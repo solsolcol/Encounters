@@ -198,6 +198,22 @@ K.pressTapMark = await p.evaluate(() => {
   return e.hotspotTap(m.x, m.y) === true && e.kitDebug().conduct.notes.includes('You read the plaque.');
 });
 
+/* v24.0: a spot with NO MARK (`mark: false`): arming it adds no mark to the screen, a tap where its mark would be does
+   nothing, and with the reticle on it the badge still names it and E presses it */
+const markCount = () => p.evaluate(() => [...document.querySelectorAll('#hotmarks .hmark')].filter(m => m.style.display !== 'none').length);
+await aimFrom9(4, 0); await settle();   // the clue on screen, the reticle well off it
+const marksBefore = await markCount();
+await p.evaluate(() => { const h = window.__enc.stage.hotspots.find(x => x.id === 'clue'); h.armed = true; });
+await settle();
+K.noMarkDrawn = (await markCount()) === marksBefore;
+K.noMarkTap = await p.evaluate(() => { const e = window.__enc, m = e.hotMarkAt('clue'); return !!m && m.z < 1 && e.hotspotTap(m.x, m.y) === false; });
+await aimFrom9(10.5, 0);
+await until(() => window.__enc.kitDebug().hotspot === 'clue', 20000).catch(() => {});
+K.noMarkBadge = (await spotNow()) === 'clue';
+await p.keyboard.press('KeyE');
+await until(() => window.__enc.kitDebug().conduct.notes.includes('You found the clue.'), 20000).catch(() => {});
+K.noMarkPress = await p.evaluate(() => window.__enc.kitDebug().conduct.notes.includes('You found the clue.'));
+
 // torch: declared → the button is on the body, F toggles it, off again after
 K.torchDeclared = await p.evaluate(() => {
   const d = window.__enc.kitDebug();

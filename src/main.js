@@ -2966,7 +2966,7 @@ function captionsFrame() {
   if (k === capPainted.k) return;
   const el = capPainted.el || (capPainted.el = $('caption')); if (!el) return;
   const was = capPainted.k; capPainted.k = k;
-  if (k < 0) { el.classList.remove('on'); return; }
+  if (k < 0) { el.classList.remove('on'); document.body.classList.remove('capsOn'); return; }
   const q = kitCaps.list[k];
   el.querySelector('.capMain').textContent = q.text;
   el.querySelector('.capSub').textContent = q.sub;
@@ -2975,6 +2975,12 @@ function captionsFrame() {
      already standing — `swap` replays the rise) */
   el.classList.remove('swap'); if (was >= 0) { void el.offsetWidth; el.classList.add('swap'); }
   el.classList.add('on');
+  /* v24.0: the interact badge stands ABOVE a caption, never on it — episode 4 chapter 1 offers the signs to look at
+     while the master's chant is captioned, and the two shared the same strip of the screen (photographed). Read once a
+     line, when its words change, never per frame: where the caption stands (its own `bottom`) and how tall it is now;
+     offsetHeight ignores the rise's transform. No earlier chapter offers a spot under a caption, so none of them moves. */
+  document.body.style.setProperty('--capTop', Math.round((parseFloat(getComputedStyle(el).bottom) || 0) + el.offsetHeight) + 'px');
+  document.body.classList.add('capsOn');
 }
 function objReset() {
   objQ.length = 0; objBeat = null;
@@ -3075,6 +3081,7 @@ const HOTMARK_FAR = 16;                 // metres; the bunk is ~12 long
 const HOTMARK_TAP = 32;                 // v21.9: CSS px from a mark's middle that a tap on it counts (the phone's mark is 44 across)
 /* v21.9: is (x, y) on this spot's mark, exactly where paintHotMarks draws it? */
 function hotMarkHit(h, x, y, d) {
+  if (h.mark === false) return false;                 // v24.0: a spot with no mark has none to tap
   if (d > (h.markFar || HOTMARK_FAR)) return false;
   const q = projectTo(h.pos.x, (h.pos.y ?? 1.0) + (h.markY ?? 0.55), h.pos.z);
   if (q.z > 1 || Math.abs(q.x) > 1.02 || Math.abs(q.y) > 1.02) return false;
@@ -3099,6 +3106,10 @@ function paintHotMarks() {
   if (state === 'play' && !ev) {
     for (const h of hotspotList()) {
       if (!h || !h.pos || h.done || (typeof h.enabled === 'function' && !h.enabled())) continue;
+      /* v24.0: `mark: false` — a spot the player must FIND by looking (episode 4 chapter 1's four signs: noticing them
+         is the play), or one that draws its own mark in the world (its mat's glow), wears no mark; the badge still names
+         it once it is offered. Declared by no earlier chapter. */
+      if (h.mark === false) continue;
       const d = Math.hypot(yaw.position.x - h.pos.x, yaw.position.z - h.pos.z);
       /* v12.3: `markFar` — a spot answered by LOOKING is not answered by
          walking to it, so the walk-up cap is the wrong measure for one. The

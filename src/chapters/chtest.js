@@ -386,6 +386,11 @@
       { id: 'plaque', pos: { x: -10.5, y: 1.6, z: -2.5 }, radius: 16, aim: 0.25, pressAim: true, prompt: 'Read the plaque', once: true, markFar: 16,
         enabled() { return !!this.armed; },
         onInteract() { if (kit) kit.conduct({ note: 'You read the plaque.' }); return true; } },
+      /* v24.0: a spot the player must FIND (`mark: false`): pressed like the two above, but it wears no mark and so has
+         none to tap — the badge names it only once the reticle is on it. Episode 4 chapter 1's four signs are this. */
+      { id: 'clue', pos: { x: 10.5, y: 1.6, z: 0 }, radius: 16, aim: 0.25, pressAim: true, mark: false, prompt: 'Look closer', once: true, markFar: 16,
+        enabled() { return !!this.armed; },
+        onInteract() { if (kit) kit.conduct({ note: 'You found the clue.' }); return true; } },
       /* v14.7: a hotspot answered by a TAP ON THE THING — `hits(x, y)`,
          reached through the engine's hotspotTap from a touch or an unlocked
          click — whose press hands over an item and opens the ITEM UNLOCKED

@@ -71,6 +71,16 @@
     bg: 0x05060c, fog: [0x05060c, 0.0004],
     hemi: [0xffb878, 0x0c0806, 0.26], key: [0xffa860, 0.42, -1, 1.2, -1], fill: [0x4a5a8a, 0.08],
     vmHemi: [0xffc488, 0x0c0806, 0.34], vmKey: [0xffb070, 0.42] });
+  const FLASH = sky({                 // the storm's lightning held long enough to see the room by (WHAT CHANGED?'s lit beat)
+    stops: [[0.00, '#3a4660'], [0.12, '#2e3a52'], [0.35, '#222c44'], [0.65, '#161e32'], [1.00, '#0c1222']],
+    bg: 0x141c2c, fog: [0x141c2c, 0.0004],
+    hemi: [0xd8e4ff, 0x23262e, 1.0], key: [0xe2ecff, 1.05, 1.6, 3, 2.2], fill: [0x8aa0d8, 0.42],
+    vmHemi: [0xd8e4ff, 0x23262e, 0.95], vmKey: [0xe2ecff, 0.85] });
+  const HUSH = sky({                  // the room after the storm: the candles, and the washed grey-blue through the louvres
+    stops: [[0.00, '#56606e'], [0.12, '#48525e'], [0.35, '#3a424e'], [0.65, '#2c323c'], [1.00, '#1e222a']],
+    bg: 0x262c36, fog: [0x262c36, 0.0004],
+    hemi: [0xc0cede, 0x2a2622, 0.52], key: [0xffb070, 0.44, -1, 1.2, -1], fill: [0x8aa0c8, 0.24],
+    vmHemi: [0xc8d4e4, 0x2a2622, 0.58], vmKey: [0xffb878, 0.44] });
   const AFTER = sky({                 // the hush: washed silver-blue, dripping eaves
     stops: [[0.00, '#c8d0dc'], [0.12, '#b0bccc'], [0.35, '#8c9cb4'], [0.65, '#6a7c98'], [1.00, '#4c5c7a']],
     bg: 0x7a8aa4, fog: [0xa8b4c4, 0.006],
@@ -96,7 +106,25 @@
     bg: 0xa8aaae, fog: [0xb4b6ba, 0.008],
     hemi: [0xdcdcdc, 0x6a6a6a, 0.92], key: [0xe4e4e4, 0.45, 0, 6, 6], fill: [0xc0c4c8, 0.30],
     vmHemi: [0xdcdcdc, 0x6a6a6a, 0.92], vmKey: [0xe4e4e4, 0.5] });
-  const PRESETS = { YARD0, YARD1, YARD2, ROOM, DARK, AFTER, ROAD, SHOP, TAXI, GREY };
+  const SHOPDARK = sky({              // his shop before the shutter is up: the morning only under its edge (the opening's first seconds)
+    stops: [[0.00, '#3a3e46'], [0.12, '#33363e'], [0.35, '#2a2d34'], [0.65, '#22242a'], [1.00, '#1a1b20']],
+    bg: 0x1c1e24, fog: [0x2a2c32, 0.004],
+    hemi: [0xc8ccd4, 0x2a2622, 0.22], key: [0xfff0dc, 0.2, 0, 1.2, 6], fill: [0x8a94a8, 0.08],
+    vmHemi: [0xc8ccd4, 0x2a2622, 0.3], vmKey: [0xfff0dc, 0.2] });
+  const PRESETS = { YARD0, YARD1, YARD2, ROOM, DARK, FLASH, HUSH, AFTER, ROAD, SHOP, SHOPDARK, TAXI, GREY };
+  /* ====================================================== THE FILMS' TIMES (CP9) — shared by the films' cues (below the
+     build) and their pictures (films, inside it): seconds on each film's own clock. The lines' lengths are estimates until
+     CP11 records them; CP12 re-times by the takes. */
+  const OPEN = { o2: 9.6, o2b: 14.8, o3: 19.4, o3b: 24.8, o4: 27.6, buzz: 30.0, o4b: 31.4, o5: 37.0, o5b: 43.8, o6: 50.6,
+                 o7: 61.4, stop: 68.4, black: 70.9, end: 72.2 };
+  const CODA = { k2: 10.6, k3: 16.6, black: 20.6, end: 21.8 };          // from the coda's own start (END[k].coda)
+  const END = {
+    A: { pao: 6.5, bless: 13.5, look: 27.5, book: 34.0, out: 40.0, walk: 51.0, cab: 57.0, wide: 62.6, coda: 70.0 },
+    B: { ask: 4.9, look: 14.4, pong: 25.6, who: 34.4, come: 42.0, card: 56.0, cab: 63.0, wide: 74.0, coda: 82.4 },
+    C: { said: 6.0, up: 9.0, calm: 12.0, pong: 19.0, out: 23.6, car: 32.4, road: 38.4, coda: 50.8 },
+    D: { ask: 7.0, nod: 19.0, out: 24.0, shelter: 36.0, dusk: 52.0, coda: 60.4 }
+  };
+
 
   const DATA = {
     id: 1,
@@ -164,7 +192,15 @@
     /* the beds (§9.3) — PLANNED until CP11 (silent until then: chaptertest allows a planned sound only in a preview) */
     ambience: { beds: [['w4yard', 0], ['w4paddy', 0], ['w4roomtone', 0], ['w4rainl', 0], ['w4rainh', 0], ['w4after', 0],
                        ['w4taxi', 0], ['w4radio', 0]] },
-    plannedSounds: ['w4yard', 'w4paddy', 'w4roomtone', 'w4rainl', 'w4rainh', 'w4after', 'w4taxi', 'w4radio'],
+    plannedSounds: ['w4yard', 'w4paddy', 'w4roomtone', 'w4rainl', 'w4rainh', 'w4after', 'w4taxi', 'w4radio',
+                    /* the play's effects (CP8): sandals off, kneeling, the tray set down, the envelope, a match, the thunder and its crack, the rain stopping */
+                    'w4sandals', 'w4kneel', 'w4tray', 'w4envelope', 'w4match', 'w4thunder', 'w4crack', 'w4rainstop',
+                    /* the films (CP9): the opening (the mall's air, the shutter, the switch, the LEDs, the carton, the pen, the phone, his
+                       typing, the wind, the pass, the diesel, the drops, the gravel, the engine off), the endings and the coda */
+                    'w4mallair', 'w4shutter', 'w4switch', 'w4ledhum', 'w4open', 'w4carton', 'w4pen', 'w4buzz', 'w4type', 'w4wind',
+                    'w4drivepass', 'w4diesel', 'w4drops', 'w4gravel', 'w4engoff', 'w4drips', 'w4breath', 'w4pao', 'w4frogs', 'w4page',
+                    'w4steps', 'w4door', 'w4endA', 'w4endB', 'w4endC', 'w4endD', 'w4pat', 'w4coda', 'w4card', 'w4heart', 'w4rise',
+                    'w4cup', 'w4dog', 'w4gasp', 'w4bell'],
     voiceLine: null,
 
     words: {
@@ -175,18 +211,97 @@
       interactTouch: 'Tap to choose what you do',
       actLine: 'Press E to choose what you do',
       actLineTouch: 'Tap to choose what you do',
-      // PLAY I · the yard (§4.2)
+      // PLAY I · the yard (§4.2): the orders, and the people he can ask
       objFollow: 'Follow Pong into the samnak',
-      objWait: 'Wait for your number · you are 14, now {n}',
       objAsk: 'Ask about the master · {n}/3',
+      objAskPong: 'Ask Pong how he knows him',
+      objWait: 'Wait for your number · you are 14, now {n}',
       objGoIn: 'Go in',
+      hotJoy: 'Ask the woman waiting',
+      hotLim: 'Ask the uncle',
+      hotSombat: 'Ask the old farmer',
+      hotPong: 'Ask Pong',
+      hotTree: 'The dresses on the tree',
       hotDoor: 'The receiving room',
-      // PLAY II–IV · the room (§4.3–§4.5)
+      // THE LEDGER (S43): his stock book's back pages — a FACT or a MEANING, never labelled (§4.2, §4.4)
+      ledWho: 'Who is he?',
+      ledSaw: 'What I saw',
+      ledPrompt: 'What will you write?',
+      ledBrief: 'One line, in the back of your stock book.',
+      ledJoyF: 'She came because her boss\'s wife said he was powerful.',
+      ledJoyM: 'He must be powerful — people drive hours to see him.',
+      ledLimF: 'Three or four years a master. Popular fast.',
+      ledLimM: 'He\'s only in it for the money.',
+      ledSbF: 'He came here five years ago. Nobody knows from where.',
+      ledSbM: 'He\'s hiding where he came from.',
+      ledPongF: 'Pong had never been here either. His cousin knows him.',
+      ledPongM: 'Pong\'s cousin vouches for him, so he\'s fine.',
+      ledReadF: 'He spoke for a long time. Pong translated one sentence.',
+      ledReadM: 'Pong is hiding what he said.',
+      ledSmokeF: 'The smoke leaned toward the covered bowl, against the fan.',
+      ledSmokeM: 'Something under the cloth was pulling at it.',
+      ledClothF: 'The cloth over the bowl moved.',
+      ledClothM: 'He keeps something alive under there.',
+      ledShadowF: 'His shadow moved after he did.',
+      ledShadowM: 'His shadow isn\'t his own.',
+      ledHerF: 'Someone stood behind him. When I looked, no one was there.',
+      ledHerM: 'He keeps a spirit that works for him.',
+      // PLAY II · the reading (§4.3)
       objKneel: 'Kneel on the mat',
-      objWatch: 'Watch. Write down what you see · {n}/4',
       hotMat: 'Kneel',
-      // the preview's own words, until the play is built (CP8)
-      objPreview: 'Being built: press the door to go in'
+      pickLabel: 'The day you were born',
+      pickTitle: 'What day were you born?',
+      day_sun: 'Sunday', dayc_sun: 'red',
+      day_mon: 'Monday', dayc_mon: 'yellow',
+      day_tue: 'Tuesday', dayc_tue: 'pink',
+      day_wed: 'Wednesday', dayc_wed: 'green · by day',
+      day_wedn: 'Wednesday night', dayc_wedn: 'smoky black · after six',
+      day_thu: 'Thursday', dayc_thu: 'orange',
+      day_fri: 'Friday', dayc_fri: 'sky blue',
+      day_sat: 'Saturday', dayc_sat: 'purple',
+      chooseLabel: 'Take one',
+      chooseTitle: 'For your shop',
+      objOffer: 'Set your offering on the tray',
+      hotOffer: 'Set down your offering',
+      // PLAY III · the work (§4.4): the chant's captions — the words as said, over what they mean — and the four signs
+      chant1: 'Namo tassa bhagavato arahato sammā-sambuddhassa',
+      chant1en: 'Homage to the Blessed One, the Worthy One, the Rightly Self-awakened One',
+      chant2: 'Ehi cittaṁ mahā-lābhaṁ piyaṁ mama māmā',
+      chant2en: 'A Thai trade blessing in Pali-like words — roughly: come, heart; great gain; be dear to me',
+      chant3: 'Mahā-lābhā bhavantu me',
+      chant3en: 'May great gains be mine.',
+      objWatch: 'Watch. Write down what you see · {n}/4',
+      lookSmoke: 'The smoke',
+      lookCloth: 'The red cloth',
+      lookShadow: 'His shadow on the wall',
+      lookHer: 'The doorway',
+      // PLAY IV · the storm (§4.5): WHAT CHANGED?
+      chgLabel: 'What changed?',
+      chgBrief: 'The lightning shows the room. Remember it. When it flashes again, tap or click only what has changed. If nothing has changed, touch nothing.',
+      // the card's What you did (§4.9)
+      noteAsked: 'You asked who he was. Nobody knew.',
+      noteNeverAsked: 'You never asked who he was.',
+      noteFacts: 'You wrote down what you saw.',
+      noteMeanings: 'You wrote down what you thought it meant.',
+      noteStormTrue: 'In the storm, you saw only what changed.',
+      noteStormFalse: 'In the storm, you saw changes that weren\'t there.',
+      note_nangkwak: 'You took a Nang Kwak for the shop.',
+      note_takrut: 'You took a takrut for the shop.',
+      note_phayant: 'You took a pha yant for the shop.',
+      // the opening film's message (§4.0 O4): the chat over the picture, and his phone's lock screen
+      phonePong: 'Pong',
+      phonePongSub: 'Amulets · Udon Thani',
+      phoneTyping: 'typing…',
+      phoneNow: 'now',
+      chat1: 'Brother!! Come Thailand. I bring you see one Ajahn. Very strong for business 🙏',
+      chat2: 'Who is he?',
+      chat3: 'Very famous. Trust me.',
+      // the coda's last image in ending B (§4.8 K3): the master's message on his phone
+      phoneAjahn: 'Ajahn',
+      phoneAjahnMsg: 'Sawasdee krub',
+      // the endings (§4.7): the line he writes in the back of his book (A, D)
+      endAline: 'I don\'t know what I saw.',
+      endDline: 'Some things I don\'t need to understand today.'
     },
     sayPrefix: 'q1',
     preview: true
@@ -209,13 +324,13 @@
     /* pg */
       'pg1car': 5.97, 'pg1here': 2.96, 'pg1come': 4.11, 'pg1sbq': 4.59, 'pg1sb': 8.86, 'pg1me': 7.52, 'pg1go': 3.21,
       'pg1tree': 4.88, 'pg1shop': 2.76, 'pg1th1': 4.34, 'pg1good': 5.9, 'pg1day': 3.14, 'pg1read': 10.4,
-      'pg1items': 4.88, 'pg1nk': 5.13, 'pg1tk': 3.34, 'pg1py': 3.34, 'pg1offer': 6.33, 'pg1eyes': 3.73,
-      'pg1power': 4.81, 'pg1Ank': 8.21, 'pg1Atk': 6.03, 'pg1Apy': 6.03, 'pg1A1': 5.28, 'pg1A2': 1.22, 'pg1B1': 2.89,
+      'pg1items': 4.88, 'pg1nk': 5.13, 'pg1tk': 6.28, 'pg1py': 6.67, 'pg1offer': 6.33, 'pg1eyes': 3.73,
+      'pg1power': 4.81, 'pg1Ank': 8.21, 'pg1Atk': 6.42, 'pg1Apy': 7.05, 'pg1A1': 5.28, 'pg1A2': 1.22, 'pg1B1': 2.89,
       'pg1B2': 5.4, 'pg1B3': 8.27, 'pg1B4': 3.07, 'pg1B5': 6.03, 'pg1B6': 4.31, 'pg1B7': 5.65, 'pg1C1': 4.04,
       'pg1C2': 3.73, 'pg1D1': 4.89, 'pg1D2': 4.11, 'pg1D3': 5.38,
     /* pn */
-      'pn1num': 6.04, 'pn1water': 5.41, 'pn1n10': 1.45, 'pn1n11': 1.81, 'pn1n12': 1.72, 'pn1n13': 1.72,
-      'pn1n14': 2.47, 'pn1tray': 0.9, 'pn1mango': 6.35, 'pn1card': 2.37, 'pn1C1': 4.59,
+      'pn1num': 6.43, 'pn1water': 6.18, 'pn1n10': 1.45, 'pn1n11': 1.81, 'pn1n12': 1.72, 'pn1n13': 1.72,
+      'pn1n14': 2.47, 'pn1tray': 0.9, 'pn1guava': 7.03, 'pn1card': 2.37, 'pn1C1': 5.36,
     /* jy */
       'jy1a': 8.41, 'jy1b': 5.4, 'jy1go': 2.96,
     /* lm */
@@ -246,9 +361,9 @@
     q1pro5: ['A Thai master... I did not know very well.', 'him'],
     pg1here: ['Here, here! This is Ajahn\'s samnak.', 'Pong'],
     pg1come: ['Come, come. Pa Noi will give you a number.', 'Pong'],
-    pn1num: ['Hello... Fourteen — number fourteen, kha. Wait at the sala, kha.', 'Pa Noi'],
+    pn1num: ['Hello... Fourteen — number fourteen, ka. Wait at the sala, na kha.', 'Pa Noi'],
     q1board: ['Fourteen. They\'re only on nine.', 'him'],
-    pn1water: ['Drink some water first... drink water first, kha. Very hot today.', 'Pa Noi'],
+    pn1water: ['Drink some water first... drink water first, na kha. Very hot today, ka.', 'Pa Noi'],
     q1water: ['Khop khun krap.', 'him'],
     pn1n10: ['Number ten!', 'Pa Noi, in Thai'],
     pn1n11: ['Number eleven!', 'Pa Noi, in Thai'],
@@ -294,8 +409,8 @@
     pg1items: ['He has many thing for business. You take one is enough.', 'Pong'],
     fm1items: ['Choose whichever piece you like. Don\'t feel you have to.', 'the master, in Thai'],
     pg1nk: ['Nang Kwak! Good choice — she call the customer in for you.', 'Pong'],
-    pg1tk: ['Takrut! Keep it under your cash drawer.', 'Pong'],
-    pg1py: ['Pha yant! Hang it over your door.', 'Pong'],
+    pg1tk: ['Takrut! You wear it on a cord — at your waist, or round your neck.', 'Pong'],
+    pg1py: ['Pha yant! Frame it on the wall facing your shop door — under your Buddha shelf.', 'Pong'],
     pg1offer: ['And the teacher offering — kha khru — you put what you want, up to you.', 'Pong'],
     fm1anu: ['I rejoice in your merit.', 'the master, in Thai'],
     fm1eyes: ['You may close your eyes. Relax.', 'the master, in Thai'],
@@ -307,11 +422,11 @@
     pg1power: ['Power cut. Normal, normal... every time rain, like this.', 'Pong'],
     fm1blessA: ['May your trade go well. May you prosper.', 'the master, in Thai'],
     pg1Ank: ['He say your shop will be busy. Put the Nang Kwak facing your door — she will call the customer.', 'Pong'],
-    pg1Atk: ['He say your shop will be busy. Keep the takrut under your cash drawer.', 'Pong'],
-    pg1Apy: ['He say your shop will be busy. Hang the pha yant over your door.', 'Pong'],
+    pg1Atk: ['He say your shop will be busy. Wear the takrut every day, on its cord.', 'Pong'],
+    pg1Apy: ['He say your shop will be busy. The pha yant — facing your door, under the Buddha.', 'Pong'],
     fm1Abye: ['Go well, come back well.', 'the master, in Thai'],
     q1A1: ['I don\'t know what I saw.', 'him'],
-    pn1mango: ['Take some mangoes with you... take mango, kha! From our tree. Very sweet.', 'Pa Noi'],
+    pn1guava: ['Take some guavas with you... take guava, na kha! From our tree. Very sweet, ka.', 'Pa Noi'],
     q1A2: ['Khop khun krap.', 'him'],
     pg1A1: ['See? I tell you. Very good one. My cousin never lie.', 'Pong'],
     pg1A2: ['Strong, right?', 'Pong'],
@@ -328,7 +443,7 @@
     fm1B3: ['If he wants to learn, come back. I can teach him to use it.', 'the master, in Thai'],
     pg1B5: ['He say you should come back. He can teach you how to use it.', 'Pong'],
     q1B3: ['Thank you, Ajahn. Maybe another time.', 'him'],
-    pn1card: ['Ajahn say, call anytime, kha.', 'Pa Noi'],
+    pn1card: ['Ajahn say, call anytime, ka.', 'Pa Noi'],
     pg1B6: ['Brother! You can SEE? Why you never tell me!', 'Pong'],
     pg1B7: ['Next time you bring me, okay? I also want to know my future!', 'Pong'],
     q1B4: ['I\'d asked to understand... and shown a man I didn\'t know what I could see.', 'him'],
@@ -337,7 +452,7 @@
     fm1C1: ['Oh... it\'s all right, it\'s all right.', 'the master, in Thai'],
     fm1C2: ['It\'s still slippery outside. Go carefully.', 'the master, in Thai'],
     pg1C1: ['He say... go carefully. Outside still slippery.', 'Pong'],
-    pn1C1: ['Wait, wait, an umbrella! Wait — umbrella, kha! Rain coming again!', 'Pa Noi'],
+    pn1C1: ['Wait, wait, an umbrella! Wait — umbrella, na kha! Rain coming again, ka!', 'Pa Noi'],
     pg1C2: ['Brother, what happen? He is a good man!', 'Pong'],
     q1C2: ['Just drive.', 'him'],
     q1C3: ['I was certain before I knew anything. And the certainty came home with me.', 'him'],
@@ -468,7 +583,7 @@
     }
     /* the tint a preset gives the dome (the photograph is the gold arrival; the waiting greys it, the storm darkens it) */
     const DOME_TINT = { YARD0: [1, 1, 1], YARD1: [0.84, 0.84, 0.88], YARD2: [0.46, 0.46, 0.55], AFTER: [0.86, 0.9, 1.0],
-                        ROAD: [1.06, 1.02, 0.98], ROOM: [0.5, 0.52, 0.6], DARK: [0.16, 0.17, 0.22] };
+                        ROAD: [1.06, 1.02, 0.98], ROOM: [0.5, 0.52, 0.6], DARK: [0.16, 0.17, 0.22], FLASH: [0.9, 0.95, 1.1], HUSH: [0.6, 0.66, 0.78] };
     function domeTint(name, secs = 0) {
       const v = DOME_TINT[name] || [1, 1, 1];
       domeLive.tintFrom.copy(domeLive.tint); domeLive.tintTo.setRGB(v[0], v[1], v[2]);
@@ -882,6 +997,10 @@
         const I = RMC.INC, BW = RMC.BOWL, T = LOWT.top;
         room.smoke.push(smokePath([[I.x, T + 0.29, I.z], [I.x - 0.005, T + 0.45, I.z + 0.004], [I.x - 0.05, T + 0.58, I.z + 0.04], [BW.x + 0.13, T + 0.6, BW.z - 0.04],
                                    [BW.x + 0.03, T + 0.44, BW.z - 0.01], [BW.x, T + 0.24, BW.z], [BW.x, T + 0.17, BW.z]], 30, 5.2, 0.36));
+        /* and after the storm, when every sign has settled (§4.6, ending A): the same stick's smoke rising straight and
+           going with the fan like the altar's (smoke[2], off until roomCtl.smokeStraight) */
+        room.smoke.push(smokePath([[I.x, T + 0.29, I.z], [I.x + 0.004, T + 0.47, I.z], [I.x + 0.02, T + 0.64, I.z + 0.01], [I.x + 0.08, T + 0.8, I.z + 0.03],
+                                   [I.x + 0.2, T + 0.94, I.z + 0.06]], 26, 5.6, 0.34));
       }
 
       /* ---- the pendulum clock beside the altar: a teak case, a glass door, the dial at twenty to five, the pendulum
@@ -2074,11 +2193,16 @@
         const pen = new THREE.Group(); pen.position.set(0.09, top + 0.0048, C.z - 0.02); pen.rotation.set(0, -0.5, Math.PI / 2); S0.add(pen); pen.userData.dyn = true; shop.pen = pen;
         { const b2 = new THREE.Mesh(new THREE.CylinderGeometry(0.0045, 0.004, 0.14, 8), M({ color: 0x1a2a6a, roughness: 0.3 })); pen.add(b2);
           const tip = new THREE.Mesh(new THREE.ConeGeometry(0.004, 0.014, 8), mAlu); tip.position.y = -0.077; tip.rotation.x = Math.PI; pen.add(tip); }
-        /* his phone: face up, its screen dark until the message comes (shop.phoneOn) */
+        /* his phone: face up, its screen dark until a message comes (shop.phoneOn), then its lock screen with the message
+           on it (shop.phoneWho: Pong's in the opening, the Ajahn's in ending B's coda). The screen is ALWAYS mapped and
+           only its colour lights it, so waking it never asks for a new program on screen (v15.1). It reads the right
+           way up from his side of the counter, where both shots of it stand. */
         const ph = new THREE.Group(); ph.position.set(0.48, top, C.z + 0.04); ph.rotation.y = -0.3; S0.add(ph); ph.userData.dyn = true;
         const body = new THREE.Mesh(new THREE.BoxGeometry(0.076, 0.009, 0.158), M({ color: 0x18181c, roughness: 0.25, metalness: 0.4 })); body.position.y = 0.0045; ph.add(body);
-        const scr = B({ color: 0x050608 }); const sc = new THREE.Mesh(new THREE.PlaneGeometry(0.068, 0.148), scr); sc.rotation.x = -Math.PI / 2; sc.position.y = 0.0095; ph.add(sc);
-        shop.phone = { g: ph, scr, base: ph.position.clone() };
+        const [pc, px] = sized(cnv, 256, 557); px.fillStyle = '#000'; px.fillRect(0, 0, 256, 557);
+        const scr = B({ color: 0x050608, map: tex(done(THREE, pc, false)) });
+        const sc = new THREE.Mesh(new THREE.PlaneGeometry(0.068, 0.148), scr); sc.rotation.set(-Math.PI / 2, 0, Math.PI); sc.position.y = 0.0095; ph.add(sc);
+        shop.phone = { g: ph, scr, base: ph.position.clone(), x: px, drawn: '' };
         bx(0.09, 0.016, 0.13, M({ color: 0x2a2a2e, roughness: 0.6 }), 0.86, top + 0.008, C.z - 0.08).rotation.y = 0.2;   // the calculator
         { const cs = bx(0.1, 0.05, 0.04, mAlu, -0.95, top + 0.025, C.z + 0.12); cs.rotation.x = -0.2;
           bx(0.09, 0.055, 0.003, M({ color: 0xf6f4ee, roughness: 0.7 }), -0.95, top + 0.05, C.z + 0.11).rotation.x = -0.35; }
@@ -2353,6 +2477,42 @@
 
     /* ---------------------------------------------------- the sets alive: the shutter, the LEDs, his phone; the taxi's
        city, wipers and streetlights; the cabin's garland and drops */
+    /* his phone's lock screen: the time, and one message on it — who sent it and its first words (the sheet's) */
+    function phoneDraw(who) {
+      const P = shop.phone; if (!P || P.drawn === who) return; P.drawn = who;
+      const x = P.x, Wd = DATA.words, ajahn = who === 'ajahn';
+      const g = x.createLinearGradient(0, 0, 0, 557); g.addColorStop(0, ajahn ? '#3a3a44' : '#1c2a44'); g.addColorStop(1, ajahn ? '#121216' : '#0a0e18');
+      x.fillStyle = g; x.fillRect(0, 0, 256, 557);
+      x.fillStyle = 'rgba(255,255,255,0.92)'; x.textAlign = 'center'; x.textBaseline = 'alphabetic';
+      x.font = '300 64px "Helvetica Neue", Arial, sans-serif'; x.fillText(ajahn ? '9:12' : '9:48', 128, 120);
+      /* the notification card */
+      const cx = 14, cy = 176, cw = 228, ch = ajahn ? 96 : 112, r = 16;
+      x.fillStyle = 'rgba(245,245,248,0.88)';
+      x.beginPath(); x.moveTo(cx + r, cy); x.arcTo(cx + cw, cy, cx + cw, cy + ch, r); x.arcTo(cx + cw, cy + ch, cx, cy + ch, r);
+      x.arcTo(cx, cy + ch, cx, cy, r); x.arcTo(cx, cy, cx + cw, cy, r); x.closePath(); x.fill();
+      x.fillStyle = '#2fae5a'; x.beginPath(); x.arc(cx + 26, cy + 26, 13, 0, Math.PI * 2); x.fill();          // the chat app's mark
+      x.fillStyle = '#fff'; x.beginPath(); x.ellipse(cx + 26, cy + 25, 7, 5.5, 0, 0, Math.PI * 2); x.fill();
+      x.textAlign = 'left'; x.fillStyle = '#16161a';
+      x.font = 'bold 19px "Helvetica Neue", Arial, sans-serif'; x.fillText(ajahn ? (Wd.phoneAjahn || 'Ajahn') : (Wd.phonePong || 'Pong'), cx + 48, cy + 32);
+      x.fillStyle = '#6a6a72'; x.font = '15px "Helvetica Neue", Arial, sans-serif'; x.textAlign = 'right'; x.fillText(Wd.phoneNow || 'now', cx + cw - 12, cy + 31);
+      x.textAlign = 'left'; x.fillStyle = '#26262c'; x.font = '18px "Helvetica Neue", Arial, sans-serif';
+      if (ajahn) {
+        const msg = Wd.phoneAjahnMsg || 'Sawasdee krub';
+        x.fillText(msg, cx + 16, cy + 70);
+        /* a lotus after his words, drawn (an emoji is not on every phone's canvas) */
+        const lx = cx + 24 + x.measureText(msg).width + 16, ly = cy + 64;
+        for (let k = 0; k < 5; k++) { x.save(); x.translate(lx, ly + 6); x.rotate((k - 2) * 0.42); x.fillStyle = k % 2 ? '#e88aa8' : '#d8658a';
+          x.beginPath(); x.moveTo(0, 0); x.quadraticCurveTo(7, -9, 0, -18); x.quadraticCurveTo(-7, -9, 0, 0); x.fill(); x.restore(); }
+        x.fillStyle = '#3a9a5a'; x.fillRect(lx - 9, ly + 7, 18, 2.5);
+      } else {
+        /* Pong's first message, wrapped to two lines */
+        const words = String(Wd.chat1 || 'Brother!! Come Thailand. I bring you see one Ajahn.').split(/\s+/); let line = '', y = cy + 64, n = 0;
+        for (const w of words) { const tl = line ? line + ' ' + w : w;
+          if (x.measureText(tl).width > cw - 32 && line) { if (n === 1) { x.fillText(line + '…', cx + 16, y); line = ''; n++; break; } x.fillText(line, cx + 16, y); y += 24; n++; line = w; } else line = tl; }
+        if (line && n < 2) x.fillText(line, cx + 16, y);
+      }
+      P.scr.map.needsUpdate = true;
+    }
     const shopCtl = {
       shutter(u, secs = 0) { shop.uFrom = shop.u; shop.uTo = Math.max(0, Math.min(1, u)); shop.t0 = wallNow(); shop.t1 = shop.t0 + Math.max(0.001, secs); if (!secs) shop.u = shop.uTo; },
       lights(k, secs = 0) { shop.ledFrom = shop.ledK; shop.ledTo = k; shop.l0 = wallNow(); shop.l1 = shop.l0 + Math.max(0.001, secs); if (!secs) shop.ledK = k; },
@@ -2378,7 +2538,7 @@
       for (const m of shop.leds) if (m) m.color.setRGB(0.12 + 0.88 * shop.ledK, 0.12 + 0.88 * shop.ledK, 0.13 + 0.87 * shop.ledK);
       if (shop.phone) {
         const on = shop.phoneOn ? now - shop.phoneOn : -1, P = shop.phone;
-        if (on >= 0) { P.scr.color.setRGB(0.55, 0.72, 0.85); const buzz = on < 1.6 ? Math.sin(on * 90) * 0.0012 * (1 - on / 1.6) : 0; P.g.position.x = P.base.x + buzz; }
+        if (on >= 0) { phoneDraw(shop.phoneWho || 'pong'); P.scr.color.setRGB(1, 1, 1); const buzz = on < 1.6 ? Math.sin(on * 90) * 0.0012 * (1 - on / 1.6) : 0; P.g.position.x = P.base.x + buzz; }
         else { P.scr.color.setRGB(0.02, 0.024, 0.03); P.g.position.x = P.base.x; }
       }
     }
@@ -2696,7 +2856,8 @@
         const L = P.L;
         P.sitW = ease(P.sitW, P.seated && (L.sitLo || !L.standLo) ? 1 : 0, 2.4, wdt);
         if (Math.abs(P.sitW - (P.seated ? 1 : 0)) < 0.002) P.sitW = P.seated ? 1 : 0;
-        P.walkW = ease(P.walkW, P.walk && !P.walk.wait ? 1 : 0, 4.5, wdt);
+        P.walkW = ease(P.walkW, (P.walk && !P.walk.wait) || P.filmWalk ? 1 : 0, 4.5, wdt);
+        if (P.filmWalk && P.L.walk) P.L.walk.setEffectiveTimeScale(P.filmWalk / 1.3);   // a film walks him by its clock (CP9: fWalk)
         P.talkW = ease(P.talkW, now < P.talkUntil ? (P.o.talkWeight || 1) : 0, 3.2, wdt);
         if (P.one && now > P.one.until) { P.oneW = ease(P.oneW, 0, 3.0, wdt); if (P.oneW < 0.01) { P.one.a.setEffectiveWeight(0); P.one = null; P.oneW = 0; } }
         else if (P.one) P.oneW = ease(P.oneW, 1, 4.0, wdt);
@@ -2828,7 +2989,7 @@
           }).catch(err => { console.warn('fmshadow failed to load', err); if (ctx.loadFail) ctx.loadFail('fmshadow', err); });
         } });
       cast.pongR = mkPerson('e4pong', { parent: worldR, x: -0.95, z: -0.2, ry: Math.atan2(0.95, -1.75), height: 1.7, sizeTake: 'Idle_9', walk: false,
-        posture: 'sit', sit: 'Sit_Cross_Legged_on_Floor', talk: 'Sitting_Answering_Questions', seatH: 0.012, seatFloor: 0.004 });
+        posture: 'sit', sit: 'Sit_Cross_Legged_on_Floor', talk: 'Sitting_Answering_Questions', seatH: 0.012, seatFloor: 0.004, look: 0.8 });
       cast.noiR = mkPerson('e4noi', { parent: worldR, x: 1.55, z: -1.0, ry: -2.2, height: 1.56, posture: 'stand', stand: 'Idle_9',
         talk: 'Talk_with_Left_Hand_on_Hip', hidden: true, noMip: true });
       cast.her = mkPerson('granny', { parent: worldR, x: RMC.HER.door.x, z: RMC.HER.door.z, ry: -0.45, height: 1.5, posture: 'stand', stand: 'Stand_and_Chat',
@@ -2894,7 +3055,7 @@
         if (_hp.z < 1 && Math.abs(_hp.y) < 1.2) { const ax = Math.abs(_hp.x); want = THREE.MathUtils.smoothstep(ax, 0.3, 0.55) * (ax < 1.25 ? 1 : 0); }
       }
       her.k += (want - her.k) * Math.min(1, wdt * (want > her.k ? 2.2 : 6.0));
-      P.group.visible = her.k > 0.01;
+      P.group.visible = her.k > 0.05;                // (CP8: under this the dither left a few stray specks where she had been)
       if (P.group.visible) P.model.traverse(m => { if (m.isMesh) m.material.opacity = her.k * 0.72; });   // never quite solid: the dither always shows
     }
     /* the shadow, each frame: his pose written into the history, the late pose read back into both silhouettes, and how
@@ -2941,6 +3102,11 @@
       if (x > SL.x0 && x < SL.x1 && z > SL.z0 && z < SL.z1) return SL.floor;
       if (x > -1.1 && x < 1.1 && z >= SL.z1 && z < SL.z1 + 0.3) return 0.22;
       if (x > -1.1 && x < 1.1 && z >= SL.z1 + 0.3 && z < SL.z1 + 0.6) return 0.11;
+      /* the receiving room's three steps and its floor (the cast walk up them and in; the player is kept off by the
+         steps' own blocker and the room's walls, and goes in by the door's press) */
+      const RX0 = CMP.ROOMX;
+      if (x > 7.15 && x < 8.65 && z >= RX0.z1 && z < RX0.z1 + 0.9) return z < RX0.z1 + 0.3 ? RX0.base : z < RX0.z1 + 0.6 ? RX0.base * 2 / 3 : RX0.base / 3;
+      if (x > RX0.x0 && x < RX0.x1 && z > RX0.z0 && z < RX0.z1) return RX0.base;
       return 0;
     }
 
@@ -2959,9 +3125,12 @@
       clothShift(on) { if (!room.cloth) return; room.cloth.rotation.y = on ? 0.45 : 0; room.cloth.position.x = RMC.BOWL.x + (on ? 0.028 : 0); room.cloth.position.z = RMC.BOWL.z + (on ? -0.012 : 0); },
       clock(run) { room.clockRun = !!run; },
       smoke(which, on) { const sp = room.smoke[which === 'altar' ? 0 : 1]; if (sp) sp.on = !!on; },
+      /* the table's smoke turned to the bowl (the sign), or straight up with the fan's air (the storm has passed) */
+      smokeStraight(on) { if (room.smoke[1]) room.smoke[1].on = !on; if (room.smoke[2]) room.smoke[2].on = !!on; },
       fan(on) { room.fanOn = !!on; }
     };
     room.smoke.forEach(sp => { sp.on = true; });
+    if (room.smoke[2]) room.smoke[2].on = false;
     room.candleK = 0; room.candleTo = 0; room.candleSecs = 0.8; room.rainFrom = 0; room.rainT0 = 0; room.rainSecs = 1; room.fanSpeed = 1;
     function roomFrame(now) {
       if (worldOf(yaw.position.x) !== 'R') { room.last = 0; return; }
@@ -3124,16 +3293,30 @@
     let worldRun = 0;
     let wDark = false;
     let decOpen = false;
-    function setPhase(p, tag) {
+    function setPhase(p, tag, opts) {
       phase = p;
       if (kit) kit.setPhase(tag ? p + ':' + tag : p);
-      objectiveFor(p, tag);
+      objectiveFor(p, opts);
     }
-    function objectiveFor(p) {
+    /* the orders (§4.2–§4.4). `opts.complete === false` where the change is not his doing — a number called, someone
+       gone in — so the HUD never congratulates him for the queue moving (the v8.7 lie) */
+    function objectiveFor(p, opts) {
       if (!kit) return;
-      if (wDark) { kit.objective(null, { complete: false }); return; }
-      const o = { arrive: W.objPreview, wait: W.objPreview, called: W.objGoIn, consult: W.objKneel, decide: null }[p];
-      kit.objective(o || null);
+      if (wDark) { kit.objective(null, { complete: false }); kit.waypoint(null); return; }
+      let o = null, wp = null;
+      if (p === 'arrive') o = W.objFollow;
+      else if (p === 'wait') {
+        const n3 = ['joy', 'lim', 'sb'].filter(k => play.asked.has(k)).length;
+        o = !threeDone() ? W.objAsk.replace('{n}', String(n3))
+          : (play.pongSat && !play.asked.has('pong')) ? W.objAskPong
+          : W.objWait.replace('{n}', String(play.n));
+      }
+      else if (p === 'called') { o = W.objGoIn; wp = { x: RDOOR.x, y: 1.9, z: RDOOR.z - 0.5 }; }
+      else if (p === 'consult') o = play.kneeling ? null : W.objKneel;
+      else if (p === 'items') o = play.offerOn && !play.offered ? W.objOffer : null;
+      else if (p === 'work') o = W.objWatch.replace('{n}', String(play.signs.size));
+      kit.objective(o, opts);
+      if (p !== 'arrive') kit.waypoint(wp);
     }
     function look(name, secs = 0) {
       if (kit) kit.daylight(PRESETS[name] || null, secs);
@@ -3186,11 +3369,654 @@
       return true;
     }
 
-    /* ------------------------------------------------------------- hotspots (CP8 builds the play; CP2's door) */
+    /* ================================================================ THE PLAY (CP8, §4.2–§4.6)
+       P1 arrive → P2 wait (ASK: the three in the sala, then Pong; THE QUEUE IS TIME) → P3 called → P4 consult (the mat,
+       the wai, the day he was born, the reading) → P5 items (the tray, the teacher's offering) → P6 work (the chant; the
+       four signs, each written in the ledger) → P7 storm (WHAT CHANGED?) → decide. Every beat on the chapter clock (wall
+       time, v7.1); every line through the queue, one voice at a time; each beat's receipt in the phase string, so a
+       Continue lands where a reload would (§10.1). */
+    const play = {
+      run: 0,                         // a token: a callback from before a reset finds it changed and does nothing
+      asked: new Set(), missed: new Set(), n: 9, nextCall: 0, calling: false, busy: false,
+      greeted: false, water: false, tree: false, pongSat: false,
+      day: '', item: '', offerOn: false, offered: false,
+      signs: new Set(), signsOn: false, herSeen: false, breathNext: 0, gestNext: 0, chantNext: 0,
+      kneeling: false, turning: null, called: false
+    };
+    const live = (run) => alive && run === play.run;
+    const KNEEL_Y = RMC.EYE.y;                                       // his eye on the mat (§4.3)
+    const faceMaster = () => Math.atan2(-(MASTER.x - CMAT.x), -(MASTER.z - CMAT.z));
+    /* one line, its speaker on his talking take for the line's own length */
+    function line(name, P, vol = 1) { queueLine(name, () => { if (P) personTalk(P, (SECS[name] || 2.5) * 0.92); }, vol); }
+    function lines(list) { for (const [n, P] of list) line(n, P); }
+    /* the receipt is the note (v7.3): a note that is banked is banked once, whatever a Continue replays */
+    function bank(note) {
+      if (!kit || !note) return;
+      const got = kit.getConduct ? kit.getConduct().notes : [];
+      if (!got.includes(note)) kit.conduct({ note, s: 0, a: 0 });
+    }
+    /* THE LEDGER (S43): a FACT pays two awareness, once (an entry already written answers at once and pays nothing);
+       a MEANING pays nothing — both are written, and chapter 2 reads them back */
+    function writeLedger(id, page, fk, mk, tries = 0) {
+      const run = play.run;
+      if (!kit || !kit.ledger) return Promise.resolve(null);
+      const had = kit.ledger.entries().some(e => e.id === id);
+      return kit.ledger.write(id, { page, title: page === 'who' ? W.ledWho : W.ledSaw, prompt: W.ledPrompt, brief: W.ledBrief,
+                                    fact: W[fk], meaning: W[mk] }).then(kind => {
+        if (!live(run)) return null;
+        if (!kind && tries < 20) return new Promise(res => after(0.5, () => res(writeLedger(id, page, fk, mk, tries + 1))));
+        if (kind === 'fact' && !had) kit.award('awareness', 2);
+        return kind;
+      });
+    }
+
+    /* ---------------------------------------------------------------- the yard's props: the board */
+    function boardSet(n) {
+      play.n = n;
+      if (yard.board) { drawQueueBoard(yard.board.canvas.getContext('2d'), 512, 224, n); yard.board.tex.needsUpdate = true; }
+    }
+    /* a person who goes in or out of sight does it where he cannot be watched doing it: hidden on the first frame his
+       head is off the screen (or when he is in another world) */
+    const _hv = new THREE.Vector3();
+    function hideUnseen(P) { if (P) P.hideUnseen = true; }
+    function unseenTick() {
+      for (const P of people) {
+        if (!P.hideUnseen || !P.group.visible) continue;
+        P.group.getWorldPosition(_hv); _hv.y += 1.5;
+        camera.updateMatrixWorld(); _hv.project(camera);
+        const off = _hv.z > 1 || Math.abs(_hv.x) > 1.08 || Math.abs(_hv.y) > 1.08 || worldOf(yaw.position.x) !== 'C';
+        if (off) { P.group.visible = false; P.hideUnseen = false; }
+      }
+    }
+
+    /* ---------------------------------------------------------------- the routes (World C, metres; §4.1)
+       The sala is a raised floor (0.32) with its steps at the front between x ±1.1 (a post stands at their top, x 0);
+       the receiving room's door is at the top of its own three steps (RDOOR) and its dark doorway takes whoever walks in
+       (the room's box hides them behind its front face). Everyone goes round the queue's board and Pa Noi. */
+    const SEAT = { joy: { x: -1.6, z: -3.0 }, lim: { x: 0.4, z: -2.75 }, pong: { x: 0.4, z: -1.35 } };
+    const DOORWAY = [[6.6, -2.4], [7.9, -5.0], [7.9, -6.15], [7.9, -7.3]];
+    const ROUTE_IN = {
+      joy: [[-0.6, -2.0], [-0.55, -0.5], [-0.55, 0.7], [-0.4, 1.9], [4.4, 1.9], ...DOORWAY],
+      lim: [[1.3, -2.2], [1.3, -0.6], [0.8, 0.6], [0.8, 1.9], [4.4, 1.9], ...DOORWAY]
+    };
+    const ROUTE_OUT = [[7.9, -6.15], [7.9, -5.0], [6.4, -2.0], [4.6, 2.6], [1.9, 6.4], [0.7, 9.4], [0.4, 12.6]];
+
+    /* ================================================================ P1 · ARRIVE */
+    function arriveBegin() {
+      setPhase('arrive');
+      look('YARD0', 0);
+      boardSet(9);
+      after(0.9, () => {
+        line('pg1come', cast.pong);
+        queueFn(() => personWalk(cast.pong, [[2.4, 9.8], [0.9, 7.2], [1.6, 4.0], [2.25, 2.35]], { speed: 1.1, ry: 2.3 }));
+      });
+    }
+    /* Pa Noi gives him his number when he comes up to her (the waypoint is on Pong, then on her) */
+    function greet() {
+      if (play.greeted) return;
+      play.greeted = true;
+      line('pn1num', cast.noi);
+      line('q1board', null);
+      queueFn(() => {
+        waitBegin(false);
+        /* Pong takes his seat on the front bench to wait */
+        personWalk(cast.pong, [[1.6, 2.0], [0.82, 0.9], [0.82, -0.3], [0.84, -1.35]], { speed: 1.05, ry: Math.PI / 2,
+          then: () => after(0.5, () => { personSit(cast.pong, true, SEAT.pong); play.pongSat = true; }) });
+      });
+    }
+
+    /* ================================================================ P2 · WAIT, AND ASK */
+    function waitTag() {
+      return [...play.asked].join(',') + ';n' + play.n + (play.missed.size ? ';m' + [...play.missed].join(',') : '');
+    }
+    function waitBegin(resumed) {
+      setPhase('wait', waitTag());
+      play.nextCall = dayClock.t + (resumed ? 18 : 24);
+      if (!resumed && !play.water) after(8.5, waterOffer);
+    }
+    /* hospitality, the first and the last: Pa Noi brings him water while he waits */
+    function waterOffer() {
+      if (play.water || phase !== 'wait') return;
+      if (play.busy || play.calling) { after(4, waterOffer); return; }
+      play.water = true;
+      line('pn1water', cast.noi);
+      line('q1water', null);
+    }
+    const ASK = {
+      joy:  { f: 'ledJoyF', m: 'ledJoyM', steps: () => [['q1joy1', null], ['jy1a', cast.joy], ['q1joy2', null], ['jy1b', cast.joy]] },
+      lim:  { f: 'ledLimF', m: 'ledLimM', steps: () => [['q1lim1', null], ['lm1a', cast.lim], ['q1lim2', null], ['lm1b', cast.lim]] },
+      sb:   { f: 'ledSbF', m: 'ledSbM', steps: () => [['q1sb1', null], ['pg1sbq', cast.pong], ['sb1a', cast.sombat], ['pg1sb', cast.pong]] },
+      pong: { f: 'ledPongF', m: 'ledPongM', steps: () => [['q1pg1', null], ['pg1me', cast.pong]] }
+    };
+    const threeDone = () => ['joy', 'lim', 'sb'].every(k => play.asked.has(k) || play.missed.has(k));
+    function askOpen(key) {
+      if (phase !== 'wait' || play.busy || play.calling || play.asked.has(key) || play.missed.has(key)) return false;
+      if (key === 'sb' || key === 'pong') { if (!play.pongSat) return false; }
+      if (key === 'pong' && !threeDone()) return false;
+      return true;
+    }
+    function ask(key) {
+      if (!askOpen(key)) return false;
+      play.busy = true;
+      const A = ASK[key], run = play.run;
+      /* the farmer is asked through Pong: Pong hears him out, turns to the farmer to ask (and the farmer to Pong), and
+         turns back to translate (CP8, by photograph: the turn came before the question was put to Pong at all) */
+      if (key === 'sb') {
+        const st = A.steps();
+        line(st[0][0], st[0][1]);
+        queueFn(() => { if (cast.pong.head && cast.sombat.head) { cast.pong.lookAt = cast.sombat.head; cast.sombat.lookAt = cast.pong.head; } });
+        line(st[1][0], st[1][1]); line(st[2][0], st[2][1]);
+        queueFn(() => { cast.pong.lookAt = null; cast.sombat.lookAt = null; });
+        line(st[3][0], st[3][1]);
+      } else lines(A.steps());
+      queueFn(() => {
+        if (key === 'sb') { cast.pong.lookAt = null; cast.sombat.lookAt = null; }
+        writeLedger('who:' + key, 'who', A.f, A.m).then(() => {
+          if (!live(run)) return;
+          play.asked.add(key);
+          if (key === 'pong') line('q1nobody', null);
+          queueFn(() => {
+            play.busy = false;
+            setPhase('wait', waitTag());
+            play.nextCall = Math.min(play.nextCall, dayClock.t + 3.5);       // a conversation is followed by the next call
+          });
+        });
+      });
+      return true;
+    }
+    /* the takhian tree with its dresses (a folk custom, shown respectfully, never explained further) */
+    function treeLook() {
+      if (play.tree || play.busy) return false;
+      play.tree = true;
+      line('q1tree', null);
+      line('pg1tree', cast.pong);
+      return true;
+    }
+
+    /* THE QUEUE IS TIME (§4.2): a short dip to black; in it the light moves a notch toward the storm and the board a
+       number on; whoever was called while time passed is gone. Ten and eleven are heard in the dark; twelve, thirteen
+       and his own fourteen are called with the picture up, and the ones called rise and go in. */
+    const CALL = { 10: 'pn1n10', 11: 'pn1n11', 12: 'pn1n12', 13: 'pn1n13', 14: 'pn1n14' };
+    const SKY = { 9: 'YARD0', 10: 'YARD0', 11: 'YARD1', 12: 'YARD1', 13: 'YARD2', 14: 'YARD2' };
+    function callNext() {
+      if (play.calling || play.n >= 14 || phase !== 'wait') return;
+      play.calling = true;
+      const n = play.n + 1, run = play.run;
+      if (kit) kit.fade(1, 0.45);
+      after(0.6, () => {
+        if (!live(run)) return;
+        boardSet(n);
+        look(SKY[n], 2.6);
+        /* the one who went in before comes out while time passes */
+        if (n === 13) comeOut(cast.joy);
+        setPhase('wait', waitTag(), { complete: false });
+        if (n <= 11) line(CALL[n], cast.noi);
+      });
+      after(1.6, () => { if (live(run) && kit) kit.fade(0, 0.8); });
+      after(2.5, () => {
+        if (!live(run)) return;
+        if (n >= 12) line(CALL[n], cast.noi);
+        if (n === 12) queueFn(() => goIn('joy'));
+        if (n === 13) queueFn(() => goIn('lim'));
+        queueFn(() => {
+          play.calling = false;
+          if (n === 14) { calledBegin(false); return; }
+          play.nextCall = dayClock.t + (['joy', 'lim', 'sb', 'pong'].every(k => play.asked.has(k) || play.missed.has(k) || !askAvail(k)) ? 9 : 30);
+        });
+      });
+    }
+    const askAvail = (k) => !(k === 'joy' && play.n >= 12) && !(k === 'lim' && play.n >= 13);
+    function goIn(who) {
+      const P = cast[who];
+      if (!play.asked.has(who)) play.missed.add(who);
+      setPhase('wait', waitTag(), { complete: false });
+      line(who === 'joy' ? 'jy1go' : 'lm1go', P);
+      queueFn(() => {
+        whenReady(P, () => personWalk(P, ROUTE_IN[who], { speed: 1.05, then: () => {
+          P.group.visible = false;
+          /* called out again while still on the way in: out a while after she went in, never out of thin air */
+          if (P.pendingOut) { P.pendingOut = false; const run = play.run; after(9, () => { if (live(run)) comeOut(P); }); }
+        } }));
+        if (play.missed.has(who)) after(1.6, () => line('q1missed', null));
+      });
+    }
+    function comeOut(P) {
+      if (P && P.walk && P.group.visible) { P.pendingOut = true; return; }
+      whenReady(P, () => {
+        P.group.visible = true; P.seated = false; P.sitW = 0;
+        personPut(P, 7.9, -7.2, 0);
+        personWalk(P, ROUTE_OUT, { speed: 1.1, then: () => hideUnseen(P) });
+      });
+    }
+
+    /* ================================================================ P3 · CALLED */
+    function calledBegin(resumed) {
+      play.called = true;
+      setPhase('called');
+      if (!resumed) {
+        line('pg1go', cast.pong);
+        queueFn(() => comeOut(cast.lim));
+      }
+      /* Pong gets up and goes to the room's steps to take his sandals off; the first drops */
+      whenReady(cast.pong, () => {
+        personWalk(cast.pong, [[0.82, 0.6], [0.82, 1.9], [4.4, 1.9], [6.6, -2.4], [7.35, -4.9]], { speed: 1.1, ry: Math.PI });
+      });
+      if (kit && kit.rain) kit.rain(0.12, 4, { len: 0.5 });
+    }
+    function enterRoom() {
+      if (phase !== 'called') return false;
+      if (kit && kit.rain) kit.rain(0, 0);
+      if (worldSfx) worldSfx('w4sandals', 0.7);
+      toWorld('R', false, 'consult');
+      consultBegin(false);
+      return true;
+    }
+
+    /* ================================================================ P4 · THE READING (World R) */
+    /* the client's mat: a glow on the floor, the engine's "!" over it; step into it, or press it, and he kneels (legs
+       folded to one side, as a client does) facing the master */
+    const matZone = (() => {
+      const g = new THREE.Group(); g.position.set(CMAT.x, 0.03, CMAT.z); g.visible = false; g.userData.dyn = true; worldR.add(g);
+      const disc = new THREE.Mesh(new THREE.CircleGeometry(0.42, 32), B({ color: 0xf2c46a, transparent: true, opacity: 0.2, depthWrite: false, fog: false }));
+      disc.rotation.x = -Math.PI / 2; g.add(disc);
+      const ring = new THREE.Mesh(new THREE.RingGeometry(0.38, 0.45, 40), B({ color: 0xffd98a, transparent: true, opacity: 0.8, depthWrite: false, fog: false,
+                                                                                 blending: THREE.AdditiveBlending, side: THREE.DoubleSide }));
+      ring.rotation.x = -Math.PI / 2; ring.position.y = 0.003; g.add(ring);
+      const wave = new THREE.Mesh(new THREE.RingGeometry(0.4, 0.45, 40), B({ color: 0xffd98a, transparent: true, opacity: 0.7, depthWrite: false, fog: false,
+                                                                                blending: THREE.AdditiveBlending, side: THREE.DoubleSide }));
+      wave.rotation.x = -Math.PI / 2; wave.position.y = 0.005; wave.userData.moves = true; g.add(wave);
+      g.userData.parts = { disc, ring, wave };
+      return g;
+    })();
+    function zoneTick(now) {
+      if (!matZone.visible) return;
+      const { disc, ring, wave } = matZone.userData.parts, k = (now % 2) / 2;
+      wave.scale.setScalar(1 + k * 0.9); wave.material.opacity = 0.7 * (1 - k);
+      ring.material.opacity = 0.6 + 0.3 * Math.sin(now * 3.1); disc.material.opacity = 0.16 + 0.08 * Math.sin(now * 3.1);
+    }
+    /* a glide and a turn to a heading, the eye easing to its height (e3c2's) */
+    const smooth = (u) => u * u * (3 - 2 * u);
+    function turnTo(to, secs, o, done) {
+      play.turning = { t: 0, from: yaw.rotation.y, to, secs, y: o.y, span: o.span, lo: o.lo, hi: o.hi, done,
+                       pos: o.pos || null, p0: { x: yaw.position.x, z: yaw.position.z }, pitch: o.pitch, pt0: pitch.rotation.x };
+    }
+    function turnTick(wdt) {
+      const T2 = play.turning; if (!T2) return;
+      T2.t += wdt / T2.secs;
+      const k = smooth(Math.min(1, T2.t));
+      let d = T2.to - T2.from; while (d > Math.PI) d -= Math.PI * 2; while (d < -Math.PI) d += Math.PI * 2;
+      yaw.rotation.y = T2.from + d * k;
+      if (T2.pos) { yaw.position.x = T2.p0.x + (T2.pos.x - T2.p0.x) * k; yaw.position.z = T2.p0.z + (T2.pos.z - T2.p0.z) * k; }
+      if (T2.pitch != null) pitch.rotation.x = T2.pt0 + (T2.pitch - T2.pt0) * k;
+      if (kit) kit.pose('lying', { y: T2.y, yaw: yaw.rotation.y, span: 0.02, pitchLo: Math.min(T2.lo, pitch.rotation.x - 0.01), pitchHi: Math.max(T2.hi, pitch.rotation.x + 0.01), secs: 0.9 });
+      if (T2.t >= 1) {
+        play.turning = null;
+        if (kit) kit.pose('lying', { y: T2.y, yaw: T2.to, span: T2.span, pitchLo: T2.lo, pitchHi: T2.hi, secs: 0.05 });
+        if (T2.done) T2.done();
+      }
+    }
+    const KNEEL = { y: KNEEL_Y, span: 1.2, lo: -0.85, hi: 0.5 };
+    function consultBegin(resumed) {
+      play.kneeling = false;
+      matZone.visible = true;
+      herCtl.show(false);
+      setPhase('consult', play.day);
+    }
+    function kneel(instant) {
+      if (play.kneeling) return false;
+      play.kneeling = true; matZone.visible = false;
+      if (kit) kit.root(true);
+      /* the order is done the moment he kneels (CP8, by photograph: "Kneel on the mat" stood over him kneeling through the
+         whole greeting); a resume that kneels him puts it away without a COMPLETE */
+      if (phase === 'consult') objectiveFor('consult', instant ? { complete: false } : undefined);
+      if (worldSfx) worldSfx('w4kneel', 0.6);
+      if (instant) {
+        yaw.position.x = RX + CMAT.x; yaw.position.z = CMAT.z; yaw.rotation.y = faceMaster(); pitch.rotation.x = -0.06;
+        if (kit) kit.pose('lying', { y: KNEEL.y, yaw: faceMaster(), span: KNEEL.span, pitchLo: KNEEL.lo, pitchHi: KNEEL.hi, secs: 0.05 });
+        return true;
+      }
+      turnTo(faceMaster(), 1.0, Object.assign({ pos: { x: RX + CMAT.x, z: CMAT.z }, pitch: -0.06 }, KNEEL), () => greeting());
+      return true;
+    }
+    function greeting() {
+      const M2 = cast.master, PR = cast.pongR;
+      if (kit && kit.pray) kit.pray(true, { secs: 0.8, y: -0.33 });         // the wai on arrival
+      lines([['fm1hello', M2], ['q1wai', null]]);
+      queueFn(() => { if (kit && kit.pray) kit.pray(false, { secs: 0.9 }); });
+      lines([['fm1shop', M2], ['pg1shop', PR], ['q1shop', null]]);
+      queueFn(() => { if (PR.head && M2.head) PR.lookAt = M2.head; });       // Pong says it to the master in Thai
+      line('pg1th1', PR);
+      queueFn(() => { PR.lookAt = null; });
+      lines([['fm1good', M2], ['pg1good', PR]]);
+      if (play.day) { queueFn(() => { slateWrite(play.day); reading(); }); return; }
+      lines([['fm1day', M2], ['pg1day', PR]]);
+      queueFn(() => askDay());
+    }
+    /* THE DAY HE WAS BORN (S47): eight days in their Thai colours — Wednesday has a night of its own (Rahu's) */
+    const DAYS = [['sun', '#d23a30'], ['mon', '#e8c228'], ['tue', '#ec7fa4'], ['wed', '#3a9a4a'], ['wedn', '#3c3a42'],
+                  ['thu', '#ec8a2a'], ['fri', '#5aa8e0'], ['sat', '#7a4aa8']];
+    const DAY_TH = { sun: 'วันอาทิตย์', mon: 'วันจันทร์', tue: 'วันอังคาร', wed: 'วันพุธ', wedn: 'พุธกลางคืน', thu: 'วันพฤหัสบดี', fri: 'วันศุกร์', sat: 'วันเสาร์' };
+    function askDay() {
+      const run = play.run;
+      if (!kit || !kit.pick) { play.day = 'fri'; reading(); return; }
+      kit.pick(DAYS.map(([id, color]) => ({ id, color, label: W['day_' + id], sub: W['dayc_' + id] })),
+               { label: W.pickLabel, title: W.pickTitle }).then(id => {
+        if (!live(run)) return;
+        if (!id) { after(0.8, askDay); return; }
+        play.day = id;
+        setPhase('consult', id);
+        slateWrite(id);
+        reading();
+      });
+    }
+    /* the master writes the day on his slate in chalk, with the small square of a reckoning under it */
+    function slateWrite(id) {
+      const S2 = room.slate; if (!S2) return;
+      const x = S2.ctx, Wd = 256, Hd = 180;
+      x.fillStyle = '#20262a'; x.fillRect(0, 0, Wd, Hd);
+      for (let i = 0; i < 300; i++) { x.fillStyle = `rgba(200,210,214,${(Math.random() * 0.05).toFixed(3)})`; x.fillRect(Math.random() * Wd, Math.random() * Hd, 2, 1); }
+      x.strokeStyle = 'rgba(232,236,236,0.85)'; x.fillStyle = 'rgba(236,240,240,0.92)';
+      x.font = `bold 34px ${THAI_FONT}`; x.textAlign = 'center'; x.textBaseline = 'middle';
+      if (!id) { S2.tex.needsUpdate = true; return; }
+      x.save(); x.translate(Wd / 2, 40); x.rotate(-0.03); x.fillText(DAY_TH[id], 0, 0); x.restore();
+      x.lineWidth = 2.2;
+      const gx = 78, gy = 72, gs = 33;
+      for (let i = 0; i <= 3; i++) { x.beginPath(); x.moveTo(gx + i * gs, gy); x.lineTo(gx + i * gs + (i % 2) * 1.5, gy + 3 * gs); x.stroke();
+                                     x.beginPath(); x.moveTo(gx, gy + i * gs); x.lineTo(gx + 3 * gs, gy + i * gs + (i % 2) * 1.5); x.stroke(); }
+      x.font = `22px ${THAI_FONT}`;
+      const digits = ['๑', '๒', '๓', '๔', '๕', '๖', '๗', '๘', '๙'];
+      const start = Math.max(0, DAYS.findIndex(d => d[0] === id));
+      for (let k = 0; k < 9; k++) x.fillText(digits[(k + start) % 9], gx + (k % 3) * gs + gs / 2, gy + Math.floor(k / 3) * gs + gs / 2 + 1);
+      S2.tex.needsUpdate = true;
+    }
+    function reading() {
+      const M2 = cast.master, PR = cast.pongR, run = play.run;
+      lines([['fm1hm', M2], ['fm1read', M2], ['pg1read', PR], ['q1short', null]]);
+      queueFn(() => writeLedger('who:read', 'who', 'ledReadF', 'ledReadM').then(() => { if (live(run)) itemsBegin(false); }));
+    }
+
+    /* ================================================================ P5 · THE ITEMS */
+    /* the tray Pa Noi brings: red lacquer on a short pedestal, set on the floor beside his mat — a small Nang Kwak
+       medallion on its card, a takrut on its cord, a pha yant folded — and, once he has given it, his envelope */
+    const tray = (() => {
+      const g = new THREE.Group(); g.position.set(0.5, 0, -0.42); g.rotation.y = -0.35; g.visible = false; g.userData.dyn = true; worldR.add(g);
+      const mk = (geo, mat, x, y, z) => { const o = new THREE.Mesh(geo, mat); o.position.set(x, y, z); g.add(o); return o; };
+      const lacq = M({ color: 0x7a1414, roughness: 0.32 }), gold = M({ color: 0xc89a3a, roughness: 0.35, metalness: 0.7 });
+      mk(new THREE.CylinderGeometry(0.06, 0.09, 0.07, 18), lacq, 0, 0.035, 0);
+      mk(new THREE.CylinderGeometry(0.2, 0.19, 0.022, 32), lacq, 0, 0.081, 0);
+      mk(new THREE.TorusGeometry(0.2, 0.008, 6, 40), gold, 0, 0.094, 0).rotation.x = Math.PI / 2;
+      const T = 0.093;
+      /* the Nang Kwak: a gilt medallion of her, beckoning, on a red card */
+      const nk = new THREE.Group(); nk.position.set(-0.1, T, 0.03); g.add(nk);
+      const card = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.004, 0.1), M({ color: 0xa81e22, roughness: 0.7 })); card.position.y = 0.002; nk.add(card);
+      const med = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.024, 0.005, 24), gold); med.position.set(0, 0.0065, 0.01); nk.add(med);
+      const medT = (() => { const [c, x] = cnv(64); x.fillStyle = '#c89a3a'; x.fillRect(0, 0, 64, 64); x.strokeStyle = '#6a4a14'; x.lineWidth = 3;
+        x.beginPath(); x.arc(32, 32, 28, 0, Math.PI * 2); x.stroke();
+        x.beginPath(); x.arc(32, 20, 6, 0, Math.PI * 2); x.stroke(); x.beginPath(); x.moveTo(32, 26); x.quadraticCurveTo(22, 44, 26, 54); x.lineTo(38, 54); x.quadraticCurveTo(42, 44, 32, 26); x.stroke();
+        x.beginPath(); x.moveTo(36, 32); x.lineTo(44, 24); x.lineTo(46, 18); x.stroke();
+        return tex(done(THREE, c, false)); })();
+      const face = new THREE.Mesh(new THREE.CircleGeometry(0.023, 24), M({ map: medT, roughness: 0.35, metalness: 0.6 })); face.rotation.x = -Math.PI / 2; face.position.set(0, 0.0095, 0.01); nk.add(face);
+      /* the takrut: a small dark metal roll on its cord */
+      const tk = new THREE.Group(); tk.position.set(0.06, T, -0.07); g.add(tk);
+      const roll = new THREE.Mesh(new THREE.CylinderGeometry(0.007, 0.007, 0.06, 10), M({ color: 0x3a3430, roughness: 0.4, metalness: 0.8 })); roll.rotation.z = Math.PI / 2; roll.position.y = 0.008; tk.add(roll);
+      const cord = new THREE.Mesh(new THREE.TorusGeometry(0.045, 0.0018, 4, 32), M({ color: 0x1a1a1a, roughness: 0.8 })); cord.rotation.x = Math.PI / 2; cord.position.set(0, 0.003, 0.02); cord.scale.set(1, 0.7, 1); tk.add(cord);
+      /* the pha yant: a white cloth folded in four, the yant's red lines showing */
+      const py = new THREE.Group(); py.position.set(0.07, T, 0.08); g.add(py);
+      const yt = (() => { const [c, x] = cnv(64); x.fillStyle = '#f2ece0'; x.fillRect(0, 0, 64, 64); x.strokeStyle = '#a81e22'; x.lineWidth = 2;
+        x.strokeRect(6, 6, 52, 52); x.beginPath(); x.moveTo(32, 10); x.lineTo(54, 50); x.lineTo(10, 50); x.closePath(); x.stroke();
+        for (let i = 0; i < 4; i++) { x.beginPath(); x.moveTo(14, 16 + i * 9); x.lineTo(28, 16 + i * 9); x.stroke(); }
+        return tex(done(THREE, c, false)); })();
+      const cloth2 = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.006, 0.08), [M({ color: 0xece4d4, roughness: 0.9 }), M({ color: 0xece4d4, roughness: 0.9 }),
+        M({ map: yt, roughness: 0.9 }), M({ color: 0xece4d4, roughness: 0.9 }), M({ color: 0xece4d4, roughness: 0.9 }), M({ color: 0xece4d4, roughness: 0.9 })]);
+      cloth2.position.y = 0.003; cloth2.rotation.y = 0.3; py.add(cloth2);
+      /* his envelope, white, set across the tray's front */
+      const env = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.003, 0.06), M({ color: 0xf6f4ee, roughness: 0.85 })); env.position.set(-0.04, T + 0.006, -0.1); env.rotation.y = 0.25; env.visible = false; g.add(env);
+      g.userData.pieces = { nangkwak: nk, takrut: tk, phayant: py }; g.userData.env = env;
+      return g;
+    })();
+    const TRAY_W = () => new THREE.Vector3(RX + tray.position.x, 0.12, tray.position.z);
+    function trayShow(on) { tray.visible = !!on; for (const k in tray.userData.pieces) tray.userData.pieces[k].visible = k !== play.item; tray.userData.env.visible = play.offered; }
+    /* the view down onto the tray beside him, and back up to the master */
+    const yawToTray = () => { const t = TRAY_W(); return Math.atan2(-(t.x - yaw.position.x), -(t.z - yaw.position.z)); };
+    function lookTray(on, done2) {
+      const KN = Object.assign({}, KNEEL);
+      turnTo(on ? yawToTray() : faceMaster(), 0.8, Object.assign(KN, { pitch: on ? -0.62 : -0.06, lo: on ? -0.9 : KNEEL.lo }), done2);
+    }
+    function itemsBegin(resumed) {
+      setPhase('items', play.item);
+      if (resumed) {
+        trayShow(true);
+        if (play.item) { offerBegin(); return; }
+        after(0.8, () => lookTray(true, () => chooseItem()));
+        return;
+      }
+      /* Pa Noi comes through the curtained doorway with the tray */
+      const NR = cast.noiR, run = play.run;
+      whenReady(NR, () => {
+        if (!live(run)) return;
+        NR.group.visible = true;
+        personPut(NR, 2.07, -2.3, 0);
+        personWalk(NR, [[1.75, -1.1], [0.92, -0.62]], { speed: 0.9, ry: -2.3, then: () => {
+          if (!live(run)) return;
+          trayShow(true);
+          if (worldSfx) worldSfx('w4tray', 0.6);
+          line('pn1tray', NR);
+          queueFn(() => personWalk(NR, [[1.75, -1.1], [2.07, -2.45]], { speed: 0.9, then: () => { NR.group.visible = false; } }));
+          lines([['pg1items', cast.pongR], ['fm1items', cast.master]]);
+          queueFn(() => lookTray(true, () => chooseItem()));
+        } });
+      });
+    }
+    function chooseItem() {
+      const run = play.run;
+      if (!kit || !kit.choose) return;
+      kit.choose(['nangkwak', 'takrut', 'phayant'], { label: W.chooseLabel, title: W.chooseTitle }).then(id => {
+        if (!live(run)) return;
+        if (!id) { after(0.8, chooseItem); return; }
+        play.item = id;
+        if (kit.give) { kit.give(id); if (kit.urge) kit.urge(null); }
+        trayShow(true);
+        bank(W['note_' + id]);
+        setPhase('items', id);
+        line({ nangkwak: 'pg1nk', takrut: 'pg1tk', phayant: 'pg1py' }[id], cast.pongR);
+        offerBegin();
+      });
+    }
+    function offerBegin() {
+      line('pg1offer', cast.pongR);
+      queueFn(() => { play.offerOn = true; objectiveFor('items'); });
+    }
+    function offer() {
+      if (!play.offerOn || play.offered) return false;
+      play.offerOn = false; play.offered = true;
+      trayShow(true);
+      if (worldSfx) worldSfx('w4envelope', 0.6);
+      objectiveFor('items');
+      line('fm1anu', cast.master);
+      queueFn(() => lookTray(false, () => workBegin(false)));
+      return true;
+    }
+
+    /* ================================================================ P6 · THE WORK: the chant and the four signs */
+    /* the chant's words (§4.4, the research): the homage three times, the Nang Kwak trade formula twice — a Thai folk
+       formula in Pali-sounding words, captioned as such — and "may great gains be mine". Timed on the take's estimate
+       (28 s) until CP11 measures its breaths. */
+    const CHANT_CAPS = () => [
+      { at: 0.4, end: 4.6, text: W.chant1, sub: W.chant1en }, { at: 4.8, end: 9.0, text: W.chant1, sub: W.chant1en },
+      { at: 9.2, end: 13.6, text: W.chant1, sub: W.chant1en },
+      { at: 14.2, end: 18.4, text: W.chant2, sub: W.chant2en }, { at: 18.8, end: 23.0, text: W.chant2, sub: W.chant2en },
+      { at: 23.6, end: 27.4, text: W.chant3, sub: W.chant3en }];
+    function chantStart() {
+      if (worldSfx) worldSfx('fm1chant', 0.8);
+      if (kit && kit.captions) kit.captions(CHANT_CAPS());
+      play.chantNext = dayClock.t + (SECS.fm1chant || 28);
+    }
+    function workBegin(resumed) {
+      setPhase('work', [...play.signs].join(','));
+      const go = () => {
+        roomCtl.candles(true, resumed ? 0.01 : 1.6);
+        if (!resumed && worldSfx) worldSfx('w4match', 0.6);
+        cast.master.look = 0;                     // his eyes close for the chant
+        chantStart();
+        roomCtl.rain(resumed ? 0.7 : 0.35, resumed ? 0.01 : 6);
+        if (!resumed) after(12, () => { if (phase === 'work') roomCtl.rain(0.7, 18); });
+        herCtl.at('door'); herCtl.show(true);
+        play.signsOn = true; play.breathNext = dayClock.t + 8; play.gestNext = dayClock.t + 4;
+        objectiveFor('work');
+      };
+      if (resumed) { go(); return; }
+      lines([['fm1eyes', cast.master], ['pg1eyes', cast.pongR]]);
+      queueFn(go);
+    }
+    const SIGN = { smoke: ['q1smoke', 'ledSmokeF', 'ledSmokeM'], cloth: ['q1cloth', 'ledClothF', 'ledClothM'],
+                   shadow: ['q1shadow', 'ledShadowF', 'ledShadowM'], her: ['q1her', 'ledHerF', 'ledHerM'] };
+    const signOpen = (k) => phase === 'work' && play.signsOn && !play.busy && !play.signs.has(k) && worldOf(yaw.position.x) === 'R'
+                            && (k !== 'her' || play.herSeen);
+    function sign(key) {
+      if (!signOpen(key)) return false;
+      play.busy = true;
+      const S2 = SIGN[key], run = play.run;
+      line(S2[0], null);
+      queueFn(() => writeLedger('saw:' + key, 'saw', S2[1], S2[2]).then(() => {
+        if (!live(run)) return;
+        play.signs.add(key); play.busy = false;
+        setPhase('work', [...play.signs].join(','));
+        if (play.signs.size >= 4) stormBegin(false);
+      }));
+      return true;
+    }
+    /* her place on the screen, for the sign's look-spot and the storm's fourth flash: wherever she stands now */
+    const herPos = { x: RX + RMC.HER.door.x, y: 1.32, z: RMC.HER.door.z };
+    function herPosSync() { const p = HER_SPOT(); herPos.x = RX + p.x; herPos.z = p.z; }
+
+    /* ================================================================ P7 · THE STORM: WHAT CHANGED? */
+    const chg = {
+      cup: { id: 'cup', pos: { x: RX + RMC.CUP[0].x, y: RMC.LOWT.top + 0.06, z: RMC.CUP[0].z } },
+      cloth: { id: 'cloth', pos: { x: RX + RMC.BOWL.x, y: RMC.LOWT.top + 0.13, z: RMC.BOWL.z } },
+      clock: { id: 'clock', pos: { x: RX + RMC.CLOCK.x, y: RMC.CLOCK.y1 - 0.13, z: RM.z0 + 0.1 } },
+      her: { id: 'her', pos: herPos }
+    };
+    function stormBegin(resumed) {
+      setPhase('storm');
+      play.signsOn = false;
+      roomCtl.rain(1, resumed ? 0.01 : 2.5);
+      roomCtl.tube(false, !resumed);
+      after(resumed ? 0.05 : 1.7, () => look('DARK', resumed ? 0.01 : 0.5));
+      if (kit && kit.lightning) kit.lightning({ power: 0.7, near: 0.25, thunder: 'w4thunder', vol: 0.8 });
+      herCtl.at('door'); herCtl.show(true); herPosSync();
+      if (!resumed) line('pg1power', cast.pongR);
+      queueFn(() => changeEvent());
+    }
+    function changeEvent() {
+      const run = play.run;
+      if (!kit || !kit.event) { stormEnd(null); return; }
+      kit.event({ kind: 'change', label: W.chgLabel, brief: W.chgBrief, spots: [chg.cup, chg.cloth, chg.clock, chg.her],
+        rounds: [[], ['cup'], ['cloth', 'clock'], ['her'], []],
+        lead: 1.4, dark: 1.6, lit: 2.6, hit: 3, miss: 1, falseCost: 3, tol: 0.09,
+        apply(r) {
+          if (r === 1) { roomCtl.cup(1); chg.cup.pos.x = RX + RMC.CUP[1].x; chg.cup.pos.z = RMC.CUP[1].z; }
+          if (r === 2) { roomCtl.clothShift(true); roomCtl.clock(false); }
+          if (r === 3) { herCtl.at('step'); herPosSync(); }
+        },
+        onPhase(r, ph) {
+          if (ph === 'lit') { if (kit.lightning) kit.lightning({ power: r === 4 ? 1.4 : 1.0, near: 0.95, thunder: 'w4crack', vol: r === 4 ? 1 : 0.65 }); look('FLASH', 0.05); }
+          else if (ph === 'dark') look('DARK', 0.15);
+          else if (ph === 'end') look('DARK', 0.3);
+        }
+      }).then(res => { if (live(run)) stormEnd(res); });
+    }
+    function stormEnd(res) {
+      bank(res && res.wrong ? W.noteStormFalse : W.noteStormTrue);
+      roomCtl.rain(0, 0.25);                       // all at once
+      roomCtl.smokeStraight(true);                 // and every sign settles: the table's smoke goes straight up with the fan's air
+      herCtl.show(false);
+      if (worldSfx) worldSfx('w4rainstop', 0.7);
+      after(0.5, () => look('HUSH', 2.8));
+      cast.master.look = 1;                        // his eyes open: the kind face he had at the start
+      after(3.4, () => decideBegin(false));
+    }
+
+    /* ================================================================ DECIDE */
+    function decideBegin(resumed) {
+      bank(play.asked.size ? W.noteAsked : W.noteNeverAsked);
+      if (kit && kit.ledger) {
+        const ents = kit.ledger.entries(), f = ents.filter(e => e.kind === 'fact').length, m = ents.filter(e => e.kind === 'meaning').length;
+        if (f + m) bank(f >= m ? W.noteFacts : W.noteMeanings);
+      }
+      setPhase('decide');
+      if (resumed) after(0.6, openDecision); else openDecision();
+    }
+
+    /* ---------------------------------------------------------------- the frame's share */
+    function playTick(now, wdt) {
+      unseenTick();
+      zoneTick(now);
+      if (getState() !== 'play') return;
+      turnTick(wdt);
+      const inC = worldOf(yaw.position.x) === 'C', inR = worldOf(yaw.position.x) === 'R';
+      if (phase === 'arrive' && inC) {
+        const P = cast.pong;
+        if (P && P.ready && P.walk) kit.waypoint({ x: P.group.position.x, y: 2.0, z: P.group.position.z });
+        else kit.waypoint({ x: cast.noi.group.position.x, y: 2.0, z: cast.noi.group.position.z });
+        if (Math.hypot(yaw.position.x - cast.noi.group.position.x, yaw.position.z - cast.noi.group.position.z) < 3.4 && !play.greeted) { kit.waypoint(null); greet(); }
+      }
+      if (phase === 'wait' && inC && !play.busy && !play.calling && !lineQ.length && !speak.pending && dayClock.t >= speak.until
+          && dayClock.t >= play.nextCall && !(kit.ledger && kit.ledger.isOpen())) callNext();
+      if (phase === 'consult' && inR && !play.kneeling && matZone.visible
+          && Math.hypot(yaw.position.x - (RX + CMAT.x), yaw.position.z - CMAT.z) < 0.42) kneel(false);
+      if ((phase === 'work' || phase === 'storm') && inR) {
+        /* the chant goes on, murmured, under the signs and the storm */
+        if (dayClock.t >= play.chantNext) { if (worldSfx) worldSfx('fm1chant2', 0.5); play.chantNext = dayClock.t + (SECS.fm1chant2 || 40); }
+        if (phase === 'work') {
+          /* the cloth breathes now and then; his hands move over the mala, so his shadow can be seen to follow late */
+          if (dayClock.t >= play.breathNext) { roomCtl.breathe(); play.breathNext = dayClock.t + 9 + 5 * ((dayClock.t * 7.13) % 1); }
+          if (dayClock.t >= play.gestNext) { personTalk(cast.master, 2.6); play.gestNext = dayClock.t + 7 + 4 * ((dayClock.t * 3.71) % 1); }
+          if (!play.herSeen && her.k > 0.45) play.herSeen = true;
+          herPosSync();
+        }
+      }
+    }
+
+    /* ---------------------------------------------------------------- the hotspots */
+    const near = (P, dy = 1.1) => ({ x: P ? P.group.position.x : 0, y: (P ? P.group.position.y : 0) + dy, z: P ? P.group.position.z : 0 });
+    const askSpot = (key, Pf, prompt) => {
+      const pos = { x: 0, y: 0, z: 0 };
+      return { id: 'ask-' + key, get pos() { const P = Pf(); const p = near(P, 1.15); pos.x = p.x; pos.y = p.y; pos.z = p.z; return pos; },
+               radius: 3.4, aim: 0.3, pressAim: true, markY: 0.42, prompt, enabled: () => askOpen(key) && worldOf(yaw.position.x) === 'C',
+               onInteract() { return ask(key); } };
+    };
+    const signHit = (posF) => (x, y) => { const p = posF(); camera.updateMatrixWorld(); _hv.set(p.x, p.y, p.z).project(camera);
+      return _hv.z < 1 && Math.hypot(x - (_hv.x * 0.5 + 0.5) * innerWidth, y - (-_hv.y * 0.5 + 0.5) * innerHeight) < Math.min(innerWidth, innerHeight) * 0.08; };
+    const smokePos = { x: RX + RMC.INC.x - 0.09, y: RMC.LOWT.top + 0.3, z: RMC.INC.z + 0.06 };
+    const clothPos = { x: RX + RMC.BOWL.x, y: RMC.LOWT.top + 0.15, z: RMC.BOWL.z };
+    const shadowPos = { x: RX + 0, y: 1.62, z: WALL_Z };
     const hotspots = [
-      { id: 'door', pos: { x: RDOOR.x, y: 1.5, z: RDOOR.z }, radius: 3.0, prompt: W.hotDoor,
-        enabled: () => worldOf(yaw.position.x) === 'C' && ['arrive', 'wait', 'called'].includes(phase),
-        onInteract() { toWorld('R', false, 'consult'); after(3.0, () => { setPhase('decide'); openDecision(); }); return true; } }
+      askSpot('joy', () => cast.joy, W.hotJoy),
+      askSpot('lim', () => cast.lim, W.hotLim),
+      askSpot('sb', () => cast.sombat, W.hotSombat),
+      askSpot('pong', () => cast.pong, W.hotPong),
+      { id: 'tree', pos: { x: CMP.TAKHIAN.x, y: 1.5, z: CMP.TAKHIAN.z + 0.9 }, radius: 12, aim: 0.22, pressAim: true, mark: false, prompt: W.hotTree,
+        enabled: () => !play.tree && !play.busy && (phase === 'wait' || phase === 'arrive') && play.greeted && worldOf(yaw.position.x) === 'C',
+        onInteract() { return treeLook(); } },
+      { id: 'door', pos: { x: RDOOR.x, y: 1.6, z: RDOOR.z - 0.5 }, radius: 3.2, prompt: W.hotDoor,
+        enabled: () => worldOf(yaw.position.x) === 'C' && phase === 'called',
+        onInteract() { return enterRoom(); } },
+      /* the glowing place on the floor IS the mat's mark (CP8, by photograph: the engine's "!" floated at chest height over
+         it and read as a mark on the far wall; the anchor stays at 1.0 so the badge is offered from the door) */
+      { id: 'mat', pos: { x: RX + CMAT.x, y: 1.0, z: CMAT.z }, radius: 2.2, prompt: W.hotMat, mark: false,
+        enabled: () => worldOf(yaw.position.x) === 'R' && phase === 'consult' && !play.kneeling,
+        onInteract() { return kneel(false); } },
+      { id: 'offer', get pos() { const t = TRAY_W(); return { x: t.x, y: 0.2, z: t.z }; }, radius: 2.2, prompt: W.hotOffer, markY: 0.22, anyView: true,
+        enabled: () => worldOf(yaw.position.x) === 'R' && phase === 'items' && play.offerOn && !play.offered,
+        onInteract() { return offer(); } },
+      { id: 'sign-smoke', pos: smokePos, radius: 4, aim: 0.17, pressAim: true, mark: false, prompt: W.lookSmoke,
+        hits: signHit(() => smokePos), enabled: () => signOpen('smoke'), onInteract() { return sign('smoke'); } },
+      { id: 'sign-cloth', pos: clothPos, radius: 4, aim: 0.15, pressAim: true, mark: false, prompt: W.lookCloth,
+        hits: signHit(() => clothPos), enabled: () => signOpen('cloth'), onInteract() { return sign('cloth'); } },
+      { id: 'sign-shadow', pos: shadowPos, radius: 4, aim: 0.3, pressAim: true, mark: false, prompt: W.lookShadow,
+        hits: signHit(() => shadowPos), enabled: () => signOpen('shadow'), onInteract() { return sign('shadow'); } },
+      { id: 'sign-her', pos: herPos, radius: 5, aim: 0.24, pressAim: true, mark: false, prompt: W.lookHer,
+        hits: signHit(() => herPos), enabled: () => signOpen('her'), onInteract() { return sign('her'); } }
     ];
 
     /* ------------------------------------------------------------- the frame */
@@ -3221,6 +4047,7 @@
         applyPhase(kit ? kit.getPhase() : null);
       }
       runTodo(); runSpeak(); runQueue();
+      playTick(now, wdt);
     }
     function updatePile() {}
     function updateFire() {}
@@ -3229,25 +4056,803 @@
     /* ------------------------------------------------------------ a resume (§10.1) */
     function resumeAt(p0) {
       const tag = String(p0 || '').split(':'), p = PHASES.includes(tag[0]) ? tag[0] : 'arrive';
-      if (PHASES.indexOf(p) >= PHASES.indexOf('consult')) return { w: 'R', at: p, tag: tag[1] || '' };
+      if (PHASES.indexOf(p) >= PHASES.indexOf('consult')) return { w: 'R', at: p, tag: tag.slice(1).join(':') };
       return null;
     }
-    function applyPhase(p) {
-      const RA = resumeAt(p);
-      if (RA) {
-        toWorld('R', true, RA.at === 'decide' ? 'decide' : 'consult');
-        if (RA.at === 'decide') after(0.6, openDecision);
-        else after(3.0, () => { setPhase('decide'); openDecision(); });
+    /* A CONTINUE LANDS WHERE A RELOAD WOULD (§10.1): each phase's receipt is in its string — whom he asked and the
+       number called (wait:joy,sb;n11;mjoy), the day he was born (consult:fri), the piece he took (items:takrut), the
+       signs he has written (work:smoke,her) — and the world, the people and the room are put as that moment had them */
+    const seatNow = (P, on) => { if (!P) return; P.seated = !!on; P.sitW = on ? 1 : 0; P.sitOff = null; P.walk = null; };
+    function yardResume(p) {
+      yaw.position.x = 3.1; yaw.position.z = 3.8; yaw.rotation.y = 0.62; pitch.rotation.x = -0.05;
+      if (kit) kit.pose('standing', { secs: 0.05 });
+      look(SKY[play.n], 0); boardSet(play.n);
+      play.greeted = true; play.water = true; play.pongSat = true;
+      whenReady(cast.pong, (P) => { personPut(P, SEAT.pong.x, SEAT.pong.z, Math.PI / 2, CMP.SALA.floor); seatNow(P, true); });
+      if (play.n >= 12) whenReady(cast.joy, (P) => { P.group.visible = false; });
+      if (play.n >= 13) whenReady(cast.lim, (P) => { P.group.visible = false; });
+      if (p === 'wait') waitBegin(true); else calledBegin(true);
+    }
+    function applyPhase(p0) {
+      const t = String(p0 || '').split(':'), p = PHASES.includes(t[0]) ? t[0] : 'arrive', tag = t.slice(1).join(':');
+      if (p === 'arrive') { arriveBegin(); return; }
+      if (p === 'wait') {
+        for (const part of tag.split(';')) {
+          if (/^n\d+$/.test(part)) { const n = parseInt(part.slice(1), 10); if (n >= 9 && n <= 14) play.n = n; }
+          else if (part.startsWith('m')) { for (const k of part.slice(1).split(',')) if (ASK[k]) play.missed.add(k); }
+          else for (const k of part.split(',')) if (ASK[k]) play.asked.add(k);
+        }
+        yardResume('wait');
         return;
       }
-      look('YARD0', 0);
-      setPhase('arrive');
+      if (p === 'called') { play.n = 14; play.called = true; yardResume('called'); return; }
+      /* the room */
+      if (p === 'consult' && DAY_TH[tag]) play.day = tag;
+      const bagged = ['nangkwak', 'takrut', 'phayant'].find(k => kit && kit.has && kit.has(k));
+      if (p === 'items') { if (['nangkwak', 'takrut', 'phayant'].includes(tag)) play.item = tag; else if (bagged) play.item = bagged; }
+      if (p === 'work' || p === 'storm' || p === 'decide') { play.item = bagged || ''; play.offered = true; }
+      if (p === 'work') for (const k of tag.split(',')) if (SIGN[k]) play.signs.add(k);
+      if (p === 'storm' || p === 'decide') for (const k of Object.keys(SIGN)) play.signs.add(k);
+      toWorld('R', true, p, tag);
+      if (p === 'consult') { consultBegin(true); return; }
+      kneel(true);
+      if (p === 'items') { itemsBegin(true); return; }
+      trayShow(true);
+      if (p === 'work') { workBegin(true); return; }
+      roomCtl.candles(true, 0.01);
+      if (p === 'storm') { stormBegin(true); return; }
+      /* decide: the room as the storm left it */
+      roomCtl.tube(false); roomCtl.rain(0, 0.01); roomCtl.cup(1); roomCtl.clothShift(true); roomCtl.clock(false); roomCtl.smokeStraight(true);
+      look('HUSH', 0);
+      decideBegin(true);
     }
+
+    /* ====================================================== THE FILMS (CP9 · §4.0, §4.7, §4.8)
+       The opening film, the four endings and the coda they share. Every picture is a function of the film's clock (v19.5's
+       law; e3c5's shape): each film below the build holds only its cues and its fades, and one track calls
+       films.frame(key, t) here — so a seek, a skip and a slow phone land on the same frame. A person's PLACE is the
+       clock's (fPut, fWalk); only his gait and his talk ease on wall time, and he talks while a line of his plays (read off
+       the film's own cues). The light follows the shot and is set when it changes. Every person is the cast, never a block
+       figure (v21.16); every prop is this chapter's own. */
+    const FL = { key: '', lit: '', stings: [], api: null, hand: null, shopOn: false };
+    const c01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v), smo = (k) => k * k * (3 - 2 * k), sgk = (t, a, b) => c01((t - a) / (b - a));
+    const lp = (a, b, k) => a + (b - a) * k, lp3 = (a, b, k) => [lp(a[0], b[0], k), lp(a[1], b[1], k), lp(a[2], b[2], k)];
+    const isNarrow = () => camera.aspect < 1;
+    const _ffv = new THREE.Vector3(), _ffv2 = new THREE.Vector3();
+    function fLook(name, secs = 0) { if (FL.lit !== name) { FL.lit = name; look(name, secs); } }
+    function fLens(f) { if (Math.abs(camera.fov - f) > 1e-3) { camera.fov = f; camera.updateProjectionMatrix(); } }
+    function camAt(p, q, roll = 0) {
+      yaw.position.set(p[0], p[1], p[2]);
+      const dx = q[0] - p[0], dy = q[1] - p[1], dz = q[2] - p[2];
+      yaw.rotation.y = Math.atan2(-dx, -dz); pitch.rotation.x = Math.atan2(dy, Math.hypot(dx, dz));
+      camera.rotation.z = roll;
+    }
+    /* where a person's head is (his look's target), or a fallback point */
+    function headOf(P, fb) { if (P && P.ready && P.head && P.group.visible) { P.head.getWorldPosition(_ffv); return [_ffv.x, _ffv.y, _ffv.z]; } return fb; }
+    function handOf(P, re) {
+      if (!P || !P.ready || !P.model) return null;
+      if (!P.handBone) P.model.traverse(b => { if (b.isBone && re.test(b.name) && !P.handBone) P.handBone = b; });
+      return P.handBone ? P.handBone.getWorldPosition(new THREE.Vector3()) : null;
+    }
+    /* a person at a mark (a cut), standing or seated */
+    function fPut(P, x, z, ry, o = {}) {
+      if (!P || !P.ready) return;
+      P.walk = null; P.filmWalk = 0; P.sitOff = null; P.group.visible = true;
+      P.group.position.set(x, o.y != null ? o.y : (P.o.ground ? P.o.ground(x, z) : P.group.position.y), z);
+      if (ry != null) { P.group.rotation.y = ry; P.turnTo = null; }
+      if (o.seated != null && P.seated !== !!o.seated) seatNow(P, o.seated);
+    }
+    const faceTo = (x, z, tx, tz) => Math.atan2(tx - x, tz - z);
+    function pathLen(pts) { let L = 0; for (let i = 1; i < pts.length; i++) L += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); return L; }
+    function pathAt(pts, s) {
+      for (let i = 1; i < pts.length; i++) {
+        const d = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+        if (s <= d || i === pts.length - 1) { const f = d > 1e-6 ? c01(s / d) : 1; return [lp(pts[i - 1][0], pts[i][0], f), lp(pts[i - 1][1], pts[i][1], f)]; }
+        s -= d;
+      }
+      return pts[0].slice();
+    }
+    /* a person walked along points by the film's clock: his place at t, his heading the path's (eased over half a metre
+       either side, so a corner is walked); the gait plays while he moves (peopleTick reads P.filmWalk, his speed) */
+    function fWalk(P, pts, t0, t1, t, o = {}) {
+      if (!P || !P.ready) return;
+      const L = pathLen(pts), k = sgk(t, t0, t1), s = (o.linear ? k : smo(k)) * L;
+      const a = pathAt(pts, s), f = pathAt(pts, Math.min(L, s + 0.5)), b = pathAt(pts, Math.max(0, s - 0.5));
+      P.walk = null; P.sitOff = null; P.group.visible = true;
+      if (P.seated || P.sitW > 0) seatNow(P, false);
+      P.group.position.set(a[0], o.y != null ? o.y : (P.o.ground ? P.o.ground(a[0], a[1]) : P.group.position.y), a[1]);
+      const moving = t > t0 && t < t1;
+      P.filmWalk = moving ? (L / Math.max(0.2, t1 - t0)) * (o.linear ? 1 : 1.3) : 0;
+      if (moving) { const dx = f[0] - b[0], dz = f[1] - b[1]; if (dx * dx + dz * dz > 1e-6) { P.group.rotation.y = Math.atan2(dx, dz); P.turnTo = null; } }
+      else if (t >= t1 && o.ry != null) P.group.rotation.y = o.ry;
+      else if (t <= t0 && o.ry0 != null) P.group.rotation.y = o.ry0;
+    }
+    /* who is speaking a line of the film's at t: his talking take, read off the film's own cues */
+    const SPEAKS = { pg: 'pong', fm: 'master', pn: 'noi' };
+    function speakerNow(who) {
+      const cand = who === 'pong' ? [cast.pongCab, cast.pongR, cast.pong] : who === 'noi' ? [cast.noi, cast.noiR] : [cast[who]];
+      for (const P of cand) {
+        if (!P || !P.ready) continue;
+        let vis = P.group.visible; for (let q = P.group.parent; vis && q && q !== world; q = q.parent) vis = q.visible;
+        if (vis) return P;
+      }
+      return null;
+    }
+    function fTalk(t) {
+      for (const s of FL.stings) {
+        const sp = SPEAKS[String(s.kind).slice(0, 2)]; if (!sp || /chant/.test(s.kind)) continue;
+        const d = SECS[s.kind]; if (!d || t < s.at || t > s.at + d) continue;
+        const P = speakerNow(sp); if (P) P.talkUntil = wallNow() + 0.25;
+      }
+    }
+
+    /* ---- the films' props: a stock book he carries (the endings' notes), a pen, the guava bag, the master's card, his
+       keys; the shop's own book and pen stand on its counter (World S) */
+    function mkBook(parent) {
+      const g = new THREE.Group(); g.visible = false; g.userData.dyn = true; parent.add(g);
+      const cover = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.012, 0.31), M({ color: 0x2a3a5a, roughness: 0.6 })); cover.position.y = 0.006; g.add(cover);
+      const [c, x] = sized(cnv, 1024, 640);
+      const t = tex(done(THREE, c, false));
+      const pages = new THREE.Mesh(new THREE.PlaneGeometry(0.44, 0.29), M({ map: t, roughness: 0.85 })); pages.rotation.x = -Math.PI / 2; pages.position.y = 0.0135; g.add(pages);
+      return { g, pages, x, t, sig: '', pen: null };
+    }
+    /* draw a book only when what it shows changes */
+    function bookDraw(B, o) {
+      const sig = JSON.stringify([o.mode, o.wed == null ? -1 : Math.round(o.wed * 60), o.last || '', o.lastK == null ? -1 : Math.round(o.lastK * 60), o.n || 0]);
+      if (sig === B.sig) return B.pen;
+      B.sig = sig; B.pen = drawStockPages(B.x, o); B.t.needsUpdate = true;
+      return B.pen;
+    }
+    /* a canvas pixel of a book's pages, in the world */
+    function bookPoint(B, px, py) { _ffv2.set((px / 1024 - 0.5) * 0.44, (0.5 - py / 640) * 0.29, 0); B.pages.updateWorldMatrix(true, false); return B.pages.localToWorld(_ffv2.clone()); }
+    function mkPen(parent) {
+      const pen = new THREE.Group(); pen.visible = false; pen.userData.dyn = true; parent.add(pen);
+      const b2 = new THREE.Mesh(new THREE.CylinderGeometry(0.0045, 0.004, 0.14, 8), M({ color: 0x1a2a6a, roughness: 0.3 })); pen.add(b2);
+      const tip = new THREE.Mesh(new THREE.ConeGeometry(0.004, 0.014, 8), M({ color: 0xc8ccd0, roughness: 0.3, metalness: 0.85 })); tip.position.y = -0.077; tip.rotation.x = Math.PI; pen.add(tip);
+      return pen;
+    }
+    /* the pen held to the page: its nib on `at` (a world point), its body running up and away along `dir` — out of a
+       macro's frame toward the hand that holds it, which the frame never shows */
+    const _fpu = new THREE.Vector3(0, 1, 0), _fpq = new THREE.Quaternion();
+    function penAt(pen, at, dir, lift = 0) {
+      const d = _ffv2.set(dir[0], dir[1], dir[2]).normalize();
+      _fpq.setFromUnitVectors(_fpu, d); pen.quaternion.copy(_fpq);
+      pen.parent.updateWorldMatrix(true, false);
+      const w = at.clone().addScaledVector(d, 0.084 + lift);
+      pen.position.copy(pen.parent.worldToLocal(w));
+      pen.visible = true;
+    }
+    const fBook = mkBook(world), fPen = mkPen(world);
+    /* the shop's book on its counter becomes a drawn one too (the opening's Wednesday, the coda's last line) */
+    const sBook = (() => { if (!shop.ledger) return null; const B = mkBook(shop.ledger); B.g.visible = true; B.g.position.y = 0.0005;
+      /* turned to read from HIS side of the counter (the film looks down at it over his shoulder; the drawn page's top is
+         the book's −z, which faced him), and the first cover and page hidden under the drawn ones (two covers 0.5 mm apart
+         fight for the rim) */
+      shop.ledger.rotation.y = Math.PI + 0.06;
+      for (const ch of shop.ledger.children.slice()) if (ch !== B.g && ch.isMesh) ch.visible = false;
+      bookDraw(B, { mode: 'front' }); return B; })();
+    /* the guava bag: a white plastic carrier, its handles knotted, green guavas showing through */
+    const guava = (() => {
+      const g = new THREE.Group(); g.visible = false; g.userData.dyn = true; world.add(g);
+      const bag = new THREE.Mesh(new THREE.SphereGeometry(0.13, 14, 10), M({ color: 0xf2f2ee, roughness: 0.35, transparent: true, opacity: 0.62, depthWrite: false }));
+      bag.scale.set(1, 1.15, 0.8); bag.position.y = -0.17; g.add(bag);
+      const mG = M({ color: 0x8ab048, roughness: 0.55 });
+      for (const [x, y, z] of [[-0.05, -0.22, 0.02], [0.05, -0.21, -0.02], [0.0, -0.13, 0.03], [-0.04, -0.1, -0.03], [0.05, -0.12, 0.02]]) {
+        const s = new THREE.Mesh(new THREE.SphereGeometry(0.048, 12, 9), mG); s.position.set(x, y, z); s.scale.set(1, 1.12, 1); g.add(s); }
+      for (const sx of [-1, 1]) { const h = new THREE.Mesh(new THREE.TorusGeometry(0.035, 0.008, 6, 12, Math.PI), M({ color: 0xf2f2ee, roughness: 0.4 })); h.position.set(sx * 0.02, -0.03, 0); h.rotation.y = sx * 0.4; g.add(h); }
+      return g;
+    })();
+    /* the master's card (ending B): its front and its back */
+    const card = (() => {
+      const g = new THREE.Group(); g.visible = false; g.userData.dyn = true; world.add(g);
+      const f = new THREE.Mesh(new THREE.PlaneGeometry(0.09, 0.055), M({ map: tex(makeMasterCard(THREE, cnv, false)), roughness: 0.8 })); g.add(f);
+      const b = new THREE.Mesh(new THREE.PlaneGeometry(0.09, 0.055), M({ map: tex(makeMasterCard(THREE, cnv, true)), roughness: 0.8 })); b.rotation.y = Math.PI; b.position.z = -0.0005; g.add(b);
+      return g;
+    })();
+    /* his keys (the coda): a steel ring, three keys, a little brass Buddha on the fob */
+    const keys = (() => {
+      const g = new THREE.Group(); g.visible = false; g.userData.dyn = true;
+      const mS = M({ color: 0xc8ccd0, roughness: 0.25, metalness: 0.9 }), mB = M({ color: 0xc8a048, roughness: 0.3, metalness: 0.85 });
+      const ring = new THREE.Mesh(new THREE.TorusGeometry(0.016, 0.0018, 6, 18), mS); g.add(ring);
+      [[0.02, -0.03, 0.3], [-0.006, -0.036, -0.1], [-0.026, -0.028, -0.5]].forEach(([x, y, r]) => {
+        const k = new THREE.Mesh(new THREE.BoxGeometry(0.009, 0.046, 0.002), mS); k.position.set(x, y, 0); k.rotation.z = r; g.add(k); });
+      const fob = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.01, 0.018, 10), mB); fob.position.set(0.002, -0.022, 0.006); g.add(fob);
+      return g;
+    })();
+    /* ending C's reflection in the glass case (the coda): his own shape, dark, where a reflection of him would stand */
+    cast.refl = mkPerson('e4pong', { parent: worldS, x: 1.0, z: -0.1, ry: 0, height: 1.72, sizeTake: 'Idle_9', walk: false,
+      posture: 'stand', stand: 'Idle_9', hidden: true, noShadow: true, then: (P) => {
+        const mm = new THREE.MeshBasicMaterial({ color: 0x0a0c10, transparent: true, opacity: 0.55, depthWrite: false }); mats.push(mm);
+        P.model.traverse(m => { if (m.isMesh) m.material = mm; }); } });
+    /* ending C's road: a woman at the stall across from the lane, who turns round as the pickup passes */
+    cast.stall = mkPerson('e4joy', { parent: worldC, x: 44.5, z: 25.6, y: 0.8, ry: Math.PI, height: 1.58, sizeTake: 'Idle_9', walk: false,
+      posture: 'stand', stand: 'Idle_9', hidden: true, noShadow: true, noMip: true });
+
+    /* a thing held in his right hand, in the hands' own pass (kit.hold's place: the palm, noteProp's frame) */
+    const PALM = [0.012, -0.052, -0.148];
+    function handHold(obj, o = {}) {
+      const A = FL.api; if (!A || !A.armR) return;
+      if (FL.hand && FL.hand !== obj) { A.armR.remove(FL.hand); FL.hand.visible = false; }
+      if (!obj) { FL.hand = null; return; }
+      if (obj.parent !== A.armR) { if (obj.parent) obj.parent.remove(obj); A.armR.add(obj); }
+      obj.position.set(PALM[0] + (o.dx || 0), PALM[1] + (o.dy || 0), PALM[2] + (o.dz || 0));
+      obj.rotation.set(o.rx || 0, o.ry || 0, o.rz || 0);
+      obj.visible = true; FL.hand = obj;
+      if (A.handsRoot) A.handsRoot.visible = true;
+      A.armR.visible = true;
+    }
+    function handFree() {
+      const A = FL.api;
+      if (FL.hand && A && A.armR) { A.armR.remove(FL.hand); FL.hand.visible = false; world.add(FL.hand); }
+      FL.hand = null;
+      /* a film shows his hands only while they hold something or make the wai */
+      if (A && A.handsRoot && FL.key && !FL.wai) A.handsRoot.visible = false;
+    }
+    /* THE WAI in a film (A after the pao, D before he speaks and when the master returns it): the clasp risen from under
+       the frame to play's own height (k 0 → 1). The arm's pose is kept and given back when it goes down, and the left
+       hand put away, so the next thing he holds is held as before. */
+    function waiAt(k) {
+      const A = FL.api; if (!A || !A.handsPose || !A.armR) return;
+      if (k <= 0.001) {
+        if (FL.wai) {
+          FL.wai = false;
+          A.armR.position.copy(FL.waiPos); A.armR.quaternion.copy(FL.waiQ);
+          const L = A.prayerArm && A.prayerArm(); if (L) L.visible = false;
+          if (A.handsRoot && !FL.hand && FL.key) A.handsRoot.visible = false;
+        }
+        return;
+      }
+      if (!FL.wai) { FL.wai = true; FL.waiPos = A.armR.position.clone(); FL.waiQ = A.armR.quaternion.clone(); }
+      if (A.handsRoot) A.handsRoot.visible = true;
+      A.handsPose(0, 0, { y: lp(-0.72, -0.33, smo(k)) });
+    }
+
+    /* ---- the pickup on the road, by the film's clock: at (x, z), heading `ry`, on the road's dyke or the lane's slope */
+    const PICK_Y = (x, z) => (z >= 17.6 && z <= 24.4) ? 0.8 : (z > 13.5 && z < 17.6 && Math.abs(x) < 3.8) ? (z - 13.5) / 4.1 * 0.8 : 0;
+    function pickupAt(x, z, ry) {
+      const pk = yard.pickup; if (!pk) return;
+      const y = PICK_Y(x, z), fx = -Math.sin(ry), fz = -Math.cos(ry);
+      const yF = PICK_Y(x + fx * 1.4, z + fz * 1.4), yB = PICK_Y(x - fx * 1.4, z - fz * 1.4);
+      pk.position.set(x, y, z); pk.rotation.set(Math.atan2(yF - yB, 2.8), ry, 0, 'YXZ');
+    }
+    function pickupHome() { const pk = yard.pickup; if (pk) { pk.position.set(CMP.PICKUP.x, 0, CMP.PICKUP.z); pk.rotation.set(0, 0, 0); } }
+    /* a drive along a path of (x, z) points, eased in and out between t0 and t1 */
+    function driveAt(pts, t0, t1, t, o = {}) {
+      const L = pathLen(pts), k = sgk(t, t0, t1), s = (o.linear ? k : o.easeOut ? 1 - (1 - k) * (1 - k) : o.easeIn ? k * k : smo(k)) * L;
+      const a = pathAt(pts, s), f = pathAt(pts, Math.min(L, s + 1.2)), b = pathAt(pts, Math.max(0, s - 1.2));
+      const ry = Math.atan2(-(f[0] - b[0]), -(f[1] - b[1]));
+      pickupAt(a[0], a[1], ry);
+      return { x: a[0], z: a[1], ry };
+    }
+    /* the eye of whoever sits in the passenger seat, and a point ahead of it, in the pickup's own frame */
+    function cabEye(lx, ly, lz) { const pk = yard.pickup; pk.updateWorldMatrix(true, false); return pk.localToWorld(_ffv.set(lx, ly, lz)).toArray(); }
+
+    /* ================================================================= THE OPENING FILM ("The Shutter", §4.0) */
+    function openFrame(t) {
+      const O = OPEN, S0 = SX;
+      const shopAt = (x, y, z) => [S0 + x, y, z];
+      if (t < O.o5) {
+        /* ---- his shop, World S: the shutter going up, the cases, the book, the message */
+        cabCtl.show(false);
+        const lit = t < 1.6 ? 'SHOPDARK' : 'SHOP';
+        fLook(lit, lit === 'SHOP' && t < 6.6 ? 5.0 : 0);
+        shop.t1 = 0; shop.u = smo(sgk(t, 1.0, 7.6));                                  // the shutter: hauled up from outside the frame
+        shop.l1 = 0; shop.ledK = t < 6.3 ? 0.02 : smo(sgk(t, 6.3, 6.8));               // the LEDs: his hand on the switch
+        /* his phone: dark until the message, then lit and buzzing (the buzz read off the film's clock) */
+        shop.phoneOn = t >= O.buzz ? wallNow() - (t - O.buzz) : 0; shop.phoneWho = 'pong';
+        /* the book: the front pages, Wednesday's row written as the pen goes */
+        const wedK = t < O.o3 + 0.6 ? 0 : sgk(t, O.o3 + 0.6, O.o3 + 4.2);
+        const pen = sBook ? bookDraw(sBook, { mode: 'front', wed: t < O.o3 ? 1 : wedK }) : null;
+        if (t < O.o2) {                                                                  // O1 · THE SHUTTER
+          const k = sgk(t, 0, O.o2);
+          fLens(isNarrow() ? 62 : 54);
+          camAt(lp3(shopAt(0.3, 1.16, -2.45), shopAt(0.24, 1.18, -2.2), k), shopAt(0.02, 0.66, 3.0));
+        } else if (t < O.o2b) {                                                          // O2 · along the new cases
+          const k = smo(sgk(t, O.o2, O.o2b)), pz = lp(2.1, -0.35, k);
+          fLens(isNarrow() ? 54 : 46);
+          camAt(shopAt(lp(1.12, 1.3, k), lp(1.38, 1.3, k), pz), shopAt(1.95, 1.06, pz - 0.85));
+        } else if (t < O.o3) {                                                           // the carton, then the flowers by the door
+          const k = smo(sgk(t, O.o2b, O.o3));
+          fLens(isNarrow() ? 58 : 50);
+          camAt(shopAt(0.72, 1.42, -0.55), lp3(shopAt(1.3, 0.36, 0.95), shopAt(-1.6, 1.22, 2.42), k));
+        } else if (t < O.o3b) {                                                          // O3 · the book: Wednesday's row
+          if (sBook && pen) {
+            const n = bookPoint(sBook, pen[0], pen[1]);
+            const k = sgk(t, O.o3, O.o3 + 0.6);
+            fLens(isNarrow() ? 34 : 28);
+            camAt([n.x + 0.04 - 0.02 * k, n.y + 0.26, n.z - 0.16], [n.x - 0.02, n.y, n.z + 0.03]);
+            const lift = t > O.o3 + 4.2 ? 0.012 * smo(sgk(t, O.o3 + 4.2, O.o3 + 4.8)) : 0;
+            const scr = shop.pen; if (scr) { scr.visible = true; penAt(scr, n, [-0.42, 0.78, -0.46], lift); }
+          }
+        } else if (t < O.o4b) {                                                          // the lens lifts to the corridor; the phone buzzes
+          if (shop.pen) shop.pen.visible = false;
+          const n = sBook && pen ? bookPoint(sBook, pen[0], pen[1]) : _ffv.set(S0, 1.05, -1.6);
+          const k = smo(sgk(t, O.o3b, O.o3b + 2.4)), kd = smo(sgk(t, O.buzz + 0.15, O.o4b));
+          fLens(lp(isNarrow() ? 34 : 28, isNarrow() ? 62 : 56, k));
+          const p0 = [n.x + 0.02, n.y + 0.26, n.z - 0.16], p1 = shopAt(0.25, 1.52, -2.1);
+          const q0 = [n.x - 0.02, n.y, n.z + 0.03], q1 = shopAt(0.1, 1.42, 7.0), q2 = shopAt(0.48, 1.06, -1.51);
+          camAt(lp3(lp3(p0, p1, k), shopAt(0.4, 1.5, -2.04), kd), lp3(lp3(q0, q1, k), q2, kd));
+        } else {                                                                         // O4 · the message
+          const k = smo(sgk(t, O.o4b, O.o5));
+          fLens(isNarrow() ? 50 : 42);
+          camAt(lp3(shopAt(0.4, 1.5, -2.04), shopAt(0.42, 1.42, -1.92), k), shopAt(0.48, 1.06, -1.51));
+        }
+        if (t >= O.o3b && shop.pen) {                                                    // the pen back down on the counter
+          shop.pen.position.set(0.09, COUNTER.h + 0.046 + 0.0048, COUNTER.z - 0.02); shop.pen.rotation.set(0, -0.5, Math.PI / 2); shop.pen.quaternion.setFromEuler(shop.pen.rotation);
+        }
+        return;
+      }
+      /* ---- the rice country, World C */
+      shop.phoneOn = 0;
+      if (t < O.o6) {
+        fLook('ROAD');
+        cabCtl.show(false);
+        if (t < O.o5b) {                                                                 // O5 · the huge wide, a long lens
+          const x = -128 + 6.2 * (t - O.o5);
+          pickupAt(x, 19.6, -Math.PI / 2);
+          fLens(isNarrow() ? 22 : 15);
+          const k = sgk(t, O.o5, O.o5b);
+          camAt([-68 + 4 * k, 1.25, 80], [x + 3, 1.6 + 0.6 * (1 - k), 19.6]);
+        } else {                                                                         // a tracking shot alongside it, the palms whipping past
+          const x = -85.8 + 6.2 * (t - O.o5b);
+          pickupAt(x, 19.6, -Math.PI / 2);
+          fLens(isNarrow() ? 44 : 36);
+          camAt([x + 2.4, 1.55, 29.0], [x + 0.6, 1.25, 19.6]);
+        }
+        return;
+      }
+      /* ---- O6, O7 · in the pickup: Pong at the wheel; the spirit house; the turn onto the lane; the gate */
+      fLook(t < O.o7 ? 'ROAD' : 'YARD0', t < O.o7 ? 0 : 3.0);
+      cabCtl.show(true);
+      cabCtl.drops(t < O.o6 + 1.0 ? 0 : 0.18 + 0.5 * sgk(t, O.o6 + 1.0, O.stop));
+      let P;
+      if (t < O.o7) P = driveAt([[-52, 19.6], [-1.2, 19.6]], O.o6, O.o7 + 9.0, t, { linear: true });
+      else P = driveAt([[-1.2 + 4.86 * 0, 19.6], [-1.2, 19.6], [0.6, 18.6], [1.7, 17.0], [2.0, 15.4], [CMP.PICKUP.x, CMP.PICKUP.z]], O.o7, O.stop, t, { easeOut: true });
+      if (t < O.o7) {
+        /* along the road: the windscreen; Pong talking; the spirit house sliding past on his side */
+        const tk = (t >= O.o6 + 3.4 && t < O.o6 + 7.4) ? smo(sgk(t, O.o6 + 3.4, O.o6 + 4.4)) * (1 - smo(sgk(t, O.o6 + 6.4, O.o6 + 7.4))) : 0;
+        fLens(isNarrow() ? 66 : 60);
+        camAt(cabEye(-0.42, 1.5, 0.08), cabEye(lp(-0.36, 0.42, tk), lp(1.36, 1.5, tk), lp(-3.0, -0.4, tk)));
+      } else {
+        fLens(isNarrow() ? 66 : 60);
+        camAt(cabEye(-0.42, 1.5, 0.08), cabEye(-0.28, 1.34, -3.0));
+      }
+      void P;
+    }
+
+    /* ================================================================= THE ENDINGS (§4.7) and THE CODA (§4.8) */
+    const ROOM_EYE = () => [RX + CMAT.x, RMC.EYE.y, CMAT.z];
+    const MASTER_HEAD = () => headOf(cast.master, [RX + MASTER.x, 1.22, MASTER.z]);
+    const PONG_HEAD = () => headOf(cast.pongR, [RX - 0.95, 0.88, -0.2]);
+    const DOOR_STEP = [RDOOR.x, 0.5 + 1.62, RDOOR.z - 0.45];
+    /* the room as the storm left it, and the people in it (a scene begins from the decision) */
+    function roomAfter() {
+      fLook('HUSH');
+      roomCtl.tube(false); roomCtl.rain(0, 0.01); roomCtl.cup(1); roomCtl.clothShift(true); roomCtl.clock(false); roomCtl.smokeStraight(true);
+    }
+    /* a slow look round the room: the table's smoke (straight now), the cloth (still), the doorway (empty) */
+    function lookRound(t, t0, eye) {
+      const k = sgk(t, t0, t0 + 6.4), qs = [[RX + 0.0, 0.92, -1.22], [RX - 0.28, 0.46, -1.08], [RX + 2.06, 1.18, -2.5]];
+      const q = k < 0.36 ? lp3(MASTER_HEAD(), qs[0], smo(k / 0.36)) : k < 0.66 ? lp3(qs[0], qs[1], smo((k - 0.36) / 0.3)) : lp3(qs[1], qs[2], smo((k - 0.66) / 0.34));
+      camAt(eye, q);
+    }
+    /* the book in his hands for the ending's own line (A, D): a macro on the page, the pen writing it */
+    function bookShot(t, t0, t1, at, line) {
+      const B = fBook;
+      B.g.visible = true; B.g.position.set(at[0], at[1], at[2]); B.g.rotation.set(0, at[3] || 0, 0);
+      const ents = kit && kit.ledger ? kit.ledger.entries() : [];
+      const k = sgk(t, t0 + 0.5, t1 - 1.1);
+      const pen = bookDraw(B, { mode: 'back', entries: ents, n: ents.length, last: line, lastK: k, titleL: W.ledWho || 'Who is he?', titleR: W.ledSaw || 'What I saw' });
+      if (!pen) return;
+      const n = bookPoint(B, pen[0], pen[1]);
+      fLens(isNarrow() ? 36 : 30);
+      const ry = at[3] || 0, bx = Math.sin(ry), bz = Math.cos(ry);           // the book's own "toward him" (+z when it lies square to him)
+      camAt([n.x + bx * 0.17 + bz * 0.02, n.y + 0.25, n.z + bz * 0.17 - bx * 0.02], [n.x - bx * 0.02, n.y, n.z - bz * 0.02]);
+      penAt(fPen, n, [0.4 * bz + 0.46 * bx, 0.8, 0.46 * bz - 0.4 * bx], t > t1 - 1.1 ? 0.012 * smo(sgk(t, t1 - 1.1, t1 - 0.6)) : 0);
+    }
+    function bookAway() { fBook.g.visible = false; fPen.visible = false; }
+
+    /* ---- A · STILL: he observes and decides nothing */
+    function endA(t) {
+      const T = END.A, it = play.item || 'takrut';
+      waiAt(t < T.out ? smo(sgk(t, T.pao + 4.4, T.pao + 5.4)) * (1 - smo(sgk(t, T.bless + 2.6, T.bless + 3.4))) : 0);   // his wai after the pao, through the blessing
+      if (t < T.out) {
+        roomAfter();
+        cabCtl.show(false);
+        const eye = ROOM_EYE();
+        if (t < T.pao) {                                                                   // his eyes down: his breath, the drips
+          const k = smo(sgk(t, 0.3, 3.0)) * (1 - smo(sgk(t, 4.6, T.pao)));
+          fLens(isNarrow() ? 64 : 58);
+          camAt(eye, lp3(MASTER_HEAD(), [RX + 0.12, 0.08, -0.62], k));
+        } else if (t < T.bless) {                                                          // the pao: three breaths onto his crown
+          const k = smo(sgk(t, T.pao, T.bless));
+          fLens(lp(isNarrow() ? 58 : 50, isNarrow() ? 50 : 42, k));
+          camAt(lp3(eye, [RX + 0.02, 1.0, -0.22], k), MASTER_HEAD());
+          cast.master.bow = t > T.pao + 5.0 && t < T.bless - 0.2 ? 0.42 : 0;
+        } else if (t < T.look) {                                                           // the blessing, and Pong's word for the piece
+          cast.master.bow = 0;
+          const onPong = t > T.bless + 3.2 && t < T.bless + 12.0;
+          fLens(isNarrow() ? 56 : 48);
+          camAt(eye, onPong ? PONG_HEAD() : MASTER_HEAD());
+          if (cast.pongR) cast.pongR.lookAt = onPong ? camera : null;
+        } else if (t < T.book) {
+          fLens(isNarrow() ? 60 : 54);
+          lookRound(t, T.look, eye);
+        } else {
+          bookShot(t, T.book, T.out, [RX + 0.04, 0.012, -0.34, 0], W.endAline || "I don't know what I saw.");
+        }
+        return;
+      }
+      bookAway();
+      if (t < T.walk) {                                                                    // outside: the washed yard; Pa Noi and her guavas
+        fLook('AFTER');
+        cabCtl.show(false);
+        const P = cast.noi, nx = RDOOR.x - 0.35, nz = RDOOR.z + 1.15;
+        fPut(P, nx, nz, faceTo(nx, nz, DOOR_STEP[0], DOOR_STEP[2]));
+        const k = smo(sgk(t, T.out, T.out + 4.2));
+        fLens(isNarrow() ? 58 : 50);
+        camAt(DOOR_STEP, lp3([2.0, 1.1, 5.0], headOf(P, [nx, 1.5, nz]), k));
+        /* the bag: in her hand, then in his */
+        const give = T.out + 8.8;
+        if (t < give) { const h = handOf(P, /RightHand(_\d+)?$/); handFree(); if (h) { guava.visible = true; guava.position.copy(h); guava.rotation.set(0, 0, 0); } }
+        else handHold(guava, { dy: -0.04, rx: 0.2 });
+        if (t > T.out + 7.6 && t < T.out + 7.7 && !P.one) personDo(P, 'Checkout_Gesture');
+        return;
+      }
+      if (t < T.cab) {                                                                     // across the yard to the gate, Pong ahead
+        fLook('AFTER');
+        handHold(guava, { dy: -0.04, rx: 0.2 });
+        const path = [[RDOOR.x, RDOOR.z + 1.0], [6.2, -1.6], [4.3, 2.0], [2.8, 5.6], [2.4, 8.6]];
+        const k = sgk(t, T.walk, T.cab), L = pathLen(path), a = pathAt(path, smo(k) * L), f = pathAt(path, Math.min(L, smo(k) * L + 3.0));
+        const bob = Math.sin((t - T.walk) * 7.2) * 0.014;
+        fLens(isNarrow() ? 62 : 56);
+        camAt([a[0], groundAt(a[0], a[1]) + 1.62 + bob, a[1]], [f[0], 1.5, f[1]]);
+        fWalk(cast.pong, [[RDOOR.x - 0.2, RDOOR.z + 2.6], [5.6, 0.0], [3.6, 3.6], [2.4, 7.4], [2.7, 10.4]], T.walk, T.cab + 0.4);
+        if (cast.pong && t > T.walk + 0.5 && t < T.walk + 5.6) cast.pong.lookAt = null;
+        return;
+      }
+      handFree();
+      if (t < T.wide) {                                                                    // in the pickup, up the lane: "Strong, right?" / "...Maybe."
+        fLook('AFTER');
+        cabCtl.show(true); cabCtl.drops(0.22);
+        driveAt([[2.0, 13.4], [1.8, 16.0], [0.4, 18.6], [-2.6, 20.2], [-12, 22.4]], T.cab, T.wide + 1.4, t, { easeIn: true });
+        const tk = (t > T.cab + 2.2 && t < T.cab + 4.6) ? smo(sgk(t, T.cab + 2.2, T.cab + 2.9)) * (1 - smo(sgk(t, T.cab + 3.9, T.cab + 4.6))) : 0;
+        fLens(isNarrow() ? 66 : 60);
+        camAt(cabEye(-0.42, 1.5, 0.08), cabEye(lp(-0.32, 0.42, tk), lp(1.36, 1.52, tk), lp(-3.0, -0.4, tk)));
+        return;
+      }
+      if (t < T.coda) {                                                                    // the wide: the dyke road into the gold seam
+        fLook('AFTER');
+        cabCtl.show(false);
+        const x = -14 - 6.0 * (t - T.wide);
+        pickupAt(x, 22.4, Math.PI / 2);
+        fLens(isNarrow() ? 30 : 22);
+        camAt([-6.0, 1.3, 11.8], [x - 4, 1.4, 22.4]);
+        return;
+      }
+      codaFrame(t - T.coda, 'A');
+    }
+
+    /* ---- B · THE QUESTION: he asks, and is seen */
+    function endB(t) {
+      const T = END.B;
+      if (t < T.card) {
+        roomAfter();
+        cabCtl.show(false);
+        const eye = ROOM_EYE();
+        herCtl.at('door'); herCtl.show(t > T.look && t < T.pong + 2.0);
+        if (cast.pongR) cast.pongR.lookAt = (t > T.ask + 3.4 && t < T.look) || (t > T.pong + 9.0 && t < T.come + 3.8) ? cast.master.head || null : null;
+        if (t < T.ask) {                                                                   // to Pong, low
+          fLens(isNarrow() ? 56 : 48);
+          camAt(eye, PONG_HEAD());
+        } else if (t < T.look) {                                                           // Pong startled; then he asks the master in Thai
+          const k = smo(sgk(t, T.ask + 3.0, T.ask + 4.2));
+          fLens(isNarrow() ? 58 : 50);
+          camAt(eye, lp3(PONG_HEAD(), MASTER_HEAD(), k));
+        } else if (t < T.pong) {                                                           // the master does not turn round: a long look, then his answer
+          const k = smo(sgk(t, T.look, T.look + 6.0));
+          fLens(lp(isNarrow() ? 54 : 46, isNarrow() ? 44 : 34, k));
+          /* the doorway behind him kept at the frame's edge, where she is (her look: only there) */
+          const mh = MASTER_HEAD(), side = isNarrow() ? 0.12 : 0.34;
+          camAt(lp3(eye, [RX + 0.0, 1.0, -0.3], k), [mh[0] + side * (1 - 0.3 * k), mh[1] - 0.02, mh[2]]);
+        } else if (t < T.who) {                                                            // Pong, uneasy
+          fLens(isNarrow() ? 56 : 48);
+          camAt(eye, PONG_HEAD());
+        } else {                                                                           // who taught him? "...Nobody." Come back. "Maybe another time."
+          const onPong = (t > T.who + 1.8 && t < T.who + 5.2) || (t > T.come + 3.8 && t < T.come + 10.0);
+          fLens(isNarrow() ? 52 : 44);
+          camAt(eye, onPong ? PONG_HEAD() : MASTER_HEAD());
+        }
+        return;
+      }
+      herCtl.show(false);
+      if (cast.pongR) cast.pongR.lookAt = null;
+      if (t < T.cab) {                                                                     // at the door: Pa Noi and the master's card
+        fLook('AFTER');
+        cabCtl.show(false);
+        const P = cast.noi, nx = RDOOR.x - 0.3, nz = RDOOR.z + 1.05;
+        fPut(P, nx, nz, faceTo(nx, nz, DOOR_STEP[0], DOOR_STEP[2]));
+        fLens(isNarrow() ? 56 : 48);
+        const give = T.card + 4.0;
+        if (t < give) {
+          handFree();
+          const h = handOf(P, /RightHand(_\d+)?$/); if (h) { card.visible = true; card.position.copy(h); card.position.y += 0.03; card.lookAt(DOOR_STEP[0], DOOR_STEP[1], DOOR_STEP[2]); }
+          camAt(DOOR_STEP, headOf(P, [nx, 1.5, nz]));
+          if (t > T.card + 2.4 && t < T.card + 2.5 && !P.one) personDo(P, 'Checkout_Gesture');
+        } else {
+          handHold(card, { dx: -0.01, dy: 0.012, rx: -1.0, ry: 0.15 });
+          camAt(DOOR_STEP, [DOOR_STEP[0] - 0.6, 1.2, DOOR_STEP[2] + 3.2]);
+        }
+        return;
+      }
+      if (t < T.wide) {                                                                    // in the pickup: Pong thrilled; he turns the card over
+        fLook('AFTER');
+        cabCtl.show(true); cabCtl.drops(0.18);
+        driveAt([[2.0, 13.4], [1.8, 16.0], [0.6, 18.4], [3.0, 19.8], [30, 19.6]], T.cab, T.wide + 3.0, t, { easeIn: true });
+        const flip = smo(sgk(t, T.cab + 6.0, T.cab + 7.6));
+        handHold(card, { dx: 0.0, dy: 0.02, rx: -1.0 - 0.25 * Math.sin(flip * Math.PI), ry: flip * Math.PI });
+        const onPong = t < T.cab + 5.2;
+        fLens(isNarrow() ? 66 : 60);
+        camAt(cabEye(-0.42, 1.5, 0.08), onPong ? cabEye(0.42, 1.52, -0.3) : cabEye(-0.3, 1.0, -0.9));
+        return;
+      }
+      handFree();
+      if (t < T.coda) {                                                                    // the wide: the pickup away along the dyke
+        fLook('AFTER');
+        cabCtl.show(false);
+        const x = 4 + 6.0 * (t - T.wide);
+        pickupAt(x, 19.6, -Math.PI / 2);
+        fLens(isNarrow() ? 30 : 22);
+        camAt([-4.0, 1.4, 11.6], [x + 4, 1.4, 19.6]);
+        return;
+      }
+      codaFrame(t - T.coda, 'B');
+    }
+
+    /* ---- C · CERTAIN: fear decides first */
+    function endC(t) {
+      const T = END.C;
+      if (kit && kit.chill) kit.chill(t < T.car ? 0.45 * (1 - sgk(t, T.calm, T.pong)) + 0.25 : t < T.coda ? 0.18 : 0, { secs: 0.01, cine: true });
+      if (t < T.out) {
+        roomAfter();
+        cabCtl.show(false);
+        const eye = ROOM_EYE(), roll = t < T.up ? 0.018 * Math.sin(t * 0.9) : 0;
+        herCtl.at('door'); herCtl.show(t > 2.6 && t < 4.6);
+        if (t < 2.2) {                                                                     // the bowl
+          fLens(isNarrow() ? 36 : 30);
+          const k = smo(sgk(t, 0, 2.2));
+          camAt(lp3(eye, [RX - 0.2, 0.86, -0.62], k), [RX - 0.28, 0.44, -1.08], roll);
+        } else if (t < 4.4) {                                                              // the shadow, and her at the edge
+          fLens(isNarrow() ? 44 : 36);
+          const side = isNarrow() ? 0.9 : 1.15;
+          camAt(eye, [RX - side + 0.5, 1.62, RM.z0], roll);
+        } else if (t < T.up) {                                                             // the master — "He's doing something to me."
+          fLens(lp(isNarrow() ? 40 : 34, isNarrow() ? 34 : 28, sgk(t, 4.4, T.up)));
+          camAt(eye, MASTER_HEAD(), roll);
+        } else if (t < T.calm) {                                                           // up too fast; the cup goes over
+          const k = smo(sgk(t, T.up, T.up + 0.9));
+          fLens(isNarrow() ? 64 : 58);
+          camAt([RX + 0.0, lp(1.0, 1.62, k), lp(0.0, 0.25, k)], lp3(MASTER_HEAD(), [RX + 0.06, 0.4, -1.03], smo(sgk(t, T.up + 0.6, T.up + 1.4))), 0.03 * Math.sin(k * Math.PI));
+          if (room.cup) room.cup.rotation.z = -1.45 * smo(sgk(t, T.up + 0.6, T.up + 1.0));
+        } else if (t < T.pong) {                                                           // the master stops, surprised, calm
+          fLens(isNarrow() ? 56 : 48);
+          camAt([RX + 0.0, 1.62, 0.25], MASTER_HEAD());
+        } else {                                                                           // Pong, awkward; he backs to the door
+          const k = smo(sgk(t, T.pong + 2.8, T.out));
+          fLens(isNarrow() ? 60 : 54);
+          camAt([RX + lp(0.0, R_ARRIVE.x - RX, k), 1.62, lp(0.25, R_ARRIVE.z, k)], k < 0.5 ? PONG_HEAD() : MASTER_HEAD());
+        }
+        return;
+      }
+      herCtl.show(false);
+      if (room.cup) room.cup.rotation.z = 0;
+      if (t < T.road) {                                                                    // across the yard in the last of the rain; Pa Noi calls after him
+        fLook('YARD2');
+        if (kit && kit.rain) kit.rain(0.25, 0.01);
+        if (t < T.car) {
+          cabCtl.show(false);
+          const P = cast.noi; fPut(P, RDOOR.x - 0.2, RDOOR.z + 0.6, faceTo(RDOOR.x, RDOOR.z, 3, 6));
+          if (t > T.out + 3.2 && t < T.out + 3.3 && !P.one) personDo(P, 'Wave_One_Hand');
+          const path = [[RDOOR.x, RDOOR.z + 1.3], [6.0, -1.0], [4.0, 3.0], [2.6, 7.4], [2.4, 10.6]];
+          const k = sgk(t, T.out, T.car), L = pathLen(path), a = pathAt(path, k * L), f = pathAt(path, Math.min(L, k * L + 3.0));
+          const back = t > T.out + 3.6 && t < T.out + 6.4;
+          const bob = Math.sin((t - T.out) * 9.5) * 0.02;
+          fLens(isNarrow() ? 64 : 58);
+          camAt([a[0], groundAt(a[0], a[1]) + 1.62 + bob, a[1]], back ? headOf(P, [RDOOR.x, 1.6, RDOOR.z]) : [f[0], 1.45, f[1]]);
+          fPut(cast.pong, 2.6, 9.4, faceTo(2.6, 9.4, a[0], a[1]));
+        } else {                                                                           // at the pickup: Pong catches up — "Just drive."
+          cabCtl.show(true); cabCtl.drops(0.5);
+          pickupAt(CMP.PICKUP.x, CMP.PICKUP.z + 0.4, Math.PI);
+          fLens(isNarrow() ? 64 : 58);
+          camAt(cabEye(-0.42, 1.5, 0.08), t < T.car + 4.4 ? cabEye(0.42, 1.52, -0.3) : cabEye(-0.3, 1.32, -3.0));
+        }
+        return;
+      }
+      if (t < T.coda) {                                                                    // the road: every dark shape is her — and a woman at a stall is only a woman at a stall
+        fLook('YARD2');
+        if (kit && kit.rain) kit.rain(0.18, 0.01);
+        cabCtl.show(true); cabCtl.drops(0.55);
+        const pos = driveAt([[2.0, 13.6], [1.8, 16.2], [0.8, 18.5], [3.2, 19.8], [70, 19.6]], T.road, T.coda + 2.0, t, { easeIn: true });
+        const S = cast.stall; if (S && S.ready) {
+          fPut(S, 44.5, 25.6, Math.PI + 3.0 * smo(sgk(pos.x, 34, 41)) * 0.33 * 3, { y: 0.8 });
+          S.group.rotation.y = lp(Math.PI, Math.PI * 2 - 0.2, smo(sgk(pos.x, 33, 40)));
+        }
+        const look = pos.x > 30 && pos.x < 50 ? smo(sgk(pos.x, 30, 36)) * (1 - smo(sgk(pos.x, 46, 50))) : 0;
+        const sh = headOf(S, [44.5, 2.3, 25.6]);
+        fLens(lp(isNarrow() ? 64 : 58, isNarrow() ? 40 : 32, look));
+        const eyeW = cabEye(-0.42, 1.5, 0.08), ahead = cabEye(-0.3, 1.34, -3.0);
+        camAt(eyeW, lp3(ahead, sh, look));
+        return;
+      }
+      if (kit && kit.rain) kit.rain(0, 0.01);
+      codaFrame(t - T.coda, 'C');
+    }
+
+    /* ---- D · ENOUGH: he knows when to go */
+    function endD(t) {
+      const T = END.D;
+      const w1 = smo(sgk(t, T.ask - 0.6, T.ask + 0.3)) * (1 - smo(sgk(t, T.ask + 5.6, T.ask + 6.4)));
+      const w2 = smo(sgk(t, T.nod + 2.2, T.nod + 3.0)) * (1 - smo(sgk(t, T.out - 1.2, T.out - 0.5)));
+      waiAt(t < T.out ? Math.max(w1, w2) : 0);                                               // his wai, and his answer to the master's
+      if (t < T.out) {
+        roomAfter();
+        cabCtl.show(false);
+        const eye = ROOM_EYE();
+        cast.master.look = t < T.ask ? 0 : 1;                                              // his eyes shut while he finishes the chant
+        if (t < T.ask) {
+          fLens(lp(isNarrow() ? 50 : 42, isNarrow() ? 46 : 38, sgk(t, 0, T.ask)));
+          camAt(eye, MASTER_HEAD());
+        } else if (t < T.nod) {                                                            // to Pong, then Pong to the master
+          const onPong = t < T.ask + 7.2;
+          if (cast.pongR) cast.pongR.lookAt = !onPong ? cast.master.head || null : null;
+          fLens(isNarrow() ? 56 : 48);
+          camAt(eye, onPong ? PONG_HEAD() : MASTER_HEAD());
+        } else {                                                                           // the master, unoffended, returns the wai
+          if (cast.pongR) cast.pongR.lookAt = null;
+          fLens(isNarrow() ? 52 : 44);
+          camAt(eye, MASTER_HEAD());
+          cast.master.bow = t > T.nod + 2.8 && t < T.out - 0.4 ? 0.45 : 0;
+        }
+        return;
+      }
+      cast.master.bow = 0;
+      if (t < T.shelter) {                                                                 // outside: "Finish already?" — "Let's sit for a bit."
+        fLook('AFTER');
+        cabCtl.show(false);
+        const path = [[RDOOR.x, RDOOR.z + 1.0], [6.4, -1.2], [4.6, 2.8], [3.2, 7.0], [4.6, 11.4]];
+        const k = sgk(t, T.out, T.shelter), L = pathLen(path), a = pathAt(path, smo(k) * L), f = pathAt(path, Math.min(L, smo(k) * L + 3.0));
+        fWalk(cast.pong, [[RDOOR.x - 0.6, RDOOR.z + 2.0], [5.8, -0.6], [4.0, 3.4], [3.0, 7.6], [4.8, 12.6]], T.out, T.shelter + 0.8);
+        const onPong = t > T.out + 1.0 && t < T.out + 5.2;
+        const bob = Math.sin((t - T.out) * 6.8) * 0.012;
+        fLens(isNarrow() ? 62 : 56);
+        camAt([a[0], groundAt(a[0], a[1]) + 1.62 + bob, a[1]], onPong ? headOf(cast.pong, [f[0], 1.6, f[1]]) : [f[0], 1.5, f[1]]);
+        return;
+      }
+      if (t < T.dusk) {                                                                    // the roadside shelter: the compound's lights across the wet paddy
+        fLook(t < T.shelter + 9.0 ? 'AFTER' : 'YARD0', 6.0);
+        cabCtl.show(false);
+        const S1 = CMP.SHELTER;
+        fPut(cast.pong, S1.x + 0.5, S1.z + 0.3, Math.PI, { y: 0.04, seated: true });
+        const eye = [S1.x - 0.42, 0.48 + 0.78, S1.z + 0.36];
+        if (t < T.shelter + 11.4) {
+          const onPong = (t > T.shelter + 1.4 && t < T.shelter + 7.2);
+          fLens(isNarrow() ? 60 : 52);
+          camAt(eye, onPong ? headOf(cast.pong, [S1.x + 0.5, 1.2, S1.z + 0.3]) : [S1.x - 2.0, 1.4, -6.0]);
+        } else {
+          bookShot(t, T.shelter + 11.4, T.dusk, [S1.x - 0.4, 0.86, S1.z + 0.08, 0], W.endDline || "Some things I don't need to understand today.");
+        }
+        return;
+      }
+      bookAway();
+      if (t < T.coda) {                                                                    // the dusk over the paddies: the two of them small under the shelter
+        fLook('YARD0', 4.0);
+        cabCtl.show(false);
+        const S1 = CMP.SHELTER, k = smo(sgk(t, T.dusk, T.coda));
+        fPut(cast.pong, S1.x + 0.5, S1.z + 0.3, Math.PI, { y: 0.04, seated: true });
+        fLens(isNarrow() ? 50 : 40);
+        camAt([S1.x + lp(-3.4, -4.6, k), lp(1.7, 2.6, k), S1.z + lp(5.4, 7.6, k)], [S1.x - 1.0, 1.2, S1.z - 6.0]);
+        return;
+      }
+      codaFrame(t - T.coda, 'D');
+    }
+
+    /* ---- THE CODA: the taxi home, the shutter again, and the ending's own last image */
+    function codaFrame(t, k) {
+      bookAway();
+      cabCtl.show(false);
+      herCtl.show(false);
+      if (kit && kit.chill && k === 'C') kit.chill(t < CODA.k3 ? 0.12 : 0, { secs: 0.01, cine: true });
+      if (t < CODA.k2) {                                                                   // K1 · the taxi in the rain
+        fLook('TAXI');
+        const T0 = TX, kk = smo(sgk(t, 1.0, 3.2));
+        fLens(isNarrow() ? 60 : 54);
+        camAt([T0 - 0.36, 1.14, 0.5], lp3([T0 - 1.2, 1.12, 0.3], [T0 + 0.1, 1.0, -2.0], kk));
+        return;
+      }
+      /* K2 · the shutter again, in grey light; his keys in his hand while the other pats his pocket */
+      const S0 = SX;
+      if (t < CODA.k3) {
+        fLook('GREY');
+        shop.t1 = 0; shop.u = smo(sgk(t, CODA.k2 + 0.4, CODA.k2 + 4.8)); shop.l1 = 0; shop.ledK = t < CODA.k2 + 3.0 ? 0.02 : 0.7;
+        shop.phoneOn = 0;
+        if (sBook) bookDraw(sBook, { mode: 'front' });
+        const kd = smo(sgk(t, CODA.k2 + 3.6, CODA.k2 + 4.6));
+        fLens(isNarrow() ? 60 : 54);
+        camAt(lp3([S0 + 0.3, 1.16, -2.4], [S0 + 0.3, 1.6, -2.3], kd), lp3([S0 + 0.02, 0.7, 3.0], [S0 + 0.2, 0.9, -1.4], kd));
+        if (t > CODA.k2 + 4.0) handHold(keys, { dx: 0.0, dy: 0.0, rx: -0.4, rz: 0.3 }); else handFree();
+        return;
+      }
+      handFree();
+      fLook('GREY');
+      shop.t1 = 0; shop.u = 1; shop.l1 = 0; shop.ledK = 0.7;
+      if (k === 'A' || k === 'D') {                                                        // the book on the counter, open at his line
+        const line = k === 'A' ? (W.endAline || "I don't know what I saw.") : (W.endDline || "Some things I don't need to understand today.");
+        const ents = kit && kit.ledger ? kit.ledger.entries() : [];
+        const pen = sBook ? bookDraw(sBook, { mode: 'back', entries: ents, n: ents.length, last: line, lastK: 1, titleL: W.ledWho || 'Who is he?', titleR: W.ledSaw || 'What I saw' }) : null;
+        if (pen) {
+          const n = bookPoint(sBook, pen[0] - 140, pen[1]);
+          const kk = smo(sgk(t, CODA.k3, CODA.black));
+          fLens(lp(isNarrow() ? 40 : 34, isNarrow() ? 34 : 28, kk));
+          camAt([n.x + 0.0, n.y + 0.34 - 0.06 * kk, n.z - 0.22 + 0.04 * kk], [n.x, n.y, n.z + 0.02]);
+        }
+      } else if (k === 'B') {                                                              // his phone lights: the Ajahn
+        shop.phoneOn = wallNow() - (t - CODA.k3 - 0.6); shop.phoneWho = 'ajahn';
+        fLens(isNarrow() ? 50 : 42);
+        camAt([S0 + 0.42, 1.42, -1.92], [S0 + 0.48, 1.06, -1.51]);
+      } else {                                                                             // C · the glass case, and a shape in it
+        const R = cast.refl, gx = 1.95, ez = 0.6, ex = 0.95;
+        if (R && R.ready) { fPut(R, gx + (gx - ex) + 0.02, ez - 0.05, -Math.PI / 2, { y: 0 }); R.group.visible = t > CODA.k3 + 0.6 && t < CODA.k3 + 2.3; }
+        const flinch = t > CODA.k3 + 1.5 ? Math.exp(-(t - CODA.k3 - 1.5) * 4) * Math.sin((t - CODA.k3 - 1.5) * 30) * 0.03 : 0;
+        fLens(isNarrow() ? 54 : 46);
+        camAt([S0 + ex, 1.6 + flinch, ez], [S0 + gx, 1.45, ez + 0.4], flinch * 0.6);
+      }
+    }
+
+    const films = {
+      begin(key, c, api) {
+        FL.key = key; FL.lit = ''; FL.api = api; FL.stings = (c && c.stings) || [];
+        /* his hands are not in the films (but for what he holds and his wai) — and nothing else gives them back after one
+           (chapter 4's law), so end() does */
+        if (api && api.handsRoot) { FL.hands = api.handsRoot; api.handsRoot.visible = false; }
+        if (key !== 'open') { play.signsOn = false; matZone.visible = false; }
+      },
+      frame(key, t, api) {
+        if (FL.key !== key) films.begin(key, null, api);
+        fTalk(t);
+        if (key === 'open') openFrame(t);
+        else if (key === 'A') endA(t);
+        else if (key === 'B') endB(t);
+        else if (key === 'C') endC(t);
+        else if (key === 'D') endD(t);
+      },
+      /* the films leave nothing behind them: the pickup home, the cabin shut, the books and props away, the people back
+         to their places, the light and the lens the play's (a scene's own end, a skip, a Retry) */
+      end() {
+        waiAt(0);
+        handFree();
+        bookAway(); guava.visible = false; card.visible = false; keys.visible = false;
+        if (shop.pen) { shop.pen.position.set(0.09, COUNTER.h + 0.046 + 0.0048, COUNTER.z - 0.02); shop.pen.rotation.set(0, -0.5, Math.PI / 2); shop.pen.visible = true; }
+        if (sBook) bookDraw(sBook, { mode: 'front' });
+        pickupHome(); cabCtl.show(false); cabCtl.drops(0);
+        shop.phoneOn = 0;
+        for (const P of people) P.filmWalk = 0;
+        if (cast.refl) cast.refl.group.visible = false;
+        if (cast.stall) cast.stall.group.visible = false;
+        if (cast.master) { cast.master.bow = 0; cast.master.look = 1; }
+        if (cast.pongR) cast.pongR.lookAt = null;
+        if (room.cup) room.cup.rotation.z = 0;
+        if (kit && kit.chill) kit.chill(0, { secs: 0.01, cine: false });
+        camera.rotation.z = 0;
+        if (FL.hands) { FL.hands.visible = true; FL.hands = null; }
+        FL.key = ''; FL.lit = ''; FL.stings = []; FL.api = null;
+      }
+    };
 
     /* ---------------------------------------------------------- lifecycle */
     function snap() { return { phase }; }
     function restore() {}
     function reset() {
+      films.end();                                       // a film's props, people and pickup back where play keeps them (CP9)
       dropTodo(); speakReset(); lineQ.length = 0; heard.clear();
       booted = false; preplaced = ''; dayClock.t = 0; lastWall = 0;
       worldRun++; wDark = false; decOpen = false;
@@ -3255,14 +4860,44 @@
       cabCtl.show(false); cabCtl.drops(0);
       for (const h of hotspots) { h.done = false; h.dwellT = 0; }
       if (kit) {
+        /* a minigame or an order left from the run before goes with it, whoever calls this (the engine's kitReset does
+           both too; a reset is never trusted to come after it — CP8: the storm's brief stood over a resumed decision) */
+        if (kit.abortEvent) kit.abortEvent();
+        kit.objective(null, { complete: false });
         kit.root(false); kit.pose('standing', { secs: 0.05 });
         if (kit.pray) kit.pray(false, { secs: 0 });
         kit.presence(0);
         kit.daylight(null, 0);
         kit.setPhase('arrive');
+        if (kit.captions) kit.captions(null);
+        if (kit.rain) kit.rain(0, 0);
+        kit.waypoint(null);
       }
       domeTint('YARD0', 0);
       phase = 'arrive';
+      /* THE PLAY, BACK TO ITS FIRST FRAME (the v8.1 law: whatever a beat stated is cleared by whatever resets it) */
+      play.run++;
+      play.asked.clear(); play.missed.clear(); play.n = 9; play.nextCall = 0; play.calling = false; play.busy = false;
+      play.greeted = false; play.water = false; play.tree = false; play.pongSat = false; play.called = false;
+      play.day = ''; play.item = ''; play.offerOn = false; play.offered = false;
+      play.signs.clear(); play.signsOn = false; play.herSeen = false; play.kneeling = false; play.turning = null;
+      play.breathNext = 0; play.gestNext = 0; play.chantNext = 0;
+      boardSet(9); slateWrite(null);
+      matZone.visible = false; tray.visible = false;
+      /* the people where the day began */
+      for (const P of people) { P.walk = null; P.lookAt = null; P.hideUnseen = false; P.pendingOut = false; P.talkUntil = 0; P.turnTo = null; if (P.one) P.one.until = 0; }
+      const at = (P, x, z, ry, y, seated) => whenReady(P, () => { P.group.visible = true; personPut(P, x, z, ry, y); seatNow(P, seated); });
+      at(cast.pong, 3.45, 11.6, Math.PI, undefined, false);
+      at(cast.joy, SEAT.joy.x, SEAT.joy.z, Math.PI / 2, CMP.SALA.floor, true);
+      at(cast.lim, SEAT.lim.x, SEAT.lim.z, Math.PI / 2, CMP.SALA.floor, true);
+      at(cast.noi, CMP.BOARD.x + 0.62, CMP.BOARD.z + 0.42, -0.46, undefined, false);
+      whenReady(cast.noiR, (P) => { P.group.visible = false; personPut(P, 1.55, -1.0, -2.2); });
+      if (cast.master) cast.master.look = 1;
+      herCtl.show(false); herCtl.at('door');
+      /* the room as he will find it */
+      roomCtl.tube(true); roomCtl.candles(false, 0.01); roomCtl.rain(0, 0.01);
+      roomCtl.cup(0); roomCtl.clothShift(false); roomCtl.clock(true); roomCtl.smokeStraight(false);
+      chg.cup.pos.x = RX + RMC.CUP[0].x; chg.cup.pos.z = RMC.CUP[0].z;
     }
     function blockers() {
       const out = [];
@@ -3323,9 +4958,11 @@
       get phase() { return phase; },
       setPhase, applyPhase, after, dayClock, sayLine, queueLine, queueFn, queueGap,
       look, presets: PRESETS, dome: domeLive, worldOf, room: roomCtl, rmc: RMC, roomState: room, yard, cmp: CMP,
-      shop: shopCtl, shopState: shop, cab: cabCtl, cabState: cab, taxi,
+      shop: shopCtl, shopState: shop, cab: cabCtl, cabState: cab, taxi, films,
       cast, her: herCtl, herState: her, shadow,
       person: { talk: personTalk, do: personDo, rest: personRest, walk: personWalk, put: personPut, sit: personSit, ready: whenReady },
+      play: { state: play, ask, sign, kneel, offer, enterRoom, callNext, greet, treeLook, chooseItem, askDay, matZone, tray, herPos, chg,
+              spots: { smoke: smokePos, cloth: clothPos, shadow: shadowPos } },
       castInfo: () => Object.fromEntries(Object.entries(cast).map(([k, P]) => [k, P && { ready: P.ready, diag: P.diag || null,
         pos: [+P.group.position.x.toFixed(2), +P.group.position.y.toFixed(2), +P.group.position.z.toFixed(2)], vis: P.group.visible }])),
       info: () => ({ phase, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], world: worldOf(yaw.position.x),
@@ -4149,6 +5786,90 @@
     x.fillStyle = 'rgba(60,50,40,0.25)'; x.fillRect(506, 0, 12, 640);
     return done(THREE, c, false);
   }
+  /* his stock book's two open pages, drawn on demand onto one 1024 × 640 canvas (CP9). The FRONT is the shop's — what he
+     stocks and what sold this week — and the opening film watches him write Wednesday's row (`wed`, 0…1: the row is
+     revealed left to right as the pen goes). The BACK is the day at the samnak: every line he wrote there in his own
+     words (`entries`, the kit's ledger, the people he asked on the left page and what he saw on the right), and the line
+     an ending adds (`last`, written to `lastK`). Answers where the pen is, in the canvas's pixels. */
+  const BOOK_HAND = '"Segoe Print", "Bradley Hand", "Comic Sans MS", "Chalkboard SE", cursive';
+  const BOOK_NOTE = 'italic 500 23px "Cormorant Garamond", Georgia, serif';
+  function drawStockPages(x, o = {}) {
+    const r = rng(4813);
+    x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, 1024, 640);
+    for (const ox of [0, 512]) {
+      const g = x.createLinearGradient(ox, 0, ox + 512, 0);
+      g.addColorStop(0, ox ? '#d8d2c2' : '#f2eee2'); g.addColorStop(ox ? 0.1 : 0.9, '#f4f0e4'); g.addColorStop(1, ox ? '#f2eee2' : '#d8d2c2');
+      x.fillStyle = g; x.fillRect(ox, 0, 512, 640);
+      x.strokeStyle = 'rgba(80,120,190,0.45)'; x.lineWidth = 1.2;
+      for (let y = 92; y < 620; y += 38) { x.beginPath(); x.moveTo(ox + 18, y); x.lineTo(ox + 494, y); x.stroke(); }
+      x.strokeStyle = 'rgba(200,40,40,0.6)'; x.beginPath(); x.moveTo(ox + 70, 20); x.lineTo(ox + 70, 620); x.stroke();
+      if (o.mode !== 'back') { x.strokeStyle = 'rgba(80,120,190,0.35)'; for (const cx of [330, 400, 452]) { x.beginPath(); x.moveTo(ox + cx, 60); x.lineTo(ox + cx, 620); x.stroke(); } }
+    }
+    x.fillStyle = '#1e2c78'; x.textBaseline = 'alphabetic'; x.textAlign = 'left';
+    let pen = null;
+    if (o.mode !== 'back') {
+      x.font = `bold 26px ${BOOK_HAND}`; x.fillText('STOCK', 84, 70); x.fillText('SALES', 596, 70);
+      x.font = `22px ${BOOK_HAND}`; x.fillText('qty', 338, 70); x.fillText('S$', 408, 70);
+      const rows = [['Phra Somdej', '2', '380'], ['Takrut (5 pc)', '5', '95'], ['Phra Pidta', '1', '560'], ['Rian LP coin', '3', '120'], ['Pendant frames', '20', '8']];
+      rows.forEach(([n, q, p], i) => { const y = 124 + i * 38; x.font = `24px ${BOOK_HAND}`; x.fillText(n, 84, y); x.fillText(q, 344, y); x.fillText(p, 404, y); });
+      x.font = `24px ${BOOK_HAND}`;
+      ['Mon', 'Tue'].forEach((d, i) => { const y = 124 + i * 38; x.fillText(d, 596, y); x.fillText('0', 856, y); });
+      /* Wednesday's row, written as far as the pen has gone (the whole row when `wed` is not given) */
+      const wk = o.wed == null ? 1 : Math.max(0, Math.min(1, o.wed)), y3 = 200, x0 = 592, x1 = 878;
+      if (wk > 0) {
+        x.save(); x.beginPath(); x.rect(x0 - 4, y3 - 30, (x1 - x0) * wk + 4, 40); x.clip();
+        x.fillText('Wed', 596, y3); x.fillText('Takrut', 690, y3); x.fillText('1', 856, y3);
+        x.restore();
+      }
+      pen = [x0 + (x1 - x0) * wk, y3 - 2];
+    } else {
+      /* the back of the book: the day at the samnak, in his own hand */
+      const E = Array.isArray(o.entries) ? o.entries : [];
+      x.font = `bold 24px ${BOOK_HAND}`; x.fillText(o.titleL || 'Who is he?', 84, 62); x.fillText(o.titleR || 'What I saw', 596, 62);
+      x.font = BOOK_NOTE;
+      const wrapAt = (txt, ox, y0, maxW) => {
+        const words = String(txt).split(/\s+/); let line = '', y = y0;
+        for (const w of words) { const tl = line ? line + ' ' + w : w; if (x.measureText(tl).width > maxW && line) { x.fillText(line, ox, y); y += 38; line = w; } else line = tl; }
+        if (line) { x.fillText(line, ox, y); y += 38; }
+        return y;
+      };
+      let yL = 124, yR = 124;
+      for (const e of E) {
+        const left = e.page === 'who';
+        if (left) { if (yL > 580) continue; x.fillText('–', 80, yL); yL = wrapAt(e.text, 98, yL, 392); }
+        else { if (yR > 540) continue; x.fillText('–', 592, yR); yR = wrapAt(e.text, 610, yR, 392); }
+      }
+      /* the ending's own line, at the foot of what he saw, written as far as the pen has gone */
+      if (o.last) {
+        const yl = Math.min(582, Math.max(yR + 6, 352)), lk = o.lastK == null ? 1 : Math.max(0, Math.min(1, o.lastK));
+        x.font = 'italic 600 25px "Cormorant Garamond", Georgia, serif';
+        const w = x.measureText(o.last).width;
+        if (lk > 0) { x.save(); x.beginPath(); x.rect(604, yl - 30, w * lk + 6, 42); x.clip(); x.fillText(o.last, 610, yl); x.restore(); }
+        pen = [610 + w * lk, yl - 2];
+      }
+    }
+    for (let i = 0; i < 200; i++) { x.fillStyle = `rgba(120,100,70,${(r() * 0.05).toFixed(3)})`; x.fillRect(r() * 1024, r() * 640, 2, 2); }
+    x.fillStyle = 'rgba(60,50,40,0.25)'; x.fillRect(506, 0, 12, 640);
+    return pen;
+  }
+  /* the master's card (ending B): cream card, his name in Thai, the samnak and a number on the front; a lotus on the back */
+  function makeMasterCard(THREE, cnv, back) {
+    const [c, x] = sized(cnv, 256, 156);
+    x.fillStyle = back ? '#f1e7cf' : '#f6efdc'; x.fillRect(0, 0, 256, 156);
+    x.strokeStyle = '#a8862e'; x.lineWidth = 3; x.strokeRect(6, 6, 244, 144);
+    x.fillStyle = '#5a1a12'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    if (!back) {
+      x.font = `bold 26px ${THAI_FONT}`; x.fillText('อาจารย์', 128, 42);
+      x.font = `17px ${THAI_FONT}`; x.fillText('สำนักบ้านอาจารย์', 128, 78);
+      x.font = 'bold 19px Arial, sans-serif'; x.fillStyle = '#2a2420'; x.fillText('08x-xxx-xxxx', 128, 116);
+    } else {
+      x.translate(128, 84);
+      for (let k = 0; k < 8; k++) { x.save(); x.rotate(k * Math.PI / 4 - Math.PI / 2); x.fillStyle = k % 2 ? '#c8a040' : '#b0781e';
+        x.beginPath(); x.moveTo(0, 0); x.quadraticCurveTo(16, -22, 0, -48); x.quadraticCurveTo(-16, -22, 0, 0); x.fill(); x.restore(); }
+      x.fillStyle = '#7a4a10'; x.beginPath(); x.arc(0, 0, 8, 0, Math.PI * 2); x.fill();
+    }
+    return done(THREE, c, false);
+  }
   /* a congratulations ribbon on a flower stand: red satin, gold characters down it */
   function makeRibbon(THREE, cnv, text, latin) {
     const [c, x] = sized(cnv, 64, 512), r = rng(4815);
@@ -4286,32 +6007,243 @@
     return done(THREE, c, false);
   }
 
-  /* ====================================================== THE FILMS (CP9 shoots them; CP2's are placeholders)
-     The opening film and the four endings in the engine's cutscene language. Until CP9 each is its words over black,
-     so the flow can be walked and every line read where it will play. */
+  /* ====================================================== THE FILMS (CP9 · §4.0, §4.7, §4.8)
+     Each film holds only its cues and its fades; one track hands its clock to the stage (films.frame), which draws every
+     picture from it — so a seek, a skip and a slow phone land on the same frame (v19.5's law). A line is cued after the one
+     before has ended (their SECS are estimates until CP11 records them; CP12 re-times by the takes); every stretch between
+     lines is held by a sound with a reason (v21.30). The coda's cues are written out in each ending, because the engine
+     warms what a scene's own source cues. */
   function introFilm(c, s, api) {
-    const { fade, sfx, step } = api;
+    const { tr, step, fade, sfx, rawK, stage, phone } = api;
+    const O = OPEN;
     c.keepFade = true;                         // it ends on black: the chapter card comes up over it (v14.1's law)
-    fade(0, 0.01, 1, 1);
-    sfx(0.5, 'q1pro1', 1); sfx(6.0, 'q1pro2', 1);
-    fade(11.4, 12, 1, 1);
-    step(12, () => {});
+    step(0, () => stage.films.begin('open', c, api));
+    tr(0, O.end, (k, t) => stage.films.frame('open', t, api), rawK);
+    /* O1 · THE SHUTTER: black, then the morning coming in under the shutter */
+    fade(0, 1.2, 1, 1); fade(1.2, 2.8, 1, 0);
+    sfx(0.2, 'w4mallair', 0.5);                // the closed mall's empty air, a far broom
+    sfx(0.9, 'w4shutter', 0.9);                // the roller shutter hauled up from outside the frame
+    sfx(2.5, 'q1pro1', 1);                     // "Not long after, my interest in amulets became more than curiosity..."  (→ ~9.7)
+    sfx(6.25, 'w4switch', 0.6);                // the lights
+    sfx(6.4, 'w4ledhum', 0.35);
+    sfx(0.4, 'w4open', 0.8);                   // the opening's own music, under the whole film
+    /* O2 · THE SHOP */
+    sfx(10.3, 'q1pro2', 1);                    // "Eventually I opened an amulet shop of my own..."  (→ ~19.1)
+    sfx(15.6, 'w4carton', 0.4);                // a carton's flap, settling
+    /* O3 · THE BOOK */
+    sfx(20.0, 'w4pen', 0.55);                  // the ballpoint, writing Wednesday's row
+    sfx(20.4, 'q1pro3', 1);                    // "Business was slow. I wanted guidance about the fortune... and the future of my shop."  (→ ~27.5)
+    /* O4 · THE MESSAGE */
+    sfx(O.buzz, 'w4buzz', 0.7); sfx(O.buzz + 0.9, 'w4buzz', 0.6);
+    sfx(30.2, 'q1pro4', 1);                    // "A dealer I bought from said he knew a very strong master in Thailand."  (→ ~36.0)
+    sfx(O.o4b + 2.6, 'w4type', 0.45);          // his reply typed
+    const Wd = DATA.words;                     // (the chat's words are the sheet's)
+    phone(O.o4b, O.o5, { name: Wd.phonePong, sub: Wd.phonePongSub, ava: { text: String(Wd.phonePong || 'P').charAt(0), color: '#2f7a5a' }, typingWord: Wd.phoneTyping,
+      msgs: [{ at: 1.0, who: 'them', typing: 0.8, text: Wd.chat1 },
+             { at: 3.2, who: 'me', typing: 1.0, text: Wd.chat2 },
+             { at: 4.8, who: 'them', typing: 0.8, text: Wd.chat3 }] });
+    /* O5 · THE RICE COUNTRY: a hard cut; the picture breathes; the wind */
+    sfx(O.o5, 'w4wind', 0.6);
+    sfx(O.o5b, 'w4drivepass', 0.55);           // the pickup going by the lens, the palms
+    /* O6 · THE PICKUP */
+    sfx(O.o6, 'w4diesel', 0.5);                // the diesel, from inside
+    sfx(O.o6 + 0.6, 'w4radio', 0.22);          // the radio low (luk thung)
+    sfx(51.6, 'pg1car', 1);                    // "This Ajahn very strong one, brother. Business, family, everything... you will see!"  (→ ~57.6)
+    sfx(O.o6 + 1.1, 'w4drops', 0.4);           // the first fat drops on the windscreen
+    sfx(58.2, 'q1pro5', 1);                    // "A Thai master... I did not know very well."  (→ ~62.8)
+    /* O7 · THE TURN */
+    sfx(O.o7 + 1.0, 'w4gravel', 0.55);         // off the road onto the red earth
+    sfx(66.0, 'w4thunder', 0.8);
+    sfx(O.stop - 0.3, 'w4engoff', 0.5);        // the engine dying
+    sfx(68.6, 'pg1here', 1);                   // "Here, here! This is Ajahn's samnak."  (→ ~71.6)
+    fade(O.black, O.end, 0, 1);
+    step(O.end, () => stage.films.end());
     previewCues(c, api);
   }
-  function scEnding(names) {
-    return function (c, s, api) {
-      const { fade, sfx, step } = api;
-      fade(0, 0.6, 0, 1);
-      let t = 0.8;
-      for (const n of names) { sfx(t, n, 1); t += (SECS[n] || 2.5) + 0.3; }
-      step(t + 0.5, () => {});
-      previewCues(c, api);
-    };
+
+  /* the ending's own frame and its end: the stage draws it; the card lies over the coda's last black */
+  function endingScene(c, api, k, cues) {
+    const { tr, step, rawK, stage } = api;
+    const T = END[k], total = T.coda + CODA.end;
+    step(0, () => stage.films.begin(k, c, api));
+    tr(0, total, (kk, t) => stage.films.frame(k, t, api), rawK);
+    cues(T);
+    step(total, () => stage.films.end());
+    c.endFade = 1;
+    c.keep.view = true;
+    previewCues(c, api);
   }
-  const scStill = scEnding(['q1A1', 'q1A3', 'q1A4']);
-  const scQuestion = scEnding(['q1B1', 'pg1B1', 'pg1B3', 'q1B4']);
-  const scCertain = scEnding(['q1C0', 'q1C1', 'pg1C2', 'q1C3']);
-  const scEnough = scEnding(['q1D1', 'pg1D2', 'q1D4', 'q1D5']);
+
+  /* A · STILL (good): he observes, and decides nothing */
+  function scStill(c, s, api) {
+    const { sfx, sfxFade, fade } = api;
+    endingScene(c, api, 'A', (T) => {
+      sfx(0.4, 'w4drips', 0.5);                              // the eaves dripping after the storm (the room's only sound)
+      sfx(0.8, 'w4breath', 0.35);                            // his breath, slowed
+      sfx(T.pao + 2.1, 'w4pao', 0.6); sfx(T.pao + 2.9, 'w4pao', 0.6); sfx(T.pao + 3.7, 'w4pao', 0.6);   // three breaths onto his crown
+      sfx(T.bless + 0.3, 'fm1blessA', 1);                    // "May your trade go well..."  (→ ~16.4)
+      /* Pong's word for the piece he took (all three written out, so the engine warms each) */
+      const it = api.stage && api.stage.play ? api.stage.play.state.item : '';
+      if (it === 'nangkwak') sfx(T.bless + 3.5, 'pg1Ank', 1);         // "...Put the Nang Kwak facing your door..."  (→ ~25.2)
+      else if (it === 'phayant') sfx(T.bless + 3.5, 'pg1Apy', 1);     // "...The pha yant — facing your door, under the Buddha."
+      else sfx(T.bless + 3.5, 'pg1Atk', 1);                           // "...Wear the takrut every day, on its cord."
+      sfx(T.bless + 12.3, 'fm1Abye', 1);                     // "Go well, come back well."  (→ ~27.3)
+      sfx(T.bless + 9.5, 'w4frogs', 0.35);                   // the frogs starting outside now the rain has stopped (they hold the
+                                                             // breath between Pong's last word and the master's, whichever piece)
+      sfx(T.book + 0.6, 'w4page', 0.5);                      // the book opened on his knee
+      sfx(T.book + 1.0, 'q1A1', 1);                          // "I don't know what I saw."  (→ ~37.8)
+      sfx(T.book + 1.0, 'w4pen', 0.4);
+      fade(T.out - 0.6, T.out, 0, 1); fade(T.out, T.out + 0.8, 1, 0);
+      sfx(T.out + 0.2, 'w4after', 0.6);                      // the washed yard: drips, frogs, a far motorbike
+      sfx(T.out + 1.2, 'pn1guava', 1);                       // "Take some guavas with you... from our tree."  (→ ~48.2)
+      sfx(T.out + 9.0, 'q1A2', 1);                           // "Khop khun krap."  (→ ~50.6)
+      sfx(T.walk + 0.4, 'pg1A1', 1);                         // "See? I tell you. Very good one. My cousin never lie."  (→ ~56.7)
+      sfx(T.walk + 0.6, 'w4steps', 0.35);
+      sfx(T.cab - 0.3, 'w4door', 0.5);                       // the pickup's door
+      sfx(T.cab + 0.2, 'w4diesel', 0.45);
+      sfx(T.cab + 0.6, 'pg1A2', 1);                          // "Strong, right?"  (→ ~58.8)
+      sfx(T.cab + 2.4, 'q1A3', 1);                           // "...Maybe."  (→ ~60.7)
+      sfx(T.cab + 0.1, 'w4endA', 0.75);                      // the khaen, alone
+      sfx(T.wide + 0.4, 'q1A4', 1);                          // "I didn't know what I'd seen in that room. So I let it stay unknown."  (→ ~69.4)
+      sfxFade(T.coda - 1.2, T.coda + 0.2, 'w4endA');
+      /* THE CODA (the same in every ending; the last image is the ending's own) */
+      fade(T.coda - 0.5, T.coda, 0, 1); fade(T.coda, T.coda + 0.8, 1, 0);
+      sfx(T.coda + 0.1, 'w4taxi', 0.6);                      // a Singapore taxi in the rain: the wipers, the indicator
+      sfx(T.coda + 0.8, 'tx1where', 1);                      // "Where to, boss?"  (→ ~2.4)
+      sfx(T.coda + 3.0, 'q1K1', 1);                          // "It's... the shop's at... sorry, uncle. Give me a second."  (→ ~8.9)
+      sfx(T.coda + 9.2, 'q1K2', 1);                          // "When I got back to Singapore..."  (→ ~12.5)
+      fade(T.coda + CODA.k2 - 0.3, T.coda + CODA.k2, 0, 1); fade(T.coda + CODA.k2, T.coda + CODA.k2 + 0.6, 1, 0);
+      sfx(T.coda + CODA.k2 + 0.3, 'w4shutter', 0.7);         // the shutter again, in grey light
+      sfx(T.coda + 13.4, 'q1K3', 1);                         // "...I stopped feeling like myself."  (→ ~16.3)
+      sfx(T.coda + CODA.k2 + 4.4, 'w4pat', 0.5);             // his free hand patting his pocket for the keys in the other
+      sfx(T.coda + CODA.k3, 'w4coda', 0.7);                  // the coda's chord
+      fade(T.coda + CODA.black, T.coda + CODA.end, 0, 1);
+    });
+  }
+
+  /* B · THE QUESTION (bad): he asks, and is seen */
+  function scQuestion(c, s, api) {
+    const { sfx, sfxFade, fade } = api;
+    endingScene(c, api, 'B', (T) => {
+      sfx(0.3, 'w4drips', 0.5);
+      sfx(0.6, 'q1B1', 1);                                   // "Pong... ask him who's standing behind him."  (→ ~4.4)
+      sfx(T.ask + 0.1, 'pg1B1', 1);                          // "Behind? ...Okay. I ask."  (→ ~7.9)
+      sfx(T.ask + 3.7, 'pg1B2', 1);                          // (Pong asks the master, in Thai)  (→ ~14.0)
+      sfx(T.look + 0.6, 'w4frogs', 0.35);
+      sfx(T.look + 1.2, 'w4endB', 0.6);                      // the curious motif, low
+      sfx(T.look + 5.2, 'fm1B1', 1);                         // "That one has been in this house longer than me..."  (→ ~25.4)
+      sfx(T.pong + 0.2, 'pg1B3', 1);                         // "He say... that one stay in this house longer than him..."  (→ ~34.1)
+      sfx(T.who + 0.2, 'fm1B2', 1);                          // "Who taught him?"  (→ ~36.0)
+      sfx(T.who + 2.0, 'pg1B4', 1);                          // "He ask... who teach you?"  (→ ~39.5)
+      sfx(T.who + 5.9, 'q1B2', 1);                           // "...Nobody."  (→ ~41.6)
+      sfx(T.come + 0.2, 'fm1B3', 1);                         // "If he wants to learn, come back. I can teach him."  (→ ~45.7)
+      sfx(T.come + 4.0, 'pg1B5', 1);                         // "He say you should come back..."  (→ ~52.0)
+      sfx(T.come + 10.6, 'q1B3', 1);                         // "Thank you, Ajahn. Maybe another time."  (→ ~55.6)
+      fade(T.card - 0.6, T.card, 0, 1); fade(T.card, T.card + 0.8, 1, 0);
+      sfx(T.card + 0.2, 'w4after', 0.6);
+      sfx(T.card + 1.4, 'pn1card', 1);                       // "Ajahn say, call anytime, ka."  (→ ~59.8)
+      sfx(T.card + 4.0, 'w4card', 0.5);                      // the card into his hand
+      sfx(T.cab - 0.3, 'w4door', 0.5);
+      sfx(T.cab + 0.2, 'w4diesel', 0.45);
+      sfx(T.cab + 0.4, 'pg1B6', 1);                          // "Brother! You can SEE? Why you never tell me!"  (→ ~67.7)
+      sfx(T.cab + 5.2, 'pg1B7', 1);                          // "Next time you bring me, okay? I also want to know my future!"  (→ ~73.9)
+      sfx(T.cab + 6.0, 'w4card', 0.35);                      // the card turned over in his fingers
+      sfx(T.wide + 0.6, 'q1B4', 1);                          // "I'd asked to understand... and shown a man I didn't know what I could see."  (→ ~81.5)
+      sfxFade(T.coda - 1.2, T.coda + 0.2, 'w4endB');
+      fade(T.coda - 0.5, T.coda, 0, 1); fade(T.coda, T.coda + 0.8, 1, 0);
+      sfx(T.coda + 0.1, 'w4taxi', 0.6);
+      sfx(T.coda + 0.8, 'tx1where', 1);
+      sfx(T.coda + 3.0, 'q1K1', 1);
+      sfx(T.coda + 9.2, 'q1K2', 1);
+      fade(T.coda + CODA.k2 - 0.3, T.coda + CODA.k2, 0, 1); fade(T.coda + CODA.k2, T.coda + CODA.k2 + 0.6, 1, 0);
+      sfx(T.coda + CODA.k2 + 0.3, 'w4shutter', 0.7);
+      sfx(T.coda + 13.4, 'q1K3', 1);
+      sfx(T.coda + CODA.k2 + 4.4, 'w4pat', 0.5);
+      sfx(T.coda + CODA.k3 + 0.6, 'w4buzz', 0.7);            // his phone lights: the Ajahn
+      sfx(T.coda + CODA.k3, 'w4coda', 0.7);
+      fade(T.coda + CODA.black, T.coda + CODA.end, 0, 1);
+    });
+  }
+
+  /* C · CERTAIN (worst): fear decides first */
+  function scCertain(c, s, api) {
+    const { sfx, sfxFade, fade, phone } = api;
+    endingScene(c, api, 'C', (T) => {
+      sfx(0.0, 'w4heart', 0.75);                             // his heart taking over
+      sfx(0.4, 'q1C0', 1);                                   // "The bowl... the shadow... her. It's all him."  (→ ~5.5)
+      sfx(0.2, 'w4endC', 0.6);                               // the tight pulse
+      sfx(T.said, 'q1C1', 1);                                // "He's doing something to me."  (→ ~8.4)
+      sfx(T.up + 0.2, 'w4rise', 0.6);                        // up too fast
+      sfx(T.up + 0.8, 'w4cup', 0.7);                         // the cup goes over
+      sfx(T.calm + 0.2, 'fm1C1', 1);                         // "Oh... it's all right, it's all right."  (→ ~15.5)
+      sfx(T.calm + 3.9, 'fm1C2', 1);                         // "It's still slippery outside. Go carefully."  (→ ~18.4)
+      sfx(T.pong + 0.2, 'pg1C1', 1);                         // "He say... go carefully. Outside still slippery."  (→ ~23.2)
+      sfx(T.out - 1.2, 'w4sandals', 0.6);                    // his feet into his shoes, wrong
+      fade(T.out - 0.4, T.out, 0, 1); fade(T.out, T.out + 0.5, 1, 0);
+      sfx(T.out + 0.1, 'w4rainl', 0.55);                     // the last of the rain
+      sfx(T.out + 1.0, 'w4dog', 0.6);                        // the dog barks
+      sfx(T.out + 3.4, 'pn1C1', 1);                          // "Wait, wait, an umbrella! ... Rain coming again, ka!"  (→ ~28.8)
+      sfx(T.out + 0.6, 'w4steps', 0.45);
+      sfx(T.car - 0.2, 'w4door', 0.6);
+      sfx(T.car + 0.4, 'pg1C2', 1);                          // "Brother, what happen? He is a good man!"  (→ ~36.5)
+      sfx(T.car + 4.6, 'q1C2', 1);                           // "Just drive."  (→ ~38.2)
+      sfx(T.road, 'w4diesel', 0.45);
+      sfx(T.road + 0.4, 'w4drops', 0.4);
+      sfx(T.road + 5.6, 'q1C3', 1);                          // "I was certain before I knew anything. And the certainty came home with me."  (→ ~50.0)
+      sfxFade(T.coda - 1.2, T.coda + 0.2, 'w4endC');
+      fade(T.coda - 0.5, T.coda, 0, 1); fade(T.coda, T.coda + 0.8, 1, 0);
+      sfx(T.coda + 0.1, 'w4taxi', 0.6);
+      sfx(T.coda + 0.8, 'tx1where', 1);
+      sfx(T.coda + 3.0, 'q1K1', 1);
+      sfx(T.coda + 9.2, 'q1K2', 1);
+      fade(T.coda + CODA.k2 - 0.3, T.coda + CODA.k2, 0, 1); fade(T.coda + CODA.k2, T.coda + CODA.k2 + 0.6, 1, 0);
+      sfx(T.coda + CODA.k2 + 0.3, 'w4shutter', 0.7);
+      sfx(T.coda + 13.4, 'q1K3', 1);
+      sfx(T.coda + CODA.k2 + 4.4, 'w4pat', 0.5);
+      sfx(T.coda + CODA.k3 + 1.5, 'w4gasp', 0.8);            // he flinches at a shape in the glass
+      sfx(T.coda + CODA.k3, 'w4coda', 0.7);
+      fade(T.coda + CODA.black, T.coda + CODA.end, 0, 1);
+      void phone;
+    });
+  }
+
+  /* D · ENOUGH (best): he knows when to go */
+  function scEnough(c, s, api) {
+    const { sfx, sfxFade, fade } = api;
+    endingScene(c, api, 'D', (T) => {
+      sfx(0.0, 'fm1chant2', 0.45);                           // the chant he began, let finish
+      sfxFade(T.ask - 1.4, T.ask - 0.2, 'fm1chant2');
+      sfx(T.ask - 0.2, 'w4bell', 0.4);                       // a small bell: the chant's end
+      sfx(T.ask + 0.4, 'q1D1', 1);                           // "Pong... please tell him thank you. This is enough for me today."  (→ ~13.4)
+      sfx(T.ask + 6.8, 'pg1D1', 1);                          // (Pong, to the master, in Thai)  (→ ~18.7)
+      sfx(T.nod + 0.2, 'fm1D1', 1);                          // "Of course, of course; no matter, as you like."  (→ ~21.8)
+      fade(T.out - 0.6, T.out, 0, 1); fade(T.out, T.out + 0.8, 1, 0);
+      sfx(T.out + 0.2, 'w4after', 0.6);
+      sfx(T.out + 1.0, 'pg1D2', 1);                          // "Finish already? He haven't even done the full one!"  (→ ~29.1)
+      sfx(T.out + 5.6, 'q1D2', 1);                           // "It's okay. Let's sit for a bit. The road's still flooded."  (→ ~34.7)
+      sfx(T.out + 0.8, 'w4steps', 0.35);
+      sfx(T.shelter + 0.4, 'w4frogs', 0.45);                 // the frogs beginning across the wet paddy
+      sfx(T.shelter + 1.6, 'pg1D3', 1);                      // "You know... I also never actually ask who is his teacher."  (→ ~43.0)
+      sfx(T.shelter + 7.6, 'q1D3', 1);                       // "Next time... we ask first."  (→ ~46.7)
+      sfx(T.shelter + 11.2, 'w4page', 0.5);
+      sfx(T.shelter + 11.6, 'q1D4', 1);                      // "Some things I don't need to understand today."  (→ ~51.1)
+      sfx(T.shelter + 11.6, 'w4pen', 0.4);
+      sfx(T.shelter + 10.0, 'w4endD', 0.7);                  // the phin
+      sfx(T.dusk + 0.6, 'q1D5', 1);                          // "I didn't need to understand it to know it was time to go."  (→ ~58.1)
+      sfxFade(T.coda - 1.2, T.coda + 0.2, 'w4endD');
+      fade(T.coda - 0.5, T.coda, 0, 1); fade(T.coda, T.coda + 0.8, 1, 0);
+      sfx(T.coda + 0.1, 'w4taxi', 0.6);
+      sfx(T.coda + 0.8, 'tx1where', 1);
+      sfx(T.coda + 3.0, 'q1K1', 1);
+      sfx(T.coda + 9.2, 'q1K2', 1);
+      fade(T.coda + CODA.k2 - 0.3, T.coda + CODA.k2, 0, 1); fade(T.coda + CODA.k2, T.coda + CODA.k2 + 0.6, 1, 0);
+      sfx(T.coda + CODA.k2 + 0.3, 'w4shutter', 0.7);
+      sfx(T.coda + 13.4, 'q1K3', 1);
+      sfx(T.coda + CODA.k2 + 4.4, 'w4pat', 0.5);
+      sfx(T.coda + CODA.k3, 'w4coda', 0.7);
+      fade(T.coda + CODA.black, T.coda + CODA.end, 0, 1);
+    });
+  }
 
   (window.__CHAPTERS__ = window.__CHAPTERS__ || {}).e4c1 = Object.assign(DATA, {
     build,
