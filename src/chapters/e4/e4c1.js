@@ -145,9 +145,8 @@
 
     /* the first master is his own (§2.1 2); every other person is a PLACEHOLDER until Chad's model lands
        (docs/E4-MODELS.md), declared in `reuse` so the FRESH check names it on every run */
-    assets: ['firstmaster', 'fmshadow', 'e4sky', 'e4pong', 'e4noi', 'sitwoman', 'sitwomantalk', 'e4lim', 'encik', 'granny'],
+    assets: ['firstmaster', 'fmshadow', 'e4sky', 'e4pong', 'e4noi', 'e4joy', 'sitwomantalk', 'e4lim', 'encik', 'granny'],
     reuse: {
-      sitwoman: 'Khun Joy — a placeholder until Chad\'s model',
       sitwomantalk: 'Khun Joy\'s talking take — with her placeholder',
       encik: 'Ta Sombat — a placeholder until Chad\'s model',
       granny: 'the presence at the edge of sight — a placeholder until Chad\'s model'
@@ -156,7 +155,8 @@
     placeholders: {
       e4pong: 'Pong, the dealer — episode 3\'s staff man with three seated takes of the first master\'s, until Chad\'s model (docs/E4-MODELS.md)',
       e4noi: 'Pa Noi, the master\'s wife — episode 3\'s Yin shop keeper at a crowd\'s cut, until Chad\'s model',
-      e4lim: 'Uncle Lim — episode 3\'s amulet-shop owner at a crowd\'s cut, until Chad\'s model'
+      e4lim: 'Uncle Lim — episode 3\'s amulet-shop owner at a crowd\'s cut, until Chad\'s model',
+      e4joy: 'Khun Joy — chapter 3\'s pink-shirt lady with a standing idle and a walk retargeted in, until Chad\'s model'
     },
     items: [],
 
@@ -387,7 +387,7 @@
   function build(ctx) {
     const { THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, pitch, LOW, kit, cnv, loadImageTexture,
             assetBytes, rescueTextures, getState, startDecision, worldSfx, warmSounds, soundOff, unifySkeletons,
-            makeHellNote, plantTrees } = ctx;
+            makeHellNote, plantTrees, HEAD_RE } = ctx;
 
     /* (the v21.1 TDZ law: everything a builder or a frame asks for is declared up here, before anything is built) */
     const owned = [];
@@ -2414,6 +2414,513 @@
     mergeStatic(worldS, new Set([...walls, ...solids]));
     mergeStatic(worldT, new Set([...walls, ...solids]));
 
+    /* ============================================== THE CAST (CP7, §3.5)
+       Every person is a real character model (v21.16): the first master is his own; everyone else wears a placeholder
+       until Chad's model lands (docs/E4-MODELS.md). One routine places them all — e3c5's mkPerson, by its own laws:
+       sized from POSED BONES in a STANDING take (v3.8/v4.7; a seated take's bones measure a seated body), grounded on
+       the lowest of them, or SEATED BY THE SKIN: the underside of the hips and thighs in the sitting take, measured on
+       the posed skin, set on the seat's top (v17.1 — a robe's drape between the knees is not where a man sits); culled by
+       a sphere round the posed skin (v18.5); the head's look laid on after the mixer and put back before it runs again
+       (v11.5); a seated talker's talking take ridden on the upper body only, so his crossed legs stay where they are
+       (v21.1). A failed download leaves the place empty, never a block of a person. */
+    /* (the seated three in the sala cast no shadow: under its roof they stand in its shade, and on a desktop their shadow
+       pass was another 130k triangles in the yard's widest view — CP7 measured 381k against the 297,872 budget) */
+    const people = [];
+    const _pv = new THREE.Vector3(), _pq = new THREE.Quaternion(), _pe = new THREE.Euler(), _hp = new THREE.Vector3(), _cp = new THREE.Vector3();
+    const _hq = new THREE.Quaternion(), _pq2 = new THREE.Quaternion(), _dq = new THREE.Quaternion(), _iq = new THREE.Quaternion(), _fv = new THREE.Vector3();
+    const UPPER_RE = /Spine|Neck|Head|Shoulder|Arm|Hand|neck/;
+    const LOWER_RE = /Hips|UpLeg|Leg|Foot|Toe/;
+    function upperOnly(clip) {
+      const c = clip.clone();
+      c.tracks = c.tracks.filter(tr => { const node = tr.name.split('.')[0]; return UPPER_RE.test(node) && !LOWER_RE.test(node); });
+      c.name = clip.name + '_upper';
+      return c;
+    }
+    function lowerOnly(clip) {
+      const c = clip.clone();
+      c.tracks = c.tracks.filter(tr => LOWER_RE.test(tr.name.split('.')[0]));
+      c.name = clip.name + '_lower';
+      return c;
+    }
+    /* the skin's seat: the vertices the hips and thighs carry (each vertex's heaviest bone), their lowest band's centre,
+       in the group's frame — where a sitting body meets what it sits on */
+    function seatContact(P) {
+      P.group.updateMatrixWorld(true);
+      let lo = Infinity; const pts = [];
+      P.model.traverse(m => {
+        if (!m.isSkinnedMesh) return;
+        m.skeleton.update();
+        const si = m.geometry.attributes.skinIndex, sw = m.geometry.attributes.skinWeight, n = m.geometry.attributes.position.count;
+        if (!si || !sw) return;
+        const st = Math.max(1, Math.floor(n / 6000));
+        for (let i = 0; i < n; i += st) {
+          let bi = 0, bw = -1;
+          for (let k = 0; k < 4; k++) { const w = sw.getComponent(i, k); if (w > bw) { bw = w; bi = si.getComponent(i, k); } }
+          const b = m.skeleton.bones[bi]; if (!b || !/Hips|UpLeg/.test(b.name)) continue;
+          m.getVertexPosition(i, _pv); _pv.applyMatrix4(m.matrixWorld); P.group.worldToLocal(_pv);
+          pts.push(_pv.x, _pv.y, _pv.z); if (_pv.y < lo) lo = _pv.y;
+        }
+      });
+      if (!pts.length) return null;
+      let sx = 0, sz = 0, n = 0;
+      for (let i = 0; i < pts.length; i += 3) if (pts[i + 1] < lo + 0.03) { sx += pts[i]; sz += pts[i + 2]; n++; }
+      return new THREE.Vector3(sx / n, lo, sz / n);
+    }
+    /* the skin's lowest point, every vertex (a sitter's heels on the floor; a stander's soles), in the group's frame */
+    function skinLow(P) {
+      P.group.updateMatrixWorld(true);
+      let lo = Infinity;
+      P.model.traverse(m => { if (!m.isSkinnedMesh) return; m.skeleton.update(); const n = m.geometry.attributes.position.count, st = Math.max(1, Math.floor(n / 4000));
+        for (let i = 0; i < n; i += st) { m.getVertexPosition(i, _pv); _pv.applyMatrix4(m.matrixWorld); P.group.worldToLocal(_pv); if (_pv.y < lo) lo = _pv.y; } });
+      return lo;
+    }
+    /* A PERSON'S TAKES ARE LAYERS, their weights eased every frame from what he is doing — never three's own fades, which
+       a weight set on the next frame silently cancels (setEffectiveWeight stops a fade): standing or sitting (each rest
+       split into legs and body, so a seated talker's crossed legs stay crossed), walking, talking (the body only) and a
+       one-off gesture (the pao). Standing up and sitting down blend the pose AND the body's offset onto the seat together,
+       so a man rises off a bench rather than jumping out of it. */
+    function mkPerson(key, o) {
+      const parent = o.parent;
+      const group = new THREE.Group(); group.position.set(o.x, o.y != null ? o.y : (o.ground ? o.ground(o.x, o.z) : 0), o.z); group.rotation.y = o.ry || 0; parent.add(group);
+      if (o.hidden) group.visible = false;
+      const P = { key, group, model: null, mixer: null, L: {}, head: null, headWrote: null, ready: false, o,
+                  seated: o.posture === 'sit', sitW: o.posture === 'sit' ? 1 : 0, walkW: 0, oneW: 0, talkW: 0, talkUntil: 0,
+                  one: null, walk: null, turnTo: null, lookW: 0, lookDir: new THREE.Vector3(0, 0, 1), faceLocal: null, look: o.look || 0, lookAt: null, lookFilm: false,
+                  bow: o.bow || 0, bowNow: o.bow || 0, inner: null, standInner: new THREE.Vector3(), sitInner: new THREE.Vector3(), onReady: [] };
+      const loads = [parseOnce(key)].concat(o.anims ? [parseOnce(o.anims)] : []);
+      Promise.all(loads).then(([gltf, extra]) => {
+        if (!alive) return;
+        const g = cloneSkinned(gltf.scene);
+        const clips = gltf.animations.concat(extra ? extra.animations : []);
+        g.traverse(m => { if (m.isMesh) { m.castShadow = !LOW && !o.noShadow; m.receiveShadow = false;
+          if (o.noMip) for (const mm of [].concat(m.material)) { const t = mm && mm.map;
+            if (t && t.generateMipmaps !== false) { t.generateMipmaps = false; t.minFilter = THREE.LinearFilter; t.needsUpdate = true; } } } });
+        g.traverse(b => { if (b.isBone && HEAD_RE.test(b.name) && !P.head) P.head = b; });
+        g.traverse(b => { if (b.isBone && /Hips(_\d+)?$/.test(b.name) && !P.hips) P.hips = b; });
+        const mx = new THREE.AnimationMixer(g);
+        const clip = (n) => clips.find(a => a.name === n);
+        const acts = new Map();
+        const act = (name, part) => {
+          const c = clip(name); if (!c) return null;
+          const k = name + '|' + (part || 'full');
+          if (!acts.has(k)) acts.set(k, mx.clipAction(part === 'upper' ? upperOnly(c) : part === 'lower' ? lowerOnly(c) : c));
+          return acts.get(k);
+        };
+        P.act = act;
+        /* the size: a STANDING take's posed bones (a seated take measures a seated body); a rig with neither a standing
+           take nor a standing bind pose is sized SITTING, floor to crown (chapter 3's crowd, 1.30) */
+        const sizeC = o.sizeTake === '@bind' ? null : clip(o.seatedHeight ? o.sit : (o.sizeTake || o.stand || o.sit)) || clips[0];
+        let lo = Infinity, hi = -Infinity;
+        if (!sizeC) {
+          g.updateMatrixWorld(true);
+          g.traverse(b => { if (!b.isBone) return; b.getWorldPosition(_pv); lo = Math.min(lo, _pv.y); hi = Math.max(hi, _pv.y); });
+        } else {
+          const a = mx.clipAction(sizeC); a.reset().setEffectiveWeight(1).play();
+          for (let k = 0; k < 6; k++) { mx.setTime(sizeC.duration * k / 6); g.updateMatrixWorld(true);
+            g.traverse(b => { if (!b.isBone) return; b.getWorldPosition(_pv); lo = Math.min(lo, _pv.y); hi = Math.max(hi, _pv.y); }); }
+          a.stop(); mx.uncacheAction(sizeC);
+        }
+        if (!(hi > lo)) { console.warn(key + ': no bones to size by'); return; }
+        const crown = (() => { let c = false; g.traverse(b => { if (b.isBone && /HeadTop_End|head_end|headtop/i.test(b.name)) c = true; }); return c; })();
+        const s = o.seatedHeight ? o.seatedHeight / (hi - lo) : o.height / ((hi - lo) / (crown ? 1 : 0.935));
+        const inner = new THREE.Group(); inner.scale.setScalar(s); inner.add(g); group.add(inner);
+        P.inner = inner; P.model = g; P.mixer = mx; P.scale = s;
+        /* the layers */
+        const L = P.L;
+        if (o.stand) { L.standLo = act(o.stand, 'lower'); L.standUp = act(o.stand, 'upper'); }
+        if (o.sit) { L.sitLo = act(o.sit, 'lower'); L.sitUp = act(o.sit, 'upper'); }
+        L.walk = o.walk === false ? null : act(o.walk || 'Walking');
+        L.talk = o.talk ? act(o.talk, 'upper') : null;
+        for (const k of ['standLo', 'standUp', 'sitLo', 'sitUp', 'walk', 'talk']) if (L[k]) L[k].reset().setEffectiveWeight(0).play();
+        const pose = (sitW) => {                            // the rest alone, at this blend, for measuring
+          for (const k of ['standLo', 'standUp']) if (L[k]) L[k].setEffectiveWeight(1 - sitW);
+          for (const k of ['sitLo', 'sitUp']) if (L[k]) L[k].setEffectiveWeight(sitW);
+          if (L.walk) L.walk.setEffectiveWeight(0); if (L.talk) L.talk.setEffectiveWeight(0);
+          mx.update(0); g.updateMatrixWorld(true);
+        };
+        /* standing: the soles a hair over the floor (the stand take's lowest bone, measured in its own clock) */
+        if (o.stand) {
+          inner.position.set(0, 0, 0); pose(0);
+          let sl = Infinity; const sa = clip(o.stand);
+          for (let k = 0; k < 4; k++) { mx.setTime(sa.duration * k / 4); g.updateMatrixWorld(true);
+            g.traverse(b => { if (b.isBone && /Foot|Toe/.test(b.name)) { b.getWorldPosition(_pv); sl = Math.min(sl, _pv.y); } }); }
+          if (!isFinite(sl)) sl = lo;
+          P.standInner.set(0, -sl * s + 0.005, 0);
+          if (o.ground === 'skin') { inner.position.copy(P.standInner); P.standInner.y -= skinLow(P) - 0.004; }
+        }
+        /* seated: the skin's seat set on the seat's top, at the group's origin; never through the floor under the seat; and
+           on a bench, feet that would hang are let down onto the floor, the seat taking up to 5 cm of it (cloth gives) */
+        if (o.sit) {
+          inner.position.set(0, 0, 0); pose(1);
+          const c = seatContact(P);
+          if (c) P.sitInner.set(-c.x, (o.seatH || 0) - c.y, -c.z);
+          if (o.seatFloor != null) {
+            inner.position.copy(P.sitInner); const lw = skinLow(P);
+            if (lw < o.seatFloor + 0.004) P.sitInner.y += o.seatFloor + 0.004 - lw;
+            else if (o.feet && lw > o.seatFloor + 0.01) P.sitInner.y -= Math.min(lw - o.seatFloor - 0.01, 0.05);
+          }
+          inner.position.copy(P.sitInner);
+          P.diag = { scale: +s.toFixed(4), seat: c && [+c.x.toFixed(3), +c.y.toFixed(3), +c.z.toFixed(3)], low: +(skinLow(P) + (o.y || 0)).toFixed(3) };
+        }
+        /* (a parked rest — her one still frame — and a slower breath are set after the measuring, which runs the clocks) */
+        if (o.idleAt != null) for (const k of ['standLo', 'standUp', 'sitLo', 'sitUp']) if (L[k]) { L[k].time = o.idleAt; L[k].setEffectiveTimeScale(0); }
+        if (o.restRate) for (const k of ['standLo', 'standUp', 'sitLo', 'sitUp']) if (L[k]) L[k].setEffectiveTimeScale(o.restRate);
+        pose(P.sitW);
+        inner.position.lerpVectors(P.standInner, P.sitInner, P.sitW);
+        /* his face's direction, in the head bone's own frame: at rest, he looks along his body's forward (level) */
+        if (P.head) {
+          group.updateMatrixWorld(true);
+          P.head.getWorldQuaternion(_hq);
+          group.getWorldQuaternion(_pq);
+          P.faceLocal = new THREE.Vector3(0, 0, 1).applyQuaternion(_pq).applyQuaternion(_hq.invert()).normalize();
+        }
+        P.ready = true;
+        /* the culling sphere round the posed skin, in world space, generous (v18.5's law) — a walker's is wider */
+        group.updateMatrixWorld(true);
+        const bb = new THREE.Box3();
+        g.traverse(m => { if (!m.isSkinnedMesh) return; m.skeleton.update(); const n = m.geometry.attributes.position.count, st = Math.max(1, Math.floor(n / 3000));
+          for (let i = 0; i < n; i += st) { m.getVertexPosition(i, _pv); _pv.applyMatrix4(m.matrixWorld); bb.expandByPoint(_pv); } });
+        if (!bb.isEmpty()) {
+          const sph = bb.getBoundingSphere(new THREE.Sphere()); sph.radius = Math.max(sph.radius * 1.5, 1.3);
+          g.traverse(m => { if (!m.isSkinnedMesh) return; m.frustumCulled = true; const inv = m.matrixWorld.clone().invert(), k = m.matrixWorld.getMaxScaleOnAxis() || 1;
+            m.boundingSphere = new THREE.Sphere(sph.center.clone().applyMatrix4(inv), sph.radius / k); });
+        }
+        owned.push({ dispose: () => mx.stopAllAction() });
+        if (o.then) o.then(P);
+        for (const f of P.onReady.splice(0)) f(P);
+      }).catch(err => { console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
+      people.push(P);
+      return P;
+    }
+    const whenReady = (P, f) => { if (!P) return; if (P.ready) f(P); else P.onReady.push(f); };
+    /* he speaks: the talking take eased in over his rest for the line's length, on WALL time */
+    function personTalk(P, secs) { if (P) P.talkUntil = wallNow() + secs; }
+    /* a take played once over the rest (a gesture, the pao), on the body only unless asked; `hold` keeps its last frame */
+    function personDo(P, name, o = {}) {
+      whenReady(P, () => {
+        const a = P.act(name, o.full ? null : 'upper'); if (!a) return;
+        if (P.one && P.one.a !== a) P.one.a.setEffectiveWeight(0);
+        a.reset().setLoop(o.loop ? THREE.LoopRepeat : THREE.LoopOnce, o.loop ? Infinity : 1); a.clampWhenFinished = true;
+        a.setEffectiveTimeScale(o.rate || 1).setEffectiveWeight(0).play();
+        P.one = { a, until: o.loop || o.hold ? Infinity : wallNow() + a.getClip().duration / (o.rate || 1) - 0.3 };
+      });
+    }
+    function personRest(P) { if (P) P.one && (P.one.until = 0); }
+    /* sitting down and getting up: the blend of pose and offset eases on the frame (sitW); a walk waits for the standing.
+       `seat` ({x, z}, the parent's frame) sits him onto a seat from where he stands in front of it: the group moves onto
+       the seat at once and the body is carried back to it with the blend (P.sitOff, the parent's frame, shrinking with
+       1 − sitW), so he lowers himself backwards onto the bench rather than sinking into it where he stood. Getting up
+       carries him forward again by the same step (`seatFwd`, 0.42 m when he began seated), and the group follows the
+       body once he is up. */
+    function personSit(P, on = true, seat) {
+      if (!P) return;
+      P.seated = !!on;
+      if (on) {
+        P.walk = null;
+        if (seat && P.ready) {
+          const g = P.group, ox = g.position.x - seat.x, oz = g.position.z - seat.z;
+          P.sitOff = new THREE.Vector3(ox, 0, oz); P.seatFwd = Math.hypot(ox, oz);
+          g.position.x = seat.x; g.position.z = seat.z;
+          if (P.o.ground) g.position.y = P.o.ground(seat.x, seat.z);
+          P.sitOffK = 1 - P.sitW;                               // what of the step the blend still has to carry
+        }
+      } else if (P.ready && P.sitOff && P.sitOffK >= 0) {
+        P.sitOffK = -1;                                       // told to stand mid-sit: the same step, now carried forward
+      } else if (P.ready && !P.sitOff && P.sitW > 0.002) {
+        const f = P.seatFwd != null ? P.seatFwd : (P.o.seatFwd != null ? P.o.seatFwd : 0.42);
+        const ry = P.group.rotation.y;
+        P.sitOff = new THREE.Vector3(Math.sin(ry) * f, 0, Math.cos(ry) * f); P.sitOffK = -1;   // rising: grows with 1 − sitW
+      }
+    }
+    /* the step, on the frame: the body's place relative to the group, in the group's own frame */
+    const _so = new THREE.Vector3();
+    function sitStep(P) {
+      if (!P.sitOff) return;
+      const g = P.group, rising = P.sitOffK < 0;
+      const k = rising ? (1 - P.sitW) : (P.sitOffK > 0 ? (1 - P.sitW) / P.sitOffK : 0);
+      _so.copy(P.sitOff).multiplyScalar(Math.min(1, k));
+      const c = Math.cos(g.rotation.y), s = Math.sin(g.rotation.y);   // the parent's frame into the group's (a turn about y)
+      P.inner.position.x += _so.x * c - _so.z * s; P.inner.position.z += _so.x * s + _so.z * c;
+      if (!rising && P.sitW > 0.999) P.sitOff = null;
+      if (rising && P.sitW < 0.001) sitRebase(P);
+    }
+    /* up: the group stands where the body does, and the offset is gone */
+    function sitRebase(P) {
+      if (!P.sitOff || P.sitOffK >= 0) return;
+      const g = P.group; g.position.x += P.sitOff.x; g.position.z += P.sitOff.z;
+      if (P.o.ground) g.position.y = P.o.ground(g.position.x, g.position.z);
+      P.sitOff = null;
+      P.inner.position.lerpVectors(P.standInner, P.sitInner, P.sitW);
+    }
+    /* a person moved to a mark (a cut, never seen moving) */
+    function personPut(P, x, z, ry, y) { if (!P) return; P.walk = null; P.sitOff = null;
+      P.group.position.set(x, y != null ? y : (P.o.ground ? P.o.ground(x, z) : P.group.position.y), z); if (ry != null) { P.group.rotation.y = ry; P.turnTo = null; } }
+    /* a walk along points on the group's own floor (`o.ground` lifts him up steps): the walking take tied to the ground
+       covered, the body turned to its heading on the way (a corner is walked, not snapped), the rest back at the end and
+       the last heading eased. A seated man stands first. */
+    function personWalk(P, pts, o = {}) {
+      whenReady(P, () => {
+        if (P.seated || P.sitW > 0.05) personSit(P, false);
+        P.seated = false;
+        P.walk = { pts: pts.slice(), i: 0, speed: o.speed || 1.1, ry: o.ry, then: o.then, wait: P.sitW > 0.05 };
+      });
+    }
+    const angTo = (a, b) => Math.atan2(Math.sin(b - a), Math.cos(b - a));
+    const ease = (v, to, rate, dt) => v + (to - v) * (1 - Math.exp(-dt * rate));
+    function walkTick(P, dt) {
+      const W = P.walk; if (!W) return;
+      if (W.wait) { if (P.sitW > 0.05) return; W.wait = false; sitRebase(P); }
+      const g = P.group, tgt = W.pts[W.i];
+      const dx = tgt[0] - g.position.x, dz = tgt[1] - g.position.z, d = Math.hypot(dx, dz);
+      if (d < 0.04) {
+        W.i++;
+        if (W.i >= W.pts.length) { P.walk = null; if (W.ry != null) P.turnTo = W.ry; if (W.then) W.then(); }
+        return;
+      }
+      const step = Math.min(d, W.speed * dt * Math.min(1, P.walkW * 1.6 + 0.15));
+      g.position.x += dx / d * step; g.position.z += dz / d * step;
+      if (P.o.ground) g.position.y = P.o.ground(g.position.x, g.position.z);
+      g.rotation.y += angTo(g.rotation.y, Math.atan2(dx, dz)) * Math.min(1, dt * 6);
+      if (P.L.walk) P.L.walk.setEffectiveTimeScale(W.speed / 1.3);
+    }
+    function peopleTick(now, wdt) {
+      const live = getState() === 'play';
+      for (const P of people) {
+        if (!P.ready) continue;
+        let vis = P.group.visible; for (let q = P.group.parent; vis && q && q !== world; q = q.parent) vis = q.visible;
+        if (!vis) continue;
+        if (P.head && P.headWrote) P.head.quaternion.copy(P.headWrote);
+        walkTick(P, wdt);
+        if (P.turnTo != null) { const d = angTo(P.group.rotation.y, P.turnTo); P.group.rotation.y += d * Math.min(1, wdt * 3.5); if (Math.abs(d) < 0.01) P.turnTo = null; }
+        /* the layers' weights, eased */
+        const L = P.L;
+        P.sitW = ease(P.sitW, P.seated && (L.sitLo || !L.standLo) ? 1 : 0, 2.4, wdt);
+        if (Math.abs(P.sitW - (P.seated ? 1 : 0)) < 0.002) P.sitW = P.seated ? 1 : 0;
+        P.walkW = ease(P.walkW, P.walk && !P.walk.wait ? 1 : 0, 4.5, wdt);
+        P.talkW = ease(P.talkW, now < P.talkUntil ? (P.o.talkWeight || 1) : 0, 3.2, wdt);
+        if (P.one && now > P.one.until) { P.oneW = ease(P.oneW, 0, 3.0, wdt); if (P.oneW < 0.01) { P.one.a.setEffectiveWeight(0); P.one = null; P.oneW = 0; } }
+        else if (P.one) P.oneW = ease(P.oneW, 1, 4.0, wdt);
+        const st = L.standLo ? 1 - P.sitW : 0, sw = L.standLo ? P.sitW : 1, wk = L.walk ? P.walkW : 0;
+        const tk = L.talk ? P.talkW * (1 - P.oneW) * (1 - wk) : 0, up = (1 - 0.9 * tk) * (1 - P.oneW);
+        if (L.standLo) { L.standLo.setEffectiveWeight(st * (1 - wk)); L.standUp.setEffectiveWeight(st * (1 - wk) * up); }
+        if (L.sitLo) { L.sitLo.setEffectiveWeight(sw); L.sitUp.setEffectiveWeight(sw * up); }
+        if (L.walk) L.walk.setEffectiveWeight(st * wk);
+        if (L.talk) L.talk.setEffectiveWeight(tk);
+        if (P.one) P.one.a.setEffectiveWeight(P.oneW);
+        if (L.standLo && L.sitLo) { P.inner.position.lerpVectors(P.standInner, P.sitInner, P.sitW); sitStep(P); }
+        P.mixer.update(wdt);
+        if (P.head) {
+          if (!P.headWrote) P.headWrote = new THREE.Quaternion();
+          P.headWrote.copy(P.head.quaternion);
+          /* THE LOOK IS ABSOLUTE (v5.04's law, in full): the face is turned onto what he looks at from wherever the take
+             has put it, never added to it — a talking take that leans him back with his chin up (the master's
+             answering take) would otherwise carry the look over the client's head. His face's own direction is
+             measured once at rest (`faceLocal`, the head bone's frame); each frame the head is turned, in the world,
+             by the part of the arc from where the face points to the target that this look's weight asks for, the
+             target held to a neck's reach of the BODY's forward (yaw ±0.85, pitch −0.35…+0.30). */
+          const tgt = P.lookAt || ((P.look > 0 && (live || P.lookFilm)) ? camera : null);
+          let want = 0;
+          if (tgt && P.faceLocal) {
+            P.head.updateWorldMatrix(true, false);
+            P.head.getWorldPosition(_hp); (tgt.isObject3D ? tgt.getWorldPosition(_cp) : _cp.copy(tgt));
+            P.group.getWorldQuaternion(_pq); _pe.setFromQuaternion(_pq, 'YXZ');
+            const dx = _cp.x - _hp.x, dz = _cp.z - _hp.z, dy = _cp.y - _hp.y, hd = Math.hypot(dx, dz);
+            const a = Math.atan2(dx, dz) - _pe.y, yawTo = Math.atan2(Math.sin(a), Math.cos(a));
+            if (Math.abs(yawTo) < 1.7 && hd < 9) {
+              want = P.lookAt ? 1 : P.look;
+              const yy = _pe.y + THREE.MathUtils.clamp(yawTo, -0.85, 0.85), pp = THREE.MathUtils.clamp(Math.atan2(dy, hd), -0.35, 0.3);
+              P.lookDir.set(Math.sin(yy) * Math.cos(pp), Math.sin(pp), Math.cos(yy) * Math.cos(pp));
+            }
+          }
+          P.lookW += (want - P.lookW) * (1 - Math.exp(-wdt * 2.4));
+          if (P.lookW > 0.002 && P.faceLocal) {
+            P.head.updateWorldMatrix(true, false);
+            P.head.getWorldQuaternion(_hq);
+            _fv.copy(P.faceLocal).applyQuaternion(_hq);
+            _dq.setFromUnitVectors(_fv, P.lookDir);
+            _dq.slerpQuaternions(_iq, _dq, Math.min(1, P.lookW));
+            P.head.parent.getWorldQuaternion(_pq2);
+            P.head.quaternion.copy(_pq2.invert().multiply(_dq.multiply(_hq)));
+          }
+          P.bowNow += ((P.bow || 0) - P.bowNow) * Math.min(1, wdt * 2.5);
+          /* a man with no talking take of his own nods his way through his line (Ta Sombat) */
+          const nod = !L.talk && P.talkW > 0.02 ? 0.07 * Math.sin(now * 5.2) * P.talkW : 0;
+          const pit = P.bowNow + nod;
+          if (Math.abs(pit) > 1e-4) { _pe.set(pit, 0, 0, 'YXZ'); _pq.setFromEuler(_pe); P.head.quaternion.multiply(_pq); }
+        }
+        if (P.after) P.after(P, now, wdt);
+      }
+    }
+
+    /* ---- THE FIRST MASTER (§3.5): on his cushion at the back of the receiving room, facing the client's mat. He rests
+       cross-legged; he talks on his answering take ridden on the upper body; the pao (the blessing blown three times
+       onto the crown) is his hands-to-mouth take. He looks at the one in front of him (v5.03), and closes his eyes to
+       chant (no look). */
+    const CUSH_TOP = RMC.PLAT.top + 0.0925;               // the red cushion's top on the platform (buildRoom)
+    const cast = {};
+    /* ---- THE LAGGING SHADOW (§7.4): his own silhouette, flattened onto the back wall by the two candles on the table —
+       one shadow a candle — and posed by what HE did 0.7 s ago (every bone's local turn written into a short history
+       each frame, the shadow reading it back late). Unlit, dark, see-through; drawn exactly once a pixel however its
+       body overlaps itself (each fragment's depth is the wall plane's, worked out from the pixel alone, so a second
+       layer at the same pixel always fails the depth test), and gone in a lightning flash. */
+    const SHADOW_LAG = 0.7, WALL_Z = RM.z0 + 0.04;
+    const shadow = { list: [], hist: [], bones: null, srcBones: null, k: 0, lag: SHADOW_LAG };
+    const _vp = new THREE.Vector4(), _nv = new THREE.Vector3(), _p0 = new THREE.Vector3(), _nm = new THREE.Matrix3();
+    function shadowMat(light, wz) {
+      const U = { uLight: { value: light.clone() }, uWallZ: { value: wz }, uProjK: { value: new THREE.Vector4() }, uProjZ: { value: new THREE.Vector2() },
+                  uPlane: { value: new THREE.Vector4() }, uVP: { value: new THREE.Vector4(0, 0, 1, 1) } };
+      /* LESS, never three's default LESS-OR-EQUAL: a second layer of the same body at the same pixel has the same depth and
+         must fail (CP7: at LEQUAL every fold of his legs added another layer, and they drew as black scribbles) */
+      const m = new THREE.MeshBasicMaterial({ color: 0x140a04, transparent: true, opacity: 0, depthWrite: true, depthFunc: THREE.LessDepth, fog: false });
+      m.onBeforeCompile = (sh) => {
+        Object.assign(sh.uniforms, U);
+        sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nuniform vec3 uLight;\nuniform float uWallZ;')
+          .replace('#include <project_vertex>', [
+            'vec4 wpS = modelMatrix * vec4(transformed, 1.0);',
+            'float dzS = min(wpS.z - uLight.z, -0.45);',           // (a knee within a hand of the flame would stretch the whole wall)
+            'vec3 pS = uLight + (wpS.xyz - uLight) * ((uWallZ - uLight.z) / dzS);',
+            'pS.z = uWallZ;',
+            'vec4 mvPosition = viewMatrix * vec4(pS, 1.0);',
+            'gl_Position = projectionMatrix * mvPosition;'].join('\n'));
+        sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nuniform vec4 uProjK; uniform vec2 uProjZ; uniform vec4 uPlane; uniform vec4 uVP;')
+          .replace(/}\s*$/, [
+            '  vec2 nd = (gl_FragCoord.xy - uVP.xy) / uVP.zw * 2.0 - 1.0;',
+            '  vec3 rv = vec3((nd.x + uProjK.z) / uProjK.x, (nd.y + uProjK.w) / uProjK.y, -1.0);',
+            '  float sd = uPlane.w / dot(uPlane.xyz, rv);',
+            '  gl_FragDepth = clamp(0.5 * (-uProjZ.x + uProjZ.y / sd) + 0.5, 0.0, 1.0);',
+            '}'].join('\n'));
+      };
+      m.userData.U = U;
+      mats.push(m);
+      return m;
+    }
+    /* the wall plane, in the lens's view space, and the projection's numbers — set on the frame it is drawn */
+    function shadowUniforms(U, renderer, cam) {
+      renderer.getCurrentViewport(_vp); U.uVP.value.copy(_vp);
+      const e = cam.projectionMatrix.elements; U.uProjK.value.set(e[0], e[5], e[8], e[9]); U.uProjZ.value.set(e[10], e[14]);
+      _nm.getNormalMatrix(cam.matrixWorldInverse); _nv.set(0, 0, 1).applyMatrix3(_nm).normalize();
+      _p0.set(RX, 1, U.uWallZ.value).applyMatrix4(cam.matrixWorldInverse);
+      U.uPlane.value.set(_nv.x, _nv.y, _nv.z, _nv.dot(_p0));
+    }
+
+    function buildCast() {
+      const SL = CMP.SALA, BENCH = 0.445;                 // a sala bench's top above its floor
+      /* the room: the master; Pong cross-legged on the second mat, turned to him; Pa Noi (the tray); her, by the curtained
+         door, never looked at */
+      cast.master = mkPerson('firstmaster', { parent: worldR, x: MASTER.x, z: MASTER.z, ry: 0, height: 1.68, sizeTake: 'Walking', walk: false,
+        posture: 'sit', sit: 'Sit_Cross_Legged_on_Floor', talk: 'Sitting_Answering_Questions', seatH: CUSH_TOP, seatFloor: RMC.PLAT.top, look: 1, noMip: true,
+        then: (P) => {
+          /* the shadow's two silhouettes, in his own inner frame so a pose lands where his does */
+          parseOnce('fmshadow').then((sg) => {
+            if (!alive || !P.inner) return;
+            const byName = new Map(); P.model.traverse(b => { if (b.isBone) byName.set(b.name, b); });
+            room.candles.slice(0, 2).forEach((c, ci) => {
+              const s2 = cloneSkinned(sg.scene);
+              const L = new THREE.Vector3(c.x + RX, c.y + 0.03, c.z);
+              const mat = shadowMat(L, WALL_Z + 0.002 * ci);      // the second a hair nearer, so where the two cross it darkens once more
+              s2.traverse(m => { if (m.isMesh) { m.material = mat; m.castShadow = false; m.receiveShadow = false; m.frustumCulled = false; m.renderOrder = -1;
+                m.onBeforeRender = (r, sc, cam) => shadowUniforms(mat.userData.U, r, cam); } });
+              P.inner.add(s2);
+              const bones = []; s2.traverse(b => { if (b.isBone) bones.push(b); });
+              shadow.list.push({ root: s2, mat, bones });
+            });
+            shadow.srcBones = shadow.list[0].bones.map(b => byName.get(b.name) || null);
+          }).catch(err => { console.warn('fmshadow failed to load', err); if (ctx.loadFail) ctx.loadFail('fmshadow', err); });
+        } });
+      cast.pongR = mkPerson('e4pong', { parent: worldR, x: -0.95, z: -0.2, ry: Math.atan2(0.95, -1.75), height: 1.7, sizeTake: 'Idle_9', walk: false,
+        posture: 'sit', sit: 'Sit_Cross_Legged_on_Floor', talk: 'Sitting_Answering_Questions', seatH: 0.012, seatFloor: 0.004 });
+      cast.noiR = mkPerson('e4noi', { parent: worldR, x: 1.55, z: -1.0, ry: -2.2, height: 1.56, posture: 'stand', stand: 'Idle_9',
+        talk: 'Talk_with_Left_Hand_on_Hip', hidden: true, noMip: true });
+      cast.her = mkPerson('granny', { parent: worldR, x: RMC.HER.door.x, z: RMC.HER.door.z, ry: -0.45, height: 1.5, posture: 'stand', stand: 'Stand_and_Chat',
+        idleAt: 0.4, walk: false, bow: 0.42, noMip: true, noShadow: true, hidden: true, then: herDress });
+      /* the yard: Pa Noi at the queue's board; in the sala, Khun Joy and Ta Sombat on the back bench and Uncle Lim on the
+         front one, all turned to the master's door; Pong, standing by his pickup at the gate (he leads him in, and sits
+         on the front bench to wait) */
+      cast.noi = mkPerson('e4noi', { parent: worldC, x: CMP.BOARD.x + 0.62, z: CMP.BOARD.z + 0.42, ry: -0.46, height: 1.56, posture: 'stand', stand: 'Idle_9',
+        talk: 'Talk_with_Left_Hand_on_Hip', look: 1, noMip: true, ground: groundAt });
+      /* (her take is a woman on a CHAIR, one knee over the other — the tentage's seated audience, v5.29 — so she has a bench) */
+      cast.joy = mkPerson('e4joy', { parent: worldC, x: -1.6, z: -3.0, y: SL.floor, ry: Math.PI / 2, height: 1.6, anims: 'sitwomantalk', sizeTake: 'Idle_9',
+        posture: 'sit', stand: 'Idle_9', sit: 'Armature|Sit_Cross_Legged|baselayer', talk: 'Talk', seatH: BENCH, seatFloor: 0, feet: true, look: 0.8, noMip: true, noShadow: true,
+        ground: groundAt });
+      cast.lim = mkPerson('e4lim', { parent: worldC, x: 0.4, z: -2.75, y: SL.floor, ry: Math.PI / 2, height: 1.66, sizeTake: 'Idle_9',
+        posture: 'sit', stand: 'Idle_9', sit: 'mixamo.com', talk: 'Talk_with_Hands_Open', seatH: BENCH, seatFloor: 0, feet: true, look: 0.8,
+        noMip: true, noShadow: true, ground: groundAt });
+      cast.sombat = mkPerson('encik', { parent: worldC, x: -1.6, z: -1.55, y: SL.floor, ry: Math.PI / 2, seatedHeight: 1.3, walk: false,
+        posture: 'sit', sit: 'mixamo.com', seatH: BENCH, seatFloor: 0, feet: true, look: 0.6, noShadow: true });
+      cast.pong = mkPerson('e4pong', { parent: worldC, x: 3.45, z: 11.6, ry: Math.PI, height: 1.7, sizeTake: 'Idle_9',
+        posture: 'stand', stand: 'Idle_9', sit: 'Sit_Upright', talk: 'Talk_with_Hands_Open', seatH: BENCH, seatFloor: 0, feet: true, look: 0.9, ground: groundAt });
+      /* the pickup: Pong at the wheel (Thailand drives on the left: the driver sits on the right, +x, facing −z), riding
+         the pickup's own frame — hidden until a film sits in the cabin */
+      cast.pongCab = mkPerson('e4pong', { parent: cab.root, x: 0.42, z: 0.06, y: 0, ry: Math.PI, height: 1.7, sizeTake: 'Idle_9', walk: false,
+        posture: 'sit', sit: 'Sit_Upright', talk: 'Talk_with_Hands_Open', seatH: 0.99, seatFloor: 0.575, noShadow: true,
+        /* his eyes on the road: a point three metres ahead of the windscreen, riding the pickup (the chair take's upright
+           stretch still lifts his chin; the absolute look holds his face level on the road) */
+        then: (P) => { const ahead = new THREE.Object3D(); ahead.position.set(0.42, 1.72, -3.2); cab.root.add(ahead); P.lookAt = ahead; } });
+    }
+    /* her look: the colour drained to the grey of an old photograph, faded by DITHERED alpha (alphaHash — the opaque
+       pass, never the transparent one: v12.4) */
+    function herDress(P) {
+      P.model.traverse(m => {
+        if (!m.isMesh) return;
+        const mm = m.material = m.material.clone(); mats.push(mm);
+        mm.alphaHash = true; mm.opacity = 0;
+        mm.onBeforeCompile = (sh) => {
+          sh.fragmentShader = sh.fragmentShader.replace('#include <map_fragment>',
+            '#include <map_fragment>\n{ float lu = dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114)); diffuseColor.rgb = mix(diffuseColor.rgb, vec3(lu) * vec3(0.92, 0.95, 1.0), 0.82) * 0.82; }');
+        };
+      });
+      her.P = P;
+    }
+    /* SHE IS SEEN ONLY AT THE EDGE OF SIGHT (§7.3): her fade is keyed to where she is ON THE SCREEN, not to an angle —
+       full in the frame's outer quarter, gone inside its middle 30 % — the only rule that holds on a phone's narrow
+       crop and a desktop's wide frame alike. Turning to her takes her away. */
+    const her = { P: null, on: false, k: 0, spot: 'door', mats: null };
+    const HER_SPOT = () => {
+      const S2 = RMC.HER; if (her.spot === 'door') return S2.door;
+      return (camera.aspect < 1 ? S2.phoneStep : S2.deskStep);
+    };
+    const herCtl = {
+      show(on) { her.on = !!on; },
+      at(spot) { her.spot = spot; const p = HER_SPOT(); if (cast.her) { cast.her.group.position.x = p.x; cast.her.group.position.z = p.z; } }
+    };
+    function herFrame(now, wdt) {
+      const P = her.P; if (!P) return;
+      const inR = worldOf(yaw.position.x) === 'R';
+      let want = 0;
+      if (her.on && inR) {
+        if (her.spot !== 'door') { const p = HER_SPOT(); P.group.position.x = p.x; P.group.position.z = p.z; }
+        P.group.getWorldPosition(_hp); _hp.y += 1.15;
+        camera.updateMatrixWorld(); _hp.project(camera);
+        if (_hp.z < 1 && Math.abs(_hp.y) < 1.2) { const ax = Math.abs(_hp.x); want = THREE.MathUtils.smoothstep(ax, 0.3, 0.55) * (ax < 1.25 ? 1 : 0); }
+      }
+      her.k += (want - her.k) * Math.min(1, wdt * (want > her.k ? 2.2 : 6.0));
+      P.group.visible = her.k > 0.01;
+      if (P.group.visible) P.model.traverse(m => { if (m.isMesh) m.material.opacity = her.k * 0.72; });   // never quite solid: the dither always shows
+    }
+    /* the shadow, each frame: his pose written into the history, the late pose read back into both silhouettes, and how
+       dark they are — the candles lit, darker in the power cut, gone in a flash */
+    const _sq = [];
+    function shadowFrame(now) {
+      if (!shadow.list.length || !shadow.srcBones || worldOf(yaw.position.x) !== 'R') return;
+      const src = shadow.srcBones, nb = src.length;
+      const rec = { t: now, q: new Float32Array(nb * 4), hp: new THREE.Vector3() };
+      for (let i = 0; i < nb; i++) { const b = src[i]; if (!b) continue; rec.q[i * 4] = b.quaternion.x; rec.q[i * 4 + 1] = b.quaternion.y; rec.q[i * 4 + 2] = b.quaternion.z; rec.q[i * 4 + 3] = b.quaternion.w; }
+      const hip = src.find(b => b && /Hips$/.test(b.name)); if (hip) rec.hp.copy(hip.position);
+      shadow.hist.push(rec);
+      while (shadow.hist.length > 2 && shadow.hist[1].t < now - shadow.lag - 0.2) shadow.hist.shift();
+      const want = now - shadow.lag;
+      let r = shadow.hist[0]; for (const h of shadow.hist) { if (h.t <= want) r = h; else break; }
+      for (const S2 of shadow.list) {
+        for (let i = 0; i < nb; i++) { const b = S2.bones[i]; if (!b || !src[i]) continue; b.quaternion.set(r.q[i * 4], r.q[i * 4 + 1], r.q[i * 4 + 2], r.q[i * 4 + 3]); if (/Hips$/.test(b.name)) b.position.copy(r.hp); }
+        if (cast.master && cast.master.model) S2.root.position.copy(cast.master.model.position);
+      }
+      const fl = kit && kit.flashNow ? kit.flashNow() : 0;
+      const k = room.candleK * (0.34 + 0.32 * (1 - room.tubeK)) * (1 - Math.min(1, fl * 1.6));
+      for (const S2 of shadow.list) { S2.mat.opacity = k; S2.root.visible = k > 0.005; }
+    }
+    buildCast();
+    if (room.wash) room.wash.renderOrder = -2;          // the candles' wash under the lagging shadow (renderOrder −1), never over it
+
     /* ------------------------------------------------- the compound, alive (CP5): the water's ripples and its sky, the
        lightning in it, the standing fan, the TV under the house */
     function yardFrame(now) {
@@ -2687,10 +3194,15 @@
     ];
 
     /* ------------------------------------------------------------- the frame */
+    let castLast = 0;
     function updateNotes(dt, t) {
       const now = wallNow();
+      const wdt = castLast ? Math.min(0.1, Math.max(0, now - castLast)) : 0; castLast = now;
       domeFrame(now);
       roomFrame(now);
+      peopleTick(now, wdt);                               // the cast's clocks run in films too (v5.19): only their looks wait for play
+      herFrame(now, wdt);
+      shadowFrame(now);
       yardFrame(now);
       shopFrame(now);
       taxiFrame(now);
@@ -2812,6 +3324,10 @@
       setPhase, applyPhase, after, dayClock, sayLine, queueLine, queueFn, queueGap,
       look, presets: PRESETS, dome: domeLive, worldOf, room: roomCtl, rmc: RMC, roomState: room, yard, cmp: CMP,
       shop: shopCtl, shopState: shop, cab: cabCtl, cabState: cab, taxi,
+      cast, her: herCtl, herState: her, shadow,
+      person: { talk: personTalk, do: personDo, rest: personRest, walk: personWalk, put: personPut, sit: personSit, ready: whenReady },
+      castInfo: () => Object.fromEntries(Object.entries(cast).map(([k, P]) => [k, P && { ready: P.ready, diag: P.diag || null,
+        pos: [+P.group.position.x.toFixed(2), +P.group.position.y.toFixed(2), +P.group.position.z.toFixed(2)], vis: P.group.visible }])),
       info: () => ({ phase, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], world: worldOf(yaw.position.x),
                      until: +speak.until.toFixed(2), pending: speak.pending ? speak.pending.name : null, decOpen }),
       hotspots,

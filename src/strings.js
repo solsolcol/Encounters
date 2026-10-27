@@ -461,6 +461,12 @@ Object.assign(window.__TEXT__, {
      (bkktattoostudio13.com — the Five Rows page for Hah Taew Chat Petch, the
      Gao Yord page, the Necklace page for Sroi Sangwan), kept to their key
      points, because this teaches the player what each design is. */
+  'item.nangkwak.name':  'Nang Kwak',
+  'item.nangkwak.desc':  'A small brass Nang Kwak, the beckoning lady, her right hand raised to call the customers in. Shopkeepers keep her facing the door.',
+  'item.takrut.name':    'Takrut',
+  'item.takrut.desc':    'A tiny scroll of metal, a yant inscribed on it and rolled tight, on a cord. It is worn: at the waist, or round the neck.',
+  'item.phayant.name':   'Pha yant',
+  'item.phayant.desc':   'A square of cloth printed with a yant for trade. It is framed on the wall facing the door, below the Buddha shelf.',
   'item.yantgaoyord.name':  'Yant Gao Yord',
   'item.yantgaoyord.power': 'Sudden sanity hits reduced by 40%',
   'item.yantgaoyord.desc':  'The Nine Spires: the nine peaks of Mount Meru, home of the gods, and the nine qualities of the Buddha, each spire crowned with the three ovals that stand for him. Inked at the top of the back, it protects against weapons, danger, evil spirits and black magic.',

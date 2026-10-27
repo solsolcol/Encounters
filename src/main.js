@@ -9522,7 +9522,12 @@ const ITEM_DEFS = {
      Sangwan, "the ability to overcome obstacles", steadies the hand. */
   yantgaoyord: { icon: 'e-ygao', slot: 'body', fixed: true, shockGuard: 0.4, rarity: 'rare' },
   yanthahtaew: { icon: 'e-yhah', slot: 'body', fixed: true, drainGuard: 0.35, rarity: 'rare' },
-  yantsroi: { icon: 'e-ysroi', slot: 'body', fixed: true, evGuard: 0.3, rarity: 'rare' }
+  yantsroi: { icon: 'e-ysroi', slot: 'body', fixed: true, evGuard: 0.3, rarity: 'rare' },
+  /* v24.0: the three pieces on the first master's tray (episode 4 chapter 1, §4.3 P5): he takes one, and nothing later
+     hangs on which — ordinary pieces, no power, line drawings and no model. Whichever he took rides in his bag. */
+  nangkwak: { icon: 'e-nangkwak', slot: 'hand', rarity: 'common' },
+  takrut: { icon: 'e-takrut', slot: 'hand', rarity: 'common' },
+  phayant: { icon: 'e-phayant', slot: 'hand', rarity: 'common' }
 };
 /* v14.11: every item has a RARITY (Chad: "Torch is common rarity with grey
    colour coding, the lp phiboon amulet is rare rarity with blue colour

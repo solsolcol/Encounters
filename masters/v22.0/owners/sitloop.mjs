@@ -11,7 +11,7 @@ import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { MeshoptDecoder, MeshoptEncoder } from 'meshoptimizer';
 await MeshoptDecoder.ready; await MeshoptEncoder.ready;
 const [,, IN, OUT, A0, A1] = process.argv;
-const W0 = Number(A0 || 9.2), W1 = Number(A1 || 1.2), FPS = 30, NAME = 'mixamo.com';
+const W0 = Number(A0 || 9.2), W1 = Number(A1 || 1.2), FPS = 30, NAME = process.env.NAME || 'mixamo.com';   // (v24.0: NAME= for a file whose 'mixamo.com' is taken)
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.decoder': MeshoptDecoder, 'meshopt.encoder': MeshoptEncoder });
 const doc = await io.read(IN), root = doc.getRoot();
 const src = root.listAnimations().find(a => a.getName() === 'Chair_Sit_Idle_M');

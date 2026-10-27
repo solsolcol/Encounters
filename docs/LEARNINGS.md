@@ -6566,3 +6566,37 @@ cut (sharing its vertices and maps) when it is small.
   the fence to the middle of the gateway: a white slab in the first frame of play and an invisible wall over half the
   way in. Its mirror on the right, `x1 − GX − 0.2`, was right. When one side of a symmetric pair is written by hand,
   write the other as the first one's mirror, and photograph from where the player stands.
+
+- **A projected silhouette needs LESS, not three's default LESS-OR-EQUAL** (v24.0 CP7). The first master's lagging
+  shadow is his skinned body flattened onto the wall in the vertex shader. Every fold of his crossed legs projects onto
+  the same plane at the same depth, so at `LessEqualDepth` (three.js's default) each layer passed and the translucent
+  shadow darkened once per layer: black scribbles inside a grey figure. Writing the wall plane's depth per FRAGMENT
+  (`gl_FragDepth`, worked out from the pixel alone) and drawing at `LessDepth` makes the first layer win and every other
+  layer at that pixel fail; a second shadow, from the second candle, sits 2 mm nearer so where the two cross it
+  darkens exactly once more.
+- **`setEffectiveWeight` cancels a fade** (v24.0 CP7). three.js's `crossFadeTo`/`fadeIn` schedule a weight interpolant,
+  and the next `setEffectiveWeight` on that action quietly stops it — so a person whose talking take was faded in by one
+  call and weighted by the next frame's code snapped. A person is LAYERS whose weights the frame eases itself (standing
+  and sitting each split into legs and body, a walk, a talk on the body only, a one-off gesture), never three's fades;
+  a seated talker keeps his legs crossed because the talk never touches the legs' layer.
+- **A head turned ADDITIVELY carries the take's tilt with it** (v24.0 CP7). The cast's look added a pitch to whatever
+  the take had put on the head, and its sign was wrong besides: the master's answering take leans him back with his
+  chin up, and a look that should have brought his eyes down onto the kneeling client tipped them further up — he
+  talked to the ceiling over the player's head, and Pong at the wheel stared at the cab roof. The look is ABSOLUTE now
+  (v5.04's law, in full): the face's own direction is measured once at rest in the head bone's frame, and each frame the
+  head is turned, in the world, by the share of the arc from where the face points to the target that the look's weight
+  asks for. The take can tilt the head any way it likes; the eyes still land on the player.
+- **Two rigs that rest differently need `--align` even when every bone shares its name** (v24.0 CP7). Pong's stand-in
+  (episode 3's staff man) took the first master's cross-legged sit through `tools/retarget.mjs` and sat on the floor
+  with both arms held out level, like wings: the master's rig rests in a T-pose and the staff man's in an A-pose, and a
+  delta measured from one rest applied to the other keeps the difference. `--align` swings the target onto the
+  source's rest first.
+- **Sitting down is a STEP BACK, not a sink** (v24.0 CP7). A person who walks to a bench and sits where he stands would
+  sink through the bench: the stand pose has his feet under the group, the sit pose his seat. `personSit(P, true, seat)`
+  moves the group onto the seat at once and carries the body back to it from where he stood with the blend (an offset
+  in the parent's frame that shrinks with 1 − sitW, re-expressed in the group's frame every frame so a turn while sitting
+  is a turn on the spot); getting up carries him forward by the same step and the group follows once he is up.
+- **Probe law: a photograph from an earlier run reads as this run's** (v24.0 CP7). The cast probe writes fixed file
+  names, and a photograph read straight after the monitor reported the previous shot was the PREVIOUS run's file — Pong
+  "sitting on the front bench" in a build where he stood at the gate. The probe clears its own photographs before it
+  starts, and a photograph is read only after the event that names it.

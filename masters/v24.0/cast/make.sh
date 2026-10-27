@@ -22,9 +22,22 @@ node masters/v22.0/owners/sitloop.mjs $O/owner/p7.glb $O/owner/s7.glb 9.2 1.2
 cp $O/owner/s7.glb  assets/e4lim.glb
 cp $O/keeper/p7.glb assets/e4noi.glb
 # 3. Pong's stand-in (staffman: idle, talk, walk) with the first master's three seated takes retargeted onto it in world
-#    space (tools/retarget.mjs, mixamo, --hips): cross-legged on the room's floor, talking seated, and a chair sit for the
-#    pickup's driving seat — 8 takes, 1344 KB.
-node tools/retarget.mjs assets/firstmaster.glb assets/staffman.glb $O/pong1.glb Sit_Cross_Legged_on_Floor mixamo --hips
-node tools/retarget.mjs assets/firstmaster.glb $O/pong1.glb $O/pong2.glb Sitting_Answering_Questions mixamo --hips
-node tools/retarget.mjs assets/firstmaster.glb $O/pong2.glb $O/pong3.glb Chair_Sit_Idle_M mixamo --hips
+#    space (tools/retarget.mjs, mixamo, --hips --align): cross-legged on the room's floor, talking seated, and a chair sit
+#    for the pickup's driving seat — 8 takes, 1344 KB. --align because the two rigs rest in different poses: without it
+#    the first cut sat cross-legged with both arms held out level, like wings (photographed, CP7).
+node tools/retarget.mjs assets/firstmaster.glb assets/staffman.glb $O/pong1.glb Sit_Cross_Legged_on_Floor mixamo --hips --align
+node tools/retarget.mjs assets/firstmaster.glb $O/pong1.glb $O/pong2.glb Sitting_Answering_Questions mixamo --hips --align
+node tools/retarget.mjs assets/firstmaster.glb $O/pong2.glb $O/pong3.glb Chair_Sit_Idle_M mixamo --hips --align
 cp $O/pong3.glb assets/e4pong.glb
+# 4. Pong's sit for the sala's bench and the pickup's seat: Chair_Sit_Idle_M folds over the knees for five of its eleven
+#    seconds (v8.0, v21.1), so its upright stretch is baked there and back as Sit_Upright (v22.0's sitloop, NAME= because
+#    the staff man's own idle already holds the name 'mixamo.com').
+NAME=Sit_Upright node masters/v22.0/owners/sitloop.mjs $O/pong3.glb $O/pongS.glb 9.2 1.2
+cp $O/pongS.glb assets/e4pong.glb
+# 5. Khun Joy's stand-in: chapter 3's pink-shirt lady (sitwoman, a Meshy rig: the `meshy` map) is a sitter only — her
+#    number is called at twelve and she has to rise and walk into the master's room — so a standing idle and a walk
+#    are retargeted onto her from the admin tee (--align: the two rigs rest in different poses; --hips for the walk's
+#    stride). Her own seated take stays; her talking take stays in sitwomantalk.glb. 2.38 MB.
+node tools/retarget.mjs assets/admintee.glb assets/sitwoman.glb $O/joy1.glb Idle_9 meshy --align
+node tools/retarget.mjs assets/admintee.glb $O/joy1.glb $O/joy2.glb Walking meshy --hips --align
+cp $O/joy2.glb assets/e4joy.glb
