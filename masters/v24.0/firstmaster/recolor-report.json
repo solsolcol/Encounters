@@ -1,0 +1,48 @@
+{
+ "triangles": 594550,
+ "slivers": 11,
+ "cloth": 394102,
+ "seeded": 379964,
+ "flooded": 10956,
+ "smoothed": 188,
+ "unclothed": 16,
+ "excludedHeadHands": 51852,
+ "texels": {
+  "changed": 1130675,
+  "skinKeptInsideCloth": 335,
+  "rimmed": 212,
+  "despecked": 302,
+  "paddingRefilled": 2320204,
+  "paleLeftBesideCloth": 212,
+  "specksLeft": 5,
+  "whiteRimLeft": {
+   "uncovered": 211,
+   "headOrHands": 136,
+   "notCloth": 44,
+   "eg": [
+    "1019,3",
+    "1084,17",
+    "614,29",
+    "482,32",
+    "482,33",
+    "482,34",
+    "644,34",
+    "481,38"
+   ]
+  }
+ },
+ "whiteRef": 0.979,
+ "black": [
+  38,
+  38,
+  41
+ ],
+ "floor": 0.22,
+ "speckEg": [
+  "393,1435",
+  "1762,1547",
+  "261,1702",
+  "209,1754",
+  "207,1776"
+ ]
+}

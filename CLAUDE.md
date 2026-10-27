@@ -32,6 +32,11 @@ from his **phone**. Consequences:
 - He dislikes over-testing small changes (see Testing) and once asked
   "why so many commands for a simple change" — keep runs proportionate.
 - Deliver a fresh backup bundle and the Netlify zip at every good version.
+- **ASK HIM FOR THE MODELS** (Chad, 27 Oct 2026: *"You can use placeholder models or generate your own until i give
+  you the real models. You just need to remember to ask me for the models so i don't forget or miss it."*). While a
+  chapter stands on placeholders, EVERY report ends with the models still NEEDED in **docs/E4-MODELS.md** (the list,
+  each role's look and takes, and what stands in). A placeholder is one of the game's own characters wearing the role,
+  or a plant or vehicle built in code — never a block figure.
 
 ## The rules that never bend
 
