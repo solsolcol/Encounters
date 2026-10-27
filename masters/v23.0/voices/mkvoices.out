@@ -1,0 +1,185 @@
+#   z5pro1      b        both end on signal, this one starts cleaner (head -62 against -48)
+#   ow5hello    a        both end on signal, this one starts cleaner (head -36 against -25)
+#   z5yinq      a        both end on signal, this one starts cleaner (head -52 against -42)
+#   ow5yin      a        both end on signal, this one starts cleaner (head -29 against -28)
+#   ow5monk     b        both end on signal, this one starts cleaner (head -32 against -29)
+#   ow5red      b        both end on signal; faded
+#   ow5shy      a        both end on signal, this one starts cleaner (head -38 against -35)
+#   ow5little   b        both end on signal, this one starts cleaner (head -38 against -28)
+#   ow5give     a        both end on signal, this one starts cleaner (head -29 against -26)
+#   z5children  a        both end on signal, this one starts cleaner (head -59 against -33)
+#   ow5never    a        the first take after all: the re-said pair (ow5never2) was made because the transcriber heard "listen, ah" as "listener" — biased with the script it hears "listen ah..." in all four takes (LEARNINGS); a has the quietest head and end (-31 / -28) and the script's comma ("not for money, not for lottery numbers")
+#   ow5wrong    b        both end on signal, this one starts cleaner (head -32 against -29)
+#   ow5promise  a        both end on signal, this one starts cleaner (head -30 against -26)
+#   z5promise   b        clean end (-54; a ends on signal)
+#   ow5careful  b        both end on signal, this one starts cleaner (head -28 against -28)
+#   z5pro2      b        both end on signal, this one starts cleaner (head -56 against -54)
+#   z5pro3      a        clean end (-41; b ends on signal)
+#   z5pro4      a        both end on signal, this one starts cleaner (head -68 against -44)
+#   z5water     a        both end on signal, this one starts cleaner (head -66 against -56)
+#   z5bag       b        both end on signal, this one starts cleaner (head -40 against -27)
+#   z5red       a        both end on signal, this one starts cleaner (head -53 against -53)
+#   z5shy       b        clean end (-64; a ends on signal)
+#   z5little    a        clean end (-57; b ends on signal)
+#   z5stiff     a        clean end (-43; b ends on signal)
+#   z5incense   b        both end on signal, this one starts cleaner (head -46 against -20)
+#   z5eat       a        both end on signal, this one starts cleaner (head -50 against -48)
+#   z5dedic     a        clean at both ends (head -52, end -54)
+#   z5wonder    b        clean end (-66; a ends on signal)
+#   z5ask       b        both end on signal, this one starts cleaner (head -58 against -47)
+#   z5loose     a        both end on signal; faded
+#   z5b1        v4_a     v4, a bossy small boy (~300 Hz): "Mine. These are all mine." whole; clean end
+#   z5b2        v4_a     v4, the bossy one: both "Nobody"s, the cleaner head (-50)
+#   z5b3        v4_a     v4, the bossy one, "More. I want more." whole; clean end
+#   z5b4        hiB_a    v4 under "[in a high, small child's voice]" (~172 Hz): the hurt line quiet and small; the v3 takes kept Brian's own register
+#   z5back1     b        clean end (-45; a ends on signal)
+#   z5back1b    b        clean end (-65; a ends on signal)
+#   z5again1    a        clean at both ends (head -59, end -50)
+#   z5s1        v4_a     v4, the shy one's giggle and "you can't see me"; clean at both ends
+#   z5s2        v4_a     v4, the shy one whispering "hide... hide..."; the clean head (-62)
+#   z5s3        hiB_a    v4 under the child direction (~258 Hz); it says the line and then again, so it is cut after the first "my secret" (keep 2.3)
+#   z5s4        hiA_a    v4 under the child direction (~196 Hz), both halves with the pause between them
+#   z5back2     b        clean at both ends (head -59, end -52)
+#   z5back2b    b        both end on signal, this one starts cleaner (head -65 against -57)
+#   z5again2    b        both end on signal, this one starts cleaner (head -36 against -33)
+#   z5l1        hiB_a    v4 under the child direction (~163 Hz), very soft; clean at both ends
+#   z5l2        v4_b     v4 (~182 Hz), the question kept a question; a repeats "you won't go"
+#   z5l3        v4_b     v4 (~326 Hz), "Stay... stay with me" said once; a says it twice
+#   z5sob       v4_a     v4, a small boy's quiet sob (wordless — the transcriber hears breaths as "hehe")
+#   z5out       a        clean end (-44; b ends on signal)
+#   z5come      b        clean at both ends (head -52, end -54)
+#   z5gasp      b        clean at both ends (head -52, end -48)
+#   z5time      b        both end on signal, this one starts cleaner (head -66 against -65)
+#   z5felt      b        both end on signal, this one starts cleaner (head -78 against -72)
+#   z5fasc      a        both end on signal, this one starts cleaner (head -75 against -63)
+#   z5A1        a        both end on signal, this one starts cleaner (head -63 against -57)
+#   z5A2        b        clean end (-46; a ends on signal)
+#   ma5vm       b        clean at both ends (head -85, end -45)
+#   z5A3        b        both end on signal, this one starts cleaner (head -45 against -38)
+#   z5Agig      v4_b     v4, the dry small giggle out of his own mouth (~250 Hz)
+#   z5A4        a        both end on signal, this one starts cleaner (head -63 against -59)
+#   z5A5        b        clean end (-45; a ends on signal)
+#   z5A6        b        clean at both ends (head -52, end -41)
+#   z5B1        b        both end on signal, this one starts cleaner (head -56 against -43)
+#   z5B2        b        clean end (-46; a ends on signal)
+#   z5B3        b        clean end (-40; a ends on signal)
+#   z5B4        b        both end on signal, this one starts cleaner (head -59 against -44)
+#   z5B5        b        both end on signal, this one starts cleaner (head -54 against -46)
+#   z5B6        a        both end on signal, this one starts cleaner (head -71 against -49)
+#   z5C1        a        clean at both ends (head -66, end -52)
+#   z5C2        b        clean at both ends (head -57, end -40)
+#   z5C3        a        both end on signal, this one starts cleaner (head -63 against -56)
+#   z5C4        a        both end on signal, this one starts cleaner (head -61 against -54)
+#   z5Cevil     b        clean end (-46; a ends on signal)
+#   z5Claugh    b        clean at both ends (head -53, end -51)
+#   z5C5        a        clean end (-45; b ends on signal)
+#   z5C6        a        both end on signal, this one starts cleaner (head -75 against -60)
+#   z5C7        a        both end on signal, this one starts cleaner (head -58 against -54)
+#   z5D1        b        clean end (-49; a ends on signal)
+#   z5D2        a        clean end (-45; b ends on signal)
+#   z5D3        a        both end on signal, this one starts cleaner (head -49 against -29)
+#   z5D4        a        both end on signal, this one starts cleaner (head -85 against -48)
+#   mk5teach    a        both end on signal, this one starts cleaner (head -41 against -38)
+#   z5D5        b        both end on signal, this one starts cleaner (head -56 against -48)
+#   z5D6        b        clean end (-45; a ends on signal)
+#   z5epi0      b        clean at both ends (head -66, end -44)
+#   z5epi1      b        clean at both ends (head -84, end -61)
+#   z5epi2      a        both end on signal, this one starts cleaner (head -41 against -30)
+#   z5epi3      b        both end on signal, this one starts cleaner (head -56 against -39)
+#   z5A         a        clean end (-43; b ends on signal)
+#   z5B         a        both end on signal, this one starts cleaner (head -56 against -49)
+#   z5C         b        both end on signal, this one starts cleaner (head -69 against -34)
+#   z5D         a        both end on signal, this one starts cleaner (head -55 against -44)
+
+him   z5pro1      raw/z5pro1_b.mp3 $F
+cast  ow5hello    raw/ow5hello_a.mp3 $F
+him   z5yinq      raw/z5yinq_a.mp3 $F
+cast  ow5yin      raw/ow5yin_a.mp3 $F
+cast  ow5monk     raw/ow5monk_b.mp3 $F
+cast  ow5red      raw/ow5red_b.mp3 $F
+cast  ow5shy      raw/ow5shy_a.mp3 $F
+cast  ow5little   raw/ow5little_b.mp3 $F
+cast  ow5give     raw/ow5give_a.mp3 $F
+him   z5children  raw/z5children_a.mp3 $F
+cast  ow5never    raw/ow5never_a.mp3 $F
+cast  ow5wrong    raw/ow5wrong_b.mp3 $F
+cast  ow5promise  raw/ow5promise_a.mp3 $F
+him   z5promise   raw/z5promise_b.mp3
+cast  ow5careful  raw/ow5careful_b.mp3 $F
+him   z5pro2      raw/z5pro2_b.mp3 $F
+him   z5pro3      raw/z5pro3_a.mp3
+him   z5pro4      raw/z5pro4_a.mp3 $F
+him   z5water     raw/z5water_a.mp3 $F
+him   z5bag       raw/z5bag_b.mp3 $F
+him   z5red       raw/z5red_a.mp3 $F
+him   z5shy       raw/z5shy_b.mp3
+him   z5little    raw/z5little_a.mp3
+him   z5stiff     raw/z5stiff_a.mp3
+him   z5incense   raw/z5incense_b.mp3 $F
+him   z5eat       raw/z5eat_a.mp3 $F
+him   z5dedic     raw/z5dedic_a.mp3
+him   z5wonder    raw/z5wonder_b.mp3 --keep 5.35
+him   z5ask       raw/z5ask_b.mp3 $F
+him   z5loose     raw/z5loose_a.mp3 $F
+him   z5b1        raw/z5b1_v4_a.mp3
+him   z5b2        raw/z5b2_v4_a.mp3
+him   z5b3        raw/z5b3_v4_a.mp3
+him   z5b4        raw/z5b4_hiB_a.mp3
+him   z5back1     raw/z5back1_b.mp3
+him   z5back1b    raw/z5back1b_b.mp3 --keep 4.95
+him   z5again1    raw/z5again1_a.mp3
+him   z5s1        raw/z5s1_v4_a.mp3
+him   z5s2        raw/z5s2_v4_a.mp3
+him   z5s3        raw/z5s3_hiB_a.mp3 --keep 2.3
+him   z5s4        raw/z5s4_hiA_a.mp3
+him   z5back2     raw/z5back2_b.mp3
+him   z5back2b    raw/z5back2b_b.mp3 $F
+him   z5again2    raw/z5again2_b.mp3 $F
+him   z5l1        raw/z5l1_hiB_a.mp3
+him   z5l2        raw/z5l2_v4_b.mp3
+him   z5l3        raw/z5l3_v4_b.mp3
+him   z5sob       raw/z5sob_v4_a.mp3
+him   z5out       raw/z5out_a.mp3
+him   z5come      raw/z5come_b.mp3 --keep 3.65
+him   z5gasp      raw/z5gasp_b.mp3
+him   z5time      raw/z5time_b.mp3 $F
+him   z5felt      raw/z5felt_b.mp3 $F
+him   z5fasc      raw/z5fasc_a.mp3 $F
+him   z5A1        raw/z5A1_a.mp3 $F
+him   z5A2        raw/z5A2_b.mp3
+phone ma5vm       raw/ma5vm_b.mp3
+him   z5A3        raw/z5A3_b.mp3 $F
+him   z5Agig      raw/z5Agig_v4_b.mp3
+him   z5A4        raw/z5A4_a.mp3 $F
+him   z5A5        raw/z5A5_b.mp3
+him   z5A6        raw/z5A6_b.mp3
+him   z5B1        raw/z5B1_b.mp3 $F
+him   z5B2        raw/z5B2_b.mp3
+him   z5B3        raw/z5B3_b.mp3
+him   z5B4        raw/z5B4_b.mp3 $F
+him   z5B5        raw/z5B5_b.mp3 $F
+him   z5B6        raw/z5B6_a.mp3 $F
+him   z5C1        raw/z5C1_a.mp3
+him   z5C2        raw/z5C2_b.mp3
+him   z5C3        raw/z5C3_a.mp3 $F
+him   z5C4        raw/z5C4_a.mp3 $F
+him   z5Cevil     raw/z5Cevil_b.mp3
+him   z5Claugh    raw/z5Claugh_b.mp3
+him   z5C5        raw/z5C5_a.mp3
+him   z5C6        raw/z5C6_a.mp3 $F
+him   z5C7        raw/z5C7_a.mp3 $F
+him   z5D1        raw/z5D1_b.mp3
+him   z5D2        raw/z5D2_a.mp3
+him   z5D3        raw/z5D3_a.mp3 $F
+him   z5D4        raw/z5D4_a.mp3 $F
+cast  mk5teach    raw/mk5teach_a.mp3 $F
+him   z5D5        raw/z5D5_b.mp3 $F
+him   z5D6        raw/z5D6_b.mp3
+him   z5epi0      raw/z5epi0_b.mp3
+him   z5epi1      raw/z5epi1_b.mp3 --keep 8.10
+him   z5epi2      raw/z5epi2_a.mp3 $F
+him   z5epi3      raw/z5epi3_b.mp3 $F
+him   z5A         raw/z5A_a.mp3
+him   z5B         raw/z5B_a.mp3 $F
+him   z5C         raw/z5C_b.mp3 $F
+him   z5D         raw/z5D_a.mp3 $F

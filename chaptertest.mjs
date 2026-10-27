@@ -14,7 +14,6 @@
    A chapter file is a plain script that registers itself on
    window.__CHAPTERS__, so all this needs is a stub window and eval.       */
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
 import { DIR } from './testlib.mjs';
 
@@ -634,15 +633,6 @@ if (VOICE && Array.isArray(VOICE.LINES)) {
     }
   }
   console.log(`briefing pictures: ${kinds.length} kinds, ${briefed} briefed events, drawn: ${[...drawn].join(' ')}`);
-}
-
-/* v23.0 CP10: a chapter carrying the M1 preview's placeholder subtitles (PREVIEW_CAPS, between its markers) must carry
-   the registry's current words — tools/e3c5caps.mjs writes the table, and a sheet edit that changes a line's words has
-   to reach the preview too. CP11 deletes the table, and this finds nothing to check */
-for (const f of files) {
-  if (!readFileSync(join(chapDir, f), 'utf8').includes('/* PREVIEW CAPTIONS BEGIN */')) continue;
-  try { console.log(String(execFileSync(process.execPath, [join(DIR, 'tools/e3c5caps.mjs'), '--check'], { stdio: 'pipe' })).trim()); }
-  catch (e) { errs.push(`ERR ${f}: ${String(e.stderr || e.message).trim()}`); }
 }
 
 console.log('errors:', errs.length ? errs : 'none');

@@ -1,0 +1,411 @@
+{
+ "_flow": "xots9tsBdCqsc1hPEyL3 (e3c5 · The Children On My Altar · effects); eleven_text_to_sound_v2, duration_seconds as a PARAMETER (the v9.2 law), prompt_influence 0.5, two takes each",
+ "fx": [
+  [
+   "k5bundle",
+   2.0,
+   "A folded red cloth bundle being opened on a glass shop counter, soft fabric unfolding with a gentle rustle, close and intimate"
+  ],
+  [
+   "k5figset",
+   0.8,
+   "A small resin figurine set down gently on a glass counter, one soft light clack"
+  ],
+  [
+   "k5bellsfaint",
+   2.5,
+   "Tiny brass bells on a small anklet ringing very faintly, a delicate soft tinkle that fades"
+  ],
+  [
+   "k5wind",
+   1.8,
+   "Winding the key of a small wooden music box, a few dry delicate ratchet clicks, close"
+  ],
+  [
+   "k5pen",
+   1.8,
+   "A ballpoint pen writing a few words on a small paper card on a glass counter, close and quiet"
+  ],
+  [
+   "k5chantlow",
+   14.0,
+   "A single Buddhist monk chanting low and far away in a large temple hall, wordless and indistinct, soft resonant monotone, peaceful, reverberant"
+  ],
+  [
+   "k5door",
+   1.6,
+   "A bedroom door in a flat opening at night, a soft latch click and the door swinging open"
+  ],
+  [
+   "k5switch",
+   0.6,
+   "A desk lamp switch clicked on, one crisp plastic click, close"
+  ],
+  [
+   "k5unwrap",
+   2.5,
+   "Unwrapping a small bundle from soft paper and cloth at a desk at night, gentle rustling, close"
+  ],
+  [
+   "k5rain",
+   8.0,
+   "Soft night rain on a window and a concrete ledge outside a high-rise flat, gentle and steady, heard from inside the room"
+  ],
+  [
+   "k5steps",
+   6.0,
+   "A man's slow footsteps in shoes on the smooth tiled floor of an empty shopping mall corridor after hours, light reverb, unhurried"
+  ],
+  [
+   "k5bag",
+   1.5,
+   "A small plastic shopping bag holding drink bottles set down on a wooden desk, a soft crinkle and a muffled clink"
+  ],
+  [
+   "k5bottleout",
+   1.2,
+   "A small plastic drink bottle lifted out of a plastic bag, a crinkle and a light knock"
+  ],
+  [
+   "k5ratchet",
+   0.5,
+   "One single tiny click of a plastic bottle cap turning, crisp, very close"
+  ],
+  [
+   "k5stiff",
+   0.6,
+   "A stiff plastic bottle cap twisted with effort, one gritty creaking click, close"
+  ],
+  [
+   "k5seal",
+   0.5,
+   "A plastic bottle cap's tamper ring snapping open, one small sharp crack"
+  ],
+  [
+   "k5hiss",
+   0.8,
+   "A short soft fizzy hiss as a bottle of soda is opened, close"
+  ],
+  [
+   "k5capoff",
+   0.6,
+   "A plastic screw cap lifted off a bottle and set down on wood, a light tap"
+  ],
+  [
+   "k5foam",
+   1.5,
+   "Soft fizzing foam rising in a small bottle of red soda, gentle effervescence, close"
+  ],
+  [
+   "k5tear",
+   0.6,
+   "Tearing the thin paper sleeve off a drinking straw, one quick small paper tear"
+  ],
+  [
+   "k5slide",
+   0.8,
+   "A plastic drinking straw sliding into the neck of a plastic bottle, a soft squeak"
+  ],
+  [
+   "k5bubbles",
+   1.0,
+   "A few small bubbles rising through a straw in a bottle of soda, soft gentle fizz pops"
+  ],
+  [
+   "k5plip",
+   0.5,
+   "One tiny soft bubble pop, a single cute plip"
+  ],
+  [
+   "k5bend",
+   0.5,
+   "Bending a plastic bendy straw at its ribbed joint, a quick small crinkle click"
+  ],
+  [
+   "k5set",
+   0.7,
+   "A small plastic bottle set down gently on a wooden shelf, a soft knock"
+  ],
+  [
+   "k5spark",
+   0.5,
+   "A disposable lighter's flint wheel struck once without catching, a single dry spark scrape"
+  ],
+  [
+   "k5flick",
+   0.8,
+   "A disposable lighter flicked and lit, the flint scrape and a soft whoosh of a small flame"
+  ],
+  [
+   "k5catch",
+   1.2,
+   "Thin incense stick tips catching a lighter's flame, a soft crackle and a tiny flame flutter"
+  ],
+  [
+   "k5wave",
+   0.8,
+   "Small flames on incense sticks waved out by hand, a soft whoosh of air"
+  ],
+  [
+   "k5sand",
+   0.8,
+   "An incense stick pushed down into a small bowl of fine sand, a soft gritty crunch"
+  ],
+  [
+   "k5wai",
+   1.2,
+   "Soft cloth of shirt sleeves rustling as two hands come together and a person bows, quiet and close"
+  ],
+  [
+   "k5loosen",
+   4.0,
+   "A slow soft breath that turns into a low warm hum and swells gently, calm and dreamlike, tender"
+  ],
+  [
+   "k5glint",
+   1.2,
+   "A soft glassy shimmer like light glinting on a small figurine, a delicate sparkle chime, gentle"
+  ],
+  [
+   "k5rise",
+   2.5,
+   "A soft airy shimmer rising upward like a warm glow lifting off something small, gentle and magical"
+  ],
+  [
+   "k5enter",
+   2.5,
+   "A soft warm swell like a breath, with a faint playful breathy laugh of a small child inside it, magical and gentle"
+  ],
+  [
+   "k5enter2",
+   2.5,
+   "A soft amber shimmer swell, a gentle hush like being wrapped in warmth, tender and magical"
+  ],
+  [
+   "k5leave",
+   2.5,
+   "A soft shimmer receding and fading away like a warm glow leaving, ending in a gentle exhale"
+  ],
+  [
+   "k5leave2",
+   2.5,
+   "A gentle glowing hum fading out softly into silence, tender, ending in a small sigh"
+  ],
+  [
+   "k5stamp",
+   0.5,
+   "A single small foot stamping on a wooden floor in a small room, one firm thump, close"
+  ],
+  [
+   "k5rattle",
+   1.5,
+   "Pens, coins and small objects rattling and jumping on a wooden desk after it is struck, then settling"
+  ],
+  [
+   "k5thud",
+   0.8,
+   "A small cardboard carton dropped onto a tiled floor, one dull thud"
+  ],
+  [
+   "k5slurp",
+   1.5,
+   "A loud greedy slurp through a straw from a small bottle of soda, then a satisfied gulp"
+  ],
+  [
+   "k5slam",
+   0.6,
+   "A flat hand slamming down on a wooden desk, one loud sharp smack"
+  ],
+  [
+   "k5bump",
+   0.8,
+   "A person flopping back onto a mat on the floor, a soft cushioned bump"
+  ],
+  [
+   "k5scurry",
+   1.5,
+   "Quick light footsteps of a small child scurrying across a wooden floor"
+  ],
+  [
+   "k5giggle",
+   1.5,
+   "A small child's soft muffled giggle from behind furniture, playful and shy, close and intimate"
+  ],
+  [
+   "k5peek",
+   0.8,
+   "The edge of a cloth lifted softly, a tiny rustle like someone peeking out"
+  ],
+  [
+   "k5scuttle",
+   1.5,
+   "Crawling quickly on hands and knees under a desk, soft scuffs of palms and knees on a floor"
+  ],
+  [
+   "k5coin",
+   1.2,
+   "A small coin dropped on a tiled floor, a little ring, a short roll and it settles"
+  ],
+  [
+   "k5bonk",
+   0.6,
+   "A head bumping the underside of a wooden desk, one dull hollow bonk"
+  ],
+  [
+   "k5bells",
+   2.0,
+   "A ring of tiny brass bells jingling softly as a small hand moves, delicate, close"
+  ],
+  [
+   "k5hair",
+   2.5,
+   "A soft hiss like slow flowing water, a gentle airy wash, calm"
+  ],
+  [
+   "k5tick",
+   1.0,
+   "The last ember of an incense stick dying out, a tiny faint crackle and a tick"
+  ],
+  [
+   "k5pull",
+   1.5,
+   "A soft muffled tug underwater, a gentle low whoosh, like being held close"
+  ],
+  [
+   "k5surface",
+   3.0,
+   "Rising out of water to the surface, a rush of bubbles opening into air, a gasp of release"
+  ],
+  [
+   "k5calm",
+   4.0,
+   "A still quiet room at dawn, a faint calm air tone and one soft wind chime note, peaceful"
+  ],
+  [
+   "k5koel",
+   3.0,
+   "An Asian koel bird calling at dawn outside a window in Singapore, its rising whooping ko-el call"
+  ],
+  [
+   "k5window",
+   1.5,
+   "A sliding aluminium window in a flat being opened, a smooth slide and a soft knock at the end"
+  ],
+  [
+   "k5doorbell",
+   2.0,
+   "A flat's two-tone electronic doorbell, ding-dong, heard far off through a closed bedroom door"
+  ],
+  [
+   "k5buzz",
+   1.0,
+   "A mobile phone vibrating on a wooden floor, one short buzzing rattle"
+  ],
+  [
+   "k5wake",
+   1.0,
+   "A laptop waking from sleep, a soft fan spin and a faint start-up chime"
+  ],
+  [
+   "k5type",
+   6.0,
+   "Typing on a laptop keyboard at night, runs of quick keystrokes with pauses between them, close and quiet"
+  ],
+  [
+   "k5post",
+   0.6,
+   "A soft whoosh notification of a message being posted from a laptop, subtle"
+  ],
+  [
+   "k5ping",
+   0.5,
+   "One short soft notification ping on a phone, a single bright little chime"
+  ],
+  [
+   "k5scroll",
+   1.0,
+   "A thumb flicking up a phone screen to scroll, a soft swipe"
+  ],
+  [
+   "k5dm",
+   0.8,
+   "A private message alert on a phone, two quick soft rising tones"
+  ],
+  [
+   "k5delete",
+   0.8,
+   "A soft digital delete sound on a laptop, a quick downward swoosh"
+  ],
+  [
+   "k5tape",
+   1.5,
+   "Packing tape pulled off the roll and pressed onto a cardboard parcel, a long screechy rip"
+  ],
+  [
+   "k5slip",
+   0.7,
+   "A small paper envelope slid onto a wooden shelf, a soft paper whisper"
+  ],
+  [
+   "k5pin",
+   0.5,
+   "A pushpin pressed into a cork board, one small crisp poke"
+  ],
+  [
+   "k5crumple",
+   1.2,
+   "A small paper pinwheel crushed in a hand, paper crumpling"
+  ]
+ ],
+ "beds": [
+  [
+   "k5nightbed",
+   30.0,
+   "A small bedroom in a Singapore high-rise flat late at night: the low steady hum of an air conditioner, a fridge humming faintly through the door, a motorcycle passing far below now and then, crickets outside, calm room tone"
+  ],
+  [
+   "k5deep",
+   30.0,
+   "Three in the morning in a quiet flat: near silence, a faint air conditioner hum, a tap slowly dripping in the kitchen far away, one distant dog barking once, very still"
+  ],
+  [
+   "k5dawnbed",
+   30.0,
+   "Dawn in a Singapore housing estate heard through an open window: koels and mynas calling, the first bus passing below, a broom sweeping the void deck downstairs, calm and fresh"
+  ],
+  [
+   "k5under",
+   20.0,
+   "Underwater ambience: a deep soft muffled hum and slow drifting bubbles, warm and calm, like floating in still water"
+  ],
+  [
+   "k5fan",
+   15.0,
+   "A ceiling fan turning steadily in a quiet room, a soft rhythmic whoosh of the blades and a faint motor hum"
+  ]
+ ],
+ "_beds": "loop: true, prompt_influence 0.5, two takes each; crossfade-looped by hand and the joint checked",
+ "remade": [
+  [
+   "k5nightbed_r2",
+   30,
+   "Late night inside a small bedroom of a Singapore high-rise flat, window slightly open: crickets chirping steadily outside, the soft airy whir of an air conditioner blowing, a faint fridge buzz through the door, now and then a motorcycle passing far below, calm and clear room tone"
+  ],
+  [
+   "k5deep_r2",
+   30,
+   "Three in the morning in a very quiet flat: a faint airy hiss of an air conditioner, a kitchen tap dripping slowly far away, one or two distant crickets, a far dog barking once, otherwise very still, hushed and clear"
+  ],
+  [
+   "k5fan_r2",
+   15,
+   "A ceiling fan turning steadily overhead in a quiet room: the soft airy swish of the blades cutting the air in a gentle steady rhythm, a light breezy whoosh, a faint motor whir"
+  ],
+  [
+   "k5loosen_r2",
+   4,
+   "A slow soft breath out that melts into a gentle warm airy shimmer, like a soft sigh turning into a quiet glowing tone in the middle register, swelling gently and settling, calm and dreamy"
+  ]
+ ],
+ "_remade": "the first takes of these four put 83-100 % of their energy under 120 Hz (a phone plays it as nothing — the v10.4 law); prompt_influence 0.6"
+}

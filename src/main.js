@@ -8030,7 +8030,16 @@ const ADULT_TAKES = new Set([
   'z4urge', 'z4go', 'z4hide', 'z4tray0', 'z4sense', 'z4lersi', 'z4wess', 'z4naga', 'z4feel',
   'z4A1', 'z4A1b', 'z4A2b', 'z4A2', 'z4A3', 'z4A4', 'z4B1', 'z4B1b', 'z4B2',
   'z4B3', 'z4B5', 'z4B4', 'z4C1', 'z4C2', 'z4C3', 'z4C4', 'z4D1', 'z4D2',
-  'z4D5', 'z4D3', 'z4D4', 'z4A', 'z4B', 'z4C', 'z4D']);
+  'z4D5', 'z4D3', 'z4D4', 'z4A', 'z4B', 'z4C', 'z4D',
+  /* v23.0 · episode 3 chapter 5, The Children On My Altar (masters/v23.0/make.sh) — the lines of the three children
+     among them: they speak THROUGH him, in his voice made small (no apostrophe in here: chaptertest reads quotes) */
+  'z5pro1', 'z5yinq', 'z5children', 'z5promise', 'z5pro2', 'z5pro3', 'z5pro4', 'z5water', 'z5bag', 'z5red', 'z5shy',
+  'z5little', 'z5stiff', 'z5incense', 'z5eat', 'z5dedic', 'z5wonder', 'z5ask', 'z5loose', 'z5b1', 'z5b2', 'z5b3',
+  'z5b4', 'z5back1', 'z5back1b', 'z5again1', 'z5s1', 'z5s2', 'z5s3', 'z5s4', 'z5back2', 'z5back2b', 'z5again2',
+  'z5l1', 'z5l2', 'z5l3', 'z5sob', 'z5out', 'z5come', 'z5gasp', 'z5time', 'z5felt', 'z5fasc', 'z5A1', 'z5A2', 'z5A3',
+  'z5Agig', 'z5A4', 'z5A5', 'z5A6', 'z5B1', 'z5B2', 'z5B3', 'z5B4', 'z5B5', 'z5B6', 'z5C1', 'z5C2', 'z5C3', 'z5C4',
+  'z5Cevil', 'z5Claugh', 'z5C5', 'z5C6', 'z5C7', 'z5D1', 'z5D2', 'z5D3', 'z5D4', 'z5D5', 'z5D6', 'z5epi0', 'z5epi1',
+  'z5epi2', 'z5epi3', 'z5A', 'z5B', 'z5C', 'z5D']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
 const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
@@ -8095,7 +8104,11 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   'yk4hello', 'yk4show', 'yk4gentle', 'yk4heard', 'yk4merit', 'ow4hello', 'ow4new', 'ow4ok', 'sm4what',
   'mk4yatha', 'to4hello', 'to4notice', 'to4tray', 'to4lersi', 'to4wess', 'to4naga', 'to4unknown', 'to4clock',
   'to4A1', 'to4A3', 'to4A2', 'to4B1', 'to4B2', 'to4C1', 'to4C2', 'to4D1', 'to4D2',
-  'to4D3']);
+  'to4D3',
+  /* v23.0 · episode 3 chapter 5: the Golden Mile owner, the voicemail from Ma, the monk (his verse is the take
+     chapter 4 made) */
+  'ow5hello', 'ow5yin', 'ow5monk', 'ow5red', 'ow5shy', 'ow5little', 'ow5give', 'ow5never', 'ow5wrong', 'ow5promise',
+  'ow5careful', 'ma5vm', 'mk5teach', 'mk5yatha']);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
@@ -8109,7 +8122,8 @@ const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_T
 const WHISPER_TAKES = new Set(['vpick1', 'vpick2', 'vpick3',
   'n1C1',     // v7.1: "Eh. You awake?" — whispered to the next bed after lights out
   'n2sigh',   // v10.8: the defeated sigh at three in the morning — a breath through the 4:1 bus comes out as loud as speech (v6.9), so it goes round it
-  'n3C1', 'n3C2']);   // v11.0: whispered to the next scrape in the jungle (chapter 3, scene C)
+  'n3C1', 'n3C2',   // v11.0: whispered to the next scrape in the jungle (chapter 3, scene C)
+  'z5s2', 'z5sob']);   // v23.0: the shy one whispering "hide... hide..." (9.5 % voiced) and the little one's breath of a sob (2 %)
 const WHISPER_GAIN = 0.55;           // -5.2 dB: through a replica of the chain (dbg-whisperbus) his narration sits at -12.7 dBFS RMS, the whispers at -26 to -28.5 — 11 to 16 dB under him
 let whisperOut = null;
 function whisperStage() {
@@ -12257,7 +12271,56 @@ const STING_SAMPLE = {
   f4office: ['f4office', 1], f4keys: ['f4keys', 1], f4click: ['f4click', 1], f4shopbell: ['f4shopbell', 1],
   /* v22.4 · and its own, once the account had credits again (masters/v22.0/cp10/make.sh): the score, the wheel's three
      turns, a far siren past the office window, the escalator, the tray across the owner's glass */
-  f4music: ['f4music', 1], f4scroll: ['f4scroll', 1], f4siren: ['f4siren', 1], f4escal: ['f4escal', 1], f4tray: ['f4tray', 1]
+  f4music: ['f4music', 1], f4scroll: ['f4scroll', 1], f4siren: ['f4siren', 1], f4escal: ['f4escal', 1], f4tray: ['f4tray', 1],
+  /* v23.0 · EPISODE 3 · CHAPTER 5 · THE CHILDREN ON MY ALTAR (masters/v23.0/make.sh): his lines, the children's
+     through him, the owner's, Ma's voicemail and the monk's */
+  z5pro1: ['z5pro1', 1], ow5hello: ['ow5hello', 1], z5yinq: ['z5yinq', 1], ow5yin: ['ow5yin', 1],
+  ow5monk: ['ow5monk', 1], ow5red: ['ow5red', 1], ow5shy: ['ow5shy', 1], ow5little: ['ow5little', 1],
+  ow5give: ['ow5give', 1], z5children: ['z5children', 1], ow5never: ['ow5never', 1], ow5wrong: ['ow5wrong', 1],
+  ow5promise: ['ow5promise', 1], z5promise: ['z5promise', 1], ow5careful: ['ow5careful', 1], z5pro2: ['z5pro2', 1],
+  z5pro3: ['z5pro3', 1], z5pro4: ['z5pro4', 1], z5water: ['z5water', 1], z5bag: ['z5bag', 1], z5red: ['z5red', 1],
+  z5shy: ['z5shy', 1], z5little: ['z5little', 1], z5stiff: ['z5stiff', 1], z5incense: ['z5incense', 1],
+  z5eat: ['z5eat', 1], z5dedic: ['z5dedic', 1], z5wonder: ['z5wonder', 1], z5ask: ['z5ask', 1], z5loose: ['z5loose', 1],
+  z5b1: ['z5b1', 1], z5b2: ['z5b2', 1], z5b3: ['z5b3', 1], z5b4: ['z5b4', 1], z5back1: ['z5back1', 1],
+  z5back1b: ['z5back1b', 1], z5again1: ['z5again1', 1], z5s1: ['z5s1', 1], z5s2: ['z5s2', 1], z5s3: ['z5s3', 1],
+  z5s4: ['z5s4', 1], z5back2: ['z5back2', 1], z5back2b: ['z5back2b', 1], z5again2: ['z5again2', 1], z5l1: ['z5l1', 1],
+  z5l2: ['z5l2', 1], z5l3: ['z5l3', 1], z5sob: ['z5sob', 1], z5out: ['z5out', 1], z5come: ['z5come', 1],
+  z5gasp: ['z5gasp', 1], z5time: ['z5time', 1], z5felt: ['z5felt', 1], z5fasc: ['z5fasc', 1], z5A1: ['z5A1', 1],
+  z5A2: ['z5A2', 1], ma5vm: ['ma5vm', 1], z5A3: ['z5A3', 1], z5Agig: ['z5Agig', 1], z5A4: ['z5A4', 1], z5A5: ['z5A5', 1],
+  z5A6: ['z5A6', 1], z5B1: ['z5B1', 1], z5B2: ['z5B2', 1], z5B3: ['z5B3', 1], z5B4: ['z5B4', 1], z5B5: ['z5B5', 1],
+  z5B6: ['z5B6', 1], z5C1: ['z5C1', 1], z5C2: ['z5C2', 1], z5C3: ['z5C3', 1], z5C4: ['z5C4', 1], z5Cevil: ['z5Cevil', 1],
+  z5Claugh: ['z5Claugh', 1], z5C5: ['z5C5', 1], z5C6: ['z5C6', 1], z5C7: ['z5C7', 1], z5D1: ['z5D1', 1],
+  z5D2: ['z5D2', 1], z5D3: ['z5D3', 1], z5D4: ['z5D4', 1], mk5teach: ['mk5teach', 1], mk5yatha: ['mk5yatha', 1],
+  z5D5: ['z5D5', 1], z5D6: ['z5D6', 1], z5epi0: ['z5epi0', 1], z5epi1: ['z5epi1', 1], z5epi2: ['z5epi2', 1],
+  z5epi3: ['z5epi3', 1], z5A: ['z5A', 1], z5B: ['z5B', 1], z5C: ['z5C', 1], z5D: ['z5D', 1],
+  /* and its sounds: the counter, the offerings, the openings and the three possessions, the endings; its beds (the
+     shop's air, the corridor, the flat at night, its fan, 3 a.m., the dawn, the water); its music — the one lullaby
+     and the cues told in its key, the box's three fates made from it; and the copies, byte for byte, of chapter 3's
+     and chapter 4's sounds under this chapter's own names (the v21.1 split law) */
+  k5after: ['k5after', 1], k5bag: ['k5bag', 1], k5bells: ['k5bells', 1], k5bellsfaint: ['k5bellsfaint', 1],
+  k5bend: ['k5bend', 1], k5bonk: ['k5bonk', 1], k5bottleout: ['k5bottleout', 1], k5boxfast: ['k5boxfast', 1],
+  k5boxstop: ['k5boxstop', 1], k5bubbles: ['k5bubbles', 1], k5bump: ['k5bump', 1], k5bundle: ['k5bundle', 1],
+  k5buzz: ['k5buzz', 1], k5calm: ['k5calm', 1], k5capoff: ['k5capoff', 1], k5care: ['k5care', 1],
+  k5catch: ['k5catch', 1], k5chantlow: ['k5chantlow', 1], k5climb: ['k5climb', 1], k5coin: ['k5coin', 1],
+  k5crumple: ['k5crumple', 1], k5dawnbed: ['k5dawnbed', 1], k5deep: ['k5deep', 1], k5delete: ['k5delete', 1],
+  k5dm: ['k5dm', 1], k5door: ['k5door', 1], k5doorbell: ['k5doorbell', 1], k5endA: ['k5endA', 1], k5endB: ['k5endB', 1],
+  k5endC: ['k5endC', 1], k5endD: ['k5endD', 1], k5enter: ['k5enter', 1], k5enter2: ['k5enter2', 1], k5epi: ['k5epi', 1],
+  k5fan: ['k5fan', 1], k5figset: ['k5figset', 1], k5flick: ['k5flick', 1], k5foam: ['k5foam', 1],
+  k5giggle: ['k5giggle', 1], k5glint: ['k5glint', 1], k5ground: ['k5ground', 1], k5hair: ['k5hair', 1],
+  k5hiss: ['k5hiss', 1], k5koel: ['k5koel', 1], k5leave: ['k5leave', 1], k5leave2: ['k5leave2', 1],
+  k5lights: ['k5lights', 1], k5lonely: ['k5lonely', 1], k5loosen: ['k5loosen', 1], k5lullaby: ['k5lullaby', 1],
+  k5mall: ['k5mall', 1], k5night: ['k5night', 1], k5nightbed: ['k5nightbed', 1], k5peek: ['k5peek', 1],
+  k5pen: ['k5pen', 1], k5pin: ['k5pin', 1], k5ping: ['k5ping', 1], k5plip: ['k5plip', 1], k5post: ['k5post', 1],
+  k5pour: ['k5pour', 1], k5pull: ['k5pull', 1], k5rain: ['k5rain', 1], k5ratchet: ['k5ratchet', 1],
+  k5rattle: ['k5rattle', 1], k5red: ['k5red', 1], k5rise: ['k5rise', 1], k5sand: ['k5sand', 1],
+  k5scroll: ['k5scroll', 1], k5scurry: ['k5scurry', 1], k5scuttle: ['k5scuttle', 1], k5seal: ['k5seal', 1],
+  k5set: ['k5set', 1], k5shopair: ['k5shopair', 1], k5shopbell: ['k5shopbell', 1], k5shutter: ['k5shutter', 1],
+  k5shy: ['k5shy', 1], k5slam: ['k5slam', 1], k5slide: ['k5slide', 1], k5slip: ['k5slip', 1], k5slurp: ['k5slurp', 1],
+  k5spark: ['k5spark', 1], k5stamp: ['k5stamp', 1], k5steps: ['k5steps', 1], k5stiff: ['k5stiff', 1],
+  k5surface: ['k5surface', 1], k5switch: ['k5switch', 1], k5tape: ['k5tape', 1], k5tbell: ['k5tbell', 1],
+  k5tear: ['k5tear', 1], k5theme: ['k5theme', 1], k5thud: ['k5thud', 1], k5tick: ['k5tick', 1], k5type: ['k5type', 1],
+  k5under: ['k5under', 1], k5unwrap: ['k5unwrap', 1], k5wai: ['k5wai', 1], k5wake: ['k5wake', 1], k5wave: ['k5wave', 1],
+  k5wind: ['k5wind', 1], k5window: ['k5window', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays

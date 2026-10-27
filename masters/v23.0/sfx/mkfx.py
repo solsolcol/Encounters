@@ -1,0 +1,86 @@
+"""v23.0 CP11 · write make.sh's effects section: each effect's pick, its processing and why — measured with
+../../v22.0/cp5/meas.py (the bands a phone can and cannot play, the onset, the decay, holes, silent takes)."""
+P = {   # name: (take, ffmpeg filter or '', peak target dBFS, why)
+ # the opening film, the counter, the home film
+ 'k5bundle':   ('a', '', -8,  'cloth on glass with a body (26 % in 500 Hz-3 kHz); b is 86 % sub-bass, nothing on a phone'),
+ 'k5figset':   ('a', '', -8,  'the cleaner head (-31.8 against -26.3); one soft clack'),
+ 'k5bellsfaint': ('b', '', -10, 'the longer, softer decay (rings to 2.35 s; a stops at 1.85)'),
+ 'k5wind':     ('b', '', -6,  'the cleaner tail (-72.7); both are the dry ratchet a box key makes'),
+ 'k5pen':      ('a', 'afade=t=out:st=1.55:d=0.2', -8, 'the pen scratch (66 % in 120-500 Hz, the hole a pause between words); b is 62 % sub-bass; faded (it ends while writing)'),
+ 'k5chantlow': ('b', '', -8,  'the cleaner head (-74.7); 53 % in 500 Hz-3 kHz, so the far voice is heard on a phone; wordless, as asked'),
+ 'k5door':     ('b', '', -6,  'the latch and the swing (58 % in 500 Hz-3 kHz); a is 94 % sub-bass, a thud only'),
+ 'k5switch':   ('b', '', -8,  'the click at 0.05 s (a waits 0.3 s before it clicks)'),
+ 'k5unwrap':   ('a', '', -8,  'the fuller paper-and-cloth rustle (5.6 dB more than b)'),
+ 'k5rain':     ('b', '', -10, 'the steadier, fuller rain (81 % in 500 Hz-3 kHz)'),
+ 'k5steps':    ('a', '', -8,  'six steps to 4.7 s on the tiles (b stops at 3.95)'),
+ # the offerings
+ 'k5bag':      ('a', '', -8,  'the cleaner head (-53.5); bottles inside the bag heard (48 % over 3 kHz)'),
+ 'k5bottleout': ('a', '', -8, 'the crinkle and the bottle, a clean head (-66)'),
+ 'k5ratchet':  ('b', '', -8,  'ONE click, as asked (it ends at 0.1 s; a rattles on to 0.4)'),
+ 'k5stiff':    ('b', '', -6,  'the clean start (-50.6 at 0.1 s; a starts on signal)'),
+ 'k5seal':     ('a', '', -8,  'the tamper ring\'s crack (b is 11 dB quieter and mostly hiss)'),
+ 'k5hiss':     ('b', '', -10, 'the longer fizz (0.6 s against 0.3) with a clean tail'),
+ 'k5capoff':   ('a', '', -8,  'both lifted and set down (b stops at the lift)'),
+ 'k5foam':     ('b', '', -10, 'the longer rise (1.3 s)'),
+ 'k5tear':     ('a', '', -8,  'the cleaner tail (-74.2 against -57.1)'),
+ 'k5slide':    ('a', '', -8,  'the straw\'s squeak in the phone band (87 % in 500 Hz-3 kHz), a clean tail'),
+ 'k5bubbles':  ('a', '', -8,  '11 dB more than b, 79 % in the phone band'),
+ 'k5plip':     ('a', '', -6,  'one plip, a softer attack than b (-16 against -6 at the head)'),
+ 'k5bend':     ('a', '', -8,  'the cleaner tail (-71.9)'),
+ 'k5set':      ('b', '', -8,  'the cleaner head (-43.9); the soft knock in the phone band'),
+ 'k5spark':    ('a', '', -6,  'the flint, clean at the head (-68.7)'),
+ 'k5flick':    ('b', '', -6,  'the scrape and the flame (45 % over 3 kHz; a is 62 % sub-bass)'),
+ 'k5catch':    ('b', 'atrim=0.25,asetpts=PTS-STARTPTS', -8, 'the crackle (77 % over 3 kHz; a is half sub-bass); its 0.3 s lead cut'),
+ 'k5wave':     ('a', '', -8,  'the whoosh of air (67 % in 120-500 Hz); b is all sub-bass'),
+ 'k5sand':     ('b', '', -8,  'the cleaner tail (-71.2)'),
+ 'k5wai':      ('b', '', -10, 'the sleeves\' rustle, 2 dB more than a (both are quiet, -35/-37 at the peak)'),
+ # the openings and the three possessions
+ 'k5loosen_r2': ('a', '', -8, 'RE-MADE: the first pair was all sub-bass hum (96-100 %); r2 a is the breath into a glowing tone, 100 % in the phone band, clean at both ends'),
+ 'k5glint':    ('a', '', -8,  'the cleaner decay (-81.8)'),
+ 'k5rise':     ('b', 'atrim=0.30,asetpts=PTS-STARTPTS', -8, 'the airy shimmer, as asked (a is one tone); its 0.35 s lead cut'),
+ 'k5enter':    ('b', '', -8,  'the breathy swell in the phone band (94 % in 500 Hz-3 kHz); a is quiet and late'),
+ 'k5enter2':   ('a', '', -8,  'the cleaner tail (-72.1 against -56.9)'),
+ 'k5leave':    ('a', '', -8,  'the shimmer receding, as asked (b is a hum)'),
+ 'k5leave2':   ('a', '', -10, 'the louder of two soft hums (both 120-500 Hz)'),
+ 'k5stamp':    ('a', '', -6,  'a foot on wood a phone can hear (65 % in 120-500 Hz); b is 97 % sub-bass'),
+ 'k5rattle':   ('a', '', -6,  'the clean start (0.15 s in; b starts on signal)'),
+ 'k5thud':     ('a', '', -6,  'the carton heard (49 % in 500 Hz-3 kHz)'),
+ 'k5slurp':    ('a', '', -6,  'the greedy slurp in the phone band (68 %)'),
+ 'k5slam':     ('b', '', -4,  'the smack (a is silent: -34 dBFS and all sub-bass)'),
+ 'k5bump':     ('b', '', -6,  'more of it in the band a phone plays (52 % in 120-500 Hz against 35)'),
+ 'k5scurry':   ('a', '', -8,  'small feet in the phone band (79 %); b is half sub-bass'),
+ 'k5peek':     ('a', '', -8,  'the cloth\'s rustle (72 % over 3 kHz)'),
+ 'k5scuttle':  ('b', '', -8,  'palms and knees heard (62 % over 3 kHz; a is 68 % sub-bass)'),
+ 'k5coin':     ('a', '', -8,  'the ring, the roll and the stop, with a clean tail (-81.6; b ends on its roll)'),
+ 'k5bonk':     ('b', '', -6,  'the hollow bonk (a is silent: -34.7 dBFS)'),
+ 'k5bells':    ('a', '', -8,  'the longer jingle (to 1.85 s)'),
+ 'k5hair':     ('b', '', -10, 'the wash with a clean tail (a holds at -12 dB to its last sample)'),
+ 'k5tick':     ('a', 'atrim=0.30,asetpts=PTS-STARTPTS', -10, 'the ember\'s crackle (96 % over 3 kHz; b is 80 % sub-bass); its 0.35 s lead cut'),
+ 'k5pull':     ('a', '', -8,  'the tug under water, less sub-bass than b (6 % against 27)'),
+ 'k5surface':  ('a', '', -6,  'the whole rush, to 2.2 s (b is over by 1.1)'),
+ # the endings
+ 'k5calm':     ('a', '', -12, 'the wind chime in the phone band (88 %); b is 73 % sub-bass'),
+ 'k5koel':     ('a', '', -8,  'the koel\'s call, all of it in the phone band'),
+ 'k5window':   ('a', '', -6,  'the slide in the band a phone plays (60 % in 120-500 Hz); b is half sub-bass'),
+ 'k5doorbell': ('a', 'lowpass=f=2400:poles=2', -10, 'the two tones with a clean decay (-77.4); muffled at 2.4 kHz — it is heard through his door'),
+ 'k5buzz':     ('a', '', -6,  'the rattle with the cleaner tail (-49 against -26)'),
+ 'k5wake':     ('b', '', -8,  'the start-up chime (84 % over 3 kHz); a is only the fan'),
+ 'k5type':     ('a', '', -6,  'keystrokes in runs with pauses (54 % over 3 kHz; b is half sub-bass)'),
+ 'k5post':     ('b', '', -8,  'the soft send in the phone band (a is a 95 % sub-bass thump)'),
+ 'k5ping':     ('b', '', -8,  'a bright ping (95 % in the phone band); a is a low blip'),
+ 'k5scroll':   ('a', '', -8,  'a short swipe of skin on glass (to 0.2 s)'),
+ 'k5dm':       ('a', '', -8,  'the two rising tones, 9 dB more than b'),
+ 'k5delete':   ('b', '', -8,  'the swoosh 17 dB more than a'),
+ 'k5tape':     ('a', 'atrim=0.25,asetpts=PTS-STARTPTS', -6, 'the pull and the press, a clean head; its 0.3 s lead cut'),
+ 'k5slip':     ('b', '', -8,  'the paper\'s whisper with a body (63 % in 500 Hz-3 kHz)'),
+ 'k5pin':      ('a', '', -8,  'the poke, 2 dB more than b'),
+ 'k5crumple':  ('a', '', -8,  'the paper heard (46 % over 500 Hz; b is 83 % sub-bass)'),
+}
+OUT = {'k5loosen_r2': 'k5loosen'}
+for name, (t, af, pk, why) in P.items():
+    print(f"#   {OUT.get(name, name):12s} {name[3:] if False else ('r2 ' if name.endswith('_r2') else '') + t}  {why}")
+print()
+for name, (t, af, pk, why) in P.items():
+    out = OUT.get(name, name)
+    if af: print(f'fx  {out:12s} raw/{name}_{t}.mp3 {pk} "{af}"')
+    else:  print(f'fx  {out:12s} raw/{name}_{t}.mp3 {pk}')

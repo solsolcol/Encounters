@@ -1,0 +1,141 @@
+#   k5bundle     a  cloth on glass with a body (26 % in 500 Hz-3 kHz); b is 86 % sub-bass, nothing on a phone
+#   k5figset     a  the cleaner head (-31.8 against -26.3); one soft clack
+#   k5bellsfaint b  the longer, softer decay (rings to 2.35 s; a stops at 1.85)
+#   k5wind       b  the cleaner tail (-72.7); both are the dry ratchet a box key makes
+#   k5pen        a  the pen scratch (66 % in 120-500 Hz, the hole a pause between words); b is 62 % sub-bass; faded (it ends while writing)
+#   k5chantlow   b  the cleaner head (-74.7); 53 % in 500 Hz-3 kHz, so the far voice is heard on a phone; wordless, as asked
+#   k5door       b  the latch and the swing (58 % in 500 Hz-3 kHz); a is 94 % sub-bass, a thud only
+#   k5switch     b  the click at 0.05 s (a waits 0.3 s before it clicks)
+#   k5unwrap     a  the fuller paper-and-cloth rustle (5.6 dB more than b)
+#   k5rain       b  the steadier, fuller rain (81 % in 500 Hz-3 kHz)
+#   k5steps      a  six steps to 4.7 s on the tiles (b stops at 3.95)
+#   k5bag        a  the cleaner head (-53.5); bottles inside the bag heard (48 % over 3 kHz)
+#   k5bottleout  a  the crinkle and the bottle, a clean head (-66)
+#   k5ratchet    b  ONE click, as asked (it ends at 0.1 s; a rattles on to 0.4)
+#   k5stiff      b  the clean start (-50.6 at 0.1 s; a starts on signal)
+#   k5seal       a  the tamper ring's crack (b is 11 dB quieter and mostly hiss)
+#   k5hiss       b  the longer fizz (0.6 s against 0.3) with a clean tail
+#   k5capoff     a  both lifted and set down (b stops at the lift)
+#   k5foam       b  the longer rise (1.3 s)
+#   k5tear       a  the cleaner tail (-74.2 against -57.1)
+#   k5slide      a  the straw's squeak in the phone band (87 % in 500 Hz-3 kHz), a clean tail
+#   k5bubbles    a  11 dB more than b, 79 % in the phone band
+#   k5plip       a  one plip, a softer attack than b (-16 against -6 at the head)
+#   k5bend       a  the cleaner tail (-71.9)
+#   k5set        b  the cleaner head (-43.9); the soft knock in the phone band
+#   k5spark      a  the flint, clean at the head (-68.7)
+#   k5flick      b  the scrape and the flame (45 % over 3 kHz; a is 62 % sub-bass)
+#   k5catch      b  the crackle (77 % over 3 kHz; a is half sub-bass); its 0.3 s lead cut
+#   k5wave       a  the whoosh of air (67 % in 120-500 Hz); b is all sub-bass
+#   k5sand       b  the cleaner tail (-71.2)
+#   k5wai        b  the sleeves' rustle, 2 dB more than a (both are quiet, -35/-37 at the peak)
+#   k5loosen     r2 a  RE-MADE: the first pair was all sub-bass hum (96-100 %); r2 a is the breath into a glowing tone, 100 % in the phone band, clean at both ends
+#   k5glint      a  the cleaner decay (-81.8)
+#   k5rise       b  the airy shimmer, as asked (a is one tone); its 0.35 s lead cut
+#   k5enter      b  the breathy swell in the phone band (94 % in 500 Hz-3 kHz); a is quiet and late
+#   k5enter2     a  the cleaner tail (-72.1 against -56.9)
+#   k5leave      a  the shimmer receding, as asked (b is a hum)
+#   k5leave2     a  the louder of two soft hums (both 120-500 Hz)
+#   k5stamp      a  a foot on wood a phone can hear (65 % in 120-500 Hz); b is 97 % sub-bass
+#   k5rattle     a  the clean start (0.15 s in; b starts on signal)
+#   k5thud       a  the carton heard (49 % in 500 Hz-3 kHz)
+#   k5slurp      a  the greedy slurp in the phone band (68 %)
+#   k5slam       b  the smack (a is silent: -34 dBFS and all sub-bass)
+#   k5bump       b  more of it in the band a phone plays (52 % in 120-500 Hz against 35)
+#   k5scurry     a  small feet in the phone band (79 %); b is half sub-bass
+#   k5peek       a  the cloth's rustle (72 % over 3 kHz)
+#   k5scuttle    b  palms and knees heard (62 % over 3 kHz; a is 68 % sub-bass)
+#   k5coin       a  the ring, the roll and the stop, with a clean tail (-81.6; b ends on its roll)
+#   k5bonk       b  the hollow bonk (a is silent: -34.7 dBFS)
+#   k5bells      a  the longer jingle (to 1.85 s)
+#   k5hair       b  the wash with a clean tail (a holds at -12 dB to its last sample)
+#   k5tick       a  the ember's crackle (96 % over 3 kHz; b is 80 % sub-bass); its 0.35 s lead cut
+#   k5pull       a  the tug under water, less sub-bass than b (6 % against 27)
+#   k5surface    a  the whole rush, to 2.2 s (b is over by 1.1)
+#   k5calm       a  the wind chime in the phone band (88 %); b is 73 % sub-bass
+#   k5koel       a  the koel's call, all of it in the phone band
+#   k5window     a  the slide in the band a phone plays (60 % in 120-500 Hz); b is half sub-bass
+#   k5doorbell   a  the two tones with a clean decay (-77.4); muffled at 2.4 kHz — it is heard through his door
+#   k5buzz       a  the rattle with the cleaner tail (-49 against -26)
+#   k5wake       b  the start-up chime (84 % over 3 kHz); a is only the fan
+#   k5type       a  keystrokes in runs with pauses (54 % over 3 kHz; b is half sub-bass)
+#   k5post       b  the soft send in the phone band (a is a 95 % sub-bass thump)
+#   k5ping       b  a bright ping (95 % in the phone band); a is a low blip
+#   k5scroll     a  a short swipe of skin on glass (to 0.2 s)
+#   k5dm         a  the two rising tones, 9 dB more than b
+#   k5delete     b  the swoosh 17 dB more than a
+#   k5tape       a  the pull and the press, a clean head; its 0.3 s lead cut
+#   k5slip       b  the paper's whisper with a body (63 % in 500 Hz-3 kHz)
+#   k5pin        a  the poke, 2 dB more than b
+#   k5crumple    a  the paper heard (46 % over 500 Hz; b is 83 % sub-bass)
+
+fx  k5bundle     raw/k5bundle_a.mp3 -8
+fx  k5figset     raw/k5figset_a.mp3 -8
+fx  k5bellsfaint raw/k5bellsfaint_b.mp3 -10
+fx  k5wind       raw/k5wind_b.mp3 -6
+fx  k5pen        raw/k5pen_a.mp3 -8 "afade=t=out:st=1.55:d=0.2"
+fx  k5chantlow   raw/k5chantlow_b.mp3 -8
+fx  k5door       raw/k5door_b.mp3 -6
+fx  k5switch     raw/k5switch_b.mp3 -8
+fx  k5unwrap     raw/k5unwrap_a.mp3 -8
+fx  k5rain       raw/k5rain_b.mp3 -10
+fx  k5steps      raw/k5steps_a.mp3 -8
+fx  k5bag        raw/k5bag_a.mp3 -8
+fx  k5bottleout  raw/k5bottleout_a.mp3 -8
+fx  k5ratchet    raw/k5ratchet_b.mp3 -8
+fx  k5stiff      raw/k5stiff_b.mp3 -6
+fx  k5seal       raw/k5seal_a.mp3 -8
+fx  k5hiss       raw/k5hiss_b.mp3 -10
+fx  k5capoff     raw/k5capoff_a.mp3 -8
+fx  k5foam       raw/k5foam_b.mp3 -10
+fx  k5tear       raw/k5tear_a.mp3 -8
+fx  k5slide      raw/k5slide_a.mp3 -8
+fx  k5bubbles    raw/k5bubbles_a.mp3 -8
+fx  k5plip       raw/k5plip_a.mp3 -6
+fx  k5bend       raw/k5bend_a.mp3 -8
+fx  k5set        raw/k5set_b.mp3 -8
+fx  k5spark      raw/k5spark_a.mp3 -6
+fx  k5flick      raw/k5flick_b.mp3 -6
+fx  k5catch      raw/k5catch_b.mp3 -8 "atrim=0.25,asetpts=PTS-STARTPTS"
+fx  k5wave       raw/k5wave_a.mp3 -8
+fx  k5sand       raw/k5sand_b.mp3 -8
+fx  k5wai        raw/k5wai_b.mp3 -10
+fx  k5loosen     raw/k5loosen_r2_a.mp3 -8
+fx  k5glint      raw/k5glint_a.mp3 -8
+fx  k5rise       raw/k5rise_b.mp3 -8 "atrim=0.30,asetpts=PTS-STARTPTS"
+fx  k5enter      raw/k5enter_b.mp3 -8
+fx  k5enter2     raw/k5enter2_a.mp3 -8
+fx  k5leave      raw/k5leave_a.mp3 -8
+fx  k5leave2     raw/k5leave2_a.mp3 -10
+fx  k5stamp      raw/k5stamp_a.mp3 -6
+fx  k5rattle     raw/k5rattle_a.mp3 -6
+fx  k5thud       raw/k5thud_a.mp3 -6
+fx  k5slurp      raw/k5slurp_a.mp3 -6
+fx  k5slam       raw/k5slam_b.mp3 -4
+fx  k5bump       raw/k5bump_b.mp3 -6
+fx  k5scurry     raw/k5scurry_a.mp3 -8
+fx  k5peek       raw/k5peek_a.mp3 -8
+fx  k5scuttle    raw/k5scuttle_b.mp3 -8
+fx  k5coin       raw/k5coin_a.mp3 -8
+fx  k5bonk       raw/k5bonk_b.mp3 -6
+fx  k5bells      raw/k5bells_a.mp3 -8
+fx  k5hair       raw/k5hair_b.mp3 -10
+fx  k5tick       raw/k5tick_a.mp3 -10 "atrim=0.30,asetpts=PTS-STARTPTS"
+fx  k5pull       raw/k5pull_a.mp3 -8
+fx  k5surface    raw/k5surface_a.mp3 -6
+fx  k5calm       raw/k5calm_a.mp3 -12
+fx  k5koel       raw/k5koel_a.mp3 -8
+fx  k5window     raw/k5window_a.mp3 -6
+fx  k5doorbell   raw/k5doorbell_a.mp3 -10 "lowpass=f=2400:poles=2"
+fx  k5buzz       raw/k5buzz_a.mp3 -6
+fx  k5wake       raw/k5wake_b.mp3 -8
+fx  k5type       raw/k5type_a.mp3 -6
+fx  k5post       raw/k5post_b.mp3 -8
+fx  k5ping       raw/k5ping_b.mp3 -8
+fx  k5scroll     raw/k5scroll_a.mp3 -8
+fx  k5dm         raw/k5dm_a.mp3 -8
+fx  k5delete     raw/k5delete_b.mp3 -8
+fx  k5tape       raw/k5tape_a.mp3 -6 "atrim=0.25,asetpts=PTS-STARTPTS"
+fx  k5slip       raw/k5slip_b.mp3 -8
+fx  k5pin        raw/k5pin_a.mp3 -8
+fx  k5crumple    raw/k5crumple_a.mp3 -8

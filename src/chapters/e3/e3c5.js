@@ -25,10 +25,9 @@
    - WORLD M, x −250: a temple — its hall by candlelight (the counter's film
      M) and at first light (ending D). Seen only in films.
 
-   PREVIEW (the forty-second seam): until its sound is recorded (CP11) the
-   chapter declares `preview` — registered, out of the run, opened only by a
-   ?ch=e3c5 link; its planned sounds are named in `plannedSounds` and stay
-   silent until then.
+   PREVIEW (the forty-second seam): until it is released (CP14) the chapter
+   declares `preview` — registered, out of the run, opened only by a ?ch=e3c5
+   link. Its sound was recorded at CP11 (masters/v23.0/make.sh).
 
    docs/V23.0-E3C5-PLAN.md is the build's memory, checkpoint by checkpoint. */
 
@@ -208,36 +207,13 @@
     items: [],
 
     musicVol: 0,
-    /* the beds arrive with the sound (CP11): k5shopair and k5mall at the counter, k5nightbed and k5fan in the room,
-       k5deep, k5dawnbed, k5under (§9.3) */
-    ambience: { beds: [] },
+    /* the beds (CP11, §9.3), mixed every frame by mixBeds: World S's air and the corridor after hours; World R's night,
+       its fan (the fourth value its rate, the fan's own speed), 3 a.m., the morning at the window and the little one's
+       water; and the two pieces of music that loop under play — the offerings' khim and the question's held tone */
+    ambience: { beds: [['k5shopair', 0], ['k5mall', 0], ['k5nightbed', 0], ['k5fan', 0, 0, 1], ['k5deep', 0], ['k5dawnbed', 0],
+                       ['k5under', 0], ['k5care', 0], ['k5night', 0]] },
     voiceLine: null,
 
-    /* the sounds the chapter is written against and that are not recorded yet (§9.2–§9.4) — a preview chapter may
-       cue them (chaptertest), and each plays nothing until it has a file; CP11 empties this list */
-    plannedSounds: [
-      // the opening film, the counter, the home film
-      'k5bundle', 'k5figset', 'k5bellsfaint', 'k5wind', 'k5pen', 'k5chantlow', 'k5door', 'k5switch', 'k5unwrap', 'k5rain',
-      'k5shutter', 'k5shopbell', 'k5steps',
-      // the offerings
-      'k5bag', 'k5bottleout', 'k5ratchet', 'k5stiff', 'k5seal', 'k5hiss', 'k5capoff', 'k5foam', 'k5tear', 'k5slide',
-      'k5bubbles', 'k5plip', 'k5bend', 'k5set', 'k5spark', 'k5flick', 'k5catch', 'k5wave', 'k5sand', 'k5wai',
-      // the openings and the three possessions
-      'k5loosen', 'k5glint', 'k5rise', 'k5enter', 'k5enter2', 'k5leave', 'k5leave2',
-      'k5stamp', 'k5rattle', 'k5thud', 'k5slurp', 'k5slam', 'k5bump',
-      'k5scurry', 'k5giggle', 'k5peek', 'k5scuttle', 'k5coin', 'k5bonk',
-      'k5bells', 'k5hair', 'k5tick', 'k5pull', 'k5surface',
-      // the endings
-      'k5calm', 'k5koel', 'k5window', 'k5doorbell', 'k5buzz', 'k5wake', 'k5type', 'k5post', 'k5ping', 'k5scroll', 'k5dm',
-      'k5delete', 'k5tape', 'k5slip', 'k5pin', 'k5crumple', 'k5tbell', 'k5pour', 'k5ground', 'k5lights',
-      // the beds
-      'k5nightbed', 'k5deep', 'k5dawnbed', 'k5under', 'k5fan', 'k5shopair', 'k5mall',
-      // the music: one lullaby, told five ways
-      'k5lullaby', 'k5theme', 'k5care', 'k5night', 'k5red', 'k5shy', 'k5lonely', 'k5climb', 'k5after',
-      'k5endA', 'k5endB', 'k5endC', 'k5endD', 'k5epi',
-      // ending C's box (processed offline from the lullaby at CP11: no credits): wound too far, then slipping to a stop
-      'k5boxfast', 'k5boxstop'
-    ],
 
     words: {
       approach: '',                          // no floating label (v12.5): the orders name what to do
@@ -331,153 +307,29 @@
     sayPrefix: 'z5'
   };
 
-  /* every line's length — the plan's ESTIMATE until CP11 measures the takes (the registry's `est` rows); the line
+  /* every line's length, measured off its shipped take (CP11; the registry carries the same numbers); the line
      queue books its window by it, so a voice never starts over another. The names are QUOTED on purpose: build.py
      gives a sound to a chapter's own pack only when the chapter names it in quotes (v21.1) */
   const SECS = {
-    /* the opening film, the counter, the home film */ 'z5pro1': 4.6, 'z5yinq': 8.5, 'z5children': 2.6, 'z5promise': 2.0,
-      'z5pro2': 4.4, 'z5pro3': 4.2, 'z5pro4': 6.0,
-      'ow5hello': 4.2, 'ow5yin': 15.0, 'ow5monk': 17.5, 'ow5red': 8.0, 'ow5shy': 8.5, 'ow5little': 5.5, 'ow5give': 10.0,
-      'ow5never': 8.5, 'ow5wrong': 11.5, 'ow5promise': 16.0, 'ow5careful': 4.5,
-    /* the offerings */ 'z5water': 2.4, 'z5bag': 4.6, 'z5red': 2.8, 'z5shy': 2.4, 'z5little': 2.4, 'z5stiff': 1.6, 'z5incense': 1.4,
-      'z5eat': 3.0, 'z5dedic': 5.0,
-    /* the question and the openings */ 'z5wonder': 3.6, 'z5ask': 5.5, 'z5loose': 2.4,
-    /* the red one */ 'z5b1': 2.2, 'z5b2': 2.6, 'z5b3': 1.8, 'z5b4': 2.4, 'z5back1': 2.4, 'z5back1b': 3.6, 'z5again1': 1.4,
-    /* the shy one */ 'z5s1': 2.4, 'z5s2': 2.2, 'z5s3': 2.0, 'z5s4': 3.4, 'z5back2': 0.6, 'z5back2b': 4.0, 'z5again2': 2.2,
-    /* the little one, and come back */ 'z5l1': 2.2, 'z5l2': 2.2, 'z5l3': 2.6, 'z5sob': 2.0, 'z5out': 6.0, 'z5come': 2.6,
-      'z5gasp': 3.0, 'z5time': 2.6, 'z5felt': 5.2, 'z5fasc': 3.6,
-    /* A */ 'z5A1': 3.4, 'z5A2': 2.8, 'z5A3': 2.2, 'z5Agig': 1.0, 'z5A4': 2.0, 'z5A5': 4.6, 'z5A6': 4.6, 'ma5vm': 6.0,
-    /* B */ 'z5B1': 3.0, 'z5B2': 3.4, 'z5B3': 2.6, 'z5B4': 5.0, 'z5B5': 3.8, 'z5B6': 5.8,
-    /* C */ 'z5C1': 2.8, 'z5C2': 3.0, 'z5C3': 5.6, 'z5C4': 5.4, 'z5Cevil': 2.8, 'z5Claugh': 2.5, 'z5C5': 3.2, 'z5C6': 4.6, 'z5C7': 4.4,
-    /* D */ 'z5D1': 3.4, 'z5D2': 4.0, 'z5D3': 4.4, 'z5D4': 8.0, 'z5D5': 7.0, 'z5D6': 4.4, 'mk5teach': 6.0, 'mk5yatha': 12.12,
-    /* the epilogue */ 'z5epi0': 9.0, 'z5epi1': 7.4, 'z5epi2': 3.0, 'z5epi3': 4.2,
-    /* the cards */ 'z5A': 4.4, 'z5B': 4.0, 'z5C': 3.0, 'z5D': 3.6
+    /* the opening film, the counter, the home film */ 'z5pro1': 5.33, 'z5yinq': 11.31, 'z5children': 3.08, 'z5promise': 2.51,
+      'z5pro2': 4.68, 'z5pro3': 8.83, 'z5pro4': 6.77,
+      'ow5hello': 5.15, 'ow5yin': 17.63, 'ow5monk': 22.6, 'ow5red': 7.39, 'ow5shy': 9.72, 'ow5little': 7.24, 'ow5give': 13.17,
+      'ow5never': 10.76, 'ow5wrong': 15.65, 'ow5promise': 20.19, 'ow5careful': 3.71,
+    /* the offerings */ 'z5water': 3.0, 'z5bag': 6.43, 'z5red': 3.08, 'z5shy': 2.19, 'z5little': 2.12, 'z5stiff': 3.24, 'z5incense': 1.07,
+      'z5eat': 4.13, 'z5dedic': 8.2,
+    /* the question and the openings */ 'z5wonder': 5.38, 'z5ask': 6.19, 'z5loose': 3.0,
+    /* the red one */ 'z5b1': 2.69, 'z5b2': 2.93, 'z5b3': 2.35, 'z5b4': 2.19, 'z5back1': 3.24, 'z5back1b': 4.99, 'z5again1': 2.04,
+    /* the shy one */ 'z5s1': 3.4, 'z5s2': 3.79, 'z5s3': 2.35, 'z5s4': 3.87, 'z5back2': 0.91, 'z5back2b': 5.72, 'z5again2': 2.43,
+    /* the little one, and come back */ 'z5l1': 1.96, 'z5l2': 2.35, 'z5l3': 2.77, 'z5sob': 3.08, 'z5out': 7.63, 'z5come': 3.68,
+      'z5gasp': 5.07, 'z5time': 3.4, 'z5felt': 8.99, 'z5fasc': 4.13,
+    /* A */ 'z5A1': 4.99, 'z5A2': 3.32, 'z5A3': 1.8, 'z5Agig': 2.35, 'z5A4': 2.27, 'z5A5': 4.75, 'z5A6': 5.33, 'ma5vm': 5.51,
+    /* B */ 'z5B1': 3.79, 'z5B2': 5.33, 'z5B3': 3.47, 'z5B4': 7.0, 'z5B5': 4.75, 'z5B6': 7.24,
+    /* C */ 'z5C1': 3.47, 'z5C2': 3.97, 'z5C3': 9.25, 'z5C4': 8.75, 'z5Cevil': 3.63, 'z5Claugh': 3.87, 'z5C5': 4.05, 'z5C6': 4.68, 'z5C7': 5.41,
+    /* D */ 'z5D1': 4.05, 'z5D2': 4.52, 'z5D3': 4.36, 'z5D4': 12.75, 'z5D5': 9.56, 'z5D6': 7.24, 'mk5teach': 10.37, 'mk5yatha': 12.12,
+    /* the epilogue */ 'z5epi0': 12.2, 'z5epi1': 8.15, 'z5epi2': 2.27, 'z5epi3': 3.87,
+    /* the cards */ 'z5A': 5.41, 'z5B': 5.49, 'z5C': 3.32, 'z5D': 3.79
   };
 
-  /* M1 · THE PREVIEW'S PLACEHOLDERS (CP10, §12 — §2.3 8): until the voices are recorded, every line not yet recorded is
-     shown where its voice will go — its words at their estimated length (SECS), the speaker under them — so the chapter
-     can be played and its words read before a credit is spent. The table is the registry's words, written by
-     tools/e3c5caps.mjs (re-run it after the sheet's words change; chaptertest checks it is current). CP11 deletes the
-     table, its markers, previewCap and previewCues, and their calls: a recorded line needs none of it */
-  /* PREVIEW CAPTIONS BEGIN */
-  const PREVIEW_CAPS = {
-    z5pro1: ['While I was still searching for answers... I began keeping Kumanthong.', 'him'],
-    ow5hello: ['Ah, you came. Come, come... I want you to meet three small ones.', 'the owner'],
-    z5yinq: ['Uncle... aren\'t these yin? Baby ghosts... the kind people trap with black magic, feed with blood... that turn on you if you ever stop?', 'him'],
-    ow5yin: ['Children, yes. Ghosts to be afraid of, no. What you\'re thinking of — trapped with black magic, fed with blood, sent to hurt people — that\'s something else. These three came from a temple. A Luang Phor gave them a home there... out of compassion.', 'the owner'],
-    ow5monk: ['Small ones who passed on young, with nowhere to go yet. Nobody forces them to stay... they come of their own free will. They help a kind person a little. And they can\'t make merit for themselves, so you make it, and you give it to them. We believe it helps them on, toward a better birth.', 'the owner'],
-    ow5red: ['This one... a family took him home for luck. When the luck didn\'t come fast enough, they brought him back. Didn\'t want him any more.', 'the owner'],
-    ow5shy: ['This one, an old auntie looked after him for twenty years. When she passed on, her family brought him back to me... with her music box.', 'the owner'],
-    ow5little: ['And this small one... somebody left him at a temple gate. Nobody knows where he came from.', 'the owner'],
-    ow5give: ['So think of them like small children... with nowhere to go. You give them drink, you make merit for them... you are giving them something they never had.', 'the owner'],
-    z5children: ['Children... with nowhere to go.', 'him'],
-    ow5never: ['But listen, ah. Never keep them for greed. Not for money, not for lottery numbers... if that is why you want them, don\'t take them.', 'the owner'],
-    ow5wrong: ['And never ask them to do anything wrong. The ones from a temple, we believe, won\'t help you do wrong. Children grow like the one who raises them... so you keep the precepts yourself.', 'the owner'],
-    ow5promise: ['And not for one month, not for one year. Every day you look after them, you keep making merit for them... as long as you live. If one day you really cannot, you bring them back to me, or to a temple. Never just leave them. Can or not?', 'the owner'],
-    z5promise: ['Every day. I promise.', 'him'],
-    ow5careful: ['Look after them like your own, ah. But don\'t play-play with them.', 'the owner'],
-    z5pro2: ['I saw it as another way of making merit... and showing compassion.', 'him'],
-    z5pro3: ['So I took them home... and made offerings to them, every day.', 'him'],
-    z5pro4: ['Then one night, after everything else I had been through... I wanted to know something.', 'him'],
-    z5water: ['Water first... never let it run dry.', 'him'],
-    z5bag: ['Three red drinks. Three straws. Same as every night, since the day I promised.', 'him'],
-    z5red: ['There you go, big boss. Your favourite.', 'him'],
-    z5shy: ['This one\'s yours. Don\'t be shy.', 'him'],
-    z5little: ['And this one\'s for you, little one.', 'him'],
-    z5stiff: ['Come on... open...', 'him'],
-    z5incense: ['One stick each.', 'him'],
-    z5eat: ['Come... eat. This is for you three.', 'him'],
-    z5dedic: ['May the merit I make reach you three... and one day, may you go on to a better birth.', 'him'],
-    z5wonder: ['Every night they just sit here... I wonder what they feel.', 'him'],
-    z5ask: ['What would happen... if I deliberately opened myself to my own Kumanthong?', 'him'],
-    z5loose: ['Just... let my mind loosen.', 'him'],
-    z5b1: ['Mine! These are all MINE!', 'the red one, through him'],
-    z5b2: ['Nobody touches my things! Nobody!', 'the red one, through him'],
-    z5b3: ['More! I want MORE!', 'the red one, through him'],
-    z5b4: ['...They didn\'t want me any more.', 'the red one, through him'],
-    z5back1: ['That wasn\'t me... That was him.', 'him'],
-    z5back1b: ['He wasn\'t angry. He just wanted someone to want him.', 'him'],
-    z5again1: ['...One more.', 'him'],
-    z5s1: ['Hehe... you can\'t see me...', 'the shy one, through him'],
-    z5s2: ['Shhh... hide... hide...', 'the shy one, through him'],
-    z5s3: ['Mine... my secret...', 'the shy one, through him'],
-    z5s4: ['Come and find me... ...Nobody ever comes.', 'the shy one, through him'],
-    z5back2: ['Ow—!', 'him'],
-    z5back2b: ['I was hiding under my own desk... waiting for someone to find me.', 'him'],
-    z5again2: ['One more. Just one more.', 'him'],
-    z5l1: ['Everyone goes away...', 'the little one, through him'],
-    z5l2: ['You won\'t go... right?', 'the little one, through him'],
-    z5l3: ['Stay... stay with me...', 'the little one, through him'],
-    z5sob: ['(sobbing quietly)', 'the little one, through him'],
-    z5out: ['His incense had burnt out... but he held on to me. He didn\'t want to be left alone again.', 'him'],
-    z5come: ['I\'m sorry... I have to go back...', 'him'],
-    z5gasp: ['(gasping for air)', 'him'],
-    z5time: ['Almost three hours... gone.', 'him'],
-    z5felt: ['To be wanted... to be found... to not be left alone. That\'s all they ever wanted.', 'him'],
-    z5fasc: ['And at that moment... I was fascinated by it.', 'him'],
-    z5A1: ['He asked me to stay... Tomorrow night, I will.', 'him'],
-    z5A2: ['Every night, it was easier to go...', 'him'],
-    ma5vm: ['Boy... why you never pick up? Ma worried, you know. Call me back, okay?', 'Ma, on his voicemail'],
-    z5A3: ['...and harder to come back.', 'him'],
-    z5Agig: ['(a small dry giggle)', 'him'],
-    z5A4: ['That... wasn\'t me.', 'him'],
-    z5A5: ['I stopped being sure where they ended... and where I began.', 'him'],
-    z5A6: ['They needed someone to look after them... and I couldn\'t do it any more.', 'him'],
-    z5B1: ['Nobody would believe this... unless I told them.', 'him'],
-    z5B2: ['I wrote it all down. Every child... every voice.', 'him'],
-    z5B3: ['Two hundred replies... by morning.', 'him'],
-    z5B4: ['Someone had tried it... because of me. And I didn\'t know what to tell them.', 'him'],
-    z5B5: ['The shy one hid from everyone... and I showed him to everyone.', 'him'],
-    z5B6: ['I wanted someone to believe me. Instead I made them a horror story... and showed strangers the way in.', 'him'],
-    z5C1: ['If they\'re real... then they can help me.', 'him'],
-    z5C2: ['Bring me luck. Bring me orders... please.', 'him'],
-    z5C3: ['The orders came. Maybe it was them... maybe it wasn\'t. I didn\'t care. I only wanted more.', 'him'],
-    z5C4: ['More orders. More money. A bigger place... a little more luck. Just a little more.', 'him'],
-    z5Cevil: ['And him... make him lose everything.', 'him'],
-    z5Claugh: ['(laughing alone, too long)', 'him'],
-    z5C5: ['If I stop asking... will it all go away?', 'him'],
-    z5C6: ['They were only children... and I had turned them into a wishing well.', 'him'],
-    z5C7: ['Nothing answered. They wouldn\'t do wrong... even when I asked them to.', 'him'],
-    z5D1: ['I\'m sorry. That was my mistake... not yours.', 'him'],
-    z5D2: ['I won\'t open that door again. But I\'m not going anywhere.', 'him'],
-    z5D3: ['In the morning, I went to the temple... and made merit in their names.', 'him'],
-    z5D4: ['For the three children in my care... may this merit reach you. May you be well... and one day, may you go on to a better birth.', 'him'],
-    mk5teach: ['Give without bargaining. Keep your precepts. Then dedicate the merit. That is what you can do for them.', 'the monk'],
-    z5D5: ['I kept caring for them every day, and making merit in their names, for years. And I never opened that door again.', 'him'],
-    z5D6: ['If one day I can\'t look after them... someone will. I made sure of it.', 'him'],
-    z5epi0: ['They were never something to fear. Only children with nowhere to go... and what they needed from me was care, merit and kindness, for as long as I live.', 'him'],
-    z5epi1: ['Looking back today, I can see clearly how dangerous... and how completely unnecessary that experiment was.', 'him'],
-    z5epi2: ['Some lessons are only learned by living them.', 'him'],
-    z5epi3: ['This is the one experiment I would tell everybody never to repeat.', 'him'],
-  };
-  /* PREVIEW CAPTIONS END */
-  function previewCap(kit, name) {
-    const P = PREVIEW_CAPS[name];
-    if (!P || !kit || !kit.captions) return false;
-    /* a long line in pieces of about a dozen words, broken after a sentence where one ends, each held for its share of
-       the line's words (the owner's longest run 15–17 s: whole, it stood six lines tall over a phone's picture) */
-    const words = P[0].split(' '), parts = [];
-    let cur = [];
-    for (const w of words) {
-      cur.push(w);
-      if (words.length > 14 && (cur.length >= 12 || (cur.length >= 6 && /[.?!—]$/.test(w)))) { parts.push(cur); cur = []; }
-    }
-    if (cur.length) { if (parts.length && cur.length < 4) parts[parts.length - 1].push(...cur); else parts.push(cur); }
-    const secs = SECS[name] || 2.5;
-    let at = 0;
-    kit.captions(parts.map(pw => { const e = { at, end: at + secs * pw.length / words.length, text: pw.join(' '), sub: P[1] }; at = e.end; return e; }));
-    return true;
-  }
-  /* a film's or a scene's own planned lines, each captioned on its cue's frame; at the end the captions go with the
-     picture (a skip runs the passed steps in the order they were pushed, so the clearing one runs last) */
-  function previewCues(c, api) {
-    if (!c || !Array.isArray(c.stings) || !Array.isArray(c.tracks) || !api || !api.step) return;
-    const mine = c.stings.filter(st => PREVIEW_CAPS[st.kind]);
-    if (!mine.length) return;
-    const end = c.tracks.reduce((m, tr) => Math.max(m, tr.t1), 0);
-    for (const st of mine) api.step(st.at, () => previewCap(api.kit, st.kind));
-    api.step(end, () => { if (api.kit && api.kit.captions) api.kit.captions(null); });
-  }
 
   /* the first two possessions' clocks (CP7, §4.4): plain numbers at the chapter's top level, so each film reads its own
      times directly — and chaptertest, which walks a film against a stand-in stage whose every lookup is 0, sees the real
@@ -3284,6 +3136,7 @@
        evidence; his look on the three; and the decision opens by itself (the altar is the pile) */
     function afterBeat(resumed) {
       openLive.busy = true; if (kit) kit.objective(null);
+      if (worldSfx && !(soundOff && soundOff())) worldSfx('k5after', 0.45);   // one held note of the lullaby, unresolved (CP11)
       roomClock('02:47');
       afterEvidence();
       if (kit) kit.fade(0, resumed ? 0.8 : 1.6);
@@ -4536,7 +4389,10 @@
     for (const bw of roomLive.bowls) RATTLE.push({ o: bw, y0: bw.position.y });
     for (const ty of roomLive.toys) RATTLE.push({ o: ty, y0: ty.position.y });
     buildCityOut();
-    if (warmSounds) warmSounds(['k5stamp', 'k5peek', 'k5pull', 'k5bells', 'k5loosen', 'k5glint']);   // PLAY II's own (CP7)
+    if (warmSounds) warmSounds(['k5stamp', 'k5peek', 'k5pull', 'k5bells', 'k5loosen', 'k5glint', 'k5after']);   // PLAY II's own (CP7; the aftermath's note, CP11)
+    /* the epilogue's cues come from epiCues, a helper every ending calls — the engine's scan reads a scene's own source
+       and cannot see them, so they are warmed here (CP11: until then they were planned and played nothing) */
+    if (warmSounds) warmSounds(['k5epi', 'z5epi0', 'z5epi1', 'z5epi2', 'z5epi3']);
     if (warmSounds) warmSounds(['k5pour', 'k5bottleout', 'k5ratchet', 'k5stiff', 'k5seal', 'k5hiss', 'k5capoff', 'k5tear', 'k5slide', 'k5bubbles',
                                 'k5plip', 'k5bend', 'k5foam', 'k5spark', 'k5flick', 'k5catch', 'k5wave', 'k5sand', 'k5wai']);   // PLAY I's own (CP6)
     buildTemple();                                   // World M (CP5): after everything it reads at call time
@@ -4947,11 +4803,10 @@
     function speakReset() { speak.until = 0; speak.pending = null; }
     /* A LINE IS A BEAT, HEARD OR NOT (e3c3's law): a muted game speaks it silently on its own length, and a line whose
        bytes have not landed is held a moment (v8.0) and then spoken silently, so a beat chained on a line's start never
-       stops the chapter — which is also how a PLANNED line (no take yet, CP11) passes: silently, on its estimate */
+       stops the chapter */
     function sayLine(name, vol = 1, onStart, pan) {
       if (dayClock.t < speak.until) return false;
       const start = () => { speak.until = dayClock.t + (SECS[name] || 2.5) + 0.25; heard.add(name); if (onStart) onStart(); };
-      if (PREVIEW_CAPS[name]) { start(); previewCap(kit, name); return true; }   // (M1, CP10: a line not recorded yet — its words, at once)
       if ((soundOff && soundOff()) || !worldSfx) { start(); return true; }
       if (worldSfx(name, vol, 1, pan)) { start(); return true; }
       speak.pending = { name, vol, start, pan, give: dayClock.t + 1.6 };
@@ -6425,6 +6280,49 @@
       roomLive.yantBoard.add(pn);
     }
     let cntWall = 0;
+    /* THE BEDS (CP11, §9.3): one mix for play and every film, eased on wall time from the world he is in and the hour the
+       room's light says it is (the look a beat or a shot sets — so a film, a resume and an ending land on the same mix
+       the light does). World S: the shop's air at the counter, the corridor after hours outside it (the opening film
+       carries its own corridor); World R: the flat at night and its fan, 3 a.m. (DEEP, and from the aftermath on), the
+       morning at the window (DAWN, MORNING — lower in the day's AFTERNOON and DRAINED), the night sinking under a
+       possession's own light, the little one's water (BLUE, in his film); World M: the courtyard at first light (D).
+       And the music under play: the offerings' khim (k5care) until the box is wound — the box's own tune is the lullaby
+       and the two never play together — and the question's held tone (k5night) from the question to the last opening;
+       both silent in every film, which has its own. Levels against the files' RMS (night -30, deep -34, dawn -26, water
+       -24, the fan -26): the room near -40 dBFS, the water -28 */
+    const bedMix = { air: 0, mall: 0, night: 0, fan: 0, deep: 0, dawn: 0, under: 0, care: 0, held: 0 };
+    function mixBeds(wdt, st) {
+      if (!(wdt > 0)) return;
+      const w = worldOf(yaw.position.x), L = roomLive.look ? roomLive.look.name : 'NIGHT';
+      const film = st === 'cine', card = st === 'result' || st === 'complete';
+      const want = { air: 0, mall: 0, night: 0, fan: 0, deep: 0, dawn: 0, under: 0, care: 0, held: 0 };
+      if (w === 'S') {
+        const out = yaw.position.z > 0.15;
+        if (fLive.shot !== 'O') { want.air = out ? 0.03 : 0.11; want.mall = out ? 0.3 : 0.12; }
+      } else if (w === 'R') {
+        const little = fLive.shot === 'little' && L === 'BLUE';
+        const day = L === 'DAWN' || L === 'MORNING', aft = L === 'AFTERNOON' || L === 'DRAINED';
+        const deep = L === 'DEEP' || (L === 'BLUE' && !little) || (!film && (phase === 'after' || phase === 'decide'));
+        const poss = L === 'RED' || L === 'AMBER' || L === 'SURFACE' || little;
+        if (day) want.dawn = 0.32;
+        else if (aft) want.dawn = 0.16;
+        else if (deep) want.deep = 0.5;
+        else want.night = poss ? (L === 'SURFACE' ? 0 : 0.08) : 0.3;
+        want.under = little ? 0.6 : 0;
+        if (roomLive.fan) want.fan = (day || aft ? 0.06 : 0.1) * roomLive.fanK;
+        if (!film && !card) {
+          if (phase === 'care' || (phase === 'sit' && !(careLive.boxOpenTo >= 1))) want.care = 0.22;
+          if (OPEN_I[phase] !== undefined) want.held = 0.2;
+        }
+      } else if (w === 'M') want.dawn = endLive.on === 'D' ? 0.26 : 0;
+      for (const k in bedMix) {
+        const tau = k === 'care' || k === 'held' ? 2.0 : 0.9;
+        bedMix[k] += (want[k] - bedMix[k]) * (1 - Math.exp(-wdt / tau));
+      }
+      const B = DATA.ambience.beds;
+      B[0][1] = bedMix.air; B[1][1] = bedMix.mall; B[2][1] = bedMix.night; B[3][1] = bedMix.fan; B[3][3] = Math.max(0.4, roomLive.fanK);
+      B[4][1] = bedMix.deep; B[5][1] = bedMix.dawn; B[6][1] = bedMix.under; B[7][1] = bedMix.care; B[8][1] = bedMix.held;
+    }
     function updateNotes(dt, t) {
       const now = wallNow();
       roomFrame(now);
@@ -6433,6 +6331,7 @@
       const wdt = cntWall ? Math.min(0.5, now - cntWall) : 0; cntWall = now;
       peopleTick(wdt); setsTick(wdt); boxTick(wdt); viewTick(); leanTick(); careFrame(wdt); openFrame(wdt);
       const st = getState();
+      mixBeds(wdt, st);
       const live = st === 'play' || st === 'unlock' || st === 'choose';
       /* a Continue into the room is put there UNDER the chapter card, so the card lifts on the world it resumes in */
       if (!booted && !preplaced && kit) {
@@ -6482,6 +6381,7 @@
     function roomReset() {
       roomClock('22:50');
       roomLive.fanK = 1;
+      for (const k in bedMix) bedMix[k] = 0;           // (CP11: the beds start again from silence, the v8.1 law)
       if (roomLive.door) roomLive.door.rotation.y = 0;
       if (roomLive.drawer) roomLive.drawer.position.z = DESK_DRAWER_Z;
       if (roomLive.boxLid) roomLive.boxLid.rotation.x = 0;
@@ -8308,7 +8208,6 @@
     sfx(OFT.open, 'k5shopbell', 0.6);                    // the door's bell as it opens
     fade(OFT.black0, OFT.black1, 0, 1);
     step(OFT.end, () => F.end());
-    previewCues(c, api);                                   // (M1's placeholders, CP10)
   }
   function playFilm(c, api) {                  // the shape every film from play keeps (CP5, CP7, CP9 fill each)
     const { step, fade } = api;
@@ -8335,7 +8234,6 @@
     sfxFade(T.b2, T.end - 0.4, 'k5chantlow');
     fade(T.b2, T.b2 + 1.6, 0, 1);                        // and black, which the counter lifts
     step(T.end, () => MF.end());
-    previewCues(c, api);                                   // (M1's placeholders, CP10)
   }
   /* FILM K · "The Card" (§4.0b, CP5): the card on his glass, read down line by line; then his face, and what he asks of the
      one who takes them home — every picture from stage.cardF's frame(t); its lines on his talking take */
@@ -8354,7 +8252,6 @@
     step(T.k3 + 21.8, () => stage.ownerTalk(16.0));
     fade(T.end - 1.0, T.end - 0.1, 0, 1);
     step(T.end, () => KF.end());
-    previewCues(c, api);                                   // (M1's placeholders, CP10)
   }
   /* THE HOME FILM · "Every Day" (§4.0c, CP9): every picture from stage.homeF's frame(t); this holds its cues, its fades and
      the one track. It begins on the counter's black (the kit hands it over) and its last black is handed to the kit's
@@ -8388,7 +8285,6 @@
     sfx(HFT.lamp2, 'k5switch', 0.45);                    // the lamp on their faces
     fade(HFT.black0, HFT.black0 + 1.0, 0, 1);            // black, handed to play
     step(HFT.end, () => F.end());
-    previewCues(c, api);                                   // (M1's placeholders, CP10)
   }
   /* POSSESSION 1 · THE RED ONE (§4.4, CP7): every picture from stage.redF's frame(t); this holds its cues (literal, the
      CUE_RE law), its STAMP (the player's three taps: a craft event the film runs on through; untapped, he stamps by
@@ -8423,7 +8319,6 @@
     sfx(T.self + 3.5, 'z5back1b', 1);                        // "He wasn't angry. He just wanted someone to want him."
     sfx(T.end - 1.6, 'z5again1', 1);                         // "...One more."  (CP9: 0.3 s clear of the line before, on its estimate)
     step(T.end, () => F.end());
-    previewCues(c, api);                                   // (M1's placeholders, CP10)
   }
   /* POSSESSION 2 · THE SHY ONE (§4.4, CP7): stage.shyF's pictures; its PEEK (drag the fingers apart: a craft slide the
      film runs on through) and its lines. */
@@ -8455,19 +8350,18 @@
     sfx(T.little, 'k5bells', 0.35);
     sfx(T.little + 1.3, 'z5again2', 1);                      // "One more. Just one more."  (CP9: clear of the line before, on its estimate)
     step(T.end, () => F.end());
-    previewCues(c, api);                                   // (M1's placeholders, CP10)
   }
   /* POSSESSION 3 · THE LITTLE ONE, and COME BACK (§4.4–§4.5, CP7): stage.littleF's pictures to the surface; then COME
      BACK, an event the film WAITS on (eventWait: the climb is his, and the film goes on when he is back); then the
      surfacing. */
   function littleFilm(c, s, api) {
-    const { tr, step, sfx, fade, rawK, stage, eventWait } = api;
+    const { tr, step, sfx, sfxFade, fade, rawK, stage, eventWait } = api;
     const F = stage.littleF, T = F.T, W = stage.W;
     c.keepFade = true;
     c.endFade = 0;
     tr(0, T.come, (k, t) => F.frame(t, api), rawK);
     sfx(0.0, 'k5bells', 0.45);
-    sfx(T.rise, 'k5under', 0.5);
+    /* (the water under him is a bed now — mixBeds, while his light is the little one's — CP11) */
     sfx(T.rise + 0.4, 'k5hair', 0.35);
     sfx(T.into, 'k5lonely', 0.5);                            // the lullaby on khlui and bowed saw u, tender
     sfx(T.l1, 'z5l1', 1);                                    // "Everyone goes away..."
@@ -8479,14 +8373,15 @@
     sfx(T.out + 0.6, 'z5out', 1);                            // "His incense had burnt out... but he held on to me..."
     sfx(T.come - 0.8, 'z5come', 1);                          // "I'm sorry... I have to go back..." (said as the climb begins: a voice plays on
                                                              //  through a paused film, and eventWait pauses this one until he is back)
+    sfx(T.come - 0.4, 'k5climb', 0.6);                       // COME BACK: the swell toward the light (it plays on through the paused film)
     step(T.come - 0.1, () => stage.comeBegin());
     eventWait(T.come, stage.comeOpts(), (r) => stage.comeDone(r));
     step(T.come + 0.2, () => stage.surfaceStart());
     sfx(T.come + 0.25, 'k5surface', 0.8);                    // (it plays when the film runs on — after he is back)
+    sfxFade(T.come + 0.2, T.come + 3.2, 'k5climb');           // (and the climb goes down under the surfacing)
     sfx(T.come + 0.5, 'z5gasp', 1);
     tr(T.come + 0.2, T.come + 4.2, (k, t) => stage.surfaceFrame(t - T.come - 0.2, api), rawK);
     step(T.come + 4.2, () => F.end());
-    previewCues(c, api);                                   // (M1's placeholders, CP10)
   }
 
   /* ============================================================ THE ENDINGS (CP8, §4.8) AND THE EPILOGUE (§4.9)
@@ -8505,7 +8400,6 @@
     step(T.end, () => { api.handsRoot.visible = true; });
     c.endFade = 1;
     c.keep.view = true;
-    previewCues(c, api);                                   // (M1's placeholders, CP10)
   }
   /* THE EPILOGUE's sound and its blacks: the counter fades up as the lullaby rises; his first line over the three; the
      black; the case file's own last words over it */

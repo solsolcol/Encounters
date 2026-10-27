@@ -1,0 +1,525 @@
+{
+ "_flow": "o8vTamhekdpbWovwvYSp (e3c5 · The Children On My Altar · voices); eleven_v3 two takes a line unless the name says _v4 (eleven_v4, one take)",
+ "_z5b1": "[as a bossy little boy, stamping] Mine! These are all MINE!",
+ "z5b1": [
+  "rlKZIRpDivCdI2CpuP4W",
+  "dC4gveiSliVGdxggjf1S"
+ ],
+ "_z5b4": "[as a small boy, quietly, hurt] ...They didn't want me any more.",
+ "z5b4": [
+  "l2WIN0sOSWeqgazF3PYe",
+  "yUVMwzfmvxp3JxyPdjGV"
+ ],
+ "_z5s1": "[as a shy little boy, giggling] Hehe... you can't see me...",
+ "z5s1": [
+  "6rNuOQNUOgHuPRuMyK5N",
+  "3CkNw9XbQtdjvEobBC2c"
+ ],
+ "_z5s4": "[as a small boy, waiting, sad] Come and find me... ...Nobody ever comes.",
+ "z5s4": [
+  "nxawdsXp01KjDqQQqxUY",
+  "hOyXVpych6C3gV5cUS0f"
+ ],
+ "_z5l1": "[as a small lonely boy, very softly] Everyone goes away...",
+ "z5l1": [
+  "gFdMNJkL5ts1WeGLOLqp",
+  "5RQWncq5GWAacB8kFtBs"
+ ],
+ "_z5b1_v4": "[as a bossy little boy, stamping] Mine! These are all MINE!  (eleven_v4)",
+ "z5b1_v4": [
+  "LfGPlzObTt20coNhiU9N",
+  "6NGWVtF7jrxKgVj4Zjur"
+ ],
+ "_z5b4_v4": "[as a small boy, quietly, hurt] ...They didn't want me any more.  (eleven_v4)",
+ "z5b4_v4": [
+  "pjdvo947vTcRkTYS33bj",
+  "SZCffXn2GVtnkYHgh7vz"
+ ],
+ "_z5s1_v4": "[as a shy little boy, giggling] Hehe... you can't see me...  (eleven_v4)",
+ "z5s1_v4": [
+  "stO5hIi1REIX1nk87Z82",
+  "65VrDrtySHgqFSvDNzwr"
+ ],
+ "_z5s4_v4": "[as a small boy, waiting, sad] Come and find me... ...Nobody ever comes.  (eleven_v4)",
+ "z5s4_v4": [
+  "a4I55hgZYECJR0sMligk",
+  "OJkbSMcRYeT1mC3fiiiW"
+ ],
+ "_z5l1_v4": "[as a small lonely boy, very softly] Everyone goes away...  (eleven_v4)",
+ "z5l1_v4": [
+  "uVNXYZb6EpDa1Ttz2gqA",
+  "p9NPU3FMnPHQk8AQ591z"
+ ],
+ "_z5b2_v4": "[as a bossy little boy] Nobody touches my things! Nobody!  (eleven_v4)",
+ "z5b2_v4": [
+  "WxCJ8i0G2BTZwuusdj8c",
+  "7GR4Q2mN6Lv626qjm8yS"
+ ],
+ "_z5b3_v4": "[as a bossy little boy, demanding] More! I want MORE!  (eleven_v4)",
+ "z5b3_v4": [
+  "7xT1XArPlbep9UO6viUI",
+  "bi9BcHr6hRWyqgcbUEHL"
+ ],
+ "_z5s2_v4": "[as a shy little boy, whispering] Shhh... hide... hide...  (eleven_v4)",
+ "z5s2_v4": [
+  "m6JhTUPoYr1sJar4qEVQ",
+  "izmHJKfc7b9v6Bo011uK"
+ ],
+ "_z5s3_v4": "[as a shy little boy, delighted, softly] Mine... my secret...  (eleven_v4)",
+ "z5s3_v4": [
+  "fCkvrC9WDWEVw1HU8YYa",
+  "qQM4yypa5KlaGaivqe2M"
+ ],
+ "_z5l2_v4": "[as a small lonely boy, pleading] You won't go... right?  (eleven_v4)",
+ "z5l2_v4": [
+  "3kRUM3tF8jx1gpJNWaqR",
+  "NZn3J5gZopBfCUg3Xn4X"
+ ],
+ "_z5l3_v4": "[as a small boy, crying] Stay... stay with me...  (eleven_v4)",
+ "z5l3_v4": [
+  "8FeovQs5Op5QrgU8m8KW",
+  "Z4EdFfVcccWJttfPv2iJ"
+ ],
+ "_z5sob_v4": "[as a small boy, sobbing quietly] Hhh... hhh...  (eleven_v4)",
+ "z5sob_v4": [
+  "JDLlKDCq0ZYowcOVkgSK",
+  "4124IYbH0u0j9MjaZVXz"
+ ],
+ "_z5Agig_v4": "[a small dry giggle] Hehe...  (eleven_v4)",
+ "z5Agig_v4": [
+  "5ajUBHQJdmtpdIS0AeIF",
+  "W6WhbXdTiHkH8MMds0IW"
+ ],
+ "_ow5hello": "[warmly] Ah, you came. Come, come... I want you to meet three small ones.",
+ "ow5hello": [
+  "QdclTW6SxXaZcslKfsgY",
+  "CXUPvv1UhrjXiIzbjnu9"
+ ],
+ "_ow5yin": "[gently] Children, yes. Ghosts to be afraid of, no. What you're thinking of — trapped with black magic, fed with blood, sent to hurt people — that's something else. These three came from a temple. A Luang Phor gave them a home there... out of compassion.",
+ "ow5yin": [
+  "iDde7tbavsBVew3vkJhh",
+  "KI9EyyKd5qGiRYdpQrN3"
+ ],
+ "_ow5monk": "[softly] Small ones who passed on young, with nowhere to go yet. Nobody forces them to stay... they come of their own free will. They help a kind person a little. And they can't make merit for themselves, so you make it, and you give it to them. We believe it helps them on, toward a better birth.",
+ "ow5monk": [
+  "GQWXtSG4bYueYcJp7jeq",
+  "U9jkzyRQFniLxgnOnGvp"
+ ],
+ "_ow5red": "This one... a family took him home for luck. When the luck didn't come fast enough, they brought him back. Didn't want him any more.",
+ "ow5red": [
+  "gIhzyAZ0Httebrk9i8BO",
+  "VOfoO0jrKqKkNdbF5TJ0"
+ ],
+ "_ow5shy": "This one, an old auntie looked after him for twenty years. When she passed on, her family brought him back to me... with her music box.",
+ "ow5shy": [
+  "ilF509iqrJK7bP4C5yRl",
+  "AG3Gz0IWe1LmMrHLkzUv"
+ ],
+ "_ow5little": "[quietly] And this small one... somebody left him at a temple gate. Nobody knows where he came from.",
+ "ow5little": [
+  "TraoWVx4ProjOHHaqxCD",
+  "W6IP15dP1iTUlbIZFeaU"
+ ],
+ "_ow5give": "So think of them like small children... with nowhere to go. You give them drink, you make merit for them... you are giving them something they never had.",
+ "ow5give": [
+  "V5pZ5X76lL71s5dKhXm7",
+  "cBP2WzF8yQqVGeAjc3bN"
+ ],
+ "_ow5never": "[serious] But listen, ah. Never keep them for greed. Not for money, not for lottery numbers... if that is why you want them, don't take them.",
+ "ow5never": [
+  "j8VkPMkComIqxlud0zkC",
+  "iOluUaseOH5Yys1Peu19"
+ ],
+ "_ow5wrong": "[serious, gently] And never ask them to do anything wrong. The ones from a temple, we believe, won't help you do wrong. Children grow like the one who raises them... so you keep the precepts yourself.",
+ "ow5wrong": [
+  "9vbbMjRgOFXaFWRp1zLL",
+  "UErsCGxdDSQTaTjVegYA"
+ ],
+ "_ow5promise": "[firmly] And not for one month, not for one year. Every day you look after them, you keep making merit for them... as long as you live. If one day you really cannot, you bring them back to me, or to a temple. Never just leave them. [asking] Can or not?",
+ "ow5promise": [
+  "MqSg11SkzdYYc4szgGSg",
+  "yxi3mwIEU5saevsrf0om"
+ ],
+ "_ow5careful": "[kindly] Look after them like your own, ah. But don't play-play with them.",
+ "ow5careful": [
+  "oAKxxYAlj0PUq4Uk41CA",
+  "UFH2ToGzNPFgD2al3XHv"
+ ],
+ "_ma5vm": "[worried, loving] Boy... why you never pick up? Ma worried, you know. Call me back, okay?",
+ "ma5vm": [
+  "l989wDOjCFjDKkmtUeIM",
+  "aa2A5AvMzeyOHVQXEnKy"
+ ],
+ "_mk5teach": "[gently] Give without bargaining. Keep your precepts. Then dedicate the merit. That is what you can do for them.",
+ "mk5teach": [
+  "VNzhybIDTYLOYGoDJZM4",
+  "jakMMLrisSKJlYswegDU"
+ ],
+ "_z5pro1": "[reflective] While I was still searching for answers... I began keeping Kumanthong.",
+ "z5pro1": [
+  "VRzdDUdNdXGiCxhpF8a5",
+  "2Sh9cQj2ufgrUSKg1BNo"
+ ],
+ "_z5yinq": "[hesitant, low] Uncle... aren't these yin? Baby ghosts... the kind people trap with black magic, feed with blood... that turn on you if you ever stop?",
+ "z5yinq": [
+  "GwHKjJ9OQlYoInfKjgf3",
+  "ILASRgA6c0cgYabJ6zO7"
+ ],
+ "_z5children": "[softly] Children... with nowhere to go.",
+ "z5children": [
+  "tVPvMmiJsumcIT1nqOZU",
+  "Vyig0Pg9beCjKoFUKTw4"
+ ],
+ "_z5promise": "[quiet, sure] Every day. I promise.",
+ "z5promise": [
+  "QeQCLhqqoZXhnvr55t7c",
+  "HQPp7jUZeTDKYbnx5OvL"
+ ],
+ "_z5pro2": "[reflective] I saw it as another way of making merit... and showing compassion.",
+ "z5pro2": [
+  "ZLGovKCFiy4pTGmSazgu",
+  "032jtJ2f7akxtyPsCPsK"
+ ],
+ "_z5pro3": "[reflective] So I took them home... and made offerings to them, every day.",
+ "z5pro3": [
+  "mN3LYwLmrOfY3Hp0TKOb",
+  "iogf5mtXE4hJPuF5H1zi"
+ ],
+ "_z5pro4": "[quietly] Then one night, after everything else I had been through... I wanted to know something.",
+ "z5pro4": [
+  "N8Ctr2vnSuXoGsZZ7J4C",
+  "6voayr5a8CJSzwb4PtKv"
+ ],
+ "_z5water": "[quiet, routine] Water first... never let it run dry.",
+ "z5water": [
+  "Rh3Yn2M6htKb4qVeJzsl",
+  "Znad4kIibHIo7hCSgVK2"
+ ],
+ "_z5bag": "Three red drinks. Three straws. Same as every night, since the day I promised.",
+ "z5bag": [
+  "uFgYHyeiKW4GnzX7bya9",
+  "b0PKuQpdC26zPvCjYS2K"
+ ],
+ "_z5red": "[warmly] There you go, big boss. Your favourite.",
+ "z5red": [
+  "1MfUhcN84xxyJ85Pxku2",
+  "u7sWEdQVMnJmpcPw61lU"
+ ],
+ "_z5shy": "[gently] This one's yours. Don't be shy.",
+ "z5shy": [
+  "0vklPmDuAT4usXLwGKNG",
+  "ClmSoln7qayELv5IJMs1"
+ ],
+ "_z5little": "[tenderly] And this one's for you, little one.",
+ "z5little": [
+  "PqnpCKFltubIgcpPm4rJ",
+  "tI9MUb0GS3jvupSFF0IG"
+ ],
+ "_z5stiff": "[straining] Come on... open...",
+ "z5stiff": [
+  "j9vSLpVjCQziXk6fAG9P",
+  "rbFg5eDkAd3rYcosX90E"
+ ],
+ "_z5incense": "One stick each.",
+ "z5incense": [
+  "6Klv6VCapXcC237EA1Xa",
+  "WA5awLVDc07RoaMii7or"
+ ],
+ "_z5eat": "[warmly] Come... eat. This is for you three.",
+ "z5eat": [
+  "zbGGcHIy5UlpxwXjtLwV",
+  "5GvUY2vqxB9rfrv6nXRr"
+ ],
+ "_z5dedic": "[whispers, tender] May the merit I make reach you three... and one day, may you go on to a better birth.",
+ "z5dedic": [
+  "sawHZQ7qrrAf7H4sA62H",
+  "Sc8F8AmnRxk9nNJ7QjCw"
+ ],
+ "_z5wonder": "[tender] Every night they just sit here... I wonder what they feel.",
+ "z5wonder": [
+  "y5NqkurItEE1cGC85KXy",
+  "SBbNgypqhTelSD8pmYLg"
+ ],
+ "_z5ask": "[whispers, wondering] What would happen... if I deliberately opened myself to my own Kumanthong?",
+ "z5ask": [
+  "XYejBPpmDNSkb5vt6nWp",
+  "3TcwC0KWQH9V6guYoQFg"
+ ],
+ "_z5loose": "[whispers] Just... let my mind loosen.",
+ "z5loose": [
+  "g9LzuyOHcJZQhtic5w98",
+  "suKYeRfqFABcRVcGotaF"
+ ],
+ "_z5back1": "[breathing hard] That wasn't me... That was him.",
+ "z5back1": [
+  "mjd1p0QdNb8HvBKq7EqZ",
+  "z119TlDVjGvcCkgMIS5O"
+ ],
+ "_z5back1b": "[gently] He wasn't angry. He just wanted someone to want him.",
+ "z5back1b": [
+  "VzdVJINQzHJLNjTWCuxk",
+  "FDY38U7oQCoux36IN0iK"
+ ],
+ "_z5again1": "...One more.",
+ "z5again1": [
+  "nXzdNPn9wXqFkzqcOhxJ",
+  "61eFx4flJqYw62amNVED"
+ ],
+ "_z5back2": "[startled] Ow—!",
+ "z5back2": [
+  "XLRZ3ai1SjLDfNwtXaFB",
+  "3V2MFLW1ssRQumzB3n8D"
+ ],
+ "_z5back2b": "[quietly] I was hiding under my own desk... waiting for someone to find me.",
+ "z5back2b": [
+  "4ofQcLGarOyNYVWQWCpC",
+  "84yNOPRUKWWJnOLJscKS"
+ ],
+ "_z5again2": "One more. Just one more.",
+ "z5again2": [
+  "bgihC4voWpSgOLjqdrBx",
+  "KiP1i6555StY6CtTK3U9"
+ ],
+ "_z5out": "[distant, sad] His incense had burnt out... but he held on to me. He didn't want to be left alone again.",
+ "z5out": [
+  "bYWph0Apb8ApnIbn20yw",
+  "InL0O0Mu13Ab8wcwv6ad"
+ ],
+ "_z5come": "[whispers, tender, straining] I'm sorry... I have to go back...",
+ "z5come": [
+  "52KI4hLaXBIzt59ZoaOt",
+  "3MyGfXqsCAFwZVukiM5m"
+ ],
+ "_z5gasp": "[gasping for air] Haaah... hhh... hhh...",
+ "z5gasp": [
+  "Bl29uDNFhlJSNW1IOXVY",
+  "IlTOyMg8kpSybmaA8NNZ"
+ ],
+ "_z5time": "[shaken] Almost three hours... gone.",
+ "z5time": [
+  "r4EwJ7N9ot0CsD3zjbnd",
+  "F1uB0xxE4n9MHLQFEIW2"
+ ],
+ "_z5felt": "[tender] To be wanted... to be found... to not be left alone. That's all they ever wanted.",
+ "z5felt": [
+  "sYrur5YRcxIYH7rQm23O",
+  "0MmVS0FfqM9qTXn5xAZQ"
+ ],
+ "_z5fasc": "[quietly] And at that moment... I was fascinated by it.",
+ "z5fasc": [
+  "Jxsc3fTdQfdhGhKz1Hw4",
+  "LOIeqCOWbIg7KHid5KZM"
+ ],
+ "_z5A1": "[softly] He asked me to stay... Tomorrow night, I will.",
+ "z5A1": [
+  "eaTAh7Wa4n1PaKaWzZjT",
+  "zzCzEqWtLBj0Hmn5DJXk"
+ ],
+ "_z5A2": "[tired] Every night, it was easier to go...",
+ "z5A2": [
+  "VELcON083J5F3zMmFYMM",
+  "xIkt5aRCCMIVHgFGe2Gp"
+ ],
+ "_z5A3": "[tired] ...and harder to come back.",
+ "z5A3": [
+  "XsWM6WvAVNftWwRHlvXn",
+  "yJjmn0RJ4eWCkVNMS758"
+ ],
+ "_z5A4": "[whispers] That... wasn't me.",
+ "z5A4": [
+  "KyIl9839dJIYjs1qcENu",
+  "GGvjmdWV50MOtdUXKw7K"
+ ],
+ "_z5A5": "[quietly] I stopped being sure where they ended... and where I began.",
+ "z5A5": [
+  "OW7cCd2d1WAr7rmhQQva",
+  "XdfjNuGbT99Ika0qmqpA"
+ ],
+ "_z5A6": "[sad] They needed someone to look after them... and I couldn't do it any more.",
+ "z5A6": [
+  "V6KsnjLKHey7NgbEwfjO",
+  "AMIp7Da94dGNM1CEhCuv"
+ ],
+ "_z5B1": "[thoughtful] Nobody would believe this... unless I told them.",
+ "z5B1": [
+  "DWapSgUE2DsqR8I0n4Hi",
+  "zBwuBbvaIjf7XJR1555y"
+ ],
+ "_z5B2": "I wrote it all down. Every child... every voice.",
+ "z5B2": [
+  "yOfBYIHCI5PTnIZ8PfoH",
+  "zRi7lrZNn50PeFLIXk3T"
+ ],
+ "_z5B3": "[uneasy] Two hundred replies... by morning.",
+ "z5B3": [
+  "x2bSf1slDpP1dtKo5De8",
+  "5jJLHGL4VhQbQIfPdjYa"
+ ],
+ "_z5B4": "[shaken] Someone had tried it... because of me. And I didn't know what to tell them.",
+ "z5B4": [
+  "GqtKwjyd6aUnObKCNBiA",
+  "BT0U8dTIHQyjRr21W5fN"
+ ],
+ "_z5B5": "[ashamed] The shy one hid from everyone... and I showed him to everyone.",
+ "z5B5": [
+  "zGHAVIZ6Yr5f7MpT8d81",
+  "rDdz8OxyUg9qcuamDP0V"
+ ],
+ "_z5B6": "[regretful] I wanted someone to believe me. Instead I made them a horror story... and showed strangers the way in.",
+ "z5B6": [
+  "GeLEVwldGH0twz9qo4Xv",
+  "6vDuXUdOxjcS6crTUPZ3"
+ ],
+ "_z5C1": "[thinking aloud] If they're real... then they can help me.",
+ "z5C1": [
+  "Q1aTkkncjzD8btcSw498",
+  "8BXN9s7rEhq9oui75W8X"
+ ],
+ "_z5C2": "[whispers, eager] Bring me luck. Bring me orders... please.",
+ "z5C2": [
+  "lFgUh3B8LjjIJeVVgVVa",
+  "3zcegJElWKWSBoQ5prri"
+ ],
+ "_z5C3": "The orders came. Maybe it was them... maybe it wasn't. I didn't care. I only wanted more.",
+ "z5C3": [
+  "p5wgayraNZeqTamSiqXL",
+  "k4AyeC4F5WSOkQmOAOB8"
+ ],
+ "_z5C4": "[low and fast] More orders. More money. A bigger place... a little more luck. Just a little more.",
+ "z5C4": [
+  "fmTkQG250kxdj2sjvx17",
+  "xc2RgP4hjCbrezkKx93c"
+ ],
+ "_z5Cevil": "[whispers, bitter] And him... make him lose everything.",
+ "z5Cevil": [
+  "AYKYDQOItCLrkPFwWs6n",
+  "xv9FSSoNOwoiNCYGVtpW"
+ ],
+ "_z5Claugh": "[laughing alone, too long] Heh... hehe... heh...",
+ "z5Claugh": [
+  "oFRQpcSQk6fGhrqk4GPH",
+  "NWT9a0QXYgpifH2jYkoE"
+ ],
+ "_z5C5": "[whispers, afraid] If I stop asking... will it all go away?",
+ "z5C5": [
+  "43vHuiB4QN1MkYRNssGZ",
+  "lofnsKOJfPuF4iRimMox"
+ ],
+ "_z5C6": "[ashamed] They were only children... and I had turned them into a wishing well.",
+ "z5C6": [
+  "VogXMr1oE9C67DWD3y76",
+  "TZfLzJiKK5tsUCS3I7Vy"
+ ],
+ "_z5C7": "[quietly] Nothing answered. They wouldn't do wrong... even when I asked them to.",
+ "z5C7": [
+  "cse8Ene97nU2cMf88l68",
+  "JPTdI7PQcPnlYVfCUJtG"
+ ],
+ "_z5D1": "[softly] I'm sorry. That was my mistake... not yours.",
+ "z5D1": [
+  "1DpON1nJc5AWGctUoB45",
+  "1UDbe5P26tLeFZOUA0AG"
+ ],
+ "_z5D2": "[tender, sure] I won't open that door again. But I'm not going anywhere.",
+ "z5D2": [
+  "6iAuF9btljtsAVSzRFao",
+  "7TJKfsOQJ6NpKW0v219D"
+ ],
+ "_z5D3": "In the morning, I went to the temple... and made merit in their names.",
+ "z5D3": [
+  "6jOQXWIIElOW0eLcHmTj",
+  "XSAtnIewlaeq8iEP1Mjo"
+ ],
+ "_z5D4": "[a tender, reverent whisper] For the three children in my care... may this merit reach you. May you be well... and one day, may you go on to a better birth.",
+ "z5D4": [
+  "7NURjSioBqp0WEwgQxDh",
+  "9cM9gXyplOfIjM1RvnDK"
+ ],
+ "_z5D5": "[warm, steady] I kept caring for them every day, and making merit in their names, for years. And I never opened that door again.",
+ "z5D5": [
+  "g7ivQu3bKM56KE7nIj8A",
+  "py3X57AOHna2XbaZAaI1"
+ ],
+ "_z5D6": "[quietly] If one day I can't look after them... someone will. I made sure of it.",
+ "z5D6": [
+  "SOumTYaP8ONWbjStFvw9",
+  "QoLN8YdnGmX2ye1QHs02"
+ ],
+ "_z5epi0": "[reflective, warm] They were never something to fear. Only children with nowhere to go... and what they needed from me was care, merit and kindness, for as long as I live.",
+ "z5epi0": [
+  "mgAJNFAS0hEPp5H9oy8E",
+  "21JzFUeW8fACsA8mPSJQ"
+ ],
+ "_z5epi1": "[reflective] Looking back today, I can see clearly how dangerous... and how completely unnecessary that experiment was.",
+ "z5epi1": [
+  "rmEjlGXvUjZrlqRiM66C",
+  "6GSQiOteF5LWFL0jAu3r"
+ ],
+ "_z5epi2": "Some lessons are only learned by living them.",
+ "z5epi2": [
+  "lmgpY10agEnk47xmLUsE",
+  "ecLJwzhS5wl3j6WWbYwL"
+ ],
+ "_z5epi3": "This is the one experiment I would tell everybody never to repeat.",
+ "z5epi3": [
+  "pjiEJWW5CSoGGpqP7pPI",
+  "6FCTstqLXkmLBZaKMAKE"
+ ],
+ "_z5A": "I promised to look after them. In the end, there was no one left to do it.",
+ "z5A": [
+  "5XxDHPJ8vi1aFBSzJ9Zk",
+  "TBrma89EDdKr8CajPkLF"
+ ],
+ "_z5B": "They were children, not a horror story. I showed strangers the way in.",
+ "z5B": [
+  "SsXPcsvTNdtGyfEBsF3r",
+  "r0Epi6Z8Uwr4cKtMFwwZ"
+ ],
+ "_z5C": "I stopped giving to them. I only kept asking.",
+ "z5C": [
+  "NKYDrZr0jV1OyyR6IPSL",
+  "DhTOkfRf1184JhHxSSoZ"
+ ],
+ "_z5D": "I kept my promise every day, and I kept my own door shut.",
+ "z5D": [
+  "hc3Fu3gnQMLGX2uaZTcy",
+  "NoUHSRyjj3CBGkJ9f0U2"
+ ],
+ "_z5b4_hiA": "[in a high, small child's voice, quietly, hurt] ...They didn't want me any more.  (eleven_v4)",
+ "z5b4_hiA": [
+  "67IQn9jPK0dGtwo9ouHg"
+ ],
+ "_z5b4_hiB": "[as a five-year-old boy, small high voice, sad] ...They didn't want me any more.  (eleven_v4)",
+ "z5b4_hiB": [
+  "GkpmalVDQPdp2S8LLuv5"
+ ],
+ "_z5s4_hiA": "[in a high, small child's voice, waiting, sad] Come and find me... ...Nobody ever comes.  (eleven_v4)",
+ "z5s4_hiA": [
+  "4j9QKq8mViWmG0rCDLH3"
+ ],
+ "_z5s4_hiB": "[as a five-year-old boy, small high voice, sad] Come and find me... ...Nobody ever comes.  (eleven_v4)",
+ "z5s4_hiB": [
+  "KH3moxr5lKjqqKGU3NzD"
+ ],
+ "_z5l1_hiA": "[in a high, small child's voice, very softly, lonely] Everyone goes away...  (eleven_v4)",
+ "z5l1_hiA": [
+  "6GWXh85z4Rj6OfO9ExyK"
+ ],
+ "_z5l1_hiB": "[as a five-year-old boy, small high voice, lonely] Everyone goes away...  (eleven_v4)",
+ "z5l1_hiB": [
+  "HhDFFNRG7KM6FHSAVa5R"
+ ],
+ "_z5s3_hiA": "[in a high, small child's voice, delighted, softly] Mine... my secret...  (eleven_v4)",
+ "z5s3_hiA": [
+  "6oMgv0xPnt90OZXBKY2o"
+ ],
+ "_z5s3_hiB": "[as a five-year-old boy, small high voice, delighted] Mine... my secret...  (eleven_v4)",
+ "z5s3_hiB": [
+  "7u3N5nqCUFWeTfF9R38B"
+ ],
+ "ow5never2": [
+  "SCbohjGuydcSFBleqX3m",
+  "MXOMz5QkpDS1iysdD88Q"
+ ],
+ "_ow5never2": "[serious] But listen ah... Never keep them for greed. Not for money, not for lottery numbers... if that is why you want them, don't take them.  (re-said: 'listen, ah' was heard as 'listener' in both first takes)"
+}

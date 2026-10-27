@@ -1,0 +1,65 @@
+{
+ "_flow": "CYNtKVY1iCq6HUIHF6Ki (e3c5 \u00b7 The Children On My Altar \u00b7 music); eleven_music_v2_5, instrumental",
+ "k5lullaby": [
+  "lZXTPZdZRpRb1rBWDREc",
+  "EkzvMn7zyR7DvUuDtAHA",
+  "XJ8HiAwJdrv9dqdBujQd",
+  "ZLS81A3ptJYLbvSRobKQ"
+ ],
+ "_k5lullaby": "node 6jNReTscxO6wXwp9DZiE, 26 s, a solo antique music box, a major-key lullaby in three-four at ~72 bpm, the phrase played twice",
+ "k5theme": [
+  "GMCLDy4VBD5K5FzQuRIy",
+  "CktCGjCSllIIY0E9T5FT"
+ ],
+ "_k5theme": "node orLmTqbyOrHMmOo1JDDm, 24 s asked, the lullaby b wired into its audio port; take b FAILED (an unexpected error, charged)",
+ "k5theme2": [
+  "ksFzxP4oq8uhHOqfJp7l",
+  "01EQDGxCwqvTk02CVY41"
+ ],
+ "_k5theme2": "node XLTBiuML1S3ss1FG7fYL, 24 s, text only, C major named (the audio-port take came back in G major)",
+ "k5care": [
+  "IazCgHxo8EC0ZJlQ8TxL",
+  "eaVnIS5qZiuXP5rHhxV4"
+ ],
+ "_k5care": "node 5xEVaXkMjed4w6Agoqlp, 40 s, khim + low strings, steady, for a hand loop",
+ "k5night": [
+  "XtNARq2RJsRLQaqiVQZE",
+  "DGWl2AQcvmYoa2udbyp3"
+ ],
+ "_k5night": "node qsLRsCVk2sPdiXjTz6Nl, 30 s, a held tone on C",
+ "k5red": [
+  "ryn440k1s1h9Ag0YqHc7",
+  "6OEY0ZZqsESlkQ96qOI8"
+ ],
+ "_k5red": "node 07i5dIQ6QqcAUpzebqXG, 34 s, toy drum, ching, klong yao, falls away to one drum",
+ "k5shy": [
+  "FRrOLftKzGKIzxbCplVr",
+  "2zAfwmb4vx2Qw7FESWQG"
+ ],
+ "_k5shy": "node QAQBQprvPnSw8JB1GagO, 34 s, music box + khim, a held note mid-way",
+ "k5lonely": [
+  "lM23PueuvlyFtUvehdE0",
+  "BTwGjzX6pnw0Q4bM4dq1"
+ ],
+ "_k5lonely": "node kdaQOROHStFNJE2Y6f9s, 30 s, khlui + saw u, slow",
+ "k5climb": [
+  "rNu4Yhxc6gI7q5gwyltx",
+  "A7QGOnkE1v2AP9Jid66E"
+ ],
+ "_k5climb": "node b9sSs0zxIw1WRsgsV6z6, 22 s, the rising swell with bells",
+ "k5after": [
+  "9CAZoYVTzo9H3ZnkCyZ3",
+  "iMTBJ5XmUCFSuioZyj1H"
+ ],
+ "_k5after": "node Lal9vvf8bxkMSbZ0pwFg, 20 s, one held note",
+ "k5endD": [
+  "g02MGmW6F1upMIZb4gOY",
+  "lWnNzVPcdhgjOqujNqb2"
+ ],
+ "_k5endD": "node uQEzd3YDENNT4rS9CvyR, 20 s, resolved with strings",
+ "k5epi": [
+  "gxXHwGYoHpZ0o1sELHD5",
+  "X5vncZnCWa348HYr2nug"
+ ],
+ "_k5epi": "node D27Mk4SRwPTc0ABIiDLU, 32 s, the fuller arrangement"
+}

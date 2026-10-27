@@ -1,0 +1,418 @@
+{
+ "z5b1": [
+  "z5b1_b",
+  "z5b1_a"
+ ],
+ "z5b4": [
+  "z5b4_b",
+  "z5b4_a"
+ ],
+ "z5s1": [
+  "z5s1_b",
+  "z5s1_a"
+ ],
+ "z5s4": [
+  "z5s4_b",
+  "z5s4_a"
+ ],
+ "z5l1": [
+  "z5l1_a",
+  "z5l1_b"
+ ],
+ "z5b1_v4": [
+  "z5b1_v4_b",
+  "z5b1_v4_a"
+ ],
+ "z5b4_v4": [
+  "z5b4_v4_b",
+  "z5b4_v4_a"
+ ],
+ "z5s1_v4": [
+  "z5s1_v4_a",
+  "z5s1_v4_b"
+ ],
+ "z5s4_v4": [
+  "z5s4_v4_a",
+  "z5s4_v4_b"
+ ],
+ "z5l1_v4": [
+  "z5l1_v4_b",
+  "z5l1_v4_a"
+ ],
+ "z5b2_v4": [
+  "z5b2_v4_b",
+  "z5b2_v4_a"
+ ],
+ "z5b3_v4": [
+  "z5b3_v4_a",
+  "z5b3_v4_b"
+ ],
+ "z5s2_v4": [
+  "z5s2_v4_b",
+  "z5s2_v4_a"
+ ],
+ "z5s3_v4": [
+  "z5s3_v4_b",
+  "z5s3_v4_a"
+ ],
+ "z5l2_v4": [
+  "z5l2_v4_b",
+  "z5l2_v4_a"
+ ],
+ "z5l3_v4": [
+  "z5l3_v4_b",
+  "z5l3_v4_a"
+ ],
+ "z5sob_v4": [
+  "z5sob_v4_a",
+  "z5sob_v4_b"
+ ],
+ "z5Agig_v4": [
+  "z5Agig_v4_b",
+  "z5Agig_v4_a"
+ ],
+ "ow5hello": [
+  "ow5hello_a",
+  "ow5hello_b"
+ ],
+ "ow5yin": [
+  "ow5yin_a",
+  "ow5yin_b"
+ ],
+ "ow5monk": [
+  "ow5monk_b",
+  "ow5monk_a"
+ ],
+ "ow5red": [
+  "ow5red_b",
+  "ow5red_a"
+ ],
+ "ow5shy": [
+  "ow5shy_a",
+  "ow5shy_b"
+ ],
+ "ow5little": [
+  "ow5little_b",
+  "ow5little_a"
+ ],
+ "ow5give": [
+  "ow5give_a",
+  "ow5give_b"
+ ],
+ "ow5never": [
+  "ow5never_a",
+  "ow5never_b"
+ ],
+ "ow5wrong": [
+  "ow5wrong_b",
+  "ow5wrong_a"
+ ],
+ "ow5promise": [
+  "ow5promise_a",
+  "ow5promise_b"
+ ],
+ "ow5careful": [
+  "ow5careful_b",
+  "ow5careful_a"
+ ],
+ "ma5vm": [
+  "ma5vm_b",
+  "ma5vm_a"
+ ],
+ "mk5teach": [
+  "mk5teach_a",
+  "mk5teach_b"
+ ],
+ "z5pro1": [
+  "z5pro1_b",
+  "z5pro1_a"
+ ],
+ "z5yinq": [
+  "z5yinq_a",
+  "z5yinq_b"
+ ],
+ "z5children": [
+  "z5children_a",
+  "z5children_b"
+ ],
+ "z5promise": [
+  "z5promise_b",
+  "z5promise_a"
+ ],
+ "z5pro2": [
+  "z5pro2_b",
+  "z5pro2_a"
+ ],
+ "z5pro3": [
+  "z5pro3_a",
+  "z5pro3_b"
+ ],
+ "z5pro4": [
+  "z5pro4_a",
+  "z5pro4_b"
+ ],
+ "z5water": [
+  "z5water_a",
+  "z5water_b"
+ ],
+ "z5bag": [
+  "z5bag_b",
+  "z5bag_a"
+ ],
+ "z5red": [
+  "z5red_a",
+  "z5red_b"
+ ],
+ "z5shy": [
+  "z5shy_b",
+  "z5shy_a"
+ ],
+ "z5little": [
+  "z5little_a",
+  "z5little_b"
+ ],
+ "z5stiff": [
+  "z5stiff_a",
+  "z5stiff_b"
+ ],
+ "z5incense": [
+  "z5incense_b",
+  "z5incense_a"
+ ],
+ "z5eat": [
+  "z5eat_a",
+  "z5eat_b"
+ ],
+ "z5dedic": [
+  "z5dedic_a",
+  "z5dedic_b"
+ ],
+ "z5wonder": [
+  "z5wonder_b",
+  "z5wonder_a"
+ ],
+ "z5ask": [
+  "z5ask_b",
+  "z5ask_a"
+ ],
+ "z5loose": [
+  "z5loose_a",
+  "z5loose_b"
+ ],
+ "z5back1": [
+  "z5back1_b",
+  "z5back1_a"
+ ],
+ "z5back1b": [
+  "z5back1b_b",
+  "z5back1b_a"
+ ],
+ "z5again1": [
+  "z5again1_a",
+  "z5again1_b"
+ ],
+ "z5back2": [
+  "z5back2_b",
+  "z5back2_a"
+ ],
+ "z5back2b": [
+  "z5back2b_b",
+  "z5back2b_a"
+ ],
+ "z5again2": [
+  "z5again2_b",
+  "z5again2_a"
+ ],
+ "z5out": [
+  "z5out_a",
+  "z5out_b"
+ ],
+ "z5come": [
+  "z5come_b",
+  "z5come_a"
+ ],
+ "z5gasp": [
+  "z5gasp_b",
+  "z5gasp_a"
+ ],
+ "z5time": [
+  "z5time_b",
+  "z5time_a"
+ ],
+ "z5felt": [
+  "z5felt_b",
+  "z5felt_a"
+ ],
+ "z5fasc": [
+  "z5fasc_a",
+  "z5fasc_b"
+ ],
+ "z5A1": [
+  "z5A1_a",
+  "z5A1_b"
+ ],
+ "z5A2": [
+  "z5A2_b",
+  "z5A2_a"
+ ],
+ "z5A3": [
+  "z5A3_b",
+  "z5A3_a"
+ ],
+ "z5A4": [
+  "z5A4_a",
+  "z5A4_b"
+ ],
+ "z5A5": [
+  "z5A5_b",
+  "z5A5_a"
+ ],
+ "z5A6": [
+  "z5A6_b",
+  "z5A6_a"
+ ],
+ "z5B1": [
+  "z5B1_b",
+  "z5B1_a"
+ ],
+ "z5B2": [
+  "z5B2_b",
+  "z5B2_a"
+ ],
+ "z5B3": [
+  "z5B3_b",
+  "z5B3_a"
+ ],
+ "z5B4": [
+  "z5B4_b",
+  "z5B4_a"
+ ],
+ "z5B5": [
+  "z5B5_b",
+  "z5B5_a"
+ ],
+ "z5B6": [
+  "z5B6_a",
+  "z5B6_b"
+ ],
+ "z5C1": [
+  "z5C1_a",
+  "z5C1_b"
+ ],
+ "z5C2": [
+  "z5C2_b",
+  "z5C2_a"
+ ],
+ "z5C3": [
+  "z5C3_a",
+  "z5C3_b"
+ ],
+ "z5C4": [
+  "z5C4_a",
+  "z5C4_b"
+ ],
+ "z5Cevil": [
+  "z5Cevil_b",
+  "z5Cevil_a"
+ ],
+ "z5Claugh": [
+  "z5Claugh_b",
+  "z5Claugh_a"
+ ],
+ "z5C5": [
+  "z5C5_a",
+  "z5C5_b"
+ ],
+ "z5C6": [
+  "z5C6_a",
+  "z5C6_b"
+ ],
+ "z5C7": [
+  "z5C7_a",
+  "z5C7_b"
+ ],
+ "z5D1": [
+  "z5D1_b",
+  "z5D1_a"
+ ],
+ "z5D2": [
+  "z5D2_a",
+  "z5D2_b"
+ ],
+ "z5D3": [
+  "z5D3_a",
+  "z5D3_b"
+ ],
+ "z5D4": [
+  "z5D4_a",
+  "z5D4_b"
+ ],
+ "z5D5": [
+  "z5D5_b",
+  "z5D5_a"
+ ],
+ "z5D6": [
+  "z5D6_b",
+  "z5D6_a"
+ ],
+ "z5epi0": [
+  "z5epi0_b",
+  "z5epi0_a"
+ ],
+ "z5epi1": [
+  "z5epi1_b",
+  "z5epi1_a"
+ ],
+ "z5epi2": [
+  "z5epi2_a",
+  "z5epi2_b"
+ ],
+ "z5epi3": [
+  "z5epi3_b",
+  "z5epi3_a"
+ ],
+ "z5A": [
+  "z5A_a",
+  "z5A_b"
+ ],
+ "z5B": [
+  "z5B_a",
+  "z5B_b"
+ ],
+ "z5C": [
+  "z5C_b",
+  "z5C_a"
+ ],
+ "z5D": [
+  "z5D_a",
+  "z5D_b"
+ ],
+ "z5b4_hiA": [
+  "z5b4_hiA_a"
+ ],
+ "z5b4_hiB": [
+  "z5b4_hiB_a"
+ ],
+ "z5s4_hiA": [
+  "z5s4_hiA_a"
+ ],
+ "z5s4_hiB": [
+  "z5s4_hiB_a"
+ ],
+ "z5l1_hiA": [
+  "z5l1_hiA_a"
+ ],
+ "z5l1_hiB": [
+  "z5l1_hiB_a"
+ ],
+ "z5s3_hiA": [
+  "z5s3_hiA_a"
+ ],
+ "z5s3_hiB": [
+  "z5s3_hiB_a"
+ ],
+ "ow5never2": [
+  "ow5never2_a",
+  "ow5never2_b"
+ ]
+}

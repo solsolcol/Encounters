@@ -1,0 +1,614 @@
+
+== z5b1: [as a bossy little boy, stamping] Mine! These are all MINE!
+  z5b1_a:  2.56s head -47.5 end -47.8 lead0.08 tail0.06 maxgap 0.54 after 'Mine.'   OK
+      heard: Mine. These are all mine.
+  z5b1_b:  2.72s head -58.2 end -47.9 lead0.10 tail0.07 maxgap 0.44 after 'Mine.'   OK
+      heard: Mine. These are all mine.
+
+== z5b4: [as a small boy, quietly, hurt] ...They didn't want me any more.
+  z5b4_a:  1.68s head -47.9 end -27.7 lead0.31 tail0.00 maxgap 0.00 after 'want' ON-SIGNAL  DIFF replace:any more>anymore
+      heard: They didn't want me anymore.
+  z5b4_b:  2.88s head -50.3 end -78.9 lead0.16 tail1.49 maxgap 0.00 after 'want'   DIFF replace:any more>anymore
+      heard: They didn't want me anymore.
+
+== z5s1: [as a shy little boy, giggling] Hehe... you can't see me...
+  z5s1_a:  2.40s head -42.5 end -31.7 lead0.00 tail0.04 maxgap 0.00 after 'see' ON-SIGNAL  DIFF delete:hehe>
+      heard: You can't see me.
+  z5s1_b:  3.52s head -40.5 end -72.2 lead0.04 tail1.15 maxgap 0.00 after 'see'   DIFF delete:hehe>
+      heard: You can't see me.
+
+== z5s4: [as a small boy, waiting, sad] Come and find me... ...Nobody ever comes.
+  z5s4_a:  4.16s head -58.5 end -25.9 lead0.12 tail0.00 maxgap 1.38 after 'me.' ON-SIGNAL  OK
+      heard: Come and find me. Nobody ever comes.
+  z5s4_b:  4.08s head -57.6 end -49.0 lead0.15 tail0.07 maxgap 1.46 after 'me.'   OK
+      heard: Come and find me. Nobody ever comes.
+
+== z5l1: [as a small lonely boy, very softly] Everyone goes away...
+  z5l1_a:  2.80s head -57.6 end -41.6 lead0.17 tail0.00 maxgap 0.00 after 'goes'   OK
+      heard: Everyone goes away.
+  z5l1_b:  2.72s head -46.2 end -36.9 lead0.00 tail0.00 maxgap 0.00 after 'goes' ON-SIGNAL  OK
+      heard: Everyone goes away.
+
+== z5b1_v4: [as a bossy little boy, stamping] Mine! These are all MINE!  (eleven_v4)
+  z5b1_v4_a:  2.64s head -33.5 end -86.0 lead0.04 tail0.27 maxgap 0.52 after 'Mine.'   OK
+      heard: Mine. These are all mine.
+  z5b1_v4_b:  2.64s head -35.0 end -85.7 lead0.04 tail0.22 maxgap 0.58 after 'Mine!'   OK
+      heard: Mine! These are all mine!
+
+== z5b4_v4: [as a small boy, quietly, hurt] ...They didn't want me any more.  (eleven_v4)
+  z5b4_v4_a:  2.16s head -56.1 end -86.7 lead0.19 tail0.30 maxgap 0.00 after 'want'   DIFF replace:any more>anymore
+      heard: They didn't want me anymore.
+  z5b4_v4_b:  2.08s head -60.8 end -82.4 lead0.21 tail0.29 maxgap 0.00 after 'want'   DIFF replace:any more>anymore
+      heard: They didn't want me anymore.
+
+== z5s1_v4: [as a shy little boy, giggling] Hehe... you can't see me...  (eleven_v4)
+  z5s1_v4_a:  3.36s head -40.9 end -88.9 lead0.05 tail0.39 maxgap 0.32 after 'Hehehe.'   DIFF replace:hehe>hehehe
+      heard: Hehehe. You can't see me.
+  z5s1_v4_b:  3.36s head -37.8 end -88.7 lead0.02 tail0.37 maxgap 0.38 after 'Hehehe.'  HEAD-ON DIFF replace:hehe>hehehe
+      heard: Hehehe. You can't see me.
+
+== z5s4_v4: [as a small boy, waiting, sad] Come and find me... ...Nobody ever comes.  (eleven_v4)
+  z5s4_v4_a:  3.92s head -86.4 end -86.7 lead0.09 tail0.17 maxgap 0.86 after 'me.'   OK
+      heard: Come and find me. Nobody ever comes.
+  z5s4_v4_b:  3.84s head -55.2 end -64.1 lead0.12 tail0.09 maxgap 0.82 after 'me.'   OK
+      heard: Come and find me. Nobody ever comes.
+
+== z5l1_v4: [as a small lonely boy, very softly] Everyone goes away...  (eleven_v4)
+  z5l1_v4_a:  3.92s head -58.9 end -87.5 lead0.17 tail0.37 maxgap 0.98 after 'away.'   DIFF insert:>everyone goes away
+      heard: Everyone goes away. Everyone goes away.
+  z5l1_v4_b:  3.68s head -65.8 end -87.0 lead0.17 tail0.22 maxgap 0.82 after 'away.'   DIFF insert:>everyone goes away
+      heard: Everyone goes away. Everyone goes away.
+
+== z5b2_v4: [as a bossy little boy] Nobody touches my things! Nobody!  (eleven_v4)
+  z5b2_v4_a:  2.88s head -50.2 end -85.1 lead0.07 tail0.21 maxgap 0.48 after 'things.'   OK
+      heard: Nobody touches my things. Nobody.
+  z5b2_v4_b:  2.88s head -52.4 end -69.7 lead0.07 tail0.17 maxgap 0.48 after 'things.'   OK
+      heard: Nobody touches my things. Nobody.
+
+== z5b3_v4: [as a bossy little boy, demanding] More! I want MORE!  (eleven_v4)
+  z5b3_v4_a:  2.32s head -26.2 end -86.5 lead0.03 tail0.28 maxgap 0.50 after 'More.'   OK
+      heard: More. I want more.
+  z5b3_v4_b:  2.08s head -24.3 end -79.8 lead0.03 tail0.17 maxgap 0.44 after 'More!'   OK
+      heard: More! I want more!
+
+== z5s2_v4: [as a shy little boy, whispering] Shhh... hide... hide...  (eleven_v4)
+  z5s2_v4_a:  3.76s head -62.0 end -86.1 lead0.11 tail0.38 maxgap 0.66 after 'Hide.'   DIFF replace:shhh>shh shh
+      heard: Shh. Shh. Hide. Hide.
+  z5s2_v4_b:  3.52s head -63.7 end -83.0 lead0.11 tail0.20 maxgap 0.70 after 'Hide.'   DIFF replace:shhh>shh shh
+      heard: Shh. Shh. Hide. Hide.
+
+== z5s3_v4: [as a shy little boy, delighted, softly] Mine... my secret...  (eleven_v4)
+  z5s3_v4_a:  4.96s head -85.5 end -84.5 lead0.25 tail0.19 maxgap 0.96 after 'secret.'   DIFF insert:>mine my secret
+      heard: Mine. My secret. Mine. My secret.
+  z5s3_v4_b:  5.28s head -86.1 end -84.0 lead0.18 tail0.19 maxgap 0.84 after 'Mine.'   DIFF insert:>mine mine mine
+      heard: Mine. Mine. Mine. Mine. My secret.
+
+== z5l2_v4: [as a small lonely boy, pleading] You won't go... right?  (eleven_v4)
+  z5l2_v4_a:  3.52s head -75.0 end -86.1 lead0.18 tail0.22 maxgap 0.56 after 'go.'   DIFF insert:>you won't go
+      heard: You won't go. You won't go, right?
+  z5l2_v4_b:  2.32s head -85.5 end -81.1 lead0.19 tail0.25 maxgap 0.36 after 'go,'   OK
+      heard: You won't go, right?
+
+== z5l3_v4: [as a small boy, crying] Stay... stay with me...  (eleven_v4)
+  z5l3_v4_a:  3.76s head -61.4 end -88.3 lead0.13 tail0.33 maxgap 0.62 after 'Stay.'   DIFF insert:>stay
+      heard: Stay. Stay. Stay with me.
+  z5l3_v4_b:  2.72s head -54.1 end -87.7 lead0.18 tail0.28 maxgap 0.60 after 'Stay.'   OK
+      heard: Stay. Stay with me.
+
+== z5sob_v4: [as a small boy, sobbing quietly] Hhh... hhh...  (eleven_v4)
+  z5sob_v4_a:  3.04s head -61.6 end -87.6 lead0.08 tail0.33 maxgap 0.00 after ''   DIFF replace:hhh hhh>hehehehehehehehehehehe
+      heard: Hehehehehehehehehehehe.
+  z5sob_v4_b:  3.28s head -49.2 end -88.2 lead0.05 tail0.68 maxgap 0.00 after ''   DIFF replace:hhh hhh>hehehehehehehe
+      heard: Hehehehehehehe.
+
+== z5Agig_v4: [a small dry giggle] Hehe...  (eleven_v4)
+  z5Agig_v4_a:  2.56s head -24.4 end -88.6 lead0.04 tail0.31 maxgap 0.00 after 'Hehehehe.'   DIFF replace:hehe>hehehehe hehehe
+      heard: Hehehehe. Hehehe.
+  z5Agig_v4_b:  2.32s head -27.2 end -87.7 lead0.04 tail0.25 maxgap 0.14 after 'Hehehe.'   DIFF replace:hehe>hehehe hehehe
+      heard: Hehehe. Hehehe.
+
+== ow5hello: [warmly] Ah, you came. Come, come... I want you to meet three small ones.
+  ow5hello_a:  5.12s head -35.7 end -32.1 lead0.04 tail0.00 maxgap 0.50 after 'came.' ON-SIGNAL  OK
+      heard: Ah, you came. Come, come. I want you to meet three small ones.
+  ow5hello_b:  4.96s head -25.1 end -31.8 lead0.00 tail0.00 maxgap 0.44 after 'came.' ON-SIGNAL HEAD-ON OK
+      heard: Ah, you came. Come, come. I want you to meet three small ones.
+
+== ow5yin: [gently] Children, yes. Ghosts to be afraid of, no. What you're thinking of — trapped with black magic, fed with blood, sent to hurt people — that's something else. These three came from a temple. A Luang Phor gave them a home there... out of compassion.
+  ow5yin_a: 17.60s head -29.0 end -38.9 lead0.00 tail0.04 maxgap 1.00 after 'Yes.' ON-SIGNAL HEAD-ON OK
+      heard: Children? Yes. Ghosts to be afraid of? No. What you're thinking of? Trapped with black magic, fed with blood, sent to hurt people? That's something else. These three came from a temple. A Luang Phor gave them a home there, out of compassion.
+  ow5yin_b: 17.68s head -28.4 end -26.8 lead0.00 tail0.00 maxgap 0.80 after 'yes.' ON-SIGNAL HEAD-ON OK
+      heard: Children, yes. Ghosts to be afraid of, no. What you're thinking of, trapped with black magic, fed with blood, sent to hurt people, that's something else. These three came from a temple. A Luang Phor gave them a home there, out of compassion.
+
+== ow5monk: [softly] Small ones who passed on young, with nowhere to go yet. Nobody forces them to stay... they come of their own free will. They help a kind person a little. And they can't make merit for themselves, so you make it, and you give it to them. We believe it helps them on, toward a better birth.
+  ow5monk_a: 24.80s head -29.2 end -29.0 lead0.00 tail0.00 maxgap 0.98 after 'them.' ON-SIGNAL HEAD-ON OK
+      heard: Small ones who passed on young with nowhere to go yet. Nobody forces them to stay. They come of their own free will. They help a kind person a little and they can't make merit for themselves. So you make it and you give it to them. We believe it helps them on toward a better birth.
+  ow5monk_b: 22.56s head -31.9 end -35.7 lead0.00 tail0.02 maxgap 1.08 after 'yet.' ON-SIGNAL HEAD-ON OK
+      heard: Small ones who passed on young, with nowhere to go yet. Nobody forces them to stay. They come of their own free will. They help a kind person, a little. And they can't make merit for themselves. So you make it, and you give it to them. We believe it helps them on, toward a better birth.
+
+== ow5red: This one... a family took him home for luck. When the luck didn't come fast enough, they brought him back. Didn't want him any more.
+  ow5red_a:  7.28s head -39.6 end -35.0 lead0.00 tail0.02 maxgap 0.38 after 'luck.' ON-SIGNAL HEAD-ON DIFF replace:any more>anymore
+      heard: This one, a family took him home for luck. When the luck didn't come fast enough, they brought him back. Didn't want him anymore.
+  ow5red_b:  7.36s head -32.9 end -25.9 lead0.03 tail0.00 maxgap 0.44 after 'luck.' ON-SIGNAL  DIFF replace:any more>anymore
+      heard: This one, a family took him home for luck. When the luck didn't come fast enough, they brought him back, didn't want him anymore.
+
+== ow5shy: This one, an old auntie looked after him for twenty years. When she passed on, her family brought him back to me... with her music box.
+  ow5shy_a:  9.68s head -38.0 end -34.0 lead0.04 tail0.00 maxgap 0.78 after 'years.' ON-SIGNAL  DIFF replace:twenty>20
+      heard: This one, an old auntie looked after him for 20 years. When she passed on, her family brought him back to me, with her music box.
+  ow5shy_b: 10.08s head -34.6 end -33.7 lead0.04 tail0.00 maxgap 0.86 after 'years.' ON-SIGNAL  DIFF replace:twenty>20
+      heard: This one, an old auntie looked after him for 20 years. When she passed on, her family brought him back to me with her music box.
+
+== ow5little: [quietly] And this small one... somebody left him at a temple gate. Nobody knows where he came from.
+  ow5little_a:  6.72s head -28.5 end -24.3 lead0.00 tail0.00 maxgap 1.26 after 'one.' ON-SIGNAL HEAD-ON OK
+      heard: And this small one. Somebody left him at a temple gate. Nobody knows where he came from.
+  ow5little_b:  7.20s head -38.4 end -25.3 lead0.04 tail0.00 maxgap 1.28 after 'gate.' ON-SIGNAL  OK
+      heard: And this small one. Somebody left him at a temple gate. Nobody knows where he came from.
+
+== ow5give: So think of them like small children... with nowhere to go. You give them drink, you make merit for them... you are giving them something they never had.
+  ow5give_a: 13.12s head -28.7 end -32.7 lead0.00 tail0.01 maxgap 0.80 after 'go.' ON-SIGNAL HEAD-ON OK
+      heard: So think of them like small children with nowhere to go. You give them drink, you make merit for them. You are giving them something they never had.
+  ow5give_b: 12.08s head -26.5 end -32.4 lead0.00 tail0.00 maxgap 0.94 after 'them.' ON-SIGNAL HEAD-ON OK
+      heard: So think of them like small children with nowhere to go. You give them drink. You make merit for them. You are giving them something they never had.
+
+== ow5never: [serious] But listen, ah. Never keep them for greed. Not for money, not for lottery numbers... if that is why you want them, don't take them.
+  ow5never_a: 10.72s head -31.4 end -28.1 lead0.03 tail0.00 maxgap 0.96 after 'listener,' ON-SIGNAL  DIFF replace:listen ah>listener
+      heard: But listener, never keep them for greed. Not for money, not for lottery numbers. If that is why you want them, don't take them.
+  ow5never_b:  9.76s head -22.2 end -22.8 lead0.00 tail0.00 maxgap 0.82 after 'listener,' ON-SIGNAL HEAD-ON DIFF replace:listen ah>listener
+      heard: But listener, never keep them for greed. Not for money. Not for lottery numbers. If that is why you want them, don't take them.
+
+== ow5wrong: [serious, gently] And never ask them to do anything wrong. The ones from a temple, we believe, won't help you do wrong. Children grow like the one who raises them... so you keep the precepts yourself.
+  ow5wrong_a: 15.44s head -28.9 end -27.7 lead0.00 tail0.00 maxgap 1.22 after 'wrong.' ON-SIGNAL HEAD-ON DIFF replace:precepts>precept
+      heard: And never ask them to do anything wrong. The ones from a temple, we believe, won't help you do wrong. Children grow like the one who raises them. So you keep the precept yourself.
+  ow5wrong_b: 15.60s head -32.0 end -28.5 lead0.00 tail0.00 maxgap 1.14 after 'wrong.' ON-SIGNAL HEAD-ON OK
+      heard: And never ask them to do anything wrong. The ones from a temple we believe won't help you do wrong. Children grow like the one who raises them. So you keep the precepts yourself.
+
+== ow5promise: [firmly] And not for one month, not for one year. Every day you look after them, you keep making merit for them... as long as you live. If one day you really cannot, you bring them back to me, or to a temple. Never just leave them. [asking] Can or not?
+  ow5promise_a: 20.16s head -30.0 end -30.2 lead0.00 tail0.00 maxgap 1.22 after 'live.' ON-SIGNAL HEAD-ON OK
+      heard: And not for one month, not for one year. Every day you look after them. You keep making merit for them. As long as you live. If one day you really cannot, you bring them back to me or to a temple. Never just leave them. Can or not?
+  ow5promise_b: 20.32s head -25.6 end -30.5 lead0.00 tail0.00 maxgap 1.04 after 'temple.' ON-SIGNAL HEAD-ON OK
+      heard: And not for one month, not for one year. Every day you look after them, you keep making merit for them, as long as you live. If one day you really cannot, you bring them back to me or to a temple. Never just leave them. Can or not,
+
+== ow5careful: [kindly] Look after them like your own, ah. But don't play-play with them.
+  ow5careful_a:  4.16s head -28.0 end -31.1 lead0.00 tail0.00 maxgap 0.90 after 'owner,' ON-SIGNAL HEAD-ON DIFF replace:own ah>owner
+      heard: Look after them like your owner, but don't play play with them.
+  ow5careful_b:  3.68s head -28.2 end -28.6 lead0.00 tail0.00 maxgap 0.60 after 'own,' ON-SIGNAL HEAD-ON DIFF delete:ah>
+      heard: Look after them like your own, but don't play play with them.
+
+== ma5vm: [worried, loving] Boy... why you never pick up? Ma worried, you know. Call me back, okay?
+  ma5vm_a:  5.12s head -77.8 end -45.4 lead0.12 tail0.06 maxgap 0.68 after 'up?'   OK
+      heard: Boy, why you never pick up? Ma worried, you know. Call me back, okay?
+  ma5vm_b:  5.52s head -84.7 end -44.8 lead0.11 tail0.00 maxgap 0.82 after 'up?'   OK
+      heard: Boy, why you never pick up? Ma worried, you know. Call me back, okay?
+
+== mk5teach: [gently] Give without bargaining. Keep your precepts. Then dedicate the merit. That is what you can do for them.
+  mk5teach_a: 10.32s head -41.3 end -26.3 lead0.00 tail0.00 maxgap 1.18 after 'merit.' ON-SIGNAL  OK
+      heard: Give without bargaining. Keep your precepts. Then dedicate the merit. That is what you can do for them.
+  mk5teach_b: 10.80s head -37.9 end -25.6 lead0.04 tail0.00 maxgap 1.08 after 'merit.' ON-SIGNAL  OK
+      heard: Give without bargaining. Keep your precepts. Then dedicate the merit. That is what you can do for them.
+
+== z5pro1: [reflective] While I was still searching for answers... I began keeping Kumanthong.
+  z5pro1_a:  5.20s head -47.7 end -31.8 lead0.08 tail0.00 maxgap 1.26 after 'answers,' ON-SIGNAL  OK
+      heard: While I was still searching for answers, I began keeping Kumanthong.
+  z5pro1_b:  5.28s head -61.8 end -26.4 lead0.26 tail0.00 maxgap 1.12 after 'answers,' ON-SIGNAL  OK
+      heard: While I was still searching for answers, I began keeping Kumanthong.
+
+== z5yinq: [hesitant, low] Uncle... aren't these yin? Baby ghosts... the kind people trap with black magic, feed with blood... that turn on you if you ever stop?
+  z5yinq_a: 11.28s head -51.9 end -28.2 lead0.11 tail0.00 maxgap 1.28 after 'yin?' ON-SIGNAL  OK
+      heard: Uncle. Aren't these yin? Baby ghosts. The kind people trap with black magic, feed with blood, that turn on you if you ever stop.
+  z5yinq_b: 11.04s head -41.5 end -29.6 lead0.11 tail0.02 maxgap 1.30 after 'Uncle.' ON-SIGNAL  OK
+      heard: Uncle. Aren't these yin? Baby ghosts. The kind people trap with black magic, feed with blood, that turn on you if you ever stop.
+
+== z5children: [softly] Children... with nowhere to go.
+  z5children_a:  3.04s head -58.6 end -24.8 lead0.08 tail0.00 maxgap 1.16 after 'Children.' ON-SIGNAL  OK
+      heard: Children. With nowhere to go.
+  z5children_b:  2.88s head -33.4 end -20.3 lead0.04 tail0.00 maxgap 0.00 after 'with' ON-SIGNAL  OK
+      heard: Children with nowhere to go.
+
+== z5promise: [quiet, sure] Every day. I promise.
+  z5promise_a:  2.56s head -50.8 end -27.8 lead0.10 tail0.00 maxgap 1.08 after 'day.' ON-SIGNAL  OK
+      heard: Every day. I promise.
+  z5promise_b:  2.48s head -58.1 end -54.3 lead0.13 tail0.00 maxgap 0.90 after 'day,'   OK
+      heard: Every day, I promise.
+
+== z5pro2: [reflective] I saw it as another way of making merit... and showing compassion.
+  z5pro2_a:  5.44s head -54.4 end -27.0 lead0.12 tail0.00 maxgap 0.00 after 'way' ON-SIGNAL  OK
+      heard: I saw it as another way of making merit and showing compassion.
+  z5pro2_b:  4.64s head -56.1 end -30.4 lead0.18 tail0.01 maxgap 0.00 after 'way' ON-SIGNAL  OK
+      heard: I saw it as another way of making merit and showing compassion.
+
+== z5pro3: [reflective] So I took them home... and made offerings to them, every day.
+  z5pro3_a:  8.80s head -56.5 end -40.8 lead0.10 tail0.00 maxgap 0.90 after 'home,'   OK
+      heard: So I took them home, and made offerings to them, every day.
+  z5pro3_b:  5.68s head -56.7 end -21.5 lead0.12 tail0.00 maxgap 0.00 after 'took' ON-SIGNAL  OK
+      heard: So I took them home and made offerings to them every day.
+
+== z5pro4: [quietly] Then one night, after everything else I had been through... I wanted to know something.
+  z5pro4_a:  6.72s head -67.8 end -25.7 lead0.09 tail0.00 maxgap 0.74 after 'through,' ON-SIGNAL  OK
+      heard: Then one night, after everything else I had been through, I wanted to know something.
+  z5pro4_b:  6.24s head -44.0 end -28.1 lead0.15 tail0.00 maxgap 1.10 after 'through,' ON-SIGNAL  OK
+      heard: Then one night, after everything else I had been through, I wanted to know something.
+
+== z5water: [quiet, routine] Water first... never let it run dry.
+  z5water_a:  2.96s head -66.0 end -22.3 lead0.13 tail0.00 maxgap 0.82 after 'first.' ON-SIGNAL  OK
+      heard: Water first. Never let it run dry.
+  z5water_b:  3.20s head -55.7 end -27.8 lead0.16 tail0.00 maxgap 0.88 after 'first.' ON-SIGNAL  OK
+      heard: Water first. Never let it run dry.
+
+== z5bag: Three red drinks. Three straws. Same as every night, since the day I promised.
+  z5bag_a:  6.96s head -27.3 end -31.6 lead0.00 tail0.00 maxgap 0.86 after 'drinks.' ON-SIGNAL HEAD-ON OK
+      heard: Three red drinks. Three straws. Same as every night since the day I promised.
+  z5bag_b:  6.40s head -40.1 end -29.5 lead0.03 tail0.00 maxgap 0.82 after 'drinks.' ON-SIGNAL  OK
+      heard: Three red drinks. Three straws. Same as every night, since the day I promised.
+
+== z5red: [warmly] There you go, big boss. Your favourite.
+  z5red_a:  3.04s head -53.4 end -33.4 lead0.19 tail0.01 maxgap 0.96 after 'boss.' ON-SIGNAL  DIFF replace:favourite>favorite
+      heard: There you go, big boss. Your favorite.
+  z5red_b:  2.56s head -52.6 end -32.5 lead0.19 tail0.00 maxgap 0.62 after 'boss.' ON-SIGNAL  DIFF replace:favourite>favorite
+      heard: There you go, big boss. Your favorite.
+
+== z5shy: [gently] This one's yours. Don't be shy.
+  z5shy_a:  2.48s head -48.7 end -37.1 lead0.14 tail0.04 maxgap 0.96 after 'yours.' ON-SIGNAL  OK
+      heard: This one's yours. Don't be shy.
+  z5shy_b:  2.16s head -51.8 end -63.5 lead0.17 tail0.15 maxgap 0.52 after 'yours.'   OK
+      heard: This one's yours. Don't be shy.
+
+== z5little: [tenderly] And this one's for you, little one.
+  z5little_a:  2.08s head -55.9 end -56.7 lead0.14 tail0.31 maxgap 0.22 after 'you,'   OK
+      heard: And this one's for you, little one.
+  z5little_b:  2.24s head -52.2 end -34.9 lead0.13 tail0.00 maxgap 0.30 after 'you,' ON-SIGNAL  OK
+      heard: And this one's for you, little one.
+
+== z5stiff: [straining] Come on... open...
+  z5stiff_a:  3.20s head -49.2 end -43.0 lead0.15 tail0.02 maxgap 0.80 after 'on.'   OK
+      heard: Come on. Open.
+  z5stiff_b:  4.64s head -52.6 end -39.8 lead0.00 tail0.00 maxgap 1.46 after 'on.' ON-SIGNAL  OK
+      heard: Come on. Open.
+
+== z5incense: One stick each.
+  z5incense_a:  0.96s head -19.8 end -34.1 lead0.03 tail0.02 maxgap 0.00 after 'stick' ON-SIGNAL  OK
+      heard: One stick each.
+  z5incense_b:  1.04s head -46.2 end -30.2 lead0.00 tail0.00 maxgap 0.00 after 'stick' ON-SIGNAL  OK
+      heard: One stick each.
+
+== z5eat: [warmly] Come... eat. This is for you three.
+  z5eat_a:  4.08s head -49.9 end -30.5 lead0.10 tail0.00 maxgap 1.40 after 'Eat.' ON-SIGNAL  OK
+      heard: Come. Eat. This is for you three.
+  z5eat_b:  3.28s head -47.5 end -31.7 lead0.15 tail0.00 maxgap 1.12 after 'Eat.' ON-SIGNAL  OK
+      heard: Come. Eat. This is for you three.
+
+== z5dedic: [whispers, tender] May the merit I make reach you three... and one day, may you go on to a better birth.
+  z5dedic_a:  8.16s head -51.9 end -54.2 lead0.10 tail0.18 maxgap 1.68 after 'three.'   OK
+      heard: May the merit I make reach you three. And one day, may you go on to a better birth.
+  z5dedic_b:  9.92s head -48.9 end -59.9 lead0.05 tail2.25 maxgap 1.62 after 'three.'   OK
+      heard: May the merit I make reach you three. And one day, may you go on to a better birth.
+
+== z5wonder: [tender] Every night they just sit here... I wonder what they feel.
+  z5wonder_a:  4.80s head -53.5 end -38.7 lead0.08 tail0.02 maxgap 1.32 after 'here.' ON-SIGNAL  OK
+      heard: Every night they just sit here. I wonder what they feel.
+  z5wonder_b:  6.40s head -39.9 end -66.1 lead0.00 tail1.37 maxgap 1.38 after 'here.'  HEAD-ON OK
+      heard: Every night they just sit here. I wonder what they feel.
+
+== z5ask: [whispers, wondering] What would happen... if I deliberately opened myself to my own Kumanthong?
+  z5ask_a:  6.24s head -46.8 end -39.7 lead0.00 tail0.03 maxgap 0.00 after 'would' ON-SIGNAL  OK
+      heard: What would happen if I deliberately opened myself to my own Kumanthong?
+  z5ask_b:  6.16s head -58.3 end -37.4 lead0.18 tail0.00 maxgap 0.00 after 'would' ON-SIGNAL  OK
+      heard: What would happen if I deliberately opened myself to my own Kumanthong?
+
+== z5loose: [whispers] Just... let my mind loosen.
+  z5loose_a:  2.96s head -32.0 end -36.1 lead0.03 tail0.00 maxgap 0.00 after 'my' ON-SIGNAL  OK
+      heard: Just let my mind loosen.
+  z5loose_b:  2.80s head -35.0 end -27.6 lead0.00 tail0.00 maxgap 0.00 after 'my' ON-SIGNAL HEAD-ON OK
+      heard: Just let my mind loosen.
+
+== z5back1: [breathing hard] That wasn't me... That was him.
+  z5back1_a:  3.76s head -55.6 end -33.5 lead0.16 tail0.00 maxgap 1.84 after 'me.' ON-SIGNAL  OK
+      heard: That wasn't me. That was him.
+  z5back1_b:  3.20s head -58.1 end -45.0 lead0.15 tail0.18 maxgap 1.16 after 'me.'   OK
+      heard: That wasn't me. That was him.
+
+== z5back1b: [gently] He wasn't angry. He just wanted someone to want him.
+  z5back1b_a:  3.84s head -57.9 end -26.1 lead0.13 tail0.00 maxgap 1.08 after 'angry.' ON-SIGNAL  OK
+      heard: He wasn't angry. He just wanted someone to want him.
+  z5back1b_b:  6.72s head -62.0 end -65.2 lead0.10 tail2.08 maxgap 1.06 after 'angry.'   OK
+      heard: He wasn't angry. He just wanted someone to want him.
+
+== z5again1: ...One more.
+  z5again1_a:  2.00s head -59.1 end -50.5 lead0.07 tail0.00 maxgap 0.00 after 'One'   OK
+      heard: One more.
+  z5again1_b:  1.84s head -57.3 end -41.8 lead0.13 tail0.00 maxgap 0.00 after 'One'   OK
+      heard: One more.
+
+== z5back2: [startled] Ow—!
+  z5back2_a:  1.68s head -50.6 end -54.9 lead0.07 tail1.01 maxgap 0.00 after ''   OK
+      heard: Ow.
+  z5back2_b:  0.88s head -59.3 end -52.0 lead0.09 tail0.31 maxgap 0.00 after ''   OK
+      heard: Ow.
+
+== z5back2b: [quietly] I was hiding under my own desk... waiting for someone to find me.
+  z5back2b_a:  5.04s head -57.0 end -28.6 lead0.17 tail0.00 maxgap 0.98 after 'desk,' ON-SIGNAL  OK
+      heard: I was hiding under my own desk, waiting for someone to find me.
+  z5back2b_b:  5.68s head -65.2 end -20.4 lead0.17 tail0.00 maxgap 0.96 after 'desk,' ON-SIGNAL  OK
+      heard: I was hiding under my own desk, waiting for someone to find me.
+
+== z5again2: One more. Just one more.
+  z5again2_a:  2.48s head -32.8 end -20.8 lead0.05 tail0.00 maxgap 1.14 after 'more.' ON-SIGNAL  OK
+      heard: One more. Just one more.
+  z5again2_b:  2.40s head -35.5 end -24.2 lead0.05 tail0.00 maxgap 1.12 after 'more.' ON-SIGNAL  OK
+      heard: One more. Just one more.
+
+== z5out: [distant, sad] His incense had burnt out... but he held on to me. He didn't want to be left alone again.
+  z5out_a:  7.60s head -53.8 end -44.2 lead0.15 tail0.00 maxgap 1.34 after 'me.'   OK
+      heard: His incense had burnt out, but he held on to me. He didn't want to be left alone again.
+  z5out_b:  7.12s head -53.4 end -26.4 lead0.12 tail0.00 maxgap 1.20 after 'me.' ON-SIGNAL  OK
+      heard: His incense had burnt out. But he held on to me. He didn't want to be left alone again.
+
+== z5come: [whispers, tender, straining] I'm sorry... I have to go back...
+  z5come_a:  3.68s head -51.2 end -50.3 lead0.17 tail0.00 maxgap 1.50 after 'sorry.'   OK
+      heard: I'm sorry. I have to go back.
+  z5come_b:  4.72s head -51.6 end -53.5 lead0.16 tail1.39 maxgap 1.54 after 'sorry.'   OK
+      heard: I'm sorry. I have to go back.
+
+== z5gasp: [gasping for air] Haaah... hhh... hhh...
+  z5gasp_a:  5.12s head -50.1 end -43.2 lead0.09 tail0.05 maxgap 1.20 after 'Ahh.'   DIFF replace:haaah hhh hhh>ahh ahh ahh
+      heard: Ahh. Ahh. Ahh.
+  z5gasp_b:  5.04s head -51.7 end -47.7 lead0.09 tail0.00 maxgap 0.72 after 'Ahh.'   DIFF replace:haaah hhh hhh>ahh ahh ahh
+      heard: Ahh. Ahh. Ahh.
+
+== z5time: [shaken] Almost three hours... gone.
+  z5time_a:  3.20s head -64.7 end -30.1 lead0.09 tail0.00 maxgap 1.46 after 'hours.' ON-SIGNAL  OK
+      heard: Almost three hours. Gone.
+  z5time_b:  3.36s head -65.9 end -29.9 lead0.12 tail0.00 maxgap 1.44 after 'hours.' ON-SIGNAL  OK
+      heard: Almost three hours. Gone.
+
+== z5felt: [tender] To be wanted... to be found... to not be left alone. That's all they ever wanted.
+  z5felt_a:  7.60s head -71.6 end -31.3 lead0.13 tail0.00 maxgap 1.20 after 'wanted.' ON-SIGNAL  OK
+      heard: To be wanted. To be found. To not be left alone. That's all they ever wanted.
+  z5felt_b:  8.96s head -77.6 end -34.7 lead0.12 tail0.01 maxgap 1.32 after 'wanted.' ON-SIGNAL  OK
+      heard: To be wanted. To be found. To not be left alone. That's all they ever wanted.
+
+== z5fasc: [quietly] And at that moment... I was fascinated by it.
+  z5fasc_a:  4.08s head -74.9 end -28.5 lead0.11 tail0.00 maxgap 1.30 after 'moment,' ON-SIGNAL  OK
+      heard: And at that moment, I was fascinated by it.
+  z5fasc_b:  4.80s head -63.4 end -28.5 lead0.17 tail0.02 maxgap 1.74 after 'moment,' ON-SIGNAL  OK
+      heard: And at that moment, I was fascinated by it.
+
+== z5A1: [softly] He asked me to stay... Tomorrow night, I will.
+  z5A1_a:  4.96s head -63.2 end -29.4 lead0.13 tail0.00 maxgap 1.64 after 'stay.' ON-SIGNAL  OK
+      heard: He asked me to stay. Tomorrow night, I will.
+  z5A1_b:  5.60s head -56.9 end -21.5 lead0.10 tail0.00 maxgap 1.88 after 'stay.' ON-SIGNAL  OK
+      heard: He asked me to stay. Tomorrow night, I will.
+
+== z5A2: [tired] Every night, it was easier to go...
+  z5A2_a:  2.08s head -66.8 end -16.8 lead0.10 tail0.00 maxgap 0.00 after 'was' ON-SIGNAL  OK
+      heard: Every night it was easier to go.
+  z5A2_b:  3.28s head -85.5 end -46.0 lead0.18 tail0.00 maxgap 0.62 after 'night,'   OK
+      heard: Every night, it was easier to go.
+
+== z5A3: [tired] ...and harder to come back.
+  z5A3_a:  1.60s head -37.5 end -36.8 lead0.00 tail0.00 maxgap 0.00 after 'to' ON-SIGNAL HEAD-ON OK
+      heard: And harder to come back.
+  z5A3_b:  1.76s head -44.7 end -28.6 lead0.09 tail0.00 maxgap 0.00 after 'to' ON-SIGNAL  OK
+      heard: And harder to come back.
+
+== z5A4: [whispers] That... wasn't me.
+  z5A4_a:  2.24s head -62.9 end -38.4 lead0.17 tail0.03 maxgap 0.00 after 'wasn't' ON-SIGNAL  OK
+      heard: That wasn't me.
+  z5A4_b:  2.88s head -58.6 end -36.6 lead0.17 tail0.00 maxgap 0.00 after 'wasn't' ON-SIGNAL  OK
+      heard: That wasn't me.
+
+== z5A5: [quietly] I stopped being sure where they ended... and where I began.
+  z5A5_a:  4.56s head -33.9 end -35.2 lead0.05 tail0.01 maxgap 0.00 after 'where' ON-SIGNAL  OK
+      heard: I stopped being sure where they ended and where I began.
+  z5A5_b:  4.72s head -53.2 end -45.4 lead0.18 tail0.09 maxgap 0.00 after 'where'   OK
+      heard: I stopped being sure where they ended and where I began.
+
+== z5A6: [sad] They needed someone to look after them... and I couldn't do it any more.
+  z5A6_a:  4.64s head -50.2 end -44.4 lead0.20 tail0.06 maxgap 0.04 after 'them,'   DIFF replace:any more>anymore
+      heard: They needed someone to look after them, and I couldn't do it anymore.
+  z5A6_b:  5.28s head -52.3 end -41.1 lead0.08 tail0.03 maxgap 1.64 after 'them.'   DIFF replace:any more>anymore
+      heard: They needed someone to look after them. And I couldn't do it anymore.
+
+== z5B1: [thoughtful] Nobody would believe this... unless I told them.
+  z5B1_a:  3.76s head -43.4 end -29.0 lead0.00 tail0.00 maxgap 0.00 after 'would' ON-SIGNAL  OK
+      heard: Nobody would believe this unless I told them.
+  z5B1_b:  3.76s head -55.5 end -29.3 lead0.08 tail0.00 maxgap 0.00 after 'would' ON-SIGNAL  OK
+      heard: Nobody would believe this unless I told them.
+
+== z5B2: I wrote it all down. Every child... every voice.
+  z5B2_a:  4.80s head -49.4 end -28.4 lead0.07 tail0.00 maxgap 1.20 after 'child.' ON-SIGNAL  OK
+      heard: I wrote it all down. Every child. Every voice.
+  z5B2_b:  5.28s head -48.5 end -45.5 lead0.05 tail0.06 maxgap 1.22 after 'child.'   OK
+      heard: I wrote it all down. Every child. Every voice.
+
+== z5B3: [uneasy] Two hundred replies... by morning.
+  z5B3_a:  3.92s head -46.6 end -39.9 lead0.00 tail0.03 maxgap 0.00 after 'replies' ON-SIGNAL  OK
+      heard: Two hundred replies by morning.
+  z5B3_b:  3.44s head -63.8 end -40.1 lead0.07 tail0.03 maxgap 0.00 after 'replies'   OK
+      heard: Two hundred replies by morning.
+
+== z5B4: [shaken] Someone had tried it... because of me. And I didn't know what to tell them.
+  z5B4_a:  6.24s head -43.8 end -24.3 lead0.09 tail0.00 maxgap 1.38 after 'me.' ON-SIGNAL  OK
+      heard: Someone had tried it. Because of me. And I didn't know what to tell them.
+  z5B4_b:  6.96s head -58.8 end -29.7 lead0.09 tail0.01 maxgap 1.42 after 'me.' ON-SIGNAL  OK
+      heard: Someone had tried it. Because of me. And I didn't know what to tell them.
+
+== z5B5: [ashamed] The shy one hid from everyone... and I showed him to everyone.
+  z5B5_a:  5.04s head -46.0 end -33.5 lead0.05 tail0.00 maxgap 1.14 after 'everyone,' ON-SIGNAL  OK
+      heard: The shy one hid from everyone, and I showed him to everyone.
+  z5B5_b:  4.72s head -54.1 end -24.7 lead0.09 tail0.00 maxgap 0.62 after 'everyone,' ON-SIGNAL  OK
+      heard: The shy one hid from everyone, and I showed him to everyone.
+
+== z5B6: [regretful] I wanted someone to believe me. Instead I made them a horror story... and showed strangers the way in.
+  z5B6_a:  7.20s head -70.9 end -28.5 lead0.08 tail0.00 maxgap 0.76 after 'me.' ON-SIGNAL  OK
+      heard: I wanted someone to believe me. Instead, I made them a horror story and showed strangers the way in.
+  z5B6_b:  7.84s head -48.8 end -27.9 lead0.15 tail0.00 maxgap 1.02 after 'me.' ON-SIGNAL  OK
+      heard: I wanted someone to believe me. Instead, I made them a horror story and showed strangers the way in.
+
+== z5C1: [thinking aloud] If they're real... then they can help me.
+  z5C1_a:  3.44s head -66.1 end -51.6 lead0.14 tail0.09 maxgap 1.36 after 'real,'   OK
+      heard: If they're real, then they can help me.
+  z5C1_b:  3.28s head -48.8 end -45.9 lead0.06 tail0.08 maxgap 0.58 after 'real,'   OK
+      heard: If they're real, then they can help me.
+
+== z5C2: [whispers, eager] Bring me luck. Bring me orders... please.
+  z5C2_a:  4.80s head -61.0 end -61.4 lead0.15 tail0.15 maxgap 1.24 after 'orders.'   DIFF replace:luck>look
+      heard: Bring me look. Bring me orders. Please.
+  z5C2_b:  3.92s head -57.2 end -40.0 lead0.15 tail0.00 maxgap 1.16 after 'orders.'   OK
+      heard: Bring me luck. Bring me orders. Please.
+
+== z5C3: The orders came. Maybe it was them... maybe it wasn't. I didn't care. I only wanted more.
+  z5C3_a:  9.20s head -62.7 end -22.6 lead0.09 tail0.00 maxgap 1.36 after 'came.' ON-SIGNAL  OK
+      heard: The orders came. Maybe it was them. Maybe it wasn't. I didn't care. I only wanted more.
+  z5C3_b:  9.36s head -56.1 end -35.9 lead0.08 tail0.00 maxgap 1.10 after 'them.' ON-SIGNAL  OK
+      heard: The orders came. Maybe it was them. Maybe it wasn't. I didn't care. I only wanted more.
+
+== z5C4: [low and fast] More orders. More money. A bigger place... a little more luck. Just a little more.
+  z5C4_a:  8.72s head -60.9 end -23.1 lead0.17 tail0.00 maxgap 1.18 after 'place.' ON-SIGNAL  OK
+      heard: More orders. More money. A bigger place. A little more luck. Just a little more.
+  z5C4_b: 10.72s head -53.5 end -32.0 lead0.13 tail0.00 maxgap 1.22 after 'luck.' ON-SIGNAL  OK
+      heard: More orders. More money. A bigger place. A little more luck. Just a little more.
+
+== z5Cevil: [whispers, bitter] And him... make him lose everything.
+  z5Cevil_a:  3.84s head -54.6 end -34.8 lead0.14 tail0.00 maxgap 0.00 after 'make' ON-SIGNAL  OK
+      heard: And him make him lose everything.
+  z5Cevil_b:  3.60s head -50.0 end -46.2 lead0.14 tail0.09 maxgap 1.24 after 'him.'   OK
+      heard: And him. Make him lose everything.
+
+== z5Claugh: [laughing alone, too long] Heh... hehe... heh...
+  z5Claugh_a:  4.00s head -36.0 end -58.2 lead0.03 tail1.27 maxgap 0.94 after 'Hehe.'   DIFF delete:heh> | replace:heh>hehe hehe
+      heard: Hehe. Hehe. Hehe.
+  z5Claugh_b:  3.84s head -53.3 end -51.0 lead0.12 tail0.23 maxgap 1.20 after 'Hehe.'   DIFF delete:heh> | replace:heh>hehe hehe
+      heard: Hehe. Hehe. Hehe.
+
+== z5C5: [whispers, afraid] If I stop asking... will it all go away?
+  z5C5_a:  4.00s head -57.2 end -45.3 lead0.13 tail0.04 maxgap 1.40 after 'asking,'   OK
+      heard: If I stop asking, will it all go away?
+  z5C5_b:  2.64s head -44.7 end -37.2 lead0.14 tail0.02 maxgap 0.42 after 'asking,' ON-SIGNAL  OK
+      heard: If I stop asking, will it all go away?
+
+== z5C6: [ashamed] They were only children... and I had turned them into a wishing well.
+  z5C6_a:  4.64s head -75.3 end -31.5 lead0.16 tail0.01 maxgap 0.96 after 'children,' ON-SIGNAL  OK
+      heard: They were only children, and I had turned them into a wishing well.
+  z5C6_b:  4.40s head -59.9 end -24.8 lead0.09 tail0.00 maxgap 1.18 after 'children,' ON-SIGNAL  OK
+      heard: They were only children, and I had turned them into a wishing well.
+
+== z5C7: [quietly] Nothing answered. They wouldn't do wrong... even when I asked them to.
+  z5C7_a:  5.36s head -58.3 end -30.6 lead0.19 tail0.00 maxgap 1.40 after 'answered.' ON-SIGNAL  OK
+      heard: Nothing answered. They wouldn't do wrong, even when I asked them to.
+  z5C7_b:  5.68s head -54.0 end -22.5 lead0.20 tail0.00 maxgap 1.18 after 'answered.' ON-SIGNAL  OK
+      heard: Nothing answered. They wouldn't do wrong, even when I asked them to.
+
+== z5D1: [softly] I'm sorry. That was my mistake... not yours.
+  z5D1_a:  4.00s head -55.0 end -20.9 lead0.11 tail0.00 maxgap 1.02 after 'sorry.' ON-SIGNAL  OK
+      heard: I'm sorry. That was my mistake, not yours.
+  z5D1_b:  4.00s head -48.6 end -49.0 lead0.14 tail0.10 maxgap 1.04 after 'mistake.'   OK
+      heard: I'm sorry. That was my mistake. Not yours.
+
+== z5D2: [tender, sure] I won't open that door again. But I'm not going anywhere.
+  z5D2_a:  4.48s head -55.9 end -45.3 lead0.12 tail0.00 maxgap 1.30 after 'again.'   OK
+      heard: I won't open that door again. But I'm not going anywhere.
+  z5D2_b:  4.48s head -55.9 end -27.6 lead0.08 tail0.00 maxgap 0.48 after 'again,' ON-SIGNAL  OK
+      heard: I won't open that door again, but I'm not going anywhere.
+
+== z5D3: In the morning, I went to the temple... and made merit in their names.
+  z5D3_a:  4.32s head -49.0 end -18.2 lead0.07 tail0.00 maxgap 0.00 after 'went' ON-SIGNAL  OK
+      heard: In the morning I went to the temple and made merit in their names.
+  z5D3_b:  4.24s head -29.3 end -21.6 lead0.03 tail0.00 maxgap 0.00 after 'went' ON-SIGNAL  OK
+      heard: In the morning I went to the temple and made merit in their names.
+
+== z5D4: [a tender, reverent whisper] For the three children in my care... may this merit reach you. May you be well... and one day, may you go on to a better birth.
+  z5D4_a: 12.72s head -85.1 end -28.4 lead0.17 tail0.00 maxgap 1.73 after 'you.' ON-SIGNAL  OK
+      heard: For the three children in my care, may this merit reach you. May you be well, and one day, may you go on to a better birth.
+  z5D4_b: 10.24s head -48.2 end -38.8 lead0.11 tail0.00 maxgap 1.08 after 'well,' ON-SIGNAL  OK
+      heard: For the three children in my care, may this merit reach you, may you be well, and one day may you go on to a better birth.
+
+== z5D5: [warm, steady] I kept caring for them every day, and making merit in their names, for years. And I never opened that door again.
+  z5D5_a:  9.28s head -47.9 end -21.4 lead0.15 tail0.00 maxgap 1.58 after 'years.' ON-SIGNAL  OK
+      heard: I kept caring for them every day and making merit in their names for years. And I never opened that door again.
+  z5D5_b:  9.52s head -55.9 end -29.7 lead0.15 tail0.00 maxgap 0.68 after 'day,' ON-SIGNAL  OK
+      heard: I kept caring for them every day, and making merit in their names for years, and I never opened that door again.
+
+== z5D6: [quietly] If one day I can't look after them... someone will. I made sure of it.
+  z5D6_a:  6.56s head -47.8 end -34.4 lead0.12 tail0.02 maxgap 1.20 after 'will.' ON-SIGNAL  OK
+      heard: If one day I can't look after them, someone will. I made sure of it.
+  z5D6_b:  7.20s head -72.2 end -45.4 lead0.15 tail0.06 maxgap 1.36 after 'will.'   OK
+      heard: If one day I can't look after them, someone will. I made sure of it.
+
+== z5epi0: [reflective, warm] They were never something to fear. Only children with nowhere to go... and what they needed from me was care, merit and kindness, for as long as I live.
+  z5epi0_a: 12.32s head -43.5 end -44.0 lead0.14 tail0.03 maxgap 1.00 after 'go,'   OK
+      heard: They were never something to fear, only children with nowhere to go, and what they needed from me was care, merit, and kindness for as long as I live.
+  z5epi0_b: 12.16s head -65.7 end -43.5 lead0.15 tail0.05 maxgap 0.98 after 'go,'   OK
+      heard: They were never something to fear, only children with nowhere to go, and what they needed from me was care, merit, and kindness, for as long as I live.
+
+== z5epi1: [reflective] Looking back today, I can see clearly how dangerous... and how completely unnecessary that experiment was.
+  z5epi1_a:  7.76s head -66.5 end -37.3 lead0.12 tail0.05 maxgap 0.04 after 'today,'   OK
+      heard: Looking back today, I can see clearly how dangerous and how completely unnecessary that experiment was.
+  z5epi1_b:  8.72s head -84.5 end -61.1 lead0.24 tail0.91 maxgap 0.14 after 'today,'   OK
+      heard: Looking back today, I can see clearly how dangerous and how completely unnecessary that experiment was.
+
+== z5epi2: Some lessons are only learned by living them.
+  z5epi2_a:  2.24s head -40.7 end -22.6 lead0.00 tail0.00 maxgap 0.00 after 'only' ON-SIGNAL  OK
+      heard: Some lessons are only learned by living them.
+  z5epi2_b:  2.48s head -30.0 end -28.4 lead0.03 tail0.00 maxgap 0.00 after 'only' ON-SIGNAL  OK
+      heard: Some lessons are only learned by living them.
+
+== z5epi3: This is the one experiment I would tell everybody never to repeat.
+  z5epi3_a:  4.40s head -38.9 end -35.4 lead0.05 tail0.00 maxgap 0.00 after 'would' ON-SIGNAL  OK
+      heard: This is the one experiment I would tell everybody never to repeat.
+  z5epi3_b:  3.84s head -55.8 end -36.3 lead0.07 tail0.00 maxgap 0.00 after 'would' ON-SIGNAL  OK
+      heard: This is the one experiment I would tell everybody never to repeat.
+
+== z5A: I promised to look after them. In the end, there was no one left to do it.
+  z5A_a:  5.36s head -42.2 end -42.8 lead0.11 tail0.04 maxgap 1.12 after 'them.'   OK
+      heard: I promised to look after them. In the end, there was no one left to do it.
+  z5A_b:  4.88s head -38.8 end -23.1 lead0.00 tail0.00 maxgap 0.96 after 'them.' ON-SIGNAL HEAD-ON OK
+      heard: I promised to look after them. In the end, there was no one left to do it.
+
+== z5B: They were children, not a horror story. I showed strangers the way in.
+  z5B_a:  5.44s head -55.6 end -27.3 lead0.09 tail0.00 maxgap 1.08 after 'story.' ON-SIGNAL  OK
+      heard: They were children, not a horror story. I showed strangers the way in.
+  z5B_b:  5.36s head -48.8 end -31.3 lead0.06 tail0.00 maxgap 1.26 after 'story.' ON-SIGNAL  OK
+      heard: They were children, not a horror story. I showed strangers the way in.
+
+== z5C: I stopped giving to them. I only kept asking.
+  z5C_a:  3.28s head -34.5 end -39.6 lead0.05 tail0.03 maxgap 0.62 after 'them.' ON-SIGNAL  OK
+      heard: I stopped giving to them. I only kept asking.
+  z5C_b:  3.28s head -69.2 end -28.9 lead0.08 tail0.00 maxgap 0.80 after 'them.' ON-SIGNAL  OK
+      heard: I stopped giving to them. I only kept asking.
+
+== z5D: I kept my promise every day, and I kept my own door shut.
+  z5D_a:  3.76s head -54.9 end -28.1 lead0.08 tail0.00 maxgap 0.52 after 'day,' ON-SIGNAL  OK
+      heard: I kept my promise every day, and I kept my own door shut.
+  z5D_b:  4.48s head -43.9 end -23.3 lead0.07 tail0.00 maxgap 0.76 after 'day,' ON-SIGNAL  OK
+      heard: I kept my promise every day, and I kept my own door shut.
+
+== z5b4_hiA: [in a high, small child's voice, quietly, hurt] ...They didn't want me any more.  (eleven_v4)
+  z5b4_hiA_a:  2.16s head -59.2 end -86.2 lead0.24 tail0.25 maxgap 0.00 after 'want'   DIFF replace:any more>anymore
+      heard: They didn't want me anymore.
+
+== z5b4_hiB: [as a five-year-old boy, small high voice, sad] ...They didn't want me any more.  (eleven_v4)
+  z5b4_hiB_a:  2.16s head -50.1 end -86.0 lead0.07 tail0.25 maxgap 0.00 after 'want'   DIFF replace:any more>anymore
+      heard: They didn't want me anymore.
+
+== z5s4_hiA: [in a high, small child's voice, waiting, sad] Come and find me... ...Nobody ever comes.  (eleven_v4)
+  z5s4_hiA_a:  3.84s head -86.2 end -81.8 lead0.10 tail0.13 maxgap 0.88 after 'me.'   OK
+      heard: Come and find me. Nobody ever comes.
+
+== z5s4_hiB: [as a five-year-old boy, small high voice, sad] Come and find me... ...Nobody ever comes.  (eleven_v4)
+  z5s4_hiB_a:  7.60s head -63.5 end -59.9 lead0.15 tail0.00 maxgap 0.60 after 'me.'   OK
+      heard: Come and find me. Nobody ever comes.
+
+== z5l1_hiA: [in a high, small child's voice, very softly, lonely] Everyone goes away...  (eleven_v4)
+  z5l1_hiA_a:  1.92s head -57.1 end -85.4 lead0.10 tail0.32 maxgap 0.00 after 'goes'   OK
+      heard: Everyone goes away.
+
+== z5l1_hiB: [as a five-year-old boy, small high voice, lonely] Everyone goes away...  (eleven_v4)
+  z5l1_hiB_a:  1.92s head -85.0 end -85.1 lead0.16 tail0.36 maxgap 0.00 after 'goes'   OK
+      heard: Everyone goes away.
+
+== z5s3_hiA: [in a high, small child's voice, delighted, softly] Mine... my secret...  (eleven_v4)
+  z5s3_hiA_a:  2.64s head -82.0 end -88.0 lead0.19 tail0.32 maxgap 0.72 after 'Mind.'   DIFF replace:mine>mind
+      heard: Mind. My secret.
+
+== z5s3_hiB: [as a five-year-old boy, small high voice, delighted] Mine... my secret...  (eleven_v4)
+  z5s3_hiB_a:  7.52s head -85.6 end -87.5 lead0.15 tail0.32 maxgap 0.60 after 'Mine.'   OK
+      heard: Mine. My secret.

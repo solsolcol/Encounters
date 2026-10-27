@@ -1,0 +1,470 @@
+{
+ "_voices": {
+  "jamesAdult": "bP8FJDHmWVEgXJDitdQd",
+  "owner3": "rTCcr5snLtTho4KbH96N",
+  "mother": "XrExE9yKIg1WjnnlVkGX",
+  "monk5": "tX4zpyB6s34no1FgD0Mm"
+ },
+ "lines": [
+  [
+   "z5pro1",
+   "jamesAdult",
+   "[reflective] While I was still searching for answers... I began keeping Kumanthong."
+  ],
+  [
+   "ow5hello",
+   "owner3",
+   "[warmly] Ah, you came. Come, come... I want you to meet three small ones."
+  ],
+  [
+   "z5yinq",
+   "jamesAdult",
+   "[hesitant, low] Uncle... aren't these yin? Baby ghosts... the kind people trap with black magic, feed with blood... that turn on you if you ever stop?"
+  ],
+  [
+   "ow5yin",
+   "owner3",
+   "[gently] Children, yes. Ghosts to be afraid of, no. What you're thinking of — trapped with black magic, fed with blood, sent to hurt people — that's something else. These three came from a temple. A Luang Phor gave them a home there... out of compassion."
+  ],
+  [
+   "ow5monk",
+   "owner3",
+   "[softly] Small ones who passed on young, with nowhere to go yet. Nobody forces them to stay... they come of their own free will. They help a kind person a little. And they can't make merit for themselves, so you make it, and you give it to them. We believe it helps them on, toward a better birth."
+  ],
+  [
+   "ow5red",
+   "owner3",
+   "This one... a family took him home for luck. When the luck didn't come fast enough, they brought him back. Didn't want him any more."
+  ],
+  [
+   "ow5shy",
+   "owner3",
+   "This one, an old auntie looked after him for twenty years. When she passed on, her family brought him back to me... with her music box."
+  ],
+  [
+   "ow5little",
+   "owner3",
+   "[quietly] And this small one... somebody left him at a temple gate. Nobody knows where he came from."
+  ],
+  [
+   "ow5give",
+   "owner3",
+   "So think of them like small children... with nowhere to go. You give them drink, you make merit for them... you are giving them something they never had."
+  ],
+  [
+   "z5children",
+   "jamesAdult",
+   "[softly] Children... with nowhere to go."
+  ],
+  [
+   "ow5never",
+   "owner3",
+   "[serious] But listen, ah. Never keep them for greed. Not for money, not for lottery numbers... if that is why you want them, don't take them."
+  ],
+  [
+   "ow5wrong",
+   "owner3",
+   "[serious, gently] And never ask them to do anything wrong. The ones from a temple, we believe, won't help you do wrong. Children grow like the one who raises them... so you keep the precepts yourself."
+  ],
+  [
+   "ow5promise",
+   "owner3",
+   "[firmly] And not for one month, not for one year. Every day you look after them, you keep making merit for them... as long as you live. If one day you really cannot, you bring them back to me, or to a temple. Never just leave them. [asking] Can or not?"
+  ],
+  [
+   "z5promise",
+   "jamesAdult",
+   "[quiet, sure] Every day. I promise."
+  ],
+  [
+   "ow5careful",
+   "owner3",
+   "[kindly] Look after them like your own, ah. But don't play-play with them."
+  ],
+  [
+   "z5pro2",
+   "jamesAdult",
+   "[reflective] I saw it as another way of making merit... and showing compassion."
+  ],
+  [
+   "z5pro3",
+   "jamesAdult",
+   "[reflective] So I took them home... and made offerings to them, every day."
+  ],
+  [
+   "z5pro4",
+   "jamesAdult",
+   "[quietly] Then one night, after everything else I had been through... I wanted to know something."
+  ],
+  [
+   "z5water",
+   "jamesAdult",
+   "[quiet, routine] Water first... never let it run dry."
+  ],
+  [
+   "z5bag",
+   "jamesAdult",
+   "Three red drinks. Three straws. Same as every night, since the day I promised."
+  ],
+  [
+   "z5red",
+   "jamesAdult",
+   "[warmly] There you go, big boss. Your favourite."
+  ],
+  [
+   "z5shy",
+   "jamesAdult",
+   "[gently] This one's yours. Don't be shy."
+  ],
+  [
+   "z5little",
+   "jamesAdult",
+   "[tenderly] And this one's for you, little one."
+  ],
+  [
+   "z5stiff",
+   "jamesAdult",
+   "[straining] Come on... open..."
+  ],
+  [
+   "z5incense",
+   "jamesAdult",
+   "One stick each."
+  ],
+  [
+   "z5eat",
+   "jamesAdult",
+   "[warmly] Come... eat. This is for you three."
+  ],
+  [
+   "z5dedic",
+   "jamesAdult",
+   "[whispers, tender] May the merit I make reach you three... and one day, may you go on to a better birth."
+  ],
+  [
+   "z5wonder",
+   "jamesAdult",
+   "[tender] Every night they just sit here... I wonder what they feel."
+  ],
+  [
+   "z5ask",
+   "jamesAdult",
+   "[whispers, wondering] What would happen... if I deliberately opened myself to my own Kumanthong?"
+  ],
+  [
+   "z5loose",
+   "jamesAdult",
+   "[whispers] Just... let my mind loosen."
+  ],
+  [
+   "z5b1",
+   "jamesAdult",
+   "[as a bossy little boy, stamping] Mine! These are all MINE!"
+  ],
+  [
+   "z5b2",
+   "jamesAdult",
+   "[as a bossy little boy] Nobody touches my things! Nobody!"
+  ],
+  [
+   "z5b3",
+   "jamesAdult",
+   "[as a bossy little boy, demanding] More! I want MORE!"
+  ],
+  [
+   "z5b4",
+   "jamesAdult",
+   "[as a small boy, quietly, hurt] ...They didn't want me any more."
+  ],
+  [
+   "z5back1",
+   "jamesAdult",
+   "[breathing hard] That wasn't me... That was him."
+  ],
+  [
+   "z5back1b",
+   "jamesAdult",
+   "[gently] He wasn't angry. He just wanted someone to want him."
+  ],
+  [
+   "z5again1",
+   "jamesAdult",
+   "...One more."
+  ],
+  [
+   "z5s1",
+   "jamesAdult",
+   "[as a shy little boy, giggling] Hehe... you can't see me..."
+  ],
+  [
+   "z5s2",
+   "jamesAdult",
+   "[as a shy little boy, whispering] Shhh... hide... hide..."
+  ],
+  [
+   "z5s3",
+   "jamesAdult",
+   "[as a shy little boy, delighted, softly] Mine... my secret..."
+  ],
+  [
+   "z5s4",
+   "jamesAdult",
+   "[as a small boy, waiting, sad] Come and find me... ...Nobody ever comes."
+  ],
+  [
+   "z5back2",
+   "jamesAdult",
+   "[startled] Ow—!"
+  ],
+  [
+   "z5back2b",
+   "jamesAdult",
+   "[quietly] I was hiding under my own desk... waiting for someone to find me."
+  ],
+  [
+   "z5again2",
+   "jamesAdult",
+   "One more. Just one more."
+  ],
+  [
+   "z5l1",
+   "jamesAdult",
+   "[as a small lonely boy, very softly] Everyone goes away..."
+  ],
+  [
+   "z5l2",
+   "jamesAdult",
+   "[as a small lonely boy, pleading] You won't go... right?"
+  ],
+  [
+   "z5l3",
+   "jamesAdult",
+   "[as a small boy, crying] Stay... stay with me..."
+  ],
+  [
+   "z5sob",
+   "jamesAdult",
+   "[as a small boy, sobbing quietly] Hhh... hhh..."
+  ],
+  [
+   "z5out",
+   "jamesAdult",
+   "[distant, sad] His incense had burnt out... but he held on to me. He didn't want to be left alone again."
+  ],
+  [
+   "z5come",
+   "jamesAdult",
+   "[whispers, tender, straining] I'm sorry... I have to go back..."
+  ],
+  [
+   "z5gasp",
+   "jamesAdult",
+   "[gasping for air] Haaah... hhh... hhh..."
+  ],
+  [
+   "z5time",
+   "jamesAdult",
+   "[shaken] Almost three hours... gone."
+  ],
+  [
+   "z5felt",
+   "jamesAdult",
+   "[tender] To be wanted... to be found... to not be left alone. That's all they ever wanted."
+  ],
+  [
+   "z5fasc",
+   "jamesAdult",
+   "[quietly] And at that moment... I was fascinated by it."
+  ],
+  [
+   "z5A1",
+   "jamesAdult",
+   "[softly] He asked me to stay... Tomorrow night, I will."
+  ],
+  [
+   "z5A2",
+   "jamesAdult",
+   "[tired] Every night, it was easier to go..."
+  ],
+  [
+   "ma5vm",
+   "mother",
+   "[worried, loving] Boy... why you never pick up? Ma worried, you know. Call me back, okay?"
+  ],
+  [
+   "z5A3",
+   "jamesAdult",
+   "[tired] ...and harder to come back."
+  ],
+  [
+   "z5Agig",
+   "jamesAdult",
+   "[a small dry giggle] Hehe..."
+  ],
+  [
+   "z5A4",
+   "jamesAdult",
+   "[whispers] That... wasn't me."
+  ],
+  [
+   "z5A5",
+   "jamesAdult",
+   "[quietly] I stopped being sure where they ended... and where I began."
+  ],
+  [
+   "z5A6",
+   "jamesAdult",
+   "[sad] They needed someone to look after them... and I couldn't do it any more."
+  ],
+  [
+   "z5B1",
+   "jamesAdult",
+   "[thoughtful] Nobody would believe this... unless I told them."
+  ],
+  [
+   "z5B2",
+   "jamesAdult",
+   "I wrote it all down. Every child... every voice."
+  ],
+  [
+   "z5B3",
+   "jamesAdult",
+   "[uneasy] Two hundred replies... by morning."
+  ],
+  [
+   "z5B4",
+   "jamesAdult",
+   "[shaken] Someone had tried it... because of me. And I didn't know what to tell them."
+  ],
+  [
+   "z5B5",
+   "jamesAdult",
+   "[ashamed] The shy one hid from everyone... and I showed him to everyone."
+  ],
+  [
+   "z5B6",
+   "jamesAdult",
+   "[regretful] I wanted someone to believe me. Instead I made them a horror story... and showed strangers the way in."
+  ],
+  [
+   "z5C1",
+   "jamesAdult",
+   "[thinking aloud] If they're real... then they can help me."
+  ],
+  [
+   "z5C2",
+   "jamesAdult",
+   "[whispers, eager] Bring me luck. Bring me orders... please."
+  ],
+  [
+   "z5C3",
+   "jamesAdult",
+   "The orders came. Maybe it was them... maybe it wasn't. I didn't care. I only wanted more."
+  ],
+  [
+   "z5C4",
+   "jamesAdult",
+   "[low and fast] More orders. More money. A bigger place... a little more luck. Just a little more."
+  ],
+  [
+   "z5Cevil",
+   "jamesAdult",
+   "[whispers, bitter] And him... make him lose everything."
+  ],
+  [
+   "z5Claugh",
+   "jamesAdult",
+   "[laughing alone, too long] Heh... hehe... heh..."
+  ],
+  [
+   "z5C5",
+   "jamesAdult",
+   "[whispers, afraid] If I stop asking... will it all go away?"
+  ],
+  [
+   "z5C6",
+   "jamesAdult",
+   "[ashamed] They were only children... and I had turned them into a wishing well."
+  ],
+  [
+   "z5C7",
+   "jamesAdult",
+   "[quietly] Nothing answered. They wouldn't do wrong... even when I asked them to."
+  ],
+  [
+   "z5D1",
+   "jamesAdult",
+   "[softly] I'm sorry. That was my mistake... not yours."
+  ],
+  [
+   "z5D2",
+   "jamesAdult",
+   "[tender, sure] I won't open that door again. But I'm not going anywhere."
+  ],
+  [
+   "z5D3",
+   "jamesAdult",
+   "In the morning, I went to the temple... and made merit in their names."
+  ],
+  [
+   "z5D4",
+   "jamesAdult",
+   "[a tender, reverent whisper] For the three children in my care... may this merit reach you. May you be well... and one day, may you go on to a better birth."
+  ],
+  [
+   "mk5teach",
+   "monk5",
+   "[gently] Give without bargaining. Keep your precepts. Then dedicate the merit. That is what you can do for them."
+  ],
+  [
+   "z5D5",
+   "jamesAdult",
+   "[warm, steady] I kept caring for them every day, and making merit in their names, for years. And I never opened that door again."
+  ],
+  [
+   "z5D6",
+   "jamesAdult",
+   "[quietly] If one day I can't look after them... someone will. I made sure of it."
+  ],
+  [
+   "z5epi0",
+   "jamesAdult",
+   "[reflective, warm] They were never something to fear. Only children with nowhere to go... and what they needed from me was care, merit and kindness, for as long as I live."
+  ],
+  [
+   "z5epi1",
+   "jamesAdult",
+   "[reflective] Looking back today, I can see clearly how dangerous... and how completely unnecessary that experiment was."
+  ],
+  [
+   "z5epi2",
+   "jamesAdult",
+   "Some lessons are only learned by living them."
+  ],
+  [
+   "z5epi3",
+   "jamesAdult",
+   "This is the one experiment I would tell everybody never to repeat."
+  ],
+  [
+   "z5A",
+   "jamesAdult",
+   "I promised to look after them. In the end, there was no one left to do it."
+  ],
+  [
+   "z5B",
+   "jamesAdult",
+   "They were children, not a horror story. I showed strangers the way in."
+  ],
+  [
+   "z5C",
+   "jamesAdult",
+   "I stopped giving to them. I only kept asking."
+  ],
+  [
+   "z5D",
+   "jamesAdult",
+   "I kept my promise every day, and I kept my own door shut."
+  ]
+ ]
+}
