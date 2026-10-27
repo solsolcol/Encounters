@@ -283,6 +283,8 @@ Object.assign(window.__TEXT__, {
   'event.change':        'WHAT CHANGED?',
   'event.changeWhere':   'Tap only what has changed',
   'event.changeWhereKey':'Click only what has changed',
+  'event.changeLook':    'REMEMBER THE ROOM',              // v24.0: the first flash only shows it
+  'event.changeLookWhere':'Nothing has changed yet',
   'event.sequence':      'TAP EACH ONE',
   'event.match':         'DRAG EACH ITEM TO ITS PLACE',
   'event.matchOk':       'MATCHED',

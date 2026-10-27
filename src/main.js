@@ -4880,7 +4880,14 @@ function evChangePhase(e, round, phase) {
   e.chRound = round; e.chPhase = phase; e.chT0 = e.t;
   if (phase === 'dark' && round > 0 && typeof e.o.apply === 'function') { try { e.o.apply(round); } catch (err) { console.warn('change apply failed', err); } }
   if (typeof e.o.onPhase === 'function') { try { e.o.onPhase(round, phase); } catch (err) { console.warn('change onPhase failed', err); } }
-  if (phase === 'lit') e.chTapped = new Set();
+  if (phase === 'lit') {
+    e.chTapped = new Set();
+    /* v24.0: the first flash only SHOWS the room (round 0 can hold no change: `apply` runs from round 1), so its words say
+       so; every flash after it asks what changed. A chapter's own prompt or note stands. */
+    const first = round === 0;
+    const pr = $('evPrompt'); if (pr && !e.o.prompt) pr.textContent = first ? T('event.changeLook') : T('event.change');
+    const nt = $('evNote'); if (nt && !e.o.whereWord) nt.textContent = first ? T('event.changeLookWhere') : T(HAS_TOUCH ? 'event.changeWhere' : 'event.changeWhereKey');
+  }
   evEl()?.classList.toggle('chgDark', phase !== 'lit');
 }
 function evChangeEndRound(e) {

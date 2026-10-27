@@ -6600,3 +6600,46 @@ cut (sharing its vertices and maps) when it is small.
   names, and a photograph read straight after the monitor reported the previous shot was the PREVIOUS run's file — Pong
   "sitting on the front bench" in a build where he stood at the gate. The probe clears its own photographs before it
   starts, and a photograph is read only after the event that names it.
+- **A caption and the interact badge share the foot of the screen** (v24.0 CP8). Episode 4 chapter 1 is the first
+  chapter that offers things to look at WHILE a chant is captioned, and the badge naming the sign stood on the caption's
+  words. The engine now lifts the badge above a caption while one is up: `body.capsOn` and `--capTop`, written once a
+  line (when its words change, never per frame) from where the caption stands and how tall it is.
+- **A reset must close what play left open** (v24.0 CP8). A Retry, a phase jump or a resume taken with a minigame open
+  left the event standing over the new phase and the old objective up; the chapter's `reset()` now aborts a live event
+  and clears the objective before anything else.
+- **A mark a finger can see is a mark a finger will press** (v24.0 CP8). The door's "!" and the offering's took no tap
+  — only the badge at the foot of the screen did — because the engine presses a spot from a tap on its mark only when
+  the spot is `pressAim` or declares `hits`, and these two were neither. A phone player taps what is drawn over the
+  thing; every spot that wears a mark and is not `pressAim` declares `hits` (`markHit`: the screen point against the
+  anchor and the mark over it).
+- **The first round of a memory game cannot ask what changed** (v24.0 CP8). WHAT CHANGED? said its own title twice
+  (the panel's label and its prompt) and asked for "only what changed" in the first flash — the one that shows the room
+  as it is, when nothing CAN have changed. The `change` kind sets its prompt per round now (round 0 REMEMBER THE ROOM,
+  "Nothing has changed yet"), and the panel's label names the chapter's beat ("The storm").
+- **A probe that presses into a scheduled pause presses nothing** (v24.0 CP8). The yard's queue dips to black and pauses
+  every ask for ~2.5 s each time Pa Noi calls a number — by design, the marks going with it — and the phone probe twice
+  tapped a person in that window and read the refusal as a bug. A probe reads the state and the mark in ONE evaluate,
+  presses at once, and if a call began in between waits it out and presses again.
+- **A probe that loops over endings must get back to play** (v24.0 CP9). After an ending the outcome card is up, and a
+  chapter's frame runs only in play, so `setPhase('decide')` from the card opens nothing and the probe waited for ever.
+  Walk it again (the card's own button), skip the opening film to its last second, and only then jump to the decision.
+- **A film that hides the hands must give them back** (v24.0 CP9, chapter 4's law met again). The engine restores the
+  hands after a film started FROM PLAY (`kit.film`), and after nothing else: an opening film or an ending that hides
+  them and does not show them again leaves play — or the next chapter — handless. The film module records the hands it
+  hid and its `end()` (run by the film's last step, a skip and every `reset()`) shows them.
+- **A look the FILM asks for is on at once** (v24.0 CP9). The cast's look eases on wall time, and a film is seeked,
+  skipped and replayed: photographed at a seek, Pong "answered" with his eyes on the cab roof, because his eased look
+  had not yet arrived. A film's look (`gaze`) sets the look's weight to 1 on the frame it is asked for and lets the neck
+  turn as far as a man turns to the one beside him (1.25 rad, where play's is 0.85); off, he goes back to what he was
+  watching (`lookHome`), and the film's `end()` gives every look back.
+- **The overlap scan must cut a voice where a film fades it** (v24.0 CP9). Ending D lets the master's chant finish
+  before he speaks — the chant is a voice line faded out by `sfxFade` — and the scan (copied from v23.0's) cut only the
+  effects, so it reported the chant over every line in the scene. `masters/v24.0/overlap.mjs` ends a faded voice where
+  it is faded.
+- **Glass with no environment map is a black slab** (v24.0 CP9, v8.9's law in a new place). The pickup's windows were
+  a metal-free glass material and still rendered black from outside, filling a phone's frame with dark panels in the
+  tracking shot. Glass seen from outside in a film is PAINTED: an emissive gradient of the sky it would reflect.
+- **A panorama's directions are measured, not assumed** (v24.0 CP9). The opening's huge wide was framed toward "the
+  storm" and showed the sunset band instead: on a three.js sphere, u 0 is −x, 0.25 +z, 0.5 +x and 0.75 −z, and the storm
+  painted at the panorama's middle stands toward +x, 27° up at its base. A shot that must hold something painted in the
+  sky is aimed by that table and photographed.

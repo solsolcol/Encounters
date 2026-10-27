@@ -276,7 +276,7 @@
       lookShadow: 'His shadow on the wall',
       lookHer: 'The doorway',
       // PLAY IV · the storm (§4.5): WHAT CHANGED?
-      chgLabel: 'What changed?',
+      chgLabel: 'The storm',
       chgBrief: 'The lightning shows the room. Remember it. When it flashes again, tap or click only what has changed. If nothing has changed, touch nothing.',
       // the card's What you did (§4.9)
       noteAsked: 'You asked who he was. Nobody knew.',
@@ -557,6 +557,20 @@
       return parsedGlb.get(key);
     }
 
+    /* the cars' windows: the sky they reflect, painted (top: the pale storm light; down to the dark of the cabin) — a
+       glass with no environment to reflect renders as a black slab (CP9, by photograph: the pickup's windows in the
+       opening's tracking shot) */
+    let carGlassTex = null;
+    function carGlassSky() {
+      if (carGlassTex) return carGlassTex;
+      const [c, x] = sized(cnv, 4, 64);
+      const g = x.createLinearGradient(0, 0, 0, 64);
+      g.addColorStop(0, '#9fb2c6'); g.addColorStop(0.32, '#61707e'); g.addColorStop(0.62, '#262e36'); g.addColorStop(1, '#0d1115');
+      x.fillStyle = g; x.fillRect(0, 0, 4, 64);
+      carGlassTex = tex(done(THREE, c, false));
+      return carGlassTex;
+    }
+
     /* ============================================== THE SKY DOME (CP1, §3.3)
        The rice country's storm: a generated equirectangular panorama (assets/e4sky.jpg — the zenith down to 6° under
        the horizon, row 1029 of 1098 the horizon) on a sphere segment of radius 140 that rides with the lens, so its
@@ -644,7 +658,9 @@
       CLOCK: { x: 0.72, y0: 1.33, y1: 2.05 },                            // the pendulum clock beside the altar
       CUP: [{ x: 0.26, z: -1.03 }, { x: 0.06, z: -1.03 }],               // the water cup, and where it is at flash 2 (§4.5)
       BOWL: { x: -0.28, z: -1.08 },                                       // the covered bowl
-      INC: { x: 0.0, z: -1.22 },                                          // the incense cup on the table
+      INC: { x: 0.16, z: -1.22 },                                         // the incense cup on the table (off the line to his face:
+                                                                          // CP9, by photograph — at x 0 its straight smoke rose
+                                                                          // through the master's face in every shot from the mat)
       HER: { door: { x: 1.98, z: -2.36 }, deskStep: { x: 1.72, z: -1.92 }, phoneStep: { x: 0.6, z: -2.25 } },
       EYE: { x: 0, y: 1.0, z: 0.0 }                                        // his eye when he kneels on the mat
     };
@@ -1582,6 +1598,17 @@
         bx(0.07, dh + 0.07, 0.06, mTeakY, DX - dw / 2 - 0.035, RX0.base + (dh + 0.07) / 2, RX0.z1 + 0.03);
         bx(0.07, dh + 0.07, 0.06, mTeakY, DX + dw / 2 + 0.035, RX0.base + (dh + 0.07) / 2, RX0.z1 + 0.03);
         bx(dw + 0.14, 0.07, 0.06, mTeakY, DX, RX0.base + dh + 0.035, RX0.z1 + 0.03);
+        /* the doorway dressed as a Thai room's is: a printed cotton curtain on a rod, a pelmet across the top and the two
+           panels hitched to the jambs, so the dark between them is a room and not a hole (CP8, by photograph: from the
+           steps the bare doorway was a black slab with a mark floating in it). The room's own print. */
+        { const tC = tex(makeCurtainPrint(THREE, cnv)); tC.repeat.set(1.0, 2.2);
+          const mC = M({ map: tC, roughness: 0.92, side: THREE.DoubleSide }), zc2 = RX0.z1 + 0.045;
+          const wave = (w2, h2, n, a) => { const g = new THREE.PlaneGeometry(w2, h2, 14, 1), ps = g.attributes.position;
+            for (let i = 0; i < ps.count; i++) { const u = (ps.getX(i) + w2 / 2) / w2; ps.setZ(i, a * Math.sin(u * Math.PI * 2 * n)); }
+            ps.needsUpdate = true; g.computeVertexNormals(); return g; };
+          mesh(wave(dw + 0.04, 0.3, 6, 0.012), mC, DX, RX0.base + dh - 0.15, zc2 + 0.006);
+          for (const s2 of [-1, 1]) mesh(wave(0.24, dh - 0.36, 2.5, 0.016), mC, DX + s2 * (dw / 2 - 0.12), RX0.base + (dh - 0.3) / 2 + 0.02, zc2);
+          cyl(0.009, 0.009, dw + 0.12, mSteel, DX, RX0.base + dh - 0.01, zc2 + 0.012, 8).rotation.z = Math.PI / 2; }
         for (let k = 0; k < 3; k++) bx(1.5, RX0.base * (3 - k) / 3, 0.3, mConc, DX, RX0.base * (3 - k) / 6, RX0.z1 + 0.15 + k * 0.3);
         solids.push(hidBox(1.5, 0.5, 0.9, DX, 0.25, RX0.z1 + 0.45, C));
         quad([DX - 1.0, 2.95, RX0.z1], [DX + 1.0, 2.95, RX0.z1], [DX + 1.0, 2.7, RX0.z1 + 1.1], [DX - 1.0, 2.7, RX0.z1 + 1.1], mZinc, C, 1.2);
@@ -1742,7 +1769,7 @@
        Generic, no maker's mark. It faces −z (its profile's +x is the nose). */
     function buildCar(kind, color) {
       const G = new THREE.Group();
-      const mBody = M({ color, roughness: 0.3, metalness: 0.55 }), mGl = M({ color: 0x141a20, roughness: 0.05, metalness: 0.6 }),
+      const mBody = M({ color, roughness: 0.3, metalness: 0.55 }), mGl = M({ color: 0x0c1014, roughness: 0.18, metalness: 0.0, emissive: 0xffffff, emissiveIntensity: 0.5, emissiveMap: carGlassSky() }),
             mT = M({ color: 0x161616, roughness: 0.85 }), mRim = M({ color: 0xa8acb0, roughness: 0.3, metalness: 0.8 }),
             mL = B({ color: 0xf0ead0 }), mR = B({ color: 0x8a1410 }), mBlk = M({ color: 0x1c1c1e, roughness: 0.6 });
       /* the side profile, x along the car (nose at +x), y up; the cabin's glass by its own corners */
@@ -2061,12 +2088,16 @@
           '    vec2 d = (f - c) / max(rad, 0.001);',
           '    float dist = length(d);',
           '    float body = 1.0 - smoothstep(0.78, 1.0, dist);',
-          '    float spec = 1.0 - smoothstep(0.0, 0.28, length(d - vec2(-0.32, 0.38)));',
-          '    float cres = smoothstep(0.3, 0.8, dist) * smoothstep(0.0, 0.55, -d.y) * body;',
+          /* a drop is a small lens: the light behind it comes through INVERTED, so its lower part is lit — a soft fill,
+             never a line — and a thin glint runs along its upper rim. CP9, by photograph: a round highlight dot over a
+             thin bright crescent drew a smiling face in every drop on the taxi's window */
+          '    float fill = smoothstep(-0.25, 0.95, -d.y) * (1.0 - smoothstep(0.5, 0.95, dist)) * body;',
+          '    float rim = smoothstep(0.58, 0.8, dist) * (1.0 - smoothstep(0.82, 0.97, dist));',
+          '    float glint = rim * smoothstep(0.3, 0.95, dot(d / max(dist, 1e-3), vec2(-0.6, 0.8)));',
           '    float fade = 1.0 - smoothstep(0.8, 1.0, life);',
           '    float tr = (1.0 - smoothstep(0.012, 0.03, seg(f, c0, c))) * smoothstep(0.03, 0.15, run);',
-          '    vec3 col = mix(uHi * 0.3, uHi * clamp(spec * 1.1 + cres * 0.75, 0.0, 1.0), body);',
-          '    float a = body * clamp(spec * 0.9 + cres * 0.6 + uDark * (0.45 + 0.55 * smoothstep(0.55, 1.0, dist)), 0.0, 1.0);',
+          '    vec3 col = mix(uHi * 0.3, uHi * clamp(fill * 0.8 + glint * 1.15, 0.0, 1.0), body);',
+          '    float a = body * clamp(fill * 0.45 + glint * 0.85 + uDark * (0.45 + 0.55 * smoothstep(0.55, 1.0, dist)), 0.0, 1.0);',
           '    a = max(a, tr * 0.28) * fade;',
           '    acc.rgb = mix(acc.rgb, col, a); acc.a = max(acc.a, a);',
           '  }',
@@ -2415,9 +2446,11 @@
       bx(2 * W, 0.64, 0.04, mTrim, 0, 0.88, 0.93);
       { const rw = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 0.5), M({ color: 0x0c1014, roughness: 0.1, transparent: true, opacity: 0.55, depthWrite: false })); rw.position.set(0, 1.46, 0.945); R0.add(rw);
         for (const sx of [-1, 1]) bx((2 * W - 1.3) / 2, 0.56, 0.04, mTrim, sx * (W - (2 * W - 1.3) / 4), 1.46, 0.95); bx(2 * W, 0.08, 0.04, mTrim, 0, 1.73, 0.95); }
-      /* the seats: his and Pong's, their backs and headrests */
-      for (const sx of [-1, 1]) { bx(0.5, 0.14, 0.52, mSeat, sx * 0.42, 0.92, 0.02); const bk = bx(0.5, 0.66, 0.12, mSeat, sx * 0.42, 1.28, 0.34); bk.rotation.x = -0.16;
-        bx(0.27, 0.18, 0.12, mSeat, sx * 0.42, 1.68, 0.4); }
+      /* the seats: his and Pong's, their backs and headrests — the cushion's top at 0.80, where a 1.70 m man's crown sits
+         under the liner (1.76) with a hand to spare and his eye lands at the lens's 1.50 (CP9, by photograph: on a seat at
+         0.99 Pong's head went up through the roof, and the turn to him found his chin under the liner) */
+      for (const sx of [-1, 1]) { bx(0.5, 0.14, 0.52, mSeat, sx * 0.42, 0.73, 0.02); const bk = bx(0.5, 0.66, 0.12, mSeat, sx * 0.42, 1.10, 0.34); bk.rotation.x = -0.16;
+        bx(0.27, 0.18, 0.12, mSeat, sx * 0.42, 1.50, 0.4); }
       /* the mirror and the garland swinging from its stem */
       { bx(0.025, 0.08, 0.025, mDash, 0, 1.72, -0.8); bx(0.26, 0.07, 0.03, mDash, 0, 1.66, -0.79);
         const gl = new THREE.Group(); gl.position.set(0.03, 1.63, -0.775); R0.add(gl); cab.garland = gl;
@@ -2727,12 +2760,21 @@
         if (o.restRate) for (const k of ['standLo', 'standUp', 'sitLo', 'sitUp']) if (L[k]) L[k].setEffectiveTimeScale(o.restRate);
         pose(P.sitW);
         inner.position.lerpVectors(P.standInner, P.sitInner, P.sitW);
-        /* his face's direction, in the head bone's own frame: at rest, he looks along his body's forward (level) */
+        /* his face's direction, in the head bone's own frame, measured at the FILE's own rest — every layer at weight 0,
+           so the mixer gives back the pose the file was bound in, head level and along the body's forward. A take's rest
+           may hold the head anywhere (CP9, by photograph: Pong's cross-legged take holds his chin up and his head turned,
+           and a face measured there looked past the lens by that turn whenever he was asked to look at it). The turn
+           the take's own rest holds the head at is kept as a diagnostic (`diag.faceTurn`, degrees). */
         if (P.head) {
-          group.updateMatrixWorld(true);
+          for (const k of ['standLo', 'standUp', 'sitLo', 'sitUp', 'walk', 'talk']) if (L[k]) L[k].setEffectiveWeight(0);
+          mx.update(0); group.updateMatrixWorld(true);
           P.head.getWorldQuaternion(_hq);
           group.getWorldQuaternion(_pq);
           P.faceLocal = new THREE.Vector3(0, 0, 1).applyQuaternion(_pq).applyQuaternion(_hq.invert()).normalize();
+          pose(P.sitW); group.updateMatrixWorld(true);
+          P.head.getWorldQuaternion(_hq);
+          const fw = P.faceLocal.clone().applyQuaternion(_hq), bw = new THREE.Vector3(0, 0, 1).applyQuaternion(_pq);
+          P.diag = Object.assign(P.diag || {}, { faceTurn: +THREE.MathUtils.radToDeg(fw.angleTo(bw)).toFixed(1) });
         }
         P.ready = true;
         /* the culling sphere round the posed skin, in world space, generous (v18.5's law) — a walker's is wider */
@@ -2889,7 +2931,8 @@
             const a = Math.atan2(dx, dz) - _pe.y, yawTo = Math.atan2(Math.sin(a), Math.cos(a));
             if (Math.abs(yawTo) < 1.7 && hd < 9) {
               want = P.lookAt ? 1 : P.look;
-              const yy = _pe.y + THREE.MathUtils.clamp(yawTo, -0.85, 0.85), pp = THREE.MathUtils.clamp(Math.atan2(dy, hd), -0.35, 0.3);
+              const nk = P.neck || 0.85;
+              const yy = _pe.y + THREE.MathUtils.clamp(yawTo, -nk, nk), pp = THREE.MathUtils.clamp(Math.atan2(dy, hd), -0.35, 0.3);
               P.lookDir.set(Math.sin(yy) * Math.cos(pp), Math.sin(pp), Math.cos(yy) * Math.cos(pp));
             }
           }
@@ -2989,7 +3032,7 @@
           }).catch(err => { console.warn('fmshadow failed to load', err); if (ctx.loadFail) ctx.loadFail('fmshadow', err); });
         } });
       cast.pongR = mkPerson('e4pong', { parent: worldR, x: -0.95, z: -0.2, ry: Math.atan2(0.95, -1.75), height: 1.7, sizeTake: 'Idle_9', walk: false,
-        posture: 'sit', sit: 'Sit_Cross_Legged_on_Floor', talk: 'Sitting_Answering_Questions', seatH: 0.012, seatFloor: 0.004, look: 0.8 });
+        posture: 'sit', sit: 'Sit_Cross_Legged_on_Floor', talk: 'Sitting_Answering_Questions', seatH: 0.012, seatFloor: 0.004, look: 0.8, noMip: true });
       cast.noiR = mkPerson('e4noi', { parent: worldR, x: 1.55, z: -1.0, ry: -2.2, height: 1.56, posture: 'stand', stand: 'Idle_9',
         talk: 'Talk_with_Left_Hand_on_Hip', hidden: true, noMip: true });
       cast.her = mkPerson('granny', { parent: worldR, x: RMC.HER.door.x, z: RMC.HER.door.z, ry: -0.45, height: 1.5, posture: 'stand', stand: 'Stand_and_Chat',
@@ -3009,14 +3052,14 @@
       cast.sombat = mkPerson('encik', { parent: worldC, x: -1.6, z: -1.55, y: SL.floor, ry: Math.PI / 2, seatedHeight: 1.3, walk: false,
         posture: 'sit', sit: 'mixamo.com', seatH: BENCH, seatFloor: 0, feet: true, look: 0.6, noShadow: true });
       cast.pong = mkPerson('e4pong', { parent: worldC, x: 3.45, z: 11.6, ry: Math.PI, height: 1.7, sizeTake: 'Idle_9',
-        posture: 'stand', stand: 'Idle_9', sit: 'Sit_Upright', talk: 'Talk_with_Hands_Open', seatH: BENCH, seatFloor: 0, feet: true, look: 0.9, ground: groundAt });
+        posture: 'stand', stand: 'Idle_9', sit: 'Sit_Upright', talk: 'Talk_with_Hands_Open', seatH: BENCH, seatFloor: 0, feet: true, look: 0.9, ground: groundAt, noMip: true });
       /* the pickup: Pong at the wheel (Thailand drives on the left: the driver sits on the right, +x, facing −z), riding
          the pickup's own frame — hidden until a film sits in the cabin */
       cast.pongCab = mkPerson('e4pong', { parent: cab.root, x: 0.42, z: 0.06, y: 0, ry: Math.PI, height: 1.7, sizeTake: 'Idle_9', walk: false,
-        posture: 'sit', sit: 'Sit_Upright', talk: 'Talk_with_Hands_Open', seatH: 0.99, seatFloor: 0.575, noShadow: true,
+        posture: 'sit', sit: 'Sit_Upright', talk: 'Talk_with_Hands_Open', seatH: 0.80, seatFloor: 0.575, noShadow: true, noMip: true,
         /* his eyes on the road: a point three metres ahead of the windscreen, riding the pickup (the chair take's upright
            stretch still lifts his chin; the absolute look holds his face level on the road) */
-        then: (P) => { const ahead = new THREE.Object3D(); ahead.position.set(0.42, 1.72, -3.2); cab.root.add(ahead); P.lookAt = ahead; } });
+        then: (P) => { const ahead = new THREE.Object3D(); ahead.position.set(0.42, 1.56, -3.2); cab.root.add(ahead); P.lookAt = ahead; P.lookHome = ahead; } });
     }
     /* her look: the colour drained to the grey of an old photograph, faded by DITHERED alpha (alphaHash — the opaque
        pass, never the transparent one: v12.4) */
@@ -3987,6 +4030,11 @@
     };
     const signHit = (posF) => (x, y) => { const p = posF(); camera.updateMatrixWorld(); _hv.set(p.x, p.y, p.z).project(camera);
       return _hv.z < 1 && Math.hypot(x - (_hv.x * 0.5 + 0.5) * innerWidth, y - (-_hv.y * 0.5 + 0.5) * innerHeight) < Math.min(innerWidth, innerHeight) * 0.08; };
+    /* a tap on a spot's own "!" (or on the thing under it) presses it: the door and the tray answer a finger as the people
+       do (CP8, the phone probe: the mark over the door took no tap — only the badge at the foot of the screen did) */
+    const markHit = (posF, markY, frac = 0.09) => (x, y) => { const p = posF(); camera.updateMatrixWorld();
+      return [p.y, p.y + markY].some((py) => { _hv.set(p.x, py, p.z).project(camera);
+        return _hv.z < 1 && Math.hypot(x - (_hv.x * 0.5 + 0.5) * innerWidth, y - (-_hv.y * 0.5 + 0.5) * innerHeight) < Math.min(innerWidth, innerHeight) * frac; }); };
     const smokePos = { x: RX + RMC.INC.x - 0.09, y: RMC.LOWT.top + 0.3, z: RMC.INC.z + 0.06 };
     const clothPos = { x: RX + RMC.BOWL.x, y: RMC.LOWT.top + 0.15, z: RMC.BOWL.z };
     const shadowPos = { x: RX + 0, y: 1.62, z: WALL_Z };
@@ -3999,6 +4047,7 @@
         enabled: () => !play.tree && !play.busy && (phase === 'wait' || phase === 'arrive') && play.greeted && worldOf(yaw.position.x) === 'C',
         onInteract() { return treeLook(); } },
       { id: 'door', pos: { x: RDOOR.x, y: 1.6, z: RDOOR.z - 0.5 }, radius: 3.2, prompt: W.hotDoor,
+        hits: markHit(() => ({ x: RDOOR.x, y: 1.6, z: RDOOR.z - 0.5 }), 0.55),
         enabled: () => worldOf(yaw.position.x) === 'C' && phase === 'called',
         onInteract() { return enterRoom(); } },
       /* the glowing place on the floor IS the mat's mark (CP8, by photograph: the engine's "!" floated at chest height over
@@ -4007,6 +4056,7 @@
         enabled: () => worldOf(yaw.position.x) === 'R' && phase === 'consult' && !play.kneeling,
         onInteract() { return kneel(false); } },
       { id: 'offer', get pos() { const t = TRAY_W(); return { x: t.x, y: 0.2, z: t.z }; }, radius: 2.2, prompt: W.hotOffer, markY: 0.22, anyView: true,
+        hits: markHit(() => { const t = TRAY_W(); return { x: t.x, y: 0.2, z: t.z }; }, 0.22),
         enabled: () => worldOf(yaw.position.x) === 'R' && phase === 'items' && play.offerOn && !play.offered,
         onInteract() { return offer(); } },
       { id: 'sign-smoke', pos: smokePos, radius: 4, aim: 0.17, pressAim: true, mark: false, prompt: W.lookSmoke,
@@ -4115,6 +4165,7 @@
        the film's own cues). The light follows the shot and is set when it changes. Every person is the cast, never a block
        figure (v21.16); every prop is this chapter's own. */
     const FL = { key: '', lit: '', stings: [], api: null, hand: null, shopOn: false };
+    const DUSK_SKY = new THREE.Vector3();
     const c01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v), smo = (k) => k * k * (3 - 2 * k), sgk = (t, a, b) => c01((t - a) / (b - a));
     const lp = (a, b, k) => a + (b - a) * k, lp3 = (a, b, k) => [lp(a[0], b[0], k), lp(a[1], b[1], k), lp(a[2], b[2], k)];
     const isNarrow = () => camera.aspect < 1;
@@ -4268,6 +4319,14 @@
     cast.stall = mkPerson('e4joy', { parent: worldC, x: 44.5, z: 25.6, y: 0.8, ry: Math.PI, height: 1.58, sizeTake: 'Idle_9', walk: false,
       posture: 'stand', stand: 'Idle_9', hidden: true, noShadow: true, noMip: true });
 
+    /* a person looking at the lens in a film: the look is the FILM's, so it is on at once (a seek or a skip lands on it —
+       CP9, by photograph: a seek arrived before Pong's eased look had turned his head, and he talked to the ceiling) and
+       the neck may turn as far as a seated man turns to the person beside him; off, he goes back to what he watched */
+    function gaze(P, on) {
+      if (!P) return;
+      if (on) { P.lookAt = camera; P.neck = 1.25; P.lookW = 1; }
+      else if (P.lookAt === camera) { P.lookAt = P.lookHome || null; P.neck = null; }
+    }
     /* a thing held in his right hand, in the hands' own pass (kit.hold's place: the palm, noteProp's frame) */
     const PALM = [0.012, -0.052, -0.148];
     function handHold(obj, o = {}) {
@@ -4281,8 +4340,14 @@
       if (A.handsRoot) A.handsRoot.visible = true;
       A.armR.visible = true;
     }
+    /* a thing held IN A GRIP (the card): the hand-pose library's closed grip, drawn at exactly k each frame it is wanted
+       (a scene's own pose, api.handPose) — the walking hand has its index out, and a card held there read as a pointing
+       hand beside a card (CP9, by photograph); `gripOff` writes the walking rest back once */
+    function gripOn() { const A = FL.api; if (A && A.handPose) { A.handPose('place', 1, { p: 0 }); FL.grip = true; } }
+    function gripOff() { const A = FL.api; if (FL.grip && A && A.handPose) A.handPose(null, 0); FL.grip = false; }
     function handFree() {
       const A = FL.api;
+      gripOff();
       if (FL.hand && A && A.armR) { A.armR.remove(FL.hand); FL.hand.visible = false; world.add(FL.hand); }
       FL.hand = null;
       /* a film shows his hands only while they hold something or make the wai */
@@ -4345,12 +4410,17 @@
         const pen = sBook ? bookDraw(sBook, { mode: 'front', wed: t < O.o3 ? 1 : wedK }) : null;
         if (t < O.o2) {                                                                  // O1 · THE SHUTTER
           const k = sgk(t, 0, O.o2);
+          /* low, on the shop floor in front of his counter, looking out at the shutter's foot: the bar of light under it
+             runs across the floor toward the lens as it rises (CP9, by photograph: from behind the counter its top filled
+             the lower half of a phone's frame and the light under the shutter never showed) */
           fLens(isNarrow() ? 62 : 54);
-          camAt(lp3(shopAt(0.3, 1.16, -2.45), shopAt(0.24, 1.18, -2.2), k), shopAt(0.02, 0.66, 3.0));
+          camAt(lp3(shopAt(0.38, 0.9, -0.95), shopAt(0.32, 0.98, -0.6), k), shopAt(0.02, 0.55, 3.0));
         } else if (t < O.o2b) {                                                          // O2 · along the new cases
-          const k = smo(sgk(t, O.o2, O.o2b)), pz = lp(2.1, -0.35, k);
+          /* along the right-hand case, its glass at x 1.95 from z −0.7 to 2.1: the aim stays on the case the whole way
+             (CP9: it ran 0.5 m past the case's end and a phone's frame filled with the bare wall) */
+          const k = smo(sgk(t, O.o2, O.o2b)), pz = lp(2.3, 0.45, k);
           fLens(isNarrow() ? 54 : 46);
-          camAt(shopAt(lp(1.12, 1.3, k), lp(1.38, 1.3, k), pz), shopAt(1.95, 1.06, pz - 0.85));
+          camAt(shopAt(lp(1.02, 1.16, k), lp(1.36, 1.28, k), pz), shopAt(1.95, lp(1.12, 0.98, k), pz - 0.72));
         } else if (t < O.o3) {                                                           // the carton, then the flowers by the door
           const k = smo(sgk(t, O.o2b, O.o3));
           fLens(isNarrow() ? 58 : 50);
@@ -4387,23 +4457,32 @@
       if (t < O.o6) {
         fLook('ROAD');
         cabCtl.show(false);
-        if (t < O.o5b) {                                                                 // O5 · the huge wide, a long lens
-          const x = -128 + 6.2 * (t - O.o5);
+        if (t < O.o5b) {
+          /* O5 · the huge wide: from behind, the pickup small on the dyke road driving away into the storm wall — which
+             stands toward +x in the panorama (its heart at u ≈ 0.5), 27° up at its base. The lens tilts up 9° so the
+             paddies are the lower third and the storm the rest (CP9: the first cut looked south on a 15° lens at the
+             horizon's sunset band, and no storm was in it) */
+          const x = -110 + 6.2 * (t - O.o5), k = sgk(t, O.o5, O.o5b), cx = -130 + 3 * k;
           pickupAt(x, 19.6, -Math.PI / 2);
-          fLens(isNarrow() ? 22 : 15);
-          const k = sgk(t, O.o5, O.o5b);
-          camAt([-68 + 4 * k, 1.25, 80], [x + 3, 1.6 + 0.6 * (1 - k), 19.6]);
-        } else {                                                                         // a tracking shot alongside it, the palms whipping past
-          const x = -85.8 + 6.2 * (t - O.o5b);
+          fLens(isNarrow() ? 50 : 38);
+          const dd = Math.hypot(x + 8 - cx, 6.9);
+          camAt([cx, 1.9, 26.5], [x + 8, 1.9 + 0.16 * dd, 19.6]);
+        } else {
+          /* a tracking shot alongside it from beyond the far row of palms, low: the trunks cross close in front of the
+             lens as it keeps pace (CP9: from 9 m without them the pickup filled a phone's frame side-on) */
+          const x = -77 + 6.2 * (t - O.o5b);
           pickupAt(x, 19.6, -Math.PI / 2);
-          fLens(isNarrow() ? 44 : 36);
-          camAt([x + 2.4, 1.55, 29.0], [x + 0.6, 1.25, 19.6]);
+          fLens(isNarrow() ? 40 : 32);
+          camAt([x - 1.5, 1.2, 28.6], [x + 3.0, 1.55, 19.6]);
         }
         return;
       }
       /* ---- O6, O7 · in the pickup: Pong at the wheel; the spirit house; the turn onto the lane; the gate */
       fLook(t < O.o7 ? 'ROAD' : 'YARD0', t < O.o7 ? 0 : 3.0);
       cabCtl.show(true);
+      /* Pong is at the wheel (pongCab): the yard's own Pong stands at the pickup's place for play, and would be waiting
+         at the gate for himself (CP9, by photograph) — away until the film ends */
+      if (cast.pong && cast.pong.group && cast.pong.group.visible) { cast.pong.group.visible = false; FL.hidPong = true; }
       cabCtl.drops(t < O.o6 + 1.0 ? 0 : 0.18 + 0.5 * sgk(t, O.o6 + 1.0, O.stop));
       let P;
       if (t < O.o7) P = driveAt([[-52, 19.6], [-1.2, 19.6]], O.o6, O.o7 + 9.0, t, { linear: true });
@@ -4412,10 +4491,15 @@
         /* along the road: the windscreen; Pong talking; the spirit house sliding past on his side */
         const tk = (t >= O.o6 + 3.4 && t < O.o6 + 7.4) ? smo(sgk(t, O.o6 + 3.4, O.o6 + 4.4)) * (1 - smo(sgk(t, O.o6 + 6.4, O.o6 + 7.4))) : 0;
         fLens(isNarrow() ? 66 : 60);
-        camAt(cabEye(-0.42, 1.5, 0.08), cabEye(lp(-0.36, 0.42, tk), lp(1.36, 1.5, tk), lp(-3.0, -0.4, tk)));
+        /* the turn to Pong lands on his face (his head beside the lens, not the windscreen's corner ahead of it — CP9) */
+        gaze(cast.pongCab, tk > 0.5);                                                 // (a glance across at him on "brother")
+        const road = cabEye(-0.36, 1.36, -3.0), face = tk > 0 ? headOf(cast.pongCab, cabEye(0.42, 1.42, 0.02)) : road;
+        camAt(cabEye(-0.42, 1.5, 0.08), lp3(road, face, tk));
       } else {
+        /* up the lane and stopped: the look goes through the gate's opening to the yard (CP9: straight ahead, the
+           right-hand post stood in the middle of a phone's frame for the last five seconds) */
         fLens(isNarrow() ? 66 : 60);
-        camAt(cabEye(-0.42, 1.5, 0.08), cabEye(-0.28, 1.34, -3.0));
+        camAt(cabEye(-0.42, 1.5, 0.08), lp3(cabEye(-0.28, 1.34, -3.0), cabEye(-1.25, 1.34, -4.0), smo(sgk(t, O.o7 + 2.0, O.o7 + 5.0))));
       }
       void P;
     }
@@ -4474,7 +4558,7 @@
           const onPong = t > T.bless + 3.2 && t < T.bless + 12.0;
           fLens(isNarrow() ? 56 : 48);
           camAt(eye, onPong ? PONG_HEAD() : MASTER_HEAD());
-          if (cast.pongR) cast.pongR.lookAt = onPong ? camera : null;
+          gaze(cast.pongR, onPong);
         } else if (t < T.book) {
           fLens(isNarrow() ? 60 : 54);
           lookRound(t, T.look, eye);
@@ -4489,25 +4573,33 @@
         cabCtl.show(false);
         const P = cast.noi, nx = RDOOR.x - 0.35, nz = RDOOR.z + 1.15;
         fPut(P, nx, nz, faceTo(nx, nz, DOOR_STEP[0], DOOR_STEP[2]));
-        const k = smo(sgk(t, T.out, T.out + 4.2));
+        gaze(P, t > T.out + 1.2);                                                        // she looks at him to give them (CP9: her eyes were on her hands)
+        const k = smo(sgk(t, T.out + 0.2, T.out + 2.4));                               // the washed yard, then her (before she speaks)
         fLens(isNarrow() ? 58 : 50);
         camAt(DOOR_STEP, lp3([2.0, 1.1, 5.0], headOf(P, [nx, 1.5, nz]), k));
-        /* the bag: in her hand, then in his */
+        /* the bag: in her hand; held out to him; taken below the frame (a man carrying a bag at his side does not see it —
+           CP9, by photograph: held up in the viewmodel it floated beside a pointing hand) */
         const give = T.out + 8.8;
-        if (t < give) { const h = handOf(P, /RightHand(_\d+)?$/); handFree(); if (h) { guava.visible = true; guava.position.copy(h); guava.rotation.set(0, 0, 0); } }
-        else handHold(guava, { dy: -0.04, rx: 0.2 });
+        handFree();
+        const h = handOf(P, /RightHand(_\d+)?$/);
+        if (t < give && h) { guava.visible = true; guava.position.copy(h); guava.rotation.set(0, 0, 0); }
+        else if (t < give + 0.9 && h) {
+          const g = smo(sgk(t, give, give + 0.9));
+          guava.visible = true; guava.rotation.set(0, 0, 0);
+          guava.position.set(lp(h.x, DOOR_STEP[0] + 0.18, g), lp(h.y, DOOR_STEP[1] - 1.05, g), lp(h.z, DOOR_STEP[2] + 0.28, g));
+        } else guava.visible = false;
         if (t > T.out + 7.6 && t < T.out + 7.7 && !P.one) personDo(P, 'Checkout_Gesture');
         return;
       }
       if (t < T.cab) {                                                                     // across the yard to the gate, Pong ahead
         fLook('AFTER');
-        handHold(guava, { dy: -0.04, rx: 0.2 });
+        handFree(); guava.visible = false;
         const path = [[RDOOR.x, RDOOR.z + 1.0], [6.2, -1.6], [4.3, 2.0], [2.8, 5.6], [2.4, 8.6]];
         const k = sgk(t, T.walk, T.cab), L = pathLen(path), a = pathAt(path, smo(k) * L), f = pathAt(path, Math.min(L, smo(k) * L + 3.0));
         const bob = Math.sin((t - T.walk) * 7.2) * 0.014;
         fLens(isNarrow() ? 62 : 56);
         camAt([a[0], groundAt(a[0], a[1]) + 1.62 + bob, a[1]], [f[0], 1.5, f[1]]);
-        fWalk(cast.pong, [[RDOOR.x - 0.2, RDOOR.z + 2.6], [5.6, 0.0], [3.6, 3.6], [2.4, 7.4], [2.7, 10.4]], T.walk, T.cab + 0.4);
+        fWalk(cast.pong, [[RDOOR.x - 0.2, RDOOR.z + 2.6], [5.6, 0.0], [3.6, 3.6], [2.4, 7.4], [2.7, 10.4]], T.walk, T.cab + 0.4, t);
         if (cast.pong && t > T.walk + 0.5 && t < T.walk + 5.6) cast.pong.lookAt = null;
         return;
       }
@@ -4516,18 +4608,22 @@
         fLook('AFTER');
         cabCtl.show(true); cabCtl.drops(0.22);
         driveAt([[2.0, 13.4], [1.8, 16.0], [0.4, 18.6], [-2.6, 20.2], [-12, 22.4]], T.cab, T.wide + 1.4, t, { easeIn: true });
-        const tk = (t > T.cab + 2.2 && t < T.cab + 4.6) ? smo(sgk(t, T.cab + 2.2, T.cab + 2.9)) * (1 - smo(sgk(t, T.cab + 3.9, T.cab + 4.6))) : 0;
+        const tk = (t > T.cab + 0.4 && t < T.cab + 4.6) ? smo(sgk(t, T.cab + 0.4, T.cab + 1.1)) * (1 - smo(sgk(t, T.cab + 3.9, T.cab + 4.6))) : 0;
+        gaze(cast.pongCab, tk > 0.5);
         fLens(isNarrow() ? 66 : 60);
-        camAt(cabEye(-0.42, 1.5, 0.08), cabEye(lp(-0.32, 0.42, tk), lp(1.36, 1.52, tk), lp(-3.0, -0.4, tk)));
+        camAt(cabEye(-0.42, 1.5, 0.08), lp3(cabEye(-0.32, 1.36, -3.0), headOf(cast.pongCab, cabEye(0.42, 1.42, 0.02)), tk));
         return;
       }
       if (t < T.coda) {                                                                    // the wide: the dyke road into the gold seam
         fLook('AFTER');
         cabCtl.show(false);
+        /* from the road's edge behind it, the pickup away down the dyke road into the gold seam at the horizon (the
+           panorama's −x is where the low sun is); the palms line the right of the frame (CP9: from the yard on a long
+           lens its side filled a phone's frame) */
         const x = -14 - 6.0 * (t - T.wide);
         pickupAt(x, 22.4, Math.PI / 2);
-        fLens(isNarrow() ? 30 : 22);
-        camAt([-6.0, 1.3, 11.8], [x - 4, 1.4, 22.4]);
+        fLens(isNarrow() ? 40 : 32);
+        camAt([-7.0, 2.1, 25.6], [x - 24, 2.0, 22.0]);
         return;
       }
       codaFrame(t - T.coda, 'A');
@@ -4541,7 +4637,9 @@
         cabCtl.show(false);
         const eye = ROOM_EYE();
         herCtl.at('door'); herCtl.show(t > T.look && t < T.pong + 2.0);
-        if (cast.pongR) cast.pongR.lookAt = (t > T.ask + 3.4 && t < T.look) || (t > T.pong + 9.0 && t < T.come + 3.8) ? cast.master.head || null : null;
+        const toMaster = (t > T.ask + 3.4 && t < T.look) || (t > T.pong + 9.0 && t < T.come + 3.8);
+        const toHim = t < T.ask + 3.4 || (t >= T.pong && t <= T.pong + 9.0) || (t >= T.come + 3.8 && t < T.come + 10.0);
+        if (cast.pongR) { if (toMaster) { cast.pongR.lookAt = cast.master.head || null; cast.pongR.neck = null; } else if (toHim) gaze(cast.pongR, true); else { gaze(cast.pongR, false); cast.pongR.lookAt = null; } }
         if (t < T.ask) {                                                                   // to Pong, low
           fLens(isNarrow() ? 56 : 48);
           camAt(eye, PONG_HEAD());
@@ -4550,11 +4648,20 @@
           fLens(isNarrow() ? 58 : 50);
           camAt(eye, lp3(PONG_HEAD(), MASTER_HEAD(), k));
         } else if (t < T.pong) {                                                           // the master does not turn round: a long look, then his answer
-          const k = smo(sgk(t, T.look, T.look + 6.0));
-          fLens(lp(isNarrow() ? 54 : 46, isNarrow() ? 44 : 34, k));
-          /* the doorway behind him kept at the frame's edge, where she is (her look: only there) */
-          const mh = MASTER_HEAD(), side = isNarrow() ? 0.12 : 0.34;
-          camAt(lp3(eye, [RX + 0.0, 1.0, -0.3], k), [mh[0] + side * (1 - 0.3 * k), mh[1] - 0.02, mh[2]]);
+          const k = smo(sgk(t, T.look, T.look + 6.0)), fov = lp(isNarrow() ? 54 : 46, isNarrow() ? 44 : 34, k);
+          fLens(fov);
+          /* he looks at the client a long time; the client's eyes go past him to the doorway and come back. The glance
+             puts the doorway three quarters of the way to the frame's edge on THIS screen — where she is seen and only
+             there (her look) — so on a phone, whose frame is a third as wide, the master leaves it for the glance (CP9,
+             by photograph: on a phone the doorway never came into the frame and she was never seen) */
+          const mh = MASTER_HEAD(), e0 = lp3(eye, [RX + 0.0, 1.0, -0.3], k);
+          const dr = [RX + RMC.HER.door.x, 1.42, RMC.HER.door.z];
+          const half = Math.atan(Math.tan(THREE.MathUtils.degToRad(fov) / 2) * innerWidth / Math.max(1, innerHeight));
+          const bm = Math.atan2(mh[0] - e0[0], mh[2] - e0[2]), bd = Math.atan2(dr[0] - e0[0], dr[2] - e0[2]);
+          const ba = bd - Math.sign(angTo(bm, bd)) * 0.75 * half, rr = Math.hypot(dr[0] - e0[0], dr[2] - e0[2]);
+          const toDoor = [e0[0] + Math.sin(ba) * rr, lp(mh[1], dr[1], 0.5), e0[2] + Math.cos(ba) * rr];
+          const g = smo(sgk(t, T.look + 6.2, T.look + 7.6)) * (1 - smo(sgk(t, T.look + 9.4, T.look + 10.6)));
+          camAt(e0, lp3([mh[0], mh[1] - 0.02, mh[2]], toDoor, g));
         } else if (t < T.who) {                                                            // Pong, uneasy
           fLens(isNarrow() ? 56 : 48);
           camAt(eye, PONG_HEAD());
@@ -4572,6 +4679,7 @@
         cabCtl.show(false);
         const P = cast.noi, nx = RDOOR.x - 0.3, nz = RDOOR.z + 1.05;
         fPut(P, nx, nz, faceTo(nx, nz, DOOR_STEP[0], DOOR_STEP[2]));
+        gaze(P, true);                                                                   // "Ajahn say, call anytime, ka." — to him
         fLens(isNarrow() ? 56 : 48);
         const give = T.card + 4.0;
         if (t < give) {
@@ -4580,7 +4688,8 @@
           camAt(DOOR_STEP, headOf(P, [nx, 1.5, nz]));
           if (t > T.card + 2.4 && t < T.card + 2.5 && !P.one) personDo(P, 'Checkout_Gesture');
         } else {
-          handHold(card, { dx: -0.01, dy: 0.012, rx: -1.0, ry: 0.15 });
+          gripOn();
+          handHold(card, { dx: 0.0, dy: 0.008, dz: -0.035, rx: -1.25, ry: 0.15 });
           camAt(DOOR_STEP, [DOOR_STEP[0] - 0.6, 1.2, DOOR_STEP[2] + 3.2]);
         }
         return;
@@ -4590,20 +4699,26 @@
         cabCtl.show(true); cabCtl.drops(0.18);
         driveAt([[2.0, 13.4], [1.8, 16.0], [0.6, 18.4], [3.0, 19.8], [30, 19.6]], T.cab, T.wide + 3.0, t, { easeIn: true });
         const flip = smo(sgk(t, T.cab + 6.0, T.cab + 7.6));
-        handHold(card, { dx: 0.0, dy: 0.02, rx: -1.0 - 0.25 * Math.sin(flip * Math.PI), ry: flip * Math.PI });
+        gripOn();
+        handHold(card, { dx: 0.0, dy: 0.008, dz: -0.035, rx: -1.25 - 0.25 * Math.sin(flip * Math.PI), ry: 0.15 + flip * Math.PI });
         const onPong = t < T.cab + 5.2;
+        gaze(cast.pongCab, onPong);
         fLens(isNarrow() ? 66 : 60);
-        camAt(cabEye(-0.42, 1.5, 0.08), onPong ? cabEye(0.42, 1.52, -0.3) : cabEye(-0.3, 1.0, -0.9));
+        /* off Pong: his eyes down to the card in his hand, the road still in the top of the frame */
+        camAt(cabEye(-0.42, 1.5, 0.08), onPong ? headOf(cast.pongCab, cabEye(0.42, 1.42, 0.02)) : cabEye(-0.36, 1.18, -1.6));
         return;
       }
       handFree();
       if (t < T.coda) {                                                                    // the wide: the pickup away along the dyke
         fLook('AFTER');
         cabCtl.show(false);
-        const x = 4 + 6.0 * (t - T.wide);
+        /* from the crown of the road behind it, the pickup going away east between the two rows of palms toward what is
+           left of the storm (CP9, by photograph: from the verge by the shelter its posts and a palm trunk stood in the
+           middle of a phone's frame and the pickup went behind them) */
+        const x = 4 + 6.0 * (t - T.wide), k = sgk(t, T.wide, T.coda);
         pickupAt(x, 19.6, -Math.PI / 2);
-        fLens(isNarrow() ? 30 : 22);
-        camAt([-4.0, 1.4, 11.6], [x + 4, 1.4, 19.6]);
+        fLens(isNarrow() ? 40 : 28);
+        camAt([lp(-4.0, -2.5, k), 1.75, 20.9], [x + 10, 1.6, 19.9]);
         return;
       }
       codaFrame(t - T.coda, 'B');
@@ -4622,10 +4737,18 @@
           fLens(isNarrow() ? 36 : 30);
           const k = smo(sgk(t, 0, 2.2));
           camAt(lp3(eye, [RX - 0.2, 0.86, -0.62], k), [RX - 0.28, 0.44, -1.08], roll);
-        } else if (t < 4.4) {                                                              // the shadow, and her at the edge
+        } else if (t < 3.3) {                                                              // the shadow on the wall
           fLens(isNarrow() ? 44 : 36);
           const side = isNarrow() ? 0.9 : 1.15;
           camAt(eye, [RX - side + 0.5, 1.62, RM.z0], roll);
+        } else if (t < 4.4) {                                                              // and her, at the edge of the doorway
+          /* the doorway three quarters of the way to the frame's edge on THIS screen, where she is seen (her look) —
+             on a phone the shadow and the door are never in one frame, so they are two cuts (CP9, by photograph) */
+          const fov = isNarrow() ? 44 : 36; fLens(fov);
+          const half = Math.atan(Math.tan(THREE.MathUtils.degToRad(fov) / 2) * innerWidth / Math.max(1, innerHeight));
+          const dr = [RX + RMC.HER.door.x, 1.42, RMC.HER.door.z], bd = Math.atan2(dr[0] - eye[0], dr[2] - eye[2]);
+          const bm = Math.atan2(-eye[0] + RX, RM.z0 - eye[2]), ba = bd - Math.sign(angTo(bm, bd)) * 0.75 * half, rr = Math.hypot(dr[0] - eye[0], dr[2] - eye[2]);
+          camAt(eye, [eye[0] + Math.sin(ba) * rr, 1.42, eye[2] + Math.cos(ba) * rr], roll);
         } else if (t < T.up) {                                                             // the master — "He's doing something to me."
           fLens(lp(isNarrow() ? 40 : 34, isNarrow() ? 34 : 28, sgk(t, 4.4, T.up)));
           camAt(eye, MASTER_HEAD(), roll);
@@ -4639,6 +4762,7 @@
           camAt([RX + 0.0, 1.62, 0.25], MASTER_HEAD());
         } else {                                                                           // Pong, awkward; he backs to the door
           const k = smo(sgk(t, T.pong + 2.8, T.out));
+          gaze(cast.pongR, k < 0.5);
           fLens(isNarrow() ? 60 : 54);
           camAt([RX + lp(0.0, R_ARRIVE.x - RX, k), 1.62, lp(0.25, R_ARRIVE.z, k)], k < 0.5 ? PONG_HEAD() : MASTER_HEAD());
         }
@@ -4652,6 +4776,7 @@
         if (t < T.car) {
           cabCtl.show(false);
           const P = cast.noi; fPut(P, RDOOR.x - 0.2, RDOOR.z + 0.6, faceTo(RDOOR.x, RDOOR.z, 3, 6));
+          gaze(P, true);                                                                 // she watches him go, and calls after him
           if (t > T.out + 3.2 && t < T.out + 3.3 && !P.one) personDo(P, 'Wave_One_Hand');
           const path = [[RDOOR.x, RDOOR.z + 1.3], [6.0, -1.0], [4.0, 3.0], [2.6, 7.4], [2.4, 10.6]];
           const k = sgk(t, T.out, T.car), L = pathLen(path), a = pathAt(path, k * L), f = pathAt(path, Math.min(L, k * L + 3.0));
@@ -4664,7 +4789,8 @@
           cabCtl.show(true); cabCtl.drops(0.5);
           pickupAt(CMP.PICKUP.x, CMP.PICKUP.z + 0.4, Math.PI);
           fLens(isNarrow() ? 64 : 58);
-          camAt(cabEye(-0.42, 1.5, 0.08), t < T.car + 4.4 ? cabEye(0.42, 1.52, -0.3) : cabEye(-0.3, 1.32, -3.0));
+          gaze(cast.pongCab, t < T.car + 4.4);
+          camAt(cabEye(-0.42, 1.5, 0.08), t < T.car + 4.4 ? headOf(cast.pongCab, cabEye(0.42, 1.42, 0.02)) : cabEye(-0.3, 1.32, -3.0));
         }
         return;
       }
@@ -4679,8 +4805,10 @@
         }
         const look = pos.x > 30 && pos.x < 50 ? smo(sgk(pos.x, 30, 36)) * (1 - smo(sgk(pos.x, 46, 50))) : 0;
         const sh = headOf(S, [44.5, 2.3, 25.6]);
-        fLens(lp(isNarrow() ? 64 : 58, isNarrow() ? 40 : 32, look));
-        const eyeW = cabEye(-0.42, 1.5, 0.08), ahead = cabEye(-0.3, 1.34, -3.0);
+        /* level on the road, a little long: the dash is a band at the foot of the frame, not half of it (CP9, by
+           photograph: aimed down on a wide lens, a phone's frame was 45 % black dashboard) */
+        fLens(lp(isNarrow() ? 54 : 52, isNarrow() ? 40 : 32, look));
+        const eyeW = cabEye(-0.42, 1.5, 0.08), ahead = cabEye(-0.3, 1.5, -3.0);
         camAt(eyeW, lp3(ahead, sh, look));
         return;
       }
@@ -4699,12 +4827,13 @@
         cabCtl.show(false);
         const eye = ROOM_EYE();
         cast.master.look = t < T.ask ? 0 : 1;                                              // his eyes shut while he finishes the chant
+        cast.master.bow = t < T.ask - 0.8 ? 0.26 : t < T.nod + 2.8 ? 0 : cast.master.bow; // (the scan's eyes cannot close: his head is bowed over it)
         if (t < T.ask) {
           fLens(lp(isNarrow() ? 50 : 42, isNarrow() ? 46 : 38, sgk(t, 0, T.ask)));
           camAt(eye, MASTER_HEAD());
         } else if (t < T.nod) {                                                            // to Pong, then Pong to the master
           const onPong = t < T.ask + 7.2;
-          if (cast.pongR) cast.pongR.lookAt = !onPong ? cast.master.head || null : null;
+          if (cast.pongR) { if (onPong) gaze(cast.pongR, true); else { cast.pongR.neck = null; cast.pongR.lookAt = cast.master.head || null; } }
           fLens(isNarrow() ? 56 : 48);
           camAt(eye, onPong ? PONG_HEAD() : MASTER_HEAD());
         } else {                                                                           // the master, unoffended, returns the wai
@@ -4719,13 +4848,22 @@
       if (t < T.shelter) {                                                                 // outside: "Finish already?" — "Let's sit for a bit."
         fLook('AFTER');
         cabCtl.show(false);
-        const path = [[RDOOR.x, RDOOR.z + 1.0], [6.4, -1.2], [4.6, 2.8], [3.2, 7.0], [4.6, 11.4]];
-        const k = sgk(t, T.out, T.shelter), L = pathLen(path), a = pathAt(path, smo(k) * L), f = pathAt(path, Math.min(L, smo(k) * L + 3.0));
-        fWalk(cast.pong, [[RDOOR.x - 0.6, RDOOR.z + 2.0], [5.8, -0.6], [4.0, 3.4], [3.0, 7.6], [4.8, 12.6]], T.out, T.shelter + 0.8);
-        const onPong = t > T.out + 1.0 && t < T.out + 5.2;
-        const bob = Math.sin((t - T.out) * 6.8) * 0.012;
+        const C0 = [RDOOR.x - 1.0, RDOOR.z + 3.4], t1 = T.out + 6.0;
+        if (t < t1) {
+          /* at the foot of the steps he turns back to the door: Pong comes out after him and stops on the bottom step */
+          fWalk(cast.pong, [[RDOOR.x, RDOOR.z + 0.6], [RDOOR.x - 0.3, RDOOR.z + 1.5], [RDOOR.x - 0.5, RDOOR.z + 2.1]], T.out + 0.3, T.out + 2.4, t, { ry: faceTo(RDOOR.x - 0.5, RDOOR.z + 2.1, C0[0], C0[1]) });
+          gaze(cast.pong, t > T.out + 2.0);
+          fLens(isNarrow() ? 58 : 52);
+          camAt([C0[0], groundAt(C0[0], C0[1]) + 1.62, C0[1]], headOf(cast.pong, [RDOOR.x - 0.5, 1.6, RDOOR.z + 2.1]));
+          return;
+        }
+        gaze(cast.pong, false);
+        const path = [C0, [5.2, 0.6], [3.6, 4.4], [3.0, 7.8], [4.6, 11.4]];
+        const k = sgk(t, t1, T.shelter), L = pathLen(path), a = pathAt(path, smo(k) * L), f = pathAt(path, Math.min(L, smo(k) * L + 3.0));
+        fWalk(cast.pong, [[RDOOR.x - 0.5, RDOOR.z + 2.1], [5.6, 0.2], [3.9, 3.8], [3.1, 7.2], [4.4, 10.8]], t1 + 0.6, T.shelter + 0.6, t);
+        const bob = Math.sin((t - t1) * 6.8) * 0.012;
         fLens(isNarrow() ? 62 : 56);
-        camAt([a[0], groundAt(a[0], a[1]) + 1.62 + bob, a[1]], onPong ? headOf(cast.pong, [f[0], 1.6, f[1]]) : [f[0], 1.5, f[1]]);
+        camAt([a[0], groundAt(a[0], a[1]) + 1.62 + bob, a[1]], [f[0], 1.5, f[1]]);
         return;
       }
       if (t < T.dusk) {                                                                    // the roadside shelter: the compound's lights across the wet paddy
@@ -4736,6 +4874,7 @@
         const eye = [S1.x - 0.42, 0.48 + 0.78, S1.z + 0.36];
         if (t < T.shelter + 11.4) {
           const onPong = (t > T.shelter + 1.4 && t < T.shelter + 7.2);
+          gaze(cast.pong, onPong);
           fLens(isNarrow() ? 60 : 52);
           camAt(eye, onPong ? headOf(cast.pong, [S1.x + 0.5, 1.2, S1.z + 0.3]) : [S1.x - 2.0, 1.4, -6.0]);
         } else {
@@ -4744,13 +4883,18 @@
         return;
       }
       bookAway();
-      if (t < T.coda) {                                                                    // the dusk over the paddies: the two of them small under the shelter
+      if (t < T.coda) {                                                                    // the dusk: Pong beside him watching the sky clear; the lens goes up into it
+        /* from his seat, never from outside (a shot of the shelter from the road showed Pong alone under it — there is
+           no body of his to put beside him — CP9): Pong first, his face up to the clearing sky, then the lens turns
+           out over the compound and rises into the gold over its roofs while the line is said */
         fLook('YARD0', 4.0);
         cabCtl.show(false);
-        const S1 = CMP.SHELTER, k = smo(sgk(t, T.dusk, T.coda));
+        const S1 = CMP.SHELTER, eye = [S1.x - 0.42, 0.48 + 0.78, S1.z + 0.36];
         fPut(cast.pong, S1.x + 0.5, S1.z + 0.3, Math.PI, { y: 0.04, seated: true });
-        fLens(isNarrow() ? 50 : 40);
-        camAt([S1.x + lp(-3.4, -4.6, k), lp(1.7, 2.6, k), S1.z + lp(5.4, 7.6, k)], [S1.x - 1.0, 1.2, S1.z - 6.0]);
+        cast.pong.lookAt = DUSK_SKY.set(S1.x - 1.5, 7.0, S1.z - 22); cast.pong.neck = null; cast.pong.lookW = 1;
+        const k = smo(sgk(t, T.dusk + 2.6, T.dusk + 7.4));
+        fLens(lp(isNarrow() ? 54 : 46, isNarrow() ? 48 : 40, k));
+        camAt(eye, lp3(headOf(cast.pong, [S1.x + 0.5, 1.2, S1.z + 0.3]), [S1.x - 1.2, 4.6, S1.z - 9.0], k));
         return;
       }
       codaFrame(t - T.coda, 'D');
@@ -4764,9 +4908,12 @@
       if (kit && kit.chill && k === 'C') kit.chill(t < CODA.k3 ? 0.12 : 0, { secs: 0.01, cine: true });
       if (t < CODA.k2) {                                                                   // K1 · the taxi in the rain
         fLook('TAXI');
-        const T0 = TX, kk = smo(sgk(t, 1.0, 3.2));
+        /* the rain on his window and the city in it; then through the gap between the front seats to the windscreen, the
+           wipers and the meter while he cannot find the unit's number; then the window again for "When I got back..."
+           (CP9, by photograph: the turn ended on the back of the driver's seat and held it) */
+        const T0 = TX, kk = smo(sgk(t, 1.0, 3.2)) * (1 - smo(sgk(t, 7.2, 9.0)));
         fLens(isNarrow() ? 60 : 54);
-        camAt([T0 - 0.36, 1.14, 0.5], lp3([T0 - 1.2, 1.12, 0.3], [T0 + 0.1, 1.0, -2.0], kk));
+        camAt([T0 - 0.36, 1.14, 0.5], lp3([T0 - 1.2, 1.12, 0.3], [T0 + 0.22, 1.3, -2.6], kk));
         return;
       }
       /* K2 · the shutter again, in grey light; his keys in his hand while the other pats his pocket */
@@ -4776,10 +4923,17 @@
         shop.t1 = 0; shop.u = smo(sgk(t, CODA.k2 + 0.4, CODA.k2 + 4.8)); shop.l1 = 0; shop.ledK = t < CODA.k2 + 3.0 ? 0.02 : 0.7;
         shop.phoneOn = 0;
         if (sBook) bookDraw(sBook, { mode: 'front' });
-        const kd = smo(sgk(t, CODA.k2 + 3.6, CODA.k2 + 4.6));
-        fLens(isNarrow() ? 60 : 54);
-        camAt(lp3([S0 + 0.3, 1.16, -2.4], [S0 + 0.3, 1.6, -2.3], kd), lp3([S0 + 0.02, 0.7, 3.0], [S0 + 0.2, 0.9, -1.4], kd));
-        if (t > CODA.k2 + 4.0) handHold(keys, { dx: 0.0, dy: 0.0, rx: -0.4, rz: 0.3 }); else handFree();
+        /* the bookend of O1: the same place low on the floor, the same shutter rising — in grey light now; then a cut to
+           him at his counter, the keys in his hand, looking down at the book while the other hand pats a pocket */
+        if (t < CODA.k2 + 4.2) {
+          fLens(isNarrow() ? 62 : 54);
+          camAt(lp3([S0 + 0.38, 0.9, -0.95], [S0 + 0.32, 0.98, -0.6], smo(sgk(t, CODA.k2, CODA.k2 + 4.2))), [S0 + 0.02, 0.55, 3.0]);
+          handFree();
+        } else {
+          fLens(isNarrow() ? 58 : 50);
+          camAt([S0 + 0.3, 1.55, -2.25], [S0 + 0.12, 1.02, -1.45]);
+          handHold(keys, { dx: 0.0, dy: 0.0, rx: -0.4, rz: 0.3 });
+        }
         return;
       }
       handFree();
@@ -4815,6 +4969,10 @@
            (chapter 4's law), so end() does */
         if (api && api.handsRoot) { FL.hands = api.handsRoot; api.handsRoot.visible = false; }
         if (key !== 'open') { play.signsOn = false; matZone.visible = false; }
+        /* the master looks at the one in front of him in the endings as he does in play (his `look`: 0 while his eyes
+           are shut) — a look outside play is opt-in (CP9, by photograph: in every ending he talked over the lens to the
+           ceiling, because his answering take tips his chin up and nothing held his face on the client) */
+        if (cast.master) cast.master.lookFilm = key !== 'open';
       },
       frame(key, t, api) {
         if (FL.key !== key) films.begin(key, null, api);
@@ -4838,8 +4996,10 @@
         for (const P of people) P.filmWalk = 0;
         if (cast.refl) cast.refl.group.visible = false;
         if (cast.stall) cast.stall.group.visible = false;
-        if (cast.master) { cast.master.bow = 0; cast.master.look = 1; }
-        if (cast.pongR) cast.pongR.lookAt = null;
+        if (FL.hidPong && cast.pong && cast.pong.group) cast.pong.group.visible = true;
+        FL.hidPong = false;
+        if (cast.master) { cast.master.bow = 0; cast.master.look = 1; cast.master.lookFilm = false; }
+        for (const P of [cast.pongR, cast.pongCab, cast.pong, cast.noi]) if (P) { P.lookAt = P.lookHome || null; P.neck = null; }
         if (room.cup) room.cup.rotation.z = 0;
         if (kit && kit.chill) kit.chill(0, { secs: 0.01, cine: false });
         camera.rotation.z = 0;
@@ -4964,7 +5124,13 @@
       play: { state: play, ask, sign, kneel, offer, enterRoom, callNext, greet, treeLook, chooseItem, askDay, matZone, tray, herPos, chg,
               spots: { smoke: smokePos, cloth: clothPos, shadow: shadowPos } },
       castInfo: () => Object.fromEntries(Object.entries(cast).map(([k, P]) => [k, P && { ready: P.ready, diag: P.diag || null,
-        pos: [+P.group.position.x.toFixed(2), +P.group.position.y.toFixed(2), +P.group.position.z.toFixed(2)], vis: P.group.visible }])),
+        pos: [+P.group.position.x.toFixed(2), +P.group.position.y.toFixed(2), +P.group.position.z.toFixed(2)], vis: P.group.visible,
+        /* where his face points against the lens, in degrees (what a look at the lens is graded on) */
+        faceToLens: (() => { if (!P.ready || !P.head || !P.faceLocal) return null;
+          const hq = new THREE.Quaternion(), hp = new THREE.Vector3(), cp = new THREE.Vector3();
+          P.head.updateWorldMatrix(true, false); P.head.getWorldQuaternion(hq); P.head.getWorldPosition(hp); camera.getWorldPosition(cp);
+          return +THREE.MathUtils.radToDeg(P.faceLocal.clone().applyQuaternion(hq).angleTo(cp.sub(hp).normalize())).toFixed(1); })(),
+        looking: P.lookAt === camera ? 'lens' : P.lookAt ? 'thing' : (P.look > 0 ? 'play' : null), lookW: +P.lookW.toFixed(2) }])),
       info: () => ({ phase, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], world: worldOf(yaw.position.x),
                      until: +speak.until.toFixed(2), pending: speak.pending ? speak.pending.name : null, decOpen }),
       hotspots,
@@ -6095,8 +6261,8 @@
       sfx(T.book + 1.0, 'w4pen', 0.4);
       fade(T.out - 0.6, T.out, 0, 1); fade(T.out, T.out + 0.8, 1, 0);
       sfx(T.out + 0.2, 'w4after', 0.6);                      // the washed yard: drips, frogs, a far motorbike
-      sfx(T.out + 1.2, 'pn1guava', 1);                       // "Take some guavas with you... from our tree."  (→ ~48.2)
-      sfx(T.out + 9.0, 'q1A2', 1);                           // "Khop khun krap."  (→ ~50.6)
+      sfx(T.out + 1.8, 'pn1guava', 1);                       // "Take some guavas with you... from our tree."  (→ ~48.8)
+      sfx(T.out + 9.4, 'q1A2', 1);                           // "Khop khun krap."  (→ ~51.0)
       sfx(T.walk + 0.4, 'pg1A1', 1);                         // "See? I tell you. Very good one. My cousin never lie."  (→ ~56.7)
       sfx(T.walk + 0.6, 'w4steps', 0.35);
       sfx(T.cab - 0.3, 'w4door', 0.5);                       // the pickup's door
