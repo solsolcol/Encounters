@@ -3613,8 +3613,10 @@
       // turned to him: from where it stands once it is placed, and on its first frame from his own heading (where it
       // stood last time is no guide)
       if (!V.placed) camera.getWorldDirection(_hv);
-      const yaw = V.placed ? Math.atan2(_hc.x - hanVis.position.x, _hc.z - hanVis.position.z) : Math.atan2(-_hv.x, -_hv.z);
-      hanVis.rotation.set(0.13 * lean, yaw, 0, 'YXZ');
+      // (v23.1: its own name — a `yaw` declared here shadowed the camera rig's for the whole function, and the push
+      //  above, which writes the rig's, threw on every frame and froze the vision)
+      const faceYaw = V.placed ? Math.atan2(_hc.x - hanVis.position.x, _hc.z - hanVis.position.z) : Math.atan2(-_hv.x, -_hv.z);
+      hanVis.rotation.set(0.13 * lean, faceYaw, 0, 'YXZ');
       const sc = 1 + 0.35 * smooth(b);
       _vo.set(FACE.x * VIS.h * sc, FACE.y * VIS.h * sc, FACE.z * VIS.h * sc).applyEuler(hanVis.rotation);
       _vt.sub(_vo);

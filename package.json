@@ -4,7 +4,7 @@
   "description": "Master Z's Spiritual Encounters — Chapter 1 3D prototype",
   "main": "index.js",
   "scripts": {
-    "build": "for f in $(find src/chapters -name '*.js'); do node --check $f || exit 1; done && esbuild src/main.js --bundle --minify --format=iife --target=es2020 --outfile=bundle.js && python3 build.py && python3 wrap.py",
+    "build": "for f in $(find src/chapters -name '*.js'); do node --check $f || exit 1; done && node tools/probes/usebefore.mjs $(find src/chapters -name '*.js') src/main.js && esbuild src/main.js --bundle --minify --format=iife --target=es2020 --outfile=bundle.js && python3 build.py && python3 wrap.py",
     "test": "node final.mjs && node csptest.mjs && node census.mjs"
   },
   "keywords": [],
@@ -16,6 +16,8 @@
     "three": "^0.185.1"
   },
   "devDependencies": {
+    "acorn": "8.14.0",
+    "acorn-walk": "8.3.4",
     "esbuild": "^0.28.2",
     "xlsx": "^0.18.5"
   },

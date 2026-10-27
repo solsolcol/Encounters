@@ -12,8 +12,8 @@
    inside a function or a block is that scope's own (shadowing, the simple
    way: such a name is never counted as build's from in there). Every chapter
    scans clean at v21.1; the e3c3 that shipped broken reports its 5 reads.
-   Needs acorn, which the repo does not carry:
-     npm i --no-save acorn@8.14.0 acorn-walk@8.3.4
+   acorn and acorn-walk are dev dependencies since v23.1 (npm install brings
+   them); the build runs usebefore.mjs, this scan's every-function companion.
    Usage: node tools/probes/tdzscan.mjs <chapter.js> [functionName=build]   */
 import fs from 'node:fs';
 let acorn, walk;

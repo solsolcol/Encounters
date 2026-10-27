@@ -6525,3 +6525,13 @@ cut (sharing its vertices and maps) when it is small.
   the frame it opened, and `#evCraft` still stood where the last event's last step (the straw's bend) had left it —
   the frame moves it. The first drink's brief, and the photographing probe's shot before its twist, had hidden the race.
   Two frames before reading where a gesture is to be made.
+- **A `const` lower in a function shadows the outer name for the WHOLE function — above its line too** (v23.1). The
+  Hanuman's new push in episode 3 chapter 4 wrote the camera rig's `yaw` at the top of `visTick`, and forty lines down
+  the same function already declared `const yaw` (the figure's own turn). That inner declaration owns the name from the
+  function's first line, so the write was a dead-zone read: "Cannot access 'yaw' before initialization" on every frame
+  the vision was up, the vision frozen, the beat never ending — on the live site for about forty minutes. It booted
+  (World Y), it built, chaptertest was green: only a probe that reached World H saw it, and only because it captured
+  `pageerror`. `tools/probes/usebefore.mjs` finds the class statically in any function (real scopes; a closure written
+  before a declaration is left alone, since it normally runs after), it reports exactly this bug on the shipped file and
+  nothing else in the game, and **`npm run build` runs it** over every chapter and main.js. When an edit reaches for an
+  outer name inside a long function, search that function for a declaration of the same name first.
