@@ -41,6 +41,11 @@ his decision to ordain (docs/V24.0-EPISODE4-PLAN.md) — and Episode 5 is monkho
 casebook's title for where that begins, *My First Monkhood*, until he names it. The Love Spell has left the list for
 now; where it goes, and whether episodes 6–10 follow the casebook too, is his.)
 
+(Later the same day, Chad: read the casebook's order again. After S1·12 it runs S1·13–S1·20, its own "case one" to
+"case eight" at Grandmaster Pho's side, Season 1's finale last — so Episode 4 is S1·11 in two chapters, S1·12, S1·13
+and S1·14 (docs/V24.0-EPISODE4-PLAN.md, fourth draft), and the next episode picks up at case three. The names in the
+game for Episodes 4 and 5 change when he picks new ones.)
+
 Episode 1's title is what chapter 1's card has carried since v2.1 — "The
 Hell Note / I Should Never Have Taken" — which says what an episode IS here:
 one case file from the site, told in five chapters. The other nine are case

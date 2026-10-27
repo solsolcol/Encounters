@@ -6677,7 +6677,9 @@ What the baseline contains, by release:
   The plan's third draft is written to his decisions (docs/V24.0-EPISODE4-PLAN.md): S1·11 in two chapters on Master Z's
   own trial (its 5.1 and 5.3 the decisions, verbatim), then S1·12, S2·02 and S2·03, ending on "That day I decided I
   would ordain." Sheet v123 (two cells; v44 stays the link). Deploy `6ae0cc0ab42b3ef6383725ec`, byte-verified (259
-  served files); harnesses text and menu green.
+  served files); harnesses text and menu green. Superseded the same afternoon: Chad had the casebook's order read
+  again — its cases one to eight at Grandmaster Pho's side (S1·13–S1·20) come right after S1·12 — so the plan's fourth
+  draft runs S1·11 (two chapters), S1·12, S1·13 and S1·14, and both names change when he picks new ones.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -7259,15 +7261,17 @@ and customers are STAND-INS until Chad's models land (docs/E3-MODELS.md says
 which rig stands in for each, and each is a one-line swap). Episode 3 chapter
 2's three batches (docs/V19.4-PLAN.md) are all done.
 
-Next up: **EPISODE 4**, The Path To The Robe — the casebook's S1·11, S1·12, S2·02 and S2·03, from the wrong master to
-the decision to ordain (Chad, 27 Oct: the episodes follow the encounters casebook; S1·11 in two chapters; "this entire
-episode ends in him knowing he has to ordain"; Episode 5 is monkhood itself) — PROPOSED, awaiting Chad's remaining
-decisions: **docs/V24.0-EPISODE4-PLAN.md** (its third draft; §0 what he decided, §5 what is still his). It runs S1·11
-in two chapters (the master he did not know; then the fog, Lersi Chin's clearing and the warning — built on Master Z's
-own trial episode, its 5.1 and 5.3 the two decisions verbatim; all nine trial episodes are copied verbatim into
-**docs/source/mztrial-episodes.md**) → S1·12 (Grandmaster Pho at the Wai Kru; open and close) → S2·02 (the night he
-lost control; the fifth precept) → S2·03 (two masters, one message: ordain). Grandmaster Pho, Lersi Chin and the Ah Pek
-are Chad's models, with their voices. EPISODE 3 IS COMPLETE (v23.0; chapter 5, The Children
+Next up: **EPISODE 4** — the casebook's S1·11, S1·12, S1·13 and S1·14, from the master he did not know to his
+teacher's first two cases (Chad, 27 Oct: the episodes follow the encounters casebook, in its order; S1·11 in two
+chapters; he meets Grandmaster Pho and his cultivation begins) — PROPOSED, awaiting Chad's remaining decisions:
+**docs/V24.0-EPISODE4-PLAN.md** (its fourth draft; §0 what he decided, §1 the casebook's order, §5 what is still his).
+It runs S1·11 in two chapters (the master he did not know; then the fog, Lersi Chin's clearing and the warning — built
+on Master Z's own trial episode, its 5.1 and 5.3 the two decisions verbatim; all nine trial episodes are copied
+verbatim into **docs/source/mztrial-episodes.md**) → S1·12 (Grandmaster Pho at the Wai Kru; open and close) → S1·13
+(case one: the woman who rose from her wheelchair) → S1·14 (case two: the house with nine Prai); the next episode picks
+up at case three (S1·15). Grandmaster Pho and Lersi Chin are Chad's models, with their voices (the Ah Pek's too, whose
+case comes later in the casebook). The names of Episodes 4 and 5 in the game came from the third draft and change when
+Chad picks new ones (§5). EPISODE 3 IS COMPLETE (v23.0; chapter 5, The Children
 On My Altar — `src/chapters/e3/e3c5.js`, docs/V23.0-E3C5-PLAN.md, its plan written 25 Oct 2026 from Chad's answers and
 revised four times — §2.3–§2.7 his rulings, docs/research/V23.0-KUMANTHONG.md the research behind every belief;
 v16.0 shipped chapter 1,
