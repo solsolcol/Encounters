@@ -36,6 +36,11 @@ sheet, not in code):
 Ghost Cyclist, S1·04–05; How It All Began, S1·06–10 — and Episode 4 is S1·11, Not Every Master Should Be
 Trusted; the Love Spell, S1·16, is Episode 5. The names live in the sheet, `ep4.title`…`ep10.title`.)
 
+(v23.3, Chad: Episode 4 is **The Path To The Robe** — S1·11 in two chapters, then S1·12, S2·02 and S2·03, ending on
+his decision to ordain (docs/V24.0-EPISODE4-PLAN.md) — and Episode 5 is monkhood itself, from S2·04; it carries the
+casebook's title for where that begins, *My First Monkhood*, until he names it. The Love Spell has left the list for
+now; where it goes, and whether episodes 6–10 follow the casebook too, is his.)
+
 Episode 1's title is what chapter 1's card has carried since v2.1 — "The
 Hell Note / I Should Never Have Taken" — which says what an episode IS here:
 one case file from the site, told in five chapters. The other nine are case

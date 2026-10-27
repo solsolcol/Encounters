@@ -394,9 +394,9 @@ Object.assign(window.__TEXT__, {
   'ep3.label':           'Episode 3',
   'ep3.title':           'How It All Began',                 // v16.0: Chad's title — Season 1 · 6–10 condensed
   'ep4.label':           'Episode 4',
-  'ep4.title':           'Not Every Master Should Be Trusted',   // v23.2: Chad — the casebook's order: S1·11 follows S1·10
+  'ep4.title':           'The Path To The Robe',                 // v23.3: Chad's pick — S1·11, S1·12, S2·02, S2·03, to the decision to ordain (S1·11's own title until then)
   'ep5.label':           'Episode 5',
-  'ep5.title':           'The Love Spell That Followed Me Home', // (S1·16; Episode 4 at v6.0)
+  'ep5.title':           'My First Monkhood',                    // v23.3: Chad — Episode 5 is monkhood itself; S2·04's own title until he names it (the Love Spell, S1·16, was here until v23.3)
   'ep6.label':           'Episode 6',
   'ep6.title':           'The Ghost Clinging To Her Back',
   'ep7.label':           'Episode 7',
