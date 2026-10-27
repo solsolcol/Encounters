@@ -1065,12 +1065,15 @@
         bw.position.set(ROW.mid, A.top, z); bw.castShadow = !LOW; bw.receiveShadow = true; R.add(bw);
         cyl(0.029, 0.029, 0.004, ROW.mid, A.top + 0.034, z, mSand, 16, R);
         roomLive.bowls.push(bw);
-        // a saucer of sweets, at the front
-        cyl(0.035, 0.03, 0.008, ROW.front, A.top + 0.004, z - 0.075, mSaucer, 18, R);
+        /* a saucer of sweets, at the front, and his toy beside it — the little one's the other way round (CP13, the play's
+           photographs: from the mat his pinwheel stood exactly on the line to the music box's key, its stick through the
+           wind's ring; the low saucer there hides nothing — and 2 cm further over, where its blades clear ending C's last
+           toy packet, z 0.705–0.775) */
+        const side = i === 2 ? -1 : 1;
+        cyl(0.035, 0.03, 0.008, ROW.front, A.top + 0.004, z - 0.075 * side, mSaucer, 18, R);
         for (let k = 0; k < 3; k++) { const sw = new THREE.Mesh(new THREE.SphereGeometry(0.008, 8, 6), M({ color: SWEET[(i + k) % 4], roughness: 0.3 }));
-          sw.position.set(ROW.front + (k - 1) * 0.012, A.top + 0.014, z - 0.075 + (k % 2) * 0.01); R.add(sw); }
-        // his toy, at the front beside them
-        const toy = new THREE.Group(); toy.position.set(ROW.front, A.top + 0.002, z + 0.075); R.add(toy); roomLive.toys.push(toy);
+          sw.position.set(ROW.front + (k - 1) * 0.012, A.top + 0.014, z - 0.075 * side + (k % 2) * 0.01); R.add(sw); }
+        const toy = new THREE.Group(); toy.position.set(ROW.front, A.top + 0.002, z + (side > 0 ? 0.075 : -0.095)); R.add(toy); roomLive.toys.push(toy);
         if (i === 0) {           // the tin car, red
           /* (CP13, the films' vision review: two boxes on four discs read as a blockout beside the scans — a little car's
              side, its hood, cabin and boot, extruded with a rounded edge, its windows, its wheels with bright hubs; its
