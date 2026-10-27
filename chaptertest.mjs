@@ -704,8 +704,13 @@ if (VOICE && Array.isArray(VOICE.LINES)) {
     }
     for (const r of Object.keys(reuse)) if (!used.has(r)) errs.push(`ERR ${k}: declares reuse of '${r}', which it no longer takes from an earlier episode — remove it from \`reuse\``);
     const list = Object.entries(reuse);
+    /* and a chapter's OWN cut of a placeholder (a lighter file made from an earlier character for a crowd) is declared in
+       `placeholders`, so it is a reminder too — and must be one the chapter loads */
+    const ph = Object.entries(ch.placeholders || {});
+    for (const [a] of ph) if (!(ch.assets || []).includes(a)) errs.push(`ERR ${k}: declares placeholder '${a}', which it does not load — remove it from \`placeholders\``);
     console.log(`fresh: ${k} takes nothing from episodes 1–${FRESH_FROM - 1} but ${list.length} declared:` +
-                (list.length ? '\n' + list.map(([a, why]) => `  REMINDER — ${a}: ${why}`).join('\n') : ' (none)'));
+                (list.length ? '\n' + list.map(([a, why]) => `  REMINDER — ${a}: ${why}`).join('\n') : ' (none)') +
+                (ph.length ? '\n' + ph.map(([a, why]) => `  REMINDER — ${a} (its own cut): ${why}`).join('\n') : ''));
   }
   if (!checked) console.log('fresh: no chapter of episode 4 or later yet');
 }

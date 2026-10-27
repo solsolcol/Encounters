@@ -24,12 +24,12 @@ just need to remember to ask me for the models so i don't forget or miss it."*
 
 | Role | Look (art direction) | Takes needed | Placeholder until then | Status |
 |---|---|---|---|---|
-| **Pong**, the Bangkok amulet dealer | Thai man, 40s, stocky, short hair; gold chain with three framed amulets; short-sleeved polo tucked into dark slacks; a belt pouch; loafers | idle, talking (hands), walking, phone call, seated idle, seated talking | `staffman` (episode 3's staff man: idle, talk, walk) | NEEDED |
-| **Pa Noi**, the master's wife | Thai woman, 50s; floral cotton blouse and tube skirt (pha sin); reading glasses on a cord; hair in a low bun | idle, walking, talking, writing on a board or pointing, carrying a tray | `yinkeeper` (episode 3's Yin shop keeper: idle, talk, wave, walk) | NEEDED |
+| **Pong**, the Bangkok amulet dealer | Thai man, 40s, stocky, short hair; gold chain with three framed amulets; short-sleeved polo tucked into dark slacks; a belt pouch; loafers | idle, talking (hands), walking, phone call, seated idle, seated talking | `e4pong`: episode 3's staff man with the first master's cross-legged sit, seated talk and chair sit retargeted in (idle, talk, walk, sit) | NEEDED |
+| **Pa Noi**, the master's wife | Thai woman, 50s; floral cotton blouse and tube skirt (pha sin); reading glasses on a cord; hair in a low bun | idle, walking, talking, writing on a board or pointing, carrying a tray | `e4noi`: episode 3's Yin shop keeper at a crowd's cut (42k triangles; idle, talk, wave, walk), the chapter's own file so the sala's view stays inside a phone's budget | NEEDED |
 | **Khun Joy**, a Bangkok office worker | Thai woman, 30s; office blouse and skirt; handbag | seated idle, seated talking, walking | `sitwoman` + `sitwomantalk` (the pink-shirt lady, seated) | NEEDED |
-| **Uncle Lim**, from Kuala Lumpur | Malaysian Chinese man, 60s; polo shirt, bum bag, glasses | seated idle, seated talking, seated laugh, walking | `owner` (episode 3's amulet-shop owner: seated, talk, walk) | NEEDED |
+| **Uncle Lim**, from Kuala Lumpur | Malaysian Chinese man, 60s; polo shirt, bum bag, glasses | seated idle, seated talking, seated laugh, walking | `e4lim`: episode 3's amulet-shop owner at a crowd's cut (42k triangles; seated, talk, walk) | NEEDED |
 | **Ta Sombat**, the farmer from next door | Thai man, 70s; faded indigo farmer's shirt (mor hom); checked cloth (pha khao ma) over a shoulder; a wooden cane | seated idle, seated talking | `encik` (the seated encik) | NEEDED |
-| **The presence** | Thai woman, elderly, in old-fashioned dress (a faded breast cloth, a dark tube skirt); short cropped grey hair; barefoot | standing idle only (very still, head slightly bowed) | `yinghost` (episode 3's still female figure), desaturated | NEEDED |
+| **The presence** | Thai woman, elderly, in old-fashioned dress (a faded breast cloth, a dark tube skirt — a pha thung); short cropped grey hair; barefoot | standing idle only (very still, head slightly bowed) | `granny` (episode 1's scolding grandmother, her own standing take), desaturated and faded by where she is on the screen — `yinghost` was the first thought, but she is episode 3's Yin ghost, and one ghost wearing another's face would say they are the same woman | NEEDED |
 
 ### The first master
 
@@ -57,6 +57,11 @@ just need to remember to ask me for the models so i don't forget or miss it."*
 | A Phra Rahu or another unusual altar image | for the third tier | none | NICE |
 | Sandals | for the door | none | NICE |
 | Small item models (takrut, a folded pha yant) | the bag's turning view | the items' line drawings | NICE |
+
+**A question for Chad, with the presence's model:** the art direction above (an old woman in a breast cloth, her hair
+cropped short) is the dress of her generation in the countryside — and it is also close to how the Nang Kwak, the
+beckoning lady, is often drawn. In this story the Nang Kwak is an item the master may give him, so the two should not
+be mistaken for each other: is the look right, or should she be dressed differently (a faded blouse, a shawl)?
 
 **Where to put them:** a Drive folder per batch, as before. Chad's own models need no credit; a Sketchfab model gets
 its credit row.

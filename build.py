@@ -414,6 +414,10 @@ ASSETS = {
     'ajarn':        ('assets/ajarn.glb', True, False),        # e3c1 v18.7: Chad's Ajahn Krukai (was v16.8's Ajarn) — deflattened, Chair_Sit_Idle_M retargeted in from v16.8's file, prepmonk 0.3 (masters/v18.7)
     'firstmaster':  ('assets/firstmaster.glb', True, False),
     'e4sky':        ('assets/e4sky.jpg', True, False),        # e4c1 v24.0 CP1: the rice country's storm sky, a generated equirectangular panorama made into a dome texture (masters/v24.0/sky/makesky.mjs) — zenith down to 6 degrees under the horizon, row 1029 the horizon  # e4c1 v24.0: the first master — the ORIGINAL Sak Yant Ajarn (v16.8's scan) under his own key, his white cloth recoloured black at Chad's ask (tools/recolorcloth.mjs), prepmonk 0.3 + CHARTFIX (masters/v24.0/firstmaster). Krukai's `ajarn` is pinned and untouched.
+    'fmshadow':     ('assets/fmshadow.glb', True, False),     # e4c1 v24.0 CP7: the first master's silhouette for his lagging shadow (tools/prepshadow.mjs 0.02: no UVs, normals, textures or clips — it plays his own)
+    'e4noi':        ('assets/e4noi.glb', True, False),        # e4c1 v24.0 CP7: Pa Noi's stand-in — episode 3's Yin shop keeper at a crowd's cut (0.07, 1024), until Chad's model (masters/v24.0/cast)
+    'e4lim':        ('assets/e4lim.glb', True, False),        # e4c1 v24.0 CP7: Uncle Lim's stand-in — episode 3's amulet-shop owner at a crowd's cut (0.07, 1024, his seat baked upright), until Chad's model
+    'e4pong':       ('assets/e4pong.glb', True, False),       # e4c1 v24.0 CP7: Pong's stand-in — episode 3's staff man with the first master's three seated takes retargeted in (masters/v24.0/cast), until Chad's model
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
     # in white (two women, two men), Mixamo's Praying and Kneeling Idle applied
     # to each rig (tools/retarget.mjs --align --hips), then tools/prepmonk.mjs
@@ -531,7 +535,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'traynear', 'trayfar', 'amushelf', 'altarrowfar', 'monkshop', 'hanuamulet', 'hanuamuletlod',
            'lersiamulet', 'lersiamuletlod', 'towkay',
            'kumanred', 'kumanshy', 'kumanlittle',
-           'firstmaster', 'e4sky'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
+           'firstmaster', 'e4sky', 'fmshadow', 'e4noi', 'e4lim', 'e4pong'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and

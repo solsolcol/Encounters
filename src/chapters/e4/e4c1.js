@@ -89,8 +89,8 @@
   const TAXI = sky({                  // Singapore at night in the rain: sodium and LED on wet glass
     stops: [[0.00, '#2a2030'], [0.12, '#201a2a'], [0.35, '#161424'], [0.65, '#0e0e1a'], [1.00, '#06060e']],
     bg: 0x08080e, fog: [0x1a1620, 0.02],
-    hemi: [0xffb070, 0x0a0a10, 0.34], key: [0xffc080, 0.30, 0, 4, 2], fill: [0x6a80c0, 0.12],
-    vmHemi: [0xffb878, 0x0a0a10, 0.4], vmKey: [0xffc888, 0.35] });
+    hemi: [0xffb070, 0x0a0a10, 0.16], key: [0xffc080, 0.12, 0, 4, 2], fill: [0x6a80c0, 0.07],
+    vmHemi: [0xffb878, 0x0a0a10, 0.3], vmKey: [0xffc888, 0.28] });
   const GREY = sky({                  // the coda's dawn in the shop, drained a third toward grey (the fog begins)
     stops: [[0.00, '#c4c6c8'], [0.12, '#babcbe'], [0.35, '#aaacb0'], [0.65, '#989a9e'], [1.00, '#86888c']],
     bg: 0xa8aaae, fog: [0xb4b6ba, 0.008],
@@ -145,15 +145,18 @@
 
     /* the first master is his own (§2.1 2); every other person is a PLACEHOLDER until Chad's model lands
        (docs/E4-MODELS.md), declared in `reuse` so the FRESH check names it on every run */
-    assets: ['firstmaster', 'e4sky', 'staffman', 'yinkeeper', 'sitwoman', 'sitwomantalk', 'owner', 'encik', 'granny'],
+    assets: ['firstmaster', 'fmshadow', 'e4sky', 'e4pong', 'e4noi', 'sitwoman', 'sitwomantalk', 'e4lim', 'encik', 'granny'],
     reuse: {
-      staffman: 'Pong, the dealer — a placeholder until Chad\'s model (docs/E4-MODELS.md)',
-      yinkeeper: 'Pa Noi, the master\'s wife — a placeholder until Chad\'s model',
       sitwoman: 'Khun Joy — a placeholder until Chad\'s model',
       sitwomantalk: 'Khun Joy\'s talking take — with her placeholder',
-      owner: 'Uncle Lim — a placeholder until Chad\'s model',
       encik: 'Ta Sombat — a placeholder until Chad\'s model',
       granny: 'the presence at the edge of sight — a placeholder until Chad\'s model'
+    },
+    /* this chapter's own lighter cuts of earlier characters, standing in for two of Chad's people in the crowded sala */
+    placeholders: {
+      e4pong: 'Pong, the dealer — episode 3\'s staff man with three seated takes of the first master\'s, until Chad\'s model (docs/E4-MODELS.md)',
+      e4noi: 'Pa Noi, the master\'s wife — episode 3\'s Yin shop keeper at a crowd\'s cut, until Chad\'s model',
+      e4lim: 'Uncle Lim — episode 3\'s amulet-shop owner at a crowd\'s cut, until Chad\'s model'
     },
     items: [],
 
@@ -472,6 +475,9 @@
       domeLive.t0 = wallNow(); domeLive.t1 = domeLive.t0 + Math.max(0.001, secs);
     }
     function domeFrame(now) {
+      /* only the world the lens is in is drawn: from the shop (x −250) the paddies' far edge, the road and its palms are
+         inside the far plane and were drawn behind the shop's walls for nothing (168 draws where 39 belong) */
+      { const w = worldOf(yaw.position.x); worldC.visible = w === 'C'; worldR.visible = w === 'R'; worldS.visible = w === 'S'; worldT.visible = w === 'T'; }
       const d = domeLive.mesh; if (!d) return;
       /* the dome rides with the lens in WORLD C (the rice country); the room, the shop and the taxi have their own skies */
       const w = worldOf(yaw.position.x);
@@ -498,15 +504,8 @@
 
     // WORLD C: the compound — built in full below (CP5)
     // WORLD R: the receiving room — built in full below (CP4)
-    // WORLD S: his shop at dawn (local; CP6)
-    {
-      const f = new THREE.Mesh(new THREE.PlaneGeometry(6, 9), mWhite); f.rotation.x = -Math.PI / 2; worldS.add(f);
-      box(6, 3, 0.2, 0, 1.5, -4.5, mWhite, worldS); box(0.2, 3, 9, -3, 1.5, 0, mWhite, worldS); box(0.2, 3, 9, 3, 1.5, 0, mWhite, worldS);
-    }
-    // WORLD T: the taxi's cabin (local; CP6)
-    {
-      box(1.6, 0.05, 2.6, 0, 0.3, 0, mDark, worldT); box(1.6, 0.05, 2.6, 0, 1.45, 0, mDark, worldT);
-    }
+    // WORLD S: his shop at dawn (local) — built in full below (CP6)
+    // WORLD T: the taxi's cabin (local) — built in full below (CP6)
 
     /* ============================================== WORLD R · THE RECEIVING ROOM (CP4, §4.3, §6.2)
        The master's receiving room: 5.4 × 4.6 m, 2.9 high, at x +250. Faded mint distemper over a darker dado, old cement
@@ -1644,12 +1643,13 @@
       const at = (px) => -px;                                                  // the profile's x → the car's z
       const add = (geo, m, x, y, z) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); G.add(o); return o; };
       /* the side glass: one block a hair wider than the body, so it shows as a window on both flanks */
-      { const [x0, x1, y0, y1] = PR.side; add(new THREE.BoxGeometry(W + 0.12, y1 - y0, x1 - x0), mGl, 0, (y0 + y1) / 2, at((x0 + x1) / 2)); }
+      const glass = [];                              // (the cabin hides these: from inside, a slab of tinted glass is a wall)
+      { const [x0, x1, y0, y1] = PR.side; glass.push(add(new THREE.BoxGeometry(W + 0.12, y1 - y0, x1 - x0), mGl, 0, (y0 + y1) / 2, at((x0 + x1) / 2))); }
       /* the windscreen and the rear glass: thin slabs laid on their slopes */
       const slab = (pa, pb) => { const L = Math.hypot(pb[0] - pa[0], pb[1] - pa[1]); const o = add(new THREE.BoxGeometry(W - 0.12, 0.02, L), mGl, 0, (pa[1] + pb[1]) / 2 + 0.03, at((pa[0] + pb[0]) / 2)); o.rotation.x = Math.atan2(pb[1] - pa[1], pb[0] - pa[0]); return o; };
-      slab(PR.ws[0], PR.ws[1]);
-      if (kind === 'pickup') add(new THREE.BoxGeometry(W - 0.3, PR.rear[1][1] - PR.rear[0][1], 0.02), mGl, 0, (PR.rear[0][1] + PR.rear[1][1]) / 2, at(PR.rear[0][0]) + 0.012);
-      else slab(PR.rear[0], PR.rear[1]);
+      glass.push(slab(PR.ws[0], PR.ws[1]));
+      if (kind === 'pickup') glass.push(add(new THREE.BoxGeometry(W - 0.3, PR.rear[1][1] - PR.rear[0][1], 0.02), mGl, 0, (PR.rear[0][1] + PR.rear[1][1]) / 2, at(PR.rear[0][0]) + 0.012));
+      else glass.push(slab(PR.rear[0], PR.rear[1]));
       if (kind === 'pickup') {                       // the open tray: its floor, dark, under the sides of the body
         add(new THREE.BoxGeometry(W - 0.14, 0.04, 1.6), mBlk, 0, 0.98, at(-1.78));
         add(new THREE.BoxGeometry(W - 0.14, 0.4, 0.04), mBlk, 0, 0.82, at(-2.58));
@@ -1665,6 +1665,22 @@
       }
       add(new THREE.BoxGeometry(0.9, 0.24, 0.04), M({ color: 0x2a2a2a, roughness: 0.4, metalness: 0.6 }), 0, kind === 'sedan' ? 0.62 : 0.72, at(nose + 0.01));
       for (const x of [-W / 2 - 0.04, W / 2 + 0.04]) add(new THREE.BoxGeometry(0.1, 0.08, 0.14), mBlk, x, PR.side[2] + 0.02, at(PR.side[1] + 0.12));   // the mirrors
+      /* what a car is read by up close (the first photograph of the pickup beside the spawn was a white box): bumpers,
+         black arches over the wheels, the doors' lines and handles, the plates — a Thai plate, black on white, its
+         province under the number (generic numbers) */
+      const mBump = kind === 'pickup' ? M({ color: 0x4a4c50, roughness: 0.45, metalness: 0.5 }) : mBody;
+      add(new THREE.BoxGeometry(W + 0.08, 0.2, 0.18), mBump, 0, 0.52, at(nose) - 0.03);
+      add(new THREE.BoxGeometry(W + 0.08, 0.2, 0.16), mBump, 0, 0.52, at(tail) + 0.03);
+      const arch = new THREE.RingGeometry(0.37, kind === 'pickup' ? 0.47 : 0.42, 18, 1, 0, Math.PI);
+      for (const px of [PR.wz, -PR.wz]) for (const sx of [-1, 1]) { const a = add(arch, mBlk, sx * (W / 2 + 0.054), 0.36, at(px)); a.rotation.y = sx * Math.PI / 2; }
+      const seams = { pickup: [0.74, -0.12, -0.93], suv: [1.05, -0.1, -1.35], sedan: [0.75, -0.25, -1.05] }[kind], sh = PR.side[2] - 0.5;
+      for (const px of seams) for (const sx of [-1, 1]) add(new THREE.BoxGeometry(0.006, sh, 0.012), mBlk, sx * (W / 2 + 0.052), 0.5 + sh / 2, at(px));
+      for (let i = 1; i < seams.length; i++) for (const sx of [-1, 1]) add(new THREE.BoxGeometry(0.02, 0.03, 0.14), mRim, sx * (W / 2 + 0.06), PR.side[2] - 0.1, at(seams[i] + 0.16));
+      if (kind === 'pickup') { for (const y of [0.66, 0.76]) add(new THREE.BoxGeometry(0.86, 0.025, 0.02), mRim, 0, y, at(nose + 0.035)); }
+      { const pm = M({ map: tex(makePlate(THREE, cnv, kind === 'pickup' ? 'บข 4821' : kind === 'suv' ? 'กค 7316' : '2กษ 590', kind === 'pickup' ? 'กรุงเทพมหานคร' : 'ขอนแก่น')), roughness: 0.5 });
+        const fp = add(new THREE.PlaneGeometry(0.34, 0.11), pm, 0, 0.52, at(nose) - 0.125); fp.rotation.y = Math.PI;
+        add(new THREE.PlaneGeometry(0.34, 0.11), pm, 0, 0.52, at(tail) + 0.115); }
+      G.userData.glass = glass;
       return G;
     }
 
@@ -1837,6 +1853,10 @@
           palms.push({ x, z, y: WY + 0.1, h: 9 + r() * 10, kind: r() < 0.72 ? (r() < 0.5 ? 0 : 1) : 2 });
         }
       }
+      for (const zz of [15.3, 26.7]) for (let x = -140; x < 140; x += 11 + r() * 16) {       // along the road's feet, for the drive in
+        if (Math.abs(x) < 9 || Math.abs(x + 48) < 4 || Math.abs(x - 44.5) < 4) continue;
+        palms.push({ x: x + (r() - 0.5) * 2, z: zz + (r() - 0.5) * 0.8, y: WY + 0.05, h: 10 + r() * 8, kind: r() < 0.75 ? (r() < 0.5 ? 0 : 1) : 2 });
+      }
       for (let k = 0; k < 14; k++) {                         // the small groups out in the open paddies, two or three together
         const a = r() * Math.PI * 2, d = 30 + r() * 90, cx = Math.cos(a) * d, cz = 6 + Math.sin(a) * d;
         if (inCompound(cx, cz) || onRoad(cz)) continue;
@@ -1875,9 +1895,524 @@
       for (const T of [CMP.TAKHIAN, CMP.RAINTREE, CMP.MANGO]) for (let k = 0; k < 14; k++) { const a = r() * Math.PI * 2, d = 0.9 + r() * 1.7; tufts.push({ x: T.x + Math.cos(a) * d, z: T.z + Math.sin(a) * d, h: 0.2 + r() * 0.22 }); }
       yard.stands.push(plantTrees(worldC, tufts, { kit: grassKit, seed: 31, lowKeep: 0.5, shadow: false }));
     }
+
+    /* ============================================== THE FILM SETS (CP6, §4.0, §4.7, §4.8, §6.2)
+       Places seen only in films: his shop at dawn in a Singapore neighbourhood mall (World S, x −250: the opening's
+       shutter, ledger and message, and the coda's grey morning), the taxi home in the rain (World T, x −500: the coda's
+       rear seat), and Pong's pickup from the inside (a cabin carried by the pickup in World C, for the drive in and the
+       endings' drives). Built in code, every surface this chapter's own; lit by the presets and painted glows (v15.1). */
+    const SHOP = { x0: -2.4, x1: 2.4, z0: -3.2, z1: 3.0, H: 3.0 };          // the unit, local to World S (its shutter at z1)
+    const COR = { x0: -12, x1: 12, z0: 3.0, z1: 8.2, H: 3.6 };          // the mall's corridor outside it
+    const COUNTER = { x0: -1.5, x1: 1.5, z: -1.55, h: 1.0, d: 0.6 };        // his counter (its customer face at z + d/2)
+    const shop = { u: 0, uFrom: 0, uTo: 0, t0: 0, t1: 0, curtain: null, curTex: null, bar: null, spill: null, spillMat: null,
+                   leds: [], ledK: 1, ledFrom: 1, ledTo: 1, l0: 0, l1: 0, phone: null, phoneOn: 0, ledger: null, pen: null };
+    const taxi = { wipers: [], wipe: true, bokeh: [], glass: [], sweep: [], sweepU: { value: 9 }, meter: null, last: 0 };
+    const cab = { root: null, glass: [], garland: null, show: false, drops: 0, last: 0, swing: 0 };
+
+    /* rain on glass: beads born at random, swelling, sliding a little and gone — each one a small lens, dark at its rim
+       and lit at its top where it catches the light. Unlit and transparent, over whatever is behind the glass. */
+    /* CP6, from the photographs: one grid of tiny beads read as a starfield, not water. Two layers on two different
+       grids (no lattice shows), bigger beads, and each one drawn as the small lens it is — a darker body, the light
+       gathered in a crescent at its foot (what lies behind it, upside down) and a point of light at its top — sliding
+       along `dir` (the wind and the weight: back and down on a side window) and leaving its wet path behind it. */
+    function rainGlassMat(o = {}) {
+      const m = new THREE.ShaderMaterial({
+        uniforms: { uTime: { value: 0 }, uK: { value: o.k == null ? 1 : o.k }, uCells: { value: new THREE.Vector2(o.cx || 24, o.cy || 14) },
+                    uHi: { value: new THREE.Color(o.hi == null ? 0xd8e4f0 : o.hi) }, uSlide: { value: o.slide == null ? 0.18 : o.slide },
+                    uRate: { value: o.rate == null ? 0.07 : o.rate }, uDark: { value: o.dark == null ? 0.35 : o.dark },
+                    uDir: { value: new THREE.Vector2(...(o.dir || [0, -1])).normalize() } },
+        vertexShader: 'varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+        fragmentShader: [
+          'uniform float uTime, uK, uSlide, uRate, uDark; uniform vec2 uCells, uDir; uniform vec3 uHi; varying vec2 vUv;',
+          'float h1(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }',
+          'float seg(vec2 p, vec2 a, vec2 b) { vec2 pa = p - a, ba = b - a; float h = clamp(dot(pa, ba) / max(dot(ba, ba), 1e-5), 0.0, 1.0); return length(pa - ba * h); }',
+          'void main() {',
+          '  vec4 acc = vec4(0.0);',
+          '  for (int k = 0; k < 2; k++) {',                                    // two layers, each on its own grid
+          '    float fk = float(k);',
+          '    vec2 g = vUv * uCells * (1.0 - 0.27 * fk) + fk * vec2(0.5, 0.37);',
+          '    vec2 cid = floor(g) + fk * 17.0; vec2 f = fract(g);',
+          '    float r0 = h1(cid), r1 = h1(cid + 3.1), r2 = h1(cid + 7.7), r3 = h1(cid + 11.3);',
+          '    if (r3 > uK) continue;',
+          '    float life = fract(uTime * uRate * (0.6 + r2) + r0);',
+          '    float run = uSlide * life * life;',
+          '    vec2 c0 = vec2(0.5) - uDir * uSlide * 0.5 + (vec2(r1, r2) - 0.5) * 0.18;',   // its whole path stays inside the cell
+          '    vec2 c = c0 + uDir * run;',
+          '    float rad = (0.08 + 0.12 * r0 + 0.1 * r0 * r0 * r0) * smoothstep(0.0, 0.08, life);',
+          '    vec2 d = (f - c) / max(rad, 0.001);',
+          '    float dist = length(d);',
+          '    float body = 1.0 - smoothstep(0.78, 1.0, dist);',
+          '    float spec = 1.0 - smoothstep(0.0, 0.28, length(d - vec2(-0.32, 0.38)));',
+          '    float cres = smoothstep(0.3, 0.8, dist) * smoothstep(0.0, 0.55, -d.y) * body;',
+          '    float fade = 1.0 - smoothstep(0.8, 1.0, life);',
+          '    float tr = (1.0 - smoothstep(0.012, 0.03, seg(f, c0, c))) * smoothstep(0.03, 0.15, run);',
+          '    vec3 col = mix(uHi * 0.3, uHi * clamp(spec * 1.1 + cres * 0.75, 0.0, 1.0), body);',
+          '    float a = body * clamp(spec * 0.9 + cres * 0.6 + uDark * (0.45 + 0.55 * smoothstep(0.55, 1.0, dist)), 0.0, 1.0);',
+          '    a = max(a, tr * 0.28) * fade;',
+          '    acc.rgb = mix(acc.rgb, col, a); acc.a = max(acc.a, a);',
+          '  }',
+          '  if (acc.a < 0.01) discard;',
+          '  gl_FragColor = acc;',
+          '}'].join('\n'),
+        transparent: true, depthWrite: false, side: THREE.DoubleSide, toneMapped: false
+      });
+      mats.push(m); return m;
+    }
+
+    /* ---------------------------------------------------- WORLD S · HIS SHOP AT DAWN (O1–O4, K2–K3) */
+    function buildShop() {
+      const S0 = worldS;
+      const mesh = (g, m, x, y, z, p = S0) => { const o = new THREE.Mesh(g, m); o.position.set(x, y, z); o.receiveShadow = true; p.add(o); return o; };
+      const bx = (w, h, d, m, x, y, z, p = S0) => mesh(new THREE.BoxGeometry(w, h, d), m, x, y, z, p);
+      const pl = (w, h, m, x, y, z, rx = 0, ry = 0, p = S0) => { const o = mesh(new THREE.PlaneGeometry(w, h), m, x, y, z, p); o.rotation.set(rx, ry, 0); return o; };
+      const tTer = tex(makeTerrazzo(THREE, cnv)); tTer.repeat.set((COR.x1 - COR.x0) / 1.2, (COR.z1 - COR.z0) / 1.2);
+      const tTile = tex(makeShopTiles(THREE, cnv)); tTile.repeat.set((SHOP.x1 - SHOP.x0) / 0.6, (SHOP.z1 - SHOP.z0) / 0.6);
+      const tAsh = tex(makeAshSlats(THREE, cnv)); tAsh.repeat.set(3.6 / 1.0, 1);
+      const tSlat = tex(makeShutterSlats(THREE, cnv));
+      const tVel = tex(makeVelvet(THREE, cnv)); tVel.repeat.set(2, 1);
+      const tFaces = tex(makeAmuletFaces(THREE, cnv)), tCards = tex(makePriceCards(THREE, cnv));
+      const tBook = tex(makeStockBook(THREE, cnv)), tBub = tex(makeBubbleWrap(THREE, cnv)), tCart = tex(makeCarton(THREE, cnv));
+      const tGl = tex(makeGlow(THREE, cnv));
+      const mFloor = M({ map: tTile, roughness: 0.32, metalness: 0.0 });
+      const mTer = M({ map: tTer, roughness: 0.4 });
+      const mWall = M({ color: 0xebe5da, roughness: 0.85 });
+      const mCeil = M({ color: 0xf2f0ea, roughness: 0.9, emissive: 0x4a4844 });
+      const mGloss = M({ color: 0xf4f4f0, roughness: 0.25 });
+      const mAsh = M({ map: tAsh, roughness: 0.6 });
+      const mOak = M({ color: 0xdcc6a0, roughness: 0.55 });
+      const mAlu = M({ color: 0xc8ccd0, roughness: 0.3, metalness: 0.85 });
+      const mGlass = M({ color: 0xe4eef2, roughness: 0.04, metalness: 0.1, transparent: true, opacity: 0.14, depthWrite: false });
+      const mVel = M({ map: tVel, roughness: 0.95 });
+      const mGold = M({ color: 0xc8a048, roughness: 0.32, metalness: 0.85 });
+      const mBlack = M({ color: 0x141416, roughness: 0.4 });
+      const mLed = B({ color: 0xf6fbff });
+      const mSlat = M({ map: tSlat, roughness: 0.5, metalness: 0.55, side: THREE.DoubleSide });
+      const mShutPaint = M({ color: 0x8c949a, roughness: 0.5, metalness: 0.5 });
+      shop.leds.push(mLed);
+
+      /* the unit: floor, walls, ceiling — the front open to the corridor above the shutter's line */
+      pl(SHOP.x1 - SHOP.x0, SHOP.z1 - SHOP.z0, mFloor, 0, 0, (SHOP.z0 + SHOP.z1) / 2, -Math.PI / 2);
+      pl(SHOP.x1 - SHOP.x0, SHOP.z1 - SHOP.z0, mCeil, 0, SHOP.H, (SHOP.z0 + SHOP.z1) / 2, Math.PI / 2);
+      pl(SHOP.x1 - SHOP.x0, SHOP.H, mWall, 0, SHOP.H / 2, SHOP.z0, 0, 0);
+      pl(SHOP.z1 - SHOP.z0, SHOP.H, mWall, SHOP.x0, SHOP.H / 2, (SHOP.z0 + SHOP.z1) / 2, 0, Math.PI / 2);
+      pl(SHOP.z1 - SHOP.z0, SHOP.H, mWall, SHOP.x1, SHOP.H / 2, (SHOP.z0 + SHOP.z1) / 2, 0, -Math.PI / 2);
+      bx(SHOP.x1 - SHOP.x0, 0.12, 0.02, mGloss, 0, 0.06, SHOP.z0 + 0.01);                   // the skirting
+      /* the ceiling's light: four downlights and a cove of LED along the sides */
+      const dl = new THREE.CircleGeometry(0.075, 20);
+      for (const [x, z] of [[-1.1, -1.6], [1.1, -1.6], [-1.1, 1.0], [1.1, 1.0]]) { const d = mesh(dl, mLed, x, SHOP.H - 0.004, z); d.rotation.x = Math.PI / 2; }
+      for (const sx of [-1, 1]) bx(0.03, 0.012, SHOP.z1 - SHOP.z0 - 0.2, mLed, sx * (SHOP.x1 - 0.12), SHOP.H - 0.02, (SHOP.z0 + SHOP.z1) / 2);
+
+      /* the back wall: ash slats, three floating shelves, the small shrine shelf over them */
+      pl(3.6, 1.9, mAsh, 0, 1.85, SHOP.z0 + 0.012, 0, 0);
+      for (const y of [1.3, 1.78]) { bx(3.0, 0.035, 0.24, mOak, 0, y, SHOP.z0 + 0.13); bx(2.9, 0.008, 0.01, mLed, 0, y - 0.022, SHOP.z0 + 0.24); }
+      { const mBoxR = M({ color: 0x9a1a1e, roughness: 0.5 }), mBoxG = M({ color: 0xb08a3a, roughness: 0.4, metalness: 0.5 });
+        let k = 0;
+        for (const y of [1.3, 1.78]) for (let x = -1.3; x <= 1.3; x += 0.36) { if ((k++ * 7) % 5 === 0) continue; const b2 = bx(0.12, 0.05, 0.09, k % 3 ? mBoxR : mBoxG, x + (k % 2) * 0.05, y + 0.044, SHOP.z0 + 0.13); b2.rotation.y = (k % 4 - 1.5) * 0.12; } }
+      { bx(0.42, 0.32, 0.025, mBlack, -0.9, 2.3, SHOP.z0 + 0.03);
+        pl(0.36, 0.26, B({ map: tex(makeTemplePrint(THREE, cnv)) }), -0.9, 2.3, SHOP.z0 + 0.045);
+        bx(0.3, 0.4, 0.02, mGold, 0.95, 2.28, SHOP.z0 + 0.03);
+        pl(0.26, 0.36, M({ color: 0xf4f2ea, roughness: 0.8 }), 0.95, 2.28, SHOP.z0 + 0.042); }
+      /* the shrine shelf: red, two electric candles, a brass pot of sand, a vase of chrysanthemums */
+      { const mRed = M({ color: 0x9a1418, roughness: 0.45 }), mCandle = M({ color: 0xc81a1a, roughness: 0.35 }), mTip = B({ color: 0xffb070 });
+        bx(0.72, 0.04, 0.26, mRed, 0, 2.52, SHOP.z0 + 0.14); bx(0.72, 0.14, 0.02, mRed, 0, 2.6, SHOP.z0 + 0.02);
+        for (const x of [-0.26, 0.26]) { const cnd = mesh(new THREE.CylinderGeometry(0.018, 0.02, 0.16, 10), mCandle, x, 2.62, SHOP.z0 + 0.15); void cnd;
+          const tip = mesh(new THREE.SphereGeometry(0.012, 8, 6), mTip, x, 2.71, SHOP.z0 + 0.15); tip.scale.y = 1.6; }
+        mesh(new THREE.CylinderGeometry(0.05, 0.04, 0.06, 14), mGold, 0, 2.57, SHOP.z0 + 0.16);
+        const vase = mesh(new THREE.CylinderGeometry(0.03, 0.04, 0.14, 12), M({ color: 0xe8e8ee, roughness: 0.2 }), 0.14, 2.61, SHOP.z0 + 0.15); void vase;
+        const mFl = M({ color: 0xf2c838, roughness: 0.7 });
+        for (let k = 0; k < 7; k++) mesh(new THREE.SphereGeometry(0.026, 8, 6), mFl, 0.14 + Math.cos(k * 2.4) * 0.04, 2.72 + (k % 3) * 0.02, SHOP.z0 + 0.15 + Math.sin(k * 2.4) * 0.04); }
+
+      /* a few amulets on velvet with their handwritten prices — the trays mostly empty (his stock is small yet) */
+      const faceG = new THREE.PlaneGeometry(0.038, 0.05);
+      const faceMats = [0, 1, 2, 3].map(k => { const t = tFaces.clone(); t.repeat.set(0.25, 1); t.offset.set(k * 0.25, 0); t.needsUpdate = true; madeTex.push(t); return M({ map: t, roughness: 0.4, metalness: 0.3 }); });
+      const cardMats = [0, 1, 2, 3].map(k => { const t = tCards.clone(); t.repeat.set(0.25, 1); t.offset.set(k * 0.25, 0); t.needsUpdate = true; madeTex.push(t); return M({ map: t, roughness: 0.8 }); });
+      const amulet = (x, y, z, ry, k, card) => {
+        const g = new THREE.Group(); g.position.set(x, y, z); g.rotation.y = ry; S0.add(g);
+        const p2 = new THREE.Mesh(faceG, faceMats[k % 4]); p2.rotation.x = -1.05; p2.position.set(0, 0.022, 0); g.add(p2);
+        const st = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.004, 0.03), mAlu); st.position.set(0, 0.002, 0.012); g.add(st);
+        if (card != null) { const c2 = new THREE.Mesh(new THREE.PlaneGeometry(0.05, 0.034), cardMats[card % 4]); c2.rotation.x = -0.6; c2.position.set(0.05, 0.015, 0.03); g.add(c2); }
+        return g;
+      };
+      /* the two wall cabinets: white carcass, pale oak shelves, glass fronts, an LED strip under each shelf */
+      const cabinet = (sx) => {
+        const X = sx * 2.17, Z0 = -0.7, Z1 = 2.1, L = Z1 - Z0, ZC = (Z0 + Z1) / 2, D = 0.44, FX = sx * (2.17 - D / 2);   // FX: its glass front
+        bx(0.02, 2.05, L, mGloss, X + sx * (D / 2 - 0.01), 1.085, ZC);                       // the carcass: its back,
+        for (const zz of [Z0, Z1]) bx(D, 2.05, 0.02, mGloss, X, 1.085, zz);                  // its ends,
+        for (const y of [0.11, 2.1]) bx(D, 0.02, L, mGloss, X, y, ZC);                       // its floor and top (the inside shows through the glass)
+        bx(D - 0.06, 0.1, L - 0.02, mBlack, X, 0.05, ZC);                     // the plinth, set back
+        for (const y of [0.42, 0.86, 1.3, 1.74]) {
+          bx(D - 0.04, 0.03, L - 0.06, mOak, X - sx * 0.01, y, ZC);
+          bx(0.012, 0.006, L - 0.12, mLed, FX - sx * 0.03, y - 0.02, ZC);
+          for (let k = 0; k < 4; k++) { const tr = bx(D - 0.14, 0.012, L / 4 - 0.1, mVel, X - sx * 0.02, y + 0.021, Z0 + (k + 0.5) * L / 4); void tr; }
+        }
+        for (const zz of [Z0 + 0.02, ZC, Z1 - 0.02]) bx(0.025, 2.0, 0.025, mAlu, FX, 1.08, zz);
+        for (const y of [0.1, 2.08]) bx(0.025, 0.025, L, mAlu, FX, y, ZC);
+        const gl = pl(L - 0.06, 1.96, mGlass, FX, 1.09, ZC, 0, -sx * Math.PI / 2); gl.renderOrder = 2;
+        return { X, ZC, L, Z0 };
+      };
+      const cL = cabinet(-1), cR = cabinet(1);
+      [[cL, 0.86, 0.3, 0, 0], [cL, 0.86, 1.25, 1, null], [cL, 1.3, 0.1, 2, 1], [cL, 0.42, 1.7, 3, 2],
+       [cR, 0.86, -0.2, 1, 3], [cR, 1.3, 0.9, 0, 0], [cR, 1.74, 1.6, 2, null], [cR, 0.42, 0.4, 3, 1]].forEach(([c, y, z, k, card]) =>
+        amulet(c.X - Math.sign(c.X) * 0.03, y + 0.03, z, -Math.sign(c.X) * Math.PI / 2, k, card));
+
+      /* his counter: a glass display over a white front, an oak top; the ledger open on it, the pen, his phone, a
+         calculator, a stand of his new cards */
+      { const C = COUNTER, W = C.x1 - C.x0, FZ = C.z + C.d / 2;
+        bx(W, 0.5, C.d, mGloss, 0, 0.25, C.z);
+        bx(W - 0.04, 0.42, C.d - 0.08, mVel, 0, 0.71, C.z - 0.02);                      // the display's bed, inside
+        bx(W, 0.045, C.d + 0.04, mOak, 0, C.h + 0.0225, C.z);                            // the top
+        const gf = pl(W - 0.02, 0.46, mGlass, 0, 0.75, FZ, 0, 0); gf.renderOrder = 2;
+        for (const x of [C.x0 + 0.01, 0, C.x1 - 0.01]) bx(0.02, 0.48, 0.02, mAlu, x, 0.74, FZ);
+        bx(W - 0.08, 0.008, 0.01, mLed, 0, 0.95, FZ - 0.03);
+        for (const sx of [-1, 1]) bx(0.02, 0.5, C.d, mGloss, sx * (W / 2 - 0.01), 0.75, C.z);
+        [[-1.0, 0, 0], [-0.35, 2, 3], [0.55, 1, null], [1.05, 3, 1]].forEach(([x, k, card]) => amulet(x, 0.92 + 0.0, C.z + 0.05, 0, k, card));
+        /* the top: the ledger (S43 is the play's own book; this one is the film's prop, his real stock book) */
+        const top = C.h + 0.046;
+        const bk = new THREE.Group(); bk.position.set(-0.2, top, C.z - 0.05); bk.rotation.y = 0.06; S0.add(bk); bk.userData.dyn = true; shop.ledger = bk;
+        const cover = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.012, 0.31), M({ color: 0x2a3a5a, roughness: 0.6 })); cover.position.y = 0.006; bk.add(cover);
+        const pages = new THREE.Mesh(new THREE.PlaneGeometry(0.44, 0.29), M({ map: tBook, roughness: 0.85 })); pages.rotation.x = -Math.PI / 2; pages.position.y = 0.0135; bk.add(pages);
+        const pen = new THREE.Group(); pen.position.set(0.09, top + 0.0048, C.z - 0.02); pen.rotation.set(0, -0.5, Math.PI / 2); S0.add(pen); pen.userData.dyn = true; shop.pen = pen;
+        { const b2 = new THREE.Mesh(new THREE.CylinderGeometry(0.0045, 0.004, 0.14, 8), M({ color: 0x1a2a6a, roughness: 0.3 })); pen.add(b2);
+          const tip = new THREE.Mesh(new THREE.ConeGeometry(0.004, 0.014, 8), mAlu); tip.position.y = -0.077; tip.rotation.x = Math.PI; pen.add(tip); }
+        /* his phone: face up, its screen dark until the message comes (shop.phoneOn) */
+        const ph = new THREE.Group(); ph.position.set(0.48, top, C.z + 0.04); ph.rotation.y = -0.3; S0.add(ph); ph.userData.dyn = true;
+        const body = new THREE.Mesh(new THREE.BoxGeometry(0.076, 0.009, 0.158), M({ color: 0x18181c, roughness: 0.25, metalness: 0.4 })); body.position.y = 0.0045; ph.add(body);
+        const scr = B({ color: 0x050608 }); const sc = new THREE.Mesh(new THREE.PlaneGeometry(0.068, 0.148), scr); sc.rotation.x = -Math.PI / 2; sc.position.y = 0.0095; ph.add(sc);
+        shop.phone = { g: ph, scr, base: ph.position.clone() };
+        bx(0.09, 0.016, 0.13, M({ color: 0x2a2a2e, roughness: 0.6 }), 0.86, top + 0.008, C.z - 0.08).rotation.y = 0.2;   // the calculator
+        { const cs = bx(0.1, 0.05, 0.04, mAlu, -0.95, top + 0.025, C.z + 0.12); cs.rotation.x = -0.2;
+          bx(0.09, 0.055, 0.003, M({ color: 0xf6f4ee, roughness: 0.7 }), -0.95, top + 0.05, C.z + 0.11).rotation.x = -0.35; }
+        /* his stool behind it */
+        { const st = new THREE.Group(); st.position.set(0.55, 0, C.z - 0.85); S0.add(st);
+          const seat = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.05, 18), M({ color: 0x2a2a2e, roughness: 0.6 })); seat.position.y = 0.66; st.add(seat);
+          const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.64, 8), mAlu); leg.position.y = 0.32; st.add(leg);
+          const ft = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.02, 18), mAlu); ft.position.y = 0.01; st.add(ft); }
+        solids.push(hidBox(W, 1.0, C.d, 0, 0.5, C.z, S0));
+      }
+
+      /* the carton half unpacked by the right cabinet, its flaps out, bubble wrap spilling */
+      { const g = new THREE.Group(); g.position.set(1.35, 0, 0.9); g.rotation.y = -0.35; S0.add(g);
+        const mC = M({ map: tCart, roughness: 0.9 }), mCin = M({ color: 0x8a6a42, roughness: 0.95, side: THREE.DoubleSide });
+        const W2 = 0.5, H2 = 0.36, D2 = 0.4;
+        for (const [w, x, z, ry] of [[W2, 0, D2 / 2, 0], [W2, 0, -D2 / 2, Math.PI], [D2, W2 / 2, 0, Math.PI / 2], [D2, -W2 / 2, 0, -Math.PI / 2]]) {
+          const f = new THREE.Mesh(new THREE.PlaneGeometry(w, H2), mC); f.position.set(x, H2 / 2, z); f.rotation.y = ry; g.add(f);
+          const fi = new THREE.Mesh(new THREE.PlaneGeometry(w, H2), mCin); fi.position.set(x * 0.98, H2 / 2, z * 0.98); fi.rotation.y = ry + Math.PI; g.add(fi);
+          const fl = new THREE.Mesh(new THREE.PlaneGeometry(w, D2 * 0.48), mCin); fl.position.set(x, H2, z); fl.rotation.set(0, ry, 0);
+          fl.rotateX(-Math.PI / 2 - 0.55); fl.translateY(D2 * 0.24); g.add(fl);
+        }
+        const mBub = M({ map: tBub, roughness: 0.15, transparent: true, depthWrite: false, side: THREE.DoubleSide });
+        const bw = new THREE.Mesh(new THREE.SphereGeometry(0.2, 12, 8), mBub); bw.scale.set(1.1, 0.55, 0.9); bw.position.set(0.02, H2 + 0.02, 0); g.add(bw);
+        const sp = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 0.34), mBub); sp.rotation.set(-Math.PI / 2 + 0.08, 0, 0.3); sp.position.set(-0.42, 0.012, 0.12); g.add(sp);
+        solids.push(hidBox(0.56, 0.4, 0.46, 1.35, 0.2, 0.9, S0));
+      }
+
+      /* the congratulations stand by the door: a tripod, a round of flowers, two red ribbons — 开张大吉, GRAND OPENING */
+      { const g = new THREE.Group(); g.position.set(-1.62, 0, 2.45); g.rotation.y = 2.5; S0.add(g);
+        const mLeg = M({ color: 0xc8a050, roughness: 0.4, metalness: 0.6 });
+        for (const a of [0, 2.1, 4.2]) { const l = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 1.45, 6), mLeg); l.position.set(Math.cos(a) * 0.14, 0.7, Math.sin(a) * 0.14 - 0.05); l.rotation.set(Math.sin(a) * 0.12, 0, -Math.cos(a) * 0.12); g.add(l); }
+        const disc = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.36, 0.06, 28), M({ color: 0x2e5a2e, roughness: 0.8 })); disc.rotation.x = Math.PI / 2; disc.position.set(0, 1.5, 0); g.add(disc);
+        const cols = [0xd8202a, 0xf2c030, 0xf27aa0, 0xf6f0e0, 0xe8642a], n = 120, fm = cols.map(c2 => M({ color: c2, roughness: 0.7 }));
+        const fg = new THREE.SphereGeometry(0.034, 8, 6), ins = fm.map(m2 => new THREE.InstancedMesh(fg, m2, n));
+        const cnt = fm.map(() => 0), mm = new THREE.Matrix4(), rr = rng(4851);
+        for (let k = 0; k < n * 2; k++) { const a = rr() * Math.PI * 2, d = Math.sqrt(rr()) * 0.34, ci = rr() * cols.length | 0; if (cnt[ci] >= n) continue;
+          mm.makeTranslation(Math.cos(a) * d, 1.5 + Math.sin(a) * d, 0.04 + (0.34 - d) * 0.18 + rr() * 0.02); ins[ci].setMatrixAt(cnt[ci]++, mm); }
+        ins.forEach((im, i) => { im.count = cnt[i]; g.add(im); });
+        [['开张大吉', false, -0.29], ['GRANDOPENING', true, 0.29]].forEach(([t, lat, x]) => {
+          const rb = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 1.05), M({ map: tex(makeRibbon(THREE, cnv, t, lat)), roughness: 0.4, side: THREE.DoubleSide }));
+          rb.position.set(x, 0.92, 0.07); rb.rotation.z = -Math.sign(x) * 0.05; g.add(rb); });
+        solids.push(hidBox(0.6, 1.6, 0.5, -1.62, 0.8, 2.45, S0));
+      }
+
+      /* THE SHUTTER: the curtain hangs from its drum (y 2.8) and rises into it; the light comes in under its edge */
+      { const SW = SHOP.x1 - SHOP.x0 - 0.1, TOP = 2.8;
+        bx(SW + 0.2, 0.34, 0.34, mShutPaint, 0, TOP + 0.17, SHOP.z1 + 0.12);                     // the drum's housing
+        for (const sx of [-1, 1]) bx(0.07, TOP, 0.09, mShutPaint, sx * (SW / 2 + 0.04), TOP / 2, SHOP.z1);   // the guide rails
+        const g = new THREE.PlaneGeometry(SW, 1); g.translate(0, -0.5, 0);
+        const ct = tSlat.clone(); ct.needsUpdate = true; madeTex.push(ct);
+        const cm = M({ map: ct, roughness: 0.5, metalness: 0.55, side: THREE.DoubleSide });
+        const cur = new THREE.Mesh(g, cm); cur.position.set(0, TOP, SHOP.z1); cur.userData.dyn = true; S0.add(cur);
+        const bar = new THREE.Mesh(new THREE.BoxGeometry(SW, 0.06, 0.05), mShutPaint); bar.userData.dyn = true; S0.add(bar);
+        for (const sx of [-0.6, 0.6]) { const hd = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.03, 0.04), mAlu); hd.position.set(sx, 0, -0.04); bar.add(hd); }
+        shop.curtain = cur; shop.curTex = ct; shop.bar = bar; shop.top = TOP;
+        /* the light it lets in: a warm-grey bar on the floor that grows inward as it rises */
+        const sm = B({ map: tGl, color: 0xfff2dc, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
+        const sp = new THREE.Mesh(new THREE.PlaneGeometry(SW + 1.2, 1), sm); sp.rotation.x = -Math.PI / 2; sp.position.set(0, 0.006, SHOP.z1); sp.userData.dyn = true; S0.add(sp);
+        shop.spill = sp; shop.spillMat = sm;
+      }
+
+      /* THE CORRIDOR: terrazzo, a skylight's soft grey down its middle, the other units' shutters still down, their signs */
+      { pl(COR.x1 - COR.x0, COR.z1 - COR.z0, mTer, 0, 0, (COR.z0 + COR.z1) / 2, -Math.PI / 2);
+        pl(COR.x1 - COR.x0, COR.z1 - COR.z0, mCeil, 0, COR.H, (COR.z0 + COR.z1) / 2, Math.PI / 2);
+        const sky = B({ color: 0xdfe6ec });
+        pl(COR.x1 - COR.x0 - 0.6, 1.4, sky, 0, COR.H - 0.01, (COR.z0 + COR.z1) / 2, Math.PI / 2);
+        for (const dz of [-0.76, 0.76]) bx(COR.x1 - COR.x0, 0.12, 0.12, mGloss, 0, COR.H - 0.06, (COR.z0 + COR.z1) / 2 + dz);
+        const signs = [['JIN FU PROVISION', '金福', '#b81e24', '#fff4d8'], ['MEI LING TAILOR', '美玲', '#1e4a8a', '#ffffff'], ['TIONG HOE CLOCKS', '中和', '#2a2a2a', '#f2c84a'],
+                       ['SIN HUAT PHARMACY', '新发', '#2a7a4a', '#ffffff'], ['GOOD LUCK GOLDSMITH', '好运', '#7a1a1a', '#f6d870'], ['KIM LEE MOBILE', '金利', '#e86a1a', '#ffffff']];
+        const unitW = 4.8;
+        const unit = (cx, z, face, sg) => {                       // face: +1 looks toward +z, −1 toward −z
+          const pz = z;
+          const cur = new THREE.Mesh(new THREE.PlaneGeometry(unitW - 0.5, 2.8), mSlat); cur.position.set(cx, 1.4, pz); cur.rotation.y = face > 0 ? 0 : Math.PI; S0.add(cur);
+          const ct2 = cur.material; void ct2;
+          bx(unitW - 0.3, 0.34, 0.3, mShutPaint, cx, 2.97, pz - face * 0.1);
+          bx(unitW, COR.H - 3.14, 0.2, mWall, cx, 3.14 + (COR.H - 3.14) / 2, pz - face * 0.1);
+          if (sg) { const s2 = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 0.46), B({ map: tex(makeShopSign(THREE, cnv, sg[0], sg[1], sg[2], sg[3])) })); s2.position.set(cx, 3.36, pz + face * 0.012); s2.rotation.y = face > 0 ? 0 : Math.PI; S0.add(s2); }
+          bx(0.46, COR.H, 0.46, M({ color: 0xc8c4bc, roughness: 0.5 }), cx + unitW / 2, COR.H / 2, pz - face * 0.12);
+        };
+        let si = 0;
+        for (let cx = -9.6; cx <= 9.7; cx += unitW) unit(cx, COR.z1, -1, signs[si++ % signs.length]);      // across the corridor
+        for (const cx of [-9.6, -4.8, 4.8, 9.6]) unit(cx, SHOP.z1, 1, signs[si++ % signs.length]);          // his neighbours
+        /* his own fascia over his shutter: a red GRAND OPENING banner (the sign proper is still on order) */
+        bx(SHOP.x1 - SHOP.x0, COR.H - 3.14, 0.2, mWall, 0, 3.14 + (COR.H - 3.14) / 2, SHOP.z1 + 0.1);
+        { const bn = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 0.4), M({ color: 0xc81a20, roughness: 0.6, side: THREE.DoubleSide })); bn.position.set(0, 3.36, SHOP.z1 + 0.21); S0.add(bn); }
+        /* the corridor's ends and an EXIT sign */
+        for (const sx of [-1, 1]) pl(COR.z1 - COR.z0, COR.H, mWall, sx * COR.x1, COR.H / 2, (COR.z0 + COR.z1) / 2, 0, -sx * Math.PI / 2);
+        { const ex = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.15), B({ map: tex(makeExitSign(THREE, cnv)) })); ex.position.set(COR.x1 - 0.02, 2.7, (COR.z0 + COR.z1) / 2); ex.rotation.y = -Math.PI / 2; S0.add(ex); }
+        /* a mop bucket against a pillar, left by the cleaner whose broom we only hear */
+        { const bk2 = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.13, 0.3, 14), M({ color: 0xf2c218, roughness: 0.5 })); bk2.position.set(-4.2, 0.15, COR.z1 - 0.5); S0.add(bk2);
+          const mop = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 1.3, 6), M({ color: 0x8a6a4a, roughness: 0.7 })); mop.position.set(-4.12, 0.7, COR.z1 - 0.45); mop.rotation.z = 0.2; S0.add(mop); }
+      }
+    }
+
+    /* ---------------------------------------------------- WORLD T · THE TAXI HOME (K1)
+       The rear-left seat of a Singapore taxi at night in the rain (the car faces −z; the uncle drives on the right): the
+       front seats' backs, the dashboard and its red meter far off, the windscreen with its wipers, his window beside
+       him beaded with rain and the city sliding past behind it, out of focus. The streetlights passing are painted on
+       the cabin's own surfaces (an emissive sweep), never a light (v15.1). */
+    function buildTaxi() {
+      const T0 = worldT;
+      const mesh = (g, m, x, y, z, p = T0) => { const o = new THREE.Mesh(g, m); o.position.set(x, y, z); p.add(o); return o; };
+      const bx = (w, h, d, m, x, y, z, p = T0) => mesh(new THREE.BoxGeometry(w, h, d), m, x, y, z, p);
+      /* a streetlight passing is a BAND of warm light sliding from the front of the cabin to the back (the car drives
+         toward −z), painted on the surfaces' own emissive. One function for all four materials, so they share one
+         program (three keys a program on onBeforeCompile's source). CP6: the first cut lit the whole cabin at once and
+         at its peak it read as a beige box. (`sw * sw`, never pow(sw, 2.0): pow of a negative base is undefined.) */
+      const sweepBand = (sh) => {
+        sh.uniforms.uSweep = taxi.sweepU;
+        sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying float vSwZ;')
+          .replace('#include <project_vertex>', '#include <project_vertex>\nvSwZ = (modelMatrix * vec4(transformed, 1.0)).z;');
+        sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying float vSwZ;\nuniform float uSweep;')
+          .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n{ float sw = (vSwZ - uSweep) / 0.5; totalEmissiveRadiance *= exp(-sw * sw); }');
+      };
+      const sweepM = (o) => { const m = M(o); m.onBeforeCompile = sweepBand; taxi.sweep.push(m); return m; };
+      const mSeat = sweepM({ color: 0x23262e, roughness: 0.9 }), mPanel = sweepM({ color: 0x1c1d22, roughness: 0.7 }), mLiner = sweepM({ color: 0x4a4a4e, roughness: 0.95 });
+      const mDash = sweepM({ color: 0x141518, roughness: 0.6 }), mChrome = M({ color: 0x9aa0a6, roughness: 0.25, metalness: 0.9 });
+      const W = 0.76, FLOOR = 0.32, ROOF = 1.5;
+      /* the shell: floor, roof liner, the door panels to the belt line, pillars */
+      bx(2 * W, 0.02, 3.2, mPanel, 0, FLOOR, -0.4);
+      bx(2 * W, 0.02, 2.31, mLiner, 0, ROOF, -0.055); bx(2 * W, 0.06, 0.06, mPanel, 0, 1.475, -1.2);
+      for (const sx of [-1, 1]) {
+        bx(0.05, 0.66, 2.6, mPanel, sx * W, FLOOR + 0.33, -0.3);                  // the doors below the windows
+        bx(0.06, 0.06, 2.6, mPanel, sx * (W - 0.03), 0.98, -0.3);                  // the belt line's sill
+        bx(0.06, 0.5, 0.1, mPanel, sx * W, 1.24, -0.1);                            // the B-pillar
+        bx(0.06, 0.5, 0.16, mPanel, sx * W, 1.24, 0.85);                           // the C-pillar
+        const ap = bx(0.06, 0.72, 0.06, mPanel, sx * (W - 0.04), 1.24, -1.46); ap.rotation.x = 0.86;   // the A-pillar along the screen
+        bx(0.08, 0.04, 0.5, mPanel, sx * (W - 0.06), 0.86, 0.35);                  // the arm rest
+      }
+      /* the seats: the bench he sits on, the two front seats' backs with their headrests */
+      bx(1.4, 0.16, 0.56, mSeat, 0, 0.6, 0.62); const rb = bx(1.4, 0.64, 0.14, mSeat, 0, 0.98, 0.95); rb.rotation.x = -0.18;
+      for (const sx of [-1, 1]) {                    // CP6: a rounded shoulder, bolsters and a headrest, not a slab
+        const sb = new THREE.Group(); sb.position.set(sx * 0.38, 0.92, -0.18); sb.rotation.x = -0.12; T0.add(sb);
+        bx(0.5, 0.56, 0.14, mSeat, 0, -0.05, 0, sb);
+        const top = mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.5, 14), mSeat, 0, 0.23, 0, sb); top.rotation.z = Math.PI / 2;
+        for (const bs of [-1, 1]) mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.56, 10), mSeat, bs * 0.25, -0.05, 0.01, sb);
+        const hr = mesh(new THREE.SphereGeometry(0.1, 16, 10), mSeat, 0, 0.44, -0.05, sb); hr.scale.set(1.3, 0.85, 0.55);
+        bx(0.02, 0.1, 0.02, mChrome, -0.06, 0.32, -0.05, sb); bx(0.02, 0.1, 0.02, mChrome, 0.06, 0.32, -0.05, sb); }
+      /* the dashboard, far off: its top, the meter's red figures, a phone in its holder glowing with a map */
+      bx(2 * W, 0.08, 0.5, mDash, 0, 0.96, -1.42); bx(2 * W, 0.34, 0.06, mDash, 0, 0.78, -1.18);
+      { const mt = new THREE.Mesh(new THREE.PlaneGeometry(0.14, 0.05), B({ map: tex(makeMeter(THREE, cnv)) })); mt.position.set(0.0, 1.03, -1.2); mt.rotation.x = -0.25; T0.add(mt); taxi.meter = mt;
+        const ph2 = bx(0.08, 0.15, 0.012, M({ color: 0x0c0c10, roughness: 0.3 }), 0.24, 1.1, -1.24); ph2.rotation.x = -0.2;
+        const scr = new THREE.Mesh(new THREE.PlaneGeometry(0.07, 0.135), B({ map: tex(makeNavMap(THREE, cnv)) })); scr.position.set(0.24, 1.1, -1.232); scr.rotation.x = -0.2; T0.add(scr); }
+      /* the city: two strips of lights out of focus, one beside him that slides past, one ahead down the road. A strip is
+         1024 × 256, so it repeats at the plane's own 4:1 and a disc stays round (CP6: at 2.2 every light was an egg) */
+      { const side = tex(makeBokeh(THREE, cnv, 4861, false)), ahead = tex(makeBokeh(THREE, cnv, 4863, true));
+        side.repeat.set(28 / 6.4 / 4, 1); ahead.repeat.set(1, 1);
+        const sm = B({ map: side, fog: false, toneMapped: false }), am = B({ map: ahead, fog: false, toneMapped: false });
+        const s2 = mesh(new THREE.PlaneGeometry(28, 6.4), sm, -6.5, 2.0, -0.6); s2.rotation.y = Math.PI / 2; s2.userData.dyn = true;
+        const s3 = mesh(new THREE.PlaneGeometry(28, 6.4), sm, 6.5, 2.0, -0.6); s3.rotation.y = -Math.PI / 2; s3.userData.dyn = true;
+        const a2 = mesh(new THREE.PlaneGeometry(14, 3.5), am, 0, 1.6, -9.5); a2.userData.dyn = true;
+        taxi.bokeh.push(side, ahead);
+        /* the road's wet sheen under the city, beside him */
+        const wet = mesh(new THREE.PlaneGeometry(28, 6), B({ color: 0x0e0e16, fog: false }), -3.4, -0.2, -0.6); wet.rotation.x = -Math.PI / 2; void wet; }
+      /* his window and the windscreen: rain on them */
+      { const side = rainGlassMat({ cx: 22, cy: 12, hi: 0xffd8b4, slide: 0.4, rate: 0.08, k: 0.55, dark: 0.24, dir: [-0.85, -0.5] });   // back and down
+        const g1 = mesh(new THREE.PlaneGeometry(0.86, 0.46), side, -W + 0.012, 1.22, 0.38); g1.rotation.y = Math.PI / 2; g1.userData.dyn = true; g1.renderOrder = 3;
+        const g2 = mesh(new THREE.PlaneGeometry(0.78, 0.46), side, -W + 0.012, 1.22, -0.58); g2.rotation.y = Math.PI / 2; g2.userData.dyn = true; g2.renderOrder = 3;
+        const front = rainGlassMat({ cx: 40, cy: 17, hi: 0xffcc98, slide: 0.18, rate: 0.16, k: 0.5, dark: 0.24, dir: [0, 1] });   // the wind pushes them up
+        const ws = mesh(new THREE.PlaneGeometry(2 * W, 0.66), front, 0, 1.24, -1.46); ws.rotation.x = 0.86; ws.userData.dyn = true; ws.renderOrder = 3;
+        taxi.glass.push(side, front);
+        /* the wipers, pivoting at the screen's foot in its own plane */
+        const wp = new THREE.Group(); wp.position.set(0, 1.035, -1.7); wp.rotation.x = 0.86; T0.add(wp); wp.userData.dyn = true;
+        for (const px of [-0.42, 0.16]) { const piv = new THREE.Group(); piv.position.set(px, 0, 0.01); wp.add(piv);
+          const arm = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.012, 0.012), M({ color: 0x0a0a0a, roughness: 0.6 })); arm.position.x = 0.3; piv.add(arm);
+          taxi.wipers.push(piv); } }
+    }
+
+    /* ---------------------------------------------------- THE PICKUP'S CABIN (O6, O7, the endings' drives)
+       Pong's white double-cab from the passenger seat (Thailand drives on the left: Pong is on the right, +x, the car
+       facing −z): the dash and its cluster, the wheel, the console and the radio, the mirror and the jasmine garland
+       swinging from it, the pillars, the liner, the door panels, the seats; the windscreen beaded with the first fat
+       drops. Carried by the pickup, hidden until a film sits in it; while it shows, the exterior's own glass is hidden
+       (from inside, a solid slab of tinted glass is a wall). */
+    function buildCabin(pk) {
+      const R0 = new THREE.Group(); R0.visible = false; R0.userData.dyn = true; pk.add(R0); cab.root = R0;
+      const mesh = (g, m, x, y, z) => { const o = new THREE.Mesh(g, m); o.position.set(x, y, z); R0.add(o); return o; };
+      const bx = (w, h, d, m, x, y, z) => mesh(new THREE.BoxGeometry(w, h, d), m, x, y, z);
+      const mDash = M({ color: 0x2a2a2c, roughness: 0.75 }), mTrim = M({ color: 0x3a3a3c, roughness: 0.8 }), mSeat = M({ color: 0x3a3632, roughness: 0.92 });
+      const mLiner = M({ color: 0x8a8680, roughness: 0.95, side: THREE.DoubleSide }), mChrome = M({ color: 0xa8acb0, roughness: 0.25, metalness: 0.9 });
+      const W = 0.86;
+      bx(2 * W, 0.03, 1.9, mDash, 0, 0.56, -0.1);                                  // the floor
+      const ln = new THREE.Mesh(new THREE.PlaneGeometry(2 * W, 1.75), mLiner); ln.rotation.x = Math.PI / 2; ln.position.set(0, 1.76, 0.08); R0.add(ln);
+      /* the dash: its top under the windscreen's foot, its face, the cluster's hood on Pong's side, the vents, the radio */
+      { const top = bx(2 * W, 0.05, 0.46, mDash, 0, 1.13, -1.16); top.rotation.x = 0.08;
+        bx(2 * W, 0.4, 0.08, mDash, 0, 0.92, -0.93);
+        bx(0.42, 0.1, 0.22, mTrim, 0.42, 1.2, -0.98);
+        for (const [x, c2] of [[0.34, 0xe8f0ff], [0.5, 0xffd8a0]]) { const d2 = new THREE.Mesh(new THREE.CircleGeometry(0.05, 18), B({ color: c2, transparent: true, opacity: 0.55 })); d2.position.set(x, 1.15, -0.865); R0.add(d2); }
+        for (const x of [-0.62, -0.18, 0.18, 0.66]) bx(0.12, 0.05, 0.02, M({ color: 0x0c0c0e, roughness: 0.8 }), x, 1.04, -0.885);
+        const rd = new THREE.Mesh(new THREE.PlaneGeometry(0.18, 0.06), B({ color: 0xff9a3a })); rd.position.set(0, 0.96, -0.883); R0.add(rd);
+        bx(0.24, 0.32, 0.02, mTrim, 0, 0.94, -0.89); }
+      /* the wheel and its column on Pong's side */
+      { const wg = new THREE.Group(); wg.position.set(0.42, 1.22, -0.72); wg.rotation.x = -0.44; R0.add(wg);
+        wg.add(new THREE.Mesh(new THREE.TorusGeometry(0.19, 0.017, 8, 32), mTrim));
+        const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.07, 0.05, 14), mTrim); hub.rotation.x = Math.PI / 2; wg.add(hub);
+        for (const a of [0.0, 2.3, 3.98]) { const sp = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.02, 0.012), mTrim); sp.position.set(Math.cos(a) * 0.09, Math.sin(a) * 0.09, 0); sp.rotation.z = a; wg.add(sp); }
+        const col = bx(0.06, 0.06, 0.3, mTrim, 0.42, 1.12, -0.86); col.rotation.x = -0.44; }
+      /* the console between the seats, the gear lever */
+      bx(0.26, 0.32, 1.1, mTrim, 0, 0.72, -0.35);
+      { const lv = bx(0.02, 0.18, 0.02, mChrome, 0, 0.97, -0.55); lv.rotation.x = 0.2; mesh(new THREE.SphereGeometry(0.032, 10, 8), mDash, 0, 1.06, -0.57); }
+      /* the A-pillars along the windscreen's sides, the B-pillars, the door panels to the belt line */
+      for (const sx of [-1, 1]) {
+        const ap = bx(0.07, 0.86, 0.08, mDash, sx * (W - 0.05), 1.47, -1.08); ap.rotation.x = 0.77;
+        bx(0.08, 0.62, 0.12, mDash, sx * (W - 0.03), 1.45, 0.86);
+        bx(0.05, 0.58, 1.72, mTrim, sx * (W - 0.01), 0.86, -0.06);
+        bx(0.08, 0.05, 0.6, mTrim, sx * (W - 0.06), 0.92, 0.02);                  // the arm rest
+        bx(0.02, 0.025, 0.1, mChrome, sx * (W - 0.04), 1.02, -0.32);              // the handle
+      }
+      /* the cab's back wall, its small rear window over the tray */
+      bx(2 * W, 0.64, 0.04, mTrim, 0, 0.88, 0.93);
+      { const rw = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 0.5), M({ color: 0x0c1014, roughness: 0.1, transparent: true, opacity: 0.55, depthWrite: false })); rw.position.set(0, 1.46, 0.945); R0.add(rw);
+        for (const sx of [-1, 1]) bx((2 * W - 1.3) / 2, 0.56, 0.04, mTrim, sx * (W - (2 * W - 1.3) / 4), 1.46, 0.95); bx(2 * W, 0.08, 0.04, mTrim, 0, 1.73, 0.95); }
+      /* the seats: his and Pong's, their backs and headrests */
+      for (const sx of [-1, 1]) { bx(0.5, 0.14, 0.52, mSeat, sx * 0.42, 0.92, 0.02); const bk = bx(0.5, 0.66, 0.12, mSeat, sx * 0.42, 1.28, 0.34); bk.rotation.x = -0.16;
+        bx(0.27, 0.18, 0.12, mSeat, sx * 0.42, 1.68, 0.4); }
+      /* the mirror and the garland swinging from its stem */
+      { bx(0.025, 0.08, 0.025, mDash, 0, 1.72, -0.8); bx(0.26, 0.07, 0.03, mDash, 0, 1.66, -0.79);
+        const gl = new THREE.Group(); gl.position.set(0.03, 1.63, -0.775); R0.add(gl); cab.garland = gl;
+        const gm = M({ map: tex(makeGarland(THREE, cnv)), roughness: 0.7, transparent: true, alphaTest: 0.3, side: THREE.DoubleSide });
+        const p2 = new THREE.Mesh(new THREE.PlaneGeometry(0.06, 0.24), gm); p2.position.y = -0.12; gl.add(p2);
+        const p3 = new THREE.Mesh(new THREE.PlaneGeometry(0.06, 0.24), gm); p3.position.y = -0.12; p3.rotation.y = Math.PI / 2; gl.add(p3); }
+      /* the windscreen: its glass with the first drops on it (cab.drops), in the opening the exterior's slab filled */
+      { const rg = rainGlassMat({ cx: 40, cy: 22, hi: 0xf0e2c8, slide: 0.06, rate: 0.05, k: 0, dark: 0.16 });
+        const L = Math.hypot(0.6, 0.62), ws = new THREE.Mesh(new THREE.PlaneGeometry(2 * W - 0.14, L), rg);
+        ws.position.set(0, (1.16 + 1.78) / 2, -(0.78 + 1.38) / 2); ws.rotation.x = Math.atan2(0.6, 0.62); ws.renderOrder = 3; R0.add(ws);
+        cab.glass.push(rg); }
+    }
+
+    /* ---------------------------------------------------- the road's own (O5–O7, ending C): a roadside spirit house at
+       the crossroads where the farm track crosses the road, and the stall across from the lane where a woman turns round */
+    function buildRoadside() {
+      const C = worldC, ROADY = 0.8;
+      const mesh = (g, m, x, y, z) => { const o = new THREE.Mesh(g, m); o.position.set(x, y, z); o.castShadow = !LOW; o.receiveShadow = true; C.add(o); return o; };
+      const bx = (w, h, d, m, x, y, z) => mesh(new THREE.BoxGeometry(w, h, d), m, x, y, z);
+      /* the crossroads at x −48: the farm track up the bund onto the road, both sides */
+      const mTrack = M({ map: tex(makeRedEarth(THREE, cnv)), roughness: 0.95, side: THREE.DoubleSide });
+      for (const [z0, z1, y0, y1] of [[13.0, 17.6, -0.22, ROADY], [24.4, 29.0, ROADY, -0.22]]) {
+        const g = new THREE.BufferGeometry(), x0 = -49.4, x1 = -46.6;
+        g.setAttribute('position', new THREE.BufferAttribute(new Float32Array([x0, y0, z0, x1, y0, z0, x1, y1, z1, x0, y1, z1]), 3));
+        g.setAttribute('uv', new THREE.BufferAttribute(new Float32Array([0, 0, 1, 0, 1, 2, 0, 2]), 2)); g.setIndex([0, 2, 1, 0, 3, 2]); g.computeVertexNormals();
+        const o = new THREE.Mesh(g, mTrack); o.receiveShadow = true; C.add(o);
+      }
+      /* the spirit house at its corner: newer and gilded, on a white pillar on a pad, its soda bottles and garlands */
+      { const X = -44.6, Z = 16.4, Y = ROADY - 0.22, mW = M({ color: 0xece6da, roughness: 0.6 }), mG = M({ color: 0xc89a3a, roughness: 0.35, metalness: 0.7 }),
+              mR = M({ color: 0xa8201c, roughness: 0.5 }), mSoda = M({ color: 0xd8141c, roughness: 0.15, transparent: true, opacity: 0.85 });
+        bx(1.1, 0.9, 1.1, M({ color: 0xa8a29a, roughness: 0.9 }), X, Y - 0.45, Z);
+        bx(0.22, 1.33, 0.22, mW, X, Y + 0.665, Z);
+        bx(0.9, 0.06, 0.9, mW, X, Y + 1.36, Z);
+        bx(0.5, 0.42, 0.42, mG, X, Y + 1.6, Z - 0.12); bx(0.18, 0.28, 0.02, mR, X, Y + 1.56, Z + 0.1);
+        for (const [dx, dz] of [[-0.24, 0.12], [0.24, 0.12], [-0.24, -0.34], [0.24, -0.34]]) bx(0.04, 0.42, 0.04, mG, X + dx, Y + 1.6, Z + dz);
+        const roof = (y, w, d, h) => { const g = new THREE.ConeGeometry(Math.hypot(w, d) * 0.5, h, 4); g.rotateY(Math.PI / 4); const o = mesh(g, mR, X, y, Z - 0.12); o.scale.set(w / Math.hypot(w, d) * 1.414, 1, d / Math.hypot(w, d) * 1.414); return o; };
+        roof(Y + 1.94, 0.7, 0.62, 0.26); roof(Y + 2.12, 0.46, 0.4, 0.22);
+        mesh(new THREE.ConeGeometry(0.03, 0.22, 6), mG, X, Y + 2.33, Z - 0.12);
+        for (let k = 0; k < 6; k++) { const b2 = mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.14, 8), mSoda, X - 0.3 + k * 0.12, Y + 1.46, Z + 0.32); void b2; }
+        const jas = M({ color: 0xf4f0e2, roughness: 0.7 });
+        for (let k = 0; k < 3; k++) { const t2 = mesh(new THREE.TorusGeometry(0.07, 0.012, 6, 14), jas, X - 0.15 + k * 0.15, Y + 1.45, Z + 0.22); t2.rotation.x = Math.PI / 2; }
+        solids.push(hidBox(1.1, 2.4, 1.1, X, Y + 1.0, Z, C)); }
+      /* the stall across the road: a lean-to of zinc on four posts, its table of fruit and bottled drinks, a bare bulb */
+      { const X = 44.5, Z = 26.0, Y = ROADY, mPost = M({ color: 0x6a5a48, roughness: 0.85 }), mZ = M({ color: 0x8a7a68, roughness: 0.6, metalness: 0.3, side: THREE.DoubleSide }),
+              mTab = M({ color: 0x8a6a4a, roughness: 0.8 }), mBulb = B({ color: 0xffe2a0 });
+        bx(3.4, 1.3, 2.4, mTrack, X, Y - 0.65, Z);                                    // its pad, built up to the road's level
+        for (const [dx, dz] of [[-1.3, -0.9], [1.3, -0.9], [-1.3, 0.9], [1.3, 0.9]]) bx(0.08, dz < 0 ? 2.3 : 2.0, 0.08, mPost, X + dx, Y + (dz < 0 ? 1.15 : 1.0), Z + dz);
+        const rf = new THREE.Mesh(new THREE.PlaneGeometry(3.0, 2.2), mZ); rf.position.set(X, Y + 2.18, Z); rf.rotation.x = -Math.PI / 2 - 0.14; C.add(rf);
+        bx(2.2, 0.05, 0.9, mTab, X, Y + 0.78, Z - 0.3); for (const dx of [-1.0, 1.0]) for (const dz of [-0.7, 0.1]) bx(0.05, 0.76, 0.05, mTab, X + dx, Y + 0.38, Z + dz);
+        const cols = [0xe8a020, 0xd84a1a, 0x9ab830, 0xf2d040], r2 = rng(4871);
+        for (let k = 0; k < 4; k++) { const bas = mesh(new THREE.CylinderGeometry(0.2, 0.15, 0.1, 14, 1, true), M({ color: 0x9a7a4a, roughness: 0.9, side: THREE.DoubleSide }), X - 0.8 + k * 0.5, Y + 0.86, Z - 0.35); void bas;
+          for (let j = 0; j < 7; j++) mesh(new THREE.SphereGeometry(0.06, 10, 8), M({ color: cols[k], roughness: 0.6 }), X - 0.8 + k * 0.5 + (r2() - 0.5) * 0.2, Y + 0.92 + r2() * 0.05, Z - 0.35 + (r2() - 0.5) * 0.2); }
+        for (let k = 0; k < 8; k++) mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.2, 8), M({ color: [0xe02a20, 0x2a8a3a, 0xf2a020][k % 3], roughness: 0.2, transparent: true, opacity: 0.85 }), X + 0.9 - (k % 4) * 0.08, Y + 0.91, Z - 0.05 - (k / 4 | 0) * 0.08);
+        mesh(new THREE.SphereGeometry(0.05, 10, 8), mBulb, X, Y + 1.88, Z - 0.2);
+        solids.push(hidBox(2.8, 2.2, 2.0, X, Y + 1.1, Z, C)); }
+    }
+
+    /* ---------------------------------------------------- the sets alive: the shutter, the LEDs, his phone; the taxi's
+       city, wipers and streetlights; the cabin's garland and drops */
+    const shopCtl = {
+      shutter(u, secs = 0) { shop.uFrom = shop.u; shop.uTo = Math.max(0, Math.min(1, u)); shop.t0 = wallNow(); shop.t1 = shop.t0 + Math.max(0.001, secs); if (!secs) shop.u = shop.uTo; },
+      lights(k, secs = 0) { shop.ledFrom = shop.ledK; shop.ledTo = k; shop.l0 = wallNow(); shop.l1 = shop.l0 + Math.max(0.001, secs); if (!secs) shop.ledK = k; },
+      phone(on) { shop.phoneOn = on ? wallNow() : 0; }
+    };
+    const cabCtl = {
+      show(on) { cab.show = !!on; if (cab.root) cab.root.visible = !!on; const gl = yard.pickup && yard.pickup.userData.glass; if (gl) for (const g of gl) g.visible = !on; },
+      drops(k) { cab.drops = k; for (const m of cab.glass) m.uniforms.uK.value = k; }
+    };
+    function shopFrame(now) {
+      if (!worldS.visible) return;
+      const k = Math.min(1, Math.max(0, (now - shop.t0) / Math.max(0.001, shop.t1 - shop.t0)));
+      if (shop.t1 > 0 && k < 1) shop.u = shop.uFrom + (shop.uTo - shop.uFrom) * k * k * (3 - 2 * k); else if (shop.t1 > 0) shop.u = shop.uTo;
+      if (shop.curtain) {
+        const h = Math.max(0.02, shop.top * (1 - shop.u));
+        shop.curtain.scale.y = h; shop.curTex.repeat.set(1, h / 0.6);
+        shop.bar.position.set(0, shop.top - h, SHOP.z1); shop.bar.visible = shop.u < 0.995;
+        const dep = 0.3 + 2.8 * shop.u; shop.spill.scale.y = dep; shop.spill.position.z = SHOP.z1 - dep / 2 + 0.2;
+        shop.spillMat.opacity = 0.34 * Math.min(1, shop.u * 2.5);
+      }
+      const kl = Math.min(1, Math.max(0, (now - shop.l0) / Math.max(0.001, shop.l1 - shop.l0)));
+      if (shop.l1 > 0) shop.ledK = kl < 1 ? shop.ledFrom + (shop.ledTo - shop.ledFrom) * kl : shop.ledTo;
+      for (const m of shop.leds) if (m) m.color.setRGB(0.12 + 0.88 * shop.ledK, 0.12 + 0.88 * shop.ledK, 0.13 + 0.87 * shop.ledK);
+      if (shop.phone) {
+        const on = shop.phoneOn ? now - shop.phoneOn : -1, P = shop.phone;
+        if (on >= 0) { P.scr.color.setRGB(0.55, 0.72, 0.85); const buzz = on < 1.6 ? Math.sin(on * 90) * 0.0012 * (1 - on / 1.6) : 0; P.g.position.x = P.base.x + buzz; }
+        else { P.scr.color.setRGB(0.02, 0.024, 0.03); P.g.position.x = P.base.x; }
+      }
+    }
+    function taxiFrame(now) {
+      if (!worldT.visible) { taxi.last = 0; return; }
+      const dt = taxi.last ? Math.min(0.1, now - taxi.last) : 0; taxi.last = now;
+      if (taxi.bokeh[0]) taxi.bokeh[0].offset.x -= dt * 0.11;
+      if (taxi.bokeh[1]) taxi.bokeh[1].offset.x = Math.sin(now * 0.07) * 0.03;
+      for (const m of taxi.glass) m.uniforms.uTime.value = now % 1000;
+      if (taxi.wipe) { const ph = (now % 1.7) / 1.7, a = ph < 0.5 ? Math.sin(ph * Math.PI * 2 - Math.PI / 2) * 0.5 + 0.5 : Math.sin((1 - ph) * Math.PI * 2 - Math.PI / 2) * 0.5 + 0.5;
+        taxi.wipers.forEach((w, i) => { w.rotation.z = 0.08 + a * (i ? 1.25 : 1.1); }); }
+      /* a streetlight passing: a warm band sliding front to back across the cabin in a third of a second, then the dark
+         until the next lamp (one every 1.8 s, each its own brightness) */
+      const per = 1.8, ph = (now % per) / per, s = 0.55 + 0.45 * Math.pow(Math.sin(Math.floor(now / per) * 12.9898), 2);
+      taxi.sweepU.value = ph < 0.32 ? -2.8 + (ph / 0.32) * 5.2 : 9;
+      for (const m of taxi.sweep) m.emissive.setRGB(0.045 * s, 0.03 * s, 0.012 * s);
+    }
+    function cabFrame(now) {
+      if (!cab.show) { cab.last = 0; return; }
+      const dt = cab.last ? Math.min(0.1, now - cab.last) : 0; cab.last = now;
+      for (const m of cab.glass) m.uniforms.uTime.value = now % 1000;
+      if (cab.garland) { cab.swing += dt; cab.garland.rotation.z = Math.sin(cab.swing * 2.3) * 0.12 + Math.sin(cab.swing * 5.1) * 0.03; cab.garland.rotation.x = Math.sin(cab.swing * 1.7) * 0.06; }
+    }
+
     buildCompound();
     buildVegetation();
+    buildRoadside();
+    yard.pickup.userData.dyn = true;                     // it drives in the films: never baked into the yard
+    buildCabin(yard.pickup);
     mergeStatic(worldC, new Set([...walls, ...solids]));
+    buildShop();
+    buildTaxi();
+    mergeStatic(worldS, new Set([...walls, ...solids]));
+    mergeStatic(worldT, new Set([...walls, ...solids]));
 
     /* ------------------------------------------------- the compound, alive (CP5): the water's ripples and its sky, the
        lightning in it, the standing fan, the TV under the house */
@@ -2157,6 +2692,9 @@
       domeFrame(now);
       roomFrame(now);
       yardFrame(now);
+      shopFrame(now);
+      taxiFrame(now);
+      cabFrame(now);
       const st = getState();
       const live = st === 'play' || st === 'unlock' || st === 'choose';
       if (!booted && !preplaced && kit) {
@@ -2202,6 +2740,7 @@
       booted = false; preplaced = ''; dayClock.t = 0; lastWall = 0;
       worldRun++; wDark = false; decOpen = false;
       worldS.visible = false; worldT.visible = false;
+      cabCtl.show(false); cabCtl.drops(0);
       for (const h of hotspots) { h.done = false; h.dwellT = 0; }
       if (kit) {
         kit.root(false); kit.pose('standing', { secs: 0.05 });
@@ -2266,12 +2805,13 @@
       skyAt: () => ({ x: yaw.position.x, z: yaw.position.z }),
       get noteStorm() { return 1; },
       set noteStorm(v) {},
-      film: { RX, SX, TX, YARD, GATE, ROAD_Z, RM, RDOOR, R_ARRIVE, MASTER, CMAT, worldC, worldR, worldS, worldT },
+      film: { RX, SX, TX, YARD, GATE, ROAD_Z, RM, RDOOR, R_ARRIVE, MASTER, CMAT, SHOP, COR, COUNTER, worldC, worldR, worldS, worldT },
       pileVia: { what: 'the receiving room\'s door (pressing it carries him inside)', x: RDOOR.x, z: RDOOR.z + 0.9 },
       arrivals: [{ what: 'the receiving room (just inside its door)', x: R_ARRIVE.x, z: R_ARRIVE.z }],
       get phase() { return phase; },
       setPhase, applyPhase, after, dayClock, sayLine, queueLine, queueFn, queueGap,
       look, presets: PRESETS, dome: domeLive, worldOf, room: roomCtl, rmc: RMC, roomState: room, yard, cmp: CMP,
+      shop: shopCtl, shopState: shop, cab: cabCtl, cabState: cab, taxi,
       info: () => ({ phase, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], world: worldOf(yaw.position.x),
                      until: +speak.until.toFixed(2), pending: speak.pending ? speak.pending.name : null, decOpen }),
       hotspots,
@@ -2974,6 +3514,259 @@
     x.fillStyle = '#b89a62'; x.fillRect(0, 0, S, S);
     for (let j = 0; j < 64; j++) for (let i = 0; i < 64; i++) { x.fillStyle = ((i >> 1) + j) % 2 ? 'rgba(90,60,30,0.2)' : 'rgba(230,200,140,0.2)'; x.fillRect(i * 4, j * 4, 4, 4); }
     for (let i = 0; i < 900; i++) { const px = 10 + r() * (S - 20), py = 10 + r() * (S - 20), a = r() * Math.PI; x.fillStyle = `rgb(${170 + r() * 60 | 0},${20 + r() * 30 | 0},${16 + r() * 20 | 0})`; x.beginPath(); x.ellipse(px, py, 5 + r() * 3, 1.6, a, 0, Math.PI * 2); x.fill(); }
+    return done(THREE, c, false);
+  }
+
+
+  /* ====================================================== THE FILM SETS' DRAWN SURFACES (CP6)
+     His shop at dawn in a Singapore neighbourhood mall, the taxi home in the rain, Pong's pickup from the inside. Every
+     sheet drawn on a canvas, every one this chapter's own (FRESH). The words on them are world art: a carton says what is
+     printed on it, a corridor's shops say their own names (generic: no real brand). */
+  /* terrazzo: a pale cement ground, chips of grey, black, white and a little terracotta, brass divider lines every tile */
+  function makeTerrazzo(THREE, cnv) {
+    const S = 512, [c, x] = cnv(S), r = rng(4801);
+    x.fillStyle = '#d6d2ca'; x.fillRect(0, 0, S, S);
+    for (let i = 0; i < 40; i++) blobWrap2(x, S, r() * S, r() * S, 40 + r() * 80, r() < 0.5 ? 'rgba(240,236,228,0.18)' : 'rgba(150,144,134,0.12)');
+    const chip = (col, n, s0, s1) => {
+      for (let i = 0; i < n; i++) {
+        const px = r() * S, py = r() * S, s = s0 + r() * (s1 - s0), k = 4 + (r() * 3 | 0);
+        x.fillStyle = col; x.beginPath();
+        for (let j = 0; j < k; j++) { const a = j / k * Math.PI * 2 + r() * 0.6, rr = s * (0.6 + r() * 0.5); const fx = px + Math.cos(a) * rr, fy = py + Math.sin(a) * rr; if (j) x.lineTo(fx, fy); else x.moveTo(fx, fy); }
+        x.closePath(); x.fill();
+      }
+    };
+    chip('rgba(120,116,110,0.85)', 900, 1.5, 4); chip('rgba(40,38,36,0.85)', 600, 1.2, 3.5); chip('rgba(250,248,244,0.9)', 700, 1.2, 3.5);
+    chip('rgba(168,104,80,0.75)', 120, 1.2, 3); chip('rgba(92,122,106,0.6)', 50, 1, 2.5);
+    x.fillStyle = 'rgba(176,146,92,0.85)'; x.fillRect(0, 0, S, 2); x.fillRect(0, 0, 2, S);    // the brass strip at the tile's edge
+    return done(THREE, c, true);
+  }
+  /* the shop's floor: 600 mm porcelain, a soft grey-white, thin pale grout */
+  function makeShopTiles(THREE, cnv) {
+    const S = 256, [c, x] = cnv(S), r = rng(4803);
+    x.fillStyle = '#e2e0dc'; x.fillRect(0, 0, S, S);
+    for (let i = 0; i < 18; i++) blobWrap2(x, S, r() * S, r() * S, 30 + r() * 60, 'rgba(200,198,194,0.16)');
+    speckle(x, S, S, r, 1400, '170,168,164', 0.05, 0.16, 1, 2);
+    x.fillStyle = 'rgba(182,178,170,0.9)'; x.fillRect(0, 0, S, 2); x.fillRect(0, 0, 2, S);
+    return done(THREE, c, true);
+  }
+  /* pale ash slats on the wall behind the counter, a shadow gap between each */
+  function makeAshSlats(THREE, cnv) {
+    const [c, x] = sized(cnv, 256, 512), r = rng(4805);
+    x.fillStyle = '#2a2420'; x.fillRect(0, 0, 256, 512);
+    for (let k = 0; k < 8; k++) {
+      const x0 = k * 32 + 3, w = 26, base = [214 + r() * 14, 192 + r() * 12, 160 + r() * 12];
+      x.fillStyle = `rgb(${base.map(v => v | 0).join(',')})`; x.fillRect(x0, 0, w, 512);
+      for (let g = 0; g < 9; g++) { x.strokeStyle = `rgba(150,120,86,${(0.12 + r() * 0.16).toFixed(2)})`; x.lineWidth = 0.6 + r(); const gx = x0 + 2 + r() * (w - 4); x.beginPath(); x.moveTo(gx, 0); for (let y = 0; y <= 512; y += 32) x.lineTo(gx + Math.sin(y * 0.02 + g) * 1.6, y); x.stroke(); }
+      x.fillStyle = 'rgba(255,250,240,0.18)'; x.fillRect(x0, 0, 2, 512);
+    }
+    return done(THREE, c, true);
+  }
+  /* a roller shutter's curtain: galvanised slats in horizontal ridges, grey, a little grime low down */
+  function makeShutterSlats(THREE, cnv) {
+    const [c, x] = sized(cnv, 128, 256), r = rng(4807);
+    for (let y = 0; y < 256; y += 32) {
+      const g = x.createLinearGradient(0, y, 0, y + 32);
+      g.addColorStop(0, '#6a7074'); g.addColorStop(0.18, '#b4babe'); g.addColorStop(0.5, '#9ca2a6'); g.addColorStop(0.82, '#7e8488'); g.addColorStop(1, '#4a4e52');
+      x.fillStyle = g; x.fillRect(0, y, 128, 32);
+    }
+    for (let i = 0; i < 40; i++) { x.fillStyle = `rgba(${r() < 0.5 ? '60,56,50' : '200,204,206'},${(0.06 + r() * 0.1).toFixed(2)})`; x.fillRect(r() * 128, r() * 256, 2 + r() * 12, 1 + r() * 3); }
+    return done(THREE, c, true);
+  }
+  /* the cases' bed: dark red velvet, its nap catching the light in soft patches */
+  function makeVelvet(THREE, cnv) {
+    const S = 128, [c, x] = cnv(S), r = rng(4809);
+    x.fillStyle = '#4a1016'; x.fillRect(0, 0, S, S);
+    for (let i = 0; i < 30; i++) blobWrap2(x, S, r() * S, r() * S, 10 + r() * 30, r() < 0.5 ? 'rgba(110,30,38,0.25)' : 'rgba(20,4,8,0.25)');
+    speckle(x, S, S, r, 900, '120,40,48', 0.1, 0.25, 1, 1);
+    return done(THREE, c, true);
+  }
+  /* the amulets in his cases, an atlas of four faces: a Somdej's stepped arch, a round coin, an oval, a takrut's roll */
+  function makeAmuletFaces(THREE, cnv) {
+    const [c, x] = sized(cnv, 256, 64), r = rng(4811);
+    x.fillStyle = '#000'; x.fillRect(0, 0, 256, 64);
+    const face = (ox, kind) => {
+      const cx = ox + 32, cy = 32;
+      x.fillStyle = '#b8902e'; x.fillRect(ox + 2, 2, 60, 60);                       // the gold frame
+      x.fillStyle = kind === 1 ? '#7a6a4a' : kind === 2 ? '#3a3632' : '#c8bca0';
+      if (kind === 0) { x.fillRect(ox + 10, 8, 44, 50); x.fillStyle = '#a89c80'; x.beginPath(); x.moveTo(cx - 14, 50); x.lineTo(cx - 14, 26); x.quadraticCurveTo(cx, 8, cx + 14, 26); x.lineTo(cx + 14, 50); x.fill();
+        x.fillStyle = '#8a7e64'; for (let k = 0; k < 3; k++) x.fillRect(cx - 12 + k * 2, 50 - k * 3, 24 - k * 4, 2); x.beginPath(); x.ellipse(cx, 34, 5, 7, 0, 0, Math.PI * 2); x.fill(); }
+      else if (kind === 1) { x.beginPath(); x.arc(cx, cy, 24, 0, Math.PI * 2); x.fill(); x.strokeStyle = '#d8b450'; x.lineWidth = 2; x.beginPath(); x.arc(cx, cy, 20, 0, Math.PI * 2); x.stroke(); x.fillStyle = '#5a4a30'; x.beginPath(); x.ellipse(cx, cy + 2, 7, 10, 0, 0, Math.PI * 2); x.fill(); }
+      else if (kind === 2) { x.beginPath(); x.ellipse(cx, cy, 18, 25, 0, 0, Math.PI * 2); x.fill(); x.fillStyle = '#6a5e4e'; x.beginPath(); x.ellipse(cx, cy + 3, 7, 11, 0, 0, Math.PI * 2); x.fill(); }
+      else { x.fillStyle = '#5a4630'; x.fillRect(ox + 24, 6, 16, 52); x.strokeStyle = '#2a2018'; x.lineWidth = 1.5; for (let y = 10; y < 56; y += 6) { x.beginPath(); x.moveTo(ox + 24, y); x.lineTo(ox + 40, y + 2); x.stroke(); } }
+      for (let i = 0; i < 40; i++) { x.fillStyle = `rgba(255,240,200,${(r() * 0.12).toFixed(2)})`; x.fillRect(ox + 4 + r() * 56, 4 + r() * 56, 1, 1); }
+    };
+    for (let k = 0; k < 4; k++) face(k * 64, k);
+    return done(THREE, c, false);
+  }
+  /* a price card, handwritten: four of them on one sheet */
+  function makePriceCards(THREE, cnv) {
+    const [c, x] = sized(cnv, 256, 64);
+    const HAND = '"Segoe Print", "Bradley Hand", "Comic Sans MS", "Chalkboard SE", cursive';
+    ['$380', '$1,200', '$95', '$560'].forEach((p, k) => {
+      x.fillStyle = '#f6f2e8'; x.fillRect(k * 64 + 3, 6, 58, 52);
+      x.fillStyle = '#c02a20'; x.fillRect(k * 64 + 3, 6, 58, 4);
+      x.fillStyle = '#1c2a6a'; x.font = `bold ${p.length > 4 ? 17 : 21}px ${HAND}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(p, k * 64 + 32, 36);
+    });
+    return done(THREE, c, false);
+  }
+  /* his stock book, open on the counter: ruled pages, a red margin, his entries in blue ballpoint, the sales column */
+  function makeStockBook(THREE, cnv) {
+    const [c, x] = sized(cnv, 1024, 640), r = rng(4813);
+    const HAND = '"Segoe Print", "Bradley Hand", "Comic Sans MS", "Chalkboard SE", cursive';
+    for (const ox of [0, 512]) {
+      const g = x.createLinearGradient(ox, 0, ox + 512, 0);
+      g.addColorStop(0, ox ? '#d8d2c2' : '#f2eee2'); g.addColorStop(ox ? 0.1 : 0.9, '#f4f0e4'); g.addColorStop(1, ox ? '#f2eee2' : '#d8d2c2');
+      x.fillStyle = g; x.fillRect(ox, 0, 512, 640);
+      x.strokeStyle = 'rgba(80,120,190,0.45)'; x.lineWidth = 1.2;
+      for (let y = 92; y < 620; y += 38) { x.beginPath(); x.moveTo(ox + 18, y); x.lineTo(ox + 494, y); x.stroke(); }
+      x.strokeStyle = 'rgba(200,40,40,0.6)'; x.beginPath(); x.moveTo(ox + 70, 20); x.lineTo(ox + 70, 620); x.stroke();
+      x.strokeStyle = 'rgba(80,120,190,0.35)'; for (const cx of [330, 400, 452]) { x.beginPath(); x.moveTo(ox + cx, 60); x.lineTo(ox + cx, 620); x.stroke(); }
+    }
+    x.fillStyle = '#1e2c78'; x.textBaseline = 'alphabetic';
+    x.font = `bold 26px ${HAND}`; x.fillText('STOCK', 84, 70); x.fillText('SALES', 596, 70);
+    x.font = `22px ${HAND}`; x.fillText('qty', 338, 70); x.fillText('S$', 408, 70);
+    const rows = [['Phra Somdej', '2', '380'], ['Takrut (5 pc)', '5', '95'], ['Phra Pidta', '1', '560'], ['Rian LP coin', '3', '120'], ['Pendant frames', '20', '8']];
+    rows.forEach(([n, q, p], i) => { const y = 124 + i * 38; x.font = `24px ${HAND}`; x.fillText(n, 84, y); x.fillText(q, 344, y); x.fillText(p, 404, y); });
+    ['Mon', 'Tue', 'Wed'].forEach((d, i) => { const y = 124 + i * 38; x.font = `24px ${HAND}`; x.fillText(d, 596, y); x.fillText(i < 2 ? '0' : '1', 856, y); if (i === 2) x.fillText('Takrut', 690, y); });
+    x.strokeStyle = 'rgba(30,44,120,0.5)'; x.lineWidth = 1.5; x.beginPath(); x.moveTo(596, 238); x.lineTo(640, 236); x.stroke();
+    for (let i = 0; i < 200; i++) { x.fillStyle = `rgba(120,100,70,${(r() * 0.05).toFixed(3)})`; x.fillRect(r() * 1024, r() * 640, 2, 2); }
+    x.fillStyle = 'rgba(60,50,40,0.25)'; x.fillRect(506, 0, 12, 640);
+    return done(THREE, c, false);
+  }
+  /* a congratulations ribbon on a flower stand: red satin, gold characters down it */
+  function makeRibbon(THREE, cnv, text, latin) {
+    const [c, x] = sized(cnv, 64, 512), r = rng(4815);
+    const g = x.createLinearGradient(0, 0, 64, 0); g.addColorStop(0, '#8a0e12'); g.addColorStop(0.5, '#d01c22'); g.addColorStop(1, '#8a0e12');
+    x.fillStyle = g; x.fillRect(0, 0, 64, 512);
+    for (let i = 0; i < 60; i++) { x.fillStyle = `rgba(255,${120 + r() * 60 | 0},${100 + r() * 40 | 0},${(r() * 0.08).toFixed(2)})`; x.fillRect(0, r() * 512, 64, 1 + r() * 3); }
+    x.fillStyle = '#f2cc5a'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    if (latin) { x.font = 'bold 28px Georgia, "Times New Roman", serif'; const ch = text.split(''); ch.forEach((t, i) => x.fillText(t, 32, 132 + i * (366 / ch.length))); }
+    else { x.font = `bold 46px "Noto Sans CJK SC", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif`; [...text].forEach((t, i) => x.fillText(t, 32, 160 + i * 92)); }
+    return done(THREE, c, false);
+  }
+  /* bubble wrap: clear plastic, a grid of bubbles catching the light (alpha) */
+  function makeBubbleWrap(THREE, cnv) {
+    const S = 128, [c, x] = cnv(S);
+    x.clearRect(0, 0, S, S); x.fillStyle = 'rgba(230,236,240,0.22)'; x.fillRect(0, 0, S, S);
+    for (let j = 0; j < 8; j++) for (let i = 0; i < 8; i++) {
+      const cx = i * 16 + (j % 2) * 8 + 8, cy = j * 16 + 8;
+      const g = x.createRadialGradient(cx - 2, cy - 2, 0, cx, cy, 6); g.addColorStop(0, 'rgba(255,255,255,0.9)'); g.addColorStop(0.5, 'rgba(220,230,238,0.45)'); g.addColorStop(1, 'rgba(180,196,210,0.3)');
+      x.fillStyle = g; x.beginPath(); x.arc(cx, cy, 6, 0, Math.PI * 2); x.fill();
+    }
+    return done(THREE, c, true);
+  }
+  /* a carton: corrugated brown, FRAGILE in red, the up arrows, a strip of tape */
+  function makeCarton(THREE, cnv) {
+    const S = 256, [c, x] = cnv(S), r = rng(4817);
+    x.fillStyle = '#b08a5a'; x.fillRect(0, 0, S, S);
+    for (let y = 0; y < S; y += 3) { x.fillStyle = `rgba(90,64,36,${(0.05 + r() * 0.05).toFixed(2)})`; x.fillRect(0, y, S, 1); }
+    x.fillStyle = 'rgba(196,170,120,0.8)'; x.fillRect(0, 118, S, 20);
+    x.fillStyle = '#b01e1a'; x.font = 'bold 30px Arial, Helvetica, sans-serif'; x.textAlign = 'center'; x.fillText('FRAGILE', 128, 74);
+    x.font = 'bold 18px Arial, Helvetica, sans-serif'; x.fillText('易碎品 · HANDLE WITH CARE', 128, 100);
+    x.strokeStyle = '#1a1a1a'; x.lineWidth = 4; for (const ax of [70, 186]) { x.beginPath(); x.moveTo(ax, 220); x.lineTo(ax, 170); x.moveTo(ax - 12, 184); x.lineTo(ax, 170); x.lineTo(ax + 12, 184); x.stroke(); }
+    return done(THREE, c, false);
+  }
+  /* a shop sign on the corridor: a lightbox with the shop's name (generic) in two scripts */
+  function makeShopSign(THREE, cnv, en, cn, bg, fg) {
+    const [c, x] = sized(cnv, 512, 96);
+    x.fillStyle = bg; x.fillRect(0, 0, 512, 96);
+    x.fillStyle = 'rgba(255,255,255,0.12)'; x.fillRect(0, 0, 512, 10);
+    x.fillStyle = fg; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.font = `bold 40px "Noto Sans CJK SC", "Noto Sans SC", "PingFang SC", sans-serif`; x.fillText(cn, 106, 48);
+    x.font = 'bold 30px Arial, Helvetica, sans-serif'; x.fillText(en, 330, 50);
+    return done(THREE, c, false);
+  }
+  /* a green EXIT sign, the running man left out (a sign says EXIT; that is enough) */
+  function makeExitSign(THREE, cnv) {
+    const [c, x] = sized(cnv, 128, 48);
+    x.fillStyle = '#0e8a3a'; x.fillRect(0, 0, 128, 48); x.fillStyle = '#eafff0'; x.font = 'bold 30px Arial, Helvetica, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('EXIT', 64, 26);
+    return done(THREE, c, false);
+  }
+  /* a small framed print of a temple's roofline at sunset (the shop's one picture on the wall) */
+  function makeTemplePrint(THREE, cnv) {
+    const [c, x] = sized(cnv, 128, 96);
+    const g = x.createLinearGradient(0, 0, 0, 96); g.addColorStop(0, '#f2b070'); g.addColorStop(0.6, '#d8805a'); g.addColorStop(1, '#5a3a3a');
+    x.fillStyle = g; x.fillRect(0, 0, 128, 96);
+    x.fillStyle = '#2a1a1a'; x.beginPath(); x.moveTo(20, 80); x.lineTo(40, 52); x.lineTo(56, 52); x.lineTo(64, 30); x.lineTo(72, 52); x.lineTo(88, 52); x.lineTo(108, 80); x.closePath(); x.fill();
+    x.fillRect(14, 80, 100, 16); x.beginPath(); x.moveTo(64, 30); x.lineTo(66, 14); x.lineTo(62, 14); x.fill();
+    return done(THREE, c, false);
+  }
+  /* the city at night through rain, out of focus: discs of sodium, LED white, tail-light red and a sign's green on blue-black
+     (a strip that repeats along u; the taxi slides past it) */
+  function makeBokeh(THREE, cnv, seed, ahead) {
+    const [c, x] = sized(cnv, 1024, 256), r = rng(seed);
+    const g = x.createLinearGradient(0, 0, 0, 256); g.addColorStop(0, '#04050a'); g.addColorStop(0.5, '#0a0b14'); g.addColorStop(0.7, '#0d0c14'); g.addColorStop(1, '#030306');
+    x.fillStyle = g; x.fillRect(0, 0, 1024, 256);
+    /* CP6: the first strip was confetti — seven hues dealt evenly, magenta among them. Weighted as a city at night is:
+       sodium and warm LED most, then white, the traffic's red, and a sign's green or blue only now and then. */
+    const pal = ahead ? [['255,64,40', 5], ['255,92,52', 3], ['255,176,86', 3], ['244,236,224', 2], ['92,255,150', 0.6]]
+                      : [['255,168,72', 5], ['255,204,130', 4], ['246,238,226', 3], ['214,226,255', 1.5], ['255,70,48', 2], ['96,236,156', 0.5], ['120,168,255', 0.5]];
+    const tot = pal.reduce((a, p) => a + p[1], 0);
+    const pick = () => { let q = r() * tot; for (const p of pal) { q -= p[1]; if (q <= 0) return p[0]; } return pal[0][0]; };
+    const HOR = ahead ? 150 : 170;                 // the street's horizon in the strip: lights above it, their wet road below
+    for (let i = 0, N = ahead ? 70 : 120; i < N; i++) {
+      const big = r() < 0.12, px = r() * 1024;
+      const py = ahead ? HOR - 8 - Math.pow(r(), 1.6) * 70 : HOR - 6 - Math.pow(r(), 1.3) * 140;
+      const rr = big ? 14 + r() * 12 : 2.5 + Math.pow(r(), 2) * 9, col = pick(), a = big ? 0.12 + r() * 0.16 : 0.35 + r() * 0.5;
+      const refl = !big && r() < 0.7, len = 30 + r() * 60, w = Math.max(2, rr * 0.9), sy = HOR + 4 + (HOR - py) * 0.15;
+      const rj = [0, (r() - 0.5) * 3, (r() - 0.5) * 4];
+      for (const ox of [-1024, 0, 1024]) {
+        const gg = x.createRadialGradient(px + ox, py, 0, px + ox, py, rr);       // a lens's disc: flat, its rim a touch brighter
+        gg.addColorStop(0, `rgba(${col},${(a * 0.82).toFixed(3)})`); gg.addColorStop(0.78, `rgba(${col},${(a * 0.9).toFixed(3)})`);
+        gg.addColorStop(0.9, `rgba(${col},${a.toFixed(3)})`); gg.addColorStop(1, `rgba(${col},0)`);
+        x.fillStyle = gg; x.fillRect(px + ox - rr, py - rr, rr * 2, rr * 2);
+        /* its reflection in the wet road: three soft streaks under the horizon, broken as the water breaks it (CP6: one
+           hard-edged bar a light read as a row of posts) */
+        if (refl) for (let k = 0; k < 3; k++) {
+          const cy = sy + len * (0.18 + k * 0.3), hl = len * 0.16, ww = w * (1 - k * 0.18);
+          x.save(); x.translate(px + ox + rj[k], cy); x.scale(1, hl / ww);
+          const gr = x.createRadialGradient(0, 0, 0, 0, 0, ww);
+          gr.addColorStop(0, `rgba(${col},${(a * 0.3 * (1 - k * 0.28)).toFixed(3)})`); gr.addColorStop(1, `rgba(${col},0)`);
+          x.fillStyle = gr; x.fillRect(-ww, -ww, ww * 2, ww * 2); x.restore();
+        }
+      }
+    }
+    return done(THREE, c, true);
+  }
+  /* the uncle's phone in its holder: a navigation map at night — dark blocks, grey roads, the blue route, his arrow */
+  function makeNavMap(THREE, cnv) {
+    const [c, x] = sized(cnv, 128, 248), r = rng(5101);
+    x.fillStyle = '#1a1d24'; x.fillRect(0, 0, 128, 248);
+    x.fillStyle = '#21252e'; for (let i = 0; i < 14; i++) x.fillRect(r() * 128, r() * 248, 14 + r() * 30, 10 + r() * 26);
+    x.strokeStyle = '#3c424e'; x.lineCap = 'round';
+    for (let i = 0; i < 9; i++) {
+      x.lineWidth = 2 + r() * 3; x.beginPath(); const vert = r() < 0.5, p0 = r() * (vert ? 128 : 248), sk = (r() - 0.5) * 40;
+      if (vert) { x.moveTo(p0, 0); x.lineTo(p0 + sk, 248); } else { x.moveTo(0, p0); x.lineTo(128, p0 + sk); }
+      x.stroke();
+    }
+    x.strokeStyle = '#2f8cff'; x.lineWidth = 6; x.lineJoin = 'round'; x.beginPath(); x.moveTo(64, 248); x.lineTo(64, 150); x.lineTo(96, 118); x.lineTo(96, 40); x.lineTo(70, 10); x.stroke();
+    x.fillStyle = '#ffffff'; x.beginPath(); x.moveTo(64, 176); x.lineTo(54, 198); x.lineTo(64, 192); x.lineTo(74, 198); x.closePath(); x.fill();
+    x.fillStyle = '#0e1016'; x.fillRect(0, 0, 128, 34); x.fillStyle = '#e8ecf2'; x.font = 'bold 15px Arial, sans-serif'; x.textBaseline = 'alphabetic'; x.fillText('300 m', 10, 23);
+    return done(THREE, c, false);
+  }
+  /* the taxi's meter: a red LED readout in its little black box */
+  function makeMeter(THREE, cnv) {
+    const [c, x] = sized(cnv, 128, 48);
+    x.fillStyle = '#0a0a0c'; x.fillRect(0, 0, 128, 48);
+    x.fillStyle = '#ff3a2a'; x.font = 'bold 26px "Courier New", monospace'; x.textAlign = 'right'; x.textBaseline = 'middle'; x.fillText('18.60', 118, 26);
+    x.fillStyle = 'rgba(255,58,42,0.6)'; x.font = '12px Arial, sans-serif'; x.textAlign = 'left'; x.fillText('S$', 8, 26);
+    return done(THREE, c, false);
+  }
+  /* a jasmine garland's string (phuang malai): white buds, a red rose at the knot, ribbons */
+  function makeGarland(THREE, cnv) {
+    const [c, x] = sized(cnv, 64, 256), r = rng(4819);
+    x.clearRect(0, 0, 64, 256);
+    for (let y = 8; y < 150; y += 7) for (let k = 0; k < 3; k++) { x.fillStyle = `rgb(${236 + r() * 18 | 0},${236 + r() * 16 | 0},${214 + r() * 20 | 0})`; x.beginPath(); x.ellipse(24 + k * 8 + (r() - 0.5) * 3, y + r() * 3, 3.6, 4.4, 0, 0, Math.PI * 2); x.fill(); }
+    x.fillStyle = '#b0141c'; x.beginPath(); x.arc(32, 162, 13, 0, Math.PI * 2); x.fill(); x.fillStyle = '#e8b030'; x.beginPath(); x.arc(32, 162, 5, 0, Math.PI * 2); x.fill();
+    for (const [x0, col] of [[24, '#e83a8a'], [36, '#f0c040']]) { x.fillStyle = col; x.fillRect(x0, 176, 5, 76); }
+    return done(THREE, c, false);
+  }
+  /* a Thai number plate: black on white, the number over the province (generic numbers) */
+  function makePlate(THREE, cnv, num, prov) {
+    const [c, x] = sized(cnv, 256, 84);
+    x.fillStyle = '#f6f6f2'; x.fillRect(0, 0, 256, 84); x.strokeStyle = '#1a1a1a'; x.lineWidth = 4; x.strokeRect(3, 3, 250, 78);
+    x.fillStyle = '#141414'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.font = `bold 40px ${THAI_FONT}`; x.fillText(num, 128, 32); x.font = `22px ${THAI_FONT}`; x.fillText(prov, 128, 66);
     return done(THREE, c, false);
   }
 
