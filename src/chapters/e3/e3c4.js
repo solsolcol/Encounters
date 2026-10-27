@@ -1887,12 +1887,15 @@
         // light that rises from the water
         for (let i = 0; i < 18; i++) { const pm = new THREE.SpriteMaterial({ map: tPetal, color: [0xffffff, 0xe8e0a0, 0xc8d890][i % 3], transparent: true, opacity: 0, depthWrite: false }); mats.push(pm);
           const s = new THREE.Sprite(pm); s.visible = false; G.add(s); mLive.petals.push({ s, i }); }
-        const mm = new THREE.SpriteMaterial({ map: tGlow, color: 0xfff6e0, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }); mats.push(mm);
-        mLive.mote = new THREE.Sprite(mm); mLive.mote.visible = false; G.add(mLive.mote);
-        const hm = new THREE.SpriteMaterial({ map: tGlow, color: 0xffd8a0, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }); mats.push(hm);
-        mLive.moteHalo = new THREE.Sprite(hm); mLive.moteHalo.visible = false; G.add(mLive.moteHalo);
-        for (let i = 0; i < 14; i++) { const tm = new THREE.SpriteMaterial({ map: tGlow, color: 0xfff0d0, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }); mats.push(tm);
-          const s = new THREE.Sprite(tm); s.visible = false; G.add(s); mLive.trail.push({ s, i }); }
+        /* (v23.1, Chad: "have the glowing orb effects be slightly more prominent as it flies up into the tree and sky" —
+           by photograph the bodhi's canopy hid the light from two seconds into its climb, at v22.3 as after it; it is
+           drawn through the leaves now, a glow seen among them, and its trail with it) */
+        const mm = new THREE.SpriteMaterial({ map: tGlow, color: 0xfff6e0, transparent: true, opacity: 0, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, fog: false }); mats.push(mm);
+        mLive.mote = new THREE.Sprite(mm); mLive.mote.visible = false; mLive.mote.renderOrder = 10; G.add(mLive.mote);
+        const hm = new THREE.SpriteMaterial({ map: tGlow, color: 0xffd8a0, transparent: true, opacity: 0, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, fog: false }); mats.push(hm);
+        mLive.moteHalo = new THREE.Sprite(hm); mLive.moteHalo.visible = false; mLive.moteHalo.renderOrder = 10; G.add(mLive.moteHalo);
+        for (let i = 0; i < 14; i++) { const tm = new THREE.SpriteMaterial({ map: tGlow, color: 0xfff0d0, transparent: true, opacity: 0, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, fog: false }); mats.push(tm);
+          const s = new THREE.Sprite(tm); s.visible = false; s.renderOrder = 10; G.add(s); mLive.trail.push({ s, i }); }
       }
       // lamps along the path (warm, just lit: painted), a spirit house, potted plants and the kit's pieces
       for (const [x, z] of [[-2.6, 8], [2.6, 8], [-2.6, 14], [2.6, 14], [-2.6, 20], [2.6, 20]]) {
