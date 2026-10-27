@@ -7403,7 +7403,10 @@
     // was photographed too and reads as someone standing inside the shop, which the turn to the street would contradict)
     /* (v23.1, Chad: "when a guy model appears in the window reflection, change that to the female ghost model instead" —
        CHAD'S ghost, World Y's own scan, still, under the same reflection's treatment) */
-    const eShade = mkPerson('yinghost', { parent: worldT, x: REFL.x + 0.42, z: REFL.z - 1.95, ry: 0, height: 1.6, still: true, hidden: true,
+    /* (v23.1, photographed on a phone: she is narrower than the man was, and at + 0.42 the window's middle bar, 1.05 m
+       from his eyes at + 0.2, split her down the shoulder; at + 0.6 she stands whole in the right-hand pane — her edges
+       about 8° and 16° off his line, a phone's half-frame 18.6°) */
+    const eShade = mkPerson('yinghost', { parent: worldT, x: REFL.x + 0.6, z: REFL.z - 1.95, ry: 0, height: 1.6, still: true, hidden: true,
       then: (P) => { P.model.traverse(m => { if (!m.isMesh) return; m.material = m.material.clone(); m.material.color.setHex(0x6e7484);
                                                  if (m.material.emissive) m.material.emissive.setHex(0x2a2d36); mats.push(m.material); m.castShadow = false; }); } });
 
