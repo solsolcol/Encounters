@@ -394,9 +394,9 @@ Object.assign(window.__TEXT__, {
   'ep3.label':           'Episode 3',
   'ep3.title':           'How It All Began',                 // v16.0: Chad's title — Season 1 · 6–10 condensed
   'ep4.label':           'Episode 4',
-  'ep4.title':           'The Love Spell That Followed Me Home',
+  'ep4.title':           'Not Every Master Should Be Trusted',   // v23.2: Chad — the casebook's order: S1·11 follows S1·10
   'ep5.label':           'Episode 5',
-  'ep5.title':           'Not Every Master Should Be Trusted',
+  'ep5.title':           'The Love Spell That Followed Me Home', // (S1·16; Episode 4 at v6.0)
   'ep6.label':           'Episode 6',
   'ep6.title':           'The Ghost Clinging To Her Back',
   'ep7.label':           'Episode 7',

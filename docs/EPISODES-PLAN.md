@@ -32,6 +32,10 @@ sheet, not in code):
 | 9 | The Corner The Dog Wouldn't Go Near |
 | 10 | The Mirror That Wouldn't Stop Banging |
 
+(v23.2, Chad: the episodes follow the encounters casebook. Episodes 2 and 3 already did — The 3 AM Shower & The
+Ghost Cyclist, S1·04–05; How It All Began, S1·06–10 — and Episode 4 is S1·11, Not Every Master Should Be
+Trusted; the Love Spell, S1·16, is Episode 5. The names live in the sheet, `ep4.title`…`ep10.title`.)
+
 Episode 1's title is what chapter 1's card has carried since v2.1 — "The
 Hell Note / I Should Never Have Taken" — which says what an episode IS here:
 one case file from the site, told in five chapters. The other nine are case
