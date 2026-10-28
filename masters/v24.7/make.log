@@ -1,0 +1,17 @@
+  keep 0.000 -> 2.855  (end in a -47.7 dB pause)
+  keep 9.075 -> 15.600  (start in a -40.8 dB pause)
+proc/ow5wrong_cut.wav: 9.34 s (from 15.60)
+  keep 3.155 -> 20.160  (start in a -39.7 dB pause)
+proc/ow5promise_cut.wav: 17.01 s (from 20.16)
+wc_ow5wrong.wav: RMS -16.01 dBFS peak -1.50 dBFS 9.34s
+ow5wrong <- proc/ow5wrong_cut.wav  (cast, RMS -16)
+wc_ow5promise.wav: RMS -16.02 dBFS peak -1.50 dBFS 17.01s
+ow5promise <- proc/ow5promise_cut.wav  (cast, RMS -16)
+z5Clotto <- h_z5Clotto.wav  mp3 -6.98  ogg -6.59  (want -6.85 / -6.6)
+z5C7 <- h_z5C7.wav  mp3 -7.09  ogg -6.54  (want -6.85 / -6.6)
+wc_mk5metta.wav: RMS -16.02 dBFS peak -1.50 dBFS 17.76s
+mk5metta <- voices/raw/mk5metta_b.mp3  (cast, RMS -16)
+k5joy <- w_k5joy.wav  mp3 -7.33  ogg -7.98  (want -8 / -8)
+k5trickle <- w_k5trickle.wav  mp3 -10.08  ogg -10.05  (want -10 / -10)
+k5orbin <- w_k5orbin.wav  mp3 -9.18  ogg -8.00  (want -8 / -8)
+k5canopy <- w_k5canopy.wav  mp3 -9.43  ogg -9.61  (want -10 / -10)

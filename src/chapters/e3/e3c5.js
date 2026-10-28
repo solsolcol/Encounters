@@ -147,7 +147,15 @@
     bg: 0x7a8292, fog: [0x8a929e, 0.014],
     hemi: [0xd0d8e4, 0x3a3e46, 0.78], key: [0xc8d0dc, 0.6, 8, 3.0, 4], fill: [0xa8b4c8, 0.32],
     vmHemi: [0xd0d8e4, 0x3a3e46, 0.8], vmKey: [0xc8d0dc, 0.6] });
-  const PRESETS = { NIGHT, DEEP, DUSK, DAWN, MORNING, AFTERNOON, HARSH, RED, AMBER, BLUE, SURFACE, SHOP_EVE, TEMPLE_NIGHT, TEMPLE_DAWN, DRAINED };
+  /* (v24.7) ending D's morning under the oak (its own place now, not chapter 4's hall): the sun up a little higher than the
+     temple's first light and clear, the fog the mist's own pale grey and a shade thicker, so the grove behind the monk
+     stands back in it (only colours and amounts — the light count the same, so no program is built on screen, v15.1) */
+  const TEMPLE_MORN = room({
+    stops: [[0.00, '#c8d4e0'], [0.12, '#b8c6d6'], [0.35, '#9cb0c8'], [0.65, '#7c92b0'], [1.00, '#5a7096']],
+    bg: 0xb4bcc4, fog: [0xc6cac8, 0.011],
+    hemi: [0xfff2e2, 0x56523e, 0.92], key: [0xffe4ba, 1.0, 8, 4.5, 3.6], fill: [0xc0d0ec, 0.30],
+    vmHemi: [0xfff2e2, 0x56523e, 0.92], vmKey: [0xffe4ba, 0.9] });
+  const PRESETS = { NIGHT, DEEP, DUSK, DAWN, MORNING, AFTERNOON, HARSH, RED, AMBER, BLUE, SURFACE, SHOP_EVE, TEMPLE_NIGHT, TEMPLE_DAWN, TEMPLE_MORN, DRAINED };
 
   const DATA = {
     id: 5,
@@ -232,15 +240,16 @@
       interactTouch: 'Tap to choose what you do',
       actLine: 'Press E to choose what you do',
       actLineTouch: 'Tap to choose what you do',
-      // ENDING D's verse, as the water is poured (chapter 4's captions, the same take)
-      yatha1: 'Yathā vārivahā pūrā',
-      yatha1en: 'Just as rivers full of water',
-      yatha2: 'Paripūrenti sāgaraṁ,',
-      yatha2en: 'fill the ocean full,',
-      yatha3: 'Evam-eva ito dinnaṁ',
-      yatha3en: 'even so does that here given',
-      yatha4: 'Petānaṁ upakappati.',
-      yatha4en: 'benefit those who have passed on.',          // (peta: the departed — chapter 4 glosses it "the hungry ghosts", which under these three would call them the very thing §2.6 clears)
+      /* ENDING D's verse, as the water is poured (v24.7: the Karaṇīya Mettā Sutta's — for beings seen and unseen, near and
+         far, born and seeking birth, which is what the three are; Thanissaro Bhikkhu's words, A Chanting Guide) */
+      metta1: 'Diṭṭhā vā ye ca adiṭṭhā,',
+      metta1en: 'Seen & unseen,',
+      metta2: 'Ye ca dūre vasanti avidūre,',
+      metta2en: 'living near & far,',
+      metta3: 'Bhūtā vā sambhavesī vā,',
+      metta3en: 'born & seeking birth:',
+      metta4: 'Sabbe sattā bhavantu sukhitattā.',
+      metta4en: 'May all beings be happy at heart.',
       // THE COUNTER (rev 4)
       objLookBundle: 'Look at what he has brought out',
       objMeet: 'Meet each of them · {n}/3',
@@ -278,11 +287,13 @@
          unchanged once the water was poured, after an OBJECTIVE COMPLETE, and read as the water not having counted:
          Chad, "stuck at the water offering") */
       objWater: 'Give them their water',
-      objDrinks: 'Make their drinks · {n}/3',
+      /* (v24.7, Chad: "it is not very clear that the player must turn his back to face the computer table" — the two orders
+         done at the desk name it, and a waypoint stands on the thing there: deskMark) */
+      objDrinks: 'Make their drinks at the desk · {n}/3',
       objGiveRed: 'Give it to the red one',
       objGiveShy: 'Give it to the shy one',
       objGiveLittle: 'Give it to the little one',
-      objIncense: 'Light their incense',
+      objIncense: 'Light their incense at the desk',
       objSticks: 'Give each one his stick · {n}/3',          // (v24.2, L6-5: "stick", as the badge, his line and the card say)
       hotJug: 'Their water',
       hotDrinks: 'Their drinks',
@@ -296,9 +307,6 @@
       craftStraw: 'Slide the straw in',
       craftBend: 'Bend the straw to him',
       craftWater: 'Hold to pour their water',
-      craftLight: 'Strike the lighter',
-      craftCatch: 'Hold the tips in the flame',
-      craftWave: 'Wave the flames out',
       craftWind: 'Wind the box',
       titleBox: 'The music box',
       noteCare: 'You prepared their drinks with care.',
@@ -311,17 +319,9 @@
       briefYield: 'Press and hold. Let your mind loosen.',
       briefYieldKey: 'Hold the mouse button, E or Space. Let your mind loosen.',
       craftStamp: 'Stamp!',
-      titleStamp: 'Stamp with him',
-      craftPeek: 'Peek through your fingers',
-      titlePeek: 'Peek-a-boo',
-      objComeBack: 'Come back',
-      /* (v24.2, L6-7: the panel's title already says COME BACK; and a held key climbs once, so W or ↑ is struck again
-         and again) */
-      briefSurface: 'Drag your finger up to rise toward the light. He doesn\'t want you to go. Keep rising.',
-      briefSurfaceKey: 'Hold the mouse button and drag up, or tap W or ↑ again and again, to rise toward the light. He doesn\'t want you to go. Keep rising.',
-      noteCameBack: 'You came back on your own.',
-      noteHard: 'It took everything to come back.',
-      noteLight: 'The light had to come down for you.'     // (v24.2, L6-10: the give-up path — he did not climb back himself)
+      titleStamp: 'Stamp with him'
+      /* (v24.7: the incense's three steps, PEEK-A-BOO's and COME BACK's words went with their minigames — Chad: "no need to
+         have that minigame", three times; the lighting, the peek and the climb play by themselves) */
     },
     sayPrefix: 'z5'
   };
@@ -333,7 +333,8 @@
     /* the opening film, the counter, the home film */ 'z5pro1': 5.33, 'z5yinq': 11.31, 'z5children': 3.08, 'z5promise': 2.51,
       'z5pro2': 4.68, 'z5pro3': 8.83, 'z5pro4': 6.77,
       'ow5hello': 5.15, 'ow5yin': 17.63, 'ow5monk': 22.6, 'ow5red': 7.39, 'ow5shy': 9.72, 'ow5little': 7.24, 'ow5give': 13.17,
-      'ow5never': 10.76, 'ow5wrong': 15.65, 'ow5promise': 20.19, 'ow5careful': 3.71,
+      'ow5never': 10.76, 'ow5wrong': 9.38, 'ow5promise': 17.03,   // (v24.7: the two cut — masters/v24.7/cut.py)
+      'ow5careful': 3.71,
     /* the offerings */ 'z5water': 3.0, 'z5bag': 6.43, 'z5red': 3.08, 'z5shy': 2.19, 'z5little': 2.12, 'z5stiff': 3.24, 'z5incense': 1.07,
       'z5eat': 4.13, 'z5dedic': 8.2,
     /* the question and the openings */ 'z5wonder': 5.38, 'z5ask': 6.19, 'z5loose': 3.0,
@@ -343,8 +344,8 @@
       'z5gasp': 5.07, 'z5time': 3.4, 'z5felt': 8.99, 'z5fasc': 4.13,
     /* A */ 'z5A1': 4.99, 'z5A2': 3.32, 'z5A3': 1.8, 'z5Agig': 2.35, 'z5A4': 2.27, 'z5A5': 4.75, 'z5A6': 5.33, 'ma5vm': 5.51,
     /* B */ 'z5B1': 3.79, 'z5B2': 5.33, 'z5B3': 3.47, 'z5B4': 7.0, 'z5B5': 4.75, 'z5B6': 7.24,
-    /* C */ 'z5C1': 3.47, 'z5C2': 3.97, 'z5C3': 9.25, 'z5C4': 8.75, 'z5Cevil': 3.63, 'z5Claugh': 3.87, 'z5C5': 4.05, 'z5C6': 4.68, 'z5C7': 5.41,
-    /* D */ 'z5D1': 4.05, 'z5D2': 4.52, 'z5D3': 4.36, 'z5D4': 12.75, 'z5D5': 9.56, 'z5D6': 7.24, 'mk5teach': 10.37, 'mk5yatha': 12.12,
+    /* C */ 'z5C1': 3.47, 'z5C2': 3.97, 'z5C3': 9.25, 'z5C4': 8.75, 'z5Clotto': 6.48, 'z5Claugh': 3.87, 'z5C5': 4.05, 'z5C6': 4.68, 'z5C7': 6.27,
+    /* D */ 'z5D1': 4.05, 'z5D2': 4.52, 'z5D3': 4.36, 'z5D4': 12.75, 'z5D5': 9.56, 'z5D6': 7.24, 'mk5teach': 10.37, 'mk5metta': 17.79,
     /* the epilogue */ 'z5epi0': 12.2, 'z5epi1': 8.15, 'z5epi2': 2.27, 'z5epi3': 3.87,
     /* the cards */ 'z5A': 5.41, 'z5B': 5.49, 'z5C': 4.16, 'z5D': 3.79
   };
@@ -363,29 +364,41 @@
      climb can surface him (lead 0.4 + hold 0.4 s); MFT: the owner's telling (22.6 s) runs over the temple
      to its end; KFT: the card's three asks, each after the one before (10.7, 15.7, 20.2 s) */
   const LFT = { bells: 0, rise: 1.5, go: 3.5, into: 6.0, l1: 9.0, city: 13.0, l2: 16.0, tears: 21.0, tick: 27.0, out: 29.0,
-                come: 40.2, surf: 0, end: 0 };                 // (surf and end follow COME BACK's own length: the film waits on it)
+                come: 40.2, climb: 6.6, pull1: 1.5, pull2: 3.4, surf: 46.8, end: 52.6 };   // (v24.7: COME BACK plays — climb, its two pulls; the surfacing after it)
   const MFT = { b1: 2.5, m2: 3.2, m3: 12.8, b2: 21.8, end: 24.8 };
-  const KFT = { k2: 1.5, k3: 13.6, end: 62.6 };
+  /* (v24.7, Chad: "the shop owner talks way too long. And the camera is just staying fixed on the shop owner throughout the
+     whole talking" — his three asks are 37.2 s now, from 46.6, two sentences cut at their own pauses; and K3 is TEN shots
+     cut on his words: s2 the three slid along at their own height, s3 his face nearer, s4 the red one close, s5 the little
+     one close, s6 over their heads to him, s7 an arc from the music box round the three, s8 his face from his side, s9 the
+     shy one close, s10 his face square to the lens for "Can or not?") */
+  const KFT = { k2: 1.5, k3: 13.6, s2: 17.9, s3: 21.1, s4: 25.1, s5: 28.5, s6: 31.9, s7: 34.8, s8: 42.5, s9: 48.2, s10: 50.3, end: 53.0 };
 
   /* THE ENDINGS' CLOCKS (CP8, §4.8–§4.9): plain numbers at the top level, so a scene, its controller and chaptertest's
      recording stand-in all read the same times (CP7's law: a stand-in stage answers zero). Each ending's shots, then the
      epilogue at `epi` (the same 30 s in every ending, its own times in EPI); `end` is where the card lies over its black.
-     DT is ending D's temple (chapter 4's merit film's shots, on D's clock) */
-  const EPI = { len: 32, fade0: 12.8, fade1: 13.8 };   // (CP12: the measured lines — 30 s, 11.0, 12.0 on the estimates)
+     DT is ending D's morning at the temple (its own place under the oak since v24.7, on D's clock) */
+  /* (v24.7, Chad, of endings A and B: "the ending part is a very long black screen, at least show something rather than such
+     a long black screen" — the epilogue went to black at 12.8 s and his last three lines were said over 18 s of it. It
+     holds pictures now: `down` the first shot's slow look down onto the three, e2 the lens drawn back across his shop to its
+     door, e3 outside his glass, e4 back down the closed mall with his light the last one lit; the black only at fade0) */
+  const EPI = { len: 32, down: 12.8, e2: 13.4, e3: 22.9, e4: 26.3, fade0: 30.9, fade1: 31.8 };
   const END = {
     A: { a1: 3.5, a2: 6.0, a2b: 8.6, a3: 13.0, a4: 17.0, vm: 19.5, dark: 25.5, a5: 29.0, gig: 33.0, turn: 34.0,
          a6: 40.0, a6b: 42.5, a6c: 45.0, a6d: 47.5, a7: 50.0, fade: 57.0, epi: 58.5 },
     B: { b1: 4.0, b2: 6.5, b3: 15.0, b4: 17.0, b5: 19.0, b6: 23.0, b7: 28.0, b8: 31.5, b9: 35.0, b10: 47.0, b11: 50.5,
          b12: 56.5, fade: 63.0, epi: 64.5 },
-    C: { c1: 4.0, c2: 9.0, c2b: 11.7, c2c: 14.4, c3: 17.0, c4: 22.0, c5: 29.0, c6: 32.5, c7: 37.0, c8: 40.0, c9: 44.5,
-         c10: 49.0, c11: 54.0, fade: 63.5, epi: 65.0 },
-    D: { d1: 5.0, d1b: 7.5, d2: 13.0, d2b: 15.5, d2c: 17.0, d3: 19.0, d4: 22.0, d5: 28.0, court: 32.0, home: 85.5,
-         years: 89.5, y2: 92.0, y3: 92.9, y4: 95.4, y5: 96.3, y6: 98.6, env: 100.5, envBox: 104.8, last: 106.5, fade: 107.6, epi: 109.0 }
-  };
+    C: { c1: 4.0, c2: 9.0, c2b: 11.7, c2c: 14.4, c3: 17.0, c4: 22.0, c5: 29.0, c6: 32.5, c7: 40.3, c8: 43.3, c9: 47.8,
+         c10: 52.3, c11: 57.3, fade: 67.6, epi: 69.1 },   // (v24.7: from c7 on +3.3 s — his new wish is 6.5 s, the one it replaced 3.6)
+    D: { d1: 5.0, d1b: 7.5, d2: 13.0, d2b: 15.5, d2c: 17.0, d3: 19.0, d4: 22.0, d5: 28.0, court: 32.0, home: 94.5, morn: 100.0,
+         years: 104.0, y2: 106.5, y3: 107.4, y4: 109.9, y5: 110.8, y6: 113.1, env: 115.0, envBox: 119.3, last: 121.0, fade: 122.1, epi: 123.5 }
+  };   // (v24.7: D's morning is under the oak now — the Mettā verse 17.8 s against the Yathā's 12.1, the lights into the crown, and
+       //  `morn`, the three lights coming in at his window, before the years — so from `home` on +9.0 s, and from the years +14.5)
   for (const k in END) END[k].end = END[k].epi + EPI.len;
-  const DT = { court: 32.0, bell: 33.1, door: 35.6, kneel: 40.0, teach: 53.4, pour0: 65.3, pour1: 75.9, earth: 77.5,
-               earth0: 78.1, earth1: 80.5, lights: 80.9, home: 85.5 };   // (CP8: the lights' climb 2.1 s → 4.6 s, the music's time to swell;
-                                                                         //  CP12: from the teaching on +9.5 s — his dedication is 12.8 s, the monk's 10.4)
+  /* (v24.7) ending D's morning, under the oak: `walk` across the grass to his mat, `kneel`, the monk's teaching, the pour
+     (pour0–pour1) and the verse's last lines (`wide`, round the roots), the water given to the earth (earth0–earth1),
+     the three lights into the crown and out of it, and `home` */
+  const DT = { court: 32.0, bell: 33.1, walk: 35.6, kneel: 40.0, teach: 53.4, pour0: 65.3, pour1: 73.8, wide: 73.8, earth: 82.8,
+               earth0: 83.4, earth1: 85.6, lights: 86.0, home: 94.5 };
 
   /* THE OPENING FILM's clock (CP9, §4.0a): black and the mall's hush; O1, his eyes down the corridor at closing time; O2,
      the owner through his glass; the door's bell; black, and the chapter card over it */
@@ -492,7 +505,7 @@
        sets down on the glass (`sets`), the three on their cloth, the box, the card, the pen and the bag; the lens leaning
        over the glass to the little one (`lean`); the owner's look into a film's lens (`ownerLook`) */
     const cntLive = { sets: [], kidSet: [null, null, null], bundleSet: null, clothSet: null, boxSet: null, cardSet: null, penSet: null,
-                      bagSet: null, box: null, bag: null, bagHeld: null, lean: null, owner: null, ownerLook: 0, opened: false,
+                      bagSet: null, box: null, bag: null, lean: null, owner: null, ownerLook: 0, lookPt: null, opened: false,
                       helloOn: false, lull: false, boxOpen: 0, boxOpenTo: 0, windT: 0, view: null, boxSrc: null };   // (v24.5: boxSrc, the box's own loop)
 
     const world = new THREE.Group();
@@ -2457,8 +2470,6 @@
           g.add(new THREE.Mesh(new THREE.TubeGeometry(c, 18, 0.0045, 6, false), mH));
         }
         cntLive.bag = g; cntLive.bagSet = mkSet(g);
-        cntLive.bagHeld = g.clone();                              // the same bag in his hand (the geometry and materials shared)
-        cntLive.bagHeld.position.set(0, 0, 0); cntLive.bagHeld.scale.setScalar(1); cntLive.bagHeld.visible = true;
       }
     }
     buildCounter();
@@ -2664,8 +2675,10 @@
         pourStop(0.35);
         queueGap(0.4); queueLine('z5water');
         /* (CP13, the save lens: every PLAY I receipt is WRITTEN after its line — written before, a Continue in the
-           line's seconds restored the act done and the line never said) */
-        queueFn(() => { careSave(); careBusy = false; objectiveFor('care'); });
+           line's seconds restored the act done and the line never said.
+           v24.7: and his look turns to the desk behind him, where the drinks' bag waits, before the order comes — every
+           drink after the first already did; the first left him facing the altar with the order's thing out of sight) */
+        queueFn(() => { careSave(); lookToDesk(1.1); after(1.15, () => { careBusy = false; objectiveFor('care'); }); });
         void r;
       });
       return true;
@@ -2711,7 +2724,7 @@
       const i = nextKid(); if (i < 0) return false;
       /* (v24.2, L6-1: the drink is GIVEN at its place, which is where its OBJECTIVE COMPLETE lands — the bag's press posted
          one more, before any drink was made) */
-      careBusy = true; kit.objective(null, { complete: false });
+      careBusy = true; kit.objective(null, { complete: false }); deskMark();
       sitAtDesk(false);
       if (!careLive.bagSaid) { careLive.bagSaid = true; queueGap(0.6); queueLine('z5bag'); }
       queueGap(0.3);
@@ -2799,8 +2812,7 @@
         careSave();                                   // (the drink's receipt and the award's, together, after his line — CP13)
         /* and his look goes back to the desk, where the next drink (or, after the third, the incense) waits — by photograph:
            standing up 0.4 m from the altar, the little one's head filled a phone's frame and the next order was behind him */
-        const dx = DESK_AT.bag[0] - yaw.position.x, dz = DESK_AT.bag[1] - yaw.position.z;
-        viewTo(Math.atan2(-dx, -dz), Math.atan2(DESK.top + 0.1 - 1.62, Math.hypot(dx, dz)), 1.1);
+        lookToDesk(1.1);
         after(1.15, () => { careBusy = false; objectiveFor('care'); });
       });
       return true;
@@ -2828,37 +2840,28 @@
        lights it, a warm glow on his hands — the three sticks' tips held in the flame till they catch, and waved out: three
        embers, three threads of smoke */
     function atDeskIncense() {
-      if (careStep() !== 'light' || !careOk() || !kit || !kit.event) return false;
-      careBusy = true; kit.objective(null);
+      if (careStep() !== 'light' || !careOk() || !kit) return false;
+      careBusy = true; kit.objective(null); deskMark();
       sitAtDesk(false);
       const Lg = careLive.lighter, St = careLive.sticks;
       careLive.catchK = 0; deskIncense('stage');
       /* his look onto the packet's mouth and the lighter, at the flame's height (the bottle's own move) */
       { const tx = PKT_O.x + 0.07, ty = DESK.top + 0.09, tz = PKT_O.z;
         viewTo(Math.atan2(-(tx - CHAIR.x), -(tz - CHAIR.z)), Math.atan2(ty - DESK_EYE, Math.hypot(tx - CHAIR.x, tz - CHAIR.z)), 0.6); }
-      let taps = 0;
-      kit.event({ kind: 'craft', label: W.objIncense,
-        steps: [{ g: 'tap', n: 2, word: W.craftLight }, { g: 'hold', secs: 1.4, word: W.craftCatch }, { g: 'swipe', dir: 'side', word: W.craftWave }],
-        at: () => worldAt(Lg.g, 0, 0.09, 0),
-        onProgress: (s, k) => {
-          if (s === 0) {
-            const t = Math.round(k * 2);
-            while (taps < t) { taps++; if (taps === 1) { sfxAt('k5spark', 0.4, CHAIR.x, CHAIR.z - 0.4); careLive.sparkT = 0.25; }
-                                       else { sfxAt('k5flick', 0.45, CHAIR.x, CHAIR.z - 0.4); Lg.flame.visible = true;
-                                              careLive.flameS = loopAt('k5flameloop', 0.21, CHAIR.x, CHAIR.z - 0.4); } }   // (v24.3: the flame he holds them in; v24.5, R1-4: as long as it burns)
-          } else if (s === 1) {
-            careLive.catchK = k;
-            St.tips.forEach((T, j) => { T.em.visible = k > 0.35 + j * 0.15; T.fl.visible = k > 0.55 + j * 0.12; });
-          }
-        },
-        onStep: (s) => {
-          if (s === 1) sfxAt('k5catch', 0.85, CHAIR.x, CHAIR.z - 0.4);
-          if (s === 2) { sfxAt('k5wave', 0.4, CHAIR.x, CHAIR.z - 0.4); sfxDown(careLive.flameS, 0.15); careLive.flameS = null; Lg.flame.visible = false; St.tips.forEach(T => { T.fl.visible = false; T.em.visible = true; }); }
-        },
-      }).then((r) => {
-        sfxDown(careLive.flameS, 0.15); careLive.flameS = null;     // (v24.5, R1-4: the flame's loop goes with it, however it ended)
-        if (!alive || (r && r.aborted)) return;
-        Lg.flame.visible = false; St.tips.forEach(T => { T.fl.visible = false; T.em.visible = true; });
+      /* (v24.7, Chad: "For the light the incense objective, no need to have that minigame of lighting the sticks, just
+         immediately make the incense sticks lit after clicking on the objective.") — the lighting PLAYS by itself, the
+         minigame's three steps in two seconds: the lighter struck and lit, the three tips leaned into its flame and
+         catching one after another, the flames waved out to three embers (incLightFrame, on the chapter's clock — a Retry
+         drops the rest with `todo`, and careReset brings the flame's loop down) */
+      careLive.incLight = { t0: dayClock.t };
+      after(0.05, () => sfxAt('k5spark', 0.4, CHAIR.x, CHAIR.z - 0.4));   // (the first strike only sparks, as the minigame's first tap did)
+      after(0.3, () => { sfxAt('k5flick', 0.45, CHAIR.x, CHAIR.z - 0.4); Lg.flame.visible = true;
+                         careLive.flameS = loopAt('k5flameloop', 0.21, CHAIR.x, CHAIR.z - 0.4); });   // (v24.3: the flame; v24.5, R1-4: as long as it burns)
+      after(1.05, () => sfxAt('k5catch', 0.85, CHAIR.x, CHAIR.z - 0.4));
+      after(1.95, () => { sfxAt('k5wave', 0.4, CHAIR.x, CHAIR.z - 0.4); sfxDown(careLive.flameS, 0.15); careLive.flameS = null;
+                          Lg.flame.visible = false; St.tips.forEach(T => { T.fl.visible = false; T.em.visible = true; }); });
+      after(2.35, () => {
+        careLive.incLight = null;
         careLive.catchK = 0; deskIncense('left');                    // (the packet and the lighter stay where they were used)
         kit.hold(St.g, { pos: STICKS_R.pos, rot: STICKS_R.rot, bare: true });   // (the sticks to his hand, to carry to them — the hand out of sight)
         careDone.add('lit');
@@ -2866,6 +2869,14 @@
         queueFn(() => { careSave(); standUp(); viewTo(altarYaw(ROW.mid, ALTAR_Z[1], STAND_UP), -0.42, 0.9); after(0.95, () => { careBusy = false; objectiveFor('care'); }); });
       });
       return true;
+    }
+    /* the lighting's frame (v24.7): the tips leaning into the flame from 0.45 s, held in it, back out as it is waved out; each
+       tip's ember and flame catching in its turn, as the minigame's hold showed them */
+    function incLightFrame() {
+      const L = careLive.incLight, St = careLive.sticks; if (!L || !St) return;
+      const u = dayClock.t - L.t0, k = smooth(cl01((u - 0.45) / 0.55)) * (1 - smooth(cl01((u - 1.95) / 0.35)));
+      careLive.catchK = k;
+      if (u < 1.95) St.tips.forEach((T, j) => { T.em.visible = k > 0.35 + j * 0.15; T.fl.visible = k > 0.55 + j * 0.12; });
     }
     /* THE INCENSE LIGHTS ITSELF (Chad, on the bottle: "if you know its impossible for you to get the fingers right, then
        dont do that animation, just have the bottle animate itself" — and the two hands holding the lighter and the sticks
@@ -3003,7 +3014,7 @@
                        bowT: 0, held: null, heldStraw: null, heldSleeve: null, lighter: null, sticks: null,
                        bottles: [], placed: [false, false, false], rings: [], glints: [], sticksSet: [], capsDesk: [], sleevesDesk: [],
                        deskBag: null, drinksBag: null, packet: null, pourS: null, pourAt: 0,
-                       cupN: 0, keyN: 0, flameS: null, lullW: 0 };   // (v24.3: the cups poured, the key's clicks, the flame's sound; the box's tune, v24.5)
+                       cupN: 0, keyN: 0, flameS: null, lullW: 0, incLight: null };   // (v24.3: the cups poured, the key's clicks, the flame's sound; the box's tune, v24.5; the lighting that plays, v24.7)
     /* where a drink is opened: on the desk before his chair, in front of the laptop (its base's front edge at z −1.315),
        straight ahead of him; the eye at the desk */
     const WORK = { x: -0.34, z: -1.265 }, DESK_EYE = 1.18;
@@ -3118,6 +3129,7 @@
       /* the mat sits him the moment he steps onto it (§4.2: "walking onto it sits him"), as a press on it does */
       if ((phase === 'sit' || phase === 'open3') && !seated && !careBusy && !openLive.busy && getState() === 'play'
           && Math.hypot(yaw.position.x - MAT.x, yaw.position.z - MAT.z) < 0.28) { if (phase === 'sit') sitWithThem(); else sitAgain(); }
+      if (careLive.incLight) incLightFrame();                 // (v24.7: the lighting plays — it moves catchK, which incenseFrame leans the sticks by)
       if (careLive.incDesk) incenseFrame();
       else if (careLive.carry >= 0 && careLive.held && careLive.held.g.parent && !careLive.grip) carryFrame(careLive.held.g, 0.06);
       else if (careDone.has('lit') && sticksN() < 3 && careLive.sticks && careLive.sticks.g.parent) carryFrame(careLive.sticks.g, 0.05);
@@ -3177,7 +3189,7 @@
       careDone.clear(); careBusy = false;
       Object.assign(careLive, { carry: -1, pour: 0, foamed: false, foamT: 0, briefed: false, bagSaid: false, seat: false, grip: '',
                                 capA: 0, slide: 0, bend: 0, capOff: false, sleeveOff: false, catchK: 0, sparkT: 0, boxOpen: 0, boxOpenTo: 0, bowT: 0,
-                                lighterOn: false, cupN: 0, keyN: 0, lullW: 0 });
+                                lighterOn: false, cupN: 0, keyN: 0, lullW: 0, incLight: null });   // (v24.7: incLight, the lighting that plays)
       sfxDown(careLive.flameS, 0.1); careLive.flameS = null;          // (v24.3: the lighter's flame, and the cups' and the key's counts)
       deskBottle(false); deskIncense(false);
       if (careLive.deskBag) careLive.deskBag.visible = false;        // (play's desk: tonight's bag of drinks, CP13)
@@ -3663,18 +3675,18 @@
     /* POSSESSION 2 · THE SHY ONE (§4.4, ~36 s): a game of hide-and-seek, never a scare. The amber double crouches out of
        its round base and SCURRIES low across the floor to hide behind him (the lens turns to follow, and it has hidden);
        contact from behind — the world warm amber and soft, the lens wider, and he drops to a crouch with his hands over
-       his eyes (the player's PEEK: drag the fingers apart and the room shows through the gap); he scuttles under his own
+       his eyes (PEEK-A-BOO: the fingers part, close and part again wider — since v24.7 by themselves); he scuttles under his own
        desk, finds a coin and holds it up to the lamp, and curls up there to wait to be found, and nobody comes; the double
        drifts back to its base like dust; BONK — his head on the desk's underside; he crawls out and sits by the desk, the
        coin in his hand, and his look goes to the shy one, and then to the little one, whose bells ring softly. */
-    const shyLive = { gap: 0, gapT: 0 };
+    const shyLive = { gap: 0, gapT: 0 };   // (v24.7: the gap is the film's own now — shyGapAt; these stay for the room's reset)
     const CROUCH_EYE = 0.55, UNDER_EYE = 0.35;
     const UNDER = { x: -0.42, z: -1.42 };                    // under his desk, by the drawer side, looking out at the room
     const BYDESK = { x: -0.05, z: -0.85 };                   // sitting on the floor by the desk after (landOn('desk'))
     const BYBED = { x: -0.42, z: 0.55, eye: 0.58 };          // on the floor against the bed's frame (landOn('bed'): the aftermath, the decision)
     const shyF = {
       T: SFT,
-      begin() { fLive.shot = 'shy'; fLive.lit = null; shyLive.gap = 0; shyLive.peeked = false; },   // (CP13: the peek's sound, once a film — it was once a session)
+      begin() { fLive.shot = 'shy'; fLive.lit = null; shyLive.gap = 0; },
       /* (v24.2, L5-6: the chair stays where the film pushed it — put back on end(), it stood round him where he sits by the
          desk, the back filling his look down at the coin; sitAgain and the resets put it home) */
       end() { fLive.shot = ''; lensTo(72); doublesOff(); look('NIGHT', 0.01); if (kit && kit.smear) kit.smear(0, { secs: 0.3 }); chairShoved(); },
@@ -3737,7 +3749,7 @@
            bottle: "if you know its impossible for you to get the fingers right, then dont do that animation") */
         if (api && api.handPose) api.handPose(null, 0);
         if (api && api.handsRoot) api.handsRoot.visible = false;
-        if (t >= SFT.peek0 && t < SFT.scuttle) peekSet(smooth(cl01((t - SFT.peek0) / 0.5)) * (1 - smooth(cl01((t - SFT.scuttle + 0.5) / 0.5))), shyLive.gap, t);
+        if (t >= SFT.peek0 && t < SFT.scuttle) peekSet(smooth(cl01((t - SFT.peek0) / 0.5)) * (1 - smooth(cl01((t - SFT.scuttle + 0.5) / 0.5))), shyGapAt(t), t);
         else if (t >= SFT.wait && t < SFT.leave) peekSet(smooth(cl01((t - SFT.wait) / 0.6)) * (1 - smooth(cl01((t - SFT.leave + 0.3) / 0.5))), 0.35, t);
         else peekSet(0);
         /* the coin: on the floor under the desk until he finds it, then up to the lamp, then in his hand by the desk */
@@ -3770,8 +3782,8 @@
        and does NOT come to him: it waits, hands joined, the way a child waits to be noticed. HE goes to IT, kneeling
        close until its face fills the view; a slow fade into the blue; the city's
        lit windows going out one by one, hours passing; the three sticks burning down fast; tears on the lens and a sob;
-       the little one's stick burns to its end and its ember dies; his own voice, far off; then COME BACK (S39, inside
-       the film): the screen sunk in deep blue water, the lamp a blurred light above, he a small pale light below with
+       the little one's stick burns to its end and its ember dies; his own voice, far off; then COME BACK (inside the film,
+       played by itself since v24.7): the screen sunk in deep blue water, the lamp a blurred light above, he a small pale light below with
        the little one's smaller blue light beside him, holding on — and SURFACING: sound and white-gold light, colour, the
        lamp blooming, and he falls back against the bed's frame, gasping. */
     /* (LFT is at the top level since CP12) */
@@ -3839,7 +3851,7 @@
     function redStampEnd() { if (kit && kit.eventActive && kit.eventActive()) kit.abortEvent(); }   // the march: what was stamped stands
     /* the peek drawn from inside (makePeekT): two planes on the CAMERA, a hand's breadth past the near plane, drawn over
        everything and unlit (no light state of the room makes a new program for them). `k` brings the hands in from the
-       sides to his face, `gap` parts them (the PEEK's drag, stage.shyGap); a breath of sway. Off (k 0) is not drawn */
+       sides to his face, `gap` parts them (since v24.7 the film's own, shyGapAt); a breath of sway. Off (k 0) is not drawn */
     const peek = (() => {
       const T = tex(makePeekT(THREE, cnv)), g = new THREE.Group(), gL = new THREE.PlaneGeometry(1, 1), gR = new THREE.PlaneGeometry(1, 1);
       { const uv = gR.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setX(i, 1 - uv.getX(i)); }
@@ -3947,7 +3959,7 @@
       for (const m of [lens.water, lens.caus, lens.lamp, lens.him, lens.kid, lens.ring, ...lens.bubs]) m.visible = false;
       if (on) lens.g.visible = true; else lensOff();
     }
-    function comeWaterFrame(lv) {                                    // every frame of COME BACK (the surface event's onLevel)
+    function comeWaterFrame(lv, puAt) {                              // every frame of COME BACK (comeClimb, v24.7)
       if (!lens.waterOn) return;
       const { d, h, w } = lensWH(), now = wallNow(), kin = smooth(cl01((now - lens.waterT0) / 0.6));
       lens.g.visible = true; lens.g.position.set(0, 0, -d);
@@ -3961,7 +3973,7 @@
       const held = Math.max(0, lv - 0.55) * 1.7;                      // beside him, holding on — and letting go as he rises
       const ky = hy - 0.12 * h - held * h, kx = 0.16 * w * (1 - 0.3 * Math.min(1, held));
       lensPut(lens.kid, kx, ky, 0.13 * h, 0.13 * h, 0.9 * kin * (1 - 0.5 * cl01(held)));
-      const pu = littleLive.pullT ? now - littleLive.pullT : 9;        // a ring when the bells ring
+      const pu = puAt !== undefined ? puAt : 9;                         // a ring when the bells ring (since the pull, on the film's clock)
       lensPut(lens.ring, kx, ky, (0.15 + 0.9 * pu) * h, (0.15 + 0.9 * pu) * h, 0.7 * (1 - cl01(pu / 0.9)) * kin);
       lens.bubs.forEach((m, i) => {
         const sp = 0.10 + 0.05 * (i % 4), yy = ((now * sp + (i * 0.618) % 1) % 1) * 2.4 * h - 1.2 * h;
@@ -3969,30 +3981,34 @@
                 0.6 * kin * (1 - cl01((yy + 0.2 * h) / h)));
       });
     }
-    function shyGap(k) { shyLive.gap = k; if (k > 0.3 && !shyLive.peeked) { shyLive.peeked = true; sfxAt('k5peek', 0.4, yaw.position.x, yaw.position.z); } }
-    function shyPeekEnd() { if (kit && kit.eventActive && kit.eventActive()) kit.abortEvent(); shyLive.gap = 0; }
-    /* COME BACK (§4.5, S39 inside the little one's film): the water, the light above, his light and the little one's
-       below; each pull the bells and a soft blue ring from below; a slip costs 4 sanity (floored, never a faint; the
-       Luang Phu Tim's and Gao Yord's cuts apply — evCut); inside 12 s "You came back on your own" (+4 awareness);
-       slower "It took everything to come back"; after 30 s the light comes down to him (gaveUp) */
-    function comeOpts() {
-      const first = !littleLive.briefed; littleLive.briefed = true;
-      return { kind: 'surface', label: W.objComeBack, brief: first ? (TOUCHY ? W.briefSurface : W.briefSurfaceKey) : undefined,
-               demo: 'surface', start: 0.18, lead: 0.4, sink: 0.07, pull: 0.16, pullGap0: 1.6, pullGap1: 2.4, floorK: 0.12,
-               slip: 4, minSanity: 10, goal: 0.92, hold: 0.4, full: 12, secs: 30,
-               onPull: () => { sfxAt('k5pull', 0.45, yaw.position.x, yaw.position.z); sfxAt('k5bells', 0.3, RISER.x, ALTAR_Z[2]); littleLive.pullT = wallNow(); },
-               onSlip: (n) => { littleLive.slipN = n; },
-               onLevel: (k) => { littleLive.lv = k; comeWaterFrame(k); },
-               /* (v24.3, L3-1: the climb's music starts on START — it had played out under the brief on a first play —
-                  as a loop whose level follows how far he has climbed, mixBeds; surfaceStart takes it down) */
-               onBegin: () => { littleLive.climbOn = true; } };
+    /* PEEK-A-BOO, PLAYED (v24.7, Chad: "For the peekaboo scene, also no need for a minigame for that one, just play out the
+       whole peekabo scene") — the fingers part by themselves: a peek, held; they close (hiding); and part again wider
+       with a giggle, until he scuttles. A function of the film's clock (a seek and a skip land on the same picture); its
+       sounds are the film's cues */
+    function shyGapAt(t) {
+      const a = SFT.peek, s = smooth;
+      return 0.6 * s(cl01((t - a) / 0.6)) * (1 - s(cl01((t - a - 1.25) / 0.3))) + s(cl01((t - a - 1.85) / 0.5));
     }
-    function comeBegin() { littleLive.lv = 0.18; littleLive.climbOn = false; look('SURFACE', 0.6); comeWaterOn(true); }
-    function comeDone(r) {
-      if (r && (r.skipped || r.aborted)) return;        // (CP13: a skipped film banks no note either way; v24.2, L2-1: nor an aborted one — its handler runs after the reset)
-      littleLive.cameBack = !!(r && r.ok && !r.gaveUp);
-      const fast = r && r.ok && !r.gaveUp && r.score >= 0.99;
-      if (kit && kit.conduct) kit.conduct(fast ? { a: 4, note: W.noteCameBack } : { note: r && r.gaveUp ? W.noteLight : W.noteHard });
+    /* COME BACK (§4.5, inside the little one's film): the water, the light above, his light and the little one's below;
+       each pull the bells and a soft blue ring from below.
+       (v24.7, Chad: "there is also no need for that minigame that drags the slider up" — it was S39's surface event, a
+       gauge climbed by a drag against the pulls; it PLAYS now: comeClimb is his level as a function of the film's clock —
+       up a little, held and taken down at each pull, then up to the light, the little one letting go as he rises. No
+       conduct note is banked for it any more: it is not the player's act) */
+    function comeBegin() { littleLive.lv = 0.18; littleLive.climbOn = true; look('SURFACE', 0.6); comeWaterOn(true); }
+    function comeLevel(u) {
+      const s = smooth, T = LFT;
+      const up = (a, b, from, to) => from + (to - from) * s(cl01((u - a) / (b - a)));
+      if (u < T.pull1) return up(0, T.pull1, 0.18, 0.38);
+      if (u < T.pull1 + 0.5) return up(T.pull1, T.pull1 + 0.5, 0.38, 0.27);           // held, and taken down
+      if (u < T.pull2) return up(T.pull1 + 0.5, T.pull2, 0.27, 0.56);
+      if (u < T.pull2 + 0.5) return up(T.pull2, T.pull2 + 0.5, 0.56, 0.47);
+      return up(T.pull2 + 0.5, T.climb, 0.47, 1.0);                                  // and up to the light
+    }
+    function comeClimb(u) {
+      littleLive.lv = comeLevel(u);
+      const pu = [LFT.pull1, LFT.pull2].reduce((m, p) => (u >= p ? u - p : m), 9);   // the ring, from the pull just rung
+      comeWaterFrame(littleLive.lv, pu);
     }
     function surfaceStart() { littleLive.climbOn = false; comeWaterOn(false); look('NIGHT', 0.8); if (kit && kit.flash) kit.flash({ color: '#fff2d6', secs: 1.4 }); }   // a rush of white-gold light
     /* the surfacing (5.6 s since CP12, his gasp inside it): a rush of white-gold light that fades as colour returns; he
@@ -4194,6 +4210,7 @@
           const filmLook = cntLive.ownerLook > 0 && P.wx > 100;            // film K: he looks straight at him
           if (P.look > 0 && (getState() === 'play' || filmLook)) {
             P.head.getWorldPosition(_hp); camera.getWorldPosition(_cp);
+            if (filmLook && cntLive.lookPt) _cp.copy(cntLive.lookPt);       // (v24.7: film K's side shots — at the player, not the lens)
             const dx = _cp.x - _hp.x, dz = _cp.z - _hp.z, dy = _cp.y - _hp.y;
             const a = Math.atan2(dx, dz) - P.group.rotation.y, yawTo = Math.atan2(Math.sin(a), Math.cos(a));
             if (Math.abs(yawTo) < 1.7 && Math.hypot(dx, dz) < (filmLook ? 12 : 7)) { ty = THREE.MathUtils.clamp(yawTo, -0.9, 0.9); tp = THREE.MathUtils.clamp(-Math.atan2(dy, Math.hypot(dx, dz)), -0.35, 0.3); }
@@ -4268,6 +4285,18 @@
     const MTREE = { x: 9.4, z: 6.2, r: 1.75, h: 0.42 };               // the bodhi on its plinth, east of the hall's front
     const MBELL = { x: -9.0, z: 4.6 };                                // the bell in its pavilion, west of the path
     const MALT = { z: -15.25, w: 3.6, d: 1.3 };                       // the Buddha's altar against the back wall
+    /* (v24.7) ENDING D'S MORNING, ITS OWN PLACE (Chad: "why did you completely copy the merit making scene again? If you
+       want to have the merit making scene, at least make it look different from the ep 3 chp 4 one ... Maybe a different
+       tree?") — not chapter 4's hall, dais, bell or bodhi on its plinth: the great old oak on the grass outside the
+       temple's west wall (the tree kit's oak, which chapter 4 never plants), a low teak platform in its shade where the
+       monk sits facing east, the mat he kneels on, and the roots the water is given to. Morning mist, a sky of its own.
+       All of it in World M's `garden` group, drawn only while ending D is there (gardenSet) */
+    const OAK = { x: -29.0, z: 3.0, h: 15.0, ry: 0.4 };               // (its height is the kit's own jitter on this seed: measured, not h)
+    const PLAT = { x: OAK.x + 3.75, z: OAK.z, w: 1.5, d: 2.1, top: 0.42 };   // the monk's platform; its length along z
+    const KN2 = { x: OAK.x + 6.0, z: OAK.z };                           // where he kneels on his mat, facing −x (the monk)
+    const GB = { x: KN2.x - 0.58, y: 0.012, z: KN2.z - 0.18 };          // the silver bowl on the mat, at his right hand
+    const ROOT = { x: OAK.x + 1.3, z: OAK.z + 1.2 };                    // the roots the water is given to (south-east of the trunk, among them:
+                                                                        //  by photograph, 3.2 m out it poured onto bare ground with no root in frame)
     /* (World M: its group is the chapter's own, at x −250 — declared with the other two worlds) */
     const mLive = { on: false, shot: '', dusk: 0, duskTo: 0, flames: [], smoke: [], motes: [], petals: [], drops: [], ripples: [],
                     stream: null, streamOut: null, water: null, wet: null, mote: null, trail: [], bell: null, envelope: null, envIn: null,
@@ -4293,7 +4322,7 @@
       const mGrass = M({ map: tGrass, roughness: 1, color: 0xa8b090 }); tGrass.repeat.set(8, 8);
       const mWinGlow = new THREE.MeshBasicMaterial({ map: tWin, fog: false }); mats.push(mWinGlow);   // (World M: its handle — at night the windows are dark)
       mLive.winGlow = mWinGlow;
-      const mSilver = M({ color: 0xd8dadc, roughness: 0.18, metalness: 0.9 });
+      const mSilver = M({ color: 0xd8dadc, roughness: 0.3, metalness: 0.55 });   // (v24.7, by photograph: at 0.9 metal with nothing to reflect it read black, v8.9's law)
       const mBrass = M({ color: 0xc89a48, roughness: 0.26, metalness: 0.85 });
       const mSaffron = M({ color: 0xc8701c, roughness: 0.85 });
       const mCarpet = M({ color: 0x8a1c14, roughness: 0.95 });
@@ -4302,7 +4331,7 @@
 
       /* ---- the sky: a dome of its own, the sun low behind the hall and a little to its west (makeMSky) */
       { const sky = new THREE.Mesh(new THREE.SphereGeometry(138, 48, 24), new THREE.MeshBasicMaterial({ map: tSky, side: THREE.BackSide, fog: false, depthWrite: false }));
-        mats.push(sky.material); sky.renderOrder = -5; sky.frustumCulled = false; G.add(sky); }
+        mats.push(sky.material); sky.renderOrder = -5; sky.frustumCulled = false; G.add(sky); mLive.sky = sky; }
 
       /* ---- the ground: the courtyard's slabs, grass beyond the walls, the path's kerbs */
       { const yard = new THREE.Mesh(new THREE.PlaneGeometry(30, 28), mSlab); yard.rotation.x = -Math.PI / 2; yard.position.set(0, 0, 8); yard.receiveShadow = true; G.add(yard);
@@ -4610,7 +4639,9 @@
       // trees: the bodhi itself (always — the film is built on its roots), and the city's trees beyond the wall
       if (plantTrees) {
         treeStands.push(plantTrees(G, [{ x: MTREE.x, y: MTREE.h - 0.02, z: MTREE.z, h: 12.5, always: true, kind: 0 }], { seed: 271, tint: 0xf0c8a0, shadow: false }));
-        treeStands.push(plantTrees(G, [[-13, 18], [13, 19], [-13.4, -4], [13.6, -6], [-20, 6], [20, 8], [-24, -14], [22, -20], [-6, 30], [8, 32], [-30, 24], [30, 26], [0, -30], [-16, -32], [16, -30]]
+        /* (v24.7: the fifth stood at [-20, 6], 2.4 m from ending D's walk to the oak — by photograph its trunk filled half a
+           desktop's frame) */
+        treeStands.push(plantTrees(G, [[-13, 18], [13, 19], [-13.4, -4], [13.6, -6], [-17.5, 11.5], [20, 8], [-24, -14], [22, -20], [-6, 30], [8, 32], [-30, 24], [30, 26], [0, -30], [-16, -32], [16, -30]]
           .map(([x, z], i) => ({ x, z, h: 7 + (i % 4) * 1.4 })), { seed: 277, tint: 0xd8b090, lowKeep: 0.6 }));
       }
       // the city beyond: HDB blocks round the temple, their windows coming on (chapter 3's estate recipe, the game's block)
@@ -4623,6 +4654,96 @@
         }
         est.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; } });
       }).catch(err => { console.warn('hdb failed to load', err); ctx.loadFail && ctx.loadFail('hdb', err); });
+
+      /* ---- (v24.7) THE GARDEN, ending D's morning (OAK, PLAT, KN2, GB, ROOT, above): the great oak on the grass outside
+         the west wall and a grove of the kit's other trees round it, the monk's low teak platform in its shade, his reed
+         mat and the young man's, the bare earth under the crown with its fallen leaves, mist lying on the grass and
+         standing between the trees, the sun's shafts slanting through the crown, and a morning sky of its own. One group,
+         shown only while ending D is there (gardenSet): the chapter's curtain draws it once, forced visible, so nothing in
+         it compiles or uploads on screen (v14.15/v15.1). Like all of World M, it casts no shadow */
+      { const GG = new THREE.Group(); GG.visible = false; G.add(GG); mLive.garden = GG;
+        // the morning sky (the hall's dome is chapter 4's sunset)
+        { const sm = new THREE.Mesh(new THREE.SphereGeometry(137.5, 48, 24), new THREE.MeshBasicMaterial({ map: tex(makeMSkyMorn(THREE, cnv)), side: THREE.BackSide, fog: false, depthWrite: false }));
+          mats.push(sm.material); sm.renderOrder = -5; sm.frustumCulled = false; GG.add(sm); }
+        // the oak (the kit's tree2 on its own seed — ×1.049 of `h`, so 15.7 m, and all but upright) and the grove round it
+        if (plantTrees) {
+          treeStands.push(plantTrees(GG, [{ x: OAK.x, y: -0.02, z: OAK.z, h: OAK.h, ry: OAK.ry, always: true, kind: 1 }], { seed: 303, tint: 0xece6d4, shadow: false }));
+          treeStands.push(plantTrees(GG, [[-41, -6, 11], [-44, 6, 12], [-39, 17, 10], [-32, 18.5, 9], [-36, -15, 10], [-48, -1, 13], [-51, 13, 12], [-42, 27, 11], [-33, -24, 11], [-46, -16, 12]]
+            .map(([x, z, h]) => ({ x, z, h })), { seed: 313, tint: 0xd6d8c8, lowKeep: 0.6 }));
+        }
+        // the bare earth under the crown, soft at its rim, and the fallen leaves on it
+        { const tE = tex(makeMEarth(THREE, cnv)); tE.repeat.set(5, 5);
+          const em = new THREE.MeshStandardMaterial({ map: tE, color: 0x9a8a72, roughness: 1, transparent: true, depthWrite: false, alphaMap: tex(makeMWet(THREE, cnv)) }); mats.push(em);
+          const e = new THREE.Mesh(new THREE.CircleGeometry(5.6, 48), em); e.rotation.x = -Math.PI / 2; e.position.set(OAK.x + 0.6, -0.016, OAK.z + 0.3); GG.add(e);
+          const lm = new THREE.MeshStandardMaterial({ map: tPetal, alphaTest: 0.45, side: THREE.DoubleSide, roughness: 0.85 }); mats.push(lm);
+          const LN = 170, lv = new THREE.InstancedMesh(new THREE.PlaneGeometry(0.075, 0.095), lm, LN);
+          const lmx = new THREE.Matrix4(), lq = new THREE.Quaternion(), le = new THREE.Euler(), lc = new THREE.Color();
+          for (let i = 0; i < LN; i++) {
+            const a = hash(i, 71) * Math.PI * 2, rr = 1.0 + Math.sqrt(hash(i, 73)) * 5.6;
+            const x = OAK.x + Math.cos(a) * rr; let z = OAK.z + Math.sin(a) * rr;
+            if (x > PLAT.x - PLAT.w / 2 - 0.1 && x < KN2.x + 0.6 && Math.abs(z - OAK.z) < 1.2) z += (z < OAK.z ? -1 : 1) * 1.3;   // (none under the platform or his mat)
+            le.set(-Math.PI / 2 + (hash(i, 75) - 0.5) * 0.3, 0, hash(i, 77) * Math.PI * 2, 'XZY'); lq.setFromEuler(le);
+            const s = 0.8 + hash(i, 79) * 0.5;
+            lmx.compose(new THREE.Vector3(x, -0.012 + hash(i, 81) * 0.004, z), lq, new THREE.Vector3(s, s, s));
+            lv.setMatrixAt(i, lmx); lv.setColorAt(i, lc.set([0xa88a50, 0x7a6438, 0xb89a58, 0x6a7a38, 0x8a6a3a][i % 5]));
+          }
+          lv.computeBoundingSphere(); GG.add(lv); }
+        // the monk's platform: teak boards on four legs, an apron round it, a reed mat on it (his cushion is his own group's)
+        { const P = new THREE.Group(); P.position.set(PLAT.x, 0, PLAT.z); GG.add(P);
+          const mT = M({ color: 0x5c3a22, roughness: 0.6 }), mT2 = M({ color: 0x4a2e1a, roughness: 0.66 });
+          const nb = 6, bw = PLAT.d / nb;
+          for (let k = 0; k < nb; k++) box(PLAT.w, 0.05, bw - 0.008, 0, PLAT.top - 0.025, -PLAT.d / 2 + bw * (k + 0.5), k % 2 ? mT : mT2, P, false);
+          for (const s of [-1, 1]) { box(PLAT.w, 0.09, 0.04, 0, PLAT.top - 0.095, s * (PLAT.d / 2 - 0.02), mT2, P, false); box(0.04, 0.09, PLAT.d, s * (PLAT.w / 2 - 0.02), PLAT.top - 0.095, 0, mT2, P, false); }
+          for (const sx of [-1, 1]) for (const sz of [-1, 1]) box(0.08, PLAT.top - 0.05, 0.08, sx * (PLAT.w / 2 - 0.08), (PLAT.top - 0.05) / 2, sz * (PLAT.d / 2 - 0.08), mT2, P, false);
+          box(1.0, 0.008, 1.3, -0.08, PLAT.top + 0.004, 0, M({ map: tex(makeWeaveT(THREE, cnv, '#b89c62', 5411)), roughness: 0.95 }), P, false);
+          /* his alms bowl beside him, in the knitted saffron cover a monk carries it in, its black lacquer lid showing at the
+             top with a brass knob, the strap slack on the mat; and a folded saffron cloth (by photograph: a bare black
+             sphere in the corner of a phone's frame read as a bowling ball) */
+          { const bg = new THREE.Group(); bg.position.set(-0.22, PLAT.top - 0.004, PLAT.d / 2 - 0.3); bg.scale.y = 0.84; P.add(bg);
+            const kn = M({ map: tex(makeWeaveT(THREE, cnv, '#c06a1c', 5417)), roughness: 0.92 });
+            const cv = new THREE.Mesh(new THREE.SphereGeometry(0.12, 22, 14, 0, Math.PI * 2, 0.6, Math.PI - 0.6), kn); cv.position.y = 0.12; bg.add(cv);
+            const lid = new THREE.Mesh(new THREE.SphereGeometry(0.118, 22, 6, 0, Math.PI * 2, 0, 0.64), M({ color: 0x1c1814, roughness: 0.22 }));
+            lid.position.y = 0.12; bg.add(lid);
+            const rim = new THREE.Mesh(new THREE.TorusGeometry(0.0675, 0.008, 6, 28), M({ color: 0x9a4e14, roughness: 0.9 }));
+            rim.rotation.x = Math.PI / 2; rim.position.y = 0.12 + 0.12 * Math.cos(0.6); bg.add(rim);   // the cover's drawn mouth round the lid
+            const nob = new THREE.Mesh(new THREE.SphereGeometry(0.014, 10, 8), gold); nob.position.y = 0.243; bg.add(nob);
+            const st = new THREE.Mesh(new THREE.TorusGeometry(0.075, 0.006, 5, 24, Math.PI * 1.3), M({ color: 0x9a4e14, roughness: 0.9 }));
+            st.rotation.set(-Math.PI / 2, 0, 0.4); st.scale.set(1, 1.6, 1); st.position.set(0.19, 0.009, 0.02); bg.add(st); }
+          box(0.3, 0.05, 0.22, -0.22, PLAT.top + 0.033, -PLAT.d / 2 + 0.28, mSaffron, P, false);
+        }
+        // his own mat on the grass before it, ferns at the trunk (by photograph: a water jar at the platform's foot stood a metre
+        // in front of the lens in the shot round the roots, and in the middle of the first — it went)
+        box(1.15, 0.008, 0.8, KN2.x - 0.25, 0.004, KN2.z, M({ map: tex(makeWeaveT(THREE, cnv, '#c4a86a', 5413)), roughness: 0.95 }), GG, false);
+        thai('fern', OAK.x - 1.6, 0, OAK.z - 2.6, { parent: GG, s: 1.2, ry: 1.1, cast: false });
+        thai('fern', OAK.x - 2.2, 0, OAK.z + 1.8, { parent: GG, s: 1.0, ry: 2.4, cast: false });
+        // the mist: patches lying on the grass, drifting; veils standing between the trees (turned to the lens each frame)
+        { const tM = tex(makeMMist(THREE, cnv));
+          mLive.mist = [];
+          for (let i = 0; i < 9; i++) {
+            const mm = new THREE.MeshBasicMaterial({ map: tM, color: 0xe8ecea, transparent: true, opacity: 0.5, depthWrite: false, fog: false, side: THREE.DoubleSide }); mats.push(mm);
+            const s = 9 + hash(i, 91) * 8, m = new THREE.Mesh(new THREE.PlaneGeometry(s, s * 0.7), mm);
+            m.rotation.set(-Math.PI / 2, 0, hash(i, 93) * Math.PI);
+            const a = hash(i, 95) * Math.PI * 2, rr = 4 + hash(i, 97) * 14;
+            m.userData.base = [OAK.x + Math.cos(a) * rr, 0.08 + hash(i, 99) * 0.4, OAK.z + Math.sin(a) * rr]; m.userData.op = 0.35 + hash(i, 101) * 0.25;
+            m.position.set(m.userData.base[0], m.userData.base[1], m.userData.base[2]); GG.add(m); mLive.mist.push(m);
+          }
+          mLive.veils = [];
+          for (const [x, z, w, h, op] of [[-42, -2, 26, 7, 0.55], [-46, 12, 24, 6, 0.5], [-38, 22, 22, 6, 0.45], [-40, -16, 24, 7, 0.5], [-56, 4, 34, 9, 0.6], [-30, -30, 30, 8, 0.45]]) {
+            const vm = new THREE.MeshBasicMaterial({ map: tM, color: 0xdfe4e4, transparent: true, opacity: op, depthWrite: false, fog: false, side: THREE.DoubleSide }); mats.push(vm);
+            const v = new THREE.Mesh(new THREE.PlaneGeometry(w, h), vm); v.position.set(x, h * 0.38, z); GG.add(v); mLive.veils.push(v);
+          }
+        }
+        // the sun's shafts through the crown, slanting west from its east side (each turned on its own length to the lens)
+        { const tR = tex(makeMShaft(THREE, cnv));
+          mLive.rays = [];
+          for (let i = 0; i < 5; i++) {
+            const rm = new THREE.MeshBasicMaterial({ map: tR, color: 0xffe2b4, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false }); mats.push(rm);
+            const r = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), rm); r.frustumCulled = false; GG.add(r);
+            mLive.rays.push({ r, top: new THREE.Vector3(OAK.x + 6.4 + 0.5 * (i % 2), 10.5 + 0.6 * (i % 3), OAK.z - 2.8 + 1.4 * i),
+                              dir: new THREE.Vector3(-0.42, -0.9, 0.06 * (i - 2)).normalize(), len: 11.5, w: 0.7 + 0.35 * ((i * 7) % 3), op: 0.10 + 0.03 * (i % 3), ph: i * 1.7 });
+          }
+        }
+      }
 
       /* ---- Chad's monk on his dais (chapter 3's shop monk, the same file): seated cross-legged on his own floor take,
          grounded on his posed skin, his hands joined by a two-bone solve with the palms measured off his own skin
@@ -4916,7 +5037,7 @@
     /* (MFT is at the top level since CP12) */
     const madeF = {
       T: MFT,
-      begin() { worldM.visible = true; nightSet.g.visible = true; threadLay(); fLive.lit = null; fLive.shot = '';
+      begin() { worldM.visible = true; gardenSet(false); nightSet.g.visible = true; threadLay(); fLive.lit = null; fLive.shot = '';   // (v24.7: the hall, never D's garden)
                 if (mLive.winGlow) mLive.winGlow.color.setHex(0x101622);                // the windows dark (they glowed with chapter 4's sunset)
                 for (const w of mLive.shafts) if (w.mesh) w.mesh.visible = false; },
       end() { worldM.visible = false; nightSet.g.visible = false; fLive.lit = null;
@@ -5195,7 +5316,7 @@
     const cardF = {
       T: KFT,
       begin() { fLive.lit = null; fLive.shot = 'K'; cntLive.ownerLook = 1; },
-      end() { cntLive.ownerLook = 0; fLive.shot = ''; lensTo(72); if (fLive.hands) { fLive.hands.visible = true; fLive.hands = null; } kidForce(1, null);
+      end() { cntLive.ownerLook = 0; cntLive.lookPt = null; fLive.shot = ''; lensTo(72); if (fLive.hands) { fLive.hands.visible = true; fLive.hands = null; } kidForce(1, null);
               if (cntLive.owner) cntLive.owner.talkUntil = 0; },   // (CP13: a skip runs all three of his talks at once — 20 s of silent gesture)
       frame(t, api) {
         if (fLive.shot !== 'K') cardF.begin();
@@ -5218,19 +5339,73 @@
           const k = ss(cl01((t - KFT.k2) / (KFT.k3 - 0.6 - KFT.k2)));
           const along = 0.036 - 0.072 * k;      // from 3.6 cm up the card to 3.6 cm down it
           camAt(cx + along - 0.1 * back, cy + 0.15 * back, cz, cx + along, cy, cz);
-        } else {                               // K3 · up to his face, and he looks straight at him
-          lensTo(40);
-          const k = ss(cl01((t - KFT.k3) / 2.0)), push = ss(cl01((t - KFT.k3) / (KFT.end - KFT.k3)));
-          /* (CP13, the counter's vision review: aimed at his head BONE, the lens followed every sway of his talking take —
-             on a phone his face drifted from the left third to past the middle; it holds on where his face is at rest, a
-             quarter of his head's sway, so he moves in the frame and the frame does not chase him) */
-          const P = cntLive.owner && cntLive.owner.head ? cntLive.owner.head.getWorldPosition(_kv) : _kv.set(SX + OWN.x, 1.55, OWN.z);
-          P.set(SX + OWN.x + (P.x - SX - OWN.x) * 0.25, 1.53 + (P.y - 1.53) * 0.25, OWN.z + (P.z - OWN.z) * 0.25);
-          const p = lerp3([cx - 0.136, cy + 0.15, cz], [SX + 2.36 + 0.28 * push, 1.6, OWN.z - 0.05], k);
-          camAt(p[0], p[1], p[2], P.x, P.y - 0.02, P.z);
-        }
+        } else cardTalk(t);                    // K3 · his three asks, in ten shots (v24.7)
       }
     };
+    /* K3 · HIS THREE ASKS (v24.7, Chad: "Have some different camera angles, look at the kumanthongs from various close-up
+       angles, panning, etc, while he speaks so that the camera is not just simply fixed on the shop owner"): ten shots cut
+       on his words, KFT's s2…s10 — his face for what he asks of the one who takes them home, the three, the music box and
+       the card for what they need — every picture a function of t. He looks into the lens where the lens is where the
+       player stands, and at the player (PLAYER_EYE) where it is not (cntLive.lookPt: the head's look reads it) */
+    const PLAYER_EYE = new THREE.Vector3(S_SPAWN.x, 1.62, S_SPAWN.z);
+    const kidFace = (i) => [SX + CNT.x, CNT.y + KIDS[i].h * 0.74, CNT_Z[i]];   // each one's face on the cloth
+    /* (CP13, the counter's vision review: aimed at his head BONE, the lens followed every sway of his talking take — on a
+       phone his face drifted from the left third to past the middle; it holds on where his face is at rest, a quarter of his
+       head's sway, so he moves in the frame and the frame does not chase him) */
+    function ownerFace() {
+      const P = cntLive.owner && cntLive.owner.head ? cntLive.owner.head.getWorldPosition(_kv) : _kv.set(SX + OWN.x, 1.55, OWN.z);
+      return P.set(SX + OWN.x + (P.x - SX - OWN.x) * 0.25, 1.53 + (P.y - 1.53) * 0.25, OWN.z + (P.z - OWN.z) * 0.25);
+    }
+    function cardTalk(t) {
+      const ss = smooth, T = KFT, cx = SX + CNT_CARD.x, cz = CNT_CARD.z, cy = CNT.y + 0.001;
+      const u = (a, b) => ss(cl01((t - a) / (b - a)));
+      cntLive.lookPt = null;
+      if (t < T.s2) {                          // S1 · up from the card to his face: "But listen, ah. Never keep them for greed"
+        lensTo(40);
+        const k = u(T.k3, T.k3 + 2.0), F = ownerFace();
+        const p = lerp3([cx - 0.136, cy + 0.15, cz], [SX + 2.36, 1.6, OWN.z - 0.05], k);
+        camAt(p[0], p[1], p[2], F.x, F.y - 0.02, F.z);
+      } else if (t < T.s3) {                   // S2 · "not for money, not for lottery numbers": along the three, at their height
+        lensTo(50);
+        const k = u(T.s2, T.s3), z = CNT_Z[0] - 0.12 + (CNT_Z[2] - CNT_Z[0] + 0.24) * k;
+        camAt(SX + CNT.x - 0.46, CNT.y + 0.23, z - 0.05, SX + CNT.x, CNT.y + 0.16, z);
+      } else if (t < T.s4) {                   // S3 · "If that is why you want them, don't take them": his face, nearer
+        lensTo(34);
+        const k = u(T.s3, T.s4), F = ownerFace();
+        camAt(SX + 2.55 + 0.18 * k, 1.47, OWN.z + 0.04, F.x, F.y - 0.01, F.z);
+      } else if (t < T.s5) {                   // S4 · "And never ask them to do anything wrong": the red one, close
+        lensTo(40);
+        const k = u(T.s4, T.s5), f = kidFace(0), d = 0.36 - 0.07 * k;
+        camAt(f[0] - d, f[1] + 0.03, f[2] - 0.03 - 0.08 * (1 - k), f[0], f[1] - 0.02, f[2]);
+      } else if (t < T.s6) {                   // S5 · "Children grow like the one who raises them": the little one, his long hair
+        lensTo(38);
+        const k = u(T.s5, T.s6), f = kidFace(2), d = 0.34 - 0.06 * k;
+        camAt(f[0] - d, f[1] + 0.07 - 0.03 * k, f[2] + 0.07, f[0], f[1] - 0.01, f[2]);
+      } else if (t < T.s7) {                   // S6 · "so you keep the precepts yourself": over their heads, up to him
+        lensTo(44);
+        const k = u(T.s6, T.s7), F = ownerFace();
+        cntLive.lookPt = PLAYER_EYE;
+        camAt(SX + 2.84 + 0.06 * k, CNT.y + 0.14, CNT.z + 0.12, F.x, F.y - 0.04, F.z);
+      } else if (t < T.s8) {                   // S7 · "Every day… as long as you live": from beyond the music box, round the three
+        lensTo(46);
+        const k = u(T.s7, T.s8), th = (Math.PI / 2) * k, r = 0.56, C = [SX + CNT.x, CNT.y + 0.12, -2.50];
+        const q = lerp3([SX + CNT_BOX.x, CNT.y + 0.06, CNT_BOX.z], [SX + CNT.x, CNT.y + 0.14, CNT.z], ss(cl01(k * 1.4)));
+        camAt(C[0] - r * Math.sin(th), C[1] + 0.12 - 0.04 * k, C[2] + r * Math.cos(th), q[0], q[1], q[2]);
+      } else if (t < T.s9) {                   // S8 · "If one day you really cannot… or to a temple": his face, from his side
+        lensTo(40);
+        const k = u(T.s8, T.s9), F = ownerFace();
+        cntLive.lookPt = PLAYER_EYE;
+        camAt(SX + 3.02 + 0.10 * k, 1.44, OWN.z + 0.78 - 0.08 * k, F.x, F.y - 0.03, F.z);
+      } else if (t < T.s10) {                  // S9 · "Never just leave them": the shy one, close
+        lensTo(40);
+        const k = u(T.s9, T.s10), f = kidFace(1), d = 0.32 - 0.05 * k;
+        camAt(f[0] - d, f[1] + 0.02, f[2] - 0.05, f[0], f[1] - 0.02, f[2]);
+      } else {                                 // S10 · "Can or not?": his face square to the lens — he is asking him
+        lensTo(40);
+        const k = u(T.s10, T.end), F = ownerFace();
+        camAt(SX + 2.42 + 0.22 * k, 1.6, OWN.z - 0.05, F.x, F.y - 0.02, F.z);
+      }
+    }
 
 
     /* ------------------------------------------------ THE THREE (CP1's scans)
@@ -5364,10 +5539,27 @@
     }
     function objectiveFor(p) {
       if (!kit) return;
-      if (wDark) { kit.objective(null, { complete: false }); return; }
+      if (wDark) { kit.objective(null, { complete: false }); deskMark(); return; }
       const o = p === 'counter' ? counterObjective() : p === 'care' ? careObjective() : OPEN_I[p] !== undefined ? openObjective()
               : { sit: W.objSit, after: null, decide: null }[p];
       kit.objective(o || null);
+      deskMark();
+    }
+    /* THE DESK, MARKED (v24.7, Chad: "For objective 'make their drinks' it is not very clear that the player must turn his
+       back to face the computer table. Is there a way to make that more obvious?"): while an order that is done at the
+       desk is open and nothing is under way — the drinks (the bag on it), the incense (the packet) — the kit's waypoint
+       stands on that thing; behind him it pins to the side of the screen he should turn to (v19.2). Every other moment
+       clears it, so it never stands over a minigame or a walk to the altar */
+    function deskMark() {
+      if (!kit || !kit.waypoint) return;
+      const s = phase === 'care' && !wDark && !careBusy ? careStep() : '';
+      const at = s === 'drink' ? DESK_AT.bag : s === 'light' ? DESK_AT.packet : null;
+      kit.waypoint(at ? { x: at[0], y: DESK.top + 0.22, z: at[1] } : null);
+    }
+    /* his look to the desk, where the drinks' bag waits (after the water, and after each drink is given) */
+    function lookToDesk(secs) {
+      const dx = DESK_AT.bag[0] - yaw.position.x, dz = DESK_AT.bag[1] - yaw.position.z;
+      viewTo(Math.atan2(-dx, -dz), Math.atan2(DESK.top + 0.1 - 1.62, Math.hypot(dx, dz)), secs);
     }
 
     /* ------------------------------------------------------- between worlds
@@ -5638,15 +5830,16 @@
       setShow(cntLive.bagSet, true, true);
       cntLive.lull = false; cntLive.boxOpen = cntLive.boxOpenTo = 0;
     }
-    /* ORDER 5 · take them home: the bag in his hand, and the home film (CP9). The phase moves on BEFORE the film — the home
-       film is not a phase, so a Continue after the bag lands at 22:50 in his room (§10.1) */
-    const BAG_HELD = { pos: [0.02, -0.2, -0.16], rot: [0, 0, 0] };   // (in the right arm's frame; its palm at (0.012, -0.052, -0.148) — by photograph)
+    /* ORDER 5 · take them home: the bag lifted off the glass, and the home film (CP9). The phase moves on BEFORE the film —
+       the home film is not a phase, so a Continue after the bag lands at 22:50 in his room (§10.1).
+       (v24.7, Chad: "When he picks up the bag from the amulet shop, the bag cuts through his hands model. Maybe no need to
+       place it into his hand." — it was held at the palm, through the fingers: it leaves the glass with its sound now, and
+       the home film opens on it set down on his desk) */
     function takeHome() {
       if (cntStep() !== 'bag' || !cntOk()) return false;
       cntBusy = true; if (kit) kit.objective(null);
       setShow(cntLive.bagSet, false, true);
       sfxAt('k5baglift', 1.0, ...atCnt(CNT));                    // (v24.3: the bag lifted off the glass — a clink and its paper)
-      if (kit && kit.hold && cntLive.bagHeld) kit.hold(cntLive.bagHeld, { pos: BAG_HELD.pos, rot: BAG_HELD.rot });
       after(1.0, () => {
         if (kit) kit.setPhase('care');
         const done = () => { if (alive) { careResume(''); toWorld('R', false, 'care'); } };
@@ -5659,7 +5852,7 @@
     function counterResume(tagStr) {
       cntDone.clear();
       for (const r of String(tagStr || '').split(',')) if (CNT_ORDER.includes(r)) cntDone.add(r);
-      cntBusy = false; cntLive.helloOn = false; cntLive.lean = null; cntLive.view = null; cntLive.ownerLook = 0;
+      cntBusy = false; cntLive.helloOn = false; cntLive.lean = null; cntLive.view = null; cntLive.ownerLook = 0; cntLive.lookPt = null;
       cntLive.opened = cntDone.has('yin');
       const packedUp = cntDone.has('vow');
       setShow(cntLive.bundleSet, !cntLive.opened, true);
@@ -5745,7 +5938,11 @@
         hits: tapBox(SX + CNT.x - CNT.w / 2, CNT.y - 0.01, CNT.z - CNT.l / 2, SX + CNT.x + CNT.w / 2, CNT.y + 0.3, CNT.z + CNT.l / 2),
         enabled: () => cntStep() === 'look' && cntOk(), onInteract() { return lookBundle(); } },
       ...KIDS.map((K, i) => ({
-        id: 'kid_' + K.key, pos: { ...cntAt(CNT.x, CNT_Z[i]), y: CNT.y + K.h * 0.55 }, radius: 2.6, aim: 0.14, pressAim: true,   // (v24.2, L1-5: its "!" sat 0.14–0.17 rad off a 0.09 cone; overlapping cones go to the nearer)
+        /* (v24.7, Chad: "it took me some time to find the zone that triggers the label to come up" — at 0.14 rad each one's
+           label came up only within 8° of his middle, and from where he stands the three are 13° apart, so a look at the
+           cloth, a head or a "!" with any slack named nobody. At 0.30 the cones overlap, and the engine gives a look inside
+           two to the nearer one: any look within 17° of the three names the child it is nearest) */
+        id: 'kid_' + K.key, pos: { ...cntAt(CNT.x, CNT_Z[i]), y: CNT.y + K.h * 0.55 }, radius: 2.6, aim: 0.30, pressAim: true,   // (v24.2, L1-5: its "!" sat 0.14–0.17 rad off a 0.09 cone; overlapping cones go to the nearer)
         markY: K.h * 0.45 + 0.03, prompt: W['hot' + K.key[0].toUpperCase() + K.key.slice(1)],   // (v24.2, L5-3: 4 cm lower — at +0.07 each "!" stood 0.142–0.164 off its own 0.14 cone; at +0.03, 0.105–0.128, the next one's 0.198 away)
         hits: tapBox(SX + CNT.x - 0.08, CNT.y - 0.01, CNT_Z[i] - 0.085, SX + CNT.x + 0.08, CNT.y + K.h + 0.03, CNT_Z[i] + 0.085),
         enabled: () => cntStep() === 'meet' && !cntDone.has('m.' + K.key) && cntOk(), onInteract() { return meetKid(K); } })),
@@ -5919,6 +6116,9 @@
       if (careLive.incDesk) deskIncense(false);
       if (endLive.dTray) endLive.dTray.visible = false;
       if (endLive.dLights) endLive.dLights.forEach(L => { L.m.visible = L.h.visible = false; });
+      if (endLive.dSparks) endLive.dSparks.forEach(q => { q.s.visible = false; });
+      if (P && P.d && P.d.orbs) P.d.orbs.forEach(O => { O.core.visible = O.halo.visible = O.bloom.visible = false; });   // (v24.7: the window's lights)
+      gardenSet(false);                                       // (v24.7: the monk back on his dais, the bowl in the hall, the hall's sky)
       dMonkRest();                                            // (the temple monk's head back at his rest: film M sees him too)
       dashLate(false); calSwap(null);
       if (P && P.cardDust) P.cardDust.visible = false;
@@ -6003,8 +6203,8 @@
         camAt(cx - 0.12 + 0.05 * k, cy + 0.26, cz + 0.55 - 0.06 * k, cx + 0.02, cy + 0.01, cz + 0.06);
       } else if (sh === 'a4') {                              // NIGHT FOUR: the amber, then 04:31 and his phone face-up, buzzing
         bloomSet(0.8 * ss(cl01((t - T.a4) / 0.4)) * (1 - ss(cl01((t - (T.a4 + 1.2)) / 0.9))), 0xffb060);
-        const buzz = t < T.vm ? Math.sin(t * 60) * 0.0015 * (Math.sin(t * 7) > 0 ? 1 : 0) : 0;   // (it buzzes on the boards)
-        phone.g.position.set(PHONE_FLOOR.x + buzz, 0.001, PHONE_FLOOR.z); phone.g.rotation.set(0, PHONE_FLOOR.ry, 0);
+        /* (v24.7, Chad, of ending B's phone: "there is no need to shake the phone" — nor here: the buzz is heard, k5buzz) */
+        phone.g.position.set(PHONE_FLOOR.x, 0.001, PHONE_FLOOR.z); phone.g.rotation.set(0, PHONE_FLOOR.ry, 0);
         phone.S.draw(t < T.vm ? 'missed' : t < T.dark ? 'vm' : 'dark', 0, '04:31');
         /* he leans over it to read it (CP8: from where he sits it was a smudge on a phone's screen, Ma's name unreadable):
            the lens comes over its foot and down, the screen the right way up, and narrows */
@@ -6064,8 +6264,9 @@
 
     /* ---------------------------------------------------------------- THE EPILOGUE (§4.9, every ending, 30 s)
        The man looking back. It opens on THEM as the owner first set them down — World S's counter, the red cloth opened,
-       the music box beside them — warm, and the lens coming slowly down onto the three; then black, and the case file's
-       own last words. The counter is put back as first seen (and by reset, counterReset). */
+       the music box beside them — warm, and the lens coming slowly down onto the three; then (v24.7) the lens drawn back
+       across his shop, out through its glass and down the closed mall under the case file's own last words, his light the
+       last one lit; and the black. The counter is put back as first seen (and by reset, counterReset). */
     function epiSet() {
       setShow(cntLive.bundleSet, false, true); setShow(cntLive.clothSet, true, true);
       for (const S2 of cntLive.kidSet) setShow(S2, true, true);
@@ -6083,14 +6284,38 @@
       endLive.epiU = u;                                    // (v24.3: mixBeds takes World S's beds down with the epilogue's black)
       if (api && api.handsRoot) api.handsRoot.visible = false;
       if (api && api.handPose) api.handPose(null, 0);
-      /* all three in the frame on THIS screen (film M's rule): the lens as far back as the screen's width needs, 0.29 m either
-         side of the middle one, coming down onto them over the shot */
-      const k = smooth(cl01(u / EPI.fade0)), zoom = camera.aspect >= 1 ? 12 : 0;
-      lensTo(72 - zoom);
-      const hw = Math.tan((72 - zoom) * Math.PI / 360) * camera.aspect, D = Math.max(0.62, 0.31 / hw) * (1.12 - 0.12 * k);
-      /* (CP8: aimed at the three from the first frame, the owner's head stood at the frame's top edge and was cut by it; the
-         lens begins on him, his face whole, and comes down onto them) */
-      camAt(SX + CNT.x - 0.86 * D, CNT.y + 0.14 + 0.46 * D, CNT.z - 0.02, SX + CNT.x, CNT.y + 0.11 + 0.24 * (1 - k), CNT.z);
+      const ss = smooth;
+      if (u < EPI.e2) {
+        /* E1 · all three in the frame on THIS screen (film M's rule): the lens as far back as the screen's width needs, 0.29 m
+           either side of the middle one, coming down onto them over the shot */
+        const k = ss(cl01(u / EPI.down)), zoom = camera.aspect >= 1 ? 12 : 0;
+        lensTo(72 - zoom);
+        const hw = Math.tan((72 - zoom) * Math.PI / 360) * camera.aspect, D = Math.max(0.62, 0.31 / hw) * (1.12 - 0.12 * k);
+        /* (CP8: aimed at the three from the first frame, the owner's head stood at the frame's top edge and was cut by it; the
+           lens begins on him, his face whole, and comes down onto them) */
+        camAt(SX + CNT.x - 0.86 * D, CNT.y + 0.14 + 0.46 * D, CNT.z - 0.02, SX + CNT.x, CNT.y + 0.11 + 0.24 * (1 - k), CNT.z);
+      } else if (u < EPI.e3) {
+        /* E2 · "Looking back today…": the lens drawn back from the counter across his shop to its door, the owner and the
+           three on his red cloth growing small in it (v24.7) */
+        const k = ss(cl01((u - EPI.e2) / (EPI.e3 - EPI.e2)));
+        lensTo(56);
+        const p = lerp3([SX + 2.15, 1.50, -2.30], [SX + 0.35, 1.60, -0.55], k);
+        camAt(p[0], p[1], p[2], SX + CNT.x + 0.2, 1.22 + 0.06 * k, CNT.z + 0.05);
+      } else if (u < EPI.e4) {
+        /* E3 · "Some lessons are only learned by living them": outside his glass, the opening film's O2 run backwards — his
+           light in the dark mall, him at his counter */
+        const k = ss(cl01((u - EPI.e3) / (EPI.e4 - EPI.e3)));
+        lensTo(60);
+        const p = lerp3([SX + 2.95, 1.6, 1.45], [SX + 3.15, 1.62, 2.05], k);
+        camAt(p[0], p[1], p[2], SX + OWN.x - 0.4, 1.32, OWN.z + 0.1);
+      } else {
+        /* E4 · "This is the one experiment…": back down the closed corridor, his shop the one light left — and only then
+           the black (fade0) */
+        const k = ss(cl01((u - EPI.e4) / (EPI.fade1 - EPI.e4)));
+        lensTo(66);
+        const p = lerp3([SX + 1.6, 1.62, 2.3], [SX - 5.5, 1.62, 2.45], k);
+        camAt(p[0], p[1], p[2], SX + 1.4, 1.3, -0.6);
+      }
     }
 
     /* ---------------------------------------------------------------- B · TELL THE WORLD (bad, §4.8 B)
@@ -6181,8 +6406,9 @@
         bloomSet(0.35 * k, 0x6a8ad8);
       } else if (sh === 'b5') {                               // DAWN: asleep at the desk, his head coming up; the phone buzzing
         const k = ss(cl01((t - T.b5) / 2.2));
-        const bz = Math.sin(t * 55) * 0.002 * (Math.sin(t * 5.3) > 0.2 ? 1 : 0);
-        phone.g.position.x = 0.04 + bz + 0.004 * (t - T.b5);
+        /* (v24.7, Chad: "why is the phone shaking so much like that, there is no need to shake the phone" — it lies still on
+           the desk; its buzz is heard) */
+        phone.g.position.x = 0.04;
         /* (CP13: its count steps 12 times a second — every new number is a repaint and an upload of a 576×1248 canvas — and
            its bar reads the lock screen's hour, not the night's 02:47) */
         P.ph = P.ph || 0; phone.S.draw('buzz', Math.min(207, Math.floor(12 + Math.floor((t - T.b5) * 12) / 12 * 40)), '06:58');
@@ -6204,8 +6430,9 @@
            ran on to 1,289 and went DOWN; the morning's hour in the bar) */
         phone.S.draw(sh === 'b6' ? 'thread' : sh === 'b7' ? 'repost' : sh === 'b8' ? 'member' : sh === 'b9' ? 'dm' : (t < T.b10 + 1.5 ? 'delete' : 'deleted'),
                      sh === 'b6' ? scroll : sh === 'b7' ? Math.min(1206, Math.floor(380 + Math.floor((t - T.b7) * 12) / 12 * 260)) : 0, '07:02');
-        const shake = sh === 'b9' ? 0.004 * ss(cl01((t - T.b9 - 1.0) / 1.5)) : 0;
-        phone.g.position.x = shake * Math.sin(t * 31); phone.g.position.y = -0.004 + shake * Math.sin(t * 27 + 1);
+        /* (v24.7, Chad: "there is no need to shake the phone" — the stranger's message trembled it 4 mm at 31 Hz, 15 cm from
+           the lens: it is held still before his eyes now; the message and its sting carry the fright) */
+        phone.g.position.x = 0; phone.g.position.y = -0.004;
         camAt(CHAIR.x, 1.18, CHAIR.z, CHAIR.x, 1.05, CHAIR.z - 1.0);
       }
     }
@@ -6213,8 +6440,9 @@
     /* ---------------------------------------------------------------- C · WISH FOR IT ALL (bad, §4.8 C — Chad's option)
        The owner's "you are giving them something they never had", turned inside out: he stops giving and starts asking,
        and the asking takes over his mind. Told on the ALTAR, piling higher every night. The three never ask him for
-       anything and never punish him; the harm is his own wanting (§2.4). And when his wanting turns to harm, nothing
-       answers: the ones from a temple, it is believed, will not help with anything wrong (§2.6 6). */
+       anything and never punish him; the harm is his own wanting (§2.4). And when his wanting reaches its peak — the
+       lottery's numbers, the very thing the owner said never to keep them for — nothing answers (v24.7: it was a wish
+       against a rival, "make him lose everything", and Chad: "that makes the kuman seem malicious"). */
     const C_SHOTS = ['c0', 'c1', 'c2a', 'c2b', 'c2c', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8', 'c9', 'c10', 'c11'];
     function cShot(t) {
       const T = END.C;
@@ -6336,8 +6564,10 @@
         careLive.boxOpen = careLive.boxOpenTo = 1;
         if (roomLive.boxKey) roomLive.boxKey.rotation.x = -(t - T.c5) * 9;
         if (roomLive.boxDrum) roomLive.boxDrum.rotation.x = (t - T.c5) * 11;
-      } else if (sh === 'c6') {                                  // the laptop: a rival's shop; he turns to the three, through his teeth
-        const s2 = laptopScreen(); laptopPage(true); endProps().page.draw('rival', 0);
+      } else if (sh === 'c6') {                                  // the laptop: the lottery's next draw; he turns to the three and asks
+        /* (v24.7, Chad: "why is there a voiceline saying make him lose everything? that makes the kuman seem malicious" —
+           his wish was against a rival's shop; it is the lottery now, the very thing the owner said never to keep them for) */
+        const s2 = laptopScreen(); laptopPage(true); endProps().page.draw('lotto', 0);
         const turn = ss(cl01((t - (T.c6 + 1.4)) / 1.0));
         if (s2) { const D = 0.62; const L = lerp3([s2.p.x, s2.p.y, s2.p.z], [RISER.x, ALTAR.top + ALTAR.riser + 0.12, ALTAR_Z[1]], turn);
           camAt(s2.p.x + s2.n.x * D * (1 - 0.3 * turn), s2.p.y + s2.n.y * D + 0.05, s2.p.z + s2.n.z * D, L[0], L[1], L[2]); }
@@ -6383,12 +6613,12 @@
        light, the merit made in their names and the water given to the earth, three lights rising (temple.js); home in the
        morning sun; THE YEARS; and the envelope for whoever looks after them next. No hand holds anything small in
        close-up (the bottle's lesson): what he does is shown by the thing itself, the hand below the frame. */
-    const D_SHOTS = ['d0', 'd1', 'd1b', 'd2', 'd2b', 'd2c', 'd3', 'd4', 'd5', 'temple', 'd11', 'y1', 'y2', 'y3', 'y4', 'y5', 'y6', 'd13', 'd13b', 'd14'];
+    const D_SHOTS = ['d0', 'd1', 'd1b', 'd2', 'd2b', 'd2c', 'd3', 'd4', 'd5', 'temple', 'win', 'd11', 'y1', 'y2', 'y3', 'y4', 'y5', 'y6', 'd13', 'd13b', 'd14'];   // (v24.7: 'win', the lights at his window)
     function dShot(t) {
       const T = END.D;
       if (t < T.d1) return 'd0'; if (t < T.d1b) return 'd1'; if (t < T.d2) return 'd1b'; if (t < T.d2b) return 'd2';
       if (t < T.d2c) return 'd2b'; if (t < T.d3) return 'd2c'; if (t < T.d4) return 'd3'; if (t < T.d5) return 'd4';
-      if (t < T.court) return 'd5'; if (t < T.home) return 'temple'; if (t < T.years) return 'd11';
+      if (t < T.court) return 'd5'; if (t < T.home) return 'temple'; if (t < T.morn) return 'win'; if (t < T.years) return 'd11';
       if (t < T.y2) return 'y1'; if (t < T.y3) return 'y2'; if (t < T.y4) return 'y3'; if (t < T.y5) return 'y4';
       if (t < T.y6) return 'y5'; if (t < T.env) return 'y6'; if (t < T.envBox) return 'd13'; if (t < T.last) return 'd13b';
       return 'd14';
@@ -6437,6 +6667,14 @@
       const barrel = cyl(0.0045, 0.0045, 0.13, 0, 0.065, 0, M({ color: 0x1a1c24, roughness: 0.35, metalness: 0.2 }), 10, D.pen);
       cyl(0.0012, 0.0045, 0.012, 0, -0.006, 0, M({ color: 0xc8c8cc, roughness: 0.3, metalness: 0.8 }), 10, D.pen);
       void barrel;
+      /* (v24.7) the three lights again, at his window the morning after (Chad: "those glowing orbs enter from the window,
+         and enters each kumanthong"): each a core and a halo coming in out of the morning, and a bloom on its own child as
+         it goes in — additive and unlit (no light: v15.1), drawn by dWinFrame, hidden by dState and endReset */
+      D.orbs = [0xffa060, 0xffc070, 0x9cc8ff].map((col) => {
+        const sp = (o) => { const m = new THREE.Sprite(new THREE.SpriteMaterial({ map: tGlow, color: col, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false, fog: false }));
+          mats.push(m.material); m.visible = false; m.renderOrder = o; R.add(m); return m; };
+        return { core: sp(8), halo: sp(7), bloom: sp(7) };
+      });
       return (P.d = D);
     }
     /* the room as each of D's shots needs it — SET, every field (a skip lands right) */
@@ -6457,17 +6695,21 @@
       careLive.drumRate = 1;
       // the light: the night until the temple, the morning after it
       if (!at('temple')) { endLook('NIGHT'); roomClock(sh === 'd0' ? '02:50' : '03:04'); cityOut(0); }
-      else if (at('d11')) { endLook('MORNING'); roomClock('07:20'); cityOut(-1); }
+      else if (at('win')) { endLook('MORNING'); roomClock('07:20'); cityOut(-1); }   // (v24.7: from the lights at his window)
       roomLive.smokeStill = at('d5') ? 1 : 0;
       // the years' things
       D.more.forEach(m => { m.visible = false; }); if (D.board2) D.board2.visible = false;
       if (D.calPage) D.calPage.visible = false;
       D.env.visible = sh === 'd13'; D.envUnder.visible = at('d13b'); D.pen.visible = sh === 'd13';
-      if (at('d11')) { for (let i = 0; i < 3; i++) stickFresh(i); careLive.pour = 1; }
+      if (at('win')) { for (let i = 0; i < 3; i++) stickFresh(i); careLive.pour = 1; }
       cartonDown(false);                                          // (the carton the red one swiped, back on the stack in the night)
       if (roomLive.coin) roomLive.coin.visible = false;           // (and the coin put back in the little one's toy box)
       phone.g.visible = false;
       worldM.visible = sh === 'temple' || sh === 'y2' || sh === 'y4' || sh === 'y6';
+      gardenSet(worldM.visible);                                 // (v24.7: D's temple is the garden under the oak)
+      D.orbs.forEach(O => { O.core.visible = O.halo.visible = O.bloom.visible = false; });   // (the window's lights: drawn by its frame only)
+      if (sh !== 'temple') { if (endLive.dLights) endLive.dLights.forEach(L => { L.m.visible = L.h.visible = false; });   // (and the oak's, by the temple's)
+                             if (endLive.dSparks) endLive.dSparks.forEach(q => { q.s.visible = false; }); }
       void P;
     }
     function endD(t, api) {
@@ -6483,7 +6725,10 @@
       /* the clasp low, the three above the joined fingers (CP8: at the clasp's own height the hands covered the middle one on a
          phone, and on their way up from rest one hand passed through the frame pointing at the sweets): drawn whole, and
          risen into the frame from under its edge */
-      if (api && api.handPose) api.handPose(prayK > 0.002 ? 'pray' : null, 1, { y: -0.28 - 0.4 * (1 - prayK) });     // (the clasp whole, rising from below the frame)
+      /* (v24.7, by photograph: before the monk under the oak the clasp at −0.28 stood over his lap on a phone — there it is held at
+         e3c1's blessing height, −0.36, its fingertips at the frame's foot, the monk whole above them) */
+      const clY = sh === 'temple' ? -0.36 : -0.28;
+      if (api && api.handPose) api.handPose(prayK > 0.002 ? 'pray' : null, 1, { y: clY - 0.4 * (1 - prayK) });     // (the clasp whole, rising from below the frame)
       lensTo(72); bloomSet(0);
       const bz = (RISER.z1 + ALTAR.z1) / 2;
       if (sh === 'd0') {                                     // on the floor by the bed: the three, the lamp low
@@ -6534,11 +6779,13 @@
         camAt(MAT.x - (nw ? 1.16 : 0.12) - 0.1 * k, MAT_EYE + 0.02, MAT.z - 0.05, RISER.x, ALTAR.top + (nw ? 0.30 : 0.40) + 0.06 * k, (ALTAR_Z[0] + ALTAR_Z[2]) / 2);
       } else if (sh === 'temple') {
         dTempleFrame(t, api);
+      } else if (sh === 'win') {                             // (v24.7) HOME: the three lights come in at his window, one into each
+        dWinFrame(t);
       } else if (sh === 'd11') {                             // HOME, the morning: the window open, the three in the sun
-        const k = ss(cl01((t - T.home) / (T.years - T.home)));
+        const k = ss(cl01((t - T.morn) / (T.years - T.morn)));
         camAt(MAT.x - 0.2 - (camera.aspect < 1 ? 0.3 : 0), MAT_EYE + 0.18, MAT.z + 0.05, RISER.x, ALTAR.top + ALTAR.riser + 0.12 + 0.05 * k, (ALTAR_Z[0] + ALTAR_Z[2]) / 2);   // (v24.2, L5-4: the little one's face was just off a phone's edge)
         if (roomLive.pinwheel) roomLive.pinwheel.rotation.z += 0.05;   // (the morning air)
-        if (t > T.home + 2.5 && D.more[0]) D.more[0].visible = true;   // the morning's receipt pinned
+        if (t > T.morn + 2.5 && D.more[0]) D.more[0].visible = true;   // the morning's receipt pinned
       } else if (sh === 'y1' || sh === 'y3' || sh === 'y5') {   // THE YEARS: locked off; the days and nights go by
         const u = t - (sh === 'y1' ? T.years : sh === 'y3' ? T.y3 : T.y5), days = ['DAWN', 'MORNING', 'AFTERNOON', 'DUSK', 'DEEP'];
         { const dd = days[Math.floor(u / 0.42) % days.length]; endLook(dd); cityOut(dd === 'DEEP' ? 0 : dd === 'DUSK' ? 1 : -1); }
@@ -6563,12 +6810,13 @@
           lensTo(52);
           camAt(0.85, 1.48, -1.0, 0.85, 1.5, -1.79);
         }
-      } else if (sh === 'y2' || sh === 'y4' || sh === 'y6') {   // the temple at dawn, again and again, in a different season's light
-        fLight(sh === 'y2' ? TEMPLE_DAWN_HOT : sh === 'y4' ? TEMPLE_DAWN_RAIN : TEMPLE_DAWN);
+      } else if (sh === 'y2' || sh === 'y4' || sh === 'y6') {   // under the oak in the morning, again and again, in a different season's light
+        fLight(sh === 'y2' ? TEMPLE_DAWN_HOT : sh === 'y4' ? TEMPLE_DAWN_RAIN : TEMPLE_MORN);
         endLive.looked = '';                                  // (CP13: so the room's next day is lit again, not left in the temple's light)
-        const F = MHALL.F, u = t - (sh === 'y2' ? T.y2 : sh === 'y4' ? T.y4 : T.y6);
-        if (endLive.dTray) endLive.dTray.visible = true;
-        mCam(MKNEEL.x - 0.35 + 0.04 * u, F + 1.05, MKNEEL.z + 0.35, MDAIS.x, F + 0.85, MDAIS.z);
+        const u = t - (sh === 'y2' ? T.y2 : sh === 'y4' ? T.y4 : T.y6);
+        dTempleProps(); gardenFrame(t);                        // (v24.7: his mat before the monk under the oak, not chapter 4's dais)
+        endLive.dTray.visible = true;
+        mCam(KN2.x + 0.35 - 0.04 * u, 1.02, KN2.z + 0.42, PLAT.x - 0.1, PLAT.top + 0.8, PLAT.z);
       } else if (sh === 'd13') {                             // THE ENVELOPE: in his own capitals, the pen's tip riding the ink
         const u = t - T.env, n = Math.floor(cl01((u - 0.5) / 3.6) * D.envTex.LEN);
         D.envTex.draw(n);
@@ -6596,7 +6844,7 @@
        first reaches the temple, in World M; hidden by endReset */
     function dTempleProps() {
       if (endLive.dTray) return;
-      const F = MHALL.F, G = new THREE.Group(); G.position.set(MKNEEL.x + 0.36, F, MKNEEL.z + 0.02); G.visible = false; worldM.add(G);
+      const G = new THREE.Group(); G.position.set(KN2.x - 0.36, 0.008, KN2.z - 0.02); G.visible = false; worldM.add(G);   // (v24.7: on his mat under the oak)
       box(0.34, 0.016, 0.24, 0, 0.008, 0, M({ color: 0xc8a050, roughness: 0.35, metalness: 0.7 }), G, false);       // the tray
       const bowl = cyl(0.045, 0.035, 0.035, -0.09, 0.034, -0.05, M({ color: 0xf2eee4, roughness: 0.3 }), 16, G);      // rice
       const rice = new THREE.Mesh(new THREE.SphereGeometry(0.042, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), M({ color: 0xfbf8f0, roughness: 0.9 }));
@@ -6614,83 +6862,132 @@
         mats.push(m.material, h.material); m.visible = h.visible = false; worldM.add(m); worldM.add(h);   // (CP8: the glow seen through the leaves, as light is)
         return { m, h };
       });
+      /* (v24.7) what the lights leave in the oak's leaves as they wind up through its crown: twelve glints each, each one
+         where its light was a moment before, twinkling and going out (Chad: "Show the glowing orbs fly up into the tree") */
+      endLive.dSparks = [];
+      [0xffa060, 0xffc070, 0x9cc8ff].forEach((col, i) => { for (let j = 0; j < 12; j++) {
+        const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: tGlow, color: col, transparent: true, opacity: 0, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, toneMapped: false, fog: false }));
+        mats.push(s.material); s.renderOrder = 20; s.visible = false; worldM.add(s);
+        endLive.dSparks.push({ s, i, j, born: 2.0 + j * 0.28 + hash(i * 12 + j, 41) * 0.12,
+                               off: [(hash(i * 12 + j, 43) - 0.5) * 1.3, (hash(i * 12 + j, 45) - 0.5) * 0.9, (hash(i * 12 + j, 47) - 0.5) * 1.3] });
+      } });
     }
-    /* the Yathā vārivahā's four lines, captioned as in chapter 4, timed on the take's own breaths (the same take) */
-    function endYatha() {
+    /* (v24.7) the Karaṇīya Mettā Sutta's verse, as the water is poured (Chad: "Is there a different prayer or chant that can
+       be used?") — its four lines captioned, the Pali over what it means, each on the take's own breath (masters/v24.7:
+       0–3.44, 4.72–8.30, 9.70–12.82, 14.00–17.40 s) */
+    function endMetta() {
       if (kit && kit.captions) kit.captions([
-        { at: 0.0, end: 3.3, text: W.yatha1, sub: W.yatha1en },
-        { at: 3.45, end: 6.45, text: W.yatha2, sub: W.yatha2en },
-        { at: 6.6, end: 9.5, text: W.yatha3, sub: W.yatha3en },
-        { at: 9.6, end: 12.6, text: W.yatha4, sub: W.yatha4en }
+        { at: 0.0, end: 3.7, text: W.metta1, sub: W.metta1en },
+        { at: 4.6, end: 8.6, text: W.metta2, sub: W.metta2en },
+        { at: 9.6, end: 13.1, text: W.metta3, sub: W.metta3en },
+        { at: 13.9, end: 17.7, text: W.metta4, sub: W.metta4en }
       ]);
     }
 
-    /* ENDING D AT THE TEMPLE (§4.8 D, 32–73.5 s of the scene): World M at first light, by chapter 4's merit film's own
-       shots (e3c4 meritFrame: S1 the courtyard, S3 the kneel, S4b the monk, S4/S4c the pour, S6 the roots), moved to
-       ending D's clock, its tray of offerings for the three before his knees, and THREE lights where chapter 4 had one —
-       red-gold, amber and blue, each child's own colour. Every picture a function of the scene's clock (a skip lands right).
-       World M is at x MX: mCam takes its own local coordinates. */
+    /* ENDING D AT THE TEMPLE (§4.8 D), REBUILT AT v24.7. Chad: "why did you completely copy the merit making scene again? If
+       you want to have the merit making scene, at least make it look different from the ep 3 chp 4 one. Is there a
+       different prayer or chant that can be used? Maybe a different tree? some sound effects when pouring the water? Like
+       the kumanthongs laughing in joy in the background? Show the glowing orbs fly up into the tree, and then in the next
+       scene, those glowing orbs enter from the window, and enters each kumanthong." It was chapter 4's merit film's own
+       shots — the bell pavilion, the walk to the hall's door, the kneel at the dais, the bodhi on its plinth — on D's
+       clock. It is its own morning now: the grounds outside the west wall at first light, mist on the grass, the great oak
+       (the kit's, never planted in chapter 4) with the monk already on his platform in its shade; across the grass to his
+       mat; on his knees before him, the tray of offerings; the monk's teaching from his left, the trunk behind him; the
+       kruat nam into the silver bowl on the mat under the Mettā verse (captioned), with its own trickle; the verse's last
+       lines low round the roots; the water given to the earth there, and the three laughing for joy; then the three
+       lights off the wet earth, round the trunk and up INTO the crown, glinting among its leaves, and out of the top into
+       the morning — and at home (dWinFrame) in at his window, one into each of them. Every picture a function of the
+       scene's clock (a skip lands right); World M is at x MX, so mCam takes its own local coordinates */
     /* (DT, the temple's clock, is at file scope with END: the scene reads it too) */
     function mCam(px, py, pz, tx, ty, tz) { camAt(MX + px, py, pz, MX + tx, ty, tz); }
     const _dp = new THREE.Vector3(), _dm = new THREE.Vector3(), _dw = new THREE.Vector3(), _dt = new THREE.Vector3();
-    function dLightAt(t, i, spot) {                          // the three lights' climb: slow from the wet earth, apart, then up together
-      const u = Math.max(0, t - DT.lights - i * 0.35), a = i * 2.1 + 0.4;
-      const spread = 0.16 * Math.min(1, u * 0.9) * (1 - 0.6 * smooth(cl01((u - 2.2) / 1.6)));
-      _dp.set(spot.x + Math.cos(a + u * 1.4) * spread, spot.y + 0.06 + 1.45 * Math.pow(u, 1.32), spot.z + Math.sin(a + u * 1.4) * spread - u * 0.2);
+    /* the three lights' climb: their height on four keys (seconds since their light, height, speed — Hermite between): off
+       the wet earth, up the trunk, SLOW through the crown, among its leaves, then away up out of the top; their distance
+       from the trunk on its own keys, wound round it, each a third of the way round from the others until they leave it */
+    const LKEY = [[0, 0.06, 0], [2.0, 4.6, 3.2], [5.4, 13.6, 2.0], [8.4, 30.0, 8.5]];
+    const LRAD = [[0, Math.hypot(ROOT.x - OAK.x, ROOT.z - OAK.z)], [1.6, 1.9], [2.2, 1.9], [4.0, 2.7], [5.4, 1.6], [8.4, 1.4]];   // (by photograph: met at the top, three were one glare)
+    const L_A0 = Math.atan2(ROOT.z - OAK.z, ROOT.x - OAK.x);
+    function lHeight(u) {
+      u = Math.max(0, Math.min(8.4, u));
+      for (let k = 0; k < LKEY.length - 1; k++) {
+        const [u0, y0, v0] = LKEY[k], [u1, y1, v1] = LKEY[k + 1];
+        if (u <= u1) { const h = u1 - u0, s = (u - u0) / h, s2 = s * s, s3 = s2 * s;
+          return (2 * s3 - 3 * s2 + 1) * y0 + (s3 - 2 * s2 + s) * h * v0 + (3 * s2 - 2 * s3) * y1 + (s3 - s2) * h * v1; }
+      }
+      return LKEY[LKEY.length - 1][1];
+    }
+    function lRadius(u) {
+      if (u <= LRAD[0][0]) return LRAD[0][1];
+      for (let k = 0; k < LRAD.length - 1; k++) if (u <= LRAD[k + 1][0]) return LRAD[k][1] + (LRAD[k + 1][1] - LRAD[k][1]) * smooth((u - LRAD[k][0]) / (LRAD[k + 1][0] - LRAD[k][0]));
+      return LRAD[LRAD.length - 1][1];
+    }
+    function dLightAt(t, i) {
+      const u = Math.max(0, t - DT.lights - i * 0.3);
+      const a = L_A0 + i * 2.09 * smooth(cl01(u / 1.6)) * (1 - 0.6 * smooth(cl01((u - 5.4) / 2.0))) + 0.8 * u, r = lRadius(u);
+      _dp.set(OAK.x + Math.cos(a) * r, lHeight(u), OAK.z + Math.sin(a) * r);
       return _dp;
     }
+    /* the lens up with them: from the roots, back and up, outside the crown, to under the morning (one curve, one ease) */
+    const LCAM = new THREE.CatmullRomCurve3([[ROOT.x + 1.1, 0.62, ROOT.z + 0.9], [OAK.x + 5.0, 1.6, OAK.z + 6.2], [OAK.x + 8.2, 4.6, OAK.z + 9.6], [OAK.x + 10.4, 5.4, OAK.z + 12.0]]
+      .map(([x, y, z]) => new THREE.Vector3(x, y, z)));
+    const _lc = new THREE.Vector3();
     function dTempleFrame(t, api) {
       dTempleProps();
-      const F = MHALL.F, ss = smooth;
-      worldM.visible = true;
+      worldM.visible = true; gardenSet(true);
+      const ss = smooth, nw = camera.aspect < 1;
+      fLight(TEMPLE_MORN);
+      gardenFrame(t);
       /* the shots */
-      if (t < DT.door) {                                      // the courtyard washed, the bell struck in its pavilion, the hall beyond
-        fLight(TEMPLE_DAWN); lensTo(64);
-        const k = ss(cl01((t - DT.court) / (DT.door - DT.court)));
-        const p = lerp3([MBELL.x + 3.4, 1.55, MBELL.z + 4.2], [MBELL.x + 3.9, 1.6, MBELL.z + 3.2], k);
-        const q = lerp3([MBELL.x, 2.7, MBELL.z], [-0.6, 3.6, -2.0], ss(cl01((t - (DT.bell + 0.6)) / 1.6)));
-        mCam(p[0], p[1], p[2], q[0], q[1], q[2]);
-      } else if (t < DT.kneel) {                              // he crosses to the hall: up the path to the open door
-        fLight(TEMPLE_DAWN); lensTo(72);
-        const k = ss(cl01((t - DT.door) / (DT.kneel - DT.door)));
-        /* (v24.2, L5-13: the eye rose 0.45 m over the flat courtyard and stopped 0.8 m short of the first step — it climbs only
-           over the flight now, z −0.6 to −1.8, and stops on its top step at the door) */
-        const p = lerp3([0.2, 1.62, 8.0], [0.0, 1.62, -1.7], k);
-        p[1] = 1.62 + F * cl01((-0.6 - p[2]) / 1.2);
-        mCam(p[0], p[1] + Math.sin(k * Math.PI * 7) * 0.012, p[2], 0, F + 1.9, MALT.z);
+      if (t < DT.walk) {                                      // the grounds at first light: mist on the grass, the oak, the monk already under it
+        lensTo(nw ? 64 : 58);
+        const k = ss(cl01((t - DT.court) / (DT.walk - DT.court)));
+        const p = lerp3([OAK.x + 6.0, 0.6, OAK.z + 16.5], [OAK.x + 5.2, 0.8, OAK.z + 13.8], k);
+        mCam(p[0], p[1], p[2], OAK.x + 2.2, 4.0 + 0.5 * k, OAK.z + 0.6);
+      } else if (t < DT.kneel) {                              // across the wet grass to his mat, the monk ahead under the crown
+        lensTo(68);
+        const k = ss(cl01((t - DT.walk) / (DT.kneel - DT.walk)));
+        const p = lerp3([OAK.x + 10.6, 1.62, OAK.z + 4.8], [KN2.x + 0.12, 1.62, KN2.z + 0.12], k);
+        p[1] = 1.62 - (1.62 - 0.95) * ss(cl01((k - 0.8) / 0.2));     // and down onto his knees as he arrives
+        mCam(p[0], p[1] + Math.sin(k * Math.PI * 7) * 0.012 * (1 - k), p[2], PLAT.x - 0.1, PLAT.top + 0.8 + 0.5 * (1 - k), PLAT.z);
       } else if (t < DT.teach) {                              // on his knees before the monk, the tray before him, his hands joined
-        fLight(TEMPLE_DAWN); lensTo(68);
+        lensTo(60);
         const k = ss(cl01((t - DT.kneel) / (DT.teach - DT.kneel)));
-        mCam(MKNEEL.x + 0.04 * k, F + 0.95, MKNEEL.z, MDAIS.x + 0.05, F + 1.12 - 0.02 * k, MDAIS.z);
-      } else if (t < DT.pour0 - 0.8) {                        // the monk looks down at the tray, then at him (from the side)
-        fLight(TEMPLE_DAWN); lensTo(46);
+        mCam(KN2.x + 0.04 * k, 0.95, KN2.z + 0.02 * k, PLAT.x - 0.1, PLAT.top + 0.86 - 0.02 * k, PLAT.z);
+      } else if (t < DT.pour0 - 0.8) {                        // the monk from his left: the trunk behind him, the light through the crown
+        lensTo(nw ? 50 : 44);
         const k = ss(cl01((t - DT.teach) / (DT.pour0 - 0.8 - DT.teach)));
-        mCam(MDAIS.x - 1.3 + 0.18 * k, F + 1.2, MDAIS.z + 0.62 - 0.08 * k, MDAIS.x + 0.06, F + 1.27, MDAIS.z);
-      } else if (t < DT.earth) {                              // the kruat nam: the vessel held from above the frame, the bowl filling
-        fLight(TEMPLE_DAWN);
+        mCam(PLAT.x + 1.25 - 0.15 * k, 1.12, PLAT.z - 1.85 + 0.2 * k, PLAT.x - 0.08, PLAT.top + 0.86, PLAT.z);
+      } else if (t < DT.wide) {                               // the kruat nam: the vessel from above the frame, the bowl filling on his mat
+        /* (from his right and from above, never from the monk's side toward him: he has no body in this game — v21.16) */
         const early = t < (DT.pour0 + DT.pour1) / 2, k = ss(cl01((t - (early ? DT.pour0 - 0.8 : (DT.pour0 + DT.pour1) / 2)) / 5.0));
-        lensTo(early ? 36 : 34);
-        if (early) mCam(MBOWL.x + 0.03, F + 0.16 - 0.015 * k, MBOWL.z + 0.44 - 0.05 * k, MBOWL.x - 0.02, F + 0.065, MBOWL.z);
-        else mCam(MBOWL.x + 0.27 - 0.03 * k, F + 0.17, MBOWL.z + 0.27 - 0.03 * k, MBOWL.x, F + 0.07, MBOWL.z);
-      } else {                                                // the roots: the water given to the earth, and the three lights rising
-        fLight(TEMPLE_DAWN);
-        const spot = { x: MTREE.x - 0.62, y: MTREE.h, z: MTREE.z + 0.42 };
-        const rk = ss(cl01((t - (DT.lights + 0.2)) / 3.6)), push = ss(cl01((t - DT.earth) / (DT.lights - DT.earth)));
-        lensTo(46 + 10 * rk);
-        const mid = dLightAt(t, 1, spot).clone();
-        const cam = lerp3(lerp3([spot.x - 0.17, spot.y + 0.64, spot.z + 0.76], [spot.x - 0.14, spot.y + 0.6, spot.z + 0.7], push),
-                          [spot.x - 1.3, spot.y + 1.05, spot.z + 1.5], rk);
-        const tgt = lerp3([spot.x + 0.05, spot.y + 0.04, spot.z - 0.05], [mid.x, mid.y, mid.z], ss(cl01((t - (DT.lights + 0.4)) / 1.6)));
-        mCam(cam[0], cam[1], cam[2], tgt[0], tgt[1], tgt[2]);
+        lensTo(early ? (nw ? 40 : 36) : 34);                  // (by photograph: on a phone the bowl overflowed the frame at 0.44 m)
+        if (early) mCam(GB.x - 0.03, GB.y + 0.16 - 0.015 * k + (nw ? 0.05 : 0), GB.z - (nw ? 0.62 : 0.44) + 0.05 * k, GB.x + 0.02, GB.y + 0.065, GB.z);
+        else mCam(GB.x - 0.05 + 0.02 * k, GB.y + 0.33 - 0.03 * k, GB.z - 0.12, GB.x, GB.y + 0.06, GB.z);
+      } else if (t < DT.earth) {                              // the verse's last lines: low round the trunk, past the monk, to where the water will go
+        lensTo(52);
+        const k = ss(cl01((t - DT.wide) / (DT.earth - DT.wide)));
+        const a = 0.42 + 0.63 * k, R = 4.9;                  // (ending where the trunk and the spot share a phone's frame)
+        const tgt = lerp3([PLAT.x - 0.1, PLAT.top + 0.7, PLAT.z], [ROOT.x, 0.1, ROOT.z], ss(cl01((k - 0.35) / 0.65)));
+        mCam(OAK.x + Math.cos(a) * R, 0.58 + 0.2 * k, OAK.z + Math.sin(a) * R, tgt[0], tgt[1], tgt[2]);
+      } else if (t < DT.lights) {                             // the water given to the earth among the roots
+        lensTo(46);
+        const k = ss(cl01((t - DT.earth) / (DT.lights - DT.earth)));
+        mCam(ROOT.x + 0.95 + 0.15 * k, 0.56 + 0.06 * k, ROOT.z + 0.78 + 0.12 * k, ROOT.x, 0.05, ROOT.z);
+      } else {                                                // and the three lights, up round the trunk into the crown and out of it
+        lensTo(46 + 16 * ss(cl01((t - DT.lights - 1.0) / 4.0)));
+        LCAM.getPoint(ss(cl01((t - DT.lights) / (DT.home - DT.lights))), _lc);
+        const L = dLightAt(t, 1), w = ss(cl01((t - DT.lights - 0.4) / 1.4));
+        mCam(_lc.x, _lc.y, _lc.z, ROOT.x + (L.x - ROOT.x) * w, 0.05 + (L.y - 0.05) * w, ROOT.z + (L.z - ROOT.z) * w);
         if (pitch.rotation.x > 1.2) pitch.rotation.x = 1.2;
       }
       dTempleFx(t);
     }
     /* THE MONK'S HEAD (CP13, the films lens: chapter 4's nod was lost in the copy, and his teaching was said by a
        statue). It lifts a little from the tray to him as he speaks, and dips on each phrase of his teaching (measured on
-       the shipped take: 0, 2.80, 5.12, 8.06 s) and of the verse (chapter 4's measure of the same take: 0, 3.56, 6.71,
-       9.73 s) — absolute from his rest, never stacked (v11.5); he faces −x, so a turn about +z bows him forward */
-    const _dq = new THREE.Quaternion(), _dz = new THREE.Vector3(0, 0, 1);
+       the shipped take: 0, 2.80, 5.12, 8.06 s) and of the Mettā verse (v24.7, its breaths: 0, 4.72, 9.70, 14.00 s) —
+       absolute from his rest, never stacked (v11.5). A turn about up × his facing bows him forward (v24.7: he faces east
+       under the oak, −x on the hall's dais, so the axis is read off his group where he now sits) */
+    const _dq = new THREE.Quaternion();
     function dMonkHead(t) {
       const mk = merit.monk;
       if (!mk.ready || !mk.head || !mk.rest) return;
@@ -6698,65 +6995,133 @@
         mk.head.quaternion.copy(mk.rest); mk.head.updateWorldMatrix(true, false);
         mk.restW = mk.head.getWorldQuaternion(new THREE.Quaternion());
         mk.parW = mk.head.parent.getWorldQuaternion(new THREE.Quaternion()).invert();
+        const ry = mk.group ? mk.group.rotation.y : -Math.PI / 2;
+        mk.bowAx = new THREE.Vector3(Math.cos(ry), 0, -Math.sin(ry));
       }
       let nod = -0.1 * smooth(cl01((t - (DT.teach + 0.1)) / 1.0)) * (1 - smooth(cl01((t - (DT.pour0 - 1.6)) / 1.0)));
       const dip = (t0, ps, a) => { let m = 0; for (const p of ps) { const d = t - t0 - p; if (d > 0 && d < 2.4) m = Math.max(m, Math.sin(Math.PI * d / 2.4) * a); } return m; };
-      nod += dip(DT.teach + 0.3, [0, 2.80, 5.12, 8.06], 0.08) + dip(DT.pour0 - 0.6, [0, 3.56, 6.71, 9.73], 0.11);
-      _dq.setFromAxisAngle(_dz, nod);
+      nod += dip(DT.teach + 0.3, [0, 2.80, 5.12, 8.06], 0.08) + dip(DT.pour0 - 0.6, [0, 4.72, 9.70, 14.00], 0.11);
+      _dq.setFromAxisAngle(mk.bowAx, nod);
       mk.head.quaternion.copy(mk.parW).multiply(_dq.multiply(mk.restW));
     }
     function dMonkRest() { const mk = merit.monk; if (mk.ready && mk.head && mk.rest) mk.head.quaternion.copy(mk.rest); }
+    /* (v24.7) WHERE THE MONK, THE BOWL AND THE WET EARTH ARE: in the hall (film M, at night, sees the monk on his dais) or in
+       the garden under the oak (ending D) — set, never toggled blind, so a skip, a replay or film M after D lands right; and
+       World M's two skies with them. The monk's head rest is read again wherever he now sits (dMonkHead's restW) */
+    function gardenSet(on) {
+      on = !!on;
+      if (mLive.gardenOn === on) return;
+      mLive.gardenOn = on;
+      if (mLive.garden) mLive.garden.visible = on;
+      if (mLive.sky) mLive.sky.visible = !on;
+      const mk = merit.monk, g0 = mk.group;
+      if (g0) {
+        if (on) { g0.position.set(PLAT.x - 0.12, PLAT.top + 0.008, PLAT.z); g0.rotation.y = Math.PI / 2; }
+        else { g0.position.set(MDAIS.x + 0.12, MHALL.F + MDAIS.h, MDAIS.z); g0.rotation.y = -Math.PI / 2; }
+        mk.restW = mk.parW = null;
+        if (mk.head && mk.rest) mk.head.quaternion.copy(mk.rest);
+      }
+      if (mLive.bowl) { if (on) mLive.bowl.position.set(GB.x, GB.y, GB.z); else mLive.bowl.position.set(MBOWL.x, MHALL.F, MBOWL.z); }
+      const wx = on ? ROOT.x : MTREE.x - 0.62, wz = on ? ROOT.z : MTREE.z + 0.42;
+      if (mLive.wet) mLive.wet.position.set(wx, on ? -0.009 : MTREE.h - 0.012, wz);
+      if (mLive.groundGlow) mLive.groundGlow.position.set(wx, on ? -0.006 : MTREE.h - 0.004, wz);
+    }
+    /* the garden's air, every frame it is seen: the mist drifting on the scene's clock, the veils turned to the lens, the
+       sun's shafts turned on their own length to it and breathing a little */
+    const _gn = new THREE.Vector3(), _gy = new THREE.Vector3(), _gc = new THREE.Vector3(), _gm = new THREE.Matrix4();
+    function gardenFrame(t) {
+      const cx = yaw.position.x - MX, cy = yaw.position.y, cz = yaw.position.z, u = t - DT.court;
+      for (const m of mLive.mist || []) { const b = m.userData.base; m.position.set(b[0] + 0.12 * u, b[1], b[2] + 0.04 * u); m.material.opacity = m.userData.op; }
+      for (const v of mLive.veils || []) v.rotation.y = Math.atan2(cx - v.position.x, cz - v.position.z);
+      for (const R of mLive.rays || []) {
+        _gc.copy(R.dir).multiplyScalar(R.len / 2).add(R.top);
+        _gn.set(cx - _gc.x, cy - _gc.y, cz - _gc.z); _gn.addScaledVector(R.dir, -_gn.dot(R.dir));
+        if (_gn.lengthSq() < 1e-6) _gn.set(0, 0, 1); _gn.normalize();
+        _gy.crossVectors(_gn, R.dir);
+        _gm.makeBasis(R.dir, _gy, _gn); R.r.quaternion.setFromRotationMatrix(_gm);
+        R.r.position.copy(_gc); R.r.scale.set(R.len, R.w, 1);
+        R.r.material.opacity = R.op * (0.8 + 0.2 * Math.sin(t * 0.7 + R.ph));
+      }
+    }
+    /* (v24.7) HOME, THE MORNING AFTER: the three lights come in at his window and each goes into its own child (Chad: "and
+       then in the next scene, those glowing orbs enter from the window, and enters each kumanthong"). From across his
+       room, the altar under the window and the morning beyond it (a phone stands further back, so all three and the window
+       are in its narrow frame); each light out of the morning, in through the panes, and down into its child's chest, the
+       child lit from within for a breath as it goes in. A function of the scene's clock */
+    function dWinFrame(t) {
+      const T = END.D, D = dProps(), u = t - T.home, nw = camera.aspect < 1;
+      lensTo(nw ? 64 : 56);
+      const k = smooth(cl01(u / (T.morn - T.home)));
+      camAt((nw ? -0.62 : 0.40) + 0.06 * k, nw ? 1.30 : 1.25, 0.40, RISER.x, (nw ? 1.32 : 1.26) - 0.04 * k, 0.40);   // (by photograph: from 0.02 a desktop held the whole wall and the lights were specks)
+      if (roomLive.pinwheel) roomLive.pinwheel.rotation.z += 0.05;   // (the morning air)
+      D.orbs.forEach((O, i) => {
+        const a0 = 0.7 + 0.55 * i, a1 = a0 + 1.45, v = cl01((u - a0) / (a1 - a0)), e = smooth(v);
+        const P0 = [ROOM.x1 + 3.4, 2.55 - 0.12 * i, ALTAR_Z[i] + (i - 1) * 0.55], P1 = [ROOM.x1 + 0.04, 1.55 + 0.06 * i, ALTAR_Z[i]];
+        const P2 = [RISER.x - 0.01, KID_BASE + KIDS[i].h * 0.56, ALTAR_Z[i]];
+        const q = (j) => (1 - e) * (1 - e) * P0[j] + 2 * (1 - e) * e * P1[j] + e * e * P2[j];   // out of the morning, in at the window, down into the child
+        const born = smooth(cl01((u - (a0 - 0.4)) / 0.5)), sink = 1 - smooth(cl01((v - 0.86) / 0.14));
+        const show = u > a0 - 0.4 && v < 1 && born * sink > 0.01;
+        O.core.visible = O.halo.visible = show;
+        if (show) {
+          O.core.position.set(q(0), q(1), q(2)); O.halo.position.copy(O.core.position);
+          const sc = 0.15 * (0.55 + 0.45 * sink); O.core.scale.set(sc, sc, 1); O.halo.scale.set(sc * 5, sc * 5, 1);   // (by photograph: at 0.055, then 0.075, a phone barely saw them)
+          O.core.material.opacity = born * sink; O.halo.material.opacity = 0.6 * born * sink;
+        }
+        const bu = u - a1, bk = bu < 0 ? 0 : Math.sin(Math.PI * cl01(bu / 1.6)) * Math.min(1, bu / 0.3);   // the child, lit from within for a breath
+        O.bloom.visible = bk > 0.01;
+        if (O.bloom.visible) { O.bloom.position.set(P2[0], P2[1], P2[2]); O.bloom.material.opacity = 0.95 * bk; const bs = 0.42 + 0.22 * bk; O.bloom.scale.set(bs, bs, 1); }
+      });
+    }
     function dTempleFx(t) {
-      const F = MHALL.F;
       dMonkHead(t);
-      /* the bell, struck: it swings and settles */
-      { const b = mLive.bell, d = t - DT.bell; if (b) b.swing.rotation.z = d > 0 ? Math.sin(d * 4.2) * 0.16 * Math.exp(-d * 0.7) : 0; }
+      /* (v24.7: no bell is seen here — the hall's is heard from across the wall) */
       /* the tray of offerings before his knees: rice, sweets, the three small red sodas (from the kneel on) */
       if (endLive.dTray) endLive.dTray.visible = t >= DT.kneel - 0.1 && t < DT.earth;
-      /* the pour (chapter 4's S4/S4c, on ending D's clock) */
-      const inside = t >= DT.pour0 - 0.8 && t < DT.earth, pouring = inside;
+      /* the kruat nam into the silver bowl on his mat: the brass vessel from above the frame on his side (+x), its spout
+         to the bowl (−x); the bowl stays full until he takes it to the roots */
+      const inside = t >= DT.pour0 - 0.8 && t < DT.wide;
       const fillK = cl01((t - DT.pour0) / (DT.pour1 - DT.pour0));
       const flow = t < DT.pour0 ? 0 : t < DT.pour1 - 0.6 ? 1 : t < DT.pour1 ? 1 - (t - (DT.pour1 - 0.6)) / 0.6 : 0;
       { const v = mLive.vessel, tip = smooth(cl01((t - (DT.pour0 - 0.5)) / 0.7)) * (1 - smooth(cl01((t - DT.pour1) / 0.8)));
         v.visible = inside;
-        v.position.set(MBOWL.x - 0.15, F + 0.155 + 0.03 * (1 - tip), MBOWL.z + 0.004);
-        v.rotation.set(0, 0, -0.35 - 0.62 * tip);
-        mLive.water.visible = inside && fillK > 0.01;
+        v.position.set(GB.x + 0.15, GB.y + 0.155 + 0.03 * (1 - tip), GB.z - 0.004);
+        v.rotation.set(0, Math.PI, -0.35 - 0.62 * tip);
+        mLive.water.visible = t >= DT.pour0 - 0.8 && t < DT.earth && fillK > 0.01;
         const lvl = 0.02 + 0.042 * fillK;
         mLive.water.position.y = lvl;
         { const y = lvl, ir = y <= 0.016 ? 0 : y < 0.026 ? 0.06 * (y - 0.016) / 0.01 : y < 0.05 ? 0.06 + 0.02 * (y - 0.026) / 0.024
                        : y < 0.074 ? 0.08 + 0.008 * (y - 0.05) / 0.024 : 0.088 + 0.006 * Math.min(1, (y - 0.074) / 0.008);
           mLive.water.scale.setScalar(Math.max(0.01, ir * 0.996 - 0.0015) / 0.08); }
         const st = mLive.stream;
-        if (pouring && flow > 0.02) {
+        if (inside && flow > 0.02) {
           v.updateMatrix();
           _dm.copy(v.userData.spout).applyMatrix4(v.matrix);
-          _dw.set(Math.cos(v.rotation.z), Math.sin(v.rotation.z), 0).normalize();
-          const end = mStreamTo(_dm, _dw, 0.32 + 0.1 * flow, F + lvl, 0.0028 * (0.45 + 0.55 * flow));
+          _dw.set(1, 0, 0).applyQuaternion(v.quaternion).normalize();      // (the spout's way: its own +x, turned with the vessel)
+          const end = mStreamTo(_dm, _dw, 0.32 + 0.1 * flow, GB.y + lvl, 0.0028 * (0.45 + 0.55 * flow));
           st.visible = true; mLive.streamMat.opacity = 0.62 * Math.min(1, flow * 1.5);
           mLive.streamMat.map.offset.y = -t * 2.6;
           mLive.hit = end;
         } else if (t < DT.earth) st.visible = false;
         mLive.ripples.forEach((rp, i) => {
-          const live = pouring && flow > 0.05 && mLive.hit, ph = ((t * 1.25 + i / mLive.ripples.length) % 1);
+          const live = inside && flow > 0.05 && mLive.hit, ph = ((t * 1.25 + i / mLive.ripples.length) % 1);
           rp.r.visible = !!live; if (!live) return;
-          rp.r.position.set(mLive.hit.x - MBOWL.x, lvl + 0.0008, mLive.hit.z - MBOWL.z);
+          rp.r.position.set(mLive.hit.x - GB.x, lvl + 0.0008, mLive.hit.z - GB.z);
           const sc = 0.4 + ph * 2.2; rp.r.scale.set(sc, sc, sc); rp.r.material.opacity = (1 - ph) * 0.55 * flow;
         });
         if (t < DT.earth) mLive.drops.forEach((d, i) => {
-          const live = pouring && flow > 0.05 && mLive.hit; d.s.visible = !!live; if (!live) return;
+          const live = inside && flow > 0.05 && mLive.hit; d.s.visible = !!live; if (!live) return;
           const ph = ((t * 1.7 + i * 0.137) % 1), a = i * 2.4;
           d.s.position.set(mLive.hit.x + Math.cos(a) * 0.012 * ph, mLive.hit.y + 0.018 * Math.sin(Math.PI * ph), mLive.hit.z + Math.sin(a) * 0.012 * ph);
           d.s.material.opacity = 0.85 * Math.sin(Math.PI * ph) * flow; const s = 0.006 + 0.006 * Math.sin(Math.PI * ph); d.s.scale.set(s, s, 1);
         });
       }
-      /* the roots (chapter 4's S6): the bowl tipped over the earth, the wet patch spreading, the glow, and THREE lights */
-      { const out = t >= DT.earth && t < DT.home, b2 = mLive.bowl2, spot = { x: MTREE.x - 0.62, y: MTREE.h, z: MTREE.z + 0.42 };
+      /* the roots: the bowl tipped toward the lens over the earth, the wet patch spreading, the glow, and THREE lights */
+      { const out = t >= DT.earth && t < DT.home, b2 = mLive.bowl2, spot = { x: ROOT.x, y: 0.0, z: ROOT.z };
         const tilt = smooth(cl01((t - (DT.earth0 - 0.2)) / 1.0)) * (1 - smooth(cl01((t - DT.earth1) / 0.6)));
         const lift = smooth(cl01((t - (DT.earth1 + 0.4)) / 0.8));
         b2.visible = out && lift < 0.98;
-        b2.position.set(spot.x - 0.07, spot.y + 0.46 + 0.6 * lift, spot.z + 0.09);
-        b2.rotation.set(0, Math.PI / 4, 0); b2.rotateOnAxis(_dt.set(1, 0, 0), -1.25 * tilt);
+        b2.position.set(spot.x - 0.10, spot.y + 0.46 + 0.6 * lift, spot.z - 0.10);
+        b2.rotation.set(0, Math.PI * 1.25, 0); b2.rotateOnAxis(_dt.set(1, 0, 0), -1.25 * tilt);
         const eflow = out && t > DT.earth0 && t < DT.earth1 ? Math.min(1, (t - DT.earth0) * 3) * Math.min(1, (DT.earth1 - t) * 2) : 0;
         if (out && eflow > 0.02) {
           b2.updateMatrix();
@@ -6773,17 +7138,34 @@
         mLive.wet.visible = out; mLive.wet.material.opacity = 0.7 * wet; mLive.wet.scale.setScalar(0.35 + 0.75 * wet);
         { const gk = smooth(cl01((t - (DT.lights - 0.5)) / 0.8)) * (1 - smooth(cl01((t - (DT.lights + 1.5)) / 1.6)));
           mLive.groundGlow.visible = out && gk > 0.01; mLive.groundGlow.material.opacity = 0.55 * gk; }
-        // the three lights, each child's own colour, born on the wet earth and rising together into the dawn
+        /* the three lights, each child's own colour, born on the wet earth and wound up round the trunk into the crown —
+           their glow wider among the leaves, lighting them — and out of the top into the morning */
         endLive.dLights.forEach((L, i) => {
-          const mu = t - DT.lights - i * 0.35;
+          const mu = t - DT.lights - i * 0.3;
           L.m.visible = L.h.visible = out && mu > 0;
           if (!L.m.visible) return;
-          const p = dLightAt(t, i, spot);
+          const p = dLightAt(t, i);
           L.m.position.set(p.x, p.y, p.z); L.h.position.copy(L.m.position);
           const born = cl01(mu / 1.0), fadeTop = 1 - cl01((t - (DT.home - 0.9)) / 0.9), pulse = 0.85 + 0.15 * Math.sin(mu * 5.2 + i);
+          const crown = smooth(cl01((p.y - 4.0) / 2.0)) * (1 - smooth(cl01((p.y - 13.5) / 2.0)));
           const dcam = Math.hypot(yaw.position.x - (MX + p.x), yaw.position.y - p.y, yaw.position.z - p.z);
-          const sc = Math.max(0.04, dcam * 0.03) * (0.55 + 0.45 * born) * pulse; L.m.scale.set(sc, sc, 1); L.h.scale.set(sc * 9, sc * 9, 1);
-          L.m.material.opacity = born * fadeTop; L.h.material.opacity = 0.6 * born * fadeTop * pulse;   // (CP8: by photograph, dots among the leaves)
+          const above = smooth(cl01((p.y - 14.0) / 4.0));    // (by photograph: ×9 and ×1.7 in the crown made the three one glare the size of the frame)
+          /* (v24.7, by photograph on a phone: at 0.026 of their distance they were specks on the trunk and among the leaves —
+             Chad asked for glowing orbs going up into the tree; the halo is a smaller multiple so the three never merge) */
+          const sc = Math.max(0.07, dcam * 0.058) * (0.55 + 0.45 * born) * pulse, hs = sc * 2.4 * (1 + 0.25 * crown) * (1 - 0.3 * above);
+          L.m.scale.set(sc, sc, 1); L.h.scale.set(hs, hs, 1);
+          L.m.material.opacity = born * fadeTop; L.h.material.opacity = 0.6 * born * fadeTop * pulse * (1 + 0.15 * crown);   // (CP8: by photograph, dots among the leaves; v24.7: two merged into one glare at the top at ×1.3)
+        });
+        // and the glints they leave in the leaves as they wind up through them, each twinkling out
+        (endLive.dSparks || []).forEach((q) => {
+          const age = t - DT.lights - q.i * 0.3 - q.born, life = 2.6;
+          q.s.visible = out && age > 0 && age < life;
+          if (!q.s.visible) return;
+          const p = dLightAt(DT.lights + q.i * 0.3 + q.born, q.i);
+          q.s.position.set(p.x + q.off[0], p.y + q.off[1], p.z + q.off[2]);
+          const dcam = Math.hypot(yaw.position.x - (MX + q.s.position.x), yaw.position.y - q.s.position.y, yaw.position.z - q.s.position.z);
+          const sc = Math.max(0.06, dcam * 0.017); q.s.scale.set(sc, sc, 1);
+          q.s.material.opacity = Math.sin(Math.PI * age / life) * (0.55 + 0.45 * Math.sin(age * 9 + q.j * 1.7)) * (1 - cl01((t - (DT.home - 0.9)) / 0.9));
         });
       }
     }
@@ -7139,7 +7521,7 @@
        silent, no beat said, no lean, no film's look */
     function counterReset() {
       cntDone.clear(); cntBusy = false; kidForce(1, null);
-      cntLive.opened = false; cntLive.helloOn = false; cntLive.lean = null; cntLive.view = null; cntLive.ownerLook = 0;
+      cntLive.opened = false; cntLive.helloOn = false; cntLive.lean = null; cntLive.view = null; cntLive.ownerLook = 0; cntLive.lookPt = null;
       cntLive.lull = false; cntLive.boxOpen = cntLive.boxOpenTo = 0; cntLive.windT = 0;
       sfxDown(cntLive.boxSrc, 0.1); cntLive.boxSrc = null;     // (v24.5: the box's loop, from its head next run)
       for (const S of cntLive.sets) setShow(S, false, true);
@@ -7263,12 +7645,12 @@
                                 owner: !!(cntLive.owner && cntLive.owner.ready) },
                      care: { step: careStep(), done: careTag(), busy: careBusy, carry: careLive.carry, seat: careLive.seat, foamed: careLive.foamed },
                      open: { busy: openLive.busy, kid: openLive.kid, k: +openLive.k.toFixed(2), came: littleLive.cameBack, slips: littleLive.slipN } }),
-      counter: { solve: leanSolve, LEAN, BAG_HELD, sets: cntLive.sets, live: cntLive },   // the counter's handles (§4.0b), for probes
+      counter: { solve: leanSolve, LEAN, sets: cntLive.sets, live: cntLive },   // the counter's handles (§4.0b), for probes
       careLab, careLive,                                       // PLAY I's held moments and its live state (CP6), for probes
       madeF, cardF, introF, homeF,                             // the counter's films' controllers (film M, film K), the opening film's and the home film's (CP9): every picture a function of their clock
       redF, shyF, littleF, W,                                  // the three possessions' controllers (CP7), and the words their events show
-      endT: { begin: endBegin, frame: endFrame, yatha: endYatha, live: endLive, props: endProps, END },   // the endings' controller (CP8), and its clocks (for probes)
-      redStampTo, redStampAuto, redStampEnd, shyGap, shyPeekEnd, comeOpts, comeBegin, comeDone, surfaceStart, surfaceFrame,
+      endT: { begin: endBegin, frame: endFrame, metta: endMetta, live: endLive, props: endProps, END },   // the endings' controller (CP8), and its clocks (for probes)
+      redStampTo, redStampAuto, redStampEnd, comeBegin, comeClimb, surfaceStart, surfaceFrame,
       openLive, doubles: { of: doubleOf, set: doubleSet, off: doublesOff }, cityOut,   // (for probes)
       ownerTalk: (secs) => personTalk(cntLive.owner, secs),    // a film's line from the owner rides his talking take
       ownerNod: () => { if (cntLive.owner) cntLive.owner.nodT = performance.now() / 1000; },   // and his nod (the opening's beckon, CP13)
@@ -7626,8 +8008,9 @@
   }
   const B_TITLE = 'I opened myself to my own kumanthong. All three. It\'s real.';
   const B_BODY = 'First the red one... I stood like him, I shouted like him... then the shy one, under my own desk... then the little one wouldn\'t let me go...';
-  /* THE LAPTOP'S PAGE (B, and C's rival shop): one canvas redrawn when its state moves — `typed` characters of the title,
-     then of the body; 'posted' is the board with his thread on top; 'rival' is a dashcam shop's page (C) */
+  /* THE LAPTOP'S PAGE (B, and C's wish): one canvas redrawn when its state moves — `typed` characters of the title, then
+     of the body; 'posted' is the board with his thread on top; 'lotto' is the lottery's next draw (C, since v24.7: it was
+     a rival's dashcam shop, his wish against it) */
   function makeLaptopPage(THREE, cnv) {
     const W = 512, H = 322, [c, x] = sized(cnv, W, H), t = done(THREE, c, false);
     let last = '';
@@ -7635,17 +8018,22 @@
       const key = state + ':' + (n | 0); if (key === last) return; last = key;
       x.textAlign = 'left'; x.textBaseline = 'alphabetic';
       x.fillStyle = '#eef0f3'; x.fillRect(0, 0, W, H);
-      if (state === 'rival') {
-        pgChrome(x, W, 'dashking.sg/shop/4k-dashcam');
-        x.fillStyle = '#10161f'; x.fillRect(0, 44, W, 30);
-        x.fillStyle = '#f2b429'; x.font = 'bold 15px sans-serif'; x.fillText('DASHKING', 16, 64);
+      if (state === 'lotto') {                                 // (v24.7: ending C's wish — the next draw, its numbers still blank)
+        pgChrome(x, W, 'lottery-results/next-draw');
+        x.fillStyle = '#0f2a5c'; x.fillRect(0, 44, W, 30);
+        x.fillStyle = '#ffd34a'; x.font = 'bold 15px sans-serif'; x.fillText('LOTTERY RESULTS', 16, 64);
         x.fillStyle = '#ffffff'; x.fillRect(96, 84, 320, 228);
-        x.fillStyle = '#1b2733'; x.font = 'bold 18px sans-serif'; x.fillText('4K Dashcam · Night Vision', 112, 112);
-        x.fillStyle = '#c0281e'; x.font = 'bold 30px sans-serif'; x.fillText('$59', 112, 156);
-        x.fillStyle = '#8a94a0'; x.font = '13px sans-serif'; x.fillText('was $89', 180, 156);
-        x.fillStyle = '#2a8a4a'; x.font = 'bold 22px sans-serif'; x.fillText('2,000 sold', 112, 204);
-        x.fillStyle = '#f2b429'; x.font = '16px sans-serif'; x.fillText('★★★★★  (1,412)', 112, 236);
-        x.fillStyle = '#20242c'; x.fillRect(112, 262, 140, 34); x.fillStyle = '#fff'; x.font = 'bold 14px sans-serif'; x.fillText('ADD TO CART', 132, 284);
+        x.fillStyle = '#1b2733'; x.font = 'bold 16px sans-serif'; x.fillText('NEXT DRAW  ·  SAT 6:30 PM', 112, 110);
+        x.fillStyle = '#8a94a0'; x.font = '12px sans-serif'; x.fillText('JACKPOT (estimated)', 112, 136);
+        x.fillStyle = '#c0281e'; x.font = 'bold 30px sans-serif'; x.fillText('$4,000,000', 112, 170);
+        x.fillStyle = '#8a94a0'; x.font = '12px sans-serif'; x.fillText('WINNING NUMBERS', 112, 200);
+        for (let i = 0; i < 6; i++) {
+          const cx = 128 + i * 46, cy = 230;
+          x.fillStyle = '#f2f4f7'; x.beginPath(); x.arc(cx, cy, 17, 0, Math.PI * 2); x.fill();
+          x.strokeStyle = '#c9d0d8'; x.lineWidth = 2; x.stroke();
+          x.fillStyle = '#9aa3ad'; x.font = 'bold 18px sans-serif'; x.textAlign = 'center'; x.fillText('?', cx, cy + 6); x.textAlign = 'left';
+        }
+        x.fillStyle = '#20242c'; x.fillRect(112, 266, 140, 34); x.fillStyle = '#fff'; x.font = 'bold 14px sans-serif'; x.fillText('BUY A TICKET', 128, 288);
         t.needsUpdate = true; return;
       }
       pgChrome(x, W, state === 'posted' ? 'amulet-talk/experiences' : 'amulet-talk/experiences/new');
@@ -7937,6 +8325,59 @@
     // the first stars on the far, dark side
     for (let i = 0; i < 120; i++) { const sx = (SU - W / 2 + (r() - 0.5) * W * 0.7 + W) % W, sy = r() * H * 0.24;
       x.fillStyle = `rgba(255,255,255,${0.2 + r() * 0.5})`; x.fillRect(sx, sy, 1.4, 1.4); }
+    return yDone(THREE, c, false);
+  }
+  /* (v24.7) ending D's morning under the oak: the sun just up in the EAST, where TEMPLE_MORN's key light comes from (u 0.43
+     on the dome, 18 degrees up), the sky clear and pale overhead, a band of mist along the line all the way round, thin
+     high cloud catching the gold. Painted darker than it reads: the renderer's ACES at 1.42 lifts it (v8.9's law). The
+     hall's dome is chapter 4's sunset, and stays its */
+  function makeMSkyMorn(THREE, cnv) {
+    const W = 2048, H = 1024, [c, x] = ySized(cnv, W, H), r = yRng(331);
+    const g = x.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0.00, '#3e5a8c'); g.addColorStop(0.18, '#5a77a2'); g.addColorStop(0.33, '#8098b8'); g.addColorStop(0.42, '#a8b2bc');
+    g.addColorStop(0.47, '#c4c0b6'); g.addColorStop(0.50, '#beb8ac'); g.addColorStop(0.53, '#7c7c6e'); g.addColorStop(0.62, '#4e5046'); g.addColorStop(1.0, '#2e3028');
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+    const SU = 0.43 * W, SV = (90 - 18) / 180 * H;
+    const wash = (cx, cy, rx, ry, col) => { for (const ox of [-W, 0, W]) { x.save(); x.translate(cx + ox, cy); x.scale(1, ry / rx);
+      const rg = x.createRadialGradient(0, 0, 0, 0, 0, rx); rg.addColorStop(0, col); rg.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = rg; x.fillRect(-rx, -rx, rx * 2, rx * 2); x.restore(); } };
+    wash(SU, SV, W * 0.40, H * 0.34, 'rgba(232,186,128,0.50)');      // the sun's half of the sky warmer
+    wash(SU, SV, W * 0.12, H * 0.10, 'rgba(240,214,170,0.75)');
+    wash(SU - W / 2, H * 0.36, W * 0.38, H * 0.20, 'rgba(110,135,175,0.35)');   // the far side still cool
+    // the mist lying along the line, all the way round
+    { const mg = x.createLinearGradient(0, H * 0.42, 0, H * 0.57); mg.addColorStop(0, 'rgba(200,198,190,0)'); mg.addColorStop(0.5, 'rgba(206,204,196,0.85)'); mg.addColorStop(1, 'rgba(180,182,172,0)');
+      x.fillStyle = mg; x.fillRect(0, H * 0.42, W, H * 0.15); }
+    // thin high cloud, lit on the sun's side — soft streaks, each a few blurred puffs (by photograph: solid ellipses read as
+    // brush strokes laid on the sky)
+    for (let i = 0; i < 40; i++) {
+      const cy = H * (0.14 + r() * 0.24), cx = r() * W, len = W * (0.04 + r() * 0.10), th = 4 + r() * 8;
+      let du = Math.abs(cx - SU); du = Math.min(du, W - du) / (W / 2);
+      const near = Math.max(0, 1 - du * 1.4), cr = Math.round(196 + 40 * near), cg = Math.round(200 + 16 * near), cb = Math.round(208 - 30 * near);
+      const a = 0.08 + 0.10 * r();
+      for (let k = 0; k < 5; k++) {
+        const px = cx + (k - 2) * len * 0.2 + (r() - 0.5) * len * 0.1, py = cy + (r() - 0.5) * th, rr = th * (1.6 + r());
+        for (const ox of [-W, 0, W]) { x.save(); x.translate(px + ox, py); x.scale(len / (4 * rr), 1);
+          const rg = x.createRadialGradient(0, 0, 0, 0, 0, rr); rg.addColorStop(0, `rgba(${cr},${cg},${cb},${a.toFixed(3)})`); rg.addColorStop(1, `rgba(${cr},${cg},${cb},0)`);
+          x.fillStyle = rg; x.fillRect(-rr, -rr, rr * 2, rr * 2); x.restore(); }
+      }
+    }
+    // the sun, just over the trees, and its bloom
+    const sg = x.createRadialGradient(SU, SV, 0, SU, SV, 70); sg.addColorStop(0, 'rgba(255,250,232,1)'); sg.addColorStop(0.14, 'rgba(250,236,200,1)'); sg.addColorStop(0.4, 'rgba(236,196,140,0.45)'); sg.addColorStop(1, 'rgba(230,180,120,0)');
+    x.fillStyle = sg; x.fillRect(SU - 70, SV - 70, 140, 140);
+    return yDone(THREE, c, false);
+  }
+  /* (v24.7) morning mist: a soft cloud of blobs, faded to nothing at every edge, so a plane of it — laid on the grass or
+     hung between the trees — shows no rim */
+  function makeMMist(THREE, cnv) {
+    const S = 256, [c, x] = cnv(S), r = yRng(337);
+    x.clearRect(0, 0, S, S);
+    for (let i = 0; i < 80; i++) {
+      const a = r() * Math.PI * 2, d = Math.sqrt(r()) * S * 0.30, px = S / 2 + Math.cos(a) * d, py = S / 2 + Math.sin(a) * d * 0.8, rad = 18 + r() * 44;
+      const g = x.createRadialGradient(px, py, 0, px, py, rad); g.addColorStop(0, `rgba(255,255,255,${(0.07 + r() * 0.10).toFixed(3)})`); g.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = g; x.fillRect(px - rad, py - rad, rad * 2, rad * 2);
+    }
+    x.globalCompositeOperation = 'destination-in';
+    const f = x.createRadialGradient(S / 2, S / 2, S * 0.18, S / 2, S / 2, S * 0.5); f.addColorStop(0, 'rgba(0,0,0,1)'); f.addColorStop(1, 'rgba(0,0,0,0)');
+    x.fillStyle = f; x.fillRect(0, 0, S, S); x.globalCompositeOperation = 'source-over';
     return yDone(THREE, c, false);
   }
   function makeMSlabs(THREE, cnv) {
@@ -9039,10 +9480,10 @@
     sfxFade(T.end - 1.0, T.end - 0.1, 'k5vowtheme');
     sfx(T.k3 + 0.6, 'ow5never', 1);                      // "But listen, ah. Never keep them for greed..."  (10.7 s)
     step(T.k3 + 0.6, () => stage.ownerTalk(10.4));
-    sfx(T.k3 + 11.6, 'ow5wrong', 1);                     // "And never ask them to do anything wrong..."  (15.7 s)
-    step(T.k3 + 11.6, () => stage.ownerTalk(15.4));
-    sfx(T.k3 + 27.6, 'ow5promise', 1);                   // "And not for one month, not for one year... Can or not?"  (20.2 s)
-    step(T.k3 + 27.6, () => stage.ownerTalk(19.9));
+    sfx(T.k3 + 11.6, 'ow5wrong', 1);                     // "And never ask them to do anything wrong..."  (9.4 s since v24.7's cut)
+    step(T.k3 + 11.6, () => stage.ownerTalk(9.1));
+    sfx(T.k3 + 21.3, 'ow5promise', 1);                   // "Every day you look after them... Can or not?"  (17.0 s since v24.7's cut)
+    step(T.k3 + 21.3, () => stage.ownerTalk(16.7));
     fade(T.end - 1.0, T.end - 0.1, 0, 1);
     step(T.end, () => KF.end());
   }
@@ -9116,11 +9557,11 @@
     sfx(T.end - 2.6, 'z5again1', 1);                         // "...One more."  (CP12: 0.35 s after the line before, measured)
     step(T.end, () => F.end());
   }
-  /* POSSESSION 2 · THE SHY ONE (§4.4, CP7): stage.shyF's pictures; its PEEK (drag the fingers apart: a craft slide the
-     film runs on through) and its lines. */
+  /* POSSESSION 2 · THE SHY ONE (§4.4, CP7): stage.shyF's pictures; its PEEK (the fingers parting by themselves since
+     v24.7 — it was a craft slide the player dragged) and its lines. */
   function shyFilm(c, s, api) {
-    const { tr, step, sfx, fade, rawK, stage, event } = api;
-    const F = stage.shyF, T = SFT, W = stage.W;
+    const { tr, step, sfx, fade, rawK, stage } = api;
+    const F = stage.shyF, T = SFT;
     c.keepFade = true;
     /* (CP13, the films lens: it handed play a different view and eye height with no black between — on the floor by the
        desk, turned to the little one — so it ends on a short black, after his last line, which the kit's fade lifts) */
@@ -9132,11 +9573,10 @@
     sfx(T.contact, 'k5enter2', 0.6);
     sfx(T.peek0, 'k5shy', 0.45);                             // the music box and a plucked khim
     sfx(T.peek0 + 0.2, 'z5s1', 1);                           // "Hehe... you can't see me..."
-    /* (low: CP13, the play's vision review — on a phone the panel under the stat bars lay over the shy one in the gap
-       between the fingers, the very thing PEEK-A-BOO is about; it stands at the foot, over the fingers' bases) */
-    event(T.peek, { kind: 'craft', label: W.titlePeek, low: true, steps: [{ g: 'slide', dir: 'side', len: 0.14, word: W.craftPeek }],
-                    at: { sx: 0.5, sy: 0.55 }, onProgress: (si, k) => stage.shyGap(k) });
-    step(T.scuttle - 0.05, () => stage.shyPeekEnd());
+    /* (v24.7: PEEK-A-BOO plays by itself — stage.shyF draws the fingers parting, closing and parting again wider,
+       shyGapAt — its peek and its giggle here) */
+    sfx(T.peek + 0.35, 'k5peek', 0.4);                       // the first peek through the fingers
+    sfx(T.peek + 2.0, 'k5giggle', 0.38);                     // and the second, wider, with a giggle
     sfx(T.scuttle, 'k5scuttle', 0.6);
     sfx(T.scuttle + 0.6, 'z5s2', 1);                         // "Shhh... hide... hide..."
     sfx(T.coin, 'k5coin', 0.5);
@@ -9153,11 +9593,10 @@
     step(T.end, () => F.end());
   }
   /* POSSESSION 3 · THE LITTLE ONE, and COME BACK (§4.4–§4.5, CP7): stage.littleF's pictures to the surface; then COME
-     BACK, an event the film WAITS on (eventWait: the climb is his, and the film goes on when he is back); then the
-     surfacing. */
+     BACK, played on the film's own clock since v24.7 (it was a surface event the film waited on); then the surfacing. */
   function littleFilm(c, s, api) {
-    const { tr, step, sfx, sfxFade, fade, rawK, stage, eventWait } = api;
-    const F = stage.littleF, T = LFT, W = stage.W;
+    const { tr, step, sfx, sfxFade, fade, rawK, stage } = api;
+    const F = stage.littleF, T = LFT;
     c.keepFade = true;
     c.endFade = 1;                                           // (CP13: as the shy one's — the surfacing ends on a short black, the aftermath by the bed lifts out of it)
     tr(0, T.come, (k, t) => F.frame(t, api), rawK);
@@ -9172,20 +9611,24 @@
     sfx(T.tick, 'k5tick', 0.8);
     sfx(T.out, 'k5bells', 0.3);
     sfx(T.out + 0.6, 'z5out', 1);                            // "His incense had burnt out... but he held on to me..."
-    sfx(T.come - 2.6, 'z5come', 1);                          // "I'm sorry... I have to go back..." (said into the climb: a voice plays on
-                                                             //  through a paused film, and eventWait pauses this one until he is back;
-                                                             //  CP12: 3.68 s, so it is done 1.08 s into the climb — the quickest
-                                                             //  surfacing is 0.8 s of event, then the gasp 0.5 s after it)
-    /* (v24.3, L3-1: COME BACK's music is a loop now — k5climbloop, started by the event's START and following his climb
-       in mixBeds; the one-shot k5climb played out under the brief and ran out on a slow climb) */
+    sfx(T.come - 2.6, 'z5come', 1);                          // "I'm sorry... I have to go back..." (said into the climb: 3.68 s, so it is
+                                                             //  done 1.08 s in, before the first pull at 1.5 — v24.7)
+    /* (v24.3, L3-1: COME BACK's music is a loop — k5climbloop, following his climb in mixBeds.
+       v24.7, Chad: "For the last kumanthong with long hair, there is also no need for that minigame that drags the slider
+       up." — COME BACK PLAYS: the water, the light above, his light below and the little one's beside it; twice the bells
+       ring and the little one's hold takes him down a little; then he rises, the little one letting go, to the light —
+       stage.comeClimb at the film's clock, LFT.climb long, and the surfacing after it as before) */
     step(T.come - 0.1, () => stage.comeBegin());
-    eventWait(T.come, stage.comeOpts(), (r) => stage.comeDone(r));
-    step(T.come + 0.2, () => stage.surfaceStart());
-    sfx(T.come + 0.25, 'k5surface', 0.8);                    // (it plays when the film runs on — after he is back)
-    sfx(T.come + 0.5, 'z5gasp', 1);
-    tr(T.come + 0.2, T.come + 5.8, (k, t) => stage.surfaceFrame(t - T.come - 0.2, api), rawK);   // (CP12: 4.2 → 5.8, the gasp's 5.07 s inside it)
-    fade(T.come + 5.25, T.come + 5.75, 0, 1);
-    step(T.come + 5.8, () => F.end());
+    tr(T.come, T.come + T.climb, (k, t) => stage.comeClimb(t - T.come), rawK);
+    sfx(T.come + T.pull1, 'k5pull', 0.45); sfx(T.come + T.pull1, 'k5bells', 0.3);   // the bells ring, and he is held
+    sfx(T.come + T.pull2, 'k5pull', 0.45); sfx(T.come + T.pull2, 'k5bells', 0.3);
+    const up = T.come + T.climb;
+    step(up + 0.2, () => stage.surfaceStart());
+    sfx(up + 0.25, 'k5surface', 0.8);
+    sfx(up + 0.5, 'z5gasp', 1);
+    tr(up + 0.2, up + 5.8, (k, t) => stage.surfaceFrame(t - up - 0.2, api), rawK);   // (CP12: 4.2 → 5.8, the gasp's 5.07 s inside it)
+    fade(up + 5.25, up + 5.75, 0, 1);
+    step(up + 5.8, () => F.end());
   }
 
   /* ============================================================ THE ENDINGS (CP8, §4.8) AND THE EPILOGUE (§4.9)
@@ -9206,16 +9649,17 @@
     c.keep.view = true;
   }
   /* THE EPILOGUE's sound and its blacks: the counter fades up as the lullaby rises; his first line over the three; the
-     black; the case file's own last words over it */
+     case file's own last words over his shop, drawn back from and left behind (v24.7: they were said over black); the
+     black at the very end */
   function epiCues(api, e) {
     const { sfx, fade } = api;
     fade(e, e + 1.4, 1, 0);
     sfx(e + 0.2, 'k5epi', 0.7);                              // the lullaby, in full (the episode's closing music)
     sfx(e + 1.5, 'z5epi0', 1);                               // "They were never something to fear..."  (→ ~10.5)
-    fade(e + EPI.fade0, e + EPI.fade1, 0, 1);
     sfx(e + 14.5, 'z5epi1', 1);                              // "Looking back today, I can see clearly how dangerous..."  (→ 22.7)
     sfx(e + 23.4, 'z5epi2', 1);                              // "Some lessons are only learned by living them."  (→ 25.7)
     sfx(e + 26.6, 'z5epi3', 1);                              // "This is the one experiment I would tell everybody never to repeat."  (→ 30.5)
+    fade(e + EPI.fade0, e + EPI.fade1, 0, 1);                // (v24.7: the black at the very end — it was at 12.8, under all three lines)
   }
   /* A · STAY WITH THEM (worst): pity without a boundary, told in his body */
   function scStay(c, s, api) {
@@ -9300,8 +9744,8 @@
       sfx(T.c4 + 0.5, 'z5C4', 1);                            // "More orders. More money. A bigger place..."  (→ ~27.9)
       sfx(T.c5 + 0.2, 'k5wind', 0.45); sfx(T.c5 + 0.9, 'k5wind', 0.45); sfx(T.c5 + 1.6, 'k5wind', 0.5);   // wound too far
       sfx(T.c5 + 2.0, 'k5boxfast', 0.45);                    // and it plays too fast
-      sfx(T.c6 + 0.1, 'k5wake', 0.4);                        // the laptop: the rival's shop
-      sfx(T.c6 + 1.0, 'z5Cevil', 1);                         // "And him... make him lose everything."  (→ ~36.3)
+      sfx(T.c6 + 0.1, 'k5wake', 0.4);                        // the laptop: the lottery's next draw (v24.7)
+      sfx(T.c6 + 1.0, 'z5Clotto', 1);                        // "And the lottery... just give me the numbers. Just this once."  (→ 40.0; v24.7)
       sfxFade(T.c7 + 0.1, T.c7 + 0.3, 'k5boxfast');          // (CP13: the overwound tune ends where the slip begins — two tunes in two keys)
       sfx(T.c7 + 0.2, 'k5boxstop', 0.5);                     // nothing answers: the box slips and stops mid-phrase
       sfx(T.c7 + 1.9, 'k5void', 0.33);                       // (v24.3: and the room's air drops out — a ringing in the ears)
@@ -9310,7 +9754,7 @@
       sfx(T.c10 + 0.4, 'k5endC', 0.55);                      // the lullaby OVERWOUND
       sfx(T.c10 + 0.6, 'k5crumple', 0.45);                   // the crushed pinwheel
       sfx(T.c11, 'z5C6', 1);                                 // "They were only children... and I had turned them into a wishing well."  (→ ~58.6)
-      sfx(T.c11 + 5.5, 'z5C7', 1);                           // "Nothing answered. They wouldn't do wrong... even when I asked them to."  (→ ~63.9)
+      sfx(T.c11 + 5.5, 'z5C7', 1);                           // "Nothing answered. They would never feed my greed... no matter how much I asked."  (→ 69.1)
       fade(T.fade, T.epi - 0.15, 0, 1);
     });
   }
@@ -9336,28 +9780,41 @@
       sfx(T.d4 + 0.5, 'z5D2', 1);                            // "I won't open that door again. But I'm not going anywhere."  (→ ~26.5)
       sfx(T.d5 + 0.2, 'k5calm', 0.5);                        // the smoke straight; the bells still
       fade(T.court - 0.6, T.court, 0, 1); fade(T.court, T.court + 0.8, 1, 0);   // (a slow dissolve to first light)
-      sfx(DT.bell, 'k5tbell', 0.6);                          // the bell in its pavilion
-      sfx(DT.bell, 'k5templebell', 0.95);                    // (v24.3: its ring over chapter 4's bell, which is a thud on a phone)
-      sfx(T.court, 'k5merit', 0.24);                         // (v24.3: first light to the three lights — its swell shaped onto them, 80.9;
-      sfxFade(T.home - 0.4, T.home + 0.2, 'k5merit');        //  59 s of this ending had no music)
+      /* (v24.7: D's morning is under the oak beside the temple — the hall's bell is heard across its wall, never seen) */
+      sfx(DT.bell, 'k5tbell', 0.5);
+      sfx(DT.bell, 'k5templebell', 0.8);                     // (v24.3: its ring over chapter 4's bell, which is a thud on a phone)
+      sfx(DT.kneel + 1.0, 'k5merit', 0.24);                  // (v24.3, 59 s of this ending had no music; v24.7: in as he kneels, so it
+      sfxFade(T.home - 0.4, T.home + 0.2, 'k5merit');        //  runs out at home — its fullest stretch over the lights going up into the oak)
       sfx(T.court + 1.5, 'z5D3', 1);                         // "In the morning, I went to the temple... and made merit in their names."  (→ ~37.9)
-      sfx(DT.kneel + 0.5, 'z5D4', 1);                        // "For the three children in my care... may this merit reach you..."  (→ ~48.5)
-      sfx(DT.teach + 0.3, 'mk5teach', 1);                    // the monk: "Give without bargaining..."  (→ ~54.8)
-      sfx(DT.pour0 - 0.6, 'mk5yatha', 1);                    // the Yathā vārivahā as the water is poured
-      step(DT.pour0 - 0.6, () => stage.endT.yatha());        // (its four lines captioned, chapter 4's)
+      sfx(DT.kneel + 0.5, 'z5D4', 1);                        // "For the three children in my care... may this merit reach you..."  (→ ~53.3)
+      sfx(DT.teach + 0.3, 'mk5teach', 1);                    // the monk: "Give without bargaining..."  (→ ~64.1)
+      /* (v24.7, Chad: "Is there a different prayer or chant that can be used?") the Karaṇīya Mettā Sutta's verse for beings
+         seen and unseen, born and seeking birth, as the water is poured (→ ~82.5); its four lines captioned */
+      sfx(DT.pour0 - 0.6, 'mk5metta', 1);
+      step(DT.pour0 - 0.6, () => stage.endT.metta());
       sfx(DT.pour0 + 0.1, 'k5pour', 0.45);
       sfxFade(DT.pour1 - 0.7, DT.pour1 + 0.7, 'k5pour');     // (CP13: the sound stops with the stream, as chapter 4's does)
+      /* (v24.7, Chad: "some sound effects when pouring the water? Like the kumanthongs laughing in joy in the background?")
+         the pour's own trickle into the bowl, rising as it fills; and when the water is given to the earth, the three, far
+         off, laughing for joy (after the verse, so no voice ducks them) */
+      sfx(DT.pour0 + 0.2, 'k5trickle', 0.6);
+      sfxFade(DT.pour1 - 0.5, DT.pour1 + 0.5, 'k5trickle');
       sfx(DT.earth0, 'k5ground', 0.45);                      // the water given to the earth
+      sfx(DT.earth0 + 0.5, 'k5joy', 0.42);
       sfx(DT.lights, 'k5lights', 0.8);                       // and three lights rising (CP8: louder, its swell given 2.5 s more)
+      sfx(DT.lights + 1.6, 'k5canopy', 0.55);                // (v24.7: the breeze up through the leaves as they wind up into the crown)
       fade(T.home - 0.3, T.home, 0, 1); fade(T.home, T.home + 0.7, 1, 0);   // home, the morning
       sfx(T.home + 0.2, 'k5window', 0.4);
       sfx(T.home + 0.8, 'k5koel', 0.35);
-      sfx(T.home + 2.5, 'k5pin', 0.4);                       // the morning's receipt pinned
+      /* (v24.7) and the three lights in at his window, one into each of them (dWinFrame: each goes in at home + 2.15, 2.70,
+         3.25 s) — a shimmer settling into one small bell as each does */
+      sfx(T.home + 2.0, 'k5orbin', 0.55); sfx(T.home + 2.55, 'k5orbin', 0.5); sfx(T.home + 3.1, 'k5orbin', 0.5);
+      sfx(T.morn + 2.5, 'k5pin', 0.4);                       // the morning's receipt pinned
       sfx(T.years + 0.5, 'k5endD', 0.6);                     // the lullaby resolved, warm, with strings
-      sfx(T.years + 1.0, 'z5D5', 1);                         // "I kept caring for them every day... for years..."  (→ ~85.5)
+      sfx(T.years + 1.0, 'z5D5', 1);                         // "I kept caring for them every day... for years..."  (→ ~114.6)
       sfx(T.y2 + 0.1, 'k5tbell', 0.35); sfx(T.y4 + 0.1, 'k5tbell', 0.35); sfx(T.y6 + 0.1, 'k5tbell', 0.35);
       sfx(T.env + 0.4, 'k5pen', 0.4);                        // the envelope, in his own capitals
-      sfx(T.env + 1.0, 'z5D6', 1);                           // "If one day I can't look after them... someone will. I made sure of it."  (→ ~92.9)
+      sfx(T.env + 1.0, 'z5D6', 1);                           // "If one day I can't look after them... someone will. I made sure of it."  (→ ~123.2)
       sfx(T.envBox + 0.2, 'k5slip', 0.4);                    // slipped under the music box
       fade(T.fade, T.epi - 0.15, 0, 1);
     });

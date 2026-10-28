@@ -8814,7 +8814,7 @@ const ADULT_TAKES = new Set([
   'z5b4', 'z5back1', 'z5back1b', 'z5again1', 'z5s1', 'z5s2', 'z5s3', 'z5s4', 'z5back2', 'z5back2b', 'z5again2',
   'z5l1', 'z5l2', 'z5l3', 'z5sob', 'z5out', 'z5come', 'z5gasp', 'z5time', 'z5felt', 'z5fasc', 'z5A1', 'z5A2', 'z5A3',
   'z5Agig', 'z5A4', 'z5A5', 'z5A6', 'z5B1', 'z5B2', 'z5B3', 'z5B4', 'z5B5', 'z5B6', 'z5C1', 'z5C2', 'z5C3', 'z5C4',
-  'z5Cevil', 'z5Claugh', 'z5C5', 'z5C6', 'z5C7', 'z5D1', 'z5D2', 'z5D3', 'z5D4', 'z5D5', 'z5D6', 'z5epi0', 'z5epi1',
+  'z5Clotto', 'z5Claugh', 'z5C5', 'z5C6', 'z5C7', 'z5D1', 'z5D2', 'z5D3', 'z5D4', 'z5D5', 'z5D6', 'z5epi0', 'z5epi1',
   'z5epi2', 'z5epi3', 'z5A', 'z5B', 'z5C', 'z5D',
   /* v24.0 · episode 4 chapter 1, The Master I Did Not Know (masters/v24.0/make.sh) */
   'q1pro1', 'q1pro2', 'q1pro3', 'q1pro4', 'q1pro5', 'q1board', 'q1water', 'q1joy1', 'q1joy2', 'q1lim1', 'q1lim2',
@@ -8886,10 +8886,10 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   'mk4yatha', 'to4hello', 'to4notice', 'to4tray', 'to4lersi', 'to4wess', 'to4naga', 'to4unknown', 'to4clock',
   'to4A1', 'to4A3', 'to4A2', 'to4B1', 'to4B2', 'to4C1', 'to4C2', 'to4D1', 'to4D2',
   'to4D3',
-  /* v23.0 · episode 3 chapter 5: the Golden Mile owner, the voicemail from Ma, the monk (his verse is the take
-     chapter 4 made) */
+  /* v23.0 · episode 3 chapter 5: the Golden Mile owner, the voicemail from Ma, the monk (v24.7: his verse is his own,
+     the Mettā, where it was chapter 4's take under this chapter's name) */
   'ow5hello', 'ow5yin', 'ow5monk', 'ow5red', 'ow5shy', 'ow5little', 'ow5give', 'ow5never', 'ow5wrong', 'ow5promise',
-  'ow5careful', 'ma5vm', 'mk5teach', 'mk5yatha',
+  'ow5careful', 'ma5vm', 'mk5teach', 'mk5metta',
   /* v24.0 · episode 4 chapter 1: Pong, Pa Noi, the master, Khun Joy, Uncle Lim, Ta Sombat, the taxi uncle */
   'pg1car', 'pg1here', 'pg1come', 'pn1num', 'pn1water', 'pn1n10', 'pn1n11', 'pn1n12', 'pn1n13', 'pn1n14', 'jy1a',
   'jy1b', 'lm1a', 'lm1b', 'pg1sbq', 'sb1a', 'pg1sb', 'pg1me', 'jy1go', 'lm1go', 'pg1go', 'pg1tree', 'fm1hello',
@@ -13137,9 +13137,9 @@ const STING_SAMPLE = {
   z5gasp: ['z5gasp', 1], z5time: ['z5time', 1], z5felt: ['z5felt', 1], z5fasc: ['z5fasc', 1], z5A1: ['z5A1', 1],
   z5A2: ['z5A2', 1], ma5vm: ['ma5vm', 1], z5A3: ['z5A3', 1], z5Agig: ['z5Agig', 1], z5A4: ['z5A4', 1], z5A5: ['z5A5', 1],
   z5A6: ['z5A6', 1], z5B1: ['z5B1', 1], z5B2: ['z5B2', 1], z5B3: ['z5B3', 1], z5B4: ['z5B4', 1], z5B5: ['z5B5', 1],
-  z5B6: ['z5B6', 1], z5C1: ['z5C1', 1], z5C2: ['z5C2', 1], z5C3: ['z5C3', 1], z5C4: ['z5C4', 1], z5Cevil: ['z5Cevil', 1],
+  z5B6: ['z5B6', 1], z5C1: ['z5C1', 1], z5C2: ['z5C2', 1], z5C3: ['z5C3', 1], z5C4: ['z5C4', 1], z5Clotto: ['z5Clotto', 1],
   z5Claugh: ['z5Claugh', 1], z5C5: ['z5C5', 1], z5C6: ['z5C6', 1], z5C7: ['z5C7', 1], z5D1: ['z5D1', 1],
-  z5D2: ['z5D2', 1], z5D3: ['z5D3', 1], z5D4: ['z5D4', 1], mk5teach: ['mk5teach', 1], mk5yatha: ['mk5yatha', 1],
+  z5D2: ['z5D2', 1], z5D3: ['z5D3', 1], z5D4: ['z5D4', 1], mk5teach: ['mk5teach', 1], mk5metta: ['mk5metta', 1],
   z5D5: ['z5D5', 1], z5D6: ['z5D6', 1], z5epi0: ['z5epi0', 1], z5epi1: ['z5epi1', 1], z5epi2: ['z5epi2', 1],
   z5epi3: ['z5epi3', 1], z5A: ['z5A', 1], z5B: ['z5B', 1], z5C: ['z5C', 1], z5D: ['z5D', 1],
   /* and its sounds: the counter, the offerings, the openings and the three possessions, the endings; its beds (the
@@ -13189,6 +13189,10 @@ const STING_SAMPLE = {
   /* v24.5 (masters/v24.5/make.sh): the room's tune and its run-down in one file (k5boxdown retires); the lighter's flame
      as a loop while it burns (k5flame, a 2.2 s one-shot, retires) */
   k5lullroom: ['k5lullroom', 1],
+  /* v24.7 (masters/v24.7/make.sh): ending D's merit, rebuilt — the pour into the bowl, the three's laughter, the breeze
+     up through the tree the lights go into, a light entering each child (z5Cevil retires: ending C's wish against a
+     rival is the lottery's numbers now, z5Clotto) */
+  k5joy: ['k5joy', 1], k5trickle: ['k5trickle', 1], k5canopy: ['k5canopy', 1], k5orbin: ['k5orbin', 1],
   /* v24.0 · episode 4 chapter 1: its voices, effects, beds and music (masters/v24.0/make.sh) */
   q1pro1: ['q1pro1', 1], q1pro2: ['q1pro2', 1], q1pro3: ['q1pro3', 1], q1pro4: ['q1pro4', 1], pg1car: ['pg1car', 1],
   q1pro5: ['q1pro5', 1], pg1here: ['pg1here', 1], pg1come: ['pg1come', 1], pn1num: ['pn1num', 1],

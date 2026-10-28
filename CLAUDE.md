@@ -6902,6 +6902,93 @@ What the baseline contains, by release:
     files); harnesses chapter, cine, leak and walk (e4c1) green on it. Milestone backup bundle made for the
     chapter's release (v24.0) at `9115564`: 1347 MB, 65 parts of 20 MB that reassemble byte-identical, a complete
     history (the session's clone had been shallow — `git fetch --unshallow` first); it replaces v22.3's.
+- **v24.5** EPISODE 3 CHAPTER 5 DEBUGGED AGAIN, AND EPISODE 4 CHAPTER 1 IN FULL — Chad: *"Are you sure you fully
+  debugged ep 3 chp 5?"* and *"Debug ep 4 chp 1 too, full debug"*. The honest answer to the first was no: v24.3 added
+  about fifty sounds and ~250 lines of code no lens had read, the play-through after it was driven by keys and only to
+  ending A, and endings B–D had never been played with the sound on. docs/V24.5-DEBUG-PLAN.md is the record (the answer,
+  the plan, the log checkpoint by checkpoint); masters/v24.5/findings.md every finding of nine read-only lenses with its
+  verdict and fix.
+  - THE ENGINE: the storm paid once (the autosave held round a minigame's payment), the decision saved as it opens, the
+    key that ends a minigame no longer skips its film, the volume slider off minigames, a hold credited from the finger's
+    own time, the mouse button read from the event, the stock book drawn without hands, a touch begun under the book
+    never a tap in the room.
+  - EPISODE 3 CHAPTER 5's sound: its loops made for the engine's window and levelled round their joints (`k5under` had
+    clicked at every joint), the music box cut on its measured phrase, the counter's tune its own loop, the flame a loop
+    while it burns, a place's noise down under a film, the box silent under the care card's film.
+  - EPISODE 4 CHAPTER 1: every L1–L6 finding — among them the stock book's words and sounds, the chant's stops and its
+    captions, ending D's chant let finish (`fm1chant2D`, cut from its own take), her body centred on her spot, the signs
+    written only once seen, one COMPLETE into the storm, the standing cast on the floor. The photographs found more: a
+    wai through the chant and the storm (on a phone the walking hand covered the low table, and the cup's second place —
+    the first change WHAT CHANGED? asks for — with it); the pao's breaths over a bowed head; the endings' gestures on a
+    latch (a tenth of a second of the film's clock was stepped over on a slow phone); ending D's eyes through the gate,
+    and its dusk cut on Pong's look (a sugar palm's trunk filled a phone's frame); the room's painted door and window
+    views closed into boxes on their own material (counted by colour, the bare background showed between the slats —
+    read by eye as fine).
+  - CHAD, ON THE DEPLOYED BUILD: *"Are you telling me you dont see any problems with how pong head and neck turns?"* He
+    was right; the photographs that showed it had been read as seek artefacts. Measured and fixed: Pong sits angled
+    between the master and the client (his chest 25° → 8°, his head 68° → 39° to look at him), glances at the wheel,
+    sits turned to the client on the shelter's bench, turns on the yard's bench to answer, talks with his chest and hands
+    under his own head (his retargeted talking take rolled it 44° onto a shoulder) and keeps it level (a roll past 5°
+    three-quarters taken out: 44° → 7°). And the hair-thin line across the room's floor in every photograph from the
+    client's mat was a STRAY VERTEX: one at his right hip weighted wholly to his left knee while its twins followed the
+    hips, so cross-legged a 2 cm cap stretched into a 0.99 m needle — mended (`mendTwins`: a seam's twins move as one;
+    two vertices in his file, none in any other model). Two probes kept: tools/probes/slivers.mjs, headroll.mjs.
+  - VERIFIED: episode 4 chapter 1 played start to finish on a phone by a finger to ending D (72 lines in order, none
+    over another, no page error) and all four endings with the sound on; Continue right at all 19 of its phases (and in
+    the same sitting at 15); episode 3 chapter 5's endings C and D with the sound on, none over another; the full suite
+    24 of 24 (3203 s) on the third deploy's build, chapter, cine, leak and walk again on the last. Not passed, and said
+    so: episode 3 chapter 5's finger run on v24.4's build stalled at the incense's flick on a loaded box (that minigame
+    is gone at v24.7). Netlify refused one deploy ("account credit usage exceeded" — the site stayed up on the build
+    before it) until Chad added credits. Nine deploys, the last `6ae2373aebf08c9df1fbc910`, each byte-verified, 269 of
+    269. Sheet v129.
+- **v24.6** THE LEAVES THE LIGHT PASSES THROUGH — Chad, on episode 3 chapter 4's merit film: *"when the camera follows
+  the glow flying up into the trees, i want more leaves drifting down the scene, add more leaves. On phone, user cant see
+  any leaves drifting down"*. 150 leaves are let go through the climb, each from the frame the lens holds at its own
+  moment (above its top, or from the canopy in its upper part, across THAT frame's width on this screen), falling,
+  swaying and tumbling — one instanced mesh, every leaf a function of the film's clock, so a seek, a skip and a slow
+  phone land on the same leaves. The climb's lens was lifted into `s6Lens` and shared, its numbers unchanged at every
+  photographed moment. Photographed on a phone (8–20 leaves in the frame through the climb, none before) and a desktop.
+  One slip, live six minutes: the lifted lens read the film function's own `ss`, a name it no longer saw (deploy
+  `6ae23bc6`, fixed by `6ae23cab`) — so `npm run build` now runs `tools/probes/undefscan.mjs` over every chapter, and
+  `tools/probes/filmshots.mjs` can photograph a film started from play (`FILM=`, `PHASE=`). Final deploy
+  `6ae23e82cb48e11d082db007`, byte-verified; leak and cine green. No word moved.
+- **v24.7** CHAD'S ELEVEN NOTES ON EPISODE 3 CHAPTER 5 — the counter's label, the owner's long talk, the bag, the desk,
+  three minigames taken out, and all four endings; docs/V24.7-E3C5-NOTES.md has his words verbatim, what each traced to
+  in the code before anything moved, the plan and the log.
+  - PLAY: the three on the owner's glass offer their badge from 17° off where it was 8° (`aim` 0.14 → 0.30 — measured,
+    the badge names one of the three across 60° of his look with no gap); the shop's bag is never put in his hand (it
+    went through his fingers); after the water his look turns to the desk and a waypoint stands on the bag while the
+    drinks are open and on the packet while the incense is, the orders saying "at the desk"; and three minigames are
+    PLAYED instead (Chad: "no need to have that minigame"): the incense lit in two seconds on the press, peek-a-boo's
+    fingers parting by themselves, COME BACK's two pulls of the bells and the climb — their words and COME BACK's
+    conduct notes retired with them.
+  - FILM K, the owner's talk: two sentences that each said a point the take says again cut from the raw takes at their
+    measured pauses (`ow5wrong` 15.65 → 9.38 s, `ow5promise` 20.19 → 17.03 s; masters/v24.7/cut.py), the film 62.6 →
+    53.0 s, and the one 49 s push on his face is ten shots on his words — close on each of the three, a slide along them,
+    an arc past the music box, his face from three angles.
+  - THE ENDINGS: the epilogue every ending shares holds pictures to its last second (the three on his cloth, the lens
+    drawn back across the shop, outside his glass, back down the closed mall with his shop the one light left) where it
+    held 18 s of black; no phone shakes in A or B (the buzz is heard); C's "make him lose everything" (`z5Cevil`) is gone
+    — he asks for the lottery's numbers instead (`z5Clotto`, greed at its height, nobody harmed) and its answer is
+    re-said, "They would never feed my greed... no matter how much I asked." And ENDING D IS ITS OWN MORNING (Chad: "why
+    did you completely copy the merit making scene again?"): under a great oak on the grass outside the temple's west wall
+    (the kit's oak, never in chapter 4), mist and the sun's shafts, the monk on a low teak platform in its shade; the
+    kruat nam into a silver bowl under the Karaṇīya Mettā Sutta's verse for beings seen and unseen, born and seeking
+    birth (`mk5metta`, Arthur, captioned — `mk5yatha`, chapter 4's chant under this chapter's name, retired), with the
+    pour's own trickle; the water given to the oak's roots and the three, far off, laughing for joy; three lights in the
+    children's colours rising off the wet earth, round the trunk and up INTO the crown, glinting among its leaves; and in
+    his room that morning the three lights coming in at his window, one into each of them, each lit from within for a
+    breath. Photographed on a phone and a desktop through five rounds; what they changed is in the log (a water jar in
+    front of the lens, the roots' spot, a city tree's trunk across the walk, the alms bowl that read as a bowling ball —
+    in its saffron cover now — and the lights, specks on a phone at first, then two merged into one glare at the top).
+  - Four new effects (`k5joy`, `k5trickle`, `k5orbin`, `k5canopy`), two lines (`z5Clotto`, and `z5C7` re-said) and the
+    chant, picked by measurement (masters/v24.7/make.sh names each pick and why). `src/main.js` gains rows in `STING_SAMPLE` and `CAST_TAKES` and
+    loses `mk5yatha`'s; nothing else in it moved. The static scan: no voice over another, nothing past an end, in any
+    film or ending. On the live build: all four endings played on a phone with the sound log on (13, 11, 14 and 13
+    lines, none over another, every cue heard, no page error) and Continue right at all 13 phases. Deploys
+    `6ae25e291ceb7e3a39c4a107`, `6ae25fb89d8585092086f7a3` (the lights' halos) and `6ae2646e943823f48852ac0a` (the
+    lighter's spark back in the played lighting), each byte-verified, 269 of 269 — the first only at the fourth
+    milestone, a slip against deploy-first (LEARNINGS). Harnesses: see the follow-up commit. Sheet v130.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -7438,7 +7525,7 @@ assigned where a texture belonged; and the clearance is ISSUED at the start
 of play rather than inferred from an empty bag, which had left both counters
 dead from the chapter's first frame (docs/LEARNINGS.md).
 
-**Chad's report of 28 Oct 2026 on episode 3 chapter 5 — docs/V24.2-E3C5-DEBUG.md** (his four messages verbatim, the plan, and the log checkpoint by checkpoint) shipped in three releases: v24.1 the soft-lock he hit (the long press), v24.2 the comprehensive debug (masters/v24.2/findings.md, every finding with its verdict and fix), v24.3 the sound buff (masters/v24.2/L3-sound-report.md the measure, masters/v24.2/make.sh every pick and why). **His two questions after it — "Are you sure you fully debugged ep 3 chp 5?" and "Debug ep 4 chp 1 too, full debug" — are docs/V24.5-DEBUG-PLAN.md** (the honest answer, the plan for both chapters, the log checkpoint by checkpoint; masters/v24.5/findings.md every finding of nine lenses with its verdict and fix), shipped at v24.5. **Episode 4 chapter 1, The Master I Did Not Know, shipped at v24.0 —
+**Chad's report of 28 Oct 2026 on episode 3 chapter 5 — docs/V24.2-E3C5-DEBUG.md** (his four messages verbatim, the plan, and the log checkpoint by checkpoint) shipped in three releases: v24.1 the soft-lock he hit (the long press), v24.2 the comprehensive debug (masters/v24.2/findings.md, every finding with its verdict and fix), v24.3 the sound buff (masters/v24.2/L3-sound-report.md the measure, masters/v24.2/make.sh every pick and why). **His two questions after it — "Are you sure you fully debugged ep 3 chp 5?" and "Debug ep 4 chp 1 too, full debug" — are docs/V24.5-DEBUG-PLAN.md** (the honest answer, the plan for both chapters, the log checkpoint by checkpoint; masters/v24.5/findings.md every finding of nine lenses with its verdict and fix), shipped at v24.5. **His eleven notes on it the same evening — the counter's label, the owner's long talk, the bag, the desk, three minigames, all four endings — are docs/V24.7-E3C5-NOTES.md** (his words verbatim, what each traced to, the plan and the log), shipped at v24.7. **Episode 4 chapter 1, The Master I Did Not Know, shipped at v24.0 —
 docs/V24.0-E4C1-PLAN.md** is its build memory (§15 the log, checkpoint by checkpoint; masters/v24.0/cp13-findings.md
 its review, every finding with its verdict and fix); its cast are placeholders until Chad's models (docs/E4-MODELS.md
 lists each, with what stands in), and its seven music cues are the measured picks until Chad's ear (one reel per cue in
@@ -7545,7 +7632,7 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v129** (`masters/v24.5/masterz-text-v129.xlsx`, v128 with v24.5's words: 1 row added (`fm1chant2D`,
+**THE SHEET IS v130** (`masters/v24.7/masterz-text-v130.xlsx`, v129 with v24.7's words for episode 3 chapter 5: the drinks' and the incense's orders say "at the desk"; the eight words of the three minigames taken out with them and COME BACK's three conduct notes; the ending D chant's four captions the Mettā verse's (`metta1`–`metta4`, Pali and English) in place of the Yathā's; the voice lines `ow5wrong` and `ow5promise` cut, `z5Clotto` in place of `z5Cevil`, `z5C7` re-said, and `mk5metta` in place of `mk5yatha`. v129 was `masters/v24.5/masterz-text-v129.xlsx`, v128 with v24.5's words: 1 row added (`fm1chant2D`,
 episode 4 chapter 1's ending D letting the chant finish) and 7 changed — three of that chapter's ledger facts (the
 woman waiting's, the uncle's, the reading's), the stops on its chant's three captions, and fm1chant2's description.
 v128 was `masters/v24.2/masterz-text-v128.xlsx`, v127 with episode 3 chapter 5's debug words: 2 rows

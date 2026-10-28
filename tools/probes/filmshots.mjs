@@ -48,7 +48,20 @@ if (FILM && !OPT) {
   if (process.env.PHASE) {
     await p.evaluate((ph) => window.__enc.stage.applyPhase(ph), process.env.PHASE);
     await p.waitForFunction((ph) => window.__enc.stage.phase === ph.split(/[:~]/)[0] && window.__enc.getState() === 'play', process.env.PHASE, { timeout: 600000, polling: 500 });
-    await p.waitForTimeout(4000);
+    /* (v24.7) and the world change's black LIFTED — a bookmark into another world raises it while that world warms
+       (`kit.warm`), and a film that keeps the fade (`c.keepFade`) started under it keeps it to its end: episode 3
+       chapter 5's little one's film photographed all black, which no player can reach (the yield that starts it waits
+       for the picture) */
+    /* (the kit's verb only mutates; the FRAME raises the black a frame later — so the black must be seen DOWN and STAY down
+       for 2.5 s, or the check passes in the instant before it rises: the first version of this wait did exactly that) */
+    await p.evaluate(() => { window.__fsClear = 0; });
+    await p.waitForFunction(() => {
+      const o = parseFloat(getComputedStyle(document.getElementById('cineFade')).opacity) || 0, now = performance.now();
+      if (o >= 0.02) { window.__fsClear = 0; return false; }
+      if (!window.__fsClear) window.__fsClear = now;
+      return now - window.__fsClear > 2500;
+    }, null, { timeout: 900000, polling: 250 });
+    await p.waitForTimeout(1500);
   }
   console.log(el(), 'film', FILM, await p.evaluate((k) => window.__enc.kit.film(k), FILM));
 }

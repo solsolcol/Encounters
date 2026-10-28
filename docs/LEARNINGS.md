@@ -6874,3 +6874,35 @@ cut (sharing its vertices and maps) when it is small.
   from the frame the lens holds then — above its top or inside its upper part, across ITS width on this screen
   (`camera.aspect`) — so the stream falls through the picture on any screen. Worked out from the film's clock alone (the
   lens as a function, `s6Lens`), so a seek lands on the same frame, and cached per leaf.
+
+## v24.7 — Chad's eleven notes on episode 3 chapter 5
+
+- **A minigame that is the scene's whole meaning can be PLAYED instead** (v24.7). Chad asked for three of the chapter's
+  hands-on beats to go — the incense's strike-hold-flick, peek-a-boo's slide, COME BACK's climb — and each became a
+  short piece of the film on the chapter's clock: the lighting plays in two seconds, the fingers part by themselves,
+  the bells pull him down twice before the climb. What a minigame did that a film does not is take a price; when it
+  goes, its conduct note goes with it (COME BACK's three notes), or the card reports an act the player no longer did.
+- **A glow is drawn as big as it must be SEEN, and its halo as small as its neighbours allow** (v24.7). The three
+  lights rising into the oak were sprites 0.026 of their distance across (1.5° of the view): the glow texture is bright
+  only in its middle third, so on a phone each was a 7 px speck — never "glowing orbs". At 0.058 (3.3°) they read; but
+  a halo five times the core merged two lights 10° apart into one glare at the top of the crown. Size the halo against
+  the SPACING of the lights it surrounds, not against the core alone (×2.4 here, a little wider in the crown).
+- **A prop is read by the one detail that names it** (v24.7). The monk's alms bowl under the oak was a dark sphere; in
+  the corner of a phone's frame it read as a bowling ball. In its knitted saffron cover, with the black lacquer lid
+  and a brass knob showing at the top and the strap slack on the boards, it reads as what it is. A shape with no
+  detail is read as the simplest thing of that shape.
+- **Name the chapter on every probe's command line** (v24.7). A shell's exports die with its call in these sessions,
+  and `filmshots`' default chapter is episode 4 chapter 1: a run that forgot `CH=e3c5` photographed the wrong
+  chapter's ending D for two minutes. Read a probe's first logged line (here the camera's x: −272 for episode 3
+  chapter 5's oak, +5 for episode 4 chapter 1) before reading its photographs.
+- **A film started from play is photographed only once the world change's black has gone and STAYED gone**
+  (v24.7). Episode 3 chapter 5's little one's film photographed all black: the probe applied a bookmark into another
+  world, which raises the black while that world warms (`kit.warm`), and started the film at once — and a film that
+  keeps the fade (`c.keepFade`) keeps the black it was started under to its end. No player can reach it (the yield that
+  starts that film waits for the picture). The first fix waited for the black to read clear and passed in the instant
+  before the FRAME raised it (a kit verb mutates; the frame paints a frame later); `filmshots` now waits for it to be
+  clear for 2.5 s running.
+- **Deploy each milestone as it is seen to run** (v24.7, a slip). The plan said so and the first three milestones were
+  photographed and checked for an hour and more without going live; nothing broke, but Chad could not play any of it
+  until the fourth. The release order is deploy first (CLAUDE.md, rule 3) — a milestone that has booted the chapter it
+  changes is a milestone that goes to Netlify.
