@@ -6869,8 +6869,9 @@ What the baseline contains, by release:
   The chapter's Opus pack 14.0 → 23.0 MB; the shared pack unchanged to the byte — `k5climb`, replaced by the loop, is
   retired, files and row, because a sound no chapter names falls into the SHARED pack (LEARNINGS). `src/main.js` gains
   52 `STING_SAMPLE` rows and loses one. Put to Chad, not changed: the menu dings the engine plays inside the rituals
-  (L3-14, every chapter). Sheet v128 exported (v44 stays the link). Deploy `6ae1b3044518593a65dfaa4b`, byte-verified
-  (269 served files).
+  (L3-14, every chapter). Sheet v128 exported (v44 stays the link). Deploys `6ae1b3044518593a65dfaa4b` and
+  `6ae1b76452cb3936badb38a8` (the box's run-down started on WALL time from its tune's own start, which plays on under
+  the pause menu where the chapter clock stands still — v24.0's two-clocks law), each byte-verified (269 served files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
