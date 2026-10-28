@@ -90,5 +90,8 @@ masters/*/out/*.glb
 # v21.8: the display models' intermediates (masters/v21.8/display/make.sh rebuilds them)
 masters/v21.8/display/*.glb
 
+# v24.7: the owner's two cut takes before levelling (masters/v24.7/make.sh rebuilds them)
+masters/v24.7/proc/
+
 # python byte-code from the masters/ scripts
 __pycache__/
