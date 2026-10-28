@@ -5452,7 +5452,7 @@ function evCraftFrame(e, o, wdt, bar) {
   const s = e.steps[e.si];
   if (!s) return;
   if (e.needUp) { /* the last step's finger or key: nothing until it lifts */ }
-  else if (s.g === 'hold' && (e.down || e.keyHeld)) { e.held += wdt; evCraftSet(e, e.held / s.secs); }
+  else if (s.g === 'hold' && (e.down || e.keyHeld)) { e.held += (e.wdtHeld ?? wdt); evCraftSet(e, e.held / s.secs); }   // (v24.1: the time really held)
   else if (e.keyHeld && s.g === 'twist') { e.twSum += wdt * o.keyRate * Math.PI / 180; evCraftSet(e, Math.abs(e.twSum) / (s.turns * 2 * Math.PI)); }
   else if (e.keyHeld && s.g === 'slide') { e.slKey += wdt / Math.max(0.1, o.slideKey); evCraftSet(e, e.slKey); }
   if (ev !== e) return;
@@ -5475,7 +5475,7 @@ function evYieldFrame(e, o, wdt, bar) {
   const held = !!(e.down || e.keyHeld);
   if (held) e.yPressed = true;
   const auto = !!o.auto && (e.yPressed || e.t >= o.autoAfter);
-  if (held || auto) e.yk = Math.min(1, e.yk + wdt / Math.max(0.05, o.fill));
+  if (held || auto) e.yk = Math.min(1, e.yk + (held ? (e.wdtHeld ?? wdt) : wdt) / Math.max(0.05, o.fill));   // (v24.1: a held fill, the time really held)
   else if (o.back > 0) e.yk = Math.max(0, e.yk - wdt * o.back);
   const el = $('evYield');
   if (el) {
@@ -5566,6 +5566,11 @@ function evFrame(dt, dLookX, dLookY) {
   const nowMs = performance.now() / 1000;
   if (!e.wallLast) e.wallLast = nowMs;
   const wdt = Math.min(0.25, Math.max(0, nowMs - e.wallLast));   // v18.0: the step the clock took, for a kind that integrates on it
+  /* v24.1: what a HELD finger is credited with — the time it was really down. A craft's hold and a yield's fill are
+     "held 1.2 seconds", and the quarter-second cap above turned that into five on a phone drawing a frame a second
+     (episode 3 chapter 5's water, measured: 0.87 of its 1.2 s after 2.6 s held at a frame a second); a frame still
+     never credits more than a second, since a tab come back from the background was holding no finger */
+  e.wdtHeld = Math.min(1.0, Math.max(0, nowMs - e.wallLast));
   e.t += wdt;
   e.wallLast = nowMs;
   if (e.down) e.look += Math.abs(dLookX) + Math.abs(dLookY);
@@ -7771,6 +7776,17 @@ canvas.addEventListener('mouseleave', () => { pointerInside = false; edgeTurn = 
 addEventListener('blur', () => { edgeTurn = 0; });
 
 canvas.addEventListener('contextmenu', e => { if (state === 'play' && weaponWant()) e.preventDefault(); });
+/* v24.1: a LONG PRESS is never the browser's — on a phone a finger held half a second fires `contextmenu`, the
+   browser opens its own menu over the game and CANCELS the touch, so a hold could never be finished: episode 3
+   chapter 5's water (hold to pour) was a soft-lock (Chad: "when holding the water step, it ends up opening right click
+   context menu on mobile browser"), and its lighter and its three openings with it. Refused on a touch device
+   anywhere but a link (the credits'), and with a mouse only while a minigame is open (its press is the left button;
+   the browser's own menu over one is in the way) — a desktop keeps its menu everywhere else, as it always had. The
+   selection and the callout that start the same long press are refused by shell.html (user-select, touch-callout) */
+document.addEventListener('contextmenu', e => {
+  if (e.target && e.target.closest && e.target.closest('a')) return;
+  if (HAS_TOUCH || e.pointerType === 'touch' || e.pointerType === 'pen' || ev) e.preventDefault();
+});
 canvas.addEventListener('mousedown', e => {
   /* v13.0, Chad, of the load drill: "on desktop, when im playing it, the left
      click gestures fires the gun, which must not happen." It did: the window's

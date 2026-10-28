@@ -33,7 +33,12 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
   font-family:var(--ui);
-  overscroll-behavior:none;touch-action:none}
+  overscroll-behavior:none;touch-action:none;
+  /* v24.1: a long press is a HOLD in this game, never the browser's own — on a phone a finger held half a second
+     started a text selection or a callout and opened the browser's menu, which cancels the touch: episode 3 chapter
+     5's water (hold to pour) could never be finished (Chad: "when holding the water step, it ends up opening right
+     click context menu on mobile browser"). The menu itself is refused in main.js (contextmenu) */
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #scene{position:fixed;inset:0;width:100%;height:100%;display:block;background:var(--void)}
 
 /* film grain + vignette sit above the canvas, below the UI */
