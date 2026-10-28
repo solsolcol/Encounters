@@ -60,7 +60,11 @@ for (const ph of PH) {
     await p.screenshot({ path: `${OUT}/${PHONE ? '' : 'desktop-'}${ph.replace(/[^a-z0-9]+/gi, '_')}.jpg`, quality: 65, timeout: 240000 });
   } catch (e) { r.fail = String(e.message || e).slice(0, 200); }
   r.errs = errs;
-  if (r.fail || errs.length) bad++;
+  /* (v24.5) where it should land: the save's own phase (a finished chapter 4, this chapter's start) */
+  const want = ph.startsWith('done:') ? 'counter' : ph.split(':')[0];
+  const got = r.land && r.land.phase ? String(r.land.phase).split(':')[0] : null;
+  r.landed = got === want ? 'right' : `WRONG (wanted ${want}, got ${got})`;
+  if (r.fail || errs.length || got !== want) bad++;
   console.log(el(), JSON.stringify(r));
   await ctx.close();
 }

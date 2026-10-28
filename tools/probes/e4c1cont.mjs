@@ -82,7 +82,12 @@ for (const ph of PH) {
     }
   } catch (e) { r.fail = String(e.message || e).slice(0, 200); }
   r.errs = errs;
-  if (r.fail || errs.length || r.sameSitting === 'DIFFERS') bad++;
+  /* (v24.5) where it should land: the save's own phase, but for a finished episode 3 (this chapter's start), a wait whose
+     number fourteen has been called (the call), and the storm already paid (the decision) */
+  const want = done ? 'arrive' : /^wait:.*n14/.test(ph) ? 'called' : /^storm:done/.test(ph) ? 'decide' : ph.split(/[:~]/)[0];
+  const got = r.land && r.land.phase ? String(r.land.phase).split(/[:~]/)[0] : null;
+  r.landed = got === want ? 'right' : `WRONG (wanted ${want}, got ${got})`;
+  if (r.fail || errs.length || r.sameSitting === 'DIFFERS' || got !== want) bad++;
   console.log(el(), JSON.stringify(r));
   await ctx.close();
 }

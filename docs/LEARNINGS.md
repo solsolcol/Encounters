@@ -6816,5 +6816,8 @@ cut (sharing its vertices and maps) when it is small.
   checked WHAT CHANGED?'s cup against the screen's edges and the panel, and it was inside the frame — under the walking
   hand, which on a phone lies over the middle third of the low table. A desktop sees it whole. He holds a wai through the
   chant and the storm now (the posture the chapter and episode 3 already give a kneeling man), and the table is clear.
-- **`pkill -f <pattern>` matches the shell that runs it** (v24.5). The pattern is in the shell's own command line, so the
-  shell kills itself (exit 144) and the probes it meant to stop run on. Find the PIDs with `pgrep` and `kill` them.
+- **`pkill -f <pattern>` matches the shell that runs it — and so does `pgrep -f`** (v24.5). The pattern is in the shell's
+  own command line, so the shell kills itself (exit 144) and the probes it meant to stop run on; a `pgrep -f` whose
+  pattern appears anywhere later in the same command (a relaunch of the probe it is stopping) hands back the shell's own
+  PID, and `kill` does the same thing (paid for twice in one session). Anchor the pattern to the start of the process's
+  own command line — `pgrep -f '^node dbg-x'` — which the shell's `bash -c …` line never begins with.
