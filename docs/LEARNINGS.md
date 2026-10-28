@@ -6711,3 +6711,16 @@ cut (sharing its vertices and maps) when it is small.
   turns to her, so she never came; the probe now turns until the doorway projects 0.42 of the half-frame out. A probe
   that fails where the game's own rules say it should fail has found a rule, not a bug — check the rule's numbers
   before reporting either.
+- **A probe cannot see the browser's long press** (v24.1). Episode 3 chapter 5's water is a hold, and on Chad's phone a
+  finger held half a second opened the browser's own menu and cancelled the touch — the chapter could not be finished.
+  The v23.0 play-through passed it every run, because it DISPATCHED PointerEvents on the overlay in code, and a
+  dispatched event never passes the browser's gesture detection; and even a real CDP touch held 2.6 s in headless
+  Chromium fires no `contextmenu` at all (measured: `menus: 0`). So the check is on what the game DOES with a long
+  press: the probe fires the contextmenu a phone would, at 0.5 s, on the element under the finger, and reads whether
+  it was refused and whether that element's text can be selected (`dbg-e3c5hold.mjs`). The game refuses the menu on a
+  touch device and makes nothing selectable. A gesture the GAME owns must be made through the browser's own pipeline
+  (CDP touch, the real mouse) — `dbg-e3c5real.mjs` — and a gesture the BROWSER owns must be imitated and answered.
+- **A hold counts the time the finger was really down** (v24.1, engine). The event clock steps at most a quarter
+  second a frame (v18.0, right for every graded kind), and a craft's hold and a yield's fill integrated that step — so
+  on a phone drawing a frame a second a "1.2 s" hold needed five, and a player let go believing it broken. They count
+  the frame's real wall step (up to a second, since a tab back from the background held no finger).

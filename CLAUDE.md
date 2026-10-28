@@ -6791,6 +6791,22 @@ What the baseline contains, by release:
   Sheet v127 exported (3 rows added, 23 words changed, the grown James's speaker label on 273 voice rows; v44 stays the
   link). Thirteen harnesses green on the review's build (walk 1188 s); deploy `6ae17aaebaef87b92fa4fb44`, byte-verified
   (269 served files).
+- **v24.1** A LONG PRESS IS NEVER THE BROWSER'S — Chad, from his phone: *"I couldn't progress, stuck at the water
+  offering for the kuman in his room"* and *"when holding the water step, it ends up opening right click context menu on
+  mobile browser"*. Episode 3 chapter 5's water is the `craft` kind's hold (1.2 s); a phone's long press fired
+  `contextmenu`, the browser opened its own menu over the game and cancelled the touch, so the hold, the lighter's hold
+  and the three openings' fills could never be finished. Nothing refused that menu but the canvas under a rifle (v12.2),
+  and no surface refused selection or the iOS callout. Now (engine, every chapter): a document `contextmenu` listener
+  refuses it on a touch device anywhere but a link, and with a mouse only while a minigame is open (a desktop keeps its
+  menu elsewhere); `html, body` carry `user-select: none` and `-webkit-touch-callout: none` (the game has no text
+  input). And under it a second defect: the event clock credits a frame a quarter second at most, so at a frame a second
+  a 1.2 s hold took five — a craft's hold and a yield's fill now count the time the finger was really down (`e.wdtHeld`,
+  up to a second a frame). WHY EVERY PROBE PASSED: the v23.0 play-through dispatched PointerEvents on the overlay in code,
+  and headless Chromium sends no long-press menu even for a real CDP touch held 2.6 s — so `dbg-e3c5hold.mjs` fires the
+  contextmenu a phone would at 0.5 s and reads what the game does with it (LEARNINGS). Reproduced on the live v24.0
+  (menu not refused, text selectable, 0.83 of the pour after 3 s held) and gone on v24.1. Deploy
+  `6ae19798a34e4596ed179fe3`, byte-verified (269 served files). docs/V24.2-E3C5-DEBUG.md is the record, with the
+  comprehensive debug and the sound buff Chad asked for in the same messages.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -7327,7 +7343,7 @@ assigned where a texture belonged; and the clearance is ISSUED at the start
 of play rather than inferred from an empty bag, which had left both counters
 dead from the chapter's first frame (docs/LEARNINGS.md).
 
-**IN FLIGHT: nothing is mid-build.** **Episode 4 chapter 1, The Master I Did Not Know, shipped at v24.0 —
+**IN FLIGHT: episode 3 chapter 5's comprehensive debug and its sound buff (Chad, 28 Oct 2026) — docs/V24.2-E3C5-DEBUG.md** has his four messages verbatim, the plan, and the log checkpoint by checkpoint; v24.1 fixed the soft-lock he hit (the long press). **Episode 4 chapter 1, The Master I Did Not Know, shipped at v24.0 —
 docs/V24.0-E4C1-PLAN.md** is its build memory (§15 the log, checkpoint by checkpoint; masters/v24.0/cp13-findings.md
 its review, every finding with its verdict and fix); its cast are placeholders until Chad's models (docs/E4-MODELS.md
 lists each, with what stands in), and its seven music cues are the measured picks until Chad's ear (one reel per cue in
