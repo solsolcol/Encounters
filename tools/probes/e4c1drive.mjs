@@ -167,7 +167,7 @@ async function playChange() {
 }
 
 const phases = [], bedsAt = {}, presses = [];
-let last = '', idle = 0, decided = false, cardAt = 0;
+let last = '', idle = 0, decided = false, cardAt = 0, sweep = -1;
 const TMAX = 120 * 60 * 1000;
 while (Date.now() - T0 < TMAX) {
   const I = await info();
@@ -200,6 +200,14 @@ while (Date.now() - T0 < TMAX) {
       await wait(how === 'REFUSED' ? 1500 : 2500);
       if (how === 'REFUSED') idle += 1.5;
       continue;
+    }
+    if (I.phase && I.phase.startsWith('work')) {   // look round the room, as a thumb does: she is seen only at the edge of sight
+      sweep = (sweep + 1) % 8;
+      const off = [0.35, 0.6, 0.85, 1.1, -0.35, -0.6, -0.85, -1.1][sweep];
+      await p.evaluate((off) => { const E = window.__enc, S = E.stage, M = S.cast.master.group.position, Y = E.yaw;
+        Y.rotation.y = Math.atan2(-(M.x - Y.position.x), -(M.z - Y.position.z)) + off; E.pitch.rotation.x = -0.05; }, off);
+      log('  looked round', off);
+      await wait(2500); idle += 1; continue;
     }
     if (I.phase === 'arrive') {   // walk up to Pa Noi: the greeting is hers when he is within 3.4 m
       await p.evaluate(() => { const E = window.__enc, N = E.stage.cast.noi.group.position, Y = E.yaw;
