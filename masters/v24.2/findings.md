@@ -62,3 +62,33 @@ REFUTED (not real — why), NOTED (real, left with the reason). OPEN until a ver
 - L4-4 · NOTED (by design) · e3c5 is no longer the last chapter, so it downloads e4c1 ahead while it plays (models from
   8 s after the curtain lifts, low priority; e4c1's 14.4 MB sound pack at the decision, held undecoded through the
   endings). Data Saver honoured. Worth knowing if a phone-heat report comes from e3c5's endings.
+
+## L1 · input and play logic (no further hard soft-lock; two traps that feel like one)
+- L1-1 · MAJOR · the twist was read only beyond 40 px of the cap, and the game DREW the circle to trace at 38 px (the
+  dashed guide, and the demo fingertip): a player tracing the guide barely turned the cap — all three drinks (540°,
+  720°) and the music box key, all required. CONFIRMED (shell.html .cpath 76 px wide; cTwist translateX(38px);
+  main.js craft minR 40). FIXED: the guide drawn at a 64 px radius, outside the progress ring, the fingertip on it;
+  minR 28.
+- L1-2 · MAJOR · five "!" marks the chapter turns him to stood out of reach (the bag 2.07 / 2.33 m against 1.9, the
+  packet 2.44 against 1.9, the shy one's and the little one's places 1.61 / 1.86 against 1.6, the little one's sand
+  1.72 against 1.6): a tap on them did nothing. CONFIRMED (hotspotTap refuses d >= radius; marks drawn to 16 m).
+  FIXED: drinks and packet 2.8, places and sands 2.0 (each press seats or kneels him itself).
+- L1-3 · minor · after the shy one's film "Sit with them" while he is rooted by the desk: the stick does nothing. NOTED:
+  he is sitting on the floor (rooted is right), the mat's "!" is in reach (1.42 m) and in his view, and BYDESK is
+  inside the chair's column — unrooting him there would leave him unable to step anyway.
+- L1-4 · minor (desktop) · the E (or the click) that opened a hold, still held, was not the hold — nothing filled until
+  a second press. CONFIRMED (evKey dropped every repeat; a click's held button never reached the overlay). FIXED: a
+  key's first repeat, and a mouse button still down on the event's first frame, begin a craft's hold or a yield (never
+  a briefing's START; a key held over from a step before stays needUp's).
+- L1-5 · minor · marks outside their own aim cones (the drink places' "!" over his head, 0.21–0.28 rad off a 0.18
+  cone; the counter's children 0.14–0.17 off 0.09): E or a click on the "!" offered nothing. CONFIRMED. FIXED: place
+  aim 0.32, counter children 0.14 (overlapping cones go to the nearer, by fraction).
+- L1-6 · minor · the mat's "!" up for ~1.5 s after the third stick while its handler refused (careBusy). CONFIRMED.
+  FIXED: !careBusy in its enabled().
+- L1-7 · cosmetic · after the red and shy ones' films the order and its marks were posted on the black; after sitAgain
+  "Sit with them" stayed 1 s with the little one already pressable. CONFIRMED. FIXED: wDark holds them until the fade
+  lifts; sitAgain posts its COMPLETE at once.
+- L1-8 · cosmetic · (v24.2's own L2-2) a Continue into open3:mat posted "Sit with them" then "Open yourself to the
+  little one", a false COMPLETE. CONFIRMED by reading. FIXED: seated before toWorld posts the order.
+- L1-9 · low (latent race) · a play-time camera turn (viewTo) or lean still in flight when a film starts kept writing
+  the camera on a clock frozen under the film. CONFIRMED by reading. FIXED: under 'cine' both are voided.

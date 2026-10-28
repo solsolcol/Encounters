@@ -4294,7 +4294,7 @@ const EV_DEFAULT = {
   /* v23.0: CRAFT — the thirty-seventh seam (see evCraftFrame): hands-on STEPS on a held prop, in order; gentle, never
      graded; `fast` the twist speed (degrees a second) past which the care is spoilt; `minR` the radius (px) a twist
      is read at; `keyRate` how fast a held E twists (degrees a second) */
-  craft:     { secs: 0, fast: 720, minR: 40, keyRate: 360, slideKey: 0.8, swipeT: 0.6, lead: 0.15 },
+  craft:     { secs: 0, fast: 720, minR: 28, keyRate: 360, slideKey: 0.8, swipeT: 0.6, lead: 0.15 },   // (v24.2, L1-1: read from 28 px — the guide is drawn at 64)
   /* v23.0: YIELD — the thirty-eighth seam (see evYieldFrame): a ring fills over `fill` seconds while anything is held;
      let go and it waits (or drains at `back` a second); `auto` fills on its own once `autoAfter` seconds have run */
   yield:     { secs: 0, fill: 4.0, back: 0, auto: false, autoAfter: 0.8 },
@@ -5556,6 +5556,11 @@ function evFrame(dt, dLookX, dLookY) {
   const e = ev; if (!e) return;
   if (!e.started) evStart();          // and fall through: a focus dot is placed on the frame it starts
   if (e.briefing) { e.wallLast = 0; return; }   // v8.7: a briefing holds the clock, the items and the beats (v9.7: and the wall mark, or START would leap)
+  /* v24.2 (L1-4): the mouse button still held from the click that OPENED a hold (the jug, a child, under the pointer
+     lock) is that hold — once, on its first frame, as the key's first repeat is (evKey) */
+  if (!e.mouseSeeded && mousePrimaryDown && !e.down && !e.keyHeld && (e.kind === 'yield' || (e.kind === 'craft' && e.steps && e.steps[e.si] && e.steps[e.si].g === 'hold'))) {
+    e.mouseSeeded = true; evPress(innerWidth / 2, innerHeight / 2);
+  }
   const o = e.o;
   /* v9.7: WALL time, not the frame's dt. `dt` is clamped to 0.05 s upstream,
      so on a device under twenty frames a second every event ran in slow
@@ -5834,7 +5839,12 @@ function evKey(e, isDown) {
   if (!ev || !ev.started) return false;
   const up = ev.kind === 'surface' && (e.code === 'KeyW' || e.code === 'ArrowUp');   // v23.0: the surface climbs on W and ↑ too
   if (e.code !== 'Space' && e.code !== 'Enter' && e.code !== 'KeyE' && !up) return false;
-  if (isDown && e.repeat) { e.preventDefault(); return true; }
+  /* v24.2 (L1-4): a key still held from the press that OPENED a hold — E on the jug, on a child — is that hold: its
+     first repeat begins it (a briefing's START never comes from one; a key held from a step before stays needUp's).
+     Every other repeat is dropped as before */
+  const heldOver = isDown && e.repeat && (ev.kind === 'craft' || ev.kind === 'yield') && !ev.briefing && !ev.keyHeld && !ev.down
+                   && e.code !== 'Enter' && (ev.kind === 'yield' || (ev.steps && ev.steps[ev.si] && ev.steps[ev.si].g === 'hold'));
+  if (isDown && e.repeat && !heldOver) { e.preventDefault(); return true; }
   e.preventDefault();
   /* v23.0: a hands-on kind knows the press is a KEY's (E held twists, slides and holds; a press taps, flicks and
      strikes the surface up) — never the press that closes a briefing */
@@ -7779,6 +7789,11 @@ canvas.addEventListener('mouseleave', () => { pointerInside = false; edgeTurn = 
 addEventListener('blur', () => { edgeTurn = 0; });
 
 canvas.addEventListener('contextmenu', e => { if (state === 'play' && weaponWant()) e.preventDefault(); });
+/* v24.2 (L1-4): whether the primary mouse button is down now — a hold opened by a click may begin with it */
+let mousePrimaryDown = false;
+addEventListener('pointerdown', e => { if (e.pointerType === 'mouse' && e.button === 0) mousePrimaryDown = true; }, true);
+addEventListener('pointerup', e => { if (e.pointerType === 'mouse' && e.button === 0) mousePrimaryDown = false; }, true);
+addEventListener('blur', () => { mousePrimaryDown = false; });
 /* v24.1: a LONG PRESS is never the browser's — on a phone a finger held half a second fires `contextmenu`, the
    browser opens its own menu over the game and CANCELS the touch, so a hold could never be finished: episode 3
    chapter 5's water (hold to pour) was a soft-lock (Chad: "when holding the water step, it ends up opening right click

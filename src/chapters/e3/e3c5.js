@@ -3348,11 +3348,14 @@
         if (!alive) return;
         openLive.busy = false; openLive.k = 0; openLive.kid = -1; peekSet(0);
         if (kit && kit.smear) { kit.smear(0, { secs: 0.4 }); openLive.smearW = 0; }
+        /* (v24.2, L1-7: the order and its marks wait for the picture — the film ends on black and the kit's fade lifts
+           it; posted at once, "Sit with them" and the mat's "!" stood on the black. wDark holds both, as an arrival's) */
+        if (i < 2) wDark = true;
         if (i === 0) { landOn('mat'); lookToOrder(1); roomClock('23:21'); setPhase('open2'); }      // (§10.1: the clock as each one left it)
         else if (i === 1) { landOn('desk'); lookToOrder(2); roomClock('23:49'); setPhase('open3'); }   // (CP13: 23:33 made z5time's "almost three hours" to 02:47 three and a quarter)
         else { landOn('bed'); setPhase('after'); afterBeat(false); return; }
         if (kit) kit.fade(0, 0.8);
-        after(0.7, () => objectiveFor(phase));
+        after(0.7, () => { wDark = false; objectiveFor(phase); });
       };
       if (!kit || !kit.film || !kit.film(key, { noSkip: firstTime, onDone: done })) done();
     }
@@ -3370,6 +3373,7 @@
     /* back to the mat after the shy one (open3): the mat's own order, then the little one's */
     function sitAgain() {
       if (phase !== 'open3' || seated || !quiet() || openLive.busy) return false;
+      if (kit) kit.objective(null);                                    // (v24.2, L1-7: he has sat — the little one's order follows the turn)
       if (kit) kit.pose('standing', { secs: 0.3 });
       sitDown(false);
       if (kit) kit.setPhase('open3:mat');                            // (v24.2, L2-2: back on the mat — a receipt; openResume reads it)
@@ -5655,7 +5659,7 @@
         hits: tapBox(SX + CNT.x - CNT.w / 2, CNT.y - 0.01, CNT.z - CNT.l / 2, SX + CNT.x + CNT.w / 2, CNT.y + 0.3, CNT.z + CNT.l / 2),
         enabled: () => cntStep() === 'look' && cntOk(), onInteract() { return lookBundle(); } },
       ...KIDS.map((K, i) => ({
-        id: 'kid_' + K.key, pos: { ...cntAt(CNT.x, CNT_Z[i]), y: CNT.y + K.h * 0.55 }, radius: 2.6, aim: 0.09, pressAim: true,
+        id: 'kid_' + K.key, pos: { ...cntAt(CNT.x, CNT_Z[i]), y: CNT.y + K.h * 0.55 }, radius: 2.6, aim: 0.14, pressAim: true,   // (v24.2, L1-5: its "!" sat 0.14–0.17 rad off a 0.09 cone; overlapping cones go to the nearer)
         markY: K.h * 0.45 + 0.07, prompt: W['hot' + K.key[0].toUpperCase() + K.key.slice(1)],
         hits: tapBox(SX + CNT.x - 0.08, CNT.y - 0.01, CNT_Z[i] - 0.085, SX + CNT.x + 0.08, CNT.y + K.h + 0.03, CNT_Z[i] + 0.085),
         enabled: () => cntStep() === 'meet' && !cntDone.has('m.' + K.key) && cntOk(), onInteract() { return meetKid(K); } })),
@@ -5675,7 +5679,11 @@
       { id: 'jug', pos: { x: ROW.mid, y: ALTAR.top + 0.08, z: ALTAR.z0 + 0.08 }, radius: 1.8, aim: 0.25, pressAim: true, markY: 0.16, prompt: W.hotJug,
         hits: tapBox(ROW.mid - 0.06, ALTAR.top, ALTAR.z0 + 0.02, ROW.mid + 0.06, ALTAR.top + 0.14, ALTAR.z0 + 0.14),
         enabled: () => careStep() === 'water' && careOk(), onInteract() { return pourWater(); } },
-      { id: 'drinks', pos: { x: DESK_AT.bag[0], y: DESK.top + 0.15, z: DESK_AT.bag[1] }, radius: 1.9, aim: 0.3, pressAim: true, markY: 0.22, prompt: W.hotDrinks,
+      /* (v24.2, L1-2: reaches measured from where each order leaves him — the bag 2.07 m after the first drink and 2.33
+         after the second, the packet 2.44 after the third, the shy one's place 1.61 and the little one's 1.86 from
+         STAND_UP, his sand 1.72: their "!" stood in his view out of reach, and a tap on it did nothing. The press
+         seats or kneels him itself, so a longer reach costs nothing) */
+      { id: 'drinks', pos: { x: DESK_AT.bag[0], y: DESK.top + 0.15, z: DESK_AT.bag[1] }, radius: 2.8, aim: 0.3, pressAim: true, markY: 0.22, prompt: W.hotDrinks,
         hits: tapBox(DESK_AT.bag[0] - 0.12, DESK.top, DESK_AT.bag[1] - 0.12, DESK_AT.bag[0] + 0.12, DESK.top + 0.36, DESK_AT.bag[1] + 0.12),
         enabled: () => careStep() === 'drink' && careOk(), onInteract() { return atDeskDrink(); } },
       ...KIDS.map((K, i) => ({
@@ -5683,14 +5691,14 @@
            where he stands, over the next one's shoulder; and raised over the drink's place, 0.13 m before him and 0.06 to
            his left, it still stood a third of the way to the next one on a phone. Anchored on the child himself now — the
            tap box stays on the drink's place) */
-        id: 'place_' + K.key, pos: { x: RISER.x, y: ALTAR.top + 0.1, z: ALTAR_Z[i] }, radius: 1.6, aim: 0.18, pressAim: true, markY: K.h + 0.1, prompt: W.hotPlace,
+        id: 'place_' + K.key, pos: { x: RISER.x, y: ALTAR.top + 0.1, z: ALTAR_Z[i] }, radius: 2.0, aim: 0.32, pressAim: true, markY: K.h + 0.1, prompt: W.hotPlace,   // (v24.2, L1-2/L1-5: in reach, and its "!" over his head inside its own cone)
         hits: tapBox(ROW.back - 0.06, ALTAR.top, ALTAR_Z[i] + 0.0, ROW.back + 0.06, ALTAR.top + 0.2, ALTAR_Z[i] + 0.12),
         enabled: () => careStep() === 'carry' && careLive.carry === i && careOk(), onInteract() { return placeDrink(i); } })),
-      { id: 'packet', pos: { x: DESK_AT.packet[0], y: DESK.top + 0.08, z: DESK_AT.packet[1] }, radius: 1.9, aim: 0.3, pressAim: true, markY: 0.16, prompt: W.hotPacket,
+      { id: 'packet', pos: { x: DESK_AT.packet[0], y: DESK.top + 0.08, z: DESK_AT.packet[1] }, radius: 2.8, aim: 0.3, pressAim: true, markY: 0.16, prompt: W.hotPacket,
         hits: tapBox(DESK_AT.packet[0] - 0.13, DESK.top, DESK_AT.packet[1] - 0.08, DESK_AT.packet[0] + 0.13, DESK.top + 0.08, DESK_AT.packet[1] + 0.08),
         enabled: () => careStep() === 'light' && careOk(), onInteract() { return atDeskIncense(); } },
       ...KIDS.map((K, i) => ({
-        id: 'sand_' + K.key, pos: { x: ROW.mid, y: ALTAR.top + 0.06, z: ALTAR_Z[i] }, radius: 1.6, aim: 0.16, pressAim: true, markY: 0.12, prompt: W.hotBowl,
+        id: 'sand_' + K.key, pos: { x: ROW.mid, y: ALTAR.top + 0.06, z: ALTAR_Z[i] }, radius: 2.0, aim: 0.16, pressAim: true, markY: 0.12, prompt: W.hotBowl,
         hits: tapBox(ROW.mid - 0.05, ALTAR.top, ALTAR_Z[i] - 0.05, ROW.mid + 0.05, ALTAR.top + 0.08, ALTAR_Z[i] + 0.05),
         enabled: () => careStep() === 'stick' && !careDone.has('i.' + K.key) && careOk(), onInteract() { return giveStick(i); } })),
       /* (a tap on the rug or on its mark sits him, as a press does — by photograph, a phone's tap on the "!" pressed
@@ -5701,7 +5709,7 @@
         enabled: () => OPEN_I[phase] === i && seated && openOk(), onInteract() { return openPress(i); } })),
       { id: 'mat', pos: { x: MAT.x, y: 0.9, z: MAT.z }, radius: 1.6, aim: 0.35, pressAim: true, prompt: W.hotMat, markY: -0.3,
         hits: tapBox(MAT.x - 0.32, 0, MAT.z - 0.5, MAT.x + 0.32, 0.06, MAT.z + 0.5),
-        enabled: () => (phase === 'sit' || phase === 'open3') && !seated && quiet() && !openLive.busy,
+        enabled: () => (phase === 'sit' || phase === 'open3') && !seated && quiet() && !openLive.busy && !careBusy,   // (v24.2, L1-6: as its handler asks)
         onInteract() { return phase === 'open3' ? sitAgain() : sitWithThem(); } }
     ];
     for (const h of hotspots) { const en = h.enabled; h.enabled = () => !wDark && (!en || en()); }   // none under an arrival's black
@@ -6822,7 +6830,11 @@
       /* the counter's motion — the owner's mixer, the things he sets down, the box — on WALL time and ABOVE the state's
          return, so his films draw them too (v5.19: the mixers above the cine return); the lean rides the chapter clock */
       const wdt = cntWall ? Math.min(0.5, now - cntWall) : 0; cntWall = now;
-      peopleTick(wdt); setsTick(wdt); boxTick(wdt); viewTick(); leanTick(); careFrame(wdt); openFrame(wdt);
+      peopleTick(wdt); setsTick(wdt); boxTick(wdt);
+      /* (v24.2, L1-9: a film owns the camera — a play-time turn or lean still in flight when one starts is void, or its
+         tween, on the chapter clock that stands still under a film, held the film's camera half-turned throughout) */
+      if (getState() === 'cine') { cntLive.view = null; cntLive.lean = null; } else { viewTick(); leanTick(); }
+      careFrame(wdt); openFrame(wdt);
       const st = getState();
       mixBeds(wdt, st);
       const live = st === 'play' || st === 'unlock' || st === 'choose';
@@ -6856,6 +6868,7 @@
       const RA = resumeAt(p);
       if (RA) {
         careResume(RA.at === 'care' ? RA.tag : CARE_ORDER.slice(0, 8).join(','));
+        if (RA.at === 'open3' && RA.tag === 'mat') seated = true;   // (v24.2, L1-8: seated before toWorld posts the order — no false COMPLETE as openResume sits him)
         toWorld(RA.w, true, RA.at, RA.at === 'care' || (RA.at === 'open3' && RA.tag === 'mat') ? RA.tag : undefined);   // (v24.2: open3's 'mat' kept)
         if (['open1', 'open2', 'open3', 'after', 'decide'].includes(RA.at)) openResume(RA.at, RA.tag);   // where the last possession left him (CP7)
         return;
