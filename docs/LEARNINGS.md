@@ -6837,3 +6837,27 @@ cut (sharing its vertices and maps) when it is small.
   foot from the oblique and low places inside the room. Close it on its own material — its ground laid flat out to it,
   its edge columns carried back to the wall — so whatever drives the picture (the lightning's brightness here) drives
   the box with it.
+- **A retargeted talking take carries its own head, and a nod becomes a roll** (v24.5, Chad: *"Are you telling me you
+  dont see any problems with how pong head and neck turns?"*). Pong's answering take is the first master's, retargeted
+  onto a different rig: with his look let go it rolled his head up to 44° onto either shoulder and swung it 52° aside.
+  Measure a take's head with the LOOK OFF before trusting the look to hide it; where the head is wrong, ride the take's
+  chest, arms and hands only and keep the seated take's own neck and head under it (`talkHead: false`), and let the
+  look turn it. And a person's eyes stay near the horizontal whatever the chest does: past 5° of roll, three quarters of
+  it is taken out (`ROLL_FREE`) — 17° → 7° under the same take.
+- **Seat a person between the two he talks to** (v24.5). Square to the master, Pong's every look at the client beside
+  him was 77° — chest and head at their limits, chin up, held through whole lines; at the wheel and on the shelter's
+  bench the client was 91–94° off, past what a gaze may turn, so his neck sat at its limit and still missed. An
+  interpreter sits angled between his two; a driver GLANCES; two men on a bench sit turned to each other. A look's numbers
+  can be right and the staging still wrong — measure the angle a look must turn before blaming the look.
+- **A hair-thin dark line in a render may be a STRAY VERTEX, not the surface it lies on** (v24.5). A 1-px line across
+  episode 4 chapter 1's floor survived every change to the floor's lighting and was gone when the floor was drawn alone,
+  so it was drawn by something else that a hit test could not find — a skinned mesh, whose bounding sphere (set from
+  the posed body) did not reach the far end of its own needle. One vertex at Pong's right hip was weighted wholly to his
+  LEFT KNEE while its two twins at the same place followed his hips: cross-legged, three triangles of a 2 cm cap became a
+  metre-long needle. Find it by skinning every triangle on the CPU and listing the long ones (`tools/probes/slivers.mjs`); bisect
+  a render by hiding classes of mesh and photographing the GL buffer straight after drawing it (`readPixels` in the same
+  task needs no `preserveDrawingBuffer`). A seam's twins must move as one (`mendTwins`).
+- **A probe waits for the panel to land before it taps** (v24.5). The decision panel rises in on a 0.45 s animation; in a
+  starved headless browser the animation can stand still at its start, so a tap computed from the option's rect landed
+  on the option below it — ending B's probe played C. `pick()` already ignores taps in the first 340 ms; the probes now
+  wait for `getAnimations()` on the panel to finish before reading a rect.

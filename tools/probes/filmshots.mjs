@@ -32,6 +32,9 @@ if (OPT) {
   await p.evaluate((ph) => window.__enc.stage.applyPhase(ph), process.env.PHASE || 'decide:~fri');
   await p.waitForFunction(() => window.__enc.getState() === 'decide', null, { timeout: 600000, polling: 500 });
   await p.waitForTimeout(2500);
+  /* (v24.5) the panel rises 40 px into place (a 0.45 s CSS animation, which a starved headless box can hold at its first
+     frame for seconds): read the option's place only once that has finished, or a tap aimed at B lands on C */
+  await p.waitForFunction(() => { const P = document.querySelector('#decide .panel'); return P && P.getAnimations().every(a => a.playState === 'finished'); }, null, { timeout: 120000, polling: 200 });
   const bt = await p.evaluate((i) => { const B = [...document.querySelectorAll('#choices button.choice')]; const r = B[i] && B[i].getBoundingClientRect();
     return r ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null; }, 'ABCD'.indexOf(OPT));
   if (PHONE) await p.touchscreen.tap(Math.round(bt.x), Math.round(bt.y)); else await p.mouse.click(bt.x, bt.y);

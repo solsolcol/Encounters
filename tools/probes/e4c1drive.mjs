@@ -183,6 +183,8 @@ while (Date.now() - T0 < TMAX) {
   if (I.st === 'unlock') { await playUnlock(); continue; }
   if (I.st === 'decide' && !decided) {
     await wait(2500); await shot('decision');
+    /* (v24.5) only once the panel's 0.45 s rise has finished (a starved headless box can hold it at its first frame) */
+    await p.waitForFunction(() => { const P = document.querySelector('#decide .panel'); return P && P.getAnimations().every(a => a.playState === 'finished'); }, null, { timeout: 120000, polling: 200 });
     const bt = await p.evaluate((i) => { const B = [...document.querySelectorAll('#choices button.choice')];
       const r = B[i] && B[i].getBoundingClientRect(); return { n: B.length, at: r ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null }; }, OPT_I);
     if (bt.at) await tap(bt.at.x, bt.at.y);

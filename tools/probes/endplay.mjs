@@ -32,6 +32,9 @@ await p.waitForFunction(() => window.__enc.getState() === 'decide', null, { time
 await p.waitForFunction(() => window.__enc.getState() === 'decide', null, { timeout: 600000, polling: 500 });
 await p.waitForTimeout(3000);
 const v0 = await p.evaluate(() => window.__enc.voices().length), c0 = await p.evaluate(() => window.__enc.stings().length);
+/* (v24.5) the panel rises 40 px into place (a 0.45 s CSS animation, which a starved headless box can hold at its first
+   frame for seconds): read the option's place only once that has finished, or a tap aimed at B lands on C */
+await p.waitForFunction(() => { const P = document.querySelector('#decide .panel'); return P && P.getAnimations().every(a => a.playState === 'finished'); }, null, { timeout: 120000, polling: 200 });
 const bt = await p.evaluate((i) => { const B = [...document.querySelectorAll('#choices button.choice')]; const r = B[i] && B[i].getBoundingClientRect();
   return r ? { x: r.left + r.width / 2, y: r.top + r.height / 2, n: B.length } : null; }, 'ABCD'.indexOf(OPT));
 await press(bt.x, bt.y);

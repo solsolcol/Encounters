@@ -395,10 +395,53 @@
           new GLTFLoader().parse(BUF, '', (gltf) => {
             rescueTextures(gltf, BUF);
             if (unifySkeletons) unifySkeletons(gltf.scene);
+            mendTwins(key, gltf.scene);
             res({ scene: gltf.scene, animations: gltf.animations });
           }, rej))));
       }
       return parsedGlb.get(key);
+    }
+    /* A SEAM'S TWINS MOVE AS ONE (v24.5, found by the photographs of Pong's head: a hair-thin dark line ran across the
+       room's floor from behind his arm to the far wall). One vertex of his trousers, at his right hip, is weighted wholly
+       to his LEFT KNEE while its two twins at the same place (a seam's copies) follow his hips — sat cross-legged, his
+       knee carries it a metre off and three triangles of a 2 cm cap stretch into a needle across the floor. Twins at one
+       place must deform as one: a vertex whose twins agree on a bone it carries no weight on at all takes their weights.
+       Once a file, on the parse every clone shares; how many each file needed is kept (`stage.mends`) */
+    const twinMends = {};
+    function mendTwins(key, root) {
+      let n = 0;
+      root.traverse(m => {
+        if (!m.isSkinnedMesh) return;
+        const g = m.geometry, pa = g.attributes.position, si = g.attributes.skinIndex, sw = g.attributes.skinWeight;
+        if (!pa || !si || !sw) return;
+        let mine = 0;
+        g.computeBoundingBox(); const bb = g.boundingBox;
+        const tol = 1.5e-3 * Math.max(bb.max.x - bb.min.x, bb.max.y - bb.min.y, bb.max.z - bb.min.z);   // ~2.5 mm on a body
+        const bones = m.skeleton ? m.skeleton.bones : [], near = (a, b2) => { const A = bones[a], B = bones[b2];
+          return !A || !B || A === B || A.parent === B || B.parent === A; };   // a joint's own boundary is never mended
+        if (!(tol > 0)) return;
+        const cell = (v) => Math.floor(v / tol), cells = new Map(), K = (a, b2, c) => a + ',' + b2 + ',' + c;
+        for (let i = 0; i < pa.count; i++) {
+          const k = K(cell(pa.getX(i)), cell(pa.getY(i)), cell(pa.getZ(i)));
+          let c = cells.get(k); if (!c) cells.set(k, c = []); c.push(i);
+        }
+        const dom = (i) => { let k = 0; for (let q = 1; q < 4; q++) if (sw.getComponent(i, q) > sw.getComponent(i, k)) k = q; return si.getComponent(i, k); };
+        const weightOn = (i, bone) => { let w = 0; for (let q = 0; q < 4; q++) if (si.getComponent(i, q) === bone) w += sw.getComponent(i, q); return w; };
+        for (let i = 0; i < pa.count; i++) {
+          const x = pa.getX(i), y = pa.getY(i), z = pa.getZ(i), cx = cell(x), cy = cell(y), cz = cell(z), tw = [];
+          for (let a = -1; a <= 1; a++) for (let b2 = -1; b2 <= 1; b2++) for (let c = -1; c <= 1; c++) {
+            const l = cells.get(K(cx + a, cy + b2, cz + c)); if (!l) continue;
+            for (const j of l) if (j !== i && Math.hypot(pa.getX(j) - x, pa.getY(j) - y, pa.getZ(j) - z) <= tol) tw.push(j);
+          }
+          if (tw.length < 2) continue;
+          const d0 = dom(tw[0]);
+          if (!tw.every(j => dom(j) === d0) || weightOn(i, d0) > 0 || near(dom(i), d0)) continue;
+          for (let q = 0; q < 4; q++) { si.setComponent(i, q, si.getComponent(tw[0], q)); sw.setComponent(i, q, sw.getComponent(tw[0], q)); }
+          n++; mine++;
+        }
+        if (mine) { si.needsUpdate = true; sw.needsUpdate = true; }
+      });
+      if (n) twinMends[key] = n;
     }
 
     /* the cars' windows: the sky they reflect, painted (top: the pale storm light; down to the dark of the cabin) — a
@@ -2548,6 +2591,8 @@
     const _hq = new THREE.Quaternion(), _pq2 = new THREE.Quaternion(), _dq = new THREE.Quaternion(), _iq = new THREE.Quaternion(), _fv = new THREE.Vector3();
     const _qlk = new THREE.Quaternion();     // the look's turn at its weight (never blended INTO _dq: see below)
     const _spq = new THREE.Quaternion(), _qy = new THREE.Quaternion(), _ax = new THREE.Vector3(), _UPV = new THREE.Vector3(0, 1, 0);
+    const _lvU = new THREE.Vector3(), _lvH = new THREE.Vector3(), _lvX = new THREE.Vector3();   // the head kept level (peopleTick)
+    const ROLL_FREE = 0.087;                 // 5°: a head's own tilt left alone; past it, three quarters of the roll is taken out
     const UPPER_RE = /Spine|Neck|Head|Shoulder|Arm|Hand|neck/;
     const LOWER_RE = /Hips|UpLeg|Leg|Foot|Toe/;
     function upperOnly(clip) {
@@ -2651,7 +2696,18 @@
         if (o.stand) { L.standLo = act(o.stand, 'lower'); L.standUp = act(o.stand, 'upper'); }
         if (o.sit) { L.sitLo = act(o.sit, 'lower'); L.sitUp = act(o.sit, 'upper'); }
         L.walk = o.walk === false ? null : act(o.walk || 'Walking');
-        L.talk = o.talk ? act(o.talk, 'upper') : null;
+        /* (v24.5, Chad on Pong's head and neck — measured with his look let go: his answering take, the first master's
+           retargeted onto this rig, tips his head up to 44° onto either shoulder and swings it 52° aside, a nod become a
+           roll. `talkHead: false` rides the talk take's chest, arms and hands only and keeps the sitting take's own neck
+           and head under it (cut to the talk take's length, so the gestures never hold still at a loop's end); the head
+           is his look's, and a small nod carries the line) */
+        if (o.talk && o.talkHead === false && o.sit && clip(o.talk) && clip(o.sit)) {
+          const tc = clip(o.talk).clone(), HN = /Neck|Head/;
+          tc.tracks = tc.tracks.filter(tr => !HN.test(tr.name.split('.')[0]))
+            .concat(clip(o.sit).tracks.filter(tr => HN.test(tr.name.split('.')[0])).map(tr => tr.clone()));
+          tc.name = o.talk + '_nohead';
+          L.talk = mx.clipAction(upperOnly(tc));
+        } else L.talk = o.talk ? act(o.talk, 'upper') : null;
         for (const k of ['standLo', 'standUp', 'sitLo', 'sitUp', 'walk', 'talk']) if (L[k]) L[k].reset().setEffectiveWeight(0).play();
         const pose = (sitW) => {                            // the rest alone, at this blend, for measuring
           for (const k of ['standLo', 'standUp']) if (L[k]) L[k].setEffectiveWeight(1 - sitW);
@@ -2713,6 +2769,7 @@
           P.head.getWorldQuaternion(_hq);
           group.getWorldQuaternion(_pq);
           P.faceLocal = new THREE.Vector3(0, 0, 1).applyQuaternion(_pq).applyQuaternion(_hq.invert()).normalize();
+          P.upLocal = new THREE.Vector3(0, 1, 0).applyQuaternion(_pq).applyQuaternion(_hq).normalize();   // (_hq is the inverse here)
           pose(P.sitW); group.updateMatrixWorld(true);
           P.head.getWorldQuaternion(_hq);
           const fw = P.faceLocal.clone().applyQuaternion(_hq), bw = new THREE.Vector3(0, 0, 1).applyQuaternion(_pq);
@@ -2921,9 +2978,31 @@
             P.head.parent.getWorldQuaternion(_pq2);
             P.head.quaternion.copy(_pq2.invert().multiply(_qlk.multiply(_hq)));
           }
+          /* A HEAD STAYS LEVEL (v24.5, Chad: "Are you telling me you dont see any problems with how pong head and neck
+             turns?" — measured: a talking take that sways the chest to one side carried Pong's head with it, up to 18° onto
+             his shoulder, look or no look). A person's eyes keep near the horizontal whatever the chest does under them:
+             the roll about the face's own line, against the BODY's up (a man riding a pickup leans with its cab), is left
+             alone up to 5° and three quarters taken out past it; nothing is done while the face points near straight up or
+             down, where level means nothing */
+          if (P.upLocal && P.faceLocal) {
+            P.head.updateWorldMatrix(true, false); P.head.getWorldQuaternion(_hq);
+            _fv.copy(P.faceLocal).applyQuaternion(_hq);
+            P.group.getWorldQuaternion(_pq2); _lvU.set(0, 1, 0).applyQuaternion(_pq2);
+            const fu = _fv.dot(_lvU), wl = THREE.MathUtils.clamp((0.85 - Math.abs(fu)) / 0.3, 0, 1);
+            if (wl > 0) {
+              _lvH.copy(P.upLocal).applyQuaternion(_hq); _lvH.addScaledVector(_fv, -_lvH.dot(_fv)).normalize();
+              _lvU.addScaledVector(_fv, -fu).normalize();
+              const ro = Math.atan2(_lvX.crossVectors(_lvU, _lvH).dot(_fv), _lvU.dot(_lvH)), ar = Math.abs(ro);
+              if (ar > ROLL_FREE) {
+                _dq.setFromAxisAngle(_fv, (Math.sign(ro) * (ROLL_FREE + (ar - ROLL_FREE) * 0.25) - ro) * wl);
+                P.head.parent.getWorldQuaternion(_pq2);
+                P.head.quaternion.copy(_pq2.invert().multiply(_dq.multiply(_hq)));
+              }
+            }
+          }
           P.bowNow += ((P.bow || 0) - P.bowNow) * Math.min(1, wdt * 2.5);
           /* a man with no talking take of his own nods his way through his line (Ta Sombat) */
-          const nod = !L.talk && P.talkW > 0.02 ? 0.07 * Math.sin(now * 5.2) * P.talkW : 0;
+          const nod = (!L.talk || P.o.talkHead === false) && P.talkW > 0.02 ? 0.07 * Math.sin(now * 5.2) * P.talkW : 0;
           const pit = P.bowNow + nod;
           if (Math.abs(pit) > 1e-4) { _pe.set(pit, 0, 0, 'YXZ'); _pq.setFromEuler(_pe); P.head.quaternion.multiply(_pq); }
         }
@@ -3007,8 +3086,13 @@
             shadow.srcBones = shadow.list[0].bones.map(b => byName.get(b.name) || null);
           }).catch(err => { console.warn('fmshadow failed to load', err); if (ctx.loadFail) ctx.loadFail('fmshadow', err); });
         } });
-      cast.pongR = mkPerson('e4pong', { parent: worldR, x: -0.95, z: -0.2, ry: Math.atan2(0.95, -1.75), height: 1.7, sizeTake: 'Idle_9', walk: false,
-        posture: 'sit', sit: 'Sit_Cross_Legged_on_Floor', talk: 'Sitting_Answering_Questions', seatH: 0.012, seatFloor: 0.004, look: 0.8, noMip: true });
+      /* (v24.5, Chad: "Are you telling me you dont see any problems with how pong head and neck turns?" — measured: sat
+         square to the master, the client on his mat was 77° to his side, and every look at him was his chest turned 25°
+         and his head 43.5° more on top, chin up, his hips still, held through whole lines: a man craning over his
+         shoulder. He sits as an interpreter does, angled between the two he talks to — half way between the master and
+         the client's eye — so a look at either is about 37°) */
+      cast.pongR = mkPerson('e4pong', { parent: worldR, x: -0.95, z: -0.2, ry: (Math.atan2(0.95, -1.75) + Math.atan2(0.95, 0.2)) / 2, height: 1.7, sizeTake: 'Idle_9', walk: false,
+        posture: 'sit', sit: 'Sit_Cross_Legged_on_Floor', talk: 'Sitting_Answering_Questions', talkHead: false, seatH: 0.012, seatFloor: 0.004, look: 0.8, noMip: true });
       cast.noiR = mkPerson('e4noi', { parent: worldR, x: 1.55, z: -1.0, ry: -2.2, height: 1.56, posture: 'stand', stand: 'Idle_9',
         talk: 'Talk_with_Left_Hand_on_Hip', hidden: true, noMip: true });
       cast.her = mkPerson('granny', { parent: worldR, x: RMC.HER.door.x, z: RMC.HER.door.z, ry: -0.45, height: 1.5, posture: 'stand', stand: 'Stand_and_Chat',
@@ -3643,6 +3727,14 @@
         line(st[1][0], st[1][1]); line(st[2][0], st[2][1]);
         queueFn(() => { cast.pong.lookAt = null; cast.sombat.lookAt = null; cast.pong.turnTo = Math.PI / 2; });
         line(st[3][0], st[3][1]);
+      } else if (key === 'pong') {
+        /* (v24.5, Chad: "Are you telling me you dont see any problems with how pong head and neck turns?" — asked
+           himself, Pong answered from where he sat, square to the master's door: his head alone turned up to 49° and
+           the rest of the answer went over his shoulder. He turns on the bench to the client, as he turns to the farmer,
+           and back when he has answered) */
+        queueFn(() => pongTurnTo(yaw.position));
+        lines(A.steps());
+        queueFn(() => { cast.pong.turnTo = Math.PI / 2; });
       } else lines(A.steps());
       queueFn(() => {
         if (key === 'sb') { cast.pong.lookAt = null; cast.sombat.lookAt = null; cast.pong.turnTo = Math.PI / 2; }
@@ -3662,6 +3754,15 @@
       });
       return true;
     }
+    /* Pong on his bench turned toward a point in the world — no further than 80° from the bench's own facing (the master's
+       door, +x), as far as a man sitting on a bench turns without getting up; his head looks the rest of the way */
+    function pongTurnTo(at) {
+      const P = cast.pong; if (!P || !P.group || !P.group.parent) return;
+      const p = P.group.parent.worldToLocal(_ptv.copy(at));
+      const want = Math.atan2(p.x - P.group.position.x, p.z - P.group.position.z);
+      P.turnTo = Math.PI / 2 + THREE.MathUtils.clamp(angTo(Math.PI / 2, want), -1.4, 1.4);
+    }
+    const _ptv = new THREE.Vector3();
     /* the takhian tree with its dresses (a folk custom, shown respectfully, never explained further) */
     function treeLook() {
       if (play.tree || play.busy) return false;
@@ -4663,11 +4764,16 @@
     /* a person looking at the lens in a film: the look is the FILM's, so it is on at once (a seek or a skip lands on it —
        CP9, by photograph: a seek arrived before Pong's eased look had turned his head, and he talked to the ceiling) and
        the neck may turn as far as a seated man turns to the person beside him; off, he goes back to what he watched */
-    function gaze(P, on) {
+    function gaze(P, on, neck = 1.25) {
       if (!P) return;
-      if (on) { P.lookAt = camera; P.neck = 1.25; P.lookW = 1; }
+      if (on) { P.lookAt = camera; P.neck = neck; P.lookW = 1; }
       else if (P.lookAt === camera) { P.lookAt = P.lookHome || null; P.neck = null; }
     }
+    /* (v24.5: at the wheel the client sits 91° to Pong's side, past the 72° a gaze may turn — so every look across was
+       his neck at its limit, chin up, still 19° short of the lens. A driver glances: 54°, his chest a little, his eyes on
+       the road's side of the passenger) */
+    const CAB_GLANCE = 0.95;
+    const SHELTER_RY = Math.PI + 0.75;                    // Pong on the shelter's bench in ending D, turned 43° toward the client
     /* a thing held in his right hand, in the hands' own pass (kit.hold's place: the palm, noteProp's frame) */
     const PALM = [0.012, -0.052, -0.148], _hhv = new THREE.Vector3();
     function handHold(obj, o = {}) {
@@ -4879,7 +4985,7 @@
         const tk = (t >= O.o6 + 3.4 && t < O.o6 + 7.4) ? smo(sgk(t, O.o6 + 3.4, O.o6 + 4.4)) * (1 - smo(sgk(t, O.o6 + 6.4, O.o6 + 7.4))) : 0;
         fLens(isNarrow() ? 66 : 60);
         /* the turn to Pong lands on his face (his head beside the lens, not the windscreen's corner ahead of it — CP9) */
-        gaze(cast.pongCab, tk > 0.5);                                                 // (a glance across at him on "brother")
+        gaze(cast.pongCab, tk > 0.5, CAB_GLANCE);                                     // (a glance across at him on "brother")
         const road = cabEye(-0.36, 1.36, -3.0), face = tk > 0 ? faceOf(cast.pongCab, cabEye(0.42, 1.42, 0.02)) : road;
         camAt(cabEye(-0.42, 1.5, 0.08), lp3(road, face, tk));
       } else {
@@ -5011,7 +5117,7 @@
         cabCtl.show(true); cabCtl.drops(0.22);
         driveAt([[2.0, 13.4], [1.8, 16.0], [0.4, 18.6], [-2.6, 20.2], [-12, 22.4]], T.cab, T.wide + 1.4, t, { easeIn: true });
         const tk = (t > T.cab + 0.4 && t < T.cab + 4.6) ? smo(sgk(t, T.cab + 0.4, T.cab + 1.1)) * (1 - smo(sgk(t, T.cab + 3.9, T.cab + 4.6))) : 0;
-        gaze(cast.pongCab, tk > 0.5);
+        gaze(cast.pongCab, tk > 0.5, CAB_GLANCE);
         fLens(isNarrow() ? 66 : 60);
         camAt(cabEye(-0.42, 1.5, 0.08), lp3(cabEye(-0.32, 1.36, -3.0), faceOf(cast.pongCab, cabEye(0.42, 1.42, 0.02)), tk));
         return;
@@ -5106,7 +5212,7 @@
         const lift = cardGrip();
         handHold(card, { screen: lift, face: true, tilt: cardTilt() - 0.25 * Math.sin(flip * Math.PI), flip: flip * Math.PI });
         const onPong = t < T.cab + 5.2;
-        gaze(cast.pongCab, onPong);
+        gaze(cast.pongCab, onPong, CAB_GLANCE);
         fLens(isNarrow() ? 66 : 60);
         /* off Pong: his eyes down to the card in his hand, the road still in the top of the frame */
         camAt(cabEye(-0.42, 1.5, 0.08), onPong ? faceOf(cast.pongCab, cabEye(0.42, 1.42, 0.02)) : cabEye(-0.36, 1.18, -1.6));
@@ -5202,7 +5308,7 @@
           cabCtl.show(true); cabCtl.drops(0.5);
           pickupAt(CMP.PICKUP.x, CMP.PICKUP.z + 0.4, Math.PI);
           fLens(isNarrow() ? 64 : 58);
-          gaze(cast.pongCab, t < T.car + 4.4);
+          gaze(cast.pongCab, t < T.car + 4.4, CAB_GLANCE);
           camAt(cabEye(-0.42, 1.5, 0.08), t < T.car + 4.4 ? faceOf(cast.pongCab, cabEye(0.42, 1.42, 0.02)) : cabEye(-0.3, 1.32, -3.0));
         }
         return;
@@ -5291,7 +5397,10 @@
         fLook(t < T.shelter + 9.0 ? 'AFTER' : 'YARD0', 6.0);
         cabCtl.show(false);
         const S1 = CMP.SHELTER;
-        fPut(cast.pong, S1.x + 0.5, S1.z + 0.3, Math.PI, { y: 0.04, seated: true });
+        /* (v24.5: sat square to the paddy, the client beside him on the bench was 94° to his side — past the 72° a gaze
+           may turn, so Pong craned his head round, chin up, and still looked past him; side by side on a bench two men
+           who talk sit turned to each other: 43° toward the client, a look at him is 51° and one at the sky ahead 38°) */
+        fPut(cast.pong, S1.x + 0.5, S1.z + 0.3, SHELTER_RY, { y: 0.04, seated: true });
         const eye = [S1.x - 0.42, 0.48 + 0.78, S1.z + 0.36];
         if (t < T.shelter + 11.4) {
           const onPong = (t > T.shelter + 1.4 && t < T.shelter + 7.2);
@@ -5316,7 +5425,7 @@
         fLook('YARD0', 4.0);
         cabCtl.show(false);
         const S1 = CMP.SHELTER, eye = [S1.x - 0.42, 0.48 + 0.78, S1.z + 0.36];
-        fPut(cast.pong, S1.x + 0.5, S1.z + 0.3, Math.PI, { y: 0.04, seated: true });
+        fPut(cast.pong, S1.x + 0.5, S1.z + 0.3, SHELTER_RY, { y: 0.04, seated: true });
         cast.pong.lookAt = DUSK_SKY.set(S1.x - 1.5, 7.0, S1.z - 22); cast.pong.neck = null; cast.pong.lookW = 1;
         const CUT = T.dusk + 4.0;                                                          // "…it was time to go." ends at ~55.9
         if (t < CUT) {
@@ -5586,7 +5695,7 @@
       setPhase, applyPhase, after, dayClock, sayLine, queueLine, queueFn, queueGap,
       look, presets: PRESETS, dome: domeLive, worldOf, room: roomCtl, rmc: RMC, roomState: room, yard, cmp: CMP,
       shop: shopCtl, shopState: shop, cab: cabCtl, cabState: cab, taxi, films,
-      cast, her: herCtl, herState: her, shadow,
+      cast, her: herCtl, herState: her, shadow, mends: twinMends,
       person: { talk: personTalk, do: personDo, rest: personRest, walk: personWalk, put: personPut, sit: personSit, ready: whenReady },
       play: { state: play, ask, sign, kneel, offer, enterRoom, callNext, greet, treeLook, chooseItem, askDay, matZone, tray, herPos, chg,
               spots: { smoke: smokePos, cloth: clothPos, shadow: shadowPos } },
