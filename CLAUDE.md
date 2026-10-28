@@ -6876,6 +6876,30 @@ What the baseline contains, by release:
   (L3-14, every chapter). Sheet v128 exported (v44 stays the link). Deploys `6ae1b3044518593a65dfaa4b` and
   `6ae1b76452cb3936badb38a8` (the box's run-down started on WALL time from its tune's own start, which plays on under
   the pause menu where the chapter clock stands still — v24.0's two-clocks law), each byte-verified (269 served files).
+  Thirteen harnesses green (fixture and walk re-run in a fresh container after the session's machine was replaced
+  mid-check — the probes now live in tools/probes); the chapter played through on a phone by keys to ending A's card
+  (`e3c5drive`: 66 voices, none over another, no page error); Continue lands right at all thirteen phases
+  (`e3c5cont`). What it costs is measured, not guessed (`memab`): the renderer 1751 → 1937 MB with the decision open
+  (the chapter's own decoded sound 392 → 614 MB) — put to Chad with the options, not changed.
+- **v24.4** ENDING C'S LAST SHOTS, AND HER WHERE SHE STANDS — the leftovers of episode 4 chapter 1's review (#352),
+  photographed on a phone and a desktop; all in `src/chapters/e4/e4c1.js`, `src/main.js` untouched.
+  - THE KEYS in every ending's coda (K2): held at the palm in the arm's frame, and the walking hand lies palm-down, so
+    the ring sat under the hand, out of the picture. They hang from the closed grip at a point of the screen now
+    (`KEYS_N`, the card's way), chosen of four placements photographed on both screens.
+  - HER, at the doorway in ending C (3.6–5.3 s): her take stands her body 0.6 m to the right of her group's spot
+    (measured: hips and head at x 2.57–2.61 against the spot's 1.98). The shot framed the spot, so on a phone it
+    framed the curtain and she stood outside the picture; and her fade (`herFrame`), which also looked at the spot,
+    kept her in full on a phone when he turned to her in play — the opposite of "gone when he turns". Both read where
+    she IS now (`herPoint`, a little under her head), and the shot puts her half way to the frame's edge, inside the
+    cold's sharp middle. A desktop draws her as before.
+  - THE SHAPE IN THE GLASS (ending C's last image): his reflection stood where a reflection would, behind the glass —
+    past the cabinet's back and the shop's wall, which hid it, so ending C ended on shelves with nothing in them on
+    every screen; and the glass was looked at 22° to its side, which a phone's frame never held. It is drawn in front
+    of the glass now, moved toward his eye and shrunk by the same 0.4 so it covers exactly the same picture, as ONE dark
+    layer (a depth pass, then the colour where the depth is its own — drawn through, the mouth, the eyes and the shirt
+    over the body showed through each other), 45 % of the way to the frame's left edge on every screen.
+  - No word moved; sheet v128 stands (v44 the link). Deploy `6ae1d0587f111c3b05db03eb`, byte-verified (269 served
+    files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

@@ -10,6 +10,7 @@ import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
 const VIEW = process.env.VIEW || 'phone', PHONE = VIEW === 'phone';
 const OPT = process.env.OPTS || 'A', TS = (process.env.TS || '5').split(',').map(Number);
 const CH = process.env.CH || 'e3c5', PHASE = process.env.PHASE || 'decide';   // (any chapter: CH=e4c1 PHASE=storm:done)
+const SETTLE = +(process.env.SETTLE || 0);   // ms of wall time after each seek: what fades on the wall clock (her look) has time to come in
 const OUT = (process.env.OUT || '/tmp/e3c5ends') + '-' + VIEW;
 fs.mkdirSync(OUT, { recursive: true });
 const b = await chromium.launch(LAUNCH);
@@ -35,6 +36,7 @@ await p.waitForFunction(() => window.__enc.cine.active(), null, { timeout: 60000
 for (const t of TS) {
   await p.evaluate((t) => window.__enc.cine.seek(t), t);
   await p.evaluate(() => new Promise(r => { let k = 0; const f = () => (++k >= 3 ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); }));
+  if (SETTLE) await p.waitForTimeout(SETTLE);
   const s = await p.evaluate(() => { const E = window.__enc; let i = {}; try { i = E.stage.info(); } catch { /* */ }
     const c = E.camera || null;
     return { st: E.getState(), shot: i.endShot || i.shot || null, fov: c ? +c.fov.toFixed(1) : null,

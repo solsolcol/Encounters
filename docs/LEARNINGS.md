@@ -6767,3 +6767,18 @@ cut (sharing its vertices and maps) when it is small.
   Measured on two builds by the same probe (`tools/probes/memab.mjs`, the renderer's resident memory by its own
   browser profile): +116 MB at the counter, +186 MB with the decision open (1751 → 1937 MB on the software-GL test
   box). The price of a sound is its decoded length × channels, not its download.
+- **A person's group is not where the person is drawn** (v24.4). A take can stand the body well off its rig's own
+  origin: episode 4 chapter 1's presence (ch3's granny on `Stand_and_Chat`, parked) is drawn 0.6 m to the right of her
+  group's spot — hips at x 2.57 and head at 2.61 against 1.98. Everything that asked where she was asked the group: her
+  fade ("seen only at the edge of sight") and ending C's shot that frames her. So on a desktop the shot held her at the
+  frame's edge by luck, on a phone it framed the curtain beside her and left her outside the picture, and in play on a
+  phone the fade was inverted — hidden while he looked at the doorway, full when he turned to her. Anything that asks
+  where a person IS (a fade keyed to the screen, a framing, a tap on them) reads a BONE (`herPoint`: a little under the
+  head), never the group. The tell: a figure measured "drawn, 69 % and rising" in a photograph that shows nobody.
+- **A reflection placed at its mirror position is behind the mirror — and behind what the mirror is mounted in**
+  (v24.4). Ending C's last image set his dark reflection where a reflection appears, 1 m past the glass of a wall case:
+  past the case's back panel and the shop's wall, so the depth test hid it and the ending closed on empty shelves on
+  every screen. Drawn without a depth test it showed — as a grey mannequin, its mouth, eyes and the shirt over the body seen through each other. What
+  works: move every point toward the eye by one factor (`P' = E + (P − E)·f`; position and scale of the group), which
+  is the same picture and lies in front of the glass; then draw it as ONE layer — a pass that writes only depth
+  (transparent, `colorWrite: false`, renderOrder before), then the colour where the depth is its own (`LessEqual`).

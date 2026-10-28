@@ -2974,13 +2974,22 @@
       show(on) { her.on = !!on; },
       at(spot) { her.spot = spot; const p = HER_SPOT(); if (cast.her) { cast.her.group.position.x = p.x; cast.her.group.position.z = p.z; } }
     };
+    /* where she IS: a little under her head. Her take stands her body 0.6 m off her group's spot (v24.4, #352, measured
+       in ending C: hips and head at x 2.57–2.61 against the spot's 1.98), so a fade that looked at the spot looked at the
+       curtain beside her — on a phone she stayed in full when he turned to her, and the ending's shot framed the curtain
+       and left her outside the picture */
+    function herPoint(v) {
+      const P = her.P; if (!P) return null;
+      if (P.head) { P.head.getWorldPosition(v); v.y -= 0.15; } else { P.group.getWorldPosition(v); v.y += 1.15; }
+      return v;
+    }
     function herFrame(now, wdt) {
       const P = her.P; if (!P) return;
       const inR = worldOf(yaw.position.x) === 'R';
       let want = 0;
       if (her.on && inR) {
         if (her.spot !== 'door') { const p = HER_SPOT(); P.group.position.x = p.x; P.group.position.z = p.z; }
-        P.group.getWorldPosition(_hp); _hp.y += 1.15;
+        herPoint(_hp);
         camera.updateMatrixWorld(); _hp.project(camera);
         if (_hp.z < 1 && Math.abs(_hp.y) < 1.2) { const ax = Math.abs(_hp.x); want = THREE.MathUtils.smoothstep(ax, 0.3, 0.55) * (ax < 1.25 ? 1 : 0); }
       }
@@ -4402,11 +4411,26 @@
       const fob = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.01, 0.018, 10), mB); fob.position.set(0.002, -0.022, 0.006); g.add(fob);
       return g;
     })();
-    /* ending C's reflection in the glass case (the coda): his own shape, dark, where a reflection of him would stand */
+    /* ending C's reflection in the glass case (the coda): his own shape, dark, where a reflection of him would stand.
+       (v24.4, #352, photographed: that place is BEHIND the glass — past the cabinet's back and the shop's wall, which
+       hid it, so the last image of ending C was shelves with nothing in them. The coda draws it in front of the glass
+       instead, shrunk toward his eye so it covers exactly what the reflection would (reflShot); and as ONE layer: a
+       depth pass first, then the colour only where the depth is its own — drawn through, the mouth, the eyes and the
+       shirt over the body showed through each other, a grey mannequin rather than a shape) */
     cast.refl = mkPerson('e4pong', { parent: worldS, x: 1.0, z: -0.1, ry: 0, height: 1.72, sizeTake: 'Idle_9', walk: false,
       posture: 'stand', stand: 'Idle_9', hidden: true, noShadow: true, then: (P) => {
-        const mm = new THREE.MeshBasicMaterial({ color: 0x0a0c10, transparent: true, opacity: 0.55, depthWrite: false }); mats.push(mm);
-        P.model.traverse(m => { if (m.isMesh) m.material = mm; }); } });
+        const mm = new THREE.MeshBasicMaterial({ color: 0x0a0c10, transparent: true, opacity: 0.55, depthWrite: false, depthFunc: THREE.LessEqualDepth });
+        const pm = new THREE.MeshBasicMaterial({ transparent: true, colorWrite: false, depthWrite: true });
+        mats.push(mm, pm);
+        const list = []; P.model.traverse(m => { if (m.isMesh) list.push(m); });
+        for (const m of list) {
+          m.material = mm; m.renderOrder = 4; m.frustumCulled = false;
+          const pre = m.isSkinnedMesh ? new THREE.SkinnedMesh(m.geometry, pm) : new THREE.Mesh(m.geometry, pm);
+          if (m.isSkinnedMesh) { pre.bindMode = m.bindMode; pre.bind(m.skeleton, m.bindMatrix); }
+          pre.position.copy(m.position); pre.quaternion.copy(m.quaternion); pre.scale.copy(m.scale);
+          pre.renderOrder = 3; pre.frustumCulled = false; m.parent.add(pre);
+        }
+      } });
     /* ending C's road: a woman at the stall across from the lane, who turns round as the pickup passes */
     cast.stall = mkPerson('e4joy', { parent: worldC, x: 44.5, z: 25.6, y: 0.8, ry: Math.PI, height: 1.58, sizeTake: 'Idle_9', walk: false,
       posture: 'stand', stand: 'Idle_9', hidden: true, noShadow: true, noMip: true });
@@ -4471,6 +4495,14 @@
     const CARD_N = { p: 1.6, phone: [0.0, -0.48, 0.30], desk: [0.2, -0.38, 0.36], tilt: -0.35 };
     function cardGrip() { gripOn(CARD_N.p); return isNarrow() ? CARD_N.phone : CARD_N.desk; }
     const cardTilt = () => CARD_N.tilt;
+    /* the keys in the same grip (the coda's K2): the ring just over the fist, the keys across the knuckles — chosen of
+       four placements photographed on a phone and a desktop (v24.4, #352: higher, they floated clear of the hand; nearer,
+       they hid it) */
+    const KEYS_N = { p: 1.6, phone: [0.16, -0.54, 0.38], desk: [0.2, -0.44, 0.40], tilt: -0.3 };
+    function gripKeys() {
+      gripOn(KEYS_N.p);
+      return isNarrow() ? KEYS_N.phone : KEYS_N.desk;
+    }
     function gripOff() { const A = FL.api; if (FL.grip && A && A.handPose) A.handPose(null, 0); FL.grip = false; }
     function handFree() {
       const A = FL.api;
@@ -4879,12 +4911,18 @@
           const side = isNarrow() ? 0.9 : 1.15;
           camAt(eye, [RX - side + 0.5, 1.62, RM.z0], roll);
         } else if (t < 5.3) {                                                              // and her, at the edge of the doorway
-          /* the doorway three quarters of the way to the frame's edge on THIS screen, where she is seen (her look) —
-             on a phone the shadow and the door are never in one frame, so they are two cuts (CP9, by photograph) */
+          /* she, at the doorway, half way to the frame's edge on THIS screen, where she is seen (her look) —
+             on a phone the shadow and the door are never in one frame, so they are two cuts (CP9, by photograph).
+             (v24.4, #352, measured and photographed on a phone: the shot was aimed at her group's spot, three quarters
+             of the way out — but her body stands 0.6 m to its right (herPoint), so on a phone she was drawn outside the
+             picture and the doorway read empty. Aimed at HER now, and half way out: her look still brings her in (it
+             fades her from 0.3 of the way) and this ending's cold, which blurs and darkens the picture's edges (its
+             sharp middle is 45 % of the way to a corner at k 0.7), leaves her face sharp) */
           const fov = isNarrow() ? 44 : 36; fLens(fov);
           const half = Math.atan(Math.tan(THREE.MathUtils.degToRad(fov) / 2) * innerWidth / Math.max(1, innerHeight));
-          const dr = [RX + RMC.HER.door.x, 1.42, RMC.HER.door.z], bd = Math.atan2(dr[0] - eye[0], dr[2] - eye[2]);
-          const bm = Math.atan2(-eye[0] + RX, RM.z0 - eye[2]), ba = bd - Math.sign(angTo(bm, bd)) * 0.75 * half, rr = Math.hypot(dr[0] - eye[0], dr[2] - eye[2]);
+          const hv = herPoint(_ffv), dr = hv ? [hv.x, 1.42, hv.z] : [RX + RMC.HER.door.x, 1.42, RMC.HER.door.z];
+          const bd = Math.atan2(dr[0] - eye[0], dr[2] - eye[2]);
+          const bm = Math.atan2(-eye[0] + RX, RM.z0 - eye[2]), ba = bd - Math.sign(angTo(bm, bd)) * 0.52 * half, rr = Math.hypot(dr[0] - eye[0], dr[2] - eye[2]);
           camAt(eye, [eye[0] + Math.sin(ba) * rr, 1.42, eye[2] + Math.cos(ba) * rr], roll);
         } else if (t < T.up) {                                                             // the master — "He's doing something to me."
           fLens(lp(isNarrow() ? 40 : 34, isNarrow() ? 34 : 28, sgk(t, 5.3, T.up)));
@@ -5072,7 +5110,10 @@
         } else {
           fLens(isNarrow() ? 58 : 50);
           camAt([S0 + 0.3, 1.55, -2.25], [S0 + 0.12, 1.02, -1.45]);
-          handHold(keys, { dx: 0.0, dy: 0.0, rx: -0.4, rz: 0.3 });
+          /* (v24.4, #352, photographed on a phone: held at the palm in the arm's frame the keys were never in the
+             picture — the walking hand lies palm-down with its index out, and the ring sat under it. Like the card:
+             the grip closes, and the keys hang from it at a point of THIS screen, their ring turned to the lens) */
+          handHold(keys, { screen: gripKeys(), face: true, tilt: KEYS_N.tilt });
         }
         return;
       }
@@ -5104,11 +5145,23 @@
         fLens(isNarrow() ? 50 : 42);
         camAt([S0 + 0.42, 1.42, -1.92], [S0 + 0.48, 1.06, -1.51]);
       } else {                                                                             // C · the glass case, and a shape in it
-        const R = cast.refl, gx = 1.95, ez = 0.6, ex = 0.95;
-        if (R && R.ready) { fPut(R, gx + (gx - ex) + 0.02, ez - 0.05, -Math.PI / 2, { y: 0 }); R.group.visible = t > CODA.k3 + 0.6 && t < CODA.k3 + 2.3; }
+        const R = cast.refl, gx = 1.95, ez = 0.6, ex = 0.95, rx = gx + (gx - ex) + 0.02, rz = ez - 0.05;
+        if (R && R.ready) {
+          /* reflShot: where the reflection stands (rx, 0, rz), moved toward his eye (ex, 1.6, ez) and shrunk by the same
+             0.4, so every point of it lies on the same line from his eye — the same picture — with its back 0.87 m off
+             his eye where the glass is 1.0 */
+          const f = 0.4;
+          fPut(R, ex + (rx - ex) * f, rz, -Math.PI / 2, { y: 1.6 * (1 - f) });
+          R.group.position.z = ez + (rz - ez) * f; R.group.scale.setScalar(f);
+          R.group.visible = t > CODA.k3 + 0.6 && t < CODA.k3 + 2.3;
+        }
         const flinch = t > CODA.k3 + 1.5 ? Math.exp(-(t - CODA.k3 - 1.5) * 4) * Math.sin((t - CODA.k3 - 1.5) * 30) * 0.03 : 0;
-        fLens(isNarrow() ? 54 : 46);
-        camAt([S0 + ex, 1.6 + flinch, ez], [S0 + gx, 1.45, ez + 0.4], flinch * 0.6);
+        /* the shape 45 % of the way to the frame's left edge on THIS screen (v24.4, #352: the glass was looked at 22° to
+           the right of it, which a desktop's wide frame held at its edge and a phone's narrow one never held at all) */
+        const fov = isNarrow() ? 54 : 46; fLens(fov);
+        const half = Math.atan(Math.tan(THREE.MathUtils.degToRad(fov) / 2) * innerWidth / Math.max(1, innerHeight));
+        const b = Math.atan2(rz - ez, rx - ex) + Math.atan(0.45 * Math.tan(half));
+        camAt([S0 + ex, 1.6 + flinch, ez], [S0 + gx, 1.45, ez + Math.tan(b) * (gx - ex)], flinch * 0.6);
       }
     }
 
