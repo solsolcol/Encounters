@@ -3,11 +3,12 @@
    state, world, phase, the order on screen, the kit's fade, where he stands, the lines heard and queued) and
    photographs it. 'done:e3c4' is the case of a run that finished chapter 4 and moves to chapter 5's start.
    (v24.3: kept here rather than as a dbg-*.mjs one-off — the v24.1 copy died with its container.)
-   ENC_DIST=<snapshot> CHROMIUM_PATH=... [PH='counter|care|...'] [OUT=dir] node tools/probes/e3c5cont.mjs */
+   ENC_DIST=<snapshot> CHROMIUM_PATH=... [PH='counter|care|...'] [VIEW=desktop] [OUT=dir] node tools/probes/e3c5cont.mjs */
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 import { LAUNCH, PAGE } from '../../testlib.mjs';
 const OUT = process.env.OUT || '/tmp/e3c5cont';
+const VIEW = process.env.VIEW || 'phone', PHONE = VIEW === 'phone';   // v24.5: desktop — a mouse clicks Continue
 fs.mkdirSync(OUT, { recursive: true });
 const PH = (process.env.PH || ['done:e3c4', 'counter', 'counter:yin,m.red,m.shy,m.little,give', 'care', 'care:water,d.red',
   'care:water,d.red,d.shy,d.little,lit,i.red,i.shy,i.little,care', 'sit', 'open1', 'open2', 'open3', 'open3:mat', 'after',
@@ -16,7 +17,8 @@ const b = await chromium.launch(LAUNCH);
 const T0 = Date.now(), el = () => ((Date.now() - T0) / 1000).toFixed(0) + 's';
 let bad = 0;
 for (const ph of PH) {
-  const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, hasTouch: true, isMobile: true });
+  const ctx = await b.newContext(PHONE ? { viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, hasTouch: true, isMobile: true }
+                                       : { viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1 });
   const done = ph.startsWith('done:');
   const save = done
     ? { v: 2, ch: ph.slice(5), stats: { sanity: 88, awareness: 61, wisdom: 70 }, inv: { gear: {}, bag: [] }, phase: null,
@@ -45,7 +47,7 @@ for (const ph of PH) {
     await p.waitForTimeout(1500);
     r.title = await p.evaluate(() => document.getElementById('startBtn').textContent.trim());
     const bb = await p.locator('#startBtn').boundingBox();
-    await p.touchscreen.tap(bb.x + bb.width / 2, bb.y + bb.height / 2);
+    if (PHONE) await p.touchscreen.tap(bb.x + bb.width / 2, bb.y + bb.height / 2); else await p.mouse.click(bb.x + bb.width / 2, bb.y + bb.height / 2);
     await p.waitForFunction(() => ['play', 'decide', 'cine'].includes(window.__enc.getState()), null, { timeout: 900000, polling: 500 });
     if (await p.evaluate(() => window.__enc.getState() === 'cine')) {          // a chapter's opening film: let it start, then skip it
       await p.waitForFunction(() => !window.__enc.cine.active() || window.__enc.cine.t() > 3.1, null, { timeout: 600000, polling: 300 });
@@ -55,7 +57,7 @@ for (const ph of PH) {
     await p.waitForTimeout(12000);
     r.saved = await p.evaluate(() => { try { const s = JSON.parse(localStorage.getItem('mz.encounters.checkpoint')); return { ch: s.ch, done: s.done, phase: s.phase }; } catch { return null; } });
     r.land = await rep();
-    await p.screenshot({ path: `${OUT}/${ph.replace(/[^a-z0-9]+/gi, '_')}.jpg`, quality: 65, timeout: 240000 });
+    await p.screenshot({ path: `${OUT}/${PHONE ? '' : 'desktop-'}${ph.replace(/[^a-z0-9]+/gi, '_')}.jpg`, quality: 65, timeout: 240000 });
   } catch (e) { r.fail = String(e.message || e).slice(0, 200); }
   r.errs = errs;
   if (r.fail || errs.length) bad++;
