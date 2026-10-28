@@ -13,8 +13,8 @@ const SAME = process.env.SAME !== '0';
 const VIEW = process.env.VIEW || 'phone', PHONE = VIEW === 'phone';   // desktop: a mouse clicks Continue
 fs.mkdirSync(OUT, { recursive: true });
 const PH = (process.env.PH || ['done:e3c5', 'arrive', 'wait:;n9', 'wait:joy;n10', 'wait:joy,lim;n11', 'wait:lim;n12;mjoy',
-  'wait:joy,lim,sb;n13', 'wait:joy,lim,sb,pong;n13', 'wait:joy;n14;mlim', 'called', 'consult', 'consult:fri', 'items~fri',
-  'items:takrut~fri', 'work~fri', 'work:smoke,cloth~fri', 'storm~fri', 'storm:done~fri', 'decide~fri'].join('|')).split('|');
+  'wait:joy,lim,sb;n13', 'wait:joy,lim,sb,pong;n13', 'wait:joy;n14;mlim', 'called', 'consult', 'consult:fri', 'items:~fri',
+  'items:takrut~fri', 'work:~fri', 'work:smoke,cloth~fri', 'storm:~fri', 'storm:done~fri', 'decide:~fri'].join('|')).split('|');
 const ROOM = /^(consult|items|work|storm|decide)/;
 const b = await chromium.launch(LAUNCH);
 const T0 = Date.now(), el = () => ((Date.now() - T0) / 1000).toFixed(0) + 's';

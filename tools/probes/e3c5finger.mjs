@@ -28,9 +28,19 @@ const wait = (ms) => p.waitForTimeout(ms);
 const frames = (n = 3) => p.evaluate((n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); }), n);
 const tap = (x, y) => p.touchscreen.tap(Math.round(x), Math.round(y));
 let tid = 1;
-const touch = (type, x, y) => cdp.send('Input.dispatchTouchEvent', { type, timestamp: Date.now() / 1000,
+const touch = (type, x, y, ts) => cdp.send('Input.dispatchTouchEvent', { type, timestamp: ts || Date.now() / 1000,
   touchPoints: type === 'touchEnd' ? [] : [{ x: Math.round(x), y: Math.round(y), id: tid, radiusX: 8, radiusY: 8, force: 1 }] });
-async function stroke(pts, gap) { await touch('touchStart', pts[0][0], pts[0][1]); for (const q of pts.slice(1)) { await wait(gap); await touch('touchMove', q[0], q[1]); } await wait(gap); await touch('touchEnd'); tid++; }
+/* a stroke's touches carry the times the finger made them, PLANNED (v24.5): each is stamped base + i·gap and sent no sooner
+   than that — on a loaded box the sends fall behind, and a stroke stamped at send time read as slow as the box (the swipe
+   that waves the flames out never took, because the probe's finger, not the game, was slow); on an idle one the pacing
+   is the gap's own */
+async function stroke(pts, gap) {
+  const base = Date.now() / 1000, at = (i) => base + i * gap / 1000;
+  const send = async (type, q, i) => { const ahead = at(i) * 1000 - Date.now(); if (ahead > 0) await wait(ahead); await touch(type, q ? q[0] : 0, q ? q[1] : 0, at(i)); };
+  await send('touchStart', pts[0], 0);
+  for (let i = 1; i < pts.length; i++) await send('touchMove', pts[i], i);
+  await send('touchEnd', null, pts.length); tid++;
+}
 let shotN = 0;
 const shot = async (tag) => { try { await p.screenshot({ path: `${OUT}/${String(++shotN).padStart(2, '0')}-${tag}.jpg`, quality: 65, timeout: 240000 }); } catch { /* a slow frame */ } };
 const box = (sel) => p.evaluate((sel) => { const e = document.querySelector(sel); if (!e) return null;

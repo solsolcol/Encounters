@@ -2910,8 +2910,9 @@
 
     /* ---- THE FIRST MASTER (§3.5): on his cushion at the back of the receiving room, facing the client's mat. He rests
        cross-legged; he talks on his answering take ridden on the upper body; the pao (the blessing blown three times
-       onto the crown) is his hands-to-mouth take. He looks at the one in front of him (v5.03), and closes his eyes to
-       chant (no look). */
+       onto the crown) is his head bowed over the one in front of him (v24.5: his hands-to-mouth take, photographed,
+       throws both arms up over his head and reads as a shout, so it is not used). He looks at the one in front of him
+       (v5.03), and closes his eyes to chant (no look). */
     const CUSH_TOP = RMC.PLAT.top + 0.0925;               // the red cushion's top on the platform (buildRoom)
     const cast = {};
     /* ---- THE LAGGING SHADOW (§7.4): his own silhouette, flattened onto the back wall by the two candles on the table —
@@ -3982,6 +3983,12 @@
       if (soundOff && soundOff()) caps(); else setTimeout(caps, 3100);
       play.chantNext = wallNow() + (SECS.fm1chant || 28);          // on WALL time (CP13: the chapter clock stops under a ledger page)
     }
+    /* (v24.5: he holds a wai while the master chants over him, and through the storm — as he did when he came in, and as
+       episode 3 chapter 1's blessing and Sak Yant hold it (Chad's rule there). The walking hand, out over the low table,
+       covered the table's middle on a phone: the cup's second place, the change WHAT CHANGED? asks him to find first, was
+       under it (photographed, v24.5's storm probe). Held low — the fingertips at the foot of the frame, e3c1's −0.37 —
+       so the table is clear on both screens; let go as the chant ends) */
+    function prayOn(now) { if (kit && kit.pray) kit.pray(true, { secs: now ? 0 : 1.2, y: -0.37 }); }
     /* (v24.5, L5-7: the covered bowl breathes only once the chant's captions are done — on a phone its dome sits under the
        captions' panel, and the captions are up for 84 % of the chant) */
     const capsOver = () => play.capsAt > 0 && wallNow() >= play.capsAt + 34.2;
@@ -3992,6 +3999,7 @@
         if (!resumed && worldSfx) worldSfx('w4match', 0.6);
         cast.master.look = 0;                     // his eyes close for the chant
         chantStart();
+        prayOn(resumed);
         roomCtl.rain(resumed ? 0.7 : 0.35, resumed ? 0.01 : 6);
         if (!resumed) after(12, () => { if (phase === 'work') roomCtl.rain(0.7, 18); });
         herCtl.at('door'); herCtl.show(true);
@@ -4062,6 +4070,7 @@
       after(resumed ? 0.05 : 1.7, () => look('DARK', resumed ? 0.01 : 0.5));
       if (kit && kit.lightning) kit.lightning({ power: 0.7, near: 0.25, thunder: 'w4thunder', vol: 0.8 });
       herCtl.at('door'); herCtl.show(true); herPosSync();
+      if (resumed) prayOn(true);                    // (v24.5: a Continue into the storm kneels him in the wai the chant began)
       if (!resumed) line('pg1power', cast.pongR);
       /* he faces the master before the room is shown to him (CP13: WHAT CHANGED? was played from wherever the fourth sign
          left his eyes — on a phone every change could be off the screen — and nothing can turn the view while it runs) */
@@ -4109,6 +4118,7 @@
       if (worldSfx) worldSfx('w4rainstop', 0.7);
       after(0.5, () => look('HUSH', 2.8));
       cast.master.look = 1;                        // his eyes open: the kind face he had at the start
+      if (kit && kit.pray) kit.pray(false, { secs: 1.4 });   // and his hands come down from the wai (v24.5)
       after(3.4, () => decideBegin(false));
     }
 
@@ -4442,13 +4452,18 @@
        clock's (fPut, fWalk); only his gait and his talk ease on wall time, and he talks while a line of his plays (read off
        the film's own cues). The light follows the shot and is set when it changes. Every person is the cast, never a block
        figure (v21.16); every prop is this chapter's own. */
-    const FL = { key: '', lit: '', stings: [], api: null, hand: null, shopOn: false };
+    const FL = { key: '', lit: '', stings: [], api: null, hand: null, shopOn: false, once: new Set() };
     const DUSK_SKY = new THREE.Vector3();
     const c01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v), smo = (k) => k * k * (3 - 2 * k), sgk = (t, a, b) => c01((t - a) / (b - a));
     const lp = (a, b, k) => a + (b - a) * k, lp3 = (a, b, k) => [lp(a[0], b[0], k), lp(a[1], b[1], k), lp(a[2], b[2], k)];
     const isNarrow = () => camera.aspect < 1;
     const _ffv = new THREE.Vector3(), _ffv2 = new THREE.Vector3();
     function fLook(name, secs = 0) { if (FL.lit !== name) { FL.lit = name; look(name, secs); } }
+    /* a take played ONCE at a moment of the film's clock (v24.5): it was a window of a tenth of a second, and the film's
+       clock steps up to half a second a frame — on a slow phone the window was stepped over and the gesture never played
+       (Pa Noi's guavas in A, her card in B, her wave in C). Fired on the first frame at or past the moment, once a run,
+       and not when a seek lands well past it */
+    function onceAt(id, t, at, fn, span = 1.5) { if (t >= at && t < at + span && !FL.once.has(id)) { FL.once.add(id); fn(); } }
     function fLens(f) { if (Math.abs(camera.fov - f) > 1e-3) { camera.fov = f; camera.updateProjectionMatrix(); } }
     function camAt(p, q, roll = 0) {
       yaw.position.set(p[0], p[1], p[2]);
@@ -4905,7 +4920,9 @@
           const k = smo(sgk(t, T.pao, T.bless));
           fLens(lp(isNarrow() ? 58 : 50, isNarrow() ? 50 : 42, k));
           camAt(lp3(eye, [RX + 0.02, 1.0, -0.22], k), MASTER_HEAD());
-          cast.master.bow = t > T.pao + 5.0 && t < T.bless - 0.2 ? 0.42 : 0;
+          /* he bows his head over him for the three breaths (8.6, 9.4, 10.2), and returns the wai with a nod (v24.5, L3-3:
+             the bow came at 11.5, after the breaths, which were heard over a man sitting upright) */
+          cast.master.bow = t > T.pao + 1.4 && t < T.pao + 4.3 ? 0.42 : t > T.pao + 5.6 && t < T.bless - 0.4 ? 0.2 : 0;
         } else if (t < T.look) {                                                           // the blessing, and Pong's word for the piece
           cast.master.bow = 0;
           const onPong = t > T.bless + 3.2 && t < T.bless + 12.0;
@@ -4944,7 +4961,7 @@
           guava.visible = true; guava.rotation.set(0, 0, 0);
           guava.position.set(lp(h.x, DOOR_STEP[0] + 0.18, g), lp(h.y, DOOR_STEP[1] - 1.05, g), lp(h.z, DOOR_STEP[2] + 0.28, g));
         } else guava.visible = false;
-        if (t > T.out + 7.6 && t < T.out + 7.7 && !P.one) personDo(P, 'Checkout_Gesture');
+        onceAt('A.give', t, T.out + 7.6, () => { if (!P.one) personDo(P, 'Checkout_Gesture'); });
         return;
       }
       if (t < T.cab) {                                                                     // across the yard to the gate, Pong ahead
@@ -5050,7 +5067,7 @@
           handFree();
           const h = handOf(P, /RightHand(_\d+)?$/); if (h) { card.visible = true; card.position.copy(h); card.position.y += 0.03; card.lookAt(DOOR_STEP[0], DOOR_STEP[1], DOOR_STEP[2]); }
           camAt(DOOR_STEP, headOf(P, [nx, 1.5, nz]));
-          if (t > T.card + 2.4 && t < T.card + 2.5 && !P.one) personDo(P, 'Checkout_Gesture');
+          onceAt('B.card', t, T.card + 2.4, () => { if (!P.one) personDo(P, 'Checkout_Gesture'); });
         } else {
           const lift = cardGrip();
           handHold(card, { screen: lift, face: true, tilt: cardTilt() });
@@ -5147,7 +5164,7 @@
           cabCtl.show(false);
           const P = cast.noi; fPut(P, RDOOR.x - 0.2, RDOOR.z + 0.6, faceTo(RDOOR.x, RDOOR.z, 3, 6));
           gaze(P, true);                                                                 // she watches him go, and calls after him
-          if (t > T.out + 3.2 && t < T.out + 3.3 && !P.one) personDo(P, 'Wave_One_Hand');
+          onceAt('C.wave', t, T.out + 3.2, () => { if (!P.one) personDo(P, 'Wave_One_Hand'); });
           /* (v24.5: out through the gateway, not the fence beside it (L5-5); past Pong, who stood ON its last leg — the lens went
              through his head at his own height, 0.125 m from his spot (L5-2); ending short of the pickup, whose bumper it
              crossed 0.13 s before the cut; looking on past its end (L5-12)) */
@@ -5370,7 +5387,7 @@
 
     const films = {
       begin(key, c, api) {
-        FL.key = key; FL.lit = ''; FL.api = api; FL.stings = (c && c.stings) || [];
+        FL.key = key; FL.lit = ''; FL.api = api; FL.stings = (c && c.stings) || []; FL.once = new Set();
         /* his hands are not in the films (but for what he holds and his wai) — and nothing else gives them back after one
            (chapter 4's law), so end() does */
         if (api && api.handsRoot) { FL.hands = api.handsRoot; api.handsRoot.visible = false; }
@@ -6677,6 +6694,7 @@
       sfx(T.book - 0.2, 'w4frogs', 0.3);                     // and the frogs go on outside (CP13: 3.4 s of silence after his line)
       sfx(T.book + 1.0, 'q1A1', 1);                          // "I don't know what I saw."  (→ ~37.8)
       sfx(T.book + 1.0, 'w4pen', 0.4);
+      sfx(T.book + 2.7, 'w4pen', 0.4);                       // (v24.5, L3-6: the pen writes on to 38.9 — the scratch is 1.77 s, so a second)
       fade(T.out - 0.6, T.out, 0, 1); fade(T.out, T.out + 0.8, 1, 0);
       sfx(T.out + 0.2, 'w4after', 0.6);                      // the washed yard: drips, frogs, a far motorbike
       sfx(T.out + 0.5, 'w4sandon', 0.55);                    // his sandals, on again at the step
@@ -6826,6 +6844,7 @@
       sfx(T.shelter + 11.2, 'w4page', 0.5);
       sfx(T.shelter + 11.6, 'q1D4', 1);                      // "Some things I don't need to understand today."  (→ ~51.1)
       sfx(T.shelter + 11.6, 'w4pen', 0.4);
+      sfx(T.shelter + 13.2, 'w4pen', 0.4);                   // (v24.5, L3-6: and here, writing on to 50.9)
       sfx(T.shelter + 10.0, 'w4endD', 0.7);                  // the phin
       sfx(T.dusk + 0.6, 'q1D5', 1);                          // "I didn't need to understand it to know it was time to go."  (→ ~58.1)
       sfxFade(T.coda - 1.2, T.coda + 0.2, 'w4endD');

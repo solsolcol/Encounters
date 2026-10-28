@@ -1,4 +1,4 @@
-/* v24.5: episode 4 chapter 1's storm (WHAT CHANGED?) MEASURED on a screen: the bookmark 'storm~fri' applied once the
+/* v24.5: episode 4 chapter 1's storm (WHAT CHANGED?) MEASURED on a screen: the bookmark 'storm:~fri' applied once the
    chapter has booted, the brief's START tapped (or clicked), and at each round's LIT flash the frame photographed with
    every change's SCORED spot (where a tap counts, within tol) and where the thing is DRAWN — her head and hips, the
    clock's dial and bob — projected and reported; the photographs are written with the scored circles drawn on them by
@@ -23,7 +23,7 @@ await p.waitForFunction(() => !!window.__enc, null, { timeout: 120000 });
 await p.evaluate(() => document.getElementById('startBtn').click());
 await toPlay(p, 1500000);
 await p.waitForTimeout(8000);
-await p.evaluate(() => window.__enc.stage.applyPhase('storm~fri'));
+await p.evaluate(() => window.__enc.stage.applyPhase('storm:~fri'));
 await p.waitForFunction(() => { const h = document.getElementById('event'); return h && !h.classList.contains('hide'); }, null, { timeout: 600000, polling: 300 });
 await p.waitForTimeout(1500);
 const sb = await p.evaluate(() => { const e = document.getElementById('evBtn'); const r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });

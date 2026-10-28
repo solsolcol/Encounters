@@ -9,10 +9,13 @@ import fs from 'node:fs';
 import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
 const CH = process.env.CH || 'e3c5', PHASE = process.env.PHASE || 'decide', OPT = process.env.OPT || 'A';
 const EVERY = +(process.env.EVERY || 8);
-const OUT = (process.env.OUT || '/tmp/endplay') + '-' + CH + '-' + OPT;
+const VIEW = process.env.VIEW || 'phone', PHONE = VIEW === 'phone';   // (v24.5: desktop — a mouse clicks Start and the option)
+const OUT = (process.env.OUT || '/tmp/endplay') + '-' + CH + '-' + OPT + (PHONE ? '' : '-desktop');
 fs.mkdirSync(OUT, { recursive: true });
 const b = await chromium.launch(LAUNCH);
-const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, hasTouch: true, isMobile: true });
+const ctx = await b.newContext(PHONE ? { viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, hasTouch: true, isMobile: true }
+                                     : { viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1 });
+const press = (x, y) => (PHONE ? p.touchscreen.tap(Math.round(x), Math.round(y)) : p.mouse.click(x, y));
 const p = await ctx.newPage();
 const errs = [];
 p.on('pageerror', e => errs.push('PAGEERROR ' + e.message + ' | ' + String(e.stack || '').split('\n').slice(1, 3).join(' ')));
@@ -20,7 +23,7 @@ p.on('console', m => { if (m.type() === 'error' || /failed|threw/i.test(m.text()
 const T0 = Date.now(), el = () => ((Date.now() - T0) / 1000).toFixed(0) + 's', log = (...a) => console.log(el(), ...a);
 await p.goto(PAGE + '?ch=' + CH, { waitUntil: 'load', timeout: 240000 });
 await p.waitForFunction(() => !!window.__enc, null, { timeout: 120000 });
-{ const r = await p.locator('#startBtn').boundingBox(); await p.touchscreen.tap(r.x + r.width / 2, r.y + r.height / 2); }
+{ const r = await p.locator('#startBtn').boundingBox(); await press(r.x + r.width / 2, r.y + r.height / 2); }
 await toPlay(p, 1500000);
 await p.waitForTimeout(8000);                                       // the chapter's first frames (v9.3: boot before driving a phase)
 await p.evaluate((ph) => window.__enc.stage.applyPhase(ph), PHASE);
@@ -31,7 +34,7 @@ await p.waitForTimeout(3000);
 const v0 = await p.evaluate(() => window.__enc.voices().length), c0 = await p.evaluate(() => window.__enc.stings().length);
 const bt = await p.evaluate((i) => { const B = [...document.querySelectorAll('#choices button.choice')]; const r = B[i] && B[i].getBoundingClientRect();
   return r ? { x: r.left + r.width / 2, y: r.top + r.height / 2, n: B.length } : null; }, 'ABCD'.indexOf(OPT));
-await p.touchscreen.tap(Math.round(bt.x), Math.round(bt.y));
+await press(bt.x, bt.y);
 log('tapped', OPT, 'of', bt.n);
 await p.waitForFunction(() => window.__enc.cine.active(), null, { timeout: 600000, polling: 300 });
 let next = 0.5, maxT = 0;
