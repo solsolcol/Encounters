@@ -9,6 +9,8 @@
 #   engine plays IS the loop as built. Every bed this chapter built itself is re-made the way it was made, plus the pad:
 #   v23.0's k5nightbed, k5deep, k5dawnbed, k5under, k5care, k5night (masters/v23.0/make.sh's recipes) and v24.3's
 #   k5shopnight, k5templenight, k5court, k5day, k5counter, k5care2, k5decide, k5climbloop, k5heart (masters/v24.2/make.sh).
+#   A bed is levelled ROUND its joint (circlevel.py): level_rms.py starts cold and ends warm, so a levelled loop's last
+#   sample had another gain than its first — k5under's joint jumped 5 dB and clicked once its 60 ms were no longer cut.
 #   (k5shopair, k5mall and k5fan are byte copies of chapter 4's and chapter 3's beds and are left as they are.)
 # R1-1 · THE BOX. fates3.py: k5boxloop re-cut on the tune's measured phrase (10.054 s, not 10.25) with the take's own
 #   continuation for its head; k5lullroom, the room's tune and its run-down in one file (k5boxdown retires with this).
@@ -29,11 +31,11 @@ enc() { # name src target_mp3 target_ogg opus_bitrate channels — peak-matched,
   echo "$n <- $src  mp3 $pm  ogg $po  (want $tm / $to)"
   rm -f e_$n.wav
 }
-bed() { # name src target_rms ceiling [high-pass] — looped by hand, levelled by RMS, PADDED (v24.2's and v23.0's bed)
+bed() { # name src target_rms ceiling [high-pass] — looped by hand, levelled by RMS round its joint, PADDED (v24.2's and v23.0's bed)
   n=$1; s=$2; t=$3; c=$4; hp=${5:-60}
   ffmpeg -v error -y -i "$s" -af "highpass=f=$hp:poles=2" -ar 48000 -ac 2 b_hp_$n.wav
   python3 ../v22.0/cp9/loopfast.py b_hp_$n.wav b_lp_$n.wav 1.5
-  python3 ../v21.12/level_rms.py b_lp_$n.wav b_lv_$n.wav $t $c
+  python3 circlevel.py b_lp_$n.wav b_lv_$n.wav $t $c       # (the leveller's state carried round the joint: circlevel.py)
   python3 padloop.py b_lv_$n.wav b_$n.wav
   ffmpeg -v error -y -i b_$n.wav -map_metadata -1 -c:a libmp3lame -b:a 128k -ar 44100 ../../assets/audio/$n.mp3
   ffmpeg -v error -y -i b_$n.wav -map_metadata -1 -c:a libopus -b:a 96k -ar 48000 ../../assets/audio-opus/$n.ogg

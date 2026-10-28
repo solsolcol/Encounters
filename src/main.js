@@ -13176,7 +13176,7 @@ const STING_SAMPLE = {
   k5step: ['k5step', 1], k5cup: ['k5cup', 1], k5chair: ['k5chair', 1], k5chairup: ['k5chairup', 1],
   k5kneel: ['k5kneel', 1], k5key: ['k5key', 1], k5lid: ['k5lid', 1], k5mat: ['k5mat', 1], k5wrap: ['k5wrap', 1],
   k5baglift: ['k5baglift', 1], k5phone: ['k5phone', 1], k5fly: ['k5fly', 1], k5templebell: ['k5templebell', 1],
-  k5flame: ['k5flame', 1], k5reveal: ['k5reveal', 1], k5vow: ['k5vow', 1], k5given: ['k5given', 1],
+  k5flameloop: ['k5flameloop', 1], k5reveal: ['k5reveal', 1], k5vow: ['k5vow', 1], k5given: ['k5given', 1],
   k5return: ['k5return', 1], k5shake: ['k5shake', 1], k5void: ['k5void', 1], k5gecko: ['k5gecko', 1],
   k5moto: ['k5moto', 1], k5dog: ['k5dog', 1], k5liftmotor: ['k5liftmotor', 1], k5gate: ['k5gate', 1],
   k5fridge: ['k5fridge', 1], k5drip: ['k5drip', 1], k5bus: ['k5bus', 1], k5guard: ['k5guard', 1],
@@ -13185,7 +13185,10 @@ const STING_SAMPLE = {
   k5heart: ['k5heart', 1], k5open: ['k5open', 1], k5counter: ['k5counter', 1], k5madeM: ['k5madeM', 1],
   k5vowtheme: ['k5vowtheme', 1], k5home: ['k5home', 1], k5care2: ['k5care2', 1], k5decide: ['k5decide', 1],
   k5climbloop: ['k5climbloop', 1], k5driftA: ['k5driftA', 1], k5screens: ['k5screens', 1], k5greed: ['k5greed', 1],
-  k5merit: ['k5merit', 1], k5boxloop: ['k5boxloop', 1], k5boxdown: ['k5boxdown', 1],
+  k5merit: ['k5merit', 1], k5boxloop: ['k5boxloop', 1],
+  /* v24.5 (masters/v24.5/make.sh): the room's tune and its run-down in one file (k5boxdown retires); the lighter's flame
+     as a loop while it burns (k5flame, a 2.2 s one-shot, retires) */
+  k5lullroom: ['k5lullroom', 1],
   /* v24.0 · episode 4 chapter 1: its voices, effects, beds and music (masters/v24.0/make.sh) */
   q1pro1: ['q1pro1', 1], q1pro2: ['q1pro2', 1], q1pro3: ['q1pro3', 1], q1pro4: ['q1pro4', 1], pg1car: ['pg1car', 1],
   q1pro5: ['q1pro5', 1], pg1here: ['pg1here', 1], pg1come: ['pg1come', 1], pn1num: ['pn1num', 1],

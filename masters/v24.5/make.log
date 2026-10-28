@@ -1,0 +1,66 @@
+onsets: note 1 0.912, 13 10.960, 25 21.018; pulse 0.8378 s; phrase 10.0530 s (fates2 used 10.25)
+  k5boxloop joint: last sample -> first is the take itself (X[1002047] -> X[1002048]); step 0.0036
+k5boxloop: 20.106 s
+  k5lullroom: the run-down begins 20.226 s in; its first strike lands one pulse after note 24 (as note 25 would)
+k5lullroom: 27.026 s
+k5flameloop: 3.0 s, its joint steps 0.1027 against a typical 0.0557
+k5void: 3.00 s
+k5flame: 2.20 s
+k5heart: 10.00 s
+proc/k5boxloop_p.wav: 20.106 s loop + 60 ms of its own wrap each end; the joint the engine plays steps 0.0041 (the built joint)
+proc/k5flameloop_p.wav: 3.000 s loop + 60 ms of its own wrap each end; the joint the engine plays steps 0.1027 (the built joint)
+proc/k5heart_p.wav: 10.000 s loop + 60 ms of its own wrap each end; the joint the engine plays steps 0.1178 (the built joint)
+k5boxloop <- proc/k5boxloop_p.wav  mp3 -3.10  ogg -3.03  (want -3.0 / -3.0)
+k5lullroom <- proc/k5lullroom.wav  mp3 -2.87  ogg -3.05  (want -3.0 / -3.0)
+k5flameloop <- proc/k5flameloop_p.wav  mp3 -10.05  ogg -10.01  (want -10 / -10)
+k5heart <- proc/k5heart_p.wav  mp3 -6.00  ogg -6.04  (want -6 / -6)
+b_lp_k5nightbed.wav 28.50s  joint is a CROSSFADE (continuous by construction); body -39.8 dBFS  peak -17.64  2ch
+b_lv_k5nightbed.wav: RMS -30.08 dBFS  peak -14.00 dBFS — the second of two levelled copies; its joint steps 0.0012
+b_k5nightbed.wav: 28.500 s loop + 60 ms of its own wrap each end; the joint the engine plays steps 0.0012 (the built joint)
+k5nightbed <- ../v23.0/sfx/raw/k5nightbed_r2_b.mp3  (bed, RMS -30, padded)
+b_lp_k5deep.wav  28.50s  joint is a CROSSFADE (continuous by construction); body -76.6 dBFS  peak -45.07  2ch
+b_lv_k5deep.wav: RMS -34.04 dBFS  peak -14.00 dBFS — the second of two levelled copies; its joint steps 0.0000
+b_k5deep.wav: 28.500 s loop + 60 ms of its own wrap each end; the joint the engine plays steps 0.0000 (the built joint)
+k5deep <- ../v23.0/sfx/raw/k5deep_r2_a.mp3  (bed, RMS -34, padded)
+b_lp_k5dawnbed.wav 28.50s  joint is a CROSSFADE (continuous by construction); body -33.4 dBFS  peak -9.93  2ch
+b_lv_k5dawnbed.wav: RMS -26.02 dBFS  peak -10.00 dBFS — the second of two levelled copies; its joint steps 0.0020
+b_k5dawnbed.wav: 28.500 s loop + 60 ms of its own wrap each end; the joint the engine plays steps 0.0020 (the built joint)
+k5dawnbed <- ../v23.0/sfx/raw/k5dawnbed_b.mp3  (bed, RMS -26, padded)
+b_lp_k5under.wav 18.50s  joint is a CROSSFADE (continuous by construction); body -18.7 dBFS  peak -1.32  2ch
+b_lv_k5under.wav: RMS -24.01 dBFS  peak -10.24 dBFS — the second of two levelled copies; its joint steps 0.0006
+b_k5under.wav: 18.500 s loop + 60 ms of its own wrap each end; the joint the engine plays steps 0.0005 (the built joint)
+k5under <- ../v23.0/sfx/raw/k5under_a.mp3  (bed, RMS -24, padded)
+l2_k5care.wav    38.00s  joint is a CROSSFADE (continuous by construction); body -15.8 dBFS  peak -2.89  2ch
+l3_k5care.wav: 38.000 s loop + 60 ms of its own wrap each end; the joint the engine plays steps 0.0017 (the built joint)
+k5care <- l3_k5care.wav  mp3 -3.00  ogg -3.01  (want -3.0 / -3.0)
+l2_k5night.wav   28.00s  joint is a CROSSFADE (continuous by construction); body -35.9 dBFS  peak -24.68  2ch
+l3_k5night.wav: 28.000 s loop + 60 ms of its own wrap each end; the joint the engine plays steps 0.0014 (the built joint)
+k5night <- l3_k5night.wav  mp3 -2.99  ogg -3.04  (want -3.0 / -3.0)
+b_lp_k5shopnight.wav 26.50s  joint is a CROSSFADE (continuous by construction); body -38.6 dBFS  peak -24.00  2ch
+b_lv_k5shopnight.wav: RMS -30.00 dBFS  peak -15.37 dBFS — the second of two levelled copies; its joint steps 0.0001
+b_k5shopnight.wav: 26.500 s loop + 60 ms of its own wrap each end; the joint the engine plays steps 0.0001 (the built joint)
+k5shopnight <- ../v24.2/sfx/raw/k5shopnight_b.mp3  (bed, RMS -30, padded)
+b_lp_k5templenight.wav 26.50s  joint is a CROSSFADE (continuous by construction); body -30.3 dBFS  peak -16.07  2ch
+b_lv_k5templenight.wav: RMS -30.00 dBFS  peak -16.78 dBFS — the second of two levelled copies; its joint steps 0.0013
+b_k5templenight.wav: 26.500 s loop + 60 ms of its own wrap each end; the joint the engine plays steps 0.0013 (the built joint)
+k5templenight <- ../v24.2/sfx/raw/k5templenight_b.mp3  (bed, RMS -30, padded)
+b_lp_k5court.wav 26.50s  joint is a CROSSFADE (continuous by construction); body -27.0 dBFS  peak -4.26  2ch
+b_lv_k5court.wav: RMS -30.04 dBFS  peak -12.00 dBFS — the second of two levelled copies; its joint steps 0.0003
+b_k5court.wav: 26.500 s loop + 60 ms of its own wrap each end; the joint the engine plays steps 0.0003 (the built joint)
+k5court <- ../v24.2/sfx/raw/k5court_a.mp3  (bed, RMS -30, padded)
+b_lp_k5day.wav   26.50s  joint is a CROSSFADE (continuous by construction); body -45.4 dBFS  peak -25.91  2ch
+b_lv_k5day.wav: RMS -30.06 dBFS  peak -14.00 dBFS — the second of two levelled copies; its joint steps 0.0004
+b_k5day.wav: 26.500 s loop + 60 ms of its own wrap each end; the joint the engine plays steps 0.0004 (the built joint)
+k5day <- ../v24.2/sfx/raw/k5day_a.mp3  (bed, RMS -30, padded)
+l2_k5counter.wav 40.00s  joint is a CROSSFADE (continuous by construction); body -18.0 dBFS  peak -1.13  2ch
+l3_k5counter.wav: 40.000 s loop + 60 ms of its own wrap each end; the joint the engine plays steps 0.0159 (the built joint)
+k5counter <- l3_k5counter.wav  mp3 -3.00  ogg -3.04  (want -3.0 / -3.0)
+l2_k5care2.wav   39.50s  joint is a CROSSFADE (continuous by construction); body -19.9 dBFS  peak -5.34  2ch
+l3_k5care2.wav: 39.500 s loop + 60 ms of its own wrap each end; the joint the engine plays steps 0.0018 (the built joint)
+k5care2 <- l3_k5care2.wav  mp3 -2.98  ogg -2.98  (want -3.0 / -3.0)
+l2_k5decide.wav  34.00s  joint is a CROSSFADE (continuous by construction); body -35.7 dBFS  peak -17.63  2ch
+l3_k5decide.wav: 34.000 s loop + 60 ms of its own wrap each end; the joint the engine plays steps 0.0015 (the built joint)
+k5decide <- l3_k5decide.wav  mp3 -3.05  ogg -2.82  (want -3.0 / -3.0)
+l2_k5climbloop.wav 14.00s  joint is a CROSSFADE (continuous by construction); body -18.1 dBFS  peak -4.67  2ch
+l3_k5climbloop.wav: 14.000 s loop + 60 ms of its own wrap each end; the joint the engine plays steps 0.0272 (the built joint)
+k5climbloop <- l3_k5climbloop.wav  mp3 -2.95  ogg -2.96  (want -3.0 / -3.0)
