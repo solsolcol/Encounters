@@ -6754,6 +6754,43 @@ What the baseline contains, by release:
     the endings re-timed on the measured takes — no two voices over each other anywhere.
   Sheet v126 exported (252 rows added, none changed; v44 stays the link). Deploy `6ae15e88a60e723a73b6ed2c`, byte-verified (269 served files);
   chaptertest green, the harnesses on its snapshot after it (§15 has their results).
+- **v24.0** EPISODE 4 · CHAPTER 1 · THE MASTER I DID NOT KNOW — released: the preview flag (S42) out, so the chapter
+  is in the run after episode 3 chapter 5, and the episode-complete card that closes case 3 now opens case 4's first
+  chapter. docs/V24.0-E4C1-PLAN.md is the build's memory (§15 every checkpoint); masters/v24.0/cp13-findings.md the
+  review. What v23.6 shipped as a preview is in its entry above; v24.0 is CP12–CP14:
+  - CP13, THE REVIEW: five read-only lenses (save and resume, sound and timing, play logic and input, the engine since
+    v23.5, words and fairness), every finding checked against the code before anything moved — 80 rows, 72 distinct
+    findings, 66 CONFIRMED and fixed, 2 PARTIAL, 1 NOTED, 3 LEFT with the reason.
+  - SAVE AND RESUME: a minigame open is saved as it OPENED (`ev.save0` — the storm was half paid and paid again on a
+    Continue); the ledger and the chooser hold the autosave until the chapter has answered (`saveHoldOff`); the day
+    he was born rides every bookmark past the reading (`~fri`); a Continue is placed under the card (`preStage`, the
+    v4.8 contract); a save in the board's flip lands on the call (it was a soft-lock); a fresh run takes back last
+    run's piece and its ledger pages; the ledger belongs to its episode and loads at the title with the bag.
+  - SOUND: everything play asks for is warmed (nothing was — the first chant, drone, match and tube were silent);
+    the master's chant plays on the effects path (as a voice in CAST_TAKES it held the −8 dB duck under the whole
+    work and storm), waits for its bytes and stops with the storm; the drone starts at START; the beds ease on the
+    wall step and the after-rain's wait is wall time; eaves, frogs and drips under four silences; the opening's
+    engine runs to the stop; the taxi, B's after-rain and C's rain go with their pictures; the coda's chord holds to
+    its fade; his bare foot on the room's tiles (`w4barestep`, World R's `stepSound` — the first run was 99 % sub-bass,
+    the v16.0 thump again).
+  - PLAY: WHAT CHANGED? turns him onto the master before it opens; a second tap on a found change is no tap, keys do
+    not tap, and at most two false taps a flash are paid (`falseCap`); the change is made in the dark, never lit
+    before it is made; she is gone as he turns to her; the tree is not offered through the room's walls; the door
+    empties the yard's queue; the call posts no false COMPLETE.
+  - THE ENGINE (all opt-in or episode-4-only by construction, the controls run): the lightning re-reads its base
+    after a daylight step and lifts the hands too; its wash is display:none when idle; `wxReset` at a chapter switch
+    and the title, and the rain's look put back; the film phone's draft no longer rebuilds the list; the ledger
+    paints at 30 fps, swallows the tap that closes it, refuses the pointer lock under the book, and is built on the
+    frame by `prepare()`; `warmSounds` decodes at once when the pack is here.
+  - WORDS: ten lines re-worded by the words lens and re-said in their own voices (Pong's blessing before the piece,
+    "if you want to learn, come back", the reading of a new shop's slow money, "Ya lah, I'm from KL!", "Good luck, na",
+    "Nobody I've asked…", "Next time you look for me also"); the ledger's facts made facts and two meanings kind; Pong
+    from Bangkok; the brief's "says he knows"; the storm's third note; the chant captions' stops; the junior greets
+    first. The quick boot check caught one of mine before a deploy: `prepare()` built the book inside the chapter's
+    build, before the hands' scene exists on a cold boot (LEARNINGS).
+  Sheet v127 exported (3 rows added, 23 words changed, the grown James's speaker label on 273 voice rows; v44 stays the
+  link). Thirteen harnesses green on the review's build (walk 1188 s); deploy `6ae17aaebaef87b92fa4fb44`, byte-verified
+  (269 served files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -7290,9 +7327,11 @@ assigned where a texture belonged; and the clearance is ISSUED at the start
 of play rather than inferred from an empty bag, which had left both counters
 dead from the chapter's first frame (docs/LEARNINGS.md).
 
-**IN FLIGHT: episode 4 chapter 1, The Master I Did Not Know** — built, voiced, scored and deployed as a PREVIEW at
-v23.6 (`?ch=e4c1`, out of the run); its release, v24.0, is CP12–CP14 of **docs/V24.0-E4C1-PLAN.md** (§15 the log,
-checkpoint by checkpoint; masters/v24.0/cp13-findings.md the review). Chad's seven notes on episode 3 chapter 4 (queued 26 Oct while chapter 5 was built) shipped at
+**IN FLIGHT: nothing is mid-build.** **Episode 4 chapter 1, The Master I Did Not Know, shipped at v24.0 —
+docs/V24.0-E4C1-PLAN.md** is its build memory (§15 the log, checkpoint by checkpoint; masters/v24.0/cp13-findings.md
+its review, every finding with its verdict and fix); its cast are placeholders until Chad's models (docs/E4-MODELS.md
+lists each, with what stands in), and its seven music cues are the measured picks until Chad's ear (one reel per cue in
+masters/v24.0/previews/). Chad's seven notes on episode 3 chapter 4 (queued 26 Oct while chapter 5 was built) shipped at
 v23.1 — **docs/V23.1-E3C4-QUEUED.md** has them verbatim, the plan and the record, with what the phone photographs
 found after the first deploy. **Episode 3 chapter 5, The Children On My
 Altar, shipped at v23.0 — docs/V23.0-E3C5-PLAN.md** is its build memory (§15 the log, checkpoint by checkpoint;
@@ -7338,7 +7377,9 @@ which rig stands in for each, and each is a one-line swap). Episode 3 chapter
 2's three batches (docs/V19.4-PLAN.md) are all done.
 
 Next up: **EPISODE 4 · THE TEACHER IN WHITE** (Chad's name) — the casebook's S1·11 to S1·15, from the master he did
-not know to his first cases at his teacher's side — PROPOSED, awaiting Chad's remaining decisions:
+not know to his first cases at his teacher's side. Chapter 1 SHIPPED at v24.0; chapter 2 (S1·11's second half: the
+fog, Lersi Chin's clearing and the warning, the trial's 5.3) is next, its build plan still to be written to Chad's
+picks, the way chapter 1's was. The episode's plan, with what remains his to decide:
 **docs/V24.0-EPISODE4-PLAN.md** (its sixth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is
 still his). S1·11 in two chapters (the master he did not know, who wears the original Sak Yant Ajarn's model; then the
 fog, Lersi Chin's clearing and the warning — built on Master Z's own trial episode, its 5.1 and 5.3 the two decisions
@@ -7355,8 +7396,9 @@ to the key, the file or e3c1's use of it, and Episode 4's first master — the o
 his own key, `firstmaster`, restored from git (5124aa7) and masters/v16.8. **Chapter 1's full build plan is
 docs/V24.0-E4C1-PLAN.md** (27 Oct 2026, Chad: *"Work on the full build plan for episode 4 chapter 1 now ... I don't want
 to see a reuse of old assets and environments ... Be like a creative director."*) — everything in its world new and
-checked so by `chaptertest` (FRESH), three new ways to play (ASK, THE LEDGER, WHAT CHANGED?), awaiting his picks on its
-§2.3. EPISODE 3
+checked so by `chaptertest` (FRESH), three new ways to play (ASK, THE LEDGER, WHAT CHANGED?); built to his "build all of
+it", with the plan's defaults taken on every §2.3 question he did not answer (Q1, the master in black, he did), and
+SHIPPED at v24.0. EPISODE 3
 IS COMPLETE (v23.0; chapter 5, The Children
 On My Altar — `src/chapters/e3/e3c5.js`, docs/V23.0-E3C5-PLAN.md, its plan written 25 Oct 2026 from Chad's answers and
 revised four times — §2.3–§2.7 his rulings, docs/research/V23.0-KUMANTHONG.md the research behind every belief;
@@ -7392,7 +7434,12 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v125** (`masters/v23.5/masterz-text-v125.xlsx`, v124 with Episode 5's name — `ep5.title` "The Signal
+**THE SHEET IS v127** (`masters/v24.0/masterz-text-v127.xlsx`, v126 with episode 4 chapter 1's review: 3 rows added
+(`film.phoneMessage`, `noteStormNone`, `phoneAjahnMsg2`), 23 words changed — the brief, the core, the ledger's facts and
+meanings, the chant's captions, Pong's home town, the master's message, and the ten re-said voice lines — and the grown
+James's speaker label, "episodes 3–4", on his 273 voice rows. v126 was `masters/v23.6/masterz-text-v126.xlsx`, v125 plus
+episode 4 chapter 1's 252 rows (its words on a new EPISODE 4 tab, its 122 voice lines); none changed. v125 was
+`masters/v23.5/masterz-text-v125.xlsx`, v124 with Episode 5's name — `ep5.title` "The Signal
 And The Translator" (Chad's pick); one cell changed, nothing else. v124 was `masters/v23.4/masterz-text-v124.xlsx`, v123
 with Episodes 4 and 5's names — `ep4.title` "The Teacher In White" (Chad's pick), `ep5.title` "The Language I Couldn't
 Understand" (proposed, until he picks); two cells changed, nothing else. v123 was `masters/v23.3/masterz-text-v123.xlsx`, v122 with Episodes 4 and 5's names —
