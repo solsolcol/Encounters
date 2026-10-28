@@ -63,6 +63,15 @@ No soft-lock in S43–S48.
 
 ## Episode 3 chapter 5
 
+### R2 · Dead ends and soft-locks, fresh (written before the records were read)
+
+No soft-lock: at every step and every Continue some order is enabled, or a chain that always finishes is running.
+
+| # | Finding | Verdict | Fix |
+|---|---|---|---|
+| R2-1 | Desktop, on every replay: the key press that finishes a film's minigame also SKIPS the film — the stamp's third E/Space/Enter resolves the event inside the main keydown, and the film's skip listener (registered later, on the same key) then finds no event and skips; a held key's next auto-repeat does the same after the peek's slide and COME BACK. The red one's march, the shy one's coin and "Nobody ever comes", the surfacing and the gasp are skipped. | CONFIRMED (code path: `main.js` keydown returns, never stops the skip listener; `noSkip` holds only until the chapter is sealed) | OPEN |
+| R2-2 | COME BACK's 30 s give-up runs on the event's capped step (¼ s a frame), so on a phone at 1 fps the light comes down to him after ~120 s, not 30. | CONFIRMED (latent: a hot phone and a player who does not climb; it still always ends) | OPEN |
+
 ### R3 · The v24.1 and v24.2 changes, audited
 
 Every removed line of the five commits accounted for; no soft-lock, no wrong save, no other chapter regressed.
