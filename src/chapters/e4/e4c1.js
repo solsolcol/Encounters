@@ -224,15 +224,15 @@
       ledSaw: 'What I saw',
       ledPrompt: 'What will you write?',
       ledBrief: 'One line, in the back of your stock book.',
-      ledJoyF: 'She came because her boss\'s wife said he was powerful.',
+      ledJoyF: 'The woman waiting came because her boss\'s wife said he was powerful.',   // (v24.5, L6-2: "She" had no one on a page called "Who is he?")
       ledJoyM: 'He must be powerful — people drive hours to see him.',
-      ledLimF: 'Uncle Lim guesses three or four years. Already popular.',
+      ledLimF: 'The uncle thinks he has been a master three or four years.',   // (v24.5, L6-2: a name the player never hears)
       ledLimM: 'He\'s only in it for the money.',
       ledSbF: 'He came here five years ago. The farmer doesn\'t know from where.',
       ledSbM: 'He\'s hiding where he came from.',
       ledPongF: 'Pong had never been here either. His cousin knows him.',
       ledPongM: 'Pong\'s cousin vouches for him, so he\'s fine.',
-      ledReadF: 'His answer was longer than Pong\'s translation.',
+      ledReadF: 'He spoke for longer than Pong translated.',   // (v24.5, L6-2: he answered no question — it was his reading)
       ledReadM: 'Pong is hiding what he said.',
       ledSmokeF: 'The smoke leaned toward the covered bowl, against the fan.',
       ledSmokeM: 'His blessing is drawing luck into the bowl.',
@@ -262,9 +262,9 @@
       // PLAY III · the work (§4.4): the chant's captions — the words as said, over what they mean — and the four signs
       chant1: 'Namo tassa bhagavato arahato sammā-sambuddhassa.',
       chant1en: 'Homage to the Blessed One, the Worthy One, the Rightly Self-awakened One.',
-      chant2: 'Ehi cittaṁ mahā-lābhaṁ piyaṁ mama māmā',
-      chant2en: 'A Thai trade blessing in Pali-like words — roughly: come, heart; great gain; be dear to me',
-      chant3: 'Mahā-lābhā bhavantu me',
+      chant2: 'Ehi cittaṁ mahā-lābhaṁ piyaṁ mama māmā.',            // (v24.5, L6-4: every caption ends on its stop)
+      chant2en: 'A Thai trade blessing in Pali-like words — roughly: come, heart; great gain; be dear to me.',
+      chant3: 'Mahā-lābhā bhavantu me.',
       chant3en: 'May great gains be mine.',
       objWatch: 'Watch. Write down what you see · {n}/4',
       lookSmoke: 'The smoke',
@@ -336,7 +336,7 @@
       'sb1a': 8.59,
     /* fm */
       'fm1hello': 4.21, 'fm1shop': 1.25, 'fm1good': 4.49, 'fm1day': 1.13, 'fm1hm': 1.21, 'fm1read': 14.81,
-      'fm1items': 2.25, 'fm1anu': 1.24, 'fm1eyes': 3.33, 'fm1chant': 33.77, 'fm1chant2': 18.17, 'fm1blessA': 2.33,
+      'fm1items': 2.25, 'fm1anu': 1.24, 'fm1eyes': 3.33, 'fm1chant': 33.77, 'fm1chant2': 18.17, 'fm1chant2D': 6.59, 'fm1blessA': 2.33,
       'fm1Abye': 1.85, 'fm1B1': 3.77, 'fm1B2': 1.69, 'fm1B3': 2.57, 'fm1C1': 2.09, 'fm1C2': 2.73, 'fm1D1': 2.73,
     /* tx */
       'tx1where': 1.17,
@@ -1350,6 +1350,51 @@
           const hm = new THREE.Mesh(hg, M({ map: tex(makeDressCloth(THREE, cnv, 4671, '#2a5a8a', 'rgba(230,200,80,0.8)')), roughness: 0.9, side: THREE.DoubleSide }));
           hm.position.set(-10.05, 1.55, -9.65); C.add(hm);
           for (const zz of [-8.7, -10.6]) { const rp = cyl(0.008, 0.008, 0.2, M({ color: 0xd8c8a0, roughness: 0.8 }), -10.05, 1.6, zz, 4); rp.rotation.x = Math.PI / 2; } }
+        /* THE TAKHIAN'S DRESSES (v24.5, L5-8: the hotspot says "The dresses on the tree" and both lines speak of them — the
+           tree stood bare; yard.dresses was declared and never filled). The folk custom for the female spirit believed to
+           live in a takhian (plan §4.1), shown respectfully and never explained: three coloured cloths wound round the trunk,
+           women's dresses hung on it on the yard's side, a small offering shelf at its foot — no figure. The trunk is the
+           stand's own broadleaf kit 0 — a nine-sided 0.62 cylinder, radius 0.030 → 0.016, flared ×(1 + 1.4·e^(−9k)) — at
+           the height plantTrees deals it from its stand's seed (27) and spot (0): 19 m × (0.88 + 0.30·rnd), turned 0.4 */
+        { const TX = CMP.TAKHIAN.x, TZ = CMP.TAKHIAN.z, TRY = 0.4;
+          const dealt = (i, salt) => { const v = Math.sin((i + 1) * 12.9898 + 27 * 78.233 + salt * 43.758) * 43758.5453; return v - Math.floor(v); };
+          const TH = 19 * (0.88 + dealt(0, 1) * 0.30);
+          const trunkR = (y) => { const k = y / (TH * 0.62); return (0.03 - 0.014 * k) * TH * (1 + 1.4 * Math.exp(-k * 9)); };
+          /* the three cloths, each a band of the trunk's own nine sides, 2.5 cm proud of it */
+          [[0xb81e24, 0.95], [0xe8b020, 1.07], [0x2e8a3e, 1.19]].forEach(([col, y0]) => {
+            const y1 = y0 + 0.115, g = new THREE.CylinderGeometry(trunkR(y1) + 0.025, trunkR(y0) + 0.025, y1 - y0, 9, 1, true);
+            const b = mesh(g, M({ color: col, roughness: 0.85, side: THREE.DoubleSide }), TX, (y0 + y1) / 2, TZ); b.rotation.y = TRY; b.castShadow = false; });
+          /* the dresses: cloth hung from a nail, the shoulders against the bark, the hem standing a little off it */
+          const dress = (th0, top, len, seed, a, b2) => {
+            const cols = 8, rows = 12, P = [], U = [], I = [];
+            for (let j = 0; j <= rows; j++) for (let i = 0; i <= cols; i++) {
+              const v = j / rows, u = i / cols * 2 - 1;
+              const hw = 0.15 + 0.11 * v - 0.035 * Math.exp(-(((v - 0.32) / 0.12) ** 2));
+              const y = top - v * len - (j === 0 ? 0.05 * Math.cos(u * Math.PI / 2) : 0);
+              const R = trunkR(y) + 0.03 + 0.05 * v, th = th0 + u * hw / R;
+              P.push(TX + R * Math.sin(th), y, TZ + R * Math.cos(th)); U.push(i / cols, 1 - v);
+            }
+            for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) { const q = j * (cols + 1) + i; I.push(q, q + cols + 1, q + 1, q + 1, q + cols + 1, q + cols + 2); }
+            const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(U, 2)); g.setIndex(I); g.computeVertexNormals();
+            const m = new THREE.Mesh(g, M({ map: tex(makeDressCloth(THREE, cnv, seed, a, b2)), roughness: 0.9, side: THREE.DoubleSide })); m.receiveShadow = true; C.add(m); yard.dresses.push(m);
+            const Rn = trunkR(top) + 0.012; bx(0.012, 0.012, 0.03, M({ color: 0x2a2420, roughness: 0.6 }), TX + Rn * Math.sin(th0), top + 0.01, TZ + Rn * Math.cos(th0));   // its nail
+          };
+          dress(-0.62, 2.36, 0.92, 4811, '#c8285a', 'rgba(250,220,120,0.85)');    // pink, with gold flowers
+          dress(-0.02, 2.42, 0.98, 4813, '#e8d24a', 'rgba(200,60,40,0.8)');     // yellow
+          dress(0.58, 2.34, 0.9, 4815, '#3a6ab8', 'rgba(240,240,250,0.85)');     // blue, white flowers
+          dress(1.18, 2.38, 0.94, 4817, '#7a2a8a', 'rgba(250,190,210,0.8)');     // purple
+          /* the small offering shelf at its foot, on the yard's side: a red cloth, flowers, a glass of red drink, a pot of
+             incense with three sticks, a jasmine garland */
+          const SX = TX + 0.05, SZ = TZ + trunkR(0.3) + 0.42, mW = M({ color: 0x7a5232, roughness: 0.8 });
+          bx(0.52, 0.035, 0.34, mW, SX, 0.56, SZ); for (const [dx, dz] of [[-0.23, -0.14], [0.23, -0.14], [-0.23, 0.14], [0.23, 0.14]]) bx(0.035, 0.54, 0.035, mW, SX + dx, 0.27, SZ + dz);
+          bx(0.5, 0.004, 0.36, M({ color: 0xa8141c, roughness: 0.9 }), SX, 0.58, SZ);
+          cyl(0.03, 0.025, 0.12, M({ color: 0xd8d0c0, roughness: 0.4 }), SX - 0.15, 0.64, SZ - 0.04, 12);
+          for (let k = 0; k < 5; k++) mesh(new THREE.SphereGeometry(0.028, 10, 8), M({ color: k % 2 ? 0xf0a020 : 0xe86818, roughness: 0.8 }), SX - 0.15 + Math.cos(k * 1.26) * 0.03, 0.73 + (k % 2) * 0.02, SZ - 0.04 + Math.sin(k * 1.26) * 0.03);
+          cyl(0.026, 0.022, 0.09, M({ color: 0xc81e28, roughness: 0.15, transparent: true, opacity: 0.85 }), SX + 0.02, 0.623, SZ + 0.05, 12);
+          cyl(0.05, 0.045, 0.07, M({ color: 0x8a6a3a, roughness: 0.7 }), SX + 0.16, 0.613, SZ - 0.02, 14);
+          for (let k = 0; k < 3; k++) { const st = cyl(0.0025, 0.0025, 0.2, M({ color: 0xa83a28, roughness: 0.7 }), SX + 0.14 + k * 0.02, 0.74, SZ - 0.02, 4); st.rotation.z = (k - 1) * 0.08; }
+          const gar = mesh(new THREE.TorusGeometry(0.07, 0.012, 6, 18), M({ color: 0xf4f0e2, roughness: 0.7 }), SX + 0.02, 0.585, SZ + 0.12); gar.rotation.x = Math.PI / 2;
+          solids.push(hidBox(0.56, 0.9, 0.4, SX, 0.45, SZ, C)); }
         const mJar = M({ color: 0x4a2a18, roughness: 0.25, metalness: 0.05 });
         for (const [jx, jz, s3] of [[-13.0, -5.0, 1], [-12.4, -4.7, 0.85], [-6.2, -9.6, 0.9]]) {
           const j = lathe([[0, 0], [0.22, 0], [0.34, 0.25], [0.36, 0.42], [0.3, 0.6], [0.2, 0.68], [0.21, 0.72]], mJar, jx, 0, jz, 20); j.scale.setScalar(s3);
@@ -1424,7 +1469,10 @@
           const bdm = flat(1.1, 0.48, M({ map: bt, roughness: 0.4 })); bdm.position.set(B0.x, SL.floor + 1.35, B0.z); bdm.rotation.y = -0.35;
           const back = bx(1.14, 0.52, 0.03, mSteel, B0.x + Math.sin(-0.35) * -0.02, SL.floor + 1.35, B0.z - 0.02); back.rotation.y = -0.35;
           for (const s2 of [-1, 1]) { const lg = bx(0.03, 1.35, 0.03, mSteel, B0.x + s2 * 0.5 * Math.cos(0.35), SL.floor + 0.675, B0.z + s2 * 0.5 * Math.sin(0.35) - 0.06); lg.rotation.x = -0.06; }
-          solids.push(hidBox(1.1, 1.4, 0.3, B0.x, 0.7, B0.z, C)); }
+          solids.push(hidBox(1.1, 1.4, 0.3, B0.x, 0.7, B0.z, C));
+          /* and Pa Noi beside it, where she stands through the whole wait (v24.5, L5-14: no person was a blocker, so walking
+             into her at the board put the lens inside her) */
+          solids.push(hidBox(0.5, 1.4, 0.5, B0.x + 0.62, 0.7, B0.z + 0.42, C)); }
         void fl;
       }
 
@@ -2116,7 +2164,7 @@
         for (let k = 0; k < n * 2; k++) { const a = rr() * Math.PI * 2, d = Math.sqrt(rr()) * 0.34, ci = rr() * cols.length | 0; if (cnt[ci] >= n) continue;
           mm.makeTranslation(Math.cos(a) * d, 1.5 + Math.sin(a) * d, 0.04 + (0.34 - d) * 0.18 + rr() * 0.02); ins[ci].setMatrixAt(cnt[ci]++, mm); }
         ins.forEach((im, i) => { im.count = cnt[i]; g.add(im); });
-        [['开张大吉', false, -0.29], ['GRANDOPENING', true, 0.29]].forEach(([t, lat, x]) => {
+        [['开张大吉', false, -0.29], ['GRAND OPENING', true, 0.29]].forEach(([t, lat, x]) => {   // (v24.5, L6-5: it read GRANDOPENING)
           const rb = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 1.05), M({ map: tex(makeRibbon(THREE, cnv, t, lat)), roughness: 0.4, side: THREE.DoubleSide }));
           rb.position.set(x, 0.92, 0.07); rb.rotation.z = -Math.sign(x) * 0.05; g.add(rb); });
         solids.push(hidBox(0.6, 1.6, 0.5, -1.62, 0.8, 2.45, S0));
@@ -2401,7 +2449,10 @@
       phone(on) { shop.phoneOn = on ? wallNow() : 0; }
     };
     const cabCtl = {
-      show(on) { cab.show = !!on; if (cab.root) cab.root.visible = !!on; const gl = yard.pickup && yard.pickup.userData.glass; if (gl) for (const g of gl) g.visible = !on; },
+      show(on) { cab.show = !!on; if (cab.root) cab.root.visible = !!on; const gl = yard.pickup && yard.pickup.userData.glass; if (gl) for (const g of gl) g.visible = !on;
+                 /* (v24.5: Pong is at the wheel — the yard's own Pong is away while the cab is shown, in every film as in the
+                    opening (CP9); films.end puts him back) */
+                 if (on && cast.pong && cast.pong.group && cast.pong.group.visible) { cast.pong.group.visible = false; FL.hidPong = true; } },
       drops(k) { cab.drops = k; for (const m of cab.glass) m.uniforms.uK.value = k; }
     };
     function shopFrame(now) {
@@ -2589,11 +2640,17 @@
         if (o.stand) {
           inner.position.set(0, 0, 0); pose(0);
           let sl = Infinity; const sa = clip(o.stand);
+          /* (v24.5, L5-1: in the GROUP's frame — the world height, with the group already at its floor and `inner` scaled,
+             was scaled by s again: every standing and walking person stood sunk, Joy and Lim 0.4 m into the sala's floor,
+             the stall woman 0.84 m into the road's pad) */
+          group.updateMatrixWorld(true);
           for (let k = 0; k < 4; k++) { mx.setTime(sa.duration * k / 4); g.updateMatrixWorld(true);
-            g.traverse(b => { if (b.isBone && /Foot|Toe/.test(b.name)) { b.getWorldPosition(_pv); sl = Math.min(sl, _pv.y); } }); }
-          if (!isFinite(sl)) sl = lo;
-          P.standInner.set(0, -sl * s + 0.005, 0);
-          if (o.ground === 'skin') { inner.position.copy(P.standInner); P.standInner.y -= skinLow(P) - 0.004; }
+            g.traverse(b => { if (b.isBone && /Foot|Toe/.test(b.name)) { b.getWorldPosition(_pv); group.worldToLocal(_pv); sl = Math.min(sl, _pv.y); } }); }
+          if (!isFinite(sl)) { group.updateMatrixWorld(true); sl = skinLow(P); }
+          P.standInner.set(0, -sl + 0.005, 0);
+          /* then the SKIN's own sole on the floor, at the take's first frame — a rig's lowest foot bone may be its toe base or
+             its ankle, centimetres over the sole (the bones put the body near; the skin puts it exactly) */
+          mx.setTime(0); inner.position.copy(P.standInner); P.standInner.y -= skinLow(P) - 0.004;
         }
         /* seated: the skin's seat set on the seat's top, at the group's origin; never through the floor under the seat; and
            on a bench, feet that would hang are let down onto the floor, the seat taking up to 5 cm of it (cloth gives) */
@@ -2614,6 +2671,14 @@
         if (o.restRate) for (const k of ['standLo', 'standUp', 'sitLo', 'sitUp']) if (L[k]) L[k].setEffectiveTimeScale(o.restRate);
         pose(P.sitW);
         inner.position.lerpVectors(P.standInner, P.sitInner, P.sitW);
+        /* v24.5 (L5-3): a body CENTRED on its group — her take (Stand_and_Chat, parked) stands her hips 0.6 m off the group's
+           origin, so every place that aimed at her spot (the storm's fourth flash, the doorway's sign, ending B's glance)
+           aimed beside her, and at the door she stood against the wall beside the curtain, not in it */
+        if (o.centre && P.hips && P.sitW < 0.5) {
+          group.updateMatrixWorld(true); P.hips.getWorldPosition(_pv); group.worldToLocal(_pv);
+          P.standInner.x -= _pv.x; P.standInner.z -= _pv.z;
+          inner.position.lerpVectors(P.standInner, P.sitInner, P.sitW);
+        }
         /* his face's direction, in the head bone's own frame, measured at the FILE's own rest — every layer at weight 0,
            so the mixer gives back the pose the file was bound in, head level and along the body's forward. A take's rest
            may hold the head anywhere (CP9, by photograph: Pong's cross-legged take holds his chin up and his head turned,
@@ -2923,7 +2988,7 @@
       cast.noiR = mkPerson('e4noi', { parent: worldR, x: 1.55, z: -1.0, ry: -2.2, height: 1.56, posture: 'stand', stand: 'Idle_9',
         talk: 'Talk_with_Left_Hand_on_Hip', hidden: true, noMip: true });
       cast.her = mkPerson('granny', { parent: worldR, x: RMC.HER.door.x, z: RMC.HER.door.z, ry: -0.45, height: 1.5, posture: 'stand', stand: 'Stand_and_Chat',
-        idleAt: 0.4, walk: false, bow: 0.42, noMip: true, noShadow: true, hidden: true, then: herDress });
+        idleAt: 0.4, walk: false, bow: 0.42, noMip: true, noShadow: true, hidden: true, then: herDress, centre: true });
       /* the yard: Pa Noi at the queue's board; in the sala, Khun Joy and Ta Sombat on the back bench and Uncle Lim on the
          front one, all turned to the master's door; Pong, standing by his pickup at the gate (he leads him in, and sits
          on the front bench to wait) */
@@ -2970,9 +3035,13 @@
       const S2 = RMC.HER; if (her.spot === 'door') return S2.door;
       return (camera.aspect < 1 ? S2.phoneStep : S2.deskStep);
     };
+    /* (v24.5, L5-3d: a spot on the master's teak platform — the phone's step, behind his left shoulder — stands her ON it;
+       at the floor's height her shins were in the dais) */
+    const onPlat = (p) => p.x > RMC.PLAT.x0 && p.x < RMC.PLAT.x1 && p.z > RMC.PLAT.z0 && p.z < RMC.PLAT.z1;
+    function herPlace(G, p) { G.position.x = p.x; G.position.z = p.z; G.position.y = onPlat(p) ? RMC.PLAT.top : 0; }
     const herCtl = {
       show(on) { her.on = !!on; },
-      at(spot) { her.spot = spot; const p = HER_SPOT(); if (cast.her) { cast.her.group.position.x = p.x; cast.her.group.position.z = p.z; } }
+      at(spot) { her.spot = spot; const p = HER_SPOT(); if (cast.her) herPlace(cast.her.group, p); }
     };
     /* where she IS: a little under her head. Her take stands her body 0.6 m off her group's spot (v24.4, #352, measured
        in ending C: hips and head at x 2.57–2.61 against the spot's 1.98), so a fade that looked at the spot looked at the
@@ -2988,7 +3057,7 @@
       const inR = worldOf(yaw.position.x) === 'R';
       let want = 0;
       if (her.on && inR) {
-        if (her.spot !== 'door') { const p = HER_SPOT(); P.group.position.x = p.x; P.group.position.z = p.z; }
+        if (her.spot !== 'door') herPlace(P.group, HER_SPOT());
         herPoint(_hp);
         camera.updateMatrixWorld(); _hp.project(camera);
         if (_hp.z < 1 && Math.abs(_hp.y) < 1.2) { const ax = Math.abs(_hp.x); want = THREE.MathUtils.smoothstep(ax, 0.3, 0.55) * (ax < 1.25 ? 1 : 0); }
@@ -3058,6 +3127,7 @@
       candles(on, secs = 0.8) { room.candleTo = on ? 1 : 0; room.candleSecs = Math.max(0.01, secs); },
       rain(k, secs = 2) { room.rainFrom = room.rainK; room.rainTo = Math.max(0, Math.min(1, k)); room.rainT0 = wallNow(); room.rainSecs = Math.max(0.01, secs); },
       breathe() { room.breathT = wallNow(); },
+      gust() { room.gustT = wallNow(); },                      // (v24.5, L1-2: the curtain in the doorway, stirred)
       cup(i) { room.cupAt = i ? 1 : 0; const c = RMC.CUP[room.cupAt]; room.cup.position.set(c.x, RMC.LOWT.top, c.z); },
       /* the cloth lies differently (flash 3): turned half a fold and slid off the bowl's centre, so the brass rim shows
          on one side and the hem hangs lower on the other */
@@ -3108,10 +3178,12 @@
         }
         P.needsUpdate = true;
       }
-      /* the curtain stirs in the same air */
+      /* the curtain stirs in the same air — and (v24.5, L1-2) billows into the room in a draught, 2.6 s, when it is sent */
       if (room.curtain) {
         const P = room.curtain.geometry.attributes.position, b = room.curtainBase, hh = (RMC.CURT.h - 0.06) / 2;
-        for (let i = 0; i < P.count; i++) { const lo = (hh - b[i * 3 + 1]) / (2 * hh); P.setZ(i, b[i * 3 + 2] + fs * 0.018 * lo * Math.sin(t * 2.1 + b[i * 3] * 9)); }
+        const gu = room.gustT ? wallNow() - room.gustT : 99, gk = gu < 2.6 ? Math.sin(Math.PI * gu / 2.6) : 0;
+        for (let i = 0; i < P.count; i++) { const lo = (hh - b[i * 3 + 1]) / (2 * hh);
+          P.setZ(i, b[i * 3 + 2] + fs * 0.018 * lo * Math.sin(t * 2.1 + b[i * 3] * 9) + gk * 0.12 * lo * (0.7 + 0.3 * Math.sin(t * 3.3 + b[i * 3] * 6))); }
         P.needsUpdate = true;
       }
       /* the candles: lit by the master (CP8), flames leaned by the fan in screen space, glows stronger when the tube is out */
@@ -3184,21 +3256,21 @@
     let phase = 'arrive';
     let booted = false, preplaced = '';
     const dayClock = { t: 0 };
-    let lastWall = 0;
+    let lastWall = 0, pausedAt = 0;                       // (v24.5: pausedAt, when a panel stopped the clock — L3-4)
     const todo = [];
     function after(secs, fn) { todo.push({ at: dayClock.t + secs, fn }); todo.sort((a, b) => a.at - b.at); }
     function runTodo() { while (todo.length && todo[0].at <= dayClock.t) todo.shift().fn(); }
     function dropTodo() { todo.length = 0; }
     const heard = new Set();
 
-    const speak = { until: 0, pending: null };
-    function speakReset() { speak.until = 0; speak.pending = null; }
+    const speak = { until: 0, pending: null, voiceTo: 0 };      // (v24.5: voiceTo, where the voice itself ends — L3-4)
+    function speakReset() { speak.until = 0; speak.pending = null; speak.voiceTo = 0; }
     /* A LINE IS A BEAT, HEARD OR NOT (e3c3's law): a muted game speaks it silently on its own length, a line whose
        bytes have not landed is held a moment (v8.0) and then spoken silently — so a beat chained on a line's start never
        stops the chapter */
     function sayLine(name, vol = 1, onStart, pan) {
       if (dayClock.t < speak.until) return false;
-      const start = () => { speak.until = dayClock.t + (SECS[name] || 2.5) + 0.25; heard.add(name); if (onStart) onStart(); };
+      const start = () => { speak.voiceTo = dayClock.t + (SECS[name] || 2.5); speak.until = speak.voiceTo + 0.25; heard.add(name); if (onStart) onStart(); };
       if ((soundOff && soundOff()) || !worldSfx) { start(); return true; }
       if (worldSfx(name, vol, 1, pan)) { start(); return true; }
       speak.pending = { name, vol, start, pan, give: dayClock.t + 1.6 };
@@ -3256,7 +3328,7 @@
           : (play.pongSat && !play.asked.has('pong')) ? W.objAskPong
           : W.objWait.replace('{n}', String(play.n));
       }
-      else if (p === 'called') { o = W.objGoIn; wp = { x: RDOOR.x, y: 1.9, z: RDOOR.z - 0.5 }; }
+      else if (p === 'called') { o = W.objGoIn; wp = { x: RDOOR.x, y: 1.9, z: RDOOR.z - 0.5 }; play.doorWp = true; }   // (the frame takes it off while the door's own mark shows — L5-13)
       else if (p === 'consult') o = play.kneeling ? null : W.objKneel;
       else if (p === 'items') o = play.offerOn && !play.offered ? W.objOffer : null;
       else if (p === 'work') o = W.objWatch.replace('{n}', String(play.signs.size));
@@ -3328,6 +3400,7 @@
       greeted: false, water: false, tree: false, pongSat: false,
       day: '', item: '', offerOn: false, offered: false,
       signs: new Set(), signsOn: false, herSeen: false, breathNext: 0, gestNext: 0, chantNext: 0,
+      clothSeen: false, gestSeen: false, gustNext: 0,          // (v24.5: the cloth has breathed, his hands have moved — L1-5; the draught — L1-2)
       kneeling: false, turning: null, called: false,
       drone: null,                    // the storm's drone while it sounds (its source, to be ramped down)
       chants: []                      // the master's chant as it sounds (CP13: never stopped, it ran on through the hush)
@@ -3338,7 +3411,8 @@
        34 s chant, the 43 s drone — once he is called in, and on any Continue into the room */
     const WARM_YARD = ['pg1come', 'pn1num', 'q1board', 'pn1water', 'q1water', 'w4water', 'pn1n10', 'pn1n11', 'pn1n12', 'pn1n13',
       'pn1n14', 'q1joy1', 'jy1a', 'q1joy2', 'jy1b', 'q1lim1', 'lm1a', 'q1lim2', 'lm1b', 'q1sb1', 'pg1sbq', 'sb1a', 'pg1sb',
-      'q1pg1', 'pg1me', 'q1nobody', 'q1missed', 'jy1go', 'lm1go', 'pg1go', 'q1tree', 'pg1tree', 'w4dog', 'w4marker', 'w4sandals'];
+      'q1pg1', 'pg1me', 'q1nobody', 'q1missed', 'jy1go', 'lm1go', 'pg1go', 'q1tree', 'pg1tree', 'w4dog', 'w4marker', 'w4sandals',
+      'w4page', 'w4pen'];                                                  // (v24.5, L3-2: the stock book's own)
     const WARM_ROOM = ['w4kneel', 'fm1hello', 'q1wai', 'fm1shop', 'pg1shop', 'q1shop', 'pg1th1', 'fm1good', 'pg1good', 'fm1day',
       'pg1day', 'fm1hm', 'fm1read', 'pg1read', 'q1short', 'w4tray', 'pn1tray', 'pg1items', 'fm1items', 'pg1nk', 'pg1tk', 'pg1py',
       'pg1offer', 'w4envelope', 'fm1anu', 'fm1eyes', 'pg1eyes', 'w4match', 'w4barestep'];
@@ -3348,7 +3422,24 @@
     /* the stock book built now, hidden, so the loading curtain compiles it (CP13: built at its first opening, its
        materials compiled on screen at the first conversation) */
     if (kit && kit.ledger && kit.ledger.prepare) kit.ledger.prepare();
+    /* the rain built now too, hidden, so the loading curtain compiles its shader and uploads its buffers (v24.5, L4-3: built
+       by its first call — on screen when number fourteen was called, or on a Continue's first frame at the call) */
+    if (kit && kit.rain) kit.rain(0);
     const warmWork = () => { if (warmSounds) warmSounds(WARM_WORK); };
+    /* the four endings' sounds, asked for as the storm begins (v24.5, L3 P3: the engine warms every scene at the decision,
+       A's and B's ~330 s of audio first, so a quick pick of C on a slow phone could open on silence — the storm is half a
+       minute of head start). Their names are read off the scenes themselves, run once against a recording stub (as
+       chaptertest walks them), with each piece Pong may name in A */
+    const warmEndings = () => {
+      if (!warmSounds) return;
+      const names = new Set(), noop = () => {};
+      for (const item of ['nangkwak', 'phayant', 'takrut']) for (const sc of [scStill, scQuestion, scCertain, scEnough]) {
+        const api = { sfx: (t, k) => names.add(k), sfxFade: noop, fade: noop, tr: noop, step: noop, rawK: (k) => k, phone: noop,
+                      stage: { films: { begin: noop, frame: noop, end: noop }, play: { state: { item } } } };
+        try { sc({ tracks: [], stings: [], keep: {} }, null, api); } catch (e) { /* a stub the scene outgrew: the engine's own warm still runs */ }
+      }
+      warmSounds([...names]);
+    };
     /* a one-shot that waits for its bytes (a long sound decoded late is still the sound): tried now, then every tenth of a
        second of wall time for `wait` seconds; muted, it is not waited for */
     function sfxReady(name, vol, keep, wait = 3) {
@@ -3384,8 +3475,10 @@
       const run = play.run;
       if (!kit || !kit.ledger) return Promise.resolve(null);
       const had = kit.ledger.entries().some(e => e.id === id);
+      /* (v24.5, L3-2: the book's own sounds — its page turned open, his pen on the paper, the page let fall; without them the
+         engine's menu click and confirm chime, the loudest things in the yard, opened and wrote every page) */
       return kit.ledger.write(id, { page, title: page === 'who' ? W.ledWho : W.ledSaw, prompt: W.ledPrompt, brief: W.ledBrief,
-                                    fact: W[fk], meaning: W[mk] }).then(kind => {
+                                    fact: W[fk], meaning: W[mk], sound: { open: 'w4page', write: 'w4pen', close: 'w4page' } }).then(kind => {
         if (!live(run)) return null;
         if (!kind && tries < 20) return new Promise(res => after(0.5, () => res(writeLedger(id, page, fk, mk, tries + 1))));
         if (kind === 'fact' && !had) kit.award('awareness', 2);
@@ -3433,7 +3526,10 @@
       if (!kit) return;
       if (kit.has && kit.take) for (const id of PIECES) { let n = 0; while (kit.has(id) && n++ < 8) kit.take(id); }
       if (kit.ledger && kit.ledger.set) {
-        const keep = kit.ledger.entries().filter(e => !/^(who|saw):/.test(e.id));
+        /* (v24.5, L2-5: only THIS chapter's pages — the book belongs to the episode, and every who:/saw: page went, a later
+           chapter's too, the moment this one was replayed) */
+        const mine = new Set(Object.keys(ASK).map(k => 'who:' + k).concat(['who:read'], Object.keys(SIGN).map(k => 'saw:' + k)));
+        const keep = kit.ledger.entries().filter(e => !mine.has(e.id));
         if (keep.length !== kit.ledger.entries().length) kit.ledger.set(keep);
       }
     }
@@ -3449,10 +3545,13 @@
         queueFn(() => { if (!play.greeted || !cast.pong.walk) personWalk(cast.pong, ARRIVE_IN, { speed: 1.1, ry: 2.3, tag: 'in' }); });
       });
     }
-    const ARRIVE_IN = [[2.4, 9.8], [0.9, 7.2], [1.6, 4.0], [2.25, 2.35]];
+    const ARRIVE_IN = [[3.3, 10.2], [2.4, 9.8], [0.9, 7.2], [1.6, 4.0], [2.25, 2.35]];   // (v24.5, L5-10: round the pickup's nose, not through it)
     function pongToSeat() {
-      personWalk(cast.pong, [[1.6, 2.0], [0.82, 0.9], [0.82, -0.3], [0.84, -1.35]], { speed: 1.05, ry: Math.PI / 2,
-        then: () => after(0.5, () => { personSit(cast.pong, true, SEAT.pong); play.pongSat = true; }) });
+      /* (v24.5, L1-8: if his model never lands his walk never runs, and pongSat — the gate of the farmer's ask and his
+         own — was never set: his (invisible) place is put on the bench instead, so both can still be asked) */
+      whenReadyOr(cast.pong, () => personWalk(cast.pong, [[1.6, 2.0], [0.82, 0.9], [0.82, -0.3], [0.84, -1.35]], { speed: 1.05, ry: Math.PI / 2,
+        then: () => after(0.5, () => { personSit(cast.pong, true, SEAT.pong); play.pongSat = true; }) }),
+        () => { personPut(cast.pong, SEAT.pong.x, SEAT.pong.z, Math.PI / 2, CMP.SALA.floor); play.pongSat = true; });
     }
     /* Pa Noi gives him his number when he comes up to her (the waypoint is on Pong, then on her) */
     function greet() {
@@ -3487,7 +3586,8 @@
       if (play.water || phase !== 'wait') return;
       if (play.busy || play.calling) { after(4, waterOffer); return; }
       play.water = true;
-      queueFn(() => { if (worldSfx) worldSfx('w4water', 0.45); });   // the dispenser's tap into a paper cup, as she speaks (CP13)
+      queueFn(() => { if (worldSfx) worldSfx('w4water', 0.5); });    // the dispenser's tap into a paper cup, as she speaks (CP13)
+      queueGap(0.5);                                                    // (v24.5, L3-8: a beat before she does — under her line it was ducked to nothing)
       line('pn1water', cast.noi);
       line('q1water', null);
     }
@@ -3513,16 +3613,21 @@
       if (key === 'sb') {
         const st = A.steps();
         line(st[0][0], st[0][1]);
-        queueFn(() => { if (cast.pong.head && cast.sombat.head) { cast.pong.lookAt = cast.sombat.head; cast.sombat.lookAt = cast.pong.head; } });
+        /* (v24.5, L5-9: Pong turns on the bench to him — the farmer sits on the bench BEHIND his, 174° from where he faces, past
+           what a neck turns, so his look was nothing and the man he translated for spoke to the back of his head) */
+        queueFn(() => { cast.pong.turnTo = 3.3; if (cast.pong.head && cast.sombat.head) { cast.pong.lookAt = cast.sombat.head; cast.sombat.lookAt = cast.pong.head; } });
         line(st[1][0], st[1][1]); line(st[2][0], st[2][1]);
-        queueFn(() => { cast.pong.lookAt = null; cast.sombat.lookAt = null; });
+        queueFn(() => { cast.pong.lookAt = null; cast.sombat.lookAt = null; cast.pong.turnTo = Math.PI / 2; });
         line(st[3][0], st[3][1]);
       } else lines(A.steps());
       queueFn(() => {
-        if (key === 'sb') { cast.pong.lookAt = null; cast.sombat.lookAt = null; }
+        if (key === 'sb') { cast.pong.lookAt = null; cast.sombat.lookAt = null; cast.pong.turnTo = Math.PI / 2; }
         writeLedger('who:' + key, 'who', A.f, A.m).then(() => {
           if (!live(run)) return;
           play.asked.add(key);
+          /* (v24.5, L2-4: bookmarked as the page is written — after Pong's it trailed by "Nobody I've asked…", and a save
+             there resumed with him still to ask and his whole exchange said again) */
+          setPhase('wait', waitTag());
           if (key === 'pong') line('q1nobody', null);
           queueFn(() => {
             play.busy = false;
@@ -3560,7 +3665,7 @@
         /* the one who went in before comes out while time passes */
         if (n === 13) comeOut(cast.joy);
         setPhase('wait', waitTag(), { complete: false });
-        if (n <= 11) line(CALL[n], cast.noi);
+        if (n <= 11) { queueGap(0.6); line(CALL[n], cast.noi); }   // (v24.5, L3-8: the marker heard before her call, not under it)
       });
       after(1.6, () => { if (live(run) && kit) kit.fade(0, 0.8); });
       after(2.5, () => {
@@ -3620,7 +3725,11 @@
     function enterRoom() {
       if (phase !== 'called') return false;
       lineQ.length = 0;                            // (CP13: Pong's yard line and Lim's walk out were carried into the room)
-      if (kit && kit.rain) kit.rain(0, 0);
+      /* (v24.5, L5-6: the yard's walks are finished as he goes in — a walk stops while its world is hidden, and Pong's to the
+         steps came back, mid-yard, in the endings' yard shots) */
+      for (const P of [cast.pong, cast.joy, cast.lim]) if (P && P.walk) {
+        const W = P.walk, e = W.pts[W.pts.length - 1]; personPut(P, e[0], e[1], W.ry); if (W.then) W.then(); }
+      if (kit && kit.rain) kit.rain(0);
       if (worldSfx) worldSfx('w4sandals', 0.7);
       toWorld('R', false, 'consult');
       consultBegin(false);
@@ -3848,6 +3957,7 @@
       trayShow(true);
       if (worldSfx) worldSfx('w4envelope', 0.6);
       objectiveFor('items');
+      queueGap(0.5);                                   // (v24.5, L3-8: the envelope heard before his blessing, not under it)
       line('fm1anu', cast.master);
       queueFn(() => lookTray(false, () => workBegin(false)));
       return true;
@@ -3864,10 +3974,17 @@
       { at: 19.5, end: 24.1, text: W.chant2, sub: W.chant2en }, { at: 25.3, end: 30.1, text: W.chant2, sub: W.chant2en },
       { at: 31.3, end: 33.8, text: W.chant3, sub: W.chant3en }];
     function chantStart() {
-      sfxReady('fm1chant', 0.8, d => play.chants.push(d));
-      if (kit && kit.captions) kit.captions(CHANT_CAPS());
+      /* the captions WITH the voice (v24.5, L3 P2: a Continue asks for the work's sounds on its first frame, and the captions
+         ran ahead of a chant still decoding) — muted, or not decoded within sfxReady's wait, they run on their own */
+      const run = play.run; let capd = false;
+      const caps = () => { if (capd || !live(run) || phase !== 'work') return; capd = true; if (kit && kit.captions) kit.captions(CHANT_CAPS()); play.capsAt = wallNow(); };
+      sfxReady('fm1chant', 0.8, d => { play.chants.push(d); caps(); });
+      if (soundOff && soundOff()) caps(); else setTimeout(caps, 3100);
       play.chantNext = wallNow() + (SECS.fm1chant || 28);          // on WALL time (CP13: the chapter clock stops under a ledger page)
     }
+    /* (v24.5, L5-7: the covered bowl breathes only once the chant's captions are done — on a phone its dome sits under the
+       captions' panel, and the captions are up for 84 % of the chant) */
+    const capsOver = () => play.capsAt > 0 && wallNow() >= play.capsAt + 34.2;
     function workBegin(resumed) {
       setPhase('work', [...play.signs].join(','));
       const go = () => {
@@ -3887,8 +4004,10 @@
     }
     const SIGN = { smoke: ['q1smoke', 'ledSmokeF', 'ledSmokeM'], cloth: ['q1cloth', 'ledClothF', 'ledClothM'],
                    shadow: ['q1shadow', 'ledShadowF', 'ledShadowM'], her: ['q1her', 'ledHerF', 'ledHerM'] };
+    /* (v24.5, L1-5: the cloth's sign only once it has breathed, the shadow's once his hands have moved — offered from the
+       work's first frame, "The cloth over the bowl moved" could be written before anything had) */
     const signOpen = (k) => phase === 'work' && play.signsOn && !play.busy && !play.signs.has(k) && worldOf(yaw.position.x) === 'R'
-                            && (k !== 'her' || play.herSeen);
+                            && (k !== 'her' || play.herSeen) && (k !== 'cloth' || play.clothSeen) && (k !== 'shadow' || play.gestSeen);
     function sign(key) {
       if (!signOpen(key)) return false;
       play.busy = true;
@@ -3900,25 +4019,41 @@
       queueFn(() => writeLedger('saw:' + key, 'saw', S2[1], S2[2]).then(() => {
         if (!live(run)) return;
         play.signs.add(key); play.busy = false;
+        /* (v24.5, L1-6: the fourth goes straight into the storm — its "4/4" order between two OBJECTIVE COMPLETEs was an
+           empty beat) */
+        if (play.signs.size >= 4) { stormBegin(false); return; }
         setPhase('work', [...play.signs].join(','));
         if (key === 'her' && phase === 'work') herCtl.show(true);
-        if (play.signs.size >= 4) stormBegin(false);
       }));
       return true;
     }
     /* her place on the screen, for the sign's look-spot and the storm's fourth flash: wherever she stands now */
     const herPos = { x: RX + RMC.HER.door.x, y: 1.32, z: RMC.HER.door.z };
-    function herPosSync() { const p = HER_SPOT(); herPos.x = RX + p.x; herPos.z = p.z; }
+    function herPosSync() { const p = HER_SPOT(); herPos.x = RX + p.x; herPos.z = p.z; herPos.y = 1.32 + (onPlat(p) ? RMC.PLAT.top : 0); }
 
     /* ================================================================ P7 · THE STORM: WHAT CHANGED? */
     const chg = {
       cup: { id: 'cup', pos: { x: RX + RMC.CUP[0].x, y: RMC.LOWT.top + 0.06, z: RMC.CUP[0].z } },
       cloth: { id: 'cloth', pos: { x: RX + RMC.BOWL.x, y: RMC.LOWT.top + 0.13, z: RMC.BOWL.z } },
-      clock: { id: 'clock', pos: { x: RX + RMC.CLOCK.x, y: RMC.CLOCK.y1 - 0.13, z: RM.z0 + 0.1 } },
+      /* (v24.5, L1-3: what visibly stops is the PENDULUM, ~100 px under the dial it was scored at — a tap on the stopped
+         pendulum was a false tap. The whole clock counts now: anywhere along its dial-to-bob line, the miss ring on its case) */
+      clock: { id: 'clock', pos: { x: RX + RMC.CLOCK.x, y: RMC.CLOCK.y1 - 0.34, z: RM.z0 + 0.1 },
+               hits: (x, y) => segHit(x, y, [RX + RMC.CLOCK.x, RMC.CLOCK.y1 - 0.13, RM.z0 + 0.1], [RX + RMC.CLOCK.x, RMC.CLOCK.y1 - 0.56, RM.z0 + 0.1], 0.09) },
       her: { id: 'her', pos: herPos }
     };
+    /* a screen point within `frac` of the screen's short side of the segment a→b, as projected now */
+    const _sa = new THREE.Vector3(), _sb = new THREE.Vector3();
+    function segHit(x, y, a, b, frac) {
+      camera.updateMatrixWorld();
+      _sa.set(a[0], a[1], a[2]).project(camera); _sb.set(b[0], b[1], b[2]).project(camera);
+      if (_sa.z > 1 || _sb.z > 1) return false;
+      const ax = (_sa.x + 1) / 2 * innerWidth, ay = (1 - _sa.y) / 2 * innerHeight, bx2 = (_sb.x + 1) / 2 * innerWidth, by = (1 - _sb.y) / 2 * innerHeight;
+      const dx = bx2 - ax, dy = by - ay, L2 = dx * dx + dy * dy || 1, u = Math.max(0, Math.min(1, ((x - ax) * dx + (y - ay) * dy) / L2));
+      return Math.hypot(x - (ax + dx * u), y - (ay + dy * u)) < frac * Math.min(innerWidth, innerHeight);
+    }
     function stormBegin(resumed) {
       setPhase('storm');
+      warmEndings();
       play.signsOn = false;
       roomCtl.rain(1, resumed ? 0.01 : 2.5);
       roomCtl.tube(false, !resumed);
@@ -3981,7 +4116,9 @@
     function decideBegin(resumed) {
       /* whom he asked, from the ledger as well (CP13: play.asked is rebuilt only for 'wait', so a Continue in the room
          told him he never asked) */
-      const askedAny = play.asked.size || (kit && kit.ledger && kit.ledger.entries().some(e => /^who:/.test(e.id)));
+      /* (v24.5, L6-1: the reading's own page, who:read, is written for everyone before this — so "You never asked" could
+         never be said; only the yard's four asks count) */
+      const askedAny = play.asked.size || (kit && kit.ledger && kit.ledger.entries().some(e => /^who:/.test(e.id) && e.id !== 'who:read'));
       bank(askedAny ? W.noteAsked : W.noteNeverAsked);
       if (kit && kit.ledger) {
         const ents = kit.ledger.entries(), f = ents.filter(e => e.kind === 'fact').length, m = ents.filter(e => e.kind === 'meaning').length;
@@ -4004,17 +4141,38 @@
         else kit.waypoint({ x: cast.noi.group.position.x, y: 2.0, z: cast.noi.group.position.z });
         if (Math.hypot(yaw.position.x - cast.noi.group.position.x, yaw.position.z - cast.noi.group.position.z) < 3.4 && !play.greeted) { kit.waypoint(null); greet(); }
       }
+      /* (v24.5, L5-13: the door's own "!" and the called waypoint stood ~48 px apart on a phone — one mark: the waypoint
+         only while the door's mark is not drawn on the screen, which the engine does within 16 m) */
+      if (phase === 'called' && inC && !wDark && kit && kit.waypoint) {
+        const dp = _hv.set(RDOOR.x, 1.6, RDOOR.z - 0.5); camera.updateMatrixWorld(); dp.project(camera);
+        const near = Math.hypot(yaw.position.x - RDOOR.x, yaw.position.z - (RDOOR.z - 0.5)) < 15.5;
+        const wp = !(near && dp.z < 1 && Math.abs(dp.x) < 0.95 && Math.abs(dp.y) < 0.95);
+        if (wp !== play.doorWp) { play.doorWp = wp; kit.waypoint(wp ? { x: RDOOR.x, y: 1.9, z: RDOOR.z - 0.5 } : null); }
+      }
       if (phase === 'wait' && inC && !play.busy && !play.calling && !lineQ.length && !speak.pending && dayClock.t >= speak.until
           && dayClock.t >= play.nextCall && !(kit.ledger && kit.ledger.isOpen())) callNext();
       if (phase === 'consult' && inR && !play.kneeling && matZone.visible
           && Math.hypot(yaw.position.x - (RX + CMAT.x), yaw.position.z - CMAT.z) < 0.42) kneel(false);
       if ((phase === 'work' || phase === 'storm') && inR) {
-        /* the chant goes on, murmured, under the signs and the storm */
-        if (play.chantNext && wallNow() >= play.chantNext) { sfxReady('fm1chant2', 0.5, d => play.chants.push(d)); play.chantNext = wallNow() + (SECS.fm1chant2 || 40); }
         if (phase === 'work') {
           /* the cloth breathes now and then; his hands move over the mala, so his shadow can be seen to follow late */
-          if (dayClock.t >= play.breathNext) { roomCtl.breathe(); if (worldSfx) worldSfx('w4cloth', 0.35); play.breathNext = dayClock.t + 9 + 5 * ((dayClock.t * 7.13) % 1); }
-          if (dayClock.t >= play.gestNext) { personTalk(cast.master, 2.6); if (worldSfx) worldSfx('w4mala', 0.3); play.gestNext = dayClock.t + 7 + 4 * ((dayClock.t * 3.71) % 1); }
+          if (dayClock.t >= play.breathNext && capsOver()) { roomCtl.breathe(); if (worldSfx) worldSfx('w4cloth', 0.35); play.breathNext = dayClock.t + 9 + 5 * ((dayClock.t * 7.13) % 1);
+                                              after(1.2, () => { play.clothSeen = true; }); }   // (v24.5, L1-5)
+          /* (v24.5, L3-8: his hands move over the mala between lines — under one its beads were ducked to nothing) */
+          if (dayClock.t >= play.gestNext && dayClock.t >= speak.until && !speak.pending) { personTalk(cast.master, 2.6); if (worldSfx) worldSfx('w4mala', 0.36); play.gestNext = dayClock.t + 7 + 4 * ((dayClock.t * 3.71) % 1);
+                                              after(1.0, () => { play.gestSeen = true; }); }   // (v24.5, L1-5)
+          /* (v24.5, L1-2: three signs written and she has not been seen — on a phone, whose frame is a third as wide, the
+             doorway is 40° off the view the work gives and nothing else changes: the curtain in it stirs in a draught,
+             heard from its side, every 11–15 s until he looks that way) */
+          if (play.signs.size === 3 && !play.signs.has('her') && !play.herSeen && play.signsOn && !play.busy) {
+            if (!play.gustNext) play.gustNext = dayClock.t + 5;
+            else if (dayClock.t >= play.gustNext) {
+              roomCtl.gust();
+              const rel = angTo(yaw.rotation.y, Math.atan2(-(RX + RMC.CURT.x0 + 0.37 - yaw.position.x), -(RM.z0 - yaw.position.z)));
+              if (worldSfx) worldSfx('w4cloth', 0.55, 0.85, Math.max(-0.9, Math.min(0.9, -Math.sin(rel) * 0.9)));
+              play.gustNext = dayClock.t + 11 + 4 * ((dayClock.t * 5.17) % 1);
+            }
+          }
           if (!play.herSeen && (her.k > 0.45 || (cast.her && cast.her.failed))) play.herSeen = true;   // (CP13: her model failed — the doorway is still the sign)
           herPosSync();
         }
@@ -4085,7 +4243,10 @@
     let castLast = 0;
     function updateNotes(dt, t) {
       const now = wallNow();
-      const raw = castLast ? Math.max(0, now - castLast) : 0, wdt = Math.min(0.1, raw); castLast = now;
+      /* (v24.5, L1-7: the cast's walks and turns and his own auto-turns on the chapter clock's cap, half a second a frame —
+         clamped to a tenth, below ten frames a second everyone walked and turned slow, and a hot phone's storm waited on a
+         turn three times its length; every ease here is stable at any step) */
+      const raw = castLast ? Math.max(0, now - castLast) : 0, wdt = Math.min(0.5, raw); castLast = now;
       domeFrame(now);
       roomFrame(now);
       peopleTick(now, wdt);                               // the cast's clocks run in films too (v5.19): only their looks wait for play
@@ -4102,7 +4263,22 @@
         const w0 = preStage(kit.getPhase());
         if (w0) preplaced = w0;
       }
-      if (!live) { lastWall = 0; return; }
+      /* the chant goes on, murmured, under the signs and the storm — and under the stock book and the pause menu, which
+         stop the chapter's clock and not its sounds (v24.5, L3-5: re-cued in play only, a take that ended under a ledger
+         page left the room without its chant until the book closed) */
+      if (booted && (phase === 'work' || phase === 'storm') && worldOf(yaw.position.x) === 'R' && play.chantNext && now >= play.chantNext
+          && (live || st === 'ledger' || st === 'menu' || st === 'inventory')) {
+        sfxReady('fm1chant2', 0.5, d => play.chants.push(d)); play.chantNext = now + (SECS.fm1chant2 || 40);
+      }
+      if (!live) { if (!pausedAt) pausedAt = now; lastWall = 0; return; }
+      /* (v24.5, L3-4: a voice plays on under a panel — the book, the menu, the bag — while the chapter's clock stands still,
+         so a line booked as the panel opened was "still being said" for its whole length after it closed: a dead gap before
+         the next beat. Its booking comes forward by the time the panel was up, as far as the voice's own end and never a
+         gap's — e3c3's v21.21 law) */
+      if (pausedAt) {
+        const away = Math.max(0, now - pausedAt); pausedAt = 0;
+        if (speak.voiceTo > dayClock.t) { const cut = Math.min(away, speak.voiceTo - dayClock.t); speak.until -= cut; speak.voiceTo -= cut; }
+      }
       if (lastWall) dayClock.t += Math.min(0.5, now - lastWall);
       lastWall = now;
       if (!booted) {
@@ -4175,6 +4351,7 @@
       }
       const RA = resumeAt(p0);
       if (!RA) return '';
+      if (p === 'work' || p === 'storm') warmWork();   // (v24.5, L3 P2: under the card — the storm's first thunder was asked for on the first live frame)
       placeIn('R');
       if (p === 'consult') return 'R';
       yaw.position.x = RX + CMAT.x; yaw.position.z = CMAT.z; yaw.rotation.y = faceMaster(); pitch.rotation.x = -0.06;
@@ -4234,6 +4411,9 @@
       if (p === 'called') { play.n = 14; play.called = true; yardResume('called'); return; }
       /* the room */
       warmWork();
+      /* (v24.5, L2 P-1: twelve and thirteen have been called by now — Khun Joy has gone, Uncle Lim is inside — as a straight
+         run leaves them; after a Continue they sat on the benches again in the endings' yard shots) */
+      for (const P of [cast.joy, cast.lim]) whenReady(P, (Q) => { Q.walk = null; Q.group.visible = false; });
       if (p === 'consult' && DAY_TH[tag]) play.day = tag;
       const bagged = ['nangkwak', 'takrut', 'phayant'].find(k => kit && kit.has && kit.has(k));
       if (p === 'items') { if (['nangkwak', 'takrut', 'phayant'].includes(tag)) play.item = tag; else if (bagged) play.item = bagged; }
@@ -4303,6 +4483,13 @@
         s -= d;
       }
       return pts[0].slice();
+    }
+    /* a point `d` metres on from arc length `s`, carried straight on past the path's end (v24.5, L5-12: a walk looking 3 m
+       ahead along its own path met its look at the path's end, and the view dived 45–84° in the last moments before the cut) */
+    function pathAhead(pts, s, d) {
+      const L = pathLen(pts); if (s + d <= L) return pathAt(pts, s + d);
+      const a = pts[pts.length - 2], b = pts[pts.length - 1], dx = b[0] - a[0], dz = b[1] - a[1], n = Math.hypot(dx, dz) || 1, over = s + d - L;
+      return [b[0] + dx / n * over, b[1] + dz / n * over];
     }
     /* a person walked along points by the film's clock: his place at t, his heading the path's (eased over half a metre
        either side, so a corner is walked); the gait plays while he moves (peopleTick reads P.filmWalk, his speed) */
@@ -4432,7 +4619,7 @@
         }
       } });
     /* ending C's road: a woman at the stall across from the lane, who turns round as the pickup passes */
-    cast.stall = mkPerson('e4joy', { parent: worldC, x: 44.5, z: 25.6, y: 0.8, ry: Math.PI, height: 1.58, sizeTake: 'Idle_9', walk: false,
+    cast.stall = mkPerson('e4joy', { parent: worldC, x: 44.5, z: 26.55, y: 0.8, ry: 0.12, height: 1.58, sizeTake: 'Idle_9', walk: false,
       posture: 'stand', stand: 'Idle_9', hidden: true, noShadow: true, noMip: true });
 
     /* a person looking at the lens in a film: the look is the FILM's, so it is on at once (a seek or a skip lands on it —
@@ -4739,6 +4926,9 @@
         cabCtl.show(false);
         const P = cast.noi, nx = RDOOR.x - 0.35, nz = RDOOR.z + 1.15;
         fPut(P, nx, nz, faceTo(nx, nz, DOOR_STEP[0], DOOR_STEP[2]));
+        /* (v24.5, L5-6: Pong out with him, where his walk will begin — a walk stops while its world is hidden, and his walk
+           to the steps came back in this shot, beside Pa Noi and facing the lens, then jumped 1.9 m at T.walk) */
+        fPut(cast.pong, RDOOR.x - 0.2, RDOOR.z + 2.6, faceTo(RDOOR.x - 0.2, RDOOR.z + 2.6, DOOR_STEP[0], DOOR_STEP[2]));
         gaze(P, t > T.out + 1.2);                                                        // she looks at him to give them (CP9: her eyes were on her hands)
         const k = smo(sgk(t, T.out + 0.2, T.out + 2.4));                               // the washed yard, then her (before she speaks)
         fLens(isNarrow() ? 58 : 50);
@@ -4760,11 +4950,14 @@
       if (t < T.cab) {                                                                     // across the yard to the gate, Pong ahead
         fLook('AFTER');
         handFree(); guava.visible = false;
-        const path = [[RDOOR.x, RDOOR.z + 1.0], [6.2, -1.6], [4.3, 2.0], [2.8, 5.6], [2.4, 8.6]];
-        const k = sgk(t, T.walk, T.cab), L = pathLen(path), a = pathAt(path, smo(k) * L), f = pathAt(path, Math.min(L, smo(k) * L + 3.0));
+        /* (v24.5: the walk goes out through the GATEWAY — ROUTE_OUT's line — where it went over the low wall beside it, 0.1 m
+           over the folded leaf's top rail, with Pong's legs through the leaf in front of the lens (L5-5); it begins clear of
+           Pa Noi, whose head it opened 0.45 m from (L5-11), and it looks on past its end (L5-12)) */
+        const path = [[RDOOR.x + 0.4, RDOOR.z + 1.2], [6.2, -1.6], [4.3, 2.0], [2.2, 6.0], [1.1, 7.6], [0.95, 8.9]];
+        const k = sgk(t, T.walk, T.cab), L = pathLen(path), a = pathAt(path, smo(k) * L), f = pathAhead(path, smo(k) * L, 3.0);
         const bob = Math.sin((t - T.walk) * 7.2) * 0.014;
         fLens(isNarrow() ? 62 : 56);
-        fWalk(cast.pong, [[RDOOR.x - 0.2, RDOOR.z + 2.6], [5.6, 0.0], [3.6, 3.6], [2.4, 7.4], [2.7, 10.4]], T.walk, T.cab + 0.4, t);
+        fWalk(cast.pong, [[RDOOR.x - 0.2, RDOOR.z + 2.6], [5.6, 0.0], [3.3, 3.6], [1.35, 7.2], [1.3, 8.8], [2.6, 10.1]], T.walk, T.cab + 0.4, t);
         if (cast.pong && t > T.walk + 0.5 && t < T.walk + 5.6) cast.pong.lookAt = null;
         /* while he says "See? I tell you..." the eyes are on Pong ahead (CP9, by photograph: on the path's own line he
            walked at a phone's left edge, a shoulder and nothing else, for the whole of his line) */
@@ -4848,6 +5041,8 @@
         cabCtl.show(false);
         const P = cast.noi, nx = RDOOR.x - 0.3, nz = RDOOR.z + 1.05;
         fPut(P, nx, nz, faceTo(nx, nz, DOOR_STEP[0], DOOR_STEP[2]));
+        /* (v24.5, L5-6: Pong has gone ahead to the pickup — his stopped walk to the steps came back here, beside Pa Noi) */
+        fPut(cast.pong, 3.35, 11.8, Math.PI);
         gaze(P, true);                                                                   // "Ajahn say, call anytime, ka." — to him
         fLens(isNarrow() ? 56 : 48);
         const give = T.card + 4.0;
@@ -4947,19 +5142,22 @@
       if (room.cup) room.cup.rotation.z = 0;
       if (t < T.road) {                                                                    // across the yard in the last of the rain; Pa Noi calls after him
         fLook('YARD2');
-        if (kit && kit.rain) kit.rain(0.25, 0.01);
+        if (kit && kit.rain) kit.rain(0.25);
         if (t < T.car) {
           cabCtl.show(false);
           const P = cast.noi; fPut(P, RDOOR.x - 0.2, RDOOR.z + 0.6, faceTo(RDOOR.x, RDOOR.z, 3, 6));
           gaze(P, true);                                                                 // she watches him go, and calls after him
           if (t > T.out + 3.2 && t < T.out + 3.3 && !P.one) personDo(P, 'Wave_One_Hand');
-          const path = [[RDOOR.x, RDOOR.z + 1.3], [6.0, -1.0], [4.0, 3.0], [2.6, 7.4], [2.4, 10.6]];
-          const k = sgk(t, T.out, T.car), L = pathLen(path), a = pathAt(path, k * L), f = pathAt(path, Math.min(L, k * L + 3.0));
+          /* (v24.5: out through the gateway, not the fence beside it (L5-5); past Pong, who stood ON its last leg — the lens went
+             through his head at his own height, 0.125 m from his spot (L5-2); ending short of the pickup, whose bumper it
+             crossed 0.13 s before the cut; looking on past its end (L5-12)) */
+          const path = [[RDOOR.x, RDOOR.z + 1.3], [6.0, -1.0], [3.6, 3.2], [1.4, 7.0], [1.2, 8.8], [1.5, 10.0]];
+          const k = sgk(t, T.out, T.car), L = pathLen(path), a = pathAt(path, k * L), f = pathAhead(path, k * L, 3.0);
           const back = t > T.out + 3.6 && t < T.out + 6.4;
           const bob = Math.sin((t - T.out) * 9.5) * 0.02;
           fLens(isNarrow() ? 64 : 58);
           camAt([a[0], groundAt(a[0], a[1]) + 1.62 + bob, a[1]], back ? headOf(P, [RDOOR.x, 1.6, RDOOR.z]) : [f[0], 1.45, f[1]]);
-          fPut(cast.pong, 2.6, 9.4, faceTo(2.6, 9.4, a[0], a[1]));
+          fPut(cast.pong, 2.75, 9.6, faceTo(2.75, 9.6, a[0], a[1]));               // (beside the pickup's nose, off the lens's line)
         } else {                                                                           // at the pickup: Pong catches up — "Just drive."
           cabCtl.show(true); cabCtl.drops(0.5);
           pickupAt(CMP.PICKUP.x, CMP.PICKUP.z + 0.4, Math.PI);
@@ -4971,15 +5169,18 @@
       }
       if (t < T.coda) {                                                                    // the road: every dark shape is her — and a woman at a stall is only a woman at a stall
         fLook('YARD2');
-        if (kit && kit.rain) kit.rain(0.18, 0.01);
+        if (kit && kit.rain) kit.rain(0.18);
         cabCtl.show(true); cabCtl.drops(0.55);
         const pos = driveAt([[2.0, 13.6], [1.8, 16.2], [0.8, 18.5], [3.2, 19.8], [70, 19.6]], T.road, T.coda + 2.0, t, { easeIn: true });
+        /* the woman at the stall (v24.5): BEHIND her table — she stood in it, its top across her waist (L5-4) — with her back
+           to the road, a dark shape, until she turns round to the passing car and is only a woman at a stall (she turned
+           the other way: from the road to her back); and the look is off her before the driver's head can come between
+           them — the stall is on his side, and from the passenger's seat past ~60° the frame was Pong's face (by photograph) */
         const S = cast.stall; if (S && S.ready) {
-          fPut(S, 44.5, 25.6, Math.PI + 3.0 * smo(sgk(pos.x, 34, 41)) * 0.33 * 3, { y: 0.8 });
-          S.group.rotation.y = lp(Math.PI, Math.PI * 2 - 0.2, smo(sgk(pos.x, 33, 40)));
+          fPut(S, 44.5, 26.55, lp(0.12, -2.3, smo(sgk(pos.x, 33.5, 38.5))), { y: 0.8 });
         }
-        const look = pos.x > 30 && pos.x < 50 ? smo(sgk(pos.x, 30, 36)) * (1 - smo(sgk(pos.x, 46, 50))) : 0;
-        const sh = headOf(S, [44.5, 2.3, 25.6]);
+        const look = pos.x > 30 && pos.x < 44 ? smo(sgk(pos.x, 30, 35)) * (1 - smo(sgk(pos.x, 39.5, 42.5))) : 0;
+        const sh = headOf(S, [44.5, 2.3, 26.55]);
         /* level on the road, a little long: the dash is a band at the foot of the frame, not half of it (CP9, by
            photograph: aimed down on a wide lens, a phone's frame was 45 % black dashboard) */
         fLens(lp(isNarrow() ? 54 : 52, isNarrow() ? 40 : 32, look));
@@ -4987,7 +5188,7 @@
         camAt(eyeW, lp3(ahead, sh, look));
         return;
       }
-      if (kit && kit.rain) kit.rain(0, 0.01);
+      if (kit && kit.rain) kit.rain(0);
       codaFrame(t - T.coda, 'C');
     }
 
@@ -5033,9 +5234,11 @@
           return;
         }
         gaze(cast.pong, false);
-        const path = [C0, [5.2, 0.6], [3.6, 4.4], [3.0, 7.8], [4.6, 11.4]];
-        const k = sgk(t, t1, T.shelter), L = pathLen(path), a = pathAt(path, smo(k) * L), f = pathAt(path, Math.min(L, smo(k) * L + 3.0));
-        fWalk(cast.pong, [[RDOOR.x - 0.5, RDOOR.z + 2.1], [5.6, 0.2], [3.9, 3.8], [3.1, 7.2], [4.4, 10.8]], t1 + 0.6, T.shelter + 0.6, t);
+        /* (v24.5: out through the gateway and round the pickup's nose toward the shelter, where it went over the low wall and
+           the folded leaf beside the gate and ended on the bank, off the lane (L5-5); looking on past its end (L5-12)) */
+        const path = [C0, [5.2, 0.6], [3.4, 4.2], [1.5, 7.2], [1.4, 8.8], [3.4, 10.0], [4.0, 11.0]];
+        const k = sgk(t, t1, T.shelter), L = pathLen(path), a = pathAt(path, smo(k) * L), f = pathAhead(path, smo(k) * L, 3.0);
+        fWalk(cast.pong, [[RDOOR.x - 0.5, RDOOR.z + 2.1], [5.6, 0.2], [3.6, 3.8], [1.6, 7.0], [1.5, 8.7], [3.6, 9.9], [4.3, 10.9]], t1 + 0.6, T.shelter + 0.6, t);
         const bob = Math.sin((t - t1) * 6.8) * 0.012;
         fLens(isNarrow() ? 62 : 56);
         camAt([a[0], groundAt(a[0], a[1]) + 1.62 + bob, a[1]], [f[0], 1.5, f[1]]);
@@ -5217,7 +5420,7 @@
     function reset() {
       films.end();                                       // a film's props, people and pickup back where play keeps them (CP9)
       dropTodo(); speakReset(); lineQ.length = 0; heard.clear();
-      booted = false; preplaced = ''; dayClock.t = 0; lastWall = 0;
+      booted = false; preplaced = ''; dayClock.t = 0; lastWall = 0; pausedAt = 0;
       worldRun++; wDark = false; decOpen = false;
       worldS.visible = false; worldT.visible = false;
       cabCtl.show(false); cabCtl.drops(0);
@@ -5233,7 +5436,7 @@
         kit.daylight(null, 0);
         kit.setPhase('arrive');
         if (kit.captions) kit.captions(null);
-        if (kit.rain) kit.rain(0, 0);
+        if (kit.rain) kit.rain(0);
         kit.waypoint(null);
       }
       domeTint('YARD0', 0);
@@ -5247,6 +5450,7 @@
       play.day = ''; play.item = ''; play.offerOn = false; play.offered = false;
       play.signs.clear(); play.signsOn = false; play.herSeen = false; play.kneeling = false; play.turning = null;
       play.breathNext = 0; play.gestNext = 0; play.chantNext = 0;
+      play.clothSeen = false; play.gestSeen = false; play.gustNext = 0; room.gustT = 0; play.doorWp = undefined; play.capsAt = 0;   // (v24.5: L1-5, L1-2, L5-13, L5-7)
       droneStop(0); chantStop(0);
       boardSet(9); slateWrite(null);
       matZone.visible = false; tray.visible = false;
@@ -6411,7 +6615,10 @@
     /* O4 · THE MESSAGE */
     sfx(O.buzz, 'w4buzz', 0.7); sfx(O.buzz + 0.9, 'w4buzz', 0.6);
     sfx(30.2, 'q1pro4', 1);                    // "A dealer I bought from said he knew a very strong master in Thailand."  (→ ~36.0)
-    sfx(O.o4b + 2.6, 'w4type', 0.45);          // his reply typed
+    /* his reply typed — as the bar fills (2.2–3.2 s: the phone's 'me' message is typed over its `typing` before it is
+       sent) and stopped as it sends (v24.5, L3-7: begun 0.4 s into the typing, its 2.2 s ran on 1.6 s past "Who is he?") */
+    sfx(O.o4b + 2.2, 'w4type', 0.45);
+    sfxFade(O.o4b + 3.05, O.o4b + 3.25, 'w4type');
     const Wd = DATA.words;                     // (the chat's words are the sheet's)
     phone(O.o4b, O.o5, { name: Wd.phonePong, sub: Wd.phonePongSub, ava: { text: String(Wd.phonePong || 'P').charAt(0), color: '#2f7a5a' }, typingWord: Wd.phoneTyping,
       msgs: [{ at: 1.0, who: 'them', typing: 0.8, text: Wd.chat1 },
@@ -6463,7 +6670,7 @@
       if (it === 'nangkwak') sfx(T.bless + 3.5, 'pg1Ank', 1);         // "...Put the Nang Kwak facing your door..."  (→ ~25.2)
       else if (it === 'phayant') sfx(T.bless + 3.5, 'pg1Apy', 1);     // "...The pha yant — facing your door, under the Buddha."
       else sfx(T.bless + 3.5, 'pg1Atk', 1);                           // "...Wear the takrut every day, on its cord."
-      sfx(T.bless + 12.3, 'fm1Abye', 1);                     // "Go well, come back well."  (→ ~27.3)
+      sfx(T.bless + 12.55, 'fm1Abye', 1);                    // "Go well, come back well."  (→ ~27.9) (v24.5, L3 P1: 0.15 s after the pha yant's line — a frame late on a slow phone and they touched)
       sfx(T.bless + 9.5, 'w4frogs', 0.35);                   // the frogs starting outside now the rain has stopped (they hold the
                                                              // breath between Pong's last word and the master's, whichever piece)
       sfx(T.book + 0.6, 'w4page', 0.5);                      // the book opened on his knee
@@ -6508,13 +6715,13 @@
       sfx(10.0, 'w4drips', 0.45);                            // the eaves, on into the master's long look (CP13: 1.8 s of silence)
       sfx(0.6, 'q1B1', 1);                                   // "Pong... ask him who's standing behind him."  (→ ~4.4)
       sfx(T.ask + 0.1, 'pg1B1', 1);                          // "Behind? ...Okay. I ask."  (→ ~7.9)
-      sfx(T.ask + 4.0, 'pg1B2', 1);                          // (Pong asks the master, in Thai)  (→ ~13.2)
+      sfx(T.ask + 4.25, 'pg1B2', 1);                         // (Pong asks the master, in Thai)  (→ ~13.5) (v24.5, L3 P1: 0.17 s after his own line)
       sfx(T.look + 0.6, 'w4frogs', 0.35);
       sfx(T.look + 1.2, 'w4endB', 0.6);                      // the curious motif, low
       sfx(T.look + 5.2, 'fm1B1', 1);                         // "That one has been in this house longer than me..."  (→ ~25.4)
       sfx(T.pong + 0.2, 'pg1B3', 1);                         // "He say... that one stay in this house longer than him..."  (→ ~34.1)
       sfx(T.who + 0.2, 'fm1B2', 1);                          // "Who taught him?"  (→ ~36.0)
-      sfx(T.who + 2.0, 'pg1B4', 1);                          // "He ask... who teach you?"  (→ ~39.5)
+      sfx(T.who + 2.3, 'pg1B4', 1);                          // "He ask... who teach you?"  (→ ~38.4) (v24.5, L3 P1: 0.11 s after the master's)
       sfx(T.who + 5.9, 'q1B2', 1);                           // "...Nobody."  (→ ~41.6)
       sfx(T.come + 0.2, 'fm1B3', 1);                         // "If he wants to learn, come back. I can teach him."  (→ ~45.7)
       sfx(T.come + 4.0, 'pg1B5', 1);                         // "He say you should come back..."  (→ ~52.0)
@@ -6569,7 +6776,7 @@
       sfx(T.out + 3.4, 'pn1C1', 1);                          // "Wait, wait, an umbrella! ... Rain coming again, ka!"  (→ ~28.8)
       sfx(T.out + 0.6, 'w4steps', 0.45);
       sfx(T.car - 0.2, 'w4door', 0.6);
-      sfx(T.car + 0.4, 'pg1C2', 1);                          // "Brother, what happen? He is a good man!"  (→ ~36.5)
+      sfx(T.car + 0.65, 'pg1C2', 1);                         // "Brother, what happen? He is a good man!"  (→ ~36.3) (v24.5, L3 P1: 0.17 s after Pa Noi's)
       sfx(T.car + 4.6, 'q1C2', 1);                           // "Just drive."  (→ ~38.2)
       sfx(T.road, 'w4diesel', 0.45);
       sfx(T.road + 0.4, 'w4drops', 0.4);
@@ -6597,10 +6804,12 @@
   function scEnough(c, s, api) {
     const { sfx, sfxFade, fade } = api;
     endingScene(c, api, 'D', (T) => {
-      sfx(0.0, 'fm1chant2', 0.45);                           // the chant he began, let finish
+      /* the chant he began, let FINISH (v24.5, L3-1: the whole take was cued from its top and faded in the middle of its
+         second phrase, under the bell that says it has ended — fm1chant2D is the take's own end, the third formula and
+         "mahā-lābhā bhavantu me", 6.59 s, ringing out before the bell; masters/v24.5/make-e4c1.sh) */
+      sfx(0.0, 'fm1chant2D', 0.45);
       sfx(0.3, 'w4drips', 0.45); sfx(10.2, 'w4drips', 0.45);  // the eaves after the storm (CP13: D's room had none — two silences)
       sfx(19.6, 'w4frogs', 0.3);                             // the frogs starting outside as he wais
-      sfxFade(T.ask - 1.4, T.ask - 0.2, 'fm1chant2');
       sfx(T.ask - 0.2, 'w4bell', 0.4);                       // a small bell: the chant's end
       sfx(T.ask + 0.4, 'q1D1', 1);                           // "Pong... please tell him thank you. This is enough for me today."  (→ ~13.4)
       sfx(T.ask + 6.8, 'pg1D1', 1);                          // (Pong, to the master, in Thai)  (→ ~18.7)

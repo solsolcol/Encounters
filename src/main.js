@@ -13204,7 +13204,7 @@ const STING_SAMPLE = {
   fm1read: ['fm1read', 1], pg1read: ['pg1read', 1], q1short: ['q1short', 1], pn1tray: ['pn1tray', 1],
   pg1items: ['pg1items', 1], fm1items: ['fm1items', 1], pg1nk: ['pg1nk', 1], pg1tk: ['pg1tk', 1],
   pg1py: ['pg1py', 1], pg1offer: ['pg1offer', 1], fm1anu: ['fm1anu', 1], fm1eyes: ['fm1eyes', 1],
-  pg1eyes: ['pg1eyes', 1], fm1chant: ['fm1chant', 1], fm1chant2: ['fm1chant2', 1], q1smoke: ['q1smoke', 1],
+  pg1eyes: ['pg1eyes', 1], fm1chant: ['fm1chant', 1], fm1chant2: ['fm1chant2', 1], fm1chant2D: ['fm1chant2D', 1], q1smoke: ['q1smoke', 1],
   q1cloth: ['q1cloth', 1], q1shadow: ['q1shadow', 1], q1her: ['q1her', 1], pg1power: ['pg1power', 1],
   fm1blessA: ['fm1blessA', 1], pg1Ank: ['pg1Ank', 1], pg1Atk: ['pg1Atk', 1], pg1Apy: ['pg1Apy', 1],
   fm1Abye: ['fm1Abye', 1], q1A1: ['q1A1', 1], pn1guava: ['pn1guava', 1], q1A2: ['q1A2', 1], pg1A1: ['pg1A1', 1],
