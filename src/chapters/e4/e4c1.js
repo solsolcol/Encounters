@@ -5258,7 +5258,10 @@
         fWalk(cast.pong, [[RDOOR.x - 0.5, RDOOR.z + 2.1], [5.6, 0.2], [3.6, 3.8], [1.6, 7.0], [1.5, 8.7], [3.6, 9.9], [4.3, 10.9]], t1 + 0.6, T.shelter + 0.6, t);
         const bob = Math.sin((t - t1) * 6.8) * 0.012;
         fLens(isNarrow() ? 62 : 56);
-        camAt([a[0], groundAt(a[0], a[1]) + 1.62 + bob, a[1]], [f[0], 1.5, f[1]]);
+        /* through the gate his eyes go to the shelter (v24.5, by photograph: 3 m ahead along the path, the look met the sugar
+           palm beside it as the path turned, and its trunk filled the middle of a phone's frame for a second) */
+        const ks = smo(sgk(t, t1 + 3.2, t1 + 4.2)), SH = CMP.SHELTER;
+        camAt([a[0], groundAt(a[0], a[1]) + 1.62 + bob, a[1]], [lp(f[0], SH.x, ks), lp(1.5, 1.25, ks), lp(f[1], SH.z, ks)]);
         return;
       }
       if (t < T.dusk) {                                                                    // the roadside shelter: the compound's lights across the wet paddy

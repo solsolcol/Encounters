@@ -6782,3 +6782,39 @@ cut (sharing its vertices and maps) when it is small.
   works: move every point toward the eye by one factor (`P' = E + (P − E)·f`; position and scale of the group), which
   is the same picture and lies in front of the glass; then draw it as ONE layer — a pass that writes only depth
   (transparent, `colorWrite: false`, renderOrder before), then the colour where the depth is its own (`LessEqual`).
+- **A loop is built for the window the engine plays, not for its own ends** (v24.5). `loopVol` starts every bed 60 ms
+  in and loops [0.06, d − 0.06] — the inset hides the silence an mp3 decode pads onto both ends — so a loop made to
+  join at 0 and d (loopfast's crossfade, an exactly periodic synth) joined somewhere else: 60 ms of its tail and 60 ms
+  of its head were never heard, and the jump between them was a click every 34 s (episode 3 chapter 5's decision bed)
+  or a dropped beat every loop (its heartbeat under every yield). `masters/v24.5/padloop.py` lays 60 ms of the loop's own
+  wrap on both ends, so the window the engine plays IS the loop as built, sample for sample (the Opus packs decode
+  sample-exact). Measured on every rebuilt file, not assumed.
+- **A loop is levelled ROUND its joint, or its joint is a step** (v24.5). `level_rms.py`'s compressor and limiter start
+  cold and end warm, so a levelled loop's last sample had another gain than its first: `k5under`'s joint was +44 dB of
+  2 kHz energy over its median — a click every pass — once the engine's 60 ms no longer cut it away.
+  `masters/v24.5/circlevel.py` levels the loop twice over, end to end, and keeps the second copy (the leveller's state
+  carried round the joint; a running minimum over a doubling window, not 240 shifted copies, or it is killed for memory);
+  `--selftest` checks it against `level_rms.py` on a straight file (1.5e-05).
+- **A probe asks for the bookmark the chapter WRITES** (v24.5). Episode 4 chapter 1 saves the storm as `storm:~fri` (the
+  day rides the tag); two probes asked for `storm~fri`, which does not parse as a phase, so the chapter fell back to its
+  start and the probe waited for a storm that had never been asked for — reported as a soft-lock in the game. Before
+  reading a probe's "stuck", read back the phase the page is in (`kit.getPhase()`): it said `arrive` the whole time.
+- **A probe's finger stamps its touches when the finger made them, not when the probe sent them** (v24.5). Stamped at
+  send time on a loaded box, a 100 ms flick took seconds and every wave of episode 3 chapter 5's flames read as too slow
+  — the probe's finger was slow, not the game. `e3c5finger`'s strokes plan their stamps (base + i · gap) and send no
+  sooner than each; the engine reads the event's own time (`evStamp`, v24.2), as it does a real phone's.
+- **A height measured in the world is not a height in the group** (v24.5). `mkPerson` read a stand take's lowest foot
+  bone with `getWorldPosition` — the group already at its floor, `inner` already scaled — and then set the offset to
+  `−sl × s`: the group's own height and the scale went in twice, and every standing and walking person in episode 4
+  chapter 1 stood sunk (Khun Joy and Uncle Lim 0.4 m into the sala's floor, the woman at the stall 0.84 m into the road's
+  pad). Measured in the group's frame (`worldToLocal`) and then set by the skin's own sole: every sole within 2 mm.
+- **A one-shot window narrower than a frame is stepped over on a slow phone** (v24.5). Three gestures in episode 4
+  chapter 1's endings fired on `t > X && t < X + 0.1` of a film's clock, and the clock steps up to half a second a frame:
+  at two frames a second the window is met one time in five, and Pa Noi's guavas, her card and her wave mostly never
+  played. A moment is a LATCH — the first frame at or past it, once a run (`onceAt`) — never a window.
+- **What a minigame asks him to find is photographed on a phone with the hands as play draws them** (v24.5). The lenses
+  checked WHAT CHANGED?'s cup against the screen's edges and the panel, and it was inside the frame — under the walking
+  hand, which on a phone lies over the middle third of the low table. A desktop sees it whole. He holds a wai through the
+  chant and the storm now (the posture the chapter and episode 3 already give a kneeling man), and the table is clear.
+- **`pkill -f <pattern>` matches the shell that runs it** (v24.5). The pattern is in the shell's own command line, so the
+  shell kills itself (exit 144) and the probes it meant to stop run on. Find the PIDs with `pgrep` and `kill` them.
