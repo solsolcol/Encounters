@@ -6899,7 +6899,9 @@ What the baseline contains, by release:
     layer (a depth pass, then the colour where the depth is its own — drawn through, the mouth, the eyes and the shirt
     over the body showed through each other), 45 % of the way to the frame's left edge on every screen.
   - No word moved; sheet v128 stands (v44 the link). Deploy `6ae1d0587f111c3b05db03eb`, byte-verified (269 served
-    files); harnesses chapter, cine, leak and walk (e4c1) green on it.
+    files); harnesses chapter, cine, leak and walk (e4c1) green on it. Milestone backup bundle made for the
+    chapter's release (v24.0) at `9115564`: 1347 MB, 65 parts of 20 MB that reassemble byte-identical, a complete
+    history (the session's clone had been shallow — `git fetch --unshallow` first); it replaces v22.3's.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
