@@ -6643,3 +6643,37 @@ cut (sharing its vertices and maps) when it is small.
   storm" and showed the sunset band instead: on a three.js sphere, u 0 is −x, 0.25 +z, 0.5 +x and 0.75 −z, and the storm
   painted at the panorama's middle stands toward +x, 27° up at its base. A shot that must hold something painted in the
   sky is aimed by that table and photographed.
+- **`q.slerpQuaternions(qa, qb, t)` copies qa into q FIRST** (v24.0 CP11). The look blended `_dq.slerpQuaternions(_iq,
+  _dq, w)`: the call copies `_iq` (the identity) into `_dq`, then blends toward `_dq` — which is now the identity too —
+  so the turn was always nothing. From CP7 to CP11 no head in episode 4 chapter 1 ever turned to look at anything;
+  only the takes' own poses and the chest's share moved, and every number about the look (its direction, its weight,
+  its target) read right. Found by measuring the face against the lens (`faceToLens` unchanged with the look on and
+  off). The blend goes into its own scratch (`_qlk.copy(_iq).slerp(_dq, w)`), and a probe of a look measures the FACE,
+  never the look's inputs.
+- **A seat's floor rule can lift a man off his seat** (v24.0 CP11). mkPerson lets a seated person's soles down onto the
+  floor and, if they would go through it, lifts the whole body. In the pickup's cab the floor is 0.225 m under the
+  cushion and a chair take's shins are twice that, so Pong rose 0.19 m off his seat and his crown went 15 cm into the
+  roof (measured in the cabin's own frame: crown 1.91 against the liner's 1.76). In a car the legs go forward under the
+  dash, where nothing sees them: the cab's people have no floor rule, and the crown is measured against the roof.
+- **A take's file length is not its words' length** (v24.0 CP11). Nine of episode 4 chapter 1's takes ended in 0.6–2.3 s
+  of silence (eleven_v3 usually trims a take to its last sample, v5.30, and sometimes does not). Booked by the file,
+  the overlap scan read two lines over each other that never were, and a line queued behind one waited on air.
+  Measured per take (the last 20 ms window within 30 dB of the peak), and every tail over 0.5 s cut at the words' end +
+  0.3 s in the chain (`prep.py --keep`), before the lengths go into the registry and `SECS`.
+- **A tap is timed by its events' own timestamps** (v24.0 CP8, engine). `onTouchEnd` measured a tap's length with
+  `performance.now()` at each handler; on a slow phone a quick tap's touchend can be handled more than 380 ms after its
+  touchstart was, and the tap on the thing was dropped. `e.timeStamp` is when the finger moved, whenever the handler
+  runs.
+- **The sound-effects model will not stop an engine** (v24.0 CP11). Four takes over two prompts ("switched off,
+  shuddering and dying"; "idling for a moment and then switched off ... dies away to silence") came back as a flat idle
+  at one level for their whole length. The stop is made from the idle the way a tape machine stops: the idle at its own
+  speed, then a varispeed down to a third of it as the level falls under a slowing shudder, a few ticks of cooling
+  metal, silence (`masters/v24.0/sfx/rundown.py`).
+- **A thing held in the first-person hand is measured against the LENS, not posed in the arm's frame** (v24.0 CP12).
+  The master's card was held at a fixed turn in the right arm's frame (`rx −1.25`), which read right when it was
+  written and then never once appeared in a photograph of either card shot. Measured through the hands' camera, its
+  face was 87° off the line of sight — EDGE-ON in every grip — and on a phone it also sat at the frame's foot, under
+  the letterbox and behind the fist. A thing he LOOKS AT in his hand now faces the hands' camera (`lookAt` the vmCam,
+  then tipped back and turned over by the film's own angles), and is placed at a point of THIS screen (−1…1 across and
+  up, at a depth in metres) just above the hand that holds it, so a phone and a desktop both see it whole. The probe
+  reads each held thing's NDC, its distance and the dot of its face with the line of sight (`CARDINFO`).

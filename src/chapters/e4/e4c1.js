@@ -4014,7 +4014,9 @@
           const rk = room.rainK || 0;
           want.room = 0.22 * Math.max(room.fanSpeed || 0, room.tubeK || 0);
           want.rainl = 0.5 * Math.min(1, rk / 0.3) * (1 - 0.8 * bedStep(rk, 0.6, 1));
-          want.rainh = 0.55 * bedStep(rk, 0.55, 1);
+          /* (CP12, priced against the voices: at 0.55 the downpour, the room and the drone summed to −20 dBFS in the band
+             a voice lives in, and Pong's whisper had 5 dB over it through the duck; at 0.40 it has 8, the cast's speech 12) */
+          want.rainh = 0.40 * bedStep(rk, 0.55, 1);
           if (phase === 'decide' && rk < 0.02) { if (hushAt < 0) hushAt = dayClock.t; } else hushAt = -1;
           want.after = hushAt >= 0 && dayClock.t - hushAt > 2.5 ? 0.3 : 0;
         }
@@ -4256,7 +4258,7 @@
       else if (P.lookAt === camera) { P.lookAt = P.lookHome || null; P.neck = null; }
     }
     /* a thing held in his right hand, in the hands' own pass (kit.hold's place: the palm, noteProp's frame) */
-    const PALM = [0.012, -0.052, -0.148];
+    const PALM = [0.012, -0.052, -0.148], _hhv = new THREE.Vector3();
     function handHold(obj, o = {}) {
       const A = FL.api; if (!A || !A.armR) return;
       if (FL.hand && FL.hand !== obj) { A.armR.remove(FL.hand); FL.hand.visible = false; }
@@ -4264,6 +4266,31 @@
       if (obj.parent !== A.armR) { if (obj.parent) obj.parent.remove(obj); A.armR.add(obj); }
       obj.position.set(PALM[0] + (o.dx || 0), PALM[1] + (o.dy || 0), PALM[2] + (o.dz || 0));
       obj.rotation.set(o.rx || 0, o.ry || 0, o.rz || 0);
+      /* a thing he LOOKS AT in his hand faces the lens (the card): its front turned onto the hands' camera, then tipped
+         back by `tilt` and turned over by `flip` about its own upright (CP9, measured: held at a fixed turn in the arm's
+         frame the card stood EDGE-ON to the lens — its face 87° off the line of sight — in every grip, and no photograph
+         of either card shot ever showed it) */
+      /* `lens`: placed from the PALM in the lens's own frame (metres: +x right, +y up, −z ahead), so a thing held up out
+         of a closed hand stands where the screen needs it whichever grip and depth the hand is at */
+      if (o.lens && A.vmCam) {
+        A.armR.updateWorldMatrix(true, false); A.vmCam.updateMatrixWorld();
+        const pw = A.vmCam.worldToLocal(A.armR.localToWorld(_hhv.set(PALM[0], PALM[1], PALM[2])));
+        pw.x += o.lens[0]; pw.y += o.lens[1]; pw.z += o.lens[2];
+        obj.position.copy(A.armR.worldToLocal(A.vmCam.localToWorld(pw)));
+      }
+      /* `screen`: [x, y, depth] — at that point of THIS screen (−1…1 across and up) that many metres from the lens: a
+         thing he holds up to read stands where every screen shape sees it, just above the hand that holds it */
+      if (o.screen && A.vmCam) {
+        A.armR.updateWorldMatrix(true, false); A.vmCam.updateMatrixWorld();
+        const [nx, ny, d] = o.screen, th = Math.tan(A.vmCam.fov * Math.PI / 360);
+        _hhv.set(nx * d * th * A.vmCam.aspect, ny * d * th, -d);
+        obj.position.copy(A.armR.worldToLocal(A.vmCam.localToWorld(_hhv)));
+      }
+      if (o.face && A.vmCam) {
+        A.vmCam.updateMatrixWorld(); obj.lookAt(_hhv.setFromMatrixPosition(A.vmCam.matrixWorld));
+        if (o.tilt) obj.rotateX(o.tilt);
+        if (o.flip) obj.rotateY(o.flip);
+      }
       obj.visible = true; FL.hand = obj;
       if (A.handsRoot) A.handsRoot.visible = true;
       A.armR.visible = true;
@@ -4273,11 +4300,15 @@
        hand beside a card (CP9, by photograph); `gripOff` writes the walking rest back once */
     function gripOn(p) { const A = FL.api; if (A && A.handPose) { A.handPose('place', 1, { p: p || 0 }); FL.grip = true; } }
     /* the card in the grip: on a phone the place-grip's forearm was a wall of skin across the frame with the card behind
-       it (CP9, by photograph — a third of the width sees a hand at 35 cm as wider than the frame), so on a narrow screen
-       the grip goes lower and deeper by the pose's own variable and the card rises out of the fingers into the frame's
-       lower third. Answers the card's lift. */
-    const CARD_N = { p: 1.6, dy: 0.045 };
-    function cardGrip() { const n = isNarrow(); gripOn(n ? CARD_N.p : 0); return n ? CARD_N.dy : 0; }
+       it (CP9, by photograph — a third of the width sees a hand at 35 cm as wider than the frame), so the grip goes lower
+       and deeper by the pose's own variable, and the card is held up out of the fist at a point of the screen (handHold's
+       `screen`). Answers that point. */
+    /* (CP12, photographed on both screens: the grip at 1.6 is a closed fist with the thumb up on both, and the card
+       stands just above it — on a phone low enough that Pa Noi's eyes stay over it at the door, on a desktop beside
+       her face, both read whole in the cab and turned over to the flower on its back) */
+    const CARD_N = { p: 1.6, phone: [0.0, -0.48, 0.30], desk: [0.2, -0.38, 0.36], tilt: -0.35 };
+    function cardGrip() { gripOn(CARD_N.p); return isNarrow() ? CARD_N.phone : CARD_N.desk; }
+    const cardTilt = () => CARD_N.tilt;
     function gripOff() { const A = FL.api; if (FL.grip && A && A.handPose) A.handPose(null, 0); FL.grip = false; }
     function handFree() {
       const A = FL.api;
@@ -4633,7 +4664,7 @@
           if (t > T.card + 2.4 && t < T.card + 2.5 && !P.one) personDo(P, 'Checkout_Gesture');
         } else {
           const lift = cardGrip();
-          handHold(card, { dx: 0.0, dy: 0.008 + lift, dz: -0.035, rx: -1.25, ry: 0.15 });
+          handHold(card, { screen: lift, face: true, tilt: cardTilt() });
           camAt(DOOR_STEP, [DOOR_STEP[0] - 0.6, 1.2, DOOR_STEP[2] + 3.2]);
         }
         return;
@@ -4644,7 +4675,7 @@
         driveAt([[2.0, 13.4], [1.8, 16.0], [0.6, 18.4], [3.0, 19.8], [30, 19.6]], T.cab, T.wide + 3.0, t, { easeIn: true });
         const flip = smo(sgk(t, T.cab + 6.0, T.cab + 7.6));
         const lift = cardGrip();
-        handHold(card, { dx: 0.0, dy: 0.008 + lift, dz: -0.035, rx: -1.25 - 0.25 * Math.sin(flip * Math.PI), ry: 0.15 + flip * Math.PI });
+        handHold(card, { screen: lift, face: true, tilt: cardTilt() - 0.25 * Math.sin(flip * Math.PI), flip: flip * Math.PI });
         const onPong = t < T.cab + 5.2;
         gaze(cast.pongCab, onPong);
         fLens(isNarrow() ? 66 : 60);

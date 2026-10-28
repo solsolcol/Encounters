@@ -6711,6 +6711,49 @@ What the baseline contains, by release:
   Krukai's own return in the casebook (S2·01) will be the same model under the same key. One cell in
   `src/strings.js`; docs/V24.0-EPISODE4-PLAN.md is the sixth draft. Sheet v125 (one cell; v44 stays the link). Deploy
   `6ae0dd073892cf6653dfaa44`, byte-verified (259 served files); harnesses chapter, text and menu green.
+- **v23.6** EPISODE 4 · CHAPTER 1 · THE MASTER I DID NOT KNOW, AS A PREVIEW WITH ITS SOUND — milestone M1 of
+  docs/V24.0-E4C1-PLAN.md and most of M2 (CP0–CP11; its §15 records every checkpoint), after Chad's *"Go ahead and
+  build out the entire chapter until full completion. Do not skip anything. Do everything, generate the music and sound
+  effects too ... I want to see a cinematic creative masterpiece."* The whole chapter is built, voiced, scored and
+  playable at `?ch=e4c1` (a PREVIEW, S42: out of the run, "In the works" in the selector). Every world, prop, sheet,
+  sky and sound in it is new (chaptertest's FRESH check); the cast are placeholders until Chad's models
+  (docs/E4-MODELS.md).
+  - THE OPENING FILM (72 s): the shutter of his own new shop going up at dawn, the empty cases, the stock book's slow
+    week, Pong's message on his phone, the rice country under a violet storm wall, the pickup, the spirit house, the
+    turn onto the red lane and the gate.
+  - PLAY: the samnak's yard and the queue that is time (Pa Noi numbers him fourteen; after each conversation the yard
+    dips to black, the board moves a number on and the sky a notch toward the storm; whoever he never asked is called
+    and gone). ASK — the woman waiting, the uncle, the old farmer through Pong, then Pong — with THE LEDGER (S43: one
+    fact or one meaning, never labelled, in the back of his stock book). The receiving room: kneel, the wai, the day of
+    his birth, the reading in Thai and Pong's one sentence, three pieces on a tray, the offering. The work: the chant
+    captioned, and FOUR SIGNS found only by looking (the smoke against the fan, the cloth that breathes, the shadow
+    that lags, the woman in the doorway who is gone when he turns). THE STORM (S44, WHAT CHANGED?: the lightning shows
+    the room; touch only what changed), the hush, and the trial's 5.1 verbatim.
+  - FOUR ENDINGS as whole stories: A STILL (the pao, the wai, the book's line "I don't know what I saw", Pa Noi's
+    guavas, "Strong, right?" / "...Maybe."); B THE QUESTION ("ask him who's standing behind him", the master's long
+    look, "who teach you?", his card, Pong thrilled); C CERTAIN (his heart, the cup over, out without a wai into the
+    rain, every dark shape on the road her and the woman at the stall only a woman); D ENOUGH (he lets the chant
+    finish, wais, says it is enough, the shelter across the wet paddy, "Some things I don't need to understand
+    today"). The CODA every ending shares: the taxi home in the rain, the unit number he cannot find, the shutter again
+    in grey light, the keys, and the ending's own last image.
+  - THE SOUND (CP11): 122 lines in eight voices (Brian, and seven new speakers cast by audition — the first master
+    Patinya, Pong Zie, Pa Noi Kanya, Khun Joy HammyTH, Ta Sombat Songkran, Uncle Lim Brandon, the taxi uncle Kopi O),
+    51 effects, beds and music, every take picked by measurement (masters/v24.0/make.sh). An engine's stop made by
+    varispeed from its idle (the model would not stop one); a heartbeat given harmonics a phone can play. The beds mixed
+    in play by place, hour and storm (`mixBeds`). Seven music cues picked by measurement until Chad's ear: one reel per
+    cue, its four takes loudness-matched, in masters/v24.0/previews/.
+  - ENGINE (all opt-in; episodes 1–3 untouched by construction, the controls run): S43–S48 (`kit.ledger`, the
+    `change` event and its picture, `kit.rain`/`kit.lightning`, a chapter's own tree kits through `plantTrees`,
+    `kit.pick`, the film phone `api.phone`); a hotspot may wear NO MARK (`mark: false`); the interact badge stands
+    ABOVE a caption while one is up (`capsOn`). And one reaching every chapter: a tap is timed by the touch events' own
+    timestamps, so a quick tap on a slow phone is no longer dropped.
+  - Found and fixed on the way (LEARNINGS): no head had ever turned to look at anything (`slerpQuaternions` copies its
+    first quaternion into the target before blending); Pong at the wheel rose 0.19 m off his seat with his crown in the
+    cab's roof (his soles held on a floor a chair take cannot reach); the master's card stood EDGE-ON to the lens in
+    both of its shots (it faces the lens now); nine takes ended in up to 2.3 s of silence (cut at the words' end); and
+    the endings re-timed on the measured takes — no two voices over each other anywhere.
+  Sheet v126 exported (252 rows added, none changed; v44 stays the link). Deploy `6ae15e88a60e723a73b6ed2c`, byte-verified (269 served files);
+  chaptertest green, the harnesses on its snapshot after it (§15 has their results).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -7247,7 +7290,9 @@ assigned where a texture belonged; and the clearance is ISSUED at the start
 of play rather than inferred from an empty bag, which had left both counters
 dead from the chapter's first frame (docs/LEARNINGS.md).
 
-Nothing is in flight. Chad's seven notes on episode 3 chapter 4 (queued 26 Oct while chapter 5 was built) shipped at
+**IN FLIGHT: episode 4 chapter 1, The Master I Did Not Know** — built, voiced, scored and deployed as a PREVIEW at
+v23.6 (`?ch=e4c1`, out of the run); its release, v24.0, is CP12–CP14 of **docs/V24.0-E4C1-PLAN.md** (§15 the log,
+checkpoint by checkpoint; masters/v24.0/cp13-findings.md the review). Chad's seven notes on episode 3 chapter 4 (queued 26 Oct while chapter 5 was built) shipped at
 v23.1 — **docs/V23.1-E3C4-QUEUED.md** has them verbatim, the plan and the record, with what the phone photographs
 found after the first deploy. **Episode 3 chapter 5, The Children On My
 Altar, shipped at v23.0 — docs/V23.0-E3C5-PLAN.md** is its build memory (§15 the log, checkpoint by checkpoint;
