@@ -1580,8 +1580,10 @@
     const worldM = new THREE.Group(); worldM.position.z = MZ; worldM.visible = false; world.add(worldM);
     const mLive = { on: false, shot: '', dusk: 0, duskTo: 0, flames: [], smoke: [], motes: [], petals: [], drops: [], ripples: [],
                     stream: null, streamOut: null, water: null, wet: null, mote: null, trail: [], bell: null, envelope: null, envIn: null,
-                    vessel: null, bowl: null, bowl2: null, shafts: [], t: 0 };
+                    vessel: null, bowl: null, bowl2: null, shafts: [], t: 0, fall: null };
     const merit = { monk: { model: null, bones: [], head: null, neck: null, rest: null, ready: false } };
+    const M_FALL_N = 150;                                         // (v24.6) the climb's falling leaves
+    const _mFallZero = new THREE.Matrix4().makeScale(0, 0, 0), _mFallD = new THREE.Object3D();
     function buildWorldM() {
       const G = worldM, F = MHALL.F;
       const tSky = tex(makeMSky(THREE, cnv)), tSlab = tex(makeMSlabs(THREE, cnv)), tPlaster = tex(makeMPlaster(THREE, cnv));
@@ -1887,6 +1889,19 @@
         // light that rises from the water
         for (let i = 0; i < 18; i++) { const pm = new THREE.SpriteMaterial({ map: tPetal, color: [0xffffff, 0xe8e0a0, 0xc8d890][i % 3], transparent: true, opacity: 0, depthWrite: false }); mats.push(pm);
           const s = new THREE.Sprite(pm); s.visible = false; G.add(s); mLive.petals.push({ s, i }); }
+        /* (v24.6, Chad: "when the camera follows the glow flying up into the trees, i want more leaves drifting down the
+           scene, add more leaves. On phone, user cant see any leaves drifting down" — the breeze's leaves start two to
+           five metres up round the roots, and the lens, low by the trunk, turns up after the light: none of them is ever
+           in the climb's frame, and a phone's frame is a narrow slice of it.) THE LEAVES THE LIGHT PASSES THROUGH: a
+           stream let go from just above the top of whatever the lens sees at each moment of the climb, inside that frame's
+           own width on this screen, falling down through the picture, turning as a leaf turns; every leaf a function of
+           the film's clock (`mFallAt`), so a seek or a skip lands on the same frame. One instanced mesh, cut out, unlit */
+        { const fm = new THREE.MeshBasicMaterial({ map: tPetal, alphaTest: 0.45, side: THREE.DoubleSide }); mats.push(fm);
+          const fall = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1), fm, M_FALL_N);
+          fall.frustumCulled = false; fall.visible = false;
+          const fc = new THREE.Color(), pal = [0xffffff, 0xf0d898, 0xd8b070, 0xc8d090, 0xe8c070, 0xb8c880];
+          for (let i = 0; i < M_FALL_N; i++) { fall.setMatrixAt(i, _mFallZero); fall.setColorAt(i, fc.set(pal[i % pal.length]).multiplyScalar(0.82 + 0.18 * hash(i, 63))); }
+          G.add(fall); mLive.fall = fall; owned.push({ dispose: () => fall.dispose() }); }
         /* (v23.1, Chad: "have the glowing orb effects be slightly more prominent as it flies up into the tree and sky" —
            by photograph the bodhi's canopy hid the light from two seconds into its climb, at v22.3 as after it; it is
            drawn through the leaves now, a glow seen among them, and its trail with it) */
@@ -6929,17 +6944,9 @@
            at the top edge, tipped, the water onto the roots in the middle of the frame, the trunk's foot beyond — then
            the lens rises and turns up with the light, up the trunk, through the canopy, into the dusk. (The first cut
            stood two metres back with the whole bowl in the air and no one holding it, the trunk a dark mass behind) */
-        const spot = { x: MTREE.x - 0.62, y: MTREE.h, z: MTREE.z + 0.42 };
-        const rk = ss(cl01((t - (MF.mote + 0.2)) / MF_CLIMB)), push = ss(cl01((t - MF.s6) / (MF.mote - MF.s6)));
-        const mote = moteAt(t, spot);
-        /* (from the trunk's side: looking down at the spot with the trunk off to the right of the frame — on a phone's
-           narrow frame out of it — where the first insert stood across the spot from the trunk and filled the top of
-           the picture with a dark mass) */
-        const cam = lerp3(lerp3([spot.x - 0.17, spot.y + 0.64, spot.z + 0.76], [spot.x - 0.14, spot.y + 0.6, spot.z + 0.7], push),
-                          [spot.x - 1.5, spot.y + 1.15, spot.z + 1.7], rk);
-        const tgt = lerp3([spot.x + 0.05, spot.y + 0.04, spot.z - 0.05], [mote.x, mote.y, mote.z], ss(cl01((t - (MF.mote + 0.6)) / 2.0)));
-        camLook(cam[0], cam[1], cam[2], tgt[0], tgt[1], tgt[2]);
-        if (pitch.rotation.x > 1.2) pitch.rotation.x = 1.2;
+        const L6 = s6Lens(t);
+        yaw.position.set(L6.cam[0], L6.cam[1], wz(L6.cam[2]));
+        yaw.rotation.y = L6.yaw; pitch.rotation.x = L6.pitch;
       }
       mLive.monkNod = 0;
       if (t >= MF.chant && t < MF.chant + 12.5) {
@@ -6948,6 +6955,66 @@
         for (const p of [0, 3.56, 6.71, 9.73]) { const d = u - p; if (d > 0 && d < 2.4) mLive.monkNod = Math.max(mLive.monkNod, Math.sin(Math.PI * d / 2.4) * 0.11); }
       }
       meritFx(t);
+    }
+    /* S6's lens at any moment of its clock, as a value (v24.6: the falling leaves are let go against the frame it holds
+       at their own moment, so the shot and they share this one function) — (from the trunk's side: looking down at the
+       spot with the trunk off to the right of the frame — on a phone's narrow frame out of it — where the first insert
+       stood across the spot from the trunk and filled the top of the picture with a dark mass); its tilt held at 1.2 */
+    function s6Lens(t) {
+      const spot = { x: MTREE.x - 0.62, y: MTREE.h, z: MTREE.z + 0.42 }, ss = smooth;      // (meritFrame's own name for it)
+      const rk = ss(cl01((t - (MF.mote + 0.2)) / MF_CLIMB)), push = ss(cl01((t - MF.s6) / (MF.mote - MF.s6)));
+      const mote = moteAt(t, spot);
+      const cam = lerp3(lerp3([spot.x - 0.17, spot.y + 0.64, spot.z + 0.76], [spot.x - 0.14, spot.y + 0.6, spot.z + 0.7], push),
+                        [spot.x - 1.5, spot.y + 1.15, spot.z + 1.7], rk);
+      const tgt = lerp3([spot.x + 0.05, spot.y + 0.04, spot.z - 0.05], [mote.x, mote.y, mote.z], ss(cl01((t - (MF.mote + 0.6)) / 2.0)));
+      const dx = tgt[0] - cam[0], dy = tgt[1] - cam[1], dz = tgt[2] - cam[2];
+      return { cam, yaw: Math.atan2(-dx, -dz), pitch: Math.min(1.2, Math.atan2(dy, Math.hypot(dx, dz))), fov: 46 + 10 * rk };
+    }
+    /* (v24.6) THE LEAVES THE LIGHT PASSES THROUGH. Leaf i of 150 is let go at its own moment of the climb (one every
+       0.05 s), from the frame the lens holds at that moment (`s6Lens`) — two in five just above its top, three in five
+       from the canopy in its upper part — 2.2–9.7 m out and anywhere across that frame's width on THIS screen (a phone's
+       is a narrow slice); it falls at 0.75–1.2 m/s, drifting and swaying, faces the lens and tumbles about it as a leaf
+       does, grows in over a quarter second and is put away at the earth. All from the clock */
+    const _fF = new THREE.Vector3(), _fR = new THREE.Vector3(), _fU = new THREE.Vector3(), _fP = new THREE.Vector3(), _fL = new THREE.Vector3();
+    const M_FALL_T0 = MF.mote + 0.3, M_FALL_DT = (MF_GONE - 0.4 - (MF.mote + 0.3)) / M_FALL_N, mFallFrom = [];
+    function mFallFrame(t, out) {
+      const fall = mLive.fall; if (!fall) return;
+      fall.visible = out && t > M_FALL_T0;
+      if (!fall.visible) return;
+      const aspect = camera.aspect || 1;
+      _fL.set(yaw.position.x, yaw.position.y, yaw.position.z - MZ);         // the lens now, in the pocket's own coordinates
+      for (let i = 0; i < M_FALL_N; i++) {
+        const t0 = M_FALL_T0 + i * M_FALL_DT, u = t - t0;
+        if (u <= 0) { fall.setMatrixAt(i, _mFallZero); continue; }
+        /* where it is let go depends on its own moment and this screen's shape alone: worked out once and kept */
+        let P0 = mFallFrom[i];
+        if (!P0 || P0.aspect !== aspect) {
+          const L = s6Lens(t0), cy = Math.cos(L.pitch);
+          _fF.set(-Math.sin(L.yaw) * cy, Math.sin(L.pitch), -Math.cos(L.yaw) * cy);
+          _fR.set(Math.cos(L.yaw), 0, -Math.sin(L.yaw));
+          _fU.crossVectors(_fR, _fF);
+          const va = THREE.MathUtils.degToRad(L.fov) / 2, ha = Math.atan(Math.tan(va) * aspect);
+          const d = 2.2 + 7.5 * Math.pow(hash(i, 51), 1.3);
+          /* two in five let go from just above the frame's top, three in five from the canopy inside its upper part (a
+             leaf coming away among the leaves it hung with) */
+          const hi = hash(i, 57), lx = (hash(i, 53) * 2 - 1) * 0.9 * d * Math.tan(ha);
+          const ly = (hash(i, 97) < 0.4 ? 1.04 + 0.3 * hi : -0.15 + 1.1 * hi) * d * Math.tan(va);
+          _fP.set(L.cam[0], L.cam[1], L.cam[2]).addScaledVector(_fF, d).addScaledVector(_fR, lx).addScaledVector(_fU, ly);
+          P0 = mFallFrom[i] = { x: _fP.x, y: _fP.y, z: _fP.z, aspect };
+        }
+        _fP.set(P0.x, P0.y, P0.z);
+        const v = 0.75 + 0.45 * hash(i, 59), ph = hash(i, 67) * 6.283, w = 1.3 + 0.8 * hash(i, 71);
+        const x = _fP.x + (hash(i, 73) - 0.5) * 0.5 * u + Math.sin(u * w + ph) * 0.3;
+        const y = _fP.y - v * u;
+        const z = _fP.z + (hash(i, 79) - 0.5) * 0.5 * u + Math.cos(u * w * 0.8 + ph) * 0.24;
+        if (y < 0.05) { fall.setMatrixAt(i, _mFallZero); continue; }
+        _mFallD.position.set(x, y, z); _mFallD.lookAt(_fL);
+        _mFallD.rotateZ(ph + Math.sin(u * (1.2 + hash(i, 83))) * 1.3 + u * 0.7);
+        const s = (0.1 + 0.07 * hash(i, 61)) * Math.min(1, u / 0.25);
+        _mFallD.scale.set(s * Math.max(0.22, Math.abs(Math.cos(u * (1.6 + hash(i, 89)) + ph))), s, 1);
+        _mFallD.updateMatrix(); fall.setMatrixAt(i, _mFallD.matrix);
+      }
+      fall.instanceMatrix.needsUpdate = true;
     }
     /* the pale light that rises from the wet earth: slow first, then up through the canopy into the dusk, turning a
        little as it climbs */
@@ -7070,6 +7137,8 @@
             tr.s.material.opacity = 0.9 * (1 - i / mLive.trail.length) * born * fadeTop;
           });
         } else mLive.trail.forEach(tr => { tr.s.visible = false; });
+        // (v24.6) and the leaves the light passes through, let go above the top of the climb's frame
+        mFallFrame(t, out);
       }
       /* ---- flames, and the incense's smoke on the altar */
       for (const f of mLive.flames) { const fl = 0.85 + 0.15 * Math.sin(t * 11 + f.k) * Math.sin(t * 7.3 + f.k * 2);

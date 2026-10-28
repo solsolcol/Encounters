@@ -5,7 +5,9 @@
    ENC_DIST=<snapshot> CHROMIUM_PATH=... CH=e4c1 VIEW=phone|desktop TS=0.5,3,6 [SETTLE=1500] [OUT=dir]
      node tools/probes/filmshots.mjs
    (v24.5) OPT=A|B|C|D [PHASE=decide:~fri] photographs an ENDING instead: play reached (the film skipped), the bookmark
-   applied once the chapter has booted, the option pressed, and the scene's clock seeked the same way. */
+   applied once the chapter has booted, the option pressed, and the scene's clock seeked the same way.
+   (v24.6) FILM=<key> [PHASE=<bookmark>] photographs a film a chapter plays FROM PLAY (`kit.film`, e.g. episode 3 chapter
+   4's merit film from `yinDone`): play reached, the bookmark applied, the film started by the kit, its clock seeked. */
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
@@ -39,6 +41,17 @@ if (OPT) {
     return r ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null; }, 'ABCD'.indexOf(OPT));
   if (PHONE) await p.touchscreen.tap(Math.round(bt.x), Math.round(bt.y)); else await p.mouse.click(bt.x, bt.y);
 }
+const FILM = process.env.FILM || '';
+if (FILM && !OPT) {
+  await toPlay(p, 1500000);
+  await p.waitForTimeout(8000);                                       // the chapter's first frames (v9.3)
+  if (process.env.PHASE) {
+    await p.evaluate((ph) => window.__enc.stage.applyPhase(ph), process.env.PHASE);
+    await p.waitForFunction((ph) => window.__enc.stage.phase === ph.split(/[:~]/)[0] && window.__enc.getState() === 'play', process.env.PHASE, { timeout: 600000, polling: 500 });
+    await p.waitForTimeout(4000);
+  }
+  console.log(el(), 'film', FILM, await p.evaluate((k) => window.__enc.kit.film(k), FILM));
+}
 await p.waitForFunction(() => window.__enc.cine.active() && window.__enc.getState() === 'cine', null, { timeout: 1500000, polling: 500 });
 await p.waitForFunction(() => window.__enc.cine.t() > 0.2, null, { timeout: 600000, polling: 300 });
 for (const t of TS) {
@@ -48,7 +61,7 @@ for (const t of TS) {
   const s = await p.evaluate(() => { const E = window.__enc, c = E.camera;
     return { st: E.getState(), t: +E.cine.t().toFixed(2), fov: c ? +c.fov.toFixed(1) : null,
              cam: [E.yaw.position.x, E.yaw.position.y, E.yaw.position.z, E.yaw.rotation.y, E.pitch.rotation.x].map(v => +v.toFixed(2)) }; });
-  await p.screenshot({ path: `${OUT}/${OPT ? 'end' + OPT : 'film'}-${String(t).replace('.', '_').padStart(5, '0')}.jpg`, quality: 70, timeout: 240000 });
+  await p.screenshot({ path: `${OUT}/${OPT ? 'end' + OPT : FILM || 'film'}-${String(t).replace('.', '_').padStart(5, '0')}.jpg`, quality: 70, timeout: 240000 });
   console.log(el(), t, JSON.stringify(s));
 }
 console.log(el(), 'errs', JSON.stringify(errs));

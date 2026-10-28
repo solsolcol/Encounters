@@ -6861,3 +6861,16 @@ cut (sharing its vertices and maps) when it is small.
   starved headless browser the animation can stand still at its start, so a tap computed from the option's rect landed
   on the option below it — ending B's probe played C. `pick()` already ignores taps in the first 340 ms; the probes now
   wait for `getAnimations()` on the panel to finish before reading a rect.
+- **A change to a film is not seen until the film is PLAYED — and a name lifted out of a function may not exist where it
+  lands** (v24.6). Episode 3 chapter 4's merit-film camera was lifted out of `meritFrame` into `s6Lens` so the new leaves
+  could share it; it read `ss`, meritFrame's own local name for `smooth`. It parsed, the chapter booted, `usebefore` and
+  `tdzscan` were clean — and the film threw on its first frame of the climb, live for six minutes, because a boot never
+  reaches a film from play. The scan that finds exactly this (`undefscan`, written at v22.0 for the same chapter's
+  `ESC_V`) was not in the build; **`npm run build` runs it now**, over every chapter. And a film a change touches is
+  photographed (`filmshots FILM=`) before the deploy, not after it.
+- **Particles the camera passes through are let go from the camera's own frame** (v24.6). The merit film's breeze
+  leaves started two to five metres up round the roots, and the lens, low by the trunk, turns up after the light: none
+  was ever in the climb's frame, and on a phone the frame is a narrow slice. Each leaf is now released at its own moment
+  from the frame the lens holds then — above its top or inside its upper part, across ITS width on this screen
+  (`camera.aspect`) — so the stream falls through the picture on any screen. Worked out from the film's clock alone (the
+  lens as a function, `s6Lens`), so a seek lands on the same frame, and cached per leaf.
