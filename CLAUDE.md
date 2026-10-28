@@ -7438,7 +7438,7 @@ assigned where a texture belonged; and the clearance is ISSUED at the start
 of play rather than inferred from an empty bag, which had left both counters
 dead from the chapter's first frame (docs/LEARNINGS.md).
 
-**Chad's report of 28 Oct 2026 on episode 3 chapter 5 — docs/V24.2-E3C5-DEBUG.md** (his four messages verbatim, the plan, and the log checkpoint by checkpoint) shipped in three releases: v24.1 the soft-lock he hit (the long press), v24.2 the comprehensive debug (masters/v24.2/findings.md, every finding with its verdict and fix), v24.3 the sound buff (masters/v24.2/L3-sound-report.md the measure, masters/v24.2/make.sh every pick and why). **Episode 4 chapter 1, The Master I Did Not Know, shipped at v24.0 —
+**Chad's report of 28 Oct 2026 on episode 3 chapter 5 — docs/V24.2-E3C5-DEBUG.md** (his four messages verbatim, the plan, and the log checkpoint by checkpoint) shipped in three releases: v24.1 the soft-lock he hit (the long press), v24.2 the comprehensive debug (masters/v24.2/findings.md, every finding with its verdict and fix), v24.3 the sound buff (masters/v24.2/L3-sound-report.md the measure, masters/v24.2/make.sh every pick and why). **His two questions after it — "Are you sure you fully debugged ep 3 chp 5?" and "Debug ep 4 chp 1 too, full debug" — are docs/V24.5-DEBUG-PLAN.md** (the honest answer, the plan for both chapters, the log checkpoint by checkpoint; masters/v24.5/findings.md every finding of nine lenses with its verdict and fix), shipped at v24.5. **Episode 4 chapter 1, The Master I Did Not Know, shipped at v24.0 —
 docs/V24.0-E4C1-PLAN.md** is its build memory (§15 the log, checkpoint by checkpoint; masters/v24.0/cp13-findings.md
 its review, every finding with its verdict and fix); its cast are placeholders until Chad's models (docs/E4-MODELS.md
 lists each, with what stands in), and its seven music cues are the measured picks until Chad's ear (one reel per cue in
@@ -7545,7 +7545,10 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v128** (`masters/v24.2/masterz-text-v128.xlsx`, v127 with episode 3 chapter 5's debug words: 2 rows
+**THE SHEET IS v129** (`masters/v24.5/masterz-text-v129.xlsx`, v128 with v24.5's words: 1 row added (`fm1chant2D`,
+episode 4 chapter 1's ending D letting the chant finish) and 7 changed — three of that chapter's ledger facts (the
+woman waiting's, the uncle's, the reading's), the stops on its chant's three captions, and fm1chant2's description.
+v128 was `masters/v24.2/masterz-text-v128.xlsx`, v127 with episode 3 chapter 5's debug words: 2 rows
 added (`objDrinks`, `noteLight`) and 14 changed — the core, the water's and the sticks' orders, the twist's, the yield's
 and COME BACK's desktop words, teachings B and C, card line C and its voice line z5C re-said, and z5children's
 description. v127 was `masters/v24.0/masterz-text-v127.xlsx`, v126 with episode 4 chapter 1's review: 3 rows added

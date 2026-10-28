@@ -618,6 +618,17 @@
         const view = flat(4.6, 3.0, B({ map: tStorm, fog: false, toneMapped: false, color: 0x8a8a96 }), G);
         view.rotation.y = side < 0 ? Math.PI / 2 : -Math.PI / 2; view.position.set(xw + out * 1.6, 1.5, zc);
         room.views.push(view);
+        /* (v24.5, L5 P2: from a spot near the window wall the gaps between the slats looked past the picture's edges and
+           under it, at the bare background's flat colour — the picture is closed into a box on its own material, which the
+           lightning lights: its ground laid flat from the wall out to it, its two edge columns carried back to the wall) */
+        const onView = (gm, f) => { const uv = gm.attributes.uv; for (let i = 0; i < uv.count; i++) { const [a, b2] = f(uv.getX(i), uv.getY(i)); uv.setXY(i, a, b2); }
+                                    const o = new THREE.Mesh(gm, view.material); G.add(o); return o; };
+        const ground = onView(new THREE.PlaneGeometry(1.6, 4.6), (a, b2) => [side < 0 ? b2 : 1 - b2, 0.01 + 0.09 * (side < 0 ? a : 1 - a)]);
+        ground.rotation.x = -Math.PI / 2; ground.position.set(xw + out * 0.8, 0, zc);
+        for (const sd of [-1, 1]) {
+          const wing = onView(new THREE.PlaneGeometry(1.6, 3.0), (a, b2) => [(sd > 0) === (side < 0) ? 0.004 : 0.996, b2]);
+          wing.rotation.y = sd > 0 ? Math.PI : 0; wing.position.set(xw + out * 0.8, 1.5, zc + sd * 2.3);
+        }
         const tRain = tex(makeRainSheet(THREE, cnv, 4501 + room.rains.length)); tRain.repeat.set(3, 1.6);
         const rain = flat(2.6, 1.8, B({ map: tRain, transparent: true, depthWrite: false, opacity: 0, color: 0xc8d4ec, fog: false }), G);
         rain.rotation.y = view.rotation.y; rain.position.set(xw + out * 0.55, 1.5, zc);
@@ -649,6 +660,18 @@
         const tYard = tex(makeStormView(THREE, cnv, 4497, true));
         const v = flat(5.0, 3.2, B({ map: tYard, fog: false, toneMapped: false, color: 0x8a8a96 })); v.rotation.y = Math.PI; v.position.set(xc, 1.25, z1 + 2.4);
         room.views.push(v);
+        /* (v24.5, L5 P1: the painted yard stood 2.4 m out with nothing under it and nothing at its sides, so from inside
+           the door a band of the bare background's flat colour showed between the step and the painted earth, and beside
+           the step from either side of the room — the picture is closed into a box on its own material: its wet earth laid
+           flat under the step and out to it, its edge columns carried back to the wall) */
+        const onPic = (gm, f) => { const uv = gm.attributes.uv; for (let i = 0; i < uv.count; i++) { const [a, b2] = f(uv.getX(i), uv.getY(i)); uv.setXY(i, a, b2); }
+                                   const o = new THREE.Mesh(gm, v.material); R.add(o); return o; };
+        const gnd = onPic(new THREE.PlaneGeometry(5.0, 2.4), (a, b2) => [a, 0.16 - 0.15 * b2]);
+        gnd.rotation.set(-Math.PI / 2, 0, Math.PI); gnd.position.set(xc, -0.3, z1 + 1.25);
+        for (const sd of [-1, 1]) {
+          const wing = onPic(new THREE.PlaneGeometry(2.35, 3.2), (a, b2) => [sd > 0 ? 0.004 : 0.996, b2]);
+          wing.rotation.y = -sd * Math.PI / 2; wing.position.set(xc + sd * 2.5, 1.25, z1 + 1.225);
+        }
         const tRainD = tex(makeRainSheet(THREE, cnv, 4507)); tRainD.repeat.set(2.5, 1.6);
         const rd = flat(2.4, 2.6, B({ map: tRainD, transparent: true, depthWrite: false, opacity: 0, color: 0xc8d4ec, fog: false })); rd.rotation.y = Math.PI; rd.position.set(xc, 1.2, z1 + 0.8);
         room.rains.push(rd);
