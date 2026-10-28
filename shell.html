@@ -39,6 +39,8 @@ html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
      5's water (hold to pour) could never be finished (Chad: "when holding the water step, it ends up opening right
      click context menu on mobile browser"). The menu itself is refused in main.js (contextmenu) */
   -webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+/* v24.5 (R3-6): but a link keeps its own long press (the credits' — the contextmenu refusal lets links through too) */
+a{-webkit-touch-callout:default}
 #scene{position:fixed;inset:0;width:100%;height:100%;display:block;background:var(--void)}
 
 /* film grain + vignette sit above the canvas, below the UI */
@@ -196,6 +198,10 @@ body.cine .invBtn,body.cine .menuBtn{display:none}   /* a scene owns the screen 
    the bag opened on top of a running minigame that kept scoring underneath
    them. Episode 1 never sets evopen. */
 body.evopen .invBtn,body.evopen .menuBtn,body.evopen .soundBtn{display:none}
+/* v24.5 (L1-4): and the volume slider with them, as every other panel hides it — on a desktop it stood over every minigame,
+   and a press on it reached the window's press handler as a press at the screen's centre (a false tap in WHAT CHANGED?,
+   START under a briefing) */
+body.evopen #volWrap{display:none}
 .invBtn svg,.menuBtn svg{fill:none;stroke:var(--bone);stroke-width:1.8}
 /* v7.0: the torch button — only a chapter that declares a torch shows it */
 .torchBtn{top:calc(max(14px,env(safe-area-inset-top)) + 168px);display:none}

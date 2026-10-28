@@ -2645,6 +2645,7 @@ let dayTween = null;
 let kitFade = null, kitFadeNow = 0;              // v7.1: a chapter's own black, in play
 let decClock = null;
 let ev = null;                                      // the live event, one at a time
+let evEndedAt = 0;                                  // v24.5 (R2-1): when the last one resolved (performance.now())
 let activeSpot = null;
 let kitInited = false;
 const _hs = new THREE.Vector3(), _c1 = new THREE.Color(), _c2 = new THREE.Color();
@@ -4192,7 +4193,7 @@ function applyDaylight(over) {
 }
 function daylightTo(preset, secs) {
   const to = { ...SKY_NIGHT, ...(CH.daylight || {}), ...(preset || {}) };
-  if (!(secs > 0)) { dayNow = to; dayTween = null; applyDaylightD(to); return; }
+  if (!(secs > 0)) { dayNow = to; dayTween = null; applyDaylightD(to); wx.dayFresh = true; return; }   // (v24.5, L4-6a: an instant change re-bases a live flash too)
   /* v22.0: from where the picture IS. A tween begun while another ran started from the last one's END (`dayNow` only
      moves when a tween finishes), so episode 3 chapter 4's next piece, taken while the room was still going back to
      day, flashed the previous piece's colour for a frame before its own tween began */
@@ -4841,6 +4842,11 @@ function evResolve(extra) {
     kitAward(aw.stat, r.delta, EV_PRICE);
   }
   if (!r.aborted && !r.skipped) snd(r.ok ? 'uiconfirm' : 'uiclick', r.ok ? 0.5 : 0.25);
+  /* v24.5 (L2-2/L4-1): the chapter's answer — its bookmark, its note — comes in this promise's callback, a microtask after
+     the frame, and the frame's autosave runs before it with the event already cleared: a save there held the minigame's
+     payments under the old bookmark, and a Continue paid them again (the storm). The ledger's and the chooser's guard */
+  saveHoldOff(600);
+  evEndedAt = performance.now();             // v24.5 (R2-1): the key that finished it does not also skip a film
   e.res(r);
 }
 /* ── v24.0 · S44 · WHAT CHANGED? — the FORTY-FOURTH SEAM, event kind `change` ─────────────────────────────────────
@@ -4992,6 +4998,9 @@ function evPress(x, y, pid, ts) {
   const e = ev; if (!e || !e.started || e.down) return;
   if (e.briefing) {                          // v8.7: START closes the briefing; nothing else counts
     const locked = !!document.pointerLockElement;   // (v22.3, L8-1: read before evBegin hands a STEADY drag the pointer back)
+    /* (v24.5, R3-1: and the click on START is not the hold — the button still down from it was seeded as the hold on the
+       next frame, and spent the red one's riser as a blip; a briefed hold's opening click was let go before START) */
+    e.mouseSeeded = true;
     evBegin();
     /* v22.0: but a STEADY drag starts with the finger that pressed START — held down from START and dragged, it moved
        nothing while the mark drifted out (the drag answers by its delta, so it may begin anywhere) */
@@ -5000,7 +5009,7 @@ function evPress(x, y, pid, ts) {
   }
   const o = e.o;
   e.down = true; e.downAt = e.t; e.downX = x; e.downY = y; e.drift = 0; e.look = 0;
-  e.downWall = performance.now() / 1000;     // (v24.2, L4-2: a hold is credited from here, never from the frame before)
+  e.downWall = Number.isFinite(ts) ? ts : performance.now() / 1000;   // (v24.2, L4-2: a hold is credited from here, never from the frame before; v24.5, R3-2: from the finger's own time)
   e.pid = pid;                               // (v23.0 CP13: whose finger it is — a hands-on gesture is one finger's, ONE_FINGER)
   $('evBtn')?.classList.add('down');
   switch (e.kind) {
@@ -5546,7 +5555,7 @@ function evSurfaceFrame(e, o, wdt) {
   if (e.goalT >= o.hold) {
     const late = Math.max(0, e.t - o.full) / Math.max(1, o.secs - o.full);
     evResolve({ ok: true, score: Math.max(0.3, 1 - 0.7 * Math.min(1, late)) });
-  } else if (o.secs > 0 && e.t >= o.secs) evResolve({ ok: true, score: 0, gaveUp: true });
+  } else if (o.secs > 0 && Math.max(e.t, e.wt || 0) >= o.secs) evResolve({ ok: true, score: 0, gaveUp: true });   // (v24.5, R2-2: on the wall too)
 }
 /* (v23.0 CP13: never before its first frame has set it up — a W struck between START and that frame made e.lv defined,
    so the set-up never ran: no pulls, a NaN hold that could never be met, and the gauge left hidden) */
@@ -5585,6 +5594,10 @@ function evFrame(dt, dLookX, dLookY) {
   /* (v24.2, L4-2: from the later of the last frame and the press itself — a finger landing just before a slow frame
      was credited the whole frame, so on a phone at a frame a second two quick taps "held" the water) */
   e.wdtHeld = Math.min(1.0, Math.max(0, nowMs - Math.max(e.wallLast, e.downWall || 0)));
+  /* v24.5 (R2-2): the event's age in WALL time (a frame credits a second at most), for what is promised in seconds of the
+     player's life rather than of the minigame's clock — COME BACK's "after `secs` the light comes down to him" took 120 s
+     at a frame a second on the quarter-second step */
+  e.wt = (e.wt || 0) + Math.min(1.0, Math.max(0, nowMs - e.wallLast));
   e.t += wdt;
   e.wallLast = nowMs;
   if (e.down) e.look += Math.abs(dLookX) + Math.abs(dLookY);
@@ -5899,8 +5912,8 @@ function kitInit() {
     for (const k of ['pointerup', 'pointercancel']) host.addEventListener(k, e => evRelease(e.pointerId));
     // a mouse press under pointer lock never reaches the overlay
     addEventListener('pointerdown', e => {
-      if (!ev || !ev.started || e.target.closest?.('#event') || e.target.closest?.('.soundBtn')) return;
-      if (e.pointerType === 'mouse' && e.button === 0) evPress(innerWidth / 2, innerHeight / 2);   // v14.4: primary only
+      if (!ev || !ev.started || e.target.closest?.('#event') || e.target.closest?.('.soundBtn') || e.target.closest?.('#volWrap')) return;   // (v24.5, L1-4: nor the volume slider)
+      if (e.pointerType === 'mouse' && e.button === 0) evPress(innerWidth / 2, innerHeight / 2, undefined, evStamp(e));   // v14.4: primary only (v24.5, R3-2: with the press's own time)
     });
     addEventListener('pointerup', e => { if (ev && ev.down) evRelease(e.pointerId); });
   }
@@ -6317,6 +6330,7 @@ function ledgerFinish(how) {
      not — and a Continue then found the page "already written" and paid nothing) */
   saveHoldOff(600);
   led.swallowUntil = performance.now() + 450;      // the rest of the press that closed it is not the world's
+  led.closedAt = performance.now();                // (v24.5, L4-4: and no touch BEGUN under the book is — onTouchEnd)
   const res = led.resolve; led.resolve = null;
   if (res) res(kind || (how === 'read' ? true : null));
 }
@@ -6385,7 +6399,9 @@ const kitLedger = {
     return new Promise(res => { ledgerOpen('write', String(id), opts); led.resolve = res; });
   },
   open(page, opts = {}) {
-    if (led.open || state !== 'play') return Promise.resolve(null);
+    /* (v24.5, R3-4: another episode's pages, kept in the save since v24.2, are never read back here — the book would have
+       painted them; latent, as no chapter outside episode 4 opens it) */
+    if (led.open || state !== 'play' || !ledMine()) return Promise.resolve(null);
     return new Promise(res => { ledgerOpen('read', 'read', Object.assign({ page }, opts)); led.resolve = res; });
   },
   entries: () => (ledMine() ? led.entries.map(e => ({ ...e })) : []),
@@ -7741,7 +7757,9 @@ let BLOCKERS = stage.blockers;
 /* ------------------------------------------------------------ controls */
 const keys = Object.create(null);
 addEventListener('keydown', e => {
-  if (evKey(e, true)) return;                     // v7.0: a live event owns Space / Enter / E
+  /* v7.0: a live event owns Space / Enter / E — and (v24.5, R2-1) no later listener sees them: the press that finished a
+     film's minigame went on to the film's skip listener, which found no event any more and skipped the film */
+  if (evKey(e, true)) { e.stopImmediatePropagation(); return; }
   if (e.code === 'KeyF' && state === 'play') { torchToggle(); return; }   // v7.0
   // Escape closes whatever is open: credits first, then the decision panel
   if (e.code === 'Escape' && !$('credits').classList.contains('hide')) {
@@ -7797,8 +7815,14 @@ addEventListener('blur', () => { edgeTurn = 0; });
 canvas.addEventListener('contextmenu', e => { if (state === 'play' && weaponWant()) e.preventDefault(); });
 /* v24.2 (L1-4): whether the primary mouse button is down now — a hold opened by a click may begin with it */
 let mousePrimaryDown = false;
-addEventListener('pointerdown', e => { if (e.pointerType === 'mouse' && e.button === 0) mousePrimaryDown = true; }, true);
-addEventListener('pointerup', e => { if (e.pointerType === 'mouse' && e.button === 0) mousePrimaryDown = false; }, true);
+/* (v24.5, R3-3: read from the buttons the event says are down — a chord ending on another button sends its one pointerup
+   with THAT button, and a native drag ends in a pointercancel with no pointerup at all, and either left the flag stuck
+   true: the next hold filled by itself) */
+const mouseButtonsNow = e => { if (e.pointerType === 'mouse') mousePrimaryDown = !!(e.buttons & 1); };
+addEventListener('pointerdown', mouseButtonsNow, true);
+addEventListener('pointerup', mouseButtonsNow, true);
+addEventListener('pointermove', mouseButtonsNow, true);
+addEventListener('pointercancel', e => { if (e.pointerType === 'mouse') mousePrimaryDown = false; }, true);
 addEventListener('blur', () => { mousePrimaryDown = false; });
 /* v24.1: a LONG PRESS is never the browser's — on a phone a finger held half a second fires `contextmenu`, the
    browser opens its own menu over the game and CANCELS the touch, so a hold could never be finished: episode 3
@@ -7914,6 +7938,9 @@ function onTouchEnd(e) {
     if (s && now - s.at < 380
         && Math.hypot(t.clientX - s.x, t.clientY - s.y) < 15
         && state === 'play' && !(performance.now() < (led.swallowUntil || 0))   // v24.0 (CP13): not the tap that closed a ledger page
+        /* (v24.5, L4-4: nor any touch that began while the book was open — on a phone drawing a frame a second the closing
+           frame outlasts the 450 ms above, and a tap begun on the page reached a sign in the room behind it) */
+        && !(led.closedAt && s.at >= (led.t0 || 0) && s.at <= led.closedAt)
         && ((stage.pile.hits(t.clientX, t.clientY) && stage.pile.interact())
             || hotspotTap(t.clientX, t.clientY))) {   // v14.7: or a hotspot that can be tapped on
       // The browser follows an unprevented touchend with a synthetic click at
@@ -13719,7 +13746,10 @@ function skipFilmOrScene() {
 }
 skipBtn.addEventListener('click', e => { e.stopPropagation(); skipFilmOrScene(); });
 addEventListener('keydown', e => {
-  if (state === 'cine' && cine && cine.t > CINE_SKIP_AT && !evActive() && !cine.noSkip &&   // v7.0: a live event owns the keys (v23.0: a noSkip film owns them too)
+  /* v24.5 (R2-1): and never a held key's repeat, nor E / Space / Enter in the 0.8 s after a minigame ended — a key still
+     held from the peek's slide or COME BACK's strokes skipped the film they were played in */
+  const fresh = !e.repeat && (e.code === 'Escape' || performance.now() - evEndedAt > 800);
+  if (state === 'cine' && cine && cine.t > CINE_SKIP_AT && !evActive() && !cine.noSkip && fresh &&   // v7.0: a live event owns the keys (v23.0: a noSkip film owns them too)
       (e.code === 'Escape' || e.code === 'KeyE' || e.code === 'Space' || e.code === 'Enter')) {
     skipFilmOrScene();
   }
@@ -14872,6 +14902,10 @@ function wardPaint() {
 syncBars();
 
 function startDecision() {
+  /* v24.5 (L2-3): the run is saved as the decision opens. The decision, the scene and the cards are never saved, so a
+     Continue from any of them went back to the last 8 s autosave — in episode 4 chapter 1 usually the start of the storm,
+     which it then played again (only an autosave that happened to fall in the 3.4 s hush after it kept the bookmark) */
+  if (state === 'play' && !ev && !fainting) saveCheckpoint();
   state = 'decide';
   chosen = null;
   snd('paper', 0.7);
@@ -15846,7 +15880,9 @@ function tick(now = 0) {
   // can never poke through a wall however close you stand to one — v15: and
   // only when there is a hand (or a torch, or a rifle) to draw: a pass with
   // nothing visible in it clears a depth buffer and draws nothing
-  if (state !== 'title' && handsReady && (!OPT.vmSkip || anyVisibleMesh(handsRoot) || (led.root && led.root.visible))) {   // v24.0: and the ledger's book (S43)
+  /* (v24.5, L4-5: the ledger's book is drawn even when the hands never loaded — open, tappable and invisible otherwise) */
+  const ledUp = !!(led.root && led.root.visible);
+  if (state !== 'title' && (handsReady || ledUp) && (!OPT.vmSkip || anyVisibleMesh(handsRoot) || ledUp)) {   // v24.0: and the ledger's book (S43)
     renderer.autoClear = false;
     renderer.clearDepth();
     renderer.render(vmScene, vmCam);

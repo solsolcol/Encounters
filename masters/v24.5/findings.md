@@ -79,6 +79,28 @@ No soft-lock in S43–S48.
 | L4-6b | e4c1 passes a number as `kit.rain`'s second argument in five places (it works only because a number's `.secs` is undefined, so the change is instant — which is what was meant). | CONFIRMED (hygiene) | OPEN |
 | L4-6c–g | Read-mode ledger buttons; the pick's 430 ms class timer; two phone tracks in one film; `mousePrimaryDown` (= R3-3); the round buttons visible and refused under the open book. | LEFT | Unreachable today (no chapter reads the ledger in read mode, opens two pickers inside 430 ms or two phones in one film); R3-3 is fixed under its own number. |
 
+### L5 · Geometry and framing
+
+Read-only arithmetic on the shipped GLBs and the real rig (72° vertical, phone 390 × 844, desktop 1280 × 800).
+
+| # | Finding | Verdict | Fix |
+|---|---|---|---|
+| L5-1 | The standing and walking cast are sunk into the floor: `mkPerson` measures the stand take's lowest foot bone in WORLD space (`getWorldPosition`, with the group already at its floor and `inner` scaled by s) and then sets `standInner.y = -sl * s + 0.005`, scaling a world height by s again — the group's own height and an s² term go into the offset. Joy (the sala, y 0.32) 0.38 m under, Lim 0.41, the stall woman (y 0.8) 0.84, Pong (y 0) 0.04. Seated poses are right (`seatContact`/`skinLow` work in the group's frame). Joy and Lim walk ROUTE_IN to the room when called, in front of the player. | CONFIRMED (code: the world-space measure, quoted) | OPEN |
+| L5-2 | Ending C: the lens walks through Pong — the path's last leg (2.6, 7.4) → (2.4, 10.6) passes 0.125 m from where he is put (2.6, 9.4), at his head's height, looking 3 m on, so his face rushes at the lens and it goes through his head; the path also ends 0.22 m inside the pickup's front. | CONFIRMED (arithmetic on the path and `fPut`) | OPEN |
+| L5-3 | Her body stands 0.6 m off her group's spot (v24.4's law), and four things still aim at the spot: (a) = L1-1; (b) ending B's glance (`dr = RMC.HER.door`) puts the doorway, not her, at three quarters of the half-frame, so on a phone she is off the frame and her fade is 0; (c) at the door spot her body is 0.13 m from the right wall and 0.18 m from the back wall, 10 % of her skin through the back wall, beside the curtained opening, not in it; (d) at the phone step her body stands in the master's platform. | CONFIRMED ((a) arithmetic, (b) code, (c)(d) arithmetic on the measured offset) | OPEN |
+| L5-4 | The stall woman stands inside her table: put at z 25.6, inside the top's z 25.25–26.15 (`bx(2.2, 0.05, 0.9, …, Z − 0.3)`), and with L5-1 she is also 0.84 m down, her head under the top. | CONFIRMED (code) | OPEN |
+| L5-5 | Endings A, C and D walk through the fence beside the gate, not through the gateway (|x| < 1.89): the lens crosses z 8 at x 2.51 (A), 2.58 (C), 3.02 (D), over the folded leaf and the low wall; Pong's walks in A and D go through the leaf and the wall in front of the lens. ROUTE_OUT uses the gateway. | CONFIRMED (arithmetic on the paths against the gate's posts at x ±2.1) | OPEN |
+| L5-6 | Yard walkers freeze while he is in the room (`peopleTick` skips a person in a hidden world), so a walk begun in the yard resumes in the endings' yard shots: on a straight run Pong's called walk (14 m, ~13 s) is cut by the door and he finishes it in A's door shot and B's card shot, beside Pa Noi and facing the lens. | CONFIRMED (code: the skip, quoted) | OPEN |
+| L5-7 | The chant caption covers the covered bowl (the breathing cloth, a sign) in the view the work gives: on a phone the bowl's dome is at y ≈ 637–700, under the caption's panel (y ≈ 586–700), and the breaths fall mostly inside the caption windows. | CONFIRMED (arithmetic) | OPEN |
+| L5-8 | The takhian has no dresses: the hotspot is "The dresses on the tree" and both lines speak of them, and `yard.dresses` is declared and never filled. | CONFIRMED (code) | OPEN |
+| L5-9 | Pong cannot turn to Ta Sombat (174° behind him, past his look's 1.7 rad clamp): the translator never faces the man he translates. | CONFIRMED (arithmetic) | OPEN |
+| L5-10 | Pong's arrival walk clips the pickup's nose (0.12 m inside its corner at bumper height). | CONFIRMED (arithmetic) | OPEN |
+| L5-11 | Ending A's walk opens with the lens 0.45 m from Pa Noi's head. | CONFIRMED (arithmetic) | OPEN |
+| L5-12 | The walks of A, C and D end on a pitch dive: the look target is 3 m on along the path, so at the path's end it meets the lens and the view drops 45–84° in the last 0.1–0.4 s before the cut. | CONFIRMED (code) | OPEN |
+| L5-13 | The room's door carries two markers ~48 px apart on a phone at 3 m (the 'called' waypoint and the door's own mark). | CONFIRMED (arithmetic) | OPEN |
+| L5-14 | Pa Noi has no collider: walking into her at the board puts the lens inside her. | CONFIRMED (code) | OPEN |
+| L5 P1–P4 | A sliver of sky past the wet step from the room's door; unpainted space past the painted storm from oblique spots; 2 cm slits in World S's shutters; Pong's soles in the shelter slab in D. | PLAUSIBLE | OPEN (photographs) |
+
 ## Episode 3 chapter 5
 
 ### R1 · The v24.3 sound code
