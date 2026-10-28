@@ -6752,3 +6752,18 @@ cut (sharing its vertices and maps) when it is small.
   phone — written down in `masters/v24.2/synth.py` so nobody re-generates them hoping for better. A thing made from a
   sound the game already has is the other way out: the music box's loop, its run-down and ending A's stop are its own
   tune, varispeeded and rung out (`fates2.py`).
+- **A probe a release leans on is kept in the repo, never only as a dbg- one-off** (v24.3). The session's container was
+  replaced in the middle of the release's checks (a restart, then a fresh machine with an empty clone): every commit
+  was safe on GitHub and the site was live, but the one-offs the checks were made with — the real-input play-through,
+  the Continue probe, the ending photographs, the scratchpad's byte-verifier — were gitignored or in the scratchpad,
+  and died with it. They are in `tools/probes/` now (`e3c5drive`, `e3c5cont`, `e3c5ends`, `memab`) and
+  `tools/byteverify.py`; a dbg- file is for a look, and a probe used twice is a tool. A fresh container also needs
+  `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci --ignore-scripts` and `CHROMIUM_PATH=/opt/pw-browsers/chromium` (testlib's
+  built-in path names a browser build the new image does not have).
+- **Decoded sound is memory, and a sound buff is priced in it** (v24.3). A sound is held decoded as 32-bit floats at
+  48 kHz: a 40 s stereo loop is 14.7 MB however small its Opus file. Episode 3 chapter 5's 52 new sounds took its own
+  decoded total from 339 MB to 561 MB (the next biggest chapters hold 325–361), because the engine decodes every bed
+  of a chapter at the entry into play, every in-play film's cues with them, and every ending's cues at the decision.
+  Measured on two builds by the same probe (`tools/probes/memab.mjs`, the renderer's resident memory by its own
+  browser profile): +116 MB at the counter, +186 MB with the decision open (1751 → 1937 MB on the software-GL test
+  box). The price of a sound is its decoded length × channels, not its download.

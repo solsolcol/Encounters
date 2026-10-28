@@ -359,7 +359,11 @@ they die with the session.
   **run from INSIDE `dist/`, never the repo root**: the uploader ships
   its cwd verbatim, and from the root it publishes the repo (no index at
   /, site down — it happened at v4.3, LEARNINGS has the write-up).
-  Byte-verify against dist/ after every deploy.
+  Byte-verify against dist/ after every deploy: `python3 tools/byteverify.py dist`
+  (every served file fetched and compared; `_headers` is Netlify's config and is
+  never served). In a fresh container: `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci
+  --ignore-scripts`, and `CHROMIUM_PATH=/opt/pw-browsers/chromium` for every
+  harness and probe when testlib's built-in browser path is absent.
   **His `chadsor` project is his personal resume site — NEVER touch it.**
 - **Retired: the claude.ai preview artifact** (Chad's call, 30 Aug
   2026 — the game is fully on Netlify). Do NOT republish it as part of
