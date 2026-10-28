@@ -6988,7 +6988,8 @@ What the baseline contains, by release:
     lines, none over another, every cue heard, no page error) and Continue right at all 13 phases. Deploys
     `6ae25e291ceb7e3a39c4a107`, `6ae25fb89d8585092086f7a3` (the lights' halos) and `6ae2646e943823f48852ac0a` (the
     lighter's spark back in the played lighting), each byte-verified, 269 of 269 — the first only at the fourth
-    milestone, a slip against deploy-first (LEARNINGS). Harnesses: see the follow-up commit. Sheet v130.
+    milestone, a slip against deploy-first (LEARNINGS). Harnesses chapter, text, hosted, leak, cine and walk green on
+    the last deploy's bytes. Sheet v130.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
