@@ -46,6 +46,24 @@ measurement, before anything is touched (docs/V24.5-DEBUG-PLAN.md has the method
 | L2-5 | `freshRun` takes back every `who:`/`saw:` page of the episode's shared ledger, not only this chapter's. | CONFIRMED (latent until chapter 2 writes) | OPEN |
 | L2 P-1 | The yard's people in the endings depend on the path: after a straight run yard Pong's walk resumes in the endings' yard shots; after a Continue, Joy and Lim sit on the benches again. | OPEN (photographs) | |
 
+### L3 · Sound and timing
+
+The scanner (`masters/v24.0/overlap.mjs`, the film and all three branches of A): no voice over another, nothing past an end, every gap of 1.5 s or more held. Every play-time sound warmed; every cue literal.
+
+| # | Finding | Verdict | Fix |
+|---|---|---|---|
+| L3-1 | Ending D opens by restarting the chant play has stopped (CP13 L2-2 stopped it at the storm's end and opened his eyes), with his eyes shut again, and fades it out in the middle of its second phrase. | CONFIRMED | OPEN |
+| L3-2 | The stock book sounds like a menu: no `sound` is passed, so the engine's UI click and confirm chime (the loudest things in the yard) open and write every page; the chapter ships `w4page` and `w4pen`. | CONFIRMED | OPEN |
+| L3-3 | Ending A: the three breaths of the pao (8.6–11.0 s) are heard while the master sits upright; his only movement, the bow, comes after them. | OPEN (photograph) | |
+| L3-4 | A panel opened mid-line (the menu, the bag) leaves a dead gap after it: the line is booked on the chapter clock, which stops under the panel while the voice plays on (e3c3's v21.21 class). | CONFIRMED | OPEN |
+| L3-5 | The chant's re-trigger runs in play only, so a take that ends under a ledger page leaves the room without its chant until the book closes. | CONFIRMED | OPEN |
+| L3-6 | Ending A's pen writes on for 2.1 s after its one scratch. | OPEN (photograph) | |
+| L3-7 | The film's typed reply is heard late and runs on after "Who is he?" is sent. | CONFIRMED | OPEN |
+| L3-8 | Four play one-shots are ducked to nothing under the line that starts with them (Pa Noi's water, her marker at 10 and 11, the envelope, the mala at 0.3). | CONFIRMED (levels measured by the lens) | OPEN |
+| L3 P1 | Five voice pairs in B, C and A's pha-yant branch are 0.11–0.17 s apart: at 2–4 fps a cue fires up to a frame late, so they can touch. | PLAUSIBLE | OPEN |
+| L3 P2 | A Continue into the work or the storm asks for the work's sounds only on the first live frame: the storm's first thunder can be spent undecoded, and the captions can lead a late chant. | PLAUSIBLE | OPEN |
+| L3 P3 | The endings are warmed at the decision in the order A, B, C, D, behind ~330 s of A's and B's audio: a quick pick of C on a slow phone could open on silence. | PLAUSIBLE | OPEN |
+
 ### L4 · The engine seams as the chapter uses them
 
 No soft-lock in S43–S48.
@@ -62,6 +80,24 @@ No soft-lock in S43–S48.
 | L4-6c–g | Read-mode ledger buttons; the pick's 430 ms class timer; two phone tracks in one film; `mousePrimaryDown` (= R3-3); the round buttons visible and refused under the open book. | LEFT | Unreachable today (no chapter reads the ledger in read mode, opens two pickers inside 430 ms or two phones in one film); R3-3 is fixed under its own number. |
 
 ## Episode 3 chapter 5
+
+### R1 · The v24.3 sound code
+
+Names, files, packs, warming, the beds' gates and clocks, the pools, the scanner (no voice over another, nothing past an end), the fades, the masking and the save are sound.
+
+| # | Finding | Verdict | Fix |
+|---|---|---|---|
+| R1-1 | The music box stutters: its phrase is 10.06 s (measured from the onsets), and the loop and the run-down were cut on 10.25 s (tune.py's 0.25 s lag steps), so `k5boxloop` carries the 25th note — the same E as the loop's first — 0.27 s before the joint, and the run-down's first E lands 0.36 s after the tune's 25th. A double strike at every seam at the counter and once in the room. | CONFIRMED (the lens's onset measure; re-measured before the re-cut) | OPEN |
+| R1-2 | The engine starts every loop 60 ms in and loops [0.06, d−0.06] (for mp3's padding), so a loop built to join at 0/d joins somewhere else: `k5heart` drops a beat every loop under every yield, `k5decide` clicks every 34 s through the decision. Pre-existing in v23.0's `k5care`/`k5night`, e3c3's `galbed` and e3c4's `y4song`. | CONFIRMED (the lens's seam measure) | OPEN |
+| R1-3 | The counter's box tune fades in under its first notes (the bed's ease on top of the engine's), and on a replay resumes wherever its source had got to. | CONFIRMED (low) | OPEN |
+| R1-4 | The flame's hiss is a 2.2 s one-shot at the second tap, and the flame burns on silently through the hold and the wave. | CONFIRMED (low) | OPEN |
+| R1-5 | A noise from the ambient pools (the guard's keys, a mop, the escalator, a room noise) can play on into the next film. | CONFIRMED (low) | OPEN |
+| R1-6 | The run-down's gate allows play and the menu but not the bag: with the bag open at the mark, the drum turns in silence and the run-down plays when the bag closes. | CONFIRMED (low; a sibling of 18b839c) | OPEN |
+| R1 P1 | Film K: the box's loop under two other tunes at other tempi for about a minute. | PLAUSIBLE | OPEN |
+| R1 P2 | The yield's glint re-fires its sound every 0.9 s above 0.6 of the fill. | PLAUSIBLE | OPEN |
+| R1 P3 | On a slow phone the key's clicks and the cups' pours bunch into one louder hit (it does not clip). | LEFT | Measured: 3 stacked keys peak at −2.4 dBFS. |
+| R1 P4 | Every bed, once started, runs on at gain 0 for the rest of the chapter (up to 19 sources on a phone's audio thread). | LEFT | Engine-wide, since v14.16; put to Chad with the memory question. |
+| R1 P5 | Ending A's last shot: `careFrame` still turns the drum after the shot has set it, so it jitters with the frame time. | PLAUSIBLE | OPEN |
 
 ### R2 · Dead ends and soft-locks, fresh (written before the records were read)
 
