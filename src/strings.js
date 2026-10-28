@@ -258,7 +258,7 @@ Object.assign(window.__TEXT__, {
   'event.craft':         'CAREFULLY',
   'event.craftTwist':    'TWIST IT',
   'event.craftTwistWhere': 'Circle your finger around it',
-  'event.craftTwistKey': 'Drag in a circle around it, or hold E',
+  'event.craftTwistKey': 'Hold the mouse button and drag in a circle around it, or hold E',
   'event.craftSlide':    'SLIDE IT',
   'event.craftSlideWhere': 'Drag the way the arrow points',
   'event.craftSlideKey': 'Drag the way the arrow points, or hold E',
@@ -273,10 +273,10 @@ Object.assign(window.__TEXT__, {
   'event.craftSwipeKey': 'Drag across fast, or press E',
   'event.yield':         'LET YOUR MIND LOOSEN',
   'event.yieldWhere':    'Press and hold anywhere',
-  'event.yieldWhereKey': 'Hold the mouse button, or hold E',
+  'event.yieldWhereKey': 'Hold the mouse button, E or Space',
   'event.surface':       'COME BACK UP',
   'event.surfaceWhere':  'Drag up to climb back',
-  'event.surfaceWhereKey': 'Drag up, or press W or ↑ quickly',
+  'event.surfaceWhereKey': 'Drag up, or tap W or ↑ again and again',
   'event.focus':         'TAP THE LIGHT',
   'event.focusKey':      'CLICK THE LIGHT',            // v21.0: the same, on a desktop
   // v24.0 · S44: WHAT CHANGED? — its word in the panel, and where the taps go (a phone; a desktop)

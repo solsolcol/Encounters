@@ -170,11 +170,11 @@
         d: { sanity: -9, awareness: 6, wisdom: -12 }, verdict: 'bad',
         say: 'They were children, not a horror story. I showed strangers the way in.',
         /* (CP13, the words lens: its first sentence was the card line's own, and "take one in" had no noun) */
-        teach: 'You do not need possession, trance or dramatic manifestations to prove a spiritual connection. Told as a thrill, a dangerous experiment becomes an invitation: strangers try it, or take a Kumanthong home, without knowing what it asks of them.' },
+        teach: 'You do not need possession, trance or dramatic manifestations to prove a spiritual connection. Told as a thrill, a dangerous experiment becomes an invitation: strangers try it, or take a Kumanthong home, without knowing what caring for one asks of them.' },
       { k: 'C', text: 'Talk to them every day — and wish for everything you want.',
         d: { sanity: -15, awareness: -6, wisdom: -18 }, verdict: 'bad',
         say: 'I stopped giving to them. I only kept asking.',
-        teach: 'Do not be driven by greed. Kumanthong kept with compassion are kept first for their sake; whatever help they give is a gift, not a wage, and the ones from a temple are believed never to help with anything wrong. Keep them for wealth, and care turns into a bargain in which the wanting never stops.' },
+        teach: 'Do not be driven by greed. Kumanthong taken in with compassion are kept first for their sake; whatever help they give is a gift, not a wage, and the ones from a temple are believed never to help with anything wrong. If you keep them for wealth, care turns into a bargain in which the wanting never stops.' },
       { k: 'D', text: 'Keep caring for them — but never open yourself to them again.',
         d: { sanity: 15, awareness: 24, wisdom: 30 }, verdict: 'best',
         say: 'I kept my promise every day, and I kept my own door shut.',
@@ -183,7 +183,7 @@
     /* Chad's purpose first, then S1·10's own lesson; the second person; no Pali tag (§2.3 9); its beliefs said as
        beliefs (§2.7) */
     /* (CP13, the words lens: "Kept well, they are kept" said kept twice, and a child was "it") */
-    core: 'Kumanthong given a home at a temple are not the trapped, blood-fed spirits of frightening stories. They are kept out of compassion: children with nowhere to go, believed to help a kind keeper a little and to be carried toward a better birth by the merit he makes for them. Never keep one for greed or ask one for anything wrong. Take one in only if you can care for him, and make merit for him, for life — and never invite one to enter or take control of you.',
+    core: 'Kumanthong given a home at a temple are not the trapped, blood-fed spirits of frightening stories. They are kept out of compassion: children with nowhere to go, believed to help a kind keeper a little and to be carried toward a better birth by the merit made for them. Never keep one for greed or ask one for anything wrong. Take one in only if you can care for him, and make merit for him, for life — and never invite one to enter or take control of you.',
 
     /* units metres, y up. WORLD R (x 0): the room x −1.6…1.6, z −1.8 (the desk wall) … 1.8 (the door wall), the
        window and the altar on the right wall (x 1.6). WORLD S (x +250): chapter 4's World H by its own numbers under
@@ -268,12 +268,16 @@
       objSit: 'Sit with them',
       hotMat: 'Sit with them',
       /* PLAY I · the offerings (CP6, §4.2) */
-      objWater: 'Give them water, then drinks · {n}/3',   // (CP13: an order, and short enough that a phone's box keeps its count on one line)
+      /* (v24.2, L6-1: one order for the water and one for the drinks — "Give them water, then drinks · 0/3" came back
+         unchanged once the water was poured, after an OBJECTIVE COMPLETE, and read as the water not having counted:
+         Chad, "stuck at the water offering") */
+      objWater: 'Give them their water',
+      objDrinks: 'Make their drinks · {n}/3',
       objGiveRed: 'Give it to the red one',
       objGiveShy: 'Give it to the shy one',
       objGiveLittle: 'Give it to the little one',
       objIncense: 'Light their incense',
-      objSticks: 'Give each one his incense · {n}/3',
+      objSticks: 'Give each one his stick · {n}/3',          // (v24.2, L6-5: "stick", as the badge, his line and the card say)
       hotJug: 'Their water',
       hotDrinks: 'Their drinks',
       hotPlace: 'Give it to him',
@@ -281,7 +285,7 @@
       hotBowl: 'His stick',
       briefCapTitle: 'His drink',
       briefCap: 'Twist the cap off gently: circle your finger slowly around it. Then slide the straw in, and bend it to him.',
-      briefCapKey: 'Twist the cap off gently: drag the mouse slowly in a circle around it, or hold E. Then slide the straw in, and bend it to him.',
+      briefCapKey: 'Twist the cap off gently: hold the mouse button and drag slowly in a circle around it, or hold E. Then slide the straw in, and bend it to him.',
       craftCap: 'Twist the cap off',
       craftStraw: 'Slide the straw in',
       craftBend: 'Bend the straw to him',
@@ -305,10 +309,13 @@
       craftPeek: 'Peek through your fingers',
       titlePeek: 'Peek-a-boo',
       objComeBack: 'Come back',
-      briefSurface: 'COME BACK — drag your finger up to rise toward the light. He doesn\'t want you to go. Keep rising.',
-      briefSurfaceKey: 'COME BACK — hold the mouse button and drag up, or tap W or ↑ quickly, to rise toward the light. He doesn\'t want you to go. Keep rising.',
+      /* (v24.2, L6-7: the panel's title already says COME BACK; and a held key climbs once, so W or ↑ is struck again
+         and again) */
+      briefSurface: 'Drag your finger up to rise toward the light. He doesn\'t want you to go. Keep rising.',
+      briefSurfaceKey: 'Hold the mouse button and drag up, or tap W or ↑ again and again, to rise toward the light. He doesn\'t want you to go. Keep rising.',
       noteCameBack: 'You came back on your own.',
-      noteHard: 'It took everything to come back.'
+      noteHard: 'It took everything to come back.',
+      noteLight: 'The light had to come down for you.'     // (v24.2, L6-10: the give-up path — he did not climb back himself)
     },
     sayPrefix: 'z5'
   };
@@ -2546,7 +2553,8 @@
     function careObjective() {
       if (careBusy) return null;
       const s = careStep();
-      if (s === 'water' || s === 'drink') return W.objWater.replace('{n}', String(drinksN()));
+      if (s === 'water') return W.objWater;
+      if (s === 'drink') return W.objDrinks.replace('{n}', String(drinksN()));
       if (s === 'carry') return W['objGive' + KEYCAP[KIDS[careLive.carry].key]];
       if (s === 'light') return W.objIncense;
       if (s === 'stick') return W.objSticks.replace('{n}', String(sticksN()));
@@ -2681,7 +2689,9 @@
     function atDeskDrink() {
       if (careStep() !== 'drink' || !careOk() || !kit || !kit.event) return false;
       const i = nextKid(); if (i < 0) return false;
-      careBusy = true; kit.objective(null);
+      /* (v24.2, L6-1: the drink is GIVEN at its place, which is where its OBJECTIVE COMPLETE lands — the bag's press posted
+         one more, before any drink was made) */
+      careBusy = true; kit.objective(null, { complete: false });
       sitAtDesk(false);
       if (!careLive.bagSaid) { careLive.bagSaid = true; queueGap(0.6); queueLine('z5bag'); }
       queueGap(0.3);
@@ -3918,7 +3928,7 @@
       if (r && r.skipped) return;                       // (CP13: a skipped film banks no note either way)
       littleLive.cameBack = !!(r && r.ok && !r.gaveUp);
       const fast = r && r.ok && !r.gaveUp && r.score >= 0.99;
-      if (kit && kit.conduct) kit.conduct(fast ? { a: 4, note: W.noteCameBack } : { note: W.noteHard });
+      if (kit && kit.conduct) kit.conduct(fast ? { a: 4, note: W.noteCameBack } : { note: r && r.gaveUp ? W.noteLight : W.noteHard });
     }
     function surfaceStart() { comeWaterOn(false); look('NIGHT', 0.8); if (kit && kit.flash) kit.flash({ color: '#fff2d6', secs: 1.4 }); }   // a rush of white-gold light
     /* the surfacing (5.6 s since CP12, his gasp inside it): a rush of white-gold light that fades as colour returns; he
@@ -7191,7 +7201,7 @@
         x.font = '14px sans-serif'; x.fillText('Thursday', W / 2, 158); x.textAlign = 'left';
         card(190, 'PHONE', 'Ma  ·  4 missed calls', 'rgba(255,255,255,0.92)', '#c0281e');
         if (state === 'vm') {
-          card(296, 'VOICEMAIL  ·  Ma', '▶ 0:07 ━━━━○─── 0:11', 'rgba(255,255,255,0.92)');
+          card(296, 'VOICEMAIL  ·  Ma', '▶ 0:03 ━━━━○─── 0:06', 'rgba(255,255,255,0.92)');   // (v24.2, L6-11: her 5.51 s message)
         }
         t.needsUpdate = true; return;
       }

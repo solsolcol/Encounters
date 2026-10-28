@@ -1403,7 +1403,7 @@
       text: "[quietly] And this small one... somebody left him at a temple gate. Nobody knows where he came from.", secs: 7.24 },
     { id: "ow5give", who: "owner3", ch: "e3c5", where: "The counter: all three met (the case file, nearly verbatim)",
       text: "So think of them like small children... with nowhere to go. You give them drink, you make merit for them... you are giving them something they never had.", secs: 13.17 },
-    { id: "z5children", who: "jamesAdult", ch: "e3c5", where: "The counter: touching the little one's hair",
+    { id: "z5children", who: "jamesAdult", ch: "e3c5", where: "The counter: after the owner's words, the three before him on the glass",
       text: "[softly] Children... with nowhere to go.", secs: 3.08 },
     { id: "ow5never", who: "owner3", ch: "e3c5", where: "The counter's film of the card: never for greed",
       text: "[serious] But listen, ah. Never keep them for greed. Not for money, not for lottery numbers... if that is why you want them, don't take them.", secs: 10.76 },
