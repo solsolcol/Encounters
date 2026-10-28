@@ -285,6 +285,7 @@ Object.assign(window.__TEXT__, {
   'event.changeWhereKey':'Click only what has changed',
   'event.changeLook':    'REMEMBER THE ROOM',              // v24.0: the first flash only shows it
   'event.changeLookWhere':'Nothing has changed yet',
+  'film.phoneMessage':   'Message',                        // v24.0 (CP13): a film phone's empty reply bar (S48)
   'event.sequence':      'TAP EACH ONE',
   'event.match':         'DRAG EACH ITEM TO ITS PLACE',
   'event.matchOk':       'MATCHED',

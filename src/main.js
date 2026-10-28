@@ -4609,7 +4609,12 @@ function kitEvent(opts = {}) {
             : (o.n || 1),
            slotT: 0, beat: 0, beatDone: false, over: false,
            combo: 0, bestCombo: 0, beats: [],           // v9.4: the rhythm game
-           pairs: [], drag: null, lastX: 0, lastY: 0, done: 0, wrong: 0 };
+           pairs: [], drag: null, lastX: 0, lastY: 0, done: 0, wrong: 0,
+           /* v24.0 (CP13): the run as it stood the moment this opened — a save while it is open writes THIS, so a
+              Continue replays the minigame from its start on what he had then. Most kinds pay ON THE SPOT (v9.3), and a
+              save taken half-way kept the half paid and paid it again on the replay (episode 4's storm, episode 2's
+              beats and drops alike) */
+           save0: (() => { try { return { st: JSON.parse(JSON.stringify(worldState())), at: { x: yaw.position.x, y: yaw.position.y, z: yaw.position.z, ry: yaw.rotation.y } }; } catch { return null; } })() };
     if (kind === 'heartbeat') ev.beats = evBeatTimes(o, ev.n);
   });
 }
@@ -4876,12 +4881,20 @@ function evChangeMark(x, y, cls) {
   L.appendChild(m);
   setTimeout(() => m.remove(), cls === 'miss' ? 1500 : 1100);
 }
+/* the change itself, made IN the dark: a little after the dark phase begins, once a chapter's eased dark has come down
+   (v24.0, CP13: made on the frame the lit phase ended, the cup was seen to jump at full light before the dimming) */
+function evChangeApply(e) {
+  if (e.chApplied || e.chPhase !== 'dark' || !(e.chRound > 0)) return;
+  e.chApplied = true;
+  if (typeof e.o.apply === 'function') { try { e.o.apply(e.chRound); } catch (err) { console.warn('change apply failed', err); } }
+}
 function evChangePhase(e, round, phase) {
+  if (e.chPhase === 'dark' && phase === 'lit') evChangeApply(e);   // never lit before it is made
   e.chRound = round; e.chPhase = phase; e.chT0 = e.t;
-  if (phase === 'dark' && round > 0 && typeof e.o.apply === 'function') { try { e.o.apply(round); } catch (err) { console.warn('change apply failed', err); } }
+  if (phase === 'dark') e.chApplied = false;
   if (typeof e.o.onPhase === 'function') { try { e.o.onPhase(round, phase); } catch (err) { console.warn('change onPhase failed', err); } }
   if (phase === 'lit') {
-    e.chTapped = new Set();
+    e.chTapped = new Set(); e.chWrongRound = 0;
     /* v24.0: the first flash only SHOWS the room (round 0 can hold no change: `apply` runs from round 1), so its words say
        so; every flash after it asks what changed. A chapter's own prompt or note stands. */
     const first = round === 0;
@@ -4905,7 +4918,7 @@ function evChangeEndRound(e) {
 function evChangeFrame(e) {
   const o = e.o, el = e.t - e.chT0, n = e.chRounds.length;
   if (e.chPhase === 'lead') { if (el >= o.lead) evChangePhase(e, 0, 'dark'); return; }
-  if (e.chPhase === 'dark') { if (el >= o.dark) evChangePhase(e, e.chRound, 'lit'); return; }
+  if (e.chPhase === 'dark') { if (el >= Math.min(o.dark * 0.45, 0.3)) evChangeApply(e); if (el >= o.dark) evChangePhase(e, e.chRound, 'lit'); return; }
   if (e.chPhase === 'lit' && el >= o.lit) {
     evChangeEndRound(e);
     if (e.chRound + 1 < n) evChangePhase(e, e.chRound + 1, 'dark');
@@ -4922,6 +4935,13 @@ function evChangePress(e, x, y) {
   if (e.chPhase !== 'lit') return;
   const o = e.o, ids = e.chRounds[e.chRound] || [];
   const tol = o.tol * Math.min(innerWidth, innerHeight);
+  /* a tap on a change he has already found this round is no tap at all (v24.0, CP13: a phone's double tap on the moved
+     cup was charged as a false tap) */
+  for (const id of e.chTapped) {
+    const sp = e.chSpots.find(q => q.id === id); if (!sp) continue;
+    if (typeof sp.hits === 'function') { if (sp.hits(x, y)) return; continue; }
+    const at = evChangeScreen(sp); if (at && Math.hypot(at.x - x, at.y - y) < tol * (sp.tol || 1)) return;
+  }
   let best = null, bd = Infinity;
   for (const id of ids) {
     if (e.chTapped.has(id)) continue;
@@ -4940,7 +4960,10 @@ function evChangePress(e, x, y) {
   } else {
     e.chWrong++; e.misses++;
     evChangeMark(x, y, 'wrong');
-    const d = evCut(-o.falseCost); if (d) kitAward('sanity', d, EV_PRICE);
+    /* `falseCap`: at most that many false taps are PAID a flash (v24.0, CP13 — a panicked thumb could faint him and lose
+       the chapter for one lesson); each is still marked, buzzed and counted. Absent, every one is paid, as before */
+    e.chWrongRound = (e.chWrongRound || 0) + 1;
+    const d = (o.falseCap == null || e.chWrongRound <= o.falseCap) ? evCut(-o.falseCost) : 0; if (d) kitAward('sanity', d, EV_PRICE);
     snd('beatmiss', 0.5); haptic([30, 40, 30]);
     const f = $('hudflash'); if (f) kitFlashSet({ color: '#d0402c', secs: 0.4 });
   }
@@ -5808,6 +5831,9 @@ function evKey(e, isDown) {
   /* v23.0: a hands-on kind knows the press is a KEY's (E held twists, slides and holds; a press taps, flicks and
      strikes the surface up) — never the press that closes a briefing */
   if (ev.kind === 'craft' || ev.kind === 'yield' || ev.kind === 'surface') ev.keyHeld = isDown && !ev.briefing;
+  /* v24.0 (CP13): WHAT CHANGED? is a tap ON a thing — a key has nowhere to tap, and the screen's centre was a false tap;
+     its brief's START still takes the key */
+  if (ev.kind === 'change' && !ev.briefing) return true;
   if (isDown) evPress(innerWidth / 2, innerHeight / 2); else evRelease();
   return true;
 }
@@ -5871,7 +5897,7 @@ let poseWall = 0, dayWall = 0;
    lies over the screen with them, and the thunder follows by the distance (`near` 1 overhead, 0 far off). The verbs
    only record; the frame does the work (the kit's law). kitReset clears both. */
 const WX_N = LOW ? 1200 : 3200, WX_BOX = [28, 14, 28];
-const wx = { mesh: null, mat: null, k: 0, from: 0, to: 0, t0: 0, secs: 0, wind: [0.12, 0.04], flash: null, base: null, thunder: [], el: null, level: 0 };
+const wx = { mesh: null, mat: null, k: 0, from: 0, to: 0, t0: 0, secs: 0, wind: [0.12, 0.04], flash: null, base: null, thunder: [], el: null, level: 0, dayFresh: false, def: null };
 function wxBuild() {
   if (wx.mesh) return;
   const N = WX_N, pos = new Float32Array(N * 4 * 3), seed = new Float32Array(N * 4 * 4), corner = new Float32Array(N * 4 * 2), idx = [];
@@ -5928,6 +5954,7 @@ function wxBuild() {
   });
   wx.mesh = new THREE.Mesh(g, wx.mat);
   wx.mesh.frustumCulled = false; wx.mesh.renderOrder = 6; wx.mesh.visible = false;
+  { const U = wx.mat.uniforms; wx.def = { len: U.uLen.value, op: U.uOpacity.value, color: U.uColor.value.clone(), wind: wx.wind.slice() }; }
   scene.add(wx.mesh);
 }
 function kitRain(k, o = {}) {
@@ -5987,16 +6014,19 @@ function weatherFrame() {
     const q = wx.thunder[i];
     if (now >= q.at) { wx.thunder.splice(i, 1); snd(q.name, q.vol); }
   }
-  const f = wx.flash;
+  const f = wx.flash, fresh = wx.dayFresh; wx.dayFresh = false;
   if (!f) { wx.base = null; wx.level = 0; return; }
-  if (!wx.base) wx.base = { h: hemi.intensity, k: moon.intensity, f: fill.intensity, hc: hemi.color.getHex(), vh: vmHemi.intensity };
+  /* the lights as they are without the flash: read once — and again on every frame a daylight tween has just written
+     them (v24.0, CP13: a chapter lights its FLASH preset on the flash's own frame, and a base read on the tween's first
+     step was restored at the end, leaving the room at a quarter of FLASH for the seconds he had to study it) */
+  if (!wx.base || fresh) wx.base = { h: hemi.intensity, k: moon.intensity, f: fill.intensity, hc: hemi.color.getHex(), vh: vmHemi.intensity };
   if (!f.t0) f.t0 = now;
   const e = wxEnvelope(f, now);
   if (e < 0) {                                   // over: every light exactly as it was
     hemi.intensity = wx.base.h; moon.intensity = wx.base.k; fill.intensity = wx.base.f; hemi.color.setHex(wx.base.hc);
     vmHemi.intensity = wx.base.vh;
     wx.flash = null; wx.base = null; wx.level = 0;
-    if (wx.el) wx.el.style.opacity = '0';
+    if (wx.el) { wx.el.style.opacity = '0'; wx.el.style.display = 'none'; }
     return;
   }
   const a = e * f.power;
@@ -6007,14 +6037,18 @@ function weatherFrame() {
   hemi.color.setHex(wx.base.hc).lerp(_wxC.copy(f.color), Math.min(1, a));
   vmHemi.intensity = wx.base.vh * (1 + 2.2 * a);
   const el = wx.el || (wx.el = $('wxflash'));
-  if (el) { el.style.opacity = String(Math.min(0.85, 0.55 * a * f.wash)); el.style.background = '#' + f.color.getHexString(); }
+  if (el) { el.style.display = 'block'; el.style.opacity = String(Math.min(0.85, 0.55 * a * f.wash)); el.style.background = '#' + f.color.getHexString(); }
 }
 function wxReset() {
   wx.k = wx.to = wx.from = 0; wx.secs = 0; wx.thunder.length = 0;
   if (wx.mesh) wx.mesh.visible = false;
+  if (wx.def && wx.mat) {                         // (v24.0, CP13: a rain's length, opacity, colour and wind were never put back)
+    const U = wx.mat.uniforms; U.uLen.value = wx.def.len; U.uOpacity.value = wx.def.op; U.uColor.value.copy(wx.def.color);
+    wx.wind = wx.def.wind.slice();
+  }
   if (wx.flash && wx.base) { hemi.intensity = wx.base.h; moon.intensity = wx.base.k; fill.intensity = wx.base.f; hemi.color.setHex(wx.base.hc); vmHemi.intensity = wx.base.vh; }
   wx.flash = null; wx.base = null; wx.level = 0;
-  if (wx.el || $('wxflash')) (wx.el || $('wxflash')).style.opacity = '0';
+  if (wx.el || $('wxflash')) { const el = wx.el || $('wxflash'); el.style.opacity = '0'; el.style.display = 'none'; }
 }
 /* ── v24.0 · S48 · A PHONE IN A FILM — the FORTY-EIGHTH SEAM, `api.phone(t0, t1, spec)` ──────────────────────────
    Episode 4 chapter 1's film turns on a message (Pong's: "Brother!! Come Thailand..."), and episode 5 has a video call
@@ -6041,7 +6075,13 @@ function filmPhoneDraw(spec, lt) {
   const sig = shown.length + '|' + (typingThem ? 1 : 0) + '|' + draft;
   el.classList.remove('hide');
   if (sig === fphone.sig) return;
-  fphone.sig = sig;
+  /* (v24.0, CP13: the draft was in the one signature, so every typed letter rebuilt the list and the newest message
+     popped in again — ten times over "Who is he?") */
+  const msgSig = shown.length + '|' + (typingThem ? 1 : 0), list = msgSig !== fphone.msgSig;
+  fphone.sig = sig; fphone.msgSig = msgSig;
+  const bar0 = el.querySelector('.fpInput');
+  if (bar0 && !bar0.dataset.ph) bar0.dataset.ph = T('film.phoneMessage', 'Message');
+  if (!list) { if (bar0) { bar0.textContent = draft; bar0.classList.toggle('empty', !draft); } return; }
   const esc = v => String(v == null ? '' : v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const ava = spec.ava || {};
   el.querySelector('.fpAva').textContent = ava.text || (spec.name || '?').slice(0, 1);
@@ -6059,7 +6099,7 @@ function filmPhoneDraw(spec, lt) {
 function filmPhoneHide() {
   const el = fphone.el || (fphone.el = $('filmPhone'));
   if (el) el.classList.add('hide');
-  fphone.sig = '';
+  fphone.sig = ''; fphone.msgSig = '';
 }
 /* ── v24.0 · S43 · THE LEDGER — the FORTY-THIRD SEAM, `kit.ledger` ───────────────────────────────────────────────
    Episode 4 chapter 1 teaches one thing — LOOK — and the ledger is where it is done: his own shop's stock book, whose
@@ -6249,6 +6289,10 @@ function ledgerFinish(how) {
   ledgerHint(false);
   if (how === 'force') { led.k = 0; if (led.root) led.root.visible = false; }
   else { const sn = (o.sound || {}).close; if (sn) snd(sn, 0.6); if (state === 'ledger') { state = 'play'; tryLock(); } }
+  /* (v24.0, CP13: the autosave ran on the tick the page closed, before the chapter's answer — the entry saved, its award
+     not — and a Continue then found the page "already written" and paid nothing) */
+  saveHoldOff(600);
+  led.swallowUntil = performance.now() + 450;      // the rest of the press that closed it is not the world's
   const res = led.resolve; led.resolve = null;
   if (res) res(kind || (how === 'read' ? true : null));
 }
@@ -6259,7 +6303,9 @@ function ledgerFrame() {
   if (led.k <= 0 && !led.open) { led.root.visible = false; return; }
   led.root.visible = true;
   if (led.open && led.mode === 'write' && led.chosen >= 0) {
-    ledgerPaint(now);
+    /* the ink at thirty frames a second at most (v24.0, CP13: each paint re-uploads the 900 × 1250 page and its mipmaps —
+       every frame for 1.65 s on a phone); the last frame of the ink is always painted */
+    if (!led.paintAt || now - led.paintAt >= 1 / 30 || now - led.inkT0 >= LED_INK) { led.paintAt = now; ledgerPaint(now); }
     if (now - led.inkT0 > LED_INK + 0.55) ledgerFinish('write');
   }
   ledgerLayout();
@@ -6281,30 +6327,34 @@ addEventListener('pointermove', e => {
 });
 addEventListener('pointerdown', e => {
   if (!led.open) return;
-  if (led.mode === 'read') { if (performance.now() - led.t0 > UNLOCK_GUARD) ledgerFinish('read'); return; }
+  if (led.mode === 'read') { if (performance.now() - led.t0 > UNLOCK_GUARD) { e.preventDefault(); e.stopPropagation(); ledgerFinish('read'); } return; }
   const i = ledgerHit(e.clientX, e.clientY);
   if (i >= 0) { led.hover = i; ledgerChoose(i); }
 }, true);
 addEventListener('keydown', e => {
   if (!led.open) return;
-  if (led.mode === 'read') { if (['Escape', 'KeyE', 'Enter', 'Space'].includes(e.code) && !e.repeat) { e.preventDefault(); ledgerFinish('read'); } return; }
+  if (led.mode === 'read') { if (['Escape', 'KeyE', 'Enter', 'Space'].includes(e.code) && !e.repeat) { e.preventDefault(); e.stopImmediatePropagation(); ledgerFinish('read'); } return; }
   if (/^(Digit|Numpad)[12]$/.test(e.code)) { e.preventDefault(); ledgerChoose(+e.code.slice(-1) - 1); return; }
   if (['ArrowUp', 'ArrowDown', 'KeyW', 'KeyS'].includes(e.code)) { e.preventDefault(); if (led.chosen < 0) { led.hover = led.hover === 0 ? 1 : 0; ledgerPaint(performance.now() / 1000); } return; }
   if (['Enter', 'Space', 'KeyE', 'NumpadEnter'].includes(e.code) && !e.repeat && led.hover >= 0) { e.preventDefault(); ledgerChoose(led.hover); }
 });
-function ledgerLoad(sl) {
+function ledgerLoad(sl, anyEp) {
   led.entries.length = 0; led.ep = 0;
   if (!sl || typeof sl !== 'object') return;
   const ep = Number(sl.ep);
-  if (!Number.isInteger(ep) || ep !== episodeOf(CH_KEY)) return;     // a ledger belongs to its episode
+  if (!Number.isInteger(ep) || (!anyEp && ep !== episodeOf(CH_KEY))) return;     // a ledger belongs to its episode
   led.ep = ep;
   for (const e of (Array.isArray(sl.entries) ? sl.entries : [])) {
     if (e && typeof e.id === 'string' && (e.kind === 'fact' || e.kind === 'meaning') && typeof e.text === 'string')
       led.entries.push({ id: e.id, page: typeof e.page === 'string' ? e.page : 'notes', kind: e.kind, text: e.text });
   }
 }
+/* (v24.0, CP13: the ledger is the EPISODE's — read back only in its own; another episode's first write replaces it, and a
+   chapter played in another episode meanwhile leaves it in the save untouched) */
+const ledMine = () => !led.ep || led.ep === episodeOf(CH_KEY);
 const kitLedger = {
   write(id, opts = {}) {
+    if (!ledMine()) { led.entries.length = 0; led.ep = 0; }
     const had = led.entries.find(e => e.id === String(id));
     if (had) return Promise.resolve(had.kind);
     if (led.open || cho.ids || unl.id || state !== 'play' || fainting || !opts.fact || !opts.meaning) return Promise.resolve(null);
@@ -6314,8 +6364,11 @@ const kitLedger = {
     if (led.open || state !== 'play') return Promise.resolve(null);
     return new Promise(res => { ledgerOpen('read', 'read', Object.assign({ page }, opts)); led.resolve = res; });
   },
-  entries: () => led.entries.map(e => ({ ...e })),
+  entries: () => (ledMine() ? led.entries.map(e => ({ ...e })) : []),
   isOpen: () => led.open,
+  /* v24.0 (CP13): the book built now, hidden, so the loading curtain compiles it — built on its first opening, its
+     materials compiled on screen, mid-play */
+  prepare: () => { ledgerBuild(); },
   set: list => ledgerLoad({ ep: episodeOf(CH_KEY), entries: list }),
   clear: () => { led.entries.length = 0; led.ep = 0; }
 };
@@ -6351,6 +6404,7 @@ function kitFrame(dt, t, dLookX, dLookY) {
     dayTween.t = Math.min(1, dayTween.t + wdtD / dayTween.secs);
     if (dayTween.t >= 1) { dayNow = dayTween.to; dayTween = null; applyDaylightD(dayNow); }
     else applyDaylightD(dayMix(dayTween.from, dayTween.to, smoothK(dayTween.t)), true);
+    wx.dayFresh = true;            // v24.0 (CP13): the lights were just written unflashed — a live flash re-reads its base
   } else dayWall = 0;
   /* v7.1: a FADE in play — the black between the day and the night of a
      chapter that has both (The Worst Bed lies him down at lights out and
@@ -6766,7 +6820,10 @@ const CHCTX = {
      soldier was silent BY CONSTRUCTION. Chapters 1-5 never call this: their
      play-time narration is one line on a timer, not something a player asks
      for at a moment of their choosing. */
-  warmSounds: (names) => { for (const n of (Array.isArray(names) ? names : [names])) WARM_WANT.add(n); },
+  /* (v24.0, CP13: and decodes them at once when their pack is already here — called later than build(), the list was only
+     recorded, and nothing drained it until the next entry into the world. Before its pack lands, sndBuf answers null and
+     the pack loader drains it as before, so a call from build() is unchanged) */
+  warmSounds: (names) => { const L = Array.isArray(names) ? names : [names]; for (const n of L) WARM_WANT.add(n); if (packJson) packWarm(L); },
   /* v15: SPHERE CULLING — a root whose meshes three cannot cull (a skinned
      clone posed from a skeleton elsewhere), culled by a generous sphere in
      the root's own space: (root, cx, cy, cz, radius) */
@@ -7645,7 +7702,8 @@ function updateViewmodel(dt, t, speed, strafe, dLookX, dLookY) {
                                   yaw.position.z - fire.position.z) : Infinity;
   const warm = fire ? Math.max(0, 1 - dFire / 7) ** 2 : 0;
   vmFire.intensity = warm * 2.4 * (0.82 + Math.sin(t * 11.3) * 0.12 + Math.random() * 0.06);
-  vmHemi.intensity = VM_REST.hemi - warm * 0.16;
+  /* (v24.0, CP13: × the lightning's lift — this line overwrote the weather's own every frame in play; 1 with no flash) */
+  vmHemi.intensity = (VM_REST.hemi - warm * 0.16) * (1 + 2.2 * (wx.level || 0));
 }
 
 /* ------------------------------------------------------- collision box */
@@ -7689,6 +7747,7 @@ function tryLock() {
   // no pointer lock at all -- which is why this only ever bit Android.
   if (!FINE_PTR) return;
   if (lockBlocked || locked || state === 'title') return;
+  if (state === 'ledger' || led.open) return;   // v24.0 (CP13): under the open book a click that missed both lines locked the cursor
   try {
     const r = canvas.requestPointerLock?.();
     if (r && typeof r.catch === 'function') r.catch(() => { lockBlocked = true; setHint(); });
@@ -7813,7 +7872,7 @@ function onTouchEnd(e) {
     touchStarts.delete(t.identifier);
     if (s && now - s.at < 380
         && Math.hypot(t.clientX - s.x, t.clientY - s.y) < 15
-        && state === 'play'
+        && state === 'play' && !(performance.now() < (led.swallowUntil || 0))   // v24.0 (CP13): not the tap that closed a ledger page
         && ((stage.pile.hits(t.clientX, t.clientY) && stage.pile.interact())
             || hotspotTap(t.clientX, t.clientY))) {   // v14.7: or a hotspot that can be tapped on
       // The browser follows an unprevented touchend with a synthetic click at
@@ -8765,8 +8824,11 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   'pg1car', 'pg1here', 'pg1come', 'pn1num', 'pn1water', 'pn1n10', 'pn1n11', 'pn1n12', 'pn1n13', 'pn1n14', 'jy1a',
   'jy1b', 'lm1a', 'lm1b', 'pg1sbq', 'sb1a', 'pg1sb', 'pg1me', 'jy1go', 'lm1go', 'pg1go', 'pg1tree', 'fm1hello',
   'fm1shop', 'pg1shop', 'pg1th1', 'fm1good', 'pg1good', 'fm1day', 'pg1day', 'fm1hm', 'fm1read', 'pg1read', 'pn1tray',
-  'pg1items', 'fm1items', 'pg1nk', 'pg1tk', 'pg1py', 'pg1offer', 'fm1anu', 'fm1eyes', 'pg1eyes', 'fm1chant',
-  'fm1chant2', 'pg1power', 'fm1blessA', 'pg1Ank', 'pg1Atk', 'pg1Apy', 'fm1Abye', 'pn1guava', 'pg1A1', 'pg1A2',
+  'pg1items', 'fm1items', 'pg1nk', 'pg1tk', 'pg1py', 'pg1offer', 'fm1anu', 'fm1eyes', 'pg1eyes',
+  /* (CP13: NOT the master's chant — fm1chant, fm1chant2 — which plays on the effects path: as a voice it held the −8 dB
+     duck for the whole work and storm, so the rain, the drone and the thunder never reached their levels; as an effect
+     it is murmured under his lines, the same gain otherwise) */
+  'pg1power', 'fm1blessA', 'pg1Ank', 'pg1Atk', 'pg1Apy', 'fm1Abye', 'pn1guava', 'pg1A1', 'pg1A2',
   'pg1B1', 'pg1B2', 'fm1B1', 'pg1B3', 'fm1B2', 'pg1B4', 'fm1B3', 'pg1B5', 'pn1card', 'pg1B6', 'pg1B7', 'fm1C1',
   'fm1C2', 'pg1C1', 'pn1C1', 'pg1C2', 'pg1D1', 'fm1D1', 'pg1D2', 'pg1D3', 'tx1where']);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
@@ -9799,10 +9861,11 @@ function saveCheckpoint(extra) {
      player actually cares about — the read guard alone is not enough. */
   if (CH_ASKED) return false;
   try {
-    const at = (extra && 'at' in extra) ? extra.at : {
+    const held = ev && ev.save0 && !(extra && 'at' in extra);      // v24.0 (CP13): a minigame open is saved as it opened
+    const at = (extra && 'at' in extra) ? extra.at : held ? { ...ev.save0.at } : {
       x: yaw.position.x, y: yaw.position.y, z: yaw.position.z, ry: yaw.rotation.y
     };
-    const base = worldState();
+    const base = held ? JSON.parse(JSON.stringify(ev.save0.st)) : worldState();
     if (extra && extra.stats) base.stats = { ...extra.stats };
     if (extra && extra.ward) base.ward = { ...extra.ward };   // v14.7: a faint and a boundary say what the amulet holds
     if (extra && extra.ch && chapterExists(extra.ch)) base.ch = extra.ch;
@@ -9851,6 +9914,9 @@ function clearCheckpoint() {
    and buys nothing, so those moments simply are not saved. */
 const AUTOSAVE_MS = 8000;
 let lastSaveAt = 0;
+/* v24.0 (CP13): no autosave for `ms` — a window that answers a chapter (the ledger, choose, pick) closes on one tick and
+   the chapter's answer runs after it; a save in between keeps half of what happened */
+function saveHoldOff(ms) { lastSaveAt = Math.max(lastSaveAt, performance.now() - AUTOSAVE_MS + ms); }
 function autosave(force) {
   if (state !== 'play' || fainting) return false;
   if (!force && performance.now() - lastSaveAt < AUTOSAVE_MS) return false;
@@ -10738,6 +10804,7 @@ function chooseFinish(how) {
   if (how !== 'force') {
     state = 'play';
     tryLock();
+    saveHoldOff(600);
   }
   if (res) res(id);
   return true;
@@ -12161,6 +12228,7 @@ function returnToTitle() {
   showHaunt(false);
   stopBed(); stopCineVoices(); stopLiveVoices();   // v21.0: nor a line play was still saying
   stopWorldSfx();                                   // v23.0: nor a sound its world was still making
+  wxReset();                                        // v24.0 (CP13): nor a thunder still coming, nor the rain
   for (const n of liveLoops) loopVol(n, 0);   // ALL of them: silenceChapterLoops() keeps this chapter's own
   if (narSrc) { try { narSrc.stop(); } catch {} narSrc = null; }
   clearTimeout(voiceTimer); voicePending = false;   // his opening line must not land on the title screen
@@ -13310,6 +13378,7 @@ function setChapter(key) {
   GHOST_HOME.set(CH.ghostHome.x, 0, CH.ghostHome.z);
   Object.assign(BOUNDS, CH.bounds);
   applyGhostTerritory();           // her reach is the new chapter's, not the old one's
+  wxReset();                       // v24.0 (CP13): a lightning flash still live gives its lights back first ...
   applyDaylight();                 // and so is the time of day
   kitReset();                      // v7.0: and the play kit starts clean for it
   silenceChapterLoops();           // and so is the room tone
@@ -14573,7 +14642,7 @@ paintTitle();
    Continue still applies the whole run on top (the same values), New game
    still empties it (invClearAll), and the selector now keeps what the
    player owns, as it always did within one sitting. */
-{ const s = loadCheckpoint(); if (s) { invLoad(s.inv); wardLoad(s.ward); torchAvailSync(); weaponAvailSync(); syncBars(); } }
+{ const s = loadCheckpoint(); if (s) { invLoad(s.inv); wardLoad(s.ward); ledgerLoad(s.ledger, true); torchAvailSync(); weaponAvailSync(); syncBars(); } }   // v24.0 (CP13): and the ledger (the v14.14 law: a selector start had none)
 /* v14.15: at the title, the chapter Continue would open starts downloading
    (DOWNLOAD AHEAD); a new player's chapter 1 is preloaded by the page */
 { const s = loadCheckpoint(); if (s && s.ch && s.ch !== CH_KEY) setTimeout(() => prefetchAhead(s.ch), 1500); }

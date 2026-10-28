@@ -117,7 +117,9 @@
      CP11 records them; CP12 re-times by the takes. */
   const OPEN = { o2: 9.6, o2b: 14.8, o3: 19.4, o3b: 24.8, o4: 27.6, buzz: 30.0, o4b: 31.4, o5: 37.0, o5b: 43.8, o6: 50.6,
                  o7: 61.4, stop: 68.4, black: 70.9, end: 72.2 };
-  const CODA = { k2: 10.6, k3: 16.6, black: 20.6, end: 21.8 };          // from the coda's own start (END[k].coda)
+  /* (CP13: the last chord is 8 s and swells to its peak 5 s in; the black at 20.6 and the end at 21.8 cut it at its loudest —
+     the last image holds through the swell now, and the black comes down on its fade) */
+  const CODA = { k2: 10.6, k3: 16.6, black: 22.6, end: 24.2 };          // from the coda's own start (END[k].coda)
   const END = {
     A: { pao: 6.5, bless: 13.5, look: 27.5, book: 34.0, out: 40.0, walk: 51.0, cab: 57.0, wide: 62.6, coda: 70.0 },
     B: { ask: 4.9, look: 14.4, pong: 25.6, who: 34.4, come: 42.0, card: 56.0, cab: 63.0, wide: 74.0, coda: 82.4 },
@@ -132,7 +134,7 @@
     title: 'The Master I Did Not Know',
     cardLabel: 'Chapter 1',
     cardTitle: 'The Master I Did Not Know',
-    brief: 'Your own shop, and a question about its future. A dealer knows a master in Thailand. Nobody knows anything else about him.',
+    brief: 'Your own shop, and a question about its future. A dealer says he knows a master in Thailand. Nobody knows anything else about him.',
     prompt: 'The rain has stopped. He is waiting for you.',
     /* Master Z's own trial, 5.1, verbatim (docs/source/mztrial-episodes.md): the four options, their verdicts and their
        lessons; the deltas are the trial's ×3, as in episode 3 (§2.2 9) */
@@ -156,7 +158,7 @@
     ],
     /* S1·11's own lesson, its first half (the choosing; the "be especially careful" half is chapter 2's) — the case
        file's words, trimmed (§2.3 Q7); no Pali tag */
-    core: 'Do not choose a spiritual master simply because somebody calls them a master. Ask the ordinary questions you would ask about anyone you are about to trust: who are they, and who can genuinely vouch for them? Spiritual knowledge and good character are not automatically the same thing, and the title alone tells you nothing about the second one.',
+    core: 'Do not choose a spiritual master simply because somebody calls them a master. Ask the ordinary questions you would ask about anyone you are about to trust: who are they, what is their character, and who can genuinely vouch for them? Spiritual knowledge and good character are not automatically the same thing, and the title alone tells you nothing about the second one.',
 
     /* units metres, y up. WORLD C (x 0): the yard x −16…14, z −13…8, the gate at z 8 on the lane (x 0), the road
        across the paddies at z 21. WORLD R (x +250): the room x −2.5…2.5, z −2…2 (local). WORLD S (x −250) and WORLD T
@@ -191,8 +193,10 @@
     musicVol: 0,
     /* the beds (§9.3), every one at 0 here: mixBeds sets each by the world he is in, the hour and the storm (masters/
        v24.0/make.sh: looped by hand, levelled by RMS) */
+    /* (CP13: the taxi's bed went — nothing ever raised it, and its 28.5 s of stereo was decoded at the start of play for
+       nothing; the coda cues the taxi as a one-shot) */
     ambience: { beds: [['w4yard', 0], ['w4paddy', 0], ['w4roomtone', 0], ['w4rainl', 0], ['w4rainh', 0], ['w4after', 0],
-                       ['w4taxi', 0], ['w4radio', 0]] },
+                       ['w4radio', 0]] },
     voiceLine: null,
 
     words: {
@@ -222,22 +226,22 @@
       ledBrief: 'One line, in the back of your stock book.',
       ledJoyF: 'She came because her boss\'s wife said he was powerful.',
       ledJoyM: 'He must be powerful — people drive hours to see him.',
-      ledLimF: 'Three or four years a master. Popular fast.',
+      ledLimF: 'Uncle Lim guesses three or four years. Already popular.',
       ledLimM: 'He\'s only in it for the money.',
-      ledSbF: 'He came here five years ago. Nobody knows from where.',
+      ledSbF: 'He came here five years ago. The farmer doesn\'t know from where.',
       ledSbM: 'He\'s hiding where he came from.',
       ledPongF: 'Pong had never been here either. His cousin knows him.',
       ledPongM: 'Pong\'s cousin vouches for him, so he\'s fine.',
-      ledReadF: 'He spoke for a long time. Pong translated one sentence.',
+      ledReadF: 'His answer was longer than Pong\'s translation.',
       ledReadM: 'Pong is hiding what he said.',
       ledSmokeF: 'The smoke leaned toward the covered bowl, against the fan.',
-      ledSmokeM: 'Something under the cloth was pulling at it.',
+      ledSmokeM: 'His blessing is drawing luck into the bowl.',
       ledClothF: 'The cloth over the bowl moved.',
       ledClothM: 'He keeps something alive under there.',
       ledShadowF: 'His shadow moved after he did.',
       ledShadowM: 'His shadow isn\'t his own.',
-      ledHerF: 'Someone stood behind him. When I looked, no one was there.',
-      ledHerM: 'He keeps a spirit that works for him.',
+      ledHerF: 'I glimpsed someone behind him. When I looked, no one was there.',
+      ledHerM: 'She watches over the house for him.',
       // PLAY II · the reading (§4.3)
       objKneel: 'Kneel on the mat',
       hotMat: 'Kneel',
@@ -256,8 +260,8 @@
       objOffer: 'Set your offering on the tray',
       hotOffer: 'Set down your offering',
       // PLAY III · the work (§4.4): the chant's captions — the words as said, over what they mean — and the four signs
-      chant1: 'Namo tassa bhagavato arahato sammā-sambuddhassa',
-      chant1en: 'Homage to the Blessed One, the Worthy One, the Rightly Self-awakened One',
+      chant1: 'Namo tassa bhagavato arahato sammā-sambuddhassa.',
+      chant1en: 'Homage to the Blessed One, the Worthy One, the Rightly Self-awakened One.',
       chant2: 'Ehi cittaṁ mahā-lābhaṁ piyaṁ mama māmā',
       chant2en: 'A Thai trade blessing in Pali-like words — roughly: come, heart; great gain; be dear to me',
       chant3: 'Mahā-lābhā bhavantu me',
@@ -277,12 +281,13 @@
       noteMeanings: 'You wrote down what you thought it meant.',
       noteStormTrue: 'In the storm, you saw only what changed.',
       noteStormFalse: 'In the storm, you saw changes that weren\'t there.',
+      noteStormNone: 'In the storm, you held back, and missed what changed.',
       note_nangkwak: 'You took a Nang Kwak for the shop.',
       note_takrut: 'You took a takrut for the shop.',
       note_phayant: 'You took a pha yant for the shop.',
       // the opening film's message (§4.0 O4): the chat over the picture, and his phone's lock screen
       phonePong: 'Pong',
-      phonePongSub: 'Amulets · Udon Thani',
+      phonePongSub: 'Amulets · Bangkok',
       phoneTyping: 'typing…',
       phoneNow: 'now',
       chat1: 'Brother!! Come Thailand. I bring you see one Ajahn. Very strong for business 🙏',
@@ -290,7 +295,8 @@
       chat3: 'Very famous. Trust me.',
       // the coda's last image in ending B (§4.8 K3): the master's message on his phone
       phoneAjahn: 'Ajahn',
-      phoneAjahnMsg: 'Sawasdee krub',
+      phoneAjahnMsg: 'Sawasdee krap',
+      phoneAjahnMsg2: 'May your shop do well.',
       // the endings (§4.7): the line he writes in the back of his book (A, D)
       endAline: 'I don\'t know what I saw.',
       endDline: 'Some things I don\'t need to understand today.'
@@ -2360,7 +2366,7 @@
       x.fillStyle = 'rgba(255,255,255,0.92)'; x.textAlign = 'center'; x.textBaseline = 'alphabetic';
       x.font = '300 64px "Helvetica Neue", Arial, sans-serif'; x.fillText(ajahn ? '9:12' : '9:48', 128, 120);
       /* the notification card */
-      const cx = 14, cy = 176, cw = 228, ch = ajahn ? 96 : 112, r = 16;
+      const cx = 14, cy = 176, cw = 228, ch = 112, r = 16;
       x.fillStyle = 'rgba(245,245,248,0.88)';
       x.beginPath(); x.moveTo(cx + r, cy); x.arcTo(cx + cw, cy, cx + cw, cy + ch, r); x.arcTo(cx + cw, cy + ch, cx, cy + ch, r);
       x.arcTo(cx, cy + ch, cx, cy, r); x.arcTo(cx, cy, cx + cw, cy, r); x.closePath(); x.fill();
@@ -2371,10 +2377,13 @@
       x.fillStyle = '#6a6a72'; x.font = '15px "Helvetica Neue", Arial, sans-serif'; x.textAlign = 'right'; x.fillText(Wd.phoneNow || 'now', cx + cw - 12, cy + 31);
       x.textAlign = 'left'; x.fillStyle = '#26262c'; x.font = '18px "Helvetica Neue", Arial, sans-serif';
       if (ajahn) {
-        const msg = Wd.phoneAjahnMsg || 'Sawasdee krub';
-        x.fillText(msg, cx + 16, cy + 70);
+        /* his greeting, a lotus after it, and a wish for the shop under them (CP13: alone, a greeting landing a second
+           after "...I stopped feeling like myself" read as the cause of it) */
+        const msg = Wd.phoneAjahnMsg || 'Sawasdee krap';
+        x.fillText(msg, cx + 16, cy + 64);
+        if (Wd.phoneAjahnMsg2) x.fillText(Wd.phoneAjahnMsg2, cx + 16, cy + 88);
         /* a lotus after his words, drawn (an emoji is not on every phone's canvas) */
-        const lx = cx + 24 + x.measureText(msg).width + 16, ly = cy + 64;
+        const lx = cx + 24 + x.measureText(msg).width + 16, ly = cy + 58;
         for (let k = 0; k < 5; k++) { x.save(); x.translate(lx, ly + 6); x.rotate((k - 2) * 0.42); x.fillStyle = k % 2 ? '#e88aa8' : '#d8658a';
           x.beginPath(); x.moveTo(0, 0); x.quadraticCurveTo(7, -9, 0, -18); x.quadraticCurveTo(-7, -9, 0, 0); x.fill(); x.restore(); }
         x.fillStyle = '#3a9a5a'; x.fillRect(lx - 9, ly + 7, 18, 2.5);
@@ -2524,7 +2533,7 @@
       const P = { key, group, model: null, mixer: null, L: {}, head: null, headWrote: null, ready: false, o,
                   seated: o.posture === 'sit', sitW: o.posture === 'sit' ? 1 : 0, walkW: 0, oneW: 0, talkW: 0, talkUntil: 0,
                   one: null, walk: null, turnTo: null, lookW: 0, lookDir: new THREE.Vector3(0, 0, 1), faceLocal: null, look: o.look || 0, lookAt: null, lookFilm: false,
-                  bow: o.bow || 0, bowNow: o.bow || 0, inner: null, standInner: new THREE.Vector3(), sitInner: new THREE.Vector3(), onReady: [] };
+                  bow: o.bow || 0, bowNow: o.bow || 0, inner: null, standInner: new THREE.Vector3(), sitInner: new THREE.Vector3(), onReady: [], onFail: [] };
       const loads = [parseOnce(key)].concat(o.anims ? [parseOnce(o.anims)] : []);
       Promise.all(loads).then(([gltf, extra]) => {
         if (!alive) return;
@@ -2636,11 +2645,18 @@
         owned.push({ dispose: () => mx.stopAllAction() });
         if (o.then) o.then(P);
         for (const f of P.onReady.splice(0)) f(P);
-      }).catch(err => { console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
+      }).catch(err => {
+        console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err);
+        /* (CP13: a beat that waits on a person never came when the download failed — the tray, the fourth sign) */
+        P.failed = true; for (const f of P.onFail.splice(0)) f(P);
+      });
       people.push(P);
       return P;
     }
     const whenReady = (P, f) => { if (!P) return; if (P.ready) f(P); else P.onReady.push(f); };
+    /* the same, with what to do if his model never comes (the v4.7 rule: a failed download costs a person, never the
+       chapter) */
+    const whenReadyOr = (P, f, fail) => { if (!P || P.failed) { fail(); return; } if (P.ready) { f(P); return; } P.onReady.push(f); P.onFail.push(fail); };
     /* he speaks: the talking take eased in over his rest for the line's length, on WALL time */
     function personTalk(P, secs) { if (P) P.talkUntil = wallNow() + secs; }
     /* a take played once over the rest (a gesture, the pao), on the body only unless asked; `hold` keeps its last frame */
@@ -2710,7 +2726,7 @@
       whenReady(P, () => {
         if (P.seated || P.sitW > 0.05) personSit(P, false);
         P.seated = false;
-        P.walk = { pts: pts.slice(), i: 0, speed: o.speed || 1.1, ry: o.ry, then: o.then, wait: P.sitW > 0.05 };
+        P.walk = { pts: pts.slice(), i: 0, speed: o.speed || 1.1, ry: o.ry, then: o.then, wait: P.sitW > 0.05, tag: o.tag || '' };
       });
     }
     const angTo = (a, b) => Math.atan2(Math.sin(b - a), Math.cos(b - a));
@@ -3210,8 +3226,12 @@
     let worldRun = 0;
     let wDark = false;
     let decOpen = false;
+    const AFTER_DAY = ['items', 'work', 'storm', 'decide'];
     function setPhase(p, tag, opts) {
       phase = p;
+      /* past the reading, the day he was born rides every bookmark (~fri), so a Continue writes it on the slate again
+         (CP13: the slate, in view from the mat and in the endings, was blank after a Continue past 'consult') */
+      if (AFTER_DAY.includes(p) && play.day) tag = (tag || '') + '~' + play.day;
       if (kit) kit.setPhase(tag ? p + ':' + tag : p);
       objectiveFor(p, opts);
     }
@@ -3301,8 +3321,43 @@
       day: '', item: '', offerOn: false, offered: false,
       signs: new Set(), signsOn: false, herSeen: false, breathNext: 0, gestNext: 0, chantNext: 0,
       kneeling: false, turning: null, called: false,
-      drone: null                     // the storm's drone while it sounds (its source, to be ramped down)
+      drone: null,                    // the storm's drone while it sounds (its source, to be ramped down)
+      chants: []                      // the master's chant as it sounds (CP13: never stopped, it ran on through the hush)
     };
+    /* THE SOUNDS PLAY ASKS FOR, warmed so the first of each is heard (CP13: nothing here was ever warmed — the first
+       chant, the drone, the match and the tube were silent, and a cold line was spoken without its voice after 1.6 s).
+       The yard's and the room's from the start (short lines, about 25 MB decoded); the work's and the storm's — the
+       34 s chant, the 43 s drone — once he is called in, and on any Continue into the room */
+    const WARM_YARD = ['pg1come', 'pn1num', 'q1board', 'pn1water', 'q1water', 'w4water', 'pn1n10', 'pn1n11', 'pn1n12', 'pn1n13',
+      'pn1n14', 'q1joy1', 'jy1a', 'q1joy2', 'jy1b', 'q1lim1', 'lm1a', 'q1lim2', 'lm1b', 'q1sb1', 'pg1sbq', 'sb1a', 'pg1sb',
+      'q1pg1', 'pg1me', 'q1nobody', 'q1missed', 'jy1go', 'lm1go', 'pg1go', 'q1tree', 'pg1tree', 'w4dog', 'w4marker', 'w4sandals'];
+    const WARM_ROOM = ['w4kneel', 'fm1hello', 'q1wai', 'fm1shop', 'pg1shop', 'q1shop', 'pg1th1', 'fm1good', 'pg1good', 'fm1day',
+      'pg1day', 'fm1hm', 'fm1read', 'pg1read', 'q1short', 'w4tray', 'pn1tray', 'pg1items', 'fm1items', 'pg1nk', 'pg1tk', 'pg1py',
+      'pg1offer', 'w4envelope', 'fm1anu', 'fm1eyes', 'pg1eyes', 'w4match'];
+    const WARM_WORK = ['fm1chant', 'fm1chant2', 'w4cloth', 'w4mala', 'q1smoke', 'q1cloth', 'q1shadow', 'q1her', 'w4tube',
+      'pg1power', 'w4storm', 'w4thunder', 'w4crack', 'w4rainstop'];
+    if (warmSounds) warmSounds(WARM_YARD.concat(WARM_ROOM));
+    /* the stock book built now, hidden, so the loading curtain compiles it (CP13: built at its first opening, its
+       materials compiled on screen at the first conversation) */
+    if (kit && kit.ledger && kit.ledger.prepare) kit.ledger.prepare();
+    const warmWork = () => { if (warmSounds) warmSounds(WARM_WORK); };
+    /* a one-shot that waits for its bytes (a long sound decoded late is still the sound): tried now, then every tenth of a
+       second of wall time for `wait` seconds; muted, it is not waited for */
+    function sfxReady(name, vol, keep, wait = 3) {
+      const run = play.run, t0 = wallNow();
+      const go = () => {
+        if (!live(run) || (soundOff && soundOff())) return;
+        const s2 = worldSfx ? worldSfx(name, vol) : null;
+        if (s2) { if (keep) keep(s2); return; }
+        if (wallNow() - t0 < wait) setTimeout(go, 100);
+      };
+      go();
+    }
+    function chantStop(tau = 0.25) {
+      for (const d of play.chants.splice(0)) {
+        try { const t = d.context.currentTime; if (d.__g && tau > 0) { d.__g.gain.setTargetAtTime(0, t, tau); d.stop(t + tau * 6); } else d.stop(); } catch (e) {}
+      }
+    }
     const live = (run) => alive && run === play.run;
     const KNEEL_Y = RMC.EYE.y;                                       // his eye on the mat (§4.3)
     const faceMaster = () => Math.atan2(-(MASTER.x - CMAT.x), -(MASTER.z - CMAT.z));
@@ -3362,15 +3417,34 @@
     const ROUTE_OUT = [[7.9, -6.15], [7.9, -5.0], [6.4, -2.0], [4.6, 2.6], [1.9, 6.4], [0.7, 9.4], [0.4, 12.6]];
 
     /* ================================================================ P1 · ARRIVE */
+    /* a fresh start of the chapter owns no piece and no page (CP13: the bag and the ledger outlive a replay — the bag adds
+       a second piece and a Continue then picked the first; every ledger page "answered at once", with no book and no
+       award): the three pieces are taken back and this chapter's entries go, the episode's others stay */
+    const PIECES = ['nangkwak', 'takrut', 'phayant'];
+    function freshRun() {
+      if (!kit) return;
+      if (kit.has && kit.take) for (const id of PIECES) { let n = 0; while (kit.has(id) && n++ < 8) kit.take(id); }
+      if (kit.ledger && kit.ledger.set) {
+        const keep = kit.ledger.entries().filter(e => !/^(who|saw):/.test(e.id));
+        if (keep.length !== kit.ledger.entries().length) kit.ledger.set(keep);
+      }
+    }
     function arriveBegin() {
       setPhase('arrive');
+      freshRun();
       look('YARD0', 0);
       boardSet(9);
       after(3.4, () => { if (phase === 'arrive' && worldSfx) worldSfx('w4dog', 0.3, 1, -0.5); });   // the yard's dog, by the house
       after(0.9, () => {
+        if (play.greeted) return;                  // (CP13: a Continue beside Pa Noi greets on the first frame; greet() walks him in)
         line('pg1come', cast.pong);
-        queueFn(() => personWalk(cast.pong, [[2.4, 9.8], [0.9, 7.2], [1.6, 4.0], [2.25, 2.35]], { speed: 1.1, ry: 2.3 }));
+        queueFn(() => { if (!play.greeted || !cast.pong.walk) personWalk(cast.pong, ARRIVE_IN, { speed: 1.1, ry: 2.3, tag: 'in' }); });
       });
+    }
+    const ARRIVE_IN = [[2.4, 9.8], [0.9, 7.2], [1.6, 4.0], [2.25, 2.35]];
+    function pongToSeat() {
+      personWalk(cast.pong, [[1.6, 2.0], [0.82, 0.9], [0.82, -0.3], [0.84, -1.35]], { speed: 1.05, ry: Math.PI / 2,
+        then: () => after(0.5, () => { personSit(cast.pong, true, SEAT.pong); play.pongSat = true; }) });
     }
     /* Pa Noi gives him his number when he comes up to her (the waypoint is on Pong, then on her) */
     function greet() {
@@ -3380,9 +3454,14 @@
       line('q1board', null);
       queueFn(() => {
         waitBegin(false);
-        /* Pong takes his seat on the front bench to wait */
-        personWalk(cast.pong, [[1.6, 2.0], [0.82, 0.9], [0.82, -0.3], [0.84, -1.35]], { speed: 1.05, ry: Math.PI / 2,
-          then: () => after(0.5, () => { personSit(cast.pong, true, SEAT.pong); play.pongSat = true; }) });
+        /* Pong takes his seat on the front bench to wait: on from his walk in if he is still on it, in from the gate if he
+           never came (a Continue beside Pa Noi — CP13: the walk in replaced the walk to the seat, which alone sits him
+           down, and the farmer and Pong could never be asked) */
+        whenReady(cast.pong, (P) => {
+          if (P.walk && P.walk.tag === 'in') P.walk.then = pongToSeat;
+          else if (P.group.position.z > 4.2) personWalk(P, ARRIVE_IN.slice(0, -1), { speed: 1.1, then: pongToSeat });
+          else pongToSeat();
+        });
       });
     }
 
@@ -3400,7 +3479,7 @@
       if (play.water || phase !== 'wait') return;
       if (play.busy || play.calling) { after(4, waterOffer); return; }
       play.water = true;
-      if (worldSfx) worldSfx('w4water', 0.45);                     // the dispenser's tap into a paper cup
+      queueFn(() => { if (worldSfx) worldSfx('w4water', 0.45); });   // the dispenser's tap into a paper cup, as she speaks (CP13)
       line('pn1water', cast.noi);
       line('q1water', null);
     }
@@ -3515,7 +3594,11 @@
     /* ================================================================ P3 · CALLED */
     function calledBegin(resumed) {
       play.called = true;
-      setPhase('called');
+      warmWork();
+      /* OBJECTIVE COMPLETE only when the order on the box was to wait (CP13: an unfinished "Ask about the master · 1/3"
+         was congratulated as the number came — the v8.7 lie) */
+      const waited = threeDone() && !(play.pongSat && !play.asked.has('pong'));
+      setPhase('called', undefined, resumed || !waited ? { complete: false } : undefined);
       if (!resumed) {
         line('pg1go', cast.pong);
         queueFn(() => comeOut(cast.lim));
@@ -3524,10 +3607,11 @@
       whenReady(cast.pong, () => {
         personWalk(cast.pong, [[0.82, 0.6], [0.82, 1.9], [4.4, 1.9], [6.6, -2.4], [7.35, -4.9]], { speed: 1.1, ry: Math.PI });
       });
-      if (kit && kit.rain) kit.rain(0.12, 4, { len: 0.5 });
+      if (kit && kit.rain) kit.rain(0.12, { secs: 4, len: 0.5 });   // (CP13: the engine's shape is (k, opts) — the ease and the length were dropped)
     }
     function enterRoom() {
       if (phase !== 'called') return false;
+      lineQ.length = 0;                            // (CP13: Pong's yard line and Lim's walk out were carried into the room)
       if (kit && kit.rain) kit.rain(0, 0);
       if (worldSfx) worldSfx('w4sandals', 0.7);
       toWorld('R', false, 'consult');
@@ -3592,7 +3676,7 @@
       /* the order is done the moment he kneels (CP8, by photograph: "Kneel on the mat" stood over him kneeling through the
          whole greeting); a resume that kneels him puts it away without a COMPLETE */
       if (phase === 'consult') objectiveFor('consult', instant ? { complete: false } : undefined);
-      if (worldSfx) worldSfx('w4kneel', 0.6);
+      if (!instant && worldSfx) worldSfx('w4kneel', 0.6);         // (CP13: a Continue kneels him without a sound)
       if (instant) {
         yaw.position.x = RX + CMAT.x; yaw.position.z = CMAT.z; yaw.rotation.y = faceMaster(); pitch.rotation.x = -0.06;
         if (kit) kit.pose('lying', { y: KNEEL.y, yaw: faceMaster(), span: KNEEL.span, pitchLo: KNEEL.lo, pitchHi: KNEEL.hi, secs: 0.05 });
@@ -3604,7 +3688,7 @@
     function greeting() {
       const M2 = cast.master, PR = cast.pongR;
       if (kit && kit.pray) kit.pray(true, { secs: 0.8, y: -0.33 });         // the wai on arrival
-      lines([['fm1hello', M2], ['q1wai', null]]);
+      lines([['q1wai', null], ['fm1hello', M2]]);                         // the junior greets first; the senior returns it (research §1.4)
       queueFn(() => { if (kit && kit.pray) kit.pray(false, { secs: 0.9 }); });
       lines([['fm1shop', M2], ['pg1shop', PR], ['q1shop', null]]);
       queueFn(() => { if (PR.head && M2.head) PR.lookAt = M2.head; });       // Pong says it to the master in Thai
@@ -3715,20 +3799,21 @@
       }
       /* Pa Noi comes through the curtained doorway with the tray */
       const NR = cast.noiR, run = play.run;
-      whenReady(NR, () => {
+      const trayDown = (P) => {
+        if (!live(run)) return;
+        trayShow(true);
+        if (worldSfx) worldSfx('w4tray', 0.6);
+        line('pn1tray', P);
+        if (P) queueFn(() => personWalk(P, [[1.75, -1.1], [2.07, -2.45]], { speed: 0.9, then: () => { P.group.visible = false; } }));
+        lines([['pg1items', cast.pongR], ['fm1items', cast.master]]);
+        queueFn(() => lookTray(true, () => chooseItem()));
+      };
+      whenReadyOr(NR, () => {
         if (!live(run)) return;
         NR.group.visible = true;
         personPut(NR, 2.07, -2.3, 0);
-        personWalk(NR, [[1.75, -1.1], [0.92, -0.62]], { speed: 0.9, ry: -2.3, then: () => {
-          if (!live(run)) return;
-          trayShow(true);
-          if (worldSfx) worldSfx('w4tray', 0.6);
-          line('pn1tray', NR);
-          queueFn(() => personWalk(NR, [[1.75, -1.1], [2.07, -2.45]], { speed: 0.9, then: () => { NR.group.visible = false; } }));
-          lines([['pg1items', cast.pongR], ['fm1items', cast.master]]);
-          queueFn(() => lookTray(true, () => chooseItem()));
-        } });
-      });
+        personWalk(NR, [[1.75, -1.1], [0.92, -0.62]], { speed: 0.9, ry: -2.3, then: () => trayDown(NR) });
+      }, () => after(1.2, () => trayDown(null)));   // her model never came: the tray is simply there, her voice from the doorway
     }
     function chooseItem() {
       const run = play.run;
@@ -3771,9 +3856,9 @@
       { at: 19.5, end: 24.1, text: W.chant2, sub: W.chant2en }, { at: 25.3, end: 30.1, text: W.chant2, sub: W.chant2en },
       { at: 31.3, end: 33.8, text: W.chant3, sub: W.chant3en }];
     function chantStart() {
-      if (worldSfx) worldSfx('fm1chant', 0.8);
+      sfxReady('fm1chant', 0.8, d => play.chants.push(d));
       if (kit && kit.captions) kit.captions(CHANT_CAPS());
-      play.chantNext = dayClock.t + (SECS.fm1chant || 28);
+      play.chantNext = wallNow() + (SECS.fm1chant || 28);          // on WALL time (CP13: the chapter clock stops under a ledger page)
     }
     function workBegin(resumed) {
       setPhase('work', [...play.signs].join(','));
@@ -3800,11 +3885,15 @@
       if (!signOpen(key)) return false;
       play.busy = true;
       const S2 = SIGN[key], run = play.run;
+      /* she is gone as he turns to her (CP13: the doorway's cone is wider than her fade on a phone, so she could stand there
+         through "No. There's no one.") — and back at the edge of sight after his line, while the work goes on */
+      if (key === 'her') herCtl.show(false);
       line(S2[0], null);
       queueFn(() => writeLedger('saw:' + key, 'saw', S2[1], S2[2]).then(() => {
         if (!live(run)) return;
         play.signs.add(key); play.busy = false;
         setPhase('work', [...play.signs].join(','));
+        if (key === 'her' && phase === 'work') herCtl.show(true);
         if (play.signs.size >= 4) stormBegin(false);
       }));
       return true;
@@ -3825,21 +3914,30 @@
       play.signsOn = false;
       roomCtl.rain(1, resumed ? 0.01 : 2.5);
       roomCtl.tube(false, !resumed);
-      if (!resumed && worldSfx) worldSfx('w4tube', 0.55);           // the tube flickers and dies with the power
+      if (!resumed) sfxReady('w4tube', 0.55, null, 1);              // the tube flickers and dies with the power
       droneStop(0);
-      if (worldSfx) play.drone = worldSfx('w4storm', 0.42);        // the one low drone, rising under WHAT CHANGED?
       after(resumed ? 0.05 : 1.7, () => look('DARK', resumed ? 0.01 : 0.5));
       if (kit && kit.lightning) kit.lightning({ power: 0.7, near: 0.25, thunder: 'w4thunder', vol: 0.8 });
       herCtl.at('door'); herCtl.show(true); herPosSync();
       if (!resumed) line('pg1power', cast.pongR);
-      queueFn(() => changeEvent());
+      /* he faces the master before the room is shown to him (CP13: WHAT CHANGED? was played from wherever the fourth sign
+         left his eyes — on a phone every change could be off the screen — and nothing can turn the view while it runs) */
+      queueFn(() => faceRoom(() => changeEvent()));
+    }
+    function faceRoom(done) {
+      const d = Math.abs(angTo(yaw.rotation.y, faceMaster())) + Math.abs(pitch.rotation.x + 0.06);
+      if (d < 0.02) { done(); return; }
+      turnTo(faceMaster(), Math.min(1.0, 0.35 + d * 0.6), Object.assign({ pitch: -0.06 }, KNEEL), done);
     }
     function changeEvent() {
       const run = play.run;
       if (!kit || !kit.event) { stormEnd(null); return; }
       kit.event({ kind: 'change', label: W.chgLabel, brief: W.chgBrief, spots: [chg.cup, chg.cloth, chg.clock, chg.her],
         rounds: [[], ['cup'], ['cloth', 'clock'], ['her'], []],
-        lead: 1.4, dark: 1.6, lit: 2.6, hit: 3, miss: 1, falseCost: 3, tol: 0.09,
+        lead: 1.4, dark: 1.6, lit: 2.6, hit: 3, miss: 1, falseCost: 3, falseCap: 2, tol: 0.09,   // (CP13: at most two false taps paid a flash — a panicked thumb could faint him and lose the chapter)
+        /* the one low drone rises from START (CP13: begun at the storm, its swell had passed before a slow reader of the
+           brief had played a round) */
+        onBegin() { droneStop(0); sfxReady('w4storm', 0.42, d => { if (phase === 'storm') play.drone = d; else try { d.stop(); } catch (e) {} }); },
         apply(r) {
           if (r === 1) { roomCtl.cup(1); chg.cup.pos.x = RX + RMC.CUP[1].x; chg.cup.pos.z = RMC.CUP[1].z; }
           if (r === 2) { roomCtl.clothShift(true); roomCtl.clock(false); }
@@ -3850,7 +3948,7 @@
           else if (ph === 'dark') look('DARK', 0.15);
           else if (ph === 'end') look('DARK', 0.3);
         }
-      }).then(res => { if (live(run)) stormEnd(res); });
+      }).then(res => { if (live(run) && !(res && res.aborted)) stormEnd(res); });   // (CP13: a faint aborts it — not an end)
     }
     function droneStop(tau) {
       const d = play.drone; play.drone = null;
@@ -3858,9 +3956,11 @@
       try { const t = d.context.currentTime; if (d.__g && tau > 0) { d.__g.gain.setTargetAtTime(0, t, tau); d.stop(t + tau * 6); } else d.stop(); } catch (e) {}
     }
     function stormEnd(res) {
-      bank(res && res.wrong ? W.noteStormFalse : W.noteStormTrue);
+      setPhase('storm', 'done');                   // the storm is paid: a Continue from here lands on the decision (CP13)
+      bank(res && res.wrong ? W.noteStormFalse : res && res.right ? W.noteStormTrue : W.noteStormNone);   // (CP13: a storm with nothing tapped and every change missed said he 'saw only what changed')
       roomCtl.rain(0, 0.25);                       // all at once
       droneStop(0.08);                             // and the drone with it
+      chantStop(0.08); play.chantNext = 0;         // and the chant: he has stopped (CP13: it ran on under the decision)
       roomCtl.smokeStraight(true);                 // and every sign settles: the table's smoke goes straight up with the fan's air
       herCtl.show(false);
       if (worldSfx) worldSfx('w4rainstop', 0.7);
@@ -3871,7 +3971,10 @@
 
     /* ================================================================ DECIDE */
     function decideBegin(resumed) {
-      bank(play.asked.size ? W.noteAsked : W.noteNeverAsked);
+      /* whom he asked, from the ledger as well (CP13: play.asked is rebuilt only for 'wait', so a Continue in the room
+         told him he never asked) */
+      const askedAny = play.asked.size || (kit && kit.ledger && kit.ledger.entries().some(e => /^who:/.test(e.id)));
+      bank(askedAny ? W.noteAsked : W.noteNeverAsked);
       if (kit && kit.ledger) {
         const ents = kit.ledger.entries(), f = ents.filter(e => e.kind === 'fact').length, m = ents.filter(e => e.kind === 'meaning').length;
         if (f + m) bank(f >= m ? W.noteFacts : W.noteMeanings);
@@ -3887,7 +3990,7 @@
       if (getState() !== 'play') return;
       turnTick(wdt);
       const inC = worldOf(yaw.position.x) === 'C', inR = worldOf(yaw.position.x) === 'R';
-      if (phase === 'arrive' && inC) {
+      if (phase === 'arrive' && inC && !play.greeted) {   // (CP13: after the greeting it came back over her for ten seconds)
         const P = cast.pong;
         if (P && P.ready && P.walk) kit.waypoint({ x: P.group.position.x, y: 2.0, z: P.group.position.z });
         else kit.waypoint({ x: cast.noi.group.position.x, y: 2.0, z: cast.noi.group.position.z });
@@ -3899,12 +4002,12 @@
           && Math.hypot(yaw.position.x - (RX + CMAT.x), yaw.position.z - CMAT.z) < 0.42) kneel(false);
       if ((phase === 'work' || phase === 'storm') && inR) {
         /* the chant goes on, murmured, under the signs and the storm */
-        if (dayClock.t >= play.chantNext) { if (worldSfx) worldSfx('fm1chant2', 0.5); play.chantNext = dayClock.t + (SECS.fm1chant2 || 40); }
+        if (play.chantNext && wallNow() >= play.chantNext) { sfxReady('fm1chant2', 0.5, d => play.chants.push(d)); play.chantNext = wallNow() + (SECS.fm1chant2 || 40); }
         if (phase === 'work') {
           /* the cloth breathes now and then; his hands move over the mala, so his shadow can be seen to follow late */
           if (dayClock.t >= play.breathNext) { roomCtl.breathe(); if (worldSfx) worldSfx('w4cloth', 0.35); play.breathNext = dayClock.t + 9 + 5 * ((dayClock.t * 7.13) % 1); }
           if (dayClock.t >= play.gestNext) { personTalk(cast.master, 2.6); if (worldSfx) worldSfx('w4mala', 0.3); play.gestNext = dayClock.t + 7 + 4 * ((dayClock.t * 3.71) % 1); }
-          if (!play.herSeen && her.k > 0.45) play.herSeen = true;
+          if (!play.herSeen && (her.k > 0.45 || (cast.her && cast.her.failed))) play.herSeen = true;   // (CP13: her model failed — the doorway is still the sign)
           herPosSync();
         }
       }
@@ -3912,6 +4015,16 @@
 
     /* ---------------------------------------------------------------- the hotspots */
     const near = (P, dy = 1.1) => ({ x: P ? P.group.position.x : 0, y: (P ? P.group.position.y : 0) + dy, z: P ? P.group.position.z : 0 });
+    /* does the ground segment (ax, az)→(bx, bz) pass through the box { x0, x1, z0, z1 }? (a slab test) */
+    function segBox(ax, az, bx, bz, B2) {
+      let t0 = 0, t1 = 1;
+      for (const [p, d, lo, hi] of [[ax, bx - ax, B2.x0, B2.x1], [az, bz - az, B2.z0, B2.z1]]) {
+        if (Math.abs(d) < 1e-9) { if (p < lo || p > hi) return false; continue; }
+        let u0 = (lo - p) / d, u1 = (hi - p) / d; if (u0 > u1) [u0, u1] = [u1, u0];
+        t0 = Math.max(t0, u0); t1 = Math.min(t1, u1); if (t0 > t1) return false;
+      }
+      return true;
+    }
     const askSpot = (key, Pf, prompt) => {
       const pos = { x: 0, y: 0, z: 0 };
       return { id: 'ask-' + key, get pos() { const P = Pf(); const p = near(P, 1.15); pos.x = p.x; pos.y = p.y; pos.z = p.z; return pos; },
@@ -3934,7 +4047,8 @@
       askSpot('sb', () => cast.sombat, W.hotSombat),
       askSpot('pong', () => cast.pong, W.hotPong),
       { id: 'tree', pos: { x: CMP.TAKHIAN.x, y: 1.5, z: CMP.TAKHIAN.z + 0.9 }, radius: 12, aim: 0.22, pressAim: true, mark: false, prompt: W.hotTree,
-        enabled: () => !play.tree && !play.busy && (phase === 'wait' || phase === 'arrive') && play.greeted && worldOf(yaw.position.x) === 'C',
+        enabled: () => !play.tree && !play.busy && (phase === 'wait' || phase === 'arrive') && play.greeted && worldOf(yaw.position.x) === 'C'
+                       && !segBox(yaw.position.x, yaw.position.z, CMP.TAKHIAN.x, CMP.TAKHIAN.z + 0.9, CMP.ROOMX),   // (CP13: offered through the room's walls)
         onInteract() { return treeLook(); } },
       { id: 'door', pos: { x: RDOOR.x, y: 1.6, z: RDOOR.z - 0.5 }, radius: 3.2, prompt: W.hotDoor,
         hits: markHit(() => ({ x: RDOOR.x, y: 1.6, z: RDOOR.z - 0.5 }), 0.55),
@@ -3963,7 +4077,7 @@
     let castLast = 0;
     function updateNotes(dt, t) {
       const now = wallNow();
-      const wdt = castLast ? Math.min(0.1, Math.max(0, now - castLast)) : 0; castLast = now;
+      const raw = castLast ? Math.max(0, now - castLast) : 0, wdt = Math.min(0.1, raw); castLast = now;
       domeFrame(now);
       roomFrame(now);
       peopleTick(now, wdt);                               // the cast's clocks run in films too (v5.19): only their looks wait for play
@@ -3974,11 +4088,11 @@
       taxiFrame(now);
       cabFrame(now);
       const st = getState();
-      mixBeds(wdt, st);
+      mixBeds(Math.min(1, raw), st);                   // the beds' ease on the unclamped wall step (CP13: at 2 fps "all at once" took 5 s)
       const live = st === 'play' || st === 'unlock' || st === 'choose';
       if (!booted && !preplaced && kit) {
-        const RA = resumeAt(kit.getPhase());
-        if (RA) { preplaced = RA.w; placeIn(RA.w); }
+        const w0 = preStage(kit.getPhase());
+        if (w0) preplaced = w0;
       }
       if (!live) { lastWall = 0; return; }
       if (lastWall) dayClock.t += Math.min(0.5, now - lastWall);
@@ -3997,11 +4111,11 @@
        as the room's rain (light, then the downpour), and after the storm THE HUSH: nothing, then the after-rain's frogs
        and drips. In a film the beds go down: every film cues its own sound, written to its pictures. The order is
        DATA.ambience.beds'. */
-    const bedMix = { yard: 0, paddy: 0, room: 0, rainl: 0, rainh: 0, after: 0, taxi: 0, radio: 0 };
+    const bedMix = { yard: 0, paddy: 0, room: 0, rainl: 0, rainh: 0, after: 0, radio: 0 };
     const bedStep = (v, a, b) => { const u = v <= a ? 0 : v >= b ? 1 : (v - a) / (b - a); return u * u * (3 - 2 * u); };
     function mixBeds(wdt, st) {
       if (!(wdt > 0)) return;
-      const want = { yard: 0, paddy: 0, room: 0, rainl: 0, rainh: 0, after: 0, taxi: 0, radio: 0 };
+      const want = { yard: 0, paddy: 0, room: 0, rainl: 0, rainh: 0, after: 0, radio: 0 };
       const w = worldOf(yaw.position.x);
       if (st !== 'cine') {
         if (w === 'C') {
@@ -4010,6 +4124,7 @@
           want.paddy = [0.08, 0.13, 0.18][late];
           const H = CMP.HOUSE, d = Math.hypot(yaw.position.x - (H.x0 + H.x1) / 2, yaw.position.z - (H.z0 + H.z1) / 2) / 7;
           want.radio = 0.3 / (1 + d * d);
+          if (play.called) want.rainl = 0.2;          // the first drops on the sala's roof as his number comes (CP13: silent)
         } else if (w === 'R') {
           const rk = room.rainK || 0;
           want.room = 0.22 * Math.max(room.fanSpeed || 0, room.tubeK || 0);
@@ -4017,20 +4132,57 @@
           /* (CP12, priced against the voices: at 0.55 the downpour, the room and the drone summed to −20 dBFS in the band
              a voice lives in, and Pong's whisper had 5 dB over it through the duck; at 0.40 it has 8, the cast's speech 12) */
           want.rainh = 0.40 * bedStep(rk, 0.55, 1);
-          if (phase === 'decide' && rk < 0.02) { if (hushAt < 0) hushAt = dayClock.t; } else hushAt = -1;
-          want.after = hushAt >= 0 && dayClock.t - hushAt > 2.5 ? 0.3 : 0;
+          /* on WALL time (CP13: the chapter clock stands still under the decision, so the after-rain never came) */
+          if (phase === 'decide' && rk < 0.02) { if (hushAt < 0) hushAt = wallNow(); } else hushAt = -1;
+          want.after = hushAt >= 0 && wallNow() - hushAt > 2.5 ? 0.3 : 0;
         }
       }
       for (const k in bedMix) bedMix[k] += (want[k] - bedMix[k]) * (1 - Math.exp(-wdt / (k === 'after' ? 2.5 : 0.9)));
       const B = DATA.ambience.beds;
       B[0][1] = bedMix.yard; B[1][1] = bedMix.paddy; B[2][1] = bedMix.room; B[3][1] = bedMix.rainl;
-      B[4][1] = bedMix.rainh; B[5][1] = bedMix.after; B[6][1] = bedMix.taxi; B[7][1] = bedMix.radio;
+      B[4][1] = bedMix.rainh; B[5][1] = bedMix.after; B[6][1] = bedMix.radio;
     }
     function updatePile() {}
     function updateFire() {}
     function updateSlow() {}
 
     /* ------------------------------------------------------------ a resume (§10.1) */
+    /* A CONTINUE IS PLACED BEFORE THE CARD (the v4.8 contract): under the chapter card the saved moment's picture is set —
+       where he is, the light, the board, who sits where, his kneel and the room's state — so the card's dissolve shows the
+       moment and nothing jumps when play begins (CP13: only the room's door was placed, so a wait showed the yard at noon
+       with Pong at the gate, and a storm showed the room lit from the door, then everything moved). applyPhase does it all
+       again on the first live frame, and every part of it is idempotent. */
+    function preStage(p0) {
+      const t = String(p0 || '').split(':'), p = PHASES.includes(t[0]) ? t[0] : 'arrive';
+      let tag = t.slice(1).join(':'); const di = tag.indexOf('~'); if (di >= 0) tag = tag.slice(0, di);
+      if (p === 'wait' || p === 'called') {
+        let n = p === 'called' ? 14 : 9;
+        for (const part of tag.split(';')) if (/^n\d+$/.test(part)) n = Math.min(14, Math.max(9, parseInt(part.slice(1), 10)));
+        yaw.position.x = 3.1; yaw.position.z = 3.8; yaw.rotation.y = 0.62; pitch.rotation.x = -0.05;
+        look(SKY[n], 0); boardSet(n);
+        whenReady(cast.pong, (P) => { if (!booted) { personPut(P, SEAT.pong.x, SEAT.pong.z, Math.PI / 2, CMP.SALA.floor); seatNow(P, true); } });
+        if (n >= 12) whenReady(cast.joy, (P) => { if (!booted) P.group.visible = false; });
+        if (n >= 13) whenReady(cast.lim, (P) => { if (!booted) P.group.visible = false; });
+        return 'C';
+      }
+      const RA = resumeAt(p0);
+      if (!RA) return '';
+      placeIn('R');
+      if (p === 'consult') return 'R';
+      yaw.position.x = RX + CMAT.x; yaw.position.z = CMAT.z; yaw.rotation.y = faceMaster(); pitch.rotation.x = -0.06;
+      if (kit) kit.pose('lying', { y: KNEEL.y, yaw: faceMaster(), span: KNEEL.span, pitchLo: KNEEL.lo, pitchHi: KNEEL.hi, secs: 0.05 });
+      const bagged = PIECES.find(k => kit && kit.has && kit.has(k)) || '';
+      play.item = p === 'items' && PIECES.includes(tag) ? tag : bagged;     // the piece he took is not on the tray
+      if (p !== 'items') play.offered = true;
+      trayShow(true);
+      if (p === 'items') return 'R';
+      roomCtl.candles(true, 0.01);
+      if (p === 'work') { roomCtl.rain(0.7, 0.01); return 'R'; }
+      if (p === 'storm' && tag !== 'done') { roomCtl.rain(1, 0.01); roomCtl.tube(false); look('DARK', 0); return 'R'; }
+      roomCtl.tube(false); roomCtl.rain(0, 0.01); roomCtl.cup(1); roomCtl.clothShift(true); roomCtl.clock(false); roomCtl.smokeStraight(true);
+      look('HUSH', 0);
+      return 'R';
+    }
     function resumeAt(p0) {
       const tag = String(p0 || '').split(':'), p = PHASES.includes(tag[0]) ? tag[0] : 'arrive';
       if (PHASES.indexOf(p) >= PHASES.indexOf('consult')) return { w: 'R', at: p, tag: tag.slice(1).join(':') };
@@ -4051,7 +4203,10 @@
       if (p === 'wait') waitBegin(true); else calledBegin(true);
     }
     function applyPhase(p0) {
-      const t = String(p0 || '').split(':'), p = PHASES.includes(t[0]) ? t[0] : 'arrive', tag = t.slice(1).join(':');
+      const t = String(p0 || '').split(':'), p = PHASES.includes(t[0]) ? t[0] : 'arrive';
+      let tag = t.slice(1).join(':');
+      const dayAt = tag.indexOf('~');
+      if (dayAt >= 0) { const d = tag.slice(dayAt + 1); tag = tag.slice(0, dayAt); if (DAY_TH[d]) play.day = d; }
       if (p === 'arrive') { arriveBegin(); return; }
       if (p === 'wait') {
         for (const part of tag.split(';')) {
@@ -4059,11 +4214,18 @@
           else if (part.startsWith('m')) { for (const k of part.slice(1).split(',')) if (ASK[k]) play.missed.add(k); }
           else for (const k of part.split(',')) if (ASK[k]) play.asked.add(k);
         }
+        /* a save in the seconds between the board's flip and the walk in (CP13): whoever's number is up has gone in, so
+           one he never asked is missed (a "!" over her empty seat otherwise), and FOURTEEN is the call itself (the
+           wait could never call again: a soft-lock) */
+        if (play.n >= 12 && !play.asked.has('joy')) play.missed.add('joy');
+        if (play.n >= 13 && !play.asked.has('lim')) play.missed.add('lim');
+        if (play.n >= 14) { play.called = true; yardResume('called'); return; }
         yardResume('wait');
         return;
       }
       if (p === 'called') { play.n = 14; play.called = true; yardResume('called'); return; }
       /* the room */
+      warmWork();
       if (p === 'consult' && DAY_TH[tag]) play.day = tag;
       const bagged = ['nangkwak', 'takrut', 'phayant'].find(k => kit && kit.has && kit.has(k));
       if (p === 'items') { if (['nangkwak', 'takrut', 'phayant'].includes(tag)) play.item = tag; else if (bagged) play.item = bagged; }
@@ -4072,12 +4234,13 @@
       if (p === 'storm' || p === 'decide') for (const k of Object.keys(SIGN)) play.signs.add(k);
       toWorld('R', true, p, tag);
       if (p === 'consult') { consultBegin(true); return; }
+      if (play.day) slateWrite(play.day);
       kneel(true);
       if (p === 'items') { itemsBegin(true); return; }
       trayShow(true);
       if (p === 'work') { workBegin(true); return; }
       roomCtl.candles(true, 0.01);
-      if (p === 'storm') { stormBegin(true); return; }
+      if (p === 'storm' && tag !== 'done') { cast.master.look = 0; play.chantNext = wallNow() + 0.5; stormBegin(true); return; }   // (CP13: his eyes shut for the chant, and the chant under it)
       /* decide: the room as the storm left it */
       roomCtl.tube(false); roomCtl.rain(0, 0.01); roomCtl.cup(1); roomCtl.clothShift(true); roomCtl.clock(false); roomCtl.smokeStraight(true);
       look('HUSH', 0);
@@ -4230,7 +4393,7 @@
       const b = new THREE.Mesh(new THREE.PlaneGeometry(0.09, 0.055), M({ map: tex(makeMasterCard(THREE, cnv, true)), roughness: 0.8 })); b.rotation.y = Math.PI; b.position.z = -0.0005; g.add(b);
       return g;
     })();
-    /* his keys (the coda): a steel ring, three keys, a little brass Buddha on the fob */
+    /* his keys (the coda): a steel ring, three keys, a plain brass fob */
     const keys = (() => {
       const g = new THREE.Group(); g.visible = false; g.userData.dyn = true;
       const mS = M({ color: 0xc8ccd0, roughness: 0.25, metalness: 0.9 }), mB = M({ color: 0xc8a048, roughness: 0.3, metalness: 0.85 });
@@ -5032,11 +5195,11 @@
       play.day = ''; play.item = ''; play.offerOn = false; play.offered = false;
       play.signs.clear(); play.signsOn = false; play.herSeen = false; play.kneeling = false; play.turning = null;
       play.breathNext = 0; play.gestNext = 0; play.chantNext = 0;
-      droneStop(0);
+      droneStop(0); chantStop(0);
       boardSet(9); slateWrite(null);
       matZone.visible = false; tray.visible = false;
       /* the people where the day began */
-      for (const P of people) { P.walk = null; P.lookAt = null; P.hideUnseen = false; P.pendingOut = false; P.talkUntil = 0; P.turnTo = null; if (P.one) P.one.until = 0; }
+      for (const P of people) { P.walk = null; P.lookAt = P.lookHome || null; P.hideUnseen = false; P.pendingOut = false; P.talkUntil = 0; P.turnTo = null; if (P.one) P.one.until = 0; }
       const at = (P, x, z, ry, y, seated) => whenReady(P, () => { P.group.visible = true; personPut(P, x, z, ry, y); seatNow(P, seated); });
       at(cast.pong, 3.45, 11.6, Math.PI, undefined, false);
       at(cast.joy, SEAT.joy.x, SEAT.joy.z, Math.PI / 2, CMP.SALA.floor, true);
@@ -6171,7 +6334,7 @@
      lines is held by a sound with a reason (v21.30). The coda's cues are written out in each ending, because the engine
      warms what a scene's own source cues. */
   function introFilm(c, s, api) {
-    const { tr, step, fade, sfx, rawK, stage, phone } = api;
+    const { tr, step, fade, sfx, sfxFade, rawK, stage, phone } = api;
     const O = OPEN;
     c.keepFade = true;                         // it ends on black: the chapter card comes up over it (v14.1's law)
     step(0, () => stage.films.begin('open', c, api));
@@ -6204,6 +6367,8 @@
     sfx(O.o5b, 'w4drivepass', 0.55);           // the pickup going by the lens, the palms
     /* O6 · THE PICKUP */
     sfx(O.o6, 'w4diesel', 0.5);                // the diesel, from inside
+    sfx(O.o6 + 9.2, 'w4diesel', 0.5);          // and on under the first's tail to the stop (CP13: the cab drove six seconds with no engine)
+    sfxFade(O.stop - 0.5, O.stop + 0.1, 'w4diesel');
     sfx(O.o6 + 0.6, 'w4radio', 0.22);          // the radio low (luk thung)
     sfx(51.6, 'pg1car', 1);                    // "This Ajahn very strong one, brother. Business, family, everything... you will see!"  (→ ~57.6)
     sfx(O.o6 + 1.1, 'w4drops', 0.4);           // the first fat drops on the windscreen
@@ -6211,7 +6376,7 @@
     /* O7 · THE TURN */
     sfx(O.o7 + 1.0, 'w4gravel', 0.55);         // off the road onto the red earth
     sfx(66.0, 'w4thunder', 0.8);
-    sfx(O.stop - 0.3, 'w4engoff', 0.5);        // the engine dying
+    sfx(O.stop - 0.3, 'w4engoff', 0.16);       // the engine dying, from the idle's own level (CP13: at 0.5 it came back 10 dB louder to die)
     sfx(68.6, 'pg1here', 1);                   // "Here, here! This is Ajahn's samnak."  (→ ~71.6)
     fade(O.black, O.end, 0, 1);
     step(O.end, () => stage.films.end());
@@ -6236,6 +6401,7 @@
       sfx(0.4, 'w4drips', 0.5);                              // the eaves dripping after the storm (the room's only sound)
       sfx(0.8, 'w4breath', 0.35);                            // his breath, slowed
       sfx(T.pao + 2.1, 'w4pao', 0.6); sfx(T.pao + 2.9, 'w4pao', 0.6); sfx(T.pao + 3.7, 'w4pao', 0.6);   // three breaths onto his crown
+      sfx(10.2, 'w4drips', 0.45);                            // the eaves still dripping, under the blessing's wait (CP13: 2.8 s of silence)
       sfx(T.bless + 0.3, 'fm1blessA', 1);                    // "May your trade go well..."  (→ ~16.4)
       /* Pong's word for the piece he took (all three written out, so the engine warms each) */
       const it = api.stage && api.stage.play ? api.stage.play.state.item : '';
@@ -6246,6 +6412,7 @@
       sfx(T.bless + 9.5, 'w4frogs', 0.35);                   // the frogs starting outside now the rain has stopped (they hold the
                                                              // breath between Pong's last word and the master's, whichever piece)
       sfx(T.book + 0.6, 'w4page', 0.5);                      // the book opened on his knee
+      sfx(T.book - 0.2, 'w4frogs', 0.3);                     // and the frogs go on outside (CP13: 3.4 s of silence after his line)
       sfx(T.book + 1.0, 'q1A1', 1);                          // "I don't know what I saw."  (→ ~37.8)
       sfx(T.book + 1.0, 'w4pen', 0.4);
       fade(T.out - 0.6, T.out, 0, 1); fade(T.out, T.out + 0.8, 1, 0);
@@ -6270,6 +6437,7 @@
       sfx(T.coda + 9.2, 'q1K2', 1);                          // "When I got back to Singapore..."  (→ ~12.5)
       fade(T.coda + CODA.k2 - 0.3, T.coda + CODA.k2, 0, 1); fade(T.coda + CODA.k2, T.coda + CODA.k2 + 0.6, 1, 0);
       sfx(T.coda + CODA.k2 + 0.3, 'w4shutter', 0.7);         // the shutter again, in grey light
+      sfxFade(T.coda + CODA.k2 - 0.5, T.coda + CODA.k2 + 0.1, 'w4taxi');   // the taxi gone with its picture (CP13: it ran on under the shop)
       sfx(T.coda + 13.4, 'q1K3', 1);                         // "...I stopped feeling like myself."  (→ ~16.3)
       sfx(T.coda + CODA.k2 + 4.4, 'w4pat', 0.5);             // his free hand patting his pocket for the keys in the other
       sfx(T.coda + CODA.k3, 'w4coda', 0.7);                  // the coda's chord
@@ -6282,6 +6450,7 @@
     const { sfx, sfxFade, fade } = api;
     endingScene(c, api, 'B', (T) => {
       sfx(0.3, 'w4drips', 0.5);
+      sfx(10.0, 'w4drips', 0.45);                            // the eaves, on into the master's long look (CP13: 1.8 s of silence)
       sfx(0.6, 'q1B1', 1);                                   // "Pong... ask him who's standing behind him."  (→ ~4.4)
       sfx(T.ask + 0.1, 'pg1B1', 1);                          // "Behind? ...Okay. I ask."  (→ ~7.9)
       sfx(T.ask + 4.0, 'pg1B2', 1);                          // (Pong asks the master, in Thai)  (→ ~13.2)
@@ -6306,6 +6475,7 @@
       sfx(T.cab + 5.2, 'pg1B7', 1);                          // "Next time you bring me, okay? I also want to know my future!"  (→ ~73.9)
       sfx(T.cab + 6.0, 'w4card', 0.35);                      // the card turned over in his fingers
       sfx(T.wide + 0.6, 'q1B4', 1);                          // "I'd asked to understand... and shown a man I didn't know what I could see."  (→ ~81.5)
+      sfxFade(T.coda - 1.0, T.coda + 0.3, 'w4after');        // (CP13: it ran 2.3 s into the Singapore taxi)
       sfxFade(T.coda - 1.2, T.coda + 0.2, 'w4endB');
       fade(T.coda - 0.5, T.coda, 0, 1); fade(T.coda, T.coda + 0.8, 1, 0);
       sfx(T.coda + 0.1, 'w4taxi', 0.6);
@@ -6314,6 +6484,7 @@
       sfx(T.coda + 9.2, 'q1K2', 1);
       fade(T.coda + CODA.k2 - 0.3, T.coda + CODA.k2, 0, 1); fade(T.coda + CODA.k2, T.coda + CODA.k2 + 0.6, 1, 0);
       sfx(T.coda + CODA.k2 + 0.3, 'w4shutter', 0.7);
+      sfxFade(T.coda + CODA.k2 - 0.5, T.coda + CODA.k2 + 0.1, 'w4taxi');   // the taxi gone with its picture (CP13: it ran on under the shop)
       sfx(T.coda + 13.4, 'q1K3', 1);
       sfx(T.coda + CODA.k2 + 4.4, 'w4pat', 0.5);
       sfx(T.coda + CODA.k3 + 0.6, 'w4buzz', 0.7);            // his phone lights: the Ajahn
@@ -6348,6 +6519,7 @@
       sfx(T.road, 'w4diesel', 0.45);
       sfx(T.road + 0.4, 'w4drops', 0.4);
       sfx(T.road + 5.6, 'q1C3', 1);                          // "I was certain before I knew anything. And the certainty came home with me."  (→ ~50.0)
+      sfxFade(T.coda - 1.0, T.coda + 0.3, 'w4rainl');        // (CP13: it ran a second into the Singapore taxi)
       sfxFade(T.coda - 1.2, T.coda + 0.2, 'w4endC');
       fade(T.coda - 0.5, T.coda, 0, 1); fade(T.coda, T.coda + 0.8, 1, 0);
       sfx(T.coda + 0.1, 'w4taxi', 0.6);
@@ -6356,6 +6528,7 @@
       sfx(T.coda + 9.2, 'q1K2', 1);
       fade(T.coda + CODA.k2 - 0.3, T.coda + CODA.k2, 0, 1); fade(T.coda + CODA.k2, T.coda + CODA.k2 + 0.6, 1, 0);
       sfx(T.coda + CODA.k2 + 0.3, 'w4shutter', 0.7);
+      sfxFade(T.coda + CODA.k2 - 0.5, T.coda + CODA.k2 + 0.1, 'w4taxi');   // the taxi gone with its picture (CP13: it ran on under the shop)
       sfx(T.coda + 13.4, 'q1K3', 1);
       sfx(T.coda + CODA.k2 + 4.4, 'w4pat', 0.5);
       sfx(T.coda + CODA.k3 + 1.5, 'w4gasp', 0.8);            // he flinches at a shape in the glass
@@ -6370,6 +6543,8 @@
     const { sfx, sfxFade, fade } = api;
     endingScene(c, api, 'D', (T) => {
       sfx(0.0, 'fm1chant2', 0.45);                           // the chant he began, let finish
+      sfx(0.3, 'w4drips', 0.45); sfx(10.2, 'w4drips', 0.45);  // the eaves after the storm (CP13: D's room had none — two silences)
+      sfx(19.6, 'w4frogs', 0.3);                             // the frogs starting outside as he wais
       sfxFade(T.ask - 1.4, T.ask - 0.2, 'fm1chant2');
       sfx(T.ask - 0.2, 'w4bell', 0.4);                       // a small bell: the chant's end
       sfx(T.ask + 0.4, 'q1D1', 1);                           // "Pong... please tell him thank you. This is enough for me today."  (→ ~13.4)
@@ -6397,6 +6572,7 @@
       sfx(T.coda + 9.2, 'q1K2', 1);
       fade(T.coda + CODA.k2 - 0.3, T.coda + CODA.k2, 0, 1); fade(T.coda + CODA.k2, T.coda + CODA.k2 + 0.6, 1, 0);
       sfx(T.coda + CODA.k2 + 0.3, 'w4shutter', 0.7);
+      sfxFade(T.coda + CODA.k2 - 0.5, T.coda + CODA.k2 + 0.1, 'w4taxi');   // the taxi gone with its picture (CP13: it ran on under the shop)
       sfx(T.coda + 13.4, 'q1K3', 1);
       sfx(T.coda + CODA.k2 + 4.4, 'w4pat', 0.5);
       sfx(T.coda + CODA.k3, 'w4coda', 0.7);

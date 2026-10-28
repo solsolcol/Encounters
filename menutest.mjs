@@ -53,12 +53,22 @@ out.tenTabs = await p.evaluate(() => document.querySelectorAll('#chTabs .chTab')
    unwritten ones — a written chapter in a later case must never open on a
    fresh game (progress is by PLACE in the run, v6.0). */
 /* v16.0: episode 3 has a chapter now, so the unwritten case is episode 4 */
+/* v23.6: episode 4 has a chapter now (as a preview until v24.0), so the unwritten case is episode 5; episode 4's first
+   row is a real chapter row, locked on a fresh profile (a preview is locked and says so; a released one is locked until
+   reached), and the other four are unwritten */
 await p.click('#chTabs .chTab[data-ep="4"]'); await p.waitForTimeout(200);
+out.writtenRowLocked = await p.evaluate(() => {
+  const r = [...document.querySelectorAll('#chList .chTile')];
+  return r.length === 5 && r[0].dataset.ch === 'e4c1' && r[0].disabled && r[0].classList.contains('locked') && !r[0].classList.contains('unwritten')
+    && r.slice(1).every(x => x.classList.contains('unwritten') && x.disabled)
+    && document.getElementById('chEpName').textContent.includes('Episode 4');
+});
+await p.click('#chTabs .chTab[data-ep="5"]'); await p.waitForTimeout(200);
 out.emptyEpisodeRows = await p.evaluate(() => {
   const r = [...document.querySelectorAll('#chList .chTile')];
   return r.length === 5 && r.every(x => x.classList.contains('unwritten') && x.disabled)
-    && document.querySelector('#chTabs .chTab.on')?.dataset.ep === '4'
-    && document.getElementById('chEpName').textContent.includes('Episode 4');
+    && document.querySelector('#chTabs .chTab.on')?.dataset.ep === '5'
+    && document.getElementById('chEpName').textContent.includes('Episode 5');
 });
 await p.click('#chTabs .chTab[data-ep="2"]'); await p.waitForTimeout(200);
 out.laterEpisodeLocked = await p.evaluate(() => {
@@ -92,7 +102,8 @@ out.caseCardLit = await p.evaluate(() => {
   const a = on.getBoundingClientRect(), s = strip.getBoundingClientRect();
   return on.dataset.ep === '1' && dots === 'done,done,open,locked,locked'
     && a.left >= s.left - 1 && a.right <= s.right + 1      // the open case is in view
-    && document.querySelector('#chTabs .chTab[data-ep="4"]').classList.contains('empty')      // v16.0: episode 3 is written
+    && document.querySelector('#chTabs .chTab[data-ep="5"]').classList.contains('empty')      // v23.6: episode 4 is written
+    && !document.querySelector('#chTabs .chTab[data-ep="4"]').classList.contains('empty')
     && !document.querySelector('#chTabs .chTab[data-ep="3"]').classList.contains('empty')
     && !document.querySelector('#chTabs .chTab[data-ep="2"]').classList.contains('empty');   // v7.1: a written case
 });

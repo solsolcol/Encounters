@@ -76,7 +76,7 @@ body.cine #caption{bottom:calc(12vh + 10px)}   /* (in a scene: over the letterbo
   background:radial-gradient(ellipse at center,transparent 22%,var(--fc,#63D6C8) 130%)}
 #hudflash.on{animation:hudFlash var(--fs,.55s) ease-out}
 /* v24.0 · S45: the lightning's wash — its opacity and colour written by the engine on the frame (weatherFrame) */
-#wxflash{position:fixed;inset:0;pointer-events:none;z-index:6;opacity:0;background:#d8e4ff;mix-blend-mode:screen}
+#wxflash{position:fixed;inset:0;pointer-events:none;z-index:6;opacity:0;display:none;background:#d8e4ff;mix-blend-mode:screen}
 /* v24.0 · S43: the ledger — the brief and the how, under the book; the HUD's busy corners kept out of its way */
 #ledHint{position:fixed;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:8;
   pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:4px;width:min(92vw,620px);text-align:center;
@@ -114,7 +114,7 @@ body.ledgeropen #objective,body.ledgeropen #hotmarks{opacity:0;transition:opacit
 @keyframes fpDot{0%,60%,100%{opacity:.35;transform:none}30%{opacity:1;transform:translateY(-3px)}}
 .fpBar{display:flex;align-items:center;gap:8px;padding:9px 10px 12px;background:#151c22}
 .fpInput{flex:1 1 auto;min-height:30px;padding:6px 12px;border-radius:16px;background:#232d35;font-size:.84rem;line-height:1.3}
-.fpInput.empty::before{content:"Message";color:#5f7080}
+.fpInput.empty::before{content:attr(data-ph);color:#5f7080}
 .fpInput:not(.empty)::after{content:"";display:inline-block;width:1.5px;height:1em;margin-left:1px;vertical-align:-2px;background:#7fd1c0;animation:fpCaret 1s steps(1) infinite}
 @keyframes fpCaret{50%{opacity:0}}
 .fpSend{color:#5fb8a8;font-size:1.05rem}
