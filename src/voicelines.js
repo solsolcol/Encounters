@@ -1573,10 +1573,10 @@
     { id: "z5D", who: "jamesAdult", ch: "e3c5", where: "Under outcome card D",
       text: "I kept my promise every day, and I kept my own door shut.", secs: 3.79 },
     /* E4C1 LINES BEGIN */
-    /* v24.0 · episode 4 chapter 1, The Master I Did Not Know — PLANNED (M1): every row carries `est: true` and an
-       estimated length until its take is recorded at CP11 (docs/V24.0-E4C1-PLAN.md §9.1; the script is
-       masters/v24.0/script/lines.py, installed by install.py). A Thai line is written in Thai script, as it is said;
-       its English is in `where`, for Chad. chaptertest allows an `est` row only in a chapter that is still `preview`. */
+    /* v24.0 · episode 4 chapter 1, The Master I Did Not Know — 122 lines in eight voices, every length MEASURED from its
+       shipped take (CP11, masters/v24.0/make.sh; ten re-said at CP13 after the words lens). A Thai line is written in
+       Thai script, as it is said; its English is in `where`, for Chad. The script it began as is
+       masters/v24.0/script/lines.py (docs/V24.0-E4C1-PLAN.md §9.1). */
     { id: "q1pro1", who: "jamesAdult", ch: "e4c1", where: "The opening film: the shutter going up on his own new shop at dawn (the case file)",
       text: "[reflective] Not long after, my interest in amulets became more than curiosity. It grew into a serious pursuit.", secs: 7.45 },
     { id: "q1pro2", who: "jamesAdult", ch: "e4c1", where: "The opening film: along his new glass cases (the case file)",

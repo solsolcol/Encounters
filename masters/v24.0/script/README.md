@@ -10,7 +10,8 @@ Pong 37, the master 19, Pa Noi 11, Khun Joy 3, Uncle Lim 3, Ta Sombat 1, the tax
 Every line of the master, Pong and Pa Noi was read against the rule.
 
 - **The master** greets, asks about the shop with interest, praises it as merit and a living at once, reads kindly,
-  advises merit and a calm mind as well as offering help, tells him not to feel obliged to take anything, accepts the
+  advises merit and a calm mind as well as offering help, tells him to choose whichever piece he likes and not to be
+  shy (CP13, L5-1: ไม่ต้องเกรงใจ — the piece is a gift, and play does ask him to take one), accepts the
   offering with anumodana, says he may close his eyes, blesses, and wishes him well. When he is asked about the figure
   (B) he answers sincerely and offers to teach; when the player bolts (C) he says it is all right and to go carefully;
   when the player leaves early (D) he is unoffended. Nothing he says threatens, mocks, pushes a sale or does harm.

@@ -25,7 +25,7 @@ just need to remember to ask me for the models so i don't forget or miss it."*
 | Role | Look (art direction) | Takes needed | Placeholder until then | Status |
 |---|---|---|---|---|
 | **Pong**, the Bangkok amulet dealer | Thai man, 40s, stocky, short hair; gold chain with three framed amulets; short-sleeved polo tucked into dark slacks; a belt pouch; loafers | idle, talking (hands), walking, phone call, seated idle, seated talking | `e4pong`: episode 3's staff man with the first master's cross-legged sit, seated talk and chair sit retargeted in (idle, talk, walk, sit) | NEEDED |
-| **Pa Noi**, the master's wife | Thai woman, 50s; floral cotton blouse and tube skirt (pha sin); reading glasses on a cord; hair in a low bun | idle, walking, talking, writing on a board or pointing, carrying a tray | `e4noi`: episode 3's Yin shop keeper at a crowd's cut (42k triangles; idle, talk, wave, walk), the chapter's own file so the sala's view stays inside a phone's budget | NEEDED |
+| **Pa Noi**, the master's wife | Thai woman, 50s; floral cotton blouse and tube skirt (pha thung); reading glasses on a cord; hair in a low bun | idle, walking, talking, writing on a board or pointing, carrying a tray | `e4noi`: episode 3's Yin shop keeper at a crowd's cut (42k triangles; idle, talk, wave, walk), the chapter's own file so the sala's view stays inside a phone's budget | NEEDED |
 | **Khun Joy**, a Bangkok office worker | Thai woman, 30s; office blouse and skirt; handbag | seated idle, seated talking, walking | `e4joy` + `sitwomantalk` (chapter 3's pink-shirt lady, with a standing idle and a walk retargeted in so she can rise and go in when her number is called) | NEEDED |
 | **Uncle Lim**, from Kuala Lumpur | Malaysian Chinese man, 60s; polo shirt, bum bag, glasses | seated idle, seated talking, seated laugh, walking | `e4lim`: episode 3's amulet-shop owner at a crowd's cut (42k triangles; seated, talk, walk) | NEEDED |
 | **Ta Sombat**, the farmer from next door | Thai man, 70s; faded indigo farmer's shirt (mor hom); checked cloth (pha khao ma) over a shoulder; a wooden cane | seated idle, seated talking | `encik` (the seated encik) | NEEDED |
@@ -41,7 +41,7 @@ just need to remember to ask me for the models so i don't forget or miss it."*
 
 | What | Spec | Placeholder | Status |
 |---|---|---|---|
-| A Thai soi dog | rigged: idle, lying, walk, bark | none (left out until it lands; its bark stays off) | NEEDED |
+| A Thai soi dog | rigged: idle, lying, walk, bark | none (left out until it lands; its bark, `w4dog`, is heard from behind the house with no dog on screen) | NEEDED |
 | A water buffalo | for the film's wide; static is fine | none (left out) | NICE |
 | A pickup truck | Thai double-cab, generic, no logos; an interior is a bonus | built in code (as the buses were at v21.14) | NEEDED |
 | Sugar palm (Borassus) | two variants if possible | built in code | **NEEDED — the landscape depends on it** |

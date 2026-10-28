@@ -6677,3 +6677,28 @@ cut (sharing its vertices and maps) when it is small.
   then tipped back and turned over by the film's own angles), and is placed at a point of THIS screen (−1…1 across and
   up, at a depth in metres) just above the hand that holds it, so a phone and a desktop both see it whole. The probe
   reads each held thing's NDC, its distance and the dot of its face with the line of sight (`CARDINFO`).
+- **A kit verb a chapter calls from `build()` only RECORDS** (v24.0 CP13, engine). The ledger's new `prepare()` built
+  the book on the spot so the loading curtain would compile it, and `ledgerBuild()` ends `vmScene.add(...)`. On a cold
+  boot straight into the chapter (`?ch=e4c1`, or a Continue on a fresh page) the stage is built while the module is
+  still initialising, before the line that makes the hands' scene — and esbuild hoists the bundle's top-level `const`s
+  to `var`s, so the error was not a TDZ one but "Cannot read properties of undefined (reading 'add')", thrown inside
+  the chapter's build, and `window.__enc` never appeared. Every probe up to it had entered the chapter from the
+  selector, where the hands' scene already existed. The verb records (`led.prep = true`) and the frame builds. The
+  quick boot check before a deploy (`dbg-e4quick.mjs`: `?ch=` to play, page errors listed) is the test that sees it.
+- **A minigame that pays ON THE SPOT is saved as it OPENED** (v24.0 CP13, engine). The `change` kind (like the
+  heartbeat's misses and the layout's wrong drops before it) charges each false tap the moment it lands; the autosave
+  runs every 8 s, including mid-event, so a Continue replayed the whole storm on the stats it had already paid —
+  twice the price. A live event now carries the run as it stood when it opened (`ev.save0`), and a save while it is
+  open writes that: a Continue replays the minigame from its start on what he had then.
+- **A window that answers a chapter closes on one tick and the answer runs after it** (v24.0 CP13, engine). A ledger
+  page's entry was saved and its +2 lost when the 8 s autosave landed between the page closing and the chapter's
+  promise callback banking the award; a Continue then found the page "already written" and paid nothing. The windows
+  that answer (the ledger, the chooser) push the next autosave 600 ms out (`saveHoldOff`).
+- **A voice in the take sets holds the duck for as long as it sounds** (v24.0 CP13). The master's chant was listed in
+  `CAST_TAKES` like every line he speaks, so its 34 s and the murmured 40 s copy held the v5.27 −8 dB duck under the
+  whole of the work and the storm: the rain, the drone and the thunder never once reached their levels. A chant is not
+  speech the player must follow; it plays on the effects path, murmured under his lines.
+- **Two clocks in one beat drift apart** (v24.0 CP13). The chapter clock stops under every window (a ledger page, the
+  decision), so a schedule written in it — the chant's next murmur, the after-rain's 2.5 s — stood still while the
+  sound it was waiting on, or the scene it was setting, went on: the after-rain never came under the decision. A wait
+  that a sound or a picture must keep is written on wall time.

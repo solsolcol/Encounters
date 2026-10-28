@@ -30,9 +30,9 @@
      The opening film and the coda.
    - WORLD T, x −500: a Singapore taxi at night in the rain. The coda.
 
-   PREVIEW (the forty-second seam): built and deployed as a preview — out of
-   the run, opened only by ?ch=e4c1 — until its voices are recorded (CP11) and
-   the release takes the flag out (CP14).
+   RELEASED at v24.0 (CP14): built and deployed as a preview (the forty-second
+   seam, out of the run) at v23.6 while it was voiced, reviewed and re-said,
+   and taken into the run by taking the flag out.
 
    docs/V24.0-E4C1-PLAN.md is the build's memory, checkpoint by checkpoint. */
 
@@ -301,14 +301,13 @@
       endAline: 'I don\'t know what I saw.',
       endDline: 'Some things I don\'t need to understand today.'
     },
-    sayPrefix: 'q1',
-    preview: true
+    sayPrefix: 'q1'
   };
 
-  /* every line's length — ESTIMATED until CP11 records the takes (the registry carries the same numbers); the line
-     queue books its window by it, so a voice never starts over another. The names are QUOTED on purpose: build.py
-     gives a sound to a chapter's own pack only when the chapter names it in quotes (v21.1). Written from the registry
-     by masters/v24.0/script/secs.py. */
+  /* every line's length — MEASURED from its recorded take (CP11; ten re-said at CP13), the registry carrying the same
+     numbers; the line queue books its window by it, so a voice never starts over another. The names are QUOTED on
+     purpose: build.py gives a sound to a chapter's own pack only when the chapter names it in quotes (v21.1). Written
+     from the registry by masters/v24.0/script/secs.py. */
   /* SECS BEGIN */
   const SECS = {
     /* q */
