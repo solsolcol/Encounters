@@ -6702,3 +6702,12 @@ cut (sharing its vertices and maps) when it is small.
   decision), so a schedule written in it — the chant's next murmur, the after-rain's 2.5 s — stood still while the
   sound it was waiting on, or the scene it was setting, went on: the after-rain never came under the decision. A wait
   that a sound or a picture must keep is written on wall time.
+- **A probe that presses from one spot tests the probe** (v24.0 CP14). The play-through asked all four people in the
+  sala from one standing spot and recorded three of them as the game refusing a tap on their mark — in two runs, and
+  read as "the probe's aim" both times without a number. Measured: Joy stood 3.77 m away and the farmer 3.5 m, past the
+  3.4 m an ask answers in (every chapter's reach: the mark grows and ripples once you are close enough), and Pong's ask
+  opens only after the first three. The probe now stands 1.8 m from each person before it taps. The same run looked
+  STRAIGHT at the woman in the doorway and waited for her — she is seen only at the edge of sight and goes when he
+  turns to her, so she never came; the probe now turns until the doorway projects 0.42 of the half-frame out. A probe
+  that fails where the game's own rules say it should fail has found a rule, not a bug — check the rule's numbers
+  before reporting either.
