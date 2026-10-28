@@ -1,0 +1,122 @@
+q1pro1     jamesAdult -> b w1.00  7.44s END-ON | other w1.00  7.12s E || Not long after, my interest in amulets became more than curiosity. It 
+q1pro2     jamesAdult -> b w1.00  6.00s END-ON | other w1.00  5.76s E || Eventually I opened an amulet shop of my own, though I was still very 
+q1pro3     jamesAdult -> a w1.00  6.00s END-ON | other w1.00  6.48s E || Business was slow. I wanted guidance about the fortune and the future 
+q1pro4     jamesAdult -> a w1.00  4.00s END-ON | other w1.00  3.76s E || A dealer I bought from said he knew a very strong master in Thailand.
+pg1car     pong       -> b w1.00  5.36s END-ON | other w1.00  5.52s E || This Ajahn very strong one brother, business, family, everything. You 
+q1pro5     jamesAdult -> b w1.00  3.28s END-ON | other w1.00  4.24s E || A Thai master. I did not know very well.
+pg1here    pong       -> b w0.83  2.48s LOW-WORDS | other w0.83  2.16s E || Here, here. This is Ajahn Samnak.
+pg1come    pong       -> b w1.00  2.00s END-ON | other w0.78  2.56s || Come, come. Pa Noi will give you a number.
+pn1num     panoi      -> b w0.39  7.60s END-ON LOW-WORDS | other w0.36  7.28s E || สวัสดีค่ะ14.Number14ค่ะWaitattheSalahนะคะ
+q1board    jamesAdult -> b w0.60  2.72s END-ON LOW-WORDS | other w0.60  2.96s E || 14. They're only on 9.
+pn1water   panoi      -> b w0.49  6.40s END-ON LOW-WORDS | other w0.53  6.72s E || ดื่มน้ำก่อนนะคะDrinkwaterfirstนะคะVeryhottodayค่ะ
+q1water    jamesAdult -> a w1.00  0.88s END-ON | other w1.00  0.88s E || Khop khun krap.
+pn1n10     panoi      -> b w0.70  1.76s ODD-LEN | other w0.43  2.72s || บ้าสิบค่ะ
+pn1n11     panoi      -> b w0.55  2.80s LOW-WORDS | other w0.33  2.24s || บ้าสิบอิทธ์ค่ะ
+pn1n12     panoi      -> a w0.77  2.24s | other w0.35  2.64s || บ้าสิบสองค่ะ
+pn1n13     panoi      -> a w0.77  2.96s ODD-LEN | other w0.73  1.36s E || บ้าสิบสามค่ะ
+pn1n14     panoi      -> a w0.84  2.56s END-ON | other w0.31  2.56s E || บ้าสิบสี่ค่ะสิบสี่
+q1joy1     jamesAdult -> b w1.00  2.24s END-ON | other w1.00  2.48s E || Sorry, have you been to him before?
+jy1a       joy4       -> b w1.00  6.96s HEAD-ON | other w1.00  6.96s E || First time, my boss's wife came last month. She said he's very powerfu
+q1joy2     jamesAdult -> a w1.00  1.04s END-ON | other w1.00  1.12s E || Do you know who taught him?
+jy1b       joy4       -> a w1.00  6.24s END-ON | other w1.00  5.92s E || Honestly, no. Someone said Cambodia. Someone said a forest monk.
+q1lim1     jamesAdult -> b w1.00  2.72s END-ON | other w1.00  2.48s E || Uncle, you're not from around here either?
+lm1a       lim4       -> b w0.95  8.48s | other w0.95  8.64s || Ah, you're also not from here, right? I'm from KL. My friend recommend
+q1lim2     jamesAdult -> b w1.00  1.28s END-ON | other w1.00  1.36s E || How long has he been a master?
+lm1b       lim4       -> a w1.00  4.48s | other w1.00  4.16s E || Three, four years, but already so popular. Must be got something, righ
+q1sb1      jamesAdult -> a w1.00  2.64s END-ON | other w1.00  2.64s E || Pong, can you ask him how long the Ajahn's been here?
+pg1sbq     pong       -> a w0.92  2.96s | other w0.88  2.56s E || ลุ่มครับอาจารย์มาอยู่ที่นี่นานแล้วหรือยังครับ
+sb1a       sombat4    -> a w0.93  8.64s END-ON | other w0.90  8.40s E || ผมอยู่ที่นี่มา60ปีแล้วอาจารย์พึ่งมาได้5ปีเองก่อนหน้านั้นไม่รู้เหมือนกั
+pg1sb      pong       -> b w0.90  7.04s END-ON | other w0.84  6.88s E || He say he live here 60 years. Ajahn come only 5 years ago. Before that
+q1pg1      jamesAdult -> b w1.00  2.80s END-ON | other w1.00  2.96s E || Pong. How long have you known him?
+pg1me      pong       -> a w0.90  6.96s HEAD-ON | other w0.84  5.60s E || Me? Actually, first time I come or so. My cousin know him. She say ver
+q1nobody   jamesAdult -> a w1.00  2.64s | other w1.00  2.48s E || Nobody here actually knows who he is.
+q1missed   jamesAdult -> a w1.00  1.60s | other w1.00  1.84s || I never got to ask.
+jy1go      joy4       -> b w1.00  2.00s END-ON | other w1.00  2.08s E || Okay, my turn. Good luck, ah?
+lm1go      lim4       -> a w0.60  2.08s END-ON LOW-WORDS | other w0.60  2.08s E || Well, finally. See ya, boy.
+pg1go      pong       -> b w1.00  2.48s END-ON | other w0.83  2.48s E || Our turn. Come, come. Shoes off.
+q1tree     jamesAdult -> b w1.00  2.96s END-ON | other w1.00  3.12s E || Dresses hanging on a tree.
+pg1tree    pong       -> a w0.82  4.16s END-ON ODD-LEN LOW-WORDS | other w0.73  3.04s E || For the lady who stay in the tree. Don't pa ya.
+fm1hello   master4    -> a w1.00  4.48s | other w1.00  3.44s E || สวัสดีครับนั่งเลยนั่งเลยตามสบายนะครับ
+q1wai      jamesAdult -> a w0.67  1.12s END-ON HEAD-ON LOW-WORDS | other w0.00  1.20s E || Sawati krap Ajahn.
+fm1shop    master4    -> b w1.00  1.60s ODD-LEN | other w1.00  1.12s E || เปิดร้านอะไรอยู่ครับ
+pg1shop    pong       -> a w0.83  1.84s END-ON LOW-WORDS | other w0.83  1.76s E || Ajahn asks what shop you have.
+q1shop     jamesAdult -> a w1.00  5.44s END-ON | other w1.00  4.48s E || An amulet shop. A small one. It just opened. In Singapore.
+pg1th1     pong       -> b w0.83  2.96s END-ON | other w0.70  2.80s E || ร้านพระเครื่องครับประจานพึ่งเปิดที่สิ่งครับโปร์
+fm1good    master4    -> b w1.00  4.48s END-ON | other w0.97  5.12s E || ดีครับดีร้านพระได้ทำบุญไปด้วยได้ทำมาหากินไปด้วย
+pg1good    pong       -> a w1.00  5.76s END-ON | other w0.92  5.76s E || He say good good. Amulet shop. Make merit and make money. Same time.
+fm1day     master4    -> a w1.00  1.12s END-ON | other w1.00  1.04s E || เกิดวันอะไรครับ
+pg1day     pong       -> b w0.86  1.84s END-ON | other w0.86  2.00s E || He asked, what day you were born?
+fm1hm      master4    -> b w1.00  0.88s END-ON ODD-LEN | other w1.00  1.20s E || อืม...
+fm1read    master4    -> a w0.98 10.64s END-ON | other w0.98 12.88s E || ร้านเค้าเป็นที่ดีนะคนเดินผ่านเยอะแต่เงินไม่ค่อยอยู่เข้ามาแล้วก็ออกไปเห
+pg1read    pong       -> b w1.00  7.60s END-ON | other w1.00  7.36s E || He say your shop is good place. But the money don't stay. Come in go o
+q1short    jamesAdult -> a w1.00  2.00s | other w1.00  1.84s || He said a lot more than that.
+pn1tray    panoi      -> b w0.57  2.64s LOW-WORDS | other w0.47  2.40s || ชื่นค่ะ
+pg1items   pong       -> a w0.91  3.20s END-ON | other w0.91  3.84s E || He has many things for business. You take one is enough.
+fm1items   master4    -> b w1.00  2.24s END-ON | other w0.93  2.24s E || ชอบชิ้นไหนก็เลือกเอานะไม่ต้องเกรงใจ
+pg1nk      pong       -> b w1.00  3.52s ODD-LEN | other w0.91  5.76s || Nang Kwak. Good choice. She call the customer in for you.
+pg1tk      pong       -> a w0.93  5.28s END-ON | other w0.77  4.64s E || takrut. You wear it on a cord, at your waist or around your neck.
+pg1py      pong       -> b w1.00  4.88s END-ON HEAD-ON | other w0.80  4.96s E || pha yant. frame it on the wall facing your shop door under your buddha
+pg1offer   pong       -> b w0.89  4.00s END-ON ODD-LEN | other w0.79  5.68s || And the teacher offering, kahru, you put what you want up to you.
+fm1anu     master4    -> a w0.92  2.64s END-ON ODD-LEN | other w0.89  1.04s E || อันนุโมทนาครับ
+fm1eyes    master4    -> a w1.00  3.36s END-ON | other w0.89  3.28s E || หลับตาก็ได้นะทำใจสบายๆ
+pg1eyes    pong       -> b w1.00  3.76s END-ON | other w0.88  4.32s || He say close your eyes also can. Relax.
+fm1chant   master4    -> b w0.51 33.76s END-ON LOW-WORDS | other w0.00 29.28s E || น่ะมูตสะภักษ์วะโตอรหัตต้อสมมาสัมพุทธศะน่ะมูตสะภักษ์วะโตอรหัตต้อสมมาสัม
+fm1chant2  master4    -> b w0.15 18.16s END-ON LOW-WORDS | other w0.00 19.68s E || เอฮิจ์ตั้งๆaiderต้องพ1930กิฟฟิมเพล็มpetroleum
+q1smoke    jamesAdult -> b w1.00  6.08s | other w0.93  7.04s E || The smoke. It's leaning toward that bowl, but the fan's blowing the ot
+q1cloth    jamesAdult -> b w1.00  2.88s END-ON | other w1.00  3.44s E || That cloth. Did it just move?
+q1shadow   jamesAdult -> a w1.00  3.76s END-ON | other w1.00  4.32s E || His shadow. It moved after he did.
+q1her      jamesAdult -> b w0.88  5.60s | other w0.88  5.44s E || Someone standing behind him. No, there's no one.
+pg1power   pong       -> b w1.00  3.68s END-ON | other w0.59  4.16s E || Power cut. Normal, normal. Every time rain like this.
+fm1blessA  master4    -> a w0.84  2.32s | other w0.80  2.08s E || ขอให้ค้าขายดีร้ำรวยร้ำรวยนะครับ
+pg1Ank     pong       -> b w1.00  5.52s END-ON | other w0.95  5.68s E || He say your shop will be busy. Put the Nang Kwak facing your door. She
+pg1Atk     pong       -> b w0.80  4.96s LOW-WORDS | other w0.73  4.16s E || He said your shop will be busy where the takrut every day on its court
+pg1Apy     pong       -> b w0.94  8.72s ODD-LEN | other w0.81  5.92s E || He say your shop will be busy. The pa yant. Facing your door under the
+fm1Abye    master4    -> b w1.00  1.84s | other w1.00  1.52s || ไปดีมาดีนะครับ
+q1A1       jamesAdult -> a w1.00  1.52s ODD-LEN | other w1.00  2.56s || I don't know what I saw.
+pn1guava   panoi      -> a w0.52  8.00s LOW-WORDS | other w0.44  6.48s || เอาฝรั่งไปด้วยนะคะTakeวาว้านะคะFromOutreeVerySweetค่ะ
+q1A2       jamesAdult -> b w1.00  0.64s END-ON | other w1.00  0.64s E || Khop khun krap.
+pg1A1      pong       -> b w1.00  3.60s END-ON | other w0.91  4.00s E || See? I tell you. Very good one. My cousin never lie.
+pg1A2      pong       -> a w1.00  1.44s | other w1.00  1.44s || Strong, right?
+q1A3       jamesAdult -> b w1.00  1.52s ODD-LEN | other w1.00  2.16s || Maybe.
+q1A4       jamesAdult -> a w1.00  5.60s END-ON | other w1.00  5.60s E || I didn't know what I'd seen in that room. So I let it stay unknown.
+q1B1       jamesAdult -> a w1.00  3.28s END-ON | other w1.00  3.28s E || Pong. Ask him who's standing behind him.
+pg1B1      pong       -> a w1.00  2.72s END-ON ODD-LEN | other w1.00  3.76s E || Behind. Okay, I ask.
+pg1B2      pong       -> a w1.00  4.32s END-ON | other w1.00  4.40s E || อาจารย์ครับเขาถามว่าใครยืนอยู่ข้างหลังอาจารย์ครับ
+fm1B1      master4    -> a w0.96  3.76s | other w0.95  3.60s E || เขาอยู่บ้านนี้มานานกว่าผมอีกหน้าไม่ค่อยมีใครเห็นเขาหรอก
+pg1B3      pong       -> a w1.00  6.88s END-ON | other w1.00  7.36s E || He say that one stay in this house longer than him. He say not many pe
+fm1B2      master4    -> b w0.96  1.68s | other w0.81  1.60s || ใครส่อนเขาครับ
+pg1B4      pong       -> a w0.80  1.68s END-ON LOW-WORDS | other w0.80  2.16s E || He asks, who teach you?
+q1B2       jamesAdult -> b w1.00  1.52s ODD-LEN | other w1.00  0.56s E || Nobody.
+fm1B3      master4    -> a w1.00  2.56s HEAD-ON | other w0.99  2.64s E || ถ้าอยากเรียนก็กลับมานะผมสอนให้ใช้ได้
+pg1B5      pong       -> b w1.00  3.28s | other w0.93  3.28s || He say you should come back. He can teach you how to use it.
+q1B3       jamesAdult -> a w1.00  2.72s END-ON | other w1.00  2.80s E || Thank you, Ajahn. Maybe another time.
+pn1card    panoi      -> b w0.55  2.64s END-ON LOW-WORDS | other w0.36  2.56s E || Ajahn say, call any time death.
+pg1B6      pong       -> a w1.00  3.04s END-ON | other w0.89  2.96s E || Brother, you can see? Why you never tell me?
+pg1B7      pong       -> b w1.00  3.44s END-ON | other w1.00  3.44s E || Next time you bring me okay, I also want to know my future.
+q1B4       jamesAdult -> a w1.00  8.24s | other w1.00  6.48s E || I'd asked to understand, and shown a man I didn't know what I could se
+q1C0       jamesAdult -> a w1.00  6.56s END-ON | other w0.88  7.12s || The bowl. The shadow. Her. It's all him.
+q1C1       jamesAdult -> a w1.00  1.76s | other w1.00  1.52s || He's doing something to me.
+fm1C1      master4    -> a w1.00  2.08s | other w1.00  2.00s E || อ้าวไม่เป็นไรไม่เป็นไรครับ
+fm1C2      master4    -> a w0.78  3.52s END-ON ODD-LEN | other w0.68  2.48s E || ข้างนอกอย่างเลือกอยู่นะไปดีดี
+pg1C1      pong       -> a w1.00  3.44s | other w1.00  3.36s E || He say go carefully, outside still slippery.
+pn1C1      panoi      -> a w0.46  6.16s END-ON LOW-WORDS | other w0.24  6.88s E || เดียวเดียวร้อมค่ะWait!Umbrellaนะค่ะRaincomingagainค่ะ
+pg1C2      pong       -> b w0.88  4.24s ODD-LEN | other w0.88  2.48s E || Brother, what happened? He is a good man.
+q1C2       jamesAdult -> a w1.00  1.28s ODD-LEN | other w0.80  2.08s || Just drive.
+q1C3       jamesAdult -> b w1.00  5.12s END-ON | other w1.00  5.60s E || I was certain before I knew anything, and the certainty came home with
+q1D1       jamesAdult -> a w1.00  5.44s END-ON | other w1.00  5.28s E || Pong. Please tell him thank you. This is enough for me today.
+pg1D1      pong       -> b w0.94  3.92s ODD-LEN | other w0.88  6.80s || ฮาจานครับเขาบอกว่าขอบคุณมากครับวันนี้พอแค่นี้ก่อน
+fm1D1      master4    -> b w1.00  3.20s ODD-LEN | other w1.00  2.24s E || ได้ครับได้ไม่เป็นไรตามสบาย
+pg1D2      pong       -> b w1.00  3.04s END-ON | other w0.89  2.96s E || Finish already? He haven't even done the full one.
+q1D2       jamesAdult -> a w1.00  4.16s END-ON | other w1.00  3.44s E || It's okay. Let's sit for a bit. The road's still flooded.
+pg1D3      pong       -> a w1.00  5.84s ODD-LEN | other w1.00  4.08s E || You know, I also never actually ask who is his teacher.
+q1D3       jamesAdult -> b w1.00  2.96s END-ON | other w1.00  2.72s E || Next time, we ask first.
+q1D4       jamesAdult -> a w1.00  3.20s | other w1.00  3.28s E || Some things I don't need to understand today.
+q1D5       jamesAdult -> b w1.00  3.28s | other w1.00  3.60s E || I didn't need to understand it to know it was time to go.
+tx1where   taxi4      -> a w1.00  1.36s | other w0.33  1.60s || Where to, boss?
+q1K1       jamesAdult -> a w0.90  7.36s | other w0.80  7.92s || It's the shop's it. Sorry, Uncle. Give me a second.
+q1K2       jamesAdult -> a w1.00  1.60s END-ON | other w1.00  1.60s E || When I got back to Singapore.
+q1K3       jamesAdult -> a w1.00  2.08s END-ON | other w1.00  1.84s E || I stopped feeling like myself.
+q1A        jamesAdult -> a w1.00  5.52s | other w1.00  6.08s || I kept what I saw as what I saw and didn't decide what it meant.
+q1B        jamesAdult -> b w1.00  4.32s END-ON | other w1.00  4.72s E || I asked to understand. I showed more than I learned.
+q1C        jamesAdult -> b w1.00  3.12s END-ON HEAD-ON | other w1.00  2.88s E || Fear made up my mind before I knew anything at all.
+q1D        jamesAdult -> b w1.00  3.44s END-ON | other w1.00  3.20s E || I knew when to leave. Understanding could wait.

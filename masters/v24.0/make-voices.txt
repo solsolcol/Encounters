@@ -1,0 +1,122 @@
+him  q1pro1     voices/raw/q1pro1_b.mp3        # words 1.00, 7.44 s
+him  q1pro2     voices/raw/q1pro2_b.mp3        # words 1.00, 6.00 s
+him  q1pro3     voices/raw/q1pro3_a.mp3        # words 1.00, 6.00 s
+him  q1pro4     voices/raw/q1pro4_a.mp3        # words 1.00, 4.00 s
+cast pg1car     voices/raw/pg1car_zie_b.mp3 -16    # CP11a audition winner; words 1.00, 5.36 s
+him  q1pro5     voices/raw/q1pro5_b.mp3        # words 1.00, 3.28 s
+cast pg1here    voices/raw/pg1here_b.mp3 -16    # words 0.83, the clean end, 2.48 s
+cast pg1come    voices/raw/pg1come_b.mp3 -16    # words 1.00 against 0.78, 2.00 s
+cast pn1num     voices/raw/pn1num_kanya_b.mp3 -16    # CP11a: take b says "number fourteen" exactly
+him  q1board    voices/raw/q1board_b.mp3        # words 0.60, 2.72 s
+cast pn1water   voices/raw/pn1water_b.mp3 -16    # words 0.49, 6.40 s
+him  q1water    voices/raw/q1water_a.mp3        # words 1.00, 0.88 s
+cast pn1n10     voices/raw/pn1n10_b.mp3 -16    # words 0.70 against 0.43, 1.76 s
+cast pn1n11     voices/raw/pn1n11_a.mp3 -16    # the clean "ber" call (the transcriber hears "Ber11"), 2.24 s against b's drawn 2.80
+cast pn1n12     voices/raw/pn1n12_a.mp3 -16    # words 0.77 against 0.35, 2.24 s
+cast pn1n13     voices/raw/pn1n13_b.mp3 -16    # "เบอร์13ค่ะ" heard exactly, a short loud call across the yard (1.36 s) against a's 2.96
+cast pn1n14     voices/raw/pn1n14_a.mp3 -16    # words 0.84 against 0.31, 2.56 s
+him  q1joy1     voices/raw/q1joy1_b.mp3        # words 1.00, 2.24 s
+cast jy1a       voices/raw/jy1a_hammy_b.mp3 -16    # CP11a audition winner; words 1.00, the clean end, 6.96 s
+him  q1joy2     voices/raw/q1joy2_a.mp3        # words 1.00, 1.04 s
+cast jy1b       voices/raw/jy1b_a.mp3 -16    # words 1.00, 6.24 s
+him  q1lim1     voices/raw/q1lim1_b.mp3        # words 1.00, 2.72 s
+cast lm1a       voices/raw/lm1a_brandon_b.mp3 -16    # CP11a audition winner; words 0.95, 8.48 s
+him  q1lim2     voices/raw/q1lim2_b.mp3        # words 1.00, 1.28 s
+cast lm1b       voices/raw/lm1b_a.mp3 -16    # words 1.00, the clean end, 4.48 s
+him  q1sb1      voices/raw/q1sb1_a.mp3        # words 1.00, 2.64 s
+cast pg1sbq     voices/raw/pg1sbq_a.mp3 -16    # words 0.92 against 0.88, the clean end, 2.96 s
+cast sb1a       voices/raw/sb1a_songkran_a.mp3 -16    # CP11a audition winner; words 0.93 against 0.90, 8.64 s
+cast pg1sb      voices/raw/pg1sb_b.mp3 -16    # words 0.90 against 0.84, 7.04 s
+him  q1pg1      voices/raw/q1pg1_b.mp3        # words 1.00, 2.80 s
+cast pg1me      voices/raw/pg1me_a.mp3 -16    # words 0.90 against 0.84, the clean end, 6.96 s
+him  q1nobody   voices/raw/q1nobody_a.mp3        # words 1.00, the clean end, 2.64 s
+him  q1missed   voices/raw/q1missed_a.mp3        # words 1.00, 1.60 s
+cast jy1go      voices/raw/jy1go_b.mp3 -16    # words 1.00, 2.00 s
+cast lm1go      voices/raw/lm1go_b.mp3 -16    # "Woah, finally" — nearer the script's "Wah", and 2 dB fuller
+cast pg1go      voices/raw/pg1go_b.mp3 -16    # words 1.00 against 0.83, 2.48 s
+him  q1tree     voices/raw/q1tree_b.mp3        # words 1.00, 2.96 s
+cast pg1tree    voices/raw/pg1tree_b.mp3 -18    # an aside at a natural pace (3.04 s, a 0.46 s breath); a stops 1.02 s mid-line
+cast fm1hello   voices/raw/fm1hello_a.mp3 -18    # words 1.00, the clean end, 4.48 s
+him  q1wai      voices/raw/q1wai_b.mp3        # the clean head (-78 against a's ON-signal start); whisper cannot spell the Thai in either
+cast fm1shop    voices/raw/fm1shop_b.mp3 -16    # words 1.00, the clean end, 1.60 s
+cast pg1shop    voices/raw/pg1shop_a.mp3 -16    # words 0.83, 1.84 s
+him  q1shop     voices/raw/q1shop_a.mp3        # words 1.00, 5.44 s
+cast pg1th1     voices/raw/pg1th1_b.mp3 -16    # words 0.83 against 0.70, 2.96 s
+cast fm1good    voices/raw/fm1good_patinya_b.mp3 -16    # CP11a audition winner; words 1.00 against 0.97, 4.48 s
+cast pg1good    voices/raw/pg1good_a.mp3 -16    # words 1.00 against 0.92, 5.76 s
+cast fm1day     voices/raw/fm1day_a.mp3 -16    # words 1.00, 1.12 s
+cast pg1day     voices/raw/pg1day_b.mp3 -16    # words 0.86, 1.84 s
+cast fm1hm      voices/raw/fm1hm_a.mp3 -18    # a considering hum (1.20 s); b is clipped short
+cast fm1read    voices/raw/fm1read_a.mp3 -16    # words 0.98, 10.64 s
+cast pg1read    voices/raw/pg1read_b.mp3 -16    # words 1.00, 7.60 s
+him  q1short    voices/raw/q1short_a.mp3        # words 1.00, 2.00 s
+cast pn1tray    voices/raw/pn1tray_b.mp3 -18    # words 0.57 against 0.47, 2.64 s
+cast pg1items   voices/raw/pg1items_a.mp3 -16    # words 0.91, 3.20 s
+cast fm1items   voices/raw/fm1items_b.mp3 -16    # words 1.00 against 0.93, 2.24 s
+cast pg1nk      voices/raw/pg1nk_b.mp3 -16    # words 1.00 against 0.91, 3.52 s
+cast pg1tk      voices/raw/pg1tk_a.mp3 -16    # words 0.93 against 0.77, 5.28 s
+cast pg1py      voices/raw/pg1py_b.mp3 -16    # words 1.00 against 0.80, 4.88 s
+cast pg1offer   voices/raw/pg1offer_b.mp3 -16    # words 0.89 against 0.79, 4.00 s
+cast fm1anu     voices/raw/fm1anu_a.mp3 -18    # words 0.92 against 0.89, 2.64 s
+cast fm1eyes    voices/raw/fm1eyes_a.mp3 -18    # words 1.00 against 0.89, 3.36 s
+cast pg1eyes    voices/raw/pg1eyes_b.mp3 -21    # words 1.00 against 0.88, 3.76 s
+cast fm1chant   voices/raw/fm1chant_b.mp3 -18    # words 0.51 against 0.00, 33.76 s
+cast fm1chant2  voices/raw/fm1chant2_b.mp3 -20    # words 0.15 against 0.00, 18.16 s
+him  q1smoke    voices/raw/q1smoke_b.mp3        # words 1.00 against 0.93, the clean end, 6.08 s
+him  q1cloth    voices/raw/q1cloth_b.mp3        # words 1.00, 2.88 s
+him  q1shadow   voices/raw/q1shadow_a.mp3        # words 1.00, 3.76 s
+him  q1her      voices/raw/q1her_b.mp3        # words 0.88, the clean end, 5.60 s
+cast pg1power   voices/raw/pg1power_b.mp3 -21    # words 1.00 against 0.59, 3.68 s
+cast fm1blessA  voices/raw/fm1blessA_a.mp3 -16    # words 0.84 against 0.80, the clean end, 2.32 s
+cast pg1Ank     voices/raw/pg1Ank_b.mp3 -16    # words 1.00 against 0.95, 5.52 s
+cast pg1Atk     voices/raw/pg1Atk_b.mp3 -16    # words 0.80 against 0.73, the clean end, 4.96 s
+cast pg1Apy     voices/raw/pg1Apy_a.mp3 -16    # 5.92 s; b stalls 1.54 s at the dash and runs 8.72
+cast fm1Abye    voices/raw/fm1Abye_b.mp3 -16    # words 1.00, 1.84 s
+him  q1A1       voices/raw/q1A1_b.mp3        # read at a writing hand's pace (2.56 s) under the pen
+cast pn1guava   voices/raw/pn1guava_a.mp3 -16    # words 0.52 against 0.44, 8.00 s
+him  q1A2       voices/raw/q1A2_b.mp3        # words 1.00, 0.64 s
+cast pg1A1      voices/raw/pg1A1_b.mp3 -16    # words 1.00 against 0.91, 3.60 s
+cast pg1A2      voices/raw/pg1A2_a.mp3 -16    # words 1.00, 1.44 s
+him  q1A3       voices/raw/q1A3_a.mp3        # the beat before it (2.16 s), as the script's ellipsis asks
+him  q1A4       voices/raw/q1A4_a.mp3        # words 1.00, 5.60 s
+him  q1B1       voices/raw/q1B1_a.mp3        # words 1.00, 3.28 s
+cast pg1B1      voices/raw/pg1B1_b.mp3 -21    # the whisper with the script's pause (1.28 s) after "Behind?"
+cast pg1B2      voices/raw/pg1B2_a.mp3 -18    # words 1.00, 4.32 s
+cast fm1B1      voices/raw/fm1B1_a.mp3 -16    # words 0.96, the clean end, 3.76 s
+cast pg1B3      voices/raw/pg1B3_a.mp3 -16    # words 1.00, 6.88 s
+cast fm1B2      voices/raw/fm1B2_b.mp3 -16    # words 0.96 against 0.81, 1.68 s
+cast pg1B4      voices/raw/pg1B4_a.mp3 -16    # words 0.80, 1.68 s
+him  q1B2       voices/raw/q1B2_b.mp3        # words 1.00, the clean end, 1.52 s
+cast fm1B3      voices/raw/fm1B3_a.mp3 -16    # words 1.00, the clean end, 2.56 s
+cast pg1B5      voices/raw/pg1B5_b.mp3 -16    # words 1.00 against 0.93, 3.28 s
+him  q1B3       voices/raw/q1B3_a.mp3        # words 1.00, 2.72 s
+cast pn1card    voices/raw/pn1card_b.mp3 -16    # words 0.55 against 0.36, 2.64 s
+cast pg1B6      voices/raw/pg1B6_a.mp3 -16    # words 1.00 against 0.89, 3.04 s
+cast pg1B7      voices/raw/pg1B7_b.mp3 -16    # words 1.00, 3.44 s
+him  q1B4       voices/raw/q1B4_a.mp3        # words 1.00, the clean end, 8.24 s
+him  q1C0       voices/raw/q1C0_a.mp3        # words 1.00 against 0.88, 6.56 s
+him  q1C1       voices/raw/q1C1_a.mp3        # words 1.00, 1.76 s
+cast fm1C1      voices/raw/fm1C1_a.mp3 -16    # words 1.00, the clean end, 2.08 s
+cast fm1C2      voices/raw/fm1C2_a.mp3 -16    # words 0.78 against 0.68, 3.52 s
+cast pg1C1      voices/raw/pg1C1_a.mp3 -16    # words 1.00, the clean end, 3.44 s
+cast pn1C1      voices/raw/pn1C1_a.mp3 -16    # words 0.46 against 0.24, 6.16 s
+cast pg1C2      voices/raw/pg1C2_a.mp3 -16    # breathless, as he catches up (2.48 s); b drags a 0.6 s gap into 4.24
+him  q1C2       voices/raw/q1C2_a.mp3        # words 1.00 against 0.80, 1.28 s
+him  q1C3       voices/raw/q1C3_b.mp3        # words 1.00, 5.12 s
+him  q1D1       voices/raw/q1D1_a.mp3        # words 1.00, 5.44 s
+cast pg1D1      voices/raw/pg1D1_b.mp3 -16    # words 0.94 against 0.88, 3.92 s
+cast fm1D1      voices/raw/fm1D1_b.mp3 -16    # words 1.00, the clean end, 3.20 s
+cast pg1D2      voices/raw/pg1D2_b.mp3 -16    # words 1.00 against 0.89, 3.04 s
+him  q1D2       voices/raw/q1D2_a.mp3        # words 1.00, 4.16 s
+cast pg1D3      voices/raw/pg1D3_a.mp3 -16    # words 1.00, the clean end, 5.84 s
+him  q1D3       voices/raw/q1D3_b.mp3        # words 1.00, 2.96 s
+him  q1D4       voices/raw/q1D4_a.mp3        # words 1.00, the clean end, 3.20 s
+him  q1D5       voices/raw/q1D5_b.mp3        # words 1.00, the clean end, 3.28 s
+cast tx1where   voices/raw/tx1where_kopio_a.mp3 -16    # CP11a: take a has the words exactly
+him  q1K1       voices/raw/q1K1_a.mp3        # words 0.90 against 0.80, 7.36 s
+him  q1K2       voices/raw/q1K2_a.mp3        # words 1.00, 1.60 s
+him  q1K3       voices/raw/q1K3_a.mp3        # words 1.00, 2.08 s
+him  q1A        voices/raw/q1A_a.mp3        # words 1.00, 5.52 s
+him  q1B        voices/raw/q1B_b.mp3        # words 1.00, 4.32 s
+him  q1C        voices/raw/q1C_b.mp3        # words 1.00, 3.12 s
+him  q1D        voices/raw/q1D_b.mp3        # words 1.00, 3.44 s

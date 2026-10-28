@@ -1,0 +1,538 @@
+{
+ "_flow": "42oRvGlkUSRPQpVq1GAB (e4c1 · The Master I Did Not Know · voices); eleven_v3, two takes a call unless the name says _v4",
+ "_auditions": "CP11a: each new role's key line read by two candidate voices; the winner's two takes are that line's takes",
+ "_fm1good_duang": "Duang jucSqawHKM1rUNf78oZQ · [warmly] ดีครับ ดี... ร้านพระ ได้ทำบุญไปด้วย ได้ทำมาหากินไปด้วย",
+ "fm1good_duang": [
+  "3FcusEPhIZG1QyP55ZJw",
+  "uh10VKh3brk1y7KrY3Mn"
+ ],
+ "_fm1good_patinya": "Patinya weRAVUYgqjjfUEEu5BsB · same",
+ "fm1good_patinya": [
+  "5VW3GFfiYg4RXGAgP7Aw",
+  "nkIaw41z29gEPmW8Zj7m"
+ ],
+ "_pg1car_tonce": "ToNCe yq05eeRaHPMGuWTVpqeP · [warm, excited] This Ajahn very strong one, brother. Business, family, everything... you will see!",
+ "pg1car_tonce": [
+  "djDngVgAk5XXN8D4P9Ws",
+  "UQsyjy2Wp7d9R00iI4Zw"
+ ],
+ "_pg1car_zie": "Zie bcdIY58WBBzAMmef52NW · same",
+ "pg1car_zie": [
+  "MiEzhLZw7y5XEC2MzvxE",
+  "qwHxEiOMzMDkTRakZwk7"
+ ],
+ "_pn1num_hammy": "HammyTH MYZYcGOqrkYQcwDunXl7 · [brisk, kind] สวัสดีค่ะ... สิบสี่ — number fourteen, ka. Wait at the sala, na kha.",
+ "pn1num_hammy": [
+  "ItIM5xM0hCS0iV4PcI9u",
+  "6Rk52b6GAuUAS8B0iBov"
+ ],
+ "_pn1num_kanya": "Kanya B4NdgwdU97lHqA8Udh2D · same",
+ "pn1num_kanya": [
+  "rcCD6TsA0xiffk7226Ui",
+  "HC3rf0v7Px5HAt6NnC4w"
+ ],
+ "_jy1a_mali": "Mali 7XW5JhaNn90bnFojQ5DA · [a little impatient, fanning herself] First time. My boss's wife came last month — she said he's very powerful. I drove three hours, you know.",
+ "_jy1a_nook": "Nook 0CcQkRq8QY9wJYlEFyzz · same",
+ "jy1a_nook": [
+  "OcCmHEypAxBWNpN03XF3",
+  "YgRJtNnTYv5PlsU2DABt"
+ ],
+ "_sb1a_songkran": "Songkran xYmBpJREC3WfqEFpbPvO · [elderly voice] [slow, plain] ผมอยู่ที่นี่มาหกสิบปีแล้ว... อาจารย์เพิ่งมาได้ห้าปีเอง ก่อนหน้านั้น ไม่รู้เหมือนกันว่ามาจากไหน",
+ "sb1a_songkran": [
+  "91CODVWuFnSOeYiYjjaJ",
+  "s8gmZTNNaO4otZXDgnYf"
+ ],
+ "_sb1a_somchai": "Somchai XLXcyPK1jTjw1pYLLcM9 · same",
+ "sb1a_somchai": [
+  "2Jx6PPjZC6LZ3EdmkjdN",
+  "rZI66nmyII7SBhjS6TkX"
+ ],
+ "_lm1a_darryl": "Darryl Lim O8ykjWKd0RjX6e5EyDuE · [an old uncle, cheerful] Ah, you also not from here, right? I'm from KL. My friend recommend. His friend's business — after one visit, double!",
+ "lm1a_darryl": [
+  "UWcbpgXEsy8nc52sQ57z",
+  "W96aL48l5xxuBP62a5VG"
+ ],
+ "_lm1a_brandon": "Brandon hnUfJmvgsLlEm4ozUacp · same",
+ "lm1a_brandon": [
+  "9Avmy5uoTl3rffuik2Py",
+  "fwkIEeO3z6LEb6v5pbRH"
+ ],
+ "_tx1where_kopio": "Kopi O HxkJ72rJ50z9kcGPPnG7 · [an old uncle, tired, friendly] Where to, boss?",
+ "tx1where_kopio": [
+  "evfYRX7xEiUE4fn8kdvz",
+  "oooBi2ZMAnabnSprfp0u"
+ ],
+ "_tx1where_gavin": "Gavin y6hZ25Fcq4pmYsc7UsbQ · same",
+ "tx1where_gavin": [
+  "yjKfmDJVGmSVaJ273LjM",
+  "DiZOh2oFmB0oQNdgsVg5"
+ ],
+ "_jy1a_mali_failed": "first run 0rvawtEkyiAw4kvmVzjt / 7EGdA36i9RBXS5hywFzE both failed (eleven_v3's random failures); re-run, text unchanged",
+ "_jy1a_mali_rerun": "re-run GOG1ulDE1A5CHKkhPZky / TzXkJL71z8X5P2heLtJ3 failed for good: \"Voice '7XW5JhaNn90bnFojQ5DA' is not fine-tuned and cannot be used.\" Mali is out.",
+ "_jy1a_hammy": "HammyTH MYZYcGOqrkYQcwDunXl7 · jy1a, the line as written (Joy, since Nook measured as a man at 125-135 Hz and Mali cannot be used)",
+ "jy1a_hammy": [
+  "lj8n01m2Z716T2zynRBT",
+  "P6iAhrZh4f3nks5eVEnE"
+ ],
+ "q1pro1": [
+  "a8obiGEJXCsvi5ycz2CD",
+  "0xLKhVkGggISLAxbDgQI"
+ ],
+ "q1pro2": [
+  "UezfvELPlf46mmK32tAo",
+  "m4jbuM7uabw5leOamrK1"
+ ],
+ "q1pro3": [
+  "kOuuffegqA54oTUBFWB6",
+  "EuUyq6ony5ZlME3zFQMd"
+ ],
+ "q1pro4": [
+  "HicbshrxvgTDM2PM1T6j",
+  "s8hB5irWU0vve4UdrezC"
+ ],
+ "q1pro5": [
+  "WOOT4Yr8irDsVWY7O11V",
+  "Ax6F5X84zgjx3ftkUTJ0"
+ ],
+ "pg1here": [
+  "DOnCktewOy8Jwnnggoq9",
+  "M0hSKW2HEHIJjBdz96KH"
+ ],
+ "pg1come": [
+  "jIXalBnKxGGC3yUPLu6j",
+  "Kv92rv7FslOOotBdJQAB"
+ ],
+ "q1board": [
+  "IzJJsSuP7kl8lS54kS6C",
+  "FeDRpLDQCd7JYfJJXbBX"
+ ],
+ "pn1water": [
+  "dzAn9pdyghBqhlbhTBd3",
+  "bTQSorpzxNShu6Wahl6G"
+ ],
+ "q1water": [
+  "hcl3qVp9mZ48ct2LkPnL",
+  "L6KvFWsXrGfKiyLSt3v5"
+ ],
+ "pn1n10": [
+  "VBQMm1ZM1GetoRT0wfzU",
+  "LzgObnOfDyuyFboEnYI7"
+ ],
+ "pn1n11": [
+  "mJ9Yt5STzcWxU3rImNOS",
+  "39agrP8gbnjPpjFymqEK"
+ ],
+ "pn1n12": [
+  "cwvI9MzsDvt0MOkMbj9z",
+  "egg8Mliu4IPGRgCt1QEf"
+ ],
+ "pn1n13": [
+  "JUoZc7xOZeA9GWfxFZsA",
+  "vnDRyj7FSKoD36OspzJc"
+ ],
+ "pn1n14": [
+  "STNRICuLrUehAb3vEWEQ",
+  "AI437gmVjaxKjcKMHKwM"
+ ],
+ "q1joy1": [
+  "qDmjpz8MYMjsf6LA14uD",
+  "m5Ww8wEhfO8uWpGbcH4b"
+ ],
+ "q1joy2": [
+  "nuVVou94RIQoz32ie8yk",
+  "8xnErDUyUhg7A580jP0a"
+ ],
+ "jy1b": [
+  "IgxJjyHBPaKUCWvkX1Cc",
+  "FGiWdn3Jf0Qt09M9LKgX"
+ ],
+ "q1lim1": [
+  "eUXWOdOrBFDYolZnKV8v",
+  "ZLi6LcN5qACk3lKJAUXQ"
+ ],
+ "q1lim2": [
+  "XdoZPvjH2HckwCq9BL4m",
+  "Zfzg4NcsHJwLJjKf4f3b"
+ ],
+ "lm1b": [
+  "8n9JSNoVOD1pZcyy9Xya",
+  "0og5TvCorwIMF43CyxUb"
+ ],
+ "q1sb1": [
+  "fM9zjPOafPfff1Y5PDhP",
+  "xmvrFCUXD9ZNRg0NgSOG"
+ ],
+ "pg1sbq": [
+  "MR5mpcQwpnGxX1CYgYbN",
+  "KZd4EdWPMe39Mig65obn"
+ ],
+ "pg1sb": [
+  "4zyTnCZm8pmcKMv94GXC",
+  "7rFQXR7EpZAMDZvMTFyi"
+ ],
+ "q1pg1": [
+  "3LAgLpRMprJX2ZwAcZI8",
+  "qHc4mGdEmWeTGkEbybWp"
+ ],
+ "pg1me": [
+  "mAqqgvT6Fr3TMYa0Ht45",
+  "II9W4IT2EwVp1VGtlFqM"
+ ],
+ "q1nobody": [
+  "5x5uL5nY1EGPkndT5gBU",
+  "eyLUE4vf5yrgiaae72VJ"
+ ],
+ "q1missed": [
+  "qIkAKhmP8dyOgaKpCr3A",
+  "Koc5FogUkR2suWg8XHwK"
+ ],
+ "jy1go": [
+  "KafY8J9Fc4hXNMgP7pTK",
+  "pVLNtlisImKYLIxjR47p"
+ ],
+ "lm1go": [
+  "doVLIPfLrv8J4WiI6FFR",
+  "QzmRjMBE5mW5Z00byxkV"
+ ],
+ "pg1go": [
+  "cSpLxoZQRR6oDPHUHYuB",
+  "YIXnCY6gMvbzectJKpzX"
+ ],
+ "q1tree": [
+  "4AeM2ewcLXcuKnVZGswH",
+  "6ouQIcTdEUtyastbfQBk"
+ ],
+ "pg1tree": [
+  "CcSX8Q4xcVox2cXx8j9H",
+  "4VQzbkI9aM23A7alKggI"
+ ],
+ "fm1hello": [
+  "Qnnitx1kJyf9oLYHM8Sg",
+  "WtKWycWGphr6FkFFrdD6"
+ ],
+ "q1wai": [
+  "nuhZ82OFjR72fkdEhHBp",
+  "eIFbXpn6WvCR9jBiEjK8"
+ ],
+ "fm1shop": [
+  "xD0t19DIqr4uuatRc5zr",
+  "Z357Q8EcGf5BaoRaEb6h"
+ ],
+ "pg1shop": [
+  "smDJhM0bYWzQRQJzfMkQ",
+  "AOkRza29apynjp3rHkKt"
+ ],
+ "q1shop": [
+  "XSCkheQAs4ZuDxizJ7At",
+  "v4k5c2M7W0d8Pb3vTsb8"
+ ],
+ "pg1th1": [
+  "uhQSpMey26sXztgITijQ",
+  "fp40q3Jemb2fMG0QIAQm"
+ ],
+ "pg1good": [
+  "IPneoZEsyHJp07Cf9yyR",
+  "46srsM8FyIx1AqiiBP0t"
+ ],
+ "fm1day": [
+  "Vq0mtMUvZhco9v9LDfkF",
+  "pvDEDf03Tp8QoOzik99b"
+ ],
+ "pg1day": [
+  "hRVSUPFRvNSLnXolHVFL",
+  "ynZ42sqLLyuGY8Vc9KA4"
+ ],
+ "fm1hm": [
+  "DCGWHtJMXASUVEuiZbk9",
+  "9iQi3mbn6zDMYHb3V0Sw"
+ ],
+ "fm1read": [
+  "QeKCyzUxRio83AzA0zrt",
+  "slYuRLM3iWI6aZg6EzXK"
+ ],
+ "pg1read": [
+  "NK1M7ilqBqbPtAnQn9QI",
+  "Q4s1tf38DViEzYljxD9d"
+ ],
+ "q1short": [
+  "yMzE910o5z50YR5GR1xI",
+  "GhoZTW66ZjNFBlUM3T0B"
+ ],
+ "pn1tray": [
+  "dVytI4PlJgDsD5zejHYD",
+  "7G5bFsW7AVILYgdxrw0s"
+ ],
+ "pg1items": [
+  "IgzZpRtNMPqLb4wB40R1",
+  "KC73ge1N7UPZ5O0crXxV"
+ ],
+ "fm1items": [
+  "GnIVk3vkowsktlXDtOoB",
+  "8rkvsW0KUloMLo9eG0VZ"
+ ],
+ "pg1nk": [
+  "qHmIP2fjLkvfTNOe3bXo",
+  "4AR8rH5gu5d8SuLNe4YO"
+ ],
+ "pg1tk": [
+  "DAgH3C0TchIsTCekpxsw",
+  "U1bBELgQzdno6jQPPsT9"
+ ],
+ "pg1py": [
+  "DGZhXmp30I5HWHctndd8",
+  "sFL5XvywsXvZpfACdFu8"
+ ],
+ "pg1offer": [
+  "u5pu2hlkKJmHkBxgBKqt",
+  "mRGacsLRnixXMcZEjZZd"
+ ],
+ "fm1anu": [
+  "FBAdhNYS4vE6DGCrjDaa",
+  "4nfihmaKwiWWGDgL5Gi9"
+ ],
+ "fm1eyes": [
+  "RCsUav1gGZ0O4CKLfF4J",
+  "ZHwATmA65KrEuzGAnnnW"
+ ],
+ "pg1eyes": [
+  "83jviYuL3FCSvxU3fDtr",
+  "VBBqB7KqBcepikXQrnfE"
+ ],
+ "fm1chant": [
+  "Lv6vviHCHsQ0CXtA6kIk",
+  "XXURzp8RKVosS2QHBHDH"
+ ],
+ "q1smoke": [
+  "8VjYTtPJYnlSbcZJ9G48",
+  "T3RNhBI5efk0tQXgsjGD"
+ ],
+ "q1cloth": [
+  "bDWutIA2U2s0lCpYUQAE",
+  "ZOVDOhNgt5xvVu0SfPEc"
+ ],
+ "fm1chant2": [
+  "7t1IvMkN3JYBWjTEj0OH",
+  "F4o8xyNAG0vdMUa0jx1t"
+ ],
+ "_fm1chant2": "prompt without the registry's 'under heavy rain' (the game lays the rain; a tag naming a place may be voiced as one): [murmured chanting, low and steady] ...",
+ "q1shadow": [
+  "tplGpwRRJ5qI2XdTv3A0",
+  "R8ki0q1lAeWR3dSYuq5R"
+ ],
+ "q1her": [
+  "bHiIRPVyCVjcCjZAfi3X",
+  "zZBARaLga3xBo3k5vkNX"
+ ],
+ "pg1power": [
+  "AdWKx7pUNbXoFmubX0Qj",
+  "xjfOjlYtV9r47bpTpTle"
+ ],
+ "fm1blessA": [
+  "XaBsyk6OqHjpAEkS2GWU",
+  "jJ1CVT9JknIooHZb8mEQ"
+ ],
+ "pg1Ank": [
+  "QGC8YcZ9KVtkxBwdGl6o",
+  "erzp7ZtF4qIvKLaynXKI"
+ ],
+ "pg1Atk": [
+  "Rn05FHaXaaPTPobyB5V7",
+  "i5k4wpjacmHQ9RPdDCU9"
+ ],
+ "pg1Apy": [
+  "ElDsQ5ublbiTFyqzqo1R",
+  "z1o8IDIeXpPqZHU7FfUM"
+ ],
+ "fm1Abye": [
+  "oyqYnLBzWZ4rwcJT4arY",
+  "qFq4jNCJthiaIhxw1EBU"
+ ],
+ "q1A1": [
+  "rDqXnnCImsUkOy7Lqz7S",
+  "lPcLfgqSa0SBEKcFRX2O"
+ ],
+ "pn1guava": [
+  "lds65avecHkiaYL9bvld",
+  "sqBQR8rELKQmkq7M65GH"
+ ],
+ "q1A2": [
+  "4VK2D9VVnrxcJmMxdVts",
+  "zY6OOYXFQakO4ATvQV43"
+ ],
+ "pg1A1": [
+  "lzWCjvOdYQHXOtHwEyvR",
+  "unVUbjmO6d8EFsqdgMvT"
+ ],
+ "pg1A2": [
+  "HIMU3QC8E7A4UVPjCSO2",
+  "DFlSmmKE9fxr3xyo5nvQ"
+ ],
+ "q1A3": [
+  "Wy6mlgsg8mzJT9dI73fd",
+  "qqj4EWI3r8lkvPCmcB6a"
+ ],
+ "q1A4": [
+  "KUYMVY6xQ6QFEZXc8Qan",
+  "dvizpeKBfdYFjLVX6x91"
+ ],
+ "q1B1": [
+  "oItpICG9bcCvsZQfP8ks",
+  "4QJBMUA8c9ntYcNfNgND"
+ ],
+ "pg1B1": [
+  "TjInwKWP4NVnEizuJhYw",
+  "SYBCvECtyv1GVR2WyiDJ"
+ ],
+ "pg1B2": [
+  "g7DdSR0q3HwdZ8z994ux",
+  "K8hCOA8ggA41j42c5pQK"
+ ],
+ "fm1B1": [
+  "K8c54IsqSIXipL9WHZ21",
+  "NATFE7A3Ldctn7L1XHPe"
+ ],
+ "pg1B3": [
+  "XJzv3EqvU1C77YzJKi7U",
+  "iB2zy0zlLFRpPSdK5NAx"
+ ],
+ "fm1B2": [
+  "0mJvKXxRvUM4DWtBxyNV",
+  "jXVPHaB8CbWjrNvuvgYI"
+ ],
+ "pg1B4": [
+  "Lz5ZN6y68GZkz2qfDhAT",
+  "8WWUr2732iF7Yj2c3TRK"
+ ],
+ "q1B2": [
+  "qgwEISiK6njSJuMJpCvC",
+  "PmI1YFOjVi2UVj77YaB0"
+ ],
+ "fm1B3": [
+  "uMVdy7YoLpVcXY5nccIF",
+  "xzYArNkm3CABhBy8vgv4"
+ ],
+ "pg1B5": [
+  "eCxmCM8l8JwdkTjzWeDf",
+  "Rg0HFVPhMz6ksbtCvbWk"
+ ],
+ "q1B3": [
+  "Exj9TKpuPL9TT3CbuoXd",
+  "iww1UPYxUJSNjClnXrjT"
+ ],
+ "pn1card": [
+  "mD4PFBk8YiY0ptxqEoTZ",
+  "ZInY4UtcFRWMjtor0DNR"
+ ],
+ "pg1B6": [
+  "LxOQXkTu1WD0vauyDtFc",
+  "WPG36NEzk249LzA18kzQ"
+ ],
+ "pg1B7": [
+  "KM3HPdFmNQTzyFAozkYR",
+  "OtHG4dAdR6Ynf2yM8OOW"
+ ],
+ "q1B4": [
+  "VRJjq5sQ2B9TqiDRy5Pj",
+  "cUUI2fQwZlLKZjERbWiE"
+ ],
+ "q1C0": [
+  "5V1egL4whmcM9ry7Tq6d",
+  "4pUr5AO9FhJw1z7E0Ltx"
+ ],
+ "q1C1": [
+  "6CULBWOKC5KXcKGjgjmJ",
+  "NR1CdUF4YHPIj0QkkUv9"
+ ],
+ "fm1C1": [
+  "ALEid4a0ekUfe5X197qq",
+  "CbouXyVDDle7zQInUBun"
+ ],
+ "fm1C2": [
+  "2aVySIjdOA3eZo3BtLF5",
+  "xDxrLuvnG290AI9sht2I"
+ ],
+ "pg1C1": [
+  "9TKejBNx8k7aKcvpMGp0",
+  "V8NjNMaBKDOwWWGZdSfE"
+ ],
+ "pn1C1": [
+  "mJbajAdF2uDLHuTcJwo2",
+  "GuCkdx2Q61G9eogEqVLc"
+ ],
+ "pg1C2": [
+  "5XWDTF272CWTltF7awNd",
+  "ubNzYhSS6BCU0i7BhUx9"
+ ],
+ "q1C2": [
+  "5JPFq1r73JhU0bydq4wa",
+  "ONtC9t4sBHoKLlxy5evk"
+ ],
+ "q1C3": [
+  "DwwU7SUEbD8F9gvply8v",
+  "NjBCmKlylpQqHRO1ZXEJ"
+ ],
+ "q1D1": [
+  "LsKeDObBv8lnHiIfxweY",
+  "voU7E35RfyNZSK6pXTov"
+ ],
+ "pg1D1": [
+  "Lkxe3dHwj1pxPyePTKuR",
+  "XdUyvFGfomKwfUApAb6e"
+ ],
+ "fm1D1": [
+  "j1OlAka695iTVMj6fW4s",
+  "K6eCv4MbBn3daZLm6QBW"
+ ],
+ "pg1D2": [
+  "SJ3v0jMJUQCRF5TOCt1O",
+  "2mkFQgBzEkqmq66q5gvZ"
+ ],
+ "q1D2": [
+  "EvQjBVzJrbfWKI3eORzG",
+  "ign32fdnBZf48l69RtZj"
+ ],
+ "pg1D3": [
+  "XY6k7rFZV8eKzxmHtdGP",
+  "kiDjpv66H7Ub6ZOggIRd"
+ ],
+ "q1D3": [
+  "HRM5FPE9Vg6gVlwXoCRc",
+  "9ikGTnuWWiDFXgxxbZQK"
+ ],
+ "q1D4": [
+  "7XxvZuMvEH6BkLoI1DPB",
+  "v85apUGJ0vTgUkmXz5hz"
+ ],
+ "q1D5": [
+  "ilh7hoDQA6wXyOCZD3b1",
+  "01cMJtv8kOoIFpxo6eIB"
+ ],
+ "q1K1": [
+  "rNzS3RgbsQBn0knxLUMq",
+  "SaLy3FuqXbpES8rAEFKZ"
+ ],
+ "q1K2": [
+  "QxTwNKaDTpuUlECrv2KN",
+  "QTj3ZfvLzPgESMbWMfry"
+ ],
+ "q1K3": [
+  "D6phANXUx5XWFTfvNhSB",
+  "5mMFe2tjsJPc4SzjcRuR"
+ ],
+ "q1A": [
+  "WemEVd3UCETQJOgM5o8R",
+  "pA5TmjcyIuejIlrJNe2h"
+ ],
+ "q1B": [
+  "R9LH0ZUowdP6nOVS4YYk",
+  "ePdQGSRkcPrWiyDlCo5N"
+ ],
+ "q1C": [
+  "iD2P6HHMmNzAw7JEY3Gu",
+  "knYoqLTukGl1ze2aPlWz"
+ ],
+ "q1D": [
+  "NiaMBiLrlQCnFxCMcxwW",
+  "w6uEXEkZcD1n9dv0Ix8O"
+ ]
+}

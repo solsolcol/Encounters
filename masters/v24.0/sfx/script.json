@@ -1,0 +1,344 @@
+{
+ "_flow": "zNE7zBvy1ngpOBqOopQH",
+ "fx": [
+  [
+   "w4sandals",
+   1.6,
+   false,
+   "Rubber flip-flop sandals slipped off at a wooden step, two soft rubbery slaps on boards, close"
+  ],
+  [
+   "w4kneel",
+   1.3,
+   false,
+   "A man kneeling down on a woven straw mat, trouser fabric rustling and a soft knee thump on the mat, close"
+  ],
+  [
+   "w4tray",
+   1.0,
+   false,
+   "A small brass offering tray set down on a wooden table, one soft metallic clink, close"
+  ],
+  [
+   "w4envelope",
+   1.4,
+   false,
+   "A paper envelope slid onto a metal tray, soft paper rustle and slide, close"
+  ],
+  [
+   "w4match",
+   2.2,
+   false,
+   "A wooden match struck and flaring, then a candle wick catching the flame, close, quiet room"
+  ],
+  [
+   "w4thunder",
+   7.0,
+   false,
+   "Rolling thunder over open countryside, a long crackling rumble rolling across the sky, heavy and distant"
+  ],
+  [
+   "w4crack",
+   3.0,
+   false,
+   "A very close lightning strike, a sharp splitting crack of thunder with a crackling tail, loud"
+  ],
+  [
+   "w4rainstop",
+   4.5,
+   false,
+   "Heavy rain on a corrugated metal roof easing off and stopping, the last scattered drops pattering, then single drips"
+  ],
+  [
+   "w4mallair",
+   12.0,
+   false,
+   "An empty shopping mall corridor at dawn before opening, air conditioning hum, a distant broom sweeping a tiled floor, faint echoes"
+  ],
+  [
+   "w4shutter",
+   6.0,
+   false,
+   "A metal roller shutter on a shopfront hauled up by hand, rattling slats rolling into the drum, ending with a clunk"
+  ],
+  [
+   "w4switch",
+   0.6,
+   false,
+   "A wall light switch clicked on, one crisp plastic click, close"
+  ],
+  [
+   "w4ledhum",
+   4.0,
+   false,
+   "Shop LED lights flickering on, a faint electrical buzz and tick, quiet room"
+  ],
+  [
+   "w4carton",
+   1.5,
+   false,
+   "A cardboard carton flap settling, bubble wrap crinkling, close, quiet shop"
+  ],
+  [
+   "w4pen",
+   1.8,
+   false,
+   "A ballpoint pen writing a few words in a paper notebook, close and quiet"
+  ],
+  [
+   "w4buzz",
+   1.2,
+   false,
+   "A smartphone vibrating on a glass counter, two short buzzes, close"
+  ],
+  [
+   "w4type",
+   2.2,
+   false,
+   "Typing a short message on a smartphone touchscreen, soft taps, then a soft send swoosh, close"
+  ],
+  [
+   "w4wind",
+   10.0,
+   false,
+   "Warm gusting wind through palm fronds and tall grass in open fields before a storm, rustling leaves"
+  ],
+  [
+   "w4drivepass",
+   4.0,
+   false,
+   "A diesel pickup truck passing close by on a country road, engine and tyres rising and fading away"
+  ],
+  [
+   "w4diesel",
+   12.0,
+   false,
+   "Inside the cab of a diesel pickup truck driving on a country road, steady engine drone and tyre noise, heard from the passenger seat"
+  ],
+  [
+   "w4drops",
+   5.0,
+   false,
+   "Big fat raindrops starting to hit a car windscreen, a few heavy splats then more, heard from inside the car"
+  ],
+  [
+   "w4gravel",
+   3.0,
+   false,
+   "Car tyres slowly rolling off a paved road onto a gravel and red earth lane, crunching stones, slowing down"
+  ],
+  [
+   "w4engoff",
+   2.0,
+   false,
+   "A diesel engine switched off, shuddering and dying, then the tick of cooling metal"
+  ],
+  [
+   "w4drips",
+   10.0,
+   false,
+   "Rainwater dripping from roof eaves after a storm into puddles and a tin bucket, slow irregular drips, quiet"
+  ],
+  [
+   "w4breath",
+   3.0,
+   false,
+   "A man breathing in slowly and deeply through the nose and letting it out, calming himself, close"
+  ],
+  [
+   "w4pao",
+   0.8,
+   false,
+   "One soft short puff of breath blown out through pursed lips, close"
+  ],
+  [
+   "w4frogs",
+   12.0,
+   false,
+   "Frogs croaking across wet rice paddies after rain at dusk, a chorus of tropical frogs and crickets"
+  ],
+  [
+   "w4page",
+   1.2,
+   false,
+   "Turning a page of a paper notebook, close, quiet"
+  ],
+  [
+   "w4steps",
+   5.0,
+   false,
+   "Footsteps in rubber sandals across a wet muddy yard after rain, squelching and splashing through shallow puddles"
+  ],
+  [
+   "w4door",
+   1.6,
+   false,
+   "A pickup truck door opened and slammed shut, a solid metal thunk"
+  ],
+  [
+   "w4pat",
+   1.4,
+   false,
+   "A man patting his trouser pockets looking for his keys, fabric pats and a faint jingle of keys"
+  ],
+  [
+   "w4card",
+   1.0,
+   false,
+   "A small paper business card taken from a hand, a soft paper slide and flick, close"
+  ],
+  [
+   "w4heart",
+   6.0,
+   false,
+   "A heartbeat thudding heavily and quickening, sharp audible thumps, tense, close"
+  ],
+  [
+   "w4rise",
+   1.5,
+   false,
+   "A man getting up too fast from a straw mat, clothes rustling, a knee knocking a low wooden table"
+  ],
+  [
+   "w4cup",
+   1.4,
+   false,
+   "An enamel cup knocked over on a wooden table, a metal clatter and water splashing"
+  ],
+  [
+   "w4dog",
+   3.0,
+   false,
+   "A village dog barking twice in a rural yard, its metal chain rattling"
+  ],
+  [
+   "w4gasp",
+   1.2,
+   false,
+   "A man's sharp startled gasp, a quick intake of breath, close"
+  ],
+  [
+   "w4bell",
+   3.0,
+   false,
+   "A small brass hand bell rung once softly, its ring fading slowly"
+  ],
+  [
+   "w4marker",
+   1.5,
+   false,
+   "A whiteboard marker writing a number on a whiteboard, two short squeaky strokes, close and clear"
+  ],
+  [
+   "w4water",
+   2.5,
+   false,
+   "Cold water poured from the tap of a plastic water dispenser into a paper cup, a short gurgle and a trickle, close"
+  ],
+  [
+   "w4tube",
+   3.0,
+   false,
+   "A fluorescent tube light flickering and buzzing, ticking a few times, then dying with a soft electrical pop, leaving silence"
+  ],
+  [
+   "w4mala",
+   3.0,
+   false,
+   "Wooden prayer beads slipping one by one through a man's fingers, soft dry clicks, close and quiet"
+  ],
+  [
+   "w4cloth",
+   1.8,
+   false,
+   "A heavy cotton cloth lifting and settling softly over a brass bowl, a slow light fabric rustle, close, quiet room"
+  ],
+  [
+   "w4sandon",
+   1.6,
+   false,
+   "A man slipping his rubber flip-flop sandals back on at a doorstep and stepping down onto wet concrete, two soft rubbery steps, close"
+  ]
+ ],
+ "beds": [
+  [
+   "w4yard",
+   30.0,
+   true,
+   "A rural village compound in the late afternoon before a storm, roosters far off, cicadas, a television murmuring through a wooden wall, a far motorbike, wind in palm trees"
+  ],
+  [
+   "w4paddy",
+   30.0,
+   true,
+   "Open rice paddies at dusk, frogs and crickets and insects, a soft warm wind over water, peaceful and wide"
+  ],
+  [
+   "w4roomtone",
+   30.0,
+   true,
+   "Inside a small room, an oscillating wall fan humming with a soft click as it turns, a fluorescent tube buzzing faintly, a small refrigerator humming, quiet"
+  ],
+  [
+   "w4rainl",
+   30.0,
+   true,
+   "Light steady rain pattering on a corrugated metal roof, heard from inside a room"
+  ],
+  [
+   "w4rainh",
+   30.0,
+   true,
+   "Heavy tropical downpour drumming hard on a corrugated metal roof, loud dense rain, gutters overflowing, heard from inside"
+  ],
+  [
+   "w4after",
+   30.0,
+   true,
+   "After rain in the countryside, water dripping from eaves into puddles, frogs croaking in wet fields, birds calling again, quiet and fresh"
+  ],
+  [
+   "w4taxi",
+   30.0,
+   true,
+   "Inside a taxi at night in the rain, windscreen wipers swishing, rain on the roof and windows, engine idling, a turn indicator ticking, muffled city traffic"
+  ]
+ ],
+ "remakes": [
+  [
+   "w4taxi_r2",
+   30.0,
+   true,
+   "Inside a car at night in heavy rain, windscreen wipers swishing steadily back and forth across wet glass, rain drumming on the roof and pattering on the side windows, a turn indicator ticking, close and clear",
+   "both first takes 78-86 % engine rumble under 120 Hz (15-17 dB lost on a phone)"
+  ],
+  [
+   "w4diesel_r2",
+   12.0,
+   false,
+   "Inside the cab of an old diesel pickup truck rattling along a bumpy country road, the engine's clattering diesel knock, the dashboard and loose door panels rattling, tyres hissing on the road, heard from the passenger seat",
+   "both first takes 97-99 % sub-bass (25-27 dB lost on a phone)"
+  ],
+  [
+   "w4heart_r2",
+   6.0,
+   false,
+   "A loud heartbeat heard close, sharp knocking double beats, lub-dub with a dry click on every beat, quickening, tense",
+   "both first takes 97 % sub-bass (29 dB lost on a phone)"
+  ],
+  [
+   "w4roomtone_r2",
+   30.0,
+   true,
+   "A small quiet room at night: an oscillating electric wall fan whirring softly with a light plastic click each time it turns, a fluorescent tube light buzzing faintly overhead, quiet and steady",
+   "the first takes 76-97 % low hum (13-20 dB lost on a phone), no fan click heard"
+  ],
+  [
+   "w4engoff_r2",
+   4.0,
+   false,
+   "A diesel pickup engine idling for a moment and then switched off: it shudders, coughs once and dies away to silence, followed by a few quiet ticks of cooling metal",
+   "both first takes held a flat idle for 2 s and never died away"
+  ]
+ ]
+}

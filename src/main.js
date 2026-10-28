@@ -7773,9 +7773,13 @@ let stickId = null, lookId = null, stickVec = { x: 0, y: 0 }, lastLook = { x: 0,
 // stealing the look and walk gestures.
 const touchStarts = new Map();
 
+/* v24.0: a tap is timed by the touch EVENTS' own timestamps (the finger's real down time), never by when their
+   handlers ran — on a hot phone drawing a frame a second, a quick tap's touchend can be handled more than 380 ms after
+   its touchstart was, and the tap on the thing was silently dropped (found by the real-tap probe on a slow box). */
 function onTouchStart(e) {
+  const at = e.timeStamp || performance.now();
   for (const t of e.changedTouches) {
-    touchStarts.set(t.identifier, { x: t.clientX, y: t.clientY, at: performance.now() });
+    touchStarts.set(t.identifier, { x: t.clientX, y: t.clientY, at });
     if (t.clientX < innerWidth * 0.45 && stickId === null) {
       stickId = t.identifier;
       stick.style.left = t.clientX + 'px'; stick.style.top = t.clientY + 'px';
@@ -7803,10 +7807,11 @@ function onTouchMove(e) {
   e.preventDefault();
 }
 function onTouchEnd(e) {
+  const now = e.timeStamp || performance.now();
   for (const t of e.changedTouches) {
     const s = touchStarts.get(t.identifier);
     touchStarts.delete(t.identifier);
-    if (s && performance.now() - s.at < 380
+    if (s && now - s.at < 380
         && Math.hypot(t.clientX - s.x, t.clientY - s.y) < 15
         && state === 'play'
         && ((stage.pile.hits(t.clientX, t.clientY) && stage.pile.interact())
@@ -8681,7 +8686,12 @@ const ADULT_TAKES = new Set([
   'z5l1', 'z5l2', 'z5l3', 'z5sob', 'z5out', 'z5come', 'z5gasp', 'z5time', 'z5felt', 'z5fasc', 'z5A1', 'z5A2', 'z5A3',
   'z5Agig', 'z5A4', 'z5A5', 'z5A6', 'z5B1', 'z5B2', 'z5B3', 'z5B4', 'z5B5', 'z5B6', 'z5C1', 'z5C2', 'z5C3', 'z5C4',
   'z5Cevil', 'z5Claugh', 'z5C5', 'z5C6', 'z5C7', 'z5D1', 'z5D2', 'z5D3', 'z5D4', 'z5D5', 'z5D6', 'z5epi0', 'z5epi1',
-  'z5epi2', 'z5epi3', 'z5A', 'z5B', 'z5C', 'z5D']);
+  'z5epi2', 'z5epi3', 'z5A', 'z5B', 'z5C', 'z5D',
+  /* v24.0 · episode 4 chapter 1, The Master I Did Not Know (masters/v24.0/make.sh) */
+  'q1pro1', 'q1pro2', 'q1pro3', 'q1pro4', 'q1pro5', 'q1board', 'q1water', 'q1joy1', 'q1joy2', 'q1lim1', 'q1lim2',
+  'q1sb1', 'q1pg1', 'q1nobody', 'q1missed', 'q1tree', 'q1wai', 'q1shop', 'q1short', 'q1smoke', 'q1cloth', 'q1shadow',
+  'q1her', 'q1A1', 'q1A2', 'q1A3', 'q1A4', 'q1B1', 'q1B2', 'q1B3', 'q1B4', 'q1C0', 'q1C1', 'q1C2', 'q1C3', 'q1D1',
+  'q1D2', 'q1D3', 'q1D4', 'q1D5', 'q1K1', 'q1K2', 'q1K3', 'q1A', 'q1B', 'q1C', 'q1D']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
 const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
@@ -8750,7 +8760,15 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   /* v23.0 · episode 3 chapter 5: the Golden Mile owner, the voicemail from Ma, the monk (his verse is the take
      chapter 4 made) */
   'ow5hello', 'ow5yin', 'ow5monk', 'ow5red', 'ow5shy', 'ow5little', 'ow5give', 'ow5never', 'ow5wrong', 'ow5promise',
-  'ow5careful', 'ma5vm', 'mk5teach', 'mk5yatha']);
+  'ow5careful', 'ma5vm', 'mk5teach', 'mk5yatha',
+  /* v24.0 · episode 4 chapter 1: Pong, Pa Noi, the master, Khun Joy, Uncle Lim, Ta Sombat, the taxi uncle */
+  'pg1car', 'pg1here', 'pg1come', 'pn1num', 'pn1water', 'pn1n10', 'pn1n11', 'pn1n12', 'pn1n13', 'pn1n14', 'jy1a',
+  'jy1b', 'lm1a', 'lm1b', 'pg1sbq', 'sb1a', 'pg1sb', 'pg1me', 'jy1go', 'lm1go', 'pg1go', 'pg1tree', 'fm1hello',
+  'fm1shop', 'pg1shop', 'pg1th1', 'fm1good', 'pg1good', 'fm1day', 'pg1day', 'fm1hm', 'fm1read', 'pg1read', 'pn1tray',
+  'pg1items', 'fm1items', 'pg1nk', 'pg1tk', 'pg1py', 'pg1offer', 'fm1anu', 'fm1eyes', 'pg1eyes', 'fm1chant',
+  'fm1chant2', 'pg1power', 'fm1blessA', 'pg1Ank', 'pg1Atk', 'pg1Apy', 'fm1Abye', 'pn1guava', 'pg1A1', 'pg1A2',
+  'pg1B1', 'pg1B2', 'fm1B1', 'pg1B3', 'fm1B2', 'pg1B4', 'fm1B3', 'pg1B5', 'pn1card', 'pg1B6', 'pg1B7', 'fm1C1',
+  'fm1C2', 'pg1C1', 'pn1C1', 'pg1C2', 'pg1D1', 'fm1D1', 'pg1D2', 'pg1D3', 'tx1where']);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
@@ -13013,7 +13031,48 @@ const STING_SAMPLE = {
   k5surface: ['k5surface', 1], k5switch: ['k5switch', 1], k5tape: ['k5tape', 1], k5tbell: ['k5tbell', 1],
   k5tear: ['k5tear', 1], k5theme: ['k5theme', 1], k5thud: ['k5thud', 1], k5tick: ['k5tick', 1], k5type: ['k5type', 1],
   k5under: ['k5under', 1], k5unwrap: ['k5unwrap', 1], k5wai: ['k5wai', 1], k5wake: ['k5wake', 1], k5wave: ['k5wave', 1],
-  k5wind: ['k5wind', 1], k5window: ['k5window', 1]
+  k5wind: ['k5wind', 1], k5window: ['k5window', 1],
+  /* v24.0 · episode 4 chapter 1: its voices, effects, beds and music (masters/v24.0/make.sh) */
+  q1pro1: ['q1pro1', 1], q1pro2: ['q1pro2', 1], q1pro3: ['q1pro3', 1], q1pro4: ['q1pro4', 1], pg1car: ['pg1car', 1],
+  q1pro5: ['q1pro5', 1], pg1here: ['pg1here', 1], pg1come: ['pg1come', 1], pn1num: ['pn1num', 1],
+  q1board: ['q1board', 1], pn1water: ['pn1water', 1], q1water: ['q1water', 1], pn1n10: ['pn1n10', 1],
+  pn1n11: ['pn1n11', 1], pn1n12: ['pn1n12', 1], pn1n13: ['pn1n13', 1], pn1n14: ['pn1n14', 1], q1joy1: ['q1joy1', 1],
+  jy1a: ['jy1a', 1], q1joy2: ['q1joy2', 1], jy1b: ['jy1b', 1], q1lim1: ['q1lim1', 1], lm1a: ['lm1a', 1],
+  q1lim2: ['q1lim2', 1], lm1b: ['lm1b', 1], q1sb1: ['q1sb1', 1], pg1sbq: ['pg1sbq', 1], sb1a: ['sb1a', 1],
+  pg1sb: ['pg1sb', 1], q1pg1: ['q1pg1', 1], pg1me: ['pg1me', 1], q1nobody: ['q1nobody', 1],
+  q1missed: ['q1missed', 1], jy1go: ['jy1go', 1], lm1go: ['lm1go', 1], pg1go: ['pg1go', 1], q1tree: ['q1tree', 1],
+  pg1tree: ['pg1tree', 1], fm1hello: ['fm1hello', 1], q1wai: ['q1wai', 1], fm1shop: ['fm1shop', 1],
+  pg1shop: ['pg1shop', 1], q1shop: ['q1shop', 1], pg1th1: ['pg1th1', 1], fm1good: ['fm1good', 1],
+  pg1good: ['pg1good', 1], fm1day: ['fm1day', 1], pg1day: ['pg1day', 1], fm1hm: ['fm1hm', 1],
+  fm1read: ['fm1read', 1], pg1read: ['pg1read', 1], q1short: ['q1short', 1], pn1tray: ['pn1tray', 1],
+  pg1items: ['pg1items', 1], fm1items: ['fm1items', 1], pg1nk: ['pg1nk', 1], pg1tk: ['pg1tk', 1],
+  pg1py: ['pg1py', 1], pg1offer: ['pg1offer', 1], fm1anu: ['fm1anu', 1], fm1eyes: ['fm1eyes', 1],
+  pg1eyes: ['pg1eyes', 1], fm1chant: ['fm1chant', 1], fm1chant2: ['fm1chant2', 1], q1smoke: ['q1smoke', 1],
+  q1cloth: ['q1cloth', 1], q1shadow: ['q1shadow', 1], q1her: ['q1her', 1], pg1power: ['pg1power', 1],
+  fm1blessA: ['fm1blessA', 1], pg1Ank: ['pg1Ank', 1], pg1Atk: ['pg1Atk', 1], pg1Apy: ['pg1Apy', 1],
+  fm1Abye: ['fm1Abye', 1], q1A1: ['q1A1', 1], pn1guava: ['pn1guava', 1], q1A2: ['q1A2', 1], pg1A1: ['pg1A1', 1],
+  pg1A2: ['pg1A2', 1], q1A3: ['q1A3', 1], q1A4: ['q1A4', 1], q1B1: ['q1B1', 1], pg1B1: ['pg1B1', 1],
+  pg1B2: ['pg1B2', 1], fm1B1: ['fm1B1', 1], pg1B3: ['pg1B3', 1], fm1B2: ['fm1B2', 1], pg1B4: ['pg1B4', 1],
+  q1B2: ['q1B2', 1], fm1B3: ['fm1B3', 1], pg1B5: ['pg1B5', 1], q1B3: ['q1B3', 1], pn1card: ['pn1card', 1],
+  pg1B6: ['pg1B6', 1], pg1B7: ['pg1B7', 1], q1B4: ['q1B4', 1], q1C0: ['q1C0', 1], q1C1: ['q1C1', 1],
+  fm1C1: ['fm1C1', 1], fm1C2: ['fm1C2', 1], pg1C1: ['pg1C1', 1], pn1C1: ['pn1C1', 1], pg1C2: ['pg1C2', 1],
+  q1C2: ['q1C2', 1], q1C3: ['q1C3', 1], q1D1: ['q1D1', 1], pg1D1: ['pg1D1', 1], fm1D1: ['fm1D1', 1],
+  pg1D2: ['pg1D2', 1], q1D2: ['q1D2', 1], pg1D3: ['pg1D3', 1], q1D3: ['q1D3', 1], q1D4: ['q1D4', 1],
+  q1D5: ['q1D5', 1], tx1where: ['tx1where', 1], q1K1: ['q1K1', 1], q1K2: ['q1K2', 1], q1K3: ['q1K3', 1],
+  q1A: ['q1A', 1], q1B: ['q1B', 1], q1C: ['q1C', 1], q1D: ['q1D', 1], w4yard: ['w4yard', 1], w4paddy: ['w4paddy', 1],
+  w4roomtone: ['w4roomtone', 1], w4rainl: ['w4rainl', 1], w4rainh: ['w4rainh', 1], w4after: ['w4after', 1],
+  w4taxi: ['w4taxi', 1], w4radio: ['w4radio', 1], w4sandals: ['w4sandals', 1], w4kneel: ['w4kneel', 1],
+  w4tray: ['w4tray', 1], w4envelope: ['w4envelope', 1], w4match: ['w4match', 1], w4thunder: ['w4thunder', 1],
+  w4crack: ['w4crack', 1], w4rainstop: ['w4rainstop', 1], w4mallair: ['w4mallair', 1], w4shutter: ['w4shutter', 1],
+  w4switch: ['w4switch', 1], w4ledhum: ['w4ledhum', 1], w4open: ['w4open', 1], w4carton: ['w4carton', 1],
+  w4pen: ['w4pen', 1], w4buzz: ['w4buzz', 1], w4type: ['w4type', 1], w4wind: ['w4wind', 1],
+  w4drivepass: ['w4drivepass', 1], w4diesel: ['w4diesel', 1], w4drops: ['w4drops', 1], w4gravel: ['w4gravel', 1],
+  w4engoff: ['w4engoff', 1], w4drips: ['w4drips', 1], w4breath: ['w4breath', 1], w4pao: ['w4pao', 1],
+  w4frogs: ['w4frogs', 1], w4page: ['w4page', 1], w4steps: ['w4steps', 1], w4door: ['w4door', 1],
+  w4endA: ['w4endA', 1], w4endB: ['w4endB', 1], w4endC: ['w4endC', 1], w4endD: ['w4endD', 1], w4pat: ['w4pat', 1],
+  w4coda: ['w4coda', 1], w4card: ['w4card', 1], w4heart: ['w4heart', 1], w4rise: ['w4rise', 1], w4cup: ['w4cup', 1],
+  w4dog: ['w4dog', 1], w4gasp: ['w4gasp', 1], w4bell: ['w4bell', 1],
+  w4marker: ['w4marker', 1], w4water: ['w4water', 1], w4tube: ['w4tube', 1], w4mala: ['w4mala', 1], w4cloth: ['w4cloth', 1], w4sandon: ['w4sandon', 1], w4storm: ['w4storm', 1]   // CP11: the plan's effects not in the first run, and the storm's drone
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays
