@@ -143,3 +143,43 @@ REFUTED (not real — why), NOTED (real, left with the reason). OPEN until a ver
 - L5-13 · cosmetic · ending D's walk to the hall rose 0.45 m over the flat courtyard and stopped 0.8 m short of the steps.
   CONFIRMED. FIXED: it climbs only over the flight and stops on its top step at the door (from z 8.0, so the pace stays
   a walk).
+
+## L3 · sound and timing (v24.3 — the full report is L3-sound-report.md; the sound it asked for is make.sh)
+- L3-1 · medium · COME BACK's music (one 20 s take) played out under its own brief on a first play and ran out on a slow
+  climb. CONFIRMED (the cue at T.come − 0.4, before the film pauses for the event). FIXED: k5climbloop, a bed raised by
+  the event's `onBegin` (START) and following his level (0.17 → 0.32 as he climbs 0.18 → 0.92), down at surfaceStart;
+  the one-shot k5climb retired (its file, its row).
+- L3-2 · medium · ending A's box was faded at two-thirds speed and its stop never heard. CONFIRMED. FIXED: k5endA re-made
+  5.0 s long (fates2.py) and cued as the key has turned (51.85, stopping 56.85, before the black); the drum follows the
+  take's rate exactly; z5A5 → 43.0 and z5A6 → 48.6 so the box's last three seconds and its stop are in the clear.
+- L3-3 · low-medium · the box's drum turned in silence — at the counter for minutes after its 24 s tune, in the room
+  through the question and the openings, and on a Continue into open1–decide. CONFIRMED. FIXED: the counter's tune is a
+  loop (k5boxloop, two phrases, its own ring over the joint) while the box plays, panned to it, a little under film K's
+  music; in the room the box RUNS DOWN where a third phrase would begin (k5boxdown, the drum easing to a stop with it);
+  openResume stills the drum.
+- L3-4 · low-medium · the question's held tone came in 17 s after the question. CONFIRMED. FIXED: held from the question
+  (phase 'sit' with openLive.busy).
+- L3-5 · low-medium · his bedroom footsteps were the engine's shoes on concrete. CONFIRMED. FIXED: stepSound → k5step
+  (a byte copy of e4c1's barefoot step: both of this chapter's own takes were 99 % sub-bass).
+- L3-6 · low · k5glint warmed and never played. CONFIRMED. FIXED: glint(i) plays it; the yield's glint goes through glint.
+- L3-7 · low · the box key turned in silence, its ratchet after. CONFIRMED. FIXED: a k5key click every 30°, the lid's
+  creak (k5lid) where the ratchet was.
+- L3-8 · low · film M's chant died at 12.6 and the hall had no sound. CONFIRMED. FIXED: k5madeM (it holds through the
+  hall) and World M's own night bed (k5templenight) in the film; D's temple its own dawn bed (k5court).
+- L3-9 · low · the red one's march ran at full under his small hurt line. CONFIRMED. FIXED: faded over T.flop..+1.0,
+  one small stamp left.
+- L3-10 · low · the home film's rain and koel were inaudible under z5pro3. CONFIRMED. FIXED: both in the gap after the
+  line, the rain at 0.8.
+- L3-11 · low · ending A's phone buzzed on Ma's first word. CONFIRMED. FIXED: both buzzes before her voicemail.
+- L3-12 · low · a hesitant first yield outlasted its riser in silence. CONFIRMED. FIXED: a heartbeat under every yield
+  (k5heart, synthesized — both generated takes were sub-bass and irregular), rising with the hold.
+- L3-13 · watch · two whispers sit at the music's level. NOTED: both survive through their breath (62 % and 70 % of
+  their energy over 3 kHz, where no bed has any); left as they are.
+- L3-14 · note (engine) · menu dings inside the rituals (evResolve's uiconfirm). NOTED: an engine change for every
+  chapter — Chad's call, put to him.
+- THE CORE FINDING · the room was ~10 dB quieter than the rest of episode 3 and had no ambient one-shots. FIXED: every
+  bed raised to −34…−37 dBFS when nobody speaks; new beds (the shop after closing, World M at night and at dawn, the
+  grey afternoon); music for every beat that had none (the opening, the counter, film M, film K's asks, the home film,
+  the offerings' second loop, the decision, COME BACK, each ending); stings on the turns (the reveal, the promise, each
+  drink given, each return); the hands' acts (the cups, the chair, the kneel, the flame, the key and the lid, the mat,
+  the wrap, the bag, the phone at 02:47); and the room's and the mall's own noises on a seeded stream (e3c3's ambTick).

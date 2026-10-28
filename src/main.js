@@ -13123,7 +13123,7 @@ const STING_SAMPLE = {
   k5bend: ['k5bend', 1], k5bonk: ['k5bonk', 1], k5bottleout: ['k5bottleout', 1], k5boxfast: ['k5boxfast', 1],
   k5boxstop: ['k5boxstop', 1], k5bubbles: ['k5bubbles', 1], k5bump: ['k5bump', 1], k5bundle: ['k5bundle', 1],
   k5buzz: ['k5buzz', 1], k5calm: ['k5calm', 1], k5capoff: ['k5capoff', 1], k5care: ['k5care', 1],
-  k5catch: ['k5catch', 1], k5chantlow: ['k5chantlow', 1], k5climb: ['k5climb', 1], k5coin: ['k5coin', 1],
+  k5catch: ['k5catch', 1], k5chantlow: ['k5chantlow', 1], k5coin: ['k5coin', 1],
   k5crumple: ['k5crumple', 1], k5dawnbed: ['k5dawnbed', 1], k5deep: ['k5deep', 1], k5delete: ['k5delete', 1],
   k5dm: ['k5dm', 1], k5door: ['k5door', 1], k5doorbell: ['k5doorbell', 1], k5endA: ['k5endA', 1], k5endB: ['k5endB', 1],
   k5endC: ['k5endC', 1], k5endD: ['k5endD', 1], k5enter: ['k5enter', 1], k5enter2: ['k5enter2', 1], k5epi: ['k5epi', 1],
@@ -13143,6 +13143,22 @@ const STING_SAMPLE = {
   k5tear: ['k5tear', 1], k5theme: ['k5theme', 1], k5thud: ['k5thud', 1], k5tick: ['k5tick', 1], k5type: ['k5type', 1],
   k5under: ['k5under', 1], k5unwrap: ['k5unwrap', 1], k5wai: ['k5wai', 1], k5wake: ['k5wake', 1], k5wave: ['k5wave', 1],
   k5wind: ['k5wind', 1], k5window: ['k5window', 1],
+  /* v24.3 · the sound buff (masters/v24.2/make.sh): the acts the hands do, the stings on the turns, the room's and the
+     mall's one-shots, the new beds, the music for every beat that had none, the box's loop and its run-down (k5climb
+     retired: COME BACK's music is the k5climbloop bed now) */
+  k5step: ['k5step', 1], k5cup: ['k5cup', 1], k5chair: ['k5chair', 1], k5chairup: ['k5chairup', 1],
+  k5kneel: ['k5kneel', 1], k5key: ['k5key', 1], k5lid: ['k5lid', 1], k5mat: ['k5mat', 1], k5wrap: ['k5wrap', 1],
+  k5baglift: ['k5baglift', 1], k5phone: ['k5phone', 1], k5fly: ['k5fly', 1], k5templebell: ['k5templebell', 1],
+  k5flame: ['k5flame', 1], k5reveal: ['k5reveal', 1], k5vow: ['k5vow', 1], k5given: ['k5given', 1],
+  k5return: ['k5return', 1], k5shake: ['k5shake', 1], k5void: ['k5void', 1], k5gecko: ['k5gecko', 1],
+  k5moto: ['k5moto', 1], k5dog: ['k5dog', 1], k5liftmotor: ['k5liftmotor', 1], k5gate: ['k5gate', 1],
+  k5fridge: ['k5fridge', 1], k5drip: ['k5drip', 1], k5bus: ['k5bus', 1], k5guard: ['k5guard', 1],
+  k5liftding: ['k5liftding', 1], k5mop: ['k5mop', 1], k5walkie: ['k5walkie', 1], k5escal: ['k5escal', 1],
+  k5shopnight: ['k5shopnight', 1], k5templenight: ['k5templenight', 1], k5court: ['k5court', 1], k5day: ['k5day', 1],
+  k5heart: ['k5heart', 1], k5open: ['k5open', 1], k5counter: ['k5counter', 1], k5madeM: ['k5madeM', 1],
+  k5vowtheme: ['k5vowtheme', 1], k5home: ['k5home', 1], k5care2: ['k5care2', 1], k5decide: ['k5decide', 1],
+  k5climbloop: ['k5climbloop', 1], k5driftA: ['k5driftA', 1], k5screens: ['k5screens', 1], k5greed: ['k5greed', 1],
+  k5merit: ['k5merit', 1], k5boxloop: ['k5boxloop', 1], k5boxdown: ['k5boxdown', 1],
   /* v24.0 · episode 4 chapter 1: its voices, effects, beds and music (masters/v24.0/make.sh) */
   q1pro1: ['q1pro1', 1], q1pro2: ['q1pro2', 1], q1pro3: ['q1pro3', 1], q1pro4: ['q1pro4', 1], pg1car: ['pg1car', 1],
   q1pro5: ['q1pro5', 1], pg1here: ['pg1here', 1], pg1come: ['pg1come', 1], pn1num: ['pn1num', 1],

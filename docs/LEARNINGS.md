@@ -5890,6 +5890,12 @@ cut (sharing its vertices and maps) when it is small.
   prove it (`diff -rq src <copy>/src`). And a probe or a harness runs on a
   SNAPSHOT of the copy's output (`cp -al dist <snap>`; `ENC_DIST=<snap>`),
   because the next build deletes and rewrites `dist/` under a running server.
+  That hard link is safe for `dist/` ONLY because build.py deletes the folder
+  first, so every file in it is new. `wrapped.html` is not: wrap.py's
+  `write_text` rewrites it in place, keeping its inode, so a `cp -al` of it for
+  `ENC_WRAPPED` becomes the next build's file the moment that build runs —
+  measured at v24.3, two "v24.2" snapshots of it holding v24.3's bytes. Snapshot
+  `wrapped.html` with a real `cp`.
 - **A person who never moves is a still, not a rig** (v21.16, the bus and coach passengers). Chad's rule — no
   block figures, anywhere — put real seated people behind every bus window, up to seven a bus. As rigs that is a
   skeleton, a mixer and a skinned draw each, ticked every frame for a figure that sits still behind glass. Instead
@@ -6663,7 +6669,12 @@ cut (sharing its vertices and maps) when it is small.
 - **A tap is timed by its events' own timestamps** (v24.0 CP8, engine). `onTouchEnd` measured a tap's length with
   `performance.now()` at each handler; on a slow phone a quick tap's touchend can be handled more than 380 ms after its
   touchstart was, and the tap on the thing was dropped. `e.timeStamp` is when the finger moved, whenever the handler
-  runs.
+  runs. v24.2 met it again in a GESTURE: the craft's flick read `performance.now()` in the overlay's handlers, so on a
+  phone drawing a frame a second a flick's down and its move were handled a second apart and every wave of the flames
+  was "too slow" — the real-finger probe stood at "Wave the flames out" for 900 s. Every press and move now hands its
+  event's own stamp down (`evStamp(e)` → evPress / evMove → the gesture). And the PROBE must do the same: a CDP
+  `Input.dispatchTouchEvent` with no `timestamp` is stamped when the browser receives it, which on a slow box is the
+  probe's pacing, not a finger's — give every touch the time it was meant to happen.
 - **The sound-effects model will not stop an engine** (v24.0 CP11). Four takes over two prompts ("switched off,
   shuddering and dying"; "idling for a moment and then switched off ... dies away to silence") came back as a flat idle
   at one level for their whole length. The stop is made from the idle the way a tape machine stops: the idle at its own
@@ -6724,3 +6735,20 @@ cut (sharing its vertices and maps) when it is small.
   second a frame (v18.0, right for every graded kind), and a craft's hold and a yield's fill integrated that step — so
   on a phone drawing a frame a second a "1.2 s" hold needed five, and a player let go believing it broken. They count
   the frame's real wall step (up to a second, since a tab back from the background held no finger).
+  v24.2 corrected one thing: the credit is counted from the later of the last frame and the PRESS (`e.downWall`), or
+  two quick taps on a phone at a frame a second each "held" for the whole frame they landed in.
+- **A sound no chapter names falls into the SHARED pack** (v24.3). build.py's split gives a sound to a chapter when
+  exactly one chapter names it in quotes and the engine never does; everything else is shared, downloaded by every
+  player at boot (the bias to shared is deliberate, v4.2). So a sound RETIRED by taking its cue out — `k5climb`,
+  replaced by the looping `k5climbloop` — and left in `assets/` with its row would have moved out of episode 3 chapter
+  5's pack and into everyone's. Retiring a sound is its files AND its `STING_SAMPLE` row, and the check is the shared
+  pack's hash before and after (v24.3: unchanged to the byte, 52 sounds added to the chapter).
+- **When every generated take of a sound fails the measure, make it** (v24.3; v24.0's engine stop was the first).
+  Asked for "the room's air dropping out and a faint ringing in the ears", the effects model gave 99 % sub-bass (one
+  take −54 dBFS whole); for "a lighter's flame held to incense", two lighter CLICKS with 1.8 s of −62 dBFS between;
+  for "a slow steady heartbeat", 94–95 % sub-bass with its beats 0.3–1.2 s apart, so no even loop could be cut. Each is
+  a simple physical sound a few lines of arithmetic make exactly — a swept noise band and two beating partials, a
+  band-passed hiss and roar flickering at 7–13 Hz, a lub-dub at 54 a minute whose 3rd to 14th harmonics carry it on a
+  phone — written down in `masters/v24.2/synth.py` so nobody re-generates them hoping for better. A thing made from a
+  sound the game already has is the other way out: the music box's loop, its run-down and ending A's stop are its own
+  tune, varispeeded and rung out (`fates2.py`).

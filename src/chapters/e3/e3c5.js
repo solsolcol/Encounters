@@ -173,7 +173,7 @@
         teach: 'You do not need possession, trance or dramatic manifestations to prove a spiritual connection. Told as a thrill, a dangerous experiment becomes an invitation: strangers try it, or take a Kumanthong home, without knowing what caring for one asks of them.' },
       { k: 'C', text: 'Talk to them every day — and wish for everything you want.',
         d: { sanity: -15, awareness: -6, wisdom: -18 }, verdict: 'bad',
-        say: 'I stopped giving to them. I only kept asking.',
+        say: 'Every gift came with a wish. I only kept asking.',   // (v24.3, L6-9: re-said — he gave MORE each night, a wish under each)
         teach: 'Do not be driven by greed. Kumanthong taken in with compassion are kept first for their sake; whatever help they give is a gift, not a wage, and the ones from a temple are believed never to help with anything wrong. If you keep them for wealth, care turns into a bargain in which the wanting never stops.' },
       { k: 'D', text: 'Keep caring for them — but never open yourself to them again.',
         d: { sanity: 15, awareness: 24, wisdom: 30 }, verdict: 'best',
@@ -212,9 +212,15 @@
     musicVol: 0,
     /* the beds (CP11, §9.3), mixed every frame by mixBeds: World S's air and the corridor after hours; World R's night,
        its fan (the fourth value its rate, the fan's own speed), 3 a.m., the morning at the window and the little one's
-       water; and the two pieces of music that loop under play — the offerings' khim and the question's held tone */
+       water; and the two pieces of music that loop under play — the offerings' khim and the question's held tone.
+       v24.3 (the sound buff, masters/v24.2/make.sh): the shop after closing under the counter's air; the counter's own music
+       and the music box playing on at the counter (its third value its pan, toward the box); the offerings' second loop
+       from the incense on; the decision's; COME BACK's climb; the heartbeat under a yield; World M at night (film M) and
+       at first light (ending D); the grey afternoon (A and C) */
     ambience: { beds: [['k5shopair', 0], ['k5mall', 0], ['k5nightbed', 0], ['k5fan', 0, 0, 1], ['k5deep', 0], ['k5dawnbed', 0],
-                       ['k5under', 0], ['k5care', 0], ['k5night', 0]] },
+                       ['k5under', 0], ['k5care', 0], ['k5night', 0],
+                       ['k5shopnight', 0], ['k5counter', 0], ['k5boxloop', 0, 0], ['k5care2', 0], ['k5decide', 0],
+                       ['k5climbloop', 0], ['k5heart', 0], ['k5templenight', 0], ['k5court', 0], ['k5day', 0]] },
     voiceLine: null,
 
 
@@ -340,7 +346,7 @@
     /* C */ 'z5C1': 3.47, 'z5C2': 3.97, 'z5C3': 9.25, 'z5C4': 8.75, 'z5Cevil': 3.63, 'z5Claugh': 3.87, 'z5C5': 4.05, 'z5C6': 4.68, 'z5C7': 5.41,
     /* D */ 'z5D1': 4.05, 'z5D2': 4.52, 'z5D3': 4.36, 'z5D4': 12.75, 'z5D5': 9.56, 'z5D6': 7.24, 'mk5teach': 10.37, 'mk5yatha': 12.12,
     /* the epilogue */ 'z5epi0': 12.2, 'z5epi1': 8.15, 'z5epi2': 2.27, 'z5epi3': 3.87,
-    /* the cards */ 'z5A': 5.41, 'z5B': 5.49, 'z5C': 3.32, 'z5D': 3.79
+    /* the cards */ 'z5A': 5.41, 'z5B': 5.49, 'z5C': 4.16, 'z5D': 3.79
   };
 
 
@@ -2629,6 +2635,7 @@
     const STAND_UP = { x: 0.22, z: -0.62 };
     function sitAtDesk(resumed) {
       careLive.seat = true;
+      if (!resumed) sfxAt('k5chair', 0.4);                  // (v24.3: the gas lift's sigh and the seat)
       yaw.position.x = CHAIR.x; yaw.position.z = CHAIR.z;
       if (kit) { kit.root(true); kit.pose('lying', { y: 1.18, yaw: 0, span: 1.1, pitchLo: -1.1, pitchHi: 0.4, secs: resumed ? 0.05 : 0.8 }); }
       yaw.rotation.y = 0; pitch.rotation.x = -0.62;          // square to the desk (by photograph: a press kept the look it was made
@@ -2636,6 +2643,7 @@
     }
     function standUp() {
       careLive.seat = false;
+      sfxAt('k5chairup', 0.54);                              // (v24.3: the chair rolled back as he stands)
       if (!kit) return;
       kit.pose('standing', { secs: 0.6 });
       careLive.glide = { fx: yaw.position.x, fz: yaw.position.z, tx: STAND_UP.x, tz: STAND_UP.z, t0: wallNow(), secs: 0.6, unroot: true };
@@ -2665,7 +2673,7 @@
     /* (CP13, the sound lens: the pour played its fourteen-second take AFTER the cups were full. It plays while the jug
        pours now — started on the hold's first progress, heard only while the hold is moving the water (a hand let go
        holds the jug still and the water stops), brought down when the third cup is full) */
-    const POUR_VOL = 0.4;
+    const POUR_VOL = 0.6;                                     // (v24.3: 0.4 sat 26 dB under the music)
     function pourSound() {
       careLive.pourAt = wallNow();
       if (!careLive.pourS) {
@@ -2682,6 +2690,11 @@
     function waterFrame() {
       pourGain();
       const k = careLive.pour;
+      /* (v24.3: each cup's own pour as it begins to fill, rising as it fills — over the jug's long pour) */
+      if (careBusy && careStep() === 'water') {
+        const n = [0, 1, 2].filter(i => k * 3 - i > 0.02).length;
+        while (careLive.cupN < n) { sfxAt('k5cup', 0.71, ALTAR.x0, ALTAR_Z[careLive.cupN]); careLive.cupN++; }
+      }
       roomLive.cups.forEach((C, i) => {
         const f = cl01(k * 3 - i);
         C.water.visible = f > 0.02;
@@ -2708,7 +2721,7 @@
     function drinkCraft(i) {
       const K = KIDS[i], H = careLive.held;
       heldReset();                                         // a fresh bottle: cap on, straw in its sleeve over it
-      sfxAt('k5bottleout', 0.45, CHAIR.x, CHAIR.z - 0.4);
+      sfxAt('k5bottleout', 0.85, CHAIR.x, CHAIR.z - 0.4);
       deskBottle(true);                                    // out of the bag, stood on the desk before him
       /* (a narrow screen aims 5 cm higher, so the bottle stands lower in it — CP13, the play's vision review: on a phone the
          craft's panel stands under the stat bars, to 39 % of the height, and lay over the straw as it slid in and bent) */
@@ -2766,7 +2779,9 @@
         kit.hold(null);
         if (kit.handPose) kit.handPose(null, 0, { secs: 0.5 });
         careLive.placed[i] = true; bottleShow(i, true);
-        sfxAt('k5set', 0.42, ROW.back, ALTAR_Z[i]);
+        sfxAt('k5set', 0.8, ROW.back, ALTAR_Z[i]);
+        /* (v24.3: one khim note as each drink is given — C, E, G across the three) */
+        if (worldSfx && !(soundOff && soundOff())) worldSfx('k5given', 0.41, [1, 1.26, 1.5][i], 0);
         careDone.add('d.' + K.key); careLive.carry = -1;
       });
       queueGap(0.9);
@@ -2790,13 +2805,14 @@
       });
       return true;
     }
-    function glint(i) { const G = careLive.glints[i]; if (G) { G.t = 0.0001; G.sp.visible = true; } }
+    function glint(i) { const G = careLive.glints[i]; if (G) { G.t = 0.0001; G.sp.visible = true; sfxAt('k5glint', 0.22, RISER.x, ALTAR_Z[i]); } }   // (v24.3, L3-6: it was silent)
     /* he steps up to the altar before that child and crouches there, his look on the place — a short glide on wall time,
        rooted while he does it (by photograph: he crouched wherever the press found him, and from the room's middle the
        drink went down out of his reach and out of the frame) */
     const KNEEL_X = ALTAR.x0 - 0.40;
     function kneelBefore(i, x, z) {
       const tx = KNEEL_X, tz = ALTAR_Z[i] + 0.03;
+      sfxAt('k5kneel', 0.18);                                // (v24.3: his knees and a sleeve onto the tiles)
       careLive.glide = { fx: yaw.position.x, fz: yaw.position.z, tx, tz, t0: wallNow(), secs: 0.55 };
       kit.root(true);
       kit.pose('lying', { y: 1.0, yaw: -Math.PI / 2, span: 1.2, pitchLo: -1.0, pitchHi: 0.5, secs: 0.5 });
@@ -2828,15 +2844,16 @@
           if (s === 0) {
             const t = Math.round(k * 2);
             while (taps < t) { taps++; if (taps === 1) { sfxAt('k5spark', 0.4, CHAIR.x, CHAIR.z - 0.4); careLive.sparkT = 0.25; }
-                                       else { sfxAt('k5flick', 0.45, CHAIR.x, CHAIR.z - 0.4); Lg.flame.visible = true; } }
+                                       else { sfxAt('k5flick', 0.45, CHAIR.x, CHAIR.z - 0.4); Lg.flame.visible = true;
+                                              careLive.flameS = sfxAt('k5flame', 0.21, CHAIR.x, CHAIR.z - 0.4); } }   // (v24.3: the flame he holds them in)
           } else if (s === 1) {
             careLive.catchK = k;
             St.tips.forEach((T, j) => { T.em.visible = k > 0.35 + j * 0.15; T.fl.visible = k > 0.55 + j * 0.12; });
           }
         },
         onStep: (s) => {
-          if (s === 1) sfxAt('k5catch', 0.4, CHAIR.x, CHAIR.z - 0.4);
-          if (s === 2) { sfxAt('k5wave', 0.4, CHAIR.x, CHAIR.z - 0.4); Lg.flame.visible = false; St.tips.forEach(T => { T.fl.visible = false; T.em.visible = true; }); }
+          if (s === 1) sfxAt('k5catch', 0.85, CHAIR.x, CHAIR.z - 0.4);
+          if (s === 2) { sfxAt('k5wave', 0.4, CHAIR.x, CHAIR.z - 0.4); sfxDown(careLive.flameS, 0.15); careLive.flameS = null; Lg.flame.visible = false; St.tips.forEach(T => { T.fl.visible = false; T.em.visible = true; }); }
         },
       }).then((r) => {
         if (!alive || (r && r.aborted)) return;
@@ -2939,15 +2956,24 @@
       after(1.0, () => {
         const B = roomLive.box;
         const keyAt = () => { if (!roomLive.boxKey) return null; const p = roomLive.boxKey.getWorldPosition(new THREE.Vector3()); return { x: p.x, y: p.y, z: p.z }; };
+        careLive.keyN = 0;
         const go = kit.event ? kit.event({ kind: 'craft', label: W.titleBox, steps: [{ g: 'twist', turns: 1, word: W.craftWind }], at: keyAt,
-          onProgress: (s, k) => { if (roomLive.boxKey) roomLive.boxKey.rotation.x = k * Math.PI * 2; } }) : Promise.resolve();
+          onProgress: (s, k) => {
+            if (roomLive.boxKey) roomLive.boxKey.rotation.x = k * Math.PI * 2;
+            /* (v24.3, L3-7: a click of the key every 30° as he turns it — it had turned in silence, its ratchet after) */
+            while (careLive.keyN < Math.floor(k * 12)) { careLive.keyN++; sfxAt('k5key', 0.8, 1.30, (RISER.z1 + ALTAR.z1) / 2); }
+          } }) : Promise.resolve();
         void B;
         go.then((r) => {
           if (!alive || (r && r.aborted)) return;
-          sfxAt('k5wind', 0.45, 1.30, (RISER.z1 + ALTAR.z1) / 2);
-          careLive.boxOpenTo = 1;
+          sfxAt('k5lid', 0.9, 1.30, (RISER.z1 + ALTAR.z1) / 2);   // (v24.3: the lid lifting, where the key's ratchet was)
+          careLive.boxOpenTo = 1; careLive.drumRate = 1; careLive.runT0 = 0; careLive.lullW = 0;
           viewTo(-Math.PI / 2, -0.12, 1.4);                     // (back to the three, for the clasp)
-          after(0.8, () => sfxAt('k5lullaby', 0.5, 1.30, (RISER.z1 + ALTAR.z1) / 2));
+          /* (v24.3, L3-3: the tune is two phrases; where a third would begin, 20.6 s in, the box RUNS DOWN — the phrase
+             begun again and slowing to a stop, the drum with it — instead of the drum turning silently through the
+             question and the openings. careFrame starts it on WALL time from the tune's own start: the tune plays on
+             under the pause menu, where the chapter clock stands still — the v24.0 two-clocks law) */
+          after(0.8, () => { sfxAt('k5lullaby', 0.5, 1.30, (RISER.z1 + ALTAR.z1) / 2); careLive.lullW = wallNow(); });
           after(1.6, () => {
             if (kit.pray) kit.pray(true, { secs: 1.0, y: -0.33 });
             queueGap(0.8); queueLine('z5eat');
@@ -2972,7 +2998,8 @@
                        capA: 0, slide: 0, bend: 0, capOff: false, sleeveOff: false, catchK: 0, sparkT: 0, boxOpen: 0, boxOpenTo: 0,
                        bowT: 0, held: null, heldStraw: null, heldSleeve: null, lighter: null, sticks: null,
                        bottles: [], placed: [false, false, false], rings: [], glints: [], sticksSet: [], capsDesk: [], sleevesDesk: [],
-                       deskBag: null, drinksBag: null, packet: null, pourS: null, pourAt: 0 };
+                       deskBag: null, drinksBag: null, packet: null, pourS: null, pourAt: 0,
+                       cupN: 0, keyN: 0, flameS: null, runT0: 0, lullW: 0 };   // (v24.3: the cups poured, the key's clicks, the flame's sound, the box's run-down)
     /* where a drink is opened: on the desk before his chair, in front of the laptop (its base's front edge at z −1.315),
        straight ahead of him; the eye at the desk */
     const WORK = { x: -0.34, z: -1.265 }, DESK_EYE = 1.18;
@@ -3100,6 +3127,14 @@
       }
       careLive.boxOpen += (careLive.boxOpenTo - careLive.boxOpen) * (1 - Math.exp(-wdt / 0.35));
       if (roomLive.boxLid) roomLive.boxLid.rotation.x = -1.9 * smooth(cl01(careLive.boxOpen));
+      if (careLive.lullW && !careLive.runT0 && !endLive.on && wallNow() - careLive.lullW >= 20.6
+          && (getState() === 'play' || getState() === 'menu') && worldOf(yaw.position.x) === 'R' && careLive.boxOpenTo >= 1) {
+        sfxAt('k5boxdown', 0.5, 1.30, (RISER.z1 + ALTAR.z1) / 2); careLive.runT0 = wallNow();   // (never at the title: there the tune is brought down)
+      }
+      if (careLive.runT0 && !endLive.on) {                    // (v24.3: the run-down after the room's tune, 5 s, on wall time)
+        const u = (wallNow() - careLive.runT0) / 5.0;
+        careLive.drumRate = 1 - smooth(cl01(u));
+      }
       if (roomLive.boxDrum && careLive.boxOpen > 0.5) roomLive.boxDrum.rotation.x += wdt * 2.2 * (careLive.drumRate === undefined ? 1 : careLive.drumRate);   // (C overwinds it, A lets it run down: CP8)
       if (careLive.bowT > 0) {                                // the bow: the eye dips 0.35 rad and comes back (1.6 s)
         const prev = careLive.bowT; careLive.bowT += wdt; const f = (t) => 0.35 * Math.sin(Math.PI * cl01(t / 1.6));
@@ -3115,6 +3150,7 @@
       for (const r of String(tagStr || '').split(',')) if (CARE_ORDER.includes(r)) careDone.add(r);
       careBusy = false; careLive.carry = -1; careLive.grip = ''; careLive.seat = false;
       careLive.pour = careDone.has('water') ? 1 : 0; careLive.foamed = careDone.has('foam');
+      careLive.cupN = careDone.has('water') ? 3 : 0;
       KIDS.forEach((K, i) => {
         const given = careDone.has('d.' + K.key);
         careLive.placed[i] = given; bottleShow(i, given);
@@ -3141,7 +3177,8 @@
       careDone.clear(); careBusy = false;
       Object.assign(careLive, { carry: -1, pour: 0, foamed: false, foamT: 0, briefed: false, bagSaid: false, seat: false, grip: '',
                                 capA: 0, slide: 0, bend: 0, capOff: false, sleeveOff: false, catchK: 0, sparkT: 0, boxOpen: 0, boxOpenTo: 0, bowT: 0,
-                                lighterOn: false });
+                                lighterOn: false, cupN: 0, keyN: 0, runT0: 0, lullW: 0 });
+      sfxDown(careLive.flameS, 0.1); careLive.flameS = null;          // (v24.3: the lighter's flame, and the cups' and the key's counts)
       deskBottle(false); deskIncense(false);
       if (careLive.deskBag) careLive.deskBag.visible = false;        // (play's desk: tonight's bag of drinks, CP13)
       if (careLive.drinksBag) careLive.drinksBag.visible = true;
@@ -3264,7 +3301,7 @@
        opens more easily, because he has already opened it twice (the case file's "one after another"). What a Continue
        must not lose: the phase — open1 (asked), open2 (the red one done, on the mat), open3 (the shy one done, by the
        desk), after (the little one done, on the floor by the bed), decide. */
-    const openLive = { busy: false, briefed: false, k: 0, kid: -1, smearW: 0, held: false, loosenS: null, loosenUsed: false, sink: 1 };
+    const openLive = { busy: false, briefed: false, k: 0, kid: -1, smearW: 0, held: false, loosenS: null, loosenUsed: false, sink: 1, fasc: false };
     const OPEN_I = { open1: 0, open2: 1, open3: 2 };
     function openOk() { return OPEN_I[phase] !== undefined && !openLive.busy && quiet(); }
     function openObjective() {
@@ -3347,7 +3384,7 @@
         if (Math.abs(want - (openLive.smearW || 0)) > 0.02) { openLive.smearW = want; kit.smear(want, { secs: 0.3 }); }
       }
       roomLive.smokeLean = k;                                      // (the room's smoke frame leans the threads toward the mat)
-      for (let i = 0; i < 3; i++) { const G = careLive.glints[i]; if (G && openLive.kid === i && k > 0.6 && G.t === 0) { G.t = 0.0001; G.sp.visible = true; } }
+      for (let i = 0; i < 3; i++) { const G = careLive.glints[i]; if (G && openLive.kid === i && k > 0.6 && G.t === 0) glint(i); }
     }
     /* the possessions: a film from play (§4.4), its first time unskippable (S41), handing him back where it leaves him */
     function possess(i) {
@@ -3360,6 +3397,7 @@
         /* (v24.2, L1-7: the order and its marks wait for the picture — the film ends on black and the kit's fade lifts
            it; posted at once, "Sit with them" and the mat's "!" stood on the black. wDark holds both, as an arrival's) */
         if (i < 2) wDark = true;
+        if (i < 2 && worldSfx && !(soundOff && soundOff())) worldSfx('k5return', 0.75, 1, 0);   // (v24.3: coming back to himself as the picture comes back)
         if (i === 0) { landOn('mat'); lookToOrder(1); roomClock('23:21'); setPhase('open2'); }      // (§10.1: the clock as each one left it)
         else if (i === 1) { landOn('desk'); lookToOrder(2); roomClock('23:49'); setPhase('open3'); }   // (CP13: 23:33 made z5time's "almost three hours" to 02:47 three and a quarter)
         else { landOn('bed'); setPhase('after'); afterBeat(false); return; }
@@ -3403,7 +3441,7 @@
       afterEvidence();
       if (kit) kit.fade(0, resumed ? 0.8 : 1.6);
       /* the phone on the floor beside him wakes, and his look goes down to it: 02:47 (the screen sleeps again after) */
-      after(resumed ? 0.4 : 2.0, () => { phone.S.draw('time', 0, '02:47'); phoneLook(1.2); after(7.5, () => phone.S.draw('dark')); });
+      after(resumed ? 0.4 : 2.0, () => { phone.S.draw('time', 0, '02:47'); sfxAt('k5phone', 1.0); phoneLook(1.2); after(7.5, () => phone.S.draw('dark')); });   // (v24.3: its buzz on the tiles)
       queueGap(resumed ? 0.8 : 3.6);
       queueLine('z5time');                                         // "Almost three hours... gone."
       queueGap(1.4);
@@ -3411,7 +3449,7 @@
       queueGap(4.4);
       queueLine('z5felt');                                         // "To be wanted... to be found... to not be left alone. That's all they ever wanted."
       queueGap(0.8);
-      queueLine('z5fasc');                                         // "And at that moment... I was fascinated by it."
+      queueLine('z5fasc', () => { openLive.fasc = true; });        // "And at that moment... I was fascinated by it." (v24.3: the decision's music from here)
       queueFn(() => { const v = decLook(); viewTo(v.ry, v.px, 1.0); });   // the three, where the decision's panel leaves them
       queueGap(1.1);
       queueFn(() => { openLive.busy = false; setPhase('decide'); openDecision(); });
@@ -3437,6 +3475,7 @@
     function openResume(p, tag) {
       const n = { open1: 0, open2: 1, open3: 2, after: 3, decide: 3 }[p] || 0;
       careLive.boxOpen = careLive.boxOpenTo = 1;
+      careLive.drumRate = 0; careLive.runT0 = 0; careLive.lullW = 0;   // (v24.3, L3-3: its tune long played out — the drum still)
       roomClock(['23:12', '23:21', '23:49', '02:47'][Math.min(3, n)]);
       if (n >= 1) { const B = careLive.bottles[0]; if (B && B.liq) B.liq.scale.y = 0.5; cartonDown(true); }
       if (n >= 2 && roomLive.coin) { roomLive.coin.visible = true; roomLive.coin.position.set(BYDESK.x + 0.18, 0.004, BYDESK.z + 0.1); roomLive.coin.rotation.set(0, 0.4, 0); }
@@ -3476,7 +3515,7 @@
     /* PLAY II as build() leaves it (the reset law): no double, nothing a possession moved still moved */
     function openReset() {
       openLive.busy = false; openLive.briefed = false; openLive.k = 0; openLive.kid = -1; openLive.smearW = 0;
-      openLive.held = false; openLive.loosenUsed = false; openLive.sink = 1; loosenStop(0.12);
+      openLive.held = false; openLive.loosenUsed = false; openLive.sink = 1; openLive.fasc = false; loosenStop(0.12);
       doublesOff();
       cartonDown(false);
       if (roomLive.curtain) roomLive.curtain.rotation.y = 0;
@@ -3488,7 +3527,7 @@
       redLive.stamps.length = 0; redLive.taps = 0; redLive.auto = false;
       shyLive.gap = 0; peekSet(0); lensOff();
       phone.g.visible = false; phone.S.draw('dark');
-      littleLive.cameBack = false; littleLive.slipN = 0; littleLive.briefed = false;
+      littleLive.cameBack = false; littleLive.slipN = 0; littleLive.briefed = false; littleLive.climbOn = false;
       fLive.shot = '';
     }
     /* POSSESSION 1 · THE RED ONE (§4.4, ~36 s): every picture a function of the film's own clock (a seek, a skip and a slow
@@ -3733,7 +3772,7 @@
        the little one's smaller blue light beside him, holding on — and SURFACING: sound and white-gold light, colour, the
        lamp blooming, and he falls back against the bed's frame, gasping. */
     /* (LFT is at the top level since CP12) */
-    const littleLive = { cameBack: false, slipN: 0, lv: 0 };
+    const littleLive = { cameBack: false, slipN: 0, lv: 0, climbOn: false };
     const KNEEL = { x: 1.05, z: ALTAR_Z[2] };                  // kneeling close before the little one, his face filling the view
     const littleF = {
       T: LFT,
@@ -3940,16 +3979,19 @@
                slip: 4, minSanity: 10, goal: 0.92, hold: 0.4, full: 12, secs: 30,
                onPull: () => { sfxAt('k5pull', 0.45, yaw.position.x, yaw.position.z); sfxAt('k5bells', 0.3, RISER.x, ALTAR_Z[2]); littleLive.pullT = wallNow(); },
                onSlip: (n) => { littleLive.slipN = n; },
-               onLevel: (k) => { littleLive.lv = k; comeWaterFrame(k); } };
+               onLevel: (k) => { littleLive.lv = k; comeWaterFrame(k); },
+               /* (v24.3, L3-1: the climb's music starts on START — it had played out under the brief on a first play —
+                  as a loop whose level follows how far he has climbed, mixBeds; surfaceStart takes it down) */
+               onBegin: () => { littleLive.climbOn = true; } };
     }
-    function comeBegin() { littleLive.lv = 0.18; look('SURFACE', 0.6); comeWaterOn(true); }
+    function comeBegin() { littleLive.lv = 0.18; littleLive.climbOn = false; look('SURFACE', 0.6); comeWaterOn(true); }
     function comeDone(r) {
       if (r && (r.skipped || r.aborted)) return;        // (CP13: a skipped film banks no note either way; v24.2, L2-1: nor an aborted one — its handler runs after the reset)
       littleLive.cameBack = !!(r && r.ok && !r.gaveUp);
       const fast = r && r.ok && !r.gaveUp && r.score >= 0.99;
       if (kit && kit.conduct) kit.conduct(fast ? { a: 4, note: W.noteCameBack } : { note: r && r.gaveUp ? W.noteLight : W.noteHard });
     }
-    function surfaceStart() { comeWaterOn(false); look('NIGHT', 0.8); if (kit && kit.flash) kit.flash({ color: '#fff2d6', secs: 1.4 }); }   // a rush of white-gold light
+    function surfaceStart() { littleLive.climbOn = false; comeWaterOn(false); look('NIGHT', 0.8); if (kit && kit.flash) kit.flash({ color: '#fff2d6', secs: 1.4 }); }   // a rush of white-gold light
     /* the surfacing (5.6 s since CP12, his gasp inside it): a rush of white-gold light that fades as colour returns; he
        falls back against the bed's frame */
     function surfaceFrame(u, api) {
@@ -4740,6 +4782,11 @@
     /* the epilogue's cues come from epiCues, a helper every ending calls — the engine's scan reads a scene's own source
        and cannot see them, so they are warmed here (CP11: until then they were planned and played nothing) */
     if (warmSounds) warmSounds(['k5epi', 'z5epi0', 'z5epi1', 'z5epi2', 'z5epi3']);
+    /* v24.3 · the sound buff's play-time sounds: the hands' acts, the stings, the box's run-down, the places' noises */
+    if (warmSounds) warmSounds(['k5step', 'k5cup', 'k5chair', 'k5chairup', 'k5kneel', 'k5key', 'k5lid', 'k5mat', 'k5wrap', 'k5baglift',
+                                'k5phone', 'k5flame', 'k5reveal', 'k5vow', 'k5given', 'k5return', 'k5boxdown',
+                                'k5gecko', 'k5moto', 'k5dog', 'k5liftmotor', 'k5gate', 'k5fridge', 'k5drip', 'k5bus',
+                                'k5guard', 'k5liftding', 'k5mop', 'k5walkie', 'k5escal', 'k5shutter']);
     if (warmSounds) warmSounds(['k5pour', 'k5bottleout', 'k5ratchet', 'k5stiff', 'k5seal', 'k5hiss', 'k5capoff', 'k5tear', 'k5slide', 'k5bubbles',
                                 'k5plip', 'k5bend', 'k5foam', 'k5spark', 'k5flick', 'k5catch', 'k5wave', 'k5sand', 'k5wai']);   // PLAY I's own (CP6)
     /* every line said in PLAY (CP13, the sound lens: none was warmed, and sayLine says a line whose bytes have not
@@ -5392,6 +5439,7 @@
       setShow(cntLive.bundleSet, false, now); setShow(cntLive.clothSet, true, now);
       if (now) { for (const S of cntLive.kidSet) setShow(S, true, true); return; }
       sfxAt('k5bundle', 0.55, ...atCnt(CNT));
+      if (worldSfx && !(soundOff && soundOff())) worldSfx('k5reveal', 0.54, 1, 0);   // (v24.3: the three coming out, a soft reveal; the counter's music follows)
       viewTo(clothYaw(), CNT_LOOK, 1.3);                // his look comes down onto the three (by photograph: on a phone the first was cut)
       KIDS.forEach((K, i) => after(0.55 + 0.45 * i, () => { setShow(cntLive.kidSet[i], true); sfxAt('k5figset', 0.42, SX + CNT.x, CNT_Z[i]); }));
       after(0.55 + 0.45 * 2 + 0.8, () => { if (phase === 'counter') objectiveFor('counter'); });   // ORDER 1, once all three are out
@@ -5449,11 +5497,14 @@
     function windBox(now) {
       setShow(cntLive.boxSet, true, now);
       if (now) { cntLive.boxOpen = cntLive.boxOpenTo = 1; startLull(); return; }
-      sfxAt('k5set', 0.42, ...atCnt(CNT_BOX));
+      sfxAt('k5set', 0.7, ...atCnt(CNT_BOX));
       after(0.5, () => { sfxAt('k5wind', 0.55, ...atCnt(CNT_BOX)); cntLive.windT = 1.3; });
-      after(1.9, () => { cntLive.boxOpenTo = 1; startLull(); });
+      after(1.9, () => { cntLive.boxOpenTo = 1; sfxAt('k5lid', 0.9, ...atCnt(CNT_BOX)); startLull(); });
     }
-    function startLull() { cntLive.lull = true; sfxAt('k5lullaby', 0.5, ...atCnt(CNT_BOX)); }
+    /* (v24.3, L3-3: the box's tune PLAYS ON at the counter — a loop of its two phrases, k5boxloop, which mixBeds raises
+       while cntLive.lull holds and pans toward the box; the one 24 s take left the drum turning in silence through the
+       card, the promise and the wrap) */
+    function startLull() { cntLive.lull = true; }
     function boxTick(wdt) {
       const B = cntLive.box; if (!B) return;
       cntLive.boxOpen += (cntLive.boxOpenTo - cntLive.boxOpen) * (1 - Math.exp(-wdt / 0.35));
@@ -5548,6 +5599,7 @@
       if (kit && kit.pray) kit.pray(true, { secs: 0.9, y: -0.33 });   // (the episode's own height: at the default the clasp hid the three and the owner on a phone)
       queueGap(1.0);
       queueLine('z5promise');
+      queueFn(() => { if (worldSfx && !(soundOff && soundOff())) worldSfx('k5vow', 0.6, 1, 0); });   // (v24.3: the promise answered — a bowl bell over a chord)
       queueGap(0.5);
       queueFn(() => { if (kit && kit.pray) kit.pray(false, { secs: 0.8 }); });
       queueGap(0.4);
@@ -5558,6 +5610,7 @@
     }
     function wrapUp() {
       if (kit) kit.fade(1, 0.45);
+      after(0.2, () => sfxAt('k5wrap', 0.62, ...atCnt(CNT)));      // (v24.3: the three wrapped in their cloth, in the dark)
       after(0.55, () => { packed(); sfxAt('k5bag', 0.55, ...atCnt(CNT)); });
       after(1.7, () => {
         if (kit) kit.fade(0, 0.8);
@@ -5577,6 +5630,7 @@
       if (cntStep() !== 'bag' || !cntOk()) return false;
       cntBusy = true; if (kit) kit.objective(null);
       setShow(cntLive.bagSet, false, true);
+      sfxAt('k5baglift', 1.0, ...atCnt(CNT));                    // (v24.3: the bag lifted off the glass — a clink and its paper)
       if (kit && kit.hold && cntLive.bagHeld) kit.hold(cntLive.bagHeld, { pos: BAG_HELD.pos, rot: BAG_HELD.rot });
       after(1.0, () => {
         if (kit) kit.setPhase('care');
@@ -5625,6 +5679,7 @@
     let seated = false;
     function sitDown(resumed) {
       seated = true;
+      if (!resumed) sfxAt('k5mat', 0.9);                     // (v24.3: the reeds under him as he sits)
       yaw.position.x = MAT.x; yaw.position.z = MAT.z;
       if (kit) {
         kit.root(true);
@@ -5745,7 +5800,7 @@
        reset law: a value a scene set is cleared by whatever ends that scene). No hand holds anything small in close-up:
        a thing an ending needs in his hands stands in front of the lens with the hand below the frame (the bottle's
        lesson, Chad: "if you know its impossible for you to get the fingers right, then dont do that animation"). */
-    const endLive = { on: '', shot: '', looked: '', props: null };
+    const endLive = { on: '', shot: '', looked: '', props: null, epiU: 0 };
     /* (BYBED is CP7's, beside BYDESK: { x, z, eye }) */
     /* a bloom from the edges of sight (V2), on the lens: the colour of the child it belongs to, 0..1 */
     function bloomSet(k, hex) {
@@ -5854,7 +5909,7 @@
       if (P && P.cardDust) P.cardDust.visible = false;
       chairHome();
       if (roomLive.tapeDisp) roomLive.tapeDisp.position.y = 0.29;
-      Object.assign(endLive, { on: '', shot: '', looked: '' });
+      Object.assign(endLive, { on: '', shot: '', looked: '', epiU: 0 });
     }
 
     /* ---------------------------------------------------------------- A · STAY WITH THEM (worst, §4.8 A)
@@ -5974,9 +6029,12 @@
         camAt(1.30 - 0.44, 0.97, bz + 0.21, 1.30, ALTAR.top + 0.05, bz + 0.01);
         careLive.boxOpen = careLive.boxOpenTo = ss(cl01((u - 0.2) / 0.6));
         /* (CP13, the sound lens: the run's 12.5 s take sounds past 63 s while the drum stopped at 56.4 — the drum now turns
-           slower and slower until the black at 57.9, and the take is faded with the black) */
-        const w = ss(cl01((u - 0.8) / 1.0)), r = Math.max(0, Math.min(u - 1.9, 6.0)), run = 1.65 * (r - r * r / 12);   // (4.95 rad in all)
-        if (roomLive.boxKey) roomLive.boxKey.rotation.x = -Math.PI * 2 * w + Math.PI * 2 * (run / 4.95);
+           slower and slower until the black at 57.9, and the take is faded with the black.
+           v24.3, L3-2: the take is re-made 5.0 s long (masters/v24.2/fates2.py) and starts as the key has turned, so its
+           stop is HEARD before the black: the drum follows its rate exactly — 1.0 -> 0.27, eased — and stops with it) */
+        const w = ss(cl01((u - 0.8) / 1.0)), kd = cl01((u - 1.85) / 5.0);
+        const run = 1.65 * 5.0 * (kd - 0.73 * (kd * kd * kd - kd * kd * kd * kd / 2));   // (5.24 rad in all)
+        if (roomLive.boxKey) roomLive.boxKey.rotation.x = -Math.PI * 2 * w + Math.PI * 2 * (run / 5.24);
         if (roomLive.boxDrum) roomLive.boxDrum.rotation.x = run;
       }
     }
@@ -6007,6 +6065,7 @@
            the card — B's own last shots put it down, a skip never runs them) */
         if (phone.g.parent === camera) phoneBeforeEyes(false);
       }
+      endLive.epiU = u;                                    // (v24.3: mixBeds takes World S's beds down with the epilogue's black)
       if (api && api.handsRoot) api.handsRoot.visible = false;
       if (api && api.handPose) api.handPose(null, 0);
       /* all three in the frame on THIS screen (film M's rule): the lens as far back as the screen's width needs, 0.29 m either
@@ -6829,16 +6888,35 @@
        And the music under play: the offerings' khim (k5care) until the box is wound — the box's own tune is the lullaby
        and the two never play together — and the question's held tone (k5night) from the question to the last opening;
        both silent in every film, which has its own. Levels against the files' RMS (night -30, deep -34, dawn -26, water
-       -24, the fan -26): the room near -40 dBFS, the water -28 */
-    const bedMix = { air: 0, mall: 0, night: 0, fan: 0, deep: 0, dawn: 0, under: 0, care: 0, held: 0 };
+       -24, the fan -26): the room near -40 dBFS, the water -28.
+       v24.3 (the sound buff, masters/v24.2/L3-sound-report.md): the room was ~10 dB quieter than the rest of episode 3
+       (its beds -40 against e3c1's -29, and nothing on a phone once the duck takes them 8 dB lower under a line) — every
+       bed comes up to -34…-37 dBFS when nobody speaks; the counter gets the shop after closing under its air and its own
+       music (k5counter, from the cloth's opening until the box plays; the box's tune then plays ON, a loop, at half under
+       film K's music and a little under the owner's asks); the offerings' second loop from the incense on; the question's
+       held tone FROM the question (L3-4: it came in 17 s after it); the decision's own music from z5fasc; COME BACK's climb
+       following his level (L3-1); a heartbeat under each yield, rising with the hold (§4.3; L3-12: a hesitant hold had
+       outlasted its riser in silence); film M's hall at night and D's courtyard at first light their own beds (L3-8); the
+       grey afternoons (A, C) the afternoon's bed, no longer the dawn's birds at a third; and World S's beds go down with the
+       epilogue's black */
+    const bedMix = { air: 0, mall: 0, night: 0, fan: 0, deep: 0, dawn: 0, under: 0, care: 0, held: 0,
+                     shopnight: 0, counter: 0, box: 0, care2: 0, decide: 0, climb: 0, heart: 0, tnight: 0, court: 0, day: 0 };
+    const BED_TAU = { care: 2.0, held: 2.0, care2: 2.0, counter: 2.0, box: 1.2, decide: 1.0, climb: 0.6, heart: 0.35 };
     function mixBeds(wdt, st) {
       if (!(wdt > 0)) return;
       const w = worldOf(yaw.position.x), L = roomLive.lookName || 'NIGHT';
       const film = st === 'cine', card = st === 'result' || st === 'complete';
-      const want = { air: 0, mall: 0, night: 0, fan: 0, deep: 0, dawn: 0, under: 0, care: 0, held: 0 };
+      const want = { air: 0, mall: 0, night: 0, fan: 0, deep: 0, dawn: 0, under: 0, care: 0, held: 0,
+                     shopnight: 0, counter: 0, box: 0, care2: 0, decide: 0, climb: 0, heart: 0, tnight: 0, court: 0, day: 0 };
+      let boxPan = 0;
       if (w === 'S') {
         const out = yaw.position.z > 0.15;
-        if (fLive.shot !== 'O') { want.air = out ? 0.03 : 0.11; want.mall = out ? 0.3 : 0.12; }
+        const dark = endLive.shot === 'epi' && endLive.epiU > EPI.fade0;   // (the epilogue's black: the counter goes with its picture)
+        if (fLive.shot !== 'O' && !dark) { want.air = out ? 0.05 : 0.2; want.mall = out ? 0.4 : 0.22; want.shopnight = out ? 0.12 : 0.32; }
+        if (!card && !dark && endLive.shot !== 'epi') {
+          if (cntLive.lull) { want.box = film ? 0.12 : 0.39; boxPan = panAt(...atCnt(CNT_BOX)) * 0.6; }
+          else if (!film && cntLive.opened && phase === 'counter') want.counter = cntDone.has('vow') ? 0.2 : 0.28;
+        }
       } else if (w === 'R') {
         /* (CP13: the little one's water holds through COME BACK too — its look is SURFACE, and the water went to 0 the
            moment the climb began, under the deepest blue) */
@@ -6853,21 +6931,31 @@
         const deep = L === 'DEEP' || (L === 'BLUE' && !little) || (!film && (phase === 'after' || phase === 'decide'))
                   || (film && endLive.on === 'D' && L === 'NIGHT');
         const poss = L === 'RED' || L === 'AMBER' || L === 'SURFACE' || little;
-        if (years) want.dawn = 0.18;
+        if (years) want.dawn = 0.3;
         else if (bare) { /* only the fan */ }
-        else if (day) want.dawn = 0.32;
-        else if (aft) want.dawn = 0.16;
-        else if (deep) want.deep = 0.5;
-        else want.night = poss ? (L === 'SURFACE' ? 0 : 0.08) : 0.3;
+        else if (day) want.dawn = 0.42;
+        else if (aft) want.day = 0.53;
+        else if (deep) want.deep = 0.9;
+        else want.night = poss ? (L === 'SURFACE' ? 0 : 0.15) : 0.55;
         want.under = little ? 0.6 : 0;
-        if (roomLive.fan) want.fan = (bare || L === 'DRAINED' ? 0.15 : day || aft || years ? 0.06 : 0.1) * roomLive.fanK;
+        if (roomLive.fan) want.fan = (bare || L === 'DRAINED' ? 0.32 : day || aft || years ? 0.13 : 0.22) * roomLive.fanK;
         if (!film && !card) {
-          if (phase === 'care' || (phase === 'sit' && !(careLive.boxOpenTo >= 1))) want.care = 0.22;
-          if (OPEN_I[phase] !== undefined) want.held = 0.2;
+          /* the offerings' khim until the drinks are given, the second loop from the incense on, crossfaded (tau 2 s) */
+          if (phase === 'care' && drinksN() < 3) want.care = 0.22;
+          else if (phase === 'care' || (phase === 'sit' && !(careLive.boxOpenTo >= 1))) want.care2 = 0.24;
+          if (OPEN_I[phase] !== undefined || (phase === 'sit' && openLive.busy)) want.held = 0.2;   // (L3-4: from the question)
+          if (phase === 'decide' || (phase === 'after' && openLive.fasc)) want.decide = 0.25;   // (from "...fascinated by it" through the panel)
         }
-      } else if (w === 'M') want.dawn = endLive.on === 'D' ? 0.26 : 0;
+        /* the heartbeat under a yield: rising with the hold, easing away when he lets go (it drains with the fill) */
+        if (openLive.busy && openLive.kid >= 0 && phase !== 'after') want.heart = openLive.held ? 0.16 + 0.27 * cl01(openLive.k) : 0.1 * cl01(openLive.k);
+        /* COME BACK's climb: from START (onBegin) to the surfacing, louder as he rises (0.18 -> 0.92) */
+        if (littleLive.climbOn) want.climb = 0.17 + 0.15 * cl01((littleLive.lv - 0.18) / 0.74);
+      } else if (w === 'M') {
+        if (endLive.on === 'D') want.court = 0.53;           // D's temple at first light
+        else if (film) want.tnight = 0.47;                   // film M's hall at night (L3-8: it had no sound of its own)
+      }
       for (const k in bedMix) {
-        const tau = k === 'care' || k === 'held' ? 2.0 : 0.9;
+        const tau = BED_TAU[k] || 0.9;
         bedMix[k] += (want[k] - bedMix[k]) * (1 - Math.exp(-wdt / tau));
       }
       const B = DATA.ambience.beds;
@@ -6876,6 +6964,70 @@
       const sink = w === 'R' ? openLive.sink : 1;
       B[0][1] = bedMix.air; B[1][1] = bedMix.mall; B[2][1] = bedMix.night * sink; B[3][1] = bedMix.fan * sink; B[3][3] = Math.max(0.4, roomLive.fanK);
       B[4][1] = bedMix.deep * sink; B[5][1] = bedMix.dawn; B[6][1] = bedMix.under; B[7][1] = bedMix.care; B[8][1] = bedMix.held * sink;
+      B[9][1] = bedMix.shopnight; B[10][1] = bedMix.counter; B[11][1] = bedMix.box; B[11][2] = boxPan; B[12][1] = bedMix.care2;
+      B[13][1] = bedMix.decide; B[14][1] = bedMix.climb; B[15][1] = bedMix.heart; B[16][1] = bedMix.tnight;
+      B[17][1] = bedMix.court; B[18][1] = bedMix.day * sink;
+    }
+    /* v24.3 · THE PLACES' OWN NOISES (e3c3's ambTick, v21.13 — the fix for the same "too quiet"): one at a time on the
+       chapter's clock from their own seeded stream, each panned to where it comes from, a third quieter while a line is
+       said, in play only and never under a panel or a yield. His room at 22:50: a gecko on the wall by the window, a
+       motorbike on the road below, a dog far off across the estate, the lift's motor through the corridor wall, a
+       neighbour's gate down the corridor, the fridge and the tap in the kitchen through his door; at three in the morning
+       only the gecko, the tap, the dog, the fridge and the night bus. The shop after closing: the guard's keys down the
+       corridor, a far lift's chime, a cleaner's mop, a walkie-talkie, the escalator, a shutter coming down. reset() rewinds
+       the stream (the v8.1 law) */
+    const sideA = (lo, hi) => (ambRand() < 0.5 ? -1 : 1) * (lo + ambRand() * (hi - lo));
+    const AMB5 = {
+      room: [
+        { n: 'k5gecko', v: 0.5, len: 2.5, at: () => ({ x: 1.55, z: -0.2 + ambRand() * 1.6 }) },
+        { n: 'k5moto', v: 0.25, len: 5.0, at: () => ({ x: 4.5, z: sideA(0, 4) }) },
+        { n: 'k5dog', v: 0.3, len: 3.0, at: () => ({ x: 14, z: sideA(2, 9) }) },
+        { n: 'k5liftmotor', v: 0.57, len: 5.0, at: () => ({ x: -1.7, z: 2.6 }) },
+        { n: 'k5gate', v: 0.34, len: 3.0, at: () => ({ x: DOOR.x + sideA(1.5, 4), z: 3.4 }) },
+        { n: 'k5fridge', v: 0.13, len: 4.0, at: () => ({ x: -0.6, z: 3.4 }) },
+        { n: 'k5drip', v: 0.6, len: 3.0, at: () => ({ x: -0.6, z: 3.4 }) },
+      ],
+      late: [
+        { n: 'k5gecko', v: 0.45, len: 2.5, at: () => ({ x: 1.55, z: -0.2 + ambRand() * 1.6 }) },
+        { n: 'k5drip', v: 0.6, len: 3.0, at: () => ({ x: -0.6, z: 3.4 }) },
+        { n: 'k5dog', v: 0.26, len: 3.0, at: () => ({ x: 14, z: sideA(2, 9) }) },
+        { n: 'k5fridge', v: 0.13, len: 4.0, at: () => ({ x: -0.6, z: 3.4 }) },
+        { n: 'k5bus', v: 0.23, len: 5.0, at: () => ({ x: 6, z: sideA(0, 5) }) },
+      ],
+      mall: [
+        { n: 'k5guard', v: 0.37, len: 5.0, at: () => ({ x: SX + sideA(2, 8), z: 2.5 }) },
+        { n: 'k5liftding', v: 0.35, len: 3.0, at: () => ({ x: SX + sideA(8, 14), z: 3.5 }) },
+        { n: 'k5mop', v: 0.36, len: 4.8, at: () => ({ x: SX + sideA(3, 10), z: 2.5 }) },
+        { n: 'k5walkie', v: 0.16, len: 2.5, at: () => ({ x: SX + sideA(2, 8), z: 2.5 }) },
+        { n: 'k5escal', v: 0.18, len: 5.0, at: () => ({ x: SX + sideA(6, 12), z: 4.0 }) },
+        { n: 'k5shutter', v: 0.2, len: 3.5, at: () => ({ x: SX + sideA(5, 14), z: 2.5 }) },
+      ],
+    };
+    const AMB5_SEED = 0x2433;
+    let ambSeed = AMB5_SEED, ambAt = 0, ambBusy = 0, ambLast = '', ambN = 0;
+    function ambRand() {
+      ambSeed = (ambSeed + 0x6D2B79F5) | 0; let t = ambSeed;
+      t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    }
+    function ambTick() {
+      if (!worldSfx || (soundOff && soundOff())) return;
+      const w = worldOf(yaw.position.x);
+      const panel = !!(kit && kit.eventActive && kit.eventActive());
+      const pool = w === 'S' ? (phase === 'counter' ? AMB5.mall : null)
+                 : w === 'R' ? (['care', 'sit', 'open1', 'open2', 'open3'].includes(phase) && !openLive.busy ? AMB5.room
+                              : phase === 'after' ? AMB5.late : null) : null;
+      if (!pool || panel) { ambAt = 0; return; }
+      if (!ambAt) { ambAt = dayClock.t + 4 + ambRand() * 6; return; }
+      if (dayClock.t < ambAt || dayClock.t < ambBusy) return;
+      let k = Math.floor(ambRand() * pool.length);
+      if (pool[k].n === ambLast) k = (k + 1 + Math.floor(ambRand() * (pool.length - 1))) % pool.length;
+      const sd = pool[k], at = sd.at();
+      const vol = sd.v * (dayClock.t < speak.until ? 0.66 : 1) * (0.85 + 0.3 * ambRand());
+      if (worldSfx(sd.n, vol, 0.94 + 0.12 * ambRand(), panAt(at.x, at.z) * 0.8)) {
+        ambN++; ambLast = sd.n; ambBusy = dayClock.t + sd.len + 0.8;
+        ambAt = dayClock.t + (w === 'S' ? 10 + ambRand() * 10 : 9 + ambRand() * 11);
+      } else ambAt = dayClock.t + 1.5;
     }
     function updateNotes(dt, t) {
       const now = wallNow();
@@ -6904,6 +7056,7 @@
         applyPhase(kit ? kit.getPhase() : null);
       }
       runTodo(); runSpeak(); runQueue();
+      ambTick();                                           // v24.3: the places' own noises
     }
     function updatePile() {}
     function updateFire() {}
@@ -6966,6 +7119,7 @@
     function reset() {
       dropTodo(); speakReset(); lineQ.length = 0; heard.clear();
       booted = false; preplaced = ''; dayClock.t = 0; lastWall = 0;
+      ambSeed = AMB5_SEED; ambAt = 0; ambBusy = 0; ambLast = ''; ambN = 0;   // v24.3: the places' noises from the top
       worldRun++; wDark = false; decOpen = false; seated = false;
       worldM.visible = false;
       roomReset();
@@ -7050,6 +7204,9 @@
               glow: () => 0 },
       drum: null, ash: null, embers: null, heroNote: null, smoke: null, flying: null,
       jossTips: [], fireLight: null,
+      /* v24.3, L3-5: his bare feet on the room's tiles (the engine's shod four on concrete were the loudest thing in a
+         22:50 bedroom); the counter and the temple keep the engine's */
+      stepSound: () => (worldOf(yaw.position.x) === 'R' ? 'k5step' : null),
       /* the sky where he is: the room, at the origin, keeps the engine's own; the shop and the temple carry theirs with
          them (chapter 4's L4-2 — away from the origin the engine's sky stood out of reach) */
       skyAt: () => worldOf(yaw.position.x) === 'R' ? null : { x: yaw.position.x, z: yaw.position.z },
@@ -8787,6 +8944,8 @@
     sfx(0.2, 'k5mall', 0.5);                             // the mall's hush after hours
     sfx(0.9, 'k5shutter', 0.22);                         // a shutter rolling down, far off
     fade(OFT.o1, OFT.o1 + 1.4, 1, 0);                    // O1 · up on the corridor
+    sfx(OFT.o1, 'k5open', 0.34);                         // (v24.3: the corridor at closing — sparse khim and strings, warming as the door opens)
+    sfxFade(OFT.black0, OFT.end - 0.05, 'k5open');
     sfx(OFT.o1, 'k5steps', 0.4);                         // his own steps on the corridor's tiles, out of the lift lobby to the light
     sfx(OFT.o1 + 3.9, 'k5steps', 0.4);                   // (CP13: the take's footfalls are its first 3.75 s of 6.0, and the walk
     sfx(OFT.o1 + 7.8, 'k5steps', 0.4);                   //  is 11 — a fresh take every 3.9 s carries him to the glass)
@@ -8821,6 +8980,8 @@
     fade(T.m2 + 0.1, T.m2 + 1.3, 1, 0);                  // M2 · the hall at night
     sfx(T.m2 + 0.2, 'k5chantlow', 0.5);                  // the monk chanting low
     sfxFade(T.b2, T.end - 0.4, 'k5chantlow');
+    sfx(T.m2, 'k5madeM', 0.18);                          // (v24.3, L3-8: a reverent pad that HOLDS through the hall and his face — the
+    sfxFade(T.b2, T.end - 0.4, 'k5madeM');               //  chant dies 9 s in; the hall's night is World M's bed, mixBeds)
     fade(T.b2, T.b2 + 1.6, 0, 1);                        // and black, which the counter lifts
     step(T.end, () => MF.end());
   }
@@ -8838,6 +8999,8 @@
        goes as he looks up, before the owner speaks) */
     sfx(T.k2 + 0.9, 'k5theme', 0.32);
     sfxFade(T.k3 - 0.4, T.k3 + 0.9, 'k5theme');
+    sfx(T.k3 + 0.9, 'k5vowtheme', 0.19);                 // (v24.3: under the three asks — 48 s that had no music under the chapter's purpose)
+    sfxFade(T.end - 1.0, T.end - 0.1, 'k5vowtheme');
     sfx(T.k3 + 0.6, 'ow5never', 1);                      // "But listen, ah. Never keep them for greed..."  (10.7 s)
     step(T.k3 + 0.6, () => stage.ownerTalk(10.4));
     sfx(T.k3 + 11.6, 'ow5wrong', 1);                     // "And never ask them to do anything wrong..."  (15.7 s)
@@ -8851,32 +9014,33 @@
      the one track. It begins on the counter's black (the kit hands it over) and its last black is handed to the kit's
      fade: PLAY I lifts it. Cues literal, times at file scope */
   function homeFilm(c, s, api) {
-    const { tr, step, sfx, fade, rawK, stage } = api;
+    const { tr, step, sfx, sfxFade, fade, rawK, stage } = api;
     const F = stage.homeF;
     c.keepFade = true;
     c.endFade = 1;
     fade(0, 0, 1, 1);
     tr(0, HFT.end, (k, t) => F.frame(t, api), rawK);
     fade(0.2, 1.0, 1, 0);                                // up on the flat's corridor and his door
+    sfx(0.3, 'k5home', 0.5);                             // (v24.3: the box's phrase alone, then khim and strings through the weeks, thinning
+    sfxFade(HFT.black0, HFT.end - 0.05, 'k5home');       //  back to the box alone — the first 13 s had no music; k5theme stays in film K)
     sfx(HFT.open, 'k5door', 0.45);                       // the door
-    sfx(HFT.lamp, 'k5switch', 0.45);                     // the lamp
+    sfx(HFT.lamp, 'k5switch', 0.8);                      // the lamp
     fade(HFT.ins - 0.25, HFT.ins, 0, 1); fade(HFT.ins, HFT.ins + 0.3, 1, 0);   // (a cut through black to the inserts)
     sfx(HFT.ins + 0.4, 'z5pro2', 1);                     // "I saw it as another way of making merit... and showing compassion."
     sfx(HFT.ins + 0.5, 'k5unwrap', 0.4);
     sfx(HFT.ins + 0.5, 'k5figset', 0.35); sfx(HFT.ins + 1.1, 'k5figset', 0.35); sfx(HFT.ins + 1.7, 'k5figset', 0.35);
-    sfx(HFT.ins2 + 0.3, 'k5set', 0.35);                  // the box set down
-    sfx(HFT.ins3 + 0.4, 'k5set', 0.35);                  // the first drink
-    sfx(HFT.ins4 + 0.3, 'k5flick', 0.4); sfx(HFT.ins4 + 0.6, 'k5catch', 0.35);
+    sfx(HFT.ins2 + 0.3, 'k5set', 0.6);                   // the box set down
+    sfx(HFT.ins3 + 0.4, 'k5set', 0.6);                   // the first drink
+    sfx(HFT.ins4 + 0.3, 'k5flick', 0.4); sfx(HFT.ins4 + 0.6, 'k5catch', 0.7);
     fade(HFT.h2 - 0.3, HFT.h2, 0, 1); fade(HFT.h2, HFT.h2 + 0.5, 1, 0);       // H2 · the weeks
-    sfx(HFT.h2 + 0.2, 'k5theme', 0.5);                   // the lullaby's theme under the weeks
     sfx(HFT.h2 + 1.0, 'z5pro3', 1);                      // "So I took them home... and made offerings to them, every day."
-    sfx(HFT.h2 + 5.0, 'k5rain', 0.3);                    // rain once
-    sfx(HFT.h2 + 8.0, 'k5koel', 0.3);                    // a koel at a dawn
+    sfx(HFT.h2 + 10.0, 'k5rain', 0.8);                   // rain once (v24.3, L3-10: in the gap after his line, where it can be heard —
+    sfx(HFT.h2 + 12.5, 'k5koel', 0.35);                  //  under it the duck took the rain to −53 dBFS); a koel at a dawn
     fade(HFT.h3 - 0.3, HFT.h3, 0, 1); fade(HFT.h3, HFT.h3 + 0.6, 1, 0);       // H3 · tonight
     sfx(HFT.h3 + 0.4, 'k5door', 0.45);
     sfx(HFT.h3 + 1.2, 'z5pro4', 1);                      // "Then one night, after everything else I had been through... I wanted to know something."  (CP12: 6.7 s, inside the film)
     sfx(HFT.bag + 0.15, 'k5bag', 0.4);                   // the shop's bag set on the desk (CP13: as it lands, in its insert)
-    sfx(HFT.lamp2, 'k5switch', 0.45);                    // the lamp on their faces
+    sfx(HFT.lamp2, 'k5switch', 0.8);                     // the lamp on their faces
     fade(HFT.black0, HFT.black0 + 1.0, 0, 1);            // black, handed to play
     step(HFT.end, () => F.end());
   }
@@ -8885,7 +9049,7 @@
      himself) and its lines. Begins on the yield's last frame (no black); ends on his own view on the mat, handed back to
      play. */
   function redFilm(c, s, api) {
-    const { tr, step, sfx, fade, rawK, stage, event } = api;
+    const { tr, step, sfx, sfxFade, fade, rawK, stage, event } = api;
     const F = stage.redF, T = RFT, W = stage.W;
     c.keepFade = true;
     c.endFade = 0;
@@ -8907,6 +9071,8 @@
     sfx(T.slam + 0.05, 'k5rattle', 0.5);
     sfx(T.slam + 0.3, 'z5b3', 1);                            // "More! I want MORE!"
     sfx(T.flop + 0.5, 'k5bump', 0.6);
+    sfxFade(T.flop, T.flop + 1.0, 'k5red');                  // (v24.3, L3-9: the march falls away under his small line, as the plan has it,
+    sfx(T.flop + 1.05, 'k5stamp', 0.22);                     //  leaving one small stamp)
     sfx(T.flop + 1.2, 'z5b4', 1);                            // "...They didn't want me any more."
     sfx(T.leave, 'k5leave', 0.6);
     sfx(T.self, 'z5back1', 1);                               // "That wasn't me... That was him."
@@ -8967,19 +9133,19 @@
     sfx(T.l2, 'z5l2', 1);                                    // "You won't go... right?"
     sfx(T.tears, 'z5sob', 1);
     sfx(T.tears + 3.3, 'z5l3', 1);                           // "Stay... stay with me..."  (CP12: after the sob, 3.0 s)
-    sfx(T.tick, 'k5tick', 0.4);
+    sfx(T.tick, 'k5tick', 0.8);
     sfx(T.out, 'k5bells', 0.3);
     sfx(T.out + 0.6, 'z5out', 1);                            // "His incense had burnt out... but he held on to me..."
     sfx(T.come - 2.6, 'z5come', 1);                          // "I'm sorry... I have to go back..." (said into the climb: a voice plays on
                                                              //  through a paused film, and eventWait pauses this one until he is back;
                                                              //  CP12: 3.68 s, so it is done 1.08 s into the climb — the quickest
                                                              //  surfacing is 0.8 s of event, then the gasp 0.5 s after it)
-    sfx(T.come - 0.4, 'k5climb', 0.6);                       // COME BACK: the swell toward the light (it plays on through the paused film)
+    /* (v24.3, L3-1: COME BACK's music is a loop now — k5climbloop, started by the event's START and following his climb
+       in mixBeds; the one-shot k5climb played out under the brief and ran out on a slow climb) */
     step(T.come - 0.1, () => stage.comeBegin());
     eventWait(T.come, stage.comeOpts(), (r) => stage.comeDone(r));
     step(T.come + 0.2, () => stage.surfaceStart());
     sfx(T.come + 0.25, 'k5surface', 0.8);                    // (it plays when the film runs on — after he is back)
-    sfxFade(T.come + 0.2, T.come + 3.2, 'k5climb');           // (and the climb goes down under the surfacing)
     sfx(T.come + 0.5, 'z5gasp', 1);
     tr(T.come + 0.2, T.come + 5.8, (k, t) => stage.surfaceFrame(t - T.come - 0.2, api), rawK);   // (CP12: 4.2 → 5.8, the gasp's 5.07 s inside it)
     fade(T.come + 5.25, T.come + 5.75, 0, 1);
@@ -9020,6 +9186,8 @@
     const { sfx, sfxFade, fade } = api;
     endScene(c, api, 'A', (T) => {
       sfx(0.3, 'z5A1', 1);                                   // "He asked me to stay... Tomorrow night, I will."  (→ ~3.7)
+      sfx(T.a1, 'k5driftA', 0.27);                           // (v24.3: time slipping away — a slow phrase and a thinning drone, never scary;
+      sfxFade(T.a6d + 0.5, T.a7, 'k5driftA');                //  50.8 s of this ending had no music; it hands over to the box)
       fade(T.a1 - 0.25, T.a1, 0, 1); fade(T.a1, T.a1 + 0.35, 1, 0);          // (a cut through black: night two)
       sfx(T.a1 + 0.15, 'k5flick', 0.35);                     // the lighter
       sfx(T.a1 + 0.9, 'k5enter', 0.45);                      // the blue, from the edges of sight
@@ -9030,17 +9198,18 @@
       sfx(T.a3 + 1.6, 'k5doorbell', 0.28);
       fade(T.a4 - 0.3, T.a4, 0, 1); fade(T.a4, T.a4 + 0.4, 1, 0);
       sfx(T.a4 + 0.1, 'k5enter2', 0.4);                      // the amber, the shy one's
-      sfx(T.a4 + 1.6, 'k5buzz', 0.45);                       // his phone on the boards
-      sfx(T.a4 + 2.5, 'k5buzz', 0.4);
+      sfx(T.a4 + 0.6, 'k5buzz', 0.45);                       // his phone on the boards
+      sfx(T.a4 + 1.7, 'k5buzz', 0.4);                        // (v24.3, L3-11: both before her voicemail — the second buzzed on her first word)
       sfx(T.vm, 'ma5vm', 1);                                 // "Boy... why you never pick up?..."  (→ ~25.5)
       sfx(25.8, 'z5A3', 1);                                  // "...and harder to come back."  (→ ~28.0)
       fade(T.a5 - 0.4, T.a5, 0, 1); fade(T.a5, T.a5 + 0.8, 1, 0);
       sfx(T.gig, 'z5Agig', 1);                               // a giggle — out of HIS mouth
       sfx(37.0, 'z5A4', 1);                                  // "That... wasn't me."  (→ ~39.0)
-      sfx(44.0, 'z5A5', 1);                                  // "I stopped being sure where they ended... and where I began."  (→ ~48.6)
-      sfx(T.a7 + 0.7, 'k5endA', 0.6);                        // the key turned once: the box running down
-      sfxFade(T.fade, T.epi - 0.15, 'k5endA');               // (CP13: and it goes with the black, never under the epilogue's lullaby)
-      sfx(52.0, 'z5A6', 1);                                  // "They needed someone to look after them... and I couldn't do it any more."  (→ ~56.6)
+      sfx(T.a6, 'k5fly', 0.47);                              // (v24.3: a fly at the old drinks)
+      sfx(43.0, 'z5A5', 1);                                  // "I stopped being sure where they ended... and where I began."  (→ ~47.8)
+      sfx(T.a7 + 1.85, 'k5endA', 0.6);                       // the key turned once: the box running down (v24.3, L3-2: as the key has turned —
+      sfxFade(T.fade, T.epi - 0.15, 'k5endA');               //  it stops at 56.85, heard, and its last tine rings into the black)
+      sfx(48.6, 'z5A6', 1);                                  // "They needed someone to look after them... and I couldn't do it any more."  (→ ~53.9: before the box stops)
       fade(T.fade, T.epi - 0.15, 0, 1);
     });
   }
@@ -9055,6 +9224,8 @@
       sfx(T.b2 + 5.6, 'k5type', 0.45);
       sfxFade(T.b3 - 0.3, T.b3, 'k5type');                   // (CP13: his keys stop where he posts — the take ran on to 17.6)
       sfx(T.b3, 'k5post', 0.5);                              // POST
+      sfx(T.b3, 'k5screens', 0.22);                          // (v24.3: an uneasy khim tremolo thickening as the thread spreads — 56.7 s had no music)
+      sfxFade(T.b10 + 1.5, T.b11, 'k5screens');
       fade(T.b5 - 0.5, T.b5, 0, 1); fade(T.b5, T.b5 + 0.9, 1, 0);           // (a dissolve through black: the dawn)
       sfx(T.b5 + 1.0, 'k5buzz', 0.45); sfx(T.b5 + 1.4, 'k5ping', 0.35);
       sfx(T.b5 + 2.2, 'k5buzz', 0.45); sfx(T.b5 + 2.6, 'k5ping', 0.35);
@@ -9063,6 +9234,7 @@
       sfx(T.b7 + 0.3, 'k5ping', 0.4); sfx(T.b7 + 0.9, 'k5ping', 0.35); sfx(T.b7 + 1.5, 'k5ping', 0.3);   // the repost, its count climbing
       sfx(T.b8 + 0.3, 'k5scroll', 0.4);                      // the old member's reply
       sfx(T.b9, 'k5dm', 0.5);                                // a stranger's message
+      sfx(T.b9 + 0.6, 'k5shake', 0.77);                      // (v24.3: a hollow swell as he reads it)
       sfx(T.b9 + 5.0, 'z5B4', 1);                            // "Someone had tried it... because of me. And I didn't know what to tell them."  (→ ~45.0)
       sfx(T.b10 + 1.5, 'k5delete', 0.45);                    // Delete thread? → Thread deleted.
       sfx(T.b11 + 0.5, 'z5B5', 1);                           // "The shy one hid from everyone... and I showed him to everyone."  (→ ~54.8)
@@ -9080,6 +9252,8 @@
       sfx(0.5, 'z5C1', 1);                                   // "If they're real... then they can help me."  (→ ~3.3)
       sfx(T.c1 + 0.6, 'z5C2', 1);                            // "Bring me luck. Bring me orders... please."  (→ ~7.6)
       fade(T.c2 - 0.3, T.c2, 0, 1); fade(T.c2, T.c2 + 0.4, 1, 0);           // (cut under black: the next days)
+      sfx(T.c2, 'k5greed', 0.27);                            // (v24.3: the wishing — an insistent khim, faster and more crowded, cut dead
+                                                             //  at 31.0 into the overwound box)
       sfx(T.c2 + 0.6, 'k5tape', 0.45);
       sfx(T.c2 + 1.0, 'z5C3', 1);                            // "The orders came. Maybe it was them... maybe it wasn't..."  (→ ~15.6)
       sfx(T.c2 + 1.8, 'k5tape', 0.4);
@@ -9094,6 +9268,7 @@
       sfx(T.c6 + 1.0, 'z5Cevil', 1);                         // "And him... make him lose everything."  (→ ~36.3)
       sfxFade(T.c7 + 0.1, T.c7 + 0.3, 'k5boxfast');          // (CP13: the overwound tune ends where the slip begins — two tunes in two keys)
       sfx(T.c7 + 0.2, 'k5boxstop', 0.5);                     // nothing answers: the box slips and stops mid-phrase
+      sfx(T.c7 + 1.9, 'k5void', 0.33);                       // (v24.3: and the room's air drops out — a ringing in the ears)
       sfx(T.c8, 'z5Claugh', 1);                              // his laugh, alone, too long  (→ ~42.5)
       sfx(T.c9 + 0.3, 'z5C5', 1);                            // "If I stop asking... will it all go away?"  (→ ~48.0)
       sfx(T.c10 + 0.4, 'k5endC', 0.55);                      // the lullaby OVERWOUND
@@ -9108,6 +9283,8 @@
     const { sfx, sfxFade, fade, step, stage } = api;
     endScene(c, api, 'D', (T) => {
       sfx(0.5, 'z5D1', 1);                                   // "I'm sorry. That was my mistake... not yours."  (→ ~3.9)
+      sfx(T.d1, 'k5care', 0.3);                              // (v24.3: the offerings' khim again as he rebuilds the care, into the box's tune)
+      sfxFade(T.d3 + 1.5, T.d3 + 2.5, 'k5care');
       sfx(T.d1 + 0.6, 'k5sand', 0.35); sfx(T.d1 + 1.2, 'k5sand', 0.35); sfx(T.d1 + 1.8, 'k5sand', 0.35);   // the stubs lifted out
       sfx(T.d1b + 0.5, 'k5flick', 0.45);                     // the lighter
       sfx(T.d1b + 2.3, 'k5catch', 0.4);                      // the tips catch
@@ -9124,6 +9301,9 @@
       sfx(T.d5 + 0.2, 'k5calm', 0.5);                        // the smoke straight; the bells still
       fade(T.court - 0.6, T.court, 0, 1); fade(T.court, T.court + 0.8, 1, 0);   // (a slow dissolve to first light)
       sfx(DT.bell, 'k5tbell', 0.6);                          // the bell in its pavilion
+      sfx(DT.bell, 'k5templebell', 0.95);                    // (v24.3: its ring over chapter 4's bell, which is a thud on a phone)
+      sfx(T.court, 'k5merit', 0.24);                         // (v24.3: first light to the three lights — its swell shaped onto them, 80.9;
+      sfxFade(T.home - 0.4, T.home + 0.2, 'k5merit');        //  59 s of this ending had no music)
       sfx(T.court + 1.5, 'z5D3', 1);                         // "In the morning, I went to the temple... and made merit in their names."  (→ ~37.9)
       sfx(DT.kneel + 0.5, 'z5D4', 1);                        // "For the three children in my care... may this merit reach you..."  (→ ~48.5)
       sfx(DT.teach + 0.3, 'mk5teach', 1);                    // the monk: "Give without bargaining..."  (→ ~54.8)

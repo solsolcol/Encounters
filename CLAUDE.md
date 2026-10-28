@@ -6807,6 +6807,70 @@ What the baseline contains, by release:
   (menu not refused, text selectable, 0.83 of the pour after 3 s held) and gone on v24.1. Deploy
   `6ae19798a34e4596ed179fe3`, byte-verified (269 served files). docs/V24.2-E3C5-DEBUG.md is the record, with the
   comprehensive debug and the sound buff Chad asked for in the same messages.
+- **v24.2** EPISODE 3 CHAPTER 5, DEBUGGED IN DEPTH — Chad: *"Comprehensive debug of the entire whole ep3 chp5, not
+  just what i mentioned"*. v22.3's method: six read-only lenses (input and play logic, save and resume, sound and
+  timing, the engine since v23.0, geometry and framing, words and purpose), a play-through on a phone in which every
+  gesture is a CDP touch through the browser's own pipeline, and photographs; every finding checked against today's
+  code or a projection before it was touched (masters/v24.2/findings.md has each with its verdict and fix).
+  - A SECOND WAY TO BE STUCK AT THE WATER (L6-1): once the water was poured, after an OBJECTIVE COMPLETE, its order
+    came back word for word ("Give them water, then drinks · 0/3"), so the pour read as not having counted. The water
+    and the drinks are two orders now ("Give them their water"; "Make their drinks · n/3"), one COMPLETE a drink.
+  - THE TWIST (L1-1) was read only beyond 40 px of the cap while the game DREW the circle to trace at 38 px, so a
+    player tracing the guide barely turned it — all three caps and the music box's key. Drawn at 64 px, read from 28.
+  - THE FLICK (RT-1, engine) read its timing from when the handlers RAN, so on a phone drawing a frame a second every
+    wave of the flames was "too slow": a soft-lock at "Wave the flames out", found by the real-finger run standing
+    there 900 s. A gesture is timed by its events' own timestamps (`evStamp`) — v24.0's tap law met again — and the
+    probe's touches carry a finger's (CDP `timestamp`).
+  - REACH (L1-2, L1-5, L5-3): five marks the chapter turns him to stood past their reach, and others outside their own
+    aim cones, so a tap or an E did nothing. A desktop's E or click that opened a hold, still held, is the hold (L1-4).
+  - SAVE: a Continue from the little one's film puts him on the mat (`open3:mat`, L2-2); a Continue into an episode-3
+    chapter no longer clears the episode-4 ledger the save carries (L4-1, engine); v24.1's held time counts from the
+    press, not the whole frame (L4-2, engine).
+  - L5's THIRTEEN: ending D's threads of smoke and its last image held one child on a phone (they stand back now), ten
+    shots that name the three held one (they slide along the three on a phone), COME BACK's gauge under the panel's
+    words, the desk chair he sat inside after the shy one's film, the slippers inside the wardrobe, the caps into the
+    wood, the walk to the hall rising over a flat courtyard.
+  - WORDS (L6): the lessons' pronouns, "stick" where it said "incense", the desktop briefs saying to hold the mouse
+    button and to tap W again and again, the voicemail's timer.
+  Deploys `6ae1a3fb17def73560db3859` and `6ae1a84d400da119d2179fe6`, each byte-verified (269 served files). On the live
+  build the real-finger play-through passed from Start to ending D — 67 lines in order, none over another, no page
+  error — and the four endings photographed on a phone were right.
+- **v24.3** EPISODE 3 CHAPTER 5'S SOUND, BUFFED — Chad: *"there is a huge lack of music, ambient sounds, sfx, stings or
+  other sounds in ep3 chp5. It needs to be buffed up more."* MEASURED FIRST (masters/v24.2/L3-sound-report.md, every
+  beat's beds, music, one-shots, stings and voices with its silences): his room at night sat at −40.6 dBFS against the
+  rest of episode 3's −29 to −36, under every line the duck took it to −47 (nothing, on a phone), most beats had no
+  music, nothing in the room or the shop ever made a sound of its own, and fourteen sound bugs (L3-1 to L3-14).
+  Generated once Chad topped up the credits (every refused or failed take re-run, never a succeeded one): 39 effects,
+  stings, beds and night sounds and 12 music cues, two takes each, picked by measurement, the phone band first
+  (masters/v24.2/make.sh names every pick and why). Three are MADE because every generated take failed the measure —
+  ending C's emptiness and the heartbeat came back as sub-bass a phone cannot play, the flame as a lighter's clicks
+  with silence between (masters/v24.2/synth.py); three are made from the box's own tune — its loop, its run-down and
+  ending A's 5 s stop (fates2.py); and card line C is re-said, "Every gift came with a wish. I only kept asking."
+  (Brian), so the card no longer contradicts ending C (L6-9).
+  - THE PLACES: ten new beds mixed by place and beat — the shop after closing, the counter's music once the cloth is
+    open, the box's tune as a bed while it turns, the offerings' second loop from the incense on, the decision's bed
+    from "...fascinated by it" through the panel, COME BACK's climb from START, a heartbeat under every yield rising
+    with the hold, film M's hall at night, D's temple court at first light, the room's grey afternoon — every bed at
+    −34 to −37 dBFS with nobody speaking; and each place's own noises one at a time on a seeded stream (v21.13's
+    ambTick, rewound by reset()): a gecko, a motorbike, a dog, the lift's motor, a neighbour's gate, the fridge and the
+    tap in his room; the guard's keys, a far lift's chime, a mop, a walkie-talkie, the escalator, a shutter in the mall.
+  - THE ACTS: his bare feet on his own floor (World R's `stepSound`, L3-5), the cups as the water pours, the chair,
+    the kneel, the mat, the key's ratchet every 30° (L3-7), the lid, the wrap and the bag, the flame held to the sticks
+    and waved out, a glint as each child takes a gift (L3-6), the bundle unwrapped, the vow's chord, each possession's
+    return.
+  - THE MUSIC under every film and ending that had none — the opening at closing time, film M (L3-8), the care card's
+    vow, the home film's weeks, A's drift, B's screens, C's greed, D's care and its merit — each faded with its
+    picture. And the rest of L3: COME BACK's music ran out on a slow box and played under its own brief (L3-1, a loop
+    from START now), ending A's box was faded at two-thirds speed and its stop never heard (L3-2), the drum turned in
+    silence for minutes after its tune (L3-3), the question's held tone came 17 s late (L3-4), the red one's march ran
+    over his small hurt line (L3-9), the home film's rain and koel were buried under his line (L3-10), A's phone buzzed
+    on Ma's first word (L3-11), a hesitant first yield outlasted its riser in silence (L3-12).
+  The static scan (masters/v23.0/overlap.mjs): no voice over another in any film or ending, every gap held by a sound.
+  The chapter's Opus pack 14.0 → 23.0 MB; the shared pack unchanged to the byte — `k5climb`, replaced by the loop, is
+  retired, files and row, because a sound no chapter names falls into the SHARED pack (LEARNINGS). `src/main.js` gains
+  52 `STING_SAMPLE` rows and loses one. Put to Chad, not changed: the menu dings the engine plays inside the rituals
+  (L3-14, every chapter). Sheet v128 exported (v44 stays the link). Deploy `6ae1b3044518593a65dfaa4b`, byte-verified
+  (269 served files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -7343,7 +7407,7 @@ assigned where a texture belonged; and the clearance is ISSUED at the start
 of play rather than inferred from an empty bag, which had left both counters
 dead from the chapter's first frame (docs/LEARNINGS.md).
 
-**IN FLIGHT: episode 3 chapter 5's comprehensive debug and its sound buff (Chad, 28 Oct 2026) — docs/V24.2-E3C5-DEBUG.md** has his four messages verbatim, the plan, and the log checkpoint by checkpoint; v24.1 fixed the soft-lock he hit (the long press). **Episode 4 chapter 1, The Master I Did Not Know, shipped at v24.0 —
+**Chad's report of 28 Oct 2026 on episode 3 chapter 5 — docs/V24.2-E3C5-DEBUG.md** (his four messages verbatim, the plan, and the log checkpoint by checkpoint) shipped in three releases: v24.1 the soft-lock he hit (the long press), v24.2 the comprehensive debug (masters/v24.2/findings.md, every finding with its verdict and fix), v24.3 the sound buff (masters/v24.2/L3-sound-report.md the measure, masters/v24.2/make.sh every pick and why). **Episode 4 chapter 1, The Master I Did Not Know, shipped at v24.0 —
 docs/V24.0-E4C1-PLAN.md** is its build memory (§15 the log, checkpoint by checkpoint; masters/v24.0/cp13-findings.md
 its review, every finding with its verdict and fix); its cast are placeholders until Chad's models (docs/E4-MODELS.md
 lists each, with what stands in), and its seven music cues are the measured picks until Chad's ear (one reel per cue in
@@ -7450,7 +7514,10 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v127** (`masters/v24.0/masterz-text-v127.xlsx`, v126 with episode 4 chapter 1's review: 3 rows added
+**THE SHEET IS v128** (`masters/v24.2/masterz-text-v128.xlsx`, v127 with episode 3 chapter 5's debug words: 2 rows
+added (`objDrinks`, `noteLight`) and 14 changed — the core, the water's and the sticks' orders, the twist's, the yield's
+and COME BACK's desktop words, teachings B and C, card line C and its voice line z5C re-said, and z5children's
+description. v127 was `masters/v24.0/masterz-text-v127.xlsx`, v126 with episode 4 chapter 1's review: 3 rows added
 (`film.phoneMessage`, `noteStormNone`, `phoneAjahnMsg2`), 23 words changed — the brief, the core, the ledger's facts and
 meanings, the chant's captions, Pong's home town, the master's message, and the ten re-said voice lines — and the grown
 James's speaker label, "episodes 3–4", on his 273 voice rows. v126 was `masters/v23.6/masterz-text-v126.xlsx`, v125 plus

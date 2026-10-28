@@ -1,0 +1,78 @@
+k5void: 3.00 s
+k5flame: 2.20 s
+k5heart: 10.00 s
+k5boxloop: 20.50 s
+  reads 3.55 s of the 10.25 s phrase
+k5boxdown: 6.80 s
+  reads 3.17 s of the 10.25 s phrase
+k5endA: 6.80 s
+k5step <- w4barestep (bytes)
+z5C <- h_z5C.wav  mp3 -6.86  ogg -6.54  (want -6.85 / -6.6)
+k5cup <- w_k5cup.wav  mp3 -9.97  ogg -10.00  (want -10 / -10)
+k5chair <- w_k5chair.wav  mp3 -10.04  ogg -10.08  (want -10 / -10)
+k5chairup <- w_k5chairup.wav  mp3 -9.99  ogg -10.10  (want -10 / -10)
+k5kneel <- w_k5kneel.wav  mp3 -10.06  ogg -10.02  (want -10 / -10)
+k5key <- w_k5key.wav  mp3 -10.68  ogg -10.01  (want -10 / -10)
+k5lid <- w_k5lid.wav  mp3 -10.60  ogg -9.99  (want -10 / -10)
+k5mat <- w_k5mat.wav  mp3 -9.98  ogg -10.05  (want -10 / -10)
+k5wrap <- w_k5wrap.wav  mp3 -9.90  ogg -10.11  (want -10 / -10)
+k5baglift <- w_k5baglift.wav  mp3 -9.76  ogg -9.97  (want -10 / -10)
+k5phone <- w_k5phone.wav  mp3 -11.07  ogg -9.70  (want -10 / -10)
+k5fly <- w_k5fly.wav  mp3 -11.82  ogg -11.90  (want -12 / -12)
+k5templebell <- w_k5templebell.wav  mp3 -7.91  ogg -8.02  (want -8 / -8)
+k5flame <- proc/k5flame.wav  mp3 -10.03  ogg -10.13  (want -10 / -10)
+k5reveal <- w_k5reveal.wav  mp3 -7.76  ogg -7.98  (want -8 / -8)
+k5vow <- w_k5vow.wav  mp3 -8.08  ogg -8.00  (want -8 / -8)
+k5given <- w_k5given.wav  mp3 -8.07  ogg -8.07  (want -8 / -8)
+k5return <- w_k5return.wav  mp3 -8.49  ogg -8.21  (want -8 / -8)
+k5shake <- w_k5shake.wav  mp3 -8.04  ogg -8.00  (want -8 / -8)
+k5void <- proc/k5void.wav  mp3 -7.99  ogg -7.68  (want -8 / -8)
+k5gecko <- w_k5gecko.wav  mp3 -6.99  ogg -8.16  (want -8 / -8)
+k5moto <- w_k5moto.wav  mp3 -8.14  ogg -7.98  (want -8 / -8)
+k5dog <- w_k5dog.wav  mp3 -8.01  ogg -7.93  (want -8 / -8)
+k5liftmotor <- w_k5liftmotor.wav  mp3 -8.00  ogg -8.26  (want -8 / -8)
+k5gate <- w_k5gate.wav  mp3 -8.02  ogg -8.16  (want -8 / -8)
+k5fridge <- w_k5fridge.wav  mp3 -7.94  ogg -8.09  (want -8 / -8)
+k5drip <- w_k5drip.wav  mp3 -8.15  ogg -8.12  (want -8 / -8)
+k5bus <- w_k5bus.wav  mp3 -8.09  ogg -8.14  (want -8 / -8)
+k5guard <- w_k5guard.wav  mp3 -7.88  ogg -8.18  (want -8 / -8)
+k5liftding <- w_k5liftding.wav  mp3 -8.61  ogg -8.21  (want -8 / -8)
+k5mop <- w_k5mop.wav  mp3 -8.13  ogg -7.07  (want -8 / -8)
+k5walkie <- w_k5walkie.wav  mp3 -8.00  ogg -8.36  (want -8 / -8)
+k5escal <- w_k5escal.wav  mp3 -7.97  ogg -8.03  (want -8 / -8)
+b_lp_k5shopnight.wav 26.50s  joint is a CROSSFADE (continuous by construction); body -38.6 dBFS  peak -24.00  2ch
+b_k5shopnight.wav: RMS -30.00 dBFS  peak -15.37 dBFS
+k5shopnight <- sfx/raw/k5shopnight_b.mp3  (bed, RMS -30)
+b_lp_k5templenight.wav 26.50s  joint is a CROSSFADE (continuous by construction); body -30.3 dBFS  peak -16.07  2ch
+b_k5templenight.wav: RMS -30.00 dBFS  peak -16.78 dBFS
+k5templenight <- sfx/raw/k5templenight_b.mp3  (bed, RMS -30)
+b_lp_k5court.wav 26.50s  joint is a CROSSFADE (continuous by construction); body -27.0 dBFS  peak -4.26  2ch
+b_k5court.wav: RMS -30.04 dBFS  peak -12.00 dBFS
+k5court <- sfx/raw/k5court_a.mp3  (bed, RMS -30)
+b_lp_k5day.wav   26.50s  joint is a CROSSFADE (continuous by construction); body -45.4 dBFS  peak -25.91  2ch
+b_k5day.wav: RMS -30.06 dBFS  peak -14.00 dBFS
+k5day <- sfx/raw/k5day_a.mp3  (bed, RMS -30)
+k5heart <- proc/k5heart.wav  mp3 -6.14  ogg -6.04  (want -6 / -6)
+k5open <- m_k5open.wav  mp3 -3.09  ogg -3.00  (want -3.0 / -3.0)
+l2_k5counter.wav 40.00s  joint is a CROSSFADE (continuous by construction); body -18.0 dBFS  peak -1.13  2ch
+k5counter <- l2_k5counter.wav  mp3 -3.07  ogg -3.04  (want -3.0 / -3.0)
+k5madeM <- m_k5madeM.wav  mp3 -2.96  ogg -2.99  (want -3.0 / -3.0)
+k5vowtheme <- m_k5vowtheme.wav  mp3 -2.97  ogg -3.00  (want -3.0 / -3.0)
+k5home <- m_k5home.wav  mp3 -3.14  ogg -3.01  (want -3.0 / -3.0)
+l2_k5care2.wav   39.50s  joint is a CROSSFADE (continuous by construction); body -19.9 dBFS  peak -5.34  2ch
+k5care2 <- l2_k5care2.wav  mp3 -2.91  ogg -2.98  (want -3.0 / -3.0)
+l2_k5decide.wav  34.00s  joint is a CROSSFADE (continuous by construction); body -35.7 dBFS  peak -17.63  2ch
+k5decide <- l2_k5decide.wav  mp3 -3.25  ogg -2.82  (want -3.0 / -3.0)
+l2_k5climbloop.wav 14.00s  joint is a CROSSFADE (continuous by construction); body -18.1 dBFS  peak -4.67  2ch
+k5climbloop <- l2_k5climbloop.wav  mp3 -2.98  ogg -2.96  (want -3.0 / -3.0)
+k5driftA <- m_k5driftA.wav  mp3 -2.99  ogg -2.99  (want -3.0 / -3.0)
+k5screens <- m_k5screens.wav  mp3 -2.92  ogg -2.99  (want -3.0 / -3.0)
+k5greed <- m_k5greed.wav  mp3 -2.59  ogg -3.11  (want -3.0 / -3.0)
+k5merit <- m_k5merit.wav  mp3 -3.04  ogg -2.98  (want -3.0 / -3.0)
+k5boxloop <- proc/k5boxloop.wav  mp3 -1.84  ogg -3.03  (want -3.0 / -3.0)
+k5boxdown <- proc/k5boxdown.wav  mp3 -2.95  ogg -3.00  (want -3.0 / -3.0)
+k5endA <- proc/k5endA.wav  mp3 -2.86  ogg -3.09  (want -3.0 / -3.0)
+
+real	3m49.004s
+user	2m44.065s
+sys	1m19.729s

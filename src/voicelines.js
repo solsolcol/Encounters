@@ -1569,7 +1569,7 @@
     { id: "z5B", who: "jamesAdult", ch: "e3c5", where: "Under outcome card B",
       text: "They were children, not a horror story. I showed strangers the way in.", secs: 5.49 },
     { id: "z5C", who: "jamesAdult", ch: "e3c5", where: "Under outcome card C",
-      text: "I stopped giving to them. I only kept asking.", secs: 3.32 },
+      text: "Every gift came with a wish. I only kept asking.", secs: 4.16 },
     { id: "z5D", who: "jamesAdult", ch: "e3c5", where: "Under outcome card D",
       text: "I kept my promise every day, and I kept my own door shut.", secs: 3.79 },
     /* E4C1 LINES BEGIN */
