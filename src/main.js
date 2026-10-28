@@ -6297,7 +6297,7 @@ function ledgerFinish(how) {
   if (res) res(kind || (how === 'read' ? true : null));
 }
 function ledgerFrame() {
-  if (!led.root) return;
+  if (!led.root) { if (!led.prep) return; ledgerBuild(); }   // v24.0 (CP13): a chapter's prepare(), built on the frame
   const now = performance.now() / 1000, dt = led.wall ? Math.min(0.25, now - led.wall) : 0; led.wall = now;
   if (led.k !== led.to) led.k = led.to > led.k ? Math.min(1, led.k + dt / 0.45) : Math.max(0, led.k - dt / 0.4);
   if (led.k <= 0 && !led.open) { led.root.visible = false; return; }
@@ -6366,9 +6366,10 @@ const kitLedger = {
   },
   entries: () => (ledMine() ? led.entries.map(e => ({ ...e })) : []),
   isOpen: () => led.open,
-  /* v24.0 (CP13): the book built now, hidden, so the loading curtain compiles it — built on its first opening, its
-     materials compiled on screen, mid-play */
-  prepare: () => { ledgerBuild(); },
+  /* v24.0 (CP13): the book built hidden on the next frame, so the loading curtain compiles it — built on its first
+     opening, its materials compiled on screen, mid-play. RECORDED, never built here (the kit's law: a chapter calls this
+     from build(), which on a cold boot into the chapter runs before the hands' scene exists) */
+  prepare: () => { led.prep = true; },
   set: list => ledgerLoad({ ep: episodeOf(CH_KEY), entries: list }),
   clear: () => { led.entries.length = 0; led.ep = 0; }
 };
@@ -13140,7 +13141,8 @@ const STING_SAMPLE = {
   w4endA: ['w4endA', 1], w4endB: ['w4endB', 1], w4endC: ['w4endC', 1], w4endD: ['w4endD', 1], w4pat: ['w4pat', 1],
   w4coda: ['w4coda', 1], w4card: ['w4card', 1], w4heart: ['w4heart', 1], w4rise: ['w4rise', 1], w4cup: ['w4cup', 1],
   w4dog: ['w4dog', 1], w4gasp: ['w4gasp', 1], w4bell: ['w4bell', 1],
-  w4marker: ['w4marker', 1], w4water: ['w4water', 1], w4tube: ['w4tube', 1], w4mala: ['w4mala', 1], w4cloth: ['w4cloth', 1], w4sandon: ['w4sandon', 1], w4storm: ['w4storm', 1]   // CP11: the plan's effects not in the first run, and the storm's drone
+  w4marker: ['w4marker', 1], w4water: ['w4water', 1], w4tube: ['w4tube', 1], w4mala: ['w4mala', 1], w4cloth: ['w4cloth', 1], w4sandon: ['w4sandon', 1], w4storm: ['w4storm', 1],   // CP11: the plan's effects not in the first run, and the storm's drone
+  w4barestep: ['w4barestep', 1]   // CP13: his bare foot in the room (e4c1's stepSound)
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays

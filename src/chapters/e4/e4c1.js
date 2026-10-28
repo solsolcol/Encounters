@@ -314,29 +314,29 @@
     /* q */
       'q1pro1': 7.45, 'q1pro2': 6.01, 'q1pro3': 6.01, 'q1pro4': 4.01, 'q1pro5': 3.29, 'q1board': 2.73,
       'q1water': 0.89, 'q1joy1': 2.25, 'q1joy2': 1.05, 'q1lim1': 2.73, 'q1lim2': 1.29, 'q1sb1': 2.65, 'q1pg1': 2.81,
-      'q1nobody': 2.65, 'q1missed': 1.61, 'q1tree': 2.97, 'q1wai': 1.21, 'q1shop': 5.45, 'q1short': 2.01,
+      'q1nobody': 2.57, 'q1missed': 1.61, 'q1tree': 2.97, 'q1wai': 1.21, 'q1shop': 5.45, 'q1short': 2.01,
       'q1smoke': 6.09, 'q1cloth': 2.89, 'q1shadow': 3.77, 'q1her': 5.61, 'q1A1': 1.83, 'q1A2': 0.65, 'q1A3': 0.81,
       'q1A4': 5.61, 'q1B1': 3.29, 'q1B2': 0.93, 'q1B3': 2.73, 'q1B4': 6.21, 'q1C0': 6.57, 'q1C1': 1.77,
       'q1C2': 1.29, 'q1C3': 5.13, 'q1D1': 5.45, 'q1D2': 4.17, 'q1D3': 2.97, 'q1D4': 3.21, 'q1D5': 3.29, 'q1K1': 6.25,
       'q1K2': 1.61, 'q1K3': 2.09, 'q1A': 4.63, 'q1B': 4.33, 'q1C': 3.13, 'q1D': 3.45,
     /* pg */
       'pg1car': 5.29, 'pg1here': 2.4, 'pg1come': 2.0, 'pg1sbq': 2.97, 'pg1sb': 7.05, 'pg1me': 6.87, 'pg1go': 2.46,
-      'pg1tree': 3.01, 'pg1shop': 1.85, 'pg1th1': 2.97, 'pg1good': 5.77, 'pg1day': 1.85, 'pg1read': 7.61,
+      'pg1tree': 3.01, 'pg1shop': 1.85, 'pg1th1': 2.97, 'pg1good': 5.77, 'pg1day': 1.85, 'pg1read': 7.81,
       'pg1items': 3.2, 'pg1nk': 3.53, 'pg1tk': 5.26, 'pg1py': 4.89, 'pg1offer': 4.01, 'pg1eyes': 3.72,
-      'pg1power': 3.67, 'pg1Ank': 5.53, 'pg1Atk': 4.96, 'pg1Apy': 5.93, 'pg1A1': 3.61, 'pg1A2': 0.94, 'pg1B1': 3.73,
-      'pg1B2': 4.3, 'pg1B3': 6.84, 'pg1B4': 1.65, 'pg1B5': 3.29, 'pg1B6': 2.99, 'pg1B7': 3.42, 'pg1C1': 3.35,
+      'pg1power': 3.67, 'pg1Ank': 8.33, 'pg1Atk': 7.69, 'pg1Apy': 8.65, 'pg1A1': 3.61, 'pg1A2': 0.94, 'pg1B1': 3.73,
+      'pg1B2': 4.3, 'pg1B3': 6.84, 'pg1B4': 1.65, 'pg1B5': 4.21, 'pg1B6': 2.99, 'pg1B7': 4.01, 'pg1C1': 3.35,
       'pg1C2': 2.49, 'pg1D1': 3.87, 'pg1D2': 3.0, 'pg1D3': 4.37,
     /* pn */
       'pn1num': 7.6, 'pn1water': 6.41, 'pn1n10': 1.14, 'pn1n11': 1.23, 'pn1n12': 1.3, 'pn1n13': 1.37,
       'pn1n14': 2.4, 'pn1tray': 0.83, 'pn1guava': 6.49, 'pn1card': 2.65, 'pn1C1': 6.03,
     /* jy */
-      'jy1a': 6.97, 'jy1b': 6.25, 'jy1go': 2.01,
+      'jy1a': 6.97, 'jy1b': 6.25, 'jy1go': 2.49,
     /* lm */
-      'lm1a': 7.96, 'lm1b': 4.49, 'lm1go': 2.04,
+      'lm1a': 5.78, 'lm1b': 4.49, 'lm1go': 2.04,
     /* sb */
       'sb1a': 8.59,
     /* fm */
-      'fm1hello': 4.21, 'fm1shop': 1.25, 'fm1good': 4.49, 'fm1day': 1.13, 'fm1hm': 1.21, 'fm1read': 10.65,
+      'fm1hello': 4.21, 'fm1shop': 1.25, 'fm1good': 4.49, 'fm1day': 1.13, 'fm1hm': 1.21, 'fm1read': 14.81,
       'fm1items': 2.25, 'fm1anu': 1.24, 'fm1eyes': 3.33, 'fm1chant': 33.77, 'fm1chant2': 18.17, 'fm1blessA': 2.33,
       'fm1Abye': 1.85, 'fm1B1': 3.77, 'fm1B2': 1.69, 'fm1B3': 2.57, 'fm1C1': 2.09, 'fm1C2': 2.73, 'fm1D1': 2.73,
     /* tx */
@@ -3333,7 +3333,7 @@
       'q1pg1', 'pg1me', 'q1nobody', 'q1missed', 'jy1go', 'lm1go', 'pg1go', 'q1tree', 'pg1tree', 'w4dog', 'w4marker', 'w4sandals'];
     const WARM_ROOM = ['w4kneel', 'fm1hello', 'q1wai', 'fm1shop', 'pg1shop', 'q1shop', 'pg1th1', 'fm1good', 'pg1good', 'fm1day',
       'pg1day', 'fm1hm', 'fm1read', 'pg1read', 'q1short', 'w4tray', 'pn1tray', 'pg1items', 'fm1items', 'pg1nk', 'pg1tk', 'pg1py',
-      'pg1offer', 'w4envelope', 'fm1anu', 'fm1eyes', 'pg1eyes', 'w4match'];
+      'pg1offer', 'w4envelope', 'fm1anu', 'fm1eyes', 'pg1eyes', 'w4match', 'w4barestep'];
     const WARM_WORK = ['fm1chant', 'fm1chant2', 'w4cloth', 'w4mala', 'q1smoke', 'q1cloth', 'q1shadow', 'q1her', 'w4tube',
       'pg1power', 'w4storm', 'w4thunder', 'w4crack', 'w4rainstop'];
     if (warmSounds) warmSounds(WARM_YARD.concat(WARM_ROOM));
@@ -5264,6 +5264,9 @@
       /* the engine's sky rides with him in the rice country (its dome is behind ours); the room, the shop and the taxi
          carry theirs with them (chapter 4's L4-2: away from the origin the engine's sky stood out of reach) */
       skyAt: () => ({ x: yaw.position.x, z: yaw.position.z }),
+      /* his footfall: bare on the room's tiles (his sandals stay at its door — CP13, L2-16: the shod four walked the room);
+         the engine's own everywhere else */
+      stepSound: () => (worldOf(yaw.position.x) === 'R' ? 'w4barestep' : null),
       get noteStorm() { return 1; },
       set noteStorm(v) {},
       film: { RX, SX, TX, YARD, GATE, ROAD_Z, RM, RDOOR, R_ARRIVE, MASTER, CMAT, SHOP, COR, COUNTER, worldC, worldR, worldS, worldT },

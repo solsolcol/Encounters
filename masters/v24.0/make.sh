@@ -66,7 +66,7 @@ cast jy1a       voices/raw/jy1a_hammy_b.mp3            -16 $F            # CP11a
 him  q1joy2     voices/raw/q1joy2_a.mp3                $F                # words 1.00, 1.04 s
 cast jy1b       voices/raw/jy1b_a.mp3                  -16 $F            # words 1.00, 6.24 s
 him  q1lim1     voices/raw/q1lim1_b.mp3                $F                # words 1.00, 2.72 s
-cast lm1a       voices/raw/lm1a_brandon_b.mp3          -16 --keep 8.0 $F # CP11a audition winner; words 0.95, 8.48 s; CP12: its silent tail cut at the words' end + 0.3 s
+cast lm1a       voices/raw/lm1a_r_a.mp3                -16 $F            # CP13 re-take ("Ya lah, I'm from KL!" — he answers the question he was asked); words 0.90 each, a's head -72 dB and end -58, 5.84 s
 him  q1lim2     voices/raw/q1lim2_b.mp3                $F                # words 1.00, 1.28 s
 cast lm1b       voices/raw/lm1b_a.mp3                  -16 $F            # words 1.00, the clean end, 4.48 s
 him  q1sb1      voices/raw/q1sb1_a.mp3                 $F                # words 1.00, 2.64 s
@@ -75,9 +75,9 @@ cast sb1a       voices/raw/sb1a_songkran_a.mp3         -16 $F            # CP11a
 cast pg1sb      voices/raw/pg1sb_b.mp3                 -16 $F            # words 0.90 against 0.84, 7.04 s
 him  q1pg1      voices/raw/q1pg1_b.mp3                 $F                # words 1.00, 2.80 s
 cast pg1me      voices/raw/pg1me_a.mp3                 -16 $F            # words 0.90 against 0.84, the clean end, 6.96 s
-him  q1nobody   voices/raw/q1nobody_a.mp3              $F                # words 1.00, the clean end, 2.64 s
+him  q1nobody   voices/raw/q1nobody_r_b.mp3            $F                # CP13 re-take ("Nobody I've asked"); words 1.00 each, b's head -38 and end -33 where a starts and ends ON signal, 2.56 s
 him  q1missed   voices/raw/q1missed_a.mp3              $F                # words 1.00, 1.60 s
-cast jy1go      voices/raw/jy1go_b.mp3                 -16 $F            # words 1.00, 2.00 s
+cast jy1go      voices/raw/jy1go_r_a.mp3               -16 $F            # CP13 re-take ("Good luck, na"); words 0.83 against 0.67, b starts ON signal (-19.7), 2.48 s
 cast lm1go      voices/raw/lm1go_b.mp3                 -16 $F            # "Woah, finally" — nearer the script's "Wah", and 2 dB fuller
 cast pg1go      voices/raw/pg1go_b.mp3                 -16 $F            # words 1.00 against 0.83, 2.48 s
 him  q1tree     voices/raw/q1tree_b.mp3                $F                # words 1.00, 2.96 s
@@ -93,8 +93,8 @@ cast pg1good    voices/raw/pg1good_a.mp3               -16 $F            # words
 cast fm1day     voices/raw/fm1day_a.mp3                -16 $F            # words 1.00, 1.12 s
 cast pg1day     voices/raw/pg1day_b.mp3                -16 $F            # words 0.86, 1.84 s
 cast fm1hm      voices/raw/fm1hm_a.mp3                 -18 $F            # a considering hum (1.20 s); b is clipped short
-cast fm1read    voices/raw/fm1read_a.mp3               -16 $F            # words 0.98, 10.64 s
-cast pg1read    voices/raw/pg1read_b.mp3               -16 $F            # words 1.00, 7.60 s
+cast fm1read    voices/raw/fm1read_r_b.mp3             -16 $F            # CP13 re-take (the shop is new, the money comes slowly, like a new well); characters 0.97 against 0.99 (noise in whisper's Thai), b the slower, kinder read with the longer pauses at the ellipses and the cleaner end (-36 against -27), 14.80 s
+cast pg1read    voices/raw/pg1read_r_a.mp3             -16 $F            # CP13 re-take ("still new ... money come slow"); words 1.00 each, a's quieter head (-85 against -60), 7.84 s
 him  q1short    voices/raw/q1short_a.mp3               $F                # words 1.00, 2.00 s
 cast pn1tray    voices/raw/pn1tray_b.mp3               -18 $F            # words 0.57 against 0.47, 2.64 s
 cast pg1items   voices/raw/pg1items_a.mp3              -16 $F            # words 0.91, 3.20 s
@@ -114,9 +114,9 @@ him  q1shadow   voices/raw/q1shadow_a.mp3              $F                # words
 him  q1her      voices/raw/q1her_b.mp3                 $F                # words 0.88, the clean end, 5.60 s
 cast pg1power   voices/raw/pg1power_b.mp3              -21 $F            # words 1.00 against 0.59, 3.68 s
 cast fm1blessA  voices/raw/fm1blessA_a.mp3             -16 $F            # words 0.84 against 0.80, the clean end, 2.32 s
-cast pg1Ank     voices/raw/pg1Ank_b.mp3                -16 $F            # words 1.00 against 0.95, 5.52 s
-cast pg1Atk     voices/raw/pg1Atk_b.mp3                -16 $F            # words 0.80 against 0.73, the clean end, 4.96 s
-cast pg1Apy     voices/raw/pg1Apy_a.mp3                -16 $F            # 5.92 s; b stalls 1.54 s at the dash and runs 8.72
+cast pg1Ank     voices/raw/pg1Ank_r_b.mp3              -16 $F            # CP13 re-take (the master's blessing first, then the piece); words 1.00 each, b's end -39 against a's -28, 8.32 s
+cast pg1Atk     voices/raw/pg1Atk_r_a.mp3              -16 --keep 7.68 $F # CP13 re-take; words 1.00 against 0.95, the clean end (-87), its 2.2 s of silent tail cut at the words' end + 0.3 s
+cast pg1Apy     voices/raw/pg1Apy_r_b.mp3              -16 $F            # CP13 re-take ("frame it facing your door"); words 0.91 each ("pa yang" for pha yant), b's end -49 against a's -28, no stall at the dash, 8.64 s
 cast fm1Abye    voices/raw/fm1Abye_b.mp3               -16 $F            # words 1.00, 1.84 s
 him  q1A1       voices/raw/q1A1_b.mp3                  --keep 1.82 $F    # read at a writing hand's pace (2.56 s) under the pen; CP12: its silent tail cut at the words' end + 0.3 s
 cast pn1guava   voices/raw/pn1guava_a.mp3              -16 $F            # words 0.52 against 0.44, 8.00 s
@@ -134,11 +134,11 @@ cast fm1B2      voices/raw/fm1B2_b.mp3                 -16 $F            # words
 cast pg1B4      voices/raw/pg1B4_a.mp3                 -16 $F            # words 0.80, 1.68 s
 him  q1B2       voices/raw/q1B2_b.mp3                  --keep 0.92 $F    # words 1.00, the clean end, 1.52 s; CP12: its silent tail cut at the words' end + 0.3 s
 cast fm1B3      voices/raw/fm1B3_a.mp3                 -16 $F            # words 1.00, the clean end, 2.56 s
-cast pg1B5      voices/raw/pg1B5_b.mp3                 -16 $F            # words 1.00 against 0.93, 3.28 s
+cast pg1B5      voices/raw/pg1B5_r_b.mp3               -16 $F            # CP13 re-take ("if you want to learn, come back"); words 1.00 each, b's end -40 against a's -26, 4.24 s
 him  q1B3       voices/raw/q1B3_a.mp3                  $F                # words 1.00, 2.72 s
 cast pn1card    voices/raw/pn1card_b.mp3               -16 $F            # words 0.55 against 0.36, 2.64 s
 cast pg1B6      voices/raw/pg1B6_a.mp3                 -16 $F            # words 1.00 against 0.89, 3.04 s
-cast pg1B7      voices/raw/pg1B7_b.mp3                 -16 $F            # words 1.00, 3.44 s
+cast pg1B7      voices/raw/pg1B7_r_a.mp3               -16 $F            # CP13 re-take ("Next time you look for me also"); words 1.00 each, a's end -40 against b's -29, 4.00 s
 him  q1B4       voices/raw/q1B4_a.mp3                  --keep 6.2 $F     # words 1.00, the clean end, 8.24 s; CP12: its silent tail cut at the words' end + 0.3 s
 him  q1C0       voices/raw/q1C0_a.mp3                  $F                # words 1.00 against 0.88, 6.56 s
 him  q1C1       voices/raw/q1C1_a.mp3                  $F                # words 1.00, 1.76 s
@@ -245,6 +245,7 @@ fx  w4tube      sfx/raw/w4tube_b.mp3      -10 "afade=t=out:st=1.35:d=0.45"     #
 fx  w4mala      sfx/raw/w4mala_b.mp3      -12 "atrim=0.25,asetpts=PTS-STARTPTS" # the beads' dry clicks to 2.3 s (a stops at 1.65); its lead cut
 fx  w4cloth     sfx/raw/w4cloth_b.mp3     -12                                  # the cloth's soft settle, the longer of two (to 1.15 s; a is over by 0.6)
 fx  w4sandon    sfx/raw/w4sandon_b.mp3    -8                                   # the rubbery step back on (37 % in 120-500 Hz, 53 % above); a is 6 dB quieter and thin
+fx  w4barestep  sfx/raw/w4barestep2_c.mp3 -6 "atrim=0.045:0.42,asetpts=PTS-STARTPTS,highpass=f=90,afade=t=out:st=0.255:d=0.12"   # CP13 (L2-16: shod steps in the room after the sandals come off): his bare foot on the room's tiles, World R's stepSound. The first run's four takes were 99 % under 120 Hz (the v16.0 thump again); the second run's c is one footfall, 78 % in 120-500 Hz, cut to it and peaked at -6 like episode 3's barestep
 fi
 
 # THE BEDS (sfx/meas.txt; the 1 s profiles from ../v21.0/sfxmeas.py):

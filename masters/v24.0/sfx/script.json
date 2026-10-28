@@ -258,6 +258,18 @@
    1.6,
    false,
    "A man slipping his rubber flip-flop sandals back on at a doorstep and stepping down onto wet concrete, two soft rubbery steps, close"
+  ],
+  [
+   "w4barestep",
+   0.6,
+   false,
+   "One single bare foot stepping on a smooth cement tile floor indoors, a soft dry skin footfall, close, quiet room, no echo"
+  ],
+  [
+   "w4barestep2",
+   0.8,
+   false,
+   "One footstep of a bare foot on a hard ceramic tile floor, a crisp soft slap of skin on tile, close-miked, dry indoor room"
   ]
  ],
  "beds": [
