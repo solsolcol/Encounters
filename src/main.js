@@ -4976,8 +4976,14 @@ function resistTap(e) {
   if (e.level !== undefined && !e.resolved) e.level = Math.min(1, e.level + (e.gain || 0));
   snd('uiclick', 0.09, 1.25 + 0.15 * Math.random());
 }
+/* v24.2: when an input event really happened, in seconds — its own timeStamp (the finger's), never when its handler
+   ran. On a hot phone drawing a frame a second, a flick's down and its move are handled a second apart however fast the
+   finger was, and the craft's FLICK ("Wave the flames out", episode 3 chapter 5's incense) read every flick as too slow,
+   for good — found by the real-touch play-through at a frame a second. The v24.0 tap rule (onTouchEnd), for a gesture.
+   A stamp far from now (an old browser's epoch time) falls back to the clock */
+function evStamp(e) { const pn = performance.now(); return (e && e.timeStamp > 0 && Math.abs(e.timeStamp - pn) < 5000 ? e.timeStamp : pn) / 1000; }
 /* a press: from the overlay, the button, a key, or a mouse under pointer lock */
-function evPress(x, y, pid) {
+function evPress(x, y, pid, ts) {
   /* v18.3: in a rapid-tap fight EVERY finger counts — two thumbs drumming
      put the second down before the first is up, and that press was dropped
      because the event was still "down". A held key cannot cheat it: evKey
@@ -5011,7 +5017,7 @@ function evPress(x, y, pid) {
       e.bar = Math.min(1, e.bar + o.gain); e.hits++; snd('uiclick', 0.18, 1.1); break;
     case 'resist': resistTap(e); break;
     case 'steady': e.lastX = x; e.lastY = y; e.pid = pid; e.seed = false; break;   // v22.0: the drag starts where the finger lands, and is that finger's
-    case 'craft': evCraftPress(e, x, y); break;            // v23.0: a step begins where the finger lands
+    case 'craft': evCraftPress(e, x, y, ts); break;        // v23.0: a step begins where the finger lands
     /* v23.0 (CP7): a yield that fills by itself once pressed latches the press HERE, not on the next frame — a tap
        shorter than a frame (a slow phone, or the probe's 0.3 s press at a frame a second) was never seen down, and the
        little one's door never opened */
@@ -5107,14 +5113,14 @@ function evRelease(pid) {
   if (e.kind === 'hold' && e.t < e.o.secs) evResolve({ ok: false, score: 0 });
   if (e.kind === 'stabilise' && e.t < e.o.secs) evResolve({ ok: false, score: 0 });
 }
-function evMove(x, y, pid) {
+function evMove(x, y, pid, ts) {
   const e = ev; if (!e || !e.down) return;
   // v22.0: and its moves are that finger's (a second thumb's alternated with the first and jumped the mark)
   if (ONE_FINGER.has(e.kind) && e.pid !== undefined && pid !== undefined && pid !== e.pid) return;
   e.drift = Math.max(e.drift, Math.hypot(x - e.downX, y - e.downY));
   if (e.kind === 'match') { e.lastX = x; e.lastY = y; if (e.drag) { evDragTo(x, y); evMatchHover(x, y); } }
   /* v23.0: a hands-on step reads the drag round its prop; the surface rises with a drag UP (never pushed down by one) */
-  if (e.kind === 'craft' && e.started && !e.briefing) evCraftMove(e, x, y);
+  if (e.kind === 'craft' && e.started && !e.briefing) evCraftMove(e, x, y, ts);
   if (e.kind === 'surface' && e.started && !e.briefing && e.sy !== undefined) {
     const dy = e.sy - y; e.sy = y;
     if (dy > 0) evSurfaceRise(e, dy / Math.max(60, e.o.span * innerHeight));
@@ -5416,7 +5422,7 @@ function evCraftTwist(e, x, y) {
   }
   e.twA = a; e.twT = now;
 }
-function evCraftPress(e, x, y) {
+function evCraftPress(e, x, y, ts) {
   const s = e.steps[e.si]; if (!s) return;
   e.cx = x; e.cy = y; e.needUp = false;
   if (e.keyHeld) {                                 // a key: a tap and a flick are one press; the frame does the rest
@@ -5428,11 +5434,11 @@ function evCraftPress(e, x, y) {
     case 'twist': e.twA = null; evCraftTwist(e, x, y); break;
     case 'slide': e.sl0 = { x, y }; e.slBase = e.sk; break;
     case 'tap': e.ctaps++; evCraftSet(e, e.ctaps / s.n); break;
-    case 'swipe': e.sw = { x, y, t: performance.now() / 1000 }; break;
+    case 'swipe': e.sw = { x, y, t: ts ?? performance.now() / 1000 }; break;   // (v24.2: the finger's own time, evStamp)
     default: break;                                // hold: the frame counts it while down
   }
 }
-function evCraftMove(e, x, y) {
+function evCraftMove(e, x, y, ts) {
   const s = e.steps[e.si]; if (!s || e.keyHeld || e.needUp) return;
   e.cx = x; e.cy = y;
   if (s.g === 'twist') evCraftTwist(e, x, y);
@@ -5440,7 +5446,7 @@ function evCraftMove(e, x, y) {
     const d = evDirOf(s.dir, x - e.sl0.x, y - e.sl0.y);
     evCraftSet(e, e.slBase + Math.max(0, d) / Math.max(20, s.len * innerHeight));
   } else if (s.g === 'swipe' && e.sw) {
-    const now = performance.now() / 1000;
+    const now = ts ?? performance.now() / 1000;
     if (now - e.sw.t > e.o.swipeT) { e.sw = { x, y, t: now }; return; }   // too slow for a flick: begin again from here
     if (evDirOf(s.dir, x - e.sw.x, y - e.sw.y) >= s.dist * innerWidth) evCraftSet(e, 1);
   }
@@ -5888,8 +5894,8 @@ function kitInit() {
       if (e.pointerType === 'mouse' && e.button !== 0) return false;
       return true;
     };
-    host.addEventListener('pointerdown', e => { if (!pressFrom(e)) return; e.preventDefault(); evPress(e.clientX, e.clientY, e.pointerId); });
-    host.addEventListener('pointermove', e => { if (ev && ev.down) evMove(e.clientX, e.clientY, e.pointerId); });
+    host.addEventListener('pointerdown', e => { if (!pressFrom(e)) return; e.preventDefault(); evPress(e.clientX, e.clientY, e.pointerId, evStamp(e)); });
+    host.addEventListener('pointermove', e => { if (ev && ev.down) evMove(e.clientX, e.clientY, e.pointerId, evStamp(e)); });
     for (const k of ['pointerup', 'pointercancel']) host.addEventListener(k, e => evRelease(e.pointerId));
     // a mouse press under pointer lock never reaches the overlay
     addEventListener('pointerdown', e => {

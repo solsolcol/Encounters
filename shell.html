@@ -1979,6 +1979,9 @@ body.capsOn #interact{padding-bottom:calc(var(--capTop,170px) + 14px)}
   body.hasObj #haunt{padding-top:calc(max(14px,env(safe-area-inset-top)) + 166px + var(--objH,0px) + 12px)}
   /* v21.1: and STAY PRESENT's panel — on a phone it stood at the desktop's +18 px, over the very bars its misses move */
   #event.full.resist,#event.full.focus,#event.full.steady,#event.full.craft,#event.full.yield,#event.full.surface{padding-top:calc(max(14px,env(safe-area-inset-top)) + 166px + var(--objH,40px) + 12px)}   /* (v22.0: and STEADY's — over the bars its drift and slip move) */
+  /* v24.2 (L5-5): and COME BACK's gauge starts UNDER that panel — at 26vh it stood inside it (x 333–355 of the panel's
+     35–355), so its goal line, and the mark the moment it reached it, were behind the panel's words */
+  #event.full.surface:not(.low) #evSurface{top:calc(max(14px,env(safe-area-inset-top)) + 166px + var(--objH,40px) + 124px);height:min(40vh,calc(100vh - 430px))}
   /* v8.3: the marks are bigger on a phone — the screen is a third the width
      of a desktop's and the same 34 px diamond reads as a speck on it */
   .hmark{width:44px;height:44px;margin:-22px 0 0 -22px}

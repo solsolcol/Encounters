@@ -458,6 +458,9 @@
       { key: 'little', asset: 'kumanlittle', h: 0.24, slot: 2, preset: 'BLUE',  lens: 62, motif: 'k5lonely', toy: 'pinwheel', capTurns: 2.0, yieldSecs: 0.6, auto: true }
     ];
     const ALTAR_Z = [0.05, 0.40, 0.75];                   // each one's place along the riser
+    /* where the three stand: on the riser's gilt cap (its top 0.808), 2 mm over it (v24.2, L5-11: at the riser's own top,
+       0.806, their bases were 2 mm INSIDE the gilt and their soft shadows, 1 mm under each base, under it — never drawn) */
+    const KID_BASE = ALTAR.top + ALTAR.riser + 0.010;
     /* WORLD S · the owner's glass (local numbers): the red cloth's middle on its top face (the 16 mm sheet is centred on
        the counter's top, 1.0) and the three on it, left to right as he faces them (−z is his left); the music box past
        the little one, short of the empty stand; his card on the cloth's front, before the shy one, where the three are in
@@ -944,7 +947,9 @@
         box(0.9, 1.9, 0.54, 0, 0.95, 0, mW, wd, false);
         for (const s of [-1, 1]) { box(0.43, 1.78, 0.012, s * 0.222, 0.97, -0.276, mW, wd, false); box(0.012, 0.14, 0.02, s * 0.02, 1.0, -0.29, mBrass, wd, false); }
         solids.push(hidBox(0.9, 1.9, 0.54, 0, 0.95, 0, wd));
-        const bp = new THREE.Group(); bp.position.set(0.52, 0, -0.12); bp.rotation.set(0, -0.4, -0.12); wd.add(bp);
+        /* (v24.2, L5-9: against its FRONT now, at its right end — leant on its side it stood 10 cm into the wardrobe and in the
+           door's swing, the leaf passing through its corner; here it is 1.1 m from the hinge) */
+        const bp = new THREE.Group(); bp.position.set(0.25, 0, -0.40); bp.rotation.set(0.12, 0.15, 0); wd.add(bp);
         box(0.3, 0.42, 0.16, 0, 0.21, 0, M({ color: 0x2a3a2e, roughness: 0.85 }), bp, false);
         box(0.24, 0.18, 0.05, 0, 0.16, -0.1, M({ color: 0x24302a, roughness: 0.85 }), bp, false); }
       /* ---- the CEILING FAN (the kit's), turning; the AIRCON high over the door, its louvre swinging, its blue LED */
@@ -965,8 +970,10 @@
       /* ---- by the door: a switch and a power socket; the slippers; the laundry basket in the bed's foot corner; a
          small bin under the desk; a cable along the skirting */
       { const pl = M({ color: 0xf2f0ea, roughness: 0.5 });
-        box(0.08, 0.12, 0.012, dL - 0.12, 1.3, z1 - 0.006, pl, R, false); box(0.02, 0.04, 0.006, dL - 0.12, 1.3, z1 - 0.014, mWhite, R, false);
-        box(0.09, 0.09, 0.012, dL - 0.12, 0.3, z1 - 0.006, pl, R, false);
+        /* (v24.2, L5-9: in the 11 cm of wall between the wardrobe's side, x 0.37, and the door's opening, 0.48 — at dL − 0.12
+           five of the switch's 8 cm and its toggle were inside the wardrobe) */
+        box(0.08, 0.12, 0.012, dL - 0.055, 1.3, z1 - 0.006, pl, R, false); box(0.02, 0.04, 0.006, dL - 0.055, 1.3, z1 - 0.014, mWhite, R, false);
+        box(0.09, 0.09, 0.012, dL - 0.055, 0.3, z1 - 0.006, pl, R, false);
         box(0.09, 0.09, 0.012, 0.32, 0.3, z0 + 0.006, pl, R, false);
         const cab = cyl(0.004, 0.004, 1.1, -0.25, 0.012, z0 + 0.03, mDark, 6, R); cab.rotation.z = Math.PI / 2; }
       parseOnce('slipper').then(({ scene: sc }) => {
@@ -977,7 +984,7 @@
         const bb = src.geometry.boundingBox, len = Math.max(bb.max.x - bb.min.x, bb.max.z - bb.min.z), k = 0.27 / len;
         for (const [dx, ry] of [[-0.07, 0.15], [0.07, -0.1]]) {
           const m = new THREE.Mesh(src.geometry, src.material.clone()); m.material.color.multiply(new THREE.Color(0x3a4a7a)); owned.push({ dispose: () => m.material.dispose() });
-          m.scale.setScalar(k); m.position.set(dL - 0.32 + dx, -bb.min.y * k, z1 - 0.3); m.rotation.y = Math.PI + ry; R.add(m);
+          m.scale.setScalar(k); m.position.set(-0.24 + dx, -bb.min.y * k, z1 - 0.70); m.rotation.y = Math.PI + ry; R.add(m);   // (v24.2, L5-9: before the wardrobe's left door — at z1 − 0.3 both were INSIDE it, never seen)
         }
       }).catch(e => { console.warn('e3c5: slippers not placed', e); ctx.loadFail && ctx.loadFail('slipper', e); });
       // (tucked in the corner past the bed's foot, which ends at z 1.4: the corner is 0.4 deep)
@@ -2855,7 +2862,7 @@
       const Lg = careLive.lighter, St = careLive.sticks, Pk = careLive.packet; if (!Lg || !St || !Pk) return;
       careLive.incDesk = mode === 'stage';
       if (mode) {
-        Pk.position.set(PKT_O.x - 0.22, DESK.top + 0.018, PKT_O.z); Pk.rotation.set(0, 0, -Math.PI / 2 + 0.02);
+        Pk.position.set(PKT_O.x - 0.22, DESK.top + 0.036, PKT_O.z); Pk.rotation.set(0, 0, -Math.PI / 2 + 0.02);   // (v24.2, L5-10: on the wood, not in it)
         if (Lg.g.parent !== worldR) worldR.add(Lg.g);
         const lx = PKT_O.x + 0.142;
         Lg.g.position.set(lx, DESK.top + 0.018, PKT_O.z); Lg.g.rotation.set(0, Math.atan2(CHAIR.x - lx, CHAIR.z - PKT_O.z), 0); Lg.g.scale.setScalar(1);   // (stood on the surface, CP8: at DESK.top its foot was in the slab)
@@ -3000,12 +3007,14 @@
         careLive.sticksSet.push(sk);
         // the cap and the torn sleeve, set aside on the desk
         const c = new THREE.Group(); c.position.set(DESK_AT.caps[i][0], DT + 0.018, DESK_AT.caps[i][1]); c.rotation.x = Math.PI; c.visible = false; R.add(c);
-        cyl(0.0144, 0.0144, 0.013, 0, 0.0065, 0, mCapB, 18, c); careLive.capsDesk.push(c);
+        cyl(0.0144, 0.0144, 0.013, 0, -0.0065, 0, mCapB, 18, c); careLive.capsDesk.push(c);   // (v24.2, L5-10: turned over, its height goes UP from the wood — it was 12.5 mm in the desk)
         const sl = makeSleeve(); sl.scale.set(1, 0.4, 1); sl.rotation.set(0.2, 0.4 * i, Math.PI / 2); sl.position.set(DESK_AT.sleeves[i][0], DT + 0.02, DESK_AT.sleeves[i][1]); sl.visible = false; R.add(sl);
         careLive.sleevesDesk.push(sl);
       }
       // the incense packet on the desk
-      { const pk = new THREE.Group(); pk.position.set(DESK_AT.packet[0], DT + 0.018, DESK_AT.packet[1]); pk.rotation.set(0, 0.5, Math.PI / 2 - 0.02); R.add(pk);
+      /* (v24.2, L5-10: stood on its edge, half its 3.6 cm width hangs under its origin — at DT + 0.018 the lower half of its
+         printed face was in the desk) */
+      { const pk = new THREE.Group(); pk.position.set(DESK_AT.packet[0], DT + 0.036, DESK_AT.packet[1]); pk.rotation.set(0, 0.5, Math.PI / 2 - 0.02); R.add(pk);
         box(0.036, 0.22, 0.012, 0, 0.11, 0, M({ map: tex(makeIncensePackT(THREE, cnv)), roughness: 0.8 }), pk, false);
         careLive.packet = pk; }
       // the things that ride his hands (never in the world: kit.hold carries them)
@@ -3374,6 +3383,7 @@
     function sitAgain() {
       if (phase !== 'open3' || seated || !quiet() || openLive.busy) return false;
       if (kit) kit.objective(null);                                    // (v24.2, L1-7: he has sat — the little one's order follows the turn)
+      chairHome();                                                     // (v24.2, L5-6: behind him from the mat)
       if (kit) kit.pose('standing', { secs: 0.3 });
       sitDown(false);
       if (kit) kit.setPhase('open3:mat');                            // (v24.2, L2-2: back on the mat — a receipt; openResume reads it)
@@ -3434,7 +3444,7 @@
       /* (v24.2, L2-2: back on the mat after the shy one is a receipt of its own — `open3:mat`, written by sitAgain — so
          a Continue from the little one's film, which saves as it starts, sits him where he sat, not by the desk again) */
       if (n === 0 || n === 1 || (n === 2 && tag === 'mat')) landOn('mat');
-      else if (n === 2) landOn('desk');
+      else if (n === 2) { landOn('desk'); chairShoved(); }             // (v24.2, L5-6: as the film left it)
       else landOn('bed');
       lookToOrder(n);
       openLive.busy = false;
@@ -3525,7 +3535,7 @@
       frame(t, api) {
         if (fLive.shot !== 'red') redF.begin();
         redLive.nowT = t;                                       // (a tap lands at the film's own time)
-        const D0 = doubleOf(0), K = KIDS[0], baseY = ALTAR.top + ALTAR.riser + 0.006;
+        const D0 = doubleOf(0), K = KIDS[0], baseY = KID_BASE;
         /* the double: up off its base, toward him, into him */
         if (t < RFT.contact + 0.3) {
           const kr = smooth(cl01(t / RFT.come)), kc = smooth(cl01((t - RFT.come) / (RFT.contact - RFT.come)));
@@ -3623,7 +3633,9 @@
     const shyF = {
       T: SFT,
       begin() { fLive.shot = 'shy'; fLive.lit = null; shyLive.gap = 0; shyLive.peeked = false; },   // (CP13: the peek's sound, once a film — it was once a session)
-      end() { fLive.shot = ''; lensTo(72); doublesOff(); look('NIGHT', 0.01); if (kit && kit.smear) kit.smear(0, { secs: 0.3 }); chairHome(); },
+      /* (v24.2, L5-6: the chair stays where the film pushed it — put back on end(), it stood round him where he sits by the
+         desk, the back filling his look down at the coin; sitAgain and the resets put it home) */
+      end() { fLive.shot = ''; lensTo(72); doublesOff(); look('NIGHT', 0.01); if (kit && kit.smear) kit.smear(0, { secs: 0.3 }); chairShoved(); },
       frame(t, api) {
         if (fLive.shot !== 'shy') shyF.begin();
         /* he shoves the desk chair aside as he scuttles under the desk (CP13, the geometry lens: the scuttle ran 2–8 cm
@@ -3631,7 +3643,7 @@
            back. It goes as he reaches it, so it reads as pushed — from the mat its slide would be in view */
         if (roomLive.chair) { const kp = smooth(cl01((t - 10.2) / 0.6));
           roomLive.chair.position.x = -0.32 - 0.45 * kp; roomLive.chair.rotation.y = 0.25 + 0.5 * kp; }
-        const K = KIDS[1], baseY = ALTAR.top + ALTAR.riser + 0.006;
+        const K = KIDS[1], baseY = KID_BASE;
         /* the double: crouched out of its base, scurrying low across the floor round to behind him (a game), into him */
         if (t < SFT.contact + 0.3) {
           const k1 = smooth(cl01(t / 0.5)), k2 = smooth(cl01((t - 0.5) / 1.4)), q = shyAt(t);
@@ -3693,7 +3705,7 @@
     /* where the shy double is on its scurry (a function of the film's clock): off its base, low across the floor to his
        front-right, round his right side, and behind him */
     function shyAt(t) {
-      const baseY = ALTAR.top + ALTAR.riser + 0.006, k2 = smooth(cl01((t - 0.5) / 1.4));
+      const baseY = KID_BASE, k2 = smooth(cl01((t - 0.5) / 1.4));
       const pts = [[RISER.x, baseY, ALTAR_Z[1]], [1.0, 0.02, 0.9], [0.35, 0.02, 0.85], [0.22, 0.02, 0.42]];
       const seg = Math.min(2, Math.floor(k2 * 3)), u = k2 * 3 - seg;
       return lerp3(pts[seg], pts[seg + 1], u);
@@ -3729,7 +3741,7 @@
       end() { fLive.shot = ''; lensTo(72); doublesOff(); look('NIGHT', 0.01); cityOut(-1); lensOff(); },
       frame(t, api) {
         if (fLive.shot !== 'little') littleF.begin();
-        const K = KIDS[2], baseY = ALTAR.top + ALTAR.riser + 0.006;
+        const K = KIDS[2], baseY = KID_BASE;
         if (t >= 0 && fLive.lit !== 'BLUE' && t < LFT.come) { look('BLUE', 1.4); fLive.lit = 'BLUE'; }
         /* the double: rises small and pale, waits with its hands joined; its locks drift (its own slow sway) */
         const kr = smooth(cl01((t - LFT.rise) / 1.6)), kf = 1 - smooth(cl01((t - LFT.into) / 2.5));
@@ -4819,6 +4831,10 @@
       yaw.rotation.y = Math.atan2(-dx, -dz); pitch.rotation.x = Math.atan2(dy, Math.hypot(dx, dz));
     }
     function lensTo(f) { if (camera.fov !== f) { camera.fov = f; camera.updateProjectionMatrix(); } }
+    /* (v24.2, L5-4: a phone's frame is a third of a desktop's width, so a close shot that holds the three on a desktop holds
+       ONE of them there; on a phone such a shot slides along the three instead, each in its turn — where along them by
+       u, 0 → 1, eased) */
+    const zAlong = u => ALTAR_Z[0] + (ALTAR_Z[2] - ALTAR_Z[0]) * smooth(cl01(u));
     const lerp3 = (a, b, k) => [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k];
     function candles(t) {                      // the night set's flames, flickering on the film's clock
       for (const f of nightSet.flames) {
@@ -5204,7 +5220,7 @@
         L.farSrc = far;                                        // (his double is a copy of this level, CP7)
         // on the riser under the window, facing into the room (−x): a model at ry θ faces (sin θ, 0, cos θ)
         L.altar = kidLOD(src, K.h);
-        L.altar.position.set(RISER.x, ALTAR.top + ALTAR.riser + 0.006, ALTAR_Z[K.slot]);
+        L.altar.position.set(RISER.x, KID_BASE, ALTAR_Z[K.slot]);
         L.altar.rotation.y = -Math.PI / 2;
         worldR.add(L.altar);
         // and on the red cloth on the owner's glass, facing him (−x as well) — SET DOWN there as the owner opens the cloth
@@ -5660,7 +5676,7 @@
         enabled: () => cntStep() === 'look' && cntOk(), onInteract() { return lookBundle(); } },
       ...KIDS.map((K, i) => ({
         id: 'kid_' + K.key, pos: { ...cntAt(CNT.x, CNT_Z[i]), y: CNT.y + K.h * 0.55 }, radius: 2.6, aim: 0.14, pressAim: true,   // (v24.2, L1-5: its "!" sat 0.14–0.17 rad off a 0.09 cone; overlapping cones go to the nearer)
-        markY: K.h * 0.45 + 0.07, prompt: W['hot' + K.key[0].toUpperCase() + K.key.slice(1)],
+        markY: K.h * 0.45 + 0.03, prompt: W['hot' + K.key[0].toUpperCase() + K.key.slice(1)],   // (v24.2, L5-3: 4 cm lower — at +0.07 each "!" stood 0.142–0.164 off its own 0.14 cone; at +0.03, 0.105–0.128, the next one's 0.198 away)
         hits: tapBox(SX + CNT.x - 0.08, CNT.y - 0.01, CNT_Z[i] - 0.085, SX + CNT.x + 0.08, CNT.y + K.h + 0.03, CNT_Z[i] + 0.085),
         enabled: () => cntStep() === 'meet' && !cntDone.has('m.' + K.key) && cntOk(), onInteract() { return meetKid(K); } })),
       { id: 'card', pos: { ...cntAt(CNT_CARD.x, CNT_CARD.z), y: CNT.y + 0.01 }, radius: 2.6, aim: 0.2, pressAim: true, markY: 0.05, prompt: W.hotCard,   // (CP13: at 0.16 its "!" stood on the shy one's chest behind it)
@@ -5707,7 +5723,9 @@
         id: 'open_' + K.key, pos: { x: RISER.x, y: ALTAR.top + ALTAR.riser + K.h * 0.6, z: ALTAR_Z[i] }, radius: 1.8, aim: 0.22, pressAim: true, markY: 0.14, prompt: W.hotOpen,
         hits: tapBox(RISER.x - 0.08, ALTAR.top + ALTAR.riser, ALTAR_Z[i] - 0.08, RISER.x + 0.08, ALTAR.top + ALTAR.riser + K.h, ALTAR_Z[i] + 0.08),
         enabled: () => OPEN_I[phase] === i && seated && openOk(), onInteract() { return openPress(i); } })),
-      { id: 'mat', pos: { x: MAT.x, y: 0.9, z: MAT.z }, radius: 1.6, aim: 0.35, pressAim: true, prompt: W.hotMat, markY: -0.3,
+      /* (v24.2, L5-3: its aim point was at the SEATED eye, 0.9 — looking down at the rug from standing was 0.36–0.39 off a
+         0.35 cone, and the look the game hands him by the desk 0.495 off; on the rug now, the "!" where it always was, 0.6) */
+      { id: 'mat', pos: { x: MAT.x, y: 0.35, z: MAT.z }, radius: 1.6, aim: 0.35, pressAim: true, prompt: W.hotMat, markY: 0.25,
         hits: tapBox(MAT.x - 0.32, 0, MAT.z - 0.5, MAT.x + 0.32, 0.06, MAT.z + 0.5),
         enabled: () => (phase === 'sit' || phase === 'open3') && !seated && quiet() && !openLive.busy && !careBusy,   // (v24.2, L1-6: as its handler asks)
         onInteract() { return phase === 'open3' ? sitAgain() : sitWithThem(); } }
@@ -5749,10 +5767,10 @@
       const dustAt = (w, d, x, y, z, parent = R) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), mDust); m.rotation.x = -Math.PI / 2; m.position.set(x, y, z); m.visible = false; m.renderOrder = 3; parent.add(m); P.dust.push(m); return m; };
       if (roomLive.cartonTop) dustAt(0.19, 0.15, 0, 0.0652, 0, roomLive.cartonTop);
       dustAt(0.2, 0.9, ROW.front + 0.065, ALTAR.top + 0.0055, (ALTAR_Z[0] + ALTAR_Z[2]) / 2);   // (over the runner, whose top is A.top + 0.004, and inside the altar's front edge)
-      dustAt(0.12, 0.5, ROW.back + 0.07, ALTAR.top + ALTAR.riser + 0.0015, (ALTAR_Z[0] + ALTAR_Z[2]) / 2);
+      dustAt(0.12, 0.5, RISER.x, ALTAR.top + 0.006 + ALTAR.riser + 0.0035, (ALTAR_Z[0] + ALTAR_Z[2]) / 2);   // (v24.2, L5-12: on the gilt — it hung 9.75 cm over the altar's top through the shy one's bottle)
       // A · the grey that settles in the little one's hair (a few motes, flat on the crown)
-      P.hairDust = new THREE.Mesh(new THREE.CircleGeometry(0.03, 16), mDust); P.hairDust.rotation.x = -Math.PI / 2;
-      P.hairDust.position.set(RISER.x, ALTAR.top + ALTAR.riser + KIDS[2].h - 0.004, ALTAR_Z[2]); P.hairDust.visible = false; R.add(P.hairDust);
+      P.hairDust = new THREE.Mesh(new THREE.CircleGeometry(0.018, 16), mDust); P.hairDust.rotation.x = -Math.PI / 2;
+      P.hairDust.position.set(RISER.x, KID_BASE + KIDS[2].h + 0.001, ALTAR_Z[2]); P.hairDust.visible = false; R.add(P.hairDust);   // (v24.2, L5-12: ON the crown — 1 cm under it, inside the hair)
       // A · the dust over the card where it fell (beyond the runner's end, on the bare top)
       P.cardDust = new THREE.Mesh(new THREE.PlaneGeometry(0.13, 0.12), mDust); P.cardDust.rotation.x = -Math.PI / 2;
       P.cardDust.position.set(1.185, ALTAR.top + 0.0024, 1.03); P.cardDust.renderOrder = 3; P.cardDust.visible = false; R.add(P.cardDust);
@@ -5781,6 +5799,7 @@
     /* the desk chair turns with him while he sits in it (CP8: a swivel chair; turned to the altar, its own back filled the
        lower right of a phone's frame — the pick probe named it, 0.3 m from the lens) */
     function chairHome() { const ch = roomLive.chair; if (ch) { ch.position.x = -0.32; ch.rotation.y = 0.25; } }   // (where build() stands it)
+    function chairShoved() { const ch = roomLive.chair; if (ch) { ch.position.x = -0.77; ch.rotation.y = 0.75; } }   // (v24.2, L5-6: where the shy one's film leaves it)
     function chairTurn() {
       const ch = roomLive.chair; if (!ch) return;
       const on = Math.hypot(yaw.position.x - CHAIR.x, yaw.position.z - CHAIR.z) < 0.16 && yaw.position.y > 0.85;
@@ -5930,7 +5949,10 @@
         camAt(CHAIR.x, 1.18 + fl, CHAIR.z, ty[0], ty[1], ty[2]);
       } else if (sh === 'a6') {                              // the drinks: old, flat, never changed; the straws bleached
         lensTo(44);
-        camAt(ROW.back - 0.55, 0.98, ALTAR_Z[1] - 0.30, ROW.back, ALTAR.top + 0.08, ALTAR_Z[1]);
+        /* (v24.2, L5-4: on a phone the three drinks were −2.66 and 2.32 of the frame's half-width — one drink — so there
+           the lens slides along them, each in its turn; zAlong) */
+        if (camera.aspect < 1) { const z = zAlong((t - T.a6 - 0.2) / 2.0); camAt(ROW.back - 0.55, 0.98, z - 0.10, ROW.back, ALTAR.top + 0.08, z + 0.06); }
+        else camAt(ROW.back - 0.55, 0.98, ALTAR_Z[1] - 0.30, ROW.back, ALTAR.top + 0.08, ALTAR_Z[1]);
       } else if (sh === 'a6b') {                             // the sand cold; dust in the little one's hair
         lensTo(40);
         const k = ss(cl01((t - T.a6b) / 2.5));
@@ -6098,7 +6120,10 @@
         const k = ss(cl01((t - T.b12) / 1.2));
         lensTo(50);
         for (let i = 0; i < 3; i++) if (t > T.b12 + 1.0 + i * 0.6) stickFresh(i);
-        camAt(ROW.mid - 0.46, 0.96, ALTAR_Z[1] - 0.04, ROW.mid, ALTAR.top + 0.10 + 0.08 * k, ALTAR_Z[1]);
+        /* (v24.2, L5-4: a desktop stands 16 cm further back — the red one's tip was off its left edge, −1.07 — and a phone
+           slides along the three as each is lit, which its frame cannot hold together: the tips were ±3.3–3.8) */
+        if (camera.aspect < 1) { const z = zAlong((t - T.b12 - 0.9) / 1.5); camAt(ROW.mid - 0.46, 0.96, z - 0.04, ROW.mid, ALTAR.top + 0.10 + 0.08 * k, z); }
+        else camAt(ROW.mid - 0.62, 0.99, ALTAR_Z[1] - 0.04, ROW.mid, ALTAR.top + 0.10 + 0.08 * k, ALTAR_Z[1]);
       } else {                                                // b6 … b10: the phone before his eyes
         const scroll = sh === 'b6' ? Math.floor((t - T.b6) * 1.4) : 0;
         /* (CP13: the share count climbs in twelfths of a second and stops at the 1,206 the delete dialog then reports — it
@@ -6218,11 +6243,14 @@
         camAt(0.70, 1.48, -1.25, 0.85, 1.50, -1.79);
       } else if (sh === 'c3') {
         const k = ss(cl01((t - T.c3) / (T.c4 - T.c3)));
-        camAt(MAT.x + 0.05 * k, MAT_EYE + 0.05, MAT.z - 0.1, RISER.x, ALTAR.top + 0.10, (ALTAR_Z[0] + ALTAR_Z[2]) / 2);
+        /* (v24.2, L5-4: a phone stands 0.6 m back, as c11 does — from the mat its faces were −1.31 and 1.18) */
+        camAt(MAT.x - (camera.aspect < 1 ? 0.6 : 0) + 0.05 * k, MAT_EYE + 0.05, MAT.z - 0.1, RISER.x, ALTAR.top + 0.10, (ALTAR_Z[0] + ALTAR_Z[2]) / 2);
       } else if (sh === 'c4') {                                  // close on the three; the wishes running together
         lensTo(56);
         const k = ss(cl01((t - T.c4) / (T.c5 - T.c4)));
-        camAt(MAT.x + 0.15 + 0.12 * k, MAT_EYE + 0.06, MAT.z, RISER.x, ALTAR.top + ALTAR.riser + 0.12, (ALTAR_Z[0] + ALTAR_Z[2]) / 2);
+        /* (v24.2, L5-4: close on the three is one of them on a phone — faces ±2.05 → ±2.48 — so there it slides along them) */
+        if (camera.aspect < 1) { const z = zAlong((t - T.c4 - 0.4) / 6.0); camAt(MAT.x + 0.15 + 0.12 * k, MAT_EYE + 0.06, z, RISER.x, ALTAR.top + ALTAR.riser + 0.12, z); }
+        else camAt(MAT.x + 0.15 + 0.12 * k, MAT_EYE + 0.06, MAT.z, RISER.x, ALTAR.top + ALTAR.riser + 0.12, (ALTAR_Z[0] + ALTAR_Z[2]) / 2);
         /* the lamp caught in their eyes, STILL (CP13: pulsing while he wished, they read as answering his greed — and the
            lesson is that nothing answers) */
         for (let i = 0; i < 3; i++) { const G = careLive.glints[i]; if (G) { G.sp.visible = true; G.sp.material.opacity = 0.6; } }
@@ -6241,14 +6269,21 @@
           camAt(s2.p.x + s2.n.x * D * (1 - 0.3 * turn), s2.p.y + s2.n.y * D + 0.05, s2.p.z + s2.n.z * D, L[0], L[1], L[2]); }
       } else if (sh === 'c7') {                                  // nothing answers: the embers as always, the box slips and stops
         laptopPage(false);
-        camAt(MAT.x + 0.2, MAT_EYE + 0.05, MAT.z, RISER.x, ALTAR.top + ALTAR.riser + 0.1, (ALTAR_Z[0] + ALTAR_Z[2]) / 2);
+        /* (v24.2, L5-4: the box it names stood off the frame on a desktop too, at 1.08; a desktop holds the embers, the three
+           and the box from 15 cm back with the look a little toward it; a phone stands back on the three and turns to the
+           box as it slows) */
+        if (camera.aspect < 1) { const k = ss(cl01((t - T.c7 - 0.6) / 1.8));
+          camAt(MAT.x - 0.40, MAT_EYE + 0.05, MAT.z, RISER.x + (1.30 - RISER.x) * k, ALTAR.top + ALTAR.riser + 0.1 - 0.15 * k, MAT.z + (1.02 - MAT.z) * k); }
+        else camAt(MAT.x + 0.05, MAT_EYE + 0.05, MAT.z, RISER.x, ALTAR.top + ALTAR.riser + 0.07, 0.50);
         if (roomLive.boxDrum) roomLive.boxDrum.rotation.x += 0;   // (stopped)
       } else if (sh === 'c8') {                                  // his laugh, alone; the picture smearing as he looks round the room
         const a = Math.sin((t - T.c8) * 0.9) * 0.9;
         camAt(MAT.x, MAT_EYE + 0.1, MAT.z, MAT.x + Math.cos(a) * 2, 1.0, MAT.z + Math.sin(a) * 2);
       } else if (sh === 'c9') {                                  // back to them, close, afraid
         lensTo(52);
-        camAt(MAT.x + 0.30, MAT_EYE + 0.05, MAT.z, RISER.x, ALTAR.top + ALTAR.riser + 0.12, ALTAR_Z[1]);
+        /* (v24.2, L5-4: on a phone the middle one alone, ±2.85 — there the lens slides along the three) */
+        if (camera.aspect < 1) { const z = zAlong((t - T.c9 - 0.3) / 3.8); camAt(MAT.x + 0.30, MAT_EYE + 0.05, z, RISER.x, ALTAR.top + ALTAR.riser + 0.12, z); }
+        else camAt(MAT.x + 0.30, MAT_EYE + 0.05, MAT.z, RISER.x, ALTAR.top + ALTAR.riser + 0.12, ALTAR_Z[1]);
       } else if (sh === 'c10') {                                 // under the slips: the owner's card and the crushed pinwheel
         lensTo(44);
         const cd = roomLive.card;
@@ -6382,7 +6417,9 @@
       } else if (sh === 'd1') {                              // the three grey stubs lifted out of the sand, one by one
         lensTo(48);
         for (let i = 0; i < 3; i++) { const g = t > T.d1 + 0.6 + i * 0.6; const sk = careLive.sticksSet[i]; if (sk) sk.visible = !g; }
-        camAt(ROW.mid - 0.46, ALTAR.top + 0.36, ALTAR_Z[1] - 0.05, ROW.mid, ALTAR.top + 0.04, ALTAR_Z[1]);
+        /* (v24.2, L5-4: a phone follows each stub as it is lifted — the outer bowls were −3.15 and 2.82) */
+        if (camera.aspect < 1) { const z = zAlong((t - T.d1 - 0.35) / 1.5); camAt(ROW.mid - 0.46, ALTAR.top + 0.36, z - 0.05, ROW.mid, ALTAR.top + 0.04, z); }
+        else camAt(ROW.mid - 0.46, ALTAR.top + 0.36, ALTAR_Z[1] - 0.05, ROW.mid, ALTAR.top + 0.04, ALTAR_Z[1]);
       } else if (sh === 'd1b') {                             // at the desk: the lighter struck, the sticks lean into its flame
         const Lg = careLive.lighter, St = careLive.sticks, u = t - T.d1b;
         Lg.flame.visible = u > 0.5 && u < 3.1;
@@ -6393,7 +6430,8 @@
       } else if (sh === 'd2') {                              // one stick in each bowl
         lensTo(48);
         for (let i = 0; i < 3; i++) { if (t > T.d2 + 0.5 + i * 0.7) stickFresh(i); else stickShow(i, false); }
-        camAt(ROW.mid - 0.46, ALTAR.top + 0.36, ALTAR_Z[1] - 0.05, ROW.mid, ALTAR.top + 0.04, ALTAR_Z[1]);
+        if (camera.aspect < 1) { const z = zAlong((t - T.d2 - 0.3) / 1.6); camAt(ROW.mid - 0.46, ALTAR.top + 0.36, z - 0.05, ROW.mid, ALTAR.top + 0.04, z); }   // (v24.2, L5-4: each stick as it goes in)
+        else camAt(ROW.mid - 0.46, ALTAR.top + 0.36, ALTAR_Z[1] - 0.05, ROW.mid, ALTAR.top + 0.04, ALTAR_Z[1]);
       } else if (sh === 'd2b') {                             // the cups topped up from the jug
         lensTo(46);
         careLive.pour = 0.82 + 0.18 * ss(cl01((t - (T.d2b + 0.2)) / 1.1));
@@ -6409,17 +6447,22 @@
         camAt(1.30 - 0.50, ALTAR.top + 0.28, bz - 0.24, 1.30, ALTAR.top + 0.05, bz);
       } else if (sh === 'd4') {                              // the three in the lamplight; his hands join; his look on the little one
         const k = ss(cl01((t - T.d4) / 3.5));
-        camAt(MAT.x, MAT_EYE, MAT.z, RISER.x, ALTAR.top + ALTAR.riser + KIDS[2].h * 0.6, ALTAR_Z[1] + (ALTAR_Z[2] - ALTAR_Z[1]) * k);
+        camAt(MAT.x - (camera.aspect < 1 ? 0.45 : 0), MAT_EYE, MAT.z, RISER.x, ALTAR.top + ALTAR.riser + KIDS[2].h * 0.6, ALTAR_Z[1] + (ALTAR_Z[2] - ALTAR_Z[1]) * k);   // (v24.2, L5-4: a phone 0.45 back, the three in at the start)
       } else if (sh === 'd5') {                              // the three threads of smoke rise STRAIGHT; the bells still
         lensTo(50);
         roomLive.smokeStill = ss(cl01((t - T.d5) / 1.6));
         const k = ss(cl01((t - T.d5) / (T.court - T.d5)));
-        camAt(MAT.x + 0.2 + 0.1 * k, MAT_EYE + 0.02, MAT.z - 0.05, RISER.x, ALTAR.top + 0.30 + 0.06 * k, (ALTAR_Z[0] + ALTAR_Z[2]) / 2);
+        /* (v24.2, L5-1: it dollied IN, and held one thread on either screen — the outer tips ±1.09 → ±1.49 on a desktop,
+           ±3.7 → ±5 on a phone; the plan's own rule is that a shot that must hold all three pulls back. It dollies OUT now,
+           a phone from 1.16 m behind the mat over the bed's edge, and a desktop looks a little higher so the threads climb
+           in frame) */
+        const nw = camera.aspect < 1;
+        camAt(MAT.x - (nw ? 1.16 : 0.12) - 0.1 * k, MAT_EYE + 0.02, MAT.z - 0.05, RISER.x, ALTAR.top + (nw ? 0.30 : 0.40) + 0.06 * k, (ALTAR_Z[0] + ALTAR_Z[2]) / 2);
       } else if (sh === 'temple') {
         dTempleFrame(t, api);
       } else if (sh === 'd11') {                             // HOME, the morning: the window open, the three in the sun
         const k = ss(cl01((t - T.home) / (T.years - T.home)));
-        camAt(MAT.x - 0.2, MAT_EYE + 0.18, MAT.z + 0.05, RISER.x, ALTAR.top + ALTAR.riser + 0.12 + 0.05 * k, (ALTAR_Z[0] + ALTAR_Z[2]) / 2);
+        camAt(MAT.x - 0.2 - (camera.aspect < 1 ? 0.3 : 0), MAT_EYE + 0.18, MAT.z + 0.05, RISER.x, ALTAR.top + ALTAR.riser + 0.12 + 0.05 * k, (ALTAR_Z[0] + ALTAR_Z[2]) / 2);   // (v24.2, L5-4: the little one's face was just off a phone's edge)
         if (roomLive.pinwheel) roomLive.pinwheel.rotation.z += 0.05;   // (the morning air)
         if (t > T.home + 2.5 && D.more[0]) D.more[0].visible = true;   // the morning's receipt pinned
       } else if (sh === 'y1' || sh === 'y3' || sh === 'y5') {   // THE YEARS: locked off; the days and nights go by
@@ -6468,7 +6511,9 @@
         camAt(1.30 - 0.46, ALTAR.top + 0.26, bz - 0.30, 1.28, ALTAR.top + 0.02, bz - 0.03);
       } else {                                               // the three in the sun; hold
         lensTo(64);
-        camAt(MAT.x - 0.1, MAT_EYE + 0.14, MAT.z, RISER.x, ALTAR.top + ALTAR.riser + 0.12, (ALTAR_Z[0] + ALTAR_Z[2]) / 2);
+        /* (v24.2, L5-2: the image the best ending leaves on held the shy one alone on a phone, the others ±1.28 — c11's way,
+           0.6 m back there) */
+        camAt(MAT.x - 0.1 - (camera.aspect < 1 ? 0.6 : 0), MAT_EYE + 0.14, MAT.z, RISER.x, ALTAR.top + ALTAR.riser + 0.12, (ALTAR_Z[0] + ALTAR_Z[2]) / 2);
       }
       if (sh !== 'temple' && sh !== 'y2' && sh !== 'y4' && sh !== 'y6' && endLive.dTray) endLive.dTray.visible = false;
     }
@@ -6487,7 +6532,10 @@
       for (let k = 0; k < 3; k++) { const b = makeBottle(); b.cap.visible = true; b.g.scale.setScalar(0.62); b.g.position.set(0.05 + k * 0.045, 0.016, -0.02 + (k % 2) * 0.03); G.add(b.g); }
       endLive.dTray = G;
       endLive.dLights = [0xffa060, 0xffc070, 0x9cc8ff].map((col) => {
-        const m = new THREE.Sprite(new THREE.SpriteMaterial({ map: tGlow, color: col, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false, fog: false }));
+        /* (v24.2, L5-8: the core through the leaves too — depth-tested, the bodhi's crown hid all three cores for the last
+           two and a half seconds of their climb, the halos left; chapter 4's merit film was ruled the same way, v23.1) */
+        const m = new THREE.Sprite(new THREE.SpriteMaterial({ map: tGlow, color: col, transparent: true, opacity: 0, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, toneMapped: false, fog: false }));
+        m.renderOrder = 20;
         const h = new THREE.Sprite(new THREE.SpriteMaterial({ map: tGlow, color: col, transparent: true, opacity: 0, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, toneMapped: false, fog: false }));
         mats.push(m.material, h.material); m.visible = h.visible = false; worldM.add(m); worldM.add(h);   // (CP8: the glow seen through the leaves, as light is)
         return { m, h };
@@ -6531,7 +6579,10 @@
       } else if (t < DT.kneel) {                              // he crosses to the hall: up the path to the open door
         fLight(TEMPLE_DAWN); lensTo(72);
         const k = ss(cl01((t - DT.door) / (DT.kneel - DT.door)));
-        const p = lerp3([0.2, 1.62, 9.5], [0.0, F + 1.62, 0.2], k);
+        /* (v24.2, L5-13: the eye rose 0.45 m over the flat courtyard and stopped 0.8 m short of the first step — it climbs only
+           over the flight now, z −0.6 to −1.8, and stops on its top step at the door) */
+        const p = lerp3([0.2, 1.62, 8.0], [0.0, 1.62, -1.7], k);
+        p[1] = 1.62 + F * cl01((-0.6 - p[2]) / 1.2);
         mCam(p[0], p[1] + Math.sin(k * Math.PI * 7) * 0.012, p[2], 0, F + 1.9, MALT.z);
       } else if (t < DT.teach) {                              // on his knees before the monk, the tray before him, his hands joined
         fLight(TEMPLE_DAWN); lensTo(68);
@@ -6739,7 +6790,9 @@
       }
       const lean = roomLive.smokeLean || 0, still = roomLive.smokeStill || 0;
       roomLive.embers.forEach((em, i) => {
-        const on = em.visible;
+        /* (v24.2, L5-7: and not a thread the lens stands in — the little one's close-up kneels on his stick's line, 0.16–0.21
+           m from it, and his thread ran up the middle of the frame through his face; his ember is under the frame there) */
+        const on = em.visible && Math.hypot(em.position.x - yaw.position.x, em.position.z - yaw.position.z) > 0.30;
         for (const s of roomLive.smoke[i]) {
           if (!on) { s.sp.visible = false; continue; }
           const u = (now * 0.3 + s.ph + i * 0.37) % 1;            // its place up the thread (0 → 1 in a little over three seconds)

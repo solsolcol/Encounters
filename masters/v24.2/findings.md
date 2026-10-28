@@ -92,3 +92,54 @@ REFUTED (not real — why), NOTED (real, left with the reason). OPEN until a ver
   little one", a false COMPLETE. CONFIRMED by reading. FIXED: seated before toWorld posts the order.
 - L1-9 · low (latent race) · a play-time camera turn (viewTo) or lean still in flight when a film starts kept writing
   the camera on a clock frozen under the film. CONFIRMED by reading. FIXED: under 'cine' both are voided.
+
+## RT · the real-input play-through (v24.1, a phone, every gesture by CDP touch)
+- RT-1 · MAJOR (a hot phone) · stuck at "Wave the flames out": the craft's FLICK read its timing from when the handlers
+  RAN (performance.now), so at a frame a second a flick's down and move were handled a second apart and every flick was
+  "too slow" — the run stood there for 900 s. CONFIRMED by its photograph (50-failed.jpg: the flick step, 2/3 of the bar).
+  The v24.0 tap rule, met again in a gesture. FIXED (engine): `evStamp(e)` — the input event's own timeStamp — handed by
+  the overlay's pointerdown and pointermove through evPress/evMove to the craft's swipe; the probe's flick now carries a
+  real finger's timestamps (CDP `timestamp`), as a phone's touches do.
+
+## L5 · geometry and framing (13; every one checked against the code at the quoted line, the framings by projection)
+- L5-1 · MAJOR · ending D's "three threads of smoke rise STRAIGHT" (d5) dollied IN and held one thread on both screens
+  (outer tips ±1.09 → ±1.49 desktop, ±3.7 → ±5 phone). CONFIRMED (projection, scratchpad l5/fixshots*.mjs). FIXED: it
+  dollies OUT — a phone from 1.16 m behind the mat (tips ±0.89 → ±0.85), a desktop from 0.12 with the look 10 cm higher
+  (±0.63 → ±0.56, the threads climbing in frame).
+- L5-2 · minor · d14, the image the best ending leaves on, held the shy one alone on a phone (±1.28). CONFIRMED. FIXED:
+  0.6 m back there (c11's way): faces ±0.78, sides ±0.91.
+- L5-3 · minor (desktop) · marks outside their own cones: (a) the counter's three (0.142–0.164 off 0.14) — FIXED, markY
+  +0.03 (0.105–0.128, the next one's 0.198 away); (b) the places — already FIXED by L1-5's 0.32; (c) the mat's aim point
+  at the seated eye, 0.36–0.39 off from standing and 0.495 off the look the game hands him by the desk — FIXED, the aim
+  point on the rug (0.35), its "!" where it was (0.6). Reach is measured on the floor (nearestHotspot), so nothing else moves.
+- L5-4 · minor · ten shots whose comments name the three (or a prop) held one child on a phone: c3, c4, c7, c9, b12, d1,
+  d2, a6, d4, d11 (and c7's box was off a desktop too, 1.08). CONFIRMED (projection). FIXED: the wide ones stand back on
+  a phone (c3 0.6, d4 0.45, d11 0.3); the close ones SLIDE along the three on a phone, each in its turn (`zAlong`: c4,
+  c9, b12, a6, and d1/d2 following each stub and stick as it is moved), a desktop unchanged; b12's desktop 16 cm back
+  (its red tip was off at −1.07); c7 holds the embers, the three and the box on a desktop (worst 0.66) and on a phone
+  starts on the three and turns to the box as it slows.
+- L5-5 · minor · COME BACK's gauge stood inside the top panel on a phone, its goal line behind the panel's words.
+  CONFIRMED (shell.html: #evSurface top 26vh against the panel's 192 px + its height). FIXED: on a phone it starts 124 px
+  under the panel's top padding, 40vh tall (a desktop unchanged).
+- L5-6 · minor · after the shy one's film he sat inside the desk chair: end() put it back onto him. CONFIRMED. FIXED:
+  the chair stays where the film pushed it (chairShoved — end() and a Continue into open3 by the desk) and goes home in
+  sitAgain, behind him from the mat, and in the resets.
+- L5-7 · minor · the little one's close-up was shot straight down his own smoke thread (0.16–0.21 m from the lens).
+  CONFIRMED. FIXED: a thread within 0.30 m of the lens is not drawn (his ember is under the frame there; in play he never
+  stands that close).
+- L5-8 · cosmetic · ending D's three lights: the halos through the bodhi's leaves, the cores hidden by them for the last
+  2.5 s of the climb. CONFIRMED. FIXED: the cores too (depthTest false, drawn after), as chapter 4's merit film was
+  ruled at v23.1.
+- L5-9 · cosmetic · the slippers wholly inside the wardrobe, the switch and socket half in it, the backpack 10 cm into it
+  and in the door's swing. CONFIRMED (the boxes' extents). FIXED: the slippers before its left door, the switch and
+  socket in the 11 cm of wall between it and the door, the pack against its front at its right end (1.1 m from the hinge).
+- L5-10 · cosmetic · the bottle caps on the desk turned over INTO the wood (0.5 mm showing); the incense packet, on its
+  edge, half its width in the desk. CONFIRMED (DT is the slab's centre; the flip and the quarter-turn). FIXED: the cap's
+  height goes up from the wood; the packet 18 mm higher in both places. (Sleeves, medium: left.)
+- L5-11 · cosmetic · the three stood 2 mm inside the riser's gilt cap and their soft shadows under it, never drawn.
+  CONFIRMED. FIXED: KID_BASE, 2 mm over the gilt, for the three and their doubles.
+- L5-12 · cosmetic · ending A's riser dust hung 9.75 cm over the altar through the shy one's bottle; the "dust in his
+  hair" was inside the hair. CONFIRMED. FIXED: on the gilt; on the crown.
+- L5-13 · cosmetic · ending D's walk to the hall rose 0.45 m over the flat courtyard and stopped 0.8 m short of the steps.
+  CONFIRMED. FIXED: it climbs only over the flight and stops on its top step at the door (from z 8.0, so the pace stays
+  a walk).
