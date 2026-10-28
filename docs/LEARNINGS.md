@@ -6821,3 +6821,19 @@ cut (sharing its vertices and maps) when it is small.
   pattern appears anywhere later in the same command (a relaunch of the probe it is stopping) hands back the shell's own
   PID, and `kill` does the same thing (paid for twice in one session). Anchor the pattern to the start of the process's
   own command line — `pgrep -f '^node dbg-x'` — which the shell's `bash -c …` line never begins with.
+- **A probe aims from WORLD positions** (v24.5). Episode 4 chapter 1's play-through looked round the room for the fourth
+  sign by turning from `cast.master.group.position` — which is LOCAL to World R's group, standing at x 250 — as if it
+  were the world's: every turn was centred 90° off the master, never faced the doorway, and three runs across two
+  releases reported the sign unreachable, read as a soft-lock in the game. A diagnostic reading her own fade showed it
+  was the probe: on a phone she comes up at the frame's edge whenever the doorway is 8–23° off its middle and is gone
+  when looked at, exactly as designed. `getWorldPosition` for anything a probe aims at; and before reporting "stuck",
+  read the state the game is waiting on (here `herSeen`, `her.k`, where she projects).
+- **A gap in a photograph is read by its COLOUR, not by eye** (v24.5). From inside episode 4 chapter 1's room a band of
+  the bare background showed between the door's step and the painted yard, and through the window slats from oblique
+  spots; by eye the band passed for a wet surface and both were first marked refuted. Counted across every pixel by the
+  background's own flat colour (68, 77, 110), it was in every door photograph — and through the frosted slats it was
+  tinted, so even the counter missed most of the window's: read the photograph AND count it.
+- **A painted view beyond an opening is a box, not a plane** (v24.5). A flat backdrop is seen past its edges and under its
+  foot from the oblique and low places inside the room. Close it on its own material — its ground laid flat out to it,
+  its edge columns carried back to the wall — so whatever drives the picture (the lightning's brightness here) drives
+  the box with it.

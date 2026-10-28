@@ -5306,16 +5306,27 @@
       bookAway();
       if (t < T.coda) {                                                                    // the dusk: Pong beside him watching the sky clear; the lens goes up into it
         /* from his seat, never from outside (a shot of the shelter from the road showed Pong alone under it — there is
-           no body of his to put beside him — CP9): Pong first, his face up to the clearing sky, then the lens turns
-           out over the compound and rises into the gold over its roofs while the line is said */
+           no body of his to put beside him — CP9): Pong first, his face up to the clearing sky while the line is said,
+           then the compound and the lens rising into the gold over its roofs.
+           (v24.5: the turn from his face out to the compound swept across the compound's own sugar palm, three metres in
+           front of the seat — photographed at 56 s on a phone its ringed trunk filled the middle of the frame for about a
+           second of the closing beat. Any turn from his face, on the right, to the compound, ahead, crosses it, so the turn
+           is a CUT on his look, a beat after the line ends, to what he is looking at; and the view rises a little left of
+           where it used to, so on a phone the trunk stays outside the frame's right edge) */
         fLook('YARD0', 4.0);
         cabCtl.show(false);
         const S1 = CMP.SHELTER, eye = [S1.x - 0.42, 0.48 + 0.78, S1.z + 0.36];
         fPut(cast.pong, S1.x + 0.5, S1.z + 0.3, Math.PI, { y: 0.04, seated: true });
         cast.pong.lookAt = DUSK_SKY.set(S1.x - 1.5, 7.0, S1.z - 22); cast.pong.neck = null; cast.pong.lookW = 1;
-        const k = smo(sgk(t, T.dusk + 2.6, T.dusk + 7.4));
-        fLens(lp(isNarrow() ? 54 : 46, isNarrow() ? 48 : 40, k));
-        camAt(eye, lp3(headOf(cast.pong, [S1.x + 0.5, 1.2, S1.z + 0.3]), [S1.x - 1.2, 4.6, S1.z - 9.0], k));
+        const CUT = T.dusk + 4.0;                                                          // "…it was time to go." ends at ~55.9
+        if (t < CUT) {
+          fLens(isNarrow() ? 54 : 46);
+          camAt(eye, headOf(cast.pong, [S1.x + 0.5, 1.2, S1.z + 0.3]));
+        } else {
+          const k = smo(sgk(t, CUT, T.coda - 0.4));
+          fLens(lp(isNarrow() ? 54 : 46, isNarrow() ? 48 : 40, k));
+          camAt(eye, lp3([S1.x - 2.28, 1.7, S1.z - 8.81], [S1.x - 2.28, 4.6, S1.z - 8.81], k));
+        }
         return;
       }
       codaFrame(t - T.coda, 'D');
