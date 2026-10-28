@@ -4994,6 +4994,7 @@ function evPress(x, y, pid) {
   }
   const o = e.o;
   e.down = true; e.downAt = e.t; e.downX = x; e.downY = y; e.drift = 0; e.look = 0;
+  e.downWall = performance.now() / 1000;     // (v24.2, L4-2: a hold is credited from here, never from the frame before)
   e.pid = pid;                               // (v23.0 CP13: whose finger it is — a hands-on gesture is one finger's, ONE_FINGER)
   $('evBtn')?.classList.add('down');
   switch (e.kind) {
@@ -5570,7 +5571,9 @@ function evFrame(dt, dLookX, dLookY) {
      "held 1.2 seconds", and the quarter-second cap above turned that into five on a phone drawing a frame a second
      (episode 3 chapter 5's water, measured: 0.87 of its 1.2 s after 2.6 s held at a frame a second); a frame still
      never credits more than a second, since a tab come back from the background was holding no finger */
-  e.wdtHeld = Math.min(1.0, Math.max(0, nowMs - e.wallLast));
+  /* (v24.2, L4-2: from the later of the last frame and the press itself — a finger landing just before a slow frame
+     was credited the whole frame, so on a phone at a frame a second two quick taps "held" the water) */
+  e.wdtHeld = Math.min(1.0, Math.max(0, nowMs - Math.max(e.wallLast, e.downWall || 0)));
   e.t += wdt;
   e.wallLast = nowMs;
   if (e.down) e.look += Math.abs(dLookX) + Math.abs(dLookY);
@@ -8562,7 +8565,9 @@ function queueVoice() {
    silent mid-download. Loops start once at volume zero and are only ever
    mixed, never restarted. One mute button rules it all: packGain/ambGain
    ramp with it, and nothing new fires while muted.                        */
-let packJson = null, packGain = null, ambGain = null, bedSrc = null, narSrc = null;
+/* (v24.2, L4-3: `var`, as esbuild already makes every top-level `let` — CHCTX.warmSounds reads packJson from inside a
+   chapter's build(), which runs above this line on a cold boot: in the source as written that was a dead-zone throw) */
+var packJson = null, packGain = null, ambGain = null, bedSrc = null, narSrc = null;
 const packBufs = {}, packPending = {}, packLoops = {}, narrated = {};
 const packNames = {};             // v14.16: pack ('' = shared, else a chapter key) -> the names it brought
 const packOwner = {};             // v14.16: a chapter-pack name -> its chapter (shared names are absent)
@@ -10006,7 +10011,7 @@ function applyState(st) {
      it — entering a new episode recharges the amulet. */
   wardLoad(st.ward);
   wardEpisode();
-  ledgerLoad(st.ledger);   // v24.0: the ledger, tolerated absent; another episode's is not this one's (S43)
+  ledgerLoad(st.ledger, true);   // v24.0: the ledger, tolerated absent (S43); v24.2 (L4-1): kept whatever its episode — a Continue into another episode's chapter cleared episode 4's pages, and the next autosave wrote them away; ledMine() hides it there and its own episode's first write replaces it
   syncBars();
   return true;
 }

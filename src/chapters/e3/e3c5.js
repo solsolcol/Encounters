@@ -3372,6 +3372,7 @@
       if (phase !== 'open3' || seated || !quiet() || openLive.busy) return false;
       if (kit) kit.pose('standing', { secs: 0.3 });
       sitDown(false);
+      if (kit) kit.setPhase('open3:mat');                            // (v24.2, L2-2: back on the mat — a receipt; openResume reads it)
       /* and his look onto the little one, whose order is next (by photograph: sat down, a phone looked at the box and the
          pinwheel, the order's child off its edge) */
       { const dx = RISER.x - MAT.x, dz = ALTAR_Z[2] - MAT.z;
@@ -3419,14 +3420,16 @@
        and the top carton on the floor (open2 on); after the shy one, the coin by the desk (open3 on); after the little one,
        the sticks burnt to stubs and the clock at 02:47 (after, decide). He is put where the last one left him, and the order
        still open is offered (the question is not asked twice) */
-    function openResume(p) {
+    function openResume(p, tag) {
       const n = { open1: 0, open2: 1, open3: 2, after: 3, decide: 3 }[p] || 0;
       careLive.boxOpen = careLive.boxOpenTo = 1;
       roomClock(['23:12', '23:21', '23:49', '02:47'][Math.min(3, n)]);
       if (n >= 1) { const B = careLive.bottles[0]; if (B && B.liq) B.liq.scale.y = 0.5; cartonDown(true); }
       if (n >= 2 && roomLive.coin) { roomLive.coin.visible = true; roomLive.coin.position.set(BYDESK.x + 0.18, 0.004, BYDESK.z + 0.1); roomLive.coin.rotation.set(0, 0.4, 0); }
       if (n >= 3) { for (let i = 0; i < 3; i++) stubShow(i, true); look('NIGHT', 0); phone.g.visible = true; phone.S.draw('dark'); }
-      if (n === 0 || n === 1) landOn('mat');
+      /* (v24.2, L2-2: back on the mat after the shy one is a receipt of its own — `open3:mat`, written by sitAgain — so
+         a Continue from the little one's film, which saves as it starts, sits him where he sat, not by the desk again) */
+      if (n === 0 || n === 1 || (n === 2 && tag === 'mat')) landOn('mat');
       else if (n === 2) landOn('desk');
       else landOn('bed');
       lookToOrder(n);
@@ -3437,7 +3440,7 @@
        left edge), and so does the end of a possession — a film hands play back the look it was STARTED from, so after
        the red one his eyes were back on the red one with the order asking for the shy one (by photograph) */
     function lookToOrder(n) {
-      if (n <= 1) {
+      if (n <= 1 || (n === 2 && seated)) {                       // (on the mat: onto that child — v24.2, L2-2: the little one too)
         const dx = RISER.x - MAT.x, dz = ALTAR_Z[n] - MAT.z;
         yaw.rotation.y = Math.atan2(-dx, -dz);
         pitch.rotation.x = Math.atan2(ALTAR.top + ALTAR.riser + KIDS[n].h * 0.6 - MAT_EYE, Math.hypot(dx, dz));
@@ -3925,7 +3928,7 @@
     }
     function comeBegin() { littleLive.lv = 0.18; look('SURFACE', 0.6); comeWaterOn(true); }
     function comeDone(r) {
-      if (r && r.skipped) return;                       // (CP13: a skipped film banks no note either way)
+      if (r && (r.skipped || r.aborted)) return;        // (CP13: a skipped film banks no note either way; v24.2, L2-1: nor an aborted one — its handler runs after the reset)
       littleLive.cameBack = !!(r && r.ok && !r.gaveUp);
       const fast = r && r.ok && !r.gaveUp && r.score >= 0.99;
       if (kit && kit.conduct) kit.conduct(fast ? { a: 4, note: W.noteCameBack } : { note: r && r.gaveUp ? W.noteLight : W.noteHard });
@@ -5326,11 +5329,11 @@
        timer (v21.9's pressAim — the reticle on the thing, or a tap on it); every line on the queue, so a press is held
        while one is said (quiet()) and a line is never dropped (the v9.5 queue). What a Continue must not lose is a
        RECEIPT in the phase string (v7.3) — `counter:yin,m.red,m.shy,m.little,give,card,vow`:
-         yin       the first look, his question, the owner's answer and film M — written as the film STARTS: kit.film
-                   saves first, so a save made inside it lands just after it (§10.1)
+         yin       the first look, his question, the owner's answer and film M — written as the film ENDS (CP13 R8:
+                   kit.film saves first, so a save made inside it lands BEFORE it and the film is seen whole again)
          m.<kid>   each child met — written when the owner's line about him ENDS, so a Continue never loses a story
-         give      the owner's words over the three and the touch of the little one's hair
-         card      film K (written as it starts, as yin)
+         give      the owner's words over the three, and his own
+         card      film K (written as it ends, as yin)
          vow       the promise, once the three are in the bag
        A resume lands on the order still open with the finished beats in place, and says nothing twice. */
     const CNT_ORDER = ['yin', 'm.red', 'm.shy', 'm.little', 'give', 'card', 'vow'];
@@ -5799,7 +5802,7 @@
         P.sticky.visible = false; for (const d of P.dust) d.visible = false; P.hairDust.visible = false;
         mStraw.color.setHex(P.strawCol);
       }
-      careLive.bottles.forEach(B2 => { if (B2 && B2.liq && B2.liqMat0) { B2.liq.material = B2.liqMat0; } });
+      careLive.bottles.forEach(B2 => { if (B2 && B2.liq) { if (B2.liqMat0) B2.liq.material = B2.liqMat0; B2.liq.scale.y = 1; } });   // (v24.2, L2-4: and ending A's levels)
       if (roomLive.card && roomLive.card.userData.r0) { roomLive.card.position.copy(roomLive.card.userData.p0); roomLive.card.rotation.copy(roomLive.card.userData.r0); }
       if (roomLive.boxKey) roomLive.boxKey.rotation.x = 0;
       if (camera.fov !== 72) { camera.fov = 72; camera.updateProjectionMatrix(); }
@@ -6853,8 +6856,8 @@
       const RA = resumeAt(p);
       if (RA) {
         careResume(RA.at === 'care' ? RA.tag : CARE_ORDER.slice(0, 8).join(','));
-        toWorld(RA.w, true, RA.at, RA.at === 'care' ? RA.tag : undefined);
-        if (['open1', 'open2', 'open3', 'after', 'decide'].includes(RA.at)) openResume(RA.at);   // where the last possession left him (CP7)
+        toWorld(RA.w, true, RA.at, RA.at === 'care' || (RA.at === 'open3' && RA.tag === 'mat') ? RA.tag : undefined);   // (v24.2: open3's 'mat' kept)
+        if (['open1', 'open2', 'open3', 'after', 'decide'].includes(RA.at)) openResume(RA.at, RA.tag);   // where the last possession left him (CP7)
         return;
       }
       const tag = String(p || '').split(':');
