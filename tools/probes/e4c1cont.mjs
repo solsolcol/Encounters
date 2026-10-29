@@ -54,6 +54,8 @@ for (const ph of PH) {
              x: +E.yaw.position.x.toFixed(2), y: +E.yaw.position.y.toFixed(2), z: +E.yaw.position.z.toFixed(2),
              obj: o && !o.classList.contains('hide') ? (document.getElementById('objTxt') || o).textContent.trim() : null,
              fade: E.kit && E.kit.getFade ? +E.kit.getFade().toFixed(2) : null, bag: E.inv().bag, led,
+             /* (v24.9) at the door the door is offered, once Pong stands there — a Continue puts him there at once */
+             door: (() => { const h = E.stage.hotspots && E.stage.hotspots.find(x => x.id === 'door'); return h ? !!(!h.enabled || h.enabled()) : null; })(),
              saved: (() => { try { const s = JSON.parse(localStorage.getItem('mz.encounters.checkpoint')); return s.phase; } catch { return null; } })() };
   });
   const cont = async () => {
@@ -77,14 +79,30 @@ for (const ph of PH) {
     r.land = await rep();
     await p.screenshot({ path: `${OUT}/${VIEW}-${ph.replace(/[^a-z0-9]+/gi, '_')}.jpg`, quality: 65, timeout: 240000 });
     if (SAME && !done) {
-      await p.evaluate(() => window.__enc.returnToTitle());
-      await p.waitForFunction(() => window.__enc.getState() === 'title', null, { timeout: 120000, polling: 300 });
-      await p.waitForTimeout(1500);
-      await cont();
-      r.again = await rep();
-      const same = ['phase', 'world', 'obj'].every(k => JSON.stringify(r.land[k]) === JSON.stringify(r.again[k]));
-      r.sameSitting = same ? 'same' : 'DIFFERS';
-      if (!same) await p.screenshot({ path: `${OUT}/${VIEW}-${ph.replace(/[^a-z0-9]+/gi, '_')}-again.jpg`, quality: 65, timeout: 240000 });
+      /* (v24.9) back to the title the way a player goes: the menu button, then "Back to the title screen". The menu
+         does not open over a live minigame or the decision (menuOpen; the button is not even drawn over a minigame),
+         and it is the only way to the title from play — so from those a player has no same-sitting Continue, and the
+         probe says so. (It used to call returnToTitle() straight under them, which no player can, and waited 900 s
+         for a Continue that the open storm held.) */
+      const menuB = p.locator('#menuBtn');
+      if (await menuB.isVisible().catch(() => false)) {
+        const mb = await menuB.boundingBox();
+        if (PHONE) await p.touchscreen.tap(mb.x + mb.width / 2, mb.y + mb.height / 2); else await p.mouse.click(mb.x + mb.width / 2, mb.y + mb.height / 2);
+        await p.waitForTimeout(1500);
+      }
+      const stM = await p.evaluate(() => window.__enc.getState());
+      if (stM !== 'menu') r.sameSitting = `n/a (${stM}${await menuB.isVisible().catch(() => false) ? '' : ', no menu button'}: no way to the title from here, as for a player)`;
+      else {
+        const tb = await p.locator('#menuTitle').boundingBox();
+        if (PHONE) await p.touchscreen.tap(tb.x + tb.width / 2, tb.y + tb.height / 2); else await p.mouse.click(tb.x + tb.width / 2, tb.y + tb.height / 2);
+        await p.waitForFunction(() => window.__enc.getState() === 'title', null, { timeout: 120000, polling: 300 });
+        await p.waitForTimeout(1500);
+        await cont();
+        r.again = await rep();
+        const same = ['phase', 'world', 'obj'].every(k => JSON.stringify(r.land[k]) === JSON.stringify(r.again[k]));
+        r.sameSitting = same ? 'same' : 'DIFFERS';
+        if (!same) await p.screenshot({ path: `${OUT}/${VIEW}-${ph.replace(/[^a-z0-9]+/gi, '_')}-again.jpg`, quality: 65, timeout: 240000 });
+      }
     }
   } catch (e) { r.fail = String(e.message || e).slice(0, 200); }
   r.errs = errs;
@@ -97,7 +115,10 @@ for (const ph of PH) {
   const askGot = !!(r.land && r.land.kp && /~ask/.test(r.land.kp));
   r.landed = got === want ? 'right' : `WRONG (wanted ${want}, got ${got})`;
   r.askedMark = askGot === askWant ? 'right' : `WRONG (wanted ${askWant ? '~ask' : 'no ~ask'}, got ${r.land && r.land.kp})`;
-  if (r.fail || errs.length || r.sameSitting === 'DIFFERS' || got !== want || askGot !== askWant) bad++;
+  /* (v24.9) a Continue at the door finds the door offered (Pong is put beside the steps), in both sittings */
+  const doorBad = want === 'called' && got === 'called' && (r.land.door !== true || (r.again && r.again.door !== true));
+  if (want === 'called') r.doorOpen = doorBad ? `SHUT (land ${r.land && r.land.door}, again ${r.again && r.again.door})` : 'right';
+  if (r.fail || errs.length || r.sameSitting === 'DIFFERS' || got !== want || askGot !== askWant || doorBad) bad++;
   console.log(el(), JSON.stringify(r));
   await ctx.close();
 }

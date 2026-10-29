@@ -7040,10 +7040,23 @@ What the baseline contains, by release:
   - SOUND: 25 sounds retired (the queue's calls, the three customers' and his own lines to them, `q1missed`, the day's
     two, the board's marker) — files, `STING_SAMPLE` rows, take sets, registry rows and speakers; two re-said and one
     new, picked of two takes each by masters/v24.0's measure and levelled by its chain (masters/v24.9/make.sh).
-  - Verified on the build: the yard driven start to the tray with no page error; the door with Pong beside it and the
-    endings' book photographed on a phone and a desktop. Sheet v131 (65 rows out, 1 in, 7 changed; v44 stays the link).
-    Deploy `6ae37096e4fec6133693a2ab`, byte-verified (268 of 268 served files). Two laws in LEARNINGS (a mechanic
-    nothing reads is filler; a re-take's session record needs a name of its own).
+  - THE DOOR WAITS FOR PONG (found by the finger play-through on the first deploy, which pressed tree, door, in and
+    never asked him): his question was offered only once he stood at the steps, while the door was offered from the
+    order on, and with 9.5 m to walk at 1.1 m/s against the player's 8.6 m at 2.55 m/s, anyone who simply followed
+    "Go in" was through the door about five seconds before Pong got there. Now the door is offered once he is at the
+    steps (his "!" and the door's appear together), he walks at 1.5 m/s (about seven seconds from the order), and a
+    20 s net finishes his walk so the door can never stay shut.
+  - Verified: the yard driven start to the tray, the door with Pong beside it and the endings' book photographed on a
+    phone and a desktop; the six harnesses (text, hosted, csp, leak, cine, walk) green on the first deploy's bytes;
+    Continue right at all 21 phases (14 new marks, 7 old v24.0–v24.8 saves, the asked mark right, the same sitting the
+    same wherever a player can reach the title — the probe now goes through the menu, LEARNINGS); and on the second
+    deploy's bytes, Continue at the door with Pong already there and the door offered, and a finger play-through to
+    ending A that asked Pong through his badge (51 lines, none over another, no page error; the card says "You asked who
+    he was. Nobody knew."), after one to ending D on the first (47 lines). Sheet v131 (65 rows out, 1 in, 7 changed;
+    v44 stays the link). Deploys `6ae37096e4fec6133693a2ab` and `6ae37cdbfb6b59f2dcfe18ca` (the door), each
+    byte-verified (268 of 268 served files). Four laws in LEARNINGS (a mechanic nothing reads is filler; a re-take's
+    session record needs a name of its own; an option that appears after a walk must not race the order that ends it;
+    a probe drives the way a player can).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

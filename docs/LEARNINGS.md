@@ -6936,3 +6936,19 @@ cut (sharing its vertices and maps) when it is small.
   name's sessions and `fetch.py` SKIPS a take already on disk, so re-saying a line under a name that already has takes
   (`q1nobody_r`, CP13's) overwrote the old take's provenance and would never have downloaded the new one. The old record
   was restored from git and the new one filed as `q1nobody_r2`. A new take is a new name, every time.
+- **An option that appears after a walk must not race the order that ends it** (v24.9, found by the finger
+  play-through after the first deploy). Pong's one question was offered only once he stood beside the master's steps,
+  and the order "Go in" put the door's badge up at the same moment as he set off. Measured: he had 9.5 m to walk at
+  1.1 m/s, the player 8.6 m at 2.55 m/s, so anyone who simply obeyed the order was through the door about five
+  seconds before Pong arrived — and never saw the question the whole yard had been cut down to. The play-through
+  pressed tree, door, and in. When a beat is optional, write down both clocks: when the option first appears and when
+  the thing that ends it can first be done. If the second can come first, hold it (the door now waits for Pong, his
+  "!" and the door's appear together, a 20 s net finishes his walk) — an option the obedient player cannot meet is not
+  an option.
+- **A probe drives the way a player can, or it tests a path nobody takes** (v24.9). The Continue probe sent the run
+  back to the title by calling `returnToTitle()` straight, under the storm's open briefing and under the decision —
+  and then waited fifteen minutes for a Continue the open minigame held. No player can get there: the pause menu
+  refuses to open over a live minigame or the decision, its button is not even drawn over a minigame, and it is the
+  only way to the title from play. The probe now taps the menu button and "Back to the title screen" like a thumb, and
+  where the menu refuses it reports that there is no same-sitting Continue from there, as for a player (v8.0's
+  minigame law, met in the save path).

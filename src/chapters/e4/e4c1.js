@@ -3159,6 +3159,13 @@
       }
       if (yard.standFan) { const f = yard.standFan; f.blades.rotation.z += dt * 24; f.head.rotation.y = f.base + Math.sin(now * 0.45) * 0.7; }
       if (yard.tvMat) { const k = 0.55 + 0.25 * Math.sin(now * 3.1) * Math.sin(now * 1.7) + (Math.sin(now * 13) > 0.92 ? 0.3 : 0); yard.tvMat.color.setRGB(0.35 * k, 0.45 * k, 0.6 * k); }
+      /* (v24.9) the door waits for Pong at the steps; if his walk has not ended 20 s after the order (a walk that never
+         ticks), he is put there and the door opens — a safety net, never the normal path (he arrives in about 7 s) */
+      if (phase === 'called' && !play.pongAtDoor && play.calledAt && now - play.calledAt > 20) {
+        const P = cast.pong;
+        if (P && P.walk) personPut(P, PONG_DOOR.x, PONG_DOOR.z, PONG_DOOR.ry);
+        play.pongAtDoor = true;
+      }
     }
     /* the ground's height where the compound is not flat: the sala's floor and its two steps (v16.4's seam) */
     function groundAt(x, z) {
@@ -3447,7 +3454,7 @@
     const play = {
       run: 0,                         // a token: a callback from before a reset finds it changed and does nothing
       asked: new Set(), busy: false,                // (v24.9: the one question, to Pong at the door — no queue, no number)
-      greeted: false, tree: false, pongAtDoor: false,
+      greeted: false, tree: false, pongAtDoor: false, calledAt: 0,   // (calledAt: the wall clock when the door was ordered)
       item: '', offerOn: false, offered: false,         // (v24.9: no birthday pick — the slate is written without one)
       signs: new Set(), signsOn: false, herSeen: false, breathNext: 0, gestNext: 0, chantNext: 0,
       clothSeen: false, gestSeen: false, gustNext: 0,          // (v24.5: the cloth has breathed, his hands have moved — L1-5; the draught — L1-2)
@@ -3615,10 +3622,16 @@
         look('YARD2', 6);                          // the storm closing in as they go to the door
         line('pg1go', cast.pong);
       }
-      /* Pong goes to the room's steps to take his sandals off, and waits there for him; the first drops */
+      /* Pong goes to the room's steps to take his sandals off, and waits there for him; the first drops.
+         (v24.9, the play-through: the door waits for him. He has 9.5 m to walk and the player 8.6 m at 2.55 m/s, so at
+         1.1 m/s anyone who followed "Go in" was through the door about five seconds before Pong reached the steps — and
+         the one question, offered only while he stands there, was never seen. He walks brisker now (1.5, his take at
+         1.15×), the door is offered once he is there, and his "!" and the door's appear together; yardFrame finishes
+         his walk if it has not ended 20 s after the order, so the door can never stay shut) */
+      play.calledAt = wallNow();
       whenReadyOr(cast.pong, (P) => {
         if (resumed) { personPut(P, PONG_DOOR.x, PONG_DOOR.z, PONG_DOOR.ry); P.seated = false; P.sitW = 0; play.pongAtDoor = true; return; }
-        personWalk(P, PONG_TO_DOOR, { speed: 1.1, ry: PONG_DOOR.ry, then: () => { play.pongAtDoor = true; } });
+        personWalk(P, PONG_TO_DOOR, { speed: 1.5, ry: PONG_DOOR.ry, then: () => { play.pongAtDoor = true; } });
       }, () => { play.pongAtDoor = true; });        // (his model never came: his place is the door's, and he can still be asked)
       if (kit && kit.rain) kit.rain(0.12, { secs: 4, len: 0.5 });   // (CP13: the engine's shape is (k, opts) — the ease and the length were dropped)
     }
@@ -4141,7 +4154,7 @@
         onInteract() { return treeLook(); } },
       { id: 'door', pos: { x: RDOOR.x, y: 1.6, z: RDOOR.z - 0.5 }, radius: 3.2, prompt: W.hotDoor,
         hits: markHit(() => ({ x: RDOOR.x, y: 1.6, z: RDOOR.z - 0.5 }), 0.55),
-        enabled: () => worldOf(yaw.position.x) === 'C' && phase === 'called' && !play.busy,   // (v24.9: not while Pong is being asked)
+        enabled: () => worldOf(yaw.position.x) === 'C' && phase === 'called' && !play.busy && play.pongAtDoor,   // (v24.9: not while Pong is being asked; offered once he stands at the steps — calledBegin)
         onInteract() { return enterRoom(); } },
       /* the glowing place on the floor IS the mat's mark (CP8, by photograph: the engine's "!" floated at chest height over
          it and read as a mark on the far wall; the anchor stays at 1.0 so the badge is offered from the door) */
@@ -5384,7 +5397,7 @@
       /* THE PLAY, BACK TO ITS FIRST FRAME (the v8.1 law: whatever a beat stated is cleared by whatever resets it) */
       play.run++;
       play.asked.clear(); play.busy = false;
-      play.greeted = false; play.tree = false; play.pongAtDoor = false; play.called = false;
+      play.greeted = false; play.tree = false; play.pongAtDoor = false; play.calledAt = 0; play.called = false;
       play.item = ''; play.offerOn = false; play.offered = false;
       play.signs.clear(); play.signsOn = false; play.herSeen = false; play.kneeling = false; play.turning = null;
       play.breathNext = 0; play.gestNext = 0; play.chantNext = 0;
