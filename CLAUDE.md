@@ -7101,7 +7101,9 @@ What the baseline contains, by release:
   save in the storm on the decision (the film replays and is skipped, as any film), and the drive probe photographs the
   storm as it plays in the real flow. Verified on the deployed bytes: a finger play-through on a phone to ending B's card
   (56 lines, none over another, `pg1offer` whole, the film's six thunder cues, no page error) and Continue from six saves
-  around the storm, each landing right. Sheet v132 (five words out, `pg1offer` re-measured; v44 stays the link). Deploys
+  around the storm, each landing right; harnesses chapter, text, hosted, leak, cine and walk green (walk 1410 s); and the
+  check v24.10 kept, run — episode 3 chapter 5's ending D after a real play-through draws what it draws after the jump,
+  moment by moment. Sheet v132 (five words out, `pg1offer` re-measured; v44 stays the link). Deploys
   `6ae39fecc0a312c1e945a7fb` and `6ae3a4d8ec468924120ba51a` (the dish), each byte-verified (268 of 268 served files).
   docs/V24.12-THE-STORM-WATCHED.md is the record of all three releases, the restart in the middle of them included.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
