@@ -7009,6 +7009,41 @@ What the baseline contains, by release:
   `6ae2ebcbf84bbd7ec99208a2` (the preaching hall turned), each byte-verified, 269 of 269; harnesses chapter, leak, cine
   and walk green on the second's bytes. No word moved; sheet v130 stands (v44 the link). docs/V24.8-THE-COMPOUND.md is
   the record.
+- **v24.9** EPISODE 4 CHAPTER 1, TIGHTENED — Chad: *"I find ep 4 chp 1 to be unnecessarily long with tons of filler
+  content that doesn't add much to the experience. For e.g, is it really necessary to have the other customers there,
+  to wait one by one for your turn, to gather notes that are inconsequential?"* Measured first: the chapter ran about
+  9½ minutes, the yard about 3 of them whichever way it was played (the numbers called one at a time, 24 s and then
+  30 s apart — a player who asked nobody stood for about 2½ minutes), and the notes stopped the game nine times while
+  nothing later read them (a "fact" paid +2 awareness and two lines went on the card; the decision and all four endings
+  were the same). Put to him as options (AskUserQuestion); his picks, all three: **straight in**, **remove the notes**,
+  **cut the birthday pick** (the amulet pick stays). docs/V24.9-E4C1-TIGHTER.md is the record.
+  - THE YARD: Pong walks him in (re-said, "Come, come. That is Pa Noi, Ajahn's wife."); Pa Noi greets them ("Sawasdee
+    ka… Ajahn is waiting for you, na kha.", `pn1ready`, new), gives water, and Pong takes him to the master's door.
+    There Pong waits BESIDE the steps, and one optional press is on him: "Pong… how long have you known him?" —
+    "first time I come also. My cousin know him." — "So even Pong doesn't really know who he is." (`q1nobody`
+    re-said). Asking pays +2 awareness once; its receipt rides every bookmark from the door on (`~ask`), so the card's
+    "You asked who he was" / "You never asked who he was" is right after a Continue. Pong's cone is narrow (0.16) so the
+    door keeps the badge when the reticle is on it, the door is not offered while he answers, and his "!" sits over his
+    head. The board reads NOW 14 and nothing after it (the last client of the day); the light eases from YARD0 to YARD2
+    as they go to the door. Khun Joy, Uncle Lim and Ta Sombat are gone (their models, routes, lines and hotspots), and
+    with them `e4lim` from the build; the roadside stall woman of ending C, who wore Khun Joy's stand-in, is now listed
+    in docs/E4-MODELS.md as a role of her own.
+  - THE NOTES: no page is written anywhere in play. Each sign is noticed and said aloud, pays +2 awareness and counts;
+    the endings' stock book (A and D) is built from what he did (`bookEntries()`: Pong's answer under "Who is he?" if he
+    asked, the four signs under "What I saw", then the ending's line). The engine's ledger seam is untouched (the fixture
+    proves it); `freshRun` still clears a v24.0–v24.8 run's old pages.
+  - THE BIRTHDAY PICK is gone: after the shop talk the master chalks ร้านพระ, the amulet shop, over his reckoning and
+    reads.
+  - SAVES: phases arrive → called → consult → items → work → storm → decide; one reader (`readMark`) for every bookmark
+    — an old `wait:…` save lands at the master's door (Pong asked if its list says so), an old `~fri` day mark is read
+    and let go.
+  - SOUND: 25 sounds retired (the queue's calls, the three customers' and his own lines to them, `q1missed`, the day's
+    two, the board's marker) — files, `STING_SAMPLE` rows, take sets, registry rows and speakers; two re-said and one
+    new, picked of two takes each by masters/v24.0's measure and levelled by its chain (masters/v24.9/make.sh).
+  - Verified on the build: the yard driven start to the tray with no page error; the door with Pong beside it and the
+    endings' book photographed on a phone and a desktop. Sheet v131 (65 rows out, 1 in, 7 changed; v44 stays the link).
+    Deploy `6ae37096e4fec6133693a2ab`, byte-verified (268 of 268 served files). Two laws in LEARNINGS (a mechanic
+    nothing reads is filler; a re-take's session record needs a name of its own).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -7545,7 +7580,7 @@ assigned where a texture belonged; and the clearance is ISSUED at the start
 of play rather than inferred from an empty bag, which had left both counters
 dead from the chapter's first frame (docs/LEARNINGS.md).
 
-**Chad's report of 28 Oct 2026 on episode 3 chapter 5 — docs/V24.2-E3C5-DEBUG.md** (his four messages verbatim, the plan, and the log checkpoint by checkpoint) shipped in three releases: v24.1 the soft-lock he hit (the long press), v24.2 the comprehensive debug (masters/v24.2/findings.md, every finding with its verdict and fix), v24.3 the sound buff (masters/v24.2/L3-sound-report.md the measure, masters/v24.2/make.sh every pick and why). **His two questions after it — "Are you sure you fully debugged ep 3 chp 5?" and "Debug ep 4 chp 1 too, full debug" — are docs/V24.5-DEBUG-PLAN.md** (the honest answer, the plan for both chapters, the log checkpoint by checkpoint; masters/v24.5/findings.md every finding of nine lenses with its verdict and fix), shipped at v24.5. **His eleven notes on it the same evening — the counter's label, the owner's long talk, the bag, the desk, three minigames, all four endings — are docs/V24.7-E3C5-NOTES.md** (his words verbatim, what each traced to, the plan and the log), shipped at v24.7; **his note the next morning, HDB blocks behind ending D's monk, is docs/V24.8-THE-COMPOUND.md** (the estate hidden behind the garden and the temple's grounds built round it, every building placed against a shot), shipped at v24.8. **Episode 4 chapter 1, The Master I Did Not Know, shipped at v24.0 —
+**Chad's report of 28 Oct 2026 on episode 3 chapter 5 — docs/V24.2-E3C5-DEBUG.md** (his four messages verbatim, the plan, and the log checkpoint by checkpoint) shipped in three releases: v24.1 the soft-lock he hit (the long press), v24.2 the comprehensive debug (masters/v24.2/findings.md, every finding with its verdict and fix), v24.3 the sound buff (masters/v24.2/L3-sound-report.md the measure, masters/v24.2/make.sh every pick and why). **His two questions after it — "Are you sure you fully debugged ep 3 chp 5?" and "Debug ep 4 chp 1 too, full debug" — are docs/V24.5-DEBUG-PLAN.md** (the honest answer, the plan for both chapters, the log checkpoint by checkpoint; masters/v24.5/findings.md every finding of nine lenses with its verdict and fix), shipped at v24.5. **His eleven notes on it the same evening — the counter's label, the owner's long talk, the bag, the desk, three minigames, all four endings — are docs/V24.7-E3C5-NOTES.md** (his words verbatim, what each traced to, the plan and the log), shipped at v24.7; **his note the next morning, HDB blocks behind ending D's monk, is docs/V24.8-THE-COMPOUND.md** (the estate hidden behind the garden and the temple's grounds built round it, every building placed against a shot), shipped at v24.8. **His note the same afternoon on episode 4 chapter 1 — "is it really necessary to have the other customers there, to wait one by one for your turn, to gather notes that are inconsequential?" — is docs/V24.9-E4C1-TIGHTER.md** (the measure, his three picks, the change list and the log), shipped at v24.9: the yard straight in with one optional question to Pong, no note pages, no birthday pick. **Episode 4 chapter 1, The Master I Did Not Know, shipped at v24.0 —
 docs/V24.0-E4C1-PLAN.md** is its build memory (§15 the log, checkpoint by checkpoint; masters/v24.0/cp13-findings.md
 its review, every finding with its verdict and fix); its cast are placeholders until Chad's models (docs/E4-MODELS.md
 lists each, with what stands in), and its seven music cues are the measured picks until Chad's ear (one reel per cue in
@@ -7595,7 +7630,9 @@ which rig stands in for each, and each is a one-line swap). Episode 3 chapter
 2's three batches (docs/V19.4-PLAN.md) are all done.
 
 Next up: **EPISODE 4 · THE TEACHER IN WHITE** (Chad's name) — the casebook's S1·11 to S1·15, from the master he did
-not know to his first cases at his teacher's side. Chapter 1 SHIPPED at v24.0; chapter 2 (S1·11's second half: the
+not know to his first cases at his teacher's side. Chapter 1 SHIPPED at v24.0 and was tightened at v24.9 (Chad's
+call: the yard straight in, no notes, no birthday pick — chapter 2's "notebook read back" becomes one question at Lersi
+Chin's, what he tells him: what he saw, or what he thinks it meant, the trial's 5.2); chapter 2 (S1·11's second half: the
 fog, Lersi Chin's clearing and the warning, the trial's 5.3) is next, its build plan still to be written to Chad's
 picks, the way chapter 1's was. The episode's plan, with what remains his to decide:
 **docs/V24.0-EPISODE4-PLAN.md** (its sixth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is
@@ -7652,7 +7689,7 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v130** (`masters/v24.7/masterz-text-v130.xlsx`, v129 with v24.7's words for episode 3 chapter 5: the drinks' and the incense's orders say "at the desk"; the eight words of the three minigames taken out with them and COME BACK's three conduct notes; the ending D chant's four captions the Mettā verse's (`metta1`–`metta4`, Pali and English) in place of the Yathā's; the voice lines `ow5wrong` and `ow5promise` cut, `z5Clotto` in place of `z5Cevil`, `z5C7` re-said, and `mk5metta` in place of `mk5yatha`. v129 was `masters/v24.5/masterz-text-v129.xlsx`, v128 with v24.5's words: 1 row added (`fm1chant2D`,
+**THE SHEET IS v131** (`masters/v24.9/masterz-text-v131.xlsx`, v130 with episode 4 chapter 1 tightened: 41 of its words out — the queue's orders, the three customers' prompts, the notes' prompts and meanings, the eight days and the pick's two, the facts/meanings card notes — and `objWatch` "Watch closely · {n}/4"; 24 voice lines out (the queue's calls, the customers', the day's), `pn1ready` in, `pg1come` and `q1nobody` re-said, four descriptions moved. v130 was `masters/v24.7/masterz-text-v130.xlsx`, v129 with v24.7's words for episode 3 chapter 5: the drinks' and the incense's orders say "at the desk"; the eight words of the three minigames taken out with them and COME BACK's three conduct notes; the ending D chant's four captions the Mettā verse's (`metta1`–`metta4`, Pali and English) in place of the Yathā's; the voice lines `ow5wrong` and `ow5promise` cut, `z5Clotto` in place of `z5Cevil`, `z5C7` re-said, and `mk5metta` in place of `mk5yatha`. v129 was `masters/v24.5/masterz-text-v129.xlsx`, v128 with v24.5's words: 1 row added (`fm1chant2D`,
 episode 4 chapter 1's ending D letting the chant finish) and 7 changed — three of that chapter's ledger facts (the
 woman waiting's, the uncle's, the reading's), the stops on its chant's three captions, and fm1chant2's description.
 v128 was `masters/v24.2/masterz-text-v128.xlsx`, v127 with episode 3 chapter 5's debug words: 2 rows

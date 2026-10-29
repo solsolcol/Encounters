@@ -6919,3 +6919,20 @@ cut (sharing its vertices and maps) when it is small.
   front-on, dead centre behind the monk in his teaching shot, and the shot saw a white wall at his ear; the HDB block
   it replaced had been wide enough to show on both sides of him. A building meant to frame a subject stands long across
   the view (side-on) or beside the line, never front-on behind it.
+
+## v24.9 — episode 4 chapter 1, tightened
+
+- **A mechanic nothing reads is filler** (v24.9). Episode 4 chapter 1 was planned with three new ways to play, and two
+  of them carried their weight only on paper: a queue of three customers to question, called one number at a time, and
+  a notebook that stopped the game nine times to choose "what I saw" or "what it meant". Measured, the yard took about
+  three of the chapter's nine and a half minutes however it was played (a player who asked nobody stood for two and a
+  half of them), and nothing later depended on a single page: the decision, the four endings and the card were the
+  same, and chapter 2's read-back was a plan, not a thing. Chad: "is it really necessary to have the other customers
+  there, to wait one by one for your turn, to gather notes that are inconsequential?" Before building a new kind of
+  play, name what LATER reads its result. If the answer is "a line on the card" or "a chapter not yet built", the
+  mechanic is a chore wearing a lesson's clothes. The lesson it was meant to carry usually fits in one act: here, one
+  question to the man who brought him, and a sign noticed and said aloud.
+- **A re-take's session record needs a name of its own** (v24.9, a slip caught on the spot). `addsess.py` REPLACES a
+  name's sessions and `fetch.py` SKIPS a take already on disk, so re-saying a line under a name that already has takes
+  (`q1nobody_r`, CP13's) overwrote the old take's provenance and would never have downloaded the new one. The old record
+  was restored from git and the new one filed as `q1nobody_r2`. A new take is a new name, every time.

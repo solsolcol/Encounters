@@ -175,18 +175,17 @@
 
     /* the first master is his own (§2.1 2); every other person is a PLACEHOLDER until Chad's model lands
        (docs/E4-MODELS.md), declared in `reuse` so the FRESH check names it on every run */
-    assets: ['firstmaster', 'fmshadow', 'e4sky', 'e4pong', 'e4noi', 'e4joy', 'sitwomantalk', 'e4lim', 'encik', 'granny'],
+    /* (v24.9, Chad's call: the yard is straight in — Khun Joy, Uncle Lim and Ta Sombat left the chapter with the queue,
+       and with them `e4lim`, `sitwomantalk` and `encik`) */
+    assets: ['firstmaster', 'fmshadow', 'e4sky', 'e4pong', 'e4noi', 'e4joy', 'granny'],
     reuse: {
-      sitwomantalk: 'Khun Joy\'s talking take — with her placeholder',
-      encik: 'Ta Sombat — a placeholder until Chad\'s model',
       granny: 'the presence at the edge of sight — a placeholder until Chad\'s model'
     },
-    /* this chapter's own lighter cuts of earlier characters, standing in for two of Chad's people in the crowded sala */
+    /* this chapter's own lighter cuts of earlier characters, standing in for Chad's people */
     placeholders: {
       e4pong: 'Pong, the dealer — episode 3\'s staff man with three seated takes of the first master\'s, until Chad\'s model (docs/E4-MODELS.md)',
       e4noi: 'Pa Noi, the master\'s wife — episode 3\'s Yin shop keeper at a crowd\'s cut, until Chad\'s model',
-      e4lim: 'Uncle Lim — episode 3\'s amulet-shop owner at a crowd\'s cut, until Chad\'s model',
-      e4joy: 'Khun Joy — chapter 3\'s pink-shirt lady with a standing idle and a walk retargeted in, until Chad\'s model'
+      e4joy: 'the woman at the roadside stall in ending C — chapter 3\'s pink-shirt lady with a standing idle and a walk retargeted in, until Chad\'s model'
     },
     items: [],
 
@@ -207,54 +206,24 @@
       interactTouch: 'Tap to choose what you do',
       actLine: 'Press E to choose what you do',
       actLineTouch: 'Tap to choose what you do',
-      // PLAY I · the yard (§4.2): the orders, and the people he can ask
+      // PLAY I · the yard (§4.2; v24.9 — straight in, Chad's call): the orders, and the one question at the door
       objFollow: 'Follow Pong into the samnak',
-      objAsk: 'Ask about the master · {n}/3',
-      objAskPong: 'Ask Pong how he knows him',
-      objWait: 'Wait for your number · you are 14, now {n}',
       objGoIn: 'Go in',
-      hotJoy: 'Ask the woman waiting',
-      hotLim: 'Ask the uncle',
-      hotSombat: 'Ask the old farmer',
       hotPong: 'Ask Pong',
       hotTree: 'The dresses on the tree',
       hotDoor: 'The receiving room',
-      // THE LEDGER (S43): his stock book's back pages — a FACT or a MEANING, never labelled (§4.2, §4.4)
+      // THE STOCK BOOK in endings A and D: what he found, in his own hand (v24.9: no page is written in play — the
+      // book is built from what he did, bookEntries)
       ledWho: 'Who is he?',
       ledSaw: 'What I saw',
-      ledPrompt: 'What will you write?',
-      ledBrief: 'One line, in the back of your stock book.',
-      ledJoyF: 'The woman waiting came because her boss\'s wife said he was powerful.',   // (v24.5, L6-2: "She" had no one on a page called "Who is he?")
-      ledJoyM: 'He must be powerful — people drive hours to see him.',
-      ledLimF: 'The uncle thinks he has been a master three or four years.',   // (v24.5, L6-2: a name the player never hears)
-      ledLimM: 'He\'s only in it for the money.',
-      ledSbF: 'He came here five years ago. The farmer doesn\'t know from where.',
-      ledSbM: 'He\'s hiding where he came from.',
       ledPongF: 'Pong had never been here either. His cousin knows him.',
-      ledPongM: 'Pong\'s cousin vouches for him, so he\'s fine.',
-      ledReadF: 'He spoke for longer than Pong translated.',   // (v24.5, L6-2: he answered no question — it was his reading)
-      ledReadM: 'Pong is hiding what he said.',
       ledSmokeF: 'The smoke leaned toward the covered bowl, against the fan.',
-      ledSmokeM: 'His blessing is drawing luck into the bowl.',
       ledClothF: 'The cloth over the bowl moved.',
-      ledClothM: 'He keeps something alive under there.',
       ledShadowF: 'His shadow moved after he did.',
-      ledShadowM: 'His shadow isn\'t his own.',
       ledHerF: 'I glimpsed someone behind him. When I looked, no one was there.',
-      ledHerM: 'She watches over the house for him.',
       // PLAY II · the reading (§4.3)
       objKneel: 'Kneel on the mat',
       hotMat: 'Kneel',
-      pickLabel: 'The day you were born',
-      pickTitle: 'What day were you born?',
-      day_sun: 'Sunday', dayc_sun: 'red',
-      day_mon: 'Monday', dayc_mon: 'yellow',
-      day_tue: 'Tuesday', dayc_tue: 'pink',
-      day_wed: 'Wednesday', dayc_wed: 'green · by day',
-      day_wedn: 'Wednesday night', dayc_wedn: 'smoky black · after six',
-      day_thu: 'Thursday', dayc_thu: 'orange',
-      day_fri: 'Friday', dayc_fri: 'sky blue',
-      day_sat: 'Saturday', dayc_sat: 'purple',
       chooseLabel: 'Take one',
       chooseTitle: 'For your shop',
       objOffer: 'Set your offering on the tray',
@@ -266,7 +235,7 @@
       chant2en: 'A Thai trade blessing in Pali-like words — roughly: come, heart; great gain; be dear to me.',
       chant3: 'Mahā-lābhā bhavantu me.',
       chant3en: 'May great gains be mine.',
-      objWatch: 'Watch. Write down what you see · {n}/4',
+      objWatch: 'Watch closely · {n}/4',
       lookSmoke: 'The smoke',
       lookCloth: 'The red cloth',
       lookShadow: 'His shadow on the wall',
@@ -277,8 +246,6 @@
       // the card's What you did (§4.9)
       noteAsked: 'You asked who he was. Nobody knew.',
       noteNeverAsked: 'You never asked who he was.',
-      noteFacts: 'You wrote down what you saw.',
-      noteMeanings: 'You wrote down what you thought it meant.',
       noteStormTrue: 'In the storm, you saw only what changed.',
       noteStormFalse: 'In the storm, you saw changes that weren\'t there.',
       noteStormNone: 'In the storm, you held back, and missed what changed.',
@@ -311,32 +278,24 @@
   /* SECS BEGIN */
   const SECS = {
     /* q */
-      'q1pro1': 7.45, 'q1pro2': 6.01, 'q1pro3': 6.01, 'q1pro4': 4.01, 'q1pro5': 3.29, 'q1board': 2.73,
-      'q1water': 0.89, 'q1joy1': 2.25, 'q1joy2': 1.05, 'q1lim1': 2.73, 'q1lim2': 1.29, 'q1sb1': 2.65, 'q1pg1': 2.81,
-      'q1nobody': 2.57, 'q1missed': 1.61, 'q1tree': 2.97, 'q1wai': 1.21, 'q1shop': 5.45, 'q1short': 2.01,
+      'q1pro1': 7.45, 'q1pro2': 6.01, 'q1pro3': 6.01, 'q1pro4': 4.01, 'q1pro5': 3.29, 'q1water': 0.89,
+      'q1pg1': 2.81, 'q1nobody': 2.81, 'q1tree': 2.97, 'q1wai': 1.21, 'q1shop': 5.45, 'q1short': 2.01,
       'q1smoke': 6.09, 'q1cloth': 2.89, 'q1shadow': 3.77, 'q1her': 5.61, 'q1A1': 1.83, 'q1A2': 0.65, 'q1A3': 0.81,
       'q1A4': 5.61, 'q1B1': 3.29, 'q1B2': 0.93, 'q1B3': 2.73, 'q1B4': 6.21, 'q1C0': 6.57, 'q1C1': 1.77,
-      'q1C2': 1.29, 'q1C3': 5.13, 'q1D1': 5.45, 'q1D2': 4.17, 'q1D3': 2.97, 'q1D4': 3.21, 'q1D5': 3.29, 'q1K1': 6.25,
-      'q1K2': 1.61, 'q1K3': 2.09, 'q1A': 4.63, 'q1B': 4.33, 'q1C': 3.13, 'q1D': 3.45,
+      'q1C2': 1.29, 'q1C3': 5.13, 'q1D1': 5.45, 'q1D2': 4.17, 'q1D3': 2.97, 'q1D4': 3.21, 'q1D5': 3.29,
+      'q1K1': 6.25, 'q1K2': 1.61, 'q1K3': 2.09, 'q1A': 4.63, 'q1B': 4.33, 'q1C': 3.13, 'q1D': 3.45,
     /* pg */
-      'pg1car': 5.29, 'pg1here': 2.4, 'pg1come': 2.0, 'pg1sbq': 2.97, 'pg1sb': 7.05, 'pg1me': 6.87, 'pg1go': 2.46,
-      'pg1tree': 3.01, 'pg1shop': 1.85, 'pg1th1': 2.97, 'pg1good': 5.77, 'pg1day': 1.85, 'pg1read': 7.81,
-      'pg1items': 3.2, 'pg1nk': 3.53, 'pg1tk': 5.26, 'pg1py': 4.89, 'pg1offer': 4.01, 'pg1eyes': 3.72,
-      'pg1power': 3.67, 'pg1Ank': 8.33, 'pg1Atk': 7.69, 'pg1Apy': 8.65, 'pg1A1': 3.61, 'pg1A2': 0.94, 'pg1B1': 3.73,
-      'pg1B2': 4.3, 'pg1B3': 6.84, 'pg1B4': 1.65, 'pg1B5': 4.21, 'pg1B6': 2.99, 'pg1B7': 4.01, 'pg1C1': 3.35,
-      'pg1C2': 2.49, 'pg1D1': 3.87, 'pg1D2': 3.0, 'pg1D3': 4.37,
+      'pg1car': 5.29, 'pg1here': 2.4, 'pg1come': 2.62, 'pg1me': 6.87, 'pg1go': 2.46, 'pg1tree': 3.01,
+      'pg1shop': 1.85, 'pg1th1': 2.97, 'pg1good': 5.77, 'pg1read': 7.81, 'pg1items': 3.2, 'pg1nk': 3.53,
+      'pg1tk': 5.26, 'pg1py': 4.89, 'pg1offer': 4.01, 'pg1eyes': 3.72, 'pg1power': 3.67, 'pg1Ank': 8.33,
+      'pg1Atk': 7.69, 'pg1Apy': 8.65, 'pg1A1': 3.61, 'pg1A2': 0.94, 'pg1B1': 3.73, 'pg1B2': 4.3, 'pg1B3': 6.84,
+      'pg1B4': 1.65, 'pg1B5': 4.21, 'pg1B6': 2.99, 'pg1B7': 4.01, 'pg1C1': 3.35, 'pg1C2': 2.49, 'pg1D1': 3.87,
+      'pg1D2': 3, 'pg1D3': 4.37,
     /* pn */
-      'pn1num': 7.6, 'pn1water': 6.41, 'pn1n10': 1.14, 'pn1n11': 1.23, 'pn1n12': 1.3, 'pn1n13': 1.37,
-      'pn1n14': 2.4, 'pn1tray': 0.83, 'pn1guava': 6.49, 'pn1card': 2.65, 'pn1C1': 6.03,
-    /* jy */
-      'jy1a': 6.97, 'jy1b': 6.25, 'jy1go': 2.49,
-    /* lm */
-      'lm1a': 5.78, 'lm1b': 4.49, 'lm1go': 2.04,
-    /* sb */
-      'sb1a': 8.59,
+      'pn1ready': 4.25, 'pn1water': 6.41, 'pn1tray': 0.83, 'pn1guava': 6.49, 'pn1card': 2.65, 'pn1C1': 6.03,
     /* fm */
-      'fm1hello': 4.21, 'fm1shop': 1.25, 'fm1good': 4.49, 'fm1day': 1.13, 'fm1hm': 1.21, 'fm1read': 14.81,
-      'fm1items': 2.25, 'fm1anu': 1.24, 'fm1eyes': 3.33, 'fm1chant': 33.77, 'fm1chant2': 18.17, 'fm1chant2D': 6.59, 'fm1blessA': 2.33,
+      'fm1hello': 4.21, 'fm1shop': 1.25, 'fm1good': 4.49, 'fm1hm': 1.21, 'fm1read': 14.81, 'fm1items': 2.25,
+      'fm1anu': 1.24, 'fm1eyes': 3.33, 'fm1chant': 33.77, 'fm1chant2': 18.17, 'fm1chant2D': 6.59, 'fm1blessA': 2.33,
       'fm1Abye': 1.85, 'fm1B1': 3.77, 'fm1B2': 1.69, 'fm1B3': 2.57, 'fm1C1': 2.09, 'fm1C2': 2.73, 'fm1D1': 2.73,
     /* tx */
       'tx1where': 1.17,
@@ -1208,7 +1167,7 @@
       SPIRIT: { x: -5.4, z: 5.4 }, SHELTER: { x: 6.0, z: 15.4 }, PICKUP: { x: 2.0, z: 13.15 },
       BOARD: { x: 2.75, z: 0.75 }, WATER_Y: -0.32
     };
-    const yard = { board: null, boardN: 9, water: null, waterMats: [], tvMat: null, standFan: null, stands: [], dresses: [], kitGeos: [], kitMats: [] };
+    const yard = { board: null, boardN: 14, water: null, waterMats: [], tvMat: null, standFan: null, stands: [], dresses: [], kitGeos: [], kitMats: [] };
     function buildCompound() {
       const C = worldC, LOWQ = LOW;
       const m4 = new THREE.Matrix4();
@@ -3097,20 +3056,10 @@
         talk: 'Talk_with_Left_Hand_on_Hip', hidden: true, noMip: true });
       cast.her = mkPerson('granny', { parent: worldR, x: RMC.HER.door.x, z: RMC.HER.door.z, ry: -0.45, height: 1.5, posture: 'stand', stand: 'Stand_and_Chat',
         idleAt: 0.4, walk: false, bow: 0.42, noMip: true, noShadow: true, hidden: true, then: herDress, centre: true });
-      /* the yard: Pa Noi at the queue's board; in the sala, Khun Joy and Ta Sombat on the back bench and Uncle Lim on the
-         front one, all turned to the master's door; Pong, standing by his pickup at the gate (he leads him in, and sits
-         on the front bench to wait) */
+      /* the yard: Pa Noi at the board; Pong, standing by his pickup at the gate (he leads him in to her, and on to the
+         master's door). (v24.9, Chad's call: no queue — Khun Joy, Uncle Lim and Ta Sombat left the sala with it) */
       cast.noi = mkPerson('e4noi', { parent: worldC, x: CMP.BOARD.x + 0.62, z: CMP.BOARD.z + 0.42, ry: -0.46, height: 1.56, posture: 'stand', stand: 'Idle_9',
         talk: 'Talk_with_Left_Hand_on_Hip', look: 1, noMip: true, ground: groundAt });
-      /* (her take is a woman on a CHAIR, one knee over the other — the tentage's seated audience, v5.29 — so she has a bench) */
-      cast.joy = mkPerson('e4joy', { parent: worldC, x: -1.6, z: -3.0, y: SL.floor, ry: Math.PI / 2, height: 1.6, anims: 'sitwomantalk', sizeTake: 'Idle_9',
-        posture: 'sit', stand: 'Idle_9', sit: 'Armature|Sit_Cross_Legged|baselayer', talk: 'Talk', seatH: BENCH, seatFloor: 0, feet: true, look: 0.8, noMip: true, noShadow: true,
-        ground: groundAt });
-      cast.lim = mkPerson('e4lim', { parent: worldC, x: 0.4, z: -2.75, y: SL.floor, ry: Math.PI / 2, height: 1.66, sizeTake: 'Idle_9',
-        posture: 'sit', stand: 'Idle_9', sit: 'mixamo.com', talk: 'Talk_with_Hands_Open', seatH: BENCH, seatFloor: 0, feet: true, look: 0.8,
-        noMip: true, noShadow: true, ground: groundAt });
-      cast.sombat = mkPerson('encik', { parent: worldC, x: -1.6, z: -1.55, y: SL.floor, ry: Math.PI / 2, seatedHeight: 1.3, walk: false,
-        posture: 'sit', sit: 'mixamo.com', seatH: BENCH, seatFloor: 0, feet: true, look: 0.6, noShadow: true });
       cast.pong = mkPerson('e4pong', { parent: worldC, x: 3.45, z: 11.6, ry: Math.PI, height: 1.7, sizeTake: 'Idle_9',
         posture: 'stand', stand: 'Idle_9', sit: 'Sit_Upright', talk: 'Talk_with_Hands_Open', seatH: BENCH, seatFloor: 0, feet: true, look: 0.9, ground: groundAt, noMip: true });
       /* the pickup: Pong at the wheel (Thailand drives on the left: the driver sits on the right, +x, facing −z), riding
@@ -3360,7 +3309,7 @@
     }
 
     /* ------------------------------------------------- the chapter clock */
-    const PHASES = ['arrive', 'wait', 'called', 'consult', 'items', 'work', 'storm', 'decide'];
+    const PHASES = ['arrive', 'called', 'consult', 'items', 'work', 'storm', 'decide'];   // (v24.9: no 'wait' — the queue went)
     let phase = 'arrive';
     let booted = false, preplaced = '';
     const dayClock = { t: 0 };
@@ -3414,28 +3363,21 @@
     let worldRun = 0;
     let wDark = false;
     let decOpen = false;
-    const AFTER_DAY = ['items', 'work', 'storm', 'decide'];
     function setPhase(p, tag, opts) {
       phase = p;
-      /* past the reading, the day he was born rides every bookmark (~fri), so a Continue writes it on the slate again
-         (CP13: the slate, in view from the mat and in the endings, was blank after a Continue past 'consult') */
-      if (AFTER_DAY.includes(p) && play.day) tag = (tag || '') + '~' + play.day;
+      /* from the door on, whether he asked Pong rides every bookmark (~ask), so a Continue in the room banks the right
+         note at the decision and the endings' book says what he learned (v24.9: it lived in the stock book's pages) */
+      if (p !== 'arrive' && play.asked.has('pong')) tag = (tag || '') + '~ask';
       if (kit) kit.setPhase(tag ? p + ':' + tag : p);
       objectiveFor(p, opts);
     }
-    /* the orders (§4.2–§4.4). `opts.complete === false` where the change is not his doing — a number called, someone
-       gone in — so the HUD never congratulates him for the queue moving (the v8.7 lie) */
+    /* the orders (§4.2–§4.4). `opts.complete === false` where the change is not his doing, so the HUD never
+       congratulates him for something he did not do (the v8.7 lie) */
     function objectiveFor(p, opts) {
       if (!kit) return;
       if (wDark) { kit.objective(null, { complete: false }); kit.waypoint(null); return; }
       let o = null, wp = null;
-      if (p === 'arrive') o = W.objFollow;
-      else if (p === 'wait') {
-        const n3 = ['joy', 'lim', 'sb'].filter(k => play.asked.has(k)).length;
-        o = !threeDone() ? W.objAsk.replace('{n}', String(n3))
-          : (play.pongSat && !play.asked.has('pong')) ? W.objAskPong
-          : W.objWait.replace('{n}', String(play.n));
-      }
+      if (p === 'arrive') o = play.greeted ? null : W.objFollow;
       else if (p === 'called') { o = W.objGoIn; wp = { x: RDOOR.x, y: 1.9, z: RDOOR.z - 0.5 }; play.doorWp = true; }   // (the frame takes it off while the door's own mark shows — L5-13)
       else if (p === 'consult') o = play.kneeling ? null : W.objKneel;
       else if (p === 'items') o = play.offerOn && !play.offered ? W.objOffer : null;
@@ -3504,9 +3446,9 @@
        Continue lands where a reload would (§10.1). */
     const play = {
       run: 0,                         // a token: a callback from before a reset finds it changed and does nothing
-      asked: new Set(), missed: new Set(), n: 9, nextCall: 0, calling: false, busy: false,
-      greeted: false, water: false, tree: false, pongSat: false,
-      day: '', item: '', offerOn: false, offered: false,
+      asked: new Set(), busy: false,                // (v24.9: the one question, to Pong at the door — no queue, no number)
+      greeted: false, tree: false, pongAtDoor: false,
+      item: '', offerOn: false, offered: false,         // (v24.9: no birthday pick — the slate is written without one)
       signs: new Set(), signsOn: false, herSeen: false, breathNext: 0, gestNext: 0, chantNext: 0,
       clothSeen: false, gestSeen: false, gustNext: 0,          // (v24.5: the cloth has breathed, his hands have moved — L1-5; the draught — L1-2)
       kneeling: false, turning: null, called: false,
@@ -3517,21 +3459,18 @@
        chant, the drone, the match and the tube were silent, and a cold line was spoken without its voice after 1.6 s).
        The yard's and the room's from the start (short lines, about 25 MB decoded); the work's and the storm's — the
        34 s chant, the 43 s drone — once he is called in, and on any Continue into the room */
-    const WARM_YARD = ['pg1come', 'pn1num', 'q1board', 'pn1water', 'q1water', 'w4water', 'pn1n10', 'pn1n11', 'pn1n12', 'pn1n13',
-      'pn1n14', 'q1joy1', 'jy1a', 'q1joy2', 'jy1b', 'q1lim1', 'lm1a', 'q1lim2', 'lm1b', 'q1sb1', 'pg1sbq', 'sb1a', 'pg1sb',
-      'q1pg1', 'pg1me', 'q1nobody', 'q1missed', 'jy1go', 'lm1go', 'pg1go', 'q1tree', 'pg1tree', 'w4dog', 'w4marker', 'w4sandals',
-      'w4page', 'w4pen'];                                                  // (v24.5, L3-2: the stock book's own)
-    const WARM_ROOM = ['w4kneel', 'fm1hello', 'q1wai', 'fm1shop', 'pg1shop', 'q1shop', 'pg1th1', 'fm1good', 'pg1good', 'fm1day',
-      'pg1day', 'fm1hm', 'fm1read', 'pg1read', 'q1short', 'w4tray', 'pn1tray', 'pg1items', 'fm1items', 'pg1nk', 'pg1tk', 'pg1py',
+    /* (v24.9: the yard straight in — the queue's calls, the three in the sala, the board's marker and the stock book's
+       pages are gone from play; the birthday pick from the room) */
+    const WARM_YARD = ['pg1come', 'pn1ready', 'pn1water', 'q1water', 'w4water', 'q1pg1', 'pg1me', 'q1nobody', 'pg1go', 'q1tree',
+      'pg1tree', 'w4dog', 'w4sandals'];
+    const WARM_ROOM = ['w4kneel', 'fm1hello', 'q1wai', 'fm1shop', 'pg1shop', 'q1shop', 'pg1th1', 'fm1good', 'pg1good',
+      'fm1hm', 'fm1read', 'pg1read', 'q1short', 'w4tray', 'pn1tray', 'pg1items', 'fm1items', 'pg1nk', 'pg1tk', 'pg1py',
       'pg1offer', 'w4envelope', 'fm1anu', 'fm1eyes', 'pg1eyes', 'w4match', 'w4barestep'];
     const WARM_WORK = ['fm1chant', 'fm1chant2', 'w4cloth', 'w4mala', 'q1smoke', 'q1cloth', 'q1shadow', 'q1her', 'w4tube',
       'pg1power', 'w4storm', 'w4thunder', 'w4crack', 'w4rainstop'];
     if (warmSounds) warmSounds(WARM_YARD.concat(WARM_ROOM));
-    /* the stock book built now, hidden, so the loading curtain compiles it (CP13: built at its first opening, its
-       materials compiled on screen at the first conversation) */
-    if (kit && kit.ledger && kit.ledger.prepare) kit.ledger.prepare();
     /* the rain built now too, hidden, so the loading curtain compiles its shader and uploads its buffers (v24.5, L4-3: built
-       by its first call — on screen when number fourteen was called, or on a Continue's first frame at the call) */
+       by its first call — on screen when he was sent to the door, or on a Continue's first frame there) */
     if (kit && kit.rain) kit.rain(0);
     const warmWork = () => { if (warmSounds) warmSounds(WARM_WORK); };
     /* the four endings' sounds, asked for as the storm begins (v24.5, L3 P3: the engine warms every scene at the decision,
@@ -3577,26 +3516,18 @@
       const got = kit.getConduct ? kit.getConduct().notes : [];
       if (!got.includes(note)) kit.conduct({ note, s: 0, a: 0 });
     }
-    /* THE LEDGER (S43): a FACT pays two awareness, once (an entry already written answers at once and pays nothing);
-       a MEANING pays nothing — both are written, and chapter 2 reads them back */
-    function writeLedger(id, page, fk, mk, tries = 0) {
-      const run = play.run;
-      if (!kit || !kit.ledger) return Promise.resolve(null);
-      const had = kit.ledger.entries().some(e => e.id === id);
-      /* (v24.5, L3-2: the book's own sounds — its page turned open, his pen on the paper, the page let fall; without them the
-         engine's menu click and confirm chime, the loudest things in the yard, opened and wrote every page) */
-      return kit.ledger.write(id, { page, title: page === 'who' ? W.ledWho : W.ledSaw, prompt: W.ledPrompt, brief: W.ledBrief,
-                                    fact: W[fk], meaning: W[mk], sound: { open: 'w4page', write: 'w4pen', close: 'w4page' } }).then(kind => {
-        if (!live(run)) return null;
-        if (!kind && tries < 20) return new Promise(res => after(0.5, () => res(writeLedger(id, page, fk, mk, tries + 1))));
-        if (kind === 'fact' && !had) kit.award('awareness', 2);
-        return kind;
-      });
+    /* THE STOCK BOOK as the endings show it (v24.9: no page is written in play — Chad, of the nine note pages: "gather
+       notes that are inconsequential?"): his own hand, built from what he did — under "Who is he?" Pong's answer if he
+       asked for it, nothing if he never did; under "What I saw" the signs he noticed, as what they were */
+    function bookEntries() {
+      const out = [];
+      if (play.asked.has('pong')) out.push({ page: 'who', text: W.ledPongF });
+      for (const k of play.signs) if (SIGN[k]) out.push({ page: 'saw', text: W[SIGN[k][1]] });
+      return out;
     }
 
     /* ---------------------------------------------------------------- the yard's props: the board */
     function boardSet(n) {
-      play.n = n;
       if (yard.board) { drawQueueBoard(yard.board.canvas.getContext('2d'), 512, 224, n); yard.board.tex.needsUpdate = true; }
     }
     /* a person who goes in or out of sight does it where he cannot be watched doing it: hidden on the first frame his
@@ -3616,28 +3547,26 @@
     /* ---------------------------------------------------------------- the routes (World C, metres; §4.1)
        The sala is a raised floor (0.32) with its steps at the front between x ±1.1 (a post stands at their top, x 0);
        the receiving room's door is at the top of its own three steps (RDOOR) and its dark doorway takes whoever walks in
-       (the room's box hides them behind its front face). Everyone goes round the queue's board and Pa Noi. */
-    const SEAT = { joy: { x: -1.6, z: -3.0 }, lim: { x: 0.4, z: -2.75 }, pong: { x: 0.4, z: -1.35 } };
-    const DOORWAY = [[6.6, -2.4], [7.9, -5.0], [7.9, -6.15], [7.9, -7.3]];
-    const ROUTE_IN = {
-      joy: [[-0.6, -2.0], [-0.55, -0.5], [-0.55, 0.7], [-0.4, 1.9], [4.4, 1.9], ...DOORWAY],
-      lim: [[1.3, -2.2], [1.3, -0.6], [0.8, 0.6], [0.8, 1.9], [4.4, 1.9], ...DOORWAY]
-    };
+       (the room's box hides them behind its front face). Everyone goes round the board and Pa Noi. */
     const ROUTE_OUT = [[7.9, -6.15], [7.9, -5.0], [6.4, -2.0], [4.6, 2.6], [1.9, 6.4], [0.7, 9.4], [0.4, 12.6]];
 
-    /* ================================================================ P1 · ARRIVE */
+    /* ================================================================ P1 · ARRIVE (v24.9: STRAIGHT IN — Chad's call)
+       Chad, 29 Oct: "is it really necessary to have the other customers there, to wait one by one for your turn, to
+       gather notes that are inconsequential?" It was not: the queue took about three of the chapter's nine and a half
+       minutes whichever way it was played, and the notes changed nothing later. Pong walks him in to Pa Noi; she greets
+       them, gives water, and they go straight to the master's door, where ONE question can be put to Pong — the case
+       file's lesson (who can vouch for him?) as a single act (docs/V24.9-E4C1-TIGHTER.md). */
     /* a fresh start of the chapter owns no piece and no page (CP13: the bag and the ledger outlive a replay — the bag adds
-       a second piece and a Continue then picked the first; every ledger page "answered at once", with no book and no
-       award): the three pieces are taken back and this chapter's entries go, the episode's others stay */
+       a second piece and a Continue then picked the first): the three pieces are taken back, and the pages a v24.0–v24.8
+       run of this chapter wrote go, the episode's others stay */
     const PIECES = ['nangkwak', 'takrut', 'phayant'];
+    const OLD_PAGES = new Set(['who:joy', 'who:lim', 'who:sb', 'who:pong', 'who:read', 'saw:smoke', 'saw:cloth', 'saw:shadow', 'saw:her']);
     function freshRun() {
       if (!kit) return;
       if (kit.has && kit.take) for (const id of PIECES) { let n = 0; while (kit.has(id) && n++ < 8) kit.take(id); }
       if (kit.ledger && kit.ledger.set) {
-        /* (v24.5, L2-5: only THIS chapter's pages — the book belongs to the episode, and every who:/saw: page went, a later
-           chapter's too, the moment this one was replayed) */
-        const mine = new Set(Object.keys(ASK).map(k => 'who:' + k).concat(['who:read'], Object.keys(SIGN).map(k => 'saw:' + k)));
-        const keep = kit.ledger.entries().filter(e => !mine.has(e.id));
+        /* (v24.5, L2-5: only THIS chapter's pages — the book belongs to the episode) */
+        const keep = kit.ledger.entries().filter(e => !OLD_PAGES.has(e.id));
         if (keep.length !== kit.ledger.entries().length) kit.ledger.set(keep);
       }
     }
@@ -3645,7 +3574,7 @@
       setPhase('arrive');
       freshRun();
       look('YARD0', 0);
-      boardSet(9);
+      boardSet(14);
       after(3.4, () => { if (phase === 'arrive' && worldSfx) worldSfx('w4dog', 0.3, 1, -0.5); });   // the yard's dog, by the house
       after(0.9, () => {
         if (play.greeted) return;                  // (CP13: a Continue beside Pa Noi greets on the first frame; greet() walks him in)
@@ -3654,113 +3583,72 @@
       });
     }
     const ARRIVE_IN = [[3.3, 10.2], [2.4, 9.8], [0.9, 7.2], [1.6, 4.0], [2.25, 2.35]];   // (v24.5, L5-10: round the pickup's nose, not through it)
-    function pongToSeat() {
-      /* (v24.5, L1-8: if his model never lands his walk never runs, and pongSat — the gate of the farmer's ask and his
-         own — was never set: his (invisible) place is put on the bench instead, so both can still be asked) */
-      whenReadyOr(cast.pong, () => personWalk(cast.pong, [[1.6, 2.0], [0.82, 0.9], [0.82, -0.3], [0.84, -1.35]], { speed: 1.05, ry: Math.PI / 2,
-        then: () => after(0.5, () => { personSit(cast.pong, true, SEAT.pong); play.pongSat = true; }) }),
-        () => { personPut(cast.pong, SEAT.pong.x, SEAT.pong.z, Math.PI / 2, CMP.SALA.floor); play.pongSat = true; });
-    }
-    /* Pa Noi gives him his number when he comes up to her (the waypoint is on Pong, then on her) */
+    /* Pa Noi greets them when he comes up to her (the waypoint is on Pong, then on her): the master is waiting; water
+       first (hospitality, the first and the last); and Pong takes him on to the door */
     function greet() {
       if (play.greeted) return;
       play.greeted = true;
-      line('pn1num', cast.noi);
-      line('q1board', null);
-      queueFn(() => {
-        waitBegin(false);
-        /* Pong takes his seat on the front bench to wait: on from his walk in if he is still on it, in from the gate if he
-           never came (a Continue beside Pa Noi — CP13: the walk in replaced the walk to the seat, which alone sits him
-           down, and the farmer and Pong could never be asked) */
-        whenReady(cast.pong, (P) => {
-          if (P.walk && P.walk.tag === 'in') P.walk.then = pongToSeat;
-          else if (P.group.position.z > 4.2) personWalk(P, ARRIVE_IN.slice(0, -1), { speed: 1.1, then: pongToSeat });
-          else pongToSeat();
-        });
-      });
-    }
-
-    /* ================================================================ P2 · WAIT, AND ASK */
-    function waitTag() {
-      return [...play.asked].join(',') + ';n' + play.n + (play.missed.size ? ';m' + [...play.missed].join(',') : '');
-    }
-    function waitBegin(resumed) {
-      setPhase('wait', waitTag());
-      play.nextCall = dayClock.t + (resumed ? 18 : 24);
-      if (!resumed && !play.water) after(8.5, waterOffer);
-    }
-    /* hospitality, the first and the last: Pa Noi brings him water while he waits */
-    function waterOffer() {
-      if (play.water || phase !== 'wait') return;
-      if (play.busy || play.calling) { after(4, waterOffer); return; }
-      play.water = true;
-      queueFn(() => { if (worldSfx) worldSfx('w4water', 0.5); });    // the dispenser's tap into a paper cup, as she speaks (CP13)
-      queueGap(0.5);                                                    // (v24.5, L3-8: a beat before she does — under her line it was ducked to nothing)
+      if (kit) kit.objective(null);                // he followed Pong in: COMPLETE, and the next order comes with Pong's
+      look('YARD1', 8);                            // the storm deck crosses the sun while she speaks
+      line('pn1ready', cast.noi);
+      queueFn(() => { if (worldSfx) worldSfx('w4water', 0.5); });    // the dispenser's tap into a paper cup (CP13)
+      queueGap(0.5);                                                    // (v24.5, L3-8: a beat before she speaks again)
       line('pn1water', cast.noi);
       line('q1water', null);
+      queueFn(() => calledBegin(false));
+      /* Pong comes up beside them: on from his walk in if he is still on it, in from the gate if he never came (a
+         Continue beside Pa Noi, CP13) */
+      whenReady(cast.pong, (P) => { if (!(P.walk && P.walk.tag === 'in') && P.group.position.z > 4.2) personWalk(P, ARRIVE_IN, { speed: 1.1, ry: 2.3, tag: 'in' }); });
     }
-    const ASK = {
-      joy:  { f: 'ledJoyF', m: 'ledJoyM', steps: () => [['q1joy1', null], ['jy1a', cast.joy], ['q1joy2', null], ['jy1b', cast.joy]] },
-      lim:  { f: 'ledLimF', m: 'ledLimM', steps: () => [['q1lim1', null], ['lm1a', cast.lim], ['q1lim2', null], ['lm1b', cast.lim]] },
-      sb:   { f: 'ledSbF', m: 'ledSbM', steps: () => [['q1sb1', null], ['pg1sbq', cast.pong], ['sb1a', cast.sombat], ['pg1sb', cast.pong]] },
-      pong: { f: 'ledPongF', m: 'ledPongM', steps: () => [['q1pg1', null], ['pg1me', cast.pong]] }
-    };
-    const threeDone = () => ['joy', 'lim', 'sb'].every(k => play.asked.has(k) || play.missed.has(k));
-    function askOpen(key) {
-      if (phase !== 'wait' || play.busy || play.calling || play.asked.has(key) || play.missed.has(key)) return false;
-      if (key === 'sb' || key === 'pong') { if (!play.pongSat) return false; }
-      if (key === 'pong' && !threeDone()) return false;
-      return true;
+
+    /* ================================================================ P2 · CALLED: to the door, and the one question */
+    /* Pong waits BESIDE the steps, left of them and clear of the awning, turned to the yard: so the door and he are two
+       things to look at — from the sala's corner they stand 9° apart on the screen, and his narrow cone (ask) lets the
+       door have the badge whenever the reticle is on the door (the aimed spot wins a press, v21.9) */
+    const PONG_DOOR = { x: 6.45, z: -5.05, ry: -0.34 };
+    const PONG_TO_DOOR = [[4.4, 1.9], [6.0, -2.0], [PONG_DOOR.x, PONG_DOOR.z]];
+    function calledBegin(resumed) {
+      play.called = true;
+      warmWork();
+      setPhase('called', undefined, resumed ? { complete: false } : undefined);
+      if (!resumed) {
+        look('YARD2', 6);                          // the storm closing in as they go to the door
+        line('pg1go', cast.pong);
+      }
+      /* Pong goes to the room's steps to take his sandals off, and waits there for him; the first drops */
+      whenReadyOr(cast.pong, (P) => {
+        if (resumed) { personPut(P, PONG_DOOR.x, PONG_DOOR.z, PONG_DOOR.ry); P.seated = false; P.sitW = 0; play.pongAtDoor = true; return; }
+        personWalk(P, PONG_TO_DOOR, { speed: 1.1, ry: PONG_DOOR.ry, then: () => { play.pongAtDoor = true; } });
+      }, () => { play.pongAtDoor = true; });        // (his model never came: his place is the door's, and he can still be asked)
+      if (kit && kit.rain) kit.rain(0.12, { secs: 4, len: 0.5 });   // (CP13: the engine's shape is (k, opts) — the ease and the length were dropped)
     }
-    function ask(key) {
-      if (!askOpen(key)) return false;
+    /* ASK (§4.2, now one question): "who can genuinely vouch for him?" — the man who brought him has never been here
+       either. Optional; asking pays two awareness once, its receipt in the bookmark of the same tick (~ask), before his
+       own line, so a Continue never asks again (v24.5, L2-4) */
+    const askOpen = () => phase === 'called' && play.pongAtDoor && !play.busy && !play.asked.has('pong') && worldOf(yaw.position.x) === 'C';
+    function askPong() {
+      if (!askOpen()) return false;
       play.busy = true;
-      const A = ASK[key], run = play.run;
-      /* the farmer is asked through Pong: Pong hears him out, turns to the farmer to ask (and the farmer to Pong), and
-         turns back to translate (CP8, by photograph: the turn came before the question was put to Pong at all) */
-      if (key === 'sb') {
-        const st = A.steps();
-        line(st[0][0], st[0][1]);
-        /* (v24.5, L5-9: Pong turns on the bench to him — the farmer sits on the bench BEHIND his, 174° from where he faces, past
-           what a neck turns, so his look was nothing and the man he translated for spoke to the back of his head) */
-        queueFn(() => { cast.pong.turnTo = 3.3; if (cast.pong.head && cast.sombat.head) { cast.pong.lookAt = cast.sombat.head; cast.sombat.lookAt = cast.pong.head; } });
-        line(st[1][0], st[1][1]); line(st[2][0], st[2][1]);
-        queueFn(() => { cast.pong.lookAt = null; cast.sombat.lookAt = null; cast.pong.turnTo = Math.PI / 2; });
-        line(st[3][0], st[3][1]);
-      } else if (key === 'pong') {
-        /* (v24.5, Chad: "Are you telling me you dont see any problems with how pong head and neck turns?" — asked
-           himself, Pong answered from where he sat, square to the master's door: his head alone turned up to 49° and
-           the rest of the answer went over his shoulder. He turns on the bench to the client, as he turns to the farmer,
-           and back when he has answered) */
-        queueFn(() => pongTurnTo(yaw.position));
-        lines(A.steps());
-        queueFn(() => { cast.pong.turnTo = Math.PI / 2; });
-      } else lines(A.steps());
+      const run = play.run;
+      /* (v24.5, Chad: "Are you telling me you dont see any problems with how pong head and neck turns?" — he turns his
+         body to the one asking him, and his head looks the rest of the way) */
+      queueFn(() => pongTurnTo(yaw.position));
+      lines([['q1pg1', null], ['pg1me', cast.pong]]);
       queueFn(() => {
-        if (key === 'sb') { cast.pong.lookAt = null; cast.sombat.lookAt = null; cast.pong.turnTo = Math.PI / 2; }
-        writeLedger('who:' + key, 'who', A.f, A.m).then(() => {
-          if (!live(run)) return;
-          play.asked.add(key);
-          /* (v24.5, L2-4: bookmarked as the page is written — after Pong's it trailed by "Nobody I've asked…", and a save
-             there resumed with him still to ask and his whole exchange said again) */
-          setPhase('wait', waitTag());
-          if (key === 'pong') line('q1nobody', null);
-          queueFn(() => {
-            play.busy = false;
-            setPhase('wait', waitTag());
-            play.nextCall = Math.min(play.nextCall, dayClock.t + 3.5);       // a conversation is followed by the next call
-          });
-        });
+        if (!live(run)) return;
+        play.asked.add('pong');
+        if (kit) kit.award('awareness', 2);
+        setPhase('called', undefined, { complete: false });
       });
+      line('q1nobody', null);
+      queueFn(() => { play.busy = false; });
       return true;
     }
-    /* Pong on his bench turned toward a point in the world — no further than 80° from the bench's own facing (the master's
-       door, +x), as far as a man sitting on a bench turns without getting up; his head looks the rest of the way */
+    /* Pong, standing, turned toward a point in the world (his head looks the rest of the way) */
     function pongTurnTo(at) {
       const P = cast.pong; if (!P || !P.group || !P.group.parent) return;
       const p = P.group.parent.worldToLocal(_ptv.copy(at));
-      const want = Math.atan2(p.x - P.group.position.x, p.z - P.group.position.z);
-      P.turnTo = Math.PI / 2 + THREE.MathUtils.clamp(angTo(Math.PI / 2, want), -1.4, 1.4);
+      P.turnTo = Math.atan2(p.x - P.group.position.x, p.z - P.group.position.z);
     }
     const _ptv = new THREE.Vector3();
     /* the takhian tree with its dresses (a folk custom, shown respectfully, never explained further) */
@@ -3771,88 +3659,12 @@
       line('pg1tree', cast.pong);
       return true;
     }
-
-    /* THE QUEUE IS TIME (§4.2): a short dip to black; in it the light moves a notch toward the storm and the board a
-       number on; whoever was called while time passed is gone. Ten and eleven are heard in the dark; twelve, thirteen
-       and his own fourteen are called with the picture up, and the ones called rise and go in. */
-    const CALL = { 10: 'pn1n10', 11: 'pn1n11', 12: 'pn1n12', 13: 'pn1n13', 14: 'pn1n14' };
-    const SKY = { 9: 'YARD0', 10: 'YARD0', 11: 'YARD1', 12: 'YARD1', 13: 'YARD2', 14: 'YARD2' };
-    function callNext() {
-      if (play.calling || play.n >= 14 || phase !== 'wait') return;
-      play.calling = true;
-      const n = play.n + 1, run = play.run;
-      if (kit) kit.fade(1, 0.45);
-      after(0.6, () => {
-        if (!live(run)) return;
-        boardSet(n);
-        if (worldSfx) worldSfx('w4marker', 0.4, 1, -0.2);          // her marker on the board, heard in the dark
-        look(SKY[n], 2.6);
-        /* the one who went in before comes out while time passes */
-        if (n === 13) comeOut(cast.joy);
-        setPhase('wait', waitTag(), { complete: false });
-        if (n <= 11) { queueGap(0.6); line(CALL[n], cast.noi); }   // (v24.5, L3-8: the marker heard before her call, not under it)
-      });
-      after(1.6, () => { if (live(run) && kit) kit.fade(0, 0.8); });
-      after(2.5, () => {
-        if (!live(run)) return;
-        if (n >= 12) line(CALL[n], cast.noi);
-        if (n === 12) queueFn(() => goIn('joy'));
-        if (n === 13) queueFn(() => goIn('lim'));
-        queueFn(() => {
-          play.calling = false;
-          if (n === 14) { calledBegin(false); return; }
-          play.nextCall = dayClock.t + (['joy', 'lim', 'sb', 'pong'].every(k => play.asked.has(k) || play.missed.has(k) || !askAvail(k)) ? 9 : 30);
-        });
-      });
-    }
-    const askAvail = (k) => !(k === 'joy' && play.n >= 12) && !(k === 'lim' && play.n >= 13);
-    function goIn(who) {
-      const P = cast[who];
-      if (!play.asked.has(who)) play.missed.add(who);
-      setPhase('wait', waitTag(), { complete: false });
-      line(who === 'joy' ? 'jy1go' : 'lm1go', P);
-      queueFn(() => {
-        whenReady(P, () => personWalk(P, ROUTE_IN[who], { speed: 1.05, then: () => {
-          P.group.visible = false;
-          /* called out again while still on the way in: out a while after she went in, never out of thin air */
-          if (P.pendingOut) { P.pendingOut = false; const run = play.run; after(9, () => { if (live(run)) comeOut(P); }); }
-        } }));
-        if (play.missed.has(who)) after(1.6, () => line('q1missed', null));
-      });
-    }
-    function comeOut(P) {
-      if (P && P.walk && P.group.visible) { P.pendingOut = true; return; }
-      whenReady(P, () => {
-        P.group.visible = true; P.seated = false; P.sitW = 0;
-        personPut(P, 7.9, -7.2, 0);
-        personWalk(P, ROUTE_OUT, { speed: 1.1, then: () => hideUnseen(P) });
-      });
-    }
-
-    /* ================================================================ P3 · CALLED */
-    function calledBegin(resumed) {
-      play.called = true;
-      warmWork();
-      /* OBJECTIVE COMPLETE only when the order on the box was to wait (CP13: an unfinished "Ask about the master · 1/3"
-         was congratulated as the number came — the v8.7 lie) */
-      const waited = threeDone() && !(play.pongSat && !play.asked.has('pong'));
-      setPhase('called', undefined, resumed || !waited ? { complete: false } : undefined);
-      if (!resumed) {
-        line('pg1go', cast.pong);
-        queueFn(() => comeOut(cast.lim));
-      }
-      /* Pong gets up and goes to the room's steps to take his sandals off; the first drops */
-      whenReady(cast.pong, () => {
-        personWalk(cast.pong, [[0.82, 0.6], [0.82, 1.9], [4.4, 1.9], [6.6, -2.4], [7.35, -4.9]], { speed: 1.1, ry: Math.PI });
-      });
-      if (kit && kit.rain) kit.rain(0.12, { secs: 4, len: 0.5 });   // (CP13: the engine's shape is (k, opts) — the ease and the length were dropped)
-    }
     function enterRoom() {
-      if (phase !== 'called') return false;
-      lineQ.length = 0;                            // (CP13: Pong's yard line and Lim's walk out were carried into the room)
+      if (phase !== 'called' || play.busy) return false;
+      lineQ.length = 0;                            // (CP13: Pong's yard line was carried into the room)
       /* (v24.5, L5-6: the yard's walks are finished as he goes in — a walk stops while its world is hidden, and Pong's to the
          steps came back, mid-yard, in the endings' yard shots) */
-      for (const P of [cast.pong, cast.joy, cast.lim]) if (P && P.walk) {
+      for (const P of [cast.pong]) if (P && P.walk) {
         const W = P.walk, e = W.pts[W.pts.length - 1]; personPut(P, e[0], e[1], W.ry); if (W.then) W.then(); }
       if (kit && kit.rain) kit.rain(0);
       if (worldSfx) worldSfx('w4sandals', 0.7);
@@ -3909,7 +3721,7 @@
       play.kneeling = false;
       matZone.visible = true;
       herCtl.show(false);
-      setPhase('consult', play.day);
+      setPhase('consult');
     }
     function kneel(instant) {
       if (play.kneeling) return false;
@@ -3937,28 +3749,11 @@
       line('pg1th1', PR);
       queueFn(() => { PR.lookAt = null; });
       lines([['fm1good', M2], ['pg1good', PR]]);
-      if (play.day) { queueFn(() => { slateWrite(play.day); reading(); }); return; }
-      lines([['fm1day', M2], ['pg1day', PR]]);
-      queueFn(() => askDay());
+      /* (v24.9, Chad's call: no birthday pick — it changed nothing but the chalk on the slate) */
+      queueFn(() => { slateWrite(true); reading(); });
     }
-    /* THE DAY HE WAS BORN (S47): eight days in their Thai colours — Wednesday has a night of its own (Rahu's) */
-    const DAYS = [['sun', '#d23a30'], ['mon', '#e8c228'], ['tue', '#ec7fa4'], ['wed', '#3a9a4a'], ['wedn', '#3c3a42'],
-                  ['thu', '#ec8a2a'], ['fri', '#5aa8e0'], ['sat', '#7a4aa8']];
-    const DAY_TH = { sun: 'วันอาทิตย์', mon: 'วันจันทร์', tue: 'วันอังคาร', wed: 'วันพุธ', wedn: 'พุธกลางคืน', thu: 'วันพฤหัสบดี', fri: 'วันศุกร์', sat: 'วันเสาร์' };
-    function askDay() {
-      const run = play.run;
-      if (!kit || !kit.pick) { play.day = 'fri'; reading(); return; }
-      kit.pick(DAYS.map(([id, color]) => ({ id, color, label: W['day_' + id], sub: W['dayc_' + id] })),
-               { label: W.pickLabel, title: W.pickTitle }).then(id => {
-        if (!live(run)) return;
-        if (!id) { after(0.8, askDay); return; }
-        play.day = id;
-        setPhase('consult', id);
-        slateWrite(id);
-        reading();
-      });
-    }
-    /* the master writes the day on his slate in chalk, with the small square of a reckoning under it */
+    /* the master writes the matter on his slate in chalk — the amulet shop, ร้านพระ — with the small square of a
+       reckoning under it */
     function slateWrite(id) {
       const S2 = room.slate; if (!S2) return;
       const x = S2.ctx, Wd = 256, Hd = 180;
@@ -3967,21 +3762,21 @@
       x.strokeStyle = 'rgba(232,236,236,0.85)'; x.fillStyle = 'rgba(236,240,240,0.92)';
       x.font = `bold 34px ${THAI_FONT}`; x.textAlign = 'center'; x.textBaseline = 'middle';
       if (!id) { S2.tex.needsUpdate = true; return; }
-      x.save(); x.translate(Wd / 2, 40); x.rotate(-0.03); x.fillText(DAY_TH[id], 0, 0); x.restore();
+      x.save(); x.translate(Wd / 2, 40); x.rotate(-0.03); x.fillText('ร้านพระ', 0, 0); x.restore();
       x.lineWidth = 2.2;
       const gx = 78, gy = 72, gs = 33;
       for (let i = 0; i <= 3; i++) { x.beginPath(); x.moveTo(gx + i * gs, gy); x.lineTo(gx + i * gs + (i % 2) * 1.5, gy + 3 * gs); x.stroke();
                                      x.beginPath(); x.moveTo(gx, gy + i * gs); x.lineTo(gx + 3 * gs, gy + i * gs + (i % 2) * 1.5); x.stroke(); }
       x.font = `22px ${THAI_FONT}`;
       const digits = ['๑', '๒', '๓', '๔', '๕', '๖', '๗', '๘', '๙'];
-      const start = Math.max(0, DAYS.findIndex(d => d[0] === id));
+      const start = 3;
       for (let k = 0; k < 9; k++) x.fillText(digits[(k + start) % 9], gx + (k % 3) * gs + gs / 2, gy + Math.floor(k / 3) * gs + gs / 2 + 1);
       S2.tex.needsUpdate = true;
     }
     function reading() {
       const M2 = cast.master, PR = cast.pongR, run = play.run;
       lines([['fm1hm', M2], ['fm1read', M2], ['pg1read', PR], ['q1short', null]]);
-      queueFn(() => writeLedger('who:read', 'who', 'ledReadF', 'ledReadM').then(() => { if (live(run)) itemsBegin(false); }));
+      queueFn(() => { if (live(run)) itemsBegin(false); });   // (v24.9: no page is written after it)
     }
 
     /* ================================================================ P5 · THE ITEMS */
@@ -4134,10 +3929,10 @@
       lines([['fm1eyes', cast.master], ['pg1eyes', cast.pongR]]);
       queueFn(go);
     }
-    const SIGN = { smoke: ['q1smoke', 'ledSmokeF', 'ledSmokeM'], cloth: ['q1cloth', 'ledClothF', 'ledClothM'],
-                   shadow: ['q1shadow', 'ledShadowF', 'ledShadowM'], her: ['q1her', 'ledHerF', 'ledHerM'] };
+    /* each sign: what he says as he notices it, and what the endings' book says he saw (v24.9: no page in play) */
+    const SIGN = { smoke: ['q1smoke', 'ledSmokeF'], cloth: ['q1cloth', 'ledClothF'], shadow: ['q1shadow', 'ledShadowF'], her: ['q1her', 'ledHerF'] };
     /* (v24.5, L1-5: the cloth's sign only once it has breathed, the shadow's once his hands have moved — offered from the
-       work's first frame, "The cloth over the bowl moved" could be written before anything had) */
+       work's first frame, "The cloth over the bowl moved" could be said before anything had) */
     const signOpen = (k) => phase === 'work' && play.signsOn && !play.busy && !play.signs.has(k) && worldOf(yaw.position.x) === 'R'
                             && (k !== 'her' || play.herSeen) && (k !== 'cloth' || play.clothSeen) && (k !== 'shadow' || play.gestSeen);
     function sign(key) {
@@ -4148,15 +3943,18 @@
          through "No. There's no one.") — and back at the edge of sight after his line, while the work goes on */
       if (key === 'her') herCtl.show(false);
       line(S2[0], null);
-      queueFn(() => writeLedger('saw:' + key, 'saw', S2[1], S2[2]).then(() => {
+      /* noticing it is the act (v24.9, Chad: no page to write — "gather notes that are inconsequential?"): two awareness,
+         paid once, its receipt in the bookmark of the same tick */
+      queueFn(() => {
         if (!live(run)) return;
         play.signs.add(key); play.busy = false;
+        if (kit) kit.award('awareness', 2);
         /* (v24.5, L1-6: the fourth goes straight into the storm — its "4/4" order between two OBJECTIVE COMPLETEs was an
            empty beat) */
         if (play.signs.size >= 4) { stormBegin(false); return; }
         setPhase('work', [...play.signs].join(','));
         if (key === 'her' && phase === 'work') herCtl.show(true);
-      }));
+      });
       return true;
     }
     /* her place on the screen, for the sign's look-spot and the storm's fourth flash: wherever she stands now */
@@ -4248,16 +4046,10 @@
 
     /* ================================================================ DECIDE */
     function decideBegin(resumed) {
-      /* whom he asked, from the ledger as well (CP13: play.asked is rebuilt only for 'wait', so a Continue in the room
-         told him he never asked) */
-      /* (v24.5, L6-1: the reading's own page, who:read, is written for everyone before this — so "You never asked" could
-         never be said; only the yard's four asks count) */
+      /* whether he asked Pong: the bookmark carries it (~ask, v24.9); a save from v24.0–v24.8 carried it only in the stock
+         book's pages, read here for it (only the yard's asks — who:read was written for everyone) */
       const askedAny = play.asked.size || (kit && kit.ledger && kit.ledger.entries().some(e => /^who:/.test(e.id) && e.id !== 'who:read'));
       bank(askedAny ? W.noteAsked : W.noteNeverAsked);
-      if (kit && kit.ledger) {
-        const ents = kit.ledger.entries(), f = ents.filter(e => e.kind === 'fact').length, m = ents.filter(e => e.kind === 'meaning').length;
-        if (f + m) bank(f >= m ? W.noteFacts : W.noteMeanings);
-      }
       setPhase('decide');
       if (resumed) after(0.6, openDecision); else openDecision();
     }
@@ -4283,8 +4075,6 @@
         const wp = !(near && dp.z < 1 && Math.abs(dp.x) < 0.95 && Math.abs(dp.y) < 0.95);
         if (wp !== play.doorWp) { play.doorWp = wp; kit.waypoint(wp ? { x: RDOOR.x, y: 1.9, z: RDOOR.z - 0.5 } : null); }
       }
-      if (phase === 'wait' && inC && !play.busy && !play.calling && !lineQ.length && !speak.pending && dayClock.t >= speak.until
-          && dayClock.t >= play.nextCall && !(kit.ledger && kit.ledger.isOpen())) callNext();
       if (phase === 'consult' && inR && !play.kneeling && matZone.visible
           && Math.hypot(yaw.position.x - (RX + CMAT.x), yaw.position.z - CMAT.z) < 0.42) kneel(false);
       if ((phase === 'work' || phase === 'storm') && inR) {
@@ -4325,11 +4115,13 @@
       }
       return true;
     }
-    const askSpot = (key, Pf, prompt) => {
+    /* the one question, on Pong where he waits by the steps: a press on what is looked at (v21.9), in a cone narrow
+       enough that the door beside him keeps the badge when the reticle is on the door (v24.9) */
+    const askSpot = (Pf, prompt) => {
       const pos = { x: 0, y: 0, z: 0 };
-      return { id: 'ask-' + key, get pos() { const P = Pf(); const p = near(P, 1.15); pos.x = p.x; pos.y = p.y; pos.z = p.z; return pos; },
-               radius: 3.4, aim: 0.3, pressAim: true, markY: 0.42, prompt, enabled: () => askOpen(key) && worldOf(yaw.position.x) === 'C',
-               onInteract() { return ask(key); } };
+      return { id: 'ask-pong', get pos() { const P = Pf(); const p = near(P, 1.15); pos.x = p.x; pos.y = p.y; pos.z = p.z; return pos; },
+               radius: 4.2, aim: 0.16, pressAim: true, markY: 0.8, prompt, enabled: askOpen,   // (his "!" over his head: standing, 0.42 put it on his face)
+               onInteract() { return askPong(); } };
     };
     const signHit = (posF) => (x, y) => { const p = posF(); camera.updateMatrixWorld(); _hv.set(p.x, p.y, p.z).project(camera);
       return _hv.z < 1 && Math.hypot(x - (_hv.x * 0.5 + 0.5) * innerWidth, y - (-_hv.y * 0.5 + 0.5) * innerHeight) < Math.min(innerWidth, innerHeight) * 0.08; };
@@ -4342,17 +4134,14 @@
     const clothPos = { x: RX + RMC.BOWL.x, y: RMC.LOWT.top + 0.15, z: RMC.BOWL.z };
     const shadowPos = { x: RX + 0, y: 1.62, z: WALL_Z };
     const hotspots = [
-      askSpot('joy', () => cast.joy, W.hotJoy),
-      askSpot('lim', () => cast.lim, W.hotLim),
-      askSpot('sb', () => cast.sombat, W.hotSombat),
-      askSpot('pong', () => cast.pong, W.hotPong),
+      askSpot(() => cast.pong, W.hotPong),
       { id: 'tree', pos: { x: CMP.TAKHIAN.x, y: 1.5, z: CMP.TAKHIAN.z + 0.9 }, radius: 12, aim: 0.22, pressAim: true, mark: false, prompt: W.hotTree,
-        enabled: () => !play.tree && !play.busy && (phase === 'wait' || phase === 'arrive') && play.greeted && worldOf(yaw.position.x) === 'C'
+        enabled: () => !play.tree && !play.busy && phase === 'called' && worldOf(yaw.position.x) === 'C'
                        && !segBox(yaw.position.x, yaw.position.z, CMP.TAKHIAN.x, CMP.TAKHIAN.z + 0.9, CMP.ROOMX),   // (CP13: offered through the room's walls)
         onInteract() { return treeLook(); } },
       { id: 'door', pos: { x: RDOOR.x, y: 1.6, z: RDOOR.z - 0.5 }, radius: 3.2, prompt: W.hotDoor,
         hits: markHit(() => ({ x: RDOOR.x, y: 1.6, z: RDOOR.z - 0.5 }), 0.55),
-        enabled: () => worldOf(yaw.position.x) === 'C' && phase === 'called',
+        enabled: () => worldOf(yaw.position.x) === 'C' && phase === 'called' && !play.busy,   // (v24.9: not while Pong is being asked)
         onInteract() { return enterRoom(); } },
       /* the glowing place on the floor IS the mat's mark (CP8, by photograph: the engine's "!" floated at chest height over
          it and read as a mark on the far wall; the anchor stays at 1.0 so the badge is offered from the door) */
@@ -4470,17 +4259,27 @@
        moment and nothing jumps when play begins (CP13: only the room's door was placed, so a wait showed the yard at noon
        with Pong at the gate, and a storm showed the room lit from the door, then everything moved). applyPhase does it all
        again on the first live frame, and every part of it is idempotent. */
+    /* a bookmark read once (v24.9): its phase, its own tag, and whether he asked Pong (~ask). A save from v24.0–v24.8 in
+       the queue ('wait:joy,pong;n12;mlim') lands at the door, with Pong asked if its list says so; an old day mark
+       ('~fri', the birthday pick that went) is read and let go */
+    function readMark(p0) {
+      const t = String(p0 || '').split(':'), old = t[0] === 'wait';
+      let p = old ? 'called' : t[0];
+      if (!PHASES.includes(p)) p = 'arrive';
+      let tag = t.slice(1).join(':'), asked = false;
+      const di = tag.indexOf('~');
+      if (di >= 0) { asked = tag.slice(di + 1) === 'ask'; tag = tag.slice(0, di); }
+      if (old) { asked = tag.split(';').some(part => !/^[nm]/.test(part) && part.split(',').includes('pong')); tag = ''; }
+      return { p, tag, asked };
+    }
+    /* he stands by the sala's front, turned to the master's door with Pong beside its steps */
+    const YARD_AT = { x: 3.1, z: 3.8, yaw: -0.45, pitch: -0.05 };
     function preStage(p0) {
-      const t = String(p0 || '').split(':'), p = PHASES.includes(t[0]) ? t[0] : 'arrive';
-      let tag = t.slice(1).join(':'); const di = tag.indexOf('~'); if (di >= 0) tag = tag.slice(0, di);
-      if (p === 'wait' || p === 'called') {
-        let n = p === 'called' ? 14 : 9;
-        for (const part of tag.split(';')) if (/^n\d+$/.test(part)) n = Math.min(14, Math.max(9, parseInt(part.slice(1), 10)));
-        yaw.position.x = 3.1; yaw.position.z = 3.8; yaw.rotation.y = 0.62; pitch.rotation.x = -0.05;
-        look(SKY[n], 0); boardSet(n);
-        whenReady(cast.pong, (P) => { if (!booted) { personPut(P, SEAT.pong.x, SEAT.pong.z, Math.PI / 2, CMP.SALA.floor); seatNow(P, true); } });
-        if (n >= 12) whenReady(cast.joy, (P) => { if (!booted) P.group.visible = false; });
-        if (n >= 13) whenReady(cast.lim, (P) => { if (!booted) P.group.visible = false; });
+      const { p, tag } = readMark(p0);
+      if (p === 'called') {
+        yaw.position.x = YARD_AT.x; yaw.position.z = YARD_AT.z; yaw.rotation.y = YARD_AT.yaw; pitch.rotation.x = YARD_AT.pitch;
+        look('YARD2', 0); boardSet(14);
+        whenReady(cast.pong, (P) => { if (!booted) { personPut(P, PONG_DOOR.x, PONG_DOOR.z, PONG_DOOR.ry); seatNow(P, false); } });
         return 'C';
       }
       const RA = resumeAt(p0);
@@ -4503,52 +4302,28 @@
       return 'R';
     }
     function resumeAt(p0) {
-      const tag = String(p0 || '').split(':'), p = PHASES.includes(tag[0]) ? tag[0] : 'arrive';
-      if (PHASES.indexOf(p) >= PHASES.indexOf('consult')) return { w: 'R', at: p, tag: tag.slice(1).join(':') };
+      const { p, tag } = readMark(p0);
+      if (PHASES.indexOf(p) >= PHASES.indexOf('consult')) return { w: 'R', at: p, tag };
       return null;
     }
-    /* A CONTINUE LANDS WHERE A RELOAD WOULD (§10.1): each phase's receipt is in its string — whom he asked and the
-       number called (wait:joy,sb;n11;mjoy), the day he was born (consult:fri), the piece he took (items:takrut), the
-       signs he has written (work:smoke,her) — and the world, the people and the room are put as that moment had them */
+    /* A CONTINUE LANDS WHERE A RELOAD WOULD (§10.1): each phase's receipt is in its string — whether he asked Pong (~ask),
+       the piece he took (items:takrut), the signs he has noticed (work:smoke,her) — and the world, the people and the room
+       are put as that moment had them */
     const seatNow = (P, on) => { if (!P) return; P.seated = !!on; P.sitW = on ? 1 : 0; P.sitOff = null; P.walk = null; };
-    function yardResume(p) {
-      yaw.position.x = 3.1; yaw.position.z = 3.8; yaw.rotation.y = 0.62; pitch.rotation.x = -0.05;
+    function yardResume() {
+      yaw.position.x = YARD_AT.x; yaw.position.z = YARD_AT.z; yaw.rotation.y = YARD_AT.yaw; pitch.rotation.x = YARD_AT.pitch;
       if (kit) kit.pose('standing', { secs: 0.05 });
-      look(SKY[play.n], 0); boardSet(play.n);
-      play.greeted = true; play.water = true; play.pongSat = true;
-      whenReady(cast.pong, (P) => { personPut(P, SEAT.pong.x, SEAT.pong.z, Math.PI / 2, CMP.SALA.floor); seatNow(P, true); });
-      if (play.n >= 12) whenReady(cast.joy, (P) => { P.group.visible = false; });
-      if (play.n >= 13) whenReady(cast.lim, (P) => { P.group.visible = false; });
-      if (p === 'wait') waitBegin(true); else calledBegin(true);
+      look('YARD2', 0); boardSet(14);
+      play.greeted = true;
+      calledBegin(true);
     }
     function applyPhase(p0) {
-      const t = String(p0 || '').split(':'), p = PHASES.includes(t[0]) ? t[0] : 'arrive';
-      let tag = t.slice(1).join(':');
-      const dayAt = tag.indexOf('~');
-      if (dayAt >= 0) { const d = tag.slice(dayAt + 1); tag = tag.slice(0, dayAt); if (DAY_TH[d]) play.day = d; }
+      const { p, tag, asked } = readMark(p0);
+      if (asked) play.asked.add('pong');           // (before any bookmark is written again: setPhase carries it on)
       if (p === 'arrive') { arriveBegin(); return; }
-      if (p === 'wait') {
-        for (const part of tag.split(';')) {
-          if (/^n\d+$/.test(part)) { const n = parseInt(part.slice(1), 10); if (n >= 9 && n <= 14) play.n = n; }
-          else if (part.startsWith('m')) { for (const k of part.slice(1).split(',')) if (ASK[k]) play.missed.add(k); }
-          else for (const k of part.split(',')) if (ASK[k]) play.asked.add(k);
-        }
-        /* a save in the seconds between the board's flip and the walk in (CP13): whoever's number is up has gone in, so
-           one he never asked is missed (a "!" over her empty seat otherwise), and FOURTEEN is the call itself (the
-           wait could never call again: a soft-lock) */
-        if (play.n >= 12 && !play.asked.has('joy')) play.missed.add('joy');
-        if (play.n >= 13 && !play.asked.has('lim')) play.missed.add('lim');
-        if (play.n >= 14) { play.called = true; yardResume('called'); return; }
-        yardResume('wait');
-        return;
-      }
-      if (p === 'called') { play.n = 14; play.called = true; yardResume('called'); return; }
+      if (p === 'called') { play.called = true; yardResume(); return; }
       /* the room */
       warmWork();
-      /* (v24.5, L2 P-1: twelve and thirteen have been called by now — Khun Joy has gone, Uncle Lim is inside — as a straight
-         run leaves them; after a Continue they sat on the benches again in the endings' yard shots) */
-      for (const P of [cast.joy, cast.lim]) whenReady(P, (Q) => { Q.walk = null; Q.group.visible = false; });
-      if (p === 'consult' && DAY_TH[tag]) play.day = tag;
       const bagged = ['nangkwak', 'takrut', 'phayant'].find(k => kit && kit.has && kit.has(k));
       if (p === 'items') { if (['nangkwak', 'takrut', 'phayant'].includes(tag)) play.item = tag; else if (bagged) play.item = bagged; }
       if (p === 'work' || p === 'storm' || p === 'decide') { play.item = bagged || ''; play.offered = true; }
@@ -4556,7 +4331,7 @@
       if (p === 'storm' || p === 'decide') for (const k of Object.keys(SIGN)) play.signs.add(k);
       toWorld('R', true, p, tag);
       if (p === 'consult') { consultBegin(true); return; }
-      if (play.day) slateWrite(play.day);
+      slateWrite(true);                            // the reading was given: his slate has its chalk (v24.9: no birthday pick)
       kneel(true);
       if (p === 'items') { itemsBegin(true); return; }
       trayShow(true);
@@ -5021,7 +4796,7 @@
     function bookShot(t, t0, t1, at, line) {
       const B = fBook;
       B.g.visible = true; B.g.position.set(at[0], at[1], at[2]); B.g.rotation.set(0, at[3] || 0, 0);
-      const ents = kit && kit.ledger ? kit.ledger.entries() : [];
+      const ents = bookEntries();             // (v24.9: what he did, never a page written in play)
       const k = sgk(t, t0 + 0.5, t1 - 1.1);
       const pen = bookDraw(B, { mode: 'back', entries: ents, n: ents.length, last: line, lastK: k, titleL: W.ledWho || 'Who is he?', titleR: W.ledSaw || 'What I saw' });
       if (!pen) return;
@@ -5488,7 +5263,7 @@
       shop.t1 = 0; shop.u = 1; shop.l1 = 0; shop.ledK = 0.7;
       if (k === 'A' || k === 'D') {                                                        // the book on the counter, open at his line
         const line = k === 'A' ? (W.endAline || "I don't know what I saw.") : (W.endDline || "Some things I don't need to understand today.");
-        const ents = kit && kit.ledger ? kit.ledger.entries() : [];
+        const ents = bookEntries();             // (v24.9: what he did, never a page written in play)
         const pen = sBook ? bookDraw(sBook, { mode: 'back', entries: ents, n: ents.length, last: line, lastK: 1, titleL: W.ledWho || 'Who is he?', titleR: W.ledSaw || 'What I saw' }) : null;
         if (pen) {
           const kk = smo(sgk(t, CODA.k3, CODA.black));
@@ -5608,21 +5383,19 @@
       phase = 'arrive';
       /* THE PLAY, BACK TO ITS FIRST FRAME (the v8.1 law: whatever a beat stated is cleared by whatever resets it) */
       play.run++;
-      play.asked.clear(); play.missed.clear(); play.n = 9; play.nextCall = 0; play.calling = false; play.busy = false;
-      play.greeted = false; play.water = false; play.tree = false; play.pongSat = false; play.called = false;
-      play.day = ''; play.item = ''; play.offerOn = false; play.offered = false;
+      play.asked.clear(); play.busy = false;
+      play.greeted = false; play.tree = false; play.pongAtDoor = false; play.called = false;
+      play.item = ''; play.offerOn = false; play.offered = false;
       play.signs.clear(); play.signsOn = false; play.herSeen = false; play.kneeling = false; play.turning = null;
       play.breathNext = 0; play.gestNext = 0; play.chantNext = 0;
       play.clothSeen = false; play.gestSeen = false; play.gustNext = 0; room.gustT = 0; play.doorWp = undefined; play.capsAt = 0;   // (v24.5: L1-5, L1-2, L5-13, L5-7)
       droneStop(0); chantStop(0);
-      boardSet(9); slateWrite(null);
+      boardSet(14); slateWrite(null);
       matZone.visible = false; tray.visible = false;
       /* the people where the day began */
       for (const P of people) { P.walk = null; P.lookAt = P.lookHome || null; P.hideUnseen = false; P.pendingOut = false; P.talkUntil = 0; P.turnTo = null; if (P.one) P.one.until = 0; }
       const at = (P, x, z, ry, y, seated) => whenReady(P, () => { P.group.visible = true; personPut(P, x, z, ry, y); seatNow(P, seated); });
       at(cast.pong, 3.45, 11.6, Math.PI, undefined, false);
-      at(cast.joy, SEAT.joy.x, SEAT.joy.z, Math.PI / 2, CMP.SALA.floor, true);
-      at(cast.lim, SEAT.lim.x, SEAT.lim.z, Math.PI / 2, CMP.SALA.floor, true);
       at(cast.noi, CMP.BOARD.x + 0.62, CMP.BOARD.z + 0.42, -0.46, undefined, false);
       whenReady(cast.noiR, (P) => { P.group.visible = false; personPut(P, 1.55, -1.0, -2.2); });
       if (cast.master) cast.master.look = 1;
@@ -5697,7 +5470,7 @@
       shop: shopCtl, shopState: shop, cab: cabCtl, cabState: cab, taxi, films,
       cast, her: herCtl, herState: her, shadow, mends: twinMends,
       person: { talk: personTalk, do: personDo, rest: personRest, walk: personWalk, put: personPut, sit: personSit, ready: whenReady },
-      play: { state: play, ask, sign, kneel, offer, enterRoom, callNext, greet, treeLook, chooseItem, askDay, matZone, tray, herPos, chg,
+      play: { state: play, ask: askPong, askOpen, sign, kneel, offer, enterRoom, greet, treeLook, chooseItem, matZone, tray, herPos, chg, pongDoor: PONG_DOOR, bookEntries,
               spots: { smoke: smokePos, cloth: clothPos, shadow: shadowPos } },
       castInfo: () => Object.fromEntries(Object.entries(cast).map(([k, P]) => [k, P && { ready: P.ready, diag: P.diag || null,
         pos: [+P.group.position.x.toFixed(2), +P.group.position.y.toFixed(2), +P.group.position.z.toFixed(2)], vis: P.group.visible,
@@ -6395,7 +6168,8 @@
     x.fillStyle = '#c0141c'; x.font = 'bold 30px sans-serif'; x.fillText('NOW', 28, 112);
     x.font = 'bold 96px sans-serif'; x.fillText(String(now), 120, 118);
     x.fillStyle = '#2a2a2a'; x.font = '22px sans-serif';
-    for (let k = 0; k < 6; k++) { const n = now + 1 + k; x.fillText(String(n), 300 + (k % 2) * 90, 76 + Math.floor(k / 2) * 40); }
+    /* (v24.9: no queue — he is the last of the day, NOW 14 and nothing after it) */
+    for (let k = 0; k < 6 && now < 14; k++) { const n = now + 1 + k; x.fillText(String(n), 300 + (k % 2) * 90, 76 + Math.floor(k / 2) * 40); }
     x.fillStyle = '#5a5a5a'; x.font = `20px ${THAI_FONT}`; x.fillText('รอเรียกคิวค่ะ', 28, 196);
   }
   function makeDressCloth(THREE, cnv, seed, a, b) {

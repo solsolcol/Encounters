@@ -8816,9 +8816,9 @@ const ADULT_TAKES = new Set([
   'z5Agig', 'z5A4', 'z5A5', 'z5A6', 'z5B1', 'z5B2', 'z5B3', 'z5B4', 'z5B5', 'z5B6', 'z5C1', 'z5C2', 'z5C3', 'z5C4',
   'z5Clotto', 'z5Claugh', 'z5C5', 'z5C6', 'z5C7', 'z5D1', 'z5D2', 'z5D3', 'z5D4', 'z5D5', 'z5D6', 'z5epi0', 'z5epi1',
   'z5epi2', 'z5epi3', 'z5A', 'z5B', 'z5C', 'z5D',
-  /* v24.0 · episode 4 chapter 1, The Master I Did Not Know (masters/v24.0/make.sh) */
-  'q1pro1', 'q1pro2', 'q1pro3', 'q1pro4', 'q1pro5', 'q1board', 'q1water', 'q1joy1', 'q1joy2', 'q1lim1', 'q1lim2',
-  'q1sb1', 'q1pg1', 'q1nobody', 'q1missed', 'q1tree', 'q1wai', 'q1shop', 'q1short', 'q1smoke', 'q1cloth', 'q1shadow',
+  /* v24.0 · episode 4 chapter 1, The Master I Did Not Know (masters/v24.0/make.sh; v24.9: the lines of the queue retired) */
+  'q1pro1', 'q1pro2', 'q1pro3', 'q1pro4', 'q1pro5', 'q1water',
+  'q1pg1', 'q1nobody', 'q1tree', 'q1wai', 'q1shop', 'q1short', 'q1smoke', 'q1cloth', 'q1shadow',
   'q1her', 'q1A1', 'q1A2', 'q1A3', 'q1A4', 'q1B1', 'q1B2', 'q1B3', 'q1B4', 'q1C0', 'q1C1', 'q1C2', 'q1C3', 'q1D1',
   'q1D2', 'q1D3', 'q1D4', 'q1D5', 'q1K1', 'q1K2', 'q1K3', 'q1A', 'q1B', 'q1C', 'q1D']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
@@ -8890,10 +8890,10 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
      the Mettā, where it was chapter 4's take under this chapter's name) */
   'ow5hello', 'ow5yin', 'ow5monk', 'ow5red', 'ow5shy', 'ow5little', 'ow5give', 'ow5never', 'ow5wrong', 'ow5promise',
   'ow5careful', 'ma5vm', 'mk5teach', 'mk5metta',
-  /* v24.0 · episode 4 chapter 1: Pong, Pa Noi, the master, Khun Joy, Uncle Lim, Ta Sombat, the taxi uncle */
-  'pg1car', 'pg1here', 'pg1come', 'pn1num', 'pn1water', 'pn1n10', 'pn1n11', 'pn1n12', 'pn1n13', 'pn1n14', 'jy1a',
-  'jy1b', 'lm1a', 'lm1b', 'pg1sbq', 'sb1a', 'pg1sb', 'pg1me', 'jy1go', 'lm1go', 'pg1go', 'pg1tree', 'fm1hello',
-  'fm1shop', 'pg1shop', 'pg1th1', 'fm1good', 'pg1good', 'fm1day', 'pg1day', 'fm1hm', 'fm1read', 'pg1read', 'pn1tray',
+  /* v24.0 · episode 4 chapter 1: Pong, Pa Noi, the master, the taxi uncle (v24.9: Khun Joy, Uncle Lim and Ta Sombat
+     left with the queue; pn1ready, Pa Noi greeting them, is new) */
+  'pg1car', 'pg1here', 'pg1come', 'pn1ready', 'pn1water', 'pg1me', 'pg1go', 'pg1tree', 'fm1hello',
+  'fm1shop', 'pg1shop', 'pg1th1', 'fm1good', 'pg1good', 'fm1hm', 'fm1read', 'pg1read', 'pn1tray',
   'pg1items', 'fm1items', 'pg1nk', 'pg1tk', 'pg1py', 'pg1offer', 'fm1anu', 'fm1eyes', 'pg1eyes',
   /* (CP13: NOT the master's chant — fm1chant, fm1chant2 — which plays on the effects path: as a voice it held the −8 dB
      duck for the whole work and storm, so the rain, the drone and the thunder never reached their levels; as an effect
@@ -13195,16 +13195,13 @@ const STING_SAMPLE = {
   k5joy: ['k5joy', 1], k5trickle: ['k5trickle', 1], k5canopy: ['k5canopy', 1], k5orbin: ['k5orbin', 1],
   /* v24.0 · episode 4 chapter 1: its voices, effects, beds and music (masters/v24.0/make.sh) */
   q1pro1: ['q1pro1', 1], q1pro2: ['q1pro2', 1], q1pro3: ['q1pro3', 1], q1pro4: ['q1pro4', 1], pg1car: ['pg1car', 1],
-  q1pro5: ['q1pro5', 1], pg1here: ['pg1here', 1], pg1come: ['pg1come', 1], pn1num: ['pn1num', 1],
-  q1board: ['q1board', 1], pn1water: ['pn1water', 1], q1water: ['q1water', 1], pn1n10: ['pn1n10', 1],
-  pn1n11: ['pn1n11', 1], pn1n12: ['pn1n12', 1], pn1n13: ['pn1n13', 1], pn1n14: ['pn1n14', 1], q1joy1: ['q1joy1', 1],
-  jy1a: ['jy1a', 1], q1joy2: ['q1joy2', 1], jy1b: ['jy1b', 1], q1lim1: ['q1lim1', 1], lm1a: ['lm1a', 1],
-  q1lim2: ['q1lim2', 1], lm1b: ['lm1b', 1], q1sb1: ['q1sb1', 1], pg1sbq: ['pg1sbq', 1], sb1a: ['sb1a', 1],
-  pg1sb: ['pg1sb', 1], q1pg1: ['q1pg1', 1], pg1me: ['pg1me', 1], q1nobody: ['q1nobody', 1],
-  q1missed: ['q1missed', 1], jy1go: ['jy1go', 1], lm1go: ['lm1go', 1], pg1go: ['pg1go', 1], q1tree: ['q1tree', 1],
+  q1pro5: ['q1pro5', 1], pg1here: ['pg1here', 1], pg1come: ['pg1come', 1], pn1ready: ['pn1ready', 1],   // (v24.9: 23 rows of the queue retired)
+  pn1water: ['pn1water', 1], q1water: ['q1water', 1],
+  q1pg1: ['q1pg1', 1], pg1me: ['pg1me', 1], q1nobody: ['q1nobody', 1],
+  pg1go: ['pg1go', 1], q1tree: ['q1tree', 1],
   pg1tree: ['pg1tree', 1], fm1hello: ['fm1hello', 1], q1wai: ['q1wai', 1], fm1shop: ['fm1shop', 1],
   pg1shop: ['pg1shop', 1], q1shop: ['q1shop', 1], pg1th1: ['pg1th1', 1], fm1good: ['fm1good', 1],
-  pg1good: ['pg1good', 1], fm1day: ['fm1day', 1], pg1day: ['pg1day', 1], fm1hm: ['fm1hm', 1],
+  pg1good: ['pg1good', 1], fm1hm: ['fm1hm', 1],
   fm1read: ['fm1read', 1], pg1read: ['pg1read', 1], q1short: ['q1short', 1], pn1tray: ['pn1tray', 1],
   pg1items: ['pg1items', 1], fm1items: ['fm1items', 1], pg1nk: ['pg1nk', 1], pg1tk: ['pg1tk', 1],
   pg1py: ['pg1py', 1], pg1offer: ['pg1offer', 1], fm1anu: ['fm1anu', 1], fm1eyes: ['fm1eyes', 1],
@@ -13233,7 +13230,7 @@ const STING_SAMPLE = {
   w4endA: ['w4endA', 1], w4endB: ['w4endB', 1], w4endC: ['w4endC', 1], w4endD: ['w4endD', 1], w4pat: ['w4pat', 1],
   w4coda: ['w4coda', 1], w4card: ['w4card', 1], w4heart: ['w4heart', 1], w4rise: ['w4rise', 1], w4cup: ['w4cup', 1],
   w4dog: ['w4dog', 1], w4gasp: ['w4gasp', 1], w4bell: ['w4bell', 1],
-  w4marker: ['w4marker', 1], w4water: ['w4water', 1], w4tube: ['w4tube', 1], w4mala: ['w4mala', 1], w4cloth: ['w4cloth', 1], w4sandon: ['w4sandon', 1], w4storm: ['w4storm', 1],   // CP11: the plan's effects not in the first run, and the storm's drone
+  w4water: ['w4water', 1], w4tube: ['w4tube', 1], w4mala: ['w4mala', 1], w4cloth: ['w4cloth', 1], w4sandon: ['w4sandon', 1], w4storm: ['w4storm', 1],   // CP11: the plan's effects not in the first run, and the storm's drone
   w4barestep: ['w4barestep', 1]   // CP13: his bare foot in the room (e4c1's stepSound)
 };
 /* Which kinds the synth below can actually fake. Everything else in
