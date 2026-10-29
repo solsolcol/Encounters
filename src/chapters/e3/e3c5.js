@@ -4653,6 +4653,7 @@
           const bb = new THREE.Box3().setFromObject(b); b.position.set(x - (bb.min.x + bb.max.x) / 2, -bb.min.y, z - (bb.min.z + bb.max.z) / 2); est.add(b);
         }
         est.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; } });
+        mLive.estate = est; est.visible = !mLive.gardenOn;          // (v24.8: never behind ending D's garden — gardenSet)
       }).catch(err => { console.warn('hdb failed to load', err); ctx.loadFail && ctx.loadFail('hdb', err); });
 
       /* ---- (v24.7) THE GARDEN, ending D's morning (OAK, PLAT, KN2, GB, ROOT, above): the great oak on the grass outside
@@ -4741,6 +4742,281 @@
             const r = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), rm); r.frustumCulled = false; GG.add(r);
             mLive.rays.push({ r, top: new THREE.Vector3(OAK.x + 6.4 + 0.5 * (i % 2), 10.5 + 0.6 * (i % 3), OAK.z - 2.8 + 1.4 * i),
                               dir: new THREE.Vector3(-0.42, -0.9, 0.06 * (i - 2)).normalize(), len: 11.5, w: 0.7 + 0.35 * ((i * 7) % 3), op: 0.10 + 0.03 * (i % 3), ph: i * 1.7 });
+          }
+        }
+        /* ---- (v24.8) THE COMPOUND ROUND THE GARDEN. Chad: "For ending d, when it reaches the monk part, why are there hdb
+           blocks in the background? Replace the hdb blocks with temple buildings and temple compound instead." While the
+           garden is on, the estate is not drawn (gardenSet) and the garden stands inside the temple's own grounds, each
+           place chosen against the shot that looks that way, on a phone's narrow frame as well as a desktop's: the
+           ordination hall in its walled court with its bai sema, behind the oak (the kneel, the years, the end of the walk);
+           the bell tower (the walk); a second hall to the north-west (the lights' climb); the great chedi in its court to
+           the north (the grounds at first light, the round of the trunk) and a mondop past the hall's courtyard; an open
+           sala; the preaching hall to the south-west (the monk's teaching) and the monks' kutis past it. The hall's own
+           recipes — roofs stepped and stacked, carved gables with gilt bargeboards, blades, naga curls and chofa, white
+           walls, gilt window frames under pointed crowns, lotus capitals — every piece merged by material into five meshes
+           coloured per vertex (World A's shopBatch shape): no download, no light, no shadow, and the morning's fog standing
+           each one back to its distance */
+        { const CB = {}, cbat = (k) => CB[k] || (CB[k] = { P: [], N: [], C: [], U: [], I: [] });
+          const _cm = new THREE.Matrix4(), _cq = new THREE.Quaternion(), _ce = new THREE.Euler(), _cv = new THREE.Vector3(), _cs = new THREE.Vector3(), _cn = new THREE.Matrix3(), _cc = new THREE.Color();
+          const UPY = new THREE.Vector3(0, 1, 0), ONE3 = new THREE.Vector3(1, 1, 1);
+          // a piece posed in a building's frame F (o: rx/ry/rz in the order o.ord, sx/sy/sz, its uv scaled by us/vs), into batch k
+          const put = (k, geo, F, x, y, z, col, o = {}) => {
+            const b = cbat(k), us = o.us || 1, vs = o.vs || 1, base = b.P.length / 3;
+            _ce.set(o.rx || 0, o.ry || 0, o.rz || 0, o.ord || 'YXZ'); _cq.setFromEuler(_ce);
+            _cm.compose(_cv.set(x, y, z), _cq, _cs.set(o.sx || 1, o.sy || 1, o.sz || 1)).premultiply(F); _cn.getNormalMatrix(_cm);
+            _cc.set(col);
+            const pa = geo.attributes.position, na = geo.attributes.normal, ua = geo.attributes.uv;
+            for (let i = 0; i < pa.count; i++) {
+              _cv.fromBufferAttribute(pa, i).applyMatrix4(_cm); b.P.push(_cv.x, _cv.y, _cv.z);
+              _cv.fromBufferAttribute(na, i).applyMatrix3(_cn).normalize(); b.N.push(_cv.x, _cv.y, _cv.z);
+              b.C.push(_cc.r, _cc.g, _cc.b);
+              b.U.push(ua ? ua.getX(i) * us : 0, ua ? ua.getY(i) * vs : 0);
+            }
+            if (geo.index) for (let i = 0; i < geo.index.count; i++) b.I.push(base + geo.index.getX(i));
+            else for (let i = 0; i < pa.count; i++) b.I.push(base + i);
+            geo.dispose();
+          };
+          const frame = (x, z, ry) => new THREE.Matrix4().compose(new THREE.Vector3(x, 0, z), new THREE.Quaternion().setFromAxisAngle(UPY, ry), ONE3);
+          const bx = (k, F, w, h, d, x, y, z, col, o) => put(k, new THREE.BoxGeometry(w, h, d), F, x, y, z, col, o);
+          const lathe = (pts, sr, sh, seg) => new THREE.LatheGeometry(pts.map(([r, h]) => new THREE.Vector2(r * sr, h * sh)), seg);   // (every profile bottom to top: its faces outward)
+          const WH = 0xece6da, WH2 = 0xdcd4c4, GD = 0xd9a63c, BRZ = 0x8a6a34, LAC = 0x7e140c, DK = 0x2a140c, SOF = 0x4a2c1a, TEAK = 0x6a4a2c, TEAKD = 0x3e2616, STONE = 0xcfc6b2;
+          const CAP = [[0.2, 0], [0.24, 0.06], [0.3, 0.16], [0.34, 0.26], [0.36, 0.3]];
+          /* a pair of slopes over z0..z1, eaves at ±hw (height eave), the ridge on the middle (height ridge): the tiles over,
+             the soffit under, a gilt fascia along each eave and a gilt cap on the ridge (the hall's roofPair, as planes) */
+          const cRoof = (F, z0, z1, hw, eave, ridge, tk) => {
+            const rise = ridge - eave, slope = Math.hypot(rise, hw), ang = Math.atan2(rise, hw), len = z1 - z0, zc = (z0 + z1) / 2, ca = Math.cos(ang), sa = Math.sin(ang);
+            for (const s of [-1, 1]) {
+              const cx = s * hw / 2, cy = (eave + ridge) / 2;
+              put(tk, new THREE.PlaneGeometry(slope + 0.12, len), F, cx, cy, zc, 0xffffff, { rx: -Math.PI / 2, rz: -s * ang, ord: 'ZYX', us: slope / 2.8, vs: len / 2.8 });
+              put('w', new THREE.PlaneGeometry(slope + 0.12, len), F, cx - s * sa * 0.12, cy - ca * 0.12, zc, SOF, { rx: Math.PI / 2, rz: -s * ang, ord: 'ZYX' });
+              bx('g', F, 0.08, 0.22, len + 0.04, s * (hw + 0.04), eave - 0.06, zc, GD);
+            }
+            bx('g', F, 0.26, 0.28, len + 0.1, 0, ridge + 0.04, zc, GD);
+            return ang;
+          };
+          /* a gable at z = zf facing `face` (+1 the front, −1 the back): the carved panel, a gilt beam and a lacquered band
+             under it, gilt bargeboards with their blades along each slope, a naga's head curling up at each foot, the chofa
+             at the apex (the hall's gableFront and nagaEdge) — or, `plain`, a teak board and teak bargeboards (a kuti's) */
+          const cGable = (F, zf, face, hw, eave, ridge, plain) => {
+            const rise = ridge - eave, ang = Math.atan2(rise, hw), slope = Math.hypot(rise, hw), ry = face > 0 ? 0 : Math.PI, f6 = zf + face * 0.06;
+            const tg = new THREE.ShapeGeometry(mTri(THREE, hw * 1.9, rise * 0.95)), tu = tg.attributes.uv, tp = tg.attributes.position;
+            for (let i = 0; i < tu.count; i++) tu.setXY(i, tp.getX(i) / (hw * 1.9) + 0.5, tp.getY(i) / (rise * 0.95));
+            if (plain) {
+              put('w', tg, F, 0, eave, zf, TEAKD, { ry });
+              for (const s of [-1, 1]) bx('w', F, slope + 0.3, 0.18, 0.1, s * hw / 2, (eave + ridge) / 2 + 0.08, f6, TEAKD, { rz: -s * ang });
+              return;
+            }
+            put('gb', tg, F, 0, eave, zf, 0xffffff, { ry });
+            bx('g', F, hw * 1.9, 0.26, 0.14, 0, eave + 0.05, zf + face * 0.05, GD);
+            bx('w', F, hw * 1.9, 0.12, 0.16, 0, eave + 0.24, f6, LAC);
+            for (const s of [-1, 1]) {
+              bx('g', F, slope + 0.35, 0.22, 0.12, s * hw / 2, (eave + ridge) / 2 + 0.1, f6, GD, { rz: -s * ang });
+              const x0 = s * (hw + 0.1), y0 = eave + 0.05, dy = ridge + 0.15 - y0, L = Math.hypot(x0, dy), nx = dy / L * s, ny = Math.abs(x0) / L, th = Math.atan2(-nx, ny);
+              for (let d = 0.45; d < L - 0.3; d += 0.42) { const k = d / L;
+                put('g', new THREE.ConeGeometry(0.09, 0.3, 3), F, x0 * (1 - k) + nx * 0.14, y0 + dy * k + ny * 0.14, zf + face * 0.08, GD, { rz: th + s * 0.35, sz: 0.35 }); }
+              put('g', new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(0, 0, 0), new THREE.Vector3(s * 0.29, 0.11, 0), new THREE.Vector3(s * 0.43, 0.47, 0), new THREE.Vector3(s * 0.36, 0.79, 0)]), 8, 0.08, 5, false), F, x0 + s * 0.05, y0 + 0.02, zf + face * 0.08, GD);
+              put('g', new THREE.SphereGeometry(0.12, 8, 6), F, x0 + s * 0.48, y0 + 0.86, zf + face * 0.08, GD, { sx: 1.3, sy: 0.85, sz: 0.8 });
+            }
+            const cf = []; for (let i = 0; i <= 8; i++) { const k = i / 8; cf.push(new THREE.Vector3(0, k * 1.5, face * k * k * 0.9)); }
+            put('g', new THREE.TubeGeometry(new THREE.CatmullRomCurve3(cf), 12, 0.1, 6, false), F, 0, ridge + 0.1, zf, GD);
+          };
+          /* the roofs over walls of half-width wh topping out at `top`: tier A meets the wall's top at the wall line (the
+             hall's eave formula), each next tier 1.5 m in (then 1.4), 2.2 m up (then 1.8), 1.6 m shorter at each end and its
+             eave 0.6 m over the tier under it, a white band beneath; gables at both ends of each */
+          const cTiers = (F, wh, top, len, o) => {
+            const T = [], tks = o.tk || ['ta', 'tb'];
+            let hw = wh + (o.ov || 1.5), ridge = top + (o.rise || 6), z0 = -len / 2 - (o.oz ?? 0.8), z1 = len / 2 + (o.oz ?? 0.8);
+            let eave = (top + 0.08 - (hw - wh) * ridge / hw) / (1 - (hw - wh) / hw);
+            for (let t = 0; t < (o.tiers || 1); t++) {
+              if (t > 0) { const P = T[t - 1]; hw = P.hw - (t === 1 ? 1.5 : 1.4); ridge = P.ridge + (t === 1 ? 2.2 : 1.8);
+                eave = P.eave + (P.hw - hw) * (P.ridge - P.eave) / P.hw + 0.6; z0 = P.z0 + 1.6; z1 = P.z1 - 1.6; }
+              const ang = cRoof(F, z0, z1, hw, eave, ridge, tks[t % tks.length]);
+              if (t > 0) { const P = T[t - 1];
+                for (const s of [-1, 1]) { const dx = hw - 0.45, y0 = P.eave + (P.hw - dx) * (P.ridge - P.eave) / P.hw - 0.15, y1 = eave + 0.45 * Math.tan(ang) - 0.1;
+                  bx('w', F, 0.12, y1 - y0, z1 - z0 - 0.4, s * dx, (y0 + y1) / 2, (z0 + z1) / 2, WH); } }
+              T.push({ hw, ridge, eave, z0, z1 });
+              cGable(F, z1, 1, hw, eave, ridge, o.plain); cGable(F, z0, -1, hw, eave, ridge, o.plain);
+            }
+            return T;
+          };
+          /* a Thai hall in its frame F, its length on z and its front at +z: the raised base with a gilt lip, the porch's
+             platform and its steps, white walls (solid — nothing inside is ever seen), the door and the windows in gilt
+             frames under their crowns; the roofs (cTiers), and the porch's own stepping forward over the steps on two white
+             pillars with a lacquered beam (the hall's porch) */
+          const cHall = (F, o) => {
+            const w = o.w, len = o.len, base = o.base, top = base + o.wall, hz = len / 2, pd = 2.6;
+            bx('w', F, w + 1.4, base, len + 1.4, 0, base / 2, 0, WH2);
+            bx('g', F, w + 1.46, 0.07, len + 1.46, 0, base - 0.03, 0, GD);
+            bx('w', F, w, o.wall, len, 0, base + o.wall / 2, 0, WH);
+            bx('w', F, w * 0.8, base, pd, 0, base / 2, hz + 0.7 + pd / 2, WH2);
+            const ns = Math.max(2, Math.round(base / 0.17)), sw = Math.min(3.8, w * 0.45);
+            for (let i = 0; i < ns; i++) { const sh = base * (ns - i) / (ns + 1); bx('w', F, sw, sh, 0.34, 0, sh / 2, hz + 0.7 + pd + 0.17 + i * 0.34, WH2); }
+            const dh = Math.min(3.6, o.wall * 0.6), dw = Math.min(2.4, w * 0.24);
+            put('w', new THREE.PlaneGeometry(dw, dh), F, 0, base + dh / 2, hz + 0.012, DK);
+            for (const s of [-1, 1]) bx('g', F, 0.16, dh + 0.12, 0.06, s * (dw / 2 + 0.08), base + dh / 2, hz + 0.03, GD);
+            bx('g', F, dw + 0.32, 0.16, 0.06, 0, base + dh + 0.08, hz + 0.03, GD);
+            put('g', new THREE.ShapeGeometry(mCrown(THREE, dw + 0.6, dh * 0.42)), F, 0, base + dh + 0.16, hz + 0.04, GD);
+            const nwin = Math.max(2, Math.floor((len - 2) / 3.2)), wy = base + o.wall * 0.48, whh = Math.min(2.2, o.wall * 0.42);
+            for (let i = 0; i < nwin; i++) { const z = -hz + 1 + (len - 2) * (i + 0.5) / nwin;
+              for (const s of [-1, 1]) { const x = s * (w / 2 + 0.012), ry = s * Math.PI / 2;
+                put('w', new THREE.PlaneGeometry(1.1, whh), F, x, wy, z, DK, { ry });
+                for (const dz of [-1, 1]) bx('g', F, 0.06, whh + 0.1, 0.12, x + s * 0.02, wy, z + dz * 0.6, GD);
+                bx('g', F, 0.06, 0.1, 1.32, x + s * 0.02, wy - whh / 2 - 0.05, z, GD);
+                put('g', new THREE.ShapeGeometry(mCrown(THREE, 1.5, 0.8)), F, x + s * 0.03, wy + whh / 2 + 0.02, z, GD, { ry }); } }
+            cTiers(F, w / 2, top, len, o);
+            const ph = Math.min(w / 2 - 0.5, 4.2), pe = base + o.wall * 0.62, pr = pe + ph * 0.72, pz1 = hz + 0.7 + pd;
+            cRoof(F, hz, pz1, ph, pe, pr, 'ta'); cGable(F, pz1, 1, ph, pe, pr);
+            for (const s of [-1, 1]) { const px = s * (ph - 0.9), pz = pz1 - 0.4, h = pe + 0.1 - base;
+              bx('w', F, 0.42, h, 0.42, px, base + h / 2, pz, WH);
+              for (const by of [0.6, h * 0.55]) bx('g', F, 0.45, 0.07, 0.45, px, base + by, pz, GD);
+              put('g', lathe(CAP, 1, 1, 10), F, px, base + h - 0.3, pz, GD); }
+            bx('w', F, ph * 2 - 0.6, 0.3, 0.36, 0, pe + 0.25, pz1 - 0.4, LAC);
+          };
+          // a wall from (x0,z0) to (x1,z1) in frame F: white, a lacquered coping, piers every 3.2 m with gilt buds (the courtyard's)
+          const cWall = (F, x0, z0, x1, z1, h) => {
+            const L = Math.hypot(x1 - x0, z1 - z0), a = Math.atan2(z1 - z0, x1 - x0), n = Math.max(1, Math.round(L / 3.2));
+            bx('w', F, L, h, 0.26, (x0 + x1) / 2, h / 2, (z0 + z1) / 2, WH, { ry: -a });
+            bx('w', F, L + 0.08, 0.08, 0.34, (x0 + x1) / 2, h + 0.04, (z0 + z1) / 2, LAC, { ry: -a });
+            for (let i = 0; i <= n; i++) { const px = x0 + (x1 - x0) * i / n, pz = z0 + (z1 - z0) * i / n;
+              bx('w', F, 0.44, h + 0.32, 0.44, px, (h + 0.32) / 2, pz, WH);
+              put('g', new THREE.SphereGeometry(0.14, 8, 6), F, px, h + 0.52, pz, GD, { sy: 1.6 }); }
+          };
+          /* a walled court ±hx by hz0..hz1 in frame F, a gate (two tall piers under gilt spires) in each side `gates` names:
+             [front (+z), back, +x, −x] */
+          const cCourt = (F, hx, hz0, hz1, h, gates) => {
+            const g = 2.2;
+            const side = (x0, z0, x1, z1, gate) => {
+              if (!gate) { cWall(F, x0, z0, x1, z1, h); return; }
+              const mx = (x0 + x1) / 2, mz = (z0 + z1) / 2, L = Math.hypot(x1 - x0, z1 - z0), ux = (x1 - x0) / L, uz = (z1 - z0) / L;
+              cWall(F, x0, z0, mx - ux * g, mz - uz * g, h); cWall(F, mx + ux * g, mz + uz * g, x1, z1, h);
+              for (const s of [-1, 1]) { const px = mx + s * ux * g, pz = mz + s * uz * g;
+                bx('w', F, 0.8, h + 1.7, 0.8, px, (h + 1.7) / 2, pz, WH); bx('g', F, 0.85, 0.08, 0.85, px, h + 0.9, pz, GD);
+                put('g', new THREE.ConeGeometry(0.3, 1.6, 8), F, px, h + 2.5, pz, GD); }
+            };
+            side(-hx, hz1, hx, hz1, gates[0]); side(-hx, hz0, hx, hz0, gates[1]); side(hx, hz0, hx, hz1, gates[2]); side(-hx, hz0, -hx, hz1, gates[3]);
+          };
+          // a bai sema, a boundary stone of the ordination hall: a gilt leaf on a white pedestal, facing out (drawn both ways)
+          const cSema = (F, x, z, a) => {
+            bx('w', F, 0.62, 0.5, 0.62, x, 0.25, z, WH);
+            for (const r of [a, a + Math.PI]) put('g', new THREE.ShapeGeometry(mCrown(THREE, 0.5, 0.95)), F, x, 0.5, z, GD, { ry: r });
+          };
+          /* the great chedi: three square terraces, the round base in its mouldings, the bell, the harmika, the gilt spire of
+             rings tapering to a finial; a small chedi at each corner of the top terrace */
+          const BODY = [[0, 0], [4.2, 0], [4.2, 0.5], [3.85, 0.55], [3.85, 1.0], [3.45, 1.05], [3.45, 1.5], [3.1, 1.55], [3.25, 1.75], [3.6, 2.5], [3.65, 3.3], [3.5, 4.3], [3.05, 5.3], [2.35, 6.2], [1.45, 6.8], [0.6, 7.1], [0, 7.15]];
+          const SPIRE = [[0, 0]]; for (let i = 0; i < 11; i++) { const r = 0.95 * (1 - i / 14); SPIRE.push([r, i * 0.42], [r * 0.8, i * 0.42 + 0.21]); }
+          SPIRE.push([0.34, 4.62], [0.07, 10.2], [0, 10.25]);
+          const cChedi = (F, s) => {
+            let y = 0;
+            for (const [w, h] of [[13, 1.2], [10.8, 1.1], [8.8, 1.0]]) { bx('w', F, w * s, h * s, w * s, 0, (y + h / 2) * s, 0, WH); bx('g', F, w * s + 0.06, 0.08, w * s + 0.06, 0, (y + h) * s - 0.03, 0, GD); y += h; }
+            put('w', lathe(BODY, s, s, 28), F, 0, y * s, 0, WH);
+            for (const [cx, cz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) { const px = cx * 3.75 * s, pz = cz * 3.75 * s;
+              put('w', lathe(BODY, 0.15 * s, 0.26 * s, 12), F, px, y * s, pz, WH);
+              put('g', new THREE.ConeGeometry(0.14 * s, 2.0 * s, 8), F, px, (y + 2.8) * s, pz, GD); }
+            y += 7.0;
+            bx('w', F, 2.1 * s, 1.0 * s, 2.1 * s, 0, (y + 0.5) * s, 0, WH); bx('g', F, 2.3 * s, 0.12 * s, 2.3 * s, 0, (y + 1.0) * s, 0, GD);
+            y += 1.06;
+            put('g', lathe(SPIRE, s, s, 20), F, 0, y * s, 0, GD);
+            put('g', new THREE.SphereGeometry(0.17 * s, 10, 8), F, 0, (y + 10.4) * s, 0, GD);
+          };
+          /* the mondop: a square shrine on its base, a door under its crown in each face, a lacquered cornice, and its roof in
+             five diminishing tiers to a tall gilt spire */
+          const cMondop = (F) => {
+            bx('w', F, 9, 1.2, 9, 0, 0.6, 0, WH2); bx('g', F, 9.06, 0.08, 9.06, 0, 1.17, 0, GD);
+            bx('w', F, 6.4, 5.2, 6.4, 0, 3.8, 0, WH);
+            for (let f = 0; f < 4; f++) { const ry = f * Math.PI / 2, nx = Math.sin(ry), nz = Math.cos(ry), px = nx * 3.212, pz = nz * 3.212;
+              put('w', new THREE.PlaneGeometry(1.6, 2.8), F, px, 2.6, pz, DK, { ry });
+              put('g', new THREE.ShapeGeometry(mCrown(THREE, 2.2, 1.3)), F, nx * 3.222, 4.05, nz * 3.222, GD, { ry });
+              for (const s of [-1, 1]) bx('g', F, 0.14, 2.9, 0.06, px + nz * s * 0.88, 2.6, pz - nx * s * 0.88, GD, { ry }); }
+            bx('w', F, 7.2, 0.4, 7.2, 0, 6.6, 0, LAC); bx('g', F, 7.3, 0.08, 7.3, 0, 6.83, 0, GD);
+            let y = 6.8;
+            for (let k = 0; k < 5; k++) { const r = 5.6 - k * 0.8, h = 1.6 - k * 0.12;
+              put(k % 2 ? 'tb' : 'ta', new THREE.ConeGeometry(r, h, 4, 1), F, 0, y + h / 2, 0, 0xffffff, { ry: Math.PI / 4, us: 3, vs: 1 });
+              y += h * 0.72; }
+            put('g', new THREE.ConeGeometry(0.62, 8, 12), F, 0, y + 4.2, 0, GD);
+            for (let i = 0; i < 6; i++) put('g', new THREE.TorusGeometry(0.6 - i * 0.07, 0.07, 5, 14), F, 0, y + 0.4 + i * 0.32, 0, GD, { rx: Math.PI / 2 });
+          };
+          /* the bell tower: a white tower on its base, an opening in each face under its crown, the belfry over it on four
+             posts with the bell hanging, and a stepped roof to a gilt spire */
+          const cBellTower = (F) => {
+            bx('w', F, 5.0, 1.0, 5.0, 0, 0.5, 0, WH2); bx('g', F, 5.06, 0.08, 5.06, 0, 0.97, 0, GD);
+            bx('w', F, 3.8, 6.0, 3.8, 0, 4.0, 0, WH);
+            for (let f = 0; f < 4; f++) { const ry = f * Math.PI / 2, nx = Math.sin(ry), nz = Math.cos(ry);
+              put('w', new THREE.PlaneGeometry(1.1, 2.0), F, nx * 1.912, 4.2, nz * 1.912, DK, { ry });
+              put('g', new THREE.ShapeGeometry(mCrown(THREE, 1.5, 0.9)), F, nx * 1.922, 5.2, nz * 1.922, GD, { ry }); }
+            bx('w', F, 4.6, 0.35, 4.6, 0, 7.18, 0, LAC);
+            for (const sx of [-1, 1]) for (const sz of [-1, 1]) { bx('w', F, 0.32, 2.7, 0.32, sx * 1.9, 8.7, sz * 1.9, WH); bx('g', F, 0.35, 0.08, 0.35, sx * 1.9, 7.8, sz * 1.9, GD); }
+            put('g', lathe([[0, 0], [0.24, 0], [0.22, 0.04], [0.17, 0.21], [0.12, 0.46], [0.07, 0.63], [0.04, 0.66], [0, 0.66]], 2.2, 2.2, 16), F, 0, 8.25, 0, BRZ);
+            bx('w', F, 4.4, 0.3, 4.4, 0, 10.2, 0, LAC);
+            let y = 10.35;
+            for (const [r, h] of [[4.0, 1.5], [2.9, 1.25], [1.9, 1.05]]) { put('ta', new THREE.ConeGeometry(r, h, 4, 1), F, 0, y + h / 2, 0, 0xffffff, { ry: Math.PI / 4, us: 3, vs: 1 }); y += h * 0.7; }
+            put('g', new THREE.ConeGeometry(0.34, 4.2, 10), F, 0, y + 2.4, 0, GD);
+          };
+          /* an open sala: a raised floor, two rows of white posts with gilt bands and lotus capitals, lacquered beams, and a
+             two-tier roof */
+          const cSala = (F) => {
+            const W2 = 3.0, L2 = 4.8, base = 0.6, post = 3.0, top = base + post;
+            bx('w', F, W2 * 2 + 1.0, base, L2 * 2 + 1.0, 0, base / 2, 0, WH2); bx('g', F, W2 * 2 + 1.06, 0.07, L2 * 2 + 1.06, 0, base - 0.03, 0, GD);
+            bx('w', F, W2 * 2 + 0.6, 0.04, L2 * 2 + 0.6, 0, base + 0.02, 0, TEAK);
+            for (let i = 0; i < 3; i++) { const sh = base * (3 - i) / 4; bx('w', F, 2.6, sh, 0.34, 0, sh / 2, L2 + 0.67 + i * 0.34, WH2); }
+            for (const sx of [-1, 1]) for (const z of [-L2, 0, L2]) { const px = sx * W2;
+              bx('w', F, 0.34, post, 0.34, px, base + post / 2, z, WH);
+              for (const by of [0.5, post * 0.6]) bx('g', F, 0.37, 0.07, 0.37, px, base + by, z, GD);
+              put('g', lathe(CAP, 1, 1, 10), F, px, top - 0.3, z, GD); }
+            for (const sx of [-1, 1]) bx('w', F, 0.3, 0.32, L2 * 2 + 0.5, sx * W2, top + 0.16, 0, LAC);
+            for (const z of [-L2, L2]) bx('w', F, W2 * 2 + 0.3, 0.32, 0.3, 0, top + 0.16, z, LAC);
+            cTiers(F, W2 + 0.17, top + 0.32, L2 * 2, { tiers: 2, ov: 1.1, rise: 3.4, oz: 0.9 });
+          };
+          // a monk's kuti: a teak house on stilts, its veranda and stair, windows and door, a steep tiled roof and plain teak gables
+          const cKuti = (F) => {
+            for (const sx of [-1, 1]) for (const sz of [-1, 0, 1]) bx('w', F, 0.22, 1.8, 0.22, sx * 1.95, 0.9, sz * 2.5, TEAKD);
+            bx('w', F, 4.4, 0.18, 6.0, 0, 1.89, 0, TEAKD);
+            bx('w', F, 3.8, 2.5, 4.6, 0, 3.23, -0.4, TEAK);
+            bx('w', F, 3.8, 0.9, 0.08, 0, 2.43, 2.92, TEAKD);
+            put('w', new THREE.PlaneGeometry(0.9, 1.9), F, 0, 2.93, 1.912, DK);
+            for (const s of [-1, 1]) for (const z of [-2.0, 0.2]) put('w', new THREE.PlaneGeometry(0.9, 1.0), F, s * 1.912, 3.3, z, DK, { ry: s * Math.PI / 2 });
+            for (let i = 0; i < 5; i++) bx('w', F, 1.0, 0.07, 0.3, 1.5, 1.98 * (5 - i) / 6, 3.15 + i * 0.3, TEAKD);
+            cTiers(F, 1.9, 4.48, 4.6, { tiers: 1, ov: 0.9, rise: 2.9, oz: 0.9, tk: ['tb'], plain: true });
+          };
+          const IDF = new THREE.Matrix4();
+          // a paved path through the grass, slab grey (its top 1.5 cm over the lawn)
+          const cPath = (pts, w) => { for (let i = 0; i < pts.length - 1; i++) { const [x0, z0] = pts[i], [x1, z1] = pts[i + 1];
+            bx('w', IDF, Math.hypot(x1 - x0, z1 - z0) + w * 0.5, 0.04, w, (x0 + x1) / 2, -0.005, (z0 + z1) / 2, STONE, { ry: -Math.atan2(z1 - z0, x1 - x0) }); } };
+
+          // THE PLACES (World M's own coordinates; every place checked against the shots that look its way)
+          { const U = frame(-68, -5, Math.PI / 2);                  // the ordination hall (ubosot), its front to the oak
+            cHall(U, { w: 10, len: 20, base: 1.0, wall: 6.0, tiers: 3, ov: 1.6, rise: 6.5 });
+            cCourt(U, 9, -13.5, 17.5, 1.3, [true, false, false, false]);
+            for (const [x, z, a] of [[0, 16.6, 0], [7.4, 11.4, 0.6], [7.6, 0, Math.PI / 2], [7.4, -11.4, 2.5], [0, -12.2, Math.PI], [-7.4, -11.4, -2.5], [-7.6, 0, -Math.PI / 2], [-7.4, 11.4, -0.6]]) cSema(U, x, z, a); }
+          cHall(frame(-56, -34, 0.63), { w: 8.5, len: 15, base: 0.7, wall: 5.2, tiers: 2, ov: 1.5, rise: 5.6 });   // the viharn, to the north-west
+          cBellTower(frame(-63, -21, 0.3));
+          { const C = frame(-27, -54, 0.1); cChedi(C, 1.25); cCourt(C, 11.5, -11.5, 11.5, 1.4, [true, true, true, true]); }   // the great chedi, north
+          cMondop(frame(2, -52, 0.05));
+          cSala(frame(-64, 14, 1.997));
+          /* the preaching hall, south-west, side-on behind the monk's teaching: long, so its roofs stand on both sides of him
+             (by photograph, front-on it stood behind his head and the shot saw a white wall at his ear) */
+          cHall(frame(-50.5, 39, 0.947), { w: 11, len: 22, base: 0.9, wall: 5.0, tiers: 2, ov: 1.6, rise: 5.6 });
+          for (const [x, z, a] of [[-73, 31, 2.1], [-78, 41, 2.3], [-40, 61, 2.9]]) cKuti(frame(x, z, a));
+          cPath([[-36, -1.5], [-50.5, -5]], 2.4);                    // from the garden to the ordination hall's gate
+          cPath([[-31, -12], [-27, -42.5]], 2.0);                    // and north to the chedi's
+
+          // five meshes: walls (and every painted colour), gold, the two tiles, the carved gables
+          const cmat = {
+            w: M({ vertexColors: true, roughness: 0.85 }),
+            g: M({ vertexColors: true, roughness: 0.3, metalness: 0.55, emissive: 0x3a2406, emissiveIntensity: 0.6 }),   // (the hall's gold)
+            ta: M({ map: tTile, vertexColors: true, roughness: 0.6 }),
+            tb: M({ map: tTile2, vertexColors: true, roughness: 0.6 }),
+            gb: M({ map: tex(makeMGable(THREE, cnv, 12, 7)), vertexColors: true, roughness: 0.5, metalness: 0.2, side: THREE.DoubleSide }),
+          };
+          for (const k of Object.keys(CB)) {
+            const b = CB[k]; if (!b.I.length) continue;
+            const g = new THREE.BufferGeometry();
+            g.setAttribute('position', new THREE.Float32BufferAttribute(b.P, 3));
+            g.setAttribute('normal', new THREE.Float32BufferAttribute(b.N, 3));
+            g.setAttribute('color', new THREE.Float32BufferAttribute(b.C, 3));
+            g.setAttribute('uv', new THREE.Float32BufferAttribute(b.U, 2));
+            g.setIndex(b.P.length / 3 > 65535 ? new THREE.Uint32BufferAttribute(b.I, 1) : new THREE.Uint16BufferAttribute(b.I, 1));
+            g.computeBoundingSphere();
+            const m = new THREE.Mesh(g, cmat[k]); m.castShadow = false; m.receiveShadow = false; m.name = 'compound:' + k; GG.add(m);
           }
         }
       }
@@ -7014,6 +7290,7 @@
       mLive.gardenOn = on;
       if (mLive.garden) mLive.garden.visible = on;
       if (mLive.sky) mLive.sky.visible = !on;
+      if (mLive.estate) mLive.estate.visible = !on;           // (v24.8: the garden stands in the temple's grounds, never the estate)
       const mk = merit.monk, g0 = mk.group;
       if (g0) {
         if (on) { g0.position.set(PLAT.x - 0.12, PLAT.top + 0.008, PLAT.z); g0.rotation.y = Math.PI / 2; }

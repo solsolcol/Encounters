@@ -6906,3 +6906,16 @@ cut (sharing its vertices and maps) when it is small.
   photographed and checked for an hour and more without going live; nothing broke, but Chad could not play any of it
   until the fourth. The release order is deploy first (CLAUDE.md, rule 3) — a milestone that has booted the chapter it
   changes is a milestone that goes to Netlify.
+
+## v24.8 — the compound round the garden
+
+- **A scene moved to a new place inherits that place's backdrop** (v24.8). v24.7 moved episode 3 chapter 5's ending D
+  from inside the temple's hall to the oak beyond its west wall, and photographed the oak, the monk and the lights —
+  while every shot of the new garden looked straight out at the HDB estate laid round the temple for film M's city at
+  night. Chad saw it at once ("why are there hdb blocks in the background?"). When a camera moves, list what each of its
+  shots now looks AT beyond its subject, on a phone's narrow frame and a desktop's wide one; the old place's photographs
+  say nothing about the new place's background.
+- **A backdrop on the line from the lens to the subject is hidden by the subject** (v24.8). The preaching hall stood
+  front-on, dead centre behind the monk in his teaching shot, and the shot saw a white wall at his ear; the HDB block
+  it replaced had been wide enough to show on both sides of him. A building meant to frame a subject stands long across
+  the view (side-on) or beside the line, never front-on behind it.

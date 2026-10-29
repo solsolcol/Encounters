@@ -6990,6 +6990,25 @@ What the baseline contains, by release:
     lighter's spark back in the played lighting), each byte-verified, 269 of 269 — the first only at the fourth
     milestone, a slip against deploy-first (LEARNINGS). Harnesses chapter, text, hosted, leak, cine and walk green on
     the last deploy's bytes. Sheet v130.
+- **v24.8** THE COMPOUND ROUND THE GARDEN — Chad, the morning after v24.7: *"For ending d, when it reaches the monk
+  part, why are there hdb blocks in the background? Replace the hdb blocks with temple buildings and temple compound
+  instead."* World M's ESTATE (eight HDB blocks round the temple, film M's city at night) was never seen from the hall,
+  and v24.7 moved ending D out to the oak beyond its west wall, where every shot looks west, north or south-west
+  straight at it: before-photographs showed a block in the grounds, the walk, the kneel, the teaching (dead behind the
+  monk), the round of the trunk, the lights and the years. Now the estate is not drawn while the garden is on
+  (`gardenSet`, and its own late landing) and the garden stands in the temple's grounds, each building placed for the
+  shot that looks its way on a phone's narrow frame as well as a desktop's: the ordination hall in its walled court
+  with bai sema behind the oak (the kneel and years, the phone's right of the trunk), the bell tower (the walk), a
+  second hall (the lights' climb), the great chedi in its court to the north (its spire and court over the trees), a
+  mondop, an open sala, the preaching hall SIDE-ON behind the teaching (front-on, by photograph, it stood behind the
+  monk's head), three kutis on stilts, two paved paths. The hall's own recipes (stepped and stacked roofs, carved gables
+  with gilt bargeboards, blades, naga curls and chofa, gilt-framed windows under crowns, lotus capitals), merged by
+  material into five meshes coloured per vertex (World A's `shopBatch` shape): 42,538 vertices, 34,854 triangles, no
+  download, no light, no shadow, the fog standing each back to its distance. Film M and episode 3 chapter 4's merit
+  film keep their city — offered to Chad, not changed. `src/main.js` untouched. Deploys `6ae2e852ce5af149d6f82aa7` and
+  `6ae2ebcbf84bbd7ec99208a2` (the preaching hall turned), each byte-verified, 269 of 269; harnesses chapter, leak, cine
+  and walk green on the second's bytes. No word moved; sheet v130 stands (v44 the link). docs/V24.8-THE-COMPOUND.md is
+  the record.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -7526,7 +7545,7 @@ assigned where a texture belonged; and the clearance is ISSUED at the start
 of play rather than inferred from an empty bag, which had left both counters
 dead from the chapter's first frame (docs/LEARNINGS.md).
 
-**Chad's report of 28 Oct 2026 on episode 3 chapter 5 — docs/V24.2-E3C5-DEBUG.md** (his four messages verbatim, the plan, and the log checkpoint by checkpoint) shipped in three releases: v24.1 the soft-lock he hit (the long press), v24.2 the comprehensive debug (masters/v24.2/findings.md, every finding with its verdict and fix), v24.3 the sound buff (masters/v24.2/L3-sound-report.md the measure, masters/v24.2/make.sh every pick and why). **His two questions after it — "Are you sure you fully debugged ep 3 chp 5?" and "Debug ep 4 chp 1 too, full debug" — are docs/V24.5-DEBUG-PLAN.md** (the honest answer, the plan for both chapters, the log checkpoint by checkpoint; masters/v24.5/findings.md every finding of nine lenses with its verdict and fix), shipped at v24.5. **His eleven notes on it the same evening — the counter's label, the owner's long talk, the bag, the desk, three minigames, all four endings — are docs/V24.7-E3C5-NOTES.md** (his words verbatim, what each traced to, the plan and the log), shipped at v24.7. **Episode 4 chapter 1, The Master I Did Not Know, shipped at v24.0 —
+**Chad's report of 28 Oct 2026 on episode 3 chapter 5 — docs/V24.2-E3C5-DEBUG.md** (his four messages verbatim, the plan, and the log checkpoint by checkpoint) shipped in three releases: v24.1 the soft-lock he hit (the long press), v24.2 the comprehensive debug (masters/v24.2/findings.md, every finding with its verdict and fix), v24.3 the sound buff (masters/v24.2/L3-sound-report.md the measure, masters/v24.2/make.sh every pick and why). **His two questions after it — "Are you sure you fully debugged ep 3 chp 5?" and "Debug ep 4 chp 1 too, full debug" — are docs/V24.5-DEBUG-PLAN.md** (the honest answer, the plan for both chapters, the log checkpoint by checkpoint; masters/v24.5/findings.md every finding of nine lenses with its verdict and fix), shipped at v24.5. **His eleven notes on it the same evening — the counter's label, the owner's long talk, the bag, the desk, three minigames, all four endings — are docs/V24.7-E3C5-NOTES.md** (his words verbatim, what each traced to, the plan and the log), shipped at v24.7; **his note the next morning, HDB blocks behind ending D's monk, is docs/V24.8-THE-COMPOUND.md** (the estate hidden behind the garden and the temple's grounds built round it, every building placed against a shot), shipped at v24.8. **Episode 4 chapter 1, The Master I Did Not Know, shipped at v24.0 —
 docs/V24.0-E4C1-PLAN.md** is its build memory (§15 the log, checkpoint by checkpoint; masters/v24.0/cp13-findings.md
 its review, every finding with its verdict and fix); its cast are placeholders until Chad's models (docs/E4-MODELS.md
 lists each, with what stands in), and its seven music cues are the measured picks until Chad's ear (one reel per cue in
