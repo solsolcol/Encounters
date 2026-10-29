@@ -7,7 +7,9 @@
    (v24.10: TS=auto samples a little into every shot of the ending's own clock table; SIG=file.json also writes a scene
    signature at the decision and at every sample — compared with sigdiff.mjs against the same ending reached by a REAL
    play-through, e3c5drive SIG= ENDTS=, because this probe's phase jump gives nothing and a played run has given
-   everything: v24.10's incense sticks were drawn here and invisible after a real play) */
+   everything: v24.10's incense sticks were drawn here and invisible after a real play)
+   (v24.12: YANT= and PRE= — his Sak Yant worn and a frame of play in his room before the jump, so the board carries his
+   print as it does for every real player) */
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
@@ -32,6 +34,11 @@ await p.waitForFunction(() => !!window.__enc, null, { timeout: 120000 });
 await p.evaluate(() => document.getElementById('startBtn').click());
 await toPlay(p, 1500000);
 await p.waitForTimeout(8000);                                       // the chapter's first frames (v9.3: boot before driving a phase)
+/* (v24.12) YANT=yantgaoyord|yanthahtaew|yantsroi wears a Sak Yant, as every player who came through episode 3 chapter 1
+   does, and PRE=<a room phase> (e.g. sit) gives him a frame of play in his room first — the frame his print is pinned on
+   (yantPrint reads the Sak Yant box on his first frame in the room IN PLAY, which the jump to the decision never has) */
+if (process.env.YANT) await p.evaluate((id) => window.__enc.kit.equip(id), process.env.YANT);
+if (process.env.PRE) { await p.evaluate((ph) => window.__enc.stage.applyPhase(ph), process.env.PRE); await p.waitForTimeout(8000); }
 await p.evaluate((ph) => window.__enc.stage.applyPhase(ph), PHASE);
 /* a chapter whose bookmark does not open the decision by itself: the engine's own handle opens it from play (v15) */
 await p.waitForFunction(() => window.__enc.getState() === 'decide', null, { timeout: 120000, polling: 500 })
