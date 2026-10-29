@@ -590,5 +590,10 @@
   "mR1sHjGvUJ9iCKcZot6W",
   "gIN7idZteXA4mX0aULcx"
  ],
- "_q1nobody_r2": "v24.9 re-said (Brian): [uneasy] So even Pong doesn't really know who he is."
+ "_q1nobody_r2": "v24.9 re-said (Brian): [uneasy] So even Pong doesn't really know who he is.",
+ "pg1offer_r": [
+  "4RExKkNSmsOXz2Lt56Ew",
+  "qfAZQGkD9oiBRpueRLDV"
+ ],
+ "_pg1offer_r": "v24.11 re-said (Zie): the shipped take b ended mid-word (its last word 'you' 60 ms, the take still voiced at its body's level on its last sample) — the same words, no tag, as the original prompt"
 }

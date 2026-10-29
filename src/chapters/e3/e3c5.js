@@ -6902,6 +6902,16 @@
       if (t < T.y6) return 'y5'; if (t < T.env) return 'y6'; if (t < T.envBox) return 'd13'; if (t < T.last) return 'd13b';
       return 'd14';
     }
+    /* (v24.11, the v24.10 audit: his printed Sak Yant — on the board from his first frame in the room, for every player who
+       came through chapter 1 — hangs where THE YEARS pins its two rows, and they covered it, its red pin through one of them;
+       every probe opened the chapter with an empty bag, so the print was never there. A receipt that would cover it is left
+       off; the board still fills, and the second board after it) */
+    function overPrint(m) {
+      const p = roomLive.yantPrint; if (!p || m.parent !== p.parent) return false;
+      const pg = p.geometry.parameters, mg = m.geometry.parameters;
+      return Math.abs(m.position.x - p.position.x) < (pg.width + mg.width) / 2 + 0.005
+          && Math.abs(m.position.y - p.position.y) < (pg.height + mg.height) / 2 + 0.005;
+    }
     /* D's things, built once and hidden (endReset hides them): the receipts THE YEARS pins — two more rows on his board and
        a second board beside it — the calendar's later months, and the envelope */
     function dProps() {
@@ -7072,7 +7082,7 @@
         if (sh === 'y1') camAt(MAT.x - 0.5, 1.2, MAT.z + 0.2, RISER.x, ALTAR.top + 0.25, (ALTAR_Z[0] + ALTAR_Z[2]) / 2);
         else if (sh === 'y3') {                               // the receipts filling his board, then a second board
           const shown = Math.floor(cl01(u / (T.y4 - T.y3)) * (D.more.length + 1));
-          D.more.forEach((m, k) => { m.visible = k < shown; });
+          D.more.forEach((m, k) => { m.visible = k < shown && !overPrint(m); });
           if (D.board2) D.board2.visible = shown > 14;
           /* close and level on the board that is filling (CP8: from 1.2 m the desk lamp's arm stood in front and the board was a
              small thing at the top); a phone's narrow frame pans to the second board as it begins, a wide one starts on the

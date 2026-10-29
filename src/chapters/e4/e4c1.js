@@ -287,7 +287,7 @@
     /* pg */
       'pg1car': 5.29, 'pg1here': 2.4, 'pg1come': 2.62, 'pg1me': 6.87, 'pg1go': 2.46, 'pg1tree': 3.01,
       'pg1shop': 1.85, 'pg1th1': 2.97, 'pg1good': 5.77, 'pg1read': 7.81, 'pg1items': 3.2, 'pg1nk': 3.53,
-      'pg1tk': 5.26, 'pg1py': 4.89, 'pg1offer': 4.01, 'pg1eyes': 3.72, 'pg1power': 3.67, 'pg1Ank': 8.33,
+      'pg1tk': 5.26, 'pg1py': 4.89, 'pg1offer': 4.17, 'pg1eyes': 3.72, 'pg1power': 3.67, 'pg1Ank': 8.33,
       'pg1Atk': 7.69, 'pg1Apy': 8.65, 'pg1A1': 3.61, 'pg1A2': 0.94, 'pg1B1': 3.73, 'pg1B2': 4.3, 'pg1B3': 6.84,
       'pg1B4': 1.65, 'pg1B5': 4.21, 'pg1B6': 2.99, 'pg1B7': 4.01, 'pg1C1': 3.35, 'pg1C2': 2.49, 'pg1D1': 3.87,
       'pg1D2': 3, 'pg1D3': 4.37,
