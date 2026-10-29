@@ -109,7 +109,9 @@ for (const ph of PH) {
   /* (v24.5) where it should land: the save's own phase, but for a finished episode 3 (this chapter's start), a wait whose
      number fourteen has been called (the call), and the storm already paid (the decision) */
   /* (v24.9) an old save in the queue lands at the master's door; whether he asked Pong rides the bookmark from there on */
-  const want = done ? 'arrive' : /^wait/.test(ph) ? 'called' : /^storm:done/.test(ph) ? 'decide' : ph.split(/[:~]/)[0];
+  /* (v24.12) the storm is a film now: a Continue in it plays the film again (skipped here, as any film is) and lands on
+     the decision, as a Continue after it always did */
+  const want = done ? 'arrive' : /^wait/.test(ph) ? 'called' : /^storm/.test(ph) ? 'decide' : ph.split(/[:~]/)[0];
   const got = r.land && r.land.phase ? String(r.land.phase).split(/[:~]/)[0] : null;
   const askWant = !done && (/~ask/.test(ph) || /^wait:[^;]*pong/.test(ph)) && want !== 'arrive';
   const askGot = !!(r.land && r.land.kp && /~ask/.test(r.land.kp));

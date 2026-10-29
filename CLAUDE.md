@@ -7057,6 +7057,53 @@ What the baseline contains, by release:
     byte-verified (268 of 268 served files). Four laws in LEARNINGS (a mechanic nothing reads is filler; a re-take's
     session record needs a name of its own; an option that appears after a walk must not race the order that ends it;
     a probe drives the way a player can).
+- **v24.10** THE INCENSE IN ENDING D — Chad: *"Ep 3 chp 5, option d cutscene, when he light the incense, the incense
+  is missing."* and *"How did this bug make it through all your debugging rounds? You don't read code?"* — a fair
+  question with a plain answer. Play hides each joss stick in the bundle as it is given (`giveStick`), and ending D's
+  lighting shot set the same bundle out on the desk again with `deskIncense('stage')`, which never set the sticks out:
+  after a REAL play-through the lighter was struck over three hidden sticks. It had been so since v23.0, past five
+  reviews, because every photograph of the endings came from the probes' jump to the decision — which gives nothing and
+  starts with an empty bag — and the one real play-through that reached ending D (v24.2) logged its voices and never
+  looked at its pictures; the bug needed the gift in play and the re-staging in the ending read together. 'stage' sets
+  all three out now; proven through the real presses (the bundle 111 → 011 → 001 → 000, then all three lean into the
+  flame). The check that would have caught it is kept: `tools/probes/scenesig.mjs` (every drawn thing, keyed by what it
+  is and where it stands), `e3c5drive` (`SIG=`, `ENDTS=auto`: an ending recorded after a real play-through), `e3c5ends`
+  (`SIG=`, `TS=auto`: after the jump) and `sigdiff.mjs`. An independent read of the class (everything play changes that
+  an ending of that chapter re-stages) found one more, fixed at v24.11. Deploy `6ae38894e9e085242e614e8c`,
+  byte-verified (268 served files). docs/V24.12-THE-STORM-WATCHED.md §1–2.
+- **v24.11** PONG'S FULL LINE, AND THE PRINT KEPT CLEAR — Chad: *"pong voice got cut in one of his voiceline after
+  something about teacher offering."* It was the take: `pg1offer` ("And the teacher offering — kha khru — you put what
+  you want, up to you.") ended mid-word — its last "you" 60 ms long in faster-whisper's word timings, still voiced on its
+  last sample. v24.0's pick put the words first and noted the end ON signal without reading what the end was. Every line
+  of the chapter measured the same way: the eleven that end loud all end on a whole word; only this one was cut. Re-said
+  by Zie (the original prompt word for word, two takes, both whole), take a, 4.17 s through v24.0's cast chain
+  (masters/v24.11/make.sh). And the audit's one: his printed Sak Yant, on his cork board from his first frame in the
+  room for every player who came through episode 3 chapter 1, hung where ending D's THE YEARS pins its receipts; a
+  receipt that would cover it is left off (`overPrint`). Deploy `6ae3987092f7ca090f49f047`, byte-verified (268).
+- **v24.12** THE STORM, WATCHED — Chad: *"For ep4 chp 1, the lightning game is way too hard, can you change it to
+  another minigame?"* and *"What is the purpose of the lightning game anyway"*. WHAT CHANGED? carried the chapter's
+  lesson as something to do (fear sees signs that are not there: tap only what really changed between flashes), and on
+  a phone it was a memory test of a dim room in 2.6-second flashes — hard for eyesight and memory, not for the lesson,
+  which the four signs had taught a minute before. Of three replacements put to him he chose **"No game, just watch"**:
+  the storm is a FILM from play now (`kit.film('storm')`, 17.4 s, every picture a function of its clock — `STORM`,
+  `stormFrame`): five flashes, each cut to what changed in the dark — the room, the cup moved beside the WET RING where
+  it stood (new), the cloth lying differently, the clock's pendulum still (its case has a glass window now), her a step
+  closer at the edge of his sight on every screen, and the master's face in the loudest crack with nothing changed —
+  then his eyes again, where play takes over for the hush and the decision as before. Every change is made on a cut or
+  in a shot that cannot see it; the thunder is the film's own cues, the drone rises from its first frame and the rain
+  beds stay up under it (`mixBeds`). Found by the photographs before it shipped: a Continue began the film under the
+  arrival's black, which a film never lifts (it waits for the black now); the cup jumped at 2.9 in view and she moved at
+  10.0 inside a shot a desktop could see; the pendulum was sealed in a solid case; and the silver offering dish beside the
+  cup drew only its rim from above (a lathe's floor faces down) — two-sided now and 4 mm off the wood, because at 0 mm its
+  floor shared the table top's plane and at 2 mm the candles' painted pool's (LEARNINGS). `stormEnd()` leaves the room as
+  the storm does whether the film ran, was skipped or never played; the card's three storm notes and the event's two
+  words are gone with the game; the engine's `change` kind (S44) stays, proven by the fixture. The Continue probe lands a
+  save in the storm on the decision (the film replays and is skipped, as any film), and the drive probe photographs the
+  storm as it plays in the real flow. Verified on the deployed bytes: a finger play-through on a phone to ending B's card
+  (56 lines, none over another, `pg1offer` whole, the film's six thunder cues, no page error) and Continue from six saves
+  around the storm, each landing right. Sheet v132 (five words out, `pg1offer` re-measured; v44 stays the link). Deploys
+  `6ae39fecc0a312c1e945a7fb` and `6ae3a4d8ec468924120ba51a` (the dish), each byte-verified (268 of 268 served files).
+  docs/V24.12-THE-STORM-WATCHED.md is the record of all three releases, the restart in the middle of them included.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
@@ -7593,7 +7640,7 @@ assigned where a texture belonged; and the clearance is ISSUED at the start
 of play rather than inferred from an empty bag, which had left both counters
 dead from the chapter's first frame (docs/LEARNINGS.md).
 
-**Chad's report of 28 Oct 2026 on episode 3 chapter 5 — docs/V24.2-E3C5-DEBUG.md** (his four messages verbatim, the plan, and the log checkpoint by checkpoint) shipped in three releases: v24.1 the soft-lock he hit (the long press), v24.2 the comprehensive debug (masters/v24.2/findings.md, every finding with its verdict and fix), v24.3 the sound buff (masters/v24.2/L3-sound-report.md the measure, masters/v24.2/make.sh every pick and why). **His two questions after it — "Are you sure you fully debugged ep 3 chp 5?" and "Debug ep 4 chp 1 too, full debug" — are docs/V24.5-DEBUG-PLAN.md** (the honest answer, the plan for both chapters, the log checkpoint by checkpoint; masters/v24.5/findings.md every finding of nine lenses with its verdict and fix), shipped at v24.5. **His eleven notes on it the same evening — the counter's label, the owner's long talk, the bag, the desk, three minigames, all four endings — are docs/V24.7-E3C5-NOTES.md** (his words verbatim, what each traced to, the plan and the log), shipped at v24.7; **his note the next morning, HDB blocks behind ending D's monk, is docs/V24.8-THE-COMPOUND.md** (the estate hidden behind the garden and the temple's grounds built round it, every building placed against a shot), shipped at v24.8. **His note the same afternoon on episode 4 chapter 1 — "is it really necessary to have the other customers there, to wait one by one for your turn, to gather notes that are inconsequential?" — is docs/V24.9-E4C1-TIGHTER.md** (the measure, his three picks, the change list and the log), shipped at v24.9: the yard straight in with one optional question to Pong, no note pages, no birthday pick. **Episode 4 chapter 1, The Master I Did Not Know, shipped at v24.0 —
+**Chad's report of 28 Oct 2026 on episode 3 chapter 5 — docs/V24.2-E3C5-DEBUG.md** (his four messages verbatim, the plan, and the log checkpoint by checkpoint) shipped in three releases: v24.1 the soft-lock he hit (the long press), v24.2 the comprehensive debug (masters/v24.2/findings.md, every finding with its verdict and fix), v24.3 the sound buff (masters/v24.2/L3-sound-report.md the measure, masters/v24.2/make.sh every pick and why). **His two questions after it — "Are you sure you fully debugged ep 3 chp 5?" and "Debug ep 4 chp 1 too, full debug" — are docs/V24.5-DEBUG-PLAN.md** (the honest answer, the plan for both chapters, the log checkpoint by checkpoint; masters/v24.5/findings.md every finding of nine lenses with its verdict and fix), shipped at v24.5. **His eleven notes on it the same evening — the counter's label, the owner's long talk, the bag, the desk, three minigames, all four endings — are docs/V24.7-E3C5-NOTES.md** (his words verbatim, what each traced to, the plan and the log), shipped at v24.7; **his note the next morning, HDB blocks behind ending D's monk, is docs/V24.8-THE-COMPOUND.md** (the estate hidden behind the garden and the temple's grounds built round it, every building placed against a shot), shipped at v24.8. **His note the same afternoon on episode 4 chapter 1 — "is it really necessary to have the other customers there, to wait one by one for your turn, to gather notes that are inconsequential?" — is docs/V24.9-E4C1-TIGHTER.md** (the measure, his three picks, the change list and the log), shipped at v24.9: the yard straight in with one optional question to Pong, no note pages, no birthday pick. **His messages of 29 Oct — the incense missing in episode 3 chapter 5's ending D ("You don't read code?"), Pong's cut line, and episode 4 chapter 1's lightning game "way too hard" — are docs/V24.12-THE-STORM-WATCHED.md** (his words, the causes, the audit, the storm film shot by shot and the log), shipped at v24.10–v24.12: the sticks set out again, the line re-said, and the storm watched instead of played (his pick, "No game, just watch"). **Episode 4 chapter 1, The Master I Did Not Know, shipped at v24.0 —
 docs/V24.0-E4C1-PLAN.md** is its build memory (§15 the log, checkpoint by checkpoint; masters/v24.0/cp13-findings.md
 its review, every finding with its verdict and fix); its cast are placeholders until Chad's models (docs/E4-MODELS.md
 lists each, with what stands in), and its seven music cues are the measured picks until Chad's ear (one reel per cue in
@@ -7702,7 +7749,7 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v131** (`masters/v24.9/masterz-text-v131.xlsx`, v130 with episode 4 chapter 1 tightened: 41 of its words out — the queue's orders, the three customers' prompts, the notes' prompts and meanings, the eight days and the pick's two, the facts/meanings card notes — and `objWatch` "Watch closely · {n}/4"; 24 voice lines out (the queue's calls, the customers', the day's), `pn1ready` in, `pg1come` and `q1nobody` re-said, four descriptions moved. v130 was `masters/v24.7/masterz-text-v130.xlsx`, v129 with v24.7's words for episode 3 chapter 5: the drinks' and the incense's orders say "at the desk"; the eight words of the three minigames taken out with them and COME BACK's three conduct notes; the ending D chant's four captions the Mettā verse's (`metta1`–`metta4`, Pali and English) in place of the Yathā's; the voice lines `ow5wrong` and `ow5promise` cut, `z5Clotto` in place of `z5Cevil`, `z5C7` re-said, and `mk5metta` in place of `mk5yatha`. v129 was `masters/v24.5/masterz-text-v129.xlsx`, v128 with v24.5's words: 1 row added (`fm1chant2D`,
+**THE SHEET IS v132** (`masters/v24.12/masterz-text-v132.xlsx`, v131 less episode 4 chapter 1's five storm words — `chgLabel`, `chgBrief` and the three `noteStorm*` notes, gone with the game — and with `pg1offer` re-measured at 4.17 s, its description saying it was re-said. v131 was `masters/v24.9/masterz-text-v131.xlsx`, v130 with episode 4 chapter 1 tightened: 41 of its words out — the queue's orders, the three customers' prompts, the notes' prompts and meanings, the eight days and the pick's two, the facts/meanings card notes — and `objWatch` "Watch closely · {n}/4"; 24 voice lines out (the queue's calls, the customers', the day's), `pn1ready` in, `pg1come` and `q1nobody` re-said, four descriptions moved. v130 was `masters/v24.7/masterz-text-v130.xlsx`, v129 with v24.7's words for episode 3 chapter 5: the drinks' and the incense's orders say "at the desk"; the eight words of the three minigames taken out with them and COME BACK's three conduct notes; the ending D chant's four captions the Mettā verse's (`metta1`–`metta4`, Pali and English) in place of the Yathā's; the voice lines `ow5wrong` and `ow5promise` cut, `z5Clotto` in place of `z5Cevil`, `z5C7` re-said, and `mk5metta` in place of `mk5yatha`. v129 was `masters/v24.5/masterz-text-v129.xlsx`, v128 with v24.5's words: 1 row added (`fm1chant2D`,
 episode 4 chapter 1's ending D letting the chant finish) and 7 changed — three of that chapter's ledger facts (the
 woman waiting's, the uncle's, the reading's), the stops on its chant's three captions, and fm1chant2's description.
 v128 was `masters/v24.2/masterz-text-v128.xlsx`, v127 with episode 3 chapter 5's debug words: 2 rows

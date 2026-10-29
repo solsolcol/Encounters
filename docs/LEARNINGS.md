@@ -6952,3 +6952,38 @@ cut (sharing its vertices and maps) when it is small.
   only way to the title from play. The probe now taps the menu button and "Back to the title screen" like a thumb, and
   where the menu refuses it reports that there is no same-sitting Continue from there, as for a player (v8.0's
   minigame law, met in the save path).
+- **An ending is checked after a REAL play-through, never only after the probes' phase jump** (v24.10, v24.11). Chad:
+  "Ep 3 chp 5, option d cutscene, when he light the incense, the incense is missing." Play hides each joss stick in the
+  bundle as it is given; ending D's lighting shot sets the same bundle out on the desk again and never set the sticks
+  out, so after a real play it struck the lighter over nothing. It had been so since the shot was written (v23.0), past
+  five reviews, because every photograph of the endings came from `applyPhase('decide')` straight after boot — a jump
+  that gives nothing, plays nothing and starts with an empty bag — and the one real play-through that reached ending D
+  (v24.2) logged its voices and errors and never looked at its pictures. An independent read then found a second of the
+  same kind the jump could not show either: the printed Sak Yant on his cork board (there only for a player who came
+  through episode 3 chapter 1, i.e. every real player) sat under the receipts ending D pins in THE YEARS. The rule: an
+  ending that re-stages a prop play touched must set every property it shows (visibility, parent, place, scale), and the
+  endings are photographed after the real path at least once — `tools/probes/scenesig.mjs` records every drawn thing,
+  `e3c5drive` (`SIG=`, `ENDTS=auto`) and `e3c5ends` (`SIG=`, `TS=auto`) write it after each path, `sigdiff.mjs`
+  compares them moment by moment. Ask also what the player CARRIES into the chapter: a probe's bag is empty.
+- **A take that ends ON signal is read for a whole last word** (v24.11). eleven_v3 ends nearly every take on its last
+  audible sample, so "ends on signal" flags most of a cast and says nothing; v24.0's pick noted it on Pong's teacher's-
+  offering line and shipped it because its words scored best — and its last word, "you", lasted 60 ms, cut mid-vowel
+  (Chad: "pong voice got cut in one of his voiceline after something about teacher offering"). What separates a cut
+  take from a tight one is the last word itself: its length in the transcriber's word timings (faster-whisper; a "you"
+  is 0.15–0.3 s, not 0.06) and whether the last 30 ms are still VOICED at the body's level (autocorrelation in the
+  voice's pitch range). Measured that way, the chapter's eleven loud endings were all whole words and this one was
+  not. (faster-whisper's own file decoder fails on this container's `av`; hand it the samples as a float32 array.)
+- **A minigame hard for the wrong reason is the wrong minigame** (v24.12). WHAT CHANGED? asked the player to remember a
+  dim room and tap only what had changed between 2.6-second flashes — on a phone's screen, a test of eyesight and
+  memory, not of the lesson it carried (fear sees signs that are not there), and the four signs had taught that lesson
+  a minute before. Chad: "the lightning game is way too hard ... What is the purpose of the lightning game anyway". Of
+  three replacements he chose none of the games: the storm is watched now, a film with each flash cut to what changed.
+  Before keeping a hard minigame, say what makes it hard; if it is not the thing the beat is about, change the game.
+- **A dish drawn from a lathe is hollow from above, and a painted pool is a plane too** (v24.12). LatheGeometry's floor
+  faces DOWN when the profile runs from the axis outward, so a dish of one side draws only its rim from above: in the
+  storm film's close shot of the cup, episode 4 chapter 1's silver offering dish read as a hollow grey ring. Two-sided,
+  its floor is drawn — and then it fought every plane it lay in: the table top (at 0 mm, a jagged star of wood through
+  the silver) and the candles' painted light pool laid 2 mm over that table (at 2 mm, a pinwheel of the floor's 22
+  wedges, each wedge winning or losing the depth test whole). The coplanar law (v19.3, v22.2) counts the PAINTED layers
+  — pools, washes, wet rings, decals — as surfaces: lift a thing set on a table clear of all of them (4 mm here), and
+  find them by listing what is drawn at that height, not by remembering what the table is made of.

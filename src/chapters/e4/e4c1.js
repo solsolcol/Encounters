@@ -126,6 +126,15 @@
     C: { said: 7.4, up: 9.4, calm: 12.4, pong: 19.4, out: 24.0, car: 33.2, road: 39.2, coda: 51.6 },
     D: { ask: 7.0, nod: 19.0, out: 24.0, shelter: 36.0, dusk: 52.0, coda: 60.4 }
   };
+  /* THE STORM, WATCHED (v24.12, Chad: the lightning game was "way too hard" — of three replacements he picked "No game, just
+     watch"): five flashes, each cut to what changed in the dark before it, as WHAT CHANGED? changed it — the cup along the
+     table (f2); the cloth over the bowl, then the clock stopped (f3, lit longer for both); her a step closer at the edge of
+     his sight (f4); nothing, the loudest (f5) — and back to his eyes on the master for the hush. `mv` is when each change
+     is made, always in a shot that cannot see it; `s` when each shot cuts in */
+  /* (the cup and the cloth change ON the cut to their own close shot — the room's wide had the cup in it, the cup's close
+     shot the bowl at its edge; she steps in the clock shot, 52° off her — each by measuring what the shot before sees) */
+  const STORM = { f1: 0.9, s2: 3.3, cupMv: 3.3, f2: 4.2, s3: 6.3, clothMv: 6.3, f3: 7.2, s3b: 7.95, herMv: 9.3, s4: 9.7,
+                  f4: 11.3, s5: 13.7, f5: 14.4, back: 16.3, end: 17.4, lit: 1.3, lit3: 1.75 };
 
 
   const DATA = {
@@ -240,15 +249,10 @@
       lookCloth: 'The red cloth',
       lookShadow: 'His shadow on the wall',
       lookHer: 'The doorway',
-      // PLAY IV · the storm (§4.5): WHAT CHANGED?
-      chgLabel: 'The storm',
-      chgBrief: 'The lightning shows the room. Remember it. When it flashes again, tap or click only what has changed. If nothing has changed, touch nothing.',
+      // (PLAY IV · the storm is watched since v24.12 — its game, WHAT CHANGED?, its two words and its three card notes are gone)
       // the card's What you did (§4.9)
       noteAsked: 'You asked who he was. Nobody knew.',
       noteNeverAsked: 'You never asked who he was.',
-      noteStormTrue: 'In the storm, you saw only what changed.',
-      noteStormFalse: 'In the storm, you saw changes that weren\'t there.',
-      noteStormNone: 'In the storm, you held back, and missed what changed.',
       note_nangkwak: 'You took a Nang Kwak for the shop.',
       note_takrut: 'You took a takrut for the shop.',
       note_phayant: 'You took a pha yant for the shop.',
@@ -804,8 +808,17 @@
         const hd = new THREE.Mesh(new THREE.TorusGeometry(0.02, 0.004, 6, 12, Math.PI), mWhiteP); hd.position.set(0.04, 0.045, 0); hd.rotation.z = -Math.PI / 2; cupG.add(hd);
         const water = flat(0.07, 0.07, M({ color: 0x9ab0b8, roughness: 0.05, metalness: 0.2, transparent: true, opacity: 0.8 }), cupG); water.rotation.x = -Math.PI / 2; water.position.y = 0.07;
         room.cup = cupG;
+        /* (v24.12) the wet ring it leaves where it stood — the storm film's close shot shows the cup moved by the ring beside it */
+        const ring = new THREE.Mesh(new THREE.RingGeometry(0.029, 0.037, 24), M({ color: 0x1a110b, roughness: 0.25, transparent: true, opacity: 0.5,
+          depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
+        ring.rotation.x = -Math.PI / 2; ring.position.set(RMC.CUP[0].x, T + 0.0008, RMC.CUP[0].z); ring.visible = false; R.add(ring); room.cupRing = ring;
         bx(0.05, 0.016, 0.035, M({ color: 0xc8a030, roughness: 0.6 }), 0.15, T + 0.008, -1.02).rotation.y = 0.3;     // the matches
-        lathe([[0, 0], [0.05, 0], [0.062, 0.012], [0.058, 0.014]], mSilver, -0.06, T, -1.03, 22);                    // the offering dish
+        /* the offering dish (v24.12: its own two-sided silver — a lathe's floor faces down, so from above only the rim was
+           drawn and the dish read as a hollow grey ring in the storm film's close shot of the cup beside it; and 4 mm off
+           the wood, or its floor, drawn now, shares a plane with the table top (a jagged star of wood in the silver) or,
+           at 2 mm, with the candles' painted pool laid over the table there (room.pools, LOWT.top + 0.002 — a pinwheel of
+           its wedges)) */
+        lathe([[0, 0], [0.05, 0], [0.062, 0.012], [0.058, 0.014]], M({ color: 0xc8ccd0, roughness: 0.28, metalness: 0.9, side: THREE.DoubleSide }), -0.06, T + 0.004, -1.03, 22);
         for (const sx2 of [-0.42, 0.42]) {
           lathe([[0, 0], [0.045, 0], [0.04, 0.012], [0.012, 0.02], [0.01, 0.07], [0.025, 0.08], [0.022, 0.086]], mBrass, sx2, T, -1.3, 18);
           room.candles.push(candle(sx2, T + 0.086, -1.3, 0.16));
@@ -892,7 +905,15 @@
          (it stops at flash 3, §4.5) */
       {
         const xc = CLOCK.x, h = CLOCK.y1 - CLOCK.y0, yc = (CLOCK.y0 + CLOCK.y1) / 2, Z = z0;
-        bx(0.26, h, 0.1, mTeak, xc, yc, Z + 0.05);
+        /* (v24.12) a case with a WINDOW: the pendulum hung inside a solid 10 cm box and was never seen, so "the clock has
+           stopped" (flash 3) showed nothing in any shot. The case is a back 6 cm deep, and in front of it the dial's board,
+           a bottom rail and two stiles, the pendulum swinging between them behind the glass; every front face stays at
+           Z + 0.1, under the dial, the hands and the glass as before */
+        bx(0.26, h, 0.06, mTeak, xc, yc, Z + 0.03);
+        { const wTop = CLOCK.y1 - 0.26, wBot = CLOCK.y0 + 0.06;
+          bx(0.26, CLOCK.y1 - wTop, 0.04, mTeak, xc, (CLOCK.y1 + wTop) / 2, Z + 0.08);      // the dial's board
+          bx(0.26, wBot - CLOCK.y0, 0.04, mTeak, xc, (wBot + CLOCK.y0) / 2, Z + 0.08);      // the bottom rail
+          for (const sd of [-1, 1]) bx(0.03, wTop - wBot, 0.04, mTeak, xc + sd * 0.115, (wTop + wBot) / 2, Z + 0.08); }   // the stiles
         const crest = new THREE.Shape(); crest.moveTo(-0.15, 0); crest.lineTo(0.15, 0); crest.lineTo(0.12, 0.05); crest.quadraticCurveTo(0, 0.13, -0.12, 0.05); crest.lineTo(-0.15, 0);
         mesh(new THREE.ExtrudeGeometry(crest, { depth: 0.11, bevelEnabled: false }), mTeakD, xc, CLOCK.y1, Z);
         bx(0.29, 0.03, 0.12, mTeakD, xc, CLOCK.y0 + 0.015, Z + 0.06);
@@ -3192,7 +3213,7 @@
       rain(k, secs = 2) { room.rainFrom = room.rainK; room.rainTo = Math.max(0, Math.min(1, k)); room.rainT0 = wallNow(); room.rainSecs = Math.max(0.01, secs); },
       breathe() { room.breathT = wallNow(); },
       gust() { room.gustT = wallNow(); },                      // (v24.5, L1-2: the curtain in the doorway, stirred)
-      cup(i) { room.cupAt = i ? 1 : 0; const c = RMC.CUP[room.cupAt]; room.cup.position.set(c.x, RMC.LOWT.top, c.z); },
+      cup(i) { room.cupAt = i ? 1 : 0; const c = RMC.CUP[room.cupAt]; room.cup.position.set(c.x, RMC.LOWT.top, c.z); if (room.cupRing) room.cupRing.visible = !!room.cupAt; },
       /* the cloth lies differently (flash 3): turned half a fold and slid off the bowl's centre, so the brass rim shows
          on one side and the hem hangs lower on the other */
       clothShift(on) { if (!room.cloth) return; room.cloth.rotation.y = on ? 0.45 : 0; room.cloth.position.x = RMC.BOWL.x + (on ? 0.028 : 0); room.cloth.position.z = RMC.BOWL.z + (on ? -0.012 : 0); },
@@ -4007,44 +4028,42 @@
       herCtl.at('door'); herCtl.show(true); herPosSync();
       if (resumed) prayOn(true);                    // (v24.5: a Continue into the storm kneels him in the wai the chant began)
       if (!resumed) line('pg1power', cast.pongR);
-      /* he faces the master before the room is shown to him (CP13: WHAT CHANGED? was played from wherever the fourth sign
-         left his eyes — on a phone every change could be off the screen — and nothing can turn the view while it runs) */
-      queueFn(() => faceRoom(() => changeEvent()));
+      /* he faces the master before the storm is shown to him (CP13: WHAT CHANGED? was played from wherever the fourth sign
+         left his eyes); the film begins on exactly that view, so it is his eyes going on (v24.12) */
+      queueFn(() => faceRoom(() => stormWatch()));
     }
     function faceRoom(done) {
       const d = Math.abs(angTo(yaw.rotation.y, faceMaster())) + Math.abs(pitch.rotation.x + 0.06);
       if (d < 0.02) { done(); return; }
       turnTo(faceMaster(), Math.min(1.0, 0.35 + d * 0.6), Object.assign({ pitch: -0.06 }, KNEEL), done);
     }
-    function changeEvent() {
+    /* THE STORM, WATCHED (v24.12, Chad: "the lightning game is way too hard" — and his pick of three replacements, "No
+       game, just watch"). WHAT CHANGED? was a spot-the-difference memory test in 2.6 s flashes on a phone's screen: hard
+       for eyesight and memory, not for the lesson, and the four signs had taught that lesson a minute before. The storm is
+       a film now (films.frame 'storm', the stage draws it), and the hush and the decision come after it in play, as
+       before. Refused while play is not running (the menu up on the frame it began), it waits for play */
+    function stormWatch() {
       const run = play.run;
-      if (!kit || !kit.event) { stormEnd(null); return; }
-      kit.event({ kind: 'change', label: W.chgLabel, brief: W.chgBrief, spots: [chg.cup, chg.cloth, chg.clock, chg.her],
-        rounds: [[], ['cup'], ['cloth', 'clock'], ['her'], []],
-        lead: 1.4, dark: 1.6, lit: 2.6, hit: 3, miss: 1, falseCost: 3, falseCap: 2, tol: 0.09,   // (CP13: at most two false taps paid a flash — a panicked thumb could faint him and lose the chapter)
-        /* the one low drone rises from START (CP13: begun at the storm, its swell had passed before a slow reader of the
-           brief had played a round) */
-        onBegin() { droneStop(0); sfxReady('w4storm', 0.42, d => { if (phase === 'storm') play.drone = d; else try { d.stop(); } catch (e) {} }); },
-        apply(r) {
-          if (r === 1) { roomCtl.cup(1); chg.cup.pos.x = RX + RMC.CUP[1].x; chg.cup.pos.z = RMC.CUP[1].z; }
-          if (r === 2) { roomCtl.clothShift(true); roomCtl.clock(false); }
-          if (r === 3) { herCtl.at('step'); herPosSync(); }
-        },
-        onPhase(r, ph) {
-          if (ph === 'lit') { if (kit.lightning) kit.lightning({ power: r === 4 ? 1.4 : 1.0, near: 0.95, thunder: 'w4crack', vol: r === 4 ? 1 : 0.65 }); look('FLASH', 0.05); }
-          else if (ph === 'dark') look('DARK', 0.15);
-          else if (ph === 'end') look('DARK', 0.3);
-        }
-      }).then(res => { if (live(run) && !(res && res.aborted)) stormEnd(res); });   // (CP13: a faint aborts it — not an end)
+      const go = () => { if (live(run) && phase === 'storm') stormEnd(); };
+      /* not over a black still lifting: a film begins on the black its caller has up and this one never lifts it — a
+         Continue into the storm started it under the arrival's fade and played all of it black (photographed, phone) */
+      if (kit && kit.getFade && kit.getFade() > 0.02) { after(0.2, stormWatch); return; }
+      if (kit && kit.film && kit.film('storm', { onDone: go })) return;
+      if (kit && kit.film && getState() !== 'play') { after(0.3, stormWatch); return; }
+      go();                                        // (no film to play: the hush, the room as the storm leaves it — stormEnd)
     }
+    /* the one low drone under the storm, from the film's first frame (CP13's from START); stopped with the rain (stormEnd) */
+    function stormDrone() { droneStop(0); sfxReady('w4storm', 0.42, d => { if (phase === 'storm') play.drone = d; else try { d.stop(); } catch (e) {} }); }
     function droneStop(tau) {
       const d = play.drone; play.drone = null;
       if (!d) return;
       try { const t = d.context.currentTime; if (d.__g && tau > 0) { d.__g.gain.setTargetAtTime(0, t, tau); d.stop(t + tau * 6); } else d.stop(); } catch (e) {}
     }
-    function stormEnd(res) {
-      setPhase('storm', 'done');                   // the storm is paid: a Continue from here lands on the decision (CP13)
-      bank(res && res.wrong ? W.noteStormFalse : res && res.right ? W.noteStormTrue : W.noteStormNone);   // (CP13: a storm with nothing tapped and every change missed said he 'saw only what changed')
+    function stormEnd() {
+      setPhase('storm', 'done');                   // the storm is over: a Continue from here lands on the decision (CP13)
+      /* (v24.12: no note on the card — there is no game to have played; the room as the storm leaves it, whether the film ran
+         to its end, was skipped or never played) */
+      roomCtl.cup(1); roomCtl.clothShift(true); roomCtl.clock(false); herCtl.at('step'); herPosSync();
       roomCtl.rain(0, 0.25);                       // all at once
       droneStop(0.08);                             // and the drone with it
       chantStop(0.08); play.chantNext = 0;         // and the chant: he has stopped (CP13: it ran on under the decision)
@@ -4237,7 +4256,9 @@
       if (!(wdt > 0)) return;
       const want = { yard: 0, paddy: 0, room: 0, rainl: 0, rainh: 0, after: 0, radio: 0 };
       const w = worldOf(yaw.position.x);
-      if (st !== 'cine') {
+      /* (v24.12: the storm film keeps the room's beds — it is the storm itself, the rain on the zinc at its loudest; every
+         other film cues its own sound) */
+      if (st !== 'cine' || FL.key === 'storm') {
         if (w === 'C') {
           const late = lookName === 'YARD2' ? 2 : lookName === 'YARD1' ? 1 : 0;
           want.yard = [0.3, 0.26, 0.2][late];
@@ -4795,6 +4816,44 @@
     const PONG_HEAD = () => headOf(cast.pongR, [RX - 0.95, 0.88, -0.2]);
     const DOOR_STEP = [RDOOR.x, 0.5 + 1.62, RDOOR.z - 0.45];
     /* the room as the storm left it, and the people in it (a scene begins from the decision) */
+    /* THE STORM, WATCHED (v24.12): every picture by the film's clock (STORM), so a seek, a skip and a slow phone land on the
+       same room. Each change is made in a shot that cannot see it; the lit beats are the FLASH light and the rest the
+       candles' DARK; each flash's flicker fires once a run as its moment passes (onceAt). The first and the last shots are
+       his own eyes on the master at play's kneeling look (a little down: −0.06), so the film begins on the frame play has
+       and hands back on it. Her figure fades by where she falls on the screen (herFrame) — in the frame's outer quarter
+       only — so she is at the door's edge in the first flash on a desktop, and a step closer at the edge on every screen in
+       the fourth */
+    function stormFrame(t) {
+      const S = STORM, nw = isNarrow(), eye = ROOM_EYE();
+      roomCtl.cup(t >= S.cupMv ? 1 : 0);
+      roomCtl.clothShift(t >= S.clothMv); roomCtl.clock(t < S.clothMv);
+      herCtl.show(true); herCtl.at(t >= S.herMv ? 'step' : 'door');
+      const F = [S.f1, S.f2, S.f3, S.f4, S.f5];
+      const lit = F.some((f, i) => t >= f && t < f + (i === 2 ? S.lit3 : S.lit));
+      fLook(lit ? 'FLASH' : 'DARK', lit ? 0.05 : 0.25);
+      F.forEach((f, i) => onceAt('storm' + i, t, f, () => { if (kit && kit.lightning) kit.lightning({ power: i === 4 ? 1.4 : 1.0, near: 0.95 }); }, 0.7));
+      const pov = [RX + CMAT.x, eye[1] - 0.12, MASTER.z - 0.05];             // his kneeling look: the master, a little down
+      if (t < S.s2) { fLens(72); camAt(eye, pov); }                          // flash 1: the room, as play left his eyes
+      else if (t < S.s3) {                                                   // flash 2: the cup moved — the wet ring where it stood
+        const k = smo(sgk(t, S.s2, S.s3));
+        fLens(nw ? 56 : 40);
+        camAt([RX + 0.34 - 0.03 * k, 0.80 - 0.03 * k, -0.50 - 0.04 * k], [RX + 0.16, RMC.LOWT.top + 0.04, RMC.CUP[0].z]);
+      } else if (t < S.s3b) {                                                // flash 3: the cloth over the bowl, lying differently
+        fLens(nw ? 52 : 38);
+        camAt([RX - 0.10, 0.76, -0.52], [RX + RMC.BOWL.x, RMC.LOWT.top + 0.06, RMC.BOWL.z]);
+      } else if (t < S.s4) {                                                 // and in the same flash, the clock: its pendulum still
+        fLens(nw ? 52 : 40);
+        camAt([RX + 0.40, 1.48, -1.42], [RX + RMC.CLOCK.x, (RMC.CLOCK.y0 + RMC.CLOCK.y1) / 2 + 0.02, RM.z0 + 0.1]);
+      } else if (t < S.s5) {                                                 // flash 4: his eyes on the master, and her at their edge
+        const k = smo(sgk(t, S.s4, S.s5));
+        fLens(72);
+        camAt([eye[0], eye[1], eye[2] - 0.12 * k], pov);
+      } else if (t < S.back) {                                               // flash 5, the loudest: and nothing has changed
+        const k = smo(sgk(t, S.s5, S.back));
+        fLens(nw ? 50 : 40);
+        camAt([RX, 1.06 - 0.02 * k, -0.92 - 0.06 * k], MASTER_HEAD());
+      } else { fLens(72); camAt(eye, pov); }                                 // back to his eyes: play takes over on this frame
+    }
     function roomAfter() {
       fLook('HUSH');
       roomCtl.tube(false); roomCtl.rain(0, 0.01); roomCtl.cup(1); roomCtl.clothShift(true); roomCtl.clock(false); roomCtl.smokeStraight(true);
@@ -5330,11 +5389,13 @@
            are shut) — a look outside play is opt-in (CP9, by photograph: in every ending he talked over the lens to the
            ceiling, because his answering take tips his chin up and nothing held his face on the client) */
         if (cast.master) cast.master.lookFilm = key !== 'open';
+        if (key === 'storm') stormDrone();             // (v24.12: the storm film's drone, stopped with the rain by stormEnd)
       },
       frame(key, t, api) {
         if (FL.key !== key) films.begin(key, null, api);
         fTalk(t);
-        if (key === 'open') openFrame(t);
+        if (key === 'storm') stormFrame(t);
+        else if (key === 'open') openFrame(t);
         else if (key === 'A') endA(t);
         else if (key === 'B') endB(t);
         else if (key === 'C') endC(t);
@@ -6594,6 +6655,22 @@
     step(O.end, () => stage.films.end());
   }
 
+  /* THE STORM, WATCHED (v24.12, kit.film from play): the stage draws it (films 'storm'); here only its thunder, one clap a
+     flash over the rain and the drone the stage keeps — a far roll on the first, cracks after, the loudest on the fifth */
+  function stormFilm(c, s, api) {
+    const { tr, step, sfx, rawK, stage } = api;
+    const S = STORM;
+    step(0, () => stage.films.begin('storm', c, api));
+    tr(0, S.end, (k, t) => stage.films.frame('storm', t, api), rawK);
+    sfx(S.f1 + 0.15, 'w4thunder', 0.75);       // flash 1: the room, a long roll
+    sfx(S.f2 + 0.1, 'w4crack', 0.7);           // flash 2: the cup
+    sfx(S.f3 + 0.1, 'w4crack', 0.8);           // flash 3: the cloth, the clock
+    sfx(S.f4 + 0.1, 'w4crack', 0.9);           // flash 4: her
+    sfx(S.f5 + 0.05, 'w4crack', 1);            // flash 5: the loudest, and nothing
+    sfx(S.f5 + 0.6, 'w4thunder', 0.9);         // and its roll on under the dark
+    step(S.end, () => stage.films.end());
+  }
+
   /* the ending's own frame and its end: the stage draws it; the card lies over the coda's last black */
   function endingScene(c, api, k, cues) {
     const { tr, step, rawK, stage } = api;
@@ -6799,6 +6876,7 @@
   (window.__CHAPTERS__ = window.__CHAPTERS__ || {}).e4c1 = Object.assign(DATA, {
     build,
     scenes: [scStill, scQuestion, scCertain, scEnough],
-    intro: introFilm
+    intro: introFilm,
+    films: { storm: stormFilm }                  // (v24.12: the storm, watched — kit.film from play)
   });
 })();

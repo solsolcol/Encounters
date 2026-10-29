@@ -4,8 +4,10 @@
    the thing itself (`hits`), or on its mark; only if all three are refused does it fall back to the engine's E path and
    say FALLBACK (a thing a finger could not press). The ledger's lines, the day of his birth (the pick), the tray (the
    choose window and its Confirm), the unlock splash's Close, WHAT CHANGED?'s START and its taps, and the decision's
-   option are all touch taps on their own screen positions. Reports: the voice log (none over another), the cues, the
-   phases with the objective on screen, the beds at each phase, every press and how it landed, every page error.
+   option are all touch taps on their own screen positions. (v24.12: the storm is a FILM now, watched — no START, no
+   taps; CHG= no longer matters. The film is photographed at its cup and her beats as it plays in the real flow.)
+   Reports: the voice log (none over another), the cues, the phases with the objective on screen, the beds at each
+   phase, every press and how it landed, every page error.
    ENC_DIST=<snapshot> CHROMIUM_PATH=... OPT=A|B|C|D ASK=all|none LED=fact|meaning CHG=right|none|wrong [OUT=dir]
      node tools/probes/e4c1drive.mjs */
 import { chromium } from 'playwright';
@@ -166,7 +168,7 @@ async function playChange() {
   log('  event over', ((Date.now() - t0) / 1000).toFixed(0) + 's');
 }
 
-const phases = [], bedsAt = {}, presses = [];
+const phases = [], bedsAt = {}, presses = [], stormShots = new Set();
 let last = '', idle = 0, decided = false, cardAt = 0, sweep = -1;
 const TMAX = 120 * 60 * 1000;
 while (Date.now() - T0 < TMAX) {
@@ -176,6 +178,10 @@ while (Date.now() - T0 < TMAX) {
     log(I.st, I.phase, I.world, JSON.stringify(I.obj), I.cine !== null ? 'cine ' + I.cine : '', JSON.stringify(I.beds));
     if (I.phase && phases[phases.length - 1] !== I.phase) { phases.push(I.phase); bedsAt[I.phase] = I.beds; await shot(I.phase.replace(/[^a-z0-9]/gi, '_')); }
     last = key; idle = 0;
+  }
+  /* (v24.12) the storm, watched: photographed in the real flow as it plays (the cup beside its wet ring; her a step closer) */
+  if (I.st === 'cine' && I.phase === 'storm' && I.cine !== null) {
+    for (const [at, tag] of [[4.5, 'storm-cup'], [11.7, 'storm-her']]) if (I.cine >= at && !stormShots.has(tag)) { stormShots.add(tag); await shot(tag); log('  storm film', tag, 'at', I.cine); }
   }
   if (I.led) { await playLedger(I.led); continue; }
   if (I.evOn && I.kind === 'change') { await playChange(); continue; }
