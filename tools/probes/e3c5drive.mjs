@@ -6,10 +6,17 @@
    reaches), the decision by a click on OPT's button. It runs every callback v24.3 added (the cups, the key's ratchet,
    the flame, the glints, the gifts, the returns, the places' noises, the box's run-down) and reports: the voice log
    (none over another), the cue log, the beds at each phase, the phases in order, and every page error.
-   ENC_DIST=<snapshot> CHROMIUM_PATH=... OPT=A|B|C|D OUT=dir node tools/probes/e3c5drive.mjs */
+   ENC_DIST=<snapshot> CHROMIUM_PATH=... OPT=A|B|C|D OUT=dir node tools/probes/e3c5drive.mjs
+   (v24.10: ENDTS=auto|t,t,… — once the option is clicked, the ending is SEEKED to those times (auto: a little into every
+   shot of its own clock table) and photographed, instead of waiting for the card; SIG=file.json writes a scene
+   signature at the decision and at every sample, for sigdiff.mjs against e3c5ends SIG= — the same ending after the
+   probes' phase jump. Chad found the incense sticks missing in ending D after a real play; every check of the endings
+   had come from the jump, and the one real run that reached D (v24.2) listened and never looked) */
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
+import { sceneSig, sampleTimes } from './scenesig.mjs';
+const SIG = process.env.SIG || '', ENDTS = process.env.ENDTS || '', REC = {};
 const OPT = process.env.OPT || 'A', OPT_I = 'ABCD'.indexOf(OPT);
 const OUT = process.env.OUT || '/tmp/e3c5drive';
 fs.mkdirSync(OUT, { recursive: true });
@@ -87,6 +94,21 @@ async function playEvent(kind) {
   log('  event over', kind, ((Date.now() - t0) / 1000).toFixed(0) + 's');
 }
 
+/* (v24.10) the ending seeked and photographed at chosen times, its scene's signature at each (a seek pauses the scene and
+   passes its cues, so the card is not awaited after it) */
+async function sampleEnding() {
+  await p.waitForFunction(() => window.__enc.cine.active(), null, { timeout: 600000, polling: 300 });
+  const TS = ENDTS === 'auto' ? sampleTimes(await p.evaluate(() => window.__enc.stage.endT.END), OPT) : ENDTS.split(',').map(Number);
+  for (const t of TS) {
+    await p.evaluate((t) => window.__enc.cine.seek(t), t);
+    await p.evaluate(() => new Promise(r => { let k = 0; const f = () => (++k >= 3 ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); }));
+    const sh = await p.evaluate(() => window.__enc.stage.endT ? window.__enc.stage.endT.live.shot : null);
+    await shot(`${OPT}-${String(t).replace('.', '_')}`);
+    if (SIG) REC['t' + t] = { shot: sh, sig: await p.evaluate(sceneSig) };
+    log('  ending', OPT, t, sh);
+  }
+  log('ENDING SAMPLED at', TS.length, 'moments');
+}
 const phases = [], bedsAt = {};
 let last = '', idle = 0, decided = false, cardAt = 0;
 const TMAX = 85 * 60 * 1000;
@@ -101,8 +123,11 @@ while (Date.now() - T0 < TMAX) {
   if (I.evOn && I.kind) { await playEvent(I.kind); continue; }
   if (I.st === 'decide' && !decided) {
     await wait(2500); await shot('decision');
+    if (SIG) REC.decide = { sig: await p.evaluate(sceneSig) };
     const n = await p.evaluate((i) => { const B = document.querySelectorAll('#choices button.choice'); if (B[i]) B[i].click(); return B.length; }, OPT_I);
-    log('decision: clicked', OPT, 'of', n); decided = true; continue;
+    log('decision: clicked', OPT, 'of', n); decided = true;
+    if (ENDTS) { await sampleEnding(); break; }
+    continue;
   }
   if ((I.st === 'result' || I.st === 'complete') && !cardAt) { cardAt = Date.now(); log('the card'); await shot('card'); }
   if (cardAt && Date.now() - cardAt > 15000) break;
@@ -133,7 +158,8 @@ const cues = await p.evaluate(() => window.__enc.stings().map(s => s.kind || s.n
 log('CUES', cues.length, cues.join(' '));
 log('PHASES', phases.join(' → '));
 log('BEDS', JSON.stringify(bedsAt));
-log('result', errs.length ? 'ERRORS' : (cardAt ? 'PASS' : 'DID NOT REACH THE CARD'));
+if (SIG) fs.writeFileSync(SIG, JSON.stringify(REC));
+log('result', errs.length ? 'ERRORS' : (cardAt ? 'PASS' : ENDTS && decided ? 'SAMPLED' : 'DID NOT REACH THE CARD'));
 console.log('errs', JSON.stringify(errs));
 await b.close();
 console.log('exit');

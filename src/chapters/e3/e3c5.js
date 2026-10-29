@@ -2895,7 +2895,10 @@
         if (Lg.g.parent !== worldR) worldR.add(Lg.g);
         const lx = PKT_O.x + 0.142;
         Lg.g.position.set(lx, DESK.top + 0.018, PKT_O.z); Lg.g.rotation.set(0, Math.atan2(CHAIR.x - lx, CHAIR.z - PKT_O.z), 0); Lg.g.scale.setScalar(1);   // (stood on the surface, CP8: at DESK.top its foot was in the slab)
-        if (mode === 'stage') { if (St.g.parent !== worldR) { if (St.g.parent) St.g.parent.remove(St.g); worldR.add(St.g); } St.g.scale.setScalar(1); incenseFrame(); }
+        /* (v24.10, Chad: "option d cutscene, when he light the incense, the incense is missing" — giveStick hides each stick in
+           the bundle as it is given, and 'stage' never set them out again, so after a PLAYED run ending D struck the lighter
+           over three hidden sticks; every probe had opened the decision by a phase jump, which gives nothing) */
+        if (mode === 'stage') { if (St.g.parent !== worldR) { if (St.g.parent) St.g.parent.remove(St.g); worldR.add(St.g); } St.g.children.forEach(c => { c.visible = true; }); St.g.scale.setScalar(1); incenseFrame(); }
       } else {
         Pk.position.set(DESK_AT.packet[0], DESK.top + 0.018, DESK_AT.packet[1]); Pk.rotation.set(0, 0.5, Math.PI / 2 - 0.02);
         if (Lg.g.parent === worldR) worldR.remove(Lg.g);
