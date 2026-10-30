@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "24.19"
+VERSION = "24.20"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -432,9 +432,9 @@ ASSETS = {
     'e4nangkwakhd': ('assets/e4nangkwakhd.glb', True, False), # e4c1 v24.17: the Nang Kwak at FULL detail for the bag's views (every triangle, colour 4096 — the amulet rule, v14.14); fetched only when he takes it
     'e4takruthd':   ('assets/e4takruthd.glb', True, False),   # e4c1 v24.17: the takrut at full detail for the bag's views
     'e4phayanthd':  ('assets/e4phayanthd.glb', True, False),  # e4c1 v24.17: the pha yant at full detail for the bag's views
-    'iconnangkwak': ('assets/iconnangkwak.jpg', True, False),  # e4c1 v24.18: the Nang Kwak's icon — her full scan rendered on a dark ground, as Chad's painted icons are (masters/v24.18/icons)
-    'icontakrut':   ('assets/icontakrut.jpg', True, False),    # e4c1 v24.18: the takrut's icon, from its full scan
-    'iconphayant':  ('assets/iconphayant.jpg', True, False),   # e4c1 v24.18: the pha yant's icon, from its full scan
+    'iconnangkwak': ('assets/iconnangkwak.jpg', True, False),  # e4c1 v24.18: the Nang Kwak's icon; v24.20: painted in the style of Chad's own (GPT Image, his torch and amulet icons as the style references and her full scan's render as the object — masters/v24.20/icons)
+    'icontakrut':   ('assets/icontakrut.jpg', True, False),    # e4c1 v24.18: the takrut's icon; v24.20: in Chad's icon style, the same way
+    'iconphayant':  ('assets/iconphayant.jpg', True, False),   # e4c1 v24.18: the pha yant's icon; v24.20: in Chad's icon style, the same way
     'e4bamboo':     ('assets/e4bamboo.glb', True, False),     # e4c1 v24.19: the bamboo clump — generated (a GPT Image reference on white, Meshy image-to-3D and remesh), 37,374 triangles, base colour + metal-roughness + normal at 1024, one metre tall for the stand (tools/prepmeshy.mjs, masters/v24.19/make.sh)
     'e4takhian':    ('assets/e4takhian.glb', True, False),    # e4c1 v24.19: the takhian, a buttressed bole and a high narrow crown — generated (71,860 triangles; its birch-white bark toned grey-brown, TINTGREY), trunk on the origin
     'e4raintree':   ('assets/e4raintree.glb', True, False),   # e4c1 v24.19: the rain tree, a wide low umbrella — generated (34,787 triangles), trunk on the origin
@@ -442,6 +442,11 @@ ASSETS = {
     'e4buffalo':    ('assets/e4buffalo.glb', True, False),    # e4c1 v24.19: a water buffalo for the film's wide — generated (11,705 triangles, 2.7 m long)
     'e4sandalsa':   ('assets/e4sandalsa.glb', True, False),   # e4c1 v24.19: black rubber flip-flops at the room's steps — generated (8,105 triangles)
     'e4sandalsb':   ('assets/e4sandalsb.glb', True, False),   # e4c1 v24.19: brown plastic slides at the room's steps — generated (6,017 triangles)
+    'e4rahu':       ('assets/e4rahu.glb', True, False),       # e4c1 v24.20: a Phra Rahu for the altar's middle tier — from photographs of REAL ones (Wat Si Sa Thong's black Rahu with the gold moon, an altar Rahu, an antique bronze) as the GPT Image reference's image references, then Meshy and its remesh, 41,565 triangles (masters/v24.20/make.sh)
+    'e4sedan':      ('assets/e4sedan.glb', True, False),      # e4c1 v24.20: the yard's silver sedan — a real model (GPT Image reference on white, Meshy image-to-3D and remesh), 30,502 triangles, 4.4 m, nose at -z
+    'e4truck':      ('assets/e4truck.glb', True, False),      # e4c1 v24.20: the yard's white double-cab pickup, red dust to its sills — generated the same way, 29,838 triangles, 5.3 m
+    'e4suv':        ('assets/e4suv.glb', True, False),        # e4c1 v24.20: the yard's dark grey SUV — generated the same way, 30,363 triangles, 4.8 m
+    'e4moto':       ('assets/e4moto.glb', True, False),       # e4c1 v24.20: the underbone motorbike under the house, its front basket — generated the same way, 19,529 triangles, 1.92 m, front at +z
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
     # in white (two women, two men), Mixamo's Praying and Kneeling Idle applied
@@ -561,7 +566,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'lersiamulet', 'lersiamuletlod', 'towkay',
            'kumanred', 'kumanshy', 'kumanlittle',
            'firstmaster', 'e4sky', 'fmshadow', 'e4noi', 'e4pong', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4pickup', 'e4nangkwak', 'e4takrut', 'e4phayant', 'e4nangkwakhd', 'e4takruthd', 'e4phayanthd', 'iconnangkwak', 'icontakrut', 'iconphayant',
-           'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4buffalo', 'e4sandalsa', 'e4sandalsb'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
+           'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4buffalo', 'e4sandalsa', 'e4sandalsb', 'e4rahu', 'e4sedan', 'e4truck', 'e4suv', 'e4moto'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and

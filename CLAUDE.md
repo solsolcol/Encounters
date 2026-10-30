@@ -386,7 +386,20 @@ they die with the session.
   /, site down — it happened at v4.3, LEARNINGS has the write-up).
   Byte-verify against dist/ after every deploy: `python3 tools/byteverify.py dist`
   (every served file fetched and compared; `_headers` is Netlify's config and is
-  never served). In a fresh container: `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci
+  never served). **Since v24.20 the deploy is `tools/netlifydeploy.py`** (Chad: "You
+  need to find a way since obviously the size will one day go way past this" — the
+  MCP's zip upload is refused once the unpacked site passes ~600 MiB, and v24.20's
+  did): get a fresh proxy URL from the Netlify MCP's deploy-site (a 30-minute
+  credential — pass it as an argument, never write it to a file), then from the repo
+  root `python3 -I tools/netlifydeploy.py dist "<proxyUrl>"
+  4133ded1-c901-49ac-8a93-0cfd34128e06`. The zip carries only what the live site does
+  not already serve byte for byte (index.html, _headers, every new or changed file);
+  Netlify's build lays the rest back from the live deploy, every file checked against
+  its sha1, and the build FAILS — nothing published — on one mismatch. Then the tool
+  fetches every served file from the live site and compares it with dist/, and checks
+  the cache headers are in force; it exits non-zero unless all of it holds (Chad: "the
+  final deployed site is always perfect and identical to the latest build you
+  built"). In a fresh container: `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm ci
   --ignore-scripts`, and `CHROMIUM_PATH=/opt/pw-browsers/chromium` for every
   harness and probe when testlib's built-in browser path is absent.
   **His `chadsor` project is his personal resume site — NEVER touch it.**
@@ -7226,6 +7239,25 @@ What the baseline contains, by release:
   the real thing") — v24.20 remakes it from real photographs. masters/v24.19/make.sh is the recipe. Deploy
   `6ae4eb84a03bb41f492059bc`, byte-verified (293 of 293 served files); harnesses chapter, hosted, csp, leak, cine and
   walk on its snapshot.
+- **v24.20** REAL VEHICLES, A RAHU FROM REAL PHOTOGRAPHS, ICONS IN CHAD'S STYLE, AND A DEPLOY WITH NO CEILING — Chad, 30
+  Oct: *"Why are there still ugly generated trucks, replace all of them with real truck models. Also your icon styles dont
+  even look like my torch icons. Also your rahu dont even look like the real thing. When you generate such statues or
+  even amulets, you must always research real images first and base it off real image references."* The yard's sedan,
+  white double-cab pickup and dark SUV and the motorbike under the house are real models made his way — a GPT Image
+  reference on white each, checked, Meshy's image-to-3D and its remesh (30,502 / 29,838 / 30,363 / 19,529 triangles);
+  the code-built ones only if a file never lands. The PHRA RAHU is remade from PHOTOGRAPHS of real ones (Wat Si Sa
+  Thong's great black Rahu with its golden moon, two altar Rahus) given to the generator as its image references: jet
+  black lacquer and gold, 41,565 triangles, 15 cm on the master's altar beside the Nang Kwak. The three charms' icons are
+  painted in the style of his own (GPT Image with his torch and amulet icons as the style references and each charm's
+  render as the object; 384 px JPEG from 1024 masters). masters/v24.20/make.sh is the recipe; docs/V24.21-PLAN.md tracks
+  every one of the day's messages. AND THE DEPLOY: the MCP's zip upload was refused five times once the unpacked site
+  passed ~600 MiB (Chad: *"You need to find a way since obviously the size will one day go way past this"*, and *"Make
+  sure that whatever method it is, the final deployed site is always perfect and identical to the latest build you
+  built"*) — `tools/netlifydeploy.py` uploads only what the live site does not already serve byte for byte, Netlify's
+  build lays the rest back from the live deploy checked file by file against its sha1 (one mismatch and nothing is
+  published), then the tool fetches every served file and compares it with dist/ and checks the cache headers, and exits
+  non-zero unless all of it holds (Live targets, above). Deploy `6ae4f6625c6746d5a2fd8d8a`, byte-verified (298 of 298
+  served files); harnesses csp, hosted, inv, cine, chapter, leak and walk on its snapshot (7 of 7).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

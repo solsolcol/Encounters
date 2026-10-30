@@ -190,7 +190,7 @@
        are his files under the stand-ins' keys, `e4stall` replaces `e4joy`, and `e4ghost`, his old woman, replaces episode
        1's `granny`; nothing in the chapter is a stand-in for a person any more) */
     assets: ['firstmaster', 'fmshadow', 'e4sky', 'e4pong', 'e4noi', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4pickup', 'e4nangkwak', 'e4takrut', 'e4phayant',
-             'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4buffalo', 'e4sandalsa', 'e4sandalsb'],
+             'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4buffalo', 'e4sandalsa', 'e4sandalsb', 'e4rahu', 'e4sedan', 'e4truck', 'e4suv', 'e4moto'],
     reuse: {},
     placeholders: {},
     items: [],
@@ -883,6 +883,24 @@
           n.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = true; bronzeLift(o); } });
           R.add(n);
         }).catch(err => { console.warn('e4nangkwak failed to load', err); if (ctx.loadFail) ctx.loadFail('e4nangkwak', err); });
+        /* (v24.20) a Phra Rahu beside her, to her right — the image a Thai altar keeps against misfortune: Rahu who swallows
+           the moon, a black bust with no body below the chest (the discus cut it away), rising from clouds, both hands
+           holding the gold moon at his open mouth. Made from photographs of the REAL ones (Chad: "your rahu dont even look
+           like the real thing. When you generate such statues or even amulets, you must always research real images first
+           and base it off real image references") — Wat Si Sa Thong's great black Rahu with its golden moon, a black altar
+           Rahu with a gold orb, an antique bronze one — as the reference picture's image references, then Meshy
+           (masters/v24.20/make.sh). Black lacquer and gold leaf: the gold is metal by its own sheet and takes the bronze's
+           lift. 15 cm tall at x −0.185, which keeps a centimetre's air to the glass of water and the marigold vase either
+           side of him */
+        parseOnce('e4rahu').then(({ scene: rs }) => {
+          if (!alive) return;
+          const r2 = rs.clone(true); r2.updateMatrixWorld(true);
+          const bb = new THREE.Box3().setFromObject(r2); r2.scale.setScalar(0.15 / Math.max(1e-3, bb.max.y - bb.min.y));
+          r2.updateMatrixWorld(true); bb.setFromObject(r2);
+          r2.position.set(-0.185 - (bb.min.x + bb.max.x) / 2, 2.185 - bb.min.y, ZF + 0.07 - (bb.min.z + bb.max.z) / 2);
+          r2.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = true; bronzeLift(o); } });
+          R.add(r2);
+        }).catch(err => { console.warn('e4rahu failed to load', err); if (ctx.loadFail) ctx.loadFail('e4rahu', err); });
         /* tier 1: the altar's incense, candles, a plate of bananas, a green coconut */
         lathe([[0, 0], [0.04, 0], [0.058, 0.04], [0.062, 0.06], [0.056, 0.064]], mBrass, 0, 1.965, ZF + 0.15, 20);
         for (let k = 0; k < 5; k++) { const s = cyl(0.0018, 0.0018, 0.2, M({ color: 0xc23a1c, roughness: 0.8 }), (k - 2) * 0.012, 2.1, ZF + 0.15, 5); s.rotation.z = (k - 2) * 0.05; }
@@ -1541,7 +1559,16 @@
           const j = lathe([[0, 0], [0.22, 0], [0.34, 0.25], [0.36, 0.42], [0.3, 0.6], [0.2, 0.68], [0.21, 0.72]], mJar, jx, 0, jz, 20); j.scale.setScalar(s3);
           cyl(0.24 * s3, 0.24 * s3, 0.02, mSteel, jx, 0.73 * s3, jz, 18); solids.push(hidBox(0.7 * s3, 0.8, 0.7 * s3, jx, 0.4, jz, C));
         }
-        buildMotorbike(-12.2, -9.9, 0.4);
+        /* (v24.20) the motorbike is a real model — a red-and-black underbone with its front basket, the country's workhorse,
+           generated from a checked reference picture (masters/v24.20/make.sh), 1.92 m, its front at +z as the drawn one's
+           was; the drawn one stands in only if the file never lands (hidden from the first frame, out of the merge) */
+        { const mb = buildMotorbike(-12.2, -9.9, 0.4); mb.visible = false; mb.userData.dyn = true;
+          parseOnce('e4moto').then(({ scene: ms }) => {
+            if (!alive) return;
+            const m = ms.clone(true); m.position.set(-12.2, 0, -9.9); m.rotation.y = 0.4;
+            m.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; bronzeLift(o); } });
+            worldC.add(m);
+          }).catch(err => { mb.visible = true; console.warn('e4moto failed to load', err); if (ctx.loadFail) ctx.loadFail('e4moto', err); }); }
         const fr = bx(0.62, 1.5, 0.62, M({ color: 0xd4ccb4, roughness: 0.4 }), -13.0, 0.75, -10.4); solids.push(fr);
         bx(0.6, 0.004, 0.02, M({ color: 0x8a8678, roughness: 0.5 }), -13.0, 1.05, -10.08);
         bx(0.9, 0.55, 0.45, mTeakY, -8.95, 0.27, -10.45); solids.push(hidBox(0.9, 0.6, 0.45, -8.95, 0.3, -10.45, C));
@@ -1762,7 +1789,26 @@
 
       /* ---- the cars under the rain tree (four, built in code like the buses at v21.14 — generic, no makers' marks) and
          Pong's white double-cab at the gate */
-      [[8.3, 3.6, 0xb8bcc0, 'sedan'], [10.6, 3.4, 0x6a1a1e, 'sedan'], [12.9, 3.7, 0xe8e8e4, 'suv']].forEach(([x, z, col, kind]) => { const c2 = buildCar(kind, col); c2.position.set(x, 0, z); c2.rotation.y = 0.04; C.add(c2); solids.push(hidBox(1.9, 1.6, 4.6, x, 0.8, z, C)); });
+      /* (v24.20) THE CARS ARE REAL MODELS (Chad: "Why are there still ugly generated trucks, replace all of them with real
+         truck models"): a silver sedan, a white double-cab pickup dusted red to its sills, a dark grey SUV — what a
+         village yard in the north-east parks under its tree — each a reference picture on white (GPT Image), checked,
+         then Meshy and its remesh (masters/v24.20/make.sh), its nose at −z, its length and its footprint measured into
+         the file (tools/prepmeshy.mjs): 4.4 / 5.3 / 4.8 m. Generic, no maker's marks. The code-built car stands in ONLY
+         if a file never lands — hidden from the first frame, shown by the failure (v21.16's placeholder rule, for a car) */
+      [['e4sedan', 8.3, 3.6, 0xb8bcc0, 'sedan', [1.8, 1.4, 4.4]], ['e4truck', 10.6, 3.4, 0xe8e8e4, 'suv', [1.9, 1.8, 5.3]], ['e4suv', 12.9, 3.7, 0x3a3e44, 'suv', [1.9, 1.8, 4.8]]]
+        .forEach(([key, x, z, col, kind, [w, h, d]]) => {
+          /* (kept out of the compound's merge — it bakes every still mesh whose OWN flag is visible, so a hidden group's
+             meshes would be baked in and shown: the v24.14 chedi) */
+          const c2 = buildCar(kind, col); c2.position.set(x, 0, z); c2.rotation.y = 0.04; c2.visible = false; c2.userData.dyn = true; C.add(c2);
+          solids.push(hidBox(w, h, d, x, h / 2, z, C));
+          parseOnce(key).then(({ scene: cs }) => {
+            if (!alive) return;
+            const m = cs.clone(true); m.position.set(x, 0, z); m.rotation.y = 0.04;
+            /* the paint and the chrome take the room environment's lift (it is 0.05 here, main.js), as the Rivian's do */
+            m.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; bronzeLift(o); } });
+            C.add(m);
+          }).catch(err => { c2.visible = true; console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
+        });
       /* (v24.16) Pong's pickup is Chad's — "Rivian R1T (2022)" by geyges (Sketchfab, Free Standard; tools/preppickup.mjs):
          its nose at −z and its axles on the drawn pickup's (the same 3.45 m wheelbase), so it stands exactly where the
          drawn one stood and every route drives it unchanged.
