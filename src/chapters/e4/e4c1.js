@@ -182,20 +182,16 @@
     fireLight: null,
     daylight: YARD0,
 
-    /* the first master is his own (§2.1 2); every other person is a PLACEHOLDER until Chad's model lands
-       (docs/E4-MODELS.md), declared in `reuse` so the FRESH check names it on every run */
+    /* the first master is his own (§2.1 2); every other person was a PLACEHOLDER until Chad's model landed
+       (docs/E4-MODELS.md), declared in `reuse` and `placeholders` so the FRESH check named it on every run */
     /* (v24.9, Chad's call: the yard is straight in — Khun Joy, Uncle Lim and Ta Sombat left the chapter with the queue,
        and with them `e4lim`, `sitwomantalk` and `encik`) */
-    assets: ['firstmaster', 'fmshadow', 'e4sky', 'e4pong', 'e4noi', 'e4joy', 'granny', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha'],
-    reuse: {
-      granny: 'the presence at the edge of sight — a placeholder until Chad\'s model'
-    },
-    /* this chapter's own lighter cuts of earlier characters, standing in for Chad's people */
-    placeholders: {
-      e4pong: 'Pong, the dealer — episode 3\'s staff man with three seated takes of the first master\'s, until Chad\'s model (docs/E4-MODELS.md)',
-      e4noi: 'Pa Noi, the master\'s wife — episode 3\'s Yin shop keeper at a crowd\'s cut, until Chad\'s model',
-      e4joy: 'the woman at the roadside stall in ending C — chapter 3\'s pink-shirt lady with a standing idle and a walk retargeted in, until Chad\'s model'
-    },
+    /* (v24.15, Chad's models: Pong, Pa Noi, the woman at the stall and the presence are his own — `e4pong` and `e4noi`
+       are his files under the stand-ins' keys, `e4stall` replaces `e4joy`, and `e4ghost`, his old woman, replaces episode
+       1's `granny`; nothing in the chapter is a stand-in for a person any more) */
+    assets: ['firstmaster', 'fmshadow', 'e4sky', 'e4pong', 'e4noi', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha'],
+    reuse: {},
+    placeholders: {},
     items: [],
 
     musicVol: 0,
@@ -2817,6 +2813,35 @@
       people.push(P);
       return P;
     }
+    /* (v24.15) A STILL PERSON — a scan with no rig (Chad's old woman, the presence): stood on her group's floor, her
+       footprint centred on its spot, scaled to `height` by her own box (a still mesh's box is its pose, which a skinned
+       one's is not), and `head` an anchor where a rig's head bone would be, so herPoint reads her as it read the rig.
+       Never in `people`: nothing in her moves, and peopleTick drives mixers and looks */
+    function mkStill(key, o) {
+      const group = new THREE.Group(); group.position.set(o.x, o.y || 0, o.z); group.rotation.y = o.ry || 0; o.parent.add(group);
+      if (o.hidden) group.visible = false;
+      const P = { key, group, model: null, head: null, ready: false, failed: false, o, onReady: [], onFail: [] };
+      parseOnce(key).then(({ scene: sc }) => {
+        if (!alive) return;
+        const g = sc.clone(true);
+        g.traverse(m => { if (!m.isMesh) return; m.castShadow = !LOW && !o.noShadow; m.receiveShadow = false;
+          if (o.noMip) for (const mm of [].concat(m.material)) { const t = mm && mm.map;
+            if (t && t.generateMipmaps !== false) { t.generateMipmaps = false; t.minFilter = THREE.LinearFilter; t.needsUpdate = true; } } });
+        g.updateMatrixWorld(true);
+        const bb = new THREE.Box3().setFromObject(g), s = o.height / Math.max(1e-3, bb.max.y - bb.min.y);
+        g.scale.setScalar(s);
+        g.position.set(-(bb.min.x + bb.max.x) / 2 * s, -bb.min.y * s, -(bb.min.z + bb.max.z) / 2 * s);
+        group.add(g);
+        const head = new THREE.Object3D(); head.position.set(0, o.height * 0.9, 0); group.add(head);
+        P.model = g; P.head = head; P.scale = s; P.ready = true;
+        if (o.then) o.then(P);
+        for (const f of P.onReady.splice(0)) f(P);
+      }).catch(err => {
+        console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err);
+        P.failed = true; for (const f of P.onFail.splice(0)) f(P);
+      });
+      return P;
+    }
     const whenReady = (P, f) => { if (!P) return; if (P.ready) f(P); else P.onReady.push(f); };
     /* the same, with what to do if his model never comes (the v4.7 rule: a failed download costs a person, never the
        chapter) */
@@ -3111,22 +3136,24 @@
          and his head 43.5° more on top, chin up, his hips still, held through whole lines: a man craning over his
          shoulder. He sits as an interpreter does, angled between the two he talks to — half way between the master and
          the client's eye — so a look at either is about 37°) */
-      cast.pongR = mkPerson('e4pong', { parent: worldR, x: -0.95, z: -0.2, ry: (Math.atan2(0.95, -1.75) + Math.atan2(0.95, 0.2)) / 2, height: 1.7, sizeTake: 'Idle_9', walk: false,
+      cast.pongR = mkPerson('e4pong', { parent: worldR, x: -0.95, z: -0.2, ry: (Math.atan2(0.95, -1.75) + Math.atan2(0.95, 0.2)) / 2, height: 1.7, sizeTake: 'Idle_4', walk: false,
         posture: 'sit', sit: 'Sit_Cross_Legged_on_Floor', talk: 'Sitting_Answering_Questions', talkHead: false, seatH: 0.012, seatFloor: 0.004, look: 0.8, noMip: true });
-      cast.noiR = mkPerson('e4noi', { parent: worldR, x: 1.55, z: -1.0, ry: -2.2, height: 1.56, posture: 'stand', stand: 'Idle_9',
-        talk: 'Talk_with_Left_Hand_on_Hip', hidden: true, noMip: true });
-      cast.her = mkPerson('granny', { parent: worldR, x: RMC.HER.door.x, z: RMC.HER.door.z, ry: -0.45, height: 1.5, posture: 'stand', stand: 'Stand_and_Chat',
-        idleAt: 0.4, walk: false, bow: 0.42, noMip: true, noShadow: true, hidden: true, then: herDress, centre: true });
+      cast.noiR = mkPerson('e4noi', { parent: worldR, x: 1.55, z: -1.0, ry: -2.2, height: 1.56, posture: 'stand', stand: 'Idle_4',
+        talk: 'Talk_with_Hands_Open', hidden: true, noMip: true });
+      /* (v24.15) the presence is Chad's old woman — a still scan (no rig), her head already bowed in it: stood on her spot
+         by mkStill, dressed by herDress as the stand-in was */
+      cast.her = mkStill('e4ghost', { parent: worldR, x: RMC.HER.door.x, z: RMC.HER.door.z, ry: -0.45, height: 1.5,
+        noMip: true, noShadow: true, hidden: true, then: herDress });
       /* the yard: Pa Noi at the board; Pong, standing by his pickup at the gate (he leads him in to her, and on to the
          master's door). (v24.9, Chad's call: no queue — Khun Joy, Uncle Lim and Ta Sombat left the sala with it) */
-      cast.noi = mkPerson('e4noi', { parent: worldC, x: CMP.BOARD.x + 0.62, z: CMP.BOARD.z + 0.42, ry: -0.46, height: 1.56, posture: 'stand', stand: 'Idle_9',
-        talk: 'Talk_with_Left_Hand_on_Hip', look: 1, noMip: true, ground: groundAt });
-      cast.pong = mkPerson('e4pong', { parent: worldC, x: 3.45, z: 11.6, ry: Math.PI, height: 1.7, sizeTake: 'Idle_9',
-        posture: 'stand', stand: 'Idle_9', sit: 'Sit_Upright', talk: 'Talk_with_Hands_Open', seatH: BENCH, seatFloor: 0, feet: true, look: 0.9, ground: groundAt, noMip: true });
+      cast.noi = mkPerson('e4noi', { parent: worldC, x: CMP.BOARD.x + 0.62, z: CMP.BOARD.z + 0.42, ry: -0.46, height: 1.56, posture: 'stand', stand: 'Idle_4',
+        talk: 'Talk_with_Hands_Open', look: 1, noMip: true, ground: groundAt });
+      cast.pong = mkPerson('e4pong', { parent: worldC, x: 3.45, z: 11.6, ry: Math.PI, height: 1.7, sizeTake: 'Idle_4',
+        posture: 'stand', stand: 'Idle_4', sit: 'Sit_Upright', talk: 'Talk_with_Right_Hand_Open', seatH: BENCH, seatFloor: 0, feet: true, look: 0.9, ground: groundAt, noMip: true });
       /* the pickup: Pong at the wheel (Thailand drives on the left: the driver sits on the right, +x, facing −z), riding
          the pickup's own frame — hidden until a film sits in the cabin */
-      cast.pongCab = mkPerson('e4pong', { parent: cab.root, x: 0.42, z: 0.06, y: 0, ry: Math.PI, height: 1.7, sizeTake: 'Idle_9', walk: false,
-        posture: 'sit', sit: 'Sit_Upright', talk: 'Talk_with_Hands_Open', seatH: 0.76, noShadow: true, noMip: true,
+      cast.pongCab = mkPerson('e4pong', { parent: cab.root, x: 0.42, z: 0.06, y: 0, ry: Math.PI, height: 1.7, sizeTake: 'Idle_4', walk: false,
+        posture: 'sit', sit: 'Sit_Upright', talk: 'Talk_with_Right_Hand_Open', seatH: 0.76, noShadow: true, noMip: true,
         /* his eyes on the road: a point three metres ahead of the windscreen, riding the pickup (the chair take's upright
            stretch still lifts his chin; the absolute look holds his face level on the road) */
         then: (P) => { const ahead = new THREE.Object3D(); ahead.position.set(0.42, 1.56, -3.2); cab.root.add(ahead); P.lookAt = ahead; P.lookHome = ahead; } });
@@ -4723,8 +4750,8 @@
        instead, shrunk toward his eye so it covers exactly what the reflection would (reflShot); and as ONE layer: a
        depth pass first, then the colour only where the depth is its own — drawn through, the mouth, the eyes and the
        shirt over the body showed through each other, a grey mannequin rather than a shape) */
-    cast.refl = mkPerson('e4pong', { parent: worldS, x: 1.0, z: -0.1, ry: 0, height: 1.72, sizeTake: 'Idle_9', walk: false,
-      posture: 'stand', stand: 'Idle_9', hidden: true, noShadow: true, then: (P) => {
+    cast.refl = mkPerson('e4pong', { parent: worldS, x: 1.0, z: -0.1, ry: 0, height: 1.72, sizeTake: 'Idle_4', walk: false,
+      posture: 'stand', stand: 'Idle_4', hidden: true, noShadow: true, then: (P) => {
         const mm = new THREE.MeshBasicMaterial({ color: 0x0a0c10, transparent: true, opacity: 0.55, depthWrite: false, depthFunc: THREE.LessEqualDepth });
         const pm = new THREE.MeshBasicMaterial({ transparent: true, colorWrite: false, depthWrite: true });
         mats.push(mm, pm);
@@ -4738,8 +4765,8 @@
         }
       } });
     /* ending C's road: a woman at the stall across from the lane, who turns round as the pickup passes */
-    cast.stall = mkPerson('e4joy', { parent: worldC, x: 44.5, z: 26.55, y: 0.8, ry: 0.12, height: 1.58, sizeTake: 'Idle_9', walk: false,
-      posture: 'stand', stand: 'Idle_9', hidden: true, noShadow: true, noMip: true });
+    cast.stall = mkPerson('e4stall', { parent: worldC, x: 44.5, z: 26.55, y: 0.8, ry: 0.12, height: 1.58, sizeTake: 'Idle_7', walk: false,
+      posture: 'stand', stand: 'Idle_7', hidden: true, noShadow: true, noMip: true });
 
     /* a person looking at the lens in a film: the look is the FILM's, so it is on at once (a seek or a skip lands on it —
        CP9, by photograph: a seek arrived before Pong's eased look had turned his head, and he talked to the ceiling) and

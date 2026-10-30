@@ -7128,6 +7128,16 @@ What the baseline contains, by release:
   him — the room merges every still mesh into one per material and removes the original (CP4's `mergeStatic`), so
   hiding the original hid nothing; a stand-in that hides when its model lands is kept out of the merge (LEARNINGS).
   Deploy `6ae4cc3033245fa68569a329`, byte-verified (275 files).
+- **v24.15** CHAD'S PEOPLE — from his Drive folder, all his own models (no credit rows): Pong, Pa Noi and the woman at
+  the roadside stall (Meshy scans on Mixamo rigs, through tools/prepmonk.mjs with CHARTFIX at 90k / 89k / 72k
+  triangles, lighter than the first master's 178k), and the presence, his old woman in a breast cloth and a dark tube
+  skirt, a still scan (tools/prepstatic.mjs, 69k at 1.5 m). Each role is mapped onto the file's own takes (Idle_4,
+  Talk_with_Right_Hand_Open, Talk_with_Hands_Open, Idle_7 …); what a file lacks is made from what it has — Pong's
+  upright chair sit baked from his own Chair_Sit_Idle_M (sitloop), Pa Noi's giving and waving gestures retargeted from
+  the stand-in's. A still person is stood by `mkStill()`, with an anchor where a rig's head bone would be, so the
+  presence's fade, place and dress read her as they read the rig. `e4joy` leaves the build for `e4stall`, episode 1's
+  `granny` leaves this chapter for `e4ghost`, and nothing in it stands in for a person any more. masters/v24.15/make.sh.
+  Deploy `6ae4cf06febff64c052c57e7`, byte-verified (276 files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

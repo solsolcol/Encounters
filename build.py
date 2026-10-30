@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "24.14"
+VERSION = "24.15"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -415,9 +415,10 @@ ASSETS = {
     'firstmaster':  ('assets/firstmaster.glb', True, False),
     'e4sky':        ('assets/e4sky.jpg', True, False),        # e4c1 v24.0 CP1: the rice country's storm sky, a generated equirectangular panorama made into a dome texture (masters/v24.0/sky/makesky.mjs) — zenith down to 6 degrees under the horizon, row 1029 the horizon  # e4c1 v24.0: the first master — the ORIGINAL Sak Yant Ajarn (v16.8's scan) under his own key, his white cloth recoloured black at Chad's ask (tools/recolorcloth.mjs), prepmonk 0.3 + CHARTFIX (masters/v24.0/firstmaster). Krukai's `ajarn` is pinned and untouched.
     'fmshadow':     ('assets/fmshadow.glb', True, False),     # e4c1 v24.0 CP7: the first master's silhouette for his lagging shadow (tools/prepshadow.mjs 0.02: no UVs, normals, textures or clips — it plays his own)
-    'e4noi':        ('assets/e4noi.glb', True, False),        # e4c1 v24.0 CP7: Pa Noi's stand-in — episode 3's Yin shop keeper at a crowd's cut (0.07, 1024), until Chad's model (masters/v24.0/cast)
-    'e4pong':       ('assets/e4pong.glb', True, False),       # e4c1 v24.0 CP7: Pong's stand-in — episode 3's staff man with the first master's three seated takes retargeted in (masters/v24.0/cast), until Chad's model
-    'e4joy':        ('assets/e4joy.glb', True, False),        # e4c1 v24.0 CP7: Khun Joy's stand-in — chapter 3's pink-shirt lady with a standing idle and a walk retargeted in (meshy, masters/v24.0/cast), until Chad's model; v24.9: Khun Joy left with the queue (Chad's call) and the stand-in is ending C's roadside stall woman's alone (Uncle Lim's `e4lim` left the build)
+    'e4noi':        ('assets/e4noi.glb', True, False),        # e4c1 v24.15: Pa Noi, Chad's own model (a Meshy scan on a Mixamo rig, 596k -> 89k triangles, tools/prepmonk.mjs CHARTFIX), her own takes and the giving and waving gestures retargeted in from the v24.0 stand-in's (masters/v24.15/make.sh)
+    'e4pong':       ('assets/e4pong.glb', True, False),       # e4c1 v24.15: Pong, Chad's own model (598k -> 90k triangles), his own takes and an upright chair sit baked from his Chair_Sit_Idle_M (sitloop, Sit_Upright; masters/v24.15/make.sh)
+    'e4stall':      ('assets/e4stall.glb', True, False),      # e4c1 v24.15: the woman at the roadside stall in ending C, Chad's own model (596k -> 72k triangles), her own takes; replaces the v24.0 stand-in `e4joy`
+    'e4ghost':      ('assets/e4ghost.glb', True, False),      # e4c1 v24.15: the presence, Chad's own old woman — a still scan (no rig), 571k -> 69k triangles at 1.5 m (tools/prepstatic.mjs); replaces episode 1's `granny` in this chapter
     'e4dog':        ('assets/e4dog.glb', True, False),        # e4c1 v24.13: Chad's soi dog — "Animated Dog, Shiba Inu" by quander (Sketchfab, CC-BY-4.0), two takes (lie, stand), base colour only, meshopt (tools/prepdog.mjs, masters/v24.13/make.sh)
     'e4palm1':      ('assets/e4palm1.glb', True, False),      # e4c1 v24.14: Chad's palms — "Palm Trees" by ElectroNick (Sketchfab, CC-BY-4.0), its first palm baked to the one-metre contract, every triangle (tools/preptree.mjs, masters/v24.13/make.sh)
     'e4palm2':      ('assets/e4palm2.glb', True, False),      # e4c1 v24.14: the second palm, every triangle
@@ -542,7 +543,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'traynear', 'trayfar', 'amushelf', 'altarrowfar', 'monkshop', 'hanuamulet', 'hanuamuletlod',
            'lersiamulet', 'lersiamuletlod', 'towkay',
            'kumanred', 'kumanshy', 'kumanlittle',
-           'firstmaster', 'e4sky', 'fmshadow', 'e4noi', 'e4pong', 'e4joy', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
+           'firstmaster', 'e4sky', 'fmshadow', 'e4noi', 'e4pong', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and
