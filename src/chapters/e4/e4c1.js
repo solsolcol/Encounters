@@ -186,7 +186,7 @@
        (docs/E4-MODELS.md), declared in `reuse` so the FRESH check names it on every run */
     /* (v24.9, Chad's call: the yard is straight in — Khun Joy, Uncle Lim and Ta Sombat left the chapter with the queue,
        and with them `e4lim`, `sitwomantalk` and `encik`) */
-    assets: ['firstmaster', 'fmshadow', 'e4sky', 'e4pong', 'e4noi', 'e4joy', 'granny'],
+    assets: ['firstmaster', 'fmshadow', 'e4sky', 'e4pong', 'e4noi', 'e4joy', 'granny', 'e4dog'],
     reuse: {
       granny: 'the presence at the edge of sight — a placeholder until Chad\'s model'
     },
@@ -3168,6 +3168,129 @@
     buildCast();
     if (room.wash) room.wash.renderOrder = -2;          // the candles' wash under the lagging shadow (renderOrder −1), never over it
 
+    /* ================================================================ THE SOI DOG (v24.13 — Chad's model)
+       "Animated Dog, Shiba Inu" by quander (Sketchfab, CC-BY-4.0; tools/prepdog.mjs): two takes, `lie` (lying with its head
+       up) and `stand` (a standing idle, panting), on a rig whose face is rigged — the neck, the head and the jaw are what
+       this chapter moves. §4.1's dog, where a dog would be: lying in the dirt at the front of the sala's left half, under
+       its eave (out of everyone's way, dry when the rain comes, and where the film's last look through the gate falls). O7
+       is its plan line, "a dog lifting its head": asleep, chin down, it lifts its head as the pickup stops. In play it
+       watches him (its head turned to him within a neck's reach), barks at the arrival — its mouth opened by the bark's
+       own loudness, measured off w4dog (DOG_BARK) — and dozes when nobody is near. It never goes near the room's door. In
+       ending C it is on its feet under the eave as he runs out, and barks after him. Its pose is laid on after its mixer
+       and taken off before the mixer runs again (v11.5); a film or an ending drives it from its own clock (dogScene), so a
+       seek and a skip land on the same dog; play drives it from the yard. */
+    const DOG = { x: -2.05, z: 0.3, ry: 0.35, head: 0.55 };   // its spot, its turn (toward the gate), its head's height standing (m)
+    /* the bark's loudness, 0–1, every 0.05 s from the sound's start (w4dog: five barks in its first 1.6 s, then quiet) */
+    const DOG_BARK = [0, 0, 0, 0, 0.94, 1, 0.77, 0.08, 0, 0, 0.54, 0.73, 0.9, 0.33, 0, 0, 0, 0, 0, 0.45, 0.93, 0.56, 0, 0,
+                      0.64, 0.82, 0.76, 0.17, 0, 0.69, 0.91, 0.71, 0.26, 0, 0];
+    const dog = { group: null, inner: null, model: null, mixer: null, lie: null, stand: null, ready: false, b: {}, wrote: [],
+                  standW: 0, up: 0, lookW: 0, barkT0: 0, cue: null, cueAt: 0, lieY: 0, standY: 0, lastNear: -1e9, scale: 0 };
+    const DOG_DOWN = [0.65, 0.2, -0.4];                     // asleep, chin on its paws: the neck's base bowed, its middle, the head lifted back level (rad; chosen of five by photograph)
+    const dogBark = (u) => { if (!(u >= 0)) return 0; const i = u / 0.05, a = Math.floor(i); if (a >= DOG_BARK.length - 1) return 0; return DOG_BARK[a] + (DOG_BARK[a + 1] - DOG_BARK[a]) * (i - a); };
+    /* a film or an ending says what the dog does this frame, from its own clock: { stand, up, look, bark (s into w4dog) } */
+    function dogScene(o) { dog.cue = o; dog.cueAt = wallNow(); }
+    const _dq1 = new THREE.Quaternion(), _dq2 = new THREE.Quaternion(), _dq3 = new THREE.Quaternion();
+    const _dv1 = new THREE.Vector3(), _dv2 = new THREE.Vector3(), _dax = new THREE.Vector3();
+    /* a bone turned by `ang` about a WORLD axis, from wherever its take has put it */
+    function dogTurn(b, axis, ang) {
+      if (!b || Math.abs(ang) < 1e-5) return;
+      b.updateWorldMatrix(true, false); b.getWorldQuaternion(_dq1); b.parent.getWorldQuaternion(_dq2);
+      _dq3.setFromAxisAngle(axis, ang);
+      b.quaternion.copy(_dq2.invert().multiply(_dq3.multiply(_dq1)));
+    }
+    function buildDog() {
+      const group = new THREE.Group(); group.position.set(DOG.x, groundAt(DOG.x, DOG.z), DOG.z); group.rotation.y = DOG.ry; worldC.add(group);
+      dog.group = group;
+      /* a dog is walked round, not through: a column round the lying body */
+      solids.push(hidBox(0.5, 1.4, 0.75, DOG.x + 0.02, 0.7, DOG.z + 0.05, worldC));
+      /* its shadow, painted (no light: v15.1) — under the eave a lying dog's contact shadow is most of what sets it down */
+      const sh = new THREE.Mesh(new THREE.PlaneGeometry(0.58, 0.9), new THREE.MeshBasicMaterial({ map: tex(makeGlow(THREE, cnv)), color: 0x000000,
+        transparent: true, opacity: 0.55, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
+      mats.push(sh.material);
+      sh.rotation.x = -Math.PI / 2; sh.position.set(0, 0.006, 0.04); group.add(sh);
+      parseOnce('e4dog').then(gltf => {
+        if (!alive) return;
+        const g = cloneSkinned(gltf.scene);
+        g.traverse(m => { if (m.isMesh) { m.castShadow = !LOW; m.receiveShadow = false; } });
+        const BONES = [['neckB', /^neck_base_jnt/], ['neckM', /^neck_mid_jnt/], ['head', /^head_jnt/], ['jaw', /^jaw_jnt/], ['nose', /^nose_jnt/]];
+        g.traverse(b => { if (b.isBone) for (const [k, re] of BONES) if (!dog.b[k] && re.test(b.name)) dog.b[k] = b; });
+        const clip = (n) => gltf.animations.find(a => a.name === n);
+        if (!clip('lie') || !clip('stand') || !dog.b.head) { console.warn('e4dog: its takes or bones are missing'); return; }
+        const inner = new THREE.Group(); inner.add(g); group.add(inner);
+        const mx = new THREE.AnimationMixer(g), lie = mx.clipAction(clip('lie')), stand = mx.clipAction(clip('stand'));
+        lie.play(); stand.play();
+        const pose = (w) => { lie.setEffectiveWeight(1 - w); stand.setEffectiveWeight(w); mx.update(0); group.updateMatrixWorld(true); };
+        /* sized by its head's height standing and grounded on its posed skin, each take on its own (v3.8: bones and skin,
+           never a box) */
+        const low = () => { let lo = Infinity; g.traverse(m => { if (!m.isSkinnedMesh) return; m.skeleton.update(); const n = m.geometry.attributes.position.count, st = Math.max(1, Math.floor(n / 4000));
+          for (let i = 0; i < n; i += st) { m.getVertexPosition(i, _dv1); _dv1.applyMatrix4(m.matrixWorld); group.worldToLocal(_dv1); if (_dv1.y < lo) lo = _dv1.y; } }); return lo; };
+        pose(1);
+        const lo1 = low(); dog.b.head.getWorldPosition(_dv1); group.worldToLocal(_dv1);
+        const s = DOG.head / Math.max(1e-6, _dv1.y - lo1);
+        inner.scale.setScalar(s);
+        pose(1); dog.standY = -low() + 0.004;
+        pose(0); dog.lieY = -low() + 0.004;
+        /* culled by a sphere round both takes' posed skin, generous (v18.5) */
+        const bb = new THREE.Box3();
+        for (const w of [0, 1]) {
+          inner.position.y = w ? dog.standY : dog.lieY; pose(w);
+          g.traverse(m => { if (!m.isSkinnedMesh) return; m.skeleton.update(); const n = m.geometry.attributes.position.count, st = Math.max(1, Math.floor(n / 3000));
+            for (let i = 0; i < n; i += st) { m.getVertexPosition(i, _dv1); _dv1.applyMatrix4(m.matrixWorld); bb.expandByPoint(_dv1); } });
+        }
+        if (!bb.isEmpty()) {
+          const sph = bb.getBoundingSphere(new THREE.Sphere()); sph.radius *= 1.4;
+          g.traverse(m => { if (!m.isSkinnedMesh) return; m.frustumCulled = true; const inv = m.matrixWorld.clone().invert(), k = m.matrixWorld.getMaxScaleOnAxis() || 1;
+            m.boundingSphere = new THREE.Sphere(sph.center.clone().applyMatrix4(inv), sph.radius / k); });
+        }
+        inner.position.y = dog.lieY; pose(0);
+        Object.assign(dog, { inner, model: g, mixer: mx, lie, stand, scale: s, ready: true });
+        dog.wrote = ['neckB', 'neckM', 'head', 'jaw'].filter(k => dog.b[k]).map(k => ({ b: dog.b[k], q: new THREE.Quaternion() }));
+        owned.push({ dispose: () => mx.stopAllAction() });
+      }).catch(err => { console.warn('e4dog failed to load', err); if (ctx.loadFail) ctx.loadFail('e4dog', err); });
+    }
+    buildDog();
+    /* the dog, each frame — in films as in play, while the lens is in the compound */
+    function dogTick(now, wdt) {
+      if (!dog.ready || worldOf(yaw.position.x) !== 'C') return;
+      for (const w of dog.wrote) w.b.quaternion.copy(w.q);              // what its mixer last wrote, before it runs again (v11.5)
+      const cue = dog.cue && now - dog.cueAt < 0.3 ? dog.cue : null;
+      let bark = 0;
+      if (cue) {
+        dog.standW = cue.stand || 0; dog.up = cue.up == null ? 1 : cue.up; dog.lookW = cue.look == null ? dog.up : cue.look;
+        bark = cue.bark == null ? 0 : dogBark(cue.bark);
+      } else {
+        const d = Math.hypot(yaw.position.x - DOG.x, yaw.position.z - DOG.z);
+        if (getState() === 'play' && d < 9) dog.lastNear = now;
+        const barking = dog.barkT0 > 0 && now - dog.barkT0 < 4, awake = barking || now - dog.lastNear < 14;
+        dog.standW = ease(dog.standW, 0, 2.0, wdt);
+        dog.up = ease(dog.up, awake ? 1 : 0, awake ? 2.2 : 0.7, wdt);
+        dog.lookW = ease(dog.lookW, awake && d < 11 ? 1 : 0, 1.8, wdt);
+        if (barking) bark = dogBark(now - dog.barkT0);
+      }
+      dog.lie.setEffectiveWeight(1 - dog.standW); dog.stand.setEffectiveWeight(dog.standW);
+      dog.inner.position.y = dog.lieY + (dog.standY - dog.lieY) * dog.standW;
+      dog.mixer.update(wdt);
+      for (const w of dog.wrote) w.q.copy(w.b.quaternion);
+      /* asleep, chin down: the neck and the head bowed about the dog's own side-to-side axis (its +x); a bark lifts it */
+      dog.group.getWorldQuaternion(_dq1); _dax.set(1, 0, 0).applyQuaternion(_dq1);
+      const down = (1 - dog.up) * (1 - dog.standW);
+      const DW = (cue && cue.dw) || DOG_DOWN;
+      dogTurn(dog.b.neckB, _dax, DW[0] * down); dogTurn(dog.b.neckM, _dax, DW[1] * down); dogTurn(dog.b.head, _dax, DW[2] * down - 0.10 * bark);
+      /* its eyes on him: the head turned about the world's up toward the lens, within a neck's reach of its body */
+      if (dog.lookW > 0.01 && dog.b.nose) {
+        dog.b.head.updateWorldMatrix(true, true);
+        dog.b.head.getWorldPosition(_dv1); dog.b.nose.getWorldPosition(_dv2);
+        const face = Math.atan2(_dv2.x - _dv1.x, _dv2.z - _dv1.z);
+        camera.getWorldPosition(_dv2);
+        const want = DOG.ry + THREE.MathUtils.clamp(angTo(DOG.ry, Math.atan2(_dv2.x - _dv1.x, _dv2.z - _dv1.z)), -1.0, 1.0);
+        const turn = angTo(face, want) * Math.min(1, dog.lookW);
+        _dax.set(0, 1, 0);
+        dogTurn(dog.b.neckB, _dax, turn * 0.3); dogTurn(dog.b.neckM, _dax, turn * 0.3); dogTurn(dog.b.head, _dax, turn * 0.4);
+      }
+      /* the bark: its jaw opened by the sound's own loudness */
+      if (bark > 0.001 && dog.b.jaw) { dog.group.getWorldQuaternion(_dq1); _dax.set(1, 0, 0).applyQuaternion(_dq1); dogTurn(dog.b.jaw, _dax, 0.5 * bark); }
+    }
+
     /* ------------------------------------------------- the compound, alive (CP5): the water's ripples and its sky, the
        lightning in it, the standing fan, the TV under the house */
     function yardFrame(now) {
@@ -3603,7 +3726,14 @@
       freshRun();
       look('YARD0', 0);
       boardSet(14);
-      after(3.4, () => { if (phase === 'arrive' && worldSfx) worldSfx('w4dog', 0.3, 1, -0.5); });   // the yard's dog, by the house
+      /* (v24.13) the yard's dog, seen now: it lifted its head as the pickup stopped (O7) and barks at the newcomers — the
+         sound from where it lies, its mouth opened by the bark (dog.barkT0); awake while they come in */
+      dog.lastNear = wallNow();
+      after(3.4, () => {
+        if (phase !== 'arrive' || !worldSfx) return;
+        const rel = angTo(yaw.rotation.y, Math.atan2(-(DOG.x - yaw.position.x), -(DOG.z - yaw.position.z)));
+        if (worldSfx('w4dog', 0.3, 1, Math.max(-0.9, Math.min(0.9, -Math.sin(rel) * 0.9)))) dog.barkT0 = wallNow();
+      });
       after(0.9, () => {
         if (play.greeted) return;                  // (CP13: a Continue beside Pa Noi greets on the first frame; greet() walks him in)
         line('pg1come', cast.pong);
@@ -4205,6 +4335,7 @@
       domeFrame(now);
       roomFrame(now);
       peopleTick(now, wdt);                               // the cast's clocks run in films too (v5.19): only their looks wait for play
+      dogTick(now, wdt);                                  // (v24.13) the dog's, likewise
       herFrame(now, wdt);
       shadowFrame(now);
       yardFrame(now);
@@ -4807,6 +4938,9 @@
         const lk = smo(sgk(t, O.o7 + 2.0, O.o7 + 5.0));
         camAt(lp3(cabEye(-0.42, 1.5, 0.08), cabEye(-0.30, 1.46, -0.30), lk), lp3(cabEye(-0.28, 1.34, -3.0), cabEye(-1.25, 1.34, -4.0), lk));
       }
+      /* (v24.13) the yard's dog: asleep under the sala's eave until the pickup is pulling up, then its head comes up, toward
+         the pickup — the plan's O7, "a dog lifting its head", in the look through the gate */
+      { const up = t < O.o7 ? 0 : smo(sgk(t, O.o7 + 4.6, O.o7 + 6.0)); dogScene({ up, look: up }); }
       void P;
     }
 
@@ -4883,6 +5017,7 @@
     /* ---- A · STILL: he observes and decides nothing */
     function endA(t) {
       const T = END.A, it = play.item || 'takrut';
+      dogScene({ up: 1, look: 1 });                       // (v24.13) the dog under the sala's eave, awake, watching him go
       waiAt(t < T.out ? smo(sgk(t, T.pao + 4.4, T.pao + 5.4)) * (1 - smo(sgk(t, T.bless + 2.6, T.bless + 3.4))) : 0);   // his wai after the pao, through the blessing
       if (t < T.out) {
         roomAfter();
@@ -4987,6 +5122,7 @@
     /* ---- B · THE QUESTION: he asks, and is seen */
     function endB(t) {
       const T = END.B;
+      dogScene({ up: 1, look: 1 });                       // (v24.13) the dog under the sala's eave, awake, watching him go
       if (t < T.card) {
         roomAfter();
         cabCtl.show(false);
@@ -5084,6 +5220,9 @@
     /* ---- C · CERTAIN: fear decides first */
     function endC(t) {
       const T = END.C;
+      /* (v24.13) the dog: up on its feet under the sala's eave by the time he bursts out (it rose in the room's shots, unseen),
+         barking after him across the yard — its mouth on the bark's own sound (w4dog at T.out + 1.0) */
+      dogScene({ stand: smo(sgk(t, T.out - 2.4, T.out - 0.8)), up: 1, look: 1, bark: t - (T.out + 1.0) });
       if (kit && kit.chill) kit.chill(t < T.car ? 0.45 * (1 - sgk(t, T.calm, T.pong)) + 0.25 : t < T.coda ? 0.18 : 0, { secs: 0.01, cine: true });
       if (t < T.out) {
         roomAfter();
@@ -5188,6 +5327,7 @@
     /* ---- D · ENOUGH: he knows when to go */
     function endD(t) {
       const T = END.D;
+      dogScene({ up: 1, look: 1 });                       // (v24.13) the dog under the sala's eave, awake, watching him go
       const w1 = smo(sgk(t, T.ask - 0.6, T.ask + 0.3)) * (1 - smo(sgk(t, T.ask + 5.6, T.ask + 6.4)));
       const w2 = smo(sgk(t, T.nod + 2.2, T.nod + 3.0)) * (1 - smo(sgk(t, T.out - 1.2, T.out - 0.5)));
       waiAt(t < T.out ? Math.max(w1, w2) : 0);                                               // his wai, and his answer to the master's
@@ -5466,6 +5606,8 @@
       droneStop(0); chantStop(0);
       boardSet(14); slateWrite(null);
       matZone.visible = false; tray.visible = false;
+      /* the dog asleep again, as the day began (it wakes in the film's O7) */
+      dog.up = 0; dog.standW = 0; dog.lookW = 0; dog.barkT0 = 0; dog.cue = null; dog.lastNear = -1e9;
       /* the people where the day began */
       for (const P of people) { P.walk = null; P.lookAt = P.lookHome || null; P.hideUnseen = false; P.pendingOut = false; P.talkUntil = 0; P.turnTo = null; if (P.one) P.one.until = 0; }
       const at = (P, x, z, ry, y, seated) => whenReady(P, () => { P.group.visible = true; personPut(P, x, z, ry, y); seatNow(P, seated); });
@@ -5555,7 +5697,9 @@
           return +THREE.MathUtils.radToDeg(P.faceLocal.clone().applyQuaternion(hq).angleTo(cp.sub(hp).normalize())).toFixed(1); })(),
         looking: P.lookAt === camera ? 'lens' : P.lookAt ? 'thing' : (P.look > 0 ? 'play' : null), lookW: +P.lookW.toFixed(2) }])),
       info: () => ({ phase, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], world: worldOf(yaw.position.x),
-                     until: +speak.until.toFixed(2), pending: speak.pending ? speak.pending.name : null, decOpen }),
+                     until: +speak.until.toFixed(2), pending: speak.pending ? speak.pending.name : null, decOpen,
+                     dog: dog.ready ? { up: +dog.up.toFixed(2), stand: +dog.standW.toFixed(2), look: +dog.lookW.toFixed(2), scale: +dog.scale.toFixed(5), lieY: +dog.lieY.toFixed(3) } : null }),
+      dogCue: (o) => dogScene(o),                        // (probes: the dog posed from outside, as a scene poses it)
       hotspots,
       updateNotes, updatePile, updateFire, updateSlow,
       snap, restore, reset, dispose

@@ -73,7 +73,10 @@ const isLeaf = (m) => /leaf|leaves|crown|branch|foliage/i.test(m.getName())
                       || m.getAlphaMode() !== 'OPAQUE';
 const leafMats = new Set(root.listMaterials().filter(isLeaf));
 for (const m of root.listMaterials()) {
-  if (leafMats.has(m)) { m.setAlphaMode('MASK'); m.setAlphaCutoff(0.45); m.setDoubleSided(true); }
+  /* (v24.13) KEEPCUT=1 keeps a material's own cutoff where the file shipped it MASK — the banana's four leaf sheets were cut
+     at 0.38–0.82 by their author, each against its own sheet's alpha (an opt-in: every tree before it takes 0.45 as it
+     always did) */
+  if (leafMats.has(m)) { const own = process.env.KEEPCUT && m.getAlphaMode() === 'MASK' ? m.getAlphaCutoff() : 0.45; m.setAlphaMode('MASK'); m.setAlphaCutoff(own); m.setDoubleSided(true); }
   else { m.setAlphaMode('OPAQUE'); m.setDoubleSided(false); }
 }
 

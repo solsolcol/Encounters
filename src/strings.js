@@ -206,6 +206,10 @@ Object.assign(window.__TEXT__, {
   'credits.skull':          'The skulls in the Yin shop',
   'credits.skullWho':       'Scattering Skull · Vladimir Petkovic · Khronos glTF Sample Assets, CC0',
   'credits.skullLink':      'github.com · KhronosGroup · ScatteringSkull',
+  // v24.13 · the dog at the master's house in episode 4 (Chad's pick, Sketchfab, CC BY 4.0)
+  'credits.dog':            'The dog at the master’s house',
+  'credits.dogWho':         'Animated Dog, Shiba Inu · quander · Sketchfab, CC BY 4.0',
+  'credits.dogLink':        'sketchfab.com · animated-dog-shiba-inu',
   /* v12.1 — Chad's ghost cyclist is his own model and takes no row (the
      v5.23 rule); the Kamaz and the flashlight already have theirs above. */
   'credits.anim':        'Animation, two of the crowd, and the soldiers’ takes',
