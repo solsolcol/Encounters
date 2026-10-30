@@ -7275,6 +7275,41 @@ What the baseline contains, by release:
   cut. THE TAXI'S SEATS are a real model (a reference on white, Meshy and its remesh, 9,061 triangles at 1.08 m, `e4seat`),
   the passing streetlight's band on their leather. Deploy `6ae501eb7f171b55980bcad5`, byte-verified (299 of 299 served
   files); harnesses csp, hosted, leak, cine and walk on its snapshot (5 of 5).
+- **v24.22** HIS SHOP, A REAL AMULET SHOP — Chad: *"Also the intro cutscene is pretty sloppily made. Look at the amulet
+  shop, it doesn't even look like one. No real amulet models, no deco, nothing. And why the view is looking outwards at
+  other shops? On phone the field of view sees nothing. The shop need to be improved significantly, have real amulets,
+  look like a real shop. Have general amulets like somdej, khun paen, takruts, mitmor, buddha statues, rian amulets, and
+  more. Also why he is recording sales on paper? It makes no sense. It should be on laptop."* docs/V24.21-PLAN.md tracks
+  it (§1 9a–9c, §3 the log).
+  - THE STOCK is nine real models, each made his way from PHOTOGRAPHS of real pieces (the sacred-object rule): Phra
+    Somdej (Wat Rakhang, gold micron casing), Phra Khun Paen (Wat Ban Krang), a rian (a monk's copper sema coin), Phra
+    Pidta, Jatukham Ramathep, Phra Kring, a meed mor with a carved bone handle, a seated bronze Buddha (the Met's 39112),
+    and his own takrut scan, light — GPT Image references on white from the photographs, checked, Meshy image-to-3D and
+    its remesh (masters/v24.22/make.sh names every source). 385 stand in the shop (the laptop counts them): a lit glass counter of 140 red
+    compartments with price cards, two wall cabinets (nine images on red stands, three rows of twenty-two cased amulets
+    on a velvet board, two takrut sets, six small images, a meed mor; red velvet backs), two display units on the back
+    wall either side of the shop's own altar, and the altar's three — stood as InstancedMeshes, a draw a kind a place.
+  - NEAR AND FAR: every stock file carries its piece twice, and a place draws the near level only while its pieces are
+    big on the screen (`stockLod`, run from `camAt` so a cut never shows the last frame's level). A cased piece's far
+    level is its own front baked onto its own geometry (`tools/planarfar.mjs`, v21.8's planar tray made general: the
+    permissive simplifier tore the casings into crumpled facets, photographed); a statue's is a permissive cut over the
+    same vertices (`tools/lodpair.mjs`). Measured: the phone's widest shop frame 274–304k triangles where the first,
+    sparser build drew 406–487k.
+  - THE DECO: pha yant cloths hung from the ceiling and on both side walls, framed yantra prints, framed certificates of
+    authenticity behind the counter (drawn: cream paper, a Thai heading, a gold seal), a spotlight track over the counter,
+    two customer stools, the counter's red fascia (พระเครื่อง · พระบูชา · เครื่องรางของขลัง / AMULETS · BUDDHA IMAGES ·
+    CHARMS), the GRAND OPENING banner over the shutter.
+  - THE LAPTOP: his own from episode 3 chapter 1's film (`filmlaptop`, declared in `reuse`) on the counter, the week's
+    sales on its screen (Wednesday's one sale typed in under a new `w4keys`), its stock count the pieces standing in the
+    shop. The notebook stays for what he saw at the endings, never sales.
+  - THE SHOTS look IN: the shutter from the corridor, along a cabinet, down into the counter, up to the altar, the laptop
+    over his shoulder — each photographed on a phone and a desktop; the back wall's units fill a phone's wide.
+  - FOUND BY READING THE CODE after the first deploy: the shop's new `makeYantCloth` shared its name with the master's
+    room's, and of two function declarations in one scope the later silently replaces the earlier — the room's two yant
+    cloths were drawn by the shop's function for about an hour live. Renamed, photographed right in the room, and
+    `npm run build` now runs `tools/probes/dupfuncs.mjs` over every chapter and the engine (LEARNINGS).
+  Deploys `6ae50cc8269a1c663c6e6493` (the shop), `6ae511826d4c34d18f80a5ab` (the cloths) and `6ae514c89c721517a7827263`
+  (the denser shop), each byte-verified (308 of 308 served files). No word on the sheet moved; sheet v133 stands.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

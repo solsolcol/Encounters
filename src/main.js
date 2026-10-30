@@ -13253,6 +13253,7 @@ const STING_SAMPLE = {
   w4crack: ['w4crack', 1], w4rainstop: ['w4rainstop', 1], w4mallair: ['w4mallair', 1], w4shutter: ['w4shutter', 1],
   w4switch: ['w4switch', 1], w4ledhum: ['w4ledhum', 1], w4open: ['w4open', 1], w4carton: ['w4carton', 1],
   w4pen: ['w4pen', 1], w4buzz: ['w4buzz', 1], w4type: ['w4type', 1], w4wind: ['w4wind', 1],
+  w4keys: ['w4keys', 1],                    // v24.22: his sales typed on the laptop (Chad: "It should be on laptop")
   w4drivepass: ['w4drivepass', 1], w4diesel: ['w4diesel', 1], w4drops: ['w4drops', 1], w4gravel: ['w4gravel', 1],
   w4engoff: ['w4engoff', 1], w4drips: ['w4drips', 1], w4breath: ['w4breath', 1], w4pao: ['w4pao', 1],
   w4frogs: ['w4frogs', 1], w4page: ['w4page', 1], w4steps: ['w4steps', 1], w4door: ['w4door', 1],

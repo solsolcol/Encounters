@@ -63,6 +63,32 @@ just need to remember to ask me for the models so i don't forget or miss it."*
 | Sandals | for the door | none | **IN v24.19**: generated — black rubber flip-flops and brown plastic slides at the room's steps |
 | Small item models (takrut, a folded pha yant) | the bag's turning view | the items' line drawings | **IN v24.17**: Chad's own scans — a takrut with its metal caps and rings (29,472 on the tray / every one of 147,376 in the bag) and the pha yant as a cloth rolled with its yant showing (30,864 / 617,280) |
 
+### His shop (the opening film and the coda, World S)
+
+Chad, 30 Oct (verbatim): *"Look at the amulet shop, it doesn't even look like one. No real amulet models, no deco,
+nothing ... have real amulets, look like a real shop. Have general amulets like somdej, khun paen, takruts, mitmor,
+buddha statues, rian amulets, and more."* Every piece below is made by his workflow and the sacred-object rule: real
+photographs of real pieces first (masters/v24.22/make.sh lists every source), a GPT Image reference on white made from
+them and checked, then Meshy's image-to-3D at its best settings and its remesh. Each file carries a near and a far level
+(v24.22: the shop draws the near one only while a piece is big on the screen).
+
+| What | Status |
+|---|---|
+| Phra Somdej (Wat Rakhang, gold micron casing) | **IN v24.22** (`e4somdej`, 1,752 / far 300) |
+| Phra Khun Paen (Wat Ban Krang, gold casing) | **IN v24.22** (`e4khunpaen`, 2,305 / far 457) |
+| A rian — a monk's sema-shaped copper coin | **IN v24.22** (`e4rian`, 2,792 / far 420) |
+| Phra Pidta (cast bronze) | **IN v24.22** (`e4pidta`, 2,072 / far 380) |
+| Jatukham Ramathep (round gold casing) | **IN v24.22** (`e4jatukham`, 2,474 / far 1,032) |
+| Phra Kring, the small cast Medicine Buddha | **IN v24.22** (`e4kring`, 4,002 / far 518) |
+| A meed mor (carved bone handle) | **IN v24.22** (`e4meedmor`, 2,780 / far 420) |
+| A seated bronze Buddha image (the Met's 39112 as its reference) | **IN v24.22** (`e4bucha`, 12,455 / far 2,000) |
+| Takrut sets | **IN v24.22**: Chad's own takrut scan, a light cut (`e4takrutsm`, 5,116 / far 516) |
+| His laptop | his own from episode 3 chapter 1's film (`filmlaptop`, declared in `reuse`) |
+
+385 pieces stand in the shop (his laptop's stock count is theirs): a counter of 140 compartments, two wall cabinets (nine images, three rows of
+twenty-two cased amulets on a velvet board, two takrut sets, six small images and a meed mor each), two display units
+on the back wall either side of its altar, and the altar's own three.
+
 **A question for Chad, with the presence's model:** the art direction above (an old woman in a breast cloth, her hair
 cropped short) is the dress of her generation in the countryside — and it is also close to how the Nang Kwak, the
 beckoning lady, is often drawn. In this story the Nang Kwak is an item the master may give him, so the two should not

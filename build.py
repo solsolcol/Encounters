@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "24.21"
+VERSION = "24.22"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -448,6 +448,22 @@ ASSETS = {
     'e4suv':        ('assets/e4suv.glb', True, False),        # e4c1 v24.20: the yard's dark grey SUV — generated the same way, 30,363 triangles, 4.8 m
     'e4moto':       ('assets/e4moto.glb', True, False),       # e4c1 v24.20: the underbone motorbike under the house, its front basket — generated the same way, 19,529 triangles, 1.92 m, front at +z
     'e4seat':       ('assets/e4seat.glb', True, False),       # e4c1 v24.21: the taxi's two front seats — a reference picture of a car seat on white (GPT Image), checked, Meshy image-to-3D + remesh, 9,061 triangles at 1.08 m, facing −z (masters/v24.20/make.sh)
+    # e4c1 v24.22: HIS SHOP'S STOCK (Chad: "have real amulets, look like a real shop. Have general amulets like somdej, khun
+    # paen, takruts, mitmor, buddha statues, rian amulets, and more"): each from PHOTOGRAPHS of real pieces (dealers', the
+    # Met's, Commons'), given to GPT Image as its image references for a reference on white, checked, then Meshy's
+    # image-to-3D and its remesh (masters/v24.22/make.sh). Instanced across the counter, the cabinets and the altar; the
+    # small pieces at 512 (a few centimetres across, photographed identical to their 1024 cuts at that size). Each file
+    # carries a near and a far level (`<key>_near`, `<key>_far`: tools/planarfar.mjs for the cased pieces, lodpair for the
+    # statues) and the shop draws the far one wherever a piece is small on the screen; the counts below are the near levels
+    'e4somdej':     ('assets/e4somdej.glb', True, False),     # a Phra Somdej in its gold case: the arch, the Buddha, the three-tier base (1,752 triangles, 5.2 cm)
+    'e4khunpaen':   ('assets/e4khunpaen.glb', True, False),   # a Phra Khun Paen, the five-sided tablet, in its gold case (2,305, 5.6 cm)
+    'e4rian':       ('assets/e4rian.glb', True, False),       # a rian, a monk's copper coin in the sema shape with its loop (2,792, 5.0 cm)
+    'e4pidta':      ('assets/e4pidta.glb', True, False),      # a Phra Pidta, the bronze monk with his hands over his face (2,072, 3.0 cm)
+    'e4jatukham':   ('assets/e4jatukham.glb', True, False),   # a Jatukham Ramathep medallion, black and gold, in its round gold case (2,474, 6.4 cm)
+    'e4kring':      ('assets/e4kring.glb', True, False),      # a Phra Kring, the small cast Buddha on his lotus base (4,002, 4.0 cm; three and four times that for the shelves' statues)
+    'e4meedmor':    ('assets/e4meedmor.glb', True, False),    # a meed mor, the ritual knife with its carved bone handle (2,780, 17 cm)
+    'e4bucha':      ('assets/e4bucha.glb', True, False),      # the shop altar's Buddha, a seated bronze in the earth-touching pose (12,455, 0.30 m, 1024 sheets)
+    'e4takrutsm':   ('assets/e4takrutsm.glb', True, False),   # Chad's takrut once more, a light cut of his own scan for the stock (5,116 of 147,376 triangles; tools/prepamulet.mjs THICK)
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
     # in white (two women, two men), Mixamo's Praying and Kneeling Idle applied
@@ -567,7 +583,8 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'lersiamulet', 'lersiamuletlod', 'towkay',
            'kumanred', 'kumanshy', 'kumanlittle',
            'firstmaster', 'e4sky', 'fmshadow', 'e4noi', 'e4pong', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4pickup', 'e4nangkwak', 'e4takrut', 'e4phayant', 'e4nangkwakhd', 'e4takruthd', 'e4phayanthd', 'iconnangkwak', 'icontakrut', 'iconphayant',
-           'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4buffalo', 'e4sandalsa', 'e4sandalsb', 'e4rahu', 'e4sedan', 'e4truck', 'e4suv', 'e4moto', 'e4seat'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
+           'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4buffalo', 'e4sandalsa', 'e4sandalsb', 'e4rahu', 'e4sedan', 'e4truck', 'e4suv', 'e4moto', 'e4seat',
+           'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and

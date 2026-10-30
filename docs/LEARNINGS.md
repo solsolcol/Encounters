@@ -6995,3 +6995,20 @@ cut (sharing its vertices and maps) when it is small.
   swap ran (the Buddha was there, the flag was false). Anything whose visibility a later callback will change — a
   stand-in, a prop a scene shows and hides — is marked `userData.dyn` before the merge runs; and a model swap is
   verified by a close photograph of the place, never by the flag.
+- **Two function declarations of one name in one scope: the later silently replaces the earlier** (v24.22). A function
+  declaration is hoisted, so of two with one name in the same block the second wins EVERYWHERE in it — no error, no
+  warning, and both call sites still run. Episode 4 chapter 1's shop added `makeYantCloth(THREE, cnv, bg, ink, k)` four
+  thousand lines below the master's room's own `makeYantCloth(THREE, cnv, kind)`, and the room's two yant cloths were
+  drawn by the shop's function with a design name where a colour belonged — live for an hour, found by reading the code,
+  not by any harness (both rooms booted, nothing threw). `npm run build` now runs `tools/probes/dupfuncs.mjs` over every
+  chapter and the engine and fails on any repeat; a new helper in a 7,000-line file gets a name of its own.
+- **A crowd of small models wants a far level, and a flat one wants its front baked** (v24.22). A shop of ~380 pieces
+  at 2–12k triangles each drew 406–487k triangles in a phone's widest look, three quarters of it pieces a few pixels
+  tall. The regular simplifier cannot cut a Meshy remesh (a UV seam every few triangles: strict stops, permissive tore
+  the cased amulets into crumpled facets — photographed at a size the shop shows them). But a cased amulet is a flat
+  thing seen from the front: bake that front orthographically from the near model, project it onto its own geometry as
+  its UVs, and with no seam left the strict cut runs clean to 300–450 triangles with its outline and relief
+  (`tools/planarfar.mjs`, v21.8's planar tray made general). Draw the near level only while a piece is big ON THE
+  SCREEN — its height over its distance against the lens's frame height, not a distance alone (the altar's Buddha is
+  2.4 m away and the hero of its shot) — and decide it where the lens is set (`camAt`), or a cut shows one frame of the
+  last shot's level. The wide went to 274–304k with two and a half times the stock.
