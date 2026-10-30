@@ -186,7 +186,7 @@
        (docs/E4-MODELS.md), declared in `reuse` so the FRESH check names it on every run */
     /* (v24.9, Chad's call: the yard is straight in — Khun Joy, Uncle Lim and Ta Sombat left the chapter with the queue,
        and with them `e4lim`, `sitwomantalk` and `encik`) */
-    assets: ['firstmaster', 'fmshadow', 'e4sky', 'e4pong', 'e4noi', 'e4joy', 'granny', 'e4dog'],
+    assets: ['firstmaster', 'fmshadow', 'e4sky', 'e4pong', 'e4noi', 'e4joy', 'granny', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha'],
     reuse: {
       granny: 'the presence at the edge of sight — a placeholder until Chad\'s model'
     },
@@ -826,12 +826,17 @@
       }
 
       /* ---- the altar shelf (a hing phra): three red-lacquered tiers stepping back up the wall, gold edges, gilt
-         brackets, a valance; a gilded chedi on the top tier (no image until Chad's models land — the altar's offerings
-         stand without them: E4-MODELS); candles, incense, water, fruit, marigolds, two jasmine garlands; ribbons on its
-         ends that the wall fan's air takes (§4.4 — beside the smoke that does not go with it) */
+         brackets, a valance; the Buddha on the top tier (v24.14, Chad's model; a gilded chedi stood in for it until then);
+         candles, incense, water, fruit, marigolds, two jasmine garlands; ribbons on its ends that the wall fan's air takes
+         (§4.4 — beside the smoke that does not go with it) */
       {
         const Z = z0;
-        const tiers = [[0.9, 1.95, 0.26], [0.78, 2.17, 0.19], [0.66, 2.39, 0.12]];
+        /* (v24.14) each tier 10 cm deeper, so the top one seats Chad's Buddha ("Yoga - Buddha" by T.Koeniger, Sketchfab, CC
+           BY 4.0 — 0.32 m tall and 0.185 deep, on a tier that was 0.12): everything on a tier keeps its distance from the
+           tier's FRONT lip (ZF), so the shelf reads as it did with the image added above; the back panel and the brackets
+           stay on the wall */
+        const DEEP = 0.10, ZF = Z + DEEP;
+        const tiers = [[0.9, 1.95, 0.26 + DEEP], [0.78, 2.17, 0.19 + DEEP], [0.66, 2.39, 0.12 + DEEP]];
         for (const [w, y, d] of tiers) { bx(w, 0.03, d, mLacq, 0, y, Z + d / 2); bx(w, 0.014, 0.012, mGold, 0, y + 0.002, Z + d - 0.004); }
         bx(0.92, 0.55, 0.012, mLacq, 0, 2.2, Z + 0.006);
         for (const [x, y] of [[-0.46, 2.2], [0.46, 2.2]]) bx(0.016, 0.57, 0.016, mGold, x, y, Z + 0.012);
@@ -840,42 +845,53 @@
           const sh = new THREE.Shape(); sh.moveTo(0, 0); sh.lineTo(0.2, 0); sh.quadraticCurveTo(0.06, -0.04, 0, -0.2); sh.lineTo(0, 0);
           const br = mesh(new THREE.ExtrudeGeometry(sh, { depth: 0.024, bevelEnabled: false }), mGold, bxp - 0.012, 1.935, Z); br.rotation.y = -Math.PI / 2;
         }
-        const val = flat(0.9, 0.11, B({ map: tex(makeValance(THREE, cnv)), transparent: true })); val.position.set(0, 1.88, Z + 0.262);
-        /* tier 3: the chedi and two small brass bowls */
-        lathe([[0, 0], [0.06, 0], [0.06, 0.02], [0.05, 0.02], [0.05, 0.035], [0.042, 0.035], [0.045, 0.06], [0.04, 0.1], [0.028, 0.12],
-               [0.02, 0.125], [0.02, 0.135], [0.016, 0.135], [0.016, 0.145], [0.012, 0.15], [0.009, 0.2], [0.004, 0.25], [0, 0.26]], mGold, 0, 2.405, Z + 0.06, 20);
-        for (const x of [-0.22, 0.22]) lathe([[0, 0], [0.02, 0], [0.034, 0.03], [0.036, 0.034]], mBrass, x, 2.405, Z + 0.06, 16);
+        const val = flat(0.9, 0.11, B({ map: tex(makeValance(THREE, cnv)), transparent: true })); val.position.set(0, 1.88, ZF + 0.262);
+        /* tier 3: the Buddha, highest, as a home altar keeps it (v24.14, Chad's model — the gilded chedi stood in for the image
+           until it landed, and stands until it loads, v4.7), and two small brass bowls before it */
+        const chedi = lathe([[0, 0], [0.06, 0], [0.06, 0.02], [0.05, 0.02], [0.05, 0.035], [0.042, 0.035], [0.045, 0.06], [0.04, 0.1], [0.028, 0.12],
+               [0.02, 0.125], [0.02, 0.135], [0.016, 0.135], [0.016, 0.145], [0.012, 0.15], [0.009, 0.2], [0.004, 0.25], [0, 0.26]], mGold, 0, 2.405, ZF + 0.06, 20);
+        /* (kept out of the room's merge, which bakes every still gold mesh into one and removes the original — hiding the
+           original then hid nothing: photographed, the chedi stood in front of the Buddha) */
+        chedi.userData.dyn = true;
+        parseOnce('e4buddha').then(({ scene: bs }) => {
+          if (!alive) return;
+          const b = bs.clone(true);
+          b.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = true; } });
+          b.position.set(0, 2.405, Z + (0.12 + DEEP) / 2 + 0.005); R.add(b);
+          chedi.visible = false;
+        }).catch(err => { console.warn('e4buddha failed to load', err); if (ctx.loadFail) ctx.loadFail('e4buddha', err); });
+        for (const x of [-0.22, 0.22]) lathe([[0, 0], [0.02, 0], [0.034, 0.03], [0.036, 0.034]], mBrass, x, 2.405, ZF + 0.06, 16);
         /* tier 2: vases of marigolds, glasses of water */
         const mari = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.018, 1), M({ color: 0xf08a1a, roughness: 0.8 }), 30);
         let mi = 0;
         for (const x of [-0.28, 0.28]) {
-          lathe([[0, 0], [0.03, 0], [0.024, 0.02], [0.034, 0.07], [0.024, 0.11], [0.03, 0.12]], mBrass, x, 2.185, Z + 0.09, 16);
-          for (let k = 0; k < 15; k++) { const a = k * 2.39, rr = 0.012 + (k % 5) * 0.009; m4.makeTranslation(x + Math.cos(a) * rr, 2.31 + (k % 3) * 0.018, Z + 0.09 + Math.sin(a) * rr); mari.setMatrixAt(mi++, m4); }
+          lathe([[0, 0], [0.03, 0], [0.024, 0.02], [0.034, 0.07], [0.024, 0.11], [0.03, 0.12]], mBrass, x, 2.185, ZF + 0.09, 16);
+          for (let k = 0; k < 15; k++) { const a = k * 2.39, rr = 0.012 + (k % 5) * 0.009; m4.makeTranslation(x + Math.cos(a) * rr, 2.31 + (k % 3) * 0.018, ZF + 0.09 + Math.sin(a) * rr); mari.setMatrixAt(mi++, m4); }
         }
         mari.count = mi; R.add(mari);
-        for (const x of [-0.1, 0.1]) lathe([[0, 0], [0.018, 0], [0.02, 0.05], [0.021, 0.052]], mGlass, x, 2.185, Z + 0.09, 12);
+        for (const x of [-0.1, 0.1]) lathe([[0, 0], [0.018, 0], [0.02, 0.05], [0.021, 0.052]], mGlass, x, 2.185, ZF + 0.09, 12);
         /* tier 1: the altar's incense, candles, a plate of bananas, a green coconut */
-        lathe([[0, 0], [0.04, 0], [0.058, 0.04], [0.062, 0.06], [0.056, 0.064]], mBrass, 0, 1.965, Z + 0.15, 20);
-        for (let k = 0; k < 5; k++) { const s = cyl(0.0018, 0.0018, 0.2, M({ color: 0xc23a1c, roughness: 0.8 }), (k - 2) * 0.012, 2.1, Z + 0.15, 5); s.rotation.z = (k - 2) * 0.05; }
+        lathe([[0, 0], [0.04, 0], [0.058, 0.04], [0.062, 0.06], [0.056, 0.064]], mBrass, 0, 1.965, ZF + 0.15, 20);
+        for (let k = 0; k < 5; k++) { const s = cyl(0.0018, 0.0018, 0.2, M({ color: 0xc23a1c, roughness: 0.8 }), (k - 2) * 0.012, 2.1, ZF + 0.15, 5); s.rotation.z = (k - 2) * 0.05; }
         for (const x of [-0.38, 0.38]) {
-          lathe([[0, 0], [0.025, 0], [0.008, 0.012], [0.007, 0.05], [0.016, 0.056]], mBrass, x, 1.965, Z + 0.15, 14);
-          room.candles.push(candle(x, 2.021, Z + 0.15, 0.09));
+          lathe([[0, 0], [0.025, 0], [0.008, 0.012], [0.007, 0.05], [0.016, 0.056]], mBrass, x, 1.965, ZF + 0.15, 14);
+          room.candles.push(candle(x, 2.021, ZF + 0.15, 0.09));
         }
-        lathe([[0, 0], [0.09, 0], [0.1, 0.012]], mSilver, -0.2, 1.965, Z + 0.15, 22);
+        lathe([[0, 0], [0.09, 0], [0.1, 0.012]], mSilver, -0.2, 1.965, ZF + 0.15, 22);
         const ban = M({ color: 0xd8c040, roughness: 0.6 });
         for (let k = 0; k < 5; k++) {
           const curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0.05, 0.05, 0), new THREE.Vector3(0.1, 0.03, 0));
-          const b = mesh(new THREE.TubeGeometry(curve, 8, 0.012, 6), ban, -0.27, 1.985 + k * 0.004, Z + 0.1 + k * 0.022); b.rotation.y = -0.3 + k * 0.05;
+          const b = mesh(new THREE.TubeGeometry(curve, 8, 0.012, 6), ban, -0.27, 1.985 + k * 0.004, ZF + 0.1 + k * 0.022); b.rotation.y = -0.3 + k * 0.05;
         }
-        const coco = mesh(new THREE.SphereGeometry(0.06, 14, 10), M({ color: 0x6a9a3a, roughness: 0.55 }), 0.22, 2.025, Z + 0.15); coco.scale.set(1, 1.1, 1);
+        const coco = mesh(new THREE.SphereGeometry(0.06, 14, 10), M({ color: 0x6a9a3a, roughness: 0.55 }), 0.22, 2.025, ZF + 0.15); coco.scale.set(1, 1.1, 1);
         /* the garlands: jasmine in a U from the tier's lip, a red tassel */
         const jas = new THREE.InstancedMesh(new THREE.SphereGeometry(0.008, 6, 5), M({ color: 0xf4f0e4, roughness: 0.7 }), 80);
         const ros = new THREE.InstancedMesh(new THREE.SphereGeometry(0.012, 6, 5), M({ color: 0xb4141c, roughness: 0.7 }), 16);
         let ji = 0, ri = 0;
         for (const gx of [-0.16, 0.16]) {
-          for (let k = 0; k <= 26; k++) { const u = k / 26, px = gx + (u - 0.5) * 0.16, py = 1.95 - Math.sin(u * Math.PI) * 0.1; m4.makeTranslation(px, py, Z + 0.265); jas.setMatrixAt(ji++, m4); }
-          for (let k = 0; k < 7; k++) { m4.makeTranslation(gx, 1.84 - k * 0.018, Z + 0.266); (k < 4 ? jas : ros).setMatrixAt(k < 4 ? ji++ : ri++, m4); }
-          for (let k = 0; k < 4; k++) { m4.makeTranslation(gx + (k - 1.5) * 0.008, 1.76 - (k % 2) * 0.01, Z + 0.266); ros.setMatrixAt(ri++, m4); }
+          for (let k = 0; k <= 26; k++) { const u = k / 26, px = gx + (u - 0.5) * 0.16, py = 1.95 - Math.sin(u * Math.PI) * 0.1; m4.makeTranslation(px, py, ZF + 0.265); jas.setMatrixAt(ji++, m4); }
+          for (let k = 0; k < 7; k++) { m4.makeTranslation(gx, 1.84 - k * 0.018, ZF + 0.266); (k < 4 ? jas : ros).setMatrixAt(k < 4 ? ji++ : ri++, m4); }
+          for (let k = 0; k < 4; k++) { m4.makeTranslation(gx + (k - 1.5) * 0.008, 1.76 - (k % 2) * 0.01, ZF + 0.266); ros.setMatrixAt(ri++, m4); }
         }
         jas.count = ji; ros.count = ri; R.add(jas); R.add(ros);
         /* the ribbons on the shelf's ends: red, yellow, green; the fan's air takes them right */
@@ -883,11 +899,11 @@
         for (const end of [-0.45, 0.45]) for (let k = 0; k < 3; k++) {
           const g = new THREE.PlaneGeometry(0.022, 0.3, 1, 6); g.translate(0, -0.15, 0);
           const rib = new THREE.Mesh(g, M({ color: ribC[k], roughness: 0.6, side: THREE.DoubleSide }));
-          rib.position.set(end + (k - 1) * 0.024, 1.95, Z + 0.262); R.add(rib);
+          rib.position.set(end + (k - 1) * 0.024, 1.95, ZF + 0.262); R.add(rib);
           room.ribbons.push({ m: rib, ph: k * 1.7 + end * 3, base: new Float32Array(g.attributes.position.array) });
         }
         /* the altar's own smoke rises and goes with the fan's air, to the right: the control beside the table's */
-        room.smoke.push(smokePath([[0, 2.08, Z + 0.15], [0.01, 2.26, Z + 0.15], [0.09, 2.42, Z + 0.17], [0.26, 2.56, Z + 0.2], [0.5, 2.68, Z + 0.25], [0.78, 2.76, Z + 0.32]], 24, 5.8, 0.32));
+        room.smoke.push(smokePath([[0, 2.08, ZF + 0.15], [0.01, 2.26, ZF + 0.15], [0.09, 2.42, ZF + 0.17], [0.26, 2.56, ZF + 0.2], [0.5, 2.68, ZF + 0.25], [0.78, 2.76, ZF + 0.32]], 24, 5.8, 0.32));
       }
 
       /* ---- the table's smoke, which does not: it rises, turns against the fan and goes down to the cloth (§4.4, §7.6) */
@@ -1774,6 +1790,19 @@
        ages, the banana, the bamboo clump, three broadleaf crowns (the takhian, the rain tree, a mango), a clump of young
        rice. Built here in code until Chad's models land (E4-MODELS). Foliage cards carry normals that point out of the
        crown, so a crown is lit as a volume, not as a pile of planes. */
+    /* (v24.14) A KIT FROM CHAD'S MODELS: each file is one kind, already baked to the one-metre contract (tools/preptree.mjs),
+       turned into the engine's parts the way its own treeKit turns Chad's first trees (v6.15): every mesh a part at its
+       place in the file, foliage known by its material's cut-out (v6.16). If any file fails, the stand takes the code-built
+       kit instead, whole — never half of one and half of the other */
+    function modelKit(keys, fallback) {
+      return Promise.all(keys.map(k => parseOnce(k).then(({ scene: sc }) => {
+        const parts = []; sc.updateMatrixWorld(true);
+        sc.traverse(o => { if (!o.isMesh) return; const mt = o.material;
+          parts.push({ geo: o.geometry, mat: mt, m: o.matrixWorld.clone(), leaf: !!(mt && (mt.alphaTest > 0 || mt.transparent)) }); });
+        return parts.length ? parts : null;
+      }).catch(err => { console.warn(k + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(k, err); return null; })))
+        .then(kinds => kinds.every(Boolean) ? kinds : fallback);
+    }
     function buildVegetation() {
       const I = new THREE.Matrix4();
       const kgeo = (g) => { yard.kitGeos.push(g); return g; };
@@ -1946,12 +1975,23 @@
         if (inCompound(cx, cz) || onRoad(cz)) continue;
         for (let j = 0; j < 1 + (r() * 3 | 0); j++) palms.push({ x: cx + (r() - 0.5) * 7, z: cz + (r() - 0.5) * 7, y: WY, h: 8 + r() * 11, kind: r() < 0.7 ? 0 : 2 });
       }
-      yard.stands.push(plantTrees(worldC, palms, { kit: palmKit, seed: 21, lowKeep: 0.5, shadow: false }));
+      /* (v24.14) CHAD'S PALMS — "Palm Trees" by ElectroNick (Sketchfab, CC BY 4.0): its two palms, each baked to the
+         one-metre contract (tools/preptree.mjs), stand in all 117 of the places the code-built sugar palms stood. The near
+         ones — the compound's own, everything within 40 m of the yard, and the road's where the drive in passes them — are
+         every triangle (15,207 and 8,912); the fields' are the same two palms cut for their distance (about 5,000 each: a
+         frond is a strip of cards, which a simplifier cannot take under two triangles). The spot's kind 0 and 1 are the
+         two palms and the young kind 2 is the first again. The code-built kit is the fallback, used only if a file never
+         lands (v4.7: a failed download costs a nicer tree, never the landscape) */
+      const palmNear = (p) => p.always || Math.hypot(p.x, p.z) < 40 || (Math.abs(p.z - 21) < 7 && Math.abs(p.x) < 60);
+      yard.stands.push(plantTrees(worldC, palms.filter(palmNear), { kit: modelKit(['e4palm1', 'e4palm2'], palmKit), seed: 21, lowKeep: 0.6, shadow: false }));
+      yard.stands.push(plantTrees(worldC, palms.filter(p => !palmNear(p)), { kit: modelKit(['e4palm1far', 'e4palm2far'], palmKit), seed: 22, lowKeep: 0.5, shadow: false }));
       /* bananas: behind and beside the house, by the spirit house, behind the room */
       const bananas = [];
       const clump = (cx, cz, n, y = 0) => { for (let j = 0; j < n; j++) bananas.push({ x: cx + (r() - 0.5) * 2.2, z: cz + (r() - 0.5) * 2.0, y, h: 2.4 + r() * 1.5, kind: j % 2 }); };
       clump(-14.5, -12.3, 4); clump(-10.5, -12.4, 3); clump(-15.2, -2.0, 3); clump(-7.2, 6.6, 3); clump(12.8, -12.4, 3); clump(-15.0, 3.5, 2); clump(13.2, -1.0, 2);
-      yard.stands.push(plantTrees(worldC, bananas, { kit: bananaKit, seed: 23, lowKeep: 0.7, shadow: true }));
+      /* (v24.14) Chad's banana tree — "Banana Tree" by Garecra (Sketchfab, CC BY 4.0), baked to the contract with its own
+         leaf cut-offs (preptree KEEPCUT); the code-built banana the fallback */
+      yard.stands.push(plantTrees(worldC, bananas, { kit: modelKit(['e4banana'], bananaKit), seed: 23, lowKeep: 0.7, shadow: true }));
       /* bamboo at the back corners and the sides, outside the fence */
       yard.stands.push(plantTrees(worldC, [{ x: -17.6, z: -14.2, y: -0.15, h: 8.5, always: true }, { x: 15.8, z: -15.0, y: -0.15, h: 9.5, always: true },
                                             { x: 17.6, z: -2.4, y: -0.15, h: 7.5 }, { x: -18.4, z: 1.8, y: -0.15, h: 8 }], { kit: bambooKit, seed: 25, lowKeep: 0.6, shadow: false }));

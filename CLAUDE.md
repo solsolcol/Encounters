@@ -7106,6 +7106,28 @@ What the baseline contains, by release:
   moment by moment. Sheet v132 (five words out, `pg1offer` re-measured; v44 stays the link). Deploys
   `6ae39fecc0a312c1e945a7fb` and `6ae3a4d8ec468924120ba51a` (the dish), each byte-verified (268 of 268 served files).
   docs/V24.12-THE-STORM-WATCHED.md is the record of all three releases, the restart in the middle of them included.
+- **v24.13** THE SOI DOG — the first of the models episode 4 chapter 1 has waited on (docs/E4-MODELS.md), Chad's pick
+  "Animated Dog, Shiba Inu" by quander (Sketchfab, CC BY 4.0; credited). `tools/prepdog.mjs`: its five takes photographed
+  frame by frame first, two kept and named for what they are — rollover's still stretch (`lie`, head up) and the standing
+  idle (`stand`) — the metal-roughness sheet dropped (a "metal" dog renders near black with no environment, v8.9),
+  meshopt; 872 KB (an Animation's `dispose()` leaves its samplers, so the dropped takes' keyframes stayed in the file
+  until the channels and samplers went first). It lies under the sala's eave: asleep in the opening film's last look
+  through the gate and lifting its head as the pickup stops; in play it watches him within a neck's reach, barks at the
+  arrival (its jaw opened by the bark's own loudness, DOG_BARK) and dozes when nobody is near; it stands and barks after
+  the pickup in ending C. Its pose is laid on after its mixer and put back before it runs (v11.5). Deploy
+  `6ae4c6593c3ec532d24ae4b2`, byte-verified (269 files). docs/V24.13-CHADS-MODELS.md is the record of all of Chad's 30
+  Oct models, milestone by milestone.
+- **v24.14** THE PALMS, THE BANANA TREES AND THE BUDDHA — Chad's three Sketchfab picks (credited): "Palm Trees" by
+  ElectroNick in all 117 of the rice country's palm places (each of the file's two palms baked to the one-metre contract
+  by `tools/preptree.mjs`; every triangle within 40 m of the yard and along the drive in, a ~5k cut for the fields),
+  "Banana Tree" by Garecra in every clump (KEEPCUT=1 keeps its own leaf cut-offs), and "Yoga - Buddha" by T.Koeniger on
+  the master's altar (`tools/prepstatic.mjs`, 50k triangles at 0.32 m), the altar's three tiers 10 cm deeper to seat him
+  with every offering keeping its distance from its tier's front lip. The kits load through `modelKit()`, the code-built
+  ones only if a file never lands. Measured on a phone from the yard: 72–145k triangles a frame. **Found by a close
+  photograph and fixed before it shipped:** the gilded chedi that stood in for the Buddha was still drawn in front of
+  him — the room merges every still mesh into one per material and removes the original (CP4's `mergeStatic`), so
+  hiding the original hid nothing; a stand-in that hides when its model lands is kept out of the merge (LEARNINGS).
+  Deploy `6ae4cc3033245fa68569a329`, byte-verified (275 files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

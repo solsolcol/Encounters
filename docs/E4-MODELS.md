@@ -45,8 +45,8 @@ just need to remember to ask me for the models so i don't forget or miss it."*
 | A Thai soi dog | rigged: idle, lying, walk, bark | — | **IN (v24.13)**: Chad's "Animated Dog, Shiba Inu" by quander (Sketchfab, CC BY 4.0) — `e4dog`, two takes (lying, standing), under the sala's eave; it lifts its head in the film's O7, watches him and barks at the arrival, and barks after him on its feet in ending C (tools/prepdog.mjs). It has no walk take, so it never moves from its spot |
 | A water buffalo | for the film's wide; static is fine | none (left out) | NICE |
 | A pickup truck | Thai double-cab, generic, no logos; an interior is a bonus | built in code (as the buses were at v21.14) | **CHOSEN, file to come** (Chad, 30 Oct: "I will give the pick up truck model later in google drive, note the credits first"): "Rivian R1T (2022)" by geyges, Sketchfab, Free Standard licence — https://sketchfab.com/3d-models/rivian-r1t-2022-6eca29c11ca44840baf93f47ef800006 (394k faces, one animation). Its credit row goes in with the model |
-| Sugar palm (Borassus) | two variants if possible | built in code | **ARRIVED (30 Oct)**: Chad's "Palm Trees" by ElectroNick (Sketchfab, CC BY 4.0) — two palms; being fitted (a near and a far cut, since ~120 stand in the fields) |
-| Banana plant | — | built in code | **ARRIVED (30 Oct)**: Chad's "Banana Tree" by Garecra (Sketchfab, CC BY 4.0); being fitted |
+| Sugar palm (Borassus) | two variants if possible | built in code | **IN v24.14**: Chad's "Palm Trees" by ElectroNick (Sketchfab, CC BY 4.0) — its two palms in all 117 places, every triangle within 40 m of the yard and along the drive in, a ~5k cut in the fields; the code-built palm only if a file never lands |
+| Banana plant | — | built in code | **IN v24.14**: Chad's "Banana Tree" by Garecra (Sketchfab, CC BY 4.0), in every clump round the compound with its own leaf cut-offs |
 | Bamboo clump | — | built in code | NEEDED |
 | A large broadleaf tree for the takhian | not one of the game's current four | built in code | NEEDED |
 
@@ -54,7 +54,7 @@ just need to remember to ask me for the models so i don't forget or miss it."*
 
 | What | Spec | Placeholder | Status |
 |---|---|---|---|
-| A seated Buddha image | any style but the Chinnarat (e.g. a bronze Sukhothai-style) | none (left out; the altar's tiers carry the other offerings) | **ARRIVED (30 Oct)**: Chad's "Yoga - Buddha" by T.Koeniger (Sketchfab, CC BY 4.0) — a bronze Buddha in meditation, 112k triangles; being fitted |
+| A seated Buddha image | any style but the Chinnarat (e.g. a bronze Sukhothai-style) | none (left out; the altar's tiers carry the other offerings) | **IN v24.14**: Chad's "Yoga - Buddha" by T.Koeniger (Sketchfab, CC BY 4.0) — a bronze Buddha in meditation, 50k triangles at 0.32 m on the altar's top tier (the tiers 10 cm deeper to seat him) |
 | A Nang Kwak (the beckoning lady) | also the item's model | none (left out; the item shows its drawing) | NEEDED |
 | A Phra Rahu or another unusual altar image | for the third tier | none | NICE |
 | Sandals | for the door | none | NICE |

@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "24.13"
+VERSION = "24.14"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -419,6 +419,12 @@ ASSETS = {
     'e4pong':       ('assets/e4pong.glb', True, False),       # e4c1 v24.0 CP7: Pong's stand-in — episode 3's staff man with the first master's three seated takes retargeted in (masters/v24.0/cast), until Chad's model
     'e4joy':        ('assets/e4joy.glb', True, False),        # e4c1 v24.0 CP7: Khun Joy's stand-in — chapter 3's pink-shirt lady with a standing idle and a walk retargeted in (meshy, masters/v24.0/cast), until Chad's model; v24.9: Khun Joy left with the queue (Chad's call) and the stand-in is ending C's roadside stall woman's alone (Uncle Lim's `e4lim` left the build)
     'e4dog':        ('assets/e4dog.glb', True, False),        # e4c1 v24.13: Chad's soi dog — "Animated Dog, Shiba Inu" by quander (Sketchfab, CC-BY-4.0), two takes (lie, stand), base colour only, meshopt (tools/prepdog.mjs, masters/v24.13/make.sh)
+    'e4palm1':      ('assets/e4palm1.glb', True, False),      # e4c1 v24.14: Chad's palms — "Palm Trees" by ElectroNick (Sketchfab, CC-BY-4.0), its first palm baked to the one-metre contract, every triangle (tools/preptree.mjs, masters/v24.13/make.sh)
+    'e4palm2':      ('assets/e4palm2.glb', True, False),      # e4c1 v24.14: the second palm, every triangle
+    'e4palm1far':   ('assets/e4palm1far.glb', True, False),   # e4c1 v24.14: the first palm cut for the fields' distance (0.12, sheets 512/256)
+    'e4palm2far':   ('assets/e4palm2far.glb', True, False),   # e4c1 v24.14: the second palm cut for distance (0.15)
+    'e4banana':     ('assets/e4banana.glb', True, False),     # e4c1 v24.14: Chad's banana tree — "Banana Tree" by Garecra (Sketchfab, CC-BY-4.0), baked to the contract with its own leaf cut-offs (preptree KEEPCUT)
+    'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
     # in white (two women, two men), Mixamo's Praying and Kneeling Idle applied
     # to each rig (tools/retarget.mjs --align --hips), then tools/prepmonk.mjs
@@ -536,7 +542,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'traynear', 'trayfar', 'amushelf', 'altarrowfar', 'monkshop', 'hanuamulet', 'hanuamuletlod',
            'lersiamulet', 'lersiamuletlod', 'towkay',
            'kumanred', 'kumanshy', 'kumanlittle',
-           'firstmaster', 'e4sky', 'fmshadow', 'e4noi', 'e4pong', 'e4joy', 'e4dog'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
+           'firstmaster', 'e4sky', 'fmshadow', 'e4noi', 'e4pong', 'e4joy', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and

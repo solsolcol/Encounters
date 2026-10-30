@@ -210,6 +210,16 @@ Object.assign(window.__TEXT__, {
   'credits.dog':            'The dog at the master’s house',
   'credits.dogWho':         'Animated Dog, Shiba Inu · quander · Sketchfab, CC BY 4.0',
   'credits.dogLink':        'sketchfab.com · animated-dog-shiba-inu',
+  // v24.14 · the rice country's palms, the banana trees and the Buddha on the master's altar (Chad's picks, Sketchfab, CC BY 4.0)
+  'credits.palm':           'The palms of the rice country',
+  'credits.palmWho':        'Palm Trees · ElectroNick · Sketchfab, CC BY 4.0',
+  'credits.palmLink':       'sketchfab.com · palm-trees',
+  'credits.banana':         'The banana trees at the master’s house',
+  'credits.bananaWho':      'Banana Tree · Garecra · Sketchfab, CC BY 4.0',
+  'credits.bananaLink':     'sketchfab.com · banana-tree',
+  'credits.ybuddha':        'The Buddha on the master’s altar',
+  'credits.ybuddhaWho':     'Yoga – Buddha · T.Koeniger · Sketchfab, CC BY 4.0',
+  'credits.ybuddhaLink':    'sketchfab.com · yoga-buddha',
   /* v12.1 — Chad's ghost cyclist is his own model and takes no row (the
      v5.23 rule); the Kamaz and the flashlight already have theirs above. */
   'credits.anim':        'Animation, two of the crowd, and the soldiers’ takes',

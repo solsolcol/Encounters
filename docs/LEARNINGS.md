@@ -6987,3 +6987,11 @@ cut (sharing its vertices and maps) when it is small.
   wedges, each wedge winning or losing the depth test whole). The coplanar law (v19.3, v22.2) counts the PAINTED layers
   — pools, washes, wet rings, decals — as surfaces: lift a thing set on a table clear of all of them (4 mm here), and
   find them by listing what is drawn at that height, not by remembering what the table is made of.
+- **A stand-in that hides when its model lands must be kept out of a static merge** (v24.14). Episode 4 chapter 1's room
+  bakes every still mesh into one geometry per material and REMOVES the originals (CP4's `mergeStatic`, a phone's draw
+  calls). The gilded chedi that stood on the altar until Chad's Buddha landed was a still gold lathe, so it was baked
+  into the gold batch at build time; when the Buddha landed, `chedi.visible = false` hid an object no longer in the
+  scene, and the batch went on drawing it — photographed, the chedi stood in front of the Buddha. Every number said the
+  swap ran (the Buddha was there, the flag was false). Anything whose visibility a later callback will change — a
+  stand-in, a prop a scene shows and hides — is marked `userData.dyn` before the merge runs; and a model swap is
+  verified by a close photograph of the place, never by the flag.

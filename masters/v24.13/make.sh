@@ -22,3 +22,14 @@
 set -e
 cd "$(dirname "$0")/../.."
 node tools/prepdog.mjs masters/v24.13/src/shiba_inu.glb assets/e4dog.glb
+# v24.14 · the palms, the banana tree and the Buddha (sources above). The palms' file holds two trees side by side: each
+# is taken on its own (preptree's onlyNode) and baked to the one-metre contract, every triangle for the near stands and
+# a cut for the fields' distance (a frond is a strip of cards, which a simplifier cannot take under two triangles, so
+# 0.12 / 0.15 come to about 5,000 each). The banana keeps its author's own leaf cut-offs (KEEPCUT). The Buddha is a
+# static scan: 112k -> 50k triangles at 0.32 m, its base colour a 2048 JPEG (its COLOR_0 is white to 1 % and goes).
+node tools/preptree.mjs masters/v24.13/src/palm_trees.glb assets/e4palm1.glb 1 1024 1024 Palm_tree_001_v2
+node tools/preptree.mjs masters/v24.13/src/palm_trees.glb assets/e4palm2.glb 1 1024 1024 Palm_tree_002_v2
+node tools/preptree.mjs masters/v24.13/src/palm_trees.glb assets/e4palm1far.glb 0.12 512 256 Palm_tree_001_v2
+node tools/preptree.mjs masters/v24.13/src/palm_trees.glb assets/e4palm2far.glb 0.15 512 256 Palm_tree_002_v2
+KEEPCUT=1 node tools/preptree.mjs masters/v24.13/src/banana_tree.glb assets/e4banana.glb 1 1024 1024
+node tools/prepstatic.mjs masters/v24.13/src/yoga_buddha.glb assets/e4buddha.glb 0.32 0.45 0 2048 88
