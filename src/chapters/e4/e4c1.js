@@ -189,7 +189,8 @@
     /* (v24.15, Chad's models: Pong, Pa Noi, the woman at the stall and the presence are his own — `e4pong` and `e4noi`
        are his files under the stand-ins' keys, `e4stall` replaces `e4joy`, and `e4ghost`, his old woman, replaces episode
        1's `granny`; nothing in the chapter is a stand-in for a person any more) */
-    assets: ['firstmaster', 'fmshadow', 'e4sky', 'e4pong', 'e4noi', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4pickup', 'e4nangkwak', 'e4takrut', 'e4phayant'],
+    assets: ['firstmaster', 'fmshadow', 'e4sky', 'e4pong', 'e4noi', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4pickup', 'e4nangkwak', 'e4takrut', 'e4phayant',
+             'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4buffalo', 'e4sandalsa', 'e4sandalsb'],
     reuse: {},
     placeholders: {},
     items: [],
@@ -1212,7 +1213,7 @@
       HOUSE: { x0: -13.4, x1: -8.6, z0: -10.9, z1: -4.3, floor: 2.5, eave: 5.1, ridge: 7.5, verX: -6.6 },
       SALA: { x0: -3, x1: 3, z0: -4, z1: 0, floor: 0.32 },
       ROOMX: { x0: 5.6, x1: 11.4, z0: -11.4, z1: -6.4, base: 0.5, top: 3.4 },
-      TAKHIAN: { x: 2.4, z: -10.4 }, RAINTREE: { x: 10.6, z: 2.2 }, MANGO: { x: -9.2, z: 2.6 },
+      TAKHIAN: { x: 2.4, z: -10.4 }, RAINTREE: { x: 10.6, z: -0.7 }, MANGO: { x: -9.2, z: 2.6 },   // (v24.19: the rain tree stood at z 2.2, inside the middle car)
       SPIRIT: { x: -5.4, z: 5.4 }, SHELTER: { x: 6.0, z: 15.4 }, PICKUP: { x: 2.0, z: 13.15 },
       BOARD: { x: 2.75, z: 0.75 }, WATER_Y: -0.32
     };
@@ -1427,39 +1428,105 @@
         /* THE TAKHIAN'S DRESSES (v24.5, L5-8: the hotspot says "The dresses on the tree" and both lines speak of them — the
            tree stood bare; yard.dresses was declared and never filled). The folk custom for the female spirit believed to
            live in a takhian (plan §4.1), shown respectfully and never explained: three coloured cloths wound round the trunk,
-           women's dresses hung on it on the yard's side, a small offering shelf at its foot — no figure. The trunk is the
-           stand's own broadleaf kit 0 — a nine-sided 0.62 cylinder, radius 0.030 → 0.016, flared ×(1 + 1.4·e^(−9k)) — at
+           women's dresses hung on it on the yard's side, a small offering shelf at its foot — no figure. The tree stands at
            the height plantTrees deals it from its stand's seed (27) and spot (0): 19 m × (0.88 + 0.30·rnd), turned 0.4 */
         { const TX = CMP.TAKHIAN.x, TZ = CMP.TAKHIAN.z, TRY = 0.4;
           const dealt = (i, salt) => { const v = Math.sin((i + 1) * 12.9898 + 27 * 78.233 + salt * 43.758) * 43758.5453; return v - Math.floor(v); };
           const TH = 19 * (0.88 + dealt(0, 1) * 0.30);
-          const trunkR = (y) => { const k = y / (TH * 0.62); return (0.03 - 0.014 * k) * TH * (1 + 1.4 * Math.exp(-k * 9)); };
-          /* the three cloths, each a band of the trunk's own nine sides, 2.5 cm proud of it */
-          [[0xb81e24, 0.95], [0xe8b020, 1.07], [0x2e8a3e, 1.19]].forEach(([col, y0]) => {
-            const y1 = y0 + 0.115, g = new THREE.CylinderGeometry(trunkR(y1) + 0.025, trunkR(y0) + 0.025, y1 - y0, 9, 1, true);
-            const b = mesh(g, M({ color: col, roughness: 0.85, side: THREE.DoubleSide }), TX, (y0 + y1) / 2, TZ); b.rotation.y = TRY; b.castShadow = false; });
-          /* the dresses: cloth hung from a nail, the shoulders against the bark, the hem standing a little off it */
-          const dress = (th0, top, len, seed, a, b2) => {
-            const cols = 8, rows = 12, P = [], U = [], I = [];
-            for (let j = 0; j <= rows; j++) for (let i = 0; i <= cols; i++) {
-              const v = j / rows, u = i / cols * 2 - 1;
-              const hw = 0.15 + 0.11 * v - 0.035 * Math.exp(-(((v - 0.32) / 0.12) ** 2));
-              const y = top - v * len - (j === 0 ? 0.05 * Math.cos(u * Math.PI / 2) : 0);
-              const R = trunkR(y) + 0.03 + 0.05 * v, th = th0 + u * hw / R;
-              P.push(TX + R * Math.sin(th), y, TZ + R * Math.cos(th)); U.push(i / cols, 1 - v);
+          /* (v24.19) THE TRUNK IS WHICHEVER LANDED — the generated takhian (assets/e4takhian.glb: a buttressed bole whose
+             roots spread ~1.6 m at the ground and round into a 0.8 m trunk by 1.8 m) or, if that file never lands, the
+             code-built broadleaf the stand falls back to. The cloths, the dresses and their nails are fitted to IT: once the
+             stand's kit lands (yard.dressTakhian, called from buildVegetation), its trunk is sliced where it stands — the
+             same dealing plantTrees gives spot 0 of seed 27: TH tall, turned TRY, its small lean — every 10 cm from 1.3 m
+             to 3.0 m, into a perimeter's centre and the bark's radius in 24 directions, and every ring and hem follows the
+             bark in its own direction. The cloths moved up from 0.95 m to 1.42 m: below that the trunk is buttress fins, and
+             a cloth is wound round the bole above them; the dresses moved up with them. */
+          const TM = new THREE.Matrix4().compose(new THREE.Vector3(TX, 0, TZ),
+            new THREE.Quaternion().setFromEuler(new THREE.Euler((dealt(0, 4) - 0.5) * 0.06, TRY, (dealt(0, 5) - 0.5) * 0.06)), new THREE.Vector3(TH, TH, TH));
+          const NA = 24, Y0 = 1.3, DY = 0.1, NY = 17, DA = 2 * Math.PI / NA;
+          const sliceTrunk = (parts) => {
+            const tri = [], W = new THREE.Matrix4(), v = new THREE.Vector3(), prof = [];
+            for (const pt of parts) {
+              W.multiplyMatrices(TM, pt.m);
+              const pos = pt.geo.attributes.position, ix = pt.geo.index, P = new Float32Array(pos.count * 3);
+              for (let i = 0; i < pos.count; i++) { v.fromBufferAttribute(pos, i).applyMatrix4(W); P[3 * i] = v.x; P[3 * i + 1] = v.y; P[3 * i + 2] = v.z; }
+              const n = ix ? ix.count : pos.count;
+              for (let t = 0; t < n; t += 3) {
+                const a = 3 * (ix ? ix.getX(t) : t), b = 3 * (ix ? ix.getX(t + 1) : t + 1), c = 3 * (ix ? ix.getX(t + 2) : t + 2);
+                if (Math.max(P[a + 1], P[b + 1], P[c + 1]) < Y0 - 0.05 || Math.min(P[a + 1], P[b + 1], P[c + 1]) > Y0 + DY * NY + 0.05) continue;
+                tri.push(P[a], P[a + 1], P[a + 2], P[b], P[b + 1], P[b + 2], P[c], P[c + 1], P[c + 2]);
+              }
             }
-            for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) { const q = j * (cols + 1) + i; I.push(q, q + cols + 1, q + 1, q + 1, q + cols + 1, q + cols + 2); }
-            const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(U, 2)); g.setIndex(I); g.computeVertexNormals();
-            const m = new THREE.Mesh(g, M({ map: tex(makeDressCloth(THREE, cnv, seed, a, b2)), roughness: 0.9, side: THREE.DoubleSide })); m.receiveShadow = true; C.add(m); yard.dresses.push(m);
-            const Rn = trunkR(top) + 0.012; bx(0.012, 0.012, 0.03, M({ color: 0x2a2420, roughness: 0.6 }), TX + Rn * Math.sin(th0), top + 0.01, TZ + Rn * Math.cos(th0));   // its nail
+            for (let j = 0; j <= NY; j++) {
+              const y = Y0 + j * DY, seg = [];
+              for (let t = 0; t < tri.length; t += 9) {
+                const q = [];
+                for (let e = 0; e < 3; e++) { const A = t + 3 * e, B = t + 3 * ((e + 1) % 3), da = tri[A + 1] - y, db = tri[B + 1] - y;
+                  if ((da < 0) !== (db < 0)) { const u = da / (da - db); q.push(tri[A] + u * (tri[B] - tri[A]), tri[A + 2] + u * (tri[B + 2] - tri[A + 2])); } }
+                if (q.length === 4) seg.push(q);
+              }
+              let sx = 0, sz = 0, sw = 0;
+              for (const q of seg) { const L = Math.hypot(q[2] - q[0], q[3] - q[1]); sx += (q[0] + q[2]) / 2 * L; sz += (q[1] + q[3]) / 2 * L; sw += L; }
+              const cx = sw ? sx / sw : TX, cz = sw ? sz / sw : TZ, r = new Array(NA).fill(0);
+              for (const q of seg) for (let e = 0; e < 4; e += 2) {
+                const d = Math.hypot(q[e] - cx, q[e + 1] - cz); if (d > 2.5) continue;
+                const k = Math.floor((Math.atan2(q[e] - cx, q[e + 1] - cz) / (2 * Math.PI) + 1) * NA) % NA; r[k] = Math.max(r[k], d);
+              }
+              /* a direction no cut reached takes the nearest that did, either side */
+              const got = r.filter(x => x > 0);
+              for (let k = 0; k < NA; k++) if (!(r[k] > 0)) { let a = 0, b = 0; for (let s = 1; s < NA && !(a && b); s++) { if (!a && r[(k + s) % NA] > 0) a = r[(k + s) % NA]; if (!b && r[(k - s + NA) % NA] > 0) b = r[(k - s + NA) % NA]; }
+                r[k] = got.length ? ((a || b) + (b || a)) / 2 : 0.4; }
+              prof.push({ cx, cz, r });
+            }
+            return prof;
           };
-          dress(-0.62, 2.36, 0.92, 4811, '#c8285a', 'rgba(250,220,120,0.85)');    // pink, with gold flowers
-          dress(-0.02, 2.42, 0.98, 4813, '#e8d24a', 'rgba(200,60,40,0.8)');     // yellow
-          dress(0.58, 2.34, 0.9, 4815, '#3a6ab8', 'rgba(240,240,250,0.85)');     // blue, white flowers
-          dress(1.18, 2.38, 0.94, 4817, '#7a2a8a', 'rgba(250,190,210,0.8)');     // purple
+          /* the bark at a height and a direction (th: from +z toward +x), and the bole's centre at that height */
+          const barkAt = (prof, y, th) => {
+            const f = Math.min(NY, Math.max(0, (y - Y0) / DY)), j0 = Math.min(NY - 1, Math.floor(f)), fj = f - j0;
+            const u = ((th / DA - 0.5) % NA + NA) % NA, k0 = Math.floor(u), fk = u - k0, k1 = (k0 + 1) % NA;
+            const ring = (p) => p.r[k0] * (1 - fk) + p.r[k1] * fk, A = prof[j0], B = prof[j0 + 1];
+            return { r: ring(A) * (1 - fj) + ring(B) * fj, cx: A.cx * (1 - fj) + B.cx * fj, cz: A.cz * (1 - fj) + B.cz * fj };
+          };
+          yard.dressTakhian = (parts) => {
+            if (!alive || !parts || yard.dressed) return;
+            yard.dressed = true;
+            const prof = sliceTrunk(parts);
+            /* the three cloths, each a band round the bark, 2.5 cm proud of it in every direction */
+            [[0xb81e24, 1.42], [0xe8b020, 1.54], [0x2e8a3e, 1.66]].forEach(([col, y0]) => {
+              const y1 = y0 + 0.115, P = [], U = [], I = [];
+              for (let k = 0; k <= NA; k++) for (const [y, vv] of [[y0, 0], [y1, 1]]) { const th = (k + 0.5) * DA, s = barkAt(prof, y, th);
+                P.push(s.cx + (s.r + 0.025) * Math.sin(th), y, s.cz + (s.r + 0.025) * Math.cos(th)); U.push(k / NA, vv); }
+              for (let k = 0; k < NA; k++) { const q = 2 * k; I.push(q, q + 2, q + 1, q + 1, q + 2, q + 3); }
+              const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(U, 2)); g.setIndex(I); g.computeVertexNormals();
+              const b = new THREE.Mesh(g, M({ color: col, roughness: 0.85, side: THREE.DoubleSide })); b.castShadow = false; C.add(b);
+            });
+            /* the dresses: cloth hung from a nail, the shoulders against the bark, the hem standing a little off it */
+            const dress = (th0, top, len, seed, a, b2) => {
+              const cols = 8, rows = 12, P = [], U = [], I = [];
+              for (let j = 0; j <= rows; j++) for (let i = 0; i <= cols; i++) {
+                const v = j / rows, u = i / cols * 2 - 1;
+                const hw = 0.15 + 0.11 * v - 0.035 * Math.exp(-(((v - 0.32) / 0.12) ** 2));
+                const y = top - v * len - (j === 0 ? 0.05 * Math.cos(u * Math.PI / 2) : 0);
+                const th = th0 + u * hw / (barkAt(prof, y, th0).r + 0.03 + 0.05 * v), s = barkAt(prof, y, th), R = s.r + 0.03 + 0.05 * v;
+                P.push(s.cx + R * Math.sin(th), y, s.cz + R * Math.cos(th)); U.push(i / cols, 1 - v);
+              }
+              for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) { const q = j * (cols + 1) + i; I.push(q, q + cols + 1, q + 1, q + 1, q + cols + 1, q + cols + 2); }
+              const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(U, 2)); g.setIndex(I); g.computeVertexNormals();
+              const m = new THREE.Mesh(g, M({ map: tex(makeDressCloth(THREE, cnv, seed, a, b2)), roughness: 0.9, side: THREE.DoubleSide })); m.receiveShadow = true; C.add(m); yard.dresses.push(m);
+              const s = barkAt(prof, top, th0), Rn = s.r + 0.012; bx(0.012, 0.012, 0.03, M({ color: 0x2a2420, roughness: 0.6 }), s.cx + Rn * Math.sin(th0), top + 0.01, s.cz + Rn * Math.cos(th0));   // its nail
+            };
+            dress(-0.62, 2.70, 0.86, 4811, '#c8285a', 'rgba(250,220,120,0.85)');    // pink, with gold flowers
+            dress(-0.02, 2.76, 0.92, 4813, '#e8d24a', 'rgba(200,60,40,0.8)');     // yellow
+            dress(0.58, 2.68, 0.84, 4815, '#3a6ab8', 'rgba(240,240,250,0.85)');     // blue, white flowers
+            dress(1.18, 2.72, 0.88, 4817, '#7a2a8a', 'rgba(250,190,210,0.8)');     // purple
+          };
+          /* (v24.19) the yard's three trees are solid: the player walked through every trunk (no blocker since v23.6) —
+             each a column round the bole's root, sized from the trees as planted (the takhian's buttress 0.9 m round at 1 m) */
+          solids.push(hidBox(1.7, 2.6, 1.7, TX, 1.3, TZ, C), hidBox(1.6, 2.6, 1.6, CMP.RAINTREE.x, 1.3, CMP.RAINTREE.z, C), hidBox(0.8, 2.4, 0.8, CMP.MANGO.x, 1.2, CMP.MANGO.z, C));
           /* the small offering shelf at its foot, on the yard's side: a red cloth, flowers, a glass of red drink, a pot of
-             incense with three sticks, a jasmine garland */
-          const SX = TX + 0.05, SZ = TZ + trunkR(0.3) + 0.42, mW = M({ color: 0x7a5232, roughness: 0.8 });
+             incense with three sticks, a jasmine garland — 1.95 m out, clear of the buttress fins in that direction (they
+             reach 1.4–1.8 m at the ground) */
+          const SX = TX + 0.05, SZ = TZ + 1.95, mW = M({ color: 0x7a5232, roughness: 0.8 });
           bx(0.52, 0.035, 0.34, mW, SX, 0.56, SZ); for (const [dx, dz] of [[-0.23, -0.14], [0.23, -0.14], [-0.23, 0.14], [0.23, 0.14]]) bx(0.035, 0.54, 0.035, mW, SX + dx, 0.27, SZ + dz);
           bx(0.5, 0.004, 0.36, M({ color: 0xa8141c, roughness: 0.9 }), SX, 0.58, SZ);
           cyl(0.03, 0.025, 0.12, M({ color: 0xd8d0c0, roughness: 0.4 }), SX - 0.15, 0.64, SZ - 0.04, 12);
@@ -1494,7 +1561,7 @@
       }
 
       /* ---- THE WAITING SALA (centre): a raised concrete floor and its steps, six white posts, a hipped roof of red
-         zinc, two benches toward the master's door, the queue's whiteboard, a water dispenser, a standing fan */
+         zinc, two benches toward the master's door, a water dispenser, a standing fan (the queue's whiteboard went at v24.19) */
       const SL = CMP.SALA;
       { const sxc = (SL.x0 + SL.x1) / 2, szc = (SL.z0 + SL.z1) / 2;
         const fl = bx(SL.x1 - SL.x0, SL.floor, SL.z1 - SL.z0, mConcW, sxc, SL.floor / 2, szc);
@@ -1536,16 +1603,11 @@
           for (let k = 0; k < 3; k++) { const b2 = new THREE.Mesh(new THREE.CircleGeometry(0.09, 8, -0.5, 1.0), M({ color: 0x8ab0d0, roughness: 0.3, transparent: true, opacity: 0.85, side: THREE.DoubleSide })); b2.rotation.z = k * Math.PI * 2 / 3; b2.scale.set(1.8, 1, 1); blades.add(b2); }
           yard.standFan = { head, blades, base: -0.8 };
           solids.push(hidBox(0.44, 1.4, 0.44, fx, 0.7, fz, C)); }
-        /* the queue's whiteboard on its stand at the sala's front corner — Pa Noi writes the numbers (CP8) */
-        { const B0 = CMP.BOARD, bc = cnv(512)[0]; bc.height = 224;
-          const bt = tex(done(THREE, bc, false)); drawQueueBoard(bc.getContext('2d'), 512, 224, yard.boardN); bt.needsUpdate = true;
-          yard.board = { canvas: bc, tex: bt };
-          const bdm = flat(1.1, 0.48, M({ map: bt, roughness: 0.4 })); bdm.position.set(B0.x, SL.floor + 1.35, B0.z); bdm.rotation.y = -0.35;
-          const back = bx(1.14, 0.52, 0.03, mSteel, B0.x + Math.sin(-0.35) * -0.02, SL.floor + 1.35, B0.z - 0.02); back.rotation.y = -0.35;
-          for (const s2 of [-1, 1]) { const lg = bx(0.03, 1.35, 0.03, mSteel, B0.x + s2 * 0.5 * Math.cos(0.35), SL.floor + 0.675, B0.z + s2 * 0.5 * Math.sin(0.35) - 0.06); lg.rotation.x = -0.06; }
-          solids.push(hidBox(1.1, 1.4, 0.3, B0.x, 0.7, B0.z, C));
-          /* and Pa Noi beside it, where she stands through the whole wait (v24.5, L5-14: no person was a blocker, so walking
-             into her at the board put the lens inside her) */
+        /* (v24.19) the queue's whiteboard is gone (Chad: "there is no need for queue number board, remove that" — since v24.9
+           there has been no queue to number); yard.board stays null, so boardSet() draws nothing. Pa Noi keeps the spot she
+           stood at beside it (CMP.BOARD), and her blocker (v24.5, L5-14: no person was a blocker, so walking into her put the
+           lens inside her) */
+        { const B0 = CMP.BOARD;
           solids.push(hidBox(0.5, 1.4, 0.5, B0.x + 0.62, 0.7, B0.z + 0.42, C)); }
         void fl;
       }
@@ -1582,6 +1644,15 @@
         const jar = lathe([[0, 0], [0.2, 0], [0.3, 0.22], [0.31, 0.38], [0.24, 0.52], [0.25, 0.55]], M({ color: 0x5a3a24, roughness: 0.3 }), DX + 1.25, 0, RX0.z1 + 0.5, 18); void jar;
         cyl(0.27, 0.27, 0.01, M({ color: 0x5a6a72, roughness: 0.05, metalness: 0.4 }), DX + 1.25, 0.5, RX0.z1 + 0.5, 18);
         solids.push(hidBox(0.6, 0.6, 0.6, DX + 1.25, 0.3, RX0.z1 + 0.5, C));
+        /* (v24.19) two pairs of sandals left at the foot of the steps, as everyone going in leaves them — black rubber
+           flip-flops and brown plastic slides, generated (a GPT Image reference on white, then Meshy's image-to-3D) */
+        for (const [key, x, z, ry] of [['e4sandalsa', DX - 0.42, RX0.z1 + 1.2, 0.25], ['e4sandalsb', DX + 0.4, RX0.z1 + 1.16, -0.35]])
+          parseOnce(key).then(({ scene: ss }) => {
+            if (!alive) return;
+            const s3 = ss.clone(true); s3.position.set(x, 0.002, z); s3.rotation.y = ry;
+            s3.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = true; } });
+            C.add(s3);
+          }).catch(err => { console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
         /* windows: dark louvres in green frames, a sill under each */
         const tLouv = (() => { const [c2, x2] = sized(cnv, 64, 128); x2.fillStyle = '#20262c'; x2.fillRect(0, 0, 64, 128); for (let y = 0; y < 128; y += 14) { x2.fillStyle = '#7a8a94'; x2.fillRect(0, y, 64, 3); x2.fillStyle = '#3a444c'; x2.fillRect(0, y + 3, 64, 5); } return tex(done(THREE, c2, true)); })();
         const mLouv = M({ map: tLouv, roughness: 0.3, metalness: 0.2 });
@@ -2036,16 +2107,34 @@
       /* (v24.14) Chad's banana tree — "Banana Tree" by Garecra (Sketchfab, CC BY 4.0), baked to the contract with its own
          leaf cut-offs (preptree KEEPCUT); the code-built banana the fallback */
       yard.stands.push(plantTrees(worldC, bananas, { kit: modelKit(['e4banana'], bananaKit), seed: 23, lowKeep: 0.7, shadow: true }));
-      /* bamboo at the back corners and the sides, outside the fence */
+      /* bamboo at the back corners and the sides, outside the fence. (v24.19) The bamboo and the three broadleaves are
+         generated models — a reference image of each on white (GPT Image, Higgsfield), checked, then Meshy's image-to-3D
+         at its best settings and its remesh (Chad's workflow, 30 Oct 2026), prepared by tools/prepmeshy.mjs to the stand's
+         one-metre contract with the trunk on the origin (masters/v24.19/make.sh); the code-built kits are the fallback,
+         used only if a file never lands (v4.7) */
       yard.stands.push(plantTrees(worldC, [{ x: -17.6, z: -14.2, y: -0.15, h: 8.5, always: true }, { x: 15.8, z: -15.0, y: -0.15, h: 9.5, always: true },
-                                            { x: 17.6, z: -2.4, y: -0.15, h: 7.5 }, { x: -18.4, z: 1.8, y: -0.15, h: 8 }], { kit: bambooKit, seed: 25, lowKeep: 0.6, shadow: false }));
-      /* the takhian behind the sala, the rain tree over the cars, a mango by the house; rain trees along the road */
+                                            { x: 17.6, z: -2.4, y: -0.15, h: 7.5 }, { x: -18.4, z: 1.8, y: -0.15, h: 8 }], { kit: modelKit(['e4bamboo'], bambooKit), seed: 25, lowKeep: 0.6, shadow: false }));
+      /* the takhian behind the sala, the rain tree over the cars, a mango by the house; rain trees along the road. The
+         takhian's cloths and dresses are fitted to whichever trunk landed (yard.dressTakhian, the compound's) */
+      const broadModel = modelKit(['e4takhian', 'e4raintree', 'e4mango'], broadKit);
+      broadModel.then(kinds => yard.dressTakhian && yard.dressTakhian(kinds && kinds[0]));
       yard.stands.push(plantTrees(worldC, [{ x: CMP.TAKHIAN.x, z: CMP.TAKHIAN.z, h: 19, kind: 0, ry: 0.4, always: true },
                                             { x: CMP.RAINTREE.x, z: CMP.RAINTREE.z, h: 10.5, kind: 1, ry: 1.2, always: true },
                                             { x: CMP.MANGO.x, z: CMP.MANGO.z, h: 8, kind: 2, ry: 2.1, always: true },
                                             { x: -58, z: 29, y: WY, h: 11, kind: 1 }, { x: 31, z: 30, y: WY, h: 9, kind: 2 }, { x: 84, z: 29.5, y: WY, h: 12, kind: 1 },
                                             { x: -96, z: 30, y: WY, h: 10, kind: 2 }, { x: -30, z: -40, y: WY, h: 9, kind: 2 }, { x: 52, z: -46, y: WY, h: 10, kind: 1 }],
-                                          { kit: broadKit, seed: 27, shadow: true }));
+                                          { kit: broadModel, seed: 27, shadow: true }));
+      /* (v24.19) two water buffalo standing in the paddy beside the road, for the opening film's huge wide (O5): its lens
+         looks east along the dyke and holds them in the water on its left, on a phone's narrow frame too (about 7° off its
+         axis, 43 m out); generated (a GPT Image reference on white, then Meshy's image-to-3D), standing still as a buffalo
+         in a field does, the water to the hock */
+      for (const [x, z, ry, sc] of [[-88, 12.4, 0.2, 1], [-83.6, 10.6, 2.75, 0.9]])
+        parseOnce('e4buffalo').then(({ scene: bs }) => {
+          if (!alive) return;
+          const b = bs.clone(true); b.position.set(x, WY - 0.12, z); b.rotation.y = ry; b.scale.setScalar(sc);
+          b.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; } });
+          worldC.add(b);
+        }).catch(err => { console.warn('e4buffalo failed to load', err); if (ctx.loadFail) ctx.loadFail('e4buffalo', err); });
       /* young rice in rows on the near paddies, round the mound (the far paddies carry it in the water's own sheet) */
       const rice = [];
       const band = (x0, x1, z0, z1) => { for (let z = z0; z < z1; z += 0.62) for (let x = x0; x < x1; x += 0.55) { if (r() < 0.12) continue; rice.push({ x: x + (r() - 0.5) * 0.12, z: z + (r() - 0.5) * 0.1, y: WY - 0.02, h: 0.48 + r() * 0.12 }); } };

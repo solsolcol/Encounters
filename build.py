@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "24.18"
+VERSION = "24.19"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -435,6 +435,13 @@ ASSETS = {
     'iconnangkwak': ('assets/iconnangkwak.jpg', True, False),  # e4c1 v24.18: the Nang Kwak's icon — her full scan rendered on a dark ground, as Chad's painted icons are (masters/v24.18/icons)
     'icontakrut':   ('assets/icontakrut.jpg', True, False),    # e4c1 v24.18: the takrut's icon, from its full scan
     'iconphayant':  ('assets/iconphayant.jpg', True, False),   # e4c1 v24.18: the pha yant's icon, from its full scan
+    'e4bamboo':     ('assets/e4bamboo.glb', True, False),     # e4c1 v24.19: the bamboo clump — generated (a GPT Image reference on white, Meshy image-to-3D and remesh), 37,374 triangles, base colour + metal-roughness + normal at 1024, one metre tall for the stand (tools/prepmeshy.mjs, masters/v24.19/make.sh)
+    'e4takhian':    ('assets/e4takhian.glb', True, False),    # e4c1 v24.19: the takhian, a buttressed bole and a high narrow crown — generated (71,860 triangles; its birch-white bark toned grey-brown, TINTGREY), trunk on the origin
+    'e4raintree':   ('assets/e4raintree.glb', True, False),   # e4c1 v24.19: the rain tree, a wide low umbrella — generated (34,787 triangles), trunk on the origin
+    'e4mango':      ('assets/e4mango.glb', True, False),      # e4c1 v24.19: the mango, round and dense — generated (31,207 triangles), trunk on the origin
+    'e4buffalo':    ('assets/e4buffalo.glb', True, False),    # e4c1 v24.19: a water buffalo for the film's wide — generated (11,705 triangles, 2.7 m long)
+    'e4sandalsa':   ('assets/e4sandalsa.glb', True, False),   # e4c1 v24.19: black rubber flip-flops at the room's steps — generated (8,105 triangles)
+    'e4sandalsb':   ('assets/e4sandalsb.glb', True, False),   # e4c1 v24.19: brown plastic slides at the room's steps — generated (6,017 triangles)
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
     # in white (two women, two men), Mixamo's Praying and Kneeling Idle applied
@@ -553,7 +560,8 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'traynear', 'trayfar', 'amushelf', 'altarrowfar', 'monkshop', 'hanuamulet', 'hanuamuletlod',
            'lersiamulet', 'lersiamuletlod', 'towkay',
            'kumanred', 'kumanshy', 'kumanlittle',
-           'firstmaster', 'e4sky', 'fmshadow', 'e4noi', 'e4pong', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4pickup', 'e4nangkwak', 'e4takrut', 'e4phayant', 'e4nangkwakhd', 'e4takruthd', 'e4phayanthd', 'iconnangkwak', 'icontakrut', 'iconphayant'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
+           'firstmaster', 'e4sky', 'fmshadow', 'e4noi', 'e4pong', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4pickup', 'e4nangkwak', 'e4takrut', 'e4phayant', 'e4nangkwakhd', 'e4takruthd', 'e4phayanthd', 'iconnangkwak', 'icontakrut', 'iconphayant',
+           'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4buffalo', 'e4sandalsa', 'e4sandalsb'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and

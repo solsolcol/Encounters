@@ -251,6 +251,31 @@ twice. An ending is read as a story before it is built and its silences are
 measured after; a review that checks only frames, collisions and overlapping
 voices has not reviewed it.
 
+**A GENERATED MODEL BEGINS AS A CHECKED PICTURE, AND A SACRED ONE AS REAL
+PHOTOGRAPHS** (Chad, 30 Oct 2026: "you should not use Meshy text to model
+directly, the results will be very bad. You should first generate a reference
+image using GPTimage, or using Higgsfield image generation using the best
+GPTimage model to generate a clean reference image against a white background
+first, then check the reference image first, then using that reference image to
+generate the 3d models on Meshy, using the best quality settings." — and that
+evening, of a Phra Rahu made from a description: "your rahu dont even look like
+the real thing. When you generate such statues or even amulets, you must always
+research real images first and base it off real image references."). A model
+this game generates is never text-to-3D: a reference picture on white first
+(Higgsfield's GPT Image at its best quality), LOOKED AT, then Meshy's
+image-to-3D at its best settings and its remesh (masters/v24.19/make.sh). A
+STATUE, AN IMAGE OR AN AMULET — anything a believer would recognise — begins one
+step earlier: photographs of the real thing are found and studied (the temple's
+own, a museum's, a collector's), they go in as the reference picture's image
+references, and the picture is checked against them before anything is
+modelled. A deity drawn from a description is a guess wearing a sacred name —
+the lesson line's Pali stamp (v11.10) in bronze. And an INVENTORY PICTURE is
+painted in the style of Chad's own (`icontorch`, `iconamulet`): a near-black,
+grungy, scratched tile with a worn darker edge, the object large, photo-real and
+lit hard from the upper left; his two icons go in as the style references beside
+the object's own render (Chad: "your icon styles dont even look like my torch
+icons").
+
 `shrine` is the engine's anchor for HER, not for the chapter's warm light.
 Chapter 1's happens to be both; chapter 2's is the gap beside the bed and
 its altar is a separate thing on the other wall. Getting that wrong made
@@ -7183,6 +7208,24 @@ What the baseline contains, by release:
   until the bytes land, and for an item with no picture, so episode 3 chapter 1's yants are unchanged). The trees he named
   are v24.19. Deploy `6ae4e16a245e26b432b49c98`, byte-verified (286 of 286 served files); harnesses chapter, fixture, inv,
   csp, hosted, leak, cine and walk on its snapshot (8 of 8).
+- **v24.19** THE GENERATED TREES, A BUFFALO, SANDALS, AND NO QUEUE BOARD — the rest of Chad's "the trees look off"
+  (v24.18), done his way (the rule above: a checked picture first, never text-to-3D). The bamboo, the takhian, the rain
+  tree and the mango round the compound are generated: a GPT Image reference on white each, checked, then Meshy's
+  image-to-3D at its best settings (300k triangles, PBR) and its REMESH — a Meshy original cannot be simplified (a normal
+  per corner and a UV chart every few triangles, so every edge is a seam: the v8.0 law) — prepared by a new
+  `tools/prepmeshy.mjs` to the stand's one-metre contract with the TRUNK on the origin (`TRUNK=a,b`: a slab of the bole
+  sliced from the surface, so a crown spreading to one side does not stand the trunk off its spot; the takhian's
+  birch-white bark toned grey-brown, `TINTGREY`): bamboo 37,374 triangles (the remesher drops thin leaves at any count),
+  takhian 71,860, rain tree 34,787, mango 31,207; the code-built kits stay as the fallback. The takhian's cloths, dresses
+  and nails are fitted to whichever trunk landed — sliced where it stands, every 10 cm from 1.3 to 3.0 m, into a centre
+  and the bark's radius in 24 directions (`yard.dressTakhian`) — and sit above its buttress fins; the rain tree moved off
+  the middle car it stood inside; the yard's three trees are solid. Two water buffalo stand in the paddy for the opening
+  film's wide (11,705 triangles, 2.7 m) and two pairs of sandals at the room's steps (8,105 / 6,017). THE QUEUE BOARD IS
+  GONE (Chad: "there is no need for queue number board, remove that" — since v24.9 there is no queue); Pa Noi keeps her
+  spot and her blocker. A generated Phra Rahu for the altar was built and HELD BACK (Chad: "your rahu dont even look like
+  the real thing") — v24.20 remakes it from real photographs. masters/v24.19/make.sh is the recipe. Deploy
+  `6ae4eb84a03bb41f492059bc`, byte-verified (293 of 293 served files); harnesses chapter, hosted, csp, leak, cine and
+  walk on its snapshot.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

@@ -43,12 +43,12 @@ just need to remember to ask me for the models so i don't forget or miss it."*
 | What | Spec | Placeholder | Status |
 |---|---|---|---|
 | A Thai soi dog | rigged: idle, lying, walk, bark | — | **IN (v24.13)**: Chad's "Animated Dog, Shiba Inu" by quander (Sketchfab, CC BY 4.0) — `e4dog`, two takes (lying, standing), under the sala's eave; it lifts its head in the film's O7, watches him and barks at the arrival, and barks after him on its feet in ending C (tools/prepdog.mjs). It has no walk take, so it never moves from its spot |
-| A water buffalo | for the film's wide; static is fine | none (left out) | NICE |
+| A water buffalo | for the film's wide; static is fine | none (left out) | **IN v24.19**: generated (a GPT Image reference on white, Meshy image-to-3D and remesh — Chad's workflow), 11,705 triangles at 2.7 m; two stand in the paddy beside the road in the opening film's wide (O5) |
 | A pickup truck | Thai double-cab, generic, no logos; an interior is a bonus | built in code (as the buses were at v21.14) | **IN v24.16**: Chad's "Rivian R1T (2022)" by geyges (Sketchfab, Free Standard licence, credited) — https://sketchfab.com/3d-models/rivian-r1t-2022-6eca29c11ca44840baf93f47ef800006 — its windows a dark tint, 394k → 101k triangles (tools/preppickup.mjs); seen from outside everywhere, the chapter's own right-hand-drive cabin kept for the shots from inside |
 | Sugar palm (Borassus) | two variants if possible | built in code | **IN v24.14**: Chad's "Palm Trees" by ElectroNick (Sketchfab, CC BY 4.0) — its two palms in all 117 places, every triangle within 40 m of the yard and along the drive in, a ~5k cut in the fields; the code-built palm only if a file never lands |
 | Banana plant | — | built in code | **IN v24.14**: Chad's "Banana Tree" by Garecra (Sketchfab, CC BY 4.0), in every clump round the compound with its own leaf cut-offs |
-| Bamboo clump | — | built in code | NEEDED |
-| A large broadleaf tree for the takhian | not one of the game's current four | built in code | NEEDED |
+| Bamboo clump | — | built in code | **IN v24.19**: generated (37,374 triangles, tools/prepmeshy.mjs); the code-built clump only if the file never lands |
+| A large broadleaf tree for the takhian | not one of the game's current four | built in code | **IN v24.19**: generated — the takhian (71,860 triangles, a buttressed bole, its cloths and dresses fitted to the real trunk), and with it the rain tree (34,787) and the mango (31,207); the code-built crowns only if a file never lands |
 
 ### The room's images and props
 
@@ -56,8 +56,8 @@ just need to remember to ask me for the models so i don't forget or miss it."*
 |---|---|---|---|
 | A seated Buddha image | any style but the Chinnarat (e.g. a bronze Sukhothai-style) | none (left out; the altar's tiers carry the other offerings) | **IN v24.14**: Chad's "Yoga - Buddha" by T.Koeniger (Sketchfab, CC BY 4.0) — a bronze Buddha in meditation, 50k triangles at 0.32 m on the altar's top tier (the tiers 10 cm deeper to seat him) |
 | A Nang Kwak (the beckoning lady) | also the item's model | none (left out; the item shows its drawing) | **IN v24.17**: Chad's own scan — a bronze Nang Kwak seated on her stepped base, beckoning, a money bag at her side: a light cut (52,604 triangles) on the master's tray and on his altar's middle tier, the FULL scan (1,753,494 triangles, colour 4096) in the bag's views — the amulet rule (v14.14) |
-| A Phra Rahu or another unusual altar image | for the third tier | none | NICE |
-| Sandals | for the door | none | NICE |
+| A Phra Rahu or another unusual altar image | for the third tier | none | **REDO (v24.20)**: v24.19's generated one was held back (Chad: "your rahu dont even look like the real thing"); remade from real photographs (Wat Si Sa Thong's black Rahu with the gold moon, and two altar images) |
+| Sandals | for the door | none | **IN v24.19**: generated — black rubber flip-flops and brown plastic slides at the room's steps |
 | Small item models (takrut, a folded pha yant) | the bag's turning view | the items' line drawings | **IN v24.17**: Chad's own scans — a takrut with its metal caps and rings (29,472 on the tray / every one of 147,376 in the bag) and the pha yant as a cloth rolled with its yant showing (30,864 / 617,280) |
 
 **A question for Chad, with the presence's model:** the art direction above (an old woman in a breast cloth, her hair
