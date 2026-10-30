@@ -1693,21 +1693,36 @@
          Pong's white double-cab at the gate */
       [[8.3, 3.6, 0xb8bcc0, 'sedan'], [10.6, 3.4, 0x6a1a1e, 'sedan'], [12.9, 3.7, 0xe8e8e4, 'suv']].forEach(([x, z, col, kind]) => { const c2 = buildCar(kind, col); c2.position.set(x, 0, z); c2.rotation.y = 0.04; C.add(c2); solids.push(hidBox(1.9, 1.6, 4.6, x, 0.8, z, C)); });
       /* (v24.16) Pong's pickup is Chad's — "Rivian R1T (2022)" by geyges (Sketchfab, Free Standard; tools/preppickup.mjs):
-         its windows a dark tint, its nose at −z and its axles on the drawn pickup's (the same 3.45 m wheelbase), so it
-         stands exactly where the drawn one stood and every route drives it unchanged. The drawn body stays under it,
-         painted the model's yellow, for the films' shots from INSIDE the cab — its bonnet is what the windscreen shows, and
-         the cabin is the chapter's own (Thailand drives on the left: the wheel on the right) — and as the pickup itself if
-         the file never lands (v4.7). Which of the two is drawn is cabSync()'s (the cabin's show) */
+         its nose at −z and its axles on the drawn pickup's (the same 3.45 m wheelbase), so it stands exactly where the
+         drawn one stood and every route drives it unchanged.
+         (v24.18) AND ITS CAB IS THE MODEL'S (Chad: "the truck model already have a well designed interior and you are
+         supposed to use it"). v24.16 painted its windows solid and stripped its seats, wheel and trim, and filmed every
+         inside shot in a cabin built from boxes. The file's whole interior ships now — the leather seats and their belts,
+         the wheel, the wood-trimmed dash, the cluster and the touchscreen, the console, the door cards, the mirror —
+         reflected so the wheel is on the right as Thailand drives (MIRROR=1), and its windows are the file's own dark
+         translucent glass, so the cab reads from outside too. From INSIDE (cabSync, the cabin's show) the glass clears
+         and the chapter adds only what is the story's: the rain on the windscreen and the garland on the mirror; Pong
+         sits in its driver's seat. The drawn body and cabin stand in only if the file never lands (v4.7) */
       { const pk = buildCar('pickup', 0xd09a2e); pk.position.set(CMP.PICKUP.x, 0, CMP.PICKUP.z); C.add(pk); yard.pickup = pk;
         solids.push(hidBox(2.05, 1.9, 5.55, CMP.PICKUP.x, 0.95, CMP.PICKUP.z + 0.135, C));
         parseOnce('e4pickup').then(({ scene: sc }) => {
           if (!alive) return;
           const m = sc.clone(true);
           /* metal reflects the room environment, which the scene keeps at 0.05 (main.js); the paint and the chrome are
-             given enough of it to read as paint and chrome, never as black */
-          m.traverse(o => { if (!o.isMesh) return; o.castShadow = !LOW; o.receiveShadow = true;
+             given enough of it to read as paint and chrome, never as black. The glass is its own (it casts no shadow: the
+             sun comes through it into the cab) */
+          yard.pickupGlass = [];
+          m.traverse(o => { if (!o.isMesh) return; o.receiveShadow = true;
+            const glass = [].concat(o.material).some(mt => mt && /^window_glass/.test(mt.name));
+            o.castShadow = !LOW && !glass; if (glass) yard.pickupGlass.push(o);
             for (const mt of [].concat(o.material)) if (mt && 'envMapIntensity' in mt) mt.envMapIntensity = mt.metalness > 0.3 ? 14 : 4; });
           pk.add(m); yard.pickupModel = m;
+          /* the story's two things in the model's cab: the garland under ITS mirror (measured off the file: the mirror's
+             middle at x 0.06, y 1.66, z −0.61, angled to the driver), the rain on ITS windscreen (the glass from y 1.25 at
+             z −1.38 to y 1.78 at z −0.55: 57° back, its middle 1 cm inside the glass) */
+          if (cab.garland) cab.garland.position.set(0.05, 1.62, -0.6);
+          if (cab.ws) { const th = Math.atan2(0.83, 0.53); cab.ws.geometry.dispose(); cab.ws.geometry = new THREE.PlaneGeometry(1.42, 0.92);
+            cab.ws.rotation.set(th, 0, 0); cab.ws.position.set(0, 1.515 - 0.012 * Math.sin(th), -0.965 + 0.012 * Math.cos(th)); }
           cabSync();
         }).catch(err => { console.warn('e4pickup failed to load', err); if (ctx.loadFail) ctx.loadFail('e4pickup', err); }); }
 
@@ -2061,6 +2076,10 @@
                    leds: [], ledK: 1, ledFrom: 1, ledTo: 1, l0: 0, l1: 0, phone: null, phoneOn: 0, ledger: null, pen: null };
     const taxi = { wipers: [], wipe: true, bokeh: [], glass: [], sweep: [], sweepU: { value: 9 }, meter: null, last: 0 };
     const cab = { root: null, glass: [], garland: null, show: false, drops: 0, last: 0, swing: 0 };
+    /* (v24.18) the model's cab (Chad's Rivian, its wheel on the right): the driver's seat pan, measured off the file along
+       the seat's centre line, and the passenger's eye a seated man's 0.74 m over his own seat pan, his head back with the
+       backrest — the drawn cab's numbers were 0.42 / 0.76 / an eye at (−0.42, 1.50, 0.08) */
+    const CAB_SEAT = { x: 0.385, z: -0.17, top: 0.81 }, CAB_EYE = [-0.385, 1.55, 0.0];
 
     /* rain on glass: beads born at random, swelling, sliding a little and gone — each one a small lens, dark at its rim
        and lit at its top where it catches the light. Unlit and transparent, over whatever is behind the glass. */
@@ -2462,6 +2481,7 @@
         bx(0.27, 0.18, 0.12, mSeat, sx * 0.42, 1.46, 0.4); }
       /* the mirror and the garland swinging from its stem */
       { bx(0.025, 0.08, 0.025, mDash, 0, 1.72, -0.8); bx(0.26, 0.07, 0.03, mDash, 0, 1.66, -0.79);
+        cab.drawn = [...R0.children];               // (v24.18) the drawn cab: hidden once the model's own is there (cabSync)
         const gl = new THREE.Group(); gl.position.set(0.03, 1.63, -0.775); R0.add(gl); cab.garland = gl;
         const gm = M({ map: tex(makeGarland(THREE, cnv)), roughness: 0.7, transparent: true, alphaTest: 0.3, side: THREE.DoubleSide });
         const p2 = new THREE.Mesh(new THREE.PlaneGeometry(0.06, 0.24), gm); p2.position.y = -0.12; gl.add(p2);
@@ -2470,7 +2490,7 @@
       { const rg = rainGlassMat({ cx: 40, cy: 22, hi: 0xf0e2c8, slide: 0.06, rate: 0.05, k: 0, dark: 0.16 });
         const L = Math.hypot(0.6, 0.62), ws = new THREE.Mesh(new THREE.PlaneGeometry(2 * W - 0.14, L), rg);
         ws.position.set(0, (1.16 + 1.78) / 2, -(0.78 + 1.38) / 2); ws.rotation.x = Math.atan2(0.6, 0.62); ws.renderOrder = 3; R0.add(ws);
-        cab.glass.push(rg); }
+        cab.glass.push(rg); cab.ws = ws; }
     }
 
     /* ---------------------------------------------------- the road's own (O5–O7, ending C): a roadside spirit house at
@@ -2569,8 +2589,12 @@
     function cabSync() {
       const pk = yard.pickup, M = yard.pickupModel; if (!pk) return;
       const on = cab.show, gl = pk.userData.glass || [];
-      if (M) { M.visible = !on; for (const o of pk.children) if (o !== M && o !== cab.root) o.visible = on && !gl.includes(o); }
-      else for (const g of gl) g.visible = !on;
+      /* (v24.18) the model is the pickup outside AND in: from inside its own tinted glass clears (the rain glass is the
+         windscreen) and the drawn cab never shows; the drawn body and cab stand in only without the model */
+      if (M) { M.visible = true; for (const o of pk.children) if (o !== M && o !== cab.root) o.visible = false;
+        for (const g of yard.pickupGlass || []) g.visible = !on;
+        for (const o of cab.drawn || []) o.visible = false; }
+      else { for (const g of gl) g.visible = !on; for (const o of cab.drawn || []) o.visible = true; }
     }
     const cabCtl = {
       show(on) { cab.show = !!on; if (cab.root) cab.root.visible = !!on; cabSync();
@@ -3194,11 +3218,13 @@
         posture: 'stand', stand: 'Idle_4', sit: 'Sit_Upright', talk: 'Talk_with_Right_Hand_Open', seatH: BENCH, seatFloor: 0, feet: true, look: 0.9, ground: groundAt, noMip: true });
       /* the pickup: Pong at the wheel (Thailand drives on the left: the driver sits on the right, +x, facing −z), riding
          the pickup's own frame — hidden until a film sits in the cabin */
-      cast.pongCab = mkPerson('e4pong', { parent: cab.root, x: 0.42, z: 0.06, y: 0, ry: Math.PI, height: 1.7, sizeTake: 'Idle_4', walk: false,
-        posture: 'sit', sit: 'Sit_Upright', talk: 'Talk_with_Right_Hand_Open', seatH: 0.76, noShadow: true, noMip: true,
+      /* (v24.18) in the model's driver's seat: its pan lowest at y 0.81, 0.17 m ahead of the cab's middle, on the wheel's
+         line x 0.385 (measured off the file along the seat's centre line) */
+      cast.pongCab = mkPerson('e4pong', { parent: cab.root, x: CAB_SEAT.x, z: CAB_SEAT.z, y: 0, ry: Math.PI, height: 1.7, sizeTake: 'Idle_4', walk: false,
+        posture: 'sit', sit: 'Sit_Upright', talk: 'Talk_with_Right_Hand_Open', seatH: CAB_SEAT.top, noShadow: true, noMip: true,
         /* his eyes on the road: a point three metres ahead of the windscreen, riding the pickup (the chair take's upright
            stretch still lifts his chin; the absolute look holds his face level on the road) */
-        then: (P) => { const ahead = new THREE.Object3D(); ahead.position.set(0.42, 1.56, -3.2); cab.root.add(ahead); P.lookAt = ahead; P.lookHome = ahead; } });
+        then: (P) => { const ahead = new THREE.Object3D(); ahead.position.set(CAB_SEAT.x, 1.6, -3.2); cab.root.add(ahead); P.lookAt = ahead; P.lookHome = ahead; } });
     }
     /* her look: the colour drained to the grey of an old photograph, faded by DITHERED alpha (alphaHash — the opaque
        pass, never the transparent one: v12.4) */
@@ -5055,8 +5081,8 @@
         fLens(isNarrow() ? 66 : 60);
         /* the turn to Pong lands on his face (his head beside the lens, not the windscreen's corner ahead of it — CP9) */
         gaze(cast.pongCab, tk > 0.5, CAB_GLANCE);                                     // (a glance across at him on "brother")
-        const road = cabEye(-0.36, 1.36, -3.0), face = tk > 0 ? faceOf(cast.pongCab, cabEye(0.42, 1.42, 0.02)) : road;
-        camAt(cabEye(-0.42, 1.5, 0.08), lp3(road, face, tk));
+        const road = cabEye(-0.36, 1.45, -3.0), face = tk > 0 ? faceOf(cast.pongCab, cabEye(CAB_SEAT.x, 1.47, -0.08)) : road;
+        camAt(cabEye(...CAB_EYE), lp3(road, face, tk));
       } else {
         /* up the lane and stopped: the look goes through the gate's opening to the yard (CP9: straight ahead, the
            right-hand post stood in the middle of a phone's frame for the last five seconds) */
@@ -5065,7 +5091,7 @@
            7° left of a phone's centre, a black bar across the gate for five seconds; leaned 0.38 m forward and 0.12 m in,
            it is 23° off his line — out of a phone's ±16.7° and at a desktop's edge, where a pillar belongs) */
         const lk = smo(sgk(t, O.o7 + 2.0, O.o7 + 5.0));
-        camAt(lp3(cabEye(-0.42, 1.5, 0.08), cabEye(-0.30, 1.46, -0.30), lk), lp3(cabEye(-0.28, 1.34, -3.0), cabEye(-1.25, 1.34, -4.0), lk));
+        camAt(lp3(cabEye(...CAB_EYE), cabEye(-0.30, 1.51, -0.36), lk), lp3(cabEye(-0.28, 1.43, -3.0), cabEye(-1.25, 1.43, -4.0), lk));
       }
       /* (v24.13) the yard's dog: asleep under the sala's eave until the pickup is pulling up, then its head comes up, toward
          the pickup — the plan's O7, "a dog lifting its head", in the look through the gate */
@@ -5230,7 +5256,7 @@
         const tk = (t > T.cab + 0.4 && t < T.cab + 4.6) ? smo(sgk(t, T.cab + 0.4, T.cab + 1.1)) * (1 - smo(sgk(t, T.cab + 3.9, T.cab + 4.6))) : 0;
         gaze(cast.pongCab, tk > 0.5, CAB_GLANCE);
         fLens(isNarrow() ? 66 : 60);
-        camAt(cabEye(-0.42, 1.5, 0.08), lp3(cabEye(-0.32, 1.36, -3.0), faceOf(cast.pongCab, cabEye(0.42, 1.42, 0.02)), tk));
+        camAt(cabEye(...CAB_EYE), lp3(cabEye(-0.32, 1.45, -3.0), faceOf(cast.pongCab, cabEye(CAB_SEAT.x, 1.47, -0.08)), tk));
         return;
       }
       if (t < T.coda) {                                                                    // the wide: the dyke road into the gold seam
@@ -5327,7 +5353,7 @@
         gaze(cast.pongCab, onPong, CAB_GLANCE);
         fLens(isNarrow() ? 66 : 60);
         /* off Pong: his eyes down to the card in his hand, the road still in the top of the frame */
-        camAt(cabEye(-0.42, 1.5, 0.08), onPong ? faceOf(cast.pongCab, cabEye(0.42, 1.42, 0.02)) : cabEye(-0.36, 1.18, -1.6));
+        camAt(cabEye(...CAB_EYE), onPong ? faceOf(cast.pongCab, cabEye(CAB_SEAT.x, 1.47, -0.08)) : cabEye(-0.36, 1.18, -1.6));
         return;
       }
       handFree();
@@ -5424,7 +5450,7 @@
           pickupAt(CMP.PICKUP.x, CMP.PICKUP.z + 0.4, Math.PI);
           fLens(isNarrow() ? 64 : 58);
           gaze(cast.pongCab, t < T.car + 4.4, CAB_GLANCE);
-          camAt(cabEye(-0.42, 1.5, 0.08), t < T.car + 4.4 ? faceOf(cast.pongCab, cabEye(0.42, 1.42, 0.02)) : cabEye(-0.3, 1.32, -3.0));
+          camAt(cabEye(...CAB_EYE), t < T.car + 4.4 ? faceOf(cast.pongCab, cabEye(CAB_SEAT.x, 1.47, -0.08)) : cabEye(-0.3, 1.42, -3.0));
         }
         return;
       }
@@ -5445,7 +5471,7 @@
         /* level on the road, a little long: the dash is a band at the foot of the frame, not half of it (CP9, by
            photograph: aimed down on a wide lens, a phone's frame was 45 % black dashboard) */
         fLens(lp(isNarrow() ? 54 : 52, isNarrow() ? 40 : 32, look));
-        const eyeW = cabEye(-0.42, 1.5, 0.08), ahead = cabEye(-0.3, 1.5, -3.0);
+        const eyeW = cabEye(...CAB_EYE), ahead = cabEye(-0.3, 1.5, -3.0);
         camAt(eyeW, lp3(ahead, sh, look));
         return;
       }

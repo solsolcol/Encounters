@@ -7164,7 +7164,25 @@ What the baseline contains, by release:
   envMapIntensity 10). The few white patches on her base are in Chad's scan itself, left as delivered (v5.10). The
   models list's question (would the presence be taken for the Nang Kwak?) is answered by the two models themselves.
   Sheet v133 exported (the credit rows of v24.13–v24.16; v44 stays the link).
-  Deploy `6ae4d6216475f1e4b4f837f9` (before the lift), byte-verified (283 files); the lift's deploy follows.
+  Deploy `6ae4d6216475f1e4b4f837f9` (before the lift), byte-verified (283 files); the lift shipped with v24.18.
+- **v24.18** THE TRUCK'S OWN CAB, AND THE CHARMS' OWN PICTURES — Chad: *"why are you still using drawn icons, when you
+  already have the full models for nang kwak, takrut, and pha yant? also why are you not using the truck's interior from
+  the 3d model? also the trees look off, something is wrong?"* and *"i spent so much time creating and finding these 3d
+  models, and you are not even using it to the fullest ... some of it is common sense, like the truck model already have
+  a well designed interior and you are supposed to use it"*. He was right on both. THE CAB: v24.16 threw the Rivian's
+  cabin away and kept the chapter's drawn one for the shots from inside; `tools/preppickup.mjs` now keeps it (`INTERIOR=1`:
+  the seats, the dash, the wheel, the screens, and the file's own translucent window glass) and reflects the whole truck
+  (`MIRROR=1`, the winding reversed) so its wheel is on the right as Thailand's are — the two screens' pictures turned
+  back within their own UV span so "0 mph" and PRND read; 107,744 triangles, 2.2 MB. In the chapter the model is drawn
+  always (`cabSync`): from inside, its own glass hidden (the rain on the glass is the story's), and the drawn cab and body
+  only if the file never lands. The seat and the eye are measured off the file (`CAB_SEAT`, `CAB_EYE`), Pong sits at the
+  wheel on its seat, the jasmine garland hangs from its mirror, the rain glass fits its windscreen, and the road looks a
+  little higher so a phone sees the road ahead. THE PICTURES: the three charms have `art` — each full scan rendered
+  three-quarter on the warm dark textured ground of Chad's painted torch and amulet icons (masters/v24.18/icons) — on the
+  bag's squares, and the Take One window now draws an item's picture too (`choArtHTML`/`choArtPaint`: the line drawing
+  until the bytes land, and for an item with no picture, so episode 3 chapter 1's yants are unchanged). The trees he named
+  are v24.19. Deploy `6ae4e16a245e26b432b49c98`, byte-verified (286 of 286 served files); harnesses chapter, fixture, inv,
+  csp, hosted, leak, cine and walk on its snapshot (8 of 8).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

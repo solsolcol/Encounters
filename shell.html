@@ -2145,6 +2145,8 @@ body.hasTorch.chooseopen .torchBtn{display:none}
   background:radial-gradient(circle,rgba(255,214,120,.16) 0%,transparent 70%);color:#E9C77D}
 .choCard.on .choArt{color:#FFE2A0;animation:unBreathe 2.6s ease-in-out infinite}
 .choIcon{width:76px;height:76px;filter:drop-shadow(0 0 8px rgba(255,190,90,.35))}
+/* v24.18: an item's picture (a rendered or painted icon) on a card: a framed square in the ring's light, not a line drawing */
+.choArt canvas.choIcon{border-radius:12px;box-shadow:0 0 0 1px rgba(255,214,140,.35);filter:drop-shadow(0 0 10px rgba(255,190,90,.30))}
 .choNum{position:absolute;left:-6px;top:-4px;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;
   font-family:var(--mono);font-size:.72rem;font-weight:700;color:var(--void);background:rgba(255,207,110,.85)}
 body:not(.finePtr) .choNum{display:none}

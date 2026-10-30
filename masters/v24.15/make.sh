@@ -35,7 +35,12 @@ cp $T/ghost.glb assets/e4ghost.glb
 # pickup_truck.glb: its tinted windows opaque, the cabin's insides and the doors' take dropped, every map but base colour
 # gone (the paint's yellow and the tyres' black are its vertex colours, kept), joined by material, turned nose to -z on
 # the drawn pickup's axles; the simplifier floors near 100k at this error bound (its hard edges are attribute seams)
-ERR=0.002 node tools/preppickup.mjs masters/v24.15/src/pickup_truck.glb assets/e4pickup.glb 0.15 1024
+# (v24.16, superseded:) ERR=0.002 node tools/preppickup.mjs masters/v24.15/src/pickup_truck.glb assets/e4pickup.glb 0.15 1024
+# v24.18 · THE CAB IS THE MODEL'S (Chad: "the truck model already have a well designed interior and you are supposed to
+# use it"): every piece of the cabin kept with its sheets, the windows the file's own dark translucent glass, and the
+# truck reflected so its wheel is on the right as Thailand drives (the two screens' pictures turned back). This line
+# replaces v24.16's, which stripped the cabin and painted the windows solid.
+INTERIOR=1 MIRROR=1 ERR=0.002 node tools/preppickup.mjs masters/v24.15/src/pickup_truck.glb assets/e4pickup.glb 0.15 1024
 # v24.17 · the three pieces on the master's tray, Chad's own scans (no credit rows): each a light cut for the tray (and
 # the Nang Kwak for his altar too) and the full scan for the bag's views — every triangle, colour 4096, the amulet rule
 # (v14.14). THICK=1 for the two that are not flat medallions; LYING=1 for the pha yant, which lies along x; FACE=pos

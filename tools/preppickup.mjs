@@ -22,6 +22,17 @@
    5. Simplified to RATIO with an error bound; sheets to at most PX (JPEG where opaque, PNG where a cut-out needs alpha);
       meshopt.
 
+   v24.18 — THE CAB IS THE MODEL'S (Chad: "the truck model already have a well designed interior and you are supposed
+   to use it"). INTERIOR=1 keeps every piece of the cabin — the seats, the wheel, the dash and its cluster, the console,
+   the door cards, the pedals, the headliner, the rear seats — with their base-colour sheets, and keeps the windows as
+   the file designed them: dark TRANSLUCENT glass (the side windows 54 %, the windscreen 23 %), so the cab reads from
+   outside and the chapter can clear the glass from inside; only the glass's own invisible inner faces (alpha 0) go.
+   MIRROR=1 puts the wheel on the right, as Thailand drives: the file is an American left-hand-drive truck, and its
+   body is symmetric, so the whole model is reflected across its long axis (positions and normals, the triangles'
+   winding turned back); the two screens' pictures (the cluster's "0 mph" and P R N D, the touchscreen's status bar)
+   have their own UVs turned back, and the badges are the maker's symmetric mark, so nothing reads backwards.
+     INTERIOR=1 MIRROR=1 ERR=0.002 node tools/preppickup.mjs masters/v24.15/src/pickup_truck.glb assets/e4pickup.glb 0.15 1024
+
    Usage: node tools/preppickup.mjs in.glb out.glb [ratio=0.2] [px=1024] */
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
@@ -41,12 +52,32 @@ const before = fs.statSync(IN).size;
 const tris = () => root.listMeshes().reduce((a, m) => a + m.listPrimitives().reduce((b, p) => b + (p.getIndices() ? p.getIndices().getCount() : p.getAttribute('POSITION').getCount()) / 3, 0), 0);
 const t0 = tris();
 
+/* 0. (v24.18, MIRROR) the two screens' pictures — the speedometer's "0 mph" and its P R N D, the touchscreen's status
+   bar — would read backwards once the truck is reflected: each screen's own UVs are turned within their own span, so
+   the reflected glass shows its picture the right way round */
+if (process.env.MIRROR === '1') {
+  let flipped = 0;
+  for (const node of root.listNodes()) {
+    const mesh = node.getMesh(), par = node.getParentNode(); if (!mesh || !par || !/\[digitalscreen\]/.test(par.getName())) continue;
+    for (const p of mesh.listPrimitives()) {
+      const uv = p.getAttribute('TEXCOORD_0'); if (!uv) continue;
+      const a = uv.getArray().slice(); let lo = Infinity, hi = -Infinity;
+      for (let i = 0; i < a.length; i += 2) { lo = Math.min(lo, a[i]); hi = Math.max(hi, a[i]); }
+      for (let i = 0; i < a.length; i += 2) a[i] = lo + hi - a[i];
+      uv.setArray(a); flipped++;
+    }
+  }
+  if (flipped !== 2) throw new Error('expected the two screens, turned ' + flipped);
+  console.log('  MIRROR: the two screens\' pictures turned back');
+}
+
 /* 1. the doors' take */
 for (const a of root.listAnimations()) { for (const c of a.listChannels()) c.dispose(); for (const s of a.listSamplers()) s.dispose(); a.dispose(); }
 
 /* 2. the cabin's insides, and the windows tinted */
-const INSIDE = /leather|carpet|wood|stitch|cloth|digitalscreen|interior/i;
-const GLASS = /^window_glass|^PATCH_151_SF_glass/;
+const INTERIOR = process.env.INTERIOR === '1', MIRROR = process.env.MIRROR === '1';
+const INSIDE = INTERIOR ? /^PATCH_151_SF_glass/ : /leather|carpet|wood|stitch|cloth|digitalscreen|interior/i;   // (v24.18: only the inner faces, alpha 0)
+const GLASS = INTERIOR ? /^window_glass/ : /^window_glass|^PATCH_151_SF_glass/;
 let gone = 0;
 for (const mesh of root.listMeshes()) for (const p of mesh.listPrimitives()) {
   const m = p.getMaterial(); if (!m || !INSIDE.test(m.getName())) continue;
@@ -67,7 +98,9 @@ for (const m of root.listMaterials()) {
   let metal = m.getMetallicFactor(), rough = m.getRoughnessFactor();
   if (mr) { const [g, b] = await mean(mr); rough *= g; metal *= b; }
   if (GLASS.test(m.getName())) {
-    m.setBaseColorFactor([0.025, 0.03, 0.035, 1]).setAlphaMode('OPAQUE'); metal = 0; rough = 0.1;
+    if (INTERIOR) { const a = m.getBaseColorFactor()[3]; m.setBaseColorFactor([0.03, 0.035, 0.04, Math.max(0.2, a)]).setAlphaMode('BLEND'); m.setDoubleSided(true); }
+    else m.setBaseColorFactor([0.025, 0.03, 0.035, 1]).setAlphaMode('OPAQUE');
+    metal = 0; rough = 0.1;
   }
   for (const e of m.listExtensions()) m.setExtension(e.extensionName, null);
   m.setMetallicRoughnessTexture(null).setNormalTexture(null).setOcclusionTexture(null);
@@ -101,12 +134,19 @@ for (const p of prims) {
     const acc = p.getAttribute(sem); if (!acc) continue;
     const a = acc.getArray(), out = new Float32Array(a.length);
     for (let i = 0; i < a.length; i += 3) {
-      if (sem === 'POSITION') { out[i] = -a[i]; out[i + 1] = a[i + 1] - lo[1]; out[i + 2] = -(a[i + 2] - mid); }
-      else { out[i] = -a[i]; out[i + 1] = a[i + 1]; out[i + 2] = -a[i + 2]; }
+      const sx = MIRROR ? 1 : -1;                        // the half turn is (−x, −z); with MIRROR the x is reflected back
+      if (sem === 'POSITION') { out[i] = sx * a[i]; out[i + 1] = a[i + 1] - lo[1]; out[i + 2] = -(a[i + 2] - mid); }
+      else { out[i] = sx * a[i]; out[i + 1] = a[i + 1]; out[i + 2] = -a[i + 2]; }
     }
     acc.setArray(out).setNormalized(false);
   }
+  if (MIRROR) {                                      // a reflection turns every triangle inside out: wind them back
+    const ix = p.getIndices();
+    if (ix) { const a = ix.getArray(); for (let i = 0; i < a.length; i += 3) { const t = a[i + 1]; a[i + 1] = a[i + 2]; a[i + 2] = t; } ix.setArray(a); }
+    else throw new Error('a primitive without indices cannot be wound back');
+  }
 }
+if (MIRROR) console.log('  MIRROR: reflected across the long axis (the wheel on the right)');
 
 /* 5. simplified, the sheets, meshopt */
 await doc.transform(simplify({ simplifier: MeshoptSimplifier, ratio: RATIO, error: ERR }), prune());

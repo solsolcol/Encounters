@@ -9696,10 +9696,13 @@ const ITEM_DEFS = {
      v24.17: their models are Chad's own scans, and the bag's views draw each at FULL detail — every triangle, the
      colour sheet at 4096 (v14.14's amulet rule: "ALL amulets must always show full quality"); the tray and the altar
      carry light cuts of the same scans. Only the piece he takes is ever fetched at full detail (episode 4 chapter 1
-     warms it the moment he chooses, kit.itemWarm); the line drawings stand in until it lands. */
-  nangkwak: { icon: 'e-nangkwak', slot: 'hand', model: 'e4nangkwakhd', rarity: 'common' },
-  takrut: { icon: 'e-takrut', slot: 'hand', model: 'e4takruthd', rarity: 'common' },
-  phayant: { icon: 'e-phayant', slot: 'hand', model: 'e4phayanthd', rarity: 'common' }
+     warms it the moment he chooses, kit.itemWarm); the line drawings stand in until it lands.
+     v24.18: and their ICONS are pictures of those models (Chad: "why are you still using drawn icons, when you already
+     have the full models"): each full scan rendered three-quarter on a dark textured ground, in the manner of his painted
+     torch and amulet icons (masters/v24.18/icons), on the bag's squares and the choose window's cards. */
+  nangkwak: { icon: 'e-nangkwak', art: 'iconnangkwak', slot: 'hand', model: 'e4nangkwakhd', rarity: 'common' },
+  takrut: { icon: 'e-takrut', art: 'icontakrut', slot: 'hand', model: 'e4takruthd', rarity: 'common' },
+  phayant: { icon: 'e-phayant', art: 'iconphayant', slot: 'hand', model: 'e4phayanthd', rarity: 'common' }
 };
 /* v14.11: every item has a RARITY (Chad: "Torch is common rarity with grey
    colour coding, the lp phiboon amulet is rare rarity with blue colour
@@ -10359,6 +10362,7 @@ function itemArtGet(id) {
         itemArt[id] = bmp;
         if (inv.open) invPaint();
         if (inv.held && inv.held.id === id) dragPaint(id);
+        if (cho.ids && cho.ids.includes(id)) choArtPaint(id);   // v24.18: the choose window's cards
       })
       .catch(() => { itemArt[id] = 'none'; });
   }
@@ -10787,6 +10791,25 @@ const cho = { ids: null, sel: -1, t0: 0, resolve: null, outT: 0, sealing: false,
    AND on drawn frames (the v13.1 law: a thing that must be SEEN is owed its
    frames, or a hot phone at a frame a second never shows it). */
 const CHOOSE_SEAL_MS = 1350, CHOOSE_SEAL_FRAMES = 8;
+/* v24.18: a card shows the item's PICTURE when it has one (Chad: "why are you still using drawn icons, when you already
+   have the full models"): its painted or rendered icon (`art`), drawn when its bytes land; the line drawing stands in until
+   then, and for an item with no picture (episode 3 chapter 1's yants are their drawings) */
+function choArtHTML(id) {
+  const def = ITEM_DEFS[id], a = def.art ? itemArt[id] : null;
+  if (a && a !== 'loading' && a !== 'none') return `<canvas class="choIcon art" data-art="${id}"></canvas>`;
+  return iconSvg(def.icon || 'e-yant', 'choIcon');
+}
+function choArtPaint(id) {
+  if (!cho.ids) return;
+  const list = $('choList'); if (!list) return;
+  cho.ids.forEach((cid, i) => {
+    if (id && cid !== id) return;
+    const card = list.querySelector(`.choCard[data-i="${i}"]`), old = card && card.querySelector('.choIcon');
+    if (!old) return;
+    if (old.tagName.toLowerCase() !== 'canvas') { const html = choArtHTML(cid); if (!/^<canvas/.test(html)) return; old.outerHTML = html; }
+    const cv = card.querySelector('canvas.choIcon'); if (cv) drawArt(cv, cid);
+  });
+}
 function kitChoose(ids, opts = {}) {
   ids = (Array.isArray(ids) ? ids : []).filter(id => ITEM_DEFS[id]);
   const el = $('choose');
@@ -10803,7 +10826,7 @@ function kitChoose(ids, opts = {}) {
   $('choList').innerHTML = ids.map((id, i) => {
     const rar = itemRarity(id), pw = T('item.' + id + '.power', '');
     return `<button class="choCard" type="button" role="radio" aria-checked="false" data-i="${i}" style="--d:${(0.14 + i * 0.09).toFixed(2)}s">`
-      + `<span class="choArt"><span class="choRing" aria-hidden="true"></span><span class="choRing r2" aria-hidden="true"></span>${iconSvg(ITEM_DEFS[id].icon || 'e-yant', 'choIcon')}<span class="choNum">${i + 1}</span></span>`
+      + `<span class="choArt"><span class="choRing" aria-hidden="true"></span><span class="choRing r2" aria-hidden="true"></span>${choArtHTML(id)}<span class="choNum">${i + 1}</span></span>`
       + `<span class="choText"><span class="choName">${itemName(id)}</span>`
       + `<span class="rar r-${rar}">${T('rarity.' + rar, rar)}</span>`
       + (pw ? `<span class="choPower"><svg aria-hidden="true"><use href="#e-yant"/></svg>${pw}</span>` : '')
@@ -10815,6 +10838,8 @@ function kitChoose(ids, opts = {}) {
   $('choHint').textContent = opts.hint || T('choose.hint', 'Pick one, then confirm');
   el.classList.remove('hide', 'out');
   document.body.classList.add('chooseopen');
+  for (const id of ids) if (ITEM_DEFS[id].art) itemArtGet(id);       // v24.18: the pictures, fetched now if not yet
+  requestAnimationFrame(() => choArtPaint());                         // drawn once the window has its size
   document.exitPointerLock?.();
   snd('itemunlock', 0.55);
   haptic([20, 50, 40]);
