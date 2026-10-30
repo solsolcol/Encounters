@@ -7138,6 +7138,16 @@ What the baseline contains, by release:
   presence's fade, place and dress read her as they read the rig. `e4joy` leaves the build for `e4stall`, episode 1's
   `granny` leaves this chapter for `e4ghost`, and nothing in it stands in for a person any more. masters/v24.15/make.sh.
   Deploy `6ae4cf06febff64c052c57e7`, byte-verified (276 files).
+- **v24.16** PONG'S PICKUP — Chad's "Rivian R1T (2022)" by geyges (Sketchfab, Free Standard licence; credited) through
+  a new `tools/preppickup.mjs`: windows an opaque dark tint (a Thai pickup's film), so the cabin's insides and the doors'
+  take go; every map but base colour, with its UV sets, the metal-roughness sheets kept as their means; the VERTEX
+  COLOURS kept (the paint's yellow and the tyres' black are COLOR_0 — a first pass that dropped them made a white
+  truck); baked, joined by material, nose turned to −z and stood on its tyres with the axles' middle on z = 0 — the
+  file's wheelbase measured 3.449 m against the drawn pickup's 3.44, so it stands on the same wheels and every route
+  drives it unchanged. 394k → 101k triangles (the simplifier floors there: hard edges are attribute seams), 1.98 MB.
+  `cabSync()` draws the model from outside and, with the cabin shown (every such shot is from inside), the drawn body
+  painted its yellow with the chapter's own right-hand-drive cabin. Deploy `6ae4d24064b0a9cad2f091de`, byte-verified
+  (277 files).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

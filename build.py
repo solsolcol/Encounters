@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "24.15"
+VERSION = "24.16"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -425,6 +425,7 @@ ASSETS = {
     'e4palm1far':   ('assets/e4palm1far.glb', True, False),   # e4c1 v24.14: the first palm cut for the fields' distance (0.12, sheets 512/256)
     'e4palm2far':   ('assets/e4palm2far.glb', True, False),   # e4c1 v24.14: the second palm cut for distance (0.15)
     'e4banana':     ('assets/e4banana.glb', True, False),     # e4c1 v24.14: Chad's banana tree — "Banana Tree" by Garecra (Sketchfab, CC-BY-4.0), baked to the contract with its own leaf cut-offs (preptree KEEPCUT)
+    'e4pickup':     ('assets/e4pickup.glb', True, False),     # e4c1 v24.16: Pong's pickup — "Rivian R1T (2022)" by geyges (Sketchfab, Free Standard), its windows a dark tint and the cabin's insides dropped, every map but base colour gone, joined by material, 394k -> 101k triangles, nose at -z on the drawn pickup's axles (tools/preppickup.mjs, masters/v24.15/make.sh)
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
     # in white (two women, two men), Mixamo's Praying and Kneeling Idle applied
@@ -543,7 +544,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'traynear', 'trayfar', 'amushelf', 'altarrowfar', 'monkshop', 'hanuamulet', 'hanuamuletlod',
            'lersiamulet', 'lersiamuletlod', 'towkay',
            'kumanred', 'kumanshy', 'kumanlittle',
-           'firstmaster', 'e4sky', 'fmshadow', 'e4noi', 'e4pong', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
+           'firstmaster', 'e4sky', 'fmshadow', 'e4noi', 'e4pong', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4pickup'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and

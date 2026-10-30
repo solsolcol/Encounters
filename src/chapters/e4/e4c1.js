@@ -189,7 +189,7 @@
     /* (v24.15, Chad's models: Pong, Pa Noi, the woman at the stall and the presence are his own — `e4pong` and `e4noi`
        are his files under the stand-ins' keys, `e4stall` replaces `e4joy`, and `e4ghost`, his old woman, replaces episode
        1's `granny`; nothing in the chapter is a stand-in for a person any more) */
-    assets: ['firstmaster', 'fmshadow', 'e4sky', 'e4pong', 'e4noi', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha'],
+    assets: ['firstmaster', 'fmshadow', 'e4sky', 'e4pong', 'e4noi', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4pickup'],
     reuse: {},
     placeholders: {},
     items: [],
@@ -1676,7 +1676,24 @@
       /* ---- the cars under the rain tree (four, built in code like the buses at v21.14 — generic, no makers' marks) and
          Pong's white double-cab at the gate */
       [[8.3, 3.6, 0xb8bcc0, 'sedan'], [10.6, 3.4, 0x6a1a1e, 'sedan'], [12.9, 3.7, 0xe8e8e4, 'suv']].forEach(([x, z, col, kind]) => { const c2 = buildCar(kind, col); c2.position.set(x, 0, z); c2.rotation.y = 0.04; C.add(c2); solids.push(hidBox(1.9, 1.6, 4.6, x, 0.8, z, C)); });
-      { const pk = buildCar('pickup', 0xf0f0ec); pk.position.set(CMP.PICKUP.x, 0, CMP.PICKUP.z); C.add(pk); yard.pickup = pk; solids.push(hidBox(1.95, 1.9, 5.3, CMP.PICKUP.x, 0.95, CMP.PICKUP.z, C)); }
+      /* (v24.16) Pong's pickup is Chad's — "Rivian R1T (2022)" by geyges (Sketchfab, Free Standard; tools/preppickup.mjs):
+         its windows a dark tint, its nose at −z and its axles on the drawn pickup's (the same 3.45 m wheelbase), so it
+         stands exactly where the drawn one stood and every route drives it unchanged. The drawn body stays under it,
+         painted the model's yellow, for the films' shots from INSIDE the cab — its bonnet is what the windscreen shows, and
+         the cabin is the chapter's own (Thailand drives on the left: the wheel on the right) — and as the pickup itself if
+         the file never lands (v4.7). Which of the two is drawn is cabSync()'s (the cabin's show) */
+      { const pk = buildCar('pickup', 0xd09a2e); pk.position.set(CMP.PICKUP.x, 0, CMP.PICKUP.z); C.add(pk); yard.pickup = pk;
+        solids.push(hidBox(2.05, 1.9, 5.55, CMP.PICKUP.x, 0.95, CMP.PICKUP.z + 0.135, C));
+        parseOnce('e4pickup').then(({ scene: sc }) => {
+          if (!alive) return;
+          const m = sc.clone(true);
+          /* metal reflects the room environment, which the scene keeps at 0.05 (main.js); the paint and the chrome are
+             given enough of it to read as paint and chrome, never as black */
+          m.traverse(o => { if (!o.isMesh) return; o.castShadow = !LOW; o.receiveShadow = true;
+            for (const mt of [].concat(o.material)) if (mt && 'envMapIntensity' in mt) mt.envMapIntensity = mt.metalness > 0.3 ? 14 : 4; });
+          pk.add(m); yard.pickupModel = m;
+          cabSync();
+        }).catch(err => { console.warn('e4pickup failed to load', err); if (ctx.loadFail) ctx.loadFail('e4pickup', err); }); }
 
       /* ---- puddles: the storm's sky again, in the ruts of the yard and the lane */
       { const r = rng(4701);
@@ -2530,8 +2547,17 @@
       lights(k, secs = 0) { shop.ledFrom = shop.ledK; shop.ledTo = k; shop.l0 = wallNow(); shop.l1 = shop.l0 + Math.max(0.001, secs); if (!secs) shop.ledK = k; },
       phone(on) { shop.phoneOn = on ? wallNow() : 0; }
     };
+    /* (v24.16) which pickup is drawn: from outside, Chad's model; with the cabin shown (every such shot is from inside it,
+       by the films' own cameras) the drawn body under it, its glass hidden (from inside, a slab of tinted glass is a
+       wall). Until the model lands — or if it never does — the drawn pickup is the pickup, as it always was */
+    function cabSync() {
+      const pk = yard.pickup, M = yard.pickupModel; if (!pk) return;
+      const on = cab.show, gl = pk.userData.glass || [];
+      if (M) { M.visible = !on; for (const o of pk.children) if (o !== M && o !== cab.root) o.visible = on && !gl.includes(o); }
+      else for (const g of gl) g.visible = !on;
+    }
     const cabCtl = {
-      show(on) { cab.show = !!on; if (cab.root) cab.root.visible = !!on; const gl = yard.pickup && yard.pickup.userData.glass; if (gl) for (const g of gl) g.visible = !on;
+      show(on) { cab.show = !!on; if (cab.root) cab.root.visible = !!on; cabSync();
                  /* (v24.5: Pong is at the wheel — the yard's own Pong is away while the cab is shown, in every film as in the
                     opening (CP9); films.end puts him back) */
                  if (on && cast.pong && cast.pong.group && cast.pong.group.visible) { cast.pong.group.visible = false; FL.hidPong = true; } },

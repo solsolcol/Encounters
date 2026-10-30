@@ -220,6 +220,10 @@ Object.assign(window.__TEXT__, {
   'credits.ybuddha':        'The Buddha on the master’s altar',
   'credits.ybuddhaWho':     'Yoga – Buddha · T.Koeniger · Sketchfab, CC BY 4.0',
   'credits.ybuddhaLink':    'sketchfab.com · yoga-buddha',
+  // v24.16 · Pong's pickup (Chad's pick, Sketchfab, Free Standard licence)
+  'credits.pickup':         'Pong’s pickup',
+  'credits.pickupWho':      'Rivian R1T (2022) · geyges · Sketchfab, Free Standard licence',
+  'credits.pickupLink':     'sketchfab.com · rivian-r1t-2022',
   /* v12.1 — Chad's ghost cyclist is his own model and takes no row (the
      v5.23 rule); the Kamaz and the flashlight already have theirs above. */
   'credits.anim':        'Animation, two of the crowd, and the soldiers’ takes',

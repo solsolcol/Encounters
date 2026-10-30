@@ -31,3 +31,8 @@ cp $T/pongS.glb assets/e4pong.glb
 cp $T/noiB.glb assets/e4noi.glb
 cp $T/stall12.glb assets/e4stall.glb
 cp $T/ghost.glb assets/e4ghost.glb
+# v24.16 · Pong's pickup, "Rivian R1T (2022)" by geyges (Sketchfab, Free Standard licence — credited), the folder's
+# pickup_truck.glb: its tinted windows opaque, the cabin's insides and the doors' take dropped, every map but base colour
+# gone (the paint's yellow and the tyres' black are its vertex colours, kept), joined by material, turned nose to -z on
+# the drawn pickup's axles; the simplifier floors near 100k at this error bound (its hard edges are attribute seams)
+ERR=0.002 node tools/preppickup.mjs masters/v24.15/src/pickup_truck.glb assets/e4pickup.glb 0.15 1024
