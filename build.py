@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "24.16"
+VERSION = "24.17"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -426,6 +426,12 @@ ASSETS = {
     'e4palm2far':   ('assets/e4palm2far.glb', True, False),   # e4c1 v24.14: the second palm cut for distance (0.15)
     'e4banana':     ('assets/e4banana.glb', True, False),     # e4c1 v24.14: Chad's banana tree — "Banana Tree" by Garecra (Sketchfab, CC-BY-4.0), baked to the contract with its own leaf cut-offs (preptree KEEPCUT)
     'e4pickup':     ('assets/e4pickup.glb', True, False),     # e4c1 v24.16: Pong's pickup — "Rivian R1T (2022)" by geyges (Sketchfab, Free Standard), its windows a dark tint and the cabin's insides dropped, every map but base colour gone, joined by material, 394k -> 101k triangles, nose at -z on the drawn pickup's axles (tools/preppickup.mjs, masters/v24.15/make.sh)
+    'e4nangkwak':   ('assets/e4nangkwak.glb', True, False),   # e4c1 v24.17: Chad's Nang Kwak, a bronze seated figure on her stepped base — the light cut (52,604 of 1,753,494 triangles, 1024 / 512 sheets) for the master's tray and his altar (tools/prepamulet.mjs THICK FACE=pos; masters/v24.15/make.sh)
+    'e4takrut':     ('assets/e4takrut.glb', True, False),     # e4c1 v24.17: Chad's takrut — the light cut (29,472 of 147,376) for the tray
+    'e4phayant':    ('assets/e4phayant.glb', True, False),    # e4c1 v24.17: Chad's pha yant, a cloth rolled with its yant showing — the light cut (30,864 of 617,280) for the tray (LYING)
+    'e4nangkwakhd': ('assets/e4nangkwakhd.glb', True, False), # e4c1 v24.17: the Nang Kwak at FULL detail for the bag's views (every triangle, colour 4096 — the amulet rule, v14.14); fetched only when he takes it
+    'e4takruthd':   ('assets/e4takruthd.glb', True, False),   # e4c1 v24.17: the takrut at full detail for the bag's views
+    'e4phayanthd':  ('assets/e4phayanthd.glb', True, False),  # e4c1 v24.17: the pha yant at full detail for the bag's views
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
     # in white (two women, two men), Mixamo's Praying and Kneeling Idle applied
@@ -544,7 +550,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'traynear', 'trayfar', 'amushelf', 'altarrowfar', 'monkshop', 'hanuamulet', 'hanuamuletlod',
            'lersiamulet', 'lersiamuletlod', 'towkay',
            'kumanred', 'kumanshy', 'kumanlittle',
-           'firstmaster', 'e4sky', 'fmshadow', 'e4noi', 'e4pong', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4pickup'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
+           'firstmaster', 'e4sky', 'fmshadow', 'e4noi', 'e4pong', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4pickup', 'e4nangkwak', 'e4takrut', 'e4phayant', 'e4nangkwakhd', 'e4takruthd', 'e4phayanthd'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and

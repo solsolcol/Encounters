@@ -7148,6 +7148,23 @@ What the baseline contains, by release:
   `cabSync()` draws the model from outside and, with the cabin shown (every such shot is from inside), the drawn body
   painted its yellow with the chapter's own right-hand-drive cabin. Deploy `6ae4d24064b0a9cad2f091de`, byte-verified
   (277 files).
+- **v24.17** THE THREE CHARMS — Chad's own scans of the three pieces on the first master's tray (no credit rows): a
+  bronze Nang Kwak seated on her stepped base, beckoning, a money bag at her side; a takrut with its metal caps and
+  rings; a pha yant, a cloth rolled with its yant showing. Each in two cuts by `tools/prepamulet.mjs`
+  (masters/v24.15/make.sh): a LIGHT cut for the world (52,604 / 29,472 / 30,864 triangles, sheets 1024/512 — a few
+  centimetres on a tray, where a phone draws nothing finer) and the FULL scan for the bag's views (1,753,494 / 147,376 /
+  617,280 triangles, colour 4096; 19.1 / 6.8 / 12.2 MB) — the amulet rule (v14.14). The tray's drawn pieces give way to
+  the light cuts as they land, each sized by its own box (the Nang Kwak 7.5 cm seated and turned to the client's mat,
+  the takrut 6.6 cm lying, the pha yant 8.5 cm rolled); the Nang Kwak also sits 12 cm tall between the water glasses
+  on the altar's middle tier, below the Buddha. `ITEM_DEFS` gives each item its full scan; only the piece he takes is
+  ever fetched at full detail (`kit.itemWarm` the moment he chooses; the line drawing stands in until it lands; the
+  curtain prepares it on any later entry with it in his bag). `prepamulet` gains `LYING=1` for a piece that lies along
+  x. Photographed on a phone, the Nang Kwak drew black in the room (about 0.8 metal by her own sheet, under the scene's
+  environment at 0.05) while the bag showed her bronze: her world copies take the pickup's lift (`bronzeLift`,
+  envMapIntensity 10). The few white patches on her base are in Chad's scan itself, left as delivered (v5.10). The
+  models list's question (would the presence be taken for the Nang Kwak?) is answered by the two models themselves.
+  Sheet v133 exported (the credit rows of v24.13–v24.16; v44 stays the link).
+  Deploy `6ae4d6216475f1e4b4f837f9` (before the lift), byte-verified (283 files); the lift's deploy follows.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

@@ -189,7 +189,7 @@
     /* (v24.15, Chad's models: Pong, Pa Noi, the woman at the stall and the presence are his own — `e4pong` and `e4noi`
        are his files under the stand-ins' keys, `e4stall` replaces `e4joy`, and `e4ghost`, his old woman, replaces episode
        1's `granny`; nothing in the chapter is a stand-in for a person any more) */
-    assets: ['firstmaster', 'fmshadow', 'e4sky', 'e4pong', 'e4noi', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4pickup'],
+    assets: ['firstmaster', 'fmshadow', 'e4sky', 'e4pong', 'e4noi', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4pickup', 'e4nangkwak', 'e4takrut', 'e4phayant'],
     reuse: {},
     placeholders: {},
     items: [],
@@ -360,6 +360,11 @@
       }
       return parsedGlb.get(key);
     }
+    /* (v24.17) Chad's Nang Kwak is bronze, about 0.8 metal by its own metal-roughness sheet, and a metal shows only what
+       it reflects: under the scene's environment at 0.05 she drew as a black silhouette on the tray and the altar
+       (photographed), where the bag's own view shows her warm bronze. The pickup's lift (v24.16), held to her metal: the
+       material is shared by her two copies, so both read as the same piece */
+    function bronzeLift(o) { for (const mt of [].concat(o.material)) if (mt && mt.metalnessMap && 'envMapIntensity' in mt) mt.envMapIntensity = 10; }
     /* A SEAM'S TWINS MOVE AS ONE (v24.5, found by the photographs of Pong's head: a hair-thin dark line ran across the
        room's floor from behind his arm to the far wall). One vertex of his trousers, at his right hip, is weighted wholly
        to his LEFT KNEE while its two twins at the same place (a seam's copies) follow his hips — sat cross-legged, his
@@ -866,6 +871,17 @@
         }
         mari.count = mi; R.add(mari);
         for (const x of [-0.1, 0.1]) lathe([[0, 0], [0.018, 0], [0.02, 0.05], [0.021, 0.052]], mGlass, x, 2.185, ZF + 0.09, 12);
+        /* (v24.17) a Nang Kwak between the glasses — Chad's scan, the beckoning lady a shop keeps facing its door, below
+           the Buddha as a home altar keeps her; the light cut the tray's piece is, 12 cm on her base */
+        parseOnce('e4nangkwak').then(({ scene: ns }) => {
+          if (!alive) return;
+          const n = ns.clone(true); n.updateMatrixWorld(true);
+          const bb = new THREE.Box3().setFromObject(n); n.scale.setScalar(0.12 / Math.max(1e-3, bb.max.y - bb.min.y));
+          n.updateMatrixWorld(true); bb.setFromObject(n);
+          n.position.set(-(bb.min.x + bb.max.x) / 2, 2.185 - bb.min.y, ZF + 0.07 - (bb.min.z + bb.max.z) / 2);
+          n.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = true; bronzeLift(o); } });
+          R.add(n);
+        }).catch(err => { console.warn('e4nangkwak failed to load', err); if (ctx.loadFail) ctx.loadFail('e4nangkwak', err); });
         /* tier 1: the altar's incense, candles, a plate of bananas, a green coconut */
         lathe([[0, 0], [0.04, 0], [0.058, 0.04], [0.062, 0.06], [0.056, 0.064]], mBrass, 0, 1.965, ZF + 0.15, 20);
         for (let k = 0; k < 5; k++) { const s = cyl(0.0018, 0.0018, 0.2, M({ color: 0xc23a1c, roughness: 0.8 }), (k - 2) * 0.012, 2.1, ZF + 0.15, 5); s.rotation.z = (k - 2) * 0.05; }
@@ -4073,6 +4089,25 @@
       /* his envelope, white, set across the tray's front */
       const env = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.003, 0.06), M({ color: 0xf6f4ee, roughness: 0.85 })); env.position.set(-0.04, T + 0.006, -0.1); env.rotation.y = 0.25; env.visible = false; g.add(env);
       g.userData.pieces = { nangkwak: nk, takrut: tk, phayant: py }; g.userData.env = env;
+      /* (v24.17) the three pieces are Chad's own scans (masters/v24.15/make.sh): a bronze Nang Kwak seated on her stepped
+         base, a takrut with its metal caps and rings, a pha yant rolled with its yant showing — each the LIGHT cut here (a
+         few centimetres on a tray: a phone draws nothing finer at this size), the full scan in the bag's own views
+         (ITEM_DEFS, the amulet rule). Each is sized by its own box and set on the tray's top; the drawn piece stands until
+         its scan lands (v4.7) */
+      const real = (key, grp, size, axis, ry, rz) => parseOnce(key).then(({ scene: sc }) => {
+        if (!alive) return;
+        const m = sc.clone(true); m.rotation.set(0, ry, rz);
+        m.updateMatrixWorld(true);
+        const bb = new THREE.Box3().setFromObject(m), sz = bb.getSize(new THREE.Vector3());
+        m.scale.setScalar(size / sz[axis]); m.updateMatrixWorld(true); bb.setFromObject(m);
+        m.position.set(-(bb.min.x + bb.max.x) / 2, -bb.min.y, -(bb.min.z + bb.max.z) / 2);
+        m.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = true; if (key === 'e4nangkwak') bronzeLift(o); } });
+        for (const c of [...grp.children]) c.visible = false;
+        grp.add(m);
+      }).catch(err => { console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
+      real('e4nangkwak', nk, 0.075, 'y', -0.52, 0);             // seated, 7.5 cm, her face to the client on his mat (atan2(−0.5, 0.42) less the tray's own −0.35)
+      real('e4takrut', tk, 0.066, 'x', 0, Math.PI / 2);          // lying along the tray, 6.6 cm
+      real('e4phayant', py, 0.085, 'x', 0.3, 0);                 // the rolled cloth, 8.5 cm
       return g;
     })();
     const TRAY_W = () => new THREE.Vector3(RX + tray.position.x, 0.12, tray.position.z);
@@ -4117,6 +4152,7 @@
         if (!id) { after(0.8, chooseItem); return; }
         play.item = id;
         if (kit.give) { kit.give(id); if (kit.urge) kit.urge(null); }
+        if (kit.itemWarm) kit.itemWarm(id);                      // (v24.17) its full scan for the bag's views, fetched now in the background
         trayShow(true);
         bank(W['note_' + id]);
         setPhase('items', id);

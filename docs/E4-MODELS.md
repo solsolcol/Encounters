@@ -55,15 +55,18 @@ just need to remember to ask me for the models so i don't forget or miss it."*
 | What | Spec | Placeholder | Status |
 |---|---|---|---|
 | A seated Buddha image | any style but the Chinnarat (e.g. a bronze Sukhothai-style) | none (left out; the altar's tiers carry the other offerings) | **IN v24.14**: Chad's "Yoga - Buddha" by T.Koeniger (Sketchfab, CC BY 4.0) — a bronze Buddha in meditation, 50k triangles at 0.32 m on the altar's top tier (the tiers 10 cm deeper to seat him) |
-| A Nang Kwak (the beckoning lady) | also the item's model | none (left out; the item shows its drawing) | NEEDED |
+| A Nang Kwak (the beckoning lady) | also the item's model | none (left out; the item shows its drawing) | **IN v24.17**: Chad's own scan — a bronze Nang Kwak seated on her stepped base, beckoning, a money bag at her side: a light cut (52,604 triangles) on the master's tray and on his altar's middle tier, the FULL scan (1,753,494 triangles, colour 4096) in the bag's views — the amulet rule (v14.14) |
 | A Phra Rahu or another unusual altar image | for the third tier | none | NICE |
 | Sandals | for the door | none | NICE |
-| Small item models (takrut, a folded pha yant) | the bag's turning view | the items' line drawings | NICE |
+| Small item models (takrut, a folded pha yant) | the bag's turning view | the items' line drawings | **IN v24.17**: Chad's own scans — a takrut with its metal caps and rings (29,472 on the tray / every one of 147,376 in the bag) and the pha yant as a cloth rolled with its yant showing (30,864 / 617,280) |
 
 **A question for Chad, with the presence's model:** the art direction above (an old woman in a breast cloth, her hair
 cropped short) is the dress of her generation in the countryside — and it is also close to how the Nang Kwak, the
 beckoning lady, is often drawn. In this story the Nang Kwak is an item the master may give him, so the two should not
 be mistaken for each other: is the look right, or should she be dressed differently (a faded blouse, a shawl)?
+(v24.15/v24.17: answered by Chad's own models — the presence is an old woman with short grey hair, barefoot, in a
+breast cloth and a dark tube skirt; the Nang Kwak is a young crowned figure in bronze on a stepped base, beckoning,
+a money bag at her side. Nobody will take one for the other.)
 
 **Where to put them:** a Drive folder per batch, as before. Chad's own models need no credit; a Sketchfab model gets
 its credit row.

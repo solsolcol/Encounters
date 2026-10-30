@@ -9692,10 +9692,14 @@ const ITEM_DEFS = {
   yanthahtaew: { icon: 'e-yhah', slot: 'body', fixed: true, drainGuard: 0.35, rarity: 'rare' },
   yantsroi: { icon: 'e-ysroi', slot: 'body', fixed: true, evGuard: 0.3, rarity: 'rare' },
   /* v24.0: the three pieces on the first master's tray (episode 4 chapter 1, §4.3 P5): he takes one, and nothing later
-     hangs on which — ordinary pieces, no power, line drawings and no model. Whichever he took rides in his bag. */
-  nangkwak: { icon: 'e-nangkwak', slot: 'hand', rarity: 'common' },
-  takrut: { icon: 'e-takrut', slot: 'hand', rarity: 'common' },
-  phayant: { icon: 'e-phayant', slot: 'hand', rarity: 'common' }
+     hangs on which — ordinary pieces, no power. Whichever he took rides in his bag.
+     v24.17: their models are Chad's own scans, and the bag's views draw each at FULL detail — every triangle, the
+     colour sheet at 4096 (v14.14's amulet rule: "ALL amulets must always show full quality"); the tray and the altar
+     carry light cuts of the same scans. Only the piece he takes is ever fetched at full detail (episode 4 chapter 1
+     warms it the moment he chooses, kit.itemWarm); the line drawings stand in until it lands. */
+  nangkwak: { icon: 'e-nangkwak', slot: 'hand', model: 'e4nangkwakhd', rarity: 'common' },
+  takrut: { icon: 'e-takrut', slot: 'hand', model: 'e4takruthd', rarity: 'common' },
+  phayant: { icon: 'e-phayant', slot: 'hand', model: 'e4phayanthd', rarity: 'common' }
 };
 /* v14.11: every item has a RARITY (Chad: "Torch is common rarity with grey
    colour coding, the lp phiboon amulet is rare rarity with blue colour

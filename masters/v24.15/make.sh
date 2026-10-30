@@ -36,3 +36,13 @@ cp $T/ghost.glb assets/e4ghost.glb
 # gone (the paint's yellow and the tyres' black are its vertex colours, kept), joined by material, turned nose to -z on
 # the drawn pickup's axles; the simplifier floors near 100k at this error bound (its hard edges are attribute seams)
 ERR=0.002 node tools/preppickup.mjs masters/v24.15/src/pickup_truck.glb assets/e4pickup.glb 0.15 1024
+# v24.17 · the three pieces on the master's tray, Chad's own scans (no credit rows): each a light cut for the tray (and
+# the Nang Kwak for his altar too) and the full scan for the bag's views — every triangle, colour 4096, the amulet rule
+# (v14.14). THICK=1 for the two that are not flat medallions; LYING=1 for the pha yant, which lies along x; FACE=pos
+# because their faces already look along +z (photographed).
+THICK=1 FACE=pos node tools/prepamulet.mjs masters/v24.15/src/nang_kwak.glb assets/e4nangkwak.glb 0.03 1024 512
+THICK=1 node tools/prepamulet.mjs masters/v24.15/src/takrut.glb assets/e4takrut.glb 0.2 1024 512
+LYING=1 FACE=pos node tools/prepamulet.mjs masters/v24.15/src/pha_yant.glb assets/e4phayant.glb 0.05 1024 512
+THICK=1 FACE=pos HD=1 node tools/prepamulet.mjs masters/v24.15/src/nang_kwak.glb assets/e4nangkwakhd.glb 1 4096 2048
+THICK=1 HD=1 node tools/prepamulet.mjs masters/v24.15/src/takrut.glb assets/e4takruthd.glb 1 4096 2048
+LYING=1 FACE=pos HD=1 node tools/prepamulet.mjs masters/v24.15/src/pha_yant.glb assets/e4phayanthd.glb 1 4096 2048

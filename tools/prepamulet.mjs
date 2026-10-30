@@ -75,7 +75,9 @@ for (const p of prims) {
 }
 const span = [hi[0] - lo[0], hi[1] - lo[1], hi[2] - lo[2]];
 const c = [(lo[0] + hi[0]) / 2, (lo[1] + hi[1]) / 2, (lo[2] + hi[2]) / 2];
-if (!(span[1] > span[0] && span[1] > span[2])) throw new Error('expected the height on y, got span ' + span.map(v => v.toFixed(3)));
+/* LYING=1 (v24.17): a piece that LIES, longest along x — Chad's pha yant, a cloth rolled into a scroll — keeps its
+   lie; it is still baked to height 1.0 (here its thickness), which only scales it, and every view sizes it by its box */
+if (!(span[1] > span[0] && span[1] > span[2]) && process.env.LYING !== '1') throw new Error('expected the height on y, got span ' + span.map(v => v.toFixed(3)));
 /* THICK=1: a deep relief — a figure standing out of its frame (Chad's lersi amulet, v22.0: a hermit's head in an arched
    casing, 0.43 of its height deep) — is still an amulet with its face on z; only the flat medallion's check is waived */
 if (!(span[2] < span[0] * 0.5) && process.env.THICK !== '1') throw new Error('expected the thin axis on z, got span ' + span.map(v => v.toFixed(3)));
