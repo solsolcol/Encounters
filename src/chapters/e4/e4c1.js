@@ -190,8 +190,10 @@
        are his files under the stand-ins' keys, `e4stall` replaces `e4joy`, and `e4ghost`, his old woman, replaces episode
        1's `granny`; nothing in the chapter is a stand-in for a person any more) */
     assets: ['firstmaster', 'fmshadow', 'e4sky', 'e4pong', 'e4noi', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4pickup', 'e4nangkwak', 'e4takrut', 'e4phayant',
-             'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4buffalo', 'e4sandalsa', 'e4sandalsb', 'e4rahu', 'e4sedan', 'e4truck', 'e4suv', 'e4moto'],
-    reuse: {},
+             'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4buffalo', 'e4sandalsa', 'e4sandalsb', 'e4rahu', 'e4sedan', 'e4truck', 'e4suv', 'e4moto',
+             'e4seat', 'owner'],
+    /* (v24.21) the taxi uncle at the wheel stands in until Chad's model (docs/E4-MODELS.md) */
+    reuse: { owner: "the taxi uncle at the wheel in the coda — chapter 3's amulet-shop owner, an older Chinese man, wearing the role until Chad's model (docs/E4-MODELS.md)" },
     placeholders: {},
     items: [],
 
@@ -2494,6 +2496,10 @@
        front seats' backs, the dashboard and its red meter far off, the windscreen with its wipers, his window beside
        him beaded with rain and the city sliding past behind it, out of focus. The streetlights passing are painted on
        the cabin's own surfaces (an emissive sweep), never a light (v15.1). */
+    /* (v24.21) the taxi's driver's side: the front seats' place, the wheel (centre, radius, its top tilted away from him)
+       and where his hips sit on the seat's cushion (measured off e4seat: the cushion's middle 0.25–0.30 m over the
+       floor, its backrest's front face 0.19 m behind the seat's centre) */
+    const TSEAT = { z: -0.51 }, TWHEEL = { x: 0.38, y: 0.95, z: -0.95, r: 0.19, tilt: -0.44 };
     function buildTaxi() {
       const T0 = worldT;
       const mesh = (g, m, x, y, z, p = T0) => { const o = new THREE.Mesh(g, m); o.position.set(x, y, z); p.add(o); return o; };
@@ -2526,13 +2532,36 @@
       }
       /* the seats: the bench he sits on, the two front seats' backs with their headrests */
       bx(1.4, 0.16, 0.56, mSeat, 0, 0.6, 0.62); const rb = bx(1.4, 0.64, 0.14, mSeat, 0, 0.98, 0.95); rb.rotation.x = -0.18;
+      const backs = [];
       for (const sx of [-1, 1]) {                    // CP6: a rounded shoulder, bolsters and a headrest, not a slab
         const sb = new THREE.Group(); sb.position.set(sx * 0.38, 0.92, -0.18); sb.rotation.x = -0.12; T0.add(sb);
+        sb.userData.dyn = true; backs.push(sb);      // (v24.21: the fallback, kept out of the merge — mergeStatic)
         bx(0.5, 0.56, 0.14, mSeat, 0, -0.05, 0, sb);
         const top = mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.5, 14), mSeat, 0, 0.23, 0, sb); top.rotation.z = Math.PI / 2;
         for (const bs of [-1, 1]) mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.56, 10), mSeat, bs * 0.25, -0.05, 0.01, sb);
         const hr = mesh(new THREE.SphereGeometry(0.1, 16, 10), mSeat, 0, 0.44, -0.05, sb); hr.scale.set(1.3, 0.85, 0.55);
         bx(0.02, 0.1, 0.02, mChrome, -0.06, 0.32, -0.05, sb); bx(0.02, 0.1, 0.02, mChrome, 0.06, 0.32, -0.05, sb); }
+      /* (v24.21) THE FRONT SEATS ARE A REAL MODEL (Chad, 30 Oct: "Why are there still ugly generated trucks, replace all of
+         them with real truck models"): a reference picture of a car's front seat on white, checked, then Meshy's
+         image-to-3D and its remesh (masters/v24.20/make.sh), 9,061 triangles at 1.08 m, turned to face the road. Each
+         stands on the floor with its backrest's rear where the drawn back's was (TSEAT.z, measured off the file: the rear
+         at +0.40 of its own depth), and the passing streetlight's band rides its leather too; the drawn backs only if the
+         file never lands */
+      parseOnce('e4seat').then(({ scene: ss }) => {
+        if (!alive) return;
+        for (const sx of [-1, 1]) {
+          const m = ss.clone(true); m.position.set(sx * 0.38, FLOOR, TSEAT.z); T0.add(m);
+          m.traverse(o => { if (!o.isMesh) return; o.castShadow = false; o.receiveShadow = true;
+            const mm = o.material = o.material.clone(); mats.push(mm); mm.onBeforeCompile = sweepBand; taxi.sweep.push(mm); });
+        }
+        for (const b of backs) b.visible = false;
+      }).catch(err => { console.warn('e4seat failed to load', err); if (ctx.loadFail) ctx.loadFail('e4seat', err); });
+      /* (v24.21) the driver's wheel and its column, on the right as Singapore drives — the taxi uncle's hands on it */
+      { const wg = new THREE.Group(); wg.position.set(TWHEEL.x, TWHEEL.y, TWHEEL.z); wg.rotation.x = TWHEEL.tilt; T0.add(wg);
+        wg.add(new THREE.Mesh(new THREE.TorusGeometry(TWHEEL.r, 0.018, 8, 36), mDash));
+        const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.07, 0.05, 14), mDash); hub.rotation.x = Math.PI / 2; wg.add(hub);
+        for (const a of [0, Math.PI, -Math.PI / 2]) { const sp = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.022, 0.014), mDash); sp.position.set(Math.cos(a) * 0.1, Math.sin(a) * 0.1, 0); sp.rotation.z = a; wg.add(sp); }
+        const col = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.04, 0.42, 10), mDash); col.rotation.x = Math.PI / 2; col.position.z = -0.21; wg.add(col); }
       /* the dashboard, far off: its top, the meter's red figures, a phone in its holder glowing with a map */
       bx(2 * W, 0.08, 0.5, mDash, 0, 0.96, -1.42); bx(2 * W, 0.34, 0.06, mDash, 0, 0.78, -1.18);
       { const mt = new THREE.Mesh(new THREE.PlaneGeometry(0.14, 0.05), B({ map: tex(makeMeter(THREE, cnv)) })); mt.position.set(0.0, 1.03, -1.2); mt.rotation.x = -0.25; T0.add(mt); taxi.meter = mt;
@@ -2721,18 +2750,24 @@
     /* (v24.16) which pickup is drawn: from outside, Chad's model; with the cabin shown (every such shot is from inside it,
        by the films' own cameras) the drawn body under it, its glass hidden (from inside, a slab of tinted glass is a
        wall). Until the model lands — or if it never does — the drawn pickup is the pickup, as it always was */
+    /* (v24.21) Pong at the wheel whenever the pickup is driven or sat in — from outside as from inside */
+    function driverSync() {
+      const P = cast.pongCab, on = !!(yard.driving || cab.show); if (P && P.group) P.group.visible = on;
+      /* one Pong: while he is at the wheel the yard's own is away (films.end puts him back), as cabCtl.show has done */
+      if (on && cast.pong && cast.pong.group && cast.pong.group.visible) { cast.pong.group.visible = false; FL.hidPong = true; }
+    }
     function cabSync() {
       const pk = yard.pickup, M = yard.pickupModel; if (!pk) return;
       const on = cab.show, gl = pk.userData.glass || [];
       /* (v24.18) the model is the pickup outside AND in: from inside its own tinted glass clears (the rain glass is the
          windscreen) and the drawn cab never shows; the drawn body and cab stand in only without the model */
-      if (M) { M.visible = true; for (const o of pk.children) if (o !== M && o !== cab.root) o.visible = false;
+      if (M) { M.visible = true; for (const o of pk.children) if (o !== M && o !== cab.root && !o.userData.rider) o.visible = false;
         for (const g of yard.pickupGlass || []) g.visible = !on;
         for (const o of cab.drawn || []) o.visible = false; }
       else { for (const g of gl) g.visible = !on; for (const o of cab.drawn || []) o.visible = true; }
     }
     const cabCtl = {
-      show(on) { cab.show = !!on; if (cab.root) cab.root.visible = !!on; cabSync();
+      show(on) { cab.show = !!on; if (cab.root) cab.root.visible = !!on; cabSync(); driverSync();
                  /* (v24.5: Pong is at the wheel — the yard's own Pong is away while the cab is shown, in every film as in the
                     opening (CP9); films.end puts him back) */
                  if (on && cast.pong && cast.pong.group && cast.pong.group.visible) { cast.pong.group.visible = false; FL.hidPong = true; } },
@@ -2880,6 +2915,17 @@
         g.traverse(b => { if (b.isBone && HEAD_RE.test(b.name) && !P.head) P.head = b; });
         g.traverse(b => { if (b.isBone && /Hips(_\d+)?$/.test(b.name) && !P.hips) P.hips = b; });
         g.traverse(b => { if (b.isBone && /Spine2(_\d+)?$/.test(b.name) && !P.spine) P.spine = b; });
+        /* (v24.21) a DRIVER's arms (`grip`): the shoulder, the elbow and the wrist of each, which gripTick bends onto the
+           wheel after the takes have posed him (a Mixamo hand bone is the wrist, v17.1; 'LeftArm' never matches
+           'LeftForeArm') */
+        if (o.grip) {
+          P.arms = {};
+          for (const sd of ['Left', 'Right']) {
+            const f = (re) => { let r = null; g.traverse(b => { if (!r && b.isBone && re.test(b.name)) r = b; }); return r; };
+            const up = f(new RegExp(sd + 'Arm(_\\d+)?$')), fore = f(new RegExp(sd + 'ForeArm(_\\d+)?$')), hand = f(new RegExp(sd + 'Hand(_\\d+)?$'));
+            if (up && fore && hand) P.arms[sd] = { up, fore, hand, wUp: new THREE.Quaternion(), wFore: new THREE.Quaternion(), wrote: false };
+          }
+        }
         const mx = new THREE.AnimationMixer(g);
         const clip = (n) => clips.find(a => a.name === n);
         const acts = new Map();
@@ -3145,6 +3191,7 @@
         if (!vis) continue;
         if (P.head && P.headWrote) P.head.quaternion.copy(P.headWrote);
         if (P.spine && P.spineWrote) P.spine.quaternion.copy(P.spineWrote);
+        if (P.arms) for (const sd in P.arms) { const a = P.arms[sd]; if (a.wrote) { a.up.quaternion.copy(a.wUp); a.fore.quaternion.copy(a.wFore); } }
         walkTick(P, wdt);
         if (P.turnTo != null) { const d = angTo(P.group.rotation.y, P.turnTo); P.group.rotation.y += d * Math.min(1, wdt * 3.5); if (Math.abs(d) < 0.01) P.turnTo = null; }
         /* the layers' weights, eased */
@@ -3252,7 +3299,50 @@
           const pit = P.bowNow + nod;
           if (Math.abs(pit) > 1e-4) { _pe.set(pit, 0, 0, 'YXZ'); _pq.setFromEuler(_pe); P.head.quaternion.multiply(_pq); }
         }
+        if (P.arms) gripTick(P);
         if (P.after) P.after(P, now, wdt);
+      }
+    }
+    /* (v24.21) HANDS ON THE WHEEL (Chad, 30 Oct: "The taxi scene has no driver in front. Also the intro scene also has no
+       driver in the moving truck"): a driver's two arms bent, every frame after his takes have posed him, so each wrist
+       lands on its point on the rim (`P.grip.Left/Right`, objects riding the vehicle) — the elbow kept down and out
+       (`pole`, in the body's own frame). Two bones, solved exactly: the shoulder turned so the elbow is where the arm's
+       two lengths meet over the target, then the elbow turned onto the target. ABSOLUTE and undone before the mixer
+       runs again (the v11.5 law: the mixer writes a bone only when its take's value changes, so a turn left in a bone
+       would be bent again from itself) */
+    const _ia = new THREE.Vector3(), _ib = new THREE.Vector3(), _ic = new THREE.Vector3(), _it = new THREE.Vector3(), _ie = new THREE.Vector3(),
+          _ipo = new THREE.Vector3(), _iu = new THREE.Vector3(), _iv = new THREE.Vector3(), _ig = new THREE.Vector3(),
+          _iqa = new THREE.Quaternion(), _iqb = new THREE.Quaternion(), _iqp = new THREE.Quaternion();
+    function armTo(a, target, pole) {
+      a.up.updateWorldMatrix(true, true);
+      a.up.getWorldPosition(_ia); a.fore.getWorldPosition(_ib); a.hand.getWorldPosition(_ic);
+      const la = _ia.distanceTo(_ib), lb = _ib.distanceTo(_ic);
+      _it.copy(target).sub(_ia); let d = _it.length(); if (d < 1e-5 || la < 1e-5 || lb < 1e-5) return;
+      _it.divideScalar(d); d = THREE.MathUtils.clamp(d, Math.abs(la - lb) + 1e-3, la + lb - 1e-3);
+      _ipo.copy(pole).sub(_ia); _ipo.addScaledVector(_it, -_ipo.dot(_it)); if (_ipo.lengthSq() < 1e-10) return; _ipo.normalize();
+      const ca = THREE.MathUtils.clamp((la * la + d * d - lb * lb) / (2 * la * d), -1, 1), sa = Math.sqrt(1 - ca * ca);
+      _ie.copy(_ia).addScaledVector(_it, la * ca).addScaledVector(_ipo, la * sa);
+      _iu.copy(_ib).sub(_ia).normalize(); _iv.copy(_ie).sub(_ia).normalize();
+      _iqa.setFromUnitVectors(_iu, _iv); a.up.getWorldQuaternion(_iqb); _iqa.multiply(_iqb);
+      a.up.parent.getWorldQuaternion(_iqp); a.up.quaternion.copy(_iqa.premultiply(_iqp.invert()));
+      a.up.updateWorldMatrix(false, true);
+      a.fore.getWorldPosition(_ib); a.hand.getWorldPosition(_ic);
+      _iu.copy(_ic).sub(_ib).normalize(); _iv.copy(target).sub(_ib).normalize();
+      _iqa.setFromUnitVectors(_iu, _iv); a.fore.getWorldQuaternion(_iqb); _iqa.multiply(_iqb);
+      a.fore.parent.getWorldQuaternion(_iqp); a.fore.quaternion.copy(_iqa.premultiply(_iqp.invert()));
+      a.fore.updateWorldMatrix(false, true);
+    }
+    function gripTick(P) {
+      for (const sd in P.arms) {
+        const a = P.arms[sd]; a.wUp.copy(a.up.quaternion); a.wFore.copy(a.fore.quaternion); a.wrote = true;
+        const t = P.grip && P.grip[sd]; if (!t) continue;
+        t.getWorldPosition(_ig);
+        /* the elbow's side: down, out to his own side and a little back, in the body's frame (his left is +x in a Mixamo
+           rig's own frame) */
+        const pl = (P.o.grip.pole || [0.35, -0.6, -0.15]);
+        a.up.getWorldPosition(_ib); P.group.getWorldQuaternion(_iqp);
+        _ic.set(pl[0] * (sd === 'Left' ? 1 : -1), pl[1], pl[2]).applyQuaternion(_iqp).add(_ib);
+        armTo(a, _ig, _ic);
       }
     }
 
@@ -3261,6 +3351,20 @@
        onto the crown) is his head bowed over the one in front of him (v24.5: his hands-to-mouth take, photographed,
        throws both arms up over his head and reads as a shout, so it is not used). He looks at the one in front of him
        (v5.03), and closes his eyes to chant (no look). */
+    /* (v24.21) a wheel's two grips, at ten and two on its rim, as objects riding the vehicle — the wrists a few
+       centimetres back from the rim toward the driver and a little down (a Mixamo hand bone is the wrist; the palm wraps
+       the rim in front of it). PK_WHEEL is the Rivian's own wheel, found in its file: the rim's ring of vertices in
+       front of the driver's seat, its top 12 cm further forward than its foot */
+    const PK_WHEEL = { x: 0.385, y: 1.275, z: -0.66, r: 0.18, tilt: -0.37 };
+    function wheelGrip(parent, Wh) {
+      const out = {};
+      for (const [sd, sx] of [['Left', -1], ['Right', 1]]) {
+        const o3 = new THREE.Object3D(), ux = sx * Wh.r * 0.87, uy = Wh.r * 0.5;
+        o3.position.set(Wh.x + ux + sx * 0.02, Wh.y + uy * Math.cos(Wh.tilt) - 0.025, Wh.z + uy * Math.sin(Wh.tilt) + 0.06);
+        o3.userData.rider = true; parent.add(o3); out[sd] = o3;
+      }
+      return out;
+    }
     const CUSH_TOP = RMC.PLAT.top + 0.0925;               // the red cushion's top on the platform (buildRoom)
     const cast = {};
     /* ---- THE LAGGING SHADOW (§7.4): his own silhouette, flattened onto the back wall by the two candles on the table —
@@ -3355,11 +3459,33 @@
          the pickup's own frame — hidden until a film sits in the cabin */
       /* (v24.18) in the model's driver's seat: its pan lowest at y 0.81, 0.17 m ahead of the cab's middle, on the wheel's
          line x 0.385 (measured off the file along the seat's centre line) */
-      cast.pongCab = mkPerson('e4pong', { parent: cab.root, x: CAB_SEAT.x, z: CAB_SEAT.z, y: 0, ry: Math.PI, height: 1.7, sizeTake: 'Idle_4', walk: false,
-        posture: 'sit', sit: 'Sit_Upright', talk: 'Talk_with_Right_Hand_Open', seatH: CAB_SEAT.top, noShadow: true, noMip: true,
+      /* (v24.21) he rides the PICKUP, not the cabin's root: the root is shown only for the shots from inside, so every shot
+         of the moving pickup from outside had an empty driver's seat (Chad: "the intro scene also has no driver in the
+         moving truck"). Shown whenever a film drives the pickup or sits in its cab (driverSync), hidden while it is parked
+         for play — when the yard's own Pong is the one walking about */
+      cast.pongCab = mkPerson('e4pong', { parent: yard.pickup, x: CAB_SEAT.x, z: CAB_SEAT.z, y: 0, ry: Math.PI, height: 1.7, sizeTake: 'Idle_4', walk: false,
+        posture: 'sit', sit: 'Sit_Upright', talk: 'Talk_with_Right_Hand_Open', seatH: CAB_SEAT.top, noShadow: true, noMip: true, hidden: true,
         /* his eyes on the road: a point three metres ahead of the windscreen, riding the pickup (the chair take's upright
            stretch still lifts his chin; the absolute look holds his face level on the road) */
-        then: (P) => { const ahead = new THREE.Object3D(); ahead.position.set(CAB_SEAT.x, 1.6, -3.2); cab.root.add(ahead); P.lookAt = ahead; P.lookHome = ahead; } });
+        grip: { pole: [0.35, -0.6, -0.15] },
+        then: (P) => { const ahead = new THREE.Object3D(); ahead.position.set(CAB_SEAT.x, 1.6, -3.2); ahead.userData.rider = true; yard.pickup.add(ahead); P.lookAt = ahead; P.lookHome = ahead;
+          P.grip = wheelGrip(yard.pickup, PK_WHEEL); driverSync(); } });
+      cast.pongCab.group.userData.rider = true;
+      /* (v24.21) THE TAXI UNCLE at the wheel (Chad, 30 Oct: "The taxi scene has no driver in front"): front right, as
+         Singapore drives, on the taxi's own seat, his hands on the wheel, his eyes on the road. A PLACEHOLDER until Chad's
+         model (docs/E4-MODELS.md, declared in `reuse`): chapter 3's amulet-shop owner, an older Chinese man, on his own
+         upright seated take ('mixamo.com', the stretch of his chair sit that never folds — masters/v22.0/owners) */
+      /* (placed by measuring his bones on the seat: the group 0.08 m ahead of the seat's centre puts his hips 0.12 m in
+         front of its backrest, a seat height of 0.50 his crown 0.1 m under the roof, and the wheel 0.45 m from his
+         shoulders) */
+      cast.uncle = mkPerson('owner', { parent: worldT, x: TWHEEL.x, z: TSEAT.z - 0.08, y: 0, ry: Math.PI, height: 1.66, sizeTake: 'Idle_9', walk: false,
+        /* (no seatFloor, as Pong in the cab — by measure: held on the taxi's floor, his chair take's soles lifted him
+           0.29 m off the seat, hips at 0.96 and his shoulders over the seat's back; his feet go under the floor, where
+           nothing in the car can see them) */
+        posture: 'sit', sit: 'mixamo.com', seatH: 0.5, noShadow: true, noMip: true,
+        grip: { pole: [0.35, -0.6, -0.15] },
+        then: (P) => { const ahead = new THREE.Object3D(); ahead.position.set(TWHEEL.x, 1.3, -4.0); worldT.add(ahead); P.lookAt = ahead; P.lookHome = ahead;
+          P.grip = wheelGrip(worldT, TWHEEL); } });
     }
     /* her look: the colour drained to the grey of an old photograph, faded by DITHERED alpha (alphaHash — the opaque
        pass, never the transparent one: v12.4) */
@@ -5099,8 +5225,9 @@
       const y = PICK_Y(x, z), fx = -Math.sin(ry), fz = -Math.cos(ry);
       const yF = PICK_Y(x + fx * 1.4, z + fz * 1.4), yB = PICK_Y(x - fx * 1.4, z - fz * 1.4);
       pk.position.set(x, y, z); pk.rotation.set(Math.atan2(yF - yB, 2.8), ry, 0, 'YXZ');
+      yard.driving = true; driverSync();
     }
-    function pickupHome() { const pk = yard.pickup; if (pk) { pk.position.set(CMP.PICKUP.x, 0, CMP.PICKUP.z); pk.rotation.set(0, 0, 0); } }
+    function pickupHome() { const pk = yard.pickup; if (pk) { pk.position.set(CMP.PICKUP.x, 0, CMP.PICKUP.z); pk.rotation.set(0, 0, 0); } yard.driving = false; driverSync(); }
     /* a drive along a path of (x, z) points, eased in and out between t0 and t1 */
     function driveAt(pts, t0, t1, t, o = {}) {
       const L = pathLen(pts), k = sgk(t, t0, t1), s = (o.linear ? k : o.easeOut ? 1 - (1 - k) * (1 - k) : o.easeIn ? k * k : smo(k)) * L;
@@ -5112,6 +5239,12 @@
     /* the eye of whoever sits in the passenger seat, and a point ahead of it, in the pickup's own frame */
     function cabEye(lx, ly, lz) { const pk = yard.pickup; pk.updateWorldMatrix(true, false); return pk.localToWorld(_ffv.set(lx, ly, lz)).toArray(); }
 
+    /* (v24.21) THE LENS INSIDE A VEHICLE — the pickup's cab and the taxi (Chad: "the field of view of inside the truck and
+       taxi both are too small and cannot see much or anything at all, especially on phone"): a portrait phone sees a third
+       of a desktop's width at the same vertical lens, so its 60–66° held a slice of windscreen and nothing else; 88° on a
+       phone (about 48° across) and 66° on a desktop (about 92° across) hold the windscreen, the road and the man at the
+       wheel together */
+    const cabLens = () => (isNarrow() ? 88 : 66);
     /* ================================================================= THE OPENING FILM ("The Shutter", §4.0) */
     function openFrame(t) {
       const O = OPEN, S0 = SX;
@@ -5213,7 +5346,7 @@
       if (t < O.o7) {
         /* along the road: the windscreen; Pong talking; the spirit house sliding past on his side */
         const tk = (t >= O.o6 + 3.4 && t < O.o6 + 7.4) ? smo(sgk(t, O.o6 + 3.4, O.o6 + 4.4)) * (1 - smo(sgk(t, O.o6 + 6.4, O.o6 + 7.4))) : 0;
-        fLens(isNarrow() ? 66 : 60);
+        fLens(cabLens());
         /* the turn to Pong lands on his face (his head beside the lens, not the windscreen's corner ahead of it — CP9) */
         gaze(cast.pongCab, tk > 0.5, CAB_GLANCE);                                     // (a glance across at him on "brother")
         const road = cabEye(-0.36, 1.45, -3.0), face = tk > 0 ? faceOf(cast.pongCab, cabEye(CAB_SEAT.x, 1.47, -0.08)) : road;
@@ -5221,7 +5354,7 @@
       } else {
         /* up the lane and stopped: the look goes through the gate's opening to the yard (CP9: straight ahead, the
            right-hand post stood in the middle of a phone's frame for the last five seconds) */
-        fLens(isNarrow() ? 66 : 60);
+        fLens(cabLens());
         /* and he LEANS IN to look (CP9, by photograph: turned 11° to the gate from his seat, the A-pillar beside him stood
            7° left of a phone's centre, a black bar across the gate for five seconds; leaned 0.38 m forward and 0.12 m in,
            it is 23° off his line — out of a phone's ±16.7° and at a desktop's edge, where a pillar belongs) */
@@ -5390,7 +5523,7 @@
         driveAt([[2.0, 13.4], [1.8, 16.0], [0.4, 18.6], [-2.6, 20.2], [-12, 22.4]], T.cab, T.wide + 1.4, t, { easeIn: true });
         const tk = (t > T.cab + 0.4 && t < T.cab + 4.6) ? smo(sgk(t, T.cab + 0.4, T.cab + 1.1)) * (1 - smo(sgk(t, T.cab + 3.9, T.cab + 4.6))) : 0;
         gaze(cast.pongCab, tk > 0.5, CAB_GLANCE);
-        fLens(isNarrow() ? 66 : 60);
+        fLens(cabLens());
         camAt(cabEye(...CAB_EYE), lp3(cabEye(-0.32, 1.45, -3.0), faceOf(cast.pongCab, cabEye(CAB_SEAT.x, 1.47, -0.08)), tk));
         return;
       }
@@ -5486,7 +5619,7 @@
         handHold(card, { screen: lift, face: true, tilt: cardTilt() - 0.25 * Math.sin(flip * Math.PI), flip: flip * Math.PI });
         const onPong = t < T.cab + 5.2;
         gaze(cast.pongCab, onPong, CAB_GLANCE);
-        fLens(isNarrow() ? 66 : 60);
+        fLens(cabLens());
         /* off Pong: his eyes down to the card in his hand, the road still in the top of the frame */
         camAt(cabEye(...CAB_EYE), onPong ? faceOf(cast.pongCab, cabEye(CAB_SEAT.x, 1.47, -0.08)) : cabEye(-0.36, 1.18, -1.6));
         return;
@@ -5583,7 +5716,7 @@
         } else {                                                                           // at the pickup: Pong catches up — "Just drive."
           cabCtl.show(true); cabCtl.drops(0.5);
           pickupAt(CMP.PICKUP.x, CMP.PICKUP.z + 0.4, Math.PI);
-          fLens(isNarrow() ? 64 : 58);
+          fLens(cabLens());
           gaze(cast.pongCab, t < T.car + 4.4, CAB_GLANCE);
           camAt(cabEye(...CAB_EYE), t < T.car + 4.4 ? faceOf(cast.pongCab, cabEye(CAB_SEAT.x, 1.47, -0.08)) : cabEye(-0.3, 1.42, -3.0));
         }
@@ -5605,7 +5738,7 @@
         const sh = headOf(S, [44.5, 2.3, 26.55]);
         /* level on the road, a little long: the dash is a band at the foot of the frame, not half of it (CP9, by
            photograph: aimed down on a wide lens, a phone's frame was 45 % black dashboard) */
-        fLens(lp(isNarrow() ? 54 : 52, isNarrow() ? 40 : 32, look));
+        fLens(lp(cabLens(), isNarrow() ? 46 : 36, look));
         const eyeW = cabEye(...CAB_EYE), ahead = cabEye(-0.3, 1.5, -3.0);
         camAt(eyeW, lp3(ahead, sh, look));
         return;
@@ -5730,10 +5863,13 @@
            wipers and the meter while he cannot find the unit's number; then the window again for "When I got back..."
            (CP9, by photograph: the turn ended on the back of the driver's seat and held it) */
         const T0 = TX, kk = smo(sgk(t, 1.0, 3.2)) * (1 - smo(sgk(t, 7.2, 9.0)));
-        fLens(isNarrow() ? 60 : 54);
+        fLens(cabLens());
         /* a phone's third of the frame, turned to the front, held the back of the driver's seat and a headrest in the dark
-           (CP9, by photograph): it leans a little to the middle and looks higher, over the seats onto the windscreen */
-        if (isNarrow()) camAt(lp3([T0 - 0.36, 1.14, 0.5], [T0 - 0.2, 1.18, 0.42], kk), lp3([T0 - 1.2, 1.12, 0.3], [T0 + 0.28, 1.38, -2.6], kk));
+           (CP9, by photograph): it leans a little to the middle and looks higher, over the seats onto the windscreen.
+           (v24.21, with the taxi uncle at the wheel, by photograph: aimed there his head was off the frame's right edge —
+           the windscreen's middle is 6° right of the lens, his head 32°, a phone holds ±24° — so it aims 19° right,
+           between them: the windscreen, the meter, his head, his hand on the wheel) */
+        if (isNarrow()) camAt(lp3([T0 - 0.36, 1.14, 0.5], [T0 - 0.2, 1.18, 0.42], kk), lp3([T0 - 1.2, 1.12, 0.3], [T0 + 0.78, 1.28, -2.42], kk));
         else camAt([T0 - 0.36, 1.14, 0.5], lp3([T0 - 1.2, 1.12, 0.3], [T0 + 0.22, 1.3, -2.6], kk));
         return;
       }
@@ -7041,6 +7177,11 @@
     const { tr, step, fade, sfx, sfxFade, rawK, stage, phone } = api;
     const O = OPEN;
     c.keepFade = true;                         // it ends on black: the chapter card comes up over it (v14.1's law)
+    /* (v24.21) AND SAYS SO: the engine's cineEnd sets the black to `endFade` on the film's last frame before it looks at
+       keepFade — left at its 0, the black went off the instant the film ended and the yard showed through, already snapped
+       to where play begins, until the card's 0.9 s fade covered it (Chad: "the intro cutscene when transition to the
+       chapter title is not smooth and very abrupt and glitchy"). Every other film that hands to a card says both */
+    c.endFade = 1;
     step(0, () => stage.films.begin('open', c, api));
     tr(0, O.end, (k, t) => stage.films.frame('open', t, api), rawK);
     /* O1 · THE SHUTTER: black, then the morning coming in under the shutter */
@@ -7086,6 +7227,9 @@
     sfx(O.stop - 0.3, 'w4engoff', 0.16);       // the engine dying, from the idle's own level (CP13: at 0.5 it came back 10 dB louder to die)
     sfx(68.6, 'pg1here', 1);                   // "Here, here! This is Ajahn's samnak."  (→ ~71.6)
     fade(O.black, O.end, 0, 1);
+    /* (v24.21) the opening's music (75 s, from 0.4) goes down WITH the picture — at the film's end the engine stops every
+       cue but speech in 0.3 s, which cut it off at full under the black, the abrupt half of the hand-over */
+    sfxFade(O.black - 0.6, O.end - 0.05, 'w4open');
     step(O.end, () => stage.films.end());
   }
 

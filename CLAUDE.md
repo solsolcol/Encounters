@@ -7258,6 +7258,23 @@ What the baseline contains, by release:
   published), then the tool fetches every served file and compares it with dist/ and checks the cache headers, and exits
   non-zero unless all of it holds (Live targets, above). Deploy `6ae4f6625c6746d5a2fd8d8a`, byte-verified (298 of 298
   served files); harnesses csp, hosted, inv, cine, chapter, leak and walk on its snapshot (7 of 7).
+- **v24.21** THE DRIVERS, THE WIDER LENS, THE SMOOTH HAND-OVER, AND THE TAXI'S SEATS — Chad: *"The taxi scene has no
+  driver in front. Also the intro scene also has no driver in the moving truck. Also the field of view of inside the truck
+  and taxi both are too small and cannot see much or anything at all, especially on phone. Also the intro cutscene when
+  transition to the chapter title is not smooth and very abrupt and glitchy. Improve it."* THE DRIVERS: Pong rode the
+  cabin's root, which is shown only for shots from inside, so every shot of the moving pickup from outside had an empty
+  driver's seat — he rides the pickup itself now (`driverSync`), shown whenever a film drives it, his hands ON the
+  Rivian's wheel (`grip`: a two-bone arm IK laid on after his mixer and undone before it, `armTo`/`gripTick`, the wrists
+  at ten and two on `PK_WHEEL`); the taxi has its uncle at the wheel — chapter 3's amulet-shop owner wearing the role
+  until Chad's model (declared in `reuse`, NEEDED in docs/E4-MODELS.md), seated on the seat's cushion with his hands on a
+  new steering wheel (`TWHEEL`). THE LENS: inside the pickup and the taxi a phone saw a slice of windscreen — 88° on a
+  phone and 66° on a desktop now (`cabLens`), and the taxi's look over the seats re-aimed so the uncle's head is in a
+  phone's frame. THE HAND-OVER: the opening set `keepFade` but not `endFade`, so on its last frame the engine set the
+  black to 0 and the yard showed through, snapped to where play begins, until the card's fade covered it — `c.endFade = 1`
+  (checked: the only film in the game that missed it), and the film's music goes down with the picture instead of being
+  cut. THE TAXI'S SEATS are a real model (a reference on white, Meshy and its remesh, 9,061 triangles at 1.08 m, `e4seat`),
+  the passing streetlight's band on their leather. Deploy `6ae501eb7f171b55980bcad5`, byte-verified (299 of 299 served
+  files); harnesses csp, hosted, leak, cine and walk on its snapshot (5 of 5).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

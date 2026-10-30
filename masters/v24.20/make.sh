@@ -1,5 +1,5 @@
 #!/bin/bash
-# v24.20 — episode 4 chapter 1's vehicles, its Phra Rahu and the charms' icons. Chad, 30 Oct
+# v24.20–v24.21 — episode 4 chapter 1's vehicles, its Phra Rahu, the charms' icons and the taxi's seats. Chad, 30 Oct
 # 2026 (verbatim): "Why are there still ugly generated trucks, replace all of them with real truck models. Also your
 # icon styles dont even look like my torch icons. Also your rahu dont even look like the real thing. When you generate
 # such statues or even amulets, you must always research real images first and base it off real image references."
@@ -14,6 +14,8 @@
 #                  lacquer, the gold crown, eye rims, jewellery and the moon in his hands) — made FROM PHOTOGRAPHS of real
 #                  ones, given to the generator as its image references: Wat Si Sa Thong's great black Rahu holding its
 #                  golden moon, and two altar Rahus from dealers' catalogues; a is used
+#      seat.jpg    a modern Asian taxi's front seat from the rear left (black woven centre, leatherette bolsters, the back
+#                  panel's map pocket, chrome headrest posts, the rails)
 #
 # 2. MESHY IMAGE-TO-3D (the key lives OUTSIDE the repo, /root/.config/meshy/key — never in a file here):
 #    POST /openapi/v1/image-to-3d {image_url, ai_model latest, topology triangle, target_polycount 300000,
@@ -30,8 +32,10 @@
 #      rahu2  (on)           "glossy jet-black lacquer body and face, bright gold leaf on the crown, the eye rims, brows
 #                             and moustache, the ear ornaments, the collar, the armlets and the moon, white teeth and fangs,
 #                             white glazed clouds, a black base"
+#      seat   (auto)         "black woven fabric seat centre panels, black leatherette bolsters and sides, a hard black
+#                             plastic back panel with a fabric map pocket, chrome headrest posts, black metal seat rails"
 #    then its REMESH (POST /openapi/v1/remesh {input_task_id, target_formats [glb], topology triangle,
-#    target_polycount}): pickup, sedan, suv 30,000; moto 20,000; rahu2 40,000.
+#    target_polycount}): pickup, sedan, suv 30,000; moto 20,000; rahu2 40,000; seat 15,000.
 #
 # 3. PREPARED (tools/prepmeshy.mjs: baked, turned, sized, the footprint centred, JPEG sheets, meshopt; each one
 #    photographed on its own with tools/shootmodel.mjs to settle its facing — a car's nose at -z, as the yard's cars):
@@ -41,6 +45,8 @@ ERR=0.003 node tools/prepmeshy.mjs $M/remeshed-sedan.glb assets/e4sedan.glb 4.4 
 ERR=0.003 node tools/prepmeshy.mjs $M/remeshed-suv.glb assets/e4suv.glb 4.8 l 1 -90 1024
 ERR=0.003 node tools/prepmeshy.mjs $M/remeshed-moto.glb assets/e4moto.glb 1.92 l 1 90 1024
 ERR=0.003 node tools/prepmeshy.mjs $M/remeshed-rahu2.glb assets/e4rahu.glb 0.2 h 1 0 1024
+# (v24.21) the taxi's front seat: 1.08 m from its rails to its headrest, turned to face -z (the road)
+ERR=0.004 node tools/prepmeshy.mjs $M/remeshed-seat.glb assets/e4seat.glb 1.08 h 0.6 180 1024
 #
 # 4. THE ICONS (icons/): the three charms' inventory pictures in the style of Chad's own torch and amulet icons
 #    (`icontorch`, `iconamulet`): a GPT Image picture with his two icons as the STYLE references beside the charm's own
