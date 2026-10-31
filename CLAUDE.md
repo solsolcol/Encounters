@@ -7342,7 +7342,7 @@ What the baseline contains, by release:
   - **The driver's phone** stands on a stalk on the dash's top just right of the meter, 9° from his hand on both
     screens.
   - No word moved; sheet v133 stands. Deploy `6ae5737bd3db48ecfd752a26`, byte-verified (308 of 308 served files);
-    chaptertest green, and harnesses csp, hosted, leak and cine green on its snapshot.
+    chaptertest green, and harnesses csp, hosted, leak, cine and walk green on its snapshot (5 of 5, 1283 s).
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so
