@@ -7310,6 +7310,39 @@ What the baseline contains, by release:
     `npm run build` now runs `tools/probes/dupfuncs.mjs` over every chapter and the engine (LEARNINGS).
   Deploys `6ae50cc8269a1c663c6e6493` (the shop), `6ae511826d4c34d18f80a5ab` (the cloths) and `6ae514c89c721517a7827263`
   (the denser shop), each byte-verified (308 of 308 served files). No word on the sheet moved; sheet v133 stands.
+- **v24.23** THE TAXI, LIT, AND THE CITY BEHIND THE RAIN — Chad, 31 Oct: *"How does the taxi scene look like now"*. It
+  was photographed on the live site, phone and desktop, and three things were wrong with it. When he looked to the
+  front, about two thirds of a phone's picture was black: the roof and the black leather seats. The dashboard phone
+  stood right behind the uncle's hand, so he read as a man on his phone while he drove. And his window showed coloured
+  discs on wet glass, not a city. Put to him, he answered *"Ok do as you suggested"*. All in
+  `src/chapters/e4/e4c1.js`, so no other chapter moves. docs/V24.21-PLAN.md §0–§1 (12) and §3 are the record.
+  - **The city.** `makeCityNight` draws Singapore at night beside the taxi:
+    - HDB blocks with their corridor tubes or their windows lit (each window its own brightness — lit evenly they read
+      as a printed grid), a water tank on each roof and a red light on the tallest;
+    - a row of shops lit at street level under their signboards, rain trees on the verge, the streetlights along the
+      far kerb (LED white mostly, the odd old sodium), the traffic in the far lane, and every light again in the wet
+      road.
+    - It is drawn, then blurred a little (`blurWrap`: three box passes, wrapping across the strip so it still repeats
+      with no seam; about 0.2 s at build). The old discs go on top of it, fewer and fainter (`bokehDiscs`).
+    - The windscreen's strip is the road running away to its vanishing point: buildings and lamps on either side, the
+      cars ahead, a green overhead sign and the junction's lights.
+    - The side strip now stands to 6.4 m. It stopped at 5.2, and a band of black sky showed over it at the top of his
+      window.
+    - Each side has its own copy of the strip. A plane's u runs to the back on his right and to the FRONT on his left,
+      so the one offset the two had shared slid the city past his own window toward the front: a taxi in reverse,
+      since v24.0 (checked by working the planes' matrices through; LEARNINGS).
+  - **The cabin.** TAXI's lights are about doubled, the roof lining is a pale grey fabric and the doors dark grey.
+    - That alone left the seats black: a black seat stays black under any light the world can afford (photographed).
+      So each cabin material paints its own glow from the city (`userData.glow`, read by `sweepBand`), shaped by its
+      world normal — a little more on faces turned up and toward a window — and tuned to sit 30–45 of 255 on screen.
+    - A passing lamp's band is shaped the same way. Laid flat and made stronger, it had lit the seat backs a flat beige
+      (CP6's "beige box", photographed again).
+    - Three rounds of photographs: too dark, then grey as day, then night.
+  - **The phone's view**, turned to the front, aims 5° under level where it aimed 2° over.
+  - **The driver's phone** stands on a stalk on the dash's top just right of the meter, 9° from his hand on both
+    screens.
+  - No word moved; sheet v133 stands. Deploy `6ae5737bd3db48ecfd752a26`, byte-verified (308 of 308 served files);
+    chaptertest green, and harnesses csp, hosted, leak and cine green on its snapshot.
 - **v10.8** THE EVENING, THE TOILET, THE FLAGPOLE, AND SCENE C REWRITTEN —
   Chad's eight notes across both episode-2 chapters. `src/main.js` gains three
   `STING_SAMPLE` rows and three names in the take sets and nothing else, so

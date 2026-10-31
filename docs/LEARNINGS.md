@@ -7012,3 +7012,26 @@ cut (sharing its vertices and maps) when it is small.
   SCREEN — its height over its distance against the lens's frame height, not a distance alone (the altar's Buddha is
   2.4 m away and the hero of its shot) — and decide it where the lens is set (`camAt`), or a cut shows one frame of the
   last shot's level. The wide went to 274–304k with two and a half times the stock.
+- **A strip shared by two planes that face each other slides opposite ways** (v24.23). Episode 4 chapter 1's taxi had
+  one city texture on a plane beside each door and one falling offset sliding it past. Each plane is turned to face the
+  car, so its +u runs toward the back on one side and toward the FRONT on the other. The offset that slid the city
+  backward past the driver's window slid it forward past the passenger's own: a taxi in reverse in every ending since
+  v24.0.
+  - No still photograph can show a direction, and no harness asks for one.
+  - It was found only by working the two planes' matrices through (`dbg-udir.mjs`: where does local +x land in world z?).
+  - The fix: give each side its own copy of the texture (one image, one upload) and sign its offset by where that
+    plane's u runs.
+  - Any texture scrolled on more than one plane is checked this way.
+- **A black material at night stays black under any light the world can afford — paint its glow** (v24.23). The
+  taxi's leather seats and its roof lining read as one black box round its windows.
+  - TAXI's hemisphere was lifted 2.6×, its key and fill about doubled, and the hemisphere's ground colour raised from
+    black. Photographed, the seats were still black: a near-black albedo times any plausible night light sits in the
+    tone curve's toe.
+  - The roof faces down, so it takes only the hemisphere's ground colour, which a few levels of grey cannot lift.
+  - What worked is a glow each material paints on itself (an emissive the room never adds as a light, v15.1),
+    `userData.glow`. It is shaped by the world normal, a little more on faces turned up and toward a window, so the
+    shapes still read.
+  - It is tuned by the radiance its target on-screen value needs through the exposure (1.42) and the ACES curve:
+    30–45 of 255 is about 0.016–0.025 linear before exposure.
+  - It took three rounds of photographs: too dark, grey as day, night. A light that moves across such surfaces (the
+    passing lamp's band) is shaped the same way, or it lays a flat colour on them.
