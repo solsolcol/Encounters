@@ -85,8 +85,11 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
 
 ## E. Housekeeping
 
-- **CLAUDE.md is ~663 KB (~165k tokens), loaded every session**; this session was summarised 26 times in three days.
-  Moving the release history verbatim to its own file was left for Chad at v14.16 (it was ~84k then); recommended.
+- ~~**CLAUDE.md is ~663 KB (~165k tokens), loaded every session**; this session was summarised 26 times in three days.
+  Moving the release history verbatim to its own file was left for Chad at v14.16 (it was ~84k then); recommended.~~
+  **DONE 31 Oct (after v24.23)**, Chad: "Do what you recommend". The diary is docs/HISTORY.md word for word, its
+  standing rules are CLAUDE.md's "Chad's standing rules", CLAUDE.md is ~115 KB (~29k tokens); the proof and the
+  independent reader's list are masters/history-split/.
 - The release zip (`masterz-encounters-vN.N.zip`, ~570 MB) is built every release and has not been handed to him
   since the site outgrew a phone's upload; Netlify keeps every published deploy for two-tap rollback.
 - Tags stay local (`git push --tags` → 403); every release commit's message begins with its version.

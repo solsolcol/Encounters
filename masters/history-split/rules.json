@@ -1,0 +1,3096 @@
+[
+{
+"g": "chad",
+"id": "C1",
+"v": "v9.5 (also v10.0, v9.6, v14.6, v24.9)",
+"s": "NEW",
+"rule": "Every mechanic, minigame, prop and item must serve the spiritual story and earn its place: no military-sim detours, no filler that nothing later reads, nothing kept that serves no purpose.",
+"q": [
+"should all still link back to spiritual stuff",
+"a mechanic nothing reads is filler"
+]
+},
+{
+"g": "chad",
+"id": "C2",
+"v": "v23.0",
+"s": "NEW",
+"rule": "The game is spiritual education, never cheap horror or jump scares; greed and desire are never shown as a right reason, and his stated purpose for a chapter governs every beat of it.",
+"q": [
+"This is not just cheap horror entertainment and jump scare."
+]
+},
+{
+"g": "chad",
+"id": "C3",
+"v": "v14.10 (also v9.2, v12.4, v16.1, v17.6)",
+"s": "NEW (related top line: 'He decides scope')",
+"rule": "Change only what he asked and keep everything else exactly as it was; if an addition does not fit a shot, say so and ask instead of re-staging it; never remove built flow unless told.",
+"q": [
+"An ask to ADD a thing to a shot is not an ask to re-stage the shot",
+"Do not remove anything you already built",
+"Dont touch the previous ghosts, you are regressing"
+]
+},
+{
+"g": "chad",
+"id": "C4",
+"v": "v12.4 (also v5.10, v17.3, v24.17)",
+"s": "NEW",
+"rule": "Use his models as he delivered them: never alter his files or their paint (a ruling such as 'no green' is applied at runtime), and leave a scan's own flaws as delivered.",
+"q": [
+"why cant u just use the ghost cyclist model the way i gave it to you?"
+]
+},
+{
+"g": "chad",
+"id": "C5",
+"v": "v24.18 (also v14.5, v12.2)",
+"s": "NEW",
+"rule": "Use the models he has already supplied, and use them to the fullest (their interiors, their own looks), before building anything in code; check the models docs for what he already sent.",
+"q": [
+"you are not even using it to the fullest",
+"you could have used the 3d truck model that you already have"
+]
+},
+{
+"g": "chad",
+"id": "C6",
+"v": "v14.14 (also v16.9, v18.8, v24.17)",
+"s": "NEW",
+"rule": "Every amulet, sacred image and hero model he gives keeps its full detail (every triangle, every map) wherever it is seen close; a lighter level is only for distance.",
+"q": [
+"every amulet ships at FULL detail",
+"why did u cut the temple down?"
+]
+},
+{
+"g": "chad",
+"id": "C7",
+"v": "v15.0 (also v8.4)",
+"s": "NEW",
+"rule": "Optimise only in ways that cost no visual quality or fidelity at all.",
+"q": [
+"without resorting to compromising visual quality or fidelity in any way"
+]
+},
+{
+"g": "chad",
+"id": "C8",
+"v": "v14.16 (also v15.1)",
+"s": "NEW",
+"rule": "Adopt an objectively better solution only when very sure of it, and prove that new work has not silently broken or undone earlier fixes.",
+"q": [
+"But you have to be very sure about it.",
+"were not accidentally undone."
+]
+},
+{
+"g": "chad",
+"id": "C9",
+"v": "v14.15",
+"s": "NEW",
+"rule": "Loading must be smart: no stutter and no late pop-in; nothing heavy happens while the world is on screen.",
+"q": [
+"nothing heavy happens while the world is on screen."
+]
+},
+{
+"g": "chad",
+"id": "C10",
+"v": "v15.3 (also v19.0)",
+"s": "NEW",
+"rule": "The loading word is on screen whenever the player waits (the one exception: the title card straight after an opening film says no 'Loading').",
+"q": [
+"The loading text should always appear and be present whenever the player waits"
+]
+},
+{
+"g": "chad",
+"id": "C11",
+"v": "v13.0 (also v5.15, v14.7, v19.3, v21.12, v23.1)",
+"s": "NEW",
+"rule": "Work in checkpoints and milestones with the plan, the steps and the progress written down so the work survives memory loss; queued asks are recorded verbatim in a plan doc before work begins.",
+"q": [
+"so that you survive any potential memory loss"
+]
+},
+{
+"g": "chad",
+"id": "C12",
+"v": "v17.0 (also v21.9, v21.16)",
+"s": "NEW",
+"rule": "Before calling a batch done, check every one of his asks against the live build, by the thing itself.",
+"q": [
+"What else did you miss?",
+"checked each against the live build by the thing itself"
+]
+},
+{
+"g": "chad",
+"id": "C13",
+"v": "v24.2 (also v18.5, v21.1)",
+"s": "NEW",
+"rule": "A debug request covers the whole chapter in depth, not only what he named; if a pass was not enough, say so honestly.",
+"q": [
+"not just what i mentioned"
+]
+},
+{
+"g": "chad",
+"id": "C14",
+"v": "v8.7",
+"s": "NEW (the top's minigame-picture rule assumes a brief but never requires one)",
+"rule": "Every minigame gives its instructions first, with a START, before anything is timed.",
+"q": [
+"The minigame must give instructions first"
+]
+},
+{
+"g": "chad",
+"id": "C15",
+"v": "v24.12 (also v9.7, v24.7)",
+"s": "NEW",
+"rule": "A minigame must test the lesson, not the player's eyesight, memory or touch latency; one that does not serve is replaced by watching or by playing it out.",
+"q": [
+"hard for eyesight and memory, not for the lesson",
+"no need to have that minigame"
+]
+},
+{
+"g": "chad",
+"id": "C16",
+"v": "v21.9",
+"s": "ALREADY_TOP (pressAim row; his words read as general, worth a line of its own)",
+"rule": "Objectives are completed by a press (tap, click or E), never by an auto timer for looking at them.",
+"q": [
+"I don't want this auto timer"
+]
+},
+{
+"g": "chad",
+"id": "C17",
+"v": "v14.8 (also v10.8)",
+"s": "NEW",
+"rule": "The next place to go is always marked and visible once it becomes the goal; episode 2 onward names it in the objective line, with a waypoint where the premise lives.",
+"q": [
+"It should always be visible ... so that player knows where to go next."
+]
+},
+{
+"g": "chad",
+"id": "C18",
+"v": "v21.21",
+"s": "NEW",
+"rule": "Nothing is offered to the player while a line it hands off to is still playing; the next objective appears only after that line and everything before it are done.",
+"q": [
+"don't allow the player to tap on the next objective yet until the voiceline and everything is totally completed"
+]
+},
+{
+"g": "chad",
+"id": "C19",
+"v": "v21.19 (also v24.8, v24.21, v24.22)",
+"s": "NEW (the post-diary AUDIT note explains the phone's centre crop)",
+"rule": "Every shot and screen must work on both desktop and phone framing.",
+"q": [
+"this must be done well on both desktop and phone framing"
+]
+},
+{
+"g": "chad",
+"id": "C20",
+"v": "v21.13 (also v24.3)",
+"s": "NEW",
+"rule": "Every place is full of sound: ambient beds, environmental one-shots, and music under every film and ending; no quiet room with nothing in it.",
+"q": [
+"there is a general lack of ambient sound and environmental sound effects",
+"there is a huge lack of music, ambient sounds, sfx, stings or other sounds"
+]
+},
+{
+"g": "chad",
+"id": "C21",
+"v": "v10.6 (also v11.3, v10.8, v20.1, v21.4, v22.4)",
+"s": "NEW",
+"rule": "Anything chosen on taste (music, scary beds, laughs, chants) goes to him as loudness-matched previews of every candidate and his ear decides; measurement only screens.",
+"q": [
+"His ear beats my measure"
+]
+},
+{
+"g": "chad",
+"id": "C22",
+"v": "v16.3 (also v16.4, v16.5, v16.9, v17.1, v17.3, v19.1, v19.2)",
+"s": "NEW",
+"rule": "A Thai temple follows his standing rulings: white, yellow and gold with red only as accent; white pillars, never red; no green; no flags; no long Lanna banners; red-and-gold gable carving; plain pale teak ceiling; no mural; no halo behind the Buddha; nothing Chinese; the monk's seat not beside the Buddha on the same wall.",
+"q": [
+"Chad's standing rulings (plain pale teak ceiling, no mural)",
+"there are no flags in temples",
+"No green anywhere on the temple",
+"no red on a pillar"
+]
+},
+{
+"g": "chad",
+"id": "C23",
+"v": "v17.4 (also v18.0, v24.7, v23.6)",
+"s": "NEW (the post-diary 'Next up' text quotes his e4c1 'no reuse' ask)",
+"rule": "Do not repeat the same character model, place or scene across chapters; each chapter looks fresh, and any reuse is declared.",
+"q": [
+"i dont want to repeat the same granny",
+"why did you completely copy the merit making scene again?"
+]
+},
+{
+"g": "chad",
+"id": "C24",
+"v": "v21.22 (also v21.10, v22.0, v23.0)",
+"s": "NEW",
+"rule": "Facts about real masters and beliefs are researched deeply in English and Thai sources, checked by an independent reader who tries to refute them, every source written down; supernatural claims are labelled popular belief; nothing of the trade (prices, lottery numbers, wish-granting); occult matters framed respectfully.",
+"q": [
+"but note them as popular belief",
+"The beliefs carry nothing of the trade"
+]
+},
+{
+"g": "chad",
+"id": "C25",
+"v": "v17.6 (also v17.7)",
+"s": "ALREADY_TOP in part (sacred things begin as real photographs); adds names, meanings and flagging",
+"rule": "Research a sacred design's real name and meaning before adding it, match the source's own images exactly, and flag a name that matches nothing to him instead of guessing.",
+"q": [
+"Research on what they are before adding them.",
+"is flagged to Chad"
+]
+},
+{
+"g": "chad",
+"id": "C26",
+"v": "v23.2 (also v23.3)",
+"s": "NEW",
+"rule": "Episodes follow the Encounters casebook's case order.",
+"q": [
+"According to the encounters casebook"
+]
+},
+{
+"g": "chad",
+"id": "C27",
+"v": "v23.4",
+"s": "NEW",
+"rule": "Each episode is themed around one core narrative, distinct from the next one.",
+"q": [
+"the past episodes were all themed around a core narrative"
+]
+},
+{
+"g": "chad",
+"id": "C28",
+"v": "v23.5",
+"s": "NEW (also stated in the post-diary 'Next up' text)",
+"rule": "Ajahn Krukai's model stays untouched; chaptertest pins it.",
+"q": [
+"Make sure ajahn krukai's model in ep3 is unaffected and untouched."
+]
+},
+{
+"g": "chad",
+"id": "C29",
+"v": "v5.23 (also v5.16, v5.20)",
+"s": "NEW",
+"rule": "Something he drops is closed for good: never ask for it again, and withdraw the ask from every doc that carried it.",
+"q": [
+"do not ask for the PNG again",
+"with the asks withdrawn from every doc"
+]
+},
+{
+"g": "chad",
+"id": "C30",
+"v": "v5.23 (also v14.12, v16.6, v18.9, v22.5, v24.15)",
+"s": "ALREADY_TOP in part (attributions stay in the credits panel); adds that his own models get none and a credit leaves with its asset",
+"rule": "His own models get no credit row; everyone else's work is credited with its link, and a credit row goes when its asset leaves the game.",
+"q": [
+"the panel lists other people's work, and she is his own"
+]
+},
+{
+"g": "chad",
+"id": "C31",
+"v": "v21.7 (also v8.3, v9.3, v14.13, v20.1, v21.30)",
+"s": "NEW",
+"rule": "His words are used exactly (lines, names, descriptions, punctuation), and any correction to them is said out loud.",
+"q": [
+"his dots kept as ellipses",
+"one stray space before a full stop dropped, and said so"
+]
+},
+{
+"g": "chad",
+"id": "C32",
+"v": "v21.10",
+"s": "NEW",
+"rule": "Where his own text disagrees with the sources, put it to him rather than changing it.",
+"q": [
+"Put to Chad, not changed: his episode-1 item text"
+]
+},
+{
+"g": "chad",
+"id": "C33",
+"v": "v22.0",
+"s": "NEW",
+"rule": "When correcting something, do not overshoot to the opposite extreme.",
+"q": [
+"stop swinging from one extreme to the other"
+]
+},
+{
+"g": "chad",
+"id": "C34",
+"v": "v8.7",
+"s": "NEW",
+"rule": "When he says 'this should be a standard', the engine owns the behaviour for every chapter, not just the one that asked.",
+"q": [
+"is a request for the ENGINE to own a behaviour"
+]
+},
+{
+"g": "chad",
+"id": "C35",
+"v": "v24.22 (also v21.2, v21.18, v24.21)",
+"s": "NEW",
+"rule": "Places look like the real kind of place (real stock and dressing, a real building when one is named), props make sense for the character, and every moving vehicle has its driver.",
+"q": [
+"It should be on laptop.",
+"The taxi scene has no driver in front."
+]
+},
+{
+"g": "chad",
+"id": "C36",
+"v": "v24.20 (also v6.15, v24.14, v24.19)",
+"s": "NEW (CONFLICT: the top's ASK HIM FOR THE MODELS allows 'a plant or vehicle built in code' as a placeholder)",
+"rule": "No code-generated trees or vehicles on screen: real models only, the code-built kit drawn only if a file never lands.",
+"q": [
+"replace all of them with real truck models",
+"i dont want to see any old generated ugly trees anymore"
+]
+},
+{
+"g": "chad",
+"id": "C37",
+"v": "v21.17",
+"s": "NEW",
+"rule": "A beat that matters is guaranteed to be seen, never left to chance or to one option.",
+"q": [
+"there is no guarantee that the user will see it"
+]
+},
+{
+"g": "chad",
+"id": "C38",
+"v": "v7.7 (also v21.30, v24.7)",
+"s": "NEW (the top covers silence, not black)",
+"rule": "No long stretches of black in a film or ending; there is always a picture.",
+"q": [
+"why is the opening cinematic black for so long?",
+"where it held 18 s of black"
+]
+},
+{
+"g": "chad",
+"id": "C39",
+"v": "v5.29 (also v19.7, v20.0)",
+"s": "NEW",
+"rule": "A crowd of repeated models is SOLVED for maximum visual diversity (a balanced deal, a seeded shuffle, a local search over neighbours), with a stats report that keeps the claim checkable.",
+"q": [
+"maximum visual diversity. Mathematically."
+]
+},
+{
+"g": "chad",
+"id": "C40",
+"v": "v9.3 (also v21.14, v23.1)",
+"s": "NEW",
+"rule": "No real organisation's crest, operator name or brand on props; liveries and packaging are generic.",
+"q": [
+"deliberately NOT anyone's real crest",
+"a drawn green-and-white livery with no operator's name"
+]
+},
+{
+"g": "chad",
+"id": "C41",
+"v": "v14.11",
+"s": "NEW (minor)",
+"rule": "Every item carries a colour-coded rarity (common grey, rare blue, ultra rare pink).",
+"q": [
+"Add rarity value with colour coding"
+]
+},
+{
+"g": "chad",
+"id": "C42",
+"v": "v23.3 (also v6.0)",
+"s": "NEW (minor)",
+"rule": "Episode titles are his to set; until he names one, an episode carries the casebook's own title.",
+"q": [
+"carries the casebook's title for where that begins"
+]
+},
+{
+"g": "chad",
+"id": "C43",
+"v": "v22.4",
+"s": "NEW",
+"rule": "Use the newest generation models, and never report a service out of credits from an estimate: check the real balance.",
+"q": [
+"an estimate is not a balance check"
+]
+},
+{
+"g": "chad",
+"id": "C44",
+"v": "v19.2 (also v21.10, v21.23, v24.3, v24.8)",
+"s": "ALREADY_TOP in part (base-game feel is its own decision); adds: anything outside the ask or game-wide",
+"rule": "A finding outside the ask, or one that would change every chapter or the base game, is listed for him with the reason and left as it is.",
+"q": [
+"Put to Chad, not changed",
+"offered to Chad, not changed"
+]
+},
+{
+"g": "chad",
+"id": "C45",
+"v": "v23.6",
+"s": "NEW (said for episode 4 chapter 1; reads as the standard for a chapter build)",
+"rule": "A chapter is built to full completion, nothing skipped, with its own music and sound generated.",
+"q": [
+"Do not skip anything. Do everything, generate the music and sound effects too"
+]
+},
+{
+"g": "chad",
+"id": "C46",
+"v": "v14.13",
+"s": "NEW (minor)",
+"rule": "A model he sends with no place decided is prepared and kept ready, and placed only when he picks where.",
+"q": [
+"but i want you to save it first ready for use"
+]
+},
+{
+"g": "process",
+"id": "P1",
+"v": "v8.4 (also v6.10, v14.15, v21.9, v21.15, many)",
+"s": "NEW",
+"rule": "Measure first, before anything moves.",
+"q": [
+"Measured before anything moved"
+]
+},
+{
+"g": "process",
+"id": "P2",
+"v": "v13.1 (also v5.21, v9.0, v12.4)",
+"s": "NEW +L",
+"rule": "Photograph it: numbers, probes and a plausible bounding box can all say yes while the frame is wrong, and a fix is proven to change the picture (render it in red if need be) before it is reported to him.",
+"q": [
+"The flash was PHOTOGRAPHED, never inferred",
+"which I reported to Chad as the fix, was a NO-OP"
+]
+},
+{
+"g": "process",
+"id": "P3",
+"v": "v6.17 (also v8.0, v19.8, v20.0, v24.13)",
+"s": "NEW +L",
+"rule": "Verify a model by photographing each kind on its own, every clip, front and side, before wiring it in.",
+"q": [
+"photographing each KIND on its own"
+]
+},
+{
+"g": "process",
+"id": "P4",
+"v": "v5.31 (also v5.21, v7.6)",
+"s": "NEW +L",
+"rule": "Judge a model at the distance the player can walk up to, never only from a wide shot.",
+"q": [
+"judged this time at the distance the player can walk up to",
+"It passed because it was reviewed from across the bunk"
+]
+},
+{
+"g": "process",
+"id": "P5",
+"v": "v5.11 (also v9.3, v14.14, v16.5, v24.6)",
+"s": "NEW +L",
+"rule": "Review on a phone at real size and pixel ratio (his only device): desktop and close-up previews miss the phone-only path and minified textures.",
+"q": [
+"it may look fine in your preview but not when im in the game",
+"every review photo was desktop"
+]
+},
+{
+"g": "process",
+"id": "P6",
+"v": "v14.5",
+"s": "NEW +L",
+"rule": "A phone probe must be a touch device, because the phone path depends on touch; a narrow desktop window is not a phone.",
+"q": [
+"so a 390 px window is not a phone"
+]
+},
+{
+"g": "process",
+"id": "P7",
+"v": "v6.8 (also v7.2, v19.2)",
+"s": "NEW",
+"rule": "Read every frame of a film on both crops (desktop and the phone's centre crop, as contact sheets) before shipping it.",
+"q": [
+"Every frame of the 62 s WAS looked at this time",
+"Every shipped frame was read on both crops first"
+]
+},
+{
+"g": "process",
+"id": "P8",
+"v": "v18.5 (also v14.1, v21.1, v22.3, v24.0, v24.2, v24.5)",
+"s": "NEW",
+"rule": "The deep-debug method: read-only lenses with one concern each (save and resume, geometry and framing, sound and timing, models and rigs, words and HUD, the engine since the last review, a regression audit of the last pass), a real-input phone play-through to every ending, every beat photographed on the phone crop, every finding verified before it is touched, and verdicts plus what was left alone written down.",
+"q": [
+"every lead verified against today's code or a photograph before anything was touched"
+]
+},
+{
+"g": "process",
+"id": "P9",
+"v": "v12.3 (also v14.2, v14.4, v14.16)",
+"s": "NEW",
+"rule": "Audit findings are leads, not bugs: verify each adversarially (default to refuted, quote today's line, ask whether a player can reach it) before fixing.",
+"q": [
+"a list of unverified claims is a list of LEADS, not of bugs"
+]
+},
+{
+"g": "process",
+"id": "P10",
+"v": "v24.5 (also v14.4, v18.5)",
+"s": "NEW",
+"rule": "Before calling a chapter debugged, review the code added since the last review and play every ending with the sound on; report honestly anything that did not pass, and name your own regressions as yours.",
+"q": [
+"endings B–D had never been played with the sound on",
+"Not passed, and said so",
+"A REGRESSION OF MINE"
+]
+},
+{
+"g": "process",
+"id": "P11",
+"v": "v24.10",
+"s": "NEW",
+"rule": "Photograph endings after a REAL play-through as well as after a probe's jump, because what play changes and what an ending re-stages must be read together.",
+"q": [
+"the bug needed the gift in play and the re-staging in the ending read together"
+]
+},
+{
+"g": "process",
+"id": "P12",
+"v": "v24.5",
+"s": "NEW",
+"rule": "Never dismiss what a photograph shows as an artefact; measure it.",
+"q": [
+"the photographs that showed it had been read as seek artefacts"
+]
+},
+{
+"g": "process",
+"id": "P13",
+"v": "v7.3 (also v21.0, v21.8, v22.2, v22.5, v23.0, v24.9)",
+"s": "NEW",
+"rule": "Test saves at every phase: Continue from each saved phase through the title on a phone, a same-sitting Continue, every way into a chapter (Continue, the selector, natural progression), and saves from the previous version.",
+"q": [
+"it found what a screenshot cannot",
+"every way in was driven with real input"
+]
+},
+{
+"g": "process",
+"id": "P14",
+"v": "v18.4",
+"s": "NEW",
+"rule": "A ?ch= probe reads and writes no save, so test the real entry paths; and a save fix must also repair the saves already on his phone.",
+"q": [
+"which reads and writes NO save",
+"so the save ALREADY on his phone opens right"
+]
+},
+{
+"g": "process",
+"id": "P15",
+"v": "v8.2 (also v8.1)",
+"s": "NEW",
+"rule": "Test a same-chapter replay both ways: run the pass twice through the real replay path and diff it, and read what reset() forgets.",
+"q": [
+"answered two ways, because neither alone was enough"
+]
+},
+{
+"g": "process",
+"id": "P16",
+"v": "v18.3 (also v16.0, v21.25, v24.1, v24.2)",
+"s": "NEW +L",
+"rule": "Probes drive the real input path (real pointer and CDP touch events with their own timestamps), never the press function, and simulate what headless Chromium cannot (the long-press menu).",
+"q": [
+"A minigame probe drives the REAL input path",
+"headless Chromium sends no long-press menu"
+]
+},
+{
+"g": "process",
+"id": "P17",
+"v": "v21.2",
+"s": "NEW",
+"rule": "Test a reaction minigame on a fake clock with a simulated human reaction delay.",
+"q": [
+"a simulated person tapping 0.75 s after a light shows"
+]
+},
+{
+"g": "process",
+"id": "P18",
+"v": "v24.9",
+"s": "NEW",
+"rule": "A probe drives the way a player can (reach the title through the menu, follow the order as given).",
+"q": [
+"a probe drives the way a player can"
+]
+},
+{
+"g": "process",
+"id": "P19",
+"v": "v8.5 (also v14.0)",
+"s": "NEW +L",
+"rule": "Probes and harnesses capture page errors and the console, and count what should be there: a probe that only checks what is there cannot see what never loaded.",
+"q": [
+"a probe that only checks what IS there cannot see what never loaded"
+]
+},
+{
+"g": "process",
+"id": "P20",
+"v": "v6.3 (also v15.2)",
+"s": "NEW +L",
+"rule": "A harness exits non-zero on any false check; runtests reads exit codes, not printed booleans.",
+"q": [
+"reads exit codes, not printed booleans"
+]
+},
+{
+"g": "process",
+"id": "P21",
+"v": "v8.7 (also v22.0)",
+"s": "ALREADY_TOP ('trust state polls, never stopwatches')",
+"rule": "No fixed waits in a harness; poll.",
+"q": [
+"a fixed wait in a harness is a coin toss, which is worse than no check."
+]
+},
+{
+"g": "process",
+"id": "P22",
+"v": "v12.0 (also v21.29)",
+"s": "NEW +L",
+"rule": "On a slow box a screenshot after a fixed wait can come before any frame is drawn: wait for a drawn frame and for animations to settle.",
+"q": [
+"a screenshot after a fixed wait can precede any rendered frame on a ~1 fps box"
+]
+},
+{
+"g": "process",
+"id": "P23",
+"v": "v6.17 (also v5.25, v6.1)",
+"s": "NEW +L",
+"rule": "Photograph a world from play, not under a paused film: cineSeek re-applies every passed track, and seek() pauses, so a cue only proves itself after resume().",
+"q": [
+"photograph a world from PLAY",
+"is what proves a sound plays"
+]
+},
+{
+"g": "process",
+"id": "P24",
+"v": "v9.3 (also v21.17)",
+"s": "NEW +L",
+"rule": "Let a chapter boot before driving one of its phases; a beat fired before its first frame is re-applied as a resume.",
+"q": [
+"let a chapter BOOT before driving one of its phases"
+]
+},
+{
+"g": "process",
+"id": "P25",
+"v": "v9.2",
+"s": "NEW +L",
+"rule": "Every harness runs muted (headless has no touch), and when a new thing fails, ask an old thing the same question.",
+"q": [
+"every harness runs MUTED",
+"when a new thing fails, ask an old thing the same question"
+]
+},
+{
+"g": "process",
+"id": "P26",
+"v": "v5.29 (also v9.2, v9.3, v20.0)",
+"s": "NEW",
+"rule": "Make a claim checkable with a stage reporting function (seatStats, ambient, marchRate, palms); the cue log cannot see sounds played through worldSfx.",
+"q": [
+"so the claim stays checkable",
+"cannot see `worldSfx`"
+]
+},
+{
+"g": "process",
+"id": "P27",
+"v": "v8.2",
+"s": "NEW +L",
+"rule": "Take a cue-log baseline before the call, not after the state changes.",
+"q": [
+"take a cue-log baseline BEFORE the call"
+]
+},
+{
+"g": "process",
+"id": "P28",
+"v": "v12.4 (also v8.4)",
+"s": "NEW",
+"rule": "Probe traps: hiding a mesh hides its children; a canvas read-back is blank without preserveDrawingBuffer; renderer.info resets on each of main.js's two renders a frame.",
+"q": [
+"a pixel grid that returns all zeros is a void measurement, not a black screen",
+"main.js renders TWICE a frame"
+]
+},
+{
+"g": "process",
+"id": "P29",
+"v": "v21.25 (also v21.26, v21.28, v21.31, v22.3, v23.1)",
+"s": "NEW (minor; LEARNINGS-level)",
+"rule": "Slow-box probe laws: two 'quick' real clicks are not quick; a synthesized vertical touch is a tap; observe a caption, never sample it; a phase jump leaves the line queue full; never return the page's own promise from evaluate; a capped chapter clock turns a wait into minutes.",
+"q": [
+"observe a caption, never sample it",
+"a probe's wait for a beat is minutes there, not seconds"
+]
+},
+{
+"g": "process",
+"id": "P30",
+"v": "v15.0 (also v8.6, v15.2)",
+"s": "NEW",
+"rule": "An optimisation is proven, not argued: behind an OPT switch, the same frame compared pixel for pixel and every matrix bit for bit, plus invariants checked.",
+"q": [
+"proven rather than argued: THE SAME PIXELS",
+"Verified by invariant, not by eye"
+]
+},
+{
+"g": "process",
+"id": "P31",
+"v": "v14.16 (also v18.2, v23.5)",
+"s": "NEW",
+"rule": "Prove every new check by breaking what it guards, on a throwaway copy, never on the real asset.",
+"q": [
+"each proven by breaking what it guards",
+"never on the model"
+]
+},
+{
+"g": "process",
+"id": "P32",
+"v": "v14.1 (also v8.2, v21.1, v23.1, v24.6, v24.22)",
+"s": "NEW",
+"rule": "Fix the class, not just the instance: add the engine default with a console warning, the harness check or the build-time static scan that stops it coming back.",
+"q": [
+"Fixed in three places, because the class is what matters"
+]
+},
+{
+"g": "process",
+"id": "P33",
+"v": "v9.3 (also v10.4)",
+"s": "NEW",
+"rule": "If the same fix fails twice, the measure is the wrong one; find the measured why.",
+"q": [
+"two releases of re-measuring the same way is the tell that the measure is the wrong one"
+]
+},
+{
+"g": "process",
+"id": "P34",
+"v": "v9.0",
+"s": "NEW",
+"rule": "Revert a guard written against a hypothesis the moment measurement disproves it.",
+"q": [
+"REVERTED the moment measurement disproved it"
+]
+},
+{
+"g": "process",
+"id": "P35",
+"v": "v7.4 (also v21.0)",
+"s": "NEW +L",
+"rule": "Harnesses teleport, so they cannot see a sealed route: walktest floods the real collision grid from the spawn and from every arrival a stage names.",
+"q": [
+"every one of them TELEPORTS the camera",
+"every probe had TELEPORTED there"
+]
+},
+{
+"g": "process",
+"id": "P36",
+"v": "v21.13",
+"s": "NEW",
+"rule": "Harnesses may run on a hard-linked snapshot of dist while the next version builds.",
+"q": [
+"the harnesses may run on a SNAPSHOT of a build"
+]
+},
+{
+"g": "process",
+"id": "P37",
+"v": "v24.3 (also v15.0)",
+"s": "NEW (refines the top's 'one-offs are gitignored')",
+"rule": "Reusable probes live in tools/probes, so they survive a replaced container.",
+"q": [
+"the probes now live in tools/probes"
+]
+},
+{
+"g": "process",
+"id": "P38",
+"v": "v24.4",
+"s": "NEW (adds to rule 3's bundle)",
+"rule": "Unshallow the clone before making the backup bundle, so the bundle holds the whole history.",
+"q": [
+"the session's clone had been shallow"
+]
+},
+{
+"g": "process",
+"id": "P39",
+"v": "v21.32",
+"s": "NEW",
+"rule": "An urgent change while unreleased work sits on the branch is built from the last released tree in a worktree.",
+"q": [
+"Built from v21.31's tree plus this change in a worktree"
+]
+},
+{
+"g": "process",
+"id": "P40",
+"v": "v21.1 (also v24.0)",
+"s": "ALREADY_TOP (rule 3)",
+"rule": "Deploy first means once the changed chapter has been seen to boot.",
+"q": [
+"never before the changed chapter has been seen to boot"
+]
+},
+{
+"g": "process",
+"id": "P41",
+"v": "v9.3 (also v7.0, v9.4, v14.0, v23.6)",
+"s": "NEW (related: top 'base-game feel is its own decision', post-diary 'a regression in the reference build')",
+"rule": "For every engine change, say whether episode 1 can reach it ('unchanged by construction') and run episode 1 as the control.",
+"q": [
+"episode 1 is unchanged by construction and was run as the control"
+]
+},
+{
+"g": "process",
+"id": "P42",
+"v": "v24.3 (also v14.15)",
+"s": "ALREADY_TOP in part (options first); adds measuring the cost",
+"rule": "State the cost of a change, measured not guessed, and put a costly one to him with the options.",
+"q": [
+"What it costs is measured, not guessed"
+]
+},
+{
+"g": "process",
+"id": "P43",
+"v": "v21.9",
+"s": "NEW",
+"rule": "Audit his mid-turn messages too; they arrive as queued commands.",
+"q": [
+"the mid-turn ones arrive as queued commands"
+]
+},
+{
+"g": "process",
+"id": "P44",
+"v": "v21.30 (also v23.0, v24.3)",
+"s": "ALREADY_TOP in part (silences measured); adds the 1.5 s bar and the method",
+"rule": "Check every film and ending with a static scan against the live stage: no voice over another, and every stretch of 1.5 s or more without a voice held by a sound with a reason.",
+"q": [
+"every stretch of 1.5 s or more without a voice is held by a sound with a reason"
+]
+},
+{
+"g": "process",
+"id": "P45",
+"v": "v21.20",
+"s": "NEW",
+"rule": "Check a re-timed film by recording every timed call against a stub before and after and comparing.",
+"q": [
+"checked by recording every timed call of both films against a stub and comparing"
+]
+},
+{
+"g": "process",
+"id": "P46",
+"v": "v21.30 (also v16.0, v24.9)",
+"s": "ALREADY_TOP in part ('he decides scope'); adds the written proposal",
+"rule": "Propose a chapter's or an ending's shape (line by line where it is content) and build only after he approves it.",
+"q": [
+"the proposal he approved (\"Yes, build it\")"
+]
+},
+{
+"g": "process",
+"id": "P47",
+"v": "v7.9 (also v10.0)",
+"s": "NEW (also in the post-diary 'THE SHEET IS' text)",
+"rule": "A sheet past the Drive connector's base64 wall is exported, not published, and the last published link stays the one to give him until the split export exists.",
+"q": [
+"the fix is a SPLIT export"
+]
+},
+{
+"g": "process",
+"id": "P48",
+"v": "v6.1",
+"s": "NEW +L",
+"rule": "Never write something down as impossible without trying it.",
+"q": [
+"the thing v5.14 wrote down as impossible and never tried"
+]
+},
+{
+"g": "process",
+"id": "P49",
+"v": "v5.15",
+"s": "NEW (the post-diary LEARNINGS pointer says to check there first)",
+"rule": "Re-read LEARNINGS before redoing a kind of task; the lesson is often already written down.",
+"q": [
+"the lesson was already written down"
+]
+},
+{
+"g": "process",
+"id": "P50",
+"v": "v20.0 (also v8.2, v10.4, v21.20)",
+"s": "NEW (minor)",
+"rule": "A retired asset leaves the build and the repo (git history and its masters recipe keep it); anything kept in the build unused has its reason written down.",
+"q": [
+"The four dropped files leave the build and the repo",
+"with the reason written down"
+]
+},
+{
+"g": "process",
+"id": "P51",
+"v": "v14.7",
+"s": "NEW (minor) +L",
+"rule": "Before believing a red harness check, run it against the baseline (an untouched worktree).",
+"q": [
+"it failed on an untouched v14.6 worktree and passed in the full run"
+]
+},
+{
+"g": "process",
+"id": "P52",
+"v": "v21.27 (also v22.3)",
+"s": "NEW (minor)",
+"rule": "Re-run the previous release's regression probes on the live build before changing more.",
+"q": [
+"The v21.26 phone probe passed on the live build first"
+]
+},
+{
+"g": "process",
+"id": "P53",
+"v": "v15.2",
+"s": "NEW (minor)",
+"rule": "For a device-specific rendering report, ask him for the ?diag screenshot.",
+"q": [
+"the screenshot Chad can send from his Samsung"
+]
+},
+{
+"g": "process",
+"id": "P54",
+"v": "v14.2",
+"s": "NEW (minor)",
+"rule": "A new sheet's diff against the last one is exactly the cells changed.",
+"q": [
+"its diff against v67 exactly the four cells changed"
+]
+},
+{
+"g": "asset",
+"id": "A1",
+"v": "v3.8 (also v4.7, v5.21, v9.3, v13.1)",
+"s": "NEW +L (the post-diary closing paragraph states it; the diary adds posed skin)",
+"rule": "Size and ground a rig from its posed bones or posed skin, never from a bounding box (a SkinnedMesh's box is its bind pose) or the file's own units.",
+"q": [
+"Measure from BONES, never from `Box3.setFromObject`"
+]
+},
+{
+"g": "asset",
+"id": "A2",
+"v": "v3.8 (also v5.01, v5.02, v5.05, v20.1)",
+"s": "NEW +L",
+"rule": "glTF renames nodes (dots stripped, 'mixamorig:' sanitised), tracks bind by name, and a wrong or loose bone lookup fails silently: use the shared regexes and measure the bone.",
+"q": [
+"glTF strips dots from node names",
+"fails silently"
+]
+},
+{
+"g": "asset",
+"id": "A3",
+"v": "v5.05",
+"s": "NEW +L",
+"rule": "Place a new thing among existing ones by the measure the existing ones used.",
+"q": [
+"the measure that matters is the one the existing things used"
+]
+},
+{
+"g": "asset",
+"id": "A4",
+"v": "v9.0 (also v5.17, v5.25, v22.5, v24.16)",
+"s": "NEW",
+"rule": "Fit a replacement model to the primitive it replaces, by the dimension the chapter's numbers depend on, so nothing else moves.",
+"q": [
+"THE FIT IS TO THE PRIMITIVE"
+]
+},
+{
+"g": "asset",
+"id": "A5",
+"v": "v9.0 (also v5.17, v9.1, v13.1)",
+"s": "NEW +L",
+"rule": "Superseded primitives are hidden, never removed (blockers and taps still use them), kept in one group swapped by one flag, and nothing may make one visible again.",
+"q": [
+"The superseded primitives are HIDDEN, never removed",
+"the swap is a single flag"
+]
+},
+{
+"g": "asset",
+"id": "A6",
+"v": "v4.7 (also v13.1, v16.6, v24.14)",
+"s": "NEW (for people the top's no-block-figure rule already applies)",
+"rule": "A model replaces its stand-in only once it has landed, so a failed download costs a nicer prop and never the chapter; a stand-in that hides on landing is kept out of static merges.",
+"q": [
+"a failed download costs a nicer prop, never the chapter",
+"a stand-in that hides when its model lands is kept out of the merge"
+]
+},
+{
+"g": "asset",
+"id": "A7",
+"v": "v5.20 (also v8.3, v24.15)",
+"s": "NEW +L",
+"rule": "Reach for a character's own clips first, and make what is missing from what the file has.",
+"q": [
+"reach for a character's OWN clips first"
+]
+},
+{
+"g": "asset",
+"id": "A8",
+"v": "v5.20 (also v7.6, v8.1, v18.7, v19.6)",
+"s": "NEW +L",
+"rule": "Retarget across rigs in world space, never by name (even two Mixamo rigs differ at rest), and align a T-pose take to an A-pose rig.",
+"q": [
+"in world space, not by name"
+]
+},
+{
+"g": "asset",
+"id": "A9",
+"v": "v5.20 (also v24.13)",
+"s": "NEW +L",
+"rule": "Drop a model's unused clip library (its channels and samplers) at prep.",
+"q": [
+"drop the clip library"
+]
+},
+{
+"g": "asset",
+"id": "A10",
+"v": "v8.0 (also v12.1, v18.7, v24.16, v24.19)",
+"s": "ALREADY_TOP in part (Meshy's remesh); adds deflatten and the reason",
+"rule": "A flat-shaded export or a Meshy original cannot be simplified (every edge is an attribute seam): deflatten it, or use the remesh.",
+"q": [
+"a flat-shaded export cannot be simplified."
+]
+},
+{
+"g": "asset",
+"id": "A11",
+"v": "v8.0 (also v21.1, v21.32)",
+"s": "NEW +L",
+"rule": "A take named 'idle' may fold the body over: sample it across its length and use its upright window.",
+"q": [
+"Each sitting take now carries its own UPRIGHT WINDOW."
+]
+},
+{
+"g": "asset",
+"id": "A12",
+"v": "v12.1 (also v6.15, v6.17, v11.1, v21.15)",
+"s": "NEW +L",
+"rule": "Measure a model's up axis, facing and ends, never assume them; the render settles the facing with the measures as its guard, and the prep tool asserts its contract before quantize() and refuses to write a wrong bake.",
+"q": [
+"the FACING is settled by the RENDER and the measures are only its guard",
+"the contract is asserted BEFORE `quantize()`"
+]
+},
+{
+"g": "asset",
+"id": "A13",
+"v": "v6.16 (also v16.6)",
+"s": "NEW +L",
+"rule": "The material decides foliage and alpha, never the texture's name; keep an alpha sheet's alpha, do not simplify leaf cards, and give crowns anisotropy.",
+"q": [
+"never the texture's name"
+]
+},
+{
+"g": "asset",
+"id": "A14",
+"v": "v9.0 (also v6.16)",
+"s": "NEW",
+"rule": "Simplify per part, gently or not at all where the silhouette is the model (tubes, leaf cards).",
+"q": [
+"a simplifier eats a round tube's silhouette"
+]
+},
+{
+"g": "asset",
+"id": "A15",
+"v": "v13.1 (also v5.17, v9.0, v11.2, v16.6, v18.5)",
+"s": "NEW +L",
+"rule": "Bake transforms before quantizing or joining (flatten() does not bake, clearNodeTransform does), keep the mesh on a child so meshopt's transform never shares the placement node, and give quantized geometry its node transform.",
+"q": [
+"`flatten()` does NOT bake",
+"meshopt's dequantizing transform and the chapter's position never share a node"
+]
+},
+{
+"g": "asset",
+"id": "A16",
+"v": "v5.17",
+"s": "NEW +L",
+"rule": "Convert spec-gloss materials to metal-rough; three.js draws them flat white without a word.",
+"q": [
+"it renders flat white and says nothing"
+]
+},
+{
+"g": "asset",
+"id": "A17",
+"v": "v11.3 (also v5.05, v5.22, v8.9, v9.0, v12.2, v24.13, v24.16)",
+"s": "NEW +L",
+"rule": "Before dropping maps or attributes, check where the look lives (metal-roughness, emissive, vertex colours); a metal with no environment renders near black, and a dropped emissive map leaves a white lamp.",
+"q": [
+"its whole look lives in the metal-roughness map",
+"a metal with no environment map has nothing to reflect and renders near black"
+]
+},
+{
+"g": "asset",
+"id": "A18",
+"v": "v5.10 (also v19.8, v24.17)",
+"s": "NEW +L",
+"rule": "Never retouch a scan's painted pixels; only pad the empty fill between its islands.",
+"q": [
+"The shipped texture touches no painted pixel"
+]
+},
+{
+"g": "asset",
+"id": "A19",
+"v": "v5.11 (also v14.14, v19.8, v21.32)",
+"s": "NEW +L",
+"rule": "An atlas whose contrasting charts sit flush draws without mipmaps (minified, they average into white streaks); mipmaps only on a dilated atlas; Meshy scans get CHARTFIX and no-mip colour.",
+"q": [
+"every shrunken copy averages the two into a white streak"
+]
+},
+{
+"g": "asset",
+"id": "A20",
+"v": "v14.14 (also v18.8)",
+"s": "NEW +L",
+"rule": "A normal map baked against the full mesh does not survive a heavy cut; recompute normals across seams, and let a statue's face set the floor of the cut.",
+"q": [
+"their normal maps were baked against the full mesh"
+]
+},
+{
+"g": "asset",
+"id": "A21",
+"v": "v18.8 (also v14.14, v21.11, v24.17, v24.22)",
+"s": "NEW",
+"rule": "Draw full detail only where it is big on screen: an LOD with a permissive cut over the same vertices (or a planar front for cased pieces) further off; item views get the full scan.",
+"q": [
+"the first pass drew everything full and cost 2.6M triangles"
+]
+},
+{
+"g": "asset",
+"id": "A22",
+"v": "v16.8 (also v18.7, v19.6, v24.5)",
+"s": "NEW +L",
+"rule": "Meshy auto-rigs: diffuse the blocky skin weights over the full mesh before simplifying, share normals across seams, keep UV-seam twins moving as one, and export from the Character_output FBX.",
+"q": [
+"the auto-rig's BLOCKY SKIN WEIGHTS",
+"Use the `Character_output` FBX"
+]
+},
+{
+"g": "asset",
+"id": "A23",
+"v": "v19.8",
+"s": "NEW (minor)",
+"rule": "Split back-to-back triangle pairs the simplifier folds, whose normals cancel and shade as NaN.",
+"q": [
+"whose normals cancelled to zero and shaded as NaN"
+]
+},
+{
+"g": "asset",
+"id": "A24",
+"v": "v16.8 (also v17.1, v17.2, v19.0, v19.7, v21.9)",
+"s": "NEW +L",
+"rule": "Seat a sitter on his posed skin, build the seat round every take he sits in, and cancel each take's root offset so changing take never slides him through it.",
+"q": [
+"seated on their POSED SKIN, not their bones",
+"cancels it every frame"
+]
+},
+{
+"g": "asset",
+"id": "A25",
+"v": "v17.1",
+"s": "NEW (minor)",
+"rule": "A Mixamo hand bone is the wrist; offset a grip to the fingers.",
+"q": [
+"a Mixamo hand bone is the wrist"
+]
+},
+{
+"g": "asset",
+"id": "A26",
+"v": "v9.1 (also v11.0, v14.1, v14.5, v15.2, v21.0)",
+"s": "NEW +L",
+"rule": "Parse each asset once and clone it (the original never touched), clone before touching (cloneSkinned copies transforms), measure scale and turn once on a shared posed take (never the standing bind pose; size a person standing), and give a clone its own materials before changing them.",
+"q": [
+"one parse per asset, every rig a clone, the original never touched",
+"`cloneSkinned` copies transforms"
+]
+},
+{
+"g": "asset",
+"id": "A27",
+"v": "v5.22",
+"s": "NEW (minor) +L",
+"rule": "A cloned skinned mesh's bindMatrix stays identity.",
+"q": [
+"identity is right for EVERY file"
+]
+},
+{
+"g": "asset",
+"id": "A28",
+"v": "v8.4 (also v18.5, v19.1)",
+"s": "NEW +L",
+"rule": "A rig's culling sphere covers every pose of every clip, is built in world space round the posed skin, and is set on both the mesh and the geometry.",
+"q": [
+"setting only the geometry's does nothing",
+"the sphere is built in world space now"
+]
+},
+{
+"g": "asset",
+"id": "A29",
+"v": "v13.1",
+"s": "NEW",
+"rule": "Prep models to real metres with the origin on the base centre, so every number in a chapter is a place, never a scale factor.",
+"q": [
+"every number in the chapter is a place and none is a scale factor"
+]
+},
+{
+"g": "asset",
+"id": "A30",
+"v": "v13.1",
+"s": "NEW (minor)",
+"rule": "Measure per mesh: the most-forward vertex of a first-person weapon rig is a hand.",
+"q": [
+"The most-forward vertex of a first-person weapon rig is a hand"
+]
+},
+{
+"g": "asset",
+"id": "A31",
+"v": "v12.0 (also v12.2)",
+"s": "NEW +L",
+"rule": "A Sketchfab clip's keys may begin seconds in: start each take at its measured first key and park the rest on its last.",
+"q": [
+"a Sketchfab clip's keys may begin seconds in"
+]
+},
+{
+"g": "asset",
+"id": "A32",
+"v": "v14.12",
+"s": "NEW (minor)",
+"rule": "textureCompress's EXT_texture_webp hides the image from the strict-CSP rescue; drop the extension.",
+"q": [
+"the extension is dropped and the WebP rides a plain source"
+]
+},
+{
+"g": "asset",
+"id": "A33",
+"v": "v21.11 (also v21.8, v21.10)",
+"s": "NEW",
+"rule": "Real photographs and paintings are used as the source's own bytes, whole at their own aspect, never cropped or retouched, with the sha1 and source recorded and a credit row.",
+"q": [
+"whole at their own aspects, never cropped or retouched"
+]
+},
+{
+"g": "asset",
+"id": "A34",
+"v": "v14.7 (also v7.1, v11.0)",
+"s": "NEW +L",
+"rule": "An asset key is global; never reuse one, not even a parked feature's.",
+"q": [
+"a key is global (the v7.1 law, in the asset table)"
+]
+},
+{
+"g": "asset",
+"id": "A35",
+"v": "v21.16 (also v16.9)",
+"s": "NEW (minor)",
+"rule": "Cut a body by what each vertex is skinned to, and geometry by clipping against a box, never by height or by centroid.",
+"q": [
+"cut by what each vertex is SKINNED to",
+"never culled by centroid"
+]
+},
+{
+"g": "asset",
+"id": "A36",
+"v": "v16.9",
+"s": "NEW (minor)",
+"rule": "A walkable building's collision is derived from its own mesh.",
+"q": [
+"Its collision is DERIVED from its mesh"
+]
+},
+{
+"g": "asset",
+"id": "A37",
+"v": "v24.19",
+"s": "NEW (minor)",
+"rule": "Anything dressed onto a model is fitted to whichever model landed (the model or its fallback).",
+"q": [
+"fitted to whichever trunk landed"
+]
+},
+{
+"g": "asset",
+"id": "A38",
+"v": "v12.0 (also v13.1, v8.9)",
+"s": "NEW (minor)",
+"rule": "An FPS viewmodel rig is not quantized; additive textures need no alpha; a greyscale map multiplies the material's colour.",
+"q": [
+"no quantization — an FPS rig's fingers are the whole model",
+"additive blending wants no alpha at all"
+]
+},
+{
+"g": "asset",
+"id": "A39",
+"v": "v6.8 (also v5.04)",
+"s": "NEW +L",
+"rule": "A rig's face direction comes from its bind matrix and is proven by a render, never taken as the head bone's +Z.",
+"q": [
+"the head bone's +Z is NOT his face"
+]
+},
+{
+"g": "asset",
+"id": "A40",
+"v": "v11.4",
+"s": "NEW (minor) +L",
+"rule": "A standing take on a kneeling or seated man raises him; turn his head instead.",
+"q": [
+"it is a STANDING one, he would rise and drop"
+]
+},
+{
+"g": "asset",
+"id": "A41",
+"v": "v4.8",
+"s": "NEW (minor) +L",
+"rule": "Crowds that share skeletons bind 'detached'; 'attached' cancels the node transform.",
+"q": [
+"'attached' cancels a skinned mesh's node transform"
+]
+},
+{
+"g": "asset",
+"id": "A42",
+"v": "v18.5 (also v19.2)",
+"s": "NEW (minor) +L",
+"rule": "Recolour a scan per UV island or by skin weights, skipping sliver triangles; only a close-up photograph catches the failures.",
+"q": [
+"each caught only by a close-up photograph"
+]
+},
+{
+"g": "asset",
+"id": "A43",
+"v": "v11.2 (also v8.1, v14.16)",
+"s": "NEW +L",
+"rule": "A take name a rig does not have fails silently (rig.play returns false and the man stands in his bind pose), so every take is checked against the clips in the rig's own file.",
+"q": [
+"`rig.play` on a take a rig does not have returns false with no error"
+]
+},
+{
+"g": "asset",
+"id": "A44",
+"v": "v5.16",
+"s": "NEW (minor) +L",
+"rule": "KHR_mesh_quantization costs nothing to load (three's own loader, no decoder); for a skinned mesh its scale rides the inverse bind matrices.",
+"q": [
+"KHR_mesh_quantization is the one compression this game gets for free"
+]
+},
+{
+"g": "audio",
+"id": "S1",
+"v": "v5.14 (also v4.8, v21.9)",
+"s": "NEW +L (the top describes the registry, not this)",
+"rule": "The voice registry records what is HEARD: transcribe the shipped take, and verify a voice change by transcribing it.",
+"q": [
+"the registry says what is HEARD, not what was asked for"
+]
+},
+{
+"g": "audio",
+"id": "S2",
+"v": "v10.8 (also v4.8, v5.15)",
+"s": "NEW +L",
+"rule": "A wordless take is still prompted with voiceable text, never tags alone.",
+"q": [
+"a wordless take that still needs voiceable text"
+]
+},
+{
+"g": "audio",
+"id": "S3",
+"v": "v5.28 (also v7.8)",
+"s": "NEW +L",
+"rule": "His prompt rules: the registry's words exactly, no added capitals, at most one added ellipsis, one tag naming an emotion (never only a volume), and a tag proven absorbed by measuring the pause (a transcript echoes the prompt).",
+"q": [
+"a tag that names an EMOTION rather than only a volume",
+"transcription cannot answer this"
+]
+},
+{
+"g": "audio",
+"id": "S4",
+"v": "v8.3 (also v12.1)",
+"s": "NEW +L",
+"rule": "The bark rule for the encik and the tower: no stage direction, write the bark itself (short bursts, full stops, capitals on the stress), recorded in the speaker's registry row; the opposite of his rule.",
+"q": [
+"a stage direction gets a professional PERFORMING anger"
+]
+},
+{
+"g": "audio",
+"id": "S5",
+"v": "v5.18 (also v5.26, v5.28, v18.6)",
+"s": "NEW",
+"rule": "A regeneration list comes from the registry, the same explicit take set chaptertest checks both ways (never a prefix rule), and is proven complete before anything is generated.",
+"q": [
+"enforced rather than promised",
+"a prefix rule CANNOT work"
+]
+},
+{
+"g": "audio",
+"id": "S6",
+"v": "v5.15 (also v5.30, v18.6, v21.4, v23.6)",
+"s": "NEW +L",
+"rule": "After a take changes: re-measure its length into the registry and SECS, run the static overlap scan (old lengths against new), move everything after it by the same amount, and trim trailing silence at the words' end.",
+"q": [
+"Timing was checked by a STATIC SCAN",
+"each the same distance from the incantation's end",
+"cut at the words' end"
+]
+},
+{
+"g": "audio",
+"id": "S7",
+"v": "v9.5 (also v10.2, v14.1, v21.12)",
+"s": "NEW +L",
+"rule": "Lines that follow one another run off a queue gated on the speech window's own clock, never at hand-typed times, and sayLine's refusal is never ignored, so a cold or muted line never stops a scene.",
+"q": [
+"never in numbers typed in, so a re-generated take cannot make two voices talk over each other",
+"so a cold or muted line never stops the scene"
+]
+},
+{
+"g": "audio",
+"id": "S8",
+"v": "v10.2 (also v5.13, v8.0, v8.8, v9.7, v14.16, v21.30, v24.0)",
+"s": "ALREADY_TOP in part (startDecision warms the cutscene set); adds play-time warming, literal cues and the fresh-load test +L",
+"rule": "Every sound play or a scene can ask for is warmed (warmSounds; the engine's own in its warm set), a scene's cues are literal sfx(t, 'name') calls the warm scan can read, and a first play is tested on a fresh load, not a replay.",
+"q": [
+"a replay had the pack decoded by then",
+"passed the name as a VARIABLE",
+"a comma inside a cue's time hides it from the warm scan"
+]
+},
+{
+"g": "audio",
+"id": "S9",
+"v": "v10.4 (also v9.2, v11.0, v16.0, v21.13, v24.0, v24.3)",
+"s": "NEW",
+"rule": "Judge every sound by what a phone speaker plays (almost nothing under 120 Hz) and by its masking of the voice band, picked by measurement because a session has no ears.",
+"q": [
+"a phone speaker reproduces almost none of it",
+"picked by measurement because there are no ears in a session"
+]
+},
+{
+"g": "audio",
+"id": "S10",
+"v": "v5.26 (also v4.8, v5.27, v10.7, v11.1, v12.1, v24.3)",
+"s": "NEW +L",
+"rule": "Levels: his takes are peak-matched to the file they replace, but peak says nothing about the average, so the flat-bus cast is levelled by RMS to −16 dBFS, beds sit at −34 to −37 dBFS with nobody speaking, and speech keeps 10–15 dB over the mix through the duck.",
+"q": [
+"peak-matching says nothing about the average",
+"Speech wants 10-15 dB of margin.",
+"every bed at −34 to −37 dBFS with nobody speaking"
+]
+},
+{
+"g": "audio",
+"id": "S11",
+"v": "v9.6 (also v9.7)",
+"s": "NEW +L",
+"rule": "mp3 and Opus shift level in opposite directions, per file: encode each from its own source and measure the output every time.",
+"q": [
+"Measure the output, every time."
+]
+},
+{
+"g": "audio",
+"id": "S12",
+"v": "v9.2 (also v10.0, v12.1)",
+"s": "NEW +L",
+"rule": "A generation's duration and loop are model parameters, never words in the prompt.",
+"q": [
+"duration is a PARAMETER, not a sentence"
+]
+},
+{
+"g": "audio",
+"id": "S13",
+"v": "v9.2 (also v9.7)",
+"s": "NEW",
+"rule": "A music bed is crossfade-looped by hand, its seam checked at the joint.",
+"q": [
+"its seam checked at the JOINT, not by RMS"
+]
+},
+{
+"g": "audio",
+"id": "S14",
+"v": "v12.1",
+"s": "NEW",
+"rule": "Measure every take; a take can come back silent.",
+"q": [
+"a take is measured, never assumed"
+]
+},
+{
+"g": "audio",
+"id": "S15",
+"v": "v6.9 (also v10.8)",
+"s": "NEW +L",
+"rule": "Whispers and breaths go round the voice bus; through its compressor they come out as loud as speech.",
+"q": [
+"comes out as loud as speech"
+]
+},
+{
+"g": "audio",
+"id": "S16",
+"v": "v21.5 (also v21.8, v23.0)",
+"s": "NEW +L",
+"rule": "eleven_v3 will not truly whisper some lines or slow down between pauses: use eleven_v4 with one tag, verify a whisper by measurement, and voice children in a child's register, never pitch-shifted.",
+"q": [
+"a transcript cannot say whether a take whispers",
+"v3 kept the same speed between its pauses however it was asked",
+"never pitch-shifted"
+]
+},
+{
+"g": "audio",
+"id": "S17",
+"v": "v18.6 (also v14.3, v19.9, v24.11)",
+"s": "NEW",
+"rule": "Pick takes by a clean end first (an end on signal must be a whole word, checked by word timings), then no odd hole, then the tighter read; check no tag was spoken; write every pick and why into the masters' make.sh.",
+"q": [
+"a clean end first, then no odd hole, then the tighter read",
+"names every pick and why"
+]
+},
+{
+"g": "audio",
+"id": "S18",
+"v": "v15.3 (also v14.0, v14.1, v16.0)",
+"s": "NEW +L",
+"rule": "A scene's closing line is said inside the scene and its music comes in under the last line (a cue fired at a scene's end dies with it); picture and music fade together.",
+"q": [
+"`n5close` is said INSIDE the scene",
+"every cue a scene fires joins `cineVoices`"
+]
+},
+{
+"g": "audio",
+"id": "S19",
+"v": "v6.14",
+"s": "NEW +L",
+"rule": "A cue's volume multiplies its STING_SAMPLE row.",
+"q": [
+"a cue's number MULTIPLIES the sound's row"
+]
+},
+{
+"g": "audio",
+"id": "S20",
+"v": "v23.1 (also v6.13)",
+"s": "NEW",
+"rule": "Never set a cue's gain over 1: make the file louder by its average under a limiter, and keep summed peaks under full scale.",
+"q": [
+"a gain over 1 on the cue would clip once it sums"
+]
+},
+{
+"g": "audio",
+"id": "S21",
+"v": "v7.1 (also v11.0, v21.1)",
+"s": "ALREADY_TOP in part (the computed split rule); adds global names and per-chapter copies +L",
+"rule": "A sound's name is global and a chapter's sayPrefix is a namespace; a chapter that cues another chapter's sound by name makes it shared (every player's boot download), so it gets its own copy.",
+"q": [
+"a sound's name is global",
+"which made all seven shared"
+]
+},
+{
+"g": "audio",
+"id": "S22",
+"v": "v24.3 (also v19.4, v21.20, v24.9)",
+"s": "NEW (SUPERSEDES v9.6 'deleting a recorded take ... no upside' and v10.8 'stays in the pack')",
+"rule": "Retire a sound that nothing plays completely (files, STING_SAMPLE row, take sets, registry row), because an unnamed sound falls into the shared pack; its takes stay in masters.",
+"q": [
+"a sound no chapter names falls into the SHARED pack"
+]
+},
+{
+"g": "audio",
+"id": "S23",
+"v": "v14.16 (also v15.1)",
+"s": "NEW +L",
+"rule": "Stop a chapter's loops when it is left (a source at gain 0 still plays) and release its decoded audio.",
+"q": [
+"a source at gain 0 still plays"
+]
+},
+{
+"g": "audio",
+"id": "S24",
+"v": "v14.16 (also v5.27)",
+"s": "NEW (minor) +L (decodeAudioData only)",
+"rule": "decodeAudioData detaches its buffer; and listen for 'ended' with a listener, never by overwriting onended.",
+"q": [
+"`decodeAudioData` DETACHES its buffer",
+"`'ended'` is a LISTENER"
+]
+},
+{
+"g": "audio",
+"id": "S25",
+"v": "v9.4",
+"s": "NEW +L",
+"rule": "Rhythm cues are judged by their decay and cut from 20 ms before their own peak.",
+"q": [
+"every cue is cut from 20 ms before its own peak"
+]
+},
+{
+"g": "audio",
+"id": "S26",
+"v": "v24.0",
+"s": "NEW",
+"rule": "A long chant or bed is not a voice take; on the voice path it holds the duck down under everything.",
+"q": [
+"it held the −8 dB duck under the whole work and storm"
+]
+},
+{
+"g": "audio",
+"id": "S27",
+"v": "v21.13 (also v9.2, v11.3, v24.3)",
+"s": "NEW",
+"rule": "Ambient one-shots come one at a time from a seeded stream on the chapter clock, panned, quieter while anyone speaks, only in the phases they fit, cleared by reset(); beds are mixed by place and beat.",
+"q": [
+"panned, quieter while anyone speaks, never two at once"
+]
+},
+{
+"g": "audio",
+"id": "S28",
+"v": "v24.3",
+"s": "NEW (minor)",
+"rule": "When every generated take fails the measure, make the sound instead.",
+"q": [
+"Three are MADE because every generated take failed the measure"
+]
+},
+{
+"g": "audio",
+"id": "S29",
+"v": "v24.3",
+"s": "ALREADY_TOP in part (re-run eleven_v3 failures); adds 'never a succeeded one'",
+"rule": "Re-run only refused or failed generations, never one that succeeded.",
+"q": [
+"every refused or failed take re-run, never a succeeded one"
+]
+},
+{
+"g": "audio",
+"id": "S30",
+"v": "v10.3 (also v10.4, v20.0)",
+"s": "NEW",
+"rule": "Every audio treatment's recipe is kept on disk in the masters' make.sh, and retired takes stay in masters.",
+"q": [
+"the recipe on disk this time"
+]
+},
+{
+"g": "audio",
+"id": "S31",
+"v": "v21.31",
+"s": "NEW",
+"rule": "Every chant with words is captioned (the Pali as chanted over its meaning), timed on the take's breaths from the line's own start so it also works muted, translated from Thanissaro Bhikkhu's A Chanting Guide.",
+"q": [
+"every chant with words is captioned now"
+]
+},
+{
+"g": "audio",
+"id": "S32",
+"v": "v18.5 (also v7.8, v16.0, v18.6)",
+"s": "NEW",
+"rule": "The main character's voice follows the episode (Aaron as the boy and the recruit, Brian as the grown man from episode 3), and the boy's engine lines are gated to his episodes.",
+"q": [
+"are not said in episode 3's adult voice"
+]
+},
+{
+"g": "audio",
+"id": "S33",
+"v": "v10.6",
+"s": "NEW",
+"rule": "When replacing or removing a cue, audit everything it carried (a swell, a beat) and say what was lost.",
+"q": [
+"so the bunk's swell went with the theme, unasked"
+]
+},
+{
+"g": "audio",
+"id": "S34",
+"v": "v4.91",
+"s": "NEW",
+"rule": "The four lines under the outcome cards are his own terse first-person reflections, never the card read aloud.",
+"q": [
+"the old ones read the cards aloud"
+]
+},
+{
+"g": "audio",
+"id": "S35",
+"v": "v5.30 (also v10.8, v21.8)",
+"s": "NEW (minor)",
+"rule": "Keep a line's pace near the game's median (about 2.3 words a second) and the read's speed fitting its feeling; re-say a rushed line.",
+"q": [
+"the game's median 2.3",
+"a hopeless line is a slow one"
+]
+},
+{
+"g": "audio",
+"id": "S36",
+"v": "v13.0 (also v18.6, v24.9)",
+"s": "NEW (minor) +L",
+"rule": "The session ids are the only handle on a generation; letter takes by request, and give a re-take's record a name of its own.",
+"q": [
+"the session ids are the only handle on a generation",
+"a re-take's session record needs a name of its own"
+]
+},
+{
+"g": "audio",
+"id": "S37",
+"v": "v10.7",
+"s": "NEW (minor)",
+"rule": "ffmpeg's alimiter does not hold its limit; use the numpy limiter.",
+"q": [
+"peaked at −0.9 whatever `limit` it was given"
+]
+},
+{
+"g": "audio",
+"id": "S38",
+"v": "v21.30",
+"s": "ALREADY_TOP in part (a new noise is a STING_SAMPLE row); adds: also for a sound already played by name +L",
+"rule": "A sound the world plays by name still needs its STING_SAMPLE row before a scene can cue it.",
+"q": [
+"a sound the world plays by name needs a STING_SAMPLE row before a scene can cue it"
+]
+},
+{
+"g": "audio",
+"id": "S39",
+"v": "v14.3",
+"s": "NEW +L",
+"rule": "Every line a chapter speaks has its measured length in that chapter's SECS table (sayLine otherwise books a default 2.5 s); chaptertest fails a chapter that speaks one it lacks.",
+"q": [
+"`chaptertest` now fails any chapter that speaks a line its own `SECS` table does not carry"
+]
+},
+{
+"g": "audio",
+"id": "S40",
+"v": "v6.6 (also v4.91)",
+"s": "NEW",
+"rule": "Starting a cutscene stops every play-time line, so a line meant to be heard in a scene is cued by that scene.",
+"q": [
+"the line is the faint scene's own cue now"
+]
+},
+{
+"g": "audio",
+"id": "S41",
+"v": "v5.30",
+"s": "NEW",
+"rule": "One voice at a time: a play-time line waits for any live voice (a scare that would land late is dropped), and a scene's natural end lets a line finish its sentence while a skip cuts everything.",
+"q": [
+"a scare is dropped instead: three seconds late reads wrong",
+"a skip still cuts everything"
+]
+},
+{
+"g": "audio",
+"id": "S42",
+"v": "v5.18 (also v8.3, v16.0, v18.6, v23.6)",
+"s": "NEW +L",
+"rule": "Cast a voice that stays the same person across takes (eleven_v3 re-rolls a voice's character per take); new voices are auditioned and he picks.",
+"q": [
+"eleven_v3 re-rolls a voice's character per take"
+]
+},
+{
+"g": "camera",
+"id": "K1",
+"v": "v6.4 (also v13.2, v19.5, v23.0, v24.6, v24.12)",
+"s": "NEW +L (in part)",
+"rule": "Everything in a film is a pure function of the film's clock (poses parked at the frame the clock asks for, paths as functions), so a seek, a skip and a slow phone land on the same picture.",
+"q": [
+"so a seek, a skip and a one-frame-a-second box land on the same pose",
+"the arc is a FUNCTION"
+]
+},
+{
+"g": "camera",
+"id": "K2",
+"v": "v6.12 (also v5.07, v18.4, v21.1)",
+"s": "NEW +L",
+"rule": "cineSeek applies every passed track every frame, so a track that changes state says when it stops, anything that must survive a seek is a track not a step, and a skip runs passed steps in push order.",
+"q": [
+"Both now state when they stop",
+"a skip runs passed steps in PUSH order"
+]
+},
+{
+"g": "camera",
+"id": "K3",
+"v": "v12.1 (also v14.3)",
+"s": "NEW +L",
+"rule": "A chapter's play-time frame functions do not run under a cutscene, so a scene drives its own effects (flares, fades, ramps) as explicit tracks.",
+"q": [
+"a film that lights a flare has to burn it itself"
+]
+},
+{
+"g": "camera",
+"id": "K4",
+"v": "v14.1 (also v7.5, v24.21)",
+"s": "ALREADY_TOP in part (films begin on black); adds the hand-over end",
+"rule": "An opening film keeps its black at its end (keepFade, endFade 1), fades its music with the picture, and ends on the light play begins in so nothing snaps.",
+"q": [
+"the only intro in the game with no `c.keepFade`",
+"so nothing snaps back"
+]
+},
+{
+"g": "camera",
+"id": "K5",
+"v": "v5.25",
+"s": "NEW",
+"rule": "A film ends with its props exactly where play keeps them, using play's own constants, never a new number.",
+"q": [
+"Where it lands is not a new number"
+]
+},
+{
+"g": "camera",
+"id": "K6",
+"v": "v6.12",
+"s": "NEW +L",
+"rule": "For a close-up, narrow the lens rather than pushing the camera through the 8 cm near plane.",
+"q": [
+"A narrow lens magnifies from a safe distance"
+]
+},
+{
+"g": "camera",
+"id": "K7",
+"v": "v6.13",
+"s": "NEW (minor) +L",
+"rule": "A camera computed from a moving bone inherits its motion; park the take for a steady shot.",
+"q": [
+"computes the camera from the HAND BONE every frame"
+]
+},
+{
+"g": "camera",
+"id": "K8",
+"v": "v13.0 (also v12.2, v12.3, v21.2)",
+"s": "NEW",
+"rule": "Framing is measured in NDC and pixels on the target screen, through a copy of the camera rig; a fixed world size is not a size.",
+"q": [
+"a framing number is measured in NDC, not in degrees on paper",
+"a fixed world size is not a size"
+]
+},
+{
+"g": "camera",
+"id": "K9",
+"v": "v21.8 (also v21.9, v21.12, v21.19)",
+"s": "NEW (the post-diary AUDIT note supports it)",
+"rule": "Each shot names the points that must be in frame and solves its distance for this screen's aspect (a portrait phone sees a third of the width), and every lens position is checked against the set's solids.",
+"q": [
+"each shot names what must be in it",
+"every lens position is checked against the stools"
+]
+},
+{
+"g": "camera",
+"id": "K10",
+"v": "v14.2",
+"s": "NEW +L",
+"rule": "A centre-ray miss is not a clear frame; coverage is a property of the whole frustum.",
+"q": [
+"A CENTRE-RAY MISS IS NOT A CLEAR FRAME"
+]
+},
+{
+"g": "camera",
+"id": "K11",
+"v": "v14.1",
+"s": "NEW",
+"rule": "Frame an outcome scene from a stated standoff distance, never from wherever the player happened to stop.",
+"q": [
+"A stated standoff in metres along the line the player is already on"
+]
+},
+{
+"g": "camera",
+"id": "K12",
+"v": "v21.30 (also v24.7)",
+"s": "NEW (the top's whole-story rule has no camera direction) +L",
+"rule": "A scene is directed: the camera goes, on the word, to what the words are about and pushes in on the speaker when it matters, and in a point-of-view scene a cut away from his eyes needs the cast looking at him; a scene with words and no direction is not finished.",
+"q": [
+"the camera goes, on the word, to what the words are about",
+"a scene with words and no direction is not finished",
+"a cut away from his eyes needs the cast to look at HIM"
+]
+},
+{
+"g": "camera",
+"id": "K13",
+"v": "v21.30",
+"s": "NEW",
+"rule": "Every prop in a scene belongs to that scene's story.",
+"q": [
+"the amulet has nothing to do with the trance"
+]
+},
+{
+"g": "camera",
+"id": "K14",
+"v": "v6.9 (also v5.04)",
+"s": "NEW +L",
+"rule": "A look starts from the neutral head and eases onto its target within a neck's reach, aimed from eye level with a slight downward bias (a face tilted up reads as disdain).",
+"q": [
+"the initial position should be the neutral and default one",
+"one angled up reads as disdain"
+]
+},
+{
+"g": "camera",
+"id": "K15",
+"v": "v14.5 (also v10.3, v21.30)",
+"s": "NEW",
+"rule": "A character talking to the player turns his whole body to face him, and a turn that hands over to a walk ends where the walk begins, never a snap.",
+"q": [
+"the encik doesnt turn his whole body to face the player when talking",
+"a turn that hands over to a walk must end where the walk begins"
+]
+},
+{
+"g": "camera",
+"id": "K16",
+"v": "v11.4 (also v5.04, v8.0, v9.6)",
+"s": "NEW",
+"rule": "A character who speaks plays his talking take on the line's own start, finishes the line before he moves off, and goes back to rest after; a take a scene set is cleared by whatever ends the scene.",
+"q": [
+"A MAN WHO SPEAKS MOVES",
+"she stands and finishes the sentence, THEN goes",
+"a take a SCENE set must be cleared by whatever ends that scene"
+]
+},
+{
+"g": "camera",
+"id": "K17",
+"v": "v5.03 (also v5.0, v5.25, v8.2)",
+"s": "NEW +L",
+"rule": "Cutscene paths obey no collision: audit every timeline against the blockers, keep every stand clear of the furniture, and deal walking lanes by where each man stands so paths never cross.",
+"q": [
+"Cutscene paths obey no collision at all",
+"Deal lanes by where a man STANDS"
+]
+},
+{
+"g": "camera",
+"id": "K18",
+"v": "v5.0 (also v7.9, v10.3, v14.1)",
+"s": "NEW +L",
+"rule": "To face a model at something use faceFrom(...) + Math.PI (faceFrom aims cameras; a Mixamo rig at 0 faces +z), and remember pitch.rotation.x positive looks up.",
+"q": [
+"a model facing needs `faceFrom(...) + Math.PI`",
+"`pitch.rotation.x` positive is looking UP"
+]
+},
+{
+"g": "camera",
+"id": "K19",
+"v": "v4.6 (also v9.1)",
+"s": "NEW +L",
+"rule": "Write a shared sign convention down as a named contract (DOOR_AJAR, DOOR_OPEN) and measure it, because a guessed or commented sign can be wrong.",
+"q": [
+"the sign was never written down, so both guessed"
+]
+},
+{
+"g": "camera",
+"id": "K20",
+"v": "v11.1 (also v12.2, v23.1)",
+"s": "NEW",
+"rule": "In play, a shake, stumble, recoil or sway is laid on the look as deltas and taken off again, so the player's look stays his.",
+"q": [
+"applied as DELTAS so the mouse still owns the look"
+]
+},
+{
+"g": "camera",
+"id": "K21",
+"v": "v9.5 (also v10.8)",
+"s": "NEW",
+"rule": "A ghost who is already there is the beat; one who fades in under your eye is a special effect.",
+"q": [
+"one who is already there is the beat"
+]
+},
+{
+"g": "camera",
+"id": "K22",
+"v": "v13.0",
+"s": "NEW",
+"rule": "A reaction (a banner, a sting) lands on the frame its cause is seen.",
+"q": [
+"land on the frame he is SEEN"
+]
+},
+{
+"g": "camera",
+"id": "K23",
+"v": "v24.12 (also v24.0)",
+"s": "NEW",
+"rule": "A change in the world is made on a cut or in a shot that cannot see it.",
+"q": [
+"Every change is made on a cut or in a shot that cannot see it"
+]
+},
+{
+"g": "camera",
+"id": "K24",
+"v": "v24.12",
+"s": "NEW",
+"rule": "A film from play leaves the world in the same state whether it ran, was skipped or never played.",
+"q": [
+"whether the film ran, was skipped or never played"
+]
+},
+{
+"g": "camera",
+"id": "K25",
+"v": "v20.1 (also v4.6, v16.5, v21.0)",
+"s": "NEW",
+"rule": "The viewmodel's cut-off upper arm is never on screen, a held thing stays in a phone's frame (slid inward, never out), and a prayer clasp never shows the thumbs.",
+"q": [
+"none of the upper arm on screen, ever",
+"the arm slides right until the fingertip is in frame, never left",
+"so that i cannot see that protruding thumbs"
+]
+},
+{
+"g": "camera",
+"id": "K26",
+"v": "v7.5 (also v8.7, v14.1, v18.4, v24.2)",
+"s": "NEW +L",
+"rule": "Hotspot anchors sit at eye height, never on the floor or under the lens at the closest standing spot, and a mark the chapter turns him to is within reach and inside its aim cone.",
+"q": [
+"hotspot anchors sit at EYE height"
+]
+},
+{
+"g": "camera",
+"id": "K27",
+"v": "v12.3 (also v7.5)",
+"s": "NEW",
+"rule": "A chapter declares its spawn facing (spawn.rot), turned to what the player must see first within a portrait phone's narrow view; what play needs first is staged inside the opening's last line of sight.",
+"q": [
+"`spawn.rot` is a chapter's to declare",
+"the spawn faces the firing point",
+"the fall-in is staged inside the opening's line of sight"
+]
+},
+{
+"g": "camera",
+"id": "K28",
+"v": "v8.9 (also v12.1, v16.1, v21.0, v22.3)",
+"s": "NEW +L",
+"rule": "The far plane is 160 m: sets fit inside it, a pocket world past it is never drawn from the main one (distance does the hiding), and the sky stands where the stage says.",
+"q": [
+"The camera's far plane is 160 m",
+"distance does the hiding"
+]
+},
+{
+"g": "camera",
+"id": "K29",
+"v": "v6.6 (also v7.7, v10.0)",
+"s": "NEW +L",
+"rule": "A film set outside the world's fog uses fog-free materials, its sky bubble is a depth surface, and a film that opens on async assets waits for them in ready().",
+"q": [
+"every material a fog-free clone",
+"a sky bubble's back wall is a DEPTH surface"
+]
+},
+{
+"g": "camera",
+"id": "K30",
+"v": "v8.9 (also v10.1, v16.0)",
+"s": "NEW +L",
+"rule": "Paint a film set at half the brightness wanted on screen; the tone mapping pales whatever is painted.",
+"q": [
+"paint a film set at half the brightness you want on screen"
+]
+},
+{
+"g": "camera",
+"id": "K31",
+"v": "v9.4 (also v14.1, v16.1, v19.0, v21.8, v21.18, v22.1)",
+"s": "NEW +L",
+"rule": "Light new things without adding a light (emissive, painted pools, unlit painted shading): a light costs the phone a shadow pass, and changing the light count builds shaders on screen.",
+"q": [
+"LIT WITHOUT A LIGHT",
+"because a real light changes the light count"
+]
+},
+{
+"g": "camera",
+"id": "K32",
+"v": "v8.8 (also v13.2)",
+"s": "NEW",
+"rule": "For a coloured glow over a bright surface, normal-blend the hue and add the glow as its own layer; additive colour sums to white.",
+"q": [
+"additive red over a bright tiled floor sums to WHITE"
+]
+},
+{
+"g": "camera",
+"id": "K33",
+"v": "v19.3 (also v7.2, v22.2, v23.1, v24.12)",
+"s": "NEW",
+"rule": "Never let two surfaces share a plane; offset them by millimetres.",
+"q": [
+"v19.3's coplanar law"
+]
+},
+{
+"g": "camera",
+"id": "K34",
+"v": "v8.9",
+"s": "NEW +L",
+"rule": "Sea and sky outside a window are geometry with perspective, never a vertical painted sheet.",
+"q": [
+"a gradient standing up in front of a window has no perspective in it"
+]
+},
+{
+"g": "camera",
+"id": "K35",
+"v": "v9.3 (also v19.2)",
+"s": "NEW +L",
+"rule": "On a phone nothing casts shadows, so a contact shadow is painted, and a body sinks a little into what it rests on.",
+"q": [
+"drawn so it is there on LOW exactly as on desktop"
+]
+},
+{
+"g": "camera",
+"id": "K36",
+"v": "v8.9 (also v7.4, v9.1)",
+"s": "NEW +L",
+"rule": "A doorway must be visibly open from both sides and have a walkable way to it.",
+"q": [
+"a doorway you cannot see is a wall",
+"A bunk with a door in it has a GANGWAY to that door"
+]
+},
+{
+"g": "camera",
+"id": "K37",
+"v": "v24.22 (also v21.18, v21.19)",
+"s": "NEW",
+"rule": "Shots look in at the subject, and whatever a shot looks straight at is built, never a flat painting.",
+"q": [
+"THE SHOTS look IN",
+"the walk ended nose to a flat painting of a shop"
+]
+},
+{
+"g": "camera",
+"id": "K38",
+"v": "v6.6",
+"s": "NEW",
+"rule": "A cutscene is skipped only by the Skip button or its keys, and only from 3.0 s.",
+"q": [
+"the Skip button and its keys alone"
+]
+},
+{
+"g": "camera",
+"id": "K39",
+"v": "v16.1 (also v21.0, v21.1)",
+"s": "NEW",
+"rule": "A scene change happens in the black: place, warm and land everything before the black lifts.",
+"q": [
+"IN THE BLACK he is put inside the room"
+]
+},
+{
+"g": "camera",
+"id": "K40",
+"v": "v24.21",
+"s": "NEW (minor)",
+"rule": "A cramped interior gets a wider lens on a phone.",
+"q": [
+"88° on a phone and 66° on a desktop"
+]
+},
+{
+"g": "camera",
+"id": "K41",
+"v": "v24.4",
+"s": "NEW (minor)",
+"rule": "Frame and fade a rig by where its body actually is, not by its group's spot.",
+"q": [
+"Both read where she IS now"
+]
+},
+{
+"g": "camera",
+"id": "K42",
+"v": "v22.3",
+"s": "NEW (minor)",
+"rule": "Lay a long thin strip near the lens in short lengths; it clips badly.",
+"q": [
+"which the rasterizer clips badly where it passes the lens"
+]
+},
+{
+"g": "camera",
+"id": "K43",
+"v": "v12.3",
+"s": "NEW +L",
+"rule": "A cutscene ends at its last TRACK (a sting is not a track), so a cue written after it never plays: cue the last sound under the fade; chaptertest walks every film and scene and fails a late cue.",
+"q": [
+"a cue written after the last track is never reached",
+"fails the build on a late cue"
+]
+},
+{
+"g": "camera",
+"id": "K44",
+"v": "v13.2",
+"s": "NEW +L",
+"rule": "A verb a cutscene calls never plays the sound itself (the sound stays a scheduled cue that the cue log and chaptertest can see) and never writes what the cutscene owns, such as the pitch.",
+"q": [
+"deliberately silent"
+]
+},
+{
+"g": "camera",
+"id": "K45",
+"v": "v6.4",
+"s": "NEW (minor) +L",
+"rule": "A film releases the pointer so Skip can be reached; skipping by click, tap or key is a gesture and locks it again.",
+"q": [
+"skipping a film by click, tap or key is a gesture too and now re-locks"
+]
+},
+{
+"g": "engine",
+"id": "E1",
+"v": "v7.1 (also v7.4, v8.7, v9.3, v9.7, v12.2, v18.0, v21.0)",
+"s": "NEW +L",
+"rule": "Every clock in play runs on wall time, never the clamped frame dt (which runs slow under 20 fps, worst on a hot phone), and a group moved on wall time drives its walk's rate from the ground covered.",
+"q": [
+"a chapter clock runs on wall time, not the clamped dt"
+]
+},
+{
+"g": "engine",
+"id": "E2",
+"v": "v13.1 (also v14.11, v17.7)",
+"s": "NEW +L",
+"rule": "A thing that must be seen lasts wall time and a number of drawn frames.",
+"q": [
+"wall time alone cannot express a thing that must be SEEN"
+]
+},
+{
+"g": "engine",
+"id": "E3",
+"v": "v12.0",
+"s": "NEW (minor) +L",
+"rule": "A busy flag reads the take's own isRunning(), never a wall-clock timer.",
+"q": [
+"a busy flag stated on the wall clock expires inside one slow frame"
+]
+},
+{
+"g": "engine",
+"id": "E4",
+"v": "v21.21 (also v19.3, v24.0, v24.3)",
+"s": "NEW",
+"rule": "The chapter clock stands still under panels and menus while wall time and voices run on: gate on state, and time anything that plays through a pause from its own start on the wall clock.",
+"q": [
+"The chapter's clock stands still under the gallery window and the voices do not"
+]
+},
+{
+"g": "engine",
+"id": "E5",
+"v": "v8.1 (also v8.2, v8.7, v9.2, v9.5, v9.6, v11.6, v12.5)",
+"s": "NEW +L",
+"rule": "reset() puts back everything a run changes (values stated in a clock, positions set by a phase, takes a scene set, given items, accumulated looks, seeded streams), because a same-chapter replay never re-runs build().",
+"q": [
+"a value stated in a clock must be cleared by whatever resets that clock",
+"and so must a POSITION stated by a phase"
+]
+},
+{
+"g": "engine",
+"id": "E6",
+"v": "v7.3 (also v10.0, v12.1, v14.0, v21.8, v21.23, v24.9)",
+"s": "NEW +L",
+"rule": "Saves run on receipts: each award carries its note and pays only what is not banked, progress rides the phase string (the only receipt; an empty bag is not one), applyPhase covers every phase, a beat spanning a save is tagged as played, progress is saved the moment it counts, and old saves map onto new phases.",
+"q": [
+"the note is the RECEIPT",
+"an empty bag is not a receipt",
+"only a PLAYED trance is tagged now"
+]
+},
+{
+"g": "engine",
+"id": "E7",
+"v": "v11.6 (also v13.2, v14.3)",
+"s": "NEW",
+"rule": "Derive state on the frame from what is saved (a step from the bag, a direction from parity, a rule from phase and distance) instead of storing a copy that can drift.",
+"q": [
+"DERIVED from the bag and the switch every frame rather than stored"
+]
+},
+{
+"g": "engine",
+"id": "E8",
+"v": "v18.4 (also v18.5, v22.0, v24.0, v24.5)",
+"s": "NEW +L (the post-diary 'only play is saved' line is related)",
+"rule": "A chapter-start save carries no phase, no conduct and fresh stats; a minigame is saved as it opened; the autosave is held while a payment or a choice is unresolved, and a bookmark never moves in the tick of its payment.",
+"q": [
+"a save for the START of a chapter carried the FINISHED chapter's phase",
+"a minigame open is saved as it OPENED",
+"a bookmark moved in the tick of its payment"
+]
+},
+{
+"g": "engine",
+"id": "E9",
+"v": "v4.8 (also v21.1, v24.0)",
+"s": "NEW +L",
+"rule": "A resume is placed under the card, so it never flashes the previous chapter or spot.",
+"q": [
+"resume no longer flashes the previous chapter (place before the card)"
+]
+},
+{
+"g": "engine",
+"id": "E10",
+"v": "v22.2 (also v22.3)",
+"s": "NEW",
+"rule": "A same-sitting Continue lands exactly where a reload's would.",
+"q": [
+"same-sitting Continue now lands where a reload's would"
+]
+},
+{
+"g": "engine",
+"id": "E11",
+"v": "v8.7 (also v11.6, v12.2, v14.7, v18.4, v24.2)",
+"s": "NEW +L",
+"rule": "Never show OBJECTIVE COMPLETE for a failure, for lateness or for an undone step, and never follow a COMPLETE with the same words again.",
+"q": [
+"a HUD that congratulates a player for being late is telling a lie"
+]
+},
+{
+"g": "engine",
+"id": "E12",
+"v": "v8.7 (also v12.3, v12.5, v24.2)",
+"s": "NEW",
+"rule": "What is drawn and what is tested are the same number or the same function.",
+"q": [
+"what is shown and what fires cannot drift apart"
+]
+},
+{
+"g": "engine",
+"id": "E13",
+"v": "v12.0 (also v8.7, v13.1, v14.7, v17.6, v24.12)",
+"s": "ALREADY_TOP in part (a chapter declares it, chapter 1's value the default; the fixture proves the kit); adds per-seam fixture proof, ship-alone, and keep-when-unused",
+"rule": "A new seam is opt-in and a bit-identical pass-through when absent, declared and proven (opt-in included) by the fixture, shipped alone first when it is big, and kept, still proven, when its chapter stops using it.",
+"q": [
+"a seam proved by the fixture first is a seam the chapter cannot hide a bug in",
+"stays, proven by the fixture"
+]
+},
+{
+"g": "engine",
+"id": "E14",
+"v": "v9.3 (also v9.4, v9.7, v14.13)",
+"s": "NEW +L (the top table has evGuard/evCut)",
+"rule": "Minigame charges are paid on the spot, the end pays only what is still owed, a flat cost is settled where it happened, the 'worst' sentinel is Infinity, and every minigame charge goes through evCut() with a chapter's own minigame price flagged.",
+"q": [
+"a penalty the player does not feel while playing is not a penalty",
+"The final award pays only what the running total still owes"
+]
+},
+{
+"g": "engine",
+"id": "E15",
+"v": "v12.3 (also v9.7)",
+"s": "NEW +L",
+"rule": "Timing grades fit a touchscreen's latency: PERFECT 45, GREAT 105, GOOD 180, SLIGHT 300, BROKEN past 510 ms.",
+"q": [
+"45 / 105 / 180 / 300 / 510 now"
+]
+},
+{
+"g": "engine",
+"id": "E16",
+"v": "v9.4 (also v12.0, v13.0, v18.1, v22.3)",
+"s": "NEW +L",
+"rule": "While a minigame is open all input is its own (keys and mouse, never the gun; a held key counts once), and a drag or steady game releases pointer lock.",
+"q": [
+"Pointer lock is released while a match runs",
+"A held key counts once"
+]
+},
+{
+"g": "engine",
+"id": "E17",
+"v": "v24.2 (also v23.6, v24.1)",
+"s": "NEW",
+"rule": "Gestures are timed by their events' own timestamps, never by when the handlers ran, and a hold counts the time the finger was really down.",
+"q": [
+"A gesture is timed by its events' own timestamps"
+]
+},
+{
+"g": "engine",
+"id": "E18",
+"v": "v24.1",
+"s": "NEW",
+"rule": "A long press is never the browser's: the context menu and text selection are refused on touch.",
+"q": [
+"A LONG PRESS IS NEVER THE BROWSER'S"
+]
+},
+{
+"g": "engine",
+"id": "E19",
+"v": "v7.4",
+"s": "NEW",
+"rule": "Every timed phase has a failure state that ends it; nothing soft-locks.",
+"q": [
+"the fall-in had NO FAILURE STATE"
+]
+},
+{
+"g": "engine",
+"id": "E20",
+"v": "v11.4 (also v11.1)",
+"s": "NEW",
+"rule": "Nothing charges or faints the player under a panel he is reading.",
+"q": [
+"a player reading four options is not charged for reading them"
+]
+},
+{
+"g": "engine",
+"id": "E21",
+"v": "v11.4 (also v12.3, v14.3, v21.17, v23.0)",
+"s": "NEW",
+"rule": "Transient play effects end on the frame a panel, card, menu or scene opens, and play-time loops and one-shots never run on under cards, menus or the title.",
+"q": [
+"a run caught under a panel is ENDED on that frame",
+"the bicycle bell rang through the outcome card"
+]
+},
+{
+"g": "engine",
+"id": "E22",
+"v": "v18.0 (also v23.0)",
+"s": "NEW",
+"rule": "A minigame panel never covers what it asks the player to watch.",
+"q": [
+"the panel sat over the hands it asks you to watch"
+]
+},
+{
+"g": "engine",
+"id": "E23",
+"v": "v8.1 (also v19.4, v21.25)",
+"s": "NEW",
+"rule": "Whatever state the chapter obeys is on screen: a timer that ends a phase is shown, a minigame shows how he is doing, a lock always says why.",
+"q": [
+"what the player reads is what the chapter obeys",
+"The lock is never a mystery"
+]
+},
+{
+"g": "engine",
+"id": "E24",
+"v": "v11.5 (also v6.7, v11.7, v11.8)",
+"s": "NEW",
+"rule": "Adding a HUD element means re-measuring every overlap by bounding box on a 390 px phone and on desktop.",
+"q": [
+"a two-pixel collision nobody re-checked on a phone"
+]
+},
+{
+"g": "engine",
+"id": "E25",
+"v": "v12.3 (also v22.3)",
+"s": "NEW",
+"rule": "A banner observes; it never orders an action the player cannot follow.",
+"q": [
+"the presence banner OBSERVES rather than ordering action"
+]
+},
+{
+"g": "engine",
+"id": "E26",
+"v": "v14.2 (also v14.3, v14.7, v22.5, v24.3)",
+"s": "NEW",
+"rule": "No line, hint, item description or card line lies: each is true everywhere it can be read and of the world as built, and no hint points at something locked.",
+"q": [
+"the BAG stops lying",
+"Both lines are TRUE of the shop as built",
+"so the card no longer contradicts ending C"
+]
+},
+{
+"g": "engine",
+"id": "E27",
+"v": "v12.5 (also v8.7)",
+"s": "NEW +L",
+"rule": "A prompt or label shows only while its thing is on screen and live; an interaction with nothing to offer is not offered at all.",
+"q": [
+"The frame asks the chapter's own `inView()` now"
+]
+},
+{
+"g": "engine",
+"id": "E28",
+"v": "v12.5 (also v14.7)",
+"s": "NEW",
+"rule": "On a phone every interaction needs a tap target (the badge, or a tap on the thing itself).",
+"q": [
+"that badge is the only tap target a hotspot has"
+]
+},
+{
+"g": "engine",
+"id": "E29",
+"v": "v18.5 (also v11.4, v24.2)",
+"s": "NEW (minor)",
+"rule": "A brief names the input for each device (a tap on a phone, the key or the mouse on a desktop), and key labels show only to a fine pointer.",
+"q": [
+"desktop is told to press Space or click"
+]
+},
+{
+"g": "engine",
+"id": "E30",
+"v": "v7.0",
+"s": "NEW (CHECK: v14.13's evGuard speaks of 'sanity, awareness, or wisdom')",
+"rule": "Minigame events move Sanity and Awareness, never Wisdom.",
+"q": [
+"moving Sanity and Awareness, never Wisdom"
+]
+},
+{
+"g": "engine",
+"id": "E31",
+"v": "v8.8 (also v8.6)",
+"s": "NEW",
+"rule": "A matrix freeze exempts anything that animates its own transform, with the exemption beside the freeze.",
+"q": [
+"Anything that animates its own transform must be exempt from a matrix freeze"
+]
+},
+{
+"g": "engine",
+"id": "E32",
+"v": "v11.5 (also v6.11, v19.6, v24.13)",
+"s": "NEW +L",
+"rule": "A pose laid on after the mixer is undone before the mixer runs again (an unchanged bone is not rewritten, so offsets stack), and values are set absolute from the clip.",
+"q": [
+"put back to what the mixer last wrote BEFORE the mixer runs again"
+]
+},
+{
+"g": "engine",
+"id": "E33",
+"v": "v5.19",
+"s": "NEW +L",
+"rule": "Animation mixers update above the cutscene guard; only pose writes sit under it.",
+"q": [
+"a guard meant to own the poses silently owned the CLOCKS"
+]
+},
+{
+"g": "engine",
+"id": "E34",
+"v": "v5.07",
+"s": "NEW +L",
+"rule": "Force a clip's end pose through action.time, and make a fade of 0 a hard cut that bakes the pose.",
+"q": [
+"a clip's end pose is FORCED via `action.time`, never waited for"
+]
+},
+{
+"g": "engine",
+"id": "E35",
+"v": "v11.1 (also v11.3, v19.3, v22.0)",
+"s": "NEW +L",
+"rule": "Never write a switch another owner owns (the hand's root, the arm, a film's visibility): derive on the frame, write only while your own effect runs, and set a clone's state explicitly because a clone copies 'visible'.",
+"q": [
+"never the chapters' switch",
+"the arm is written ONLY while a swap runs"
+]
+},
+{
+"g": "engine",
+"id": "E36",
+"v": "v12.2 (also v14.16, v15.1)",
+"s": "NEW +L",
+"rule": "An asset loader's failure is never silent (an error, the console, and walktest fails on it).",
+"q": [
+"an asset loader's catch is never silent again"
+]
+},
+{
+"g": "engine",
+"id": "E37",
+"v": "v14.1",
+"s": "ALREADY_TOP in part (an empty cell removes that text); adds the code law +L",
+"rule": "A declared empty word means no text: test presence, not truthiness.",
+"q": [
+"A presence test, not a truthiness test"
+]
+},
+{
+"g": "engine",
+"id": "E38",
+"v": "v15.1 (also v19.0, v22.1)",
+"s": "NEW +L",
+"rule": "A lit material's shader depends on how many lights are drawn, so never change the light count on screen without warming that state; prefer painted light.",
+"q": [
+"keyed by how MANY lights of each kind are drawn"
+]
+},
+{
+"g": "engine",
+"id": "E39",
+"v": "v16.5",
+"s": "NEW +L",
+"rule": "An optimisation that thins content decides up front and hands its result to everything built on it.",
+"q": [
+"was decided inside `plantTrees`'s loader and told nobody"
+]
+},
+{
+"g": "engine",
+"id": "E40",
+"v": "v6.15",
+"s": "NEW (minor) +L",
+"rule": "Shared kits are released before a chapter's own geometry sweep.",
+"q": [
+"must run BEFORE a chapter's own geometry sweep"
+]
+},
+{
+"g": "engine",
+"id": "E41",
+"v": "v6.15 (also v9.2, v13.1, v21.17)",
+"s": "NEW",
+"rule": "Anything random is a seeded deterministic stream rewound by reset(), and a cosmetic addition gets its own stream so signed-off feel stays bit-identical.",
+"q": [
+"deterministic per-spot stream",
+"so the recoil's scatter stays bit-identical"
+]
+},
+{
+"g": "engine",
+"id": "E42",
+"v": "v9.2 (also v14.9)",
+"s": "NEW +L",
+"rule": "Box3.setFromObject never refreshes ancestors: call updateWorldMatrix(true, true) before measuring a child or a skin.",
+"q": [
+"refreshes the object and its DESCENDANTS and never its ancestors"
+]
+},
+{
+"g": "engine",
+"id": "E43",
+"v": "v6.11 (also v21.1, v23.1, v24.6, v24.22)",
+"s": "NEW +L",
+"rule": "Keep and extend the build's static checks over every chapter (syntax, use before declaration, undefined names, duplicate functions), because chapters are copied, not bundled; a lifted function must not read names it no longer sees, and an inner name must not shadow an outer one.",
+"q": [
+"esbuild bundles main.js only and the chapters are copied",
+"of two function declarations in one scope the later silently replaces the earlier"
+]
+},
+{
+"g": "engine",
+"id": "E44",
+"v": "v19.5 (also v22.0)",
+"s": "ALREADY_TOP in part (rule 1: targeted edits, read the full diff); adds this trap",
+"rule": "Never append a comment onto a line of code in a targeted edit; it can swallow the code.",
+"q": [
+"a targeted edit that appended a comment to a line"
+]
+},
+{
+"g": "engine",
+"id": "E45",
+"v": "v13.2",
+"s": "NEW",
+"rule": "Chapter and sheet text goes into the page as text (createElement), never as markup.",
+"q": [
+"because a note is chapter text and the sheet can put anything in it"
+]
+},
+{
+"g": "engine",
+"id": "E46",
+"v": "v11.8 (also v5.08, v6.2, v9.4, v11.7, v14.6, v21.23, v21.28)",
+"s": "NEW (minor) +L",
+"rule": "DOM and CSS traps: read layout through a ResizeObserver, never a sample on the frame; measure layout boxes, not rects mid-animation; .hide is display:none !important; a hide rule needs as many classes as the show rule; a CSS filter makes a stacking context; paint a canvas only after it is shown; Chrome makes the rest of a scroll uncancellable once its first event is let through.",
+"q": [
+"A layout read sampled on the frame is a coin toss on a slow device",
+"`.hide` is `display:none !important`",
+"Chrome sends the rest of a scroll sequence uncancellable once its first event was let through"
+]
+},
+{
+"g": "engine",
+"id": "E47",
+"v": "v21.28 (also v21.27)",
+"s": "NEW (minor)",
+"rule": "A refusal must not be able to succeed: a lock is only ever said, never pressed.",
+"q": [
+"a refusal must not be able to succeed"
+]
+},
+{
+"g": "engine",
+"id": "E48",
+"v": "v21.1",
+"s": "NEW (minor)",
+"rule": "A run token cancels a callback, not the work that callback owed.",
+"q": [
+"a run token cancels a callback, not what it owed"
+]
+},
+{
+"g": "engine",
+"id": "E49",
+"v": "v23.6",
+"s": "NEW (minor)",
+"rule": "three's slerpQuaternions copies its first quaternion into the target before blending.",
+"q": [
+"copies its first quaternion into the target before blending"
+]
+},
+{
+"g": "engine",
+"id": "E50",
+"v": "v24.9",
+"s": "NEW (minor)",
+"rule": "An option that appears after a walk must not race the order that ends it.",
+"q": [
+"an option that appears after a walk must not race the order that ends it"
+]
+},
+{
+"g": "engine",
+"id": "E51",
+"v": "v24.0 (also v21.0)",
+"s": "NEW (minor)",
+"rule": "build() runs before the hands' scene exists on a cold boot, and blockers must be in its array before it returns.",
+"q": [
+"before the hands' scene exists on a cold boot",
+"pushed after build() handed the engine its array"
+]
+},
+{
+"g": "engine",
+"id": "E52",
+"v": "v5.03 (also v7.9, v14.3, v16.6)",
+"s": "NEW +L",
+"rule": "collide() samples one point at 1.0 m, so furniture blockers are columns from the floor, a chair is boxed whole, blockers match what is drawn (the model's footprint), new pieces on walkable ground bring their own, and the spawn stays clear of padded blockers.",
+"q": [
+"Furniture blockers are now COLUMNS",
+"a blocked spawn fills nothing"
+]
+},
+{
+"g": "engine",
+"id": "E53",
+"v": "v14.6 (also v5.09, v22.5, v24.9)",
+"s": "NEW",
+"rule": "Old saves keep loading after items or shapes change: unknown ids are dropped and old shapes fold in with nothing lost.",
+"q": [
+"an old save still carrying them loads and they are simply absent"
+]
+},
+{
+"g": "engine",
+"id": "E54",
+"v": "v15.0",
+"s": "NEW",
+"rule": "Moving work to another core does not cool a phone; deleting the work does.",
+"q": [
+"moving work to another core removes none of it; deleting it does"
+]
+},
+{
+"g": "engine",
+"id": "E55",
+"v": "v14.15 (also v14.16, v15.1)",
+"s": "ALREADY_TOP in part (the 'items' row); adds the curtain law",
+"rule": "The curtain covers the world until loads, the figure and the items are in and every texture, program and hidden geometry is warmed; a chapter declares its items and every model it loads.",
+"q": [
+"the work that used to stutter mid-play is done there"
+]
+},
+{
+"g": "engine",
+"id": "E56",
+"v": "v15.3",
+"s": "NEW (minor)",
+"rule": "Go dark before a synchronous rebuild so no card freezes on screen.",
+"q": [
+"draws two frames at full black, and only then runs"
+]
+},
+{
+"g": "engine",
+"id": "E57",
+"v": "v5.12",
+"s": "NEW (minor)",
+"rule": "Chapter progress lives on its own key apart from the run, so nothing re-locks a reached chapter.",
+"q": [
+"a new game or a replay never locks a later chapter again"
+]
+},
+{
+"g": "engine",
+"id": "E58",
+"v": "v16.7",
+"s": "NEW (minor)",
+"rule": "Geometry consumers derive from one table, so one change moves them together.",
+"q": [
+"Every stair consumer derives from `STAIR`"
+]
+},
+{
+"g": "engine",
+"id": "E59",
+"v": "v8.6",
+"s": "NEW (minor)",
+"rule": "Hold a removed feature at zero rather than deleting it when many call sites use it.",
+"q": [
+"is held at 0 rather than deleted, because ten call sites save, restore and cue it"
+]
+},
+{
+"g": "engine",
+"id": "E60",
+"v": "v8.9 (also v14.5, v19.2, v24.14, v24.22)",
+"s": "NEW (minor)",
+"rule": "Price an addition's triangles as a real phone against the chapter's budget, and instance repeated props.",
+"q": [
+"Priced rather than assumed",
+"INSTANCED (~200 meshes to six draws)"
+]
+},
+{
+"g": "engine",
+"id": "E61",
+"v": "v14.6",
+"s": "NEW (minor)",
+"rule": "Item views share one offscreen renderer, one GL context.",
+"q": [
+"cost one GL context, not three"
+]
+},
+{
+"g": "engine",
+"id": "E62",
+"v": "v24.22",
+"s": "NEW (minor)",
+"rule": "LOD is chosen from the camera at the cut, so a cut never shows the last frame's level.",
+"q": [
+"so a cut never shows the last frame's level"
+]
+},
+{
+"g": "engine",
+"id": "E63",
+"v": "v14.7",
+"s": "NEW (minor) +L",
+"rule": "A guard's clock starts after the work it guards.",
+"q": [
+"a 0.6 s guard whose clock starts AFTER the setup"
+]
+},
+{
+"g": "engine",
+"id": "E64",
+"v": "v21.23 (also v18.5)",
+"s": "NEW (minor)",
+"rule": "Time spent with the tab hidden never counts as play and is never charged.",
+"q": [
+"time away counted as reading"
+]
+},
+{
+"g": "engine",
+"id": "E65",
+"v": "v22.0",
+"s": "NEW (minor) +L",
+"rule": "A tween begun mid-tween starts from the picture as it is, on wall time.",
+"q": [
+"a daylight tween begun mid-tween starts from the picture as it is and runs on wall time"
+]
+},
+{
+"g": "engine",
+"id": "E66",
+"v": "v12.3",
+"s": "NEW (minor)",
+"rule": "The bag carries across chapters, so a chapter that must keep an item out of use declares it (torch.player: false) instead of relying on never issuing it.",
+"q": [
+"the bag carries across a chapter"
+]
+},
+{
+"g": "engine",
+"id": "E67",
+"v": "v14.5",
+"s": "NEW (minor)",
+"rule": "Words drawn into the world (signs, boards) are art, not sheet strings.",
+"q": [
+"the signs are world art, like e2c1's jetty sign"
+]
+}
+]
