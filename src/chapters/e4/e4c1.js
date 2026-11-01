@@ -244,13 +244,30 @@
       chooseTitle: 'For your shop',
       objOffer: 'Set your offering on the tray',
       hotOffer: 'Set down your offering',
-      // PLAY III · the work (§4.4): the chant's captions — the words as said, over what they mean — and the four signs
-      chant1: 'Namo tassa bhagavato arahato sammā-sambuddhassa.',
-      chant1en: 'Homage to the Blessed One, the Worthy One, the Rightly Self-awakened One.',
-      chant2: 'Ehi cittaṁ mahā-lābhaṁ piyaṁ mama māmā.',            // (v24.5, L6-4: every caption ends on its stop)
-      chant2en: 'A Thai trade blessing in Pali-like words — roughly: come, heart; great gain; be dear to me.',
-      chant3: 'Mahā-lābhā bhavantu me.',
-      chant3en: 'May great gains be mine.',
+      // v24.24 · THE MASTER'S WORDS, SUBTITLED: what he says in Thai, in English at the foot of the screen while he says it
+      // (Chad, 1 Nov 2026: "subtitles for everything that the black ajahn says, subtitles in english while he speaks thai")
+      subHello: 'Hello... sit, sit. Make yourself comfortable.',
+      subShop: 'What kind of shop do you have?',
+      subGood: 'Good, good... an amulet shop. You make merit and earn a living at the same time.',
+      subHm: 'Mm...',
+      subRead1: 'His shop is a good place... but it is still new.',
+      subRead2: 'People don\'t know it yet, so the money comes slowly —',
+      subRead3: 'like a new well: you wait for the water to seep in.',
+      subRead4: 'If he wants it to come faster, I can help...',
+      subRead5: '...but he must make merit often too, and keep his mind calm.',
+      subItems: 'Choose whichever piece you like. Please, don\'t be shy.',
+      subAnu: 'I rejoice in your merit.',
+      subEyes: 'You may close your eyes. Relax.',
+      subBlessA: 'May your trade go well. May you prosper.',
+      subAbye: 'Go well, come back well.',
+      subB1: 'That one has been in this house longer than me... not many people see them.',
+      subB2: 'Who taught him?',
+      subB3: 'If he wants to learn, come back. I can teach him to use it.',
+      subC1: 'Oh... it\'s all right, it\'s all right.',
+      subC2: 'It\'s still slippery outside. Go carefully.',
+      subD1: 'Of course, of course. No problem. As you like.',
+      // PLAY III · the work (§4.4): the four signs (v24.24: the chant is whispered, and has no words on screen — Chad:
+      // "Except for his creepy chanting, that part will not have any subtitles")
       objWatch: 'Watch closely · {n}/4',
       lookSmoke: 'The smoke',
       lookCloth: 'The red cloth',
@@ -306,12 +323,46 @@
       'pn1ready': 4.25, 'pn1water': 6.41, 'pn1tray': 0.83, 'pn1guava': 6.49, 'pn1card': 2.65, 'pn1C1': 6.03,
     /* fm */
       'fm1hello': 4.21, 'fm1shop': 1.25, 'fm1good': 4.49, 'fm1hm': 1.21, 'fm1read': 14.81, 'fm1items': 2.25,
-      'fm1anu': 1.24, 'fm1eyes': 3.33, 'fm1chant': 33.77, 'fm1chant2': 18.17, 'fm1chant2D': 6.59, 'fm1blessA': 2.33,
+      'fm1anu': 1.24, 'fm1eyes': 3.33, 'fm1chant': 24.31, 'fm1chant2': 14.6, 'fm1chant2D': 6.52, 'fm1blessA': 2.33,
       'fm1Abye': 1.85, 'fm1B1': 3.77, 'fm1B2': 1.69, 'fm1B3': 2.57, 'fm1C1': 2.09, 'fm1C2': 2.73, 'fm1D1': 2.73,
     /* tx */
       'tx1where': 1.17,
   };
   /* SECS END */
+
+  /* v24.24 · THE MASTER'S WORDS, IN ENGLISH WHILE HE SPEAKS THAI (Chad, 1 Nov 2026: "i want subtitles for everything that
+     the black ajahn says, subtitles in english while he speaks thai" — "Except for his creepy chanting, that part will
+     not have any subtitles"). Every line he speaks, on the engine's captions (kit.captions: the foot of the screen, wall
+     time from the call), put up on the moment his voice starts — in play by the line queue's start (a muted game's
+     too, on the line's own length), in an ending on the same scene time as its cue. Each stays 0.4 s past his last
+     word, a short line at least 1.6 s, so it can be read; the next words replace it. The reading goes up in five,
+     timed on its take's own pauses (measured: 2.96, 5.30-5.77, 8.30-8.80 and 11.07-11.68 of its 14.80 s). One table,
+     read by play and by the four endings alike; the chant is not in it. */
+  const SUBS = {
+    'fm1hello': 'subHello', 'fm1shop': 'subShop', 'fm1good': 'subGood', 'fm1hm': 'subHm', 'fm1items': 'subItems',
+    'fm1anu': 'subAnu', 'fm1eyes': 'subEyes', 'fm1blessA': 'subBlessA', 'fm1Abye': 'subAbye', 'fm1B1': 'subB1',
+    'fm1B2': 'subB2', 'fm1B3': 'subB3', 'fm1C1': 'subC1', 'fm1C2': 'subC2', 'fm1D1': 'subD1',
+    'fm1read': [['subRead1', 0, 2.98], ['subRead2', 2.98, 5.6], ['subRead3', 5.6, 8.6], ['subRead4', 8.6, 11.4],
+                ['subRead5', 11.4, 15.21]]
+  };
+  function subsFor(name) {
+    const s = SUBS[name];
+    if (!s) return null;
+    const list = typeof s === 'string' ? [[s, 0, Math.max((SECS[name] || 2.5) + 0.4, 1.6)]] : s;
+    return list.map(([w, at, end]) => ({ at, end, text: DATA.words[w] }));
+  }
+  function subtitle(kit, name) {
+    const list = subsFor(name);
+    if (list && kit && kit.captions) kit.captions(list);
+  }
+  /* an ending's sfx, the same in every way, and when the cue is one of his lines its words go up on the same scene time
+     (so the voice and its subtitle can never drift apart, and the cues stay literal calls the warm scan reads) */
+  function subbedSfx(api) {
+    return (t, name, vol) => {
+      api.sfx(t, name, vol);
+      if (SUBS[name]) api.step(t, () => subtitle(api.kit, name));
+    };
+  }
 
   function build(ctx) {
     const { THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, pitch, LOW, kit, cnv, loadImageTexture,
@@ -4399,7 +4450,9 @@
     const KNEEL_Y = RMC.EYE.y;                                       // his eye on the mat (§4.3)
     const faceMaster = () => Math.atan2(-(MASTER.x - CMAT.x), -(MASTER.z - CMAT.z));
     /* one line, its speaker on his talking take for the line's own length */
-    function line(name, P, vol = 1) { queueLine(name, () => { if (P) personTalk(P, (SECS[name] || 2.5) * 0.92); }, vol); }
+    function line(name, P, vol = 1) {
+      queueLine(name, () => { if (P) personTalk(P, (SECS[name] || 2.5) * 0.92); subtitle(kit, name); }, vol);
+    }
     function lines(list) { for (const [n, P] of list) line(n, P); }
     /* the receipt is the note (v7.3): a note that is banked is banked once, whatever a Continue replays */
     function bank(note) {
@@ -4808,22 +4861,18 @@
     }
 
     /* ================================================================ P6 · THE WORK: the chant and the four signs */
-    /* the chant's words (§4.4, the research): the homage three times, the Nang Kwak trade formula twice — a Thai folk
-       formula in Pali-sounding words, captioned as such — and "may great gains be mine". Timed on the take's own
-       breaths (CP11, measured: five of 1.2-1.6 s at -40 dB, so six phrases — 0-4.75, 6.25-11.1, 12.7-17.6, 19.6-24.0,
-       25.4-30.0, 31.35-33.8 of its 33.8 s). */
-    const CHANT_CAPS = () => [
-      { at: 0.1, end: 4.9, text: W.chant1, sub: W.chant1en }, { at: 6.2, end: 11.2, text: W.chant1, sub: W.chant1en },
-      { at: 12.6, end: 17.7, text: W.chant1, sub: W.chant1en },
-      { at: 19.5, end: 24.1, text: W.chant2, sub: W.chant2en }, { at: 25.3, end: 30.1, text: W.chant2, sub: W.chant2en },
-      { at: 31.3, end: 33.8, text: W.chant3, sub: W.chant3en }];
+    /* the chant (§4.4, the research): the homage three times, the Nang Kwak trade formula twice — a Thai folk formula in
+       Pali-sounding words — and "may great gains be mine". WHISPERED since v24.24, and with no words on screen (Chad, 1 Nov
+       2026: "change all of his chanting to something that cannot really hear and intelligible. So that he seem more yin
+       and creepy. Like a whispering voice. But still in the same thai voice" — "Except for his creepy chanting, that part
+       will not have any subtitles"; masters/v24.24/make.sh). Until v24.23 it was captioned, the Pali over its meaning. */
     function chantStart() {
-      /* the captions WITH the voice (v24.5, L3 P2: a Continue asks for the work's sounds on its first frame, and the captions
-         ran ahead of a chant still decoding) — muted, or not decoded within sfxReady's wait, they run on their own */
-      const run = play.run; let capd = false;
-      const caps = () => { if (capd || !live(run) || phase !== 'work') return; capd = true; if (kit && kit.captions) kit.captions(CHANT_CAPS()); play.capsAt = wallNow(); };
-      sfxReady('fm1chant', 0.8, d => { play.chants.push(d); caps(); });
-      if (soundOff && soundOff()) caps(); else setTimeout(caps, 3100);
+      /* when it is heard to begin (v24.5, L3 P2: a Continue asks for the work's sounds on its first frame, and the chant can
+         still be decoding) — muted, or not decoded within sfxReady's wait, it is counted from 3.1 s on */
+      const run = play.run; let begun = false;
+      const begin = () => { if (begun || !live(run) || phase !== 'work') return; begun = true; play.chantAt = wallNow(); };
+      sfxReady('fm1chant', 0.8, d => { play.chants.push(d); begin(); });
+      if (soundOff && soundOff()) begin(); else setTimeout(begin, 3100);
       play.chantNext = wallNow() + (SECS.fm1chant || 28);          // on WALL time (CP13: the chapter clock stops under a ledger page)
     }
     /* (v24.5: he holds a wai while the master chants over him, and through the storm — as he did when he came in, and as
@@ -4832,9 +4881,10 @@
        under it (photographed, v24.5's storm probe). Held low — the fingertips at the foot of the frame, e3c1's −0.37 —
        so the table is clear on both screens; let go as the chant ends) */
     function prayOn(now) { if (kit && kit.pray) kit.pray(true, { secs: now ? 0 : 1.2, y: -0.37 }); }
-    /* (v24.5, L5-7: the covered bowl breathes only once the chant's captions are done — on a phone its dome sits under the
-       captions' panel, and the captions are up for 84 % of the chant) */
-    const capsOver = () => play.capsAt > 0 && wallNow() >= play.capsAt + 34.2;
+    /* (v24.5, L5-7: the covered bowl breathes only once the blessing has been chanted through — then so the captions'
+       panel, up for 84 % of the chant, never stood over the bowl's dome on a phone. The chant has no captions since
+       v24.24 and the bowl still waits for its end, so the first sign keeps its place in the work) */
+    const chantOver = () => play.chantAt > 0 && wallNow() >= play.chantAt + (SECS.fm1chant || 28) + 0.4;
     function workBegin(resumed) {
       setPhase('work', [...play.signs].join(','));
       const go = () => {
@@ -5002,7 +5052,7 @@
       if ((phase === 'work' || phase === 'storm') && inR) {
         if (phase === 'work') {
           /* the cloth breathes now and then; his hands move over the mala, so his shadow can be seen to follow late */
-          if (dayClock.t >= play.breathNext && capsOver()) { roomCtl.breathe(); if (worldSfx) worldSfx('w4cloth', 0.35); play.breathNext = dayClock.t + 9 + 5 * ((dayClock.t * 7.13) % 1);
+          if (dayClock.t >= play.breathNext && chantOver()) { roomCtl.breathe(); if (worldSfx) worldSfx('w4cloth', 0.35); play.breathNext = dayClock.t + 9 + 5 * ((dayClock.t * 7.13) % 1);
                                               after(1.2, () => { play.clothSeen = true; }); }   // (v24.5, L1-5)
           /* (v24.5, L3-8: his hands move over the mala between lines — under one its beads were ducked to nothing) */
           if (dayClock.t >= play.gestNext && dayClock.t >= speak.until && !speak.pending) { personTalk(cast.master, 2.6); if (worldSfx) worldSfx('w4mala', 0.36); play.gestNext = dayClock.t + 7 + 4 * ((dayClock.t * 3.71) % 1);
@@ -6383,7 +6433,7 @@
       play.item = ''; play.offerOn = false; play.offered = false;
       play.signs.clear(); play.signsOn = false; play.herSeen = false; play.kneeling = false; play.turning = null;
       play.breathNext = 0; play.gestNext = 0; play.chantNext = 0;
-      play.clothSeen = false; play.gestSeen = false; play.gustNext = 0; room.gustT = 0; play.doorWp = undefined; play.capsAt = 0;   // (v24.5: L1-5, L1-2, L5-13, L5-7)
+      play.clothSeen = false; play.gestSeen = false; play.gustNext = 0; room.gustT = 0; play.doorWp = undefined; play.chantAt = 0;   // (v24.5: L1-5, L1-2, L5-13, L5-7)
       droneStop(0); chantStop(0);
       boardSet(14); slateWrite(null);
       matZone.visible = false; tray.visible = false;
@@ -7920,7 +7970,7 @@
 
   /* A · STILL (good): he observes, and decides nothing */
   function scStill(c, s, api) {
-    const { sfx, sfxFade, fade } = api;
+    const { sfxFade, fade } = api; const sfx = subbedSfx(api);   // (v24.24: his lines subtitled)
     endingScene(c, api, 'A', (T) => {
       sfx(0.4, 'w4drips', 0.5);                              // the eaves dripping after the storm (the room's only sound)
       sfx(0.8, 'w4breath', 0.35);                            // his breath, slowed
@@ -7972,7 +8022,7 @@
 
   /* B · THE QUESTION (bad): he asks, and is seen */
   function scQuestion(c, s, api) {
-    const { sfx, sfxFade, fade } = api;
+    const { sfxFade, fade } = api; const sfx = subbedSfx(api);   // (v24.24: his lines subtitled)
     endingScene(c, api, 'B', (T) => {
       sfx(0.3, 'w4drips', 0.5);
       sfx(10.0, 'w4drips', 0.45);                            // the eaves, on into the master's long look (CP13: 1.8 s of silence)
@@ -8020,7 +8070,7 @@
 
   /* C · CERTAIN (worst): fear decides first */
   function scCertain(c, s, api) {
-    const { sfx, sfxFade, fade, phone } = api;
+    const { sfxFade, fade, phone } = api; const sfx = subbedSfx(api);   // (v24.24: his lines subtitled)
     endingScene(c, api, 'C', (T) => {
       sfx(0.0, 'w4heart', 0.75);                             // his heart taking over
       sfx(0.4, 'q1C0', 1);                                   // "The bowl... the shadow... her. It's all him."  (→ 6.97: "her" 4.05, on her; "It's all him" 6.12, on him)
@@ -8065,7 +8115,7 @@
 
   /* D · ENOUGH (best): he knows when to go */
   function scEnough(c, s, api) {
-    const { sfx, sfxFade, fade } = api;
+    const { sfxFade, fade } = api; const sfx = subbedSfx(api);   // (v24.24: his lines subtitled)
     endingScene(c, api, 'D', (T) => {
       /* the chant he began, let FINISH (v24.5, L3-1: the whole take was cued from its top and faded in the middle of its
          second phrase, under the bell that says it has ended — fm1chant2D is the take's own end, the third formula and

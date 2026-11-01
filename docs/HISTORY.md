@@ -7218,6 +7218,15 @@ What the baseline contains, by release:
 
 ## The sheet, version by version
 
+**v134** (`masters/v24.24/masterz-text-v134.xlsx`, its CSV beside it): v133 with episode 4 chapter 1's master
+subtitled and his chant whispered — 20 rows added (`subHello`, `subShop`, `subGood`, `subHm`, `subRead1`–`subRead5`,
+`subItems`, `subAnu`, `subEyes`, `subBlessA`, `subAbye`, `subB1`–`subB3`, `subC1`, `subC2`, `subD1`: his words in
+English while he speaks Thai), 6 removed (`chant1`, `chant1en`, `chant2`, `chant2en`, `chant3`, `chant3en`: the chant's
+captions, gone at Chad's "Except for his creepy chanting, that part will not have any subtitles"), and the three
+chant rows of the voice lines (fm1chant, fm1chant2, fm1chant2D) changed — their words as whispered, where they play,
+their measured lengths. Nothing else moved (1960 rows to 1974). Exported, not published (docs/OPEN-ITEMS.md A1).
+v133 was `masters/v24.17/masterz-text-v133.xlsx`, v132 with the credit rows of v24.13–v24.16.
+
 **THE SHEET IS v132** (`masters/v24.12/masterz-text-v132.xlsx`, v131 less episode 4 chapter 1's five storm words — `chgLabel`, `chgBrief` and the three `noteStorm*` notes, gone with the game — and with `pg1offer` re-measured at 4.17 s, its description saying it was re-said. v131 was `masters/v24.9/masterz-text-v131.xlsx`, v130 with episode 4 chapter 1 tightened: 41 of its words out — the queue's orders, the three customers' prompts, the notes' prompts and meanings, the eight days and the pick's two, the facts/meanings card notes — and `objWatch` "Watch closely · {n}/4"; 24 voice lines out (the queue's calls, the customers', the day's), `pn1ready` in, `pg1come` and `q1nobody` re-said, four descriptions moved. v130 was `masters/v24.7/masterz-text-v130.xlsx`, v129 with v24.7's words for episode 3 chapter 5: the drinks' and the incense's orders say "at the desk"; the eight words of the three minigames taken out with them and COME BACK's three conduct notes; the ending D chant's four captions the Mettā verse's (`metta1`–`metta4`, Pali and English) in place of the Yathā's; the voice lines `ow5wrong` and `ow5promise` cut, `z5Clotto` in place of `z5Cevil`, `z5C7` re-said, and `mk5metta` in place of `mk5yatha`. v129 was `masters/v24.5/masterz-text-v129.xlsx`, v128 with v24.5's words: 1 row added (`fm1chant2D`,
 episode 4 chapter 1's ending D letting the chant finish) and 7 changed — three of that chapter's ledger facts (the
 woman waiting's, the uncle's, the reading's), the stops on its chant's three captions, and fm1chant2's description.

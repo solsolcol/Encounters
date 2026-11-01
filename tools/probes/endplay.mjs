@@ -39,6 +39,27 @@ const bt = await p.evaluate((i) => { const B = [...document.querySelectorAll('#c
   return r ? { x: r.left + r.width / 2, y: r.top + r.height / 2, n: B.length } : null; }, 'ABCD'.indexOf(OPT));
 await press(bt.x, bt.y);
 log('tapped', OPT, 'of', bt.n);
+/* (v24.24) THE SUBTITLES: every caption that goes up is recorded in the page as it happens (its words, when, and the
+   voice last started then), and photographed from here the first time it is seen */
+const CAPWATCH = () => p.evaluate(() => {
+  if (window.__caps) return;
+  const c = document.getElementById('caption'); window.__caps = [];
+  if (!c) return;
+  new MutationObserver(() => {
+    const on = c.classList.contains('on'), t = (c.querySelector('.capMain') || c).textContent.trim(), L = window.__caps, last = L[L.length - 1];
+    let v = null; try { const V = window.__enc.voices(); v = V.length ? V[V.length - 1].name : null; } catch { /* */ }
+    if (on && t && (!last || last.text !== t || last.off)) L.push({ text: t, at: +(performance.now() / 1000).toFixed(2), voice: v });
+    else if (!on && last && !last.off) last.off = +(performance.now() / 1000).toFixed(2);
+  }).observe(c, { attributes: true, childList: true, subtree: true, characterData: true });
+});
+const capSeen = new Set();
+const capShot = async (shotFn) => {
+  const cap = await p.evaluate(() => { const c = document.getElementById('caption'); return c && c.classList.contains('on') ? (c.querySelector('.capMain') || c).textContent.trim() : ''; });
+  if (cap && !capSeen.has(cap)) { capSeen.add(cap); console.log('  caption', capSeen.size, JSON.stringify(cap)); await shotFn('cap' + String(capSeen.size).padStart(2, '0')); }
+};
+const capReport = async () => { const L = await p.evaluate(() => window.__caps || []);
+  console.log('CAPTIONS', L.length, '|', L.map(q => `${q.at}–${q.off || '?'} [${q.voice}] ${q.text}`).join(' || ')); };
+await CAPWATCH();
 await p.waitForFunction(() => window.__enc.cine.active(), null, { timeout: 600000, polling: 300 });
 let next = 0.5, maxT = 0;
 const tStart = Date.now();
@@ -48,11 +69,13 @@ while (Date.now() - tStart < 90 * 60 * 1000) {
     maxT = Math.max(maxT, s.t);
     if (s.t >= next) { try { await p.screenshot({ path: `${OUT}/t${String(Math.round(s.t)).padStart(3, '0')}.jpg`, quality: 60, timeout: 240000 }); } catch { /* */ } next = s.t + EVERY; }
   }
+  await capShot((tag) => p.screenshot({ path: `${OUT}/${tag}.jpg`, quality: 60, timeout: 240000 }).catch(() => {}));
   if (!s.on && ['result', 'complete'].includes(s.st)) { log('the card, scene reached', maxT.toFixed(1)); break; }
   await p.waitForTimeout(700);
 }
 await p.waitForTimeout(6000);
 try { await p.screenshot({ path: `${OUT}/card.jpg`, quality: 60, timeout: 240000 }); } catch { /* */ }
+await capReport();
 const V = (await p.evaluate(() => window.__enc.voices())).slice(v0);
 const over = [];
 for (let i = 0; i < V.length; i++) for (let j = i + 1; j < V.length; j++) {

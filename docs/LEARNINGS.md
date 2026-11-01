@@ -7035,3 +7035,15 @@ cut (sharing its vertices and maps) when it is small.
     30–45 of 255 is about 0.016–0.025 linear before exposure.
   - It took three rounds of photographs: too dark, grey as day, night. A light that moves across such surfaces (the
     passing lamp's band) is shaped the same way, or it lays a flat colour on them.
+- **eleven_v4 whispers the first phrases of a take and drifts back to the voice after — lay a long whisper phrase by
+  phrase** (v24.24). The first master's chant had to become a true whisper in his own voice (Patinya).
+  - `[whispering]` once at the head gave a hushed VOICE, not a whisper: 68–82 % of the loud frames still had a pitch
+    (meas.py's "voiced"; Pong's real whisper pg1eyes reads 34 %, the chant it replaced 75 %).
+  - The documented `[whispers]` before EVERY phrase whispered the homage (4–18 %) and then, in all four takes, went back
+    to his voice at the trade formula (64–82 %). On the formula alone it whispered the first phrase (22–38 %) and
+    drifted after (40–59 %).
+  - A take of ONE phrase whispers through (9–24 %). So each chant is laid from whispered phrases only: cut at the
+    words' measured edges, one loudness, the model's own half-second breath between (masters/v24.24/assemble.py).
+  - Measure per PHRASE, not per take: a whole-take figure of 47 % hid a perfect whisper followed by a plain voice.
+  - The tag repeated before each phrase is one tag; no tag was spoken (each phrase's length is the words' own in every
+    take — a spoken tag adds ~0.6 s).

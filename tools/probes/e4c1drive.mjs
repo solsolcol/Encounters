@@ -168,11 +168,33 @@ async function playChange() {
   log('  event over', ((Date.now() - t0) / 1000).toFixed(0) + 's');
 }
 
+/* (v24.24) THE SUBTITLES: every caption that goes up is recorded in the page as it happens (its words, when, and the
+   voice last started then), and photographed from here the first time it is seen */
+const CAPWATCH = () => p.evaluate(() => {
+  if (window.__caps) return;
+  const c = document.getElementById('caption'); window.__caps = [];
+  if (!c) return;
+  new MutationObserver(() => {
+    const on = c.classList.contains('on'), t = (c.querySelector('.capMain') || c).textContent.trim(), L = window.__caps, last = L[L.length - 1];
+    let v = null; try { const V = window.__enc.voices(); v = V.length ? V[V.length - 1].name : null; } catch { /* */ }
+    if (on && t && (!last || last.text !== t || last.off)) L.push({ text: t, at: +(performance.now() / 1000).toFixed(2), voice: v });
+    else if (!on && last && !last.off) last.off = +(performance.now() / 1000).toFixed(2);
+  }).observe(c, { attributes: true, childList: true, subtree: true, characterData: true });
+});
+const capSeen = new Set();
+const capShot = async (shotFn) => {
+  const cap = await p.evaluate(() => { const c = document.getElementById('caption'); return c && c.classList.contains('on') ? (c.querySelector('.capMain') || c).textContent.trim() : ''; });
+  if (cap && !capSeen.has(cap)) { capSeen.add(cap); console.log('  caption', capSeen.size, JSON.stringify(cap)); await shotFn('cap' + String(capSeen.size).padStart(2, '0')); }
+};
+const capReport = async () => { const L = await p.evaluate(() => window.__caps || []);
+  console.log('CAPTIONS', L.length, '|', L.map(q => `${q.at}–${q.off || '?'} [${q.voice}] ${q.text}`).join(' || ')); };
+await CAPWATCH();
 const phases = [], bedsAt = {}, presses = [], stormShots = new Set();
 let last = '', idle = 0, decided = false, cardAt = 0, sweep = -1;
 const TMAX = 120 * 60 * 1000;
 while (Date.now() - T0 < TMAX) {
   const I = await info();
+  await capShot(shot);
   const key = `${I.st}|${I.phase}|${I.obj}`;
   if (key !== last) {
     log(I.st, I.phase, I.world, JSON.stringify(I.obj), I.cine !== null ? 'cine ' + I.cine : '', JSON.stringify(I.beds));
@@ -228,6 +250,7 @@ while (Date.now() - T0 < TMAX) {
   if (idle > 300) { log('STUCK', JSON.stringify(I)); await shot('stuck'); break; }
 }
 
+await capReport();
 /* the voice log, on the audio clock: nothing starts while another is still sounding */
 const V = await p.evaluate(() => window.__enc.voices());
 const over = [];
