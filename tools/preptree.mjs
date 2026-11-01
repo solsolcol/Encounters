@@ -53,10 +53,18 @@ if (onlyNode) {
 /* 1 — the material model three.js still speaks */
 await doc.transform(metalRough());
 
-/* 2 — base colour only; a detached texture must also be disposed or it stays */
+/* 2 — base colour only; a detached texture must also be disposed or it stays.
+   (v24.27) KEEPMAPS=1 keeps every map and factor AS DELIVERED (normal, metal-roughness, occlusion, emissive; the
+   roughness and metalness factors; each material's own two-sidedness): the base-colour-only rule was the strict-CSP
+   single-file build's (rescueTextures restores base colour only), and episode 4's trees ship in the hosted build alone,
+   which loads every map (its generated cars and statues ship normal and metal-roughness sheets). Chad, of his palms and
+   banana: "The tree leaves look off too" — the fronds' own emissive fill and every normal had been dropped. An opt-in:
+   every tree prepped without it comes out as it always did */
+const KEEPMAPS = !!process.env.KEEPMAPS;
 const keep = new Set();
 for (const m of root.listMaterials()) {
   const base = m.getBaseColorTexture(); if (base) keep.add(base);
+  if (KEEPMAPS) { for (const t of [m.getNormalTexture(), m.getMetallicRoughnessTexture(), m.getOcclusionTexture(), m.getEmissiveTexture()]) if (t) keep.add(t); continue; }
   m.setNormalTexture(null); m.setMetallicRoughnessTexture(null);
   m.setOcclusionTexture(null); m.setEmissiveTexture(null);
   m.setEmissiveFactor([0, 0, 0]); m.setMetallicFactor(0); m.setRoughnessFactor(0.9);
@@ -77,7 +85,7 @@ for (const m of root.listMaterials()) {
      at 0.38–0.82 by their author, each against its own sheet's alpha (an opt-in: every tree before it takes 0.45 as it
      always did) */
   if (leafMats.has(m)) { const own = process.env.KEEPCUT && m.getAlphaMode() === 'MASK' ? m.getAlphaCutoff() : 0.45; m.setAlphaMode('MASK'); m.setAlphaCutoff(own); m.setDoubleSided(true); }
-  else { m.setAlphaMode('OPAQUE'); m.setDoubleSided(false); }
+  else { m.setAlphaMode('OPAQUE'); if (!KEEPMAPS) m.setDoubleSided(false); }
 }
 
 await doc.transform(dedup(), prune(), flatten());
@@ -246,8 +254,9 @@ for (const p of prims) {
    affordable — a foliage sheet is a few greens and a hard alpha edge, and
    alphaCutoff throws away every partial value anyway, so 256 colours costs
    nothing visible and roughly a quarter of the bytes. */
-const leafTex = new Set();
+const leafTex = new Set(), normTex = new Set();
 for (const m of leafMats) { const t = m.getBaseColorTexture(); if (t) leafTex.add(t); }
+for (const m of root.listMaterials()) { const t = m.getNormalTexture(); if (t) normTex.add(t); }   // (v24.27: KEEPMAPS's normals at q 92, as prepmeshy's)
 for (const t of root.listTextures()) {
   const img = t.getImage(); if (!img) continue;
   const leaf = leafTex.has(t);
@@ -256,7 +265,7 @@ for (const t of root.listTextures()) {
     ? await sharp(Buffer.from(img)).ensureAlpha().resize(px, px, { fit: 'inside' })
         .png({ palette: true, quality: 92, effort: 9 }).toBuffer()
     : await sharp(Buffer.from(img)).resize(px, px, { fit: 'inside' })
-        .jpeg({ quality: 88 }).toBuffer();
+        .jpeg({ quality: normTex.has(t) ? 92 : 88 }).toBuffer();
   t.setImage(out).setMimeType(leaf ? 'image/png' : 'image/jpeg');
   console.log(`  ${leaf ? 'leaf' : 'bark'} sheet -> ${px}px ${leaf ? 'png(alpha)' : 'jpeg'} ${(out.length / 1024).toFixed(0)} KB`);
 }

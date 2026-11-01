@@ -103,7 +103,9 @@ for (const [v, only] of PLAN) {
     await frames(4); await p.waitForTimeout(1200); await frames(2);
     const at = await p.evaluate(() => { const E = window.__enc; return [E.yaw.position.x, E.yaw.position.y, E.yaw.position.z].map(v => +v.toFixed(2)); });
     await p.screenshot({ path: `${OUT}/${v}-${tag}.png`, timeout: 240000 });
-    console.log(el(), v, tag, 'at', JSON.stringify(at), 'state', await p.evaluate(() => window.__enc.getState()));
+    /* (v24.27) what this view costs: the world's draws and triangles in one render of it */
+    const cost = await p.evaluate(() => { const E = window.__enc, R = E.renderer; R.render(E.scene, E.camera); return [R.info.render.calls, R.info.render.triangles]; });
+    console.log(el(), v, tag, 'at', JSON.stringify(at), 'draws', cost[0], 'tris', cost[1], 'state', await p.evaluate(() => window.__enc.getState()));
   }
 }
 console.log(el(), 'errs', JSON.stringify(errs.slice(0, 20)));

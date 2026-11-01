@@ -7069,3 +7069,10 @@ cut (sharing its vertices and maps) when it is small.
   hidden group (so every "is he visible" walk up the parents still says no); hand everything back the frame the lens
   leaves. Collision read once at build, frame functions gated on the lens's world, and a shadow box over the main world's
   origin make the move safe; the yard's merged meshes meant the building had to be split out of the merge first.
+- **A remesher's target is a look, not just a budget.** Meshy's remesh at ~30k made a broadleaf crown a shell of big
+  flat shards (Chad: "very blocky looking leaves"); at 120k the same job's crown is leaves again, and the original's
+  ~300k cannot be simplified at all (a UV chart every few triangles). Spend the triangles where he stands — the two
+  trees in the yard at 120k as extra kinds of the same stand (so every tree keeps its dealing), the fields at 30k.
+- **A model's emissive fill is daylight's.** Chad's palms carry a frond glow (their author's translucency); dropped at
+  prep, the crowns read black against the sky; kept at full strength, they would glow in the storm. Scale it by the
+  hemisphere light's intensity each frame — a uniform, no shader change — and it follows the presets and the lightning.

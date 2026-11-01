@@ -7292,6 +7292,24 @@ What the baseline contains, by release:
     in masters/v24.19, v24.20 and v24.22's src (gitignored) and every job ID is in their make.sh. LEARNINGS has the lesson.
   - Deployed first (6ae7a00f61ced8f811a794ac, 308 of 308 files byte-identical); chapter, hosted, leak and walk run on its
     copy; the doorway photographed on a phone in four places in the room's light and in the storm's.
+- **v24.27** THE BLOCKY LEAVES, AND CHAD'S OWN TREES AS DELIVERED — Chad, during v24.26: "The problem is one of the trees
+  have very blocky looking leaves." (and, before it, "The tree leaves look off too").
+  - The blocky leaves are the generated broadleaf trees' crowns: Meshy's own model of each is leafy (~300k triangles),
+    and its remesh to ~30k — the only way down, since a Meshy original cannot be simplified (v8.0) — turned the crowns into
+    big flat shards. Meshy's remesh of the same two jobs at 120,000 (10 credits; the jobs' files expired the next day)
+    gives the mango 106,782 and the rain tree 112,118 triangles with leaves again. Only the two he stands under — the
+    yard's own rain tree and mango, new keys e4raintreehd and e4mangohd as kinds 3 and 4 of the same stand, so every
+    tree's dealing is the one it had — take them; the fields' six keep the 30k files (six more at 120k would add 0.45 M
+    triangles for trees 30–100 m away), and a spot whose file never lands keeps its 30k tree. Measured on a phone: the
+    yard's views 178–389k triangles become 366–468k; +4.2 MB.
+  - Chad's palms and banana keep every map and factor as delivered (preptree's KEEPMAPS opt-in; byte-identical without
+    it, proven on palm 1): the bark and frond normals, the banana's metal-roughness and occlusion, each material's own
+    roughness and two-sidedness, and the fronds' own emissive fill — without which the crowns drew as black silhouettes
+    against the sky. Kept as delivered a glow is the same in the storm as at noon, so its strength follows the hemisphere
+    light's (glowFrame: the arrival's 0.95 is the author's full fill, the storm's 0.58 about three fifths, a lightning
+    stroke lifts it). +2.9 MB.
+  - Deployed first (6ae7a91f1b01c118def6bdc4, 310 of 310 files byte-identical); photographed on a phone before and after
+    at the mango, the rain tree, the lane's palm and the banana.
 
 ## The sheet, version by version
 

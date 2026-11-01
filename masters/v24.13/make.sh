@@ -27,9 +27,13 @@ node tools/prepdog.mjs masters/v24.13/src/shiba_inu.glb assets/e4dog.glb
 # a cut for the fields' distance (a frond is a strip of cards, which a simplifier cannot take under two triangles, so
 # 0.12 / 0.15 come to about 5,000 each). The banana keeps its author's own leaf cut-offs (KEEPCUT). The Buddha is a
 # static scan: 112k -> 50k triangles at 0.32 m, its base colour a 2048 JPEG (its COLOR_0 is white to 1 % and goes).
-node tools/preptree.mjs masters/v24.13/src/palm_trees.glb assets/e4palm1.glb 1 1024 1024 Palm_tree_001_v2
-node tools/preptree.mjs masters/v24.13/src/palm_trees.glb assets/e4palm2.glb 1 1024 1024 Palm_tree_002_v2
+# (v24.27, Chad: "The tree leaves look off too") the near palms and the banana keep every map and factor AS DELIVERED
+# (KEEPMAPS): the palms' bark and frond normals and the fronds' own emissive fill (without it the crowns drew as black
+# silhouettes against the sky), the banana's normal, metal-roughness and occlusion, and each material's own roughness
+# and two-sidedness. +2.9 MB. The far palms (the fields') stay as they were.
+KEEPMAPS=1 node tools/preptree.mjs masters/v24.13/src/palm_trees.glb assets/e4palm1.glb 1 1024 1024 Palm_tree_001_v2
+KEEPMAPS=1 node tools/preptree.mjs masters/v24.13/src/palm_trees.glb assets/e4palm2.glb 1 1024 1024 Palm_tree_002_v2
 node tools/preptree.mjs masters/v24.13/src/palm_trees.glb assets/e4palm1far.glb 0.12 512 256 Palm_tree_001_v2
 node tools/preptree.mjs masters/v24.13/src/palm_trees.glb assets/e4palm2far.glb 0.15 512 256 Palm_tree_002_v2
-KEEPCUT=1 node tools/preptree.mjs masters/v24.13/src/banana_tree.glb assets/e4banana.glb 1 1024 1024
+KEEPMAPS=1 KEEPCUT=1 node tools/preptree.mjs masters/v24.13/src/banana_tree.glb assets/e4banana.glb 1 1024 1024
 node tools/prepstatic.mjs masters/v24.13/src/yoga_buddha.glb assets/e4buddha.glb 0.32 0.45 0 2048 88

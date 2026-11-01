@@ -194,7 +194,7 @@
        are his files under the stand-ins' keys, `e4stall` replaces `e4joy`, and `e4ghost`, his old woman, replaces episode
        1's `granny`; nothing in the chapter is a stand-in for a person any more) */
     assets: ['firstmaster', 'fmshadow', 'e4sky', 'e4pong', 'e4noi', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4pickup', 'e4nangkwak', 'e4takrut', 'e4phayant',
-             'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4buffalo', 'e4sandalsa', 'e4sandalsb', 'e4rahu', 'e4sedan', 'e4truck', 'e4suv', 'e4moto',
+             'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd', 'e4buffalo', 'e4sandalsa', 'e4sandalsb', 'e4rahu', 'e4sedan', 'e4truck', 'e4suv', 'e4moto',
              'e4seat', 'owner',
              'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm', 'filmlaptop'],
     /* (v24.21) the taxi uncle at the wheel stands in until Chad's model (docs/E4-MODELS.md) */
@@ -594,6 +594,26 @@
       const k = Math.min(1, Math.max(0, (now - domeLive.t0) / Math.max(0.001, domeLive.t1 - domeLive.t0)));
       domeLive.tint.copy(domeLive.tintFrom).lerp(domeLive.tintTo, k);
       domeLive.mat.color.copy(domeLive.tint);
+    }
+
+    /* (v24.27) THE PALM FRONDS' OWN GLOW, HELD TO THE LIGHT. Chad's palms carry an emissive fill on their fronds — their
+       author's daylight translucency, dropped at prep until v24.27 (the crowns drew as black silhouettes against the sky).
+       Kept as delivered, a glow is the same in the storm and the dark as at noon, so its strength follows the hemisphere
+       light's: the arrival's 0.95 is the author's full fill, the storm's 0.58 about three fifths, a lightning stroke lifts
+       it with everything else. Found once the near palms' stand has landed (the only materials with an emissive map) */
+    const glow = { mats: null, next: 0, hemi: null };
+    function glowFrame(now) {
+      if (!glow.mats) {
+        if (now < glow.next) return;
+        glow.next = now + 2;
+        const ms = new Set();
+        for (const st of yard.stands) if (st && st.traverse) st.traverse(o => { for (const m of [].concat(o.material || [])) if (m && m.emissiveMap) ms.add(m); });
+        if (!ms.size) return;
+        glow.mats = [...ms];
+        scene.traverse(o => { if (o.isHemisphereLight && !glow.hemi) glow.hemi = o; });
+      }
+      const k = glow.hemi ? Math.min(1, Math.max(0.12, glow.hemi.intensity / 0.95)) : 1;
+      for (const m of glow.mats) m.emissiveIntensity = k;
     }
 
     /* ============================================== THE YARD THROUGH THE DOOR (v24.26)
@@ -2505,12 +2525,19 @@
          takhian's cloths and dresses are fitted to whichever trunk landed (yard.dressTakhian, the compound's) */
       const broadModel = modelKit(['e4takhian', 'e4raintree', 'e4mango'], broadKit, { twoSided: true, rough: 1.74 });
       broadModel.then(kinds => yard.dressTakhian && yard.dressTakhian(kinds && kinds[0]));
+      /* (v24.27, Chad: "one of the trees have very blocky looking leaves") the yard's own rain tree and mango — the two he
+         stands under — are Meshy's remesh of the same trees at 120k (masters/v24.19/make.sh): at 30k the remesher turned
+         their crowns into big flat shards; at 120k they are leaves again. Kinds 3 and 4 of the same stand, so every tree's
+         dealing (turn, lean, size) is the one it always had; the fields' six keep the 30k files (six of them at 120k would
+         add 0.45 M triangles for trees 30-100 m away), and a spot whose file never lands keeps its 30k tree */
+      const nearModel = Promise.all([broadModel, modelKit(['e4raintreehd', 'e4mangohd'], null, { twoSided: true, rough: 1.74 })])
+        .then(([b, hd]) => b ? [...b, (hd && hd[0]) || b[1], (hd && hd[1]) || b[2]] : b);
       yard.stands.push(plantTrees(worldC, [{ x: CMP.TAKHIAN.x, z: CMP.TAKHIAN.z, h: 19, kind: 0, ry: 0.4, always: true },
-                                            { x: CMP.RAINTREE.x, z: CMP.RAINTREE.z, h: 10.5, kind: 1, ry: 1.2, always: true },
-                                            { x: CMP.MANGO.x, z: CMP.MANGO.z, h: 8, kind: 2, ry: 2.1, always: true },
+                                            { x: CMP.RAINTREE.x, z: CMP.RAINTREE.z, h: 10.5, kind: 3, ry: 1.2, always: true },
+                                            { x: CMP.MANGO.x, z: CMP.MANGO.z, h: 8, kind: 4, ry: 2.1, always: true },
                                             { x: -58, z: 29, y: WY, h: 11, kind: 1 }, { x: 31, z: 30, y: WY, h: 9, kind: 2 }, { x: 84, z: 29.5, y: WY, h: 12, kind: 1 },
                                             { x: -96, z: 30, y: WY, h: 10, kind: 2 }, { x: -30, z: -40, y: WY, h: 9, kind: 2 }, { x: 52, z: -46, y: WY, h: 10, kind: 1 }],
-                                          { kit: broadModel, seed: 27, shadow: true }));
+                                          { kit: nearModel, seed: 27, shadow: true }));
       /* (v24.19) two water buffalo standing in the paddy beside the road, for the opening film's huge wide (O5): its lens
          looks east along the dyke and holds them in the water on its left, on a phone's narrow frame too (about 7° off its
          axis, 43 m out); generated (a GPT Image reference on white, then Meshy's image-to-3D), standing still as a buffalo
@@ -5443,6 +5470,7 @@
          turn three times its length; every ease here is stable at any step) */
       const raw = castLast ? Math.max(0, now - castLast) : 0, wdt = Math.min(0.5, raw); castLast = now;
       domeFrame(now);
+      glowFrame(now);                                     // (v24.27) the palm fronds' own glow, held to the light
       roomFrame(now);
       peopleTick(now, wdt);                               // the cast's clocks run in films too (v5.19): only their looks wait for play
       dogTick(now, wdt);                                  // (v24.13) the dog's, likewise

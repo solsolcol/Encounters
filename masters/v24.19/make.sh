@@ -66,3 +66,10 @@ ERR=0.005 node tools/prepmeshy.mjs $S/remeshed-sandalsB.glb assets/e4sandalsb.gl
 #   sandalsA   image-to-3d 01a18dfb-e7f1-72a0-8fb4-095871b6b308  remesh 01a18e06-a47d-7642-b1dd-ed4a0834fd1d
 #   sandalsB   image-to-3d 01a18dfb-f5b8-70f8-927d-3e827cc90e59  remesh 01a18e0a-1531-757d-9abf-8db26085138f
 # Run with S=masters/v24.19/src.
+#
+# (v24.27, Chad: "one of the trees have very blocky looking leaves") the yard's own rain tree and mango from Meshy's remesh
+# of the same jobs at 120,000 (01a198e2-b901-775f-a581-f63492c55e61 -> 112,118 triangles; 01a198e2-b76a-7103-93da-a977b1b79cc6
+# -> 106,782): at 30k the remesher made their crowns big flat shards; at 120k they are leaves again. Only the two trees in
+# the yard take them (e4raintreehd, e4mangohd); the fields' six keep the 30k files. +4.2 MB.
+TRUNK=0.06,0.14 node tools/prepmeshy.mjs $S/remeshed-raintree120.glb assets/e4raintreehd.glb 1 h 1 0 1024
+TRUNK=0.05,0.13 node tools/prepmeshy.mjs $S/remeshed-mango120.glb assets/e4mangohd.glb 1 h 1 0 1024

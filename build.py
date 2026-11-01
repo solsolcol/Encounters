@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "24.26"
+VERSION = "24.27"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -439,6 +439,8 @@ ASSETS = {
     'e4takhian':    ('assets/e4takhian.glb', True, False),    # e4c1 v24.19: the takhian, a buttressed bole and a high narrow crown — generated (71,860 triangles; its birch-white bark toned grey-brown, TINTGREY), trunk on the origin
     'e4raintree':   ('assets/e4raintree.glb', True, False),   # e4c1 v24.19: the rain tree, a wide low umbrella — generated (34,787 triangles), trunk on the origin
     'e4mango':      ('assets/e4mango.glb', True, False),      # e4c1 v24.19: the mango, round and dense — generated (31,207 triangles), trunk on the origin
+    'e4raintreehd': ('assets/e4raintreehd.glb', True, False), # e4c1 v24.27: the yard's own rain tree — Meshy's remesh of the same tree at 120k (112,118 triangles): its crown leaves, not the 30k's shards (Chad: "one of the trees have very blocky looking leaves"); the fields' keep e4raintree
+    'e4mangohd':    ('assets/e4mangohd.glb', True, False),    # e4c1 v24.27: the yard's own mango, likewise (106,782 triangles); the fields' keep e4mango
     'e4buffalo':    ('assets/e4buffalo.glb', True, False),    # e4c1 v24.19: a water buffalo for the film's wide — generated (11,705 triangles, 2.7 m long)
     'e4sandalsa':   ('assets/e4sandalsa.glb', True, False),   # e4c1 v24.19: black rubber flip-flops at the room's steps — generated (8,105 triangles)
     'e4sandalsb':   ('assets/e4sandalsb.glb', True, False),   # e4c1 v24.19: brown plastic slides at the room's steps — generated (6,017 triangles)
@@ -583,7 +585,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'lersiamulet', 'lersiamuletlod', 'towkay',
            'kumanred', 'kumanshy', 'kumanlittle',
            'firstmaster', 'e4sky', 'fmshadow', 'e4noi', 'e4pong', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4pickup', 'e4nangkwak', 'e4takrut', 'e4phayant', 'e4nangkwakhd', 'e4takruthd', 'e4phayanthd', 'iconnangkwak', 'icontakrut', 'iconphayant',
-           'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4buffalo', 'e4sandalsa', 'e4sandalsb', 'e4rahu', 'e4sedan', 'e4truck', 'e4suv', 'e4moto', 'e4seat',
+           'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd', 'e4buffalo', 'e4sandalsa', 'e4sandalsb', 'e4rahu', 'e4sedan', 'e4truck', 'e4suv', 'e4moto', 'e4seat',
            'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY
 
