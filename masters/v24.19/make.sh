@@ -51,3 +51,18 @@ ERR=0.005 node tools/prepmeshy.mjs $S/remeshed-sandalsB.glb assets/e4sandalsb.gl
 # its spot); the buffalo, the image and the sandals at their size in metres. The takhian's bark came out birch-white
 # (its texture prompt asked for pale grey) and is toned grey-brown (TINTGREY: only the base colour's grey texels, 6.9 % of
 # the sheet; the green leaves untouched).
+
+# (v24.26) THE SOURCES, KEPT: Meshy keeps a job's files for THREE DAYS (each job's expires_at), so the files this recipe
+# reads are kept in masters/v24.19/src (gitignored, as every src/*.glb): original-<name>.glb (the image-to-3D job) and
+# remeshed-<name>.glb (its remesh). Re-downloaded 1 Nov 2026 from the jobs below, each matched to the asset it made by its
+# own colour sheet (RMSE 0.8-2.0 of 255 against 23+ for every other job; the takhian's bark is tinted at prep, 14 against
+# 17+) and by the IDs this session wrote down when it made them:
+#   bamboo     image-to-3d 01a18dfa-ea3f-75d3-b0f2-dd7a2ba5f6c1  remesh 01a18e0a-1cbc-7189-b312-e81d70baba64 (bamboo80: 01a18e14-9488-729e-bf55-e6bbcec0e7df)
+#   takhian    image-to-3d 01a18dfa-fffa-73b3-b3af-44e8c4ee7ca3  remesh 01a18e0a-1b0b-77a6-b767-b04d499ee9c5 (takhian70, used: 01a18e17-fe82-7407-b959-3963917d6e4a)
+#   raintree   image-to-3d 01a18e0c-2985-74ae-ae23-3643e70d60f7  remesh 01a18e13-bea4-7799-9c8a-1f9a64e97215
+#   mango      image-to-3d 01a18e0c-3d84-7310-bacb-8ef3e40dac54  remesh 01a18e17-0b50-73ce-a20e-10ffd4fc1c5e
+#   buffalo    image-to-3d 01a18dfb-c1b8-7786-ac2a-431162bea112  remesh 01a18e0a-17c6-7501-85b3-7e02976fd7ce
+#   rahu       image-to-3d 01a18dfb-d41c-766d-8516-490a86c3db00  remesh 01a18e0a-1954-7329-a3d5-04d4ac9ea7e5 (retired at v24.20)
+#   sandalsA   image-to-3d 01a18dfb-e7f1-72a0-8fb4-095871b6b308  remesh 01a18e06-a47d-7642-b1dd-ed4a0834fd1d
+#   sandalsB   image-to-3d 01a18dfb-f5b8-70f8-927d-3e827cc90e59  remesh 01a18e0a-1531-757d-9abf-8db26085138f
+# Run with S=masters/v24.19/src.

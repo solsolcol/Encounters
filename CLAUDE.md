@@ -255,6 +255,7 @@ that fits it, with the version it came from.
 - Parse each asset once and clone it (the original never touched), clone before touching (cloneSkinned copies transforms), measure scale and turn once on a shared posed take (never the standing bind pose; size a person standing), and give a clone its own materials before changing them. (v9.1)
 - A rig's culling sphere covers every pose of every clip, is built in world space round the posed skin, and is set on both the mesh and the geometry. (v8.4)
 - Prep models to real metres with the origin on the base centre, so every number in a chapter is a place, never a scale factor. (v13.1)
+- A generated model's sources (Meshy's original and its remesh) go into masters/<v>/src the day they are made, with every job ID in that recipe's make.sh: Meshy keeps a job's files three days. List a scratch folder before deleting it; old release zips are the safe thing to clear (Netlify holds every deploy). (v24.26)
 - Measure per mesh: the most-forward vertex of a first-person weapon rig is a hand. (v13.1)
 - A Sketchfab clip's keys may begin seconds in: start each take at its measured first key and park the rest on its last. (v12.0)
 - textureCompress's EXT_texture_webp hides the image from the strict-CSP rescue; drop the extension. (v14.12)

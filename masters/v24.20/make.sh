@@ -40,9 +40,13 @@
 # 3. PREPARED (tools/prepmeshy.mjs: baked, turned, sized, the footprint centred, JPEG sheets, meshopt; each one
 #    photographed on its own with tools/shootmodel.mjs to settle its facing — a car's nose at -z, as the yard's cars):
 M=${M:-/tmp/meshy}        # where the remeshed files were downloaded (remeshed-<name>.glb)
-ERR=0.003 node tools/prepmeshy.mjs $M/remeshed-pickup.glb assets/e4truck.glb 5.3 l 1 -90 1024
-ERR=0.003 node tools/prepmeshy.mjs $M/remeshed-sedan.glb assets/e4sedan.glb 4.4 l 1 -90 1024
-ERR=0.003 node tools/prepmeshy.mjs $M/remeshed-suv.glb assets/e4suv.glb 4.8 l 1 -90 1024
+# (v24.26, Chad: "Why are the cars and trees so low res and compressed, and looks like it has missing textures or
+#  something?") the three cars he walks past keep Meshy's 2048 base colour and normal: at 1024 the normal crumpled the
+#  hood and the glass and the base colour smeared the lamps (each map shrunk alone, photographed); the metal-roughness at
+#  1024 is identical on screen (PXMR). +4.9 MB. The motorbike stays at 1024 (247 texels a metre: sharp where he stands).
+ERR=0.003 PXMR=1024 node tools/prepmeshy.mjs $M/remeshed-pickup.glb assets/e4truck.glb 5.3 l 1 -90 2048
+ERR=0.003 PXMR=1024 node tools/prepmeshy.mjs $M/remeshed-sedan.glb assets/e4sedan.glb 4.4 l 1 -90 2048
+ERR=0.003 PXMR=1024 node tools/prepmeshy.mjs $M/remeshed-suv.glb assets/e4suv.glb 4.8 l 1 -90 2048
 ERR=0.003 node tools/prepmeshy.mjs $M/remeshed-moto.glb assets/e4moto.glb 1.92 l 1 90 1024
 ERR=0.003 node tools/prepmeshy.mjs $M/remeshed-rahu2.glb assets/e4rahu.glb 0.2 h 1 0 1024
 # (v24.21) the taxi's front seat: 1.08 m from its rails to its headrest, turned to face -z (the road)
@@ -56,3 +60,15 @@ ERR=0.004 node tools/prepmeshy.mjs $M/remeshed-seat.glb assets/e4seat.glb 1.08 h
 for n in iconnangkwak icontakrut iconphayant; do
   python3 -c "from PIL import Image; Image.open('masters/v24.20/icons/$n-1k.jpg').convert('RGB').resize((384, 384), Image.LANCZOS).save('assets/$n.jpg', quality=88, optimize=True)"
 done
+
+# (v24.26) THE SOURCES, KEPT: Meshy keeps a job's files for THREE DAYS, so the files this recipe reads are kept in
+# masters/v24.20/src (gitignored): original-<name>.glb and remeshed-<name>.glb. Re-downloaded 1 Nov 2026 (the session's
+# scratch copy had been deleted to free disk — a mistake, recovered in time), each matched to the asset it made by its exact
+# triangle count; remeshed-sedan.glb re-prepped with the line above gives e4sedan.glb byte for byte:
+#   pickup  image-to-3d 01a18e47-3325-76b8-9ee0-ac789f6fca9a  remesh 01a18e4b-be00-7754-8547-de5f75751774 (29,838 triangles)
+#   sedan   image-to-3d 01a18e47-429a-77f6-b559-38cc7d7b8e71  remesh 01a18e4a-3e66-7411-b745-053ac8f62985 (30,502)
+#   suv     image-to-3d 01a18e47-5601-7280-816c-c3b1ca18bebd  remesh 01a18e4a-403d-72c1-9af8-6067bbb35639 (30,363)
+#   moto    image-to-3d 01a18e47-6930-7532-8b79-171a2df1c111  remesh 01a18e4b-c0d9-729b-a352-a1ef6dd0ed87 (19,529)
+#   rahu2   image-to-3d 01a18e46-8586-71fd-ad91-28829054beb2  remesh 01a18e4a-3be5-7640-af0b-6942b3c4f950 (41,565)
+#   seat    image-to-3d 01a18e4e-9599-7186-a00b-1603ff9e83b7  remesh 01a18e6c-97bf-70c4-9138-671a35e502de (14,864; 9,061 after prep)
+# Run with M=masters/v24.20/src.

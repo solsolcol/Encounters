@@ -428,6 +428,10 @@
        (photographed), where the bag's own view shows her warm bronze. The pickup's lift (v24.16), held to her metal: the
        material is shared by her two copies, so both read as the same piece */
     function bronzeLift(o) { for (const mt of [].concat(o.material)) if (mt && mt.metalnessMap && 'envMapIntensity' in mt) mt.envMapIntensity = 10; }
+    /* (v24.26) a car's sheets filtered at a slant as the trees' are (main.js plantTrees): a bonnet and a roof are seen
+       edge-on from where he stands, and at anisotropy 1 they smeared (masters/v24.20/make.sh). Set before the first draw,
+       so nothing is uploaded twice */
+    function carSharp(o) { for (const mt of [].concat(o.material)) if (mt) for (const k of ['map', 'normalMap', 'roughnessMap', 'metalnessMap']) if (mt[k]) mt[k].anisotropy = 8; }
     /* (v24.22) MANY OF ONE MODEL: a real model stood at many places as InstancedMeshes — one per mesh of the file, the
        file's own node transform folded into every instance — so a shop full of stock costs a draw a kind a place, never a
        draw a piece. `list`: [{ x, y, z, ry, rx, rz, s }] in `parent`'s frame, turned ry about y, then rx about its own x
@@ -578,16 +582,140 @@
     function domeFrame(now) {
       /* only the world the lens is in is drawn: from the shop (x −250) the paddies' far edge, the road and its palms are
          inside the far plane and were drawn behind the shop's walls for nothing (168 draws where 39 belong) */
-      { const w = worldOf(yaw.position.x); worldC.visible = w === 'C'; worldR.visible = w === 'R'; worldS.visible = w === 'S'; worldT.visible = w === 'T'; }
+      { const w = worldOf(yaw.position.x); doorWorld(w === 'R');
+        worldC.visible = w === 'C' || (w === 'R' && doorSeen()); worldR.visible = w === 'R'; worldS.visible = w === 'S'; worldT.visible = w === 'T';
+        doorFrame(now); }
       const d = domeLive.mesh; if (!d) return;
-      /* the dome rides with the lens in WORLD C (the rice country); the room, the shop and the taxi have their own skies */
+      /* the dome rides with the lens in WORLD C (the rice country); the room, the shop and the taxi have their own skies —
+         (v24.26) and the room's door looks out on World C, so its sky is the yard's whenever the yard is drawn */
       const w = worldOf(yaw.position.x);
-      d.visible = !!domeLive.mat.map && w === 'C';
+      d.visible = !!domeLive.mat.map && (w === 'C' || (w === 'R' && worldC.visible));
       d.position.set(yaw.position.x, 0, yaw.position.z);
       const k = Math.min(1, Math.max(0, (now - domeLive.t0) / Math.max(0.001, domeLive.t1 - domeLive.t0)));
       domeLive.tint.copy(domeLive.tintFrom).lerp(domeLive.tintTo, k);
       domeLive.mat.color.copy(domeLive.tint);
     }
+
+    /* ============================================== THE YARD THROUGH THE DOOR (v24.26)
+       Chad, 1 Nov 2026: "in the ajahn room, the door looks to the outside scenery but it is drawn so badly?" — it was a
+       picture painted in code on a board 2.4 m out. The room's door opens on the yard it stands in, so the door shows the
+       yard itself now: Chad's trees and cars, the sala, the gate, the fields and the sky, at their real distances.
+       While the lens is in World R, World C is moved under the room by the room's own mapping — the yard's (x, y, z) is
+       the room's (x − 8.5, y − 0.5, z + 8.4): the yard's receiving room IS the room, its door RDOOR the room's ENTRY, the
+       top of its plinth the room's floor — its own receiving room is set aside (yard.roomShell: its walls, floor and roof
+       stand where the room's are drawn) and its people are parked in a hidden group, out of sight and out of every "is he
+       visible" test exactly as they were while the yard was hidden, and handed back to their own parents, unmoved, on the
+       frame the lens leaves the room. The yard is drawn only while the doorway is in the lens's frustum, and then only
+       what can be seen THROUGH it (doorFrame: the rest is taken off the camera's layers, never its visibility, as the
+       engine's own sphere cull does). Nothing that reads the yard moves with it: the blockers were read once at build,
+       the yard's frame functions wait for the lens to be in it, and the key light's shadow box stands over the yard's own
+       origin, so nothing moved casts into the room. Outside the door it rains as the room's windows say (room.rainK, and
+       the drizzle he walked in through before the storm), and the light out there is the storm's, not the room's tube
+       (the veil). */
+    const DOOR_OFF = new THREE.Vector3(RX - 8.5, -0.5, 8.4);
+    const doorView = { on: false, parked: [], hold: null, cands: null, cull: true,
+                       box: new THREE.Box3(), fr: new THREE.Frustum(), pm: new THREE.Matrix4(),
+                       planes: [new THREE.Plane(), new THREE.Plane(), new THREE.Plane(), new THREE.Plane()],
+                       eye: new THREE.Vector3(), q: [new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()], c: new THREE.Vector3() };
+    function doorWorld(inR) {
+      if (inR === doorView.on) return;
+      doorView.on = inR;
+      if (!doorView.hold) { doorView.hold = new THREE.Group(); doorView.hold.visible = false; doorView.hold.name = 'yardPeopleParked'; world.add(doorView.hold); }
+      if (inR) {
+        worldC.position.copy(DOOR_OFF);
+        if (yard.roomShell) yard.roomShell.visible = false;
+        for (const P of people) {
+          let under = false; for (let q = P.group.parent; q; q = q.parent) if (q === worldC) { under = true; break; }
+          if (under) { doorView.parked.push([P.group, P.group.parent]); doorView.hold.add(P.group); }
+        }
+        doorView.cands = null;                            // what the portal may cull, gathered afresh (models land late)
+      } else {
+        worldC.position.set(0, 0, 0);
+        if (yard.roomShell) yard.roomShell.visible = true;
+        for (const [g, par] of doorView.parked) par.add(g);
+        doorView.parked.length = 0;
+        doorShowAll();
+      }
+      worldC.updateMatrixWorld(true);
+    }
+    /* the doorway's opening, in the room's own metres: ENTRY on the front wall, floor to head */
+    function doorCorners(out) {
+      const E = RMC.ENTRY;
+      out[0].set(RX + E.x0, 0, RM.z1); out[1].set(RX + E.x1, 0, RM.z1); out[2].set(RX + E.x1, E.h, RM.z1); out[3].set(RX + E.x0, E.h, RM.z1);
+      return out;
+    }
+    function doorSeen() {
+      camera.updateWorldMatrix(true, false);
+      doorView.pm.multiplyMatrices(camera.projectionMatrix, doorView.pm.copy(camera.matrixWorld).invert());
+      doorView.fr.setFromProjectionMatrix(doorView.pm);
+      const E = RMC.ENTRY;
+      doorView.box.min.set(RX + E.x0, 0, RM.z1 - 0.02); doorView.box.max.set(RX + E.x1, E.h, RM.z1 + 0.02);
+      return doorView.fr.intersectsBox(doorView.box);
+    }
+    /* THE PORTAL: what cannot be seen through the opening is not drawn. Each of the yard's own pieces (its top-level
+       children: a car, a tree, a stand of palms, a house — not the merged ground, which is everywhere) is a sphere; a
+       sphere wholly outside one of the four planes through his eye and the opening's edges is behind the room's walls
+       wherever it is, and its meshes go off the camera's layers (their own masks kept, and put back the moment it comes
+       into the opening or the lens leaves the room) */
+    function doorCands() {
+      const list = [], bb = new THREE.Box3(), sp = new THREE.Sphere();
+      for (const o of worldC.children) {
+        if (o === yard.roomShell || o.name === 'merged') continue;
+        const meshes = [];
+        o.traverse(m => { if (m.isMesh || m.isPoints || m.isLine || m.isSprite) meshes.push(m); });
+        if (!meshes.length) continue;
+        o.updateWorldMatrix(true, true); bb.setFromObject(o); if (bb.isEmpty()) continue;
+        bb.getBoundingSphere(sp);
+        list.push({ o, meshes, masks: meshes.map(m => m.layers.mask), c: sp.center.clone().sub(worldC.position), r: sp.radius, out: false });
+      }
+      return list;
+    }
+    function doorShow(k) { if (!k.out) return; k.meshes.forEach((m, i) => { m.layers.mask = k.masks[i]; }); k.out = false; }
+    function doorShowAll() { if (doorView.cands) for (const k of doorView.cands) doorShow(k); doorView.cands = null; }
+    function doorFrame(now) {
+      const seen = doorView.on && worldC.visible;
+      if (room.doorRain) room.doorRain.visible = false;
+      if (room.doorVeil) room.doorVeil.visible = seen;
+      if (!seen) return;
+      /* the portal's planes, from his eye through the opening's four edges (pointing inward) */
+      camera.getWorldPosition(doorView.eye);
+      const Q = doorCorners(doorView.q), eye = doorView.eye;
+      /* a point surely inside the portal, to say which side of each plane is in: on the line from his eye through the
+         opening's centre, as far beyond it again (a point straight out from the door is outside the portal from the
+         room's far corner — the probe's pixel check found the gate's post culled through the open door) */
+      doorView.c.set(RX + (RMC.ENTRY.x0 + RMC.ENTRY.x1) / 2, RMC.ENTRY.h / 2, RM.z1).sub(eye).multiplyScalar(2).add(eye);
+      const deep = eye.z < RM.z1 - 0.05;                  // at the threshold itself the four planes fold flat: draw what the lens sees
+      for (let i = 0; i < 4; i++) {
+        const pl = doorView.planes[i]; pl.setFromCoplanarPoints(eye, Q[i], Q[(i + 1) % 4]);
+        if (pl.distanceToPoint(doorView.c) < 0) pl.negate();
+      }
+      if (!doorView.cands) doorView.cands = doorCands();
+      for (const k of doorView.cands) {
+        let inside = true;
+        if (doorView.cull && deep) {
+          if (!k.o.parent) { doorShow(k); continue; }
+          const c = doorView.c.copy(k.c).add(worldC.position);
+          for (const pl of doorView.planes) if (pl.distanceToPoint(c) < -k.r) { inside = false; break; }
+        }
+        if (inside) doorShow(k);
+        else if (!k.out) { k.meshes.forEach((m, i) => { k.masks[i] = m.layers.mask; m.layers.mask = 0; }); k.out = true; }
+      }
+      /* the rain outside: as heavy as the room's windows say it is, and the drizzle he walked in through until the storm */
+      const R2 = room.doorRain;
+      if (R2) {
+        const k = Math.max(room.rainK, phase === 'consult' || phase === 'items' ? DOOR_DRIZZLE : 0);
+        R2.visible = k > 0.003;
+        if (R2.visible) { const U = R2.material.uniforms; U.uTime.value = now % 1000; U.uK.value = k; }
+      }
+      /* the veil: the yard is lit by the room's lights (the engine's three are the only lights there are), so the
+         doorway multiplies what is seen through it toward the storm's light — the preset's own dome tint, eased with it */
+      if (room.doorVeil) {
+        const T = domeLive.tint, V = DOOR_VEIL;
+        room.doorVeil.material.color.setRGB(Math.min(1, V[0] + V[3] * T.r), Math.min(1, V[1] + V[3] * T.g), Math.min(1, V[2] + V[3] * T.b), THREE.SRGBColorSpace);
+      }
+    }
+    const DOOR_DRIZZLE = 0.18;                            // the rain he came in through (kit.rain 0.12 in the yard, seen at a distance)
+    const DOOR_VEIL = [0.38, 0.39, 0.44, 0.62];           // the veil's floor and how much of the preset's dome tint lifts it
 
     /* ============================================== THE WORLDS, AS BOXES (CP2)
        CP4–CP6 build each place out; until then each is its floor, its walls and its masses, so the chapter boots, every
@@ -647,6 +775,7 @@
       views: [], rains: [], floorBands: [], rainK: 0, rainTo: 0,
       drip: null, ripple: null, dripT: 0,
       shakers: [], hangs: [], tremor: 0, shook: false,   // (v24.24: the room under the chant — roomFrame)
+      doorPaint: [], doorRain: null, doorVeil: null,      // (v24.26: the yard through the door — doorView)
       last: 0, forced: false
     };
     function buildRoom() {
@@ -792,12 +921,13 @@
         const tYard = tex(makeStormView(THREE, cnv, 4497, true));
         const v = flat(5.0, 3.2, B({ map: tYard, fog: false, toneMapped: false, color: 0x8a8a96 })); v.rotation.y = Math.PI; v.position.set(xc, 1.25, z1 + 2.4);
         room.views.push(v);
+        const paint = [v];                                 // (v24.26: the painted yard, its step and its eave — hidden below)
         /* (v24.5, L5 P1: the painted yard stood 2.4 m out with nothing under it and nothing at its sides, so from inside
            the door a band of the bare background's flat colour showed between the step and the painted earth, and beside
            the step from either side of the room — the picture is closed into a box on its own material: its wet earth laid
            flat under the step and out to it, its edge columns carried back to the wall) */
         const onPic = (gm, f) => { const uv = gm.attributes.uv; for (let i = 0; i < uv.count; i++) { const [a, b2] = f(uv.getX(i), uv.getY(i)); uv.setXY(i, a, b2); }
-                                   const o = new THREE.Mesh(gm, v.material); R.add(o); return o; };
+                                   const o = new THREE.Mesh(gm, v.material); R.add(o); paint.push(o); return o; };
         const gnd = onPic(new THREE.PlaneGeometry(5.0, 2.4), (a, b2) => [a, 0.16 - 0.15 * b2]);
         gnd.rotation.set(-Math.PI / 2, 0, Math.PI); gnd.position.set(xc, -0.3, z1 + 1.25);
         for (const sd of [-1, 1]) {
@@ -808,8 +938,70 @@
         const rd = flat(2.4, 2.6, B({ map: tRainD, transparent: true, depthWrite: false, opacity: 0, color: 0xc8d4ec, fog: false })); rd.rotation.y = Math.PI; rd.position.set(xc, 1.2, z1 + 0.8);
         room.rains.push(rd);
         const step = flat(1.6, 1.6, M({ color: 0x3a3632, roughness: 0.3, metalness: 0.1 })); step.rotation.x = -Math.PI / 2; step.position.set(xc, -0.16, z1 + 0.9);   // the wet step down
-        bx(1.6, 0.16, 0.05, M({ color: 0x4a4440, roughness: 0.6 }), xc, -0.08, z1 + 0.12);
+        const riser = bx(1.6, 0.16, 0.05, M({ color: 0x4a4440, roughness: 0.6 }), xc, -0.08, z1 + 0.12);
         const eave = flat(2.2, 1.4, mDarkRoom); eave.rotation.x = Math.PI / 2; eave.position.set(xc, ENTRY.h + 0.35, z1 + 0.75);   // the veranda roof over it
+        /* (v24.26, Chad: "in the ajahn room, the door looks to the outside scenery but it is drawn so badly?") the painted
+           yard is superseded by the yard itself, drawn round the room (doorView): the picture, its ground and wings, the
+           step and the eave are hidden from the start, kept rather than removed, and nothing shows them again */
+        paint.push(step, riser, eave);
+        for (const o of paint) o.visible = false;
+        room.doorPaint = paint;
+        /* (v24.26) THE YARD'S RAIN, through the door: the engine's streaks (a thin quad each, turned to face him about its
+           own fall) in a FIXED box over the yard in front of the door — never in the room, which the engine's own rain
+           would fill, since it falls round the lens. doorFrame says how much falls */
+        { const N = LOW ? 900 : 2200, B0 = [-9, -0.6, z1 + 0.25], BS = [17, 9.6, 22];
+          const seed = new Float32Array(N * 16), corner = new Float32Array(N * 8), idx = [];
+          let r = 0x2545f491; const rnd = () => { r ^= r << 13; r >>>= 0; r ^= r >>> 17; r ^= r << 5; r >>>= 0; return r / 4294967296; };
+          for (let i = 0; i < N; i++) {
+            const a = rnd(), b2 = rnd(), c = rnd(), d = rnd();
+            for (let k = 0; k < 4; k++) { const j = i * 4 + k; seed.set([a, b2, c, d], j * 4); corner.set([(k & 1) ? 1 : -1, (k & 2) ? 1 : 0], j * 2); }
+            const o = i * 4; idx.push(o, o + 2, o + 1, o + 1, o + 2, o + 3);
+          }
+          const g = new THREE.BufferGeometry();
+          g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N * 12), 3));
+          g.setAttribute('aSeed', new THREE.BufferAttribute(seed, 4)); g.setAttribute('aCorner', new THREE.BufferAttribute(corner, 2)); g.setIndex(idx);
+          const rm = new THREE.ShaderMaterial({
+            uniforms: { uTime: { value: 0 }, uK: { value: 0 }, uB0: { value: new THREE.Vector3(...B0) }, uBS: { value: new THREE.Vector3(...BS) },
+                        uWind: { value: new THREE.Vector2(0.12, 0.04) }, uLen: { value: 0.55 }, uWidth: { value: LOW ? 0.016 : 0.011 },
+                        uSpeed: { value: 9.0 }, uColor: { value: new THREE.Color(0xc8d4e4) }, uOpacity: { value: 0.42 } },
+            vertexShader: `
+              uniform float uTime, uK, uLen, uWidth, uSpeed; uniform vec3 uB0, uBS; uniform vec2 uWind;
+              attribute vec4 aSeed; attribute vec2 aCorner; varying float vA; varying float vEnd;
+              void main() {
+                if (aSeed.w > uK) { gl_Position = vec4(2.0, 2.0, 2.0, 1.0); vA = 0.0; vEnd = 0.0; return; }
+                vec3 w = uB0 + vec3(aSeed.x * uBS.x, mod(aSeed.y * uBS.y - uSpeed * uTime, uBS.y), aSeed.z * uBS.z);
+                vec3 dir = normalize(vec3(uWind.x, -1.0, uWind.y));
+                vec3 wp = (modelMatrix * vec4(w, 1.0)).xyz;
+                vec3 to = wp - cameraPosition;
+                vec3 side = normalize(cross(dir, to + vec3(0.0001)));
+                vec3 p = wp - dir * uLen * aCorner.y + side * uWidth * aCorner.x;
+                float d = length(to);
+                vA = (1.0 - smoothstep(9.0, 26.0, d)) * smoothstep(0.6, 1.6, d);
+                vEnd = aCorner.y;
+                gl_Position = projectionMatrix * viewMatrix * vec4(p, 1.0);
+              }`,
+            fragmentShader: `
+              uniform vec3 uColor; uniform float uOpacity; varying float vA; varying float vEnd;
+              void main() {
+                float a = uOpacity * vA * (1.0 - vEnd * 0.75) * smoothstep(0.0, 0.12, vEnd) * (1.0 - smoothstep(0.82, 1.0, vEnd));
+                if (a < 0.003) discard;
+                gl_FragColor = vec4(uColor, a);
+              }`,
+            transparent: true, depthWrite: false, fog: false, side: THREE.DoubleSide
+          });
+          mats.push(rm);
+          const rain = new THREE.Mesh(g, rm); rain.frustumCulled = false; rain.renderOrder = 6; rain.visible = false; rain.userData.dyn = true;
+          R.add(rain); room.doorRain = rain; }
+        /* (v24.26) THE VEIL: a pane in the opening that MULTIPLIES what is seen through it. The yard is lit by the room's
+           own lights (the engine's three are the only lights there are), so the storm's light outside is laid on here:
+           doorFrame colours it from the preset's own dome tint, eased with it. It is drawn after the yard and its rain
+           and tested against the room's depth, so nothing in the room in front of the door is touched */
+        { const vm = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, depthWrite: false, fog: false, toneMapped: false,
+            blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.ZeroFactor, blendDst: THREE.SrcColorFactor,
+            blendSrcAlpha: THREE.ZeroFactor, blendDstAlpha: THREE.OneFactor });
+          mats.push(vm);
+          const veil = new THREE.Mesh(new THREE.PlaneGeometry(w, ENTRY.h), vm); veil.rotation.y = Math.PI; veil.position.set(xc, ENTRY.h / 2, z1 + 0.012);
+          veil.renderOrder = 7; veil.visible = false; veil.userData.dyn = true; R.add(veil); room.doorVeil = veil; }
       }
 
       /* ---- the curtained doorway into the house: its frame, the dark passage behind, a plaque over it, and the
@@ -1695,7 +1887,7 @@
           parseOnce('e4moto').then(({ scene: ms }) => {
             if (!alive) return;
             const m = ms.clone(true); m.position.set(-12.2, 0, -9.9); m.rotation.y = 0.4;
-            m.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; bronzeLift(o); } });
+            m.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; bronzeLift(o); carSharp(o); } });
             worldC.add(m);
           }).catch(err => { mb.visible = true; console.warn('e4moto failed to load', err); if (ctx.loadFail) ctx.loadFail('e4moto', err); }); }
         const fr = bx(0.62, 1.5, 0.62, M({ color: 0xd4ccb4, roughness: 0.4 }), -13.0, 0.75, -10.4); solids.push(fr);
@@ -1772,6 +1964,7 @@
          roof, louvred windows, the open door at the top of three steps under a small awning, a jar of water by them to
          wash the feet. (Its inside is World R.) */
       const RX0 = CMP.ROOMX;
+      const nShell = C.children.length;                   // (v24.26: where the room's own parts begin — the shell, below)
       { const xc = (RX0.x0 + RX0.x1) / 2, zc = (RX0.z0 + RX0.z1) / 2, w = RX0.x1 - RX0.x0, d = RX0.z1 - RX0.z0;
         bx(w + 0.1, RX0.base, d + 0.1, mConc, xc, RX0.base / 2, zc);
         const mRoomW = M({ map: tex(makeConcreteT(THREE, cnv, 4681, '#bcd6c8')), roughness: 0.9 });
@@ -1831,6 +2024,19 @@
         }
         bx(w + 2 * oxx + 0.05, 0.08, 0.1, mSteel, xc, ory + 0.02, zc);
       }
+      /* (v24.26) THE ROOM'S OUTSIDE, KEPT APART. From inside World R the door shows this yard itself (doorView), the
+         yard drawn round the room by the room's own mapping, so the parts of this building that stand where World R's
+         floor, walls and roof are drawn — its plinth, its walls, its doorway's dark and curtain, its windows, its roof —
+         are one group, set aside while he is inside, and baked on their own (the yard's merge would have mixed them into
+         its concrete, its teak and its zinc). Its steps, its awning, its water jar and the sandals are outside the door
+         and stay the yard's: they are what the door looks out on. */
+      { const shell = new THREE.Group(); shell.userData.dyn = true; shell.name = 'roomShell';
+        const bb = new THREE.Box3(), c3 = new THREE.Vector3();
+        for (const o of C.children.slice(nShell)) {
+          bb.setFromObject(o); bb.getCenter(c3);
+          if (c3.x > RX0.x0 - 0.1 && c3.x < RX0.x1 + 0.1 && c3.z > RX0.z0 - 0.1 && c3.z < RX0.z1 + 0.07 && c3.y > -0.05 && c3.y < RX0.top + 1.2) shell.add(o);
+        }
+        C.add(shell); yard.roomShell = shell; }
 
       /* ---- THE GATE: two white concrete posts with red caps, the hand-painted sign over the way in, the steel gates
          folded back against the fence; the fence itself — concrete posts and four strands of wire round the plot,
@@ -1934,7 +2140,7 @@
             if (!alive) return;
             const m = cs.clone(true); m.position.set(x, 0, z); m.rotation.y = 0.04;
             /* the paint and the chrome take the room environment's lift (it is 0.05 here, main.js), as the Rivian's do */
-            m.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; bronzeLift(o); } });
+            m.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; bronzeLift(o); carSharp(o); } });
             C.add(m);
           }).catch(err => { c2.visible = true; console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
         });
@@ -2084,10 +2290,16 @@
        turned into the engine's parts the way its own treeKit turns Chad's first trees (v6.15): every mesh a part at its
        place in the file, foliage known by its material's cut-out (v6.16). If any file fails, the stand takes the code-built
        kit instead, whole — never half of one and half of the other */
-    function modelKit(keys, fallback) {
+    function modelKit(keys, fallback, o2 = {}) {
       return Promise.all(keys.map(k => parseOnce(k).then(({ scene: sc }) => {
         const parts = []; sc.updateMatrixWorld(true);
         sc.traverse(o => { if (!o.isMesh) return; const mt = o.material;
+          /* (v24.26, Chad: "The tree leaves look off too", and "looks like it has missing textures") a generated tree's
+             crown is a closed shell of shards: made one-sided at prep, the share of it whose back faces the lens was culled
+             and read as holes (mango 18.8 %, rain tree 3.0 %, bamboo 2.2 %), and its roughness sheet (0.46 on average)
+             shone like plastic. Both faces drawn, and the sheet lifted to about 0.8 — until a real tree replaces each */
+          if (o2.twoSided && mt && !mt.__twoSided) { mt.side = THREE.DoubleSide; mt.__twoSided = true; }
+          if (o2.rough && mt && !mt.__rough && 'roughness' in mt) { mt.roughness = Math.min(2.5, mt.roughness * o2.rough); mt.__rough = true; }
           parts.push({ geo: o.geometry, mat: mt, m: o.matrixWorld.clone(), leaf: !!(mt && (mt.alphaTest > 0 || mt.transparent)) }); });
         return parts.length ? parts : null;
       }).catch(err => { console.warn(k + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(k, err); return null; })))
@@ -2288,10 +2500,10 @@
          one-metre contract with the trunk on the origin (masters/v24.19/make.sh); the code-built kits are the fallback,
          used only if a file never lands (v4.7) */
       yard.stands.push(plantTrees(worldC, [{ x: -17.6, z: -14.2, y: -0.15, h: 8.5, always: true }, { x: 15.8, z: -15.0, y: -0.15, h: 9.5, always: true },
-                                            { x: 17.6, z: -2.4, y: -0.15, h: 7.5 }, { x: -18.4, z: 1.8, y: -0.15, h: 8 }], { kit: modelKit(['e4bamboo'], bambooKit), seed: 25, lowKeep: 0.6, shadow: false }));
+                                            { x: 17.6, z: -2.4, y: -0.15, h: 7.5 }, { x: -18.4, z: 1.8, y: -0.15, h: 8 }], { kit: modelKit(['e4bamboo'], bambooKit, { twoSided: true, rough: 1.74 }), seed: 25, lowKeep: 0.6, shadow: false }));
       /* the takhian behind the sala, the rain tree over the cars, a mango by the house; rain trees along the road. The
          takhian's cloths and dresses are fitted to whichever trunk landed (yard.dressTakhian, the compound's) */
-      const broadModel = modelKit(['e4takhian', 'e4raintree', 'e4mango'], broadKit);
+      const broadModel = modelKit(['e4takhian', 'e4raintree', 'e4mango'], broadKit, { twoSided: true, rough: 1.74 });
       broadModel.then(kinds => yard.dressTakhian && yard.dressTakhian(kinds && kinds[0]));
       yard.stands.push(plantTrees(worldC, [{ x: CMP.TAKHIAN.x, z: CMP.TAKHIAN.z, h: 19, kind: 0, ry: 0.4, always: true },
                                             { x: CMP.RAINTREE.x, z: CMP.RAINTREE.z, h: 10.5, kind: 1, ry: 1.2, always: true },
@@ -3226,6 +3438,7 @@
     buildRoadside();
     yard.pickup.userData.dyn = true;                     // it drives in the films: never baked into the yard
     buildCabin(yard.pickup);
+    mergeStatic(yard.roomShell, new Set([...walls, ...solids]));   // (v24.26: the room's outside, baked on its own — buildCompound)
     mergeStatic(worldC, new Set([...walls, ...solids]));
     buildShop();
     buildTaxi();
@@ -6620,7 +6833,7 @@
       arrivals: [{ what: 'the receiving room (just inside its door)', x: R_ARRIVE.x, z: R_ARRIVE.z }],
       get phase() { return phase; },
       setPhase, applyPhase, after, dayClock, sayLine, queueLine, queueFn, queueGap,
-      look, presets: PRESETS, dome: domeLive, worldOf, room: roomCtl, rmc: RMC, roomState: room, yard, cmp: CMP,
+      look, presets: PRESETS, dome: domeLive, worldOf, room: roomCtl, rmc: RMC, roomState: room, yard, cmp: CMP, doorView,
       shop: shopCtl, shopState: shop, cab: cabCtl, cabState: cab, taxi, films,
       cast, her: herCtl, herState: her, shadow, mends: twinMends,
       person: { talk: personTalk, do: personDo, rest: personRest, walk: personWalk, put: personPut, sit: personSit, ready: whenReady },

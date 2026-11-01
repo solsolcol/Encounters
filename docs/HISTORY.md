@@ -7259,6 +7259,39 @@ What the baseline contains, by release:
     subtitles held at 15 characters a second; the charms' descriptions true of Chad's scans.
   - Standing rules added (CLAUDE.md): the black ajahn is meant to be evil (Chad's word for this one character, the stated
     exception to v21.30's rule); anumodana only from a monk; the chant-caption rule's exception. Sheet v135.
+- **v24.26** THE YARD THROUGH THE DOOR, THE CARS SHARP, AND THE SOURCES KEPT — Chad's second message, asks 2 and 1
+  (verbatim in docs/V24.24-PLAN.md): "in the ajahn room, the door looks to the outside scenery but it is drawn so badly?"
+  and "Why are the cars and trees so low res and compressed, and looks like it has missing textures or something? The tree
+  leaves look off too." The plan and the record: docs/V24.24-PLAN.md, "v24.26".
+  - THE DOOR SHOWS THE YARD ITSELF. The view was a picture painted in code on a board 2.4 m out. The room (World R, a
+    pocket at x 250) and the yard's receiving room are one building — the same front wall, door and floor — so while the
+    lens is in the room the yard is drawn moved under it by that mapping, its own receiving room set aside (one group,
+    baked on its own: the yard's merge had mixed its plinth, walls and roof into the yard's concrete, teak and zinc), its
+    people parked in a hidden group (so speakerNow and peopleTick still see them as hidden) and handed back unmoved when
+    the lens leaves. Chad's trees and cars, the sala, the gate, the fields and the sky stand at their real distances.
+    Drawn only while the doorway is in the lens's frustum, and then only what can be seen THROUGH it (a portal: off the
+    camera's layers, never its visibility) — from the far corner 257 draws become 97; the same frame with the portal off
+    and on is identical through the doorway, pixel for pixel, from the mat and the corner (one pixel at the front wall's
+    foot was the yard seen through a hairline seam of the room's own planes, which the portal's frame hides). Rain in its
+    own fixed box outside (the engine's falls round the lens), as heavy as the room's windows say and the drizzle he came
+    in through before the storm; a pane in the opening multiplies the yard toward the storm's light (the yard is lit by
+    the room's lights — the engine's three are the only lights). The painted picture, its step and its eave are hidden,
+    kept.
+  - THE CARS: a read-only models lens found the cause in our own prep — prepmeshy halved Meshy's 2048 sheets to 1024
+    JPEG: the normal crumpled the bonnet and the glass, the base colour smeared the lamps (each map shrunk alone,
+    photographed). The three cars he walks past keep 2048 base colour and normal (metal-roughness at 1024 — identical on
+    screen; prepmeshy's new opt-in PXMR, bit-identical without it), +4.9 MB; every car map filtered at anisotropy 8. The
+    motorbike stays at 1024 (sharp where he stands).
+  - THE GENERATED TREES (rain tree, mango, takhian, bamboo): their crowns are shells of shards (Meshy) — drawn on both
+    faces now (made one-sided at prep, 18.8 % of the mango's crown was culled back faces: the "missing textures") and
+    their roughness lifted from plastic to about 0.8. The real fix is a real tree model with leaf cards, put to Chad.
+  - THE SOURCES, NEARLY LOST: to free a full disk I deleted two scratch folders without listing them; they held the only
+    copies of the Meshy files the cars, the second Rahu, the taxi seat and the shop's amulets were made from. Meshy keeps
+    a job's files three days and these had a day left: all 15 originals and 25 remeshes downloaded again, each matched to
+    its asset (exact triangle counts; colour sheets at RMSE 1–4 against 38+), the sedan re-prepped byte for byte; they are
+    in masters/v24.19, v24.20 and v24.22's src (gitignored) and every job ID is in their make.sh. LEARNINGS has the lesson.
+  - Deployed first (6ae7a00f61ced8f811a794ac, 308 of 308 files byte-identical); chapter, hosted, leak and walk run on its
+    copy; the doorway photographed on a phone in four places in the room's light and in the storm's.
 
 ## The sheet, version by version
 

@@ -7047,3 +7047,25 @@ cut (sharing its vertices and maps) when it is small.
   - Measure per PHRASE, not per take: a whole-take figure of 47 % hid a perfect whisper followed by a plain voice.
   - The tag repeated before each phrase is one tag; no tag was spoken (each phrase's length is the words' own in every
     take — a spoken tag adds ~0.6 s).
+
+## v24.26 — the yard through the door, and the sources I nearly lost
+
+- **A scratch folder can hold the ONLY copy of a model's sources.** To free a full disk I deleted two scratch folders
+  (v2420, v2422) without listing them; they held the Meshy files every car, the second Rahu, the taxi seat and the
+  shop's eight amulets were prepped from — the recipes read them from /tmp/meshy, which was gone. Meshy keeps a job's
+  files for THREE DAYS (each job's `expires_at`), and these were a day from expiring: all 15 originals and 25 remeshes
+  were downloaded again from the account, each matched to the asset it made (exact triangle count for the cars; its own
+  colour sheet for the amulets and the trees, RMSE 1–4 of 255 against 38+ for every other job), and the sedan re-prepped
+  from its restored remesh came out byte for byte. So: (1) list a folder before deleting it, and check every kind of file
+  in it exists somewhere else; (2) a recipe's sources go into masters/<v>/src THE DAY they are made, and the jobs' IDs into
+  its make.sh; (3) old release zips in the repo root are the cheap thing to delete (Netlify holds every deploy).
+- **A portal's planes are oriented by a point INSIDE the portal**, not by a point straight out from the door: from the
+  room's far corner the line from the eye through a point a metre out from the door passes beside the opening, one plane
+  came out flipped, and the gate's post — visible through the open door — was culled. The point on the line from the eye
+  through the opening's centre, as far beyond it again, is inside from anywhere in the room. Proven by the same frame
+  with the cull off and on, pixel for pixel, from the mat and from the far corner.
+- **Fixing a pocket world's window onto the main world:** move the main world under the pocket by the pocket's own
+  mapping while the lens is in the pocket; set aside what of it stands where the pocket is drawn; park its people in a
+  hidden group (so every "is he visible" walk up the parents still says no); hand everything back the frame the lens
+  leaves. Collision read once at build, frame functions gated on the lens's world, and a shadow box over the main world's
+  origin make the move safe; the yard's merged meshes meant the building had to be split out of the merge first.

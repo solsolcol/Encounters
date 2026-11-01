@@ -96,3 +96,18 @@ enc() { # name src target_mp3 target_ogg opus_bitrate channels — peak-matched,
 ch=$(ffprobe -v error -show_entries stream=channels -of csv=p=0 sfx/raw/w4keys_a.mp3 | head -1)
 ffmpeg -v error -y -i sfx/raw/w4keys_a.mp3 -af "highpass=f=150:poles=2,afade=t=out:st=3.15:d=0.25" -ar 48000 w_w4keys.wav
 enc w4keys w_w4keys.wav -10 -10 96k $ch; rm -f w_w4keys.wav
+
+# (v24.26) THE SOURCES, KEPT: Meshy keeps a job's files for THREE DAYS, so the files this recipe reads are kept in
+# masters/v24.22/src (gitignored): original-<name>.glb and remeshed-<name>.glb. Re-downloaded 1 Nov 2026 (the session's
+# scratch copy had been deleted to free disk — a mistake, recovered in time), each matched to the asset it made by its own
+# colour sheet (RMSE 1.3-3.8 of 255 against 38+ for every other job):
+#   somdej    image-to-3d 01a18e92-7d6b-7582-9228-eba9b9821ead  remesh 01a18e97-4582-73d6-86bb-4b2d0d808d5d
+#   khunpaen  image-to-3d 01a18e92-92bd-7691-bd45-554e34345eb9  remesh 01a18e97-4732-7202-9024-b4defdf9b76c
+#   rian      image-to-3d 01a18e92-a823-7592-a553-d1f90278dec9  remesh 01a18e97-4923-73c6-86b2-b6234f5a9314
+#   jatukham  image-to-3d 01a18e92-d1ab-704b-bac4-80472cf5e28d  remesh 01a18e97-4ade-75e2-b339-e8fa1871c53e
+#   pidta     image-to-3d 01a18e92-bbe4-70cb-91ba-f291059971d6  remesh 01a18e97-4d60-7109-af13-869039462415
+#   kring     image-to-3d 01a18e92-e917-7010-8224-293e26ed1f69  remesh 01a18e97-4f96-7410-9c62-3b419347fe2a
+#   meedmor   image-to-3d 01a18e92-fd5d-7598-8e31-ffad76891a77  remesh 01a18e97-5156-752c-a7d8-147ea213b204
+#   buddhaA   image-to-3d 01a18e93-0f21-7195-b824-28b3075e12e6  remesh 01a18e97-52fd-7395-a2b8-f2e3f1ae000e (the bucha)
+#   laptop    image-to-3d 01a18e7d-654f-742d-9c16-fca6f100fe65  remesh 01a18e80-a2eb-76e0-bd5c-d5f1376104fc (set aside)
+# Run with M=masters/v24.22/src.

@@ -115,7 +115,11 @@ for (const m of root.listMaterials()) {
       console.log(`  TINTGREY: ${(n / (data.length / 3) * 100).toFixed(1)} % of the base colour's texels`);
       src = sharp(data, { raw: { width: info.width, height: info.height, channels: 3 } });
     }
-    const out = await src.resize(PX, PX, { fit: 'inside', withoutEnlargement: true }).jpeg({ quality: q }).toBuffer();
+    /* (v24.26) PXMR: the metal-roughness sheet's own size (default PX). The cars at 2048 (Chad: "Why are the cars ... so
+       low res and compressed"): halving their base colour blurs the lamps and halving their normal crumples the hood and
+       the glass, while the metal-roughness at 1024 is identical on screen (each map shrunk alone, photographed) */
+    const px = process.env.PXMR && tx === m.getMetallicRoughnessTexture() ? Number(process.env.PXMR) : PX;
+    const out = await src.resize(px, px, { fit: 'inside', withoutEnlargement: true }).jpeg({ quality: q }).toBuffer();
     tx.setImage(out).setMimeType('image/jpeg').setURI(''); tx.__done = true;
   }
   m.setOcclusionTexture(null); m.setAlphaMode('OPAQUE').setDoubleSided(false);
