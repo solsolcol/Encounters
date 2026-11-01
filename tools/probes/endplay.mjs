@@ -55,7 +55,15 @@ const CAPWATCH = () => p.evaluate(() => {
 const capSeen = new Set();
 const capShot = async (shotFn) => {
   const cap = await p.evaluate(() => { const c = document.getElementById('caption'); return c && c.classList.contains('on') ? (c.querySelector('.capMain') || c).textContent.trim() : ''; });
-  if (cap && !capSeen.has(cap)) { capSeen.add(cap); console.log('  caption', capSeen.size, JSON.stringify(cap)); await shotFn('cap' + String(capSeen.size).padStart(2, '0')); }
+  if (cap && !capSeen.has(cap)) {
+    capSeen.add(cap); console.log('  caption', capSeen.size, JSON.stringify(cap));
+    /* a new line RISES on (capSwap: from 15 % over 0.42 s, which a starved box can hold for seconds) — the photograph
+       waits for it to finish, or it shows the words faded and reads as a fault (v24.24) */
+    await p.waitForFunction(() => { const c = document.getElementById('caption');
+      return !c || !c.classList.contains('on') || (c.getAnimations().every(a => a.playState === 'finished') && +getComputedStyle(c).opacity > 0.95); },
+      null, { timeout: 30000, polling: 150 }).catch(() => {});
+    await shotFn('cap' + String(capSeen.size).padStart(2, '0'));
+  }
 };
 const capReport = async () => { const L = await p.evaluate(() => window.__caps || []);
   console.log('CAPTIONS', L.length, '|', L.map(q => `${q.at}–${q.off || '?'} [${q.voice}] ${q.text}`).join(' || ')); };
