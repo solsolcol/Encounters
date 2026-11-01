@@ -2951,7 +2951,7 @@ function flashRun() {
    starts with one up (kitReset). The verb only records; the frame paints (the kit's law). Episodes 1 and 2 never call
    it. */
 let kitCaps = null;
-const capPainted = { k: -2, el: null };
+const capPainted = { k: -2, el: null, list: null };   // (v24.24: and WHICH list it painted — see captionsFrame)
 function kitCaptionsSet(list) {
   const L = Array.isArray(list) ? list.filter(q => q && (q.text || q.sub)).map(q => ({
     at: Math.max(0, +q.at || 0), end: Math.max(0, +q.end || 0), text: String(q.text || ''), sub: String(q.sub || '') })) : [];
@@ -2964,9 +2964,14 @@ function captionsFrame() {
     if (t > kitCaps.last + 0.5) kitCaps = null;
     else if (state === 'play' || state === 'cine') kitCaps.list.forEach((q, i) => { if (t >= q.at && t < q.end) k = i; });
   }
-  if (k === capPainted.k) return;
+  /* v24.24 (two review lenses, and a frame-by-frame model of the queue): a NEW list set while the old list's entry of the
+     same index is still painted is new words — episode 4 chapter 1 sets a one-entry list per line, and one line follows
+     another 0.25 s after it ends while its subtitle stands 0.4 s past it, so "What kind of shop do you have?" and the
+     reading's first words were never painted at any real frame rate (index 0 both times: the old words stayed). A box
+     drawing a frame a second hid it. Episodes 1 and 2 never call captions; episode 3's lists never replace one standing */
+  if (k === capPainted.k && capPainted.list === kitCaps) return;
   const el = capPainted.el || (capPainted.el = $('caption')); if (!el) return;
-  const was = capPainted.k; capPainted.k = k;
+  const was = capPainted.k; capPainted.k = k; capPainted.list = kitCaps;
   if (k < 0) { el.classList.remove('on'); document.body.classList.remove('capsOn'); return; }
   const q = kitCaps.list[k];
   el.querySelector('.capMain').textContent = q.text;
@@ -2976,8 +2981,8 @@ function captionsFrame() {
      already standing — `swap` replays the rise) */
   el.classList.remove('swap'); if (was >= 0) { void el.offsetWidth; el.classList.add('swap'); }
   el.classList.add('on');
-  /* v24.0: the interact badge stands ABOVE a caption, never on it — episode 4 chapter 1 offers the signs to look at
-     while the master's chant is captioned, and the two shared the same strip of the screen (photographed). Read once a
+  /* v24.0: the interact badge stands ABOVE a caption, never on it — episode 4 chapter 1 offered the signs to look at
+     while the master's chant was captioned (until v24.24), and the two shared the same strip of the screen (photographed). Read once a
      line, when its words change, never per frame: where the caption stands (its own `bottom`) and how tall it is now;
      offsetHeight ignores the rise's transform. No earlier chapter offers a spot under a caption, so none of them moves. */
   document.body.style.setProperty('--capTop', Math.round((parseFloat(getComputedStyle(el).bottom) || 0) + el.offsetHeight) + 'px');

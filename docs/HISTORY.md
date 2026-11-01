@@ -7215,8 +7215,58 @@ What the baseline contains, by release:
   sheet list are byte-identical. The reader's full list is masters/history-split/rules-sweep.txt. CLAUDE.md is about 115 KB
   now (19,400 words, roughly 29,000 tokens). From here on a release's entry is written at the end of this list, never in
   CLAUDE.md. No game file moved, so the version stays v24.23 and nothing was deployed; the next game release is v24.24.
+- **v24.24** THE BLACK AJAHN'S CHANT WHISPERED, HIS WORDS SUBTITLED, AND EPISODE 4 CHAPTER 1 DEBUGGED IN FULL — Chad, 1
+  Nov 2026: *"For the black ajahn in ep 4 chp 1, change all of his chanting to something that cannot really hear and
+  intelligible. So that he seem more yin and creepy. Like a whispering voice. But still in the same thai voice. Then, once
+  that is done, do a full comprehensive debug of this chapter. Be smart with your time, be efficient, avoid being
+  bottlenecked by slow long probes and slow checks, be more parallel."* — then *"Also i want subtitles for everything that
+  the black ajahn says, subtitles in english while he speaks thai."* — *"Except for his creepy chanting , that part will
+  not have any subtitles"*. docs/V24.24-PLAN.md is the record (his words, the plan, every lens finding with its verdict).
+  - The whisper (masters/v24.24/make.sh): eleven_v4 whispers this voice (Patinya) only in a take's first phrases and drifts
+    back to his voice after (measured PER PHRASE — a whole take's 47 % hid a true whisper followed by a plain voice), so
+    the chant was laid phrase by phrase from takes of one phrase each. The chant's captions came out.
+  - The subtitles: one table, `SUBS`, beside the chapter's SECS — in play from the line queue's start (muted too), in the
+    four endings from the same scene time as each cue through one wrapped `sfx` (the cues stay literal for the warm
+    scan); the reading in five on its take's own pauses.
+  - Deployed first (6ae7871351182b7ea9669657), then the debug in parallel: six read-only lenses (save and resume, sound,
+    play logic, words and HUD, the engine since v24.5 and every e4c1 fix since v24.9, staging and camera) while the probes
+    ran two at a time on the deployed build's hard-linked copy (a finger play-through to ending B, endings A/C/D with
+    sound, Continue from 21 save marks) — all passed; the probes now photograph each subtitle once its rise has finished.
+- **v24.25** THE DEBUG'S FIXES, AND CHAD'S SECOND MESSAGE — his words (verbatim in docs/V24.24-PLAN.md): the cars and
+  trees look low-res and compressed (v24.26), the doorway's view is drawn badly (v24.26), the four signs' trigger areas
+  are too small, the ajahn must not say anumodana ("that can only be said by a monk ... Maybe just thank you?"), his chants
+  must be UNintelligible and no Buddhist chant at all ("The ajahn is supposed to be evil"), things should move and shake as
+  he chants and in the films — and "the music still cuts off too abruptly when going from the intro cutscene to the title".
+  - THE ENGINE NEVER PAINTED A REPLACED SUBTITLE (two lenses, a frame-by-frame model): `captionsFrame` repainted only when
+    the painted index changed; back-to-back lines both paint index 0, so "What kind of shop do you have?" and the reading's
+    first words were never shown at any real frame rate (this box, at a frame a second, hid it). The painter now remembers
+    which list it painted; a fixture check sets a second list over the first — FAILS on v24.24, passes on the fix.
+  - The chant: four phrases of MEANINGLESS syllables (no Pali, no Thai word), whispered one phrase a take, laid three deep
+    (the lead; other takes played backwards 5 dB under; a third set 9 dB under) so no syllable can be made out: 3–5 %
+    voiced, as loud as the whisper before (masters/v24.24/layer.py, make.sh). "Thank you" (ขอบคุณครับ) in his voice.
+  - The room trembles under the chant (work, storm and its film): the altar's offerings, the cabinets' glass and the cup
+    rattle in bursts with its phrases, the yant cloths swing out from the wall, ribbons and curtain stir with no fan, the
+    flames lean and gutter — each on its own phase and taken off again; still the moment the chant stops.
+  - The signs: aim cones wider (0.28–0.42 rad), a tap within 16 % of the short side — and the open sign NEAREST the finger
+    answers (the engine takes the first spot that says yes).
+  - The opening film's end: the radio's song (the loudest thing left, cut at the end) goes off with the ignition, the
+    music fades over 4 s from the engine's stop, the thunder's and the engine's tails with the picture.
+  - The lenses' fixes (each in the plan's record): the door's marks wait for Pong, the tree's exchange is not cut, the
+    work's order waits for the signs; the tube's and the tray's sounds heard before their lines; the chant re-cued under the
+    storm film; a Continue staged under the card (the slate, the wai, the fan, the drizzle), the endings warmed, an old
+    save's question not paid twice, no doubled flash; no lens jumps inside a shot (six places), B's card handed over in
+    sight, B's cut on Pong's first word, D's wai held clear of the subtitle, the slate's chalk going on as he writes it;
+    subtitles held at 15 characters a second; the charms' descriptions true of Chad's scans.
+  - Standing rules added (CLAUDE.md): the black ajahn is meant to be evil (Chad's word for this one character, the stated
+    exception to v21.30's rule); anumodana only from a monk; the chant-caption rule's exception. Sheet v135.
 
 ## The sheet, version by version
+
+**v135** (`masters/v24.24/masterz-text-v135.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from
+it — stale since v24.7): v134 with 9 rows changed, none added or removed — episode 4 chapter 1's `subAnu` ("Thank you.",
+Chad: not anumodana) and `subRead2` (shorter, to be read in its time); the three charms' descriptions made true of
+Chad's scans (bronze; the takrut capped, with rings for its cord; the pha yant rolled); and the voice rows fm1anu,
+fm1chant, fm1chant2 and fm1chant2D (the chant wordless, no Buddhist chant). Exported, not published.
 
 **v134** (`masters/v24.24/masterz-text-v134.xlsx`, its CSV beside it): v133 with episode 4 chapter 1's master
 subtitled and his chant whispered — 20 rows added (`subHello`, `subShop`, `subGood`, `subHm`, `subRead1`–`subRead5`,

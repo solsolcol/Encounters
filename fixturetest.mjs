@@ -1624,6 +1624,14 @@ K.captionFirst = await until(() => { const el = document.getElementById('caption
 K.captionSecond = await until(() => { const el = document.getElementById('caption');
   return el.classList.contains('on') && el.querySelector('.capMain').textContent === 'Line two' && el.querySelector('.capSub').textContent === 'Meaning two'; }, 30000)
   .then(() => true, () => false);
+/* v24.24: a NEW list set while the old list's entry 0 is still up shows ITS words (the painter compared only the index,
+   so the old words stayed — episode 4 chapter 1's back-to-back lines). Windows of seconds, for a slow box */
+await p.evaluate(() => window.__enc.kit.captions([{ at: 0, end: 20, text: 'List A' }]));
+K.captionListA = await until(() => document.getElementById('caption').querySelector('.capMain').textContent === 'List A'
+  && document.getElementById('caption').classList.contains('on'), 15000).then(() => true, () => false);
+await p.evaluate(() => window.__enc.kit.captions([{ at: 0, end: 20, text: 'List B' }]));
+K.captionListReplaced = await until(() => document.getElementById('caption').querySelector('.capMain').textContent === 'List B'
+  && document.getElementById('caption').classList.contains('on'), 15000).then(() => true, () => false);
 await p.evaluate(() => window.__enc.kit.captions(null));
 K.captionCleared = await until(() => !document.getElementById('caption').classList.contains('on') && window.__enc.kit.captionNow() === null, 15000)
   .then(() => true, () => false);

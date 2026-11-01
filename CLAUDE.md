@@ -122,6 +122,8 @@ that fits it, with the version it came from.
 
 - Every mechanic, minigame, prop and item must serve the spiritual story and earn its place: no military-sim detours, no filler that nothing later reads, nothing kept that serves no purpose. (v9.5)
 - The game is spiritual education, never cheap horror or jump scares; greed and desire are never shown as a right reason, and his stated purpose for a chapter governs every beat of it. (v23.0)
+- Episode 4 chapter 1's black ajahn "is supposed to be evil": he chants no Buddhist chant ("should be chanting something else"), and his chants cannot be made out at all. Chad's word for this one character, the stated exception to the rule that no practitioner is the villain (Architecture, v21.30). (v24.25)
+- Anumodana is said only by a monk ("that can only be said by a monk"); a lay master or anyone else says thank you. (v24.25)
 - Change only what he asked and keep everything else exactly as it was; if an addition does not fit a shot, say so and ask instead of re-staging it; never remove built flow unless told. (v14.10)
 - Use his models as he delivered them: never alter his files or their paint (a ruling such as 'no green' is applied at runtime), and leave a scan's own flaws as delivered. (v12.4)
 - Use the models he has already supplied, and use them to the fullest (their interiors, their own looks), before building anything in code; check the models docs for what he already sent. (v24.18)
@@ -297,6 +299,7 @@ that fits it, with the version it came from.
 - Re-run only refused or failed generations, never one that succeeded. (v24.3)
 - Every audio treatment's recipe is kept on disk in the masters' make.sh, and retired takes stay in masters. (v10.3)
 - Every chant with words is captioned (the Pali as chanted over its meaning), timed on the take's breaths from the line's own start so it also works muted, translated from Thanissaro Bhikkhu's A Chanting Guide. (v21.31)
+  The one exception: episode 4 chapter 1's black ajahn chants WORDLESS, with no subtitles (v24.24: "Except for his creepy chanting, that part will not have any subtitles"; v24.25: "you cannot even hear the words").
 - The main character's voice follows the episode (Aaron as the boy and the recruit, Brian as the grown man from episode 3), and the boy's engine lines are gated to his episodes. (v18.5)
 - When replacing or removing a cue, audit everything it carried (a swell, a beat) and say what was lost. (v10.6)
 - The four lines under the outcome cards are his own terse first-person reflections, never the card read aloud. (v4.91)
@@ -1138,13 +1141,13 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v134** (`masters/v24.24/masterz-text-v134.xlsx`, its CSV beside it: v24.24's subtitles). It is
+**THE SHEET IS v135** (`masters/v24.24/masterz-text-v135.xlsx`, its CSV beside it: v24.25's words). It is
 EXPORTED and not published: the workbook (118 KB) is far past what the Drive connector's base64 route can carry (about
 20,000 characters — docs/EDITING-TEXT.md, "THE CEILING"), so the split export written down there no longer fits
 either. The way through is the Google Sheets connector, which writes the cells directly (docs/OPEN-ITEMS.md A1).
 **v44 is still the link to give Chad** until that is done:
 https://docs.google.com/spreadsheets/d/1bqnbQJPr1O6YslOlcsbVDFlZCohQtyKbPzm9EuY1IpM/edit
-Every sheet version's own diff, v134 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
+Every sheet version's own diff, v135 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
 first; a new version goes at its top).
 
 `docs/LEARNINGS.md` is the catalog of every hard-won lesson (CSP traps,

@@ -53,3 +53,43 @@ for k in fm1chant fm1chant2 fm1chant2D; do
     "$(ffprobe -v error -show_entries format=duration -of csv=p=0 ../../assets/audio-opus/$k.ogg)"
 done
 rm -f w_*.wav l_*.wav l_*.wav.f32
+
+# ======================================================================================================================
+# v24.25 · Chad's second word on it (1 Nov 2026): "i want all of the ajahn's chants to be [un]intelligible, meaning you
+# cannot even hear the words, but i can still hear namo tassa and the chant words. The ajahn is supposed to be evil so he
+# should not even chant proper buddhist chants and should be chanting something else." — and "the ajahn should not say
+# anumodami, that can only be said by a monk. Change it to something else. Maybe just thank you?"
+#
+# THE CHANT, NO LONGER ANY BUDDHIST WORD: four phrases of MEANINGLESS chant-like syllables (no Pali, no Thai word; the
+# prompts are in sessions.json, n1-n4), whispered in his own voice one phrase a take (eleven_v4, [whispers] at its head),
+# four takes each. Every take whispers (2-23 % voiced, measured per phrase); the picks for the lead are the least voiced:
+# n1_a 9 %, n2_c 2 %, n3_a 4 %, n4_c 6 %. One whispered stream alone is still heard as syllables, so three run at once
+# (layer.py): the LEAD (the chant's rhythm, his voice on top), other takes of the phrases played BACKWARDS 5 dB under
+# and 0.55 s behind, and a third set 9 dB under, 1.3 s behind — every gap filled, no syllable alone. Measured: the
+# blessing 23.0 s, 3 % voiced; the loop 13.8 s, 4 %; ending D's end of it 6.3 s, 5 % (inside the 6.8 s before the bell);
+# -19.6 and -19.5 LUFS, as loud as the whisper it replaces. The v24.24 whispered homage and formula (r3, r4f, r4m) stay
+# in raw/ as retired takes.
+R=raw
+python3 -I layer.py w2_fm1chant.wav LEAD $R/n1_a.mp3,$R/n2_c.mp3,$R/n3_a.mp3,$R/n4_c.mp3,$R/n2_b.mp3 \
+  BACK $R/n1_c.mp3,$R/n2_a.mp3,$R/n3_d.mp3,$R/n4_a.mp3,$R/n1_b.mp3 UNDER $R/n3_c.mp3,$R/n4_b.mp3,$R/n1_d.mp3,$R/n2_d.mp3,$R/n3_b.mp3
+python3 -I layer.py w2_fm1chant2.wav LEAD $R/n4_a.mp3,$R/n3_c.mp3,$R/n1_d.mp3 BACK $R/n2_d.mp3,$R/n1_c.mp3,$R/n4_b.mp3 \
+  UNDER $R/n3_b.mp3,$R/n2_a.mp3 --tail w2_fm1chant2D.wav 6.3
+for k in fm1chant fm1chant2 fm1chant2D; do
+  python3 -I ../v11.1/level.py w2_$k.wav l2_$k.wav -21
+  ffmpeg -v error -y -i l2_$k.wav -map_metadata -1 -c:a libmp3lame -b:a 128k -ar 44100 ../../assets/audio/$k.mp3
+  ffmpeg -v error -y -i l2_$k.wav -map_metadata -1 -c:a libopus -b:a 64k -ar 48000 ../../assets/audio-opus/$k.ogg
+  printf '%s: mp3 %s s, opus %s s\n' $k \
+    "$(ffprobe -v error -show_entries format=duration -of csv=p=0 ../../assets/audio/$k.mp3)" \
+    "$(ffprobe -v error -show_entries format=duration -of csv=p=0 ../../assets/audio-opus/$k.ogg)"
+done
+rm -f w2_*.wav l2_*.wav l2_*.wav.f32
+#
+# "THANK YOU" (fm1anu): ขอบคุณครับ in his own voice and model (eleven_v3, [softly], as the line it replaces), four takes:
+# t1_b is the only one that begins on its words and ends in silence (a, c and d hold 1.2-1.7 s of silence before them;
+# a ends on its signal). Its words 0.56 s. Levelled as his soft lines are (v24.0's cast: prep, RMS -18).
+python3 ../v21.0/prep.py raw/t1_b.mp3 p_fm1anu.wav --fade 0.12 >/dev/null
+python3 ../v11.1/level.py p_fm1anu.wav wc_fm1anu.wav -18
+ffmpeg -v error -y -i wc_fm1anu.wav -map_metadata -1 -c:a libmp3lame -b:a 128k -ar 44100 ../../assets/audio/fm1anu.mp3
+ffmpeg -v error -y -i wc_fm1anu.wav -map_metadata -1 -c:a libopus -b:a 64k -ar 48000 ../../assets/audio-opus/fm1anu.ogg
+printf 'fm1anu: opus %s s\n' "$(ffprobe -v error -show_entries format=duration -of csv=p=0 ../../assets/audio-opus/fm1anu.ogg)"
+rm -f p_fm1anu.wav wc_fm1anu.wav wc_fm1anu.wav.f32
