@@ -4096,10 +4096,11 @@
       if (yard.tvMat) { const k = 0.55 + 0.25 * Math.sin(now * 3.1) * Math.sin(now * 1.7) + (Math.sin(now * 13) > 0.92 ? 0.3 : 0); yard.tvMat.color.setRGB(0.35 * k, 0.45 * k, 0.6 * k); }
       /* (v24.9) the door waits for Pong at the steps; if his walk has not ended 20 s after the order (a walk that never
          ticks), he is put there and the door opens — a safety net, never the normal path (he arrives in about 7 s) */
-      if (phase === 'called' && !play.pongAtDoor && play.calledAt && now - play.calledAt > 20) {
+      /* (v24.24, L3-5: on the chapter clock — a tab hidden through his walk counted as twenty seconds of it) */
+      if (phase === 'called' && !play.pongAtDoor && play.calledAt && dayClock.t - play.calledAt > 20) {
         const P = cast.pong;
         if (P && P.walk) personPut(P, PONG_DOOR.x, PONG_DOOR.z, PONG_DOOR.ry);
-        play.pongAtDoor = true;
+        pongAtSteps();
       }
     }
     /* the ground's height where the compound is not flat: the sala's floor and its two steps (v16.4's seam) */
@@ -4320,10 +4321,12 @@
       if (wDark) { kit.objective(null, { complete: false }); kit.waypoint(null); return; }
       let o = null, wp = null;
       if (p === 'arrive') o = play.greeted ? null : W.objFollow;
-      else if (p === 'called') { o = W.objGoIn; wp = { x: RDOOR.x, y: 1.9, z: RDOOR.z - 0.5 }; play.doorWp = true; }   // (the frame takes it off while the door's own mark shows — L5-13)
+      /* (v24.24, L3-1: "Go in" and its marks wait for Pong at the steps — the door is offered only once he is there (v24.9),
+         and the order, up with his "Come, come", had nothing marking the door for the six seconds of his walk) */
+      else if (p === 'called') { if (play.pongAtDoor) { o = W.objGoIn; wp = { x: RDOOR.x, y: 1.9, z: RDOOR.z - 0.5 }; play.doorWp = true; } }   // (the frame takes it off while the door's own mark shows — L5-13)
       else if (p === 'consult') o = play.kneeling ? null : W.objKneel;
       else if (p === 'items') o = play.offerOn && !play.offered ? W.objOffer : null;
-      else if (p === 'work') o = W.objWatch.replace('{n}', String(play.signs.size));
+      else if (p === 'work') o = play.signsOn ? W.objWatch.replace('{n}', String(play.signs.size)) : null;   // (v24.24, L3-3: not over the lines it waits on)
       kit.objective(o, opts);
       if (p !== 'arrive') kit.waypoint(wp);
     }
@@ -4389,7 +4392,7 @@
     const play = {
       run: 0,                         // a token: a callback from before a reset finds it changed and does nothing
       asked: new Set(), busy: false,                // (v24.9: the one question, to Pong at the door — no queue, no number)
-      greeted: false, tree: false, pongAtDoor: false, calledAt: 0,   // (calledAt: the wall clock when the door was ordered)
+      greeted: false, tree: false, pongAtDoor: false, calledAt: 0,   // (calledAt: the chapter clock when the door was ordered)
       item: '', offerOn: false, offered: false,         // (v24.9: no birthday pick — the slate is written without one)
       signs: new Set(), signsOn: false, herSeen: false, breathNext: 0, gestNext: 0, chantNext: 0,
       clothSeen: false, gestSeen: false, gustNext: 0,          // (v24.5: the cloth has breathed, his hands have moved — L1-5; the draught — L1-2)
@@ -4572,13 +4575,16 @@
          the one question, offered only while he stands there, was never seen. He walks brisker now (1.5, his take at
          1.15×), the door is offered once he is there, and his "!" and the door's appear together; yardFrame finishes
          his walk if it has not ended 20 s after the order, so the door can never stay shut) */
-      play.calledAt = wallNow();
+      play.calledAt = Math.max(dayClock.t, 0.001);
       whenReadyOr(cast.pong, (P) => {
-        if (resumed) { personPut(P, PONG_DOOR.x, PONG_DOOR.z, PONG_DOOR.ry); P.seated = false; P.sitW = 0; play.pongAtDoor = true; return; }
-        personWalk(P, PONG_TO_DOOR, { speed: 1.5, ry: PONG_DOOR.ry, then: () => { play.pongAtDoor = true; } });
-      }, () => { play.pongAtDoor = true; });        // (his model never came: his place is the door's, and he can still be asked)
+        if (resumed) { personPut(P, PONG_DOOR.x, PONG_DOOR.z, PONG_DOOR.ry); P.seated = false; P.sitW = 0; pongAtSteps(); return; }
+        personWalk(P, PONG_TO_DOOR, { speed: 1.5, ry: PONG_DOOR.ry, then: () => pongAtSteps() });
+      }, () => pongAtSteps());        // (his model never came: his place is the door's, and he can still be asked)
       if (kit && kit.rain) kit.rain(0.12, { secs: 4, len: 0.5 });   // (CP13: the engine's shape is (k, opts) — the ease and the length were dropped)
     }
+    /* Pong is at the steps: the door is offered, and the order to go in goes up with its marks (v24.24, L3-1) */
+    function pongAtSteps() { play.pongAtDoor = true; if (phase === 'called') objectiveFor('called'); }
+    const doorLive = () => worldOf(yaw.position.x) === 'C' && phase === 'called' && !play.busy && play.pongAtDoor;
     /* ASK (§4.2, now one question): "who can genuinely vouch for him?" — the man who brought him has never been here
        either. Optional; asking pays two awareness once, its receipt in the bookmark of the same tick (~ask), before his
        own line, so a Continue never asks again (v24.5, L2-4) */
@@ -4612,8 +4618,10 @@
     function treeLook() {
       if (play.tree || play.busy) return false;
       play.tree = true;
+      play.busy = true;                            // (v24.24, L3-2: the door, live inside his question, cut Pong's answer)
       line('q1tree', null);
       line('pg1tree', cast.pong);
+      queueFn(() => { play.busy = false; });
       return true;
     }
     function enterRoom() {
@@ -5044,10 +5052,11 @@
       if (phase === 'called' && inC && !wDark && kit && kit.waypoint) {
         const dp = _hv.set(RDOOR.x, 1.6, RDOOR.z - 0.5); camera.updateMatrixWorld(); dp.project(camera);
         const near = Math.hypot(yaw.position.x - RDOOR.x, yaw.position.z - (RDOOR.z - 0.5)) < 15.5;
-        const wp = !(near && dp.z < 1 && Math.abs(dp.x) < 0.95 && Math.abs(dp.y) < 0.95);
+        /* (v24.24, L3-1: the door's own mark is drawn only while the door is live — the same function decides both) */
+        const wp = doorLive() && !(near && dp.z < 1 && Math.abs(dp.x) < 0.95 && Math.abs(dp.y) < 0.95);
         if (wp !== play.doorWp) { play.doorWp = wp; kit.waypoint(wp ? { x: RDOOR.x, y: 1.9, z: RDOOR.z - 0.5 } : null); }
       }
-      if (phase === 'consult' && inR && !play.kneeling && matZone.visible
+      if (phase === 'consult' && inR && !play.kneeling && matZone.visible && !wDark
           && Math.hypot(yaw.position.x - (RX + CMAT.x), yaw.position.z - CMAT.z) < 0.42) kneel(false);
       if ((phase === 'work' || phase === 'storm') && inR) {
         if (phase === 'work') {
@@ -5113,12 +5122,12 @@
         onInteract() { return treeLook(); } },
       { id: 'door', pos: { x: RDOOR.x, y: 1.6, z: RDOOR.z - 0.5 }, radius: 3.2, prompt: W.hotDoor,
         hits: markHit(() => ({ x: RDOOR.x, y: 1.6, z: RDOOR.z - 0.5 }), 0.55),
-        enabled: () => worldOf(yaw.position.x) === 'C' && phase === 'called' && !play.busy && play.pongAtDoor,   // (v24.9: not while Pong is being asked; offered once he stands at the steps — calledBegin)
+        enabled: () => doorLive(),   // (v24.9: not while Pong is being asked; offered once he stands at the steps — calledBegin)
         onInteract() { return enterRoom(); } },
       /* the glowing place on the floor IS the mat's mark (CP8, by photograph: the engine's "!" floated at chest height over
          it and read as a mark on the far wall; the anchor stays at 1.0 so the badge is offered from the door) */
       { id: 'mat', pos: { x: RX + CMAT.x, y: 1.0, z: CMAT.z }, radius: 2.2, prompt: W.hotMat, mark: false,
-        enabled: () => worldOf(yaw.position.x) === 'R' && phase === 'consult' && !play.kneeling,
+        enabled: () => worldOf(yaw.position.x) === 'R' && phase === 'consult' && !play.kneeling && !wDark,   // (v24.24, L3-4: not in the arrival's black)
         onInteract() { return kneel(false); } },
       { id: 'offer', get pos() { const t = TRAY_W(); return { x: t.x, y: 0.2, z: t.z }; }, radius: 2.2, prompt: W.hotOffer, markY: 0.22, anyView: true,
         hits: markHit(() => { const t = TRAY_W(); return { x: t.x, y: 0.2, z: t.z }; }, 0.22),
