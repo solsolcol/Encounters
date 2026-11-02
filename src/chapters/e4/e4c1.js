@@ -197,7 +197,8 @@
              'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd', 'e4buffalo', 'e4sandalsa', 'e4sandalsb', 'e4rahu', 'e4sedan', 'e4truck', 'e4suv', 'e4moto',
              'e4seat', 'owner', 'sitman', 'sitclap', 'sitshout',
              'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm', 'filmlaptop',
-             'e4kuman', 'e4ngang', 'e4tani', 'e4phraioil', 'e4phraitab', 'e4praicase', 'e4tanitab'],
+             'e4kuman', 'e4ngang', 'e4tani', 'e4phraioil', 'e4phraitab', 'e4praicase', 'e4tanitab',
+             'staffman', 'sitwoman', 'wifewalk', 'sitangry', 'fatherwalk'],
     /* (v24.21) the taxi uncle at the wheel stands in until Chad's model (docs/E4-MODELS.md) */
     /* (v24.22) his laptop is HIS: the one his dashcam orders climbed on in episode 3 chapter 1's film (Chad's model), now
        keeping his shop's sales (Chad: "why he is recording sales on paper? It makes no sense. It should be on laptop") */
@@ -207,7 +208,14 @@
                 rain, never close (seatSitters) */
              sitman: "a man at a coffee shop's table, seen from the taxi in the coda — episode 1 chapter 3's seated man from the tentage, at rest",
              sitclap: "a man at a coffee shop's table, seen from the taxi in the coda — episode 1 chapter 3's seated man, at rest",
-             sitshout: "a man at a coffee shop's table, seen from the taxi in the coda — episode 1 chapter 3's seated man, at the first frame of his take" },
+             sitshout: "a man at a coffee shop's table, seen from the taxi in the coda — episode 1 chapter 3's seated man, at the first frame of his take",
+             /* (v24.37) the mall open round his shop (Chad: "Why are other stores also closed. Why not show real people walking
+                past the shop etc."): the people walking past it and the goldsmith's man across the corridor, each a few metres
+                off and seen for a few seconds */
+             staffman: "the goldsmith's man behind his counter across the corridor from his shop, seen through its open front in the opening film — episode 3 chapter 3's staff man, in a red shop shirt",
+             sitwoman: "a woman walking past his shop as he opens it in the opening film, and back the other way while nothing sells — episode 3 chapter 3's wife, on her own walk",
+             wifewalk: "her walk, the clip alone (episode 3 chapter 3's)",
+             sitangry: "a man walking past his shop, seen from behind his counter in the opening film, and again as he opens it in the coda — episode 3 chapter 3's father, on his own walk" },
     placeholders: {},
     items: [],
 
@@ -1497,21 +1505,30 @@
             let z = cb.zA + 0.08, lastF = -1, lastW = '';
             const clearOfPost = (zz, w) => Math.abs(zz - cb.zc) > 0.045 + w / 2;
             while (z < cb.zB - 0.08) {
-              const u = yr(), what = lastW !== 'fig' && u < 0.55 ? 'fig' : u < 0.78 ? 'oil' : 'tak';
+              const u = yr(); let what = lastW !== 'fig' && u < 0.55 ? 'fig' : u < 0.78 ? 'oil' : 'tak';
+              if (what === lastW) what = what === 'oil' ? 'tak' : 'oil';      // (v24.37, the reviewer: "three identical bottles at even spacing") never one thing twice running
               if (what === 'fig') { if (z + 0.12 > cb.zB - 0.04) break;
                 if (!clearOfPost(z + 0.05, 0.05)) { z += 0.04; continue; }
                 let kf = Math.floor(yr() * YIN.figs.length); if (kf === lastF) kf = (kf + 1) % YIN.figs.length; lastF = kf;
-                slots.fig.push({ c: cb, kind: kf, x: xs + (yr() - 0.5) * 0.05, y: yy, z: z + 0.05, ry: ry0 + (yr() - 0.5) * 0.4, s: 0.86 + yr() * 0.26 }); z += 0.1 + yr() * 0.03; }
+                slots.fig.push({ c: cb, kind: kf, x: xs + (yr() - 0.5) * 0.05, y: yy, z: z + 0.05, ry: ry0 + (yr() - 0.5) * 0.4, s: 0.86 + yr() * 0.26 }); z += 0.095 + yr() * 0.06; }
               else if (what === 'oil') { if (!clearOfPost(z + 0.03, 0.03)) { z += 0.04; continue; }
-                slots.oil.push({ c: cb, x: xs + (yr() - 0.5) * 0.08, y: yy, z: z + 0.03, ry: ry0 + (yr() - 0.5) * 0.5, s: 0.8 + yr() * 0.35 }); z += 0.055 + yr() * 0.02; }   // (its front to the room: Meshy's glass is opaque, its takrut and figure lie on the phial's face)
+                slots.oil.push({ c: cb, x: xs + (yr() - 0.5) * 0.08, y: yy, z: z + 0.03, ry: ry0 + (yr() - 0.5) * 0.5, s: 0.8 + yr() * 0.35 }); z += 0.05 + yr() * 0.045; }   // (its front to the room: Meshy's glass is opaque, its takrut and figure lie on the phial's face)
               else { if (!clearOfPost(z + 0.04, 0.08)) { z += 0.04; continue; }
-                slots.tak.push({ c: cb, x: xs + (yr() - 0.5) * 0.06, y: yy + 0.0185, z: z + 0.04, ry: ry0 + (yr() - 0.5) * 0.7, rz: Math.PI / 2, s: 0.065 + yr() * 0.012 }); z += 0.085; }   // (one at a slant: a pair one behind the other read as stacked)
+                slots.tak.push({ c: cb, x: xs + (yr() - 0.5) * 0.06, y: yy + 0.0185, z: z + 0.04, ry: ry0 + (yr() - 0.5) * 0.7, rz: Math.PI / 2, s: 0.065 + yr() * 0.012 }); z += 0.08 + yr() * 0.03; }   // (one at a slant: a pair one behind the other read as stacked)
               lastW = what;
             }
-            /* the bay's tablets in two rows, as pieces are pinned on a dealer's velvet, the lower row's foot over the figures' heads */
-            for (const [r2, yT] of (si < 2 ? [[0, yy + 0.15], [1, yy + 0.255]] : [[0, yy + 0.12], [1, yy + 0.205]]))
-              { let nk = si + r2 * 2 + (cb.side > 0 ? 1 : 0);
-                for (let zt = cb.zA + 0.07 + r2 * 0.05; zt < cb.zB - 0.06; zt += 0.1) if (Math.abs(zt - cb.zc) > 0.035) slots.tab.push({ c: cb, kind: nk++ % YIN.tabs.length, x: xb, y: yT, z: zt, ry: ry0 }); }
+            /* the bay's tablets in two rows, as pieces are pinned on a dealer's velvet, the lower row's foot over the figures'
+               heads — (v24.37, the reviewer: "the same three amulets repeat in a perfect grid, in strict order, on every row",
+               and "the gold seated figure looks like it is standing on a round medallion") each row dealt by the seeded stream
+               (never one kind twice running, a gap where a piece has gone, each pinned a little off its neighbours' line), and
+               the rows held low in their bay: a row high under the next shelf showed THROUGH that glass shelf, from the glass,
+               at the feet of the figures standing on it */
+            for (const [r2, yT] of (si < 2 ? [[0, yy + 0.11], [1, yy + 0.168]] : [[0, yy + 0.12], [1, yy + 0.205]]))
+              { let lastK = -1;
+                for (let zt = cb.zA + 0.07 + r2 * 0.05 + yr() * 0.03; zt < cb.zB - 0.06; zt += 0.085 + yr() * 0.035) {
+                  if (Math.abs(zt - cb.zc) <= 0.035 || yr() < 0.14) continue;
+                  let kk = Math.floor(yr() * YIN.tabs.length); if (kk === lastK) kk = (kk + 1 + Math.floor(yr() * 2)) % YIN.tabs.length; lastK = kk;
+                  slots.tab.push({ c: cb, kind: kk, x: xb, y: yT + (yr() - 0.5) * 0.008, z: zt, ry: ry0 + (yr() - 0.5) * 0.06 }); } }
           });
         }
         /* (v24.36, the reviewer: "Nothing has a shelf lip, glass edge or contact shadow under it") a soft dark patch on the
@@ -3170,21 +3187,40 @@
       }
 
       /* the congratulations stand by the door: a tripod, a round of flowers, two red ribbons — 开张大吉, GRAND OPENING */
-      { const g = new THREE.Group(); g.position.set(-1.62, 0, 2.45); g.rotation.y = 2.5; S0.add(g);
+      const flowerStand = (px, pz, pry, words, seed, cols = [0xd8202a, 0xf2c030, 0xf27aa0, 0xf6f0e0, 0xe8642a]) => {
+        const g = new THREE.Group(); g.position.set(px, 0, pz); g.rotation.y = pry; S0.add(g);
         const mLeg = M({ color: 0xc8a050, roughness: 0.4, metalness: 0.6 });
         for (const a of [0, 2.1, 4.2]) { const l = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 1.45, 6), mLeg); l.position.set(Math.cos(a) * 0.14, 0.7, Math.sin(a) * 0.14 - 0.05); l.rotation.set(Math.sin(a) * 0.12, 0, -Math.cos(a) * 0.12); g.add(l); }
         const disc = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.36, 0.06, 28), M({ color: 0x2e5a2e, roughness: 0.8 })); disc.rotation.x = Math.PI / 2; disc.position.set(0, 1.5, 0); g.add(disc);
-        const cols = [0xd8202a, 0xf2c030, 0xf27aa0, 0xf6f0e0, 0xe8642a], n = 120, fm = cols.map(c2 => M({ color: c2, roughness: 0.7 }));
+        const n = 120, fm = cols.map(c2 => M({ color: c2, roughness: 0.7 }));
         const fg = new THREE.SphereGeometry(0.034, 8, 6), ins = fm.map(m2 => new THREE.InstancedMesh(fg, m2, n));
-        const cnt = fm.map(() => 0), mm = new THREE.Matrix4(), rr = rng(4851);
+        const cnt = fm.map(() => 0), mm = new THREE.Matrix4(), rr = rng(seed);
         for (let k = 0; k < n * 2; k++) { const a = rr() * Math.PI * 2, d = Math.sqrt(rr()) * 0.34, ci = rr() * cols.length | 0; if (cnt[ci] >= n) continue;
           mm.makeTranslation(Math.cos(a) * d, 1.5 + Math.sin(a) * d, 0.04 + (0.34 - d) * 0.18 + rr() * 0.02); ins[ci].setMatrixAt(cnt[ci]++, mm); }
         ins.forEach((im, i) => { im.count = cnt[i]; g.add(im); });
-        [['开张大吉', false, -0.29], ['GRAND OPENING', true, 0.29]].forEach(([t, lat, x]) => {   // (v24.5, L6-5: it read GRANDOPENING)
+        words.forEach(([t, lat, x]) => {
           const rb = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 1.05), M({ map: tex(makeRibbon(THREE, cnv, t, lat)), roughness: 0.4, side: THREE.DoubleSide }));
           rb.position.set(x, 0.92, 0.07); rb.rotation.z = -Math.sign(x) * 0.05; g.add(rb); });
-        solids.push(hidBox(0.6, 1.6, 0.5, -1.62, 0.8, 2.45, S0));
-      }
+        solids.push(hidBox(0.6, 1.6, 0.5, px, 0.8, pz, S0));
+      };
+      /* (v24.37) by the door's other side now, its flowers to the corridor as a well-wisher's stand faces: on the left it
+         stood in the middle of a phone's look out from behind the counter, over the corridor and the shops across it where
+         the people now pass, and it showed the corridor its bare back */
+      flowerStand(1.62, 2.45, -0.35, [['开张大吉', false, -0.29], ['GRAND OPENING', true, 0.29]], 4851);   // (v24.5, L6-5: it read GRANDOPENING)
+      /* (v24.37) and outside it in the corridor, two more from well-wishers, as a shop that has just opened has them lined up
+         at its front: 生意兴隆 and 财源广进 (may business thrive, may wealth come in), 大展鸿图 and 开张志喜 (great plans
+         unfolding, joy at the opening) */
+      flowerStand(1.8, 3.45, -0.12, [['生意兴隆', false, -0.29], ['财源广进', false, 0.29]], 4853, [0xf27aa0, 0xf6f0e0, 0xd8202a, 0xf2b8d0, 0xfaf6ee]);
+      flowerStand(2.65, 3.6, -0.3, [['大展鸿图', false, -0.29], ['开张志喜', false, 0.29]], 4857, [0xf2c030, 0xe8642a, 0xf6f0e0, 0xd8202a, 0xf2d870]);
+      /* (v24.37) the ceiling's air-conditioner, as every unit has one: a white cassette, its grille and its four vents */
+      { const yC = SHOP.H - 0.022, zC = 0.35;
+        bx(0.84, 0.04, 0.84, mGloss, 0, yC, zC);
+        bx(0.46, 0.006, 0.46, M({ color: 0xc8ccd0, roughness: 0.6 }), 0, yC - 0.022, zC);
+        for (const [dx, dz, w, d] of [[0, -0.33, 0.6, 0.06], [0, 0.33, 0.6, 0.06], [-0.33, 0, 0.06, 0.6], [0.33, 0, 0.06, 0.6]]) bx(w, 0.006, d, M({ color: 0x5a5e64, roughness: 0.7 }), dx, yC - 0.021, zC + dz); }
+      /* (v24.37) his door mat inside the shutter's line, and on his counter's end the casing he does, on an acrylic stand */
+      { const mat = pl(1.1, 0.55, M({ map: tex(makeDoorMat(THREE, cnv)), roughness: 0.95 }), -0.35, 0.004, 2.55, -Math.PI / 2); void mat;
+        const sg = pl(0.15, 0.21, M({ map: tex(makeCasingSign(THREE, cnv)), roughness: 0.35 }), -1.25, COUNTER.h + 0.046 + 0.112, COUNTER.z + 0.08, -0.18, 0); void sg;
+        bx(0.17, 0.012, 0.07, M({ color: 0xe8f0f2, roughness: 0.1, transparent: true, opacity: 0.5 }), -1.25, COUNTER.h + 0.046 + 0.006, COUNTER.z + 0.09); }
 
       /* THE SHUTTER: the curtain hangs from its drum (y 2.8) and rises into it; the light comes in under its edge */
       { const SW = SHOP.x1 - SHOP.x0 - 0.1, TOP = 2.8;
@@ -3203,7 +3239,122 @@
         shop.spill = sp; shop.spillMat = sm;
       }
 
-      /* THE CORRIDOR: terrazzo, a skylight's soft grey down its middle, the other units' shutters still down, their signs */
+      /* (v24.37) THE MALL OPEN ROUND HIM (Chad, 2 Nov 2026: "Also i think the players amulet shop can still be improved more.
+         And also the outside of the amulet shop too. Why are other stores also closed. Why not show real people walking past
+         the shop etc."). The units the films can see are open for the morning's trade, each a room behind its rolled-up
+         shutter, stocked as its kind of shop is and lit by its own ceiling (painted light: unlit, every face as bright as the
+         light on it, v15.1): across the corridor the goldsmith (a phone's look out of his shop holds its counter and its
+         man), the clock shop and the provision shop (a desktop's), and either side of his own the tailor and the
+         prayer-goods shop (a desktop's edges as his shutter goes up). The units no shot sees keep their shutters down.
+         Each unit draws in three meshes — its colours, its pictures (makeMallAtlas), its glass. Local to the unit: its
+         front on z 0 facing +z, its room to −z, x across its front */
+      const MAT_A = makeMallAtlas(THREE, cnv), MC = MAT_A.cells;
+      const mMallC = B({ vertexColors: true, side: THREE.DoubleSide }), mMallT = B({ map: tex(MAT_A.tex), vertexColors: true, side: THREE.DoubleSide, alphaTest: 0.5 });
+      const mMallG = B({ color: 0xe8f4f8, transparent: true, opacity: 0.16, depthWrite: false, side: THREE.DoubleSide });
+      const _mc = new THREE.Color();
+      function mallRoom(kind, cx, zf, face) {
+        const W2 = 2.17, D = 5.6, HC = 2.95, V = { p: [], c: [] }, A = { p: [], c: [], u: [] }, GL = { p: [], c: [] };
+        const lc = (hex, k = 1) => { _mc.set(hex); return [_mc.r * k, _mc.g * k, _mc.b * k]; };
+        const q = (T, a, b, c2, d, ca) => { T.p.push(...a, ...b, ...c2, ...a, ...c2, ...d); for (let i = 0; i < 6; i++) T.c.push(...ca); };
+        const pic = (a, b, c2, d, cell, k = 1) => { q(A, a, b, c2, d, lc(0xffffff, k)); const [u0, v0, u1, v1] = cell; A.u.push(u0, v0, u1, v0, u1, v1, u0, v0, u1, v1, u0, v1); };
+        /* a box, each face as bright as the light on it: [top, bottom, +x, −x, +z (the front), −z] */
+        const KB = [0.95, 0.42, 0.72, 0.72, 0.84, 0.6];
+        const box = (x0, x1, y0, y1, z0, z1, hex, K = KB, T = V) => {
+          const f = (i) => lc(hex, K[i]);
+          q(T, [x0, y1, z0], [x1, y1, z0], [x1, y1, z1], [x0, y1, z1], f(0)); q(T, [x0, y0, z0], [x1, y0, z0], [x1, y0, z1], [x0, y0, z1], f(1));
+          q(T, [x1, y0, z0], [x1, y0, z1], [x1, y1, z1], [x1, y1, z0], f(2)); q(T, [x0, y0, z0], [x0, y0, z1], [x0, y1, z1], [x0, y1, z0], f(3));
+          q(T, [x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1], f(4)); q(T, [x0, y0, z0], [x1, y0, z0], [x1, y1, z0], [x0, y1, z0], f(5));
+        };
+        /* pictures on the room's three walls, each read from inside: the back from −x to +x; the −x wall from the front
+           back; the +x wall from the back to the front */
+        const onBack = (x0, x1, y0, y1, cell, k) => pic([x0, y0, -D + 0.012], [x1, y0, -D + 0.012], [x1, y1, -D + 0.012], [x0, y1, -D + 0.012], cell, k);
+        const onLeft = (z0, z1, y0, y1, cell, k) => pic([-W2 + 0.012, y0, z0], [-W2 + 0.012, y0, z1], [-W2 + 0.012, y1, z1], [-W2 + 0.012, y1, z0], cell, k);
+        const onRight = (z0, z1, y0, y1, cell, k) => pic([W2 - 0.012, y0, z1], [W2 - 0.012, y0, z0], [W2 - 0.012, y1, z0], [W2 - 0.012, y1, z1], cell, k);
+        const RM = { gold: [0xf2f0e8, 0xe6e2d8, 0x7a1214], clock: [0xe8dcc4, 0xcfc4ae], prov: [0xd8ccb0, 0xc4b89e], tailor: [0xece4dc, 0xd2c8be], prayer: [0xd8b896, 0xc8b49a, 0x7a1416] }[kind];   // [walls, floor, back wall]
+        /* the room: its floor, ceiling, walls, the light panels in its ceiling */
+        q(V, [-W2, 0.003, 0], [W2, 0.003, 0], [W2, 0.003, -D], [-W2, 0.003, -D], lc(RM[1], 0.74));
+        q(V, [-W2, HC, 0], [W2, HC, 0], [W2, HC, -D], [-W2, HC, -D], lc(0xf4f2ec, 0.9));
+        q(V, [-W2, 0, -D], [W2, 0, -D], [W2, HC, -D], [-W2, HC, -D], lc(RM[2] || RM[0], 0.8));
+        for (const sx of [-1, 1]) q(V, [sx * W2, 0, 0], [sx * W2, 0, -D], [sx * W2, HC, -D], [sx * W2, HC, 0], lc(RM[0], 0.86));
+        for (const [px, pz] of [[-1.1, -1.2], [1.1, -1.2], [-1.1, -3.4], [1.1, -3.4]]) box(px - 0.3, px + 0.3, HC - 0.02, HC - 0.005, pz - 0.3, pz + 0.3, 0xffffff, [1, 1, 1, 1, 1, 1]);
+        box(-W2, W2, 0, 0.1, -D, -D + 0.02, 0x8a8478);                                     // the skirting
+        /* a glass counter: its base, a coloured band, the tray under the glass, the glass box over it */
+        const glassCounter = (x0, x1, z0, z1, h, base, band, tray) => {
+          box(x0, x1, 0, h - 0.22, z0, z1, base);
+          box(x0 - 0.005, x1 + 0.005, h - 0.24, h - 0.22, z0 - 0.005, z1 + 0.005, band, [1, 0.6, 0.9, 0.9, 0.95, 0.8]);
+          if (tray) { const along = Math.abs(x1 - x0) >= Math.abs(z1 - z0);
+            if (along) pic([x0 + 0.03, h - 0.215, z1 - 0.03], [x1 - 0.03, h - 0.215, z1 - 0.03], [x1 - 0.03, h - 0.215, z0 + 0.03], [x0 + 0.03, h - 0.215, z0 + 0.03], tray, 1);
+            else pic([x1 - 0.03, h - 0.215, z1 - 0.03], [x1 - 0.03, h - 0.215, z0 + 0.03], [x0 + 0.03, h - 0.215, z0 + 0.03], [x0 + 0.03, h - 0.215, z1 - 0.03], tray, 1); }
+          box(x0, x1, h - 0.22, h, z0, z1, 0xffffff, [1, 1, 1, 1, 1, 1], GL);
+          for (const xx of [x0, x1]) for (const zz of [z0, z1]) box(xx - 0.008, xx + 0.008, h - 0.22, h, zz - 0.008, zz + 0.008, 0xc8ccd0, [0.95, 0.5, 0.8, 0.8, 0.85, 0.7]);
+        };
+        const cyl = (x, z, y0, y1, rad, n, hex) => { for (let i = 0; i < n; i++) { const a0 = i / n * Math.PI * 2, a1 = (i + 1) / n * Math.PI * 2;
+          q(V, [x + Math.cos(a0) * rad, y0, z + Math.sin(a0) * rad], [x + Math.cos(a1) * rad, y0, z + Math.sin(a1) * rad], [x + Math.cos(a1) * rad, y1, z + Math.sin(a1) * rad], [x + Math.cos(a0) * rad, y1, z + Math.sin(a0) * rad], lc(hex, 0.7 + 0.25 * Math.cos((a0 + a1) / 2 - 0.6)));
+          V.p.push(x, y1, z, x + Math.cos(a0) * rad, y1, z + Math.sin(a0) * rad, x + Math.cos(a1) * rad, y1, z + Math.sin(a1) * rad); const t = lc(hex, 0.95); V.c.push(...t, ...t, ...t); } };
+        const rr = rng(6200 + Math.round(cx * 10) + (face > 0 ? 0 : 500));
+        if (kind === 'gold') {
+          /* the goldsmith: white and bright, a red back wall of chains, mirrors down both sides, an L of glass counters lit
+             from inside with the trays under the glass */
+          onBack(-1.95, 1.95, 0.95, 2.55, MC.goldWall, 0.95);
+          box(-1.98, 1.98, 0.9, 0.95, -D + 0.04, -D + 0.08, 0xc8a040); box(-1.98, 1.98, 2.55, 2.6, -D + 0.04, -D + 0.08, 0xc8a040);
+          for (const sx of [-1, 1]) { const xw = sx * (W2 - 0.015);
+            q(V, [xw, 1.05, -1.6], [xw, 1.05, -4.9], [xw, 2.45, -4.9], [xw, 2.45, -1.6], lc(0xb8c8d0, 0.95));
+            box(xw - 0.012, xw + 0.012, 1.02, 1.05, -4.92, -1.58, 0xc8a040); box(xw - 0.012, xw + 0.012, 2.45, 2.48, -4.92, -1.58, 0xc8a040); }
+          glassCounter(-2.0, 0.9, -1.35, -0.75, 1.05, 0xf4f2ec, 0xc8a040, MC.goldTray);
+          glassCounter(-W2 + 0.02, -1.55, -4.6, -1.5, 1.05, 0xf4f2ec, 0xc8a040, MC.goldTray);
+          glassCounter(1.45, W2 - 0.02, -4.6, -2.2, 1.05, 0xf4f2ec, 0xc8a040, MC.goldTray);
+          box(-1.9, 0.8, 0, 0.62, -2.2, -1.75, 0xe8e4dc);                                   // the counter behind the man: drawers, a till
+          box(-0.6, -0.25, 0.62, 0.74, -2.1, -1.85, 0x2a2a2e);
+          for (const x of [-1.6, 0.4]) { cyl(x, -0.42, 0, 0.62, 0.17, 10, 0xc8a040); cyl(x, -0.42, 0.62, 0.68, 0.19, 12, 0x8a1418); }   // two stools for its customers
+        } else if (kind === 'clock') {
+          /* the clock and watch repairer: clocks covering the walls, a glass counter of watches, his bench and lamp at the
+             side, a tall clock in the corner */
+          onBack(-2.1, 2.1, 0.75, 2.75, MC.clockWall, 0.92);
+          onLeft(-0.6, -4.9, 1.2, 2.7, MC.clockWall, 0.88); onRight(-0.6, -4.9, 1.2, 2.7, MC.clockWall, 0.88);
+          glassCounter(-1.7, 1.2, -1.45, -0.9, 1.0, 0x6a4a2c, 0x2a2a2e, MC.watchTray);
+          box(1.35, 2.1, 0, 0.74, -2.6, -1.5, 0x5a3c22); box(1.35, 2.1, 0.74, 0.77, -2.6, -1.5, 0x7a5a3a);   // the bench
+          box(1.9, 1.94, 0.77, 1.25, -2.2, -2.16, 0x2a2a2e); box(1.62, 1.94, 1.23, 1.27, -2.2, -2.16, 0x2a2a2e); box(1.56, 1.68, 1.14, 1.24, -2.22, -2.12, 0x3a3a40);
+          box(1.5, 1.74, 0.77, 0.8, -1.95, -1.7, 0xd8d8dc);
+          box(-2.05, -1.6, 0, 1.95, -5.4, -5.1, 0x4a2c18); box(-1.95, -1.7, 1.45, 1.75, -5.11, -5.09, 0xf2ecd8);   // the tall clock, its face
+          cyl(1.2, -2.9, 0, 0.5, 0.16, 10, 0x2a2a2e);
+        } else if (kind === 'prov') {
+          /* the provision shop: shelved to the ceiling, packets hung in strips across its front, crates out at its foot */
+          onLeft(-0.5, -5.0, 0.1, 2.5, MC.goods, 0.9); onRight(-0.5, -5.0, 0.1, 2.5, MC.goods, 0.9);
+          onBack(-1.8, 1.8, 0.1, 2.5, MC.goods, 0.85);
+          for (const hx of [-1.6, -0.9, 0.9, 1.6]) pic([hx - 0.25, 1.35, -0.12], [hx + 0.25, 1.35, -0.12], [hx + 0.25, 2.6, -0.12], [hx - 0.25, 2.6, -0.12], MC.hang, 0.92);
+          for (let k = 0; k < 5; k++) { const x0 = -1.9 + k * 0.42 + rr() * 0.05, col = [0xc82a2a, 0x2a5ab8, 0x2a8a4a][k % 3];
+            box(x0, x0 + 0.38, 0, 0.3, -0.75, -0.35, col); box(x0 + 0.02, x0 + 0.36, 0.3, 0.33, -0.73, -0.37, [0xe8a020, 0xe86a2a, 0x8ac83a, 0xf2e2b0][(rr() * 4) | 0]); }
+          box(1.0, 2.0, 0, 0.95, -1.9, -1.4, 0xd8d4cc); box(1.3, 1.6, 0.95, 1.15, -1.85, -1.6, 0x2a2a2e);   // the till
+        } else if (kind === 'tailor') {
+          /* the tailor: rails of finished clothes down the right, bolts of cloth on the back wall, the cutting table and the
+             machine, a long mirror */
+          onBack(-1.9, 1.9, 0.5, 2.6, MC.fabric, 0.9);
+          for (const z0 of [-0.6, -2.4]) { box(W2 - 0.55, W2 - 0.52, 1.75, 1.78, z0 - 1.6, z0, 0xc8ccd0);
+            for (let k = 0; k < 13; k++) { const zz = z0 - 0.08 - k * 0.115, col = [0xe8e8e4, 0x3a5a9a, 0xc8443a, 0x2a2a2e, 0x8a7a5a, 0x4a8a5a, 0xd888a8][(rr() * 7) | 0], len = 0.65 + rr() * 0.45;
+              box(W2 - 0.78, W2 - 0.3, 1.74 - len, 1.72, zz - 0.035, zz + 0.035, col, [0.9, 0.5, 0.75, 0.75, 0.82, 0.62]); } }
+          box(-1.6, 0.4, 0, 0.88, -2.9, -2.1, 0x8a6a4a); box(-1.62, 0.42, 0.88, 0.91, -2.92, -2.08, 0xd8c8a8);   // the cutting table
+          box(-1.4, -0.95, 0.91, 1.15, -2.7, -2.45, 0x2a2a2e); box(-1.38, -1.0, 1.15, 1.22, -2.68, -2.6, 0x2a2a2e);  // the machine
+          q(V, [-W2 + 0.012, 0.3, -1.2], [-W2 + 0.012, 0.3, -1.9], [-W2 + 0.012, 2.1, -1.9], [-W2 + 0.012, 2.1, -1.2], lc(0xb8c8d0, 0.95));   // the mirror
+          box(0.6, 1.8, 0, 0.95, -1.5, -1.0, 0xe8e0d4);
+        } else if (kind === 'prayer') {
+          /* the prayer-goods shop: red and gold to the ceiling, joss sticks in buckets at its front, gold paper in stacks,
+             red lanterns hung */
+          onBack(-2.0, 2.0, 0.2, 2.6, MC.prayer, 0.9); onLeft(-0.4, -5.0, 0.2, 2.6, MC.prayer, 0.88); onRight(-0.4, -5.0, 0.2, 2.6, MC.prayer, 0.88);
+          for (let k = 0; k < 4; k++) { const x = -1.8 + k * 0.3; cyl(x, -0.45, 0, 0.32, 0.12, 10, 0xc8a040);
+            for (let j = 0; j < 9; j++) { const a = j * 0.7, d = 0.02 + (j % 3) * 0.03; box(x + Math.cos(a) * d - 0.004, x + Math.cos(a) * d + 0.004, 0.32, 0.95 + rr() * 0.2, -0.45 + Math.sin(a) * d - 0.004, -0.45 + Math.sin(a) * d + 0.004, j % 2 ? 0xd83a2a : 0xe8b82a); } }
+          for (let k = 0; k < 4; k++) box(0.2 + k * 0.42, 0.56 + k * 0.42, 0, 0.18 + rr() * 0.3, -0.85, -0.45, 0xf2d04a);
+          for (const lx of [-1.2, 0, 1.2]) { cyl(lx, -0.6, 2.35, 2.62, 0.2, 10, 0xc81a1a); box(lx - 0.006, lx + 0.006, 2.62, HC, -0.606, -0.594, 0xc8a040); cyl(lx, -0.6, 2.3, 2.35, 0.05, 6, 0xe8b82a); }
+          box(-0.9, 0.9, 0, 0.95, -2.4, -1.9, 0x7a1416);
+        }
+        const G2 = new THREE.Group(); G2.position.set(cx, 0, zf); G2.rotation.y = face > 0 ? 0 : Math.PI; S0.add(G2);
+        const mk = (T, mat, uv) => { if (!T.p.length) return null; const geo = new THREE.BufferGeometry();
+          geo.setAttribute('position', new THREE.Float32BufferAttribute(T.p, 3)); geo.setAttribute('color', new THREE.Float32BufferAttribute(T.c, 3));
+          if (uv) geo.setAttribute('uv', new THREE.Float32BufferAttribute(T.u, 2));
+          geo.computeBoundingSphere(); const m = new THREE.Mesh(geo, mat); G2.add(m); return m; };
+        mk(V, mMallC); mk(A, mMallT, true); const gm = mk(GL, mMallG); if (gm) gm.renderOrder = 2;
+        return G2;
+      }
+      /* THE CORRIDOR: terrazzo, a skylight's soft grey down its middle, the other units' fronts and their signs (v24.37: the ones a shot can see open for the day, mallRoom) */
       { pl(COR.x1 - COR.x0, COR.z1 - COR.z0, mTer, 0, 0, (COR.z0 + COR.z1) / 2, -Math.PI / 2);
         pl(COR.x1 - COR.x0, COR.z1 - COR.z0, mCeil, 0, COR.H, (COR.z0 + COR.z1) / 2, Math.PI / 2);
         const sky = B({ color: 0xdfe6ec });
@@ -3212,18 +3363,26 @@
         const signs = [['JIN FU PROVISION', '金福', '#b81e24', '#fff4d8'], ['MEI LING TAILOR', '美玲', '#1e4a8a', '#ffffff'], ['TIONG HOE CLOCKS', '中和', '#2a2a2a', '#f2c84a'],
                        ['SIN HUAT PHARMACY', '新发', '#2a7a4a', '#ffffff'], ['GOOD LUCK GOLDSMITH', '好运', '#7a1a1a', '#f6d870'], ['KIM LEE MOBILE', '金利', '#e86a1a', '#ffffff']];
         const unitW = 4.8;
-        const unit = (cx, z, face, sg) => {                       // face: +1 looks toward +z, −1 toward −z
+        const unit = (cx, z, face, sg, open) => {                 // face: +1 looks toward +z, −1 toward −z; (v24.37) open: its kind, its shutter rolled up
           const pz = z;
-          const cur = new THREE.Mesh(new THREE.PlaneGeometry(unitW - 0.5, 2.8), mSlat); cur.position.set(cx, 1.4, pz); cur.rotation.y = face > 0 ? 0 : Math.PI; S0.add(cur);
-          const ct2 = cur.material; void ct2;
+          if (open) mallRoom(open, cx, pz, face);
+          else { const cur = new THREE.Mesh(new THREE.PlaneGeometry(unitW - 0.5, 2.8), mSlat); cur.position.set(cx, 1.4, pz); cur.rotation.y = face > 0 ? 0 : Math.PI; S0.add(cur);
+            const ct2 = cur.material; void ct2; }
           bx(unitW - 0.3, 0.34, 0.3, mShutPaint, cx, 2.97, pz - face * 0.1);
           bx(unitW, COR.H - 3.14, 0.2, mWall, cx, 3.14 + (COR.H - 3.14) / 2, pz - face * 0.1);
           if (sg) { const s2 = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 0.46), B({ map: tex(makeShopSign(THREE, cnv, sg[0], sg[1], sg[2], sg[3])) })); s2.position.set(cx, 3.36, pz + face * 0.012); s2.rotation.y = face > 0 ? 0 : Math.PI; S0.add(s2); }
           bx(0.46, COR.H, 0.46, M({ color: 0xc8c4bc, roughness: 0.5 }), cx + unitW / 2, COR.H / 2, pz - face * 0.12);
         };
-        let si = 0;
-        for (let cx = -9.6; cx <= 9.7; cx += unitW) unit(cx, COR.z1, -1, signs[si++ % signs.length]);      // across the corridor
-        for (const cx of [-9.6, -4.8, 4.8, 9.6]) unit(cx, SHOP.z1, 1, signs[si++ % signs.length]);          // his neighbours
+        /* (v24.37) who is where, each sign once (they were dealt in turn, and MEI LING's hung over two fronts): across the
+           corridor the goldsmith, the clock shop and the provision shop open, a phone's and a desktop's look out of his shop
+           holding them; either side of his own the tailor and the prayer-goods shop open, at a desktop's edges as his
+           shutter goes up; the four no shot sees shut */
+        signs.push(['HOCK SENG PRAYER ITEMS', '福成', '#9a1414', '#f6d870'], ['WAH LEE TRAVEL', '华利', '#1e5a8a', '#ffffff'], ['HAPPY OPTICAL', '眼镜', '#2a7a8a', '#ffffff']);
+        for (const [cx, k, open] of [[-9.6, 7, null], [-4.8, 4, 'gold'], [0, 2, 'clock'], [4.8, 0, 'prov'], [9.6, 3, null]]) unit(cx, COR.z1, -1, signs[k], open);   // across the corridor
+        for (const [cx, k, open] of [[-9.6, 5, null], [-4.8, 1, 'tailor'], [4.8, 6, 'prayer'], [9.6, 8, null]]) unit(cx, SHOP.z1, 1, signs[k], open);              // his neighbours
+        /* (v24.37) the pillar at his shop's right: each unit stands one at its +x end, so his own end had none, and a 0.2 m
+           slot beside his shutter opened onto nothing (a ray-cast and a desktop photograph found it) */
+        bx(0.46, COR.H, 0.46, M({ color: 0xc8c4bc, roughness: 0.5 }), SHOP.x1, COR.H / 2, SHOP.z1 - 0.12);
         /* his own fascia over his shutter: a red GRAND OPENING banner (the sign proper is still on order) */
         bx(SHOP.x1 - SHOP.x0, COR.H - 3.14, 0.2, mWall, 0, 3.14 + (COR.H - 3.14) / 2, SHOP.z1 + 0.1);
         { const bn = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 0.4), M({ map: tex(makeShopBanner(THREE, cnv)), roughness: 0.6 })); bn.position.set(0, 3.36, SHOP.z1 + 0.21); S0.add(bn); }   // (v24.22: its words — the amulets, GRAND OPENING)
@@ -3870,11 +4029,23 @@
         }
         /* a bus stop on the footpath: its shelter, its bench, its lit panel — (v24.36) a framed advert lit from inside,
            the same poster on its two faces (the road's and the walk's), where v24.33 left it a blank white board */
-        { const z = -48 - r() * 6, zp = z + 2.3;
-          box(3.6, 0.08, 1.7, mPole, -3.7, 2.55, z, g); for (const dz of [-1.6, 1.6]) box(0.08, 2.5, 0.08, mPole, -4.4, 1.27, z + dz, g);
-          box(0.4, 0.45, 2.6, mPole, -4.25, 0.36, z, g); box(0.08, 1.84, 1.27, mPole, -4.45, 1.05, zp, g);
+        { const z = -48 - r() * 6, zp = z + 2.3, zr = z - 2.15;
+          /* (v24.37, the reviewer: "a big flat dark-grey slanted slab ... nothing holds up the roof's near corner", "the thin
+             pole ... goes up past it and ends in mid-air") its roof was laid ACROSS the walk, 3.6 m deep and 1.7 long, so
+             its posts stood past both its ends: now along the kerb over them, its edge boards, its underside lit by its tube
+             (painted, v15.1), its bench and posts in that light, and at its far end the route board a stop has */
+          const mShel = B({ color: 0x8a8e96 }), mShelP = B({ color: 0x6a6e74 }), mShelB = B({ color: 0x7a7e84 });
+          box(1.7, 0.08, 3.6, mShel, -3.7, 2.55, z, g);
+          for (const ez of [-1.8, 1.8]) box(1.7, 0.12, 0.05, mPole, -3.7, 2.53, z + ez, g);
+          box(0.05, 0.12, 3.6, mPole, -2.85, 2.53, z, g);
+          for (const dz of [-1.6, 1.6]) box(0.08, 2.5, 0.08, mShelP, -4.4, 1.27, z + dz, g);
+          box(0.06, 0.035, 3.1, mHead, -3.3, 2.49, z, g);
+          box(0.4, 0.45, 2.6, mShelB, -4.25, 0.36, z, g); box(0.08, 1.84, 1.27, mPole, -4.45, 1.05, zp, g);
           qT(SA, ...fX(-4.45 + 0.042, 0.21, 1.89, zp + 0.55, zp - 0.55), CELL.advert, 0.88);
-          qT(SA, ...fX(-4.45 - 0.042, 0.21, 1.89, zp - 0.55, zp + 0.55), CELL.advert, 0.88); }
+          qT(SA, ...fX(-4.45 - 0.042, 0.21, 1.89, zp - 0.55, zp + 0.55), CELL.advert, 0.88);
+          box(0.06, 1.62, 0.5, mPole, -4.45, 1.35, zr, g);
+          qT(SA, ...fX(-4.45 + 0.032, 0.62, 2.12, zr + 0.22, zr - 0.22), CELL.routes, 0.8);
+          qT(SA, ...fX(-4.45 - 0.032, 0.62, 2.12, zr - 0.22, zr + 0.22), CELL.routes, 0.8); }
         /* the HDB blocks along the next road back: their void-deck shops lit under them, twelve storeys over the shops */
         let z = -2 - r() * 6;
         while (z > -SG + 20) {
@@ -4935,6 +5106,16 @@
         grip: { pole: [0.35, -0.6, -0.15] },
         then: (P) => { const ahead = new THREE.Object3D(); ahead.position.set(TWHEEL.x, 1.3, -4.0); worldT.add(ahead); P.lookAt = ahead; P.lookHome = ahead;
           P.grip = wheelGrip(worldT, TWHEEL); } });
+      /* (v24.37) THE MALL'S PEOPLE (Chad: "Why not show real people walking past the shop etc."): a woman passing as his
+         shutter goes up, and she and a man crossing his look out from behind the counter while nothing sells, the man
+         passing again as he opens it in the coda; the goldsmith's man across the corridor at his counter. Each a real model
+         the game already has (declared in `reuse`), on its own walk, shown only while a shot holds them (mallPass). Not
+         episode 2's recruits (Chad, of the first build's young man in his admin tee: "I dont want the admin green tshirt
+         guy, he is overused" — he was barefoot, too), nor the customer or the towkay (photographed: one shirtless and
+         barefoot, the other in a white suit that in this episode reads as a teacher's) */
+      cast.mallA = mkPerson('sitwoman', { parent: worldS, x: 3.4, z: 4.15, ry: -Math.PI / 2, height: 1.56, anims: 'wifewalk', sizeTake: 'Walking', posture: 'stand', stand: 'Walking', look: 0, noShadow: true, hidden: true });
+      cast.mallB = mkPerson('sitangry', { parent: worldS, x: 4.0, z: 6.9, ry: -Math.PI / 2, height: 1.7, anims: 'fatherwalk', sizeTake: 'Walking', posture: 'stand', stand: 'Walking', look: 0, noShadow: true, hidden: true });
+      cast.goldman = mkPerson('staffman', { parent: worldS, x: -3.2, z: 9.95, ry: Math.PI, height: 1.66, sizeTake: 'Idle_9', posture: 'stand', stand: 'Idle_9', walk: false, look: 0, noShadow: true });
     }
     /* her look: the colour drained to the grey of an old photograph, faded by DITHERED alpha (alphaHash — the opaque
        pass, never the transparent one: v12.4) */
@@ -6631,6 +6812,19 @@
       else if (t >= t1 && o.ry != null) P.group.rotation.y = o.ry;
       else if (t <= t0 && o.ry0 != null) P.group.rotation.y = o.ry0;
     }
+    /* (v24.37) the mall's passers-by on a film's clock: each walks its line through its shot and is hidden either side of it
+       (and in every shot that is not theirs), so a skip, a seek or a replay lands the same corridor */
+    const MALL = { open: [['mallA', [[3.4, 4.15], [-3.4, 4.15]], 2.2, 7.4], ['mallB', [[4.0, 6.9], [-6.0, 6.9]], 25.0, 32.6],
+                          ['mallA', [[-6.0, 5.6], [4.0, 5.6]], 25.4, 33.0]],
+                   coda: [['mallB', [[-3.4, 4.2], [3.4, 4.2]], CODA.k2 + 0.2, CODA.k2 + 4.6]] };
+    function mallPass(scene, t) {
+      for (const k of ['mallA', 'mallB']) {
+        const P = cast[k]; if (!P) continue;
+        const row = (MALL[scene] || []).find(rw => rw[0] === k && t >= rw[2] && t <= rw[3]);
+        if (!row || !P.ready) { P.group.visible = false; P.filmWalk = 0; continue; }
+        fWalk(P, row[1], row[2], row[3], t, { linear: true });
+      }
+    }
     /* who is speaking a line of the film's at t: his talking take, read off the film's own cues */
     const SPEAKS = { pg: 'pong', fm: 'master', pn: 'noi' };
     function speakerNow(who) {
@@ -6863,6 +7057,7 @@
            looking outwards at other shops? On phone the field of view sees nothing" — every shot here looks IN, and each
            was framed on a phone's third of a desktop's width */
         cabCtl.show(false);
+        mallPass('open', t);                                                           // (v24.37) the mall's people
         const lit = t < 1.6 ? 'SHOPDARK' : 'SHOP';
         fLook(lit, lit === 'SHOP' && t < 6.6 ? 5.0 : 0);
         shop.t1 = 0; shop.u = smo(sgk(t, 1.0, 7.6));                                  // the shutter: going up on its motor
@@ -6919,7 +7114,7 @@
         return;
       }
       /* ---- the rice country, World C */
-      shop.phoneOn = 0;
+      shop.phoneOn = 0; mallPass('', t);
       if (t < O.o6) {
         fLook('ROAD');
         cabCtl.show(false);
@@ -7530,6 +7725,7 @@
       }
       /* K2 · the shutter again, in grey light; his keys in his hand while the other pats his pocket */
       const S0 = SX;
+      mallPass('coda', t);                                                             // (v24.37) a man passing as he opens again
       if (t < CODA.k3) {
         fLook('GREY');
         shop.t1 = 0; shop.u = smo(sgk(t, CODA.k2 + 0.4, CODA.k2 + 4.8)); shop.l1 = 0; shop.ledK = t < CODA.k2 + 3.0 ? 0.02 : 0.7;
@@ -9210,7 +9406,154 @@
       }
       x.fillStyle = '#6a5a3a'; x.fillRect(0, 0, w, 4);
     });
+    /* (v24.37) the bus stop's route board: the stop's sign and code, then its services, each number in its box (generic:
+       no operator's mark, v9.3) */
+    cell('routes', 128, 300, (w, h) => {
+      x.fillStyle = '#f4f4f0'; x.fillRect(0, 0, w, h);
+      x.fillStyle = '#1e3c78'; x.fillRect(0, 0, w, 62);
+      x.fillStyle = '#ffffff'; x.textAlign = 'center'; x.textBaseline = 'middle';
+      x.fillRect(w / 2 - 22, 8, 44, 24); x.fillStyle = '#1e3c78'; x.fillRect(w / 2 - 18, 12, 36, 12); x.fillStyle = '#ffffff';
+      x.beginPath(); x.arc(w / 2 - 12, 32, 4, 0, Math.PI * 2); x.arc(w / 2 + 12, 32, 4, 0, Math.PI * 2); x.fill();
+      x.font = EN(13); x.fillText('BUS STOP  43129', w / 2, 50);
+      const svc = ['21', '51', '133', '857', '961'];
+      svc.forEach((n, k) => { const y = 78 + k * 42;
+        x.fillStyle = '#2a2a2e'; x.fillRect(12, y, 46, 30); x.fillStyle = '#ffffff'; x.font = EN(fit(n, EN, 20, 40)); x.fillText(n, 35, y + 16);
+        x.fillStyle = '#5a5a60'; for (let j = 0; j < 3; j++) x.fillRect(66, y + 4 + j * 9, 50 - j * 12 - r() * 8, 4); });
+      x.strokeStyle = '#1e3c78'; x.lineWidth = 4; x.strokeRect(2, 2, w - 4, h - 4);
+    });
     return { tex: done(THREE, c, false), cells };
+  }
+  /* (v24.37) THE MALL'S OWN PICTURES (Chad: "Why are other stores also closed"): what the open shops round his are stocked
+     with, seen through their fronts across the corridor and at the edges of his own — the goldsmith's chains on red
+     velvet and his trays, the clock shop's walls of clocks and its watches, the provision shop's shelves and its hanging
+     packets, the tailor's bolts of cloth, the prayer-goods shop's red and gold. One sheet with gutters (the street's way,
+     makeStoreAtlas), its own seeded stream; generic, no brand (v9.3) */
+  function makeMallAtlas(THREE, cnv) {
+    const S = 1024, G = 8, [c, x] = sized(cnv, S, S), r = rng(6151), cells = {};
+    x.fillStyle = '#2a2a2e'; x.fillRect(0, 0, S, S);
+    let cx = 0, cy = 0, rowH = 0;
+    const cell = (name, w, h, draw) => {
+      if (cx + w + 2 * G > S) { cx = 0; cy += rowH; rowH = 0; }
+      const X = cx + G, Y = cy + G;
+      x.save(); x.beginPath(); x.rect(X, Y, w, h); x.clip(); x.translate(X, Y); draw(w, h); x.restore();
+      x.drawImage(c, X, Y, w, 1, X, Y - G, w, G); x.drawImage(c, X, Y + h - 1, w, 1, X, Y + h, w, G);
+      x.drawImage(c, X, Y - G, 1, h + 2 * G, X - G, Y - G, G, h + 2 * G); x.drawImage(c, X + w - 1, Y - G, 1, h + 2 * G, X + w, Y - G, G, h + 2 * G);
+      cells[name] = [(X + 1) / S, 1 - (Y + h - 1) / S, (X + w - 1) / S, 1 - (Y + 1) / S];
+      cx += w + 2 * G; rowH = Math.max(rowH, h + 2 * G);
+    };
+    const gold = (x0, y0, x1, y1) => { const g = x.createLinearGradient(x0, y0, x1, y1); g.addColorStop(0, '#8a5a10'); g.addColorStop(0.35, '#ffe08a'); g.addColorStop(0.55, '#e8b02e'); g.addColorStop(1, '#9a6a14'); return g; };
+    const velvet = (w, h, top, bot) => { const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, top); g.addColorStop(1, bot); x.fillStyle = g; x.fillRect(0, 0, w, h);
+      for (let k = 0; k < 900; k++) { x.fillStyle = `rgba(0,0,0,${r() * 0.08})`; x.fillRect(r() * w, r() * h, 2, 2); } };
+    /* the goldsmith's back wall: red velvet panels in gold frames, chains hung in rows, pendants on them, a row of bangles */
+    cell('goldWall', 512, 192, (w, h) => {
+      velvet(w, h, '#8a1418', '#5a0a0e');
+      for (let p = 0; p < 4; p++) { const px = 6 + p * 126, pw = 118;
+        x.strokeStyle = gold(px, 0, px + pw, 0); x.lineWidth = 4; x.strokeRect(px, 6, pw, h - 12);
+        for (let row = 0; row < 2; row++) { const y0 = 16 + row * 84;
+          for (let k = 0; k < 7; k++) { const ax = px + 10 + k * 15, len = 36 + r() * 30;
+            x.strokeStyle = gold(ax - 4, y0, ax + 4, y0 + len); x.lineWidth = 1.6 + r() * 1.4;
+            x.beginPath(); x.moveTo(ax - 5, y0); x.quadraticCurveTo(ax, y0 + len * 1.25, ax + 5, y0); x.stroke();
+            if (r() < 0.6) { x.fillStyle = gold(ax - 4, y0 + len, ax + 4, y0 + len + 8); x.beginPath(); x.ellipse(ax, y0 + len * 0.66 + 4, 3 + r() * 2, 4 + r() * 3, 0, 0, Math.PI * 2); x.fill(); } } }
+        x.fillStyle = 'rgba(255,255,255,0.85)'; for (let k = 0; k < 30; k++) x.fillRect(px + r() * pw, 12 + r() * (h - 24), 1.5, 1.5);   // glints
+      }
+    });
+    /* the goldsmith's trays under the glass: bangles, chains coiled, rings in slots, on red velvet in rows */
+    cell('goldTray', 256, 64, (w, h) => {
+      velvet(w, h, '#7a1014', '#600c10');
+      for (let k = 0; k < 10; k++) { const bx = 10 + k * 24, kind = k % 3;
+        x.strokeStyle = gold(bx - 9, 0, bx + 9, 0); x.lineWidth = 2.4;
+        if (kind === 0) { x.beginPath(); x.ellipse(bx + 2, h * 0.35, 9, 6, 0, 0, Math.PI * 2); x.stroke(); x.beginPath(); x.ellipse(bx + 2, h * 0.72, 9, 6, 0, 0, Math.PI * 2); x.stroke(); }
+        else if (kind === 1) { x.beginPath(); for (let a = 0; a < 18; a += 0.5) x.lineTo(bx + 2 + Math.cos(a) * (2 + a * 0.45), h / 2 + Math.sin(a) * (2 + a * 0.45) * 0.8); x.stroke(); }
+        else for (let j = 0; j < 4; j++) { x.lineWidth = 1.6; x.beginPath(); x.arc(bx + 2, 9 + j * 14, 3.4, 0, Math.PI * 2); x.stroke(); } }
+      x.fillStyle = 'rgba(255,255,255,0.9)'; for (let k = 0; k < 24; k++) x.fillRect(r() * w, r() * h, 1.5, 1.5);
+    });
+    /* the clock shop's wall: clocks of every kind hung close, each its own face, frame and time */
+    cell('clockWall', 512, 192, (w, h) => {
+      x.fillStyle = '#d8ccb2'; x.fillRect(0, 0, w, h);
+      const frames = ['#4a2c18', '#2a2a2e', '#c8a040', '#7a5a3a', '#e8e4dc', '#8a1a1a', '#1e3a6a'];
+      for (let k = 0; k < 46; k++) {
+        const rad = 9 + r() * 15, X = 10 + r() * (w - 20), Y = 10 + r() * (h - 20), sq = r() < 0.3, fr = frames[(r() * frames.length) | 0];
+        x.fillStyle = 'rgba(0,0,0,0.25)'; if (sq) x.fillRect(X - rad + 2, Y - rad + 3, rad * 2, rad * 2); else { x.beginPath(); x.arc(X + 2, Y + 3, rad, 0, Math.PI * 2); x.fill(); }
+        x.fillStyle = fr; if (sq) x.fillRect(X - rad, Y - rad, rad * 2, rad * 2); else { x.beginPath(); x.arc(X, Y, rad, 0, Math.PI * 2); x.fill(); }
+        x.fillStyle = r() < 0.15 ? '#1a1a1e' : '#f6f2e6'; x.beginPath(); x.arc(X, Y, rad * 0.78, 0, Math.PI * 2); x.fill();
+        const ink = x.fillStyle === '#1a1a1e' ? '#f0e8d0' : '#1a1a1e';
+        x.fillStyle = ink; for (let q = 0; q < 12; q++) { const a = q * Math.PI / 6; x.fillRect(X + Math.cos(a) * rad * 0.66 - 0.8, Y + Math.sin(a) * rad * 0.66 - 0.8, 1.6, 1.6); }
+        x.strokeStyle = ink; x.lineCap = 'round';
+        const ah = r() * Math.PI * 2, am = r() * Math.PI * 2;
+        x.lineWidth = 2; x.beginPath(); x.moveTo(X, Y); x.lineTo(X + Math.cos(ah) * rad * 0.4, Y + Math.sin(ah) * rad * 0.4); x.stroke();
+        x.lineWidth = 1.2; x.beginPath(); x.moveTo(X, Y); x.lineTo(X + Math.cos(am) * rad * 0.62, Y + Math.sin(am) * rad * 0.62); x.stroke();
+      }
+    });
+    /* the clock shop's counter: watches in rows on dark velvet, faces and straps */
+    cell('watchTray', 256, 64, (w, h) => {
+      velvet(w, h, '#1e2230', '#141822');
+      for (let row = 0; row < 2; row++) for (let k = 0; k < 9; k++) { const X = 16 + k * 27, Y = 17 + row * 30;
+        x.fillStyle = ['#2a2a2e', '#7a4a2a', '#c8c8cc', '#c8a040'][(r() * 4) | 0]; x.fillRect(X - 3, Y - 13, 6, 26);
+        x.fillStyle = r() < 0.5 ? '#d8d8dc' : '#c8a040'; x.beginPath(); x.arc(X, Y, 7, 0, Math.PI * 2); x.fill();
+        x.fillStyle = r() < 0.3 ? '#1a2a4a' : '#f6f4ee'; x.beginPath(); x.arc(X, Y, 5.2, 0, Math.PI * 2); x.fill(); }
+    });
+    /* the provision shop's shelves: tins, bottles, packets and boxes, three shelves to a cell */
+    cell('goods', 384, 192, (w, h) => {
+      x.fillStyle = '#b8b4aa'; x.fillRect(0, 0, w, h);
+      for (let s2 = 0; s2 < 3; s2++) { const y1 = 60 + s2 * 64; x.fillStyle = '#8a8478'; x.fillRect(0, y1 - 4, w, 6);
+        let X = 2; while (X < w - 6) { const kind = r(), col = ['#c8302a', '#e8b82a', '#2a6ac8', '#2a9a4a', '#e86a1a', '#f2f2ee', '#7a3a8a', '#a8642a'][(r() * 8) | 0];
+          if (kind < 0.35) { const ww = 10 + r() * 6, hh = 18 + r() * 14; x.fillStyle = col; x.fillRect(X, y1 - 4 - hh, ww, hh); x.fillStyle = 'rgba(255,255,255,0.5)'; x.fillRect(X + 1, y1 - 4 - hh * 0.6, ww - 2, 5); X += ww + 1; }
+          else if (kind < 0.6) { const ww = 7 + r() * 4, hh = 28 + r() * 16; x.fillStyle = col; x.fillRect(X + 2, y1 - 4 - hh, ww - 4, 8); x.fillRect(X, y1 - 4 - hh + 8, ww, hh - 8); X += ww + 1; }
+          else { const ww = 18 + r() * 14, hh = 22 + r() * 22; x.fillStyle = col; x.fillRect(X, y1 - 4 - hh, ww, hh); x.fillStyle = 'rgba(0,0,0,0.2)'; x.fillRect(X + ww - 3, y1 - 4 - hh, 3, hh); x.fillStyle = 'rgba(255,255,255,0.6)'; x.fillRect(X + 3, y1 - hh + 4, ww - 8, 4); X += ww + 2; } } }
+    });
+    /* packets hung in strips from the provision shop's front */
+    cell('hang', 128, 192, (w, h) => {
+      x.clearRect(0, 0, w, h);
+      for (let k = 0; k < 6; k++) { const X = 4 + k * 21, col = ['#e8302a', '#f2c030', '#2a8ad8', '#e86aa0', '#3aa84a', '#f27a1a'][k];
+        x.fillStyle = '#d8d8d4'; x.fillRect(X + 8, 0, 2, h);
+        for (let j = 0; j < 7; j++) { x.fillStyle = col; x.fillRect(X, 6 + j * 26, 18, 22); x.fillStyle = 'rgba(255,255,255,0.75)'; x.fillRect(X + 3, 12 + j * 26, 12, 5); x.fillStyle = 'rgba(0,0,0,0.25)'; x.fillRect(X + 15, 6 + j * 26, 3, 22); } }
+    });
+    /* the tailor's wall of cloth: bolts end-on and folded lengths on shelves */
+    cell('fabric', 384, 192, (w, h) => {
+      x.fillStyle = '#c8b89c'; x.fillRect(0, 0, w, h);
+      for (let s2 = 0; s2 < 4; s2++) { const y1 = 46 + s2 * 48; x.fillStyle = '#7a5a3a'; x.fillRect(0, y1 - 3, w, 5);
+        let X = 3; while (X < w - 10) { const col = ['#2a3a6a', '#8a2a2a', '#e8e0d0', '#3a6a4a', '#c8a050', '#5a5a60', '#d87a8a', '#1a1a1e', '#6a8ab8'][(r() * 9) | 0], ww = 16 + r() * 12, hh = 30 + r() * 10;
+          x.fillStyle = col; x.fillRect(X, y1 - 3 - hh, ww, hh); x.fillStyle = 'rgba(255,255,255,0.18)'; for (let q = 0; q < 4; q++) x.fillRect(X, y1 - 3 - hh + 4 + q * 8, ww, 2);
+          x.fillStyle = 'rgba(0,0,0,0.3)'; x.fillRect(X + ww - 2, y1 - 3 - hh, 2, hh); X += ww + 1; } }
+    });
+    /* the prayer-goods shop's shelves: red candles, boxes of joss sticks, gold paper, red packets and lanterns folded */
+    cell('prayer', 384, 192, (w, h) => {
+      x.fillStyle = '#7a1416'; x.fillRect(0, 0, w, h);
+      for (let s2 = 0; s2 < 3; s2++) { const y1 = 62 + s2 * 64; x.fillStyle = '#4a0a0c'; x.fillRect(0, y1 - 4, w, 6);
+        let X = 3; while (X < w - 8) { const kind = r();
+          if (kind < 0.3) { for (let q = 0; q < 3; q++) { x.fillStyle = '#c81a1a'; x.fillRect(X + q * 7, y1 - 4 - 34, 5, 34); x.fillStyle = '#f2c030'; x.fillRect(X + q * 7, y1 - 4 - 30, 5, 6); } X += 24; }
+          else if (kind < 0.55) { const ww = 20 + r() * 8; x.fillStyle = '#e8b82a'; x.fillRect(X, y1 - 4 - 30, ww, 30); x.fillStyle = '#c81a1a'; x.fillRect(X + 3, y1 - 4 - 24, ww - 6, 10); X += ww + 2; }
+          else if (kind < 0.8) { const ww = 22 + r() * 10, hh = 10 + r() * 14; x.fillStyle = '#f2d04a'; x.fillRect(X, y1 - 4 - hh, ww, hh); x.fillStyle = '#c89a1a'; for (let q = 0; q < hh; q += 3) x.fillRect(X, y1 - 4 - hh + q, ww, 1); X += ww + 2; }
+          else { x.fillStyle = '#e8302a'; x.fillRect(X, y1 - 4 - 22, 16, 22); x.fillStyle = '#f2c030'; x.fillRect(X + 4, y1 - 4 - 16, 8, 8); X += 18; } } }
+    });
+    return { tex: done(THREE, c, false), cells };
+  }
+  /* (v24.37) his door mat, inside the shutter's line: red, a gold border, 出入平安 (safe going out and coming in), as a
+     Chinese shop lays one */
+  function makeDoorMat(THREE, cnv) {
+    const [c, x] = sized(cnv, 512, 256), r = rng(6301);
+    x.fillStyle = '#8a1416'; x.fillRect(0, 0, 512, 256);
+    for (let k = 0; k < 2600; k++) { x.fillStyle = `rgba(0,0,0,${r() * 0.12})`; x.fillRect(r() * 512, r() * 256, 2, 2); }
+    x.strokeStyle = '#d8a83a'; x.lineWidth = 10; x.strokeRect(18, 18, 476, 220); x.lineWidth = 3; x.strokeRect(34, 34, 444, 188);
+    x.fillStyle = '#e8b84a'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.font = 'bold 92px "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Noto Sans SC", "Microsoft YaHei", "WenQuanYi Zen Hei", sans-serif';
+    x.fillText('出入平安', 256, 132);
+    return done(THREE, c, false);
+  }
+  /* (v24.37) the acrylic stand on his counter: the casing he does, in English and in Thai (รับเลี่ยมพระ: amulets cased),
+     waterproof, gold, silver */
+  function makeCasingSign(THREE, cnv) {
+    const [c, x] = sized(cnv, 256, 360);
+    x.fillStyle = '#fbf8f0'; x.fillRect(0, 0, 256, 360);
+    x.fillStyle = '#8e1418'; x.fillRect(0, 0, 256, 96);
+    x.fillStyle = '#f6d870'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.font = 'bold 40px "Helvetica Neue", Helvetica, Arial, sans-serif'; x.fillText('CASING', 128, 34); x.font = 'bold 26px "Helvetica Neue", Helvetica, Arial, sans-serif'; x.fillText('SERVICE', 128, 70);
+    x.fillStyle = '#8e1418'; x.font = 'bold 34px "Noto Sans Thai", "Thonburi", "Leelawadee UI", "Tahoma", sans-serif'; x.fillText('รับเลี่ยมพระ', 128, 140);
+    x.fillStyle = '#2a2a2e'; x.font = '22px "Helvetica Neue", Helvetica, Arial, sans-serif';
+    ['WATERPROOF', 'GOLD · SILVER', 'MICRON'].forEach((t, k) => x.fillText(t, 128, 196 + k * 34));
+    x.strokeStyle = '#c8a040'; x.lineWidth = 6; x.strokeRect(6, 6, 244, 348);
+    x.fillStyle = '#8e1418'; x.font = 'bold 18px "Helvetica Neue", Helvetica, Arial, sans-serif'; x.fillText('ASK AT THE COUNTER', 128, 322);
+    return done(THREE, c, false);
   }
   /* (v24.33) a light's reflection in the wet road, as the eye sees it: a soft upright streak */
   function makeStreak(THREE, cnv) {
@@ -9291,7 +9634,9 @@
     tr(0, O.end, (k, t) => stage.films.frame('open', t, api), rawK);
     /* O1 · THE SHUTTER: black, then the morning coming in under the shutter */
     fade(0, 1.2, 1, 1); fade(1.2, 2.8, 1, 0);
-    sfx(0.2, 'w4mallair', 0.5);                // the closed mall's empty air, a far broom
+    sfx(0.2, 'w4mallair', 0.5);                // the mall's air, a far broom
+    sfx(0.3, 'w4mallpeople', 0.7);             // (v24.37) and the mall open: people passing on the terrazzo, talk at a counter
+    sfxFade(O.o5 - 0.45, O.o5 + 0.05, 'w4mallpeople');   // gone with the shop at the cut to the rice country
     sfx(0.9, 'w4shutter', 0.9);                // the roller shutter hauled up from outside the frame
     sfx(2.5, 'q1pro1', 1);                     // "Not long after, my interest in amulets became more than curiosity..."  (→ ~9.7)
     sfx(6.25, 'w4switch', 0.6);                // the lights
@@ -9426,6 +9771,8 @@
       sfx(T.coda + 9.2, 'q1K2', 1);                          // "When I got back to Singapore..."  (→ ~12.5)
       fade(T.coda + CODA.k2 - 0.3, T.coda + CODA.k2, 0, 1); fade(T.coda + CODA.k2, T.coda + CODA.k2 + 0.6, 1, 0);
       sfx(T.coda + CODA.k2 + 0.3, 'w4shutter', 0.7);         // the shutter again, in grey light
+      sfx(T.coda + CODA.k2 + 0.1, 'w4mallpeople', 0.6);      // (v24.37) the mall open round it as he opens again
+      sfxFade(T.coda + CODA.black - 0.2, T.coda + CODA.end, 'w4mallpeople');
       sfxFade(T.coda + CODA.k2 - 0.5, T.coda + CODA.k2 + 0.1, 'w4taxi');   // the taxi gone with its picture (CP13: it ran on under the shop)
       sfx(T.coda + 13.4, 'q1K3', 1);                         // "...I stopped feeling like myself."  (→ ~16.3)
       sfx(T.coda + CODA.k2 + 4.4, 'w4pat', 0.5);             // his free hand patting his pocket for the keys in the other
@@ -9478,6 +9825,8 @@
       sfx(T.coda + 9.2, 'q1K2', 1);
       fade(T.coda + CODA.k2 - 0.3, T.coda + CODA.k2, 0, 1); fade(T.coda + CODA.k2, T.coda + CODA.k2 + 0.6, 1, 0);
       sfx(T.coda + CODA.k2 + 0.3, 'w4shutter', 0.7);
+      sfx(T.coda + CODA.k2 + 0.1, 'w4mallpeople', 0.6);      // (v24.37) the mall open round it as he opens again
+      sfxFade(T.coda + CODA.black - 0.2, T.coda + CODA.end, 'w4mallpeople');
       sfxFade(T.coda + CODA.k2 - 0.5, T.coda + CODA.k2 + 0.1, 'w4taxi');   // the taxi gone with its picture (CP13: it ran on under the shop)
       sfx(T.coda + 13.4, 'q1K3', 1);
       sfx(T.coda + CODA.k2 + 4.4, 'w4pat', 0.5);
@@ -9524,6 +9873,8 @@
       sfx(T.coda + 9.2, 'q1K2', 1);
       fade(T.coda + CODA.k2 - 0.3, T.coda + CODA.k2, 0, 1); fade(T.coda + CODA.k2, T.coda + CODA.k2 + 0.6, 1, 0);
       sfx(T.coda + CODA.k2 + 0.3, 'w4shutter', 0.7);
+      sfx(T.coda + CODA.k2 + 0.1, 'w4mallpeople', 0.6);      // (v24.37) the mall open round it as he opens again
+      sfxFade(T.coda + CODA.black - 0.2, T.coda + CODA.end, 'w4mallpeople');
       sfxFade(T.coda + CODA.k2 - 0.5, T.coda + CODA.k2 + 0.1, 'w4taxi');   // the taxi gone with its picture (CP13: it ran on under the shop)
       sfx(T.coda + 13.4, 'q1K3', 1);
       sfx(T.coda + CODA.k2 + 4.4, 'w4pat', 0.5);
@@ -9576,6 +9927,8 @@
       sfx(T.coda + 9.2, 'q1K2', 1);
       fade(T.coda + CODA.k2 - 0.3, T.coda + CODA.k2, 0, 1); fade(T.coda + CODA.k2, T.coda + CODA.k2 + 0.6, 1, 0);
       sfx(T.coda + CODA.k2 + 0.3, 'w4shutter', 0.7);
+      sfx(T.coda + CODA.k2 + 0.1, 'w4mallpeople', 0.6);      // (v24.37) the mall open round it as he opens again
+      sfxFade(T.coda + CODA.black - 0.2, T.coda + CODA.end, 'w4mallpeople');
       sfxFade(T.coda + CODA.k2 - 0.5, T.coda + CODA.k2 + 0.1, 'w4taxi');   // the taxi gone with its picture (CP13: it ran on under the shop)
       sfx(T.coda + 13.4, 'q1K3', 1);
       sfx(T.coda + CODA.k2 + 4.4, 'w4pat', 0.5);

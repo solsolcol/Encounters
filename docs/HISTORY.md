@@ -7583,6 +7583,45 @@ What the baseline contains, by release:
     stand on a tablet behind it, and the bus shelter beside the new advert as flat dark slabs (no light, no route
     board). Outside the ask, listed for Chad: the rain's beads read as brown bubbles on a phone, and the wet road shows
     no shine.
+- **v24.37** HIS SHOP, INSIDE AND OUT — episode 4 chapter 1, Chad's ask 7 of docs/V24.32-E4C1-NOTES.md ("Also i think
+  the players amulet shop can still be improved more. And also the outside of the amulet shop too. Why are other stores
+  also closed. Why not show real people walking past the shop etc."), with what the reviewer still found in v24.36.
+  `src/chapters/e4/e4c1.js`, `src/main.js` (one `STING_SAMPLE` row), one sound (masters/v24.37/make.sh).
+  - THE SHOTS FIRST, photographed as they were: the corridor is seen from behind his counter in the opening (24.8-31.4 s:
+    on a phone the unit across and the corridor before it, on a desktop the next one too) and from the corridor as his
+    shutter goes up (O1) and goes up again in the coda (K2: on a desktop, the fronts either side of his own). Every shop
+    in those frames was shuttered and nobody was in them.
+  - THE MALL OPEN: the units those shots see are open for the morning's trade, each a room behind its rolled-up shutter
+    (mallRoom: painted light, three meshes a unit, its pictures from one sheet, makeMallAtlas). Across the corridor are a
+    goldsmith (a red back wall of chains, mirrors, an L of lit glass counters, its man at the counter), a clock and watch
+    repairer (walls of clocks, a counter of watches, his bench and lamp, a tall clock) and a provision shop. Either side of
+    his own are a tailor and a prayer-goods shop. The four units no shot sees keep their shutters down, and each sign hangs
+    over one front (MEI LING's had hung over two).
+  - PEOPLE WALKING PAST: a woman passes as his shutter goes up and walks back while nothing sells; a man crosses his look
+    out and passes again as he opens in the coda; the goldsmith's man stands at his counter. They are episode 3 chapter 3's
+    wife, father and staff man, each declared in `reuse` and shown only while a shot holds them (mallPass, on the film's
+    clock). Chad stopped the first build's young man in the admin tee ("I dont want the admin green tshirt guy, he is
+    overused"; he was barefoot, too, as the photographs showed). The customer and the towkay were photographed and set
+    aside: one is shirtless and barefoot, and the other wears a white suit that in this episode reads as a teacher's.
+  - HIS SHOP: the 0.2 m slot beside his shutter is closed (each unit stands a pillar at its +x end, so his own end had
+    none). Added: a ceiling air-conditioner, a door mat (出入平安), a casing-service stand on his counter (CASING SERVICE,
+    รับเลี่ยมพระ) and two more well-wishers' flower stands outside his front (生意兴隆 / 财源广进, 大展鸿图 / 开张志喜). The
+    GRAND OPENING stand moved to the door's other side and turned outward: on the left it stood in the middle of a phone's
+    look out from behind the counter, and it showed the corridor its back.
+  - THE SOUND: the mall open (w4mallpeople: footsteps on terrazzo, talk at a counter, a trolley far off) under the
+    opening's shop and the coda's, beside the mall's air. Four takes were measured and the pick installed (the least energy
+    in the voice band under the narration); the three that passed go to Chad as a loudness-matched reel
+    (masters/v24.37/previews/).
+  - THE REVIEWER'S FINDINGS ON v24.36, fixed: the cabinets' tablets are dealt by the seeded stream (no strict order, gaps
+    where pieces have gone) and held low in their bay (a row high under the next shelf showed through the glass at a
+    figure's feet), and a shelf never holds the same thing twice running. The bus shelter's roof now runs along the kerb
+    over its posts (it had been laid across the walk with both posts past its ends), lit by its tube, with a route board.
+  - PRICED ON A PHONE: the shutter going up with the woman passing 312,299 triangles in 169 draws, the shop opened
+    237,120, the look out with the goldsmith and the passers-by 305,130 (all under the chapter's ~400k); the cabinets'
+    stock now 178k-216k at 0.9 m (the tablets' gaps).
+  - Deployed 6ae8d9f5895270ee1b191b87, then 6ae8dd506a25493a12efd98b (the recast, the stand turned), 317 of 317 files
+    byte-identical each time. The check round, once: photographs of every changed shot on a phone and a desktop, an
+    independent reviewer shown only the pictures, chaptertest and leak.
 
 ## The sheet, version by version
 

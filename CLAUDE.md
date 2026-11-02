@@ -150,6 +150,7 @@ that fits it, with the version it came from.
 - Episodes follow the Encounters casebook's case order. (v23.2)
 - Each episode is themed around one core narrative, distinct from the next one. (v23.4)
 - Ajahn Krukai's model stays untouched; chaptertest pins it. (v23.5)
+- Episode 2's admin-tee buddy (`admintee`) is overused: never cast him again, not even as an extra walking past ("I dont want the admin green tshirt guy, he is overused"). (v24.37)
 - Something he drops is closed for good: never ask for it again, and withdraw the ask from every doc that carried it. (v5.23)
 - His own models get no credit row; everyone else's work is credited with its link, and a credit row goes when its asset leaves the game. (v5.23)
 - His words are used exactly (lines, names, descriptions, punctuation), and any correction to them is said out loud. (v21.7)
