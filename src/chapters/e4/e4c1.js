@@ -815,8 +815,31 @@
       const flat = (w, h, m, p = R) => { const o = new THREE.Mesh(new THREE.PlaneGeometry(w, h), m); p.add(o); return o; };
       const m4 = new THREE.Matrix4();
       /* (v24.24, Chad: "make things move or vibrate or shake as he chants") a thing that rattles under the chant: kept out of
-         the room's merge, its own place and turn kept to come back to, and its own phase (roomFrame) */
-      const shake = (o, amp = 1) => { o.userData.dyn = true; room.shakers.push({ o, p: o.position.clone(), r: o.rotation.clone(), ph: 0.7 + room.shakers.length * 1.913, amp }); return o; };
+         the room's merge, its own place and turn kept to come back to, and its own phase (roomFrame).
+         v24.31 (Chad: "They look like they are flying around detached from where they are"): each rattles about ITS OWN
+         base. An instanced group (the cabinets' bottles, scrolls and bundles) rattles instance by instance, each about its
+         own origin with its own phase — the group itself was turned about the room's origin, two metres off, and swung
+         them up to 14 cm through their glass (tools/probes/shake.mjs). And a thing that stands on its base keeps its foot on
+         what it stands on: `base` is the radius of its foot (its lowest ring of points, when its origin is on it), and it
+         is lifted by that radius times its tilt, so no edge of it sinks into the shelf as it tips. */
+      const footR = (geo) => {
+        geo.computeBoundingBox(); const P = geo.attributes.position, y0 = geo.boundingBox.min.y;
+        if (Math.abs(y0) > 0.005) return 0;                   // (its origin is not on its foot: it turns about its middle)
+        let r = 0; for (let i = 0; i < P.count; i++) if (P.getY(i) < y0 + 0.004) r = Math.max(r, Math.hypot(P.getX(i), P.getZ(i)));
+        return r;
+      };
+      const shake = (o, amp = 1) => {
+        o.userData.dyn = true;
+        const s = { o, p: o.position.clone(), r: o.rotation.clone(), ph: 0.7 + room.shakers.length * 1.913, amp, base: o.geometry ? footR(o.geometry) : 0 };
+        if (o.isInstancedMesh) {
+          s.inst = [];
+          for (let i = 0; i < o.count; i++) {
+            o.getMatrixAt(i, m4); const I = { p: new THREE.Vector3(), q: new THREE.Quaternion(), sc: new THREE.Vector3(), ph: s.ph + i * 2.618 };
+            m4.decompose(I.p, I.q, I.sc); s.inst.push(I);
+          }
+        }
+        room.shakers.push(s); return o;
+      };
 
       /* ---- the drawn sheets (the drawers are at the foot of the file) */
       const tTile = tex(makeCementTiles(THREE, cnv)); tTile.repeat.set(Wd / 0.4, Dp / 0.4);
@@ -1151,7 +1174,8 @@
         const rim = new THREE.Mesh(new THREE.TorusGeometry(0.039, 0.003, 6, 20), M({ color: 0x1e3c8a, roughness: 0.4 })); rim.rotation.x = Math.PI / 2; rim.position.y = 0.084; cupG.add(rim);
         const hd = new THREE.Mesh(new THREE.TorusGeometry(0.02, 0.004, 6, 12, Math.PI), mWhiteP); hd.position.set(0.04, 0.045, 0); hd.rotation.z = -Math.PI / 2; cupG.add(hd);
         const water = flat(0.07, 0.07, M({ color: 0x9ab0b8, roughness: 0.05, metalness: 0.2, transparent: true, opacity: 0.8 }), cupG); water.rotation.x = -Math.PI / 2; water.position.y = 0.07;
-        room.cup = cupG;
+        /* (v24.31) its foot's radius, the lathe's first ring: roomFrame lifts it by this times its tip */
+        room.cup = cupG; room.cupFoot = 0.034;
         /* (v24.12) the wet ring it leaves where it stood — the storm film's close shot shows the cup moved by the ring beside it */
         const ring = new THREE.Mesh(new THREE.RingGeometry(0.029, 0.037, 24), M({ color: 0x1a110b, roughness: 0.25, transparent: true, opacity: 0.5,
           depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
@@ -1206,13 +1230,15 @@
         }).catch(err => { console.warn('e4buddha failed to load', err); if (ctx.loadFail) ctx.loadFail('e4buddha', err); });
         for (const x of [-0.22, 0.22]) shake(lathe([[0, 0], [0.02, 0], [0.034, 0.03], [0.036, 0.034]], mBrass, x, 2.405, ZF + 0.06, 16), 1.1);
         /* tier 2: vases of marigolds, glasses of water */
-        const mari = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(0.018, 1), M({ color: 0xf08a1a, roughness: 0.8 }), 30);
-        let mi = 0;
+        /* (v24.31) each vase's marigolds are its own bunch, a child of the vase, so they rattle IN it: the thirty were one
+           group turned about the room's origin, and flew 23 cm out of their vases (tools/probes/shake.mjs) */
+        const mariG = new THREE.IcosahedronGeometry(0.018, 1), mariM = M({ color: 0xf08a1a, roughness: 0.8 });
         for (const x of [-0.28, 0.28]) {
-          shake(lathe([[0, 0], [0.03, 0], [0.024, 0.02], [0.034, 0.07], [0.024, 0.11], [0.03, 0.12]], mBrass, x, 2.185, ZF + 0.09, 16), 1.2);
-          for (let k = 0; k < 15; k++) { const a = k * 2.39, rr = 0.012 + (k % 5) * 0.009; m4.makeTranslation(x + Math.cos(a) * rr, 2.31 + (k % 3) * 0.018, ZF + 0.09 + Math.sin(a) * rr); mari.setMatrixAt(mi++, m4); }
+          const vase = shake(lathe([[0, 0], [0.03, 0], [0.024, 0.02], [0.034, 0.07], [0.024, 0.11], [0.03, 0.12]], mBrass, x, 2.185, ZF + 0.09, 16), 1.2);
+          const mari = new THREE.InstancedMesh(mariG, mariM, 15);
+          for (let k = 0; k < 15; k++) { const a = k * 2.39, rr = 0.012 + (k % 5) * 0.009; m4.makeTranslation(Math.cos(a) * rr, 2.31 - 2.185 + (k % 3) * 0.018, Math.sin(a) * rr); mari.setMatrixAt(k, m4); }
+          vase.add(mari);
         }
-        mari.count = mi; R.add(mari); shake(mari, 0.9);
         for (const x of [-0.1, 0.1]) shake(lathe([[0, 0], [0.018, 0], [0.02, 0.05], [0.021, 0.052]], mGlass, x, 2.185, ZF + 0.09, 12), 1.3);
         /* (v24.17) a Nang Kwak between the glasses — Chad's scan, the beckoning lady a shop keeps facing its door, below
            the Buddha as a home altar keeps her; the light cut the tray's piece is, 12 cm on her base */
@@ -1258,16 +1284,21 @@
         }
         const coco = mesh(new THREE.SphereGeometry(0.06, 14, 10), M({ color: 0x6a9a3a, roughness: 0.55 }), 0.22, 2.025, ZF + 0.15); coco.scale.set(1, 1.1, 1);
         shake(coco, 0.8);
-        /* the garlands: jasmine in a U from the tier's lip, a red tassel */
-        const jas = new THREE.InstancedMesh(new THREE.SphereGeometry(0.008, 6, 5), M({ color: 0xf4f0e4, roughness: 0.7 }), 80);
-        const ros = new THREE.InstancedMesh(new THREE.SphereGeometry(0.012, 6, 5), M({ color: 0xb4141c, roughness: 0.7 }), 16);
-        let ji = 0, ri = 0;
+        /* the garlands: jasmine in a U from the tier's lip, a red tassel — (v24.31) each hung on its own pivot on the lip,
+           the line through both its ends, so the chant swings it a little out from the shelf as one string (roomFrame,
+           room.hangs) and both ends stay on the lip; the pair was one group turned about the room's origin, and swung 13 cm */
+        const jasG = new THREE.SphereGeometry(0.008, 6, 5), jasM = M({ color: 0xf4f0e4, roughness: 0.7 });
+        const rosG = new THREE.SphereGeometry(0.012, 6, 5), rosM = M({ color: 0xb4141c, roughness: 0.7 });
         for (const gx of [-0.16, 0.16]) {
-          for (let k = 0; k <= 26; k++) { const u = k / 26, px = gx + (u - 0.5) * 0.16, py = 1.95 - Math.sin(u * Math.PI) * 0.1; m4.makeTranslation(px, py, ZF + 0.265); jas.setMatrixAt(ji++, m4); }
-          for (let k = 0; k < 7; k++) { m4.makeTranslation(gx, 1.84 - k * 0.018, ZF + 0.266); (k < 4 ? jas : ros).setMatrixAt(k < 4 ? ji++ : ri++, m4); }
-          for (let k = 0; k < 4; k++) { m4.makeTranslation(gx + (k - 1.5) * 0.008, 1.76 - (k % 2) * 0.01, ZF + 0.266); ros.setMatrixAt(ri++, m4); }
+          const pv = new THREE.Group(); pv.position.set(gx, 1.95, ZF + 0.265); pv.userData.dyn = true; R.add(pv);
+          const jas = new THREE.InstancedMesh(jasG, jasM, 31), ros = new THREE.InstancedMesh(rosG, rosM, 7);
+          let ji = 0, ri = 0;
+          for (let k = 0; k <= 26; k++) { const u = k / 26; m4.makeTranslation((u - 0.5) * 0.16, -Math.sin(u * Math.PI) * 0.1, 0); jas.setMatrixAt(ji++, m4); }
+          for (let k = 0; k < 7; k++) { m4.makeTranslation(0, 1.84 - k * 0.018 - 1.95, 0.001); (k < 4 ? jas : ros).setMatrixAt(k < 4 ? ji++ : ri++, m4); }
+          for (let k = 0; k < 4; k++) { m4.makeTranslation((k - 1.5) * 0.008, 1.76 - (k % 2) * 0.01 - 1.95, 0.001); ros.setMatrixAt(ri++, m4); }
+          jas.count = ji; ros.count = ri; pv.add(jas); pv.add(ros);
+          room.hangs.push({ g: pv, ph: 1.1 + gx * 9, amp: 0.35, sway: false });
         }
-        jas.count = ji; ros.count = ri; R.add(jas); R.add(ros); shake(jas, 0.6); shake(ros, 0.6);
         /* the ribbons on the shelf's ends: red, yellow, green; the fan's air takes them right */
         const ribC = [0xc81e24, 0xe8b020, 0x2a8a4a];
         for (const end of [-0.45, 0.45]) for (let k = 0; k < 3; k++) {
@@ -4408,6 +4439,22 @@
     room.smoke.forEach(sp => { sp.on = true; });
     if (room.smoke[2]) room.smoke[2].on = false;
     room.candleK = 0; room.candleTo = 0; room.candleSecs = 0.8; room.rainFrom = 0; room.rainT0 = 0; room.rainSecs = 1; room.fanSpeed = 1;
+    /* (v24.31) THE RATTLE'S SIZE (Chad: "i think the movements move too much, you can lessen it a little"): each term at 0.6
+       of v24.24's — a slide of 2.4 mm, a hop of 1.5, a tip of 0.03 rad and a twist of 0.024 at full tremor, times the
+       thing's own amp. Measured at v24.30 under the storm's full tremor (tools/probes/shake.mjs), the vases' rims travelled
+       17 mm and tipped 4.5 degrees, the glasses 5, the cup 6. */
+    const RATTLE = { slide: 0.0024, hop: 0.0015, tilt: 0.03, twist: 0.024 };
+    const _shE = new THREE.Euler(), _shQ = new THREE.Quaternion(), _shP = new THREE.Vector3(), _shM = new THREE.Matrix4();
+    /* one rattle at wall time `now`, size `a`, phase `ph`: its slide and hop into `pos` (an offset from where it rests), its
+       tip and twist into _shE; a thing standing on its foot (`base`, the foot's radius) is lifted by that radius times its
+       tip, so its low edge stays on the shelf instead of sinking into it */
+    function rattle(now, a, ph, base, pos) {
+      const rx = a * RATTLE.tilt * Math.sin(now * 29 + ph), ry = a * RATTLE.twist * Math.sin(now * 23 + ph * 2), rz = a * RATTLE.tilt * Math.sin(now * 31 + ph * 1.7);
+      _shE.set(rx, ry, rz);
+      return pos.set(a * RATTLE.slide * Math.sin(now * 41 + ph) * Math.sin(now * 7 + ph),
+                     a * RATTLE.hop * Math.abs(Math.sin(now * 37 + ph * 1.3)) + base * Math.hypot(rx, rz),
+                     a * RATTLE.slide * Math.sin(now * 43 + ph * 0.7) * Math.sin(now * 5 + ph));
+    }
     function roomFrame(now) {
       if (worldOf(yaw.position.x) !== 'R') { room.last = 0; return; }
       const dt = room.last ? Math.min(0.1, Math.max(0, now - room.last)) : 0; room.last = now;
@@ -4430,21 +4477,33 @@
       if (tr > 0 || room.shook) {
         room.shook = tr > 0;
         for (const s2 of room.shakers) {
-          const a = burst * s2.amp, ph = s2.ph;
-          s2.o.position.set(s2.p.x + a * 0.004 * Math.sin(now * 41 + ph) * Math.sin(now * 7 + ph),
-                            s2.p.y + a * 0.0025 * Math.abs(Math.sin(now * 37 + ph * 1.3)),
-                            s2.p.z + a * 0.004 * Math.sin(now * 43 + ph * 0.7) * Math.sin(now * 5 + ph));
-          s2.o.rotation.set(s2.r.x + a * 0.05 * Math.sin(now * 29 + ph), s2.r.y + a * 0.04 * Math.sin(now * 23 + ph * 2), s2.r.z + a * 0.05 * Math.sin(now * 31 + ph * 1.7));
+          const a = burst * s2.amp;
+          if (s2.inst) {                                  // (v24.31) an instanced group: each one about its own origin
+            for (let i = 0; i < s2.inst.length; i++) {
+              const I = s2.inst[i]; rattle(now, a, I.ph, s2.base, _shP).add(I.p);
+              _shQ.setFromEuler(_shE).multiply(I.q); s2.o.setMatrixAt(i, _shM.compose(_shP, _shQ, I.sc));
+            }
+            s2.o.instanceMatrix.needsUpdate = true;
+            continue;
+          }
+          rattle(now, a, s2.ph, s2.base, _shP);
+          s2.o.position.copy(s2.p).add(_shP);
+          s2.o.rotation.set(s2.r.x + _shE.x, s2.r.y + _shE.y, s2.r.z + _shE.z);
         }
         for (const h of room.hangs) {
-          h.g.rotation.x = -tr * (0.05 + 0.13 * (0.5 + 0.5 * Math.sin(now * 1.9 + h.ph))) - burst * 0.03 * Math.abs(Math.sin(now * 17 + h.ph));   // out from the wall, never into it
-          h.g.rotation.z = tr * 0.05 * Math.sin(now * 1.3 + h.ph);
+          /* (v24.31) at half v24.24's swing (12 degrees out from the wall with no air to move them); a garland at 0.35 of
+             that, and never sideways — it hangs from both ends */
+          const k = h.amp == null ? 1 : h.amp;
+          h.g.rotation.x = -k * (tr * (0.025 + 0.065 * (0.5 + 0.5 * Math.sin(now * 1.9 + h.ph))) + burst * 0.015 * Math.abs(Math.sin(now * 17 + h.ph)));   // out from the wall, never into it
+          h.g.rotation.z = h.sway === false ? 0 : k * tr * 0.025 * Math.sin(now * 1.3 + h.ph);
         }
-        /* the cup on the table rattles where it stands (its own z is ending C's, never touched here) */
+        /* the cup on the table rattles where it stands (its own z is ending C's, never touched here) — (v24.31) at 0.6 of
+           v24.24's, its twist at a quarter (it turned six degrees each way four times a second), lifted on its foot as it
+           tips */
         if (room.cup) {
-          const c = RMC.CUP[room.cupAt], a = burst * 1.3;
-          room.cup.position.set(c.x + a * 0.003 * Math.sin(now * 47) * Math.sin(now * 9), RMC.LOWT.top + a * 0.002 * Math.abs(Math.sin(now * 39)), c.z + a * 0.003 * Math.sin(now * 53 + 1));
-          room.cup.rotation.x = a * 0.04 * Math.sin(now * 33); room.cup.rotation.y = a * 0.08 * Math.sin(now * 27);
+          const c = RMC.CUP[room.cupAt], a = burst * 1.3, rx = a * 0.024 * Math.sin(now * 33);
+          room.cup.position.set(c.x + a * 0.0018 * Math.sin(now * 47) * Math.sin(now * 9), RMC.LOWT.top + a * 0.0012 * Math.abs(Math.sin(now * 39)) + room.cupFoot * Math.abs(rx), c.z + a * 0.0018 * Math.sin(now * 53 + 1));
+          room.cup.rotation.x = rx; room.cup.rotation.y = a * 0.02 * Math.sin(now * 27);
         }
       }
       /* the tube */

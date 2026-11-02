@@ -7117,7 +7117,7 @@ cut (sharing its vertices and maps) when it is small.
   frame (capped at 0.1 s); at under a frame a second, four seconds after the switch the hand was still there. Wait for
   the thing to be drawn.
 
-## v24.30 — the amulet in his hand
+## v24.30 — the amulet in his hand, and v24.31 — what the shake turned about
 
 - **A thing drawn in the world AND in his hand takes its reflection as a lift, never as an envMap of its own.** The
   hands' pass is drawn at half the world's reflection (vmScene 0.025 against the scene's 0.05: their rig lights them
@@ -7134,3 +7134,10 @@ cut (sharing its vertices and maps) when it is small.
   nothing happened: the engine's active spot (the badge, `#itxt`) is chosen by the frame, and on a slow box the frame
   after quiet had not run yet. Wait for the thing the press goes through (the badge naming the spot), then press; and
   make the wait after it fail at once if the press did nothing, instead of waiting out its timeout.
+- **An InstancedMesh shaken by its own transform turns every instance about the GROUP's origin.** v24.24 rattled the
+  altar's marigolds, the garlands and the cabinets' stock by the group's rotation, and the group's origin was the room's,
+  two metres away: a tip of a few hundredths of a radian swung flowers 23 cm out of their vases (Chad: "flying around
+  detached from where they are"). Shake instances about their own origins (decompose each rest matrix, compose each
+  frame); what sits IN a thing is that thing's child; what hangs from two points swings about the line through them.
+  And a thing rocked about its foot's centre sinks half its foot into the shelf: lift it by the foot's radius times its
+  tip. tools/probes/shake.mjs measures all of it, generically, for any build.

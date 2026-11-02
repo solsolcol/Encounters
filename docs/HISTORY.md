@@ -7383,6 +7383,28 @@ What the baseline contains, by release:
     episode's statues and trays still do: docs/OPEN-ITEMS.md, listed and left).
   - Deployed 6ae819d55c26aa1e60939142 (310 of 310 files byte-identical); chapter and leak green on v24.31's copy, which
     carries it.
+- **v24.31** THE ROOM'S RATTLE, SEATED — Chad, 2 Nov 2026 (while v24.30 was built): "The items shaking in ep 4 chp 1 , is
+  very fake looking and unnatural, fix it, i think the movements move too much, you can lessen it a little. They look
+  like they are flying around detached from where they are. Which looks wrong."
+  - MEASURED (tools/probes/shake.mjs, new: the room's own frame on a held clock at the storm's full tremor; every drawn
+    thing that moves, each instance of an instanced group on its own, against where it rests): v24.24's shake turned an
+    INSTANCED GROUP by its own transform, about the room's origin two metres away, so a tip of a few hundredths of a
+    radian swung the marigolds 23 cm out of their vases, the jasmine garlands 13 cm and the cabinets' bottles, scrolls
+    and bundles 7–14 cm through their glass shelves. The single pieces rocked on their own feet but large: the vases'
+    rims 17 mm and 4.5 degrees, the glasses and the cup 5–6 degrees, each dipping 2–3.5 mm into its shelf; the yant
+    cloths swung 12 degrees out from the wall.
+  - THE FIX (e4c1 roomFrame and the room's build): an instanced group rattles instance by instance, each about its own
+    origin with its own phase; each vase's marigolds are its own bunch, a child of the vase, so they rattle in it; each
+    garland hangs on a pivot on the tier's lip, the line through both its ends, and swings a little out as one string
+    (never sideways); every term of the rattle at 0.6 of before (RATTLE: a slide of 2.4 mm, a hop of 1.5, a tip of 0.03
+    rad, a twist of 0.024, times each thing's own amp), the cup's twist at a quarter, the cloths' swing at half; and a
+    thing that stands on its foot is lifted by its foot's radius times its tip, so no edge sinks into the shelf.
+  - After, at the same tremor: marigolds 12 mm (with their vase), garlands 8 mm at the tassel, the cabinets' pieces
+    1–2 mm each in its place, vases 10 mm and 2.8 degrees, glasses and cup 7 mm and 2–3 degrees, cloths 6 degrees; the
+    feet's dips under a millimetre. The phone pictures (each pixel's range over one second at the peak, red over the
+    still room) show the altar's flowers and garlands and the cabinets' stock in their places. The films run the same
+    frame (roomFrame runs in films as in play), so the storm film is answered by the same change.
+  - Deployed 6ae81d6f8873c4cc2398b700 (310 of 310 files byte-identical); chapter and leak green on its copy.
 
 ## The sheet, version by version
 
