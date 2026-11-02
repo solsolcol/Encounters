@@ -13271,7 +13271,11 @@ const STING_SAMPLE = {
   w4coda: ['w4coda', 1], w4heart: ['w4heart', 1], w4rise: ['w4rise', 1], w4cup: ['w4cup', 1],
   w4dog: ['w4dog', 1], w4bell: ['w4bell', 1],
   w4water: ['w4water', 1], w4tube: ['w4tube', 1], w4mala: ['w4mala', 1], w4cloth: ['w4cloth', 1], w4sandon: ['w4sandon', 1], w4storm: ['w4storm', 1],   // CP11: the plan's effects not in the first run, and the storm's drone
-  w4barestep: ['w4barestep', 1]   // CP13: his bare foot in the room (e4c1's stepSound)
+  w4barestep: ['w4barestep', 1],   // CP13: his bare foot in the room (e4c1's stepSound)
+  /* v24.34: e4c1's music where it had none (Chad: "a serious lack of background music ... not just in gameplay, but all the
+     cutscenes") — the yard's and the room's beds in play, the storm film's, the lead-ins to endings A, B and D, the coda's */
+  w4yardmus: ['w4yardmus', 1], w4roommus: ['w4roommus', 1], w4stormmus: ['w4stormmus', 1],
+  w4endA0: ['w4endA0', 1], w4endB0: ['w4endB0', 1], w4endD0: ['w4endD0', 1], w4codamus: ['w4codamus', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays

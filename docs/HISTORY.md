@@ -7487,6 +7487,37 @@ What the baseline contains, by release:
     draws; the cars are 120k of it) — under the yard with Chad's pickup in it (~400k), the chapter's own peak.
   - Deployed 6ae89acbde07277f00d9b685 (310 of 310 files byte-identical).
 
+- **v24.34** THE MUSIC WHERE THERE WAS NONE — episode 4 chapter 1, Chad's note of 2 Nov 2026 (docs/V24.32-E4C1-NOTES.md,
+  ask 5: "throughout this entire episode there is a serious lack of background music, ambient music, mood music, not just
+  in gameplay, but all the cutscenes, like when exiting the samnak, in the taxi, and back in his shop etc. it feels flat
+  because there is not much music"). `src/chapters/e4/e4c1.js`, `src/main.js` (seven `STING_SAMPLE` rows), seven sounds.
+  - THE CENSUS first (tools/probes/musiccensus.mjs, new): music under 55 % of the chapter's films (452 s) — none of the
+    storm film's own (the storm's drone, begun by the stage, rose out of near silence under it, and the census cannot see
+    a sound the stage starts), ending A none for 57 s, D for 46, B for 16, every coda none before its last chord; and
+    in play no music at all.
+  - SEVEN PIECES (eleven_music_v2_5, instrumental, four takes each; masters/v24.34/make.sh has every pick and why, and
+    the takes the measures screened out): in play, two beds looped by hand — the yard's (khaen and phin) under the
+    arrival and the call, giving way to the stilt house's radio as he nears it, and the room's (a reed and violas, close
+    and uneasy) under the consultation and the offering, none under the chant or the storm, half under the decision
+    with the after-rain; in the films, the storm's strings rising to the fifth flash and thinning as his eyes come back,
+    a lead-in to each of endings A (the blessing to the cab), B (the opening exchange) and D (from his "This is enough"
+    to the shelter), each handing over to the cue that was there, and the coda's night piano under the taxi and the shop
+    in all four endings, into the chord. Each eases in and out (2.5 s), each lead-in sits 1-3 dB under the cue it hands
+    to, the beds about 10 dB under speech before the duck.
+  - TWO RE-MADE before any was installed: all four takes of the room's and of the storm's were a drone under 120 Hz that
+    a phone speaker barely plays (10-19 dB lost); asked for the middle register, the remakes lose 1-4 dB (LEARNINGS).
+  - THE LOOPS JOIN EXACTLY: measured, today's Chromium decodes the game's mp3 and Opus with no padding, so the engine's
+    60 ms insets skip 120 ms at every bed's seam; the music beds are padded circularly (padloop.py) and their seams
+    checked as Chromium decodes and loops them. The engine's insets are left as they are (every chapter's beds) and
+    listed for Chad (docs/OPEN-ITEMS.md).
+  - Music now under 97 % of the films (438 of 452 s). Heard on a phone from their own samples (tools/probes/
+    e4c1music.mjs, new): the beds phase by phase, the storm film's, ending D's lead-in, the coda's. The cost: 4.3 MB
+    (mp3) or 4.8 MB (Opus) in the chapter's own pack; decoded, 52 MB from the start of play (the beds and the storm's)
+    and 51 MB more from the decision (the endings') — put to Chad.
+  - Every candidate went to Chad as a loudness-matched reel (masters/v24.34/previews/); the picks are provisional until
+    his ear. Chaptertest, leak, hosted, and episode 1's sound and cine (the control for the engine's rows) green.
+  - Deployed 6ae8a2d63fc2de4835678e4c (310 of 310 files byte-identical).
+
 ## The sheet, version by version
 
 **v136** (`masters/v24.32/masterz-text-v136.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from

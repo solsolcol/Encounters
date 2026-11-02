@@ -210,8 +210,11 @@
        v24.0/make.sh: looped by hand, levelled by RMS) */
     /* (CP13: the taxi's bed went — nothing ever raised it, and its 28.5 s of stereo was decoded at the start of play for
        nothing; the coda cues the taxi as a one-shot) */
+    /* (v24.34, Chad: "a serious lack of background music, ambient music, mood music, not just in gameplay, but all the
+       cutscenes") and the two pieces of music play has now, looped by hand: the yard's (khaen and phin) and the room's
+       (a reed and violas, close and uneasy) — mixBeds sets them by the world and the phase like every other bed */
     ambience: { beds: [['w4yard', 0], ['w4paddy', 0], ['w4roomtone', 0], ['w4rainl', 0], ['w4rainh', 0], ['w4after', 0],
-                       ['w4radio', 0]] },
+                       ['w4radio', 0], ['w4yardmus', 0], ['w4roommus', 0]] },
     voiceLine: null,
 
     words: {
@@ -5773,11 +5776,17 @@
        as the room's rain (light, then the downpour), and after the storm THE HUSH: nothing, then the after-rain's frogs
        and drips. In a film the beds go down: every film cues its own sound, written to its pictures. The order is
        DATA.ambience.beds'. */
-    const bedMix = { yard: 0, paddy: 0, room: 0, rainl: 0, rainh: 0, after: 0, radio: 0 };
+    /* (v24.34) THE MUSIC IN PLAY, two beds of it: the yard's under the arrival and the call (it gives way to the stilt
+       house's radio as he nears it: two musics at once is noise), the room's under the consultation and the offering — and
+       never under the chant or the storm, whose own sounds are the music then (the chant; the drone) — then low under the
+       decision, coming in with the after-rain. Each eases over 2.5 s, as the after-rain does: music that cuts in or out
+       with a step is heard as a mistake. MUS is each bed's level, priced against the voices (masters/v24.34/make.sh). */
+    const MUS = { yard: 0.38, room: 0.23, decide: 0.5 };
+    const bedMix = { yard: 0, paddy: 0, room: 0, rainl: 0, rainh: 0, after: 0, radio: 0, yardmus: 0, roommus: 0 };
     const bedStep = (v, a, b) => { const u = v <= a ? 0 : v >= b ? 1 : (v - a) / (b - a); return u * u * (3 - 2 * u); };
     function mixBeds(wdt, st) {
       if (!(wdt > 0)) return;
-      const want = { yard: 0, paddy: 0, room: 0, rainl: 0, rainh: 0, after: 0, radio: 0 };
+      const want = { yard: 0, paddy: 0, room: 0, rainl: 0, rainh: 0, after: 0, radio: 0, yardmus: 0, roommus: 0 };
       const w = worldOf(yaw.position.x);
       /* (v24.12: the storm film keeps the room's beds — it is the storm itself, the rain on the zinc at its loudest; every
          other film cues its own sound) */
@@ -5788,6 +5797,7 @@
           want.paddy = [0.08, 0.13, 0.18][late];
           const H = CMP.HOUSE, d = Math.hypot(yaw.position.x - (H.x0 + H.x1) / 2, yaw.position.z - (H.z0 + H.z1) / 2) / 7;
           want.radio = 0.3 / (1 + d * d);
+          want.yardmus = MUS.yard * (1 - Math.min(1, want.radio / 0.3));
           if (play.called) want.rainl = 0.2;          // the first drops on the sala's roof as his number comes (CP13: silent)
         } else if (w === 'R') {
           const rk = room.rainK || 0;
@@ -5799,12 +5809,13 @@
           /* on WALL time (CP13: the chapter clock stands still under the decision, so the after-rain never came) */
           if (phase === 'decide' && rk < 0.02) { if (hushAt < 0) hushAt = wallNow(); } else hushAt = -1;
           want.after = hushAt >= 0 && wallNow() - hushAt > 2.5 ? 0.3 : 0;
+          want.roommus = phase === 'consult' || phase === 'items' ? MUS.room : phase === 'decide' && want.after > 0 ? MUS.room * MUS.decide : 0;
         }
       }
-      for (const k in bedMix) bedMix[k] += (want[k] - bedMix[k]) * (1 - Math.exp(-wdt / (k === 'after' ? 2.5 : 0.9)));
+      for (const k in bedMix) bedMix[k] += (want[k] - bedMix[k]) * (1 - Math.exp(-wdt / (k === 'after' || k === 'yardmus' || k === 'roommus' ? 2.5 : 0.9)));
       const B = DATA.ambience.beds;
       B[0][1] = bedMix.yard; B[1][1] = bedMix.paddy; B[2][1] = bedMix.room; B[3][1] = bedMix.rainl;
-      B[4][1] = bedMix.rainh; B[5][1] = bedMix.after; B[6][1] = bedMix.radio;
+      B[4][1] = bedMix.rainh; B[5][1] = bedMix.after; B[6][1] = bedMix.radio; B[7][1] = bedMix.yardmus; B[8][1] = bedMix.roommus;
     }
     function updatePile() {}
     function updateFire() {}
@@ -8466,10 +8477,14 @@
   /* THE STORM, WATCHED (v24.12, kit.film from play): the stage draws it (films 'storm'); here only its thunder, one clap a
      flash over the rain and the drone the stage keeps — a far roll on the first, cracks after, the loudest on the fifth */
   function stormFilm(c, s, api) {
-    const { tr, step, sfx, rawK, stage } = api;
+    const { tr, step, sfx, sfxFade, rawK, stage } = api;
     const S = STORM;
     step(0, () => stage.films.begin('storm', c, api));
     tr(0, S.end, (k, t) => stage.films.frame('storm', t, api), rawK);
+    /* (v24.34) its music: strings rising under the five flashes, thinned as his eyes come back to the master (the storm's
+       drone takes over in play) */
+    sfx(0.2, 'w4stormmus', 0.85);
+    sfxFade(S.back, S.end - 0.05, 'w4stormmus');
     sfx(S.f1 + 0.15, 'w4thunder', 0.75);       // flash 1: the room, a long roll
     sfx(S.f2 + 0.1, 'w4crack', 0.7);           // flash 2: the cup
     sfx(S.f3 + 0.1, 'w4crack', 0.8);           // flash 3: the cloth, the clock
@@ -8525,6 +8540,10 @@
       sfx(T.cab + 0.6, 'pg1A2', 1);                          // "Strong, right?"  (→ ~58.8)
       sfx(T.cab + 2.4, 'q1A3', 1);                           // "...Maybe."  (→ ~60.7)
       sfx(T.cab + 0.1, 'w4endA', 0.75);                      // the khaen, alone
+      /* (v24.34) and the music before it: from the blessing to the cab (the khaen and low strings; it thins as he climbs in,
+         and the khaen alone takes over) */
+      sfx(4.5, 'w4endA0', 0.55);
+      sfxFade(T.cab - 0.5, T.cab + 1.5, 'w4endA0');
       sfx(T.wide + 0.4, 'q1A4', 1);                          // "I didn't know what I'd seen in that room. So I let it stay unknown."  (→ ~69.4)
       sfxFade(T.coda - 1.2, T.coda + 0.2, 'w4endA');
       /* THE CODA (the same in every ending; the last image is the ending's own) */
@@ -8538,6 +8557,9 @@
       sfxFade(T.coda + CODA.k2 - 0.5, T.coda + CODA.k2 + 0.1, 'w4taxi');   // the taxi gone with its picture (CP13: it ran on under the shop)
       sfx(T.coda + 13.4, 'q1K3', 1);                         // "...I stopped feeling like myself."  (→ ~16.3)
       sfx(T.coda + CODA.k2 + 4.4, 'w4pat', 0.5);             // his free hand patting his pocket for the keys in the other
+      /* (v24.34) the coda's own music, under the taxi and the shop at dawn — a night piano, thinning into the chord */
+      sfx(T.coda + 0.2, 'w4codamus', 0.8);
+      sfxFade(T.coda + CODA.k3 - 0.2, T.coda + CODA.k3 + 1.2, 'w4codamus');
       sfx(T.coda + CODA.k3, 'w4coda', 0.7);                  // the coda's chord
       fade(T.coda + CODA.black, T.coda + CODA.end, 0, 1);
     });
@@ -8554,6 +8576,9 @@
       sfx(T.ask + 4.25, 'pg1B2', 1);                         // (Pong asks the master, in Thai)  (→ ~13.5) (v24.5, L3 P1: 0.17 s after his own line)
       sfx(T.look + 0.6, 'w4frogs', 0.35);
       sfx(T.look + 1.2, 'w4endB', 0.6);                      // the curious motif, low
+      /* (v24.34) and before it, under his question and Pong's: a low phin over a hush, settling as the master looks */
+      sfx(0.6, 'w4endB0', 0.5);
+      sfxFade(T.look + 0.6, T.look + 2.2, 'w4endB0');
       sfx(T.look + 5.2, 'fm1B1', 1);                         // "That one has been in this house longer than me..."  (→ ~25.4)
       sfx(T.pong + 0.2, 'pg1B3', 1);                         // "He say... that one stay in this house longer than him..."  (→ ~34.1)
       sfx(T.who + 0.2, 'fm1B2', 1);                          // "Who taught him?"  (→ ~36.0)
@@ -8585,6 +8610,8 @@
       sfx(T.coda + 13.4, 'q1K3', 1);
       sfx(T.coda + CODA.k2 + 4.4, 'w4pat', 0.5);
       sfx(T.coda + CODA.k3 + 0.6, 'w4buzz', 0.7);            // his phone lights: the Ajahn
+      sfx(T.coda + 0.2, 'w4codamus', 0.8);                   // (v24.34) the coda's own music, as in A
+      sfxFade(T.coda + CODA.k3 - 0.2, T.coda + CODA.k3 + 1.2, 'w4codamus');
       sfx(T.coda + CODA.k3, 'w4coda', 0.7);
       fade(T.coda + CODA.black, T.coda + CODA.end, 0, 1);
     });
@@ -8628,6 +8655,8 @@
       sfxFade(T.coda + CODA.k2 - 0.5, T.coda + CODA.k2 + 0.1, 'w4taxi');   // the taxi gone with its picture (CP13: it ran on under the shop)
       sfx(T.coda + 13.4, 'q1K3', 1);
       sfx(T.coda + CODA.k2 + 4.4, 'w4pat', 0.5);
+      sfx(T.coda + 0.2, 'w4codamus', 0.8);                   // (v24.34) the coda's own music, as in A
+      sfxFade(T.coda + CODA.k3 - 0.2, T.coda + CODA.k3 + 1.2, 'w4codamus');
       sfx(T.coda + CODA.k3, 'w4coda', 0.7);
       fade(T.coda + CODA.black, T.coda + CODA.end, 0, 1);
       void phone;
@@ -8662,6 +8691,10 @@
       sfx(T.shelter + 11.6, 'w4pen', 0.4);
       sfx(T.shelter + 13.2, 'w4pen', 0.4);                   // (v24.5, L3-6: and here, writing on to 50.9)
       sfx(T.shelter + 10.0, 'w4endD', 0.7);                  // the phin
+      /* (v24.34) and the music before it: from his "This is enough for me today", after the bell, through the yard and the
+         shelter — warm and unhurried, thinning as the phin comes in */
+      sfx(T.ask + 0.6, 'w4endD0', 0.45);
+      sfxFade(T.shelter + 9.5, T.shelter + 11.0, 'w4endD0');
       sfx(T.dusk + 0.6, 'q1D5', 1);                          // "I didn't need to understand it to know it was time to go."  (→ ~58.1)
       sfxFade(T.coda - 1.2, T.coda + 0.2, 'w4endD');
       fade(T.coda - 0.5, T.coda, 0, 1); fade(T.coda, T.coda + 0.8, 1, 0);
@@ -8674,6 +8707,8 @@
       sfxFade(T.coda + CODA.k2 - 0.5, T.coda + CODA.k2 + 0.1, 'w4taxi');   // the taxi gone with its picture (CP13: it ran on under the shop)
       sfx(T.coda + 13.4, 'q1K3', 1);
       sfx(T.coda + CODA.k2 + 4.4, 'w4pat', 0.5);
+      sfx(T.coda + 0.2, 'w4codamus', 0.8);                   // (v24.34) the coda's own music, as in A
+      sfxFade(T.coda + CODA.k3 - 0.2, T.coda + CODA.k3 + 1.2, 'w4codamus');
       sfx(T.coda + CODA.k3, 'w4coda', 0.7);
       fade(T.coda + CODA.black, T.coda + CODA.end, 0, 1);
     });

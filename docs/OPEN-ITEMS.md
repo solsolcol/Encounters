@@ -94,6 +94,12 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
       keeps them). If the yard is slow on his phone: roll back to v24.27 on Netlify, or a distance level that keeps
       the clear-coated paint whole and cuts the rest (~170k, +~2 MB, photographed before it ships).
 
+11. **The beds' loop seams (found at v24.34, every chapter).** The engine loops a bed over [0.06, duration − 0.06] because
+    mp3 decoding once padded both ends with silence; measured in today's Chromium, neither the game's mp3s nor its Opus
+    files are padded, so every bed skips 120 ms of its own sound at each seam (a noise bed hides it; music would stutter —
+    e4c1's two music beds are padded to fit, LEARNINGS v24.34). Changing the engine's insets would move every bed in every
+    chapter, episode 1's included, so it waits on his word. Also his: the new music's decoded cost in episode 4
+    chapter 1 — 52 MB from the start of play, 51 MB more from the decision (docs/HISTORY.md, v24.34).
 ## D. Not built yet
 
 - Episode 4 chapters 2–5; Episode 5 (S1·16–S1·20); Episodes 6–10 (names still the v6.0 list).

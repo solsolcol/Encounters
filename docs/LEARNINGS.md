@@ -7189,3 +7189,27 @@ cut (sharing its vertices and maps) when it is small.
 - **A light's reflection in a wet road can be placed, not rendered.** Its streak lies where the line from the eye to the
   light's mirror image under the road meets the road; a Points sprite there with an upright streak texture reads as
   the reflection from that eye, at the cost of a few multiplications a light a frame.
+
+## v24.34 — the music where there was none
+
+- **A drone asked for as "very low" comes back under 120 Hz, and a phone plays none of it.** All four takes of the room's
+  bed and of the storm's music were 46-95 % sub-bass (10-19 dB lost through a phone's speaker, measured as two 250 Hz
+  high-passes). Laying the take's own harmonics under it (v24.0's heartbeat recipe) did not save them: the layer had to
+  be as loud as the take to matter and still left 11 dB lost. Asked again for the MIDDLE register ("bowed violas … in
+  the middle register … no bass, no sub-bass, no low drone"), the four remakes lost 1-4 dB. Ask for the register a phone
+  plays in the prompt; do not plan to rescue it after.
+- **The engine's 60 ms loop insets cut real sound in today's Chromium.** loopVol() loops a bed over [0.06, duration −
+  0.06] because "mp3 decoding pads both ends with silence" (above). Measured at v24.34 with a click at a known time: an
+  mp3 from ffmpeg's libmp3lame (it writes the LAME tag) and an Ogg Opus both decode in the suite's Chromium to their
+  exact length, the click where it was — so every bed's seam skips 120 ms of its own sound. A noise bed hides it; a
+  piece of music would stutter. The music beds are padded circularly by 0.06 s each side (masters/v24.34/music/
+  padloop.py), so the engine's loop region is exactly one period. Changing the engine's insets would move every bed of
+  every chapter (episode 1's included), so it is listed for Chad, not changed (docs/OPEN-ITEMS.md).
+- **A static census sees only what a film cues.** musiccensus walks a film's sfx and fades; the storm's drone is started
+  by the stage when the film begins, so the census reported the storm film silent when the drone was under it (rising
+  out of near silence, so its first seconds were bare all the same). Before trusting a 0, read what the film's stage
+  starts.
+- **Polling for "it stopped moving" reads a starved frame as settled.** The beds ease on the frame's wall step, and a
+  slow box draws a frame every few seconds: two reads a second apart can see no frame between them and call a fade that
+  is a third done "settled" (the first run of e4c1music marked three right phases WRONG). Wait on the condition the
+  phase should reach (waitForFunction on the range), and fail it only if it never comes.

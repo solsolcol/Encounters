@@ -1,0 +1,55 @@
+{
+ "_flow": "VzVVjq8H0JxVBpIUXadi",
+ "model": "eleven_music_v2_5, instrumental, four takes each",
+ "music": [
+  [
+   "w4yardmus",
+   90,
+   "Sparse ambient Southeast Asian folk, instrumental: a soft low khaen (Lao bamboo mouth organ) drone with distant, unhurried phin lute phrases and long silences between them, and a faint high bowed fiddle tone now and then. Calm, curious and a little uneasy, slow tempo, no drums, a steady quiet level from start to end, natural room reverb."
+  ],
+  [
+   "w4roommus",
+   90,
+   "Dark ambient drone, instrumental: a very low sustained reed drone and soft bowed strings holding a dissonant interval, an occasional deep wooden knock and a faint metallic shimmer, close and uneasy. No melody, no drums, very slow, a steady quiet level from start to end."
+  ],
+  [
+   "w4stormmus",
+   18,
+   "Cinematic dark ambient tension, instrumental: low bowed cello and viola tremolo over a deep reed drone, swelling steadily in intensity for fifteen seconds with no percussion and no sudden hits, then thinning back to a low held drone at the end."
+  ],
+  [
+   "w4endA0",
+   57,
+   "Tender cinematic Southeast Asian score, instrumental: a soft khaen (Lao bamboo mouth organ) with warm low bowed strings, slow and open, gentle phrases that never quite resolve, quiet relief and uncertainty. Starts very soft, grows a little warmer through the middle, then thins to a single held khaen note at the end, natural room reverb."
+  ],
+  [
+   "w4endB0",
+   17,
+   "Quiet questioning ambience, instrumental: a soft low plucked Thai phin lute note repeated slowly over a hushed bowed drone, sparse and a little uneasy, no drums, settling into near stillness by the end."
+  ],
+  [
+   "w4endD0",
+   40,
+   "Gentle warm Thai folk, instrumental: a soft Thai phin lute playing an unhurried calm melody in a warm middle register over a quiet khaen drone, kind and a little wistful, slow tempo, sparse with space, steady and soft throughout, ending on a quiet open note."
+  ],
+  [
+   "w4codamus",
+   19,
+   "Reflective night-time cinematic piano, instrumental: soft felt piano and warm electric piano chords over a low synth pad, slow, lonely and hushed, with a faint distant khaen phrase like a memory, fading into a held unresolved chord at the end."
+  ]
+ ],
+ "remakes": [
+  [
+   "w4roommus_r2",
+   90,
+   "Dark ambient, instrumental: a soft sustained reed tone and bowed violas holding a dissonant interval in the middle register, slowly shifting, with an occasional faint ring of a struck metal bowl, close and uneasy. Nothing deep: no bass, no sub-bass, no low drone, no drums, no melody. Very slow, a steady quiet level from start to end.",
+   "RE-MADE: the first four were 46-95 % under 120 Hz (10-19 dB lost on a phone)"
+  ],
+  [
+   "w4stormmus_r2",
+   18,
+   "Cinematic tension, instrumental: violins and violas in tremolo in their middle and high register with a thin reed tone above them, swelling steadily with no percussion and no sudden hits, then thinning to one high held note at the end. No bass, no sub-bass, no low drone.",
+   "RE-MADE: the first four were 77-92 % under 120 Hz (13-16 dB lost on a phone)"
+  ]
+ ]
+}
