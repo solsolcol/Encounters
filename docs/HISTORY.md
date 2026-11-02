@@ -7517,6 +7517,29 @@ What the baseline contains, by release:
   - Every candidate went to Chad as a loudness-matched reel (masters/v24.34/previews/); the picks are provisional until
     his ear. Chaptertest, leak, hosted, and episode 1's sound and cine (the control for the engine's rows) green.
   - Deployed 6ae8a2d63fc2de4835678e4c (310 of 310 files byte-identical).
+- **v24.35** THE SHOPS UNDER THE BLOCKS, AND THE TREES — episode 4 chapter 1, Chad's notes of 2 Nov 2026 (asks 11 and 12
+  of docs/V24.32-E4C1-NOTES.md: "Those storefronts the taxi pass by are not real, at least put more effort into it";
+  "Why are there 2 layers of signboard"; "You should remove the top one not the lower one"; "Why are there no trees at
+  the roadside"). `src/chapters/e4/e4c1.js`.
+  - MEASURED FIRST: his side window sees only units 3-8 of each street segment's first block (the coda's 0-1 s and
+    9-10.6 s), and the kopitiam, always dealt to a corner, was never in it; the first block of each segment is now
+    planned, the rest dealt by a seeded stream.
+  - The shops BUILT where one painted sheet stood: each unit a room open to the walk, stocked and lit in painted light
+    (one atlas with gutters, makeStoreAtlas; unlit vertex colours, no light added) — minimart, provision shop, coffee
+    shop (tables, stools, drinks stall, menu board, people at the tables as stills of episode 1 chapter 3's seated men,
+    declared reuse), clinic, bakery, hair salon, a hardware shop shuttered; one generic sign each, Chinese and English,
+    over its own front (the beam's lightbox removed at Chad's word); the walkway's columns, ceiling and tubes; the two
+    storeys above (windows in their frames, curtains, air-conditioners, laundry poles).
+  - Chad's palms along the verge every 11-13 m and on the median at its lamps (near level where the window looks).
+  - Priced on a phone before the trees: the window 61,398 triangles in 37 draws, the windscreen 338,373 in 68.
+  - Deployed 6ae8b3ae38ae63a56cd25459 (the shops) and 6ae8b57fa96b2ed03d2df857 (the trees), 310 of 310 files
+    byte-identical each time; chaptertest green; the harness round runs with v24.36's batch.
+  - What the checks missed and Chad found: v24.33's bus-stop advert panel, lit and blank, a white block in front of the
+    bakery. And his question of the method (the notes doc has his words and the answer): four full releases for one
+    list of notes and building by trial, photograph by photograph, on a box with no GPU. The rule it became is in
+    CLAUDE.md (v24.35): one build, one deploy and one round of checks per batch of his asks, each ask designed in full
+    before it is built, the standards unchanged, and every changed picture judged by a reviewer who does not know what
+    was meant.
 
 ## The sheet, version by version
 

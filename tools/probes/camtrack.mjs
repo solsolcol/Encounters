@@ -8,7 +8,7 @@
 // gesture, a walk's gait — is wherever the seeks leave it). SHOTS=t1,t2,… photographs frames INSIDE the stepped run, at
 // those times of the film's clock, so a person's one-off gesture (played on the wall clock, here held in step with the
 // film's) is pictured where a real play shows it — shots.jpg.
-//   ENC_DIST=<snap> CHROMIUM_PATH=... CH=e4c1 OPT=A [PHASE='decide:~fri'] T0=51 T1=57 [FPS=30] [STRIP=6] [SHOTS=52,54] node tools/probes/camtrack.mjs <outdir>
+//   ENC_DIST=<snap> CHROMIUM_PATH=... CH=e4c1 OPT=A [PHASE='decide:~fri'] T0=51 T1=57 [FPS=30] [STRIP=6] [SHOTS=52,54] [VIEW=desktop] node tools/probes/camtrack.mjs <outdir>
 import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
 import fs from 'node:fs';
@@ -22,7 +22,10 @@ const CH = process.env.CH || 'e4c1', OPT = process.env.OPT || 'A', T0 = +(proces
 const FPS = +(process.env.FPS || 30), STRIP = +(process.env.STRIP || 0);
 const SHOTS = (process.env.SHOTS || '').split(',').filter(Boolean).map(Number).sort((a, b) => a - b);
 const b = await chromium.launch(LAUNCH);
-const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
+/* (v24.35) VIEW=desktop: a 1280 x 800 window with a mouse, where the default is a phone (touch) */
+const DESK = process.env.VIEW === 'desktop';
+const ctx = await b.newContext(DESK ? { viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1 }
+                                    : { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
 const p = await ctx.newPage(); const errs = [];
 p.on('pageerror', e => errs.push('PAGEERROR ' + e.message));
 p.on('console', m => { if (m.type() === 'error') errs.push('console ' + m.text().slice(0, 200)); });
@@ -37,7 +40,7 @@ await p.waitForFunction(() => window.__enc.getState() === 'decide', null, { time
 await p.waitForFunction(() => { const P = document.querySelector('#decide .panel'); return P && P.getAnimations().every(a => a.playState === 'finished'); }, null, { timeout: 120000, polling: 200 });
 const bt = await p.evaluate((i) => { const B = [...document.querySelectorAll('#choices button.choice')]; const r = B[i] && B[i].getBoundingClientRect();
   return r ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null; }, 'ABCD'.indexOf(OPT));
-await p.touchscreen.tap(Math.round(bt.x), Math.round(bt.y));
+if (DESK) await p.mouse.click(Math.round(bt.x), Math.round(bt.y)); else await p.touchscreen.tap(Math.round(bt.x), Math.round(bt.y));
 await p.waitForFunction(() => window.__enc.cine.active() && window.__enc.getState() === 'cine', null, { timeout: 1500000, polling: 500 });
 await p.waitForFunction(() => window.__enc.cine.t() > 0.2, null, { timeout: 600000, polling: 300 });
 /* let the scene's own frames run up to T0 once, so what its clock builds as it goes (the people's walks, the props) is

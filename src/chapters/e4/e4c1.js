@@ -195,13 +195,18 @@
        1's `granny`; nothing in the chapter is a stand-in for a person any more) */
     assets: ['firstmaster', 'fmshadow', 'e4sky', 'e4pong', 'e4noi', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4pickup', 'e4nangkwak', 'e4takrut', 'e4phayant',
              'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd', 'e4buffalo', 'e4sandalsa', 'e4sandalsb', 'e4rahu', 'e4sedan', 'e4truck', 'e4suv', 'e4moto',
-             'e4seat', 'owner',
+             'e4seat', 'owner', 'sitman', 'sitclap', 'sitshout',
              'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm', 'filmlaptop'],
     /* (v24.21) the taxi uncle at the wheel stands in until Chad's model (docs/E4-MODELS.md) */
     /* (v24.22) his laptop is HIS: the one his dashcam orders climbed on in episode 3 chapter 1's film (Chad's model), now
        keeping his shop's sales (Chad: "why he is recording sales on paper? It makes no sense. It should be on laptop") */
     reuse: { owner: "the taxi uncle at the wheel in the coda — chapter 3's amulet-shop owner, an older Chinese man, wearing the role until Chad's model (docs/E4-MODELS.md)",
-             filmlaptop: "his own laptop — the one his dashcam business's orders climbed on in episode 3 chapter 1's film — on his shop's counter now, keeping its sales" },
+             filmlaptop: "his own laptop — the one his dashcam business's orders climbed on in episode 3 chapter 1's film — on his shop's counter now, keeping its sales",
+             /* (v24.35) people at the coffee shops' tables the taxi passes in the coda, each a still a few metres off through the
+                rain, never close (seatSitters) */
+             sitman: "a man at a coffee shop's table, seen from the taxi in the coda — episode 1 chapter 3's seated man from the tentage, at rest",
+             sitclap: "a man at a coffee shop's table, seen from the taxi in the coda — episode 1 chapter 3's seated man, at rest",
+             sitshout: "a man at a coffee shop's table, seen from the taxi in the coda — episode 1 chapter 3's seated man, at the first frame of his take" },
     placeholders: {},
     items: [],
 
@@ -3274,13 +3279,13 @@
        models (v24.13, v24.20), the cars' glass painted, so no empty seat shows. The cabin's sweep band is the lamps
        passing overhead now, read off the same street */
     const TST = { V: 13.5, SEG: 120, LAMPS: [-8, -38, -68, -98], MLAMPS: [-23, -53, -83, -113] };
-    const street = { segs: [], lights: [], refl: null, reflPos: null, cars: [], eye: new THREE.Vector3() };
+    const street = { segs: [], lights: [], refl: null, reflPos: null, cars: [], people: [], eye: new THREE.Vector3() };
     function buildTaxiStreet() {
       const T0 = worldT, SG = TST.SEG;
       const tGlow = tex(makeGlow(THREE, cnv)), tStreak = tex(makeStreak(THREE, cnv));
       const mRoad = B({ color: 0x0a0a0e }), mGround = B({ color: 0x0c0d11 }), mFoot = B({ color: 0x18181d }), mKerb = B({ color: 0x34343a });
       const mVerge = B({ color: 0x0b100b }), mMark = B({ color: 0xa8a8a4 }), mPole = B({ color: 0x24262a }), mHead = B({ color: 0xfff1dc });
-      const mEnd = B({ color: 0x131419 }), mUnder = B({ color: 0x1e1c1a }), mPanel = B({ color: 0xd8dce4 });
+      const mEnd = B({ color: 0x131419 }), mPanel = B({ color: 0xd8dce4 });
       const mPool = B({ map: tGlow, color: 0xffd2a0, transparent: true, opacity: 0.3, blending: THREE.AdditiveBlending, depthWrite: false });
       /* the shops' light out over the walk in front of them, brightest at their fronts (photographed: without it the lower
          half of his window was black ground) */
@@ -3288,6 +3293,328 @@
         g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.45, 'rgba(255,255,255,0.4)'); g.addColorStop(1, 'rgba(255,255,255,0)');
         x.fillStyle = g; x.fillRect(0, 0, 64, 8); return tex(done(THREE, c, false)); })();
       const mSpill = B({ map: tSpill, color: 0xffe6c4, transparent: true, opacity: 0.42, blending: THREE.AdditiveBlending, depthWrite: false });
+      /* (v24.35) THE SHOPS UNDER THE BLOCKS, BUILT (Chad, 2 Nov 2026: "Those storefronts the taxi pass by are not real, at
+         least put more effort into it"). v24.33 painted them on a sheet at each block's foot. Now each block stands on its
+         covered walkway — the columns along its front, the tubes in its ceiling, the beam over it with each shop's lightbox
+         — and behind the walkway a row of real rooms with their fronts open: a minimart (aisles, a wall of fridges, its
+         till by the door, the ice-cream chest out front), a provision shop (shelved to the ceiling, its crates, a table of
+         snacks and its rice out on the walk, snacks hanging in strips), a clinic behind its frosted front, a bakery's
+         counter of trays, a hair salon (mirrors, chairs, its pole by the door), a medical hall (its wall of drawers, its
+         jars), a laundromat, a hardware shop shuttered for the night, and the lift lobby with the block's number and its
+         recycling bins; on about half the blocks a coffee shop on the near corner, two units wide and open on its side: its
+         stalls along the back (drinks, noodles, economy rice, one shut), their signs and the drinks menu, round tables with
+         their stools inside and out on the walk, its fans, its fridge, a TV high on the wall; a bicycle at a column. All
+         painted light (v15.1): unlit, each face as bright as the light on it (baked into its vertex colours), the pictures
+         from makeStoreAtlas. Two meshes a segment and a Points of the lightboxes' and tubes' glows; the shops have their
+         own seeded stream, so the blocks stand exactly where v24.33 put them. */
+      const ATL = makeStoreAtlas(THREE, cnv), CELL = ATL.cells;
+      const mShopC = B({ vertexColors: true, side: THREE.DoubleSide });
+      const mShopT = B({ map: tex(ATL.tex), vertexColors: true, side: THREE.DoubleSide, alphaTest: 0.5 });
+      const mShopGlow = new THREE.PointsMaterial({ map: tGlow, size: 2.6, sizeAttenuation: true, vertexColors: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
+      mats.push(mShopGlow);
+      const SH = { XF: -11.6, XB: -17.4, XW: -8.95, XC: -9.25, YF: 0.18, YS: 3.72, YC: 3.4 };
+      const _sc = new THREE.Color();
+      const lc = (hex, k = 1) => { _sc.set(hex); return [_sc.r * k, _sc.g * k, _sc.b * k]; };
+      /* a quad of four corners in colours (one, or one a corner), or in a cell of the atlas: the shops are drawn from both
+         sides, so its winding does not matter; a cell's u runs from its first corner to its second, v from the second to
+         the third */
+      const qC = (V, a, b, c, d, ca, cb = ca, cc = ca, cd = ca) => { V.p.push(...a, ...b, ...c, ...a, ...c, ...d); V.c.push(...ca, ...cb, ...cc, ...ca, ...cc, ...cd); };
+      const qT = (A, a, b, c, d, cell, k = 1) => {
+        const [u0, v0, u1, v1] = cell, t = lc(0xffffff, k);
+        A.p.push(...a, ...b, ...c, ...a, ...c, ...d); for (let i = 0; i < 6; i++) A.c.push(...t);
+        A.u.push(u0, v0, u1, v0, u1, v1, u0, v0, u1, v1, u0, v1);
+      };
+      /* a face toward the road (+x), its bottom-left the higher z as the road sees it; a side wall's face from the front
+         (xF) to the back (xB); a floor or a ceiling */
+      const fX = (x, y0, y1, zHi, zLo) => [[x, y0, zHi], [x, y0, zLo], [x, y1, zLo], [x, y1, zHi]];
+      const fZ = (z, y0, y1, xF, xB) => [[xF, y0, z], [xB, y0, z], [xB, y1, z], [xF, y1, z]];
+      const fY = (y, x0, x1, z0, z1) => [[x0, y, z0], [x1, y, z0], [x1, y, z1], [x0, y, z1]];
+      /* a box, each face as bright as the light on it, K = [top, bottom, +x, −x, +z, −z]: out on the walk lit from the
+         shops behind it and the tubes over it (KO), inside a shop from its ceiling (KI); `skip` names faces never seen */
+      const KO = [0.9, 0.35, 0.42, 0.85, 0.62, 0.62], KI = [0.78, 0.42, 0.68, 0.55, 0.6, 0.6];   // (photographed: a shop at full white read as a glare)
+      const bC = (V, x0, x1, y0, y1, z0, z1, hex, K = KI, skip = '') => {
+        const c = (i) => lc(hex, K[i]);
+        if (!skip.includes('t')) qC(V, ...fY(y1, x0, x1, z0, z1), c(0));
+        if (!skip.includes('b')) qC(V, ...fY(y0, x0, x1, z0, z1), c(1));
+        if (!skip.includes('p')) qC(V, ...fX(x1, y0, y1, z1, z0), c(2));
+        if (!skip.includes('n')) qC(V, ...fX(x0, y0, y1, z1, z0), c(3));
+        if (!skip.includes('z')) qC(V, ...fZ(z1, y0, y1, x1, x0), c(4));
+        if (!skip.includes('w')) qC(V, ...fZ(z0, y0, y1, x1, x0), c(5));
+      };
+      /* an upright cylinder (a table's top, a stool, a fan's hub), its side and its top; and one in a cell (the salon's pole) */
+      const cyC = (V, x, z, y0, y1, rad, n, hex, kTop = 1, kSide = 0.72) => {
+        const top = lc(hex, kTop);
+        for (let i = 0; i < n; i++) {
+          const a0 = i / n * Math.PI * 2, a1 = (i + 1) / n * Math.PI * 2, c0 = Math.cos(a0), s0 = Math.sin(a0), c1 = Math.cos(a1), s1 = Math.sin(a1);
+          qC(V, [x + c0 * rad, y0, z + s0 * rad], [x + c1 * rad, y0, z + s1 * rad], [x + c1 * rad, y1, z + s1 * rad], [x + c0 * rad, y1, z + s0 * rad], lc(hex, kSide * (0.8 + 0.2 * (c0 + c1) / 2)));
+          V.p.push(x, y1, z, x + c0 * rad, y1, z + s0 * rad, x + c1 * rad, y1, z + s1 * rad); V.c.push(...top, ...top, ...top);
+        }
+      };
+      const cyT = (A, x, z, y0, y1, rad, n, cell, k = 1) => {
+        const [u0, v0, u1, v1] = cell, t = lc(0xffffff, k);
+        for (let i = 0; i < n; i++) {
+          const a0 = i / n * Math.PI * 2, a1 = (i + 1) / n * Math.PI * 2, uA = u0 + (u1 - u0) * i / n, uB = u0 + (u1 - u0) * (i + 1) / n;
+          const p0 = [x + Math.cos(a0) * rad, 0, z + Math.sin(a0) * rad], p1 = [x + Math.cos(a1) * rad, 0, z + Math.sin(a1) * rad];
+          A.p.push(p0[0], y0, p0[2], p1[0], y0, p1[2], p1[0], y1, p1[2], p0[0], y0, p0[2], p1[0], y1, p1[2], p0[0], y1, p0[2]);
+          A.u.push(uA, v0, uB, v0, uB, v1, uA, v0, uB, v1, uA, v1); for (let j = 0; j < 6; j++) A.c.push(...t);
+        }
+      };
+      /* floor tiles, 1.45 m of the cell a quad, the last of a row cut to fit (and its cell with it); k0 at x0, k1 at x1 */
+      const tileQ = (A, x0, x1, zHi, zLo, y, k0, k1) => {
+        const TS = 1.45, [u0, v0, u1, v1] = CELL.tiles;
+        for (let xa = x0; xa > x1 + 1e-6; xa -= TS) {
+          const xb = Math.max(x1, xa - TS), fx = (xa - xb) / TS, k = k0 + (k1 - k0) * ((x0 - (xa + xb) / 2) / Math.max(1e-6, x0 - x1));
+          for (let za = zHi; za > zLo + 1e-6; za -= TS) {
+            const zb = Math.max(zLo, za - TS), fz = (za - zb) / TS;
+            qT(A, [xa, y, za], [xa, y, zb], [xb, y, zb], [xb, y, za], [u0, v0, u0 + (u1 - u0) * fz, v0 + (v1 - v0) * fx], k);
+          }
+        }
+      };
+      const SROOM = {
+        mart: { wall: 0xe4e8ea, floor: 0xd2d6d4, light: 0xffffff }, prov: { wall: 0xd4c4a4, floor: 0xbcb098, light: 0xfff0d4 },
+        clinic: { wall: 0xf0f2f0, floor: 0xd6dad6, light: 0xffffff }, bakery: { wall: 0xf0dabe, floor: 0xd4c0a2, light: 0xfff0c8 },
+        salon: { wall: 0xf0e4ec, floor: 0xd6ced2, light: 0xffffff }, med: { wall: 0xc6a676, floor: 0xa6885e, light: 0xffe2b0 },
+        laundry: { wall: 0xe6eef2, floor: 0xced6da, light: 0xffffff }, kopi: { wall: 0xdedacd, floor: 0xd0c8b8, light: 0xf4fbff },
+        lift: { wall: 0xd6d2c6, floor: 0xc8c0b0, light: 0xf4fbff }
+      };
+      const KINDS = ['mart', 'prov', 'clinic', 'bakery', 'salon', 'med', 'laundry', 'hard'];
+      const SIGNS = { kopi: 'sKopi', mart: 'sMart', prov: 'sProv', clinic: 'sClinic', bakery: 'sBakery', salon: 'sSalon', med: 'sMed', laundry: 'sLaundry', hard: 'sHard' };
+      const GLOWC = { kopi: 0x3aa860, mart: 0x4a80d8, prov: 0xe04a3a, clinic: 0xd8f0ec, bakery: 0xe08a3a, salon: 0xb050a0, med: 0xc03a2a, laundry: 0x3ab0d0, lift: 0x6a7ad0 };
+      const PAL3 = [0xc8302a, 0xe8b82a, 0x2a6ac8, 0x2a9a4a, 0xe86a1a], STOOL = [0x2a5ab0, 0xc03030, 0x2a8a4a, 0x8a5a2a];
+      /* one block's walk and its shops, from z0 along L toward −z, into the segment's V (colours), A (pictures), GP (glows);
+         answers whether its near corner is the coffee shop (its end wall then stands only behind the shop) */
+      function shopRow(L, z0, rs, nBlk, V, A, GP, SE, plan) {
+        const { XF, XB, XW, XC, YF, YS, YC } = SH, NU = Math.max(4, Math.round(L / 6.2)), UW = L / NU;
+        /* who stands where: the coffee shop on the near corner of about half the blocks (two units), the lift lobby in the
+           middle, the rest dealt from the kinds — no kind twice in a block, so at most one shut. A `plan` (by unit; 'kopi'
+           takes two) puts chosen kinds where his window looks, and the deal fills the rest without them */
+        const deck = KINDS.filter(k => !(plan || []).includes(k));
+        for (let q = deck.length - 1; q > 0; q--) { const j = (rs() * (q + 1)) | 0; [deck[q], deck[j]] = [deck[j], deck[q]]; }
+        const units = []; let i = 0;
+        if (plan) {
+          for (let d = 0; i < NU;) {
+            const want = plan[i];
+            if (want === 'kopi' && i + 1 < NU) { units.push({ kind: 'kopi', i0: i, n: 2 }); i += 2; }
+            else { units.push({ kind: want && want !== 'kopi' ? want : deck[d++ % deck.length], i0: i, n: 1 }); i++; }
+          }
+        } else {
+          if (rs() < 0.55) { units.push({ kind: 'kopi', i0: 0, n: 2 }); i = 2; }
+          const lobby = Math.min(NU - 1, Math.max(i, (NU / 2) | 0));
+          for (let d = 0; i < NU; i++) units.push(i === lobby ? { kind: 'lift', i0: i, n: 1 } : { kind: deck[d++ % deck.length], i0: i, n: 1 });
+        }
+        /* the walk's edge stepping down to the path, its ceiling, the beam over it */
+        qC(V, ...fX(XW, 0.12, YF, z0, z0 - L), lc(0x8a8478, 0.35));
+        qC(V, ...fY(YS, XF, -8.79, z0, z0 - L), lc(0xb8b2a6, 0.5), lc(0xb8b2a6, 0.34), lc(0xb8b2a6, 0.34), lc(0xb8b2a6, 0.5));
+        qC(V, ...fX(-8.79, YS, 4.1, z0, z0 - L), lc(0xd6cebe, 0.3));
+        /* the columns along its front, one at each party wall and at both ends, their skirting dark; the tubes, one a unit */
+        for (let k = 0; k <= NU; k++) {
+          const zc = z0 - k * UW;
+          bC(V, XC - 0.25, XC + 0.25, 0.42, YS, zc - 0.25, zc + 0.25, 0xd6cebe, KO, 'tb');
+          bC(V, XC - 0.26, XC + 0.26, YF, 0.42, zc - 0.26, zc + 0.26, 0x5a5650, KO, 'b');
+        }
+        for (let k = 0; k < NU; k++) {
+          const zc = z0 - (k + 0.5) * UW;
+          bC(V, -10.66, -10.54, YS - 0.06, YS - 0.01, zc - 0.62, zc + 0.62, 0xf4fbff, [1, 1, 1, 1, 1, 1], 't');
+          GP.p.push(-10.6, YS - 0.18, zc); GP.c.push(...lc(0xd8f0ff, 0.3));
+        }
+        /* a bicycle at a column, side-on to the road */
+        const bike = (bz, hex) => {
+          const bx = XW - 0.32, yW = YF + 0.34;
+          const ring = (cz) => { for (let k = 0; k < 12; k++) { const a0 = k / 12 * Math.PI * 2, a1 = (k + 1) / 12 * Math.PI * 2;
+            qC(V, [bx, yW + Math.sin(a0) * 0.29, cz + Math.cos(a0) * 0.29], [bx, yW + Math.sin(a0) * 0.34, cz + Math.cos(a0) * 0.34],
+                  [bx, yW + Math.sin(a1) * 0.34, cz + Math.cos(a1) * 0.34], [bx, yW + Math.sin(a1) * 0.29, cz + Math.cos(a1) * 0.29], lc(0x18181a, 0.7)); } };
+          const bar = (y0, za, y1, zb, w = 0.035, h2 = hex) => { const dy = y1 - y0, dz = zb - za, l = Math.hypot(dy, dz) || 1, ny = -dz / l * w / 2, nz = dy / l * w / 2;
+            qC(V, [bx, y0 + ny, za + nz], [bx, y1 + ny, zb + nz], [bx, y1 - ny, zb - nz], [bx, y0 - ny, za - nz], lc(h2, 0.6)); };
+          ring(bz + 0.52); ring(bz - 0.52);
+          bar(yW, bz + 0.52, yW + 0.45, bz + 0.02); bar(yW + 0.45, bz + 0.02, yW + 0.5, bz - 0.42); bar(yW, bz - 0.52, yW + 0.5, bz - 0.42);
+          bar(yW, bz + 0.52, yW, bz + 0.02); bar(yW + 0.5, bz - 0.42, yW + 0.62, bz - 0.48); bar(yW + 0.45, bz + 0.02, yW + 0.6, bz + 0.08);
+          bar(yW + 0.62, bz + 0.0, yW + 0.62, bz + 0.18, 0.06, 0x111111); bar(yW + 0.62, bz - 0.4, yW + 0.66, bz - 0.56, 0.04, 0x222222);
+        };
+        if (rs() < 0.8) bike(z0 - UW * (1 + ((rs() * (NU - 1)) | 0)) + 0.9, PAL3[(rs() * PAL3.length) | 0]);
+        let corner = false;
+        for (const u of units) unit(u);
+        return { corner };
+        function unit({ kind, i0, n }) {
+          const zA = z0 - i0 * UW, zB = zA - n * UW, Wu = n * UW, zc = (zA + zB) / 2, a = zA - 0.14, b = zB + 0.14;
+          const Z = (s) => zA - s, X = (d) => XF - d, shut = kind === 'hard', kopi = kind === 'kopi', side = kopi && i0 === 0;
+          if (side) corner = true;
+          /* the walk before it, lit by it */
+          const kw = shut ? 0.36 : 0.5;
+          qC(V, ...fY(YF, XF, XW, zA, zB), lc(0xc8bfae, kw), lc(0xc8bfae, 0.3), lc(0xc8bfae, 0.3), lc(0xc8bfae, kw));
+          /* its sign, over its own front under the walk's ceiling (the lift lobby's: the block's number) — (Chad, 2 Nov 2026,
+             of a first build that had a lightbox on the beam over the walk as well: "Why are there 2 layers of signboard" ...
+             "You should remove the top one not the lower one") — and its glow just before it */
+          const sc = kind === 'lift' ? CELL['blk' + (nBlk % 4)] : CELL[SIGNS[kind]], sw = kind === 'lift' ? Math.min(2.6, Wu - 1.2) : (Wu - 1.0) * 0.9;
+          qT(A, ...fX(XF + 0.05, 3.03, YS - 0.06, zc + sw / 2, zc - sw / 2), sc, shut ? 0.25 : 0.85);
+          if (!shut) { GP.p.push(XF + 0.35, 3.35, zc); GP.c.push(...lc(GLOWC[kind] || 0xffffff, 0.3)); }
+          /* its front: a pier at each party wall (none on the coffee shop's open side), the band over the opening, the
+             shutter's box (or the shutter itself, down) */
+          if (!side) bC(V, XF - 0.12, XF + 0.04, YF, YS, zA - 0.26, zA, 0xcfc8ba, KO, 'tb');
+          bC(V, XF - 0.12, XF + 0.04, YF, YS, zB, zB + 0.26, 0xcfc8ba, KO, 'tb');
+          qC(V, ...fX(XF + 0.03, 3.0, YS, zA, zB), lc(0xbdb6a8, 0.5));
+          bC(V, XF - 0.06, XF + 0.16, 2.84, 3.0, b, a, 0x6a6e72, KO, 'n');
+          if (shut) {
+            qT(A, ...fX(XF + 0.05, YF, 2.86, a, (a + b) / 2), CELL.shutter, 0.6); qT(A, ...fX(XF + 0.05, YF, 2.86, (a + b) / 2, b), CELL.shutter, 0.6);
+            return;
+          }
+          /* the room: its floor, its back wall, its side walls (not the open side), its ceiling and its lights */
+          const P = SROOM[kind], tiled = kopi || kind === 'lift';
+          if (tiled) tileQ(A, XF, XB, side ? zA : a, b, YF + 0.004, 0.66, 0.54);
+          else qC(V, ...fY(YF + 0.004, XF, XB, a, b), lc(P.floor, 0.7), lc(P.floor, 0.55), lc(P.floor, 0.55), lc(P.floor, 0.7));
+          qC(V, ...fX(XB, YF, YC, side ? zA : a, b), lc(P.wall, 0.58), lc(P.wall, 0.58), lc(P.wall, 0.7), lc(P.wall, 0.7));
+          if (!side) qC(V, ...fZ(a, YF, YC, XF, XB), lc(P.wall, 0.6), lc(P.wall, 0.52), lc(P.wall, 0.64), lc(P.wall, 0.7));
+          qC(V, ...fZ(b, YF, YC, XF, XB), lc(P.wall, 0.6), lc(P.wall, 0.52), lc(P.wall, 0.64), lc(P.wall, 0.7));
+          qC(V, ...fY(YC, XF, XB, side ? zA : a, b), lc(P.wall, 0.45));
+          const nL = Math.max(1, Math.round(Wu / 2.6));
+          for (const d of [1.3, 3.8]) for (let k = 0; k < nL; k++) { const s = (k + 0.5) * Wu / nL; qC(V, ...fY(YC - 0.01, X(d - 0.3), X(d + 0.3), Z(s - 0.6), Z(s + 0.6)), lc(P.light, 1)); }
+          if (side) {
+            /* the coffee shop's open side: the band between its ceiling and the slab, a column at its corner */
+            qC(V, ...fZ(zA, YC, 4.1, XF, XB), lc(0xd6cebe, 0.32));
+            bC(V, XF - 0.42, XF - 0.02, YF, YC, zA - 0.4, zA, 0xd6cebe, KO, 'tb');
+          }
+          switch (kind) {
+            case 'mart': {
+              const nf = Math.max(2, Math.floor((Wu - 0.6) / 1.3)), fw = (Wu - 0.6) / nf;
+              for (let k = 0; k < nf; k++) qT(A, ...fX(XB + 0.03, YF + 0.05, 2.15, Z(0.3 + k * fw), Z(0.3 + (k + 1) * fw - 0.05)), CELL.fridge, 0.86);
+              bC(V, XB, XB + 0.75, 2.15, 2.4, b, a, 0x30343a, KI, 'nb');
+              for (const sf of [0.34, 0.66]) {
+                const zc2 = Z(Wu * sf), x0 = X(4.6), x1 = X(1.5);
+                bC(V, x0, x1, 1.55, 1.6, zc2 - 0.32, zc2 + 0.32, 0xc8ccd0, KI, 'b');
+                for (const [zz, cl] of [[zc2 + 0.32, CELL.goodsA], [zc2 - 0.32, CELL.goodsC]]) for (let q = 0; q < 2; q++) {
+                  const xa = x1 - q * 1.55, xb = xa - 1.55; qT(A, [xa, YF, zz], [xb, YF, zz], [xb, 1.55, zz], [xa, 1.55, zz], cl, 0.92);
+                }
+                qT(A, ...fX(x1 + 0.01, YF, 1.55, zc2 + 0.32, zc2 - 0.32), CELL.goodsB, 0.76);
+              }
+              bC(V, X(1.6), X(0.4), YF, 1.0, Z(Wu - 0.35), Z(Wu - 1.25), 0x46566a, KI, 'b');
+              bC(V, X(1.4), X(0.6), 1.0, 1.04, Z(Wu - 0.3), Z(Wu - 1.3), 0xd8d8d0, KI, 'b');
+              bC(V, X(1.2), X(0.9), 1.04, 1.3, Z(Wu - 0.6), Z(Wu - 0.95), 0x22262c, KI, 'b');
+              qT(A, ...fZ(b + 0.01, 1.1, 2.3, X(0.3), X(1.9)), CELL.goodsA, 0.76);
+              for (let q = 0; q < 3; q++) qT(A, ...fZ(a - 0.01, YF, 2.0, X(1.6 + q * 1.35), X(2.95 + q * 1.35)), CELL.goodsB, 0.76);
+              for (let q = 0; q < 2; q++) qT(A, ...fZ(b + 0.01, YF, 2.0, X(2.2 + q * 1.6), X(3.8 + q * 1.6)), CELL.goodsA, 0.76);
+              bC(V, XF + 0.25, XF + 0.95, YF, 0.86, Z(1.45), Z(0.55), 0xe8ecee, KO, 'b');           // the ice-cream chest out on the walk
+              bC(V, XF + 0.27, XF + 0.93, 0.86, 0.9, Z(1.43), Z(0.57), 0x9ab8d0, KO, 'b');
+              break;
+            }
+            case 'prov': {
+              for (let q = 0; q < 4; q++) {
+                qT(A, ...fZ(a - 0.01, YF, 2.9, X(0.25 + q * 1.38), X(1.63 + q * 1.38)), q % 2 ? CELL.goodsC : CELL.goodsA, 0.76);
+                qT(A, ...fZ(b + 0.01, YF, 2.9, X(0.25 + q * 1.38), X(1.63 + q * 1.38)), q % 2 ? CELL.goodsA : CELL.goodsB, 0.76);
+              }
+              const nb = Math.max(2, Math.round((Wu - 0.3) / 1.5)), bw = (Wu - 0.3) / nb;
+              for (let k = 0; k < nb; k++) qT(A, ...fX(XB + 0.02, YF, 2.9, Z(0.15 + k * bw), Z(0.15 + (k + 1) * bw)), CELL.goodsB, 0.74);
+              bC(V, X(1.5), X(0.4), YF, 0.95, Z(1.2), Z(0.3), 0x7a5a3a, KI, 'b');
+              for (const [s, h0] of [[0.5, 0], [0.5, 0.3], [0.5, 0.6], [1.0, 0], [1.0, 0.3]]) {           // the crates out on the walk
+                bC(V, XF + 0.2, XF + 0.55, YF + h0, YF + h0 + 0.3, Z(s + 0.42), Z(s), 0x76100a, KO, 'b');
+                qT(A, ...fX(XF + 0.56, YF + h0, YF + h0 + 0.3, Z(s), Z(s + 0.42)), CELL.crate, 0.8);
+              }
+              const tz = Wu * 0.5;                                                                   // a folding table of snacks
+              bC(V, XF + 0.25, XF + 0.85, 0.72, 0.75, Z(tz + 0.6), Z(tz - 0.6), 0x8a8a84, KO, 'b');
+              for (const lx of [-0.55, 0.55]) bC(V, XF + 0.3, XF + 0.34, YF, 0.72, Z(tz + lx) - 0.02, Z(tz + lx) + 0.02, 0x4a4a48, KO, 'tb');
+              for (let k = 0; k < 6; k++) { const s0 = tz - 0.55 + k * 0.19; bC(V, XF + 0.3, XF + 0.8, 0.75, 0.85 + rs() * 0.12, Z(s0 + 0.17), Z(s0), PAL3[(rs() * PAL3.length) | 0], KO, 'b'); }
+              for (let k = 0; k < 3; k++) bC(V, XF + 0.2, XF + 0.7, YF + k * 0.22, YF + k * 0.22 + 0.22, Z(Wu - 0.3), Z(Wu - 0.95), 0xd6c8a8, KO, 'b');   // its rice
+              for (const s of [1.7, Wu - 1.5]) qT(A, ...fX(XF + 0.15, 2.0, 2.95, Z(s), Z(s + 0.5)), CELL.hang, 1);
+              break;
+            }
+            case 'clinic': {
+              const dw = 1.0, ds = Wu - 0.25 - dw;                                                   // its door at the far side
+              qT(A, ...fX(XF + 0.06, YF, 2.86, a, Z(ds / 2 + 0.12)), CELL.frosted, 0.82);
+              qT(A, ...fX(XF + 0.06, YF, 2.86, Z(ds / 2 + 0.12), Z(ds + 0.14)), CELL.frosted, 0.82);
+              for (const s of [ds + 0.14, ds + 0.14 + dw]) bC(V, XF, XF + 0.08, YF, 2.86, Z(s) - 0.03, Z(s) + 0.03, 0x3a3e44, KO, 'tb');
+              bC(V, X(2.6), X(2.0), YF, 1.05, Z(Wu - 0.4), Z(Wu - 2.6), 0xe6e8e6, KI, 'b');
+              bC(V, X(2.0), X(2.0) + 0.02, 0.6, 0.8, Z(Wu - 0.45), Z(Wu - 2.55), 0x16867a, KI, '');
+              for (let k = 0; k < 4; k++) bC(V, X(1.0), X(0.5), YF, 0.47, Z(0.9 + k * 0.6), Z(0.4 + k * 0.6), 0x2a5a9a, KI, 'b');
+              qT(A, ...fX(XB + 0.02, 1.0, 1.9, Z(Wu * 0.5 - 0.3), Z(Wu * 0.5 + 0.3)), CELL.poster1, 0.95);
+              break;
+            }
+            case 'bakery': {
+              const x0 = X(1.3), x1 = X(0.5), n2 = Math.max(2, Math.round((Wu - 0.8) / 1.2)), w2 = (Wu - 0.8) / n2;
+              bC(V, x0, x1, YF, 1.15, Z(Wu - 0.4), Z(0.4), 0x9a9a92, KI, 'b');
+              for (let k = 0; k < n2; k++) qT(A, ...fX(x1 + 0.01, YF + 0.05, 1.15, Z(0.4 + k * w2), Z(0.4 + (k + 1) * w2)), CELL.bread, 0.86);
+              bC(V, x0, x1, 1.15, 1.18, Z(Wu - 0.4), Z(0.4), 0xe8eef0, KI, 'b');
+              const nb = Math.max(2, Math.round((Wu - 0.4) / 1.3)), bw = (Wu - 0.4) / nb;
+              for (const [y0, y1] of [[0.9, 1.7], [1.8, 2.6]]) for (let k = 0; k < nb; k++) qT(A, ...fX(XB + 0.02, y0, y1, Z(0.2 + k * bw), Z(0.2 + (k + 1) * bw)), CELL.bread, 0.78);
+              break;
+            }
+            case 'salon': {
+              for (let k = 0; k < 3; k++) {
+                const d0 = 1.0 + k * 1.4, zc2 = Z(0.95), xc2 = X(d0 + 0.5);
+                qT(A, ...fZ(a - 0.01, 0.95, 2.15, X(d0), X(d0 + 1.0)), CELL.mirror, 0.8);
+                bC(V, xc2 - 0.24, xc2 + 0.24, 0.42, 0.55, zc2 - 0.24, zc2 + 0.24, 0x3a1818, KI, 'b');
+                bC(V, xc2 - 0.24, xc2 + 0.24, 0.55, 1.15, zc2 - 0.3, zc2 - 0.22, 0x3a1818, KI, 'b');
+                bC(V, xc2 - 0.08, xc2 + 0.08, YF, 0.42, zc2 - 0.08, zc2 + 0.08, 0x8a8a8a, KI, 'tb');
+              }
+              bC(V, X(4.4), X(1.0), 0.8, 0.88, a - 0.3, a, 0xf0f0ee, KI, 'b');
+              bC(V, X(3.6), X(1.2), YF, 0.46, b, b + 0.45, 0x5a5a5c, KI, 'b');
+              qT(A, ...fX(XB + 0.02, 1.1, 2.0, Z(Wu * 0.5 - 0.3), Z(Wu * 0.5 + 0.3)), CELL.poster2, 0.9);
+              cyT(A, XF + 0.14, Z(0.42), 1.55, 2.3, 0.08, 8, CELL.pole, 1);
+              cyC(V, XF + 0.14, Z(0.42), 2.3, 2.38, 0.1, 8, 0xe8e8e8, 1, 0.8); cyC(V, XF + 0.14, Z(0.42), 1.47, 1.55, 0.1, 8, 0xe8e8e8, 1, 0.8);
+              break;
+            }
+            case 'med': {
+              const nd = Math.max(2, Math.round((Wu - 0.3) / 1.6)), dw = (Wu - 0.3) / nd;
+              for (let k = 0; k < nd; k++) qT(A, ...fX(XB + 0.02, 0.3, 3.0, Z(0.15 + k * dw), Z(0.15 + (k + 1) * dw)), CELL.drawers, 0.78);
+              const nj = Math.max(2, Math.round((Wu - 1.2) / 1.2)), jw = (Wu - 1.2) / nj;
+              bC(V, X(2.0), X(1.4), YF, 1.08, Z(Wu - 0.8), Z(0.4), 0x6a4a2a, KI, 'b');
+              for (let k = 0; k < nj; k++) qT(A, ...fX(X(1.4) + 0.01, YF + 0.1, 1.05, Z(0.4 + k * jw), Z(0.4 + (k + 1) * jw)), CELL.jars, 0.8);
+              for (let k = 0; k < 3; k++) qT(A, ...fZ(a - 0.01, 1.0, 1.75, X(2.4 + k * 1.1), X(3.5 + k * 1.1)), CELL.jars, 0.76);
+              break;
+            }
+            case 'laundry': {
+              for (let k = 0; k < 4; k++) qT(A, ...fZ(a - 0.01, YF, 1.88, X(0.6 + k * 1.2), X(1.8 + k * 1.2)), CELL.washers, 0.8);
+              for (let k = 0; k < 3; k++) qT(A, ...fZ(b + 0.01, YF, 1.88, X(1.0 + k * 1.2), X(2.2 + k * 1.2)), CELL.washers, 0.76);
+              bC(V, X(4.0), X(1.6), YF, 0.45, Z(Wu * 0.5 + 0.25), Z(Wu * 0.5 - 0.25), 0x6a7a8a, KI, 'b');
+              break;
+            }
+            case 'lift': {
+              qT(A, ...fX(XB + 0.02, YF, 2.5, Z(Wu * 0.5 - 1.25), Z(Wu * 0.5 + 1.25)), CELL.lift, 0.9);
+              qT(A, ...fZ(a - 0.01, 0.4, 2.2, X(1.2), X(3.6)), CELL.letters, 0.88);
+              qT(A, ...fZ(b + 0.01, 1.0, 1.9, X(2.0), X(2.6)), CELL.poster1, 0.85);
+              for (const s of [0.5, 1.25]) { bC(V, XW - 0.7, XW - 0.1, YF, 1.0, Z(s + 0.6), Z(s), 0x1a56a4, KO, 'b'); bC(V, XW - 0.72, XW - 0.08, 1.0, 1.06, Z(s + 0.62), Z(s - 0.02), 0x2a6ac0, KO, 'b'); }
+              break;
+            }
+            case 'kopi': {
+              tileQ(A, XW - 0.02, XF, zA, zB, YF + 0.003, 0.5, 0.66);                                 // its tiles out on the walk
+              const ns = 3, sw2 = (Wu - 0.6) / ns;
+              for (let k = 0; k < ns; k++) {                                                         // its stalls along the back
+                const s0 = 0.3 + k * sw2 + 0.1, s1 = 0.3 + (k + 1) * sw2 - 0.1, closed = k === 2 && rs() < 0.5;
+                bC(V, XB, X(4.95), YF, 1.0, Z(s1), Z(s0), 0x9aa0a6, KI, 'b');
+                qT(A, ...fX(X(4.95) + 0.01, YF + 0.02, 1.0, Z(s0), Z(s1)), closed ? CELL.shutter : k === 0 ? CELL.stallDrink : CELL.stallFood, closed ? 0.55 : 1);
+                qT(A, ...fX(XB + 0.03, 2.1, 2.5, Z(s0 + 0.2), Z(s1 - 0.2)), CELL[['sDrinks', 'sNoodle', 'sRice'][k]], closed ? 0.35 : 1);
+                if (k === 0) qT(A, ...fX(XB + 0.03, 2.56, 3.22, Z(s0 + 0.1), Z(s1 - 0.1)), CELL.menu, 0.95);
+              }
+              bC(V, X(4.6), X(3.9), YF, 2.0, b, b + 0.8, 0x30343a, KI, 'b');                          // its fridge
+              qT(A, ...fX(X(3.9) + 0.01, YF + 0.05, 1.95, b + 0.78, b + 0.02), CELL.fridge, 0.86);
+              bC(V, X(2.6), X(1.7), 2.45, 3.0, b, b + 0.08, 0x111111, KI, '');                       // the TV, high on the wall
+              qT(A, [X(1.75), 2.5, b + 0.09], [X(2.55), 2.5, b + 0.09], [X(2.55), 2.95, b + 0.09], [X(1.75), 2.95, b + 0.09], CELL.tv, 1);
+              for (const [d, s] of [[1.6, Wu * 0.25], [1.6, Wu * 0.75], [3.6, Wu * 0.5]]) {          // its fans
+                const fx = X(d), fz = Z(s), fy = YC - 0.28;
+                cyC(V, fx, fz, fy, YC, 0.035, 6, 0x8a8a8a);
+                for (let k = 0; k < 3; k++) { const an = k * 2.094 + d * 1.7;
+                  qC(V, [fx + Math.cos(an - 0.14) * 0.1, fy, fz + Math.sin(an - 0.14) * 0.1], [fx + Math.cos(an - 0.07) * 0.68, fy, fz + Math.sin(an - 0.07) * 0.68],
+                        [fx + Math.cos(an + 0.07) * 0.68, fy, fz + Math.sin(an + 0.07) * 0.68], [fx + Math.cos(an + 0.14) * 0.1, fy, fz + Math.sin(an + 0.14) * 0.1], lc(0xd8d8d4, 0.55)); }
+              }
+              const TB = [];                                                                         // its tables and stools, inside and out on the walk
+              for (const d of [1.5, 3.2]) for (let k = 0; k < 3; k++) TB.push([X(d), Z((k + 0.5) * Wu / 3)]);
+              for (let k = 0; k < 3; k++) TB.push([XF + 1.35, Z((k + 0.5) * Wu / 3 + 0.4)]);
+              let ti = 0;
+              for (const [tx, tz] of TB) {
+                const tNo = ti++;
+                cyC(V, tx, tz, 0.72, 0.76, 0.42, 10, 0xe6e2da, 0.95, 0.7);
+                bC(V, tx - 0.04, tx + 0.04, YF, 0.72, tz - 0.04, tz + 0.04, 0x3a3a3a, KI, 'tb');
+                const sc2 = STOOL[(rs() * STOOL.length) | 0];
+                let deep = null;
+                for (let q = 0; q < 4; q++) { const an = q * Math.PI / 2 + 0.4 + rs() * 0.3, sx = tx + Math.cos(an) * 0.62, sz = tz + Math.sin(an) * 0.62;
+                  cyC(V, sx, sz, 0.4, 0.45, 0.16, 10, sc2, 0.9, 0.7); cyC(V, sx, sz, YF, 0.4, 0.13, 8, sc2, 0.6, 0.5);   // (10 sides: at 6 they read as cubes)
+                  if (!deep || sx < deep.x) deep = { x: sx, z: sz }; }
+                /* someone on the stool at its far side, facing the road across the table (seatSitters) */
+                /* (the coffee shop his window passes always has its people: four tables of the nine) */
+                if (plan ? [0, 2, 4, 7].includes(tNo) : rs() < 0.55) SE.push({ x: deep.x, y: 0.45, z: deep.z, ry: Math.atan2(tx - deep.x, tz - deep.z) });
+              }
+              break;
+            }
+          }
+        }
+      }
       /* the road and the ground either side stand still (they have nothing on them to see go by); the lanes' paint does not */
       const flatQ = (w, d, m, x, y, z, p = T0) => { const o = new THREE.Mesh(new THREE.PlaneGeometry(w, d), m); o.rotation.x = -Math.PI / 2; o.position.set(x, y, z); p.add(o); return o; };
       flatQ(16.0, 300, mRoad, 6.1, 0, -110);
@@ -3301,11 +3628,135 @@
       const box = (w, h, d, m, x, y, z, p) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y, z); p.add(o); return o; };
       const cylY = (r0, r1, h, m, x, y, z, p) => { const o = new THREE.Mesh(new THREE.CylinderGeometry(r0, r1, h, 8), m); o.position.set(x, y, z); p.add(o); return o; };
       const glowPts = [];
+      /* (v24.35) the block's first two storeys over its shops, BUILT — they are the top half of a phone's frame through his
+         window, where the painted face's flat windows sat right over the built shops: each flat's window set back in the
+         wall, in its white frame, lit behind a curtain (warm or cool) or dark; the slab's edge at each floor; an
+         air-conditioner's compressor on its ledge under some, and out of others the laundry poles an HDB block's windows
+         carry, washing on them. The wall as dark as the painted face's, a little lighter at the first floor where the
+         shops and the lamps reach. The painted face goes on from the third storey (shopRow's caller) */
+      function floorsAbove(L, z0, rs, V, A) {
+        const XW0 = -8.8, XG = XW0 - 0.12, FH = 2.8, nb = Math.max(1, Math.round(L / 3.0)), bw = L / nb;
+        for (let f = 0; f < 2; f++) {
+          const y0 = 4.1 + f * FH, sill = y0 + 0.95, top = sill + 1.3, y1 = y0 + FH, wall = f ? 0x23252b : 0x2e3036;
+          bC(V, XW0, XW0 + 0.2, y0, y0 + 0.24, z0 - L, z0, 0x3a3c42, [0.9, 1, 0.8, 0.8, 0.8, 0.8], 'n');   // the slab's edge
+          for (let k = 0; k < nb; k++) {
+            const zA = z0 - k * bw, zB = zA - bw, zc = (zA + zB) / 2, wA = zc + 0.75, wB = zc - 0.75;
+            qC(V, ...fX(XW0, y0 + 0.24, sill, zA, zB), lc(wall)); qC(V, ...fX(XW0, top, y1, zA, zB), lc(wall));
+            qC(V, ...fX(XW0, sill, top, zA, wA), lc(wall)); qC(V, ...fX(XW0, sill, top, wB, zB), lc(wall));
+            qC(V, ...fY(top, XG, XW0, wA, wB), lc(wall, 0.7)); qC(V, ...fY(sill, XG, XW0 + 0.06, wA, wB), lc(0x4a4c52));
+            qC(V, ...fZ(wA, sill, top, XW0, XG), lc(wall, 0.8)); qC(V, ...fZ(wB, sill, top, XW0, XG), lc(wall, 0.8));
+            const v = rs(), lit = v < 0.46;
+            qT(A, ...fX(XG, sill, top, wA, wB), lit ? (v < 0.28 ? CELL.curtWarm : CELL.curtCool) : CELL.glassDark, lit ? 0.82 : 1);
+            for (const [ya, yb, za, zb] of [[sill, sill + 0.05, wA, wB], [top - 0.05, top, wA, wB], [sill, top, wA, wA - 0.05], [sill, top, wB + 0.05, wB], [sill, top, zc + 0.025, zc - 0.025]])
+              qC(V, ...fX(XG + 0.02, ya, yb, za, zb), lc(0xd8d8d2, lit ? 0.42 : 0.2));
+            const w2 = rs();
+            if (w2 < 0.35) {                                                       // an air-conditioner on its ledge
+              const zA2 = zA - 0.15, zB2 = zA2 - 0.8;
+              bC(V, XW0, XW0 + 0.32, y0 + 0.3, y0 + 0.85, zB2, zA2, 0x7a7e84, [0.5, 0.3, 0.4, 0.3, 0.36, 0.36], 'n');
+              qT(A, ...fX(XW0 + 0.33, y0 + 0.3, y0 + 0.85, zA2, zB2), CELL.aircon, f ? 0.22 : 0.3);
+              bC(V, XW0, XW0 + 0.4, y0 + 0.26, y0 + 0.3, zB2 - 0.05, zA2 + 0.05, 0x4a4a4a, [0.4, 0.3, 0.35, 0.3, 0.32, 0.32], 'n');
+            } else if (w2 < 0.6) {                                                 // laundry poles, and washing on two of them
+              const yP = top + 0.2;
+              for (const dz of [-0.45, 0, 0.45]) bC(V, XW0, XW0 + 1.35, yP - 0.02, yP + 0.02, zc + dz - 0.02, zc + dz + 0.02, 0x8a7a5a, [0.5, 0.3, 0.42, 0.3, 0.36, 0.36], 'n');
+              for (const dz of [-0.45, 0.45]) if (rs() < 0.8) qT(A, ...fZ(zc + dz, yP - 0.78, yP, XW0 + 0.06, XW0 + 1.3), CELL.clothes, f ? 0.26 : 0.34);
+            }
+          }
+        }
+      }
+      /* (v24.35) THE COFFEE SHOPS' PEOPLE — no shop at night is empty, and no person is a block (v21.16): episode 1's
+         seated people from the tentage (three of them, each reuse declared in DATA.reuse), posed ONCE on the frame their
+         hands rest on and their skin BAKED to plain geometry (e3c3's passengers' way, v21.16: every vertex and its normal
+         through the skin, the hips at the origin) — a still, no skeleton, no mixer, nothing to tick — unlit like the shop
+         round them (their own pictures, the tubes' cool white over them). One or two at a table, on the stool at its far
+         side so they face the road; until a file lands the stool is empty. A person further than the shops a window sees
+         is not drawn (streetFrame): the windscreen would otherwise draw every coffee shop's people down the road */
+      const SITTERS = [
+        { key: 'sitman', height: 1.25, take: 'Armature|Sitting_Clap|baselayer', at: 0.0 },
+        { key: 'sitclap', height: 1.22, take: 'mixamo.com', at: 0.0, sizeAt: 0.15 },
+        { key: 'sitshout', height: 1.27, take: 'Armature|Sit_Shout_Hands_on_Mouth|baselayer', at: 0.0 }];
+      const _sp = new THREE.Vector3(), _sq = new THREE.Vector3(), _sN = new THREE.Matrix3(), stills = new Map();
+      const GETC = ['getX', 'getY', 'getZ', 'getW'];
+      const copyAttr = (at) => {                       // (component by component: an interleaved or a quantized one reads right)
+        const out = new Float32Array(at.count * at.itemSize);
+        for (let i = 0; i < at.count; i++) for (let k = 0; k < at.itemSize; k++) out[i * at.itemSize + k] = at[GETC[k]](i);
+        return new THREE.BufferAttribute(out, at.itemSize);
+      };
+      function sitterStill(spec) {
+        if (stills.has(spec.key)) return stills.get(spec.key);
+        const pr = parseOnce(spec.key).then((gltf) => {
+          if (!alive) return null;
+          const g = cloneSkinned(gltf.scene), holder = new THREE.Group(); holder.add(g);
+          const mixer = (gltf.animations || []).length ? new THREE.AnimationMixer(g) : null;
+          const pose = (name, at) => {
+            const clip = mixer && gltf.animations.find(c => c.name === name); if (!clip) return;
+            mixer.stopAllAction(); const a = mixer.clipAction(clip); a.play(); a.time = clip.duration * at; a.paused = true; mixer.update(0);
+          };
+          /* sized as a seated person is (the bone span to the crown, on his own take), then posed on the frame he sits in */
+          pose(spec.take, spec.sizeAt ?? spec.at);
+          holder.updateMatrixWorld(true);
+          let lo = Infinity, hi = -Infinity, crown = false, hips = null;
+          g.traverse(o => {
+            if (!o.isBone) return;
+            o.getWorldPosition(_sp); lo = Math.min(lo, _sp.y); hi = Math.max(hi, _sp.y);
+            if (/HeadTop_End|head_end/.test(o.name)) crown = true;
+            if (!hips && /Hips(_\d+)?$/.test(o.name)) hips = o;
+          });
+          if (isFinite(lo) && hi > lo) g.scale.multiplyScalar(spec.height / ((hi - lo) / (crown ? 1 : 0.935)));
+          pose(spec.take, spec.at);
+          holder.updateMatrixWorld(true);
+          const hp = hips ? hips.getWorldPosition(new THREE.Vector3()) : new THREE.Vector3();
+          const parts = []; let seat = Infinity;
+          g.traverse(o => {
+            if (!o.isMesh || !o.geometry.attributes.position) return;
+            const src = o.geometry, pos = src.attributes.position, nrm = src.attributes.normal, n = pos.count;
+            const P = new Float32Array(n * 3), N = new Float32Array(n * 3);
+            _sN.getNormalMatrix(o.matrixWorld);
+            for (let i = 0; i < n; i++) {
+              _sp.fromBufferAttribute(pos, i);
+              if (nrm) _sq.fromBufferAttribute(nrm, i).add(_sp);
+              if (o.isSkinnedMesh) { o.applyBoneTransform(i, _sp); if (nrm) o.applyBoneTransform(i, _sq); }
+              if (nrm) { _sq.sub(_sp).applyMatrix3(_sN).normalize(); N[i * 3] = _sq.x; N[i * 3 + 1] = _sq.y; N[i * 3 + 2] = _sq.z; }
+              _sp.applyMatrix4(o.matrixWorld).sub(hp);
+              P[i * 3] = _sp.x; P[i * 3 + 1] = _sp.y; P[i * 3 + 2] = _sp.z;
+              if (Math.abs(_sp.x) < 0.14 && Math.abs(_sp.z) < 0.14 && _sp.y < seat) seat = _sp.y;     // what sits on the stool: the skin under the hips
+            }
+            const geo = new THREE.BufferGeometry();
+            geo.setAttribute('position', new THREE.BufferAttribute(P, 3));
+            if (nrm) geo.setAttribute('normal', new THREE.BufferAttribute(N, 3));
+            for (const k of ['uv', 'uv1', 'color']) if (src.attributes[k]) geo.setAttribute(k, copyAttr(src.attributes[k]));
+            if (src.index) geo.setIndex(new THREE.BufferAttribute(src.index.array.slice(), 1));
+            for (const gr of src.groups) geo.addGroup(gr.start, gr.count, gr.materialIndex);
+            if (!nrm) geo.computeVertexNormals();
+            geo.computeBoundingSphere();
+            const night = (m) => B({ map: m.map || null, color: 0xb8bcb8, fog: true, side: m.side, transparent: m.transparent, alphaTest: m.alphaTest || 0 });
+            const ms = Array.isArray(o.material) ? o.material : [o.material];
+            parts.push({ geo, mat: ms.length > 1 ? ms.map(night) : night(ms[0]) });
+          });
+          if (mixer) { mixer.stopAllAction(); mixer.uncacheRoot(g); }
+          return parts.length ? { parts, seatDy: isFinite(seat) ? seat : -0.1 } : null;
+        }).catch(err => { console.warn('e4c1: a coffee shop sitter (' + spec.key + ') failed', err); if (ctx.loadFail) ctx.loadFail(spec.key, err); return null; });
+        stills.set(spec.key, pr);
+        return pr;
+      }
+      /* a segment's seats taken, dealt round the three */
+      function seatSitters(g, s, seats) {
+        seats.forEach((st0, i) => {
+          sitterStill(SITTERS[(i + s) % SITTERS.length]).then(st => {
+            if (!alive || !st) return;
+            const p = new THREE.Group(); p.position.set(st0.x, st0.y - st.seatDy - 0.012, st0.z); p.rotation.y = st0.ry;
+            for (const part of st.parts) { const m = new THREE.Mesh(part.geo, part.mat); m.castShadow = false; m.receiveShadow = false; p.add(m); }
+            g.add(p);
+            street.people.push({ o: p, s, z: st0.z });
+          });
+        });
+      }
       for (let s = 0; s < 2; s++) {
         const g = new THREE.Group(); g.userData.dyn = true; g.name = 'taxiStreet' + s; T0.add(g);
         const r = rng(4911 + s * 17);
         const mW = B({ map: tex(makeHdbFace(THREE, cnv, 4901 + s * 10, false)) }), mC = B({ map: tex(makeHdbFace(THREE, cnv, 4903 + s * 10, true)) });
-        const mShop = B({ map: tex(makeShopRow(THREE, cnv, 4905 + s * 3)) });
+        /* (v24.35) the segment's shops: their colours, their pictures and their glows, built block by block (shopRow) */
+        const SV = { p: [], c: [] }, SA = { p: [], c: [], u: [] }, SGL = { p: [], c: [] }, SEATS = [], rs = rng(6113 + s * 29);
+        let nBlk = s * 7;
         /* the kerb, the footpath, the verge (left); the median; the far kerb and its footpath */
         box(0.18, 0.15, SG, mKerb, -1.95, 0.075, -SG / 2, g);
         box(2.7, 0.13, SG, mFoot, -3.4, 0.065, -SG / 2, g);
@@ -3337,12 +3788,26 @@
         let z = -2 - r() * 6;
         while (z > -SG + 20) {
           const L = 36 + Math.floor(r() * 4) * 6, fl = 10 + Math.floor(r() * 4), H = fl * 2.8, zc = z - L / 2, u0 = r();
-          /* the shops recessed under the block; the block's face over them, standing out over the walk to them */
-          face(L, 3.9, mShop, 32, 4, -9.8, 2.05, zc, 0, g, u0);
-          flatQ(3.6, L, mSpill, -8.0, 0.14, zc, g);                                   // their light on the walk
-          box(1.0, 0.12, L, mUnder, -9.3, 4.05, zc, g);                               // the block's underside over the shops
-          face(L, H, r() < 0.5 ? mW : mC, 36, 33.6, -8.8, 4.1 + H / 2, zc, 0, g, u0);
-          box(12, H + 4.1, 0.1, mEnd, -14.8, (H + 4.1) / 2, z - 0.05, g); box(12, H + 4.1, 0.1, mEnd, -14.8, (H + 4.1) / 2, z - L + 0.05, g);
+          /* (v24.35) the shops under the block, built (shopRow): its walk, its columns, its lit rooms; the block's face over them */
+          /* (his window, measured: in every ending it looks out at two stretches only — the coda's first second, the
+             first segment's first block 25-49 m in; and its last second and a half, the other's first block 26-58 m
+             in, units 3 to 8 of each — so what stands there is chosen: the coffee shop and its people, the minimart,
+             the lift lobby and the provision shop; then the medical hall, the salon, the clinic, the bakery, the
+             laundromat and the hardware shop, shut. The rest of the street is dealt) */
+          const plan = nBlk !== s * 7 ? null : s === 1 ? [null, null, null, 'kopi', null, 'mart', 'lift', 'prov', null]
+                                                   : [null, null, null, 'med', 'salon', 'clinic', 'bakery', 'laundry', 'hard'];
+          const shopsAt = shopRow(L, z, rs, nBlk++, SV, SA, SGL, SEATS, plan);
+          flatQ(3.6, L, mSpill, -7.15, 0.14, zc, g);                                  // their light on the path before the walk
+          /* its first two storeys built (floorsAbove), the painted face from the third — its windows' side always (the
+             corridor's sheet would sit over built windows), the draw that chose between them kept so the street after it
+             is the street v24.33 laid */
+          floorsAbove(L, z, rs, SV, SA);
+          r();
+          face(L, H - 5.6, mW, 36, 33.6, -8.8, 9.7 + (H - 5.6) / 2, zc, 0, g, u0);
+          /* its end walls: whole over the shops, and at the ground only behind the walk (it is open at its ends) — or, over a
+             coffee shop on the corner, only behind the shop's back wall (it is open on that side) */
+          const endW = (zz, open) => { box(12, H, 0.1, mEnd, -14.8, 4.1 + H / 2, zz, g); const xo = open ? -17.4 : -11.6; box(xo + 20.8, 4.1, 0.1, mEnd, (xo - 20.8) / 2, 2.05, zz, g); };
+          endW(z - 0.05, shopsAt.corner); endW(z - L + 0.05, false);
           box(12.2, 0.4, L, mEnd, -14.8, H + 4.3, zc, g);                              // its roof's edge
           z -= L + 10 + r() * 8;
         }
@@ -3352,6 +3817,14 @@
         for (let k = 0, z2 = -10 - r() * 10; k < 2; k++, z2 -= 58) { const L = 46, fl = 11 + (k + 2 * s) % 4, H = fl * 2.8;
           face(L, H, (k + s) % 2 ? mC : mW, 36, 33.6, 21, H / 2, z2 - L / 2, Math.PI, g, r()); }
         mergeStatic(g, new Set());
+        /* (v24.35) the shops' two meshes and their glows, after the merge (which keeps no colours) */
+        const mkShops = (buf, m, uv) => { const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(buf.p, 3));
+          geo.setAttribute('color', new THREE.Float32BufferAttribute(buf.c, 3)); if (uv) geo.setAttribute('uv', new THREE.Float32BufferAttribute(buf.u, 2));
+          geo.computeBoundingSphere(); const o = new THREE.Mesh(geo, m); o.name = 'shops'; g.add(o); return o; };
+        mkShops(SV, mShopC, false); mkShops(SA, mShopT, true);
+        seatSitters(g, s, SEATS);
+        { const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(SGL.p, 3)); geo.setAttribute('color', new THREE.Float32BufferAttribute(SGL.c, 3));
+          geo.computeBoundingSphere(); const pts = new THREE.Points(geo, mShopGlow); pts.name = 'shopGlows'; g.add(pts); }
         street.segs.push(g);
       }
       /* the lamps' glows (one Points of all of them, moved with their segments each frame), and their streaks in the wet road */
@@ -3363,22 +3836,29 @@
       const refl = new THREE.Points(gr, new THREE.PointsMaterial({ map: tStreak, color: 0xb89a78, size: 3.4, sizeAttenuation: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
       mats.push(refl.material); refl.frustumCulled = false; refl.userData.dyn = true; T0.add(refl); street.refl = refl;
       /* the palms: the verge's between the kerb's lamps, the median's between its own — Chad's palms (v24.13), far cut */
-      modelKit(['e4palm1far', 'e4palm2far'], null).then(kinds => {
+      /* (v24.35, Chad: "Why are there no trees at the roadside" — there was one palm on the verge every 30 m, so the two
+         stretches his window looks at came out bare) the verge lined with his two palms, one every 11-13 m, alternating;
+         the full cut where his window passes them (shopRow's two stretches), the far cut down the rest of the road; the
+         median's at its lamps, as before */
+      Promise.all([modelKit(['e4palm1far', 'e4palm2far'], null), modelKit(['e4palm1', 'e4palm2'], null)]).then(([kinds, nearK]) => {
         if (!alive || !kinds) return;
         const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3(), Y = new THREE.Vector3(0, 1, 0);
         street.segs.forEach((g, s) => {
-          const r = rng(4931 + s * 7), spots = [];
-          for (const z of TST.MLAMPS) spots.push([-5.5, z + (r() - 0.5) * 3]);
+          const r = rng(4931 + s * 7), spots = [], near = [], win = s === 1 ? [-20, -54] : [-21, -63];
+          for (let z = -4 - r() * 3; z > -SG + 2; z -= 11 + r() * 2) (nearK && z < win[0] && z > win[1] ? near : spots).push([-5.5 + (r() - 0.5) * 0.4, z]);
           for (const z of TST.LAMPS) spots.push([6.2, z + (r() - 0.5) * 2]);
-          kinds.forEach((parts, ki) => {
-            const mine = spots.filter((_, i) => (i + s + ki) % 2 === 0);
+          const plant = (kindsX, list) => kindsX.forEach((parts, ki) => {
+            const mine = list.filter((_, i) => (i + s + ki) % 2 === 0);
+            if (!mine.length) return;
+            const hs = mine.map(() => [7 + r() * 3.5, r() * Math.PI * 2]);
             for (const pt of parts) {
               const im = new THREE.InstancedMesh(pt.geo, pt.mat, mine.length);
-              mine.forEach(([x, z], i) => { const h = 7 + r() * 3.5; q.setFromAxisAngle(Y, r() * Math.PI * 2); sc.setScalar(h);
+              mine.forEach(([x, z], i) => { q.setFromAxisAngle(Y, hs[i][1]); sc.setScalar(hs[i][0]);
                 m4.compose(new THREE.Vector3(x, 0.1, z), q, sc).multiply(pt.m); im.setMatrixAt(i, m4); });
               im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere(); im.userData.dyn = true; g.add(im); owned.push(im);
             }
           });
+          plant(kinds, spots); if (nearK) plant(nearK, near);
         });
       });
       /* the traffic: a car ahead in his lane, one pulling away in the next, two coming the other way (the chapter's own
@@ -3413,6 +3893,7 @@
         /* an oncoming car is drawn only between the fog (past 115 m it is gone in it) and the cabin it has passed */
         c.o.visible = !!c.ready && (!c.oncoming || (z > -115 && z < 14));
       }
+      for (const pp of street.people) { const wz = pp.z + street.segs[pp.s].position.z; pp.o.visible = wz > -42 && wz < 10; }   // (v24.35: the coffee shops' people near, not down the road)
       if (!street.glow) return;
       const P = street.glow.geometry.attributes.position, R = street.refl.geometry.attributes.position;
       const E = street.eye.set(yaw.position.x - TX, yaw.position.y, yaw.position.z);
@@ -8313,32 +8794,291 @@
     }
     return done(THREE, c, true);
   }
-  /* (v24.33) the void deck's shops under a block: 8 units of 4 m by 4 m, each its sign and its front — lit and stocked,
-     or its shutter down for the night. The names are a kind of shop, never a real one (v9.3) */
-  function makeShopRow(THREE, cnv, seed) {
-    const [c, x] = sized(cnv, 2048, 256), r = rng(seed), UW = 256;
-    const SHOPS = [['MINI MART', '#b82c28'], ['BAKERY', '#c88a22'], ['CLINIC', '#2a62a8'], ['COFFEE SHOP', '#2a7a44'], ['HAIR SALON', '#7a3490'],
-                   ['PROVISION SHOP', '#a83a26'], ['STATIONERY', '#28708e'], ['LAUNDRY', '#3452a0'], ['FLORIST', '#963458'], ['OPTICAL', '#2e4a68']];
-    x.fillStyle = '#121318'; x.fillRect(0, 0, 2048, 256);
-    for (let u = 0; u < 8; u++) {
-      const X = u * UW, [name, col] = SHOPS[(seed + u * 3) % SHOPS.length], open = r() < 0.6;
-      x.fillStyle = open ? col : '#26262c'; x.fillRect(X + 14, 18, UW - 28, 46);   // the signboard, lit or not
-      x.fillStyle = open ? 'rgba(255,255,255,0.95)' : 'rgba(140,140,150,0.55)'; x.font = 'bold 26px Arial, Helvetica, sans-serif';
-      x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(name, X + UW / 2, 42);
-      if (open) {
-        const g = x.createLinearGradient(0, 72, 0, 250); g.addColorStop(0, '#f6e6cc'); g.addColorStop(1, '#bca88a');
-        x.fillStyle = g; x.fillRect(X + 16, 72, UW - 32, 176);
-        for (let k = 0; k < 4; k++) {                                                // its shelves and their stock
-          x.fillStyle = 'rgba(90,70,50,0.5)'; x.fillRect(X + 22, 96 + k * 36, UW - 44, 4);
-          for (let q = 0; q < 7; q++) { x.fillStyle = `hsla(${(r() * 360) | 0},55%,45%,0.65)`; x.fillRect(X + 26 + q * 30 + r() * 6, 76 + k * 36, 20, 18); }
+  /* (v24.35, Chad: "Those storefronts the taxi pass by are not real, at least put more effort into it") THE SHOPS'
+     PICTURES, on one sheet, for the shops built under the blocks (buildTaxiStreet's shopRow): each kind's lightbox sign,
+     Chinese beside English — a kind of shop, never a real one's name (v9.3); the stock on the shelves (packets, bottles,
+     the household shelf), a drinks fridge's doors, a bakery's trays, a medical hall's drawers and jars, a laundromat's
+     machines, a salon's mirror and its pole, a shutter down, the lift lobby's doors and letterboxes and its block's
+     number, a coffee shop's floor tiles, its stalls' fronts and signs and the drinks stall's menu (the drinks' names, no
+     prices, no brand), a TV, two posters, a drinks crate, snacks hanging in strips. Each cell is drawn in a gutter of its
+     own edge pixels, so no mipmap mixes two cells (v5.11); cells[name] is [u0, v0, u1, v1], a pixel in from its edge.
+     (v24.33's painted strip, makeShopRow, is retired with this: git keeps it.) */
+  function makeStoreAtlas(THREE, cnv) {
+    const S = 2048, G = 10, [c, x] = sized(cnv, S, S), r = rng(5351), cells = {};
+    const EN = (px) => `bold ${px}px "Helvetica Neue", Helvetica, Arial, sans-serif`;
+    const ZH = (px) => `bold ${px}px "PingFang SC", "Hiragino Sans GB", "Noto Sans CJK SC", "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", "WenQuanYi Zen Hei", sans-serif`;
+    x.fillStyle = '#26262a'; x.fillRect(0, 0, S, S);
+    let cx = 0, cy = 0, rowH = 0;
+    const fit = (str, font, px, maxW) => { let p = Math.round(px); x.font = font(p); while (p > 8 && x.measureText(str).width > maxW) { p -= 2; x.font = font(p); } return p; };
+    const cell = (name, w, h, draw) => {
+      if (cx + w + 2 * G > S) { cx = 0; cy += rowH; rowH = 0; }
+      const X = cx + G, Y = cy + G;
+      x.save(); x.beginPath(); x.rect(X, Y, w, h); x.clip(); x.translate(X, Y); draw(w, h); x.restore();
+      /* the gutter: the cell's own edges stretched out into it */
+      x.drawImage(c, X, Y, w, 1, X, Y - G, w, G); x.drawImage(c, X, Y + h - 1, w, 1, X, Y + h, w, G);
+      x.drawImage(c, X, Y - G, 1, h + 2 * G, X - G, Y - G, G, h + 2 * G); x.drawImage(c, X + w - 1, Y - G, 1, h + 2 * G, X + w, Y - G, G, h + 2 * G);
+      cells[name] = [(X + 1) / S, 1 - (Y + h - 1) / S, (X + w - 1) / S, 1 - (Y + 1) / S];
+      cx += w + 2 * G; rowH = Math.max(rowH, h + 2 * G);
+    };
+    /* a lightbox's face: its colour brightest at the top where the tubes behind it are, its frame, the Chinese and the English */
+    const sign = (bg, top, fg, zh, en, small, rim) => (w, h) => {
+      const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, top); g.addColorStop(1, bg);
+      x.fillStyle = g; x.fillRect(0, 0, w, h);
+      x.strokeStyle = rim || 'rgba(18,18,22,0.6)'; x.lineWidth = 6; x.strokeRect(3, 3, w - 6, h - 6);
+      x.fillStyle = fg; x.textBaseline = 'middle'; x.textAlign = 'center';
+      if (zh && en) {
+        x.font = ZH(fit(zh, ZH, h * 0.6, w * 0.4)); x.fillText(zh, w * 0.24, h * 0.53);
+        x.font = EN(fit(en, EN, h * (small ? 0.3 : 0.36), w * 0.5)); x.fillText(en, w * 0.72, h * (small ? 0.42 : 0.53));
+        if (small) { x.font = EN(fit(small, EN, h * 0.18, w * 0.46)); x.fillText(small, w * 0.72, h * 0.76); }
+      } else { const s = zh || en, f = zh ? ZH : EN; x.font = f(fit(s, f, h * 0.58, w * 0.86)); x.fillText(s, w / 2, h * 0.53); }
+    };
+    cell('sKopi', 512, 96, sign('#1a6436', '#2e8a50', '#ffffff', '咖啡店', 'COFFEE SHOP'));
+    cell('sMart', 512, 96, sign('#1c4a94', '#386cc0', '#ffffff', '迷你超市', 'MINIMART', 'OPEN 24 HOURS'));
+    cell('sProv', 512, 96, sign('#a82222', '#cc3c34', '#fff2cc', '杂货店', 'PROVISION SHOP'));
+    cell('sClinic', 512, 96, sign('#eef0ee', '#ffffff', '#12706a', '家庭诊所', 'FAMILY CLINIC', null, '#12706a'));
+    cell('sBakery', 512, 96, sign('#a0561a', '#c4762a', '#fff0d6', '面包店', 'BAKERY'));
+    cell('sSalon', 512, 96, sign('#742866', '#963e84', '#ffffff', '发廊', 'HAIR SALON'));
+    cell('sMed', 512, 96, sign('#641212', '#861e1e', '#f0c84c', '药材行', 'MEDICAL HALL'));
+    cell('sLaundry', 512, 96, sign('#0c7490', '#2694b0', '#ffffff', '自助洗衣', 'LAUNDROMAT', '24 HOURS'));
+    cell('sHard', 512, 96, sign('#d4ac1e', '#ecc834', '#1a1a1a', '五金', 'HARDWARE'));
+    cell('sDrinks', 256, 64, sign('#bc261a', '#d63e2e', '#fff6de', '饮料', 'DRINKS'));
+    cell('sNoodle', 256, 64, sign('#cc860e', '#e4a426', '#361206', '面食', 'NOODLES'));
+    cell('sRice', 256, 64, sign('#285696', '#3870b4', '#ffffff', '经济饭', 'ECONOMY RICE'));
+    ['412', '415', '418', '421'].forEach((n, i) => cell('blk' + i, 256, 96, (w, h) => {
+      x.fillStyle = '#1a2654'; x.fillRect(0, 0, w, h); x.strokeStyle = '#f2f2f2'; x.lineWidth = 5; x.strokeRect(6, 6, w - 12, h - 12);
+      x.fillStyle = '#ffffff'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = EN(fit('BLK ' + n, EN, h * 0.56, w * 0.8)); x.fillText('BLK ' + n, w / 2, h * 0.53);
+    }));
+    /* the shelves' stock: a, packets and boxes; b, bottles; c, the household shelf — four shelves to a cell, each product
+       faced two or three times side by side as a shop stacks it, a label on each, price tickets on the boards' edges */
+    const PAL = ['#c8302a', '#e8b82a', '#2a6ac8', '#2a9a4a', '#e86a1a', '#f2f2ee', '#7a3aa0', '#d84a7a', '#3aaab8', '#8a5a2a'];
+    const goods = (kind) => (w, h) => {
+      x.fillStyle = kind === 'b' ? '#cfd5d6' : '#d6d0c2'; x.fillRect(0, 0, w, h);
+      const rh = h / 4;
+      for (let k = 0; k < 4; k++) {
+        const y1 = (k + 1) * rh - 6; let X = 3;
+        while (X < w - 8) {
+          const pw = kind === 'b' ? 9 + r() * 6 : kind === 'c' ? 20 + r() * 22 : 13 + r() * 16;
+          const ph = rh * (kind === 'b' ? 0.6 + r() * 0.26 : kind === 'c' ? 0.48 + r() * 0.4 : 0.42 + r() * 0.36);
+          const col = PAL[(r() * PAL.length) | 0], n = kind === 'c' ? 1 : 1 + ((r() * 3) | 0);
+          for (let q = 0; q < n && X < w - 8; q++) {
+            if (kind === 'b') {
+              x.fillStyle = col; x.fillRect(X, y1 - ph * 0.72, pw, ph * 0.72); x.fillRect(X + pw * 0.3, y1 - ph, pw * 0.4, ph * 0.3);
+              x.fillStyle = '#f0f0ec'; x.fillRect(X, y1 - ph * 0.5, pw, ph * 0.18);
+              x.fillStyle = '#1e1e1e'; x.fillRect(X + pw * 0.3, y1 - ph - 2, pw * 0.4, 3);
+            } else {
+              x.fillStyle = col; x.fillRect(X, y1 - ph, pw, ph);
+              x.fillStyle = 'rgba(255,255,255,0.55)'; x.fillRect(X + 2, y1 - ph * 0.7, pw - 4, ph * 0.22);
+              x.fillStyle = 'rgba(0,0,0,0.2)'; x.fillRect(X + pw - 2, y1 - ph, 2, ph);
+            }
+            X += pw + 1;
+          }
+          X += 2;
         }
-      } else {
-        x.fillStyle = '#383a42'; x.fillRect(X + 16, 72, UW - 32, 176);
-        for (let k = 0; k < 22; k++) { x.fillStyle = 'rgba(18,18,24,0.55)'; x.fillRect(X + 16, 76 + k * 8, UW - 32, 2); }   // the shutter's slats
+        x.fillStyle = '#787066'; x.fillRect(0, y1, w, 6);
+        for (let tX = 8; tX < w; tX += 26 + r() * 20) { x.fillStyle = '#f4f0dc'; x.fillRect(tX, y1 + 1, 10, 4); }
       }
-      x.fillStyle = '#1c1d22'; x.fillRect(X, 0, 14, 256); x.fillRect(X + UW - 14, 0, 14, 256);   // the columns
-    }
-    return done(THREE, c, true);
+    };
+    cell('goodsA', 256, 256, goods('a')); cell('goodsB', 256, 256, goods('b')); cell('goodsC', 256, 256, goods('c'));
+    /* a drinks fridge's two glass doors: its shelves of cans and bottles, its light along the top, its handles, the glass's sheen */
+    cell('fridge', 256, 256, (w, h) => {
+      x.fillStyle = '#e6eef2'; x.fillRect(0, 0, w, h);
+      for (let k = 0; k < 5; k++) {
+        const y1 = 18 + (k + 1) * (h - 30) / 5; let X = 12;
+        while (X < w - 12) {
+          if (Math.abs(X - w / 2) < 8) { X += 14; continue; }
+          const can = r() < 0.5, pw = can ? 11 : 9, ph = can ? 22 : 34, col = ['#c8302a', '#2a9a4a', '#e8b82a', '#2a6ac8', '#f08a1a', '#7a3aa0', '#d8d8d8'][(r() * 7) | 0];
+          x.fillStyle = col; x.fillRect(X, y1 - ph, pw, ph); x.fillStyle = 'rgba(255,255,255,0.4)'; x.fillRect(X + 1, y1 - ph * 0.6, pw - 2, ph * 0.2);
+          X += pw + 2;
+        }
+        x.fillStyle = '#a6b2ba'; x.fillRect(0, y1, w, 3);
+      }
+      x.fillStyle = 'rgba(255,255,255,0.95)'; x.fillRect(0, 0, w, 12);
+      x.strokeStyle = '#363a40'; x.lineWidth = 10; x.strokeRect(5, 5, w / 2 - 5, h - 10); x.strokeRect(w / 2, 5, w / 2 - 5, h - 10);
+      x.fillStyle = '#98a0a8'; x.fillRect(w / 2 - 16, h * 0.35, 5, h * 0.3); x.fillRect(w / 2 + 11, h * 0.35, 5, h * 0.3);
+      x.fillStyle = 'rgba(255,255,255,0.14)'; for (const o of [24, 150]) { x.beginPath(); x.moveTo(o, h); x.lineTo(o + 60, 0); x.lineTo(o + 88, 0); x.lineTo(o + 28, h); x.fill(); }
+    });
+    /* a bakery's glass counter: three tiers of trays, buns and loaves */
+    cell('bread', 256, 128, (w, h) => {
+      x.fillStyle = '#f4e8d0'; x.fillRect(0, 0, w, h);
+      for (let k = 0; k < 3; k++) {
+        const y1 = 36 + k * 34;
+        x.fillStyle = '#b4b4ac'; x.fillRect(4, y1, w - 8, 4);
+        for (let X = 8; X < w - 22; X += 17 + r() * 8) {
+          const bw = 14 + r() * 8, bh = 9 + r() * 8;
+          x.fillStyle = ['#c8843c', '#d89a4a', '#b06a2a', '#e8c070'][(r() * 4) | 0];
+          x.beginPath(); x.ellipse(X + bw / 2, y1 - bh / 2, bw / 2, bh / 2, 0, 0, Math.PI * 2); x.fill();
+          x.fillStyle = 'rgba(255,240,200,0.55)'; x.beginPath(); x.ellipse(X + bw / 2, y1 - bh * 0.7, bw * 0.3, bh * 0.18, 0, 0, Math.PI * 2); x.fill();
+        }
+      }
+      x.fillStyle = '#86867f'; x.fillRect(0, h - 12, w, 12); x.fillStyle = 'rgba(255,255,255,0.2)'; x.fillRect(0, 0, w, 6);
+    });
+    /* a medical hall's wall of drawers: each its label and its brass pull; and its jars of herbs on a shelf */
+    cell('drawers', 256, 256, (w, h) => {
+      x.fillStyle = '#4a2a14'; x.fillRect(0, 0, w, h);
+      const nx = 8, ny = 9, dw = w / nx, dh = h / ny;
+      for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) {
+        const v = 0.85 + r() * 0.3;
+        x.fillStyle = `rgb(${(122 * v) | 0},${(74 * v) | 0},${(38 * v) | 0})`; x.fillRect(i * dw + 2, j * dh + 2, dw - 4, dh - 4);
+        x.fillStyle = '#efe6cf'; x.fillRect(i * dw + dw * 0.3, j * dh + dh * 0.18, dw * 0.4, dh * 0.22);
+        x.fillStyle = '#d0a848'; x.beginPath(); x.arc(i * dw + dw / 2, j * dh + dh * 0.66, 2.4, 0, Math.PI * 2); x.fill();
+      }
+    });
+    cell('jars', 256, 128, (w, h) => {
+      x.fillStyle = '#d6c6a4'; x.fillRect(0, 0, w, h);
+      for (let k = 0; k < 2; k++) {
+        const y1 = 58 + k * 62;
+        for (let X = 6; X < w - 24; X += 26) {
+          x.fillStyle = 'rgba(220,230,232,0.92)'; x.fillRect(X, y1 - 44, 22, 44);
+          x.fillStyle = ['#7a4a22', '#a8742a', '#5a3a1a', '#c89a4a', '#8a2a1a'][(r() * 5) | 0]; const f = 26 + r() * 10; x.fillRect(X + 2, y1 - f, 18, f);
+          x.fillStyle = '#c03020'; x.fillRect(X - 1, y1 - 48, 24, 5);
+          x.fillStyle = 'rgba(255,255,255,0.35)'; x.fillRect(X + 3, y1 - 42, 3, 36);
+        }
+        x.fillStyle = '#6a4a2a'; x.fillRect(0, y1, w, 4);
+      }
+    });
+    /* a laundromat's machines, a washer under a dryer, two pairs to a cell, their displays lit */
+    cell('washers', 256, 256, (w, h) => {
+      x.fillStyle = '#c6cacf'; x.fillRect(0, 0, w, h);
+      for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) {
+        const X = i * 128 + 6, Y = j * 128 + 6;
+        x.fillStyle = '#eceef0'; x.fillRect(X, Y, 116, 116);
+        x.fillStyle = '#3a4048'; x.fillRect(X + 8, Y + 6, 100, 14); x.fillStyle = '#58e070'; x.fillRect(X + 80, Y + 10, 16, 6);
+        x.fillStyle = '#9aa4ac'; x.beginPath(); x.arc(X + 58, Y + 68, 38, 0, Math.PI * 2); x.fill();
+        x.fillStyle = '#28303a'; x.beginPath(); x.arc(X + 58, Y + 68, 30, 0, Math.PI * 2); x.fill();
+        x.fillStyle = 'rgba(200,220,255,0.28)'; x.beginPath(); x.arc(X + 50, Y + 60, 14, 0, Math.PI * 2); x.fill();
+      }
+    });
+    /* a salon's mirror: the room behind him in it, the lights along its top; and the pole by its door */
+    cell('mirror', 256, 256, (w, h) => {
+      const g = x.createLinearGradient(0, 0, w, h); g.addColorStop(0, '#5c6672'); g.addColorStop(1, '#2a3038'); x.fillStyle = g; x.fillRect(0, 0, w, h);
+      for (let k = 0; k < 3; k++) { x.fillStyle = 'rgba(255,250,235,0.6)'; x.fillRect(30 + k * 80, 10, 30, 8); }
+      x.fillStyle = 'rgba(206,194,184,0.35)'; x.fillRect(40, 112, 40, 118); x.fillRect(150, 122, 46, 108);
+      x.fillStyle = 'rgba(255,255,255,0.16)'; x.beginPath(); x.moveTo(60, h); x.lineTo(150, 0); x.lineTo(190, 0); x.lineTo(100, h); x.fill();
+      x.strokeStyle = '#d8d8d4'; x.lineWidth = 8; x.strokeRect(4, 4, w - 8, h - 8);
+    });
+    cell('pole', 64, 256, (w, h) => {
+      x.fillStyle = '#f4f4f2'; x.fillRect(0, 0, w, h);
+      for (let k = -4; k < 12; k++) { x.fillStyle = k % 2 ? '#c41e28' : '#2a46a4'; x.beginPath(); x.moveTo(0, k * 32); x.lineTo(w, k * 32 - 40); x.lineTo(w, k * 32 - 26); x.lineTo(0, k * 32 + 14); x.fill(); }
+    });
+    /* a shutter down for the night: its slats, its grime, its bottom bar and its padlock */
+    cell('shutter', 256, 256, (w, h) => {
+      for (let y = 0; y < h; y += 8) { x.fillStyle = (y / 8) % 2 ? '#6a6e72' : '#5c6064'; x.fillRect(0, y, w, 8); x.fillStyle = 'rgba(20,20,24,0.5)'; x.fillRect(0, y + 7, w, 1); }
+      speckle(x, w, h, r, 300, '30,30,30', 0.05, 0.2, 1, 3);
+      x.fillStyle = '#3a3c40'; x.fillRect(0, h - 14, w, 14); x.fillStyle = '#b4983a'; x.fillRect(w / 2 - 6, h - 26, 12, 14);
+    });
+    /* the void deck's lift lobby: two lifts' brushed doors, each its floor lit red over it; the letterboxes' wall */
+    cell('lift', 256, 256, (w, h) => {
+      x.fillStyle = '#8a8e94'; x.fillRect(0, 0, w, h);
+      for (const X0 of [14, 134]) {
+        for (let X = 0; X < 108; X++) { const v = 168 + ((r() * 30) | 0); x.fillStyle = `rgb(${v},${v + 2},${v + 6})`; x.fillRect(X0 + X, 40, 1, h - 40); }
+        x.fillStyle = '#4a4e54'; x.fillRect(X0 + 53, 40, 2, h - 40);
+        x.fillStyle = '#0e1012'; x.fillRect(X0 + 34, 10, 40, 22);
+        x.fillStyle = '#ff4030'; x.font = EN(18); x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(String(1 + ((r() * 9) | 0)), X0 + 54, 21);
+      }
+    });
+    cell('letters', 256, 256, (w, h) => {
+      x.fillStyle = '#5a6066'; x.fillRect(0, 0, w, h);
+      const nx = 8, ny = 10, dw = w / nx, dh = h / ny;
+      for (let i = 0; i < nx; i++) for (let j = 0; j < ny; j++) {
+        x.fillStyle = '#a8aeb4'; x.fillRect(i * dw + 2, j * dh + 2, dw - 4, dh - 4);
+        x.fillStyle = '#2a2e32'; x.fillRect(i * dw + dw / 2 - 1, j * dh + dh * 0.5, 3, 5);
+        x.fillStyle = '#f0f0e8'; x.fillRect(i * dw + 5, j * dh + 5, dw * 0.4, 4);
+      }
+    });
+    /* the coffee shop's floor: four tiles by four, a little different each, the grout between */
+    cell('tiles', 256, 256, (w, h) => {
+      x.fillStyle = '#968e80'; x.fillRect(0, 0, w, h);
+      for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) { const v = 0.9 + r() * 0.12; x.fillStyle = `rgb(${(214 * v) | 0},${(206 * v) | 0},${(190 * v) | 0})`; x.fillRect(i * 64 + 2, j * 64 + 2, 60, 60); }
+    });
+    /* a clinic's frosted front, a band across it */
+    cell('frosted', 256, 256, (w, h) => {
+      x.fillStyle = '#e2eaec'; x.fillRect(0, 0, w, h);
+      x.fillStyle = 'rgba(255,255,255,0.55)'; for (let k = 0; k < 6; k++) x.fillRect(0, k * 44 + 6, w, 2);
+      x.fillStyle = '#16867a'; x.fillRect(0, h * 0.38, w, 30);
+      x.fillStyle = '#ffffff'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.font = EN(fit('GENERAL PRACTICE', EN, 16, w * 0.9)); x.fillText('GENERAL PRACTICE', w / 2, h * 0.38 + 15);
+    });
+    /* the coffee shop's stalls: one of cooked food in trays, one of drinks (cups, tins, the urn); the drinks' menu */
+    cell('stallFood', 256, 128, (w, h) => {
+      x.fillStyle = '#f2f2ea'; x.fillRect(0, 0, w, h);
+      for (let k = 0; k < 6; k++) { const X = 8 + k * 41;
+        x.fillStyle = '#c6cacf'; x.fillRect(X, 60, 36, 26);
+        x.fillStyle = ['#2a8a3a', '#e07a1a', '#8a4a1a', '#f4f0e0', '#c8302a', '#e8c040'][k]; x.beginPath(); x.ellipse(X + 18, 66, 15, 8, 0, 0, Math.PI * 2); x.fill(); }
+      x.fillStyle = 'rgba(255,255,255,0.28)'; x.fillRect(0, 0, w, 40); x.fillStyle = '#989ca2'; x.fillRect(0, h - 30, w, 30);
+    });
+    cell('stallDrink', 256, 128, (w, h) => {
+      x.fillStyle = '#ecece6'; x.fillRect(0, 0, w, h);
+      for (let k = 0; k < 9; k++) { x.fillStyle = '#fafaf6'; x.fillRect(10 + k * 14, 70, 11, 14); x.fillStyle = '#7a4a22'; x.fillRect(10 + k * 14, 70, 11, 3); }
+      for (let k = 0; k < 5; k++) { x.fillStyle = ['#c8302a', '#2a9a4a', '#e8b82a', '#2a6ac8', '#e86a1a'][k]; x.fillRect(150 + k * 18, 56, 14, 28); }
+      x.fillStyle = '#b8bcc2'; x.fillRect(20, 20, 40, 44); x.fillStyle = '#d8dce2'; x.fillRect(24, 24, 10, 36);
+      x.fillStyle = '#989ca2'; x.fillRect(0, h - 30, w, 30);
+    });
+    cell('menu', 512, 160, (w, h) => {
+      x.fillStyle = '#123826'; x.fillRect(0, 0, w, h); x.strokeStyle = '#d6b648'; x.lineWidth = 4; x.strokeRect(4, 4, w - 8, h - 8);
+      [['咖啡', 'KOPI'], ['咖啡乌', 'KOPI-O'], ['茶', 'TEH'], ['茶乌', 'TEH-O'], ['薏米水', 'BARLEY'], ['柠檬茶', 'LEMON TEA'], ['豆奶', 'SOYA MILK'], ['椰水', 'COCONUT']].forEach(([zh, en], i) => {
+        const X = 22 + (i % 2) * 250, Y = 28 + Math.floor(i / 2) * 34;
+        x.textAlign = 'left'; x.textBaseline = 'middle'; x.fillStyle = '#f4f0e0'; x.font = ZH(22); x.fillText(zh, X, Y);
+        x.fillStyle = '#f0d060'; x.font = EN(17); x.fillText(en, X + 96, Y);
+      });
+    });
+    /* a TV high on the coffee shop's wall; two posters; a drinks crate's side; snacks hanging in strips (its own alpha) */
+    cell('tv', 128, 80, (w, h) => {
+      const g = x.createLinearGradient(0, 0, w, h); g.addColorStop(0, '#2a5aa8'); g.addColorStop(1, '#e8884a'); x.fillStyle = g; x.fillRect(0, 0, w, h);
+      x.fillStyle = 'rgba(255,255,255,0.35)'; x.fillRect(16, 12, 60, 40); x.fillStyle = '#b02020'; x.fillRect(0, h - 14, w, 14); x.fillStyle = '#ffffff'; x.fillRect(6, h - 10, 70, 5);
+      x.strokeStyle = '#101010'; x.lineWidth = 6; x.strokeRect(0, 0, w, h);
+    });
+    cell('poster1', 128, 192, (w, h) => {
+      x.fillStyle = '#2a7ab8'; x.fillRect(0, 0, w, h); x.fillStyle = '#ffffff'; x.fillRect(10, 40, w - 20, h - 60);
+      x.fillStyle = '#d83a3a'; x.beginPath(); x.arc(w / 2 - 10, 80, 14, 0, Math.PI * 2); x.arc(w / 2 + 10, 80, 14, 0, Math.PI * 2); x.fill(); x.beginPath(); x.moveTo(w / 2 - 24, 86); x.lineTo(w / 2 + 24, 86); x.lineTo(w / 2, 112); x.fill();
+      x.fillStyle = '#9aa0a6'; for (let k = 0; k < 5; k++) x.fillRect(20, 124 + k * 10, w - 40 - r() * 30, 4);
+      x.fillStyle = '#ffffff'; x.font = EN(16); x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('HEALTH', w / 2, 20);
+    });
+    cell('poster2', 128, 192, (w, h) => {
+      x.fillStyle = '#f2c230'; x.fillRect(0, 0, w, h); x.fillStyle = '#c8241c';
+      x.beginPath(); for (let k = 0; k < 16; k++) { const a = k * Math.PI / 8, rr = k % 2 ? 30 : 50; x.lineTo(w / 2 + Math.cos(a) * rr, 76 + Math.sin(a) * rr); } x.fill();
+      x.fillStyle = '#ffffff'; x.font = EN(22); x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('NEW', w / 2, 78);
+      x.fillStyle = '#4a3a1a'; for (let k = 0; k < 4; k++) x.fillRect(16, 140 + k * 11, w - 32 - r() * 20, 5);
+    });
+    cell('crate', 128, 96, (w, h) => {
+      x.fillStyle = '#b4221a'; x.fillRect(0, 0, w, h); for (let i = 0; i < 6; i++) { x.fillStyle = '#76100a'; x.fillRect(8 + i * 20, 30, 12, 40); }
+      x.fillStyle = '#2a7a3a'; for (let i = 0; i < 8; i++) x.fillRect(4 + i * 15, 0, 10, 9);
+    });
+    cell('hang', 96, 256, (w, h) => {
+      x.clearRect(0, 0, w, h); x.fillStyle = '#3a3a3a'; x.fillRect(0, 0, w, 6);
+      for (let i = 0; i < 3; i++) { const X = 6 + i * 31; x.fillStyle = '#d6d6d6'; x.fillRect(X + 11, 6, 3, h - 12);
+        for (let Y = 14; Y < h - 34; Y += 32) { x.fillStyle = ['#e8b82a', '#c8302a', '#2a6ac8', '#e86a1a', '#2a9a4a'][(r() * 5) | 0]; x.fillRect(X, Y, 25, 28); x.fillStyle = 'rgba(255,255,255,0.55)'; x.fillRect(X + 3, Y + 8, 19, 8); } }
+    });
+    /* (v24.35) the flats over the shops: a window lit behind its curtain (warm, or cool), a dark one, an
+       air-conditioner's compressor, washing on a laundry pole (its own alpha) */
+    const curtain = (top, bot, fold) => (w, h) => {
+      const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, top); g.addColorStop(1, bot); x.fillStyle = g; x.fillRect(0, 0, w, h);
+      for (let X = 0; X < w; X += 8) { x.fillStyle = `rgba(${fold},${(0.08 + r() * 0.14).toFixed(2)})`; x.fillRect(X, 0, 3, h); }
+      x.fillStyle = 'rgba(255,255,255,0.18)'; x.fillRect(0, 0, w, 6);
+    };
+    cell('curtWarm', 128, 96, curtain('#ffe0ae', '#e2b274', '110,64,26'));
+    cell('curtCool', 128, 96, curtain('#e2ecff', '#b4c4e4', '60,70,100'));
+    cell('glassDark', 64, 64, (w, h) => {
+      const g = x.createLinearGradient(0, 0, w, h); g.addColorStop(0, '#222b3a'); g.addColorStop(1, '#0c1016'); x.fillStyle = g; x.fillRect(0, 0, w, h);
+      x.fillStyle = 'rgba(160,180,210,0.12)'; x.beginPath(); x.moveTo(10, h); x.lineTo(40, 0); x.lineTo(52, 0); x.lineTo(22, h); x.fill();
+    });
+    cell('aircon', 128, 80, (w, h) => {
+      x.fillStyle = '#b6babe'; x.fillRect(0, 0, w, h); x.fillStyle = '#54585e'; x.beginPath(); x.arc(w * 0.36, h / 2, h * 0.38, 0, Math.PI * 2); x.fill();
+      x.strokeStyle = '#8a8e94'; x.lineWidth = 2; for (let k = 0; k < 6; k++) { x.beginPath(); x.arc(w * 0.36, h / 2, h * (0.06 + k * 0.055), 0, Math.PI * 2); x.stroke(); }
+      x.fillStyle = '#9a9ea4'; for (let k = 0; k < 6; k++) x.fillRect(w * 0.72, 10 + k * 10, w * 0.22, 4);
+    });
+    cell('clothes', 256, 128, (w, h) => {
+      x.clearRect(0, 0, w, h);
+      let X = 4;
+      while (X < w - 30) {
+        const col = ['#e8e8e4', '#3a5a9a', '#c8443a', '#e8c84a', '#4a8a5a', '#2a2a2e', '#d888a8'][(r() * 7) | 0], kind = r();
+        x.fillStyle = col;
+        if (kind < 0.4) { x.fillRect(X, 4, 40, 18); x.fillRect(X + 8, 4, 24, 56); X += 46; }                       // a shirt
+        else if (kind < 0.7) { x.fillRect(X, 4, 30, 70 + r() * 30); X += 36; }                                    // a towel
+        else { x.fillRect(X, 4, 26, 14); x.fillRect(X, 4, 11, 80); x.fillRect(X + 15, 4, 11, 80); X += 32; }      // trousers
+        x.fillStyle = 'rgba(0,0,0,0.18)'; x.fillRect(X - 6, 4, 2, 60);
+      }
+      x.fillStyle = '#6a5a3a'; x.fillRect(0, 0, w, 4);
+    });
+    return { tex: done(THREE, c, false), cells };
   }
   /* (v24.33) a light's reflection in the wet road, as the eye sees it: a soft upright streak */
   function makeStreak(THREE, cnv) {

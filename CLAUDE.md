@@ -168,6 +168,7 @@ that fits it, with the version it came from.
 - A finding outside the ask, or one that would change every chapter or the base game, is listed for him with the reason and left as it is. (v19.2)
 - A chapter is built to full completion, nothing skipped, with its own music and sound generated. (v23.6)
 - A model he sends with no place decided is prepared and kept ready, and placed only when he picks where. (v14.13)
+- Efficiency improves and the standards and quality stay exactly where they are ("I dont want quality and creativity and standards to drop because of this change, i want efficiency to improve while keeping the same standards and quality"): his asks are done in one shot, one build, one deploy and one round of checks at the end ("cant you do all of my asks in one shot, deploy, test once probe once?"), not one release per ask. Each ask is designed fully before it is built (what the real place has, what each shot sees), so the photographs confirm instead of discover. The work is saved by commits as it goes. Every check this file asks for is still made, once, where it can catch something, and never repeated after each tweak. A generated model's own checks (the reference picture, each model on its own) are part of making it, not probes of the game. (v24.35)
 
 ### How the work is done and checked
 
@@ -224,6 +225,7 @@ that fits it, with the version it came from.
 - Re-run the previous release's regression probes on the live build before changing more. (v21.27)
 - For a device-specific rendering report, ask him for the ?diag screenshot. (v15.2)
 - A new sheet's diff against the last one is exactly the cells changed. (v14.2)
+- A picture is judged by a reader who does not know what was meant. The end check hands every changed shot (phone crop and desktop) to an independent reviewer with only the pictures and the question of what looks fake, blank, floating, doubled or wrong, because the author sees what he intended. v24.33's bus-stop advert panel, lit and blank, passed every check as 'an advert' and read as a white block. (v24.35)
 
 ### Models and assets
 
