@@ -7406,8 +7406,70 @@ What the baseline contains, by release:
     still room) show the altar's flowers and garlands and the cabinets' stock in their places. The films run the same
     frame (roomFrame runs in films as in play), so the storm film is answered by the same change.
   - Deployed 6ae81d6f8873c4cc2398b700 (310 of 310 files byte-identical); chapter and leak green on its copy.
+- **v24.32** THE WALK OUT, HER HAND, THE FARE, AND THREE BEATS LET GO — Chad's notes on episode 4 chapter 1, 2 Nov 2026:
+  one message of seven asks and three more while it was built, every word in docs/V24.32-E4C1-NOTES.md with the plan
+  for all ten. This release is six of them (1, 2, 3, 8, 9, 10); the taxi's window is v24.33, then the music, the
+  samnak's amulets and his shop.
+  - ENDING A'S WALK-OUT ("when the camera tracks pong walking out, it is extremely jerky and awkward"). Measured frame
+    by frame on a held clock (tools/probes/camtrack.mjs, new): the eye ran 15 m in six seconds round straight legs,
+    eased by the clock — 3.84 m/s at its peak, a jog — so close behind Pong that his back filled a phone's frame, its
+    view on his head, which bobs with his gait: turns up to 168°/s and 74 of 180 frames whose turn changed faster than
+    400°/s². Now a walk is a smooth curve through its points (`walkCurve`: centripetal Catmull-Rom, sampled once at even
+    spacing), walked at a man's pace from a standstill (`walkS`/`walkV`: 1.35 m/s reached over a second), its bob and
+    sway counted from the ground covered (`walkEye`), the person carried on the same curve (`walkOn`), and the view on
+    a point that does not bob: 1.35 m/s, 4.8°/s at most, the turn's change 16°/s² at most. Pong walks 2.7–3 m ahead in
+    the middle of a phone's frame. ENDINGS C AND D, built the same way, measured the same and were walked the same way
+    (outside the ask, said in the report): D's eye ran 4.0 m/s and passed 0.4 m from the gate's post, which filled a
+    phone's frame — now 1.4 m/s, a turn from Pong to the gateway as he says "Let's sit for a bit", the shelter on
+    "sit", nothing over 400°/s²; C's look snapped to Pa Noi behind him and back in one frame each way (5,206°/s) — now
+    a look back over his right shoulder as she calls, 1.7 s each way (`aimTurn`: bearing and pitch eased, its side
+    chosen), 159°/s at most, nothing over 400°/s².
+  - PA NOI'S HAND ("when the wife gives the guava, one of her hands is twisted"). The giving take (Checkout_Gesture,
+    retargeted from the v24.0 stand-in at v24.15) rolls her LEFT hand 124.8° about its own bone with a bend of 28.5°;
+    her own takes roll at most 92° and her right hand 14° in the same take, and her rig has no forearm twist bone, so the
+    skin wrung at the wrist (photographed front and side). `TWIST_FIX` keeps 35 % of the roll and all of the bend
+    (swing-twist about the bone's +y, measured to point to its fingers), once on the shared clip at load from the
+    original parse's rest; the file is not touched. And the bag of guavas is in that hand now: it hung from her right
+    at her side while the left reached out empty. `handOf` keeps one bone per hand asked for (it kept the first).
+  - THE FARE ("in the taxi for all cutscenes, the time is 1860 which makes 0 sense"). The meter was "S$ 18.60" on a
+    128 × 48 sheet drawn 14 cm wide down the dash; on a phone the dim "S$" and the decimal point were gone. Now 256 × 96:
+    FARE over "$18.60", the dollar sign as large and bright as the digits, a square decimal point.
+  - ENDING B, NO CARD (his second message: "no need for the wife to give any business card, and no need to show the
+    card. Just have the player exit the samnak normally, and the wife just say goodbye to him and he gets into the car
+    with pong"). The card, its grip (`CARD_N`, `cardGrip`), its picture (`makeMasterCard`) and its sound are gone. At the
+    door Pa Noi, standing beside the foot of the steps (in front of them, his way down passed 0.7 m from her and her head
+    rose through the bottom of the frame), says goodbye — `pn1bye`, "กลับดีๆ นะคะ... Go home safe, na kha. Bye bye!",
+    Kanya on eleven_v3, two takes picked by measure (masters/v24.32/make.sh) — and waves on "Bye bye" (her right hand,
+    which rolls 65° at most, needs no fix); her line done, his eyes turn to the yard where Pong waits by the pickup
+    (`aimEase`: the two directions slerped — sliding the aim's point from her 1.7 m off to the gate 17 m off peaked at
+    101°/s, eased by direction 32°/s), and he goes down the steps (the eye's floor one 0.85 m slope, a slower start)
+    toward the gate; then the cab, his eyes on Pong through both his lines and then the road. Ending B is 1.5 s longer.
+    Gestures play on the wall clock, so seeked photographs never showed the wave: camtrack's SHOTS photograph inside the
+    held clock.
+  - ENDING C, NO SHADOW (his third: "No need to have that shadow and no need to have a shocked effect"). The dark shape in
+    his glass case (a clone of Pong's rig drawn as one layer), the flinch and its gasp are gone; the last shot is the
+    same frame, quiet.
+  - THE STALL WOMAN (his fourth: "way too abrupt and awkward and i dont know what it was trying to show"). The look that
+    swung off the road onto her — her back to the road, a dark shape he took for HER, turning round to be only a woman
+    at a stall, three seconds on a narrowing lens — is gone; she stands at her stall facing the road as the pickup
+    passes, and the eyes stay on the road.
+  - Found on the way, by photograph: a seek from ending C's room straight into its road held a purple void for the
+    whole shot. The room's door view (v24.26) moves the yard to DOOR_OFF while the lens is in the room, and the frame
+    chooses the world from where the lens was; the cab's eye, read off the pickup in the moved yard, landed 241 m off
+    inside the room's world and kept it there. Unreachable by play (the walk across the yard comes between), but a film
+    must be a function of its clock: `cabEye` hands the yard back first.
+  - Retired (v24.3's rule): `pn1card` (her card line), `w4card` (the card's slide and flick), `w4gasp` (C's flinch) —
+    files, STING rows, take set and registry; their takes stay in masters/v24.0, their lines there commented. Sheet v136.
+  - Deployed 6ae88a0abad7973a1bc22c32 as soon as the walk-out was measured, then the finished build
+    6ae892cb1008cef3f5b9f699, then 6ae894796a95e9c809835af4 (a comment restored in the chapter, which ships its
+    comments) — 310 of 310 files byte-identical each time; harnesses hosted, chapter and leak green on its copy.
 
 ## The sheet, version by version
+
+**v136** (`masters/v24.32/masterz-text-v136.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from
+it): v135 with one row swapped — the voice row `pn1card` (Pa Noi with the master's card, ending B) out and `pn1bye` (her
+goodbye at the door, "กลับดีๆ นะคะ... Go home safe, na kha. Bye bye!", 4.78 s) in; nothing else moved (1974 rows).
+Exported, not published.
 
 **v135** (`masters/v24.24/masterz-text-v135.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from
 it — stale since v24.7): v134 with 9 rows changed, none added or removed — episode 4 chapter 1's `subAnu` ("Thank you.",

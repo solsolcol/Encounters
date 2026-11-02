@@ -8909,7 +8909,7 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
      duck for the whole work and storm, so the rain, the drone and the thunder never reached their levels; as an effect
      it is murmured under his lines, the same gain otherwise) */
   'pg1power', 'fm1blessA', 'pg1Ank', 'pg1Atk', 'pg1Apy', 'fm1Abye', 'pn1guava', 'pg1A1', 'pg1A2',
-  'pg1B1', 'pg1B2', 'fm1B1', 'pg1B3', 'fm1B2', 'pg1B4', 'fm1B3', 'pg1B5', 'pn1card', 'pg1B6', 'pg1B7', 'fm1C1',
+  'pg1B1', 'pg1B2', 'fm1B1', 'pg1B3', 'fm1B2', 'pg1B4', 'fm1B3', 'pg1B5', 'pn1bye', 'pg1B6', 'pg1B7', 'fm1C1',
   'fm1C2', 'pg1C1', 'pn1C1', 'pg1C2', 'pg1D1', 'fm1D1', 'pg1D2', 'pg1D3', 'tx1where']);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
@@ -13250,7 +13250,7 @@ const STING_SAMPLE = {
   fm1Abye: ['fm1Abye', 1], q1A1: ['q1A1', 1], pn1guava: ['pn1guava', 1], q1A2: ['q1A2', 1], pg1A1: ['pg1A1', 1],
   pg1A2: ['pg1A2', 1], q1A3: ['q1A3', 1], q1A4: ['q1A4', 1], q1B1: ['q1B1', 1], pg1B1: ['pg1B1', 1],
   pg1B2: ['pg1B2', 1], fm1B1: ['fm1B1', 1], pg1B3: ['pg1B3', 1], fm1B2: ['fm1B2', 1], pg1B4: ['pg1B4', 1],
-  q1B2: ['q1B2', 1], fm1B3: ['fm1B3', 1], pg1B5: ['pg1B5', 1], q1B3: ['q1B3', 1], pn1card: ['pn1card', 1],
+  q1B2: ['q1B2', 1], fm1B3: ['fm1B3', 1], pg1B5: ['pg1B5', 1], q1B3: ['q1B3', 1], pn1bye: ['pn1bye', 1],
   pg1B6: ['pg1B6', 1], pg1B7: ['pg1B7', 1], q1B4: ['q1B4', 1], q1C0: ['q1C0', 1], q1C1: ['q1C1', 1],
   fm1C1: ['fm1C1', 1], fm1C2: ['fm1C2', 1], pg1C1: ['pg1C1', 1], pn1C1: ['pn1C1', 1], pg1C2: ['pg1C2', 1],
   q1C2: ['q1C2', 1], q1C3: ['q1C3', 1], q1D1: ['q1D1', 1], pg1D1: ['pg1D1', 1], fm1D1: ['fm1D1', 1],
@@ -13268,8 +13268,8 @@ const STING_SAMPLE = {
   w4engoff: ['w4engoff', 1], w4drips: ['w4drips', 1], w4breath: ['w4breath', 1], w4pao: ['w4pao', 1],
   w4frogs: ['w4frogs', 1], w4page: ['w4page', 1], w4steps: ['w4steps', 1], w4door: ['w4door', 1],
   w4endA: ['w4endA', 1], w4endB: ['w4endB', 1], w4endC: ['w4endC', 1], w4endD: ['w4endD', 1], w4pat: ['w4pat', 1],
-  w4coda: ['w4coda', 1], w4card: ['w4card', 1], w4heart: ['w4heart', 1], w4rise: ['w4rise', 1], w4cup: ['w4cup', 1],
-  w4dog: ['w4dog', 1], w4gasp: ['w4gasp', 1], w4bell: ['w4bell', 1],
+  w4coda: ['w4coda', 1], w4heart: ['w4heart', 1], w4rise: ['w4rise', 1], w4cup: ['w4cup', 1],
+  w4dog: ['w4dog', 1], w4bell: ['w4bell', 1],
   w4water: ['w4water', 1], w4tube: ['w4tube', 1], w4mala: ['w4mala', 1], w4cloth: ['w4cloth', 1], w4sandon: ['w4sandon', 1], w4storm: ['w4storm', 1],   // CP11: the plan's effects not in the first run, and the storm's drone
   w4barestep: ['w4barestep', 1]   // CP13: his bare foot in the room (e4c1's stepSound)
 };

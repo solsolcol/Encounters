@@ -136,7 +136,7 @@ him  q1B2       voices/raw/q1B2_b.mp3                  --keep 0.92 $F    # words
 cast fm1B3      voices/raw/fm1B3_a.mp3                 -16 $F            # words 1.00, the clean end, 2.56 s
 cast pg1B5      voices/raw/pg1B5_r_b.mp3               -16 $F            # CP13 re-take ("if you want to learn, come back"); words 1.00 each, b's end -40 against a's -26, 4.24 s
 him  q1B3       voices/raw/q1B3_a.mp3                  $F                # words 1.00, 2.72 s
-cast pn1card    voices/raw/pn1card_b.mp3               -16 $F            # words 0.55 against 0.36, 2.64 s
+# (v24.32, retired — Chad's notes of 2 Nov 2026, masters/v24.32/make.sh; nothing plays it:) cast pn1card    voices/raw/pn1card_b.mp3               -16 $F            # words 0.55 against 0.36, 2.64 s
 cast pg1B6      voices/raw/pg1B6_a.mp3                 -16 $F            # words 1.00 against 0.89, 3.04 s
 cast pg1B7      voices/raw/pg1B7_r_a.mp3               -16 $F            # CP13 re-take ("Next time you look for me also"); words 1.00 each, a's end -40 against b's -29, 4.00 s
 him  q1B4       voices/raw/q1B4_a.mp3                  --keep 6.2 $F     # words 1.00, the clean end, 8.24 s; CP12: its silent tail cut at the words' end + 0.3 s
@@ -231,12 +231,12 @@ fx  w4page      sfx/raw/w4page_a.mp3      -10                                  #
 fx  w4steps     sfx/raw/w4steps_b.mp3     -8                                   # squelching steps to 4.45 s (a stops at 3.8)
 fx  w4door      sfx/raw/w4door_a.mp3      -6                                   # the slam at once (b opens 0.8 s before it, and is 41 % sub-bass)
 fx  w4pat       sfx/raw/w4pat_a.mp3       -10                                  # the pats and the keys, more of the cloth than b
-fx  w4card      sfx/raw/w4card_a.mp3      -10                                  # the slide and the flick, 6 dB more than b
+# (v24.32, retired — Chad's notes of 2 Nov 2026, masters/v24.32/make.sh; nothing plays it:) fx  w4card      sfx/raw/w4card_a.mp3      -10                                  # the slide and the flick, 6 dB more than b
 fxc w4heart     sfx/raw/w4heart_r2_b.mp3  -6  "[0:a]asplit[a][b];[b]lowpass=f=160,volume=26dB,asoftclip=type=tanh,highpass=f=180,lowpass=f=2500,volume=-6dB[h];[a][h]amix=inputs=2:normalize=0"  # RE-MADE AND HARMONISED: every take was 90-97 % sub-bass (24-29 dB lost on a phone); r2 b (88 bpm) with its own thump's harmonics laid under it — 11 dB lost now, the gaps still 50 dB under the beats
 fx  w4rise      sfx/raw/w4rise_a.mp3      -8                                   # the rustle and the knock across the band (25 % over 3 kHz); b is one low knock
 fx  w4cup       sfx/raw/w4cup_a.mp3       -6                                   # the clatter and the splash with a clean tail (-84)
 fx  w4dog       sfx/raw/w4dog_a.mp3       -8                                   # two barks and the chain, clean at both ends
-fx  w4gasp      sfx/raw/w4gasp_b.mp3      -8                                   # the breath of the gasp (20 % over 3 kHz), a clean tail (-80.6)
+# (v24.32, retired — Chad's notes of 2 Nov 2026, masters/v24.32/make.sh; nothing plays it:) fx  w4gasp      sfx/raw/w4gasp_b.mp3      -8                                   # the breath of the gasp (20 % over 3 kHz), a clean tail (-80.6)
 fx  w4bell      sfx/raw/w4bell_a.mp3      -8                                   # the longer ring (-60 at 1.9 s; b is gone by 1.0)
 # the plan's effects that were not in the first run (§9.2): made, measured and picked the same way
 fx  w4marker    sfx/raw/w4marker_a.mp3    -10                                  # two squeaky strokes (78 % over 3 kHz), the clean head (-36.7; b starts on signal)

@@ -126,7 +126,7 @@
   const CODA = { k2: 10.6, k3: 16.6, black: 22.6, end: 24.2 };          // from the coda's own start (END[k].coda)
   const END = {
     A: { pao: 6.5, bless: 13.5, look: 27.5, book: 34.0, out: 40.0, walk: 51.0, cab: 57.0, wide: 62.6, coda: 70.0 },
-    B: { ask: 4.9, look: 14.4, pong: 25.6, who: 34.4, come: 42.0, card: 56.0, cab: 63.0, wide: 74.0, coda: 82.4 },
+    B: { ask: 4.9, look: 14.4, pong: 25.6, who: 34.4, come: 42.0, door: 56.0, cab: 64.5, wide: 75.5, coda: 83.9 },   // (v24.32: no card — her goodbye and the walk to the pickup, 1.5 s longer)
     C: { said: 7.4, up: 9.4, calm: 12.4, pong: 19.4, out: 24.0, car: 33.2, road: 39.2, coda: 51.6 },
     D: { ask: 7.0, nod: 19.0, out: 24.0, shelter: 36.0, dusk: 52.0, coda: 60.4 }
   };
@@ -320,7 +320,7 @@
       'pg1B4': 1.65, 'pg1B5': 4.21, 'pg1B6': 2.99, 'pg1B7': 4.01, 'pg1C1': 3.35, 'pg1C2': 2.49, 'pg1D1': 3.87,
       'pg1D2': 3, 'pg1D3': 4.37,
     /* pn */
-      'pn1ready': 4.25, 'pn1water': 6.41, 'pn1tray': 0.83, 'pn1guava': 6.49, 'pn1card': 2.65, 'pn1C1': 6.03,
+      'pn1ready': 4.25, 'pn1water': 6.41, 'pn1tray': 0.83, 'pn1guava': 6.49, 'pn1bye': 4.78, 'pn1C1': 6.03,
     /* fm */
       'fm1hello': 4.21, 'fm1shop': 1.25, 'fm1good': 4.49, 'fm1hm': 1.21, 'fm1read': 14.81, 'fm1items': 2.25,
       'fm1anu': 1, 'fm1eyes': 3.33, 'fm1chant': 23.03, 'fm1chant2': 13.82, 'fm1chant2D': 6.31, 'fm1blessA': 2.33,
@@ -3589,6 +3589,33 @@
        split into legs and body, so a seated talker's crossed legs stay crossed), walking, talking (the body only) and a
        one-off gesture (the pao). Standing up and sitting down blend the pose AND the body's offset onto the seat together,
        so a man rises off a bench rather than jumping out of it. */
+    /* (v24.32) A WRIST THAT ROLLS PAST WHAT THE SKIN CAN FOLLOW (Chad: "when the wife gives the guava, one of her hands is
+       twisted"). Pa Noi's giving gesture (Checkout_Gesture) is retargeted from the v24.0 stand-in (masters/v24.15/make.sh),
+       and measured against her rest, its LEFT hand ROLLS up to 125° about its own bone — the forearm, with no twist bone in
+       this rig, does not follow, and the skin wrings at the wrist (photographed). Its bend is 28°, her own takes' kind; her
+       own takes roll it at most 92° (Talk_with_Hands_Open), her right hand in the same gesture 14°. So the roll of each key
+       is cut to `keep` of itself and the bend kept: rest⁻¹·key = swing·twist, the twist about the bone's own axis (+y, to its
+       fingers: measured, the child's offset), and key' = rest·swing·slerp(1, twist, keep). Once, on the shared clip (its
+       userData marks it), from the original parse's rest — the file is never touched */
+    const TWIST_FIX = { e4noi: [['Checkout_Gesture', 'LeftHand', 0.35]] };
+    function softenTwist(clip, rest, bone, keep) {
+      const done = clip.userData || (clip.userData = {});
+      if (done['twist:' + bone]) return;
+      let b = null; const re = new RegExp(bone + '(_\\d+)?$');
+      rest.traverse(o => { if (!b && o.isBone && re.test(o.name)) b = o; });
+      const tr = b && clip.tracks.find(t => t.name === b.name + '.quaternion'); if (!tr) return;
+      const ri = b.quaternion.clone().invert(), q = new THREE.Quaternion(), tw = new THREE.Quaternion(), sw = new THREE.Quaternion(), tk = new THREE.Quaternion(), I = new THREE.Quaternion();
+      const v = tr.values;
+      for (let i = 0; i < v.length; i += 4) {
+        q.set(v[i], v[i + 1], v[i + 2], v[i + 3]).premultiply(ri);
+        tw.set(0, q.y, 0, q.w).normalize();
+        sw.copy(q).multiply(tk.copy(tw).invert());
+        tk.slerpQuaternions(I, tw, keep);                 // (into its own target: slerpQuaternions copies its first argument in)
+        q.copy(b.quaternion).multiply(sw).multiply(tk);
+        v[i] = q.x; v[i + 1] = q.y; v[i + 2] = q.z; v[i + 3] = q.w;
+      }
+      done['twist:' + bone] = true;
+    }
     function mkPerson(key, o) {
       const parent = o.parent;
       const group = new THREE.Group(); group.position.set(o.x, o.y != null ? o.y : (o.ground ? o.ground(o.x, o.z) : 0), o.z); group.rotation.y = o.ry || 0; parent.add(group);
@@ -3602,6 +3629,7 @@
         if (!alive) return;
         const g = cloneSkinned(gltf.scene);
         const clips = gltf.animations.concat(extra ? extra.animations : []);
+        for (const [cn, bn, keep] of TWIST_FIX[key] || []) { const c = clips.find(x => x.name === cn); if (c) softenTwist(c, gltf.scene, bn, keep); }
         g.traverse(m => { if (m.isMesh) { m.castShadow = !LOW && !o.noShadow; m.receiveShadow = false;
           if (o.noMip) for (const mm of [].concat(m.material)) { const t = mm && mm.map;
             if (t && t.generateMipmaps !== false) { t.generateMipmaps = false; t.minFilter = THREE.LinearFilter; t.needsUpdate = true; } } } });
@@ -5763,8 +5791,10 @@
     function headOf(P, fb) { if (P && P.ready && P.head && P.group.visible) { P.head.getWorldPosition(_ffv); return [_ffv.x, _ffv.y, _ffv.z]; } return fb; }
     function handOf(P, re) {
       if (!P || !P.ready || !P.model) return null;
-      if (!P.handBone) P.model.traverse(b => { if (b.isBone && re.test(b.name) && !P.handBone) P.handBone = b; });
-      return P.handBone ? P.handBone.getWorldPosition(new THREE.Vector3()) : null;
+      /* (v24.32: kept per hand — one cached bone answered every hand asked for after the first) */
+      const hb = P.handBones || (P.handBones = {});
+      if (!hb[re.source]) P.model.traverse(b => { if (b.isBone && re.test(b.name) && !hb[re.source]) hb[re.source] = b; });
+      return hb[re.source] ? hb[re.source].getWorldPosition(new THREE.Vector3()) : null;
     }
     /* a person at a mark (a cut), standing or seated */
     function fPut(P, x, z, ry, o = {}) {
@@ -5790,6 +5820,64 @@
       const L = pathLen(pts); if (s + d <= L) return pathAt(pts, s + d);
       const a = pts[pts.length - 2], b = pts[pts.length - 1], dx = b[0] - a[0], dz = b[1] - a[1], n = Math.hypot(dx, dz) || 1, over = s + d - L;
       return [b[0] + dx / n * over, b[1] + dz / n * over];
+    }
+    /* (v24.32) A WALK THE EYE CAN BEAR (Chad, of ending A: "when the camera tracks pong walking out, it is extremely jerky
+       and awkward"). Measured on a phone (tools/probes/camtrack.mjs): the eye ran 15 m in six seconds round a path of
+       straight legs — 3.8 m/s at its peak, a jog — so close behind Pong that his back filled a phone's frame, its view on
+       his head (which bobs with his gait): it turned up to 168° a second, and 74 of its 180 frames changed their turn faster
+       than 400°/s². A walk now is a smooth curve through its points (centripetal Catmull-Rom, sampled once at even
+       spacing), walked at a man's pace from a standstill (walkS: 1.35 m/s, reached over its first second), with a step's
+       bob counted from the ground covered (a step of 0.72 m) and a view on a point that does not bob. Every value a pure
+       function of the film's clock (v6.4). */
+    function walkCurve(pts, n = 64) {
+      const c = new THREE.CatmullRomCurve3(pts.map(([x, z]) => new THREE.Vector3(x, 0, z)), false, 'centripetal');
+      return c.getSpacedPoints(n).map(v => [v.x, v.z]);
+    }
+    const walkS = (t, t0, v = 1.35, acc = 1.0) => { const u = Math.max(0, t - t0); return u < acc ? v * u * u / (2 * acc) : v * (u - acc / 2); };
+    const walkV = (t, t0, v = 1.35, acc = 1.0) => { const u = Math.max(0, t - t0); return u < acc ? v * u / acc : v; };
+    /* a person carried along a curve to arc length s at speed v (his heading the curve's, his gait at its speed) */
+    function walkOn(P, pts, s, v) {
+      if (!P || !P.ready) return;
+      const L = pathLen(pts), a = pathAt(pts, Math.min(L, s)), f = pathAhead(pts, s, 0.5), b = pathAt(pts, Math.max(0, s - 0.5));
+      P.walk = null; P.sitOff = null; P.group.visible = true;
+      if (P.seated || P.sitW > 0) seatNow(P, false);
+      P.group.position.set(a[0], P.o.ground ? P.o.ground(a[0], a[1]) : P.group.position.y, a[1]);
+      if (v > 0.02) { const dx = f[0] - b[0], dz = f[1] - b[1]; if (dx * dx + dz * dz > 1e-6) { P.group.rotation.y = Math.atan2(dx, dz); P.turnTo = null; } }
+      P.filmWalk = v;
+    }
+    /* (v24.32) an aim eased from one target to another by its DIRECTION, never by sliding the point: a point slid from a
+       near target to a far one turns the view fastest at its near end — ending B's turn from Pa Noi 1.7 m off to the gate
+       17 m off peaked at 101°/s and jerked at its start (camtrack). The two directions from the eye, slerped, turn at the
+       ease's own rate. Answers a point 10 m out along the eased direction, for camAt */
+    const _aeA = new THREE.Vector3(), _aeB = new THREE.Vector3(), _aeQ = new THREE.Quaternion(), _aeK = new THREE.Quaternion();
+    function aimEase(eye, a, b, k) {
+      _aeA.set(a[0] - eye[0], a[1] - eye[1], a[2] - eye[2]).normalize();
+      _aeB.set(b[0] - eye[0], b[1] - eye[1], b[2] - eye[2]).normalize();
+      _aeQ.setFromUnitVectors(_aeA, _aeB);
+      _aeK.identity().slerp(_aeQ, c01(k));
+      _aeA.applyQuaternion(_aeK);
+      return [eye[0] + _aeA.x * 10, eye[1] + _aeA.y * 10, eye[2] + _aeA.z * 10];
+    }
+    /* (v24.32) a turn of the look by its own two angles — the bearing turned the way `side` says (+1 the way the bearing
+       grows, −1 the other, 0 the shorter way) and the pitch between — for a turn of about a half circle (a look back
+       over the shoulder, a turn round to walk on), where the shorter way round flips as the eye walks and a slerp may go
+       over the top. Answers a point 10 m out, for camAt */
+    function aimTurn(eye, a, b, k, side = 0) {
+      const bA = Math.atan2(a[0] - eye[0], a[2] - eye[2]), bB = Math.atan2(b[0] - eye[0], b[2] - eye[2]);
+      const pA = Math.atan2(a[1] - eye[1], Math.hypot(a[0] - eye[0], a[2] - eye[2]));
+      const pB = Math.atan2(b[1] - eye[1], Math.hypot(b[0] - eye[0], b[2] - eye[2]));
+      let d = angTo(bA, bB);
+      if (side > 0 && d < 0) d += Math.PI * 2; else if (side < 0 && d > 0) d -= Math.PI * 2;
+      const kk = c01(k), br = bA + d * kk, pt = lp(pA, pB, kk);
+      return [eye[0] + Math.sin(br) * Math.cos(pt) * 10, eye[1] + Math.sin(pt) * 10, eye[2] + Math.cos(br) * Math.cos(pt) * 10];
+    }
+    /* the eye walking a curve: its place at arc length s, the step's bob (once a step, from the ground covered) and the
+       stride's sway (once a stride, across the way), both in proportion to the pace; `ground` its floor */
+    function walkEye(pts, s, v, ground) {
+      const L = pathLen(pts), a = pathAt(pts, Math.min(L, s)), f = pathAhead(pts, s, 0.6);
+      const k = Math.min(1, v / 1.35), ph = s / 0.72 * Math.PI * 2;
+      const dx = f[0] - a[0], dz = f[1] - a[1], n = Math.hypot(dx, dz) || 1, sway = 0.006 * k * Math.sin(ph / 2);
+      return [a[0] - dz / n * sway, ground(a[0], a[1]) + 1.62 + 0.012 * k * (1 - Math.cos(ph)) / 2, a[1] + dx / n * sway];
     }
     /* a person walked along points by the film's clock: his place at t, his heading the path's (eased over half a metre
        either side, so a corner is walked); the gait plays while he moves (peopleTick reads P.filmWalk, his speed) */
@@ -5881,13 +5969,8 @@
       for (const sx of [-1, 1]) { const h = new THREE.Mesh(new THREE.TorusGeometry(0.035, 0.008, 6, 12, Math.PI), M({ color: 0xf2f2ee, roughness: 0.4 })); h.position.set(sx * 0.02, -0.03, 0); h.rotation.y = sx * 0.4; g.add(h); }
       return g;
     })();
-    /* the master's card (ending B): its front and its back */
-    const card = (() => {
-      const g = new THREE.Group(); g.visible = false; g.userData.dyn = true; world.add(g);
-      const f = new THREE.Mesh(new THREE.PlaneGeometry(0.09, 0.055), M({ map: tex(makeMasterCard(THREE, cnv, false)), roughness: 0.8 })); g.add(f);
-      const b = new THREE.Mesh(new THREE.PlaneGeometry(0.09, 0.055), M({ map: tex(makeMasterCard(THREE, cnv, true)), roughness: 0.8 })); b.rotation.y = Math.PI; b.position.z = -0.0005; g.add(b);
-      return g;
-    })();
+    /* (v24.32: the master's card — ending B's, given at the door and turned over in the cab — left with them: Chad, "no
+       need for the wife to give any business card, and no need to show the card") */
     /* his keys (the coda): a steel ring, three keys, a plain brass fob */
     const keys = (() => {
       const g = new THREE.Group(); g.visible = false; g.userData.dyn = true;
@@ -5898,27 +5981,10 @@
       const fob = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.01, 0.018, 10), mB); fob.position.set(0.002, -0.022, 0.006); g.add(fob);
       return g;
     })();
-    /* ending C's reflection in the glass case (the coda): his own shape, dark, where a reflection of him would stand.
-       (v24.4, #352, photographed: that place is BEHIND the glass — past the cabinet's back and the shop's wall, which
-       hid it, so the last image of ending C was shelves with nothing in them. The coda draws it in front of the glass
-       instead, shrunk toward his eye so it covers exactly what the reflection would (reflShot); and as ONE layer: a
-       depth pass first, then the colour only where the depth is its own — drawn through, the mouth, the eyes and the
-       shirt over the body showed through each other, a grey mannequin rather than a shape) */
-    cast.refl = mkPerson('e4pong', { parent: worldS, x: 1.0, z: -0.1, ry: 0, height: 1.72, sizeTake: 'Idle_4', walk: false,
-      posture: 'stand', stand: 'Idle_4', hidden: true, noShadow: true, then: (P) => {
-        const mm = new THREE.MeshBasicMaterial({ color: 0x0a0c10, transparent: true, opacity: 0.55, depthWrite: false, depthFunc: THREE.LessEqualDepth });
-        const pm = new THREE.MeshBasicMaterial({ transparent: true, colorWrite: false, depthWrite: true });
-        mats.push(mm, pm);
-        const list = []; P.model.traverse(m => { if (m.isMesh) list.push(m); });
-        for (const m of list) {
-          m.material = mm; m.renderOrder = 4; m.frustumCulled = false;
-          const pre = m.isSkinnedMesh ? new THREE.SkinnedMesh(m.geometry, pm) : new THREE.Mesh(m.geometry, pm);
-          if (m.isSkinnedMesh) { pre.bindMode = m.bindMode; pre.bind(m.skeleton, m.bindMatrix); }
-          pre.position.copy(m.position); pre.quaternion.copy(m.quaternion); pre.scale.copy(m.scale);
-          pre.renderOrder = 3; pre.frustumCulled = false; m.parent.add(pre);
-        }
-      } });
-    /* ending C's road: a woman at the stall across from the lane, who turns round as the pickup passes */
+    /* (v24.32: ending C's reflection in the glass case — his own dark shape in the coda, a clone of Pong's rig drawn as one
+       layer — is gone with the shock it was for: Chad, "No need to have that shadow and no need to have a shocked effect") */
+    /* ending C's road: a woman at her stall across from the lane, facing the road (v24.32: no longer turned round as the
+       pickup passes, nor looked at — see endC) */
     cast.stall = mkPerson('e4stall', { parent: worldC, x: 44.5, z: 26.55, y: 0.8, ry: 0.12, height: 1.58, sizeTake: 'Idle_7', walk: false,
       posture: 'stand', stand: 'Idle_7', hidden: true, noShadow: true, noMip: true });
 
@@ -5973,20 +6039,13 @@
       if (A.handsRoot) A.handsRoot.visible = true;
       A.armR.visible = true;
     }
-    /* a thing held IN A GRIP (the card): the hand-pose library's closed grip, drawn at exactly k each frame it is wanted
+    /* a thing held IN A GRIP (the coda's keys; the card's until v24.32): the hand-pose library's closed grip, drawn at exactly k each frame it is wanted
        (a scene's own pose, api.handPose) — the walking hand has its index out, and a card held there read as a pointing
        hand beside a card (CP9, by photograph); `gripOff` writes the walking rest back once */
     function gripOn(p) { const A = FL.api; if (A && A.handPose) { A.handPose('place', 1, { p: p || 0 }); FL.grip = true; } }
-    /* the card in the grip: on a phone the place-grip's forearm was a wall of skin across the frame with the card behind
-       it (CP9, by photograph — a third of the width sees a hand at 35 cm as wider than the frame), so the grip goes lower
-       and deeper by the pose's own variable, and the card is held up out of the fist at a point of the screen (handHold's
-       `screen`). Answers that point. */
-    /* (CP12, photographed on both screens: the grip at 1.6 is a closed fist with the thumb up on both, and the card
-       stands just above it — on a phone low enough that Pa Noi's eyes stay over it at the door, on a desktop beside
-       her face, both read whole in the cab and turned over to the flower on its back) */
-    const CARD_N = { p: 1.6, phone: [0.0, -0.48, 0.30], desk: [0.2, -0.38, 0.36], tilt: -0.35 };
-    function cardGrip() { gripOn(CARD_N.p); return isNarrow() ? CARD_N.phone : CARD_N.desk; }
-    const cardTilt = () => CARD_N.tilt;
+    /* (v24.32: the card's grip, CARD_N, left with the card. The keys keep the same grip and its lessons: on a phone the
+       place-grip's forearm was a wall of skin across the frame (CP9, by photograph), so the grip goes lower and deeper by
+       the pose's own variable and a thing is held up out of the fist at a point of the screen, handHold's `screen`) */
     /* the keys in the same grip (the coda's K2): the ring just over the fist, the keys across the knuckles — chosen of
        four placements photographed on a phone and a desktop (v24.4, #352: higher, they floated clear of the hand; nearer,
        they hid it) */
@@ -6042,7 +6101,14 @@
       return { x: a[0], z: a[1], ry };
     }
     /* the eye of whoever sits in the passenger seat, and a point ahead of it, in the pickup's own frame */
-    function cabEye(lx, ly, lz) { const pk = yard.pickup; pk.updateWorldMatrix(true, false); return pk.localToWorld(_ffv.set(lx, ly, lz)).toArray(); }
+    function cabEye(lx, ly, lz) {
+      /* (v24.32) the pickup is always in WORLD C: while the room's door view holds the yard at DOOR_OFF (the last frame's
+         lens was in the room), its eye came out 241 m off, inside the room's world, and the world chosen from it kept the
+         yard there — a seek from the room straight into a cab shot held a purple void for the rest of the shot
+         (photographed: ending C's road). The yard is handed back first, so a cab shot is a function of the clock alone */
+      if (doorView.on) doorWorld(false);
+      const pk = yard.pickup; pk.updateWorldMatrix(true, false); return pk.localToWorld(_ffv.set(lx, ly, lz)).toArray();
+    }
 
     /* (v24.21) THE LENS INSIDE A VEHICLE — the pickup's cab and the taxi (Chad: "the field of view of inside the truck and
        taxi both are too small and cannot see much or anything at all, especially on phone"): a portrait phone sees a third
@@ -6247,6 +6313,27 @@
     }
     function bookAway() { fBook.g.visible = false; fPen.visible = false; }
 
+    /* (v24.32) the walk out of the yard through the gateway (v24.5's line, L5-5 and L5-12), as one smooth curve from below
+       the room's steps to past the gate — ending A's eye and Pong walk it, and ending B's walk to the pickup joins it */
+    const WALK_A = walkCurve([[8.3, -4.35], [7.5, -2.9], [6.4, -1.0], [5.2, 1.2], [3.9, 3.5], [2.6, 5.7], [1.5, 7.8], [0.9, 9.8], [0.7, 11.6]]);
+    /* (v24.32) ending B's way out: from the step at the door, down the room's three steps on their right (Pa Noi stands
+       off their left foot), then round toward the gate */
+    const WALK_B = walkCurve([[7.9, -6.05], [8.15, -5.45], [8.4, -4.55], [8.1, -3.4], [7.2, -1.9], [6.4, -1.0], [5.2, 1.2]]);
+    /* (v24.32) ending C's way out, from the foot of the steps through the gateway's middle to short of the pickup; and
+       ending D's, from the foot of the steps (where he turned back to Pong: the eye from its second point, Pong walking it
+       from the first, behind him) toward the gateway and the shelter past it */
+    const WALK_C = walkCurve([[RDOOR.x, RDOOR.z + 1.3], [6.0, -1.0], [3.6, 3.2], [1.6, 6.6], [0.7, 8.6], [1.2, 10.2]]);
+    const D_C0 = [RDOOR.x - 1.0, RDOOR.z + 3.4];
+    const WALK_DP = walkCurve([[RDOOR.x - 0.5, RDOOR.z + 2.1], D_C0, [5.7, 0.2], [4.3, 2.8], [2.8, 5.4], [1.3, 7.6], [0.6, 9.4], [1.6, 11.0], [3.6, 12.6]]);
+    const WALK_D = walkCurve([D_C0, [5.7, 0.2], [4.3, 2.8], [2.8, 5.4], [1.3, 7.6], [0.6, 9.4], [1.6, 11.0], [3.6, 12.6]]);
+    /* the eye's floor down the room's steps as one slope (groundAt's three treads would drop the eye 17 cm at a time),
+       from the step at the door to where his feet are past the last tread — 0.85 m, so the half metre down is three
+       steps' worth (camtrack: on 0.6 m the eye dropped it in half a second) */
+    function stepGround(x, z) {
+      const RX0 = CMP.ROOMX;
+      if (x > 7.15 && x < 8.65 && z > RX0.z1 - 0.4 && z < RX0.z1 + 1.2) return RX0.base * c01((RX0.z1 + 1.2 - z) / 0.85);
+      return groundAt(x, z);
+    }
     /* ---- A · STILL: he observes and decides nothing */
     function endA(t) {
       const T = END.A, it = play.item || 'takrut';
@@ -6297,10 +6384,11 @@
         fLens(isNarrow() ? 58 : 50);
         camAt(DOOR_STEP, lp3([2.0, 1.1, 5.0], headOf(P, [nx, 1.5, nz]), k));
         /* the bag: in her hand; held out to him; taken below the frame (a man carrying a bag at his side does not see it —
-           CP9, by photograph: held up in the viewmodel it floated beside a pointing hand) */
+           CP9, by photograph: held up in the viewmodel it floated beside a pointing hand). (v24.32) In her LEFT hand, the
+           one her gesture holds out to him — in the right it hung at her side while the left reached out empty (photographed) */
         const give = T.out + 8.8;
         handFree();
-        const h = handOf(P, /RightHand(_\d+)?$/);
+        const h = handOf(P, /LeftHand(_\d+)?$/);
         if (t < give && h) { guava.visible = true; guava.position.copy(h); guava.rotation.set(0, 0, 0); }
         else if (t < give + 0.9 && h) {
           const g = smo(sgk(t, give, give + 0.9));
@@ -6316,16 +6404,16 @@
         /* (v24.5: the walk goes out through the GATEWAY — ROUTE_OUT's line — where it went over the low wall beside it, 0.1 m
            over the folded leaf's top rail, with Pong's legs through the leaf in front of the lens (L5-5); it begins clear of
            Pa Noi, whose head it opened 0.45 m from (L5-11), and it looks on past its end (L5-12)) */
-        const path = [[RDOOR.x + 0.4, RDOOR.z + 1.2], [6.2, -1.6], [4.3, 2.0], [2.2, 6.0], [1.1, 7.6], [0.95, 8.9]];
-        const k = sgk(t, T.walk, T.cab), L = pathLen(path), a = pathAt(path, smo(k) * L), f = pathAhead(path, smo(k) * L, 3.0);
-        const bob = Math.sin((t - T.walk) * 7.2) * 0.014;
+        /* (v24.32) the same line walked (WALK_A, a smooth curve through it): Pong sets off from where he stood at 1.4 m/s,
+           and the eye follows 0.9 s later at 1.35 — he stays 2.7 to 3 m ahead, where his back was a phone's whole frame —
+           the view on his walking body at his shoulders' height, never his head (CP9: on the path's own line he walked at a
+           phone's left edge; on the curve he walks its middle) */
+        const sP = 1.4 + walkS(t, T.walk, 1.4), vP = walkV(t, T.walk, 1.4), sC = walkS(t, T.walk + 0.9), vC = walkV(t, T.walk + 0.9);
+        walkOn(cast.pong, WALK_A, sP, vP);
+        if (cast.pong) cast.pong.lookAt = null;
+        const pp = pathAt(WALK_A, Math.min(pathLen(WALK_A), sP)), f = pathAhead(WALK_A, sC, 3.0);
         fLens(isNarrow() ? 62 : 56);
-        fWalk(cast.pong, [[RDOOR.x - 0.2, RDOOR.z + 2.6], [5.6, 0.0], [3.3, 3.6], [1.35, 7.2], [1.3, 8.8], [2.6, 10.1]], T.walk, T.cab + 0.4, t);
-        if (cast.pong && t > T.walk + 0.5 && t < T.walk + 5.6) cast.pong.lookAt = null;
-        /* while he says "See? I tell you..." the eyes are on Pong ahead (CP9, by photograph: on the path's own line he
-           walked at a phone's left edge, a shoulder and nothing else, for the whole of his line) */
-        const ph = headOf(cast.pong, null), on = ph ? smo(sgk(t, T.walk + 0.2, T.walk + 1.0)) * (1 - smo(sgk(t, T.walk + 4.4, T.walk + 5.4))) : 0;
-        camAt([a[0], groundAt(a[0], a[1]) + 1.62 + bob, a[1]], on > 0 ? lp3([f[0], 1.5, f[1]], [ph[0], ph[1] - 0.1, ph[2]], on) : [f[0], 1.5, f[1]]);
+        camAt(walkEye(WALK_A, sC, vC, groundAt), cast.pong && cast.pong.ready ? [pp[0], 1.36, pp[1]] : [f[0], 1.45, f[1]]);
         return;
       }
       handFree();
@@ -6358,7 +6446,7 @@
     function endB(t) {
       const T = END.B;
       dogScene({ up: 1, look: 1 });                       // (v24.13) the dog under the sala's eave, awake, watching him go
-      if (t < T.card) {
+      if (t < T.door) {
         roomAfter();
         cabCtl.show(false);
         const eye = ROOM_EYE();
@@ -6400,52 +6488,48 @@
       }
       herCtl.show(false);
       if (cast.pongR) cast.pongR.lookAt = null;
-      if (t < T.cab) {                                                                     // at the door: Pa Noi and the master's card
+      if (t < T.cab) {                                                                     // out of the samnak: Pa Noi's goodbye; down the steps to the pickup
         fLook('AFTER');
         cabCtl.show(false);
-        const P = cast.noi, nx = RDOOR.x - 0.3, nz = RDOOR.z + 1.05;
+        handFree();
+        /* (v24.32) she stands BESIDE the foot of the steps, not in front of them: there, his way down passed 0.7 m from her
+           and her head rose through the bottom of the frame as he went (photographed on a phone) */
+        const P = cast.noi, nx = RDOOR.x - 1.15, nz = RDOOR.z + 0.75;
         fPut(P, nx, nz, faceTo(nx, nz, DOOR_STEP[0], DOOR_STEP[2]));
         /* (v24.5, L5-6: Pong has gone ahead to the pickup — his stopped walk to the steps came back here, beside Pa Noi) */
         fPut(cast.pong, 3.35, 11.8, Math.PI);
-        gaze(P, true);                                                                   // "Ajahn say, call anytime, ka." — to him
-        fLens(isNarrow() ? 56 : 48);
-        /* (v24.24, L6-2: it changed hands in one frame — gone from her hand 1.6 m off, in his fist 0.3 m from the lens — and
-           the picture tilted 8° with it: now it goes down out of her hand as A's guavas do, the aim easing down with it,
-           and comes up in his fist from the bottom of the frame, the grip easing in) */
-        const give = T.card + 4.0, DN = 0.5;
-        const aimHer = headOf(P, [nx, 1.5, nz]), aimCard = [DOOR_STEP[0] - 0.6, 1.2, DOOR_STEP[2] + 3.2], ag = smo(sgk(t, give, give + 0.9));
-        if (t < give + DN) {
-          handFree();
-          const h = handOf(P, /RightHand(_\d+)?$/);
-          if (h) {
-            const g = smo(sgk(t, give, give + DN));
-            card.visible = true;
-            card.position.set(lp(h.x, DOOR_STEP[0] + 0.1, g), lp(h.y + 0.03, DOOR_STEP[1] - 0.9, g), lp(h.z, DOOR_STEP[2] + 0.3, g));
-            card.lookAt(DOOR_STEP[0], DOOR_STEP[1], DOOR_STEP[2]);
-          }
-          camAt(DOOR_STEP, lp3(aimHer, aimCard, ag));
-          onceAt('B.card', t, T.card + 2.4, () => { if (!P.one) personDo(P, 'Checkout_Gesture'); });
+        /* (v24.32, Chad: "no need for the wife to give any business card, and no need to show the card. Just have the player
+           exit the samnak normally, and the wife just say goodbye to him and he gets into the car with pong") on the step
+           outside the door, his sandals on: her goodbye to him ("Get home safely... go home safe, na kha. Bye bye!", pn1bye),
+           her right hand up to wave on "Bye bye" (4.1 s into her line; the take's hand is up 0.5 s in) and waving on as he
+           goes; her line done, the eyes turn to the yard, where Pong waits by the pickup and watches him come, and he goes
+           down the steps (on their far side from her) toward the gate; the car's door on the cut into the cab */
+        const walk0 = T.door + 6.1;
+        gaze(P, true);
+        onceAt('B.wave', t, T.door + 4.6, () => { if (!P.one) personDo(P, 'Wave_One_Hand'); });
+        if (t < walk0) {
+          fLens(isNarrow() ? 56 : 48);
+          camAt(DOOR_STEP, headOf(P, [nx, 1.5, nz]));
         } else {
-          const u = smo(sgk(t, give + DN, give + DN + 0.5));
-          const A2 = FL.api; if (A2 && A2.handPose) { A2.handPose('place', u, { p: CARD_N.p }); FL.grip = true; }
-          const lift = isNarrow() ? CARD_N.phone : CARD_N.desk;
-          handHold(card, { screen: [lift[0], lift[1] - 0.9 * (1 - u), lift[2]], face: true, tilt: cardTilt() });
-          camAt(DOOR_STEP, lp3(aimHer, aimCard, ag));
+          gaze(cast.pong, true);
+          /* (down the steps: a slower start, 1.6 s to his pace) */
+          const s = walkS(t, walk0 + 0.4, 1.35, 1.6), v = walkV(t, walk0 + 0.4, 1.35, 1.6), aim = smo(sgk(t, walk0, walk0 + 1.6));
+          fLens(lp(isNarrow() ? 56 : 48, isNarrow() ? 60 : 54, aim));
+          const eyeW = walkEye(WALK_B, s, v, stepGround);
+          camAt(eyeW, aimEase(eyeW, headOf(P, [nx, 1.5, nz]), [3.35, 1.45, 11.8], aim));
         }
         return;
       }
-      if (t < T.wide) {                                                                    // in the pickup: Pong thrilled; he turns the card over
+      if (t < T.wide) {                                                                    // in the pickup: Pong thrilled
         fLook('AFTER');
         cabCtl.show(true); cabCtl.drops(0.18);
+        handFree();
         driveAt([[2.0, 13.4], [1.8, 16.0], [0.6, 18.4], [3.0, 19.8], [30, 19.6]], T.cab, T.wide + 3.0, t, { easeIn: true });
-        const flip = smo(sgk(t, T.cab + 6.0, T.cab + 7.6));
-        const lift = cardGrip();
-        handHold(card, { screen: lift, face: true, tilt: cardTilt() - 0.25 * Math.sin(flip * Math.PI), flip: flip * Math.PI });
-        const onPong = t < T.cab + 5.2;
-        gaze(cast.pongCab, onPong, CAB_GLANCE);
+        /* (v24.32: no card in his hand — the eyes on Pong through both his lines, eased on and off as A's are, then the road) */
+        const tk = smo(sgk(t, T.cab + 0.4, T.cab + 1.1)) * (1 - smo(sgk(t, T.cab + 9.4, T.cab + 10.2)));
+        gaze(cast.pongCab, tk > 0.5, CAB_GLANCE);
         fLens(cabLens());
-        /* off Pong: his eyes down to the card in his hand, the road still in the top of the frame */
-        camAt(cabEye(...CAB_EYE), onPong ? faceOf(cast.pongCab, cabEye(CAB_SEAT.x, 1.47, -0.08)) : cabEye(-0.36, 1.18, -1.6));
+        camAt(cabEye(...CAB_EYE), lp3(cabEye(-0.32, 1.45, -3.0), faceOf(cast.pongCab, cabEye(CAB_SEAT.x, 1.47, -0.08)), tk));
         return;
       }
       handFree();
@@ -6530,13 +6614,17 @@
           /* (v24.5: out through the gateway, not the fence beside it (L5-5); past Pong, who stood ON its last leg — the lens went
              through his head at his own height, 0.125 m from his spot (L5-2); ending short of the pickup, whose bumper it
              crossed 0.13 s before the cut; looking on past its end (L5-12)) */
-          const path = [[RDOOR.x, RDOOR.z + 1.3], [6.0, -1.0], [3.6, 3.2], [1.4, 7.0], [1.2, 8.8], [1.5, 10.0]];
-          const k = sgk(t, T.out, T.car), L = pathLen(path), a = pathAt(path, k * L), f = pathAhead(path, k * L, 3.0);
-          const back = t > T.out + 3.6 && t < T.out + 6.4;
-          const bob = Math.sin((t - T.out) * 9.5) * 0.02;
+          /* (v24.32) walked as A's walk is now (Chad, of A's: "extremely jerky and awkward"; measured here the same way, the
+             look snapped to Pa Noi behind him and back in one frame each way — 5,206°/s): the line as a smooth curve, through
+             the gateway's middle now (it passed 0.6 m from a post), walked at a hurried 1.75 m/s from a standstill; and as
+             she calls after him he looks back over his right shoulder — she is almost straight behind him — a turn of 1.7 s
+             each way (at 1.4 the ease's own pull passed 400°/s² for 19 frames), held on her 0.8 s, and walks on */
+          const sC = walkS(t, T.out, 1.75), vC = walkV(t, T.out, 1.75), a = walkEye(WALK_C, sC, vC, groundAt);
+          const fC = pathAhead(WALK_C, sC, 3.0), her = headOf(P, [RDOOR.x - 0.2, 1.5, RDOOR.z + 0.6]);
+          const kb = smo(sgk(t, T.out + 3.4, T.out + 5.1)) * (1 - smo(sgk(t, T.out + 5.9, T.out + 7.6)));
           fLens(isNarrow() ? 64 : 58);
-          camAt([a[0], groundAt(a[0], a[1]) + 1.62 + bob, a[1]], back ? headOf(P, [RDOOR.x, 1.6, RDOOR.z]) : [f[0], 1.45, f[1]]);
-          fPut(cast.pong, 2.75, 9.6, faceTo(2.75, 9.6, a[0], a[1]));               // (beside the pickup's nose, off the lens's line)
+          camAt(a, aimTurn(a, [fC[0], 1.45, fC[1]], her, kb, -1));
+          fPut(cast.pong, 2.75, 9.6, faceTo(2.75, 9.6, a[0], a[2]));               // (beside the pickup's nose, off the lens's line)
         } else {                                                                           // at the pickup: Pong catches up — "Just drive."
           cabCtl.show(true); cabCtl.drops(0.5);
           pickupAt(CMP.PICKUP.x, CMP.PICKUP.z + 0.4, Math.PI);
@@ -6546,25 +6634,22 @@
         }
         return;
       }
-      if (t < T.coda) {                                                                    // the road: every dark shape is her — and a woman at a stall is only a woman at a stall
+      if (t < T.coda) {                                                                    // the road home, in the rain
         fLook('YARD2');
         if (kit && kit.rain) kit.rain(0.18);
         cabCtl.show(true); cabCtl.drops(0.55);
-        const pos = driveAt([[2.0, 13.6], [1.8, 16.2], [0.8, 18.5], [3.2, 19.8], [70, 19.6]], T.road, T.coda + 2.0, t, { easeIn: true });
-        /* the woman at the stall (v24.5): BEHIND her table — she stood in it, its top across her waist (L5-4) — with her back
-           to the road, a dark shape, until she turns round to the passing car and is only a woman at a stall (she turned
-           the other way: from the road to her back); and the look is off her before the driver's head can come between
-           them — the stall is on his side, and from the passenger's seat past ~60° the frame was Pong's face (by photograph) */
-        const S = cast.stall; if (S && S.ready) {
-          fPut(S, 44.5, 26.55, lp(0.12, -2.3, smo(sgk(pos.x, 33.5, 38.5))), { y: 0.8 });
-        }
-        const look = pos.x > 30 && pos.x < 44 ? smo(sgk(pos.x, 30, 35)) * (1 - smo(sgk(pos.x, 39.5, 42.5))) : 0;
-        const sh = headOf(S, [44.5, 2.3, 26.55]);
+        driveAt([[2.0, 13.6], [1.8, 16.2], [0.8, 18.5], [3.2, 19.8], [70, 19.6]], T.road, T.coda + 2.0, t, { easeIn: true });
+        /* (v24.32, Chad: "when there is the brief stall lady appearance, it is way too abrupt and awkward and i dont know
+           what it was trying to show or represent") the look that swung off the road to a woman at her stall — her back
+           to the road, a dark shape he took for HER, turning round to be only a woman at a stall — is gone: it lasted
+           three seconds on a narrowing lens, and read as nothing. She stays at her stall across the lane, facing the road,
+           as the pickup passes; the eyes stay on the road (the stall is on the driver's side: from the passenger's seat she
+           is seen ahead, past Pong, as a passer-by) */
+        const S = cast.stall; if (S && S.ready) fPut(S, 44.5, 26.55, -2.3, { y: 0.8 });
         /* level on the road, a little long: the dash is a band at the foot of the frame, not half of it (CP9, by
            photograph: aimed down on a wide lens, a phone's frame was 45 % black dashboard) */
-        fLens(lp(cabLens(), isNarrow() ? 46 : 36, look));
-        const eyeW = cabEye(...CAB_EYE), ahead = cabEye(-0.3, 1.5, -3.0);
-        camAt(eyeW, lp3(ahead, sh, look));
+        fLens(cabLens());
+        camAt(cabEye(...CAB_EYE), cabEye(-0.3, 1.5, -3.0));
         return;
       }
       if (kit && kit.rain) kit.rain(0);
@@ -6604,7 +6689,7 @@
       if (t < T.shelter) {                                                                 // outside: "Finish already?" — "Let's sit for a bit."
         fLook('AFTER');
         cabCtl.show(false);
-        const C0 = [RDOOR.x - 1.0, RDOOR.z + 3.4], t1 = T.out + 6.0;
+        const C0 = D_C0, t1 = T.out + 6.0;
         if (t < t1) {
           /* at the foot of the steps he turns back to the door: Pong comes out after him and stops on the bottom step */
           fWalk(cast.pong, [[RDOOR.x, RDOOR.z + 0.6], [RDOOR.x - 0.3, RDOOR.z + 1.5], [RDOOR.x - 0.5, RDOOR.z + 2.1]], T.out + 0.3, T.out + 2.4, t, { ry: faceTo(RDOOR.x - 0.5, RDOOR.z + 2.1, C0[0], C0[1]) });
@@ -6616,15 +6701,19 @@
         gaze(cast.pong, false);
         /* (v24.5: out through the gateway and round the pickup's nose toward the shelter, where it went over the low wall and
            the folded leaf beside the gate and ended on the bank, off the lane (L5-5); looking on past its end (L5-12)) */
-        const path = [C0, [5.2, 0.6], [3.4, 4.2], [1.5, 7.2], [1.4, 8.8], [3.4, 10.0], [4.0, 11.0]];
-        const k = sgk(t, t1, T.shelter), L = pathLen(path), a = pathAt(path, smo(k) * L), f = pathAhead(path, smo(k) * L, 3.0);
-        fWalk(cast.pong, [[RDOOR.x - 0.5, RDOOR.z + 2.1], [5.6, 0.2], [3.6, 3.8], [1.6, 7.0], [1.5, 8.7], [3.6, 9.9], [4.3, 10.9]], t1 + 0.6, T.shelter + 0.6, t);
-        const bob = Math.sin((t - t1) * 6.8) * 0.012;
+        /* (v24.32) walked as A's walk is now (Chad, of A's: "extremely jerky and awkward"; measured here the same way: the eye
+           ran this line at up to 4.0 m/s, a run, its look turning 158°/s, and it passed 0.4 m from the gate's post, which
+           filled the middle of a phone's frame — Pong ran past it the same way): he turns from Pong round to the gateway as
+           he says "It's okay. Let's sit for a bit." (a turn of 2.0 s, the way the sala is), and walks on at a man's pace
+           with Pong two metres behind him; his eyes go to the shelter on "sit", and the cut finds the two of them there.
+           (v24.5's view on the shelter, kept: 3 m ahead along the path, the look met the sugar palm beside it as the path
+           turned, and its trunk filled the middle of a phone's frame for a second) */
+        const sE = walkS(t, t1 + 1.0, 1.4, 1.2), vE = walkV(t, t1 + 1.0, 1.4, 1.2), a = walkEye(WALK_D, sE, vE, groundAt);
+        walkOn(cast.pong, WALK_DP, walkS(t, t1 + 1.6, 1.4), walkV(t, t1 + 1.6, 1.4));
         fLens(isNarrow() ? 62 : 56);
-        /* through the gate his eyes go to the shelter (v24.5, by photograph: 3 m ahead along the path, the look met the sugar
-           palm beside it as the path turned, and its trunk filled the middle of a phone's frame for a second) */
-        const ks = smo(sgk(t, t1 + 3.2, t1 + 4.2)), SH = CMP.SHELTER;
-        camAt([a[0], groundAt(a[0], a[1]) + 1.62 + bob, a[1]], [lp(f[0], SH.x, ks), lp(1.5, 1.25, ks), lp(f[1], SH.z, ks)]);
+        const f = pathAhead(WALK_D, sE, 3.0), fwd = [f[0], 1.45, f[1]], SH = CMP.SHELTER;
+        const kt = smo(sgk(t, t1, t1 + 2.0)), ks = smo(sgk(t, t1 + 3.2, t1 + 4.4));
+        camAt(a, kt < 1 ? aimTurn(a, headOf(cast.pong, [RDOOR.x - 0.5, 1.6, RDOOR.z + 2.1]), fwd, kt, 1) : aimEase(a, fwd, [SH.x, 1.25, SH.z], ks));
         return;
       }
       if (t < T.dusk) {                                                                    // the roadside shelter: the compound's lights across the wet paddy
@@ -6752,24 +6841,16 @@
         shop.phoneOn = wallNow() - (t - CODA.k3 - 0.6); shop.phoneWho = 'ajahn';
         fLens(isNarrow() ? 50 : 42);
         camAt([S0 + 0.42, 1.42, -1.92], [S0 + 0.48, 1.06, -1.51]);
-      } else {                                                                             // C · the glass case, and a shape in it
-        const R = cast.refl, gx = 1.95, ez = 0.6, ex = 0.95, rx = gx + (gx - ex) + 0.02, rz = ez - 0.05;
-        if (R && R.ready) {
-          /* reflShot: where the reflection stands (rx, 0, rz), moved toward his eye (ex, 1.6, ez) and shrunk by the same
-             0.4, so every point of it lies on the same line from his eye — the same picture — with its back 0.87 m off
-             his eye where the glass is 1.0 */
-          const f = 0.4;
-          fPut(R, ex + (rx - ex) * f, rz, -Math.PI / 2, { y: 1.6 * (1 - f) });
-          R.group.position.z = ez + (rz - ez) * f; R.group.scale.setScalar(f);
-          R.group.visible = t > CODA.k3 + 0.6 && t < CODA.k3 + 2.3;
-        }
-        const flinch = t > CODA.k3 + 1.5 ? Math.exp(-(t - CODA.k3 - 1.5) * 4) * Math.sin((t - CODA.k3 - 1.5) * 30) * 0.03 : 0;
-        /* the shape 45 % of the way to the frame's left edge on THIS screen (v24.4, #352: the glass was looked at 22° to
-           the right of it, which a desktop's wide frame held at its edge and a phone's narrow one never held at all) */
+      } else {                                                                             // C · the glass case, quiet
+        /* (v24.32, Chad: "when he is back to his shop, why does a shadow suddenly appear and the player gets shocked? No need
+           for that. No need to have that shadow and no need to have a shocked effect.") his own dark shape in the glass, his
+           flinch and its gasp are gone: he stands at his case and looks into it, the same frame without them (aimed, since
+           v24.4's #352, so the reflection's place sat 45 % of the way to the frame's left edge on THIS screen) */
+        const gx = 1.95, ez = 0.6, ex = 0.95, rx = gx + (gx - ex) + 0.02, rz = ez - 0.05;
         const fov = isNarrow() ? 54 : 46; fLens(fov);
         const half = Math.atan(Math.tan(THREE.MathUtils.degToRad(fov) / 2) * innerWidth / Math.max(1, innerHeight));
         const b = Math.atan2(rz - ez, rx - ex) + Math.atan(0.45 * Math.tan(half));
-        camAt([S0 + ex, 1.6 + flinch, ez], [S0 + gx, 1.45, ez + Math.tan(b) * (gx - ex)], flinch * 0.6);
+        camAt([S0 + ex, 1.6, ez], [S0 + gx, 1.45, ez + Math.tan(b) * (gx - ex)]);
       }
     }
 
@@ -6801,13 +6882,12 @@
       end() {
         waiAt(0);
         handFree();
-        bookAway(); guava.visible = false; card.visible = false; keys.visible = false;
+        bookAway(); guava.visible = false; keys.visible = false;
         if (shop.pen) { shop.pen.position.set(PEN_AT.x, COUNTER.h + 0.046 + 0.0048, PEN_AT.z); shop.pen.rotation.set(0, -0.5, Math.PI / 2); shop.pen.visible = true; }
         if (sBook) bookDraw(sBook, { mode: 'front' });
         pickupHome(); cabCtl.show(false); cabCtl.drops(0);
         shop.phoneOn = 0; shop.lapOn = 0;
         for (const P of people) P.filmWalk = 0;
-        if (cast.refl) cast.refl.group.visible = false;
         if (cast.stall) cast.stall.group.visible = false;
         if (FL.hidPong && cast.pong && cast.pong.group) cast.pong.group.visible = true;
         FL.hidPong = false;
@@ -7983,24 +8063,6 @@
     x.fillStyle = 'rgba(60,50,40,0.25)'; x.fillRect(506, 0, 12, 640);
     return pen;
   }
-  /* the master's card (ending B): cream card, his name in Thai, the samnak and a number on the front; a lotus on the back */
-  function makeMasterCard(THREE, cnv, back) {
-    const [c, x] = sized(cnv, 256, 156);
-    x.fillStyle = back ? '#f1e7cf' : '#f6efdc'; x.fillRect(0, 0, 256, 156);
-    x.strokeStyle = '#a8862e'; x.lineWidth = 3; x.strokeRect(6, 6, 244, 144);
-    x.fillStyle = '#5a1a12'; x.textAlign = 'center'; x.textBaseline = 'middle';
-    if (!back) {
-      x.font = `bold 26px ${THAI_FONT}`; x.fillText('อาจารย์', 128, 42);
-      x.font = `17px ${THAI_FONT}`; x.fillText('สำนักบ้านอาจารย์', 128, 78);
-      x.font = 'bold 19px Arial, sans-serif'; x.fillStyle = '#2a2420'; x.fillText('08x-xxx-xxxx', 128, 116);
-    } else {
-      x.translate(128, 84);
-      for (let k = 0; k < 8; k++) { x.save(); x.rotate(k * Math.PI / 4 - Math.PI / 2); x.fillStyle = k % 2 ? '#c8a040' : '#b0781e';
-        x.beginPath(); x.moveTo(0, 0); x.quadraticCurveTo(16, -22, 0, -48); x.quadraticCurveTo(-16, -22, 0, 0); x.fill(); x.restore(); }
-      x.fillStyle = '#7a4a10'; x.beginPath(); x.arc(0, 0, 8, 0, Math.PI * 2); x.fill();
-    }
-    return done(THREE, c, false);
-  }
   /* a congratulations ribbon on a flower stand: red satin, gold characters down it */
   function makeRibbon(THREE, cnv, text, latin) {
     const [c, x] = sized(cnv, 64, 512), r = rng(4815);
@@ -8272,12 +8334,19 @@
     x.fillStyle = '#0e1016'; x.fillRect(0, 0, 128, 34); x.fillStyle = '#e8ecf2'; x.font = 'bold 15px Arial, sans-serif'; x.textBaseline = 'alphabetic'; x.fillText('300 m', 10, 23);
     return done(THREE, c, false);
   }
-  /* the taxi's meter: a red LED readout in its little black box */
+  /* the taxi's meter: a red LED readout in its little black box — (v24.32, Chad: "in the taxi for all cutscenes, the time is
+     1860 which makes 0 sense") a FARE no phone can read as a clock: drawn at 128 x 48 its decimal point and its dim little
+     "S$" were gone by the time a phone drew the 14 cm box, and what was left read 1860. Now twice the sheet, the dollar
+     sign as large and as bright as the digits, a decimal point drawn as a square, and FARE over it */
   function makeMeter(THREE, cnv) {
-    const [c, x] = sized(cnv, 128, 48);
-    x.fillStyle = '#0a0a0c'; x.fillRect(0, 0, 128, 48);
-    x.fillStyle = '#ff3a2a'; x.font = 'bold 26px "Courier New", monospace'; x.textAlign = 'right'; x.textBaseline = 'middle'; x.fillText('18.60', 118, 26);
-    x.fillStyle = 'rgba(255,58,42,0.6)'; x.font = '12px Arial, sans-serif'; x.textAlign = 'left'; x.fillText('S$', 8, 26);
+    const [c, x] = sized(cnv, 256, 96);
+    x.fillStyle = '#0a0a0c'; x.fillRect(0, 0, 256, 96);
+    x.strokeStyle = '#2a1614'; x.lineWidth = 3; x.strokeRect(2, 2, 252, 92);
+    x.fillStyle = 'rgba(255,72,52,0.78)'; x.font = 'bold 17px Arial, Helvetica, sans-serif'; x.textAlign = 'left'; x.textBaseline = 'top'; x.fillText('FARE', 14, 9);
+    x.fillStyle = '#ff3a2a'; x.font = 'bold 54px "Courier New", monospace'; x.textBaseline = 'alphabetic';
+    x.textAlign = 'left'; x.fillText('$', 12, 84);
+    x.textAlign = 'right'; x.fillText('18', 150, 84); x.fillText('60', 244, 84);
+    x.fillRect(158, 74, 10, 10);                         // the decimal point, square and bold
     return done(THREE, c, false);
   }
   /* a jasmine garland's string (phuang malai): white buds, a red rose at the knot, ribbons */
@@ -8471,17 +8540,16 @@
       sfx(T.come + 0.2, 'fm1B3', 1);                         // "If he wants to learn, come back. I can teach him."  (→ ~45.7)
       sfx(T.come + 4.0, 'pg1B5', 1);                         // "He say you should come back..."  (→ ~52.0)
       sfx(T.come + 10.6, 'q1B3', 1);                         // "Thank you, Ajahn. Maybe another time."  (→ ~55.6)
-      fade(T.card - 0.6, T.card, 0, 1); fade(T.card, T.card + 0.8, 1, 0);
-      sfx(T.card + 0.2, 'w4after', 0.6);
-      sfx(T.card + 0.4, 'w4sandon', 0.55);
-      sfx(T.card + 1.4, 'pn1card', 1);                       // "Ajahn say, call anytime, ka."  (→ ~59.8)
-      sfx(T.card + 4.0, 'w4card', 0.5);                      // the card into his hand
+      fade(T.door - 0.6, T.door, 0, 1); fade(T.door, T.door + 0.8, 1, 0);
+      sfx(T.door + 0.2, 'w4after', 0.6);
+      sfx(T.door + 0.4, 'w4sandon', 0.55);
+      sfx(T.door + 1.2, 'pn1bye', 1);                        // (v24.32, no card) "Get home safely... go home safe, na kha. Bye bye!"  (→ ~62.0)
+      sfx(T.door + 6.6, 'w4steps', 0.35);                    // down the steps, across the yard
       sfx(T.cab - 0.3, 'w4door', 0.5);
       sfx(T.cab + 0.2, 'w4diesel', 0.45);
-      sfx(T.cab + 0.4, 'pg1B6', 1);                          // "Brother! You can SEE? Why you never tell me!"  (→ ~67.7)
-      sfx(T.cab + 5.2, 'pg1B7', 1);                          // "Next time you bring me, okay? I also want to know my future!"  (→ ~73.9)
-      sfx(T.cab + 6.0, 'w4card', 0.35);                      // the card turned over in his fingers
-      sfx(T.wide + 0.6, 'q1B4', 1);                          // "I'd asked to understand... and shown a man I didn't know what I could see."  (→ ~81.5)
+      sfx(T.cab + 0.4, 'pg1B6', 1);                          // "Brother! You can SEE? Why you never tell me!"  (→ ~67.9)
+      sfx(T.cab + 5.2, 'pg1B7', 1);                          // "Next time you bring me, okay? I also want to know my future!"  (→ ~73.7)
+      sfx(T.wide + 0.6, 'q1B4', 1);                          // "I'd asked to understand... and shown a man I didn't know what I could see."  (→ ~82.3)
       sfxFade(T.coda - 1.0, T.coda + 0.3, 'w4after');        // (CP13: it ran 2.3 s into the Singapore taxi)
       sfxFade(T.coda - 1.2, T.coda + 0.2, 'w4endB');
       fade(T.coda - 0.5, T.coda, 0, 1); fade(T.coda, T.coda + 0.8, 1, 0);
@@ -8538,7 +8606,6 @@
       sfxFade(T.coda + CODA.k2 - 0.5, T.coda + CODA.k2 + 0.1, 'w4taxi');   // the taxi gone with its picture (CP13: it ran on under the shop)
       sfx(T.coda + 13.4, 'q1K3', 1);
       sfx(T.coda + CODA.k2 + 4.4, 'w4pat', 0.5);
-      sfx(T.coda + CODA.k3 + 1.5, 'w4gasp', 0.8);            // he flinches at a shape in the glass
       sfx(T.coda + CODA.k3, 'w4coda', 0.7);
       fade(T.coda + CODA.black, T.coda + CODA.end, 0, 1);
       void phone;

@@ -7141,3 +7141,40 @@ cut (sharing its vertices and maps) when it is small.
   frame); what sits IN a thing is that thing's child; what hangs from two points swings about the line through them.
   And a thing rocked about its foot's centre sinks half its foot into the shelf: lift it by the foot's radius times its
   tip. tools/probes/shake.mjs measures all of it, generically, for any build.
+
+## v24.32 — a film's walk, a retargeted wrist, a meter, and a world that moves for a door
+
+- **A camera that walks is measured, not looked at.** Ending A's walk-out passed every still photographed of it; stepped
+  frame by frame on a held clock (tools/probes/camtrack.mjs) the eye ran at 3.8 m/s — a jog — round a path of straight
+  legs, eased in and out by the clock, with its view on Pong's bobbing head 1.5 m ahead: turns of 168°/s and 74 of 180
+  frames whose turn changed faster than 400°/s². Endings C and D, built the same way, measured the same (D: 4.0 m/s and
+  158°/s; C: a look snapped to the woman behind him and back in one frame each way, 5,206°/s). A walk is a smooth curve
+  through its points (centripetal Catmull-Rom, sampled once at even spacing), walked at a man's pace from a standstill
+  (1.35–1.75 m/s, reached over a second), its bob counted from the ground covered, its view on a point that does not
+  bob. After: 1.35 m/s, 4.8°/s, no step over 400°/s².
+- **Ease a look by its direction, never by sliding its target.** A point slid from a near target to a far one turns the
+  view fastest at its near end: ending B's turn from Pa Noi 1.7 m away to the gate 17 m away peaked at 101°/s with a
+  1,142°/s² jerk at its start; the two directions slerped turn at the ease's own rate (32°/s, 114°/s²). And a turn of a
+  half circle (a look back over the shoulder) is eased by bearing and pitch with its side chosen: the shorter way round
+  flips as the eye walks, and a slerp between near-opposite directions may go over the top.
+- **A gesture runs on the wall clock, so a seek cannot photograph it.** filmshots seeks the film and waits; the one-off
+  take plays on the mixer's wall steps, and on a slow box the picture shows its first frames or none — Pa Noi's wave
+  "never happened" in four seeked photographs. Photograph inside a held clock where the people's tick and the film's
+  seek step together (camtrack's SHOTS).
+- **A retargeted gesture can roll a wrist past what the skin follows.** Pa Noi's giving take (the stand-in's, retargeted)
+  rolled her left hand 125° about its own bone; her own takes roll at most 92°, and with no forearm twist bone the skin
+  wrung at the wrist (Chad: "one of her hands is twisted"). Measure each hand's twist about its bone's own axis and its
+  swing against its rest, per key (gltf-transform with the meshopt decoder: a raw parse of a meshopt file reads garbage
+  and looks like data); keep the swing, cut the twist (swing-twist), once on the shared clip, from the original parse's
+  rest. And check which hand a gesture holds out before putting a thing in a hand: the guava bag hung from her right
+  while her left reached out empty.
+- **A reading drawn small loses its smallest marks first.** The taxi's meter, "S$ 18.60" on a 128 × 48 sheet drawn 14 cm
+  wide far down the dash: on a phone the dim "S$" and the decimal point were gone and four digits read as a time no
+  clock shows (Chad: "the time is 1860 which makes 0 sense"). Every mark a reading depends on is as large and as bright
+  as its digits, and a word says what it is (FARE).
+- **A world moved for a portal must be moved back by anything that reads it.** The room's door view (v24.26) carries the
+  yard to DOOR_OFF while the lens is in the room, and the frame chooses the world from where the lens was left. A cab
+  shot's eye is read off the pickup in the yard (cabEye): straight after a room frame it came out 241 m off, inside the
+  room's world, and the world chosen from it kept the yard there — a seek into ending C's road held a purple void for
+  the whole shot. Unreachable by play (the walk across the yard always comes between), but a film must be a function of
+  its clock: anything that reads the moved world hands it back first.
