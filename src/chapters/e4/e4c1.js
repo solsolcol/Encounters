@@ -459,12 +459,14 @@
        phone's widest look into the shop drew 406k triangles, three quarters of them pieces a few pixels tall at their
        full 2–12k. A file with no levels stands as it is, always */
     const stockLods = [], STOCK_NEAR = 0.04;
-    function manyOf(key, list, parent, size = 0.06) {
+    /* (v24.36) `done`, if given, is handed every InstancedMesh made, once they stand (the samnak's cabinets shake theirs
+       with the room and put their stand-ins away); without it, as before */
+    function manyOf(key, list, parent, size = 0.06, done = null) {
       if (!list.length) return;
       parseOnce(key).then(({ scene: src }) => {
         if (!alive) return;
         src.updateMatrixWorld(true);
-        const lv = { near: [], far: [] };
+        const lv = { near: [], far: [] }, made = [];
         src.traverse(o => {
           if (!o.isMesh) return;
           const mat = o.material.clone(); mats.push(mat); bronzeLift({ material: mat });
@@ -476,7 +478,7 @@
           });
           im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere();
           im.castShadow = false; im.receiveShadow = true; im.name = 'stock:' + key;
-          parent.add(im); owned.push(im);
+          parent.add(im); owned.push(im); made.push(im);
           if (/_far$/.test(o.name)) lv.far.push(im); else if (/_near$/.test(o.name)) lv.near.push(im);
         });
         if (lv.near.length && lv.far.length) {
@@ -489,6 +491,7 @@
           for (const im of lv.near) im.visible = false;                  // the far level until the first frame asks
           stockLods.push({ near: lv.near, far: lv.far, c, r: r + 0.05, size: size * sMax, on: false });
         }
+        if (done) done(made);
       }).catch(err => { console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
     }
     const _sl = new THREE.Vector3();
@@ -836,9 +839,11 @@
         let r = 0; for (let i = 0; i < P.count; i++) if (P.getY(i) < y0 + 0.004) r = Math.max(r, Math.hypot(P.getX(i), P.getZ(i)));
         return r;
       };
-      const shake = (o, amp = 1) => {
+      /* (v24.36) `ph`, if given, is its phase: a piece's near and far levels share one, so the level it is drawn in never
+         jumps in its rattle */
+      const shake = (o, amp = 1, ph = null) => {
         o.userData.dyn = true;
-        const s = { o, p: o.position.clone(), r: o.rotation.clone(), ph: 0.7 + room.shakers.length * 1.913, amp, base: o.geometry ? footR(o.geometry) : 0 };
+        const s = { o, p: o.position.clone(), r: o.rotation.clone(), ph: ph ?? 0.7 + room.shakers.length * 1.913, amp, base: o.geometry ? footR(o.geometry) : 0 };
         if (o.isInstancedMesh) {
           s.inst = [];
           for (let i = 0; i < o.count; i++) {
@@ -1434,7 +1439,7 @@
         for (const yy of [0.74, 1.14, 1.54]) bx(dep - 0.06, 0.008, zl - 0.06, mGlass, xc + side * 0.01, yy, zc, G);
         const gf = flat(zl - 0.06, Hc - 0.8, mGlass, G); gf.rotation.y = board.rotation.y; gf.position.set(xc - side * (dep / 2 - 0.01), 0.72 + (Hc - 0.8) / 2, zc);
         bx(0.025, Hc - 0.8, 0.025, mTeak, xc - side * (dep / 2 - 0.012), 0.72 + (Hc - 0.8) / 2, zc, G);
-        cabs.push({ side, xw, xc, dep, zA, zB, zc, zl, G });
+        cabs.push({ side, xw, xc, dep, zA, zB, zc, zl, G, board, seed });
         const body = hidBox(dep, Hc, zl, xc, Hc / 2, zc, R); solids.push(body);
       };
       cabinet(-1, -2.5, -1.15, 4511); cabinet(1, -1.6, -0.45, 4513);
@@ -1456,6 +1461,44 @@
         }
         bottles.count = nb; tak.count = nt; bun.count = nu; R.add(bottles); R.add(tak); R.add(bun);
         shake(bottles, 0.5); shake(tak, 0.4); shake(bun, 0.3);   // (v24.24: the cabinets' glass and brass rattle with it)
+        /* (v24.36, Chad, 2 Nov 2026: "in the ajahn samnak, the amulet display shelf can have real amulets instead of
+           generated ones, but it should look more like the yin, barang, ghost based kind of amulets. But base the model
+           generation off real yin amulets when you generate more models.") THE CABINETS' STOCK, MODELLED — each kind
+           made from photographs of real pieces (docs/research/V24.36-YIN-STOCK.md: every name, its sources, its
+           photographs; masters/v24.36/make.sh: the pictures, the Meshy jobs, the prep). On each glass shelf the figures
+           stand facing the room, dealt in turn, with a bottle of nam man phrai or a pair of Chad's takrut lying between
+           them; on the velvet behind, a row of phrai tablets to a bay, clear of the figures in front. Near and far levels
+           as the shop's stock (manyOf, stockLod — the room's frame asks too), each kind shaking with the room as the
+           stand-ins did, near and far in one phase. A stand-in above goes only once its model has landed (v4.7): the
+           bundles with the figures, the bottles with the oil, the brass tubes with the takrut, the board's painted
+           amulets with the tablets */
+        const YIN = { figs: ['e4kuman', 'e4ngang', 'e4tani', 'e4phayon'], oil: 'e4phraioil', tab: 'e4phraitab', tak: 'e4takrutsm' };
+        const YH = { e4kuman: 0.085, e4ngang: 0.07, e4tani: 0.08, e4phayon: 0.075, e4phraioil: 0.07, e4phraitab: 0.045, e4takrutsm: 1.0 };   // (the takrut's file is 1 m, stood at s 0.07: the shop's KIND_H)
+        const yr = rng(4529), SH3 = [0.748, 1.148, 1.548], slots = { fig: [], oil: [], tak: [], tab: [] };
+        for (const cb of cabs) {
+          const ry0 = -cb.side * Math.PI / 2, xs = cb.xc - cb.side * 0.03, xb = cb.xw - cb.side * 0.03;
+          SH3.forEach((yy, si) => {
+            let z = cb.zA + 0.08, k = si + (cb.side > 0 ? 1 : 0), nf = si * 2 + (cb.side > 0 ? 1 : 0);
+            while (z < cb.zB - 0.08) {
+              const what = ['fig', 'oil', 'fig', 'tak'][k++ % 4];
+              if (what === 'fig') { if (z + 0.12 > cb.zB - 0.04) break;
+                slots.fig.push({ c: cb, kind: nf++ % YIN.figs.length, x: xs + (yr() - 0.5) * 0.04, y: yy, z: z + 0.06, ry: ry0 + (yr() - 0.5) * 0.3 }); z += 0.14; }
+              else if (what === 'oil') { slots.oil.push({ c: cb, x: xs + (yr() - 0.5) * 0.06, y: yy, z: z + 0.035, ry: yr() * Math.PI * 2 }); z += 0.08; }
+              else { for (const dx of [-0.026, 0.026]) slots.tak.push({ c: cb, x: xs + cb.side * dx, y: yy + 0.0185, z: z + 0.045, ry: ry0 + (yr() - 0.5) * 0.12, rz: Math.PI / 2, s: 0.07 }); z += 0.1; }
+            }
+            const yT = yy + (si < 2 ? 0.19 : 0.13);                      // the bay's tablets, their foot over the figures' heads
+            for (let zt = cb.zA + 0.075; zt < cb.zB - 0.06; zt += 0.115) slots.tab.push({ c: cb, x: xb, y: yT, z: zt, ry: ry0 });
+          });
+        }
+        const stood = (amp, then) => (ims) => { const ph = 0.7 + room.shakers.length * 1.913; for (const im of ims) shake(im, amp, ph); then(); };
+        for (const cb of cabs) {
+          const mine = (list) => list.filter(sl => sl.c === cb);
+          YIN.figs.forEach((key, ki) => manyOf(key, mine(slots.fig).filter(sl => sl.kind === ki), R, YH[key], stood(0.3, () => { bun.visible = false; })));
+          manyOf(YIN.oil, mine(slots.oil), R, YH[YIN.oil], stood(0.5, () => { bottles.visible = false; }));
+          manyOf(YIN.tak, mine(slots.tak), R, YH[YIN.tak], stood(0.4, () => { tak.visible = false; }));
+          manyOf(YIN.tab, mine(slots.tab), R, YH[YIN.tab], stood(0.12, () => {
+            cb.board.material.map = tex(makeAmuletBoard(THREE, cnv, cb.seed, true)); cb.board.material.needsUpdate = true; }));
+        }
       }
 
       /* ---- the yant cloths on the wall either side of the altar, and the gold shop's calendar */
@@ -2376,7 +2419,11 @@
              shone like plastic. Both faces drawn, and the sheet lifted to about 0.8 — until a real tree replaces each */
           if (o2.twoSided && mt && !mt.__twoSided) { mt.side = THREE.DoubleSide; mt.__twoSided = true; }
           if (o2.rough && mt && !mt.__rough && 'roughness' in mt) { mt.roughness = Math.min(2.5, mt.roughness * o2.rough); mt.__rough = true; }
-          parts.push({ geo: o.geometry, mat: mt, m: o.matrixWorld.clone(), leaf: !!(mt && (mt.alphaTest > 0 || mt.transparent)) }); });
+          /* (v24.36) `level`: of a two-level file (tools/lodpair.mjs, tools/planarfar.mjs: nodes <name>_near and
+           <name>_far), only that level's meshes; a one-level file gives all of its meshes, as before */
+        if (o2.level) { let lv = null; for (let a = o; a && !lv; a = a.parent) { const mm = /_(near|far)$/.exec(a.name || ''); if (mm) lv = mm[1]; }
+          if (lv && lv !== o2.level) return; }
+        parts.push({ geo: o.geometry, mat: mt, m: o.matrixWorld.clone(), leaf: !!(mt && (mt.alphaTest > 0 || mt.transparent)) }); });
         return parts.length ? parts : null;
       }).catch(err => { console.warn(k + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(k, err); return null; })))
         .then(kinds => kinds.every(Boolean) ? kinds : fallback);
@@ -3285,7 +3332,7 @@
       const tGlow = tex(makeGlow(THREE, cnv)), tStreak = tex(makeStreak(THREE, cnv));
       const mRoad = B({ color: 0x0a0a0e }), mGround = B({ color: 0x0c0d11 }), mFoot = B({ color: 0x18181d }), mKerb = B({ color: 0x34343a });
       const mVerge = B({ color: 0x0b100b }), mMark = B({ color: 0xa8a8a4 }), mPole = B({ color: 0x24262a }), mHead = B({ color: 0xfff1dc });
-      const mEnd = B({ color: 0x131419 }), mPanel = B({ color: 0xd8dce4 });
+      const mEnd = B({ color: 0x131419 });
       const mPool = B({ map: tGlow, color: 0xffd2a0, transparent: true, opacity: 0.3, blending: THREE.AdditiveBlending, depthWrite: false });
       /* the shops' light out over the walk in front of them, brightest at their fronts (photographed: without it the lower
          half of his window was black ground) */
@@ -3780,10 +3827,13 @@
           for (const sx of [-1, 1]) { const arm = box(1.5, 0.08, 0.08, mPole, 6.2 + sx * 0.75, 9.35, z, g); arm.rotation.z = -sx * 0.1;
             box(0.56, 0.1, 0.24, mHead, 6.2 + sx * 1.42, 9.38, z, g); glowPts.push([s, 6.2 + sx * 1.42, 9.28, z]); flatQ(8, 8, mPool, 6.2 + sx * 2.2, 0.02, z, g); }
         }
-        /* a bus stop on the footpath: its shelter, its bench, its lit panel */
-        { const z = -48 - r() * 6;
+        /* a bus stop on the footpath: its shelter, its bench, its lit panel — (v24.36) a framed advert lit from inside,
+           the same poster on its two faces (the road's and the walk's), where v24.33 left it a blank white board */
+        { const z = -48 - r() * 6, zp = z + 2.3;
           box(3.6, 0.08, 1.7, mPole, -3.7, 2.55, z, g); for (const dz of [-1.6, 1.6]) box(0.08, 2.5, 0.08, mPole, -4.4, 1.27, z + dz, g);
-          box(0.4, 0.45, 2.6, mPole, -4.25, 0.36, z, g); box(0.05, 1.7, 1.15, mPanel, -4.45, 1.05, z + 2.3, g); }
+          box(0.4, 0.45, 2.6, mPole, -4.25, 0.36, z, g); box(0.08, 1.84, 1.27, mPole, -4.45, 1.05, zp, g);
+          qT(SA, ...fX(-4.45 + 0.042, 0.21, 1.89, zp + 0.55, zp - 0.55), CELL.advert, 0.88);
+          qT(SA, ...fX(-4.45 - 0.042, 0.21, 1.89, zp - 0.55, zp + 0.55), CELL.advert, 0.88); }
         /* the HDB blocks along the next road back: their void-deck shops lit under them, twelve storeys over the shops */
         let z = -2 - r() * 6;
         while (z > -SG + 20) {
@@ -5119,6 +5169,7 @@
     }
     function roomFrame(now) {
       if (worldOf(yaw.position.x) !== 'R') { room.last = 0; return; }
+      stockLod();                                                       // (v24.36) the cabinets' pieces, near or far
       const dt = room.last ? Math.min(0.1, Math.max(0, now - room.last)) : 0; room.last = now;
       const fl = kit && kit.flashNow ? kit.flashNow() : 0;
       /* (v24.24, Chad: "Why not make things move or vibrate or shake as he chants or in the cutscenes. Right now those
@@ -6424,7 +6475,7 @@
       const dx = q[0] - p[0], dy = q[1] - p[1], dz = q[2] - p[2];
       yaw.rotation.y = Math.atan2(-dx, -dz); pitch.rotation.x = Math.atan2(dy, Math.hypot(dx, dz));
       camera.rotation.z = roll;
-      if (worldOf(p[0]) === 'S') stockLod();             // (v24.22) the stock's levels for THIS frame's lens, never the last one's
+      if (worldOf(p[0]) === 'S' || worldOf(p[0]) === 'R') stockLod();   // (v24.22) the stock's levels for THIS frame's lens, never the last one's (v24.36: the samnak's cabinets too)
     }
     /* where his FACE is, for a lens to frame: the head bone is the skull's base, 9 cm under the eyes, and a shot aimed
        at it put the eyes at the top of a phone's frame and cut them in the cab (CP9, by photograph) */
@@ -8030,11 +8081,17 @@
 
   /* the back of an amulet cabinet: red velvet, rows of amulets in gold frames (a niche, a coin, a leaf, a tablet), each
      with its small white tag — the shapes of amulets at a glance, not any one amulet */
-  function makeAmuletBoard(THREE, cnv, seed) {
+  function makeAmuletBoard(THREE, cnv, seed, plain) {
     const S = 512, [c, x] = cnv(S), r = rng(seed);
     x.fillStyle = '#6e1016'; x.fillRect(0, 0, S, S);
     speckle(x, S, S, r, 5000, '40,0,4', 0.08, 0.2, 1, 2);
     speckle(x, S, S, r, 2000, '160,40,48', 0.06, 0.14, 1, 2);
+    /* (v24.36) PLAIN: the velvet alone, its nap worn into faint bands where pieces have hung for years — for the board
+       whose amulets are the modelled phrai tablets pinned in front of it */
+    if (plain) {
+      for (let j = 0; j < 3; j++) { x.fillStyle = 'rgba(30,0,4,0.12)'; x.fillRect(0, S * (0.2 + j * 0.31), S, 18); }
+      return done(THREE, c, false);
+    }
     const fills = ['#8a6a48', '#c9b896', '#5c4430', '#a08a62', '#7c5228', '#d8ccb0', '#4a3a2a'];
     const rows = 5, cols = 7, cw = S / cols, rh = S / rows;
     for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
@@ -9037,6 +9094,38 @@
       x.beginPath(); for (let k = 0; k < 16; k++) { const a = k * Math.PI / 8, rr = k % 2 ? 30 : 50; x.lineTo(w / 2 + Math.cos(a) * rr, 76 + Math.sin(a) * rr); } x.fill();
       x.fillStyle = '#ffffff'; x.font = EN(22); x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('NEW', w / 2, 78);
       x.fillStyle = '#4a3a1a'; for (let k = 0; k < 4; k++) x.fillRect(16, 140 + k * 11, w - 32 - r() * 20, 5);
+    });
+    /* (v24.36) the bus stop's lit advert (Chad: "Why is there a white block in front of the bakery" — v24.33 left the
+       panel lit and blank): a drink, generic, no brand (v9.3) — a sky to an aqua sea, the headline, a bottle of iced
+       lemon tea beaded with cold, ice and a lemon slice, the line along the foot */
+    cell('advert', 256, 384, (w, h) => {
+      const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#0b4f86'); g.addColorStop(0.55, '#26a6c4'); g.addColorStop(1, '#c4ecf0');
+      x.fillStyle = g; x.fillRect(0, 0, w, h);
+      x.fillStyle = 'rgba(255,255,255,0.08)';                                       // light rays from the top
+      for (let k = 0; k < 7; k++) { x.beginPath(); x.moveTo(w / 2, -20); x.lineTo(k * 44 - 20, h); x.lineTo(k * 44 + 2, h); x.closePath(); x.fill(); }
+      x.textAlign = 'center'; x.textBaseline = 'middle';
+      x.fillStyle = '#ffffff'; x.font = EN(fit('STAY COOL', EN, 46, w - 30)); x.fillText('STAY COOL', w / 2, 40);
+      x.fillStyle = '#ffe14a'; x.font = ZH(fit('清凉一夏', ZH, 30, w - 60)); x.fillText('清凉一夏', w / 2, 84);
+      const bx0 = w / 2 - 34, by0 = 120, bw = 68, bh = 196;                         // the bottle: its neck, cap, shoulders, body
+      x.fillStyle = '#e8eef0'; x.fillRect(w / 2 - 14, by0 - 4, 28, 14);
+      const bg = x.createLinearGradient(bx0, 0, bx0 + bw, 0); bg.addColorStop(0, '#8a4a10'); bg.addColorStop(0.35, '#e0962e'); bg.addColorStop(0.6, '#c87a1e'); bg.addColorStop(1, '#6a3408');
+      x.fillStyle = bg; x.beginPath(); x.moveTo(w / 2 - 12, by0 + 10); x.lineTo(w / 2 + 12, by0 + 10); x.lineTo(w / 2 + 12, by0 + 34);
+      x.quadraticCurveTo(bx0 + bw, by0 + 44, bx0 + bw, by0 + 70); x.lineTo(bx0 + bw, by0 + bh - 8); x.quadraticCurveTo(bx0 + bw, by0 + bh, bx0 + bw - 8, by0 + bh);
+      x.lineTo(bx0 + 8, by0 + bh); x.quadraticCurveTo(bx0, by0 + bh, bx0, by0 + bh - 8); x.lineTo(bx0, by0 + 70); x.quadraticCurveTo(bx0, by0 + 44, w / 2 - 12, by0 + 34); x.closePath(); x.fill();
+      x.fillStyle = '#fbf6e4'; x.fillRect(bx0, by0 + 96, bw, 58);                  // its label: a lemon slice and the words
+      x.fillStyle = '#f4c81c'; x.beginPath(); x.arc(w / 2, by0 + 116, 13, 0, Math.PI * 2); x.fill();
+      x.strokeStyle = '#fff6c0'; x.lineWidth = 1.5; for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4; x.beginPath(); x.moveTo(w / 2, by0 + 116); x.lineTo(w / 2 + Math.cos(a) * 11, by0 + 116 + Math.sin(a) * 11); x.stroke(); }
+      x.fillStyle = '#1a5a2a'; x.font = EN(11); x.fillText('LEMON TEA', w / 2, by0 + 142);
+      x.fillStyle = 'rgba(255,255,255,0.55)'; x.fillRect(bx0 + 10, by0 + 60, 6, bh - 76);   // the shine down its side
+      for (let k = 0; k < 40; k++) { x.fillStyle = `rgba(255,255,255,${0.35 + r() * 0.4})`; x.beginPath(); x.arc(bx0 + 4 + r() * (bw - 8), by0 + 48 + r() * (bh - 56), 1 + r() * 1.6, 0, Math.PI * 2); x.fill(); }
+      for (const [ix, iy, s2] of [[44, 286, 30], [66, 304, 24], [196, 290, 28], [214, 312, 22]]) {      // ice
+        x.fillStyle = 'rgba(235,250,255,0.75)'; x.fillRect(ix - s2 / 2, iy - s2 / 2, s2, s2); x.strokeStyle = 'rgba(255,255,255,0.95)'; x.lineWidth = 2; x.strokeRect(ix - s2 / 2, iy - s2 / 2, s2, s2); }
+      x.fillStyle = '#f4c81c'; x.beginPath(); x.arc(188, 210, 26, 0, Math.PI * 2); x.fill();                 // a lemon slice
+      x.fillStyle = '#fff3a8'; x.beginPath(); x.arc(188, 210, 21, 0, Math.PI * 2); x.fill();
+      x.strokeStyle = '#f0c418'; x.lineWidth = 2; for (let k = 0; k < 10; k++) { const a = k * Math.PI / 5; x.beginPath(); x.moveTo(188, 210); x.lineTo(188 + Math.cos(a) * 20, 210 + Math.sin(a) * 20); x.stroke(); }
+      x.fillStyle = '#0b3e6e'; x.fillRect(0, h - 46, w, 46);                       // the line along the foot
+      x.fillStyle = '#ffffff'; x.font = EN(fit('ICED LEMON TEA', EN, 22, w - 40)); x.fillText('ICED LEMON TEA', w / 2, h - 30);
+      x.fillStyle = 'rgba(255,255,255,0.6)'; x.font = EN(10); x.fillText('NEW · ICE COLD · 冰镇', w / 2, h - 11);
     });
     cell('crate', 128, 96, (w, h) => {
       x.fillStyle = '#b4221a'; x.fillRect(0, 0, w, h); for (let i = 0; i < 6; i++) { x.fillStyle = '#76100a'; x.fillRect(8 + i * 20, 30, 12, 40); }
