@@ -7382,7 +7382,8 @@ What the baseline contains, by release:
     after a lost graphics context (main.js roomEnvAgain); an envMap of a material's own keeps the dead one (the
     episode's statues and trays still do: docs/OPEN-ITEMS.md, listed and left).
   - Deployed 6ae819d55c26aa1e60939142 (310 of 310 files byte-identical); chapter and leak green on v24.31's copy, which
-    carries it.
+    carries it. Photographed after, in the cold (the real pickup, E pressed, the cold waited for; on v24.31's copy): at
+    0.125 the frame still reads metal against the dimmed shop and her portrait keeps its blacks; 0.25 pale.
 - **v24.31** THE ROOM'S RATTLE, SEATED — Chad, 2 Nov 2026 (while v24.30 was built): "The items shaking in ep 4 chp 1 , is
   very fake looking and unnatural, fix it, i think the movements move too much, you can lessen it a little. They look
   like they are flying around detached from where they are. Which looks wrong."
