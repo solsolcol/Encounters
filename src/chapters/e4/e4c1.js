@@ -2635,7 +2635,8 @@
     const shop = { u: 0, uFrom: 0, uTo: 0, t0: 0, t1: 0, curtain: null, curTex: null, bar: null, spill: null, spillMat: null,
                    leds: [], ledK: 1, ledFrom: 1, ledTo: 1, l0: 0, l1: 0, phone: null, phoneOn: 0, ledger: null, pen: null,
                    lap: null, lapOn: 0, lapWed: 1, lapBar: 1, stockCount: 0 };      // (v24.22: his laptop's sales, the stock stood)
-    const taxi = { wipers: [], wipe: true, bokeh: [], glass: [], sweep: [], sweepU: { value: 9 }, meter: null, last: 0 };
+    /* (v24.33: d, the street driven — buildTaxiStreet) */
+    const taxi = { wipers: [], wipe: true, glass: [], sweep: [], sweepU: { value: 9 }, meter: null, last: 0, d: 0 };
     const cab = { root: null, glass: [], garland: null, show: false, drops: 0, last: 0, swing: 0 };
     /* (v24.18) the model's cab (Chad's Rivian, its wheel on the right): the driver's seat pan, measured off the file along
        the seat's centre line, and the passenger's eye a seated man's 0.74 m over his own seat pan, his head back with the
@@ -3242,23 +3243,9 @@
         const ph2 = bx(0.08, 0.15, 0.012, mHold, PH.x, PH.y, PH.z); ph2.rotation.x = -0.2;
         bx(0.014, 0.1, 0.014, mHold, PH.x, 1.045, PH.z - 0.01);                       // its stalk, down to the dash's top
         const scr = new THREE.Mesh(new THREE.PlaneGeometry(0.07, 0.135), B({ map: tex(makeNavMap(THREE, cnv)) })); scr.position.set(PH.x, PH.y, PH.z + 0.008); scr.rotation.x = -0.2; T0.add(scr); }
-      /* the city: a strip beside him that slides past, one ahead down the road (v24.23: buildings, shops, trees, lamps and
-         traffic, a little out of focus, where there had been only discs — makeCityNight). A strip is 4:1, so it repeats at
-         the plane's own 4:1 and a disc stays round (CP6: at 2.2 every light was an egg). The side's sheet stands from
-         1.2 m under the road to 6.4 m (it stopped at 5.2, and through his window's top a band of black sky showed over it).
-         (v24.23) Each side has its own copy of the strip (one image, one upload): a plane's u runs to the BACK on his
-         right and to the FRONT on his left, so the one offset the two shared had slid the city past his own window
-         toward the front — a taxi in reverse, in every ending */
-      { const SH = 7.6, cityR = tex(makeCityNight(THREE, cnv, 4861, false)), cityL = tex(cityR.clone()), ahead = tex(makeCityNight(THREE, cnv, 4863, true));
-        cityL.needsUpdate = true;
-        cityR.repeat.set(28 / SH / 4, 1); cityL.repeat.set(28 / SH / 4, 1); ahead.repeat.set(1, 1);
-        const smR = B({ map: cityR, fog: false, toneMapped: false }), smL = B({ map: cityL, fog: false, toneMapped: false }), am = B({ map: ahead, fog: false, toneMapped: false });
-        const s2 = mesh(new THREE.PlaneGeometry(28, SH), smL, -6.5, -1.2 + SH / 2, -0.6); s2.rotation.y = Math.PI / 2; s2.userData.dyn = true;
-        const s3 = mesh(new THREE.PlaneGeometry(28, SH), smR, 6.5, -1.2 + SH / 2, -0.6); s3.rotation.y = -Math.PI / 2; s3.userData.dyn = true;
-        const a2 = mesh(new THREE.PlaneGeometry(14, 3.5), am, 0, 1.6, -9.5); a2.userData.dyn = true;
-        taxi.bokeh.push(cityR, ahead, cityL);
-        /* the road's wet sheen under the city, beside him */
-        const wet = mesh(new THREE.PlaneGeometry(28, 6), B({ color: 0x0e0e16, fog: false }), -3.4, -0.2, -0.6); wet.rotation.x = -Math.PI / 2; void wet; }
+      /* the city outside (v24.33): a street built at its distances, run past on the coda's clock — buildTaxiStreet, where
+         v24.23's painted strips slid past the windows (makeCityNight, retired with them) */
+      buildTaxiStreet();
       /* his window and the windscreen: rain on them */
       { const side = rainGlassMat({ cx: 22, cy: 12, hi: 0xffd8b4, slide: 0.4, rate: 0.08, k: 0.55, dark: 0.24, dir: [-0.85, -0.5] });   // back and down
         const g1 = mesh(new THREE.PlaneGeometry(0.86, 0.46), side, -W + 0.012, 1.22, 0.38); g1.rotation.y = Math.PI / 2; g1.userData.dyn = true; g1.renderOrder = 3;
@@ -3271,6 +3258,174 @@
         for (const px of [-0.42, 0.16]) { const piv = new THREE.Group(); piv.position.set(px, 0, 0.01); wp.add(piv);
           const arm = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.012, 0.012), M({ color: 0x0a0a0a, roughness: 0.6 })); arm.position.x = 0.3; piv.add(arm);
           taxi.wipers.push(piv); } }
+    }
+    /* (v24.33) THE STREET BEHIND THE RAIN, BUILT (Chad, 2 Nov 2026: "i think the view out the taxi window can be improved
+       further"). v24.23 painted the city on two sheets sliding past his window, and through the wet glass it read as
+       smears with no depth (photographed). Now a Singapore road at night stands in World T and runs past the cabin on the
+       coda's own clock (TST.V metres a second; taxi.d, set by codaFrame, so a seek lands the same street): beside his
+       window the kerb, the footpath, the lamp posts and the palms race past, the void-deck shops of the HDB blocks go by
+       lit along the next road back, a second row of blocks drifts behind them, and through the windscreen the road runs
+       on — its lanes, the median's palms and double lamps, a car ahead, oncoming lights. Two segments of TST.SEG metres
+       leapfrog; the far end is in TAXI's fog. Everything is painted light — unlit sheets, glows, pools on the ground, the
+       lights again in the wet road — and no light is added (v15.1); the palms and the cars are the chapter's own real
+       models (v24.13, v24.20), the cars' glass painted, so no empty seat shows. The cabin's sweep band is the lamps
+       passing overhead now, read off the same street */
+    const TST = { V: 13.5, SEG: 120, LAMPS: [-8, -38, -68, -98], MLAMPS: [-23, -53, -83, -113] };
+    const street = { segs: [], lights: [], refl: null, reflPos: null, cars: [], eye: new THREE.Vector3() };
+    function buildTaxiStreet() {
+      const T0 = worldT, SG = TST.SEG;
+      const tGlow = tex(makeGlow(THREE, cnv)), tStreak = tex(makeStreak(THREE, cnv));
+      const mRoad = B({ color: 0x0a0a0e }), mGround = B({ color: 0x0c0d11 }), mFoot = B({ color: 0x18181d }), mKerb = B({ color: 0x34343a });
+      const mVerge = B({ color: 0x0b100b }), mMark = B({ color: 0xa8a8a4 }), mPole = B({ color: 0x24262a }), mHead = B({ color: 0xfff1dc });
+      const mEnd = B({ color: 0x131419 }), mUnder = B({ color: 0x1e1c1a }), mPanel = B({ color: 0xd8dce4 });
+      const mPool = B({ map: tGlow, color: 0xffd2a0, transparent: true, opacity: 0.3, blending: THREE.AdditiveBlending, depthWrite: false });
+      /* the shops' light out over the walk in front of them, brightest at their fronts (photographed: without it the lower
+         half of his window was black ground) */
+      const tSpill = (() => { const [c, x] = sized(cnv, 64, 8), g = x.createLinearGradient(0, 0, 64, 0);
+        g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.45, 'rgba(255,255,255,0.4)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+        x.fillStyle = g; x.fillRect(0, 0, 64, 8); return tex(done(THREE, c, false)); })();
+      const mSpill = B({ map: tSpill, color: 0xffe6c4, transparent: true, opacity: 0.42, blending: THREE.AdditiveBlending, depthWrite: false });
+      /* the road and the ground either side stand still (they have nothing on them to see go by); the lanes' paint does not */
+      const flatQ = (w, d, m, x, y, z, p = T0) => { const o = new THREE.Mesh(new THREE.PlaneGeometry(w, d), m); o.rotation.x = -Math.PI / 2; o.position.set(x, y, z); p.add(o); return o; };
+      flatQ(16.0, 300, mRoad, 6.1, 0, -110);
+      flatQ(60, 300, mGround, -39, 0.01, -110); flatQ(60, 300, mGround, 44.1, 0.01, -110);
+      /* a sheet of a building's face: w by h, its tile `tw` by `th` metres, facing +x (ry 0) or −x (ry π) */
+      const face = (w, h, m, tw, th, x, y, z, ry, p, u0 = 0) => {
+        const g = new THREE.PlaneGeometry(w, h), uv = g.attributes.uv;
+        for (let i = 0; i < uv.count; i++) uv.setXY(i, u0 + uv.getX(i) * w / tw, uv.getY(i) * h / th);
+        const o = new THREE.Mesh(g, m); o.position.set(x, y, z); o.rotation.y = ry + Math.PI / 2; p.add(o); return o;
+      };
+      const box = (w, h, d, m, x, y, z, p) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y, z); p.add(o); return o; };
+      const cylY = (r0, r1, h, m, x, y, z, p) => { const o = new THREE.Mesh(new THREE.CylinderGeometry(r0, r1, h, 8), m); o.position.set(x, y, z); p.add(o); return o; };
+      const glowPts = [];
+      for (let s = 0; s < 2; s++) {
+        const g = new THREE.Group(); g.userData.dyn = true; g.name = 'taxiStreet' + s; T0.add(g);
+        const r = rng(4911 + s * 17);
+        const mW = B({ map: tex(makeHdbFace(THREE, cnv, 4901 + s * 10, false)) }), mC = B({ map: tex(makeHdbFace(THREE, cnv, 4903 + s * 10, true)) });
+        const mShop = B({ map: tex(makeShopRow(THREE, cnv, 4905 + s * 3)) });
+        /* the kerb, the footpath, the verge (left); the median; the far kerb and its footpath */
+        box(0.18, 0.15, SG, mKerb, -1.95, 0.075, -SG / 2, g);
+        box(2.7, 0.13, SG, mFoot, -3.4, 0.065, -SG / 2, g);
+        box(1.6, 0.12, SG, mVerge, -5.55, 0.06, -SG / 2, g);
+        box(2.6, 0.12, SG, mFoot, -7.65, 0.06, -SG / 2, g);
+        box(2.2, 0.2, SG, mVerge, 6.2, 0.1, -SG / 2, g); box(0.12, 0.2, SG, mKerb, 5.06, 0.1, -SG / 2, g); box(0.12, 0.2, SG, mKerb, 7.34, 0.1, -SG / 2, g);
+        box(0.18, 0.15, SG, mKerb, 14.15, 0.075, -SG / 2, g); box(3.0, 0.13, SG, mFoot, 15.7, 0.065, -SG / 2, g);
+        /* the lanes' paint: the edges solid, the lane lines dashed 3 m in 12 */
+        for (const lx of [-1.72, 4.96, 7.44, 13.98]) flatQ(0.12, SG, mMark, lx, 0.012, -SG / 2, g);
+        for (const lx of [1.66, 10.7]) for (let z = -2; z > -SG; z -= 12) flatQ(0.12, 3, mMark, lx, 0.012, z - 1.5, g);
+        /* the lamps: the kerb's, every 30 m, an arm reaching over the lane; the median's, two arms; a pool of light under each */
+        for (const z of TST.LAMPS) {
+          cylY(0.08, 0.12, 8.6, mPole, -2.3, 4.3, z, g);
+          const arm = box(1.7, 0.08, 0.08, mPole, -1.48, 8.56, z, g); arm.rotation.z = 0.1;
+          box(0.56, 0.1, 0.24, mHead, -0.66, 8.6, z, g);
+          glowPts.push([s, -0.66, 8.5, z]);
+          flatQ(10, 10, mPool, -0.9, 0.02, z, g); flatQ(8, 8, mPool, -3.2, 0.16, z, g);
+        }
+        for (const z of TST.MLAMPS) {
+          cylY(0.09, 0.13, 9.4, mPole, 6.2, 4.7, z, g);
+          for (const sx of [-1, 1]) { const arm = box(1.5, 0.08, 0.08, mPole, 6.2 + sx * 0.75, 9.35, z, g); arm.rotation.z = -sx * 0.1;
+            box(0.56, 0.1, 0.24, mHead, 6.2 + sx * 1.42, 9.38, z, g); glowPts.push([s, 6.2 + sx * 1.42, 9.28, z]); flatQ(8, 8, mPool, 6.2 + sx * 2.2, 0.02, z, g); }
+        }
+        /* a bus stop on the footpath: its shelter, its bench, its lit panel */
+        { const z = -48 - r() * 6;
+          box(3.6, 0.08, 1.7, mPole, -3.7, 2.55, z, g); for (const dz of [-1.6, 1.6]) box(0.08, 2.5, 0.08, mPole, -4.4, 1.27, z + dz, g);
+          box(0.4, 0.45, 2.6, mPole, -4.25, 0.36, z, g); box(0.05, 1.7, 1.15, mPanel, -4.45, 1.05, z + 2.3, g); }
+        /* the HDB blocks along the next road back: their void-deck shops lit under them, twelve storeys over the shops */
+        let z = -2 - r() * 6;
+        while (z > -SG + 20) {
+          const L = 36 + Math.floor(r() * 4) * 6, fl = 10 + Math.floor(r() * 4), H = fl * 2.8, zc = z - L / 2, u0 = r();
+          /* the shops recessed under the block; the block's face over them, standing out over the walk to them */
+          face(L, 3.9, mShop, 32, 4, -9.8, 2.05, zc, 0, g, u0);
+          flatQ(3.6, L, mSpill, -8.0, 0.14, zc, g);                                   // their light on the walk
+          box(1.0, 0.12, L, mUnder, -9.3, 4.05, zc, g);                               // the block's underside over the shops
+          face(L, H, r() < 0.5 ? mW : mC, 36, 33.6, -8.8, 4.1 + H / 2, zc, 0, g, u0);
+          box(12, H + 4.1, 0.1, mEnd, -14.8, (H + 4.1) / 2, z - 0.05, g); box(12, H + 4.1, 0.1, mEnd, -14.8, (H + 4.1) / 2, z - L + 0.05, g);
+          box(12.2, 0.4, L, mEnd, -14.8, H + 4.3, zc, g);                              // its roof's edge
+          z -= L + 10 + r() * 8;
+        }
+        /* a second row behind them, and blocks across the far side of the road */
+        for (let k = 0, z2 = -6 - r() * 10; k < 2; k++, z2 -= 60) { const L = 48, fl = 12 + (k + s) % 3, H = fl * 2.8;
+          face(L, H, (k + s) % 2 ? mW : mC, 36, 33.6, -34, H / 2, z2 - L / 2, 0, g, r()); }
+        for (let k = 0, z2 = -10 - r() * 10; k < 2; k++, z2 -= 58) { const L = 46, fl = 11 + (k + 2 * s) % 4, H = fl * 2.8;
+          face(L, H, (k + s) % 2 ? mC : mW, 36, 33.6, 21, H / 2, z2 - L / 2, Math.PI, g, r()); }
+        mergeStatic(g, new Set());
+        street.segs.push(g);
+      }
+      /* the lamps' glows (one Points of all of them, moved with their segments each frame), and their streaks in the wet road */
+      street.lights = glowPts;
+      const gp = new THREE.BufferGeometry(); gp.setAttribute('position', new THREE.BufferAttribute(new Float32Array(glowPts.length * 3), 3));
+      const glow = new THREE.Points(gp, new THREE.PointsMaterial({ map: tGlow, color: 0xffe4bc, size: 2.6, sizeAttenuation: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+      mats.push(glow.material); glow.frustumCulled = false; glow.userData.dyn = true; T0.add(glow); street.glow = glow;
+      const gr = new THREE.BufferGeometry(); gr.setAttribute('position', new THREE.BufferAttribute(new Float32Array(glowPts.length * 3), 3));
+      const refl = new THREE.Points(gr, new THREE.PointsMaterial({ map: tStreak, color: 0xb89a78, size: 3.4, sizeAttenuation: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+      mats.push(refl.material); refl.frustumCulled = false; refl.userData.dyn = true; T0.add(refl); street.refl = refl;
+      /* the palms: the verge's between the kerb's lamps, the median's between its own — Chad's palms (v24.13), far cut */
+      modelKit(['e4palm1far', 'e4palm2far'], null).then(kinds => {
+        if (!alive || !kinds) return;
+        const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3(), Y = new THREE.Vector3(0, 1, 0);
+        street.segs.forEach((g, s) => {
+          const r = rng(4931 + s * 7), spots = [];
+          for (const z of TST.MLAMPS) spots.push([-5.5, z + (r() - 0.5) * 3]);
+          for (const z of TST.LAMPS) spots.push([6.2, z + (r() - 0.5) * 2]);
+          kinds.forEach((parts, ki) => {
+            const mine = spots.filter((_, i) => (i + s + ki) % 2 === 0);
+            for (const pt of parts) {
+              const im = new THREE.InstancedMesh(pt.geo, pt.mat, mine.length);
+              mine.forEach(([x, z], i) => { const h = 7 + r() * 3.5; q.setFromAxisAngle(Y, r() * Math.PI * 2); sc.setScalar(h);
+                m4.compose(new THREE.Vector3(x, 0.1, z), q, sc).multiply(pt.m); im.setMatrixAt(i, m4); });
+              im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere(); im.userData.dyn = true; g.add(im); owned.push(im);
+            }
+          });
+        });
+      });
+      /* the traffic: a car ahead in his lane, one pulling away in the next, two coming the other way (the chapter's own
+         models, v24.20: the nose at −z, its length measured into the file), each with its lights */
+      const carLights = (o, front, red) => {
+        const gl = new THREE.BufferGeometry(), z = front ? -2.12 : 2.12;
+        gl.setAttribute('position', new THREE.BufferAttribute(new Float32Array([-0.62, 0.72, z, 0.62, 0.72, z]), 3));
+        const p = new THREE.Points(gl, new THREE.PointsMaterial({ map: tGlow, color: red ? 0xff3a28 : 0xfff6e8, size: red ? 0.9 : 1.6, sizeAttenuation: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+        mats.push(p.material); p.frustumCulled = false; o.add(p); return p;
+      };
+      for (const [key, x, oncoming, phase] of [['e4sedan', 0, false, 0], ['e4suv', 3.4, false, 0], ['e4sedan', 9.0, true, 0], ['e4truck', 12.4, true, 105]]) {
+        const car = { o: new THREE.Group(), x, oncoming, phase }; car.o.userData.dyn = true; car.o.visible = false; T0.add(car.o);
+        carLights(car.o, oncoming, !oncoming);
+        street.cars.push(car);
+        parseOnce(key).then(({ scene: cs }) => {
+          if (!alive) return;
+          const m = cs.clone(true);
+          m.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = false; bronzeLift(o, 2); carSharp(o); } });
+          car.o.add(m); car.ready = true;
+        }).catch(err => { console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
+      }
+    }
+    /* the street on the coda's clock: each segment where the distance driven puts it; each car at its place on its own
+       line; the glows with their lamps and their streaks where the wet road would show them to the eye */
+    function streetFrame() {
+      const d = taxi.d || 0, SG = TST.SEG;
+      street.segs.forEach((g, s) => { g.position.z = -90 + ((d + SG * s) % (2 * SG)); });
+      const t = d / TST.V;
+      for (const c of street.cars) {
+        const z = c.oncoming ? -170 + ((27 * t + c.phase) % 220) : c.x === 0 ? -19 - 2.5 * Math.sin(t * 0.35) : -36 - 1.1 * t;
+        c.o.position.set(c.x, 0, z); c.o.rotation.y = c.oncoming ? Math.PI : 0;
+        /* an oncoming car is drawn only between the fog (past 115 m it is gone in it) and the cabin it has passed */
+        c.o.visible = !!c.ready && (!c.oncoming || (z > -115 && z < 14));
+      }
+      if (!street.glow) return;
+      const P = street.glow.geometry.attributes.position, R = street.refl.geometry.attributes.position;
+      const E = street.eye.set(yaw.position.x - TX, yaw.position.y, yaw.position.z);
+      street.lights.forEach(([s, x, y, z], i) => {
+        const wz = z + street.segs[s].position.z; P.setXYZ(i, x, y, wz);
+        /* its reflection: where the line from the eye to the light's mirror image under the road meets the road */
+        const k = E.y / (E.y + y);
+        R.setXYZ(i, E.x + (x - E.x) * k, 0.03, E.z + (wz - E.z) * k);
+      });
+      P.needsUpdate = true; R.needsUpdate = true;
+      /* the lamp passing overhead (its band across the cabin): the nearest lamp within the cabin's length */
+      let best = 9, bi = -1;
+      street.lights.forEach(([s, x, y, z], i) => { const wz = z + street.segs[s].position.z; if (Math.abs(wz) < Math.abs(best) && wz > -3.2 && wz < 2.6) { best = wz; bi = i; } });
+      taxi.sweepU.value = best;
+      const sw = bi < 0 ? 0 : (street.lights[bi][1] < 0 ? 1 : 0.6) * (0.65 + 0.35 * Math.abs(Math.sin(bi * 12.9898)));
+      for (const m of taxi.sweep) m.emissive.setRGB(0.1 * sw, 0.068 * sw, 0.028 * sw);
     }
 
     /* ---------------------------------------------------- THE PICKUP'S CABIN (O6, O7, the endings' drives)
@@ -3487,19 +3642,14 @@
     }
     function taxiFrame(now) {
       if (!worldT.visible) { taxi.last = 0; return; }
-      const dt = taxi.last ? Math.min(0.1, now - taxi.last) : 0; taxi.last = now;
-      if (taxi.bokeh[0]) taxi.bokeh[0].offset.x -= dt * 0.09;          // his right: u runs to the back there
-      if (taxi.bokeh[1]) taxi.bokeh[1].offset.x = Math.sin(now * 0.07) * 0.03;
-      if (taxi.bokeh[2]) taxi.bokeh[2].offset.x += dt * 0.09;          // (v24.23) his own window: u runs to the front
+      taxi.last = now;
       for (const m of taxi.glass) m.uniforms.uTime.value = now % 1000;
       if (taxi.wipe) { const ph = (now % 1.7) / 1.7, a = ph < 0.5 ? Math.sin(ph * Math.PI * 2 - Math.PI / 2) * 0.5 + 0.5 : Math.sin((1 - ph) * Math.PI * 2 - Math.PI / 2) * 0.5 + 0.5;
         taxi.wipers.forEach((w, i) => { w.rotation.z = 0.08 + a * (i ? 1.25 : 1.1); }); }
-      /* a streetlight passing: a warm band sliding front to back across the cabin in a third of a second, then the dark
-         until the next lamp (one every 1.8 s, each its own brightness) */
-      const per = 1.8, ph = (now % per) / per, s = 0.55 + 0.45 * Math.pow(Math.sin(Math.floor(now / per) * 12.9898), 2);
-      taxi.sweepU.value = ph < 0.32 ? -2.8 + (ph / 0.32) * 5.2 : 9;
-      /* (v24.23) twice what it was, shaped onto what faces up (sweepBand), so a lamp passing is seen to cross the seats */
-      for (const m of taxi.sweep) m.emissive.setRGB(0.1 * s, 0.068 * s, 0.028 * s);
+      /* (v24.33) the street outside, on the coda's clock, and a streetlight passing overhead as the warm band sliding front to
+         back across the cabin (twice v24.23's first, shaped onto what faces up — sweepBand) when a lamp of that street is
+         over the cabin, where it had come every 1.8 s of wall time from no lamp at all */
+      streetFrame();
     }
     function cabFrame(now) {
       if (!cab.show) { cab.last = 0; return; }
@@ -6772,6 +6922,8 @@
       if (kit && kit.chill && k === 'C') kit.chill(t < CODA.k3 ? 0.12 : 0, { secs: 0.01, cine: true });
       if (t < CODA.k2) {                                                                   // K1 · the taxi in the rain
         fLook('TAXI');
+        /* (v24.33) the street driven, on the coda's clock */
+        taxi.d = TST.V * t;
         /* the rain on his window and the city in it; then through the gap between the front seats to the windscreen, the
            wipers and the meter while he cannot find the unit's number; then the window again for "When I got back..."
            (CP9, by photograph: the turn ended on the back of the driver's seat and held it) */
@@ -8112,212 +8264,82 @@
     x.fillStyle = '#0e8a3a'; x.fillRect(0, 0, 128, 48); x.fillStyle = '#eafff0'; x.font = 'bold 30px Arial, Helvetica, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('EXIT', 64, 26);
     return done(THREE, c, false);
   }
-  /* (v24.23) THE CITY BEHIND THE RAIN (Chad, 31 Oct, on the taxi: "do as you suggested" — through his window the city had
-     read as coloured blurs on wet glass): Singapore at night beside a taxi — HDB blocks with their corridor tubes or
-     their windows lit, a water tank on each roof and a red light on the tallest, a row of shops lit at street level
-     under their signboards, rain trees on the verge, the streetlights along the far kerb (LED white mostly, the odd old
-     sodium), the traffic in the far lane, and every light again in the wet road — drawn, blurred a little (the lens is
-     on the drops), then the near lights laid on as the discs the strip always had. `ahead` is the windscreen's: the
-     road running away to where it vanishes, the buildings and the lamps either side of it and the cars ahead. Drawn
-     in the 1024 × 256 units the first strip had (the side's sheet is twice that, so its lit windows hold), every
-     feature three times across the width and the blur wrapping, so the strip still repeats along u with no seam. */
-  function makeCityNight(THREE, cnv, seed, ahead) {
-    const K = ahead ? 1 : 2, W = 1024, H = 256, [c, x] = sized(cnv, W * K, H * K), r = rng(seed);
-    /* the eye's level in the strip, from the planes' own numbers (buildTaxi): beside him 1.14 m on a sheet from −1.2 to
-       6.4 m, ahead 1.15 m on one from −0.15 to 3.35 m */
-    const HOR = ahead ? 161 : 177;
-    const at3 = (fn) => { for (const ox of [-W, 0, W]) fn(ox); };
-    const glow = (X, Y, rad, col, a) => { const g = x.createRadialGradient(X, Y, 0, X, Y, rad); g.addColorStop(0, `rgba(${col},${a})`);
-      g.addColorStop(0.22, `rgba(${col},${(a * 0.42).toFixed(3)})`); g.addColorStop(1, `rgba(${col},0)`); x.fillStyle = g; x.fillRect(X - rad, Y - rad, rad * 2, rad * 2); };
-    /* a light's reflection in the wet road under it: three soft streaks, broken as the water breaks it (CP6's) */
-    const streak = (X, Y, len, w, col, a) => { for (let k = 0; k < 3; k++) {
-      const cy = Y + len * (0.18 + k * 0.3), hl = len * 0.16, ww = w * (1 - k * 0.18);
-      x.save(); x.translate(X, cy); x.scale(1, hl / ww); const g = x.createRadialGradient(0, 0, 0, 0, 0, ww);
-      g.addColorStop(0, `rgba(${col},${(a * (1 - k * 0.28)).toFixed(3)})`); g.addColorStop(1, `rgba(${col},0)`); x.fillStyle = g; x.fillRect(-ww, -ww, ww * 2, ww * 2); x.restore(); } };
-    x.save(); x.scale(K, K);
-    /* the sky: low cloud lit from under by the city, warmest over the street */
-    const sk = x.createLinearGradient(0, 0, 0, HOR);
-    sk.addColorStop(0, '#0a0910'); sk.addColorStop(0.5, '#141119'); sk.addColorStop(0.86, '#271e25'); sk.addColorStop(1, '#35282c');
-    x.fillStyle = sk; x.fillRect(0, 0, W, HOR);
-    for (let i = 0; i < 9; i++) { const px = r() * W, py = 16 + r() * (HOR - 80), rr = 50 + r() * 110; at3(ox => glow(px + ox, py, rr, '92,70,78', 0.1)); }
-    /* the road: wet asphalt, darkest nearest */
-    const rd = x.createLinearGradient(0, HOR, 0, H); rd.addColorStop(0, '#130f15'); rd.addColorStop(0.3, '#0b0a10'); rd.addColorStop(1, '#050508');
-    x.fillStyle = rd; x.fillRect(0, HOR, W, H - HOR);
-    if (!ahead) {
-      /* HDB slab blocks: the corridor side lit floor by floor, a tube every few metres — or the flats' side, its windows,
-         most of them lit warm. Nearer blocks have bigger floors */
-      let bx = r() * 30;
-      while (bx < W) {
-        const near = r() < 0.35, fh = near ? 6.2 : 4.4, floors = near ? 9 + (r() * 9 | 0) : 13 + (r() * 16 | 0);
-        const w = near ? 60 + r() * 60 : 36 + r() * 70, top = HOR - 15 - floors * fh, corridor = r() < 0.62, sd = 1 + (r() * 1e6 | 0);
-        at3(ox => {
-          const X = bx + ox, rb = rng(sd);                                     // the same lights in each copy
-          const bg = x.createLinearGradient(0, top, 0, HOR); bg.addColorStop(0, '#0d0f16'); bg.addColorStop(1, '#181b26');
-          x.fillStyle = bg; x.fillRect(X, top, w, HOR - top);
-          x.fillStyle = 'rgba(44,48,66,0.4)'; x.fillRect(X, top, 1.2, HOR - top);           // its lit edge
-          x.fillStyle = '#0b0c12'; x.fillRect(X + w * 0.3, top - 5, w * 0.24, 5);           // the water tank on its roof
-          for (let f = 0; f < floors; f++) {
-            const fy = top + 8 + f * fh;
-            if (corridor) {
-              x.fillStyle = 'rgba(196,232,212,0.3)'; x.fillRect(X + 2, fy, w - 4, 0.8);
-              for (let lx = X + 3 + rb() * 4; lx < X + w - 3; lx += 6 + rb() * 3) { if (rb() < 0.08) continue; x.fillStyle = `rgba(232,250,240,${(0.6 + rb() * 0.35).toFixed(2)})`; x.fillRect(lx, fy - 0.45, 1.4, 1.4); }
-            } else {
-              /* (each its own brightness: lit evenly, a block's windows read as a printed grid — photographed) */
-              for (let wx = X + 3; wx < X + w - 4; wx += 4.2) { const v = rb(), a = 0.35 + rb() * 0.55; if (v > 0.5) continue;
-                x.fillStyle = v < 0.38 ? `rgba(255,212,150,${a.toFixed(2)})` : `rgba(214,230,255,${(a * 0.8).toFixed(2)})`; x.fillRect(wx, fy - 1.1, 2.2, 2.5); }
-            }
+  /* (v24.33) THE TAXI'S STREET, its sheets (buildTaxiStreet). An HDB block's face at night as a tile that repeats along a
+     block: 12 bays of 3 m by 12 storeys of 2.8 m — its window side (each window its own: warm, cool, a television's
+     blue, or dark) or its corridor side (the parapet, the corridor's tubes, each flat's window and door behind them).
+     Painted at half the brightness wanted on screen (v8.9) */
+  function makeHdbFace(THREE, cnv, seed, corridor) {
+    const [c, x] = sized(cnv, 1024, 1024), r = rng(seed), BW = 1024 / 12, FH = 1024 / 12;
+    x.fillStyle = corridor ? '#1b1d24' : '#181a21'; x.fillRect(0, 0, 1024, 1024);
+    for (let f = 0; f < 12; f++) {
+      const y0 = f * FH, late = r() < 0.25;                                         // a floor gone to bed
+      x.fillStyle = '#0e0f14'; x.fillRect(0, y0 + FH - 6, 1024, 6);                 // the slab's edge
+      if (corridor) {
+        const g = x.createLinearGradient(0, y0, 0, y0 + FH - 34);
+        g.addColorStop(0, 'rgba(170,205,182,0.26)'); g.addColorStop(1, 'rgba(90,104,98,0.12)');
+        x.fillStyle = g; x.fillRect(0, y0 + 6, 1024, FH - 40);                       // the corridor, lit by its tubes
+        for (let b = 0; b < 12; b++) {
+          const X = b * BW, v = r();
+          x.fillStyle = v < (late ? 0.12 : 0.38) ? `rgba(255,214,160,${(0.4 + r() * 0.35).toFixed(2)})` : 'rgba(20,22,28,0.92)';
+          x.fillRect(X + 12, y0 + 16, 22, FH - 54);                                  // a flat's window
+          x.fillStyle = 'rgba(46,40,36,0.95)'; x.fillRect(X + 44, y0 + 14, 18, FH - 50);   // its door
+          if (b % 2 === 0) { x.fillStyle = `rgba(228,255,240,${(0.75 + r() * 0.25).toFixed(2)})`; x.fillRect(X + 28, y0 + 8, 30, 3); }   // a tube
+        }
+        x.fillStyle = '#2c2f38'; x.fillRect(0, y0 + FH - 34, 1024, 28);              // the parapet
+        x.fillStyle = 'rgba(70,74,86,0.7)'; x.fillRect(0, y0 + FH - 34, 1024, 2);
+      } else {
+        for (let b = 0; b < 12; b++) {
+          const X = b * BW;
+          for (const wx of [10, 48]) {
+            const v = r(), a = (0.45 + r() * 0.5).toFixed(2), k = late ? 0.3 : 1;
+            x.fillStyle = v < 0.3 * k ? `rgba(255,206,140,${a})` : v < 0.42 * k ? `rgba(206,222,255,${a})` : v < 0.45 * k ? `rgba(120,160,255,${a})` : '#0c0d12';
+            x.fillRect(X + wx, y0 + 22, 26, 36);
+            x.fillStyle = 'rgba(8,8,10,0.85)'; x.fillRect(X + wx + 12, y0 + 22, 2, 36);   // its mullion
           }
-          if (floors * fh > 95) { x.fillStyle = 'rgba(255,48,32,1)'; x.fillRect(X + w * 0.42, top - 7.4, 1.6, 1.6); glow(X + w * 0.42 + 0.8, top - 6.6, 5, '255,48,32', 0.5); }
-        });
-        bx += w + 6 + r() * 50;
-      }
-      /* the far kerb's shops: a low row lit at street level, its signboards over the shopfronts, a window lit upstairs */
-      const SIGN = ['200,40,46', '40,140,80', '40,90,170', '224,176,40', '232,232,236'];
-      let sx = r() * 20; const shops = [];
-      while (sx < W) {
-        const w = 14 + r() * 26, open = r() < 0.72, warm = r() < 0.6, sign = SIGN[r() * SIGN.length | 0], up = r() < 0.45, lw = (w - 6) * (0.4 + 0.5 * r());
-        shops.push({ sx, w, open, warm });
-        at3(ox => {
-          const X = sx + ox;
-          x.fillStyle = '#17141c'; x.fillRect(X, HOR - 27, w, 27);
-          if (up) { x.fillStyle = 'rgba(255,214,160,0.34)'; x.fillRect(X + 3, HOR - 24, w - 6, 3.2); }
-          x.fillStyle = `rgba(${sign},0.82)`; x.fillRect(X + 1, HOR - 17.5, w - 2, 4.6);
-          x.fillStyle = 'rgba(255,255,255,0.4)'; x.fillRect(X + 3, HOR - 15.9, lw, 1.3);                 // its lettering
-          if (open) { x.fillStyle = warm ? 'rgba(255,206,140,0.92)' : 'rgba(236,242,236,0.9)'; x.fillRect(X + 1.5, HOR - 11.5, w - 3, 10); }
-          else { x.fillStyle = '#26232c'; x.fillRect(X + 1.5, HOR - 11.5, w - 3, 10);
-            x.fillStyle = 'rgba(74,72,82,0.6)'; for (let k = 0; k < 4; k++) x.fillRect(X + 1.5, HOR - 10.5 + k * 2.4, w - 3, 0.5); }   // shuttered
-        });
-        sx += w + 0.5 + (r() < 0.12 ? 10 + r() * 30 : 0);
-      }
-      /* rain trees on the verge, lit from under by the lamps */
-      let tx = r() * 60;
-      while (tx < W) {
-        const w = 30 + r() * 46, h = 16 + r() * 14, cy = HOR - 31 - r() * 10, lit = r() < 0.65, blobs = [];
-        for (let k = 0; k < 6; k++) blobs.push([(r() - 0.5) * w * 0.8, (r() - 0.6) * h * 0.6, w * (0.22 + r() * 0.16), h * (0.35 + r() * 0.2)]);
-        at3(ox => {
-          const X = tx + ox;
-          x.fillStyle = '#0b0a0e'; x.fillRect(X - 1.2, cy, 2.4, HOR - cy);
-          x.fillStyle = '#08080b'; for (const [dx, dy, rx, ry] of blobs) { x.beginPath(); x.ellipse(X + dx, cy + dy, rx, ry, 0, 0, Math.PI * 2); x.fill(); }
-          if (lit) glow(X, cy + h * 0.3, w * 0.5, '255,170,92', 0.16);
-        });
-        tx += w * 0.9 + 20 + r() * 70;
-      }
-      /* the streetlights along the far kerb, each again in the road */
-      for (let lx = r() * 40; lx < W; lx += 74 + r() * 30) {
-        const col = r() < 0.7 ? '246,240,226' : '255,178,92', L = lx;
-        at3(ox => { const X = L + ox, hy = HOR - 58;
-          x.fillStyle = '#121219'; x.fillRect(X - 0.6, hy, 1.2, HOR - hy); x.fillRect(X - 0.6, hy - 0.6, 9, 1.2);
-          glow(X + 8, hy + 1, 15, col, 0.8); x.fillStyle = `rgba(${col},1)`; x.fillRect(X + 6, hy + 0.2, 4, 1.2);
-          streak(X + 8, HOR + 2, 46, 3.4, col, 0.26); });
-      }
-      /* the far kerb, a lane's dashes (24 divides the width, so they repeat), the shops again in the road */
-      x.fillStyle = 'rgba(122,110,112,0.3)'; x.fillRect(0, HOR, W, 0.9);
-      x.fillStyle = 'rgba(214,214,214,0.16)'; for (let dx = 0; dx < W; dx += 24) x.fillRect(dx, HOR + 14, 13, 0.9);
-      for (const s of shops) if (s.open) at3(ox => streak(s.sx + ox + s.w / 2, HOR + 1, 22, s.w * 0.4, s.warm ? '255,206,140' : '236,242,236', 0.16));
-      /* the traffic in the far lane: tail lights going, headlamps coming, and their reflections */
-      for (let i = 0; i < 7; i++) {
-        const X0 = r() * W, tail = r() < 0.55, yy = HOR + 4 + r() * 5, col = tail ? '255,44,32' : '255,248,232';
-        at3(ox => { for (const dx of [0, 7.5]) { const X = X0 + ox + dx; glow(X, yy, tail ? 5 : 8, col, 0.95); streak(X, yy + 2, 28, 2.2, col, 0.22); } });
-      }
-    } else {
-      const VX = 490;                                  // where the road goes: straight ahead of his seat
-      /* the buildings either side, running away: each a face whose roof and foot both run to the vanishing point, its
-         corridors lit floor by floor */
-      for (const s of [-1, 1]) {
-        let d0 = 5 + r() * 10;
-        while (d0 < (s < 0 ? VX : W - VX)) {
-          const d1 = d0 + 26 + r() * 80, hk = 0.28 + r() * 0.5, floors = 7 + (r() * 12 | 0), warm = r() < 0.45;
-          const P = (d, f) => [VX + s * d, HOR + d * 0.17 - (d * 0.17 + d * hk) * f];   // f 0 at its foot, 1 at its roof
-          x.fillStyle = '#0f1118'; x.beginPath(); x.moveTo(...P(d1, 0)); x.lineTo(...P(d1, 1)); x.lineTo(...P(d0, 1)); x.lineTo(...P(d0, 0)); x.closePath(); x.fill();
-          x.strokeStyle = warm ? 'rgba(255,214,160,0.5)' : 'rgba(200,236,214,0.42)';
-          for (let f = 1; f < floors; f++) { const ff = f / floors; x.lineWidth = 0.35 + d1 * 0.0035; x.beginPath(); x.moveTo(...P(d1, ff)); x.lineTo(...P(d0, ff)); x.stroke(); }
-          d0 = d1 + 2 + r() * 14;
+          x.fillStyle = '#25272e'; x.fillRect(X + 34, y0 + 63, 14, 9);               // an air-con unit on its ledge
         }
       }
-      /* the road between them: its edges and a lane's dashes running to the vanishing point */
-      x.fillStyle = '#0a090e'; x.beginPath(); x.moveTo(VX, HOR); x.lineTo(W, HOR + (W - VX) * 0.17); x.lineTo(W, H); x.lineTo(0, H); x.lineTo(0, HOR + VX * 0.17); x.closePath(); x.fill();
-      x.strokeStyle = 'rgba(214,214,214,0.22)';
-      for (const k of [-260, 190]) for (let t = 0.02; t < 1; t += 0.11) { const t2 = Math.min(1, t + 0.05);
-        x.lineWidth = 0.4 + t * 2; x.beginPath(); x.moveTo(VX + k * t * t, HOR + (H - HOR) * t * t); x.lineTo(VX + k * t2 * t2, HOR + (H - HOR) * t2 * t2); x.stroke(); }
-      /* an overhead sign, green as Singapore's are, and the traffic lights at the junction ahead */
-      x.fillStyle = 'rgba(30,108,60,0.9)'; x.fillRect(VX - 30, HOR - 33, 44, 9); x.fillStyle = 'rgba(240,240,240,0.55)'; x.fillRect(VX - 26, HOR - 30.5, 26, 1.4); x.fillRect(VX - 26, HOR - 27.5, 18, 1.2);
-      for (const [X, col] of [[VX + 16, '255,52,36'], [VX - 22, '255,52,36'], [VX + 44, '60,255,150']]) { x.fillStyle = '#0c0c10'; x.fillRect(X - 1, HOR - 15, 2, 15); glow(X, HOR - 14, 5, col, 0.95); }
-      /* the lamps along both kerbs, nearer and bigger toward the edges */
-      for (const s of [-1, 1]) for (let d = 7, i = 0; d < 520; d *= 1.38, i++) {
-        const col = (i % 4 === 2) ? '255,178,92' : '246,240,226', X = VX + s * d * 1.04, Y = HOR - d * 0.55;
-        x.strokeStyle = '#121219'; x.lineWidth = 0.5 + d * 0.004; x.beginPath(); x.moveTo(X, Y); x.lineTo(VX + s * d, HOR + d * 0.17); x.stroke();
-        glow(X, Y, 1.5 + d * 0.04, col, 0.85); streak(X, HOR + d * 0.17 + 2, 8 + d * 0.12, 0.8 + d * 0.012, col, 0.2);
-      }
-      /* the cars ahead: their tail lights, the nearest brighter (one braking), and the lights again in the road */
-      for (const [t, lane, brake] of [[0.06, 0.1, 0], [0.11, -0.7, 0], [0.18, 0.55, 1], [0.3, -0.35, 0], [0.46, 0.9, 0]]) {
-        const cx = VX + lane * t * 420, cy = HOR + t * 70, sp = 3 + t * 60, rr = 1 + t * (brake ? 7 : 5);
-        for (const dx of [-sp / 2, sp / 2]) { glow(cx + dx, cy, rr * 2.2, '255,40,28', brake ? 1 : 0.85); streak(cx + dx, cy + 1, 10 + t * 50, rr * 0.8, '255,40,28', 0.22); }
-      }
     }
-    x.restore();
-    blurWrap(x, W * K, H * K, ahead ? 2 : 3, 3);
-    x.save(); x.scale(K, K); bokehDiscs(x, r, ahead, HOR, ahead ? 26 : 44, 0.7); x.restore();
     return done(THREE, c, true);
   }
-  /* a soft blur across the sheet (three box passes, which is close to a gaussian), wrapping across its width so the strip
-     still repeats with no seam, held at its top and bottom edges. A channel at a time, so it never holds more than one
-     float plane */
-  function blurWrap(x, W, H, rad, passes) {
-    const img = x.getImageData(0, 0, W, H), d = img.data, n = 2 * rad + 1;
-    const f = new Float32Array(W * H), g = new Float32Array(W * H), cs = new Float32Array(W);
-    /* where each step's window gains and loses a texel, worked out once (the wrap across, the hold down) */
-    const hA = new Int32Array(W), hS = new Int32Array(W), vA = new Int32Array(H), vS = new Int32Array(H);
-    for (let i = 0; i < W; i++) { hA[i] = (i + rad + 1) % W; hS[i] = (i - rad + W) % W; }
-    for (let y = 0; y < H; y++) { vA[y] = Math.min(H - 1, y + rad + 1) * W; vS[y] = Math.max(0, y - rad) * W; }
-    for (let ch = 0; ch < 3; ch++) {
-      for (let i = 0; i < W * H; i++) f[i] = d[i * 4 + ch];
-      for (let p = 0; p < passes; p++) {
-        for (let y = 0; y < H; y++) {                          // across, into g
-          const o = y * W; let s = 0;
-          for (let k = -rad; k <= rad; k++) s += f[o + ((k + W) % W)];
-          for (let i = 0; i < W; i++) { g[o + i] = s / n; s += f[o + hA[i]] - f[o + hS[i]]; }
+  /* (v24.33) the void deck's shops under a block: 8 units of 4 m by 4 m, each its sign and its front — lit and stocked,
+     or its shutter down for the night. The names are a kind of shop, never a real one (v9.3) */
+  function makeShopRow(THREE, cnv, seed) {
+    const [c, x] = sized(cnv, 2048, 256), r = rng(seed), UW = 256;
+    const SHOPS = [['MINI MART', '#b82c28'], ['BAKERY', '#c88a22'], ['CLINIC', '#2a62a8'], ['COFFEE SHOP', '#2a7a44'], ['HAIR SALON', '#7a3490'],
+                   ['PROVISION SHOP', '#a83a26'], ['STATIONERY', '#28708e'], ['LAUNDRY', '#3452a0'], ['FLORIST', '#963458'], ['OPTICAL', '#2e4a68']];
+    x.fillStyle = '#121318'; x.fillRect(0, 0, 2048, 256);
+    for (let u = 0; u < 8; u++) {
+      const X = u * UW, [name, col] = SHOPS[(seed + u * 3) % SHOPS.length], open = r() < 0.6;
+      x.fillStyle = open ? col : '#26262c'; x.fillRect(X + 14, 18, UW - 28, 46);   // the signboard, lit or not
+      x.fillStyle = open ? 'rgba(255,255,255,0.95)' : 'rgba(140,140,150,0.55)'; x.font = 'bold 26px Arial, Helvetica, sans-serif';
+      x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(name, X + UW / 2, 42);
+      if (open) {
+        const g = x.createLinearGradient(0, 72, 0, 250); g.addColorStop(0, '#f6e6cc'); g.addColorStop(1, '#bca88a');
+        x.fillStyle = g; x.fillRect(X + 16, 72, UW - 32, 176);
+        for (let k = 0; k < 4; k++) {                                                // its shelves and their stock
+          x.fillStyle = 'rgba(90,70,50,0.5)'; x.fillRect(X + 22, 96 + k * 36, UW - 44, 4);
+          for (let q = 0; q < 7; q++) { x.fillStyle = `hsla(${(r() * 360) | 0},55%,45%,0.65)`; x.fillRect(X + 26 + q * 30 + r() * 6, 76 + k * 36, 20, 18); }
         }
-        cs.fill(0);                                            // down, back into f, a row at a time (a column sum each)
-        for (let k = -rad; k <= rad; k++) { const o = Math.min(H - 1, Math.max(0, k)) * W; for (let i = 0; i < W; i++) cs[i] += g[o + i]; }
-        for (let y = 0; y < H; y++) { const o = y * W, a = vA[y], b = vS[y];
-          for (let i = 0; i < W; i++) { f[o + i] = cs[i] / n; cs[i] += g[a + i] - g[b + i]; } }
+      } else {
+        x.fillStyle = '#383a42'; x.fillRect(X + 16, 72, UW - 32, 176);
+        for (let k = 0; k < 22; k++) { x.fillStyle = 'rgba(18,18,24,0.55)'; x.fillRect(X + 16, 76 + k * 8, UW - 32, 2); }   // the shutter's slats
       }
-      for (let i = 0; i < W * H; i++) d[i * 4 + ch] = f[i];
+      x.fillStyle = '#1c1d22'; x.fillRect(X, 0, 14, 256); x.fillRect(X + UW - 14, 0, 14, 256);   // the columns
     }
-    x.putImageData(img, 0, 0);
+    return done(THREE, c, true);
   }
-  /* the near lights out of focus, the discs the strip has always had: sodium, LED white, tail-light red and a sign's green
-     (in the 1024 × 256 units), fewer and fainter (`ak`) now that the city stands behind them */
-  function bokehDiscs(x, r, ahead, HOR, N, ak) {
-    /* CP6: the first strip was confetti — seven hues dealt evenly, magenta among them. Weighted as a city at night is:
-       sodium and warm LED most, then white, the traffic's red, and a sign's green or blue only now and then. */
-    const pal = ahead ? [['255,64,40', 5], ['255,92,52', 3], ['255,176,86', 3], ['244,236,224', 2], ['92,255,150', 0.6]]
-                      : [['255,168,72', 5], ['255,204,130', 4], ['246,238,226', 3], ['214,226,255', 1.5], ['255,70,48', 2], ['96,236,156', 0.5], ['120,168,255', 0.5]];
-    const tot = pal.reduce((a, p) => a + p[1], 0);
-    const pick = () => { let q = r() * tot; for (const p of pal) { q -= p[1]; if (q <= 0) return p[0]; } return pal[0][0]; };
-    for (let i = 0; i < N; i++) {
-      const big = r() < 0.12, px = r() * 1024;
-      const py = ahead ? HOR - 8 - Math.pow(r(), 1.6) * 70 : HOR - 6 - Math.pow(r(), 1.3) * 140;
-      const rr = big ? 14 + r() * 12 : 2.5 + Math.pow(r(), 2) * 9, col = pick(), a = (big ? 0.12 + r() * 0.16 : 0.35 + r() * 0.5) * ak;
-      const refl = !big && r() < 0.7, len = 30 + r() * 60, w = Math.max(2, rr * 0.9), sy = HOR + 4 + (HOR - py) * 0.15;
-      const rj = [0, (r() - 0.5) * 3, (r() - 0.5) * 4];
-      for (const ox of [-1024, 0, 1024]) {
-        const gg = x.createRadialGradient(px + ox, py, 0, px + ox, py, rr);       // a lens's disc: flat, its rim a touch brighter
-        gg.addColorStop(0, `rgba(${col},${(a * 0.82).toFixed(3)})`); gg.addColorStop(0.78, `rgba(${col},${(a * 0.9).toFixed(3)})`);
-        gg.addColorStop(0.9, `rgba(${col},${a.toFixed(3)})`); gg.addColorStop(1, `rgba(${col},0)`);
-        x.fillStyle = gg; x.fillRect(px + ox - rr, py - rr, rr * 2, rr * 2);
-        /* its reflection in the wet road: three soft streaks under the horizon, broken as the water breaks it (CP6: one
-           hard-edged bar a light read as a row of posts) */
-        if (refl) for (let k = 0; k < 3; k++) {
-          const cy = sy + len * (0.18 + k * 0.3), hl = len * 0.16, ww = w * (1 - k * 0.18);
-          x.save(); x.translate(px + ox + rj[k], cy); x.scale(1, hl / ww);
-          const gr = x.createRadialGradient(0, 0, 0, 0, 0, ww);
-          gr.addColorStop(0, `rgba(${col},${(a * 0.3 * (1 - k * 0.28)).toFixed(3)})`); gr.addColorStop(1, `rgba(${col},0)`);
-          x.fillStyle = gr; x.fillRect(-ww, -ww, ww * 2, ww * 2); x.restore();
-        }
-      }
-    }
+  /* (v24.33) a light's reflection in the wet road, as the eye sees it: a soft upright streak */
+  function makeStreak(THREE, cnv) {
+    const [c, x] = cnv(128);
+    x.save(); x.translate(64, 64); x.scale(0.22, 1);
+    const g = x.createRadialGradient(0, 0, 0, 0, 0, 64);
+    g.addColorStop(0, 'rgba(255,255,255,0.9)'); g.addColorStop(0.35, 'rgba(255,255,255,0.32)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    x.fillStyle = g; x.fillRect(-64, -64, 128, 128); x.restore();
+    return done(THREE, c, false);
   }
+  /* (v24.33: v24.23's painted city — makeCityNight, the strips beside and ahead of the taxi, and its blurWrap and
+     bokehDiscs — retired with the strips: the street outside the taxi is built now, buildTaxiStreet; git keeps them) */
   /* the uncle's phone in its holder: a navigation map at night — dark blocks, grey roads, the blue route, his arrow */
   function makeNavMap(THREE, cnv) {
     const [c, x] = sized(cnv, 128, 248), r = rng(5101);

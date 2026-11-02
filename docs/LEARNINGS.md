@@ -7178,3 +7178,14 @@ cut (sharing its vertices and maps) when it is small.
   room's world, and the world chosen from it kept the yard there — a seek into ending C's road held a purple void for
   the whole shot. Unreachable by play (the walk across the yard always comes between), but a film must be a function of
   its clock: anything that reads the moved world hands it back first.
+
+## v24.33 — the street outside the taxi
+
+- **What is seen through a moving vehicle's window is geometry, as v8.9's sea and sky are.** v24.23 painted the city on
+  sheets sliding past the taxi's windows, blurred to sit behind the rain, and it read as smears: everything on a sheet
+  moves at one speed, and depth is the difference in speeds. Built at its distances (the poles at 2 m, the shops at
+  10, the next blocks at 34), the near things race past, the far ones drift, and the same street serves the side window
+  and the windscreen. Two segments leapfrogging and the preset's fog over the far end make a street of any length.
+- **A light's reflection in a wet road can be placed, not rendered.** Its streak lies where the line from the eye to the
+  light's mirror image under the road meets the road; a Points sprite there with an upright streak texture reads as
+  the reflection from that eye, at the cost of a few multiplications a light a frame.

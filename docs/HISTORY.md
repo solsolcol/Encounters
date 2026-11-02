@@ -7463,6 +7463,29 @@ What the baseline contains, by release:
   - Deployed 6ae88a0abad7973a1bc22c32 as soon as the walk-out was measured, then the finished build
     6ae892cb1008cef3f5b9f699, then 6ae894796a95e9c809835af4 (a comment restored in the chapter, which ships its
     comments) — 310 of 310 files byte-identical each time; harnesses hosted, chapter and leak green on its copy.
+- **v24.33** THE STREET BEHIND THE RAIN, BUILT — Chad, 2 Nov 2026 (ask 4 of docs/V24.32-E4C1-NOTES.md): "i think the
+  view out the taxi window can be improved further". v24.23 had painted the city on two sheets sliding past the taxi's
+  windows (makeCityNight), and through the wet glass it read as coloured smears with no depth (photographed at v24.32).
+  - Now a Singapore road at night is BUILT in World T and runs past the cabin on the coda's own clock (`taxi.d`, 13.5 m/s
+    times the coda's time, set by codaFrame, so a seek lands on the same street): `buildTaxiStreet` — the kerb, the
+    footpath and the verge; the kerb's lamp posts every 30 m, an arm over the lane, and the median's double lamps between
+    them, each with its pool of light on the ground; Chad's palms (the far cut, v24.13) on the verge and the median;
+    HDB blocks along the next road back, their void-deck shops under them lit and stocked or shuttered for the night
+    (`makeShopRow`: a kind of shop on each sign, never a real one) and their light out over the walk in front, twelve
+    storeys of windows or corridors over them (`makeHdbFace`), a second row behind seen through the gaps, blocks across
+    the far side; the lanes' paint; a car ahead in his lane, one pulling away in the next and two coming the other way
+    (the yard's sedan, SUV and pickup, v24.20 — their glass painted, so no empty seat shows), each with its lights. All
+    painted light — unlit sheets, the lamps' glows, each light's streak in the wet road placed where the eye would see
+    it (the line from the eye to its mirror image under the road) — and no light added (v15.1). Two segments of 120 m
+    leapfrog; the far end is in TAXI's fog, where an oncoming car is not drawn. The cabin's passing-lamp band (sweepBand)
+    is the street's own lamps now, crossing when one is overhead, where it had come every 1.8 s of wall time.
+  - makeCityNight, blurWrap and bokehDiscs are retired with the strips (git keeps them).
+  - Photographed on a phone and a desktop: through his window the shops slide past, a lamp's pole whips by with its
+    band across the door, and through the gaps the second row of blocks barely moves; through the windscreen a car's
+    tail-lights ahead, the lamps down the road, the palms on the median, the windows of the blocks either side.
+  - Priced on a phone: the window view 932 → 41,940 triangles (8 → 36 draws); the windscreen view 169k → 353k (18 → 68
+    draws; the cars are 120k of it) — under the yard with Chad's pickup in it (~400k), the chapter's own peak.
+  - Deployed 6ae89acbde07277f00d9b685 (310 of 310 files byte-identical).
 
 ## The sheet, version by version
 
