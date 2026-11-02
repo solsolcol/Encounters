@@ -7097,3 +7097,22 @@ cut (sharing its vertices and maps) when it is small.
   lift written against scene.environment (the pickup's 14 and 4, bronzeLift's 10, the torch's 30 — whose comment says it
   multiplies) reaches nothing; measured in the program's own uniforms (dbg one-off, v24.28). Give the material its own
   envMap if a lift is wanted — a change to how metal looks in every chapter, so it is Chad's (OPEN-ITEMS).
+
+## v24.29 — three honours a material's shine, and every lift had to be photographed
+
+- **A value nobody could see is a guess.** Chad asked for three to stop ignoring the shine (v24.28's finding); patched
+  at build (tools/patchthree.mjs: a material's envMapIntensity multiplies its scene's environmentIntensity, a material
+  at 1 drawn bit for bit as before). Drawn as written, every lift the code held washed its object out: the shop's bronze
+  10 (0.5 of the room) turned the Buddha images pale silver, the yard cars' 10 the sedan white, the pickup's 14 its orange
+  pale yellow, the torch's 30 the black torch near white. None had ever been drawn, so none had ever been judged — the
+  torch's comment even said "found by render". Each was bracketed on a phone and set from the pictures; episode 3's own
+  bracket for its Buddha images (BUDDHA_ENV 0.15: "0.3 up washed the gold pale") predicted the statues' value exactly.
+  A lift is a look: photograph it at three or four strengths before writing a number.
+- **"Before" can be drawn by the same build.** Because the patched uniform is the scene's strength times the material's,
+  a material put back to 1 draws exactly what the unpatched build drew — so before and after are one frozen frame drawn
+  twice, no second build and no second browser (tools/probes/shine.mjs; BRACKET draws a row of strengths the same way).
+- **Read the pixels, not the side-by-side.** A row of five frames of the torch "showed" the hand brightening with the
+  shine; its mean colour was identical to the decimal in every frame. The eye compares neighbours; the numbers do not.
+- **A swap on the frame clock needs frames, not seconds, on a slow box.** The torch comes up into the hand by dt per
+  frame (capped at 0.1 s); at under a frame a second, four seconds after the switch the hand was still there. Wait for
+  the thing to be drawn.

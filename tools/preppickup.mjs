@@ -113,6 +113,11 @@ const mean = async (tex) => {
 for (const m of root.listMaterials()) {
   if (FULL && !GLASS.test(m.getName())) {                 // (v24.28) as delivered, but for transmission and the lamps' strength
     for (const e of m.listExtensions()) if (/transmission|emissive_strength|volume|ior/.test(e.extensionName)) m.setExtension(e.extensionName, null);
+    /* (v24.29) how metal it REALLY is — the sheet's blue averaged, times the factor — in the material's extras (three's
+       userData.meanMetal): the factor is 1 wherever a sheet carries the metal, and e4c1 lifts a material's reflection
+       by how metal it is (the paint's 0.39-0.43 and the chrome's 1 against the tyres', the plastics' and the leather's 0) */
+    { const mr = m.getMetallicRoughnessTexture();
+      m.setExtras({ ...m.getExtras(), meanMetal: +(m.getMetallicFactor() * (mr ? (await mean(mr))[1] : 1)).toFixed(3) }); }
     continue;
   }
   const mr = m.getMetallicRoughnessTexture();

@@ -397,6 +397,7 @@ that fits it, with the version it came from.
 - An asset loader's failure is never silent (an error, the console, and walktest fails on it). (v12.2)
 - A declared empty word means no text: test presence, not truthiness. (v14.1)
 - A lit material's shader depends on how many lights are drawn, so never change the light count on screen without warming that state; prefer painted light. (v15.1)
+- A material's envMapIntensity multiplies its scene's environmentIntensity: three r185 ignored it under scene.environment, so `npm run build` patches three (tools/patchthree.mjs, which stops the build if an upgrade moves the line); a value meant absolute gives the material its own envMap; and a lift is a look, set from photographs at a few strengths (tools/probes/shine.mjs BRACKET), never written blind. (v24.29)
 - An optimisation that thins content decides up front and hands its result to everything built on it. (v16.5)
 - Anything random is a seeded deterministic stream rewound by reset(), and a cosmetic addition gets its own stream so signed-off feel stays bit-identical. (v6.15)
 - Box3.setFromObject never refreshes ancestors: call updateWorldMatrix(true, true) before measuring a child or a skin. (v9.2)

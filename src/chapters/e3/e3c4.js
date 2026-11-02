@@ -314,7 +314,12 @@
     function yinAmulet() {
       if (!yinAm) yinAm = Promise.all([parseOnce('yinamulet'), parseOnce('yinamuletlod')]).then(([n, f]) => {
         let mat = null; n.scene.traverse(m => { if (m.isMesh && !mat) mat = m.material; });
-        if (mat) { mat.envMapIntensity = 0.35; for (const k of ['map', 'normalMap', 'roughnessMap', 'metalnessMap']) if (mat[k]) mat[k].anisotropy = 8; }
+        /* (v24.29) "a little" of the room, absolute — its own envMap, as the episode's statues and trays have: the scene's
+           lift multiplies the scene's 0.05 since three honours a material's own (tools/patchthree.mjs), and the 0.35 written
+           here (never drawn until then) would have drawn it darker than it ever was. Photographed on a phone on the tray at
+           0.05 / 0.15 / 0.25 / 0.35, its frame reads dark bronze, gold, gold beside the tray's own gilt (TRAY_ENV 0.3), and
+           pale — so 0.25 */
+        if (mat) { mat.envMap = scene.environment || null; mat.envMapIntensity = 0.25; for (const k of ['map', 'normalMap', 'roughnessMap', 'metalnessMap']) if (mat[k]) mat[k].anisotropy = 8; }
         f.scene.traverse(m => { if (m.isMesh) m.material = mat; });
         for (const sc of [n.scene, f.scene]) sc.traverse(m => { if (m.isMesh) { m.castShadow = false; m.receiveShadow = false; } });
         return { near: n.scene, far: f.scene, mat };
@@ -5909,7 +5914,8 @@
     Promise.all([parseOnce('lersiamulet'), parseOnce('lersiamuletlod')]).then(([hd, lo]) => {
       if (!alive) return;
       let mat = null; hd.scene.traverse(m => { if (m.isMesh && !mat) mat = m.material; });
-      if (mat) { mat.envMapIntensity = 0.35; for (const k of ['map', 'normalMap', 'roughnessMap', 'metalnessMap']) if (mat[k]) mat[k].anisotropy = 8; }
+      /* (v24.29) its own envMap, at the yin amulet's 0.25 of the room (above) */
+      if (mat) { mat.envMap = scene.environment || null; mat.envMapIntensity = 0.25; for (const k of ['map', 'normalMap', 'roughnessMap', 'metalnessMap']) if (mat[k]) mat[k].anisotropy = 8; }
       const lod = new THREE.LOD();
       for (const [src, d] of [[hd.scene, 0], [lo.scene, 1.4]]) {
         const m = src.clone(true); m.scale.setScalar(L_S); m.position.y = 0.01 + L_S / 2;

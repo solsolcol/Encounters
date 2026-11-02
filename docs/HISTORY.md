@@ -7338,6 +7338,32 @@ What the baseline contains, by release:
     is shown, and no model of the chapter lands late (the engine's own load log).
   - Deployed 6ae7f25ddd0a7466a3b234da, 310 of 310 files byte-identical; photographed on a phone at the spawn and in the
     opening film's five cab shots; chapter, hosted, leak and walk green on its copy.
+- **v24.29** THE METAL SHINE HONOURED — Chad, 2 Nov 2026: "Can you update the 3d library so that it does not ignore the
+  metal shine" (v24.28's finding: three r185 gave every material lit by the scene's environment the scene's own strength
+  and ignored the material's envMapIntensity, so every lift the game had written reached nothing).
+  - THE LIBRARY: `npm run build` now runs tools/patchthree.mjs before esbuild — one line of three's module, so a
+    material's envMapIntensity MULTIPLIES its scene's environmentIntensity (the meaning main.js's torch comment always
+    gave it). A material at 1 — every one three makes, every one a GLB brings — draws bit for bit as before; a material
+    with its own envMap (episode 3's statues and trays) is not touched. Idempotent, and it stops the build if three's
+    line is not there or has moved branch (both proven on throwaway copies).
+  - EVERY LIFT PHOTOGRAPHED: drawn as written, each one washed its object out — none had ever been seen (LEARNINGS).
+    tools/probes/shine.mjs (new) draws the same frozen frame as it is and as every earlier build drew it, and BRACKET a
+    row of strengths, on a phone; the values were set from the pictures:
+    - e4c1's statues and the shop's stock (bronzeLift): 10 → 3 (0.15 of the room; episode 3's own bracketed value for
+      Buddha images) — the shop's Buddha images and Chad's Nang Kwak, black silhouettes before, read bronze and gold.
+    - e4c1's cars and motorbike: 2 (0.1) — silver reads silver, red red; the pickup's paint and chrome 2, the rest 1
+      (by each material's real metalness, recorded in the truck file at prep: meanMetal in its materials' extras —
+      the factor is 1 wherever a sheet carries the metal, and would have lifted the tyres as the chrome).
+    - the torch (main.js): 30 → 4 (0.1 of the hands' 0.025); its comment's "found by render" corrected.
+    - e3c4's yin and Lersi amulets: their 0.35 meant 0.35 of the room — they take their own envMap now, at 0.25 (gold
+      beside the tray's own gilt at 0.3; 0.35 paled). The yin amulet was not on screen in any phase the probe reached
+      (it lies in her closed box); it is the same piece of work and takes the same value.
+    - kept as written, photographed fine: the rifle's 1.6 (0.04 at night), the item close-ups' 1.4, the shop's gold trim
+      6 and the loupe's lens 4.
+  - Episode 1 is unchanged by construction and proven: chapter 1 has no changed material and its frame is identical to
+    the pixel; chapter 3's world likewise — only the bag's close-up of the amulet (as every item close-up) is drawn a
+    little richer.
+  - Deployed 6ae80aff5c6f09bc83879040 (310 of 310 files byte-identical); chapter, hosted, csp and fixture green on its copy.
 
 ## The sheet, version by version
 

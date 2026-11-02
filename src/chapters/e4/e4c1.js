@@ -427,7 +427,13 @@
        it reflects: under the scene's environment at 0.05 she drew as a black silhouette on the tray and the altar
        (photographed), where the bag's own view shows her warm bronze. The pickup's lift (v24.16), held to her metal: the
        material is shared by her two copies, so both read as the same piece */
-    function bronzeLift(o) { for (const mt of [].concat(o.material)) if (mt && mt.metalnessMap && 'envMapIntensity' in mt) mt.envMapIntensity = 10; }
+    /* (v24.29) THE LIFT IS DRAWN NOW (tools/patchthree.mjs: three ignored a material's envMapIntensity under the scene's
+       environment, so the 10 written here never reached a pixel and she stayed the black silhouette above). Drawn as
+       written, 10 x 0.05 = 0.5 of the room washed the shop's bronze and gold to pale silver; photographed on a phone at
+       0.05 / 0.08 / 0.12 / 0.18 / 0.25 the images read bronze-gold at 0.12-0.18 and pale from 0.25 — episode 3's own
+       bracket for its Buddha images (BUDDHA_ENV 0.15) — so a piece takes 3 (0.15). A vehicle's paint and chrome take k 2
+       (0.1: silver reads silver and red red, where 0.18 up washed the sedan white) */
+    function bronzeLift(o, k = 3) { for (const mt of [].concat(o.material)) if (mt && mt.metalnessMap && 'envMapIntensity' in mt) mt.envMapIntensity = k; }
     /* (v24.26) a car's sheets filtered at a slant as the trees' are (main.js plantTrees): a bonnet and a roof are seen
        edge-on from where he stands, and at anisotropy 1 they smeared (masters/v24.20/make.sh). Set before the first draw,
        so nothing is uploaded twice */
@@ -1907,7 +1913,7 @@
           parseOnce('e4moto').then(({ scene: ms }) => {
             if (!alive) return;
             const m = ms.clone(true); m.position.set(-12.2, 0, -9.9); m.rotation.y = 0.4;
-            m.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; bronzeLift(o); carSharp(o); } });
+            m.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; bronzeLift(o, 2); carSharp(o); } });
             worldC.add(m);
           }).catch(err => { mb.visible = true; console.warn('e4moto failed to load', err); if (ctx.loadFail) ctx.loadFail('e4moto', err); }); }
         const fr = bx(0.62, 1.5, 0.62, M({ color: 0xd4ccb4, roughness: 0.4 }), -13.0, 0.75, -10.4); solids.push(fr);
@@ -2160,7 +2166,7 @@
             if (!alive) return;
             const m = cs.clone(true); m.position.set(x, 0, z); m.rotation.y = 0.04;
             /* the paint and the chrome take the room environment's lift (it is 0.05 here, main.js), as the Rivian's do */
-            m.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; bronzeLift(o); carSharp(o); } });
+            m.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; bronzeLift(o, 2); carSharp(o); } });
             C.add(m);
           }).catch(err => { c2.visible = true; console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
         });
@@ -2191,7 +2197,12 @@
           m.traverse(o => { if (!o.isMesh) return; o.receiveShadow = true;
             const glass = [].concat(o.material).some(mt => mt && /^window_glass/.test(mt.name));
             o.castShadow = !LOW && !glass; if (glass) yard.pickupGlass.push(o);
-            for (const mt of [].concat(o.material)) if (mt && 'envMapIntensity' in mt) mt.envMapIntensity = mt.metalness > 0.3 ? 14 : 4;
+            /* (v24.29: the lift is drawn now — tools/patchthree.mjs) by how metal a material REALLY is: the prep's meanMetal, its
+               sheet's average; the factor is 1 wherever a sheet carries the metal, and would lift the tyres as the chrome. The
+               paint and the chrome take the yard's vehicle lift, 2 (0.1 of the room: photographed on a phone, 0.7 — the 14
+               written blind — washed the orange to pale yellow, 0.18 up paled it); the rest stays at the scene's own 0.05 */
+            for (const mt of [].concat(o.material)) if (mt && 'envMapIntensity' in mt)
+              mt.envMapIntensity = (mt.userData && mt.userData.meanMetal != null ? mt.userData.meanMetal : mt.metalness) > 0.3 ? 2 : 1;
             /* (v24.28) its own maps now: filtered at a slant as the yard's cars are (v24.26) */
             carSharp(o); });
           pk.add(m); yard.pickupModel = m;

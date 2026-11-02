@@ -3276,10 +3276,15 @@ function torchPropLoad(key) {
            emissive map (the lens) keeps the file's factor. */
         if (m.color) m.color.setScalar(2.2);
         /* the scene's environmentIntensity is 0.025 and a material's
-           envMapIntensity MULTIPLIES it: 30 here is 0.75 of the room, which
-           is what a black metal needs to read as metal (found by render:
-           at 1.4 the body was a black cut-out with a lit lens) */
-        if ('envMapIntensity' in m) m.envMapIntensity = 30;
+           envMapIntensity MULTIPLIES it — since v24.29, when three was
+           patched to honour it (tools/patchthree.mjs): before that the 30
+           written here never reached the shader, and what made the body
+           legible was the base lift above and the fill. Drawn as written,
+           30 (0.75 of the room) turned the black torch near white;
+           photographed on a phone in the night forest at 0.025 / 0.1 / 0.2
+           / 0.4 / 0.75, it keeps its look to 0.1 with a little more sheen
+           on its rims, and pales from 0.4 — so 4 (0.1) */
+        if ('envMapIntensity' in m) m.envMapIntensity = 4;
         if (m.emissive && !m.emissiveMap) { m.emissive.setHex(0x1a1614); m.emissiveIntensity = 1; }
         m.needsUpdate = true;
       }
@@ -16301,6 +16306,11 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                                 cracks: wardFx.cracks, breaks: wardFx.breaks,
                                 banner: !!$('wardBreak')?.classList.contains('on') }),
                  unlockState: () => ({ id: unl.id, state }),
+                 /* v24.29: an item's close-up drawn at a fixed angle, and the close-ups' own scene, for probes only — the shine's
+                    before-and-after (tools/probes/shine.mjs). ivShot answers null until the item's model has landed */
+                 ivShot: (id, W, H, yawA, pitchA) => (ivRender(id, W, H, yawA, pitchA, 1)
+                   ? { url: iv.r.domElement.toDataURL('image/png'), bw: iv.r.domElement.width, bh: iv.r.domElement.height } : null),
+                 ivScene: () => iv.scene,
                  chooseState: () => ({ ids: cho.ids, sel: cho.sel, sealing: cho.sealing, state }),        // v17.6
                  /* v24.0: the episode-4 seams, for the fixture's proofs — the ledger (S43), the weather (S45), a film's phone
                     (S48) and WHAT CHANGED? (S44) */

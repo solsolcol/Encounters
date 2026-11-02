@@ -76,10 +76,12 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
       equipment screen; sharing chapter 3's two Phiboon parses; rebuilding an episode-2 chapter on a selector replay;
       an engine-owned clock for new chapters.
     - k. Kept and put to him at v21.16: the range's Figure 11 boards and e3c2's painted shadow on the mats.
-    - l. (v24.28) Per-material reflection strengths do nothing: three r185 gives every material lit by the scene's
+    - ~~l. (v24.28) Per-material reflection strengths do nothing: three r185 gives every material lit by the scene's
       environment the scene's own strength (0.05; 0.025 for the hands), so the torch's 30 (e2), the shop's bronze 10
       and the pickup's 14 (e4c1) are ignored — measured in the program's uniforms, and 100x changes no pixel. The game
-      looks as it has; making them work changes how metal looks in every chapter, so it is his call.
+      looks as it has; making them work changes how metal looks in every chapter, so it is his call.~~
+      **DONE v24.29** (Chad: "Can you update the 3d library so that it does not ignore the metal shine"): three
+      patched at build (tools/patchthree.mjs), every lift photographed and set from the pictures.
     - m. (v24.28) Pong's pickup as delivered costs a phone ~390–400k triangles wherever it is in view (the cut cost
       108k) and 160–220k standing beside it looking away (its joined parts span the whole truck, so sphere culling
       keeps them). If the yard is slow on his phone: roll back to v24.27 on Netlify, or a distance level that keeps
