@@ -1547,6 +1547,25 @@
             im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere(); im.userData.dyn = true; R.add(im);
           }
         }
+        /* (v24.37, the reviewer: "the hanging amulets ... no hooks, pins or cords and no shadows, so they look like they
+           hover") each tablet pinned to the velvet — a brass pin at its top — with its soft shadow on the velvet behind it,
+           painted (v9.3), one InstancedMesh of each a cabinet */
+        { const gv = new THREE.PlaneGeometry(1, 1), gp = new THREE.BoxGeometry(1, 1, 1);
+          const msv = new THREE.MeshBasicMaterial({ map: tGlow, color: 0x000000, transparent: true, opacity: 0.55, depthWrite: false });
+          const mpin = M({ color: 0xc8a050, roughness: 0.35, metalness: 0.8 });
+          const pq = new THREE.Quaternion(), pe = new THREE.Euler(), pv = new THREE.Vector3(), ps = new THREE.Vector3(), pm = new THREE.Matrix4();
+          for (const cb of cabs) {
+            const mine = slots.tab.filter(sl => sl.c === cb); if (!mine.length) continue;
+            const sh = new THREE.InstancedMesh(gv, msv, mine.length), pn = new THREE.InstancedMesh(gp, mpin, mine.length);
+            mine.forEach((sl, i) => {
+              const h = YH[YIN.tabs[sl.kind]];
+              pe.set(0, sl.ry, 0); pq.setFromEuler(pe);
+              pm.compose(pv.set(cb.xw - cb.side * 0.0222, sl.y + h * 0.5 - 0.006, sl.z + 0.003), pq, ps.set(0.052, h + 0.018, 1)); sh.setMatrixAt(i, pm);
+              pm.compose(pv.set(sl.x + cb.side * 0.003, sl.y + h + 0.004, sl.z), pq, ps.set(0.005, 0.006, 0.005)); pn.setMatrixAt(i, pm);
+            });
+            for (const im of [sh, pn]) { im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere(); im.userData.dyn = true; R.add(im); }
+          }
+        }
         const stood = (amp, then) => (ims) => { const ph = 0.7 + room.shakers.length * 1.913; for (const im of ims) shake(im, amp, ph); then(); };
         for (const cb of cabs) {
           const mine = (list) => list.filter(sl => sl.c === cb);
@@ -4040,10 +4059,14 @@
           box(0.05, 0.12, 3.6, mPole, -2.85, 2.53, z, g);
           for (const dz of [-1.6, 1.6]) box(0.08, 2.5, 0.08, mShelP, -4.4, 1.27, z + dz, g);
           box(0.06, 0.035, 3.1, mHead, -3.3, 2.49, z, g);
-          box(0.4, 0.45, 2.6, mShelB, -4.25, 0.36, z, g); box(0.08, 1.84, 1.27, mPole, -4.45, 1.05, zp, g);
+          /* (v24.37, the reviewer: "the shelter's bench is a plain pale-grey block with no legs") a seat on three legs and its
+             back rail, as a stop's steel bench */
+          box(0.42, 0.05, 2.6, mShelB, -4.25, 0.46, z, g); box(0.04, 0.3, 2.6, mShelB, -4.43, 0.7, z, g);
+          for (const dz of [-1.1, 0, 1.1]) box(0.05, 0.44, 0.36, mShelP, -4.25, 0.22, z + dz, g);
+          box(0.08, 1.84, 1.27, mPole, -4.45, 1.05, zp, g);
           qT(SA, ...fX(-4.45 + 0.042, 0.21, 1.89, zp + 0.55, zp - 0.55), CELL.advert, 0.88);
           qT(SA, ...fX(-4.45 - 0.042, 0.21, 1.89, zp - 0.55, zp + 0.55), CELL.advert, 0.88);
-          box(0.06, 1.62, 0.5, mPole, -4.45, 1.35, zr, g);
+          box(0.06, 1.62, 0.5, mPole, -4.45, 1.35, zr, g); box(0.07, 0.56, 0.07, mShelP, -4.45, 0.28, zr, g);   // (v24.37, the reviewer: it floated) its pole to the walk
           qT(SA, ...fX(-4.45 + 0.032, 0.62, 2.12, zr + 0.22, zr - 0.22), CELL.routes, 0.8);
           qT(SA, ...fX(-4.45 - 0.032, 0.62, 2.12, zr - 0.22, zr + 0.22), CELL.routes, 0.8); }
         /* the HDB blocks along the next road back: their void-deck shops lit under them, twelve storeys over the shops */

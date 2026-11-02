@@ -7622,6 +7622,12 @@ What the baseline contains, by release:
   - Deployed 6ae8d9f5895270ee1b191b87, then 6ae8dd506a25493a12efd98b (the recast, the stand turned), 317 of 317 files
     byte-identical each time. The check round, once: photographs of every changed shot on a phone and a desktop, an
     independent reviewer shown only the pictures, chaptertest and leak.
+  - THE REVIEWER'S VERDICT, sorted. Fixed and deployed (6ae8e40ee01bac01949b7d88, 317 of 317): the shelter's bench (a
+    plain block, now a seat on three legs with a back rail), its route board (it floated, now on a pole), the cabinets'
+    tablets (they seemed to hover, now each pinned, with a soft shadow on the velvet). Listed for Chad, outside the
+    asks: the taxi window's drops read as brown bubbles and the wet road has no shine (v24.33's), and the cabinets' seven
+    kinds of piece repeat (more kinds need more models from photographs). Left as minor: the flowers' round heads, the
+    carton still by the case weeks later, the corridor floor's plainness.
 
 ## The sheet, version by version
 
