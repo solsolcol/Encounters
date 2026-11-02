@@ -1,0 +1,6 @@
+[{"name": "phraioil", "image": "refs/oil-2k.png", "symmetry": "auto", "remesh": 3000,
+  "texture": "clear glass phial filled with bright golden-yellow oil, a brass takrut wound with pale cotton cord and a small dark carved wooden figure inside the oil, a black screw cap under a scrap of saffron-orange cloth tied round with red cotton cord"},
+ {"name": "phraitab", "image": "refs/tab-2k.png", "symmetry": "off", "remesh": 2000,
+  "texture": "coarse brown-ochre sacred powder flecked with dark grains and small red and black specks, a soft worn relief of a woman cradling a baby to her chest, a rough hand-pressed rim"},
+ {"name": "tani", "image": "refs/tani-2k.png", "symmetry": "off", "remesh": 4000,
+  "texture": "hand-painted resin with a soft sheen: pale skin, long glossy black hair, a red flower behind her ear, a bright green sabai across her chest, a darker green pleated skirt with a gold band, yellow bananas in her hands, a mauve-brown stump base"}]

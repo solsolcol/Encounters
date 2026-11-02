@@ -196,7 +196,8 @@
     assets: ['firstmaster', 'fmshadow', 'e4sky', 'e4pong', 'e4noi', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4pickup', 'e4nangkwak', 'e4takrut', 'e4phayant',
              'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd', 'e4buffalo', 'e4sandalsa', 'e4sandalsb', 'e4rahu', 'e4sedan', 'e4truck', 'e4suv', 'e4moto',
              'e4seat', 'owner', 'sitman', 'sitclap', 'sitshout',
-             'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm', 'filmlaptop'],
+             'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm', 'filmlaptop',
+             'e4kuman', 'e4ngang', 'e4tani', 'e4phraioil', 'e4phraitab', 'e4praicase', 'e4tanitab'],
     /* (v24.21) the taxi uncle at the wheel stands in until Chad's model (docs/E4-MODELS.md) */
     /* (v24.22) his laptop is HIS: the one his dashcam orders climbed on in episode 3 chapter 1's film (Chad's model), now
        keeping his shop's sales (Chad: "why he is recording sales on paper? It makes no sense. It should be on laptop") */
@@ -1424,19 +1425,30 @@
       /* ---- the glass cabinets of amulets on the side walls: teak carcass, a cupboard below, three glass shelves, red
          velvet boards of amulets behind them, and on the shelves takrut, bottles of oil, small wrapped bundles */
       const cabs = [];
+      /* (v24.36) the carcass in teak with its grain (the reviewer: "a dark box with no grain, next to a bench that has grain"),
+         and the glass shelves' green front edges */
+      const tCab = tex(makePlanks(THREE, cnv, 4519, [70, 44, 25])), tCabD = tex(makePlanks(THREE, cnv, 4521, [46, 28, 16]));
+      const mCab = M({ map: tCab, roughness: 0.68 }), mCabD = M({ map: tCabD, roughness: 0.72 });
+      const mGlassEdge = M({ color: 0x86ae9c, roughness: 0.12, metalness: 0.1, transparent: true, opacity: 0.6 });
       const cabinet = (side, zA, zB, seed) => {
         const xw = side < 0 ? x0 : x1, dep = 0.42, xc = xw - side * dep / 2, zl = zB - zA, zc = (zA + zB) / 2, Hc = 1.95;
         const G = new THREE.Group(); R.add(G);
-        bx(dep, 0.06, zl, mTeakD, xc, 0.03, zc, G);
-        bx(dep, 0.04, zl, mTeak, xc, Hc - 0.02, zc, G);
-        bx(dep + 0.03, 0.035, zl + 0.04, mTeakD, xc - side * 0.015, Hc + 0.017, zc, G);
-        for (const zz of [zA, zB]) bx(dep, Hc, 0.03, mTeak, xc, Hc / 2, zz + (zz === zA ? 0.015 : -0.015), G);
-        bx(0.03, 0.7, zl - 0.06, mTeak, xc - side * (dep / 2 - 0.015), 0.38, zc, G);                        // the cupboard's doors
+        bx(dep, 0.06, zl, mCabD, xc, 0.03, zc, G);
+        bx(dep, 0.04, zl, mCab, xc, Hc - 0.02, zc, G);
+        bx(dep + 0.03, 0.035, zl + 0.04, mCabD, xc - side * 0.015, Hc + 0.017, zc, G);
+        for (const zz of [zA, zB]) bx(dep, Hc, 0.03, mCab, xc, Hc / 2, zz + (zz === zA ? 0.015 : -0.015), G);
+        bx(0.03, 0.7, zl - 0.06, mCab, xc - side * (dep / 2 - 0.015), 0.38, zc, G);                         // the cupboard's doors
         bx(0.006, 0.6, 0.004, mTeakD, xc - side * (dep / 2 - 0.0), 0.38, zc, G);
         for (const zz of [zc - 0.06, zc + 0.06]) bx(0.02, 0.06, 0.012, mBrass, xc - side * (dep / 2 + 0.005), 0.45, zz, G);
-        const board = flat(zl - 0.06, Hc - 0.84, M({ map: tex(makeAmuletBoard(THREE, cnv, seed)), roughness: 0.85 }), G);
-        board.rotation.y = side < 0 ? Math.PI / 2 : -Math.PI / 2; board.position.set(xw - side * 0.02, 0.73 + (Hc - 0.84) / 2 + 0.02, zc);
-        for (const yy of [0.74, 1.14, 1.54]) bx(dep - 0.06, 0.008, zl - 0.06, mGlass, xc + side * 0.01, yy, zc, G);
+        /* (v24.36) the velvet from the cupboard's top to the carcass's (0.735-1.91): an independent reviewer saw the green
+           wall in a band over the old board (0.75-1.86) and a line under it */
+        const board = flat(zl - 0.03, 1.175, M({ map: tex(makeAmuletBoard(THREE, cnv, seed)), roughness: 0.85 }), G);
+        board.rotation.y = side < 0 ? Math.PI / 2 : -Math.PI / 2; board.position.set(xw - side * 0.02, 0.735 + 1.175 / 2, zc);
+        for (const yy of [0.74, 1.14, 1.54]) {
+          bx(dep - 0.06, 0.008, zl - 0.06, mGlass, xc + side * 0.01, yy, zc, G);
+          bx(0.006, 0.0085, zl - 0.06, mGlassEdge, xc - side * 0.17, yy, zc, G);   // (v24.36) its front edge, green as thick glass is: the shelf a piece stands on is seen
+        }
+        bx(dep - 0.01, 0.02, zl - 0.04, mCabD, xc, 0.725, zc, G);          // (v24.36) the cupboard's top under the lowest glass: the wall no longer shows through it
         const gf = flat(zl - 0.06, Hc - 0.8, mGlass, G); gf.rotation.y = board.rotation.y; gf.position.set(xc - side * (dep / 2 - 0.01), 0.72 + (Hc - 0.8) / 2, zc);
         bx(0.025, Hc - 0.8, 0.025, mTeak, xc - side * (dep / 2 - 0.012), 0.72 + (Hc - 0.8) / 2, zc, G);
         cabs.push({ side, xw, xc, dep, zA, zB, zc, zl, G, board, seed });
@@ -1466,29 +1478,57 @@
            generation off real yin amulets when you generate more models.") THE CABINETS' STOCK, MODELLED — each kind
            made from photographs of real pieces (docs/research/V24.36-YIN-STOCK.md: every name, its sources, its
            photographs; masters/v24.36/make.sh: the pictures, the Meshy jobs, the prep). On each glass shelf the figures
-           stand facing the room, dealt in turn, with a bottle of nam man phrai or a pair of Chad's takrut lying between
+           stand facing the room (a Kuman Thong, a Phra Ngang Ta Daeng, a Nang Tani), dealt in turn, with a bottle of nam man phrai or a pair of Chad's takrut lying between
            them; on the velvet behind, a row of phrai tablets to a bay, clear of the figures in front. Near and far levels
            as the shop's stock (manyOf, stockLod — the room's frame asks too), each kind shaking with the room as the
            stand-ins did, near and far in one phase. A stand-in above goes only once its model has landed (v4.7): the
            bundles with the figures, the bottles with the oil, the brass tubes with the takrut, the board's painted
            amulets with the tablets */
-        const YIN = { figs: ['e4kuman', 'e4ngang', 'e4tani', 'e4phayon'], oil: 'e4phraioil', tab: 'e4phraitab', tak: 'e4takrutsm' };
-        const YH = { e4kuman: 0.085, e4ngang: 0.07, e4tani: 0.08, e4phayon: 0.075, e4phraioil: 0.07, e4phraitab: 0.045, e4takrutsm: 1.0 };   // (the takrut's file is 1 m, stood at s 0.07: the shop's KIND_H)
+        const YIN = { figs: ['e4kuman', 'e4ngang', 'e4tani'], oil: 'e4phraioil', tabs: ['e4phraitab', 'e4praicase', 'e4tanitab'], tak: 'e4takrutsm' };   // (v24.36, Chad: "Why so many rounded amulets?" — three shapes on the velvet: the brown oval, the black bell in its case, the green standing figure)
+        const YH = { e4kuman: 0.085, e4ngang: 0.08, e4tani: 0.085, e4phraioil: 0.05, e4phraitab: 0.045, e4praicase: 0.045, e4tanitab: 0.055, e4takrutsm: 1.0 };   // (the takrut's file is 1 m, stood at s 0.07: the shop's KIND_H)
         const yr = rng(4529), SH3 = [0.748, 1.148, 1.548], slots = { fig: [], oil: [], tak: [], tab: [] };
         for (const cb of cabs) {
           const ry0 = -cb.side * Math.PI / 2, xs = cb.xc - cb.side * 0.03, xb = cb.xw - cb.side * 0.03;
           SH3.forEach((yy, si) => {
-            let z = cb.zA + 0.08, k = si + (cb.side > 0 ? 1 : 0), nf = si * 2 + (cb.side > 0 ? 1 : 0);
+            /* (v24.36, the reviewer: "the same five pieces repeat in nearly the same order on every shelf") each shelf deals
+               its own seeded order — a figure half the time, never the same kind twice running, a phial or a takrut between —
+               each piece a little larger or smaller than the last (no two real pieces are one size), and nothing stands
+               behind the doors' middle post */
+            let z = cb.zA + 0.08, lastF = -1, lastW = '';
+            const clearOfPost = (zz, w) => Math.abs(zz - cb.zc) > 0.045 + w / 2;
             while (z < cb.zB - 0.08) {
-              const what = ['fig', 'oil', 'fig', 'tak'][k++ % 4];
+              const u = yr(), what = lastW !== 'fig' && u < 0.55 ? 'fig' : u < 0.78 ? 'oil' : 'tak';
               if (what === 'fig') { if (z + 0.12 > cb.zB - 0.04) break;
-                slots.fig.push({ c: cb, kind: nf++ % YIN.figs.length, x: xs + (yr() - 0.5) * 0.04, y: yy, z: z + 0.06, ry: ry0 + (yr() - 0.5) * 0.3 }); z += 0.14; }
-              else if (what === 'oil') { slots.oil.push({ c: cb, x: xs + (yr() - 0.5) * 0.06, y: yy, z: z + 0.035, ry: yr() * Math.PI * 2 }); z += 0.08; }
-              else { for (const dx of [-0.026, 0.026]) slots.tak.push({ c: cb, x: xs + cb.side * dx, y: yy + 0.0185, z: z + 0.045, ry: ry0 + (yr() - 0.5) * 0.12, rz: Math.PI / 2, s: 0.07 }); z += 0.1; }
+                if (!clearOfPost(z + 0.05, 0.05)) { z += 0.04; continue; }
+                let kf = Math.floor(yr() * YIN.figs.length); if (kf === lastF) kf = (kf + 1) % YIN.figs.length; lastF = kf;
+                slots.fig.push({ c: cb, kind: kf, x: xs + (yr() - 0.5) * 0.05, y: yy, z: z + 0.05, ry: ry0 + (yr() - 0.5) * 0.4, s: 0.86 + yr() * 0.26 }); z += 0.1 + yr() * 0.03; }
+              else if (what === 'oil') { if (!clearOfPost(z + 0.03, 0.03)) { z += 0.04; continue; }
+                slots.oil.push({ c: cb, x: xs + (yr() - 0.5) * 0.08, y: yy, z: z + 0.03, ry: ry0 + (yr() - 0.5) * 0.5, s: 0.8 + yr() * 0.35 }); z += 0.055 + yr() * 0.02; }   // (its front to the room: Meshy's glass is opaque, its takrut and figure lie on the phial's face)
+              else { if (!clearOfPost(z + 0.04, 0.08)) { z += 0.04; continue; }
+                slots.tak.push({ c: cb, x: xs + (yr() - 0.5) * 0.06, y: yy + 0.0185, z: z + 0.04, ry: ry0 + (yr() - 0.5) * 0.7, rz: Math.PI / 2, s: 0.065 + yr() * 0.012 }); z += 0.085; }   // (one at a slant: a pair one behind the other read as stacked)
+              lastW = what;
             }
-            const yT = yy + (si < 2 ? 0.19 : 0.13);                      // the bay's tablets, their foot over the figures' heads
-            for (let zt = cb.zA + 0.075; zt < cb.zB - 0.06; zt += 0.115) slots.tab.push({ c: cb, x: xb, y: yT, z: zt, ry: ry0 });
+            /* the bay's tablets in two rows, as pieces are pinned on a dealer's velvet, the lower row's foot over the figures' heads */
+            for (const [r2, yT] of (si < 2 ? [[0, yy + 0.15], [1, yy + 0.255]] : [[0, yy + 0.12], [1, yy + 0.205]]))
+              { let nk = si + r2 * 2 + (cb.side > 0 ? 1 : 0);
+                for (let zt = cb.zA + 0.07 + r2 * 0.05; zt < cb.zB - 0.06; zt += 0.1) if (Math.abs(zt - cb.zc) > 0.035) slots.tab.push({ c: cb, kind: nk++ % YIN.tabs.length, x: xb, y: yT, z: zt, ry: ry0 }); }
           });
+        }
+        /* (v24.36, the reviewer: "Nothing has a shelf lip, glass edge or contact shadow under it") a soft dark patch on the
+           glass under each piece, painted (v9.3: a phone casts no shadows), one InstancedMesh a cabinet; it stays where the
+           piece rests while the piece rattles */
+        { const gs = new THREE.PlaneGeometry(1, 1); gs.rotateX(-Math.PI / 2);
+          const msh = new THREE.MeshBasicMaterial({ map: tGlow, color: 0x000000, transparent: true, opacity: 0.55, depthWrite: false });
+          const dq = new THREE.Quaternion(), de = new THREE.Euler(), dv = new THREE.Vector3(), ds = new THREE.Vector3(), dm = new THREE.Matrix4();
+          for (const cb of cabs) {
+            const all = [...slots.fig.map(sl => [sl, 0.06 * (sl.s || 1), 0.05 * (sl.s || 1)]), ...slots.oil.map(sl => [sl, 0.032 * (sl.s || 1), 0.032 * (sl.s || 1)]),
+                         ...slots.tak.map(sl => [sl, 0.085, 0.03])].filter(([sl]) => sl.c === cb);
+            if (!all.length) continue;
+            const im = new THREE.InstancedMesh(gs, msh, all.length);
+            all.forEach(([sl, w, d], i) => { de.set(0, sl.ry || 0, 0); dq.setFromEuler(de);
+              dm.compose(dv.set(sl.x, sl.y - (sl.rz ? 0.0185 : 0) + 0.0015, sl.z), dq, ds.set(w, 1, d)); im.setMatrixAt(i, dm); });
+            im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere(); im.userData.dyn = true; R.add(im);
+          }
         }
         const stood = (amp, then) => (ims) => { const ph = 0.7 + room.shakers.length * 1.913; for (const im of ims) shake(im, amp, ph); then(); };
         for (const cb of cabs) {
@@ -1496,8 +1536,9 @@
           YIN.figs.forEach((key, ki) => manyOf(key, mine(slots.fig).filter(sl => sl.kind === ki), R, YH[key], stood(0.3, () => { bun.visible = false; })));
           manyOf(YIN.oil, mine(slots.oil), R, YH[YIN.oil], stood(0.5, () => { bottles.visible = false; }));
           manyOf(YIN.tak, mine(slots.tak), R, YH[YIN.tak], stood(0.4, () => { tak.visible = false; }));
-          manyOf(YIN.tab, mine(slots.tab), R, YH[YIN.tab], stood(0.12, () => {
-            cb.board.material.map = tex(makeAmuletBoard(THREE, cnv, cb.seed, true)); cb.board.material.needsUpdate = true; }));
+          YIN.tabs.forEach((key, ti) => manyOf(key, mine(slots.tab).filter(sl => sl.kind === ti), R, YH[key], stood(0.12, () => {
+            if (cb.plain) return; cb.plain = true;                          // (the first kind to hang takes the painted ones down)
+            cb.board.material.map = tex(makeAmuletBoard(THREE, cnv, cb.seed, true)); cb.board.material.needsUpdate = true; })));
         }
       }
 
@@ -3896,17 +3937,20 @@
         street.segs.forEach((g, s) => {
           const r = rng(4931 + s * 7), spots = [], near = [], win = s === 1 ? [-20, -54] : [-21, -63];
           for (let z = -4 - r() * 3; z > -SG + 2; z -= 11 + r() * 2) (nearK && z < win[0] && z > win[1] ? near : spots).push([-5.5 + (r() - 0.5) * 0.4, z]);
-          for (const z of TST.LAMPS) spots.push([6.2, z + (r() - 0.5) * 2]);
-          const plant = (kindsX, list) => kindsX.forEach((parts, ki) => {
+          /* (v24.36) the median's at every other lamp: priced on a phone, the windscreen drew 427,631 triangles with every
+             palm in, over the chapter's ~400k */
+          TST.LAMPS.forEach((z, i) => { const zz = z + (r() - 0.5) * 2; if ((i + s) % 2 === 0) spots.push([6.2, zz]); });
+          const plant = (kindsX, list) => kindsX.flatMap((parts, ki) => {
             const mine = list.filter((_, i) => (i + s + ki) % 2 === 0);
-            if (!mine.length) return;
-            const hs = mine.map(() => [7 + r() * 3.5, r() * Math.PI * 2]);
+            if (!mine.length) return [];
+            const hs = mine.map(() => [7 + r() * 3.5, r() * Math.PI * 2]), made = [];
             for (const pt of parts) {
               const im = new THREE.InstancedMesh(pt.geo, pt.mat, mine.length);
               mine.forEach(([x, z], i) => { q.setFromAxisAngle(Y, hs[i][1]); sc.setScalar(hs[i][0]);
                 m4.compose(new THREE.Vector3(x, 0.1, z), q, sc).multiply(pt.m); im.setMatrixAt(i, m4); });
-              im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere(); im.userData.dyn = true; g.add(im); owned.push(im);
+              im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere(); im.userData.dyn = true; g.add(im); owned.push(im); made.push(im);
             }
+            return made;
           });
           plant(kinds, spots); if (nearK) plant(nearK, near);
         });
@@ -8086,10 +8130,9 @@
     x.fillStyle = '#6e1016'; x.fillRect(0, 0, S, S);
     speckle(x, S, S, r, 5000, '40,0,4', 0.08, 0.2, 1, 2);
     speckle(x, S, S, r, 2000, '160,40,48', 0.06, 0.14, 1, 2);
-    /* (v24.36) PLAIN: the velvet alone, its nap worn into faint bands where pieces have hung for years — for the board
-       whose amulets are the modelled phrai tablets pinned in front of it */
+    /* (v24.36) PLAIN: the velvet alone, for the board whose amulets are the modelled phrai tablets pinned in front of it
+       (its first cut had faint worn bands: the reviewer read them as a stripe behind the pieces) */
     if (plain) {
-      for (let j = 0; j < 3; j++) { x.fillStyle = 'rgba(30,0,4,0.12)'; x.fillRect(0, S * (0.2 + j * 0.31), S, 18); }
       return done(THREE, c, false);
     }
     const fills = ['#8a6a48', '#c9b896', '#5c4430', '#a08a62', '#7c5228', '#d8ccb0', '#4a3a2a'];

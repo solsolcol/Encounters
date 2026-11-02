@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "24.35"
+VERSION = "24.36"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -466,6 +466,14 @@ ASSETS = {
     'e4meedmor':    ('assets/e4meedmor.glb', True, False),    # a meed mor, the ritual knife with its carved bone handle (2,780, 17 cm)
     'e4bucha':      ('assets/e4bucha.glb', True, False),      # the shop altar's Buddha, a seated bronze in the earth-touching pose (12,455, 0.30 m, 1024 sheets)
     'e4takrutsm':   ('assets/e4takrutsm.glb', True, False),   # Chad's takrut once more, a light cut of his own scan for the stock (5,116 of 147,376 triangles; tools/prepamulet.mjs THICK)
+    # e4c1 v24.36: the samnak's cabinets, the yin pieces — each from photographs of REAL ones (docs/research/V24.36-YIN-STOCK.md), a GPT Image reference on white checked against them, Meshy and its remesh, near and far in one file (masters/v24.36/make.sh)
+    'e4kuman':      ('assets/e4kuman.glb', True, False),      # a Kuman Thong: the seated boy, palms joined, worn gilt over dark lacquer, a red base (8.5 cm)
+    'e4ngang':      ('assets/e4ngang.glb', True, False),      # a Phra Ngang Ta Daeng: copper, red glass eyes, the bent ringed topknot, a triangle-cut base (8 cm)
+    'e4tani':       ('assets/e4tani.glb', True, False),       # a Nang Tani: a painted figure in a green sabai and pha sin, bananas in her hands (8.5 cm)
+    'e4phraioil':   ('assets/e4phraioil.glb', True, False),   # a nam man phrai phial: golden oil, a cord-bound takrut and a carved figure inside, saffron cloth over the cap (5 cm)
+    'e4phraitab':   ('assets/e4phraitab.glb', True, False),   # a Mae Hong Phrai powder tablet: a woman cradling a baby in relief (4.5 cm)
+    'e4praicase':   ('assets/e4praicase.glb', True, False),   # a Prai Tang Glom tablet: glossy black, in a bell-shaped clear case with a silver rim (4.5 cm)
+    'e4tanitab':    ('assets/e4tanitab.glb', True, False),    # a Nang Tani powder tablet: pale green, a standing woman in relief (5.5 cm)
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
     # in white (two women, two men), Mixamo's Praying and Kneeling Idle applied
@@ -586,7 +594,8 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'kumanred', 'kumanshy', 'kumanlittle',
            'firstmaster', 'e4sky', 'fmshadow', 'e4noi', 'e4pong', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4pickup', 'e4nangkwak', 'e4takrut', 'e4phayant', 'e4nangkwakhd', 'e4takruthd', 'e4phayanthd', 'iconnangkwak', 'icontakrut', 'iconphayant',
            'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd', 'e4buffalo', 'e4sandalsa', 'e4sandalsb', 'e4rahu', 'e4sedan', 'e4truck', 'e4suv', 'e4moto', 'e4seat',
-           'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
+           'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm',
+           'e4kuman', 'e4ngang', 'e4tani', 'e4phraioil', 'e4phraitab', 'e4praicase', 'e4tanitab'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and

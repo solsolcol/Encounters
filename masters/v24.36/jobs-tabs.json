@@ -1,0 +1,4 @@
+[{"name": "praicase", "image": "refs/praicase-2k.png", "symmetry": "auto", "remesh": 2000,
+  "texture": "a glossy black oil-soaked powder tablet with a worn relief of a crouching figure, inside a clear glossy plastic bell-shaped case with a thin polished silver rim and a silver jump ring"},
+ {"name": "tanitab", "image": "refs/tanitab-2k.png", "symmetry": "off", "remesh": 2000,
+  "texture": "pale sage-green gritty sacred powder with tiny darker grains, a soft worn relief of a standing young woman in a long Thai wrap dress, slightly uneven hand-pressed edges"}]

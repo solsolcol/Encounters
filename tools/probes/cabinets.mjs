@@ -58,14 +58,18 @@ for (const dev of (VIEW === 'both' ? ['phone', 'desktop'] : [VIEW])) {
       const f0 = E.camera.fov; if (fov) { E.camera.fov = fov; E.camera.updateProjectionMatrix(); }
       E.yaw.updateMatrixWorld(true); E.stage.updateNotes(1 / 60, 0);
       E.renderer.render(E.scene, E.camera);
-      const i = E.renderer.info.render, url = E.renderer.domElement.toDataURL('image/png');
-      const lv = []; E.stage.film.worldR.traverse(o => { if (o.isInstancedMesh && /^stock:/.test(o.name) && o.visible) lv.push(o.name + ':' + o.count); });
+      const i = E.renderer.info.render, url = E.renderer.domElement.toDataURL('image/png'), tris = i.triangles, calls = i.calls;
+      const lv = [], st = []; E.stage.film.worldR.traverse(o => { if (o.isInstancedMesh && /^stock:/.test(o.name) && o.visible) { lv.push(o.name + ':' + o.count); st.push(o); } });
+      /* (v24.36) the same view drawn again with the modelled stock hidden: what the stock itself costs this view */
+      st.forEach(o => { o.visible = false; }); E.renderer.render(E.scene, E.camera);
+      const bare = { tris: E.renderer.info.render.triangles, calls: E.renderer.info.render.calls };
+      st.forEach(o => { o.visible = true; });
       if (fov) { E.camera.fov = f0; E.camera.updateProjectionMatrix(); }
-      return { url, tris: i.triangles, calls: i.calls, stock: lv };
+      return { url, tris, calls, stock: lv, bare };
     }, [from, to, fov]);
     fs.writeFileSync(`${OUT}/${dev}-${tag}.png`, Buffer.from(r.url.split(',')[1], 'base64'));
-    report[dev].push({ view: tag, tris: r.tris, calls: r.calls, stockDrawn: r.stock.length });
-    log(dev, tag, 'triangles', r.tris, 'calls', r.calls, 'stock meshes drawn', r.stock.length);
+    report[dev].push({ view: tag, tris: r.tris, calls: r.calls, stockDrawn: r.stock.length, withoutStock: r.bare });
+    log(dev, tag, 'triangles', r.tris, 'calls', r.calls, 'stock meshes drawn', r.stock.length, '| without the stock', r.bare.tris, 'calls', r.bare.calls);
     if (!r.stock.length) { bad++; log('  NO MODELLED STOCK drawn in', tag); }
   }
   if (errs.length) { bad += errs.length; log(dev, 'ERRORS', errs); }

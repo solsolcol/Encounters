@@ -1,0 +1,10 @@
+started image-to-3d phraioil 01a19d27-23a5-73a0-81d8-ce10bac7c066
+started image-to-3d phraitab 01a19d27-3303-777e-88cd-ac90b629a10b
+started image-to-3d tani 01a19d27-4782-73a6-8281-a54ade581daf
+image-to-3d done phraioil -> remesh 01a19d2a-79d4-73a6-8fbd-b2167fbdcba8
+image-to-3d done phraitab -> remesh 01a19d2a-843c-7454-ab1b-5c7e1f03b48d
+image-to-3d done tani -> remesh 01a19d2a-92a8-74fb-b872-5ff6063fd0a8
+remesh done phraioil
+remesh done phraitab
+remesh done tani
+all done: ['phraioil', 'phraitab', 'tani']

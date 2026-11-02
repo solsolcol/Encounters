@@ -7540,6 +7540,49 @@ What the baseline contains, by release:
     CLAUDE.md (v24.35): one build, one deploy and one round of checks per batch of his asks, each ask designed in full
     before it is built, the standards unchanged, and every changed picture judged by a reviewer who does not know what
     was meant.
+- **v24.36** THE SAMNAK'S CABINETS, FROM REAL PIECES — episode 4 chapter 1, Chad's ask 6 of docs/V24.32-E4C1-NOTES.md
+  ("the amulet display shelf can have real amulets instead of generated ones, but it should look more like the yin,
+  barang, ghost based kind of amulets. But base the model generation off real yin amulets"), and the bus stop's panel.
+  `src/chapters/e4/e4c1.js`, seven models (assets/e4kuman, e4ngang, e4tani, e4phraioil, e4phraitab, e4praicase,
+  e4tanitab), tools/probes/cabinets.mjs (new).
+  - REAL PHOTOGRAPHS FIRST, found by six researchers at once (docs/research/V24.36-YIN-STOCK.md: every name, its English
+    and Thai sources, its photographs). Each reference picture was made from them and checked against them (one swapped
+    before any picture: the first Ngang photographs were modern variants, replaced by the Penn Museum's and a
+    collector's classic pieces). The Meshy jobs ran at once (masters/v24.36/meshy.py), each model was photographed
+    on its own front, side and back, and each has near and far levels as the shop's stock (masters/v24.36/make.sh has
+    every job ID).
+  - THE CABINETS: Kuman Thong, Phra Ngang Ta Daeng and Nang Tani on the glass shelves, packed as a dealer's are; nam man
+    phrai phials and Chad's takrut between them; two rows of Mae Hong Phrai tablets on each bay's velvet, the board's
+    painted amulets gone once they hang. A teak top closes the cupboard (the wall had shown green through the lowest
+    glass). Every kind shakes with the room as the stand-ins did, its near and far levels in one phase; the room's frame
+    now asks stockLod too. The stand-ins stay until each model lands (v4.7).
+  - Meshy's glass is opaque, so a phial's takrut and figure lie on its face: each phial faces the room, and the cabinets'
+    teak ends hide the view along a shelf.
+  - Hun Phayon was dropped and the Nang Tani research stopped, at Chad's word ("You need to know when to stop").
+  - THE BUS STOP'S PANEL: a framed advert lit from inside (generic iced lemon tea, no brand) on both faces, where v24.33
+    left a lit blank board; photographed passing the bakery on a phone and a desktop.
+  - THE SHELVES MADE VARIED (deploy 3, Chad: "Cant you improve the diversity of the amulets in the shelf? Why so many
+    rounded amulets?"): two more tablet kinds modelled the same way (a black phrai tablet in a clear case; a green Nang
+    Tani tablet), so the velvet's rows mix three shapes; each glass shelf dealt by a seeded stream (no figure twice on a
+    shelf, sizes varied, a single takrut laid aslant, nothing behind a mullion). An independent reviewer, shown only the
+    photographs, found the rest, all fixed: the green wall below and above the velvet (a cupboard top, the board full
+    height), pieces that seemed to float (a lit front edge on each glass shelf, a painted contact shadow under every
+    piece), flat cabinet faces (teak grain), and one copied pattern on every shelf.
+  - PRICED ON A PHONE by the new probe, each view drawn twice, with and without the stock: from 0.9 m and at the glass
+    the stock is 194k-245k triangles, the views 201k-252k in all; from the mat, where the consultation holds his look on
+    the master, the cabinets are out of frame and the stock costs nothing (that view's 434,741 is the room's own, the
+    same with the stock hidden). The taxi's windscreen with v24.35's palms drew 427,631; the median's palms halved, it
+    draws 407,575, about 2 % over (a per-shot near/far swap was tried and dropped: the shot is one continuous pan, so the
+    swap would have shown).
+  - A researcher's request to Wikimedia carried Chad's email in its User-Agent; it was refused, but sent. Reported to him.
+  - Deployed 6ae8c20c46a5a9f9575a09f7 (the samnak), 6ae8c3b8e8f95d0ccce54fe1 (the packed cabinets) and
+    6ae8ccea24f3c373b4c3696f (the varied shelves and the halved palms; 317 of 317 files byte-identical). Harnesses: leak
+    (on the deployed build) and walk (walk failed once with six browsers running on the box and passed alone, 1250 s).
+  - The reviewer's pass on the deployed build still found, and v24.37's batch takes up: the tablets on the velvet in
+    one strict order on every row (wallpaper), the same pieces at even spacing on a shelf, a gold figure that seems to
+    stand on a tablet behind it, and the bus shelter beside the new advert as flat dark slabs (no light, no route
+    board). Outside the ask, listed for Chad: the rain's beads read as brown bubbles on a phone, and the wet road shows
+    no shine.
 
 ## The sheet, version by version
 
