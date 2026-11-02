@@ -310,16 +310,22 @@
     /* CHAD'S yin amulet (v22.0 CP5), shared by her velvet box and his hand: the near cut (every triangle) and the far
        cut wearing the near one's own material; its frame is old silver-gold, so its metal takes the room's reflection
        a little (none and it reads black, v8.9; the whole of it and it reads pale, v18.8) */
+    /* v24.30 · THE AMULETS' SHINE, the yin locket's and the Lersi's: a LIFT on the scene's own environment, which three
+       multiplies by the scene's strength since v24.29 (tools/patchthree.mjs) — so each is drawn at 5 x 0.05 = 0.25 of the
+       room on her satin and on the tray, and at 5 x 0.025 = 0.125 in his hand, the hands' pass being drawn at half the
+       world's reflection (main.js: the hands' rig lights them brighter). Photographed on a phone (tools/probes/shine.mjs)
+       at 0.025 / 0.05 / 0.1 / 0.15 / 0.25: on the satin and the tray the frame reads old bronze-gold at 0.25; in his hand
+       v24.29's 0.25 (its own envMap, the same in both places) turned the locket's frame pale silver and her portrait
+       milky, and the Lersi a flat bright yellow that lost the relief of its face, where 0.1–0.15 keeps both. The scene's
+       own environment is also the one drawn again after a lost graphics context (main.js roomEnvAgain); an envMap of a
+       material's own keeps the dead one. */
+    const AMULET_LIFT = 5;
     let yinAm = null;
     function yinAmulet() {
       if (!yinAm) yinAm = Promise.all([parseOnce('yinamulet'), parseOnce('yinamuletlod')]).then(([n, f]) => {
         let mat = null; n.scene.traverse(m => { if (m.isMesh && !mat) mat = m.material; });
-        /* (v24.29) "a little" of the room, absolute — its own envMap, as the episode's statues and trays have: the scene's
-           lift multiplies the scene's 0.05 since three honours a material's own (tools/patchthree.mjs), and the 0.35 written
-           here (never drawn until then) would have drawn it darker than it ever was. Photographed on a phone on the tray at
-           0.05 / 0.15 / 0.25 / 0.35, its frame reads dark bronze, gold, gold beside the tray's own gilt (TRAY_ENV 0.3), and
-           pale — so 0.25 */
-        if (mat) { mat.envMap = scene.environment || null; mat.envMapIntensity = 0.25; for (const k of ['map', 'normalMap', 'roughnessMap', 'metalnessMap']) if (mat[k]) mat[k].anisotropy = 8; }
+        /* (v24.30) "a little" of the room: AMULET_LIFT on its scene's own environment (below) */
+        if (mat) { mat.envMapIntensity = AMULET_LIFT; for (const k of ['map', 'normalMap', 'roughnessMap', 'metalnessMap']) if (mat[k]) mat[k].anisotropy = 8; }
         f.scene.traverse(m => { if (m.isMesh) m.material = mat; });
         for (const sc of [n.scene, f.scene]) sc.traverse(m => { if (m.isMesh) { m.castShadow = false; m.receiveShadow = false; } });
         return { near: n.scene, far: f.scene, mat };
@@ -5914,8 +5920,9 @@
     Promise.all([parseOnce('lersiamulet'), parseOnce('lersiamuletlod')]).then(([hd, lo]) => {
       if (!alive) return;
       let mat = null; hd.scene.traverse(m => { if (m.isMesh && !mat) mat = m.material; });
-      /* (v24.29) its own envMap, at the yin amulet's 0.25 of the room (above) */
-      if (mat) { mat.envMap = scene.environment || null; mat.envMapIntensity = 0.25; for (const k of ['map', 'normalMap', 'roughnessMap', 'metalnessMap']) if (mat[k]) mat[k].anisotropy = 8; }
+      /* (v24.30) the yin amulet's lift, AMULET_LIFT (above): 0.25 of the room on the tray, 0.125 between his palms (the
+         held copy's material is a clone of this one, glowMats) */
+      if (mat) { mat.envMapIntensity = AMULET_LIFT; for (const k of ['map', 'normalMap', 'roughnessMap', 'metalnessMap']) if (mat[k]) mat[k].anisotropy = 8; }
       const lod = new THREE.LOD();
       for (const [src, d] of [[hd.scene, 0], [lo.scene, 1.4]]) {
         const m = src.clone(true); m.scale.setScalar(L_S); m.position.y = 0.01 + L_S / 2;

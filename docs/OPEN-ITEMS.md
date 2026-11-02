@@ -24,6 +24,13 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
    (`masters/v23.0/previews/`, and v24.3's twelve cues). Send the reels again.
 5. **Episode 4 chapter 2's build plan** (S1·11's second half: the fog, Lersi Chin's clearing, the trial's 5.2–5.3),
    written for his approval before any build.
+6. **Episode 3's statues and trays after a lost graphics context** (found at v24.30, outside its ask, left as it was).
+   Every chapter of episode 3 gives its Buddha images, trays and a few pieces an envMap of their own — the scene's
+   environment texture at the time they were built (`buddhaMat`, `trayMat`, e3c1–e3c5). When a phone drops the page's
+   WebGL context and it comes back, main.js draws the room's environment again into a NEW texture (`roomEnvAgain`) and
+   disposes the old, so those materials keep reflecting the dead one and their metal goes dark until the chapter is
+   rebuilt. Rare (iOS under memory pressure), and nothing breaks. The fix is v24.30's: each such value as a lift on the
+   scene's own environment (its absolute value over the scene's 0.05), the same frame to the pixel, proven per chapter.
 
 ## B. Episode 1 (the reference game) — only with his OK
 

@@ -1,14 +1,21 @@
 // v24.29 · THE SHINE, BEFORE AND AFTER — three honours a material's envMapIntensity now (tools/patchthree.mjs: it
 // multiplies its scene's environmentIntensity). On a PHONE (390x844 touch, DPR 2 -> the engine's 1.6) each picture is
 // the same frame drawn twice with the clock held still — AFTER as the build draws it, BEFORE as every earlier build did
-// (every material lit by its scene's environment put back to 1; episode 3 chapter 4's two amulets — their own envMap at 0.25, the episode's only
-// such value — back on the scene's environment) — side by side, with how many pixels changed. It first prints the CENSUS: every material whose shine
+// (every material lit by its scene's environment put back to 1; and, reading a v24.29 build, episode 3 chapter 4's two
+// amulets — their own envMap at 0.25 in that build only — back on the scene's environment) — side by side, with how many
+// pixels changed. It first prints the CENSUS: every material whose shine
 // changed (its scene, its lift, the strength it is drawn at before -> after); an empty census is a chapter drawn bit for
 // bit as before.
 //   ENC_DIST=<snap> CHROMIUM_PATH=... CH=e4c1 [PHASE=<bookmark>] [SETUP=torch,rifle] [VIEWS='tag:x,y,z,yawDeg,pitchDeg;…']
 //     [TARGETS=n] [TS=0.5,4] (the opening film at those seconds) [ITEMS=id,id] node tools/probes/shine.mjs <outdir>
 //   (a VIEWS tag with no numbers photographs wherever the chapter has put him)
 //   BRACKET=0.05,0.1,0.15 draws every changed material at each of those strengths instead, side by side, labelled
+//   AT='x,y,z,yawDeg,pitchDeg' stands him there (a teleport) before the SETUP; SETUP=hold puts the chapter's held thing in
+//   his hand through its probe handle, stage.holdTry(HOLD) (HOLD=x,y,z, the offset the chapter itself uses); SETUP=press
+//   presses E (the real key) once PREWAIT holds and then waits for WAIT — each an expression on the page (e.g. the
+//   chapter's own state: quiet, then a beat reached); SETUP=eval runs EVAL on the page (a chapter's own probe handle,
+//   e.g. stage.trayTry('lersi')). The canvas's own CSS filter (kit.chill's dim and drain) is drawn into every picture; the chill's edge layers
+//   are not.
 import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
 import fs from 'node:fs';
@@ -32,8 +39,9 @@ await p.goto(PAGE + '?ch=' + CH, { waitUntil: 'load', timeout: 240000 });
 await p.waitForFunction(() => !!window.__enc, null, { timeout: 180000 });
 await p.evaluate(() => document.getElementById('startBtn').click());
 /* the page's half: the census, BEFORE on and off, a frame drawn as the engine draws it (the world, then the hands) */
-/* (episode 3 chapter 4's amulets are the only materials v24.29 moved onto their own envMap, at 0.25; episode 3 chapter 3
-   has an unrelated 0.25 of its own, so the value counts only in that chapter) */
+/* (episode 3 chapter 4's amulets are the only materials v24.29 moved onto their own envMap, at 0.25 — v24.30 put them
+   back on the scene's environment with a lift, which the census reads like any other; episode 3 chapter 3 has an
+   unrelated 0.25 of its own, so the value counts only in that chapter) */
 await p.addScriptTag({ content: `
 window.__shineKit = {
   ownV: ${CH === 'e3c4' ? 0.25 : 'null'},
@@ -69,7 +77,10 @@ window.__shineKit = {
   restore() { this.before(false); },
   draw() { const E = window.__enc, R = E.renderer; R.render(E.scene, E.camera);
     if (E.vmVisible && E.vmVisible()) { R.autoClear = false; R.clearDepth(); R.render(this.vm(), E.vmCam); R.autoClear = true; }
-    return R.domElement.toDataURL('image/png'); }
+    const c = R.domElement, f = c.style.filter; if (!f) return c.toDataURL('image/png');
+    /* the canvas's CSS filter (the cold's dim and drain) as the screen shows it */
+    const o = document.createElement('canvas'); o.width = c.width; o.height = c.height; const x = o.getContext('2d'); x.filter = f; x.drawImage(c, 0, 0);
+    this.filtered = f; return o.toDataURL('image/png'); }
 };` });
 const decode = async (url) => { const { data, info } = await sharp(Buffer.from(url.split(',')[1], 'base64')).removeAlpha().raw().toBuffer({ resolveWithObject: true }); return { data, info }; };
 async function pair(tag, aUrl, bUrl, crop) {
@@ -119,7 +130,28 @@ if (process.env.PHASE) {
   await p.waitForFunction(() => window.__enc.kit.getFade() < 0.02, null, { timeout: 900000, polling: 500 });
   await p.waitForTimeout(3000);
 }
+if (process.env.AT) { const [x, y, z, yd, pd] = process.env.AT.split(',').map(Number);
+  /* an empty y keeps his own eye height */
+  await p.evaluate((v) => { const E = window.__enc; E.yaw.position.set(v.x, v.y === null ? E.yaw.position.y : v.y, v.z); E.yaw.rotation.y = v.ry; E.pitch.rotation.x = v.pt; }, { x, y: Number.isFinite(y) && process.env.AT.split(',')[1] !== '' ? y : null, z, ry: yd * Math.PI / 180, pt: pd * Math.PI / 180 });
+  await frames(4); log('at', process.env.AT); }
 for (const s of (process.env.SETUP || '').split(',').filter(Boolean)) {
+  if (s === 'press') {
+    if (process.env.PREWAIT) await p.waitForFunction(process.env.PREWAIT, null, { timeout: 900000, polling: 1000 })
+      .then(() => log('setup press: ready', process.env.PREWAIT), () => log('setup press: NEVER ready', process.env.PREWAIT));
+    await p.keyboard.press('KeyE'); log('setup press: E');
+    if (process.env.WAIT) await p.waitForFunction(process.env.WAIT, null, { timeout: 1500000, polling: 1000 })
+      .then(() => log('setup press: reached', process.env.WAIT), () => log('setup press: NEVER reached', process.env.WAIT));
+    await frames(4); await p.waitForTimeout(1500); continue;
+  }
+  if (s === 'eval') {
+    log('setup eval', process.env.EVAL, '->', await p.evaluate((x) => { try { return String(eval(x)); } catch (e) { return 'THREW ' + e.message; } }, process.env.EVAL || ''));
+    await frames(4); await p.waitForTimeout(2500); continue;
+  }
+  if (s === 'hold') {
+    const HOLD = (process.env.HOLD || '').split(',').filter(Boolean).map(Number);
+    log('setup hold', await p.evaluate((h) => { const S = window.__enc.stage; return S && S.holdTry ? (S.holdTry(h.length === 3 ? h : undefined), 'held at ' + h.join(',')) : 'no holdTry'; }, HOLD));
+    await frames(4); await p.waitForTimeout(1500); continue;
+  }
   log('setup', s, await p.evaluate((s) => { const K = window.__enc.kit; if (s === 'torch') return K.torchOn ? (K.torchOn(true), 'on') : 'no torch';
     if (s === 'rifle') return K.weaponOut ? (K.weaponOut(true), 'out') : 'no rifle'; return 'unknown'; }, s));
   /* the torch and the rifle come up on the frame clock (a swap of the hand): wait for the thing itself to be drawn — a

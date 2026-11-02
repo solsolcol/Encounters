@@ -7116,3 +7116,21 @@ cut (sharing its vertices and maps) when it is small.
 - **A swap on the frame clock needs frames, not seconds, on a slow box.** The torch comes up into the hand by dt per
   frame (capped at 0.1 s); at under a frame a second, four seconds after the switch the hand was still there. Wait for
   the thing to be drawn.
+
+## v24.30 — the amulet in his hand
+
+- **A thing drawn in the world AND in his hand takes its reflection as a lift, never as an envMap of its own.** The
+  hands' pass is drawn at half the world's reflection (vmScene 0.025 against the scene's 0.05: their rig lights them
+  brighter), and a lift on the scene's environment follows each pass's own strength. v24.29 gave e3c4's two amulets their
+  own envMap at 0.25 — right on her satin and the tray, where it was photographed, and the same 0.25 in his hand, where it
+  was not: the locket's frame pale silver, her portrait milky, the Lersi a flat bright yellow (photographed at v24.30).
+  Photograph a piece in every pass it is drawn in. And an envMap of a material's own is a reference to one texture: after
+  a lost graphics context main.js draws the room's environment again into a NEW texture (roomEnvAgain) and disposes the
+  old, so a material holding the old one reflects nothing; a material on the scene's environment follows it.
+- **To compare two looks, draw them in one page, and compare raw pixels.** Two pictures of the same frame from two runs,
+  each through JPEG, differed by a mean of 5 levels where the frames were in fact identical (the 8x8 blocks fell on
+  different columns of the two sheets): draw the frame both ways in one page with the clock held, readPixels, count.
+- **A probe's press races the frame that offers it.** The chapter's own "quiet" condition held, E was pressed, and
+  nothing happened: the engine's active spot (the badge, `#itxt`) is chosen by the frame, and on a slow box the frame
+  after quiet had not run yet. Wait for the thing the press goes through (the badge naming the spot), then press; and
+  make the wait after it fail at once if the press did nothing, instead of waiting out its timeout.

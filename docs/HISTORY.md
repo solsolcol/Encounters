@@ -7364,6 +7364,25 @@ What the baseline contains, by release:
     the pixel; chapter 3's world likewise — only the bag's close-up of the amulet (as every item close-up) is drawn a
     little richer.
   - Deployed 6ae80aff5c6f09bc83879040 (310 of 310 files byte-identical); chapter, hosted, csp and fixture green on its copy.
+- **v24.30** THE YIN AMULET CHECKED — Chad, 2 Nov 2026: "Check the yin amulet." (v24.29 had set it unseen: it lies in her
+  shut box.) The box is open from her hand-over on (yinHold), and the chapter has a probe handle for the locket in his
+  hand (stage.holdTry); tools/probes/shine.mjs learnt to stand him somewhere (AT), hold a thing (SETUP=hold), press E
+  for real once a condition holds (SETUP=press, PREWAIT, WAIT), run a chapter's own handle (SETUP=eval) and draw the
+  canvas's CSS filter (the cold's dim) into its pictures.
+  - Photographed on a phone at 0.025 / 0.05 / 0.1 / 0.15 / 0.25: on her satin, from the nearest place he can stand and
+    close, its frame reads old bronze-gold at v24.29's 0.25 — right. In his hand the same 0.25 was wrong: the hands'
+    pass is drawn at half the world's reflection (main.js: their rig lights them brighter), and an envMap of the
+    material's own is the same in both, so the frame went pale silver and her portrait milky (0.1–0.15 keeps her
+    blacks). The Lersi between his palms, the same work, went a flat bright yellow that lost the relief of its face.
+  - THE FIX: both amulets take their reflection as a LIFT on the scene's own environment (AMULET_LIFT 5, e3c4), as
+    v22.0 wrote them, the lift honoured since v24.29 — 0.25 on the satin and the tray (the scene's 0.05), 0.125 in his
+    hand (the hands' 0.025). On the satin and the tray the frame is the same to the pixel as v24.29's (proven: the same
+    frame drawn both ways, raw pixels, 0 differing); in his hand the locket's frame reads metal and her portrait keeps
+    its blacks, and the Lersi is gold with its relief back. The scene's own environment is also the one drawn again
+    after a lost graphics context (main.js roomEnvAgain); an envMap of a material's own keeps the dead one (the
+    episode's statues and trays still do: docs/OPEN-ITEMS.md, listed and left).
+  - Deployed 6ae819d55c26aa1e60939142 (310 of 310 files byte-identical); chapter and leak green on v24.31's copy, which
+    carries it.
 
 ## The sheet, version by version
 
