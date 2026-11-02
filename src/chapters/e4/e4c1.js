@@ -2174,7 +2174,11 @@
          reflected so the wheel is on the right as Thailand drives (MIRROR=1), and its windows are the file's own dark
          translucent glass, so the cab reads from outside too. From INSIDE (cabSync, the cabin's show) the glass clears
          and the chapter adds only what is the story's: the rain on the windscreen and the garland on the mirror; Pong
-         sits in its driver's seat. The drawn body and cabin stand in only if the file never lands (v4.7) */
+         sits in its driver's seat. The drawn body and cabin stand in only if the file never lands (v4.7).
+         (v24.28) AND THE WHOLE TRUCK AS HE DELIVERED IT (Chad: "Do the pickup truck" — v14.14): every triangle (394k,
+         where v24.16–v24.27 drew a 108k cut) and every map, on the sheets' own UV sets with the file's clearcoat, sheen and
+         specular (tools/preppickup.mjs FULL). One level: a distance cut on the same maps showed its facets through the
+         clear-coated paint as dark creases across the doors at 13 m (photographed on a phone; LEARNINGS) */
       { const pk = buildCar('pickup', 0xd09a2e); pk.position.set(CMP.PICKUP.x, 0, CMP.PICKUP.z); C.add(pk); yard.pickup = pk;
         solids.push(hidBox(2.05, 1.9, 5.55, CMP.PICKUP.x, 0.95, CMP.PICKUP.z + 0.135, C));
         parseOnce('e4pickup').then(({ scene: sc }) => {
@@ -2187,7 +2191,9 @@
           m.traverse(o => { if (!o.isMesh) return; o.receiveShadow = true;
             const glass = [].concat(o.material).some(mt => mt && /^window_glass/.test(mt.name));
             o.castShadow = !LOW && !glass; if (glass) yard.pickupGlass.push(o);
-            for (const mt of [].concat(o.material)) if (mt && 'envMapIntensity' in mt) mt.envMapIntensity = mt.metalness > 0.3 ? 14 : 4; });
+            for (const mt of [].concat(o.material)) if (mt && 'envMapIntensity' in mt) mt.envMapIntensity = mt.metalness > 0.3 ? 14 : 4;
+            /* (v24.28) its own maps now: filtered at a slant as the yard's cars are (v24.26) */
+            carSharp(o); });
           pk.add(m); yard.pickupModel = m;
           /* the story's two things in the model's cab: the garland under ITS mirror (measured off the file: the mirror's
              middle at x 0.06, y 1.66, z −0.61, angled to the driver), the rain on ITS windscreen (the glass from y 1.25 at

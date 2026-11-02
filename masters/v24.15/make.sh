@@ -40,7 +40,15 @@ cp $T/ghost.glb assets/e4ghost.glb
 # use it"): every piece of the cabin kept with its sheets, the windows the file's own dark translucent glass, and the
 # truck reflected so its wheel is on the right as Thailand drives (the two screens' pictures turned back). This line
 # replaces v24.16's, which stripped the cabin and painted the windows solid.
-INTERIOR=1 MIRROR=1 ERR=0.002 node tools/preppickup.mjs masters/v24.15/src/pickup_truck.glb assets/e4pickup.glb 0.15 1024
+# (v24.18, superseded:) INTERIOR=1 MIRROR=1 ERR=0.002 node tools/preppickup.mjs masters/v24.15/src/pickup_truck.glb assets/e4pickup.glb 0.15 1024
+# v24.28 · THE TRUCK AS DELIVERED WHERE IT IS SEEN CLOSE (Chad, 2 Nov 2026: "Do the pickup truck" — v14.14): the file
+# carries the truck as delivered — every triangle (394k) and every map (base colour, metal-roughness, normal, occlusion,
+# emissive, on their own four UV sets, with the tangents and the clearcoat, sheen and specular) — and no cut of it
+# for distance: v24.18's cut (same ratio and error, 109k) was tried as a distance level wearing the same materials, and
+# the clear-coated paint showed its facets as dark creases across the doors at 13 m (photographed on a phone). The glass
+# stays v24.18's (the file's transmission would draw the scene twice a frame) and the lamps at 1x (its "All_On" emissive
+# strength dropped). The non-FULL line above still makes v24.18's file byte for byte.
+FULL=1 INTERIOR=1 MIRROR=1 node tools/preppickup.mjs masters/v24.15/src/pickup_truck.glb assets/e4pickup.glb
 # v24.17 · the three pieces on the master's tray, Chad's own scans (no credit rows): each a light cut for the tray (and
 # the Nang Kwak for his altar too) and the full scan for the bag's views — every triangle, colour 4096, the amulet rule
 # (v14.14). THICK=1 for the two that are not flat medallions; LYING=1 for the pha yant, which lies along x; FACE=pos

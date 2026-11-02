@@ -7076,3 +7076,24 @@ cut (sharing its vertices and maps) when it is small.
 - **A model's emissive fill is daylight's.** Chad's palms carry a frond glow (their author's translucency); dropped at
   prep, the crowns read black against the sky; kept at full strength, they would glow in the storm. Scale it by the
   hemisphere light's intensity each frame — a uniform, no shader change — and it follows the presets and the lightning.
+
+## v24.28 — Chad's Rivian as delivered, and the cut that could not wear its maps
+
+- **A distance cut cannot wear the full model's maps when its paint is clear-coated.** Pong's pickup went in as two
+  levels in one file on one set of sheets — the truck as delivered near, v24.18's 109k cut far, the same materials — on
+  the reasoning that only triangles would differ. Photographed on a phone, the cut's facets showed through the coat's
+  sharp reflection as dark creases across the doors, plain at 13 m (thousands of pixels changed at the switch). The
+  shipped cut never showed it only because it had no coat and no normal maps. Photograph the cut WEARING the maps before
+  designing around it; this is v14.14's lesson (a normal map baked against the full mesh does not survive a heavy cut)
+  met again from the other side. The truck ships as one level, and one level is also the smaller download (10.2 MB
+  against 13.2 MB with the cut beside it).
+- **Estimate a model's download by preparing it, never by arithmetic.** The full truck was put to Chad as "about 3.3 MB
+  more" and measured 8.1 MB more: its geometry with the tangents and four UV sets the maps need is 6.6 MB of the 10.2
+  (meshopt and gzip together leave little: gzip takes a further 20 %, and Netlify serves .glb uncompressed anyway).
+  A prep takes four seconds; the estimate cost a correction in the report.
+- **three r185 ignores a material's envMapIntensity under scene.environment.** WebGLRenderer sets the uniform to
+  `scene.environmentIntensity` whenever the material's own envMap is null (three.module.js, setProgram), and
+  refreshUniformsStandard writes `material.envMapIntensity` only when the material HAS its own envMap. So a per-material
+  lift written against scene.environment (the pickup's 14 and 4, bronzeLift's 10, the torch's 30 — whose comment says it
+  multiplies) reaches nothing; measured in the program's own uniforms (dbg one-off, v24.28). Give the material its own
+  envMap if a lift is wanted — a change to how metal looks in every chapter, so it is Chad's (OPEN-ITEMS).

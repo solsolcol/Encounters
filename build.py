@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "24.27"
+VERSION = "24.28"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -425,7 +425,7 @@ ASSETS = {
     'e4palm1far':   ('assets/e4palm1far.glb', True, False),   # e4c1 v24.14: the first palm cut for the fields' distance (0.12, sheets 512/256)
     'e4palm2far':   ('assets/e4palm2far.glb', True, False),   # e4c1 v24.14: the second palm cut for distance (0.15)
     'e4banana':     ('assets/e4banana.glb', True, False),     # e4c1 v24.14: Chad's banana tree — "Banana Tree" by Garecra (Sketchfab, CC-BY-4.0), baked to the contract with its own leaf cut-offs (preptree KEEPCUT)
-    'e4pickup':     ('assets/e4pickup.glb', True, False),     # e4c1 v24.16: Pong's pickup — "Rivian R1T (2022)" by geyges (Sketchfab, Free Standard), every map but base colour gone, joined by material, nose at -z on the drawn pickup's axles; v24.18: its own cabin kept with its translucent glass (INTERIOR) and the truck mirrored so the wheel is on the right (MIRROR), 394k -> 108k triangles (tools/preppickup.mjs, masters/v24.15/make.sh)
+    'e4pickup':     ('assets/e4pickup.glb', True, False),     # e4c1 v24.16: Pong's pickup — "Rivian R1T (2022)" by geyges (Sketchfab, Free Standard), every map but base colour gone, joined by material, nose at -z on the drawn pickup's axles; v24.18: its own cabin kept with its translucent glass (INTERIOR) and the truck mirrored so the wheel is on the right (MIRROR), 394k -> 108k triangles (tools/preppickup.mjs, masters/v24.15/make.sh); v24.28: the truck as delivered, every triangle (394k) and every map on its own UV set with its clearcoat, sheen and specular — one level, since a distance cut on those maps showed its facets through the clear-coated paint (FULL)
     'e4nangkwak':   ('assets/e4nangkwak.glb', True, False),   # e4c1 v24.17: Chad's Nang Kwak, a bronze seated figure on her stepped base — the light cut (52,604 of 1,753,494 triangles, 1024 / 512 sheets) for the master's tray and his altar (tools/prepamulet.mjs THICK FACE=pos; masters/v24.15/make.sh)
     'e4takrut':     ('assets/e4takrut.glb', True, False),     # e4c1 v24.17: Chad's takrut — the light cut (29,472 of 147,376) for the tray
     'e4phayant':    ('assets/e4phayant.glb', True, False),    # e4c1 v24.17: Chad's pha yant, a cloth rolled with its yant showing — the light cut (30,864 of 617,280) for the tray (LYING)

@@ -7310,6 +7310,34 @@ What the baseline contains, by release:
     stroke lifts it). +2.9 MB.
   - Deployed first (6ae7a91f1b01c118def6bdc4, 310 of 310 files byte-identical); photographed on a phone before and after
     at the mango, the rain tree, the lane's palm and the banana.
+- **v24.28** PONG'S PICKUP AS CHAD DELIVERED IT — Chad, 2 Nov 2026: "Do the pickup truck" (answering: his Rivian had
+  been cut to a quarter of its triangles and most of its maps dropped at prep, against his v14.14 rule that his models
+  keep full detail wherever they are seen close — and the truck is: he starts beside it, and the opening film sits him
+  in its cab).
+  - THE FILE: tools/preppickup.mjs's new opt-in FULL (byte-identical without it, proven against the shipped file) keeps
+    every triangle (393,952 where v24.16–v24.27 drew 107,744) and every map on its own UV set — base colour,
+    metal-roughness, normal, occlusion, emissive — with the tangents (turned with the truck, their handedness flipped by
+    the mirror) and the file's clearcoat, sheen and specular. Kept as the cut had them: the v24.18 glass (the file's
+    transmission would draw the whole scene twice a frame) and the lamps at 1x (the file's "All_On" strength, up to 10x,
+    dropped); the daytime-running-light atlas keeps its emissive map, which the cut had lost (it lit the atlas white).
+    Its maps are filtered at anisotropy 8, as the yard's other cars' are (v24.26).
+  - ONE LEVEL, NOT TWO: the plan was the truck as delivered near and v24.18's cut far, one file on one set of sheets.
+    Deployed first that way (6ae7efa729528572f083ce39) and photographed on a phone, the cut wearing the full maps showed
+    its facets through the clear-coated paint as dark creases across the doors, plain at 13 m (LEARNINGS), so the switch
+    would have been seen. The truck is drawn whole at every distance; one level is also the smaller download.
+  - THE COST, MEASURED (put to Chad as "about 3.3 MB" — an arithmetic estimate, and wrong): the file 2.2 → 10.2 MB
+    (+8.1 MB; the chapter's models 70.8 → 78.9 MB); its sheets ~24 → ~102 MB of graphics memory, its geometry 3.1 → 12.7 MB
+    decoded. On a phone, the same frame with the truck shown and hidden: 387k triangles at the spawn, 399k seen from the
+    gate or the yard's middle (the cut: 108k); 164–223k standing beside it looking away (each joined part spans the whole
+    truck, so sphere culling keeps it); nothing in the yard's other ten views. Put to him with the options (OPEN-ITEMS
+    C12 m).
+  - Found on the way and left alone: three r185 ignores a material's envMapIntensity under the scene's environment (the
+    uniform is the scene's 0.05; 100x changes no pixel), so the torch's, the bronze's and the pickup's lifts do nothing
+    (LEARNINGS; OPEN-ITEMS C12 l).
+  - It lands behind the curtain: on a fresh Start and on a Continue its parse (2.1–2.6 s) ends about 45 s before the world
+    is shown, and no model of the chapter lands late (the engine's own load log).
+  - Deployed 6ae7f25ddd0a7466a3b234da, 310 of 310 files byte-identical; photographed on a phone at the spawn and in the
+    opening film's five cab shots; chapter, hosted, leak and walk green on its copy.
 
 ## The sheet, version by version
 

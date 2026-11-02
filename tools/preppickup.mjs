@@ -33,6 +33,22 @@
    have their own UVs turned back, and the badges are the maker's symmetric mark, so nothing reads backwards.
      INTERIOR=1 MIRROR=1 ERR=0.002 node tools/preppickup.mjs masters/v24.15/src/pickup_truck.glb assets/e4pickup.glb 0.15 1024
 
+   v24.28 — FULL=1, THE TRUCK AS DELIVERED, for where it is seen close (Chad, 2 Nov 2026: "Do the pickup truck" — v14.14,
+   his models keep every triangle and every map wherever they are seen close — and the truck is seen close: he starts
+   beside it, and the opening film sits him in its cab): every triangle (no simplify), every map on its own UV set (base colour, metal-roughness, normal, occlusion, emissive — the
+   four UV sets the maps use; the two no map uses go), the tangents (turned with the truck, their handedness flipped by
+   the MIRROR's reflection), and the materials' own clearcoat, sheen and specular. Two things stay as v24.18's cut had
+   them: the GLASS (the v24.18 dark translucent windows; the lamps' lenses keep their own alpha) — the file's
+   TRANSMISSION would make three.js draw the whole scene a second time every frame the glass is on screen — and the
+   lamps' brightness: the file's emissive strength
+   (its "All_On" state, every lamp burning at up to 10x) is dropped, so each lamp shows its own map at 1x, as the cut
+   always has (and the daytime-running atlas, whose map is on its second UV set, keeps it: the cut lost that map and lit
+   the whole atlas white). The sheets keep their own size (none is over 1024): JPEG where opaque — the data sheets
+   (normal, metal-roughness, occlusion) at q 92 with full chroma, so no channel bleeds into its neighbour — PNG where a
+   cut-out needs its alpha. ONE level: no cut of it ships for distance (step 5 says why), so the ratio and error are
+   not read.
+     FULL=1 INTERIOR=1 MIRROR=1 node tools/preppickup.mjs masters/v24.15/src/pickup_truck.glb assets/e4pickup.glb
+
    Usage: node tools/preppickup.mjs in.glb out.glb [ratio=0.2] [px=1024] */
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
@@ -86,7 +102,8 @@ for (const mesh of root.listMeshes()) for (const p of mesh.listPrimitives()) {
 }
 console.log(`  the cabin's insides: ${gone} triangles gone (${INSIDE})`);
 
-/* 3. the maps: base colour only; the metal-roughness sheet kept as its mean */
+/* 3. the maps: base colour only; the metal-roughness sheet kept as its mean (FULL: every map kept — v24.28) */
+const FULL = process.env.FULL === '1';
 const mean = async (tex) => {
   const { data, info } = await sharp(Buffer.from(tex.getImage())).resize(64, 64, { fit: 'fill' }).raw().toBuffer({ resolveWithObject: true });
   let g = 0, b = 0; const n = info.width * info.height, c = info.channels;
@@ -94,6 +111,10 @@ const mean = async (tex) => {
   return [g / n / 255, b / n / 255];
 };
 for (const m of root.listMaterials()) {
+  if (FULL && !GLASS.test(m.getName())) {                 // (v24.28) as delivered, but for transmission and the lamps' strength
+    for (const e of m.listExtensions()) if (/transmission|emissive_strength|volume|ior/.test(e.extensionName)) m.setExtension(e.extensionName, null);
+    continue;
+  }
   const mr = m.getMetallicRoughnessTexture();
   let metal = m.getMetallicFactor(), rough = m.getRoughnessFactor();
   if (mr) { const [g, b] = await mean(mr); rough *= g; metal *= b; }
@@ -110,9 +131,10 @@ for (const m of root.listMaterials()) {
   if (m.getBaseColorTexture() && bi && bi.getTexCoord() !== 0) throw new Error(m.getName() + ': base colour on UV ' + bi.getTexCoord());
   m.setMetallicFactor(+metal.toFixed(3)).setRoughnessFactor(+Math.max(0.04, rough).toFixed(3));
 }
-for (const e of root.listExtensionsUsed()) e.dispose();
+if (FULL) { for (const e of root.listExtensionsUsed()) if (/transmission|emissive_strength|volume|ior/.test(e.extensionName)) e.dispose(); }
+else for (const e of root.listExtensionsUsed()) e.dispose();
 for (const mesh of root.listMeshes()) for (const p of mesh.listPrimitives())
-  for (const sem of ['TEXCOORD_1', 'TEXCOORD_2', 'TEXCOORD_3', 'TANGENT']) if (p.getAttribute(sem)) p.setAttribute(sem, null);
+  for (const sem of (FULL ? ['TEXCOORD_4', 'TEXCOORD_5'] : ['TEXCOORD_1', 'TEXCOORD_2', 'TEXCOORD_3', 'TANGENT'])) if (p.getAttribute(sem)) p.setAttribute(sem, null);
 
 /* 4. baked and joined; then the half turn, the tyres on the ground, the axles' middle on z = 0 */
 { const seen = new Set(); for (const node of root.listNodes()) { const m = node.getMesh(); if (!m) continue; if (seen.has(m)) node.setMesh(m.clone()); else seen.add(m); } }
@@ -140,6 +162,11 @@ for (const p of prims) {
     }
     acc.setArray(out).setNormalized(false);
   }
+  /* (v24.28, FULL) the tangents turn with the truck; a reflection (MIRROR) also turns their handedness */
+  { const acc = p.getAttribute('TANGENT');
+    if (acc) { const a = acc.getArray(), out = new Float32Array(a.length), sx = MIRROR ? 1 : -1;
+      for (let i = 0; i < a.length; i += 4) { out[i] = sx * a[i]; out[i + 1] = a[i + 1]; out[i + 2] = -a[i + 2]; out[i + 3] = MIRROR ? -a[i + 3] : a[i + 3]; }
+      acc.setArray(out).setNormalized(false); } }
   if (MIRROR) {                                      // a reflection turns every triangle inside out: wind them back
     const ix = p.getIndices();
     if (ix) { const a = ix.getArray(); for (let i = 0; i < a.length; i += 3) { const t = a[i + 1]; a[i + 1] = a[i + 2]; a[i + 2] = t; } ix.setArray(a); }
@@ -149,12 +176,19 @@ for (const p of prims) {
 if (MIRROR) console.log('  MIRROR: reflected across the long axis (the wheel on the right)');
 
 /* 5. simplified, the sheets, meshopt */
-await doc.transform(simplify({ simplifier: MeshoptSimplifier, ratio: RATIO, error: ERR }), prune());
+if (!FULL) await doc.transform(simplify({ simplifier: MeshoptSimplifier, ratio: RATIO, error: ERR }), prune());
+/* (v24.28) FULL is ONE level, the truck as delivered: a distance level cut from it (v24.18's ratio and error, 109k) was
+   tried on the same materials and photographed on a phone — the clear-coated paint showed every facet of the cut as
+   dark creases across the doors, plain at 13 m (docs/HISTORY.md v24.28; LEARNINGS) — so no cut level ships */
+const dataTex = new Set();                                 // (v24.28) the sheets that are data, not colour
+for (const m of root.listMaterials()) for (const t of [m.getNormalTexture(), m.getMetallicRoughnessTexture(), m.getOcclusionTexture()]) if (t) dataTex.add(t);
 for (const t of root.listTextures()) {
   const img = t.getImage(); if (!img) continue;
   const alpha = root.listMaterials().some(m => m.getAlphaMode() !== 'OPAQUE' && (m.getBaseColorTexture() === t));
   const s = sharp(Buffer.from(img)).resize(PX, PX, { fit: 'inside', withoutEnlargement: true });
-  const out = alpha ? await s.png({ palette: true }).toBuffer() : await s.jpeg({ quality: 86 }).toBuffer();
+  const out = alpha ? await s.png({ palette: !FULL }).toBuffer()
+    : FULL ? await s.jpeg(dataTex.has(t) ? { quality: 92, chromaSubsampling: '4:4:4' } : { quality: 90 }).toBuffer()
+    : await s.jpeg({ quality: 86 }).toBuffer();
   t.setImage(out).setMimeType(alpha ? 'image/png' : 'image/jpeg').setURI('');
 }
 /* the contract, asserted after the bake */
