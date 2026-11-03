@@ -7628,6 +7628,26 @@ What the baseline contains, by release:
     asks: the taxi window's drops read as brown bubbles and the wet road has no shine (v24.33's), and the cabinets' seven
     kinds of piece repeat (more kinds need more models from photographs). Left as minor: the flowers' round heads, the
     carton still by the case weeks later, the corridor floor's plainness.
+- **v24.38** (prepared, not a build: nothing deployed, build.py still says 24.37) LERSI CHIN, READY AND NOT YET CAST —
+  Chad, 3 Nov 2026: *"this is the 3d model of lersi chin, he will be used in the next episode"* (episode 4 chapter 2,
+  S1·11's second half, the next chapter to be built — the plan has him there, and that is taken to be what "the next
+  episode" meant). His own model, so no credit row: a Meshy scan on a 28-joint Mixamo rig, 597,494 triangles, twelve
+  takes of his own (no standing idle). Prepared as `assets/lersichin.glb` (179,247 triangles, a 4096 colour sheet and a
+  2048 normal map, 7.6 MB), photographed take by take, and committed; the key `lersichin` is his, and goes into build.py
+  (hosted-only) the day the chapter casts him, so no player downloads him before then. masters/v24.38/make.sh is the
+  recipe and the reasons; masters/v24.38/shots/ the photographs.
+  - FLAT-SHADED, as Krukai's was (v18.7): 1,197,581 vertices over 298,699 positions, every sampled triangle with its own
+    normals, so prepmonk alone cut 597,494 to 597,324 and wrote 23 MB. tools/deflatten.mjs first, then the cut works.
+    The tell was already in LEARNINGS (vertices ÷ triangles ≈ 2) and was not checked first; it is now the first thing
+    to measure on any scan.
+  - HIS FACE IS IN THE COLOUR SHEET: at a close-up (0.5 m, a 30° lens) five versions against the scan — the 0.3 cut
+    with a 2048 sheet (Pong's and Krukai's level) and every triangle with a 2048 sheet are equally soft; the 0.3 cut
+    with a 4096 sheet matches the scan; a 2048 normal map is indistinguishable from a 4096 one. So: 4096 colour, 2048
+    normals (prepmonk's new NTEX, opt-in; unset it gives the same bytes, re-run and compared, sha1 df63587). The cost,
+    measured: about 67 MB more of a phone's graphics memory while he is on screen than the 2048 file, and 2.2 MB more
+    to download; the 2048 file is one commented line in make.sh, for the chapter to choose when its budget is known.
+  - tools/shootmodel.mjs's `--clips` never worked (the argument filter dropped every word beginning '--', so only the
+    bind pose was ever shot); fixed, with `--at=` to pose each take at a share of its length.
 
 ## The sheet, version by version
 

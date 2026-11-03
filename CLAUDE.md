@@ -1101,7 +1101,8 @@ two and three, one chapter: the smell nobody else could smell). Episode 5, **The
 name, v23.5), is S1·16–S1·20, cases four to eight, one a chapter, ending on Season 1's finale; the casebook's own hinge
 between the two is the end of case four, "I had thought I was only there to assist my teacher" (the grouping is
 Chad's, approved v23.5). Grandmaster Pho and Lersi Chin are Chad's models, with their voices (the Ah Pek's too, whose
-case comes later in the casebook). **Ajahn Krukai's model is PINNED** (v23.5, Chad: *"Make sure ajahn krukai's model
+case comes later in the casebook). Lersi Chin's model arrived 3 Nov 2026 and is prepared, not yet cast:
+`assets/lersichin.glb`, key `lersichin` (into build.py the day chapter 2 casts him), masters/v24.38/make.sh. **Ajahn Krukai's model is PINNED** (v23.5, Chad: *"Make sure ajahn krukai's model
 in ep3 is unaffected and untouched. It is important that krukai is in the game as the master who gave the player his
 first sakyant."*): `ajarn` / `assets/ajarn.glb` are the bytes that shipped at v18.7, `chaptertest` fails on any change
 to the key, the file or e3c1's use of it, and Episode 4's first master — the original Sak Yant Ajarn — arrives under

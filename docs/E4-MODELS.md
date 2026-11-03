@@ -99,3 +99,13 @@ a money bag at her side. Nobody will take one for the other.)
 
 **Where to put them:** a Drive folder per batch, as before. Chad's own models need no credit; a Sketchfab model gets
 its credit row.
+
+---
+
+## Episode 4 chapter 2 — not built yet (S1·11's second half: the fog, Lersi Chin's clearing and the warning)
+
+### People
+
+| Role | Model | Status |
+|---|---|---|
+| **Lersi Chin** | Chad's own (3 Nov 2026: *"this is the 3d model of lersi chin, he will be used in the next episode"*) — a young hermit in a tiger-print cloth over his left shoulder, a long string of big red-brown prayer beads and beads at both wrists, beads wound up his topknot, a red mark on his forehead, a small goatee, a tattoo on his bare right shoulder and one on his chest, barefoot. A Meshy scan on a 28-joint Mixamo rig with twelve takes of his own (walk, run, a cross-legged sit, two chair sits and a sit-to-stand, five talking takes — one angry, 20.8 s — and a spell cast); no standing idle (the chapter makes his rest from a talk take's still stretch, or retargets one) | **RECEIVED AND PREPARED (v24.38), not yet cast**: `assets/lersichin.glb`, 597,494 → 179,247 triangles, a 4096 colour sheet and a 2048 normal map, 7.6 MB (`masters/v24.38/make.sh` — his file was flat-shaded, so `tools/deflatten.mjs` first; the colour sheet is 4096 because at a face close-up the 2048 one is visibly soft, `masters/v24.38/shots/face-cuts.jpg`). Every take photographed front and side (`shots/takes-1.jpg`, `takes-2.jpg`). The key `lersichin` is his; it goes into build.py (hosted-only) the day the chapter casts him. His voice is still to come (by audition, Chad picks by ear — docs/V24.0-EPISODE4-PLAN.md §4) |

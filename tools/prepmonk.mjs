@@ -225,9 +225,14 @@ if (process.env.CHARTFIX) {
   if (process.env.CHARTREPORT) fs.writeFileSync(process.env.CHARTREPORT, JSON.stringify(rep));
 }
 
-/* sheets: base colour and normal map at 2048 WebP, on a plain source */
+/* sheets: base colour and normal map at 2048 WebP, on a plain source.
+   v24.38: NTEX sizes the normal map on its own (a face's sharpness is in the
+   colour sheet; unset, the normal map takes TEX as it always did) */
+const NTEXPX = Number(process.env.NTEX || TEXPX);
+const normalTex = new Set(root.listMaterials().map(m => m.getNormalTexture()).filter(Boolean));
 for (const tex of root.listTextures()) {
-  const img = await sharp(Buffer.from(tex.getImage())).resize(TEXPX, TEXPX, { fit: 'fill' }).webp({ quality: 92 }).toBuffer();
+  const px = normalTex.has(tex) ? NTEXPX : TEXPX;
+  const img = await sharp(Buffer.from(tex.getImage())).resize(px, px, { fit: 'fill' }).webp({ quality: 92 }).toBuffer();
   tex.setImage(img).setMimeType('image/webp').setURI('');
 }
 await doc.transform(prune(), meshopt({ encoder: MeshoptEncoder, level: 'medium' }));

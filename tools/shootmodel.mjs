@@ -3,7 +3,11 @@
 // and the model load as modules, frames the model from its own bounds, and
 // writes front / side / back / top-ish PNGs plus a measured report.
 //
-//   node tools/shootmodel.mjs <file.glb> <outPrefix> [clipName|--clips] [--size=900]
+//   node tools/shootmodel.mjs <file.glb> <outPrefix> [clipName|--clips] [--size=900] [--at=0.5]
+//
+// --clips shoots every take in the file (v24.38: the filter below dropped every
+// '--' word, so --clips was never seen and only the bind pose was shot); --at
+// poses each take at that share of its own length instead of its first frame.
 import { chromium } from 'playwright';
 import { createServer } from 'http';
 import { readFile } from 'fs/promises';
@@ -12,7 +16,8 @@ import { LAUNCH } from '../testlib.mjs';
 
 const FILE = process.argv[2];
 const OUT = process.argv[3] || '/tmp/shot';
-const CLIP = process.argv.slice(4).find(a => !a.startsWith('--')) || '';
+const CLIP = process.argv.slice(4).includes('--clips') ? '--clips' : (process.argv.slice(4).find(a => !a.startsWith('--')) || '');
+const AT = +(process.argv.find(a => a.startsWith('--at=')) || '').slice(5) || 0;
 const SIZE = +(process.argv.find(a => a.startsWith('--size=')) || '').slice(7) || 900;
 const ROOT = resolve('.');
 const MIME = { '.js': 'text/javascript', '.mjs': 'text/javascript', '.html': 'text/html', '.glb': 'model/gltf-binary', '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg' };
@@ -87,7 +92,8 @@ console.log(JSON.stringify(info, null, 1));
 const clips = CLIP === '--clips' ? (info.info?.clips || []).map(c => c.name) : (CLIP ? [CLIP] : ['']);
 for (const c of clips) {
   for (const [name, deg, pitch] of [['front', 0, 8], ['side', 90, 8], ['back', 180, 8], ['q', 35, 18]]) {
-    const r = await p.evaluate(([d, pi, cl]) => window.__shoot(d, pi, cl, 0.001), [deg, pitch, c]);
+    const dur = (info.info?.clips || []).find(k => k.name === c)?.dur || 0;
+    const r = await p.evaluate(([d, pi, cl, t]) => window.__shoot(d, pi, cl, t), [deg, pitch, c, AT && dur ? AT * dur : 0.001]);
     await p.screenshot({ path: `${OUT}${c ? '-' + c : ''}-${name}.png` });
     if (name === 'front') console.log(c || '(static)', JSON.stringify(r));
   }

@@ -7213,3 +7213,16 @@ cut (sharing its vertices and maps) when it is small.
   slow box draws a frame every few seconds: two reads a second apart can see no frame between them and call a fade that
   is a third done "settled" (the first run of e4c1music marked three right phases WRONG). Wait on the condition the
   phase should reach (waitForFunction on the range), and fail it only if it never comes.
+
+## v24.38 — a scan's face lives in its colour sheet
+
+- **Measure vertices ÷ triangles before the first prep of any scan.** About 0.55 is a welded mesh; about 2 is a
+  flat-shaded export (every triangle carrying its own normals), which no simplifier can cut — prepmonk took Lersi Chin
+  from 597,494 to 597,324 triangles and wrote 23 MB. tools/deflatten.mjs first. This was already written down for
+  Krukai (v18.7) and was not checked first: the first measurement of a new model is this ratio.
+- **At a close-up, a character's face is limited by the colour sheet, not by the triangle cut.** Five versions of Lersi
+  Chin against his scan at 0.5 m with a 30° lens: the 0.3 cut at 2048 and EVERY triangle at 2048 were equally soft
+  (smudged eyes, a blurred forehead mark and mouth, a blotch at a brow's end); the 0.3 cut at 4096 matched the scan;
+  the normal map at 2048 could not be told from 4096. So a hero seen close keeps a large colour sheet and a modest cut,
+  not the other way round; spend the memory where the picture is. (At bust distance on a phone, 1.3 m, every version
+  read alike — judge at the closest shot the chapter will use, v5.31.)
