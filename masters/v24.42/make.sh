@@ -35,6 +35,16 @@
 #   (x27), running 524 (x41). That ring is the strip, the tongue and the spikes; no robe rule can remove it, because it is
 #   tied to both. The next step, if Chad wants it: cut the robe's underside free of his shins at that ring and close each
 #   leg — a change to his mesh, so his call (his rule: his models as delivered).
+#
+# THE INDEPENDENT REVIEW of this file (a fresh reader, the eight takes this pass touched, ten angles against his file):
+#   1 better (mage_soell_cast_4), 2 the same (Charged_Spell_Cast; mage_soell_cast_8, up from worse), 5 worse — Running and
+#   Right_Hand_Sword_Slash (a foot or shin through the hem, a torn scrap at the trailing ankle), Walking (the striding
+#   shin's torn strip at 0.2 s; the drape over his left upper arm a stiff shell the forearm passes into),
+#   Talk_with_Hands_Open (that drape), mage_soell_cast_6 (stiff sails in the crouch, a heel through the back).
+#   Measured against v24.41's file, every skinned point: HULLTAPER moved Walking up to 20 cm, mage_soell_cast_6 17,
+#   mage_soell_cast_4 16, Charged_Spell_Cast 7, Talk_with_Hands_Open 0.3 — it changed takes nothing had asked it to, so
+#   the next pass takes it out; the drape is v24.39's re-bind (the cloth on his left arm given to the trunk), a regression
+#   of mine, and the next pass takes it on.
 #   Photographed: the eight takes this pass touched, ten angles against his file, read by a fresh independent reviewer
 #   (the session's survey7); the shipped file every take from five angles (shots/takes-1..3.jpg); before and after on a
 #   solid floor (shots/pho-before-after-seated.jpg, -moving.jpg).

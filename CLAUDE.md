@@ -1109,7 +1109,9 @@ improved — `assets/pho.glb`, key `pho` (chapter 3), masters/v24.42/make.sh: hi
 frame by tools/rigstrain.mjs), his robe rebuilt at v24.41 as twelve three-bone chains baked into his nineteen takes
 (tools/robeskin.mjs; v24.40's robe made the seated takes worse; v24.41's independent review: 5 takes better than his file,
 8 the same, 6 worse), and at v24.42 each take given the robe rules that read best for it (running and the sword lunge
-v24.40's, measured identical; one cast fitted to his file; the hull's push eased in) — its own review: pending. What no
+v24.40's, measured identical; one cast fitted to his file; the hull's push eased in) — its own review, the eight takes it
+touched: 1 better, 2 the same, 5 worse (feet and shins through the hem with torn scraps; the drape over his left arm a
+stiff shell the forearm passes through, v24.39's re-bind and my regression; the taper moved takes nothing asked). What no
 robe rule can fix: the scan's robe is one closed surface whose hem is joined to his shins by a ring of 562 triangles,
 which stretches into the strips and spikes whenever a leg leaves the robe; cutting it free is a change to his mesh, put
 to Chad. **Ajahn Krukai's model is PINNED** (v23.5, Chad: *"Make sure ajahn krukai's model

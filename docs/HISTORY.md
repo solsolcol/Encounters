@@ -7758,7 +7758,19 @@ What the baseline contains, by release:
   off unless set: v24.40's and v24.41's recipes still re-make their own files byte for byte (checked), and v24.42's
   re-makes assets/pho.glb (6,782,472 bytes, sha1 46d1a1e6…). The torso measures as before (0.7 % at most).
   - REVIEW of the eight takes this pass touched, a fresh reader against his file (the first reader was stopped by a
-    container restart before it reported; a new one read the same sheets): pending at this checkpoint.
+    container restart before it reported; a new one read the same sheets): 1 BETTER (mage_soell_cast_4: his lunge's
+    trouser legs become a long flared skirt), 2 THE SAME (Charged_Spell_Cast, a trade: his trouser legs and streaked wing
+    gone, stiff pointed sails in the crouch instead; mage_soell_cast_8, up from worse, fitted), 5 WORSE: Running and
+    Right_Hand_Sword_Slash (a foot or shin through the hem, a torn scrap at the trailing ankle, the back drawn into a strip
+    to it, a black hole on the back), Walking (at 0.2 s the striding shin bare with a torn strip above the ankle in six of
+    eight views; the drape over his left upper arm a stiff shell the forearm disappears into), Talk_with_Hands_Open (that
+    drape; the forearm and hand through it at 2.7 s), mage_soell_cast_6 (stiff sails with corners in the crouch, a heel
+    through the back, a pinched bare shoulder). Measured against v24.41 (every skinned point compared): the taper moved
+    Walking up to 20 cm, mage_soell_cast_6 17 cm, mage_soell_cast_4 16 cm and Charged_Spell_Cast 7 cm, and
+    Talk_with_Hands_Open not at all (0.3 cm) — so the taper changed takes no finding had asked it to (its only reason,
+    the sword's and running's panels, went with V1TAKES), and the drape is v24.39's re-bind: MY regression, kept off the
+    arm to stop his file's wing, so a calm arm now passes through it. The next pass takes the taper back out and the drape
+    on.
   - WHY THE STRIPS COME BACK, MEASURED (the session's junction count): the robe's surface meets his legs along 562
     triangles (rest heights 0.20–0.30 m, the hem's underside closing onto his shins), stretched past three times their
     length in every take that moves his legs (walking x16, hidden; the sword lunge x27; running x41). No robe rule can
