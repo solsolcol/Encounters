@@ -7745,6 +7745,29 @@ What the baseline contains, by release:
     (masters/v24.41/shots/takes-1..3.jpg), before and after on a solid floor (pho-before-after-seated.jpg, -moving.jpg;
     tools/clipsheet.mjs --floor, new: a see-through grid shows cloth a game's floor hides). Not in build.py until chapter
     3 casts him.
+- **v24.42** (prepared, not a build: nothing deployed, the live build stays v24.40) GRANDMASTER PHO, EACH TAKE ITS OWN
+  ROBE RULES — the v24.41 review's six worse takes answered where a rule could answer them, on the same rig
+  (masters/v24.42/make.sh). Running and the sword lunge get v24.40's own rules exactly (robeskin V1TAKES: the two-bone
+  chain as one turn shared by the waist and mid bones, its table, sag and hang, the legs' four capsules — the reader of
+  v24.40 had rated it better and the same there, where v24.41's hull flared the hem into panels). Measured: every one of
+  their 355,131 skinned points lies within 0.8 mm of v24.40's file (walking, on this pass's rules, is up to 35 cm
+  apart), so v24.40's own fault comes back with them: the sword lunge's back hem drawn down to the back heel (the scan's
+  robe is one closed surface joined to his ankles; his file shows trouser legs at that moment). mage_soell_cast_8 is
+  fitted to his own file's robe (both reviewers: his hem is clean there); the hull's push eases in by angle (HULLTAPER)
+  instead of v24.41's hard cut, which stood one front-side chain out beside its unpushed neighbour. Both new options are
+  off unless set: v24.40's and v24.41's recipes still re-make their own files byte for byte (checked), and v24.42's
+  re-makes assets/pho.glb (6,782,472 bytes, sha1 46d1a1e6…). The torso measures as before (0.7 % at most).
+  - REVIEW of the eight takes this pass touched, a fresh reader against his file (the first reader was stopped by a
+    container restart before it reported; a new one read the same sheets): pending at this checkpoint.
+  - WHY THE STRIPS COME BACK, MEASURED (the session's junction count): the robe's surface meets his legs along 562
+    triangles (rest heights 0.20–0.30 m, the hem's underside closing onto his shins), stretched past three times their
+    length in every take that moves his legs (walking x16, hidden; the sword lunge x27; running x41). No robe rule can
+    untie a surface tied to both; cutting it is a change to his mesh, so it is put to Chad.
+  - Left, and said to Chad: the cross-legged lap's dark folds; sit-to-stand's lap apron and the necklace at his side
+    (since v24.40); the drape over his left arm when it lifts (the v24.39 upper-body re-bind); the deep crouches, where
+    the hanging cloth lies flat on the floor (both reviews: the same as his file there).
+  - The before-and-after sheets (masters/v24.42/shots/pho-before-after-seated.jpg, -moving.jpg) label the new rows NOW,
+    not FIXED: the sword lunge's hem is not fixed, and a label is a claim.
 
 ## The sheet, version by version
 

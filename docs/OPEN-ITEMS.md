@@ -64,7 +64,7 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
 9. **Models.** NEEDED (docs/E4-MODELS.md): the taxi uncle. Episode 3 still on stand-ins (docs/E3-MODELS.md): chapter
    3's shop staff man and the customers (the kneeling girl and man, the auntie, the youth, the shrine's wife and
    father, the passer-by); chapter 4's Chinatown towkay. To come for episode 4: Grandmaster Pho's voice (his model arrived
-   3 Nov 2026 and is prepared, `pho`, v24.41, its robe still being improved), Lersi Chin's voice (his model arrived 3 Nov 2026 and is prepared,
+   3 Nov 2026 and is prepared, `pho`, v24.42, its robe still being improved), Lersi Chin's voice (his model arrived 3 Nov 2026 and is prepared,
    `lersichin`, v24.38), chapter 4's lady; the Ah Pek later
    in the casebook.
 10. **Episode 4's next chapters** (docs/V24.0-EPISODE4-PLAN.md §5): how Pho and Lersi Chin speak (Thai captioned in

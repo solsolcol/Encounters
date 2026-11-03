@@ -443,7 +443,7 @@ if (CH) {
      they pass outside it (the legs' support in each chain's direction, at each height, within HULLB). Never in front
      (the front drapes the lap and the crossed shins) and never more than at rest (each chain's rest shortfall is its
      allowance, so rest is rest) */
-  const HULL = E('HULL', SKIRTB === 3 ? 1 : 0), HULLB = E('HULLB', 0.08), HSEC = 1 / Math.cos(Math.PI / 12), HULLR = E('HULLR', 1);
+  const HULL = E('HULL', SKIRTB === 3 ? 1 : 0), HULLB = E('HULLB', 0.08), HSEC = 1 / Math.cos(Math.PI / 12), HULLR = E('HULLR', 1), HULLTAPER = E('HULLTAPER', 0);
   const legSamples = () => { const S = [];
     for (const sd of ['Left', 'Right']) { const kn = Wd(`${sd}Leg`), an = Wd(`${sd}Foot`), K = new Vector3().setFromMatrixPosition(kn), Aa = new Vector3().setFromMatrixPosition(an);
       for (let i = 0; i <= 6; i++) S.push([K.clone().lerp(Aa, i / 6), 0.065]);
@@ -451,12 +451,12 @@ if (CH) {
       /* a kicked foot's sole and toes */
       for (const t of [`${sd}ToeBase`, `${sd}Toe_End`]) if (JI[t] !== undefined) S.push([new Vector3().setFromMatrixPosition(Wd(t)), 0.04]); }
     return S; };
-  const hullPush = (P, d, L, outN, axis, S, slack) => {
+  const hullPush = (P, d, L, outN, axis, S, slack, hw = 1) => {
     const e = P.clone().addScaledVector(d, L);
     for (let it = 0; it < 5; it++) { let moved = false;
       for (const u of [0.35, 0.7, 1]) { const q = P.clone().lerp(e, u); let need = -1e9;
         for (const [s, r] of S) if (Math.abs(s.y - q.y) < HULLB) need = Math.max(need, ((s.x - axis.x) * outN.x + (s.z - axis.z) * outN.z + r * HULLR) * HSEC);
-        const have = (q.x - axis.x) * outN.x + (q.z - axis.z) * outN.z, def = need - have - slack;
+        const have = (q.x - axis.x) * outN.x + (q.z - axis.z) * outN.z, def = (need - have - slack) * hw;
         if (def > 0.002) { e.addScaledVector(outN, Math.min(0.1, def / u)); moved = true; } }
       e.sub(P).setLength(L).add(P); if (!moved) break; }
     return e.sub(P).normalize(); };
@@ -478,11 +478,14 @@ if (CH) {
       const T = thighK('Left', c.Mid).multiplyScalar(c.w[0]).add(thighK('Right', c.Mid).multiplyScalar(c.w[1])).add(rigW(c.Mid).multiplyScalar(c.w[2]));
       let d = T.sub(R).normalize(); d = push(R, d, c.La, caps, grown(c.ra), out); d = floorClamp(R, d, c.La, out);
       const P1 = R.clone().addScaledVector(d, c.La);
-      const hullOn = HULL && Math.abs(c.th - Math.PI) <= 2 * Math.PI / 3 + 1e-6;   // 60°..300°: the sides and the back
-      let dm = c.m0.clone().applyQuaternion(yaw); if (hullOn) dm = hullPush(P1, dm, c.Lm, out, PwN, LS, c.hsM || 0);
+      /* HULLTAPER=1 (v24.42): the hull's share by the chain's angle — full behind him (105°..255°), easing out to none at
+         60°/300°; v24.41's hard cut there pushed one front-side chain out beside an unpushed neighbour, a flat panel with
+         a step (the reviewer). Unset, the hard cut, as v24.41 */
+      const dA = Math.abs(c.th - Math.PI), hw = !HULL ? 0 : HULLTAPER ? sstep((2 * Math.PI / 3 - dA) / (Math.PI / 4)) : (dA <= 2 * Math.PI / 3 + 1e-6 ? 1 : 0), hullOn = hw > 0;
+      let dm = c.m0.clone().applyQuaternion(yaw); if (hullOn) dm = hullPush(P1, dm, c.Lm, out, PwN, LS, c.hsM || 0, hw);
       dm = push(P1, dm, c.Lm, caps, grown(c.rm), out); dm = floorClamp(P1, dm, c.Lm, out);
       const P2 = P1.clone().addScaledVector(dm, c.Lm);
-      let db = c.l0.clone().applyQuaternion(yaw); if (hullOn) db = hullPush(P2, db, c.L2, out, PwN, LS, c.hsB || 0);
+      let db = c.l0.clone().applyQuaternion(yaw); if (hullOn) db = hullPush(P2, db, c.L2, out, PwN, LS, c.hsB || 0, hw);
       db = push(P2, db, c.L2, caps, grown(c.rb), out); db = floorClamp(P2, db, c.L2, out);
       if (DBG) DBG.push(`ch${Math.round(c.th * 180 / Math.PI)}° R ${R.toArray().map(x => x.toFixed(2))} T ${T.toArray().map(x => x.toFixed(2))} P1 ${P1.toArray().map(x => x.toFixed(2))} P2 ${P2.toArray().map(x => x.toFixed(2))} hem ${P2.clone().addScaledVector(db, c.L2).toArray().map(x => x.toFixed(2))}`);
       const Wa = qAlign(c.a0.clone().applyQuaternion(qW), d).multiply(qW), Wm = qAlign(c.m0.clone().applyQuaternion(Wa), dm).multiply(Wa), Wb = qAlign(c.l0.clone().applyQuaternion(Wm), db).multiply(Wm);
@@ -491,7 +494,41 @@ if (CH) {
     res.waist = [qHw.clone().invert().multiply(qW), qW];
     return res;
   };
-  const chainsAt = () => (SKIRTB === 3 ? chainsNow3 : chainsNow)();
+  /* V1TAKES (v24.42, SKIRTB=3): these takes get v24.40's own rules — the two-bone chain (the waist to the knees as ONE
+     turn shared by the waist and mid bones, the knees to the hem), its angle table, its sag and its hang, the legs'
+     four capsules only — so they deform exactly as v24.40's file did. The first reviewer rated v24.40 better than this
+     pass's hanging rules in running and the sword lunge, where the hull flares the hem into panels */
+  const V1TAKES = (process.env.V1TAKES || '').split(',').filter(Boolean);
+  const TABLE1 = [[0.5, 0.5, 0], [0.7, 0.3, 0], [0.88, 0.12, 0], [0.85, 0, 0.15], [0.65, 0, 0.35], [0.45, 0.05, 0.5], [0.25, 0.25, 0.5]];
+  const angW1 = th => { let d = th * 180 / Math.PI, mir = false; if (d > 180) { d = 360 - d; mir = true; }
+    const i = Math.min(5, Math.floor(d / 30)), f = d / 30 - i, a = TABLE1[i], b = TABLE1[i + 1], w = a.map((x, k) => x + (b[k] - x) * f), s = w[0] + w[1] + w[2];
+    const r = w.map(x => x / s); return mir ? [r[1], r[0], r[2]] : r; };
+  const chainsV1 = () => {
+    const qHw = new Quaternion(), qSw = new Quaternion(); Wd('Hips').decompose(new Vector3(), qHw, new Vector3()); Wd('Spine').decompose(new Vector3(), qSw, new Vector3());
+    const qH = qHw.clone().multiply(qH0.clone().invert()), qS = qSw.clone().multiply(qS0.clone().invert());
+    const qW = qH.clone().slerp(qS, WB), PwN = new Vector3().setFromMatrixPosition(Wd('Hips')), fwd = new Vector3(0, 0, 1).applyQuaternion(qW);
+    const yaw = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), Math.atan2(fwd.x, fwd.z)), caps = capsNow();
+    const rig = (n, p) => V(p).applyMatrix4(M0i[n]).applyMatrix4(Wd(n)), rigW = p => V(p).sub(Pw0).applyQuaternion(qW).add(PwN);
+    /* v24.40 had the thighs' and shins' capsules only */
+    const only4 = rr => rr.map((r, i) => (i < 4 ? r : 0));
+    const res = CH.map(c => {
+      const w = c.w1 || (c.w1 = angW1(c.th)), out = c.out.clone().applyQuaternion(yaw), R = rigW(c.R);
+      let d = rig('LeftUpLeg', c.K).multiplyScalar(w[0]).add(rig('RightUpLeg', c.K).multiplyScalar(w[1])).add(rigW(c.K).multiplyScalar(w[2])).sub(R).normalize();
+      const gu = 0.45 * sstep((c25 + d.y) / (c25 - c75)); if (gu > 0) d.multiplyScalar(1 - gu).add(new Vector3(0, -gu, 0)).normalize();
+      d = push(R, d, c.L1, caps, only4(c.r1), out); d = floorClamp(R, d, c.L1, out);
+      const S = R.clone().addScaledVector(d, c.L1), hang = S.clone().addScaledVector(c.l0.clone().applyQuaternion(yaw), c.L2);
+      const gr = 0.15 + (0.9 - 0.15) * sstep((c25 + d.y) / (c25 - c75));
+      const Fl = rig('LeftLeg', c.H).multiplyScalar(w[0]).add(rig('RightLeg', c.H).multiplyScalar(w[1])).add(hang.clone().multiplyScalar(w[2]));
+      let d2 = Fl.multiplyScalar(1 - gr).add(hang.clone().multiplyScalar(gr)).sub(S).normalize();
+      d2 = push(S, d2, c.L2, caps, only4(c.r2), out); d2 = floorClamp(S, d2, c.L2, out);
+      const Wu = qAlign(c.u0.clone().applyQuaternion(qW), d).multiply(qW), Wl = qAlign(c.l0.clone().applyQuaternion(Wu), d2).multiply(Wu);
+      return [qW.clone().invert().multiply(Wu), new Quaternion(), Wu.clone().invert().multiply(Wl), Wu, Wu.clone(), Wl];
+    });
+    res.waist = [qHw.clone().invert().multiply(qW), qW];
+    return res;
+  };
+  let RULES1 = false;
+  const chainsAt = () => (SKIRTB === 3 ? (RULES1 ? chainsV1 : chainsNow3) : chainsNow)();
   poser.pose(null, 0);
   if (HULL) { const S = legSamples(), ax = new Vector3(...JP[JI.Hips]);
     for (const c of CH) { const o = c.out, f = (P, Q) => { let w = 0; for (const u of [0.35, 0.7, 1]) { const q = V(P).lerp(V(Q), u); let need = -1e9;
@@ -552,7 +589,8 @@ if (CH) {
   };
   const buf = root.listBuffers()[0]; let nt = 0, nk = 0;
   for (const an of root.listAnimations()) {
-    const fitThis = FITTAKES.includes(an.getName());
+    const fitThis = FITTAKES.includes(an.getName()); RULES1 = SKIRTB === 3 && V1TAKES.includes(an.getName());
+    if (RULES1) console.log(`  ${an.getName()}: v24.40's rules (V1TAKES)`);
     const chR = an.listChannels().find(c => c.getTargetNode() === node('Hips') && c.getTargetPath() === 'rotation');
     const times = chR ? Array.from(chR.getSampler().getInput().getArray()) : [0, poser.duration(an)];
     const outs = CH.map(() => Array.from({ length: NB }, () => [])), prev = CH.map(() => Array(NB).fill(null)), wOut = []; let wPrev = null;

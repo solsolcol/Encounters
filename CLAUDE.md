@@ -1105,11 +1105,14 @@ Chad's, approved v23.5). Grandmaster Pho and Lersi Chin are Chad's models, with 
 case comes later in the casebook). Lersi Chin's model arrived 3 Nov 2026 and is prepared, not yet cast:
 `assets/lersichin.glb`, key `lersichin` (into build.py the day chapter 2 casts him), masters/v24.38/make.sh.
 Grandmaster Pho's arrived the same day, with distortions Chad asked to have fixed: PREPARED, not yet cast, and still being
-improved — `assets/pho.glb`, key `pho` (chapter 3), masters/v24.41/make.sh: his torso fixed (v24.40, measured on every
-frame by tools/rigstrain.mjs) and his robe rebuilt at v24.41 as twelve three-bone chains baked into his nineteen takes
-(tools/robeskin.mjs; v24.40's robe made the seated takes worse); an independent reviewer found v24.41 better than his file
-in 5 takes, the same in 8, worse in 6 (the sword lunge, running, the cross-legged lap's folds, sit-to-stand, one cast, a
-drape), and the next pass takes those on. **Ajahn Krukai's model is PINNED** (v23.5, Chad: *"Make sure ajahn krukai's model
+improved — `assets/pho.glb`, key `pho` (chapter 3), masters/v24.42/make.sh: his torso fixed (v24.40, measured on every
+frame by tools/rigstrain.mjs), his robe rebuilt at v24.41 as twelve three-bone chains baked into his nineteen takes
+(tools/robeskin.mjs; v24.40's robe made the seated takes worse; v24.41's independent review: 5 takes better than his file,
+8 the same, 6 worse), and at v24.42 each take given the robe rules that read best for it (running and the sword lunge
+v24.40's, measured identical; one cast fitted to his file; the hull's push eased in) — its own review: pending. What no
+robe rule can fix: the scan's robe is one closed surface whose hem is joined to his shins by a ring of 562 triangles,
+which stretches into the strips and spikes whenever a leg leaves the robe; cutting it free is a change to his mesh, put
+to Chad. **Ajahn Krukai's model is PINNED** (v23.5, Chad: *"Make sure ajahn krukai's model
 in ep3 is unaffected and untouched. It is important that krukai is in the game as the master who gave the player his
 first sakyant."*): `ajarn` / `assets/ajarn.glb` are the bytes that shipped at v18.7, `chaptertest` fails on any change
 to the key, the file or e3c1's use of it, and Episode 4's first master — the original Sak Yant Ajarn — arrives under

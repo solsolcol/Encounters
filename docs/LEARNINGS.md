@@ -7294,3 +7294,23 @@ cut (sharing its vertices and maps) when it is small.
   a fold limit) came back out of robeskin with the recipe re-made byte for byte, so none can be switched on by mistake.
 - **`A && B && (C) & (D) &` backgrounds the whole and-list.** D starts in the parent shell without what A and B set (an
   export, a variable): put each background job's setup on its own line. It cost two render passes this session.
+
+## v24.42 — when the rig's rules are baked per take, each take can have the rules that read best for it
+
+- **A baked rig is per take.** Pho's robe chains are tracks baked into each take, so a take that reads worse under new
+  rules can keep the old ones on the SAME skeleton: v24.40's two-bone rules run on the three-bone chains by giving the
+  waist and mid bones one shared turn (robeskin V1TAKES), and a take whose own file moves the robe cleanly can be fitted
+  to it (FIT). Choose by what the reviewers saw, take by take, not by which rule is newest.
+- **Two reviewers are two rulers.** v24.40's and v24.41's reviews rated takes whose robe had not changed (the drape in
+  Talk_with_Hands_Open) differently. Compare a change within ONE review (his file, the old pass and the new side by side)
+  before trusting a better/worse across two.
+- **A push that stops at a fixed angle leaves a step.** The hull pushed the chains from 60° to 300° fully and the rest
+  not at all; the chain at the cut stood out beside its neighbour as a flat panel. Ease any per-chain effect in by angle.
+- **Count where a scanned garment is joined to the body before rigging it.** A scan is one closed surface: Pho's hem
+  closes onto his shins along 562 triangles (rest heights 0.20–0.30 m) whose points are weighted half to the robe, half to
+  the legs. That ring stretches whenever a leg leaves the robe (x16 walking, hidden; x27 the sword lunge; x41 running),
+  and it IS the strips, tongues and spikes four passes of robe rules chased. A rule can move the cloth; it cannot untie
+  a surface tied to both. Measure the ring (triangles whose points' dominant bones are cloth on one side and body on the
+  other) first; cutting it is a mesh change, so it goes to Chad.
+- **A before-and-after label is a claim.** The sheets said FIXED over a take whose hem was still drawn to the heel; they
+  say NOW. Label a picture with what it is, and say what is still wrong beside it.
