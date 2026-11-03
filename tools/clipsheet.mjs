@@ -15,6 +15,9 @@ const AT = arg('at', '0.1,0.35,0.6,0.85').split(',').map(Number), SIZE = +arg('s
 /* --plan=<file.json>: { "Take": [seconds, ...] } — each take shot at its own moments (rigstrain's worst frames) */
 const PLAN = arg('plan', '') ? JSON.parse(fs.readFileSync(arg('plan', ''), 'utf8')) : null;
 const FRAME = arg('frame', 'body');   // body | torso (the chest and back, framed on the posed Spine1)
+/* --floor: a solid floor under the grid, as a player sees him (cloth that dips under it is hidden, as in the game);
+   for views from above only */
+const FLOORON = process.argv.includes('--floor');
 const VIEWS = arg('views', '0:6,90:6,215:14').split(',').map(v => v.split(':').map(Number)), NV = VIEWS.length;
 const ROOT = resolve('.');
 const MIME = { '.js': 'text/javascript', '.mjs': 'text/javascript', '.html': 'text/html', '.glb': 'model/gltf-binary' };
@@ -40,6 +43,7 @@ scene.add(new THREE.HemisphereLight(0xffffff, 0x404048, 2.0));
 const key = new THREE.DirectionalLight(0xffffff, 2.2); key.position.set(3, 5, 4); scene.add(key);
 const fill = new THREE.DirectionalLight(0xbcd0ff, 0.8); fill.position.set(-4, 2, -3); scene.add(fill);
 const grid = new THREE.GridHelper(4, 8, 0x333333, 0x4a4a4a); scene.add(grid);
+if (${FLOORON}) { const fl = new THREE.Mesh(new THREE.PlaneGeometry(4, 4), new THREE.MeshStandardMaterial({ color: 0x8a7f72, roughness: 0.9 })); fl.rotation.x = -Math.PI / 2; fl.position.y = -0.001; scene.add(fl); }
 const cam = new THREE.PerspectiveCamera(30, 1, 0.01, 100);
 window.__ready = false;
 new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load('/model.glb', (gltf) => {

@@ -7264,3 +7264,33 @@ cut (sharing its vertices and maps) when it is small.
 - **Fix the class the first time.** v24.12 made the offering dish two-sided because a lathe's floor faces down; four more
   open vessels in the same room stayed see-through until a reviewer saw two of them. When a fix is for a CLASS (an open
   lathe), grep for every instance in the chapter that day.
+
+## v24.41 — a robe is pushed by legs, bends where the lap ends, and shows its folds only where they sit
+
+- **A bone's twist is not cloth's.** Sitting with his knees apart, Pho's thigh bones turn out on their own axes, and the
+  robe's side points, carried rigidly by the thigh bone, went UNDER the thighs (measured with robeskin's DBGAT print: 9 cm
+  below and 12 cm behind the knee) — so no chair sit showed a lap from the side. Cloth lying on a limb is carried by the
+  limb's SWING (the turn of its direction), never its twist about its own length.
+- **Count the cloth's length before choosing the bones.** Seated, the robe from the belly over the lap to the knee top is
+  ~0.32 m; standing, waist to knee is ~0.43 m. A chain with one bone from the waist to the knees puts its bend 13 cm down
+  the shin, whatever its rules: a slide, not a lap. Three bones (the waist to a ring 0.30 m below it, to the knees, to the
+  hem) put the bend at the knee top. Measure where a garment must bend in each pose and give it a joint there.
+- **Cloth is pushed by a leg, not tied to one.** Lower robe bones that followed the shins pinned the hem to the back foot
+  in every lunge. Hanging bones (rest direction turned only by the body's yaw), pushed out of the legs' capsules and the
+  floor, read as cloth. A capsule's radius can be the cloth's own rest clearance growing back to full as the leg leaves
+  its rest place round the waist: rest stays rest without disarming the push.
+- **What stands behind him stands inside his robe.** A stepped-back leg, a kicked heel: the back of the robe must ENCLOSE
+  the legs (pushed out from the body's axis past the shins, ankles, heels and toes at each height), not merely avoid them.
+- **Where the fold sits is what shows.** In the cross-legged sit about one robe triangle in ten folds over in EVERY version,
+  his file included (tools/probes/clothfold.mjs: 9.7 % his, 9.0 % fitted, 11.3 % hanging rules); his file tucks the fold
+  under the knees, a rig with a joint on the lap shows it on top as dark streaks. Rule out the paint first (white albedo,
+  no normal map, no metal map — each changed nothing), then count the folds, then look at WHERE they are.
+- **A scan's hem is joined to its ankles.** One surface: a foot kicked up to hip height pulls the hem with it, and no rig
+  can free it without opening the mesh. Say so; do not chase it.
+- **Compare like with like.** v24.40's survey set the PREPPED pass (no metal sheet, the 0.3 cut) beside his RAW file, and a
+  see-through grid floor shows cloth a game's solid floor hides. Photograph both at the same stage, and the floor as the
+  player has it (tools/clipsheet.mjs --floor) before calling a hem ragged.
+- **Revert a disproven option the same day.** Three ideas the photographs disproved (a direction-only fit, a lap-only fit,
+  a fold limit) came back out of robeskin with the recipe re-made byte for byte, so none can be switched on by mistake.
+- **`A && B && (C) & (D) &` backgrounds the whole and-list.** D starts in the parent shell without what A and B set (an
+  export, a variable): put each background job's setup on its own line. It cost two render passes this session.

@@ -1,6 +1,10 @@
 #!/bin/sh
 # v24.40 · GRANDMASTER PHO, fixed and kept ready (not in the build); and the ghost jar's room, the reviewer's findings.
 #
+# PHO'S PART IS SUPERSEDED by masters/v24.41/make.sh: an independent reviewer found this pass's seated takes WORSE than
+# his file (no lap, slits, the cross-legged sit a tent) and its lunges' hem pinned to the back heel; "the seated takes
+# hang from the knees" below was wrong. assets/pho.glb is v24.41's; this recipe is kept so v24.40's file can be re-made.
+#
 # ---- PHO -----------------------------------------------------------------------------------------------------------
 # Chad, 3 Nov 2026 (https://drive.google.com/file/d/19ndQALVTv2ttIXUEogb9a7uvCnb0_Rv4/view): "This is grandmaster pho 3d
 # model. However, there are many issues with the 3d model, especially with the animations, many animations make his body

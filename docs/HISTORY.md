@@ -7686,7 +7686,8 @@ What the baseline contains, by release:
     BAKED into all nineteen takes (25 new bones, the rest pose baking to 0.000°); the robe's waist on SkirtWaist, half way
     between the pelvis and the spine (his floor sit tips the pelvis 59° one way and the spine 15° the other); the floor
     sit lifted 5.5 cm onto its sitting bones. Walking and running read as one robe, the seated takes hang from the knees,
-    the back is a back. The floor sit's robe still pools flat round him from the front — a skinned robe cannot fold onto
+    the back is a back. [Corrected at v24.41: an independent reviewer found every seated take WORSE than his file — no
+    lap, the shins through slits, the cross-legged sit a tent — and the lunges' hem pinned to the back heel.] The floor sit's robe still pools flat round him from the front — a skinned robe cannot fold onto
     itself without a cloth simulation; two other ways tried and kept out (make.sh says what each did).
   - assets/pho.glb: 592,579 -> 177,772 triangles, 53 joints, nineteen takes, a 4096 colour sheet for the face and a 2048
     normal map (Lersi Chin's recipe), 6.5 MB; the recipe re-makes it byte for byte. Not in build.py until chapter 3
@@ -7706,6 +7707,44 @@ What the baseline contains, by release:
     call).
   - Deployed 6aea3ae728f1707b35bb66d2, 318 of 318 served files byte-identical. Checked once: the room and the jar
     photographed on a phone and a desktop (the storm's close and wide, ending C), chaptertest and leak green.
+
+- **v24.41** (prepared, not a build: nothing deployed, the live build stays v24.40) GRANDMASTER PHO'S ROBE REBUILT — Chad,
+  3 Nov 2026: *"I think pho model still needs alot more fixing and you are not looking at the right angles for the big
+  issues"*. He was right again: v24.40 fixed the torso, but an independent reviewer reading ten angles of every take
+  against his file found the robe WORSE than his file in every seated take (no lap or knees from the side — a slanted
+  tube he seemed to lean back on — the shins through slits, the cross-legged sit a tent with spikes and a hole), the
+  back hem stretched into a strip pinned to the back heel in every lunge, and the kicked foot through the back running.
+  - WHY, MEASURED (robeskin's new DBGAT print of every chain at a key): sitting with his knees apart the thigh bones turn
+    out on their own axes, and the robe's side points, carried rigidly by them, went UNDER the thighs (9 cm below and
+    12 cm behind the knee); seated, the cloth from his belly over the lap to the knee top is ~0.32 m against ~0.43 m
+    standing, so a chain with one bone from the waist to the knees bent 13 cm down the shin — a slide, never a lap;
+    and lower bones tied to the shins dragged the hem to the back foot.
+  - THE FIX (tools/robeskin.mjs SKIRTB=3, masters/v24.41/make.sh): twelve chains of THREE bones (the waist to a ring
+    0.30 m below it, to the knees, to the hem), 65 joints. The waist bone follows the thighs by their SWING, never their
+    twist; the mid and lower bones HANG and are pushed out of the thighs, shins, feet and heels (each capsule's radius the
+    chain's own rest clearance, growing back to full as the leg leaves its rest place) and kept above the floor; the back
+    and sides ENCLOSE a stepped-back leg (pushed out from his axis past the shins, ankles, heels and toes). The
+    cross-legged sit alone is FITTED to how his own file moves the robe (each bone's best rotation by Horn's method):
+    about one robe triangle in ten folds over in that pose in every version, his file included (tools/probes/clothfold.mjs,
+    new), and his file tucks the fold under the knees, so it reads as he does — sitting cross-legged, the feet showing —
+    with the torso fixed and the 5.5 cm lift kept. The rest pose bakes to 0.000°; the torso measures exactly as v24.40.
+  - Tried, photographed and taken back out the same day (each disproved by the pictures; make.sh says how): the swing fix
+    on two bones (still a slide), a direction-only fit (the lap crumpled), a lap-only fit (cloth through the floor), a
+    fold limit (darker, then shards), 24 chains (no better), fitting every seated take (his trouser legs came back), a
+    wider hull for the running kick (no change). v24.40's recipe still re-makes its file byte for byte.
+  - STILL NOT CLEAN CLOTH, said to Chad: running (a foot kicked to hip height pulls the hem, which the scan joins to his
+    ankles, up with it — no rig frees it without opening the mesh); a few dark folds on the cross-legged knees; the drape
+    over his left arm as in his file.
+  - assets/pho.glb: 177,772 triangles, 65 joints, nineteen takes, 6.8 MB (6,794,668 bytes, sha1 42a71465…), the recipe
+    re-makes it byte for byte. Photographed: ten angles of every take's worst moments against his file (the session's
+    survey, read by a fresh independent reviewer: against his file 5 takes better, 8 the same, 6 worse — the seated takes up
+    from worse to the same, the cross-legged sit from worst to narrowly worse, two casts' lunges better; worse: the sword
+    lunge and running (where the robe is pushed out round a stepped-back leg its hem breaks into flat panels and spikes and
+    shows the scan's dark underside, and a lifted heel still shows through), the cross-legged lap's dark folds, sit-to-stand,
+    mage_soell_cast_8, and Talk_with_Hands_Open's drape (unchanged since v24.40); the next pass takes these on), every take of the shipped file from five angles
+    (masters/v24.41/shots/takes-1..3.jpg), before and after on a solid floor (pho-before-after-seated.jpg, -moving.jpg;
+    tools/clipsheet.mjs --floor, new: a see-through grid shows cloth a game's floor hides). Not in build.py until chapter
+    3 casts him.
 
 ## The sheet, version by version
 

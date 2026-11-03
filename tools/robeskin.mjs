@@ -54,6 +54,10 @@ const FRONTSHIN = E('FRONTSHIN', 0);   // the trunk's skin: under the neck's bas
      robe's points take the two chains either side of them by angle and the upper or lower bones by height; above ROOTY
      the trunk's weights; near the shins' skin, the shins'. So the robe is one robe that the legs move, never trousers. */
 const BANDS = E('BANDS', 0), SKIRT = E('SKIRT', 0), ROOTY = E('ROOTY', 0.93), FLOOR = E('FLOOR', 0);
+/* SKIRTB=3 (v24.41): three bones a chain — the waist to the MID ring (YMD below the roots), the mid ring to the knees, the
+   knees to the hem — so a seated lap can bend down at the knee: the lap from the belly to the knee top is ~0.32 m of
+   cloth, the standing waist-to-knee ~0.43, so with two bones the bend fell on the shin and every chair sit was a slide */
+const SKIRTB = E('SKIRTB', 2), YMD = E('YMD', 0.30);
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS);
 const doc = await io.read(IN);
 const root = doc.getRoot(), skin = root.listSkins()[0], joints = skin.listJoints();
@@ -136,21 +140,23 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
     for (let g = 0; g < G; g++) if (inR[g] && cloth[g]) skirtG[g] = 1;
     /* the chains, measured on the robe: its radius at ROOTY and at the knees' height (80th percentile in each of n bins
        round the legs' axis) and its hem (the bin's lowest 2 %) */
-    const N = SKIRT, D = 2 * Math.PI / N, YK = 0.5 * (JP[JI.LeftLeg][1] + JP[JI.RightLeg][1]);
+    const N = SKIRT, D = 2 * Math.PI / N, YK = 0.5 * (JP[JI.LeftLeg][1] + JP[JI.RightLeg][1]), YM = ROOTY - YMD;
     const ang = (x, z) => { const a = Math.atan2(x - cx, z - cz); return a < 0 ? a + 2 * Math.PI : a; };
     const pct = (a, f) => { if (!a.length) return NaN; a.sort((x, y) => x - y); return a[Math.min(a.length - 1, Math.floor(f * (a.length - 1)))]; };
     CH = [];
     for (let k = 0; k < N; k++) {
-      const th = k * D, rR = [], rK = [], ys = [];
+      const th = k * D, rR = [], rK = [], ys = [], rM = [];
       for (let g = 0; g < G; g++) { if (!skirtG[g]) continue; const x = gp[3 * g], y = gp[3 * g + 1], z = gp[3 * g + 2];
         let da = Math.abs(ang(x, z) - th); da = Math.min(da, 2 * Math.PI - da); if (da > D / 2) continue;
-        const r = Math.hypot(x - cx, z - cz); if (Math.abs(y - ROOTY) < 0.03) rR.push(r); if (Math.abs(y - YK) < 0.03) rK.push(r); ys.push([y, r]); }
+        const r = Math.hypot(x - cx, z - cz); if (Math.abs(y - ROOTY) < 0.03) rR.push(r); if (Math.abs(y - YK) < 0.03) rK.push(r); ys.push([y, r]);
+        if (SKIRTB === 3 && Math.abs(y - YM) < 0.03) rM.push(r); }
       const yH = Math.min(pct(ys.map(q => q[0]), 0.02), YK - 0.12);
       CH.push({ th, rR: pct(rR, 0.8), rK: pct(rK, 0.8), yH, rH: pct(ys.filter(q => q[0] < yH + 0.04).map(q => q[1]), 0.8) });
+      if (SKIRTB === 3) CH[k].rM = pct(rM, 0.8);
     }
-    for (const key of ['rR', 'rK', 'rH', 'yH']) CH.forEach((c, k) => { if (!(c[key] > 0)) { const a = CH[(k + N - 1) % N][key], b = CH[(k + 1) % N][key]; c[key] = (a > 0 && b > 0) ? (a + b) / 2 : (a > 0 ? a : b); } });
+    for (const key of SKIRTB === 3 ? ['rR', 'rK', 'rH', 'yH', 'rM'] : ['rR', 'rK', 'rH', 'yH']) CH.forEach((c, k) => { if (!(c[key] > 0)) { const a = CH[(k + N - 1) % N][key], b = CH[(k + 1) % N][key]; c[key] = (a > 0 && b > 0) ? (a + b) / 2 : (a > 0 ? a : b); } });
     const pt = (c, r, y) => [cx + r * Math.sin(c.th), y, cz + r * Math.cos(c.th)];
-    CH.forEach(c => { c.R = pt(c, c.rR, ROOTY); c.K = pt(c, c.rK, YK); c.H = pt(c, c.rH, c.yH); });
+    CH.forEach(c => { c.R = pt(c, c.rR, ROOTY); c.K = pt(c, c.rK, YK); c.H = pt(c, c.rH, c.yH); if (SKIRTB === 3) c.Mid = pt(c, c.rM, YM); });
     /* the bones: SkirtA (the waist to the knees) a child of the hips, SkirtB (the knees to the hem) a child of it, each
        turned at rest to the world's own frame (so a bake turns it from rest, and rest bakes to no turn at all) */
     const poser = makePoser(root); poser.pose(null, 0);
@@ -164,7 +170,17 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
     CH.waist = doc.createNode('SkirtWaist').setTranslation([0, 0, 0]).setRotation(qH0.clone().invert().toArray());
     hipsN.addChild(CH.waist); skin.addJoint(CH.waist); JN.push('SkirtWaist'); CH.jw = NJ0;
     ib.push(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -Pw[0], -Pw[1], -Pw[2], 1);
-    CH.forEach((c, k) => {
+    if (SKIRTB === 3) CH.forEach((c, k) => {
+      const nm = String(k).padStart(2, '0');
+      c.A = doc.createNode(`SkirtA${nm}`).setTranslation([c.R[0] - Pw[0], c.R[1] - Pw[1], c.R[2] - Pw[2]]);
+      c.Mn = doc.createNode(`SkirtM${nm}`).setTranslation([c.Mid[0] - c.R[0], c.Mid[1] - c.R[1], c.Mid[2] - c.R[2]]);
+      c.B = doc.createNode(`SkirtB${nm}`).setTranslation([c.K[0] - c.Mid[0], c.K[1] - c.Mid[1], c.K[2] - c.Mid[2]]);
+      CH.waist.addChild(c.A); c.A.addChild(c.Mn); c.Mn.addChild(c.B); skin.addJoint(c.A); skin.addJoint(c.Mn); skin.addJoint(c.B); JN.push(`SkirtA${nm}`, `SkirtM${nm}`, `SkirtB${nm}`);
+      ib.push(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -c.R[0], -c.R[1], -c.R[2], 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -c.Mid[0], -c.Mid[1], -c.Mid[2], 1,
+        1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -c.K[0], -c.K[1], -c.K[2], 1);
+      c.ja = NJ0 + 1 + 3 * k; c.jm = NJ0 + 2 + 3 * k; c.jb = NJ0 + 3 + 3 * k;
+    });
+    else CH.forEach((c, k) => {
       const nm = String(k).padStart(2, '0');
       c.A = doc.createNode(`SkirtA${nm}`).setTranslation([c.R[0] - Pw[0], c.R[1] - Pw[1], c.R[2] - Pw[2]]);
       c.B = doc.createNode(`SkirtB${nm}`).setTranslation([c.K[0] - c.R[0], c.K[1] - c.R[1], c.K[2] - c.R[2]]);
@@ -173,7 +189,7 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
       c.ja = NJ0 + 1 + 2 * k; c.jb = NJ0 + 2 + 2 * k;
     });
     skin.getInverseBindMatrices().setArray(new Float32Array(ib));
-    Object.assign(CH, { YK, cx, cz });
+    Object.assign(CH, { YK, cx, cz, YM });
     console.log(`  skirt: ${skirtG.reduce((a, b) => a + b, 0)} positions below ${ROOTY} m (${isl} of them the colour test called skin, inside it); ${N} chains (angle: root r, knee r, hem y / r):`);
     console.log('   ', CH.map(c => `${Math.round(c.th * 180 / Math.PI)}° ${c.rR.toFixed(2)} ${c.rK.toFixed(2)} ${c.yH.toFixed(2)}/${c.rH.toFixed(2)}`).join(' | '));
   }
@@ -246,17 +262,24 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
     if (tr <= 0) return;
     for (const b of best) b[0] *= 1 - tr;
     const c = tr * (1 - th), sh = tr * th;
-    best.push([c * (1 - f) * (1 - tk), CH[k0].ja], [c * f * (1 - tk), CH[k1].ja], [c * (1 - f) * tk, CH[k0].jb], [c * f * tk, CH[k1].jb]);
+    if (SKIRTB === 3) { const tm = sstep((CH.YM + 0.05 - y) / 0.10), wA = 1 - tm, wM = tm * (1 - tk), wB = tk;   // the mid ring's band, then the knees'
+      best.push([c * (1 - f) * wA, CH[k0].ja], [c * f * wA, CH[k1].ja], [c * (1 - f) * wM, CH[k0].jm], [c * f * wM, CH[k1].jm], [c * (1 - f) * wB, CH[k0].jb], [c * f * wB, CH[k1].jb]); }
+    else best.push([c * (1 - f) * (1 - tk), CH[k0].ja], [c * f * (1 - tk), CH[k1].ja], [c * (1 - f) * tk, CH[k0].jb], [c * f * tk, CH[k1].jb]);
     if (sh > 0) { const p = [x, y, z]; best.push([sh, segD(p, JP[JI.LeftLeg], JP[JI.LeftFoot]) < segD(p, JP[JI.RightLeg], JP[JI.RightFoot]) ? JI.LeftLeg : JI.RightLeg]); }
   };
   /* back to four per vertex */
-  const dom = {};
+  const dom = {}, fitSeen = new Uint8Array(G); if (CH) CH.fit = {};
   for (let i = 0; i < n; i++) {
     const g = gid[i], o = g * NJ, best = [];
     for (let j = 0; j < NJ; j++) if (A[o + j] > 1e-4) best.push([A[o + j], j]);
     if (CH && env[g]) for (const b of best) if (b[1] === JI.Hips) b[1] = CH.jw;   // the robe's waist rides SkirtWaist, never the pelvis's own tip
     if (CH && skirtG[g]) skirtMix(g, best);
     best.sort((x, y) => y[0] - x[0]); const top = best.slice(0, 4), s = top.reduce((x, y) => x + y[0], 0) || 1;
+    /* v24.41 FIT: a skirt position's rest place, its ORIGINAL weights and the chain bone it mostly rides, kept (every
+       few) so a take can have its chains fitted to how his own file moved the robe */
+    if (CH && skirtG[g] && !fitSeen[g] && top[0][1] > NJ0) { fitSeen[g] = 1;
+      const jb = top[0][1], o0 = g * NJ, a0 = []; for (let j = 0; j < NJ; j++) if (A0[o0 + j] > 0.01) a0.push(j, A0[o0 + j]);
+      (CH.fit[jb] || (CH.fit[jb] = [])).push({ p: [gp[3 * g], gp[3 * g + 1], gp[3 * g + 2]], a0, w: top[0][0] / s }); }
     while (top.length < 4) top.push([0, 0]);
     J.setElement(i, top.map(t => t[1])); W.setElement(i, top.map(t => t[0] / s));
     if (env[g]) { const k = JN[top[0][1]]; dom[k] = (dom[k] || 0) + 1; }
@@ -295,16 +318,47 @@ if (CH) {
   for (const n of LEGS) M0i[n] = Wd(n).clone().invert();
   const qH0 = new Quaternion(); Wd('Hips').decompose(new Vector3(), qH0, new Vector3());
   const qS0 = new Quaternion(); Wd('Spine').decompose(new Vector3(), qS0, new Vector3());
-  const V = a => new Vector3(...a), Pw0 = new Vector3(...JP[JI.Hips]), WB = E('WAISTBLEND', 0.5), GU = E('HANGUP', 0.45);
-  const RT = E('THIGHCAP', 0.09), RS = E('SHINCAP', 0.07), G0 = E('HANG0', 0.15), G1 = E('HANG1', 0.9);
+  /* SKIRTV=2 (the reviewer's read of v24.40's first skirt, every seated take worse than his file): the back of the robe
+     follows the thighs and goes under him when he sits (a small share of the waist, not half), no sag on a lifted thigh
+     (a chair sit shows its lap and knees), the lower bones TURN with the shins (each shin's own rotation laid on the
+     bone's rest direction, the two shins' pulls softened toward their mean by LOWERMIX) rather than chase a point
+     carried by one shin (which pinned the hem to the back foot in every lunge), less gravity on them (they cover the
+     shins seated), and the feet are capsules too */
+  /* the three-bone chains (SKIRTB=3) take V2's table and foot capsules */
+  const V2 = E('SKIRTV', 1) >= 2 || SKIRTB === 3;
+  let DBG = null;   // DBGAT=Take@seconds: each chain's working printed at that key (a debug print; nothing written changes)
+  const V = a => new Vector3(...a), Pw0 = new Vector3(...JP[JI.Hips]), WB = E('WAISTBLEND', 0.5), GU = E('HANGUP', V2 ? 0 : 0.45);
+  const RT = E('THIGHCAP', 0.09), RS = E('SHINCAP', 0.07), G0 = E('HANG0', 0.15), G1 = E('HANG1', V2 ? 0.35 : 0.9), LOWERMIX = E('LOWERMIX', 0.5);
+  const FITTAKES = (process.env.FIT || '').split(',').filter(Boolean), FITMIX = E('FITMIX', 1);
   /* [his left thigh, his right thigh, the pelvis] by the chain's angle from his front, 0..180° by 30 (mirrored past 180) */
-  const TABLE = [[0.5, 0.5, 0], [0.7, 0.3, 0], [0.88, 0.12, 0], [0.85, 0, 0.15], [0.65, 0, 0.35], [0.45, 0.05, 0.5], [0.25, 0.25, 0.5]];
+  const TABLE = V2 ? [[0.5, 0.5, 0], [0.7, 0.3, 0], [0.88, 0.12, 0], [0.85, 0, 0.15], [0.75, 0.05, 0.2], [0.6, 0.2, 0.2], [0.42, 0.42, 0.16]]
+    : [[0.5, 0.5, 0], [0.7, 0.3, 0], [0.88, 0.12, 0], [0.85, 0, 0.15], [0.65, 0, 0.35], [0.45, 0.05, 0.5], [0.25, 0.25, 0.5]];
   const angW = th => { let d = th * 180 / Math.PI, mir = false; if (d > 180) { d = 360 - d; mir = true; }
     const i = Math.min(5, Math.floor(d / 30)), f = d / 30 - i, a = TABLE[i], b = TABLE[i + 1], w = a.map((x, k) => x + (b[k] - x) * f), s = w[0] + w[1] + w[2];
     const r = w.map(x => x / s); return mir ? [r[1], r[0], r[2]] : r; };
   const CAPS = [['LeftUpLeg', 'LeftLeg', RT], ['LeftLeg', 'LeftFoot', RS], ['RightUpLeg', 'RightLeg', RT], ['RightLeg', 'RightFoot', RS]];
+  if (V2) for (const sd of ['Left', 'Right']) { const toe = [`${sd}Toe_End`, `${sd}ToeBase`].find(n => JI[n] !== undefined); if (toe) CAPS.push([`${sd}Foot`, toe, E('FOOTCAP', 0.05)]); }
+  /* SKIRTB=3: the HEELS too (a point 6 cm behind the ankle at the sole, carried by the foot): a kicked-back foot leads
+     with its heel, and the ankle's capsule alone let it through the back of the robe running */
+  const HEEL = {};
+  if (SKIRTB === 3) for (const sd of ['Left', 'Right']) { const toe = [`${sd}ToeBase`, `${sd}Toe_End`].find(n => JI[n] !== undefined); if (!toe) continue;
+    const f = JP[JI[`${sd}Foot`]], t = JP[JI[toe]], h = Math.hypot(t[0] - f[0], t[2] - f[2]) || 1;
+    HEEL[sd] = [f[0] - 0.06 * (t[0] - f[0]) / h, 0.035, f[2] - 0.06 * (t[2] - f[2]) / h]; CAPS.push([`${sd}Foot`, `@heel${sd}`, E('HEELCAP', 0.045)]); }
+  for (const [a, b] of CAPS) for (const n of [a, b]) if (!LEGS.includes(n) && n[0] !== '@') LEGS.push(n);
+  poser.pose(null, 0); for (const n of LEGS) M0i[n] = Wd(n).clone().invert();
+  const qRest = {}; for (const n of LEGS) { qRest[n] = new Quaternion(); Wd(n).decompose(new Vector3(), qRest[n], new Vector3()); }
+  /* SKIRTV=3 (SWING): a leg carries the cloth by its SWING alone — the turn that takes the waist-carried rest direction of
+     the thigh (hip to knee) or shin (knee to ankle) to where it points now — never by the bone's own twist. Sitting with
+     his knees apart the femurs turn out on their own axes, and the side chains' knee points, carried rigidly by the thigh
+     bone, went UNDER the thighs (measured: Sitting_Answering_Questions 4.4 s, the left side chain's knee point 9 cm below
+     and 12 cm behind his knee), so a chair sit showed no lap from the side. Cloth lying over a thigh does not turn with
+     the femur */
+  const SWING = E('SWING', E('SKIRTV', 1) >= 3 ? 1 : 0);
+  const restP = {}; for (const n of ['LeftUpLeg', 'LeftLeg', 'LeftFoot', 'RightUpLeg', 'RightLeg', 'RightFoot']) restP[n] = new Vector3().setFromMatrixPosition(Wd(n));
+  const qTurn = n => { const q = new Quaternion(); Wd(n).decompose(new Vector3(), q, new Vector3()); return q.multiply(qRest[n].clone().invert()); };
   const segPt = (q, a, b) => { const ab = b.clone().sub(a), t = Math.max(0, Math.min(1, q.clone().sub(a).dot(ab) / ab.lengthSq())); return a.clone().addScaledVector(ab, t); };
-  const capsNow = () => CAPS.map(([a, b]) => [new Vector3().setFromMatrixPosition(Wd(a)), new Vector3().setFromMatrixPosition(Wd(b))]);
+  const capPt = n => n[0] === '@' ? V(HEEL[n.slice(5)]).applyMatrix4(M0i[`${n.slice(5)}Foot`]).applyMatrix4(Wd(`${n.slice(5)}Foot`)) : new Vector3().setFromMatrixPosition(Wd(n));
+  const capsNow = () => CAPS.map(([a, b]) => [capPt(a), capPt(b)]);
   const rest = capsNow();
   for (const c of CH) {
     c.u0 = V(c.K).sub(V(c.R)).normalize(); c.l0 = V(c.H).sub(V(c.K)).normalize(); c.L1 = V(c.K).distanceTo(V(c.R)); c.L2 = V(c.H).distanceTo(V(c.K));
@@ -313,6 +367,11 @@ if (CH) {
     const p1 = [0.4, 0.7, 1].map(u => V(c.R).lerp(V(c.K), u)), p2 = [0.4, 0.7, 1].map(u => V(c.K).lerp(V(c.H), u));
     c.r1 = rest.map(([a, b], i) => Math.min(CAPS[i][2], ...p1.map(q => q.distanceTo(segPt(q, a, b)) - 0.01)));
     c.r2 = rest.map(([a, b], i) => Math.min(CAPS[i][2], ...p2.map(q => q.distanceTo(segPt(q, a, b)) - 0.01)));
+    if (SKIRTB === 3) {
+      c.a0 = V(c.Mid).sub(V(c.R)).normalize(); c.m0 = V(c.K).sub(V(c.Mid)).normalize(); c.La = V(c.Mid).distanceTo(V(c.R)); c.Lm = V(c.K).distanceTo(V(c.Mid));
+      const cap = (P, Q) => { const pts = [0.4, 0.7, 1].map(u => V(P).lerp(V(Q), u)); return rest.map(([a, b], i) => Math.min(CAPS[i][2], ...pts.map(q => q.distanceTo(segPt(q, a, b)) - 0.01))); };
+      c.ra = cap(c.R, c.Mid); c.rm = cap(c.Mid, c.K); c.rb = cap(c.K, c.H);
+    }
   }
   const push = (S, d, len, caps, radii, out) => { const e = S.clone().addScaledVector(d, len);
     for (let it = 0; it < 4; it++) { let moved = false;
@@ -338,39 +397,176 @@ if (CH) {
     const yaw = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), Math.atan2(fwd.x, fwd.z)), caps = capsNow();
     const rig = (n, p) => V(p).applyMatrix4(M0i[n]).applyMatrix4(Wd(n));          // a rest point carried rigidly by that bone
     const rigW = p => V(p).sub(Pw0).applyQuaternion(qW).add(PwN);                  // ... and by the waist
+    const Pn = n => new Vector3().setFromMatrixPosition(Wd(n));
+    const swingOf = (a, b) => { const r = restP[b].clone().sub(restP[a]).normalize().applyQuaternion(qW), m = Pn(b).sub(Pn(a)).normalize();
+      return new Quaternion().setFromUnitVectors(r, m).multiply(qW); };
+    const carry = (a, b, p) => V(p).sub(restP[a]).applyQuaternion(swingOf(a, b)).add(Pn(a));   // SWING: by the leg's swing, not its twist
+    const thighK = (sd, p) => SWING ? carry(`${sd}UpLeg`, `${sd}Leg`, p) : rig(`${sd}UpLeg`, p);
+    const shinQ = sd => SWING ? swingOf(`${sd}Leg`, `${sd}Foot`) : qTurn(`${sd}Leg`);
     const res = CH.map(c => {
       const out = c.out.clone().applyQuaternion(yaw), R = rigW(c.R);
-      const Et = rig('LeftUpLeg', c.K).multiplyScalar(c.w[0]).add(rig('RightUpLeg', c.K).multiplyScalar(c.w[1])).add(rigW(c.K).multiplyScalar(c.w[2]));
+      const Et = thighK('Left', c.K).multiplyScalar(c.w[0]).add(thighK('Right', c.K).multiplyScalar(c.w[1])).add(rigW(c.K).multiplyScalar(c.w[2]));
+      const Et0 = DBG ? Et.clone() : null;
       let d = Et.sub(R).normalize();
       /* a lifted thigh's cloth sags (HANGUP at most): across a lap onto the shins, between the knees, over the thigh's side */
       const gu = GU * sstep((c25 + d.y) / (c25 - c75)); if (gu > 0) d.multiplyScalar(1 - gu).add(new Vector3(0, -gu, 0)).normalize();
+      const dPre = DBG ? d.clone() : null;
       d = push(R, d, c.L1, caps, c.r1, out); d = floorClamp(R, d, c.L1, out);
       const S = R.clone().addScaledVector(d, c.L1), hang = S.clone().addScaledVector(c.l0.clone().applyQuaternion(yaw), c.L2);
-      const Fl = rig('LeftLeg', c.H).multiplyScalar(c.w[0]).add(rig('RightLeg', c.H).multiplyScalar(c.w[1])).add(hang.clone().multiplyScalar(c.w[2]));
+      if (DBG) DBG.push(`ch${Math.round(c.th * 180 / Math.PI)}° R ${R.toArray().map(x => x.toFixed(2))} Et ${Et0.toArray().map(x => x.toFixed(2))} d ${dPre.toArray().map(x => x.toFixed(2))} -> ${d.toArray().map(x => x.toFixed(2))} S ${S.toArray().map(x => x.toFixed(2))}`);
       const gr = G0 + (G1 - G0) * sstep((c25 + d.y) / (c25 - c75));             // -d.y: how near straight down the upper bone is
-      let d2 = Fl.multiplyScalar(1 - gr).add(hang.multiplyScalar(gr)).sub(S).normalize(); d2 = push(S, d2, c.L2, caps, c.r2, out); d2 = floorClamp(S, d2, c.L2, out);
+      let d2;
+      if (V2) {
+        const m = (c.w[0] + c.w[1]) / 2, wl = (1 - LOWERMIX) * c.w[0] + LOWERMIX * m, wr = (1 - LOWERMIX) * c.w[1] + LOWERMIX * m;
+        const dH = c.l0.clone().applyQuaternion(yaw);
+        const dl = c.l0.clone().applyQuaternion(shinQ('Left')).multiplyScalar(wl).add(c.l0.clone().applyQuaternion(shinQ('Right')).multiplyScalar(wr)).add(dH.clone().multiplyScalar(c.w[2])).normalize();
+        d2 = dl.multiplyScalar(1 - gr).add(dH.multiplyScalar(gr)).normalize();
+      } else {
+        const Fl = rig('LeftLeg', c.H).multiplyScalar(c.w[0]).add(rig('RightLeg', c.H).multiplyScalar(c.w[1])).add(hang.clone().multiplyScalar(c.w[2]));
+        d2 = Fl.multiplyScalar(1 - gr).add(hang.clone().multiplyScalar(gr)).sub(S).normalize();
+      }
+      d2 = push(S, d2, c.L2, caps, c.r2, out); d2 = floorClamp(S, d2, c.L2, out);
       const Wu = qAlign(c.u0.clone().applyQuaternion(qW), d).multiply(qW), Wl = qAlign(c.l0.clone().applyQuaternion(Wu), d2).multiply(Wu);
       return [qW.clone().invert().multiply(Wu), Wu.clone().invert().multiply(Wl), Wu, Wl];
     });
     res.waist = [qHw.clone().invert().multiply(qW), qW];
     return res;
   };
+  /* SKIRTB=3 · THE RULES THAT HANG: the waist bone follows the thighs (by their swing, the table's shares) to the mid ring;
+     the mid and lower bones HANG (their rest direction turned only by his yaw) and are pushed out of the legs, the heels
+     and the floor — cloth is pushed by a leg, not tied to one (tied to the shins it pinned the hem to the back foot in
+     every lunge). A capsule's radius is the chain's own rest clearance (so rest is rest) growing back to the full radius
+     as that leg moves off its rest place round the waist (GROW per metre), so a kicked foot meets the cloth it was under */
+  const GROW = E('GROW', 1.5), NB = SKIRTB === 3 ? 3 : 2;
+  /* HULL (SKIRTB=3): the back and sides of the robe ENCLOSE the shins, ankles, heels and toes — a leg stepped back (every lunge)
+     or a heel kicked up (running) stands inside the robe, so the chains there are pushed OUT from his body's axis until
+     they pass outside it (the legs' support in each chain's direction, at each height, within HULLB). Never in front
+     (the front drapes the lap and the crossed shins) and never more than at rest (each chain's rest shortfall is its
+     allowance, so rest is rest) */
+  const HULL = E('HULL', SKIRTB === 3 ? 1 : 0), HULLB = E('HULLB', 0.08), HSEC = 1 / Math.cos(Math.PI / 12), HULLR = E('HULLR', 1);
+  const legSamples = () => { const S = [];
+    for (const sd of ['Left', 'Right']) { const kn = Wd(`${sd}Leg`), an = Wd(`${sd}Foot`), K = new Vector3().setFromMatrixPosition(kn), Aa = new Vector3().setFromMatrixPosition(an);
+      for (let i = 0; i <= 6; i++) S.push([K.clone().lerp(Aa, i / 6), 0.065]);
+      if (HEEL[sd]) S.push([V(HEEL[sd]).applyMatrix4(M0i[`${sd}Foot`]).applyMatrix4(an), 0.045]);
+      /* a kicked foot's sole and toes */
+      for (const t of [`${sd}ToeBase`, `${sd}Toe_End`]) if (JI[t] !== undefined) S.push([new Vector3().setFromMatrixPosition(Wd(t)), 0.04]); }
+    return S; };
+  const hullPush = (P, d, L, outN, axis, S, slack) => {
+    const e = P.clone().addScaledVector(d, L);
+    for (let it = 0; it < 5; it++) { let moved = false;
+      for (const u of [0.35, 0.7, 1]) { const q = P.clone().lerp(e, u); let need = -1e9;
+        for (const [s, r] of S) if (Math.abs(s.y - q.y) < HULLB) need = Math.max(need, ((s.x - axis.x) * outN.x + (s.z - axis.z) * outN.z + r * HULLR) * HSEC);
+        const have = (q.x - axis.x) * outN.x + (q.z - axis.z) * outN.z, def = need - have - slack;
+        if (def > 0.002) { e.addScaledVector(outN, Math.min(0.1, def / u)); moved = true; } }
+      e.sub(P).setLength(L).add(P); if (!moved) break; }
+    return e.sub(P).normalize(); };
+  const chainsNow3 = () => {
+    const qHw = new Quaternion(), qSw = new Quaternion(); Wd('Hips').decompose(new Vector3(), qHw, new Vector3()); Wd('Spine').decompose(new Vector3(), qSw, new Vector3());
+    const qH = qHw.clone().multiply(qH0.clone().invert()), qS = qSw.clone().multiply(qS0.clone().invert());
+    const qW = qH.clone().slerp(qS, WB), PwN = new Vector3().setFromMatrixPosition(Wd('Hips')), fwd = new Vector3(0, 0, 1).applyQuaternion(qW);
+    const yaw = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), Math.atan2(fwd.x, fwd.z)), caps = capsNow();
+    const rigW = p => V(p).sub(Pw0).applyQuaternion(qW).add(PwN);
+    const Pn = n => new Vector3().setFromMatrixPosition(Wd(n));
+    const swingOf = (a, b) => { const r = restP[b].clone().sub(restP[a]).normalize().applyQuaternion(qW), m = Pn(b).sub(Pn(a)).normalize();
+      return new Quaternion().setFromUnitVectors(r, m).multiply(qW); };
+    const thighK = (sd, p) => V(p).sub(restP[`${sd}UpLeg`]).applyQuaternion(swingOf(`${sd}UpLeg`, `${sd}Leg`)).add(Pn(`${sd}UpLeg`));
+    const disp = caps.map(([a, b], i) => Math.max(a.distanceTo(rigW(rest[i][0].toArray())), b.distanceTo(rigW(rest[i][1].toArray()))));
+    const grown = rr => rr.map((r, i) => Math.min(CAPS[i][2], Math.max(r, 0) + GROW * disp[i]));
+    const LS = HULL ? legSamples() : null;
+    const res = CH.map(c => {
+      const out = c.out.clone().applyQuaternion(yaw), R = rigW(c.R);
+      const T = thighK('Left', c.Mid).multiplyScalar(c.w[0]).add(thighK('Right', c.Mid).multiplyScalar(c.w[1])).add(rigW(c.Mid).multiplyScalar(c.w[2]));
+      let d = T.sub(R).normalize(); d = push(R, d, c.La, caps, grown(c.ra), out); d = floorClamp(R, d, c.La, out);
+      const P1 = R.clone().addScaledVector(d, c.La);
+      const hullOn = HULL && Math.abs(c.th - Math.PI) <= 2 * Math.PI / 3 + 1e-6;   // 60°..300°: the sides and the back
+      let dm = c.m0.clone().applyQuaternion(yaw); if (hullOn) dm = hullPush(P1, dm, c.Lm, out, PwN, LS, c.hsM || 0);
+      dm = push(P1, dm, c.Lm, caps, grown(c.rm), out); dm = floorClamp(P1, dm, c.Lm, out);
+      const P2 = P1.clone().addScaledVector(dm, c.Lm);
+      let db = c.l0.clone().applyQuaternion(yaw); if (hullOn) db = hullPush(P2, db, c.L2, out, PwN, LS, c.hsB || 0);
+      db = push(P2, db, c.L2, caps, grown(c.rb), out); db = floorClamp(P2, db, c.L2, out);
+      if (DBG) DBG.push(`ch${Math.round(c.th * 180 / Math.PI)}° R ${R.toArray().map(x => x.toFixed(2))} T ${T.toArray().map(x => x.toFixed(2))} P1 ${P1.toArray().map(x => x.toFixed(2))} P2 ${P2.toArray().map(x => x.toFixed(2))} hem ${P2.clone().addScaledVector(db, c.L2).toArray().map(x => x.toFixed(2))}`);
+      const Wa = qAlign(c.a0.clone().applyQuaternion(qW), d).multiply(qW), Wm = qAlign(c.m0.clone().applyQuaternion(Wa), dm).multiply(Wa), Wb = qAlign(c.l0.clone().applyQuaternion(Wm), db).multiply(Wm);
+      return [qW.clone().invert().multiply(Wa), Wa.clone().invert().multiply(Wm), Wm.clone().invert().multiply(Wb), Wa, Wm, Wb];
+    });
+    res.waist = [qHw.clone().invert().multiply(qW), qW];
+    return res;
+  };
+  const chainsAt = () => (SKIRTB === 3 ? chainsNow3 : chainsNow)();
   poser.pose(null, 0);
-  const r0 = chainsNow(), turn = w => 2 * Math.acos(Math.min(1, Math.abs(w.w))) * 180 / Math.PI;
-  const restTurn = Math.max(turn(r0.waist[1]), ...r0.flatMap(q => [q[2], q[3]].map(turn)));
+  if (HULL) { const S = legSamples(), ax = new Vector3(...JP[JI.Hips]);
+    for (const c of CH) { const o = c.out, f = (P, Q) => { let w = 0; for (const u of [0.35, 0.7, 1]) { const q = V(P).lerp(V(Q), u); let need = -1e9;
+        for (const [s, r] of S) if (Math.abs(s.y - q.y) < HULLB) need = Math.max(need, ((s.x - ax.x) * o.x + (s.z - ax.z) * o.z + r * HULLR) * HSEC);
+        w = Math.max(w, need - ((q.x - ax.x) * o.x + (q.z - ax.z) * o.z)); } return Math.max(0, w); };
+      c.hsM = f(c.Mid, c.K); c.hsB = f(c.K, c.H); }
+    console.log('  hull: rest shortfall (m) mid', CH.map(c => c.hsM.toFixed(3)).join(' '), '| lower', CH.map(c => c.hsB.toFixed(3)).join(' ')); }
+  const r0 = chainsAt(), turn = w => 2 * Math.acos(Math.min(1, Math.abs(w.w))) * 180 / Math.PI;
+  const restTurn = Math.max(turn(r0.waist[1]), ...r0.flatMap(q => q.slice(NB, 2 * NB).map(turn)));
   if (restTurn > 0.5) throw new Error(`the rest pose bakes to a turn of ${restTurn.toFixed(2)}°`);
+  /* FIT: the rotation that best carries a bone's points from rest to where his OWN file's weights put them this frame
+     (Horn's quaternion method; the 4x4's top eigenvector by Jacobi), about the bone's own posed head */
+  const eig4 = (N) => { const a = N.map(r => r.slice()), v = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]];
+    for (let sw = 0; sw < 50; sw++) { let off = 0; for (let i = 0; i < 4; i++) for (let j = i + 1; j < 4; j++) off += a[i][j] * a[i][j]; if (off < 1e-18) break;
+      for (let p = 0; p < 4; p++) for (let q = p + 1; q < 4; q++) { if (Math.abs(a[p][q]) < 1e-20) continue;
+        const th = (a[q][q] - a[p][p]) / (2 * a[p][q]), t = Math.sign(th || 1) / (Math.abs(th) + Math.sqrt(th * th + 1)), c = 1 / Math.sqrt(t * t + 1), sn = t * c;
+        for (let k = 0; k < 4; k++) { const akp = a[k][p], akq = a[k][q]; a[k][p] = c * akp - sn * akq; a[k][q] = sn * akp + c * akq; }
+        for (let k = 0; k < 4; k++) { const apk = a[p][k], aqk = a[q][k]; a[p][k] = c * apk - sn * aqk; a[q][k] = sn * apk + c * aqk; }
+        for (let k = 0; k < 4; k++) { const vkp = v[k][p], vkq = v[k][q]; v[k][p] = c * vkp - sn * vkq; v[k][q] = sn * vkp + c * vkq; } } }
+    let best = 0; for (let i = 1; i < 4; i++) if (a[i][i] > a[best][best]) best = i; return [v[0][best], v[1][best], v[2][best], v[3][best]]; };
+  const fitRot = (P, Q, W) => { let Sxx = 0, Sxy = 0, Sxz = 0, Syx = 0, Syy = 0, Syz = 0, Szx = 0, Szy = 0, Szz = 0;
+    for (let i = 0; i < P.length; i++) { const p = P[i], q = Q[i], w = W[i];
+      Sxx += w * p.x * q.x; Sxy += w * p.x * q.y; Sxz += w * p.x * q.z; Syx += w * p.y * q.x; Syy += w * p.y * q.y; Syz += w * p.y * q.z; Szx += w * p.z * q.x; Szy += w * p.z * q.y; Szz += w * p.z * q.z; }
+    const N = [[Sxx + Syy + Szz, Syz - Szy, Szx - Sxz, Sxy - Syx], [Syz - Szy, Sxx - Syy - Szz, Sxy + Syx, Szx + Sxz],
+      [Szx - Sxz, Sxy + Syx, -Sxx + Syy - Szz, Syz + Szy], [Sxy - Syx, Szx + Sxz, Syz + Szy, -Sxx - Syy + Szz]];
+    const e = eig4(N); return new Quaternion(e[1], e[2], e[3], e[0]).normalize(); };
+  const SKo = joints.map(() => new Matrix4()), IBo = joints.map((_, k) => new Matrix4().fromArray(ibm, k * 16));
+  const origAt = (smp, out) => { const x = new Vector3(); out.set(0, 0, 0); for (let i = 0; i < smp.a0.length; i += 2) { x.set(...smp.p).applyMatrix4(SKo[smp.a0[i]]).multiplyScalar(smp.a0[i + 1]); out.add(x); } return out; };
+  const fitSamples = jb => { const all = CH.fit[jb] || []; const step = Math.max(1, Math.floor(all.length / 900)); return all.filter((_, i) => i % step === 0); };
+  const fitNow = (cs) => {
+    joints.forEach((j, k) => SKo[k].multiplyMatrices(poser.world[poser.NI.get(j)], IBo[k]));
+    const qW = cs.waist[1], PwN = new Vector3().setFromMatrixPosition(Wd('Hips'));
+    return CH.map((c, k) => {
+      const R = V(c.R).sub(Pw0).applyQuaternion(qW).add(PwN), sa = fitSamples(c.ja), sb = fitSamples(c.jb);
+      let Wu = cs[k][2], Wl = cs[k][3];
+      if (sa.length >= 20) { const P = [], Q = [], W = []; for (const sm of sa) { P.push(V(sm.p).sub(V(c.R))); Q.push(origAt(sm, new Vector3()).sub(R)); W.push(sm.w); }
+        Wu = cs[k][2].clone().slerp(fitRot(P, Q, W), FITMIX); }
+      const S = R.clone().add(V(c.K).sub(V(c.R)).applyQuaternion(Wu));
+      if (sb.length >= 20) { const P = [], Q = [], W = []; for (const sm of sb) { P.push(V(sm.p).sub(V(c.K))); Q.push(origAt(sm, new Vector3()).sub(S)); W.push(sm.w); }
+        Wl = cs[k][3].clone().slerp(fitRot(P, Q, W), FITMIX); }
+      return [qW.clone().invert().multiply(Wu), Wu.clone().invert().multiply(Wl)];
+    });
+  };
+  const fitNow3 = (cs) => {
+    joints.forEach((j, k) => SKo[k].multiplyMatrices(poser.world[poser.NI.get(j)], IBo[k]));
+    const qW = cs.waist[1], PwN = new Vector3().setFromMatrixPosition(Wd('Hips'));
+    const fit1 = (jset, rest0, P0) => { const sm = fitSamples(jset); if (sm.length < 20) return null; const P = [], Q = [], W = [];
+      for (const s of sm) { P.push(V(s.p).sub(V(rest0))); Q.push(origAt(s, new Vector3()).sub(P0)); W.push(s.w); } return fitRot(P, Q, W); };
+    return CH.map((c, k) => {
+      const R = V(c.R).sub(Pw0).applyQuaternion(qW).add(PwN); let Wa = cs[k][3], Wm = cs[k][4], Wb = cs[k][5], q;
+      if ((q = fit1(c.ja, c.R, R))) Wa = Wa.clone().slerp(q, FITMIX);
+      const P1 = R.clone().add(V(c.Mid).sub(V(c.R)).applyQuaternion(Wa));
+      if ((q = fit1(c.jm, c.Mid, P1))) Wm = Wm.clone().slerp(q, FITMIX);
+      const P2 = P1.clone().add(V(c.K).sub(V(c.Mid)).applyQuaternion(Wm));
+      if ((q = fit1(c.jb, c.K, P2))) Wb = Wb.clone().slerp(q, FITMIX);
+      return [qW.clone().invert().multiply(Wa), Wa.clone().invert().multiply(Wm), Wm.clone().invert().multiply(Wb)];
+    });
+  };
   const buf = root.listBuffers()[0]; let nt = 0, nk = 0;
   for (const an of root.listAnimations()) {
+    const fitThis = FITTAKES.includes(an.getName());
     const chR = an.listChannels().find(c => c.getTargetNode() === node('Hips') && c.getTargetPath() === 'rotation');
     const times = chR ? Array.from(chR.getSampler().getInput().getArray()) : [0, poser.duration(an)];
-    const outs = CH.map(() => [[], []]), prev = CH.map(() => [null, null]), wOut = []; let wPrev = null;
-    for (const t of times) { poser.pose(an, t); const cs = chainsNow();
+    const outs = CH.map(() => Array.from({ length: NB }, () => [])), prev = CH.map(() => Array(NB).fill(null)), wOut = []; let wPrev = null;
+    const dbgT = (process.env.DBGAT || '').split('@'), dbgK = dbgT[0] === an.getName() ? times.reduce((b, t, i) => Math.abs(t - +dbgT[1]) < Math.abs(times[b] - +dbgT[1]) ? i : b, 0) : -1;
+    for (const [ti, t] of times.entries()) { poser.pose(an, t); DBG = ti === dbgK ? [] : null; const cs = chainsAt();
+      if (DBG) { console.log(`  DBG ${an.getName()} @ ${t.toFixed(2)}`); for (const l of DBG) console.log('   ', l); DBG = null; }
       const wq = cs.waist[0]; if (wPrev && wPrev.dot(wq) < 0) wq.set(-wq.x, -wq.y, -wq.z, -wq.w); wPrev = wq; wOut.push(wq.x, wq.y, wq.z, wq.w);
-      cs.forEach((q, k) => [q[0], q[1]].forEach((r, b) => { if (prev[k][b] && prev[k][b].dot(r) < 0) r.set(-r.x, -r.y, -r.z, -r.w); prev[k][b] = r; outs[k][b].push(r.x, r.y, r.z, r.w); })); }
+      const qs = fitThis ? (SKIRTB === 3 ? fitNow3 : fitNow)(cs) : cs;
+      qs.forEach((q, k) => q.slice(0, NB).forEach((r, b) => { if (prev[k][b] && prev[k][b].dot(r) < 0) r.set(-r.x, -r.y, -r.z, -r.w); prev[k][b] = r; outs[k][b].push(r.x, r.y, r.z, r.w); })); }
+    if (fitThis) console.log(`  ${an.getName()}: chains fitted to his own file's robe (FITMIX ${FITMIX})`);
     const inAcc = doc.createAccessor().setType('SCALAR').setArray(new Float32Array(times)).setBuffer(buf);
     { const smp = doc.createAnimationSampler().setInput(inAcc).setInterpolation('LINEAR').setOutput(doc.createAccessor().setType('VEC4').setArray(new Float32Array(wOut)).setBuffer(buf));
       an.addSampler(smp).addChannel(doc.createAnimationChannel().setTargetNode(CH.waist).setTargetPath('rotation').setSampler(smp)); }
-    CH.forEach((c, k) => [c.A, c.B].forEach((nd, b) => {
+    CH.forEach((c, k) => (NB === 3 ? [c.A, c.Mn, c.B] : [c.A, c.B]).forEach((nd, b) => {
       const smp = doc.createAnimationSampler().setInput(inAcc).setInterpolation('LINEAR')
         .setOutput(doc.createAccessor().setType('VEC4').setArray(new Float32Array(outs[k][b])).setBuffer(buf));
       an.addSampler(smp).addChannel(doc.createAnimationChannel().setTargetNode(nd).setTargetPath('rotation').setSampler(smp)); }));
