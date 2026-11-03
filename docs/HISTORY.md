@@ -7670,6 +7670,42 @@ What the baseline contains, by release:
   - Deployed 6aea228cc22592c0494f94ed, 318 of 318 served files byte-identical. Checked once: photographed on a phone and a
     desktop (the room from the mat, the storm's wide and its third flash, ending C's cuts, the breath held at its peak);
     chaptertest, hosted and leak green; an independent reviewer shown only the pictures.
+- **v24.40** GRANDMASTER PHO FIXED AND READY; THE JAR'S ROOM, THE REVIEWER'S FINDINGS; CHAPTER 2'S PLAN — Chad, 3 Nov
+  2026, of Pho's model (his own, for chapter 3): *"many animations make his body distorted and wrong. I need you to find
+  a way to fix all of it"*, *"The biggest problems are with his torso and back that distorts to very thin. You need to
+  look at more angles"*, and *"I think pho model still needs alot more fixing and you are not looking at the right angles
+  for the big issues"*. He was right: two moments of a few takes from four sides had not shown it.
+  - MEASURED, NOT GLIMPSED: tools/rigstrain.mjs (new) poses every frame of every take in plain Node and reports where the
+    trunk caves toward the spine, its chest-to-back depth, squashed edges and opened seams. His file caved up to 52 % of
+    the trunk at once; the first re-bind (v24.39's robeskin) cut it to 15 %; the shipped file 0.7 %, its depth never
+    under 0.92 of rest. Photographed then from ten angles (eight round him, above, below) at each take's worst moments,
+    and the seated takes showed what no number had: the robe thrown out in a hump behind him and split at the lap.
+  - THE FIX (tools/robeskin.mjs, masters/v24.40/make.sh): the spine's weights dealt by height, not by distance to joints
+    the auto-rig put in his belly (BANDS); a SKIRT RIG — twelve chains of two bones round the robe, each following the
+    thighs, the waist and the shins by its angle round him, sagging when a thigh lifts, kept off the legs and the floor —
+    BAKED into all nineteen takes (25 new bones, the rest pose baking to 0.000°); the robe's waist on SkirtWaist, half way
+    between the pelvis and the spine (his floor sit tips the pelvis 59° one way and the spine 15° the other); the floor
+    sit lifted 5.5 cm onto its sitting bones. Walking and running read as one robe, the seated takes hang from the knees,
+    the back is a back. The floor sit's robe still pools flat round him from the front — a skinned robe cannot fold onto
+    itself without a cloth simulation; two other ways tried and kept out (make.sh says what each did).
+  - assets/pho.glb: 592,579 -> 177,772 triangles, 53 joints, nineteen takes, a 4096 colour sheet for the face and a 2048
+    normal map (Lersi Chin's recipe), 6.5 MB; the recipe re-makes it byte for byte. Not in build.py until chapter 3
+    casts him. Every take photographed on the shipped file from five angles (masters/v24.40/shots/); before and after
+    for Chad; an independent reviewer read the ten-angle sheets.
+  - THE JAR'S ROOM (episode 4 chapter 1), the v24.39 reviewer's findings, each verified first: the jar now has a painted
+    contact shadow (the bowl had stood on its tray; the jar stood on bare wood); four open vessels on the platform and the
+    table drew see-through from above (a lathe's floor faces down — the class of v24.12's offering dish) and each now has
+    its own two-sided material, the incense cup its sand. Refuted, and left: the jar is 12 cm clear of the candlestick
+    (one stands behind the other in the shot); the cloth's banded stripes are its own woven texture's slubs (unchanged by
+    tent-filtered mipmaps, anisotropy 1 or 8, or the normal map off — photographed). The reviewer's other findings were
+    in the room before the jar and are listed for Chad (docs/OPEN-ITEMS.md).
+  - CHAPTER 2's PLAN, proposed for Chad: docs/V25.0-E4C2-PLAN.md — the fog, Lersi Chin's examination and clearing, the
+    warning, the trial's 5.3 verbatim, the endings line by line, eight questions; its research written and refuted by a
+    second reader, docs/research/V25.0-LERSI.md and -VERDICTS.md (he is an ORDAINED ascetic, not a lay one; the
+    crown-blow is not a sourced clearing step; the Sakkatvā "your" form is a monks' blessing, so the chant is Chad's
+    call).
+  - Deployed 6aea3ae728f1707b35bb66d2, 318 of 318 served files byte-identical. Checked once: the room and the jar
+    photographed on a phone and a desktop (the storm's close and wide, ending C), chaptertest and leak green.
 
 ## The sheet, version by version
 

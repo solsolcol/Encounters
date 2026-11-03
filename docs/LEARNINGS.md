@@ -7237,3 +7237,30 @@ cut (sharing its vertices and maps) when it is small.
 - **A prop replaced under a chapter's lines changes the lines.** "The bowl" in two voice takes and two book lines would
   have described a thing no longer there (the v14.2 law), so they were re-said; and a re-said take moves its words, so
   any cut timed to a word is re-timed to the new take's word timings (transcribed from the installed file).
+
+## v24.40 — a rig is judged by every frame from every side, and a robe needs bones of its own
+
+- **Look at every frame from every side, by number first.** Pho's thin torso showed from the SIDE, at moments two
+  samples per take never landed on; Chad had to say twice that the angles were wrong. tools/rigstrain.mjs now poses every
+  frame of every take in plain Node and reports where the trunk caves toward the spine (posed distance over rest), its
+  chest-to-back depth, squashed edges and opened seams, per take with the worst moment — and those moments are then
+  photographed from eight sides, above and below (tools/clipsheet.mjs `--plan`). The number finds the frame; the
+  photograph finds what the number does not measure (the seated hump was a BULGE outside the trunk measure).
+- **A long robe cannot be fixed by weights alone.** Any weighting either splits it into trousers when the legs part,
+  throws the back out when a seated pelvis tips, or folds the lap: linear skinning has no gravity and no "between the
+  legs". The fix is bones a robe needs — chains round the skirt that follow the thighs by their angle round him, hang by
+  gravity when lifted, stay off the legs and the floor — BAKED into every take at its own keys, so the engine plays them
+  as ordinary tracks (tools/robeskin.mjs SKIRT). Rest must bake to rest: assert it (0.000°).
+- **An auto-rig's joints are not where the anatomy is.** Pho's Spine joint sits 13 cm in front of his hips joint (in his
+  belly), so any weighting by distance to the spine's segments gave his whole lower back to the pelvis. Deal a chain's
+  share by height instead (robeskin BANDS), and check the joints' positions (from the inverse bind matrices) before
+  trusting any distance-based weight.
+- **A take's pelvis can tip far past anatomy.** The floor sit tips Pho's hips 59° back with the spine 15° forward; cloth
+  carried by the raw pelvis swings out behind. A helper bone half way between the pelvis and the spine (SkirtWaist) is
+  what the waist of a garment should ride.
+- **A cloth's stripes may be its own paint.** The ghost jar's banded cloth looked like moiré; tent-filtered mipmaps,
+  anisotropy and the normal map off all changed nothing, and the source texture at 4× showed the weave's slubs. Test the
+  rendering cause before "fixing" a texture, and never retouch the paint.
+- **Fix the class the first time.** v24.12 made the offering dish two-sided because a lathe's floor faces down; four more
+  open vessels in the same room stayed see-through until a reviewer saw two of them. When a fix is for a CLASS (an open
+  lathe), grep for every instance in the chapter that day.

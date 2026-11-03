@@ -22,8 +22,8 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
    (`masters/v24.0/previews/`) and its seven new voices; episode 3 chapter 4's opening score (take 3 of 4,
    `masters/v22.0/previews/film-music-1..4.mp3`) and closing music (c, against a); episode 3 chapter 5's music
    (`masters/v23.0/previews/`, and v24.3's twelve cues). Send the reels again.
-5. **Episode 4 chapter 2's build plan** (S1·11's second half: the fog, Lersi Chin's clearing, the trial's 5.2–5.3),
-   written for his approval before any build.
+5. ~~**Episode 4 chapter 2's build plan**~~ — WRITTEN at v24.40, docs/V25.0-E4C2-PLAN.md: waiting on his answers to
+   its §2.3 (eight questions) before any build.
 6. **Episode 3's statues and trays after a lost graphics context** (found at v24.30, outside its ask, left as it was).
    Every chapter of episode 3 gives its Buddha images, trays and a few pieces an envMap of their own — the scene's
    environment texture at the time they were built (`buddhaMat`, `trayMat`, e3c1–e3c5). When a phone drops the page's
@@ -31,6 +31,16 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
    disposes the old, so those materials keep reflecting the dead one and their metal goes dark until the chapter is
    rebuilt. Rare (iOS under memory pressure), and nothing breaks. The fix is v24.30's: each such value as a lift on the
    scene's own environment (its absolute value over the scene's 0.05), the same frame to the pixel, proven per chapter.
+7. **Episode 4 chapter 1's room: what the v24.39 reviewer found that was there before the jar** (v24.40 fixed only what
+   the jar's change or the jar's shots owned: its contact shadow and the four see-through vessels). Each was in the room
+   since v24.0–v24.31 and is outside his ask, so it is listed with the reason and left: the old woman in the doorway
+   drawn as a coarse stipple (her fade's dither; it reads as static at desktop size); the two lagging wall shadows'
+   stair-stepped edges and a pinhole at the neck (their low-resolution silhouette — they are scene B's subject); the
+   smoke the player is told to tap is faint in play and its plume starts above the stick; the incense tip lands on his
+   toes in the wide shots; a faint box beside the thermos; the altar's ribbons over the clock; the HUD covering the
+   altar and the clock on a phone; the fan's cable and a wall pipe ending mid-wall; the shelf's posts ending in mid-air;
+   the yellow block reading as a sponge; the tablet's text unreadable on a phone; the plate's faceted rim; the seat as a
+   plain red block; the hands' smooth mitts. Fix any on his word (the photographs: the session's review2439).
 
 ## B. Episode 1 (the reference game) — only with his OK
 

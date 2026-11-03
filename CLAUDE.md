@@ -1090,8 +1090,9 @@ Next up: **EPISODE 4 · THE TEACHER IN WHITE** (Chad's name) — the casebook's 
 not know to his first cases at his teacher's side. Chapter 1 SHIPPED at v24.0 and was tightened at v24.9 (Chad's
 call: the yard straight in, no notes, no birthday pick — chapter 2's "notebook read back" becomes one question at Lersi
 Chin's, what he tells him: what he saw, or what he thinks it meant, the trial's 5.2); chapter 2 (S1·11's second half: the
-fog, Lersi Chin's clearing and the warning, the trial's 5.3) is next, its build plan still to be written to Chad's
-picks, the way chapter 1's was. The episode's plan, with what remains his to decide:
+fog, Lersi Chin's clearing and the warning, the trial's 5.3) is next: its build plan, **docs/V25.0-E4C2-PLAN.md**, was
+PROPOSED at v24.40 and waits on Chad's answers to its §2.3 (eight questions) — nothing is built before his yes; its
+research, refuted by a second reader, is docs/research/V25.0-LERSI.md (and -VERDICTS.md, which wins where they differ). The episode's plan, with what remains his to decide:
 **docs/V24.0-EPISODE4-PLAN.md** (its sixth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is
 still his). S1·11 in two chapters (the master he did not know, who wears the original Sak Yant Ajarn's model; then the
 fog, Lersi Chin's clearing and the warning — built on Master Z's own trial episode, its 5.1 and 5.3 the two decisions
@@ -1102,7 +1103,10 @@ name, v23.5), is S1·16–S1·20, cases four to eight, one a chapter, ending on 
 between the two is the end of case four, "I had thought I was only there to assist my teacher" (the grouping is
 Chad's, approved v23.5). Grandmaster Pho and Lersi Chin are Chad's models, with their voices (the Ah Pek's too, whose
 case comes later in the casebook). Lersi Chin's model arrived 3 Nov 2026 and is prepared, not yet cast:
-`assets/lersichin.glb`, key `lersichin` (into build.py the day chapter 2 casts him), masters/v24.38/make.sh. **Ajahn Krukai's model is PINNED** (v23.5, Chad: *"Make sure ajahn krukai's model
+`assets/lersichin.glb`, key `lersichin` (into build.py the day chapter 2 casts him), masters/v24.38/make.sh.
+Grandmaster Pho's arrived the same day, with distortions Chad asked to have fixed: FIXED AND PREPARED at v24.40, not yet
+cast — `assets/pho.glb`, key `pho` (chapter 3), masters/v24.40/make.sh: a skirt rig of 25 bones baked into his nineteen
+takes and his trunk re-bound (tools/robeskin.mjs; measured on every frame by tools/rigstrain.mjs). **Ajahn Krukai's model is PINNED** (v23.5, Chad: *"Make sure ajahn krukai's model
 in ep3 is unaffected and untouched. It is important that krukai is in the game as the master who gave the player his
 first sakyant."*): `ajarn` / `assets/ajarn.glb` are the bytes that shipped at v18.7, `chaptertest` fails on any change
 to the key, the file or e3c1's use of it, and Episode 4's first master — the original Sak Yant Ajarn — arrives under

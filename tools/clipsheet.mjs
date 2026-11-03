@@ -12,6 +12,8 @@ import { LAUNCH } from '../testlib.mjs';
 const FILE = process.argv[2], OUT = process.argv[3] || '/tmp/clips';
 const arg = (k, d) => { const a = process.argv.find(x => x.startsWith(`--${k}=`)); return a ? a.slice(k.length + 3) : d; };
 const AT = arg('at', '0.1,0.35,0.6,0.85').split(',').map(Number), SIZE = +arg('size', 360), ONLY = arg('clips', '');
+/* --plan=<file.json>: { "Take": [seconds, ...] } — each take shot at its own moments (rigstrain's worst frames) */
+const PLAN = arg('plan', '') ? JSON.parse(fs.readFileSync(arg('plan', ''), 'utf8')) : null;
 const FRAME = arg('frame', 'body');   // body | torso (the chest and back, framed on the posed Spine1)
 const VIEWS = arg('views', '0:6,90:6,215:14').split(',').map(v => v.split(':').map(Number)), NV = VIEWS.length;
 const ROOT = resolve('.');
@@ -48,14 +50,16 @@ new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load('/model.glb', (gltf) => 
   window.__clips = gltf.animations.map(a => ({ name: a.name, dur: a.duration }));
   const box = new THREE.Box3(), v = new THREE.Vector3();
   /* the posed skin's box (a SkinnedMesh's own box is its bind pose): sample every 40th vertex through the skin */
-  const posedBox = () => { box.makeEmpty(); const P = skinned.geometry.attributes.position;
+  const posedBox = () => { box.makeEmpty(); if (!skinned) return box.setFromObject(root); const P = skinned.geometry.attributes.position;
     for (let i = 0; i < P.count; i += 40) { skinned.getVertexPosition(i, v); v.applyMatrix4(skinned.matrixWorld); box.expandByPoint(v); } return box; };
+  if (!gltf.animations.length) window.__clips = [{ name: 'static', dur: 1 }];   // a still (rigstrain's heat): one row
   window.__shoot = (clip, t) => {
     for (const a of Object.values(acts)) a.stop();
-    const a = acts[clip]; a.reset().play(); a.paused = true; a.time = t; mixer.update(0); root.updateMatrixWorld(true);
+    const a = acts[clip]; if (a) { a.reset().play(); a.paused = true; a.time = t; mixer.update(0); } root.updateMatrixWorld(true);
     const b = posedBox(); let c = b.getCenter(new THREE.Vector3()); const s = b.getSize(new THREE.Vector3());
     let r = Math.max(s.x, s.y, s.z, 1.0) * 0.6;
-    if ('${FRAME}' === 'torso') { let sp = null; root.traverse(o => { if (o.isBone && /Spine1$/.test(o.name)) sp = o; }); if (sp) { c = sp.getWorldPosition(new THREE.Vector3()); r = 0.42; } }
+    if ('${FRAME}' === 'torso') { let sp = null; root.traverse(o => { if (o.isBone && /Spine1$/.test(o.name)) sp = o; }); if (sp) { c = sp.getWorldPosition(new THREE.Vector3()); r = 0.42; }
+      else { c = new THREE.Vector3(c.x, b.min.y + 0.72 * s.y, c.z); r = 0.42; } }   // a still: the chest by its height
     const d = r / Math.sin(THREE.MathUtils.degToRad(15)) * 1.02;
     const views = ${JSON.stringify(VIEWS)};
     views.forEach(([deg, pitch], k) => {
@@ -76,11 +80,11 @@ await p.route('**/sheet.html', r => r.fulfill({ status: 200, contentType: 'text/
 await p.goto(`http://127.0.0.1:${srv.address().port}/sheet.html`);
 await p.waitForFunction(() => window.__ready, null, { timeout: 600000 });
 const err = await p.evaluate(() => window.__err); if (err) { console.log('load failed', err); process.exit(1); }
-const clips = (await p.evaluate(() => window.__clips)).filter(c => !ONLY || ONLY.split(',').includes(c.name));
+const clips = (await p.evaluate(() => window.__clips)).filter(c => (!ONLY || ONLY.split(',').includes(c.name)) && (!PLAN || PLAN[c.name]));
 const sharp = (await import('sharp')).default;
 for (const c of clips) {
   const rows = [];
-  for (const f of AT) {
+  for (const f of (PLAN ? PLAN[c.name].map(t => t / c.dur) : AT)) {
     const r = await p.evaluate(([n, t]) => window.__shoot(n, t), [c.name, Math.min(c.dur - 1e-3, f * c.dur)]);
     rows.push({ input: await p.screenshot({ type: 'png' }), f, r });
   }

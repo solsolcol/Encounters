@@ -1,0 +1,382 @@
+/* v24.39 · ROBE SKIN — a robed scan's cloth re-bound to the bones the way cloth hangs, before tools/prepmonk.mjs.
+   Chad, 3 Nov 2026, of Grandmaster Pho's model: "many animations make his body distorted and wrong. I need you to find a
+   way to fix all of it." Measured on his file (a Meshy scan, auto-rigged on 28 Mixamo joints): of the robe's 293,756
+   vertices, 93,674 were bound mainly to his LEFT thigh against 36,865 to the right, 59,255 to his left arm, and almost
+   none to the spine (Spine2: 8). So the robe split into trouser legs when he walked, crumpled into spikes when he sat
+   cross-legged, and the drape over his left shoulder flew out like a wing whenever that arm moved.
+
+   Chad, the same day: "The biggest problems are with his torso and back that distorts to very thin. You need to look at
+   more angles" — photographed from seven angles (tools/clipsheet.mjs --frame=torso): raising his arms dragged his chest
+   and back up with them, the back caving in and the trunk flattening, because the TRUNK (his bare chest and back, the
+   necklace, and the robe over them) was bound to his arms, not his spine. So the trunk is re-bound too.
+
+   WHAT IT DOES — his face, neck, arms, hands, feet and the skin of his legs keep their weights; the CLOTH everywhere and
+   the TRUNK's skin and necklace (between the waist and the base of the neck, and off the arms) are re-bound:
+   1. CLASSES. Each vertex is read from the base colour at its UV: cloth is a pale neutral (saturation < SAT, value >
+      VAL), below the neck (y < NECKY) and away from the head; everything else (skin, the necklace) keeps its weights.
+      A vertex whose neighbours mostly disagree takes their class (one pass), so a stray texel cannot flip one point.
+   2. AN ENVELOPE for every cloth vertex: for each allowed bone, a weight from the distance d to the bone's SEGMENT (its
+      joint to its child's, in the bind pose): w = exp(-(max(0, d - r) / s)^2), the bone's core radius r and falloff s
+      from its class — the trunk wide and soft (the robe hangs from the body), the arms tight (only the cloth that wraps
+      an arm follows it), the legs between. Hands, feet, toes and the head are never allowed: cloth does not follow
+      a foot. Cloth below the waist may follow only the hips and the legs; the drape above it, the trunk and the arms.
+      Between the legs the two thighs are near equal, so the robe stays one robe and does not split.
+   3. A SEAM-FREE MIX: cloth within RING rings (edge hops) of skin blends from its own original weights at the boundary
+      to the envelope inside, so the hem, the neckline and the sleeves' edges do not tear from the skin they meet.
+   4. ROBE DIFFUSION: RPASS passes of neighbour averaging inside the cloth only, so no fold can step.
+   Every copy of a position (the UV seams) shares one set of weights, so no seam can open; four strongest kept,
+   renormalised. TAKELIFT="Take:metres,..." lifts a take's hips (a floor sit the take plants through the floor).
+     node tools/robeskin.mjs in.glb out.glb [previewOut.glb]   (the preview paints cloth by its main bone) */
+import { NodeIO } from '@gltf-transform/core';
+import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
+import sharp from 'sharp';
+import { Matrix4, Quaternion, Vector3 } from 'three';
+import { makePoser } from './gltfpose.mjs';
+const [,, IN, OUT, PREVIEW] = process.argv;
+const E = (k, d) => (process.env[k] !== undefined ? Number(process.env[k]) : d);
+const SAT = E('SAT', 0.16), VAL = E('VAL', 150), NECKY = E('NECKY', 1.43), RING = E('RING', 6), RPASS = E('RPASS', 40);
+const SKINTOP = E('SKINTOP', 1.37), SKINARM = E('SKINARM', 0.06);
+/* FRONTSHIN: cloth IN FRONT of a shin follows the thigh instead (by this share), so a lap does not fold back under
+   crossed shins and open the robe's inside to the eye; 0 leaves the shins' pull as the envelope gives it */
+const FRONTSHIN = E('FRONTSHIN', 0);   // the trunk's skin: under the neck's base, and this far off an arm
+/* v24.40 — Chad: "I think pho model still needs alot more fixing and you are not looking at the right angles for the big
+   issues". Measured over every frame (tools/rigstrain.mjs) and photographed from ten angles: weights alone cannot make a
+   robe — his legs pulled the skirt into trousers walking and running, a seated pelvis tilting back threw the cloth of
+   his lower back out into a hump, and a floor sit split the lap. Two options, both off unless set:
+   BANDS=1 — the spine's share of every re-bound point is dealt among Hips, Spine, Spine1 and Spine2 by its HEIGHT (his
+     auto-rig put the spine's joints in his belly, 13 cm in front of his back, so by distance his whole lower back went to
+     the pelvis); the cuts at the Spine joint less BANDHS, at Spine1 and at Spine2, each blended over ±BANDW.
+   SKIRT=n — the robe below ROOTY gets n chains of two bones round it (children of the hips: the waist to the knees, the
+     knees to the hem), placed on the robe's own surface, and every take gets the chains' turn BAKED in: each upper bone
+     follows a blend of the two thighs and the pelvis by its angle round him (the front both thighs, the sides their own,
+     the back half the pelvis), each lower bone the shins and gravity (the more the upper bone is lifted, the more it
+     hangs), neither inside a leg (no nearer than it stood at rest) nor through the floor (y = FLOOR, after TAKELIFT). The
+     robe's points take the two chains either side of them by angle and the upper or lower bones by height; above ROOTY
+     the trunk's weights; near the shins' skin, the shins'. So the robe is one robe that the legs move, never trousers. */
+const BANDS = E('BANDS', 0), SKIRT = E('SKIRT', 0), ROOTY = E('ROOTY', 0.93), FLOOR = E('FLOOR', 0);
+const io = new NodeIO().registerExtensions(ALL_EXTENSIONS);
+const doc = await io.read(IN);
+const root = doc.getRoot(), skin = root.listSkins()[0], joints = skin.listJoints();
+const name = j => j.getName().replace('mixamorig:', '');
+const JN = joints.map(name), JI = Object.fromEntries(JN.map((n, i) => [n, i]));
+/* the joints' bind positions, from the inverse bind matrices */
+const ibm = skin.getInverseBindMatrices().getArray();
+const invPos = k => { const a = Array.from(ibm.slice(k * 16, k * 16 + 16));
+  const c00 = a[5] * a[10] - a[9] * a[6], c01 = -(a[4] * a[10] - a[8] * a[6]), c02 = a[4] * a[9] - a[8] * a[5];
+  const c10 = -(a[1] * a[10] - a[9] * a[2]), c11 = a[0] * a[10] - a[8] * a[2], c12 = -(a[0] * a[9] - a[8] * a[1]);
+  const c20 = a[1] * a[6] - a[5] * a[2], c21 = -(a[0] * a[6] - a[4] * a[2]), c22 = a[0] * a[5] - a[4] * a[1];
+  const det = a[0] * c00 + a[4] * c10 + a[8] * c20, id = 1 / det;
+  const r = [c00 * id, c01 * id, c02 * id, c10 * id, c11 * id, c12 * id, c20 * id, c21 * id, c22 * id];
+  return [-(r[0] * a[12] + r[1] * a[13] + r[2] * a[14]), -(r[3] * a[12] + r[4] * a[13] + r[5] * a[14]), -(r[6] * a[12] + r[7] * a[13] + r[8] * a[14])]; };
+const JP = joints.map((_, k) => invPos(k));
+/* the segments cloth may follow: [bone, child, core radius r, falloff s, region] (region: 'low' below the waist, 'up' above) */
+const SEG = [
+  ['Hips', 'Spine', E('TRUNKR', 0.13), E('TRUNKS', 0.10), 'both'], ['Spine', 'Spine1', E('TRUNKR', 0.13), E('TRUNKS', 0.10), 'up'],
+  ['Spine1', 'Spine2', E('TRUNKR', 0.13), E('TRUNKS', 0.10), 'up'], ['Spine2', 'Neck', E('TRUNKR', 0.13) - 0.01, E('TRUNKS', 0.10) - 0.02, 'up'],
+  ['LeftShoulder', 'LeftArm', 0.07, 0.05, 'up'], ['RightShoulder', 'RightArm', 0.07, 0.05, 'up'],
+  ['LeftArm', 'LeftForeArm', E('ARMR', 0.05), E('ARMS', 0.025), 'up'], ['RightArm', 'RightForeArm', E('ARMR', 0.05), E('ARMS', 0.025), 'up'],
+  ['LeftForeArm', 'LeftHand', 0.045, 0.025, 'up'], ['RightForeArm', 'RightHand', 0.045, 0.025, 'up'],
+  ['LeftUpLeg', 'LeftLeg', E('THIGHR', 0.09), E('THIGHS', 0.12), 'low'], ['RightUpLeg', 'RightLeg', E('THIGHR', 0.09), E('THIGHS', 0.12), 'low'],
+  ['LeftLeg', 'LeftFoot', E('SHINR', 0.06), E('SHINS', 0.10), 'low'], ['RightLeg', 'RightFoot', E('SHINR', 0.06), E('SHINS', 0.10), 'low']
+].filter(s => JI[s[0]] !== undefined && JI[s[1]] !== undefined);
+const WAIST = JP[JI.Hips][1] + E('WAISTUP', 0.04);          // the waist: a little above the hips' joint
+const SPINEJ = ['Hips', 'Spine', 'Spine1', 'Spine2'].map(n => JI[n]);
+const sstep = x => { const t = Math.max(0, Math.min(1, x)); return t * t * (3 - 2 * t); };
+const bandW = y => { const BW = E('BANDW', 0.05), cuts = [JP[JI.Spine][1] - E('BANDHS', 0.04), JP[JI.Spine1][1], JP[JI.Spine2][1]];
+  const s = cuts.map(c => sstep((y - (c - BW)) / (2 * BW))); return [1 - s[0], s[0] - s[1], s[1] - s[2], s[2]]; };
+const segD = (p, a, b) => { const ab = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], ap = [p[0] - a[0], p[1] - a[1], p[2] - a[2]];
+  const L2 = ab[0] ** 2 + ab[1] ** 2 + ab[2] ** 2, t = Math.max(0, Math.min(1, (ap[0] * ab[0] + ap[1] * ab[1] + ap[2] * ab[2]) / L2));
+  return Math.hypot(ap[0] - t * ab[0], ap[1] - t * ab[1], ap[2] - t * ab[2]); };
+
+let CH = null;                                              // v24.40: the skirt's chains (SKIRT)
+const NJ0 = joints.length;
+for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) {
+  const P = prim.getAttribute('POSITION'), UV = prim.getAttribute('TEXCOORD_0'), J = prim.getAttribute('JOINTS_0'), W = prim.getAttribute('WEIGHTS_0');
+  if (!J || !W) continue;
+  const img = prim.getMaterial().getBaseColorTexture().getImage();
+  const { data, info } = await sharp(Buffer.from(img), { limitInputPixels: false }).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+  const n = P.getCount(), v = [0, 0, 0], uv = [0, 0], jj = [0, 0, 0, 0], ww = [0, 0, 0, 0];
+  /* positions grouped (the UV seams' copies share one), and the neighbours per group */
+  const pos = new Float64Array(n * 3), gid = new Int32Array(n), gmap = new Map(); let G = 0;
+  for (let i = 0; i < n; i++) { P.getElement(i, v); pos.set(v, 3 * i); const k = `${Math.round(v[0] * 1e5)},${Math.round(v[1] * 1e5)},${Math.round(v[2] * 1e5)}`;
+    let g = gmap.get(k); if (g === undefined) { g = G++; gmap.set(k, g); } gid[i] = g; }
+  const I = prim.getIndices().getArray(), deg = new Uint32Array(G + 1), pairs = [];
+  for (let t = 0; t < I.length; t += 3) for (let k = 0; k < 3; k++) { const a = gid[I[t + k]], b = gid[I[t + (k + 1) % 3]]; if (a !== b) { pairs.push(a, b); deg[a + 1]++; deg[b + 1]++; } }
+  for (let g = 0; g < G; g++) deg[g + 1] += deg[g];
+  const adj = new Uint32Array(deg[G]), fill = deg.slice(0, G);
+  for (let e = 0; e < pairs.length; e += 2) { const a = pairs[e], b = pairs[e + 1]; adj[fill[a]++] = b; adj[fill[b]++] = a; }
+  /* 1 · classes by colour, per group (any copy that reads as cloth votes cloth) */
+  const gp = new Float64Array(G * 3), cloth = new Uint8Array(G), seen = new Uint8Array(G);
+  const head = JP[JI.Head];
+  for (let i = 0; i < n; i++) {
+    const g = gid[i]; UV.getElement(i, uv);
+    if (!seen[g]) { seen[g] = 1; gp[3 * g] = pos[3 * i]; gp[3 * g + 1] = pos[3 * i + 1]; gp[3 * g + 2] = pos[3 * i + 2]; }
+    const x = Math.min(info.width - 1, Math.max(0, Math.floor(uv[0] * info.width))), y = Math.min(info.height - 1, Math.max(0, Math.floor(uv[1] * info.height)));
+    const o = (y * info.width + x) * 3, r = data[o], gg = data[o + 1], b = data[o + 2], val = Math.max(r, gg, b), sat = val ? (val - Math.min(r, gg, b)) / val : 0;
+    const p = [pos[3 * i], pos[3 * i + 1], pos[3 * i + 2]];
+    if (sat < SAT && val > VAL && p[1] < NECKY && Math.hypot(p[0] - head[0], p[1] - head[1], p[2] - head[2]) > 0.13) cloth[g] = 1;
+  }
+  { const c2 = cloth.slice(); for (let g = 0; g < G; g++) { let k = 0, m = deg[g + 1] - deg[g]; for (let e = deg[g]; e < deg[g + 1]; e++) k += cloth[adj[e]];
+      if (m >= 3) { if (cloth[g] && k * 4 < m) c2[g] = 0; else if (!cloth[g] && k * 4 > 3 * m) c2[g] = 1; } } cloth.set(c2); }
+  /* v24.40 · THE SKIRT'S POINTS: the cloth below the chains' roots, within 0.42 m of the legs' axis and off the hands and
+     forearms — and every patch inside it that the colour test called skin (a fold's shadow) but that no skin outside it
+     reaches (the feet and ankles, the trunk, the hands), which is cloth */
+  const cx = SKIRT ? 0.5 * (JP[JI.LeftUpLeg][0] + JP[JI.RightUpLeg][0]) : 0, cz = SKIRT ? 0.5 * (JP[JI.LeftUpLeg][2] + JP[JI.RightUpLeg][2]) : 0;
+  const skirtG = new Uint8Array(G);
+  if (SKIRT) {
+    const handSegs = [['LeftForeArm', 'LeftHand'], ['LeftHand', 'LeftHandMiddle4'], ['RightForeArm', 'RightHand'], ['RightHand', 'RightHandMiddle4']].filter(([a, b]) => JI[a] !== undefined && JI[b] !== undefined);
+    const inR = new Uint8Array(G);
+    for (let g = 0; g < G; g++) { const p = [gp[3 * g], gp[3 * g + 1], gp[3 * g + 2]];
+      if (p[1] > ROOTY + 0.06 || Math.hypot(p[0] - cx, p[2] - cz) > 0.42) continue;
+      if (handSegs.some(([a, b]) => segD(p, JP[JI[a]], JP[JI[b]]) < 0.08)) continue; inR[g] = 1; }
+    const reach = new Uint8Array(G), qq = [];
+    for (let g = 0; g < G; g++) if (!cloth[g] && (!inR[g] || gp[3 * g + 1] < 0.15)) { reach[g] = 1; qq.push(g); }
+    for (let h = 0; h < qq.length; h++) { const g = qq[h]; for (let e = deg[g]; e < deg[g + 1]; e++) { const b = adj[e]; if (!reach[b] && !cloth[b]) { reach[b] = 1; qq.push(b); } } }
+    let isl = 0; for (let g = 0; g < G; g++) if (inR[g] && !cloth[g] && !reach[g]) { cloth[g] = 1; isl++; }
+    for (let g = 0; g < G; g++) if (inR[g] && cloth[g]) skirtG[g] = 1;
+    /* the chains, measured on the robe: its radius at ROOTY and at the knees' height (80th percentile in each of n bins
+       round the legs' axis) and its hem (the bin's lowest 2 %) */
+    const N = SKIRT, D = 2 * Math.PI / N, YK = 0.5 * (JP[JI.LeftLeg][1] + JP[JI.RightLeg][1]);
+    const ang = (x, z) => { const a = Math.atan2(x - cx, z - cz); return a < 0 ? a + 2 * Math.PI : a; };
+    const pct = (a, f) => { if (!a.length) return NaN; a.sort((x, y) => x - y); return a[Math.min(a.length - 1, Math.floor(f * (a.length - 1)))]; };
+    CH = [];
+    for (let k = 0; k < N; k++) {
+      const th = k * D, rR = [], rK = [], ys = [];
+      for (let g = 0; g < G; g++) { if (!skirtG[g]) continue; const x = gp[3 * g], y = gp[3 * g + 1], z = gp[3 * g + 2];
+        let da = Math.abs(ang(x, z) - th); da = Math.min(da, 2 * Math.PI - da); if (da > D / 2) continue;
+        const r = Math.hypot(x - cx, z - cz); if (Math.abs(y - ROOTY) < 0.03) rR.push(r); if (Math.abs(y - YK) < 0.03) rK.push(r); ys.push([y, r]); }
+      const yH = Math.min(pct(ys.map(q => q[0]), 0.02), YK - 0.12);
+      CH.push({ th, rR: pct(rR, 0.8), rK: pct(rK, 0.8), yH, rH: pct(ys.filter(q => q[0] < yH + 0.04).map(q => q[1]), 0.8) });
+    }
+    for (const key of ['rR', 'rK', 'rH', 'yH']) CH.forEach((c, k) => { if (!(c[key] > 0)) { const a = CH[(k + N - 1) % N][key], b = CH[(k + 1) % N][key]; c[key] = (a > 0 && b > 0) ? (a + b) / 2 : (a > 0 ? a : b); } });
+    const pt = (c, r, y) => [cx + r * Math.sin(c.th), y, cz + r * Math.cos(c.th)];
+    CH.forEach(c => { c.R = pt(c, c.rR, ROOTY); c.K = pt(c, c.rK, YK); c.H = pt(c, c.rH, c.yH); });
+    /* the bones: SkirtA (the waist to the knees) a child of the hips, SkirtB (the knees to the hem) a child of it, each
+       turned at rest to the world's own frame (so a bake turns it from rest, and rest bakes to no turn at all) */
+    const poser = makePoser(root); poser.pose(null, 0);
+    const hipsN = joints[JI.Hips], MH0 = poser.world[poser.NI.get(hipsN)].clone(), MH0i = MH0.clone().invert(), qH0 = new Quaternion();
+    MH0.decompose(new Vector3(), qH0, new Vector3());
+    const ib = Array.from(ibm), Pw = JP[JI.Hips];
+    /* SkirtWaist, at the hips' joint: turned half way between the pelvis and the spine (WAISTBLEND). His seated takes
+       tip the pelvis back by up to 59° while the spine leans forward (the floor sit: Hips +59°, Spine -15°), so cloth
+       carried by the pelvis itself was thrown out behind him in a hump and up into his belly in front; the robe's waist
+       and the chains' roots ride this bone instead */
+    CH.waist = doc.createNode('SkirtWaist').setTranslation([0, 0, 0]).setRotation(qH0.clone().invert().toArray());
+    hipsN.addChild(CH.waist); skin.addJoint(CH.waist); JN.push('SkirtWaist'); CH.jw = NJ0;
+    ib.push(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -Pw[0], -Pw[1], -Pw[2], 1);
+    CH.forEach((c, k) => {
+      const nm = String(k).padStart(2, '0');
+      c.A = doc.createNode(`SkirtA${nm}`).setTranslation([c.R[0] - Pw[0], c.R[1] - Pw[1], c.R[2] - Pw[2]]);
+      c.B = doc.createNode(`SkirtB${nm}`).setTranslation([c.K[0] - c.R[0], c.K[1] - c.R[1], c.K[2] - c.R[2]]);
+      CH.waist.addChild(c.A); c.A.addChild(c.B); skin.addJoint(c.A); skin.addJoint(c.B); JN.push(`SkirtA${nm}`, `SkirtB${nm}`);
+      ib.push(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -c.R[0], -c.R[1], -c.R[2], 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -c.K[0], -c.K[1], -c.K[2], 1);
+      c.ja = NJ0 + 1 + 2 * k; c.jb = NJ0 + 2 + 2 * k;
+    });
+    skin.getInverseBindMatrices().setArray(new Float32Array(ib));
+    Object.assign(CH, { YK, cx, cz });
+    console.log(`  skirt: ${skirtG.reduce((a, b) => a + b, 0)} positions below ${ROOTY} m (${isl} of them the colour test called skin, inside it); ${N} chains (angle: root r, knee r, hem y / r):`);
+    console.log('   ', CH.map(c => `${Math.round(c.th * 180 / Math.PI)}° ${c.rR.toFixed(2)} ${c.rK.toFixed(2)} ${c.yH.toFixed(2)}/${c.rH.toFixed(2)}`).join(' | '));
+  }
+  let nCloth = 0; for (let g = 0; g < G; g++) nCloth += cloth[g];
+  /* the set re-bound: the cloth, and the TRUNK's other points (bare chest and back, the necklace) — between the waist and
+     the base of the neck, and off the arms (farther than SKINARM from an upper arm, forearm or hand) */
+  const armSegs = [['LeftArm', 'LeftForeArm'], ['LeftForeArm', 'LeftHand'], ['RightArm', 'RightForeArm'], ['RightForeArm', 'RightHand']].filter(([a, b]) => JI[a] !== undefined && JI[b] !== undefined);
+  const env = new Uint8Array(G); let nTrunk = 0;
+  for (let g = 0; g < G; g++) {
+    if (cloth[g]) { env[g] = 1; continue; }
+    const p = [gp[3 * g], gp[3 * g + 1], gp[3 * g + 2]];
+    if (p[1] <= WAIST - 0.08 || p[1] >= SKINTOP) continue;
+    let dArm = 9; for (const [a, b] of armSegs) dArm = Math.min(dArm, segD(p, JP[JI[a]], JP[JI[b]]));
+    if (dArm > SKINARM) { env[g] = 1; nTrunk++; }
+  }
+  /* the original weights per group (averaged over a group's copies), NJ wide */
+  const NJ = joints.length, A0 = new Float32Array(G * NJ), cnt = new Float32Array(G);
+  for (let i = 0; i < n; i++) { const g = gid[i]; J.getElement(i, jj); W.getElement(i, ww); cnt[g]++; for (let k = 0; k < 4; k++) A0[g * NJ + jj[k]] += ww[k]; }
+  for (let g = 0; g < G; g++) for (let j = 0; j < NJ; j++) A0[g * NJ + j] /= cnt[g];
+  /* 3 · rings from skin (BFS over the groups) */
+  const ring = new Int32Array(G).fill(1 << 20), q = [];
+  for (let g = 0; g < G; g++) if (!env[g]) { ring[g] = 0; q.push(g); }
+  for (let h = 0; h < q.length; h++) { const g = q[h]; if (ring[g] >= RING) continue; for (let e = deg[g]; e < deg[g + 1]; e++) { const b = adj[e]; if (ring[b] > ring[g] + 1) { ring[b] = ring[g] + 1; q.push(b); } } }
+  /* 2 · the envelope, mixed with the original near skin */
+  let A = A0.slice();
+  for (let g = 0; g < G; g++) {
+    if (!env[g]) continue;
+    const p = [gp[3 * g], gp[3 * g + 1], gp[3 * g + 2]], low = p[1] < WAIST;
+    const ew = new Float32Array(NJ); let sum = 0;
+    for (const [b, c, r, s, reg] of SEG) {
+      if (reg === 'low' && !low && p[1] > WAIST + 0.06) continue;             // a leg never pulls the drape above the waist
+      if (reg === 'low' && SKIRT && p[1] > ROOTY - 0.03) continue;           // v24.40: with the skirt's chains, never above their roots
+      if (reg === 'up' && low && p[1] < WAIST - 0.10) continue;              // nor an arm the skirt below it
+      const d = segD(p, JP[JI[b]], JP[JI[c]]);
+      let w = Math.exp(-((Math.max(0, d - r) / s) ** 2));
+      if (FRONTSHIN && /Leg$/.test(b) && !/UpLeg$/.test(b)) {
+        /* how far in front of this shin the point stands (z past the shin's own z at that height, the bind pose faces +z) */
+        const A = JP[JI[b]], C = JP[JI[c]], t = Math.max(0, Math.min(1, (p[1] - A[1]) / ((C[1] - A[1]) || 1e-6)));
+        const zf = p[2] - (A[2] + t * (C[2] - A[2])), k = Math.max(0, Math.min(1, (zf - 0.02) / 0.08));
+        const lost = w * FRONTSHIN * k * k * (3 - 2 * k); w -= lost;
+        const up = b.replace('Leg', 'UpLeg'); if (JI[up] !== undefined) { ew[JI[up]] += lost; sum += lost; }
+      }
+      ew[JI[b]] += w; sum += w;
+    }
+    if (sum < 1e-6) continue;                                                 // nothing near: keep its own
+    if (BANDS) { const bw = bandW(p[1]); let sp = 0; for (const j of SPINEJ) { sp += ew[j]; ew[j] = 0; } SPINEJ.forEach((j, k) => { ew[j] += sp * bw[k]; }); }
+    const a = Math.min(1, ring[g] / RING);
+    for (let j = 0; j < NJ; j++) A[g * NJ + j] = (1 - a) * A0[g * NJ + j] + a * ew[j] / sum;
+  }
+  /* 4 · diffusion inside the cloth (skin groups hold still as the boundary) */
+  let B = A.slice();
+  for (let it = 0; it < RPASS; it++) {
+    for (let g = 0; g < G; g++) {
+      const o = g * NJ;
+      if (!env[g] || ring[g] < 2) { for (let j = 0; j < NJ; j++) B[o + j] = A[o + j]; continue; }
+      const m = deg[g + 1] - deg[g]; if (!m) { for (let j = 0; j < NJ; j++) B[o + j] = A[o + j]; continue; }
+      for (let j = 0; j < NJ; j++) { let acc = 0; for (let e = deg[g]; e < deg[g + 1]; e++) acc += A[adj[e] * NJ + j]; B[o + j] = 0.5 * A[o + j] + 0.5 * acc / m; }
+    }
+    const T = A; A = B; B = T;
+  }
+  /* v24.40 · a skirt point's weights: below the roots' band the chains (the two either side of it by angle, the upper or
+     lower bones by height, blended over the knees' band), above it the trunk's; within HEMRING edges of the shins' skin,
+     the nearer shin's */
+  const skirtMix = (g, best) => {
+    const x = gp[3 * g], y = gp[3 * g + 1], z = gp[3 * g + 2], N = CH.length, D = 2 * Math.PI / N;
+    let a = Math.atan2(x - CH.cx, z - CH.cz); if (a < 0) a += 2 * Math.PI;
+    const u = a / D, k0 = Math.floor(u) % N, k1 = (k0 + 1) % N, f = u - Math.floor(u);
+    const tk = sstep((CH.YK + 0.07 - y) / 0.14), tr = sstep((ROOTY + 0.05 - y) / 0.08);
+    const th = y < CH.YK ? Math.max(0, 1 - ring[g] / E('HEMRING', 4)) : 0;
+    if (tr <= 0) return;
+    for (const b of best) b[0] *= 1 - tr;
+    const c = tr * (1 - th), sh = tr * th;
+    best.push([c * (1 - f) * (1 - tk), CH[k0].ja], [c * f * (1 - tk), CH[k1].ja], [c * (1 - f) * tk, CH[k0].jb], [c * f * tk, CH[k1].jb]);
+    if (sh > 0) { const p = [x, y, z]; best.push([sh, segD(p, JP[JI.LeftLeg], JP[JI.LeftFoot]) < segD(p, JP[JI.RightLeg], JP[JI.RightFoot]) ? JI.LeftLeg : JI.RightLeg]); }
+  };
+  /* back to four per vertex */
+  const dom = {};
+  for (let i = 0; i < n; i++) {
+    const g = gid[i], o = g * NJ, best = [];
+    for (let j = 0; j < NJ; j++) if (A[o + j] > 1e-4) best.push([A[o + j], j]);
+    if (CH && env[g]) for (const b of best) if (b[1] === JI.Hips) b[1] = CH.jw;   // the robe's waist rides SkirtWaist, never the pelvis's own tip
+    if (CH && skirtG[g]) skirtMix(g, best);
+    best.sort((x, y) => y[0] - x[0]); const top = best.slice(0, 4), s = top.reduce((x, y) => x + y[0], 0) || 1;
+    while (top.length < 4) top.push([0, 0]);
+    J.setElement(i, top.map(t => t[1])); W.setElement(i, top.map(t => t[0] / s));
+    if (env[g]) { const k = JN[top[0][1]]; dom[k] = (dom[k] || 0) + 1; }
+  }
+  console.log(`  cloth: ${nCloth} of ${G} positions (${n} vertices), and ${nTrunk} more of the trunk; rings ${RING}, diffusion ${RPASS}; waist y ${WAIST.toFixed(3)}`);
+  console.log('  re-bound points by main bone now:', Object.entries(dom).sort((a, b) => b[1] - a[1]).map(([k, c]) => `${k} ${c}`).join(', '));
+  if (PREVIEW) {
+    /* a copy painted by class and main bone (vertex colours), for a photograph of where the cloth was found */
+    const pal = { SkirtWaist: [0.62, 0.45, 0.3], Hips: [1, 0.8, 0], Spine: [1, 0.5, 0], Spine1: [1, 0.3, 0.2], Spine2: [0.9, 0.2, 0.4], LeftUpLeg: [0.2, 0.4, 1], RightUpLeg: [0.2, 0.9, 1],
+      LeftLeg: [0.2, 0.2, 0.7], RightLeg: [0.1, 0.6, 0.6], LeftArm: [0.1, 0.8, 0.2], RightArm: [0.6, 1, 0.3], LeftShoulder: [0.3, 0.6, 0.3], RightShoulder: [0.5, 0.7, 0.4],
+      LeftForeArm: [0, 0.5, 0], RightForeArm: [0.4, 0.6, 0], Neck: [0.8, 0, 0.8] };
+    const col = new Float32Array(n * 4);
+    /* a chain's bones by its angle round him (a hue), its upper bone light and its lower dark */
+    const skirtCol = nm => { const m = /^Skirt([AB])(\d+)$/.exec(nm || ''); if (!m) return null; const h = (+m[2] / (CH ? CH.length : 12)) * 6, v = m[1] === 'A' ? 1 : 0.55;
+      const f = h - Math.floor(h), seg = Math.floor(h) % 6, q = [[1, f, 0], [1 - f, 1, 0], [0, 1, f], [0, 1 - f, 1], [f, 0, 1], [1, 0, 1 - f]][seg]; return q.map(x => (0.25 + 0.75 * x) * v); };
+    for (let i = 0; i < n; i++) { const g = gid[i]; J.getElement(i, jj); const c = env[g] ? (pal[JN[jj[0]]] || skirtCol(JN[jj[0]]) || [1, 1, 1]) : [0.35, 0.3, 0.28]; col.set([...c, 1], 4 * i); }
+    prim.setAttribute('COLOR_0', doc.createAccessor().setType('VEC4').setArray(col).setBuffer(root.listBuffers()[0]));
+  }
+}
+/* TAKELIFT: a take's hips raised (a floor sit planted through the floor) */
+for (const spec of (process.env.TAKELIFT || '').split(',').filter(Boolean)) {
+  const [take, m] = spec.split(':'), dy = Number(m);
+  const an = root.listAnimations().find(a => a.getName() === take); if (!an) throw new Error('no take ' + take);
+  for (const ch of an.listChannels()) {
+    if (ch.getTargetPath() !== 'translation' || !/Hips$/.test(ch.getTargetNode().getName())) continue;
+    const out = ch.getSampler().getOutput(), arr = out.getArray().slice(); for (let i = 1; i < arr.length; i += 3) arr[i] += dy; out.setArray(arr);
+    console.log(`  ${take}: hips raised ${dy} m`);
+  }
+}
+/* v24.40 · THE SKIRT'S TAKES: every take's chains turned at its own keys (the hips' rotation track's times), from the
+   pose the take gives the pelvis, thighs and shins — and the rest pose checked to bake to rest */
+if (CH) {
+  const poser = makePoser(root), node = n => joints[JI[n]], Wd = n => poser.world[poser.NI.get(node(n))];
+  const LEGS = ['Hips', 'LeftUpLeg', 'RightUpLeg', 'LeftLeg', 'RightLeg', 'LeftFoot', 'RightFoot'], M0i = {};
+  poser.pose(null, 0);
+  for (const n of LEGS) M0i[n] = Wd(n).clone().invert();
+  const qH0 = new Quaternion(); Wd('Hips').decompose(new Vector3(), qH0, new Vector3());
+  const qS0 = new Quaternion(); Wd('Spine').decompose(new Vector3(), qS0, new Vector3());
+  const V = a => new Vector3(...a), Pw0 = new Vector3(...JP[JI.Hips]), WB = E('WAISTBLEND', 0.5), GU = E('HANGUP', 0.45);
+  const RT = E('THIGHCAP', 0.09), RS = E('SHINCAP', 0.07), G0 = E('HANG0', 0.15), G1 = E('HANG1', 0.9);
+  /* [his left thigh, his right thigh, the pelvis] by the chain's angle from his front, 0..180° by 30 (mirrored past 180) */
+  const TABLE = [[0.5, 0.5, 0], [0.7, 0.3, 0], [0.88, 0.12, 0], [0.85, 0, 0.15], [0.65, 0, 0.35], [0.45, 0.05, 0.5], [0.25, 0.25, 0.5]];
+  const angW = th => { let d = th * 180 / Math.PI, mir = false; if (d > 180) { d = 360 - d; mir = true; }
+    const i = Math.min(5, Math.floor(d / 30)), f = d / 30 - i, a = TABLE[i], b = TABLE[i + 1], w = a.map((x, k) => x + (b[k] - x) * f), s = w[0] + w[1] + w[2];
+    const r = w.map(x => x / s); return mir ? [r[1], r[0], r[2]] : r; };
+  const CAPS = [['LeftUpLeg', 'LeftLeg', RT], ['LeftLeg', 'LeftFoot', RS], ['RightUpLeg', 'RightLeg', RT], ['RightLeg', 'RightFoot', RS]];
+  const segPt = (q, a, b) => { const ab = b.clone().sub(a), t = Math.max(0, Math.min(1, q.clone().sub(a).dot(ab) / ab.lengthSq())); return a.clone().addScaledVector(ab, t); };
+  const capsNow = () => CAPS.map(([a, b]) => [new Vector3().setFromMatrixPosition(Wd(a)), new Vector3().setFromMatrixPosition(Wd(b))]);
+  const rest = capsNow();
+  for (const c of CH) {
+    c.u0 = V(c.K).sub(V(c.R)).normalize(); c.l0 = V(c.H).sub(V(c.K)).normalize(); c.L1 = V(c.K).distanceTo(V(c.R)); c.L2 = V(c.H).distanceTo(V(c.K));
+    c.w = angW(c.th); c.out = new Vector3(Math.sin(c.th), 0, Math.cos(c.th));
+    /* a leg's capsule never nearer than this chain stood to it at rest, so rest is rest */
+    const p1 = [0.4, 0.7, 1].map(u => V(c.R).lerp(V(c.K), u)), p2 = [0.4, 0.7, 1].map(u => V(c.K).lerp(V(c.H), u));
+    c.r1 = rest.map(([a, b], i) => Math.min(CAPS[i][2], ...p1.map(q => q.distanceTo(segPt(q, a, b)) - 0.01)));
+    c.r2 = rest.map(([a, b], i) => Math.min(CAPS[i][2], ...p2.map(q => q.distanceTo(segPt(q, a, b)) - 0.01)));
+  }
+  const push = (S, d, len, caps, radii, out) => { const e = S.clone().addScaledVector(d, len);
+    for (let it = 0; it < 4; it++) { let moved = false;
+      for (const u of [0.4, 0.7, 1]) { const q = S.clone().lerp(e, u);
+        caps.forEach(([a, b], ci) => { const r = radii[ci]; if (r <= 0) return; const cp = segPt(q, a, b), dv = q.clone().sub(cp), dist = dv.length(); if (dist >= r) return;
+          if (dist < 1e-6) dv.copy(out); else dv.divideScalar(dist); e.addScaledVector(dv, Math.min(0.08, (r - dist) / u)); moved = true; }); }
+      e.sub(S).setLength(len).add(S); if (!moved) break; }
+    return e.sub(S).normalize(); };
+  /* FLOORIN (0..1): the share of a floor-lying length turned back in under him (a robe's hem on the floor tucks under
+     the knees) instead of running on outward along the floor */
+  const FLOORIN = E('FLOORIN', 0);
+  const floorClamp = (S, d, len, out) => { const fy = FLOOR + 0.015; if (S.y + d.y * len >= fy) return d;
+    const h = new Vector3(d.x, 0, d.z); if (h.lengthSq() < 1e-6) h.copy(out); h.normalize();
+    if (FLOORIN > 0) { h.multiplyScalar(1 - FLOORIN).addScaledVector(out, -FLOORIN); if (h.lengthSq() < 1e-6) h.copy(out).negate(); h.normalize(); }
+    const dy = S.y - fy;
+    if (dy <= 0) return h; const s = Math.min(1, dy / len); return h.multiplyScalar(Math.sqrt(1 - s * s)).add(new Vector3(0, -s, 0)); };
+  const qAlign = (a, b) => new Quaternion().setFromUnitVectors(a, b), c25 = Math.cos(25 * Math.PI / 180), c75 = Math.cos(75 * Math.PI / 180);
+  /* the chains at the pose the poser holds: each bone's local rotation */
+  const chainsNow = () => {
+    const qHw = new Quaternion(), qSw = new Quaternion(); Wd('Hips').decompose(new Vector3(), qHw, new Vector3()); Wd('Spine').decompose(new Vector3(), qSw, new Vector3());
+    const qH = qHw.clone().multiply(qH0.clone().invert()), qS = qSw.clone().multiply(qS0.clone().invert());
+    const qW = qH.clone().slerp(qS, WB), PwN = new Vector3().setFromMatrixPosition(Wd('Hips')), fwd = new Vector3(0, 0, 1).applyQuaternion(qW);
+    const yaw = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), Math.atan2(fwd.x, fwd.z)), caps = capsNow();
+    const rig = (n, p) => V(p).applyMatrix4(M0i[n]).applyMatrix4(Wd(n));          // a rest point carried rigidly by that bone
+    const rigW = p => V(p).sub(Pw0).applyQuaternion(qW).add(PwN);                  // ... and by the waist
+    const res = CH.map(c => {
+      const out = c.out.clone().applyQuaternion(yaw), R = rigW(c.R);
+      const Et = rig('LeftUpLeg', c.K).multiplyScalar(c.w[0]).add(rig('RightUpLeg', c.K).multiplyScalar(c.w[1])).add(rigW(c.K).multiplyScalar(c.w[2]));
+      let d = Et.sub(R).normalize();
+      /* a lifted thigh's cloth sags (HANGUP at most): across a lap onto the shins, between the knees, over the thigh's side */
+      const gu = GU * sstep((c25 + d.y) / (c25 - c75)); if (gu > 0) d.multiplyScalar(1 - gu).add(new Vector3(0, -gu, 0)).normalize();
+      d = push(R, d, c.L1, caps, c.r1, out); d = floorClamp(R, d, c.L1, out);
+      const S = R.clone().addScaledVector(d, c.L1), hang = S.clone().addScaledVector(c.l0.clone().applyQuaternion(yaw), c.L2);
+      const Fl = rig('LeftLeg', c.H).multiplyScalar(c.w[0]).add(rig('RightLeg', c.H).multiplyScalar(c.w[1])).add(hang.clone().multiplyScalar(c.w[2]));
+      const gr = G0 + (G1 - G0) * sstep((c25 + d.y) / (c25 - c75));             // -d.y: how near straight down the upper bone is
+      let d2 = Fl.multiplyScalar(1 - gr).add(hang.multiplyScalar(gr)).sub(S).normalize(); d2 = push(S, d2, c.L2, caps, c.r2, out); d2 = floorClamp(S, d2, c.L2, out);
+      const Wu = qAlign(c.u0.clone().applyQuaternion(qW), d).multiply(qW), Wl = qAlign(c.l0.clone().applyQuaternion(Wu), d2).multiply(Wu);
+      return [qW.clone().invert().multiply(Wu), Wu.clone().invert().multiply(Wl), Wu, Wl];
+    });
+    res.waist = [qHw.clone().invert().multiply(qW), qW];
+    return res;
+  };
+  poser.pose(null, 0);
+  const r0 = chainsNow(), turn = w => 2 * Math.acos(Math.min(1, Math.abs(w.w))) * 180 / Math.PI;
+  const restTurn = Math.max(turn(r0.waist[1]), ...r0.flatMap(q => [q[2], q[3]].map(turn)));
+  if (restTurn > 0.5) throw new Error(`the rest pose bakes to a turn of ${restTurn.toFixed(2)}°`);
+  const buf = root.listBuffers()[0]; let nt = 0, nk = 0;
+  for (const an of root.listAnimations()) {
+    const chR = an.listChannels().find(c => c.getTargetNode() === node('Hips') && c.getTargetPath() === 'rotation');
+    const times = chR ? Array.from(chR.getSampler().getInput().getArray()) : [0, poser.duration(an)];
+    const outs = CH.map(() => [[], []]), prev = CH.map(() => [null, null]), wOut = []; let wPrev = null;
+    for (const t of times) { poser.pose(an, t); const cs = chainsNow();
+      const wq = cs.waist[0]; if (wPrev && wPrev.dot(wq) < 0) wq.set(-wq.x, -wq.y, -wq.z, -wq.w); wPrev = wq; wOut.push(wq.x, wq.y, wq.z, wq.w);
+      cs.forEach((q, k) => [q[0], q[1]].forEach((r, b) => { if (prev[k][b] && prev[k][b].dot(r) < 0) r.set(-r.x, -r.y, -r.z, -r.w); prev[k][b] = r; outs[k][b].push(r.x, r.y, r.z, r.w); })); }
+    const inAcc = doc.createAccessor().setType('SCALAR').setArray(new Float32Array(times)).setBuffer(buf);
+    { const smp = doc.createAnimationSampler().setInput(inAcc).setInterpolation('LINEAR').setOutput(doc.createAccessor().setType('VEC4').setArray(new Float32Array(wOut)).setBuffer(buf));
+      an.addSampler(smp).addChannel(doc.createAnimationChannel().setTargetNode(CH.waist).setTargetPath('rotation').setSampler(smp)); }
+    CH.forEach((c, k) => [c.A, c.B].forEach((nd, b) => {
+      const smp = doc.createAnimationSampler().setInput(inAcc).setInterpolation('LINEAR')
+        .setOutput(doc.createAccessor().setType('VEC4').setArray(new Float32Array(outs[k][b])).setBuffer(buf));
+      an.addSampler(smp).addChannel(doc.createAnimationChannel().setTargetNode(nd).setTargetPath('rotation').setSampler(smp)); }));
+    nt++; nk += times.length;
+  }
+  console.log(`  skirt: ${CH.length} chains baked into ${nt} takes (${nk} keys each bone); the rest pose bakes to ${restTurn.toFixed(3)}°`);
+}
+if (PREVIEW) { for (const m of root.listMaterials()) m.setBaseColorTexture(null).setBaseColorFactor([1, 1, 1, 1]); await io.write(PREVIEW, doc); console.log('preview', PREVIEW); }
+else { await io.write(OUT, doc); console.log('wrote', OUT); }

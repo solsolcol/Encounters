@@ -884,6 +884,12 @@
       const mGold = M({ color: 0xc9a043, roughness: 0.38, metalness: 0.75 });
       const mBrass = M({ color: 0xb8892e, roughness: 0.32, metalness: 0.85 });
       const mSilver = M({ color: 0xc8ccd0, roughness: 0.28, metalness: 0.9 });
+      /* (v24.40) the open vessels' own two-sided brass and silver: a lathe's floor faces down and its far inside wall
+         away, so from above an open bowl drew as a rim with the platform or the tablet's lettering through it — the
+         reviewer's photographs of v24.39's jar shots (the holy-water bowl behind the jar, the incense cup); the class of
+         v24.12's offering dish */
+      const mBrassIn = M({ color: 0xb8892e, roughness: 0.32, metalness: 0.85, side: THREE.DoubleSide });
+      const mSilverIn = M({ color: 0xc8ccd0, roughness: 0.28, metalness: 0.9, side: THREE.DoubleSide });
       const mGlass = M({ color: 0xcfe2dc, roughness: 0.05, metalness: 0.1, transparent: true, opacity: 0.12, depthWrite: false });
       const mFrost = M({ color: 0xbcd0d4, roughness: 0.35, transparent: true, opacity: 0.42, depthWrite: false, side: THREE.DoubleSide });
       const mWhiteP = M({ color: 0xe8e4da, roughness: 0.5 });
@@ -1119,7 +1125,7 @@
         const tri = new THREE.Shape(); tri.moveTo(0, 0); tri.lineTo(0.36, 0); tri.lineTo(0.04, 0.4); tri.lineTo(0, 0.4); tri.lineTo(0, 0);
         const tg = new THREE.ExtrudeGeometry(tri, { depth: 0.56, bevelEnabled: true, bevelThickness: 0.015, bevelSize: 0.015, bevelSegments: 2 });
         const pil = mesh(tg, M({ color: 0x9a1c1e, roughness: 0.7 }), -0.28, T0, PLAT.z0 + 0.04); pil.rotation.y = Math.PI / 2;
-        const tray = lathe([[0, 0], [0.15, 0], [0.16, 0.025], [0.15, 0.03]], mBrass, 0.98, T0, -2.22, 24);
+        const tray = lathe([[0, 0], [0.15, 0], [0.16, 0.025], [0.15, 0.03]], mBrassIn, 0.98, T0 + 0.002, -2.22, 24);
         for (const [ox, oz, hh] of [[-0.06, -0.05, 0.07], [0.05, -0.06, 0.05], [0.07, 0.05, 0.06], [-0.05, 0.06, 0.08]])
           lathe([[0, 0], [0.028, 0], [0.034, hh * 0.6], [0.022, hh], [0.026, hh + 0.008]], mBrass, 0.98 + ox, T0 + 0.025, -2.22 + oz, 14);
         void tray;
@@ -1128,13 +1134,13 @@
         bx(0.46, 0.055, 0.075, mCloth, -1.06, T0 + 0.083, -2.31).rotation.y = 0.06;
         bx(0.42, 0.05, 0.07, M({ color: 0x7a2a1e, roughness: 0.85 }), -1.0, T0 + 0.025, -2.18).rotation.y = -0.1;
         bx(0.006, 0.061, 0.08, mGold, -1.08, T0 + 0.03, -2.32).rotation.y = 0.12;
-        lathe([[0, 0], [0.07, 0], [0.12, 0.05], [0.125, 0.07], [0.118, 0.072]], mSilver, -0.74, T0, -1.62, 24);
+        lathe([[0, 0], [0.07, 0], [0.12, 0.05], [0.125, 0.07], [0.118, 0.072]], mSilverIn, -0.74, T0 + 0.002, -1.62, 24);
         const grass = M({ color: 0x5a8a3a, roughness: 0.8, side: THREE.DoubleSide });
         for (let k = 0; k < 5; k++) { const g = flat(0.012, 0.16, grass); g.position.set(-0.74 + (k - 2) * 0.012, T0 + 0.1, -1.62); g.rotation.set(0.3, k * 0.6, (k - 2) * 0.18); }
         cyl(0.055, 0.055, 0.28, M({ color: 0xb02828, roughness: 0.45 }), 1.12, T0 + 0.14, -1.68);
         cyl(0.04, 0.05, 0.05, mWhiteP, 1.12, T0 + 0.305, -1.68);
         lathe([[0, 0], [0.032, 0], [0.036, 0.09], [0.034, 0.095]], mGlass, 1.0, T0, -1.62, 14);
-        lathe([[0, 0], [0.07, 0], [0.08, 0.012]], mBrass, 0.52, T0, -1.6, 20);
+        lathe([[0, 0], [0.07, 0], [0.08, 0.012]], mBrassIn, 0.52, T0 + 0.002, -1.6, 20);
         const beads = new THREE.InstancedMesh(new THREE.SphereGeometry(0.0085, 8, 6), M({ color: 0x3a2014, roughness: 0.5 }), 54);
         for (let k = 0; k < 54; k++) { const a = k / 54 * Math.PI * 2; m4.makeTranslation(0.52 + Math.cos(a) * 0.05, T0 + 0.02, -1.6 + Math.sin(a) * 0.04); beads.setMatrixAt(k, m4); }
         R.add(beads);
@@ -1206,13 +1212,27 @@
             }
             room.jarB = { attr: P, base, idx, w, lift: 0.018 / Math.max(1e-6, Math.hypot(me[4], me[5], me[6])) };
           }
+          /* (v24.40) its contact shadow, painted (v9.3: on a phone nothing casts one): the bowl stood on its brass tray, the
+             jar stands on the bare wood, and the reviewer's close-ups found it set down rather than resting. A soft dark
+             disc a millimetre over the table under it, dark to just past its widest (9.5 cm: the camera sees the table
+             only outside the bulge, so a disc of the jar's own size hid under it and read as nothing) and gone by 15 cm,
+             a child of the jar so the storm's turn carries it */
+          { const [cs] = cnv(64), cx2 = cs.getContext('2d'), gr = cx2.createRadialGradient(32, 32, 2, 32, 32, 32);
+            gr.addColorStop(0, 'rgba(0,0,0,0.6)'); gr.addColorStop(0.62, 'rgba(0,0,0,0.52)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+            cx2.fillStyle = gr; cx2.fillRect(0, 0, 64, 64);
+            const sh = new THREE.Mesh(new THREE.CircleGeometry(0.15, 32), new THREE.MeshBasicMaterial({ map: tex(done(THREE, cs, false)),
+              transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }));
+            sh.rotation.x = -Math.PI / 2; sh.position.y = 0.001; sh.renderOrder = -1; j.add(sh); }
           room.jar = j;
           if (room.clothShifted) { j.rotation.y = 0.45; j.position.x = BW.x + 0.028; j.position.z = BW.z - 0.012; }
           bowlTray.visible = false; bowlBrass.visible = false; cloth.visible = false;
         }).catch(err => { console.warn('e4ghostjar failed to load', err); if (ctx.loadFail) ctx.loadFail('e4ghostjar', err); });
         /* the incense: a small brass cup of sand and three sticks; their tips glow */
         const IC = RMC.INC;
-        lathe([[0, 0], [0.03, 0], [0.042, 0.04], [0.045, 0.05], [0.04, 0.052]], mBrass, IC.x, T, IC.z, 18);
+        lathe([[0, 0], [0.03, 0], [0.042, 0.04], [0.045, 0.05], [0.04, 0.052]], mBrassIn, IC.x, T + 0.002, IC.z, 18);
+        /* (v24.40) its sand, at the sticks' feet (they stand from 4 cm up): before this the cup was empty and open */
+        const sand = new THREE.Mesh(new THREE.CircleGeometry(0.0432, 18), M({ color: 0x6e6252, roughness: 1 }));
+        sand.rotation.x = -Math.PI / 2; sand.position.set(IC.x, T + 0.044, IC.z); R.add(sand);
         const stick = M({ color: 0x8a2a1a, roughness: 0.8 });
         for (let k = 0; k < 3; k++) {
           const s = cyl(0.0026, 0.0026, 0.24, stick, IC.x + (k - 1) * 0.008, T + 0.16, IC.z, 5); s.rotation.z = (k - 1) * 0.07;
