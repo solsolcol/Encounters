@@ -193,7 +193,7 @@
     /* (v24.15, Chad's models: Pong, Pa Noi, the woman at the stall and the presence are his own — `e4pong` and `e4noi`
        are his files under the stand-ins' keys, `e4stall` replaces `e4joy`, and `e4ghost`, his old woman, replaces episode
        1's `granny`; nothing in the chapter is a stand-in for a person any more) */
-    assets: ['firstmaster', 'fmshadow', 'e4sky', 'e4pong', 'e4noi', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4pickup', 'e4nangkwak', 'e4takrut', 'e4phayant',
+    assets: ['firstmaster', 'fmshadow', 'e4sky', 'e4pong', 'e4noi', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4ghostjar', 'e4pickup', 'e4nangkwak', 'e4takrut', 'e4phayant',
              'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd', 'e4buffalo', 'e4sandalsa', 'e4sandalsb', 'e4rahu', 'e4sedan', 'e4truck', 'e4suv', 'e4moto',
              'e4seat', 'owner', 'sitman', 'sitclap', 'sitshout',
              'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm', 'filmlaptop',
@@ -250,8 +250,8 @@
       ledWho: 'Who is he?',
       ledSaw: 'What I saw',
       ledPongF: 'Pong had never been here either. His cousin knows him.',
-      ledSmokeF: 'The smoke leaned toward the covered bowl, against the fan.',
-      ledClothF: 'The cloth over the bowl moved.',
+      ledSmokeF: 'The smoke leaned toward the covered jar, against the fan.',
+      ledClothF: 'The cloth over the jar moved.',
       ledShadowF: 'His shadow moved after he did.',
       ledHerF: 'I glimpsed someone behind him. When I looked, no one was there.',
       // PLAY II · the reading (§4.3)
@@ -325,8 +325,8 @@
     /* q */
       'q1pro1': 7.45, 'q1pro2': 6.01, 'q1pro3': 6.01, 'q1pro4': 4.01, 'q1pro5': 3.29, 'q1water': 0.89,
       'q1pg1': 2.81, 'q1nobody': 2.81, 'q1tree': 2.97, 'q1wai': 1.21, 'q1shop': 5.45, 'q1short': 2.01,
-      'q1smoke': 6.09, 'q1cloth': 2.89, 'q1shadow': 3.77, 'q1her': 5.61, 'q1A1': 1.83, 'q1A2': 0.65, 'q1A3': 0.81,
-      'q1A4': 5.61, 'q1B1': 3.29, 'q1B2': 0.93, 'q1B3': 2.73, 'q1B4': 6.21, 'q1C0': 6.57, 'q1C1': 1.77,
+      'q1smoke': 7.13, 'q1cloth': 2.89, 'q1shadow': 3.77, 'q1her': 5.61, 'q1A1': 1.83, 'q1A2': 0.65, 'q1A3': 0.81,
+      'q1A4': 5.61, 'q1B1': 3.29, 'q1B2': 0.93, 'q1B3': 2.73, 'q1B4': 6.21, 'q1C0': 6.25, 'q1C1': 1.77,
       'q1C2': 1.29, 'q1C3': 5.13, 'q1D1': 5.45, 'q1D2': 4.17, 'q1D3': 2.97, 'q1D4': 3.21, 'q1D5': 3.29,
       'q1K1': 6.25, 'q1K2': 1.61, 'q1K3': 2.09, 'q1A': 4.63, 'q1B': 4.33, 'q1C': 3.13, 'q1D': 3.45,
     /* pg */
@@ -1151,10 +1151,13 @@
         bx(w - 0.08, 0.06, 0.02, mTeakD, tx, LOWT.top - 0.07, LOWT.z1 - 0.03);
         bx(w - 0.08, 0.06, 0.02, mTeakD, tx, LOWT.top - 0.07, LOWT.z0 + 0.03);
         const T = LOWT.top;
-        /* the covered bowl: a brass bowl on a footed tray (phan) under a red cloth that falls in folds to the tray */
+        /* the covered bowl: a brass bowl on a footed tray (phan) under a red cloth that falls in folds to the tray —
+           (v24.39) the FALLBACK now: Chad's ghost jar stands in its place (below), and these three hide when it lands, so
+           they are kept out of the room's merge (a merged mesh cannot be hidden) */
         const BW = RMC.BOWL;
-        lathe([[0, 0], [0.06, 0], [0.05, 0.03], [0.13, 0.045], [0.135, 0.06], [0.125, 0.062]], mBrass, BW.x, T, BW.z, 28);
-        lathe([[0, 0], [0.06, 0], [0.1, 0.03], [0.115, 0.08], [0.11, 0.084]], mBrass, BW.x, T + 0.06, BW.z, 28);
+        const bowlTray = lathe([[0, 0], [0.06, 0], [0.05, 0.03], [0.13, 0.045], [0.135, 0.06], [0.125, 0.062]], mBrass, BW.x, T, BW.z, 28);
+        const bowlBrass = lathe([[0, 0], [0.06, 0], [0.1, 0.03], [0.115, 0.08], [0.11, 0.084]], mBrass, BW.x, T + 0.06, BW.z, 28);
+        bowlTray.userData.dyn = true; bowlBrass.userData.dyn = true;
         const cg = new THREE.PlaneGeometry(0.42, 0.42, 26, 26); cg.rotateX(-Math.PI / 2);
         const cp = cg.attributes.position, base = new Float32Array(cp.count * 3), wts = new Float32Array(cp.count);
         const RIM = 0.118, TOPY = 0.144;
@@ -1173,6 +1176,40 @@
         cp.array.set(base); cp.needsUpdate = true; cg.computeVertexNormals();
         const cloth = new THREE.Mesh(cg, mRedCloth); cloth.position.set(BW.x, T, BW.z); cloth.castShadow = !LOW; R.add(cloth);
         room.cloth = cloth; room.clothBase = base; room.clothW = wts;
+        /* (v24.39) THE GHOST JAR — Chad: "You can replace ep4 chp 1, the red clothed jar in the ajahn's room with this model"
+           ("Thai ghost jar หม้อแม่นาค" by N0M4DXII, Sketchfab, CC BY-NC-SA 4.0, credited): a clay pot, its mouth tied under a
+           red cloth with a silver band, a yantra wheel inked on top. Prepared to the bowl's own height (16 cm) with its base
+           on the bowl's spot, so every shot, sign and smoke path that looks there is unmoved (masters/v24.39/make.sh: its
+           metal kept to the band, as the author's own render has it; levelled). It lands under the curtain; the bowl, its
+           tray and its cloth then hide. Its cloth's DOME breathes as the bowl's cloth did — the vertices above the band,
+           weighted to the middle (measured on the file: the band at 12.8–13.5 cm, the dome to 16 cm, radius 9.5 cm) — and
+           at the storm's third flash the jar lies turned, as the cloth did (clothShift). */
+        parseOnce('e4ghostjar').then(({ scene: js }) => {
+          if (!alive) return;
+          const j = js.clone(true);
+          j.position.set(BW.x, T, BW.z);
+          let jm = null;
+          j.traverse(o => { if (o.isMesh) { o.castShadow = !LOW; o.receiveShadow = true; if (!jm) jm = o; } });
+          R.add(j);
+          if (jm) {
+            /* its own copy of the geometry (the parsed original is never touched), and the dome's weights in the mesh's
+               own (quantized) units: the file's node carries the dequantizing scale, so a lift in metres is divided by it */
+            jm.geometry = jm.geometry.clone(); jm.updateMatrix();
+            const P = jm.geometry.attributes.position, me = jm.matrix.elements, idx = [], w = [], base = new Float32Array(P.count);
+            const v = new THREE.Vector3(), sm = (a, b, x) => { const q = Math.max(0, Math.min(1, (x - a) / (b - a))); return q * q * (3 - 2 * q); };
+            for (let i = 0; i < P.count; i++) {
+              base[i] = P.getY(i);
+              v.set(P.getX(i), P.getY(i), P.getZ(i)).applyMatrix4(jm.matrix);
+              if (v.y <= 0.136) continue;
+              const r = Math.hypot(v.x, v.z), wt = sm(0.136, 0.152, v.y) * Math.max(0, 1 - (r / 0.095) ** 2);
+              if (wt > 0.002) { idx.push(i); w.push(wt); }
+            }
+            room.jarB = { attr: P, base, idx, w, lift: 0.018 / Math.max(1e-6, Math.hypot(me[4], me[5], me[6])) };
+          }
+          room.jar = j;
+          if (room.clothShifted) { j.rotation.y = 0.45; j.position.x = BW.x + 0.028; j.position.z = BW.z - 0.012; }
+          bowlTray.visible = false; bowlBrass.visible = false; cloth.visible = false;
+        }).catch(err => { console.warn('e4ghostjar failed to load', err); if (ctx.loadFail) ctx.loadFail('e4ghostjar', err); });
         /* the incense: a small brass cup of sand and three sticks; their tips glow */
         const IC = RMC.INC;
         lathe([[0, 0], [0.03, 0], [0.042, 0.04], [0.045, 0.05], [0.04, 0.052]], mBrass, IC.x, T, IC.z, 18);
@@ -5389,7 +5426,12 @@
       cup(i) { room.cupAt = i ? 1 : 0; const c = RMC.CUP[room.cupAt]; room.cup.position.set(c.x, RMC.LOWT.top, c.z); if (room.cupRing) room.cupRing.visible = !!room.cupAt; },
       /* the cloth lies differently (flash 3): turned half a fold and slid off the bowl's centre, so the brass rim shows
          on one side and the hem hangs lower on the other */
-      clothShift(on) { if (!room.cloth) return; room.cloth.rotation.y = on ? 0.45 : 0; room.cloth.position.x = RMC.BOWL.x + (on ? 0.028 : 0); room.cloth.position.z = RMC.BOWL.z + (on ? -0.012 : 0); },
+      clothShift(on) {
+        /* (v24.39) the ghost jar lies turned the same way (its cloth's hanging corners where they were not); the state is
+           kept, so a jar that lands after a resume into the storm's end lies as the room says */
+        room.clothShifted = !!on;
+        if (room.jar) { room.jar.rotation.y = on ? 0.45 : 0; room.jar.position.x = RMC.BOWL.x + (on ? 0.028 : 0); room.jar.position.z = RMC.BOWL.z + (on ? -0.012 : 0); }
+        if (!room.cloth) return; room.cloth.rotation.y = on ? 0.45 : 0; room.cloth.position.x = RMC.BOWL.x + (on ? 0.028 : 0); room.cloth.position.z = RMC.BOWL.z + (on ? -0.012 : 0); },
       clock(run) { room.clockRun = !!run; },
       smoke(which, on) { const sp = room.smoke[which === 'altar' ? 0 : 1]; if (sp) sp.on = !!on; },
       /* the table's smoke turned to the bowl (the sign), or straight up with the fan's air (the storm has passed) */
@@ -5530,8 +5572,15 @@
       if (room.clockRun) room.clockT += dt;
       if (room.pendulum) room.pendulum.rotation.z = room.clockRun ? 0.16 * Math.sin(room.clockT * Math.PI * 2 / 1.5) : room.pendulum.rotation.z * Math.max(0, 1 - dt * 3);
       if (room.hands) { const m = 40 + room.clockT / 60; room.hands.mh.rotation.z = -(m / 60) * Math.PI * 2; room.hands.hh.rotation.z = -((4 + m / 60) / 12) * Math.PI * 2; }
-      /* the cloth's one breath: up over 0.9 s, down over 1.4 s */
-      if (room.breathT > 0 && room.cloth) {
+      /* the cloth's one breath: up over 0.9 s, down over 1.4 s — (v24.39) the ghost jar's cloth dome once it has landed,
+         the bowl's cloth (the fallback) otherwise */
+      if (room.breathT > 0 && room.jarB) {
+        const e = now - room.breathT, k = e < 0.9 ? Math.sin(e / 0.9 * Math.PI / 2) : e < 2.3 ? Math.cos((e - 0.9) / 1.4 * Math.PI / 2) : 0;
+        const J = room.jarB, P = J.attr;
+        for (let n = 0; n < J.idx.length; n++) { const i = J.idx[n]; P.setY(i, J.base[i] + (e >= 2.3 ? 0 : k * J.lift * J.w[n])); }
+        P.needsUpdate = true;
+        if (e >= 2.3) room.breathT = -1;
+      } else if (room.breathT > 0 && room.cloth) {
         const e = now - room.breathT, k = e < 0.9 ? Math.sin(e / 0.9 * Math.PI / 2) : e < 2.3 ? Math.cos((e - 0.9) / 1.4 * Math.PI / 2) : 0;
         const P = room.cloth.geometry.attributes.position, b = room.clothBase, w = room.clothW;
         for (let i = 0; i < P.count; i++) P.setY(i, b[i * 3 + 1] + k * (0.022 * w[i] + (w[i] === 0 ? 0.004 * Math.max(0, 1 - (Math.hypot(b[i * 3], b[i * 3 + 2]) - 0.118) / 0.06) : 0)));
@@ -7515,9 +7564,10 @@
         cabCtl.show(false);
         const eye = ROOM_EYE(), roll = t < T.up ? 0.018 * Math.sin(t * 0.9) : 0;
         herCtl.at('door'); herCtl.show(t > 2.6 && t < 5.5);
-        if (t < 2.2) {                                                                     // the bowl
+        /* (v24.39) the jar's shot ends at 1.6, on "the shadow" (1.64 in the re-said take, which says "jar"; it was 2.2) */
+        if (t < 1.6) {                                                                     // the jar
           fLens(isNarrow() ? 36 : 30);
-          const k = smo(sgk(t, 0, 2.2));
+          const k = smo(sgk(t, 0, 1.6));
           camAt(lp3(eye, [RX - 0.2, 0.86, -0.62], k), [RX - 0.28, 0.44, -1.08], roll);
         } else if (t < 3.6) {                                                              // the shadow on the wall
           fLens(isNarrow() ? 44 : 36);
@@ -9866,7 +9916,7 @@
     const { sfxFade, fade, phone } = api; const sfx = subbedSfx(api);   // (v24.24: his lines subtitled)
     endingScene(c, api, 'C', (T) => {
       sfx(0.0, 'w4heart', 0.75);                             // his heart taking over
-      sfx(0.4, 'q1C0', 1);                                   // "The bowl... the shadow... her. It's all him."  (→ 6.97: "her" 4.05, on her; "It's all him" 6.12, on him)
+      sfx(0.4, 'q1C0', 1);                                   // "The jar... the shadow... her. It's all him."  (v24.39 → 6.65: "the shadow" 1.64, on the shadow; "her" 3.94, on her; "It's all him" 5.52, on him)
       sfx(0.2, 'w4endC', 0.6);                               // the tight pulse
       sfx(T.said, 'q1C1', 1);                                // "He's doing something to me."  (→ 9.17)
       sfx(T.up + 0.2, 'w4rise', 0.6);                        // up too fast

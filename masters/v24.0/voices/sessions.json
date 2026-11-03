@@ -595,5 +595,15 @@
   "4RExKkNSmsOXz2Lt56Ew",
   "qfAZQGkD9oiBRpueRLDV"
  ],
- "_pg1offer_r": "v24.11 re-said (Zie): the shipped take b ended mid-word (its last word 'you' 60 ms, the take still voiced at its body's level on its last sample) — the same words, no tag, as the original prompt"
+ "_pg1offer_r": "v24.11 re-said (Zie): the shipped take b ended mid-word (its last word 'you' 60 ms, the take still voiced at its body's level on its last sample) — the same words, no tag, as the original prompt",
+ "q1smoke_j": [
+  "wrahpFJTwJWdT4f5kXYN",
+  "TYExegNFKAiHSQTyIvkw"
+ ],
+ "_q1smoke_j": "v24.39 re-said (Brian), the bowl now a jar: [whispering, to himself] The smoke... it's leaning toward that jar. But the fan's blowing the other way.",
+ "q1C0_j": [
+  "FBy8vxdFpZB0JadOd1VQ",
+  "IT44MyLPJaiuuOJjtG25"
+ ],
+ "_q1C0_j": "v24.39 re-said (Brian), the bowl now a jar: [breathing fast, to himself] The jar... the shadow... her. It's all him."
 }

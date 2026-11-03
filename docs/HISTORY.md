@@ -7648,8 +7648,36 @@ What the baseline contains, by release:
     to download; the 2048 file is one commented line in make.sh, for the chapter to choose when its budget is known.
   - tools/shootmodel.mjs's `--clips` never worked (the argument filter dropped every word beginning '--', so only the
     bind pose was ever shot); fixed, with `--at=` to pose each take at a share of its length.
+- **v24.39** THE GHOST JAR — Chad, 3 Nov 2026: *"You can replace ep4 chp 1, the red clothed jar in the ajahn's room with
+  this model"* (his upload of "Thai ghost jar หม้อแม่นาค" by N0M4DXII, Sketchfab, CC BY-NC-SA 4.0 — credited with its
+  link; NonCommercial and ShareAlike, said to him). A clay pot, its mouth tied under a red cloth with a silver band, a
+  yantra wheel inked on top, in the covered bowl's place on the master's low table (the trial's "ritual object").
+  masters/v24.39/make.sh is the recipe; masters/v24.39/jarfix.mjs puts two export faults right: its metal-roughness
+  sheet marked every texel metal (the pot and cloth drew as dark metal; the author's own Sketchfab render shows matte
+  clay and cloth and a shining silver band), so metal is kept to the band alone (4.9 % of texels); and its root tipped it
+  2.05° (one side of its foot would float), so the tip is taken out. tools/prepstatic.mjs gains DOUBLE=1 (its cloth flaps
+  are single sheets, two-sided as delivered; unset, the tool makes the same bytes — e4ghost re-made byte for byte).
+  Every triangle (12,000), 16 cm tall — the bowl's own height on the bowl's own spot, so every shot, sign and smoke path
+  that looks there is unmoved; 375 KB.
+  - In the chapter: it lands under the curtain and the bowl, its tray and its cloth (kept out of the room's merge) hide;
+    the second sign's breath now lifts the jar's cloth DOME (the 2,148 vertices above its band, weighted to the middle,
+    1.8 cm at the peak, measured, and back to rest exactly); at the storm's third flash the jar lies turned, as the cloth
+    did (its state kept, so a resume into the storm's end lands it turned).
+  - THE WORDS: the object is a jar, so the two lines that called it a bowl are re-said with "jar" (Brian, the same voice,
+    model and tags; q1smoke b 7.13 s, q1C0 b 6.25 s, picked by v24.0's order — masters/v24.39/make.sh says why) and the
+    endings' book says "jar" (ledSmokeF, ledClothF). Ending C's first cut moves from 2.2 to 1.6 s so the shadow is on
+    screen as he says "the shadow" in the new take. Sheet v137.
+  - Deployed 6aea228cc22592c0494f94ed, 318 of 318 served files byte-identical. Checked once: photographed on a phone and a
+    desktop (the room from the mat, the storm's wide and its third flash, ending C's cuts, the breath held at its peak);
+    chaptertest, hosted and leak green; an independent reviewer shown only the pictures.
 
 ## The sheet, version by version
+
+**v137** (`masters/v24.39/masterz-text-v137.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from
+it): v136 with 8 rows touched — three credit rows added for the ghost jar (`credits.ghostjar`, `ghostjarWho`,
+`ghostjarLink`); the endings' book's `ledSmokeF` and `ledClothF` saying "jar" where they said "bowl"; and the voice rows
+`q1smoke` and `q1C0` re-said with "jar" (7.13 s, 6.25 s), `q1cloth`'s description "the cloth over the jar". Nothing else
+moved (1977 rows). Exported, not published.
 
 **v136** (`masters/v24.32/masterz-text-v136.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from
 it): v135 with one row swapped — the voice row `pn1card` (Pa Noi with the master's card, ending B) out and `pn1bye` (her

@@ -56,6 +56,8 @@ if (Math.abs(B[1][0]) > 1e-6 || Math.abs(B[1][1] - HEIGHT) > 1e-4) throw new Err
 
 const doc = new Document(); const buf = doc.createBuffer(); const scene = doc.createScene();
 const mat = doc.createMaterial('figure').setBaseColorFactor([1, 1, 1, 1]).setRoughnessFactor(0.85).setMetallicFactor(0);
+/* v24.39: DOUBLE=1 keeps a two-sided source two-sided (the ghost jar's cloth flaps are single sheets); unset, as before */
+if (process.env.DOUBLE && mat0 && mat0.getDoubleSided()) mat.setDoubleSided(true);
 const bct = mat0 && mat0.getBaseColorTexture();
 const sheet = async (t, px, q, name) => {
   const jpg = await sharp(Buffer.from(t.getImage()), { limitInputPixels: false }).resize(px, px, { fit: 'fill' }).jpeg({ quality: q, mozjpeg: true }).toBuffer();

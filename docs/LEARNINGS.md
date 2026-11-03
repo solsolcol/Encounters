@@ -7226,3 +7226,14 @@ cut (sharing its vertices and maps) when it is small.
   the normal map at 2048 could not be told from 4096. So a hero seen close keeps a large colour sheet and a modest cut,
   not the other way round; spend the memory where the picture is. (At bust distance on a phone, 1.3 m, every version
   read alike — judge at the closest shot the chapter will use, v5.31.)
+
+## v24.39 — a Sketchfab export's material is checked against its author's own render
+
+- **A model's metal can be an export artefact.** The ghost jar's metal-roughness sheet had blue 255 on every texel, so
+  three drew the terracotta and the cloth as dark metal (photographed with no environment: a near-black pot and a black
+  band). The author's thumbnail on Sketchfab (its API gives it: `api.sketchfab.com/v3/models/<uid>` → thumbnails) showed
+  matte clay and cloth and one shining silver band. The fix kept the author's roughness and paint and put metal only where
+  the render had it (masters/v24.39/jarfix.mjs). Check the source's render before trusting a sheet that says "all metal".
+- **A prop replaced under a chapter's lines changes the lines.** "The bowl" in two voice takes and two book lines would
+  have described a thing no longer there (the v14.2 law), so they were re-said; and a re-said take moves its words, so
+  any cut timed to a word is re-timed to the new take's word timings (transcribed from the installed file).

@@ -224,6 +224,10 @@ Object.assign(window.__TEXT__, {
   'credits.pickup':         'Pong’s pickup',
   'credits.pickupWho':      'Rivian R1T (2022) · geyges · Sketchfab, Free Standard licence',
   'credits.pickupLink':     'sketchfab.com · rivian-r1t-2022',
+  // v24.39 · the ghost jar on the master's low table (Chad's pick, Sketchfab, CC BY-NC-SA 4.0)
+  'credits.ghostjar':       'The covered jar in the master’s room',
+  'credits.ghostjarWho':    'Thai ghost jar หม้อแม่นาค · N0M4DXII · Sketchfab, CC BY-NC-SA 4.0',
+  'credits.ghostjarLink':   'sketchfab.com · thai-ghost-jar',
   /* v12.1 — Chad's ghost cyclist is his own model and takes no row (the
      v5.23 rule); the Kamaz and the flashlight already have theirs above. */
   'credits.anim':        'Animation, two of the crowd, and the soldiers’ takes',
