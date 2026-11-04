@@ -119,3 +119,26 @@ chains (v24.40–v24.41: twelve three-bone chains, their turn baked into every t
   up to 48° round the arm while WALKING — near vertical, "below the arm" swings round it as the arm passes forward and
   back — so the hang should start only once the arm is clearly raised (HANGL0/HANGLW: the sine of the arm's angle off
   vertical; at rest it is 0.51). p26 (from 0.60 over 0.25) and p27 (from 0.55 over 0.30, at most 90°) bake next.
+- **Step 2e: the hang, tuned.** Photographed (v24.44 / p22 no hang / p24 half / p25 full from 3° off vertical): with the
+  full hang the cloth under the arm raised forward (Charged_Spell_Cast_1 1.8 s) falls from the arm as one smooth curtain —
+  no streaks, no brown crevices, cleaner than v24.44's flap; half a hang leaves streaks. But walking it turned the band
+  up to 48° round the arm and bulged it. Started only once the arm is clearly raised (p26: from sin 0.60 over 0.25, at
+  most 60°; p27: from 0.55 over 0.30, at most 90°), walking, talking, the cheer and the hand on the hip take no hang at
+  all (0–2°) and keep p22's look, while the casts, the slash, the shout and running hang (16–86°). p26 proven against
+  v24.44 in all nineteen takes: every point outside his left upper body's cloth 0.000 mm (not one moved); the rest of
+  that cloth, the drape's own fading edge, at most 0.6 cm (mage_soell_cast_3). Its shawl strain (edges past 1.4×): the
+  sleeve lower than v24.44 in every take (walking 5.7 % against 7.4), the shoulder-blade panel back to v24.44's (the
+  reach), the band and web higher in the casts (the stretch moved off the shell and spread down the curtain, where the
+  photographs show it smooth): a share past a threshold says where cloth stretches, not whether it reads as cloth.
+  Next: the sword slash, mage_soell_cast_7, running and the shout (where 60° and 90° differ) photographed to choose.
+- **Step 2f: chosen, p27.** The two hang limits photographed where they differ (the sword slash at three moments,
+  mage_soell_cast_7 at three, running at two, the seated shout at two; v24.44 / p26 / p27): both replace v24.44's
+  stretched shell and wing under a raised arm with a curtain hanging from it; 90° (p27) a little smoother in the shout,
+  running's back-swung arm and the charged cast; neither tears or passes through him anywhere photographed. p27:
+  DRAPE=2 BANDO0=0.02 BANDOW=0.10 BANDPASS=30 BANDSIG=0.05 DRAPEMERGE=1 DRAPEREACH=0.24 BANDSPINE=0.04 DRAPEHANG=1
+  HANGL0=0.55 HANGLW=0.30 HANGMAX=90; the band's turn round the arm per take: walking 2°, talking 0°, the hand on the hip
+  1°, the cheer 0°, the casts 9–79°, the slash 86°, running 41°, the shout 31°. Also measured, and dropped: whether the
+  arm's skin shows through the sleeve now that the sleeve no longer follows the arm's twist — there is no skin under the
+  sleeve to show (the scan's sleeve is the surface; not one skin point within 9 cm of the arm's axis has sleeve cloth
+  outside it), so the brown flecks in some photographs are the texture's own fold crevices. Next: every take, three
+  versions (his file / v24.44 / p27, the last two shuffled per take), to a blind reader.

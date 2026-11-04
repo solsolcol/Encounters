@@ -434,6 +434,8 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
   };
   /* back to four per vertex */
   const dom = {}, fitSeen = new Uint8Array(G); if (CH) CH.fit = {};
+  /* DRAPEDBG=1 (a measure; nothing written changes): how much of their weight his left upper body's points lose to the
+     four-bone cut, counted by share */
   const DRAPEDBG = E('DRAPEDBG', 0), dbgSeen = new Uint8Array(DRAPEDBG ? G : 0), dbgH = [0, 0, 0, 0, 0];
   for (let i = 0; i < n; i++) {
     const g = gid[i], o = g * NJ, best = [];
