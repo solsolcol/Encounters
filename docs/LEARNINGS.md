@@ -7333,3 +7333,10 @@ cut (sharing its vertices and maps) when it is small.
 - **A fit cannot make a sleeve.** Fitting the robe's chain bones to his file, which wraps cloth round each leg, gave the
   sword lunge his file's look with the torso fixed (cloth that moves in sheets), but running's raised knee a flat-sided
   box (cloth that must bend round a leg). Photograph a fit at the take's worst bend before keeping it.
+- **A review of the worst takes reads worse than a review of all of them.** v24.42's reader, shown the eight takes
+  that had been worst, rated v24.42 worse than his file in five; v24.43's reader, shown all nineteen side by side with his
+  file and v24.43, rated the same v24.42 better in thirteen. Neither is wrong: report which takes a verdict covers, and
+  put the versions being compared side by side in ONE review, blind to which is newer.
+- **A measured change can be invisible.** LDRAPE moved 23,308 points of the drape by up to 46 cm in the arm-raising
+  casts, yet the reader saw v24.42 and v24.43 as the same picture in 16 of 19 takes (1–3 % of pixels): the fault he saw
+  was the cloth the change did not reach. A number proves what moved; only a picture proves it was the part that mattered.

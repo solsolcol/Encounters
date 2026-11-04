@@ -7781,6 +7781,39 @@ What the baseline contains, by release:
   - The before-and-after sheets (masters/v24.42/shots/pho-before-after-seated.jpg, -moving.jpg) label the new rows NOW,
     not FIXED: the sword lunge's hem is not fixed, and a label is a claim.
 
+- **v24.43** (prepared, not a build: nothing deployed, the live build stays v24.40) GRANDMASTER PHO, EVERY TAKE REVIEWED,
+  THE DRAPE MEASURED — the v24.42 review (eight takes: 1 better, 2 the same, 5 worse) answered where it could be; the
+  plan and every step's measure were written as the work went (masters/v24.43/PLAN.md; recipe masters/v24.43/make.sh).
+  - THE TAPER OUT: v24.42's HULLTAPER had moved takes nothing asked it to (walking up to 20 cm); without it every take
+    that runs the hull skins exactly as v24.41's file (0.00 cm at five moments of six takes).
+  - THE DRAPE ON HIS LEFT ARM, my regression of v24.39, measured: his file had the cloth round his upper arm 92–98 % on
+    the arm within 13 cm of its axis, v24.42 5–59 %; he is rigged with his arms 31° out, so the cloth stayed where the arm
+    had been — the reviewer's stiff shell at the elbow, the forearm passing into it. robeskin LDRAPE: AFTER the weights'
+    averaging, the cloth nearer his left upper arm than his spine and within 14 cm of it (the trunk measure's own test of
+    an arm's point) takes his file's weights back, faded in from the shoulder joint: now 65–91 % on the arm, and the
+    trunk measure unchanged (caved at 0.7 % at most). Tried and measured out: a wider arm envelope (the averaging carried
+    the arm into his upper back: the talking take's back to 0.40 of its depth, 7 % caved), the forearm's cloth (no
+    change), a 22 cm reach (the loose drape followed the arm into his torso: 0.19, 5.5 % — his file's own fault). The
+    LOOSE drape, 13–22 cm off the arm, still stands off as a shell when the arm comes down: weights have no answer
+    between the shell and his file's wing; a hanging-cloth rig for the drape does, and is put to Chad.
+  - THE SWORD LUNGE FITTED to his file's robe: his file's look, the torso fixed (his file's back is a dark smear there).
+    RUNNING was fitted too and the reader rated it worse (the raised knee in a box, torn scraps at the standing ankle):
+    running keeps v24.42's rules — below his waist identical to v24.42's (0.00 cm), only the drape differs.
+  - THE REVIEW of all nineteen takes (the drape moves every one, 11–46 cm), a fresh reader blind to which version is
+    newer, his file / v24.42 / this pass side by side: against his file 13 BETTER, 4 THE SAME, 2 WORSE
+    (Talk_with_Hands_Open: the drape; the sword lunge, slightly: his file's trouser legs with a sail between them) — the
+    trouser split and his dark smeared back gone in walking, the chair sits and the casts. v24.42 and this pass looked
+    the same in 16 takes (1–3 % of pixels): the LDRAPE change is measured, not seen. The fault in nearly every take, in
+    both: the loose drape standing off his left upper arm as a shell, wing or cone, the forearm coming out of it. Also
+    seen: a grey striped band across the seat in the seated takes, torn scraps at the seated front hem, a foot through the
+    back in mage_soell_cast_6, the cross-legged lap a flat streaked sheet, a box round the rear leg in mage_soell_cast_8.
+    No caved or thin torso.
+  - TWO RULERS, MEASURED: the v24.42 reader saw the eight worst takes and rated v24.42 worse than his file in five; this
+    reader saw all nineteen and rated the same v24.42 better in thirteen (docs/LEARNINGS.md).
+  - assets/pho.glb: 177,772 triangles, 65 joints, nineteen takes, 6.8 MB (6,791,872 bytes, sha1 9b466006…); the recipe re-makes it byte for byte.
+    Before and after on a solid floor: masters/v24.43/shots/pho-before-after-seated.jpg, -moving.jpg; every take from five
+    angles: shots/takes-1..3.jpg. Not in build.py until chapter 3 casts him.
+
 ## The sheet, version by version
 
 **v137** (`masters/v24.39/masterz-text-v137.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from

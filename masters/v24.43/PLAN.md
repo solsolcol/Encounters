@@ -71,3 +71,13 @@ what this pass does about it, each step proven before the next:
   VERSION B = this pass's robe file, the session's p9 = e1) with a fresh reader, blind to which is newer. Meanwhile the
   candidate is prepped (prepmonk) for assets/pho.glb. If the reader prefers A's running, running goes back to V1TAKES
   (v24.40's rules) and the file is re-baked.
+- **Step 4 done, the review** (a fresh reader, all nineteen takes, blind): A (v24.42) against his file 13 better / 4 the
+  same / 2 worse; B (this pass, running fitted) 12 / 4 / 3; B against A 2 better (the sword lunge, mage_soell_cast_4),
+  16 the same (1–3 % of pixels: LDRAPE not visible), 1 worse (running: the fitted box and ankle scraps). So: the sword
+  lunge stays fitted, running goes back to V1TAKES (its robe below the waist then identical to v24.42's, 0.00 cm, only
+  the drape differing), the taper stays out. The final file: B with A's running — 13 better, 4 the same, 2 worse.
+  The fault in nearly every take, in both: the loose drape's shell on his left arm (step 2's limit).
+- **Step 5 done:** the final recipe (masters/v24.43/make.sh) re-makes assets/pho.glb byte for byte (6,791,872 bytes,
+  sha1 9b466006…); the torso caves at 0.7 % at most (Charged_Spell_Cast), the back's worst 1 % at 0.78. Photographed:
+  shots/pho-before-after-*.jpg (solid floor), shots/takes-1..3.jpg. Put to Chad: a hanging-cloth rig for the drape, and
+  cutting the robe free of his shins.
