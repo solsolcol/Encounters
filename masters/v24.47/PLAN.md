@@ -239,3 +239,36 @@ and run on all 180 moments x 6 sides for the before and for every after.
 12. Every take through the checks; each fault traced and cured, the sword lunge and the floor sit included.
 13. Every shot looked at by me at full size, then a blind reader with the same shots.
 14. The record: the recipe, the proofs, the docs, the commit, and the report to him with what passes and what does not.
+
+## The log from his pick
+
+**Step 10 · the checks (tools/probes/pholegs.mjs).** Proven on his picture's moment of the saved file before anything
+else: at Running 0.47 s it counts his kicked shin 40 cm out through the robe, 711 torn robe triangles and the leg seen
+through the back; a calm moment counts nothing of the kind once a picture's edge cutting a foot is not taken for a
+floating leg. The first count of "a leg through the cloth" (a leg point outside the robe round his hips' axis) took a
+seated man's shins in front of his robe's hanging front for faults; it was replaced by the exact one (an edge of his
+legs' surface passing through a triangle of the robe). On all 180 moments: his saved file 39,869 leg edges through the
+cloth, 109,419 torn robe triangles, 166 floating leg pieces; the first v24.47 recipe 35,782 / 113,425 / 44.
+
+**What it found: the robe has a second skin.** His scan's robe is a closed shell about a centimetre thick: an outer
+surface and, behind it, an inner surface facing his body, fused at the hem to his old shins. Sliced at the hem, the
+inner surface wraps each leg; the real legs cut through it standing still, it tears into the dark shards seen inside the
+hem from a little below, and when a leg lifts the hem it is what stretches into the flat sheets. tools/robeshell.mjs
+takes out every triangle of the robe below his waist that no side can see (drawn from 145 directions at 2048 px, with
+his trunk and legs round it but never his arms or the drape that hangs over it) and that does not face out: 96,171 of
+277,811. A lining 2 mm behind what is left was tried and tore into shards where the hem curls; instead tools/prepmonk.mjs
+TWOSIDE draws the robe below his waist from both sides, in a part of its own sharing every point, so its inside is the
+back of the same cloth (his whole material drawn from both sides showed specks of his scan's own holes at his head and
+necklace). From outside at rest the picture is the same: tools/probes/restdiff.mjs, 36 sides at 1024 px, 155 single
+pixels of slightly different shade (a file against itself: 0). Counted again on all 180 moments: 9,945 leg edges
+through the cloth (a quarter of before), 62,112 torn triangles (about half), the file 8.8 MB (smaller).
+
+**Step 11 · the jog.** His running take is a sprint: the thigh swings from 72° in front to 33° behind, the knee bends to
+149°, the heel kicks up to 0.79 m, 0.55 m behind his hips. Easing his knee alone was tried (85°, then 70, 60, 50): the
+heel stayed 0.43–0.59 m up and over half a metre behind him, through the back of the robe, because his thigh swings so
+far back. So the path of each ankle is remade and his leg solved to it (tools/leggraft.mjs JOG): steps 0.55 as long (he
+runs that much slower over the ground), the lift 0.6 of what it was, and less again behind him, so the heel is at most
+22 cm off the ground whenever it is behind his hips (highest 0.48 m, under him); his foot turned back toward flat as its
+lift was taken; his hips, toes and everything else as they were. Running's counts: 452 leg edges through the cloth (the
+sprint 2,410), no floating leg piece (11), torn cloth halved; in the large shots his legs leave the robe cleanly below
+the hem from every side. Left: where the hem lifts over a foot, a few crumpled grey bits inside it.

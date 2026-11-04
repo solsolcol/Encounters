@@ -5,10 +5,12 @@
 // character scans on the same kind of skeleton: the admin-tee man's (Chad's own model, bare from mid-thigh down; he lends
 // only legs hidden under a robe and is never seen as himself). Two stages, either side of tools/robeskin.mjs:
 //   node tools/leggraft.mjs bones <his file.glb> <out.glb>              the new bones and every take solved for them
+//   (JOG=<take>: that take's running made a jog first, at Chad's pick "Calmer running")
 //   (tools/robeskin.mjs on that, with HEMRING=0 — no ring of the robe rides a shin — and LEGRIG=1: the robe follows and
 //    makes room for these legs, not his rig's)
 //   node tools/leggraft.mjs mesh <robe.glb> <donor.glb> <out.glb>       the cut, the donor's legs, their skin
-//   then tools/robesim.mjs (the robe below his waist as cloth round these legs) and tools/prepmonk.mjs. <donor.glb>:
+//   then tools/robeshell.mjs (the robe below his waist one layer), tools/robesim.mjs (that robe as cloth round these legs)
+//   and tools/prepmonk.mjs. <donor.glb>:
 //   tools/deflatten.mjs of the donor's scan (masters/v24.47/make.sh).
 //
 // THE KNEE (measured, masters/v24.47/PLAN.md): his rig's knee joints sit at the front of the robe, 14–16 cm in front of
@@ -169,6 +171,49 @@ for (const s of SIDES) { const H = posOf(BW[ji(`${s}UpLeg`)]), A = posOf(BW[ji(`
   log(`${s} leg: hip ${H.toArray().map(x => x.toFixed(3))}, his rig's knee ${K0.toArray().map(x => x.toFixed(3))} (${K0.distanceTo(K1).toFixed(3)} m from the new one), ankle ${A.toArray().map(x => x.toFixed(3))}; thigh ${L1.toFixed(3)} + shin ${L2.toFixed(3)} = ${(L1 + L2).toFixed(3)} m against his rig's ${(K0.distanceTo(H) + A.distanceTo(K0)).toFixed(3)} (hip to ankle at rest ${A.distanceTo(H).toFixed(3)}); joints ${jU}, ${jL}`); }
 { const ib = Array.from(skin.getInverseBindMatrices().getArray()); for (const s of SIDES) for (const B of [GR[s].BU, GR[s].BL]) ib.push(...B.clone().invert().elements);
   skin.getInverseBindMatrices().setArray(new Float32Array(ib)); }
+
+/* JOG=<take>,...: that take's running made a jog, before anything is solved for it (Chad, 4 Nov 2026, his pick "Calmer
+   running": his running changed to a jog with a lower back heel, so his calf never sweeps through the back of the robe).
+   His take is a sprint (the thigh swung from 72° in front to 33° behind, the heel kicked up to 0.79 m, 0.55 m behind his
+   hips); easing his knee alone left the heel 0.43 m up and 0.54 m behind, so the PATH of each ankle is remade and his
+   leg solved to it: its distance in front of or behind his hips scaled by JOGSTRIDE (shorter steps, so he runs that much
+   slower over the ground); its lift off its lowest made JOGLIFT of what it was, and less again the further behind his
+   hips it is (from JOGBACK1 metres behind down to JOGBACKLIFT of it at JOGBACK2), so a heel behind him stays low; his
+   thigh and shin solved to it in his own knee's bending plane (lengths held, the reach softened as the solver below);
+   his foot turned back toward its flat stance as its lift was taken. His hips, his toes' own turn and every other bone as
+   they were. Unset, nothing here runs. */
+const JOGSTRIDE = E('JOGSTRIDE', 0.55), JOGLIFT = E('JOGLIFT', 0.6), JOGBACK1 = E('JOGBACK1', 0.06), JOGBACK2 = E('JOGBACK2', 0.20), JOGBACKLIFT = E('JOGBACKLIFT', 0.25);
+for (const take of (process.env.JOG || '').split(',').filter(Boolean)) { const an = root.listAnimations().find(z => z.getName() === take); if (!an) throw new Error(`leggraft: JOG: no take ${take}`);
+  const pz = makePoser(root);
+  for (const s of SIDES) { const [nU, nL, nF] = ['UpLeg', 'Leg', 'Foot'].map(x => joints[ji(`${s}${x}`)]);
+    const chs = [nU, nL, nF].map(nd => an.listChannels().find(c => c.getTargetNode() === nd && c.getTargetPath() === 'rotation'));
+    if (chs.some(c => !c || c.getSampler().getInterpolation() !== 'LINEAR')) throw new Error(`leggraft: JOG: ${take} lacks a linear ${s} leg turn`);
+    const tset = new Set(); for (const c of chs) for (const t of c.getSampler().getInput().getArray()) tset.add(+t.toFixed(5)); const times = [...tset].sort((x, y) => x - y);
+    const pose = t => { pz.pose(an, t); const Wm = nd => pz.world[pz.NI.get(nd)]; return { H: Wm(joints[jHips]).clone(), U: Wm(nU).clone(), K: Wm(nL).clone(), A: Wm(nF).clone() }; };
+    const fr = times.map(pose), floor = Math.min(...fr.map(f => posOf(f.A).y));
+    /* the foot flat: its turn in the world where it is lowest */
+    const flatQ = quatOf(fr.reduce((m, f) => (posOf(f.A).y < posOf(m.A).y ? f : m)).A);
+    const outU = [], outL = [], outF = []; let maxBack0 = 0, maxBack1 = 0, hi0 = 0, hi1 = 0, slid = 0, pq = [null, null, null];
+    for (const f of fr) { const h = posOf(f.H), u = posOf(f.U), k = posOf(f.K), a = posOf(f.A), zr = a.z - h.z, lift = a.y - floor;
+      const z2 = zr * JOGSTRIDE, behind = -z2, w = behind <= JOGBACK1 ? 1 : behind >= JOGBACK2 ? JOGBACKLIFT : 1 - (1 - JOGBACKLIFT) * sstep((behind - JOGBACK1) / (JOGBACK2 - JOGBACK1));
+      const lift2 = lift * JOGLIFT * w, a2 = V3(a.x, floor + lift2, h.z + z2);
+      if (-zr > 0.1) { maxBack0 = Math.max(maxBack0, a.y); } if (-z2 > 0.1) maxBack1 = Math.max(maxBack1, a2.y); hi0 = Math.max(hi0, a.y); hi1 = Math.max(hi1, a2.y);
+      const L1 = k.distanceTo(u), L2 = a.distanceTo(k), D = a2.distanceTo(u), Ls = L1 + L2; let De = D, sl = 0;
+      if (D > Ls - SOFT) { De = Ls - SOFT * Math.exp(-(D - (Ls - SOFT)) / SOFT); sl = D - De; } slid = Math.max(slid, sl);
+      const dir = a2.clone().sub(u).normalize(), a3 = u.clone().addScaledVector(dir, De);
+      const x = (L1 * L1 - L2 * L2 + De * De) / (2 * De), r = Math.sqrt(Math.max(0, L1 * L1 - x * x));
+      let pv = k.clone().sub(u); pv.addScaledVector(dir, -pv.dot(dir)); if (pv.length() < 1e-6) pv = V3(0, 0, 1); pv.normalize();
+      const k2 = u.clone().addScaledVector(dir, x).addScaledVector(pv, r);
+      const RU = quatOf(f.U), RK = quatOf(f.K), RF = quatOf(f.A), RH = quatOf(f.H);
+      const dU = new Quaternion().setFromUnitVectors(k.clone().sub(u).normalize(), k2.clone().sub(u).normalize()), RU2 = dU.clone().multiply(RU);
+      const shin1 = a.clone().sub(k).normalize().applyQuaternion(dU), dK = new Quaternion().setFromUnitVectors(shin1, a3.clone().sub(k2).normalize()), RK2 = dK.clone().multiply(dU).multiply(RK);
+      const RF2 = flatQ.clone().slerp(RF, lift > 1e-4 ? Math.min(1, lift2 / lift) : 1);
+      const qs = [RH.clone().invert().multiply(RU2), RU2.clone().invert().multiply(RK2), RK2.clone().invert().multiply(RF2)];
+      qs.forEach((q, m) => { if (pq[m] && pq[m].dot(q) < 0) q.set(-q.x, -q.y, -q.z, -q.w); pq[m] = q; });
+      outU.push(qs[0].x, qs[0].y, qs[0].z, qs[0].w); outL.push(qs[1].x, qs[1].y, qs[1].z, qs[1].w); outF.push(qs[2].x, qs[2].y, qs[2].z, qs[2].w); }
+    const tAcc = doc.createAccessor().setType('SCALAR').setArray(new Float32Array(times)).setBuffer(buf);
+    chs.forEach((c, m) => c.getSampler().setInput(tAcc).setOutput(doc.createAccessor().setType('VEC4').setArray(new Float32Array([outU, outL, outF][m])).setBuffer(buf)));
+    log(`jog: ${take} ${s} ankle — steps x${JOGSTRIDE}, lift x${JOGLIFT} (less behind him): highest ${hi0.toFixed(2)} -> ${hi1.toFixed(2)} m, highest while 10+ cm behind his hips ${maxBack0.toFixed(2)} -> ${maxBack1.toFixed(2)} m; ${times.length} keys; reach softened by at most ${(slid * 100).toFixed(1)} cm`); } }
 
 /* every take solved for the new bones, at the keys of his own leg tracks */
 const legNodes = s => new Set(['Hips', `${s}UpLeg`, `${s}Leg`, `${s}Foot`].map(x => joints[ji(x)]));

@@ -225,6 +225,27 @@ if (process.env.CHARTFIX) {
   if (process.env.CHARTREPORT) fs.writeFileSync(process.env.CHARTREPORT, JSON.stringify(rep));
 }
 
+/* v24.47: TWOSIDE=<bone pattern> — the triangles riding those bones (all three points' weight on them over a half) drawn
+   from both sides, as a second part of the same mesh sharing its points (the very same accessors, so no seam can open)
+   with a copy of its material that is double-sided: Grandmaster Pho's robe below his waist, one layer of cloth since
+   tools/robeshell.mjs, whose inside is then the back of the same cloth. The rest of him is drawn from its front as before
+   (his whole material double-sided showed specks of his scan's own holes at his head and necklace). Unset, nothing here
+   runs and the output is as it was. */
+if (process.env.TWOSIDE) { const re = new RegExp(process.env.TWOSIDE);
+  for (const node of root.listNodes()) { const mesh = node.getMesh(), skin = node.getSkin(); if (!mesh || !skin) continue; const jn = skin.listJoints().map(j => j.getName());
+    for (const p of [...mesh.listPrimitives()]) { const J = p.getAttribute('JOINTS_0'), W = p.getAttribute('WEIGHTS_0'); if (!J || !W) continue;
+      const n = J.getCount(), on = new Uint8Array(n), jj = [], ww = [];
+      for (let i = 0; i < n; i++) { J.getElement(i, jj); W.getElement(i, ww); let s = 0; for (let k = 0; k < 4; k++) if (re.test(jn[jj[k]])) s += ww[k]; on[i] = s > 0.5 ? 1 : 0; }
+      const I = p.getIndices().getArray(), rest = [], both = [];
+      for (let t = 0; t < I.length; t += 3) (on[I[t]] && on[I[t + 1]] && on[I[t + 2]] ? both : rest).push(I[t], I[t + 1], I[t + 2]);
+      if (!both.length) continue;
+      const Ctor = I.constructor; p.getIndices().setArray(new Ctor(rest));
+      const m2 = p.getMaterial().clone().setDoubleSided(true).setName(`${p.getMaterial().getName() || 'material'} (both sides)`);
+      const p2 = doc.createPrimitive().setMode(p.getMode()).setMaterial(m2).setIndices(doc.createAccessor().setType('SCALAR').setArray(new Ctor(both)).setBuffer(p.getIndices().getBuffer()));
+      for (const sem of p.listSemantics()) p2.setAttribute(sem, p.getAttribute(sem));
+      mesh.addPrimitive(p2);
+      console.log(`  both sides: ${both.length / 3} triangles riding /${process.env.TWOSIDE}/ in their own part, its material double-sided (${rest.length / 3} drawn from the front as before)`); } } }
+
 /* sheets: base colour and normal map at 2048 WebP, on a plain source.
    v24.38: NTEX sizes the normal map on its own (a face's sharpness is in the
    colour sheet; unset, the normal map takes TEX as it always did) */
