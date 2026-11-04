@@ -53,3 +53,30 @@ what it costs, and a recommendation; the choice is his.
   In a dim room (shots/pho-look-dim-room.jpg) an unlit model ignores the room's lights and glows; D's unlit share is
   scaled to the scene's light level, which a chapter sets. Recommended D; sent to Chad to pick (A–D). Nothing in his file
   changes for any of them: the look is a material patch applied when chapter 3 casts him.
+- **Step 2: the right armpit (fault 1).** Measured: the trunk's re-bind (v24.40) ends at SKINARM, 6 cm off an arm's axis;
+  inside it his file's weights (his right upper arm's skin rides the arm), outside it the envelope's (the spine) — a step,
+  so the skin and the chest wrap's edge at his right armpit tore into a notch with strands of the wrap across it
+  whenever the arm moved (15x at mage_soell_cast_6 1.61 s, his own file 4x there). tools/robeskin.mjs ARMBLEND=w fades
+  the envelope in over the w metres past SKINARM for every point nearest his right upper arm, so the arm's share falls
+  off gradually down his side. 6 and 10 cm photographed at the casts' worst moments (shots/pho-armpit-cast4.jpg:
+  v24.45, 6 cm, 10 cm): 10 cm clears most of the skin strands under the raised arm, 6 cm half of them. The trunk measure
+  (rigstrain, every take): as v24.45 within 0.01 everywhere but the cast whose arm sweeps across (mage_soell_cast_4 at
+  0.9 s: the back's 1st percentile 0.83 → 0.74; cast 6 0.87 → 0.80), and the arms' squashed edges up 0.3–0.5 % in most
+  takes: all of it the fold under his right arm (354 more points under 0.75 there, rest x −0.19..−0.08, y 1.08–1.35),
+  the very cloth that now goes with the arm, and not seen in the lit photographs from four angles at that moment.
+  Taken: 10 cm. Unset, the robe file byte for byte.
+- **Step 3: the hem cut free (fault 2, his word).** tools/robeskin.mjs HEMRING=0: the robe's underside within 4 rings of
+  the shins' skin no longer rides the nearer shin (that was the gradual join; with the hem cut there is nothing to join)
+  — unset, the same file byte for byte (re-made: sha1 d8b323f5 both times). New tools/hemcut.mjs, run on the robe file
+  before prepmonk: every triangle joining a point that rides the skirt to one that rides a lower leg (405 with
+  HEMRING=0) is taken out and every opening closed by a cap — the robe's two underside openings riding the robe, each
+  shin's cut top riding the shin bone alone, two specks; each cap ONE texel (a shin's the median skin colour 2–6 cm
+  below its cut, rgb 219,159,118 and 220,160,119; the robe's white), because the first caps, textured from their own
+  edge points, smeared the atlas between them into white and grey stripes. Every point that existed keeps every
+  attribute; 432 points and 383 triangles added; nothing joins robe to shin after it (counted). Tried and left: the shin
+  carried 6 cm up before its cap (stripes, and the shin through the robe's front and back walking and sitting); the
+  joining band remade in skin colour, four layers blended shin to robe (it stretched into flat webs of skin when he
+  runs). Photographed in seven takes against v24.45 (shots/pho-hem-walking-lunge.jpg, -running.jpg, -sits.jpg): walking's
+  strips at the trailing shin gone, the grey sheets round his shins seated gone, the lunge's grey band less. What it
+  cannot do: when he runs, a heel kicked up behind him shows his lower leg ending where the robe once closed on it
+  (mid-shin, a skin-coloured end) — his scan has no leg above that, and the robe there does not reach over the calf.

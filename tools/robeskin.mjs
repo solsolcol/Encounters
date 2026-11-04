@@ -39,6 +39,14 @@ const SKINTOP = E('SKINTOP', 1.37), SKINARM = E('SKINARM', 0.06);
 /* FRONTSHIN: cloth IN FRONT of a shin follows the thigh instead (by this share), so a lap does not fold back under
    crossed shins and open the robe's inside to the eye; 0 leaves the shins' pull as the envelope gives it */
 const FRONTSHIN = E('FRONTSHIN', 0);   // the trunk's skin: under the neck's base, and this far off an arm
+/* v24.46 · ARMBLEND=w: THE RIGHT ARMPIT. The trunk's re-bind (v24.40) ends at SKINARM off an arm's axis: inside it his
+   file's weights (his right upper arm's skin rides the arm, RightArm 0.75–0.87), outside it the envelope's (the spine) —
+   a step, so the skin and the chest wrap's edge at his right armpit, 6–7 cm off the arm, tore into a notch with strands
+   whenever the arm moved (15x at mage_soell_cast_6 1.61 s; his own file 4x there). ARMBLEND fades the envelope in over
+   the w metres past SKINARM for every point nearest his RIGHT upper arm, skin and cloth alike, so the arm's share falls
+   off gradually down his side; the trunk measure's own points (14 cm and more off an arm) are not among them. Unset (0),
+   the step as it was, byte for byte */
+const ARMBLEND = E('ARMBLEND', 0);
 /* v24.40 — Chad: "I think pho model still needs alot more fixing and you are not looking at the right angles for the big
    issues". Measured over every frame (tools/rigstrain.mjs) and photographed from ten angles: weights alone cannot make a
    robe — his legs pulled the skirt into trousers walking and running, a seated pelvis tilting back threw the cloth of
@@ -390,6 +398,12 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
   /* the set re-bound: the cloth, and the TRUNK's other points (bare chest and back, the necklace) — between the waist and
      the base of the neck, and off the arms (farther than SKINARM from an upper arm, forearm or hand) */
   const armSegs = [['LeftArm', 'LeftForeArm'], ['LeftForeArm', 'LeftHand'], ['RightArm', 'RightForeArm'], ['RightForeArm', 'RightHand']].filter(([a, b]) => JI[a] !== undefined && JI[b] !== undefined);
+  /* ARMBLEND (see above): each point's distance to his right upper arm's axis, where that is the arm segment nearest it */
+  const armR = ARMBLEND > 0 && JI.RightArm !== undefined && JI.RightForeArm !== undefined ? new Float32Array(G).fill(9) : null;
+  if (armR) { let nb = 0; for (let g = 0; g < G; g++) { const p = [gp[3 * g], gp[3 * g + 1], gp[3 * g + 2]];
+      const dR = segD(p, JP[JI.RightArm], JP[JI.RightForeArm]); let dMin = 9; for (const [a, b] of armSegs) dMin = Math.min(dMin, segD(p, JP[JI[a]], JP[JI[b]]));
+      if (dR <= dMin + 1e-9) { armR[g] = dR; if (dR > SKINARM && dR < SKINARM + ARMBLEND) nb++; } }
+    console.log(`  armpit: ${nb} positions between ${SKINARM} and ${(SKINARM + ARMBLEND).toFixed(2)} m off his right upper arm take the trunk's weights gradually`); }
   const env = new Uint8Array(G); let nTrunk = 0;
   for (let g = 0; g < G; g++) {
     if (cloth[g]) { env[g] = 1; continue; }
@@ -429,7 +443,8 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
     }
     if (sum < 1e-6) continue;                                                 // nothing near: keep its own
     if (BANDS) { const bw = bandW(p[1]); let sp = 0; for (const j of SPINEJ) { sp += ew[j]; ew[j] = 0; } SPINEJ.forEach((j, k) => { ew[j] += sp * bw[k]; }); }
-    const a = Math.min(1, ring[g] / RING);
+    let a = Math.min(1, ring[g] / RING);
+    if (armR && armR[g] < SKINARM + ARMBLEND) a = Math.min(a, sstep((armR[g] - SKINARM) / ARMBLEND));
     for (let j = 0; j < NJ; j++) A[g * NJ + j] = (1 - a) * A0[g * NJ + j] + a * ew[j] / sum;
   }
   /* 4 · diffusion inside the cloth (skin groups hold still as the boundary) */
@@ -464,12 +479,14 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
   /* v24.40 · a skirt point's weights: below the roots' band the chains (the two either side of it by angle, the upper or
      lower bones by height, blended over the knees' band), above it the trunk's; within HEMRING edges of the shins' skin,
      the nearer shin's */
+  /* v24.46 HEMRING=0: none (the hem cut free of his shins, tools/hemcut.mjs, so no ring of the robe rides a shin) */
+  const HEMRING = E('HEMRING', 4);
   const skirtMix = (g, best) => {
     const x = gp[3 * g], y = gp[3 * g + 1], z = gp[3 * g + 2], N = CH.length, D = 2 * Math.PI / N;
     let a = Math.atan2(x - CH.cx, z - CH.cz); if (a < 0) a += 2 * Math.PI;
     const u = a / D, k0 = Math.floor(u) % N, k1 = (k0 + 1) % N, f = u - Math.floor(u);
     const tk = sstep((CH.YK + 0.07 - y) / 0.14), tr = sstep((ROOTY + 0.05 - y) / 0.08);
-    const th = y < CH.YK ? Math.max(0, 1 - ring[g] / E('HEMRING', 4)) : 0;
+    const th = y < CH.YK && HEMRING > 0 ? Math.max(0, 1 - ring[g] / HEMRING) : 0;
     if (tr <= 0) return;
     for (const b of best) b[0] *= 1 - tr;
     const c = tr * (1 - th), sh = tr * th;

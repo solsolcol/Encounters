@@ -14,7 +14,7 @@ const arg = (k, d) => { const a = process.argv.find(x => x.startsWith(`--${k}=`)
 const AT = arg('at', '0.1,0.35,0.6,0.85').split(',').map(Number), SIZE = +arg('size', 360), ONLY = arg('clips', '');
 /* --plan=<file.json>: { "Take": [seconds, ...] } — each take shot at its own moments (rigstrain's worst frames) */
 const PLAN = arg('plan', '') ? JSON.parse(fs.readFileSync(arg('plan', ''), 'utf8')) : null;
-const FRAME = arg('frame', 'body');   // body | torso (the chest and back, framed on the posed Spine1)
+const FRAME = arg('frame', 'body');   // body | torso (the chest and back, framed on the posed Spine1) | head | legs (the hem and shins)
 /* --floor: a solid floor under the grid, as a player sees him (cloth that dips under it is hidden, as in the game);
    for views from above only */
 const FLOORON = process.argv.includes('--floor');
@@ -85,6 +85,7 @@ new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load('/model.glb', (gltf) => 
     const a = acts[clip]; if (a) { a.reset().play(); a.paused = true; a.time = t; mixer.update(0); } root.updateMatrixWorld(true);
     const b = posedBox(); let c = b.getCenter(new THREE.Vector3()); const s = b.getSize(new THREE.Vector3());
     let r = Math.max(s.x, s.y, s.z, 1.0) * 0.6;
+    if ('${FRAME}' === 'legs') { c = new THREE.Vector3(c.x, b.min.y + 0.32, c.z); r = 0.38; }
     if ('${FRAME}' === 'head') { let hd = null; root.traverse(o => { if (o.isBone && /Head$/.test(o.name)) hd = o; }); if (hd) { c = hd.getWorldPosition(new THREE.Vector3()); c.y += 0.06; r = 0.17; } }
     if ('${FRAME}' === 'torso') { let sp = null; root.traverse(o => { if (o.isBone && /Spine1$/.test(o.name)) sp = o; }); if (sp) { c = sp.getWorldPosition(new THREE.Vector3()); r = 0.42; }
       else { c = new THREE.Vector3(c.x, b.min.y + 0.72 * s.y, c.z); r = 0.42; } }   // a still: the chest by its height
