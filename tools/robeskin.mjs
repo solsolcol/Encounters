@@ -351,10 +351,11 @@ for (const spec of (process.env.TAKELIFT || '').split(',').filter(Boolean)) {
    motion), and the neck the same turn given back key by key, so the head keeps exactly the orientation the take gave it.
    The hips and legs are not touched: the feet stay where they were. Unset, nothing changes */
 const UPRIGHT = (process.env.UPRIGHT || '').split(',').filter(Boolean).map(s => { const [k, v] = s.split(':'); return [k, Number(v)]; });
-/* UPRIGHTARMS="Take,...": those takes' shoulders (the clavicles) get the turn given back too, so the arms hang exactly as
-   the take had them and only ride the straightened shoulders — where the hands rest (the cross-legged sit's hands on his
-   knees would otherwise swing up with the chest and stand straight out); elsewhere the arms ride the chest, so a gesture
-   keeps its shape */
+/* UPRIGHTARMS="Take,...": those takes' shoulders (the clavicles) get the turn given back too, so the arms keep their
+   world pose (a hanging arm hangs, an aimed gesture keeps its aim, a hand at the face stays there) and only ride the
+   straightened shoulders. Left out, the arms ride the chest and every raised arm aims higher by the turn — the v24.44
+   review found it on every sheet (a forward thrust became an upward reach, the shout's hands rose above his head), so
+   name every turned take where a hand aims, hangs or rests; leave out only a hand resting ON the body (on the hip) */
 const UPRIGHTARMS = (process.env.UPRIGHTARMS || '').split(',').filter(Boolean);
 if (UPRIGHT.length) {
   const nodeN = n => root.listNodes().find(x => x.getName().replace(/^mixamorig[:_]?/, '') === n);

@@ -7353,9 +7353,17 @@ cut (sharing its vertices and maps) when it is small.
   given the same turn back key by key so the head keeps its world orientation (he looks where he looked), the hips and
   legs untouched so the feet keep their ground. Prove what must not move at every frame (hips, feet, head: 0.00 cm,
   0.00°) and measure what rides along (the hands, 1–35 cm).
-- **Contact does not ride along.** Hands that rest on the legs or push on the knees (the cross-legged sit, sit-to-stand)
-  leave them when the chest straightens under them: give the shoulders the turn back too, so the arms keep their world
-  pose and only the shoulders move; and leave a lean that IS the movement (a man leans forward to stand up).
-- **A pelvis number is not a lean.** With the hips still tipped back by the takes, talking with hands open has his head
-  8.9 cm behind his hips once straightened; from both sides it does not read as leaning back. Check a posture number
-  against a side view before chasing it.
+- **The arms keep their world pose; only the shoulders ride the chest.** The first pass let the arms ride the
+  straightened chest: every raised arm then aimed higher (a forward thrust became an upward reach, a level slash rose
+  30–45°, the shout's hands left his face for the top of his head, the walking arms swung up in front), and a blind reader
+  found it on every sheet. Giving the turn back at the shoulders keeps every gesture where it was relative to his head
+  (1–2 cm, measured) while the body straightens under it; check that a hand does not then sink into the chest (the
+  wrists come 2–8 cm nearer the trunk's axis). The one exception is a hand resting ON the body (on his hip), which rides.
+- **The lean that IS the move stays.** A crouching cast, a lunge, a slash, a man leaning forward to stand up: the lean is
+  the action, and straightening it pulled the trunk up under a head still looking at the floor (the reader: "the head
+  drops onto the chest"). Those takes keep his file's posture.
+- **A posture is the line from the hips to the head, not one joint's bend** (my own wrong call, corrected by the
+  reader). In talking with hands open his waist bend is offset by hips tipped back as far, so he already stood straight;
+  straightened, he leaned back 8–10° from the hips. I had looked at my side views and called it fine ("a pelvis number
+  is not a lean"); the blind reader, certain, said it leans back. Size a turn from where the head sits over the hips,
+  and let a reader who does not know what was meant judge the pictures.

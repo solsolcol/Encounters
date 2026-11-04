@@ -7813,6 +7813,48 @@ What the baseline contains, by release:
   - assets/pho.glb: 177,772 triangles, 65 joints, nineteen takes, 6.8 MB (6,791,872 bytes, sha1 9b466006…); the recipe re-makes it byte for byte.
     Before and after on a solid floor: masters/v24.43/shots/pho-before-after-seated.jpg, -moving.jpg; every take from five
     angles: shots/takes-1..3.jpg. Not in build.py until chapter 3 casts him.
+- **v24.44** (prepared, not a build: nothing deployed, the live build stays v24.40) GRANDMASTER PHO STANDS UPRIGHT —
+  Chad, 4 Nov 2026: *"Why does pho model look hunchback in so many poses? Make him more upright"*. The plan and every
+  step's measure, written as the work went: masters/v24.44/PLAN.md; recipe masters/v24.44/make.sh.
+  - THE WHY, measured on his file's own takes (no pass of mine had touched his skeleton): at rest he stands straight
+    (his upper body 2° from vertical), but in his takes the lowest spine joint, at his waist, is bent forward 42–75°
+    against rest in EVERY take and barely moves within one (walking 42 ± 1°, talking with a hand on his hip 42 ± 1°, the
+    casts 50–56°), his hips tipped back about 25° and his neck bent back 15–40° to bring his face round: how the takes
+    were laid onto his scan's rig, not acting. Where the hips do not offset it, he stoops: his upper body leaned walking
+    17.7°, the casts 22.5–31.6°, the sits 18.7–43.5°, running 25.2°, his head 10–21 cm ahead of his hips — in his file
+    too. From his left side the loose drape on his left arm (v24.43's open item) adds a bulge at the shoulder.
+  - THE FIX, robeskin UPRIGHT and UPRIGHTARMS (before the robe's chains are baked, so the skirt follows): per take, a
+    constant backward turn of the waist joint about the hips' own side axis, given back at the neck key by key (his head
+    keeps its turn: he looks where he looked) and at the shoulders (his arms keep their world pose: a hanging arm hangs,
+    an aimed hand keeps its aim, a hand at his face stays there); his hips and legs untouched, so his feet keep their
+    ground. Turned: walking, running, the four sits, sit-to-stand (8°, as a man leans forward to stand), the hand-on-hip
+    take (5°; that hand rides the chest, 1 cm) and four casts. Not turned, his file's posture kept: the lean that IS the
+    move (the crouching Charged_Spell_Cast, the sword slash, the lunging and tilting cast_3 and cast_4, cast_5's crouch),
+    mage_soell_cast_8 (already leans back) and Talk_with_Hands_Open (its hips tip back as far as its waist bends: he
+    already stands straight).
+  - THE FIRST PASS, REVIEWED AND CHANGED: every take turned, the arms riding the chest except in the two sits. A blind
+    reader of all nineteen (his file / v24.43 / it, shuffled per take) found the upright version on every sheet unaided
+    and rated it against his file 10 better, 2 the same, 7 worse (v24.43 by the same reader: 10 / 8 / 1): every raised arm
+    aimed higher (a forward thrust an upward reach, the slash 30–45° up, the shout's hands above his head, the walking
+    arms swinging up in front), Talk_with_Hands_Open leaned BACK 8–10° (I had judged it fine from my own side views:
+    wrong), and the crouching cast's head dropped onto his chest. The shout's hands I had caught in my own before-and-
+    after pictures while it read (not by a number: the rig has no fingers); the rest is the reader's. Hence the lists
+    above.
+  - WHAT IT MEASURES: hips, feet and the head's turn unchanged at every frame of every take (0.00); the hands, seen from
+    his head, within 2 cm of his file's wherever the arms are given back; the takes not turned skin exactly as v24.43's
+    file (0.00 cm). The upper body now leans walking 4.7°, the turned casts 7.4–7.9°, the sits 9.5–10.2°, running 10.1°.
+    The torso caves at 0.7 % at most, as v24.43.
+  - THE SECOND REVIEW (a fresh reader, blind, the seven reworked takes; his file / v24.43 / this file shuffled by another
+    hash): this file BETTER than his file in all seven (walking and cast_7 slightly) and better than v24.43 in all seven;
+    "no gesture changes its aim", "no hand or forearm passes into the body or the robe", his head natural on every
+    sheet, no leaning back unnaturally anywhere. Mild: two seated moments 4–5° past vertical, and one cast's hand
+    reaching 8–10 cm less far without the lean into the thrust. The other twelve takes are files the first reader
+    judged: the five kept from the first pass better than his file, the seven untouched exactly v24.43's (3 slightly
+    better than his file, 4 the same). Two readers, two rulers: no single reader saw all nineteen of this file. Noticed in
+    v24.43 and this file alike, outside this ask: a crease at the front of his right shoulder (faint in his file).
+  - assets/pho.glb: 177,772 triangles, 65 joints, nineteen takes, 6.8 MB (6,793,504 bytes, sha1 53031273…); the recipe re-makes it byte for
+    byte. Before and after, side on (v24.43 over v24.44): masters/v24.44/shots/pho-upright-moving.jpg, -seated.jpg;
+    every take from five angles: shots/takes-1..3.jpg. Not in build.py until chapter 3 casts him.
 
 ## The sheet, version by version
 

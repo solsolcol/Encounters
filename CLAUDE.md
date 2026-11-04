@@ -1105,11 +1105,17 @@ Chad's, approved v23.5). Grandmaster Pho and Lersi Chin are Chad's models, with 
 case comes later in the casebook). Lersi Chin's model arrived 3 Nov 2026 and is prepared, not yet cast:
 `assets/lersichin.glb`, key `lersichin` (into build.py the day chapter 2 casts him), masters/v24.38/make.sh.
 Grandmaster Pho's arrived the same day, with distortions Chad asked to have fixed: PREPARED, not yet cast, and still being
-improved — `assets/pho.glb`, key `pho` (chapter 3), masters/v24.43/make.sh (and its PLAN.md): his torso fixed (v24.40,
+improved — `assets/pho.glb`, key `pho` (chapter 3), masters/v24.44/make.sh (and its PLAN.md): his torso fixed (v24.40,
 measured on every frame by tools/rigstrain.mjs), his robe rebuilt at v24.41 as twelve three-bone chains baked into his
 nineteen takes (tools/robeskin.mjs), each take given the robe rules that read best for it (v24.42–v24.43: running on
 v24.40's, the cross-legged sit, one cast and the sword lunge fitted to his file), and at v24.43 the cloth on his left upper
-arm back on the arm (robeskin LDRAPE; my v24.39 re-bind had given it to his chest). An independent reader of ALL nineteen
+arm back on the arm (robeskin LDRAPE; my v24.39 re-bind had given it to his chest), and at v24.44 stood upright at Chad's
+word (robeskin UPRIGHT/UPRIGHTARMS: his takes bend his waist joint forward 42–75° in every take, a constant left by how
+they were laid on his rig, so each take that stoops has its waist turned back and the turn given back at the neck and the
+shoulders — his head's turn, every gesture's aim and his feet unchanged; the lean that is the move, and the talk that
+already stands straight, are left as his file has them; a first pass that let the arms ride the chest raised every aimed
+arm and was reworked; a second blind reader rates the seven reworked takes better than his file and v24.43 in all
+seven). An independent reader of ALL nineteen
 takes, blind to which version is newer, rates v24.43 against his file 13 better, 4 the same, 2 worse (talking with hands
 open; the sword lunge, slightly) — read a review of a few takes against one of all of them with care: v24.42's reader,
 shown the eight worst, rated the same file worse in five. What no weight or robe rule can fix, both put to Chad: the

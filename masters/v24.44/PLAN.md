@@ -72,3 +72,60 @@ Chad, 4 Nov 2026: *"Why does pho model look hunchback in so many poses? Make him
   wrist comes within 30 cm of the head joint in any take). Baking p13: the shout's shoulders given the turn back too
   (UPRIGHTARMS), so the arms keep their world pose and move with the head. Sit_Cheer's resting hand moves 4–5 cm off
   its knee (9° turn): photographed, it reads the same, left as it is.
+- **p13 baked** (p12 with UPRIGHTARMS for the shout): only the shout changed (every other take skins as p12, 0.00 cm).
+  Each hand's place seen from his head, his file against p12 / p13: the shout 13–16 cm / 1 cm — his hands frame his face
+  again, the body upright under them (photographed). Elsewhere the hands seen from the head move 7–24 cm in p12 (the
+  arms ride the straightened chest while the head keeps its turn): the casts' and talking's gestures sit a little higher
+  against the face; the reader's verdict decides whether any other take needs its shoulders given back.
+- **Step 5: the final file** (the recipe with the shout in UPRIGHTARMS): masters/v24.44/make.sh re-makes the robe file
+  byte for byte (sha1 0f0fdf01…, the same as p13) and assets/pho.glb byte for byte (a second packing: sha1 4acdbbf6…,
+  6,792,132 bytes). The shout's trunk (rigstrain): caved 0.3 % at most (as v24.43), its chest 0.94 and back 0.91 at
+  their first percentile. Photographed from the installed file: shots/pho-upright-moving.jpg and -seated.jpg (v24.43
+  over v24.44, side views on a solid floor; the moving sheet's walking and cast_5 rows re-rendered from the final file
+  are pixel-identical), shots/takes-1..3.jpg (every take, five angles).
+- **Step 6: the review of p12** (a fresh reader, all nineteen takes, his file / v24.43 / p12 shuffled per take; the
+  key: the session's key12.txt). Mapped back: p12 against his file 10 better, 2 the same, 7 worse; v24.43 against his file
+  10 better, 8 the same, 1 worse (the cross-legged sit); p12 against v24.43 5 better (Charged_Spell_Cast_1, the
+  cross-legged sit, Sitting_Answering_Questions, Walking, mage_soell_cast_6), 7 the same, 7 worse. The reader found the
+  upright version in every sheet unaided (its head 4–17 px back), and "every arm that is raised compared with his file
+  belongs to the version whose head moved back". The seven worse: the arms riding the straightened chest aim HIGH
+  (mage_soell_cast_3's forward thrust an upward reach, cast_4's arms in a V, cast_5's hand over his head, the sword
+  slash 30–45° up with the forearm over his eyes, the shout's hands above his head); Talk_with_Hands_Open LEANING BACK
+  8–10° from the hips (his file already stands straight there: its hips tip back as far as its waist bends forward — my
+  "a pelvis number is not a lean" was wrong for this take); Charged_Spell_Cast's crouch with the trunk pulled up and the
+  head on his chest, looking at the floor (the crouch is the move). Also: walking's arm swing higher, the talking and
+  answering hands at chest height.
+- **Step 7: per take, by what the review showed.** The lean that IS the move stays his file's (no turn): the crouching
+  cast (Charged_Spell_Cast), the sword slash, the lunging and tilting casts (cast_3, cast_4) and cast_5's crouch; and
+  Talk_with_Hands_Open, which already stands straight. Wherever the body is straightened and a hand aims or hangs, the
+  arms keep their world pose (UPRIGHTARMS): walking (arms hang from the shoulders, so they swing beside him, not up in
+  front), Charged_Spell_Cast_1, Sitting_Answering_Questions, mage_soell_cast, cast_6, cast_7, with the three sits that
+  already had it. Running, Sit_Cheer and the hand-on-hip take stay as p12 (no fault; the hand on the hip rides the
+  chest: 1 cm). Baking p14; then the hands against the chest, the photographs, and a blind review of the changed takes.
+- **Step 7 baked (p14) and measured.** The takes given no turn skin exactly as v24.43's file (0.00 cm: Charged_Spell_Cast,
+  the sword slash, Talk_with_Hands_Open, cast_3, cast_4, cast_5, cast_8); the takes kept as reviewed exactly as p12/p13
+  (0.00 cm: running, Sit_Cheer, the cross-legged sit, the shout, sit-to-stand, the hand-on-hip take). In the seven
+  reworked takes the hands, seen from his head, sit within 1–2 cm of his file's (p12: 7–24 cm); the wrists come 2–8 cm
+  nearer the trunk's axis (closest Charged_Spell_Cast_1's left wrist, 14 cm at 1.95 s: photographed, in front of the
+  robe); the leans as p12 (walking 4.7°, the casts 7.4–7.9°, the sits ~10°); the trunk caved at 0.6 % at most in them
+  (mage_soell_cast; v24.43 0.5 %), the upper chest's first percentile 0.02–0.04 lower where the shoulders are given back.
+  Photographed (his file / p12 / p14, front and both sides): every gesture back where his file has it, the body straight
+  under it; Sitting_Answering_Questions at 6.5 s still leans back further than his file (the take leans back there; the
+  turn adds to it) — the reader decides. A blind review of the seven reworked takes (his file / v24.43 / p14, shuffled
+  by a second hash; the key: the session's key14.txt) is running.
+- **The recipe re-run (my slip, recorded):** I edited make.sh's notes while sh was still executing it; both files were
+  written first (the robe file identical to p14, sha1 9feb8236…; assets/pho.glb 6,793,504 bytes, sha1 53031273…,
+  identical to a second packing), then the shell read on from its old place in the changed file and stopped on a
+  fragment (exit 127). The recipe is re-run untouched before the commit.
+- **Step 8 done, the second review** (a fresh reader, blind; the seven reworked takes, his file / v24.43 / p14 shuffled by
+  a second hash). Mapped back: p14 against his file 7 better (walking and cast_7 slightly); v24.43 against his file 3
+  better, 3 the same, 1 slightly worse (walking); p14 against v24.43 better in all 7. The reader found the upright version
+  on every sheet unaided (head and both hands 6–14 px back together, the legs unmoved) and: "No gesture changes its aim",
+  "No hand or forearm passes into the body or the robe", the head natural on every sheet, no version leaning back
+  unnaturally anywhere. Mild, on p14: Sitting_Answering_Questions at 6.5 s and the shout at 1.8 s 4–5° past vertical (the
+  closest calls; the shout's hands end ~12 cm further back over his lap); Charged_Spell_Cast_1's hand reaches 8–10 cm less
+  far without the lean into the thrust ("a matter of taste"); mage_soell_cast at 0.5 s and cast_7 at 1.8 s head over the
+  heels (unsure: "it reads upright"). Shared with v24.43, not this pass's: the drape's stiff panel, the walking hem's grey
+  band, the hem's ring of strips from below, a crease at the front of the right shoulder (faint in his file) — noted.
+- **Step 9: final.** The recipe as committed re-run untouched (the robe file and assets/pho.glb byte for byte); docs; the
+  diff read; commit, tag v24.44, push; the report to Chad.
