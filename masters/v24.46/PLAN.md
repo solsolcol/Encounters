@@ -100,3 +100,19 @@ what it costs, and a recommendation; the choice is his.
   look the same and the crack opened at a moment where it had been closed, so it is not taken. What would cure them is
   more than weights: a helper bone for the shoulder blade and the side under the arm (a twist-and-slide rig, or a
   corrective shape per pose), or cloth that moves by simulation. Put to Chad with the rest that remains.
+- **Step 5: the blind review of every take, and what ships.** The recipe re-made the photographed bakes byte for byte
+  and a second packing was the same file. A fresh reader, blind, read all nineteen takes (his file / v24.45 / the file
+  with the armpit fade AND the hem cut, the last two shuffled per take; review-key.txt), his upper body from his right
+  and his legs, two moments each. That file against his file 11 better, 4 the same, 4 worse (v24.45: 9 / 5 / 5);
+  against v24.45 better in 13, the same in 4, worse in 2. Its wins are the armpit: in take after take its flap at the
+  right armpit smaller (talking with hands open, the hand on the hip, the casts, the slash, sit-to-stand, the
+  cross-legged sit). Its losses are the hem: walking clearly ("the rear leg is cut off below the knee and floats
+  outside the robe as a flat-topped stump, with a gap to the hem" — the reader's most serious fault anywhere, "in the
+  take that will be seen most"), Charged_Spell_Cast_1 slightly (a bigger, spikier slit in the back hem), and cut-off
+  shin tops at the hem in a chair sit and three casts; running only slightly better. **So v24.46 ships the armpit
+  alone.** Measured, the two changes do not overlap: the armpit fade alters 23,865 points, every one on the right side
+  of his upper body between his waist and his neck, and no take's motion; the hem cut only the 1,088 points of the shin
+  join (and, through the robe's fit to his file, three takes' chain motion). The armpit-alone file is therefore exactly
+  the reviewed upper body on v24.45's legs and robe. The hem cut is made, photographed and kept (tools/hemcut.mjs,
+  shots/pho-hem-*.jpg) and goes back to Chad as a choice: strips when a leg leaves the robe (as now), or a leg that ends
+  at mid-shin. What would cure both is a leg under the robe — his scan has none above mid-shin.

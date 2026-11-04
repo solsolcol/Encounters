@@ -7909,6 +7909,52 @@ What the baseline contains, by release:
     masters/v24.45/shots/pho-drape-arm-down.jpg, pho-drape-arm-raised.jpg; every take from five angles:
     shots/takes-1..3.jpg. Cutting the robe's hem free of his shins still waits on his word. Not in build.py until
     chapter 3 casts him.
+- **v24.46** (prepared, not a build: nothing deployed, the live build stays v24.40) GRANDMASTER PHO: THE REST OF HIS
+  FAULTS, AND HIS LOOK — Chad, 4 Nov 2026 (answering v24.45's report): *"Fix the rest of the issues with grandmaster pho's
+  model. Is it also possible to run him in unlit mode, or unlit just only for his face? I find unlit mode to be more
+  accurate to how he really looks like"*, and a photograph of the real man (masters/v24.46/ref). Taken as his yes to the
+  one change v24.45 put to him, the robe's hem cut free of his shins. The plan and every step's measure, written as the
+  work went: masters/v24.46/PLAN.md; recipe masters/v24.46/make.sh.
+  - HIS LOOK, answered with pictures beside his photograph (shots/pho-look-face.jpg, -body.jpg, -dim-room.jpg): A lit as
+    now (his face greyer, deep shadows), B all unlit (his skin the photo's warm tan, the robe a flat shape with no folds),
+    C his face only (the face right, his bare shoulder paler beside it), D his skin and necklaces unlit and the robe lit,
+    chosen by the texel's own saturation (recommended). Found on the way: the game tone-maps every model (ACES at 1.42),
+    so an unlit colour put through it comes out far paler than the scan; "as he looks" is the scan's colour laid on after
+    the tone mapping, and an unlit model ignores the room's light, so its share is scaled to the scene's light level. His
+    file does not change for any of them: a material patch when chapter 3 casts him. tools/clipsheet.mjs gains --look,
+    --light, --exposure, --frame=legs and --frame=joint:<bone>:<r> (unset, the same picture byte for byte). His pick.
+  - THE RIGHT ARMPIT, shipped: the trunk's re-bind ended in a step 6 cm off his right upper arm's axis, and the skin and
+    the chest wrap there tore into a notch with strands across it whenever the arm moved. robeskin ARMBLEND fades it in
+    over 10 cm (6 cm cleared half the strands; shots/pho-armpit-cast4.jpg): the front of the armpit now stretches about as
+    his own file does (triangles past 2x at the hand-on-hip moment: his file 203, v24.45 1,100, now 201). It alters 23,865
+    points, every one on the right side of his upper body between his waist and his neck, and no take's motion.
+  - THE HEM CUT FREE OF HIS SHINS (his word), made but NOT shipped: robeskin HEMRING=0 (no ring of the robe's underside
+    rides a shin) and the new tools/hemcut.mjs — the 405 triangles joining points that ride the skirt to points that ride
+    his lower legs taken out, every opening closed by a cap of one texel (a shin's top riding the shin bone, in that shin's
+    own median skin colour; the robe's underside riding the robe, in its white), every existing point untouched. The first
+    caps, textured from their own edge points, smeared the atlas into stripes; carrying the shin 6 cm up first striped and
+    showed through the robe; a skin-coloured band where the join was stretched into webs when he runs. My photographs
+    showed walking's strips at the trailing shin and the grey sheets round his shins seated gone (shots/pho-hem-*.jpg) —
+    and the blind reader found the cost: in walking the trailing leg "cut off below the knee", floating behind the robe,
+    worse than the strips. So it goes back to Chad as a choice (strips when a leg leaves the robe, as now, or a leg that
+    ends at mid-shin); a cure for both needs a leg under the robe, which his scan does not have above mid-shin.
+  - MEASURED, NOT CURED: the crack across his right shoulder blade and the slit at the right side of his waist are his
+    skin folding over where it is half arm and half trunk (turned-over triangles at the worst moments: his file 11 and
+    90, v24.45 61 and 299, now 96 and 199); the white shards below his left elbow are the hip cloth his file has riding
+    the forearm, torn between it and his hips. Fading the trunk's re-bind out under his neck (it handed back his file's
+    weights on his upper back, where both arms pull the middle of his back, and those folded) and averaging the weights
+    over centimetres (the numbers fell, the photographs did not improve) were tried and are not taken; a cure needs a
+    helper bone or a corrective shape for the shoulder, or cloth by simulation.
+  - THE BLIND REVIEW (every take; his file / v24.45 / the file with the armpit AND the hem cut, the last two shuffled;
+    his upper body from his right and his legs): that file against his file 11 better, 4 the same, 4 worse (v24.45: 9 /
+    5 / 5); against v24.45 better in 13, the same in 4, worse in 2 — its wins the armpit, take after take; its losses the
+    hem (walking clearly, a cast's back hem slightly). The shipped file is the armpit alone: measured, the two changes touch
+    disjoint points (23,865 on his upper right side; 1,088 at the shin join), so it is exactly the reviewed upper body on
+    v24.45's legs and robe. assets/pho.glb 6,858,792 bytes, 177,772 triangles, 67 joints, 19 takes; the recipe re-makes it
+    byte for byte and a second packing is the same file. The trunk (rigstrain, every take at 10 fps): as v24.45's but the
+    armpit fade's own fold under his right arm (the arms' squashed edges up 0.1–0.5 points; the back's lowest share in
+    four casts and the hand-on-hip take down to 0.74), painted and photographed: the cloth that now goes with the arm.
+    Every take photographed (shots/takes-1..3.jpg). Not in build.py until chapter 3 casts him.
 
 ## The sheet, version by version
 

@@ -7427,7 +7427,8 @@ cut (sharing its vertices and maps) when it is small.
 - **What hides a cut limb shows through a lagging garment.** Carrying the shin up past its cut (to the knee, or 6 cm)
   hides its end only where the robe follows the leg; where the hem lags a stepping knee the extension pokes through the
   robe's front and back. A skin-coloured band rebuilt where the join was (layers, weights blended shin to robe) stretches
-  into flat webs of skin when he runs. A cut that leaves a lower leg's end visible in one take beats strips in every take.
+  into flat webs of skin when he runs. And the cut itself, its strips gone, left a lower leg ending in mid-air that a
+  blind reader rated worse than the strips in walking (below): no fix for this hem is good without a leg under the robe.
 - **A black slit can be a fold, not a seam.** Close up, the "crack" on his shoulder blade was skin turning over on itself.
   Count it: each triangle's posed normal against the normal its own skinning carries from rest (negative: turned over).
   And rule out the seam first: copies of one point welded by rounding can straddle a rounding boundary and part (here
@@ -7449,3 +7450,9 @@ cut (sharing its vertices and maps) when it is small.
 - **A process started with & inside a backgrounded shell dies with that shell.** Two bakes launched as `(… &) &` with an
   `echo started` ended the moment the outer command returned, their logs cut mid-line and no file written. Run the waits
   inside the backgrounded command (`a & b & wait`).
+- **A fix that removes one visible fault can add a worse one, and only a reader of every take finds which.** The hem
+  cut took the strips away in every photograph I made of it; the blind reader of every take found the trailing leg in
+  walking "cut off below the knee", floating behind the robe, and rated the joined hem better there. When two changes
+  ride in one file, read the reader's notes per take for which change each verdict is about, measure that the changes
+  touch disjoint points (here 23,865 on his upper right side against 1,088 at the shin join, and no shared motion), and
+  ship the reviewed parts that won — the composed file is then exactly what was read.

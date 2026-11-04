@@ -1,7 +1,8 @@
 #!/bin/sh
 # v24.46 · GRANDMASTER PHO: THE REST OF HIS FAULTS, AND HIS LOOK (prepared, not a build; not cast until episode 4 chapter 3).
-# Builds on masters/v24.45/make.sh (read it first: every option below but ARMBLEND and HEMRING is its own, unchanged, and
-# the hem cut is a new step). The plan and every step's measure, written as the work went: masters/v24.46/PLAN.md.
+# Builds on masters/v24.45/make.sh (read it first: every option below but ARMBLEND is its own, unchanged). The plan and
+# every step's measure, written as the work went: masters/v24.46/PLAN.md. The hem cut (HEMRING=0 and tools/hemcut.mjs,
+# below) is made and photographed but NOT in this file: the blind reader preferred v24.45's joined hem in walking.
 #
 # CHAD, 4 Nov 2026 (answering the v24.45 report): "Fix the rest of the issues with grandmaster pho's model. Is it also
 #   possible to run him in unlit mode, or unlit just only for his face? I find unlit mode to be more accurate to how he
@@ -20,7 +21,8 @@
 #   file 4x). The envelope now fades in over the 10 cm past that (6 cm cleared half the strands, 10 cm most of them:
 #   shots/pho-armpit-cast4.jpg). Unset, the robe file byte for byte.
 #
-# THE HEM CUT FREE OF HIS SHINS (step 3, his word), robeskin HEMRING=0 and the new tools/hemcut.mjs: the scan's robe closed
+# THE HEM CUT FREE OF HIS SHINS (step 3, his word; MADE, NOT SHIPPED — see THE REVIEW), robeskin HEMRING=0 and the new
+#   tools/hemcut.mjs: the scan's robe closed
 #   onto his shins at mid-shin through triangles joining points that ride the skirt's chains to points that ride his
 #   lower legs, which stretched whenever a leg moved (walking 16x, the sword lunge 27x, running 41x): the grey band at the
 #   trailing shin, the strips and spikes at the hem. HEMRING=0: no ring of the robe's underside rides a shin any more
@@ -42,7 +44,17 @@
 #   photographs did not change for the better, and neither is taken. A cure needs a helper bone or a corrective shape for
 #   the shoulder, or cloth that moves by simulation.
 #
-# THE REVIEW: (filled in below when the blind reader has read every take)
+# THE REVIEW: a fresh reader, blind, every take (his file / v24.45 / the file WITH the hem cut, the last two shuffled per take;
+#   masters/v24.46/review-key.txt), his upper body from his right and his legs, two moments each. That file against his
+#   file 11 better, 4 the same, 4 worse (v24.45: 9 / 5 / 5); against v24.45 better in 13, the same in 4, worse in 2. Its
+#   wins are the armpit (in take after take its flap at the right armpit smaller); its losses the hem — walking clearly
+#   ("the rear leg cut off below the knee and floats outside the robe as a flat-topped stump, with a gap to the hem",
+#   the reader's worst fault of all, "in the take that will be seen most"), and cut-off shin tops at the hem in a chair
+#   sit and three casts; running only slightly better. So this file is the ARMPIT ALONE: measured, it differs from v24.45
+#   in 23,865 points, every one on the right side of his upper body between his waist and his neck, every take's motion
+#   identical — the reviewed upper body on v24.45's legs; the hem cut touches only the 1,088 points of the shin join. The
+#   cut is put to Chad with its pictures (shots/pho-hem-*.jpg): strips when a leg leaves the robe (as now), or a leg that
+#   ends at mid-shin. A cure for both is a leg under the robe, which his scan does not have.
 #
 # Needs: npm i --no-save @gltf-transform/core @gltf-transform/extensions @gltf-transform/functions meshoptimizer sharp three
 set -e
@@ -55,10 +67,12 @@ BANDS=1 SKIRT=12 SKIRTB=3 FIT=Sit_Cross_Legged_on_Floor,mage_soell_cast_8,Right_
   UPRIGHTARMS=Sit_Cross_Legged_on_Floor,Sit_to_Stand_Transition_M,Sit_Shout_Hands_on_Mouth,Walking,Charged_Spell_Cast_1,Sitting_Answering_Questions,mage_soell_cast,mage_soell_cast_6,mage_soell_cast_7 \
   DRAPE=2 BANDO0=0.02 BANDOW=0.10 BANDPASS=30 BANDSIG=0.05 DRAPEMERGE=1 DRAPEREACH=0.24 BANDSPINE=0.04 \
   DRAPEHANG=1 HANGL0=0.55 HANGLW=0.30 HANGMAX=90 LDRAPEY=0.08 DRAPEISL=0.18 \
-  ARMBLEND=0.10 HEMRING=0 \
+  ARMBLEND=0.10 \
   node tools/robeskin.mjs masters/v24.39/src/grandmaster_pho_v1.glb $T/pho_robe13.glb
-node tools/hemcut.mjs $T/pho_robe13.glb $T/pho_robe13_hem.glb
-TEX=4096 NTEX=2048 CHARTFIX=1 node tools/prepmonk.mjs $T/pho_robe13_hem.glb assets/pho.glb 0.3
+TEX=4096 NTEX=2048 CHARTFIX=1 node tools/prepmonk.mjs $T/pho_robe13.glb assets/pho.glb 0.3
+# the hem cut, made but not shipped (Chad's choice; the reviewed file): the same robeskin line with HEMRING=0 added, then
+#   node tools/hemcut.mjs <that robe file> <its cut copy>   and prepmonk on the cut copy
 # the measure, and the photographs:
 #   node tools/rigstrain.mjs $T/pho_robe13.glb --fps=10
-#   node tools/clipsheet.mjs assets/pho.glb masters/v24.46/shots/take --at=0.3,0.7 --size=240 --views=0:8,90:8,180:8,270:8,45:30
+#   node tools/clipsheet.mjs assets/pho.glb <out> --at=0.3,0.7 --size=300 --frame=torso --views=330:5,270:5,210:8,30:5
+#   node tools/clipsheet.mjs assets/pho.glb <out> --at=0.3,0.7 --size=300 --frame=legs --views=0:2,90:2,180:2,270:2

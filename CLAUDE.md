@@ -1105,7 +1105,7 @@ Chad's, approved v23.5). Grandmaster Pho and Lersi Chin are Chad's models, with 
 case comes later in the casebook). Lersi Chin's model arrived 3 Nov 2026 and is prepared, not yet cast:
 `assets/lersichin.glb`, key `lersichin` (into build.py the day chapter 2 casts him), masters/v24.38/make.sh.
 Grandmaster Pho's arrived the same day, with distortions Chad asked to have fixed: PREPARED, not yet cast, and still being
-improved — `assets/pho.glb`, key `pho` (chapter 3), masters/v24.45/make.sh (and its PLAN.md): his torso fixed (v24.40,
+improved — `assets/pho.glb`, key `pho` (chapter 3), masters/v24.46/make.sh (and its PLAN.md): his torso fixed (v24.40,
 measured on every frame by tools/rigstrain.mjs), his robe rebuilt at v24.41 as twelve three-bone chains baked into his
 nineteen takes (tools/robeskin.mjs), each take given the robe rules that read best for it (v24.42–v24.43: running on
 v24.40's, the cross-legged sit, one cast and the sword lunge fitted to his file), and at v24.43 the cloth on his left upper
@@ -1122,9 +1122,14 @@ in 7, worse in 3 for shards at his elbow, measured to an older step in LDRAPE an
 skin and cured — a second reader rates those moments better in 6 of 7, the same in 1). An independent reader of ALL nineteen
 takes, blind to which version is newer, rates v24.43 against his file 13 better, 4 the same, 2 worse (talking with hands
 open; the sword lunge, slightly) — read a review of a few takes against one of all of them with care: v24.42's reader,
-shown the eight worst, rated the same file worse in five. What no weight or robe rule can fix, put to Chad: the robe's
-hem is joined to his shins by a ring of 562 triangles that stretches into strips when a leg leaves the robe, so freeing
-it is a change to his mesh (the loose drape's shell, put to him with it, got its hanging-cloth rig at v24.45). **Ajahn Krukai's model is PINNED** (v23.5, Chad: *"Make sure ajahn krukai's model
+shown the eight worst, rated the same file worse in five. At v24.46 (Chad: "Fix the rest of the issues ... unlit just
+only for his face?") the notch at his right armpit eased (robeskin ARMBLEND) and his LOOK photographed four ways beside
+his photograph for him to pick (lit / all unlit / his face unlit / his skin and necklaces unlit with the robe lit, the
+last recommended: a material patch when chapter 3 casts him, his file unchanged); the robe's hem, joined to his shins by
+triangles that stretch into strips when a leg leaves the robe, was cut free at his word (tools/hemcut.mjs) but NOT
+shipped — a blind reader of every take preferred the strips to a trailing leg ending at mid-shin in walking — so the hem
+is his choice too. Measured and not cured (a helper bone or a corrective shape would): the folds across his right
+shoulder blade and at his right side, the shards below his left elbow in one talking moment. **Ajahn Krukai's model is PINNED** (v23.5, Chad: *"Make sure ajahn krukai's model
 in ep3 is unaffected and untouched. It is important that krukai is in the game as the master who gave the player his
 first sakyant."*): `ajarn` / `assets/ajarn.glb` are the bytes that shipped at v18.7, `chaptertest` fails on any change
 to the key, the file or e3c1's use of it, and Episode 4's first master — the original Sak Yant Ajarn — arrives under
