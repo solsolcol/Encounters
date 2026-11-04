@@ -142,3 +142,20 @@ chains (v24.40–v24.41: twelve three-bone chains, their turn baked into every t
   sleeve to show (the scan's sleeve is the surface; not one skin point within 9 cm of the arm's axis has sleeve cloth
   outside it), so the brown flecks in some photographs are the texture's own fold crevices. Next: every take, three
   versions (his file / v24.44 / p27, the last two shuffled per take), to a blind reader.
+- **Step 3: the recipe, and its proofs.** masters/v24.45/make.sh run (untouched while it ran: sha1 before and after
+  1701d8cc). Its robe file (masters/v24.39/prep/pho_robe12.glb) is byte for byte the p27 bake made separately before it
+  (sha1 e7030f82 both): the bake repeats exactly. assets/pho.glb: 6,851,452 bytes (sha1 12421533), 177,772 triangles as
+  v24.44, 67 joints (v24.44's 65, DrapeArm and DrapeHang, both animated in all nineteen takes). Against v24.44 (p27, the
+  same file, drapecmp, every take at 5 fps): every point outside his left upper body's cloth 0.000 mm, not one moved, in
+  all nineteen; the drape's own fading edge at most 0.60 cm (mage_soell_cast_3; walking 0.19, talking 0.17). Both new
+  bones bake their rest pose to 0.000°. Every take photographed in three versions (his file / v24.44 / p27, the last two
+  shuffled per take by a sha1 of the take's name, the key outside the reader's folder) for a blind reader.
+  assets/pho.glb re-made by a second packing of the same robe file: byte for byte (sha1 12421533 both). The trunk
+  (tools/rigstrain.mjs, every take at 10 fps, against v24.44's file measured the same way): unchanged in thirteen takes;
+  in Charged_Spell_Cast_1, Talk_with_Hands_Open, Sit_to_Stand, mage_soell_cast_3 and _5 more of what it calls the back
+  under 0.75 of its rest distance from the spine (worst 1.8 % against 0.3 %, Charged_Spell_Cast_1 0.9 s). Painted by
+  the measure and photographed at the two worst moments (rigstrain --heat; the session's rev45/heat/heat4.jpg): the new
+  red is in the drape's own folds hanging under his arm — cloth that sits nearer the spine than the arm, now hanging —
+  and the only red on his body itself, by his right shoulder blade, is the same in both files. The torso is as v24.44.
+  Before and after for Chad (his file / v24.44 / v24.45): masters/v24.45/shots/pho-drape-arm-down.jpg (walking 0.8 s,
+  talking with hands open 2.3 s) and pho-drape-arm-raised.jpg (Charged_Spell_Cast_1 1.8 s, mage_soell_cast 0.5 s).
