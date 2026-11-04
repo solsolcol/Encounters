@@ -80,3 +80,23 @@ what it costs, and a recommendation; the choice is his.
   strips at the trailing shin gone, the grey sheets round his shins seated gone, the lunge's grey band less. What it
   cannot do: when he runs, a heel kicked up behind him shows his lower leg ending where the robe once closed on it
   (mid-shin, a skin-coloured end) — his scan has no leg above that, and the robe there does not reach over the calf.
+- **Step 4: the shoulder-blade crack, the waist slit and the shards at his left elbow (faults 3 and 4) — measured, not
+  cured.** Close up (clipsheet's new --frame=joint:<bone>:<r>) the crack is a real black slit: the skin of his right
+  shoulder blade turns over on itself (a fold, not a texture seam and not a seam's copies parting — every copy is welded,
+  counted). Turned-over triangles on his upper back within 22 cm of the right shoulder at Talk_with_Left_Hand_on_Hip
+  2.5 s: his file 11, v24.45 61, now 96; the waist slit (the side of his torso under his right arm, from behind) at
+  mage_soell_cast_5 9.7 s: his file 90, v24.45 299, now 199 (the armpit fade of step 2 took a third away). That side of
+  his torso faces his arm (its normal against the direction out from the arm's axis −0.8 to −1.0) 8 cm off the arm's
+  axis, and his file has it riding the arm 95 %: skin under an arm that is half arm and half trunk folds whichever way
+  the mix goes. The shards at his left elbow (Talk_with_Hands_Open 1.19 s): the cloth at his left hip behind the
+  forearm, which his file has riding the forearm 65–76 % (the forearm hangs beside it at rest), here mixed with the
+  hips, the robe's waist and the drape's hanging bone within millimetres — 14x. Tried and left, both measured and
+  photographed: (a) fading the trunk's re-bind out under the base of his neck (8 and 14 cm): the shoulder blade's
+  stretched triangles went (past 3x 14 → 6) but it hands back his file's own weights on his upper back, where his rig has
+  both arms pulling the middle of his back (left 0.45, right 0.43), and those folded instead (the worst now at his spine);
+  the slit in the close-up thinner, not gone. (b) Averaging the weights with their neighbours' 60 or 200 times in boxes
+  round the hip, under the arm and on the shoulder blade: the numbers fell (the elbow's triangles past 3x 4,533 → 1,655,
+  the worst 14x → 8x; the back's folds 96 → 73; the waist slit unchanged, 199 → 200–215), but photographed the shards
+  look the same and the crack opened at a moment where it had been closed, so it is not taken. What would cure them is
+  more than weights: a helper bone for the shoulder blade and the side under the arm (a twist-and-slide rig, or a
+  corrective shape per pose), or cloth that moves by simulation. Put to Chad with the rest that remains.

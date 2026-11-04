@@ -7412,3 +7412,40 @@ cut (sharing its vertices and maps) when it is small.
 - **A share past a threshold says where cloth stretches, not whether it reads as cloth.** The edges stretched past 1.4x
   rose in the band and the web of the chosen file while the photographs showed the shell gone and a smooth curtain in its
   place: the stretch had moved off one hard fold and spread down a sheet. Measure to locate, photograph to judge.
+
+## v24.46 — a scanned robe cut free of the shins, folds that are not seams, and fixes the numbers liked and the pictures did not
+
+- **A garment scanned shut onto the body is untied by cutting, not weighting.** The robe's underside closed onto his
+  shins (one surface, 405–562 triangles joining points that ride the skirt to points that ride the legs); no weight can
+  untie a surface tied to both. Take out exactly the triangles that join the two classes and cap each opening, every
+  existing point untouched (tools/hemcut.mjs). Turn off first whatever rule blended the two near the join (HEMRING), or
+  the robe's underside still rides the shin and strips stay.
+- **A cap is one texel.** A fan textured from its own edge points interpolates across the atlas between them — a scan's
+  neighbouring points sit on islands far apart — and draws the atlas's other islands as white and grey stripes. Give
+  every point of a cap one texture position, chosen as the median colour of the surface it belongs to (a shin 2–6 cm
+  below the cut; the robe near the opening).
+- **What hides a cut limb shows through a lagging garment.** Carrying the shin up past its cut (to the knee, or 6 cm)
+  hides its end only where the robe follows the leg; where the hem lags a stepping knee the extension pokes through the
+  robe's front and back. A skin-coloured band rebuilt where the join was (layers, weights blended shin to robe) stretches
+  into flat webs of skin when he runs. A cut that leaves a lower leg's end visible in one take beats strips in every take.
+- **A black slit can be a fold, not a seam.** Close up, the "crack" on his shoulder blade was skin turning over on itself.
+  Count it: each triangle's posed normal against the normal its own skinning carries from rest (negative: turned over).
+  And rule out the seam first: copies of one point welded by rounding can straddle a rounding boundary and part (here
+  none did — counted, not assumed). A fold count is noisy on a dense scan (thousands in any pose, his file too): compare
+  versions at the same moment in the same region, and paint them red to see which are on screen.
+- **A fade back to the artist's weights hands back the artist's faults.** Fading the trunk's re-bind out under his neck
+  took the shoulder blade's stretch away and handed back his rig's own weights on his upper back, where both arms pull the
+  middle of his back (0.45 and 0.43), and that folded instead. Before fading toward a file's weights, read what they are
+  where the fade lands.
+- **Numbers can fall while the picture stays.** Averaging the weights over centimetres cut the elbow's triangles past 3x
+  from 4,533 to 1,655 and the back's folds by a quarter, and the photographs of the shards looked the same, the crack
+  opened where it had been closed. Stretch and fold counts are leads; the photograph decides, and a change that only the
+  numbers like is not taken.
+- **Skin under an arm that is half arm and half trunk folds whichever way the mix goes.** The side of his torso faces the
+  arm 8 cm off its axis (its normal against the direction out from the arm −0.8 to −1.0): his file has it riding the arm
+  (95 %), the trunk's re-bind gave it the spine; both fold when the arm lifts. Distance to a bone cannot separate a body
+  from the limb that rests against it in the bind pose; facing can say which surface is which, but no weight cures the
+  fold — that needs a helper bone or a corrective shape.
+- **A process started with & inside a backgrounded shell dies with that shell.** Two bakes launched as `(… &) &` with an
+  `echo started` ended the moment the outer command returned, their logs cut mid-line and no file written. Run the waits
+  inside the backgrounded command (`a & b & wait`).
