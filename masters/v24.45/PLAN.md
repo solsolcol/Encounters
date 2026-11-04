@@ -83,3 +83,39 @@ chains (v24.40–v24.41: twelve three-bone chains, their turn baked into every t
   halves (walking 7.6 → 5.0 %); the band's and the web's do not move much, the blade's grows (4 → 18 %): the stretch
   is relocated, as it must be (skinning cannot slide cloth), so the question is only where it is least seen. Next:
   wider, smoother handovers (p17: 2–12 cm, 30 passes; p18: 0–8 cm, 60 passes).
+- **Step 2c: photographed with his texture; two more causes found and cured.** The region paint exaggerates; the real
+  look decides. Textured, at the faulty moments (his file / v24.44 / p17 / p18): the DRAPE=2 band hugs the arm in
+  walking (no wing), but stretched strips hang under a raised arm (Charged_Spell_Cast_1 1.8 s) with a skin-coloured gap at
+  his left hip, and a stiff flap stands out at the hip talking. (A first photograph of p17/p18 came out blank: the
+  session's disk was full, 23 MB left, and the browser could not draw — old scratch snapshots cleared, 6.6 GB free.)
+  Two measured causes of strips: (1) THE FOUR-WEIGHT CUT — a point keeps its four largest bone shares, and the band
+  added a fifth and sixth: 9,800 points of his left upper body lost more than 2 % of their weight to the cut (1,157 more
+  than 10 %), against 2,600 in v24.44, and two neighbours cut differently move apart. DRAPEMERGE=1 gives each lost share
+  to the kept bone nearest it at rest (the sleeve bone and the arm, two spine joints, move nearly as one): 30 points left
+  over 2 %. (2) THE SCAN'S FOLDS — the share was set per point by its height off his body, so a fold's crest and trough,
+  2–3 cm apart, took different shares; mesh smoothing reaches only ~2 cm in 30 passes (the scan's edges are 5.5 mm).
+  BANDSIG smooths the field in space first (a Gaussian, 3 or 5 cm). Photographed (v24.44 / p17 / p19 merge / p20 merge +
+  3 cm / p21 merge + 5 cm): p21 hangs in folds from the shoulder in walking, talking, mage_soell_cast and the seated
+  cheer — clearly better than v24.44's wing in each — but in Charged_Spell_Cast_1 the robe's top edge on his upper back
+  was dragged and the bare skin beside it stretched. Measured against v24.44 point by point (drape/drapecmp.mjs): points
+  OFF the shawl moved up to 8.4 cm walking and 11.5 cm in that cast (5,700–7,700 points over 2 mm), the worst on his
+  upper back by the spine (rest −0.04, 1.36, −0.14), 24 cm from the arm's axis but inside the band's 30 cm reach, and
+  "off his body" by the inner-surface test there. So THE REACH (DRAPEREACH, BANDSPINE): only cloth near the arm and nearer
+  it than the spine may follow the sleeve bone, the sleeve's share and the band's alike, the band held inside it again
+  after smoothing; every other point keeps v24.44's weights exactly (to be proven 0.00 cm). Next: p22 (24 cm, 4 cm)
+  and p23 (30 cm, 6 cm).
+- **Step 2d: the reach, proven; and the band made to HANG.** p22 (reach 24 cm, the spine margin 4 cm) and p23 (30 cm,
+  6 cm): the robe's top edge on his back stays where v24.44 has it in the raised-arm cast, and walking, talking, the cast
+  and the cheer keep p21's look. Measured against v24.44 (drapecmp): off the shawl at most 0.19 cm walking, 0.17 talking,
+  0.36 in Charged_Spell_Cast_1 (the drape's own fading edge at his back, region "other"), against 8–11 cm in p21. The
+  four-weight cut outside the reach is v24.44's exactly (2,595 points over 2 %, as before; inside it, none). What still
+  fails: under the raised arm in Charged_Spell_Cast_1 the band's lower part is torn into streaks from the arm to his hip,
+  the scan's fold crevices (baked brown into its texture) opening like skin. Photographed by region: the band rides the
+  arm's swing, so an arm raised forward carries the cloth that hangs BEHIND it up onto its top, and its lower edge is
+  stretched 35 cm to the robe at the hip. Real cloth hanging from an arm swings round it to hang below. So DRAPEHANG: the
+  band rides a bone of its own (DrapeHang), the sleeve bone's turn then a turn about the arm's own axis toward the side
+  gravity hangs it at rest (its rest angle to "down" round the arm kept, so rest is rest: 0.000°), at most HANGMAX,
+  continuous from key to key. First bakes (p24 half, p25 full, fading in from an arm 3° off vertical): it turns the band
+  up to 48° round the arm while WALKING — near vertical, "below the arm" swings round it as the arm passes forward and
+  back — so the hang should start only once the arm is clearly raised (HANGL0/HANGLW: the sine of the arm's angle off
+  vertical; at rest it is 0.51). p26 (from 0.60 over 0.25) and p27 (from 0.55 over 0.30, at most 90°) bake next.

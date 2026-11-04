@@ -121,7 +121,27 @@ const DRAPE = E('DRAPE', 0);
    the torso's axis at that angle and height, measured in 10° and 2 cm bins), from BANDO0 to BANDO0 + BANDOW, and never
    farther than BANDR from the upper arm's axis; smoothed over the mesh (BANDPASS passes), and moved over ring by ring
    from skin as above */
-const BANDO0 = E('BANDO0', 0.03), BANDOW = E('BANDOW', 0.04), BANDR = E('BANDR', 0.30), BANDPASS = E('BANDPASS', 10);
+const BANDO0 = E('BANDO0', 0.03), BANDOW = E('BANDOW', 0.04), BANDR = E('BANDR', 0.30), BANDPASS = E('BANDPASS', 10), BANDSIG = E('BANDSIG', 0);
+/* DRAPEMERGE=1: a drape point keeps four bones, like every point, but the share of each bone it loses goes to the kept
+   bone nearest it (at rest), not spread over all four: the sleeve bone and the arm, or two spine joints, move nearly as
+   one, so the point moves nearly as it would with all of them — where the cut fell differently on two neighbours, they
+   moved apart */
+const DRAPEMERGE = E('DRAPEMERGE', 0);
+/* DRAPEREACH / BANDSPINE: how far the sleeve bone may reach. Only the cloth within DRAPEREACH metres of the upper arm's
+   axis (faded over DRAPEREACHW) and nearer the arm than the spine (by BANDSPINE, faded) may follow it — the sleeve's
+   own share of the arm and the band's share alike — and every other point keeps exactly the weights it had. Without it
+   (p21) the band's smoothing reached his upper back by the spine, 24 cm from the arm: with the arm raised, the robe's
+   top edge there was dragged 8–11 cm and the bare skin beside it stretched */
+const DRAPEREACH = E('DRAPEREACH', 0), DRAPEREACHW = E('DRAPEREACHW', 0.08), BANDSPINE = E('BANDSPINE', 0);
+/* DRAPEHANG=g (0..1) — THE BAND HANGS. The sleeve bone carries the band by the arm's swing, so an arm raised forward
+   lifted the cloth that hangs behind it onto its top, and the band's lower part was stretched in streaks from the arm to
+   his hip (Charged_Spell_Cast_1 1.8 s, the scan's fold crevices opening brown). Real cloth hanging from an arm swings
+   round it to hang below it. So the band rides a bone of its own, DrapeHang: the sleeve bone's turn, then a turn about
+   the arm's own axis (as it points now) that brings the band's side of the arm back toward the side gravity hangs it
+   at rest (its rest angle to "down" round the arm kept, so rest is rest), by share g, at most HANGMAX degrees, and only
+   as far as the arm is off vertical (a near-vertical arm has no "below": the sine of its angle off vertical from HANGL0,
+   faded in over HANGLW). The sleeve itself stays on DrapeArm */
+const DRAPEHANG = E('DRAPEHANG', 0), HANGMAX = E('HANGMAX', 60), HANGL0 = E('HANGL0', 0.05), HANGLW = E('HANGLW', 0.10);
 const segT = (p, a, b) => { const ab = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], ap = [p[0] - a[0], p[1] - a[1], p[2] - a[2]];
   const L2 = ab[0] ** 2 + ab[1] ** 2 + ab[2] ** 2; return Math.max(0, Math.min(1, (ap[0] * ab[0] + ap[1] * ab[1] + ap[2] * ab[2]) / L2)); };
 const segD = (p, a, b) => { const ab = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], ap = [p[0] - a[0], p[1] - a[1], p[2] - a[2]];
@@ -243,6 +263,25 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
     skin.getInverseBindMatrices().setArray(new Float32Array(ibD));
     DR = { node: dnode, j: dj };
     console.log(`  drape: the sleeve bone DrapeArm (joint ${dj}) at his left arm's joint, a child of his left shoulder`);
+    /* DRAPEHANG: the band's own bone, made the same way (rest is the world's own frame) */
+    if (DRAPEHANG > 0 && DRAPE >= 2) {
+      const hnode = doc.createNode('DrapeHang').setTranslation(laN.getTranslation()).setRotation(qLS0.clone().invert().toArray());
+      lsN.addChild(hnode); const hj = skin.listJoints().length; skin.addJoint(hnode); JN.push('DrapeHang');
+      const ibH = Array.from(skin.getInverseBindMatrices().getArray()); ibH.push(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -pa[0], -pa[1], -pa[2], 1);
+      skin.getInverseBindMatrices().setArray(new Float32Array(ibH));
+      Object.assign(DR, { hnode, jh: hj });
+      console.log(`  drape: the band's bone DrapeHang (joint ${hj}), beside it`);
+    }
+  }
+  /* the drape's REACH (see DRAPEREACH above), per group: the cloth near the arm and nearer it than the spine */
+  let drReach = null;
+  if (DR && (DRAPEREACH > 0 || BANDSPINE > 0)) {
+    const LA = JP[JI.LeftArm], LF = JP[JI.LeftForeArm], SPN = ['Hips', 'Spine', 'Spine1', 'Spine2', 'Neck', 'Head'].filter(n => JI[n] !== undefined).map(n => JP[JI[n]]);
+    drReach = new Float32Array(G); let nr = 0;
+    for (let g = 0; g < G; g++) { if (!cloth[g] || skirtG[g]) continue; const p = [gp[3 * g], gp[3 * g + 1], gp[3 * g + 2]]; if (p[1] <= WAIST) continue;
+      const dA = segD(p, LA, LF); let dS = 9; for (let k = 0; k + 1 < SPN.length; k++) dS = Math.min(dS, segD(p, SPN[k], SPN[k + 1]));
+      drReach[g] = (DRAPEREACH > 0 ? sstep((DRAPEREACH - dA) / DRAPEREACHW) : 1) * (BANDSPINE > 0 ? sstep((dS - dA) / BANDSPINE) : 1); if (drReach[g] > 0) nr++; }
+    console.log(`  drape reach: ${nr} cloth positions may follow the sleeve bone (within ${DRAPEREACH || '-'} m of the arm, nearer it than the spine by ${BANDSPINE || '-'} m); every other point keeps v24.44's weights`);
   }
   /* DRAPE=2 · THE BAND's share of the sleeve bone, per group (see BANDO0 above) */
   let bandF = null;
@@ -274,13 +313,33 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
       if (p[1] < Y0 + 0.04 || p[1] > LA[1] + 0.06 || p[0] < 0) continue;
       const dA = segD(p, LA, LF); if (dA >= BANDR) continue;
       const o = Math.hypot(p[0] - tcx, p[2] - tcz) - rAt(p[1], angOf(p[0], p[2]));
-      bandF[g] = sstep((o - BANDO0) / BANDOW) * sstep((BANDR - dA) / 0.06); }
+      bandF[g] = sstep((o - BANDO0) / BANDOW) * sstep((BANDR - dA) / 0.06) * (drReach ? drReach[g] : 1); }
+    /* BANDSIG: first smoothed in space (a Gaussian of BANDSIG metres over the cloth round it), so the crest and the trough
+       of one of the scan's folds, a few centimetres apart but at different heights off his body, take the same share and
+       move as one: per point, they pulled each fold apart into strips */
+    if (BANDSIG > 0) {
+      const R = 2.5 * BANDSIG, ids = [], grid = new Map(), ck = (x, y, z) => `${Math.floor(x / R)},${Math.floor(y / R)},${Math.floor(z / R)}`;
+      for (let g = 0; g < G; g++) { if (!cloth[g] || skirtG[g]) continue; const y = gp[3 * g + 1]; if (y < Y0 || y > LA[1] + 0.12 || gp[3 * g] < -0.05) continue;
+        ids.push(g); const k = ck(gp[3 * g], y, gp[3 * g + 2]); let c = grid.get(k); if (!c) grid.set(k, c = []); c.push(g); }
+      const sm = new Float32Array(ids.length);
+      ids.forEach((g, m) => { const x = gp[3 * g], y = gp[3 * g + 1], z = gp[3 * g + 2], X = Math.floor(x / R), Y = Math.floor(y / R), Z = Math.floor(z / R); let sw = 0, sv = 0;
+        for (let a = -1; a <= 1; a++) for (let b = -1; b <= 1; b++) for (let c = -1; c <= 1; c++) { const cell = grid.get(`${X + a},${Y + b},${Z + c}`); if (!cell) continue;
+          for (const h of cell) { const d2 = (gp[3 * h] - x) ** 2 + (gp[3 * h + 1] - y) ** 2 + (gp[3 * h + 2] - z) ** 2; if (d2 > R * R) continue; const w = Math.exp(-d2 / (BANDSIG * BANDSIG)); sw += w; sv += w * bandF[h]; } }
+        sm[m] = sv / sw; });
+      ids.forEach((g, m) => { bandF[g] = sm[m]; });
+    }
     /* smoothed over the mesh, among the cloth (a band's edge never steps) */
     const tmp = new Float32Array(G);
     for (let it = 0; it < BANDPASS; it++) { for (let g = 0; g < G; g++) { if (!cloth[g] || skirtG[g]) { tmp[g] = bandF[g]; continue; } const m = deg[g + 1] - deg[g]; if (!m) { tmp[g] = bandF[g]; continue; }
         let acc = 0; for (let e = deg[g]; e < deg[g + 1]; e++) acc += bandF[adj[e]]; tmp[g] = 0.5 * bandF[g] + 0.5 * acc / m; } bandF.set(tmp); }
+    /* and held inside the reach again (the smoothing spreads it; a product of smooth fields stays smooth) */
+    if (drReach) for (let g = 0; g < G; g++) bandF[g] *= drReach[g];
     let sF = 0; for (let g = 0; g < G; g++) if (bandF[g] > 0.01) { nb++; sF += bandF[g]; }
     console.log(`  drape band: ${nb} cloth positions ride the sleeve bone by their height off his body (mean share ${(sF / Math.max(1, nb)).toFixed(2)}); torso axis x ${tcx.toFixed(3)} z ${tcz.toFixed(3)}`);
+    /* DRAPEHANG: the band's middle at rest (weighted by its share), whose side of the arm is the side it hangs on */
+    if (DR.jh !== undefined) { let sx = 0, sy = 0, sz = 0, sw = 0;
+      for (let g = 0; g < G; g++) { const w = bandF[g]; if (w <= 0.01) continue; sx += w * gp[3 * g]; sy += w * gp[3 * g + 1]; sz += w * gp[3 * g + 2]; sw += w; }
+      DR.c0 = [sx / sw, sy / sw, sz / sw]; console.log(`  drape hang: the band's middle at rest ${DR.c0.map(x => x.toFixed(3)).join(' ')}`); }
   }
   let nCloth = 0; for (let g = 0; g < G; g++) nCloth += cloth[g];
   /* the set re-bound: the cloth, and the TRUNK's other points (bare chest and back, the necklace) — between the waist and
@@ -375,17 +434,27 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
   };
   /* back to four per vertex */
   const dom = {}, fitSeen = new Uint8Array(G); if (CH) CH.fit = {};
+  const DRAPEDBG = E('DRAPEDBG', 0), dbgSeen = new Uint8Array(DRAPEDBG ? G : 0), dbgH = [0, 0, 0, 0, 0];
   for (let i = 0; i < n; i++) {
     const g = gid[i], o = g * NJ, best = [];
     for (let j = 0; j < NJ; j++) if (A[o + j] > 1e-4) best.push([A[o + j], j]);
     if (CH && env[g]) for (const b of best) if (b[1] === JI.Hips) b[1] = CH.jw;   // the robe's waist rides SkirtWaist, never the pelvis's own tip
     if (CH && skirtG[g]) skirtMix(g, best);
     /* v24.45 DRAPE: a re-bound point's share of the upper arm rides the sleeve bone, moved over ring by ring from skin */
-    if (DR && env[g] && !skirtG[g] && gp[3 * g + 1] > WAIST) { const f = Math.min(1, ring[g] / RING);
-      for (const b of best.slice()) if (b[1] === JI.LeftArm && b[0] > 0) { best.push([b[0] * f, DR.j]); b[0] *= 1 - f; }
+    if (DR && env[g] && !skirtG[g] && gp[3 * g + 1] > WAIST) { const fr = Math.min(1, ring[g] / RING), f = fr * (drReach ? drReach[g] : 1);
+      if (f > 0) for (const b of best.slice()) if (b[1] === JI.LeftArm && b[0] > 0) { best.push([b[0] * f, DR.j]); b[0] *= 1 - f; }
       /* DRAPE=2: and the band's share of the whole point (its height off his body), moved over from skin the same way */
-      if (bandF && bandF[g] > 0) { const fb = bandF[g] * f, tot = best.reduce((s, b) => s + b[0], 0) || 1; for (const b of best) b[0] *= (1 - fb); best.push([fb * tot, DR.j]); } }
-    best.sort((x, y) => y[0] - x[0]); const top = best.slice(0, 4), s = top.reduce((x, y) => x + y[0], 0) || 1;
+      if (bandF && bandF[g] > 0) { const fb = bandF[g] * fr, tot = best.reduce((s, b) => s + b[0], 0) || 1; for (const b of best) b[0] *= (1 - fb); best.push([fb * tot, DR.jh !== undefined ? DR.jh : DR.j]); } }
+    best.sort((x, y) => y[0] - x[0]); let top = best.slice(0, 4);
+    /* v24.45 DRAPEMERGE: a drape point's lost shares go to the nearest kept bone (see DRAPEMERGE above) */
+    if (DRAPEMERGE && DR && best.length > 4 && best.some(b => (b[1] === DR.j || b[1] === DR.jh) && b[0] > 0)) { top = top.map(b => [b[0], b[1]]);
+      const jpos = j => j === DR.j || j === DR.jh ? JP[JI.LeftArm] : (CH && j === CH.jw) ? JP[JI.Hips] : JP[j];
+      for (const d of best.slice(4)) { const pd = jpos(d[1]); if (!pd) continue; let bi = -1, bd = 1e9;
+        top.forEach((k, m) => { const pk = jpos(k[1]); if (!pk) return; const dd = Math.hypot(pd[0] - pk[0], pd[1] - pk[1], pd[2] - pk[2]); if (dd < bd) { bd = dd; bi = m; } });
+        if (bi >= 0) top[bi][0] += d[0]; } }
+    const s = top.reduce((x, y) => x + y[0], 0) || 1;
+    if (DRAPEDBG && env[g] && !skirtG[g] && gp[3 * g] > 0 && gp[3 * g + 1] > WAIST && !dbgSeen[g]) { dbgSeen[g] = 1;
+      const tot = best.reduce((x, y) => x + y[0], 0) || 1, dl = 1 - s / tot; dbgH[dl > 0.2 ? 4 : dl > 0.1 ? 3 : dl > 0.05 ? 2 : dl > 0.02 ? 1 : 0]++; }
     /* v24.41 FIT: a skirt position's rest place, its ORIGINAL weights and the chain bone it mostly rides, kept (every
        few) so a take can have its chains fitted to how his own file moved the robe */
     if (CH && skirtG[g] && !fitSeen[g] && top[0][1] > NJ0) { fitSeen[g] = 1;
@@ -395,13 +464,14 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
     J.setElement(i, top.map(t => t[1])); W.setElement(i, top.map(t => t[0] / s));
     if (env[g]) { const k = JN[top[0][1]]; dom[k] = (dom[k] || 0) + 1; }
   }
+  if (DRAPEDBG) console.log(`  DRAPEDBG left upper body, share dropped by the four-weight cut: <2% ${dbgH[0]}, 2-5% ${dbgH[1]}, 5-10% ${dbgH[2]}, 10-20% ${dbgH[3]}, >20% ${dbgH[4]}`);
   console.log(`  cloth: ${nCloth} of ${G} positions (${n} vertices), and ${nTrunk} more of the trunk; rings ${RING}, diffusion ${RPASS}; waist y ${WAIST.toFixed(3)}`);
   console.log('  re-bound points by main bone now:', Object.entries(dom).sort((a, b) => b[1] - a[1]).map(([k, c]) => `${k} ${c}`).join(', '));
   if (PREVIEW) {
     /* a copy painted by class and main bone (vertex colours), for a photograph of where the cloth was found */
     const pal = { SkirtWaist: [0.62, 0.45, 0.3], Hips: [1, 0.8, 0], Spine: [1, 0.5, 0], Spine1: [1, 0.3, 0.2], Spine2: [0.9, 0.2, 0.4], LeftUpLeg: [0.2, 0.4, 1], RightUpLeg: [0.2, 0.9, 1],
       LeftLeg: [0.2, 0.2, 0.7], RightLeg: [0.1, 0.6, 0.6], LeftArm: [0.1, 0.8, 0.2], RightArm: [0.6, 1, 0.3], LeftShoulder: [0.3, 0.6, 0.3], RightShoulder: [0.5, 0.7, 0.4],
-      LeftForeArm: [0, 0.5, 0], RightForeArm: [0.4, 0.6, 0], Neck: [0.8, 0, 0.8], DrapeArm: [0.1, 0.9, 0.9] };
+      LeftForeArm: [0, 0.5, 0], RightForeArm: [0.4, 0.6, 0], Neck: [0.8, 0, 0.8], DrapeArm: [0.1, 0.9, 0.9], DrapeHang: [0.9, 0.9, 0.1] };
     const col = new Float32Array(n * 4);
     /* a chain's bones by its angle round him (a hue), its upper bone light and its lower dark */
     const skirtCol = nm => { const m = /^Skirt([AB])(\d+)$/.exec(nm || ''); if (!m) return null; const h = (+m[2] / (CH ? CH.length : 12)) * 6, v = m[1] === 'A' ? 1 : 0.55;
@@ -778,20 +848,40 @@ if (DR) {
   /* [the bone's local turn, its world turn]: the shoulder's turn since rest, then the swing from the arm's rest direction
      so carried to the arm's direction now */
   const sleeveAt = () => { const qLS = Qn(lsN), qc = qLS.clone().multiply(qLS0.clone().invert()), r = a0.clone().applyQuaternion(qc), m = Pn(lfN).sub(Pn(laN)).normalize();
-    const R = new Quaternion().setFromUnitVectors(r, m).multiply(qc); return [qLS.clone().invert().multiply(R), R]; };
-  const [, R0] = sleeveAt(), restTurnD = 2 * Math.acos(Math.min(1, Math.abs(R0.w))) * 180 / Math.PI;
+    const R = new Quaternion().setFromUnitVectors(r, m).multiply(qc); return [qLS.clone().invert().multiply(R), R, m, qLS]; };
+  /* DRAPEHANG: the band's side of the arm at rest (from the arm's axis to the band's middle) and its rest angle round the
+     arm from "down" (the world's down less its part along the arm); posed, the band's side as the swing carries it is
+     turned about the arm toward that same angle from the posed "down" — continuous from key to key, at most HANGMAX,
+     by DRAPEHANG, faded out as the arm nears vertical (L, the sine of its angle off vertical, under HANGL0 + HANGLW) */
+  let h0 = null, phi0 = 0; const HM = HANGMAX * Math.PI / 180;
+  if (DR.hnode) { const c = new Vector3(...DR.c0).sub(Pn(laN)); h0 = c.addScaledVector(a0, -c.dot(a0)).normalize();
+    const dp0 = new Vector3(0, -1, 0).addScaledVector(a0, a0.y).normalize(); phi0 = Math.atan2(dp0.clone().cross(h0).dot(a0), dp0.dot(h0)); }
+  const hangAt = (R, m, prevTh) => { const dp = new Vector3(0, -1, 0).addScaledVector(m, m.y), L = dp.length(); if (L < 1e-6) return [R.clone(), prevTh, 0];
+    dp.divideScalar(L); const h = h0.clone().applyQuaternion(R), ht = dp.applyAxisAngle(m, phi0);
+    let th = Math.atan2(h.clone().cross(ht).dot(m), h.dot(ht));
+    if (prevTh !== null) { while (th - prevTh > Math.PI) th -= 2 * Math.PI; while (th - prevTh < -Math.PI) th += 2 * Math.PI; }
+    const thc = Math.max(-HM, Math.min(HM, th)) * DRAPEHANG * sstep((L - HANGL0) / HANGLW);
+    return [new Quaternion().setFromAxisAngle(m, thc).multiply(R), th, thc]; };
+  const [, R0, m0] = sleeveAt(), restTurnD = 2 * Math.acos(Math.min(1, Math.abs(R0.w))) * 180 / Math.PI;
   if (restTurnD > 0.01) throw new Error(`DRAPE: the rest pose bakes to a turn of ${restTurnD.toFixed(3)}°`);
-  const buf = root.listBuffers()[0]; let nt = 0, nk = 0;
+  let restHangD = 0; if (DR.hnode) { const [Rh0] = hangAt(R0, m0, null); restHangD = 2 * Math.acos(Math.min(1, Math.abs(Rh0.w))) * 180 / Math.PI;
+    if (restHangD > 0.01) throw new Error(`DRAPEHANG: the rest pose bakes to a turn of ${restHangD.toFixed(3)}°`); }
+  const buf = root.listBuffers()[0]; let nt = 0, nk = 0, hangMaxD = 0; const hangTake = [];
+  const track = (node, times, out) => { const smp = doc.createAnimationSampler().setInput(doc.createAccessor().setType('SCALAR').setArray(new Float32Array(times)).setBuffer(buf)).setInterpolation('LINEAR')
+      .setOutput(doc.createAccessor().setType('VEC4').setArray(new Float32Array(out)).setBuffer(buf));
+    return [smp, doc.createAnimationChannel().setTargetNode(node).setTargetPath('rotation').setSampler(smp)]; };
   for (const an of root.listAnimations()) {
     const chA = an.listChannels().find(c => c.getTargetNode() === laN && c.getTargetPath() === 'rotation');
     const times = chA ? Array.from(chA.getSampler().getInput().getArray()) : [0, poser.duration(an)];
-    const out = []; let prev = null;
-    for (const t of times) { poser.pose(an, t); const [l] = sleeveAt(); if (prev && prev.dot(l) < 0) l.set(-l.x, -l.y, -l.z, -l.w); prev = l; out.push(l.x, l.y, l.z, l.w); }
-    const smp = doc.createAnimationSampler().setInput(doc.createAccessor().setType('SCALAR').setArray(new Float32Array(times)).setBuffer(buf)).setInterpolation('LINEAR')
-      .setOutput(doc.createAccessor().setType('VEC4').setArray(new Float32Array(out)).setBuffer(buf));
-    an.addSampler(smp).addChannel(doc.createAnimationChannel().setTargetNode(DR.node).setTargetPath('rotation').setSampler(smp)); nt++; nk += times.length;
+    const out = [], outH = []; let prev = null, prevH = null, prevTh = null, tkMax = 0;
+    for (const t of times) { poser.pose(an, t); const [l, R, m, qLS] = sleeveAt(); if (prev && prev.dot(l) < 0) l.set(-l.x, -l.y, -l.z, -l.w); prev = l; out.push(l.x, l.y, l.z, l.w);
+      if (DR.hnode) { const [Rh, th, thc] = hangAt(R, m, prevTh); prevTh = th; tkMax = Math.max(tkMax, Math.abs(thc));
+        const lh = qLS.clone().invert().multiply(Rh); if (prevH && prevH.dot(lh) < 0) lh.set(-lh.x, -lh.y, -lh.z, -lh.w); prevH = lh; outH.push(lh.x, lh.y, lh.z, lh.w); } }
+    const [smp, ch] = track(DR.node, times, out); an.addSampler(smp).addChannel(ch); nt++; nk += times.length;
+    if (DR.hnode) { const [smpH, chH] = track(DR.hnode, times, outH); an.addSampler(smpH).addChannel(chH); hangMaxD = Math.max(hangMaxD, tkMax * 180 / Math.PI); hangTake.push(`${an.getName()} ${(tkMax * 180 / Math.PI).toFixed(0)}°`); }
   }
   console.log(`  drape: the sleeve bone baked into ${nt} takes (${nk} keys; the arm's swing, never its twist); the rest pose bakes to ${restTurnD.toFixed(3)}°`);
+  if (DR.hnode) console.log(`  drape hang: the band's bone baked too (rest ${restHangD.toFixed(3)}°); its largest turn round the arm per take: ${hangTake.join(', ')}`);
 }
 if (PREVIEW) { for (const m of root.listMaterials()) m.setBaseColorTexture(null).setBaseColorFactor([1, 1, 1, 1]); await io.write(PREVIEW, doc); console.log('preview', PREVIEW); }
 else { await io.write(OUT, doc); console.log('wrote', OUT); }
