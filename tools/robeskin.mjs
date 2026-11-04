@@ -88,6 +88,22 @@ const SPINEJ = ['Hips', 'Spine', 'Spine1', 'Spine2'].map(n => JI[n]);
 const sstep = x => { const t = Math.max(0, Math.min(1, x)); return t * t * (3 - 2 * t); };
 const bandW = y => { const BW = E('BANDW', 0.05), cuts = [JP[JI.Spine][1] - E('BANDHS', 0.04), JP[JI.Spine1][1], JP[JI.Spine2][1]];
   const s = cuts.map(c => sstep((y - (c - BW)) / (2 * BW))); return [1 - s[0], s[0] - s[1], s[1] - s[2], s[2]]; };
+/* v24.43 · THE DRAPE ON HIS LEFT ARM. His file bound the cloth round his left upper arm to the arm (92–95 % of it, 8–13 cm
+   from the arm's axis), so it flew out as a wing when the arm lifted; v24.39's envelope (ARMR 0.05, ARMS 0.025) left it
+   5–28 %, and he is rigged with his arms 31° out from his sides, so whenever the arm came down the cloth stayed out where
+   the arm had been: a stiff shelf at the elbow, the forearm passing into it (the v24.42 review, walking and talking).
+   A wider left-arm envelope was tried first and measured (tools/rigstrain.mjs): the diffusion carried the arm into his
+   upper back, which caved again (Talk_with_Hands_Open's back to 0.40 of its depth; 7 % of the trunk in a cast), so the
+   envelope stays as it was. LDRAPE=k instead hands back, AFTER the diffusion, his file's own weights to the cloth that is
+   nearer his left UPPER ARM than his spine and within 14 cm of it (the measure's own test of an arm's point, so no point
+   the trunk measure reads is touched), by share k, faded in from the shoulder joint (LDRAPET0 to LDRAPET0 + LDRAPETW of
+   the arm's length) and across the arm/spine boundary (LDRAPEB metres); unset, nothing changes */
+const LDRAPE = E('LDRAPE', 0), LDRAPET0 = E('LDRAPET0', 0.2), LDRAPETW = E('LDRAPETW', 0.2), LDRAPEB = E('LDRAPEB', 0.03);
+/* Tried and taken back out (masters/v24.43/PLAN.md): the forearm's cloth too (it changed nothing: that cloth lies within
+   14 cm of the upper arm's elbow end already), and a reach of 22 cm instead of 14 (the loose drape 13–22 cm off the arm
+   followed it into his torso when the arm swung: the talking take's back to 0.19 of its depth, 5.5 % of the trunk) */
+const segT = (p, a, b) => { const ab = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], ap = [p[0] - a[0], p[1] - a[1], p[2] - a[2]];
+  const L2 = ab[0] ** 2 + ab[1] ** 2 + ab[2] ** 2; return Math.max(0, Math.min(1, (ap[0] * ab[0] + ap[1] * ab[1] + ap[2] * ab[2]) / L2)); };
 const segD = (p, a, b) => { const ab = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], ap = [p[0] - a[0], p[1] - a[1], p[2] - a[2]];
   const L2 = ab[0] ** 2 + ab[1] ** 2 + ab[2] ** 2, t = Math.max(0, Math.min(1, (ap[0] * ab[0] + ap[1] * ab[1] + ap[2] * ab[2]) / L2));
   return Math.hypot(ap[0] - t * ab[0], ap[1] - t * ab[1], ap[2] - t * ab[2]); };
@@ -249,6 +265,23 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
       for (let j = 0; j < NJ; j++) { let acc = 0; for (let e = deg[g]; e < deg[g + 1]; e++) acc += A[adj[e] * NJ + j]; B[o + j] = 0.5 * A[o + j] + 0.5 * acc / m; }
     }
     const T = A; A = B; B = T;
+  }
+  /* 5 · v24.43 LDRAPE: the cloth on his left upper arm takes his file's own weights back (see LDRAPE above) */
+  if (LDRAPE > 0 && JI.LeftArm !== undefined && JI.LeftForeArm !== undefined) {
+    const LA = JP[JI.LeftArm], LF = JP[JI.LeftForeArm], SP = ['Hips', 'Spine', 'Spine1', 'Spine2', 'Neck'].filter(n => JI[n] !== undefined).map(n => JP[JI[n]]);
+    let nD = 0, sD = 0;
+    for (let g = 0; g < G; g++) {
+      if (!cloth[g]) continue;
+      const p = [gp[3 * g], gp[3 * g + 1], gp[3 * g + 2]];
+      if (p[1] < WAIST + 0.10) continue;
+      const dA = segD(p, LA, LF); if (dA >= 0.14) continue;
+      let dS = 9; for (let k = 0; k + 1 < SP.length; k++) dS = Math.min(dS, segD(p, SP[k], SP[k + 1]));
+      const f = LDRAPE * sstep((dS - dA) / LDRAPEB) * sstep((0.14 - dA) / LDRAPEB) * sstep((segT(p, LA, LF) - LDRAPET0) / LDRAPETW);
+      if (f <= 0) continue;
+      const o = g * NJ; for (let j = 0; j < NJ; j++) A[o + j] = (1 - f) * A[o + j] + f * A0[o + j];
+      nD++; sD += f;
+    }
+    console.log(`  drape: ${nD} cloth positions on his left upper arm take his file's weights back (mean share ${(sD / Math.max(1, nD)).toFixed(2)})`);
   }
   /* v24.40 · a skirt point's weights: below the roots' band the chains (the two either side of it by angle, the upper or
      lower bones by height, blended over the knees' band), above it the trunk's; within HEMRING edges of the shins' skin,

@@ -7314,3 +7314,22 @@ cut (sharing its vertices and maps) when it is small.
   other) first; cutting it is a mesh change, so it goes to Chad.
 - **A before-and-after label is a claim.** The sheets said FIXED over a take whose hem was still drawn to the heel; they
   say NOW. Label a picture with what it is, and say what is still wrong beside it.
+
+## v24.43 — a correction goes where the measure can see it, and after the averaging
+
+- **Cloth on a rigged arm that does not follow the arm stays where the bind pose left it.** Pho is rigged with his arms
+  31° out from his sides; v24.39 gave the drape on his left upper arm to his chest, so whenever the arm came down the
+  cloth stood out where the arm had been — a stiff shelf at the elbow, the forearm passing into it. Measure the share of
+  the cloth that follows a bone, band by band of distance from it, against the original file (his file 92–98 % within
+  13 cm of the arm; v24.42 5–59 %), before deciding the bone's envelope is right.
+- **An envelope spreads with the averaging.** Widening the arm's envelope BEFORE the weights were diffused carried the arm
+  into his upper back, which caved again (the trunk measure: 0.7 % → 7 %). A correction for one region goes in AFTER the
+  averaging, limited by the measure's own test of that region (nearer the arm than the spine, within 14 cm), so no point
+  the measure reads changes — and the measure proves it (18 of 19 takes identical).
+- **Some cloth cannot be skinned well either way.** The loose drape 13–22 cm off his arm swings into his torso when it
+  follows the arm (his file's fault, Chad's biggest complaint) and stands off as a shell when it does not. Linear
+  skinning has no third answer; a hanging-cloth rig does (the robe's chains are one). Say so, rather than tune a
+  weight between two faults.
+- **A fit cannot make a sleeve.** Fitting the robe's chain bones to his file, which wraps cloth round each leg, gave the
+  sword lunge his file's look with the torso fixed (cloth that moves in sheets), but running's raised knee a flat-sided
+  box (cloth that must bend round a leg). Photograph a fit at the take's worst bend before keeping it.
