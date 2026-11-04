@@ -606,7 +606,13 @@ if (UPRIGHT.length) {
 /* v24.40 · THE SKIRT'S TAKES: every take's chains turned at its own keys (the hips' rotation track's times), from the
    pose the take gives the pelvis, thighs and shins — and the rest pose checked to bake to rest */
 if (CH) {
-  const poser = makePoser(root), node = n => joints[JI[n]], Wd = n => poser.world[poser.NI.get(node(n))];
+  /* v24.47 · LEGRIG=1: the legs the robe follows and makes room for are the REAL legs under it (tools/leggraft.mjs bones:
+     a thigh from his hip and a shin from a knee on his shin's own axis, the bones LeftLegGraftUp / LeftLegGraftLow and the
+     right's), not his rig's own thigh and shin (whose knee stands at the front of the robe, 15 cm before his shins). Every
+     rule below reads a leg through node(), so his thigh's and shin's names lead there. Unset, his rig's, as before */
+  const LEGRIG = E('LEGRIG', 0), LG = n => !LEGRIG ? n : n.replace(/^(Left|Right)UpLeg$/, '$1LegGraftUp').replace(/^(Left|Right)Leg$/, '$1LegGraftLow');
+  if (LEGRIG) for (const n of ['LeftUpLeg', 'LeftLeg', 'RightUpLeg', 'RightLeg']) if (JI[LG(n)] === undefined) throw new Error(`LEGRIG: no bone ${LG(n)} (run tools/leggraft.mjs bones first)`);
+  const poser = makePoser(root), node = n => joints[JI[LG(n)]], Wd = n => poser.world[poser.NI.get(node(n))];
   const LEGS = ['Hips', 'LeftUpLeg', 'RightUpLeg', 'LeftLeg', 'RightLeg', 'LeftFoot', 'RightFoot'], M0i = {};
   poser.pose(null, 0);
   for (const n of LEGS) M0i[n] = Wd(n).clone().invert();
