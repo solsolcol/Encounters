@@ -99,6 +99,13 @@ const bandW = y => { const BW = E('BANDW', 0.05), cuts = [JP[JI.Spine][1] - E('B
    the trunk measure reads is touched), by share k, faded in from the shoulder joint (LDRAPET0 to LDRAPET0 + LDRAPETW of
    the arm's length) and across the arm/spine boundary (LDRAPEB metres); unset, nothing changes */
 const LDRAPE = E('LDRAPE', 0), LDRAPET0 = E('LDRAPET0', 0.2), LDRAPETW = E('LDRAPETW', 0.2), LDRAPEB = E('LDRAPEB', 0.03);
+/* v24.45 · LDRAPEY=m: LDRAPE's floor (10 cm above the waist) faded in over the m metres below it, where it was a step. The
+   drape's lowest cloth hangs below the elbow to his hip, and his file binds it to the arm all the way down; LDRAPE handed
+   that back only above the floor, so two points 4 mm apart in height rode the arm and the spine (his file's LeftArm 0.55 /
+   the envelope's Spine 0.92): a tear across the drape's lower edge that v24.44 hid under one stretched web (68x at
+   Talk_with_Hands_Open 1.19 s), and that the hanging band, once that web was gone, opened into shards (with DRAPEISL's
+   creases, what the v24.45 blind review read as his elbow showing through). Unset (0), the step as it was, byte for byte */
+const LDRAPEY = E('LDRAPEY', 0);
 /* Tried and taken back out (masters/v24.43/PLAN.md): the forearm's cloth too (it changed nothing: that cloth lies within
    14 cm of the upper arm's elbow end already), and a reach of 22 cm instead of 14 (the loose drape 13–22 cm off the arm
    followed it into his torso when the arm swung: the talking take's back to 0.19 of its depth, 5.5 % of the trunk) */
@@ -149,6 +156,15 @@ const DRAPEHANG = E('DRAPEHANG', 0), HANGMAX = E('HANGMAX', 60), HANGL0 = E('HAN
    forearm at its cuff; so the sleeve's share of the arm moves over to the twist-free bone only above DRAPETW0 of the
    upper arm's length, back to the arm itself by DRAPETW0 + DRAPETWW (unset, the whole sleeve is twist-free, as before) */
 const DRAPETW0 = E('DRAPETW0', 0), DRAPETWW = E('DRAPETWW', 0.4);
+/* DRAPEISL=r: THE DRAPE'S CREASES ARE CLOTH. The colour test calls a point skin when its texel is dark, and the scan bakes
+   its folds' shadows into the texture, so the deep creases of the drape's lower edge read as skin: as "trunk" they kept
+   the envelope's spine weights while the cloth round them rode the arm, and with the arm out they tore out of their folds
+   as shards, their brown crease texture showing (what the v24.45 blind review read as his elbow through the drape). As
+   the skirt has done since v24.40: inside the drape (above the waist, within r metres of his left upper arm's axis and
+   nearer it than the spine), every patch the colour test called skin that is smaller than DRAPEISLN points is cloth (his
+   own skin is a few patches of many thousands; the skirt's test, no skin outside reaching it, finds nothing here, because
+   the creases run on down the robe below the drape). Unset (0), the colour test's word stands, byte for byte */
+const DRAPEISL = E('DRAPEISL', 0), DRAPEISLN = E('DRAPEISLN', 3000);
 const segT = (p, a, b) => { const ab = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], ap = [p[0] - a[0], p[1] - a[1], p[2] - a[2]];
   const L2 = ab[0] ** 2 + ab[1] ** 2 + ab[2] ** 2; return Math.max(0, Math.min(1, (ap[0] * ab[0] + ap[1] * ab[1] + ap[2] * ab[2]) / L2)); };
 const segD = (p, a, b) => { const ab = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], ap = [p[0] - a[0], p[1] - a[1], p[2] - a[2]];
@@ -279,6 +295,28 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
       Object.assign(DR, { hnode, jh: hj });
       console.log(`  drape: the band's bone DrapeHang (joint ${hj}), beside it`);
     }
+  }
+  /* DRAPEISL (see above): the creases inside the drape, small patches the colour test called skin, are cloth */
+  if (DRAPEISL > 0 && JI.LeftArm !== undefined && JI.LeftForeArm !== undefined) {
+    const LA = JP[JI.LeftArm], LF = JP[JI.LeftForeArm], SPI = ['Hips', 'Spine', 'Spine1', 'Spine2', 'Neck'].filter(n => JI[n] !== undefined).map(n => JP[JI[n]]);
+    const inD = new Uint8Array(G);
+    for (let g = 0; g < G; g++) { const p = [gp[3 * g], gp[3 * g + 1], gp[3 * g + 2]]; if (p[1] <= WAIST) continue;
+      const dA = segD(p, LA, LF); if (dA >= DRAPEISL) continue; let dS = 9; for (let k = 0; k + 1 < SPI.length; k++) dS = Math.min(dS, segD(p, SPI[k], SPI[k + 1]));
+      if (dS > dA) inD[g] = 1; }
+    /* every patch of points the colour test called skin, over the whole mesh, by its size: his skin is a few patches of
+       many thousands (an arm and hand, the head and neck, the legs); a crease is a thin patch of a few hundred */
+    const comp = new Int32Array(G).fill(-1), csize = []; let nc = 0;
+    for (let s = 0; s < G; s++) { if (cloth[s] || comp[s] >= 0) continue; const qd = [s]; comp[s] = nc;
+      for (let h = 0; h < qd.length; h++) { const g = qd[h]; for (let e = deg[g]; e < deg[g + 1]; e++) { const b = adj[e]; if (comp[b] < 0 && !cloth[b]) { comp[b] = nc; qd.push(b); } } }
+      csize.push(qd.length); nc++; }
+    const touch = new Map(); for (let g = 0; g < G; g++) if (inD[g] && !cloth[g]) touch.set(comp[g], (touch.get(comp[g]) || 0) + 1);
+    /* DRAPEDBG=1 (a measure): each such patch's box and middle at rest, and how near it comes to his left hand's joint */
+    if (E('DRAPEDBG', 0)) for (const [c] of touch) { const mn = [9, 9, 9], mx = [-9, -9, -9], mid = [0, 0, 0]; let dh = 9;
+      for (let g = 0; g < G; g++) { if (comp[g] !== c) continue; for (let k = 0; k < 3; k++) { mn[k] = Math.min(mn[k], gp[3 * g + k]); mx[k] = Math.max(mx[k], gp[3 * g + k]); mid[k] += gp[3 * g + k] / csize[c]; }
+        if (JI.LeftHand !== undefined) dh = Math.min(dh, Math.hypot(gp[3 * g] - JP[JI.LeftHand][0], gp[3 * g + 1] - JP[JI.LeftHand][1], gp[3 * g + 2] - JP[JI.LeftHand][2])); }
+      console.log(`    patch ${c}: ${csize[c]} points, ${touch.get(c)} inside; box ${mn.map(x => x.toFixed(2)).join(' ')} .. ${mx.map(x => x.toFixed(2)).join(' ')}; middle ${mid.map(x => x.toFixed(2)).join(' ')}; nearest his left hand's joint ${dh.toFixed(2)} m`); }
+    let nIsl = 0, nSkin = 0; for (let g = 0; g < G; g++) if (inD[g] && !cloth[g]) { if (csize[comp[g]] < DRAPEISLN) { cloth[g] = 1; nIsl++; } else nSkin++; }
+    console.log(`  drape creases: ${nIsl} positions inside the drape the colour test called skin, in patches under ${DRAPEISLN} points, are cloth (${nSkin} in bigger patches stay skin); the patches inside it (points inside / the patch's whole size): ${[...touch].sort((a, b) => csize[b[0]] - csize[a[0]]).slice(0, 24).map(([c, k]) => `${k}/${csize[c]}`).join(' ')}${touch.size > 24 ? ` and ${touch.size - 24} more` : ''}`);
   }
   /* the drape's REACH (see DRAPEREACH above), per group: the cloth near the arm and nearer it than the spine */
   let drReach = null;
@@ -412,10 +450,11 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
     for (let g = 0; g < G; g++) {
       if (!cloth[g]) continue;
       const p = [gp[3 * g], gp[3 * g + 1], gp[3 * g + 2]];
-      if (p[1] < WAIST + 0.10) continue;
+      if (p[1] < WAIST + 0.10 - LDRAPEY) continue;
       const dA = segD(p, LA, LF); if (dA >= 0.14) continue;
       let dS = 9; for (let k = 0; k + 1 < SP.length; k++) dS = Math.min(dS, segD(p, SP[k], SP[k + 1]));
-      const f = LDRAPE * sstep((dS - dA) / LDRAPEB) * sstep((0.14 - dA) / LDRAPEB) * sstep((segT(p, LA, LF) - LDRAPET0) / LDRAPETW);
+      const fy = LDRAPEY > 0 ? sstep((p[1] - (WAIST + 0.10 - LDRAPEY)) / LDRAPEY) : 1;
+      const f = fy * LDRAPE * sstep((dS - dA) / LDRAPEB) * sstep((0.14 - dA) / LDRAPEB) * sstep((segT(p, LA, LF) - LDRAPET0) / LDRAPETW);
       if (f <= 0) continue;
       const o = g * NJ; for (let j = 0; j < NJ; j++) A[o + j] = (1 - f) * A[o + j] + f * A0[o + j];
       nD++; sD += f;

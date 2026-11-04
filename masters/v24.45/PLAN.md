@@ -175,3 +175,33 @@ chains (v24.40–v24.41: twelve three-bone chains, their turn baked into every t
   across his right shoulder blade in the casts, the cross-legged lap. The fix tried: DRAPETW0/DRAPETWW — the sleeve takes
   the arm's twist back toward the elbow, as a real sleeve is held at the shoulder and turns with the forearm at its
   cuff (p28: from half the upper arm over 40 %; p29: from a quarter over 45 %).
+- **Step 5: the shards, measured to their cause, and cured.** The twist was not the cause: the sleeve taking the arm's
+  twist back toward the elbow (p28, p29) changed no picture, and neither did a wider, gentler edge to the drape's reach
+  (p30: DRAPEREACH 0.26 over 0.14; p31: the same, BANDSIG 0.08). Two fixes failed, so the measure was the wrong one
+  (the standing rule): the shards were found instead by the triangles themselves — at Talk_with_Hands_Open 1.19 s every
+  triangle within 14 cm of his left elbow, by how far it stretches, and what its three points ride (the session's
+  shard/find.mjs; painted by stretch and photographed, shard/st-talk.jpg). Two causes, both older than this pass and both
+  in the cloth hanging below his elbow to his hip:
+  (1) LDRAPE's floor (v24.43). It hands his file's own weights back only above WAIST + 0.10 (1.084 m), a step: point
+  197676 at 1.080 m kept the envelope's spine weights (Spine 0.92) while 200960 four millimetres above it took his file's
+  (LeftArm 0.55, LeftForeArm 0.26, LeftUpLeg 0.18). His own file rides the arm smoothly there (9x at worst at that
+  moment). v24.44 tore along that line into one web stretched 68x — part of the wing the drape rig was asked to cure;
+  the hanging band took that web away, and the line showed. robeskin LDRAPEY=m fades the floor in over the m metres
+  below it (0.08: from 1.004 m, still above the waist; unset, the step, byte for byte).
+  (2) The creases. The colour test calls a point skin when its texel is dark, and the scan bakes its folds' shadows
+  into the texture: a 260-point crease at his hip (x 0.24–0.28, y 0.93–1.08 m) read as skin, kept the trunk's spine
+  weights, and tore out of its fold — the brown the reviewer read as his elbow is the crease's own texture. The skirt's
+  rule (a patch no skin outside reaches is cloth) finds nothing here, because the creases run on down the robe; by size
+  it is plain (DRAPEDBG=1 prints each patch): inside the drape the colour test's skin is three patches — 35,674 points
+  (his trunk, head and right arm; 84 inside), 4,090 (his left forearm and hand, 2 cm from the hand's joint; 930
+  inside), and 260 (the crease; 213 inside). robeskin DRAPEISL=r (DRAPEISLN 3000): inside the drape (above the waist,
+  within r of his left upper arm's axis, nearer it than the spine) a patch under 3,000 points is cloth (unset, the
+  colour test's word, byte for byte; proven: the reviewed bake re-made with the new code, sha1 e7030f82 both).
+  Measured at the moment: the worst stretch 35.9x (p27) → 14.0x (p35, both: DRAPEISL=0.18 LDRAPEY=0.08), the last of it
+  at the waist where the band meets the skirt; the floor's fade alone moved the tear (28.6x, p32), the crease rule alone
+  did nothing there (35.5x, p34). Photographed at all seven shard moments (v24.44 / the reviewed file / p35, and p36
+  with a 12 cm fade): p35 shows no brown anywhere they showed it (talking 1.19 s, the crouching cast, the seated cheer),
+  and walking, running, the charged cast's curtain and sit-to-stand keep the reviewed file's look. A 12 cm fade (p36)
+  reaches below the waist and measures the same: 8 cm chosen. Proofs running (every point outside his left upper body
+  against v24.44; the trunk), and a fresh blind reader on the seven moments (the reviewed file / p35, shuffled; the key
+  outside the reader's folder).
