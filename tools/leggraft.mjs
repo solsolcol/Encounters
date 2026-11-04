@@ -8,7 +8,8 @@
 //   (tools/robeskin.mjs on that, with HEMRING=0 — no ring of the robe rides a shin — and LEGRIG=1: the robe follows and
 //    makes room for these legs, not his rig's)
 //   node tools/leggraft.mjs mesh <robe.glb> <donor.glb> <out.glb>       the cut, the donor's legs, their skin
-//   then tools/prepmonk.mjs. <donor.glb>: tools/deflatten.mjs of the donor's scan (masters/v24.47/make.sh).
+//   then tools/robesim.mjs (the robe below his waist as cloth round these legs) and tools/prepmonk.mjs. <donor.glb>:
+//   tools/deflatten.mjs of the donor's scan (masters/v24.47/make.sh).
 //
 // THE KNEE (measured, masters/v24.47/PLAN.md): his rig's knee joints sit at the front of the robe, 14–16 cm in front of
 // the line of his visible shins (which stand within 5 degrees of upright over his ankles); a real knee skinned there pokes
@@ -27,11 +28,14 @@
 //      crosses clipped at it, so each shin ends in a clean ring. His shins' points ride the new shin bone (from his LeftLeg /
 //      RightLeg); their foot weights stay.
 //   2. The openings the join leaves in the robe's underside are capped in ONE texel of the robe's own colour (as
-//      tools/hemcut.mjs does), so nothing is seen through it from below.
+//      tools/hemcut.mjs does), so nothing is seen through it from below — each cap in CAPRINGS rings, so where the cloth
+//      bends a cap it is a smooth dish (a fan of long thin triangles showed as a grey star when he sits).
 //   3. The donor's legs are carried from his rest pose onto these bones, bone by bone (his thigh onto the new thigh, his
 //      shin onto the new shin's axis, lengths matched, the girth scaled to Pho's shin at the cut and, over the last CONFORM
-//      metres, shaped angle by angle to the ring of Pho's shin), cut BAND above Pho's ring and below his shorts (TOPY, capped
-//      in one texel), and joined to Pho's ring by a band of triangles. They ride the new bones by the donor's own weights.
+//      metres, shaped angle by angle to the ring of Pho's shin), cut BAND above Pho's ring and below his shorts (TOPY), each
+//      thigh carried on from there toward the hip THIGHEXT metres in one texel of his skin (widening by THIGHTOP) and
+//      capped (a flat top 10 cm above the knee showed as a cut-off leg when a running knee lifted the robe), and joined to
+//      Pho's ring by a band of triangles. They ride the new bones by the donor's own weights.
 //   4. Their skin is painted into free squares of Pho's colour sheet: each leg unwrapped round its axis in six pieces (front
 //      and back, three heights), painted from the donor's own sheet, its colour matched to Pho's shin (the mean and spread of
 //      each channel in Lab), and the first FEATHER metres above the join fading from the colour of Pho's own ring, so no line
@@ -50,6 +54,9 @@ const KNEEY = E('KNEEY', 0.50);      // the new knee: on the shin's axis at this
 const BAND = E('BAND', 0.015);       // the join: the donor's leg starts this far above Pho's ring
 const TOPY = E('TOPY', 0.60);        // the donor's thigh ends at this height (under his shorts' hem), capped
 const CAPRINGS = Math.max(1, Math.round(E('CAPRINGS', 4)));   // rings in each cap of the robe's openings (1: a fan)
+/* the donor's thigh carried on toward the hip THIGHEXT metres, widening by THIGHTOP: 0.17 m widening 10 % poked through a
+   fold of the robe near the hip in one cast take; 0.11 m and 0.13 m, unwidened, did not, and 0.11 hid the cut as well */
+const THIGHEXT = E('THIGHEXT', 0.11), THIGHTOP = E('THIGHTOP', 1.0);
 const SOFT = E('SOFT', 0.02);        // the soft limit of the new leg's reach (metres before straight)
 const CONFORM = E('CONFORM', 0.06);  // the donor's shin shaped to Pho's ring over this length above the join
 const GIRTH = E('GIRTH', 1.06), GFADE = E('GFADE', 0.12);   // the donor's leg scaled round its axis to Pho's shin at the join, fading over GFADE to GIRTH (his knees and thighs keep their own shape)
@@ -478,14 +485,22 @@ for (const pc of PIECES.values()) { const s = pc.s;
       outTris.push(...ids);
       const pts = tr.ids.map(([k, i], m) => uvIn(pc, tr.th[m], k === 'D' ? DV.v[i] : 0).map(x => x * SH));
       raster(pts, (b0, b1, b2) => { const th = Math.atan2(b0 * Math.sin(tr.th[0]) + b1 * Math.sin(tr.th[1]) + b2 * Math.sin(tr.th[2]), b0 * Math.cos(tr.th[0]) + b1 * Math.cos(tr.th[1]) + b2 * Math.cos(tr.th[2])); return ringCol(s, th); }); } } }
-/* the donor's top: a cap in one texel of his skin there (inside the robe, never seen) */
+/* the donor's top: his thigh carried on up THIGHEXT metres toward the hip in one texel of his skin there (widening by
+   THIGHTOP), then capped — under the robe, seen only when a running knee lifts it, where a flat-topped thigh 10 cm above
+   the knee read as a cut-off leg (THIGHEXT=0: the flat cap alone, as first made) */
 let nTopCap = 0;
 for (const s of SIDES) { if (!donorTop[s].length) continue; const ids = [...new Set(donorTop[s].flat())], c = ids.reduce((a, i) => a.add(V3(DV.P[3 * i], DV.P[3 * i + 1], DV.P[3 * i + 2])), V3(0, 0, 0)).multiplyScalar(1 / ids.length);
   const pc = PIECES.get(`${s}F2`) || PIECES.get(`${s}B2`) || [...PIECES.values()].find(p => p.s === s); const uv = uvIn(pc, pc.half === 'F' ? 0 : Math.PI, (pc.band === 2 ? VB2 : pc.band === 1 ? VB1 : 0) + 0.01);
   const nrm = GR[s].H.clone().sub(GR[s].K1).normalize(), wm = new Map(); for (const i of ids) for (const [j, w] of DV.jw[i]) wm.set(j, (wm.get(j) || 0) + w);
-  const dup = new Map(); for (const i of ids) dup.set(i, outV([DV.P[3 * i], DV.P[3 * i + 1], DV.P[3 * i + 2]], [DV.N[3 * i], DV.N[3 * i + 1], DV.N[3 * i + 2]], uv, DV.jw[i]));
-  const mid = outV(c.toArray(), nrm.toArray(), uv, [...wm]);
-  for (const [a, b] of donorTop[s]) outTris.push(dup.get(b), dup.get(a), mid); nTopCap += donorTop[s].length; }
+  const nRings = THIGHEXT > 0 ? Math.max(1, Math.round(THIGHEXT / 0.03)) : 0, rings = [];
+  for (let k = 0; k <= nRings; k++) { const f = nRings ? k / nRings : 0, m = new Map();
+    for (const i of ids) { const p0 = V3(DV.P[3 * i], DV.P[3 * i + 1], DV.P[3 * i + 2]), rv = p0.clone().sub(c), along = rv.dot(nrm); rv.addScaledVector(nrm, -along);
+      const p = k === 0 ? p0 : c.clone().addScaledVector(nrm, along + THIGHEXT * f).addScaledVector(rv, 1 + (THIGHTOP - 1) * f), nr = k === 0 ? [DV.N[3 * i], DV.N[3 * i + 1], DV.N[3 * i + 2]] : rv.clone().normalize().toArray();
+      m.set(i, outV(p.toArray(), nr, uv, DV.jw[i])); }
+    rings.push(m); }
+  for (let k = 0; k < nRings; k++) for (const [a, b] of donorTop[s]) { const A0 = rings[k].get(a), B0 = rings[k].get(b), A1 = rings[k + 1].get(a), B1 = rings[k + 1].get(b); outTris.push(B0, A0, A1, B0, A1, B1); }
+  const mid = outV(c.clone().addScaledVector(nrm, THIGHEXT).toArray(), nrm.toArray(), uv, [...wm]), top = rings[nRings];
+  for (const [a, b] of donorTop[s]) outTris.push(top.get(b), top.get(a), mid); nTopCap += donorTop[s].length * (2 * nRings + 1); }
 /* each piece's paint grown into its margin (bilinear reach, and the halving at prep), and the normal sheet flat under it */
 const grow = (rect) => { const [x0, y0, w, h] = rect; for (let pass = 0; pass < MARGIN; pass++) { const add = [];
     for (let y = y0; y < y0 + h; y++) for (let x = x0; x < x0 + w; x++) { if (painted[y * SH + x]) continue; let c = [0, 0, 0], k = 0;

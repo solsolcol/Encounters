@@ -195,3 +195,47 @@ magenta pixels counted. It saw what the numbers did not: three takes went from a
   (robesim DRAPETAKES).
 The robe's caps (where his shins left its underside) were a fan of long thin triangles that showed as a grey star when
 he sits; they are made of rings now (leggraft CAPRINGS 4).
+
+## Chad's words, later the same evening (4 Nov 2026), verbatim
+
+> do you not see the problem here
+
+(With the picture of the saved file, v24.46, running at 0.47 s, from his back and his right.)
+
+> there are still so many problems and issues with disembodied legs and parts, or cloth and body clipping into each
+> other, and so many other issues
+
+Answered: he is right. In his picture a bare thigh hangs out of the robe's back with a ragged edge and nothing under it;
+from his right the kicked leg comes out through the side of the robe, goes back into it, and its heel shows through the
+cloth as a skin smear; the hem is torn into strips and holes with the robe's white inside faces showing; the standing
+foot has torn cloth round it. And the measure this pass had been reporting (the thigh and knee pixels, step 8) cannot see
+a calf through the cloth, a floating piece of leg or torn cloth, so its "17 of 19 takes" was withdrawn. The new file at
+the same moment was shown to him beside it, broken too (the calf through a hole in the robe's back, torn flaps): the
+cloth had not solved running's heel kick, and sitting cross-legged on the floor was still wrong.
+
+Put to him (the robe is one thick piece fused to his body; it tears or lets a leg through wherever a leg swings hard
+under it): only the takes chapter 3 needs / every take, running too / calmer running / a new model. **His pick: "Calmer
+running"** — every take worked on, and his running changed to a jog with a lower back heel, so his calf never sweeps
+through the back of the robe (a change to the motion itself, not just the cloth).
+
+## The checks from now on (what he named, counted, not just thighs)
+
+Every frame checked is looked at full size by me, and then by a second reader; and every frame is counted for:
+- FLOATING LEG PIECES: the model drawn flat (thigh, knee, shin and foot each its own colour, the robe white, the rest of
+  him grey), every island of leg colour seen that does not reach a foot — a leg cut off in mid-air, or seen through a
+  hole;
+- A LEG THROUGH THE CLOTH: leg colour with robe colour below it in the same column — a leg seen inside the robe's area,
+  through a hole or poking out of the cloth above the hem;
+- TORN CLOTH: the robe's triangles stretched past 3x their rest length with an edge over 4 cm — the strips, flaps and
+  flat sheets.
+Each check is proven on the saved file at the moment in his picture (it must flag what he saw) before it is trusted,
+and run on all 180 moments x 6 sides for the before and for every after.
+
+## The steps from his pick
+
+10. The checks above (tools/probes/pholegs.mjs), proven on his picture's moment.
+11. Calmer running: the back heel's lift taken down — his knee's bend in the swing capped softly, the stance and every
+    footfall left as they are — measured (the heel's highest point behind, before and after) and photographed.
+12. Every take through the checks; each fault traced and cured, the sword lunge and the floor sit included.
+13. Every shot looked at by me at full size, then a blind reader with the same shots.
+14. The record: the recipe, the proofs, the docs, the commit, and the report to him with what passes and what does not.

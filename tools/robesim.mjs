@@ -15,16 +15,22 @@
 //   3. Every take SIMULATED (position-based): gravity and damping; a spring toward the target (KTARGET a step); stretch,
 //      shear and bend constraints whose lengths are the target's own, so the cloth keeps the robe's shape and only spreads
 //      a push to its neighbours (a stretch resisted fully, a squeeze at KCOMP); each particle kept within its MOTION
-//      DISTANCE of its target (0 at the waist, growing to MAXD at the hem); and, last, the COLLIDERS: each real leg (the
-//      new thigh and shin bones of tools/leggraft.mjs, as thick as the grafted leg measures along its length, plus
-//      MARGIN, and, where the robe lies in layers, as deep as its layers go under the cloth's surface there: DEPTH), the
-//      feet and heels, the floor. A take starts on its first frame's target, held HOLD seconds; a take that
-//      ends where it began is run twice and the second pass kept, its last LOOPBLEND seconds eased into its first frame.
-//   4. BAKED as cloth bones: a BA x BR grid of the particles, each bone a child of the waist bone standing on its particle
-//      and turned to lie along the cloth there (round the ring, up the column), keyed at FPS and thinned to the keys that
-//      matter (a key is dropped only where the bone's place and turn between the keys kept stay within POSTOL metres and
-//      ROTTOL degrees of it). (Chains down each column with turns alone were tried: a cloth pushed out by a knee is
-//      longer than at rest, and the chains' bones, each its rest length from the one above, fell up to 4.8 cm short of it.)
+//      DISTANCE of its target (0 at the waist, growing to MAXD at the hem) — a target never inside a leg and never pulling
+//      the cloth across one; and, last, the COLLIDERS: each real leg (the new thigh and shin bones of tools/leggraft.mjs,
+//      as thick as his legs' own points measure in that pose, plus MARGIN, and, where the robe lies in layers, as deep as
+//      its layers go under the cloth's surface there: DEPTH; a knee bent shut filled from hip to ankle: KNEEFOLD), the
+//      feet and heels, the floor. A take starts from the robe hanging at rest, carried into its first frame by his legs
+//      (SETTLE) and held (HOLD); a take that ends where it began runs until the cloth has settled into it (LOOPSECS) and
+//      is closed by spreading what its end misses its start by over its last LOOPBLEND seconds. Per take: the robe's shape
+//      may be taken from another robe file (TARGETFROM, TARGETTAKES), legs folded on the floor draped (DRAPETAKES), and
+//      the hem's motion distance set to its own MAXD (MAXDTAKES).
+//   4. BAKED as cloth bones: a BA x BR grid of the particles, each bone a child of the waist bone, placed by a least-squares
+//      fit to the whole cloth (LSFIT) and turned to lie along the cloth there (round the ring, up the column; the robe's
+//      own turn where the cloth folds over itself), keyed at FPS and thinned to the keys that matter (a key is dropped
+//      only where the bone's place and turn between the keys kept stay within POSTOL metres and ROTTOL degrees of it), the
+//      values on power-of-two grids (QT, QR, QTIME). (Chains down each column with turns alone were tried: a cloth pushed
+//      out by a knee is longer than at rest, and the chains' bones, each its rest length from the one above, fell up to
+//      4.8 cm short of it.)
 //   5. The robe's skirt points RE-SKINNED to them: the share each had on the chains spread bilinearly over the four bones
 //      round it (its other weights kept). The chains then drive nothing, and their tracks are dropped.
 // Nothing above the waist, nothing outside the skirt's points, and no bone of his own is touched.
@@ -40,6 +46,9 @@ const NA = E('NA', 48), NR = E('NR', 28), BA = E('BA', 16), BR = E('BR', 10), FP
 const DT = 1 / E('HZ', 120), ITER = E('ITER', 8), DAMP = E('DAMP', 0.985), GRAV = E('GRAV', 9.81);
 const KST = E('KST', 1), KCOMP = E('KCOMP', 0.2), KSH = E('KSH', 0.5), KBE = E('KBE', 0.1);   // stretch, a squeeze's share of it, shear, bend
 const MAXD = E('MAXD', 0.10), MAXP = E('MAXP', 1.5), KTARGET = E('KTARGET', 0.04), KNN = E('KNN', 8);
+/* MAXDTAKES=<take>:<metres>,...: a take's own MAXD at the hem (running's heel kick: the robe kept nearer its own shape,
+   whose chains follow the real legs, covers his thigh where a freer cloth swung clear of it); unset, every take MAXD */
+const MAXDTAKES = new Map((process.env.MAXDTAKES || '').split(',').filter(Boolean).map(x => { const [k, v] = x.split(':'); if (!(Number(v) >= 0)) throw new Error(`robesim: MAXDTAKES: ${x}`); return [k, Number(v)]; }));
 const KNEEFOLD = E('KNEEFOLD', 75), MARGIN = E('MARGIN', 0.02), SETTLE = E('SETTLE', 0.8), HOLD = E('HOLD', 0.3), LOOPBLEND = E('LOOPBLEND', 0.2), LOOPSECS = E('LOOPSECS', 1.5), ROOTY = E('ROOTY', 0.93);
 const POSTOL = E('POSTOL', 0.003), ROTTOL = E('ROTTOL', 1) * Math.PI / 180, QT = E('QT', 2 ** -12), QR = E('QR', 2 ** -15), QTIME = E('QTIME', 2 ** -12), DEPTH = E('DEPTH', 1), DEPTHMAX = E('DEPTHMAX', 0.05);
 const DUMP = process.env.SIMDUMP || '';   // 'Take@t': the particles, their targets and the colliders then, as JSON to SIMDUMPOUT
@@ -192,6 +201,23 @@ const capR = (x, y, z, A, B, pr, extra) => { const abx = B.x - A.x, aby = B.y - 
   return Math.hypot(x - A.x - abx * t, y - A.y - aby * t, z - A.z - abz * t) - (radAt(pr, t) + extra); };   // < 0 inside
 const liftY = (x, y, z, A, B, pr, extra) => { if (capR(x, y, z, A, B, pr, extra) >= 0) return y; let lo = 0, hi = A.distanceTo(B) + 2 * (radAt(pr, 0) + radAt(pr, 1) + extra) + 0.05;
   for (let it = 0; it < 22; it++) { const m = 0.5 * (lo + hi); if (capR(x, y + m, z, A, B, pr, extra) < 0) lo = m; else hi = m; } return y + hi; };
+/* and in those takes the robe's own shape is first LAID OVER his legs, as a cloth laid on them: each target in front of his
+   hips that a level leg holds inside it lifted straight up out of it, and the lift spread to the targets round it
+   (LIFTSPREAD passes, never less than its own), so the robe rises over his lap and knees smoothly instead of being pushed
+   aside and crumpling */
+const LIFTSPREAD = E('LIFTSPREAD', 6), DRAPEUNDER = E('DRAPEUNDER', 0), DRAPEKIN = E('DRAPEKIN', 0), DRAPEFREE = E('DRAPEFREE', 0);   // DRAPEFREE=k: below row k the draped robe is free cloth (no pull, no motion distance)
+const liftTargets = C => { const d0 = new Float64Array(NP), hp = posOf(Wj(ji('Hips'))), fw = ['Left', 'Right'].reduce((a, s2) => a.add(posOf(Wj(gL[s2])).sub(posOf(Wj(gU[s2])))), V3(0, 0, 0)).setY(0).normalize();
+  for (let p = 0; p < NP; p++) { if (pinned[p]) continue; const o = 3 * p; if ((Tg[o] - hp.x) * fw.x + (Tg[o + 2] - hp.z) * fw.z < 0.05) continue; let y = Tg[o + 1];
+    for (const [A, B, pr] of C) { if (!pr || !level(A, B)) continue; const r = MARGIN + depth[p];
+      /* DRAPEUNDER: a target UNDER a level leg (within its width seen from above) counts as held by it too */
+      if (DRAPEUNDER) { const abx = B.x - A.x, abz = B.z - A.z, L2 = abx * abx + abz * abz, t = clamp01(L2 > 1e-12 ? ((Tg[o] - A.x) * abx + (Tg[o + 2] - A.z) * abz) / L2 : 0), qx = A.x + abx * t, qz = A.z + abz * t, qy = A.y + (B.y - A.y) * t;
+        const rr = radAt(pr, t) + r, h = Math.hypot(Tg[o] - qx, Tg[o + 2] - qz); if (h < rr && Tg[o + 1] < qy) { y = Math.max(y, qy + Math.sqrt(Math.max(0, rr * rr - h * h))); continue; } }
+      y = Math.max(y, liftY(Tg[o], Tg[o + 1], Tg[o + 2], A, B, pr, r)); }
+    d0[p] = y - Tg[o + 1]; }
+  let d = d0; for (let pass = 0; pass < LIFTSPREAD; pass++) { const nd = new Float64Array(NP);
+    for (let c = 0; c < NA; c++) for (let j = 0; j < NR; j++) { const p = pid(c, j); if (pinned[p]) continue; nd[p] = Math.max(d0[p], 0.25 * (d[pid(c - 1, j)] + d[pid(c + 1, j)] + d[pid(c, Math.max(0, j - 1))] + d[pid(c, Math.min(NR - 1, j + 1))])); }
+    d = nd; }
+  for (let p = 0; p < NP; p++) Tg[3 * p + 1] += d[p]; };
 const projectTargets = C => { Tp.set(Tg);
   for (let p = 0; p < NP; p++) { if (pinned[p]) continue; const o = 3 * p;
     for (const [A, B, pr] of C) { if (!pr) continue; const abx = B.x - A.x, aby = B.y - A.y, abz = B.z - A.z, L2 = abx * abx + aby * aby + abz * abz;
@@ -211,7 +237,8 @@ for (let c = 0; c < NA; c++) for (let j = 0; j < NR; j++) { addC(pid(c, j), pid(
   addC(pid(c, j), pid(c + 2, j), KBE); if (j + 2 < NR) addC(pid(c, j), pid(c, j + 2), KBE); }
 const NC = CON.length, CA = new Int32Array(CON.map(x => x[0])), CBb = new Int32Array(CON.map(x => x[1])), CD = new Float64Array(NC), CK = new Float64Array(CON.map(x => x[2]));
 const pinned = new Uint8Array(NP); for (let c = 0; c < NA; c++) pinned[pid(c, 0)] = 1;
-const maxD = new Float64Array(NP); for (let c = 0; c < NA; c++) for (let j = 0; j < NR; j++) maxD[pid(c, j)] = MAXD * Math.pow(j / (NR - 1), MAXP);
+const maxD = new Float64Array(NP), setMaxD = m => { for (let c = 0; c < NA; c++) for (let j = 0; j < NR; j++) maxD[pid(c, j)] = m * Math.pow(j / (NR - 1), MAXP); };
+setMaxD(MAXD);
 
 const toeOf = s => ['ToeBase', 'Toe_End'].map(x => s + x).filter(x => names.includes(x)).map(ji);
 /* each real leg's thickness in THIS pose: his legs' own points (every other one, riding the new thigh and shin bones by
@@ -280,12 +307,14 @@ log(`robesim: ${moved} skirt points re-skinned to the cloth (their share on the 
 /* ------------------------------------------------------------------ the simulation */
 const X = new Float64Array(NP * 3), Xp = new Float64Array(NP * 3);
 const step = C => {
-  const g = GRAV * DT * DT; projectTargets(C);
+  const g = GRAV * DT * DT; if (draping) liftTargets(C);
+  if (draping && DRAPEKIN) { X.set(Tg); Xp.set(Tg); return; }   // DRAPEKIN: the laid robe as it is, no cloth moving
+  projectTargets(C);
   for (let p = 0; p < NP; p++) { const o = 3 * p;
     if (pinned[p]) { X[o] = Xp[o] = Tg[o]; X[o + 1] = Xp[o + 1] = Tg[o + 1]; X[o + 2] = Xp[o + 2] = Tg[o + 2]; continue; }
     const vx = (X[o] - Xp[o]) * DAMP, vy = (X[o + 1] - Xp[o + 1]) * DAMP, vz = (X[o + 2] - Xp[o + 2]) * DAMP;
     Xp[o] = X[o]; Xp[o + 1] = X[o + 1]; Xp[o + 2] = X[o + 2]; X[o] += vx; X[o + 1] += vy - g; X[o + 2] += vz;
-    X[o] += (Tp[o] - X[o]) * KTARGET; X[o + 1] += (Tp[o + 1] - X[o + 1]) * KTARGET; X[o + 2] += (Tp[o + 2] - X[o + 2]) * KTARGET; }
+    if (!(draping && DRAPEFREE && Math.floor(p / NA) > DRAPEFREE)) { X[o] += (Tp[o] - X[o]) * KTARGET; X[o + 1] += (Tp[o + 1] - X[o + 1]) * KTARGET; X[o + 2] += (Tp[o + 2] - X[o + 2]) * KTARGET; } }
   for (let ci = 0; ci < NC; ci++) { const a = 3 * CA[ci], b = 3 * CBb[ci]; CD[ci] = Math.hypot(Tg[b] - Tg[a], Tg[b + 1] - Tg[a + 1], Tg[b + 2] - Tg[a + 2]); }   // the target's own lengths
   for (let it = 0; it < ITER; it++) {
     for (let ci = 0; ci < NC; ci++) { const a = CA[ci], b = CBb[ci], oa = 3 * a, ob = 3 * b, dx = X[ob] - X[oa], dy = X[ob + 1] - X[oa + 1], dz = X[ob + 2] - X[oa + 2], d = Math.sqrt(dx * dx + dy * dy + dz * dz) || 1e-9;
@@ -293,7 +322,7 @@ const step = C => {
       X[oa] += dx * f * wa; X[oa + 1] += dy * f * wa; X[oa + 2] += dz * f * wa; X[ob] -= dx * f * wb2; X[ob + 1] -= dy * f * wb2; X[ob + 2] -= dz * f * wb2; }
     for (let p = 0; p < NP; p++) { if (pinned[p]) continue; const o = 3 * p;
       { const dx = X[o] - Tp[o], dy = X[o + 1] - Tp[o + 1], dz = X[o + 2] - Tp[o + 2], L = Math.sqrt(dx * dx + dy * dy + dz * dz);   // the motion distance
-        if (L > maxD[p]) { const s = maxD[p] / L; X[o] = Tp[o] + dx * s; X[o + 1] = Tp[o + 1] + dy * s; X[o + 2] = Tp[o + 2] + dz * s; } }
+        if (L > maxD[p] && !(draping && DRAPEFREE && Math.floor(p / NA) > DRAPEFREE)) { const s = maxD[p] / L; X[o] = Tp[o] + dx * s; X[o + 1] = Tp[o + 1] + dy * s; X[o + 2] = Tp[o + 2] + dz * s; } }
       for (const [A, B, pr, ra, rb] of C) { const abx = B.x - A.x, aby = B.y - A.y, abz = B.z - A.z, L2 = abx * abx + aby * aby + abz * abz;
         let t = L2 > 1e-12 ? ((X[o] - A.x) * abx + (X[o + 1] - A.y) * aby + (X[o + 2] - A.z) * abz) / L2 : 0; t = Math.max(0, Math.min(1, t));
         const qx = A.x + abx * t, qy = A.y + aby * t, qz = A.z + abz * t, dx = X[o] - qx, dy = X[o + 1] - qy, dz = X[o + 2] - qz, d = Math.sqrt(dx * dx + dy * dy + dz * dz), r = pr ? radAt(pr, t) + MARGIN + depth[p] : ra + (rb - ra) * t;
@@ -354,7 +383,9 @@ const thin = (times, Ts, Qs) => { const keep = new Uint8Array(times.length); kee
 let dumpTake = null, dumpT = 0; if (DUMP) { const [a, b] = DUMP.split('@'); dumpTake = a; dumpT = +b; }
 const buf = root.listBuffers()[0]; let nKeys = 0, nKept = 0; const stats = [];
 const ONLY = process.env.ONLY ? process.env.ONLY.split(',') : null;   // a trial run: only these takes simulated (the others keep no cloth tracks)
+for (const k of MAXDTAKES.keys()) if (!root.listAnimations().some(a => a.getName() === k)) throw new Error(`robesim: MAXDTAKES: no take ${k}`);
 for (const an of root.listAnimations()) { const dur = duration(an); if (ONLY && !ONLY.includes(an.getName())) continue; draping = DRAPETAKES.includes(an.getName());
+  setMaxD(MAXDTAKES.has(an.getName()) ? MAXDTAKES.get(an.getName()) : MAXD);
   /* a take that ends as it began (his feet, knees and hips within 3 cm) loops: run twice, the second pass kept */
   const ends = t => { pose(an, t); return ['Hips', 'LeftFoot', 'RightFoot'].map(x => posOf(Wj(ji(x)))).concat(['Left', 'Right'].map(s => posOf(Wj(gL[s])))); };
   const e0 = ends(0), e1 = ends(dur), loops = e0.every((p, k) => p.distanceTo(e1[k]) < 0.03);
