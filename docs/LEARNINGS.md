@@ -7456,3 +7456,8 @@ cut (sharing its vertices and maps) when it is small.
   ride in one file, read the reader's notes per take for which change each verdict is about, measure that the changes
   touch disjoint points (here 23,865 on his upper right side against 1,088 at the shin join, and no shared motion), and
   ship the reviewed parts that won — the composed file is then exactly what was read.
+- **A leg that ends in mid-air is a severed leg, however tidy its end.** I photographed the cut shins in walking and
+  running, wrote the stump down only for running, and called walking's trailing leg "mostly fine" because its cap was
+  clean and skin-coloured. The blind reader called it the worst fault anywhere, and Chad asked how it could have been
+  missed. Judge a body by what a viewer will call it (severed, floating, cut off), not by whether its edge is neat, and
+  never put a version that shows it to him as an option, however it is worded.
