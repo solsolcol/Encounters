@@ -159,3 +159,19 @@ chains (v24.40–v24.41: twelve three-bone chains, their turn baked into every t
   and the only red on his body itself, by his right shoulder blade, is the same in both files. The torso is as v24.44.
   Before and after for Chad (his file / v24.44 / v24.45): masters/v24.45/shots/pho-drape-arm-down.jpg (walking 0.8 s,
   talking with hands open 2.3 s) and pho-drape-arm-raised.jpg (Charged_Spell_Cast_1 1.8 s, mage_soell_cast 0.5 s).
+- **Step 4: the blind review of every take, and what it found.** A fresh reader, given only the 19 sheets (his file /
+  VERSION A / VERSION B, the two reworks shuffled per take by a sha1 of the take's name; the key now in
+  masters/v24.45/review-key.txt), read every sheet with zoomed crops. Decoded: the new file against his file 14 better,
+  2 the same, 3 worse (talking with hands open, the hand on the hip slightly, walking); v24.44 against his file 14 / 1 /
+  4; the new file against v24.44: better in 9 (2 clearly: the hand on the hip, mage_soell_cast_5), the same in 7, worse
+  in 3 (talking with hands open clearly; Charged_Spell_Cast_1 and mage_soell_cast_3 slightly). Less decisive than my
+  own pictures of the five faulty moments said — I had photographed the moments I had fixed. And one fault the new file
+  alone has, in five takes: HIS LEFT ELBOW OR FOREARM SHOWS THROUGH THE DRAPE'S LOWER EDGE (the crouching cast 0.8 s,
+  running 0.44 s, the seated cheer 1.87 s, sit-to-stand 4.3 s, talking with hands open 1.19 s, where the cloth at the
+  elbow splits into shards with skin between). My regression: the twist-free sleeve. His upper arm is turned 30–50°
+  about its own axis in most takes, a bent elbow turns with it, and the sleeve's hem no longer does. Shared by both
+  reworks and not this pass's (every point off his left upper body unchanged): a notch with stretched strands at the
+  chest wrap under his RIGHT arm in most takes, a stiff corner standing on his left shoulder in a few, a crack line
+  across his right shoulder blade in the casts, the cross-legged lap. The fix tried: DRAPETW0/DRAPETWW — the sleeve takes
+  the arm's twist back toward the elbow, as a real sleeve is held at the shoulder and turns with the forearm at its
+  cuff (p28: from half the upper arm over 40 %; p29: from a quarter over 45 %).

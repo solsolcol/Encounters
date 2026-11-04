@@ -142,6 +142,13 @@ const DRAPEREACH = E('DRAPEREACH', 0), DRAPEREACHW = E('DRAPEREACHW', 0.08), BAN
    as far as the arm is off vertical (a near-vertical arm has no "below": the sine of its angle off vertical from HANGL0,
    faded in over HANGLW). The sleeve itself stays on DrapeArm */
 const DRAPEHANG = E('DRAPEHANG', 0), HANGMAX = E('HANGMAX', 60), HANGL0 = E('HANGL0', 0.05), HANGLW = E('HANGLW', 0.10);
+/* DRAPETW0 / DRAPETWW — THE SLEEVE TAKES THE TWIST BACK TOWARD THE ELBOW. A blind reader of every take found his left elbow
+   showing through the drape's lower edge in five takes of the twist-free sleeve (the crouching cast, running, the seated
+   cheer, sit-to-stand, talking with hands open): his upper arm is turned 30–50° about its own axis in most takes, and a
+   bent elbow turned with it while the sleeve's hem did not. A real sleeve is held at the shoulder and turns with the
+   forearm at its cuff; so the sleeve's share of the arm moves over to the twist-free bone only above DRAPETW0 of the
+   upper arm's length, back to the arm itself by DRAPETW0 + DRAPETWW (unset, the whole sleeve is twist-free, as before) */
+const DRAPETW0 = E('DRAPETW0', 0), DRAPETWW = E('DRAPETWW', 0.4);
 const segT = (p, a, b) => { const ab = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], ap = [p[0] - a[0], p[1] - a[1], p[2] - a[2]];
   const L2 = ab[0] ** 2 + ab[1] ** 2 + ab[2] ** 2; return Math.max(0, Math.min(1, (ap[0] * ab[0] + ap[1] * ab[1] + ap[2] * ab[2]) / L2)); };
 const segD = (p, a, b) => { const ab = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], ap = [p[0] - a[0], p[1] - a[1], p[2] - a[2]];
@@ -443,7 +450,9 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
     if (CH && env[g]) for (const b of best) if (b[1] === JI.Hips) b[1] = CH.jw;   // the robe's waist rides SkirtWaist, never the pelvis's own tip
     if (CH && skirtG[g]) skirtMix(g, best);
     /* v24.45 DRAPE: a re-bound point's share of the upper arm rides the sleeve bone, moved over ring by ring from skin */
-    if (DR && env[g] && !skirtG[g] && gp[3 * g + 1] > WAIST) { const fr = Math.min(1, ring[g] / RING), f = fr * (drReach ? drReach[g] : 1);
+    if (DR && env[g] && !skirtG[g] && gp[3 * g + 1] > WAIST) { const fr = Math.min(1, ring[g] / RING);
+      const tw = DRAPETW0 > 0 ? 1 - sstep((segT([gp[3 * g], gp[3 * g + 1], gp[3 * g + 2]], JP[JI.LeftArm], JP[JI.LeftForeArm]) - DRAPETW0) / DRAPETWW) : 1;
+      const f = fr * (drReach ? drReach[g] : 1) * tw;
       if (f > 0) for (const b of best.slice()) if (b[1] === JI.LeftArm && b[0] > 0) { best.push([b[0] * f, DR.j]); b[0] *= 1 - f; }
       /* DRAPE=2: and the band's share of the whole point (its height off his body), moved over from skin the same way */
       if (bandF && bandF[g] > 0) { const fb = bandF[g] * fr, tot = best.reduce((s, b) => s + b[0], 0) || 1; for (const b of best) b[0] *= (1 - fb); best.push([fb * tot, DR.jh !== undefined ? DR.jh : DR.j]); } }
