@@ -34,11 +34,35 @@
 #     band round the arm while he walked (below a hanging arm is no one side). The band's turn round the arm per take:
 #     walking 2°, talking 0°, the hand on the hip 1°, the cheer 0°, the other sits 10–31°, the shout 31°, running 41°, the
 #     casts 9–79°, the slash 86°.
+#   LDRAPEY=0.08 DRAPEISL=0.18 — THE SHARDS AT HIS ELBOW (the blind review below found them: two causes, both older than
+#     this pass, in the cloth hanging below his elbow to his hip). LDRAPEY fades v24.43's LDRAPE floor in over the 8 cm
+#     below it, where it was a step: points 4 mm apart rode the arm and the spine, v24.44 tore there into one web stretched
+#     68x (part of its wing), and once the band took that web away the line showed. DRAPEISL: inside the drape (above the
+#     waist, within 18 cm of his left upper arm's axis, nearer it than the spine) a patch the colour test called skin that
+#     is smaller than 3,000 points is cloth — the scan bakes its folds' shadows into the texture, and a 260-point crease at
+#     his hip had kept the trunk's weights and torn out of its fold, its brown texture read as his elbow. His own skin there
+#     is two patches, 4,090 points (his left forearm and hand) and 35,674 (his trunk, head and right arm): still skin.
 #
-# WHAT IT MEASURES (his file's skeleton, every take at 5 fps, against v24.44's file — drape/drapecmp.mjs in the session):
-#   every point outside his left upper body's cloth 0.000 mm in all nineteen takes; the rest of that cloth, the drape's own
-#   fading edge at his back, at most 0.6 cm. The rest pose bakes to 0.000° for both new bones. The trunk (tools/rigstrain.mjs)
-#   and the review: see THE REVIEW below.
+# WHAT IT MEASURES (his file's skeleton, every take at 5 fps, against v24.44's file — drape/drapecmp2.mjs in the session):
+#   outside his left upper body's cloth only the 213 crease points DRAPEISL makes cloth move (at rest x 0.24–0.28, y
+#   0.99–1.08, z 0.02–0.07: the crease, riding its fold now); every other point there 0.000 mm in all nineteen takes; the
+#   rest of his left upper body's cloth off the shawl, the drape's own fading edge at his back, at most 0.6 cm. The rest
+#   pose bakes to 0.000° for both new bones. The trunk (tools/rigstrain.mjs, every take at 10 fps): the share it calls
+#   caved as v24.44's in fourteen takes; in five (the forward cast Charged_Spell_Cast_1, talking with hands open,
+#   sit-to-stand, cast_3, cast_5) more of what it calls the back under 0.75 of its rest depth (1.9 % at worst against
+#   0.3 %): painted and photographed, the drape's own folds hanging under his arm, not his torso (the session's rev45/heat).
+#
+# THE REVIEW: a fresh reader, blind, every take (his file / v24.44 / this file before LDRAPEY and DRAPEISL, the last two
+#   shuffled per take; masters/v24.45/review-key.txt): against his file 14 better, 2 the same, 3 worse (v24.44: 14 / 1 /
+#   4); against v24.44 better in 9, the same in 7, worse in 3 — talking with hands open clearly, for the shards at his
+#   elbow with brown between them, which LDRAPEY and DRAPEISL then cured. A second fresh reader, blind, the seven moments
+#   where the shards were (that file / this one, shuffled): this one better in 6 (4 clearly), the same in 1 (walking);
+#   the brown showed only in the other, and the reader's own count of skin-coloured pixels where the other version shows
+#   cloth agrees (talking: 804 against 56). Left in both, as both readers saw: the drape below his elbow still shredded
+#   into white shards in Talk_with_Hands_Open at 1.19 s from his left; a stiff flat panel at the drape's lower end in the
+#   arms-down and seated poses; comb-like streaks in the deep folds; and, not this pass's, a notch at the chest wrap under
+#   his right arm, a stiff corner on his left shoulder, a crack line across his right shoulder blade in the casts, the
+#   cross-legged lap. The hem joined to his shins (a change to his mesh) still waits on Chad's word.
 #
 # Needs: npm i --no-save @gltf-transform/core @gltf-transform/extensions @gltf-transform/functions meshoptimizer sharp three
 set -e
@@ -50,7 +74,7 @@ BANDS=1 SKIRT=12 SKIRTB=3 FIT=Sit_Cross_Legged_on_Floor,mage_soell_cast_8,Right_
   UPRIGHT=Running:15,Walking:13,Charged_Spell_Cast_1:16,Sit_Cheer_with_Left_Hand:9,Sit_Cross_Legged_on_Floor:34,Sit_Shout_Hands_on_Mouth:19,Sit_to_Stand_Transition_M:8,Sitting_Answering_Questions:17,Talk_with_Left_Hand_on_Hip:5,mage_soell_cast:17,mage_soell_cast_6:19,mage_soell_cast_7:15 \
   UPRIGHTARMS=Sit_Cross_Legged_on_Floor,Sit_to_Stand_Transition_M,Sit_Shout_Hands_on_Mouth,Walking,Charged_Spell_Cast_1,Sitting_Answering_Questions,mage_soell_cast,mage_soell_cast_6,mage_soell_cast_7 \
   DRAPE=2 BANDO0=0.02 BANDOW=0.10 BANDPASS=30 BANDSIG=0.05 DRAPEMERGE=1 DRAPEREACH=0.24 BANDSPINE=0.04 \
-  DRAPEHANG=1 HANGL0=0.55 HANGLW=0.30 HANGMAX=90 \
+  DRAPEHANG=1 HANGL0=0.55 HANGLW=0.30 HANGMAX=90 LDRAPEY=0.08 DRAPEISL=0.18 \
   node tools/robeskin.mjs masters/v24.39/src/grandmaster_pho_v1.glb $T/pho_robe12.glb
 TEX=4096 NTEX=2048 CHARTFIX=1 node tools/prepmonk.mjs $T/pho_robe12.glb assets/pho.glb 0.3
 # the measure, and the photographs:

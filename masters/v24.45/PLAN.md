@@ -205,3 +205,24 @@ chains (v24.40–v24.41: twelve three-bone chains, their turn baked into every t
   reaches below the waist and measures the same: 8 cm chosen. Proofs running (every point outside his left upper body
   against v24.44; the trunk), and a fresh blind reader on the seven moments (the reviewed file / p35, shuffled; the key
   outside the reader's folder).
+- **Step 6: proven, reviewed, made.** Against v24.44, every take at 5 fps (the session's drape/drapecmp2.mjs, which
+  splits drapecmp's question): outside his left upper body's cloth only 213 points move in any take — exactly the 213
+  crease points DRAPEISL makes cloth (at rest x 0.240–0.275, y 0.986–1.078, z 0.016–0.065), now riding their fold;
+  every other point there 0.000 mm in all nineteen; his left upper body's other cloth at most 0.60 cm (as p27). Against
+  the reviewed file (p27): his left upper body's other cloth 0.00 cm in every take, the shawl itself up to 34 cm in the
+  raised-arm casts (the drape's lowest cloth following the arm as his file had it); photographed whole-body in every
+  take, the casts that change most (cast_3, cast_8, the shout, cast_7) read as the reviewed file did, nothing torn. The
+  trunk (rigstrain, 10 fps): as the reviewed file in seventeen takes, the forward cast's caved share 1.8 → 1.9 % and
+  sit-to-stand's back 0.73 → 0.72 (the drape's folds). A fresh blind reader of the seven shard moments (the reviewed file
+  / p35, shuffled by a sha1 of "v24.45 creases " and the take; the key outside the reader's folder): p35 better in 6
+  (talking with hands open, the crouching cast, sit-to-stand and the seated cheer clearly; running and the forward cast
+  slightly), the same in 1 (walking); the brown showed only in the reviewed file, and the reader's own count of
+  skin-coloured pixels where the other version shows cloth agrees (talking 804 against 56, the crouching cast 252
+  against 20, sit-to-stand 170 against 24, the seated cheer 279 against 22). What both versions still show: white
+  shards at the elbow in talking with hands open at 1.19 s from his left (no brown now), a stiff flat panel at the
+  drape's lower end in the arms-down and seated poses, comb-like streaks in the deep folds, and a fin at his right
+  armpit (outside the drape). Adopted: make.sh gains LDRAPEY=0.08 DRAPEISL=0.18, run untouched (sha1 before and after
+  match); its robe file is the p35 bake byte for byte (sha1 c34f5688 both); assets/pho.glb 6,851,264 bytes (sha1
+  7b3501f8), a second packing byte for byte, 177,772 triangles, 67 joints. Photographed from the packed file:
+  shots/takes-1..3.jpg (every take, five angles, two moments); before and after for Chad from the robe files as before
+  (his file / v24.44 / v24.45): shots/pho-drape-arm-down.jpg, pho-drape-arm-raised.jpg.

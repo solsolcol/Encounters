@@ -7855,6 +7855,60 @@ What the baseline contains, by release:
   - assets/pho.glb: 177,772 triangles, 65 joints, nineteen takes, 6.8 MB (6,793,504 bytes, sha1 53031273…); the recipe re-makes it byte for
     byte. Before and after, side on (v24.43 over v24.44): masters/v24.44/shots/pho-upright-moving.jpg, -seated.jpg;
     every take from five angles: shots/takes-1..3.jpg. Not in build.py until chapter 3 casts him.
+- **v24.45** (prepared, not a build: nothing deployed, the live build stays v24.40) GRANDMASTER PHO'S DRAPE HANGS —
+  Chad, 4 Nov 2026 (answering v24.44's report, which put the rig to him): *"Go ahead with the hanging-cloth rig for the
+  drape"*. The plan and every step's measure, written as the work went: masters/v24.45/PLAN.md; recipe
+  masters/v24.45/make.sh.
+  - THE WHY, measured on his file's bind pose (painted and photographed from every side): the shawl over his left
+    shoulder is one sheet — a sleeve on the upper arm, a band hanging behind the arm, a panel on his shoulder blade and a
+    web to the belt. v24.44's band was a fixed blend of the arm and his back, so whenever the arm moved its points spread
+    across the gap between them: the stiff shell, wing and shelf behind the arm in nearly every take, and from his left
+    side the hump. His own file kept the band on the arm and dragged his back instead. Skinning cannot slide cloth; the
+    rig decides where the stretch goes, and makes the cloth hang.
+  - THE RIG, robeskin's DRAPE family (each its own option; unset, v24.44's file byte for byte): a sleeve bone (the arm's
+    swing, never its twist) carries the sleeve, and the band rides it as one piece where it stands off his body (its
+    height above the body's own inner surface, smoothed in space at 5 cm so a fold's crest and trough move together); a
+    share the four-bone cut drops goes to the kept bone nearest it; only the cloth near the arm and nearer it than the
+    spine may follow; and the band rides a bone of its own that turns it round the arm to hang below it once the arm is
+    clearly raised (at most 90°; walking 2°, talking 0°, the casts up to 79°, the slash 86°).
+  - WHAT WENT WRONG ON THE WAY, each measured and cured: the first sleeve bone alone changed nothing (the twist was not
+    the cause); the band riding it per point tore the scan's folds into strips (the four-bone cut, 9,800 points losing
+    over 2 % of their weight, and shares split crest from trough); its smoothing crept onto his upper back by the spine
+    and a raised arm dragged the robe's top edge 8–11 cm; riding the arm's swing, the cloth behind an arm raised forward
+    went onto its top and its lower edge tore down to his hip; and a hang started from a near-vertical arm swung the band
+    48° round it while he walked. Also: the session's disk filled (23 MB free) and the browser drew blank photographs
+    without an error.
+  - THE FIRST BLIND REVIEW (every take; his file / v24.44 / the new file, the last two shuffled): the new file against his
+    file 14 better, 2 the same, 3 worse (v24.44: 14 / 1 / 4), against v24.44 better in 9, the same in 7, worse in 3 —
+    less decisive than my own pictures of the moments I had fixed. And one fault only the new file had, in five takes:
+    shards at his left elbow with brown between them, read as his elbow through the drape. I called it my twist-free
+    sleeve; two fixes on that guess (the sleeve taking the twist back toward the elbow; a wider, gentler edge to the
+    drape's reach) changed no picture. Measured instead by the triangles (every triangle by his elbow at the worst
+    moment, by its stretch and what its points ride), two causes, both older than this pass: v24.43's LDRAPE handed his
+    file's weights back only above a floor 10 cm over the waist — a step, points 4 mm apart riding the arm and the spine,
+    where v24.44 tore into one web stretched 68x (part of its wing) and where, the web gone, the line showed; and the
+    colour test that sorts cloth from skin read a 260-point crease at his hip as skin (the scan bakes its folds' shadows
+    into the texture), so it kept the trunk's weights and tore out of its fold, its brown texture the "elbow". robeskin
+    LDRAPEY (the floor faded in over 8 cm) and DRAPEISL (inside the drape, a patch the colour test called skin under
+    3,000 points is cloth; his own skin there is two patches, 4,090 and 35,674 points): the worst stretch at that moment
+    35.9x → 14.0x.
+  - WHAT IT MEASURES (against v24.44, every take at 5 fps): outside his left upper body's cloth only the 213 crease
+    points move, now riding their fold; every other point there 0.000 mm in all nineteen takes; the drape's own fading
+    edge at his back at most 0.6 cm. Both new bones bake their rest pose to 0.000°. The trunk (tools/rigstrain.mjs): the
+    share it calls caved as v24.44's in fourteen takes; in five, more of the back under 0.75 of its rest depth (1.9 % at
+    worst against 0.3 %) — painted and photographed, the drape's own folds hanging under his arm, not his torso.
+  - THE SECOND BLIND REVIEW (the seven moments where the shards were; the first file / the final one, shuffled): the
+    final file better in 6 (4 clearly), the same in 1 (walking); the brown only in the other, and the reader's own count
+    of skin-coloured pixels agrees (talking: 804 against 56). Left in both: white shards at the elbow in talking with
+    hands open at 1.19 s from his left; a stiff flat panel at the drape's lower end in the arms-down and seated poses;
+    comb-like streaks in the deep folds; and, not this pass's, a notch at the chest wrap under his right arm, a stiff
+    corner on his left shoulder, a crack line across his right shoulder blade in the casts, the cross-legged lap.
+  - assets/pho.glb: 177,772 triangles, 67 joints (v24.44's 65, DrapeArm and DrapeHang, both animated in all nineteen
+    takes), nineteen takes, 6.9 MB (6,851,264 bytes, sha1 7b3501f8…); the recipe re-makes the robe file and
+    assets/pho.glb byte for byte (a second packing). Before and after (his file / v24.44 / v24.45):
+    masters/v24.45/shots/pho-drape-arm-down.jpg, pho-drape-arm-raised.jpg; every take from five angles:
+    shots/takes-1..3.jpg. Cutting the robe's hem free of his shins still waits on his word. Not in build.py until
+    chapter 3 casts him.
 
 ## The sheet, version by version
 

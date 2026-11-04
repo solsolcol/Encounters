@@ -7367,3 +7367,48 @@ cut (sharing its vertices and maps) when it is small.
   straightened, he leaned back 8–10° from the hips. I had looked at my side views and called it fine ("a pelvis number
   is not a lean"); the blind reader, certain, said it leans back. Size a turn from where the head sits over the hips,
   and let a reader who does not know what was meant judge the pictures.
+
+## v24.45 — a hanging-cloth rig on a scanned shawl: where skinning can put the stretch, and how to make it hang
+
+- **Skinning cannot slide cloth; the rig decides where the stretch goes.** Cloth between two bones that move apart
+  stretches somewhere: his file kept the shawl's band on the arm and dragged his back; v24.44 blended it between arm and
+  back and it stood off as a shell. A bone of its own for the cloth (the sleeve on the arm's swing, the band riding it
+  where it stands off the body) moves the stretch to where cloth can take it.
+- **The four-bone cut tears what extra bones add.** Each point keeps its four largest shares; give a region a fifth and a
+  sixth bone and neighbouring points are cut differently, so they move apart in strips (9,800 points of his left upper
+  body lost over 2 % of their weight). Count what the cut drops (DRAPEDBG), and give a dropped share to the kept bone
+  nearest it at rest rather than spreading it over all four (DRAPEMERGE).
+- **Smooth a share at the scale of the scan's folds, in space.** A share set per point by its height off the body splits
+  a fold's crest from its trough (2–3 cm apart). Mesh passes diffuse about edge × √(passes/2): 30 passes over 5.5 mm edges
+  reach 2 cm. A Gaussian in space (5 cm) first, then the passes.
+- **Every smoothing needs a reach.** The band's share, smoothed, crept onto his upper back by the spine, and a raised arm
+  dragged the robe's top edge there 8–11 cm. Hold a rig's change to the cloth it is for, multiply the reach back in after
+  smoothing, and prove every point outside it unchanged (0.000 mm in all nineteen takes).
+- **Hanging is a turn about the limb, only when there is a below.** Cloth that rides an arm's swing goes wherever the arm
+  goes — raised forward, the cloth behind it ends up on top and its lower edge tears down to the hip. Turning the band
+  about the arm's own axis toward the side gravity hangs it (its rest angle to "down" kept, so rest is rest) makes it fall
+  as a curtain. But a nearly vertical arm has no one "below": the direction swings right round it as the arm passes
+  forward and back (48° while walking). Start the hang only once the arm is clearly off vertical.
+- **When two fixes fail, measure the triangles.** I took the reviewer's shards for my twist-free sleeve and tried two fixes
+  on that guess; neither changed a picture. Listing the most-stretched triangles near the fault, with what each of their
+  points rides, named both causes in one run: neighbours 4 mm apart on different bones. Paint the stretch and photograph
+  it to see which triangles are the ones on screen.
+- **A big fault can hide an older small one.** v24.44's wing was itself one web stretched 68x over a hard step in the
+  weights (LDRAPE's floor, a cut by height); taking the wing away showed the step as shards. Before calling a new fault a
+  regression, measure the old file at the same moment. And never gate a weight by a step: fade every gate (height,
+  distance, region) over a few centimetres.
+- **A colour test misreads a scan's baked shadows.** The cloth/skin split reads each texel's saturation and value; the
+  scan bakes its folds' shadows into the colour, so a deep crease reads as skin and keeps the body's weights while its
+  fold moves with the arm — and its brown texture reads, torn open, as skin showing through. Inside a garment a small
+  connected patch of "skin" is a crease: test the patches by size (his skin: patches of thousands; the crease: 260),
+  and print each patch's box and distance to the hand before trusting the rule. The skirt's test (no skin outside
+  reaches it) found nothing here, because the creases run on out of the region.
+- **The pictures that prove a fix are not the pictures that judge the file.** My before-and-after shots were of the five
+  moments I had fixed; the blind reader of all nineteen takes was far less decisive (9 better, 7 the same, 3 worse
+  against v24.44). Photograph the textured surface, every take, from every side, and let a reader who does not know what
+  was meant judge it.
+- **A full disk draws nothing.** With the session's disk at 23 MB free the browser rendered blank sheets with no error
+  (15 KB files of background). A blank render is a resource problem first: check the disk before the code.
+- **A share past a threshold says where cloth stretches, not whether it reads as cloth.** The edges stretched past 1.4x
+  rose in the band and the web of the chosen file while the photographs showed the shell gone and a smooth curtain in its
+  place: the stretch had moved off one hard fold and spread down a sheet. Measure to locate, photograph to judge.
