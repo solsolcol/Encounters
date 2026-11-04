@@ -342,6 +342,51 @@ for (const spec of (process.env.TAKELIFT || '').split(',').filter(Boolean)) {
     console.log(`  ${take}: hips raised ${dy} m`);
   }
 }
+/* v24.44 · UPRIGHT="Take:degrees,..." — the waist straightened. Chad, 4 Nov 2026: "Why does pho model look hunchback in
+   so many poses? Make him more upright". Measured (masters/v24.44/PLAN.md): his waist joint (Spine) is bent forward
+   42–75° against rest in EVERY take and barely moves within one, his hips tipped back ~25° and his neck craned back
+   15–40° to bring his face up — a constant left by how the takes were laid onto his scan's rig, not acting. Each named
+   take gets a constant backward turn of the Spine joint about the body's side-to-side axis (the rest's +x as the hips
+   carry it, which is one fixed axis in the hips' own frame, so the turn is the same at every key and keeps the take's
+   motion), and the neck the same turn given back key by key, so the head keeps exactly the orientation the take gave it.
+   The hips and legs are not touched: the feet stay where they were. Unset, nothing changes */
+const UPRIGHT = (process.env.UPRIGHT || '').split(',').filter(Boolean).map(s => { const [k, v] = s.split(':'); return [k, Number(v)]; });
+/* UPRIGHTARMS="Take,...": those takes' shoulders (the clavicles) get the turn given back too, so the arms hang exactly as
+   the take had them and only ride the straightened shoulders — where the hands rest (the cross-legged sit's hands on his
+   knees would otherwise swing up with the chest and stand straight out); elsewhere the arms ride the chest, so a gesture
+   keeps its shape */
+const UPRIGHTARMS = (process.env.UPRIGHTARMS || '').split(',').filter(Boolean);
+if (UPRIGHT.length) {
+  const nodeN = n => root.listNodes().find(x => x.getName().replace(/^mixamorig[:_]?/, '') === n);
+  const wqOf = (P, n) => { const q = new Quaternion(); P.world[P.NI.get(nodeN(n))].decompose(new Vector3(), q, new Vector3()); return q; };
+  const P0 = makePoser(root); P0.pose(null, 0);
+  const hipsRest = wqOf(P0, 'Hips'), axisH = new Vector3(1, 0, 0).applyQuaternion(hipsRest.clone().invert()).normalize();
+  for (const [take, deg] of UPRIGHT) {
+    const an = root.listAnimations().find(a => a.getName() === take); if (!an) throw new Error('no take ' + take);
+    const chOf = n => an.listChannels().find(c => c.getTargetPath() === 'rotation' && c.getTargetNode() === nodeN(n));
+    const chS = chOf('Spine'), chN = chOf('Neck'); if (!chS || !chN) throw new Error(`${take}: no Spine or Neck rotation track`);
+    for (const ch of [chS, chN]) if (!['LINEAR', 'STEP'].includes(ch.getSampler().getInterpolation())) throw new Error(`${take}: a ${ch.getSampler().getInterpolation()} track`);
+    const th = deg * Math.PI / 180, P = makePoser(root);
+    /* the neck's turn given back, from the take as it was: about the side axis seen from Spine2 at that key (and the
+       shoulders', in an UPRIGHTARMS take — all three are children of Spine2) */
+    const giveBack = ch => { const tK = ch.getSampler().getInput().getArray(), arr = ch.getSampler().getOutput().getArray().slice();
+      for (let k = 0; k < tK.length; k++) {
+        P.pose(an, tK[k]);
+        const side = new Vector3(1, 0, 0).applyQuaternion(wqOf(P, 'Hips').multiply(hipsRest.clone().invert()));
+        side.applyQuaternion(wqOf(P, 'Spine2').invert()).normalize();
+        new Quaternion().setFromAxisAngle(side, th).multiply(new Quaternion().fromArray(arr, 4 * k)).normalize().toArray(arr, 4 * k);
+      }
+      return arr; };
+    const arrN = giveBack(chN);
+    const arms = UPRIGHTARMS.includes(take) ? ['LeftShoulder', 'RightShoulder'].map(n => { const ch = chOf(n); if (!ch) throw new Error(`${take}: no ${n} rotation track`); return [ch, giveBack(ch)]; }) : [];
+    /* the waist's turn, the same at every key */
+    const Qs = new Quaternion().setFromAxisAngle(axisH, -th), arrS = chS.getSampler().getOutput().getArray().slice();
+    for (let k = 0; k < arrS.length / 4; k++) Qs.clone().multiply(new Quaternion().fromArray(arrS, 4 * k)).normalize().toArray(arrS, 4 * k);
+    chS.getSampler().getOutput().setArray(arrS); chN.getSampler().getOutput().setArray(arrN);
+    for (const [ch, arr] of arms) ch.getSampler().getOutput().setArray(arr);
+    console.log(`  ${take}: the waist straightened ${deg}°, the neck${arms.length ? ' and the shoulders' : ''} given it back`);
+  }
+}
 /* v24.40 · THE SKIRT'S TAKES: every take's chains turned at its own keys (the hips' rotation track's times), from the
    pose the take gives the pelvis, thighs and shins — and the rest pose checked to bake to rest */
 if (CH) {

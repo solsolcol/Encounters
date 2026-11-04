@@ -7340,3 +7340,22 @@ cut (sharing its vertices and maps) when it is small.
 - **A measured change can be invisible.** LDRAPE moved 23,308 points of the drape by up to 46 cm in the arm-raising
   casts, yet the reader saw v24.42 and v24.43 as the same picture in 16 of 19 takes (1–3 % of pixels): the fault he saw
   was the cloth the change did not reach. A number proves what moved; only a picture proves it was the part that mattered.
+
+## v24.44 — a stoop the same in every take is the rig's, not the actor's
+
+- **A bend that is the same in every take is not acting.** Pho's waist joint (Spine) is bent forward 42–75° against rest
+  in every take, with a spread of 1–7° inside each, standing, walking, sitting and casting alike, while his hips tip back
+  about 25° and his neck bends back 15–40° to bring his face round: how the animations were laid onto his scan's rig.
+  Measure each joint's own bend against rest, take by take, its mean AND its spread: a large mean with a small spread in
+  every take is an offset to take out; the acting is in the spread.
+- **Take the offset out at the joint that carries it, and give it back where the take's meaning lives.** A constant turn
+  of the waist joint about the hips' own side axis (constant in the hips' frame, so one quaternion per take), the neck
+  given the same turn back key by key so the head keeps its world orientation (he looks where he looked), the hips and
+  legs untouched so the feet keep their ground. Prove what must not move at every frame (hips, feet, head: 0.00 cm,
+  0.00°) and measure what rides along (the hands, 1–35 cm).
+- **Contact does not ride along.** Hands that rest on the legs or push on the knees (the cross-legged sit, sit-to-stand)
+  leave them when the chest straightens under them: give the shoulders the turn back too, so the arms keep their world
+  pose and only the shoulders move; and leave a lean that IS the movement (a man leans forward to stand up).
+- **A pelvis number is not a lean.** With the hips still tipped back by the takes, talking with hands open has his head
+  8.9 cm behind his hips once straightened; from both sides it does not read as leaning back. Check a posture number
+  against a side view before chasing it.
