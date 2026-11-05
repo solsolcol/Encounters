@@ -1,0 +1,2702 @@
+{
+ "p001": {
+  "file": "Charged_Spell_Cast_00_0.22_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p002": {
+  "file": "Charged_Spell_Cast_00_0.22_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p003": {
+  "file": "Charged_Spell_Cast_00_0.22_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p004": {
+  "file": "Charged_Spell_Cast_01_0.67_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p005": {
+  "file": "Charged_Spell_Cast_01_0.67_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p006": {
+  "file": "Charged_Spell_Cast_01_0.67_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p007": {
+  "file": "Charged_Spell_Cast_02_0.67_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p008": {
+  "file": "Charged_Spell_Cast_02_0.67_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p009": {
+  "file": "Charged_Spell_Cast_02_0.67_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p010": {
+  "file": "Charged_Spell_Cast_03_0.93_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p011": {
+  "file": "Charged_Spell_Cast_03_0.93_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p012": {
+  "file": "Charged_Spell_Cast_03_0.93_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p013": {
+  "file": "Charged_Spell_Cast_04_1.11_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p014": {
+  "file": "Charged_Spell_Cast_04_1.11_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p015": {
+  "file": "Charged_Spell_Cast_04_1.11_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p016": {
+  "file": "Charged_Spell_Cast_05_1.20_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p017": {
+  "file": "Charged_Spell_Cast_05_1.20_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p018": {
+  "file": "Charged_Spell_Cast_05_1.20_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p019": {
+  "file": "Charged_Spell_Cast_06_1.56_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p020": {
+  "file": "Charged_Spell_Cast_06_1.56_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p021": {
+  "file": "Charged_Spell_Cast_06_1.56_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p022": {
+  "file": "Charged_Spell_Cast_07_2.00_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p023": {
+  "file": "Charged_Spell_Cast_07_2.00_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p024": {
+  "file": "Charged_Spell_Cast_07_2.00_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p025": {
+  "file": "Charged_Spell_Cast_08_2.44_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p026": {
+  "file": "Charged_Spell_Cast_08_2.44_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p027": {
+  "file": "Charged_Spell_Cast_08_2.44_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p028": {
+  "file": "Charged_Spell_Cast_1_00_0.36_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p029": {
+  "file": "Charged_Spell_Cast_1_00_0.36_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p030": {
+  "file": "Charged_Spell_Cast_1_00_0.36_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p031": {
+  "file": "Charged_Spell_Cast_1_01_1.07_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p032": {
+  "file": "Charged_Spell_Cast_1_01_1.07_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p033": {
+  "file": "Charged_Spell_Cast_1_01_1.07_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p034": {
+  "file": "Charged_Spell_Cast_1_02_1.79_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p035": {
+  "file": "Charged_Spell_Cast_1_02_1.79_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p036": {
+  "file": "Charged_Spell_Cast_1_02_1.79_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p037": {
+  "file": "Charged_Spell_Cast_1_03_2.13_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p038": {
+  "file": "Charged_Spell_Cast_1_03_2.13_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p039": {
+  "file": "Charged_Spell_Cast_1_03_2.13_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p040": {
+  "file": "Charged_Spell_Cast_1_04_2.40_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p041": {
+  "file": "Charged_Spell_Cast_1_04_2.40_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p042": {
+  "file": "Charged_Spell_Cast_1_04_2.40_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p043": {
+  "file": "Charged_Spell_Cast_1_05_2.51_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p044": {
+  "file": "Charged_Spell_Cast_1_05_2.51_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p045": {
+  "file": "Charged_Spell_Cast_1_05_2.51_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p046": {
+  "file": "Charged_Spell_Cast_1_06_2.93_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p047": {
+  "file": "Charged_Spell_Cast_1_06_2.93_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p048": {
+  "file": "Charged_Spell_Cast_1_06_2.93_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p049": {
+  "file": "Charged_Spell_Cast_1_07_3.23_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p050": {
+  "file": "Charged_Spell_Cast_1_07_3.23_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p051": {
+  "file": "Charged_Spell_Cast_1_07_3.23_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p052": {
+  "file": "Charged_Spell_Cast_1_08_3.94_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p053": {
+  "file": "Charged_Spell_Cast_1_08_3.94_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p054": {
+  "file": "Charged_Spell_Cast_1_08_3.94_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p055": {
+  "file": "Right_Hand_Sword_Slash_00_0.13_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p056": {
+  "file": "Right_Hand_Sword_Slash_00_0.13_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p057": {
+  "file": "Right_Hand_Sword_Slash_00_0.13_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p058": {
+  "file": "Right_Hand_Sword_Slash_01_0.13_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p059": {
+  "file": "Right_Hand_Sword_Slash_01_0.13_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p060": {
+  "file": "Right_Hand_Sword_Slash_01_0.13_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p061": {
+  "file": "Right_Hand_Sword_Slash_02_0.38_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p062": {
+  "file": "Right_Hand_Sword_Slash_02_0.38_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p063": {
+  "file": "Right_Hand_Sword_Slash_02_0.38_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p064": {
+  "file": "Right_Hand_Sword_Slash_03_0.40_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p065": {
+  "file": "Right_Hand_Sword_Slash_03_0.40_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p066": {
+  "file": "Right_Hand_Sword_Slash_03_0.40_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p067": {
+  "file": "Right_Hand_Sword_Slash_04_0.63_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p068": {
+  "file": "Right_Hand_Sword_Slash_04_0.63_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p069": {
+  "file": "Right_Hand_Sword_Slash_04_0.63_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p070": {
+  "file": "Right_Hand_Sword_Slash_05_0.88_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p071": {
+  "file": "Right_Hand_Sword_Slash_05_0.88_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p072": {
+  "file": "Right_Hand_Sword_Slash_05_0.88_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p073": {
+  "file": "Right_Hand_Sword_Slash_06_1.13_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p074": {
+  "file": "Right_Hand_Sword_Slash_06_1.13_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p075": {
+  "file": "Right_Hand_Sword_Slash_06_1.13_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p076": {
+  "file": "Right_Hand_Sword_Slash_07_1.38_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p077": {
+  "file": "Right_Hand_Sword_Slash_07_1.38_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p078": {
+  "file": "Right_Hand_Sword_Slash_07_1.38_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p079": {
+  "file": "Right_Hand_Sword_Slash_08_1.47_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p080": {
+  "file": "Right_Hand_Sword_Slash_08_1.47_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p081": {
+  "file": "Right_Hand_Sword_Slash_08_1.47_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p082": {
+  "file": "Running_00_0.03_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p083": {
+  "file": "Running_00_0.03_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p084": {
+  "file": "Running_00_0.03_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p085": {
+  "file": "Running_01_0.07_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p086": {
+  "file": "Running_01_0.07_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p087": {
+  "file": "Running_01_0.07_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p088": {
+  "file": "Running_02_0.10_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p089": {
+  "file": "Running_02_0.10_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p090": {
+  "file": "Running_02_0.10_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p091": {
+  "file": "Running_03_0.16_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p092": {
+  "file": "Running_03_0.16_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p093": {
+  "file": "Running_03_0.16_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p094": {
+  "file": "Running_04_0.22_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p095": {
+  "file": "Running_04_0.22_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p096": {
+  "file": "Running_04_0.22_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p097": {
+  "file": "Running_05_0.28_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p098": {
+  "file": "Running_05_0.28_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p099": {
+  "file": "Running_05_0.28_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p100": {
+  "file": "Running_06_0.35_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p101": {
+  "file": "Running_06_0.35_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p102": {
+  "file": "Running_06_0.35_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p103": {
+  "file": "Running_07_0.40_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p104": {
+  "file": "Running_07_0.40_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p105": {
+  "file": "Running_07_0.40_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p106": {
+  "file": "Running_08_0.41_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p107": {
+  "file": "Running_08_0.41_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p108": {
+  "file": "Running_08_0.41_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p109": {
+  "file": "Running_09_0.47_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p110": {
+  "file": "Running_09_0.47_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p111": {
+  "file": "Running_09_0.47_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p112": {
+  "file": "Running_10_0.54_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p113": {
+  "file": "Running_10_0.54_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p114": {
+  "file": "Running_10_0.54_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p115": {
+  "file": "Running_11_0.60_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p116": {
+  "file": "Running_11_0.60_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p117": {
+  "file": "Running_11_0.60_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p118": {
+  "file": "Sit_Cheer_with_Left_Hand_00_0.13_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p119": {
+  "file": "Sit_Cheer_with_Left_Hand_00_0.13_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p120": {
+  "file": "Sit_Cheer_with_Left_Hand_00_0.13_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p121": {
+  "file": "Sit_Cheer_with_Left_Hand_01_0.22_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p122": {
+  "file": "Sit_Cheer_with_Left_Hand_01_0.22_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p123": {
+  "file": "Sit_Cheer_with_Left_Hand_01_0.22_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p124": {
+  "file": "Sit_Cheer_with_Left_Hand_02_0.67_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p125": {
+  "file": "Sit_Cheer_with_Left_Hand_02_0.67_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p126": {
+  "file": "Sit_Cheer_with_Left_Hand_02_0.67_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p127": {
+  "file": "Sit_Cheer_with_Left_Hand_03_0.80_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p128": {
+  "file": "Sit_Cheer_with_Left_Hand_03_0.80_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p129": {
+  "file": "Sit_Cheer_with_Left_Hand_03_0.80_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p130": {
+  "file": "Sit_Cheer_with_Left_Hand_04_1.11_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p131": {
+  "file": "Sit_Cheer_with_Left_Hand_04_1.11_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p132": {
+  "file": "Sit_Cheer_with_Left_Hand_04_1.11_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p133": {
+  "file": "Sit_Cheer_with_Left_Hand_05_1.56_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p134": {
+  "file": "Sit_Cheer_with_Left_Hand_05_1.56_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p135": {
+  "file": "Sit_Cheer_with_Left_Hand_05_1.56_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p136": {
+  "file": "Sit_Cheer_with_Left_Hand_06_1.80_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p137": {
+  "file": "Sit_Cheer_with_Left_Hand_06_1.80_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p138": {
+  "file": "Sit_Cheer_with_Left_Hand_06_1.80_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p139": {
+  "file": "Sit_Cheer_with_Left_Hand_07_2.00_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p140": {
+  "file": "Sit_Cheer_with_Left_Hand_07_2.00_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p141": {
+  "file": "Sit_Cheer_with_Left_Hand_07_2.00_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p142": {
+  "file": "Sit_Cheer_with_Left_Hand_08_2.44_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p143": {
+  "file": "Sit_Cheer_with_Left_Hand_08_2.44_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p144": {
+  "file": "Sit_Cheer_with_Left_Hand_08_2.44_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p145": {
+  "file": "Sit_Cross_Legged_on_Floor_00_0.00_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p146": {
+  "file": "Sit_Cross_Legged_on_Floor_00_0.00_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p147": {
+  "file": "Sit_Cross_Legged_on_Floor_00_0.00_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p148": {
+  "file": "Sit_Cross_Legged_on_Floor_01_0.21_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p149": {
+  "file": "Sit_Cross_Legged_on_Floor_01_0.21_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p150": {
+  "file": "Sit_Cross_Legged_on_Floor_01_0.21_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p151": {
+  "file": "Sit_Cross_Legged_on_Floor_02_0.63_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p152": {
+  "file": "Sit_Cross_Legged_on_Floor_02_0.63_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p153": {
+  "file": "Sit_Cross_Legged_on_Floor_02_0.63_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p154": {
+  "file": "Sit_Cross_Legged_on_Floor_03_1.04_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p155": {
+  "file": "Sit_Cross_Legged_on_Floor_03_1.04_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p156": {
+  "file": "Sit_Cross_Legged_on_Floor_03_1.04_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p157": {
+  "file": "Sit_Cross_Legged_on_Floor_04_1.46_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p158": {
+  "file": "Sit_Cross_Legged_on_Floor_04_1.46_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p159": {
+  "file": "Sit_Cross_Legged_on_Floor_04_1.46_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p160": {
+  "file": "Sit_Cross_Legged_on_Floor_05_1.88_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p161": {
+  "file": "Sit_Cross_Legged_on_Floor_05_1.88_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p162": {
+  "file": "Sit_Cross_Legged_on_Floor_05_1.88_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p163": {
+  "file": "Sit_Cross_Legged_on_Floor_06_2.00_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p164": {
+  "file": "Sit_Cross_Legged_on_Floor_06_2.00_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p165": {
+  "file": "Sit_Cross_Legged_on_Floor_06_2.00_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p166": {
+  "file": "Sit_Cross_Legged_on_Floor_07_2.27_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p167": {
+  "file": "Sit_Cross_Legged_on_Floor_07_2.27_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p168": {
+  "file": "Sit_Cross_Legged_on_Floor_07_2.27_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p169": {
+  "file": "Sit_Cross_Legged_on_Floor_08_2.29_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p170": {
+  "file": "Sit_Cross_Legged_on_Floor_08_2.29_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p171": {
+  "file": "Sit_Cross_Legged_on_Floor_08_2.29_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p172": {
+  "file": "Sit_Shout_Hands_on_Mouth_00_0.17_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p173": {
+  "file": "Sit_Shout_Hands_on_Mouth_00_0.17_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p174": {
+  "file": "Sit_Shout_Hands_on_Mouth_00_0.17_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p175": {
+  "file": "Sit_Shout_Hands_on_Mouth_01_0.20_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p176": {
+  "file": "Sit_Shout_Hands_on_Mouth_01_0.20_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p177": {
+  "file": "Sit_Shout_Hands_on_Mouth_01_0.20_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p178": {
+  "file": "Sit_Shout_Hands_on_Mouth_02_0.50_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p179": {
+  "file": "Sit_Shout_Hands_on_Mouth_02_0.50_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p180": {
+  "file": "Sit_Shout_Hands_on_Mouth_02_0.50_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p181": {
+  "file": "Sit_Shout_Hands_on_Mouth_03_0.83_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p182": {
+  "file": "Sit_Shout_Hands_on_Mouth_03_0.83_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p183": {
+  "file": "Sit_Shout_Hands_on_Mouth_03_0.83_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p184": {
+  "file": "Sit_Shout_Hands_on_Mouth_04_1.17_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p185": {
+  "file": "Sit_Shout_Hands_on_Mouth_04_1.17_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p186": {
+  "file": "Sit_Shout_Hands_on_Mouth_04_1.17_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p187": {
+  "file": "Sit_Shout_Hands_on_Mouth_05_1.50_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p188": {
+  "file": "Sit_Shout_Hands_on_Mouth_05_1.50_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p189": {
+  "file": "Sit_Shout_Hands_on_Mouth_05_1.50_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p190": {
+  "file": "Sit_Shout_Hands_on_Mouth_06_1.67_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p191": {
+  "file": "Sit_Shout_Hands_on_Mouth_06_1.67_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p192": {
+  "file": "Sit_Shout_Hands_on_Mouth_06_1.67_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p193": {
+  "file": "Sit_Shout_Hands_on_Mouth_07_1.83_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p194": {
+  "file": "Sit_Shout_Hands_on_Mouth_07_1.83_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p195": {
+  "file": "Sit_Shout_Hands_on_Mouth_07_1.83_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p196": {
+  "file": "Sit_Shout_Hands_on_Mouth_08_1.93_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p197": {
+  "file": "Sit_Shout_Hands_on_Mouth_08_1.93_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p198": {
+  "file": "Sit_Shout_Hands_on_Mouth_08_1.93_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p199": {
+  "file": "Sit_to_Stand_Transition_M_00_0.20_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p200": {
+  "file": "Sit_to_Stand_Transition_M_00_0.20_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p201": {
+  "file": "Sit_to_Stand_Transition_M_00_0.20_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p202": {
+  "file": "Sit_to_Stand_Transition_M_01_0.47_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p203": {
+  "file": "Sit_to_Stand_Transition_M_01_0.47_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p204": {
+  "file": "Sit_to_Stand_Transition_M_01_0.47_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p205": {
+  "file": "Sit_to_Stand_Transition_M_02_0.51_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p206": {
+  "file": "Sit_to_Stand_Transition_M_02_0.51_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p207": {
+  "file": "Sit_to_Stand_Transition_M_02_0.51_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p208": {
+  "file": "Sit_to_Stand_Transition_M_03_0.73_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p209": {
+  "file": "Sit_to_Stand_Transition_M_03_0.73_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p210": {
+  "file": "Sit_to_Stand_Transition_M_03_0.73_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p211": {
+  "file": "Sit_to_Stand_Transition_M_04_1.54_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p212": {
+  "file": "Sit_to_Stand_Transition_M_04_1.54_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p213": {
+  "file": "Sit_to_Stand_Transition_M_04_1.54_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p214": {
+  "file": "Sit_to_Stand_Transition_M_05_2.57_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p215": {
+  "file": "Sit_to_Stand_Transition_M_05_2.57_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p216": {
+  "file": "Sit_to_Stand_Transition_M_05_2.57_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p217": {
+  "file": "Sit_to_Stand_Transition_M_06_3.60_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p218": {
+  "file": "Sit_to_Stand_Transition_M_06_3.60_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p219": {
+  "file": "Sit_to_Stand_Transition_M_06_3.60_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p220": {
+  "file": "Sit_to_Stand_Transition_M_07_4.63_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p221": {
+  "file": "Sit_to_Stand_Transition_M_07_4.63_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p222": {
+  "file": "Sit_to_Stand_Transition_M_07_4.63_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p223": {
+  "file": "Sit_to_Stand_Transition_M_08_5.65_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p224": {
+  "file": "Sit_to_Stand_Transition_M_08_5.65_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p225": {
+  "file": "Sit_to_Stand_Transition_M_08_5.65_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p226": {
+  "file": "Sitting_Answering_Questions_00_0.81_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p227": {
+  "file": "Sitting_Answering_Questions_00_0.81_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p228": {
+  "file": "Sitting_Answering_Questions_00_0.81_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p229": {
+  "file": "Sitting_Answering_Questions_01_2.42_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p230": {
+  "file": "Sitting_Answering_Questions_01_2.42_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p231": {
+  "file": "Sitting_Answering_Questions_01_2.42_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p232": {
+  "file": "Sitting_Answering_Questions_02_4.03_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p233": {
+  "file": "Sitting_Answering_Questions_02_4.03_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p234": {
+  "file": "Sitting_Answering_Questions_02_4.03_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p235": {
+  "file": "Sitting_Answering_Questions_03_5.64_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p236": {
+  "file": "Sitting_Answering_Questions_03_5.64_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p237": {
+  "file": "Sitting_Answering_Questions_03_5.64_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p238": {
+  "file": "Sitting_Answering_Questions_04_7.25_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p239": {
+  "file": "Sitting_Answering_Questions_04_7.25_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p240": {
+  "file": "Sitting_Answering_Questions_04_7.25_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p241": {
+  "file": "Sitting_Answering_Questions_05_8.60_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p242": {
+  "file": "Sitting_Answering_Questions_05_8.60_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p243": {
+  "file": "Sitting_Answering_Questions_05_8.60_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p244": {
+  "file": "Sitting_Answering_Questions_06_8.86_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p245": {
+  "file": "Sitting_Answering_Questions_06_8.86_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p246": {
+  "file": "Sitting_Answering_Questions_06_8.86_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p247": {
+  "file": "Sitting_Answering_Questions_07_8.87_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p248": {
+  "file": "Sitting_Answering_Questions_07_8.87_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p249": {
+  "file": "Sitting_Answering_Questions_07_8.87_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p250": {
+  "file": "Sitting_Answering_Questions_08_9.13_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p251": {
+  "file": "Sitting_Answering_Questions_08_9.13_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p252": {
+  "file": "Sitting_Answering_Questions_08_9.13_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p253": {
+  "file": "Talk_with_Hands_Open_00_0.33_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p254": {
+  "file": "Talk_with_Hands_Open_00_0.33_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p255": {
+  "file": "Talk_with_Hands_Open_00_0.33_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p256": {
+  "file": "Talk_with_Hands_Open_01_0.53_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p257": {
+  "file": "Talk_with_Hands_Open_01_0.53_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p258": {
+  "file": "Talk_with_Hands_Open_01_0.53_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p259": {
+  "file": "Talk_with_Hands_Open_02_0.99_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p260": {
+  "file": "Talk_with_Hands_Open_02_0.99_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p261": {
+  "file": "Talk_with_Hands_Open_02_0.99_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p262": {
+  "file": "Talk_with_Hands_Open_03_1.65_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p263": {
+  "file": "Talk_with_Hands_Open_03_1.65_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p264": {
+  "file": "Talk_with_Hands_Open_03_1.65_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p265": {
+  "file": "Talk_with_Hands_Open_04_1.67_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p266": {
+  "file": "Talk_with_Hands_Open_04_1.67_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p267": {
+  "file": "Talk_with_Hands_Open_04_1.67_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p268": {
+  "file": "Talk_with_Hands_Open_05_1.93_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p269": {
+  "file": "Talk_with_Hands_Open_05_1.93_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p270": {
+  "file": "Talk_with_Hands_Open_05_1.93_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p271": {
+  "file": "Talk_with_Hands_Open_06_2.31_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p272": {
+  "file": "Talk_with_Hands_Open_06_2.31_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p273": {
+  "file": "Talk_with_Hands_Open_06_2.31_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p274": {
+  "file": "Talk_with_Hands_Open_07_2.98_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p275": {
+  "file": "Talk_with_Hands_Open_07_2.98_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p276": {
+  "file": "Talk_with_Hands_Open_07_2.98_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p277": {
+  "file": "Talk_with_Hands_Open_08_3.64_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p278": {
+  "file": "Talk_with_Hands_Open_08_3.64_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p279": {
+  "file": "Talk_with_Hands_Open_08_3.64_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p280": {
+  "file": "Talk_with_Left_Hand_on_Hip_00_0.13_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p281": {
+  "file": "Talk_with_Left_Hand_on_Hip_00_0.13_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p282": {
+  "file": "Talk_with_Left_Hand_on_Hip_00_0.13_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p283": {
+  "file": "Talk_with_Left_Hand_on_Hip_01_0.43_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p284": {
+  "file": "Talk_with_Left_Hand_on_Hip_01_0.43_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p285": {
+  "file": "Talk_with_Left_Hand_on_Hip_01_0.43_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p286": {
+  "file": "Talk_with_Left_Hand_on_Hip_02_0.47_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p287": {
+  "file": "Talk_with_Left_Hand_on_Hip_02_0.47_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p288": {
+  "file": "Talk_with_Left_Hand_on_Hip_02_0.47_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p289": {
+  "file": "Talk_with_Left_Hand_on_Hip_03_1.07_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p290": {
+  "file": "Talk_with_Left_Hand_on_Hip_03_1.07_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p291": {
+  "file": "Talk_with_Left_Hand_on_Hip_03_1.07_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p292": {
+  "file": "Talk_with_Left_Hand_on_Hip_04_1.29_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p293": {
+  "file": "Talk_with_Left_Hand_on_Hip_04_1.29_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p294": {
+  "file": "Talk_with_Left_Hand_on_Hip_04_1.29_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p295": {
+  "file": "Talk_with_Left_Hand_on_Hip_05_2.15_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p296": {
+  "file": "Talk_with_Left_Hand_on_Hip_05_2.15_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p297": {
+  "file": "Talk_with_Left_Hand_on_Hip_05_2.15_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p298": {
+  "file": "Talk_with_Left_Hand_on_Hip_06_3.01_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p299": {
+  "file": "Talk_with_Left_Hand_on_Hip_06_3.01_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p300": {
+  "file": "Talk_with_Left_Hand_on_Hip_06_3.01_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p301": {
+  "file": "Talk_with_Left_Hand_on_Hip_07_3.88_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p302": {
+  "file": "Talk_with_Left_Hand_on_Hip_07_3.88_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p303": {
+  "file": "Talk_with_Left_Hand_on_Hip_07_3.88_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p304": {
+  "file": "Talk_with_Left_Hand_on_Hip_08_4.74_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p305": {
+  "file": "Talk_with_Left_Hand_on_Hip_08_4.74_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p306": {
+  "file": "Talk_with_Left_Hand_on_Hip_08_4.74_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p307": {
+  "file": "Walking_00_0.04_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p308": {
+  "file": "Walking_00_0.04_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p309": {
+  "file": "Walking_00_0.04_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p310": {
+  "file": "Walking_01_0.13_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p311": {
+  "file": "Walking_01_0.13_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p312": {
+  "file": "Walking_01_0.13_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p313": {
+  "file": "Walking_02_0.13_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p314": {
+  "file": "Walking_02_0.13_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p315": {
+  "file": "Walking_02_0.13_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p316": {
+  "file": "Walking_03_0.21_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p317": {
+  "file": "Walking_03_0.21_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p318": {
+  "file": "Walking_03_0.21_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p319": {
+  "file": "Walking_04_0.30_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p320": {
+  "file": "Walking_04_0.30_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p321": {
+  "file": "Walking_04_0.30_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p322": {
+  "file": "Walking_05_0.39_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p323": {
+  "file": "Walking_05_0.39_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p324": {
+  "file": "Walking_05_0.39_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p325": {
+  "file": "Walking_06_0.40_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p326": {
+  "file": "Walking_06_0.40_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p327": {
+  "file": "Walking_06_0.40_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p328": {
+  "file": "Walking_07_0.47_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p329": {
+  "file": "Walking_07_0.47_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p330": {
+  "file": "Walking_07_0.47_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p331": {
+  "file": "Walking_08_0.56_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p332": {
+  "file": "Walking_08_0.56_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p333": {
+  "file": "Walking_08_0.56_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p334": {
+  "file": "Walking_09_0.65_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p335": {
+  "file": "Walking_09_0.65_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p336": {
+  "file": "Walking_09_0.65_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p337": {
+  "file": "Walking_10_0.73_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p338": {
+  "file": "Walking_10_0.73_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p339": {
+  "file": "Walking_10_0.73_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p340": {
+  "file": "Walking_11_0.80_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p341": {
+  "file": "Walking_11_0.80_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p342": {
+  "file": "Walking_11_0.80_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p343": {
+  "file": "Walking_12_0.82_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p344": {
+  "file": "Walking_12_0.82_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p345": {
+  "file": "Walking_12_0.82_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p346": {
+  "file": "Walking_13_0.90_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p347": {
+  "file": "Walking_13_0.90_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p348": {
+  "file": "Walking_13_0.90_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p349": {
+  "file": "Walking_14_0.99_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p350": {
+  "file": "Walking_14_0.99_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p351": {
+  "file": "Walking_14_0.99_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p352": {
+  "file": "mage_soell_cast_00_0.19_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p353": {
+  "file": "mage_soell_cast_00_0.19_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p354": {
+  "file": "mage_soell_cast_00_0.19_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p355": {
+  "file": "mage_soell_cast_01_0.33_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p356": {
+  "file": "mage_soell_cast_01_0.33_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p357": {
+  "file": "mage_soell_cast_01_0.33_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p358": {
+  "file": "mage_soell_cast_02_0.57_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p359": {
+  "file": "mage_soell_cast_02_0.57_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p360": {
+  "file": "mage_soell_cast_02_0.57_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p361": {
+  "file": "mage_soell_cast_03_0.94_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p362": {
+  "file": "mage_soell_cast_03_0.94_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p363": {
+  "file": "mage_soell_cast_03_0.94_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p364": {
+  "file": "mage_soell_cast_04_1.32_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p365": {
+  "file": "mage_soell_cast_04_1.32_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p366": {
+  "file": "mage_soell_cast_04_1.32_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p367": {
+  "file": "mage_soell_cast_05_1.67_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p368": {
+  "file": "mage_soell_cast_05_1.67_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p369": {
+  "file": "mage_soell_cast_05_1.67_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p370": {
+  "file": "mage_soell_cast_06_1.70_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p371": {
+  "file": "mage_soell_cast_06_1.70_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p372": {
+  "file": "mage_soell_cast_06_1.70_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p373": {
+  "file": "mage_soell_cast_07_1.93_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p374": {
+  "file": "mage_soell_cast_07_1.93_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p375": {
+  "file": "mage_soell_cast_07_1.93_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p376": {
+  "file": "mage_soell_cast_08_2.08_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p377": {
+  "file": "mage_soell_cast_08_2.08_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p378": {
+  "file": "mage_soell_cast_08_2.08_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p379": {
+  "file": "mage_soell_cast_3_00_0.28_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p380": {
+  "file": "mage_soell_cast_3_00_0.28_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p381": {
+  "file": "mage_soell_cast_3_00_0.28_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p382": {
+  "file": "mage_soell_cast_3_01_0.83_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p383": {
+  "file": "mage_soell_cast_3_01_0.83_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p384": {
+  "file": "mage_soell_cast_3_01_0.83_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p385": {
+  "file": "mage_soell_cast_3_02_1.13_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p386": {
+  "file": "mage_soell_cast_3_02_1.13_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p387": {
+  "file": "mage_soell_cast_3_02_1.13_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p388": {
+  "file": "mage_soell_cast_3_03_1.39_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p389": {
+  "file": "mage_soell_cast_3_03_1.39_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p390": {
+  "file": "mage_soell_cast_3_03_1.39_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p391": {
+  "file": "mage_soell_cast_3_04_1.94_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p392": {
+  "file": "mage_soell_cast_3_04_1.94_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p393": {
+  "file": "mage_soell_cast_3_04_1.94_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p394": {
+  "file": "mage_soell_cast_3_05_2.40_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p395": {
+  "file": "mage_soell_cast_3_05_2.40_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p396": {
+  "file": "mage_soell_cast_3_05_2.40_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p397": {
+  "file": "mage_soell_cast_3_06_2.50_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p398": {
+  "file": "mage_soell_cast_3_06_2.50_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p399": {
+  "file": "mage_soell_cast_3_06_2.50_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p400": {
+  "file": "mage_soell_cast_3_07_2.67_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p401": {
+  "file": "mage_soell_cast_3_07_2.67_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p402": {
+  "file": "mage_soell_cast_3_07_2.67_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p403": {
+  "file": "mage_soell_cast_3_08_3.06_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p404": {
+  "file": "mage_soell_cast_3_08_3.06_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p405": {
+  "file": "mage_soell_cast_3_08_3.06_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p406": {
+  "file": "mage_soell_cast_4_00_0.18_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p407": {
+  "file": "mage_soell_cast_4_00_0.18_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p408": {
+  "file": "mage_soell_cast_4_00_0.18_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p409": {
+  "file": "mage_soell_cast_4_01_0.47_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p410": {
+  "file": "mage_soell_cast_4_01_0.47_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p411": {
+  "file": "mage_soell_cast_4_01_0.47_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p412": {
+  "file": "mage_soell_cast_4_02_0.55_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p413": {
+  "file": "mage_soell_cast_4_02_0.55_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p414": {
+  "file": "mage_soell_cast_4_02_0.55_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p415": {
+  "file": "mage_soell_cast_4_03_0.73_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p416": {
+  "file": "mage_soell_cast_4_03_0.73_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p417": {
+  "file": "mage_soell_cast_4_03_0.73_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p418": {
+  "file": "mage_soell_cast_4_04_0.92_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p419": {
+  "file": "mage_soell_cast_4_04_0.92_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p420": {
+  "file": "mage_soell_cast_4_04_0.92_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p421": {
+  "file": "mage_soell_cast_4_05_1.00_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p422": {
+  "file": "mage_soell_cast_4_05_1.00_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p423": {
+  "file": "mage_soell_cast_4_05_1.00_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p424": {
+  "file": "mage_soell_cast_4_06_1.28_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p425": {
+  "file": "mage_soell_cast_4_06_1.28_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p426": {
+  "file": "mage_soell_cast_4_06_1.28_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p427": {
+  "file": "mage_soell_cast_4_07_1.65_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p428": {
+  "file": "mage_soell_cast_4_07_1.65_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p429": {
+  "file": "mage_soell_cast_4_07_1.65_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p430": {
+  "file": "mage_soell_cast_4_08_2.02_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p431": {
+  "file": "mage_soell_cast_4_08_2.02_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p432": {
+  "file": "mage_soell_cast_4_08_2.02_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p433": {
+  "file": "mage_soell_cast_5_00_0.95_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p434": {
+  "file": "mage_soell_cast_5_00_0.95_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p435": {
+  "file": "mage_soell_cast_5_00_0.95_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p436": {
+  "file": "mage_soell_cast_5_01_2.40_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p437": {
+  "file": "mage_soell_cast_5_01_2.40_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p438": {
+  "file": "mage_soell_cast_5_01_2.40_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p439": {
+  "file": "mage_soell_cast_5_02_2.84_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p440": {
+  "file": "mage_soell_cast_5_02_2.84_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p441": {
+  "file": "mage_soell_cast_5_02_2.84_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p442": {
+  "file": "mage_soell_cast_5_03_4.00_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p443": {
+  "file": "mage_soell_cast_5_03_4.00_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p444": {
+  "file": "mage_soell_cast_5_03_4.00_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p445": {
+  "file": "mage_soell_cast_5_04_4.27_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p446": {
+  "file": "mage_soell_cast_5_04_4.27_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p447": {
+  "file": "mage_soell_cast_5_04_4.27_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p448": {
+  "file": "mage_soell_cast_5_05_4.74_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p449": {
+  "file": "mage_soell_cast_5_05_4.74_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p450": {
+  "file": "mage_soell_cast_5_05_4.74_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p451": {
+  "file": "mage_soell_cast_5_06_6.63_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p452": {
+  "file": "mage_soell_cast_5_06_6.63_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p453": {
+  "file": "mage_soell_cast_5_06_6.63_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p454": {
+  "file": "mage_soell_cast_5_07_8.53_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p455": {
+  "file": "mage_soell_cast_5_07_8.53_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p456": {
+  "file": "mage_soell_cast_5_07_8.53_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p457": {
+  "file": "mage_soell_cast_5_08_10.42_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p458": {
+  "file": "mage_soell_cast_5_08_10.42_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p459": {
+  "file": "mage_soell_cast_5_08_10.42_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p460": {
+  "file": "mage_soell_cast_6_00_0.19_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p461": {
+  "file": "mage_soell_cast_6_00_0.19_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p462": {
+  "file": "mage_soell_cast_6_00_0.19_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p463": {
+  "file": "mage_soell_cast_6_01_0.47_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p464": {
+  "file": "mage_soell_cast_6_01_0.47_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p465": {
+  "file": "mage_soell_cast_6_01_0.47_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p466": {
+  "file": "mage_soell_cast_6_02_0.57_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p467": {
+  "file": "mage_soell_cast_6_02_0.57_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p468": {
+  "file": "mage_soell_cast_6_02_0.57_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p469": {
+  "file": "mage_soell_cast_6_03_0.87_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p470": {
+  "file": "mage_soell_cast_6_03_0.87_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p471": {
+  "file": "mage_soell_cast_6_03_0.87_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p472": {
+  "file": "mage_soell_cast_6_04_0.96_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p473": {
+  "file": "mage_soell_cast_6_04_0.96_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p474": {
+  "file": "mage_soell_cast_6_04_0.96_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p475": {
+  "file": "mage_soell_cast_6_05_1.20_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p476": {
+  "file": "mage_soell_cast_6_05_1.20_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p477": {
+  "file": "mage_soell_cast_6_05_1.20_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p478": {
+  "file": "mage_soell_cast_6_06_1.34_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p479": {
+  "file": "mage_soell_cast_6_06_1.34_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p480": {
+  "file": "mage_soell_cast_6_06_1.34_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p481": {
+  "file": "mage_soell_cast_6_07_1.73_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p482": {
+  "file": "mage_soell_cast_6_07_1.73_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p483": {
+  "file": "mage_soell_cast_6_07_1.73_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p484": {
+  "file": "mage_soell_cast_6_08_2.11_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p485": {
+  "file": "mage_soell_cast_6_08_2.11_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p486": {
+  "file": "mage_soell_cast_6_08_2.11_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p487": {
+  "file": "mage_soell_cast_7_00_0.20_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p488": {
+  "file": "mage_soell_cast_7_00_0.20_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p489": {
+  "file": "mage_soell_cast_7_00_0.20_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p490": {
+  "file": "mage_soell_cast_7_01_0.22_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p491": {
+  "file": "mage_soell_cast_7_01_0.22_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p492": {
+  "file": "mage_soell_cast_7_01_0.22_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p493": {
+  "file": "mage_soell_cast_7_02_0.47_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p494": {
+  "file": "mage_soell_cast_7_02_0.47_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p495": {
+  "file": "mage_soell_cast_7_02_0.47_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p496": {
+  "file": "mage_soell_cast_7_03_0.67_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p497": {
+  "file": "mage_soell_cast_7_03_0.67_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p498": {
+  "file": "mage_soell_cast_7_03_0.67_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p499": {
+  "file": "mage_soell_cast_7_04_1.11_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p500": {
+  "file": "mage_soell_cast_7_04_1.11_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p501": {
+  "file": "mage_soell_cast_7_04_1.11_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p502": {
+  "file": "mage_soell_cast_7_05_1.56_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p503": {
+  "file": "mage_soell_cast_7_05_1.56_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p504": {
+  "file": "mage_soell_cast_7_05_1.56_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p505": {
+  "file": "mage_soell_cast_7_06_2.00_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p506": {
+  "file": "mage_soell_cast_7_06_2.00_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p507": {
+  "file": "mage_soell_cast_7_06_2.00_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p508": {
+  "file": "mage_soell_cast_7_07_2.44_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p509": {
+  "file": "mage_soell_cast_7_07_2.44_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p510": {
+  "file": "mage_soell_cast_7_07_2.44_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p511": {
+  "file": "mage_soell_cast_7_08_2.53_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p512": {
+  "file": "mage_soell_cast_7_08_2.53_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p513": {
+  "file": "mage_soell_cast_7_08_2.53_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p514": {
+  "file": "mage_soell_cast_8_00_0.00_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p515": {
+  "file": "mage_soell_cast_8_00_0.00_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p516": {
+  "file": "mage_soell_cast_8_00_0.00_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p517": {
+  "file": "mage_soell_cast_8_01_0.11_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p518": {
+  "file": "mage_soell_cast_8_01_0.11_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p519": {
+  "file": "mage_soell_cast_8_01_0.11_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p520": {
+  "file": "mage_soell_cast_8_02_0.33_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p521": {
+  "file": "mage_soell_cast_8_02_0.33_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p522": {
+  "file": "mage_soell_cast_8_02_0.33_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p523": {
+  "file": "mage_soell_cast_8_03_0.56_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p524": {
+  "file": "mage_soell_cast_8_03_0.56_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p525": {
+  "file": "mage_soell_cast_8_03_0.56_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p526": {
+  "file": "mage_soell_cast_8_04_0.78_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p527": {
+  "file": "mage_soell_cast_8_04_0.78_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p528": {
+  "file": "mage_soell_cast_8_04_0.78_C.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p529": {
+  "file": "mage_soell_cast_8_05_1.00_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p530": {
+  "file": "mage_soell_cast_8_05_1.00_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p531": {
+  "file": "mage_soell_cast_8_05_1.00_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p532": {
+  "file": "mage_soell_cast_8_06_1.07_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p533": {
+  "file": "mage_soell_cast_8_06_1.07_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p534": {
+  "file": "mage_soell_cast_8_06_1.07_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p535": {
+  "file": "mage_soell_cast_8_07_1.22_A.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p536": {
+  "file": "mage_soell_cast_8_07_1.22_B.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p537": {
+  "file": "mage_soell_cast_8_07_1.22_C.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p538": {
+  "file": "mage_soell_cast_8_08_1.33_A.jpg",
+  "X": "after",
+  "Y": "before"
+ },
+ "p539": {
+  "file": "mage_soell_cast_8_08_1.33_B.jpg",
+  "X": "before",
+  "Y": "after"
+ },
+ "p540": {
+  "file": "mage_soell_cast_8_08_1.33_C.jpg",
+  "X": "after",
+  "Y": "before"
+ }
+}
