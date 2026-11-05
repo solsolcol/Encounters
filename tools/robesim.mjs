@@ -258,54 +258,18 @@ const liftTargets = C => { const d0 = new Float64Array(NP), hp = posOf(Wj(ji('Hi
     for (let c = 0; c < NA; c++) for (let j = 0; j < NR; j++) { const p = pid(c, j); if (pinned[p]) continue; nd[p] = Math.max(d0[p], 0.25 * (d[pid(c - 1, j)] + d[pid(c + 1, j)] + d[pid(c, Math.max(0, j - 1))] + d[pid(c, Math.min(NR - 1, j + 1))])); }
     d = nd; }
   for (let p = 0; p < NP; p++) Tg[3 * p + 1] += d[p]; };
-/* PUSHSPREAD=n (v24.49; PUSHSPREADTAKES=<take,...> limits it to those takes): the push a leg gives the targets it holds
-   inside it, SPREAD to the targets round them (n passes, each target taking the mean of its four neighbours' push where
-   that is larger than its own; the waist's row never moves), then every target pushed out of his legs once more and its
-   path checked as before. Pushed alone, the targets a knee held inside it stood 13-25 cm out from the robe's shape while
-   the row above, over the thigh, stood 2-9 cm out: in the first Charged cast's lunge the cloth between them stretched six
-   to seven times and his thigh showed through the robe's front overlap (the sword slash and cast_6 the same). Spread, the
-   robe stands off his knee as a cone from his hip, as cloth over a lifted knee does. Unset, nothing here runs. */
-const PUSHSPREAD = E('PUSHSPREAD', 0), PUSHSPREADTAKES = (process.env.PUSHSPREADTAKES || '').split(',').filter(Boolean), pushD = PUSHSPREAD ? new Float64Array(NP * 3) : null; let pushing = false;
-/* LAPDROP=n (v24.49, in the LEGWRAPTAKES): sitting cross-legged, the robe's shape LAID DOWN on his legs, as cloth falls
-   on a lap — each target standing over a level leg (within its reach seen from above: its thickness, the margin and the
-   robe's layers there) lowered straight down onto it, and the drop spread to the targets round it (n passes, never less
-   than its own), so the cloth comes down over his thighs and knees smoothly. Carried by his legs at their whole rest
-   distance, the robe's front that hung loose before his shins stood 5-12 cm over his forearms and hands, and his hands,
-   resting on his knees, sank out of sight into it; pulled in toward his legs instead (v24.48's hug), it let his knee
-   through at the front of his lap. Unset, nothing here runs. */
-const LAPDROP = E('LAPDROP', 0);
-const dropTargets = C => { const d0 = new Float64Array(NP);
-  for (let p = 0; p < NP; p++) { if (pinned[p]) continue; const o = 3 * p, x = Tg[o], y = Tg[o + 1], z = Tg[o + 2]; let top = -Infinity;
-    for (const [A, B, pr] of C) { if (!pr || !level(A, B)) continue; const abx = B.x - A.x, abz = B.z - A.z, L2 = abx * abx + abz * abz, t = clamp01(L2 > 1e-12 ? ((x - A.x) * abx + (z - A.z) * abz) / L2 : 0);
-      const qx = A.x + abx * t, qz = A.z + abz * t, qy = A.y + (B.y - A.y) * t, rr = radAt(pr, t) + MARGIN + depth[p], h = Math.hypot(x - qx, z - qz); if (h >= rr) continue; top = Math.max(top, qy + Math.sqrt(rr * rr - h * h)); }
-    if (top > -Infinity && y > top) d0[p] = top - y; }
-  let d = d0; for (let pass = 0; pass < LAPDROP; pass++) { const nd = new Float64Array(NP);
-    for (let c = 0; c < NA; c++) for (let j = 0; j < NR; j++) { const p = pid(c, j); if (pinned[p]) continue; nd[p] = Math.min(d0[p], 0.25 * (d[pid(c - 1, j)] + d[pid(c + 1, j)] + d[pid(c, Math.max(0, j - 1))] + d[pid(c, Math.min(NR - 1, j + 1))])); }
-    d = nd; }
-  for (let p = 0; p < NP; p++) Tg[3 * p + 1] += d[p]; };
 const projectTargets = C => { Tp.set(Tg);
-  if (pushing) { for (let p = 0; p < NP; p++) if (!pinned[p]) projOne(p, C);
-    for (let o = 0; o < 3 * NP; o++) pushD[o] = Tp[o] - Tg[o];
-    let d = pushD; for (let pass = 0; pass < PUSHSPREAD; pass++) { const nd = new Float64Array(NP * 3);
-      for (let c = 0; c < NA; c++) for (let j = 0; j < NR; j++) { const p = pid(c, j); if (pinned[p]) continue; const o = 3 * p, ns = [pid(c - 1, j), pid(c + 1, j), pid(c, Math.max(0, j - 1)), pid(c, Math.min(NR - 1, j + 1))];
-        let mx = 0, my = 0, mz = 0; for (const q of ns) { mx += 0.25 * d[3 * q]; my += 0.25 * d[3 * q + 1]; mz += 0.25 * d[3 * q + 2]; }
-        if (mx * mx + my * my + mz * mz > pushD[o] * pushD[o] + pushD[o + 1] * pushD[o + 1] + pushD[o + 2] * pushD[o + 2]) { nd[o] = mx; nd[o + 1] = my; nd[o + 2] = mz; } else { nd[o] = pushD[o]; nd[o + 1] = pushD[o + 1]; nd[o + 2] = pushD[o + 2]; } }
-      d = nd; }
-    for (let p = 0; p < NP; p++) { if (pinned[p]) continue; const o = 3 * p; Tp[o] = Tg[o] + d[o]; Tp[o + 1] = Tg[o + 1] + d[o + 1]; Tp[o + 2] = Tg[o + 2] + d[o + 2]; projOne(p, C); checkOne(p, C); }
-    return; }
-  for (let p = 0; p < NP; p++) { if (pinned[p]) continue; projOne(p, C); checkOne(p, C); } };
-const projOne = (p, C) => { const o = 3 * p;
+  for (let p = 0; p < NP; p++) { if (pinned[p]) continue; const o = 3 * p;
     for (const col of C) { const [A, B, pr] = col; if (!pr) continue; const abx = B.x - A.x, aby = B.y - A.y, abz = B.z - A.z, L2 = abx * abx + aby * aby + abz * abz;
       let t = ((Tp[o] - A.x) * abx + (Tp[o + 1] - A.y) * aby + (Tp[o + 2] - A.z) * abz) / L2; if (col.openA && t < 0) continue; t = Math.max(0, Math.min(1, t));
       const qx = A.x + abx * t, qy = A.y + aby * t, qz = A.z + abz * t, r = colR(p, col, t);
       if (Math.hypot(Tp[o] - qx, Tp[o + 1] - qy, Tp[o + 2] - qz) >= r) continue;
       if (draping && level(A, B) && Tp[o + 1] < qy) { Tp[o + 1] = liftY(Tp[o], Tp[o + 1], Tp[o + 2], A, B, pr, MARGIN + depth[p]); continue; }
       let ux = X[o] - qx, uy = X[o + 1] - qy, uz = X[o + 2] - qz; const along = (ux * abx + uy * aby + uz * abz) / L2; ux -= abx * along; uy -= aby * along; uz -= abz * along;
-      const ul = Math.hypot(ux, uy, uz); if (ul < 1e-9) continue; Tp[o] = qx + ux / ul * r; Tp[o + 1] = qy + uy / ul * r; Tp[o + 2] = qz + uz / ul * r; } };
-const checkOne = (p, C) => { const o = 3 * p;
+      const ul = Math.hypot(ux, uy, uz); if (ul < 1e-9) continue; Tp[o] = qx + ux / ul * r; Tp[o + 1] = qy + uy / ul * r; Tp[o + 2] = qz + uz / ul * r; }
     for (const col of C) { const [A, B, pr] = col; if (!pr) continue; const [d, t] = segSeg(X[o], X[o + 1], X[o + 2], Tp[o], Tp[o + 1], Tp[o + 2], A, B);
       if (col.openA && t <= 0) continue;
-      if (d < colR(p, col, t) - 1e-4) { Tp[o] = X[o]; Tp[o + 1] = X[o + 1]; Tp[o + 2] = X[o + 2]; break; } } };
+      if (d < colR(p, col, t) - 1e-4) { Tp[o] = X[o]; Tp[o + 1] = X[o + 1]; Tp[o + 2] = X[o + 2]; break; } } } };
 log(`robesim: each particle skinned like the ${KNN} robe points nearest it (${cand.length} on the robe's outside; ${tjs.length} bones in all)`);
 
 /* the constraints: round the ring and down the column (stretch), the diagonals (shear), skip-one both ways (bend) */
@@ -385,7 +349,6 @@ log(`robesim: ${moved} skirt points re-skinned to the cloth (their share on the 
 const X = new Float64Array(NP * 3), Xp = new Float64Array(NP * 3);
 const step = C => {
   const g = GRAV * DT * DT; if (draping) liftTargets(C);
-  if (legwrapping && LAPDROP) dropTargets(C);
   if (draping && DRAPEKIN) { X.set(Tg); Xp.set(Tg); return; }   // DRAPEKIN: the laid robe as it is, no cloth moving
   projectTargets(C);
   for (let p = 0; p < NP; p++) { const o = 3 * p;
@@ -530,7 +493,6 @@ for (const k of MAXDTAKES.keys()) if (!root.listAnimations().some(a => a.getName
 skinOn = true;
 for (const an of root.listAnimations()) { const dur = duration(an); if (ONLY && !ONLY.includes(an.getName())) continue; draping = DRAPETAKES.includes(an.getName()); legwrapping = LEGWRAPTAKES.includes(an.getName());
   setMaxD(MAXDTAKES.has(an.getName()) ? MAXDTAKES.get(an.getName()) : MAXD);
-  pushing = PUSHSPREAD > 0 && (!PUSHSPREADTAKES.length || PUSHSPREADTAKES.includes(an.getName()));
   /* a take that ends as it began (his feet, knees and hips within 3 cm) loops: run twice, the second pass kept */
   const ends = t => { pose(an, t); return ['Hips', 'LeftFoot', 'RightFoot'].map(x => posOf(Wj(ji(x)))).concat(['Left', 'Right'].map(s => posOf(Wj(gL[s])))); };
   const e0 = ends(0), e1 = ends(dur), loops = e0.every((p, k) => p.distanceTo(e1[k]) < 0.03);

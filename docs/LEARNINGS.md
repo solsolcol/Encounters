@@ -7542,3 +7542,32 @@ cut (sharing its vertices and maps) when it is small.
   27 of 27 better against v24.47 for one reader and 25 of 27 "the same" for the next ("Y's robe just hangs a little
   fuller"); the floor sit 27 of 27 better against his saved file, then 18 of 27. Read a take's count beside its notes,
   and weigh a take that flips between passes as a close call, not a finding.
+
+## v24.49 — a lifted hem's two layers, a slit a push cannot close, and a lap a cloth cannot lie on
+
+- **Inside a lifted hem, every layer a cut leaves is seen.** The crumpled white and grey shards inside the first Charged
+  cast's hem were two layers: the back of the robe's own wall, and 1-5 cm in front of it, scraps of the scan's lining that
+  the visibility cut kept because a view from beside the hem grazed them (up to 4.7 cm high, with a ragged top edge). The
+  cloth there lay smooth (no particle fold); the triangles were the fault. Sort what a box of the picture holds by layer
+  before tuning anything: the triangle's rest normal against the hips' axis says outer wall (out), lining (in) or strip
+  (down), and front or back face says which side the camera sees. Taking the lining's lowest centimetres out leaves one
+  layer, the wall's back, and it reads clean; the rolled edge's own strip and lip stay, for the thin dark line along the
+  hem that readers call clean.
+- **Behind the cloth is not through it.** The sliver of his knee in the lunges sat 1-5 cm BEHIND the nearest cloth: it
+  was seen through the slit along the edge of the wrap's outer panel, not poking out. Spreading the knee's push to the
+  cloth round it moved the slit from moment to moment (one moment's sliver grew from 29 to 111 px) and pushed his shin
+  through the robe in another take (0 -> 71 points). Compare the depths of the leg and the nearest cloth at the pixel
+  before choosing a cure: a push cures a leg through cloth, never a slit.
+- **A thick scanned robe cannot lie on a lap.** Its layers (pleats, under-panels) ride 2-5 cm under its surface, and the
+  real legs bulge past any capsule fitted to them: laid down onto the legs, the robe let the knees out at its sides
+  (floating leg pieces 9 -> 76); pulled in toward them, at its front (v24.48). Hands resting on the knees need the hands
+  raised onto the robe or a thinner garment there — a change to him, so his to choose, said with the measure.
+- **A keep that guards against one cut can starve another.** HEMKEEP kept the hem's rolled edge whole against the hem
+  rim's cut (RIM), and as first written against the old floor's cut (FLOOR) too — and FLOOR, cutting by each shin, was
+  what had taken the old opening's first centimetres between his shins. 493 fewer triangles went, and the readers of the
+  first final against v24.48 found them as a grey "comb" between his legs: 16 of the 32 pictures they rated worse were
+  the three chair sits. The
+  count saw only a little more leg, and the trials had photographed only the takes the fix was for. When an option
+  exempts triangles from later steps, log what each later step now leaves (FLOOR 1,674 -> 1,181 said it plainly), make
+  each exemption its own switch (HEMKEEPFLOOR, off), and photograph where the left-over triangles are, in every take
+  that has them.

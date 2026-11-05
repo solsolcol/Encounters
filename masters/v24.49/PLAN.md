@@ -70,3 +70,98 @@ before his shins), and his palms, 4.7 cm over his thighs near the knees, are und
   thickness, the margin and the robe's layers there) and the drop spread to the targets round it (n passes, never less
   than its own) — cloth laid on a lap. On the dumped targets, 6 passes bring the cloth over his hands to 0-4 cm above
   their middle line. Trial on the floor sit.
+
+**Step 4 · the push spread tried, and not taken.** Trials on the three takes with walking and running (6 passes) and on
+the three alone (12 passes), counted on their moments x 6 sides against v24.48: the first Charged cast's floating leg
+pieces 4 (248 px) -> 3 (136) -> 1 (111), the sword slash's 1 (71) -> 2 (79) -> 1 (62), cast_6's 1 (55) -> 1 (27) -> 1 (27);
+but cast_6's shin came through the robe at the knee (0 -> 37 -> 71 points), and at 1.556 s the Charged cast's sliver grew
+(29 -> 111 px). Looked at with the depths: the knee is BEHIND the cloth there (1-5 cm), seen through the slit along the
+edge of the wrap's outer panel, which ends about 50 cm up at his front-left; the spread moves the slit between moments
+and does not close it. tools/robesim.mjs is again v24.48's (only its debug dump now also writes his arms' bones).
+
+**Step 5 · the lap laid down tried, and not taken.** One-take trial (LAPDROP=6): the robe over his lap came down by about
+5 cm near his hands, to his wrists, and the hands stayed mostly under it, while his knees came out through its sides
+(floating leg pieces on the nine moments 9 -> 76, seen now from his left, his right and behind-left too; legs through the
+cloth 7,606 -> 9,722). Of the earlier ways: pulled in toward his legs (v24.48's hug), the knee came through at the front.
+What would show his hands needs his hands raised onto the robe (about 10 cm at his fingertips on today's lap, his
+forearms then near level) or a thin lap the robe's own layers cannot make: both change him, so they are his to choose.
+
+**Step 6 · the final file (masters/v24.49/make.sh): v24.48's with the hem fix of step 1.** robeshell RIM, FLOOR, INNER,
+ISLANDS as v24.48 with HEMKEEP=0.02, HEMLINING=0.06, HEMLININGBAND=1; robesim and prepmonk as v24.48.
+The shell (sha1 ccd4b67d): HEMKEEP keeps 11,062 triangles of the rolled edge whole (3,629 given back), HEMLINING takes
+609 more of the lining, RIM 435, FLOOR 1,181 (v24.48's 1,674: the band is left alone now), INNER 302, ISLANDS 39 scraps
+of 162. The cloth (761a83df) keeps 95,858 of 264,800 keys; SKINPUSH moved 454,783 robe points (the most any needed, 5.0 cm). The
+file: 560,638 -> 168,190 triangles, 19 takes, 8,664,648 bytes (sha1 bd33efcb; v24.48's 8,624,964).
+- The proofs, with the final code: robeshell with RIM alone on v24.47's graft gives v24.47's pho_shell.glb (51104ba9);
+  with v24.48's options on v24.48's graft, v24.48's (e681032f); robesim with v24.48's options on v24.48's shell gives
+  v24.48's pho_cloth.glb (fbd6786e) — byte for byte, all three.
+
+**Step 7 · the count, 179 moments x 6 sides (v24.48 / v24.49).** Floating leg pieces 26 / 26 (7,720 / 9,132 px: the
+floor sit's gap at the front of his lap, where his crossed shins show, 120 px larger in each of its nine moments; two
+gone in cast_4 and one in cast_7, one new in running and one in talking from behind and above, his heel); legs through
+the cloth outside the floor sit 413 / 445; torn robe triangles 54,459 / 60,497 (the rolled edge kept whole, stretched
+round a flared hem, counts as torn); the robe seen inside out 1.24 / 1.20 million px.
+
+**Step 8 · read blind against his saved file, all 540 pictures, twenty readers** (review/vs-saved; the pictures dealt
+to the readers interleaved this time, so each take is read by many readers, not one): better in 366, the same in 120,
+worse in 54 (v24.48: 347 / 78 / 115). Better in 17 takes — talking with hands open now 12 / 15 / 0 (v24.48 5 / 10 / 12),
+running 36 of 36, both chair sits 27 of 27 — and about even in 2: the first Charged cast 7 / 11 / 9 (v24.48 4 / 6 / 17)
+and mage_soell_cast 8 / 13 / 6. None worse. Faults named: 1,034 in the new file against 1,454 in his.
+
+**Step 9 · the first final read blind against v24.48, all 540 pictures, twenty readers** (review/first-vs-v2448; step 8
+moved to review/first-vs-saved): better in 318, the same in 190, worse in 32 — talking with hands open 27 of 27, the
+first Charged cast 15 / 12 / 0, the floor sit 0 / 27 / 0. Most of the 32 name one thing in the new file: a grey spiky
+fan, a "comb" of streaks, between his legs from the front, in the three chair sits (Sitting_Answering_Questions 9 / 11
+/ 7, Sit_Shout 10 / 12 / 5, Sit_Cheer 8 / 15 / 4) and a few casts. Photographed (Sitting_Answering_Questions at 4.03 s
+from the front): at the bottom of the back hem seen between his shins, where v24.48 shows small white bits, the first
+final shows a grey comb. Mine: HEMKEEP as first written also kept the band out of FLOOR's reach, and FLOOR's cut by each
+shin (493 triangles fewer: 1,674 -> 1,181) is what took the old floor's first centimetres there. Now opt-in
+(robeshell HEMKEEPFLOOR=1); trial without it on the three chair sits, the Charged cast and talking.
+- Trial without it (the three chair sits, the first Charged cast, talking; FLOOR takes 2,029): the comb is gone — the
+  back hem between his shins is v24.48's again — and the Charged hem behind his heel and talking's corner keep the fix
+  (photographed beside v24.48 and the first final); on those five takes' moments x 6 sides, floating leg pieces 8
+  (1,667 px) against v24.48's 7 (1,638) and the first final's 9 (2,051).
+
+**Step 10 · the final file built again without HEMKEEPFLOOR (masters/v24.49/make.sh as written).** Chad's rule that a
+check is made once where it can catch something, never repeated after each tweak: the count is made on all 179 moments
+x 6 sides again (it is a machine's), and only the pictures that changed from the first final are read blind again,
+the new file against the first, by readers who are not told which is which.
+- Which pictures changed: all 540 (by 6,804 to 82,537 pixels, half of them by more than 30,692 — a change to the shell
+  moves the cloth's particles everywhere, as it did between v24.48's two finals). So all 540 are read blind, the final
+  against the first final only (twenty readers, dealt interleaved as in step 8): the two reviews of steps 8 and 9 stand
+  for the first final, and this one says whether the final keeps them.
+- A correction said out loud: "179 moments" (step 7 and above) and v24.48's "180" are the same count — the plan lists 180
+  and one of them, the first Charged cast at 0.667 s, twice; the counts are of the 179, the pictures of the 180.
+
+**Step 11 · the final file and its count.** The shell (sha1 3bb281b3): HEMKEEP keeps the same 11,062 triangles of the
+rolled edge whole (3,629 given back), HEMLINING takes 609, RIM 435, FLOOR 2,029 (v24.48's 1,674, the first final's
+1,181: the given-back edge between his shins is FLOOR's again), INNER 302, ISLANDS 42 scraps (175 triangles). The cloth
+(59fabc9d) keeps 95,466 of 264,800 keys; SKINPUSH moved 439,744 robe points (the most any needed, 5.0 cm). The file
+(masters/v24.49/prep/pho_final.glb): 559,777 -> 167,933 triangles, 19 takes, 8,654,336 bytes (sha1 1e228754).
+- The count, 179 moments x 6 sides (v24.48 / the first final / the final): floating leg pieces 26 / 26 / 33 (7,720 /
+  9,132 / 8,687 px) — outside the floor sit 17 / 17 / 17 (2,768 / 3,062 / 2,744 px: two gone in cast_4 and cast_7, one
+  more in the first Charged cast at 0.933 s, one new in running from behind and above, his heel); the floor sit 9 / 9 / 16
+  (4,952 / 6,070 / 5,943 px): the gap at the front of his lap where his crossed shins show, 89 px larger than v24.48's in
+  each of its nine moments, and, new, a hairline of his shin in a crease of the lap at the front of his left knee, seen
+  from his left in seven of them (25-29 px of the count's 600-px picture of a 1.5 m square, about 5 mm across; drawn
+  again with every piece marked, it is not there in v24.48's count, but in the photographs from his left a sliver of skin
+  as small shows in that crease in v24.48 too). Legs through the cloth outside the floor sit 413 / 445 / 421; torn robe triangles 54,459 / 60,497 / 58,931
+  (the rolled edge kept whole, stretched round a flared hem, counts as torn); the robe seen inside out 1.24 / 1.20 / 1.27
+  million px.
+
+**Step 12 · the final file read blind against the first final, all 540 pictures, twenty readers** (review/final-vs-first;
+under way at this checkpoint, ten readers in): the first final better in 103 pictures, the final in 11, the same in 156.
+The first final's wins name one thing again and again: small white shards and torn strips along the hem by his legs —
+over the front shin, at both ends of the front hem, under the side hem, above the heel — where FLOOR, given the rolled
+edge back, cuts it by each shin. The final's wins are the chair sits' comb, gone; even there it is no better overall.
+The comb's cure cost more than the comb.
+- Where the comb is made (phoid on the first final, Sitting_Answering_Questions at 4.028 s from the front, the box
+  round the comb): 60 triangles at 217-244 degrees round his hips (behind his right calf), riding the hem's row of cloth
+  bones there (Cloth_10_09 and Cloth_11_09 at 225 and 248 degrees), 1.4-3.2 cm round him from the hem band's triangles
+  that FLOOR takes when it may: of the 848 band triangles FLOOR takes, 125 lie behind the line of his two shins (all at
+  180-270 degrees), 723 in front of it and at his sides (577 by his left shin) — where the shards are.
+- robeshell HEMKEEPFLOORBACK=1 (with HEMKEEPFLOOR=1): FLOOR takes the band again behind his shins only (126 triangles:
+  FLOOR 1,307). Trial on the three chair sits, the sword slash, the hand-on-hip talk and cast_4 (the takes the readers'
+  notes name most), under way at this checkpoint.
+- The first final's recipe proven: robeshell with HEMKEEPFLOOR=1 on v24.48's graft gives the first final's shell byte
+  for byte (sha1 ccd4b67d); the cloth and the file after it, under way.

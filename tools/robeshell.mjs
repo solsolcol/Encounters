@@ -105,11 +105,12 @@ log(`robeshell: ${views.length} views at ${RES} px — ${nSeen} skirt triangles 
    its lowest point facing out (a skirt point whose normal's share away from that axis is OUTWARD or more), and every skirt
    triangle whose middle lies within HEMKEEP above that point and no more than HEMKEEPIN inside the wall's radius there
    stays, though no view from outside sees it (the curve faces down, the lip faces in) and though it lies near his old
-   shins (RIM and FLOOR, below, leave it alone). Cut by those two in fragments (within 2 cm of the bottom, 41 % of the underside
+   shins (RIM, below, leaves it alone; FLOOR too with HEMKEEPFLOOR=1 — which left the old floor's first centimetres by
+   each shin, and they showed between his shins as a grey comb in the chair sits). Cut by those two in fragments (within 2 cm of the bottom, 41 % of the underside
    and 76 % of the lip were out), what was left of the edge showed under every lifted or flared hem as loose white shards;
    his saved file's whole edge shows there as one smooth curve. The robe's lowest point itself is no guide: at his front
    it is the sheet deep inside between his legs (INNER and FLOOR take it). Unset, nothing here runs. */
-const keepBand = new Uint8Array(NT);
+const keepBand = new Uint8Array(NT), HEMKEEPFLOOR = E('HEMKEEPFLOOR', 0);   // HEMKEEPFLOOR=1: FLOOR leaves the band whole too
 if (process.env.HEMKEEP) { const HK = E('HEMKEEP', 0.02), HKIN = E('HEMKEEPIN', 0.03), NRMH = prim.getAttribute('NORMAL').getArray(), NAB = 120, wLow = new Float32Array(NAB).fill(9), wR = new Float32Array(NAB);
   const abin = (x, z) => { let a = Math.atan2(x, z); if (a < 0) a += 2 * Math.PI; return Math.min(NAB - 1, Math.floor(a / (2 * Math.PI) * NAB)); };
   for (let i = 0; i < n; i++) { if (!onSkirt[i]) continue; const x = P[3 * i] - hip.x, z = P[3 * i + 2] - hip.z, r = Math.hypot(x, z); if (r < 1e-6 || (NRMH[3 * i] * x + NRMH[3 * i + 2] * z) / r < OUTWARD) continue;
@@ -171,11 +172,17 @@ if (process.env.FLOOR) { const FLOORIN = E('FLOOR', 0.02), FLOORR = E('FLOORR', 
   for (let i = 0; i < n; i++) { if (!onSkirt[i]) continue; const x = P[3 * i] - hip.x, z = P[3 * i + 2] - hip.z, y = P[3 * i + 1], r = Math.hypot(x, z); if (y < 0 || y >= 1 || r < 1e-6) continue;
     if ((NRMA[3 * i] * x + NRMA[3 * i + 2] * z) / r < OUTWARD) continue; const k = abin(x, z) * NHB + Math.floor(y * 100); if (r > wall[k]) wall[k] = r; }
   let nFloor = 0; const fy = {};
-  for (const t of skirtTris) { if (drop[t] || keepBand[t]) continue; const vs = [0, 1, 2].map(m => new Vector3().fromArray(P, 3 * IDX[3 * t + m])), mid = vs[0].clone().add(vs[1]).add(vs[2]).multiplyScalar(1 / 3);
+  /* HEMKEEPFLOORBACK=1 (v24.49, with HEMKEEPFLOOR=1): the band is FLOOR's again where it lies behind his shins (behind the
+     middle of the two shins' axes at its height) — there, kept whole, its strip by his right calf stretched into a grey
+     comb seen between his shins in the chair sits; in front of them and at his sides, kept whole, it is the clean hem. */
+  const HKFBACK = E('HEMKEEPFLOORBACK', 0), axZ = p => axes.map(([A, B]) => { const ab = B.clone().sub(A), t = Math.max(0, Math.min(1, p.clone().sub(A).dot(ab) / ab.lengthSq())); return A.z + ab.z * t; }).reduce((s, z) => s + z / 2, 0);
+  let nBehind = 0;
+  for (const t of skirtTris) { if (drop[t]) continue; const vs = [0, 1, 2].map(m => new Vector3().fromArray(P, 3 * IDX[3 * t + m])), mid = vs[0].clone().add(vs[1]).add(vs[2]).multiplyScalar(1 / 3);
+    if (HEMKEEPFLOOR && keepBand[t]) { if (!HKFBACK || mid.z >= axZ(mid)) continue; nBehind++; }
     if (mid.y >= FLOORY || dAx(mid) >= FLOORR) continue; if (Math.abs(new Vector3().crossVectors(vs[1].clone().sub(vs[0]), vs[2].clone().sub(vs[0])).normalize().y) < FLOORNY) continue; const x = mid.x - hip.x, z = mid.z - hip.z, r = Math.hypot(x, z), ab = abin(x, z), h0 = Math.max(0, Math.floor(mid.y * 100));
     let ref = 0; for (const da of [-1, 0, 1]) { const a2 = (ab + da + NAB) % NAB; for (let h = h0; h <= Math.min(NHB - 1, h0 + Math.round(FLOORWIN * 100)); h++) ref = Math.max(ref, wall[a2 * NHB + h]); }
     if (ref - r > FLOORIN) { drop[t] = 1; nFloor++; const yy = (Math.floor(mid.y / 0.05) * 0.05).toFixed(2); fy[yy] = (fy[yy] || 0) + 1; } }
-  log(`robeshell: FLOOR ${FLOORIN} m — ${nFloor} more skirt triangles taken out (the floor of the robe's old opening round his shins, by height: ${Object.keys(fy).sort().map(y => `${y} ${fy[y]}`).join(', ')})`); }
+  log(`robeshell: FLOOR ${FLOORIN} m — ${nFloor} more skirt triangles taken out (the floor of the robe's old opening round his shins, by height: ${Object.keys(fy).sort().map(y => `${y} ${fy[y]}`).join(', ')})${HKFBACK ? `; the hem band FLOOR's again behind his shins: ${nBehind} triangles` : ''}`); }
 /* INNER=<metres> (v24.48; with INNERY 0.35 m, INNERWIN 0.06 m): the robe's INNER SHEETS low inside it taken out — cloth
    hanging deep inside the robe's own wall near the hem (between his legs at the front, 15 cm inside the front wall: the
    inner panel of the wrap as his scan made it), seen at rest only from below. Skinned to the cloth bones round it at that

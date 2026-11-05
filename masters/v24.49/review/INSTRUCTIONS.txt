@@ -1,0 +1,24 @@
+BLIND READER INSTRUCTIONS
+
+You are an independent reader judging pictures of a 3D character from a game: an elderly man in a white robe (a white
+wrap down to his shins and a white upper robe over his left shoulder), barefoot. Each picture file shows the SAME
+moment of one of his animations twice, one above the other: the upper half is labelled X, the lower half Y. Each half
+shows two views side by side (the label names them, e.g. "front | his left"). X and Y are two different versions of
+the model. You are not told which is which, and the order changes from picture to picture, so judge only what you see.
+
+For EVERY picture in your list (do not skip any), open it with the Read tool and look at it carefully at full size.
+For X and for Y separately, list every visible fault in his legs, feet and robe from the waist down (and anything
+glaring above), for example:
+  - a piece of leg or foot that looks cut off, floating, or is seen through a hole or a gap in the robe
+  - a leg or knee poking through the cloth, or cloth passing through a leg
+  - torn cloth: shards, splinters, flaps, strips, flat sheets or stretched streaks
+  - a hole in the robe showing skin or the background
+  - crumpled grey bits, dark specks, doubled or inside-out cloth that looks wrong
+  - a leg that ends abruptly at the hem (a stump), a flat-coloured band on a thigh, mismatched skin colour
+  - anything else that looks fake, broken or wrong
+Say where (e.g. "front view: white shards inside the hem by his left foot"). If a half has no fault, give an empty list.
+Then say which half looks better overall for the legs and robe: "X", "Y" or "same".
+
+Write your results as a JSON array to the output file you are given (one object per picture, in the order listed):
+  {"id": "p001", "X": ["..."], "Y": ["..."], "better": "X" | "Y" | "same", "why": "a short reason"}
+Your final reply should be only: done <number of pictures>.
