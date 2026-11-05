@@ -133,3 +133,8 @@ thigh).
   floating pieces 9/9/8 -> 8/9/6 and 9/9/8 — neither touches it, because the band is not the hem's edge. Both taken back
   out. Trial d, robeshell INNER=0.08 (cloth more than 8 cm inside the robe's own wall below 35 cm taken out): 271
   triangles, every one at his front and front-left at hem height, 20-30 cm off the floor — the sheet.
+  Counted on the eleven takes it can change (105 moments x 6 sides) against the first final file: floating leg pieces in
+  the three chair sits 9/9/8 -> 0/0/0, walking 3 -> 0, the second Charged cast 9 -> 4, cast_4 13 -> 8; torn robe
+  triangles down in nine of the eleven (walking 467 -> 284, sitting answering questions 2,001 -> 1,733); legs through the
+  cloth walking 96 -> 61, the sword slash 39 -> 28. Taken: robeshell INNER=0.08 is in the recipe, and the final file is
+  built again from step 5.

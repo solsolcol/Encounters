@@ -17,7 +17,10 @@
 #   - the crumples, white flaps and splinters inside a lifted hem: the floor of the robe's old opening round his old
 #     shins, running up inside the new legs, and the hem's underside and turned-in lip: robeshell FLOOR, HEMBASE, ISLANDS;
 #   - sitting cross-legged, his legs bare: robesim LEGWRAPTAKES (that take's robe carried by his real legs as a skirt
-#     skinned to its wearer's legs; his saved file's robe has no thighs inside it to cover).
+#     skinned to its wearer's legs; his saved file's robe has no thighs inside it to cover);
+#   - found by counting the first final file: sitting on a chair, a white band across his shins with skin showing above it
+#     (a sheet of the robe 15 cm inside its own front wall near the hem, between his legs, swung out and stretched four to
+#     five times when the robe lifts over his knees): robeshell INNER.
 #
 # THE DONOR: as v24.47 — the admin-tee man's scan, Chad's own, "soldier admin tee open eyes  w 9 animations.glb" in his
 #   Drive (id 1uPLWmKeoYYelsMf3E9NLerldCEhqDrvX, 125,531,744 bytes, sha1 cfe4b8488b75b51b254b0ffb1378a61ec6f1f038), kept as
@@ -30,9 +33,11 @@
 #   4. tools/leggraft.mjs mesh: his shins cut at 0.17 m and the donor's legs joined on.
 #   5. tools/robeshell.mjs: the robe below his waist one layer of cloth (as v24.47, with RIM), and now: FLOOR (the floor
 #      of the robe's old opening round each shin, a sheet sloping up inside the new leg to its axis: below 32 cm, within
-#      11 cm of a shin's axis, more than 2 cm inside the robe's own wall, lying flatter than upright), HEMBASE (the hem's
-#      underside and turned-in lip, not facing out, within 4.5 cm of the robe's lowest point round him) and ISLANDS
-#      (loose scraps of the skirt under 40 triangles).
+#      11 cm of a shin's axis, more than 2 cm inside the robe's own wall, lying flatter than upright), INNER (cloth more
+#      than 8 cm inside the robe's own wall below 35 cm: the sheet between his legs at the front; the wrap's under-panel,
+#      2-5 cm inside, and the pleats' valleys stay), HEMBASE (the hem's underside facing down, and its turned-in lip facing
+#      in away from his front, within 4.5 cm of the robe's lowest point round him; at his front, where the wrap overlaps,
+#      the lip and the panels' edges stay) and ISLANDS (loose scraps of the skirt under 40 triangles).
 #   6. tools/robesim.mjs: the robe below his waist as cloth, every take simulated and baked as 16 x 10 cloth bones, with
 #      TURNFIT/TURNSMOOTH=4 (the bones' turns fitted to their patches and smoothed), HIPOPEN and TOPTAPER=0.3 (the thighs
 #      open at the hip and thinned toward it), RESTCAP (no push past the rest), SKINPUSH=0.008 (the robe's points kept
@@ -61,7 +66,7 @@ BANDS=1 SKIRT=12 SKIRTB=3 FIT=Sit_Cross_Legged_on_Floor,mage_soell_cast_8,Right_
   ARMBLEND=0.10 HEMRING=0 \
   sh -c "LEGRIG=1 node tools/robeskin.mjs $T/pho_legs.glb $T/pho_robe.glb && node tools/robeskin.mjs $T/pho_legs.glb $T/pho_robe_rig.glb"
 node tools/leggraft.mjs mesh $T/pho_robe.glb $T/admintee_smooth.glb $T/pho_graft.glb
-RIM=0.08 FLOOR=0.02 HEMBASE=0.045 ISLANDS=40 node tools/robeshell.mjs $T/pho_graft.glb $T/pho_shell.glb
+RIM=0.08 FLOOR=0.02 INNER=0.08 HEMBASE=0.045 ISLANDS=40 node tools/robeshell.mjs $T/pho_graft.glb $T/pho_shell.glb
 TURNFIT=1 TURNSMOOTH=4 HIPOPEN=1 TOPTAPER=0.3 RESTCAP=1 SKINPUSH=0.008 \
   TARGETFROM=$T/pho_robe_rig.glb TARGETTAKES=Sit_Cheer_with_Left_Hand,Sit_Shout_Hands_on_Mouth \
   LEGWRAPTAKES=Sit_Cross_Legged_on_Floor MAXDTAKES=Running:0.08,Sit_Cross_Legged_on_Floor:0.03 \
