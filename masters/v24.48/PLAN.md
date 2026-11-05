@@ -138,3 +138,10 @@ thigh).
   triangles down in nine of the eleven (walking 467 -> 284, sitting answering questions 2,001 -> 1,733); legs through the
   cloth walking 96 -> 61, the sword slash 39 -> 28. Taken: robeshell INNER=0.08 is in the recipe, and the final file is
   built again from step 5.
+
+**Step 7 · the final file, built again with INNER (the recipe's steps 5-7; steps 1-4 unchanged and byte for byte
+v24.47's).** The shell is the one trial d counted (sha1 07380ffe: INNER 271 triangles, HEMBASE 2,281, ISLANDS 51 scraps of
+283); the cloth keeps 95,251 of 264,800 keys, SKINPUSH moved 443,888 robe points (the most any needed, 5.1 cm); the file:
+554,154 -> 166,245 triangles, 231 joints, 19 takes, 8,606,232 bytes (sha1 9c46b291). The proofs with the final code:
+robeshell with RIM alone on v24.47's graft gives v24.47's pho_shell.glb (51104ba9), and robesim is byte for byte the file
+whose v24.47 options rebuilt v24.47's pho_cloth.glb (e93ab6d0). Kept out of assets/ until counted and read.
