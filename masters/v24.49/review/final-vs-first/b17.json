@@ -1,0 +1,401 @@
+[
+ {
+  "id": "p017",
+  "X": [
+   "his back view: a long flat grey inner sheet (the robe's lining) shows under the back hem, stretched diagonally beside his heel",
+   "his back view: jagged white teeth along the lower edge of that inner sheet, at the middle and the lower right",
+   "his back view: thin white dashes along the folds at upper left",
+   "his right view: crumpled grey bits at the bottom of the hanging upper-robe edge above the foot"
+  ],
+  "Y": [
+   "his back view: a long flat grey inner sheet (the robe's lining) shows under the back hem, stretched diagonally beside his heel",
+   "his back view: a few small jagged teeth at the far right end of that inner sheet",
+   "his back view: thin white dashes along the folds at upper left",
+   "his right view: crumpled grey bits at the bottom of the hanging upper-robe edge above the foot"
+  ],
+  "better": "Y",
+  "why": "the same flat inner sheet in both, but X's edge is more torn with white teeth"
+ },
+ {
+  "id": "p037",
+  "X": [
+   "front view: white sliver and small shards under the hem at the left corner beside his right ankle",
+   "front view: thin white strip of lining showing along the hem's underside beside the right shin",
+   "his left view: flat white-grey sheet pieces with a stepped edge hanging under the hem behind the shin",
+   "his left view: small orange skin-coloured speck on the robe at a fold near the top"
+  ],
+  "Y": [
+   "front view: small white shard at the hem's left corner beside his right ankle",
+   "his left view: white spiky splinters fanning out under the hem behind the shin",
+   "his left view: small orange skin-coloured speck on the robe at a fold near the top"
+  ],
+  "better": "same",
+  "why": "each has a hem fault the other lacks: X a white strip and flat pieces, Y a fan of spiky splinters behind the shin"
+ },
+ {
+  "id": "p057",
+  "X": [
+   "behind-left view: tiny white dashes inside the folds near the top",
+   "behind-right view: small grey crumpled bits along the hem edge above the shin",
+   "behind-right view: small white stepped notch at the bottom of the hanging upper-robe edge"
+  ],
+  "Y": [
+   "behind-left view: tiny white dashes inside the folds near the top",
+   "behind-right view: small grey crumpled bits along the hem edge above the shin",
+   "behind-right view: small white stepped notch at the bottom of the hanging upper-robe edge"
+  ],
+  "better": "same",
+  "why": "identical apart from a small framing shift"
+ },
+ {
+  "id": "p077",
+  "X": [
+   "his back view: a white jagged shard and a white strip stuck on the shin just below the back hem",
+   "his back view: crumpled grey bits at the hem's right corner",
+   "his right view: crumpled grey-white bits at the hem corner beside the shin",
+   "his right view: inner hem layers stacked as doubled edges along the bottom"
+  ],
+  "Y": [
+   "his back view: a white star-shaped jagged shard and a white strip stuck on the shin just below the back hem",
+   "his back view: crumpled grey bits at the hem's right corner",
+   "his right view: crumpled grey-white bits at the hem corner beside the shin",
+   "his right view: inner hem layers stacked as doubled edges along the bottom"
+  ],
+  "better": "same",
+  "why": "the same white shard on the shin under the back hem in both; Y's is only marginally jaggier"
+ },
+ {
+  "id": "p097",
+  "X": [
+   "front view: inside the robe's opening around the raised shin, a bright flat white sheet with a ragged edge on the left and a white panel on the right",
+   "front view: crumpled grey bits at the hem beside the standing shin",
+   "his left view: the raised foot shows only as a small stub poking out behind the standing shin",
+   "his left view: blotchy flat-coloured patches on the standing shin",
+   "his left view: small crumpled bits at the hem's corners"
+  ],
+  "Y": [
+   "front view: inside the robe's opening around the raised shin, a smaller grey sheet with splinters on the left and a white panel on the right",
+   "front view: crumpled grey bits at the hem beside the standing shin",
+   "his left view: the raised foot shows only as a small stub poking out behind the standing shin",
+   "his left view: blotchy flat-coloured patches on the standing shin",
+   "his left view: small crumpled bits at the hem's corners"
+  ],
+  "better": "Y",
+  "why": "the inner sheet beside the raised shin is smaller and less glaring in Y; the rest is the same"
+ },
+ {
+  "id": "p117",
+  "X": [
+   "behind-left view: a white torn flap with splinters hanging from the hem's right corner by the shin",
+   "behind-left view: flat white lining sheet showing under the hem behind the legs",
+   "behind-left view: small white bits at the hem's left end"
+  ],
+  "Y": [
+   "behind-left view: a few small white splinters at the hem's right corner by the shin",
+   "behind-left view: flat white lining sheet showing under the hem behind the legs",
+   "behind-left view: small white bits at the hem's left end"
+  ],
+  "better": "Y",
+  "why": "smaller torn bits at the hem corner in Y"
+ },
+ {
+  "id": "p137",
+  "X": [
+   "his right view: the lower robe juts forward into a stiff angular sack with a sharp point at the front",
+   "his right view: small dark crumpled notch at the bottom corner of the hem by the feet",
+   "his back view: small white dashes in the folds"
+  ],
+  "Y": [
+   "his right view: the lower robe juts forward into a stiff angular sack with a sharp point at the front",
+   "his right view: small dark crumpled notch at the bottom corner of the hem by the feet",
+   "his right view: thin white streak along the hem edge just above the ankle",
+   "his back view: small white dashes in the folds"
+  ],
+  "better": "X",
+  "why": "otherwise identical; Y has a thin white streak along the hem above the ankle"
+ },
+ {
+  "id": "p157",
+  "X": [
+   "front view: the lap cloth is a flat stiff sheet across the knees with a straight top edge and small dark triangles on it",
+   "front view: a vertical slit in the cloth over the lap shows the skin of a leg through a gap, with loose cloth strips inside it",
+   "his left view: the lower robe curls into big doubled, inside-out-looking tubes",
+   "his left view: a vertical ragged strip with dark specks down the seam in the middle",
+   "his left view: orange skin specks showing through the folds"
+  ],
+  "Y": [
+   "front view: the lap cloth is a flat stiff sheet across the knees with a straight top edge and small dark triangles on it",
+   "front view: a vertical slit in the cloth over the lap shows the skin of a leg through a gap, with loose cloth strips inside it",
+   "his left view: the lower robe curls into big doubled, inside-out-looking tubes",
+   "his left view: a vertical ragged strip with dark specks down the seam in the middle",
+   "his left view: orange skin specks showing through the folds"
+  ],
+  "better": "same",
+  "why": "the same flat lap sheet, slit and curled tubes in both"
+ },
+ {
+  "id": "p177",
+  "X": [
+   "behind-left view: upper robe's lower edges stacked as flat layered sheets with dark rims across the middle (doubled cloth)",
+   "behind-left view: small grey crumpled bits and dark specks near the top by the hand",
+   "behind-right view: robe pulled into a stiff tent-like point at lower left, reads as a stretched flat sheet"
+  ],
+  "Y": [
+   "behind-left view: upper robe's lower edges stacked as flat layered sheets with dark rims across the middle (doubled cloth)",
+   "behind-left view: small grey crumpled bits and dark specks near the top by the hand",
+   "behind-right view: robe pulled into a stiff tent-like point at lower left, reads as a stretched flat sheet"
+  ],
+  "better": "same",
+  "why": "the two halves are practically identical; the same layered edges and stretched point in both"
+ },
+ {
+  "id": "p197",
+  "X": [
+   "his right view: robe stretched into a sharp angular point at lower left (stiff sheet)",
+   "his right view: small ragged notch at the hem's lower corner",
+   "his back view: tiny white dashes inside the shadowed folds"
+  ],
+  "Y": [
+   "his right view: robe stretched into a sharp angular point at lower left (stiff sheet)",
+   "his right view: thin white sliver along the hem edge where it meets the heel",
+   "his back view: tiny white dashes inside the shadowed folds"
+  ],
+  "better": "same",
+  "why": "near identical; each has one tiny hem-edge blemish by the foot"
+ },
+ {
+  "id": "p217",
+  "X": [
+   "front view: white jagged shards at the left corner of the hem",
+   "front view: white torn splinters along the inner hem layer at the right, by his left shin",
+   "his left view: small white shard notch where the hem meets the shin",
+   "his left view: dark curled doubled edge at the hem's back corner"
+  ],
+  "Y": [
+   "his left view: dark curled doubled edge at the hem's back corner"
+  ],
+  "better": "Y",
+  "why": "Y's hem edges are clean dark-rimmed lines; X has white shards at both ends of the front hem and at the shin"
+ },
+ {
+  "id": "p237",
+  "X": [
+   "behind-left view: upper robe edges stacked as layered sheets with dark rims",
+   "behind-left view: small dark speck/notch on the robe at upper left"
+  ],
+  "Y": [
+   "behind-left view: upper robe edges stacked as layered sheets with dark rims",
+   "behind-left view: small dark speck/notch on the robe at upper left"
+  ],
+  "better": "same",
+  "why": "identical apart from a tiny framing shift"
+ },
+ {
+  "id": "p257",
+  "X": [
+   "his back view: white triangular shard plus a white sliver under the hem by his left ankle",
+   "his right view: white ragged shards at the front corner of the hem",
+   "his right view: dark grey smudged edge on the hanging upper-robe flap"
+  ],
+  "Y": [
+   "his back view: small white triangular shard under the hem by his left ankle",
+   "his right view: white ragged shards at the front corner of the hem",
+   "his right view: thin white streak along the hem lining by the back ankle",
+   "his right view: dark grey smudged edge on the hanging upper-robe flap"
+  ],
+  "better": "same",
+  "why": "both carry the same small hem shards; X's ankle shard is a little bigger, Y has an extra white streak"
+ },
+ {
+  "id": "p277",
+  "X": [
+   "front view: white jagged splinters along the hem's bottom edge at the left",
+   "front view: white jagged dashes along the inner hem layer between the legs",
+   "front view: white torn flap with shards at the right end of the hem by his left shin"
+  ],
+  "Y": [],
+  "better": "Y",
+  "why": "Y's hem is clean with smooth dark-rimmed edges; X shows white torn shards along it"
+ },
+ {
+  "id": "p297",
+  "X": [],
+  "Y": [
+   "behind-right view: a small dark vertical scratch mark on the back of the robe near the right edge"
+  ],
+  "better": "X",
+  "why": "otherwise identical; Y has one small dark scratch on the robe"
+ },
+ {
+  "id": "p317",
+  "X": [
+   "his back view: small white star-shaped shard just below the hem's right corner",
+   "his right view: white jagged fragments along the inner hem lining by the raised shin",
+   "his right view: small white flecks on the robe above the raised leg"
+  ],
+  "Y": [
+   "his back view: small white star-shaped shard just below the hem's right corner",
+   "his right view: inner hem lining by the raised shin has a ragged grey edge with dark specks",
+   "his right view: small white flecks on the robe above the raised leg"
+  ],
+  "better": "same",
+  "why": "practically identical; the lining under the raised leg is ragged in both, white bits in X, grey specks in Y"
+ },
+ {
+  "id": "p337",
+  "X": [
+   "front view: white crumpled shards hanging from the rolled hem on the left side of the forward shin",
+   "front view: jagged white zigzag torn edge on the right side of the forward shin",
+   "front view: white flap with shards at the right corner of the hem",
+   "his left view: a wide stretch of flat white torn pieces hanging below the hem in the middle"
+  ],
+  "Y": [
+   "front view: white crumpled shards on the left side of the forward shin (slightly fewer)",
+   "front view: jagged white zigzag torn edge on the right side of the forward shin",
+   "his left view: a cluster of grey spiky splinters hanging below the hem in the middle"
+  ],
+  "better": "Y",
+  "why": "both have torn bits at the hem; X has more white shards in front and a wider white torn stretch at the side, Y's are smaller"
+ },
+ {
+  "id": "p357",
+  "X": [
+   "behind-left view: tiny white dashes inside the folds and a white speck near the hem",
+   "behind-right view: faint grey ragged bits along the hem edge above the foot"
+  ],
+  "Y": [
+   "behind-left view: tiny white dashes inside the folds and a white speck near the hem",
+   "behind-right view: faint grey ragged bits along the hem edge above the foot"
+  ],
+  "better": "same",
+  "why": "identical apart from framing"
+ },
+ {
+  "id": "p377",
+  "X": [
+   "his back view: white triangular shard and a white strip under the hem above the lifted foot",
+   "his back view: grey ragged lining at the hem by the standing ankle",
+   "his right view: rolled inner hem lining visible at the corner by the shin"
+  ],
+  "Y": [
+   "his back view: smaller white bits under the hem above the lifted foot",
+   "his back view: grey ragged lining at the hem by the standing ankle",
+   "his right view: hem corner by the shin is torn into white-grey splinters",
+   "his right view: dark jagged line along the lower edge of the lining at left"
+  ],
+  "better": "X",
+  "why": "Y's side view hem corner is visibly splintered and its lining edge jagged; X's back shards are only slightly bigger"
+ },
+ {
+  "id": "p397",
+  "X": [
+   "front view: dark crumpled hollow with white specks in the robe near the top",
+   "front view: a sliver of skin seen through a slit in the robe",
+   "front view: jagged inner layer edges beside the foot with a tiny white shard at the bottom",
+   "his left view: lower robe forms a white scoop/shell under and around the foot",
+   "his left view: dark specks along the inner edge of that scoop"
+  ],
+  "Y": [
+   "front view: dark crumpled hollow with white specks in the robe near the top",
+   "front view: a sliver of skin seen through a slit in the robe",
+   "front view: jagged inner layer edges beside the foot with a tiny white shard at the bottom",
+   "front view: white jagged strip at the right end of the hem",
+   "his left view: lower robe forms a white scoop/shell under and around the foot",
+   "his left view: dark specks along the inner edge of that scoop"
+  ],
+  "better": "X",
+  "why": "near identical; Y adds a small white jagged strip at the right end of the front hem"
+ },
+ {
+  "id": "p417",
+  "X": [
+   "behind-left view: long ragged band of white torn shards and splinters hanging under the back hem",
+   "behind-left view: white strip flap and dark crumpled bits at the hem's left corner"
+  ],
+  "Y": [
+   "behind-left view: a few small white shards under the back hem",
+   "behind-left view: white strip flap and dark crumpled bits at the hem's left corner"
+  ],
+  "better": "Y",
+  "why": "Y's back hem is much cleaner; X has a long band of white splinters under it"
+ },
+ {
+  "id": "p437",
+  "X": [
+   "his back view: white triangular shards under the hem above the lifted foot",
+   "his back view: two bright white strips along the hem's underside by the standing leg",
+   "his right view: hem corner by the shin torn into white splinters"
+  ],
+  "Y": [
+   "his back view: one small white shard under the hem above the lifted foot",
+   "his back view: grey lining visible along the hem's underside"
+  ],
+  "better": "Y",
+  "why": "fewer white shards under the back hem and a clean hem corner at the side"
+ },
+ {
+  "id": "p457",
+  "X": [
+   "front view: small white vertical notch in the middle of the hem"
+  ],
+  "Y": [
+   "front view: small white vertical notch in the middle of the hem",
+   "front view: white torn strip with jagged bits along the underside of the hem's right part by his left shin"
+  ],
+  "better": "X",
+  "why": "X's front hem is a clean dark-rimmed edge; Y shows a white jagged strip under it"
+ },
+ {
+  "id": "p477",
+  "X": [
+   "behind-left view: thin grey lining strip with a few light patches under the back hem",
+   "behind-right view: dark ragged notch with specks at the robe's lower corner"
+  ],
+  "Y": [
+   "behind-left view: bright white jagged shards along the underside of the back hem",
+   "behind-right view: dark ragged notch with specks at the robe's lower corner"
+  ],
+  "better": "X",
+  "why": "Y's back hem shows a run of bright white torn shards; X's is a clean grey lining"
+ },
+ {
+  "id": "p497",
+  "X": [
+   "his back view: white triangle and a white strip shard under the hem by his left ankle",
+   "his right view: crumpled grey bits at the hem's front corner",
+   "his right view: crumpled grey-white torn bits at the back corner of the hem"
+  ],
+  "Y": [
+   "his back view: one white triangular shard under the hem by his left ankle",
+   "his right view: flat white strip with a jagged edge running under the hem across the shins",
+   "his right view: back corner of the hem torn into jagged white splinters"
+  ],
+  "better": "X",
+  "why": "Y's side view adds a flat white strip across the shins and a more splintered corner"
+ },
+ {
+  "id": "p517",
+  "X": [
+   "front view: white torn shards along the hem's right part by the forward shin",
+   "front view: dark gap in the robe opening with white bits and a sliver of skin showing"
+  ],
+  "Y": [
+   "front view: dark gap in the robe opening with white bits and a sliver of skin showing"
+  ],
+  "better": "Y",
+  "why": "Y's front hem by the shin is clean; X has white shards there"
+ },
+ {
+  "id": "p537",
+  "X": [
+   "behind-left view: small white fleck under the robe edge by the right foot",
+   "behind-right view: a few tiny white flecks along the hem edge over the shin"
+  ],
+  "Y": [
+   "behind-left view: small white fleck under the robe edge by the right foot",
+   "behind-right view: a few tiny white flecks along the hem edge over the shin"
+  ],
+  "better": "same",
+  "why": "identical apart from a tiny framing shift"
+ }
+]

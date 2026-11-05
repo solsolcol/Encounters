@@ -149,12 +149,13 @@ rolled edge whole (3,629 given back), HEMLINING takes 609, RIM 435, FLOOR 2,029 
   (the rolled edge kept whole, stretched round a flared hem, counts as torn); the robe seen inside out 1.24 / 1.20 / 1.27
   million px.
 
-**Step 12 · the final file read blind against the first final, all 540 pictures, twenty readers** (review/final-vs-first;
-under way at this checkpoint, ten readers in): the first final better in 103 pictures, the final in 11, the same in 156.
-The first final's wins name one thing again and again: small white shards and torn strips along the hem by his legs —
-over the front shin, at both ends of the front hem, under the side hem, above the heel — where FLOOR, given the rolled
-edge back, cuts it by each shin. The final's wins are the chair sits' comb, gone; even there it is no better overall.
-The comb's cure cost more than the comb.
+**Step 12 · the final file read blind against the first final, all 540 pictures, twenty readers** (review/final-vs-first):
+the first final better in 203 pictures, the final in 27, the same in 310; faults named 1,592 in the final against 1,405.
+Every take leans to the first final, the chair sits too (Sit_Cheer 2 / 15 / 10, Sit_Shout 1 / 15 / 11,
+Sitting_Answering_Questions 4 / 16 / 7, final / same / first). The first final's wins name one thing again and again:
+small white shards and torn strips along the hem by his legs — over the front shin, at both ends of the front hem, under
+the side hem, above the heel — where FLOOR, given the rolled edge back, cuts it by each shin. The final's wins are the
+chair sits' comb, gone. The comb's cure cost more than the comb.
 - Where the comb is made (phoid on the first final, Sitting_Answering_Questions at 4.028 s from the front, the box
   round the comb): 60 triangles at 217-244 degrees round his hips (behind his right calf), riding the hem's row of cloth
   bones there (Cloth_10_09 and Cloth_11_09 at 225 and 248 degrees), 1.4-3.2 cm round him from the hem band's triangles
@@ -162,6 +163,21 @@ The comb's cure cost more than the comb.
   180-270 degrees), 723 in front of it and at his sides (577 by his left shin) — where the shards are.
 - robeshell HEMKEEPFLOORBACK=1 (with HEMKEEPFLOOR=1): FLOOR takes the band again behind his shins only (126 triangles:
   FLOOR 1,307). Trial on the three chair sits, the sword slash, the hand-on-hip talk and cast_4 (the takes the readers'
-  notes name most), under way at this checkpoint.
+  notes name most), every picture a reader named set beside the first final and the final: behind his shins it is the
+  final (the comb gone to the small white bits v24.48 had there), everywhere else the first final (the front hem over his
+  shin, both ends of the front hem, the side hem and above the heel clean; cast_4's torn hole at the back of the hem not
+  there); counted on its 54 moments x 6 sides, the first final's numbers within a few triangles (floating leg pieces 1,
+  through the cloth 45, torn 17,978).
 - The first final's recipe proven: robeshell with HEMKEEPFLOOR=1 on v24.48's graft gives the first final's shell byte
-  for byte (sha1 ccd4b67d); the cloth and the file after it, under way.
+  for byte (sha1 ccd4b67d).
+
+**Step 13 · the third final: the first final with HEMKEEPFLOORBACK=1** (built as masters/v24.49/make.sh would with it).
+The shell (sha1 e0b97ccf): FLOOR 1,307, ISLANDS 42 scraps (177 triangles), 560,497 triangles kept. The cloth (4530ba70)
+keeps 95,820 of 264,800 keys. The file (masters/v24.49/prep/pho_final2.glb, sha1 ca8c0cc8).
+- The count, 179 moments x 6 sides (the first final / the third): floating leg pieces 26 / 35 (9,132 / 12,121 px) —
+  outside the floor sit 17 / 18 (3,062 / 2,872 px: the first Charged cast at 1.556 s and talking at 1.667 s clean, new
+  in the second Charged cast at 2.933 s from behind and above and three small ones in cast_7 at 0.467 s, 26-46 px); the
+  floor sit 9 / 17: the gap at the front of his lap where his crossed shins show larger (about 1,000 px a moment against
+  690) and the 5 mm hairline of shin from his left in eight moments. Legs through the cloth outside the floor sit 445 /
+  419; torn robe triangles 60,497 / 60,443; the robe seen inside out 1.20 / 1.22 million px.
+- Read blind against the first final, all 540 pictures, twenty readers (review/third-vs-first): under way.
