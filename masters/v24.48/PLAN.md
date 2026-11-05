@@ -128,3 +128,8 @@ thigh).
   hand rests on the robe seen from his side, but his knee comes through the lap at his front (floating leg seen 4,439 px
   on the floor sit's nine moments -> 46,259 and 50,838). Not taken, and taken back out of robesim (the file is again
   byte for byte the one the final was built with). His hands under the lap cloth are left, and said so.
+- Tried for the band across his shins, on the eight takes it shows in (78 moments x 6 sides): the hem's turned-in lip cut
+  at his front too (trial b), and the front of the hem left whole (trial c, robeshell HEMBASEKEEPFRONT): the chair sits'
+  floating pieces 9/9/8 -> 8/9/6 and 9/9/8 — neither touches it, because the band is not the hem's edge. Both taken back
+  out. Trial d, robeshell INNER=0.08 (cloth more than 8 cm inside the robe's own wall below 35 cm taken out): 271
+  triangles, every one at his front and front-left at hem height, 20-30 cm off the floor — the sheet.

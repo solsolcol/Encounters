@@ -170,16 +170,14 @@ if (process.env.INNER) { const IN = E('INNER', 0.08), INY = E('INNERY', 0.35), I
    either side of his front, where the robe's wrap overlaps: there, and anything facing sideways anywhere, the panels'
    own edges, taken out it opened slits in the front hem by his left shin when he sat on a chair. The robe is one layer
    of cloth drawn from both sides (tools/prepmonk.mjs TWOSIDE), and its hem is that cloth's edge. Unset, nothing runs. */
-if (process.env.HEMBASE) { const HB = E('HEMBASE', 0.015), HBNY = E('HEMBASENY', -0.6), HBOUT = E('HEMBASEOUT', 0.2), HBFRONT = E('HEMBASEFRONT', 70) * Math.PI / 180, HBKEEPF = E('HEMBASEKEEPFRONT', 0), HBRIM = E('HEMBASERIM', 0), NAB = 120, low = new Float32Array(NAB).fill(9);
+if (process.env.HEMBASE) { const HB = E('HEMBASE', 0.015), HBNY = E('HEMBASENY', -0.6), HBOUT = E('HEMBASEOUT', 0.2), HBFRONT = E('HEMBASEFRONT', 70) * Math.PI / 180, NAB = 120, low = new Float32Array(NAB).fill(9);
   const abin = (x, z) => { let a = Math.atan2(x, z); if (a < 0) a += 2 * Math.PI; return Math.min(NAB - 1, Math.floor(a / (2 * Math.PI) * NAB)); };
   for (let i = 0; i < n; i++) { if (!onSkirt[i]) continue; const k = abin(P[3 * i] - hip.x, P[3 * i + 2] - hip.z); if (P[3 * i + 1] < low[k]) low[k] = P[3 * i + 1]; }
   let nBase = 0; for (const t of skirtTris) { if (drop[t]) continue; const vs = [0, 1, 2].map(m => new Vector3().fromArray(P, 3 * IDX[3 * t + m])), mid = vs[0].clone().add(vs[1]).add(vs[2]).multiplyScalar(1 / 3);
     if (mid.y > low[abin(mid.x - hip.x, mid.z - hip.z)] + HB) continue;
     const fn = new Vector3().crossVectors(vs[1].clone().sub(vs[0]), vs[2].clone().sub(vs[0])).normalize(), rad = new Vector3(mid.x - hip.x, 0, mid.z - hip.z).normalize();
     const down = fn.y <= HBNY, inward = fn.dot(rad) < -HBOUT, front = Math.abs(Math.atan2(mid.x - hip.x, mid.z - hip.z)) < HBFRONT;
-    if (HBKEEPF && front) continue;
-    const rim = HBRIM < 0 && fn.y <= HBRIM && fn.dot(rad) < HBOUT;
-    if (!(down || rim || (inward && !front))) continue; drop[t] = 1; nBase++; }
+    if (!(down || (inward && !front))) continue; drop[t] = 1; nBase++; }
   log(`robeshell: HEMBASE ${HB} m — ${nBase} more skirt triangles taken out (the hem's underside facing down, and its turned-in lip facing in away from his front, within ${(HB * 100).toFixed(1)} cm of the robe's lowest point round him)`); }
 /* ISLANDS=<triangles> (v24.48): what the cuts above left of the robe below his waist in loose scraps — pieces of the
    skirt joined to nothing else (by any point they share, or any point at the same place across a seam) and smaller than
