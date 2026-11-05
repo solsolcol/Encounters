@@ -177,11 +177,30 @@ const tjs = [...new Set(TWj.flatMap(x => [...x]))], SMe = new Map(), Tg = new Fl
 const targets = () => { for (const j of tjs) SMe.set(j, new Matrix4().multiplyMatrices(Wj(j), IB[j]).elements);
   for (let p = 0; p < NP; p++) { const o = 3 * p, x = X0[o], y = X0[o + 1], z = X0[o + 2], js = TWj[p], ws = TWw[p]; let tx = 0, ty = 0, tz = 0;
     for (let k = 0; k < js.length; k++) { const e = SMe.get(js[k]), w = ws[k]; tx += w * (e[0] * x + e[4] * y + e[8] * z + e[12]); ty += w * (e[1] * x + e[5] * y + e[9] * z + e[13]); tz += w * (e[2] * x + e[6] * y + e[10] * z + e[14]); }
-    Tg[o] = tx; Tg[o + 1] = ty; Tg[o + 2] = tz; } };
+    Tg[o] = tx; Tg[o + 1] = ty; Tg[o + 2] = tz; }
+  if (legwrapping) legWrap(); };
 /* the target as the cloth is pulled toward it: never inside a leg — a target inside one is moved to the leg's surface on
    the side the particle is on — and never across one: where the way from the particle to its target passes through a leg
    (the robe's shape has a knee on the other side of it), the particle is not pulled at all that step, so the pull never
    drags the cloth into a leg or through it to the other side */
+/* v24.48 · the colliders made to fit the robe (each unset: as v24.47).
+   HIPOPEN=1: a thigh (and a knee bent shut, hip to ankle) is OPEN at the hip — a capsule's round end at the hip joint,
+     as thick as the top of the thigh plus the margin and the robe's layers (up to 17 cm), reached above the waistband: in
+     the sword slash's lunge it held the cloth just under the waist 7 cm ABOVE the waist ring, folded back on itself (the
+     shards at his hip); nothing beyond the hip joint is the thigh's (the pelvis there is his body's, under the waistband).
+   RESTCAP=1: no leg pushes a particle further from it than the particle stands at rest — a leg's reach (its thickness,
+     the margin and the robe's layers) is cut to the particle's own distance from it in his rest pose, so the robe as it
+     hangs at rest is never pushed out by the legs standing where they stand at rest (talking, the robe stood 2-5 cm out
+     from its own shape round his hips and knees: the sack); only a leg that comes nearer pushes.
+   TOPTAPER=k: a thigh's reach thinned toward the hip joint over the top k of its length (to TOPMIN of it at the joint):
+     its thickest tenth stood for the thigh's whole top, where under the waistband the thigh meets the pelvis, and a thigh
+     swung forward or back swept that thickness through the cloth hanging from the waist (the lunge's back hip). */
+const HIPOPEN = E('HIPOPEN', 0), RESTCAP = E('RESTCAP', 0), TOPTAPER = E('TOPTAPER', 0), TOPMIN = E('TOPMIN', 0.4);
+const restD = RESTCAP ? new Float64Array(NP * 4) : null;
+if (RESTCAP) { const segs = []; for (const s2 of ['Left', 'Right']) { const H = posOf(BW[gU[s2]]), K = posOf(BW[gL[s2]]), A2 = posOf(BW[ji(s2 + 'Foot')]); segs.push([H, K], [K, A2]); }
+  for (let p = 0; p < NP; p++) { const q = V3(X0[3 * p], X0[3 * p + 1], X0[3 * p + 2]); segs.forEach(([A2, B2], k) => { const ab = B2.clone().sub(A2), t = Math.max(0, Math.min(1, q.clone().sub(A2).dot(ab) / ab.lengthSq())); restD[4 * p + k] = q.distanceTo(A2.clone().addScaledVector(ab, t)); }); } }
+/* how far a leg (a collider with a thickness profile) reaches from its axis at t, for particle p */
+const colR = (p, col, t) => { let r = radAt(col[2], t) + MARGIN + depth[p]; if (TOPTAPER && col.top && t < TOPTAPER) r *= TOPMIN + (1 - TOPMIN) * sstep(t / TOPTAPER); if (RESTCAP && col.seg !== undefined) r = Math.min(r, Math.max(restD[4 * p + col.seg], radAt(col[2], t) + MARGIN)); return r; };
 const Tp = new Float64Array(NP * 3), clamp01 = x => (x < 0 ? 0 : x > 1 ? 1 : x);
 const segSeg = (px, py, pz, qx, qy, qz, A, B) => {   // closest approach of the segment p-q to the segment A-B: [distance, the parameter on A-B]
   const d1x = qx - px, d1y = qy - py, d1z = qz - pz, d2x = B.x - A.x, d2y = B.y - A.y, d2z = B.z - A.z, rx = px - A.x, ry = py - A.y, rz = pz - A.z;
@@ -196,6 +215,27 @@ const segSeg = (px, py, pz, qx, qy, qz, A, B) => {   // closest approach of the 
    wraps over a knee and hangs down its outside (lifted straight up there too, it stayed on top and left the knees bare at
    his sides). Its target likewise */
 const DRAPETAKES = (process.env.DRAPETAKES || '').split(',').filter(Boolean); let draping = false;
+/* LEGWRAPTAKES=<take,...> (v24.48): for these takes the robe's shape the cloth keeps is the robe CARRIED BY HIS REAL LEGS,
+   as a skirt skinned to its wearer's legs is carried — each target near his waist riding the waist bone, and below it
+   riding the real thigh and shin nearest it at rest (each side's share by its nearness, Gaussian over LEGWRAPSIG metres;
+   the thigh's and the shin's shares crossing at his knee over LEGWRAPKNEE of the leg's length; the waist's share whole
+   down to LEGWRAPHIP0 metres under the waist ring and none past LEGWRAPHIP1): his legs start inside the robe at rest, and
+   so stay inside it, the robe between them spanning his lap. Sitting cross-legged on the floor his waist is below the
+   tops of his knees: neither the chain skirt made on his real legs nor on his rig's (both fitted to his own file's robe
+   there, which rides his hips) nor cloth hanging from the waist can cover them */
+const LEGWRAPTAKES = (process.env.LEGWRAPTAKES || '').split(',').filter(Boolean), LEGWRAPSIG = E('LEGWRAPSIG', 0.08), LEGWRAPKNEE = E('LEGWRAPKNEE', 0.15), LEGWRAPHIP0 = E('LEGWRAPHIP0', 0.04), LEGWRAPHIP1 = E('LEGWRAPHIP1', 0.16); let legwrapping = false, wrapW = null;
+const legWrap = () => { const bones = [jWaist, gU.Left, gL.Left, gU.Right, gL.Right];
+  if (!wrapW) { wrapW = []; const seg = ['Left', 'Right'].map(s2 => [posOf(BW[gU[s2]]), posOf(BW[gL[s2]]), posOf(BW[ji(s2 + 'Foot')])]);
+    for (let p = 0; p < NP; p++) { const q = V3(X0[3 * p], X0[3 * p + 1], X0[3 * p + 2]), wW = 1 - sstep((ROOTY - q.y - LEGWRAPHIP0) / (LEGWRAPHIP1 - LEGWRAPHIP0)), w = [wW, 0, 0, 0, 0];
+      const near = seg.map(([H, K, A]) => Math.min(segDist(q, H, K), segDist(q, K, A))), g = near.map(d => Math.exp(-((d / LEGWRAPSIG) ** 2)) + 1e-9), gs = g[0] + g[1];
+      seg.forEach(([H, K, A], si) => { const L1 = H.distanceTo(K), L2 = K.distanceTo(A), hk = K.clone().sub(H), t = q.clone().sub(H).dot(hk) / hk.lengthSq() * L1, kf = sstep((t - L1 + LEGWRAPKNEE * (L1 + L2) / 2) / (LEGWRAPKNEE * (L1 + L2))), share = (1 - wW) * g[si] / gs;
+        w[1 + 2 * si] = share * (1 - kf); w[2 + 2 * si] = share * kf; });
+      wrapW.push(w); } }
+  const M = bones.map(j => new Matrix4().multiplyMatrices(Wj(j), IB[j]).elements);
+  for (let p = 0; p < NP; p++) { if (pinned[p]) continue; const o = 3 * p, x = X0[o], y = X0[o + 1], z = X0[o + 2], w = wrapW[p]; let tx = 0, ty = 0, tz = 0;
+    for (let b = 0; b < 5; b++) { const a = w[b]; if (!a) continue; const e = M[b]; tx += a * (e[0] * x + e[4] * y + e[8] * z + e[12]); ty += a * (e[1] * x + e[5] * y + e[9] * z + e[13]); tz += a * (e[2] * x + e[6] * y + e[10] * z + e[14]); }
+    Tg[o] = tx; Tg[o + 1] = ty; Tg[o + 2] = tz; } };
+const segDist = (q, A, B) => { const ab = B.clone().sub(A), t = Math.max(0, Math.min(1, q.clone().sub(A).dot(ab) / ab.lengthSq())); return q.distanceTo(A.clone().addScaledVector(ab, t)); };
 const level = (A, B) => Math.abs(B.y - A.y) < 0.7 * Math.hypot(B.x - A.x, B.y - A.y, B.z - A.z);
 const capR = (x, y, z, A, B, pr, extra) => { const abx = B.x - A.x, aby = B.y - A.y, abz = B.z - A.z, L2 = abx * abx + aby * aby + abz * abz, t = clamp01(((x - A.x) * abx + (y - A.y) * aby + (z - A.z) * abz) / L2);
   return Math.hypot(x - A.x - abx * t, y - A.y - aby * t, z - A.z - abz * t) - (radAt(pr, t) + extra); };   // < 0 inside
@@ -220,15 +260,16 @@ const liftTargets = C => { const d0 = new Float64Array(NP), hp = posOf(Wj(ji('Hi
   for (let p = 0; p < NP; p++) Tg[3 * p + 1] += d[p]; };
 const projectTargets = C => { Tp.set(Tg);
   for (let p = 0; p < NP; p++) { if (pinned[p]) continue; const o = 3 * p;
-    for (const [A, B, pr] of C) { if (!pr) continue; const abx = B.x - A.x, aby = B.y - A.y, abz = B.z - A.z, L2 = abx * abx + aby * aby + abz * abz;
-      let t = ((Tp[o] - A.x) * abx + (Tp[o + 1] - A.y) * aby + (Tp[o + 2] - A.z) * abz) / L2; t = Math.max(0, Math.min(1, t));
-      const qx = A.x + abx * t, qy = A.y + aby * t, qz = A.z + abz * t, r = radAt(pr, t) + MARGIN + depth[p];
+    for (const col of C) { const [A, B, pr] = col; if (!pr) continue; const abx = B.x - A.x, aby = B.y - A.y, abz = B.z - A.z, L2 = abx * abx + aby * aby + abz * abz;
+      let t = ((Tp[o] - A.x) * abx + (Tp[o + 1] - A.y) * aby + (Tp[o + 2] - A.z) * abz) / L2; if (col.openA && t < 0) continue; t = Math.max(0, Math.min(1, t));
+      const qx = A.x + abx * t, qy = A.y + aby * t, qz = A.z + abz * t, r = colR(p, col, t);
       if (Math.hypot(Tp[o] - qx, Tp[o + 1] - qy, Tp[o + 2] - qz) >= r) continue;
       if (draping && level(A, B) && Tp[o + 1] < qy) { Tp[o + 1] = liftY(Tp[o], Tp[o + 1], Tp[o + 2], A, B, pr, MARGIN + depth[p]); continue; }
       let ux = X[o] - qx, uy = X[o + 1] - qy, uz = X[o + 2] - qz; const along = (ux * abx + uy * aby + uz * abz) / L2; ux -= abx * along; uy -= aby * along; uz -= abz * along;
       const ul = Math.hypot(ux, uy, uz); if (ul < 1e-9) continue; Tp[o] = qx + ux / ul * r; Tp[o + 1] = qy + uy / ul * r; Tp[o + 2] = qz + uz / ul * r; }
-    for (const [A, B, pr] of C) { if (!pr) continue; const [d, t] = segSeg(X[o], X[o + 1], X[o + 2], Tp[o], Tp[o + 1], Tp[o + 2], A, B);
-      if (d < radAt(pr, t) + MARGIN + depth[p] - 1e-4) { Tp[o] = X[o]; Tp[o + 1] = X[o + 1]; Tp[o + 2] = X[o + 2]; break; } } } };
+    for (const col of C) { const [A, B, pr] = col; if (!pr) continue; const [d, t] = segSeg(X[o], X[o + 1], X[o + 2], Tp[o], Tp[o + 1], Tp[o + 2], A, B);
+      if (col.openA && t <= 0) continue;
+      if (d < colR(p, col, t) - 1e-4) { Tp[o] = X[o]; Tp[o + 1] = X[o + 1]; Tp[o + 2] = X[o + 2]; break; } } } };
 log(`robesim: each particle skinned like the ${KNN} robe points nearest it (${cand.length} on the robe's outside; ${tjs.length} bones in all)`);
 
 /* the constraints: round the ring and down the column (stretch), the diagonals (shear), skip-one both ways (bend) */
@@ -263,12 +304,12 @@ log(`robesim: his legs measured in every pose from ${legPts.length} of their poi
 /* each collider: [A, B, profile | null, r at A, r at B] (a profile adds MARGIN) */
 const colliders = () => { const C = [], pf = legProf();
   for (const s of ['Left', 'Right']) { const h = posOf(Wj(gU[s])), k = posOf(Wj(gL[s])), a = posOf(Wj(ji(s + 'Foot'))), t = toeOf(s).map(x => posOf(Wj(x)));
-    C.push([h, k, pf[s + 'thigh'], 0, 0], [k, a, pf[s + 'shin'], 0, 0]);
+    { const th = [h, k, pf[s + 'thigh'], 0, 0], sh = [k, a, pf[s + 'shin'], 0, 0], si = s === 'Left' ? 0 : 2; th.seg = si; sh.seg = si + 1; if (HIPOPEN) th.openA = 1; if (TOPTAPER) th.top = 1; C.push(th, sh); }
     /* a knee bent shut (the thigh and the calf less than KNEEFOLD degrees apart: a running heel kicked up behind him, his
        legs folded under him on the floor) is one body: a capsule from the hip to the ankle as thick as the thinner of the
        two fills the fold, so cloth caught between thigh and calf is pushed out of it instead of back and forth between them */
     { const u = h.clone().sub(k).normalize(), w = a.clone().sub(k).normalize(); if (Math.acos(Math.max(-1, Math.min(1, u.dot(w)))) * 180 / Math.PI < KNEEFOLD) {
-      const R = Math.min(Math.max(...pf[s + 'thigh']), Math.max(...pf[s + 'shin'])); C.push([h, a, new Array(NB).fill(R), 0, 0]); } }
+      const R = Math.min(Math.max(...pf[s + 'thigh']), Math.max(...pf[s + 'shin'])), kf = [h, a, new Array(NB).fill(R), 0, 0]; if (HIPOPEN) kf.openA = 1; C.push(kf); } }
     if (t.length) { const toe = t[t.length - 1], back = a.clone().sub(toe).setY(0).normalize(); C.push([a, toe, null, 0.04 + MARGIN, 0.03 + MARGIN]); const heel = a.clone().addScaledVector(back, 0.05); heel.y = Math.max(0.03, heel.y - 0.06); C.push([heel, heel, null, 0.04 + MARGIN, 0.04 + MARGIN]); } }
   return C; };
 
@@ -323,9 +364,9 @@ const step = C => {
     for (let p = 0; p < NP; p++) { if (pinned[p]) continue; const o = 3 * p;
       { const dx = X[o] - Tp[o], dy = X[o + 1] - Tp[o + 1], dz = X[o + 2] - Tp[o + 2], L = Math.sqrt(dx * dx + dy * dy + dz * dz);   // the motion distance
         if (L > maxD[p] && !(draping && DRAPEFREE && Math.floor(p / NA) > DRAPEFREE)) { const s = maxD[p] / L; X[o] = Tp[o] + dx * s; X[o + 1] = Tp[o + 1] + dy * s; X[o + 2] = Tp[o + 2] + dz * s; } }
-      for (const [A, B, pr, ra, rb] of C) { const abx = B.x - A.x, aby = B.y - A.y, abz = B.z - A.z, L2 = abx * abx + aby * aby + abz * abz;
-        let t = L2 > 1e-12 ? ((X[o] - A.x) * abx + (X[o + 1] - A.y) * aby + (X[o + 2] - A.z) * abz) / L2 : 0; t = Math.max(0, Math.min(1, t));
-        const qx = A.x + abx * t, qy = A.y + aby * t, qz = A.z + abz * t, dx = X[o] - qx, dy = X[o + 1] - qy, dz = X[o + 2] - qz, d = Math.sqrt(dx * dx + dy * dy + dz * dz), r = pr ? radAt(pr, t) + MARGIN + depth[p] : ra + (rb - ra) * t;
+      for (const col of C) { const [A, B, pr, ra, rb] = col; const abx = B.x - A.x, aby = B.y - A.y, abz = B.z - A.z, L2 = abx * abx + aby * aby + abz * abz;
+        let t = L2 > 1e-12 ? ((X[o] - A.x) * abx + (X[o + 1] - A.y) * aby + (X[o + 2] - A.z) * abz) / L2 : 0; if (col.openA && t < 0) continue; t = Math.max(0, Math.min(1, t));
+        const qx = A.x + abx * t, qy = A.y + aby * t, qz = A.z + abz * t, dx = X[o] - qx, dy = X[o + 1] - qy, dz = X[o + 2] - qz, d = Math.sqrt(dx * dx + dy * dy + dz * dz), r = pr ? colR(p, col, t) : ra + (rb - ra) * t;
         if (d < r && d > 1e-9) { if (draping && pr && level(A, B) && dy < 0) { X[o + 1] = liftY(X[o], X[o + 1], X[o + 2], A, B, pr, MARGIN + depth[p]); continue; }
           const s = r / d; X[o] = qx + dx * s; X[o + 1] = qy + dy * s; X[o + 2] = qz + dz * s; } }
       if (X[o + 1] < 0.005) X[o + 1] = 0.005; } } };
@@ -361,13 +402,78 @@ const clothFrame = cbn => { const c = bc[cbn.b], j = br[cbn.r], ft = frameAt(Tg,
   const tx = at(X, c + 1, j).sub(at(X, c - 1, j)), ty = at(X, c, j - 1).sub(at(X, c, j + 1)), cross = tx.clone().normalize().cross(ty.clone().normalize()).length();
   const ang = 2 * Math.acos(Math.min(1, Math.abs(qt.dot(qx)))), w = cross < Math.sin(20 * Math.PI / 180) ? 0 : 1 - sstep((ang - FRAMEOK) / (FRAMEBAD - FRAMEOK));
   return new Matrix4().makeRotationFromQuaternion(qt.slerp(qx, w)).setPosition(posOf(fx)); };
-const bake = () => { const Wi = Wj(jWaist).clone().invert(), frames = CB.map(clothFrame);
+/* TURNFIT=1 (v24.48): each bone's turn FITTED to the cloth round it — the best rotation of the whole patch of particles it
+   carries (its bilinear share of each, some 7 x 7 particles) from rest to now (shape matching: the rotation part of the
+   patch's covariance, found by Mueller's iteration started from the bone's turn at the frame before), and its place the
+   patch's centre carried by that turn. Read from the two pairs of particles next to it (the frames above), a bone's turn
+   followed every crumple at the particles' own 2-3 cm scale: at the sword slash's lunge neighbouring bones stood up to
+   172 degrees apart, and talking 20-56, and every robe point between two bones turned apart was thrown apart (the shards
+   and tears). TURNSMOOTH=n: n passes averaging each bone's turn with its four neighbours' (half its own) */
+const TURNFIT = E('TURNFIT', 0), TURNSMOOTH = E('TURNSMOOTH', 0), TURNITER = E('TURNITER', 30);
+const patchOf = Array.from({ length: CB.length }, () => []); for (let p = 0; p < NP; p++) for (const [b, w] of PW[p]) patchOf[b].push([p, w]);
+const patchC0 = patchOf.map(L => { let x = 0, y = 0, z = 0, s = 0; for (const [p, w] of L) { x += w * X0[3 * p]; y += w * X0[3 * p + 1]; z += w * X0[3 * p + 2]; s += w; } return V3(x / s, y / s, z / s); });
+const turnPrev = CB.map(() => new Quaternion()); let turnFresh = true;   // a take's first frame is fitted from no turn at all: ten times the iterations
+const extractRot = (A, q) => { const m = new Matrix4(), om = new Vector3(), dq = new Quaternion();   // A row-major 3x3; q in/out
+  for (let it = 0, nIt = turnFresh ? 10 * TURNITER : TURNITER; it < nIt; it++) { m.makeRotationFromQuaternion(q); const e = m.elements; let ox = 0, oy = 0, oz = 0, dot = 0;
+    for (let c = 0; c < 3; c++) { const rx = e[4 * c], ry = e[4 * c + 1], rz = e[4 * c + 2], ax = A[c], ay = A[3 + c], az = A[6 + c];
+      ox += ry * az - rz * ay; oy += rz * ax - rx * az; oz += rx * ay - ry * ax; dot += rx * ax + ry * ay + rz * az; }
+    om.set(ox, oy, oz).multiplyScalar(1 / (Math.abs(dot) + 1e-12)); const w = om.length(); if (w < 1e-9) break;
+    dq.setFromAxisAngle(om.divideScalar(w), w); q.premultiply(dq).normalize(); }
+  return q; };
+const turnFrames = () => { const qs = CB.map((cbn, k) => { const L = patchOf[k], c0 = patchC0[k]; let cx2 = 0, cy2 = 0, cz2 = 0, s = 0;
+    for (const [p, w] of L) { cx2 += w * X[3 * p]; cy2 += w * X[3 * p + 1]; cz2 += w * X[3 * p + 2]; s += w; } cx2 /= s; cy2 /= s; cz2 /= s;
+    const A = new Float64Array(9); for (const [p, w] of L) { const bx = X[3 * p] - cx2, by = X[3 * p + 1] - cy2, bz = X[3 * p + 2] - cz2, ax = X0[3 * p] - c0.x, ay = X0[3 * p + 1] - c0.y, az = X0[3 * p + 2] - c0.z;
+      A[0] += w * bx * ax; A[1] += w * bx * ay; A[2] += w * bx * az; A[3] += w * by * ax; A[4] += w * by * ay; A[5] += w * by * az; A[6] += w * bz * ax; A[7] += w * bz * ay; A[8] += w * bz * az; }
+    turnPrev[k] = extractRot(A, turnPrev[k].clone()); return { q: turnPrev[k].clone(), c: V3(cx2, cy2, cz2) }; }); turnFresh = false;
+  for (let pass = 0; pass < TURNSMOOTH; pass++) { const old = qs.map(x => x.q.clone());
+    CB.forEach((cbn, k) => { const acc = [0, 0, 0, 0], add = (q, w) => { const s = q.dot(old[k]) < 0 ? -w : w; acc[0] += s * q.x; acc[1] += s * q.y; acc[2] += s * q.z; acc[3] += s * q.w; };
+      let self = 0.5; for (const [db, dr] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const r2 = cbn.r + dr; if (r2 < 0 || r2 >= BR) { self += 0.125; continue; } add(old[((cbn.b + db + BA) % BA) * BR + r2], 0.125); }
+      add(old[k], self); qs[k].q.set(acc[0], acc[1], acc[2], acc[3]).normalize(); }); }
+  return CB.map((cbn, k) => { const { q, c } = qs[k]; return new Matrix4().makeRotationFromQuaternion(q.clone().multiply(restQ[k])).setPosition(c.clone().add(restP[k].clone().sub(patchC0[k]).applyQuaternion(q))); }); };
+/* SKINPUSH=m (v24.48): the robe's own points made to clear his legs' own surface by m metres, at every frame baked. The
+   cloth's particles clear the legs as capsules (a thickness profile round each bone), but the robe rides the cloth in
+   layers 3-5 cm deep (pleats, the wrap's under-panel, the hem's turned rim), and a capsule is not his leg: held out by
+   the layers' depth everywhere, the robe stood off his legs in a sack; held out by less, a thigh came through its back.
+   So after the cloth bones are placed, the robe is skinned as the game will skin it (every SKINSTRIDE-th of its points
+   on the cloth) against his legs' own points (every 8th, with their normals), and wherever a robe point lies within m
+   of the leg's surface or inside it, the cloth bones it rides are moved out along the leg's normal by what it lacks
+   (each bone by the mean its offending points need), SKINITER times: the robe is moved only where a leg truly meets it,
+   by as much as it truly must. SKINREACH: how far from the leg a robe point is looked for (metres). */
+const SKINPUSH = E('SKINPUSH', 0), SKINSTRIDE = E('SKINSTRIDE', 3), SKINITER = E('SKINITER', 3), SKINREACH = E('SKINREACH', 0.045), SKINLEG = E('SKINLEG', 8);
+const J0 = CB[0].jx, restInv = restM.map(m => m.clone().invert());
+let skinOn = false;   // the rest bake is not pushed (the rest is the rest)
+let skinS = null, skinL = null, skinStats = { frames: 0, moved: 0, worst: 0 };
+if (SKINPUSH) { skinS = []; for (let i = 0; i < n; i += SKINSTRIDE) { if (share[i] <= 0.5) continue; const js = [], ws = []; for (let k = 0; k < 4; k++) { const w = Wn[4 * i + k]; if (w > 0) { js.push(Jn[4 * i + k]); ws.push(w); } } skinS.push({ i, js, ws }); }
+  skinL = legPts.filter((_, a) => a % (SKINLEG / 2) === 0).map(q => { NRM.getElement(q.i, nv); return { ...q, nrm: nv.slice() }; });
+  log(`robesim: SKINPUSH ${SKINPUSH} m: ${skinS.length} robe points against ${skinL.length} of his legs' points, ${SKINITER} passes`); }
+const skinPush = frames => { const M = new Map(), mat = j => { let e = M.get(j); if (e) return e; e = (j >= J0 ? new Matrix4().multiplyMatrices(frames[j - J0], restInv[j - J0]) : new Matrix4().multiplyMatrices(Wj(j), IB[j])).elements; M.set(j, e); return e; };
+  const NL = skinL.length, LP = new Float64Array(3 * NL), LN = new Float64Array(3 * NL), grid = new Map(), C2 = SKINREACH, key = (x, y, z) => (x + 512) + 1024 * ((y + 512) + 1024 * (z + 512));
+  skinL.forEach((q, a) => { const x = RP[3 * q.i], y = RP[3 * q.i + 1], z = RP[3 * q.i + 2], [n0, n1, n2] = q.nrm; let px = 0, py = 0, pz = 0, nx = 0, ny = 0, nz = 0;
+    for (let k = 0; k < 4; k++) { const w = q.ws[k]; if (!w) continue; const e = mat(q.js[k]); px += w * (e[0] * x + e[4] * y + e[8] * z + e[12]); py += w * (e[1] * x + e[5] * y + e[9] * z + e[13]); pz += w * (e[2] * x + e[6] * y + e[10] * z + e[14]); nx += w * (e[0] * n0 + e[4] * n1 + e[8] * n2); ny += w * (e[1] * n0 + e[5] * n1 + e[9] * n2); nz += w * (e[2] * n0 + e[6] * n1 + e[10] * n2); }
+    const nl = Math.hypot(nx, ny, nz) || 1; LP[3 * a] = px; LP[3 * a + 1] = py; LP[3 * a + 2] = pz; LN[3 * a] = nx / nl; LN[3 * a + 1] = ny / nl; LN[3 * a + 2] = nz / nl;
+    const kk = key(Math.floor(px / C2), Math.floor(py / C2), Math.floor(pz / C2)); let L = grid.get(kk); if (!L) grid.set(kk, L = []); L.push(a); });
+  let worst0 = 0;
+  for (let it = 0; it < SKINITER; it++) { if (it) for (const j of [...M.keys()]) if (j >= J0) M.delete(j);
+    const acc = new Float64Array(CB.length * 3), wacc = new Float64Array(CB.length); let nV = 0;
+    for (const sp of skinS) { const x = RP[3 * sp.i], y = RP[3 * sp.i + 1], z = RP[3 * sp.i + 2]; let px = 0, py = 0, pz = 0;
+      for (let k = 0; k < sp.js.length; k++) { const e = mat(sp.js[k]), w = sp.ws[k]; px += w * (e[0] * x + e[4] * y + e[8] * z + e[12]); py += w * (e[1] * x + e[5] * y + e[9] * z + e[13]); pz += w * (e[2] * x + e[6] * y + e[10] * z + e[14]); }
+      const gx = Math.floor(px / C2), gy = Math.floor(py / C2), gz = Math.floor(pz / C2); let best = -1, bd = C2 * C2;
+      for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) for (let dz = -1; dz <= 1; dz++) { const L = grid.get(key(gx + dx, gy + dy, gz + dz)); if (!L) continue;
+        for (const a of L) { const ex = px - LP[3 * a], ey = py - LP[3 * a + 1], ez = pz - LP[3 * a + 2], d2 = ex * ex + ey * ey + ez * ez; if (d2 < bd) { bd = d2; best = a; } } }
+      if (best < 0) continue; const sd = (px - LP[3 * best]) * LN[3 * best] + (py - LP[3 * best + 1]) * LN[3 * best + 1] + (pz - LP[3 * best + 2]) * LN[3 * best + 2];
+      if (sd >= SKINPUSH) continue; const need = SKINPUSH - sd; nV++; if (!it && need > worst0) worst0 = need;
+      for (let k = 0; k < sp.js.length; k++) { const j = sp.js[k]; if (j < J0) continue; const kb = j - J0, w = sp.ws[k]; acc[3 * kb] += w * need * LN[3 * best]; acc[3 * kb + 1] += w * need * LN[3 * best + 1]; acc[3 * kb + 2] += w * need * LN[3 * best + 2]; wacc[kb] += w; } }
+    if (!nV) break; if (!it) skinStats.moved += nV;
+    frames.forEach((m, kb) => { if (wacc[kb] > 0) { const e = m.elements; e[12] += acc[3 * kb] / wacc[kb]; e[13] += acc[3 * kb + 1] / wacc[kb]; e[14] += acc[3 * kb + 2] / wacc[kb]; } }); }
+  skinStats.frames++; if (worst0 > skinStats.worst) skinStats.worst = worst0; };
+const bake = () => { const Wi = Wj(jWaist).clone().invert(), frames = TURNFIT ? turnFrames() : CB.map(clothFrame);
   if (LSFIT) { const Q = frames.map((m, k) => new Quaternion().setFromRotationMatrix(m).multiply(restQ[k].clone().invert())), rhs = Array.from({ length: NBn }, () => new Vector3());
     for (let p = 0; p < NP; p++) { const o = 3 * p, y = V3(X[o], X[o + 1], X[o + 2]), x0 = V3(X0[o], X0[o + 1], X0[o + 2]);
       for (const [b, w] of PW[p]) y.addScaledVector(x0.clone().sub(restP[b]).applyQuaternion(Q[b]), -w);
       for (const [b, w] of PW[p]) rhs[b].addScaledVector(y, w); }
     frames.forEach((m, b) => rhs[b].addScaledVector(posOf(m), LSREG));
     frames.forEach((m, b) => { const P = new Vector3(); for (let k = 0; k < NBn; k++) P.addScaledVector(rhs[k], LSM[b][k]); m.setPosition(P); }); }
+  if (SKINPUSH && skinOn) skinPush(frames);
   return frames.map(fr => { const loc = Wi.clone().multiply(fr), t = new Vector3(), q = new Quaternion(), s = new Vector3(); loc.decompose(t, q, s); return [t, q]; }); };
 /* the rest pose bakes to rest */
 { pose(null, 0); targets(); X.set(X0); const r = bake(); let worst = 0; CB.forEach((cbn, k) => { worst = Math.max(worst, r[k][0].distanceTo(cbn.t), 2 * Math.acos(Math.min(1, Math.abs(r[k][1].dot(cbn.q))))); });
@@ -384,7 +490,8 @@ let dumpTake = null, dumpT = 0; if (DUMP) { const [a, b] = DUMP.split('@'); dump
 const buf = root.listBuffers()[0]; let nKeys = 0, nKept = 0; const stats = [];
 const ONLY = process.env.ONLY ? process.env.ONLY.split(',') : null;   // a trial run: only these takes simulated (the others keep no cloth tracks)
 for (const k of MAXDTAKES.keys()) if (!root.listAnimations().some(a => a.getName() === k)) throw new Error(`robesim: MAXDTAKES: no take ${k}`);
-for (const an of root.listAnimations()) { const dur = duration(an); if (ONLY && !ONLY.includes(an.getName())) continue; draping = DRAPETAKES.includes(an.getName());
+skinOn = true;
+for (const an of root.listAnimations()) { const dur = duration(an); if (ONLY && !ONLY.includes(an.getName())) continue; draping = DRAPETAKES.includes(an.getName()); legwrapping = LEGWRAPTAKES.includes(an.getName());
   setMaxD(MAXDTAKES.has(an.getName()) ? MAXDTAKES.get(an.getName()) : MAXD);
   /* a take that ends as it began (his feet, knees and hips within 3 cm) loops: run twice, the second pass kept */
   const ends = t => { pose(an, t); return ['Hips', 'LeftFoot', 'RightFoot'].map(x => posOf(Wj(ji(x)))).concat(['Left', 'Right'].map(s => posOf(Wj(gL[s])))); };
@@ -392,7 +499,7 @@ for (const an of root.listAnimations()) { const dur = duration(an); if (ONLY && 
   /* his rest pose eased into the take's first frame, then held: the cloth starts as the robe hangs at rest and is carried
      and pushed into the take's first frame by his legs as they come, so a knee that rises in front of the robe takes the
      robe with it (begun ON the first frame, a seated knee began outside it) */
-  pose(null, 0); targets(); X.set(Tg); Xp.set(Tg);
+  pose(null, 0); targets(); X.set(Tg); Xp.set(Tg); turnPrev.forEach(q => q.identity()); turnFresh = true;
   const nSet = Math.round(SETTLE / DT), nHold = Math.round(HOLD / DT);
   for (let s = 0; s < nSet + nHold; s++) { pose(an, 0, s < nSet ? sstep((s + 1) / nSet) : 1); targets(); step(colliders()); }
   /* a loop is run until the cloth has settled into it (LOOPSECS seconds before the pass kept, two passes at least) */
@@ -401,7 +508,7 @@ for (const an of root.listAnimations()) { const dur = duration(an); if (ONLY && 
   for (let pass = 0; pass < passes; pass++) { let s = 0, ki = 0;
     while (ki < times.length) { const t = Math.min(s * DT, dur);
       if (pass === passes - 1 && t >= times[ki] - 1e-9) { rec.push(bake());
-        if (dumpTake === an.getName() && !dumped && times[ki] >= dumpT - 1e-9) { dumped = true; writeFileSync(process.env.SIMDUMPOUT || 'simdump.json', JSON.stringify({ take: dumpTake, t: times[ki], X: [...X], T: [...Tg], NA, NR, bc, br, C: colliders().map(([A, B, pr, ra, rb]) => [A.toArray(), B.toArray(), pr ? pr.map(x => x + MARGIN) : [ra, rb]]) })); }
+        if (dumpTake === an.getName() && !dumped && times[ki] >= dumpT - 1e-9) { dumped = true; writeFileSync(process.env.SIMDUMPOUT || 'simdump.json', JSON.stringify({ take: dumpTake, t: times[ki], X: [...X], T: [...Tg], X0: [...X0], NA, NR, bc, br, C: colliders().map(([A, B, pr, ra, rb]) => [A.toArray(), B.toArray(), pr ? pr.map(x => x + MARGIN) : [ra, rb]]) })); }
         ki++; continue; }
       s++; const t2 = Math.min(s * DT, dur); pose(an, t2); targets(); step(colliders()); if (t2 >= dur && pass < passes - 1) break; } }
   /* a loop closed: what its last frame misses its first by, laid on over its last LOOPBLEND seconds (each frame keeps its own
@@ -424,5 +531,6 @@ for (const an of root.listAnimations()) { const dur = duration(an); if (ONLY && 
   let dropped = 0; for (const ch of an.listChannels()) { const nd = ch.getTargetNode(); if (nd && /^Skirt[AMB]/.test(nd.getName())) { const smp = ch.getSampler(); ch.dispose(); if (smp && !smp.listParents().some(p => p.propertyType === 'AnimationChannel')) smp.dispose(); dropped++; } }
   stats.push(`${an.getName()} ${dur.toFixed(2)} s ${loops ? `loop (${passes} passes)` : 'once'}, ${times.length} frames, ${dropped} chain tracks dropped`); }
 log('robesim: every take simulated:'); for (const s of stats) log('  ' + s);
+if (SKINPUSH) log(`robesim: SKINPUSH: ${skinStats.moved} robe points moved off his legs over ${skinStats.frames} frames, the most one needed ${(skinStats.worst * 100).toFixed(1)} cm`);
 await io.write(OUT, doc);
 log(`robesim: wrote ${OUT} (${CB.length} cloth bones; ${nKept} of ${nKeys} keys kept, within ${(POSTOL * 1000).toFixed(1)} mm and ${(ROTTOL * 180 / Math.PI).toFixed(2)}°)`);

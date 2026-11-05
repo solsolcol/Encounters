@@ -116,6 +116,60 @@ if (process.env.RIM) { const RIM = E('RIM', 0.08), RIMY = E('RIMY', 0.45), RIMFA
     const nrm = new Vector3().crossVectors(vs[1].clone().sub(vs[0]), vs[2].clone().sub(vs[0])).normalize(), mid = vs[0].clone().add(vs[1]).add(vs[2]).multiplyScalar(1 / 3), toAx = near(mid)[1].sub(mid).normalize();
     if (nrm.dot(toAx) >= RIMFACE || nrm.y <= -0.5) { drop[t] = 1; nRim++; } else nOut++; }
   log(`robeshell: RIM ${RIM} m below ${RIMY} m — ${nRim} more skirt triangles taken out (the rim that hugged his old shins, facing them, and the caps); ${nOut} as near facing away kept (the robe's outside at his calves)`); }
+/* FLOOR=<metres> (v24.48; with FLOORR 0.11 m, FLOORY 0.32 m, FLOORWIN 0.06 m): the FLOOR of the robe's old opening round
+   each shin taken out — where his scan's robe was fused to his shins it curls in under the hem and runs on as a sheet up
+   through the inside of his new leg to its axis at about 25 cm (a slice through either shin at rest shows it). Hidden in
+   the leg at rest, every time the leg moved it came out of it as the white shards and grey crumples inside a lifted hem,
+   and stood in the way of the robe being kept off the leg. Every skirt triangle not already out whose middle lies below
+   FLOORY, within FLOORR of either shin's axis, and more than FLOOR inside the robe's own outer wall above it (measured
+   from his hips' axis, against the furthest point of the skirt facing out in its 3 degrees of turn and the FLOORWIN of
+   height over it), and lying flatter than upright (its normal's height share FLOORNY or more: the floor is a sheet
+   sloping up to the axis; the robe's under-panel at his front, which hangs upright 2-5 cm inside the outer flap, stays —
+   taken out, it left holes at his front-left) goes: what is left at each shin is the robe's own wall, ending in its hem.
+   Unset, nothing here runs. */
+if (process.env.FLOOR) { const FLOORIN = E('FLOOR', 0.02), FLOORR = E('FLOORR', 0.11), FLOORY = E('FLOORY', 0.32), FLOORWIN = E('FLOORWIN', 0.06), FLOORNY = E('FLOORNY', 0.5), NRMA = prim.getAttribute('NORMAL').getArray();
+  const jq = re => { const k = names.findIndex(x => re.test(x)); if (k < 0) throw new Error(`robeshell: FLOOR: no joint ${re}`); return new Vector3().setFromMatrixPosition(IB[k].clone().invert()); };
+  const axes = ['Left', 'Right'].map(s => [jq(new RegExp(`${s}LegGraftLow$`)), jq(new RegExp(`${s}Foot$`))]);
+  const dAx = p => Math.min(...axes.map(([A, B]) => { const ab = B.clone().sub(A), t = Math.max(0, Math.min(1, p.clone().sub(A).dot(ab) / ab.lengthSq())); return p.distanceTo(A.clone().addScaledVector(ab, t)); }));
+  const NAB = 120, NHB = 100, wall = new Float32Array(NAB * NHB), abin = (x, z) => { let a = Math.atan2(x, z); if (a < 0) a += 2 * Math.PI; return Math.min(NAB - 1, Math.floor(a / (2 * Math.PI) * NAB)); };
+  for (let i = 0; i < n; i++) { if (!onSkirt[i]) continue; const x = P[3 * i] - hip.x, z = P[3 * i + 2] - hip.z, y = P[3 * i + 1], r = Math.hypot(x, z); if (y < 0 || y >= 1 || r < 1e-6) continue;
+    if ((NRMA[3 * i] * x + NRMA[3 * i + 2] * z) / r < OUTWARD) continue; const k = abin(x, z) * NHB + Math.floor(y * 100); if (r > wall[k]) wall[k] = r; }
+  let nFloor = 0; const fy = {};
+  for (const t of skirtTris) { if (drop[t]) continue; const vs = [0, 1, 2].map(m => new Vector3().fromArray(P, 3 * IDX[3 * t + m])), mid = vs[0].clone().add(vs[1]).add(vs[2]).multiplyScalar(1 / 3);
+    if (mid.y >= FLOORY || dAx(mid) >= FLOORR) continue; if (Math.abs(new Vector3().crossVectors(vs[1].clone().sub(vs[0]), vs[2].clone().sub(vs[0])).normalize().y) < FLOORNY) continue; const x = mid.x - hip.x, z = mid.z - hip.z, r = Math.hypot(x, z), ab = abin(x, z), h0 = Math.max(0, Math.floor(mid.y * 100));
+    let ref = 0; for (const da of [-1, 0, 1]) { const a2 = (ab + da + NAB) % NAB; for (let h = h0; h <= Math.min(NHB - 1, h0 + Math.round(FLOORWIN * 100)); h++) ref = Math.max(ref, wall[a2 * NHB + h]); }
+    if (ref - r > FLOORIN) { drop[t] = 1; nFloor++; const yy = (Math.floor(mid.y / 0.05) * 0.05).toFixed(2); fy[yy] = (fy[yy] || 0) + 1; } }
+  log(`robeshell: FLOOR ${FLOORIN} m — ${nFloor} more skirt triangles taken out (the floor of the robe's old opening round his shins, by height: ${Object.keys(fy).sort().map(y => `${y} ${fy[y]}`).join(', ')})`); }
+/* HEMBASE=<metres> (v24.48; with HEMBASENY -0.6, HEMBASEOUT 0.2, HEMBASEFRONT 70 degrees): the hem's UNDERSIDE and its turned-in LIP taken
+   out — the strip about a centimetre wide that closes the bottom of his scan's robe wall, facing straight down, and the
+   lip it turns into, facing in. When the hem flares (walking, the casts' wide steps) the hem ring stretches round, and
+   the strip, seen from behind and below, stretched up to 2.2 times into the ragged white splinters along the bottom of
+   the hem (his saved file has them too); the strip alone taken out, the lip behind it came loose and floated under the
+   hem in white bits. Every skirt triangle not already out whose middle lies within HEMBASE above the robe's lowest point
+   in its 3 degrees of turn round his hips' axis, and that faces down (its normal's height share HEMBASENY or less) or
+   in (its share away from that axis under -HEMBASEOUT), goes — the lip facing in only outside HEMBASEFRONT degrees
+   either side of his front, where the robe's wrap overlaps: there, and anything facing sideways anywhere, the panels'
+   own edges, taken out it opened slits in the front hem by his left shin when he sat on a chair. The robe is one layer
+   of cloth drawn from both sides (tools/prepmonk.mjs TWOSIDE), and its hem is that cloth's edge. Unset, nothing runs. */
+if (process.env.HEMBASE) { const HB = E('HEMBASE', 0.015), HBNY = E('HEMBASENY', -0.6), HBOUT = E('HEMBASEOUT', 0.2), HBFRONT = E('HEMBASEFRONT', 70) * Math.PI / 180, NAB = 120, low = new Float32Array(NAB).fill(9);
+  const abin = (x, z) => { let a = Math.atan2(x, z); if (a < 0) a += 2 * Math.PI; return Math.min(NAB - 1, Math.floor(a / (2 * Math.PI) * NAB)); };
+  for (let i = 0; i < n; i++) { if (!onSkirt[i]) continue; const k = abin(P[3 * i] - hip.x, P[3 * i + 2] - hip.z); if (P[3 * i + 1] < low[k]) low[k] = P[3 * i + 1]; }
+  let nBase = 0; for (const t of skirtTris) { if (drop[t]) continue; const vs = [0, 1, 2].map(m => new Vector3().fromArray(P, 3 * IDX[3 * t + m])), mid = vs[0].clone().add(vs[1]).add(vs[2]).multiplyScalar(1 / 3);
+    if (mid.y > low[abin(mid.x - hip.x, mid.z - hip.z)] + HB) continue;
+    const fn = new Vector3().crossVectors(vs[1].clone().sub(vs[0]), vs[2].clone().sub(vs[0])).normalize(), rad = new Vector3(mid.x - hip.x, 0, mid.z - hip.z).normalize();
+    const down = fn.y <= HBNY, inward = fn.dot(rad) < -HBOUT, front = Math.abs(Math.atan2(mid.x - hip.x, mid.z - hip.z)) < HBFRONT;
+    if (!(down || (inward && !front))) continue; drop[t] = 1; nBase++; }
+  log(`robeshell: HEMBASE ${HB} m — ${nBase} more skirt triangles taken out (the hem's underside facing down, and its turned-in lip facing in away from his front, within ${(HB * 100).toFixed(1)} cm of the robe's lowest point round him)`); }
+/* ISLANDS=<triangles> (v24.48): what the cuts above left of the robe below his waist in loose scraps — pieces of the
+   skirt joined to nothing else (by any point they share, or any point at the same place across a seam) and smaller than
+   ISLANDS triangles — taken out too: with the hem's lip gone, small bits of it were left floating under the hem.
+   Unset, nothing here runs. */
+if (process.env.ISLANDS) { const MINT = E('ISLANDS', 40), par = new Int32Array(n).map((_, i) => i), find = i => { while (par[i] !== i) { par[i] = par[par[i]]; i = par[i]; } return i; }, uni = (a, b) => { a = find(a); b = find(b); if (a !== b) par[a] = b; };
+  const at = new Map(); for (let i = 0; i < n; i++) { const k = `${Math.round(P[3 * i] * 1e4)},${Math.round(P[3 * i + 1] * 1e4)},${Math.round(P[3 * i + 2] * 1e4)}`, j = at.get(k); if (j === undefined) at.set(k, i); else uni(i, j); }
+  for (let t = 0; t < NT; t++) if (!drop[t]) { uni(IDX[3 * t], IDX[3 * t + 1]); uni(IDX[3 * t], IDX[3 * t + 2]); }
+  const size = new Map(); for (let t = 0; t < NT; t++) if (!drop[t]) { const r = find(IDX[3 * t]); size.set(r, (size.get(r) || 0) + 1); }
+  let nIsl = 0, nTri = 0; const seen = new Set(); for (const t of skirtTris) { if (drop[t]) continue; const r = find(IDX[3 * t]); if (size.get(r) >= MINT) continue; drop[t] = 1; nTri++; if (!seen.has(r)) { seen.add(r); nIsl++; } }
+  log(`robeshell: ISLANDS ${MINT} — ${nIsl} loose scraps of the skirt, ${nTri} triangles, taken out`); }
 const keep = []; for (let t = 0; t < NT; t++) if (!drop[t]) keep.push(IDX[3 * t], IDX[3 * t + 1], IDX[3 * t + 2]);
 const ia = prim.getIndices(); ia.setArray(n > 65535 ? new Uint32Array(keep) : new Uint16Array(keep));
 compactPrimitive(prim);

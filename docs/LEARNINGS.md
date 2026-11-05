@@ -7487,3 +7487,38 @@ cut (sharing its vertices and maps) when it is small.
   off a thick round outline of the leg) pushed the lower robe into a sack when he stands talking; held closer, his legs
   came through the cloth five to ten times as often. A count that falls can buy a picture that is worse: the blind
   reader of every take is what found it.
+
+## v24.48 — cloth bones turned by two neighbours, a collider's round end, the floor of a fused opening, and a hem's lip
+
+- **A bone's turn read from two pairs of particles follows every crumple.** Each of the robe's 160 cloth bones took its
+  turn from the particles 2–3 cm either side of it; where the cloth crumpled, neighbouring bones stood up to 172° apart
+  and the robe's triangles between them stretched 2.5–4.7 times into the shards and tears the readers named. Fit each
+  bone's turn to the whole patch of cloth it carries (shape matching, Müller's iteration started from the frame before,
+  so it never flips), then average it with its neighbours' (four passes: at most 29° apart). Draw the triangles in their
+  own colours at the moment a reader named (tools/probes/phoid.mjs) and read the bones' turns against their neighbours'
+  before tuning the cloth.
+- **A capsule's round end reaches past its joint.** The thigh's collider was a capsule whose round end at the hip, as
+  thick as the top of the thigh plus the margin and the robe's layers (up to 17 cm), reached above the waistband and held
+  the cloth just under the waist ring up to 7 cm above the ring, folded back on itself. A limb's collider where it meets
+  the body is open at that joint and thinned toward it.
+- **Room enough is no more than the rest.** The cloth was kept a leg's thickness plus the depth of the robe's layers off
+  every leg, so wherever the robe at rest hangs closer than that it was pushed out into a sack. Cap the push at the
+  distance the cloth hangs at rest; and because a cap lets a leg through where the particles say clear and the robe as
+  drawn is not, check the robe as the game skins it (its own points) against the legs' own points, and move the bones
+  only where the two meet.
+- **The floor of a fused opening runs on inside the new limb.** Where his scan's robe was fused to his shins it curls in
+  under the hem and runs on as a sheet up inside the new leg to its axis. Hidden in the leg at rest, it came out whenever
+  the leg moved, as the crumples and white flaps inside a lifted hem, and it was most of what the count called "leg
+  through the cloth". A slice through the limb at rest shows it; know what a count is counting before cutting by it.
+- **A hem has an underside and a lip, and where a wrap overlaps the lip is the panels' edge.** Taking out the hem's
+  down-facing strip left its in-facing lip floating loose; taking the lip too, all the way round, opened slits at his
+  front, where the wrap's panels overlap and their edges face in as well. Facing cannot tell a lip from a panel's edge:
+  where the robe overlaps, leave the edges; and take out the loose scraps a cut leaves behind (here under 40 triangles).
+- **A fix made for one take is counted on every take.** A cap that kept the cloth below the waist ring, made for the
+  sword lunge, held the lap down into his thighs in the chair sits (sit-to-stand: 975 leg edges through the robe against
+  2 without it), and did nothing for the lunge once the hip was open. It came back out.
+- **A robe fitted to a robe that rides the hips cannot cover legs folded above the waist.** Sitting cross-legged his
+  waist is below his knees; both of his robe rigs are fitted, in that take, to his saved robe, which rides his hips, so
+  every robe made from them lay behind and under the real legs. Carried by the real legs instead (the waist's share for
+  its top few centimetres, then each side's thigh and shin by nearness at rest), the legs start inside the robe and stay
+  inside it.
