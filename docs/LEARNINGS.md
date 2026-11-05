@@ -7461,3 +7461,29 @@ cut (sharing its vertices and maps) when it is small.
   clean and skin-coloured. The blind reader called it the worst fault anywhere, and Chad asked how it could have been
   missed. Judge a body by what a viewer will call it (severed, floating, cut off), not by whether its edge is neat, and
   never put a version that shows it to him as an option, however it is worded.
+- **One tube of cloth cannot wear trousers.** Grandmaster Pho's saved robe wraps each crossed leg separately when he sits
+  on the floor, because its hem rides his shins; a cloth made as one tube round both legs (16 x 10 bones, each robe point
+  a blend of four) cannot split into two sleeves, nor can a narrow skirt reach round two knees 70 cm apart. Five ways
+  were tried (laid over the legs, his rig-leg robe's shape, the saved robe's weights, the real legs laid along his rig's
+  legs, the cloth held exactly to the saved wrap); each left his legs bare in front and the lap torn. Know what the
+  representation can express before tuning it.
+- **"Deep inside the robe", measured from his hips' axis, also finds the robe's pleats.** Taking out what lay 4 cm
+  inside the outermost point of its 5-degree slice opened slits in the back of the robe in every take: a pleat's valley
+  is that deep. What found the shards was the distance from his old shins (all within 8 cm), and what separated them
+  from the robe's outside at his calf (also within 8 cm) was facing: the rim faces the shin, the outside faces away.
+  Colour the model by the measure and photograph it before cutting by it.
+- **A hidden layer can be the back of a pocket.** The robe's inner layer, which no side sees at rest, was what the real
+  legs cut through, so it was taken out; but where the robe's front panels overlap, a pose that opens the pocket showed
+  the inner layer before and the knee now. Visibility at rest does not see what a pose uncovers.
+- **A sphere has no length.** A knee collider written as a capsule from the knee to the knee, with a thickness profile
+  along it, divided by its zero length in one of the cloth's steps; nothing threw, and every take with a bent knee came
+  out with the cloth frozen (11,105 keys kept of 264,800, where a working run keeps about 120,000). Write a sphere's
+  radius out, as the heel's is, and read the key count of every run.
+- **A recipe that draws needs its browser written in it.** tools/robeshell.mjs draws the robe in a browser; my trial
+  scripts set CHROMIUM_PATH, the recipe did not, and its first full run stopped there six minutes in. Put every
+  environment a recipe needs in its "Needs" line, and run the recipe itself, not only its trial scripts, before
+  calling it the recipe.
+- **Room for the legs is a look.** The cloth kept off each leg by a margin and the depth of the robe's layers (up to 7 cm
+  off a thick round outline of the leg) pushed the lower robe into a sack when he stands talking; held closer, his legs
+  came through the cloth five to ten times as often. A count that falls can buy a picture that is worse: the blind
+  reader of every take is what found it.

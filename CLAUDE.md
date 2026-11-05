@@ -1129,7 +1129,14 @@ last recommended: a material patch when chapter 3 casts him, his file unchanged)
 triangles that stretch into strips when a leg leaves the robe, was cut free at his word (tools/hemcut.mjs) but NOT
 shipped — a blind reader of every take preferred the strips to a trailing leg ending at mid-shin in walking — so the hem
 is his choice too. Measured and not cured (a helper bone or a corrective shape would): the folds across his right
-shoulder blade and at his right side, the shards below his left elbow in one talking moment. **Ajahn Krukai's model is PINNED** (v23.5, Chad: *"Make sure ajahn krukai's model
+shoulder blade and at his right side, the shards below his left elbow in one talking moment. At v24.47 (Chad: "Option 2
+and look D", "Cloth simulation", "Calmer running"; masters/v24.47/make.sh and PLAN.md) his look is D, and he has REAL LEGS
+under the robe (tools/leggraft.mjs: the admin-tee man's bare legs, lent hidden, on new bones solved into every take), the
+robe below his waist made cloth that makes room for them (tools/robesim.mjs, tools/robeshell.mjs, prepmonk TWOSIDE) and
+his running a jog; his legs are checked on 180 moments from six sides (tools/probes/pholegs.mjs) and by twenty blind
+readers of all 540 pictures: better than his saved file in 11 takes, even in 2, worse in 6 — sitting cross-legged (five
+ways tried; one tube of cloth cannot wrap two crossed legs), the sword slash, the two Charged casts, cast_8 and talking
+with hands open (the lower robe puffed into a sack). The floor sit's options are his. **Ajahn Krukai's model is PINNED** (v23.5, Chad: *"Make sure ajahn krukai's model
 in ep3 is unaffected and untouched. It is important that krukai is in the game as the master who gave the player his
 first sakyant."*): `ajarn` / `assets/ajarn.glb` are the bytes that shipped at v18.7, `chaptertest` fails on any change
 to the key, the file or e3c1's use of it, and Episode 4's first master — the original Sak Yant Ajarn — arrives under

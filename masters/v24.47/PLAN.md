@@ -272,3 +272,59 @@ runs that much slower over the ground), the lift 0.6 of what it was, and less ag
 lift was taken; his hips, toes and everything else as they were. Running's counts: 452 leg edges through the cloth (the
 sprint 2,410), no floating leg piece (11), torn cloth halved; in the large shots his legs leave the robe cleanly below
 the hem from every side. Left: where the hem lifts over a foot, a few crumpled grey bits inside it.
+
+**Step 12 · every take through the checks.** All 180 moments of the recipe photographed at 760 px from six sides (540
+pictures, two sides each) and counted; the 31 moments the count flags looked at full size, and the worst-torn moment of
+each take. Four kinds of fault, each traced:
+1. *His knee through the front of the robe* (the chair sits; two casts and the sword lunge where he crouches). Sliced
+   across at knee height, the knee sits right against the robe's front with no room. The cloth itself clears it (its
+   points stand 1.4 cm off the knee's collider), but the robe's surface is carried by the cloth bones on either side of
+   the fold over the knee, and that blend draws it inward across the corner; where the robe's front panel overlaps (a
+   pocket in his scan), the opening shows the knee. In his saved file the same pocket shows the robe's inner layer.
+   Tried: the inner layer kept (the knee no longer shows in four of the six takes, but legs through the cloth and torn
+   cloth double — the reason it was taken out); a pad of 3 cm at a bent knee (robesim, one chair sit better, a crouching
+   cast and another sit worse; taken back out). Not cured.
+2. *Shards and skin-coloured strips inside a lifted hem* (casts with a wide stance, the sword lunge, sit-to-stand).
+   Coloured by how far each point of the robe lay from his old shins at rest, the shards are all the rim that hugged them
+   (within 8 cm). Taken out by distance alone (tools/robeshell.mjs RIM) it opened a hole at the back of his right calf in
+   every take — the robe's outside comes that close there, facing away; taken out only where it faces the shin (or down:
+   the caps), 1,035 triangles: the long strips and the big shards go (mage_soell_cast_6 from behind, sit-to-stand from the
+   front), smaller crumples remain inside the hem at its sides. On all 180 moments: floating leg pieces 55 → 52 (12,367 →
+   9,812 px), legs through the cloth 9,945 → 7,130, torn cloth about the same (59,831: most of it folded out of sight).
+   (A first try measured "inside" from his hips' axis: it took the deep valleys of the robe's pleats and opened slits
+   at its back in every take.)
+3. *Thin slivers of leg just above the hem* (walking, three casts): the leg seen through the gap between the hem's
+   outer edge and its turned-up lip, 25–110 px at 600 px. Not cured.
+4. *Sitting cross-legged* — five ways tried, none passes: the robe laid over his folded legs (the recipe: his crossed
+   legs bare in front and the robe torn into shards in his lap); the robe's shape taken from the chair sits' robe made on
+   his rig's legs (his knees out through it, or his legs wholly in front of it with the thigh's flat-coloured top showing);
+   the same with his saved file's robe weights, whose hem wraps each leg like a trouser leg; his real legs laid along his
+   rig's legs so they would sit inside that wrap (tools/leggraft.mjs, tried and taken back out: no floating piece, but his
+   legs still bare in front and the robe torn in his lap); and the cloth held exactly to that wrap (shards everywhere). Why:
+   the cloth is one tube round both legs, his saved file's robe wraps each leg separately (its hem riding his shins), and
+   160 cloth bones cannot follow a tube split into two sleeves; nor can a narrow skirt reach round two knees 70 cm apart.
+   Put to Chad.
+The recipe as it now stands is make.sh (RIM in step 5); with each new option unset the tools give their old files byte
+for byte (tools/robeshell.mjs: the shell sha1 8c64ada2; tools/prepmonk.mjs: v24.46's shipped file, 816d2652).
+
+**Step 13 · the file, and the review.** The recipe re-run whole (make.sh; robeshell needs a browser, CHROMIUM_PATH in a
+container — the first run stopped there and is noted in it): assets/pho.glb 9,031,528 bytes (v24.46 6,858,792), sha1
+710e3d2c. All 180 moments photographed again at 760 px, six sides (540 pictures) and counted: floating leg pieces 52
+(his file 166), legs through the cloth 7,130 edges (39,869), torn robe triangles 59,831 (109,419). Looked at by me
+(walking, the chair sits, the casts' worst moments), then by twenty blind readers, each with 27–30 of the 540 pictures,
+his file and the new one stacked in an order they could not know (masters/v24.47/review: the instructions, every
+reader's notes, the key and the table). Picture by picture the new file is better in 279, the same in 65, worse in 196.
+By take — better: running 35 / 0 / 1 (better / same / worse), walking 34 / 1 / 10, the three chair sits (18 / 9 / 0,
+27 / 0 / 0, 27 / 0 / 0), sit-to-stand 12 / 7 / 8, the hand-on-hip talk 18 / 0 / 9, casts 4, 5, 6 and 7; even: casts 1
+and 3; worse: sitting cross-legged 0 / 0 / 27, the sword slash 4 / 2 / 21, Charged_Spell_Cast 5 / 9 / 13,
+Charged_Spell_Cast_1 8 / 2 / 17, mage_soell_cast_8 3 / 1 / 23 and talking with hands open 5 / 0 / 22. What the readers
+named in the new file: in the sword slash a tear at the waist fold showing skin and torn shards at his hip; in the two
+Charged casts torn shards and a doubled hem inside the hem by his feet and skin through a slit at the robe's front; in
+cast_8 a dark tear across the top of the robe's rear panel and the upper robe's hanging end flaring as a stiff sheet
+(v24.42 had given cast_8 his own file's robe); talking with hands open, the lower robe puffed out round his legs into a
+sack, its hem curled in. And everywhere a lifted hem shows, small crumpled grey bits and white specks inside it.
+Tried after the review and not taken: the hem's turned-up inner lip taken out too (robeshell, the crumples stayed:
+they are not the lip); the cloth held closer to his legs (the robe's layers counted 2 cm deep at most, or not at all:
+the sack goes, but his legs come through the cloth 33,479 and 76,499 times against 7,130). The sack is the room his
+real legs need inside a robe a centimetre thick in layers; the tears at the waist are where the cloth meets the robe
+above it. Put to Chad, with the floor sit.

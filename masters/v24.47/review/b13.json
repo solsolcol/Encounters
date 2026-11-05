@@ -1,0 +1,174 @@
+[
+  {
+    "id": "p340",
+    "X": [
+      "front view: his forward (right) leg pierces the front panel of the wrap through a ragged, torn hole at mid-shin instead of coming out under the hem",
+      "front view: small white shards at the hem by his back (left) foot",
+      "his left view: a stretched white/blue streaky sheet under the hem between the forward leg and the robe",
+      "his left view: crumpled, layered grey streaks along the bottom of the front panel's hem"
+    ],
+    "Y": [
+      "front view: crumpled grey/silver shards inside the hem on the outer side of his forward (right) leg",
+      "front view: white splinters at the hem between his legs, beside the forward shin",
+      "his left view: a few small white shards just under the hem in the middle"
+    ],
+    "better": "Y",
+    "why": "X's forward leg punches through the front of the wrap through a torn hole and has stretched streaks under the hem; Y's legs come out under the hem with only small shards"
+  },
+  {
+    "id": "p341",
+    "X": [
+      "his back view: small white shards inside the hem at the lower left, by his left leg",
+      "his right view: small white shards/flaps hanging just under the hem in the middle"
+    ],
+    "Y": [
+      "his right view: his forward (right) thigh and knee come out through the front edge of the robe instead of below the hem, with torn white strips smeared across the thigh",
+      "his back view: small white shards inside the hem at the lower left, and a white sliver at the hem by his right foot"
+    ],
+    "better": "X",
+    "why": "Y's forward leg breaks out through the robe with white streaks across it; X has only small shards at the hem"
+  },
+  {
+    "id": "p342",
+    "X": [
+      "behind-left view: the wrap's front panel at the left edge reads as a stiff boxy sheet, its top and bottom edges crumpled and doubled with dark grey streaks",
+      "behind-right view: a tiny bright white sliver at the hem by his right foot"
+    ],
+    "Y": [
+      "behind-left view: a thin grey sliver and a doubled edge where the wrap's front panel overlaps, at the left edge"
+    ],
+    "better": "Y",
+    "why": "X's front panel looks like a flat box with crumpled dark edges; Y's drapes in one smooth piece"
+  },
+  {
+    "id": "p343",
+    "X": [
+      "front view: crumpled grey/silver shards inside the hem on the outer side of his forward (right) leg",
+      "front view: white splinters at the hem between his legs, beside the forward shin",
+      "his left view: a small white shard under the doubled hem in the middle"
+    ],
+    "Y": [
+      "front view: his forward (right) leg pierces the front panel of the wrap through a ragged, torn hole instead of coming out under the hem",
+      "front view: a small white shard at the hem's lower left corner beside that leg",
+      "his left view: a stretched white/blue streaky sheet under the hem between the forward leg and the robe",
+      "his left view: crumpled, layered grey and white streaks along the bottom of the front panel"
+    ],
+    "better": "X",
+    "why": "Y's forward leg punches through a torn hole in the wrap and drags stretched streaks under the hem; X has only small shards at the hem"
+  },
+  {
+    "id": "p344",
+    "X": [
+      "his back view: white shards inside the hem at the lower left, by his left leg",
+      "his back view: white splinters at the hem by his right foot",
+      "his right view: his forward (right) thigh and knee come out through the front edge of the robe, with torn white strips across the thigh"
+    ],
+    "Y": [
+      "his back view: white shards and dark specks inside the hem at the lower left",
+      "his right view: a few small white shards just under the hem in the middle"
+    ],
+    "better": "Y",
+    "why": "X's forward leg breaks out through the robe with white strips across it; Y has only small shards at the hem"
+  },
+  {
+    "id": "p345",
+    "X": [
+      "behind-left view: a thin grey doubled edge where the wrap's front panel overlaps, at the left",
+      "behind-left view: a tiny dark speck on the back of the robe"
+    ],
+    "Y": [
+      "behind-left view: the wrap's front panel at the left reads as a stiff boxy sheet with crumpled, doubled dark grey streaks along its top and bottom edges",
+      "behind-right view: a small bright white sliver at the hem by his right foot"
+    ],
+    "better": "X",
+    "why": "Y's front panel looks like a flat box with crumpled dark edges; X's drapes smoothly"
+  },
+  {
+    "id": "p346",
+    "X": [
+      "front view: a tiny white shard at the hem's lower left corner",
+      "his left view: a faint thin dark line on the back of the robe"
+    ],
+    "Y": [
+      "front view: his forward (right) leg pierces the front panel through a ragged, torn hole at the shin instead of coming out under the hem",
+      "front view: crumpled grey bits at the hem corner beside that leg",
+      "his left view: crumpled, layered white/grey streaks along the bottom of the front panel",
+      "his left view: a stretched white streaky flap under the hem behind the forward leg"
+    ],
+    "better": "X",
+    "why": "Y's forward leg punches through a torn hole in the wrap; X's legs come out cleanly under the hem"
+  },
+  {
+    "id": "p347",
+    "X": [
+      "his back view: the inside of the hem shows dark, inside-out lining on both sides, full of white zigzag shards",
+      "his back view: skin-coloured flecks inside the hem at the lower left",
+      "his back view: a white torn sheet crosses the back of his right calf",
+      "his right view: a small white shard under the hem by his standing leg"
+    ],
+    "Y": [
+      "his back view: the inside of the hem shows on the left, scattered with dark specks and splinters",
+      "his back view: dark inside-out lining with white shards on the right, by his right leg",
+      "his back view: white specks along the top edge of the hem opening",
+      "his right view: a row of white shards and splinters hanging under the hem"
+    ],
+    "better": "Y",
+    "why": "both show a messy hem interior from behind, but X also has a white sheet cutting across his right calf; Y's legs stay clean"
+  },
+  {
+    "id": "p348",
+    "X": [
+      "behind-left view: thin dark slivers/cracks in the cloth at the back of the robe",
+      "behind-left view: small white bits at the hem by the visible foot and at the hem's right corner",
+      "behind-right view: white shards under the hem by both legs"
+    ],
+    "Y": [
+      "behind-left view: thin dark slivers in the cloth at the back of the robe",
+      "behind-right view: a small white sliver at the hem by his right foot"
+    ],
+    "better": "Y",
+    "why": "nearly the same; X has more white shards along the hem"
+  },
+  {
+    "id": "p349",
+    "X": [
+      "front view: a crumpled grey bit at the hem's lower left corner",
+      "his left view: a ragged white flap of shards under the hem between the legs",
+      "his left view: a doubled grey edge at the front corner of the hem"
+    ],
+    "Y": [
+      "front view: a small white shard and a tiny orange speck at the hem's lower left corner by the forward leg",
+      "his left view: a small white sliver under the hem behind the forward leg",
+      "his left view: a crumpled grey edge at the front corner of the hem"
+    ],
+    "better": "Y",
+    "why": "both close to clean; X's side view has a bigger ragged flap under the hem between the legs"
+  },
+  {
+    "id": "p350",
+    "X": [
+      "his back view: a small white shard at the hem by his right leg",
+      "his right view: a torn white flap with a brown fleck crosses the calf of his forward (standing) leg just below the hem"
+    ],
+    "Y": [
+      "his back view: the inside of the hem shows at the lower left, full of crumpled grey bits, dark specks and white shards",
+      "his back view: small white shards at the hem by his right foot",
+      "his right view: small white shards along the bottom of the hem",
+      "his right view: a dark crumpled patch on the edge of the hanging upper robe"
+    ],
+    "better": "X",
+    "why": "slightly: X's one real fault is a torn flap over a calf, while Y has a messy hem interior from behind plus more shards along the hem"
+  },
+  {
+    "id": "p351",
+    "X": [
+      "behind-left view: a small grey crumpled bit at the hem's right corner",
+      "behind-right view: a tiny white shard at the hem by his right leg"
+    ],
+    "Y": [
+      "behind-left view: a faint white speck on the cloth near the hem (very minor)"
+    ],
+    "better": "Y",
+    "why": "both nearly clean; Y has no shards at the hem"
+  }
+]

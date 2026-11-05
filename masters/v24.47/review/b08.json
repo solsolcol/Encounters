@@ -1,0 +1,372 @@
+[
+ {
+  "id": "p199",
+  "X": [
+   "front view: the robe hangs as a stiff box and both shins come out through its front face with ragged, torn-looking tops just under the panel's edge, so the legs read as cut-off stumps",
+   "front view: the lower corners of the robe at both sides look glassy and see-through (silvery, inside-out cloth)",
+   "front view: crumpled white and grey shards inside the hem between the legs",
+   "front view: a small dark speck on his left shin"
+  ],
+  "Y": [
+   "front view: the lower sides of the robe are glassy and silvery with torn grey shards and streaks, worst on the right side of the picture",
+   "front view: a dark grey crumpled bit inside the hem beside his right ankle",
+   "his-left view: a dark hole in the robe at the hip (upper right of the view) and a small skin-coloured speck showing through above it",
+   "his-left view: crumpled grey bits along the robe's front edge on the left",
+   "his-left view: a faint mismatched colour band across the near shin"
+  ],
+  "better": "Y",
+  "why": "X's front view shows both shins as stumps poking through a boxy robe, the most glaring fault; Y's legs read as whole, though its sides are torn and the side view has a hole"
+ },
+ {
+  "id": "p200",
+  "X": [
+   "his-right view: torn white splinters along the hem where it meets the floor in the middle",
+   "his-right view: the back of the robe sweeps out into a stiff angular sheet with a sharp corner at the bottom left",
+   "his-right view: white flap shards at the top left and a glassy grey fold at the hip"
+  ],
+  "Y": [
+   "his-back view: the robe is pulled into a long tube-like streak running off the bottom-left corner of the frame, following the trailing leg",
+   "his-back view: small dark specks at the hem",
+   "his-right view: the visible leg's knee and thigh are smeared into stretched white-and-skin streaks where the robe meets it",
+   "his-right view: dark-edged, inside-out cloth bands along the robe's right edge and just above that leg",
+   "his-right view: the robe forms stiff flat sheets with two sharp points (bottom left and straight down to the floor)"
+  ],
+  "better": "X",
+  "why": "Y smears the leg into streaks and stretches the back of the robe into a long tube; X's faults are small shards and a stiff corner"
+ },
+ {
+  "id": "p201",
+  "X": [
+   "behind-left view: a thin dark slit in the folds at the hip",
+   "behind-left view: the upper robe's lower edge shows stacked, doubled fold edges",
+   "behind-right view: the robe's upper right corner is a stiff flat sheet ending in a sharp point",
+   "behind-right view: small torn bits at the hem bottom right"
+  ],
+  "Y": [
+   "behind-left view: a hole in the folds at the hip with a speck of skin showing and a dark gap below it",
+   "behind-left view: dark-edged doubled fold edges and a flap with a doubled edge at the far left",
+   "behind-right view: a ragged edge along the upper robe's lower border with a small torn white shard",
+   "behind-right view: splintered white bits near the arm at the top"
+  ],
+  "better": "X",
+  "why": "Y has a hole showing skin and a dark gap plus torn edges; X is mostly clean apart from a stiff corner"
+ },
+ {
+  "id": "p202",
+  "X": [
+   "front view: the robe hangs as a stiff box and both shins come out through its front face with ragged, torn-looking tops, so the legs read as cut-off stumps",
+   "front view: the lower corners of the robe at both sides look glassy and see-through (silvery, inside-out cloth)",
+   "front view: crumpled white and grey shards inside the hem between the legs",
+   "front view: a small dark speck on his left shin"
+  ],
+  "Y": [
+   "front view: the lower sides of the robe are glassy and silvery with torn grey shards and streaks",
+   "front view: a dark grey crumpled bit inside the hem beside his right ankle",
+   "his-left view: a dark hole in the robe at the hip (upper right) and a small skin-coloured speck showing through above it",
+   "his-left view: crumpled grey bits along the robe's front edge on the left",
+   "his-left view: a faint mismatched colour band across the near shin"
+  ],
+  "better": "Y",
+  "why": "X's legs read as stumps poking out of a boxy robe; Y's legs look whole despite its torn sides and the hole at the hip"
+ },
+ {
+  "id": "p203",
+  "X": [
+   "his-right view: torn white splinters along the hem in the middle",
+   "his-right view: the back of the robe is a stiff angular sheet with a sharp corner at the bottom left",
+   "his-right view: white flap shards at the top left and a glassy grey fold at the hip"
+  ],
+  "Y": [
+   "his-back view: the robe is pulled into a long tube-like streak running off the bottom-left corner, following the trailing leg",
+   "his-back view: small dark specks at the hem",
+   "his-right view: the leg's knee and thigh are smeared into stretched white-and-skin streaks under the robe",
+   "his-right view: dark-edged inside-out cloth along the robe's right edge and above the leg",
+   "his-right view: stiff flat sheets with two sharp points, one reaching down to the floor"
+  ],
+  "better": "X",
+  "why": "Y's smeared leg and stretched robe are far worse than X's small hem shards"
+ },
+ {
+  "id": "p204",
+  "X": [
+   "behind-left view: a thin dark slit in the folds at the hip",
+   "behind-left view: stacked, doubled fold edges on the upper robe",
+   "behind-right view: the robe's upper right corner is a stiff flat sheet ending in a sharp point",
+   "behind-right view: small torn bits at the hem bottom right"
+  ],
+  "Y": [
+   "behind-left view: a hole in the folds at the hip with a speck of skin and a dark gap",
+   "behind-left view: dark-edged doubled fold edges and a doubled flap edge at the far left",
+   "behind-right view: a ragged edge along the upper robe's lower border",
+   "behind-right view: splintered white bits near the arm at the top"
+  ],
+  "better": "X",
+  "why": "Y shows a hole with skin and torn edges; X is cleaner"
+ },
+ {
+  "id": "p205",
+  "X": [
+   "front view: a stiff boxy robe with both shins coming out through its front face with ragged tops, reading as cut-off stumps",
+   "front view: glassy see-through lower corners at both sides",
+   "front view: crumpled white and grey shards inside the hem between the legs",
+   "front view: a small dark speck on his left shin"
+  ],
+  "Y": [
+   "front view: glassy silvery lower sides with torn grey shards and streaks",
+   "front view: a dark grey crumpled bit inside the hem beside his right ankle",
+   "his-left view: a dark hole in the robe at the hip and a skin-coloured speck showing through above it",
+   "his-left view: crumpled grey bits along the robe's front edge on the left",
+   "his-left view: a faint mismatched colour band across the near shin"
+  ],
+  "better": "Y",
+  "why": "X's stumps through a boxy robe are the most glaring fault; Y's legs read as whole"
+ },
+ {
+  "id": "p206",
+  "X": [
+   "his-right view: torn white splinters along the hem in the middle",
+   "his-right view: the back of the robe is a stiff angular sheet with a sharp corner at the bottom left",
+   "his-right view: white flap shards at the top left and a glassy grey fold at the hip"
+  ],
+  "Y": [
+   "his-back view: the robe stretched into a long tube-like streak off the bottom-left corner along the trailing leg",
+   "his-back view: small dark specks at the hem",
+   "his-right view: the leg's knee and thigh smeared into stretched white-and-skin streaks",
+   "his-right view: dark-edged inside-out cloth along the right edge and above the leg",
+   "his-right view: stiff flat sheets with two sharp points, one down to the floor"
+  ],
+  "better": "X",
+  "why": "Y's smeared leg and stretched cloth outweigh X's small shards"
+ },
+ {
+  "id": "p207",
+  "X": [
+   "behind-left view: a thin dark slit in the folds at the hip",
+   "behind-left view: stacked, doubled fold edges on the upper robe",
+   "behind-right view: stiff flat upper right corner ending in a sharp point",
+   "behind-right view: small torn bits at the hem bottom right"
+  ],
+  "Y": [
+   "behind-left view: a hole in the folds at the hip with a speck of skin and a dark gap",
+   "behind-left view: dark-edged doubled fold edges and a doubled flap edge at the far left",
+   "behind-right view: a ragged edge along the upper robe's lower border",
+   "behind-right view: splintered white bits near the arm at the top"
+  ],
+  "better": "X",
+  "why": "Y has a hole with skin showing and ragged edges; X is cleaner"
+ },
+ {
+  "id": "p208",
+  "X": [
+   "front view: glassy silvery lower sides with torn grey shards and streaks",
+   "front view: a dark grey crumpled bit inside the hem beside his right ankle",
+   "his-left view: a dark hole in the robe at the hip (upper right) and a skin-coloured speck showing through above it",
+   "his-left view: crumpled grey bits along the robe's front edge on the left",
+   "his-left view: a faint mismatched colour band across the near shin"
+  ],
+  "Y": [
+   "front view: a stiff boxy robe with both shins coming out through its front face with ragged tops, reading as cut-off stumps",
+   "front view: glassy see-through lower corners at both sides",
+   "front view: crumpled white and grey shards inside the hem between the legs",
+   "front view: a small dark speck on his left shin"
+  ],
+  "better": "X",
+  "why": "Y's legs read as stumps poking through a boxy robe; X's legs look whole despite its torn sides and the hole at the hip"
+ },
+ {
+  "id": "p209",
+  "X": [
+   "his-back view: the robe stretched into a long tube-like streak running off the bottom-left corner along the trailing leg",
+   "his-back view: small dark specks at the hem",
+   "his-right view: the leg's knee and thigh smeared into stretched white-and-skin streaks under the robe",
+   "his-right view: dark-edged inside-out cloth along the robe's right edge and above the leg",
+   "his-right view: stiff flat sheets with two sharp points, one down to the floor"
+  ],
+  "Y": [
+   "his-right view: torn white splinters along the hem in the middle",
+   "his-right view: the back of the robe is a stiff angular sheet with a sharp corner at the bottom left",
+   "his-right view: white flap shards at the top left and a glassy grey fold at the hip"
+  ],
+  "better": "Y",
+  "why": "X smears the leg into streaks and stretches the robe into a tube; Y has only small shards and a stiff corner"
+ },
+ {
+  "id": "p210",
+  "X": [
+   "behind-left view: a hole in the folds at the hip with a speck of skin and a dark gap",
+   "behind-left view: dark-edged doubled fold edges and a doubled flap edge at the far left",
+   "behind-right view: a ragged edge along the upper robe's lower border",
+   "behind-right view: splintered white bits near the arm at the top"
+  ],
+  "Y": [
+   "behind-left view: a thin dark slit in the folds at the hip",
+   "behind-left view: stacked, doubled fold edges on the upper robe",
+   "behind-right view: stiff flat upper right corner ending in a sharp point",
+   "behind-right view: small torn bits at the hem bottom right"
+  ],
+  "better": "Y",
+  "why": "X has a hole with skin showing and ragged edges; Y is cleaner"
+ },
+ {
+  "id": "p211",
+  "X": [
+   "front view: the robe hangs as a stiff box; the top of his left shin pokes up through the front of the robe with a ragged, torn-looking edge",
+   "front view: glassy, silvery inside-out cloth at both lower corners of the robe",
+   "front view: tiny skin-coloured specks inside the hem"
+  ],
+  "Y": [
+   "front view: the lower sides of the robe are glassy and silvery with torn grey shards and streaks on both sides",
+   "front view: the robe's right side is pulled out into a sharp pinched point at the edge of the frame",
+   "front view: a tiny skin-coloured speck inside the hem",
+   "his-left view: the robe's front edge is pinched into a sharp point with crumpled, torn white bits"
+  ],
+  "better": "X",
+  "why": "Y has torn shards on both sides and a pinched, crumpled point in both views; X's main fault is one ragged shin top and a boxy shape, and its side view is clean"
+ },
+ {
+  "id": "p212",
+  "X": [
+   "his-right view: small torn white shards along the bottom of the hem at the back",
+   "his-right view: the front of the hem is lifted high in a stiff diagonal sweep"
+  ],
+  "Y": [
+   "his-right view: a few small white bits at the bottom of the hem"
+  ],
+  "better": "Y",
+  "why": "both are mostly clean; Y's robe hangs naturally while X has more shards along its hem"
+ },
+ {
+  "id": "p213",
+  "X": [
+   "behind-left view: the upper robe's hanging edge has blocky stair-stepped corners with dark edges"
+  ],
+  "Y": [
+   "behind-left view: the upper robe's hanging edge has blocky stair-stepped corners and a doubled, dark-and-beige streaked edge",
+   "behind-left view: dark specks and lines on the upper robe flap at the top left",
+   "behind-right view: thin white splinter-like streaks on the left side of the robe"
+  ],
+  "better": "X",
+  "why": "both are nearly clean, but Y adds streaks, specks and a doubled edge"
+ },
+ {
+  "id": "p214",
+  "X": [
+   "his-left view: crumpled, torn white shards of the inner layer hanging just under the hem at both sides of the legs",
+   "his-left view: a faint mismatched colour band across the near shin just below the hem"
+  ],
+  "Y": [
+   "his-left view: the inner layer under the hem is stretched into a flat white sheet trailing down behind the legs",
+   "his-left view: the top of the far leg looks smeared into that sheet where it meets the hem",
+   "his-left view: crumpled grey bits at the inner hem"
+  ],
+  "better": "X",
+  "why": "Y's stretched sheet and smeared far leg are more visible than X's small shards"
+ },
+ {
+  "id": "p215",
+  "X": [
+   "his-back view: torn white shards stuck on the right calf just under the hem, like a hole in the cloth",
+   "his-back view: crumpled grey bits at the inner hem above the left leg",
+   "his-right view: jagged white and grey shards on the near calf just under the hem",
+   "his-right view: a dark crumpled bit on the upper robe's edge"
+  ],
+  "Y": [
+   "his-back view: a few small white bits at the hem by the right leg",
+   "his-right view: small white bits at the hem",
+   "his-right view: a dark crumpled bit on the upper robe's edge"
+  ],
+  "better": "Y",
+  "why": "X has large torn shards plastered on both calves; Y's hem is nearly clean"
+ },
+ {
+  "id": "p216",
+  "X": [],
+  "Y": [
+   "behind-right view: jagged white torn shards on the calf just under the hem"
+  ],
+  "better": "X",
+  "why": "X is clean; Y has torn shards on the calf"
+ },
+ {
+  "id": "p217",
+  "X": [
+   "front view: a small grey bit at the hem's right corner",
+   "his-left view: a small dark crumpled bit at the robe's inner fold"
+  ],
+  "Y": [
+   "front view: a small grey bit on the inner layer between the legs"
+  ],
+  "better": "same",
+  "why": "both hang cleanly with only tiny specks"
+ },
+ {
+  "id": "p218",
+  "X": [
+   "his-right view: a small torn white shard at the front of the hem by the leg"
+  ],
+  "Y": [
+   "his-right view: small torn white bits at the front corner of the hem"
+  ],
+  "better": "same",
+  "why": "both clean apart from similar small shards at the front of the hem"
+ },
+ {
+  "id": "p219",
+  "X": [],
+  "Y": [],
+  "better": "same",
+  "why": "both clean; the far heel under the hem looks natural in both"
+ },
+ {
+  "id": "p220",
+  "X": [],
+  "Y": [],
+  "better": "same",
+  "why": "both clean and hang the same way; only faint skin-texture variation on the shins, alike in both"
+ },
+ {
+  "id": "p221",
+  "X": [
+   "his-right view: a tiny white bit under the front corner of the hem"
+  ],
+  "Y": [
+   "his-right view: a tiny white bit under the front corner of the hem"
+  ],
+  "better": "same",
+  "why": "both hang cleanly with the same tiny bit at the hem"
+ },
+ {
+  "id": "p222",
+  "X": [],
+  "Y": [],
+  "better": "same",
+  "why": "both clean; the far heel under the hem looks natural in both"
+ },
+ {
+  "id": "p223",
+  "X": [
+   "front view: a small grey crumpled bit inside the hem between the legs"
+  ],
+  "Y": [],
+  "better": "Y",
+  "why": "nearly identical, but X shows a small grey crumpled bit inside the hem"
+ },
+ {
+  "id": "p224",
+  "X": [
+   "his-right view: a small torn white shard hanging under the front corner of the hem by the leg"
+  ],
+  "Y": [
+   "his-right view: a thin white sliver under the front corner of the hem"
+  ],
+  "better": "Y",
+  "why": "both clean overall, but X's shard at the hem is more noticeable"
+ },
+ {
+  "id": "p225",
+  "X": [],
+  "Y": [],
+  "better": "same",
+  "why": "both clean; the far heel under the hem looks natural in both"
+ }
+]

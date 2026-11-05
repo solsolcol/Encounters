@@ -7955,6 +7955,38 @@ What the baseline contains, by release:
     armpit fade's own fold under his right arm (the arms' squashed edges up 0.1–0.5 points; the back's lowest share in
     four casts and the hand-on-hip take down to 0.74), painted and photographed: the cloth that now goes with the arm.
     Every take photographed (shots/takes-1..3.jpg). Not in build.py until chapter 3 casts him.
+- **v24.47** (prepared, not a build: nothing deployed, the live build stays v24.40) GRANDMASTER PHO'S REAL LEGS — Chad,
+  4 Nov 2026, after v24.46: *"Why is his legs severed? Didnt you see that problem how is it possible you even missed that"*,
+  *"Seriously zoom in and look at the mess, its clear you are blind. Option 2 and look D"* (real legs under the robe from
+  another of the game's scans, the hem cut free; his look D), *"You need to look at way more large shots of the legs in
+  various animations and posrs, walking, running, etc. look at large shots nut thumbnails"*, of the robe that could not
+  make room for real legs his pick *"Cloth simulation"*, and that evening, *"there are still so many problems and issues
+  with disembodied legs and parts, or cloth and body clipping into each other, and so many other issues"* — his pick
+  *"Calmer running"*. The plan, his words and every step's measure: masters/v24.47/PLAN.md; recipe masters/v24.47/make.sh.
+  - THE LEGS (tools/leggraft.mjs, new): his scan has no leg between mid-shin and the hip; the admin-tee man's bare legs
+    (Chad's own scan, lent hidden under the robe and never seen as himself) joined to his shins at 0.17 m, girth and skin
+    colour matched, on new thigh and shin bones solved into every take (two bones to his own ankle, in his own knee's
+    plane); his rig's knees stand 15 cm before his shins and could not carry a real knee.
+  - THE ROBE AS CLOTH (tools/robesim.mjs, new): below his waist the robe is cloth that keeps its own shape (each point's
+    target skinned like the robe nearest it) and makes room for the real legs, every take simulated and baked as 16 x 10
+    cloth bones; tools/robeshell.mjs (new) takes out the robe's hidden inner layer, fused at the hem to his old shins,
+    which the legs cut and tore (from outside at rest the picture is the same: tools/probes/restdiff.mjs, new), and the rim
+    that hugged his old shins (RIM: shards and skin-coloured strips inside a lifted hem); tools/prepmonk.mjs TWOSIDE draws
+    the robe below his waist from both sides. His running made a jog (leggraft JOG): shorter steps, the heel at most 22 cm
+    up while behind him, so his calf never sweeps through the robe.
+  - THE CHECKS, his words made counts (tools/probes/pholegs.mjs, new): floating leg pieces, legs through the cloth, torn
+    cloth, on 180 moments x 6 sides, each proven on his picture's moment of the saved file first. His saved file 166 /
+    39,869 / 109,419; this one 52 / 7,130 / 59,831. Every option new to a tool proven to change nothing when unset (the
+    old file byte for byte).
+  - THE BLIND REVIEW (twenty readers, the 540 pictures of his file and this one stacked in an order they could not
+    know; masters/v24.47/review): better in 279 pictures, the same in 65, worse in 196 — better in running, walking, the
+    three chair sits, sit-to-stand, the hand-on-hip talk and four casts; even in two casts; worse in six takes: sitting
+    cross-legged (five ways tried, none passes: one tube of cloth cannot wrap two crossed legs as his file's trouser-like
+    robe does), the sword slash (a tear at the waist fold), the two Charged casts and cast_8 (torn shards inside the hem, a
+    tear in the rear panel), and talking with hands open (the lower robe puffed into a sack: the room the legs need inside
+    a robe that is layers deep; held closer, the legs come through it five to ten times as often). Left everywhere: small
+    crumpled bits inside a lifted hem, his knee through the front pocket in the chair sits. Put to Chad, with the floor
+    sit's options. assets/pho.glb 9,031,528 bytes (v24.46 6,858,792), 19 takes. Not in build.py until chapter 3 casts him.
 
 ## The sheet, version by version
 

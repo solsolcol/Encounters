@@ -64,13 +64,18 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
 9. **Models.** NEEDED (docs/E4-MODELS.md): the taxi uncle. Episode 3 still on stand-ins (docs/E3-MODELS.md): chapter
    3's shop staff man and the customers (the kneeling girl and man, the auntie, the youth, the shrine's wife and
    father, the passer-by); chapter 4's Chinatown towkay. To come for episode 4: Grandmaster Pho's voice (his model arrived
-   3 Nov 2026 and is prepared, `pho`, v24.46: made upright at his word (v24.44), the drape on his left arm given a hanging-cloth
-   rig at his word (v24.45, done), the notch at his right armpit eased (v24.46, done); TWO CHOICES wait on him: his LOOK —
-   A lit as now, B all unlit, C his face unlit, D his skin and necklaces unlit and the robe lit (D recommended;
-   masters/v24.46/shots/pho-look-*.jpg), applied when chapter 3 casts him — and the HEM: cut free of his shins at his
-   word and made (tools/hemcut.mjs), but a blind reader preferred the joined hem in walking (cut, a trailing leg ends at
-   mid-shin and floats behind the robe), so the file keeps it joined until he picks: strips when a leg leaves the robe,
-   or the cut (masters/v24.46/shots/pho-hem-*.jpg)), Lersi Chin's voice (his model arrived 3 Nov 2026 and is prepared,
+   3 Nov 2026 and is prepared, `pho`, v24.47: made upright at his word (v24.44), the drape on his left arm given a hanging-cloth
+   rig at his word (v24.45, done), the notch at his right armpit eased (v24.46, done), his LOOK picked: D, his skin and
+   necklaces unlit and the robe lit (4 Nov, "Option 2 and look D"; a material patch when chapter 3 casts him), and REAL
+   LEGS under a robe made cloth at his word (v24.47, his "Option 2", "Cloth simulation" and "Calmer running"); TWO
+   CHOICES wait on him (masters/v24.47/PLAN.md steps 12–13, masters/v24.47/shots/pho-*-saved-vs-new.jpg): SITTING
+   CROSS-LEGGED fails five ways (his legs bare in front, the robe torn in his lap) — (a) keep at it, the robe laid tidily
+   in his lap with the shins bare (not yet achieved), (b) his saved file's trouser-like robe and old shins carried for
+   that one take and swapped in by the game (the file grows, a switch in chapter 3), or (c) the take left out; and SIX
+   TAKES the blind reader rates worse than his saved file — the floor sit, the sword slash (a tear at the waist fold),
+   the two Charged casts and cast_8 (shards inside the hem, a tear in the rear panel), talking with hands open (the
+   lower robe puffed into a sack: the room the real legs need) — which chapter 3 may never use; left in every take,
+   small crumpled bits inside a lifted hem and, in the chair sits, his knee through the robe's front pocket), Lersi Chin's voice (his model arrived 3 Nov 2026 and is prepared,
    `lersichin`, v24.38), chapter 4's lady; the Ah Pek later
    in the casebook.
 10. **Episode 4's next chapters** (docs/V24.0-EPISODE4-PLAN.md §5): how Pho and Lersi Chin speak (Thai captioned in

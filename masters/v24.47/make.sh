@@ -29,7 +29,10 @@
 #      matched in Lab, painted into free squares of his own texture sheet, each thigh carried on 11 cm toward the hip), the
 #      robe's openings capped in rings.
 #   5. tools/robeshell.mjs: the robe below his waist made one layer of cloth — its inner surface (and the caps), which no
-#      side can see and which the real legs cut through, taken out; from outside at rest the picture is the same.
+#      side can see and which the real legs cut through, taken out; from outside at rest the picture is the same. And
+#      (RIM) the rim that hugged his old shins: within 8 cm of a shin's axis, below 0.45 m, facing the shin (or down, the
+#      caps) — seen from below inside a lifted hem, the cloth crumpled it into shards and skin-coloured strips (taken out
+#      by distance alone it took a patch of the robe's outside at the back of his right calf too: a hole in every take).
 #   6. tools/robesim.mjs: the robe below his waist as cloth that keeps the skirt's shape and makes room for the real legs,
 #      every take simulated and baked as 16 x 10 cloth bones fitted to the whole cloth; sitting cross-legged draped over
 #      the folded legs (DRAPETAKES), the two chair takes keeping the robe made on his rig's legs (TARGETFROM), and running
@@ -39,6 +42,7 @@
 #      the same cloth), in a part of its own; the rest of him as before.
 #
 # Needs: npm i --no-save @gltf-transform/core @gltf-transform/extensions @gltf-transform/functions meshoptimizer sharp three
+# and a browser for step 5 (tools/robeshell.mjs draws the robe): in a fresh container, CHROMIUM_PATH=/opt/pw-browsers/chromium
 set -e
 cd "$(dirname "$0")/../.."
 T=masters/v24.47/prep
@@ -54,7 +58,7 @@ BANDS=1 SKIRT=12 SKIRTB=3 FIT=Sit_Cross_Legged_on_Floor,mage_soell_cast_8,Right_
   ARMBLEND=0.10 HEMRING=0 \
   sh -c "LEGRIG=1 node tools/robeskin.mjs $T/pho_legs.glb $T/pho_robe.glb && node tools/robeskin.mjs $T/pho_legs.glb $T/pho_robe_rig.glb"
 node tools/leggraft.mjs mesh $T/pho_robe.glb $T/admintee_smooth.glb $T/pho_graft.glb
-node tools/robeshell.mjs $T/pho_graft.glb $T/pho_shell.glb
+RIM=0.08 node tools/robeshell.mjs $T/pho_graft.glb $T/pho_shell.glb
 DRAPETAKES=Sit_Cross_Legged_on_Floor TARGETFROM=$T/pho_robe_rig.glb TARGETTAKES=Sit_Cheer_with_Left_Hand,Sit_Shout_Hands_on_Mouth \
   MAXDTAKES=Running:0.08 node tools/robesim.mjs $T/pho_shell.glb $T/pho_cloth.glb
 TWOSIDE='^(Cloth|Skirt)' TEX=4096 NTEX=2048 CHARTFIX=1 node tools/prepmonk.mjs $T/pho_cloth.glb assets/pho.glb 0.3

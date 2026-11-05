@@ -1,0 +1,569 @@
+[
+ {
+  "id": "p145",
+  "X": [
+   "front view: his right shin and foot come out through a ragged hole in the lap cloth at the centre, jagged torn edges all round the shin",
+   "front view: a pale grey gap in the lap cloth just above that shin, by his left hand",
+   "front view: flat sheets with shard-like edges sticking out sideways at the far left by his right knee",
+   "front view: ragged splinters and crumpled bits along the hem by the floor at the bottom right",
+   "front view: a few torn flaps on the upper robe by his left elbow",
+   "his-left view: crumpled, doubled sheets with torn shards along the hem below the knee (bottom left)",
+   "his-left view: thin splinters along the folds at the lower right of the lap, and angular flat planes on the knee"
+  ],
+  "Y": [
+   "front view: both shins completely bare and crossed in front; the wrap does not reach them and the lap cloth floats above them like a flat horizontal sheet",
+   "front view: dark grey inside-out patches across the lap cloth",
+   "front view: a spray of white shards and splinters by his left wrist and at the centre of the waist",
+   "front view: torn sheet edges hanging down at the far left and far right of the lap",
+   "his-left view: a burst of white shards, splinters and flat sheets all round the knee and shin",
+   "his-left view: dark holes and gaps in the cloth at the knee",
+   "his-left view: torn flaps along the hem down by the foot, with the bare shin showing through the broken cloth at the far left"
+  ],
+  "better": "X",
+  "why": "X's shins stay mostly covered and its side view is far cleaner; Y leaves both shins bare under a floating dark-grey sheet and its side view shatters into shards at the knee"
+ },
+ {
+  "id": "p146",
+  "X": [
+   "back view: skin-coloured blotches on the back of the upper robe below his right shoulder (above the waist)",
+   "back view: white splinters and shards at the far left edge by his hip",
+   "back view: a flat flap sticking out at the right side, with bare leg skin seen through the gap under it",
+   "right view: a pile of flat torn sheets and shards over the lap and knee by his hand",
+   "right view: spiky splinters poking up above his forearm",
+   "right view: big angular cardboard-like planes and grey slits at the knee"
+  ],
+  "Y": [
+   "back view: skin-coloured blotches on the back of the upper robe below his right shoulder (above the waist)",
+   "back view: a separate rounded white lobe sticking out at the bottom left by his knee (minor)",
+   "right view: a few torn sheet edges and a small slit in the lap cloth by the knee",
+   "right view: thin slivers at the hem by the foot (bottom right)"
+  ],
+  "better": "Y",
+  "why": "Y's lap and hem are mostly smooth; X has a heap of torn sheets and spiky shards over the knee and a flap with skin showing under it"
+ },
+ {
+  "id": "p147",
+  "X": [
+   "behind-left view: crumpled torn bits and small shards along the hem at the bottom left by his knee",
+   "behind-left view: grey inside-out underside showing on the lap cloth edge by his left hand",
+   "behind-left view: a tiny dark red speck on the cloth near the knee",
+   "behind-right view: skin-coloured blotches on the back of the upper robe (above the waist)",
+   "behind-right view: a thin stretched strip along the edge of the lap cloth by his right hand",
+   "behind-right view: small ragged gaps along the top edge of the upper robe at his armpit"
+  ],
+  "Y": [
+   "behind-left view: white splinters sticking up at the far left by his knee",
+   "behind-left view: crumpled shards and torn sheets over the lap at the far left",
+   "behind-left view: his bare foot peeking out of a gap in the hem at the bottom left",
+   "behind-right view: skin-coloured blotches on the back of the upper robe (above the waist)",
+   "behind-right view: torn flat sheets and grey crumpled bits on the lap around his right hand",
+   "behind-right view: shard-like edges where the upper robe meets his arm"
+  ],
+  "better": "X",
+  "why": "X has only small torn bits at the hem; Y has splinters at the knee, a foot peeking through the hem and torn sheets round his right hand"
+ },
+ {
+  "id": "p148",
+  "X": [
+   "front view: his right shin and foot come out through a ragged hole in the lap cloth at the centre, jagged torn edges all round the shin",
+   "front view: a pale grey gap in the lap cloth just above that shin, by his left hand",
+   "front view: flat sheets with shard-like edges sticking out sideways at the far left by his right knee",
+   "front view: ragged splinters and crumpled bits along the hem by the floor at the bottom right",
+   "front view: a few torn flaps on the upper robe by his left elbow",
+   "his-left view: crumpled, doubled sheets with torn shards along the hem below the knee (bottom left)",
+   "his-left view: thin splinters along the folds at the lower right of the lap, and angular flat planes on the knee"
+  ],
+  "Y": [
+   "front view: both shins completely bare and crossed in front; the wrap does not reach them and the lap cloth floats above them like a flat horizontal sheet",
+   "front view: dark grey inside-out patches across the lap cloth",
+   "front view: a spray of white shards and splinters by his left wrist and at the centre of the waist",
+   "front view: torn sheet edges hanging down at the far left and far right of the lap",
+   "his-left view: a burst of white shards, splinters and flat sheets all round the knee and shin",
+   "his-left view: dark holes and gaps in the cloth at the knee",
+   "his-left view: torn flaps along the hem down by the foot, with the bare shin showing through the broken cloth at the far left"
+  ],
+  "better": "X",
+  "why": "X's shins stay mostly covered and its side view is far cleaner; Y leaves both shins bare under a floating dark-grey sheet and its side view shatters into shards at the knee"
+ },
+ {
+  "id": "p149",
+  "X": [
+   "back view: skin-coloured blotches on the back of the upper robe below his right shoulder (above the waist)",
+   "back view: white splinters and shards at the far left edge by his hip",
+   "back view: a flat flap sticking out at the right side, with bare leg skin seen through the gap under it",
+   "right view: a pile of flat torn sheets and shards over the lap and knee by his hand",
+   "right view: spiky splinters poking up above his forearm",
+   "right view: big angular cardboard-like planes and grey slits at the knee"
+  ],
+  "Y": [
+   "back view: skin-coloured blotches on the back of the upper robe below his right shoulder (above the waist)",
+   "back view: a separate rounded white lobe sticking out at the bottom left by his knee (minor)",
+   "right view: a few torn sheet edges and a small slit in the lap cloth by the knee",
+   "right view: thin slivers at the hem by the foot (bottom right)"
+  ],
+  "better": "Y",
+  "why": "Y's lap and hem are mostly smooth; X has a heap of torn sheets and spiky shards over the knee and a flap with skin showing under it"
+ },
+ {
+  "id": "p150",
+  "X": [
+   "behind-left view: crumpled torn bits and small shards along the hem at the bottom left by his knee",
+   "behind-left view: grey inside-out underside showing on the lap cloth edge by his left hand",
+   "behind-left view: a tiny dark red speck on the cloth near the knee",
+   "behind-right view: skin-coloured blotches on the back of the upper robe (above the waist)",
+   "behind-right view: a thin stretched strip along the edge of the lap cloth by his right hand",
+   "behind-right view: small ragged gaps along the top edge of the upper robe at his armpit"
+  ],
+  "Y": [
+   "behind-left view: white splinters sticking up at the far left by his knee",
+   "behind-left view: crumpled shards and torn sheets over the lap at the far left",
+   "behind-left view: his bare foot peeking out of a gap in the hem at the bottom left",
+   "behind-right view: skin-coloured blotches on the back of the upper robe (above the waist)",
+   "behind-right view: torn flat sheets and grey crumpled bits on the lap around his right hand",
+   "behind-right view: shard-like edges where the upper robe meets his arm"
+  ],
+  "better": "X",
+  "why": "X has only small torn bits at the hem; Y has splinters at the knee, a foot peeking through the hem and torn sheets round his right hand"
+ },
+ {
+  "id": "p151",
+  "X": [
+   "front view: both shins completely bare and crossed in front; the wrap does not reach them and the lap cloth floats above them like a flat horizontal sheet",
+   "front view: dark grey inside-out patches across the lap cloth",
+   "front view: a spray of white shards and splinters by his left wrist and at the centre of the waist",
+   "front view: torn sheet edges hanging down at the far left and far right of the lap",
+   "his-left view: a burst of white shards, splinters and flat sheets all round the knee and shin",
+   "his-left view: dark holes and gaps in the cloth at the knee",
+   "his-left view: torn flaps along the hem down by the foot, with the bare shin showing through the broken cloth at the far left"
+  ],
+  "Y": [
+   "front view: his right shin and foot come out through a ragged hole in the lap cloth at the centre, jagged torn edges all round the shin",
+   "front view: a pale grey gap in the lap cloth just above that shin, by his left hand",
+   "front view: flat sheets with shard-like edges sticking out sideways at the far left by his right knee",
+   "front view: ragged splinters and crumpled bits along the hem by the floor at the bottom right",
+   "front view: a few torn flaps on the upper robe by his left elbow",
+   "his-left view: crumpled, doubled sheets with torn shards along the hem below the knee (bottom left)",
+   "his-left view: thin splinters along the folds at the lower right of the lap, and angular flat planes on the knee"
+  ],
+  "better": "Y",
+  "why": "Y's shins stay mostly covered and its side view is far cleaner; X leaves both shins bare under a floating dark-grey sheet and its side view shatters into shards at the knee"
+ },
+ {
+  "id": "p152",
+  "X": [
+   "back view: skin-coloured blotches on the back of the upper robe below his right shoulder (above the waist)",
+   "back view: a separate rounded white lobe sticking out at the bottom left by his knee (minor)",
+   "right view: a few torn sheet edges and a small slit in the lap cloth by the knee",
+   "right view: thin slivers at the hem by the foot (bottom right)"
+  ],
+  "Y": [
+   "back view: skin-coloured blotches on the back of the upper robe below his right shoulder (above the waist)",
+   "back view: white splinters and shards at the far left edge by his hip",
+   "back view: a flat flap sticking out at the right side, with bare leg skin seen through the gap under it",
+   "right view: a pile of flat torn sheets and shards over the lap and knee by his hand",
+   "right view: spiky splinters poking up above his forearm",
+   "right view: big angular cardboard-like planes and grey slits at the knee"
+  ],
+  "better": "X",
+  "why": "X's lap and hem are mostly smooth; Y has a heap of torn sheets and spiky shards over the knee and a flap with skin showing under it"
+ },
+ {
+  "id": "p153",
+  "X": [
+   "behind-left view: white splinters sticking up at the far left by his knee",
+   "behind-left view: crumpled shards and torn sheets over the lap at the far left",
+   "behind-left view: his bare foot peeking out of a gap in the hem at the bottom left",
+   "behind-right view: skin-coloured blotches on the back of the upper robe (above the waist)",
+   "behind-right view: torn flat sheets and grey crumpled bits on the lap around his right hand",
+   "behind-right view: shard-like edges where the upper robe meets his arm"
+  ],
+  "Y": [
+   "behind-left view: crumpled torn bits and small shards along the hem at the bottom left by his knee",
+   "behind-left view: grey inside-out underside showing on the lap cloth edge by his left hand",
+   "behind-left view: a tiny dark red speck on the cloth near the knee",
+   "behind-right view: skin-coloured blotches on the back of the upper robe (above the waist)",
+   "behind-right view: a thin stretched strip along the edge of the lap cloth by his right hand",
+   "behind-right view: small ragged gaps along the top edge of the upper robe at his armpit"
+  ],
+  "better": "Y",
+  "why": "Y has only small torn bits at the hem; X has splinters at the knee, a foot peeking through the hem and torn sheets round his right hand"
+ },
+ {
+  "id": "p154",
+  "X": [
+   "front view: his right shin and foot come out through a ragged hole in the lap cloth at the centre, jagged torn edges all round the shin",
+   "front view: a pale grey gap in the lap cloth just above that shin, by his left hand",
+   "front view: flat sheets with shard-like edges sticking out sideways at the far left by his right knee",
+   "front view: ragged splinters and crumpled bits along the hem by the floor at the bottom right",
+   "front view: a few torn flaps on the upper robe by his left elbow",
+   "his-left view: crumpled, doubled sheets with torn shards along the hem below the knee (bottom left)",
+   "his-left view: thin splinters along the folds at the lower right of the lap, and angular flat planes on the knee"
+  ],
+  "Y": [
+   "front view: both shins completely bare and crossed in front; the wrap does not reach them and the lap cloth floats above them like a flat horizontal sheet",
+   "front view: dark grey inside-out patches across the lap cloth",
+   "front view: a spray of white shards and splinters by his left wrist and at the centre of the waist",
+   "front view: torn sheet edges hanging down at the far left and far right of the lap",
+   "his-left view: a burst of white shards, splinters and flat sheets all round the knee and shin",
+   "his-left view: dark holes and gaps in the cloth at the knee",
+   "his-left view: torn flaps along the hem down by the foot, with the bare shin showing through the broken cloth at the far left"
+  ],
+  "better": "X",
+  "why": "X's shins stay mostly covered and its side view is far cleaner; Y leaves both shins bare under a floating dark-grey sheet and its side view shatters into shards at the knee"
+ },
+ {
+  "id": "p155",
+  "X": [
+   "back view: skin-coloured blotches on the back of the upper robe below his right shoulder (above the waist)",
+   "back view: white splinters and shards at the far left edge by his hip",
+   "back view: a flat flap sticking out at the right side, with bare leg skin seen through the gap under it",
+   "right view: a pile of flat torn sheets and shards over the lap and knee by his hand",
+   "right view: spiky splinters poking up above his forearm",
+   "right view: big angular cardboard-like planes and grey slits at the knee"
+  ],
+  "Y": [
+   "back view: skin-coloured blotches on the back of the upper robe below his right shoulder (above the waist)",
+   "back view: a separate rounded white lobe sticking out at the bottom left by his knee (minor)",
+   "right view: a few torn sheet edges and a small slit in the lap cloth by the knee",
+   "right view: thin slivers at the hem by the foot (bottom right)"
+  ],
+  "better": "Y",
+  "why": "Y's lap and hem are mostly smooth; X has a heap of torn sheets and spiky shards over the knee and a flap with skin showing under it"
+ },
+ {
+  "id": "p156",
+  "X": [
+   "behind-left view: crumpled torn bits and small shards along the hem at the bottom left by his knee",
+   "behind-left view: grey inside-out underside showing on the lap cloth edge by his left hand",
+   "behind-left view: a tiny dark red speck on the cloth near the knee",
+   "behind-right view: skin-coloured blotches on the back of the upper robe (above the waist)",
+   "behind-right view: a thin stretched strip along the edge of the lap cloth by his right hand",
+   "behind-right view: small ragged gaps along the top edge of the upper robe at his armpit"
+  ],
+  "Y": [
+   "behind-left view: white splinters sticking up at the far left by his knee",
+   "behind-left view: crumpled shards and torn sheets over the lap at the far left",
+   "behind-left view: his bare foot peeking out of a gap in the hem at the bottom left",
+   "behind-right view: skin-coloured blotches on the back of the upper robe (above the waist)",
+   "behind-right view: torn flat sheets and grey crumpled bits on the lap around his right hand",
+   "behind-right view: shard-like edges where the upper robe meets his arm"
+  ],
+  "better": "X",
+  "why": "X has only small torn bits at the hem; Y has splinters at the knee, a foot peeking through the hem and torn sheets round his right hand"
+ },
+ {
+  "id": "p157",
+  "X": [
+   "front view: both shins completely bare and crossed in front; the wrap does not reach them and the lap cloth floats above them like a flat horizontal sheet",
+   "front view: dark grey inside-out patches across the lap cloth",
+   "front view: a spray of white shards and splinters by his left wrist and at the centre of the waist",
+   "front view: torn sheet edges hanging down at the far left and far right of the lap",
+   "his-left view: a burst of white shards, splinters and flat sheets all round the knee and shin",
+   "his-left view: dark holes and gaps in the cloth at the knee",
+   "his-left view: torn flaps along the hem down by the foot, with the bare shin showing through the broken cloth at the far left"
+  ],
+  "Y": [
+   "front view: his right shin and foot come out through a ragged hole in the lap cloth at the centre, jagged torn edges all round the shin",
+   "front view: a pale grey gap in the lap cloth just above that shin, by his left hand",
+   "front view: flat sheets with shard-like edges sticking out sideways at the far left by his right knee",
+   "front view: ragged splinters and crumpled bits along the hem by the floor at the bottom right",
+   "front view: a few torn flaps on the upper robe by his left elbow",
+   "his-left view: crumpled, doubled sheets with torn shards along the hem below the knee (bottom left)",
+   "his-left view: thin splinters along the folds at the lower right of the lap, and angular flat planes on the knee"
+  ],
+  "better": "Y",
+  "why": "Y's shins stay mostly covered and its side view is far cleaner; X leaves both shins bare under a floating dark-grey sheet and its side view shatters into shards at the knee"
+ },
+ {
+  "id": "p158",
+  "X": [
+   "back view: skin-coloured blotches on the back of the upper robe below his right shoulder (above the waist)",
+   "back view: a separate rounded white lobe sticking out at the bottom left by his knee (minor)",
+   "right view: a few torn sheet edges and a small slit in the lap cloth by the knee",
+   "right view: thin slivers at the hem by the foot (bottom right)"
+  ],
+  "Y": [
+   "back view: skin-coloured blotches on the back of the upper robe below his right shoulder (above the waist)",
+   "back view: white splinters and shards at the far left edge by his hip",
+   "back view: a flat flap sticking out at the right side, with bare leg skin seen through the gap under it",
+   "right view: a pile of flat torn sheets and shards over the lap and knee by his hand",
+   "right view: spiky splinters poking up above his forearm",
+   "right view: big angular cardboard-like planes and grey slits at the knee"
+  ],
+  "better": "X",
+  "why": "X's lap and hem are mostly smooth; Y has a heap of torn sheets and spiky shards over the knee and a flap with skin showing under it"
+ },
+ {
+  "id": "p159",
+  "X": [
+   "behind-left view: white splinters sticking up at the far left by his knee",
+   "behind-left view: crumpled shards and torn sheets over the lap at the far left",
+   "behind-left view: his bare foot peeking out of a gap in the hem at the bottom left",
+   "behind-right view: skin-coloured blotches on the back of the upper robe (above the waist)",
+   "behind-right view: torn flat sheets and grey crumpled bits on the lap around his right hand",
+   "behind-right view: shard-like edges where the upper robe meets his arm"
+  ],
+  "Y": [
+   "behind-left view: crumpled torn bits and small shards along the hem at the bottom left by his knee",
+   "behind-left view: grey inside-out underside showing on the lap cloth edge by his left hand",
+   "behind-left view: a tiny dark red speck on the cloth near the knee",
+   "behind-right view: skin-coloured blotches on the back of the upper robe (above the waist)",
+   "behind-right view: a thin stretched strip along the edge of the lap cloth by his right hand",
+   "behind-right view: small ragged gaps along the top edge of the upper robe at his armpit"
+  ],
+  "better": "Y",
+  "why": "Y has only small torn bits at the hem; X has splinters at the knee, a foot peeking through the hem and torn sheets round his right hand"
+ },
+ {
+  "id": "p160",
+  "X": [
+   "front view: his right shin and foot come out through a ragged hole in the lap cloth at the centre, jagged torn edges all round the shin",
+   "front view: a pale grey gap in the lap cloth just above that shin, by his left hand",
+   "front view: flat sheets with shard-like edges sticking out sideways at the far left by his right knee",
+   "front view: ragged splinters and crumpled bits along the hem by the floor at the bottom right",
+   "front view: a few torn flaps on the upper robe by his left elbow",
+   "his-left view: crumpled, doubled sheets with torn shards along the hem below the knee (bottom left)",
+   "his-left view: thin splinters along the folds at the lower right of the lap, and angular flat planes on the knee"
+  ],
+  "Y": [
+   "front view: both shins completely bare and crossed in front; the wrap does not reach them and the lap cloth floats above them like a flat horizontal sheet",
+   "front view: dark grey inside-out patches across the lap cloth",
+   "front view: a spray of white shards and splinters by his left wrist and at the centre of the waist",
+   "front view: torn sheet edges hanging down at the far left and far right of the lap",
+   "his-left view: a burst of white shards, splinters and flat sheets all round the knee and shin",
+   "his-left view: dark holes and gaps in the cloth at the knee",
+   "his-left view: torn flaps along the hem down by the foot, with the bare shin showing through the broken cloth at the far left"
+  ],
+  "better": "X",
+  "why": "X's shins stay mostly covered and its side view is far cleaner; Y leaves both shins bare under a floating dark-grey sheet and its side view shatters into shards at the knee"
+ },
+ {
+  "id": "p161",
+  "X": [
+   "back view: skin-coloured blotches on the back of the upper robe below his right shoulder (above the waist)",
+   "back view: white splinters and shards at the far left edge by his hip",
+   "back view: a flat flap sticking out at the right side, with bare leg skin seen through the gap under it",
+   "right view: a pile of flat torn sheets and shards over the lap and knee by his hand",
+   "right view: spiky splinters poking up above his forearm",
+   "right view: big angular cardboard-like planes and grey slits at the knee"
+  ],
+  "Y": [
+   "back view: skin-coloured blotches on the back of the upper robe below his right shoulder (above the waist)",
+   "back view: a separate rounded white lobe sticking out at the bottom left by his knee (minor)",
+   "right view: a few torn sheet edges and a small slit in the lap cloth by the knee",
+   "right view: thin slivers at the hem by the foot (bottom right)"
+  ],
+  "better": "Y",
+  "why": "Y's lap and hem are mostly smooth; X has a heap of torn sheets and spiky shards over the knee and a flap with skin showing under it"
+ },
+ {
+  "id": "p162",
+  "X": [
+   "behind-left view: crumpled torn bits and small shards along the hem at the bottom left by his knee",
+   "behind-left view: grey inside-out underside showing on the lap cloth edge by his left hand",
+   "behind-left view: a tiny dark red speck on the cloth near the knee",
+   "behind-right view: skin-coloured blotches on the back of the upper robe (above the waist)",
+   "behind-right view: a thin stretched strip along the edge of the lap cloth by his right hand",
+   "behind-right view: small ragged gaps along the top edge of the upper robe at his armpit"
+  ],
+  "Y": [
+   "behind-left view: white splinters sticking up at the far left by his knee",
+   "behind-left view: crumpled shards and torn sheets over the lap at the far left",
+   "behind-left view: his bare foot peeking out of a gap in the hem at the bottom left",
+   "behind-right view: skin-coloured blotches on the back of the upper robe (above the waist)",
+   "behind-right view: torn flat sheets and grey crumpled bits on the lap around his right hand",
+   "behind-right view: shard-like edges where the upper robe meets his arm"
+  ],
+  "better": "X",
+  "why": "X has only small torn bits at the hem; Y has splinters at the knee, a foot peeking through the hem and torn sheets round his right hand"
+ },
+ {
+  "id": "p163",
+  "X": [
+   "front view: his right shin and foot come out through a ragged hole in the lap cloth at the centre, jagged torn edges all round the shin",
+   "front view: a pale grey gap in the lap cloth just above that shin, by his left hand",
+   "front view: flat sheets with shard-like edges sticking out sideways at the far left by his right knee",
+   "front view: ragged splinters and crumpled bits along the hem by the floor at the bottom right",
+   "front view: a few torn flaps on the upper robe by his left elbow",
+   "his-left view: crumpled, doubled sheets with torn shards along the hem below the knee (bottom left)",
+   "his-left view: thin splinters along the folds at the lower right of the lap, and angular flat planes on the knee"
+  ],
+  "Y": [
+   "front view: both shins completely bare and crossed in front; the wrap does not reach them and the lap cloth floats above them like a flat horizontal sheet",
+   "front view: dark grey inside-out patches across the lap cloth",
+   "front view: a spray of white shards and splinters by his left wrist and at the centre of the waist",
+   "front view: torn sheet edges hanging down at the far left and far right of the lap",
+   "his-left view: a burst of white shards, splinters and flat sheets all round the knee and shin",
+   "his-left view: dark holes and gaps in the cloth at the knee",
+   "his-left view: torn flaps along the hem down by the foot, with the bare shin showing through the broken cloth at the far left"
+  ],
+  "better": "X",
+  "why": "X's shins stay mostly covered and its side view is far cleaner; Y leaves both shins bare under a floating dark-grey sheet and its side view shatters into shards at the knee"
+ },
+ {
+  "id": "p164",
+  "X": [
+   "back view: skin-coloured blotches on the back of the upper robe below his right shoulder (above the waist)",
+   "back view: white splinters and shards at the far left edge by his hip",
+   "back view: a flat flap sticking out at the right side, with bare leg skin seen through the gap under it",
+   "right view: a pile of flat torn sheets and shards over the lap and knee by his hand",
+   "right view: spiky splinters poking up above his forearm",
+   "right view: big angular cardboard-like planes and grey slits at the knee"
+  ],
+  "Y": [
+   "back view: skin-coloured blotches on the back of the upper robe below his right shoulder (above the waist)",
+   "back view: a separate rounded white lobe sticking out at the bottom left by his knee (minor)",
+   "right view: a few torn sheet edges and a small slit in the lap cloth by the knee",
+   "right view: thin slivers at the hem by the foot (bottom right)"
+  ],
+  "better": "Y",
+  "why": "Y's lap and hem are mostly smooth; X has a heap of torn sheets and spiky shards over the knee and a flap with skin showing under it"
+ },
+ {
+  "id": "p165",
+  "X": [
+   "behind-left view: crumpled torn bits and small shards along the hem at the bottom left by his knee",
+   "behind-left view: grey inside-out underside showing on the lap cloth edge by his left hand",
+   "behind-left view: a tiny dark red speck on the cloth near the knee",
+   "behind-right view: skin-coloured blotches on the back of the upper robe (above the waist)",
+   "behind-right view: a thin stretched strip along the edge of the lap cloth by his right hand",
+   "behind-right view: small ragged gaps along the top edge of the upper robe at his armpit"
+  ],
+  "Y": [
+   "behind-left view: white splinters sticking up at the far left by his knee",
+   "behind-left view: crumpled shards and torn sheets over the lap at the far left",
+   "behind-left view: his bare foot peeking out of a gap in the hem at the bottom left",
+   "behind-right view: skin-coloured blotches on the back of the upper robe (above the waist)",
+   "behind-right view: torn flat sheets and grey crumpled bits on the lap around his right hand",
+   "behind-right view: shard-like edges where the upper robe meets his arm"
+  ],
+  "better": "X",
+  "why": "X has only small torn bits at the hem; Y has splinters at the knee, a foot peeking through the hem and torn sheets round his right hand"
+ },
+ {
+  "id": "p166",
+  "X": [
+   "front view: his right shin and foot come out through a ragged hole in the lap cloth at the centre, jagged torn edges all round the shin",
+   "front view: a pale grey gap in the lap cloth just above that shin, by his left hand",
+   "front view: flat sheets with shard-like edges sticking out sideways at the far left by his right knee",
+   "front view: ragged splinters and crumpled bits along the hem by the floor at the bottom right",
+   "front view: a few torn flaps on the upper robe by his left elbow",
+   "his-left view: crumpled, doubled sheets with torn shards along the hem below the knee (bottom left)",
+   "his-left view: thin splinters along the folds at the lower right of the lap, and angular flat planes on the knee"
+  ],
+  "Y": [
+   "front view: both shins completely bare and crossed in front; the wrap does not reach them and the lap cloth floats above them like a flat horizontal sheet",
+   "front view: dark grey inside-out patches across the lap cloth",
+   "front view: a spray of white shards and splinters by his left wrist and at the centre of the waist",
+   "front view: torn sheet edges hanging down at the far left and far right of the lap",
+   "his-left view: a burst of white shards, splinters and flat sheets all round the knee and shin",
+   "his-left view: dark holes and gaps in the cloth at the knee",
+   "his-left view: torn flaps along the hem down by the foot, with the bare shin showing through the broken cloth at the far left"
+  ],
+  "better": "X",
+  "why": "X's shins stay mostly covered and its side view is far cleaner; Y leaves both shins bare under a floating dark-grey sheet and its side view shatters into shards at the knee"
+ },
+ {
+  "id": "p167",
+  "X": [
+   "back view: skin-coloured blotches on the back of the upper robe below his right shoulder (above the waist)",
+   "back view: white splinters and shards at the far left edge by his hip",
+   "back view: a flat flap sticking out at the right side, with bare leg skin seen through the gap under it",
+   "right view: a pile of flat torn sheets and shards over the lap and knee by his hand",
+   "right view: spiky splinters poking up above his forearm",
+   "right view: big angular cardboard-like planes and grey slits at the knee"
+  ],
+  "Y": [
+   "back view: skin-coloured blotches on the back of the upper robe below his right shoulder (above the waist)",
+   "back view: a separate rounded white lobe sticking out at the bottom left by his knee (minor)",
+   "right view: a few torn sheet edges and a small slit in the lap cloth by the knee",
+   "right view: thin slivers at the hem by the foot (bottom right)"
+  ],
+  "better": "Y",
+  "why": "Y's lap and hem are mostly smooth; X has a heap of torn sheets and spiky shards over the knee and a flap with skin showing under it"
+ },
+ {
+  "id": "p168",
+  "X": [
+   "behind-left view: crumpled torn bits and small shards along the hem at the bottom left by his knee",
+   "behind-left view: grey inside-out underside showing on the lap cloth edge by his left hand",
+   "behind-left view: a tiny dark red speck on the cloth near the knee",
+   "behind-right view: skin-coloured blotches on the back of the upper robe (above the waist)",
+   "behind-right view: a thin stretched strip along the edge of the lap cloth by his right hand",
+   "behind-right view: small ragged gaps along the top edge of the upper robe at his armpit"
+  ],
+  "Y": [
+   "behind-left view: white splinters sticking up at the far left by his knee",
+   "behind-left view: crumpled shards and torn sheets over the lap at the far left",
+   "behind-left view: his bare foot peeking out of a gap in the hem at the bottom left",
+   "behind-right view: skin-coloured blotches on the back of the upper robe (above the waist)",
+   "behind-right view: torn flat sheets and grey crumpled bits on the lap around his right hand",
+   "behind-right view: shard-like edges where the upper robe meets his arm"
+  ],
+  "better": "X",
+  "why": "X has only small torn bits at the hem; Y has splinters at the knee, a foot peeking through the hem and torn sheets round his right hand"
+ },
+ {
+  "id": "p169",
+  "X": [
+   "front view: both shins completely bare and crossed in front; the wrap does not reach them and the lap cloth floats above them like a flat horizontal sheet",
+   "front view: dark grey inside-out patches across the lap cloth",
+   "front view: a spray of white shards and splinters by his left wrist and at the centre of the waist",
+   "front view: torn sheet edges hanging down at the far left and far right of the lap",
+   "his-left view: a burst of white shards, splinters and flat sheets all round the knee and shin",
+   "his-left view: dark holes and gaps in the cloth at the knee",
+   "his-left view: torn flaps along the hem down by the foot, with the bare shin showing through the broken cloth at the far left"
+  ],
+  "Y": [
+   "front view: his right shin and foot come out through a ragged hole in the lap cloth at the centre, jagged torn edges all round the shin",
+   "front view: a pale grey gap in the lap cloth just above that shin, by his left hand",
+   "front view: flat sheets with shard-like edges sticking out sideways at the far left by his right knee",
+   "front view: ragged splinters and crumpled bits along the hem by the floor at the bottom right",
+   "front view: a few torn flaps on the upper robe by his left elbow",
+   "his-left view: crumpled, doubled sheets with torn shards along the hem below the knee (bottom left)",
+   "his-left view: thin splinters along the folds at the lower right of the lap, and angular flat planes on the knee"
+  ],
+  "better": "Y",
+  "why": "Y's shins stay mostly covered and its side view is far cleaner; X leaves both shins bare under a floating dark-grey sheet and its side view shatters into shards at the knee"
+ },
+ {
+  "id": "p170",
+  "X": [
+   "back view: skin-coloured blotches on the back of the upper robe below his right shoulder (above the waist)",
+   "back view: a separate rounded white lobe sticking out at the bottom left by his knee (minor)",
+   "right view: a few torn sheet edges and a small slit in the lap cloth by the knee",
+   "right view: thin slivers at the hem by the foot (bottom right)"
+  ],
+  "Y": [
+   "back view: skin-coloured blotches on the back of the upper robe below his right shoulder (above the waist)",
+   "back view: white splinters and shards at the far left edge by his hip",
+   "back view: a flat flap sticking out at the right side, with bare leg skin seen through the gap under it",
+   "right view: a pile of flat torn sheets and shards over the lap and knee by his hand",
+   "right view: spiky splinters poking up above his forearm",
+   "right view: big angular cardboard-like planes and grey slits at the knee"
+  ],
+  "better": "X",
+  "why": "X's lap and hem are mostly smooth; Y has a heap of torn sheets and spiky shards over the knee and a flap with skin showing under it"
+ },
+ {
+  "id": "p171",
+  "X": [
+   "behind-left view: white splinters sticking up at the far left by his knee",
+   "behind-left view: crumpled shards and torn sheets over the lap at the far left",
+   "behind-left view: his bare foot peeking out of a gap in the hem at the bottom left",
+   "behind-right view: skin-coloured blotches on the back of the upper robe (above the waist)",
+   "behind-right view: torn flat sheets and grey crumpled bits on the lap around his right hand",
+   "behind-right view: shard-like edges where the upper robe meets his arm"
+  ],
+  "Y": [
+   "behind-left view: crumpled torn bits and small shards along the hem at the bottom left by his knee",
+   "behind-left view: grey inside-out underside showing on the lap cloth edge by his left hand",
+   "behind-left view: a tiny dark red speck on the cloth near the knee",
+   "behind-right view: skin-coloured blotches on the back of the upper robe (above the waist)",
+   "behind-right view: a thin stretched strip along the edge of the lap cloth by his right hand",
+   "behind-right view: small ragged gaps along the top edge of the upper robe at his armpit"
+  ],
+  "better": "Y",
+  "why": "Y has only small torn bits at the hem; X has splinters at the knee, a foot peeking through the hem and torn sheets round his right hand"
+ }
+]

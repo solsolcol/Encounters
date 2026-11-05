@@ -19,6 +19,7 @@
 // What is left is one layer of cloth; tools/prepmonk.mjs TWOSIDE then draws it from both sides, so its inside is the
 // back of the same cloth (a lining 2 mm behind it was tried: where the hem curls it tore into shards). Nothing else is
 // touched: no point moves and no weight changes (the proof that the picture from outside is unchanged: PLAN.md there).
+// RIM (below, where it runs) also takes out the rim that hugged his old shins, seen from below inside a lifted hem.
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import { compactPrimitive } from '@gltf-transform/functions';
@@ -99,6 +100,22 @@ skirtTris.forEach((t, k) => { if (seen[k + 1]) { nSeen++; return; }
   if (nrm.dot(rad) >= OUTWARD) { nKeptCovered++; return; }
   drop[t] = 1; nDrop++; const y = (Math.floor(mid.y / 0.1) * 0.1).toFixed(1); byY[y] = (byY[y] || 0) + 1; });
 log(`robeshell: ${views.length} views at ${RES} px — ${nSeen} skirt triangles seen from outside; ${nKeptCovered} unseen but facing out (covered, kept); ${nDrop} unseen and facing in or down taken out (by height: ${Object.keys(byY).sort().map(y => `${y} ${byY[y]}`).join(', ')})`);
+/* RIM=<metres> (with RIMY, 0.45 m): the rim of the robe that hugged his old shins, and the caps of tools/leggraft.mjs
+   across its openings, are taken out too, seen or not: every skirt triangle whose three points at rest lie within RIM of
+   either shin's axis (the new knee on his shin's axis, tools/leggraft.mjs, to his ankle) and below RIMY. Seen from below
+   inside the hem, the cloth, carrying them as it carries the cloth round them, crumples them into shards and strips when
+   the hem lifts (photographed coloured by this distance: the shards are all within 8 cm). Only what faces the shin (its
+   normal's share toward the nearer axis RIMFACE or more) or faces down (the caps) goes: where the robe's outside hugs the
+   back of his calf it too lies within 8 cm, facing away from the shin, and taken out it left a hole there in every take.
+   Unset, nothing here runs. */
+if (process.env.RIM) { const RIM = E('RIM', 0.08), RIMY = E('RIMY', 0.45), RIMFACE = E('RIMFACE', 0.2), jp = re => { const k = names.findIndex(x => re.test(x)); if (k < 0) throw new Error(`robeshell: RIM: no joint ${re}`); return new Vector3().setFromMatrixPosition(IB[k].clone().invert()); };
+  const axes = ['Left', 'Right'].map(s => [jp(new RegExp(`${s}LegGraftLow$`)), jp(new RegExp(`${s}Foot$`))]);
+  const near = p => { let best = null; for (const [A, B] of axes) { const ab = B.clone().sub(A), t = Math.max(-0.5, Math.min(1.5, p.clone().sub(A).dot(ab) / ab.lengthSq())), c = A.clone().addScaledVector(ab, t), d = p.distanceTo(c); if (!best || d < best[0]) best = [d, c]; } return best; };
+  let nRim = 0, nOut = 0; for (const t of skirtTris) { if (drop[t]) continue; const vs = [0, 1, 2].map(m => new Vector3().fromArray(P, 3 * IDX[3 * t + m]));
+    if (!vs.every(v => v.y < RIMY && near(v)[0] < RIM)) continue;
+    const nrm = new Vector3().crossVectors(vs[1].clone().sub(vs[0]), vs[2].clone().sub(vs[0])).normalize(), mid = vs[0].clone().add(vs[1]).add(vs[2]).multiplyScalar(1 / 3), toAx = near(mid)[1].sub(mid).normalize();
+    if (nrm.dot(toAx) >= RIMFACE || nrm.y <= -0.5) { drop[t] = 1; nRim++; } else nOut++; }
+  log(`robeshell: RIM ${RIM} m below ${RIMY} m — ${nRim} more skirt triangles taken out (the rim that hugged his old shins, facing them, and the caps); ${nOut} as near facing away kept (the robe's outside at his calves)`); }
 const keep = []; for (let t = 0; t < NT; t++) if (!drop[t]) keep.push(IDX[3 * t], IDX[3 * t + 1], IDX[3 * t + 2]);
 const ia = prim.getIndices(); ia.setArray(n > 65535 ? new Uint32Array(keep) : new Uint16Array(keep));
 compactPrimitive(prim);
