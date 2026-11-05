@@ -100,6 +100,42 @@ skirtTris.forEach((t, k) => { if (seen[k + 1]) { nSeen++; return; }
   if (nrm.dot(rad) >= OUTWARD) { nKeptCovered++; return; }
   drop[t] = 1; nDrop++; const y = (Math.floor(mid.y / 0.1) * 0.1).toFixed(1); byY[y] = (byY[y] || 0) + 1; });
 log(`robeshell: ${views.length} views at ${RES} px — ${nSeen} skirt triangles seen from outside; ${nKeptCovered} unseen but facing out (covered, kept); ${nDrop} unseen and facing in or down taken out (by height: ${Object.keys(byY).sort().map(y => `${y} ${byY[y]}`).join(', ')})`);
+/* HEMKEEP=<metres> (v24.49; with HEMKEEPIN 0.03 m): the hem's ROLLED EDGE kept whole — the bottom of the robe's outer
+   wall, the curve under it and the lip it turns into. Found from the WALL, in each 3 degrees of turn round his hips' axis:
+   its lowest point facing out (a skirt point whose normal's share away from that axis is OUTWARD or more), and every skirt
+   triangle whose middle lies within HEMKEEP above that point and no more than HEMKEEPIN inside the wall's radius there
+   stays, though no view from outside sees it (the curve faces down, the lip faces in) and though it lies near his old
+   shins (RIM and FLOOR, below, leave it alone). Cut by those two in fragments (within 2 cm of the bottom, 41 % of the underside
+   and 76 % of the lip were out), what was left of the edge showed under every lifted or flared hem as loose white shards;
+   his saved file's whole edge shows there as one smooth curve. The robe's lowest point itself is no guide: at his front
+   it is the sheet deep inside between his legs (INNER and FLOOR take it). Unset, nothing here runs. */
+const keepBand = new Uint8Array(NT);
+if (process.env.HEMKEEP) { const HK = E('HEMKEEP', 0.02), HKIN = E('HEMKEEPIN', 0.03), NRMH = prim.getAttribute('NORMAL').getArray(), NAB = 120, wLow = new Float32Array(NAB).fill(9), wR = new Float32Array(NAB);
+  const abin = (x, z) => { let a = Math.atan2(x, z); if (a < 0) a += 2 * Math.PI; return Math.min(NAB - 1, Math.floor(a / (2 * Math.PI) * NAB)); };
+  for (let i = 0; i < n; i++) { if (!onSkirt[i]) continue; const x = P[3 * i] - hip.x, z = P[3 * i + 2] - hip.z, r = Math.hypot(x, z); if (r < 1e-6 || (NRMH[3 * i] * x + NRMH[3 * i + 2] * z) / r < OUTWARD) continue;
+    const k = abin(x, z); if (P[3 * i + 1] < wLow[k]) { wLow[k] = P[3 * i + 1]; wR[k] = r; } }
+  let nBand = 0, nBack = 0; for (const t of skirtTris) { const vs = [0, 1, 2].map(m => new Vector3().fromArray(P, 3 * IDX[3 * t + m])), mid = vs[0].clone().add(vs[1]).add(vs[2]).multiplyScalar(1 / 3), x = mid.x - hip.x, z = mid.z - hip.z, k = abin(x, z);
+    if (mid.y > wLow[k] + HK || Math.hypot(x, z) < wR[k] - HKIN) continue; keepBand[t] = 1; nBand++; if (drop[t]) { drop[t] = 0; nBack++; } }
+  log(`robeshell: HEMKEEP ${HK} m — the hem's rolled edge kept whole: ${nBand} skirt triangles within ${(HK * 100).toFixed(1)} cm of the outer wall's lowest point round him and ${(HKIN * 100).toFixed(0)} cm inside it, ${nBack} of them given back`); }
+/* HEMLINING=<metres> (v24.49; with HEMLININGFACE 0.3, HEMLININGFRONT 70 degrees, HEMLININGBAND 0): the LINING of the
+   robe at the hem taken out — every skirt triangle facing in (its normal's share toward his hips' axis HEMLININGFACE or
+   more) whose middle lies within HEMLINING above the robe wall's lowest point round him (found as HEMKEEP finds it),
+   outside HEMLININGFRONT degrees either side of his front, seen from outside or not. The views kept the lining's lowest
+   few centimetres in scraps (what a view from beside the hem grazed), up to 5 cm high and 1-5 cm inside the wall; inside a
+   lifted hem (the first Charged cast, seen from behind by his right heel) they stood in front of the back of the robe's
+   wall as a second, ragged layer: the crumpled white and grey shards. Taken out, the inside of the hem is the back of the
+   robe's own wall, closed at its foot by the strip facing down (HEMKEEP keeps it whole; HEMLININGBAND=1 spares the lip it
+   keeps too). At his front the robe's wrap overlaps, and what faces in there are the panels' own edges (v24.48: taking
+   them opened slits by his left shin). Unset, nothing here runs. */
+if (process.env.HEMLINING) { const HL = E('HEMLINING', 0.06), HLF = E('HEMLININGFACE', 0.3), HLFRONT = E('HEMLININGFRONT', 70) * Math.PI / 180, HLBAND = E('HEMLININGBAND', 0), NRML = prim.getAttribute('NORMAL').getArray(), NAB = 120, lLow = new Float32Array(NAB).fill(9);
+  const abin = (x, z) => { let a = Math.atan2(x, z); if (a < 0) a += 2 * Math.PI; return Math.min(NAB - 1, Math.floor(a / (2 * Math.PI) * NAB)); };
+  for (let i = 0; i < n; i++) { if (!onSkirt[i]) continue; const x = P[3 * i] - hip.x, z = P[3 * i + 2] - hip.z, r = Math.hypot(x, z); if (r < 1e-6 || (NRML[3 * i] * x + NRML[3 * i + 2] * z) / r < OUTWARD) continue;
+    const k = abin(x, z); if (P[3 * i + 1] < lLow[k]) lLow[k] = P[3 * i + 1]; }
+  let nLin = 0, nWas = 0; for (const t of skirtTris) { if (HLBAND && keepBand[t]) continue; const vs = [0, 1, 2].map(m => new Vector3().fromArray(P, 3 * IDX[3 * t + m])), mid = vs[0].clone().add(vs[1]).add(vs[2]).multiplyScalar(1 / 3), x = mid.x - hip.x, z = mid.z - hip.z;
+    if (mid.y > lLow[abin(x, z)] + HL || Math.abs(Math.atan2(x, z)) < HLFRONT) continue;
+    const nrm = new Vector3().crossVectors(vs[1].clone().sub(vs[0]), vs[2].clone().sub(vs[0])).normalize();
+    if (nrm.dot(new Vector3(x, 0, z).normalize()) > -HLF) continue; if (drop[t]) { nWas++; continue; } drop[t] = 1; nLin++; }
+  log(`robeshell: HEMLINING ${HL} m — ${nLin} more skirt triangles of the lining facing in within ${(HL * 100).toFixed(0)} cm of the hem taken out (${nWas} were out already); his front's ${(HLFRONT * 180 / Math.PI).toFixed(0)} degrees either side left whole`); }
 /* RIM=<metres> (with RIMY, 0.45 m): the rim of the robe that hugged his old shins, and the caps of tools/leggraft.mjs
    across its openings, are taken out too, seen or not: every skirt triangle whose three points at rest lie within RIM of
    either shin's axis (the new knee on his shin's axis, tools/leggraft.mjs, to his ankle) and below RIMY. Seen from below
@@ -111,7 +147,7 @@ log(`robeshell: ${views.length} views at ${RES} px — ${nSeen} skirt triangles 
 if (process.env.RIM) { const RIM = E('RIM', 0.08), RIMY = E('RIMY', 0.45), RIMFACE = E('RIMFACE', 0.2), jp = re => { const k = names.findIndex(x => re.test(x)); if (k < 0) throw new Error(`robeshell: RIM: no joint ${re}`); return new Vector3().setFromMatrixPosition(IB[k].clone().invert()); };
   const axes = ['Left', 'Right'].map(s => [jp(new RegExp(`${s}LegGraftLow$`)), jp(new RegExp(`${s}Foot$`))]);
   const near = p => { let best = null; for (const [A, B] of axes) { const ab = B.clone().sub(A), t = Math.max(-0.5, Math.min(1.5, p.clone().sub(A).dot(ab) / ab.lengthSq())), c = A.clone().addScaledVector(ab, t), d = p.distanceTo(c); if (!best || d < best[0]) best = [d, c]; } return best; };
-  let nRim = 0, nOut = 0; for (const t of skirtTris) { if (drop[t]) continue; const vs = [0, 1, 2].map(m => new Vector3().fromArray(P, 3 * IDX[3 * t + m]));
+  let nRim = 0, nOut = 0; for (const t of skirtTris) { if (drop[t] || keepBand[t]) continue; const vs = [0, 1, 2].map(m => new Vector3().fromArray(P, 3 * IDX[3 * t + m]));
     if (!vs.every(v => v.y < RIMY && near(v)[0] < RIM)) continue;
     const nrm = new Vector3().crossVectors(vs[1].clone().sub(vs[0]), vs[2].clone().sub(vs[0])).normalize(), mid = vs[0].clone().add(vs[1]).add(vs[2]).multiplyScalar(1 / 3), toAx = near(mid)[1].sub(mid).normalize();
     if (nrm.dot(toAx) >= RIMFACE || nrm.y <= -0.5) { drop[t] = 1; nRim++; } else nOut++; }
@@ -135,7 +171,7 @@ if (process.env.FLOOR) { const FLOORIN = E('FLOOR', 0.02), FLOORR = E('FLOORR', 
   for (let i = 0; i < n; i++) { if (!onSkirt[i]) continue; const x = P[3 * i] - hip.x, z = P[3 * i + 2] - hip.z, y = P[3 * i + 1], r = Math.hypot(x, z); if (y < 0 || y >= 1 || r < 1e-6) continue;
     if ((NRMA[3 * i] * x + NRMA[3 * i + 2] * z) / r < OUTWARD) continue; const k = abin(x, z) * NHB + Math.floor(y * 100); if (r > wall[k]) wall[k] = r; }
   let nFloor = 0; const fy = {};
-  for (const t of skirtTris) { if (drop[t]) continue; const vs = [0, 1, 2].map(m => new Vector3().fromArray(P, 3 * IDX[3 * t + m])), mid = vs[0].clone().add(vs[1]).add(vs[2]).multiplyScalar(1 / 3);
+  for (const t of skirtTris) { if (drop[t] || keepBand[t]) continue; const vs = [0, 1, 2].map(m => new Vector3().fromArray(P, 3 * IDX[3 * t + m])), mid = vs[0].clone().add(vs[1]).add(vs[2]).multiplyScalar(1 / 3);
     if (mid.y >= FLOORY || dAx(mid) >= FLOORR) continue; if (Math.abs(new Vector3().crossVectors(vs[1].clone().sub(vs[0]), vs[2].clone().sub(vs[0])).normalize().y) < FLOORNY) continue; const x = mid.x - hip.x, z = mid.z - hip.z, r = Math.hypot(x, z), ab = abin(x, z), h0 = Math.max(0, Math.floor(mid.y * 100));
     let ref = 0; for (const da of [-1, 0, 1]) { const a2 = (ab + da + NAB) % NAB; for (let h = h0; h <= Math.min(NHB - 1, h0 + Math.round(FLOORWIN * 100)); h++) ref = Math.max(ref, wall[a2 * NHB + h]); }
     if (ref - r > FLOORIN) { drop[t] = 1; nFloor++; const yy = (Math.floor(mid.y / 0.05) * 0.05).toFixed(2); fy[yy] = (fy[yy] || 0) + 1; } }

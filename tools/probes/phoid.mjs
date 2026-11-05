@@ -49,6 +49,8 @@ new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load('/model.glb', g => { con
   const v = new THREE.Vector3(), pos = (o, i) => { v.fromBufferAttribute(o.geometry.attributes.position, i); o.applyBoneTransform(i, v); return v.applyMatrix4(o.matrixWorld).clone(); };
   root.traverse(o => { if (o.isSkinnedMesh) o.skeleton.pose(); }); root.updateMatrixWorld(true);
   const rest = parts.map(o => { const n = o.geometry.attributes.position.count, P = new Float32Array(3 * n); for (let i = 0; i < n; i++) { const q = pos(o, i); P[3 * i] = q.x; P[3 * i + 1] = q.y; P[3 * i + 2] = q.z; } return P; });
+  /* v24.49: his hips at rest in the same frame, so a triangle's rest place reads as height and distance from their axis */
+  const hipB = parts[0].skeleton.bones.find(b => /Hips$/.test(b.name)), hipRest = hipB ? new THREE.Vector3().setFromMatrixPosition(hipB.matrixWorld).toArray().map(x => +x.toFixed(4)) : null;
   const mixer = new THREE.AnimationMixer(root);
   window.__go = (take, t, deg, pitch) => { mixer.stopAllAction();
     if (take === 'REST') root.traverse(o => { if (o.isSkinnedMesh) o.skeleton.pose(); });
@@ -98,7 +100,7 @@ new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load('/model.glb', g => { con
       for (let r = 0; r < BR; r++) { ang[r] = []; diff[r] = []; for (let b = 0; b < BA; b++) { ang[r][b] = Math.round(da(Q(b, r), new THREE.Quaternion())); let m = 0;
         for (const [db, dr] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { if (r + dr < 0 || r + dr >= BR) continue; m = Math.max(m, da(Q(b, r), Q(b + db, r + dr))); } diff[r][b] = Math.round(m); } }
       bones = { BA, BR, turn: ang, neighbour: diff }; }
-    return { png: cv.toDataURL('image/png'), listed: list.length, covered: [...hist.values()].reduce((s, h) => s + h.front + h.back, 0), tris, bones }; };
+    return { png: cv.toDataURL('image/png'), listed: list.length, covered: [...hist.values()].reduce((s, h) => s + h.front + h.back, 0), hip: hipRest, tris, bones }; };
   window.__ready = true; }, undefined, e => { window.__err = String(e); window.__ready = true; });
 </script></body></html>`;
 const br = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined, args: ['--use-gl=swiftshader', '--enable-unsafe-swiftshader'] });

@@ -36,3 +36,37 @@ can change (a two-take or few-take trial) before the whole file is built; then t
 6 sides, the moments named photographed full size, and all 540 pictures read blind against his saved file AND v24.48.
 
 ## The log
+
+**Step 1 · the white bits at the hem, what they are made of.** Talking with hands open (v24.48 step 13): the hem's own
+bottom band at the back corner above his right heel, stretched up to 1.56 times as the hem flares round his calf. The first
+Charged cast, seen from behind by his right heel (0.667 s, phoid with the hips' rest place added to its listing): the
+crumpled white and grey shards inside the lifted hem are TWO layers — the back of the robe's own wall (119 triangles) and,
+1-5 cm in front of it, scraps of his scan's lining facing in (71 triangles), up to 4.7 cm above the hem with a ragged top
+edge: the views of tools/robeshell.mjs kept what a view from beside the hem grazed. The cloth itself lies smooth there
+(its particles never fold: neighbouring normals within 47 degrees) and stretched 2.4-3.1 times round, as the target's
+own flare; his saved file stretches the same triangles 2-3.4 times (his chains' flare), but its lining is whole.
+- robeshell HEMKEEP=0.02 (HEMKEEPIN 0.03): the rolled edge — the strip under the wall and the lip it turns into — kept
+  whole within 2 cm of the wall's lowest point round him (11,062 triangles, 3,629 given back), and left alone by RIM and
+  FLOOR. Two-take trial: the talking back corner close to his saved file; the Charged shards unchanged.
+- robeshell HEMLINING=0.06 (HEMLININGFACE 0.3, HEMLININGFRONT 70 degrees): the lining facing in within 6 cm of the hem
+  taken out, outside his front's 70 degrees either side (v24.48: the panels' own edges there). With the band's lip too
+  (3,989 more triangles) and without it (HEMLININGBAND=1, 609 more): inside the lifted Charged hem only the back of the
+  wall is left (182 triangles of it and 13 of the strip in the box that held both layers); the talking corner's white
+  bits are smaller in both. Kept: HEMLININGBAND=1, so the hem keeps the thin dark rolled edge readers called clean in his
+  saved file (v24.48 step 10).
+
+**Step 2 · the sliver of thigh at the front overlap, what makes it.** The first Charged cast at 0.958 s (the cloth's
+particles dumped): below his left knee the targets a leg holds inside it are pushed 13-25 cm out from the robe's shape,
+while the row above, over the thigh, stands 2-9 cm out; the cloth between them is stretched 6.4-7.4 times down its
+length, and his thigh shows through the front overlap there (four moments; the sword slash and cast_6 one each).
+- robesim PUSHSPREAD=n (PUSHSPREADTAKES to limit it): the push each target takes out of his legs spread to the targets
+  round it (n passes, each the mean of its four neighbours' push where that is larger than its own), then every target
+  pushed out of his legs once more and its path checked as before. Trial on the three takes, walking and running.
+
+**Step 3 · sitting cross-legged, his hands.** The cloth dumped at 1.5 s with his arms' bones: carried by his legs at its
+whole rest distance, the robe's front stands 5-12 cm over his forearms and hands (rows 15-19, the panel that hung loose
+before his shins), and his palms, 4.7 cm over his thighs near the knees, are under it.
+- robesim LAPDROP=n (in the LEGWRAPTAKES): each target standing over a level leg lowered straight down onto it (its
+  thickness, the margin and the robe's layers there) and the drop spread to the targets round it (n passes, never less
+  than its own) — cloth laid on a lap. On the dumped targets, 6 passes bring the cloth over his hands to 0-4 cm above
+  their middle line. Trial on the floor sit.
