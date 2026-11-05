@@ -8032,6 +8032,52 @@ What the baseline contains, by release:
     cross-legged, his hands resting under the robe over his knees (pulled in to his legs, the robe let his knee through).
     assets/pho.glb 8,624,964 bytes (sha1 b746ab6f; v24.47 9,031,528), 556,447 -> 166,933 triangles, 231 joints, 19
     takes. Not in build.py until chapter 3 casts him.
+- **v24.49** (prepared, not a build: nothing deployed, the live build stays v24.40) GRANDMASTER PHO: THE LAST OF IT —
+  Chad, 5 Nov 2026, after v24.48's report ("I can keep going on the white hem bits, the thigh sliver and the hidden hands.
+  Each round of fixes plus a full review takes about two hours. Should I?"): *"Yes, fix all of it"*. Said out loud: that
+  report named the thigh sliver's takes as the first Charged cast, the sword slash and cast_8; the count says cast_6. The
+  plan, his words and every step's measure: masters/v24.49/PLAN.md; recipe masters/v24.49/make.sh; pictures
+  masters/v24.49/shots/pho-*.jpg; the blind reviews masters/v24.49/review/.
+  - WHAT EACH WAS (tools/probes/phoid.mjs, and the cloth's particles dumped at the moment): the white bits inside a lifted
+    hem were two layers — the back of the robe's own wall and, 1-5 cm in front of it, ragged scraps of his scan's lining
+    (facing in, up to 4.7 cm above the hem) that the robe's visibility cut kept where a view from beside the hem grazed
+    them — with the hem's rolled edge cut into fragments by the same views; the sliver of thigh at the wrap's front edge
+    was his knee 1-5 cm BEHIND the cloth, seen through the slit along the edge of the wrap's outer panel; his hands in the
+    floor sit were under the robe's front, carried by his legs 5-12 cm over his forearms and hands.
+  - THE FIX (each option proven to change nothing unset: robeshell with RIM alone and with v24.48's options rebuilds
+    v24.47's and v24.48's shells byte for byte, with the final code): robeshell HEMKEEP (the rolled edge kept whole within
+    2 cm of the wall's lowest point, 11,062 triangles, 3,629 given back) and HEMLINING with HEMLININGBAND (the lining
+    facing in within 6 cm of the hem taken out, outside his front's 70 degrees, the edge's lip kept: 609 triangles), and
+    HEMKEEPFLOOR with HEMKEEPFLOORBACK (the old floor's cut by each shin leaves the edge whole but behind his shins).
+  - THE FIRST FINAL (without HEMKEEPFLOORBACK) read blind by twenty readers, all 540 pictures: against his saved file
+    better in 366, the same in 120, worse in 54 (v24.48: 347 / 78 / 115) — better in 17 takes, about even in 2 (the first
+    Charged cast, mage_soell_cast), none worse; against v24.48 better in 318, the same in 190, worse in 32 — talking with
+    hands open 27 of 27 better; worse, my regression, for a grey "comb" of streaks between his shins in the three chair
+    sits (the edge kept whole behind his right calf, stretched).
+  - THE COMB'S CURES: FLOOR given the whole edge back (the final file) — read blind against the first final, worse in
+    203, better in 27, the same in 310: the comb gone, white shards back along the hem by his legs everywhere else; FLOOR
+    given the edge behind his shins only (HEMKEEPFLOORBACK, the third final, what ships) — a six-take trial set beside
+    both, then read blind against the first final: better in 96, the same in 367, worse in 77 — the chair sits 31 / 50 /
+    0, walking 11 / 34 / 0; talking with hands open 0 / 16 / 11 and with a hand on the hip 0 / 19 / 8 (the inner back hem
+    between his legs in small torn dashes again, as v24.48), cast_7 and cast_8 worse (a torn seam at cast_8's hip), the
+    floor sit 6 / 10 / 11 (a larger gap in his lap). The first final is kept (masters/v24.49/prep/pho_first.glb) for
+    Chad's pick if he would rather have the cleaner talk.
+  - Tried and taken back out: robesim PUSHSPREAD (the knee's push spread round it: the slit moved between moments, one
+    moment's sliver grew 29 -> 111 px, cast_6's shin came through the robe) and LAPDROP (the robe laid down onto his lap:
+    his hands stayed under it and his knees came through its sides, floating leg pieces 9 -> 76).
+  - THE COUNT, 179 moments x 6 sides (v24.48 / the shipped file): floating leg pieces 26 / 35 (7,720 / 12,121 px; outside
+    the floor sit 17 / 18); legs through the cloth outside the floor sit 413 / 419; torn robe triangles 54,459 / 60,443
+    (the rolled edge kept whole, stretched round a flared hem, counts as torn); the robe seen inside out 1.24 / 1.22
+    million px.
+  - The cost, said: each blind review is twenty readers, about 6 million tokens; this round ran four where two were
+    planned, the last two chasing my own regression, without putting their cost to Chad first. Chad: *"you suddenly
+    consumed so much usage"*. The rule for the next review is his to pick.
+  - Left, and said: the sliver of thigh at the wrap's front edge in three takes (behind the cloth, not through it: a push
+    cannot close a slit), his heel below the long hem seen from behind and above, and, sitting cross-legged, his hands
+    under the robe over his knees — his choice of three: his hands raised about 10 cm onto the robe, his saved file's robe
+    for that one take (his hands show, the robe torn open over his shin and foot), or as it is.
+    assets/pho.glb 8,666,228 bytes (sha1 ca8c0cc8; v24.48 8,624,964), 560,497 -> 168,148 triangles, 19 takes. Not in
+    build.py until chapter 3 casts him.
 
 ## The sheet, version by version
 

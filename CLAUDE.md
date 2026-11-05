@@ -1105,7 +1105,7 @@ Chad's, approved v23.5). Grandmaster Pho and Lersi Chin are Chad's models, with 
 case comes later in the casebook). Lersi Chin's model arrived 3 Nov 2026 and is prepared, not yet cast:
 `assets/lersichin.glb`, key `lersichin` (into build.py the day chapter 2 casts him), masters/v24.38/make.sh.
 Grandmaster Pho's arrived the same day, with distortions Chad asked to have fixed: PREPARED, not yet cast, and still being
-improved — `assets/pho.glb`, key `pho` (chapter 3), masters/v24.48/make.sh (and its PLAN.md): his torso fixed (v24.40,
+improved — `assets/pho.glb`, key `pho` (chapter 3), masters/v24.49/make.sh (and its PLAN.md): his torso fixed (v24.40,
 measured on every frame by tools/rigstrain.mjs), his robe rebuilt at v24.41 as twelve three-bone chains baked into his
 nineteen takes (tools/robeskin.mjs), each take given the robe rules that read best for it (v24.42–v24.43: running on
 v24.40's, the cross-legged sit, one cast and the sword lunge fitted to his file), and at v24.43 the cloth on his left upper
@@ -1142,7 +1142,14 @@ bones' turns fitted to the cloth they carry, the thighs open at the hip, no push
 floor and an inner sheet taken out, the floor sit's robe carried by his real legs; his hem is his scan's own (a cut to it
 was rated worse and taken back out). Forty blind readers of all 540 pictures: better than his saved file in 15 takes,
 about even in 2, worse in 2 (the first Charged cast and talking with hands open: small white bits at the hem); against
-v24.47 better in 17, the same in 2. **Ajahn Krukai's model is PINNED** (v23.5, Chad: *"Make sure ajahn krukai's model
+v24.47 better in 17, the same in 2. At v24.49 (Chad: "Yes, fix all of it"; masters/v24.49/PLAN.md) the white bits were
+fixed (his scan's lining scraps out of the hem, the hem's rolled edge kept whole, robeshell HEMLINING and HEMKEEP; the
+edge left to the old floor's cut behind his shins only, HEMKEEPFLOORBACK, where kept whole it made a grey comb between
+his shins in the chair sits): the first build better than his saved file in 366 of 540 pictures, worse in 54; the
+shipped file against that build better in 96, worse in 77 (talking slightly worse, the chair sits clean; the first build
+kept for his pick). Waiting on his choice: his hands in the floor sit (raised onto the robe, his saved file's robe for
+that take, or as it is). Each 540-picture blind review by twenty readers costs about 6 million tokens: put its cost to
+Chad before running one (he noticed v24.49's four). **Ajahn Krukai's model is PINNED** (v23.5, Chad: *"Make sure ajahn krukai's model
 in ep3 is unaffected and untouched. It is important that krukai is in the game as the master who gave the player his
 first sakyant."*): `ajarn` / `assets/ajarn.glb` are the bytes that shipped at v18.7, `chaptertest` fails on any change
 to the key, the file or e3c1's use of it, and Episode 4's first master — the original Sak Yant Ajarn — arrives under

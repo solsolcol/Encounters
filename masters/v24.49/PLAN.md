@@ -180,4 +180,25 @@ keeps 95,820 of 264,800 keys. The file (masters/v24.49/prep/pho_final2.glb, sha1
   floor sit 9 / 17: the gap at the front of his lap where his crossed shins show larger (about 1,000 px a moment against
   690) and the 5 mm hairline of shin from his left in eight moments. Legs through the cloth outside the floor sit 445 /
   419; torn robe triangles 60,497 / 60,443; the robe seen inside out 1.20 / 1.22 million px.
-- Read blind against the first final, all 540 pictures, twenty readers (review/third-vs-first): under way.
+- Read blind against the first final, all 540 pictures, twenty readers (review/third-vs-first): the third better in 96,
+  the same in 367, the first final better in 77 (faults named 1,407 / 1,376). Better in the three chair sits 31 / 50 / 0
+  (the comb gone), walking 11 / 34 / 0, the second Charged cast 8 / 17 / 2, cast_6 9 / 16 / 2, cast_4 7 / 19 / 1, running
+  7 / 26 / 3, the sword slash 4 / 23 / 0; worse in talking with hands open 0 / 16 / 11 and with a hand on the hip 0 / 19 /
+  8 (the inner back hem between his legs edged in small torn dashes again, as v24.48 had it there), cast_7 2 / 16 / 9,
+  cast_8 2 / 18 / 7 (a torn seam at the back of the hip at 0.33-0.56 s), the floor sit 6 / 10 / 11 (the larger gap in his
+  lap); about even in the rest.
+
+**Step 14 · what ships: the third final.** Better than the first final overall (96 to 77), and it takes back the one
+thing the first final made worse than v24.48 (the comb, 31 to 0 in the chair sits). Not a clean win: talking keeps the
+fixed back corner but loses the first final's clean inner back hem, and the floor sit's lap gap is larger. The first
+final stays in masters/v24.49/prep/pho_first.glb (sha1 bd33efcb) and is rebuilt by this recipe without
+HEMKEEPFLOORBACK, if Chad would rather have the cleaner talk. Read blind against the first final only; against his saved
+file and v24.48 only the first final was read. No further review: Chad, 5 Nov 2026, while
+the fourth ran: "you suddenly consumed so much usage" (each blind review is twenty readers, about 6 million tokens; this
+round ran four where two were planned, the last two for a fault of my own, without putting their cost to him first). The
+rule for the next review — fewer readers looking once, or his say before each — is his to pick.
+assets/pho.glb: 560,497 -> 168,148 triangles, 19 takes, 8,666,228 bytes (sha1 ca8c0cc8; v24.48's 8,624,964).
+- The proofs, with the final code: robeshell with RIM alone on v24.47's graft gives v24.47's shell (51104ba9), with
+  v24.48's options on v24.48's graft v24.48's (e681032f) — byte for byte, both; robesim unchanged since its proof
+  (step 6). The pictures: masters/v24.49/shots/pho-*.jpg remade from the third final (pho-chair-comb.jpg: v24.48, the
+  first final and the third between his shins in a chair sit).

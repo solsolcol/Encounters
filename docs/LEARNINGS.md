@@ -7571,3 +7571,13 @@ cut (sharing its vertices and maps) when it is small.
   exempts triangles from later steps, log what each later step now leaves (FLOOR 1,674 -> 1,181 said it plainly), make
   each exemption its own switch (HEMKEEPFLOOR, off), and photograph where the left-over triangles are, in every take
   that has them.
+- **Then cure the comb where it is made, and weigh what that costs too.** The comb's strip lay behind the line of his
+  shins (125 of the 848 edge triangles FLOOR takes; the shards it caused elsewhere were the other 723, by his left shin
+  and at his front). Given back to FLOOR behind the shins only (HEMKEEPFLOORBACK), the chair sits lost the comb (31 to 0
+  read blind against the first final) — and the talking takes got back the small torn dashes on the inner back hem
+  between his legs that the whole edge had cured (0 to 11). One shell serves every take: a cure in it is a trade between
+  takes, and the readers' per-take table, not the total, is what says which.
+- **Count the cost of a check before running it again.** A blind review of 540 pictures by twenty readers who zoom in
+  is about 6 million tokens; v24.49 ran four, the last two to chase a fault of my own, without putting their cost to
+  Chad first, and he noticed the usage before he was told. A further review is a costly change like any other: state its
+  measured cost and let him choose (fewer readers, one look each, or none).
