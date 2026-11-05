@@ -140,6 +140,25 @@ if (process.env.FLOOR) { const FLOORIN = E('FLOOR', 0.02), FLOORR = E('FLOORR', 
     let ref = 0; for (const da of [-1, 0, 1]) { const a2 = (ab + da + NAB) % NAB; for (let h = h0; h <= Math.min(NHB - 1, h0 + Math.round(FLOORWIN * 100)); h++) ref = Math.max(ref, wall[a2 * NHB + h]); }
     if (ref - r > FLOORIN) { drop[t] = 1; nFloor++; const yy = (Math.floor(mid.y / 0.05) * 0.05).toFixed(2); fy[yy] = (fy[yy] || 0) + 1; } }
   log(`robeshell: FLOOR ${FLOORIN} m — ${nFloor} more skirt triangles taken out (the floor of the robe's old opening round his shins, by height: ${Object.keys(fy).sort().map(y => `${y} ${fy[y]}`).join(', ')})`); }
+/* INNER=<metres> (v24.48; with INNERY 0.35 m, INNERWIN 0.06 m): the robe's INNER SHEETS low inside it taken out — cloth
+   hanging deep inside the robe's own wall near the hem (between his legs at the front, 15 cm inside the front wall: the
+   inner panel of the wrap as his scan made it), seen at rest only from below. Skinned to the cloth bones round it at that
+   depth, it swung out whenever the front of the robe moved: sitting on a chair, stretched four to five times into a white
+   band across his shins, with skin showing above it; standing, the "inner layer hanging below the hem between the legs".
+   Every skirt triangle not already out whose middle lies below INNERY and more than INNER inside the robe's outer wall
+   (its furthest point facing out, in its 3 degrees of turn round his hips' axis and the INNERWIN of height over it) goes:
+   the wrap's under-panel, 2-5 cm inside the outer flap, and the valleys of the pleats (up to 4 cm) stay. Unset, nothing
+   here runs. */
+if (process.env.INNER) { const IN = E('INNER', 0.08), INY = E('INNERY', 0.35), INWIN = E('INNERWIN', 0.06), NRMB = prim.getAttribute('NORMAL').getArray();
+  const NAB = 120, NHB = 100, wall = new Float32Array(NAB * NHB), abin = (x, z) => { let a = Math.atan2(x, z); if (a < 0) a += 2 * Math.PI; return Math.min(NAB - 1, Math.floor(a / (2 * Math.PI) * NAB)); };
+  for (let i = 0; i < n; i++) { if (!onSkirt[i]) continue; const x = P[3 * i] - hip.x, z = P[3 * i + 2] - hip.z, y = P[3 * i + 1], r = Math.hypot(x, z); if (y < 0 || y >= 1 || r < 1e-6) continue;
+    if ((NRMB[3 * i] * x + NRMB[3 * i + 2] * z) / r < OUTWARD) continue; const k = abin(x, z) * NHB + Math.floor(y * 100); if (r > wall[k]) wall[k] = r; }
+  let nIn = 0; const fd = {};
+  for (const t of skirtTris) { if (drop[t]) continue; const vs = [0, 1, 2].map(m => new Vector3().fromArray(P, 3 * IDX[3 * t + m])), mid = vs[0].clone().add(vs[1]).add(vs[2]).multiplyScalar(1 / 3);
+    if (mid.y >= INY) continue; const x = mid.x - hip.x, z = mid.z - hip.z, r = Math.hypot(x, z), ab = abin(x, z), h0 = Math.max(0, Math.floor(mid.y * 100));
+    let ref = 0; for (const da of [-1, 0, 1]) { const a2 = (ab + da + NAB) % NAB; for (let h = h0; h <= Math.min(NHB - 1, h0 + Math.round(INWIN * 100)); h++) ref = Math.max(ref, wall[a2 * NHB + h]); }
+    if (ref - r > IN) { drop[t] = 1; nIn++; const dd = (Math.floor((ref - r) / 0.04) * 0.04).toFixed(2); fd[dd] = (fd[dd] || 0) + 1; } }
+  log(`robeshell: INNER ${IN} m — ${nIn} more skirt triangles taken out (cloth more than ${(IN * 100).toFixed(0)} cm inside the robe's wall below ${INY} m; by depth: ${Object.keys(fd).sort().map(d => `${d} ${fd[d]}`).join(', ')})`); }
 /* HEMBASE=<metres> (v24.48; with HEMBASENY -0.6, HEMBASEOUT 0.2, HEMBASEFRONT 70 degrees): the hem's UNDERSIDE and its turned-in LIP taken
    out — the strip about a centimetre wide that closes the bottom of his scan's robe wall, facing straight down, and the
    lip it turns into, facing in. When the hem flares (walking, the casts' wide steps) the hem ring stretches round, and
@@ -151,14 +170,16 @@ if (process.env.FLOOR) { const FLOORIN = E('FLOOR', 0.02), FLOORR = E('FLOORR', 
    either side of his front, where the robe's wrap overlaps: there, and anything facing sideways anywhere, the panels'
    own edges, taken out it opened slits in the front hem by his left shin when he sat on a chair. The robe is one layer
    of cloth drawn from both sides (tools/prepmonk.mjs TWOSIDE), and its hem is that cloth's edge. Unset, nothing runs. */
-if (process.env.HEMBASE) { const HB = E('HEMBASE', 0.015), HBNY = E('HEMBASENY', -0.6), HBOUT = E('HEMBASEOUT', 0.2), HBFRONT = E('HEMBASEFRONT', 70) * Math.PI / 180, NAB = 120, low = new Float32Array(NAB).fill(9);
+if (process.env.HEMBASE) { const HB = E('HEMBASE', 0.015), HBNY = E('HEMBASENY', -0.6), HBOUT = E('HEMBASEOUT', 0.2), HBFRONT = E('HEMBASEFRONT', 70) * Math.PI / 180, HBKEEPF = E('HEMBASEKEEPFRONT', 0), HBRIM = E('HEMBASERIM', 0), NAB = 120, low = new Float32Array(NAB).fill(9);
   const abin = (x, z) => { let a = Math.atan2(x, z); if (a < 0) a += 2 * Math.PI; return Math.min(NAB - 1, Math.floor(a / (2 * Math.PI) * NAB)); };
   for (let i = 0; i < n; i++) { if (!onSkirt[i]) continue; const k = abin(P[3 * i] - hip.x, P[3 * i + 2] - hip.z); if (P[3 * i + 1] < low[k]) low[k] = P[3 * i + 1]; }
   let nBase = 0; for (const t of skirtTris) { if (drop[t]) continue; const vs = [0, 1, 2].map(m => new Vector3().fromArray(P, 3 * IDX[3 * t + m])), mid = vs[0].clone().add(vs[1]).add(vs[2]).multiplyScalar(1 / 3);
     if (mid.y > low[abin(mid.x - hip.x, mid.z - hip.z)] + HB) continue;
     const fn = new Vector3().crossVectors(vs[1].clone().sub(vs[0]), vs[2].clone().sub(vs[0])).normalize(), rad = new Vector3(mid.x - hip.x, 0, mid.z - hip.z).normalize();
     const down = fn.y <= HBNY, inward = fn.dot(rad) < -HBOUT, front = Math.abs(Math.atan2(mid.x - hip.x, mid.z - hip.z)) < HBFRONT;
-    if (!(down || (inward && !front))) continue; drop[t] = 1; nBase++; }
+    if (HBKEEPF && front) continue;
+    const rim = HBRIM < 0 && fn.y <= HBRIM && fn.dot(rad) < HBOUT;
+    if (!(down || rim || (inward && !front))) continue; drop[t] = 1; nBase++; }
   log(`robeshell: HEMBASE ${HB} m — ${nBase} more skirt triangles taken out (the hem's underside facing down, and its turned-in lip facing in away from his front, within ${(HB * 100).toFixed(1)} cm of the robe's lowest point round him)`); }
 /* ISLANDS=<triangles> (v24.48): what the cuts above left of the robe below his waist in loose scraps — pieces of the
    skirt joined to nothing else (by any point they share, or any point at the same place across a seam) and smaller than

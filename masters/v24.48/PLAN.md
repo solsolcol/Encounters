@@ -111,3 +111,16 @@ of 310); the cloth keeps 95,972 of 264,800 keys, and SKINPUSH moved 436,237 robe
 fdcb21f7; v24.47's was 9,031,528), kept out of assets/ until it has been counted and read. The proofs, every new option unset: robeshell with RIM alone
 on v24.47's graft gives v24.47's pho_shell.glb (51104ba9), and robesim with v24.47's options on v24.47's shell gives
 v24.47's pho_cloth.glb (e93ab6d0), byte for byte.
+
+**Step 6 · the final file counted on all 180 moments, and what the count found.** Against v24.47 (and his saved file):
+legs through the cloth outside the floor sit 7,051 -> 368 (his file 29,232); torn robe triangles 59,715 -> 52,801 (his
+file 108,928); robe seen inside out 1.73 -> 1.45 million px (2.02); floating leg pieces 52 -> 85 (his file 166). The
+floating pieces had grown in the three chair sits (0 -> 8-9 in each), the second Charged cast and cast_4: drawn in their
+own colours, each is a thin band of shin seen between the front of the robe and a white band hanging below it across his
+shins. That band is a sheet of the robe 15 cm inside its own front wall near the hem, between his legs (the inner panel
+of the wrap as his scan made it, seen at rest only from below), carried by the front cloth bones at that depth: when the
+front of the robe lifts over his knees it swings out and is stretched four to five times into the band. Cutting the
+hem's turned-in lip at the front as well (trial b) changed nothing. And sitting cross-legged, the robe now covers his
+legs, but it stands up over his knees as a slab and his hands, which rest on his knees, sink out of sight into it: each
+point of the robe there is carried at its whole rest distance from the leg (the robe's flare stands 10-15 cm off the
+thigh).
