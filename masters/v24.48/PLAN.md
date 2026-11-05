@@ -102,3 +102,12 @@ along the bottom of the hem (his saved file has them too).
   wrap overlaps, those are the panels' own edges, and taking them out opened slits in the front hem by his left shin in
   the chair sits and at cast_8. Narrowed: the lip facing in is taken only outside 70 degrees either side of his front,
   and nothing facing sideways is taken anywhere. The slits closed.
+
+**Step 5 · the final file (masters/v24.48/make.sh, run whole from his saved file).** Steps 1-4 of the recipe rebuild
+v24.47's files byte for byte (the donor's smooth copy, the leg bones, both robe rigs, the graft); the shell is the one
+counted and photographed in the trials (sha1 bed96e7b: FLOOR took out 1,674 triangles, HEMBASE 2,309, ISLANDS 60 scraps
+of 310); the cloth keeps 95,972 of 264,800 keys, and SKINPUSH moved 436,237 robe points off his legs over 1,655 frames
+(the most any needed, 5.1 cm). The file: 554,370 -> 166,311 triangles, 231 joints, 19 takes, 8,619,908 bytes (sha1
+fdcb21f7; v24.47's was 9,031,528), kept out of assets/ until it has been counted and read. The proofs, every new option unset: robeshell with RIM alone
+on v24.47's graft gives v24.47's pho_shell.glb (51104ba9), and robesim with v24.47's options on v24.47's shell gives
+v24.47's pho_cloth.glb (e93ab6d0), byte for byte.
