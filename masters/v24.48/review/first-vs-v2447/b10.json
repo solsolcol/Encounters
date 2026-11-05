@@ -1,0 +1,352 @@
+[
+ {
+  "id": "p244",
+  "X": [
+   "front view: crumpled grey shards on the inside of the robe between his legs, next to his right shin (viewer's left)",
+   "front view: crumpled grey bits along the inner rim of the hem outside his left shin (viewer's right)",
+   "front view: white splinters along the back hem low between his legs, and a tiny orange speck on the inner back hem",
+   "his left view: blocky, mismatched skin patch on the far shin just below the hem"
+  ],
+  "Y": [
+   "front view: small flat white flap hanging from the front hem beside his left shin",
+   "front view: a few small white shards on the inner hem by his right shin and on the back hem low between his legs",
+   "his left view: blocky, mismatched skin patch on the far shin just below the hem"
+  ],
+  "better": "Y",
+  "why": "Y's hem is nearly clean inside (one small flap); X has crumpled grey shards inside the robe beside and between the legs."
+ },
+ {
+  "id": "p245",
+  "X": [
+   "his right view: small white jagged splinters along the bottom edge of the hem next to his legs"
+  ],
+  "Y": [
+   "his right view: small white jagged splinters along the bottom edge of the hem next to his legs",
+   "his right view: thin dark line along the hem edge above his calves (the cloth's inside showing), barely noticeable"
+  ],
+  "better": "same",
+  "why": "Practically identical; both have small splinters at the hem bottom, the extra dark hem line is barely visible."
+ },
+ {
+  "id": "p246",
+  "X": [],
+  "Y": [],
+  "better": "same",
+  "why": "Both robes hang cleanly from these angles; no visible difference."
+ },
+ {
+  "id": "p247",
+  "X": [
+   "front view: crumpled grey shards on the inside of the robe between his legs, next to his right shin (viewer's left)",
+   "front view: crumpled grey bits along the inner rim of the hem outside his left shin (viewer's right)",
+   "front view: white splinters along the back hem low between his legs, and a tiny orange speck on the inner back hem",
+   "his left view: blocky, mismatched skin patch on the far shin just below the hem"
+  ],
+  "Y": [
+   "front view: small flat white flap hanging from the front hem beside his left shin",
+   "front view: a few small white shards on the inner hem by his right shin and on the back hem low between his legs",
+   "his left view: blocky, mismatched skin patch on the far shin just below the hem"
+  ],
+  "better": "Y",
+  "why": "Y's hem is nearly clean inside (one small flap); X has crumpled grey shards inside the robe beside and between the legs."
+ },
+ {
+  "id": "p248",
+  "X": [
+   "his right view: small white jagged splinters along the bottom edge of the hem next to his legs"
+  ],
+  "Y": [
+   "his right view: small white jagged splinters along the bottom edge of the hem next to his legs",
+   "his right view: thin dark line along the hem edge above his calves (the cloth's inside showing), barely noticeable"
+  ],
+  "better": "same",
+  "why": "Practically identical; both have small splinters at the hem bottom, the extra dark hem line is barely visible."
+ },
+ {
+  "id": "p249",
+  "X": [],
+  "Y": [],
+  "better": "same",
+  "why": "Both robes hang cleanly from these angles; no visible difference."
+ },
+ {
+  "id": "p250",
+  "X": [
+   "front view: small flat white flap hanging from the front hem beside his left shin",
+   "front view: a few small white shards on the inner hem by his right shin and on the back hem low between his legs",
+   "his left view: blocky, mismatched skin patch on the far shin just below the hem"
+  ],
+  "Y": [
+   "front view: crumpled grey shards on the inside of the robe between his legs, next to his right shin (viewer's left)",
+   "front view: crumpled grey bits along the inner rim of the hem outside his left shin (viewer's right)",
+   "front view: white splinters along the back hem low between his legs, and a tiny orange speck on the inner back hem",
+   "his left view: blocky, mismatched skin patch on the far shin just below the hem"
+  ],
+  "better": "X",
+  "why": "X's hem is nearly clean inside (one small flap); Y has crumpled grey shards inside the robe beside and between the legs."
+ },
+ {
+  "id": "p251",
+  "X": [
+   "his right view: small white jagged splinters along the bottom edge of the hem next to his legs",
+   "his right view: thin dark line along the hem edge above his calves (the cloth's inside showing), barely noticeable"
+  ],
+  "Y": [
+   "his right view: small white jagged splinters along the bottom edge of the hem next to his legs"
+  ],
+  "better": "same",
+  "why": "Practically identical; both have small splinters at the hem bottom, the extra dark hem line is barely visible."
+ },
+ {
+  "id": "p252",
+  "X": [
+   "behind-right view: a couple of tiny white flecks in a fold near the top"
+  ],
+  "Y": [
+   "behind-left view: faint white hairline streaks under the edge of the upper robe",
+   "behind-right view: faint white hairline streaks in a fold near the top"
+  ],
+  "better": "same",
+  "why": "Both hang cleanly; only faint hairline flecks, too small to separate them."
+ },
+ {
+  "id": "p253",
+  "X": [
+   "his left view: the bottom of the robe balloons out and curls under into a rounded sack around his shins",
+   "front view: a small white flap on the hem beside his left shin; doubled grey line along the hem edge"
+  ],
+  "Y": [
+   "front view: thin white strips and small splinters along the front hem edge, at the corner on his right (viewer's left) and beside his left shin",
+   "his left view: a few small white splinters at the hem by his legs"
+  ],
+  "better": "Y",
+  "why": "Y's robe falls straight like a wrap; X's hem puffs out into a sack shape. Small hem splinters are similar in both."
+ },
+ {
+  "id": "p254",
+  "X": [
+   "his back view: small white shards on the hem above his right calf (viewer's right)",
+   "his right view: small white splinters at the back corner of the hem"
+  ],
+  "Y": [
+   "his back view: the bottom of the robe bulges out into a rounded bell, like a sack",
+   "his back view: white jagged shards on the hem above his right calf (viewer's right)",
+   "his right view: the back corner of the hem bulges; dark band along the hem's lower edge (the inside showing)",
+   "his right view: white jagged splinters at the back corner of the hem"
+  ],
+  "better": "X",
+  "why": "X's robe falls straight like a wrap; Y's hem puffs out into a sack shape. Small hem splinters are similar in both."
+ },
+ {
+  "id": "p255",
+  "X": [
+   "behind-left view: the bottom of the robe bulges out into a rounded sack, most on the viewer's right",
+   "behind-right view: the hem is rounded and puffy; tiny white flecks on the hem edge"
+  ],
+  "Y": [
+   "behind-right view: small white splinters along the hem edge above his leg"
+  ],
+  "better": "Y",
+  "why": "Y's robe falls straight like a wrap; X's hem puffs out into a sack shape. Small hem splinters are similar in both."
+ },
+ {
+  "id": "p256",
+  "X": [
+   "front view: small white splinters and thin white strips along the hem, at the corner on his right (viewer's left) and beside his left shin",
+   "his left view: a few tiny white flecks at the hem"
+  ],
+  "Y": [
+   "front view: dark grey sliver between the hem layers just inside his right shin; white bits on the hem beside his left shin",
+   "his left view: the bottom of the robe balloons out and curls under into a rounded sack around his shins"
+  ],
+  "better": "X",
+  "why": "X's robe falls straight like a wrap; Y's hem puffs out into a sack shape. Small hem splinters are similar in both."
+ },
+ {
+  "id": "p257",
+  "X": [
+   "his back view: the bottom of the robe bulges out into a rounded bell, like a sack",
+   "his back view: white jagged shards on the hem above his right calf (viewer's right)",
+   "his right view: the back corner of the hem bulges; dark band along the hem's lower edge (the inside showing)",
+   "his right view: white jagged splinters at the back corner of the hem"
+  ],
+  "Y": [
+   "his back view: small white shards on the hem above his right calf (viewer's right)",
+   "his right view: small white splinters at the back corner of the hem"
+  ],
+  "better": "Y",
+  "why": "Y's robe falls straight like a wrap; X's hem puffs out into a sack shape. Small hem splinters are similar in both."
+ },
+ {
+  "id": "p258",
+  "X": [
+   "behind-right view: small white splinters along the hem edge above his leg"
+  ],
+  "Y": [
+   "behind-left view: the bottom of the robe bulges out into a rounded sack",
+   "behind-right view: the hem is rounded and puffy; small white splinters on the hem edge"
+  ],
+  "better": "X",
+  "why": "X's robe falls straight like a wrap; Y's hem puffs out into a sack shape. Small hem splinters are similar in both."
+ },
+ {
+  "id": "p259",
+  "X": [
+   "his left view: the bottom of the robe balloons out and curls under into a rounded sack around his shins",
+   "front view: small dark grey sliver between the hem layers just inside his right shin; small white bits on the hem beside his left shin"
+  ],
+  "Y": [
+   "front view: small white flaps and splinters along the hem: at the corner on his right (viewer's left), in the middle and beside his left shin",
+   "his left view: a few small white splinters at the hem by his legs"
+  ],
+  "better": "Y",
+  "why": "Y's robe falls straight like a wrap; X's hem puffs out into a sack shape. Small hem splinters are similar in both."
+ },
+ {
+  "id": "p260",
+  "X": [
+   "his back view: small white shards on the hem above his right calf (viewer's right)",
+   "his right view: small white splinters at the back corner of the hem"
+  ],
+  "Y": [
+   "his back view: the bottom of the robe bulges out into a rounded bell, like a sack",
+   "his back view: small white shards on the hem above his right calf (viewer's right)",
+   "his right view: the back corner of the hem bulges; dark band along the hem's lower edge; a grey crumpled bit at the front edge of the hem",
+   "his right view: a larger white jagged flap at the back corner of the hem"
+  ],
+  "better": "X",
+  "why": "X's robe falls straight like a wrap; Y's hem puffs out into a sack shape. Small hem splinters are similar in both."
+ },
+ {
+  "id": "p261",
+  "X": [
+   "behind-left view: the bottom of the robe bulges out into a rounded sack, most on the viewer's right",
+   "behind-right view: the hem is rounded and puffy; tiny white flecks on the hem edge"
+  ],
+  "Y": [
+   "behind-right view: small white splinters along the hem edge above his leg"
+  ],
+  "better": "Y",
+  "why": "Y's robe falls straight like a wrap; X's hem puffs out into a sack shape. Small hem splinters are similar in both."
+ },
+ {
+  "id": "p262",
+  "X": [
+   "front view: small white splinters and thin white strips along the hem, at the corner on his right (viewer's left) and beside his left shin",
+   "his left view: a small white splinter at the hem by his legs"
+  ],
+  "Y": [
+   "front view: dark grey sliver between the hem layers just inside his right shin; white bits on the hem beside his left shin",
+   "his left view: the bottom of the robe balloons out and curls under into a rounded sack around his shins"
+  ],
+  "better": "X",
+  "why": "X's robe falls straight like a wrap; Y's hem puffs out into a sack shape. Small hem splinters are similar in both."
+ },
+ {
+  "id": "p263",
+  "X": [
+   "his back view: the bottom of the robe bulges out into a rounded bell, like a sack",
+   "his back view: white jagged shards on the hem above his right calf (viewer's right)",
+   "his right view: the back corner of the hem bulges; dark band along the hem's lower edge (the inside showing)",
+   "his right view: white jagged splinters at the back corner of the hem"
+  ],
+  "Y": [
+   "his back view: small white shards on the hem above his right calf (viewer's right)",
+   "his right view: small white splinters at the back corner of the hem"
+  ],
+  "better": "Y",
+  "why": "Y's robe falls straight like a wrap; X's hem puffs out into a sack shape. Small hem splinters are similar in both."
+ },
+ {
+  "id": "p264",
+  "X": [
+   "behind-right view: small white splinters along the hem edge above his leg"
+  ],
+  "Y": [
+   "behind-left view: the bottom of the robe bulges out into a rounded sack, most on the viewer's right",
+   "behind-right view: the hem is rounded and puffy; tiny white flecks on the hem edge"
+  ],
+  "better": "X",
+  "why": "X's robe falls straight like a wrap; Y's hem puffs out into a sack shape. Small hem splinters are similar in both."
+ },
+ {
+  "id": "p265",
+  "X": [
+   "his left view: the bottom of the robe balloons out and curls under into a rounded sack around his shins",
+   "front view: small dark grey sliver between the hem layers just inside his right shin; small white bits on the hem beside his left shin"
+  ],
+  "Y": [
+   "front view: small white flaps and splinters along the hem, at the corner on his right (viewer's left) and beside his left shin; a thin white doubled strip inside the hem between his legs",
+   "his left view: a few small white splinters at the hem by his legs"
+  ],
+  "better": "Y",
+  "why": "Y's robe falls straight like a wrap; X's hem puffs out into a sack shape. Small hem splinters are similar in both."
+ },
+ {
+  "id": "p266",
+  "X": [
+   "his back view: small white shards on the hem above his right calf (viewer's right)",
+   "his right view: small white splinters at the back corner of the hem"
+  ],
+  "Y": [
+   "his back view: the bottom of the robe bulges out into a rounded bell, like a sack",
+   "his back view: white jagged shards on the hem above his right calf (viewer's right)",
+   "his right view: the back corner of the hem bulges; dark band along the hem's lower edge (the inside showing)",
+   "his right view: white jagged splinters at the back corner of the hem"
+  ],
+  "better": "X",
+  "why": "X's robe falls straight like a wrap; Y's hem puffs out into a sack shape. Small hem splinters are similar in both."
+ },
+ {
+  "id": "p267",
+  "X": [
+   "behind-left view: the bottom of the robe bulges out into a rounded sack, most on the viewer's right",
+   "behind-right view: the hem is rounded and puffy; tiny white flecks on the hem edge"
+  ],
+  "Y": [
+   "behind-right view: small white splinters along the hem edge above his leg"
+  ],
+  "better": "Y",
+  "why": "Y's robe falls straight like a wrap; X's hem puffs out into a sack shape. Small hem splinters are similar in both."
+ },
+ {
+  "id": "p268",
+  "X": [
+   "his left view: the bottom of the robe balloons out and curls under into a rounded sack around his shins",
+   "front view: small dark grey sliver between the hem layers just inside his right shin; small white bits on the hem beside his left shin"
+  ],
+  "Y": [
+   "front view: small white flaps and splinters along the hem, at the corner on his right (viewer's left) and beside his left shin; a thin white doubled strip inside the hem between his legs",
+   "his left view: a few small white splinters at the hem by his legs"
+  ],
+  "better": "Y",
+  "why": "Y's robe falls straight like a wrap; X's hem puffs out into a sack shape. Small hem splinters are similar in both."
+ },
+ {
+  "id": "p269",
+  "X": [
+   "his back view: small white shards on the hem above his right calf (viewer's right)",
+   "his right view: small white splinters at the back corner of the hem"
+  ],
+  "Y": [
+   "his back view: the bottom of the robe bulges out into a rounded bell, like a sack",
+   "his back view: white jagged shards on the hem above his right calf (viewer's right)",
+   "his right view: the back corner of the hem bulges; dark band along the hem's lower edge (the inside showing)",
+   "his right view: white jagged splinters at the back corner of the hem"
+  ],
+  "better": "X",
+  "why": "X's robe falls straight like a wrap; Y's hem puffs out into a sack shape. Small hem splinters are similar in both."
+ },
+ {
+  "id": "p270",
+  "X": [
+   "behind-left view: the bottom of the robe bulges out into a rounded sack, most on the viewer's right",
+   "behind-right view: the hem is rounded and puffy; tiny white flecks on the hem edge"
+  ],
+  "Y": [
+   "behind-right view: small white splinters along the hem edge above his leg"
+  ],
+  "better": "Y",
+  "why": "Y's robe falls straight like a wrap; X's hem puffs out into a sack shape. Small hem splinters are similar in both."
+ }
+]

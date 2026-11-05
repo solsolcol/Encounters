@@ -1,0 +1,395 @@
+[
+ {
+  "id": "p055",
+  "X": [
+   "front view: a small patch of skin seen through a gap between the hanging upper-robe flap and the wrap at the waist, left of centre",
+   "front view: doubled hem, a second inner layer showing between his legs, with thin white slivers along the hem by both legs",
+   "his left view: blotchy, streaky rectangular patches on the back of the robe; a small notch in the hem at the front"
+  ],
+  "Y": [
+   "front view: torn, jagged cloth with dark specks around the waist fold left of centre, with skin seen through the gap",
+   "front view: dark vertical splinters running down the middle of the robe below the waist",
+   "front view: thick doubled hem with a dark rim line, white slivers by his left leg",
+   "his left view: blotchy, streaky patches on the back of the robe; hem edge slightly lumpy"
+  ],
+  "better": "X",
+  "why": "Y has torn shards, dark specks and splinters at the waist fold that X does not; the hems are about equal"
+ },
+ {
+  "id": "p056",
+  "X": [
+   "his back view: white jagged shards on his right leg just under the hem, dark specks along the hem edge",
+   "his right view: torn white splinters with dark gaps in the upper-robe fold at the upper right",
+   "his right view: hem doubled into several thin layers, crumpled bits at its end by his right leg"
+  ],
+  "Y": [
+   "his back view: white jagged shards on his right leg just under the hem, dark specks along the hem edge",
+   "his right view: hem doubled into several thin layers, crumpled dark bits at its end by his right leg"
+  ],
+  "better": "Y",
+  "why": "same hem faults in both, but X also has torn splinters in the fold at the upper right"
+ },
+ {
+  "id": "p057",
+  "X": [
+   "behind-left view: smeared streaky texture patches and a couple of white flecks on the back of the robe",
+   "behind-right view: crumpled folds at the waist on the right with a grey notch at a fold's end",
+   "behind-right view: small white jagged bits along the hem by his leg"
+  ],
+  "Y": [
+   "behind-left view: smeared streaky texture patches and white flecks on the back of the robe",
+   "behind-right view: torn white shards and dark gaps in the folds at the waist on the right (a visible tear)",
+   "behind-right view: small white jagged bits along the hem by his leg"
+  ],
+  "better": "X",
+  "why": "Y has a visible tear with shards in the waist folds; otherwise the two match"
+ },
+ {
+  "id": "p058",
+  "X": [
+   "front view: torn, jagged cloth with dark specks around the waist fold left of centre, with skin seen through the gap",
+   "front view: dark vertical splinters running down the middle of the robe below the waist",
+   "front view: thick doubled hem with a dark rim line",
+   "his left view: blotchy, streaky patches on the back of the robe"
+  ],
+  "Y": [
+   "front view: a small patch of skin seen through a gap at the waist fold",
+   "front view: doubled hem with a second inner layer between his legs and white slivers along the hem by both legs",
+   "his left view: blotchy, streaky patches on the back of the robe; a small notch in the hem at the front"
+  ],
+  "better": "Y",
+  "why": "X has torn shards and dark splinters at the waist; Y is cleaner there"
+ },
+ {
+  "id": "p059",
+  "X": [
+   "his back view: white jagged shards on his right leg just under the hem, dark specks along the hem edge",
+   "his right view: hem doubled into several thin layers, crumpled dark bits at its end by his right leg"
+  ],
+  "Y": [
+   "his back view: white jagged shards on his right leg just under the hem, dark specks at the hem's end",
+   "his right view: torn white splinters with dark gaps in the upper-robe fold at the upper right",
+   "his right view: hem doubled into several thin layers, crumpled dark bits at its end by his right leg"
+  ],
+  "better": "X",
+  "why": "Y adds torn splinters in the fold; the hems are alike"
+ },
+ {
+  "id": "p060",
+  "X": [
+   "behind-left view: smeared streaky texture patches and white flecks on the back of the robe",
+   "behind-right view: torn white shards and dark gaps in the folds at the waist on the right",
+   "behind-right view: small white jagged bits along the hem by his leg"
+  ],
+  "Y": [
+   "behind-left view: smeared streaky texture patches and white flecks on the back of the robe",
+   "behind-right view: small white jagged bits along the hem by his leg; a grey notch at a fold's end"
+  ],
+  "better": "Y",
+  "why": "X has a tear with shards in the waist folds"
+ },
+ {
+  "id": "p061",
+  "X": [
+   "front view: a gap in the hanging flap at the waist on the left showing a speck of skin and a white shard, with a dark notch along the fold",
+   "front view: doubled hem with a dark rim line and dark specks at its end by his left leg; inner layer visible between his legs",
+   "his left view: blotchy streaky patches on the robe; two small dark dashes near the hem"
+  ],
+  "Y": [
+   "front view: thin grey bits in the gap of the hanging flap at the waist on the left",
+   "front view: ragged hem with white shards and dark specks along it by his left leg; white slivers at the hem on the left; inner layer visible between his legs",
+   "his left view: blotchy streaky patches on the robe; a small notch at the hem's back edge"
+  ],
+  "better": "same",
+  "why": "X's fault is at the waist gap, Y's is a ragged hem by the leg; about equal"
+ },
+ {
+  "id": "p062",
+  "X": [
+   "his back view: white jagged shards on his right leg just under the hem; frayed hem edge with dark specks",
+   "his right view: hem doubled into several thin layers, crumpled bits at its end by his right leg"
+  ],
+  "Y": [
+   "his back view: a white jagged shard on his right leg just under the hem; dark specks at the hem's end",
+   "his right view: a torn flat white sheet across the upper-robe fold at the waist, and a stretched flap at the upper right",
+   "his right view: hem doubled into several thin layers, crumpled bits at its end by his right leg"
+  ],
+  "better": "X",
+  "why": "Y has a torn flat sheet across the waist fold"
+ },
+ {
+  "id": "p063",
+  "X": [
+   "behind-left view: smeared streaky texture patches on the back of the robe, small dark ticks near the hem",
+   "behind-right view: torn, crumpled shards with dark gaps in the folds at the waist on the right",
+   "behind-right view: small white jagged bits at the hem by his leg"
+  ],
+  "Y": [
+   "behind-left view: smeared streaky texture patches; a dark sliver at the far left edge near the top",
+   "behind-right view: thin dark crease lines in the folds at the waist",
+   "behind-right view: small white and reddish specks at the hem by his leg"
+  ],
+  "better": "Y",
+  "why": "X has torn crumpled shards in the waist folds; Y's folds are mostly intact"
+ },
+ {
+  "id": "p064",
+  "X": [
+   "front view: a gap in the hanging flap at the waist on the left with white bits and a shard sticking out, dark notch along the fold",
+   "front view: doubled hem with a dark rim line, a white fleck on it and dark specks at its end by his left leg; inner layer hanging between his legs",
+   "his left view: blotchy streaky patches; two small dark ticks near the hem"
+  ],
+  "Y": [
+   "front view: a dark notch/seam in the gap of the hanging flap at the waist on the left",
+   "front view: ragged hem with white shards and dark specks by his left leg, a reddish speck and white slivers at the hem on the left; inner layer hanging between his legs",
+   "his left view: blotchy streaky patches"
+  ],
+  "better": "same",
+  "why": "X's waist gap with a shard against Y's ragged hem; about equal"
+ },
+ {
+  "id": "p065",
+  "X": [
+   "his back view: white jagged shards on his right leg just under the hem; dark specks at the hem's end and a few dark specks high on the right of the robe",
+   "his right view: hem doubled into several thin layers, crumpled bits at its end by his right leg"
+  ],
+  "Y": [
+   "his back view: white jagged shards on his right leg just under the hem; a crumpled grey bunch at the hem's end",
+   "his right view: torn flat white sheets and a hole in the upper-robe fold at the waist, crumpled grey bits at the upper right",
+   "his right view: hem doubled into several thin layers"
+  ],
+  "better": "X",
+  "why": "Y has torn sheets and a hole in the waist fold"
+ },
+ {
+  "id": "p066",
+  "X": [
+   "behind-left view: smeared streaky texture patches; small dark specks near the top right",
+   "behind-right view: torn shards with dark and black gaps throughout the folds at the waist on the right",
+   "behind-right view: ragged hem with white shards by his leg"
+  ],
+  "Y": [
+   "behind-left view: smeared streaky texture patches; a dark sliver at the far left edge",
+   "behind-right view: crease lines in the folds at the waist",
+   "behind-right view: ragged hem with white shards by his leg"
+  ],
+  "better": "Y",
+  "why": "X's waist folds are torn with black gaps; Y's are intact"
+ },
+ {
+  "id": "p067",
+  "X": [
+   "front view: dark smudgy grey crumpling on the robe at the upper left, with small torn white shards at the top",
+   "front view: doubled hem with a dark rim, crumpled bits with dark specks at its end by his left leg; inner layer hanging between his legs",
+   "his left view: a dark crumpled gap in the hem at the front; a small white shard at the hem by his leg; crumpled bits by the back leg"
+  ],
+  "Y": [
+   "front view: a dark slit along the fold at the upper left",
+   "front view: a flat white tab stuck on his left leg just under the hem; crumpled bits at the hem's end; inner layer hanging between his legs",
+   "his left view: stretched white streak lines across the inside of the hem; crumpled bits by the back leg"
+  ],
+  "better": "same",
+  "why": "X's top is crumpled and dirty-looking; Y has a tab on the leg and stretched streaks; about equal"
+ },
+ {
+  "id": "p068",
+  "X": [
+   "his back view: a torn flap with a dark jagged edge in the upper-robe fold at the top",
+   "his back view: a small torn white shard sticking out of the robe above the hem",
+   "his back view: several thin layers of inner cloth under the hem round the leg stretched back",
+   "his right view: white shards at the top; jagged hem end with dark specks by his right leg; layered inner cloth under the drape"
+  ],
+  "Y": [
+   "his back view: a large torn area with dark crumpled grey shards at the waist, top centre",
+   "his back view: several thin layers of inner cloth under the hem round the leg stretched back, with white shards along the edge",
+   "his right view: torn shards with dark notches at the top of the fold, a flat white shard",
+   "his right view: jagged bits at the hem by his right leg; layered inner cloth"
+  ],
+  "better": "X",
+  "why": "Y has a large torn crumpled area at the waist"
+ },
+ {
+  "id": "p069",
+  "X": [
+   "behind-left view: a small dark speck and a ragged edge with white bits at the fold on the right",
+   "behind-right view: a big torn area in the folds at the waist: shards, jagged edges and a hole showing dark inside",
+   "behind-right view: crumpled white shards with dark bits inside the hem round his leg"
+  ],
+  "Y": [
+   "behind-left view: a white splinter sticking out of the robe in the middle",
+   "behind-right view: a few white shards and a dark notch in the folds at the waist",
+   "behind-right view: white shards and crumpled bits at the hem round his leg"
+  ],
+  "better": "Y",
+  "why": "X's waist folds are badly torn with a hole; Y has only a splinter and small shards"
+ },
+ {
+  "id": "p070",
+  "X": [
+   "front view: doubled hem with a dark rim line, a cluster of dark specks at its end by his left leg; inner layer between his legs with small white bits",
+   "his left view: ragged, crumpled hem at the front edge; a small crumpled bit at a fold at the upper right"
+  ],
+  "Y": [
+   "front view: doubled hem with thin white slivers and small white jagged bits at its end by his left leg; inner layer between his legs",
+   "his left view: small ragged bits at the hem's front edge"
+  ],
+  "better": "Y",
+  "why": "slightly cleaner hem ends in both views"
+ },
+ {
+  "id": "p071",
+  "X": [
+   "his back view: crumpled bits with dark specks inside the hem by his right leg; inner layer visible",
+   "his right view: crumpled bits at the hem's end; layered inner hem; white ragged bits by the back leg"
+  ],
+  "Y": [
+   "his back view: a torn flap with black shards (a hole showing dark) on the right side of the robe",
+   "his back view: crumpled grey and dark shards inside the hem by his right leg",
+   "his right view: torn black jagged bits at the top",
+   "his right view: layered inner hem"
+  ],
+  "better": "X",
+  "why": "Y has torn black shards and a hole"
+ },
+ {
+  "id": "p072",
+  "X": [
+   "behind-left view: a small dark notch at the flap edge on the right",
+   "behind-right view: a torn edge with black jagged shards (a hole showing dark) across the robe",
+   "behind-right view: ragged white shards at the hem round his leg"
+  ],
+  "Y": [
+   "behind-left view: a tiny white bit by his leg",
+   "behind-right view: ragged white shards at the hem round his leg"
+  ],
+  "better": "Y",
+  "why": "X has a torn black-shard edge across the robe"
+ },
+ {
+  "id": "p073",
+  "X": [
+   "front view: doubled hem with a dark rim line; small white specks at the inner hem between his legs",
+   "his left view: a small crumpled grey bit at the hem's front edge; blotchy streaky patches"
+  ],
+  "Y": [
+   "front view: doubled hem with white slivers and small jagged bits by both legs",
+   "his left view: a small notch at the hem's front edge, a crumpled bit at the robe's edge near the top; blotchy streaky patches"
+  ],
+  "better": "same",
+  "why": "only minor hem specks in both"
+ },
+ {
+  "id": "p074",
+  "X": [
+   "his back view: white jagged shards on his right leg just under the hem; white bits and dark specks along the hem",
+   "his right view: hem doubled into several thin layers, crumpled bits with dark specks at its end by his right leg; crumpled bits at the upper right"
+  ],
+  "Y": [
+   "his back view: white jagged shards on his right leg just under the hem; dark specks at the hem's end",
+   "his right view: hem doubled into several thin layers, crumpled bits at its end and at the upper right"
+  ],
+  "better": "same",
+  "why": "the same faults in both"
+ },
+ {
+  "id": "p075",
+  "X": [
+   "behind-left view: smeared streaky texture patches, white flecks and dark ticks on the back of the robe",
+   "behind-right view: small white jagged bits at the hem by his leg"
+  ],
+  "Y": [
+   "behind-left view: smeared streaky texture patches and white flecks",
+   "behind-right view: ragged white shards at the hem by his leg"
+  ],
+  "better": "same",
+  "why": "the same minor faults in both"
+ },
+ {
+  "id": "p076",
+  "X": [
+   "front view: torn jagged cloth at the waist fold left of centre, with skin seen through the gap and a skin speck below the flap",
+   "front view: dark vertical splinters near the fold in the middle",
+   "front view: thick doubled hem with a dark rim line",
+   "his left view: blotchy streaky patches"
+  ],
+  "Y": [
+   "front view: a patch of skin seen through a gap at the waist fold",
+   "front view: doubled hem with white slivers by both legs",
+   "his left view: blotchy streaky patches; a small notch at the hem"
+  ],
+  "better": "Y",
+  "why": "X has torn bits and splinters at the waist"
+ },
+ {
+  "id": "p077",
+  "X": [
+   "his back view: white jagged shards on his right leg just under the hem; dark specks along the hem",
+   "his right view: hem doubled into several thin layers, crumpled bits at its end by his right leg"
+  ],
+  "Y": [
+   "his back view: white jagged shards on his right leg just under the hem; dark specks",
+   "his right view: torn, crumpled flaps with dark specks in the fold at the upper right",
+   "his right view: hem doubled into several thin layers, crumpled bits at its end"
+  ],
+  "better": "X",
+  "why": "Y adds torn flaps in the fold"
+ },
+ {
+  "id": "p078",
+  "X": [
+   "behind-left view: smeared streaky texture patches and white flecks",
+   "behind-right view: torn shards in the folds at the waist on the right",
+   "behind-right view: ragged bits at the hem by his leg"
+  ],
+  "Y": [
+   "behind-left view: smeared streaky texture patches and white flecks",
+   "behind-right view: small white bits at the hem by his leg"
+  ],
+  "better": "Y",
+  "why": "X has torn shards in the waist folds"
+ },
+ {
+  "id": "p079",
+  "X": [
+   "front view: a patch of skin seen through a gap at the waist fold",
+   "front view: doubled hem with white slivers and ragged white bits by his left leg",
+   "his left view: blotchy streaky patches; a small notch at the hem's front edge"
+  ],
+  "Y": [
+   "front view: torn jagged cloth with dark specks around the waist fold left of centre, skin seen through the gap",
+   "front view: dark vertical splinters near the fold in the middle",
+   "front view: thick doubled hem with a dark rim line",
+   "his left view: blotchy streaky patches"
+  ],
+  "better": "X",
+  "why": "Y has torn shards and splinters at the waist"
+ },
+ {
+  "id": "p080",
+  "X": [
+   "his back view: white jagged shards on his right leg just under the hem; dark specks",
+   "his right view: torn white shards with dark gaps in the upper-robe fold at the upper right",
+   "his right view: hem doubled into several thin layers, crumpled bits at its end"
+  ],
+  "Y": [
+   "his back view: white jagged shards on his right leg just under the hem; dark specks along the hem",
+   "his right view: hem doubled into several thin layers, crumpled bits at its end; small crumpled bits at the upper right"
+  ],
+  "better": "Y",
+  "why": "X has torn shards in the fold"
+ },
+ {
+  "id": "p081",
+  "X": [
+   "behind-left view: smeared streaky texture patches and white flecks",
+   "behind-right view: a grey notch at a fold's end; ragged white bits at the hem by his leg"
+  ],
+  "Y": [
+   "behind-left view: smeared streaky texture patches and white flecks",
+   "behind-right view: torn white shards and dark gaps in the folds at the waist on the right",
+   "behind-right view: ragged bits at the hem by his leg"
+  ],
+  "better": "X",
+  "why": "Y has torn shards in the waist folds"
+ }
+]

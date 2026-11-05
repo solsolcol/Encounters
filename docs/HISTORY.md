@@ -7988,6 +7988,51 @@ What the baseline contains, by release:
     crumpled bits inside a lifted hem, his knee through the front pocket in the chair sits. Put to Chad, with the floor
     sit's options. assets/pho.glb 9,031,528 bytes (v24.46 6,858,792), 19 takes. Not in build.py until chapter 3 casts him.
 
+- **v24.48** (prepared, not a build: nothing deployed, the live build stays v24.40) GRANDMASTER PHO: EVERY FAULT OF
+  v24.47'S ROBE FIXED — Chad, 5 Nov 2026, after v24.47's report (better than his saved file in 11 takes, even in 2, worse in
+  6, and the floor sit's three options): *"Fix all of it"* — every fault the report named, none left to chapter 3's choice
+  of takes, and the floor sit made to work. The plan, his words and every step's measure: masters/v24.48/PLAN.md; recipe
+  masters/v24.48/make.sh; pictures masters/v24.48/shots/pho-*.jpg (his saved file, v24.47 and v24.48 at the moments
+  v24.47's readers named); the blind reviews masters/v24.48/review/.
+  - WHAT EACH FAULT WAS (tools/probes/phoid.mjs, new: the picture drawn again with every triangle in its own colour at the
+    moment and side a reader named, the triangles listed with their rest place, stretch and bones): the shards and tears
+    were robe triangles stretched 2.5-4.7 times between cloth bones turned up to 172° apart, each bone's turn read from the
+    two pairs of particles next to it; the cloth under the waistband folded over itself in the lunge because the thigh's
+    collider, a capsule, reached 7 cm above the waist ring with its round end; the sack was the cloth held out by the depth
+    of the robe's layers wherever a leg was near; the crumples and white flaps inside a lifted hem were the floor of the
+    robe's old opening round his old shins, running up inside the new legs; the floor sit's legs were bare because both of
+    his robe rigs ride his hips in that take and his waist is below his knees; and (found by counting the first final file)
+    the white band across his shins in the chair sits was a sheet of robe 15 cm inside its front wall, swung out and
+    stretched four to five times.
+  - THE FIXES, each an option proven to change nothing unset (robeshell with RIM alone and robesim with v24.47's options
+    rebuild v24.47's files byte for byte, with the final code): robesim TURNFIT and TURNSMOOTH (each cloth bone's turn fitted
+    to the whole patch of cloth it carries and averaged with its neighbours': at most 29° apart), HIPOPEN and TOPTAPER (the
+    thigh open at the hip and thinned toward it), RESTCAP (no leg pushes the cloth further out than it hangs at rest) and
+    SKINPUSH (the robe's own points, skinned as the game skins them, kept 8 mm off his legs' own points, the bones moved
+    only where they meet), LEGWRAPTAKES (the floor sit's robe carried by his real legs); robeshell FLOOR (1,674 triangles),
+    INNER (271) and ISLANDS (50 loose scraps).
+  - Tried and taken back out: the hem's underside and turned-in lip cut away (HEMBASE, 2,281 triangles: it left the hem's
+    edge ragged, and the first final file's blind readers rated four takes worse than his saved file for it — the hem is
+    his scan's own and stays), a cap holding the cloth below the waist ring (it held the lap down in the chair sits:
+    sit-to-stand 975 leg edges through the robe against 2), the front hem's lip cut or kept whole for the band (neither
+    touched it), four ways to dress the floor sit, and the floor sit's robe pulled in toward his legs so his hands would
+    rest on it (his knee came through the lap).
+  - THE COUNT, 180 moments x 6 sides (his saved file / v24.47 / v24.48): floating leg pieces 166 / 52 / 26; legs through
+    the cloth outside the floor sit 29,232 / 7,051 / 413 (0 in fourteen takes); torn robe triangles 108,928 / 59,715 /
+    54,459; the robe seen inside out 2.02 / 1.73 / 1.24 million px.
+  - THE BLIND REVIEW: forty readers of all 540 pictures, none told which is new: against his saved file better in
+    347, the same in 78, worse in 115 — better in 15 takes, about even in 2, worse in 2 (the first Charged cast and talking
+    with hands open, for small white jagged bits at the hem); against v24.47 better in 268, the same in 245, worse in 27 —
+    better in 17 takes, the same in 2. The first final file, with the hem cut, read the same way: 337 / 70 / 133 and
+    293 / 179 / 68.
+  - Left, and said: the white bits at the hem's back corner when he talks with his hands open and along the hem by
+    his heel in the first Charged cast (the hem's own bottom band stretched up to 1.56 times as it flares round his calf;
+    not the leg push — with it off the bits stay and his legs come through), the sliver of thigh at the front overlap in
+    that cast, the sword slash and cast_6, his heel below the long hem seen from behind and above, and, sitting
+    cross-legged, his hands resting under the robe over his knees (pulled in to his legs, the robe let his knee through).
+    assets/pho.glb 8,624,964 bytes (sha1 b746ab6f; v24.47 9,031,528), 556,447 -> 166,933 triangles, 231 joints, 19
+    takes. Not in build.py until chapter 3 casts him.
+
 ## The sheet, version by version
 
 **v137** (`masters/v24.39/masterz-text-v137.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from

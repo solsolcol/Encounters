@@ -182,3 +182,40 @@ by that strip and lip — the thin dark line along its bottom that the readers c
   inside the robe against his shins, met by the count and not seen from outside).
 - Taken: the hem is his scan's own and stays. HEMBASE is out of the recipe and out of tools/robeshell.mjs (an option
   nothing uses is not kept), and the final file is built again from step 5.
+
+**Step 11 · the final file, built again without the hem cut (the recipe's steps 5-7; steps 1-4 unchanged and byte for
+byte v24.47's).** The shell is byte for byte the one the trial counted (sha1 e681032f: RIM 1,035 triangles, FLOOR 1,674,
+INNER 271, ISLANDS 50 scraps of 271); the cloth keeps 95,301 of 264,800 keys, and SKINPUSH moved 444,488 robe points
+(the most any needed, 5.1 cm). The file: 556,447 -> 166,933 triangles, 231 joints, 19 takes, 8,624,964 bytes (sha1
+b746ab6f). The proofs with the final code: robeshell with RIM alone on v24.47's graft gives v24.47's pho_shell.glb
+(51104ba9); tools/robesim.mjs is unchanged since step 7 (with v24.47's options it rebuilds v24.47's pho_cloth.glb,
+e93ab6d0).
+
+**Step 12 · the final file counted on all 180 moments x 6 sides** (his saved file / v24.47 / v24.48): floating leg
+pieces 166 (13,913 px) / 52 (9,812) / 26 (7,720); legs through the cloth 39,747 / 7,051 / 8,019 — of which the floor
+sit 10,515 / 0 / 7,606 (its robe lies on his legs, carried by them, so the count meets the robe at the legs' surface;
+outside the floor sit 29,232 / 7,051 / 413, and 0 in fourteen takes: running 259, walking 98, the sword slash 34, cast_7
+18, cast_8 4); torn robe triangles 108,928 / 59,715 / 54,459; robe seen inside out 2.02 / 1.73 / 1.24 million px. The
+26 floating pieces: the floor sit's nine (4,952 px, one each moment, from the front: his crossed shins seen in the gap at
+the front of his lap); his heel below the hem seen from behind and above in talking with hands open and the second
+Charged cast (six, 2,141 px); a sliver of thigh through the front overlap in the first Charged cast, the sword slash and
+cast_6 (six, 374 px); small slivers seen from his back in walking, mage_soell_cast, cast_4 and cast_7 (five, 253 px).
+
+**Step 13 · the final file read blind, all 540 pictures, twice** (as step 9, forty new readers; review/vs-saved and
+review/vs-v2447 — step 9's are review/first-vs-saved and first-vs-v2447). Against his saved file: better in 347, the same
+in 78, worse in 115 (the first final 337 / 70 / 133) — better in 15 takes (running 36 of 36, walking 36 of 45, two chair
+sits 27 of 27, cast_5 24 of 27), about even in 2 (the second Charged cast 9/9/9, mage_soell_cast 10/6/11), worse in 2:
+the first Charged cast (4/6/17) and talking with hands open (5/10/12). Against v24.47: better in 268, the same in 245,
+worse in 27 (the first final 293 / 179 / 68) — better in 17 takes (the floor sit and sitting on a chair shouting 27 of
+27), the same in the hand-on-hip talk (0/27/0) and talking with hands open (0/25/2: that reader saw the two nearly
+alike, "Y's robe just hangs a little fuller"). Every note sorted by its words, against his saved file (his file's in
+brackets): the hem's edge 795 (802; the first final 864), a slit or a leg through the cloth 56 (192), specks 118 (190),
+crumples 209 (267), the inside of the robe or a doubled edge 335 (400); more often than his file: his heel below the hem
+66 (42), a bulge 86 (24) and his hands 18 (12). What the two worse takes are made of, drawn in their own colours:
+talking, small white jagged bits at the hem's back corner above his right heel, the hem's own bottom band there stretched
+up to 1.56 times as the hem flares round his calf (his saved file shows a thinner white sliver at the same place; with
+SKINPUSH off the bits are the same, and his legs come through the robe 360 times in that take — a two-take trial); the
+first Charged cast, the same white bits along the hem by his heel, the robe over his right leg read as "a sack whose
+bottom curls under like a bag", and the sliver of thigh at the front overlap. Sitting cross-legged, the one reader of
+its last three moments preferred his saved file's torn lap, where his hands show on his knees, to the new lap that hides
+them (9 of 27; better in the other 18 and in both of step 9's passes).

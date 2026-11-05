@@ -7537,3 +7537,8 @@ cut (sharing its vertices and maps) when it is small.
   out of sight into it. Pulled in toward the legs (0.3 of the distance, and fully), his knee came through the lap
   instead. A garment cannot be both clear of a bulging knee and thin under a hand that rests on that knee unless the
   hand moves; the take's hands are his, so this is left and said.
+- **When the batches follow the takes, each take's verdict is one reader's.** Twenty readers of 27 pictures each, the
+  pictures in take order, means a take is read by one reader, two at most. The same talking take, sack and all, was
+  27 of 27 better against v24.47 for one reader and 25 of 27 "the same" for the next ("Y's robe just hangs a little
+  fuller"); the floor sit 27 of 27 better against his saved file, then 18 of 27. Read a take's count beside its notes,
+  and weigh a take that flips between passes as a close call, not a finding.

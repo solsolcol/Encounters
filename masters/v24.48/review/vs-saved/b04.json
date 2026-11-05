@@ -2,427 +2,406 @@
  {
   "id": "p082",
   "X": [
-   "front view: small ragged white bits along the hem edge between the legs and by his left shin",
-   "his left view: torn white lining fragments along the underside of the hem between the legs"
+   "front view: dark grey crumpled inner edge of the hem between the legs",
+   "his left view: ragged white fringe/shards hanging under the back of the hem by his rear leg"
   ],
   "Y": [
-   "front view: a cluster of white and grey shards/splinters sticking out of the robe at his left shin, just above the hem",
-   "front view: a gap in the robe there with the skin of his left ankle seen through it",
-   "front view: dark grey crumpled, doubled strip along the hem over his left foot",
-   "his left view: a foot hangs below the hem with no leg visible, twisted at an odd angle - looks cut off/floating",
-   "his left view: small white shard at the right edge of the hem"
+   "front view: white shards with dark edges at a split in the robe by his left leg, skin seen through the gap above the hem",
+   "front view: grey crumpled streaks at the hem corner beside his left foot",
+   "his left view: his near foot hangs below the hem as a sole with no ankle or leg showing, looks cut off/floating",
+   "his left view: stray skin fragment at the right edge at hem level"
   ],
   "better": "X",
-  "why": "X's legs and hem are clean apart from tiny ragged hem bits; Y has shards and a hole at the shin and a foot that looks cut off under the hem."
+  "why": "X's hem is nearly clean; Y has a torn split with shards in front and a foot that looks detached in the side view"
  },
  {
   "id": "p083",
   "X": [
-   "his back view: a jagged slit torn up the back of the robe from the hem, with the calf of the leg on the right showing through it",
-   "his back view: the foot on the left sticks out the side of the robe with no leg visible above it",
-   "his right view: a cluster of white and dark grey shards/splinters at the back of the robe by his calf, with skin seen through a gap",
-   "his right view: a flat doubled sheet of cloth along the lower hem on the left"
+   "his back view: torn notch in the hem centre-right; his right leg shows through a ragged gap with a jagged white edge",
+   "his right view: white splinters and a dark metallic-grey crumpled patch at the hem round his rear leg, leg seen through a gap"
   ],
   "Y": [
-   "his back view: small ragged white bits on the hem by the right leg and at the left corner",
-   "his right view: small ragged cloth bits at the back hem corner and along the bottom edge"
+   "his back view: tiny white fringe at the hem by his right leg and a small grey crumple at the left corner",
+   "his right view: small grey inside-out fold at the back of the hem"
   ],
   "better": "Y",
-  "why": "Y is clean apart from minor ragged hem bits; X has a torn slit with the calf through it and shards at the back."
+  "why": "Y has only tiny hem specks; X has a torn notch and splintered shards"
  },
  {
   "id": "p084",
-  "X": [
-   "behind-left view: a few tiny ragged white bits at the hem centre",
-   "behind-right view: a small orange speck on the robe; a toe edge peeking at the right end of the hem"
-  ],
+  "X": [],
   "Y": [
-   "behind-left view: a foot hangs below the hem with no leg visible (looks cut off)",
-   "behind-left view: a leg pokes through a jagged tear at the hem's right corner, skin showing through ragged edges",
-   "behind-right view: white and dark shards/splinters at the back of the robe where a panel separates",
-   "behind-right view: the leg pokes through a ragged hole at the bottom left of the robe",
-   "behind-right view: an open flap at the back of the robe exposing the inner layer"
+   "behind-left view: ragged triangular tear at the right end of the hem with the leg showing through",
+   "behind-left view: rear foot hangs under the hem as a sole with no ankle, looks cut off",
+   "behind-right view: white splinters with dark specks on the side of the robe (a hole)",
+   "behind-right view: jagged torn flap at the hem over the leg"
   ],
   "better": "X",
-  "why": "X is essentially clean; Y has torn holes with legs poking through, shards and a cut-off-looking foot."
+  "why": "X is clean; Y has tears, splinters and a detached-looking foot"
  },
  {
   "id": "p085",
   "X": [
-   "front view: torn white strips/shards flapping at the hem by his left shin, the leg poking through a hole there",
-   "front view: dark grey crumpled band along the hem over his left shin",
-   "front view: his right foot hangs below the hem with very little leg showing",
-   "his left view: skin of a leg/foot poking out through the back edge of the robe at the far right",
-   "his left view: the trailing back of the robe stretched into a flat sheet"
+   "front view: white flaps/shards with dark edges at the hem where his left leg passes through a tear",
+   "front view: white sliver between the legs and grey crumpled hem edge",
+   "his left view: rear leg pokes out through the back edge of the robe at the right",
+   "his left view: back of the hem stretched into a flat sheet towards the rear leg"
   ],
   "Y": [
-   "front view: slightly ragged white bits along the hem",
-   "his left view: small ragged white bits at the hem"
+   "front view: small grey crumpled inner hem edge between the legs, a few white bits"
   ],
   "better": "Y",
-  "why": "Y's robe and legs read naturally; X has torn strips at the shin and a leg poking out of the back of the robe."
+  "why": "Y is clean apart from a slight hem crumple; X has torn flaps and a leg poking out of the robe"
  },
  {
   "id": "p086",
   "X": [
-   "his back view: small ragged white bits at the hem by the right leg",
-   "his right view: small ragged white bits along the bottom edge of the hem; a slightly doubled cloth corner at the back hem"
+   "his back view: tiny white fringe at the hem by his right leg",
+   "his right view: small grey crumpled fold at the back corner of the hem and a few white bits at the front"
   ],
   "Y": [
-   "his back view: a big jagged tear in the back of the robe with the calf poking through it, skin showing through the hole",
-   "his back view: a small white shard at the edge of the tear",
-   "his right view: white/grey shards and strips at the back hem around the calf, skin seen through the torn hem",
-   "his right view: at the left edge a leg/foot pokes through the hem among ragged shards",
-   "his right view: the hem flares into a flat sheet"
+   "his back view: large jagged tear up the back of the robe, centre-right, with the leg showing through it and a dark slit line",
+   "his right view: white shards and flat strips at the hem by the rear leg, which passes through the cloth",
+   "his right view: torn fragments with skin showing at the front edge (left)",
+   "his right view: underside of the hem shows as a flat white sheet"
   ],
   "better": "X",
-  "why": "X is clean apart from minor hem bits; Y has a big tear with the calf through it and shards at the hem."
+  "why": "X has only tiny hem specks; Y has a big tear in the back and shards round both legs"
  },
  {
   "id": "p087",
   "X": [
-   "behind-left view: a leg pokes out through a torn hole on the right side of the robe, with a white shard at its edge",
-   "behind-left view: a flat stretched white strip inside the hem",
-   "behind-right view: a leg pokes through torn cloth at the bottom left, surrounded by white shards and splinters",
-   "behind-right view: shards, streaks and dark specks at the back of the robe by the right calf"
+   "behind-left view: his leg pokes out through a torn opening at the right of the hem, with dark shards",
+   "behind-left view: white stretched streaks along the hem",
+   "behind-right view: jagged white pieces with dark edges where the front leg passes through the cloth (left)",
+   "behind-right view: shards with dark specks at the hem round the rear leg"
   ],
   "Y": [
-   "behind-right view: tiny ragged bits at the hem"
+   "behind-right view: tiny white fringe at the hem"
   ],
   "better": "Y",
-  "why": "Y is clean; X has legs poking through torn holes with shards in both views."
+  "why": "Y is clean; X has legs poking through torn cloth in both views"
  },
  {
   "id": "p088",
   "X": [
-   "front view: a doubled grey edge along the hem over his left shin",
-   "his left view: a tiny ragged bit at the hem"
+   "front view: dark grey crumpled inner edge of the hem between the legs, small white inner bit"
   ],
   "Y": [
-   "front view: his left leg pokes through a torn hole in the robe front with jagged white shards around it",
-   "front view: only the toes of the other foot peek out under the hem with no leg (looks cut off)",
-   "front view: dark grey crumpled band at the left corner of the hem",
-   "his left view: grey/white splinters and torn cloth at the back of the robe where a leg/foot pokes out at the right edge"
+   "front view: jagged tear in the front of the robe where his left leg comes through, with white shards",
+   "front view: toes of the other foot peek out under the hem with no foot or ankle above them",
+   "front view: white flap between the legs",
+   "his left view: rear leg pokes out through the back of the robe with splintered white/grey shards and dark streaks",
+   "his left view: white stretched streak along the hem"
   ],
   "better": "X",
-  "why": "X reads cleanly; Y has a leg through a torn hole, cut-off toes and splinters at the back."
+  "why": "X only has a slight hem crumple; Y has tears, shards and a leg through the robe"
  },
  {
   "id": "p089",
   "X": [
-   "his back view: a large tear in the back of the robe with the raised foot and leg poking through it",
-   "his back view: jagged ragged edges at the top of the tear and dark streaks/shards along its sides",
-   "his right view: the leg at the left edge pokes through torn cloth with brown and white shards",
-   "his right view: flat white sheets/streaks at the back hem by the right calf and a broad flat sheet along the underside of the hem",
-   "his right view: dark grey crumpled band at the back hem"
+   "his back view: big tear in the back of the robe: the raised foot and calf poke through a jagged slit with a ragged top edge",
+   "his back view: white shards and dark streaks along the slit's right edge",
+   "his right view: torn shards with skin where the front leg pokes through the front edge",
+   "his right view: white stretched streaks and dark specks at the back hem by the rear leg",
+   "his right view: underside of the hem shows as a flat white sheet"
   ],
   "Y": [
-   "his back view: small ragged white bits at the hem",
-   "his right view: small ragged white bits along the hem and a slightly doubled hem corner at the back"
+   "his back view: tiny white fringe at the hem",
+   "his right view: small grey inside-out fold at the back of the hem, small white fringe at the front"
   ],
   "better": "Y",
-  "why": "Y is clean apart from minor hem bits; X has a big tear with the foot through it and shards."
+  "why": "Y is nearly clean; X has a big slit with the foot through it and shards in the side view"
  },
  {
   "id": "p090",
   "X": [
-   "behind-right view: a small ragged bit at the hem"
+   "behind-right view: tiny white sliver at the hem"
   ],
   "Y": [
-   "behind-left view: a leg pokes out through a torn hole at the right side of the robe with white/grey shards and splinters",
-   "behind-right view: a leg pokes through torn cloth at the bottom left with white shards and brown splinters",
-   "behind-right view: shards and grey streaks with dark specks at the back by the right calf"
+   "behind-left view: rear leg pokes through the side of the robe with white splinters, dark specks and skin bits",
+   "behind-right view: front leg pokes through torn cloth at the left with shards and dark streaks",
+   "behind-right view: shards and white strips with dark specks round the rear leg",
+   "behind-right view: flat flap sheet sticking out at the right edge"
   ],
   "better": "X",
-  "why": "X is clean; Y has legs poking through torn cloth with shards in both views."
+  "why": "X is clean; Y has both legs tearing through the robe with shards"
  },
  {
   "id": "p091",
   "X": [
-   "front view: a ragged torn hole where his left leg leaves the robe, with white shards and a dark grey crumpled bit",
-   "front view: a dark grey hollow/inside-out patch on the robe front above the hem",
-   "front view: his other leg is not visible at all",
-   "his left view: the raised back leg pokes out through the back of the robe at top right, the robe torn into long stretched strips streaked with skin and dark brown",
-   "his left view: a long flat white sheet inside the robe",
-   "his left view: a dark speck at the hem by the front leg"
+   "front view: white shards and dark grey bits at the hem where his left leg exits through a tear",
+   "front view: large dark grey hollow on the robe front (inside of the cloth showing)",
+   "his left view: raised rear thigh/knee pokes out of the back of the robe",
+   "his left view: cloth between that leg and the hem stretched into long streaks and shards with dark brown/black smears",
+   "his left view: long white strips across the back of the hem; dark specks at the front leg's knee"
   ],
   "Y": [
-   "front view: small ragged white bits at the hem",
-   "his left view: small ragged white bits at the hem"
+   "front view: small grey crumple at the hem between the legs, a few white bits"
   ],
   "better": "Y",
-  "why": "Y is clean; X has a leg tearing out of the back of the robe in long strips and a hollow torn front."
+  "why": "Y is clean; X has the rear leg out of the robe with stretched, smeared cloth"
  },
  {
   "id": "p092",
   "X": [
-   "his back view: small ragged white bits at the hem by the right leg",
-   "his right view: small ragged white bits along the hem and a small doubled hem bit at the back"
+   "his back view: tiny white fringe at the hem",
+   "his right view: tiny white fringe at the hem and a small grey fold at the back corner"
   ],
   "Y": [
-   "his back view: the raised foot pokes out through a big hole high in the back of the robe",
-   "his back view: long dark brown/grey streaks and shards below it and a torn, inside-out lighter panel down to the hem",
-   "his right view: a leg pokes out through the upper left of the robe with torn shards and skin streaks",
-   "his right view: the back of the robe is a huge open flap showing a dark grey inside",
-   "his right view: grey/white stretched strips and shards where the front leg comes through the hem"
+   "his back view: the raised foot pokes out of the back of the robe with a smeared skin-coloured streak below it",
+   "his back view: large torn area of flat white sheets and dark lines down to the hem",
+   "his right view: front leg pokes through the robe with stretched skin-coloured streaks and shards",
+   "his right view: robe stretched open showing a big dark grey hollow inside",
+   "his right view: shards and dark specks at the hem by the rear leg; hem stretched into a flat sheet"
   ],
   "better": "X",
-  "why": "X is clean apart from minor hem bits; Y's robe is torn wide open with the foot through it."
+  "why": "X is nearly clean; Y is badly torn with smeared skin streaks and an open grey hollow"
  },
  {
   "id": "p093",
   "X": [
-   "behind-left view: the raised, bent leg pokes out through the back right of the robe",
-   "behind-left view: a big torn sheet below it with dark brown/black streaks, shards and splinters, plus a long flat streak",
-   "behind-right view: the same leg crossing at top left with torn stretched streaks of skin and grey cloth under it",
-   "behind-right view: the lower robe is a boxy flat sheet",
-   "behind-right view: torn shards and grey crumpled bits at the back hem by the right calf"
+   "behind-left view: raised leg pokes out through the side of the robe",
+   "behind-left view: big torn area below it with dark brown/black smears and white shards; a white strip sticking out",
+   "behind-left view: hem pulled into a flat sheet",
+   "behind-right view: raised leg pokes out with stretched skin streaks and dark smears",
+   "behind-right view: white shards and a flat sheet of cloth below it",
+   "behind-right view: grey/dark shards at the hem round the rear leg"
   ],
   "Y": [
-   "behind-right view: small ragged white bits at the hem"
+   "behind-right view: small white fringe at the hem"
   ],
   "better": "Y",
-  "why": "Y is clean; X has a leg bursting out of the robe with torn, streaked sheets."
+  "why": "Y is clean; X has the raised leg ripping out of the robe with smeared shards"
  },
  {
   "id": "p094",
   "X": [
-   "front view: the robe front puffs into a dark grey hollow cavity where the raised leg should be, and that leg is not visible",
-   "front view: a small dark crumpled bit at the left corner of the hem",
-   "his left view: skin of the raised leg pokes out of the robe at the top right corner",
-   "his left view: an inner flap/flat sheet visible at the back of the robe"
+   "front view: large dark grey hollow on the robe's front left (inside of the cloth showing)",
+   "front view: dark specks at the hem by the leg; the other leg not visible at all",
+   "his left view: raised rear leg pokes out of the back of the robe at the top right",
+   "his left view: torn stretched sheet with grey streaks at the back edge of the robe"
   ],
   "Y": [
-   "front view: the lifted foot hangs below the hem with no leg visible (looks like a floating foot)",
-   "front view: small ragged bits at the hem",
-   "his left view: the back foot hangs under the back hem with no leg showing",
-   "his left view: a faint horizontal colour seam on the shin just below the hem"
+   "front view: rear foot hangs under the hem with no ankle visible (minor)",
+   "front view: small white bits and grey crumple at the hem"
   ],
   "better": "Y",
-  "why": "Y's robe is intact and the feet read as a stepping pose; X has a hollow cavity in the front and a leg poking out of the back."
+  "why": "Y reads as a normal step; X has a leg poking out of the back and a torn sheet"
  },
  {
   "id": "p095",
   "X": [
-   "his back view: the raised foot sits in a flat rectangular notch/hole in the back of the robe, with a flat lighter panel above it",
-   "his back view: crumpled grey ragged edge along the hem",
-   "his right view: the raised foot hangs out sideways from under the robe",
-   "his right view: a doubled, crumpled inner band below the hem"
+   "his back view: flat, straight-edged rectangular patch in the robe above the raised foot (a step in the cloth)",
+   "his back view: the raised foot sole pokes out of the robe through that patch",
+   "his back view: white fringe/shards at the hem on both sides of the standing leg",
+   "his right view: doubled hem at the back with white crumpled strips and dark specks"
   ],
   "Y": [
-   "his back view: a big flap torn open in the back of the robe showing a lighter inner panel, with grey crumpled shards at its top",
-   "his back view: the raised leg is not visible",
-   "his right view: the robe is opened into a large dark grey inside-out cavity",
-   "his right view: torn white shards and crumpled grey bits around the leg at the hem",
-   "his right view: a flat white flap at the left and a piece of leg/skin poking out at the top left corner"
+   "his back view: big torn area at the back, centre-right: flat white panels and grey crumpled shards",
+   "his right view: raised leg pokes out at the top left",
+   "his right view: robe stretched open showing a big dark grey hollow inside",
+   "his right view: white shards with dark specks at the front edge and round the standing leg at the hem; flat white sheet at the front"
   ],
   "better": "X",
-  "why": "X has a foot through a notch and a doubled hem, but Y's robe is torn open into a grey cavity with shards."
+  "why": "X's faults are smaller (a flat patch and hem fringe); Y is torn open with a grey hollow and shards"
  },
  {
   "id": "p096",
   "X": [
-   "behind-left view: the raised leg pokes out through the robe at the top right",
-   "behind-left view: long torn strips with grey shards hanging below it, and an open flap at the side of the robe",
-   "behind-right view: the raised foot pokes out at the top left through the robe",
-   "behind-right view: robe torn open with shards, grey crumpled bits and a flat white flap where the standing leg comes through"
+   "behind-left view: raised foot pokes out at the top right",
+   "behind-left view: torn cloth sheet hanging below it with white stretched streaks, dark lines and grey crumpled shards",
+   "behind-right view: raised foot pokes out at the top left",
+   "behind-right view: big torn area at the back of the robe: flat white sheet and grey/black crumpled shards with dark specks; rear leg seen through the tear"
   ],
   "Y": [
-   "behind-left view: the trailing foot hangs below the back hem with no ankle or leg visible",
-   "behind-left view: a faint round dent in the robe above it",
-   "behind-right view: the trailing foot appears under the hem with no leg visible",
-   "behind-right view: small ragged white bits at the bottom left of the hem"
+   "behind-right view: small grey bits at the hem's left corner"
   ],
   "better": "Y",
-  "why": "Y's robe is intact with only a foot showing under it; X's robe is torn open around the raised leg."
+  "why": "Y is clean; X has the robe torn open behind the raised leg"
  },
  {
   "id": "p097",
   "X": [
-   "front view: small white shards at the left of the hem by the raised foot",
-   "front view: ragged hem bits by the standing leg",
-   "his left view: only the toes of the raised foot peek out behind the standing leg",
-   "his left view: small ragged bits at the hem"
+   "front view: white shards at the hem round the raised foot; grey crumpled hem edges",
+   "his left view: small white torn flap at the hem; a dark grey fold mark on the robe"
   ],
   "Y": [
-   "front view: a large dark grey hollow/inside-out panel on the robe front",
-   "front view: white jagged teeth-like shards hanging below it",
-   "front view: a bit of foot/heel poking out at the left edge of the robe; the raised leg is not visible",
-   "his left view: the robe balloons forward into a big puffed sack where the raised leg should be, and the leg is not visible",
-   "his left view: small white shards on the underside"
+   "front view: large dark grey panel on the robe front (inside-out cloth)",
+   "front view: jagged white teeth/shards along its lower edge",
+   "front view: raised knee pokes out at the panel's left edge",
+   "his left view: small grey/white torn flap at the hem"
   ],
   "better": "X",
-  "why": "X is nearly clean; Y has a grey hollow panel with jagged shards and a ballooned robe."
+  "why": "X has only small hem shards; Y has a big inside-out grey panel with jagged teeth in front"
  },
  {
   "id": "p098",
   "X": [
-   "his back view: the raised foot floats beside the robe with no leg connecting it (looks cut off)",
-   "his back view: a ragged notch in the hem at the standing leg",
-   "his back view: white sliver streaks on the right side of the robe",
-   "his right view: the raised foot sticks out of the side of the robe through a straight-edged cut",
-   "his right view: dark grey crumpled inner bits and doubled cloth at the swinging back of the robe"
+   "his back view: jagged notch at the hem where the standing leg exits",
+   "his back view: white streaks on the robe's right side below the raised foot",
+   "his right view: raised foot sticks out through a straight-edged gap in the robe",
+   "his right view: jagged notch at the hem round the standing leg",
+   "his right view: dark grey crumpled inside-out cloth at the back of the hem"
   ],
   "Y": [
-   "his back view: the raised foot comes through a ragged notch in the hem",
-   "his back view: small ragged bits along the hem",
-   "his right view: the raised back foot comes through the hem at an odd angle",
-   "his right view: a doubled, crumpled inner lining band below the outer hem with grey bits"
+   "his back view: small notch and white fringe at the hem by the raised foot",
+   "his right view: white crumpled fragments and grey inside-out cloth with dark specks under the back of the hem",
+   "his right view: raised foot dangles under the hem with almost no leg showing"
   ],
   "better": "Y",
-  "why": "Y's foot at least comes out at the hem; X's foot floats outside the robe and through a cut edge."
+  "why": "Y's faults are smaller; X has a hard-edged gap round the raised foot and torn notches"
  },
  {
   "id": "p099",
-  "X": [
-   "behind-right view: a small notch in the hem where the raised foot comes out"
-  ],
+  "X": [],
   "Y": [
-   "behind-left view: the raised foot floats outside the side of the robe with no leg (looks cut off)",
-   "behind-right view: the raised foot floats in front of the back of the robe with no leg visible",
-   "behind-right view: a torn slit with white shards in the hem and a ragged hem edge where the standing leg enters"
+   "behind-left view: raised foot floats beside the robe's right edge with no leg connecting it",
+   "behind-right view: raised foot floats in front of the robe with no leg visible",
+   "behind-right view: vertical slit with a white edge in the robe below that foot",
+   "behind-right view: jagged notch at the hem where the standing leg exits"
   ],
   "better": "X",
-  "why": "X is clean; Y has a floating disconnected foot and a torn slit."
+  "why": "X is clean; Y's raised foot looks detached and the robe is slit"
  },
  {
   "id": "p100",
   "X": [
-   "front view: the feet look jammed against the hem with almost no leg showing",
-   "front view: dark grey crumpled/doubled hem edges around both legs and a white inner panel showing between them",
-   "front view: dark specks on the robe above the hem",
-   "his left view: the hem flares into a large flat sheet with doubled dark grey edges; only one foot hangs below it",
-   "his left view: white streaks on the robe and skin poking out at the far right edge"
+   "front view: dark grey crumpled shards at the hem by his right leg",
+   "front view: inner white panel showing between the legs; small dark specks",
+   "his left view: doubled hem: grey crumpled inner edge and a flat white inner sheet hanging below the outer hem",
+   "his left view: only a foot dangles below the hem with almost no leg (looks like a stump)",
+   "his left view: white streak marks on the hem"
   ],
   "Y": [
-   "front view: small ragged bits along the hem",
-   "his left view: small ragged white bits at the hem"
+   "front view: a few white bits at the hem",
+   "his left view: a few white bits at the hem"
   ],
   "better": "Y",
-  "why": "Y reads naturally; X has a flared, doubled hem with crumpled grey edges and stubby legs."
+  "why": "Y is clean; X has a doubled, crumpled hem and a stump-like foot"
  },
  {
   "id": "p101",
   "X": [
-   "his back view: small ragged white bits at the hem",
-   "his right view: small ragged white bits along the hem"
+   "his back view: small white shards at the hem by the raised foot",
+   "his right view: small white fringe at the hem"
   ],
   "Y": [
-   "his back view: the standing leg shows through a ragged rectangular hole in the back of the robe, with a straight cut edge",
-   "his back view: white/grey torn shards by the raised foot",
-   "his right view: a leg at the left edge pokes through torn cloth with shards and dark grey splinters, plus a long flat white streak",
-   "his right view: the back foot hangs below the hem with no visible leg (floating foot)"
+   "his back view: rectangular hole in the robe at the hem where the standing leg comes through, with a hard straight top edge",
+   "his back view: white shards with skin bits round the raised foot; a dark speck",
+   "his right view: white shards with dark grey bits and skin seen through a tear at the front edge",
+   "his right view: white stretched streak along the hem",
+   "his right view: a foot hangs below the hem with no leg visible, looks detached"
   ],
   "better": "X",
-  "why": "X is clean apart from minor hem bits; Y has a cut hole, shards and a floating foot."
+  "why": "X has only hem fringe; Y has a cut-out hole, shards and a detached-looking foot"
  },
  {
   "id": "p102",
   "X": [
-   "behind-left view: a stray foot/toes hang below the robe apart from the legs",
-   "behind-left view: white flat streaks, dark specks and a doubled inner panel inside the hem",
-   "behind-left view: the standing leg pokes through a torn hole at the hem with dark specks",
-   "behind-right view: a leg pokes through a torn hole at left with white/grey shards and brown splinters, plus long white streaks",
-   "behind-right view: the back foot pokes out of the hem with no leg visible"
+   "behind-left view: jagged torn notch at the hem where the leg exits, with white and dark bits",
+   "behind-left view: doubled inner hem panel with dark streak lines; stray white streak",
+   "behind-right view: torn splinters with skin showing at the hem's left; stretched white strip",
+   "behind-right view: raised foot poking out of the hem surface"
   ],
   "Y": [
-   "behind-left view: a toe tip poking out at the left of the hem",
-   "behind-right view: small ragged white bits at the hem"
+   "behind-right view: small white fringe at the hem"
   ],
   "better": "Y",
-  "why": "Y is clean; X has torn holes with shards and streaks and a stray foot."
+  "why": "Y is clean; X has torn notches and splinters with skin showing"
  },
  {
   "id": "p103",
   "X": [
-   "front view: small ragged bits along the hem; a little inner layer showing between the legs",
-   "his left view: a lighter inner lining band sticking out below the hem between the legs, with ragged white bits"
+   "front view: small white bits at the hem by his right leg",
+   "his left view: white shard bits under the hem between the legs; a doubled inner hem showing as a flat sheet below the outer hem"
   ],
   "Y": [
-   "front view: the leg pokes through a torn hole in the robe front with ragged edges and white shards",
-   "front view: the inside of the hem shows as a flat inner band, with skin-coloured specks inside the robe",
-   "front view: dark grey crumpled bits at the hem corner; the other leg not visible",
-   "his left view: the front leg pokes through a ragged hole at left with shards and long white streaks",
-   "his left view: a doubled inner band/flat sheet along the hem with dark grey crumpled bits and skin specks",
-   "his left view: a leg pokes through torn cloth at the far right with white shards"
+   "front view: jagged tear in the robe front where the leg comes through",
+   "front view: stray skin-coloured fleck inside the hem",
+   "front view: doubled inner hem as a flat white band with grey crumpled shards; white shards at the hem corner",
+   "his left view: front leg pokes through torn cloth",
+   "his left view: dark grey triangular shard and white stretched streaks along the hem",
+   "his left view: stray skin-coloured fleck on the inner hem",
+   "his left view: rear leg pokes through the robe at the right edge with shards",
+   "his left view: doubled flat hem band"
   ],
   "better": "X",
-  "why": "X has only minor hem lining showing; Y has legs through torn holes, streaks and specks."
+  "why": "X has only minor hem bits; Y has torn cloth round both legs, skin flecks and a doubled hem"
  },
  {
   "id": "p104",
   "X": [
-   "his back view: the raised foot and leg poke out through a big jagged hole in the back of the robe, with a ragged top edge",
-   "his back view: grey shards/flaps at the sides of the hole",
-   "his right view: the raised leg pokes out at left through torn cloth with stretched grey/white shards and streaks",
-   "his right view: skin-coloured specks inside the torn cloth"
+   "his back view: large torn hole at the back: the raised foot and calf poke through, with a jagged torn edge across the calf (looks cut off above)",
+   "his back view: grey and white shards round the hole",
+   "his right view: rear leg pokes out of the back of the robe with stretched grey shards and white strips",
+   "his right view: stray skin-coloured fleck inside the cloth"
   ],
   "Y": [
-   "his back view: small ragged bits at the hem",
-   "his right view: small ragged white bits at the hem"
+   "his back view: small grey crumple at the hem",
+   "his right view: small white fringe at the hem"
   ],
   "better": "Y",
-  "why": "Y is clean; X has a big torn hole with the foot through it and shards."
+  "why": "Y is clean; X has a big hole with the foot through it and stretched shards"
  },
  {
   "id": "p105",
   "X": [
-   "behind-left view: tiny ragged bits at the hem",
-   "behind-right view: small ragged bits at the hem"
+   "behind-right view: tiny white bit at the hem"
   ],
   "Y": [
-   "behind-left view: a leg pokes out through a torn flap at bottom right with grey/white shards",
-   "behind-left view: a stretched flat triangular sheet hanging down, with skin specks inside",
-   "behind-left view: the back leg comes out through a gap at the side of the robe with shards",
-   "behind-right view: a leg pokes through torn cloth at left with grey/white shards, stretched streaks and skin specks"
+   "behind-left view: rear leg pokes out through the robe",
+   "behind-left view: big flat triangular sheet of cloth stretched to a point, with dark grey slivers and skin flecks",
+   "behind-left view: dark grey streaks and white shards on the robe's left side",
+   "behind-right view: leg pokes through the robe at the left with white shards, stretched strips, dark specks and a skin fleck"
   ],
   "better": "X",
-  "why": "X is clean; Y has legs through torn flaps with stretched sheets."
+  "why": "X is clean; Y has the rear leg tearing the robe into a flat stretched sheet"
  },
  {
   "id": "p106",
   "X": [
-   "front view: small ragged bits along the hem; a small orange speck on the front fold",
-   "his left view: a lighter inner lining band showing below the hem between the legs, with ragged white bits"
+   "front view: small white bits at the hem by his right leg",
+   "his left view: white shard bits under the hem between the legs; a doubled inner hem showing as a flat sheet below the outer hem"
   ],
   "Y": [
-   "front view: the leg pokes through a torn hole in the robe front with ragged edges and white shards",
-   "front view: the inner hem band shows as a flat sheet with a skin-coloured speck inside; dark grey crumpled bits at the hem corner",
-   "his left view: the front leg pokes through a ragged hole at left with shards and long white streaks",
-   "his left view: dark grey crumpled bits, a skin speck and a doubled inner band/flat sheet along the hem",
-   "his left view: a leg pokes through torn cloth at the far right with white shards"
+   "front view: jagged tear in the robe front where the leg comes through",
+   "front view: stray skin-coloured fleck inside the hem",
+   "front view: doubled inner hem as a flat white band with grey crumpled shards; white shards at the hem corner",
+   "his left view: front leg pokes through torn cloth",
+   "his left view: dark grey triangular shard and white stretched streaks along the hem",
+   "his left view: stray skin-coloured fleck on the inner hem",
+   "his left view: rear leg pokes through the robe at the right edge with shards",
+   "his left view: doubled flat hem band"
   ],
   "better": "X",
-  "why": "X has only minor hem lining showing; Y has legs through torn holes and streaked, doubled cloth."
+  "why": "X has only minor hem bits; Y has torn cloth round both legs, skin flecks and a doubled hem"
  },
  {
   "id": "p107",
   "X": [
-   "his back view: the raised foot and leg poke out through a big jagged hole in the back of the robe with a ragged top edge",
-   "his back view: grey shards at the edges of the hole",
-   "his right view: the raised leg pokes out at left through torn cloth with stretched grey/white shards and streaks",
-   "his right view: skin-coloured specks inside the torn cloth"
+   "his back view: large torn hole at the back: the raised foot and calf poke through, with a jagged torn edge across the calf",
+   "his back view: grey and white shards round the hole",
+   "his right view: rear leg pokes out of the back of the robe with stretched grey shards and white strips",
+   "his right view: stray skin-coloured fleck inside the cloth"
   ],
   "Y": [
-   "his back view: small ragged bits at the hem",
-   "his right view: small ragged white bits at the hem"
+   "his back view: small grey crumple at the hem",
+   "his right view: small white fringe at the hem"
   ],
   "better": "Y",
-  "why": "Y is clean; X has a big torn hole with the foot through it."
+  "why": "Y is clean; X has a big hole with the foot through it and stretched shards"
  },
  {
   "id": "p108",
-  "X": [
-   "behind-left view: a tiny ragged bit at the hem",
-   "behind-right view: small ragged bits at the hem"
-  ],
+  "X": [],
   "Y": [
-   "behind-left view: a leg pokes out through a torn flap at bottom right with grey/white shards",
-   "behind-left view: a stretched flat triangular sheet hangs down to a point, with skin specks inside",
-   "behind-left view: the back leg comes out through a gap in the side of the robe with white streaks",
-   "behind-right view: a leg pokes through torn cloth at left with grey/white shards, stretched streaks and skin specks"
+   "behind-left view: rear leg pokes out through the robe",
+   "behind-left view: big flat triangular sheet of cloth stretched to a point, with dark grey slivers and skin flecks",
+   "behind-left view: dark grey streaks and white shards on the robe's left side",
+   "behind-right view: leg pokes through the robe at the left with white shards, stretched strips, dark specks and skin flecks"
   ],
   "better": "X",
-  "why": "X is clean; Y has legs through torn flaps with stretched sheets."
+  "why": "X is clean; Y has the rear leg tearing the robe into a flat stretched sheet"
  }
 ]

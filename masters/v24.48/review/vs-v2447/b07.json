@@ -1,288 +1,402 @@
 [
   {"id": "p163",
-   "X": ["front view: his legs are bare from the knees down - both shins and feet fully uncovered, the lower robe left only as a band on his lap",
-         "front view: the cloth band across his lap is crumpled, with dark grey inside-out surfaces showing",
-         "front view: white shards and splinters by his left elbow and at the right end of the lap cloth",
-         "front view: a flat sheet of cloth hangs straight to the floor beside his right knee (picture left)",
-         "his left view: a mass of torn white shards, splinters, flaps and flat sheets around his left knee and shin",
-         "his left view: dark gaps and grey specks inside the torn cloth by the knee and near the floor"],
-   "Y": ["front view: the lap cloth is one huge flat sheet with a hard straight top edge, like a tablecloth over his knees",
-         "front view: a vertical gap in the middle of the robe shows inner-leg skin and a dark slit",
-         "front view: toes poke out under the hem at the bottom left",
-         "front view: a flat flap edge sticks out at the right",
-         "his left view: a dark split seam down the middle of the lap cloth with small skin-coloured specks in it",
-         "his left view: doubled, folded-over cloth layers at the bottom left",
-         "his left view: a small dark speck by his hand"],
-   "better": "Y", "why": "Y keeps his legs under mostly whole cloth; X shows bare legs and a lap cloth torn into shards round the knee"},
+   "X": [
+     "front view: the lower robe is hiked up into a crumpled ring round his waist, so both bare shins and feet sit in front of it instead of under the wrap",
+     "front view: dark grey, crumpled, inside-out-looking sheets across the lap band, worst by his right hand",
+     "front view: white shards and splinters in the lap by his left forearm and elbow",
+     "front view: flat flaps hang off both ends of the lap band, a long flat sheet down to the floor at the far left",
+     "his-left view: a big cluster of torn shards, splinters and flat sheets round his left knee and shin at the front, with dark specks inside",
+     "his-left view: the shin comes out of a shattered cloth tube, loose strips near the floor"
+   ],
+   "Y": [
+     "front view: the lower robe is a huge puffed sack / flat slab over the lap with a hard straight top edge and no leg shape under it",
+     "front view: a vertical gap in the middle of the sack shows a strip of bare leg skin",
+     "front view: toes of one foot poke out under the bottom-left edge and look cut off",
+     "front view: a doubled layer along the top edge with a grey streak at the left; a few small white shards by his left elbow",
+     "his-left view: rolled loops of cloth at the bottom front look like inside-out tubes",
+     "his-left view: a vertical tear with grey splinters running down by the knee, with a small black speck and tiny skin-coloured specks beside it"
+   ],
+   "better": "Y",
+   "why": "X's lap band is torn and crumpled with grey inside-out sheets and its side view is a mass of shards; Y is a stiff sack with a small gap and loops but far fewer broken pieces"},
+
   {"id": "p164",
-   "X": ["his back view (above the waist): skin-coloured holes in the upper robe by his right shoulder blade",
-         "his back view: white jagged shards sticking out at the left edge near the floor",
-         "his back view: a stiff flat sheet juts out sideways at the right beside his lap",
-         "his back view: crumpled grey texture and a dark line in the waist band",
-         "his right view: the lap robe is a flat, board-like horizontal slab",
-         "his right view: a few small white shards at the bottom right"],
-   "Y": ["his back view (above the waist): skin-coloured holes in the upper robe by his right shoulder blade",
-         "his back view: white jagged shards at the left edge",
-         "his back view: a torn triangular flap dangles at the right, with leg skin showing in the gap beside it",
-         "his back view: crumpled grey texture and a dark line in the waist band",
-         "his right view: a mass of torn white shards, splinters and flat sheets around his right knee and hand",
-         "his right view: splinters flying off above the knee at the top right",
-         "his right view: bare shin and foot showing beside the torn cloth, with grey inside surfaces among the flaps"],
-   "better": "X", "why": "X's lap cloth is stiff but whole; Y's is torn into flaps and splinters round the knee"},
+   "X": [
+     "his-back view (above the waist): skin-coloured blotches showing through holes in the upper robe on his back",
+     "his-back view: a separate white lump sticks out at the far left by his knee",
+     "his-back view: a flat sheet juts out sideways on the right at lap level",
+     "his-right view: the cloth over his lap is a stiff flat slab with a hard edge and a dark crease line along it",
+     "his-right view: small grey splinters at the bottom right by the floor"
+   ],
+   "Y": [
+     "his-back view (above the waist): the same skin-coloured blotches through holes in the upper robe",
+     "his-back view: torn white shards on the far left edge by his knee",
+     "his-back view: a flat flap dangles on the right with a glimpse of bare skin under it",
+     "his-right view: the robe round his right knee is shattered into big torn flat sheets and splinters, shards flying up above the knee",
+     "his-right view: bare shin and foot exposed at the far right inside ragged cloth; flat torn sheets hang down to the floor"
+   ],
+   "better": "X",
+   "why": "Y's side view is shattered into sheets and splinters round the knee; X's lap cloth is stiff but intact"},
+
   {"id": "p165",
-   "X": ["behind-left: torn white shards and splinters around his left knee at the left edge",
-         "behind-left: a stiff white tube of cloth around the shin, with bare toes poking out below it",
-         "behind-left: grey crumpled bits and a dark speck at the lower left",
-         "behind-right (above the waist): skin-coloured holes in the upper robe on his back",
-         "behind-right: the lap cloth at the right is a flat flap with jagged edges and grey inside surfaces",
-         "behind-right: dark grey hollow, inside-out cloth at the far right by his hand"],
-   "Y": ["behind-left: a few dark specks and small jaggies inside the hem at the bottom left",
-         "behind-right (above the waist): skin-coloured holes in the upper robe on his back",
-         "behind-right: a small dark speck at his hip"],
-   "better": "Y", "why": "Y's lower robe is smooth and whole; X has shards, a tube-like shin and grey inside-out cloth"},
+   "X": [
+     "behind-left view: torn white shards and grey crumpled bits round his left knee at the far left, a tube-like white leg piece sticking out",
+     "behind-right view (above the waist): skin-coloured blotches through holes in the upper robe on his back",
+     "behind-right view: torn flat sheets with jagged edges, stretched streaks and dark grey bits in the lap cloth by his right hand"
+   ],
+   "Y": [
+     "behind-left view: a few dark specks and grey crumpled bits at the bottom left of the lap cloth",
+     "behind-right view (above the waist): the same skin-coloured blotches through holes in the upper robe",
+     "behind-right view: a small black speck at his right hip; the lap cloth is a smooth but stiff slab"
+   ],
+   "better": "Y",
+   "why": "Y's lap cloth is smooth with only specks; X has torn shards and streaked sheets on both sides"},
+
   {"id": "p166",
-   "X": ["front view: his legs are bare from the knees down - both shins and feet fully uncovered, the lower robe left only as a band on his lap",
-         "front view: the cloth band across his lap is crumpled, with dark grey inside-out surfaces showing",
-         "front view: white shards and splinters by his left elbow and at the right end of the lap cloth",
-         "front view: a flat sheet of cloth hangs straight to the floor beside his right knee (picture left)",
-         "his left view: a mass of torn white shards, splinters, flaps and flat sheets around his left knee and shin",
-         "his left view: dark gaps and grey specks inside the torn cloth by the knee and near the floor"],
-   "Y": ["front view: the lap cloth is one huge flat sheet with a hard straight top edge, like a tablecloth over his knees",
-         "front view: a vertical gap in the middle of the robe shows inner-leg skin and a dark slit",
-         "front view: toes poke out under the hem at the bottom left",
-         "front view: a flat flap edge sticks out at the right",
-         "his left view: a dark split seam down the middle of the lap cloth with small skin-coloured specks in it",
-         "his left view: doubled, folded-over cloth layers at the bottom left",
-         "his left view: a small dark speck by his hand"],
-   "better": "Y", "why": "same as p163: Y keeps his legs under mostly whole cloth; X shows bare legs and a torn, shard-filled lap cloth"},
+   "X": [
+     "front view: the lower robe is hiked up into a crumpled ring round his waist, so both bare shins and feet sit in front of it instead of under the wrap",
+     "front view: dark grey, crumpled, inside-out-looking sheets across the lap band, worst by his right hand",
+     "front view: white shards and splinters in the lap by his left forearm and elbow",
+     "front view: flat flaps hang off both ends of the lap band, a long flat sheet down to the floor at the far left",
+     "his-left view: a big cluster of torn shards, splinters and flat sheets round his left knee and shin at the front, with dark specks inside",
+     "his-left view: the shin comes out of a shattered cloth tube, loose strips near the floor"
+   ],
+   "Y": [
+     "front view: the lower robe is a huge puffed sack / flat slab over the lap with a hard straight top edge and no leg shape under it",
+     "front view: a vertical gap in the middle of the sack shows a strip of bare leg skin",
+     "front view: toes of one foot poke out under the bottom-left edge and look cut off",
+     "front view: a doubled layer along the top edge with a grey streak at the left; a few small white shards by his left elbow",
+     "his-left view: rolled loops of cloth at the bottom front look like inside-out tubes",
+     "his-left view: a vertical tear with grey splinters running down by the knee, with a small black speck and tiny skin-coloured specks beside it"
+   ],
+   "better": "Y",
+   "why": "same moment as p163: X is torn and crumpled with a shattered side view; Y is a stiff sack with a small gap but far fewer broken pieces"},
+
   {"id": "p167",
-   "X": ["his back view (above the waist): skin-coloured holes in the upper robe by his right shoulder blade",
-         "his back view: white jagged shards sticking out at the left edge near the floor",
-         "his back view: a stiff flat sheet juts out sideways at the right beside his lap",
-         "his back view: crumpled grey texture and a dark line in the waist band",
-         "his right view: the lap robe is a flat, board-like horizontal slab",
-         "his right view: a few small white shards at the bottom right"],
-   "Y": ["his back view (above the waist): skin-coloured holes in the upper robe by his right shoulder blade",
-         "his back view: white jagged shards at the left edge",
-         "his back view: a torn triangular flap dangles at the right, with leg skin showing in the gap beside it",
-         "his back view: crumpled grey texture and a dark line in the waist band",
-         "his right view: a mass of torn white shards, splinters and flat sheets around his right knee and hand",
-         "his right view: splinters flying off above the knee at the top right",
-         "his right view: bare shin and foot showing beside the torn cloth, with grey inside surfaces among the flaps"],
-   "better": "X", "why": "X's lap cloth is stiff but whole; Y's is torn into flaps and splinters round the knee"},
+   "X": [
+     "his-back view (above the waist): skin-coloured blotches showing through holes in the upper robe on his back",
+     "his-back view: a separate white lump sticks out at the far left by his knee",
+     "his-back view: a flat sheet juts out sideways on the right at lap level",
+     "his-right view: the cloth over his lap is a stiff flat slab with a hard edge and a dark crease line along it",
+     "his-right view: small grey splinters at the bottom right by the floor"
+   ],
+   "Y": [
+     "his-back view (above the waist): the same skin-coloured blotches through holes in the upper robe",
+     "his-back view: torn white shards on the far left edge by his knee",
+     "his-back view: a flat flap dangles on the right with a glimpse of bare skin under it",
+     "his-right view: the robe round his right knee is shattered into big torn flat sheets and splinters, shards flying up above the knee",
+     "his-right view: bare shin and foot exposed at the far right inside ragged cloth; flat torn sheets hang down to the floor"
+   ],
+   "better": "X",
+   "why": "Y's side view is shattered into sheets and splinters round the knee; X's lap cloth is stiff but intact"},
+
   {"id": "p168",
-   "X": ["behind-left: torn white shards and splinters around his left knee at the left edge",
-         "behind-left: a stiff white tube of cloth around the shin, with bare toes poking out below it",
-         "behind-left: grey crumpled bits and a dark speck at the lower left",
-         "behind-right (above the waist): skin-coloured holes in the upper robe on his back",
-         "behind-right: the lap cloth at the right is a flat flap with jagged edges and grey inside surfaces",
-         "behind-right: dark grey hollow, inside-out cloth at the far right by his hand"],
-   "Y": ["behind-left: a few dark specks and small jaggies inside the hem at the bottom left",
-         "behind-right (above the waist): skin-coloured holes in the upper robe on his back",
-         "behind-right: a small dark speck at his hip"],
-   "better": "Y", "why": "Y's lower robe is smooth and whole; X has shards, a tube-like shin and grey inside-out cloth"},
+   "X": [
+     "behind-left view: torn white shards and grey crumpled bits round his left knee at the far left, a tube-like white leg piece sticking out",
+     "behind-right view (above the waist): skin-coloured blotches through holes in the upper robe on his back",
+     "behind-right view: torn flat sheets with jagged edges, stretched streaks and dark grey bits in the lap cloth by his right hand"
+   ],
+   "Y": [
+     "behind-left view: a few dark specks and grey crumpled bits at the bottom left of the lap cloth",
+     "behind-right view (above the waist): the same skin-coloured blotches through holes in the upper robe",
+     "behind-right view: a small black speck at his right hip; the lap cloth is a smooth but stiff slab"
+   ],
+   "better": "Y",
+   "why": "Y's lap cloth is smooth with only specks; X has torn shards and streaked sheets on both sides"},
+
   {"id": "p169",
-   "X": ["front view: the lap cloth is one huge flat sheet with a hard straight top edge, like a tablecloth over his knees",
-         "front view: a vertical gap in the middle of the robe shows inner-leg skin",
-         "front view: toes poke out under the hem at the bottom left",
-         "front view: a flat flap edge sticks out at the right",
-         "his left view: a dark split seam down the middle of the lap cloth with small skin-coloured specks in it",
-         "his left view: doubled, folded-over cloth layers at the bottom left",
-         "his left view: a small dark speck by his hand"],
-   "Y": ["front view: his legs are bare from the knees down - both shins and feet fully uncovered, the lower robe left only as a band on his lap",
-         "front view: the cloth band across his lap is crumpled, with dark grey inside-out surfaces showing",
-         "front view: white shards and splinters by his left elbow and at the right end of the lap cloth",
-         "front view: a flat sheet of cloth hangs straight to the floor beside his right knee (picture left)",
-         "his left view: a mass of torn white shards, splinters, flaps and flat sheets around his left knee and shin",
-         "his left view: dark gaps and grey specks inside the torn cloth by the knee and near the floor"],
-   "better": "X", "why": "X keeps his legs under mostly whole cloth; Y shows bare legs and a lap cloth torn into shards round the knee"},
+   "X": [
+     "front view: the lower robe is a huge puffed sack / flat slab over the lap with a hard straight top edge and no leg shape under it",
+     "front view: a vertical gap in the middle of the sack shows a strip of bare leg skin",
+     "front view: toes of one foot poke out under the bottom-left edge and look cut off",
+     "front view: a doubled layer along the top edge with a grey streak at the left; a few small white shards by his left elbow",
+     "his-left view: rolled loops of cloth at the bottom front look like inside-out tubes",
+     "his-left view: a vertical tear with grey splinters running down by the knee, with a small black speck and a tiny skin-coloured bit beside it"
+   ],
+   "Y": [
+     "front view: the lower robe is hiked up into a crumpled ring round his waist, so both bare shins and feet sit in front of it instead of under the wrap",
+     "front view: dark grey, crumpled, inside-out-looking sheets across the lap band, worst by his right hand",
+     "front view: white shards and splinters in the lap by his left forearm and elbow",
+     "front view: flat flaps hang off both ends of the lap band, a long flat sheet down to the floor at the far left",
+     "his-left view: a big cluster of torn shards, splinters and flat sheets round his left knee and shin at the front, with dark specks inside",
+     "his-left view: the shin comes out of a shattered cloth tube, loose strips near the floor"
+   ],
+   "better": "X",
+   "why": "Y's lap band is torn and crumpled with grey inside-out sheets and its side view is a mass of shards; X is a stiff sack with a small gap but far fewer broken pieces"},
+
   {"id": "p170",
-   "X": ["his back view (above the waist): skin-coloured holes in the upper robe by his right shoulder blade",
-         "his back view: white jagged shards at the left edge",
-         "his back view: a torn triangular flap dangles at the right, with leg skin showing in the gap beside it",
-         "his right view: a mass of torn white shards, splinters and flat sheets around his right knee and hand",
-         "his right view: splinters flying off above the knee at the top right",
-         "his right view: bare shin and foot showing beside the torn cloth, with grey inside surfaces among the flaps"],
-   "Y": ["his back view (above the waist): skin-coloured holes in the upper robe by his right shoulder blade",
-         "his back view: small white shards at the left edge",
-         "his back view: a stiff flat sheet juts out sideways at the right beside his lap",
-         "his right view: the lap robe is a flat, board-like horizontal slab",
-         "his right view: a few small white shards at the bottom right"],
-   "better": "Y", "why": "Y's lap cloth is stiff but whole; X's is torn into flaps and splinters round the knee"},
+   "X": [
+     "his-back view (above the waist): skin-coloured blotches showing through holes in the upper robe on his back",
+     "his-back view: torn white shards on the far left edge by his knee",
+     "his-back view: a flat flap dangles on the right with bare skin showing under it",
+     "his-right view: the robe round his right knee is shattered into big torn flat sheets and splinters, shards flying up above the knee",
+     "his-right view: bare shin and foot exposed at the far right inside ragged cloth; flat torn sheets hang down to the floor"
+   ],
+   "Y": [
+     "his-back view (above the waist): the same skin-coloured blotches through holes in the upper robe",
+     "his-back view: a separate white lump sticks out at the far left; a flat sheet juts out sideways on the right at lap level",
+     "his-right view: the cloth over his lap is a stiff flat slab with a hard edge and a dark crease line along it",
+     "his-right view: small grey splinters at the bottom right by the floor"
+   ],
+   "better": "Y",
+   "why": "X's side view is shattered into sheets and splinters round the knee with the shin exposed; Y's lap cloth is stiff but intact"},
+
   {"id": "p171",
-   "X": ["behind-left: a few dark specks and small jaggies inside the hem at the bottom left",
-         "behind-right (above the waist): skin-coloured holes in the upper robe on his back",
-         "behind-right: a small dark speck at his hip"],
-   "Y": ["behind-left: torn white shards and splinters around his left knee at the left edge",
-         "behind-left: a stiff white tube of cloth around the shin, with bare toes poking out below it",
-         "behind-left: grey crumpled bits at the lower left",
-         "behind-right (above the waist): skin-coloured holes in the upper robe on his back",
-         "behind-right: the lap cloth at the right is a flat flap with jagged edges and grey inside surfaces",
-         "behind-right: dark grey hollow, inside-out cloth at the far right by his hand"],
-   "better": "X", "why": "X's lower robe is smooth and whole; Y has shards, a tube-like shin and grey inside-out cloth"},
+   "X": [
+     "behind-left view: a few dark specks and grey crumpled bits at the bottom left of the lap cloth",
+     "behind-right view (above the waist): skin-coloured blotches through holes in the upper robe on his back",
+     "behind-right view: a small black speck at his right hip; the lap cloth is a smooth but stiff slab"
+   ],
+   "Y": [
+     "behind-left view: torn white shards and grey crumpled bits round his left knee at the far left, a white tube-like leg piece and a bare hand/foot poking out at the bottom",
+     "behind-right view (above the waist): the same skin-coloured blotches through holes in the upper robe",
+     "behind-right view: torn flat sheets with jagged edges, stretched streaks and dark grey bits in the lap cloth by his right hand"
+   ],
+   "better": "X",
+   "why": "X's lap cloth is smooth with only specks; Y has torn shards and streaked sheets on both sides"},
+
   {"id": "p172",
-   "X": ["front view: grey crumpled bits, dark specks and white jagged shards along the inside back wall of the hem, between and beside his legs",
-         "front view: dark grey streaks inside the hem by his left leg (picture right)",
-         "front view: crumpled dark specks at the waist, top centre",
-         "his left view: the back of the robe juts out stiffly in a wide sheet behind his legs"],
-   "Y": ["front view: a few light grey jagged edges inside the hem at the left and right",
-         "front view: small white jaggies along the bottom of the inside of the hem between his legs",
-         "front view: crumpled dark specks at the waist, top centre",
-         "his left view: the back of the robe juts out stiffly in a wide sheet behind his legs"],
-   "better": "Y", "why": "the inside of Y's hem is mostly clean white; X's is full of grey crumples, dark streaks and shards"},
+   "X": [
+     "front view: inside the hem at the bottom left the lining is ragged, with white shards, a grey streak and grey crumpled bits beside his right shin",
+     "front view: dark grey crumpled shards inside the hem on the right beside his left shin",
+     "front view: a square notch/step in the inner hem edge by his right shin",
+     "front view: crumpled bits with dark specks at the waist knot at the top of the frame",
+     "his-left view: the back of the hem juts out into a stiff pointed wedge"
+   ],
+   "Y": [
+     "front view: a flat pale panel with a square notch/step inside the hem by his right shin, a few faint white bits on it",
+     "front view: a few small light grey specks inside the hem on the right",
+     "front view: crumpled bits with dark specks at the waist knot at the top of the frame",
+     "his-left view: the back of the hem juts out into a stiff pointed wedge"
+   ],
+   "better": "Y",
+   "why": "same robe, but X's inner hem has torn shards and dark grey crumpled bits round both shins; Y's is much cleaner"},
+
   {"id": "p173",
-   "X": ["his back view: a dark grey smudge in the folds across the hips",
-         "his back view: a long pointed tail of cloth stretched down to the floor at the left",
-         "his right view: a stiff pointed triangular flap juts out behind him at floor level, on a flat slab-like base"],
-   "Y": ["his back view: a dark grey smudge across the hips whose folds stop in a ragged line",
-         "his back view: a long pointed tail of cloth stretched down to the floor at the left",
-         "his right view: a stiff pointed triangular flap juts out behind him at floor level, on a flat slab-like base",
-         "his right view: a thin dark line along the hem by his feet"],
-   "better": "X", "why": "nearly the same; Y's hip smudge ends in a ragged line and its hem shows a dark edge by the feet"},
+   "X": [
+     "his-back view: broad, soft grey shading over the upper pleats",
+     "his-right view: the hem behind him sticks out in a stiff pointed wedge; a thin dark line along the inner hem edge by his feet"
+   ],
+   "Y": [
+     "his-back view: a dark grey smudged band across the pleats at hip level with a hard lower edge and grey streaks running down from it",
+     "his-back view: a lumpy bulge low on the left side of the robe",
+     "his-right view: the hem behind him sticks out in a stiff pointed wedge"
+   ],
+   "better": "X",
+   "why": "nearly identical; Y's back has a dirty-looking dark band with streaks at hip level and a lump on the left"},
+
   {"id": "p174",
-   "X": ["behind-left: a dark crease line along the lower lip of the hip drape",
-         "behind-left: a tiny skin-coloured speck at the top of the drape",
-         "behind-right: the robe bulges into a sagging pouch over the hips with a hard crease under it, like two stacked sacks",
-         "behind-right: a stiff pointed triangular flap juts out behind him at floor level"],
-   "Y": ["behind-left: a dark crease line along the lower lip of the hip drape",
-         "behind-left: a tiny skin-coloured speck at the top of the drape",
-         "behind-right: a stiff pointed triangular flap juts out behind him at floor level"],
-   "better": "Y", "why": "almost identical; Y's robe falls as one piece where X's sags into a pouch over the hips"},
+   "X": [
+     "behind-left view: small grey crumpled bits in the fold at the top by his hand; overlapping hem edges with dark seam lines",
+     "behind-right view: the robe over his seat bulges into a rounded shelf with a sharp crease underneath, like a stuffed sack"
+   ],
+   "Y": [
+     "behind-left view: a small dark scratch in the fold at the top; overlapping hem edges with dark seam lines"
+   ],
+   "better": "Y",
+   "why": "otherwise the same; X's robe over his seat forms a sack-like shelf with a hard crease, Y's hangs more naturally"},
+
   {"id": "p175",
-   "X": ["front view: a few light grey jagged edges inside the hem at the left and right",
-         "front view: small white jaggies along the bottom of the inside of the hem between his legs",
-         "front view: crumpled dark specks at the waist, top centre",
-         "his left view: the back of the robe juts out stiffly in a wide sheet behind his legs"],
-   "Y": ["front view: grey crumpled bits, dark specks and white jagged shards along the inside back wall of the hem, between and beside his legs",
-         "front view: dark grey streaks inside the hem by his left leg (picture right)",
-         "front view: crumpled dark specks at the waist, top centre",
-         "his left view: the back of the robe juts out stiffly in a wide sheet behind his legs"],
-   "better": "X", "why": "the inside of X's hem is mostly clean white; Y's is full of grey crumples, dark streaks and shards"},
+   "X": [
+     "front view: a flat pale panel with a square notch/step inside the hem by his right shin, a few faint white bits on it",
+     "front view: a few small white/grey specks inside the hem on the right",
+     "front view: crumpled bits with dark specks at the waist knot at the top of the frame",
+     "his-left view: the back of the hem juts out into a stiff pointed wedge"
+   ],
+   "Y": [
+     "front view: inside the hem at the bottom left the lining is ragged, with white shards and grey crumpled bits beside his right shin",
+     "front view: dark grey crumpled shards inside the hem on the right beside his left shin",
+     "front view: a square notch/step in the inner hem edge by his right shin",
+     "front view: crumpled bits with dark specks at the waist knot at the top of the frame",
+     "his-left view: the back of the hem juts out into a stiff pointed wedge"
+   ],
+   "better": "X",
+   "why": "Y's inner hem has torn shards and dark grey crumpled bits round both shins; X's is cleaner"},
+
   {"id": "p176",
-   "X": ["his back view: a dark grey smudge across the hips whose folds stop in a ragged line",
-         "his back view: a long pointed tail of cloth stretched down to the floor at the left",
-         "his right view: a stiff pointed triangular flap juts out behind him at floor level, on a flat slab-like base",
-         "his right view: a thin dark line along the hem by his feet"],
-   "Y": ["his back view: a dark grey smudge in the folds across the hips",
-         "his back view: a long pointed tail of cloth stretched down to the floor at the left",
-         "his right view: a stiff pointed triangular flap juts out behind him at floor level, on a flat slab-like base"],
-   "better": "Y", "why": "nearly the same; X's hip smudge ends in a ragged line and its hem shows a dark edge by the feet"},
+   "X": [
+     "his-back view: a dark grey smudged band across the pleats at hip level with a hard lower edge and grey streaks running down from it",
+     "his-back view: a lumpy bulge low on the left side of the robe",
+     "his-right view: the hem behind him sticks out in a stiff pointed wedge; thin dark line along the inner hem edge"
+   ],
+   "Y": [
+     "his-back view: broad, soft grey shading over the upper pleats",
+     "his-right view: the hem behind him sticks out in a stiff pointed wedge"
+   ],
+   "better": "Y",
+   "why": "nearly identical; X's back has a dirty-looking dark band with streaks at hip level and a lump on the left"},
+
   {"id": "p177",
-   "X": ["behind-left: a dark crease line along the lower lip of the hip drape",
-         "behind-left: a tiny skin-coloured speck at the top of the drape",
-         "behind-right: a stiff pointed triangular flap juts out behind him at floor level"],
-   "Y": ["behind-left: a dark crease line along the lower lip of the hip drape",
-         "behind-left: a tiny skin-coloured speck at the top of the drape",
-         "behind-right: the robe bulges into a sagging pouch over the hips with a hard crease under it, like two stacked sacks",
-         "behind-right: a stiff pointed triangular flap juts out behind him at floor level"],
-   "better": "X", "why": "almost identical; X's robe falls as one piece where Y's sags into a pouch over the hips"},
+   "X": [
+     "behind-left view: small grey crumpled bits in the fold at the top by his hand; overlapping hem edges with dark seam lines"
+   ],
+   "Y": [
+     "behind-left view: small grey crumpled bits in the fold at the top; overlapping hem edges with dark seam lines",
+     "behind-right view: the robe over his seat bulges into a rounded shelf with a sharp crease underneath, like a stuffed sack"
+   ],
+   "better": "X",
+   "why": "otherwise the same; Y's robe over his seat forms a sack-like shelf with a hard crease"},
+
   {"id": "p178",
-   "X": ["front view: a few light grey jagged edges inside the hem at the left and right",
-         "front view: small white jaggies along the bottom of the inside of the hem between his legs",
-         "front view: crumpled dark specks at the waist, top centre",
-         "his left view: a few small white bits along the hem's bottom edge by his foot",
-         "his left view: the back of the robe juts out stiffly in a wide sheet behind his legs"],
-   "Y": ["front view: grey crumpled bits, white shards and dark specks along the inside of the hem, between and beside his legs",
-         "front view: dark grey streaks inside the hem by his left leg (picture right)",
-         "front view: crumpled dark specks at the waist, top centre",
-         "his left view: the back of the robe juts out stiffly in a wide sheet behind his legs"],
-   "better": "X", "why": "the inside of X's hem is mostly clean; Y's shows grey crumples, shards and dark streaks"},
+   "X": [
+     "front view: a flat pale panel with a square notch/step inside the hem by his right shin, a few faint white bits on it",
+     "front view: a few small white/grey specks inside the hem on the right",
+     "front view: crumpled bits with dark specks at the waist knot at the top of the frame",
+     "his-left view: the back of the hem curls out into a stiff pointed wedge"
+   ],
+   "Y": [
+     "front view: inside the hem at the bottom left the lining is ragged, with white shards, a grey streak and grey crumpled bits beside his right shin",
+     "front view: dark grey crumpled shards inside the hem on the right beside his left shin",
+     "front view: a square notch/step in the inner hem edge by his right shin",
+     "front view: crumpled bits with dark specks at the waist knot at the top of the frame",
+     "his-left view: the back of the hem curls out into a stiff pointed wedge"
+   ],
+   "better": "X",
+   "why": "Y's inner hem has torn shards and dark grey crumpled bits round both shins; X's is cleaner"},
+
   {"id": "p179",
-   "X": ["his back view: a dark grey smudge across the hips whose folds stop in a ragged line",
-         "his back view: the robe bags out at the bottom into a long pointed tail stretched down to the floor at the left",
-         "his right view: a stiff pointed triangular flap juts out behind him at floor level, on a flat slab-like base",
-         "his right view: a thin dark line along the hem by his feet"],
-   "Y": ["his back view: a dark grey smudge in the folds across the hips",
-         "his back view: the robe bags out at the bottom into a long pointed tail stretched down to the floor at the left",
-         "his right view: a stiff pointed triangular flap juts out behind him at floor level, on a flat slab-like base"],
-   "better": "Y", "why": "nearly the same; X's hip smudge ends in a ragged line and its hem shows a dark edge by the feet"},
+   "X": [
+     "his-back view: a dark grey smudged band across the pleats at hip level with a hard lower edge and grey streaks running down from it",
+     "his-back view: a lumpy bulge low on the left side of the robe",
+     "his-right view: the hem behind him sticks out in a stiff pointed wedge; thin dark line along the inner hem edge"
+   ],
+   "Y": [
+     "his-back view: broad, soft grey shading over the upper pleats",
+     "his-right view: the hem behind him sticks out in a stiff pointed wedge"
+   ],
+   "better": "Y",
+   "why": "nearly identical; X's back has a dirty-looking dark band with streaks at hip level and a lump on the left"},
+
   {"id": "p180",
-   "X": ["behind-left: a dark crease line along the lower lip of the hip drape",
-         "behind-right: a stiff pointed triangular flap juts out behind him at floor level"],
-   "Y": ["behind-left: a dark crease line along the lower lip of the hip drape",
-         "behind-right: the robe bulges into a sagging pouch over the hips with a hard crease under it, like two stacked sacks",
-         "behind-right: a stiff pointed triangular flap juts out behind him at floor level"],
-   "better": "X", "why": "almost identical; X's robe falls as one piece where Y's sags into a pouch over the hips"},
+   "X": [
+     "behind-left view: overlapping hem edges with dark seam lines at the fold"
+   ],
+   "Y": [
+     "behind-left view: overlapping hem edges with dark seam lines at the fold",
+     "behind-right view: the robe over his seat bulges into a rounded shelf with a sharp crease underneath, like a stuffed sack"
+   ],
+   "better": "X",
+   "why": "otherwise the same; Y's robe over his seat forms a sack-like shelf with a hard crease"},
+
   {"id": "p181",
-   "X": ["front view: grey crumpled bits, white shards and dark specks along the inside of the hem, between and beside his legs",
-         "front view: dark grey streaks inside the hem by his left leg (picture right)",
-         "front view: crumpled dark specks at the waist, top centre",
-         "his left view: the back of the robe juts out stiffly in a wide sheet behind his legs"],
-   "Y": ["front view: a few light grey jagged edges inside the hem at the right",
-         "front view: small white jaggies along the bottom of the inside of the hem between his legs",
-         "front view: crumpled dark specks at the waist, top centre",
-         "his left view: the back of the robe juts out stiffly in a wide sheet behind his legs"],
-   "better": "Y", "why": "the inside of Y's hem is mostly clean; X's shows grey crumples, shards and dark streaks"},
+   "X": [
+     "front view: inside the hem at the bottom left the lining is ragged, with white shards, a grey streak and grey crumpled bits beside his right shin",
+     "front view: dark grey crumpled shards inside the hem on the right beside his left shin",
+     "front view: a square notch/step in the inner hem edge by his right shin",
+     "front view: crumpled bits with dark specks at the waist knot at the top of the frame",
+     "his-left view: the back of the hem curls out into a stiff pointed wedge"
+   ],
+   "Y": [
+     "front view: a flat pale panel with a square notch/step inside the hem by his right shin, a few small white bits on it",
+     "front view: a few small specks inside the hem on the right",
+     "front view: crumpled bits with dark specks at the waist knot at the top of the frame",
+     "his-left view: the back of the hem curls out into a stiff pointed wedge"
+   ],
+   "better": "Y",
+   "why": "X's inner hem has torn shards and dark grey crumpled bits round both shins; Y's is cleaner"},
+
   {"id": "p182",
-   "X": ["his back view: a dark grey smudge in the folds across the hips",
-         "his back view: a long pointed tail of cloth stretched down to the floor at the left",
-         "his right view: a stiff pointed triangular flap juts out behind him at floor level, on a flat slab-like base"],
-   "Y": ["his back view: a dark grey smudge across the hips whose folds stop in a ragged line",
-         "his back view: the robe bags out at the bottom into a long pointed tail stretched down to the floor at the left",
-         "his right view: a stiff pointed triangular flap juts out behind him at floor level, on a flat slab-like base",
-         "his right view: a thin dark line along the hem by his feet"],
-   "better": "X", "why": "nearly the same; Y's hip smudge ends in a ragged line and its hem shows a dark edge by the feet"},
+   "X": [
+     "his-back view: broad, soft grey shading over the upper pleats",
+     "his-right view: the hem behind him sticks out in a stiff pointed wedge"
+   ],
+   "Y": [
+     "his-back view: a dark grey smudged band across the pleats at hip level with a hard lower edge and grey streaks running down from it",
+     "his-back view: a lumpy bulge low on the left side of the robe",
+     "his-right view: the hem behind him sticks out in a stiff pointed wedge"
+   ],
+   "better": "X",
+   "why": "nearly identical; Y's back has a dirty-looking dark band with streaks at hip level and a lump on the left"},
+
   {"id": "p183",
-   "X": ["behind-left: a dark crease line along the lower lip of the hip drape",
-         "behind-left: a small dark speck at the top of the drape",
-         "behind-right: the robe bulges into a sagging pouch over the hips with a hard crease under it, like two stacked sacks",
-         "behind-right: a stiff pointed triangular flap juts out behind him at floor level"],
-   "Y": ["behind-left: a dark crease line along the lower lip of the hip drape",
-         "behind-left: a small dark speck at the top of the drape",
-         "behind-right: a stiff pointed triangular flap juts out behind him at floor level"],
-   "better": "Y", "why": "almost identical; Y's robe falls as one piece where X's sags into a pouch over the hips"},
+   "X": [
+     "behind-left view: overlapping hem edges with dark seam lines at the fold",
+     "behind-right view: the robe over his seat bulges into a rounded shelf with a sharp crease underneath, like a stuffed sack"
+   ],
+   "Y": [
+     "behind-left view: overlapping hem edges with dark seam lines at the fold"
+   ],
+   "better": "Y",
+   "why": "otherwise the same; X's robe over his seat forms a sack-like shelf with a hard crease"},
+
   {"id": "p184",
-   "X": ["front view: a few light grey jagged edges inside the hem at the left and right",
-         "front view: small white jaggies along the bottom of the inside of the hem between his legs",
-         "front view: crumpled dark specks at the waist, top centre",
-         "his left view: a few small white bits along the hem's bottom edge by his foot",
-         "his left view: the back of the robe juts out stiffly in a wide sheet behind his legs"],
-   "Y": ["front view: grey crumpled bits, white shards and dark specks along the inside of the hem, between and beside his legs",
-         "front view: dark grey streaks inside the hem by his left leg (picture right)",
-         "front view: crumpled dark specks at the waist, top centre",
-         "his left view: the back of the robe juts out stiffly in a wide sheet behind his legs"],
-   "better": "X", "why": "the inside of X's hem is mostly clean; Y's shows grey crumples, shards and dark streaks"},
+   "X": [
+     "front view: a flat pale panel with a square notch/step inside the hem by his right shin, a few faint white bits on it",
+     "front view: a few small white/grey specks inside the hem on the right",
+     "front view: crumpled bits with dark specks at the waist knot at the top of the frame",
+     "his-left view: the back of the hem curls out into a stiff pointed wedge"
+   ],
+   "Y": [
+     "front view: inside the hem at the bottom left the lining is ragged, with white shards, a grey streak and grey crumpled bits beside his right shin",
+     "front view: dark grey crumpled shards inside the hem on the right beside his left shin",
+     "front view: a square notch/step in the inner hem edge by his right shin",
+     "front view: crumpled bits with dark specks at the waist knot at the top of the frame",
+     "his-left view: the back of the hem curls out into a stiff pointed wedge"
+   ],
+   "better": "X",
+   "why": "Y's inner hem has torn shards and dark grey crumpled bits round both shins; X's is cleaner"},
+
   {"id": "p185",
-   "X": ["his back view: a dark grey smudge across the hips whose folds stop in a ragged line",
-         "his back view: the robe bags out at the bottom into a long pointed tail stretched down to the floor at the left",
-         "his right view: a stiff pointed triangular flap juts out behind him at floor level, on a flat slab-like base",
-         "his right view: a thin dark line along the hem by his feet"],
-   "Y": ["his back view: a dark grey smudge in the folds across the hips",
-         "his back view: the robe bags out at the bottom into a long pointed tail stretched down to the floor at the left",
-         "his right view: a stiff pointed triangular flap juts out behind him at floor level, on a flat slab-like base"],
-   "better": "Y", "why": "nearly the same; X's hip smudge ends in a ragged line and its hem shows a dark edge by the feet"},
+   "X": [
+     "his-back view: a dark grey smudged band across the pleats at hip level with a hard lower edge and grey streaks running down from it",
+     "his-back view: a lumpy bulge low on the left side of the robe",
+     "his-right view: the hem behind him sticks out in a stiff pointed wedge"
+   ],
+   "Y": [
+     "his-back view: broad, soft grey shading over the upper pleats",
+     "his-right view: the hem behind him sticks out in a stiff pointed wedge"
+   ],
+   "better": "Y",
+   "why": "nearly identical; X's back has a dirty-looking dark band with streaks at hip level and a lump on the left"},
+
   {"id": "p186",
-   "X": ["behind-left: a dark crease line along the lower lip of the hip drape",
-         "behind-right: a stiff pointed triangular flap juts out behind him at floor level"],
-   "Y": ["behind-left: a dark crease line along the lower lip of the hip drape",
-         "behind-right: the robe bulges into a sagging pouch over the hips with a hard crease under it, like two stacked sacks",
-         "behind-right: a stiff pointed triangular flap juts out behind him at floor level"],
-   "better": "X", "why": "almost identical; X's robe falls as one piece where Y's sags into a pouch over the hips"},
+   "X": [
+     "behind-left view: overlapping hem edges with dark seam lines at the fold"
+   ],
+   "Y": [
+     "behind-left view: overlapping hem edges with dark seam lines at the fold",
+     "behind-right view: the robe over his seat bulges into a rounded shelf with a sharp crease underneath, like a stuffed sack"
+   ],
+   "better": "X",
+   "why": "otherwise the same; Y's robe over his seat forms a sack-like shelf with a hard crease"},
+
   {"id": "p187",
-   "X": ["front view: a few light grey jagged edges inside the hem at the left and right",
-         "front view: small white jaggies along the bottom of the inside of the hem between his legs",
-         "front view: crumpled dark specks at the waist, top centre",
-         "his left view: a few small white bits along the hem's bottom edge by his foot",
-         "his left view: the back of the robe juts out stiffly in a wide sheet behind his legs"],
-   "Y": ["front view: grey crumpled bits, white shards and dark specks along the inside of the hem, between and beside his legs",
-         "front view: dark grey streaks inside the hem by his left leg (picture right)",
-         "front view: crumpled dark specks at the waist, top centre",
-         "his left view: the back of the robe juts out stiffly in a wide sheet behind his legs"],
-   "better": "X", "why": "the inside of X's hem is mostly clean; Y's shows grey crumples, shards and dark streaks"},
+   "X": [
+     "front view: a flat pale panel with a square notch/step inside the hem by his right shin, a few faint white bits on it",
+     "front view: a few small white specks inside the hem on the right",
+     "front view: crumpled bits with dark specks at the waist knot at the top of the frame",
+     "his-left view: the back of the hem curls out into a stiff pointed wedge"
+   ],
+   "Y": [
+     "front view: inside the hem at the bottom left the lining is ragged, with white shards and grey crumpled bits beside his right shin",
+     "front view: dark grey crumpled shards inside the hem on the right beside his left shin",
+     "front view: a square notch/step in the inner hem edge by his right shin",
+     "front view: crumpled bits with dark specks at the waist knot at the top of the frame",
+     "his-left view: the back of the hem curls out into a stiff pointed wedge"
+   ],
+   "better": "X",
+   "why": "Y's inner hem has torn shards and dark grey crumpled bits round both shins; X's is cleaner"},
+
   {"id": "p188",
-   "X": ["his back view: a dark grey smudge across the hips whose folds stop in a ragged line",
-         "his back view: a long pointed tail of cloth stretched down to the floor at the left",
-         "his right view: a stiff pointed triangular flap juts out behind him at floor level, on a flat slab-like base",
-         "his right view: a thin dark line along the hem by his feet"],
-   "Y": ["his back view: a dark grey smudge in the folds across the hips",
-         "his back view: a long pointed tail of cloth stretched down to the floor at the left",
-         "his right view: a stiff pointed triangular flap juts out behind him at floor level, on a flat slab-like base"],
-   "better": "Y", "why": "nearly the same; X's hip smudge ends in a ragged line and its hem shows a dark edge by the feet"},
+   "X": [
+     "his-back view: a dark grey smudged band across the pleats at hip level with a hard lower edge and grey streaks running down from it",
+     "his-back view: a lumpy bulge low on the left side of the robe",
+     "his-right view: the hem behind him sticks out in a stiff pointed wedge"
+   ],
+   "Y": [
+     "his-back view: broad, soft grey shading over the upper pleats",
+     "his-right view: the hem behind him sticks out in a stiff pointed wedge"
+   ],
+   "better": "Y",
+   "why": "nearly identical; X's back has a dirty-looking dark band with streaks at hip level and a lump on the left"},
+
   {"id": "p189",
-   "X": ["behind-left: a dark crease line along the lower lip of the hip drape",
-         "behind-right: a stiff pointed triangular flap juts out behind him at floor level"],
-   "Y": ["behind-left: a dark crease line along the lower lip of the hip drape",
-         "behind-right: the robe bulges into a sagging pouch over the hips with a hard crease under it, like two stacked sacks",
-         "behind-right: a stiff pointed triangular flap juts out behind him at floor level"],
-   "better": "X", "why": "almost identical; X's robe falls as one piece where Y's sags into a pouch over the hips"}
+   "X": [
+     "behind-left view: overlapping hem edges with dark seam lines at the fold"
+   ],
+   "Y": [
+     "behind-left view: overlapping hem edges with dark seam lines at the fold",
+     "behind-right view: the robe over his seat bulges into a rounded shelf with a sharp crease underneath, like a stuffed sack"
+   ],
+   "better": "X",
+   "why": "otherwise the same; Y's robe over his seat forms a sack-like shelf with a hard crease"}
 ]
