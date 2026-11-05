@@ -223,30 +223,17 @@ const DRAPETAKES = (process.env.DRAPETAKES || '').split(',').filter(Boolean); le
    so stay inside it, the robe between them spanning his lap. Sitting cross-legged on the floor his waist is below the
    tops of his knees: neither the chain skirt made on his real legs nor on his rig's (both fitted to his own file's robe
    there, which rides his hips) nor cloth hanging from the waist can cover them */
-const LEGWRAPTAKES = (process.env.LEGWRAPTAKES || '').split(',').filter(Boolean), LEGWRAPSIG = E('LEGWRAPSIG', 0.08), LEGWRAPKNEE = E('LEGWRAPKNEE', 0.15), LEGWRAPHIP0 = E('LEGWRAPHIP0', 0.04), LEGWRAPHIP1 = E('LEGWRAPHIP1', 0.16); let legwrapping = false, wrapW = null, wrapH = null;
-/* LEGWRAPHUG=k (v24.48, with LEGWRAPTAKES): each leg's share of a target is carried from a rest point pulled in toward
-   that leg's axis — to the leg's own thickness, the margin and the robe's layers there, plus k of whatever lay beyond:
-   carried at its whole rest distance (the robe's flare stands 10-15 cm off the thigh), the robe over his crossed legs
-   stood up as a slab above his knees and his hands, resting on his knees, sank out of sight into it. Unset: as before */
-const LEGWRAPHUG = process.env.LEGWRAPHUG !== undefined && process.env.LEGWRAPHUG !== '' ? +process.env.LEGWRAPHUG : -1;
+const LEGWRAPTAKES = (process.env.LEGWRAPTAKES || '').split(',').filter(Boolean), LEGWRAPSIG = E('LEGWRAPSIG', 0.08), LEGWRAPKNEE = E('LEGWRAPKNEE', 0.15), LEGWRAPHIP0 = E('LEGWRAPHIP0', 0.04), LEGWRAPHIP1 = E('LEGWRAPHIP1', 0.16); let legwrapping = false, wrapW = null;
 const legWrap = () => { const bones = [jWaist, gU.Left, gL.Left, gU.Right, gL.Right];
   if (!wrapW) { wrapW = []; const seg = ['Left', 'Right'].map(s2 => [posOf(BW[gU[s2]]), posOf(BW[gL[s2]]), posOf(BW[ji(s2 + 'Foot')])]);
     for (let p = 0; p < NP; p++) { const q = V3(X0[3 * p], X0[3 * p + 1], X0[3 * p + 2]), wW = 1 - sstep((ROOTY - q.y - LEGWRAPHIP0) / (LEGWRAPHIP1 - LEGWRAPHIP0)), w = [wW, 0, 0, 0, 0];
       const near = seg.map(([H, K, A]) => Math.min(segDist(q, H, K), segDist(q, K, A))), g = near.map(d => Math.exp(-((d / LEGWRAPSIG) ** 2)) + 1e-9), gs = g[0] + g[1];
       seg.forEach(([H, K, A], si) => { const L1 = H.distanceTo(K), L2 = K.distanceTo(A), hk = K.clone().sub(H), t = q.clone().sub(H).dot(hk) / hk.lengthSq() * L1, kf = sstep((t - L1 + LEGWRAPKNEE * (L1 + L2) / 2) / (LEGWRAPKNEE * (L1 + L2))), share = (1 - wW) * g[si] / gs;
         w[1 + 2 * si] = share * (1 - kf); w[2 + 2 * si] = share * kf; });
-      wrapW.push(w);
-      if (LEGWRAPHUG >= 0) { if (!wrapH) wrapH = []; const h = [null];
-        ['Left', 'Right'].forEach((s2, si) => { const [H, K, A] = seg[si]; let best = null;
-          for (const [part, P0, P1] of [['thigh', H, K], ['shin', K, A]]) { const ab = P1.clone().sub(P0), t = Math.max(0, Math.min(1, q.clone().sub(P0).dot(ab) / ab.lengthSq())), c = P0.clone().addScaledVector(ab, t), d = q.distanceTo(c); if (!best || d < best.d) best = { d, c, r: radAt(prof[s2 + part], t) }; }
-          const floor = best.r + MARGIN + depth[p]; let hp = q;
-          if (best.d > floor && best.d > 1e-9) hp = best.c.clone().addScaledVector(q.clone().sub(best.c), (floor + (best.d - floor) * LEGWRAPHUG) / best.d);
-          h.push(hp, hp); });
-        wrapH.push(h); } } }
+      wrapW.push(w); } }
   const M = bones.map(j => new Matrix4().multiplyMatrices(Wj(j), IB[j]).elements);
-  for (let p = 0; p < NP; p++) { if (pinned[p]) continue; const o = 3 * p, w = wrapW[p]; let tx = 0, ty = 0, tz = 0;
-    for (let b = 0; b < 5; b++) { const a = w[b]; if (!a) continue; const e = M[b], hp = wrapH && wrapH[p][b], x = hp ? hp.x : X0[o], y = hp ? hp.y : X0[o + 1], z = hp ? hp.z : X0[o + 2];
-      tx += a * (e[0] * x + e[4] * y + e[8] * z + e[12]); ty += a * (e[1] * x + e[5] * y + e[9] * z + e[13]); tz += a * (e[2] * x + e[6] * y + e[10] * z + e[14]); }
+  for (let p = 0; p < NP; p++) { if (pinned[p]) continue; const o = 3 * p, x = X0[o], y = X0[o + 1], z = X0[o + 2], w = wrapW[p]; let tx = 0, ty = 0, tz = 0;
+    for (let b = 0; b < 5; b++) { const a = w[b]; if (!a) continue; const e = M[b]; tx += a * (e[0] * x + e[4] * y + e[8] * z + e[12]); ty += a * (e[1] * x + e[5] * y + e[9] * z + e[13]); tz += a * (e[2] * x + e[6] * y + e[10] * z + e[14]); }
     Tg[o] = tx; Tg[o + 1] = ty; Tg[o + 2] = tz; } };
 const segDist = (q, A, B) => { const ab = B.clone().sub(A), t = Math.max(0, Math.min(1, q.clone().sub(A).dot(ab) / ab.lengthSq())); return q.distanceTo(A.clone().addScaledVector(ab, t)); };
 const level = (A, B) => Math.abs(B.y - A.y) < 0.7 * Math.hypot(B.x - A.x, B.y - A.y, B.z - A.z);

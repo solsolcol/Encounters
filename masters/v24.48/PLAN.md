@@ -124,3 +124,7 @@ hem's turned-in lip at the front as well (trial b) changed nothing. And sitting 
 legs, but it stands up over his knees as a slab and his hands, which rest on his knees, sink out of sight into it: each
 point of the robe there is carried at its whole rest distance from the leg (the robe's flare stands 10-15 cm off the
 thigh).
+- Tried for the hands (robesim LEGWRAPHUG, the robe over his crossed legs pulled in toward them, by 0.3 and fully): his
+  hand rests on the robe seen from his side, but his knee comes through the lap at his front (floating leg seen 4,439 px
+  on the floor sit's nine moments -> 46,259 and 50,838). Not taken, and taken back out of robesim (the file is again
+  byte for byte the one the final was built with). His hands under the lap cloth are left, and said so.
