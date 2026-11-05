@@ -7522,3 +7522,14 @@ cut (sharing its vertices and maps) when it is small.
   every robe made from them lay behind and under the real legs. Carried by the real legs instead (the waist's share for
   its top few centimetres, then each side's thigh and shin by nearness at rest), the legs start inside the robe and stay
   inside it.
+- **What a fault looks like is not what it is made of.** The white band across his shins in the chair sits sat right at
+  the hem, so the first two fixes cut the hem's lip at his front and then left his front hem whole; neither moved the
+  count. Drawn in its triangles' own colours it was a sheet of robe 15 cm inside the front wall (the wrap's inner panel
+  between his legs, seen at rest only from below), carried by the front cloth bones at that depth and swung out across his
+  shins. Taking out cloth more than 8 cm inside the robe's own wall low down (robeshell INNER) took the band and every
+  floating shin piece in the three chair sits. Identify the triangles first; cut second.
+- **A thick robe over folded legs swallows the hands that rest on them.** Carried by his legs at their rest distance,
+  the robe over his crossed legs stands 10-15 cm above his knees, and his hands, resting on his knees in the take, sink
+  out of sight into it. Pulled in toward the legs (0.3 of the distance, and fully), his knee came through the lap
+  instead. A garment cannot be both clear of a bulging knee and thin under a hand that rests on that knee unless the
+  hand moves; the take's hands are his, so this is left and said.
