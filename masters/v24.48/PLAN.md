@@ -155,3 +155,30 @@ slash 28, cast_7 16, cast_8 4). Of the 32 floating pieces: the floor sit's nine 
 shins seen in the gap at the front of his lap), his heel below the hem from above and behind in talking and the second
 Charged cast (six, 1,825 px), a sliver of thigh through the front overlap in the first Charged cast, the sword slash and
 cast_6 (six, 324 px), slivers at cast_4's hem (eight, 419 px) and three others.
+
+**Step 9 · that file read blind, all 540 pictures, twice** (masters/v24.48/review/INSTRUCTIONS.txt: each picture beside
+the same moment of the other file, sides shuffled, twenty readers a pass, none told which is new). Against his saved
+file: better in 337, the same in 70, worse in 133 — better in 13 takes (all four sits 27 of 27, running 36 of 36), about
+even in 2 (the second Charged cast 8/10/9, cast_3 8/8/11), worse in 4: the first Charged cast (5/6/16), talking with
+hands open (5/6/16), mage_soell_cast (8/4/15) and cast_7 (8/2/17). Against v24.47: better in 293, the same in 179, worse
+in 68 — better in 16 takes (talking with hands open and the floor sit 27 of 27), even in running (14/8/14), worse in
+walking (8/23/14) and cast_7 (4/17/6). Every note sorted by its words: against his saved file the new file is named less
+often for everything but the hem's edge — "shards", "splinters", "ragged", "torn" along the hem 864 times (his file
+751), the inside of the robe or a doubled edge 261 (471), crumples 187 (262), specks 124 (207), a slit or a leg through
+the cloth 62 (208); his heel below the hem 60 (47) and a bulge 41 (34) a little more. In the four worse takes nearly
+every note against the new picture is the hem: "ragged white splinters and small torn bits along the whole bottom edge
+of the hem", "ragged, doubled white hem edge across the front".
+
+**Step 10 · the hem cut taken back out.** Drawn in their own colours, the white bits the readers named are the cut's own
+edge: with the strip and the lip gone, the robe's wall ends in the raw, uneven edge of its outer surface, and the inside
+of the back hem, seen between his legs under the front hem, shows as loose white shapes. His saved file's hem is closed
+by that strip and lip — the thin dark line along its bottom that the readers called clean.
+- Trial: the recipe without HEMBASE (RIM, FLOOR, INNER and ISLANDS kept). Photographed beside his saved file and the
+  first final at the moments named (the first Charged cast, the sword lunge, walking, zoomed in on the hem): the dark
+  rolled edge of his saved file is back along the hem, with fewer white bits. Counted on all 180 moments x 6 sides
+  against the first final: floating leg pieces 32 -> 26; robe seen inside out 1.46 -> 1.24 million px; torn robe
+  triangles 50,919 -> 54,459 (the strip and the lip, stretched round a flared hem, count as torn — they are what the cut
+  took out); legs through the cloth outside the floor sit 344 -> 418 (running 235 -> 264, walking 61 -> 98: the lip lies
+  inside the robe against his shins, met by the count and not seen from outside).
+- Taken: the hem is his scan's own and stays. HEMBASE is out of the recipe and out of tools/robeshell.mjs (an option
+  nothing uses is not kept), and the final file is built again from step 5.

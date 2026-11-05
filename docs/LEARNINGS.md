@@ -7510,10 +7510,14 @@ cut (sharing its vertices and maps) when it is small.
   under the hem and runs on as a sheet up inside the new leg to its axis. Hidden in the leg at rest, it came out whenever
   the leg moved, as the crumples and white flaps inside a lifted hem, and it was most of what the count called "leg
   through the cloth". A slice through the limb at rest shows it; know what a count is counting before cutting by it.
-- **A hem has an underside and a lip, and where a wrap overlaps the lip is the panels' edge.** Taking out the hem's
-  down-facing strip left its in-facing lip floating loose; taking the lip too, all the way round, opened slits at his
-  front, where the wrap's panels overlap and their edges face in as well. Facing cannot tell a lip from a panel's edge:
-  where the robe overlaps, leave the edges; and take out the loose scraps a cut leaves behind (here under 40 triangles).
+- **A hem has an underside and a lip, and they are what the eye reads as its edge.** Taking out the hem's down-facing
+  strip left its in-facing lip floating loose; taking the lip too, all the way round, opened slits at his front, where
+  the wrap's panels overlap and their edges face in as well (facing cannot tell a lip from a panel's edge). Narrowed to
+  spare his front, the cut still left the robe's wall ending in the raw, uneven edge of its outer surface, and blind
+  readers named "ragged white splinters along the hem" in four takes they rated worse than his saved file, whose hem is
+  closed by that strip and lip: a thin dark line they called clean. A scan's own hem is its edge; leave it, and cut only
+  what lies inside the garment (the old opening's floor, a sheet deep inside the wall). Take out the loose scraps the
+  cuts leave behind (here under 40 triangles).
 - **A fix made for one take is counted on every take.** A cap that kept the cloth below the waist ring, made for the
   sword lunge, held the lap down into his thighs in the chair sits (sit-to-stand: 975 leg edges through the robe against
   2 without it), and did nothing for the lunge once the hip was open. It came back out.

@@ -159,29 +159,12 @@ if (process.env.INNER) { const IN = E('INNER', 0.08), INY = E('INNERY', 0.35), I
     let ref = 0; for (const da of [-1, 0, 1]) { const a2 = (ab + da + NAB) % NAB; for (let h = h0; h <= Math.min(NHB - 1, h0 + Math.round(INWIN * 100)); h++) ref = Math.max(ref, wall[a2 * NHB + h]); }
     if (ref - r > IN) { drop[t] = 1; nIn++; const dd = (Math.floor((ref - r) / 0.04) * 0.04).toFixed(2); fd[dd] = (fd[dd] || 0) + 1; } }
   log(`robeshell: INNER ${IN} m — ${nIn} more skirt triangles taken out (cloth more than ${(IN * 100).toFixed(0)} cm inside the robe's wall below ${INY} m; by depth: ${Object.keys(fd).sort().map(d => `${d} ${fd[d]}`).join(', ')})`); }
-/* HEMBASE=<metres> (v24.48; with HEMBASENY -0.6, HEMBASEOUT 0.2, HEMBASEFRONT 70 degrees): the hem's UNDERSIDE and its turned-in LIP taken
-   out — the strip about a centimetre wide that closes the bottom of his scan's robe wall, facing straight down, and the
-   lip it turns into, facing in. When the hem flares (walking, the casts' wide steps) the hem ring stretches round, and
-   the strip, seen from behind and below, stretched up to 2.2 times into the ragged white splinters along the bottom of
-   the hem (his saved file has them too); the strip alone taken out, the lip behind it came loose and floated under the
-   hem in white bits. Every skirt triangle not already out whose middle lies within HEMBASE above the robe's lowest point
-   in its 3 degrees of turn round his hips' axis, and that faces down (its normal's height share HEMBASENY or less) or
-   in (its share away from that axis under -HEMBASEOUT), goes — the lip facing in only outside HEMBASEFRONT degrees
-   either side of his front, where the robe's wrap overlaps: there, and anything facing sideways anywhere, the panels'
-   own edges, taken out it opened slits in the front hem by his left shin when he sat on a chair. The robe is one layer
-   of cloth drawn from both sides (tools/prepmonk.mjs TWOSIDE), and its hem is that cloth's edge. Unset, nothing runs. */
-if (process.env.HEMBASE) { const HB = E('HEMBASE', 0.015), HBNY = E('HEMBASENY', -0.6), HBOUT = E('HEMBASEOUT', 0.2), HBFRONT = E('HEMBASEFRONT', 70) * Math.PI / 180, NAB = 120, low = new Float32Array(NAB).fill(9);
-  const abin = (x, z) => { let a = Math.atan2(x, z); if (a < 0) a += 2 * Math.PI; return Math.min(NAB - 1, Math.floor(a / (2 * Math.PI) * NAB)); };
-  for (let i = 0; i < n; i++) { if (!onSkirt[i]) continue; const k = abin(P[3 * i] - hip.x, P[3 * i + 2] - hip.z); if (P[3 * i + 1] < low[k]) low[k] = P[3 * i + 1]; }
-  let nBase = 0; for (const t of skirtTris) { if (drop[t]) continue; const vs = [0, 1, 2].map(m => new Vector3().fromArray(P, 3 * IDX[3 * t + m])), mid = vs[0].clone().add(vs[1]).add(vs[2]).multiplyScalar(1 / 3);
-    if (mid.y > low[abin(mid.x - hip.x, mid.z - hip.z)] + HB) continue;
-    const fn = new Vector3().crossVectors(vs[1].clone().sub(vs[0]), vs[2].clone().sub(vs[0])).normalize(), rad = new Vector3(mid.x - hip.x, 0, mid.z - hip.z).normalize();
-    const down = fn.y <= HBNY, inward = fn.dot(rad) < -HBOUT, front = Math.abs(Math.atan2(mid.x - hip.x, mid.z - hip.z)) < HBFRONT;
-    if (!(down || (inward && !front))) continue; drop[t] = 1; nBase++; }
-  log(`robeshell: HEMBASE ${HB} m — ${nBase} more skirt triangles taken out (the hem's underside facing down, and its turned-in lip facing in away from his front, within ${(HB * 100).toFixed(1)} cm of the robe's lowest point round him)`); }
 /* ISLANDS=<triangles> (v24.48): what the cuts above left of the robe below his waist in loose scraps — pieces of the
    skirt joined to nothing else (by any point they share, or any point at the same place across a seam) and smaller than
-   ISLANDS triangles — taken out too: with the hem's lip gone, small bits of it were left floating under the hem.
+   ISLANDS triangles — taken out too, so no small bit is left floating under the hem. The hem itself (the strip that
+   closes the bottom of his scan's robe wall and the lip it turns into) is his scan's own and is never cut: cut out
+   (v24.48's trials, within 4.5 cm of the robe's lowest point, facing down or in), it left the hem's edge ragged with
+   white bits, and blind readers rated four takes worse than his saved file for it (masters/v24.48/PLAN.md step 10).
    Unset, nothing here runs. */
 if (process.env.ISLANDS) { const MINT = E('ISLANDS', 40), par = new Int32Array(n).map((_, i) => i), find = i => { while (par[i] !== i) { par[i] = par[par[i]]; i = par[i]; } return i; }, uni = (a, b) => { a = find(a); b = find(b); if (a !== b) par[a] = b; };
   const at = new Map(); for (let i = 0; i < n; i++) { const k = `${Math.round(P[3 * i] * 1e4)},${Math.round(P[3 * i + 1] * 1e4)},${Math.round(P[3 * i + 2] * 1e4)}`, j = at.get(k); if (j === undefined) at.set(k, i); else uni(i, j); }
