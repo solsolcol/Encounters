@@ -145,3 +145,13 @@ v24.47's).** The shell is the one trial d counted (sha1 07380ffe: INNER 271 tria
 554,154 -> 166,245 triangles, 231 joints, 19 takes, 8,606,232 bytes (sha1 9c46b291). The proofs with the final code:
 robeshell with RIM alone on v24.47's graft gives v24.47's pho_shell.glb (51104ba9), and robesim is byte for byte the file
 whose v24.47 options rebuilt v24.47's pho_cloth.glb (e93ab6d0). Kept out of assets/ until counted and read.
+
+**Step 8 · the final file counted on all 180 moments x 6 sides** (tools/probes/pholegs.mjs; his saved file / v24.47 /
+v24.48): floating leg pieces 166 (13,913 px) / 52 (9,812) / 32 (8,609); legs through the cloth 39,747 / 7,051 / 8,344 —
+of which the floor sit 10,515 / 0 / 8,000 (its robe now lies on his legs, carried by them, so the count meets the robe at
+the legs' surface; outside the floor sit 29,232 / 7,051 / 344); torn robe triangles 108,928 / 59,715 / 50,919; robe seen
+inside out 2.02 / 1.73 / 1.47 million px. Through the cloth is 0 in fourteen takes (running 235, walking 61, the sword
+slash 28, cast_7 16, cast_8 4). Of the 32 floating pieces: the floor sit's nine (5,907 px, one each moment: his crossed
+shins seen in the gap at the front of his lap), his heel below the hem from above and behind in talking and the second
+Charged cast (six, 1,825 px), a sliver of thigh through the front overlap in the first Charged cast, the sword slash and
+cast_6 (six, 324 px), slivers at cast_4's hem (eight, 419 px) and three others.
