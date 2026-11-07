@@ -8079,6 +8079,28 @@ What the baseline contains, by release:
     assets/pho.glb 8,666,228 bytes (sha1 ca8c0cc8; v24.48 8,624,964), 560,497 -> 168,148 triangles, 19 takes. Not in
     build.py until chapter 3 casts him.
 
+- **v24.50** (prepared, not a build: nothing deployed, the live build stays v24.40) GRANDMASTER PHO: THE ROBE FREED FROM
+  HIS RIGHT ARM. Chad, 7 Nov 2026, testing me ("Do you see any problems with any of the animations? I already see some ,
+  im testing you. Dont spawn reviewers"); my list named feet off the floor, the floor sit's lap, a lump over his left arm
+  and more, and missed his: "The robe is like attached to the underside of the arm" — and when I painted his LEFT arm,
+  "Its the other arm , why can't you see it even after telling you?" ... "Do it, go" ... "Be efficient".
+  - The fault, measured: his scan hangs his right arm 62 degrees below level with the robe's edge touching its underside,
+    and the rig gave that robe the arm's weights (6-8 cm off the arm's line 0.86, fading to 0.18 at 12-14 cm: 12,347
+    points), so whenever he lifts the arm the robe climbs its underside to the elbow, white shards along it.
+  - The fix, tools/armfree.mjs between robesim and prepmonk (masters/v24.50/make.sh): the robe re-tied to his trunk; the
+    340 triangles joining it to skin that rides the arm cut out, with the scraps of robe the scan stuck on his arm (105);
+    the arm's openings closed by fans whose middle sits inside the arm; the robe's side left as cut. Fourteen tries, each
+    photographed close (masters/v24.50/PLAN.md): a band of armpit skin taking the stretch made a sheet of skin, ribbons and
+    lips floated or frayed, a lower cut opened holes on his back, fans on the robe's side made a flap.
+  - Checked: every take front and from his right at four moments against v24.49, nothing changed but the right armpit;
+    painted by bone again, no robe moves with his right arm (tools/clipsheet.mjs --look=bone:<regex>@raw, new);
+    masters/v24.50/shots/pho-right-arm-before-after.jpg and -red-before-after.jpg. No blind review, at his word.
+  - Left, and said: a jagged robe edge at the armpit when the arm is straight up (the robe's own colour edge stretching
+    with the skin); and the rest of the first list (feet off the floor in 16 takes, his file's; the floor sit's lap; the
+    left shoulder's lump; the billowing; the scribbles; skin dots; no chair; moves unlike their names).
+    assets/pho.glb 8,661,548 bytes (sha1 7f9e098e; v24.49 8,666,228), 560,288 -> 168,085 triangles, 19 takes, re-made
+    byte for byte by the recipe.
+
 ## The sheet, version by version
 
 **v137** (`masters/v24.39/masterz-text-v137.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from

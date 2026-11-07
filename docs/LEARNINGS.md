@@ -7581,3 +7581,20 @@ cut (sharing its vertices and maps) when it is small.
   is about 6 million tokens; v24.49 ran four, the last two to chase a fault of my own, without putting their cost to
   Chad first, and he noticed the usage before he was told. A further review is a costly change like any other: state its
   measured cost and let him choose (fewer readers, one look each, or none).
+
+## v24.50 — the other arm, and painting what a cloth is tied to
+
+- **A fault named without a side: check both sides before answering.** Chad: "The robe is like attached to the underside
+  of the arm". I painted his left arm (where my last week's work had been) and showed him that; it was his right arm. A
+  lead names a fault, not where to stop looking.
+- **Paint what a cloth is tied to before describing how it looks.** For days the sheets showed a "lump", a "wing", a
+  "curtain", white shards up an arm; one picture of the robe painted by its weight on the arm's bones
+  (tools/clipsheet.mjs --look='bone:<regex>@raw') showed the cause at once: 12,347 points of robe riding his right arm.
+- **Freeing cloth from a limb, what held and what did not.** Held: the cloth re-tied to the trunk, the triangles that join
+  it to skin riding the limb cut out, scraps of cloth printed on the limb cut out, the limb's openings closed by fans with
+  their middle inside the limb, the cloth's own cut edge left open. Did not: the stretch moved into a band of skin (a
+  sheet of skin under the arm), ribbons to the bone line (their half-tied points stayed where the arm had hung, floating
+  panels), short inward lips (strands where an edge's points part), a lower cut (holes along the cloth's edge), fans on
+  the cloth's side (a flap). A fan's colour shows what it is: a skin fan off a robe's edge reads as a fin.
+- **Look at a "fault" from one more angle before cutting for it.** The last fin was the tip of his nose: his head was
+  tilted back behind his raised arm.

@@ -73,7 +73,9 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
    inside a lifted hem and the chair sits' band gone; better than his saved file in 15 takes, about even in 2, worse in
    2 — the first Charged cast and talking with hands open, for small white bits at the hem), and those white bits fixed
    at his word (v24.49, "Yes, fix all of it"; masters/v24.49/PLAN.md: the first build better than his saved file in 366
-   pictures, worse in 54; the shipped file against it better in 96, worse in 77). His choice waits on one thing: sitting
+   pictures, worse in 54; the shipped file against it better in 96, worse in 77). The robe under his right
+   armpit, tied to that arm, re-tied to his chest and cut free of it at his word (v24.50, "Its the other arm", "Do it,
+   go"; masters/v24.50/PLAN.md). His choice waits on one thing: sitting
    cross-legged, his hands rest under the robe — raise them about 10 cm onto it, his saved file's robe for that take, or
    leave it; and, if he prefers cleaner talking over clean chair sits, the first build instead. Left and said: a sliver
    of thigh at the wrap's front edge in three takes (his knee behind the cloth, seen through a slit)), Lersi Chin's voice (his model arrived 3 Nov 2026 and is prepared,

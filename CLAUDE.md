@@ -1147,7 +1147,11 @@ fixed (his scan's lining scraps out of the hem, the hem's rolled edge kept whole
 edge left to the old floor's cut behind his shins only, HEMKEEPFLOORBACK, where kept whole it made a grey comb between
 his shins in the chair sits): the first build better than his saved file in 366 of 540 pictures, worse in 54; the
 shipped file against that build better in 96, worse in 77 (talking slightly worse, the chair sits clean; the first build
-kept for his pick). Waiting on his choice: his hands in the floor sit (raised onto the robe, his saved file's robe for
+kept for his pick). At v24.50 (Chad: "The robe is like attached to the underside of the arm" ... "Its the other arm" ... "Do it, go";
+masters/v24.50/PLAN.md) the robe under his RIGHT armpit, tied to that arm (12,347 points), was re-tied to his chest and
+cut free of it (tools/armfree.mjs): lifting the arm no longer drags it up the arm's underside. Paint what a cloth is tied
+to before describing how it looks (tools/clipsheet.mjs --look=bone:<regex>@raw), and when he names a fault without a
+side, check both. Waiting on his choice: his hands in the floor sit (raised onto the robe, his saved file's robe for
 that take, or as it is). Each 540-picture blind review by twenty readers costs about 6 million tokens: put its cost to
 Chad before running one (he noticed v24.49's four). **Ajahn Krukai's model is PINNED** (v23.5, Chad: *"Make sure ajahn krukai's model
 in ep3 is unaffected and untouched. It is important that krukai is in the game as the master who gave the player his

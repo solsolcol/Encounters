@@ -25,7 +25,10 @@ const FLOORON = process.argv.includes('--floor');
    tone mapping, so it shows the scan's colour exactly as captured; @rawL the same scaled by L); skin[:K]@raw[L] lays it
    only where the texture's own colour is saturated (his skin, the beads, the gold: by the texel's saturation, 0.12–0.25),
    so the white robe keeps the scene's light and its folds). --light=dim draws every light at 0.3 of its
-   strength; --exposure=E sets the tone mapping's exposure (the game's is 1.42; unset, 1.2 as before) */
+   strength; --exposure=E sets the tone mapping's exposure (the game's is 1.42; unset, 1.2 as before).
+   v24.50 · bone:<regex>@raw paints in red the CLOTH (unsaturated texels; skin is never painted) that moves with the bones
+   whose names match, by their share of each point: what his robe is tied to, seen (the robe glued under his right arm,
+   --look='bone:Right(Shoulder|Arm|ForeArm|Hand)$@raw'); no regex with a colon or a quote */
 const LOOK = arg('look', 'lit'), LIGHT = arg('light', 'day'), EXPO = +arg('exposure', '1.2');
 const VIEWS = arg('views', '0:6,90:6,215:14').split(',').map(v => v.split(':').map(Number)), NV = VIEWS.length;
 const ROOT = resolve('.');
@@ -62,8 +65,11 @@ new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load('/model.glb', (gltf) => 
   for (const c of gltf.animations) acts[c.name] = mixer.clipAction(c);
   let skinned = null; root.traverse(o => { if (o.isSkinnedMesh && !skinned) skinned = o; });
   const LOOK = '${LOOK}';
-  if (LOOK !== 'lit') { const [m0, lv] = LOOK.split('@'), [mode, kk] = m0.split(':'), RAW = !!lv && lv.startsWith('raw'), level = RAW ? (+lv.slice(3) || 1) : (lv ? +lv : 1), K = kk ? +kk : 1, SKIN = mode === 'skin';
+  if (LOOK !== 'lit') { const [m0, lv] = LOOK.split('@'), [mode, kk] = m0.split(':'), RAW = !!lv && lv.startsWith('raw'), level = RAW ? (+lv.slice(3) || 1) : (lv ? +lv : 1), K = mode === 'bone' ? 1 : kk ? +kk : 1, SKIN = mode === 'skin';
     root.traverse(o => { if (!o.isMesh) return; const g = o.geometry, n = g.attributes.position.count, mask = new Float32Array(n).fill(1);
+      if (mode === 'bone' && o.isSkinnedMesh) { const SI = g.attributes.skinIndex, SW = g.attributes.skinWeight, B = o.skeleton.bones, re = new RegExp(m0.slice(5));
+        const wt = B.map(b => re.test(b.name) ? 1 : 0);
+        for (let i = 0; i < n; i++) { let m = 0; for (let k = 0; k < 4; k++) m += SW.getComponent(i, k) * wt[SI.getComponent(i, k)]; mask[i] = m; } }
       if (mode === 'face' && o.isSkinnedMesh) { const SI = g.attributes.skinIndex, SW = g.attributes.skinWeight, B = o.skeleton.bones;
         const wt = B.map(b => /Head(Top_End)?$/.test(b.name) ? 1 : /Neck$/.test(b.name) ? 0.5 : 0);
         for (let i = 0; i < n; i++) { let m = 0; for (let k = 0; k < 4; k++) m += SW.getComponent(i, k) * wt[SI.getComponent(i, k)]; const t = Math.max(0, Math.min(1, (m - 0.3) / 0.4)); mask[i] = t * t * (3 - 2 * t); } }
@@ -71,7 +77,7 @@ new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load('/model.glb', (gltf) => 
       for (const mt of [].concat(o.material)) { mt.onBeforeCompile = sh => { sh.uniforms.uLevel = { value: level }; sh.uniforms.uK = { value: K };
         sh.vertexShader = 'attribute float lookMask;\\nvarying float vLook;\\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\\nvLook = lookMask;');
         sh.fragmentShader = 'varying float vLook;\\nuniform float uLevel;\\nuniform float uK;\\n' + (RAW
-          ? sh.fragmentShader.replace('#include <tonemapping_fragment>', '#include <tonemapping_fragment>\\n' + (SKIN ? 'vec3 sc = pow(max(diffuseColor.rgb, vec3(1e-4)), vec3(1.0 / 2.2)); float mxc = max(sc.r, max(sc.g, sc.b)); float skn = smoothstep(0.12, 0.25, (mxc - min(sc.r, min(sc.g, sc.b))) / max(mxc, 1e-4));\\n' : 'float skn = 1.0;\\n') + 'gl_FragColor.rgb = mix(gl_FragColor.rgb, diffuseColor.rgb * uLevel, clamp(vLook * uK * skn, 0.0, 1.0));')
+          ? sh.fragmentShader.replace('#include <tonemapping_fragment>', '#include <tonemapping_fragment>\\n' + (mode === 'bone' ? 'vec3 sc = pow(max(diffuseColor.rgb, vec3(1e-4)), vec3(1.0 / 2.2)); float mxc = max(sc.r, max(sc.g, sc.b)); float skn = smoothstep(0.12, 0.25, (mxc - min(sc.r, min(sc.g, sc.b))) / max(mxc, 1e-4));\\ngl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.95, 0.08, 0.08), clamp(vLook * (1.0 - skn), 0.0, 1.0) * 0.8);\\n' + '//' : '') + (SKIN ? 'vec3 sc = pow(max(diffuseColor.rgb, vec3(1e-4)), vec3(1.0 / 2.2)); float mxc = max(sc.r, max(sc.g, sc.b)); float skn = smoothstep(0.12, 0.25, (mxc - min(sc.r, min(sc.g, sc.b))) / max(mxc, 1e-4));\\n' : 'float skn = 1.0;\\n') + 'gl_FragColor.rgb = mix(gl_FragColor.rgb, diffuseColor.rgb * uLevel, clamp(vLook * uK * skn, 0.0, 1.0));')
           : sh.fragmentShader.replace('#include <opaque_fragment>', 'outgoingLight = mix(outgoingLight, diffuseColor.rgb * uLevel, clamp(vLook * uK, 0.0, 1.0));\\n#include <opaque_fragment>')); };
         mt.customProgramCacheKey = () => 'look' + LOOK; mt.needsUpdate = true; } }); }
   window.__clips = gltf.animations.map(a => ({ name: a.name, dur: a.duration }));
