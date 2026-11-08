@@ -7598,3 +7598,22 @@ cut (sharing its vertices and maps) when it is small.
   the cloth's side (a flap). A fan's colour shows what it is: a skin fan off a robe's edge reads as a fin.
 - **Look at a "fault" from one more angle before cutting for it.** The last fin was the tip of his nose: his head was
   tilted back behind his raised arm.
+
+## v24.51 — a later step undid the fix, and a join kept beats a join cut
+
+- **Measure a fix in the FINAL file, not in the output of the step that made it.** armfree took every bit of the arm's
+  share out of the robe's edge, and the white teeth stayed. Measured in the shipped file, the edge was riding the arm
+  again (0.11 to 0.42). prepmonk smooths every weight over 24 passes AFTER armfree, and carried the share back from the
+  skin beside it. Three tries that held the skin at the robe's weights "changed nothing" for the same reason. If the same
+  fix fails twice, look downstream: run the re-blending step before the fix (armfree DIFFUSE; prepmonk WSMOOTH=0).
+- **Where a scan glued a limb to the body, keep the join and paint it skin; don't cut it.** Cut, the limb and the body
+  part with nothing between. The gap shows the inside of him. A cap over it, if its middle rides half the trunk and half
+  the limb, hangs as a flap. Caps on each lip apart hang as skin flaps. Kept and painted in one skin texel, the joining
+  triangles stretch into one even web, which reads as an armpit. Cutting only part of a web breaks the rest of it into
+  threads, so keep it whole.
+- **No hard step in the weights.** Skin held at the cloth's weights right beside skin riding the limb by half makes one
+  edge go from 0 to 0.55 in a single step: a 60-times thread. A hold may not touch the limb's own skin; the rest is
+  blended (armfree SKINFILL).
+- **A small loose piece is a lead; read the texture before calling it geometry.** The seven loose bits of his scan were
+  real loose pieces (taken out). The orange dots on his back were skin colour painted into the robe's texture, on the
+  robe's own triangles (left).

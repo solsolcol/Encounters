@@ -8100,6 +8100,38 @@ What the baseline contains, by release:
     left shoulder's lump; the billowing; the scribbles; skin dots; no chair; moves unlike their names).
     assets/pho.glb 8,661,548 bytes (sha1 7f9e098e; v24.49 8,666,228), 560,288 -> 168,085 triangles, 19 takes, re-made
     byte for byte by the recipe.
+- **v24.51** (prepared, not a build: nothing deployed, the live build stays v24.40) GRANDMASTER PHO: THE ROBE'S EDGE AT
+  HIS RIGHT ARMPIT CLEAN, AND NOTHING FLOATING. Chad, 8 Nov 2026: "Fix the jagged part, and there are some floating pieces
+  that needs fixing".
+  - The jagged part, measured (tools/probes/phoid.mjs, now with --frame=joint:<bone>:<r>): the white teeth at the robe's
+    edge were its triangles stretched 6-8 times, their points riding the arm by 0.11-0.42 although armfree had freed
+    them. prepmonk smooths every weight over 24 passes AFTER armfree, and carried the arm's share back into 2,864 points
+    of the freed robe; that is also why v24.50's last three tries changed nothing.
+  - The floating pieces:
+    - a flap under the arm in the Charged cast: one cap closing an opening that ran along both the robe's edge and the
+      arm's, its middle riding half the trunk;
+    - a thread off his side in cast 6: skin held to the robe beside skin riding the arm, stretched 60 times;
+    - seven loose bits of his scan.
+    The orange dots on his back are paint in his robe's texture, left as delivered.
+  - The fix (masters/v24.51/make.sh, tools/armfree.mjs):
+    - the smoothing run inside armfree first (DIFFUSE 24; prepmonk WSMOOTH=0);
+    - the armpit's skin beside the robe blended between robe and arm (SKINFILL 8, SKINHOLD 2, SKINMAX 0.5);
+    - the 333 triangles joining the robe's edge to the arm kept and drawn in his arm's skin (JOINSKIN): with the arm up
+      they stretch into one even web of skin, an armpit;
+    - the loose bits out (DROPBITS 12).
+    Thirty-five tries (PLAN.md). Left: caps on each lip apart (skin flaps); slits left open (the gap showed); the web cut
+    below the armpit (threads); the far joins riding the arm (white strips).
+  - Checked:
+    - the four raised-arm moments close, front and his right (shots/pho-right-armpit-before-after.jpg);
+    - all 19 takes against v24.50;
+    - before the thinning: no point moved, weights changed only 6.5-31 cm from his right shoulder joint, triangles only
+      round the arm and the bits.
+    A pixel compare shows faint shading over the whole body: the thinning is redone whenever the triangle count changes.
+    No blind review, at his word.
+  - Left, and said: a small skin patch on the robe in the chair sit seen from his right (the web's lowest part); two
+    hairline seams in the web from behind in cast 6.
+  - assets/pho.glb 8,659,908 bytes (sha1 8f3e440b), 560,428 -> 168,127 triangles, 19 takes, re-made byte for byte by the
+    recipe.
 
 ## The sheet, version by version
 

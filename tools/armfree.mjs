@@ -14,6 +14,14 @@
 // his chin), the specks recoloured to skin (a fin), ROBESHOULDER (untying the robe from his shoulder bone too: no change
 // seen at the edge, 10,000 more points moved). Left: a jagged edge where the robe meets the armpit skin when the arm is
 // straight up — the robe's own white-to-skin colour edge stretching with the skin.
+// v24.51 (Chad, 8 Nov 2026: "Fix the jagged part, and there are some floating pieces that needs fixing"; masters/v24.51/
+// PLAN.md). THE SHIPPED SETTINGS NOW (masters/v24.51/make.sh): DIFFUSE=24 SKINFILL=8 SKINHOLD=2 SKINMAX=0.5 JOINSKIN=1
+// DROPBITS=12 with v24.50's CUT=1 CUTARM=0.5 SPECKCUT=1 CAPROBE=none CAPARM=fan, and prepmonk at WSMOOTH=0. The jagged edge
+// was prepmonk's weight smoothing, run after this tool, giving the arm's share back to the freed robe: it runs here first
+// now (DIFFUSE). The armpit's skin beside the robe is blended (SKINFILL). The joining triangles are kept and drawn in his
+// skin (JOINSKIN): one even web, no cap to hang as a flap. His scan's loose bits are taken out (DROPBITS). Tried and left:
+// caps on each lip apart (skin flaps), slits left open (CAPSLIT none: the gap showed), the web cut below the armpit
+// (JOINWEB: threads), the far joins riding the arm (JOINFAR: white strips). PIECES=1 lists each opening's rim.
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import sharp from 'sharp';
@@ -79,6 +87,49 @@ if (REPORT) process.exit(0);
    is less, the trunk's weights are carried in from the robe around them (each point the mean of its robe neighbours,
    PASSES times, the points outside the set held fixed). Every other point keeps its weights byte for byte; no point moves;
    triangles are taken out and added only by CUT (below). */
+/* v24.51 · DIFFUSE=n: tools/prepmonk.mjs's weight diffusion (its WSMOOTH, 24 passes) run HERE, before the re-tie, with
+   prepmonk then run at WSMOOTH=0. Run after this tool (v24.50), the diffusion carried the arm's share back out of his
+   armpit's skin into the robe's edge just freed (2,864 points of robe, 313 at 0.05 or more) and blurred every hold put on
+   the skin beside it, which is why the white teeth at the robe's edge never changed (v24.50's tries 12-14). The same
+   arithmetic as prepmonk's (each position's weights pulled toward its neighbours', every copy of a position sharing one
+   set, cut back to the four strongest), so everywhere away from his right armpit is as it was. */
+const DIFFUSE = E('DIFFUSE', 0);
+if (DIFFUSE > 0) for (const mesh of root.listMeshes()) for (const p of mesh.listPrimitives()) {
+  const pos = p.getAttribute('POSITION'), J = p.getAttribute('JOINTS_0'), Wt = p.getAttribute('WEIGHTS_0');
+  if (!J || !Wt) continue;
+  const I = p.getIndices().getArray(), n = pos.getCount(), v = [0, 0, 0], jj = [0, 0, 0, 0], ww = [0, 0, 0, 0];
+  const key = i => { pos.getElement(i, v); return `${Math.round(v[0] * 1e5)},${Math.round(v[1] * 1e5)},${Math.round(v[2] * 1e5)}`; };
+  const gid = new Int32Array(n), gmap = new Map(); let G = 0;
+  for (let i = 0; i < n; i++) { const k = key(i); let g = gmap.get(k); if (g === undefined) { g = G++; gmap.set(k, g); } gid[i] = g; }
+  let NJ = 0;
+  for (let i = 0; i < n; i++) { J.getElement(i, jj); for (const j of jj) NJ = Math.max(NJ, j + 1); }
+  let A = new Float32Array(G * NJ); const cnt = new Float32Array(G);
+  for (let i = 0; i < n; i++) { const g = gid[i]; J.getElement(i, jj); Wt.getElement(i, ww); cnt[g]++;
+    for (let k = 0; k < 4; k++) A[g * NJ + jj[k]] += ww[k]; }
+  for (let g = 0; g < G; g++) for (let j = 0; j < NJ; j++) A[g * NJ + j] /= cnt[g];
+  const deg = new Uint32Array(G + 1), pairs = [];
+  for (let t = 0; t < I.length; t += 3) for (let k = 0; k < 3; k++) { const a = gid[I[t + k]], b = gid[I[t + (k + 1) % 3]]; if (a !== b) { pairs.push(a, b); deg[a + 1]++; deg[b + 1]++; } }
+  for (let g = 0; g < G; g++) deg[g + 1] += deg[g];
+  const adj = new Uint32Array(deg[G]), fill = deg.slice(0, G);
+  for (let e = 0; e < pairs.length; e += 2) { const a = pairs[e], b = pairs[e + 1]; adj[fill[a]++] = b; adj[fill[b]++] = a; }
+  let B = new Float32Array(A.length);
+  for (let it = 0; it < DIFFUSE; it++) {
+    for (let g = 0; g < G; g++) {
+      const s0 = deg[g], s1 = deg[g + 1], m = s1 - s0, o = g * NJ;
+      if (!m) { for (let j = 0; j < NJ; j++) B[o + j] = A[o + j]; continue; }
+      for (let j = 0; j < NJ; j++) { let acc = 0; for (let e = s0; e < s1; e++) acc += A[adj[e] * NJ + j]; B[o + j] = 0.5 * A[o + j] + 0.5 * acc / m; }
+    }
+    const T = A; A = B; B = T;
+  }
+  for (let i = 0; i < n; i++) {
+    const o = gid[i] * NJ, best = [];
+    for (let j = 0; j < NJ; j++) if (A[o + j] > 1e-4) best.push([A[o + j], j]);
+    best.sort((a, b) => b[0] - a[0]); const top = best.slice(0, 4); const sum = top.reduce((a, b) => a + b[0], 0) || 1;
+    while (top.length < 4) top.push([0, 0]);
+    J.setElement(i, top.map(t => t[1])); Wt.setElement(i, top.map(t => t[0] / sum));
+  }
+  console.log(`diffused first (prepmonk's arithmetic, ${DIFFUSE} passes): ${n} vertices in ${G} positions; prepmonk to run with WSMOOTH=0`);
+}
 const KEEP = E('KEEP', 0.5), PASSES = E('PASSES', 400), ISLAND = E('ISLAND', 2000);
 for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) {
   const P = prim.getAttribute('POSITION'), UV = prim.getAttribute('TEXCOORD_0'), J = prim.getAttribute('JOINTS_0'), W = prim.getAttribute('WEIGHTS_0');
@@ -130,14 +181,19 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
      pale texels show as white streaks. So the skin his re-tied robe touches is given the robe's new weights too (rings
      1..SKINHOLD from the robe, each ring the mean of its inner neighbours), then eases back to its own weights by ring R:
      the arm pulls only skin, which stretches as an armpit does. Skin with no share on his right arm is never touched. */
-  const SKINRING = E('SKINRING', 0), SKINHOLD = E('SKINHOLD', 2), SKINMAX = E('SKINMAX', 2);   // SKINMAX: skin riding the arm this much or more is never eased (the arm itself)
+  const SKINRING = E('SKINRING', 0), SKINHOLD = E('SKINHOLD', 2), SKINMAX = E('SKINMAX', 2);
+  /* SKINSH=1: the skin eased is the skin riding his right SHOULDER bone too, not only his arm: the skin above the robe's
+     edge on his side and back rides the shoulder (0.34-0.52), which lifts as the arm goes overhead and drew the robe's
+     edge triangles up into white teeth; eased to the robe's weights for SKINHOLD rings and back to its own by SKINRING,
+     the stretch falls on plain skin */
+  const riderOf = g => armOf(g) + (E('SKINSH', 0) && SHJ !== undefined ? A[g * NJ + SHJ] : 0);   // SKINMAX: skin riding the arm this much or more is never eased (the arm itself)
   let nSkin = 0;
   if (SKINRING > 0) {
     const ring = new Int32Array(G).fill(-1); let front = [];
     for (let g = 0; g < G; g++) if (set[g]) { ring[g] = 0; front.push(g); }
     const O = new Float32Array(A.length); O.set(A);
     for (let r = 1; r <= SKINRING; r++) { const next = [];
-      for (const g of front) for (let e = deg[g]; e < deg[g + 1]; e++) { const b = adj[e]; if (ring[b] >= 0 || cloth[b] || armOf(b) <= 1e-6 || armOf(b) >= SKINMAX) continue; ring[b] = r; next.push(b); }
+      for (const g of front) for (let e = deg[g]; e < deg[g + 1]; e++) { const b = adj[e]; if (ring[b] >= 0 || cloth[b] || riderOf(b) <= 1e-6 || armOf(b) >= SKINMAX) continue; ring[b] = r; next.push(b); }
       for (const g of next) { const o = g * NJ, acc = new Float32Array(NJ); let m = 0;
         for (let e = deg[g]; e < deg[g + 1]; e++) { const b = adj[e]; if (ring[b] !== r - 1) continue; m++; for (let j = 0; j < NJ; j++) acc[j] += O[b * NJ + j]; }
         const t = Math.max(0, Math.min(1, (r - SKINHOLD) / Math.max(1, SKINRING - SKINHOLD))), a = t * t * (3 - 2 * t);
@@ -145,6 +201,35 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
         for (let j = 0; j < NJ; j++) A[o + j] = (1 - a) * O[o + j] + a * A[o + j];
         set[g] = 1; nSkin++; }
       front = next; }
+  }
+  /* v24.51 · SKINFILL=R: the armpit's skin between the robe's edge and his arm BLENDED, not stepped. SKINRING's ring-by-ring
+     ease held skin at the robe's weights right beside skin riding the arm by half or more: one edge going from none of the
+     arm to 0.55 of it, drawn out sixty times its length into a thread floating off his side when the arm went up
+     (mage_soell_cast_6, from behind). Here the skin within R rings of the re-tied robe that rides the arm by less than
+     SKINMAX is solved as a membrane: held at the robe's own weights where it touches the robe (SKINHOLD rings, never a point
+     beside skin riding the arm SKINMAX or more), every other point the mean of its neighbours (FILLPASSES times), the robe,
+     the arm and the skin beyond the band held as they are; so the arm's pull spreads evenly over the band and the robe's
+     coloured edge stays with the robe. */
+  const SKINFILL = E('SKINFILL', 0), FILLPASSES = E('FILLPASSES', 300);
+  if (SKINFILL > 0) {
+    const ring = new Int32Array(G).fill(-1), band = []; let front = [];
+    for (let g = 0; g < G; g++) if (set[g] && cloth[g]) { ring[g] = 0; front.push(g); }
+    for (let r = 1; r <= SKINFILL; r++) { const next = [];
+      for (const g of front) for (let e = deg[g]; e < deg[g + 1]; e++) { const b = adj[e]; if (ring[b] >= 0 || cloth[b] || armOf(b) <= 1e-6 || armOf(b) >= SKINMAX) continue; ring[b] = r; next.push(b); band.push(b); }
+      front = next; }
+    const nearArm = g => { for (let e = deg[g]; e < deg[g + 1]; e++) if (!cloth[adj[e]] && armOf(adj[e]) >= SKINMAX) return true; return false; };
+    const fixed = new Uint8Array(G);
+    for (let r = 1; r <= SKINHOLD; r++) for (const g of band) { if (ring[g] !== r || nearArm(g)) continue; const o = g * NJ, acc = new Float64Array(NJ); let m = 0;
+      for (let e = deg[g]; e < deg[g + 1]; e++) { const b = adj[e]; if (ring[b] !== r - 1 || (r > 1 && !fixed[b])) continue; m++; for (let j = 0; j < NJ; j++) acc[j] += A[b * NJ + j]; }
+      if (!m) continue; for (let j = 0; j < NJ; j++) A[o + j] = acc[j] / m; fixed[g] = 1; }
+    const free = band.filter(g => !fixed[g]), B2 = new Float32Array(free.length * NJ);
+    for (let it = 0; it < FILLPASSES; it++) {
+      free.forEach((g, k) => { const o = k * NJ, m = deg[g + 1] - deg[g]; for (let j = 0; j < NJ; j++) B2[o + j] = 0;
+        for (let e = deg[g]; e < deg[g + 1]; e++) { const b = adj[e] * NJ; for (let j = 0; j < NJ; j++) B2[o + j] += A[b + j]; }
+        for (let j = 0; j < NJ; j++) B2[o + j] /= m; });
+      free.forEach((g, k) => { for (let j = 0; j < NJ; j++) A[g * NJ + j] = B2[k * NJ + j]; }); }
+    for (const g of band) set[g] = 1; nSkin += band.length;
+    console.log(`armfree fill: ${band.length} armpit skin points within ${SKINFILL} rings of the robe, ${band.length - free.length} held at the robe's weights, ${free.length} blended (${FILLPASSES} passes)`);
   }
   /* write: the four largest shares, summing to 1 */
   let nw = 0;
@@ -170,10 +255,40 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
     if (SPECKCUT) for (let g = 0; g < G; g++) if (cloth[g] && wnow[g] >= 0.05) cls[g] = 3;
     const N = prim.getAttribute('NORMAL'), TG = prim.getAttribute('TANGENT');
     for (const sem of prim.listSemantics()) if (!['POSITION', 'NORMAL', 'TEXCOORD_0', 'TANGENT', 'JOINTS_0', 'WEIGHTS_0'].includes(sem)) throw new Error('armfree: an attribute it cannot extend: ' + sem);
+    /* v24.51 · DROPBITS=N: the loose bits of his scan taken out, pieces of N triangles or fewer joined to nothing (seven in his
+       body, 1 to 9 triangles, 7 to 14 mm: three riding only his spine at the small of his back, three his left drape, one his
+       right shoulder). The surface round them moved as they do in his file; the robe re-rigged round them since moves without
+       them, and they show as orange dots on his back (mage_soell_cast_6, from behind). */
+    const DROPBITS = E('DROPBITS', 0), bit = new Uint8Array(I.length / 3); let nBits = 0, nBitTris = 0;
+    if (DROPBITS > 0) { const p2 = new Int32Array(G).map((_, i) => i), f2 = x => { while (p2[x] !== x) x = p2[x] = p2[p2[x]]; return x; };
+      for (let t = 0; t < I.length; t += 3) { const a = f2(gid[I[t]]), b = f2(gid[I[t + 1]]), c = f2(gid[I[t + 2]]); p2[a] = b; p2[f2(b)] = f2(c); }
+      const size = new Map(); for (let t = 0; t < I.length; t += 3) { const r = f2(gid[I[t]]); size.set(r, (size.get(r) || 0) + 1); }
+      for (const s of size.values()) if (s <= DROPBITS) nBits++;
+      for (let t = 0; t < I.length; t += 3) if (size.get(f2(gid[I[t]])) <= DROPBITS) { bit[t / 3] = 1; nBitTris++; } }
+    /* v24.51 · JOINSKIN=1: the join KEPT and drawn in his arm's skin. Cut (v24.50), the robe's edge and the arm parted with
+       nothing between: the gap showed the inside of him, and the caps that closed it hung as flaps (a cap's middle riding half
+       the trunk and half the arm) or, left off, showed the gap. Kept, each joining triangle (a point of robe on his trunk, a
+       point of skin riding the arm CUTARM or more) has its three corners copied with the median skin of his arm, so as the
+       arm goes up they stretch into an even web of skin from the robe's edge to the arm, an armpit, and the robe's white edge
+       stays on the robe. */
+    const JOINSKIN = E('JOINSKIN', 0), joinT = [];
+    /* JOINWEB=D: the web only where his arm meets his body at the armpit. The scan pressed the arm to his side from the armpit
+       to near the elbow, and a join kept all the way down stretched, with the arm up, into a strip of skin from his waist to
+       the raised elbow lying across the robe (a bat's wing). A joining triangle whose arm points are all within D metres of
+       his shoulder joint is kept as the web; any further down the arm is taken out as v24.50 took them all. */
+    /* JOINFAR=D1 (with JOINWEB=D0): every join kept, and the ones down the arm made to ride it instead: a joining triangle's
+       corners off the arm (on the robe's edge) take the arm corners' weights by a share easing from 0 at D0 to 1 at D1 metres
+       from his shoulder joint, so the web stays at the armpit and further down the join goes up with the arm, closing its
+       underside, while the robe's edge stays on his side. */
+    const JOINWEB = E('JOINWEB', 0), JOINFAR = E('JOINFAR', 0), RAJ = JP[JI.RightArm], djHist = [], joinD = [];
+    const joinDist = (t, cs) => { let d = 0; for (let k = 0; k < 3; k++) if (cs[k] === 2) { P.getElement(I[t + k], v); d = Math.max(d, Math.hypot(v[0] - RAJ[0], v[1] - RAJ[1], v[2] - RAJ[2])); }
+      djHist.push(d); return d; };
     const ek = (a, b) => a < b ? a + ',' + b : b + ',' + a, before = new Map(), after = new Map(), keep = []; let cut = 0;
     for (let t = 0; t < I.length; t += 3) { const g3 = [gid[I[t]], gid[I[t + 1]], gid[I[t + 2]]];
       for (let k = 0; k < 3; k++) { const e = ek(g3[k], g3[(k + 1) % 3]); before.set(e, (before.get(e) || 0) + 1); }
-      const cs = g3.map(g => cls[g]); if (cs.includes(1) && cs.includes(2)) { cut++; continue; } if (cs.includes(3)) { nSpeckCut++; continue; }
+      if (bit[t / 3]) continue;
+      const cs = g3.map(g => cls[g]); if (cs.includes(1) && cs.includes(2)) { const d = JOINSKIN ? joinDist(t, cs) : 0;
+        if (JOINSKIN && (JOINFAR || !JOINWEB || d <= JOINWEB)) { joinT.push(t); joinD.push(d); } else { cut++; continue; } } if (cs.includes(3)) { nSpeckCut++; continue; }
       keep.push(t); for (let k = 0; k < 3; k++) { const e = ek(g3[k], g3[(k + 1) % 3]); after.set(e, (after.get(e) || 0) + 1); } }
     const edges = [];
     for (const t of keep) for (let k = 0; k < 3; k++) { const a = I[t + k], b = I[t + (k + 1) % 3], e = ek(gid[a], gid[b]); if (after.get(e) === 1 && before.get(e) > 1) edges.push([a, b]); }
@@ -200,14 +315,22 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
        the arm had hung, its points tied half to the arm). A piece's lip in one texel: the median skin within 6 cm (a robe
        piece shows the skin under its edge). */
     const LIP = E('LIP', 0.012), CAPROBE = process.env.CAPROBE || 'fan', CAPARM = process.env.CAPARM || 'fan', FANIN = E('FANIN', 0.6);
+    /* v24.51 · CAPSLIT=none: an opening whose rim runs along both the robe's edge and the arm's (a slit, its two lips meeting at
+       the cut's ends: 54 points of robe and 54 of arm on one rim) is left as cut. Capped as one (v24.50, as an arm piece), its
+       middle rode half the trunk and half the arm and the cap hung under the raised arm as a flap (Charged_Spell_Cast); its
+       two lips capped apart, the arm's lip a long open chain along the arm's underside, the caps hung as skin flaps in every
+       raised-arm take. */
+    const CAPSLIT = process.env.CAPSLIT || '';
     const skinNear = (c, r) => { const cand = []; for (let i = 0; i < n; i++) { if (cloth[gid[i]]) continue; const q = pos(i); if (Math.hypot(q[0] - c[0], q[1] - c[1], q[2] - c[2]) < r) cand.push(i); } return cand; };
     const rep = { robe: 0, arm: 0, open: 0 };
     for (const eds of pieces.values()) {
       const ids = [...new Set(eds.flat())], cc = [0, 0, 0, 0]; for (const i of ids) cc[cls[gid[i]]]++; const pc = cc[1] > cc[2] + cc[0] ? 1 : 2;
+      if (E('PIECES', 0)) { const ar = ids.map(i => wnow[gid[i]]).sort((a, b) => a - b), q = pos(ids[0]);   // PIECES=1: each opening, its rim's classes and arm shares
+        console.log(`  piece ${pc === 1 ? 'robe' : 'arm '}: ${eds.length} edges, rim other/robe/arm/speck ${cc.join('/')}, arm share ${ar[0].toFixed(2)}..${ar[ar.length >> 1].toFixed(2)}..${ar[ar.length - 1].toFixed(2)}, at ${q.map(x => x.toFixed(3))}`); }
       if (eds.length < 2) { rep.open++; continue; }
       const c = [0, 0, 0]; for (const i of ids) { const q = pos(i); for (let k = 0; k < 3; k++) c[k] += q[k] / ids.length; }
       let cand = skinNear(c, 0.06); if (!cand.length) cand = skinNear(c, 0.12); const from = medianPoint(cand.length ? cand : ids);
-      const how = pc === 1 ? CAPROBE : CAPARM;
+      const how = CAPSLIT && cc[1] > 0 && cc[2] > 0 ? CAPSLIT : pc === 1 ? CAPROBE : CAPARM;
       if (how === 'none') { rep.open++; continue; }
       if (how === 'fan') {
         /* a fan to the piece's middle (tools/hemcut.mjs's cap), riding as its edge points do on average */
@@ -231,14 +354,22 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
     let nSpeckTri = 0; const armSkin = (() => { const cand = []; for (let i = 0; i < n; i++) if (!cloth[gid[i]] && cls[gid[i]] === 2) cand.push(i); return cand.length ? medianPoint(cand.filter((_, k) => k % 7 === 0)) : null; })();
     if (armSkin !== null) for (const t of keep) { if (!speckG[gid[I[t]]] && !speckG[gid[I[t + 1]]] && !speckG[gid[I[t + 2]]]) continue;
       for (let k = 0; k < 3; k++) { const i = I[t + k]; N.getElement(i, nn); I[t + k] = newPoint(pos(i), [nn[0], nn[1], nn[2]], armSkin, wOf(i)); } nSpeckTri++; }
+    let nSlid = 0;
+    if (armSkin !== null) joinT.forEach((t, q) => { const sl = JOINFAR > JOINWEB ? Math.max(0, Math.min(1, (joinD[q] - JOINWEB) / (JOINFAR - JOINWEB))) : 0, s3 = sl * sl * (3 - 2 * sl);
+      const armI = [0, 1, 2].map(k => I[t + k]).filter(i => cls[gid[i]] === 2), armW = avgWeights(armI).map(([j, w]) => [j, w / armI.length]); if (s3 > 0) nSlid++;
+      for (let k = 0; k < 3; k++) { const i = I[t + k]; N.getElement(i, nn); let jw = wOf(i);
+        if (s3 > 0 && cls[gid[i]] !== 2) { const m = new Map(); for (const [j, w] of jw) m.set(j, (m.get(j) || 0) + (1 - s3) * w); for (const [j, w] of armW) m.set(j, (m.get(j) || 0) + s3 * w); jw = [...m]; }
+        I[t + k] = newPoint(pos(i), [nn[0], nn[1], nn[2]], armSkin, jw); } });
     const grow = (acc, extra, Ctor) => { const old = acc.getArray(), out = new Ctor(old.length + extra.length); out.set(old); out.set(extra, old.length); acc.setArray(out); };
     grow(P, NP, Float32Array); grow(N, NN, Float32Array); grow(UV, NUV, Float32Array); if (TG) grow(TG, NTG, Float32Array);
     grow(J, NJw, J.getArray().constructor); grow(W, NW, W.getArray().constructor);
     const idx = new Uint32Array(keep.length * 3 + tri.length); let o2 = 0; for (const t of keep) { idx[o2++] = I[t]; idx[o2++] = I[t + 1]; idx[o2++] = I[t + 2]; } idx.set(tri, o2);
     prim.getIndices().setArray(idx);
-    console.log(`armfree cut: ${cut} triangles joining the robe to skin riding his right arm (share >= ${CUTARM}) taken out; ${edges.length} open edges in ${pieces.size} pieces: ${rep.robe} robe and ${rep.arm} arm pieces closed (robe ${CAPROBE}, arm ${CAPARM}), ${rep.open} left open; ${nSpeckTri} triangles of pale specks on his arm drawn in skin, ${nSpeckCut} taken out with them; ${NP.length / 3} points and ${tri.length / 3} triangles added`);
+    const cent = () => djHist.length ? [0.1, 0.5, 0.9].map(q => djHist.slice().sort((x, y) => x - y)[Math.floor(q * (djHist.length - 1))].toFixed(3)).join('/') : '-';
+    const joinNote = () => !JOINSKIN ? '' : `; ${joinT.length} joining triangles kept, drawn in his arm's skin` + (JOINFAR ? `, ${nSlid} of them riding the arm from ${JOINWEB} m to wholly at ${JOINFAR} m from his shoulder joint` : JOINWEB ? `, those with arm points within ${JOINWEB} m of his shoulder joint` : '') + (JOINWEB || JOINFAR ? ` (the joins' arm points lie ${cent()} m from it at the 10th/50th/90th centile)` : '');
+    console.log(`armfree cut: ${cut} triangles joining the robe to skin riding his right arm (share >= ${CUTARM}) taken out; ${edges.length} open edges in ${pieces.size} pieces: ${rep.robe} robe and ${rep.arm} arm pieces closed (robe ${CAPROBE}, arm ${CAPARM}), ${rep.open} left open; ${nSpeckTri} triangles of pale specks on his arm drawn in skin, ${nSpeckCut} taken out with them; ${NP.length / 3} points and ${tri.length / 3} triangles added${joinNote()}${DROPBITS ? `; ${nBits} loose bits of ${DROPBITS} triangles or fewer taken out (${nBitTris} triangles)` : ''}`);
   }
-  console.log(`armfree: ${nSet} robe points off his right arm (${nFill} given the trunk's weights from the robe around them), ${nSkin} armpit skin points eased (SKINRING ${E('SKINRING', 0)}), ${nw} vertices written; ${nSpeck} pale specks inside his skin left on the arm; robe pieces ${nc}, largest ${Math.max(...csize)}`);
+  console.log(`armfree: ${nSet} robe points off his right arm (${nFill} given the trunk's weights from the robe around them), ${nSkin} armpit skin points eased (SKINRING ${E('SKINRING', 0)}, SKINFILL ${E('SKINFILL', 0)}), ${nw} vertices written; ${nSpeck} pale specks inside his skin left on the arm; robe pieces ${nc}, largest ${Math.max(...csize)}`);
 }
 await io.write(OUT, doc);
 console.log('armfree: wrote', OUT);

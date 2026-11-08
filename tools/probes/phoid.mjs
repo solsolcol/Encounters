@@ -4,7 +4,7 @@
    front or back face, each with its three points' rest place, posed place, edge stretch and the bones they ride; and the
    picture is written with those triangles tinted red and the box drawn, to prove the list IS the fault.
      node tools/probes/phoid.mjs <file.glb> <outPrefix> --take=<take|REST> --t=<seconds> --view=<deg:pitch> [--rect=x0,y0,x1,y1]
-       [--size=760] [--min=6 (pixels a triangle must cover to be listed)] [--top=40]
+       [--size=760] [--min=6 (pixels a triangle must cover to be listed)] [--top=40] [--frame=joint:<bone>:<radius m> (v24.51)]
    writes <outPrefix>.png (the tinted picture) and <outPrefix>.json; CHROMIUM_PATH as for every probe. */
 import { chromium } from 'playwright';
 import { createServer } from 'http';
@@ -14,7 +14,7 @@ import { fileURLToPath } from 'url';
 const [FILE, OUT] = process.argv.slice(2), arg = (k, d) => { const a = process.argv.find(x => x.startsWith(`--${k}=`)); return a ? a.slice(k.length + 3) : d; };
 if (!FILE || !OUT) { console.error('usage: node tools/probes/phoid.mjs <file.glb> <outPrefix> --take=T --t=s --view=deg:pitch [--rect=x0,y0,x1,y1] [--size=760]'); process.exit(1); }
 const SIZE = +arg('size', 760), TAKE = arg('take', 'REST'), T = +arg('t', 0), VIEW = arg('view', '0:2').split(':').map(Number), MIN = +arg('min', 6), TOP = +arg('top', 40);
-const RECT = arg('rect', `0,0,${SIZE},${SIZE}`).split(',').map(Number);
+const RECT = arg('rect', `0,0,${SIZE},${SIZE}`).split(',').map(Number), FRAME = arg('frame', 'legs');
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..'), MIME = { '.js': 'text/javascript', '.mjs': 'text/javascript', '.html': 'text/html', '.glb': 'model/gltf-binary' };
 const srv = createServer(async (req, res) => { try { const p = decodeURIComponent(req.url.split('?')[0]); const path = p === '/model.glb' ? resolve(FILE) : resolve(ROOT + p);
   if (p !== '/model.glb' && !path.startsWith(ROOT + '/node_modules/')) throw new Error('outside');
@@ -58,7 +58,10 @@ new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load('/model.glb', g => { con
     root.updateMatrixWorld(true);
     /* clipsheet's frame: the posed skin's box from every 40th point of the first skinned part, legs framing */
     const box = new THREE.Box3(), sk = parts[0], P0 = sk.geometry.attributes.position; for (let i = 0; i < P0.count; i += 40) { sk.getVertexPosition(i, v); v.applyMatrix4(sk.matrixWorld); box.expandByPoint(v); }
-    let c = box.getCenter(new THREE.Vector3()); c = new THREE.Vector3(c.x, box.min.y + 0.32, c.z); const r = 0.38, d = r / Math.sin(THREE.MathUtils.degToRad(15)) * 1.02;
+    let c = box.getCenter(new THREE.Vector3()); c = new THREE.Vector3(c.x, box.min.y + 0.32, c.z); let r = 0.38;
+    /* v24.51 · --frame=joint:<bone>:<radius>, as tools/clipsheet.mjs frames a close-up on one bone */
+    if ('${FRAME}'.startsWith('joint:')) { const [, jn, jr] = '${FRAME}'.split(':'); let bj = null; root.traverse(o => { if (o.isBone && new RegExp(jn + '$').test(o.name)) bj = o; }); if (bj) { c = bj.getWorldPosition(new THREE.Vector3()); r = +jr || 0.2; } }
+    const d = r / Math.sin(THREE.MathUtils.degToRad(15)) * 1.02;
     const a2 = THREE.MathUtils.degToRad(deg), p2 = THREE.MathUtils.degToRad(pitch);
     cam.position.set(c.x + Math.sin(a2) * Math.cos(p2) * d, c.y + Math.sin(p2) * d, c.z + Math.cos(a2) * Math.cos(p2) * d); cam.lookAt(c); cam.updateProjectionMatrix();
     /* the picture as clipsheet draws it */
