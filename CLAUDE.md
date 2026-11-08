@@ -129,6 +129,9 @@ that fits it, with the version it came from.
 - Use the models he has already supplied, and use them to the fullest (their interiors, their own looks), before building anything in code; check the models docs for what he already sent. (v24.18)
 - Every amulet, sacred image and hero model he gives keeps its full detail (every triangle, every map) wherever it is seen close; a lighter level is only for distance. (v14.14)
 - Optimise only in ways that cost no visual quality or fidelity at all. (v15.0)
+- Never compress anything to make room on the working machine ("I dont want to compress anything"): room is made by clearing
+  copies and leftovers (old build snapshots, release zips, a bundle's sent pieces, intermediates a recipe remakes), with
+  his yes, never by compressing a file. (v24.54)
 - Adopt an objectively better solution only when very sure of it, and prove that new work has not silently broken or undone earlier fixes. (v14.16)
 - Loading must be smart: no stutter and no late pop-in; nothing heavy happens while the world is on screen. (v14.15)
 - The loading word is on screen whenever the player waits (the one exception: the title card straight after an opening film says no 'Loading'). (v15.3)
@@ -1164,7 +1167,13 @@ the triangles that stretch with his arm and hold it are drawn in skin, in armfre
 masters/v24.53/PLAN.md) the skin patch on the robe (his scan's lowest joins, drawn out by the raised arm) is taken out
 after the thinning (prepmonk ROBEHANG), and the pale dots in the armpit's crease (white in his colour sheet bleeding in
 at the edges of thin charts of skin) mostly cured by pointing those triangles at skin inside a chart (EDGEBLEED). A
-triangle hanging between robe and arm shows wrong whichever colour it is given: take it out. Waiting on his choice: his hands in the floor sit (raised onto the robe, his saved file's robe for
+triangle hanging between robe and arm shows wrong whichever colour it is given: take it out. At v24.54 (Chad: "Ok, install
+blender on your end"; masters/v24.54/PLAN.md) the collar and the small fold his scan made where his inner arm touched his
+side are cut in Blender (tools/armpit.py, run on Blender's Python; tools/meshpatch.mjs hands it the region and writes
+back only what it changed), each opening closed on its own side, the points by the cut weighed to their own side, and
+the thinning holds the armpit as built (prepmonk THINLOCK): the patch's hairline, cast 6's seams and the robe's teeth
+under the arm are gone. Blender here is a tool for the mesh, never for the pictures that judge it (those stay the
+game's renderer). A Blender script iterates its points in memory order unless sorted by a key no two points share. Waiting on his choice: his hands in the floor sit (raised onto the robe, his saved file's robe for
 that take, or as it is). Each 540-picture blind review by twenty readers costs about 6 million tokens: put its cost to
 Chad before running one (he noticed v24.49's four). **Ajahn Krukai's model is PINNED** (v23.5, Chad: *"Make sure ajahn krukai's model
 in ep3 is unaffected and untouched. It is important that krukai is in the game as the master who gave the player his

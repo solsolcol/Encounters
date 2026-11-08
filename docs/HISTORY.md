@@ -8185,6 +8185,40 @@ What the baseline contains, by release:
     behind in cast 6; the orange dots and dark crease lines painted in his robe (as delivered).
   - assets/pho.glb 8,679,276 bytes (sha1 f4c6cf60), 560,428 -> 168,098 triangles, 19 takes, the recipe's file byte for
     byte the trial build's. The disk allowance ran out mid-way (blank renders, no error); old scratch was cleared.
+- **v24.54** (prepared, not a build: nothing deployed, the live build stays v24.40) GRANDMASTER PHO: HIS RIGHT ARM FREED FROM
+  HIS SIDE, IN BLENDER. Chad, 8 Nov 2026: "Would it have been easier if you had blender mcp and open the model in
+  blender" ... (offered: Blender installed here, his right armpit redone properly, all 19 moves re-checked, his file the
+  fallback until the new one is better in every picture) ... "Ok, install blender on your end. I'm just worried it will be
+  all slow since you have no gpu, and make the whole workspace have even lesser space. Is it possible to increase the
+  space? ... But i dont want to compress anything" (masters/v24.54/PLAN.md).
+  - Blender 5.2.3 as a Python module, headless, no graphics card: his whole file opens in 9 s, the armpit step runs in
+    about 10. tools/meshpatch.mjs hands Blender the region round his right shoulder joint and writes back only what it
+    changed (an empty change writes the file it read, byte for byte); tools/armpit.py is the step.
+  - The collar his scan made where his inner arm touched his side (140 triangles) and the small fold below it (21) taken
+    out with their 6 last ties; each opening closed on its own side by the least-cost triangulation of its rim (Liepa's
+    hole filling); a fill triangle whose paint underneath is not all of its kind pointed at plain skin or robe beside it
+    (the scan printed the robe's white on his arm); the points within 4 cm of the cut weighed to their own side. The two
+    folds across the armpit are the armpit and stay.
+  - prepmonk THINLOCK=0.25: the thinning may not move a point within 25 cm of the joint whose arm share lies between 0.02
+    and 0.98, nor its neighbours (meshopt's vertex lock): it had been remaking the joins from the points round them.
+    ROBEHANG off.
+  - Tried and left: every triangle further out whose corners ride arm and side apart cut too (a white strip up the raised
+    arm); every point within 30 cm weighed to its side (gaps and a shard); Blender's own fills (folded on a ragged round
+    hole); copies made before the reweight (hairline cracks).
+  - Checked: close in look D (shots/pho-armpit-blender-before-after.jpg): the chair sit's hairline and skin tooth, cast 6's
+    two seams from behind and the robe's teeth under the arm in the Charged cast and the seated moves are gone; all 19
+    takes, four moments, front and side, one-pixel noise taken out: every change at his right armpit and each cleaner;
+    the recipe twice byte for byte; step 7 is v24.52's file; prepmonk with v24.53's settings makes v24.53's file.
+  - Left, and said: raised, the armpit's skin is one plain colour (his scan never saw it; a soft blend would need new
+    paint in the empty space of his colour sheet: his choice); the robe's own edge in the crease, arm down; the robe's
+    painted dots and crease lines (as delivered).
+  - The space question answered: the allowance is fixed per session and a new session starts on a fresh machine; the game
+    itself takes about 4.5 GB of 39; 2.2 GB of my own scratch copies cleared; four leftovers (old build snapshots, the
+    v24.40 zip, the backup's 65 pieces, Pho's old in-between files: 6.3 GB) put to him; and the 1.3 GB of Meshy sources
+    that exist only on this machine (masters/*/src is gitignored, Meshy deletes its copies after three days) put to him
+    with three ways to keep them. Nothing compressed.
+  - assets/pho.glb 8,656,084 bytes (sha1 f0a6a9fa), 560,428 -> 168,122 triangles, 19 takes, re-made byte for byte by
+    the recipe.
 
 ## The sheet, version by version
 

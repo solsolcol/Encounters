@@ -7649,3 +7649,30 @@ cut (sharing its vertices and maps) when it is small.
   touching a pixel (prepmonk EDGEBLEED).
 - **A full disk fails quietly.** With the session's disk allowance spent, the renders came out blank with no error. Check
   `df` when pictures come back empty, and clear your own scratch first.
+
+## v24.54 — Blender for the mesh, the game for the pictures, and lock what a later step would undo
+
+- **Blender runs headless here, and needs no graphics card for mesh work.** Installed as a Python module (`pip install
+  bpy`, Python 3.13 for Blender 5.2), it opened Grandmaster Pho's 560,000-triangle file in 9 seconds; its bmesh did the cut,
+  the splits and the fills in about 10. Its own renderer (Cycles, on the processor) is good for working pictures (each
+  piece in a colour); the pictures that judge a fix stay the game's renderer. Hand Blender only the region (a dump of
+  points, triangles, uvs and weights) and write back only its change, so every other byte of the file stays as it was:
+  tools/meshpatch.mjs with an empty change writes the file it read.
+- **A step that remakes a fault is stopped at the step, not cleaned after it.** Three versions cleaned up after the
+  thinning (STRETCHPAINT, ROBEHANG) because the thinning kept remaking joins between arm and side. meshopt's vertex lock
+  (simplifyWithAttributes with no attributes and a lock per point) keeps the region as built, and the rest of the body
+  is thinned as before (prepmonk THINLOCK).
+- **A hole in a scan is ragged and curved: fill it by least cost, not by projection.** A zipper between its far ends and
+  Blender's own fills (flat projection along its facing) folded on a 6 cm ragged hole; the least-cost triangulation of
+  the rim (Liepa: area, grown by how far each triangle turns from the surface round its corners, a dynamic programme over
+  the rim in order) followed the surface.
+- **Blender's vert_separate splits a point at every non-manifold edge too**, not only between the fans that meet there
+  (a scan has many): count the fans yourself (faces joined through an edge at the point) and rebuild only the extra fans.
+- **A copy made before the weights change keeps the old ones.** A fill corner copied from a point the step then weighed
+  again moved apart from it in motion: hairline cracks along the fill. Write the weights first, then copy.
+- **Paint carried from the corners is checked under the triangle.** The scan printed the robe's white on his arm where
+  the robe touched it; fill triangles that took their corners' places showed white marks. Sample the sheet under each.
+  And "not robe" is not skin: the dark fill between the sheet's charts is neither; skin is warm and coloured.
+- **A set of Blender's points iterates in memory order.** Two runs of the same script gave different files until every
+  set was sorted by a key no two points share (a point and its copy share a place: add the lowest triangle number round
+  each). Prove a recipe by running it twice, and again under a shifted memory layout.

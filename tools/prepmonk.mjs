@@ -104,7 +104,43 @@ if (WSMOOTH > 0) for (const mesh of root.listMeshes()) for (const p of mesh.list
   }
   console.log(`  skin weights: ${n} vertices in ${G} positions over ${NJ} joints, ${WSMOOTH} diffusion passes; ${moved} vertices' main weight moved`);
 }
-await doc.transform(simplify({ simplifier: MeshoptSimplifier, ratio: RATIO, error: 0.0015 }), prune());
+/* v24.54 · THINLOCK=<r> (masters/v24.54/PLAN.md): the thinning may not move or take out a point within r of his right
+   shoulder joint whose arm share (RightArm, RightForeArm, RightHand) lies between 0.02 and 0.98, nor a point joined to one
+   by an edge (meshopt's vertex lock; every other point is thinned by the same rule as before). His right armpit, rebuilt in
+   Blender before this step (tools/armpit.py), is kept as built: free to move there, the thinning remade joins between his
+   arm and his side from the points round them (v24.53's patch came back however the joins were cut or painted before it). */
+const THINLOCK = Number(process.env.THINLOCK || 0);
+let thinner = MeshoptSimplifier;
+if (THINLOCK > 0) {
+  const skin = root.listSkins()[0], joints = skin.listJoints(), names = joints.map(j => j.getName().replace('mixamorig:', ''));
+  const k = names.indexOf('RightArm'), a = Array.from(skin.getInverseBindMatrices().getArray().slice(k * 16, k * 16 + 16));
+  // the joint's rest place: the translation of its inverse bind matrix's inverse (as tools/armfree.mjs finds it)
+  const c00 = a[5] * a[10] - a[9] * a[6], c01 = -(a[4] * a[10] - a[8] * a[6]), c02 = a[4] * a[9] - a[8] * a[5];
+  const c10 = -(a[1] * a[10] - a[9] * a[2]), c11 = a[0] * a[10] - a[8] * a[2], c12 = -(a[0] * a[9] - a[8] * a[1]);
+  const c20 = a[1] * a[6] - a[5] * a[2], c21 = -(a[0] * a[6] - a[4] * a[2]), c22 = a[0] * a[5] - a[4] * a[1];
+  const id = 1 / (a[0] * c00 + a[4] * c10 + a[8] * c20), r = [c00, c01, c02, c10, c11, c12, c20, c21, c22].map(x => x * id);
+  const C = [0, 1, 2].map(i => -(r[3 * i] * a[12] + r[3 * i + 1] * a[13] + r[3 * i + 2] * a[14]));
+  const ARM = new Set(['RightArm', 'RightForeArm', 'RightHand'].map(x => names.indexOf(x)));
+  const key = (a, o) => `${Math.round(a[o] * 1e5)},${Math.round(a[o + 1] * 1e5)},${Math.round(a[o + 2] * 1e5)}`;
+  const band = new Set();
+  for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) {
+    const P = prim.getAttribute('POSITION'), J = prim.getAttribute('JOINTS_0'), W = prim.getAttribute('WEIGHTS_0');
+    if (!J || !W) continue;
+    const pos = P.getArray(), I = prim.getIndices().getArray(), n = P.getCount(), jj = [0, 0, 0, 0], ww = [0, 0, 0, 0], inBand = new Uint8Array(n);
+    for (let i = 0; i < n; i++) { const d = Math.hypot(pos[3 * i] - C[0], pos[3 * i + 1] - C[1], pos[3 * i + 2] - C[2]); if (d > THINLOCK) continue;
+      J.getElement(i, jj); W.getElement(i, ww); let a = 0; for (let q = 0; q < 4; q++) if (ARM.has(jj[q])) a += ww[q];
+      if (a > 0.02 && a < 0.98) inBand[i] = 1; }
+    const lockV = new Uint8Array(n);
+    for (let t = 0; t < I.length; t += 3) if (inBand[I[t]] || inBand[I[t + 1]] || inBand[I[t + 2]]) lockV[I[t]] = lockV[I[t + 1]] = lockV[I[t + 2]] = 1;
+    for (let i = 0; i < n; i++) if (lockV[i]) band.add(key(pos, 3 * i));
+  }
+  thinner = { ...MeshoptSimplifier, simplify: (idx, pos, stride, target, err, flags) => {
+    const nv = pos.length / stride, lock = new Uint8Array(nv); let nl = 0;
+    for (let i = 0; i < nv; i++) if (band.has(key(pos, i * stride))) { lock[i] = 1; nl++; }
+    console.log(`  thinning: ${nl} points at his right armpit held (within ${THINLOCK} m of the joint, arm share 0.02-0.98, and their neighbours)`);
+    return MeshoptSimplifier.simplifyWithAttributes(idx, pos, stride, new Float32Array(0), 0, [], lock, target, err, flags); } };
+}
+await doc.transform(simplify({ simplifier: thinner, ratio: RATIO, error: 0.0015 }), prune());
 
 /* ---- v19.8: THE FOLDS. The simplifier can fold a thin flap flat onto
    itself, leaving two copies of one triangle facing opposite ways (none in

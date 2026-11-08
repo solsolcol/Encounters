@@ -82,7 +82,10 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
    will actually look in the game"; his look is D, said again: "unlit, except for the robe"; masters/v24.52/PLAN.md;
    left and said: a faint pale line at the robe's edge under his arm, seen close), and those last faults fixed (v24.53,
    "Fix those remaining issues cleanly and efficiently"; masters/v24.53/PLAN.md: the skin patch on the robe gone, the
-   pale dots mostly gone; left and said: a hairline where the patch was). His choice waits on one thing: sitting
+   pale dots mostly gone; left and said: a hairline where the patch was), and his right arm freed from his side in
+   Blender (v24.54, "Ok, install blender on your end"; masters/v24.54/PLAN.md: the hairline, cast 6's seams and the
+   robe's teeth under the arm gone; left and said: raised, the armpit's skin is one plain colour, a soft blend his
+   choice). His choice waits on one thing: sitting
    cross-legged, his hands rest under the robe — raise them about 10 cm onto it, his saved file's robe for that take, or
    leave it; and, if he prefers cleaner talking over clean chair sits, the first build instead. Left and said: a sliver
    of thigh at the wrap's front edge in three takes (his knee behind the cloth, seen through a slit)), Lersi Chin's voice (his model arrived 3 Nov 2026 and is prepared,
@@ -149,3 +152,14 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
 - The release zip (`masterz-encounters-vN.N.zip`, ~570 MB) is built every release and has not been handed to him
   since the site outgrew a phone's upload; Netlify keeps every published deploy for two-tap rollback.
 - Tags stay local (`git push --tags` → 403); every release commit's message begins with its version.
+- **The working machine's disk** (asked 8 Nov, v24.54: "Is it possible to increase the space? ... But i dont want to
+  compress anything"). The allowance is fixed per session (about 39 GB) and a new session starts on a fresh machine; the
+  game itself (the checkout, its history, node_modules and both builds) takes about 4.5 GB. Put to him, waiting on his
+  yes, each losing nothing: the old build snapshots of v24.13–v24.17 beside the repo (3 GB; Netlify keeps every deploy),
+  the v24.40 release zip (0.6 GB), the backup bundle's 65 pieces cut for sending (1.3 GB; the whole bundle stays), and
+  Pho's in-between files of older versions under masters/*/prep (2 GB; each recipe remakes them).
+- **The Meshy sources live only on the working machine** (found 8 Nov, v24.54): masters/*/src/*.glb is gitignored
+  (since v11.2, for the large unshrunk sources), so the 64 originals and remeshes Meshy made for episode 4 (1.31 GB: the
+  trees, cars, Phra Rahu, the amulets and kumanthong) are in no commit and no bundle, and Meshy deletes its own after
+  three days. Chad's own models came from his Drive. Put to him: A, keep them on GitHub on a branch of their own that a
+  fresh copy of the project does not download (recommended); B, send them to him in 20 MB pieces; C, leave them here.
