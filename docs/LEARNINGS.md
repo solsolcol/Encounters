@@ -7632,3 +7632,20 @@ cut (sharing its vertices and maps) when it is small.
   tone mapping, lights and lens draw it. A studio render on grey is not the game.
 - **A question his own earlier pick answers is answered with the pick.** He asked "lit or unlit?" after picking look D at
   v24.47. The answer is D, shown in the game, not a new choice between looks.
+
+## v24.53 — take out what hangs between two surfaces, and read the colour sheet before blaming the mesh
+
+- **A triangle hanging between two surfaces shows wrong whatever colour it is given.** Grandmaster Pho's lowest joins ran
+  from the robe on his side to his raised arm. In skin they were a patch on the robe; painted the robe's white they were
+  a white streak up the skin. Taken out (after the last step that rebuilds triangles), what was behind them showed: his
+  robe and the armpit's web.
+- **Test the cheap explanation first, and let one picture decide.** A ring of 140 joins looked like the patch's cause; cut,
+  nothing changed. The lowest fold looked like it; cut before the thinning, nothing changed, because the thinning rebuilt
+  it. Every join cut removed the patch but made threads. A triangle-ID render of the final file (tools/probes/phoid.mjs)
+  named the real triangles in one run.
+- **Pale dots along triangle edges on unlit skin can be the colour sheet.** Drawing the region from both sides changed
+  nothing; the texture under those triangles showed thin charts of skin with white right beside them, and a texel at a
+  chart's edge mixes in its neighbour. Pointing those triangles at a texel inside a chart cured most of it without
+  touching a pixel (prepmonk EDGEBLEED).
+- **A full disk fails quietly.** With the session's disk allowance spent, the renders came out blank with no error. Check
+  `df` when pictures come back empty, and clear your own scratch first.

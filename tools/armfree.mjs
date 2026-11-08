@@ -25,6 +25,7 @@
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
 import sharp from 'sharp';
+import { writeFileSync } from 'fs';
 const [IN, OUT] = process.argv.slice(2);
 const E = (k, d) => (process.env[k] !== undefined ? Number(process.env[k]) : d);
 const SAT = E('SAT', 0.16), VAL = E('VAL', 150), REPORT = E('REPORT', 0);
@@ -297,6 +298,13 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
       const cs = g3.map(g => cls[g]); if (cs.includes(1) && (cs.includes(2) || (JOINSKIN && JOINARM < CUTARM && g3.some(g => cls[g] === 0 && wnow[g] >= JOINARM)))) { const d = JOINSKIN ? joinDist(t, cs) : 0;
         if (JOINSKIN && (JOINFAR || !JOINWEB || d <= JOINWEB)) { joinT.push(t); joinD.push(d); } else { cut++; continue; } } if (cs.includes(3)) { nSpeckCut++; continue; }
       keep.push(t); for (let k = 0; k < 3; k++) { const e = ek(g3[k], g3[(k + 1) % 3]); after.set(e, (after.get(e) || 0) + 1); } }
+    /* JOINDUMP=<file.json> (a look, nothing changed): the joining triangles and the kept triangles touching them, each point's
+       place, class (1 robe, 2 arm, 0 other), arm share and robe flag, for working out the shape of the join */
+    if (process.env.JOINDUMP) { const js = new Set(); for (const t of joinT) for (let k = 0; k < 3; k++) js.add(gid[I[t + k]]);
+      const near = keep.filter(t => [0, 1, 2].some(k => js.has(gid[I[t + k]]))), pts = {};
+      for (const t of [...joinT, ...near]) for (let k = 0; k < 3; k++) { const i = I[t + k], g = gid[i]; if (!pts[g]) pts[g] = { p: (P.getElement(i, v), [v[0], v[1], v[2]].map(x => +x.toFixed(5))), c: cls[g], w: +wnow[g].toFixed(4), r: cloth[g] ? 1 : 0 }; }
+      writeFileSync(process.env.JOINDUMP, JSON.stringify({ joint: RAJ, joins: joinT.map(t => [0, 1, 2].map(k => gid[I[t + k]])), near: near.map(t => [0, 1, 2].map(k => gid[I[t + k]])), pts }));
+      console.log(`armfree joindump: ${joinT.length} joins, ${near.length} kept triangles touching them -> ${process.env.JOINDUMP}`); }
     const edges = [];
     for (const t of keep) for (let k = 0; k < 3; k++) { const a = I[t + k], b = I[t + (k + 1) % 3], e = ek(gid[a], gid[b]); if (after.get(e) === 1 && before.get(e) > 1) edges.push([a, b]); }
     const par = new Map(), find = x => { while (par.get(x) !== x) { par.set(x, par.get(par.get(x))); x = par.get(x); } return x; };

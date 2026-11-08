@@ -8164,6 +8164,27 @@ What the baseline contains, by release:
     chair-sit patch and two hairline seams; the robe's painted crease lines and orange dots (his scan's).
   - assets/pho.glb 8,667,256 bytes (sha1 82dceadf), 560,428 -> 168,128 triangles, 19 takes, re-made byte for byte by the
     recipe.
+- **v24.53** (prepared, not a build: nothing deployed, the live build stays v24.40) GRANDMASTER PHO: THE LAST FAULTS AT HIS
+  RIGHT ARMPIT. Chad, 8 Nov 2026: "Fix those remaining issues cleanly and efficiently" (the two v24.52 left, in look D).
+  - The patch of skin on the robe, chair sit from his right, arm up: his scan's lowest joins between robe and arm, drawn
+    out over the robe. Taken out or painted before the thinning, the thinning made it again; painted white after it, it
+    showed as a white streak up the skin. Taken out after the thinning (prepmonk ROBEHANG 0.175: 30 triangles in skin
+    with a corner on the robe riding his trunk and a corner riding the arm by 0.3 or more, further than 17.5 cm from his
+    right shoulder joint): gone, a hairline left.
+  - The faint pale dots in the crease of his armpit, arm down: his colour sheet. The triangles sit on thin charts of skin
+    with white right beside them, and a texel at a chart's edge mixes in its neighbour when drawn. Within 15 cm of the
+    joint, such triangles are pointed at skin inside a chart (prepmonk EDGEBLEED 0.15: 295 triangles; no pixel of his sheet
+    touched): most gone.
+  - Tried and left (masters/v24.53/PLAN.md): the 140-triangle ring joining arm and side cut and both holes closed (a
+    see-through gap); every join cut (threads); the lowest fold painted robe before the thinning; the stretched skin's
+    half-lit texels; the armpit drawn from both sides. Those settings were taken back out of the tools.
+  - Checked: close in look D at the game's exposure (shots/pho-armpit-before-after.jpg); five moments from three sides;
+    all 19 takes against v24.52; step 7 is v24.52's file and prepmonk with v24.52's settings makes v24.52's file byte for
+    byte.
+  - Left, and said: a hairline where the patch was; a few faint dots seen very close; the web's hairline seams from
+    behind in cast 6; the orange dots and dark crease lines painted in his robe (as delivered).
+  - assets/pho.glb 8,679,276 bytes (sha1 f4c6cf60), 560,428 -> 168,098 triangles, 19 takes, the recipe's file byte for
+    byte the trial build's. The disk allowance ran out mid-way (blank renders, no error); old scratch was cleared.
 
 ## The sheet, version by version
 

@@ -156,6 +156,19 @@ for (const mesh of root.listMeshes()) for (const p of mesh.listPrimitives()) {
 const STRETCHPAINT = Number(process.env.STRETCHPAINT || 0);
 if (STRETCHPAINT > 0) {
   const reJ = new RegExp(process.env.STRETCHJOINT || 'RightArm$'), reB = new RegExp(process.env.STRETCHBONES || 'Right(Arm|ForeArm|Hand)$'), DIFF = Number(process.env.STRETCHDIFF || 0.015);
+  /* v24.53 · ROBEHANG=d: low on his side, further than d metres from the joint, a triangle in skin with a corner on the robe
+     (a vertex there holds the robe's white) riding his trunk and a corner riding the arm by 0.3 or more hangs off the robe:
+     raised, the arm draws it out over the robe as a patch of skin (his scan's lowest joins, seen from his right in the chair
+     sit's cheer). Chad, 8 Nov 2026: "Fix those remaining issues cleanly and efficiently". It is taken out, here, after the
+     thinning: drawn in the robe's white it showed as a white streak up the skin under his arm, and painted or taken out
+     before the thinning, the thinning made it again from the points round it. What is behind it is his robe and the web. */
+  const ROBEHANG = Number(process.env.ROBEHANG || 0); let nHang = 0;
+  /* v24.53 · EDGEBLEED=r: within r metres of the joint, a triangle of skin whose texels lie within 2 texels of the robe's
+     white (a thin chart of skin beside white in his colour sheet) is pointed at a texel of the skin beside it whose own
+     7 x 7 texels are all skin. Drawn, a texel at a chart's edge mixes in its neighbour: the white came through as the faint
+     pale dots and lines in the crease of his armpit with the arm down (look D, Talk_with_Hands_Open). No pixel of his sheet
+     is touched. Unset, nothing changes. */
+  const EDGEBLEED = Number(process.env.EDGEBLEED || 0); let nBleed = 0;
   for (const node of root.listNodes()) { const mesh = node.getMesh(), skin = node.getSkin(); if (!mesh || !skin) continue;
     const jn = skin.listJoints().map(j => j.getName()), ji = jn.findIndex(x => reJ.test(x)); if (ji < 0) continue;
     const a = Array.from(skin.getInverseBindMatrices().getArray().slice(ji * 16, ji * 16 + 16));   // the joint at rest: the inverse of its inverse-bind matrix
@@ -172,9 +185,22 @@ if (STRETCHPAINT > 0) {
       const sat = c => { const mx = Math.max(c[0], c[1], c[2]); return mx ? (mx - Math.min(c[0], c[1], c[2])) / mx : 0; }, pale = c => Math.max(c[0], c[1], c[2]) > 150 && sat(c) < 0.16;
       const dJ = (x, y, z) => Math.hypot(x - JP[0], y - JP[1], z - JP[2]), skinV = [];
       for (let i = 0; i < n; i++) { if (dJ(pos[3 * i], pos[3 * i + 1], pos[3 * i + 2]) > STRETCHPAINT + 0.05) continue; UV.getElement(i, uv); const c = px(uv[0], uv[1]); if (sat(c) > 0.2 && !pale(c)) skinV.push([i, c]); }
-      const I0 = p.getIndices().getArray(), jobs = [];
+      const I0 = p.getIndices().getArray(), jobs = [], drops = new Set();
+      const pk = i => Math.round(pos[3 * i] * 1e5) + ',' + Math.round(pos[3 * i + 1] * 1e5) + ',' + Math.round(pos[3 * i + 2] * 1e5), robeAt = new Map();
+      if (ROBEHANG > 0) for (let i = 0; i < n; i++) { if (share[i] >= 0.05 || dJ(pos[3 * i], pos[3 * i + 1], pos[3 * i + 2]) > STRETCHPAINT + 0.05) continue; UV.getElement(i, uv); if (pale(px(uv[0], uv[1])) && !robeAt.has(pk(i))) robeAt.set(pk(i), i); }
       for (let t = 0; t < I0.length; t += 3) { const q = [I0[t], I0[t + 1], I0[t + 2]], cx = (pos[3 * q[0]] + pos[3 * q[1]] + pos[3 * q[2]]) / 3, cy = (pos[3 * q[0] + 1] + pos[3 * q[1] + 1] + pos[3 * q[2] + 1]) / 3, cz = (pos[3 * q[0] + 2] + pos[3 * q[1] + 2] + pos[3 * q[2] + 2]) / 3;
-        if (dJ(cx, cy, cz) > STRETCHPAINT) continue; const s3 = q.map(i => share[i]); if (Math.max(...s3) - Math.min(...s3) < DIFF) continue;
+        if (dJ(cx, cy, cz) > STRETCHPAINT) continue; const s3 = q.map(i => share[i]), spread = Math.max(...s3) - Math.min(...s3);
+        if (EDGEBLEED > 0 && dJ(cx, cy, cz) <= EDGEBLEED) { const u3b = q.map(i => { UV.getElement(i, uv); return [uv[0], uv[1]]; }); let skinN = 0, nearW = false;
+          for (let s = 0; s <= 4; s++) for (let r2 = 0; r2 + s <= 4; r2++) { const b = [s / 4, r2 / 4, 1 - s / 4 - r2 / 4], uu = b[0] * u3b[0][0] + b[1] * u3b[1][0] + b[2] * u3b[2][0], ww2 = b[0] * u3b[0][1] + b[1] * u3b[1][1] + b[2] * u3b[2][1];
+            if (!pale(px(uu, ww2))) skinN++; if (!nearW) for (let dy = -2; dy <= 2 && !nearW; dy++) for (let dx = -2; dx <= 2; dx++) if (pale(px(uu + dx / info.width, ww2 + dy / info.height))) { nearW = true; break; } }
+          if (skinN >= 12 && nearW) { const safe = skinV.filter(([i]) => Math.hypot(pos[3 * i] - cx, pos[3 * i + 1] - cy, pos[3 * i + 2] - cz) < 0.03).filter(([i]) => { UV.getElement(i, uv); for (let dy = -3; dy <= 3; dy++) for (let dx = -3; dx <= 3; dx++) if (pale(px(uv[0] + dx / info.width, uv[1] + dy / info.height))) return false; return true; });
+            if (safe.length) { const med = [0, 1, 2].map(k => safe.map(x => x[1][k]).sort((x, y) => x - y)[safe.length >> 1]); let best = safe[0][0], bd = 1e9; for (const [i, c] of safe) { const d = (c[0] - med[0]) ** 2 + (c[1] - med[1]) ** 2 + (c[2] - med[2]) ** 2; if (d < bd) { bd = d; best = i; } }
+              jobs.push([t, best]); nBleed++; continue; } } }
+        if (spread < DIFF) continue;
+        if (ROBEHANG > 0 && dJ(cx, cy, cz) > ROBEHANG) { const tr = q.filter(i => share[i] < 0.05 && robeAt.has(pk(i)));
+          if (tr.length >= 1 && q.some(i => share[i] > 0.3)) { const u3h = q.map(i => { UV.getElement(i, uv); return [uv[0], uv[1]]; }); let skinN = 0;
+            for (let s = 0; s <= 4; s++) for (let r2 = 0; r2 + s <= 4; r2++) { const b = [s / 4, r2 / 4, 1 - s / 4 - r2 / 4]; if (!pale(px(b[0] * u3h[0][0] + b[1] * u3h[1][0] + b[2] * u3h[2][0], b[0] * u3h[0][1] + b[1] * u3h[1][1] + b[2] * u3h[2][1]))) skinN++; }
+            if (skinN >= 8) { drops.add(t); nHang++; continue; } } }
         const u3 = q.map(i => { UV.getElement(i, uv); return [uv[0], uv[1]]; }); let white = false;
         for (let s = 0; s <= 4 && !white; s++) for (let r2 = 0; r2 + s <= 4; r2++) { const b = [s / 4, r2 / 4, 1 - s / 4 - r2 / 4]; if (pale(px(b[0] * u3[0][0] + b[1] * u3[1][0] + b[2] * u3[2][0], b[0] * u3[0][1] + b[1] * u3[1][1] + b[2] * u3[2][1]))) { white = true; break; } }
         if (!white) continue;
@@ -182,14 +208,18 @@ if (STRETCHPAINT > 0) {
         const med = [0, 1, 2].map(k => near.map(x => x[1][k]).sort((x, y) => x - y)[near.length >> 1]); let best = near[0][0], bd = 1e9;
         for (const [i, c] of near) { const d = (c[0] - med[0]) ** 2 + (c[1] - med[1]) ** 2 + (c[2] - med[2]) ** 2; if (d < bd) { bd = d; best = i; } }
         jobs.push([t, best]); }
-      if (!jobs.length) { console.log('  stretch paint: none'); continue; }
+      if (!jobs.length && !drops.size) { console.log('  stretch paint: none'); continue; }
       const N = n + 3 * jobs.length;
       for (const sem of p.listSemantics()) { const acc = p.getAttribute(sem), old = acc.getArray(), es = acc.getElementSize(), arr = new old.constructor(N * es); arr.set(old);
         let o = n; for (const [t, best] of jobs) for (let k = 0; k < 3; k++, o++) { const src = sem === 'TEXCOORD_0' ? best : I0[t + k]; for (let e = 0; e < es; e++) arr[o * es + e] = old[src * es + e]; }
         acc.setArray(arr); }
       const I = N > 65535 ? new Uint32Array(I0) : new I0.constructor(I0); let o = n; for (const [t] of jobs) for (let k = 0; k < 3; k++, o++) I[t + k] = o;
-      p.getIndices().setArray(I);
-      console.log(`  stretch paint: ${jobs.length} triangles within ${STRETCHPAINT} m of ${jn[ji]} that stretch with /${reB.source}/ and held the robe's white drawn in the skin beside them`); } } }
+      /* ROBEHANG: the hanging triangles taken out */
+      if (drops.size) { const I2 = new I.constructor(I.length - 3 * drops.size); let w = 0; for (let t = 0; t < I.length; t += 3) if (!drops.has(t)) { I2[w++] = I[t]; I2[w++] = I[t + 1]; I2[w++] = I[t + 2]; } p.getIndices().setArray(I2); }
+      else p.getIndices().setArray(I);
+      if (EDGEBLEED > 0) console.log(`  edge bleed: ${nBleed} triangles of skin within ${EDGEBLEED} m of ${jn[ji]} beside the robe's white in the sheet pointed at skin inside a chart`);
+      console.log(`  stretch paint: ${jobs.length - nBleed} triangles within ${STRETCHPAINT} m of ${jn[ji]} that stretch with /${reB.source}/ and held the robe's white drawn in the skin beside them`);
+      if (ROBEHANG > 0) console.log(`  robe hang: ${nHang} triangles in skin hanging off the robe further than ${ROBEHANG} m from ${jn[ji]} taken out`); } } }
 
 /* ---- normals shared across the seams (and an optional Taubin pass) ---- */
 for (const mesh of root.listMeshes()) for (const p of mesh.listPrimitives()) {

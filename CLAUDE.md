@@ -1160,7 +1160,11 @@ not clean enough" ... "I want to see how he will actually look in the game"; mas
 clean in look D, and he was photographed in the real game (tools/probes/phoingame.mjs). His look is D, said again:
 "unlit, except for the robe"; do not put lit against it again. In look D any robe white inside a skin triangle shows, so
 the triangles that stretch with his arm and hold it are drawn in skin, in armfree and again after prepmonk's thinning
-(STRETCHPAINT), which makes new ones. Waiting on his choice: his hands in the floor sit (raised onto the robe, his saved file's robe for
+(STRETCHPAINT), which makes new ones. At v24.53 (Chad: "Fix those remaining issues cleanly and efficiently";
+masters/v24.53/PLAN.md) the skin patch on the robe (his scan's lowest joins, drawn out by the raised arm) is taken out
+after the thinning (prepmonk ROBEHANG), and the pale dots in the armpit's crease (white in his colour sheet bleeding in
+at the edges of thin charts of skin) mostly cured by pointing those triangles at skin inside a chart (EDGEBLEED). A
+triangle hanging between robe and arm shows wrong whichever colour it is given: take it out. Waiting on his choice: his hands in the floor sit (raised onto the robe, his saved file's robe for
 that take, or as it is). Each 540-picture blind review by twenty readers costs about 6 million tokens: put its cost to
 Chad before running one (he noticed v24.49's four). **Ajahn Krukai's model is PINNED** (v23.5, Chad: *"Make sure ajahn krukai's model
 in ep3 is unaffected and untouched. It is important that krukai is in the game as the master who gave the player his
