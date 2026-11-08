@@ -144,6 +144,53 @@ for (const mesh of root.listMeshes()) for (const p of mesh.listPrimitives()) {
   console.log(`  folds: ${pairs.length} triangles lying back to back on another, each side given its own vertices`);
 }
 
+/* ---- v24.52 · STRETCHPAINT=R: AFTER the thinning, the robe's white kept only where nothing stretches. Grandmaster Pho
+   (Chad, 8 Nov 2026: "It is still not clean enough"): tools/armfree.mjs draws in skin the triangles at his right armpit
+   that stretch while holding the robe's white, but the thinning above merges points into NEW such triangles, white teeth
+   at the robe's edge stretched 8 to 18 times (built without the thinning, there are none; no hold width before it cured
+   them). So here, after it: a triangle within R metres of the STRETCHJOINT bone's joint (his right shoulder) whose
+   corners' shares of the STRETCHBONES bones (his right arm) differ by STRETCHDIFF or more, and that holds any of the
+   robe's white (15 points sampled in it; a pale neutral texel, saturation under 0.16 and value over 150), is drawn in the
+   skin beside it: its three corners copied with every attribute, pointed at the texel of the most typical skin within
+   3 cm. No point moves, no weight changes. Unset, nothing here runs. ---- */
+const STRETCHPAINT = Number(process.env.STRETCHPAINT || 0);
+if (STRETCHPAINT > 0) {
+  const reJ = new RegExp(process.env.STRETCHJOINT || 'RightArm$'), reB = new RegExp(process.env.STRETCHBONES || 'Right(Arm|ForeArm|Hand)$'), DIFF = Number(process.env.STRETCHDIFF || 0.015);
+  for (const node of root.listNodes()) { const mesh = node.getMesh(), skin = node.getSkin(); if (!mesh || !skin) continue;
+    const jn = skin.listJoints().map(j => j.getName()), ji = jn.findIndex(x => reJ.test(x)); if (ji < 0) continue;
+    const a = Array.from(skin.getInverseBindMatrices().getArray().slice(ji * 16, ji * 16 + 16));   // the joint at rest: the inverse of its inverse-bind matrix
+    const c00 = a[5] * a[10] - a[9] * a[6], c01 = -(a[4] * a[10] - a[8] * a[6]), c02 = a[4] * a[9] - a[8] * a[5], c10 = -(a[1] * a[10] - a[9] * a[2]), c11 = a[0] * a[10] - a[8] * a[2], c12 = -(a[0] * a[9] - a[8] * a[1]);
+    const c20 = a[1] * a[6] - a[5] * a[2], c21 = -(a[0] * a[6] - a[4] * a[2]), c22 = a[0] * a[5] - a[4] * a[1], idet = 1 / (a[0] * c00 + a[4] * c10 + a[8] * c20);
+    const r = [c00, c01, c02, c10, c11, c12, c20, c21, c22].map(x => x * idet), JP = [0, 1, 2].map(k => -(r[3 * k] * a[12] + r[3 * k + 1] * a[13] + r[3 * k + 2] * a[14]));
+    const moving = jn.map(x => reB.test(x));
+    for (const p of mesh.listPrimitives()) { const P = p.getAttribute('POSITION'), J = p.getAttribute('JOINTS_0'), W = p.getAttribute('WEIGHTS_0'), UV = p.getAttribute('TEXCOORD_0');
+      const tex = p.getMaterial() && p.getMaterial().getBaseColorTexture(); if (!J || !W || !UV || !tex) continue;
+      const { data, info } = await sharp(Buffer.from(tex.getImage()), { limitInputPixels: false }).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+      const n = P.getCount(), v = [0, 0, 0], uv = [0, 0], jj = [0, 0, 0, 0], ww = [0, 0, 0, 0], pos = new Float32Array(3 * n), share = new Float32Array(n);
+      for (let i = 0; i < n; i++) { P.getElement(i, v); pos.set(v, 3 * i); J.getElement(i, jj); W.getElement(i, ww); let s = 0; for (let k = 0; k < 4; k++) if (moving[jj[k]]) s += ww[k]; share[i] = s; }
+      const wrap = (x, m) => ((x % m) + m) % m, px = (u, w) => { const o = (wrap(Math.floor(w * info.height), info.height) * info.width + wrap(Math.floor(u * info.width), info.width)) * 3; return [data[o], data[o + 1], data[o + 2]]; };
+      const sat = c => { const mx = Math.max(c[0], c[1], c[2]); return mx ? (mx - Math.min(c[0], c[1], c[2])) / mx : 0; }, pale = c => Math.max(c[0], c[1], c[2]) > 150 && sat(c) < 0.16;
+      const dJ = (x, y, z) => Math.hypot(x - JP[0], y - JP[1], z - JP[2]), skinV = [];
+      for (let i = 0; i < n; i++) { if (dJ(pos[3 * i], pos[3 * i + 1], pos[3 * i + 2]) > STRETCHPAINT + 0.05) continue; UV.getElement(i, uv); const c = px(uv[0], uv[1]); if (sat(c) > 0.2 && !pale(c)) skinV.push([i, c]); }
+      const I0 = p.getIndices().getArray(), jobs = [];
+      for (let t = 0; t < I0.length; t += 3) { const q = [I0[t], I0[t + 1], I0[t + 2]], cx = (pos[3 * q[0]] + pos[3 * q[1]] + pos[3 * q[2]]) / 3, cy = (pos[3 * q[0] + 1] + pos[3 * q[1] + 1] + pos[3 * q[2] + 1]) / 3, cz = (pos[3 * q[0] + 2] + pos[3 * q[1] + 2] + pos[3 * q[2] + 2]) / 3;
+        if (dJ(cx, cy, cz) > STRETCHPAINT) continue; const s3 = q.map(i => share[i]); if (Math.max(...s3) - Math.min(...s3) < DIFF) continue;
+        const u3 = q.map(i => { UV.getElement(i, uv); return [uv[0], uv[1]]; }); let white = false;
+        for (let s = 0; s <= 4 && !white; s++) for (let r2 = 0; r2 + s <= 4; r2++) { const b = [s / 4, r2 / 4, 1 - s / 4 - r2 / 4]; if (pale(px(b[0] * u3[0][0] + b[1] * u3[1][0] + b[2] * u3[2][0], b[0] * u3[0][1] + b[1] * u3[1][1] + b[2] * u3[2][1]))) { white = true; break; } }
+        if (!white) continue;
+        const near = skinV.filter(([i]) => Math.hypot(pos[3 * i] - cx, pos[3 * i + 1] - cy, pos[3 * i + 2] - cz) < 0.03); if (!near.length) continue;
+        const med = [0, 1, 2].map(k => near.map(x => x[1][k]).sort((x, y) => x - y)[near.length >> 1]); let best = near[0][0], bd = 1e9;
+        for (const [i, c] of near) { const d = (c[0] - med[0]) ** 2 + (c[1] - med[1]) ** 2 + (c[2] - med[2]) ** 2; if (d < bd) { bd = d; best = i; } }
+        jobs.push([t, best]); }
+      if (!jobs.length) { console.log('  stretch paint: none'); continue; }
+      const N = n + 3 * jobs.length;
+      for (const sem of p.listSemantics()) { const acc = p.getAttribute(sem), old = acc.getArray(), es = acc.getElementSize(), arr = new old.constructor(N * es); arr.set(old);
+        let o = n; for (const [t, best] of jobs) for (let k = 0; k < 3; k++, o++) { const src = sem === 'TEXCOORD_0' ? best : I0[t + k]; for (let e = 0; e < es; e++) arr[o * es + e] = old[src * es + e]; }
+        acc.setArray(arr); }
+      const I = N > 65535 ? new Uint32Array(I0) : new I0.constructor(I0); let o = n; for (const [t] of jobs) for (let k = 0; k < 3; k++, o++) I[t + k] = o;
+      p.getIndices().setArray(I);
+      console.log(`  stretch paint: ${jobs.length} triangles within ${STRETCHPAINT} m of ${jn[ji]} that stretch with /${reB.source}/ and held the robe's white drawn in the skin beside them`); } } }
+
 /* ---- normals shared across the seams (and an optional Taubin pass) ---- */
 for (const mesh of root.listMeshes()) for (const p of mesh.listPrimitives()) {
   const pos = p.getAttribute('POSITION'), nor = p.getAttribute('NORMAL'), I = p.getIndices().getArray();

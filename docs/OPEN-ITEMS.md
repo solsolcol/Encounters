@@ -77,7 +77,10 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
    armpit, tied to that arm, re-tied to his chest and cut free of it at his word (v24.50, "Its the other arm", "Do it,
    go"; masters/v24.50/PLAN.md), and the jagged robe edge there and the floating pieces fixed at his word (v24.51, "Fix
    the jagged part, and there are some floating pieces that needs fixing"; masters/v24.51/PLAN.md; left and said: a
-   small skin patch on the robe in the chair sit seen from his right). His choice waits on one thing: sitting
+   small skin patch on the robe in the chair sit seen from his right), and that armpit cleaned in look D, the look he
+   is drawn in, with pictures of him in the real game (v24.52, "It is still not clean enough", "I want to see how he
+   will actually look in the game"; his look is D, said again: "unlit, except for the robe"; masters/v24.52/PLAN.md;
+   left and said: a faint pale line at the robe's edge under his arm, seen close). His choice waits on one thing: sitting
    cross-legged, his hands rest under the robe — raise them about 10 cm onto it, his saved file's robe for that take, or
    leave it; and, if he prefers cleaner talking over clean chair sits, the first build instead. Left and said: a sliver
    of thigh at the wrap's front edge in three takes (his knee behind the cloth, seen through a slit)), Lersi Chin's voice (his model arrived 3 Nov 2026 and is prepared,

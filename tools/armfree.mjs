@@ -272,6 +272,13 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
        arm goes up they stretch into an even web of skin from the robe's edge to the arm, an armpit, and the robe's white edge
        stays on the robe. */
     const JOINSKIN = E('JOINSKIN', 0), joinT = [];
+    /* v24.52 · JOINARM=a (with JOINSKIN): a triangle joining the robe to skin riding the arm by a or more is part of the web
+       too, not only to skin riding it CUTARM or more. Beside the arm's own skin the armpit's skin cannot be held to the robe
+       (SKINFILL), so the step from the robe (none of the arm) to the arm (half and more) falls in one or two edges; the
+       thinning (prepmonk, to 30 %) then merged those points into triangles holding the robe's white that stretch 8 to 18
+       times (the same four in every hold width tried, cast 6 and the Charged cast from his right). Drawn as web, the step
+       is skin. */
+    const JOINARM = E('JOINARM', E('CUTARM', 0.15));
     /* JOINWEB=D: the web only where his arm meets his body at the armpit. The scan pressed the arm to his side from the armpit
        to near the elbow, and a join kept all the way down stretched, with the arm up, into a strip of skin from his waist to
        the raised elbow lying across the robe (a bat's wing). A joining triangle whose arm points are all within D metres of
@@ -287,7 +294,7 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
     for (let t = 0; t < I.length; t += 3) { const g3 = [gid[I[t]], gid[I[t + 1]], gid[I[t + 2]]];
       for (let k = 0; k < 3; k++) { const e = ek(g3[k], g3[(k + 1) % 3]); before.set(e, (before.get(e) || 0) + 1); }
       if (bit[t / 3]) continue;
-      const cs = g3.map(g => cls[g]); if (cs.includes(1) && cs.includes(2)) { const d = JOINSKIN ? joinDist(t, cs) : 0;
+      const cs = g3.map(g => cls[g]); if (cs.includes(1) && (cs.includes(2) || (JOINSKIN && JOINARM < CUTARM && g3.some(g => cls[g] === 0 && wnow[g] >= JOINARM)))) { const d = JOINSKIN ? joinDist(t, cs) : 0;
         if (JOINSKIN && (JOINFAR || !JOINWEB || d <= JOINWEB)) { joinT.push(t); joinD.push(d); } else { cut++; continue; } } if (cs.includes(3)) { nSpeckCut++; continue; }
       keep.push(t); for (let k = 0; k < 3; k++) { const e = ek(g3[k], g3[(k + 1) % 3]); after.set(e, (after.get(e) || 0) + 1); } }
     const edges = [];
@@ -361,6 +368,37 @@ for (const mesh of root.listMeshes()) for (const prim of mesh.listPrimitives()) 
         if (s3 > 0 && cls[gid[i]] !== 2) { const m = new Map(); for (const [j, w] of jw) m.set(j, (m.get(j) || 0) + (1 - s3) * w); for (const [j, w] of armW) m.set(j, (m.get(j) || 0) + s3 * w); jw = [...m]; }
         I[t + k] = newPoint(pos(i), [nn[0], nn[1], nn[2]], armSkin, jw); } });
     const grow = (acc, extra, Ctor) => { const old = acc.getArray(), out = new Ctor(old.length + extra.length); out.set(old); out.set(extra, old.length); acc.setArray(out); };
+    /* v24.52 · EDGEPAINT=R and ARMPAINT=R2: the robe's white kept only where nothing stretches. Chad, 8 Nov 2026: "It is
+       still not clean enough". In his look (D: his skin unlit, the robe lit) what was left at that armpit was colour. The
+       scan painted the robe's white-to-skin edge across triangles, not along their edges, and the few such triangles whose
+       corners ride the arm by different amounts drew out into white teeth (1 to 3 a view, stretched 3 to 11 times); and the
+       robe's white that the scan printed onto his upper arm, where it lay against the robe, shows on the raised arm.
+       EDGEPAINT: a kept triangle within R metres of his shoulder joint holding the robe's white and skin both (15 points
+       sampled in it) whose corners' shares of the arm differ by EDGEDIFF or more is drawn in the skin beside it. ARMPAINT:
+       a triangle within R2 metres riding the arm (every corner CUTARM or more) holding any of the robe's white is drawn in
+       the skin beside it ("beside it": the median colour of the skin within 3 cm that is not the robe's white). No point
+       moves and no weight changes: each corner is copied with the new colour, as the join's are. */
+    const EDGEPAINT = E('EDGEPAINT', 0), ARMPAINT = E('ARMPAINT', 0), EDGEDIFF = E('EDGEDIFF', 0.03); let nEdgePaint = 0, nArmPaint = 0, nRobeStretch = 0;
+    if (EDGEPAINT > 0 || ARMPAINT > 0) {
+      const isPale = c => { const mx = Math.max(c[0], c[1], c[2]); return mx > VAL && (mx - Math.min(c[0], c[1], c[2])) / mx < SAT; };
+      const q2 = [0, 0], paleShare = t => { const u3 = []; for (let k = 0; k < 3; k++) { UV.getElement(I[t + k], q2); u3.push([q2[0], q2[1]]); } let p = 0, m = 0;
+        for (let s = 0; s <= 4; s++) for (let r = 0; r + s <= 4; r++) { const b = [s / 4, r / 4, 1 - s / 4 - r / 4], u = b[0] * u3[0][0] + b[1] * u3[1][0] + b[2] * u3[2][0], w = b[0] * u3[0][1] + b[1] * u3[1][1] + b[2] * u3[2][1];
+          const o = (wrap(Math.floor(w * info.height), info.height) * info.width + wrap(Math.floor(u * info.width), info.width)) * 3; m++; if (isPale([data[o], data[o + 1], data[o + 2]])) p++; } return p / m; };
+      const RR = Math.max(EDGEPAINT, ARMPAINT), dj = q => Math.hypot(q[0] - RAJ[0], q[1] - RAJ[1], q[2] - RAJ[2]), near = [];
+      for (let i = 0; i < n; i++) { if (cloth[gid[i]]) continue; const q = pos(i); if (dj(q) > RR + 0.05 || isPale(texel(i))) continue; near.push([i, q]); }
+      const skinBeside = c => { const cand = near.filter(([, q]) => Math.hypot(q[0] - c[0], q[1] - c[1], q[2] - c[2]) < 0.03).map(([i]) => i); return cand.length ? medianPoint(cand) : armSkin; };
+      const joinSet = new Set(joinT);
+      for (const t of keep) { if (joinSet.has(t)) continue; const ix = [I[t], I[t + 1], I[t + 2]]; if (ix.some(i => i >= n)) continue;
+        const ps = ix.map(pos), c = [0, 1, 2].map(k => (ps[0][k] + ps[1][k] + ps[2][k]) / 3), d = dj(c); if (d > RR) continue;
+        const a = ix.map(i => wnow[gid[i]]), lo = Math.min(...a), hi = Math.max(...a);
+        let why = 0;
+        if (EDGEPAINT && d <= EDGEPAINT && hi - lo >= EDGEDIFF) { const sh = paleShare(t); if (sh > 0 && sh < 1) why = 1; else if (sh === 1) nRobeStretch++; }
+        if (!why && ARMPAINT && d <= ARMPAINT && lo >= CUTARM && paleShare(t) > 0) why = 2;
+        if (!why) continue; const from = skinBeside(c);
+        for (let k = 0; k < 3; k++) { N.getElement(ix[k], nn); I[t + k] = newPoint(ps[k], [nn[0], nn[1], nn[2]], from, wOf(ix[k])); }
+        if (why === 1) nEdgePaint++; else nArmPaint++; }
+      console.log(`armfree paint: ${nEdgePaint} triangles at the robe's edge that stretch drawn in the skin beside them (within ${EDGEPAINT} m of his shoulder joint), ${nArmPaint} on his arm holding the robe's white (within ${ARMPAINT} m); robe triangles that stretch left as they are: ${nRobeStretch}`);
+    }
     grow(P, NP, Float32Array); grow(N, NN, Float32Array); grow(UV, NUV, Float32Array); if (TG) grow(TG, NTG, Float32Array);
     grow(J, NJw, J.getArray().constructor); grow(W, NW, W.getArray().constructor);
     const idx = new Uint32Array(keep.length * 3 + tri.length); let o2 = 0; for (const t of keep) { idx[o2++] = I[t]; idx[o2++] = I[t + 1]; idx[o2++] = I[t + 2]; } idx.set(tri, o2);

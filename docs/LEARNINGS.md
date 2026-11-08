@@ -7617,3 +7617,18 @@ cut (sharing its vertices and maps) when it is small.
 - **A small loose piece is a lead; read the texture before calling it geometry.** The seven loose bits of his scan were
   real loose pieces (taken out). The orange dots on his back were skin colour painted into the robe's texture, on the
   robe's own triangles (left).
+
+## v24.52 — judge a fix in the look it ships in, and run a paint rule after the step that undoes it
+
+- **Photograph a fix in the look the game draws.** v24.51's armpit pictures were lit, and clean. Grandmaster Pho ships in
+  look D (his skin unlit), where shading is gone and colour is all there is: any of the robe's white inside a skin
+  triangle shows at full strength, as white teeth and a white smear on his arm. Judge in that look, at the game's
+  exposure (1.42).
+- **A thinning step remakes the fault you just cleaned.** prepmonk's thinning to 30 % merges robe and skin points into new
+  triangles holding both colours; a build left at full count had none. Holding more skin did not stop it. A rule that
+  must hold in the final file runs again after the thinning (prepmonk STRETCHPAINT).
+- **To see a model as the game shows it, put it into the real game.** tools/probes/phoingame.mjs boots dist/ on a phone
+  and adds the file to the live scene through a second copy of three served beside the game: the game's own renderer,
+  tone mapping, lights and lens draw it. A studio render on grey is not the game.
+- **A question his own earlier pick answers is answered with the pick.** He asked "lit or unlit?" after picking look D at
+  v24.47. The answer is D, shown in the game, not a new choice between looks.

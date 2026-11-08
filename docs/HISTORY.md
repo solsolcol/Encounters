@@ -8132,6 +8132,38 @@ What the baseline contains, by release:
     hairline seams in the web from behind in cast 6.
   - assets/pho.glb 8,659,908 bytes (sha1 8f3e440b), 560,428 -> 168,127 triangles, 19 takes, re-made byte for byte by the
     recipe.
+- **v24.52** (prepared, not a build: nothing deployed, the live build stays v24.40) GRANDMASTER PHO: HIS RIGHT ARMPIT CLEAN
+  IN LOOK D, AND HOW HE LOOKS IN THE GAME. Chad, 8 Nov 2026: "It is still not clean enough." / "Also how will he look in
+  the game? Will he be unlit or lit? It makes a massive difference to how he looks" / "I want to see how he will actually
+  look in the game" / "I thought i said before my preference is for the model to be unlit, except for the robe".
+  - His look is D, his pick at v24.47, said again: his skin and necklaces unlit, the robe lit. It is a material patch
+    chapter 3 carries; his file is unchanged by it. No look question was put (my first in-game run also took him lit;
+    those pictures are not kept).
+  - What was left, in look D (his skin shows the texture's own colour, so any robe white in a skin triangle shows):
+    - at the robe's edge, triangles holding robe white and skin whose corners ride the arm by different amounts: white
+      teeth when the arm rises;
+    - the robe's white the scan printed onto his upper arm;
+    - after the thinning to 30 %, new triangles of the first kind (a build at all 560,428 triangles has none).
+  - The fix (masters/v24.52/make.sh, PLAN.md):
+    - armfree EDGEPAINT 0.35 / EDGEDIFF 0.015: 60 edge triangles that stretch, within 35 cm of his shoulder joint, drawn
+      in the skin beside them;
+    - armfree ARMPAINT 0.25: 64 of the arm's triangles holding the robe's white, drawn in the skin beside them;
+    - prepmonk STRETCHPAINT 0.35: the same rule AFTER the thinning, 37 triangles.
+    A wider hold (4-5 rings) or a wider web (JOINARM) still left 1-4 after the thinning. Left.
+  - Checked:
+    - close in look D at the game's exposure (shots/pho-right-armpit-lookD-before-after.jpg,
+      pho-talking-lookD-before-after.jpg);
+    - all 19 takes against v24.51: nothing else changed that the eye can see;
+    - before the thinning: no point, weight or triangle changed; paint changed on 124 triangles, 4-22 cm from the joint;
+    - the new settings unset make v24.51's files byte for byte.
+  - In the game: tools/probes/phoingame.mjs (new) boots the real game on a phone and stands his file in a chapter's world
+    with the game's renderer, tone mapping, lights and lens, look D patched on, the player's hands hidden (HANDS=0).
+    Episode 3 chapter 1's temple in daylight and episode 4 chapter 1's evening yard (his unlit skin at 0.75) stand in
+    for chapter 3's light (shots/pho-in-game-lookD.jpg).
+  - Left, and said: a faint pale line where the robe's edge meets his right arm, seen close with the arm down; v24.51's
+    chair-sit patch and two hairline seams; the robe's painted crease lines and orange dots (his scan's).
+  - assets/pho.glb 8,667,256 bytes (sha1 82dceadf), 560,428 -> 168,128 triangles, 19 takes, re-made byte for byte by the
+    recipe.
 
 ## The sheet, version by version
 

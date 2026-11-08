@@ -1155,7 +1155,12 @@ side, check both. At v24.51 (Chad: "Fix the jagged part, and there are some floa
 masters/v24.51/PLAN.md) the robe's edge at that armpit is clean and nothing floats: prepmonk's weight smoothing now runs
 inside armfree BEFORE the robe is freed (run after, it gave the arm's share back to the robe's edge: the teeth), and the
 triangles joining the robe's edge to the arm are kept and drawn in his skin, one even web as an armpit (cut, they left a
-gap whose caps hung as a flap). Measure a fix in the FINAL file: a later step can undo it. Waiting on his choice: his hands in the floor sit (raised onto the robe, his saved file's robe for
+gap whose caps hung as a flap). Measure a fix in the FINAL file: a later step can undo it. At v24.52 (Chad: "It is still
+not clean enough" ... "I want to see how he will actually look in the game"; masters/v24.52/PLAN.md) the armpit is
+clean in look D, and he was photographed in the real game (tools/probes/phoingame.mjs). His look is D, said again:
+"unlit, except for the robe"; do not put lit against it again. In look D any robe white inside a skin triangle shows, so
+the triangles that stretch with his arm and hold it are drawn in skin, in armfree and again after prepmonk's thinning
+(STRETCHPAINT), which makes new ones. Waiting on his choice: his hands in the floor sit (raised onto the robe, his saved file's robe for
 that take, or as it is). Each 540-picture blind review by twenty readers costs about 6 million tokens: put its cost to
 Chad before running one (he noticed v24.49's four). **Ajahn Krukai's model is PINNED** (v23.5, Chad: *"Make sure ajahn krukai's model
 in ep3 is unaffected and untouched. It is important that krukai is in the game as the master who gave the player his
