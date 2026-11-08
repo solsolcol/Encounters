@@ -326,13 +326,88 @@ for (const mesh of root.listMeshes()) for (const p of mesh.listPrimitives()) {
   console.log(`  ${n} vertices in ${G} positions; ${changed} normals turned more than 10° to agree across a seam${TAUBIN ? `; Taubin x${TAUBIN}` : ''}; normals of no length: ${zero}`);
 }
 
+/* v24.55 · BAKE=dump:<dir> | apply:<dir> (masters/v24.55/PLAN.md): his face and hands at his scan's full detail, a part of
+   their own baked in Blender (tools/rebake.py). Grandmaster Pho (Chad, 8 Nov 2026: "you are not using it to its fullest
+   potential and capacity"): his colour sheet is 8192 pixels and every part of him has the same share of it (23 texels a
+   centimetre), so cut to 4096 for a phone his face and hands lost half their detail with the plain robe; and the chart fix
+   below pins each of his hair's hundreds of slivers to one texel of the sheets, so lit, each sliver takes one tilt of the
+   normal map: a mosaic of grey squares on the back of his head. dump (here, before the chart fix and the two-side split):
+   this mesh (its points, normals, sheet coordinates, triangles and which part of him each point rides), the mesh this run
+   read and his two sheets as read are written to <dir>, and the run stops. Blender packs the charts of his head and hands
+   (and his necklace's gold) into a square of their own, bakes his 8192 colour sheet into it through each triangle's own
+   coordinates (every triangle shows what it showed: no texel of his paint changed) and his normal map from the full mesh
+   read (the slivers keep their real shading), and gives Blender's tangents for the new coordinates. apply: the run reads it
+   back and checks the mesh is the one dumped; those triangles become a part of their own with their own points (copies:
+   every attribute their point's, so they move and bend as before, with the new sheets' coordinates and tangents) and a
+   copy of his material with the two new sheets (DETNORMAL=0: none, shaded by its points). The chart fix leaves that part
+   alone (a gutter round every chart). His body sheet, normal map, points, weights and the rest of his triangles are as
+   they were. The sheets keep their own sizes, WebP as the others. Unset, nothing here runs and the output is as it was. */
+const chartSkip = new Set();
+if (process.env.BAKE) {
+  const [mode, dir] = process.env.BAKE.split(/:(.*)/s);
+  const node = root.listNodes().find(x => x.getMesh() && x.getSkin()), mesh = node.getMesh(), prims = mesh.listPrimitives();
+  if (prims.length !== 1) throw new Error('BAKE: one part expected before the two-side split');
+  const p0 = prims[0], mat0 = p0.getMaterial(), baseTex = mat0.getBaseColorTexture();
+  const P = p0.getAttribute('POSITION').getArray(), N = p0.getAttribute('NORMAL').getArray(), UVA = p0.getAttribute('TEXCOORD_0'), n = UVA.getCount();
+  const idx = Uint32Array.from(p0.getIndices().getArray());
+  const fnv = (...arrs) => { let h = 0x811c9dc5; for (const a of arrs) { const b = new Uint8Array(a.buffer, a.byteOffset, a.byteLength); for (let i = 0; i < b.length; i++) { h ^= b[i]; h = Math.imul(h, 0x01000193) >>> 0; } } return h.toString(16); };
+  const hash = fnv(Float32Array.from(P), idx, Float32Array.from(UVA.getArray()));
+  const bin = (f, a) => fs.writeFileSync(`${dir}/${f}`, Buffer.from(a.buffer, a.byteOffset, a.byteLength));
+  const ext = t => (t.getMimeType() === 'image/png' ? 'png' : t.getMimeType() === 'image/webp' ? 'webp' : 'jpg');
+  if (mode === 'dump') {
+    fs.mkdirSync(dir, { recursive: true });
+    const jn = node.getSkin().listJoints().map(j => j.getName()), J = p0.getAttribute('JOINTS_0'), W = p0.getAttribute('WEIGHTS_0'), reg = new Uint8Array(n), jj = [], ww = [];
+    for (let i = 0; i < n; i++) { J.getElement(i, jj); W.getElement(i, ww); const acc = {}; for (let k = 0; k < 4; k++) acc[jj[k]] = (acc[jj[k]] || 0) + ww[k];
+      let best = 0, bw = -1; for (const k in acc) if (acc[k] > bw) { bw = acc[k]; best = +k; } const nm = jn[best] || '';
+      reg[i] = /Head|Neck/.test(nm) ? 1 : /Hand|Thumb|Index|Middle|Ring|Pinky/.test(nm) ? 2 : /Foot|Toe/.test(nm) ? 3 : 0; }
+    bin('low_pos.f32', Float32Array.from(P)); bin('low_nor.f32', Float32Array.from(N)); bin('low_uv.f32', Float32Array.from(UVA.getArray())); bin('low_idx.u32', idx); bin('low_reg.u8', reg);
+    const hp = (await io.read(IN)).getRoot().listMeshes()[0].listPrimitives()[0], hn = hp.getMaterial().getNormalTexture();
+    bin('high_pos.f32', Float32Array.from(hp.getAttribute('POSITION').getArray())); bin('high_nor.f32', Float32Array.from(hp.getAttribute('NORMAL').getArray()));
+    bin('high_uv.f32', Float32Array.from(hp.getAttribute('TEXCOORD_0').getArray())); bin('high_idx.u32', Uint32Array.from(hp.getIndices().getArray()));
+    fs.writeFileSync(`${dir}/base_src.${ext(baseTex)}`, Buffer.from(baseTex.getImage())); fs.writeFileSync(`${dir}/normal_src.${ext(hn)}`, Buffer.from(hn.getImage()));
+    fs.writeFileSync(`${dir}/dump.json`, JSON.stringify({ hash, n, tris: idx.length / 3, base: `base_src.${ext(baseTex)}`, normal: `normal_src.${ext(hn)}`,
+      high: { n: hp.getAttribute('POSITION').getCount(), tris: hp.getIndices().getCount() / 3 }, texPx: TEXPX }));
+    console.log(`  bake: dumped ${n} points and ${idx.length / 3} triangles (and the ${hp.getIndices().getCount() / 3} read) to ${dir}; run tools/rebake.py ${dir}, then BAKE=apply:${dir}`);
+    process.exit(0);
+  }
+  if (mode !== 'apply') throw new Error(`BAKE=${process.env.BAKE}: dump:<dir> or apply:<dir>`);
+  const dj = JSON.parse(fs.readFileSync(`${dir}/dump.json`, 'utf8')), out = JSON.parse(fs.readFileSync(`${dir}/baked.json`, 'utf8'));
+  if (dj.hash !== hash || out.hash !== hash) throw new Error(`BAKE: the mesh is not the one dumped (${hash} against ${dj.hash}/${out.hash})`);
+  const rdf = f => { const b = fs.readFileSync(`${dir}/${f}`); return new Float32Array(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength)); };
+  const rdu = f => { const b = fs.readFileSync(`${dir}/${f}`); return new Uint32Array(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength)); };
+  const detUV = rdf('det_uv.f32'), detTan = rdf('det_tan.f32'), copySrc = rdu('copy_src.u32'), idxNew = rdu('idx_new.u32'), detTri = fs.readFileSync(`${dir}/det_tri.u8`), nv = n + copySrc.length;
+  if (nv !== out.points || detUV.length !== 2 * nv || detTan.length !== 4 * nv || idxNew.length !== idx.length || detTri.length !== idx.length / 3) throw new Error('BAKE: the baked coordinates do not match the points');
+  // the part's own points: one for each (point, coordinate) its triangles use, every attribute its point's
+  const own = new Map(), srcOf = [], body = [], face = [];
+  for (let t = 0; t < idx.length; t += 3) {
+    if (!detTri[t / 3]) { body.push(idx[t], idx[t + 1], idx[t + 2]); continue; }
+    for (let k = 0; k < 3; k++) { const id = idxNew[t + k]; let o = own.get(id); if (o === undefined) { o = srcOf.length; own.set(id, o); srcOf.push(id); } face.push(o); } }
+  const m = srcOf.length, Ctor0 = p0.getIndices().getArray().constructor;
+  const p2 = doc.createPrimitive().setMode(p0.getMode());
+  for (const sem of p0.listSemantics()) { const acc = p0.getAttribute(sem), old = acc.getArray(), es = acc.getElementSize(), arr = new old.constructor(m * es);
+    for (let o = 0; o < m; o++) { const id = srcOf[o], v = id < n ? id : copySrc[id - n]; for (let e = 0; e < es; e++) arr[o * es + e] = old[v * es + e]; }
+    p2.setAttribute(sem, doc.createAccessor().setType(acc.getType()).setArray(arr).setNormalized(acc.getNormalized()).setBuffer(acc.getBuffer())); }
+  const uv2 = new Float32Array(2 * m), tan2 = new Float32Array(4 * m);
+  for (let o = 0; o < m; o++) { const id = srcOf[o]; uv2[2 * o] = detUV[2 * id]; uv2[2 * o + 1] = detUV[2 * id + 1]; for (let e = 0; e < 4; e++) tan2[4 * o + e] = detTan[4 * id + e]; }
+  p2.getAttribute('TEXCOORD_0').setArray(uv2);
+  if (p2.getAttribute('TANGENT')) p2.getAttribute('TANGENT').setArray(tan2); else p2.setAttribute('TANGENT', doc.createAccessor().setType('VEC4').setArray(tan2).setBuffer(UVA.getBuffer()));
+  p2.setIndices(doc.createAccessor().setType('SCALAR').setArray(m > 65535 ? Uint32Array.from(face) : Uint16Array.from(face)).setBuffer(p0.getIndices().getBuffer()));
+  p0.getIndices().setArray(Ctor0.from(body));
+  const dm = mat0.clone().setName(`${mat0.getName() || 'material'} (face and hands)`);
+  dm.setBaseColorTexture(doc.createTexture('detail').setImage(fs.readFileSync(`${dir}/${out.detail}`)).setMimeType('image/png'));
+  if (out.normal && process.env.DETNORMAL !== '0') dm.setNormalTexture(doc.createTexture('detail normal').setImage(fs.readFileSync(`${dir}/${out.normal}`)).setMimeType('image/png'));
+  else dm.setNormalTexture(null);
+  p2.setMaterial(dm); mesh.addPrimitive(p2); chartSkip.add(dm);
+  console.log(`  bake: ${out.summary}; a part of its own: ${face.length / 3} triangles on ${m} points of their own${dm.getNormalTexture() ? '' : ', no normal map'}`);
+}
+
 /* v19.8: the scan's two-texel charts, each pointed at a uniform spot of the
    colour its surface shows, so an edge fetch cannot bleed a neighbour into
    them (CHARTFIX=1; tools/chartfix.mjs has the measurement) */
 if (process.env.PREPACK) await io.write(process.env.PREPACK, doc);   // the cut before the fix, for probes
 if (process.env.CHARTFIX) {
   const rep = [];
-  await fixThinCharts(doc, { finalPx: TEXPX, report: rep, inset: Number(process.env.INSET || 1.5) });
+  await fixThinCharts(doc, { finalPx: TEXPX, report: rep, inset: Number(process.env.INSET || 1.5), skip: chartSkip });
   const sz = rep.map(r => r.texels).sort((a, b) => b - a);
   console.log(`  largest fixed charts (texels at ${TEXPX}): ${sz.slice(0, 12).join(' ')}`);
   if (process.env.CHARTREPORT) fs.writeFileSync(process.env.CHARTREPORT, JSON.stringify(rep));
@@ -365,7 +440,8 @@ if (process.env.TWOSIDE) { const re = new RegExp(process.env.TWOSIDE);
 const NTEXPX = Number(process.env.NTEX || TEXPX);
 const normalTex = new Set(root.listMaterials().map(m => m.getNormalTexture()).filter(Boolean));
 for (const tex of root.listTextures()) {
-  const px = normalTex.has(tex) ? NTEXPX : TEXPX;
+  /* v24.55: the face-and-hands sheets (BAKE) keep their own sizes */
+  const px = /^detail( normal)?$/.test(tex.getName()) ? tex.getSize()[0] : normalTex.has(tex) ? NTEXPX : TEXPX;
   const img = await sharp(Buffer.from(tex.getImage())).resize(px, px, { fit: 'fill' }).webp({ quality: 92 }).toBuffer();
   tex.setImage(img).setMimeType('image/webp').setURI('');
 }

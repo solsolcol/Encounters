@@ -24,7 +24,9 @@ const FLOORON = process.argv.includes('--floor');
    level: an unlit model ignores the scene's lights, so a dim room needs it; @raw instead lays the unlit colour on AFTER the
    tone mapping, so it shows the scan's colour exactly as captured; @rawL the same scaled by L); skin[:K]@raw[L] lays it
    only where the texture's own colour is saturated (his skin, the beads, the gold: by the texel's saturation, 0.12–0.25),
-   so the white robe keeps the scene's light and its folds). --light=dim draws every light at 0.3 of its
+   so the white robe keeps the scene's light and its folds). v24.55: a part whose material is named '... (face and hands)'
+   (Grandmaster Pho's face, head, hands and gold, tools/rebake.py) is drawn unlit whole in skin mode, his grey hair too: Chad's
+   look D is "unlit, except for the robe", and grey hair read as robe to the colour test. --light=dim draws every light at 0.3 of its
    strength; --exposure=E sets the tone mapping's exposure (the game's is 1.42; unset, 1.2 as before).
    v24.50 · bone:<regex>@raw paints in red the CLOTH (unsaturated texels; skin is never painted) that moves with the bones
    whose names match, by their share of each point: what his robe is tied to, seen (the robe glued under his right arm,
@@ -74,17 +76,20 @@ new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load('/model.glb', (gltf) => 
         const wt = B.map(b => /Head(Top_End)?$/.test(b.name) ? 1 : /Neck$/.test(b.name) ? 0.5 : 0);
         for (let i = 0; i < n; i++) { let m = 0; for (let k = 0; k < 4; k++) m += SW.getComponent(i, k) * wt[SI.getComponent(i, k)]; const t = Math.max(0, Math.min(1, (m - 0.3) / 0.4)); mask[i] = t * t * (3 - 2 * t); } }
       g.setAttribute('lookMask', new THREE.BufferAttribute(mask, 1));
-      for (const mt of [].concat(o.material)) { mt.onBeforeCompile = sh => { sh.uniforms.uLevel = { value: level }; sh.uniforms.uK = { value: K };
+      for (const mt of [].concat(o.material)) { const WHOLE = mt.name.endsWith('(face and hands)'); mt.onBeforeCompile = sh => { sh.uniforms.uLevel = { value: level }; sh.uniforms.uK = { value: K };
         sh.vertexShader = 'attribute float lookMask;\\nvarying float vLook;\\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\\nvLook = lookMask;');
         sh.fragmentShader = 'varying float vLook;\\nuniform float uLevel;\\nuniform float uK;\\n' + (RAW
-          ? sh.fragmentShader.replace('#include <tonemapping_fragment>', '#include <tonemapping_fragment>\\n' + (mode === 'bone' ? 'vec3 sc = pow(max(diffuseColor.rgb, vec3(1e-4)), vec3(1.0 / 2.2)); float mxc = max(sc.r, max(sc.g, sc.b)); float skn = smoothstep(0.12, 0.25, (mxc - min(sc.r, min(sc.g, sc.b))) / max(mxc, 1e-4));\\ngl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.95, 0.08, 0.08), clamp(vLook * (1.0 - skn), 0.0, 1.0) * 0.8);\\n' + '//' : '') + (SKIN ? 'vec3 sc = pow(max(diffuseColor.rgb, vec3(1e-4)), vec3(1.0 / 2.2)); float mxc = max(sc.r, max(sc.g, sc.b)); float skn = smoothstep(0.12, 0.25, (mxc - min(sc.r, min(sc.g, sc.b))) / max(mxc, 1e-4));\\n' : 'float skn = 1.0;\\n') + 'gl_FragColor.rgb = mix(gl_FragColor.rgb, diffuseColor.rgb * uLevel, clamp(vLook * uK * skn, 0.0, 1.0));')
+          ? sh.fragmentShader.replace('#include <tonemapping_fragment>', '#include <tonemapping_fragment>\\n' + (mode === 'bone' ? 'vec3 sc = pow(max(diffuseColor.rgb, vec3(1e-4)), vec3(1.0 / 2.2)); float mxc = max(sc.r, max(sc.g, sc.b)); float skn = smoothstep(0.12, 0.25, (mxc - min(sc.r, min(sc.g, sc.b))) / max(mxc, 1e-4));\\ngl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.95, 0.08, 0.08), clamp(vLook * (1.0 - skn), 0.0, 1.0) * 0.8);\\n' + '//' : '') + (SKIN && !WHOLE ? 'vec3 sc = pow(max(diffuseColor.rgb, vec3(1e-4)), vec3(1.0 / 2.2)); float mxc = max(sc.r, max(sc.g, sc.b)); float skn = smoothstep(0.12, 0.25, (mxc - min(sc.r, min(sc.g, sc.b))) / max(mxc, 1e-4));\\n' : 'float skn = 1.0;\\n') + 'gl_FragColor.rgb = mix(gl_FragColor.rgb, diffuseColor.rgb * uLevel, clamp(vLook * uK * skn, 0.0, 1.0));')
           : sh.fragmentShader.replace('#include <opaque_fragment>', 'outgoingLight = mix(outgoingLight, diffuseColor.rgb * uLevel, clamp(vLook * uK, 0.0, 1.0));\\n#include <opaque_fragment>')); };
-        mt.customProgramCacheKey = () => 'look' + LOOK; mt.needsUpdate = true; } }); }
+        mt.customProgramCacheKey = () => 'look' + LOOK + (WHOLE ? ':whole' : ''); mt.needsUpdate = true; } }); }
   window.__clips = gltf.animations.map(a => ({ name: a.name, dur: a.duration }));
   const box = new THREE.Box3(), v = new THREE.Vector3();
   /* the posed skin's box (a SkinnedMesh's own box is its bind pose): sample every 40th vertex through the skin */
-  const posedBox = () => { box.makeEmpty(); if (!skinned) return box.setFromObject(root); const P = skinned.geometry.attributes.position;
-    for (let i = 0; i < P.count; i += 40) { skinned.getVertexPosition(i, v); v.applyMatrix4(skinned.matrixWorld); box.expandByPoint(v); } return box; };
+  /* v24.55: every skinned part and every point (a file whose head is a part of its own framed from the first part alone, and
+     every 40th point of a reordered part, put the camera somewhere else: two files compared must be framed alike) */
+  const skins = []; root.traverse(o => { if (o.isSkinnedMesh) skins.push(o); });
+  const posedBox = () => { box.makeEmpty(); if (!skins.length) return box.setFromObject(root);
+    for (const sk of skins) { const P = sk.geometry.attributes.position; for (let i = 0; i < P.count; i++) { sk.getVertexPosition(i, v); v.applyMatrix4(sk.matrixWorld); box.expandByPoint(v); } } return box; };
   if (!gltf.animations.length) window.__clips = [{ name: 'static', dur: 1 }];   // a still (rigstrain's heat): one row
   window.__shoot = (clip, t) => {
     for (const a of Object.values(acts)) a.stop();

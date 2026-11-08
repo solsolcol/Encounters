@@ -1173,7 +1173,12 @@ side are cut in Blender (tools/armpit.py, run on Blender's Python; tools/meshpat
 back only what it changed), each opening closed on its own side, the points by the cut weighed to their own side, and
 the thinning holds the armpit as built (prepmonk THINLOCK): the patch's hairline, cast 6's seams and the robe's teeth
 under the arm are gone. Blender here is a tool for the mesh, never for the pictures that judge it (those stay the
-game's renderer). A Blender script iterates its points in memory order unless sorted by a key no two points share. Waiting on his choice: his hands in the floor sit (raised onto the robe, his saved file's robe for
+game's renderer). A Blender script iterates its points in memory order unless sorted by a key no two points share. At
+v24.55 (Chad: "you are not using it to its fullest potential and capacity"; masters/v24.55/PLAN.md) his face, hair, hands
+and necklace gold are a part of their own whose 2048 sheet Blender packs and bakes from his 8192 sheet (tools/rebake.py
+between prepmonk BAKE=dump and BAKE=apply): his scan's full detail where he is seen close, his body sheet untouched; look D
+draws that part unlit whole (his grey hair too, which the colour test had lit). Blender 5 bakes from a blurred copy of an
+image unless render.use_texture_cache is off. Its cost (+21 MB of texture memory) is put to Chad. Waiting on his choice: his hands in the floor sit (raised onto the robe, his saved file's robe for
 that take, or as it is). Each 540-picture blind review by twenty readers costs about 6 million tokens: put its cost to
 Chad before running one (he noticed v24.49's four). **Ajahn Krukai's model is PINNED** (v23.5, Chad: *"Make sure ajahn krukai's model
 in ep3 is unaffected and untouched. It is important that krukai is in the game as the master who gave the player his

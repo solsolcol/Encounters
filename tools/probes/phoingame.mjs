@@ -63,15 +63,16 @@ const info = await p.evaluate(async () => {
   const root = g.scene, E = window.__enc; let tris = 0;
   root.traverse(o => { if (!o.isMesh) return; o.frustumCulled = false; tris += (o.geometry.index ? o.geometry.index.count : o.geometry.attributes.position.count) / 3;
     const n = o.geometry.attributes.position.count; o.geometry.setAttribute('lookMask', new T.BufferAttribute(new Float32Array(n).fill(1), 1));
-    for (const mt of [].concat(o.material)) { mt.userData.look = { value: 1 }; mt.userData.level = window.__phoLevel;
+    for (const mt of [].concat(o.material)) { mt.userData.look = { value: 1 }; mt.userData.level = window.__phoLevel; const WHOLE = mt.name.endsWith('(face and hands)');
       /* look D, as tools/clipsheet.mjs --look=skin@raw: after the tone mapping, the texel's own colour where it is saturated
          (skin, beads, gold: saturation 0.12-0.25 eased), the robe left lit; uK 0 draws him lit */
       mt.onBeforeCompile = sh => { sh.uniforms.uK = mt.userData.look; sh.uniforms.uLevel = mt.userData.level;
         sh.vertexShader = 'attribute float lookMask;\nvarying float vLook;\n' + sh.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvLook = lookMask;');
         sh.fragmentShader = 'varying float vLook;\nuniform float uLevel;\nuniform float uK;\n' + sh.fragmentShader.replace('#include <tonemapping_fragment>', '#include <tonemapping_fragment>\n'
-          + 'vec3 sc = pow(max(diffuseColor.rgb, vec3(1e-4)), vec3(1.0 / 2.2)); float mxc = max(sc.r, max(sc.g, sc.b)); float skn = smoothstep(0.12, 0.25, (mxc - min(sc.r, min(sc.g, sc.b))) / max(mxc, 1e-4));\n'
+          /* v24.55: his face-and-hands part (tools/rebake.py) unlit whole, his grey hair too */
+          + (WHOLE ? 'float skn = 1.0;\n' : 'vec3 sc = pow(max(diffuseColor.rgb, vec3(1e-4)), vec3(1.0 / 2.2)); float mxc = max(sc.r, max(sc.g, sc.b)); float skn = smoothstep(0.12, 0.25, (mxc - min(sc.r, min(sc.g, sc.b))) / max(mxc, 1e-4));\n')
           + 'gl_FragColor.rgb = mix(gl_FragColor.rgb, diffuseColor.rgb * uLevel, clamp(vLook * uK * skn, 0.0, 1.0));'); };
-      mt.customProgramCacheKey = () => 'phoLookD'; mt.needsUpdate = true; } });
+      mt.customProgramCacheKey = () => 'phoLookD' + (WHOLE ? ':whole' : ''); mt.needsUpdate = true; } });
   E.scene.add(root);
   const mixer = new T.AnimationMixer(root);
   window.__pho = { root, mixer, clips: g.animations, T,

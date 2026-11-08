@@ -85,7 +85,11 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
    pale dots mostly gone; left and said: a hairline where the patch was), and his right arm freed from his side in
    Blender (v24.54, "Ok, install blender on your end"; masters/v24.54/PLAN.md: the hairline, cast 6's seams and the
    robe's teeth under the arm gone; left and said: raised, the armpit's skin is one plain colour, a soft blend his
-   choice). His choice waits on one thing: sitting
+   choice), and his face and hands given his scan's full detail in a sheet of their own baked in Blender (v24.55, "you
+   are not using it to its fullest potential and capacity"; masters/v24.55/PLAN.md: his face sharper close, his hair his
+   own paint unlit; its cost, +21 MB of texture memory, put to him with a lighter 1448 sheet at +10 MB; left and said: his
+   robe's ragged edge across his back and the skin-coloured patches on it are his scan's paint, his choice). His choice
+   waits on one thing: sitting
    cross-legged, his hands rest under the robe — raise them about 10 cm onto it, his saved file's robe for that take, or
    leave it; and, if he prefers cleaner talking over clean chair sits, the first build instead. Left and said: a sliver
    of thigh at the wrap's front edge in three takes (his knee behind the cloth, seen through a slit)), Lersi Chin's voice (his model arrived 3 Nov 2026 and is prepared,

@@ -36,10 +36,11 @@ import sharp from 'sharp';
 
 const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 
-export async function fixThinCharts(doc, { finalPx, ringDiff = 0.22, risk = 0.15, inset = 1.5, log = console.log, report = null } = {}) {
+export async function fixThinCharts(doc, { finalPx, ringDiff = 0.22, risk = 0.15, inset = 1.5, log = console.log, report = null, skip = null } = {}) {
   const root = doc.getRoot();
   let charts = 0, fixed = 0, fixedTris = 0, worst = 0, fromSurface = 0, armTris = 0, pulled = 0, guarded = 0;
   for (const mat of root.listMaterials()) {
+    if (skip && skip.has(mat)) continue;   // v24.55: a material whose sheet has a gutter round every chart (tools/rebake.py) needs no fix
     const tex = mat.getBaseColorTexture(); if (!tex) continue;
     const img = Buffer.from(tex.getImage());
     const src = await sharp(img).removeAlpha().raw().toBuffer({ resolveWithObject: true });

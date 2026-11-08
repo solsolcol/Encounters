@@ -8219,6 +8219,40 @@ What the baseline contains, by release:
     with three ways to keep them. Nothing compressed.
   - assets/pho.glb 8,656,084 bytes (sha1 f0a6a9fa), 560,428 -> 168,122 triangles, 19 takes, re-made byte for byte by
     the recipe.
+- **v24.55** (prepared, not a build: nothing deployed, the live build stays v24.40) GRANDMASTER PHO: HIS FACE AND HANDS AT
+  HIS SCAN'S FULL DETAIL, BAKED IN BLENDER. Chad, 8 Nov 2026: "I think you can still improve the pho model much more given
+  now that you have blender, you are not using it to its fullest potential and capacity" (masters/v24.55/PLAN.md).
+  - Measured first: his 8192 colour sheet gives every part of him the same share (23 texels a centimetre; head and neck
+    3.4%, hands 0.8%), so the 4096 cut a phone can hold halved his face's detail with the plain robe. The blotches on the
+    back of his head are the light on his scan's own shape there (his full scan has them; drawn unlit his hair is smooth):
+    look D lit his hair because grey reads as robe to its colour test, and Chad's look D is "unlit, except for the robe".
+  - tools/rebake.py (Blender): the 465 charts of his head, hands and necklace gold packed by Blender into a 2048 square of
+    their own (59% covered: 1.99x the texels of his body sheet, his 8192 sheet's full detail) and his 8192 sheet baked into
+    it in Cycles through each triangle's own coordinates (no texel of his paint changed). prepmonk BAKE=dump/apply around
+    it, before the chart fix (which had pinned his hair's slivers to single texels): those triangles become a part of their
+    own on points of their own with a copy of his material, the new sheet and no normal map; his body sheet, normal map,
+    points, weights and every other triangle as they were. Look D draws that part unlit whole (clipsheet, phoingame, and
+    chapter 3's patch when it casts him), his hair too: his own paint, no blocks.
+  - Tried and left: his whole sheet laid out again in one 4096 square (Blender packs his 3,900 charts into half of it at
+    best: his face's room would cost the robe 14% of its sharpness); his normal map baked again from his full scan onto
+    the kept triangles (the robe came out with the scan's lumpy bead-like lines along every fold edge; the thinned robe is
+    cleaner); the new part lit with a normal map baked from the full scan (the blocks stayed: they are his scan's shape).
+  - Traps: Blender 5 reads an image through its texture cache "at appropriate resolution" by default, so the first bake
+    came out blurred (render.use_texture_cache off); Blender's packer joins faces only by an edge (two charts touching at a
+    corner come apart: 2 points copied) and keeps unselected faces in the square as obstacles (hidden, it fills it);
+    clipsheet framed a file from its first skinned part, so with his head in a part of its own the camera moved (it now
+    frames from every part and every point); a regex escape inside clipsheet's page template lost its backslash.
+  - Checked in look D at the game's exposure: his face close is sharper (brows, eyes, lips, the skin of his forehead); at
+    about 200 pixels tall a touch softer (a sheet with more detail than the screen is drawn from its averaged copies); the
+    back of his head is his own paint; his hands and wrists from four sides show no seam. All 19 takes, four moments,
+    front, his right and behind, framed alike: every change, down to a difference of 12 in 255, is on the back of his head
+    (his hair, now unlit). prepmonk without BAKE makes v24.54's file byte for byte (f0a6a9fa); the recipe three times makes
+    the same file (3f933c52).
+  - Cost: assets/pho.glb 9,076,976 bytes (+420,892), 3 parts, 168,122 triangles (the same); texture memory with mipmaps
+    about 128 MB against 107 (the 2048 sheet, +21 MB): put to Chad with the lighter choice (the sheet at 1448: 1.4x
+    today's detail, +10 MB).
+  - Left, and said: his robe's ragged edge across his back and the skin-coloured patches on it are his scan's paint (his
+    choice); his hands in the floor sit and the raised armpit's plain skin, as before.
 
 ## The sheet, version by version
 

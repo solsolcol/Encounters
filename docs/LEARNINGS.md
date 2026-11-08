@@ -7676,3 +7676,27 @@ cut (sharing its vertices and maps) when it is small.
 - **A set of Blender's points iterates in memory order.** Two runs of the same script gave different files until every
   set was sorted by a key no two points share (a point and its copy share a place: add the lowest triangle number round
   each). Prove a recipe by running it twice, and again under a shifted memory layout.
+
+## v24.55 — Blender bakes, and what a sheet's room is worth
+
+- **Blender 5 bakes from a blurred copy of an image unless told not to.** Its new texture cache (`render.use_texture_cache`,
+  on by default) reads an image "at appropriate resolution", and in a bake that is a lower level: Grandmaster Pho's face,
+  baked from his 8192 sheet, came out blurred. Turned off, the bake matched his sheet spot for spot. Judge a bake by the
+  same spot in both sheets (find one triangle in each): a scan's atlas holds several copies of a face, some blurrier than
+  others, and two crops of "the face" may be two different copies.
+- **A sheet's room goes where the detail is seen.** His 8192 sheet gives the plain robe and his face the same texels a
+  centimetre; cut to 4096 for a phone, his face lost half its detail with the robe. Laying the whole sheet out again cost
+  the robe (Blender packs 3,900 scan charts into half a square at best); a second, small sheet for the face and hands alone
+  (their own part, their own points, the body untouched) gives them the full detail and changes nothing else. Its price
+  is texture memory, stated to Chad.
+- **Blender's packer:** it joins faces into one piece only through an edge (two charts touching at a corner come apart:
+  copy the corner point, one copy a piece); it treats the faces that are not selected as obstacles in the square (hide
+  them, and it fills the square); and leaving edit mode rebuilds the mesh's layers, so fetch a layer again after it.
+- **A colour test is not a part.** Look D drew "skin" by the saturation of each texel, so his grey hair counted as robe and
+  was lit, and the light showed the blocks of his scan's own shape at the back of his head. A part of its own (his face and
+  hands) can be drawn as what it is: unlit whole, as Chad asked ("unlit, except for the robe").
+- **Frame two files alike before comparing them.** clipsheet framed a model from its first skinned part, sampling every
+  40th point: once his head was a part of its own, the camera moved and every edge of him showed as changed. It now frames
+  from every part and every point.
+- **A backslash inside a page built as a template string is eaten.** `/\(face and hands\)$/` written into clipsheet's page
+  reached the browser as `/(face and hands)$/` and matched nothing; a plain `endsWith` has no escape to lose.
