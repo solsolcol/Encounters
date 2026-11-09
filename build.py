@@ -475,6 +475,7 @@ ASSETS = {
     'e4praicase':   ('assets/e4praicase.glb', True, False),   # a Prai Tang Glom tablet: glossy black, in a bell-shaped clear case with a silver rim (4.5 cm)
     'e4tanitab':    ('assets/e4tanitab.glb', True, False),    # a Nang Tani powder tablet: pale green, a standing woman in relief (5.5 cm)
     'e4ghostjar':   ('assets/e4ghostjar.glb', True, False),   # e4c1 v24.39: Chad's "Thai ghost jar หม้อแม่นาค" by N0M4DXII (Sketchfab, CC BY-NC-SA 4.0), 16 cm, every triangle (12k), its metal kept to the band, levelled (masters/v24.39/make.sh), in the covered bowl's place on the master's low table
+    'lersichin':    ('assets/lersichin.glb', True, False),    # e4c2 v25.0: Lersi Chin, Chad's own model (v24.38: his twelve takes; masters/v24.38/make.sh) — cast at last
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
     # in white (two women, two men), Mixamo's Praying and Kneeling Idle applied
@@ -596,7 +597,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'firstmaster', 'e4sky', 'fmshadow', 'e4noi', 'e4pong', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4pickup', 'e4nangkwak', 'e4takrut', 'e4phayant', 'e4nangkwakhd', 'e4takruthd', 'e4phayanthd', 'iconnangkwak', 'icontakrut', 'iconphayant',
            'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd', 'e4buffalo', 'e4sandalsa', 'e4sandalsb', 'e4rahu', 'e4sedan', 'e4truck', 'e4suv', 'e4moto', 'e4seat',
            'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm',
-           'e4kuman', 'e4ngang', 'e4tani', 'e4phraioil', 'e4phraitab', 'e4praicase', 'e4tanitab', 'e4ghostjar'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
+           'e4kuman', 'e4ngang', 'e4tani', 'e4phraioil', 'e4phraitab', 'e4praicase', 'e4tanitab', 'e4ghostjar', 'lersichin'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and

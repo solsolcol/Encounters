@@ -20,6 +20,12 @@
           for (const k of ['standLo', 'standUp']) if (P.L[k]) { P.L[k].time = LC_STAND_AT; P.L[k].setEffectiveTimeScale(0); }
           P.waiGrip = { Left: new THREE.Object3D(), Right: new THREE.Object3D() };
           for (const sd in P.waiGrip) P.group.add(P.waiGrip[sd]);
+          P.reach = { Left: new THREE.Object3D(), Right: new THREE.Object3D() }; P.reachR = { Right: P.reach.Right };
+          for (const sd in P.reach) worldS.add(P.reach[sd]);
+          P.bowlGrip = { Left: new THREE.Object3D(), Right: new THREE.Object3D() };
+          if (props.bowl) { P.bowlGrip.Left.position.set(0.118, 0.07, 0); P.bowlGrip.Right.position.set(-0.118, 0.07, 0); props.bowl.add(P.bowlGrip.Left, P.bowlGrip.Right); }
+          waiHands(P);
+          P.after = waiAfter;
         } });
       cast.pong = mkPerson('e4pong', { parent: worldS, x: PSTOOL.x, z: PSTOOL.z, ry: PONG_RY, height: 1.7, sizeTake: 'Idle_4',
         posture: 'sit', stand: 'Idle_4', sit: 'Sit_Upright', talk: 'Talk_with_Right_Hand_Open', seatH: 0.71, seatFloor: 0, feet: true,
@@ -28,18 +34,116 @@
       cast.mallA = mkPerson('sitwoman', { parent: worldS, x: 3.4, z: 4.15, ry: -Math.PI / 2, height: 1.56, anims: 'wifewalk', sizeTake: 'Walking', posture: 'stand', stand: 'Walking', look: 0, noShadow: true, hidden: true });
       cast.mallB = mkPerson('sitangry', { parent: worldS, x: 4.0, z: 6.9, ry: -Math.PI / 2, height: 1.7, anims: 'fatherwalk', sizeTake: 'Walking', posture: 'stand', stand: 'Walking', look: 0, noShadow: true, hidden: true });
     }
-    /* HIS WAI (Lersi Chin has no take for it): both wrists carried onto two points before his chest, the hands meeting
-       there, by the arm solver the drivers use (armTo); `k` blends from where the take holds them (gripTick, P.gripK).
-       The two points ride his group, set each frame from his chest (the spine bone, last frame's) */
-    const _wv = new THREE.Vector3(), _wq = new THREE.Quaternion();
-    function waiSet(P, k) { if (!P || !P.ready) return; P.gripK = k; P.grip = k > 0.001 && P.waiGrip ? P.waiGrip : null; }
+    /* HIS HANDS (Lersi Chin has no take for a wai, a reach or a bowl held): his wrists carried onto points by the arm
+       solver the drivers use (armTo), blended from where his take holds them by `k` (gripTick's P.gripK, v25.0). In a wai
+       each hand is turned fingers up and palm to the middle (waiAfter; the palm found from the hand's own vertices at its
+       bind, since his rig has no finger bones). The wai's points ride his group, set each frame from his chest (the spine
+       bone, last frame's); a reach's and a bowl's are in the world. A thing he holds rides his hand, or the middle of the
+       two in a wai; let go, it goes home. Every pose is undone before the mixer runs again (the v11.5 law) */
+    const _wv = new THREE.Vector3(), _wq = new THREE.Quaternion(), _wF = new THREE.Vector3(), _wN = new THREE.Vector3(), _wX = new THREE.Vector3();
+    const _wMw = new THREE.Matrix4(), _wMl = new THREE.Matrix4(), _wqT = new THREE.Quaternion(), _wqP = new THREE.Quaternion();
+    const _wa = new THREE.Vector3(), _wb = new THREE.Vector3();
+    const lerpN = (a, b, k) => a + (b - a) * k;
+    function waiHands(P) {
+      const sks = []; P.model.traverse(m => { if (m.isSkinnedMesh) sks.push(m); });
+      if (!sks.length) return;
+      const bones = sks[0].skeleton.bones, inv = sks[0].skeleton.boneInverses;
+      const idx = (re) => bones.findIndex(b => re.test(b.name));
+      const bindAt = (i) => new THREE.Vector3().setFromMatrixPosition(new THREE.Matrix4().copy(inv[i]).invert());
+      const hip = idx(/Hips(_\d+)?$/);
+      P.waiHand = {};
+      for (const sd of ['Left', 'Right']) {
+        const hi = idx(new RegExp(sd + 'Hand(_\\d+)?$')), ti = idx(new RegExp(sd + 'HandMiddle\\d(_\\d+)?$'));
+        if (hi < 0) continue;
+        const Hinv = inv[hi];
+        const fL = ti >= 0 ? bindAt(ti).applyMatrix4(Hinv).normalize() : new THREE.Vector3(0, 1, 0);
+        /* the hand's own vertices (each one's heaviest bone the hand or its end), in the hand's frame at its bind */
+        const pts = [], v = new THREE.Vector3(), M2 = new THREE.Matrix4();
+        for (const sk of sks) {
+          const sb = sk.skeleton.bones, h2 = sb.indexOf(bones[hi]), t2 = ti >= 0 ? sb.indexOf(bones[ti]) : -1; if (h2 < 0) continue;
+          M2.multiplyMatrices(sk.skeleton.boneInverses[h2], sk.bindMatrix);
+          const pos = sk.geometry.attributes.position, si = sk.geometry.attributes.skinIndex, sw = sk.geometry.attributes.skinWeight;
+          if (!si || !sw) continue;
+          for (let i = 0; i < pos.count; i++) {
+            let bi = -1, bw = 0;
+            for (let c = 0; c < 4; c++) { const w = sw.getComponent(i, c); if (w > bw) { bw = w; bi = si.getComponent(i, c); } }
+            if (bi !== h2 && bi !== t2) continue;
+            pts.push(v.fromBufferAttribute(pos, i).applyMatrix4(M2).clone());
+          }
+        }
+        if (pts.length < 12) continue;
+        /* the palm's normal: the thinnest way across the hand, square to the fingers (a 2 × 2 spread, its minor axis),
+           turned to face the body at the bind (an A-pose's palms face the thighs) */
+        const c0 = new THREE.Vector3(); for (const p of pts) c0.add(p); c0.divideScalar(pts.length);
+        const u = new THREE.Vector3(1, 0, 0); if (Math.abs(u.dot(fL)) > 0.9) u.set(0, 0, 1);
+        u.addScaledVector(fL, -u.dot(fL)).normalize(); const w2 = new THREE.Vector3().crossVectors(fL, u);
+        let a = 0, b = 0, cc = 0;
+        for (const p of pts) { const dx = p.x - c0.x, dy = p.y - c0.y, dz = p.z - c0.z, px = dx * u.x + dy * u.y + dz * u.z, py = dx * w2.x + dy * w2.y + dz * w2.z; a += px * px; b += px * py; cc += py * py; }
+        const th = 0.5 * Math.atan2(2 * b, a - cc) + Math.PI / 2;
+        const nL = u.clone().multiplyScalar(Math.cos(th)).addScaledVector(w2, Math.sin(th)).normalize();
+        if (hip >= 0 && nL.dot(bindAt(hip).applyMatrix4(Hinv)) < 0) nL.negate();
+        const xL = new THREE.Vector3().crossVectors(fL, nL);
+        P.waiHand[sd] = { bone: bones[hi], fL, nL, xL, q0: new THREE.Quaternion(), wrote: false };
+      }
+    }
+    function holdHome(obj) {
+      const h = obj && obj.userData.holdHome; if (!h) return;
+      if (obj.parent !== h.parent) h.parent.add(obj);
+      obj.position.copy(h.p); obj.rotation.copy(h.r);
+    }
+    function lcPose(mode, k = 1, o = {}) {
+      const P = cast.lersi; if (!P || !P.ready || !P.arms || !P.waiGrip) return;
+      const kk = Math.max(0, Math.min(1, k)), on = !!mode && kk > 0.001;
+      const hold = on ? (o.hold || null) : null;
+      if (P.holdObj && P.holdObj !== hold) holdHome(P.holdObj);
+      if (hold && !hold.userData.holdHome) hold.userData.holdHome = { parent: hold.parent, p: hold.position.clone(), r: hold.rotation.clone() };
+      P.holdObj = hold;
+      if (!on) { P.grip = null; P.gripK = 0; P.waiOn = false; return; }
+      P.gripK = kk; P.waiOn = mode === 'wai'; P.waiLift = o.lift || 0;
+      if (mode === 'wai') P.grip = P.waiGrip;
+      else if (mode === 'bowl') P.grip = P.bowlGrip;
+      else {
+        worldS.updateWorldMatrix(true, false);
+        P.reach.Right.position.copy(worldS.worldToLocal(_wv.set(o.at[0], o.at[1], o.at[2])));
+        if (o.atL) P.reach.Left.position.copy(worldS.worldToLocal(_wv.set(o.atL[0], o.atL[1], o.atL[2])));
+        P.grip = o.atL ? P.reach : P.reachR;
+      }
+    }
+    /* before the mixer: the hands' turns given back, and the wai's two points set from his chest */
     function waiUpdate() {
-      for (const P of [cast.lersi]) {
-        if (!P || !P.ready || !P.grip || !P.spine) continue;
-        P.spine.getWorldPosition(_wv); P.group.worldToLocal(_wv);
-        const up = P.sitW > 0.5 ? 0.02 : 0.06;
-        P.waiGrip.Left.position.set(_wv.x + 0.022, _wv.y + up, _wv.z + 0.2);
-        P.waiGrip.Right.position.set(_wv.x - 0.022, _wv.y + up, _wv.z + 0.2);
+      const P = cast.lersi; if (!P || !P.ready) return;
+      if (P.waiHand) for (const sd in P.waiHand) { const H = P.waiHand[sd]; if (H.wrote) { H.bone.quaternion.copy(H.q0); H.wrote = false; } }
+      if (!P.grip || P.grip !== P.waiGrip || !P.spine) return;
+      P.spine.getWorldPosition(_wv); P.group.worldToLocal(_wv);
+      const L = P.waiLift || 0, y = _wv.y + lerpN(-0.05, 0.13, L), z = _wv.z + lerpN(0.2, 0.15, L);
+      P.waiGrip.Left.position.set(_wv.x + 0.028, y, z);
+      P.waiGrip.Right.position.set(_wv.x - 0.028, y, z);
+    }
+    /* after the arms are solved (P.after): the hands turned for a wai, and what he holds carried */
+    function waiAfter(P) {
+      if (!P.grip || !(P.gripK > 0.001)) return;
+      if (P.waiOn && P.waiHand) {
+        P.group.getWorldQuaternion(_wq);
+        for (const sd in P.waiHand) {
+          const H = P.waiHand[sd];
+          H.q0.copy(H.bone.quaternion); H.wrote = true;
+          _wF.set(0, 1, 0.25).normalize().applyQuaternion(_wq);                       // the fingers up, a little forward
+          _wN.set(sd === 'Left' ? -1 : 1, 0, 0).applyQuaternion(_wq);                 // the palm to the middle (his left is +x)
+          _wN.addScaledVector(_wF, -_wN.dot(_wF)).normalize();
+          _wX.crossVectors(_wF, _wN);
+          _wMw.makeBasis(_wF, _wN, _wX); _wMl.makeBasis(H.fL, H.nL, H.xL).transpose(); _wMw.multiply(_wMl);
+          _wqT.setFromRotationMatrix(_wMw);
+          H.bone.parent.getWorldQuaternion(_wqP); _wqT.premultiply(_wqP.invert());
+          H.bone.quaternion.slerp(_wqT, P.gripK);
+        }
+      }
+      const obj = P.holdObj;
+      if (obj && P.waiHand && obj.parent) {
+        const L = P.waiHand.Left, R = P.waiHand.Right;
+        if (P.waiOn && L && R) { L.bone.getWorldPosition(_wa); R.bone.getWorldPosition(_wb); _wa.add(_wb).multiplyScalar(0.5); _wa.y += 0.07; }
+        else if (R) { R.bone.getWorldPosition(_wa); R.bone.getWorldQuaternion(_wqP); _wb.copy(R.fL).applyQuaternion(_wqP).multiplyScalar(0.07); _wa.add(_wb); }
+        else return;
+        obj.parent.updateWorldMatrix(true, false); obj.position.copy(obj.parent.worldToLocal(_wa));
       }
     }
 
@@ -229,7 +333,7 @@
       for (const P of [cast.lersi, cast.pong]) whenReady(P, (Q) => { Q.group.visible = false; });
       whenReady(cast.goldman, (Q) => { Q.group.visible = true; });
       props.lcThings.visible = false; props.note.visible = true; props.envelope.visible = false;
-      pieceShow(true);
+      pieceShow(true); lcBlockOn(false);
     }
     function shopBegin() {
       shopStage();
@@ -279,7 +383,7 @@
       shopCtl.night(true); shopCtl.shutter(0.42, 0); shopCtl.lights(0.28, 0); shopCtl.ceiling(0, 0); shopCtl.lap(''); shopCtl.phone('');
       for (const P of [cast.lersi, cast.pong, cast.goldman, cast.mallA, cast.mallB]) whenReady(P, (Q) => { Q.group.visible = false; });
       props.lcThings.visible = false; props.note.visible = true; props.wallet.visible = false; props.envelope.visible = false;
-      pieceShow(true);
+      pieceShow(true); lcBlockOn(false);
     }
     function toNight() {
       const run = ++worldRun;
@@ -371,7 +475,8 @@
       look(cleared ? 'CLEAR' : 'VISIT', 0); fog(!cleared, 0.01);
       shopCtl.night(true); shopCtl.shutter(0.42, 0); shopCtl.lights(0.9, 0); shopCtl.ceiling(0, 0); shopCtl.lap(''); shopCtl.phone('');
       for (const P of [cast.goldman, cast.mallA, cast.mallB]) whenReady(P, (Q) => { Q.group.visible = false; });
-      whenReady(cast.lersi, (P) => { P.group.visible = true; personPut(P, LC.x, LC.z, 0, 0); seatNow(P, true); waiSet(P, 0); });
+      whenReady(cast.lersi, (P) => { P.group.visible = true; personPut(P, LC.x, LC.z, 0, 0); seatNow(P, true); lcPose(null, 0); });
+      lcBlockOn(true);
       whenReady(cast.pong, (P) => { P.group.visible = true; personPut(P, PSTOOL.x, PSTOOL.z, PONG_RY, 0); seatNow(P, true); });
       props.lcThings.visible = true; props.matK = 1; props.note.visible = true; props.wallet.visible = false;
       pieceShow(!play.examined); props.cloth.userData.piece = play.examined;
@@ -383,6 +488,8 @@
       if (!resumed) {
         yaw.position.set(-0.95, yaw.position.y, 1.25); yaw.rotation.y = Math.atan2(-(LC.x + 0.95), -(LC.z - 1.25)); pitch.rotation.x = -0.12;
         if (kit) kit.pose('standing', { secs: 0.05 });
+        /* the visit film hands over on its black: lifted here, on the room it ended on */
+        if (kit && kit.getFade && kit.getFade() > 0.01) kit.fade(0, 1.1);
       }
       kneelZone.visible = !play.knelt;
       setPhase('clearing', { complete: false });
@@ -573,6 +680,7 @@
     function playTick(now, wdt) {
       zoneTick(now);
       if (getState() !== 'play') return;
+      mallPlay(now, phase === 'shop' && !wDark);                 // noon: the mall's people going by outside
       turnTick(wdt); bowTick(wdt);
       if (phase === 'night') nightTick(now);
       if (phase === 'clearing' && !play.knelt && kneelZone.visible && !wDark && Math.hypot(yaw.position.x - CL.x, yaw.position.z - CL.z) < 0.42) kneel(false);
