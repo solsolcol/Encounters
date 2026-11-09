@@ -22,8 +22,9 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
    (`masters/v24.0/previews/`) and its seven new voices; episode 3 chapter 4's opening score (take 3 of 4,
    `masters/v22.0/previews/film-music-1..4.mp3`) and closing music (c, against a); episode 3 chapter 5's music
    (`masters/v23.0/previews/`, and v24.3's twelve cues). Send the reels again.
-5. ~~**Episode 4 chapter 2's build plan**~~ — WRITTEN at v24.40, docs/V25.0-E4C2-PLAN.md: waiting on his answers to
-   its §2.3 (eight questions) before any build.
+5. ~~**Episode 4 chapter 2's build plan**~~ — WRITTEN at v24.40, docs/V25.0-E4C2-PLAN.md, and REVISED 9 Nov 2026 to his
+   direction (Lersi Chin comes to his shop in Singapore, brought by Pong; all play in the shop; the decision rebuilt):
+   waiting on his yes and his answers to its §2.3 (six questions) before any build.
 6. **Episode 3's statues and trays after a lost graphics context** (found at v24.30, outside its ask, left as it was).
    Every chapter of episode 3 gives its Buddha images, trays and a few pieces an envMap of their own — the scene's
    environment texture at the time they were built (`buddhaMat`, `trayMat`, e3c1–e3c5). When a phone drops the page's

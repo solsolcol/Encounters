@@ -111,9 +111,10 @@ its credit row.
 |---|---|---|
 | **Lersi Chin** | Chad's own (3 Nov 2026: *"this is the 3d model of lersi chin, he will be used in the next episode"*) — a young hermit in a tiger-print cloth over his left shoulder, a long string of big red-brown prayer beads and beads at both wrists, beads wound up his topknot, a red mark on his forehead, a small goatee, a tattoo on his bare right shoulder and one on his chest, barefoot. A Meshy scan on a 28-joint Mixamo rig with twelve takes of his own (walk, run, a cross-legged sit, two chair sits and a sit-to-stand, five talking takes — one angry, 20.8 s — and a spell cast); no standing idle (the chapter makes his rest from a talk take's still stretch, or retargets one) | **RECEIVED AND PREPARED (v24.38), not yet cast**: `assets/lersichin.glb`, 597,494 → 179,247 triangles, a 4096 colour sheet and a 2048 normal map, 7.6 MB (`masters/v24.38/make.sh` — his file was flat-shaded, so `tools/deflatten.mjs` first; the colour sheet is 4096 because at a face close-up the 2048 one is visibly soft, `masters/v24.38/shots/face-cuts.jpg`). Every take photographed front and side (`shots/takes-1.jpg`, `takes-2.jpg`). The key `lersichin` is his; it goes into build.py (hosted-only) the day the chapter casts him. His voice is still to come (by audition, Chad picks by ear — docs/V24.0-EPISODE4-PLAN.md §4) |
 
-The chapter's plan (proposed 3 Nov 2026, waiting on Chad's answers): docs/V25.0-E4C2-PLAN.md — its §6 lists what the
-chapter will make (the flat, the hermitage's images from real photographs, its trees as models) and what it reuses
-(Pong, the first master and his compound in endings A and C, the charms).
+The chapter's plan (proposed 3 Nov 2026, revised 9 Nov to Chad's direction, waiting on his yes):
+docs/V25.0-E4C2-PLAN.md. All of it is in his shop in Singapore, so its §6 needs no new model (Lersi Chin and Pong are
+his and ready; the first master is only heard, the customers only heard); it makes Lersi Chin's things and the forum's
+screens, and reuses his shop, Pong and the charm he took in chapter 1.
 
 ## Episode 4 chapter 3 — not built yet (S1·12: the Wai Kru, the teacher in white)
 

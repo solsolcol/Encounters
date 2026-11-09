@@ -172,6 +172,7 @@ that fits it, with the version it came from.
 - A finding outside the ask, or one that would change every chapter or the base game, is listed for him with the reason and left as it is. (v19.2)
 - A chapter is built to full completion, nothing skipped, with its own music and sound generated. (v23.6)
 - A model he sends with no place decided is prepared and kept ready, and placed only when he picks where. (v14.13)
+- A chapter opens where the last one left him, and nothing re-shows a journey the last chapter already made ("it does not link properly"); every decision's answers make sense where he stands (no answer sends him back across a border once the matter is settled) and teach different things in distinct ways ("All the decisions need to make sense, and teach different things in distinct ways"). (v24.56, the plan for episode 4 chapter 2)
 - Efficiency improves and the standards and quality stay exactly where they are ("I dont want quality and creativity and standards to drop because of this change, i want efficiency to improve while keeping the same standards and quality"): his asks are done in one shot, one build, one deploy and one round of checks at the end ("cant you do all of my asks in one shot, deploy, test once probe once?"), not one release per ask. Each ask is designed fully before it is built (what the real place has, what each shot sees), so the photographs confirm instead of discover. The work is saved by commits as it goes. Every check this file asks for is still made, once, where it can catch something, and never repeated after each tweak. A generated model's own checks (the reference picture, each model on its own) are part of making it, not probes of the game. (v24.35)
 
 ### How the work is done and checked
@@ -358,6 +359,7 @@ that fits it, with the version it came from.
 - Shots look in at the subject, and whatever a shot looks straight at is built, never a flat painting. (v24.22)
 - A cutscene is skipped only by the Skip button or its keys, and only from 3.0 s. (v6.6)
 - A scene change happens in the black: place, warm and land everything before the black lifts. (v16.1)
+- The grown Master Zavier is never seen: no mirror, reflection or third-person shot shows him, because there is no model of him in the world (Chad: "it will then require a new master zavier model"; `zav` is the equipment panel's figure). Every shot is his eyes. (v24.56, the plan for episode 4 chapter 2)
 - A cramped interior gets a wider lens on a phone. (v24.21)
 - Frame and fade a rig by where its body actually is, not by its group's spot. (v24.4)
 - Lay a long thin strip near the lens in short lengths; it clips badly. (v22.3)
@@ -1093,8 +1095,11 @@ Next up: **EPISODE 4 · THE TEACHER IN WHITE** (Chad's name) — the casebook's 
 not know to his first cases at his teacher's side. Chapter 1 SHIPPED at v24.0 and was tightened at v24.9 (Chad's
 call: the yard straight in, no notes, no birthday pick — chapter 2's "notebook read back" becomes one question at Lersi
 Chin's, what he tells him: what he saw, or what he thinks it meant, the trial's 5.2); chapter 2 (S1·11's second half: the
-fog, Lersi Chin's clearing and the warning, the trial's 5.3) is next: its build plan, **docs/V25.0-E4C2-PLAN.md**, was
-PROPOSED at v24.40 and waits on Chad's answers to its §2.3 (eight questions) — nothing is built before his yes; its
+fog, Lersi Chin's clearing and the warning) is next: its build plan, **docs/V25.0-E4C2-PLAN.md**, PROPOSED at v24.40 and
+REVISED 9 Nov 2026 to Chad's direction (Lersi Chin comes to his shop in Singapore, Pong brings him; all play in the shop;
+no airport and no mirror, he is never seen; no answer goes back to test and each teaches its own thing; the coda ends on a
+forum thread, "LF> Gathering devotees for Wai Kru in Udon Thani!"), waits on his yes and his answers to its §2.3 (six
+questions) — nothing is built before his yes; its
 research, refuted by a second reader, is docs/research/V25.0-LERSI.md (and -VERDICTS.md, which wins where they differ). The episode's plan, with what remains his to decide:
 **docs/V24.0-EPISODE4-PLAN.md** (its sixth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is
 still his). S1·11 in two chapters (the master he did not know, who wears the original Sak Yant Ajarn's model; then the

@@ -8288,6 +8288,17 @@ What the baseline contains, by release:
   - Left, and said: a small bit of his robe's own ragged edge at the front of the armpit in a few arm-down moments (the
     hand-on-hip talk), where the folds used to hang in front of it: his scan's robe, his choice; as before, the face
     sheet's size, his hands in the floor sit, the raised armpit's plain skin, the robe's ragged edge across his back.
+  - The same day, EPISODE 4 CHAPTER 2's PLAN shown to Chad again and REVISED to his direction (docs/V25.0-E4C2-PLAN.md,
+    §0 his words verbatim): "lersi chin was in singapore, should be at the player's newly opened amulet shop, not
+    thailand" ... "Just start at his shop right away" ... "Dont use the mirror, as it will then require a new master
+    zavier model" ... "All play is in the shop" ... Pong recommends him and brings him over ("i know a famous ajahn who
+    is good at clearing dirty things, he helped my mother before. This one I can vouch for...") ... "there should not be
+    any decisions that 'go back to test'" ... "All the decisions need to make sense, and teach different things in
+    distinct ways" ... the coda ending on a forum thread, "LF> Gathering devotees for Wai Kru in Udon Thani!". The
+    decision rebuilt from Master Z's own trial (5.3C confront him, 5.3D let it rest, 5.5C tell others he practises black
+    magic) and his casebook (S1·12: ask Lersi Chin to be your teacher); no new model needed. Three standing rules lifted
+    into CLAUDE.md: a chapter opens where the last left him; every decision's answers make sense where he stands and
+    teach distinct things; the grown Master Zavier is never seen. Waiting on Chad's yes and his six answers.
 
 ## The sheet, version by version
 
