@@ -88,7 +88,11 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
    choice), and his face and hands given his scan's full detail in a sheet of their own baked in Blender (v24.55, "you
    are not using it to its fullest potential and capacity"; masters/v24.55/PLAN.md: his face sharper close, his hair his
    own paint unlit; its cost, +21 MB of texture memory, put to him with a lighter 1448 sheet at +10 MB; left and said: his
-   robe's ragged edge across his back and the skin-coloured patches on it are his scan's paint, his choice). His choice
+   robe's ragged edge across his back and the skin-coloured patches on it are his scan's paint, his choice), and his right
+   armpit cleaned up (v24.56, "why cant u just clean up that entire armpit area, remove all those popping out parts";
+   masters/v24.56/PLAN.md: the skin flap and every fold, fin and strip gone, the worst stretch 95 → 28 times; left and
+   said: in a few arm-down moments a small bit of his robe's own ragged edge shows at the front of the armpit, his
+   choice). His choice
    waits on one thing: sitting
    cross-legged, his hands rest under the robe — raise them about 10 cm onto it, his saved file's robe for that take, or
    leave it; and, if he prefers cleaner talking over clean chair sits, the first build instead. Left and said: a sliver

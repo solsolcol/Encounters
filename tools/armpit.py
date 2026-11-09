@@ -27,6 +27,14 @@ from collections import defaultdict
 RJ, JJ, OUT = sys.argv[1], sys.argv[2], sys.argv[3]
 E = lambda k, dflt: float(os.environ.get(k, dflt))
 CUTFAR, MIXFAR, UVSTRETCH, WSMOOTH = E('CUTFAR', 0.15), E('MIXFAR', 0.15), E('UVSTRETCH', 3.0), int(E('WSMOOTH', 12))
+# v24.56 · CUTALL=1 (masters/v24.56/PLAN.md; Chad, 9 Nov 2026: "why cant u just clean up that entire armpit area, remove
+# all those popping out parts"): the two folds kept as the armpit go too. They were not the armpit: they are a strip the scan
+# laid across the mouth of the hollow under his arm (the hollow's own walls, the arm's inner side and his side, meet above
+# it), and every take holds the arm 23 to 150 degrees from where the scan hung it, so the strip opened in every take, even
+# walking, and drawn out in front of the robe it was the skin shards under his arm (stretched up to 95 times in cast 4). The
+# band of blended skin at the front and back of the shoulder (where the arm truly joins the body) stays. With CUTALL come
+# TONGUE, MIXOPEN, CREASEPAINT and COVERPAINT below. Unset, as v24.54.
+CUTALL = bool(int(E('CUTALL', 0)))
 d = json.load(open(RJ))
 C = d['center']; pts = d['pts']; keys = list(pts.keys()); kidx = {k: i for i, k in enumerate(keys)}
 gvuv = {}
@@ -89,7 +97,7 @@ for p in range(npc):
             for w in adj[v]:
                 if w not in seen: seen.add(w); st.append(w)
     dmin = min(dist(v.co) for f in fs for v in f.verts)
-    take = loops >= 2 or dmin > CUTFAR
+    take = CUTALL or loops >= 2 or dmin > CUTFAR
     report.append(f'piece {p}: {len(fs)} triangles, rim {loops} loop(s), nearest {dmin:.3f} m -> {"taken out" if take else "kept (the armpit)"}')
     if take: cut |= set(fs)
 # beside the pieces taken out, a triangle whose corners ride the arm and the trunk apart (arm share across 0.5), further than
@@ -104,9 +112,56 @@ while grow:
     grow = bool(new); mixed |= new
 cut |= mixed
 report.append(f'mixed triangles beside them, further than {MIXFAR} m, taken out too: {len(mixed)}')
+# v24.56 · TONGUE=d (with CUTALL): what is left of the scan's bridge on the arm's side. A strip of triangles that ride the arm
+# but stand off it towards his side (the collar's wall: up to about 3 cm beyond an upper arm 5 to 6.6 cm in radius), touching the cut
+# and grown while new ones touch: a triangle on the inner side of the upper arm (within 60 degrees of the direction from the
+# arm's line to his chest), below the armpit's folds (more than 9 cm down the arm from the shoulder joint), whose corners lie
+# more than d beyond the arm's own radius there (the 90th centile of the points that ride the arm wholly, per centimetre down
+# the arm). Closed, the opening it leaves lies on the arm; left, the closing fill spanned it and swung out under the armpit as
+# the skin shard (Talk_with_Hands_Open, Chad 9 Nov 2026). The front and back folds of the armpit stand off the arm too but lie
+# to its front and back, outside the 60 degrees, and stay.
+TONGUE = E('TONGUE', 0)
+if TONGUE > 0 and CUTALL:
+    JPOS = d['jointPos']; ja = JPOS['RightArm']; jb = JPOS['RightForeArm']; jc = JPOS['Spine2']
+    axv = [jb[i] - ja[i] for i in range(3)]; alen = math.sqrt(sum(x * x for x in axv)); au = [x / alen for x in axv]
+    def cylof(p):
+        dd = [p[i] - ja[i] for i in range(3)]; t = sum(dd[i] * au[i] for i in range(3)); r = [dd[i] - t * au[i] for i in range(3)]
+        return t, r, math.sqrt(sum(x * x for x in r))
+    _, cin, cinl = cylof(jc); cin = [x / cinl for x in cin]
+    prof = defaultdict(list)
+    for k in keys:
+        if pts[k]['arm'] > 0.97:
+            t, _, rho = cylof(pts[k]['p'])
+            if 0 <= t <= alen: prof[int(t * 100)].append(rho)
+    rp90 = {b: sorted(v)[int(len(v) * 0.9)] for b, v in prof.items() if len(v) >= 10}
+    def rarm(t):
+        b = min(max(int(t * 100), min(rp90)), max(rp90))
+        while b not in rp90: b -= 1
+        return rp90[b]
+    def tongue_face(f):
+        if sum(arm(w) for w in f.verts) / 3 < 0.5: return False
+        cen = [sum(w.co[i] for w in f.verts) / 3 for i in range(3)]
+        t, r, rho = cylof(cen)
+        if t < 0.09 or t > alen or rho <= 0: return False
+        if sum(r[i] * cin[i] for i in range(3)) / rho < math.cos(math.radians(60)): return False
+        return max(cylof(list(w.co))[2] - rarm(cylof(list(w.co))[0]) for w in f.verts) > TONGUE
+    tongue = set(); grow = True
+    while grow:
+        near = {v for f in cut | tongue for v in f.verts}
+        new = {f for v in near for f in v.link_faces if f not in cut and f not in tongue and tongue_face(f)}
+        grow = bool(new); tongue |= new
+    cut |= tongue
+    report.append(f'the bridge left on the arm (riding the arm, more than {TONGUE} m off it towards his side, touching the cut): {len(tongue)} triangles taken out')
 cutverts = {v for f in cut for v in f.verts}
 drop = sorted(f[tid] for f in cut)
 cutco = [[v.co.copy() for v in f.verts] for f in cut]
+# v24.56 · COVERPAINT (below) needs the mesh as it was, the cut pieces in it: a ray tree of it, and which of its faces are cut
+COVERPAINT = E('COVERPAINT', 0)
+tree0 = cutidx = None
+if COVERPAINT > 0 and CUTALL:
+    from mathutils.bvhtree import BVHTree
+    bm.faces.ensure_lookup_table(); bm.faces.index_update()
+    tree0 = BVHTree.FromBMesh(bm); cutidx = {f.index for f in cut}
 for f in cut: bm.faces.remove(f)
 # 2. separate shared points: each fan of faces round a cut point that is joined to the others only through the point gets
 #    its own copy (Blender's vert_separate), and every point the cut touched is weighed again from its own side: its weights
@@ -277,15 +332,44 @@ def zipper(L):
     return out
 def _fan(L):
     return [(L[0], L[k], L[k + 1]) for k in range(1, len(L) - 1)]
+# v24.56 · CUTALL: a fold cut out leaves ONE opening whose rim runs along the arm's lip and his side's lip both. It is split
+# into its runs (the rim's edges in order, each run the edges whose face is on one side), and each run is closed on its own
+# side by the same fill, from its first point to its last: the arm's lip by the arm's skin, his side's by his side's surface.
+# MIXOPEN=1: such an opening is left open instead, as v24.54 left one: it is the mouth of the hollow, whose own walls close
+# him. Closed by runs, each run's fill was a fan 10 to 15 cm long from the two ends where arm and side still meet, and those
+# ends, riding the arm by half, drew the fans out as grey strips across his back and chest (46 times, cast 6).
+MIXOPEN = bool(int(E('MIXOPEN', 0)))
+jobs = []
 for es in holes:
-    h0 = (nfill, nsafe, bad)
     sides = {faceside(e.link_faces[0]) for e in es}
-    if len(sides) > 1:
-        unfilled += 1; hv = {v for e in es for v in e.verts}
-        report.append(f'  an opening of {len(es)} edges runs along the arm and the trunk both ({min(dist(v.co) for v in hv):.3f}-{max(dist(v.co) for v in hv):.3f} m): left open'); continue
-    L = order_loop(es)
-    if L is None:
-        unfilled += 1; report.append(f'  an opening of {len(es)} edges is not one simple loop: left open'); continue
+    if len(sides) > 1 and CUTALL and not MIXOPEN:
+        L = order_loop(es)
+        if L is None: jobs.append((es, 'order')); continue
+        n = len(L); emap = {frozenset(e.verts): e for e in es}
+        esd = [faceside(emap[frozenset((L[i], L[(i + 1) % n]))].link_faces[0]) for i in range(n)]
+        start = next((i for i in range(n) if esd[i] != esd[i - 1]), 0)
+        runs, cur = [], [start]
+        for k in range(1, n + 1):
+            i = (start + k) % n
+            if k < n and esd[i] == esd[(i - 1) % n]: cur.append(i)
+            else: runs.append(cur); cur = [i]
+        report.append(f'  an opening of {len(es)} edges along the arm and his side both: split into {len(runs)} runs ({", ".join(str(len(r)) for r in runs)} edges)')
+        for r in runs:
+            Lr = [L[i] for i in r] + [L[(r[-1] + 1) % n]]
+            if len(Lr) >= 3: jobs.append(([emap[frozenset((L[i], L[(i + 1) % n]))] for i in r], Lr))
+        continue
+    jobs.append((es, 'order'))
+allmade = set()   # every fill face made so far: two runs of one opening share their end points
+for es, L in jobs:
+    h0 = (nfill, nsafe, bad)
+    if L == 'order':
+        sides = {faceside(e.link_faces[0]) for e in es}
+        if len(sides) > 1:
+            unfilled += 1; hv = {v for e in es for v in e.verts}
+            report.append(f'  an opening of {len(es)} edges runs along the arm and the trunk both ({min(dist(v.co) for v in hv):.3f}-{max(dist(v.co) for v in hv):.3f} m): left open'); continue
+        L = order_loop(es)
+        if L is None:
+            unfilled += 1; report.append(f'  an opening of {len(es)} edges is not one simple loop: left open'); continue
     # the opening closed by the least-cost triangulation of its rim (Liepa's hole filling, as a dynamic programme over the
     # rim in order): a triangle costs its area, more the further it turns from the skin round its corners, and far more if
     # it faces against it, so the fill follows the surface it closes and never folds
@@ -320,6 +404,7 @@ for es in holes:
         try: made.add(bm.faces.new(t))
         except ValueError: pass
     bm.normal_update()
+    made |= allmade; allmade |= made
     hv = sorted({v for e in es for v in e.verts}, key=vkey)
     side = 'arm' if sum(arm(v) for v in hv) / len(hv) >= 0.5 else 'trunk'
     for tv in out:
@@ -367,9 +452,68 @@ for es in holes:
         debug.append(([v.co[:] for v in tv], 'safe' if tris[-1][0].get('safe') else 'fill', against))
     report.append(f'  opening: {len(es)} edges, {side}, {min(dist(v.co) for v in hv):.3f}-{max(dist(v.co) for v in hv):.3f} m from the joint: {nfill - h0[0]} triangles, {nsafe - h0[1]} pointed at plain, {bad - h0[2]} facing against')
 report.append(f'openings closed: {len(holes)} ({nfill} triangles, {nsafe} pointed at plain skin or robe, {bad} facing against their neighbours)')
+# v24.56 · CREASEPAINT=o (with CUTALL): the inside of the crease drawn in his skin. With the seal across the hollow under his
+# arm cut out (MIXOPEN), a raised arm shows the hollow's own walls, which the scan painted in the crease's grey and the robe's
+# white where it could not see (grey and white scraps in the armpit, cast 6 from behind, the cheer from the side). A triangle
+# here is in the crease when, at rest, his own body closes it in: of 48 rays from it over the side it faces, fewer than o in
+# 48 get 15 cm without meeting him; and it lies within CREASENEAR (3 cm unless set) of the other side (a triangle of his side
+# near the arm, or of the arm near his side) and within 22 cm of the joint. Each is handed to tools/meshpatch.mjs as skin:
+# kept where its own paint is all skin, else pointed at plain skin beside it (no texel of his sheet changes). What shows at
+# rest is not in the crease.
+# COVERPAINT=c: what the cut pieces covered keeps their colour. The seal and the folds were skin, and at rest they lay over the
+# robe's ragged top edge in his armpit; cut out, that edge showed as white teeth even with his arm down. A triangle (as near
+# the other side and the joint as above) of whose 48 rays at least c met a cut piece first, in the mesh as it was, is handed on
+# as skin the same way: at rest he looks as he did, and nothing the pieces covered is left to show when the arm moves.
+CREASEPAINT, CREASENEAR = E('CREASEPAINT', 0), E('CREASENEAR', 0.03)
+crease_tris = []
+if (CREASEPAINT > 0 or COVERPAINT > 0) and CUTALL:
+    from mathutils.bvhtree import BVHTree
+    from mathutils.kdtree import KDTree
+    bm.faces.ensure_lookup_table(); bm.verts.ensure_lookup_table()
+    tree = BVHTree.FromBMesh(bm)
+    live = [v for v in bm.verts if v.link_faces]
+    kd = {}
+    for sd in (0, 1):
+        vs = [v for v in live if vside(v) == sd]
+        kt = KDTree(len(vs))
+        for i, v in enumerate(vs): kt.insert(v.co, i)
+        kt.balance(); kd[sd] = kt
+    NR = 48; ga = math.pi * (3 - math.sqrt(5)); hemi = []
+    for i in range(NR):
+        z = 1 - (i + 0.5) / NR; r = math.sqrt(max(0.0, 1 - z * z)); hemi.append((math.cos(ga * i) * r, math.sin(ga * i) * r, z))
+    nCrease = 0
+    # the fills' own triangles are not his scan's: each is already written above with its paint, and a face made here
+    # carries its layers' defaults (tid 0, every corner glTF vertex 0), so taken again it dropped glTF triangle 0 (at his
+    # shin) and wrote a triangle with all three corners at vertex 0
+    for f in sorted((f for f in bm.faces if f.is_valid and f not in allmade), key=lambda f: f[tid]):
+        cen = f.calc_center_median()
+        if dist(cen) > 0.22: continue
+        sd = faceside(f)
+        if kd[1 - sd].find(cen)[2] > CREASENEAR: continue
+        nrm = f.normal
+        if nrm.length < 0.5: continue
+        t1 = nrm.orthogonal().normalized(); t2 = nrm.cross(t1)
+        org = cen + nrm * 0.001; free = covered = 0
+        for hx, hy, hz in hemi:
+            d3 = t1 * hx + t2 * hy + nrm * hz
+            if tree.ray_cast(org, d3, 0.15)[0] is None: free += 1
+            if tree0 is not None:
+                hit = tree0.ray_cast(org, d3, 0.15)
+                if hit[0] is not None and hit[2] in cutidx: covered += 1
+        if not ((CREASEPAINT > 0 and free < CREASEPAINT) or (COVERPAINT > 0 and covered >= COVERPAINT)): continue
+        cs = readd.pop(f, None) or [{'v': lp[gvl]} for lp in f.loops]
+        drop.append(f[tid]); crease_tris.append([dict(c, kind='skin') for c in cs]); nCrease += 1
+    report.append(f'the inside of the crease (closed in at rest: under {CREASEPAINT:g} of {NR} rays free for 15 cm; or {COVERPAINT:g} or more meeting a cut piece first; within {CREASENEAR:g} m of the other side): {nCrease} triangles handed on as skin')
 readd_tris = []
 for f, cs in readd.items():
     if f.is_valid: drop.append(f[tid]); readd_tris.append(cs)
+readd_tris += crease_tris
+# the patch may take out only triangles of the region it was handed, and write no triangle with a corner twice
+rtids = {tr['t'] for tr in d['tris']}
+outside = sorted(t for t in set(drop) if t not in rtids)
+if outside: raise SystemExit(f'armpit: would take out triangles outside the region: {outside[:8]}')
+twice = [t for t in readd_tris + tris if len({(c.get('v'), c.get('p')) for c in t}) < 3]
+if twice: raise SystemExit(f'armpit: {len(twice)} triangles with a corner twice, e.g. {twice[0]}')
 json.dump({'drop': sorted(set(drop)), 'points': points, 'reweight': reweight, 'tris': readd_tris + tris, 'report': report}, open(OUT, 'w'))
 if os.environ.get('DEBUG'): json.dump({'fills': debug, 'cut': [[v[:] for v in c] for c in cutco]}, open(os.environ['DEBUG'], 'w'))
 print('\n'.join(report)); print(f'armpit: {len(set(drop))} triangles out, {len(points)} points copied, {len(reweight)} reweighed, {len(readd_tris) + len(tris)} triangles in -> {OUT}')

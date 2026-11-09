@@ -91,13 +91,15 @@ if (MODE === 'dump') {
   const kindAt = (x, y) => { const { data, info } = tex, xx = Math.min(info.width - 1, Math.max(0, x)), yy = Math.min(info.height - 1, Math.max(0, y)), o = (yy * info.width + xx) * 3;
     const val = Math.max(data[o], data[o + 1], data[o + 2]), sat = val ? (val - Math.min(data[o], data[o + 1], data[o + 2])) / val : 0;
     return sat < 0.16 && val > 150 ? 'robe' : (sat > 0.25 && val > 80 ? 'skin' : 'none'); };
-  const safeUV = (centre, kind) => { const { info, data } = tex, cand = [];
+  // v24.56: with no plain paint of its kind within SAFER, the search widens to twice and then four times it (deep in the
+  // crease of his armpit the nearest plain skin can be further off); where SAFER sufficed, nothing changes
+  const safeUV = (centre, kind, R = SAFER) => { const { info, data } = tex, cand = [];
     for (let i = 0; i < n; i++) { const dx = pos[3 * i] - centre[0], dy = pos[3 * i + 1] - centre[1], dz = pos[3 * i + 2] - centre[2];
-      if (dx * dx + dy * dy + dz * dz > SAFER * SAFER) continue;
+      if (dx * dx + dy * dy + dz * dz > R * R) continue;
       UV.getElement(i, uv); const x = Math.floor(uv[0] * info.width), y = Math.floor(uv[1] * info.height); let ok = true;
       for (let a = -3; a <= 3 && ok; a++) for (let b = -3; b <= 3 && ok; b++) if (kindAt(x + a, y + b) !== kind) ok = false;
       if (ok) { const o = (Math.min(info.height - 1, Math.max(0, y)) * info.width + Math.min(info.width - 1, Math.max(0, x))) * 3; cand.push([uv[0], uv[1], data[o], data[o + 1], data[o + 2]]); } }
-    if (!cand.length) throw new Error(`meshpatch: no plain ${kind} within ${SAFER} m of ${centre}`);
+    if (!cand.length) { if (R < 4 * SAFER) return safeUV(centre, kind, 2 * R); throw new Error(`meshpatch: no plain ${kind} within ${R} m of ${centre}`); }
     const med = [2, 3, 4].map(k => cand.map(c => c[k]).sort((a, b) => a - b)[cand.length >> 1]);
     let best = cand[0], bd = 1e9; for (const c of cand) { const d2 = (c[2] - med[0]) ** 2 + (c[3] - med[1]) ** 2 + (c[4] - med[2]) ** 2; if (d2 < bd) { bd = d2; best = c; } }
     return [best[0], best[1]]; };

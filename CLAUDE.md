@@ -1178,7 +1178,13 @@ v24.55 (Chad: "you are not using it to its fullest potential and capacity"; mast
 and necklace gold are a part of their own whose 2048 sheet Blender packs and bakes from his 8192 sheet (tools/rebake.py
 between prepmonk BAKE=dump and BAKE=apply): his scan's full detail where he is seen close, his body sheet untouched; look D
 draws that part unlit whole (his grey hair too, which the colour test had lit). Blender 5 bakes from a blurred copy of an
-image unless render.use_texture_cache is off. Its cost (+21 MB of texture memory) is put to Chad. Waiting on his choice: his hands in the floor sit (raised onto the robe, his saved file's robe for
+image unless render.use_texture_cache is off. Its cost (+21 MB of texture memory) is put to Chad. At v24.56 (Chad: "why
+cant u just clean up that entire armpit area, remove all those popping out parts"; masters/v24.56/PLAN.md) his right armpit
+is clean: the "folds kept as the armpit" were a strip his scan laid across the mouth of the hollow under his arm, cut and
+left open (armpit.py CUTALL, MIXOPEN), the scan's bridge on the arm cut with it (TONGUE), the crease and what those pieces
+covered drawn in plain skin (CREASEPAINT, COVERPAINT); the worst stretch over every frame of every take 95 → 28 times
+(tools/probes/webstretch.mjs). Measure every frame before judging a picture, and draw a scan's geometry before cutting it.
+Waiting on his choice: his hands in the floor sit (raised onto the robe, his saved file's robe for
 that take, or as it is). Each 540-picture blind review by twenty readers costs about 6 million tokens: put its cost to
 Chad before running one (he noticed v24.49's four). **Ajahn Krukai's model is PINNED** (v23.5, Chad: *"Make sure ajahn krukai's model
 in ep3 is unaffected and untouched. It is important that krukai is in the game as the master who gave the player his

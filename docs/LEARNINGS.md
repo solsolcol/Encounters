@@ -7700,3 +7700,30 @@ cut (sharing its vertices and maps) when it is small.
   from every part and every point.
 - **A backslash inside a page built as a template string is eaten.** `/\(face and hands\)$/` written into clipsheet's page
   reached the browser as `/(face and hands)$/` and matched nothing; a plain `endsWith` has no escape to lose.
+
+## v24.56 — a scan's armpit: what joins, what seals, what covers
+
+- **Measure every frame before looking at pictures.** A photograph shows one moment from one side; tools/probes/webstretch.mjs
+  poses the file through every frame of every take and ranks every triangle round a joint by how far it is drawn out. It
+  found the 95-times slivers no picture had shown, and it is how a fix is judged before it is photographed.
+- **Draw the geometry before cutting it.** Pho's "two folds kept as the armpit" (v24.54) were never the armpit: drawn piece
+  by piece in Blender and cut through, they are a strip the scan laid across the mouth of the hollow under his arm, whose
+  own walls meet above it. Removing a seal needs no closing; closing it again (fans from the two ends, which ride the arm
+  by half) makes long slivers. A cross-section and a coloured render settle in minutes what reasoning about loops does not.
+- **A patch is only as good as its rim.** A hole closed on the arm is a fin if its rim runs out along scan material that
+  rides the arm but lies off it (here 3 cm past the arm's radius). Measure the rim against the bone's own line and radius;
+  cut what stands off before closing.
+- **Opening a crease shows what the scan never saw.** Its walls carry grey and white paint from the photographs' shadow;
+  point what his body closes in at rest at plain skin. And what a removed piece used to cover keeps the piece's colour
+  (rays from each triangle meeting the cut pieces first, in the mesh as it was): otherwise his look at rest changes.
+- **A global step spreads a local change.** prepmonk's thinning shares one triangle budget over the whole model; a change in
+  the armpit moved it a little everywhere (1.2% of the robe's other part). Say so, and check the whole body, not only the
+  part that was changed.
+- **When the same fault returns after each pass, stop patching and find what it is made of.** The armpit went round five
+  versions; the decisive step was identifying each visible piece's triangles and their place in the scan, not another rule.
+- **A face a Blender script makes carries its layers' defaults.** armpit.py's fill triangles have tid 0 and every corner
+  glTF vertex 0; a later pass over bm.faces that took them as his scan's dropped glTF triangle 0 (at his shin, far from the
+  armpit) and wrote 117 triangles with all three corners on that one point. No picture of the armpit could show it: it was
+  found reading the final diff and the patch's numbers (a drop outside the region). A pass over a mesh a script has
+  changed skips what the script made, and the patch refuses to take out a triangle outside its region or write a corner
+  twice (proved by breaking the fix on a copy).

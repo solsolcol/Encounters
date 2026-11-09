@@ -8253,6 +8253,41 @@ What the baseline contains, by release:
     today's detail, +10 MB).
   - Left, and said: his robe's ragged edge across his back and the skin-coloured patches on it are his scan's paint (his
     choice); his hands in the floor sit and the raised armpit's plain skin, as before.
+- **v24.56** (prepared, not a build: nothing deployed, the live build stays v24.40) GRANDMASTER PHO: HIS RIGHT ARMPIT
+  CLEANED UP, NOTHING POPPING OUT. Chad, 9 Nov 2026: "why is there a piece of skin colour thing popping out from under the
+  right armpit? didnt you notice it" ... "why cant u just clean up that entire armpit area, remove all those popping out
+  parts, is it so hard? you have been going in circles on this part" (masters/v24.56/PLAN.md). I had seen the piece in
+  v24.55's game picture and passed it as older work: my miss.
+  - Measured on every frame of every take (tools/probes/webstretch.mjs, new): within 25 cm of his right shoulder 210
+    triangles were drawn out past 20 times their length, the worst 95 times. The piece (tools/probes/phoid.mjs) was v24.54's
+    patch over the place his inner arm pressed his side, riding the arm but lying off it (a fin), with the "two folds kept
+    as the armpit" drawn out behind it. Drawn and cut through in Blender, those folds are a strip the scan laid across the
+    mouth of the hollow under his arm, whose own walls meet above it; every take opens it.
+  - tools/armpit.py: the folds cut too (CUTALL) and their openings left open (MIXOPEN: the hollow closes him); the scan's
+    bridge left on the arm's inner side cut with them (TONGUE, more than 0.6 cm past the arm's own radius), so the patch
+    lies on the arm; the inside of the crease (closed in by his body at rest) and what the cut pieces covered at rest drawn
+    in plain skin beside them (CREASEPAINT, COVERPAINT; no texel of his sheet changed). tools/meshpatch.mjs looks further
+    for plain paint when none lies within 3 cm. Step 8 as v24.55.
+  - Tried and left: each opening closed on its own side by runs (fans 10-15 cm long drawn out as grey strips across his
+    back, 46 times); the cut carried nearer the joint (bigger fans, no plain skin in reach); the cut's rim and the blend
+    band painted too (no gain, wedges in the robe's edge at his back).
+  - Checked: past 20 times 210 → 38 triangles, the worst 95 → 28 times (cast 6, the blended skin where the arm joins him);
+    all 19 takes at five moments from four sides close on the armpit, and in the real game on a phone
+    (masters/v24.56/shots/pho-armpit-before-after.jpg): the flap gone, no strip, fin or shard. Raised high, the armpit now
+    shows his robe in the arm's shade where v24.55 stretched a sheet of skin over it. The thinning's one triangle budget
+    moves a little elsewhere: the robe's two-sided part 584 triangles fewer (1.2%), a few pixels along its outline.
+    armpit.py unset writes v24.54's patch byte for byte (7cbb527b), meshpatch then v24.54's step 7b file byte for byte;
+    the recipe twice makes the same file (be554c7f).
+  - Found reading the final diff, before the commit: the crease pass also took the fill's own triangles, which carry no id
+    of his scan's, so it took out glTF triangle 0 (a 5 mm piece inside the fold of his robe's hem, at his shin) and wrote
+    117 triangles with all three corners on one point. Fixed (the fill's triangles are skipped), and armpit.py now refuses
+    a patch that takes out a triangle outside its region or writes a corner twice (proved by breaking the fix on a copy).
+    Every check above was made again on the rebuilt file: the every-frame measure the same (213 past 10 times, 38 past 20,
+    the worst 28), the 19 takes' armpit pictures and the game's the same but for a pixel or two along the robe's edges.
+  - Cost: assets/pho.glb 9,096,408 bytes (+19,432), 168,029 triangles, 127,408 points; the same sheets.
+  - Left, and said: a small bit of his robe's own ragged edge at the front of the armpit in a few arm-down moments (the
+    hand-on-hip talk), where the folds used to hang in front of it: his scan's robe, his choice; as before, the face
+    sheet's size, his hands in the floor sit, the raised armpit's plain skin, the robe's ragged edge across his back.
 
 ## The sheet, version by version
 
