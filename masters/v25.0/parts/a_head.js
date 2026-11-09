@@ -193,7 +193,7 @@
     /* (§3.2) declared reuse, each with its reason — the shop is his (chapter 1's World S, Chad's direction, 9 Nov); Pong
        is the friend who sent him and now vouches first-hand; the piece he took in chapter 1 comes back to be seen as
        what it is; the mall's people are the same mall's */
-    assets: ['lersichin', 'e4pong', 'e4nangkwak', 'e4takrut', 'e4phayant',
+    assets: ['lersichin', 'e4pong', 'e4nangkwak', 'e4takrut', 'e4phayant', 'e4mayom', 'e4khannam', 'e4phan',
              'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm', 'filmlaptop',
              'staffman', 'sitwoman', 'wifewalk', 'sitangry', 'fatherwalk'],
     /* FRESH (chaptertest) asks a chapter of episode 4 to declare what it takes from episodes 1-3 (`reuse`, printed on

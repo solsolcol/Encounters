@@ -144,6 +144,24 @@
       return g;
     })();
     const WRIST = [0.012, -0.03, -0.075];                                // the wrist, in the arm's own frame (a little behind the palm)
+    /* (v25.0 CP7) the world point at a share (fx, fy) of the lens's frame, d metres out, for a lens of fovDeg — where a
+       hand the engine places by its share of the frame (HPOSE) stands on THIS screen */
+    const _lpv = new THREE.Vector3();
+    /* (v25.0 CP7) a held thing turned so its +x runs along `ax` and its +y (the mayom's face) as near `up` as that allows;
+       holdHome gives it back its own turn when it is let go */
+    const _ox = new THREE.Vector3(), _oy = new THREE.Vector3(), _oz = new THREE.Vector3(), _om = new THREE.Matrix4();
+    function orient(obj, ax, up) {
+      _ox.set(ax[0], ax[1], ax[2]).normalize();
+      _oy.set(up[0], up[1], up[2]); _oy.addScaledVector(_ox, -_oy.dot(_ox)).normalize();
+      _oz.crossVectors(_ox, _oy);
+      obj.quaternion.setFromRotationMatrix(_om.makeBasis(_ox, _oy, _oz));
+    }
+    function lensPoint(fx, fy, d, fovDeg) {
+      camera.updateWorldMatrix(true, false);
+      const hh = d * Math.tan(fovDeg * Math.PI / 360), hw = hh * camera.aspect;
+      _lpv.set(fx * hw, fy * hh, -d); camera.localToWorld(_lpv);
+      return [_lpv.x, _lpv.y, _lpv.z];
+    }
     function threadOn(on) {
       const A = FL.api; if (!A || !A.armR) return;
       if (on) { if (wristThread.parent !== A.armR) A.armR.add(wristThread); wristThread.position.set(WRIST[0], WRIST[1], WRIST[2]); wristThread.visible = true;
@@ -246,7 +264,11 @@
       else if (t < C.pg2c3) at = aimTurn(eye, altar, glass, smo(sgk(t, C.q2c2 - 0.4, C.q2c2 + 1.4)), -1);
       else if (t < C.q2c3) at = aimEase(eye, glass, door, smo(sgk(t, C.pg2c3 + 1.0, C.pg2c3 + 4.0)));
       else at = aimEase(eye, door, UNDER, smo(sgk(t, C.q2c3 - 0.2, C.q2c3 + 1.2)));
-      fLens(isNarrow() ? 58 : 50);
+      /* (v25.0 CP4) a slow push in on each held subject, eased back out as his eyes move on: the stand while he tells
+         Pong, the altar under Pong's offer (held still for 7-8 s each, the frame read as frozen) */
+      const pushA = smo(sgk(t, C.q2c1 + 2.0, C.offer + 1.0)) * (1 - smo(sgk(t, C.offer + 1.0, C.offer + 3.5)));
+      const pushB = smo(sgk(t, C.offer + 6.0, C.q2c2)) * (1 - smo(sgk(t, C.q2c2 - 0.4, C.q2c2 + 1.4)));
+      fLens((isNarrow() ? 58 : 50) - 8 * pushA - 10 * pushB);
       camAt(eye, at);
     }
 
@@ -378,7 +400,7 @@
         if (L) { L.lookAt = _sh.set(shelf[0], shelf[1], shelf[2]); }
         const kw = smo(sgk(t, X.fetch, X.fetch + 2.0));
         const e = [lp(CL.x, SHELF.x + 0.62, kw), lp(KNEEL.y, 1.6, smo(sgk(t, X.fetch, X.fetch + 0.8))), lp(CL.z, SHELF.z - 0.42, kw)];
-        fLens(isNarrow() ? 56 : 48);
+        fLens(lp(isNarrow() ? 56 : 48, isNarrow() ? 40 : 34, kw));   // (v25.0 CP7) narrowed as he arrives: the piece large enough to know
         camAt(e, [shelf[0], shelf[1] - 0.05 * kw, shelf[2]]);
         if (t >= tTake && ph) handHold(ph, { screen: [0.1, lp(-0.35, -0.12, smo(sgk(t, tTake, tBack))), 0.36], face: false, rx: -0.3 });
         else handFree();
@@ -400,7 +422,7 @@
         /* the piece on the cloth, the candles' light on it */
         if (L) { gaze(L, false); L.lookAt = null; L.look = 0; }
         const c0 = props.cloth.position;
-        shot([c0.x + 0.2, 0.62, c0.z + 0.5], [c0.x, c0.y + 0.02, c0.z], 44, 36);
+        shot([c0.x + 0.17, 0.5, c0.z + 0.42], [c0.x, c0.y + 0.03, c0.z], 36, 30);   // (v25.0 CP7) closer: the piece, not his bag
         return;
       }
       /* "According to my practice, I believe..." — pushed in; "By him?" — "I didn't say that. I said on you." */
@@ -438,23 +460,33 @@
         const wH = smo(sgk(t, K.homage + 1.6, K.homage + 2.3)) * (1 - smo(sgk(t, K.sak - 0.8, K.sak)));
         if (L) { L.lookAt = null; L.look = 0; L.bow = t > K.homage && t < K.lift ? 0.2 : 0.08; L.neck = null; }
         if (t < K.sak) lcPose(wH > 0.001 ? 'wai' : null, wH, { lift: 0.7 });
-        else lcPose('reach', smo(sgk(t, K.sak, K.sak + 1.0)), { at: [LC.x - 0.1, 0.72, LC.z + 0.3], hold: props.mayom });   // the mayom held over the bowl as he chants
+        else {
+          /* (v25.0 CP7) the verses chanted with the mayom held between his joined palms, its leaves up and toward him (an
+             open hand raised by his face to hold it read as "stop", by photograph) */
+          lcPose('wai', Math.max(0.001, smo(sgk(t, K.sak, K.sak + 1.0))), { lift: 0.45, hold: props.mayom });
+          if (props.mayom) orient(props.mayom, [0, 0.825, 0.565], [0, -0.565, 0.825]);   // its leaves up and toward him, their face to him
+        }
         /* his eyes down on his hands and the mat (the tray, the candles' light at the top of the frame); up as it lifts */
         const down = [CL.x, 0.25, CL.z - 0.75];
-        fLens(isNarrow() ? 54 : 46);
-        camAt(KN_EYE, aimEase(KN_EYE, down, LC_HEAD(), 0.15 + 0.85 * lift));
+        /* (v25.0 CP7) not one still frame for forty seconds: a slow push in on the tray's candles under Namo tassa, his
+           eyes drawn up to the master's joined hands and the leaves as the verses begin, up to his face as the grey
+           lifts; a breath under it all */
+        const toHands = smo(sgk(t, K.sak - 1.0, K.sak + 3.0)), push = smo(sgk(t, K.homage + 1.0, K.sak)) * (1 - toHands);
+        const base = aimEase(KN_EYE, down, [LC.x, 0.5, LC.z + 0.22], toHands * 0.75);
+        fLens((isNarrow() ? 54 : 46) - 8 * push - 4 * toHands * (1 - lift));
+        camAt([KN_EYE[0], KN_EYE[1] + 0.004 * Math.sin(t * 2 * Math.PI / 4.6), KN_EYE[2]], aimEase(KN_EYE, base, LC_HEAD(), 0.15 + 0.85 * lift));
         return;
       }
       if (t < K.sprinkle) {
         /* "Drink. A little." — the bowl brought up to him in both hands; a sip */
         const up = smo(sgk(t, K.water + 0.2, K.water + 1.4)) * (1 - smo(sgk(t, K.sprinkle - 1.2, K.sprinkle - 0.2)));
         const B0 = props.bowl.userData.home || (props.bowl.userData.home = props.bowl.position.clone());
-        props.bowl.position.set(lp(B0.x, CL.x, up), lp(B0.y, 0.86, up), lp(B0.z, CL.z - 0.34, up));
+        props.bowl.position.set(lp(B0.x, CL.x, up), lp(B0.y, 0.7, up), lp(B0.z, CL.z - 0.32, up));   // (v25.0 CP7) below his eyes, the water seen
         props.bowl.rotation.x = 0.35 * smo(sgk(t, K.lc2drink + SECS.lc2drink, K.lc2drink + SECS.lc2drink + 0.8)) * up;
         lcPose('bowl', up);
         if (L) { L.look = 1; gaze(L, true, 1.1); L.bow = 0; }
         fLens(isNarrow() ? 54 : 46);
-        camAt(KN_EYE, aimEase(KN_EYE, LC_HEAD(), [CL.x, 0.86, CL.z - 0.34], up * 0.7));
+        camAt(KN_EYE, aimEase(KN_EYE, LC_HEAD(), [CL.x, 0.7, CL.z - 0.32], up * 0.6));
         return;
       }
       if (props.bowl.userData.home) { props.bowl.position.copy(props.bowl.userData.home); props.bowl.rotation.x = 0; }
@@ -462,6 +494,7 @@
         /* the leaves dipped and flicked over his head and shoulders: the drops falling through his view */
         const fk = (t - K.sprinkle) * 2.6, k = smo(sgk(t, K.sprinkle, K.sprinkle + 0.6)) * (1 - smo(sgk(t, K.thread - 0.6, K.thread)));
         lcPose('reach', k, { at: [CL.x + 0.12 * Math.sin(fk), 1.28 + 0.06 * Math.cos(fk * 1.3), CL.z - 0.55], hold: props.mayom });
+        if (props.mayom && k > 0.001) orient(props.mayom, [0.55 * Math.sin(0.9 * Math.sin(fk * 2.0)), -0.8, 0.45], [0, 0.5, 0.85]);   // (v25.0 CP7) its leaves down at him, flicked side to side
         if (L) { L.lookAt = _lv.set(CL.x, 1.25, CL.z); L.neck = null; L.look = 1; }
         dropsAt(t, K.sprinkle + 0.3, K.thread - 0.4, KN_EYE);
         fLens(isNarrow() ? 56 : 48);
@@ -473,15 +506,28 @@
         /* "Your wrist." — his right hand out, the white thread tied round it in the master's hands */
         const k = smo(sgk(t, K.thread + 0.2, K.thread + 1.0)) * (1 - smo(sgk(t, K.advice - 0.7, K.advice)));
         const tie = (t - K.thread) * 5.0;
-        lcPose('reach', k, { at: [CL.x + 0.14 + 0.02 * Math.sin(tie), 0.66 + 0.015 * Math.cos(tie * 1.4), CL.z - 0.42], atL: [CL.x + 0.06 - 0.02 * Math.sin(tie), 0.66, CL.z - 0.44] });
-        threadOn(t > K.thread + 2.2);
-        const A = FL.api; if (A && A.handsRoot) { A.handsRoot.visible = true; A.armR.visible = true; }
-        if (L) { L.lookAt = _lv.set(CL.x + 0.12, 0.62, CL.z - 0.4); L.neck = null; }
-        fLens(isNarrow() ? 54 : 46);
+        /* (v25.0 CP7) his right hand held out INTO the frame (the engine's own `reach` pose: its palm at that share of the
+           frame on every screen), and the master's hands brought to where it is on THIS screen — the point at that share
+           of the lens, 0.42 m out — so on a phone and a desktop alike they meet over his wrist (aimed at a fixed world
+           point, his own hand lay at the frame's foot, a blob, and the thread under the edge, by photograph) */
+        const A = FL.api;
+        if (A && A.handPose) A.handPose('reach', smo(sgk(t, K.thread, K.thread + 0.9)));
+        if (A && A.handsRoot) { A.handsRoot.visible = true; A.armR.visible = true; }
+        const fl = isNarrow() ? 54 : 46;
+        fLens(fl);
         camAt(KN_EYE, [CL.x + 0.05, 0.72, CL.z - 0.9]);
+        const hw = lensPoint(0.326, -0.652, 0.42, fl);
+        lcPose('reach', k, { at: [hw[0] - 0.03 + 0.02 * Math.sin(tie), hw[1] + 0.015 * Math.cos(tie * 1.4), hw[2] - 0.03],
+                             atL: [hw[0] + 0.05 - 0.02 * Math.sin(tie), hw[1], hw[2] - 0.05] });
+        threadOn(t > K.thread + 2.2);
+        if (L) { L.lookAt = _lv.set(hw[0], hw[1], hw[2]); L.neck = null; }
         return;
       }
-      lcPose(null, 0); threadOn(false);
+      lcPose(null, 0);
+      /* (v25.0 CP7) the hand lowered out of the frame as he listens, the thread on it until it has gone */
+      { const A = FL.api, down = smo(sgk(t, K.advice, K.advice + 1.0));
+        if (A && A.handPose) A.handPose('reach', 1 - down);
+        threadOn(down < 0.999); }
       /* "Go to a temple this week..." — his face, the colour back, warm */
       if (L) { L.look = 1; gaze(L, true, 1.1); L.bow = 0; }
       fLens(lp(isNarrow() ? 52 : 44, isNarrow() ? 48 : 40, smo(sgk(t, K.advice, K.end))));

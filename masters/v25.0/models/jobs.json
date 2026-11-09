@@ -1,0 +1,6 @@
+[{"name": "mayom", "image": "masters/v25.0/models/refs/mayom-a-2k.png", "symmetry": "off", "remesh": 8000,
+  "texture": "fresh bright green small smooth oval leaflets in two rows along slender light-green stems, a few turns of white cotton thread binding the stems near their cut ends"},
+ {"name": "bowl", "image": "masters/v25.0/models/refs/bowl-a-2k.png", "symmetry": "on", "remesh": 4000,
+  "texture": "polished silver gently worn, a band of embossed Thai flame-and-leaf pattern round the outer wall, a plain smooth rim, a smooth polished inside, a flared plain foot"},
+ {"name": "phan", "image": "masters/v25.0/models/refs/phan-a-2k.png", "symmetry": "on", "remesh": 8000,
+  "texture": "polished brass with gentle wear and engraved bands on the pedestal, a scalloped rim, a low mound of fresh orange marigold heads, a ring of white jasmine buds round it"}]

@@ -52,6 +52,11 @@
     const SHELF = { x: SHOP.x0 + 0.13, y: 1.48, z: 2.36 };                     // a small shelf beside it: the piece, facing the door
     const STAND = { x: 1.55, z: 2.36, ry: Math.PI + 0.42 };                    // the Grand Opening stand inside the door, turned in, its flowers dried
     const LC = { x: 0, z: -0.42 };                                             // Lersi Chin on his mat, facing the door; the altar's Buddha over his shoulder
+    /* (v25.0 CP6) Lersi Chin's things made as models (masters/v25.0/models): their sizes in metres, and the places inside
+       each that the code's own pieces stand at (shares of the fitted model's height and width, measured on the model) */
+    const BOWL_W = 0.22, BOWL_WATER = [0.72, 0.4];                            // the bowl across; the water's height and radius
+    const PHAN_W = 0.26, PHAN_TOP = 0.86;                                     // the tray across; where the candles stand in its flowers
+    const MAYOM_L = 0.24, MAYOM_TIE = 0.16;                                   // the bundle's length; its tie, from the cut end
     const CL = { x: 0, z: 0.78 };                                              // where he kneels before him, facing the altar
     const PSTOOL = { x: 1.15, z: COUNTER.z + COUNTER.d / 2 + 0.42 };           // the customers' right stool (buildShop's): Pong's
     const MAT = { x: 0, z: 0.18, w: 1.24, d: 2.1 };                            // the woven mat under both

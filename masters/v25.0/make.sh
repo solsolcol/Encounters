@@ -271,3 +271,29 @@ mus  x2endC     music/raw/x2endC_b.mp3                                         #
 mus  x2endD     music/raw/x2endD_b.mp3                                         # D's morning (20 s): b, the brightest (centroid 357 Hz against 251), thinning at 20.8 s where the coda comes
 mus  x2codamus  music/raw/x2codamus_c.mp3                                      # the coda (45 s) under the case file's last words: c, flat, 3.5 dB lost on a phone (a 5.1, b swings 8 dB), thinning at 45 s
 fi
+
+# ---------------------------------------------------------------- models (CP6) · `ONLY=models bash make.sh`, from masters/v25.0
+# Lersi Chin's things that are plants or vessels, made Chad's way (30 Oct 2026: a reference picture on white first,
+# LOOKED AT, then Meshy's image-to-3D at its best settings and its remesh — masters/v24.19/make.sh); the rest of his things
+# (the mat, the thread, the cloth, his bag, the candles and incense) stay in code. Not sacred images, so no photographs of a
+# real piece were needed first (the research's own words for each: docs/research/V25.0-LERSI.md §4.3 and [37]).
+# 1. THE PICTURES: Higgsfield gpt_image_2_6, quality high, 2k, opaque, 1:1, two of each (2.75 credits each); the prompts in
+#    models/refs/PROMPTS.txt; the picks (1024 copies beside the 2k originals, which are not committed):
+#      mayom-a   seven slender stems, small oval leaflets in two rows, bound near the cut ends with white cotton thread
+#                (b the same, a looser fan); a, the fuller silhouette
+#      bowl-a    an embossed silver khan nam mon on a flared foot, lai kranok round the wall, a plain rim (b deeper); a,
+#                its inside seen
+#      phan-a    a footed brass phan with a scalloped rim, a low mound of marigolds ringed by jasmine (b a taller heap); a
+# 2. MESHY (masters/v25.0/meshy.py masters/v25.0/models/jobs.json — every job at once; the key outside the repo): image-to-3d,
+#    then its remesh (src/, gitignored; Meshy keeps a job's files three days):
+#      mayom   01a1c1d4-ed4c-709b-a59f-0edefd6fce47   01a1c1d7-c499-7593-a151-de96360c9cb1   (remesh 8000: a flat fan, 8 mm thick)
+#      bowl    01a1c1d5-00d3-7326-a625-2a03cd139f24   01a1c1d8-1ceb-76e7-980d-c8d10c501647   (remesh 4000)
+#      phan    01a1c1d5-152e-772d-82a0-97cced0ebe19   01a1c1da-b52f-70d3-900a-2710ef2ea09d   (remesh 8000 -> 6,901)
+# 3. PREPARED (tools/prepmeshy.mjs: sized in metres, every triangle kept, the sheets at 1024 — the bowl is seen from a
+#    hand's length in the clearing), each photographed on its own (tools/shootmodel.mjs) before it was wired in
+if [ "$ONLY" = models ]; then
+  cd ../..
+  ERR=0.002 node tools/prepmeshy.mjs masters/v25.0/src/remeshed-bowl.glb  assets/e4khannam.glb 0.22 w 1 0 1024
+  ERR=0.002 node tools/prepmeshy.mjs masters/v25.0/src/remeshed-mayom.glb assets/e4mayom.glb   0.24 h 1 0 1024
+  ERR=0.002 node tools/prepmeshy.mjs masters/v25.0/src/remeshed-phan.glb  assets/e4phan.glb    0.26 w 1 0 1024
+fi

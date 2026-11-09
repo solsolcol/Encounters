@@ -193,7 +193,7 @@
     /* (§3.2) declared reuse, each with its reason — the shop is his (chapter 1's World S, Chad's direction, 9 Nov); Pong
        is the friend who sent him and now vouches first-hand; the piece he took in chapter 1 comes back to be seen as
        what it is; the mall's people are the same mall's */
-    assets: ['lersichin', 'e4pong', 'e4nangkwak', 'e4takrut', 'e4phayant',
+    assets: ['lersichin', 'e4pong', 'e4nangkwak', 'e4takrut', 'e4phayant', 'e4mayom', 'e4khannam', 'e4phan',
              'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm', 'filmlaptop',
              'staffman', 'sitwoman', 'wifewalk', 'sitangry', 'fatherwalk'],
     /* FRESH (chaptertest) asks a chapter of episode 4 to declare what it takes from episodes 1-3 (`reuse`, printed on
@@ -527,6 +527,11 @@
     const SHELF = { x: SHOP.x0 + 0.13, y: 1.48, z: 2.36 };                     // a small shelf beside it: the piece, facing the door
     const STAND = { x: 1.55, z: 2.36, ry: Math.PI + 0.42 };                    // the Grand Opening stand inside the door, turned in, its flowers dried
     const LC = { x: 0, z: -0.42 };                                             // Lersi Chin on his mat, facing the door; the altar's Buddha over his shoulder
+    /* (v25.0 CP6) Lersi Chin's things made as models (masters/v25.0/models): their sizes in metres, and the places inside
+       each that the code's own pieces stand at (shares of the fitted model's height and width, measured on the model) */
+    const BOWL_W = 0.22, BOWL_WATER = [0.72, 0.4];                            // the bowl across; the water's height and radius
+    const PHAN_W = 0.26, PHAN_TOP = 0.86;                                     // the tray across; where the candles stand in its flowers
+    const MAYOM_L = 0.24, MAYOM_TIE = 0.16;                                   // the bundle's length; its tie, from the cut end
     const CL = { x: 0, z: 0.78 };                                              // where he kneels before him, facing the altar
     const PSTOOL = { x: 1.15, z: COUNTER.z + COUNTER.d / 2 + 0.42 };           // the customers' right stool (buildShop's): Pong's
     const MAT = { x: 0, z: 0.18, w: 1.24, d: 2.1 };                            // the woven mat under both
@@ -1249,17 +1254,29 @@
         { const [x, z] = at(0.36, 0.3); const bg = new THREE.Group(); bg.position.set(x, 0.006, z); g.add(bg); props.bowl = bg;
           const prof = [[0, 0], [0.05, 0], [0.055, 0.012], [0.045, 0.02], [0.07, 0.03], [0.1, 0.06], [0.112, 0.095], [0.108, 0.1], [0.098, 0.064], [0.07, 0.036], [0, 0.032]]
             .map(([r, y]) => new THREE.Vector2(r, y));
-          bg.add(new THREE.Mesh(new THREE.LatheGeometry(prof, 40), M({ color: 0xd8dadc, roughness: 0.22, metalness: 0.9, envMapIntensity: 3, side: THREE.DoubleSide })));
-          const wtr = new THREE.Mesh(new THREE.CircleGeometry(0.1, 36), M({ color: 0xa8c4d4, roughness: 0.04, metalness: 0.1, transparent: true, opacity: 0.7 })); wtr.rotation.x = -Math.PI / 2; wtr.position.y = 0.082; bg.add(wtr); props.water = wtr; }
-        /* the mayom bundle across the bowl's rim: seven sprigs tied (a stand-in drawn in code only until its model lands) */
+          const lathe = new THREE.Mesh(new THREE.LatheGeometry(prof, 40), M({ color: 0xd8dadc, roughness: 0.22, metalness: 0.9, envMapIntensity: 3, side: THREE.DoubleSide })); bg.add(lathe);
+          const wtr = new THREE.Mesh(new THREE.CircleGeometry(0.1, 36), M({ color: 0xa8c4d4, roughness: 0.04, metalness: 0.1, transparent: true, opacity: 0.7 })); wtr.rotation.x = -Math.PI / 2; wtr.position.y = 0.082; bg.add(wtr); props.water = wtr;
+          /* (v25.0 CP6) the bowl itself (masters/v25.0/models: a checked picture on white, then Meshy): the turned stand-in
+             hidden the moment it lands, the water laid inside it at its own height */
+          fitModel('e4khannam', bg, BOWL_W, 'x', 0, 0).then(m => { if (!m || !alive) return; lathe.visible = false;
+            wtr.position.y = m.userData.fit.y * BOWL_WATER[0]; wtr.scale.setScalar(m.userData.fit.x * BOWL_WATER[1] / 0.1); }); }
+        /* the mayom bundle across the bowl's rim: seven sprigs tied. Its frame (what every pose turns): the tied end on the
+           group's origin, the leaves along +x, their face up (+y) */
         { const mg = new THREE.Group(); const [x, z] = at(0.36, 0.3); mg.position.set(x - 0.02, 0.11, z); mg.rotation.set(0, 0.6, 0.18); g.add(mg); props.mayom = mg;
+          const sg = new THREE.Group(); mg.add(sg);                                   // (v25.0 CP6) the stand-in, drawn only if the model never lands
           const mLeafM = M({ color: 0x3e7a2e, roughness: 0.7, side: THREE.DoubleSide }), mStem = M({ color: 0x5a6a2a, roughness: 0.8 });
           for (let k = 0; k < 7; k++) { const a = (k - 3) * 0.12, st = new THREE.Mesh(new THREE.CylinderGeometry(0.002, 0.002, 0.2, 5), mStem);
-            st.rotation.z = Math.PI / 2 + a; st.position.set(0.02, k * 0.002, (k - 3) * 0.008); mg.add(st);
+            st.rotation.z = Math.PI / 2 + a; st.position.set(0.02, k * 0.002, (k - 3) * 0.008); sg.add(st);
             for (let j = 0; j < 9; j++) { const lf = new THREE.Mesh(new THREE.PlaneGeometry(0.032, 0.014), mLeafM);
               lf.position.set(0.04 + j * 0.013, Math.sin(a) * 0.05 + (j % 2 ? 0.006 : -0.006), (k - 3) * 0.008 + (j % 2 ? 0.01 : -0.01));
-              lf.rotation.set(Math.PI / 2 + (j % 2 ? 0.5 : -0.5), 0, a); mg.add(lf); } }
-          mg.add(new THREE.Mesh(new THREE.TorusGeometry(0.012, 0.003, 6, 14), M({ color: 0xf2f0e8, roughness: 0.8 }))); }
+              lf.rotation.set(Math.PI / 2 + (j % 2 ? 0.5 : -0.5), 0, a); sg.add(lf); } }
+          sg.add(new THREE.Mesh(new THREE.TorusGeometry(0.012, 0.003, 6, 14), M({ color: 0xf2f0e8, roughness: 0.8 })));
+          /* the bundle itself (a checked picture on white, then Meshy: masters/v25.0/models). Meshy made it a flat fan
+             standing in its own x-y plane, leaves up, tied 16 % from its foot: turned so the leaves run along +x and its
+             face lies up, the tie moved onto the origin */
+          const mm = new THREE.Group(); mm.rotation.x = -Math.PI / 2; mg.add(mm);
+          fitModel('e4mayom', mm, MAYOM_L, 'x', 0, -Math.PI / 2).then(m => { if (!m || !alive) return; sg.visible = false;
+            m.position.x += m.userData.fit.x * (0.5 - MAYOM_TIE); m.position.y -= m.userData.fit.y / 2; }); }
         /* the white thread: a skein, coiled */
         { const [x, z] = at(-0.34, 0.34); const th = new THREE.Group(); th.position.set(x, 0.012, z); g.add(th); props.thread = th;
           for (let k = 0; k < 3; k++) { const tr = new THREE.Mesh(new THREE.TorusGeometry(0.028 - k * 0.002, 0.0028, 6, 24), M({ color: 0xf4f2ea, roughness: 0.85 })); tr.rotation.x = Math.PI / 2; tr.position.y = k * 0.004; th.add(tr); } }
@@ -1267,17 +1284,24 @@
         { const [x, z] = at(-0.36, 0.08); const cl = mesh(new THREE.BoxGeometry(0.26, 0.008, 0.22), M({ color: 0xf6f4ee, roughness: 0.9 }), x, 0.008, z, g); props.cloth = cl; }
         /* the homage tray between them: a footed brass phan, marigolds and jasmine on it, two candles, three sticks */
         { const [x, z] = at(0, 0.52); const kg = new THREE.Group(); kg.position.set(x, 0.004, z); g.add(kg); props.khan = kg;
+          /* (v25.0 CP6) the tray and its flowers (`stand`, a stand-in until the model lands) apart from the candles and the
+             incense (`top`), which stand in the flowers whichever tray is drawn */
+          const stand = new THREE.Group(), topG = new THREE.Group(); kg.add(stand, topG);
           const mBrass = M({ color: 0xc89a3a, roughness: 0.3, metalness: 0.9, envMapIntensity: 3 });
-          kg.add(new THREE.Mesh(new THREE.LatheGeometry([[0, 0], [0.06, 0], [0.04, 0.02], [0.03, 0.07], [0.12, 0.085], [0.13, 0.095], [0, 0.095]].map(([r, y]) => new THREE.Vector2(r, y)), 32), mBrass));
+          stand.add(new THREE.Mesh(new THREE.LatheGeometry([[0, 0], [0.06, 0], [0.04, 0.02], [0.03, 0.07], [0.12, 0.085], [0.13, 0.095], [0, 0.095]].map(([r, y]) => new THREE.Vector2(r, y)), 32), mBrass));
           const mMari = M({ color: 0xf0901a, roughness: 0.7 }), mJas = M({ color: 0xf6f2e6, roughness: 0.75 }), r = rng(5231);
           for (let k = 0; k < 18; k++) { const a = r() * 6.28, d = 0.02 + r() * 0.08; const s2 = new THREE.Mesh(new THREE.SphereGeometry(0.018 + r() * 0.006, 8, 6), k % 3 ? mMari : mJas);
-            s2.position.set(Math.cos(a) * d, 0.11 + r() * 0.02, Math.sin(a) * d); kg.add(s2); }
+            s2.position.set(Math.cos(a) * d, 0.11 + r() * 0.02, Math.sin(a) * d); stand.add(s2); }
           const mCand = M({ color: 0xf2e6c0, roughness: 0.5 }), mFlame = B({ color: 0xffc070, transparent: true, opacity: 0, depthWrite: false });
-          for (const sx of [-1, 1]) { const cd = new THREE.Mesh(new THREE.CylinderGeometry(0.007, 0.008, 0.09, 10), mCand); cd.position.set(sx * 0.07, 0.14, -0.04); kg.add(cd);
-            const fl = new THREE.Mesh(new THREE.SphereGeometry(0.006, 8, 6), mFlame); fl.scale.y = 2; fl.position.set(sx * 0.07, 0.195, -0.04); kg.add(fl); props.flames.push(fl); }
+          for (const sx of [-1, 1]) { const cd = new THREE.Mesh(new THREE.CylinderGeometry(0.007, 0.008, 0.09, 10), mCand); cd.position.set(sx * 0.07, 0.14, -0.04); topG.add(cd);
+            const fl = new THREE.Mesh(new THREE.SphereGeometry(0.006, 8, 6), mFlame); fl.scale.y = 2; fl.position.set(sx * 0.07, 0.195, -0.04); topG.add(fl); props.flames.push(fl); }
           const mStk = M({ color: 0x9a2a1a, roughness: 0.7 });
-          for (let k = 0; k < 3; k++) { const st = new THREE.Mesh(new THREE.CylinderGeometry(0.0016, 0.0016, 0.22, 5), mStk); st.position.set((k - 1) * 0.012, 0.2, 0.03); st.rotation.z = (k - 1) * 0.12; kg.add(st);
-            const em = new THREE.Mesh(new THREE.SphereGeometry(0.003, 6, 4), mFlame); em.position.set((k - 1) * 0.012 + (k - 1) * 0.013, 0.31, 0.03); kg.add(em); props.flames.push(em); } }
+          for (let k = 0; k < 3; k++) { const st = new THREE.Mesh(new THREE.CylinderGeometry(0.0016, 0.0016, 0.22, 5), mStk); st.position.set((k - 1) * 0.012, 0.2, 0.03); st.rotation.z = (k - 1) * 0.12; topG.add(st);
+            const em = new THREE.Mesh(new THREE.SphereGeometry(0.003, 6, 4), mFlame); em.position.set((k - 1) * 0.012 + (k - 1) * 0.013, 0.31, 0.03); topG.add(em); props.flames.push(em); }
+          /* the tray (a checked picture on white, then Meshy): the stand-in hidden when it lands, the candles and the incense
+             raised to stand in its flowers (their feet were on the stand-in's top, 0.095) */
+          fitModel('e4phan', kg, PHAN_W, 'x', 0, 0).then(m => { if (!m || !alive) return; stand.visible = false;
+            topG.position.y = m.userData.fit.y * PHAN_TOP - 0.095; }); }
         /* his woven bag beside him: a yaam, its stripes, its long strap */
         { const [x, z] = at(-0.56, -0.16); const yg = new THREE.Group(); yg.position.set(x, 0, z); yg.rotation.set(0, 0.4, 0); g.add(yg); props.yaam = yg;
           const mY = M({ map: tex(makeYaamCloth(THREE, cnv)), roughness: 0.95, side: THREE.DoubleSide });
@@ -1298,7 +1322,9 @@
         m.scale.setScalar(size / sz[axis]); m.updateMatrixWorld(true); bb.setFromObject(m);
         m.position.set(-(bb.min.x + bb.max.x) / 2, -bb.min.y, -(bb.min.z + bb.max.z) / 2);
         m.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = true; if (key === 'e4nangkwak') bronzeLift(o); } });
+        m.userData.fit = { x: bb.max.x - bb.min.x, y: bb.max.y - bb.min.y, z: bb.max.z - bb.min.z };   // (v25.0) its size as placed
         grp.add(m);
+        return m;
       }).catch(err => { console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
     }
 
@@ -3052,6 +3078,24 @@
       return g;
     })();
     const WRIST = [0.012, -0.03, -0.075];                                // the wrist, in the arm's own frame (a little behind the palm)
+    /* (v25.0 CP7) the world point at a share (fx, fy) of the lens's frame, d metres out, for a lens of fovDeg — where a
+       hand the engine places by its share of the frame (HPOSE) stands on THIS screen */
+    const _lpv = new THREE.Vector3();
+    /* (v25.0 CP7) a held thing turned so its +x runs along `ax` and its +y (the mayom's face) as near `up` as that allows;
+       holdHome gives it back its own turn when it is let go */
+    const _ox = new THREE.Vector3(), _oy = new THREE.Vector3(), _oz = new THREE.Vector3(), _om = new THREE.Matrix4();
+    function orient(obj, ax, up) {
+      _ox.set(ax[0], ax[1], ax[2]).normalize();
+      _oy.set(up[0], up[1], up[2]); _oy.addScaledVector(_ox, -_oy.dot(_ox)).normalize();
+      _oz.crossVectors(_ox, _oy);
+      obj.quaternion.setFromRotationMatrix(_om.makeBasis(_ox, _oy, _oz));
+    }
+    function lensPoint(fx, fy, d, fovDeg) {
+      camera.updateWorldMatrix(true, false);
+      const hh = d * Math.tan(fovDeg * Math.PI / 360), hw = hh * camera.aspect;
+      _lpv.set(fx * hw, fy * hh, -d); camera.localToWorld(_lpv);
+      return [_lpv.x, _lpv.y, _lpv.z];
+    }
     function threadOn(on) {
       const A = FL.api; if (!A || !A.armR) return;
       if (on) { if (wristThread.parent !== A.armR) A.armR.add(wristThread); wristThread.position.set(WRIST[0], WRIST[1], WRIST[2]); wristThread.visible = true;
@@ -3154,7 +3198,11 @@
       else if (t < C.pg2c3) at = aimTurn(eye, altar, glass, smo(sgk(t, C.q2c2 - 0.4, C.q2c2 + 1.4)), -1);
       else if (t < C.q2c3) at = aimEase(eye, glass, door, smo(sgk(t, C.pg2c3 + 1.0, C.pg2c3 + 4.0)));
       else at = aimEase(eye, door, UNDER, smo(sgk(t, C.q2c3 - 0.2, C.q2c3 + 1.2)));
-      fLens(isNarrow() ? 58 : 50);
+      /* (v25.0 CP4) a slow push in on each held subject, eased back out as his eyes move on: the stand while he tells
+         Pong, the altar under Pong's offer (held still for 7-8 s each, the frame read as frozen) */
+      const pushA = smo(sgk(t, C.q2c1 + 2.0, C.offer + 1.0)) * (1 - smo(sgk(t, C.offer + 1.0, C.offer + 3.5)));
+      const pushB = smo(sgk(t, C.offer + 6.0, C.q2c2)) * (1 - smo(sgk(t, C.q2c2 - 0.4, C.q2c2 + 1.4)));
+      fLens((isNarrow() ? 58 : 50) - 8 * pushA - 10 * pushB);
       camAt(eye, at);
     }
 
@@ -3286,7 +3334,7 @@
         if (L) { L.lookAt = _sh.set(shelf[0], shelf[1], shelf[2]); }
         const kw = smo(sgk(t, X.fetch, X.fetch + 2.0));
         const e = [lp(CL.x, SHELF.x + 0.62, kw), lp(KNEEL.y, 1.6, smo(sgk(t, X.fetch, X.fetch + 0.8))), lp(CL.z, SHELF.z - 0.42, kw)];
-        fLens(isNarrow() ? 56 : 48);
+        fLens(lp(isNarrow() ? 56 : 48, isNarrow() ? 40 : 34, kw));   // (v25.0 CP7) narrowed as he arrives: the piece large enough to know
         camAt(e, [shelf[0], shelf[1] - 0.05 * kw, shelf[2]]);
         if (t >= tTake && ph) handHold(ph, { screen: [0.1, lp(-0.35, -0.12, smo(sgk(t, tTake, tBack))), 0.36], face: false, rx: -0.3 });
         else handFree();
@@ -3308,7 +3356,7 @@
         /* the piece on the cloth, the candles' light on it */
         if (L) { gaze(L, false); L.lookAt = null; L.look = 0; }
         const c0 = props.cloth.position;
-        shot([c0.x + 0.2, 0.62, c0.z + 0.5], [c0.x, c0.y + 0.02, c0.z], 44, 36);
+        shot([c0.x + 0.17, 0.5, c0.z + 0.42], [c0.x, c0.y + 0.03, c0.z], 36, 30);   // (v25.0 CP7) closer: the piece, not his bag
         return;
       }
       /* "According to my practice, I believe..." — pushed in; "By him?" — "I didn't say that. I said on you." */
@@ -3346,23 +3394,33 @@
         const wH = smo(sgk(t, K.homage + 1.6, K.homage + 2.3)) * (1 - smo(sgk(t, K.sak - 0.8, K.sak)));
         if (L) { L.lookAt = null; L.look = 0; L.bow = t > K.homage && t < K.lift ? 0.2 : 0.08; L.neck = null; }
         if (t < K.sak) lcPose(wH > 0.001 ? 'wai' : null, wH, { lift: 0.7 });
-        else lcPose('reach', smo(sgk(t, K.sak, K.sak + 1.0)), { at: [LC.x - 0.1, 0.72, LC.z + 0.3], hold: props.mayom });   // the mayom held over the bowl as he chants
+        else {
+          /* (v25.0 CP7) the verses chanted with the mayom held between his joined palms, its leaves up and toward him (an
+             open hand raised by his face to hold it read as "stop", by photograph) */
+          lcPose('wai', Math.max(0.001, smo(sgk(t, K.sak, K.sak + 1.0))), { lift: 0.45, hold: props.mayom });
+          if (props.mayom) orient(props.mayom, [0, 0.825, 0.565], [0, -0.565, 0.825]);   // its leaves up and toward him, their face to him
+        }
         /* his eyes down on his hands and the mat (the tray, the candles' light at the top of the frame); up as it lifts */
         const down = [CL.x, 0.25, CL.z - 0.75];
-        fLens(isNarrow() ? 54 : 46);
-        camAt(KN_EYE, aimEase(KN_EYE, down, LC_HEAD(), 0.15 + 0.85 * lift));
+        /* (v25.0 CP7) not one still frame for forty seconds: a slow push in on the tray's candles under Namo tassa, his
+           eyes drawn up to the master's joined hands and the leaves as the verses begin, up to his face as the grey
+           lifts; a breath under it all */
+        const toHands = smo(sgk(t, K.sak - 1.0, K.sak + 3.0)), push = smo(sgk(t, K.homage + 1.0, K.sak)) * (1 - toHands);
+        const base = aimEase(KN_EYE, down, [LC.x, 0.5, LC.z + 0.22], toHands * 0.75);
+        fLens((isNarrow() ? 54 : 46) - 8 * push - 4 * toHands * (1 - lift));
+        camAt([KN_EYE[0], KN_EYE[1] + 0.004 * Math.sin(t * 2 * Math.PI / 4.6), KN_EYE[2]], aimEase(KN_EYE, base, LC_HEAD(), 0.15 + 0.85 * lift));
         return;
       }
       if (t < K.sprinkle) {
         /* "Drink. A little." — the bowl brought up to him in both hands; a sip */
         const up = smo(sgk(t, K.water + 0.2, K.water + 1.4)) * (1 - smo(sgk(t, K.sprinkle - 1.2, K.sprinkle - 0.2)));
         const B0 = props.bowl.userData.home || (props.bowl.userData.home = props.bowl.position.clone());
-        props.bowl.position.set(lp(B0.x, CL.x, up), lp(B0.y, 0.86, up), lp(B0.z, CL.z - 0.34, up));
+        props.bowl.position.set(lp(B0.x, CL.x, up), lp(B0.y, 0.7, up), lp(B0.z, CL.z - 0.32, up));   // (v25.0 CP7) below his eyes, the water seen
         props.bowl.rotation.x = 0.35 * smo(sgk(t, K.lc2drink + SECS.lc2drink, K.lc2drink + SECS.lc2drink + 0.8)) * up;
         lcPose('bowl', up);
         if (L) { L.look = 1; gaze(L, true, 1.1); L.bow = 0; }
         fLens(isNarrow() ? 54 : 46);
-        camAt(KN_EYE, aimEase(KN_EYE, LC_HEAD(), [CL.x, 0.86, CL.z - 0.34], up * 0.7));
+        camAt(KN_EYE, aimEase(KN_EYE, LC_HEAD(), [CL.x, 0.7, CL.z - 0.32], up * 0.6));
         return;
       }
       if (props.bowl.userData.home) { props.bowl.position.copy(props.bowl.userData.home); props.bowl.rotation.x = 0; }
@@ -3370,6 +3428,7 @@
         /* the leaves dipped and flicked over his head and shoulders: the drops falling through his view */
         const fk = (t - K.sprinkle) * 2.6, k = smo(sgk(t, K.sprinkle, K.sprinkle + 0.6)) * (1 - smo(sgk(t, K.thread - 0.6, K.thread)));
         lcPose('reach', k, { at: [CL.x + 0.12 * Math.sin(fk), 1.28 + 0.06 * Math.cos(fk * 1.3), CL.z - 0.55], hold: props.mayom });
+        if (props.mayom && k > 0.001) orient(props.mayom, [0.55 * Math.sin(0.9 * Math.sin(fk * 2.0)), -0.8, 0.45], [0, 0.5, 0.85]);   // (v25.0 CP7) its leaves down at him, flicked side to side
         if (L) { L.lookAt = _lv.set(CL.x, 1.25, CL.z); L.neck = null; L.look = 1; }
         dropsAt(t, K.sprinkle + 0.3, K.thread - 0.4, KN_EYE);
         fLens(isNarrow() ? 56 : 48);
@@ -3381,15 +3440,28 @@
         /* "Your wrist." — his right hand out, the white thread tied round it in the master's hands */
         const k = smo(sgk(t, K.thread + 0.2, K.thread + 1.0)) * (1 - smo(sgk(t, K.advice - 0.7, K.advice)));
         const tie = (t - K.thread) * 5.0;
-        lcPose('reach', k, { at: [CL.x + 0.14 + 0.02 * Math.sin(tie), 0.66 + 0.015 * Math.cos(tie * 1.4), CL.z - 0.42], atL: [CL.x + 0.06 - 0.02 * Math.sin(tie), 0.66, CL.z - 0.44] });
-        threadOn(t > K.thread + 2.2);
-        const A = FL.api; if (A && A.handsRoot) { A.handsRoot.visible = true; A.armR.visible = true; }
-        if (L) { L.lookAt = _lv.set(CL.x + 0.12, 0.62, CL.z - 0.4); L.neck = null; }
-        fLens(isNarrow() ? 54 : 46);
+        /* (v25.0 CP7) his right hand held out INTO the frame (the engine's own `reach` pose: its palm at that share of the
+           frame on every screen), and the master's hands brought to where it is on THIS screen — the point at that share
+           of the lens, 0.42 m out — so on a phone and a desktop alike they meet over his wrist (aimed at a fixed world
+           point, his own hand lay at the frame's foot, a blob, and the thread under the edge, by photograph) */
+        const A = FL.api;
+        if (A && A.handPose) A.handPose('reach', smo(sgk(t, K.thread, K.thread + 0.9)));
+        if (A && A.handsRoot) { A.handsRoot.visible = true; A.armR.visible = true; }
+        const fl = isNarrow() ? 54 : 46;
+        fLens(fl);
         camAt(KN_EYE, [CL.x + 0.05, 0.72, CL.z - 0.9]);
+        const hw = lensPoint(0.326, -0.652, 0.42, fl);
+        lcPose('reach', k, { at: [hw[0] - 0.03 + 0.02 * Math.sin(tie), hw[1] + 0.015 * Math.cos(tie * 1.4), hw[2] - 0.03],
+                             atL: [hw[0] + 0.05 - 0.02 * Math.sin(tie), hw[1], hw[2] - 0.05] });
+        threadOn(t > K.thread + 2.2);
+        if (L) { L.lookAt = _lv.set(hw[0], hw[1], hw[2]); L.neck = null; }
         return;
       }
-      lcPose(null, 0); threadOn(false);
+      lcPose(null, 0);
+      /* (v25.0 CP7) the hand lowered out of the frame as he listens, the thread on it until it has gone */
+      { const A = FL.api, down = smo(sgk(t, K.advice, K.advice + 1.0));
+        if (A && A.handPose) A.handPose('reach', 1 - down);
+        threadOn(down < 0.999); }
       /* "Go to a temple this week..." — his face, the colour back, warm */
       if (L) { L.look = 1; gaze(L, true, 1.1); L.bow = 0; }
       fLens(lp(isNarrow() ? 52 : 44, isNarrow() ? 48 : 40, smo(sgk(t, K.advice, K.end))));
