@@ -8348,8 +8348,10 @@ What the baseline contains, by release:
     once on a Continue, so the warning the fourth answer names was never heard — it plays again now. Deployed last as
     `6af23af385a5a3cfad5a9c5e`, 325 served files byte-identical to dist. Listed for Chad, not changed (the base game's,
     every chapter's): on a narrow phone the outcome card's first line runs under the bag button when it is long.
-  Sheet v138 exported (187 rows added, nothing else moved; v44 stays the link). The backup bundle refreshed (a chapter
-  shipped).
+  Sheet v138 exported (187 rows added, nothing else moved; v44 stays the link). Milestone backup bundle made for the
+  chapter's release at `3e83766`: 1744 MB, 84 parts of 20 MB that reassemble byte-identical (one SHA-256 for the stream
+  and the reassembled file), a complete history by `git bundle verify`; streamed straight into its parts, which replaced
+  v24.0's in place (the disk had no room for a second copy); it replaces v24.0's.
 
 ## The sheet, version by version
 
