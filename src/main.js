@@ -1931,7 +1931,12 @@ function tremTick() {
    three back. Nothing before e3c4 calls them; the fixture proves them. */
 const CHILL_LIVE = s => s === 'play' || s === 'decide' || s === 'unlock' || s === 'choose' || s === 'menu';
 const PULSE_LIVE = s => s === 'play' || s === 'decide' || s === 'unlock' || s === 'choose';
-const chill = { k: 0, to: 0, secs: 1.5, last: 0, beat: 0, on: false, sig: '', el: null, cine: false };
+const chill = { k: 0, to: 0, secs: 1.5, last: 0, beat: 0, on: false, sig: '', el: null, cine: false, tint: null };
+/* v25.0 · THE FOG (episode 4 chapter 2: "my mind became extremely foggy"): the same cold at the edges, its colour a
+   neutral grey instead of the Yin shop's blue — `tint` names one of these (or gives its own three [r, g, b]: the clear
+   middle's, the ring's, the edge's). Unset (null, and again after kitReset) the layer is painted from the very same
+   strings as before the option existed, so every chapter that never names a tint draws exactly as it did. */
+const CHILL_TINTS = { grey: [[178, 180, 184], [156, 158, 162], [70, 72, 78]] };
 function chillEls() {
   if (!chill.el) chill.el = { blur: document.getElementById('chillBlur'), tint: document.getElementById('chillTint') };
   return chill.el.blur && chill.el.tint ? chill.el : null;
@@ -1941,6 +1946,7 @@ function kitChill(k, opts = {}) {
   if (opts.secs !== undefined) chill.secs = Math.max(0.01, +opts.secs);
   if (opts.secs === 0) chill.k = chill.to;
   if (opts.cine !== undefined) chill.cine = !!opts.cine;
+  if (opts.tint !== undefined) chill.tint = (typeof opts.tint === 'string' ? CHILL_TINTS[opts.tint] : opts.tint) || null;
   if (!chill.last) chill.last = performance.now();
 }
 function chillTick() {
@@ -1966,7 +1972,7 @@ function chillPaint(show) {
   const k = Math.round(chill.k * 100) / 100, b = Math.round(chill.beat * k * 10) / 10;
   const blur = 1.2 + 9.5 * k + 4.5 * b;                       // CSS px, at the very edge
   const clear = Math.max(16, 66 - 30 * k - 14 * b);           // how much of the middle stays sharp, % of the way to a corner
-  const sig = blur.toFixed(1) + ' ' + clear.toFixed(1) + ' ' + k.toFixed(3) + ' ' + b.toFixed(2);
+  const sig = blur.toFixed(1) + ' ' + clear.toFixed(1) + ' ' + k.toFixed(3) + ' ' + b.toFixed(2) + (chill.tint ? ' ' + chill.tint.join() : '');
   if (sig === chill.sig) return;
   chill.sig = sig;
   const mask = `radial-gradient(ellipse at 50% 47%, transparent ${clear.toFixed(1)}%, #000 ${(clear + 26).toFixed(1)}%)`;
@@ -1974,6 +1980,11 @@ function chillPaint(show) {
   const s1 = E.blur.style;
   s1.backdropFilter = bf; s1.webkitBackdropFilter = bf; s1.maskImage = mask; s1.webkitMaskImage = mask;
   const t0 = Math.max(10, clear - 6);
+  if (chill.tint) {
+    const [c0, c1, c2] = chill.tint.map(c => c.join(','));
+    E.tint.style.background = `radial-gradient(ellipse at 50% 47%, rgba(${c0},0) ${t0.toFixed(1)}%, `
+      + `rgba(${c1},${(0.12 * k + 0.08 * b).toFixed(3)}) ${(t0 + 24).toFixed(1)}%, rgba(${c2},${(0.40 * k + 0.16 * b).toFixed(3)}) 100%)`;
+  } else
   E.tint.style.background = `radial-gradient(ellipse at 50% 47%, rgba(120,170,240,0) ${t0.toFixed(1)}%, `
     + `rgba(104,158,232,${(0.12 * k + 0.08 * b).toFixed(3)}) ${(t0 + 24).toFixed(1)}%, rgba(40,82,158,${(0.40 * k + 0.16 * b).toFixed(3)}) 100%)`;
   canvas.style.filter = `saturate(${(1 - 0.5 * k).toFixed(3)}) brightness(${(1 - 0.16 * k - 0.06 * b).toFixed(3)})`;
@@ -2137,7 +2148,7 @@ function smearPass() {
   } catch (err) { smear.ok = false; smearFree(); console.warn('smear: off for this session', err); }
 }
 function coldOff() {
-  chill.k = chill.to = 0; chill.beat = 0; chill.last = 0; chill.cine = false; chillPaint(false);
+  chill.k = chill.to = 0; chill.beat = 0; chill.last = 0; chill.cine = false; chill.tint = null; chillPaint(false);
   kitPulse = null;
   smear.k = smear.to = 0; smear.last = 0; smearFree();
 }
@@ -16244,7 +16255,8 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                    const E = chillEls();
                    return { chill: { k: +chill.k.toFixed(3), to: chill.to, beat: +chill.beat.toFixed(3), on: chill.on,
                                      shown: !!(E && !E.blur.classList.contains('hide')), filter: canvas.style.filter,
-                                     backdrop: E ? (E.blur.style.backdropFilter || E.blur.style.webkitBackdropFilter || '') : '' },
+                                     backdrop: E ? (E.blur.style.backdropFilter || E.blur.style.webkitBackdropFilter || '') : '',
+                                     tintBg: E ? E.tint.style.background : '', tint: chill.tint ? chill.tint.map(c => c.join(',')).join(' ') : null },
                             pulse: kitPulse ? { bpm: +kitPulse.bpm.toFixed(1), to: kitPulse.to, erratic: kitPulse.erratic, next: kitPulse.next && kitPulse.next.kind } : null,
                             beats: { ...pulseLog }, curBpm: +curBpm.toFixed(1),
                             smear: { k: +smear.k.toFixed(3), ok: smear.ok, err: smear.err, drawn: smear.drawn, copied: smear.copied, tex: !!smear.tex } };

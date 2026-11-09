@@ -41,8 +41,8 @@
   const NIGHT = sky({                 // after closing, alone: the ceiling off, the counter's LEDs low, the corridor's night light under the half shutter
     stops: [[0.00, '#2a2d34'], [0.12, '#24272e'], [0.35, '#1d1f25'], [0.65, '#16171c'], [1.00, '#101115']],
     bg: 0x121318, fog: [0x1c1d22, 0.006],
-    hemi: [0xa8b2c8, 0x2a2420, 0.36], key: [0xffe2c0, 0.26, 0, 1.4, 4.5], fill: [0x7480a8, 0.13],
-    vmHemi: [0xa8b2c8, 0x2a2420, 0.4], vmKey: [0xffe2c0, 0.28] });
+    hemi: [0xa8b2c8, 0x2a2420, 0.52], key: [0xffe2c0, 0.32, 0, 1.4, 4.5], fill: [0x7480a8, 0.19],
+    vmHemi: [0xa8b2c8, 0x2a2420, 0.5], vmKey: [0xffe2c0, 0.32] });
   const LIT = sky({                   // the same night, his lights back on (the shape by the door seen for what it is)
     stops: [[0.00, '#2a2d34'], [0.12, '#24272e'], [0.35, '#1d1f25'], [0.65, '#16171c'], [1.00, '#101115']],
     bg: 0x121318, fog: [0x1c1d22, 0.006],
@@ -516,7 +516,7 @@
     const CL = { x: 0, z: 0.78 };                                              // where he kneels before him, facing the altar
     const PSTOOL = { x: 1.15, z: COUNTER.z + COUNTER.d / 2 + 0.42 };           // the customers' right stool (buildShop's): Pong's
     const MAT = { x: 0, z: 0.18, w: 1.24, d: 2.1 };                            // the woven mat under both
-    const KNEEL = { y: 1.0, span: 1.15, lo: -0.85, hi: 0.5 };                  // his eye kneeling, how far he may look about
+    const KNEEL = { y: 0.88, span: 1.15, lo: -0.85, hi: 0.5 };                 // his eye kneeling (sat back on his heels, his head no higher than it need be), how far he may look about
     const faceLC = () => Math.atan2(-(LC.x - CL.x), -(LC.z - CL.z));         // his view from the mat, onto Lersi Chin and the altar
     /* ---------------------------------------------------- WORLD S · HIS SHOP AT DAWN (O1–O4, K2–K3) */
     function buildShop() {
@@ -2175,7 +2175,7 @@
       if (p === 'shop') { o = play.wallet ? null : play.objBlur ? null : W.objWallet;
         if (!play.wallet && play.searched.size >= 3) wp = { x: (FRIDGE.x0 + FRIDGE.x1) / 2, y: 1.0, z: FRIDGE.z - 0.1 }; }
       else if (p === 'night') {
-        if (!play.shapeSeen) { o = W.objClose; wp = { x: SWITCH.x + 0.1, y: SWITCH.y + 0.25, z: SWITCH.z }; }
+        if (!play.shapeSeen) { o = W.objClose; wp = { x: 1.0, y: 1.1, z: SHOP.z1 - 0.15 }; }   // the shutter's pull: the way to it passes the stand
         else if (!play.revealed) o = W.bannerShape;
         else if (play.noteOn) { o = W.objCall; wp = { x: NOTE.x, y: COUNTER.h + 0.25, z: NOTE.z }; }
       }
@@ -2341,6 +2341,9 @@
     }
     function nightBegin(resumed) {
       nightStage();
+      /* a resume after the reveal: the light as he left it (switched on, or his eyes used to the dark) */
+      if (resumed && play.revealed && play.how === 'light') { look('LIT', 0); shopCtl.lights(1, 0); shopCtl.ceiling(1, 0); }
+      else if (resumed && play.revealed && play.how === 'watch') { look('LIT', 0); shopCtl.lights(0.6, 0); }
       setPhase('night', { complete: false });
       if (resumed && play.revealed) afterReveal(true);
     }
@@ -2350,7 +2353,8 @@
       if (play.revealed) return;
       if (!play.shapeSeen) {
         camera.updateMatrixWorld(); _nv2.set(STAND_HEAD.x, STAND_HEAD.y, STAND_HEAD.z).project(camera);
-        if (_nv2.z < 1 && Math.abs(_nv2.x) < 0.75 && Math.abs(_nv2.y) < 0.8) {
+        const near = Math.hypot(yaw.position.x - STAND.x, yaw.position.z - STAND.z) < 2.6;
+        if ((_nv2.z < 1 && Math.abs(_nv2.x) < 0.9 && Math.abs(_nv2.y) < 0.85) || near) {
           play.shapeSeen = true; props.sway = 1;
           const rel = angTo(yaw.rotation.y, Math.atan2(-(STAND.x - yaw.position.x), -(STAND.z - yaw.position.z)));
           if (worldSfx) { worldSfx('x2rustle', 0.55, 1, Math.max(-0.8, Math.min(0.8, -Math.sin(rel) * 0.8))); worldSfx('x2breath', 0.45); }
@@ -2423,7 +2427,7 @@
     function clearingBegin(resumed) {
       clearStage(play.cleared);
       if (!resumed) {
-        yaw.position.set(-0.95, yaw.position.y, 1.25); yaw.rotation.y = Math.atan2(-(LC.x + 0.95), -(LC.z - 1.25)); pitch.rotation.x = -0.12;
+        yaw.position.set(-0.95, yaw.position.y, 1.25); yaw.rotation.y = Math.atan2(-(LC.x + 0.95), -(LC.z - 1.25)); pitch.rotation.x = -0.36;
         if (kit) kit.pose('standing', { secs: 0.05 });
         /* the visit film hands over on its black: lifted here, on the room it ended on */
         if (kit && kit.getFade && kit.getFade() > 0.01) kit.fade(0, 1.1);
@@ -2434,7 +2438,7 @@
     }
     const seatNow = (P, on) => { if (!P) return; P.seated = !!on; P.sitW = on ? 1 : 0; P.sitOff = null; P.walk = null; };
     function kneel(instant) {
-      if (play.knelt) return false;
+      if (play.knelt && !instant) return false;                     // (a resume kneels him where the save says he knelt)
       play.knelt = true; kneelZone.visible = false;
       if (kit) kit.root(true);
       if (!instant && worldSfx) worldSfx('x2kneel', 0.6);
@@ -2946,7 +2950,7 @@
     /* ---------------------------------------------------------------- (v25.0) the films' own helpers */
     const KN_EYE = [CL.x, KNEEL.y, CL.z];                               // his eye kneeling before Lersi Chin
     const BUDDHA_AT = [BUDDHA.x, BUDDHA.y, BUDDHA.z];
-    const LC_HEAD = () => faceOf(cast.lersi, [LC.x, 0.96, LC.z]);
+    const LC_HEAD = () => faceOf(cast.lersi, [LC.x, 0.74, LC.z]);
     const PG_HEAD = () => faceOf(cast.pong, [PSTOOL.x, 1.42, PSTOOL.z]);
     const UNDER = [0.3, 1.0, SHOP.z1 + 0.6];                             // under the shutter's edge, the corridor's light
     const top0 = COUNTER.h + 0.046;                                      // the counter's glass
@@ -3069,12 +3073,12 @@
       if (t < O.o3) {
         /* O2 · his eyes on the tray while she asks (never on her): the compartments under the glass; at "say again" they
            lift to the counter's front edge and fall back; at "I could not think properly" up to where she went */
-        const tray = [0.3, DISPLAY.floor, COUNTER.z + 0.05], edge = [0.2, top0, COUNTER.z + COUNTER.d / 2];
+        const tray = [0.12, DISPLAY.floor, COUNTER.z - 0.04], edge = [0.2, top0, COUNTER.z + COUNTER.d / 2];
         const kU = smo(sgk(t, O.q2o2b - 0.2, O.q2o2b + 0.8)) * (1 - smo(sgk(t, O.cu2a1b + 0.3, O.cu2a1b + 1.6)));
         const kOut = smo(sgk(t, O.q2o2 - 0.3, O.q2o2 + 2.4));
         let at = aimEase(eye, tray, edge, kU * 0.75);
         if (kOut > 0) at = aimEase(eye, at, [0.6, 1.35, 5.2], kOut);
-        fLens(lp(isNarrow() ? 56 : 48, isNarrow() ? 50 : 42, sgk(t, O.o2, O.o3)));
+        fLens(lp(isNarrow() ? 50 : 42, isNarrow() ? 44 : 36, sgk(t, O.o2, O.o3)));
         camAt([eye[0] - 0.05 * sgk(t, O.o2, O.o3), eye[1] - 0.04, eye[2] + 0.06], at);
         return;
       }

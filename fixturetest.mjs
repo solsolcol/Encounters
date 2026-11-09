@@ -424,6 +424,17 @@ K.coldSeam = await p.evaluate(async () => {
   await frames(3);
   const c1 = E.cold();
   const chilled = c1.chill.shown && /blur\(/.test(c1.chill.backdrop) && /saturate/.test(c1.chill.filter);
+  /* v25.0: THE FOG — the same cold in grey when a chapter names the tint, and the Yin shop's blue again the moment it
+     is unset (an unnamed tint paints the very strings it always did; the browser reads a colour back with spaces) */
+  const blue0 = /104,\s*158,\s*232/.test(c1.chill.tintBg) && c1.chill.tint === null;
+  E.kit.chill(1, { secs: 0, tint: 'grey' });
+  await frames(3);
+  const cg = E.cold();
+  const grey = /156,\s*158,\s*162/.test(cg.chill.tintBg) && !/104,\s*158,\s*232/.test(cg.chill.tintBg) && cg.chill.tint !== null;
+  E.kit.chill(1, { secs: 0, tint: null });
+  await frames(3);
+  const blue1 = /104,\s*158,\s*232/.test(E.cold().chill.tintBg) && E.cold().chill.tint === null;
+  const fog = blue0 && grey && blue1;
   E.kit.pulse({ bpm: 150, secs: 0.05 });
   const b0 = E.cold().beats.beats;
   const beats = await until(() => E.cold().beats.beats - b0 >= 3, 20000);      // 150 a minute: ~2.5 beats a second
@@ -438,8 +449,8 @@ K.coldSeam = await p.evaluate(async () => {
   await frames(3);
   const c2 = E.cold();
   const clean = !c2.chill.shown && c2.chill.filter === '' && !c2.pulse && !c2.smear.tex;
-  console.log('coldSeam', JSON.stringify({ clean0, chilled, beats, wild, smeared, clean, smear: s1 }));
-  return clean0 && chilled && beats && wild && smeared && clean;
+  console.log('coldSeam', JSON.stringify({ clean0, chilled, fog, beats, wild, smeared, clean, smear: s1 }));
+  return clean0 && chilled && fog && beats && wild && smeared && clean;
 }).catch(e => { console.log('coldSeam threw', e.message); return false; });
 await settle();
 

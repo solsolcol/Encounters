@@ -1,0 +1,3096 @@
+{
+ "q2o1": {
+  "who": "jamesAdult",
+  "text": "[quiet] When I returned to Singapore my mind became extremely foggy.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 3.631,
+    "first": 0.0,
+    "last": 3.58,
+    "tail": 0.051,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "When I returned to Singapore my mind became extremely foggy."
+   },
+   "b": {
+    "len": 5.329,
+    "first": 0.0,
+    "last": 4.4,
+    "tail": 0.929,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "When I returned to Singapore my mind became extremely foggy."
+   }
+  }
+ },
+ "cu2a1": {
+  "who": "cust2a",
+  "text": "Boss, this one... from which temple ah? Who blessed it?",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 7.079,
+    "first": 0.0,
+    "last": 3.76,
+    "tail": 3.319,
+    "tail_db": -99.0,
+    "hole": 0.44,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Boss, this one... from which temple ah? Who blessed it?"
+   },
+   "b": {
+    "len": 4.754,
+    "first": 0.0,
+    "last": 4.6,
+    "tail": 0.154,
+    "tail_db": -99.0,
+    "hole": 0.64,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Boss, this one... from which temple ah? Who blessed it?"
+   }
+  }
+ },
+ "q2o2b": {
+  "who": "jamesAdult",
+  "text": "[tired] Sorry... can you say again?",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 1.802,
+    "first": 0.0,
+    "last": 1.54,
+    "tail": 0.262,
+    "tail_db": -99.0,
+    "hole": 0.24,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Sorry, can you say again?"
+   },
+   "b": {
+    "len": 2.769,
+    "first": 0.0,
+    "last": 1.5,
+    "tail": 1.269,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Sorry... can you say again?"
+   }
+  }
+ },
+ "cu2a1b": {
+  "who": "cust2a",
+  "text": "Aiyo, never mind. I come back another day.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 2.769,
+    "first": 0.0,
+    "last": 2.62,
+    "tail": 0.149,
+    "tail_db": -99.0,
+    "hole": 0.36,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Aiyo, never mind. I come back another day."
+   },
+   "b": {
+    "len": 2.847,
+    "first": 0.0,
+    "last": 2.44,
+    "tail": 0.407,
+    "tail_db": -99.0,
+    "hole": 0.16,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Aiyo, never mind. I come back another day."
+   }
+  }
+ },
+ "q2o2": {
+  "who": "jamesAdult",
+  "text": "[quiet] I could not think properly.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 1.724,
+    "first": 0.0,
+    "last": 1.42,
+    "tail": 0.304,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I could not think properly."
+   },
+   "b": {
+    "len": 2.038,
+    "first": 0.0,
+    "last": 1.66,
+    "tail": 0.378,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I could not think properly."
+   }
+  }
+ },
+ "q2o3": {
+  "who": "jamesAdult",
+  "text": "I misplaced my wallet, and strangely I could barely remember what I had done with it.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 5.407,
+    "first": 0.0,
+    "last": 5.22,
+    "tail": 0.187,
+    "tail_db": -99.0,
+    "hole": 0.68,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I misplaced my wallet, and strangely I could barely remember what I had done with it."
+   },
+   "b": {
+    "len": 5.251,
+    "first": 0.0,
+    "last": 5.18,
+    "tail": 0.071,
+    "tail_db": -99.0,
+    "hole": 0.84,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I misplaced my wallet, and strangely I could barely remember what I had done with it."
+   }
+  }
+ },
+ "q2o4": {
+  "who": "jamesAdult",
+  "text": "[quiet] I simply felt unlike myself.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 2.351,
+    "first": 0.0,
+    "last": 2.08,
+    "tail": 0.271,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I simply felt unlike myself."
+   },
+   "b": {
+    "len": 2.586,
+    "first": 0.0,
+    "last": 2.3,
+    "tail": 0.286,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I simply felt unlike myself."
+   }
+  }
+ },
+ "q2till": {
+  "who": "jamesAdult",
+  "text": "[tired] Not in the drawer.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 1.567,
+    "first": 0.0,
+    "last": 1.16,
+    "tail": 0.407,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Not in the drawer."
+   },
+   "b": {
+    "len": 1.881,
+    "first": 0.0,
+    "last": 1.48,
+    "tail": 0.401,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Not in the drawer."
+   }
+  }
+ },
+ "q2bag": {
+  "who": "jamesAdult",
+  "text": "Not in my bag.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 1.149,
+    "first": 0.0,
+    "last": 0.92,
+    "tail": 0.229,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Not in my bag."
+   },
+   "b": {
+    "len": 1.071,
+    "first": 0.0,
+    "last": 0.84,
+    "tail": 0.231,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Not in my bag."
+   }
+  }
+ },
+ "q2jacket": {
+  "who": "jamesAdult",
+  "text": "[tired] Not in my jacket either.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 1.646,
+    "first": 0.0,
+    "last": 1.36,
+    "tail": 0.286,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Not in my jacket either."
+   },
+   "b": {
+    "len": 1.567,
+    "first": 0.0,
+    "last": 1.28,
+    "tail": 0.287,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Not in my jacket either."
+   }
+  }
+ },
+ "q2where": {
+  "who": "jamesAdult",
+  "text": "[confused] Where did I put it?",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 1.646,
+    "first": 0.0,
+    "last": 1.16,
+    "tail": 0.486,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Where did I put it?"
+   },
+   "b": {
+    "len": 1.489,
+    "first": 0.0,
+    "last": 1.28,
+    "tail": 0.209,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Where did I put it?"
+   }
+  }
+ },
+ "q2fridge": {
+  "who": "jamesAdult",
+  "text": "[confused] ...What is it doing in here?",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 2.038,
+    "first": 0.0,
+    "last": 1.2,
+    "tail": 0.838,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "What is it doing in here?"
+   },
+   "b": {
+    "len": 1.646,
+    "first": 0.0,
+    "last": 1.44,
+    "tail": 0.206,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "What is it doing in here?"
+   }
+  }
+ },
+ "q2flowers": {
+  "who": "jamesAdult",
+  "text": "[relieved] ...The flowers. I never took them away.",
+  "pick": "a",
+  "why": [
+   "no odd hole"
+  ],
+  "takes": {
+   "a": {
+    "len": 3.082,
+    "first": 0.0,
+    "last": 2.92,
+    "tail": 0.162,
+    "tail_db": -99.0,
+    "hole": 1.2,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "The flowers. I never took them away."
+   },
+   "b": {
+    "len": 3.631,
+    "first": 0.0,
+    "last": 3.42,
+    "tail": 0.211,
+    "tail_db": -99.0,
+    "hole": 1.54,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "The flowers. I never took them away."
+   }
+  }
+ },
+ "q2note": {
+  "who": "jamesAdult",
+  "text": "[quiet] ...Call Pong.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 1.071,
+    "first": 0.0,
+    "last": 0.86,
+    "tail": 0.211,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Call Pong."
+   },
+   "b": {
+    "len": 1.071,
+    "first": 0.0,
+    "last": 0.86,
+    "tail": 0.211,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Call Pong."
+   }
+  }
+ },
+ "pg2c1": {
+  "who": "pong",
+  "text": "[warm] Brother! Long time no reply. You OK or not?",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 2.769,
+    "first": 0.0,
+    "last": 2.54,
+    "tail": 0.229,
+    "tail_db": -99.0,
+    "hole": 0.32,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Brother! Long time no reply. You OK or not?"
+   },
+   "b": {
+    "len": 3.082,
+    "first": 0.0,
+    "last": 2.88,
+    "tail": 0.202,
+    "tail_db": -99.0,
+    "hole": 0.32,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Brother! Long time no reply. You OK or not?"
+   }
+  }
+ },
+ "q2c1": {
+  "who": "jamesAdult",
+  "text": "[tired] Not really. Since I came back... I can't think. I found my wallet in the fridge.",
+  "pick": "b",
+  "why": [
+   "no odd hole"
+  ],
+  "takes": {
+   "a": {
+    "len": 8.986,
+    "first": 0.0,
+    "last": 8.7,
+    "tail": 0.286,
+    "tail_db": -99.0,
+    "hole": 1.56,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Not really. Since I came back... I can't think. I found my wallet in the fridge."
+   },
+   "b": {
+    "len": 8.594,
+    "first": 0.0,
+    "last": 8.32,
+    "tail": 0.274,
+    "tail_db": -99.0,
+    "hole": 1.34,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Not really. Since I came back... I can't think. I found my wallet in the fridge."
+   }
+  }
+ },
+ "pg2c2": {
+  "who": "pong",
+  "text": "[serious] Bro... I know a famous ajahn who is good at clearing dirty things, he helped my mother before. This one I can vouch for. He just arrived in Singapore this week. I'm coming down with your stock tomorrow, I can bring him over.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 14.838,
+    "first": 0.0,
+    "last": 14.48,
+    "tail": 0.358,
+    "tail_db": -99.0,
+    "hole": 0.84,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Bro, I know a famous ajahn who is good at clearing dirty things, he helped my mother before. This one I can vouch for. He just arrived in Singapore this week. I'm coming down with your stock tomorrow, I can bring him over."
+   },
+   "b": {
+    "len": 14.028,
+    "first": 0.0,
+    "last": 13.72,
+    "tail": 0.308,
+    "tail_db": -99.0,
+    "hole": 0.54,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Bro... I know a famous ajahn who is good at clearing dirty things, he helped my mother before. This one I can vouch for. He just arrived in Singapore this week. I'm coming down with your stock tomorrow, I can bring him over."
+   }
+  }
+ },
+ "q2c2": {
+  "who": "jamesAdult",
+  "text": "Last time you said \"trust me\" also.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 2.429,
+    "first": 0.0,
+    "last": 2.22,
+    "tail": 0.209,
+    "tail_db": -99.0,
+    "hole": 0.24,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Last time you said, trust me also."
+   },
+   "b": {
+    "len": 2.586,
+    "first": 0.0,
+    "last": 2.38,
+    "tail": 0.206,
+    "tail_db": -99.0,
+    "hole": 0.34,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Last time you said, trust me also."
+   }
+  }
+ },
+ "pg2c3": {
+  "who": "pong",
+  "text": "[apologetic] I know. Sorry, bro. That one I never met. This one, I was there with my mother.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 5.146,
+    "first": 0.0,
+    "last": 4.88,
+    "tail": 0.266,
+    "tail_db": -99.0,
+    "hole": 0.42,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I know. Sorry, bro. That one I never met. This one, I was there with my mother."
+   },
+   "b": {
+    "len": 5.564,
+    "first": 0.0,
+    "last": 5.26,
+    "tail": 0.304,
+    "tail_db": -99.0,
+    "hole": 0.52,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I know. Sorry, bro. That one I never met. This one, I was there with my mother."
+   }
+  }
+ },
+ "q2c3": {
+  "who": "jamesAdult",
+  "text": "[quiet] ...Bring him.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 0.993,
+    "first": 0.0,
+    "last": 0.62,
+    "tail": 0.373,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Bring him."
+   },
+   "b": {
+    "len": 1.411,
+    "first": 0.0,
+    "last": 0.58,
+    "tail": 0.831,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Bring him."
+   }
+  }
+ },
+ "q2v1": {
+  "who": "jamesAdult",
+  "text": "Eventually I approached another Thai practitioner I trusted, Lersi Chin, a true Lersi master.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 6.922,
+    "first": 0.0,
+    "last": 6.52,
+    "tail": 0.402,
+    "tail_db": -99.0,
+    "hole": 0.78,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Eventually I approached another Thai practitioner I trusted, Lersi Chin, a true Lersi master."
+   },
+   "b": {
+    "len": 6.609,
+    "first": 0.0,
+    "last": 6.2,
+    "tail": 0.409,
+    "tail_db": -99.0,
+    "hole": 0.66,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Eventually I approached another Thai practitioner I trusted, Lersi Chin, a true Lersi master."
+   }
+  }
+ },
+ "pg2v1": {
+  "who": "pong",
+  "text": "[warm] Lersi Chin, this is my friend. His shop.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 3.161,
+    "first": 0.0,
+    "last": 2.88,
+    "tail": 0.281,
+    "tail_db": -99.0,
+    "hole": 0.44,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Lersi Chin, this is my friend. His shop."
+   },
+   "b": {
+    "len": 2.586,
+    "first": 0.0,
+    "last": 2.42,
+    "tail": 0.166,
+    "tail_db": -99.0,
+    "hole": 0.38,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Lersi Chin, this is my friend. His shop."
+   }
+  }
+ },
+ "lc2v1": {
+  "who": "lersichin",
+  "text": "[gentle] Sawasdee krap. New shop... tired owner.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 3.866,
+    "first": 0.0,
+    "last": 3.66,
+    "tail": 0.206,
+    "tail_db": -99.0,
+    "hole": 0.66,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Sawasdee krap. New shop... tired owner."
+   },
+   "b": {
+    "len": 3.318,
+    "first": 0.0,
+    "last": 3.0,
+    "tail": 0.318,
+    "tail_db": -99.0,
+    "hole": 0.58,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Sawasdee krap. New shop... tired owner."
+   }
+  }
+ },
+ "lc2sit": {
+  "who": "lersichin",
+  "text": "[gentle] Sit, sit. You look like you haven't slept.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 2.769,
+    "first": 0.0,
+    "last": 2.5,
+    "tail": 0.269,
+    "tail_db": -99.0,
+    "hole": 0.46,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Sit, sit. You look like you haven't slept."
+   },
+   "b": {
+    "len": 2.847,
+    "first": 0.0,
+    "last": 2.56,
+    "tail": 0.287,
+    "tail_db": -99.0,
+    "hole": 0.54,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Sit, sit. You look like you haven't slept."
+   }
+  }
+ },
+ "lc2tell": {
+  "who": "lersichin",
+  "text": "[calm] Tell me what happened there.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 3.866,
+    "first": 0.0,
+    "last": 1.52,
+    "tail": 2.346,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Tell me what happened there."
+   },
+   "b": {
+    "len": 3.082,
+    "first": 0.0,
+    "last": 1.46,
+    "tail": 1.622,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Tell me what happened there."
+   }
+  }
+ },
+ "q2tA": {
+  "who": "jamesAdult",
+  "text": "The smoke leaned toward a covered jar. The cloth over it moved. His shadow moved after he did. And I saw someone behind him... then no one.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 10.762,
+    "first": 0.0,
+    "last": 10.58,
+    "tail": 0.182,
+    "tail_db": -99.0,
+    "hole": 0.86,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "The smoke leaned toward a covered jar. The cloth over it moved. His shadow moved after he did. And I saw someone behind him... then no one."
+   },
+   "b": {
+    "len": 11.886,
+    "first": 0.0,
+    "last": 11.0,
+    "tail": 0.886,
+    "tail_db": -99.0,
+    "hole": 0.94,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "The smoke leaned toward a covered jar. The cloth over it moved. His shadow moved after he did. And I saw someone behind him... then no one."
+   }
+  }
+ },
+ "q2tB": {
+  "who": "jamesAdult",
+  "text": "I saw things in his room I can't explain. What do you think they mean?",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 5.251,
+    "first": 0.0,
+    "last": 5.0,
+    "tail": 0.251,
+    "tail_db": -99.0,
+    "hole": 1.4,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I saw things in his room I can't explain. What do you think they mean?"
+   },
+   "b": {
+    "len": 4.989,
+    "first": 0.0,
+    "last": 4.8,
+    "tail": 0.189,
+    "tail_db": -99.0,
+    "hole": 1.3,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I saw things in his room I can't explain. What do you think they mean?"
+   }
+  }
+ },
+ "q2tC": {
+  "who": "jamesAdult",
+  "text": "[tense] He's using black magic. I'm sure of it.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 3.318,
+    "first": 0.0,
+    "last": 3.26,
+    "tail": 0.058,
+    "tail_db": -99.0,
+    "hole": 0.98,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "He's using black magic. I'm sure of it."
+   },
+   "b": {
+    "len": 3.161,
+    "first": 0.0,
+    "last": 3.1,
+    "tail": 0.061,
+    "tail_db": -99.0,
+    "hole": 0.74,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "He's using black magic. I'm sure of it."
+   }
+  }
+ },
+ "q2tD": {
+  "who": "jamesAdult",
+  "text": "What should I do now?",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 2.273,
+    "first": 0.0,
+    "last": 0.96,
+    "tail": 1.313,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "What should I do now?"
+   },
+   "b": {
+    "len": 0.993,
+    "first": 0.0,
+    "last": 0.82,
+    "tail": 0.173,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "What should I do now?"
+   }
+  }
+ },
+ "lc2tA": {
+  "who": "lersichin",
+  "text": "[calm] Good. You tell me what you saw, not what you think. Then I can look for myself.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 5.251,
+    "first": 0.0,
+    "last": 4.92,
+    "tail": 0.331,
+    "tail_db": -99.0,
+    "hole": 0.54,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Good. You tell me what you saw, not what you think. Then I can look for myself."
+   },
+   "b": {
+    "len": 5.721,
+    "first": 0.0,
+    "last": 5.46,
+    "tail": 0.261,
+    "tail_db": -99.0,
+    "hole": 0.48,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Good. You tell me what you saw, not what you think. Then I can look for myself."
+   }
+  }
+ },
+ "lc2tB": {
+  "who": "lersichin",
+  "text": "[calm] Seeing is not understanding. Someone near a master... you don't know yet what he is to him.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 8.908,
+    "first": 0.0,
+    "last": 6.36,
+    "tail": 2.548,
+    "tail_db": -99.0,
+    "hole": 0.78,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Seeing is not understanding. Someone near a master... you don't know yet what he is to him."
+   },
+   "b": {
+    "len": 6.844,
+    "first": 0.0,
+    "last": 6.72,
+    "tail": 0.124,
+    "tail_db": -99.0,
+    "hole": 0.74,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Seeing is not understanding. Someone near a master... you don't know yet what he is to him."
+   }
+  }
+ },
+ "lc2tC": {
+  "who": "lersichin",
+  "text": "[calm] You don't know that. Suspicion is not evidence. I will look, then we talk.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 5.799,
+    "first": 0.0,
+    "last": 5.54,
+    "tail": 0.259,
+    "tail_db": -99.0,
+    "hole": 0.76,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "You don't know that. Suspicion is not evidence. I will look, then we talk."
+   },
+   "b": {
+    "len": 7.549,
+    "first": 0.0,
+    "last": 5.12,
+    "tail": 2.429,
+    "tail_db": -99.0,
+    "hole": 0.54,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "You don't know that. Suspicion is not evidence. I will look, then we talk."
+   }
+  }
+ },
+ "lc2tD": {
+  "who": "lersichin",
+  "text": "[calm] First, we look at you. Not at him.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 2.769,
+    "first": 0.0,
+    "last": 2.66,
+    "tail": 0.109,
+    "tail_db": -99.0,
+    "hole": 0.36,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "First, we look at you. Not at him."
+   },
+   "b": {
+    "len": 3.004,
+    "first": 0.0,
+    "last": 2.82,
+    "tail": 0.184,
+    "tail_db": -99.0,
+    "hole": 0.38,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "First, we look at you. Not at him."
+   }
+  }
+ },
+ "lc2e1": {
+  "who": "lersichin",
+  "text": "[gentle] Give me your hand.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 3.474,
+    "first": 0.0,
+    "last": 1.02,
+    "tail": 2.454,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Give me your hand."
+   },
+   "b": {
+    "len": 3.082,
+    "first": 0.0,
+    "last": 1.02,
+    "tail": 2.062,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Give me your hand."
+   }
+  }
+ },
+ "lc2e2": {
+  "who": "lersichin",
+  "text": "You sleep?",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 3.161,
+    "first": 0.0,
+    "last": 0.56,
+    "tail": 2.601,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "You sleep?"
+   },
+   "b": {
+    "len": 1.567,
+    "first": 0.0,
+    "last": 0.5,
+    "tail": 1.067,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "You sleep?"
+   }
+  }
+ },
+ "q2e1": {
+  "who": "jamesAdult",
+  "text": "Not much.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 1.306,
+    "first": 0.0,
+    "last": 0.5,
+    "tail": 0.806,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Not much."
+   },
+   "b": {
+    "len": 0.758,
+    "first": 0.0,
+    "last": 0.54,
+    "tail": 0.218,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Not much."
+   }
+  }
+ },
+ "lc2e3": {
+  "who": "lersichin",
+  "text": "Eat?",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 2.273,
+    "first": 0.0,
+    "last": 0.3,
+    "tail": 1.973,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Eat?"
+   },
+   "b": {
+    "len": 1.411,
+    "first": 0.0,
+    "last": 0.28,
+    "tail": 1.131,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Eat?"
+   }
+  }
+ },
+ "q2e2": {
+  "who": "jamesAdult",
+  "text": "When I remember.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 0.914,
+    "first": 0.0,
+    "last": 0.66,
+    "tail": 0.254,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "When I remember."
+   },
+   "b": {
+    "len": 0.679,
+    "first": 0.0,
+    "last": 0.56,
+    "tail": 0.119,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "When I remember."
+   }
+  }
+ },
+ "lc2e4": {
+  "who": "lersichin",
+  "text": "The wallet... in the fridge?",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 4.284,
+    "first": 0.0,
+    "last": 1.96,
+    "tail": 2.324,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "The wallet... in the fridge?"
+   },
+   "b": {
+    "len": 1.959,
+    "first": 0.0,
+    "last": 1.68,
+    "tail": 0.279,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "The wallet... in the fridge?"
+   }
+  }
+ },
+ "q2e3": {
+  "who": "jamesAdult",
+  "text": "[embarrassed] ...Yes.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 0.914,
+    "first": 0.0,
+    "last": 0.5,
+    "tail": 0.414,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Yes."
+   },
+   "b": {
+    "len": 0.914,
+    "first": 0.0,
+    "last": 0.44,
+    "tail": 0.474,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Yes."
+   }
+  }
+ },
+ "lc2e5": {
+  "who": "lersichin",
+  "text": "You saw a doctor?",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 3.631,
+    "first": 0.0,
+    "last": 0.92,
+    "tail": 2.711,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "You saw a doctor?"
+   },
+   "b": {
+    "len": 3.474,
+    "first": 0.0,
+    "last": 0.94,
+    "tail": 2.534,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "You saw a doctor?"
+   }
+  }
+ },
+ "q2e4": {
+  "who": "jamesAdult",
+  "text": "Yes. They said stress.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 1.959,
+    "first": 0.0,
+    "last": 1.64,
+    "tail": 0.319,
+    "tail_db": -99.0,
+    "hole": 0.6,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Yes. They said stress."
+   },
+   "b": {
+    "len": 2.116,
+    "first": 0.0,
+    "last": 1.76,
+    "tail": 0.356,
+    "tail_db": -99.0,
+    "hole": 0.66,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Yes. They said stress."
+   }
+  }
+ },
+ "lc2e6": {
+  "who": "lersichin",
+  "text": "[calm] Mm. Good. Doctor first, always. Now, quiet.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 4.754,
+    "first": 0.0,
+    "last": 4.46,
+    "tail": 0.294,
+    "tail_db": -99.0,
+    "hole": 0.8,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Mm. Good. Doctor first, always. Now, quiet."
+   },
+   "b": {
+    "len": 5.146,
+    "first": 0.0,
+    "last": 4.8,
+    "tail": 0.346,
+    "tail_db": -99.0,
+    "hole": 1.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Mm. Good. Doctor first, always. Now, quiet."
+   }
+  }
+ },
+ "lc2e7": {
+  "who": "lersichin",
+  "text": "[gentle] That one... from there?",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 3.631,
+    "first": 0.0,
+    "last": 1.56,
+    "tail": 2.071,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "That one... from there?"
+   },
+   "b": {
+    "len": 5.146,
+    "first": 0.0,
+    "last": 2.92,
+    "tail": 2.226,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "That one... from there?"
+   }
+  }
+ },
+ "q2e5": {
+  "who": "jamesAdult",
+  "text": "...Yes. I was told to put it facing the door.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 3.082,
+    "first": 0.0,
+    "last": 2.84,
+    "tail": 0.242,
+    "tail_db": -99.0,
+    "hole": 0.76,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Yes. I was told to put it facing the door."
+   },
+   "b": {
+    "len": 2.769,
+    "first": 0.0,
+    "last": 2.6,
+    "tail": 0.169,
+    "tail_db": -99.0,
+    "hole": 0.66,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Yes. I was told to put it facing the door."
+   }
+  }
+ },
+ "lc2e8": {
+  "who": "lersichin",
+  "text": "[calm] This one, you give to a temple. Don't keep, don't sell, don't throw.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 5.329,
+    "first": 0.0,
+    "last": 5.18,
+    "tail": 0.149,
+    "tail_db": -99.0,
+    "hole": 0.58,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "This one, you give to a temple. Don't keep, don't sell, don't throw."
+   },
+   "b": {
+    "len": 5.146,
+    "first": 0.0,
+    "last": 5.1,
+    "tail": 0.046,
+    "tail_db": -99.0,
+    "hole": 0.66,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "This one, you give to a temple. Don't keep, don't sell, don't throw."
+   }
+  }
+ },
+ "lc2e9": {
+  "who": "lersichin",
+  "text": "[serious] According to my practice, I believe something negative was placed on you.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 7.314,
+    "first": 0.0,
+    "last": 4.58,
+    "tail": 2.734,
+    "tail_db": -99.0,
+    "hole": 0.42,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "According to my practice, I believe something negative was placed on you."
+   },
+   "b": {
+    "len": 7.314,
+    "first": 0.0,
+    "last": 5.12,
+    "tail": 2.194,
+    "tail_db": -99.0,
+    "hole": 0.44,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "According to my practice, I believe something negative was placed on you."
+   }
+  }
+ },
+ "q2e6": {
+  "who": "jamesAdult",
+  "text": "[tense] By him?",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 2.586,
+    "first": 1.04,
+    "last": 2.14,
+    "tail": 0.446,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "By him?"
+   },
+   "b": {
+    "len": 2.038,
+    "first": 0.0,
+    "last": 0.78,
+    "tail": 1.258,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "By him?"
+   }
+  }
+ },
+ "lc2e10": {
+  "who": "lersichin",
+  "text": "[calm] I didn't say that. I said on you.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 2.769,
+    "first": 0.0,
+    "last": 2.56,
+    "tail": 0.209,
+    "tail_db": -99.0,
+    "hole": 0.28,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I didn't say that. I said on you."
+   },
+   "b": {
+    "len": 2.847,
+    "first": 0.0,
+    "last": 2.78,
+    "tail": 0.067,
+    "tail_db": -99.0,
+    "hole": 0.46,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I didn't say that. I said on you."
+   }
+  }
+ },
+ "lc2k0": {
+  "who": "lersichin",
+  "text": "[gentle] Hands together. Close your eyes.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 3.239,
+    "first": 0.0,
+    "last": 3.04,
+    "tail": 0.199,
+    "tail_db": -99.0,
+    "hole": 1.24,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Hands together. Close your eyes."
+   },
+   "b": {
+    "len": 3.239,
+    "first": 0.0,
+    "last": 3.06,
+    "tail": 0.179,
+    "tail_db": -99.0,
+    "hole": 1.06,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Hands together. Close your eyes."
+   }
+  }
+ },
+ "lc2namo": {
+  "who": "lersichin",
+  "text": "[chanting] Namo tassa bhagavato arahato sammāsambuddhassa. Namo tassa bhagavato arahato sammāsambuddhassa. Namo tassa bhagavato arahato sammāsambuddhassa.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 17.162,
+    "first": 0.0,
+    "last": 16.94,
+    "tail": 0.222,
+    "tail_db": -99.0,
+    "hole": 0.88,
+    "sim": 0.5,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Namo Tasa Bhagavato Arahato Samma Sambuddhasa. Namo Tasa Bhagavato Arahato Samma Sambuddhasa. Namo Tasa Bhagavato Arahato Samma Sambuddhasa."
+   },
+   "b": {
+    "len": 17.633,
+    "first": 0.0,
+    "last": 17.38,
+    "tail": 0.253,
+    "tail_db": -99.0,
+    "hole": 0.92,
+    "sim": 0.333,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Namo Tasa Bhagavato Arhato Samma Sambudasa Namo Tasa Bhagavato Arhato Samma Sambudasa Namo Tasa Bhagavato Arhato Samma Sambudasa"
+   }
+  }
+ },
+ "lc2sak1": {
+  "who": "lersichin",
+  "text": "[chanting] Sakkatvā buddha-ratanaṁ, osathaṁ uttamaṁ varaṁ, hitaṁ deva-manussānaṁ, buddha-tejena sotthinā, nassantupaddavā sabbe, dukkhā vūpasamentu te.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 14.681,
+    "first": 0.0,
+    "last": 14.62,
+    "tail": 0.061,
+    "tail_db": -99.0,
+    "hole": 0.68,
+    "sim": 0.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Sakkadwa Bhutaratanang, O Satam Utamangvarang, Hittangde wamanutsanang, Utatejena Sotina, Natsantu Padawasabhe, Dukkabupasa Mentuthe."
+   },
+   "b": {
+    "len": 14.994,
+    "first": 0.0,
+    "last": 14.6,
+    "tail": 0.394,
+    "tail_db": -99.0,
+    "hole": 0.92,
+    "sim": 0.053,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Sakkadwa Bhuta Ratanang, Osatam Utamangwarang, Hittang Deva Manusanang, Bhutate Jena Sotina, Natsantupadwa Sabe, Dukkha Bupasa Mentute."
+   }
+  }
+ },
+ "lc2sak2": {
+  "who": "lersichin",
+  "text": "[chanting] Sakkatvā dhamma-ratanaṁ, osathaṁ uttamaṁ varaṁ, pariḷāhūpasamanaṁ, dhamma-tejena sotthinā, nassantupaddavā sabbe, bhayā vūpasamentu te.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 15.882,
+    "first": 0.0,
+    "last": 15.56,
+    "tail": 0.322,
+    "tail_db": -99.0,
+    "hole": 0.86,
+    "sim": 0.167,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Sakatva Dhamma Ratanang, O Satam Uttamangwarang, Parirahu Pasamanang, Dhamma Tejena Sothina, Natsantu Padawasape, Vayabhu Pasamanthuti."
+   },
+   "b": {
+    "len": 16.039,
+    "first": 0.0,
+    "last": 15.9,
+    "tail": 0.139,
+    "tail_db": -99.0,
+    "hole": 0.84,
+    "sim": 0.111,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Sakadhwa Dhamma Ratanang, O Satam Utamangvarang, Parihahu Pasamanang, Dhammathe Jainaso Thina, Natsantu Padawasabhe, Baya Vupasaman Thutte,"
+   }
+  }
+ },
+ "lc2sak3": {
+  "who": "lersichin",
+  "text": "[chanting] Sakkatvā saṅgha-ratanaṁ, osathaṁ uttamaṁ varaṁ, āhuneyyaṁ pāhuneyyaṁ, saṅgha-tejena sotthinā, nassantupaddavā sabbe, rogā vūpasamentu te.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 15.151,
+    "first": 0.0,
+    "last": 14.82,
+    "tail": 0.331,
+    "tail_db": -99.0,
+    "hole": 0.78,
+    "sim": 0.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Sakatva Sangha Ratanang, O Satam Utamang Varang, Ahunayang Pahunayang, Sanghatejna Sothina, Natsantu Padewa Sabe, Roga Wupa Samintute,"
+   },
+   "b": {
+    "len": 14.602,
+    "first": 0.0,
+    "last": 14.16,
+    "tail": 0.442,
+    "tail_db": -99.0,
+    "hole": 0.64,
+    "sim": 0.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Sakkadwa Sangha Ratanang, O Satam Utamang Varang, Ahunayang Paahunayang, Sanghatejna Sotina, Natsantu Padawasabhe, Roga Vupasa Mentute."
+   }
+  }
+ },
+ "lc2drink": {
+  "who": "lersichin",
+  "text": "[gentle] Drink. A little.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 1.802,
+    "first": 0.0,
+    "last": 1.36,
+    "tail": 0.442,
+    "tail_db": -99.0,
+    "hole": 0.6,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Drink. A little."
+   },
+   "b": {
+    "len": 1.724,
+    "first": 0.0,
+    "last": 1.46,
+    "tail": 0.264,
+    "tail_db": -99.0,
+    "hole": 0.78,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Drink. A little."
+   }
+  }
+ },
+ "lc2wrist": {
+  "who": "lersichin",
+  "text": "[gentle] Your wrist.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 2.926,
+    "first": 0.0,
+    "last": 0.72,
+    "tail": 2.206,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Your wrist."
+   },
+   "b": {
+    "len": 3.631,
+    "first": 0.0,
+    "last": 0.68,
+    "tail": 2.951,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Your wrist."
+   }
+  }
+ },
+ "lc2k2": {
+  "who": "lersichin",
+  "text": "[gentle] Go to a temple this week. Make merit. If the fog comes back, doctor first, then me.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 9.091,
+    "first": 0.82,
+    "last": 8.96,
+    "tail": 0.131,
+    "tail_db": -99.0,
+    "hole": 0.8,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Go to a temple this week. Make merit. If the fog comes back, doctor first, then me."
+   },
+   "b": {
+    "len": 8.751,
+    "first": 0.0,
+    "last": 6.48,
+    "tail": 2.271,
+    "tail_db": -99.0,
+    "hole": 0.66,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Go to a temple this week. Make merit. If the fog comes back, doctor first, then me."
+   }
+  }
+ },
+ "lc2w1": {
+  "who": "lersichin",
+  "text": "[serious] One more thing. Don't go looking for him. Don't tell people stories about him. Don't wish anything back on him. Leave it there.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 9.953,
+    "first": 0.0,
+    "last": 9.9,
+    "tail": 0.053,
+    "tail_db": -99.0,
+    "hole": 0.96,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "One more thing. Don't go looking for him. Don't tell people stories about him. Don't wish anything back on him. Leave it there."
+   },
+   "b": {
+    "len": 9.639,
+    "first": 0.0,
+    "last": 9.58,
+    "tail": 0.059,
+    "tail_db": -99.0,
+    "hole": 0.78,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "One more thing. Don't go looking for him. Don't tell people stories about him. Don't wish anything back on him. Leave it there."
+   }
+  }
+ },
+ "pg2w1": {
+  "who": "pong",
+  "text": "Bro, I wait outside.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 1.489,
+    "first": 0.0,
+    "last": 1.22,
+    "tail": 0.269,
+    "tail_db": -99.0,
+    "hole": 0.36,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Bro, I wait outside."
+   },
+   "b": {
+    "len": 1.567,
+    "first": 0.0,
+    "last": 1.28,
+    "tail": 0.287,
+    "tail_db": -99.0,
+    "hole": 0.26,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Bro, I wait outside."
+   }
+  }
+ },
+ "q2A1": {
+  "who": "jamesAdult",
+  "text": "[determined] Somebody has to warn people.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 2.194,
+    "first": 0.0,
+    "last": 1.94,
+    "tail": 0.254,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Somebody has to warn people."
+   },
+   "b": {
+    "len": 1.802,
+    "first": 0.0,
+    "last": 1.5,
+    "tail": 0.302,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Somebody has to warn people."
+   }
+  }
+ },
+ "pg2A1": {
+  "who": "pong",
+  "text": "[upset] Bro, why you post? His people calling me. They say I bring you there, now you spoil his name.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 5.251,
+    "first": 0.0,
+    "last": 4.98,
+    "tail": 0.271,
+    "tail_db": -99.0,
+    "hole": 0.28,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Bro, why you post? His people calling me. They say I bring you there, now you spoil his name."
+   },
+   "b": {
+    "len": 5.721,
+    "first": 0.0,
+    "last": 5.16,
+    "tail": 0.561,
+    "tail_db": -99.0,
+    "hole": 0.38,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Bro, why you post? His people calling me. They say I bring you there, now you spoil his name."
+   }
+  }
+ },
+ "q2A2": {
+  "who": "jamesAdult",
+  "text": "[defensive] I know what I saw.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 2.586,
+    "first": 0.0,
+    "last": 1.02,
+    "tail": 1.566,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I know what I saw."
+   },
+   "b": {
+    "len": 1.881,
+    "first": 0.0,
+    "last": 1.0,
+    "tail": 0.881,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I know what I saw."
+   }
+  }
+ },
+ "pg2A2": {
+  "who": "pong",
+  "text": "[quiet] You saw. You don't know.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 2.116,
+    "first": 0.0,
+    "last": 1.82,
+    "tail": 0.296,
+    "tail_db": -99.0,
+    "hole": 0.56,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "You saw. You don't know."
+   },
+   "b": {
+    "len": 2.038,
+    "first": 0.0,
+    "last": 1.68,
+    "tail": 0.358,
+    "tail_db": -99.0,
+    "hole": 0.5,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "You saw. You don't know."
+   }
+  }
+ },
+ "cu2b1": {
+  "who": "cust2b",
+  "text": "Eh, you the one who posted about that Thai ajahn?",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 2.926,
+    "first": 0.0,
+    "last": 2.52,
+    "tail": 0.406,
+    "tail_db": -99.0,
+    "hole": 0.18,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Eh, you the one who posted about that Thai ajahn?"
+   },
+   "b": {
+    "len": 2.586,
+    "first": 0.0,
+    "last": 2.46,
+    "tail": 0.126,
+    "tail_db": -99.0,
+    "hole": 0.34,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Eh, you the one who posted about that Thai ajahn?"
+   }
+  }
+ },
+ "q2A3": {
+  "who": "jamesAdult",
+  "text": "[reflective] I was sure enough to stay away from him. I was never sure enough to say it about him.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 5.642,
+    "first": 0.0,
+    "last": 1.74,
+    "tail": 3.902,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 0.789,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I was sure enough to say it about him."
+   },
+   "b": {
+    "len": 7.236,
+    "first": 0.0,
+    "last": 5.72,
+    "tail": 1.516,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 0.789,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I was sure enough to say it about him."
+   }
+  }
+ },
+ "q2B1": {
+  "who": "jamesAdult",
+  "text": "[hopeful] Lersi Chin... will you teach me? I see things. I don't know why.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 6.844,
+    "first": 0.0,
+    "last": 6.72,
+    "tail": 0.124,
+    "tail_db": -99.0,
+    "hole": 1.2,
+    "sim": 0.846,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Will you teach me? I see things. I don't know why."
+   },
+   "b": {
+    "len": 6.531,
+    "first": 0.0,
+    "last": 6.32,
+    "tail": 0.211,
+    "tail_db": -99.0,
+    "hole": 1.02,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Lersi Chin... will you teach me? I see things. I don't know why."
+   }
+  }
+ },
+ "lc2B1": {
+  "who": "lersichin",
+  "text": "[gentle] Why you see, what it is for... that question is bigger than my practice. I clear. I cannot answer that one.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 8.281,
+    "first": 0.0,
+    "last": 8.14,
+    "tail": 0.141,
+    "tail_db": -99.0,
+    "hole": 0.7,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Why you see, what it is for... that question is bigger than my practice. I clear. I cannot answer that one."
+   },
+   "b": {
+    "len": 7.549,
+    "first": 0.0,
+    "last": 7.44,
+    "tail": 0.109,
+    "tail_db": -99.0,
+    "hole": 0.62,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Why you see, what it is for... that question is bigger than my practice. I clear. I cannot answer that one."
+   }
+  }
+ },
+ "lc2B2": {
+  "who": "lersichin",
+  "text": "[gentle] Someone can. Not me. When you find him, don't take my word. Don't take Pong's word. Check his teacher. Check his people. Then go.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 12.434,
+    "first": 0.0,
+    "last": 9.6,
+    "tail": 2.834,
+    "tail_db": -99.0,
+    "hole": 0.66,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Someone can. Not me. When you find him, don't take my word. Don't take Pong's word. Check his teacher. Check his people. Then go."
+   },
+   "b": {
+    "len": 13.479,
+    "first": 0.0,
+    "last": 10.88,
+    "tail": 2.599,
+    "tail_db": -99.0,
+    "hole": 0.76,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Someone can. Not me. When you find him, don't take my word. Don't take Pong's word. Check his teacher. Check his people. Then go."
+   }
+  }
+ },
+ "pg2B1": {
+  "who": "pong",
+  "text": "[warm] This time we check first, bro.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 1.646,
+    "first": 0.0,
+    "last": 1.42,
+    "tail": 0.226,
+    "tail_db": -99.0,
+    "hole": 0.22,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "This time we check first, bro."
+   },
+   "b": {
+    "len": 1.646,
+    "first": 0.0,
+    "last": 1.34,
+    "tail": 0.306,
+    "tail_db": -99.0,
+    "hole": 0.1,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "This time we check first, bro."
+   }
+  }
+ },
+ "q2B2": {
+  "who": "jamesAdult",
+  "text": "[reflective] He had cleared me. He could not tell me what I was for, and he was honest enough to say so.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 6.531,
+    "first": 0.0,
+    "last": 6.38,
+    "tail": 0.151,
+    "tail_db": -99.0,
+    "hole": 0.98,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "He had cleared me. He could not tell me what I was for, and he was honest enough to say so."
+   },
+   "b": {
+    "len": 7.393,
+    "first": 0.0,
+    "last": 7.24,
+    "tail": 0.153,
+    "tail_db": -99.0,
+    "hole": 1.14,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "He had cleared me. He could not tell me what I was for, and he was honest enough to say so."
+   }
+  }
+ },
+ "q2C1": {
+  "who": "jamesAdult",
+  "text": "[bitter] Lersi Chin... can you send it back? To whoever did this.",
+  "pick": "b",
+  "why": [
+   "no odd hole"
+  ],
+  "takes": {
+   "a": {
+    "len": 6.426,
+    "first": 0.0,
+    "last": 6.16,
+    "tail": 0.266,
+    "tail_db": -99.0,
+    "hole": 1.46,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Lersi Chin... can you send it back? To whoever did this?"
+   },
+   "b": {
+    "len": 5.642,
+    "first": 0.0,
+    "last": 5.46,
+    "tail": 0.182,
+    "tail_db": -99.0,
+    "hole": 1.32,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Lersi Chin... can you send it back? To whoever did this."
+   }
+  }
+ },
+ "lc2C1": {
+  "who": "lersichin",
+  "text": "[calm] I clear. I don't send.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 2.273,
+    "first": 0.0,
+    "last": 1.98,
+    "tail": 0.293,
+    "tail_db": -99.0,
+    "hole": 0.54,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I clear. I don't send."
+   },
+   "b": {
+    "len": 1.959,
+    "first": 0.0,
+    "last": 1.66,
+    "tail": 0.299,
+    "tail_db": -99.0,
+    "hole": 0.46,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I clear. I don't send."
+   }
+  }
+ },
+ "lc2C2": {
+  "who": "lersichin",
+  "text": "[calm] If I send, I carry it. If you ask me to send, you carry it also.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 5.486,
+    "first": 0.0,
+    "last": 5.26,
+    "tail": 0.226,
+    "tail_db": -99.0,
+    "hole": 0.44,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "If I send, I carry it. If you ask me to send, you carry it also."
+   },
+   "b": {
+    "len": 5.878,
+    "first": 0.0,
+    "last": 5.66,
+    "tail": 0.218,
+    "tail_db": -99.0,
+    "hole": 0.44,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "If I send, I carry it. If you ask me to send, you carry it also."
+   }
+  }
+ },
+ "pg2C1": {
+  "who": "pong",
+  "text": "[uneasy] Bro...",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 1.411,
+    "first": 0.0,
+    "last": 1.24,
+    "tail": 0.171,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Bro..."
+   },
+   "b": {
+    "len": 1.646,
+    "first": 0.0,
+    "last": 1.18,
+    "tail": 0.466,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Bro..."
+   }
+  }
+ },
+ "q2C2": {
+  "who": "jamesAdult",
+  "text": "[bitter] He did this to me.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 3.004,
+    "first": 0.0,
+    "last": 1.26,
+    "tail": 1.744,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "He did this to me."
+   },
+   "b": {
+    "len": 3.004,
+    "first": 0.0,
+    "last": 1.46,
+    "tail": 1.544,
+    "tail_db": -99.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "He did this to me."
+   }
+  }
+ },
+ "lc2C3": {
+  "who": "lersichin",
+  "text": "[gentle] Maybe. Maybe not. Either way, you are clear now. Don't pick it up again.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 6.191,
+    "first": 0.0,
+    "last": 6.02,
+    "tail": 0.171,
+    "tail_db": -99.0,
+    "hole": 0.92,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Maybe. Maybe not. Either way, you are clear now. Don't pick it up again."
+   },
+   "b": {
+    "len": 7.549,
+    "first": 0.0,
+    "last": 5.32,
+    "tail": 2.229,
+    "tail_db": -99.0,
+    "hole": 0.58,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Maybe. Maybe not. Either way, you are clear now. Don't pick it up again."
+   }
+  }
+ },
+ "q2C3": {
+  "who": "jamesAdult",
+  "text": "[heavy] I wanted him to feel what I had felt. Lersi Chin would not carry that for me, and I could not put it down.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 8.516,
+    "first": 0.0,
+    "last": 8.2,
+    "tail": 0.316,
+    "tail_db": -99.0,
+    "hole": 1.44,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I wanted him to feel what I had felt. Lersi Chin would not carry that for me, and I could not put it down."
+   },
+   "b": {
+    "len": 8.751,
+    "first": 0.0,
+    "last": 8.54,
+    "tail": 0.211,
+    "tail_db": -99.0,
+    "hole": 1.56,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I wanted him to feel what I had felt. Lersi Chin would not carry that for me, and I could not put it down."
+   }
+  }
+ },
+ "q2D1": {
+  "who": "jamesAdult",
+  "text": "[grateful] Thank you, Lersi Chin.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 1.881,
+    "first": 0.0,
+    "last": 1.28,
+    "tail": 0.601,
+    "tail_db": -99.0,
+    "hole": 0.16,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Thank you, Lersi Chin."
+   },
+   "b": {
+    "len": 1.802,
+    "first": 0.0,
+    "last": 1.46,
+    "tail": 0.342,
+    "tail_db": -99.0,
+    "hole": 0.24,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Thank you, Lersi Chin."
+   }
+  }
+ },
+ "lc2D1": {
+  "who": "lersichin",
+  "text": "[warm] Go well. Make merit when you can.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 2.847,
+    "first": 0.0,
+    "last": 2.7,
+    "tail": 0.147,
+    "tail_db": -99.0,
+    "hole": 0.76,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Go well. Make merit when you can."
+   },
+   "b": {
+    "len": 2.691,
+    "first": 0.0,
+    "last": 2.52,
+    "tail": 0.171,
+    "tail_db": -99.0,
+    "hole": 0.44,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Go well. Make merit when you can."
+   }
+  }
+ },
+ "pg2D1": {
+  "who": "pong",
+  "text": "[cheerful] Bro, go eat something?",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 2.508,
+    "first": 0.0,
+    "last": 1.2,
+    "tail": 1.308,
+    "tail_db": -99.0,
+    "hole": 0.24,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Bro, go eat something?"
+   },
+   "b": {
+    "len": 2.508,
+    "first": 0.0,
+    "last": 1.16,
+    "tail": 1.348,
+    "tail_db": -99.0,
+    "hole": 0.28,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Bro, go eat something?"
+   }
+  }
+ },
+ "cu2a2": {
+  "who": "cust2a",
+  "text": "Boss, this one... from which temple ah?",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 3.004,
+    "first": 0.0,
+    "last": 2.68,
+    "tail": 0.324,
+    "tail_db": -99.0,
+    "hole": 0.36,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Boss, this one... from which temple ah?"
+   },
+   "b": {
+    "len": 5.329,
+    "first": 0.0,
+    "last": 2.44,
+    "tail": 2.889,
+    "tail_db": -99.0,
+    "hole": 0.3,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Boss, this one... from which temple ah?"
+   }
+  }
+ },
+ "q2D2": {
+  "who": "jamesAdult",
+  "text": "[warm] This one? A temple in Ayutthaya. The card is inside, let me show you.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 6.113,
+    "first": 0.0,
+    "last": 6.06,
+    "tail": 0.053,
+    "tail_db": -99.0,
+    "hole": 1.1,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "This one? A temple in Ayutthaya. The card is inside, let me show you."
+   },
+   "b": {
+    "len": 5.642,
+    "first": 0.0,
+    "last": 5.58,
+    "tail": 0.062,
+    "tail_db": -99.0,
+    "hole": 1.02,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "This one? A temple in Ayutthaya. The card is inside, let me show you."
+   }
+  }
+ },
+ "q2D3": {
+  "who": "jamesAdult",
+  "text": "[calm] I had enough to decide. There was nothing more worth proving.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 4.441,
+    "first": 0.0,
+    "last": 4.18,
+    "tail": 0.261,
+    "tail_db": -99.0,
+    "hole": 1.18,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I had enough to decide. There was nothing more worth proving."
+   },
+   "b": {
+    "len": 4.911,
+    "first": 0.0,
+    "last": 4.6,
+    "tail": 0.311,
+    "tail_db": -99.0,
+    "hole": 1.22,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I had enough to decide. There was nothing more worth proving."
+   }
+  }
+ },
+ "q2K1": {
+  "who": "jamesAdult",
+  "text": "[reflective] Whether you interpret that spiritually or otherwise, the lesson has stayed with me ever since. After that I became far stricter about who I go to.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 10.031,
+    "first": 0.0,
+    "last": 9.9,
+    "tail": 0.131,
+    "tail_db": -99.0,
+    "hole": 1.58,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Whether you interpret that spiritually or otherwise, the lesson has stayed with me ever since. After that I became far stricter about who I go to."
+   },
+   "b": {
+    "len": 10.449,
+    "first": 0.0,
+    "last": 10.28,
+    "tail": 0.169,
+    "tail_db": -99.0,
+    "hole": 1.54,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Whether you interpret that spiritually or otherwise, the lesson has stayed with me ever since. After that I became far stricter about who I go to."
+   }
+  }
+ },
+ "q2K2": {
+  "who": "jamesAdult",
+  "text": "I research a master's lineage thoroughly. I look for real accounts from real people. I only approach those I have checked and genuinely trust.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 9.953,
+    "first": 0.0,
+    "last": 9.66,
+    "tail": 0.293,
+    "tail_db": -99.0,
+    "hole": 1.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I research a master's lineage thoroughly. I look for real accounts from real people. I only approach those I have checked and genuinely trust."
+   },
+   "b": {
+    "len": 10.031,
+    "first": 0.0,
+    "last": 9.78,
+    "tail": 0.251,
+    "tail_db": -99.0,
+    "hole": 1.16,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I research a master's lineage thoroughly. I look for real accounts from real people. I only approach those I have checked and genuinely trust."
+   }
+  }
+ },
+ "q2K3": {
+  "who": "jamesAdult",
+  "text": "And yet still, none of them could answer the question I actually carried... why I had these abilities at all, and what they were truly for.",
+  "pick": "b",
+  "why": [
+   "no odd hole"
+  ],
+  "takes": {
+   "a": {
+    "len": 12.278,
+    "first": 0.0,
+    "last": 11.98,
+    "tail": 0.298,
+    "tail_db": -99.0,
+    "hole": 1.72,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "And yet still, none of them could answer the question I actually carried... why I had these abilities at all, and what they were truly for."
+   },
+   "b": {
+    "len": 10.762,
+    "first": 0.0,
+    "last": 10.5,
+    "tail": 0.262,
+    "tail_db": -99.0,
+    "hole": 0.94,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "And yet still, none of them could answer the question I actually carried... why I had these abilities at all, and what they were truly for."
+   }
+  }
+ },
+ "q2K4": {
+  "who": "jamesAdult",
+  "text": "[quiet] That question went unanswered for a long time, until the day I met someone who could finally help me understand.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 7.158,
+    "first": 0.0,
+    "last": 6.74,
+    "tail": 0.418,
+    "tail_db": -99.0,
+    "hole": 0.42,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "That question went unanswered for a long time, until the day I met someone who could finally help me understand."
+   },
+   "b": {
+    "len": 7.471,
+    "first": 0.0,
+    "last": 7.14,
+    "tail": 0.331,
+    "tail_db": -99.0,
+    "hole": 0.26,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "That question went unanswered for a long time, until the day I met someone who could finally help me understand."
+   }
+  }
+ },
+ "q2A": {
+  "who": "jamesAdult",
+  "text": "[quiet] I said it as fact. I only knew it as fear.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 3.788,
+    "first": 0.0,
+    "last": 3.54,
+    "tail": 0.248,
+    "tail_db": -99.0,
+    "hole": 1.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I said it as fact. I only knew it as fear."
+   },
+   "b": {
+    "len": 3.866,
+    "first": 0.0,
+    "last": 3.68,
+    "tail": 0.186,
+    "tail_db": -99.0,
+    "hole": 1.06,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I said it as fact. I only knew it as fear."
+   }
+  }
+ },
+ "q2B": {
+  "who": "jamesAdult",
+  "text": "[quiet] He couldn't answer me. He was honest enough to say so.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 3.788,
+    "first": 0.0,
+    "last": 3.74,
+    "tail": 0.048,
+    "tail_db": -99.0,
+    "hole": 0.84,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "He couldn't answer me. He was honest enough to say so."
+   },
+   "b": {
+    "len": 3.553,
+    "first": 0.0,
+    "last": 3.44,
+    "tail": 0.113,
+    "tail_db": -99.0,
+    "hole": 0.7,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "He couldn't answer me. He was honest enough to say so."
+   }
+  }
+ },
+ "q2C": {
+  "who": "jamesAdult",
+  "text": "[quiet] I wanted it sent back. I only kept it closer.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 3.631,
+    "first": 0.0,
+    "last": 3.34,
+    "tail": 0.291,
+    "tail_db": -99.0,
+    "hole": 0.62,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I wanted it sent back. I only kept it closer."
+   },
+   "b": {
+    "len": 3.866,
+    "first": 0.0,
+    "last": 3.56,
+    "tail": 0.306,
+    "tail_db": -99.0,
+    "hole": 1.14,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I wanted it sent back. I only kept it closer."
+   }
+  }
+ },
+ "q2D": {
+  "who": "jamesAdult",
+  "text": "[quiet] I had seen enough. I didn't need to prove it.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 3.239,
+    "first": 0.0,
+    "last": 3.18,
+    "tail": 0.059,
+    "tail_db": -99.0,
+    "hole": 1.1,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I had seen enough. I didn't need to prove it."
+   },
+   "b": {
+    "len": 3.318,
+    "first": 0.0,
+    "last": 3.16,
+    "tail": 0.158,
+    "tail_db": -99.0,
+    "hole": 1.3,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "I had seen enough. I didn't need to prove it."
+   }
+  }
+ }
+}

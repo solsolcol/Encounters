@@ -55,6 +55,6 @@
     const CL = { x: 0, z: 0.78 };                                              // where he kneels before him, facing the altar
     const PSTOOL = { x: 1.15, z: COUNTER.z + COUNTER.d / 2 + 0.42 };           // the customers' right stool (buildShop's): Pong's
     const MAT = { x: 0, z: 0.18, w: 1.24, d: 2.1 };                            // the woven mat under both
-    const KNEEL = { y: 1.0, span: 1.15, lo: -0.85, hi: 0.5 };                  // his eye kneeling, how far he may look about
+    const KNEEL = { y: 0.88, span: 1.15, lo: -0.85, hi: 0.5 };                 // his eye kneeling (sat back on his heels, his head no higher than it need be), how far he may look about
     const faceLC = () => Math.atan2(-(LC.x - CL.x), -(LC.z - CL.z));         // his view from the mat, onto Lersi Chin and the altar
 //@@COPY 2889-3476

@@ -238,7 +238,7 @@
       if (p === 'shop') { o = play.wallet ? null : play.objBlur ? null : W.objWallet;
         if (!play.wallet && play.searched.size >= 3) wp = { x: (FRIDGE.x0 + FRIDGE.x1) / 2, y: 1.0, z: FRIDGE.z - 0.1 }; }
       else if (p === 'night') {
-        if (!play.shapeSeen) { o = W.objClose; wp = { x: SWITCH.x + 0.1, y: SWITCH.y + 0.25, z: SWITCH.z }; }
+        if (!play.shapeSeen) { o = W.objClose; wp = { x: 1.0, y: 1.1, z: SHOP.z1 - 0.15 }; }   // the shutter's pull: the way to it passes the stand
         else if (!play.revealed) o = W.bannerShape;
         else if (play.noteOn) { o = W.objCall; wp = { x: NOTE.x, y: COUNTER.h + 0.25, z: NOTE.z }; }
       }
@@ -404,6 +404,9 @@
     }
     function nightBegin(resumed) {
       nightStage();
+      /* a resume after the reveal: the light as he left it (switched on, or his eyes used to the dark) */
+      if (resumed && play.revealed && play.how === 'light') { look('LIT', 0); shopCtl.lights(1, 0); shopCtl.ceiling(1, 0); }
+      else if (resumed && play.revealed && play.how === 'watch') { look('LIT', 0); shopCtl.lights(0.6, 0); }
       setPhase('night', { complete: false });
       if (resumed && play.revealed) afterReveal(true);
     }
@@ -413,7 +416,8 @@
       if (play.revealed) return;
       if (!play.shapeSeen) {
         camera.updateMatrixWorld(); _nv2.set(STAND_HEAD.x, STAND_HEAD.y, STAND_HEAD.z).project(camera);
-        if (_nv2.z < 1 && Math.abs(_nv2.x) < 0.75 && Math.abs(_nv2.y) < 0.8) {
+        const near = Math.hypot(yaw.position.x - STAND.x, yaw.position.z - STAND.z) < 2.6;
+        if ((_nv2.z < 1 && Math.abs(_nv2.x) < 0.9 && Math.abs(_nv2.y) < 0.85) || near) {
           play.shapeSeen = true; props.sway = 1;
           const rel = angTo(yaw.rotation.y, Math.atan2(-(STAND.x - yaw.position.x), -(STAND.z - yaw.position.z)));
           if (worldSfx) { worldSfx('x2rustle', 0.55, 1, Math.max(-0.8, Math.min(0.8, -Math.sin(rel) * 0.8))); worldSfx('x2breath', 0.45); }
@@ -486,7 +490,7 @@
     function clearingBegin(resumed) {
       clearStage(play.cleared);
       if (!resumed) {
-        yaw.position.set(-0.95, yaw.position.y, 1.25); yaw.rotation.y = Math.atan2(-(LC.x + 0.95), -(LC.z - 1.25)); pitch.rotation.x = -0.12;
+        yaw.position.set(-0.95, yaw.position.y, 1.25); yaw.rotation.y = Math.atan2(-(LC.x + 0.95), -(LC.z - 1.25)); pitch.rotation.x = -0.36;
         if (kit) kit.pose('standing', { secs: 0.05 });
         /* the visit film hands over on its black: lifted here, on the room it ended on */
         if (kit && kit.getFade && kit.getFade() > 0.01) kit.fade(0, 1.1);
@@ -497,7 +501,7 @@
     }
     const seatNow = (P, on) => { if (!P) return; P.seated = !!on; P.sitW = on ? 1 : 0; P.sitOff = null; P.walk = null; };
     function kneel(instant) {
-      if (play.knelt) return false;
+      if (play.knelt && !instant) return false;                     // (a resume kneels him where the save says he knelt)
       play.knelt = true; kneelZone.visible = false;
       if (kit) kit.root(true);
       if (!instant && worldSfx) worldSfx('x2kneel', 0.6);

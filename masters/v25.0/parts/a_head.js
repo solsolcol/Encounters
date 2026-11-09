@@ -41,8 +41,8 @@
   const NIGHT = sky({                 // after closing, alone: the ceiling off, the counter's LEDs low, the corridor's night light under the half shutter
     stops: [[0.00, '#2a2d34'], [0.12, '#24272e'], [0.35, '#1d1f25'], [0.65, '#16171c'], [1.00, '#101115']],
     bg: 0x121318, fog: [0x1c1d22, 0.006],
-    hemi: [0xa8b2c8, 0x2a2420, 0.36], key: [0xffe2c0, 0.26, 0, 1.4, 4.5], fill: [0x7480a8, 0.13],
-    vmHemi: [0xa8b2c8, 0x2a2420, 0.4], vmKey: [0xffe2c0, 0.28] });
+    hemi: [0xa8b2c8, 0x2a2420, 0.52], key: [0xffe2c0, 0.32, 0, 1.4, 4.5], fill: [0x7480a8, 0.19],
+    vmHemi: [0xa8b2c8, 0x2a2420, 0.5], vmKey: [0xffe2c0, 0.32] });
   const LIT = sky({                   // the same night, his lights back on (the shape by the door seen for what it is)
     stops: [[0.00, '#2a2d34'], [0.12, '#24272e'], [0.35, '#1d1f25'], [0.65, '#16171c'], [1.00, '#101115']],
     bg: 0x121318, fog: [0x1c1d22, 0.006],

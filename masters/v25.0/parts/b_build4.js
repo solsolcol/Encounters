@@ -66,7 +66,7 @@
     /* ---------------------------------------------------------------- (v25.0) the films' own helpers */
     const KN_EYE = [CL.x, KNEEL.y, CL.z];                               // his eye kneeling before Lersi Chin
     const BUDDHA_AT = [BUDDHA.x, BUDDHA.y, BUDDHA.z];
-    const LC_HEAD = () => faceOf(cast.lersi, [LC.x, 0.96, LC.z]);
+    const LC_HEAD = () => faceOf(cast.lersi, [LC.x, 0.74, LC.z]);
     const PG_HEAD = () => faceOf(cast.pong, [PSTOOL.x, 1.42, PSTOOL.z]);
     const UNDER = [0.3, 1.0, SHOP.z1 + 0.6];                             // under the shutter's edge, the corridor's light
     const top0 = COUNTER.h + 0.046;                                      // the counter's glass
@@ -189,12 +189,12 @@
       if (t < O.o3) {
         /* O2 · his eyes on the tray while she asks (never on her): the compartments under the glass; at "say again" they
            lift to the counter's front edge and fall back; at "I could not think properly" up to where she went */
-        const tray = [0.3, DISPLAY.floor, COUNTER.z + 0.05], edge = [0.2, top0, COUNTER.z + COUNTER.d / 2];
+        const tray = [0.12, DISPLAY.floor, COUNTER.z - 0.04], edge = [0.2, top0, COUNTER.z + COUNTER.d / 2];
         const kU = smo(sgk(t, O.q2o2b - 0.2, O.q2o2b + 0.8)) * (1 - smo(sgk(t, O.cu2a1b + 0.3, O.cu2a1b + 1.6)));
         const kOut = smo(sgk(t, O.q2o2 - 0.3, O.q2o2 + 2.4));
         let at = aimEase(eye, tray, edge, kU * 0.75);
         if (kOut > 0) at = aimEase(eye, at, [0.6, 1.35, 5.2], kOut);
-        fLens(lp(isNarrow() ? 56 : 48, isNarrow() ? 50 : 42, sgk(t, O.o2, O.o3)));
+        fLens(lp(isNarrow() ? 50 : 42, isNarrow() ? 44 : 36, sgk(t, O.o2, O.o3)));
         camAt([eye[0] - 0.05 * sgk(t, O.o2, O.o3), eye[1] - 0.04, eye[2] + 0.06], at);
         return;
       }

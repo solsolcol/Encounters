@@ -1,0 +1,258 @@
+{
+ "_flow": "SFnWUI9IMdhGxt73er5Q",
+ "_model": "eleven_text_to_sound_v2",
+ "fx": [
+  [
+   "x2drawer",
+   1.6,
+   false,
+   "A cash drawer under a shop counter pulled open and pushed shut, coins rattling in its plastic tray, close, small quiet shop"
+  ],
+  [
+   "x2bagzip",
+   1.8,
+   false,
+   "A nylon sling bag's zip pulled open, a hand rummaging through it, then zipped shut again, close"
+  ],
+  [
+   "x2cloth",
+   1.4,
+   false,
+   "A cotton jacket lifted off a stool and its pockets patted, soft fabric rustle, close, quiet room"
+  ],
+  [
+   "x2fridge",
+   2.2,
+   false,
+   "A small glass-door drinks fridge pulled open, its rubber seal unsticking, bottles clinking softly, the cold air humming, close"
+  ],
+  [
+   "x2wallet",
+   1.0,
+   false,
+   "A leather wallet picked up from a fridge shelf, a soft leather slap into a hand, close"
+  ],
+  [
+   "x2switch",
+   0.8,
+   false,
+   "A wall light switch flicked on, one crisp plastic click, close, quiet dark room"
+  ],
+  [
+   "x2rustle",
+   2.5,
+   false,
+   "Dried flowers and satin ribbons on a flower stand rustling in an air conditioner's draft, papery and light, quiet room at night"
+  ],
+  [
+   "x2breath",
+   2.0,
+   false,
+   "A man's sharp startled intake of breath, then holding it, close, very quiet room"
+  ],
+  [
+   "x2ledhum",
+   3.0,
+   false,
+   "Shop ceiling lights and display case LEDs buzzing on, a faint electrical hum settling, quiet room"
+  ],
+  [
+   "x2shutter",
+   3.5,
+   false,
+   "A metal roller shutter on a shopfront pulled down by hand to halfway, rattling slats rolling, then stopping with a clank"
+  ],
+  [
+   "x2kneel",
+   1.3,
+   false,
+   "A man kneeling down on a woven straw mat, trouser fabric rustling and a soft knee thump on the mat, close"
+  ],
+  [
+   "x2bow",
+   1.2,
+   false,
+   "Fabric rustling softly as a kneeling man bows forward to touch the mat and sits back up, close, quiet room"
+  ],
+  [
+   "x2pat",
+   1.4,
+   false,
+   "A man patting his trouser pockets one after the other, soft fabric pats, close"
+  ],
+  [
+   "x2heels",
+   3.0,
+   false,
+   "A woman's heels walking away across a tiled shopping mall floor, fading into the distance"
+  ],
+  [
+   "x2pickup",
+   0.8,
+   false,
+   "A smartphone picked up off a glass counter, a soft tap and slide, close"
+  ],
+  [
+   "x2ring",
+   1.6,
+   false,
+   "A telephone ringback tone heard through a phone held to the ear, one long ring, thin and tinny"
+  ],
+  [
+   "x2knock",
+   1.6,
+   false,
+   "Two knocks of knuckles on a metal roller shutter, the slats rattling, heard from inside a quiet shop"
+  ],
+  [
+   "x2shutterup",
+   2.5,
+   false,
+   "A metal roller shutter on a shopfront lifted by hand from halfway to the top, slats rattling and rolling up, a clunk at the top"
+  ],
+  [
+   "x2steps",
+   3.0,
+   false,
+   "Footsteps of two men walking slowly across a tiled shop floor in soft shoes, indoors, quiet"
+  ],
+  [
+   "x2mat",
+   2.0,
+   false,
+   "A rolled woven straw mat unrolled across a tiled floor, a soft flap and slide, close"
+  ],
+  [
+   "x2rise",
+   1.5,
+   false,
+   "A man getting up from kneeling on a straw mat, fabric rustle and a soft creak, close"
+  ],
+  [
+   "x2pickpiece",
+   1.0,
+   false,
+   "A small bronze amulet figure picked up off a wooden shelf, a soft clink, close"
+  ],
+  [
+   "x2breathslow",
+   3.0,
+   false,
+   "An old man breathing slowly and calmly in meditation, in and out through the nose, very quiet room"
+  ],
+  [
+   "x2candle",
+   2.2,
+   false,
+   "A lighter flicked, a candle wick catching, then incense sticks lit and the flame shaken out, close, quiet room"
+  ],
+  [
+   "x2sip",
+   1.5,
+   false,
+   "A small sip of water from a metal bowl and a quiet swallow, close"
+  ],
+  [
+   "x2sprinkle",
+   1.2,
+   false,
+   "A bundle of leaves dipped in water and flicked, droplets scattering and pattering on cloth and tiles, close"
+  ],
+  [
+   "x2thread",
+   2.0,
+   false,
+   "White cotton thread wound around a wrist and tied in a knot, soft friction of string, close, quiet"
+  ],
+  [
+   "x2bowl",
+   1.0,
+   false,
+   "A silver metal bowl with a little water set down on a straw mat, a soft dull clink and a gentle slosh, close"
+  ],
+  [
+   "x2keys",
+   3.0,
+   false,
+   "Typing on a laptop keyboard, soft quick keystrokes, close, quiet room at night"
+  ],
+  [
+   "x2post",
+   1.2,
+   false,
+   "A soft whoosh notification from a laptop as a message is sent"
+  ],
+  [
+   "x2ping",
+   0.8,
+   false,
+   "A gentle single notification ping from a laptop"
+  ],
+  [
+   "x2buzz",
+   1.0,
+   false,
+   "A smartphone vibrating on a glass counter, one short buzzing rattle"
+  ],
+  [
+   "x2case",
+   1.0,
+   false,
+   "A small plastic amulet case lifted out of a glass display tray, a light click, close"
+  ],
+  [
+   "x2scroll",
+   2.0,
+   false,
+   "Fingers sliding on a laptop trackpad, soft swipes, close, quiet"
+  ],
+  [
+   "x2click",
+   0.6,
+   false,
+   "A single laptop trackpad click, close"
+  ],
+  [
+   "x2page",
+   1.2,
+   false,
+   "A notebook page turned, crisp paper, close"
+  ],
+  [
+   "x2hum",
+   10.0,
+   false,
+   "An air conditioner's steady hum in an empty small shop at night, a drinks fridge compressor ticking, nothing else"
+  ],
+  [
+   "x2lift",
+   4.0,
+   false,
+   "Small brass wind chimes stirring softly far away in a gentle breeze, bright and calm, a quiet room opening up"
+  ],
+  [
+   "x2mallfog",
+   22.0,
+   true,
+   "A busy shopping mall at noon heard from inside a small shop, people talking and walking in the corridor outside, muffled and far away as if heard through cotton wool"
+  ],
+  [
+   "x2mallclear",
+   22.0,
+   true,
+   "A shopping mall corridor at noon, people walking past and chatting, footsteps on terrazzo, a shop's radio faint, clear and present"
+  ],
+  [
+   "x2nightroom",
+   22.0,
+   true,
+   "A small shop at night after closing with the shutter down, an air conditioner humming, a drinks fridge compressor, very quiet, faint distant mall ventilation"
+  ],
+  [
+   "x2corridor",
+   8.0,
+   false,
+   "An empty shopping mall corridor at night, two people's footsteps echoing, a distant ventilation hum"
+  ]
+ ]
+}
