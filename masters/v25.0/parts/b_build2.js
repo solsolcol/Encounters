@@ -119,7 +119,9 @@
           const lathe = new THREE.Mesh(new THREE.LatheGeometry(prof, 40), M({ color: 0xd8dadc, roughness: 0.22, metalness: 0.9, envMapIntensity: 3, side: THREE.DoubleSide })); bg.add(lathe);
           /* (v25.0 CP7) the water: still, a little dull (at roughness 0.04 it mirrored the environment's cloudy sky inside a
              shop at night, by photograph) */
-          const wtr = new THREE.Mesh(new THREE.CircleGeometry(0.1, 36), M({ color: 0x7d98a4, roughness: 0.32, metalness: 0, envMapIntensity: 0.35, transparent: true, opacity: 0.62 })); wtr.rotation.x = -Math.PI / 2; wtr.position.y = 0.082; bg.add(wtr); props.water = wtr;
+          /* (v25.0 CP13) and barely reflecting at all: at 0.35 the same sky still lay on it, clouds and all, brought up to his
+             face (by photograph); the bowl's dark inside seen through it, the room's lamps its only shine */
+          const wtr = new THREE.Mesh(new THREE.CircleGeometry(0.1, 36), M({ color: 0x6a8490, roughness: 0.2, metalness: 0, envMapIntensity: 0.04, transparent: true, opacity: 0.62 })); wtr.rotation.x = -Math.PI / 2; wtr.position.y = 0.082; bg.add(wtr); props.water = wtr;
           /* (v25.0 CP6) the bowl itself (masters/v25.0/models: a checked picture on white, then Meshy): the turned stand-in
              hidden the moment it lands, the water laid inside it at its own height */
           fitModel('e4khannam', bg, BOWL_W, 'x', 0, 0).then(m => { if (!m || !alive) return; lathe.visible = false;

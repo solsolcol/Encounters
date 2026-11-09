@@ -7727,3 +7727,52 @@ cut (sharing its vertices and maps) when it is small.
   found reading the final diff and the patch's numbers (a drop outside the region). A pass over a mesh a script has
   changed skips what the script made, and the patch refuses to take out a triangle outside its region or write a corner
   twice (proved by breaking the fix on a copy).
+
+## v25.0 — a new chapter's sound, a film's room, a drawn screen's mode, and what the first photographs found
+
+- **A tool that reads loudness at `-v error` reads nothing.** ffmpeg's volumedetect prints at `info`; pick.py asked for
+  `-v error`, so every take's end-of-take loudness came back empty and every "clean end" was a pass. Prove a measure by
+  breaking it (a take that ends on a word) before trusting a column of passes.
+- **One Hann-windowed FFT over a whole take mis-reads a short sound.** meas.py's band shares all but silence a take's first
+  and last tenths, so a slap or a seal unsticking at its start reads as its quiet tail. Measure a short sound in frames
+  (sfx/envelope.py) or on the phone's own filter in the time domain.
+- **A prompt to a transcriber can merge what it was told.** whisper given the script as its initial prompt heard q2A3's two
+  like sentences as one; unprompted, both takes said every word. Transcribe a take to check it without telling the
+  transcriber what it says.
+- **A one-shot room tone dies inside a long film.** A 22 s take cued once under a 98 s film stops at 22 s and the room goes
+  dead. The room under a film is the chapter's own LOOP, set every frame by the film's clock (e4c2's filmBedAt): a bed
+  keeps playing under a cutscene, and mixBeds takes the film's numbers while `cine` is the state. The static voice scan
+  cannot see beds (they are not cues), so a stretch held only by the room reads bare there: read the film's bed first.
+- **chaptertest's FRESH `reuse` is for episodes 1-3.** A chapter that shares assets with its own episode (his shop, its
+  stock, Pong) declares them in `reuseInEpisode`; putting them in `reuse` is an error.
+- **A drawn screen draws only what it is told.** shopFrame redrew the laptop on a signature of its numbers (replies, chars,
+  newK) and called drawForum without the screen's name, so every ending's forum drew its default, the LIST: his post, the
+  replies and the new thread's page were never seen, and nothing failed. Name the mode in the call, and put every value the
+  drawing reads (the scroll, the cursor) in the redraw signature, or a moving screen stands still.
+- **A held thing keeps its own turn.** waiAfter carries a held object's POSITION to the hands, never its rotation; a bundle
+  of leaves held for a wai therefore lay as it lay at rest, across the master's face. Turn a held thing by direction each
+  frame (orient: its long axis, its face) or, better, ask whether it should be held at all: the mayom stands in the bowl's
+  water while the bowl is chanted over, as holy water is made, and is picked up only to sprinkle.
+- **A pose's hand sits at a share of the frame, not at a world point.** The engine's HPOSE places a hand by its share of the
+  lens's frame on every screen; another character's hands meeting it must be aimed at that share of THIS screen's lens
+  (lensPoint), or on a phone they reach for a point beside it. And pick the pose whose palm leaves the wrist in frame
+  (`place`, a third of the way down), or the thread tied there is under the frame's edge.
+- **His hand is 35 cm from his eye, in a scene of its own.** The hands are drawn through their own 52° lens (vmCam, at the
+  hands' scene's origin), whatever lens the film has, so another character who meets his hand meets it only on the screen
+  unless the room is brought to it: read the wrist off his arm (e4c2's wristShare: its share of that frame and its depth),
+  find the room's point under it (lensPoint), and lean his eye in so that point is within the other's reach. From where he
+  knelt, a metre and a quarter off, the hand filled a phone from its middle down, hid the master's face, and the master's
+  hands stopped in the air short of it.
+- **A ring round an arm lies in the arm's own xy.** A torus's axis is its own z; the viewmodel's arm runs along its z
+  (fingers to −z), so a thread round the wrist needs no turn at all. Turned a quarter about y, the three turns ran
+  lengthwise through the wrist and were never seen, and nothing failed: found only by drawing them red, thick and over
+  everything (depthTest off) and reading their place off the arm in the page. Prove a small drawn thing is drawn.
+- **A camera that follows a head must keep its distance.** A walk-out that tracked the master's head from where the client
+  stood put the back of his head a half metre from the lens; aim at where they are going until he is a step or two ahead
+  (e4c2 ending D), and route a walker round the one who watches (OUT_L).
+- **The last words on a screen must fit a phone's crop.** A title drawn across the full width of a laptop screen reads
+  whole on a desktop and as its middle on a phone ("athering devotees for Wai Kru in U"); draw the words that must be read
+  large and centred in the middle half of the drawing.
+- **Water at roughness 0.04 is a mirror.** Indoors at night it mirrored the environment's cloudy sky. Still water in a bowl
+  is a little dull, darker, and takes almost none of the environment (envMapIntensity 0.04: at 0.35 the sky's clouds
+  still lay on it, brought up to his face).

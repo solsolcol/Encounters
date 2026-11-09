@@ -65,6 +65,9 @@
 
     /* ---------------------------------------------------------------- (v25.0) the films' own helpers */
     const KN_EYE = [CL.x, KNEEL.y, CL.z];                               // his eye kneeling before Lersi Chin
+    /* (v25.0 CP13) the thread: how far he leans in (down, forward), where his eyes go (over the mat, his wrist below
+       them), the hand's own lowering (`place`'s p), the master's lean to meet it, and the lens on a phone and a desktop */
+    const TIE = { dy: 0.06, dz: 0.28, aim: [0.03, 0.6, 0.05], p: 0, bow: 0.3, flN: 60, flD: 50 };
     const BUDDHA_AT = [BUDDHA.x, BUDDHA.y, BUDDHA.z];
     const LC_HEAD = () => faceOf(cast.lersi, [LC.x, 0.74, LC.z]);
     const PG_HEAD = () => faceOf(cast.pong, [PSTOOL.x, 1.42, PSTOOL.z]);
@@ -139,13 +142,15 @@
     /* the white thread on his wrist (the clearing's last gesture): a cotton loop on the right arm, drawn in the hands' pass */
     const wristThread = (() => {
       const g = new THREE.Group(); g.visible = false; g.userData.dyn = true;
-      for (let k = 0; k < 3; k++) { const tr = new THREE.Mesh(new THREE.TorusGeometry(0.031, 0.0016, 5, 28), M({ color: 0xf6f4ec, roughness: 0.85 }));
-        tr.rotation.y = Math.PI / 2; tr.position.x = (k - 1) * 0.0045; g.add(tr); }
+      /* (v25.0 CP13) three turns ROUND the wrist: a torus's axis is its own z, and the arm runs along the arm's z (its fingers
+         to −z), so the turns lie flat in the arm's xy and step along its z; turned a quarter about y, their axis lay across
+         the wrist and they ran lengthwise through it, hidden inside the arm (found by drawing them red, thick and over
+         everything, and reading their place off the arm) */
+      for (let k = 0; k < 3; k++) { const tr = new THREE.Mesh(new THREE.TorusGeometry(0.033, 0.0022, 6, 32), M({ color: 0xf6f4ec, roughness: 0.85 }));
+        tr.position.z = (k - 1) * 0.0055; g.add(tr); }
       return g;
     })();
     const WRIST = [0.012, -0.03, -0.075];                                // the wrist, in the arm's own frame (a little behind the palm)
-    /* (v25.0 CP7) the world point at a share (fx, fy) of the lens's frame, d metres out, for a lens of fovDeg — where a
-       hand the engine places by its share of the frame (HPOSE) stands on THIS screen */
     /* (v25.0 CP7) the mayom bundle set in one of its two resting places ('bowl' or 'mat'), as each film and phase needs */
     function mayomAt(w) {
       const g = props.mayom; if (!g || !g.userData.bowlP) return;
@@ -161,11 +166,25 @@
       _oz.crossVectors(_ox, _oy);
       obj.quaternion.setFromRotationMatrix(_om.makeBasis(_ox, _oy, _oz));
     }
+    /* (v25.0 CP7) the world point at a share (fx, fy) of the lens's frame, d metres out, for a lens of fovDeg — where a
+       hand the engine places by its share of the frame (HPOSE) stands on THIS screen */
     function lensPoint(fx, fy, d, fovDeg) {
       camera.updateWorldMatrix(true, false);
       const hh = d * Math.tan(fovDeg * Math.PI / 360), hw = hh * camera.aspect;
       _lpv.set(fx * hw, fy * hh, -d); camera.localToWorld(_lpv);
       return [_lpv.x, _lpv.y, _lpv.z];
+    }
+    /* (v25.0 CP13) where his wrist IS on this screen: the hands are drawn in a scene of their own through their own lens
+       (main.js's vmCam, 52° and at that scene's origin, whatever the film's lens), so the wrist is read off his arm there and
+       given as its share of that frame and its depth — lensPoint then finds the room's point under it */
+    const VM_FOV = 52;
+    function wristShare() {
+      const A = FL.api; if (!A || !A.armR) return null;
+      A.armR.updateWorldMatrix(true, false);
+      _lpv.set(WRIST[0], WRIST[1], WRIST[2]); A.armR.localToWorld(_lpv);
+      const d = -_lpv.z; if (!(d > 0.05)) return null;
+      const hh = d * Math.tan(VM_FOV * Math.PI / 360);
+      return [_lpv.x / (hh * camera.aspect), _lpv.y / hh, d];
     }
     function threadOn(on) {
       const A = FL.api; if (!A || !A.armR) return;
@@ -461,6 +480,9 @@
       /* his own hands: together from "Hands together", down for the water and the thread, up again for the advice */
       const handsK = smo(sgk(t, K.lc2k0 + 0.6, K.lc2k0 + 1.4)) * (1 - smo(sgk(t, K.water - 0.6, K.water)));
       waiAt(handsK);
+      /* (v25.0 CP13) his own right hand is drawn only while a clasp holds it and for the thread: hidden in every other frame
+         before it, so a seek lands on the same picture */
+      if (handsK <= 0.001 && t < K.thread && FL.api && FL.api.handsRoot) FL.api.handsRoot.visible = false;
       /* (his eyes "closed" are the film's own fade track, dimmed and never black: clearFilm) */
       /* the master: his wai to his teachers over the tray, the chant, the mayom, the bowl, the thread */
       let at = LC_HEAD();
@@ -472,7 +494,9 @@
           /* (v25.0 CP7) the verses chanted with his hands joined over the bowl, the mayom standing in its water (an open hand
              raised by his face to hold it read as "stop"; held between his palms, its leaves covered his face — both by
              photograph) */
-          lcPose('wai', Math.max(0.001, smo(sgk(t, K.sak, K.sak + 1.0))), { lift: 0.3 });
+          /* (v25.0 CP13) his wrists at the foot of his chest: at lift 0.3 the joined fingers stood before his face from the
+             kneeling eye, the wrists being what is carried to the point (by photograph) */
+          lcPose('wai', Math.max(0.001, smo(sgk(t, K.sak, K.sak + 1.0))), { lift: -0.5 });
         }
         mayomAt('bowl');
         /* his eyes down on his hands and the mat (the tray, the candles' light at the top of the frame); up as it lifts */
@@ -519,30 +543,33 @@
         /* "Your wrist." — his right hand out, the white thread tied round it in the master's hands */
         const k = smo(sgk(t, K.thread + 0.2, K.thread + 1.0)) * (1 - smo(sgk(t, K.advice - 0.7, K.advice)));
         const tie = (t - K.thread) * 5.0;
-        /* (v25.0 CP7) his right hand held out INTO the frame (an engine pose, `place`: its palm at that share of the
-           frame on every screen), and the master's hands brought to where it is on THIS screen — the point at that share
-           of the lens, 0.42 m out — so on a phone and a desktop alike they meet over his wrist (aimed at a fixed world
-           point, his own hand lay at the frame's foot, a blob, and the thread under the edge, by photograph) */
-        const A = FL.api;
-        /* (`place`, its palm a third of the way down the frame: with `reach`'s, two thirds down, his wrist and the thread lay
-           under the frame's edge, by photograph) */
-        if (A && A.handPose) A.handPose('place', smo(sgk(t, K.thread, K.thread + 0.9)));
+        /* (v25.0 CP7) his right hand held out INTO the frame (an engine pose, `place`: its palm at that share of the frame
+           on every screen; with `reach`'s, two thirds down, his wrist and the thread lay under the frame's edge, by
+           photograph) */
+        /* (v25.0 CP13) and he LEANS IN to it, his eyes going down from the master's face to his own wrist, the master
+           leaning to meet it: from where he knelt, his hand (drawn 35 cm from his eye) filled a phone from its middle down
+           and hid the master's face, and the master's hands, a metre off in the room, met it only on the screen (by
+           photograph). They go to the wrist where it is drawn (wristShare) */
+        const A = FL.api, lean = smo(sgk(t, K.thread, K.thread + 1.4));
+        if (A && A.handPose) A.handPose('place', smo(sgk(t, K.thread, K.thread + 0.9)), { p: TIE.p });
         if (A && A.handsRoot) { A.handsRoot.visible = true; A.armR.visible = true; }
-        const fl = isNarrow() ? 54 : 46;
+        const fl = lp(isNarrow() ? 56 : 48, isNarrow() ? TIE.flN : TIE.flD, lean);
         fLens(fl);
-        camAt(KN_EYE, [CL.x + 0.05, 0.72, CL.z - 0.9]);
-        const hw = lensPoint(0.296, -0.319, 0.42, fl);
+        const e = [KN_EYE[0], KN_EYE[1] - TIE.dy * lean, KN_EYE[2] - TIE.dz * lean], h0 = LC_HEAD();
+        camAt(e, aimEase(e, [h0[0], h0[1] + 0.15, h0[2]], TIE.aim, lean));
+        const ws = wristShare(), hw = ws ? lensPoint(ws[0], ws[1], ws[2], fl) : lensPoint(0.296, -0.319, 0.42, fl);
         lcPose('reach', k, { at: [hw[0] - 0.03 + 0.02 * Math.sin(tie), hw[1] + 0.015 * Math.cos(tie * 1.4), hw[2] - 0.03],
                              atL: [hw[0] + 0.05 - 0.02 * Math.sin(tie), hw[1], hw[2] - 0.05] });
         threadOn(t > K.thread + 2.2);
-        if (L) { L.lookAt = _lv.set(hw[0], hw[1], hw[2]); L.neck = null; }
+        if (L) { L.lookAt = _lv.set(hw[0], hw[1], hw[2]); L.neck = null; L.bow = TIE.bow * k; }
         return;
       }
       lcPose(null, 0);
-      /* (v25.0 CP7) the hand lowered out of the frame as he listens, the thread on it until it has gone */
-      { const A = FL.api, down = smo(sgk(t, K.advice, K.advice + 1.0));
-        if (A && A.handPose) A.handPose('place', 1 - down);
-        threadOn(down < 0.999); }
+      /* (v25.0 CP13) the advice opens on a cut back to his face, the hand and its thread put down in the cut (eased down
+         under the camera, `place` went back to the WALKING rest, still in the frame, by photograph) */
+      { const A = FL.api;
+        threadOn(false);
+        if (A && A.handsRoot) A.handsRoot.visible = false; }
       /* "Go to a temple this week..." — his face, the colour back, warm */
       if (L) { L.look = 1; gaze(L, true, 1.1); L.bow = 0; }
       fLens(lp(isNarrow() ? 52 : 44, isNarrow() ? 48 : 40, smo(sgk(t, K.advice, K.end))));
@@ -810,7 +837,8 @@
       }
       /* the forum: the list read down; the new thread arriving at the top; pushed in as it is opened */
       const kIn = smo(sgk(t, C.thread, C.black));
-      fLens(lp(isNarrow() ? 54 : 46, isNarrow() ? 40 : 32, kIn));
+      /* (v25.0 CP9) on a phone the push ends at 46, so the new thread's title reads whole (at 40 it lost a letter each side) */
+      fLens(lp(isNarrow() ? 54 : 46, isNarrow() ? 46 : 32, kIn));
       camAt(lp3(eye, [LAP.x + 0.02, 1.36, LAP.z - 0.36], kIn * 0.6), lap);
     }
 
