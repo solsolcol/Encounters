@@ -1411,10 +1411,13 @@
       /* his laptop: the sales page by day (chapter 1's), the forum in ending A and the coda */
       if (shop.lap) {
         const L = shop.lap, on = !!shop.lapOn, o = shop.lapO || {};
-        const sig = on ? [shop.lapMode, o.n || 0, o.chars || 0, o.newK || 0, o.post ? 1 : 0, Math.floor(now * 2.4) % 2].join(',') : 'off';
+        /* (v25.0 CP9) the list's scroll and the cursor are in the signature too (the coda's list never moved without them) */
+        const sig = on ? [shop.lapMode, o.n || 0, o.chars || 0, o.newK || 0, o.post ? 1 : 0, Math.floor(now * 2.4) % 2,
+                          Math.round((o.scroll || 0) * 60), Math.round((o.cursor || 0) * 40), o.click ? 1 : 0].join(',') : 'off';
         if (sig !== L.sig) { L.sig = sig;
           if (on) { if (shop.lapMode === 'sales') drawSalesApp(L.x, { wed: 1, bar: 1, blink: true, stock: shop.stockCount });
-                    else drawForum(L.x, Object.assign({ blink: Math.floor(now * 2.4) % 2 === 0, words: DATA.words }, o));
+                    /* (v25.0 CP9) its screen named: compose, thread, list or post (without it, always the list) */
+                    else drawForum(L.x, Object.assign({ blink: Math.floor(now * 2.4) % 2 === 0, words: DATA.words, mode: shop.lapMode }, o));
                     L.t.needsUpdate = true; }
           L.m.color.setRGB(on ? 1 : 0.02, on ? 1 : 0.024, on ? 1 : 0.03); }
       }
@@ -3477,7 +3480,9 @@
     function pongShot() { fLens(isNarrow() ? 50 : 42); camAt(KN_EYE, aimEase(KN_EYE, LC_HEAD(), PG_HEAD(), 1)); }
     /* Lersi Chin and Pong go out under the shutter (B, C, D): he stands (on a cut, his bag taken), the two walk out, the
        shutter lifted by Pong as they reach it; `eye` where he watches from */
-    const OUT_L = [[LC.x, LC.z + 0.25], [0.15, 1.4], [0.35, 2.6], [0.4, 3.6], [0.6, 4.6]];
+    /* (v25.0 CP9) round him on his right, a metre off, not through where he knelt: the back of the master's head filled
+       the frame from 0.45 m as he passed (by photograph) */
+    const OUT_L = [[LC.x, LC.z + 0.25], [0.55, 0.45], [0.6, 1.5], [0.45, 2.6], [0.4, 3.6], [0.6, 4.6]];
     const OUT_P = [[PONG_DOOR.x, PONG_DOOR.z], [0.95, 3.2], [1.1, 4.2], [1.4, 5.0]];
     function goOut(t, t0, t1) {
       const L = cast.lersi, P = cast.pong;

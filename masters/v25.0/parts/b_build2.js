@@ -273,10 +273,13 @@
       /* his laptop: the sales page by day (chapter 1's), the forum in ending A and the coda */
       if (shop.lap) {
         const L = shop.lap, on = !!shop.lapOn, o = shop.lapO || {};
-        const sig = on ? [shop.lapMode, o.n || 0, o.chars || 0, o.newK || 0, o.post ? 1 : 0, Math.floor(now * 2.4) % 2].join(',') : 'off';
+        /* (v25.0 CP9) the list's scroll and the cursor are in the signature too (the coda's list never moved without them) */
+        const sig = on ? [shop.lapMode, o.n || 0, o.chars || 0, o.newK || 0, o.post ? 1 : 0, Math.floor(now * 2.4) % 2,
+                          Math.round((o.scroll || 0) * 60), Math.round((o.cursor || 0) * 40), o.click ? 1 : 0].join(',') : 'off';
         if (sig !== L.sig) { L.sig = sig;
           if (on) { if (shop.lapMode === 'sales') drawSalesApp(L.x, { wed: 1, bar: 1, blink: true, stock: shop.stockCount });
-                    else drawForum(L.x, Object.assign({ blink: Math.floor(now * 2.4) % 2 === 0, words: DATA.words }, o));
+                    /* (v25.0 CP9) its screen named: compose, thread, list or post (without it, always the list) */
+                    else drawForum(L.x, Object.assign({ blink: Math.floor(now * 2.4) % 2 === 0, words: DATA.words, mode: shop.lapMode }, o));
                     L.t.needsUpdate = true; }
           L.m.color.setRGB(on ? 1 : 0.02, on ? 1 : 0.024, on ? 1 : 0.03); }
       }

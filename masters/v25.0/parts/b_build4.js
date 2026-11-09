@@ -543,7 +543,9 @@
     function pongShot() { fLens(isNarrow() ? 50 : 42); camAt(KN_EYE, aimEase(KN_EYE, LC_HEAD(), PG_HEAD(), 1)); }
     /* Lersi Chin and Pong go out under the shutter (B, C, D): he stands (on a cut, his bag taken), the two walk out, the
        shutter lifted by Pong as they reach it; `eye` where he watches from */
-    const OUT_L = [[LC.x, LC.z + 0.25], [0.15, 1.4], [0.35, 2.6], [0.4, 3.6], [0.6, 4.6]];
+    /* (v25.0 CP9) round him on his right, a metre off, not through where he knelt: the back of the master's head filled
+       the frame from 0.45 m as he passed (by photograph) */
+    const OUT_L = [[LC.x, LC.z + 0.25], [0.55, 0.45], [0.6, 1.5], [0.45, 2.6], [0.4, 3.6], [0.6, 4.6]];
     const OUT_P = [[PONG_DOOR.x, PONG_DOOR.z], [0.95, 3.2], [1.1, 4.2], [1.4, 5.0]];
     function goOut(t, t0, t1) {
       const L = cast.lersi, P = cast.pong;
