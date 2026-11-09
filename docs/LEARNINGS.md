@@ -7770,6 +7770,11 @@ cut (sharing its vertices and maps) when it is small.
 - **A camera that follows a head must keep its distance.** A walk-out that tracked the master's head from where the client
   stood put the back of his head a half metre from the lens; aim at where they are going until he is a step or two ahead
   (e4c2 ending D), and route a walker round the one who watches (OUT_L).
+- **A receipt's letters must each be unique, and written from the same table that reads them.** e4c2 saved how he met
+  the shape as 'h' + the way's first letter; 'watch' and 'walk' both begin with w, so walking up to it was saved as
+  watching, and a Continue lit the shop the walk had left dark. Every probe that wrote a save by hand wrote 'hk' and
+  passed; only the finger's play-through that WALKED up showed the save string saying hw. Spell the letters out in a
+  table (light l, watch w, walk k) beside readMark, and let a real play write the save a Continue then reads.
 - **The last words on a screen must fit a phone's crop.** A title drawn across the full width of a laptop screen reads
   whole on a desktop and as its middle on a phone ("athering devotees for Wai Kru in U"); draw the words that must be read
   large and centred in the middle half of the drawing.

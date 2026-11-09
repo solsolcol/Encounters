@@ -8302,6 +8302,12 @@ What the baseline contains, by release:
 
 ## The sheet, version by version
 
+**v138** (`masters/v25.0/masterz-text-v138.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from
+it): v137 with 187 rows added and nothing else moved — episode 4 chapter 2's words (96 rows, `e4c2.*`: its title, its
+objectives and prompts, the 5.2 cards and their notes, the chant's captions (the Pali over its meaning), the decision,
+the four outcome cards and lessons, the forum's names, posts and threads)
+and its voice lines (91 rows: his 45, Lersi Chin's 32, Pong's 10, the customers' 4); 2163 rows. Exported, not published.
+
 **v137** (`masters/v24.39/masterz-text-v137.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from
 it): v136 with 8 rows touched — three credit rows added for the ghost jar (`credits.ghostjar`, `ghostjarWho`,
 `ghostjarLink`); the endings' book's `ledSmokeF` and `ledClothF` saying "jar" where they said "bowl"; and the voice rows

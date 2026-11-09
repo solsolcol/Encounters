@@ -59,6 +59,18 @@ for (const ph of PH) {
       await p.waitForFunction(() => ['play', 'decide'].includes(window.__enc.getState()), null, { timeout: 600000, polling: 500 });
     }
     await p.waitForTimeout(12000);
+    /* (v25.0 CP13) a phase that starts a film from play on a Continue (the visit plays again, then hands to the clearing)
+       is in play for a frame before its film starts, so the check above can see play and the landing was read inside the
+       film ("WRONG (wanted clearing, got visit)", in the cine state): a film found after the wait is skipped the same way
+       and the landing read after it */
+    for (let n = 0; n < 2 && await p.evaluate(() => window.__enc.getState() === 'cine'); n++) {
+      await p.waitForFunction(() => !window.__enc.cine.active() || window.__enc.cine.t() > 3.1, null, { timeout: 600000, polling: 300 });
+      await p.evaluate(() => window.__enc.cine.skip());
+      await p.waitForFunction(() => ['play', 'decide'].includes(window.__enc.getState()), null, { timeout: 600000, polling: 500 });
+      await p.waitForTimeout(6000);
+    }
+    /* (v25.0 CP13) a save in the warning plays the warning again: the landing is read once the decision it hands to is open */
+    if (/^clearing:(.*,)?c(,|$)/.test(ph)) await p.waitForFunction(() => window.__enc.getState() === 'decide', null, { timeout: 240000, polling: 500 });
   };
   const r = { ph };
   try {
@@ -99,7 +111,9 @@ for (const ph of PH) {
   r.errs = errs;
   /* where it should land: the save's own phase, but for a finished chapter 1 (this chapter's start) and the visit (a film
      that hands to the clearing) */
-  const want = done ? 'shop' : /^visit/.test(ph) ? 'clearing' : ph.split(':')[0];
+  /* (v25.0 CP13) and a save in the clearing with `c` in it (a save in the warning), which plays the warning again and
+     opens the decision */
+  const want = done ? 'shop' : /^visit/.test(ph) ? 'clearing' : /^clearing:(.*,)?c(,|$)/.test(ph) ? 'decide' : ph.split(':')[0];
   const got = r.land && r.land.phase ? String(r.land.phase).split(':')[0] : null;
   r.landed = got === want ? 'right' : `WRONG (wanted ${want}, got ${got})`;
   if (r.fail || errs.length || r.sameSitting === 'DIFFERS' || got !== want) bad++;

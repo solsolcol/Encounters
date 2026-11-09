@@ -4,8 +4,8 @@ A 3D first-person horror-education game based on Master Z's Spiritual
 Encounters (encounters.triplegem.asia, Triple Gem Affiliation Consultancy,
 Singapore). Multi-chapter; each chapter is one small dense location, one
 supernatural encounter, one decision with consequences and a Buddhist
-teaching. Sixteen chapters are live: three complete episodes of five and
-the first chapter of the fourth. Episode 1, all at one block: The Hell Note
+teaching. Seventeen chapters are live: three complete episodes of five and
+the first two chapters of the fourth. Episode 1, all at one block: The Hell Note
 (a void deck, a burner, a note, her), The Presence (a bedroom, a fan, the
 gap beside the bed), The Gathering (a seventh-month tentage in the car
 park at ten in the morning, and one chair facing the wrong way), Back
@@ -1094,13 +1094,17 @@ which rig stands in for each, and each is a one-line swap). Episode 3 chapter
 Next up: **EPISODE 4 · THE TEACHER IN WHITE** (Chad's name) — the casebook's S1·11 to S1·15, from the master he did
 not know to his first cases at his teacher's side. Chapter 1 SHIPPED at v24.0 and was tightened at v24.9 (Chad's
 call: the yard straight in, no notes, no birthday pick — chapter 2's "notebook read back" becomes one question at Lersi
-Chin's, what he tells him: what he saw, or what he thinks it meant, the trial's 5.2); chapter 2 (S1·11's second half: the
-fog, Lersi Chin's clearing and the warning) is next: its build plan, **docs/V25.0-E4C2-PLAN.md**, PROPOSED at v24.40 and
-REVISED 9 Nov 2026 to Chad's direction (Lersi Chin comes to his shop in Singapore, Pong brings him; all play in the shop;
-no airport and no mirror, he is never seen; no answer goes back to test and each teaches its own thing; the coda ends on a
-forum thread, "LF> Gathering devotees for Wai Kru in Udon Thani!"), waits on his yes and his answers to its §2.3 (six
-questions) — nothing is built before his yes; its
-research, refuted by a second reader, is docs/research/V25.0-LERSI.md (and -VERDICTS.md, which wins where they differ). The episode's plan, with what remains his to decide:
+Chin's, what he tells him: what he saw, or what he thinks it meant, the trial's 5.2); chapter 2, NOT EVERY MASTER SHOULD BE
+TRUSTED (S1·11's second half: the fog, Lersi Chin's clearing in his own shop, and the warning), SHIPPED at v25.0 —
+**docs/V25.0-E4C2-PLAN.md** is its build memory (§0 Chad's words, §4 the beats and the four endings line by line, §14 the
+log, checkpoint by checkpoint), built to his direction of 9 Nov 2026 (Lersi Chin comes to his shop in Singapore, Pong
+brings him; all play in the shop; no airport and no mirror, he is never seen; no answer goes back to test and each teaches
+its own thing; answer C his own, "ask Lersi Chin to send it back to whoever did it"; the coda ends on a forum thread, "LF>
+Gathering devotees for Wai Kru in Udon Thani!"). **`src/chapters/e4/e4c2.js` is GENERATED**: masters/v25.0/assemble.py
+makes it from masters/v25.0/parts/*.js and chapter 1's own lines (pinned to e4c1.js's sha1, so a change to chapter 1
+stops the assembly instead of shifting it) — edit the parts and assemble again, never the chapter file. Its research,
+refuted by a second reader, is docs/research/V25.0-LERSI.md (and -VERDICTS.md, which wins where they differ); its sound,
+music and models, every pick and why, masters/v25.0/make.sh. Chapter 3 (S1·12, Grandmaster Pho at the Wai Kru) is next. The episode's plan, with what remains his to decide:
 **docs/V24.0-EPISODE4-PLAN.md** (its sixth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is
 still his). S1·11 in two chapters (the master he did not know, who wears the original Sak Yant Ajarn's model; then the
 fog, Lersi Chin's clearing and the warning — built on Master Z's own trial episode, its 5.1 and 5.3 the two decisions
@@ -1110,8 +1114,9 @@ two and three, one chapter: the smell nobody else could smell). Episode 5, **The
 name, v23.5), is S1·16–S1·20, cases four to eight, one a chapter, ending on Season 1's finale; the casebook's own hinge
 between the two is the end of case four, "I had thought I was only there to assist my teacher" (the grouping is
 Chad's, approved v23.5). Grandmaster Pho and Lersi Chin are Chad's models, with their voices (the Ah Pek's too, whose
-case comes later in the casebook). Lersi Chin's model arrived 3 Nov 2026 and is prepared, not yet cast:
-`assets/lersichin.glb`, key `lersichin` (into build.py the day chapter 2 casts him), masters/v24.38/make.sh.
+case comes later in the casebook). Lersi Chin's model arrived 3 Nov 2026 and is CAST in chapter 2 (v25.0):
+`assets/lersichin.glb`, key `lersichin` (hosted-only), masters/v24.38/make.sh; his voice is ElevenLabs' Mart-Podcast, the
+measured pick of three until Chad's ear (masters/v25.0/audition).
 Grandmaster Pho's arrived the same day, with distortions Chad asked to have fixed: PREPARED, not yet cast, and still being
 improved — `assets/pho.glb`, key `pho` (chapter 3), masters/v24.49/make.sh (and its PLAN.md): his torso fixed (v24.40,
 measured on every frame by tools/rigstrain.mjs), his robe rebuilt at v24.41 as twelve three-bone chains baked into his
@@ -1236,13 +1241,13 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v137** (`masters/v24.39/masterz-text-v137.xlsx`, its CSV beside it: v24.39's words). It is
-EXPORTED and not published: the workbook (119 KB) is far past what the Drive connector's base64 route can carry (about
+**THE SHEET IS v138** (`masters/v25.0/masterz-text-v138.xlsx`, its CSV beside it: v25.0's words). It is
+EXPORTED and not published: the workbook (127 KB) is far past what the Drive connector's base64 route can carry (about
 20,000 characters — docs/EDITING-TEXT.md, "THE CEILING"), so the split export written down there no longer fits
 either. The way through is the Google Sheets connector, which writes the cells directly (docs/OPEN-ITEMS.md A1).
 **v44 is still the link to give Chad** until that is done:
 https://docs.google.com/spreadsheets/d/1bqnbQJPr1O6YslOlcsbVDFlZCohQtyKbPzm9EuY1IpM/edit
-Every sheet version's own diff, v137 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
+Every sheet version's own diff, v138 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
 first; a new version goes at its top).
 
 `docs/LEARNINGS.md` is the catalog of every hard-won lesson (CSP traps,

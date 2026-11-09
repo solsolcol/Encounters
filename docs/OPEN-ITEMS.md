@@ -21,10 +21,13 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
 4. **Music and voices picked by measurement, never by his ear:** episode 4 chapter 1's seven music cues
    (`masters/v24.0/previews/`) and its seven new voices; episode 3 chapter 4's opening score (take 3 of 4,
    `masters/v22.0/previews/film-music-1..4.mp3`) and closing music (c, against a); episode 3 chapter 5's music
-   (`masters/v23.0/previews/`, and v24.3's twelve cues). Send the reels again.
+   (`masters/v23.0/previews/`, and v24.3's twelve cues); episode 4 chapter 2's eleven pieces of music (v25.0, three
+   takes each, loudness-matched: `masters/v25.0/music/previews/`) and Lersi Chin's voice (three Thai-accented voices
+   reading his key lines, Mart-Podcast built: `masters/v25.0/audition/*-preview.mp3`). Send the reels again.
 5. ~~**Episode 4 chapter 2's build plan**~~ — WRITTEN at v24.40, docs/V25.0-E4C2-PLAN.md, and REVISED 9 Nov 2026 to his
-   direction (Lersi Chin comes to his shop in Singapore, brought by Pong; all play in the shop; the decision rebuilt):
-   waiting on his yes and his answers to its §2.3 (six questions) before any build.
+   direction (Lersi Chin comes to his shop in Singapore, brought by Pong; all play in the shop; the decision rebuilt).
+   **BUILT AND SHIPPED at v25.0** on his yes the same day (answer C his own: "ask Lersi Chin to send it back to whoever
+   did it"); the §2.3 defaults were taken where he did not answer, each changeable (the plan's §2.2).
 6. **Episode 3's statues and trays after a lost graphics context** (found at v24.30, outside its ask, left as it was).
    Every chapter of episode 3 gives its Buddha images, trays and a few pieces an envMap of their own — the scene's
    environment texture at the time they were built (`buddhaMat`, `trayMat`, e3c1–e3c5). When a phone drops the page's
@@ -97,8 +100,8 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
    waits on one thing: sitting
    cross-legged, his hands rest under the robe — raise them about 10 cm onto it, his saved file's robe for that take, or
    leave it; and, if he prefers cleaner talking over clean chair sits, the first build instead. Left and said: a sliver
-   of thigh at the wrap's front edge in three takes (his knee behind the cloth, seen through a slit)), Lersi Chin's voice (his model arrived 3 Nov 2026 and is prepared,
-   `lersichin`, v24.38), chapter 4's lady; the Ah Pek later
+   of thigh at the wrap's front edge in three takes (his knee behind the cloth, seen through a slit)), Lersi Chin's voice (cast at v25.0, `lersichin`: Mart-Podcast, the
+   measured pick of three, A.4), chapter 4's lady; the Ah Pek later
    in the casebook.
 10. **Episode 4's next chapters** (docs/V24.0-EPISODE4-PLAN.md §5): how Pho and Lersi Chin speak (Thai captioned in
     English recommended, or simple English); the five proposed chapter titles; chapter 4's lady (model, language,
@@ -147,7 +150,7 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
     chapter 1 — 52 MB from the start of play, 51 MB more from the decision (docs/HISTORY.md, v24.34).
 ## D. Not built yet
 
-- Episode 4 chapters 2–5; Episode 5 (S1·16–S1·20); Episodes 6–10 (names still the v6.0 list).
+- Episode 4 chapters 3–5; Episode 5 (S1·16–S1·20); Episodes 6–10 (names still the v6.0 list).
 - Deferred by choice: ghost mesh compression (the biggest download saving left), a service worker / offline,
   canvas-resolution and backdrop-blur thermal options.
 

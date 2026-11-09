@@ -2201,7 +2201,10 @@
     /* THE RECEIPT IS THE PHASE STRING (v7.3): every beat that counts, so a Continue lands where it was */
     function mark() {
       const t = [];
-      if (play.how) t.push('h' + play.how[0]);
+      /* (v25.0 CP13) one letter for each way he met the shape, as readMark reads them: 'watch' and 'walk' both begin with
+         w, so a walk was saved as a watch and a Continue lit the shop it had left dark (found by the finger's play-through
+         that walked up to it) */
+      if (play.how) t.push('h' + ({ light: 'l', watch: 'w', walk: 'k' }[play.how] || ''));
       if (play.revealed) t.push('r');
       if (play.knelt) t.push('k');
       if (play.bowed) t.push('b');
@@ -2585,11 +2588,18 @@
       return true;
     }
     function clearDone() {
-      const run = play.run;
       play.cleared = true; play.busy = false; saveMark();
       fog(false, 0.01); look('CLEAR', 0);
-      /* THE WARNING (P8): serious and kind; Pong to the shutter to wait outside; the decision opens */
-      after(0.6, () => { if (!live(run)) return;
+      warning(false);
+    }
+    /* THE WARNING (P8): serious and kind; Pong to the shutter to wait outside; the decision opens */
+    /* (v25.0 CP13) also from a Continue: the clearing's end is saved (`c`) before the master speaks, so a save in the
+       clearing with `c` in it is a save in the warning, and a Continue from it plays the warning again and then opens the
+       decision, as the first time (it opened the decision at once, and the warning the fourth answer names was never
+       heard; found by the Continue probe) */
+    function warning(resumed) {
+      const run = play.run;
+      after(resumed ? 1.0 : 0.6, () => { if (!live(run)) return;
         line('lc2w1', cast.lersi); queueGap(0.6);
         queueFn(() => { if (!live(run)) return; whenReady(cast.pong, (P) => { personSit(P, false); personWalk(P, [[1.4, 1.6], [0.9, 2.5]], { speed: 0.9, ry: Math.PI }); }); });
         line('pg2w1', cast.pong);
@@ -2743,7 +2753,7 @@
       clearingBegin(play.knelt);
       if (play.knelt) kneel(true);
       if (R.p === 'decide') { decideBegin(true); return; }
-      if (play.cleared) { decideBegin(true); return; }
+      if (play.cleared) { warning(true); return; }
       if (play.examined) { objectiveFor('clearing', { complete: false }); return; }
       if (play.told) { after(0.6, examBegin); return; }
       if (play.bowed) { after(0.6, () => tellPick()); return; }
