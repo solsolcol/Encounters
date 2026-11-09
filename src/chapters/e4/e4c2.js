@@ -290,8 +290,8 @@
       capSak3c: 'nassant\'upaddavā sabbe, rogā vūpasamentu te.',
       capSak3cSub: 'may all obstacles vanish. May your diseases grow totally calm.',
       // the forum (ending A and the coda): generic, no real site's name or look
-      forumName: 'Amulet Talk',
-      forumSub: 'Masters, lineages & real accounts',
+      forumName: 'Masters & Lineages',
+      forumSub: 'Real accounts, shared by devotees',
       postTitle: 'Warning about an ajahn in Thailand',
       postBody: 'He practises black magic. I went to him myself. Stay away.',
       reply1: 'Proof?',
@@ -299,10 +299,12 @@
       reply3: 'Which shop are you? Say it to his face lah.',
       reply4: 'Name and shame!',
       reply5: 'Bro, careful what you post. You saw something, ok. You know what it was?',
-      thread1: 'Lineage of the Wat Bang Phra masters, a summary',
+      thread1: 'The lineages of the old masters, a summary',
       thread2: 'Real experiences only: who has met him?',
       thread3: 'How to check a master before you go',
-      thread4: 'Lersi practice in Isan: accounts from devotees',
+      thread4: 'Lersi practice: accounts from devotees',
+      thread2b: 'Keeping an altar at home: the basics',
+      thread3b: 'First time at a Wai Kru: what to expect',
       threadNew: 'LF> Gathering devotees for Wai Kru in Udon Thani!',
       threadNewSub: 'just now',
       envelope: 'For the temple',
@@ -317,11 +319,15 @@
   /* THE CHANT'S CAPTIONS (v21.31's law: every chant with words is captioned, the Pali as chanted over its meaning, timed
      on the take's own breaths from the line's start so it works muted too; translated from A Chanting Guide). The cut
      points are fractions of each take's measured length until CP10 times them on the breaths */
+  /* (v25.0 CP10) each cut at the middle of a breath in the shipped take, measured (20 ms frames 32 dB under its peak):
+     Namo's three at its two long breaths (5.0-5.74 s, 10.94-11.76 s of 17.12); each Sakkatvā verse's six lines
+     paired, cut at its second and fourth breaths (lc2sak1 4.75 and 9.45 s of 14.64; lc2sak2 5.14 and 10.52 of 15.84;
+     lc2sak3 4.61 and 9.51 of 14.56) */
   const CHANT_CAPS = {
-    lc2namo: [['capNamo', 'capNamoSub', 0, 0.333], ['capNamo', 'capNamoSub', 0.333, 0.667], ['capNamo', 'capNamoSub', 0.667, 1]],
-    lc2sak1: [['capSak1a', 'capSak1aSub', 0, 0.34], ['capSak1b', 'capSak1bSub', 0.34, 0.68], ['capSak1c', 'capSak1cSub', 0.68, 1]],
-    lc2sak2: [['capSak2a', 'capSak2aSub', 0, 0.34], ['capSak2b', 'capSak2bSub', 0.34, 0.68], ['capSak2c', 'capSak2cSub', 0.68, 1]],
-    lc2sak3: [['capSak3a', 'capSak3aSub', 0, 0.34], ['capSak3b', 'capSak3bSub', 0.34, 0.68], ['capSak3c', 'capSak3cSub', 0.68, 1]]
+    lc2namo: [['capNamo', 'capNamoSub', 0, 0.314], ['capNamo', 'capNamoSub', 0.314, 0.663], ['capNamo', 'capNamoSub', 0.663, 1]],
+    lc2sak1: [['capSak1a', 'capSak1aSub', 0, 0.324], ['capSak1b', 'capSak1bSub', 0.324, 0.646], ['capSak1c', 'capSak1cSub', 0.646, 1]],
+    lc2sak2: [['capSak2a', 'capSak2aSub', 0, 0.324], ['capSak2b', 'capSak2bSub', 0.324, 0.664], ['capSak2c', 'capSak2cSub', 0.664, 1]],
+    lc2sak3: [['capSak3a', 'capSak3aSub', 0, 0.317], ['capSak3b', 'capSak3bSub', 0.317, 0.653], ['capSak3c', 'capSak3cSub', 0.653, 1]]
   };
   function chantCaps(name) {
     const L = SECS[name] || 10, W = DATA.words;
@@ -1134,7 +1140,7 @@
                     fridge: null, fridgeDoor: null, fridgeLight: null, fridgeK: 0, fridgeTo: 0, wallet: null, note: null, sw: null, swDot: null,
                     shelf: null, piece: null, pieces: {}, mat: null, matK: 1, matTo: 1, bowl: null, water: null, mayom: null, thread: null,
                     cloth: null, khan: null, flames: [], yaam: null, envelope: null, stand: null, ribbons: [], sway: 0, lcThings: null,
-                    ceil: null, ceilK: 1, ceilFrom: 1, ceilTo: 1, c0: 0, c1: 0, night: false, nightShut: [], signs: [], corSky: null, corCeil: null };
+                    ceil: null, ceilS: null, ceilK: 1, ceilFrom: 1, ceilTo: 1, c0: 0, c1: 0, night: false, nightShut: [], signs: [], corSky: null, corCeil: null };
     function buildProps() {
       const S0 = worldS, top = COUNTER.h + 0.046;
       const mesh = (g, m, x, y, z, p = S0) => { const o = new THREE.Mesh(g, m); o.position.set(x, y, z); o.receiveShadow = true; p.add(o); return o; };
@@ -1353,6 +1359,8 @@
       const kc = Math.min(1, Math.max(0, (now - props.c0) / Math.max(0.001, props.c1 - props.c0)));
       if (props.c1 > 0) props.ceilK = kc < 1 ? props.ceilFrom + (props.ceilTo - props.ceilFrom) * kc : props.ceilTo;
       if (props.ceil) props.ceil.color.setRGB(0.1 + 0.9 * props.ceilK, 0.1 + 0.9 * props.ceilK, 0.11 + 0.89 * props.ceilK);
+      /* the ceiling's own glow (its painted light, 0x4a4844 by day) goes with its lights */
+      if (props.ceilS) props.ceilS.emissive.setRGB(0.29 * props.ceilK, 0.282 * props.ceilK, 0.267 * props.ceilK);
       /* the moving parts, eased on the wall clock (a drawer is pulled, a flap lifts, a door swings) */
       const dt = Math.min(0.1, Math.max(0, now - (shop.lastNow || now))); shop.lastNow = now;
       const ez = (v, to, r) => v + (to - v) * (1 - Math.exp(-dt * r));
@@ -2362,7 +2370,7 @@
       if (!play.shapeSeen) {
         camera.updateMatrixWorld(); _nv2.set(STAND_HEAD.x, STAND_HEAD.y, STAND_HEAD.z).project(camera);
         const near = Math.hypot(yaw.position.x - STAND.x, yaw.position.z - STAND.z) < 2.6;
-        if ((_nv2.z < 1 && Math.abs(_nv2.x) < 0.9 && Math.abs(_nv2.y) < 0.85) || near) {
+        if ((_nv2.z < 1 && Math.abs(_nv2.x) < 0.7 && Math.abs(_nv2.y) < 0.7) || near) {   // looked at, not caught at the frame's edge
           play.shapeSeen = true; props.sway = 1;
           const rel = angTo(yaw.rotation.y, Math.atan2(-(STAND.x - yaw.position.x), -(STAND.z - yaw.position.z)));
           if (worldSfx) { worldSfx('x2rustle', 0.55, 1, Math.max(-0.8, Math.min(0.8, -Math.sin(rel) * 0.8))); worldSfx('x2breath', 0.45); }
@@ -3089,13 +3097,16 @@
       if (t < O.o3) {
         /* O2 · his eyes on the tray while she asks (never on her): the compartments under the glass; at "say again" they
            lift to the counter's front edge and fall back; at "I could not think properly" up to where she went */
-        const tray = [0.12, DISPLAY.floor, COUNTER.z - 0.04], edge = [0.2, top0, COUNTER.z + COUNTER.d / 2];
+        /* (v25.0 CP8) from the till's end of his place, the tray at his left hand: the laptop in front of him and the note
+           by his phone both stay out of the frame on every screen (from his own place the laptop filled half a phone's) */
+        const e1 = [HIS.x - 0.2, 1.56, HIS.z + 0.28];
+        const tray = [-0.75, DISPLAY.floor, COUNTER.z - 0.04], edge = [-0.6, top0, COUNTER.z + COUNTER.d / 2];
         const kU = smo(sgk(t, O.q2o2b - 0.2, O.q2o2b + 0.8)) * (1 - smo(sgk(t, O.cu2a1b + 0.3, O.cu2a1b + 1.6)));
         const kOut = smo(sgk(t, O.q2o2 - 0.3, O.q2o2 + 2.4));
-        let at = aimEase(eye, tray, edge, kU * 0.75);
-        if (kOut > 0) at = aimEase(eye, at, [0.6, 1.35, 5.2], kOut);
+        let at = aimEase(e1, tray, edge, kU * 0.75);
+        if (kOut > 0) at = aimEase(e1, at, [0.6, 1.35, 5.2], kOut);
         fLens(lp(isNarrow() ? 50 : 42, isNarrow() ? 44 : 36, sgk(t, O.o2, O.o3)));
-        camAt([eye[0] - 0.05 * sgk(t, O.o2, O.o3), eye[1] - 0.04, eye[2] + 0.06], at);
+        camAt([e1[0] - 0.05 * sgk(t, O.o2, O.o3), e1[1], e1[2]], at);
         return;
       }
       if (t < O.o4) {

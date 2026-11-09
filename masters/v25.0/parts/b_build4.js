@@ -189,13 +189,16 @@
       if (t < O.o3) {
         /* O2 · his eyes on the tray while she asks (never on her): the compartments under the glass; at "say again" they
            lift to the counter's front edge and fall back; at "I could not think properly" up to where she went */
-        const tray = [0.12, DISPLAY.floor, COUNTER.z - 0.04], edge = [0.2, top0, COUNTER.z + COUNTER.d / 2];
+        /* (v25.0 CP8) from the till's end of his place, the tray at his left hand: the laptop in front of him and the note
+           by his phone both stay out of the frame on every screen (from his own place the laptop filled half a phone's) */
+        const e1 = [HIS.x - 0.2, 1.56, HIS.z + 0.28];
+        const tray = [-0.75, DISPLAY.floor, COUNTER.z - 0.04], edge = [-0.6, top0, COUNTER.z + COUNTER.d / 2];
         const kU = smo(sgk(t, O.q2o2b - 0.2, O.q2o2b + 0.8)) * (1 - smo(sgk(t, O.cu2a1b + 0.3, O.cu2a1b + 1.6)));
         const kOut = smo(sgk(t, O.q2o2 - 0.3, O.q2o2 + 2.4));
-        let at = aimEase(eye, tray, edge, kU * 0.75);
-        if (kOut > 0) at = aimEase(eye, at, [0.6, 1.35, 5.2], kOut);
+        let at = aimEase(e1, tray, edge, kU * 0.75);
+        if (kOut > 0) at = aimEase(e1, at, [0.6, 1.35, 5.2], kOut);
         fLens(lp(isNarrow() ? 50 : 42, isNarrow() ? 44 : 36, sgk(t, O.o2, O.o3)));
-        camAt([eye[0] - 0.05 * sgk(t, O.o2, O.o3), eye[1] - 0.04, eye[2] + 0.06], at);
+        camAt([e1[0] - 0.05 * sgk(t, O.o2, O.o3), e1[1], e1[2]], at);
         return;
       }
       if (t < O.o4) {

@@ -417,7 +417,7 @@
       if (!play.shapeSeen) {
         camera.updateMatrixWorld(); _nv2.set(STAND_HEAD.x, STAND_HEAD.y, STAND_HEAD.z).project(camera);
         const near = Math.hypot(yaw.position.x - STAND.x, yaw.position.z - STAND.z) < 2.6;
-        if ((_nv2.z < 1 && Math.abs(_nv2.x) < 0.9 && Math.abs(_nv2.y) < 0.85) || near) {
+        if ((_nv2.z < 1 && Math.abs(_nv2.x) < 0.7 && Math.abs(_nv2.y) < 0.7) || near) {   // looked at, not caught at the frame's edge
           play.shapeSeen = true; props.sway = 1;
           const rel = angTo(yaw.rotation.y, Math.atan2(-(STAND.x - yaw.position.x), -(STAND.z - yaw.position.z)));
           if (worldSfx) { worldSfx('x2rustle', 0.55, 1, Math.max(-0.8, Math.min(0.8, -Math.sin(rel) * 0.8))); worldSfx('x2breath', 0.45); }

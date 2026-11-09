@@ -7,7 +7,7 @@
                     fridge: null, fridgeDoor: null, fridgeLight: null, fridgeK: 0, fridgeTo: 0, wallet: null, note: null, sw: null, swDot: null,
                     shelf: null, piece: null, pieces: {}, mat: null, matK: 1, matTo: 1, bowl: null, water: null, mayom: null, thread: null,
                     cloth: null, khan: null, flames: [], yaam: null, envelope: null, stand: null, ribbons: [], sway: 0, lcThings: null,
-                    ceil: null, ceilK: 1, ceilFrom: 1, ceilTo: 1, c0: 0, c1: 0, night: false, nightShut: [], signs: [], corSky: null, corCeil: null };
+                    ceil: null, ceilS: null, ceilK: 1, ceilFrom: 1, ceilTo: 1, c0: 0, c1: 0, night: false, nightShut: [], signs: [], corSky: null, corCeil: null };
     function buildProps() {
       const S0 = worldS, top = COUNTER.h + 0.046;
       const mesh = (g, m, x, y, z, p = S0) => { const o = new THREE.Mesh(g, m); o.position.set(x, y, z); o.receiveShadow = true; p.add(o); return o; };
@@ -226,6 +226,8 @@
       const kc = Math.min(1, Math.max(0, (now - props.c0) / Math.max(0.001, props.c1 - props.c0)));
       if (props.c1 > 0) props.ceilK = kc < 1 ? props.ceilFrom + (props.ceilTo - props.ceilFrom) * kc : props.ceilTo;
       if (props.ceil) props.ceil.color.setRGB(0.1 + 0.9 * props.ceilK, 0.1 + 0.9 * props.ceilK, 0.11 + 0.89 * props.ceilK);
+      /* the ceiling's own glow (its painted light, 0x4a4844 by day) goes with its lights */
+      if (props.ceilS) props.ceilS.emissive.setRGB(0.29 * props.ceilK, 0.282 * props.ceilK, 0.267 * props.ceilK);
       /* the moving parts, eased on the wall clock (a drawer is pulled, a flap lifts, a door swings) */
       const dt = Math.min(0.1, Math.max(0, now - (shop.lastNow || now))); shop.lastNow = now;
       const ez = (v, to, r) => v + (to - v) * (1 - Math.exp(-dt * r));
