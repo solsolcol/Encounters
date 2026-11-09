@@ -484,6 +484,7 @@
       lcBlockOn(true);
       whenReady(cast.pong, (P) => { P.group.visible = true; personPut(P, PSTOOL.x, PSTOOL.z, PONG_RY, 0); seatNow(P, true); });
       props.lcThings.visible = true; props.matK = 1; props.note.visible = true; props.wallet.visible = false;
+      mayomAt(cleared ? 'mat' : 'bowl');
       pieceShow(!play.examined); props.cloth.userData.piece = play.examined;
       clothPiece(play.examined);
       for (const f of props.flames) f.material.opacity = play.examined ? 1 : 0;

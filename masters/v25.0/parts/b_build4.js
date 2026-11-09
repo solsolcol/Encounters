@@ -146,6 +146,11 @@
     const WRIST = [0.012, -0.03, -0.075];                                // the wrist, in the arm's own frame (a little behind the palm)
     /* (v25.0 CP7) the world point at a share (fx, fy) of the lens's frame, d metres out, for a lens of fovDeg — where a
        hand the engine places by its share of the frame (HPOSE) stands on THIS screen */
+    /* (v25.0 CP7) the mayom bundle set in one of its two resting places ('bowl' or 'mat'), as each film and phase needs */
+    function mayomAt(w) {
+      const g = props.mayom; if (!g || !g.userData.bowlP) return;
+      g.position.copy(w === 'mat' ? g.userData.matP : g.userData.bowlP); g.rotation.copy(w === 'mat' ? g.userData.matR : g.userData.bowlR);
+    }
     const _lpv = new THREE.Vector3();
     /* (v25.0 CP7) a held thing turned so its +x runs along `ax` and its +y (the mayom's face) as near `up` as that allows;
        holdHome gives it back its own turn when it is let go */
@@ -342,6 +347,7 @@
       /* seated now, his things set out; Pong on his stool; the master looks up at him */
       propsAt({ mat: 1 });
       for (const o of [props.bowl, props.mayom, props.thread, props.cloth, props.khan, props.yaam]) if (o) o.visible = true;
+      mayomAt('bowl');
       lcSeated(); pongSeated(); lcBlockOn(true);
       if (L) { L.bow = 0; if (t > matT + 0.6) gaze(L, true, 1.1); else { L.lookAt = _lv.set(0.36, 0.1, -0.12); L.neck = null; } }
       if (P) { P.lookAt = L && L.head ? L.head : null; P.neck = null; }
@@ -358,7 +364,7 @@
       shopAt({ u: 0.42, led: 0.9, ceil: 0, night: true });
       castVis({ goldman: false, mallA: false, mallB: false, lersi: true, pong: true });
       lcSeated(); pongSeated();
-      props.lcThings.visible = true; propsAt({ mat: 1 });
+      props.lcThings.visible = true; propsAt({ mat: 1 }); mayomAt('bowl');
       const L = cast.lersi, P = cast.pong;
       if (P) { P.lookAt = L && L.head ? L.head : null; P.neck = null; }
       const shelf = [SHELF.x + 0.02, SHELF.y + 0.04, SHELF.z];
@@ -463,12 +469,12 @@
         if (L) { L.lookAt = null; L.look = 0; L.bow = t > K.homage && t < K.lift ? 0.2 : 0.08; L.neck = null; }
         if (t < K.sak) lcPose(wH > 0.001 ? 'wai' : null, wH, { lift: 0.7 });
         else {
-          /* (v25.0 CP7) the verses chanted with the mayom held between his joined palms, its leaves up and toward him (an
-             open hand raised by his face to hold it read as "stop", by photograph) */
-          lcPose('wai', Math.max(0.001, smo(sgk(t, K.sak, K.sak + 1.0))), { lift: 0.45, hold: props.mayom });
-          /* its leaves up and toward him, their face to him */
-          if (props.mayom) orient(props.mayom, [0, 0.825, 0.565], [0, -0.565, 0.825]);
+          /* (v25.0 CP7) the verses chanted with his hands joined over the bowl, the mayom standing in its water (an open hand
+             raised by his face to hold it read as "stop"; held between his palms, its leaves covered his face — both by
+             photograph) */
+          lcPose('wai', Math.max(0.001, smo(sgk(t, K.sak, K.sak + 1.0))), { lift: 0.3 });
         }
+        mayomAt('bowl');
         /* his eyes down on his hands and the mat (the tray, the candles' light at the top of the frame); up as it lifts */
         const down = [CL.x, 0.25, CL.z - 0.75];
         /* (v25.0 CP7) not one still frame for forty seconds: a slow push in on the tray's candles under Namo tassa, his
@@ -484,13 +490,14 @@
         /* "Drink. A little." — the bowl brought up to him in both hands; a sip */
         const up = smo(sgk(t, K.water + 0.2, K.water + 1.4)) * (1 - smo(sgk(t, K.sprinkle - 1.2, K.sprinkle - 0.2)));
         const B0 = props.bowl.userData.home || (props.bowl.userData.home = props.bowl.position.clone());
-        /* (v25.0 CP7) below his eyes, the water seen */
-        props.bowl.position.set(lp(B0.x, CL.x, up), lp(B0.y, 0.7, up), lp(B0.z, CL.z - 0.32, up));
+        /* (v25.0 CP7) below his eyes and a forearm off, the water seen and the master behind it (at 0.3 m it filled the frame) */
+        props.bowl.position.set(lp(B0.x, CL.x, up), lp(B0.y, 0.62, up), lp(B0.z, CL.z - 0.44, up));
         props.bowl.rotation.x = 0.35 * smo(sgk(t, K.lc2drink + SECS.lc2drink, K.lc2drink + SECS.lc2drink + 0.8)) * up;
         lcPose('bowl', up);
+        mayomAt('mat');
         if (L) { L.look = 1; gaze(L, true, 1.1); L.bow = 0; }
         fLens(isNarrow() ? 54 : 46);
-        camAt(KN_EYE, aimEase(KN_EYE, LC_HEAD(), [CL.x, 0.7, CL.z - 0.32], up * 0.6));
+        camAt(KN_EYE, aimEase(KN_EYE, LC_HEAD(), [CL.x, 0.62, CL.z - 0.44], up * 0.5));
         return;
       }
       if (props.bowl.userData.home) { props.bowl.position.copy(props.bowl.userData.home); props.bowl.rotation.x = 0; }
@@ -507,21 +514,24 @@
         return;
       }
       dropsAt(-1, 0, 0, KN_EYE);
+      mayomAt('mat');
       if (t < K.advice) {
         /* "Your wrist." — his right hand out, the white thread tied round it in the master's hands */
         const k = smo(sgk(t, K.thread + 0.2, K.thread + 1.0)) * (1 - smo(sgk(t, K.advice - 0.7, K.advice)));
         const tie = (t - K.thread) * 5.0;
-        /* (v25.0 CP7) his right hand held out INTO the frame (the engine's own `reach` pose: its palm at that share of the
+        /* (v25.0 CP7) his right hand held out INTO the frame (an engine pose, `place`: its palm at that share of the
            frame on every screen), and the master's hands brought to where it is on THIS screen — the point at that share
            of the lens, 0.42 m out — so on a phone and a desktop alike they meet over his wrist (aimed at a fixed world
            point, his own hand lay at the frame's foot, a blob, and the thread under the edge, by photograph) */
         const A = FL.api;
-        if (A && A.handPose) A.handPose('reach', smo(sgk(t, K.thread, K.thread + 0.9)));
+        /* (`place`, its palm a third of the way down the frame: with `reach`'s, two thirds down, his wrist and the thread lay
+           under the frame's edge, by photograph) */
+        if (A && A.handPose) A.handPose('place', smo(sgk(t, K.thread, K.thread + 0.9)));
         if (A && A.handsRoot) { A.handsRoot.visible = true; A.armR.visible = true; }
         const fl = isNarrow() ? 54 : 46;
         fLens(fl);
         camAt(KN_EYE, [CL.x + 0.05, 0.72, CL.z - 0.9]);
-        const hw = lensPoint(0.326, -0.652, 0.42, fl);
+        const hw = lensPoint(0.296, -0.319, 0.42, fl);
         lcPose('reach', k, { at: [hw[0] - 0.03 + 0.02 * Math.sin(tie), hw[1] + 0.015 * Math.cos(tie * 1.4), hw[2] - 0.03],
                              atL: [hw[0] + 0.05 - 0.02 * Math.sin(tie), hw[1], hw[2] - 0.05] });
         threadOn(t > K.thread + 2.2);
@@ -531,7 +541,7 @@
       lcPose(null, 0);
       /* (v25.0 CP7) the hand lowered out of the frame as he listens, the thread on it until it has gone */
       { const A = FL.api, down = smo(sgk(t, K.advice, K.advice + 1.0));
-        if (A && A.handPose) A.handPose('reach', 1 - down);
+        if (A && A.handPose) A.handPose('place', 1 - down);
         threadOn(down < 0.999); }
       /* "Go to a temple this week..." — his face, the colour back, warm */
       if (L) { L.look = 1; gaze(L, true, 1.1); L.bow = 0; }
@@ -623,7 +633,7 @@
       clothPiece(true); pieceShow(false);
       const L = cast.lersi, P = cast.pong;
       if (t < T.go) {
-        lcSeated(); pongDoor(); props.lcThings.visible = true; lcBlockOn(true);
+        lcSeated(); pongDoor(); props.lcThings.visible = true; mayomAt('mat'); lcBlockOn(true);
         /* packing (his hand at the bowl) until he is asked; then the bowl down, and the long look */
         const pk = 1 - smo(sgk(t, T.q2B1 + 1.0, T.q2B1 + 2.2));
         lcPose(pk > 0.001 ? 'reach' : null, pk, { at: [LC.x + 0.36, 0.2, LC.z + 0.3] });
@@ -638,7 +648,7 @@
       if (t < T.empty) {
         /* he wais; up (a cut), and the two go out under the shutter — Pong lifting it as they reach it */
         const tw = T.go + 1.5;
-        if (t < tw) { lcSeated(); pongDoor(); props.lcThings.visible = true;
+        if (t < tw) { lcSeated(); pongDoor(); props.lcThings.visible = true; mayomAt('mat');
           const w = smo(sgk(t, T.go, T.go + 0.5)) * (1 - smo(sgk(t, tw - 0.4, tw))); lcPose('wai', Math.max(0.001, w), { lift: 0 });
           waiAt(w); if (L) gaze(L, true, 1.1); kneelShot(t, 46, 46); return; }
         waiAt(0);
@@ -665,7 +675,7 @@
       const L = cast.lersi, P = cast.pong;
       if (t < T.alone) { fLook('CLEAR'); fogFilm(0); shopAt({ u: 0.42, led: 1, ceil: 0, night: true }); }
       if (t < T.go) {
-        lcSeated(); pongDoor(); props.lcThings.visible = true; lcBlockOn(true);
+        lcSeated(); pongDoor(); props.lcThings.visible = true; mayomAt('mat'); lcBlockOn(true);
         /* the thread going into his bag when he is asked; he stops; sits back; the long look, not unkind */
         const pk = 1 - smo(sgk(t, T.stop - 0.4, T.stop + 0.6));
         lcPose(pk > 0.001 ? 'reach' : null, pk, { at: [LC.x - 0.4, 0.2, LC.z + 0.1] });
@@ -676,7 +686,7 @@
       }
       if (t < T.alone) {
         const tw = T.go + 1.4;
-        if (t < tw) { lcSeated(); pongDoor(); props.lcThings.visible = true;
+        if (t < tw) { lcSeated(); pongDoor(); props.lcThings.visible = true; mayomAt('mat');
           const w = smo(sgk(t, T.go, T.go + 0.5)) * (1 - smo(sgk(t, tw - 0.4, tw))); lcPose('wai', Math.max(0.001, w), { lift: 0 });
           if (L) gaze(L, true, 1.1); kneelShot(t, 46, 46); return; }
         goOut(t, tw, T.alone - 0.2);
@@ -710,7 +720,7 @@
         castVis({ goldman: false, mallA: false, mallB: false, lersi: true, pong: true });
         if (t < T.go) {
           shopAt({ u: 0.42 });
-          lcSeated(); pongDoor(); props.lcThings.visible = true; lcBlockOn(true);
+          lcSeated(); pongDoor(); props.lcThings.visible = true; mayomAt('mat'); lcBlockOn(true);
           const w = smo(sgk(t, T.q2D1, T.q2D1 + 0.5)) * (1 - smo(sgk(t, T.lc2D1 + SECS.lc2D1 * 0.6, T.lc2D1 + SECS.lc2D1)));
           waiAt(w);
           const wl = smo(sgk(t, T.lc2D1 - 0.2, T.lc2D1 + 0.3)) * (1 - smo(sgk(t, T.lc2D1 + SECS.lc2D1 * 0.6, T.lc2D1 + SECS.lc2D1)));
@@ -729,7 +739,10 @@
         const y0 = lp(KNEEL.y, 1.62, smo(sgk(t, T.go, T.go + 1.2)));
         const e = walkEye(path, s, v, () => 0); e[1] = Math.min(e[1], y0 + (e[1] - 1.62));
         fLens(isNarrow() ? 60 : 52);
-        camAt(e, headOf(L, [0.4, 1.55, 3.2]) || [0.4, 1.55, 3.2]);
+        /* (v25.0 CP9) his eyes on the door until the master is a step or two ahead, then on him: tracking his head as he rose
+           and passed put it a half metre from the lens, by photograph */
+        const hL = headOf(L, [0.4, 1.55, 3.2]) || [0.4, 1.55, 3.2];
+        camAt(e, aimEase(e, [0.45, 1.45, 3.2], hL, smo(sgk(Math.hypot(hL[0] - e[0], hL[2] - e[2]), 1.0, 1.8))));
         return;
       }
       /* the next morning, in full colour (chapter 1's dawn shop again, clear this time) */

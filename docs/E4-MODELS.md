@@ -103,18 +103,28 @@ its credit row.
 
 ---
 
-## Episode 4 chapter 2 — not built yet (S1·11's second half: the fog, Lersi Chin's clearing and the warning)
+## Episode 4 chapter 2 — Not Every Master Should Be Trusted (v25.0: S1·11's second half, the fog, Lersi Chin's clearing and the warning)
 
 ### People
 
 | Role | Model | Status |
 |---|---|---|
-| **Lersi Chin** | Chad's own (3 Nov 2026: *"this is the 3d model of lersi chin, he will be used in the next episode"*) — a young hermit in a tiger-print cloth over his left shoulder, a long string of big red-brown prayer beads and beads at both wrists, beads wound up his topknot, a red mark on his forehead, a small goatee, a tattoo on his bare right shoulder and one on his chest, barefoot. A Meshy scan on a 28-joint Mixamo rig with twelve takes of his own (walk, run, a cross-legged sit, two chair sits and a sit-to-stand, five talking takes — one angry, 20.8 s — and a spell cast); no standing idle (the chapter makes his rest from a talk take's still stretch, or retargets one) | **RECEIVED AND PREPARED (v24.38), not yet cast**: `assets/lersichin.glb`, 597,494 → 179,247 triangles, a 4096 colour sheet and a 2048 normal map, 7.6 MB (`masters/v24.38/make.sh` — his file was flat-shaded, so `tools/deflatten.mjs` first; the colour sheet is 4096 because at a face close-up the 2048 one is visibly soft, `masters/v24.38/shots/face-cuts.jpg`). Every take photographed front and side (`shots/takes-1.jpg`, `takes-2.jpg`). The key `lersichin` is his; it goes into build.py (hosted-only) the day the chapter casts him. His voice is still to come (by audition, Chad picks by ear — docs/V24.0-EPISODE4-PLAN.md §4) |
+| **Lersi Chin** | Chad's own (3 Nov 2026: *"this is the 3d model of lersi chin, he will be used in the next episode"*) — a young hermit in a tiger-print cloth over his left shoulder, a long string of big red-brown prayer beads and beads at both wrists, beads wound up his topknot, a red mark on his forehead, a small goatee, a tattoo on his bare right shoulder and one on his chest, barefoot. A Meshy scan on a 28-joint Mixamo rig with twelve takes of his own (walk, run, a cross-legged sit, two chair sits and a sit-to-stand, five talking takes — one angry, 20.8 s — and a spell cast); no standing idle (the chapter makes his rest from a talk take's still stretch, or retargets one) | **CAST (v25.0)**, his own takes on his own rig (the wai, the reach and the bowl laid on by the chapter, `masters/v25.0/parts/b_build3.js`), his voice Mart-Podcast (picked by pace, the three previews with Chad: masters/v25.0/audition/). Prepared at v24.38: `assets/lersichin.glb`, 597,494 → 179,247 triangles, a 4096 colour sheet and a 2048 normal map, 7.6 MB (`masters/v24.38/make.sh` — his file was flat-shaded, so `tools/deflatten.mjs` first; the colour sheet is 4096 because at a face close-up the 2048 one is visibly soft, `masters/v24.38/shots/face-cuts.jpg`). Every take photographed front and side (`shots/takes-1.jpg`, `takes-2.jpg`). The key `lersichin` is his; it goes into build.py (hosted-only) the day the chapter casts him. His voice is still to come (by audition, Chad picks by ear — docs/V24.0-EPISODE4-PLAN.md §4) |
 
-The chapter's plan (proposed 3 Nov 2026, revised 9 Nov to Chad's direction, waiting on his yes):
-docs/V25.0-E4C2-PLAN.md. All of it is in his shop in Singapore, so its §6 needs no new model (Lersi Chin and Pong are
-his and ready; the first master is only heard, the customers only heard); it makes Lersi Chin's things and the forum's
-screens, and reuses his shop, Pong and the charm he took in chapter 1.
+| **Pong** | Chad's own (chapter 1's), on his own takes | **IN** (declared reuse: the friend who sent him to the first master vouches first-hand here) |
+| **The customers at his counter** (a woman, a man) | heard only, never seen (the plan's §2.2 #14) | none needed |
+
+### Lersi Chin's things (v25.0 CP6)
+
+| Thing | How it was made | Status |
+|---|---|---|
+| The mayom bundle (seven leafy stems tied with white thread, 24 cm) | a picture on white (GPT Image 2.6, checked), then Meshy image-to-3D and its remesh, every triangle (8,166) — `assets/e4mayom.glb`, masters/v25.0/models, make.sh models | **IN** |
+| The holy-water bowl (embossed silver on a foot, 22 cm) | the same — `assets/e4khannam.glb` (4,128 triangles) | **IN** |
+| The homage tray (a footed brass phan of marigolds and jasmine, 26 cm) | the same — `assets/e4phan.glb` (6,901 triangles); its candles and incense in code, stood in its flowers | **IN** |
+| His mat, the white thread, the clean cloth, his woven bag; his jacket, his bag and the till in the shop | built in code (not plants or vessels) | **IN** |
+
+Nothing in chapter 2 is NEEDED from Chad. All of it is in his shop in Singapore (chapter 1's World S); the first master is
+neither seen nor heard, the customers only heard. Its plan and build record: docs/V25.0-E4C2-PLAN.md.
 
 ## Episode 4 chapter 3 — not built yet (S1·12: the Wai Kru, the teacher in white)
 

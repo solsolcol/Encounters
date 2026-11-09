@@ -117,14 +117,20 @@
           const prof = [[0, 0], [0.05, 0], [0.055, 0.012], [0.045, 0.02], [0.07, 0.03], [0.1, 0.06], [0.112, 0.095], [0.108, 0.1], [0.098, 0.064], [0.07, 0.036], [0, 0.032]]
             .map(([r, y]) => new THREE.Vector2(r, y));
           const lathe = new THREE.Mesh(new THREE.LatheGeometry(prof, 40), M({ color: 0xd8dadc, roughness: 0.22, metalness: 0.9, envMapIntensity: 3, side: THREE.DoubleSide })); bg.add(lathe);
-          const wtr = new THREE.Mesh(new THREE.CircleGeometry(0.1, 36), M({ color: 0xa8c4d4, roughness: 0.04, metalness: 0.1, transparent: true, opacity: 0.7 })); wtr.rotation.x = -Math.PI / 2; wtr.position.y = 0.082; bg.add(wtr); props.water = wtr;
+          /* (v25.0 CP7) the water: still, a little dull (at roughness 0.04 it mirrored the environment's cloudy sky inside a
+             shop at night, by photograph) */
+          const wtr = new THREE.Mesh(new THREE.CircleGeometry(0.1, 36), M({ color: 0x7d98a4, roughness: 0.32, metalness: 0, envMapIntensity: 0.35, transparent: true, opacity: 0.62 })); wtr.rotation.x = -Math.PI / 2; wtr.position.y = 0.082; bg.add(wtr); props.water = wtr;
           /* (v25.0 CP6) the bowl itself (masters/v25.0/models: a checked picture on white, then Meshy): the turned stand-in
              hidden the moment it lands, the water laid inside it at its own height */
           fitModel('e4khannam', bg, BOWL_W, 'x', 0, 0).then(m => { if (!m || !alive) return; lathe.visible = false;
             wtr.position.y = m.userData.fit.y * BOWL_WATER[0]; wtr.scale.setScalar(m.userData.fit.x * BOWL_WATER[1] / 0.1); }); }
         /* the mayom bundle across the bowl's rim: seven sprigs tied. Its frame (what every pose turns): the tied end on the
            group's origin, the leaves along +x, their face up (+y) */
-        { const mg = new THREE.Group(); const [x, z] = at(0.36, 0.3); mg.position.set(x - 0.02, 0.11, z); mg.rotation.set(0, 0.6, 0.18); g.add(mg); props.mayom = mg;
+        { const mg = new THREE.Group(); const [x, z] = at(0.36, 0.3); mg.position.set(x - 0.02, 0.11, z); mg.rotation.set(0, 0.6, 0.35); g.add(mg); props.mayom = mg;
+          /* (v25.0 CP7) its two resting places: standing in the bowl's water, its leaves out over the rim (the bowl is chanted
+             over with it in the water), and laid on the mat beside the bowl once it has been used (mayomAt) */
+          mg.userData.bowlP = mg.position.clone(); mg.userData.bowlR = mg.rotation.clone();
+          mg.userData.matP = new THREE.Vector3(x + 0.12, 0.012, z + 0.14); mg.userData.matR = new THREE.Euler(0, 0.9, 0);
           /* (v25.0 CP6) the stand-in, drawn only if the model never lands */
           const sg = new THREE.Group(); mg.add(sg);
           const mLeafM = M({ color: 0x3e7a2e, roughness: 0.7, side: THREE.DoubleSide }), mStem = M({ color: 0x5a6a2a, roughness: 0.8 });

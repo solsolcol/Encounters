@@ -124,12 +124,19 @@
       return;
     }
     if (mode === 'post') {
+      /* (v25.0 CP9) the chapter's last words, so they read whole on a phone: the title large and centred in the middle half
+         of the screen (a phone's crop of it at the coda's end), in as many lines as it needs (at 34 px across the full width
+         a phone saw "athering devotees for Wai Kru in U", by photograph) */
       card(112, 560);
-      x.fillStyle = '#1e2a3a'; x.font = F(34, 'bold'); wrap(Wd.threadNew || '', 44, 158, W - 100, 44, 2);
-      x.fillStyle = '#7a8698'; x.font = F(18); x.fillText(Wd.threadNewSub || '', 44, 250);
-      x.fillStyle = '#d8dce2'; x.fillRect(44, 280, 300, 200);                              // a photograph, not yet loaded
-      x.fillStyle = '#b8bec8'; for (let i = 0; i < 7; i++) x.fillRect(370, 290 + i * 28, i === 6 ? 260 : 560 - (i % 3) * 40, 12);
-      for (let i = 0; i < 4; i++) x.fillRect(44, 510 + i * 30, 880 - (i % 2) * 120, 12);
+      x.fillStyle = '#1e2a3a'; x.font = F(42, 'bold'); x.textAlign = 'center';
+      { const ws = String(Wd.threadNew || '').split(' '), lines = []; let line = '';
+        for (const w2 of ws) { const t2 = line ? line + ' ' + w2 : w2; if (x.measureText(t2).width > 440 && line) { lines.push(line); line = w2; } else line = t2; }
+        if (line) lines.push(line);
+        lines.slice(0, 4).forEach((l, i) => x.fillText(l, W / 2, 170 + i * 52));
+        x.fillStyle = '#7a8698'; x.font = F(20); x.fillText(Wd.threadNewSub || '', W / 2, 170 + Math.min(4, lines.length) * 52 + 4); }
+      x.textAlign = 'left';
+      x.fillStyle = '#d8dce2'; x.fillRect(W / 2 - 230, 400, 460, 150);                // a photograph, not yet loaded
+      x.fillStyle = '#b8bec8'; for (let i = 0; i < 3; i++) x.fillRect(W / 2 - 230, 572 + i * 26, i === 2 ? 300 : 460 - (i % 2) * 60, 11);
       return;
     }
     /* the list: the new thread arriving at the top, then the rest, read down; a lineage chart beside them */
