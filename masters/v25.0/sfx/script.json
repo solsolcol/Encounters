@@ -254,5 +254,28 @@
    false,
    "An empty shopping mall corridor at night, two people's footsteps echoing, a distant ventilation hum"
   ]
+ ],
+ "remakes": [
+  [
+   "x2corridor_r2",
+   8.0,
+   false,
+   "Two people walking slowly away down an empty shopping mall corridor at night, their footsteps on hard terrazzo echoing clearly off the walls, steady unhurried steps, a faint ventilation hum, nothing else",
+   "RE-MADE: neither first take had a footstep in it (no transient within 24 dB of its peak in a; none at all in b)"
+  ],
+  [
+   "x2heelsin",
+   2.2,
+   false,
+   "A woman's heels walking up across a tiled shopping mall floor towards a shop counter and stopping close by, getting nearer, footsteps on terrazzo",
+   "NEW: ending D, the woman from the opening coming back to his counter (the opening has her heels going away)"
+  ],
+  [
+   "x2stepsin",
+   2.2,
+   false,
+   "A man's footsteps in leather shoes walking up across a tiled shopping mall floor towards a shop counter and stopping close by, getting nearer",
+   "NEW: ending A, the man who comes up to his counter (it had cued a woman's heels)"
+  ]
  ]
 }

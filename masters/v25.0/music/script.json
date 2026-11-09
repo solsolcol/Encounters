@@ -1,0 +1,62 @@
+{
+ "_flow": "uW6A2wpf69s61vNZEpAZ",
+ "model": "eleven_music_v2_5, instrumental, three takes each (41,332 credits by the estimate)",
+ "why": "the durations are each film's measured length (v25.0 CP10) plus 2-3 s; every prompt says 'Nothing deep' (v24.34: the first takes without it were 46-95 % under 120 Hz)",
+ "music": [
+  [
+   "x2open",
+   37,
+   "Cinematic hazy ambient score, instrumental: a soft blurred synth pad and a muted electric piano playing a slow, dragging pulse, slightly detuned and out of focus, the sound of a mind in a fog in a quiet shop at noon. Weary and uneasy, never frightening. Starts very soft, holds, and thins to a single held note at the end. Nothing deep: no bass, no sub-bass, no low drone, no drums, no vocals."
+  ],
+  [
+   "x2fogmus",
+   60,
+   "Hazy ambient underscore, instrumental: a soft blurred synth pad in the middle register with a slow, dragging pulse like a tired heartbeat played on a muted electric piano, slightly detuned and out of focus, as if heard through fog. Weary and uneasy, never frightening. Nothing deep: no bass, no sub-bass, no low drone, no drums, no melody, no vocals. Very slow, a steady quiet level from start to end."
+  ],
+  [
+   "x2callmus",
+   31,
+   "Quiet hopeful cinematic underscore, instrumental: a soft warm electric piano and gentle strings in the middle register, a few slow chords that gradually open up and brighten a little, late at night, a friend's offer of help, cautious hope. Nothing deep: no bass, no sub-bass, no drums, no vocals. Very slow, starting almost silent, ending on an open held chord."
+  ],
+  [
+   "x2visit",
+   28,
+   "Plain open cinematic underscore, instrumental: a soft Thai phin lute playing a few simple calm notes over warm sustained strings in the middle register, unhurried and kind, a respected visitor arriving at a small shop in the evening. Nothing deep: no bass, no sub-bass, no drums, no vocals. Steady and soft throughout, ending on an open note."
+  ],
+  [
+   "x2visitmus",
+   60,
+   "Calm open ambient bed, instrumental: soft sustained strings and a quiet warm pad in the middle register with an occasional single soft phin lute note, patient and attentive, an evening of quiet questions. Nothing deep: no bass, no sub-bass, no low drone, no drums, no melody, no vocals. Very slow, a steady quiet level from start to end."
+  ],
+  [
+   "x2clearmus",
+   92,
+   "Meditative sacred ambient underscore for a Buddhist blessing, instrumental: a very soft warm pad in the middle register with gently struck small temple bells and a faint singing bowl ring now and then, spacious and still, made to sit quietly under a spoken chant and never over it. Over the second half it slowly brightens and clears, like a fog lifting. Nothing deep: no bass, no sub-bass, no low drone, no drums, no melody, no vocals. Very slow, quiet throughout, ending on a clear held tone."
+  ],
+  [
+   "x2endA",
+   39,
+   "Tight unresolved cinematic tension, instrumental: muted plucked strings repeating a small nervous figure in the middle register over a thin uneasy pad, regret and the weight of words that cannot be taken back. Nothing deep: no bass, no sub-bass, no low drone, no drums, no vocals. Slow and quiet, never resolving, thinning at the end to a single held dissonant note."
+  ],
+  [
+   "x2endB",
+   40,
+   "Warm open cinematic score, instrumental: a soft Thai phin lute and warm strings in the middle register playing a slow gentle melody, quiet gratitude and a long road ahead, hopeful and humble. Nothing deep: no bass, no sub-bass, no drums, no vocals. Starts soft, warms through the middle, and ends on an open unresolved note, like a question still to be asked."
+  ],
+  [
+   "x2endC",
+   43,
+   "Sombre cinematic underscore, instrumental: one long held note on violas that slowly gathers weight, then slow solemn chords on bowed violas and cellos played high in their range, the weight of wishing harm on someone, sober and still. Nothing deep: no bass, no sub-bass, no low drone, no drums, no vocals. Very slow and quiet, ending on a held dark chord."
+  ],
+  [
+   "x2endD",
+   23,
+   "Bright unhurried cinematic score, instrumental: a soft Thai phin lute and a warm acoustic guitar playing a simple gentle melody over light strings, a clear morning in a small shop, calm and settled, quietly happy. Nothing deep: no bass, no sub-bass, no drums, no vocals. Steady and soft, ending on a warm resolved note."
+  ],
+  [
+   "x2codamus",
+   48,
+   "Reflective night-time cinematic score, instrumental: soft felt piano and a warm pad in the middle register, slow and patient, a man reading late at night with a question still open, and now and then a faint distant phin lute phrase like a memory. Nothing deep: no bass, no sub-bass, no drums, no vocals. Quiet throughout, ending on a held unresolved chord."
+  ]
+ ]
+}

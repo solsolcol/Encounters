@@ -195,7 +195,7 @@
   }
 
   /* ====================================================== THE FILMS' CUES (§4, §8)
-     Every sound is a literal sfx(t, 'name') the warm scan can read (v10.2); the pictures are the stage's (films.frame) */
+     Every sound is a literal cue the warm scan can read (v10.2: the time, then the quoted name); the pictures are the stage's (films.frame) */
   function introFilm(c, s, api) {
     const { tr, step, fade, sfx, sfxFade, rawK, stage } = api;
     const O = OPEN;
@@ -204,7 +204,6 @@
     step(0, () => stage.films.begin('open', c, api));
     tr(0, O.end, (k, t) => stage.films.frame('open', t, api), rawK);
     fade(0, 1.0, 1, 1); fade(1.0, 2.6, 1, 0);
-    sfx(0.2, 'x2mallfog', 0.6);                // the mall at noon, through the fog: its murmur, far and muffled
     sfx(0.4, 'x2open', 0.75);                  // the fog's own music, under the whole film
     sfx(O.q2o1, 'q2o1', 1);                    // "When I returned to Singapore my mind became extremely foggy."
     sfx(O.cu2a1, 'cu2a1', 1);                  // "Boss, this one... from which temple ah? Who blessed it?"
@@ -219,7 +218,6 @@
     sfx(O.o4 + 0.4, 'x2ledhum', 0.3);          // the counter's lights, the only sound left near
     fade(O.black, O.end, 0, 1);
     sfxFade(O.black - 1.0, O.end - 0.05, 'x2open');
-    sfxFade(O.black - 1.0, O.end - 0.05, 'x2mallfog');
     sfxFade(O.black - 0.5, O.end - 0.05, 'x2ledhum');
     step(O.end, () => stage.films.end());
   }
@@ -230,9 +228,8 @@
     c.keepFade = true; c.endFade = 1;
     step(0, () => stage.films.begin('call', c, api));
     tr(0, C.end, (k, t) => stage.films.frame('call', t, api), rawK);
-    sfx(0.1, 'x2nightroom', 0.55);             // the shop shut for the night: the air-con, the fridge
     sfx(C.pick - 0.4, 'x2pickup', 0.6);        // the phone off the glass
-    sfx(C.pick + 0.5, 'x2ring', 0.5); sfx(C.pick + 1.7, 'x2ring', 0.5);   // ringing, in his ear
+    sfx(C.pick + 0.5, 'x2ring', 0.5);          // ringing in his ear: one ring-ring (Singapore's 0.4 on, 0.2 off, 0.4 on), and Pong answers before the next
     sfx(C.pg2c1, 'pg2c1', 1);                  // "Brother! Long time no reply. You OK or not?"   (the phone's band, CP10)
     sfx(C.q2c1, 'q2c1', 1);                    // "Not really. Since I came back... I can't think..."
     sfx(C.offer - 0.6, 'x2callmus', 0.6);      // a low pad under Pong's offer, opening up at "This one I can vouch for"
@@ -242,7 +239,6 @@
     sfx(C.q2c3, 'q2c3', 1);                    // "...Bring him."
     fade(C.black, C.end, 0, 1);
     sfxFade(C.black - 0.8, C.end - 0.05, 'x2callmus');
-    sfxFade(C.black - 0.6, C.end - 0.05, 'x2nightroom');
     step(C.end, () => stage.films.end());
   }
   /* THE VISIT (kit.film, straight on from the call's black): the next evening */
@@ -253,7 +249,6 @@
     step(0, () => stage.films.begin('visit', c, api));
     tr(0, V.end, (k, t) => stage.films.frame('visit', t, api), rawK);
     fade(0, 0.5, 1, 1); fade(0.5, 1.6, 1, 0);
-    sfx(0.1, 'x2nightroom', 0.5);
     sfx(V.knock + 0.1, 'x2knock', 0.7);        // a knock on the shutter, twice
     sfx(V.lift, 'x2shutterup', 0.75);          // Pong lifting it
     sfx(V.in + 0.3, 'x2steps', 0.45); sfx(V.in + 2.6, 'x2steps', 0.4);   // their feet on his tiles
@@ -264,7 +259,6 @@
     sfx(V.mat + 0.2, 'x2mat', 0.6);            // the mat unrolled on the floor
     fade(V.black, V.end, 0, 1);
     sfxFade(V.black - 1.0, V.end - 0.05, 'x2visit');
-    sfxFade(V.black - 0.6, V.end - 0.05, 'x2nightroom');
     step(V.end, () => stage.films.end());
   }
   /* P6 · THE EXAMINATION (kit.film from play): it ends on play's own view, kneeling before him */
@@ -273,7 +267,6 @@
     const X = EXAM;
     step(0, () => stage.films.begin('exam', c, api));
     tr(0, X.end, (k, t) => stage.films.frame('exam', t, api), rawK);
-    sfx(0.1, 'x2nightroom', 0.5);
     sfx(0.3, 'x2visitmus', 0.32);              // the visit's own bed, low, under the questions
     sfx(X.lc2e1, 'lc2e1', 1);                  // "Give me your hand."
     sfx(X.lc2e2, 'lc2e2', 1);                  // "You sleep?"
@@ -299,7 +292,6 @@
     sfx(X.q2e6, 'q2e6', 1);                    // "By him?"
     sfx(X.lc2e10, 'lc2e10', 1);                // "I didn't say that. I said on you."
     sfxFade(X.end - 1.2, X.end - 0.05, 'x2visitmus');
-    sfxFade(X.end - 0.8, X.end - 0.05, 'x2nightroom');
     step(X.end, () => stage.films.end());
   }
   /* P7 · THE CLEARING (kit.film from play, unskippable the first time): the chant captioned on its own breaths, from each
@@ -309,7 +301,6 @@
     const K = CLEARF;
     step(0, () => stage.films.begin('clear', c, api));
     tr(0, K.end, (k, t) => stage.films.frame('clear', t, api), rawK);
-    sfx(0.1, 'x2nightroom', 0.45);
     sfx(K.lc2k0, 'lc2k0', 1);                  // "Hands together. Close your eyes."
     /* his eyes "closed": the picture dimmed (never black), and opened again as the fog lifts */
     fade(K.lc2k0 + 1.6, K.homage + 0.6, 0, 0.42); fade(K.lift, K.water - 0.6, 0.42, 0);
@@ -331,7 +322,6 @@
     sfx(K.lc2wrist + 1.1, 'x2thread', 0.5);    // the cotton thread round it, knotted
     sfx(K.lc2k2, 'lc2k2', 1);                  // "Go to a temple this week. Make merit. If the fog comes back, doctor first, then me."
     sfxFade(K.end - 2.0, K.end - 0.05, 'x2clearmus');
-    sfxFade(K.end - 0.8, K.end - 0.05, 'x2nightroom');
     step(K.end, () => stage.films.end());
   }
 
@@ -350,7 +340,6 @@
   function codaCues(api, T) {
     const { sfx, sfxFade, fade } = api, C = CODA, t0 = T.coda;
     fade(t0 - 0.5, t0, 0, 1); fade(t0, t0 + 0.8, 1, 0);
-    sfx(t0 + 0.1, 'x2nightroom', 0.45);
     sfx(t0 + 0.3, 'x2codamus', 0.7);           // the coda's music: patient, the question still open
     sfx(t0 + C.q2K1, 'q2K1', 1);               // "Whether you interpret that spiritually or otherwise..."
     sfx(t0 + C.q2K1 + 3.0, 'x2scroll', 0.35);  // his finger on the pad, the list read down
@@ -362,32 +351,27 @@
     sfx(t0 + C.open, 'x2click', 0.55);         // opened
     fade(t0 + C.black, t0 + C.end, 0, 1);
     sfxFade(t0 + C.black - 0.8, t0 + C.end - 0.05, 'x2codamus');
-    sfxFade(t0 + C.black - 0.6, t0 + C.end - 0.05, 'x2nightroom');
   }
   /* A · WORD GETS AROUND (worst) */
   function scWord(c, s, api) {
     const { sfx, sfxFade, fade } = api;
     endingScene(c, api, 'A', (T) => {
       fade(0, 0.35, 0, 1); fade(0.35, 1.0, 1, 0);                    // that night, alone (a cut in the black)
-      sfx(0.1, 'x2nightroom', 0.5);
       sfx(0.5, 'x2endA', 0.6);                                       // the ending's music: tight, unresolved
       sfx(0.9, 'x2keys', 0.55); sfx(3.4, 'x2keys', 0.5);             // typing it
       sfx(T.q2A1, 'q2A1', 1);                                        // "Somebody has to warn people."
       sfx(T.q2A1 + SECS.q2A1 + 0.5, 'x2post', 0.6);                  // posted
-      sfxFade(T.days - 0.6, T.days, 'x2nightroom');
       fade(T.days - 0.5, T.days, 0, 1); fade(T.days, T.days + 0.6, 1, 0);   // days later
-      sfx(T.days + 0.1, 'x2mallclear', 0.55);                        // the mall by day, clear now
       sfx(T.days + 1.4, 'x2ping', 0.45); sfx(T.days + 2.6, 'x2ping', 0.45); sfx(T.days + 3.7, 'x2ping', 0.45); sfx(T.days + 4.9, 'x2ping', 0.45);
       sfx(T.call - 1.6, 'x2buzz', 0.6); sfx(T.call - 0.8, 'x2buzz', 0.6);   // his phone: Pong
       sfx(T.call - 0.25, 'x2pickup', 0.5);
       sfx(T.pg2A1, 'pg2A1', 1);                                      // "Bro, why you post? His people calling me..."   (the phone's band, CP10)
       sfx(T.q2A2, 'q2A2', 1);                                        // "I know what I saw."
       sfx(T.pg2A2, 'pg2A2', 1);                                      // "You saw. You don't know."
-      sfx(T.cust - 1.6, 'x2heels', 0.45);                            // someone coming up to the counter
+      sfx(T.cust - 1.7, 'x2stepsin', 0.45);                          // a man's shoes coming up to the counter
       sfx(T.cu2b1, 'cu2b1', 1);                                      // "Eh, you the one who posted about that Thai ajahn?"
       sfx(T.q2A3, 'q2A3', 1);                                        // "I was sure enough to stay away from him..."
       sfxFade(T.coda - 1.2, T.coda + 0.2, 'x2endA');
-      sfxFade(T.coda - 1.0, T.coda + 0.2, 'x2mallclear');
       codaCues(api, T);
     });
   }
@@ -395,7 +379,6 @@
   function scRoad(c, s, api) {
     const { sfx, sfxFade } = api;
     endingScene(c, api, 'B', (T) => {
-      sfx(0.1, 'x2nightroom', 0.5);
       sfx(T.q2B1, 'q2B1', 1);                                        // "Lersi Chin... will you teach me? I see things. I don't know why."
       sfx(T.q2B1 + 1.2, 'x2bowl', 0.45);                             // the bowl set down
       sfx(T.look - 0.2, 'x2endB', 0.55);                             // the ending's music: warm, open (it holds the long look)
@@ -407,7 +390,6 @@
       sfx(T.go + 2.6, 'x2shutterup', 0.6);                           // Pong lifting the shutter for them
       sfx(T.q2B2, 'q2B2', 1);                                        // "He had cleared me. He could not tell me what I was for..."
       sfxFade(T.coda - 1.2, T.coda + 0.2, 'x2endB');
-      sfxFade(T.coda - 1.0, T.coda + 0.2, 'x2nightroom');
       codaCues(api, T);
     });
   }
@@ -415,7 +397,6 @@
   function scBack(c, s, api) {
     const { sfx, sfxFade } = api;
     endingScene(c, api, 'C', (T) => {
-      sfx(0.1, 'x2nightroom', 0.5);
       sfx(T.q2C1, 'q2C1', 1);                                        // "Lersi Chin... can you send it back? To whoever did this."
       sfx(T.stop - 0.2, 'x2endC', 0.5);                              // the ending's music: one low held note, then the weight of it
       sfx(T.lc2C1, 'lc2C1', 1);                                      // "I clear. I don't send."
@@ -427,11 +408,8 @@
       sfx(T.go + 1.9, 'x2steps', 0.45);
       sfx(T.go + 2.5, 'x2shutterup', 0.6);
       sfx(T.alone + 0.1, 'x2shutter', 0.7);                          // the shutter pulled down behind them
-      sfx(T.alone + 0.9, 'x2hum', 0.5);                              // the air-con's hum, all that is left
       sfx(T.q2C3, 'q2C3', 1);                                        // "I wanted him to feel what I had felt..."
       sfxFade(T.coda - 1.2, T.coda + 0.2, 'x2endC');
-      sfxFade(T.coda - 1.0, T.coda + 0.2, 'x2hum');
-      sfxFade(T.coda - 1.0, T.coda + 0.2, 'x2nightroom');
       codaCues(api, T);
     });
   }
@@ -439,7 +417,6 @@
   function scEnough(c, s, api) {
     const { sfx, sfxFade, fade } = api;
     endingScene(c, api, 'D', (T) => {
-      sfx(0.1, 'x2nightroom', 0.5);
       sfx(T.q2D1, 'q2D1', 1);                                        // "Thank you, Lersi Chin."
       sfx(T.lc2D1, 'lc2D1', 1);                                      // "Go well. Make merit when you can."
       sfx(T.pg2D1, 'pg2D1', 1);                                      // "Bro, go eat something?"
@@ -448,18 +425,16 @@
       sfx(T.go + 2.3, 'x2shutterup', 0.6);
       sfx(T.go + 3.0, 'x2corridor', 0.5);                            // the mall's corridor at night, empty, their steps in it
       sfxFade(T.morning - 0.6, T.morning, 'x2corridor');
-      sfxFade(T.morning - 0.6, T.morning, 'x2nightroom');
       fade(T.morning - 0.5, T.morning, 0, 1); fade(T.morning, T.morning + 0.7, 1, 0);   // the next morning
       sfx(T.morning + 0.1, 'x2endD', 0.6);                           // the ending's music: bright, unhurried
       sfx(T.morning + 0.2, 'x2shutterup', 0.7);                      // his shutter going up on a clear morning
-      sfx(T.morning + 0.3, 'x2mallclear', 0.55);
-      sfx(T.morning + 3.2, 'x2pat', 0.5); sfx(T.morning + 3.6, 'x2wallet', 0.5);   // his pocket — and the wallet in it
+      sfx(T.morning + 3.2, 'x2pat', 0.5); sfx(T.morning + 3.75, 'x2wallet', 0.5);  // his pocket — and the wallet in it
+      sfx(T.cu2a2 - 1.6, 'x2heelsin', 0.45);                         // her heels coming back up to his counter
       sfx(T.cu2a2, 'cu2a2', 1);                                      // "Boss, this one... from which temple ah?"
       sfx(T.q2D2, 'q2D2', 1);                                        // "This one? A temple in Ayutthaya. The card is inside, let me show you."
       sfx(T.q2D2 + 0.5, 'x2case', 0.45);                             // the cased piece lifted from the tray
       sfx(T.q2D3, 'q2D3', 1);                                        // "I had enough to decide. There was nothing more worth proving."
       sfxFade(T.coda - 1.2, T.coda + 0.2, 'x2endD');
-      sfxFade(T.coda - 1.0, T.coda + 0.2, 'x2mallclear');
       codaCues(api, T);
     });
   }

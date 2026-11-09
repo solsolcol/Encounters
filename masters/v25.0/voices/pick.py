@@ -12,6 +12,8 @@ timings (faster-whisper small.en, on this machine — nothing uploaded), and mea
 A chant (Pali) is not English: its words are not scored, only its end, its holes and its length.
 Writes picks.json (the pick and every measure, for each line) and prints a table. Run from the repo root:
     python3 masters/v25.0/voices/pick.py
+    python3 masters/v25.0/voices/pick.py --rescore   (the end's loudness and the voice's span by energy measured again,
+                                                      every pick made again, nothing transcribed)
 """
 import json, os, re, subprocess, sys
 
@@ -39,10 +41,51 @@ def probe_len(path):
 def tail_db(path, secs=0.06):
     """the loudness of a file's last `secs` (dBFS, RMS)"""
     d = probe_len(path)
-    out = subprocess.run(['ffmpeg', '-v', 'error', '-ss', f'{max(0, d - secs):.3f}', '-i', path, '-af', 'volumedetect', '-f', 'null', '-'],
-                         capture_output=True, text=True).stderr
+    out = subprocess.run(['ffmpeg', '-v', 'info', '-ss', f'{max(0, d - secs):.3f}', '-i', path, '-af', 'volumedetect', '-f', 'null', '-'],
+                         capture_output=True, text=True).stderr          # (-v info: volumedetect reports at info, so -v error read nothing)
     m = re.search(r'mean_volume:\s*(-?[\d.]+) dB', out)
     return float(m.group(1)) if m else -99.0
+
+def speech_span(path, sr=16000):
+    """where the voice is, by energy: 20 ms frames over the peak - 38 dB, gaps under 0.24 s bridged"""
+    import numpy as np
+    raw = subprocess.run(['ffmpeg', '-v', 'quiet', '-i', path, '-ac', '1', '-ar', str(sr), '-f', 'f32le', '-'], capture_output=True).stdout
+    x = np.frombuffer(raw, np.float32).astype(np.float64); w = int(sr * 0.02)
+    d = 20 * np.log10(np.maximum(np.array([np.sqrt(np.mean(x[i:i + w] ** 2)) for i in range(0, len(x) - w, w)]), 1e-9))
+    idx = np.where(d > d.max() - 38)[0]
+    return (round(float(idx[0]) * 0.02, 3), round(float(idx[-1] + 1) * 0.02, 3)) if len(idx) else (0.0, 0.0)
+
+def rescore():
+    """--rescore: the measures of picks.json taken again where they were wrong (the end's loudness, the voice's span by
+    energy), and every pick made again by the same rule, without transcribing anything"""
+    res = json.load(open(os.path.join(HERE, 'picks.json')))
+    changed = []
+    for lid, v in res.items():
+        for k, t in v['takes'].items():
+            path = os.path.join(RAW, f'{lid}_{k}.mp3')
+            t['tail_db'] = round(tail_db(path), 1)
+            e0, e1 = speech_span(path)
+            t['e_first'], t['e_last'] = e0, e1
+            on_signal = t['tail_db'] > -45
+            # an end ON signal is clean only if the last word (whisper's timing) ended 0.12 s or more before it: the
+            # chain fades a take's last 0.12 s (eleven_v3 ends on its last sample, v5.30), which must never eat a word
+            t['clean_end'] = bool((not on_signal) or (t['len'] - t['last']) >= 0.12)
+        def score(k):
+            t = v['takes'][k]; chant = lid in CHANTS
+            ok = t['clean_end'] and not t['tag_said'] and (chant or t['sim'] >= 0.8)
+            return (0 if ok else 1, 1 if t['hole'] > (2.2 if chant else 1.4) else 0, round(t['e_last'] - t['e_first'], 2))
+        old = v['pick']
+        pick = min(v['takes'], key=score)
+        v['pick'] = pick
+        if len(v['takes']) == 2:
+            o = 'b' if pick == 'a' else 'a'; s0, s1 = score(pick), score(o)
+            v['why'] = ['only clean/valid take' if s0[0] < s1[0] else 'no odd hole' if s0[1] < s1[1] else 'the tighter read']
+        if pick != old: changed.append((lid, old, pick, v['why']))
+        t = v['takes'][pick]
+        print(f"{lid:9} {pick}  len {t['len']:6.2f}  voice {t['e_first']:.2f}-{t['e_last']:.2f}  end {t['tail_db']:6.1f} dB  clean {t['clean_end']}  sim {t['sim']:.2f}")
+    txt = json.dumps(res, indent=1, ensure_ascii=False)           # (made whole first: a failed dump must not leave half a file)
+    open(os.path.join(HERE, 'picks.json'), 'w').write(txt)
+    print('changed:', changed)
 
 def main():
     from faster_whisper import WhisperModel
@@ -98,4 +141,4 @@ def main():
     print('lines needing a look:', bad)
 
 if __name__ == '__main__':
-    main()
+    rescore() if '--rescore' in sys.argv else main()

@@ -739,6 +739,28 @@
       camAt(lp3(eye, [LAP.x + 0.02, 1.36, LAP.z - 0.36], kIn * 0.6), lap);
     }
 
+    /* (v25.0 CP11) THE ROOM UNDER EACH FILM, a pure function of its clock: the mall muffled at noon in the opening, the
+       shop at night under the call, the visit, the examination and the clearing (the room's sound fuller once the fog has
+       lifted, from K.lift), each ending's night and its daylight (A's "days later", D's morning: the mall heard clear),
+       C's air-con alone after the shutter comes down, and the coda's night. mixBeds eases to it. */
+    function filmBedAt(key, t) {
+      const B = { mall: 0, night: 0, mallclear: 0 };
+      const seg = (a, b) => Math.min(1, Math.max(0, (t - a) / (b - a)));      // 0 before a, 1 after b
+      if (key === 'open') B.mall = 0.55 * (1 - seg(OPEN.black - 1.0, OPEN.end));               // out with the picture
+      else if (key === 'call') B.night = 0.5 * (1 - seg(CALL.black - 0.6, CALL.end));          // to the next evening's black
+      else if (key === 'visit') B.night = 0.45 * seg(0, 1.0);                                   // and in from it
+      else if (key === 'exam') B.night = 0.45;
+      else if (key === 'clear') B.night = t < CLEARF.lift ? 0.4 : 0.5;
+      else if (END[key]) {
+        const T = END[key];
+        if (t >= T.coda) B.night = 0.42 * (1 - seg(T.coda + CODA.black - 0.6, T.coda + CODA.end));
+        else if (key === 'A' && t >= T.days - 0.3) B.mallclear = 0.5 * (1 - seg(T.coda - 1.0, T.coda));
+        else if (key === 'D' && t >= T.morning - 0.3) B.mallclear = 0.5 * (1 - seg(T.coda - 1.0, T.coda));
+        else if (key === 'C' && t >= T.alone) B.night = 0.62;                                   // the air-con, all that is left
+        else B.night = 0.45;
+      }
+      return B;
+    }
     const films = {
       begin(key, c, api) {
         FL.key = key; FL.lit = ''; FL.api = api; FL.stings = (c && c.stings) || []; FL.once = new Set();
@@ -749,6 +771,7 @@
       },
       frame(key, t, api) {
         if (FL.key !== key) films.begin(key, null, api);
+        Object.assign(filmBed, filmBedAt(key, t)); filmBed.on = true;
         fTalk(t);
         if (key === 'open') openFrame(t);
         else if (key === 'call') callFrame(t);
@@ -780,6 +803,7 @@
         camera.rotation.z = 0;
         if (FL.hands) { FL.hands.visible = true; FL.hands = null; }
         FL.key = ''; FL.lit = ''; FL.stings = []; FL.api = null;
+        filmBed.on = false;
         if (kit && kit.captions) kit.captions(null);
       }
     };

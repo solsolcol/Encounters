@@ -78,22 +78,25 @@
      it, so a re-said line moves what follows it. The names are QUOTED on purpose: build.py gives a sound to a chapter's
      own pack only when the chapter names it in quotes (v21.1). Written from the registry by masters/v25.0/secs.py. */
   /* SECS BEGIN */
-  const SECS = {
-      'q2o1': 4.85, 'cu2a1': 4.85, 'q2o2b': 2.67, 'cu2a1b': 3.98, 'q2o2': 2.67, 'q2o3': 7.46, 'q2o4': 2.67,
-      'q2till': 2.24, 'q2bag': 2.24, 'q2jacket': 2.67, 'q2where': 2.67, 'q2fridge': 3.11, 'q2flowers': 3.54, 'q2note': 1.37,
-      'pg2c1': 4.41, 'q2c1': 7.46, 'pg2c2': 19.2, 'q2c2': 3.54, 'pg2c3': 7.89, 'q2c3': 1.37,
-      'q2v1': 6.59, 'pg2v1': 3.98, 'lc2v1': 3.11, 'lc2sit': 3.98, 'lc2tell': 2.67,
-      'q2tA': 12.24, 'q2tB': 7.02, 'q2tC': 3.98, 'q2tD': 2.67, 'lc2tA': 7.89, 'lc2tB': 7.89, 'lc2tC': 6.59, 'lc2tD': 3.98,
-      'lc2e1': 2.24, 'lc2e2': 1.37, 'q2e1': 1.37, 'lc2e3': 0.93, 'q2e2': 1.8, 'lc2e4': 2.67, 'q2e3': 0.93, 'lc2e5': 2.24,
-      'q2e4': 2.24, 'lc2e6': 3.54, 'lc2e7': 2.24, 'q2e5': 4.85, 'lc2e8': 6.15, 'lc2e9': 5.72, 'q2e6': 1.37, 'lc2e10': 3.98,
-      'lc2k0': 2.67, 'lc2namo': 11.21, 'lc2sak1': 10.5, 'lc2sak2': 9.79, 'lc2sak3': 10.5, 'lc2drink': 1.8, 'lc2wrist': 1.37,
-      'lc2k2': 7.89, 'lc2w1': 10.5, 'pg2w1': 2.24,
-      'q2A1': 2.67, 'pg2A1': 8.76, 'q2A2': 2.67, 'pg2A2': 2.67, 'cu2b1': 4.85, 'q2A3': 8.76,
-      'q2B1': 6.15, 'lc2B1': 9.63, 'lc2B2': 10.93, 'pg2B1': 3.11, 'q2B2': 9.63,
-      'q2C1': 5.28, 'lc2C1': 2.67, 'lc2C2': 7.46, 'pg2C1': 0.93, 'q2C2': 2.67, 'lc2C3': 6.59, 'q2C3': 10.93,
-      'q2D1': 2.24, 'lc2D1': 3.54, 'pg2D1': 2.24, 'cu2a2': 3.54, 'q2D2': 6.59, 'q2D3': 5.28,
-      'q2K1': 11.8, 'q2K2': 10.93, 'q2K3': 11.8, 'q2K4': 9.2,
-      'q2A': 5.28, 'q2B': 5.28, 'q2C': 4.85, 'q2D': 4.85,
+  const SECS = {      // MEASURED from the shipped takes (masters/v25.0/install.py; the registry carries the same numbers)
+    /* him */
+    'q2o1': 4.75, 'q2o2b': 1.97, 'q2o2': 1.69, 'q2o3': 5.37, 'q2o4': 2.33, 'q2till': 1.53, 'q2bag': 1.13,
+    'q2jacket': 1.53, 'q2where': 1.51, 'q2fridge': 1.65, 'q2flowers': 3.05, 'q2note': 1.05, 'q2c1': 8.57,
+    'q2c2': 2.41, 'q2c3': 0.97, 'q2v1': 6.57, 'q2tA': 10.73, 'q2tB': 4.97, 'q2tC': 3.29, 'q2tD': 0.97, 'q2e1': 0.73,
+    'q2e2': 0.65, 'q2e3': 0.89, 'q2e4': 1.93, 'q2e5': 2.73, 'q2e6': 1.12, 'q2A1': 1.77, 'q2A2': 1.51, 'q2A3': 5.61,
+    'q2B1': 6.49, 'q2B2': 6.49, 'q2C1': 5.61, 'q2C2': 1.65, 'q2C3': 8.49, 'q2D1': 1.79, 'q2D2': 5.61, 'q2D3': 4.41,
+    'q2K1': 10.01, 'q2K2': 9.93, 'q2K3': 10.73, 'q2K4': 7.13, 'q2A': 3.77, 'q2B': 3.53, 'q2C': 3.61, 'q2D': 3.29,
+    /* the customers */
+    'cu2a1': 4.55, 'cu2a1b': 2.73, 'cu2b1': 2.57, 'cu2a2': 2.81,
+    /* Pong */
+    'pg2c1': 2.68, 'pg2c2': 13.9, 'pg2c3': 5.06, 'pg2v1': 2.57, 'pg2w1': 1.45, 'pg2A1': 5.16, 'pg2A2': 1.75,
+    'pg2B1': 1.54, 'pg2C1': 0.69, 'pg2D1': 1.48,
+    /* Lersi Chin */
+    'lc2v1': 3.29, 'lc2sit': 2.7, 'lc2tell': 1.6, 'lc2tA': 5.21, 'lc2tB': 6.55, 'lc2tC': 5.44, 'lc2tD': 2.73,
+    'lc2e1': 1.2, 'lc2e2': 0.75, 'lc2e3': 0.58, 'lc2e4': 1.93, 'lc2e5': 1.18, 'lc2e6': 4.73, 'lc2e7': 1.74,
+    'lc2e8': 5.26, 'lc2e9': 4.79, 'lc2e10': 2.73, 'lc2k0': 3.21, 'lc2namo': 17.13, 'lc2sak1': 14.65, 'lc2sak2': 15.85,
+    'lc2sak3': 14.57, 'lc2drink': 1.69, 'lc2wrist': 0.92, 'lc2k2': 6.66, 'lc2w1': 9.93, 'lc2B1': 7.53, 'lc2B2': 9.77,
+    'lc2C1': 1.88, 'lc2C2': 5.45, 'lc2C3': 5.52, 'lc2D1': 2.65
   };
   /* SECS END */
 
@@ -193,7 +196,15 @@
     assets: ['lersichin', 'e4pong', 'e4nangkwak', 'e4takrut', 'e4phayant',
              'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm', 'filmlaptop',
              'staffman', 'sitwoman', 'wifewalk', 'sitangry', 'fatherwalk'],
-    reuse: { e4pong: "Pong, the Bangkok dealer of chapter 1 — he sent him to the first master on someone else's word, and vouches first-hand for Lersi Chin here (§3.2)",
+    /* FRESH (chaptertest) asks a chapter of episode 4 to declare what it takes from episodes 1-3 (`reuse`, printed on
+       every run as a reminder); what it shares with chapter 1 of its own episode — his own shop, its stock, Pong — is
+       the same story going on, declared here as data so it stays written down (Chad, v17.4: "any reuse is declared") */
+    reuse: { filmlaptop: "his own laptop on his counter, as in chapter 1 — its screen the forum in ending A and the coda",
+             staffman: "the goldsmith's man across the corridor, the same neighbour as in chapter 1, seen at noon through his open front",
+             sitwoman: "a woman walking past his shop at noon, the same mall's people as in chapter 1, a few metres off and blurred by the fog",
+             wifewalk: "her walk, the clip alone",
+             sitangry: "a man walking past his shop at noon, the same mall's people as in chapter 1" },
+    reuseInEpisode: { e4pong: "Pong, the Bangkok dealer of chapter 1 — he sent him to the first master on someone else's word, and vouches first-hand for Lersi Chin here (§3.2)",
              e4nangkwak: "the piece he took from the first master's tray in chapter 1, standing by his door as he was told to put it — Lersi Chin sees it and advises a temple (§2.2 #6)",
              e4takrut: "the same, when the piece he took was the takrut",
              e4phayant: "the same, when it was the pha yant",
@@ -201,20 +212,17 @@
              e4khunpaen: "his shop's stock", e4rian: "his shop's stock", e4pidta: "his shop's stock", e4jatukham: "his shop's stock",
              e4kring: "his shop's stock", e4meedmor: "his shop's stock", e4bucha: "his shop's stock and the Buddha on his altar",
              e4takrutsm: "his shop's stock",
-             filmlaptop: "his own laptop on his counter, as in chapter 1 — its screen the forum in ending A and the coda",
-             staffman: "the goldsmith's man across the corridor, the same neighbour as in chapter 1, seen at noon through his open front",
-             sitwoman: "a woman walking past his shop at noon, the same mall's people as in chapter 1, a few metres off and blurred by the fog",
-             wifewalk: "her walk, the clip alone",
-             sitangry: "a man walking past his shop at noon, the same mall's people as in chapter 1",
-             fatherwalk: "his walk, the clip alone" },
+             fatherwalk: "a man's walk past his shop, the clip alone (chapter 1's mall)" },
     placeholders: {},
     items: [],
 
     musicVol: 0,
     /* the beds, every one at 0 here: mixBeds sets each by the hour, the fog and the beat (masters/v25.0/make.sh: looped
        by hand, levelled by RMS) — the mall by day (muffled in the fog), the shop at night (the air-con, the fridge, the
-       empty corridor), and the two pieces of music play has: the fog's and the visit's */
-    ambience: { beds: [['x2mallday', 0], ['x2night', 0], ['x2fogmus', 0], ['x2visitmus', 0]] },
+       empty corridor), the two pieces of music play has (the fog's and the visit's), and the mall by day heard clear
+       (the endings' mornings). Under a film the room's beds are the film's own (films.frame: filmBedAt), so a 98 s
+       film's room never stops where a one-shot of its 22 s take would have */
+    ambience: { beds: [['x2mallfog', 0], ['x2nightroom', 0], ['x2fogmus', 0], ['x2visitmus', 0], ['x2mallclear', 0]] },
     voiceLine: null,
 
     words: {
@@ -309,11 +317,15 @@
   /* THE CHANT'S CAPTIONS (v21.31's law: every chant with words is captioned, the Pali as chanted over its meaning, timed
      on the take's own breaths from the line's start so it works muted too; translated from A Chanting Guide). The cut
      points are fractions of each take's measured length until CP10 times them on the breaths */
+  /* (v25.0 CP10) each cut at the middle of a breath in the shipped take, measured (20 ms frames 32 dB under its peak):
+     Namo's three at its two long breaths (5.0-5.74 s, 10.94-11.76 s of 17.12); each Sakkatvā verse's six lines
+     paired, cut at its second and fourth breaths (lc2sak1 4.75 and 9.45 s of 14.64; lc2sak2 5.14 and 10.52 of 15.84;
+     lc2sak3 4.61 and 9.51 of 14.56) */
   const CHANT_CAPS = {
-    lc2namo: [['capNamo', 'capNamoSub', 0, 0.333], ['capNamo', 'capNamoSub', 0.333, 0.667], ['capNamo', 'capNamoSub', 0.667, 1]],
-    lc2sak1: [['capSak1a', 'capSak1aSub', 0, 0.34], ['capSak1b', 'capSak1bSub', 0.34, 0.68], ['capSak1c', 'capSak1cSub', 0.68, 1]],
-    lc2sak2: [['capSak2a', 'capSak2aSub', 0, 0.34], ['capSak2b', 'capSak2bSub', 0.34, 0.68], ['capSak2c', 'capSak2cSub', 0.68, 1]],
-    lc2sak3: [['capSak3a', 'capSak3aSub', 0, 0.34], ['capSak3b', 'capSak3bSub', 0.34, 0.68], ['capSak3c', 'capSak3cSub', 0.68, 1]]
+    lc2namo: [['capNamo', 'capNamoSub', 0, 0.314], ['capNamo', 'capNamoSub', 0.314, 0.663], ['capNamo', 'capNamoSub', 0.663, 1]],
+    lc2sak1: [['capSak1a', 'capSak1aSub', 0, 0.324], ['capSak1b', 'capSak1bSub', 0.324, 0.646], ['capSak1c', 'capSak1cSub', 0.646, 1]],
+    lc2sak2: [['capSak2a', 'capSak2aSub', 0, 0.324], ['capSak2b', 'capSak2bSub', 0.324, 0.664], ['capSak2c', 'capSak2cSub', 0.664, 1]],
+    lc2sak3: [['capSak3a', 'capSak3aSub', 0, 0.317], ['capSak3b', 'capSak3bSub', 0.317, 0.653], ['capSak3c', 'capSak3cSub', 0.653, 1]]
   };
   function chantCaps(name) {
     const L = SECS[name] || 10, W = DATA.words;

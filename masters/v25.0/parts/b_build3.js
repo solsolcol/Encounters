@@ -498,6 +498,9 @@
       kneelZone.visible = !play.knelt;
       setPhase('clearing', { complete: false });
       if (warmSounds) warmSounds(WARM_CLEAR);
+      /* the coda's sounds: every ending cues them through one helper (codaCues), so no scene's own source names them and
+         the engine's warm scan cannot find them — warmed here, written out, before any ending can play */
+      if (warmSounds) warmSounds(['x2codamus', 'q2K1', 'q2K2', 'q2K3', 'q2K4', 'x2scroll', 'x2page', 'x2click', 'x2ping']);
     }
     const seatNow = (P, on) => { if (!P) return; P.seated = !!on; P.sitW = on ? 1 : 0; P.sitOff = null; P.walk = null; };
     function kneel(instant) {
@@ -693,11 +696,15 @@
        corridor), the fog's own music under play until the clearing, and the visit's after it — each eased; in a film the
        beds go down (every film cues its own sound, written to its pictures). The order is DATA.ambience.beds' */
     const MUS = { fog: 0.32, visit: 0.26 };
-    const bedMix = { mall: 0, night: 0, fogmus: 0, visitmus: 0 };
+    const bedMix = { mall: 0, night: 0, fogmus: 0, visitmus: 0, mallclear: 0 };
+    /* (v25.0 CP11) a film's own room: films.frame writes it from the film's clock (filmBedAt), films.end takes it off */
+    const filmBed = { on: false, mall: 0, night: 0, mallclear: 0 };
     function mixBeds(wdt, st) {
       if (!(wdt > 0)) return;
-      const want = { mall: 0, night: 0, fogmus: 0, visitmus: 0 };
-      if (st !== 'cine') {
+      const want = { mall: 0, night: 0, fogmus: 0, visitmus: 0, mallclear: 0 };
+      if (st === 'cine') {
+        if (filmBed.on) { want.mall = filmBed.mall; want.night = filmBed.night; want.mallclear = filmBed.mallclear; }
+      } else {
         if (phase === 'shop') { want.mall = 0.3; want.fogmus = MUS.fog; }
         else if (phase === 'night') { want.night = 0.3; want.fogmus = MUS.fog * 0.8; }
         else if (phase === 'clearing' || phase === 'decide' || phase === 'visit') {
@@ -708,6 +715,7 @@
       for (const k in bedMix) bedMix[k] += (want[k] - bedMix[k]) * (1 - Math.exp(-wdt / (k === 'fogmus' || k === 'visitmus' ? 2.5 : 0.9)));
       const B2 = DATA.ambience.beds;
       B2[0][1] = bedMix.mall; B2[1][1] = bedMix.night; B2[2][1] = bedMix.fogmus; B2[3][1] = bedMix.visitmus;
+      B2[4][1] = bedMix.mallclear;
     }
     function updatePile() {}
     function updateFire() {}
