@@ -125,7 +125,8 @@
         /* the mayom bundle across the bowl's rim: seven sprigs tied. Its frame (what every pose turns): the tied end on the
            group's origin, the leaves along +x, their face up (+y) */
         { const mg = new THREE.Group(); const [x, z] = at(0.36, 0.3); mg.position.set(x - 0.02, 0.11, z); mg.rotation.set(0, 0.6, 0.18); g.add(mg); props.mayom = mg;
-          const sg = new THREE.Group(); mg.add(sg);                                   // (v25.0 CP6) the stand-in, drawn only if the model never lands
+          /* (v25.0 CP6) the stand-in, drawn only if the model never lands */
+          const sg = new THREE.Group(); mg.add(sg);
           const mLeafM = M({ color: 0x3e7a2e, roughness: 0.7, side: THREE.DoubleSide }), mStem = M({ color: 0x5a6a2a, roughness: 0.8 });
           for (let k = 0; k < 7; k++) { const a = (k - 3) * 0.12, st = new THREE.Mesh(new THREE.CylinderGeometry(0.002, 0.002, 0.2, 5), mStem);
             st.rotation.z = Math.PI / 2 + a; st.position.set(0.02, k * 0.002, (k - 3) * 0.008); sg.add(st);
@@ -184,7 +185,8 @@
         m.scale.setScalar(size / sz[axis]); m.updateMatrixWorld(true); bb.setFromObject(m);
         m.position.set(-(bb.min.x + bb.max.x) / 2, -bb.min.y, -(bb.min.z + bb.max.z) / 2);
         m.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = true; if (key === 'e4nangkwak') bronzeLift(o); } });
-        m.userData.fit = { x: bb.max.x - bb.min.x, y: bb.max.y - bb.min.y, z: bb.max.z - bb.min.z };   // (v25.0) its size as placed
+        /* (v25.0) its size as placed */
+        m.userData.fit = { x: bb.max.x - bb.min.x, y: bb.max.y - bb.min.y, z: bb.max.z - bb.min.z };
         grp.add(m);
         return m;
       }).catch(err => { console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });

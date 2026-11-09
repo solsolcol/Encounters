@@ -1263,7 +1263,8 @@
         /* the mayom bundle across the bowl's rim: seven sprigs tied. Its frame (what every pose turns): the tied end on the
            group's origin, the leaves along +x, their face up (+y) */
         { const mg = new THREE.Group(); const [x, z] = at(0.36, 0.3); mg.position.set(x - 0.02, 0.11, z); mg.rotation.set(0, 0.6, 0.18); g.add(mg); props.mayom = mg;
-          const sg = new THREE.Group(); mg.add(sg);                                   // (v25.0 CP6) the stand-in, drawn only if the model never lands
+          /* (v25.0 CP6) the stand-in, drawn only if the model never lands */
+          const sg = new THREE.Group(); mg.add(sg);
           const mLeafM = M({ color: 0x3e7a2e, roughness: 0.7, side: THREE.DoubleSide }), mStem = M({ color: 0x5a6a2a, roughness: 0.8 });
           for (let k = 0; k < 7; k++) { const a = (k - 3) * 0.12, st = new THREE.Mesh(new THREE.CylinderGeometry(0.002, 0.002, 0.2, 5), mStem);
             st.rotation.z = Math.PI / 2 + a; st.position.set(0.02, k * 0.002, (k - 3) * 0.008); sg.add(st);
@@ -1322,7 +1323,8 @@
         m.scale.setScalar(size / sz[axis]); m.updateMatrixWorld(true); bb.setFromObject(m);
         m.position.set(-(bb.min.x + bb.max.x) / 2, -bb.min.y, -(bb.min.z + bb.max.z) / 2);
         m.traverse(o => { if (o.isMesh) { o.castShadow = false; o.receiveShadow = true; if (key === 'e4nangkwak') bronzeLift(o); } });
-        m.userData.fit = { x: bb.max.x - bb.min.x, y: bb.max.y - bb.min.y, z: bb.max.z - bb.min.z };   // (v25.0) its size as placed
+        /* (v25.0) its size as placed */
+        m.userData.fit = { x: bb.max.x - bb.min.x, y: bb.max.y - bb.min.y, z: bb.max.z - bb.min.z };
         grp.add(m);
         return m;
       }).catch(err => { console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
@@ -2399,7 +2401,8 @@
       if (!play.shapeSeen) {
         camera.updateMatrixWorld(); _nv2.set(STAND_HEAD.x, STAND_HEAD.y, STAND_HEAD.z).project(camera);
         const near = Math.hypot(yaw.position.x - STAND.x, yaw.position.z - STAND.z) < 2.6;
-        if ((_nv2.z < 1 && Math.abs(_nv2.x) < 0.7 && Math.abs(_nv2.y) < 0.7) || near) {   // looked at, not caught at the frame's edge
+        /* (v25.0) looked at, not caught at the frame's edge */
+        if ((_nv2.z < 1 && Math.abs(_nv2.x) < 0.7 && Math.abs(_nv2.y) < 0.7) || near) {
           play.shapeSeen = true; props.sway = 1;
           const rel = angTo(yaw.rotation.y, Math.atan2(-(STAND.x - yaw.position.x), -(STAND.z - yaw.position.z)));
           if (worldSfx) { worldSfx('x2rustle', 0.55, 1, Math.max(-0.8, Math.min(0.8, -Math.sin(rel) * 0.8))); worldSfx('x2breath', 0.45); }
@@ -3337,7 +3340,8 @@
         if (L) { L.lookAt = _sh.set(shelf[0], shelf[1], shelf[2]); }
         const kw = smo(sgk(t, X.fetch, X.fetch + 2.0));
         const e = [lp(CL.x, SHELF.x + 0.62, kw), lp(KNEEL.y, 1.6, smo(sgk(t, X.fetch, X.fetch + 0.8))), lp(CL.z, SHELF.z - 0.42, kw)];
-        fLens(lp(isNarrow() ? 56 : 48, isNarrow() ? 40 : 34, kw));   // (v25.0 CP7) narrowed as he arrives: the piece large enough to know
+        /* (v25.0 CP7) narrowed as he arrives: the piece large enough to know */
+        fLens(lp(isNarrow() ? 56 : 48, isNarrow() ? 40 : 34, kw));
         camAt(e, [shelf[0], shelf[1] - 0.05 * kw, shelf[2]]);
         if (t >= tTake && ph) handHold(ph, { screen: [0.1, lp(-0.35, -0.12, smo(sgk(t, tTake, tBack))), 0.36], face: false, rx: -0.3 });
         else handFree();
@@ -3359,7 +3363,8 @@
         /* the piece on the cloth, the candles' light on it */
         if (L) { gaze(L, false); L.lookAt = null; L.look = 0; }
         const c0 = props.cloth.position;
-        shot([c0.x + 0.17, 0.5, c0.z + 0.42], [c0.x, c0.y + 0.03, c0.z], 36, 30);   // (v25.0 CP7) closer: the piece, not his bag
+        /* (v25.0 CP7) closer: the piece, not his bag */
+        shot([c0.x + 0.17, 0.5, c0.z + 0.42], [c0.x, c0.y + 0.03, c0.z], 36, 30);
         return;
       }
       /* "According to my practice, I believe..." — pushed in; "By him?" — "I didn't say that. I said on you." */
@@ -3401,7 +3406,8 @@
           /* (v25.0 CP7) the verses chanted with the mayom held between his joined palms, its leaves up and toward him (an
              open hand raised by his face to hold it read as "stop", by photograph) */
           lcPose('wai', Math.max(0.001, smo(sgk(t, K.sak, K.sak + 1.0))), { lift: 0.45, hold: props.mayom });
-          if (props.mayom) orient(props.mayom, [0, 0.825, 0.565], [0, -0.565, 0.825]);   // its leaves up and toward him, their face to him
+          /* its leaves up and toward him, their face to him */
+          if (props.mayom) orient(props.mayom, [0, 0.825, 0.565], [0, -0.565, 0.825]);
         }
         /* his eyes down on his hands and the mat (the tray, the candles' light at the top of the frame); up as it lifts */
         const down = [CL.x, 0.25, CL.z - 0.75];
@@ -3418,7 +3424,8 @@
         /* "Drink. A little." — the bowl brought up to him in both hands; a sip */
         const up = smo(sgk(t, K.water + 0.2, K.water + 1.4)) * (1 - smo(sgk(t, K.sprinkle - 1.2, K.sprinkle - 0.2)));
         const B0 = props.bowl.userData.home || (props.bowl.userData.home = props.bowl.position.clone());
-        props.bowl.position.set(lp(B0.x, CL.x, up), lp(B0.y, 0.7, up), lp(B0.z, CL.z - 0.32, up));   // (v25.0 CP7) below his eyes, the water seen
+        /* (v25.0 CP7) below his eyes, the water seen */
+        props.bowl.position.set(lp(B0.x, CL.x, up), lp(B0.y, 0.7, up), lp(B0.z, CL.z - 0.32, up));
         props.bowl.rotation.x = 0.35 * smo(sgk(t, K.lc2drink + SECS.lc2drink, K.lc2drink + SECS.lc2drink + 0.8)) * up;
         lcPose('bowl', up);
         if (L) { L.look = 1; gaze(L, true, 1.1); L.bow = 0; }
@@ -3431,7 +3438,8 @@
         /* the leaves dipped and flicked over his head and shoulders: the drops falling through his view */
         const fk = (t - K.sprinkle) * 2.6, k = smo(sgk(t, K.sprinkle, K.sprinkle + 0.6)) * (1 - smo(sgk(t, K.thread - 0.6, K.thread)));
         lcPose('reach', k, { at: [CL.x + 0.12 * Math.sin(fk), 1.28 + 0.06 * Math.cos(fk * 1.3), CL.z - 0.55], hold: props.mayom });
-        if (props.mayom && k > 0.001) orient(props.mayom, [0.55 * Math.sin(0.9 * Math.sin(fk * 2.0)), -0.8, 0.45], [0, 0.5, 0.85]);   // (v25.0 CP7) its leaves down at him, flicked side to side
+        /* (v25.0 CP7) its leaves down at him, flicked side to side */
+        if (props.mayom && k > 0.001) orient(props.mayom, [0.55 * Math.sin(0.9 * Math.sin(fk * 2.0)), -0.8, 0.45], [0, 0.5, 0.85]);
         if (L) { L.lookAt = _lv.set(CL.x, 1.25, CL.z); L.neck = null; L.look = 1; }
         dropsAt(t, K.sprinkle + 0.3, K.thread - 0.4, KN_EYE);
         fLens(isNarrow() ? 56 : 48);
@@ -3619,12 +3627,16 @@
       }
       /* alone at the counter, the shutter down; the shelf by the door where the piece stood, empty; the grey creeping in */
       castVis({ lersi: false, pong: false }); lcPose(null, 0); lcBlockOn(false); props.lcThings.visible = false;
-      fLook('VISIT'); shopAt({ u: 0, led: 0.85, ceil: 0, night: true });
+      /* (v25.0 CP9) inside the door: the shutter brought down as its sound says (x2shutter, T.alone + 0.1), then his eyes to
+         the little shelf beside it where the piece stood, empty, the grey creeping in. From behind the counter the left
+         wall's cabinet hid the shelf (by photograph), and the shutter was already down under its own sound */
+      const down = smo(sgk(t, T.alone + 0.1, T.alone + 3.3));
+      fLook('VISIT'); shopAt({ u: lp(0.86, 0, down), led: 0.85, ceil: 0, night: true });
       const creep = smo(sgk(t, T.alone + 1.2, T.coda - 1.0));
       if (kit && kit.chill) kit.chill(0.36 * creep, { secs: 0.01, cine: true, tint: 'grey' });
-      const e = [HIS.x - 0.2, 1.6, HIS.z + 0.3], shelf = [SHELF.x + 0.04, SHELF.y, SHELF.z];
-      fLens(lp(isNarrow() ? 56 : 48, isNarrow() ? 46 : 38, smo(sgk(t, T.alone, T.coda))));
-      camAt(e, shelf);
+      const e = [-1.0, 1.6, 1.55], shelf = [SHELF.x + 0.04, SHELF.y, SHELF.z];
+      fLens(lp(isNarrow() ? 56 : 48, isNarrow() ? 44 : 36, smo(sgk(t, T.alone + 3.0, T.coda))));
+      camAt(e, aimEase(e, [0.0, 1.0, 3.0], shelf, smo(sgk(t, T.alone + 3.0, T.alone + 5.0))));
     }
 
     /* D · ENOUGH (best): thank you; go well; out under the shutter together; the next morning in full colour — the stand
@@ -3652,7 +3664,8 @@
         waiAt(0);
         goOut(t, T.go, T.morning + 0.6);
         const path = [[CL.x, CL.z], [0.0, 1.6], [0.2, 2.7], [0.3, 3.6], [0.4, 4.3]];
-        const s = walkS(t, T.go + 1.6, 1.25), v = walkV(t, T.go + 1.6, 1.25);
+        /* (v25.0 CP9) two metres behind him (started at 1.6 s he walked at the master's ear) */
+        const s = walkS(t, T.go + 2.8, 1.1), v = walkV(t, T.go + 2.8, 1.1);
         const y0 = lp(KNEEL.y, 1.62, smo(sgk(t, T.go, T.go + 1.2)));
         const e = walkEye(path, s, v, () => 0); e[1] = Math.min(e[1], y0 + (e[1] - 1.62));
         fLens(isNarrow() ? 60 : 52);
@@ -3677,7 +3690,8 @@
       const eye = [HIS.x + 0.1, 1.55, HIS.z + 0.28];
       if (t < T.cu2a2) {
         /* the envelope on the counter, For the temple; his pocket, and the wallet in it */
-        shot(eye, [props.envelope.position.x, top0, props.envelope.position.z], 50, 42);
+        /* (v25.0 CP9) its words read on a phone */
+        shot(eye, [props.envelope.position.x, top0, props.envelope.position.z], 36, 30);
         return;
       }
       if (t < T.last) {

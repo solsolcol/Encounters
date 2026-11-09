@@ -59,8 +59,10 @@ out.tenTabs = await p.evaluate(() => document.querySelectorAll('#chTabs .chTab')
 await p.click('#chTabs .chTab[data-ep="4"]'); await p.waitForTimeout(200);
 out.writtenRowLocked = await p.evaluate(() => {
   const r = [...document.querySelectorAll('#chList .chTile')];
-  return r.length === 5 && r[0].dataset.ch === 'e4c1' && r[0].disabled && r[0].classList.contains('locked') && !r[0].classList.contains('unwritten')
-    && r.slice(1).every(x => x.classList.contains('unwritten') && x.disabled)
+  /* v25.0: and its second (Not Every Master Should Be Trusted): two real rows, both locked on a fresh profile, three unwritten */
+  return r.length === 5 && r[0].dataset.ch === 'e4c1' && r[1].dataset.ch === 'e4c2'
+    && r.slice(0, 2).every(x => x.disabled && x.classList.contains('locked') && !x.classList.contains('unwritten'))
+    && r.slice(2).every(x => x.classList.contains('unwritten') && x.disabled)
     && document.getElementById('chEpName').textContent.includes('Episode 4');
 });
 await p.click('#chTabs .chTab[data-ep="5"]'); await p.waitForTimeout(200);
