@@ -89,6 +89,51 @@ EDITS = [
     ("      flowerStand(1.8, 3.45, -0.12, [['生意兴隆', false, -0.29], ['财源广进', false, 0.29]], 4853, [0xf27aa0, 0xf6f0e0, 0xd8202a, 0xf2b8d0, 0xfaf6ee]);\n"
      "      flowerStand(2.65, 3.6, -0.3, [['大展鸿图', false, -0.29], ['开张志喜', false, 0.29]], 4857, [0xf2c030, 0xe8642a, 0xf6f0e0, 0xd8202a, 0xf2d870]);\n",
      "      /* (v25.0: the two outside in the corridor were cleared away by the mall weeks ago) */\n"),
+    # (v25.1 F1) a dealer's 16 cm display: at 52 cm deep, every line from his eyes through the glass top passed over the
+    # tray and out through the front glass, and whatever lay on the glass (his laptop, phone, notebook, the note, the
+    # loupe) read as lying on the floor among the customers' stools. The tray's floor raised; the cupboard under it as
+    # tall as that leaves (CUP), the glass and its frame standing on it
+    ("    const DISPLAY = { floor: 0.52, rows: 5, cols: 28 };",
+     "    const DISPLAY = { floor: 0.88, rows: 5, cols: 28 };"),
+    # (v25.1 F2) and the cupboard built round the drinks fridge set into its back: one box covered the fridge's opening, so
+    # its water, its cans and the wallet the play sends him to find were never seen (the door opened on white)
+    ("        bx(W, 0.5, C.d, mGloss, 0, 0.25, C.z);                                           // the white cupboard under it\n",
+     "        /* (v25.1 F1, F2) the white cupboard under it, as tall as the display leaves (CUP), built round the drinks fridge\n"
+     "           set into its back: either side of it, over it and behind it (one box covered its opening) */\n"
+     "        const CUP = DISPLAY.floor - 0.02;\n"
+     "        { const FD = 0.45, fx0 = FRIDGE.x0, fx1 = FRIDGE.x1, fh = FRIDGE.h;\n"
+     "          bx(fx0 - C.x0, CUP, C.d, mGloss, (C.x0 + fx0) / 2, CUP / 2, C.z);\n"
+     "          bx(C.x1 - fx1, CUP, C.d, mGloss, (fx1 + C.x1) / 2, CUP / 2, C.z);\n"
+     "          bx(fx1 - fx0, CUP - fh, C.d, mGloss, (fx0 + fx1) / 2, fh + (CUP - fh) / 2, C.z);\n"
+     "          bx(fx1 - fx0, fh, C.d - FD, mGloss, (fx0 + fx1) / 2, fh / 2, BZ + FD + (C.d - FD) / 2); }\n"),
+    ("        const TY = DISPLAY.floor, TH = top - 0.012 - 0.5;",
+     "        const TY = DISPLAY.floor, TH = top - 0.012 - CUP;"),
+    ("const gp = pl(w, TH, mGlass, x, 0.5 + TH / 2, z, 0, ry);",
+     "const gp = pl(w, TH, mGlass, x, CUP + TH / 2, z, 0, ry);"),
+    ("bx(0.02, TH + 0.012, 0.02, mAlu, x, 0.5 + (TH + 0.012) / 2, z);",
+     "bx(0.02, TH + 0.012, 0.02, mAlu, x, CUP + (TH + 0.012) / 2, z);"),
+    ("bx(W, 0.02, 0.022, mAlu, 0, 0.51, z); }",
+     "bx(W, 0.02, 0.022, mAlu, 0, CUP + 0.01, z); }"),
+    ("        bx(0.012, TH, 0.012, mAlu, 0, 0.5 + TH / 2, FZ);",
+     "        bx(0.012, TH, 0.012, mAlu, 0, CUP + TH / 2, FZ);"),
+    # (v25.1 F5) his laptop's two drawings in the shop's hands, so it can be put away for the master's visit (lapAway)
+    ("old.userData.dyn = true; S0.add(old);\n",
+     "old.userData.dyn = true; S0.add(old); shop.lapOld = old;\n"),
+    ("            S0.add(g); old.visible = false;\n",
+     "            S0.add(g); old.visible = false; shop.lapG = g;\n"),
+    # (v25.1 F9) each dried flower a crumpled head, not a ball: a low sphere pressed flat toward the room, creased by a
+    # pattern fixed to each point (its seams stay shut) and lit facet by facet, every head turned its own way (rf, its
+    # own stream, so the layout's rr is untouched). Smooth balls read as a heap of brown marbles up close
+    ("        const fg = new THREE.SphereGeometry(0.034, 8, 6), ins = fm.map(m2 => new THREE.InstancedMesh(fg, m2, n));\n",
+     "        const fg = (() => { const g0 = new THREE.SphereGeometry(0.036, 9, 6), q = g0.attributes.position, v = new THREE.Vector3();\n"
+     "          for (let i = 0; i < q.count; i++) { v.fromBufferAttribute(q, i);\n"
+     "            const f = 0.76 + 0.24 * Math.abs(Math.sin(v.x * 211 + v.y * 97) * Math.cos(v.y * 151 - v.z * 73)) + 0.08 * Math.abs(Math.cos(Math.atan2(v.y, v.x) * 2.5));\n"
+     "            q.setXYZ(i, v.x * f, v.y * f, v.z * f * 0.62); }\n"
+     "          const g1 = g0.toNonIndexed(); g1.computeVertexNormals(); g0.dispose(); return g1; })(), ins = fm.map(m2 => new THREE.InstancedMesh(fg, m2, n));\n"),
+    ("        const cnt = fm.map(() => 0), mm = new THREE.Matrix4(), rr = rng(seed);\n",
+     "        const cnt = fm.map(() => 0), mm = new THREE.Matrix4(), rr = rng(seed), rf = rng(seed + 101), fe = new THREE.Euler();\n"),
+    ("          mm.makeTranslation(Math.cos(a) * d, 1.5 + Math.sin(a) * d, 0.04 + (0.34 - d) * 0.18 + rr() * 0.02); ins[ci].setMatrixAt(cnt[ci]++, mm); }\n",
+     "          mm.makeRotationFromEuler(fe.set((rf() - 0.5) * 0.9, (rf() - 0.5) * 0.9, rf() * Math.PI * 2)).setPosition(Math.cos(a) * d, 1.5 + Math.sin(a) * d, 0.04 + (0.34 - d) * 0.18 + rr() * 0.02); ins[ci].setMatrixAt(cnt[ci]++, mm); }\n"),
 ]
 
 

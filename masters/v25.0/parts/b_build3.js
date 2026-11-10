@@ -282,7 +282,7 @@
     }
     /* THE SOUNDS PLAY ASKS FOR, warmed so the first of each is heard (CP13 of chapter 1: nothing warmed is silence) */
     const WARM_SHOP = ['q2till', 'q2bag', 'q2jacket', 'q2where', 'q2fridge', 'x2drawer', 'x2bagzip', 'x2cloth', 'x2fridge', 'x2wallet'];
-    const WARM_NIGHT = ['q2flowers', 'q2note', 'x2switch', 'x2rustle', 'x2breath', 'x2ledhum'];
+    const WARM_NIGHT = ['q2flowers', 'q2note', 'x2switch', 'x2rustle', 'x2breath', 'x2ledhum', 'x2breathslow'];
     const WARM_CLEAR = ['lc2sit', 'lc2tell', 'q2tA', 'q2tB', 'q2tC', 'q2tD', 'lc2tA', 'lc2tB', 'lc2tC', 'lc2tD', 'lc2w1', 'pg2w1', 'x2kneel', 'x2bow'];
     if (warmSounds) warmSounds(WARM_SHOP.concat(WARM_NIGHT));
 
@@ -451,6 +451,8 @@
       if (play.revealed || play.busy) return false;
       const run = play.run; play.busy = true;
       if (kit) { kit.root(true); if (kit.chill) kit.chill(FOG.chill * 0.6, { secs: 3.2, tint: 'grey' }); }
+      /* (v25.1 F10) the press has its sound: his breath, slowed, as he holds still (four seconds of the beds alone before) */
+      if (worldSfx) worldSfx('x2breathslow', 0.4);
       look('LIT', 4.5); shopCtl.lights(0.6, 3.5);
       props.sway = 0.2;
       after(4.0, () => { if (!live(run)) return; play.busy = false; reveal('watch');
@@ -665,9 +667,12 @@
         enabled: () => phase === 'night' && play.noteOn && !play.called && !play.busy && !wDark, onInteract() { return callPong(); } },
       { id: 'kneel', pos: { x: CL.x, y: 1.0, z: CL.z }, radius: 2.4, prompt: W.hotKneel, mark: false,
         enabled: () => phase === 'clearing' && !play.knelt && !wDark, onInteract() { return kneel(false); } },
-      { id: 'bow', pos: BUDDHA, radius: 6, anyView: true, prompt: W.hotBow,
+      /* (v25.1 F8) the two presses made kneeling wear no mark (the kneel spot's own rule): each rode 0.55 m over its
+         thing, so from the kneeling eye it stood at the very top of the screen, under a phone's stats; both are pressed
+         from anywhere, and the badge names them */
+      { id: 'bow', pos: BUDDHA, radius: 6, anyView: true, prompt: W.hotBow, mark: false,
         enabled: () => phase === 'clearing' && play.knelt && !play.bowed && !play.busy && !play.turning && !wDark, onInteract() { return bow(); } },
-      { id: 'bowhead', pos: { x: LC.x, y: 0.95, z: LC.z }, radius: 3, anyView: true, prompt: W.hotBowHead,
+      { id: 'bowhead', pos: { x: LC.x, y: 0.95, z: LC.z }, radius: 3, anyView: true, prompt: W.hotBowHead, mark: false,
         enabled: () => phase === 'clearing' && play.examined && !play.cleared && !play.busy && !wDark, onInteract() { return bowHead(); } }
     ];
 
@@ -679,6 +684,7 @@
       waiUpdate();
       peopleTick(now, wdt);                               // the cast's clocks run in films too (v5.19): only their looks wait for play
       shopFrame(now);
+      lapTick();
       const st = getState();
       mixBeds(Math.min(1, raw), st);
       const liveSt = st === 'play' || st === 'unlock' || st === 'choose';

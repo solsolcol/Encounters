@@ -67,7 +67,11 @@
     const KN_EYE = [CL.x, KNEEL.y, CL.z];                               // his eye kneeling before Lersi Chin
     /* (v25.0 CP13) the thread: how far he leans in (down, forward), where his eyes go (over the mat, his wrist below
        them), the hand's own lowering (`place`'s p), the master's lean to meet it, and the lens on a phone and a desktop */
-    const TIE = { dy: 0.06, dz: 0.28, aim: [0.03, 0.6, 0.05], p: 0, bow: 0.3, flN: 60, flD: 50 };
+    /* (v25.1 F6) pN: on a narrow screen the hand held lower and further off (`place`'s own p: 8 cm down, 6 cm away a unit):
+       at p 0 it was a dark shape over half a phone, a pointing finger at its tip (by photograph) */
+    const TIE = { dy: 0.06, dz: 0.28, aim: [0.03, 0.6, 0.05], p: 0, pN: 1.0, bow: 0.3, flN: 60, flD: 50 };
+    /* (v25.1 F7) ending D's piece held IN his hand: at the place grip's palm, this far off it in the lens's frame */
+    const AMU_HELD = [0.0, 0.035, -0.01];
     const BUDDHA_AT = [BUDDHA.x, BUDDHA.y, BUDDHA.z];
     const LC_HEAD = () => faceOf(cast.lersi, [LC.x, 0.74, LC.z]);
     const PG_HEAD = () => faceOf(cast.pong, [PSTOOL.x, 1.42, PSTOOL.z]);
@@ -194,10 +198,12 @@
     }
     /* HIS NOTEBOOK on the counter, open: the masters he has checked, some crossed out (the coda) — a drawn page laid on
        the shop's own book, drawn only when what it shows changes */
+    /* (v25.1 F3) laid with its top AWAY from him, so it reads upright from his place (laid flat by x alone, the page's
+       top came toward him and every word in the coda stood upside down) */
     const nBook = (() => {
       if (!shop.ledger) return null;
       const [c, x] = sized(cnv, 1024, 640), t = tex(done(THREE, c, false));
-      const pg = new THREE.Mesh(new THREE.PlaneGeometry(0.44, 0.29), M({ map: t, roughness: 0.85 })); pg.rotation.x = -Math.PI / 2; pg.position.y = 0.0135; pg.visible = false;
+      const pg = new THREE.Mesh(new THREE.PlaneGeometry(0.44, 0.29), M({ map: t, roughness: 0.85 })); pg.rotation.set(-Math.PI / 2, 0, Math.PI); pg.position.y = 0.0135; pg.visible = false;
       shop.ledger.add(pg);
       return { pg, x, t, sig: '' };
     })();
@@ -416,7 +422,9 @@
         /* his eyes open on the door: "That one... from there?" — the look follows his, round to the shelf by the door */
         if (L) { L.bow = 0; L.look = 1; L.lookAt = _sh.set(shelf[0], shelf[1], shelf[2]); L.neck = 0.95; }
         const k = smo(sgk(t, X.lc2e7 + 0.4, X.lc2e7 + 2.2));
-        fLens(lp(isNarrow() ? 50 : 42, isNarrow() ? 40 : 32, smo(sgk(t, X.q2e5, X.fetch))));
+        /* (v25.1 F11) narrowed onto the shelf as the look arrives: at 40/32 the piece was a few pixels on a dark bracket,
+           2.8 m off and seen from below (photographed, both screens) */
+        fLens(lp(isNarrow() ? 50 : 42, isNarrow() ? 22 : 17, smo(sgk(t, X.q2e5, X.fetch))));
         camAt(KN_EYE, aimTurn(KN_EYE, LC_HEAD(), shelf, k, 1));
         return;
       }
@@ -551,7 +559,7 @@
            and hid the master's face, and the master's hands, a metre off in the room, met it only on the screen (by
            photograph). They go to the wrist where it is drawn (wristShare) */
         const A = FL.api, lean = smo(sgk(t, K.thread, K.thread + 1.4));
-        if (A && A.handPose) A.handPose('place', smo(sgk(t, K.thread, K.thread + 0.9)), { p: TIE.p });
+        if (A && A.handPose) A.handPose('place', smo(sgk(t, K.thread, K.thread + 0.9)), { p: isNarrow() ? TIE.pN : TIE.p });
         if (A && A.handsRoot) { A.handsRoot.visible = true; A.armR.visible = true; }
         const fl = lp(isNarrow() ? 56 : 48, isNarrow() ? TIE.flN : TIE.flD, lean);
         fLens(fl);
@@ -798,7 +806,13 @@
         /* her question followed, and answered: a piece from the tray in his hand, turned to her */
         const tray = [0.35, DISPLAY.floor + 0.02, COUNTER.z + 0.02];
         const up = smo(sgk(t, T.q2D2 + 0.4, T.q2D2 + 1.6));
-        if (up > 0.001) handHold(amuletHand, { screen: [lp(0.15, 0.05, up), lp(-0.45, -0.15, up), 0.38], face: true, tilt: -0.2 }); else handFree();
+        /* (v25.1 F7) held IN his hand: the place grip eased in with the lift, the piece at its palm, turned to the lens
+           (placed at a point of the screen it stood in the air above an open hand, by photograph); handFree lets go */
+        const A = FL.api;
+        if (up > 0.001) {
+          if (A && A.handPose) { A.handPose('place', up, { p: 0 }); FL.grip = true; }
+          handHold(amuletHand, { lens: AMU_HELD, face: true, tilt: -0.2 });
+        } else handFree();
         fLens(isNarrow() ? 54 : 46);
         camAt(eye, aimEase(eye, tray, [0.3, top0 + 0.1, COUNTER.z + 0.4], up * 0.6));
         return;
@@ -864,6 +878,18 @@
       }
       return B;
     }
+    /* (v25.1 F5) HIS LAPTOP PUT AWAY for the master's visit: the counter cleared from the visit on, through the clearing,
+       the decision and endings B, C and D, and back where it stood for ending A's night (he opens it to post) and the coda.
+       Its lid's back is the model's own near-black paint, and it stood as a flat black slab before the altar in every
+       kneeling shot (the lid and the base's underside are one mesh in the file, so it cannot be closed). A change made on
+       a cut: the visit opens out of the black, and A and the coda open on their own nights */
+    function lapAway(away) {
+      const g = shop.lapG || shop.lapOld;
+      if (g) g.visible = !away;
+    }
+    function lapTick() {
+      if (!FL.key) lapAway(phase === 'visit' || phase === 'clearing' || phase === 'decide');
+    }
     const films = {
       begin(key, c, api) {
         FL.key = key; FL.lit = ''; FL.api = api; FL.stings = (c && c.stings) || []; FL.once = new Set();
@@ -874,6 +900,7 @@
       },
       frame(key, t, api) {
         if (FL.key !== key) films.begin(key, null, api);
+        lapAway(key === 'visit' || key === 'exam' || key === 'clear' || (!!END[key] && key !== 'A' && t < END[key].coda));
         Object.assign(filmBed, filmBedAt(key, t)); filmBed.on = true;
         fTalk(t);
         if (key === 'open') openFrame(t);
@@ -892,6 +919,8 @@
       end() {
         const key = FL.key, fogBack = (key === 'call' || key === 'visit' || key === 'exam') && !play.cleared;
         waiAt(0); handFree(); threadOn(false); lcPose(null, 0);
+        /* (v25.1 F4) the coda's page put away, so a replay (reset() runs this) never opens on the months-later notebook */
+        namesAt(-1);
         handPhone.visible = false; amuletHand.visible = false; drops.visible = false;
         for (const s of ['hand', 'lc']) if (held[s]) held[s].visible = false;
         if (shop.phone) shop.phone.g.visible = true;

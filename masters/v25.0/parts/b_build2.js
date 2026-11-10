@@ -47,7 +47,9 @@
         }
         geo.computeVertexNormals();
         const drape = new THREE.Mesh(geo, mJ); g.add(drape);
-        const slv = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.045, 0.42, 12, 6, true), mJ); slv.position.set(0.25, -0.2, 0.08); slv.rotation.set(0.25, 0, 0.18); g.add(slv);
+        /* (v25.1 F12) the sleeve closed at its ends and hung a little lower: its open top stood 9 cm over the drape, a dark
+           ring on top of the jacket from where he stands (measured, then photographed) */
+        const slv = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.045, 0.42, 12, 6, false), mJ); slv.position.set(0.25, -0.26, 0.08); slv.rotation.set(0.25, 0, 0.18); g.add(slv);
         const zip = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.004, 0.36), mAluP); zip.position.set(-0.04, 0.02, 0); g.add(zip);
       }
       /* THE DRINKS FRIDGE set into the cupboard's back, his side: a glass door in a black frame, lit inside, two

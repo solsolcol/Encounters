@@ -508,7 +508,7 @@
        back wall behind him (its cabinet and three tiers stepping up and back, the Buddha on the top one), the statue
        shelves either side of it; on the counter's glass his laptop (its screen's UV island measured off the file: u
        −0.0033…1.0044, v −0.3276…1.3144, so repeat and offset put the whole canvas on the glass), his notebook, his pen */
-    const DISPLAY = { floor: 0.52, rows: 5, cols: 28 };       // (v24.22: a dealer's compartments, 10.5 × 10.8 cm — 3 × 16 read as a tray of empty boxes)
+    const DISPLAY = { floor: 0.88, rows: 5, cols: 28 };       // (v24.22: a dealer's compartments, 10.5 × 10.8 cm — 3 × 16 read as a tray of empty boxes)
     const SHRINE = { w: 1.2, h: 0.95, d: 0.5, tiers: [{ w: 1.2, h: 0.16, d: 0.48, y: 0.95 }, { w: 0.9, h: 0.2, d: 0.32, y: 1.11 }, { w: 0.56, h: 0.2, d: 0.2, y: 1.31 }] };
     const BU = { x0: 0.8, x1: 2.36, d: 0.34, H: 2.06, base: 0.9, ys: [1.30, 1.68] };   // (v24.22) the back wall's two display units: their inner and outer x, depth, height, the cupboard's top, the shelves
     const LAP = { x: -0.15, z: COUNTER.z - 0.06, ry: -Math.PI / 2 + 0.1, uv: [0.99236, 0.60901, 0.003275, 0.19951] };
@@ -814,20 +814,27 @@
          calculator, a stand of his new cards. The top's upper face stays at C.h + 0.046, where everything on it has
          always stood */
       { const C = COUNTER, W = C.x1 - C.x0, FZ = C.z + C.d / 2, BZ = C.z - C.d / 2, top = C.h + 0.046;
-        bx(W, 0.5, C.d, mGloss, 0, 0.25, C.z);                                           // the white cupboard under it
+        /* (v25.1 F1, F2) the white cupboard under it, as tall as the display leaves (CUP), built round the drinks fridge
+           set into its back: either side of it, over it and behind it (one box covered its opening) */
+        const CUP = DISPLAY.floor - 0.02;
+        { const FD = 0.45, fx0 = FRIDGE.x0, fx1 = FRIDGE.x1, fh = FRIDGE.h;
+          bx(fx0 - C.x0, CUP, C.d, mGloss, (C.x0 + fx0) / 2, CUP / 2, C.z);
+          bx(C.x1 - fx1, CUP, C.d, mGloss, (fx1 + C.x1) / 2, CUP / 2, C.z);
+          bx(fx1 - fx0, CUP - fh, C.d, mGloss, (fx0 + fx1) / 2, fh + (CUP - fh) / 2, C.z);
+          bx(fx1 - fx0, fh, C.d - FD, mGloss, (fx0 + fx1) / 2, fh / 2, BZ + FD + (C.d - FD) / 2); }
         pl(W - 0.1, 0.16, M({ map: tex(makeCounterFascia(THREE, cnv)), roughness: 0.5 }), 0, 0.3, FZ + 0.002);   // (v24.22) its fascia: what the shop sells
-        const TY = DISPLAY.floor, TH = top - 0.012 - 0.5;                                 // the tray's floor; the glass's height
+        const TY = DISPLAY.floor, TH = top - 0.012 - CUP;                                 // the tray's floor; the glass's height
         bx(W - 0.03, 0.02, C.d - 0.03, mVel, 0, TY - 0.01, C.z);                        // the tray's red velvet floor
         { const dz = (C.d - 0.06) / DISPLAY.rows, dx = (W - 0.06) / DISPLAY.cols, mPart = mStand;   // its partitions
           for (let i = 0; i <= DISPLAY.rows; i++) bx(W - 0.06, 0.026, 0.006, mPart, 0, TY + 0.013, BZ + 0.03 + i * dz);
           for (let j = 0; j <= DISPLAY.cols; j++) bx(0.006, 0.026, C.d - 0.06, mPart, C.x0 + 0.03 + j * dx, TY + 0.013, C.z); }
         for (const [w, x, z, ry] of [[W - 0.02, 0, FZ, 0], [W - 0.02, 0, BZ, Math.PI], [C.d - 0.02, C.x0 + 0.005, C.z, -Math.PI / 2], [C.d - 0.02, C.x1 - 0.005, C.z, Math.PI / 2]]) {
-          const gp = pl(w, TH, mGlass, x, 0.5 + TH / 2, z, 0, ry); gp.renderOrder = 2; }  // the glass front, his sliding doors at the back, the ends
+          const gp = pl(w, TH, mGlass, x, CUP + TH / 2, z, 0, ry); gp.renderOrder = 2; }  // the glass front, his sliding doors at the back, the ends
         const gt = pl(W - 0.03, C.d - 0.03, mGlass, 0, top - 0.006, C.z, -Math.PI / 2); gt.renderOrder = 2;   // the glass top
-        for (const x of [C.x0 + 0.01, C.x1 - 0.01]) for (const z of [FZ, BZ]) bx(0.02, TH + 0.012, 0.02, mAlu, x, 0.5 + (TH + 0.012) / 2, z);
-        for (const z of [FZ, BZ]) { bx(W, 0.014, 0.022, mAlu, 0, top - 0.007, z); bx(W, 0.02, 0.022, mAlu, 0, 0.51, z); }
+        for (const x of [C.x0 + 0.01, C.x1 - 0.01]) for (const z of [FZ, BZ]) bx(0.02, TH + 0.012, 0.02, mAlu, x, CUP + (TH + 0.012) / 2, z);
+        for (const z of [FZ, BZ]) { bx(W, 0.014, 0.022, mAlu, 0, top - 0.007, z); bx(W, 0.02, 0.022, mAlu, 0, CUP + 0.01, z); }
         for (const x of [C.x0 + 0.01, C.x1 - 0.01]) bx(0.022, 0.014, C.d, mAlu, x, top - 0.007, C.z);
-        bx(0.012, TH, 0.012, mAlu, 0, 0.5 + TH / 2, FZ);                                   // the front's middle mullion
+        bx(0.012, TH, 0.012, mAlu, 0, CUP + TH / 2, FZ);                                   // the front's middle mullion
         bx(W - 0.08, 0.008, 0.01, mLed, 0, top - 0.026, FZ - 0.03);                        // the LEDs under the top's front edge
         bx(W - 0.08, 0.008, 0.01, mLed, 0, top - 0.026, BZ + 0.03);
         /* the compartments' stock, dealt from a fixed seed: cased amulets lying face up (their tops to the back, so they
@@ -882,7 +889,7 @@
           lt.repeat.set(LAP.uv[0], LAP.uv[1]); lt.offset.set(LAP.uv[2], LAP.uv[3]);       // the screen's UV island onto the whole canvas (measured)
           const scrM = B({ color: 0x050608, map: lt });
           shop.lap = { x: lx, t: lt, m: scrM, sig: '', on: 0 };
-          const old = new THREE.Group(); old.position.set(LAP.x, top, LAP.z); old.rotation.y = LAP.ry; old.userData.dyn = true; S0.add(old);
+          const old = new THREE.Group(); old.position.set(LAP.x, top, LAP.z); old.rotation.y = LAP.ry; old.userData.dyn = true; S0.add(old); shop.lapOld = old;
           const base = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.016, 0.24), mBlack); base.position.y = 0.008; old.add(base);
           const lid = new THREE.Mesh(new THREE.PlaneGeometry(0.33, 0.23), scrM); lid.position.set(0.09, 0.12, 0); lid.rotation.set(0, -Math.PI / 2, 0); lid.rotateX(-0.41); old.add(lid);
           parseOnce('filmlaptop').then(({ scene: src }) => {
@@ -890,7 +897,7 @@
             const g = src.clone(true); g.position.set(LAP.x, top, LAP.z); g.rotation.y = LAP.ry;
             g.traverse(o => { if (!o.isMesh) return; o.castShadow = false; o.receiveShadow = true;
               const m = o.material; o.material = (m && m.name === 'screen') ? scrM : m.clone(); if (o.material !== scrM) mats.push(o.material); });
-            S0.add(g); old.visible = false;
+            S0.add(g); old.visible = false; shop.lapG = g;
           }).catch(err => { console.warn('filmlaptop failed to load', err); if (ctx.loadFail) ctx.loadFail('filmlaptop', err); }); }
         /* his stool behind it */
         { const st = new THREE.Group(); st.position.set(0.55, 0, C.z - 0.85); S0.add(st);
@@ -923,10 +930,14 @@
         for (const a of [0, 2.1, 4.2]) { const l = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 1.45, 6), mLeg); l.position.set(Math.cos(a) * 0.14, 0.7, Math.sin(a) * 0.14 - 0.05); l.rotation.set(Math.sin(a) * 0.12, 0, -Math.cos(a) * 0.12); g.add(l); }
         const disc = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.36, 0.06, 28), M({ color: sway ? 0x4a4632 : 0x2e5a2e, roughness: 0.8 })); disc.rotation.x = Math.PI / 2; disc.position.set(0, 1.5, 0); g.add(disc);
         const n = 120, fm = cols.map(c2 => M({ color: c2, roughness: 0.7 }));
-        const fg = new THREE.SphereGeometry(0.034, 8, 6), ins = fm.map(m2 => new THREE.InstancedMesh(fg, m2, n));
-        const cnt = fm.map(() => 0), mm = new THREE.Matrix4(), rr = rng(seed);
+        const fg = (() => { const g0 = new THREE.SphereGeometry(0.036, 9, 6), q = g0.attributes.position, v = new THREE.Vector3();
+          for (let i = 0; i < q.count; i++) { v.fromBufferAttribute(q, i);
+            const f = 0.76 + 0.24 * Math.abs(Math.sin(v.x * 211 + v.y * 97) * Math.cos(v.y * 151 - v.z * 73)) + 0.08 * Math.abs(Math.cos(Math.atan2(v.y, v.x) * 2.5));
+            q.setXYZ(i, v.x * f, v.y * f, v.z * f * 0.62); }
+          const g1 = g0.toNonIndexed(); g1.computeVertexNormals(); g0.dispose(); return g1; })(), ins = fm.map(m2 => new THREE.InstancedMesh(fg, m2, n));
+        const cnt = fm.map(() => 0), mm = new THREE.Matrix4(), rr = rng(seed), rf = rng(seed + 101), fe = new THREE.Euler();
         for (let k = 0; k < n * 2; k++) { const a = rr() * Math.PI * 2, d = Math.sqrt(rr()) * 0.34, ci = rr() * cols.length | 0; if (cnt[ci] >= n) continue;
-          mm.makeTranslation(Math.cos(a) * d, 1.5 + Math.sin(a) * d, 0.04 + (0.34 - d) * 0.18 + rr() * 0.02); ins[ci].setMatrixAt(cnt[ci]++, mm); }
+          mm.makeRotationFromEuler(fe.set((rf() - 0.5) * 0.9, (rf() - 0.5) * 0.9, rf() * Math.PI * 2)).setPosition(Math.cos(a) * d, 1.5 + Math.sin(a) * d, 0.04 + (0.34 - d) * 0.18 + rr() * 0.02); ins[ci].setMatrixAt(cnt[ci]++, mm); }
         ins.forEach((im, i) => { im.count = cnt[i]; g.add(im); });
         words.forEach(([t, lat, x]) => {
           const rb = new THREE.Mesh(new THREE.PlaneGeometry(0.1, 1.05), M({ map: tex(makeRibbon(THREE, cnv, t, lat)), roughness: 0.4, side: THREE.DoubleSide }));
@@ -1185,7 +1196,9 @@
         }
         geo.computeVertexNormals();
         const drape = new THREE.Mesh(geo, mJ); g.add(drape);
-        const slv = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.045, 0.42, 12, 6, true), mJ); slv.position.set(0.25, -0.2, 0.08); slv.rotation.set(0.25, 0, 0.18); g.add(slv);
+        /* (v25.1 F12) the sleeve closed at its ends and hung a little lower: its open top stood 9 cm over the drape, a dark
+           ring on top of the jacket from where he stands (measured, then photographed) */
+        const slv = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.045, 0.42, 12, 6, false), mJ); slv.position.set(0.25, -0.26, 0.08); slv.rotation.set(0.25, 0, 0.18); g.add(slv);
         const zip = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.004, 0.36), mAluP); zip.position.set(-0.04, 0.02, 0); g.add(zip);
       }
       /* THE DRINKS FRIDGE set into the cupboard's back, his side: a glass door in a black frame, lit inside, two
@@ -2274,7 +2287,7 @@
     }
     /* THE SOUNDS PLAY ASKS FOR, warmed so the first of each is heard (CP13 of chapter 1: nothing warmed is silence) */
     const WARM_SHOP = ['q2till', 'q2bag', 'q2jacket', 'q2where', 'q2fridge', 'x2drawer', 'x2bagzip', 'x2cloth', 'x2fridge', 'x2wallet'];
-    const WARM_NIGHT = ['q2flowers', 'q2note', 'x2switch', 'x2rustle', 'x2breath', 'x2ledhum'];
+    const WARM_NIGHT = ['q2flowers', 'q2note', 'x2switch', 'x2rustle', 'x2breath', 'x2ledhum', 'x2breathslow'];
     const WARM_CLEAR = ['lc2sit', 'lc2tell', 'q2tA', 'q2tB', 'q2tC', 'q2tD', 'lc2tA', 'lc2tB', 'lc2tC', 'lc2tD', 'lc2w1', 'pg2w1', 'x2kneel', 'x2bow'];
     if (warmSounds) warmSounds(WARM_SHOP.concat(WARM_NIGHT));
 
@@ -2443,6 +2456,8 @@
       if (play.revealed || play.busy) return false;
       const run = play.run; play.busy = true;
       if (kit) { kit.root(true); if (kit.chill) kit.chill(FOG.chill * 0.6, { secs: 3.2, tint: 'grey' }); }
+      /* (v25.1 F10) the press has its sound: his breath, slowed, as he holds still (four seconds of the beds alone before) */
+      if (worldSfx) worldSfx('x2breathslow', 0.4);
       look('LIT', 4.5); shopCtl.lights(0.6, 3.5);
       props.sway = 0.2;
       after(4.0, () => { if (!live(run)) return; play.busy = false; reveal('watch');
@@ -2657,9 +2672,12 @@
         enabled: () => phase === 'night' && play.noteOn && !play.called && !play.busy && !wDark, onInteract() { return callPong(); } },
       { id: 'kneel', pos: { x: CL.x, y: 1.0, z: CL.z }, radius: 2.4, prompt: W.hotKneel, mark: false,
         enabled: () => phase === 'clearing' && !play.knelt && !wDark, onInteract() { return kneel(false); } },
-      { id: 'bow', pos: BUDDHA, radius: 6, anyView: true, prompt: W.hotBow,
+      /* (v25.1 F8) the two presses made kneeling wear no mark (the kneel spot's own rule): each rode 0.55 m over its
+         thing, so from the kneeling eye it stood at the very top of the screen, under a phone's stats; both are pressed
+         from anywhere, and the badge names them */
+      { id: 'bow', pos: BUDDHA, radius: 6, anyView: true, prompt: W.hotBow, mark: false,
         enabled: () => phase === 'clearing' && play.knelt && !play.bowed && !play.busy && !play.turning && !wDark, onInteract() { return bow(); } },
-      { id: 'bowhead', pos: { x: LC.x, y: 0.95, z: LC.z }, radius: 3, anyView: true, prompt: W.hotBowHead,
+      { id: 'bowhead', pos: { x: LC.x, y: 0.95, z: LC.z }, radius: 3, anyView: true, prompt: W.hotBowHead, mark: false,
         enabled: () => phase === 'clearing' && play.examined && !play.cleared && !play.busy && !wDark, onInteract() { return bowHead(); } }
     ];
 
@@ -2671,6 +2689,7 @@
       waiUpdate();
       peopleTick(now, wdt);                               // the cast's clocks run in films too (v5.19): only their looks wait for play
       shopFrame(now);
+      lapTick();
       const st = getState();
       mixBeds(Math.min(1, raw), st);
       const liveSt = st === 'play' || st === 'unlock' || st === 'choose';
@@ -3026,7 +3045,11 @@
     const KN_EYE = [CL.x, KNEEL.y, CL.z];                               // his eye kneeling before Lersi Chin
     /* (v25.0 CP13) the thread: how far he leans in (down, forward), where his eyes go (over the mat, his wrist below
        them), the hand's own lowering (`place`'s p), the master's lean to meet it, and the lens on a phone and a desktop */
-    const TIE = { dy: 0.06, dz: 0.28, aim: [0.03, 0.6, 0.05], p: 0, bow: 0.3, flN: 60, flD: 50 };
+    /* (v25.1 F6) pN: on a narrow screen the hand held lower and further off (`place`'s own p: 8 cm down, 6 cm away a unit):
+       at p 0 it was a dark shape over half a phone, a pointing finger at its tip (by photograph) */
+    const TIE = { dy: 0.06, dz: 0.28, aim: [0.03, 0.6, 0.05], p: 0, pN: 1.0, bow: 0.3, flN: 60, flD: 50 };
+    /* (v25.1 F7) ending D's piece held IN his hand: at the place grip's palm, this far off it in the lens's frame */
+    const AMU_HELD = [0.0, 0.035, -0.01];
     const BUDDHA_AT = [BUDDHA.x, BUDDHA.y, BUDDHA.z];
     const LC_HEAD = () => faceOf(cast.lersi, [LC.x, 0.74, LC.z]);
     const PG_HEAD = () => faceOf(cast.pong, [PSTOOL.x, 1.42, PSTOOL.z]);
@@ -3153,10 +3176,12 @@
     }
     /* HIS NOTEBOOK on the counter, open: the masters he has checked, some crossed out (the coda) — a drawn page laid on
        the shop's own book, drawn only when what it shows changes */
+    /* (v25.1 F3) laid with its top AWAY from him, so it reads upright from his place (laid flat by x alone, the page's
+       top came toward him and every word in the coda stood upside down) */
     const nBook = (() => {
       if (!shop.ledger) return null;
       const [c, x] = sized(cnv, 1024, 640), t = tex(done(THREE, c, false));
-      const pg = new THREE.Mesh(new THREE.PlaneGeometry(0.44, 0.29), M({ map: t, roughness: 0.85 })); pg.rotation.x = -Math.PI / 2; pg.position.y = 0.0135; pg.visible = false;
+      const pg = new THREE.Mesh(new THREE.PlaneGeometry(0.44, 0.29), M({ map: t, roughness: 0.85 })); pg.rotation.set(-Math.PI / 2, 0, Math.PI); pg.position.y = 0.0135; pg.visible = false;
       shop.ledger.add(pg);
       return { pg, x, t, sig: '' };
     })();
@@ -3375,7 +3400,9 @@
         /* his eyes open on the door: "That one... from there?" — the look follows his, round to the shelf by the door */
         if (L) { L.bow = 0; L.look = 1; L.lookAt = _sh.set(shelf[0], shelf[1], shelf[2]); L.neck = 0.95; }
         const k = smo(sgk(t, X.lc2e7 + 0.4, X.lc2e7 + 2.2));
-        fLens(lp(isNarrow() ? 50 : 42, isNarrow() ? 40 : 32, smo(sgk(t, X.q2e5, X.fetch))));
+        /* (v25.1 F11) narrowed onto the shelf as the look arrives: at 40/32 the piece was a few pixels on a dark bracket,
+           2.8 m off and seen from below (photographed, both screens) */
+        fLens(lp(isNarrow() ? 50 : 42, isNarrow() ? 22 : 17, smo(sgk(t, X.q2e5, X.fetch))));
         camAt(KN_EYE, aimTurn(KN_EYE, LC_HEAD(), shelf, k, 1));
         return;
       }
@@ -3510,7 +3537,7 @@
            and hid the master's face, and the master's hands, a metre off in the room, met it only on the screen (by
            photograph). They go to the wrist where it is drawn (wristShare) */
         const A = FL.api, lean = smo(sgk(t, K.thread, K.thread + 1.4));
-        if (A && A.handPose) A.handPose('place', smo(sgk(t, K.thread, K.thread + 0.9)), { p: TIE.p });
+        if (A && A.handPose) A.handPose('place', smo(sgk(t, K.thread, K.thread + 0.9)), { p: isNarrow() ? TIE.pN : TIE.p });
         if (A && A.handsRoot) { A.handsRoot.visible = true; A.armR.visible = true; }
         const fl = lp(isNarrow() ? 56 : 48, isNarrow() ? TIE.flN : TIE.flD, lean);
         fLens(fl);
@@ -3757,7 +3784,13 @@
         /* her question followed, and answered: a piece from the tray in his hand, turned to her */
         const tray = [0.35, DISPLAY.floor + 0.02, COUNTER.z + 0.02];
         const up = smo(sgk(t, T.q2D2 + 0.4, T.q2D2 + 1.6));
-        if (up > 0.001) handHold(amuletHand, { screen: [lp(0.15, 0.05, up), lp(-0.45, -0.15, up), 0.38], face: true, tilt: -0.2 }); else handFree();
+        /* (v25.1 F7) held IN his hand: the place grip eased in with the lift, the piece at its palm, turned to the lens
+           (placed at a point of the screen it stood in the air above an open hand, by photograph); handFree lets go */
+        const A = FL.api;
+        if (up > 0.001) {
+          if (A && A.handPose) { A.handPose('place', up, { p: 0 }); FL.grip = true; }
+          handHold(amuletHand, { lens: AMU_HELD, face: true, tilt: -0.2 });
+        } else handFree();
         fLens(isNarrow() ? 54 : 46);
         camAt(eye, aimEase(eye, tray, [0.3, top0 + 0.1, COUNTER.z + 0.4], up * 0.6));
         return;
@@ -3823,6 +3856,18 @@
       }
       return B;
     }
+    /* (v25.1 F5) HIS LAPTOP PUT AWAY for the master's visit: the counter cleared from the visit on, through the clearing,
+       the decision and endings B, C and D, and back where it stood for ending A's night (he opens it to post) and the coda.
+       Its lid's back is the model's own near-black paint, and it stood as a flat black slab before the altar in every
+       kneeling shot (the lid and the base's underside are one mesh in the file, so it cannot be closed). A change made on
+       a cut: the visit opens out of the black, and A and the coda open on their own nights */
+    function lapAway(away) {
+      const g = shop.lapG || shop.lapOld;
+      if (g) g.visible = !away;
+    }
+    function lapTick() {
+      if (!FL.key) lapAway(phase === 'visit' || phase === 'clearing' || phase === 'decide');
+    }
     const films = {
       begin(key, c, api) {
         FL.key = key; FL.lit = ''; FL.api = api; FL.stings = (c && c.stings) || []; FL.once = new Set();
@@ -3833,6 +3878,7 @@
       },
       frame(key, t, api) {
         if (FL.key !== key) films.begin(key, null, api);
+        lapAway(key === 'visit' || key === 'exam' || key === 'clear' || (!!END[key] && key !== 'A' && t < END[key].coda));
         Object.assign(filmBed, filmBedAt(key, t)); filmBed.on = true;
         fTalk(t);
         if (key === 'open') openFrame(t);
@@ -3851,6 +3897,8 @@
       end() {
         const key = FL.key, fogBack = (key === 'call' || key === 'visit' || key === 'exam') && !play.cleared;
         waiAt(0); handFree(); threadOn(false); lcPose(null, 0);
+        /* (v25.1 F4) the coda's page put away, so a replay (reset() runs this) never opens on the months-later notebook */
+        namesAt(-1);
         handPhone.visible = false; amuletHand.visible = false; drops.visible = false;
         for (const s of ['hand', 'lc']) if (held[s]) held[s].visible = false;
         if (shop.phone) shop.phone.g.visible = true;
