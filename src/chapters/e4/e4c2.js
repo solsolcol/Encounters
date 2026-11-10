@@ -82,7 +82,7 @@
     /* him */
     'q2o1': 4.75, 'q2o2b': 1.97, 'q2o2': 1.69, 'q2o3': 5.37, 'q2o4': 2.33, 'q2till': 1.53, 'q2bag': 1.13,
     'q2jacket': 1.53, 'q2where': 1.51, 'q2fridge': 1.65, 'q2flowers': 3.05, 'q2note': 1.05, 'q2c1': 8.57,
-    'q2c2': 2.41, 'q2c3': 0.97, 'q2v1': 6.57, 'q2tA': 10.73, 'q2tB': 4.97, 'q2tC': 3.29, 'q2tD': 0.97, 'q2e1': 0.73,
+    'q2c2': 2.41, 'q2c3': 0.97, 'q2v1': 6.57, 'q2tA': 10.73, 'q2e1': 0.73,
     'q2e2': 0.65, 'q2e3': 0.89, 'q2e4': 1.93, 'q2e5': 2.73, 'q2e6': 1.12, 'q2A1': 1.77, 'q2A2': 1.51, 'q2A3': 5.61,
     'q2B1': 6.49, 'q2B2': 6.49, 'q2C1': 5.61, 'q2C2': 1.65, 'q2C3': 8.49, 'q2D1': 1.79, 'q2D2': 5.61, 'q2D3': 4.41,
     'q2K1': 10.01, 'q2K2': 9.93, 'q2K3': 10.73, 'q2K4': 7.13, 'q2A': 3.77, 'q2B': 3.53, 'q2C': 3.61, 'q2D': 3.29,
@@ -92,7 +92,7 @@
     'pg2c1': 2.68, 'pg2c2': 13.9, 'pg2c3': 5.06, 'pg2v1': 2.57, 'pg2w1': 1.45, 'pg2A1': 5.16, 'pg2A2': 1.75,
     'pg2B1': 1.54, 'pg2C1': 0.69, 'pg2D1': 1.48,
     /* Lersi Chin */
-    'lc2v1': 3.29, 'lc2sit': 2.7, 'lc2tell': 1.6, 'lc2tA': 5.21, 'lc2tB': 6.55, 'lc2tC': 5.44, 'lc2tD': 2.73,
+    'lc2v1': 3.29, 'lc2sit': 2.7, 'lc2tell': 1.6, 'lc2tA': 5.21,
     'lc2e1': 1.2, 'lc2e2': 0.75, 'lc2e3': 0.58, 'lc2e4': 1.93, 'lc2e5': 1.18, 'lc2e6': 4.73, 'lc2e7': 1.74,
     'lc2e8': 5.26, 'lc2e9': 4.79, 'lc2e10': 2.73, 'lc2k0': 3.21, 'lc2namo': 17.13, 'lc2sak1': 14.65, 'lc2sak2': 15.85,
     'lc2sak3': 14.57, 'lc2drink': 1.69, 'lc2wrist': 0.92, 'lc2k2': 6.66, 'lc2w1': 9.93, 'lc2B1': 7.53, 'lc2B2': 9.77,
@@ -255,17 +255,11 @@
       hotKneel: 'Kneel',
       objBow: 'Bow to the Buddha',
       hotBow: 'Bow three times',
-      pickLabel: 'Tell Lersi Chin',
-      pickTitle: 'What happened there?',
-      pickA: 'Tell Lersi Chin exactly what you saw',
-      pickB: 'Ask Lersi Chin what he thinks it means',
-      pickC: 'Assume the first master is using black magic',
-      pickD: 'Ask Lersi Chin what you should do next',
+      // (v25.2, Chad: "just have the player tell lersi chin what happened in a standradized way") one telling, no pick
+      objTell: 'Tell Lersi Chin what happened',
+      hotTell: 'Tell him what you saw',
       // the card's What you did: the trial's 5.2, its lesson in his own words
       note52A: 'You told him what you saw, not what you made of it. Evidence first, interpretation second.',
-      note52B: 'You asked him what it meant. Seeing something is not the same as understanding it.',
-      note52C: 'You called it black magic. Suspicion is not evidence.',
-      note52D: 'You asked what to do next. The sensible step mattered more than the theory.',
       objBowHead: 'Bow your head',
       hotBowHead: 'Bow your head',
       // the chant, captioned: the Pali as chanted over its meaning (A Chanting Guide, The Dhammayut Order in the USA)
@@ -2207,7 +2201,7 @@
       run: 0, busy: false,
       searched: new Set(), wallet: false,                                   // P1
       shapeSeen: false, revealed: false, how: '', watchAt: 0, noteOn: false, // P2 (how: 'light' | 'watch' | 'walk')
-      knelt: false, bowed: false, bow: null, told: '', examined: false, cleared: false, warned: false,
+      knelt: false, bowed: false, bow: null, asked: false, told: '', examined: false, cleared: false, warned: false,
       piece: 'nangkwak', turning: null
     };
     const PIECES = ['nangkwak', 'takrut', 'phayant'];
@@ -2253,6 +2247,7 @@
       else if (p === 'clearing') {
         if (!play.knelt) o = W.objKneel;
         else if (!play.bowed && !play.busy) o = W.objBow;
+        else if (play.asked && !play.told && !play.busy) o = W.objTell;
         else if (play.examined && !play.cleared && !play.busy) o = W.objBowHead;
       }
       kit.objective(o, opts);
@@ -2288,7 +2283,7 @@
     /* THE SOUNDS PLAY ASKS FOR, warmed so the first of each is heard (CP13 of chapter 1: nothing warmed is silence) */
     const WARM_SHOP = ['q2till', 'q2bag', 'q2jacket', 'q2where', 'q2fridge', 'x2drawer', 'x2bagzip', 'x2cloth', 'x2fridge', 'x2wallet'];
     const WARM_NIGHT = ['q2flowers', 'q2note', 'x2switch', 'x2rustle', 'x2breath', 'x2ledhum', 'x2breathslow'];
-    const WARM_CLEAR = ['lc2sit', 'lc2tell', 'q2tA', 'q2tB', 'q2tC', 'q2tD', 'lc2tA', 'lc2tB', 'lc2tC', 'lc2tD', 'lc2w1', 'pg2w1', 'x2kneel', 'x2bow'];
+    const WARM_CLEAR = ['lc2sit', 'lc2tell', 'q2tA', 'lc2tA', 'lc2w1', 'pg2w1', 'x2kneel', 'x2bow'];
     if (warmSounds) warmSounds(WARM_SHOP.concat(WARM_NIGHT));
 
     /* ---------------------------------------------------------------- the floor's marks (the kneeling place) */
@@ -2560,25 +2555,23 @@
       /* the wai to Lersi Chin: the clasp held a moment toward him, and lowered; he returns it, then speaks */
       after(0.8, () => { if (!live(run)) return; if (kit) kit.pray(false, { secs: 1.2 });
         line('lc2sit', cast.lersi); queueGap(0.5); line('lc2tell', cast.lersi);
-        queueFn(() => { if (live(run)) tellPick(); }); });
+        queueFn(() => { if (live(run)) askTell(); }); });
     }
-    /* WHAT HE TELLS HIM (P5, the trial's 5.2 verbatim): a pick; his line, Lersi Chin's answer, and the trial's lesson banked
-       in his own words with its awareness (awareness only: the decision's wisdom is kept for the decision, §2.2 #5) */
-    const TELL_A = { A: 9, B: 6, C: 3, D: 6 };
-    function tellPick() {
+    /* WHAT HE TELLS HIM (P5, the trial's 5.2): one telling, pressed — what he saw, Lersi Chin's answer, and the trial's lesson
+       banked in his own words with its awareness (awareness only: the decision's wisdom is kept for the decision, §2.2 #5).
+       (v25.2) The four-card pick is gone at Chad's word ("just have the player tell lersi chin what happened in a
+       standradized way. If not i have to review 4 outcomes, on top of another 4 outcomes at the end"): the answer that
+       was the trial's best is the telling. A save from before that told B, C or D goes on as told (readMark keeps it). */
+    const TELL_AWARE = 9;
+    function askTell() { play.asked = true; objectiveFor('clearing'); }
+    function tellIt() {
+      if (!play.asked || play.told || play.busy) return false;
       const run = play.run;
-      if (!kit || !kit.pick) { tellAnswer('A'); return; }
-      kit.pick([{ id: 'A', label: W.pickA, color: '#3a7a5a' }, { id: 'B', label: W.pickB, color: '#3a5a8a' },
-                { id: 'C', label: W.pickC, color: '#8a3a3a' }, { id: 'D', label: W.pickD, color: '#7a6a3a' }],
-               { label: W.pickLabel, title: W.pickTitle })
-        .then((id) => { if (live(run)) tellAnswer(id || 'A'); });
-    }
-    function tellAnswer(k) {
-      const run = play.run;
-      play.told = k; saveMark();
-      bank(W['note52' + k], TELL_A[k] || 0);
-      line('q2t' + k); queueGap(0.4); line('lc2t' + k, cast.lersi);
-      queueFn(() => { if (live(run)) examBegin(); });
+      play.told = 'A'; play.busy = true; saveMark(); objectiveFor('clearing');
+      bank(W.note52A, TELL_AWARE);
+      line('q2tA'); queueGap(0.4); line('lc2tA', cast.lersi);
+      queueFn(() => { if (live(run)) { play.busy = false; examBegin(); } });
+      return true;
     }
     /* THE EXAMINATION (P6, a film) — at its end the piece is on the clean cloth, and out of his bag */
     function examBegin() {
@@ -2677,6 +2670,9 @@
          from anywhere, and the badge names them */
       { id: 'bow', pos: BUDDHA, radius: 6, anyView: true, prompt: W.hotBow, mark: false,
         enabled: () => phase === 'clearing' && play.knelt && !play.bowed && !play.busy && !play.turning && !wDark, onInteract() { return bow(); } },
+      /* (v25.2) the one telling: pressed from where he kneels, named by the badge, no mark (the kneel spot's own rule) */
+      { id: 'tell', pos: { x: LC.x, y: 0.95, z: LC.z }, radius: 3, anyView: true, prompt: W.hotTell, mark: false,
+        enabled: () => phase === 'clearing' && play.bowed && play.asked && !play.told && !play.busy && !wDark, onInteract() { return tellIt(); } },
       { id: 'bowhead', pos: { x: LC.x, y: 0.95, z: LC.z }, radius: 3, anyView: true, prompt: W.hotBowHead, mark: false,
         enabled: () => phase === 'clearing' && play.examined && !play.cleared && !play.busy && !wDark, onInteract() { return bowHead(); } }
     ];
@@ -2775,7 +2771,7 @@
       if (play.cleared) { warning(true); return; }
       if (play.examined) { objectiveFor('clearing', { complete: false }); return; }
       if (play.told) { after(0.6, examBegin); return; }
-      if (play.bowed) { after(0.6, () => tellPick()); return; }
+      if (play.bowed) { after(0.6, () => { if (!play.told) askTell(); }); return; }
     }
 
 
@@ -3959,7 +3955,7 @@
       play.run++;
       play.busy = false; play.searched.clear(); play.wallet = false; play.objBlur = false;
       play.shapeSeen = false; play.revealed = false; play.how = ''; play.watchAt = 0; play.noteOn = false; play.called = false;
-      play.knelt = false; play.bowed = false; play.bow = null; play.told = ''; play.examined = false; play.cleared = false; play.warned = false;
+      play.knelt = false; play.bowed = false; play.bow = null; play.asked = false; play.told = ''; play.examined = false; play.cleared = false; play.warned = false;
       play.turning = null; play.piece = 'nangkwak';
       kneelZone.visible = false; lcBlockOn(false);
       /* the shop as the day began */
@@ -4034,7 +4030,7 @@
       look, presets: PRESETS, shop: shopCtl, shopState: shop, props, films,
       film: { SX, SHOP, COR, COUNTER, HIS, TILL, BAG, STOOL, FRIDGE, NOTE, SWITCH, SHELF, STAND, LC, CL, PSTOOL, MAT, KNEEL, worldS },
       cast, person: { talk: personTalk, do: personDo, rest: personRest, walk: personWalk, put: personPut, sit: personSit, ready: whenReady, pose: lcPose },
-      play: { state: play, search, fridgeOpen, reveal, watch, callPong, kneel, bow, tellAnswer, bowHead, kneelZone, pieces: PIECES },
+      play: { state: play, search, fridgeOpen, reveal, watch, callPong, kneel, bow, tellIt, bowHead, kneelZone, pieces: PIECES },
       castInfo: () => Object.fromEntries(Object.entries(cast).map(([k, P]) => [k, P && { ready: P.ready, diag: P.diag || null,
         pos: [+P.group.position.x.toFixed(2), +P.group.position.y.toFixed(2), +P.group.position.z.toFixed(2)], vis: P.group.visible,
         faceToLens: (() => { if (!P.ready || !P.head || !P.faceLocal) return null;

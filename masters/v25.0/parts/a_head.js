@@ -82,7 +82,7 @@
     /* him */
     'q2o1': 4.75, 'q2o2b': 1.97, 'q2o2': 1.69, 'q2o3': 5.37, 'q2o4': 2.33, 'q2till': 1.53, 'q2bag': 1.13,
     'q2jacket': 1.53, 'q2where': 1.51, 'q2fridge': 1.65, 'q2flowers': 3.05, 'q2note': 1.05, 'q2c1': 8.57,
-    'q2c2': 2.41, 'q2c3': 0.97, 'q2v1': 6.57, 'q2tA': 10.73, 'q2tB': 4.97, 'q2tC': 3.29, 'q2tD': 0.97, 'q2e1': 0.73,
+    'q2c2': 2.41, 'q2c3': 0.97, 'q2v1': 6.57, 'q2tA': 10.73, 'q2e1': 0.73,
     'q2e2': 0.65, 'q2e3': 0.89, 'q2e4': 1.93, 'q2e5': 2.73, 'q2e6': 1.12, 'q2A1': 1.77, 'q2A2': 1.51, 'q2A3': 5.61,
     'q2B1': 6.49, 'q2B2': 6.49, 'q2C1': 5.61, 'q2C2': 1.65, 'q2C3': 8.49, 'q2D1': 1.79, 'q2D2': 5.61, 'q2D3': 4.41,
     'q2K1': 10.01, 'q2K2': 9.93, 'q2K3': 10.73, 'q2K4': 7.13, 'q2A': 3.77, 'q2B': 3.53, 'q2C': 3.61, 'q2D': 3.29,
@@ -92,7 +92,7 @@
     'pg2c1': 2.68, 'pg2c2': 13.9, 'pg2c3': 5.06, 'pg2v1': 2.57, 'pg2w1': 1.45, 'pg2A1': 5.16, 'pg2A2': 1.75,
     'pg2B1': 1.54, 'pg2C1': 0.69, 'pg2D1': 1.48,
     /* Lersi Chin */
-    'lc2v1': 3.29, 'lc2sit': 2.7, 'lc2tell': 1.6, 'lc2tA': 5.21, 'lc2tB': 6.55, 'lc2tC': 5.44, 'lc2tD': 2.73,
+    'lc2v1': 3.29, 'lc2sit': 2.7, 'lc2tell': 1.6, 'lc2tA': 5.21,
     'lc2e1': 1.2, 'lc2e2': 0.75, 'lc2e3': 0.58, 'lc2e4': 1.93, 'lc2e5': 1.18, 'lc2e6': 4.73, 'lc2e7': 1.74,
     'lc2e8': 5.26, 'lc2e9': 4.79, 'lc2e10': 2.73, 'lc2k0': 3.21, 'lc2namo': 17.13, 'lc2sak1': 14.65, 'lc2sak2': 15.85,
     'lc2sak3': 14.57, 'lc2drink': 1.69, 'lc2wrist': 0.92, 'lc2k2': 6.66, 'lc2w1': 9.93, 'lc2B1': 7.53, 'lc2B2': 9.77,
@@ -255,17 +255,11 @@
       hotKneel: 'Kneel',
       objBow: 'Bow to the Buddha',
       hotBow: 'Bow three times',
-      pickLabel: 'Tell Lersi Chin',
-      pickTitle: 'What happened there?',
-      pickA: 'Tell Lersi Chin exactly what you saw',
-      pickB: 'Ask Lersi Chin what he thinks it means',
-      pickC: 'Assume the first master is using black magic',
-      pickD: 'Ask Lersi Chin what you should do next',
+      // (v25.2, Chad: "just have the player tell lersi chin what happened in a standradized way") one telling, no pick
+      objTell: 'Tell Lersi Chin what happened',
+      hotTell: 'Tell him what you saw',
       // the card's What you did: the trial's 5.2, its lesson in his own words
       note52A: 'You told him what you saw, not what you made of it. Evidence first, interpretation second.',
-      note52B: 'You asked him what it meant. Seeing something is not the same as understanding it.',
-      note52C: 'You called it black magic. Suspicion is not evidence.',
-      note52D: 'You asked what to do next. The sensible step mattered more than the theory.',
       objBowHead: 'Bow your head',
       hotBowHead: 'Bow your head',
       // the chant, captioned: the Pali as chanted over its meaning (A Chanting Guide, The Dhammayut Order in the USA)

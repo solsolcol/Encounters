@@ -3,7 +3,8 @@
    turned onto the thing and the player stood within its reach, then a CDP touch TAP on the interact badge, the thing
    itself or its mark; only if all three are refused, the engine's E path, reported as FALLBACK). The shape by the door is
    LOOKED AT (the lens turned onto the stand, as a thumb's drag does) and met by HOW: the light switch, standing still to
-   watch, or walking up to it. The 5.2 pick (what he tells Lersi Chin) is a tap on PICK's card and Confirm; the decision a
+   watch, or walking up to it. Since v25.2 there is no pick: what he tells Lersi Chin is one badge, Tell him what you saw,
+   pressed like every other order (PICK is kept only for a build before v25.2, which still opened the cards); the decision a
    tap on OPT. The clearing film cannot be skipped the first time: it is watched. Reports the voice log (none over
    another), the captions (the chant's), the cues, the phases with the objective on screen, the beds at each phase, every
    press and how it landed, every page error.

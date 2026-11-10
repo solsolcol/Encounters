@@ -981,7 +981,7 @@
       play.run++;
       play.busy = false; play.searched.clear(); play.wallet = false; play.objBlur = false;
       play.shapeSeen = false; play.revealed = false; play.how = ''; play.watchAt = 0; play.noteOn = false; play.called = false;
-      play.knelt = false; play.bowed = false; play.bow = null; play.told = ''; play.examined = false; play.cleared = false; play.warned = false;
+      play.knelt = false; play.bowed = false; play.bow = null; play.asked = false; play.told = ''; play.examined = false; play.cleared = false; play.warned = false;
       play.turning = null; play.piece = 'nangkwak';
       kneelZone.visible = false; lcBlockOn(false);
       /* the shop as the day began */
@@ -1056,7 +1056,7 @@
       look, presets: PRESETS, shop: shopCtl, shopState: shop, props, films,
       film: { SX, SHOP, COR, COUNTER, HIS, TILL, BAG, STOOL, FRIDGE, NOTE, SWITCH, SHELF, STAND, LC, CL, PSTOOL, MAT, KNEEL, worldS },
       cast, person: { talk: personTalk, do: personDo, rest: personRest, walk: personWalk, put: personPut, sit: personSit, ready: whenReady, pose: lcPose },
-      play: { state: play, search, fridgeOpen, reveal, watch, callPong, kneel, bow, tellAnswer, bowHead, kneelZone, pieces: PIECES },
+      play: { state: play, search, fridgeOpen, reveal, watch, callPong, kneel, bow, tellIt, bowHead, kneelZone, pieces: PIECES },
       castInfo: () => Object.fromEntries(Object.entries(cast).map(([k, P]) => [k, P && { ready: P.ready, diag: P.diag || null,
         pos: [+P.group.position.x.toFixed(2), +P.group.position.y.toFixed(2), +P.group.position.z.toFixed(2)], vis: P.group.visible,
         faceToLens: (() => { if (!P.ready || !P.head || !P.faceLocal) return null;

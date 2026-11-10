@@ -8844,7 +8844,7 @@ const ADULT_TAKES = new Set([
   'q1D2', 'q1D3', 'q1D4', 'q1D5', 'q1K1', 'q1K2', 'q1K3', 'q1A', 'q1B', 'q1C', 'q1D',
   /* v25.0 · episode 4 chapter 2, Not Every Master Should Be Trusted (masters/v25.0/make.sh) */
   'q2o1', 'q2o2b', 'q2o2', 'q2o3', 'q2o4', 'q2till', 'q2bag', 'q2jacket', 'q2where', 'q2fridge', 'q2flowers',
-  'q2note', 'q2c1', 'q2c2', 'q2c3', 'q2v1', 'q2tA', 'q2tB', 'q2tC', 'q2tD', 'q2e1', 'q2e2', 'q2e3', 'q2e4', 'q2e5',
+  'q2note', 'q2c1', 'q2c2', 'q2c3', 'q2v1', 'q2tA', 'q2e1', 'q2e2', 'q2e3', 'q2e4', 'q2e5',
   'q2e6', 'q2A1', 'q2A2', 'q2A3', 'q2B1', 'q2B2', 'q2C1', 'q2C2', 'q2C3', 'q2D1', 'q2D2', 'q2D3', 'q2K1', 'q2K2',
   'q2K3', 'q2K4', 'q2A', 'q2B', 'q2C', 'q2D']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
@@ -8929,8 +8929,8 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   'fm1C2', 'pg1C1', 'pn1C1', 'pg1C2', 'pg1D1', 'fm1D1', 'pg1D2', 'pg1D3', 'tx1where',
   /* v25.0 · episode 4 chapter 2: Pong (his call and ending A's on a phone's band), Lersi Chin (his chant among his
      lines: his own words, captioned, the clearing's music under them), the woman and the man at his counter */
-  'cu2a1', 'cu2a1b', 'pg2c1', 'pg2c2', 'pg2c3', 'pg2v1', 'lc2v1', 'lc2sit', 'lc2tell', 'lc2tA', 'lc2tB', 'lc2tC',
-  'lc2tD', 'lc2e1', 'lc2e2', 'lc2e3', 'lc2e4', 'lc2e5', 'lc2e6', 'lc2e7', 'lc2e8', 'lc2e9', 'lc2e10', 'lc2k0',
+  'cu2a1', 'cu2a1b', 'pg2c1', 'pg2c2', 'pg2c3', 'pg2v1', 'lc2v1', 'lc2sit', 'lc2tell', 'lc2tA',
+  'lc2e1', 'lc2e2', 'lc2e3', 'lc2e4', 'lc2e5', 'lc2e6', 'lc2e7', 'lc2e8', 'lc2e9', 'lc2e10', 'lc2k0',
   'lc2namo', 'lc2sak1', 'lc2sak2', 'lc2sak3', 'lc2drink', 'lc2wrist', 'lc2k2', 'lc2w1', 'pg2w1', 'pg2A1', 'pg2A2',
   'cu2b1', 'lc2B1', 'lc2B2', 'pg2B1', 'lc2C1', 'lc2C2', 'pg2C1', 'lc2C3', 'lc2D1', 'pg2D1', 'cu2a2']);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
@@ -13305,8 +13305,8 @@ const STING_SAMPLE = {
   q2where: ['q2where', 1], q2fridge: ['q2fridge', 1], q2flowers: ['q2flowers', 1], q2note: ['q2note', 1],
   pg2c1: ['pg2c1', 1], q2c1: ['q2c1', 1], pg2c2: ['pg2c2', 1], q2c2: ['q2c2', 1], pg2c3: ['pg2c3', 1],
   q2c3: ['q2c3', 1], q2v1: ['q2v1', 1], pg2v1: ['pg2v1', 1], lc2v1: ['lc2v1', 1], lc2sit: ['lc2sit', 1],
-  lc2tell: ['lc2tell', 1], q2tA: ['q2tA', 1], q2tB: ['q2tB', 1], q2tC: ['q2tC', 1], q2tD: ['q2tD', 1],
-  lc2tA: ['lc2tA', 1], lc2tB: ['lc2tB', 1], lc2tC: ['lc2tC', 1], lc2tD: ['lc2tD', 1], lc2e1: ['lc2e1', 1],
+  lc2tell: ['lc2tell', 1], q2tA: ['q2tA', 1],
+  lc2tA: ['lc2tA', 1], lc2e1: ['lc2e1', 1],
   lc2e2: ['lc2e2', 1], q2e1: ['q2e1', 1], lc2e3: ['lc2e3', 1], q2e2: ['q2e2', 1], lc2e4: ['lc2e4', 1],
   q2e3: ['q2e3', 1], lc2e5: ['lc2e5', 1], q2e4: ['q2e4', 1], lc2e6: ['lc2e6', 1], lc2e7: ['lc2e7', 1],
   q2e5: ['q2e5', 1], lc2e8: ['lc2e8', 1], lc2e9: ['lc2e9', 1], q2e6: ['q2e6', 1], lc2e10: ['lc2e10', 1],

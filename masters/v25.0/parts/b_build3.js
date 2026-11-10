@@ -202,7 +202,7 @@
       run: 0, busy: false,
       searched: new Set(), wallet: false,                                   // P1
       shapeSeen: false, revealed: false, how: '', watchAt: 0, noteOn: false, // P2 (how: 'light' | 'watch' | 'walk')
-      knelt: false, bowed: false, bow: null, told: '', examined: false, cleared: false, warned: false,
+      knelt: false, bowed: false, bow: null, asked: false, told: '', examined: false, cleared: false, warned: false,
       piece: 'nangkwak', turning: null
     };
     const PIECES = ['nangkwak', 'takrut', 'phayant'];
@@ -248,6 +248,7 @@
       else if (p === 'clearing') {
         if (!play.knelt) o = W.objKneel;
         else if (!play.bowed && !play.busy) o = W.objBow;
+        else if (play.asked && !play.told && !play.busy) o = W.objTell;
         else if (play.examined && !play.cleared && !play.busy) o = W.objBowHead;
       }
       kit.objective(o, opts);
@@ -283,7 +284,7 @@
     /* THE SOUNDS PLAY ASKS FOR, warmed so the first of each is heard (CP13 of chapter 1: nothing warmed is silence) */
     const WARM_SHOP = ['q2till', 'q2bag', 'q2jacket', 'q2where', 'q2fridge', 'x2drawer', 'x2bagzip', 'x2cloth', 'x2fridge', 'x2wallet'];
     const WARM_NIGHT = ['q2flowers', 'q2note', 'x2switch', 'x2rustle', 'x2breath', 'x2ledhum', 'x2breathslow'];
-    const WARM_CLEAR = ['lc2sit', 'lc2tell', 'q2tA', 'q2tB', 'q2tC', 'q2tD', 'lc2tA', 'lc2tB', 'lc2tC', 'lc2tD', 'lc2w1', 'pg2w1', 'x2kneel', 'x2bow'];
+    const WARM_CLEAR = ['lc2sit', 'lc2tell', 'q2tA', 'lc2tA', 'lc2w1', 'pg2w1', 'x2kneel', 'x2bow'];
     if (warmSounds) warmSounds(WARM_SHOP.concat(WARM_NIGHT));
 
     /* ---------------------------------------------------------------- the floor's marks (the kneeling place) */
@@ -555,25 +556,23 @@
       /* the wai to Lersi Chin: the clasp held a moment toward him, and lowered; he returns it, then speaks */
       after(0.8, () => { if (!live(run)) return; if (kit) kit.pray(false, { secs: 1.2 });
         line('lc2sit', cast.lersi); queueGap(0.5); line('lc2tell', cast.lersi);
-        queueFn(() => { if (live(run)) tellPick(); }); });
+        queueFn(() => { if (live(run)) askTell(); }); });
     }
-    /* WHAT HE TELLS HIM (P5, the trial's 5.2 verbatim): a pick; his line, Lersi Chin's answer, and the trial's lesson banked
-       in his own words with its awareness (awareness only: the decision's wisdom is kept for the decision, §2.2 #5) */
-    const TELL_A = { A: 9, B: 6, C: 3, D: 6 };
-    function tellPick() {
+    /* WHAT HE TELLS HIM (P5, the trial's 5.2): one telling, pressed — what he saw, Lersi Chin's answer, and the trial's lesson
+       banked in his own words with its awareness (awareness only: the decision's wisdom is kept for the decision, §2.2 #5).
+       (v25.2) The four-card pick is gone at Chad's word ("just have the player tell lersi chin what happened in a
+       standradized way. If not i have to review 4 outcomes, on top of another 4 outcomes at the end"): the answer that
+       was the trial's best is the telling. A save from before that told B, C or D goes on as told (readMark keeps it). */
+    const TELL_AWARE = 9;
+    function askTell() { play.asked = true; objectiveFor('clearing'); }
+    function tellIt() {
+      if (!play.asked || play.told || play.busy) return false;
       const run = play.run;
-      if (!kit || !kit.pick) { tellAnswer('A'); return; }
-      kit.pick([{ id: 'A', label: W.pickA, color: '#3a7a5a' }, { id: 'B', label: W.pickB, color: '#3a5a8a' },
-                { id: 'C', label: W.pickC, color: '#8a3a3a' }, { id: 'D', label: W.pickD, color: '#7a6a3a' }],
-               { label: W.pickLabel, title: W.pickTitle })
-        .then((id) => { if (live(run)) tellAnswer(id || 'A'); });
-    }
-    function tellAnswer(k) {
-      const run = play.run;
-      play.told = k; saveMark();
-      bank(W['note52' + k], TELL_A[k] || 0);
-      line('q2t' + k); queueGap(0.4); line('lc2t' + k, cast.lersi);
-      queueFn(() => { if (live(run)) examBegin(); });
+      play.told = 'A'; play.busy = true; saveMark(); objectiveFor('clearing');
+      bank(W.note52A, TELL_AWARE);
+      line('q2tA'); queueGap(0.4); line('lc2tA', cast.lersi);
+      queueFn(() => { if (live(run)) { play.busy = false; examBegin(); } });
+      return true;
     }
     /* THE EXAMINATION (P6, a film) — at its end the piece is on the clean cloth, and out of his bag */
     function examBegin() {
@@ -672,6 +671,9 @@
          from anywhere, and the badge names them */
       { id: 'bow', pos: BUDDHA, radius: 6, anyView: true, prompt: W.hotBow, mark: false,
         enabled: () => phase === 'clearing' && play.knelt && !play.bowed && !play.busy && !play.turning && !wDark, onInteract() { return bow(); } },
+      /* (v25.2) the one telling: pressed from where he kneels, named by the badge, no mark (the kneel spot's own rule) */
+      { id: 'tell', pos: { x: LC.x, y: 0.95, z: LC.z }, radius: 3, anyView: true, prompt: W.hotTell, mark: false,
+        enabled: () => phase === 'clearing' && play.bowed && play.asked && !play.told && !play.busy && !wDark, onInteract() { return tellIt(); } },
       { id: 'bowhead', pos: { x: LC.x, y: 0.95, z: LC.z }, radius: 3, anyView: true, prompt: W.hotBowHead, mark: false,
         enabled: () => phase === 'clearing' && play.examined && !play.cleared && !play.busy && !wDark, onInteract() { return bowHead(); } }
     ];
@@ -770,5 +772,5 @@
       if (play.cleared) { warning(true); return; }
       if (play.examined) { objectiveFor('clearing', { complete: false }); return; }
       if (play.told) { after(0.6, examBegin); return; }
-      if (play.bowed) { after(0.6, () => tellPick()); return; }
+      if (play.bowed) { after(0.6, () => { if (!play.told) askTell(); }); return; }
     }
