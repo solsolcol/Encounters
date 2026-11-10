@@ -162,6 +162,7 @@ that fits it, with the version it came from.
 - When he says 'this should be a standard', the engine owns the behaviour for every chapter, not just the one that asked. (v8.7)
 - Places look like the real kind of place (real stock and dressing, a real building when one is named), props make sense for the character, and every moving vehicle has its driver. (v24.22)
 - No code-generated trees or vehicles on screen: real models only, the code-built kit drawn only if a file never lands. (v24.20)
+- Every prop the player sees is a real model, generated his way when he has not sent one (a checked reference picture on white, then Meshy image-to-3D at its best and its remesh): a prop built in code from boxes and cylinders is drawn only if its file never lands ("why are there such badly drawn models like the wallet which is just a block of colour, and the jacket and bag dont even look like one. You already have meshy connected, why are you not using it properly. Moving forward, you should make full use of generating the 3d models that you need"). (v25.2)
 - A beat that matters is guaranteed to be seen, never left to chance or to one option. (v21.17)
 - No long stretches of black in a film or ending; there is always a picture. (v7.7)
 - A crowd of repeated models is SOLVED for maximum visual diversity (a balanced deal, a seeded shuffle, a local search over neighbours), with a stats report that keeps the claim checkable. (v5.29)
