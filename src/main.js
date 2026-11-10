@@ -13331,7 +13331,9 @@ const STING_SAMPLE = {
   x2post: ['x2post', 1], x2ring: ['x2ring', 1], x2rise: ['x2rise', 1], x2rustle: ['x2rustle', 1],
   x2scroll: ['x2scroll', 1], x2shutter: ['x2shutter', 1], x2shutterup: ['x2shutterup', 1], x2sip: ['x2sip', 1],
   x2steps: ['x2steps', 1], x2stepsin: ['x2stepsin', 1], x2switch: ['x2switch', 1],
-  x2visit: ['x2visit', 1], x2visitmus: ['x2visitmus', 1], x2wallet: ['x2wallet', 1]
+  x2visit: ['x2visit', 1], x2visitmus: ['x2visitmus', 1], x2wallet: ['x2wallet', 1],
+  /* (v25.4) the whisper of the piece on his shelf, a loop (e4c2's ambience; its volume and side are mixBeds') */
+  x2whisper: ['x2whisper', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays

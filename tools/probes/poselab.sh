@@ -1,8 +1,9 @@
 #!/bin/bash
 # v25.3 · the pose lab restarted on the chapter AS ASSEMBLED NOW (no build): the last dist/ hard-linked into a snapshot,
 # episode 4 chapter 2's file in it replaced by src/chapters/e4/e4c2.js with two scratch handles added (never shipped):
-#   window.__lc  = { LCM, LCS, HS, body(o), HINGE, FORE_ROLL, cast, props }   his body's measures, state and lcBody
-#   window.__lc2 = { VW, SW }                                                 the films' bows, standing and seated
+#   window.__lc  = { LCM, LCS, HS, body(o), HINGE, FORE_ROLL, cast, props,    his body's measures, state and lcBody;
+#                    PIECE_FIT, PGLOW, pieceLit, play }                       the piece on the shelf and its glow (v25.4)
+#   window.__lc2 = { VW, SW, EXAM, CLEARF, VISIT_T, END, SECS }               the films' bows and their timelines
 # so a job can pose him (window.__lc.body({ R: { wai: 'brow' }, L: { wai: 'brow' }, lean: 0.16, neck: 0.14 })) and change a
 # measure (window.__lc.LCM.wai.press = 0.035) and photograph it within seconds.
 #   LABDIR=<dir> SNAP=<dir> CHROMIUM_PATH=... tools/probes/poselab.sh [phase]      (phase: a PLAY phase, default clearing:k,b)
@@ -20,11 +21,11 @@ import sys
 s = open('src/chapters/e4/e4c2.js').read()
 a = "    const LCS = { on: false, R: null, L: null, lean: 0, twist: 0, side: 0, neck: 0, holdBy: 'R', holdAt: null };\n"
 assert s.count(a) == 1, 'LCS line moved'
-s = s.replace(a, a + "    window.__lc = { LCM, LCS, get HS() { return HS; }, body: (o) => lcBody(o), HINGE, FORE_ROLL, get cast() { return cast; }, get props() { return props; } };\n")
+s = s.replace(a, a + "    window.__lc = { LCM, LCS, get HS() { return HS; }, body: (o) => lcBody(o), HINGE, FORE_ROLL, get cast() { return cast; }, get props() { return props; }, PIECE_FIT, PGLOW, pieceLit, get play() { return play; } };\n")
 b = "    const VW = { lean:"
 assert s.count(b) == 1, 'VW line moved'
 i = s.index(b); j = s.index('\n', i) + 1
-s = s[:j] + "    window.__lc2 = { VW, SW };\n" + s[j:]
+s = s[:j] + "    window.__lc2 = { VW, SW, EXAM, CLEARF, VISIT_T, END, SECS };\n" + s[j:]
 open(sys.argv[1], 'w').write(s)
 PY
 rm -f "$LABDIR/READY"

@@ -224,7 +224,8 @@
        empty corridor), the two pieces of music play has (the fog's and the visit's), and the mall by day heard clear
        (the endings' mornings). Under a film the room's beds are the film's own (films.frame: filmBedAt), so a 98 s
        film's room never stops where a one-shot of its 22 s take would have */
-    ambience: { beds: [['x2mallfog', 0], ['x2nightroom', 0], ['x2fogmus', 0], ['x2visitmus', 0], ['x2mallclear', 0]] },
+    /* (v25.4) and the piece's whisper, heard near its shelf (its volume and its side set every frame: mixBeds) */
+    ambience: { beds: [['x2mallfog', 0], ['x2nightroom', 0], ['x2fogmus', 0], ['x2visitmus', 0], ['x2mallclear', 0], ['x2whisper', 0, 0]] },
     voiceLine: null,
 
     words: {

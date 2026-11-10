@@ -277,6 +277,9 @@ that fits it, with the version it came from.
 - Cut a body by what each vertex is skinned to, and geometry by clipping against a box, never by height or by centroid. (v21.16)
 - A walkable building's collision is derived from its own mesh. (v16.9)
 - Anything dressed onto a model is fitted to whichever model landed (the model or its fallback). (v24.19)
+- A thing made bigger or smaller is one size wherever one shot follows another, and is photographed, each kind of it,
+  wherever it is carried: where it stands, in his hand on a phone's frame, on another's hands, where it is laid, and
+  through every film that sees it (v25.4: the takrut made bigger for its shelf ran out of the frame in his fist). (v25.4)
 - An FPS viewmodel rig is not quantized; additive textures need no alpha; a greyscale map multiplies the material's colour. (v12.0)
 - A rig's face direction comes from its bind matrix and is proven by a render, never taken as the head bone's +Z. (v6.8)
 - A take name a rig does not have fails silently (rig.play returns false and the man stands in his bind pose), so every take is checked against the clips in the rig's own file. (v11.2)
@@ -312,6 +315,8 @@ that fits it, with the version it came from.
 - Stop a chapter's loops when it is left (a source at gain 0 still plays) and release its decoded audio. (v14.16)
 - Rhythm cues are judged by their decay and cut from 20 ms before their own peak. (v9.4)
 - A long chant or bed is not a voice take; on the voice path it holds the duck down under everything. (v24.0)
+- A whisper or a murmur meant to be wordless is put through a transcriber, and a take it writes words from is refused:
+  it would say something nobody wrote, and would need a caption. (v25.4)
 - Ambient one-shots come one at a time from a seeded stream on the chapter clock, panned, quieter while anyone speaks, only in the phases they fit, cleared by reset(); beds are mixed by place and beat. (v21.13)
 - When every generated take fails the measure, make the sound instead. (v24.3)
 - Re-run only refused or failed generations, never one that succeeded. (v24.3)
@@ -425,6 +430,8 @@ that fits it, with the version it came from.
 - A refusal must not be able to succeed: a lock is only ever said, never pressed. (v21.28)
 - A run token cancels a callback, not the work that callback owed. (v21.1)
 - three's slerpQuaternions copies its first quaternion into the target before blending. (v23.6)
+- Never keep an Object3D (a parent, a mesh) in userData: a clone copies userData through JSON and throws on the circle.
+  Keep it in a map. (v25.4)
 - An option that appears after a walk must not race the order that ends it. (v24.9)
 - build() runs before the hands' scene exists on a cold boot, and blockers must be in its array before it returns. (v24.0)
 - collide() samples one point at 1.0 m, so furniture blockers are columns from the floor, a chair is boxed whole, blockers match what is drawn (the model's footprint), new pieces on walkable ground bring their own, and the spawn stays clear of padded blockers. (v5.03)
@@ -1124,7 +1131,12 @@ tools/probes/framecheck.mjs and framediff.py, its body probe lcmotion.mjs. His n
 tied, and "i find it unacceptable that you find his poses natural, it clearly is not") shipped at v25.3 —
 **docs/V25.3-E4C2-NATURAL.md** (his words, what was measured on Lersi Chin's rig, the wai's sources, what was seen and
 left); the rig's measures are masters/v25.3/make.sh, the pose lab tools/probes/poselab.mjs (with poselab-job.py and
-poselab.sh). Chapter 3 (S1·12, Grandmaster Pho at the Wai Kru) is next. The episode's plan, with what remains his to decide:
+poselab.sh). His two asks while that was checked (the piece he took in chapter 1 made bigger on its shelf with a red glow;
+then black smoke on it and a whisper; the smoke made more translucent on his word the same evening) shipped at v25.4 —
+**docs/V25.4-E4C2-SHELF-PIECES.md** (his words, the measures, the
+log, and the game's captured prayer held against Lersi Chin's wai); the whisper is the measured pick until Chad's ear
+(four previews in masters/v25.4/previews, every candidate and why in masters/v25.4/make.sh). Chapter 3 (S1·12, Grandmaster
+Pho at the Wai Kru) is next. The episode's plan, with what remains his to decide:
 **docs/V24.0-EPISODE4-PLAN.md** (its sixth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is
 still his). S1·11 in two chapters (the master he did not know, who wears the original Sak Yant Ajarn's model; then the
 fog, Lersi Chin's clearing and the warning — built on Master Z's own trial episode, its 5.1 and 5.3 the two decisions

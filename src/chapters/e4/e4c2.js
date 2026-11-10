@@ -224,7 +224,8 @@
        empty corridor), the two pieces of music play has (the fog's and the visit's), and the mall by day heard clear
        (the endings' mornings). Under a film the room's beds are the film's own (films.frame: filmBedAt), so a 98 s
        film's room never stops where a one-shot of its 22 s take would have */
-    ambience: { beds: [['x2mallfog', 0], ['x2nightroom', 0], ['x2fogmus', 0], ['x2visitmus', 0], ['x2mallclear', 0]] },
+    /* (v25.4) and the piece's whisper, heard near its shelf (its volume and its side set every frame: mixBeds) */
+    ambience: { beds: [['x2mallfog', 0], ['x2nightroom', 0], ['x2fogmus', 0], ['x2visitmus', 0], ['x2mallclear', 0], ['x2whisper', 0, 0]] },
     voiceLine: null,
 
     words: {
@@ -524,6 +525,48 @@
        on the wall's line at 2.88): at 2.8 it was inside the pillar, unseen since v25.0 — the night's 'Switch on the light'
        pointed at nothing a player could see (found by photographing the switch from 44 cm at v25.2) */
     const SHELF = { x: SHOP.x0 + 0.13, y: 1.48, z: 2.36 };                     // a small shelf beside it: the piece, facing the door
+    /* (v25.4) THE PIECE HE TOOK, BIGGER, AND ITS RED GLOW ON THE SHELF. Chad, 10 Nov 2026: "The 3 possible items that the
+       player picks in the previous chapter, nang kwak, takrut, pha yant, needs to be made bigger on the shelf so that it is
+       actually visible. It is hard to see now. Also add a red glow to those items as it sits on the shelf."
+       Measured first (docs/V25.4-E4C2-SHELF-PIECES.md): at chapter 1's tray sizes (7.5, 6.6 and 8.5 cm, kept at v25.0) the
+       Nang Kwak stood 9 pixels tall on a phone from behind his counter, near black, on a shelf in a 45 cm strip of wall
+       between the wall cabinet and the door's pillar.
+       ONE SIZE WHEREVER THE PIECE IS SEEN in this chapter (the shelf, his hand, the master's palms, the cloth): made bigger
+       on the shelf alone it would shrink as he took it down, in one shot.
+       Each: its asset, its size in metres along `axis` (measured after the turns), its turns as its model lies, and its
+       place on the shelf from the shelf's own middle (dx into the room, dz along the wall toward the door) with its turn
+       there (ry); and its outline for the smoke, which leaves its surface and not the air beside it: `taper`, how much
+       narrower the seated figure is at her head than at her base, or `round` for the two that lie (a tube and a roll:
+       widest at half their height, a line along their top) */
+    const PIECE_FIT = {
+      /* each stands 4 to 5 cm toward the door from the shelf's middle: the wall cabinet's end (its corner post at
+         x -1.94, z 2.11) hid whatever stood at the middle from where he kneels in the examination, and the look that
+         turns to "the piece standing by the door" found half of it (measured, then photographed through that lens) */
+      nangkwak: { key: 'e4nangkwak', size: 0.19, axis: 'y', ry: 0, rz: 0, at: [-0.012, 0.05], turn: 0, taper: 0.6 },
+      /* the two that lie are laid along the wall, a little askew: pointing out from it (chapter 1's way on the tray) a
+         man facing the shelf saw each end-on, a disc, and at 21 cm the roll's far end was in the wall (photographed) */
+      takrut:   { key: 'e4takrut', size: 0.2, axis: 'x', ry: 0, rz: Math.PI / 2, at: [-0.017, 0.05], turn: 0.95, round: true },
+      phayant:  { key: 'e4phayant', size: 0.21, axis: 'x', ry: 0.3, rz: 0, at: [-0.012, 0.04], turn: 1.1, round: true }
+    };
+    /* the glow (no lamp, v9.4): a red halo that faces the lens (additive), a red wash on the wall behind it and a pool
+       on the shelf's top (the hue laid on, v8.8: additive red on a pale wall sums to pink), and the piece's own surface
+       lit red from within. `at`: the halo's middle, as a share of the piece's height. It breathes: `breath` of its
+       strength, once in `period` seconds. `night`: its strength with the shop's lights off (an unlit layer is not dimmed
+       by the dark, so it is) */
+    const PGLOW = { tint: 0xff2412, wall: 0xd4140a, halo: 0.42, haloD: 0.62, wash: 0.62, washD: 0.66, pool: 0.5, self: 0.12,
+                    at: 0.55, breath: 0.28, period: 3.6, night: 0.8,
+                    /* (v25.4) THE BLACK SMOKE (Chad, the same day: "Maybe also add some black smoke to the items to make it
+                       look more evil and some sound effects on those items to make it more creepy, like whispering
+                       sounds"): how many streams and how dark at their fullest (each rooted on the piece's own surface at
+                       its own place along it, from under half its height to its top, lengthening upward).
+                       Its strength is 0.42, from 0.8, on his word the same evening with it live ("make the black smoke
+                       more transclucent"): photographed at 0.8, 0.6, 0.45 and 0.32 with the smoke held still, the wall
+                       and the glow are seen through it from 0.45 down, and at 0.32 it is nearly gone from the middle of
+                       the shop on a phone (a correction does not overshoot, v22.0) */
+                    wisps: 12, smoke: 0.42 };
+    /* (v25.4) ITS WHISPER: a wordless loop (x2whisper) heard near the shelf while the piece stands on it, full within
+       `near` metres and gone by `far`, to the side it is on, and under a voice at `under` of itself */
+    const WHISPER = { vol: 0.5, near: 0.9, far: 3.6, under: 0.5 };
     const STAND = { x: 1.55, z: 2.36, ry: Math.PI + 0.42 };                    // the Grand Opening stand inside the door, turned in, its flowers dried
     const LC = { x: 0, z: -0.42 };                                             // Lersi Chin on his mat, facing the door; the altar's Buddha over his shoulder
     /* (v25.0 CP6) Lersi Chin's things made as models (masters/v25.0/models): their sizes in metres, and the places inside
@@ -1167,7 +1210,7 @@
        them (the visit film shows them). */
     const props = { till: null, tillK: 0, tillTo: 0, bag: null, bagFlap: null, bagK: 0, bagTo: 0, jacket: null, jacketK: 0, jacketTo: 0,
                     fridge: null, fridgeDoor: null, fridgeLight: null, fridgeK: 0, fridgeTo: 0, wallet: null, note: null, sw: null, swDot: null,
-                    shelf: null, piece: null, pieces: {}, mat: null, matK: 1, matTo: 1, bowl: null, water: null,
+                    shelf: null, piece: null, pieces: {}, pieceGlow: null, glowHalo: null, glowWash: null, glowPool: null, glowSmoke: [], mat: null, matK: 1, matTo: 1, bowl: null, water: null,
                     cloth: null, khan: null, flames: [], yaam: null, envelope: null, stand: null, ribbons: [], sway: 0, lcThings: null,
                     ceil: null, ceilS: null, ceilK: 1, ceilFrom: 1, ceilTo: 1, c0: 0, c1: 0, night: false, nightShut: [], signs: [], corSky: null, corCeil: null };
     function buildProps() {
@@ -1296,7 +1339,9 @@
               d.position.set(m.position.x + sx * 0.0104, m.position.y + 0.0551, m.position.z + 0.0018); g.add(d); } }); }
       }
       /* THE SHELF beside the door, and on it the piece he took in chapter 1, facing the door as he was told — each of the
-         three made ready (which one is his, play decides), its light cut (the amulet rule: a few centimetres at a shelf) */
+         three made ready (which one is his, play decides), its light cut (v25.0: a few centimetres at a shelf; v25.4:
+         bigger, 19 to 21 cm, and still the light cut — photographed from the nearest a player can stand, a hand's length
+         off, its 1024 sheet holds) */
       { const g = new THREE.Group(); g.position.set(SHELF.x, SHELF.y, SHELF.z); S0.add(g); props.shelf = g;
         mesh(new THREE.BoxGeometry(0.2, 0.02, 0.3), M({ color: 0x5a3a24, roughness: 0.6 }), 0, -0.01, 0, g);
         for (const dz of [-0.11, 0.11]) mesh(new THREE.BoxGeometry(0.02, 0.07, 0.02), mBlackP, -0.08, -0.045, dz, g);
@@ -1306,10 +1351,43 @@
         { const standIn = [...g.children];
           fitModel('e4shelf', g, 0.3, 'z', Math.PI / 2, 0).then(m => { if (!m || !alive) return; for (const o of standIn) o.visible = false;
             m.position.y -= m.userData.fit.y; m.position.x += (SHOP.x0 + 0.008 + m.userData.fit.x / 2) - SHELF.x; }); }
-        mesh(new THREE.PlaneGeometry(0.16, 0.2), M({ color: 0x9a1418, roughness: 0.85 }), 0.005, 0.0012, 0, g).rotation.x = -Math.PI / 2;   // a red cloth under it
-        for (const [key, size, axis, ry, rz] of [['e4nangkwak', 0.075, 'y', 0, 0], ['e4takrut', 0.066, 'x', 0, Math.PI / 2], ['e4phayant', 0.085, 'x', 0.3, 0]]) {
-          const pg = new THREE.Group(); pg.visible = false; g.add(pg); props.pieces[key.slice(2)] = pg; pg.userData.dyn = true;
-          fitModel(key, pg, size, axis, ry, rz);
+        /* a red cloth under it ((v25.4) 26 cm along the 30 cm board, from 20: the piece stands toward its door end now) */
+        mesh(new THREE.PlaneGeometry(0.16, 0.26), M({ color: 0x9a1418, roughness: 0.85 }), 0.005, 0.0012, 0, g).rotation.x = -Math.PI / 2;
+        /* (v25.4) each at its new size (PIECE_FIT), at its own place and turn on the shelf; its height kept as a number
+           (the glow stands by it, pieceGlowTick) */
+        for (const id in PIECE_FIT) { const F = PIECE_FIT[id];
+          const pg = new THREE.Group(); pg.visible = false; g.add(pg); props.pieces[id] = pg; pg.userData.dyn = true;
+          pg.position.set(F.at[0], 0, F.at[1]); pg.rotation.y = F.turn; pg.userData.fit = F;
+          fitModel(F.key, pg, F.size, F.axis, F.ry, F.rz).then(m => { if (!m || !alive) return;
+            pg.userData.fitY = m.userData.fit.y; pg.userData.fitX = m.userData.fit.x; pg.userData.fitZ = m.userData.fit.z; });
+        }
+        /* (v25.4) THE RED GLOW, on while the piece stands here (pieceGlowTick): the halo, the wall's wash and the pool on
+           the shelf's top. The wall's face is 13 cm behind the shelf's middle; the board is 30 cm along it and 21 cm deep */
+        { const gl = new THREE.Group(); gl.visible = false; gl.userData.dyn = true; g.add(gl); props.pieceGlow = gl;
+          const tG = tex(makeGlow(THREE, cnv));
+          const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: tG, color: PGLOW.tint, transparent: true, opacity: 0, depthWrite: false, fog: false, blending: THREE.AdditiveBlending }));
+          halo.scale.set(PGLOW.haloD, PGLOW.haloD, 1); halo.userData.dyn = true; gl.add(halo); mats.push(halo.material);
+          const wash = new THREE.Mesh(new THREE.PlaneGeometry(PGLOW.washD, PGLOW.washD), B({ map: tG, color: PGLOW.wall, transparent: true, opacity: 0, depthWrite: false }));
+          wash.rotation.y = Math.PI / 2; wash.userData.dyn = true; g.add(wash);
+          const pool = new THREE.Mesh(new THREE.PlaneGeometry(0.2, 0.29), B({ map: tG, color: PGLOW.tint, transparent: true, opacity: 0, depthWrite: false, fog: false, blending: THREE.AdditiveBlending }));
+          pool.rotation.x = -Math.PI / 2; pool.position.set(-0.017, 0.004, 0); pool.userData.dyn = true; g.add(pool);
+          props.glowHalo = halo; props.glowWash = wash; props.glowPool = pool; wash.visible = pool.visible = false;
+          /* (v25.4) THE BLACK SMOKE: thin dark streams that leave the piece's own surface and lengthen upward before the
+             red, each drawn over what is behind it (smoke darkens; it is never added) and after the red halo (renderOrder:
+             a stream behind the halo's middle was drawn first and came out red). A stream's whole path is a function of
+             the wall clock and its own fixed numbers (thrown once, here), so play, a film and a seek draw the same smoke.
+             They stand evenly along the piece (`a`, from one end of its length to the other) on alternate sides of it
+             (`c`), two pictures of a stream dealt alternately */
+          const tS = [tex(makeDarkPuff(THREE, cnv, 7741)), tex(makeDarkPuff(THREE, cnv, 5153))], sr = rng(8813);
+          props.glowSmoke = [];
+          for (let i = 0; i < PGLOW.wisps; i++) {
+            const sm = new THREE.SpriteMaterial({ map: tS[i % 2], color: 0x0a0607, transparent: true, opacity: 0, depthWrite: false, fog: false });
+            const sp = new THREE.Sprite(sm); sp.userData.dyn = true; sp.renderOrder = 1; gl.add(sp); mats.push(sm);
+            sp.userData.w = { T: 3.4 + sr() * 2.2, ph: sr(), a: ((i * 5) % PGLOW.wisps + 0.15 + sr() * 0.7) / PGLOW.wisps * 2 - 1, c: i % 2 ? 1 : -1,
+                              dx: 0.004 + sr() * 0.03, dz: (sr() - 0.5) * 0.06,
+                              h0: 0.45 + sr() * 0.55, s: 0.07 + sr() * 0.04, rot: (sr() - 0.5) * 0.24, cw: sr() < 0.5 ? -1 : 1 };
+            props.glowSmoke.push(sp);
+          }
         }
       }
       /* LERSI CHIN'S THINGS (§2.2 #7), hidden until the visit: his woven mat on the floor (rolled up in the film until he
@@ -1443,8 +1521,65 @@
       lap(mode, o = {}) { shop.lapMode = mode || ''; shop.lapOn = mode ? 1 : 0; shop.lapO = o; }
     };
     const _swV = new THREE.Vector3();
+    /* (v25.4) THE PIECE'S TWO LOOKS: as his file has it, and lit red from within while it stands on the shelf. The lit
+       twin is the same material with a red emissive (no map: the same shader, so nothing is compiled when the looks
+       change, v15.1); his file's own material is never changed (v12.4). A clone made for a hand takes the file's look */
+    const pieceLitOf = new Map(), pieceBaseOf = new Map();
+    function pieceLit(root, on) {
+      root.traverse(o => {
+        if (!o.isMesh || Array.isArray(o.material) || !o.material || !o.material.emissive) return;
+        const base = pieceBaseOf.get(o.material) || o.material;
+        if (!on) { o.material = base; return; }
+        let lit = pieceLitOf.get(base);
+        if (!lit) { lit = base.clone(); mats.push(lit); lit.emissive.setHex(PGLOW.tint); lit.emissiveIntensity = PGLOW.self;
+                    pieceLitOf.set(base, lit); pieceBaseOf.set(lit, base); }
+        o.material = lit;
+      });
+    }
+    /* (v25.4) THE RED GLOW, derived on the frame from where the piece is (v11.6): on while it stands on its shelf, off the
+       frame it is taken down, never on the cloth or in a hand ("as it sits on the shelf"). It breathes on the wall clock,
+       in play and in films alike (as the cast's own clocks do, v5.19) */
+    function pieceGlowTick(now) {
+      const gl = props.pieceGlow; if (!gl) return;
+      let on = null;
+      for (const id in props.pieces) { const p = props.pieces[id]; if (!p.userData.fitY) continue;
+        const here = p.visible && p.parent === props.shelf;
+        if (here) on = p;
+        if (p.userData.lit !== here) { pieceLit(p, here); p.userData.lit = here; } }
+      gl.visible = props.glowWash.visible = props.glowPool.visible = !!on;
+      if (!on) return;
+      const br = (1 - PGLOW.breath * (0.5 - 0.5 * Math.cos(now * 2 * Math.PI / PGLOW.period))) * (props.night ? PGLOW.night : 1);
+      const h = on.userData.fitY;
+      gl.position.set(on.position.x, h * PGLOW.at, on.position.z);
+      props.glowWash.position.set(-0.128, h * PGLOW.at, on.position.z);                 // 2 mm off the wall's face
+      props.glowHalo.material.opacity = PGLOW.halo * br; props.glowWash.material.opacity = PGLOW.wash * br; props.glowPool.material.opacity = PGLOW.pool * br;
+      for (const lit of pieceLitOf.values()) lit.emissiveIntensity = PGLOW.self * br;
+      /* the smoke: each stream's foot is ROOTED on the piece's own surface for its whole life (lifted off it, a stream
+         hung in the air beside the two that lie: photographed), on the outline its height has there (the seated figure
+         narrowing by `taper` to her head; a tube or a roll widest at half its height), a finger outside it so that
+         some rise before the piece and some from behind it. It lengthens upward from that foot, leans a little into the
+         room (never into the wall), widens and thins.
+         The piece's own length and width: its box is measured after its model's turn (PIECE_FIT.ry), so they are taken
+         back out of it, and the streams stand along the piece as it lies, not along its box */
+      const F = on.userData.fit, ry = F.ry || 0, th = on.rotation.y + ry, cs = Math.cos(th), sn = Math.sin(th);
+      const bx = on.userData.fitX || 0.1, bz = on.userData.fitZ || 0.1, c0 = Math.abs(Math.cos(ry)), s0 = Math.abs(Math.sin(ry)), den = c0 * c0 - s0 * s0;
+      const rx = (bx * c0 - bz * s0) / den / 2 + 0.006, rz = (bz * c0 - bx * s0) / den / 2 + 0.006;
+      for (const sp of props.glowSmoke) { const w = sp.userData.w, u = (now / w.T + w.ph) % 1;
+        const kx = F.round ? 1 : 1 - (F.taper || 0) * w.h0, kz = F.round ? Math.sqrt(Math.max(0, 1 - (2 * w.h0 - 1) * (2 * w.h0 - 1))) : kx;
+        const lx = w.a * rx * kx, lz = w.c * rz * kz * Math.sqrt(1 - w.a * w.a);            // in the piece's own frame, along its length
+        const sway = Math.sin((u * 1.3 + w.ph) * Math.PI * 2) * 0.02 * u;
+        const tall = w.s * 2.4 * (0.5 + 1.5 * u), wide = w.s * (0.7 + 0.9 * u);
+        sp.position.set(lx * cs + lz * sn + w.dx * u + sway,
+                        h * (w.h0 - PGLOW.at) + tall * 0.4375,                             // the picture's foot is 0.4375 of its height under its middle
+                        -lx * sn + lz * cs + w.dz * u + sway * 0.6 * w.cw);
+        sp.scale.set(wide, tall, 1);
+        sp.material.rotation = w.rot * (0.3 + 0.7 * u);
+        sp.material.opacity = PGLOW.smoke * Math.min(1, u / 0.12) * Math.min(1, (1 - u) / 0.5);  // in at once, whole for half its climb, then thinning away
+      }
+    }
     function shopFrame(now) {
       stockLod();                                                                       // (v24.22) near or far, place by place
+      pieceGlowTick(now);
       const k = Math.min(1, Math.max(0, (now - shop.t0) / Math.max(0.001, shop.t1 - shop.t0)));
       if (shop.t1 > 0 && k < 1) shop.u = shop.uFrom + (shop.uTo - shop.uFrom) * k * k * (3 - 2 * k); else if (shop.t1 > 0) shop.u = shop.uTo;
       if (shop.curtain) {
@@ -2398,7 +2533,7 @@
        he bows his head to it): its place is found from his chest's joint or from his brow, and from there up and
        before him in his body's own level frame */
     const _cC = new THREE.Vector3();
-    function cupped(P, where, sd, out) {
+    function cupped(P, where, sd, out, dy) {
       const K = LCM.cup, S = P.scale || 1, H = P.waiHand[sd], sg = sd === 'Left' ? -1 : 1;
       let off = null;
       if (Array.isArray(where)) _cC.set(where[0], where[1], where[2]);
@@ -2409,6 +2544,7 @@
       } else { P.spine.getWorldPosition(_cC); off = K.chest; }
       partAxes(P.group, null);
       if (off) _cC.addScaledVector(_pY, off[1] * S).addScaledVector(_pZ, off[2] * S);
+      if (dy) _cC.addScaledVector(_pY, dy);                                // (v25.4) a tall thing is carried lower (`dy`, metres)
       out.n.copy(_pY).multiplyScalar(Math.cos(K.roll)).addScaledVector(_pX, sg * Math.sin(K.roll));
       out.f.copy(_pZ).multiplyScalar(Math.cos(K.toe)).addScaledVector(_pX, sg * Math.sin(K.toe));
       out.f.multiplyScalar(Math.cos(K.tip)).addScaledVector(_pY, Math.sin(K.tip));
@@ -2432,7 +2568,7 @@
       const sg = sd === 'Left' ? -1 : 1;
       out.k = out.ak = h.k == null ? 1 : h.k;
       if (h.wai != null) { joined(P, h.wai, sd, out); return out; }
-      if (h.cup != null) { cupped(P, h.cup, sd, out); return out; }
+      if (h.cup != null) { cupped(P, h.cup, sd, out, h.dy || 0); return out; }
       if (h.bowl) { cradled(P, sd, out); return out; }
       /* a reach: the hand's turn and its elbow's side in his body's frame, its palm or its wrist at a point of the room */
       const am = h.aim && typeof h.aim === 'object' ? h.aim : LCM.aim[h.aim || 'down'];
@@ -2730,7 +2866,10 @@
       for (const P of [cast.lersi, cast.pong]) whenReady(P, (Q) => { Q.group.visible = false; });
       whenReady(cast.goldman, (Q) => { Q.group.visible = true; });
       props.lcThings.visible = false; props.note.visible = true; props.envelope.visible = false;
-      pieceShow(true); lcBlockOn(false);
+      /* (v25.4) and the piece is on its shelf, whatever state this phase is applied over (applyPhase covers every phase,
+         v7.3): only the clearing's phases and reset() took it back off the cloth, so a jump back to the shop or the night
+         from a later beat left it on the master's cloth, hidden with his things (no play makes that jump; a probe did) */
+      clothPiece(false); pieceShow(true); lcBlockOn(false);
     }
     function shopBegin() {
       shopStage();
@@ -2780,7 +2919,7 @@
       shopCtl.night(true); shopCtl.shutter(0.42, 0); shopCtl.lights(0.28, 0); shopCtl.ceiling(0, 0); shopCtl.lap(''); shopCtl.phone('');
       for (const P of [cast.lersi, cast.pong, cast.goldman, cast.mallA, cast.mallB]) whenReady(P, (Q) => { Q.group.visible = false; });
       props.lcThings.visible = false; props.note.visible = true; props.wallet.visible = false; props.envelope.visible = false;
-      pieceShow(true); lcBlockOn(false);
+      clothPiece(false); pieceShow(true); lcBlockOn(false);
     }
     function toNight() {
       const run = ++worldRun;
@@ -3018,12 +3157,17 @@
     }
     /* the piece he took in chapter 1: on its shelf by the door (which one is his: the bag says, the save keeps it) */
     function pieceShow(on) { for (const k of PIECES) if (props.pieces[k]) props.pieces[k].visible = on && k === play.piece; }
+    /* (v25.4) where each piece stood before the cloth, kept in a map and never on the piece's userData: a clone copies
+       userData through JSON, and a parent kept there is a circle (a clone asked for after the piece had lain on the
+       cloth threw on every frame; no play reaches it, the clones being made on the examination's first frame, but a
+       probe that changed the piece between films did) */
+    const pieceHome = new WeakMap();
     function clothPiece(on) {
       const pc = props.pieces[play.piece]; if (!pc) return;
-      if (on) { if (pc.parent !== props.lcThings) { pc.userData.home = pc.userData.home || { p: pc.position.clone(), r: pc.rotation.clone(), parent: pc.parent };
+      if (on) { if (pc.parent !== props.lcThings) { if (!pieceHome.has(pc)) pieceHome.set(pc, { p: pc.position.clone(), r: pc.rotation.clone(), parent: pc.parent });
                   props.lcThings.add(pc); }
                 pc.position.set(props.cloth.position.x, props.clothTop + 0.002, props.cloth.position.z); pc.rotation.set(0, -0.4, 0); pc.visible = true; }
-      else if (pc.userData.home && pc.parent !== pc.userData.home.parent) { pc.userData.home.parent.add(pc); pc.position.copy(pc.userData.home.p); pc.rotation.copy(pc.userData.home.r); }
+      else { const hm = pieceHome.get(pc); if (hm && pc.parent !== hm.parent) { hm.parent.add(pc); pc.position.copy(hm.p); pc.rotation.copy(hm.r); } }
     }
 
     /* ---------------------------------------------------------------- the decision: Lersi Chin, on his mat */
@@ -3116,14 +3260,14 @@
        corridor), the fog's own music under play until the clearing, and the visit's after it — each eased; in a film the
        beds go down (every film cues its own sound, written to its pictures). The order is DATA.ambience.beds' */
     const MUS = { fog: 0.32, visit: 0.26 };
-    const bedMix = { mall: 0, night: 0, fogmus: 0, visitmus: 0, mallclear: 0 };
+    const bedMix = { mall: 0, night: 0, fogmus: 0, visitmus: 0, mallclear: 0, whisper: 0 };
     /* (v25.0 CP11) a film's own room: films.frame writes it from the film's clock (filmBedAt), films.end takes it off */
-    const filmBed = { on: false, mall: 0, night: 0, mallclear: 0 };
+    const filmBed = { on: false, mall: 0, night: 0, mallclear: 0, whisper: 0 };
     function mixBeds(wdt, st) {
       if (!(wdt > 0)) return;
-      const want = { mall: 0, night: 0, fogmus: 0, visitmus: 0, mallclear: 0 };
+      const want = { mall: 0, night: 0, fogmus: 0, visitmus: 0, mallclear: 0, whisper: 0 };
       if (st === 'cine') {
-        if (filmBed.on) { want.mall = filmBed.mall; want.night = filmBed.night; want.mallclear = filmBed.mallclear; }
+        if (filmBed.on) { want.mall = filmBed.mall; want.night = filmBed.night; want.mallclear = filmBed.mallclear; want.whisper = filmBed.whisper || 0; }
       } else {
         if (phase === 'shop') { want.mall = 0.3; want.fogmus = MUS.fog; }
         else if (phase === 'night') { want.night = 0.3; want.fogmus = MUS.fog * 0.8; }
@@ -3132,10 +3276,19 @@
           if (play.cleared) want.visitmus = MUS.visit; else want.fogmus = MUS.fog * 0.5;
         }
       }
-      for (const k in bedMix) bedMix[k] += (want[k] - bedMix[k]) * (1 - Math.exp(-wdt / (k === 'fogmus' || k === 'visitmus' ? 2.5 : 0.9)));
+      /* (v25.4) THE PIECE'S WHISPER, in play: while it stands on its shelf (the glow's own rule, pieceGlowTick), by how
+         near he is to it, and under a voice; to the side the shelf is on (the lens's own right, so no sign is guessed) */
+      const sdx = SHELF.x - camera.position.x, sdz = SHELF.z - camera.position.z, sd = Math.hypot(sdx, sdz) || 1;
+      if (st !== 'cine' && props.pieceGlow && props.pieceGlow.visible) {
+        const k = Math.min(1, Math.max(0, (WHISPER.far - sd) / (WHISPER.far - WHISPER.near)));
+        want.whisper = WHISPER.vol * k * k * (3 - 2 * k) * (speak.voiceTo > dayClock.t ? WHISPER.under : 1);
+      }
+      for (const k in bedMix) bedMix[k] += (want[k] - bedMix[k]) * (1 - Math.exp(-wdt / (k === 'fogmus' || k === 'visitmus' ? 2.5 : k === 'whisper' ? 0.3 : 0.9)));
       const B2 = DATA.ambience.beds;
       B2[0][1] = bedMix.mall; B2[1][1] = bedMix.night; B2[2][1] = bedMix.fogmus; B2[3][1] = bedMix.visitmus;
       B2[4][1] = bedMix.mallclear;
+      camera.updateMatrixWorld(); const ce = camera.matrixWorld.elements;
+      B2[5][1] = bedMix.whisper; B2[5][2] = Math.max(-0.8, Math.min(0.8, (sdx * ce[0] + sdz * ce[2]) / sd * 0.8));
     }
     function updatePile() {}
     function updateFire() {}
@@ -3450,6 +3603,38 @@
        the palm itself the fist hid it whole; with the walking hand it stood behind a pointing finger; photographed, twelve
        ways) */
     const AMU_P = 1, AMU_HELD = [0.0, 0.07, -0.01];
+    /* (v25.4) the middle of the piece where it stands on its shelf: what the films that look at it aim at (the shelf's
+       own middle was the aim while every piece was a few centimetres tall and stood there) */
+    function shelfPiece() {
+      const F = PIECE_FIT[play.piece] || PIECE_FIT.nangkwak, pc = props.pieces[play.piece];
+      return [SHELF.x + F.at[0], SHELF.y + ((pc && pc.userData.fitY) || 0.08) * 0.5, SHELF.z + F.at[1]];
+    }
+    const _pbb = new THREE.Box3();                                     // (v25.4) the piece's own box, for the shot that must hold it
+    /* (v25.4) THE PIECE IN HIS OWN HAND, at its new size. The seated figure stands on his fist by her base, as before. The
+       two that lie (a tube and a roll, 20 cm) are held UPRIGHT, their foot in the fist: laid across it as on the shelf,
+       the takrut ran out of a phone's frame, a fist over one end (photographed). Turned about the line to the lens after
+       it is faced there (its length up the screen), lifted by half its length less what the fist holds, and moved over
+       by half its thickness (it lies on its side: its middle line is that far off its own floor) */
+    function pieceHeld(ph) {
+      const F = PIECE_FIT[play.piece] || PIECE_FIT.nangkwak;
+      if (!F.round) { handHold(ph, { lens: AMU_HELD, face: true, tilt: -0.2 }); return; }
+      handHold(ph, { lens: [AMU_HELD[0] + (ph.userData.fitY || 0.05) / 2, AMU_HELD[1] + F.size / 2 - 0.045, AMU_HELD[2]], face: true, tilt: -0.2 });
+      ph.rotateZ(Math.PI / 2);
+    }
+    /* (v25.4) THE TWO THAT LIE, ON THE MASTER'S PALMS: laid across the MIDDLE of his two palms, 3 cm toward his fingers
+       from the tray's own point (the heels of his hands, where the seated figure's base stands). At that point a 20 cm
+       tube read through the film's lens as balanced on his wrists, his palms empty before it (photographed) */
+    const _pfA = new THREE.Vector3(), _pfB = new THREE.Vector3();
+    function palmsMiddle(obj) {
+      const W = cast.lersi && cast.lersi.waiHand; if (!W || !W.Left || !W.Right || !obj.parent) return;
+      let dx = 0, dy = 0, dz = 0;
+      for (const H of [W.Left, W.Right]) {
+        handPoint(H, H.palm[0], H.palm[1], _pfA); handPoint(H, H.palm[0] + 0.03 / H.mpu, H.palm[1], _pfB);
+        dx += _pfB.x - _pfA.x; dy += _pfB.y - _pfA.y; dz += _pfB.z - _pfA.z;
+      }
+      obj.parent.updateWorldMatrix(true, false); obj.getWorldPosition(_pfA); _pfA.x += dx / 2; _pfA.y += dy / 2; _pfA.z += dz / 2;
+      obj.position.copy(obj.parent.worldToLocal(_pfA));
+    }
     const BUDDHA_AT = [BUDDHA.x, BUDDHA.y, BUDDHA.z];
     /* (v25.2) HIS BODY IN THE FILMS (lcBody, b_build3): his look eased onto what he looks at. (v25.3) The joined hands'
        three places (at his brow, his head bowed to them: the Buddha's and his teachers'; before his chest: a greeting
@@ -3573,6 +3758,9 @@
       if (!held[slot] || held[slot].userData.piece !== play.piece) {
         if (held[slot] && held[slot].parent) held[slot].parent.remove(held[slot]);
         const c = src.clone(true); c.visible = false; c.userData.piece = play.piece; c.userData.dyn = true; world.add(c); held[slot] = c;
+        /* (v25.4) in a hand it is as his file has it: the glow is the shelf's (pieceLit, b_build2); and it stands on its
+           own foot, at no turn of the shelf's */
+        pieceLit(c, false); c.userData.lit = false; c.position.set(0, 0, 0); c.rotation.set(0, 0, 0);
       }
       return held[slot];
     }
@@ -3816,24 +4004,35 @@
     function examBody(t) {
       const X = EXAM, L = cast.lersi; if (!L || !L.ready) return;
       const tBack = X.fetch + 3.9, tCloth = X.lc2e8 + SECS.lc2e8 * 0.86;
-      const pl2 = pieceClone('lc'), c0 = props.cloth.position, shelf = [SHELF.x + 0.02, SHELF.y + 0.04, SHELF.z];
+      const pl2 = pieceClone('lc'), c0 = props.cloth.position, shelf = shelfPiece();
       const toCloth = { cup: [c0.x + 0.12, props.clothTop + 0.15, c0.z + 0.07] };
+      /* (v25.4) a tall piece is carried lower before his chest, by nine tenths of what it stands over the 8 cm the tray
+         was set for: on his palms at his chest the 19 cm Nang Kwak stood before his mouth through the line he says of
+         it (photographed) */
+      const pcH = (props.pieces[play.piece] && props.pieces[play.piece].userData.fitY) || 0.08;
+      const cChest = pcH > 0.09 ? { cup: 'chest', dy: -0.9 * (pcH - 0.08) } : C_CHEST;
       /* (the piece is back with him 2.3 s before he speaks of it: raised over 0.9 s, held a breath, lowered over 0.8 s as
          his head comes up; the raise and the lowering never overlap, or the hands would jump from one to the other) */
-      const two = [[tBack - 0.01, tBack, C_CHEST], [tBack + 0.3, tBack + 1.2, C_BROW], [X.lc2e8 - 0.8, X.lc2e8, C_CHEST],
-                   [tCloth - 1.3, tCloth - 0.1, toCloth]];
+      /* (v25.4) AND HE SITS BACK UP. Since v25.2 nothing took his hands, his lean and his turn off the cloth once the
+         piece was laid: he spoke "According to my practice, I believe..." and every line after it bent down to his right
+         over the cloth, his hands still out to it (mine; found photographing the cloth's shot for the bigger piece). His
+         hands come home and his back straightens over a second from the cut, done before he speaks */
+      const two = [[tBack - 0.01, tBack, cChest], [tBack + 0.3, tBack + 1.2, C_BROW], [X.lc2e8 - 0.8, X.lc2e8, cChest],
+                   [tCloth - 1.3, tCloth - 0.1, toCloth], [tCloth + 0.1, tCloth + 1.1, null]];
       const R = handKeys(t, [[X.lc2e1 + 0.3, X.lc2e1 + 1.45, { palm: [EX_WR[0] - 0.01, EX_WR[1] + 0.035, EX_WR[2]], aim: 'down', pole: 'reach' }],
                              [X.lc2e6 - 0.1, X.lc2e6 + 1.0, null]].concat(two));
       const Lh = handKeys(t, [[X.lc2e1 + 0.45, X.lc2e1 + 1.6, { palm: [EX_WR[0] + 0.03, EX_WR[1] - 0.035, EX_WR[2] - 0.01], aim: 'under', pole: 'reach' }],
                               [X.lc2e6 - 0.2, X.lc2e6 + 0.85, null]].concat(two));
       const lean = keyed(t, 0, [[X.lc2e1 + 0.2, X.lc2e1 + 1.4, 0.32], [X.lc2e6 - 0.1, X.lc2e6 + 1.0, 0],
                                 [X.still + 0.4, X.still + 2.0, 0.08], [X.eyes - 1.2, X.eyes - 0.2, 0],
-                                [tBack + 0.4, tBack + 1.2, 0.1], [X.lc2e8 - 0.8, X.lc2e8, 0.03], [tCloth - 1.3, tCloth - 0.1, 0.4]]);
-      const side = keyed(t, 0, [[tCloth - 1.3, tCloth - 0.1, -0.14]]), twist = keyed(t, 0, [[tCloth - 1.3, tCloth - 0.1, -0.28]]);
+                                [tBack + 0.4, tBack + 1.2, 0.1], [X.lc2e8 - 0.8, X.lc2e8, 0.03], [tCloth - 1.3, tCloth - 0.1, 0.4],
+                                [tCloth + 0.15, tCloth + 1.25, 0]]);
+      const side = keyed(t, 0, [[tCloth - 1.3, tCloth - 0.1, -0.14], [tCloth + 0.15, tCloth + 1.25, 0]]);
+      const twist = keyed(t, 0, [[tCloth - 1.3, tCloth - 0.1, -0.28], [tCloth + 0.15, tCloth + 1.25, 0]]);
       const neck = keyed(t, 0, [[tBack + 0.4, tBack + 1.2, 0.16], [X.lc2e8 - 0.8, X.lc2e8, 0]]);
       const hold = t >= tBack && t < tCloth ? pl2 : null;
       if (pl2) pl2.visible = !!hold;
-      lcBody({ R, L: Lh, lean, side, twist, neck, hold, holdBy: 'cup' });
+      lcBody({ R, L: Lh, lean, side, twist, neck, hold, holdBy: 'cup', holdAt: PIECE_FIT[play.piece] && PIECE_FIT[play.piece].round ? palmsMiddle : null });
       lcLook(t, [[X.lc2e1 + 0.35, X.lc2e1 + 1.1, EX_WR], [X.lc2e1 + 1.6, X.lc2e1 + 2.3, 'lens'],
                  [X.still - 0.3, X.still + 0.6, null], [X.eyes - 0.1, X.eyes + 0.9, shelf],
                  [tBack - 0.01, tBack, [LC.x, 0.5, LC.z + 0.28]], [tBack + 0.3, tBack + 1.0, null], [X.lc2e8 - 0.5, X.lc2e8 + 0.2, 'lens'],
@@ -3853,7 +4052,7 @@
       props.lcThings.visible = true; propsAt({ mat: 1 });
       const L = cast.lersi, P = cast.pong;
       if (P) { P.lookAt = L && L.head ? L.head : null; P.neck = null; }
-      const shelf = [SHELF.x + 0.02, SHELF.y + 0.04, SHELF.z];
+      const shelf = shelfPiece();
       /* the piece: on the shelf until he takes it; in his hand to the mat; in the master's hands; on the cloth */
       const tTake = X.fetch + 2.2, tBack = X.fetch + 3.9, tCloth = X.lc2e8 + SECS.lc2e8 * 0.86;
       pieceShow(t < tTake); clothPiece(t >= tCloth);
@@ -3897,7 +4096,7 @@
            at a point of the screen, it hung in the air before the shelf with his open hand below it, by photograph) */
         const A = FL.api, gk = smo(sgk(t, tTake - 0.8, tTake));
         if (gk > 0.001 && A && A.handPose) { A.handPose('place', gk, { p: AMU_P }); FL.grip = true; if (A.handsRoot) { A.handsRoot.visible = true; A.armR.visible = true; } }
-        if (t >= tTake && ph) handHold(ph, { lens: AMU_HELD, face: true, tilt: -0.2 });
+        if (t >= tTake && ph) pieceHeld(ph);
         else if (gk <= 0.001) handFree();
         return;
       }
@@ -3913,7 +4112,17 @@
         /* the piece on the cloth, the candles' light on it */
         const c0 = props.cloth.position;
         /* (v25.0 CP7) closer: the piece, not his bag */
-        shot([c0.x + 0.17, 0.5, c0.z + 0.42], [c0.x, c0.y + 0.03, c0.z], 36, 30);
+        /* (v25.4) from the cloth's OUTER side, and holding the whole piece: the lens stood between the cloth and his
+           knee, so his flat hand lay across the frame in front of the piece with his robe filling its right half, and
+           aimed at the cloth it cut the bigger piece off at the top (photographed). From his far right the piece stands
+           clear on its cloth, his hands leaving the frame's edge as he sits back; the piece's own box is what the shot
+           must hold, whichever piece and whichever screen */
+        const pc = props.pieces[play.piece], must = [];
+        let mid = [c0.x, c0.y + 0.03, c0.z];
+        if (pc && pc.visible) { pc.updateWorldMatrix(true, true); _pbb.setFromObject(pc);
+          const a = _pbb.min, b = _pbb.max; mid = [(a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2];
+          for (const x of [a.x, b.x]) for (const z of [a.z, b.z]) must.push([x, b.y + 0.015, z], [x, a.y, z]); }
+        fitShot([c0.x - 0.36, 0.4, c0.z + 0.52], mid, 36, 30, must);
         return;
       }
       /* "According to my practice, I believe..." — pushed in; "By him?" — "I didn't say that. I said on you." */
@@ -3997,8 +4206,8 @@
         /* his eyes down on his hands and the mat (the tray, the candles' light at the top of the frame); up as it lifts */
         const down = [CL.x, 0.25, CL.z - 0.65];                         // (v25.2) with the tray, 10 cm nearer him than v25.0's
         /* (v25.0 CP7) not one still frame for forty seconds: a slow push in on the tray's candles under Namo tassa, his
-           eyes drawn up to the master's joined hands and the leaves as the verses begin, up to his face as the grey
-           lifts; a breath under it all */
+           eyes drawn up to the master's joined hands as the verses begin (v25.3: the leaves are gone), up to his face as
+           the grey lifts; a breath under it all */
         const toHands = smo(sgk(t, K.sak - 1.0, K.sak + 3.0)), push = smo(sgk(t, K.homage + 1.0, K.sak)) * (1 - toHands);
         const base = aimEase(KN_EYE, down, [LC.x, 0.5, LC.z + 0.22], toHands * 0.75);
         fLens((isNarrow() ? 54 : 46) - 8 * push - 4 * toHands * (1 - lift));
@@ -4339,12 +4548,15 @@
        lifted, from K.lift), each ending's night and its daylight (A's "days later", D's morning: the mall heard clear),
        C's air-con alone after the shutter comes down, and the coda's night. mixBeds eases to it. */
     function filmBedAt(key, t) {
-      const B = { mall: 0, night: 0, mallclear: 0 };
+      const B = { mall: 0, night: 0, mallclear: 0, whisper: 0 };
       const seg = (a, b) => Math.min(1, Math.max(0, (t - a) / (b - a)));      // 0 before a, 1 after b
       if (key === 'open') B.mall = 0.55 * (1 - seg(OPEN.black - 1.0, OPEN.end));               // out with the picture
       else if (key === 'call') B.night = 0.5 * (1 - seg(CALL.black - 0.6, CALL.end));          // to the next evening's black
       else if (key === 'visit') B.night = 0.45 * seg(0, 1.0);                                   // and in from it
-      else if (key === 'exam') B.night = 0.45;
+      else if (key === 'exam') { B.night = 0.45;
+        /* (v25.4) the piece's whisper under the look that finds it, nearer as he goes to it, gone as his hand closes on it */
+        const tTake = EXAM.fetch + 2.2;
+        B.whisper = WHISPER.vol * (0.36 * seg(EXAM.lc2e7 + 0.2, EXAM.lc2e7 + 1.6) + 0.56 * seg(EXAM.fetch, EXAM.fetch + 1.8)) * (1 - seg(tTake - 0.35, tTake - 0.05)); }
       else if (key === 'clear') B.night = t < CLEARF.lift ? 0.4 : 0.5;
       else if (END[key]) {
         const T = END[key];
@@ -5130,6 +5342,33 @@
   /* ====================================================== (v25.0) THIS CHAPTER'S OWN DRAWN SURFACES
      Each drawn on a canvas (CSP-safe, no download); words drawn into the world are art (v14.5), except the forum's,
      which are the sheet's like chapter 1's phone chat, so Chad can change them */
+  /* (v25.4) black smoke: ONE STREAM, drawn upright from the foot of the picture: thin and dark where it leaves the
+     thing, wavering, wider and fainter as it climbs, two thinner strands leaving it on the way, gone before the
+     picture's top (white in the sheet and blackened by its material; `seed` draws another stream, so two side by side
+     are not one shape twice). Photographed before this: round puffs read as dark balls hanging over the piece; one
+     ragged plume up a wide S read as slanted strokes of charcoal, every wisp leaning the same way; and a stream of a
+     hundred separate dabs read as a row of ink blots */
+  function makeDarkPuff(THREE, cnv, seed) {
+    const W = 128, H = 256, [c, x] = sized(cnv, W, H), r = rng(seed);
+    x.clearRect(0, 0, W, H);
+    /* one strand from share v0 to v1 of the height (0 the foot): a path of two slow waves that swing wider as it climbs,
+       stamped with hundreds of faint soft discs a pixel apart (a ribbon, never a row of beads), wider and fainter upward */
+    const strand = (x0, v0, v1, amp, wid, dens) => {
+      const p1 = r() * 6.283, p2 = r() * 6.283, f1 = 0.7 + r() * 0.5, f2 = 1.9 + r() * 0.9, n = Math.round(260 * (v1 - v0));
+      for (let i = 0; i < n; i++) {
+        const v = v0 + (v1 - v0) * (i + r()) / n, t = (v - v0) / (v1 - v0);
+        const px = W / 2 + x0 * (0.3 + v) + (Math.sin(v * f1 * 6.283 + p1) * 0.7 + Math.sin(v * f2 * 6.283 + p2) * 0.3) * amp * (0.25 + v);
+        const py = H - 16 - v * (H - 40), rr = wid * (0.5 + 1.9 * v) * (0.8 + r() * 0.4);
+        const a = dens * Math.min(1, t / 0.07) * Math.pow(1 - t, 1.3) * (0.7 + r() * 0.6);
+        const g = x.createRadialGradient(px, py, 0, px, py, rr);
+        g.addColorStop(0, `rgba(255,255,255,${a.toFixed(3)})`); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(px - rr, py - rr, rr * 2, rr * 2);
+      }
+    };
+    strand(0, 0, 1, 13, 8, 0.18);                                              // the stream
+    strand((r() - 0.5) * 16, 0.22 + r() * 0.15, 0.95, 16, 5, 0.12);            // two thinner strands that leave it on the way up
+    strand((r() - 0.5) * 20, 0.4 + r() * 0.15, 0.9, 12, 4, 0.09);
+    return done(THREE, c, false);
+  }
   /* a woven fabric: a grey sling bag's nylon weave, by its colour and seed */
   function makeCanvasCloth(THREE, cnv, hex, seed) {
     const S = 256, [c, x] = cnv(S), r = rng(seed);

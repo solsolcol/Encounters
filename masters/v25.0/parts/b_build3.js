@@ -341,7 +341,7 @@
        he bows his head to it): its place is found from his chest's joint or from his brow, and from there up and
        before him in his body's own level frame */
     const _cC = new THREE.Vector3();
-    function cupped(P, where, sd, out) {
+    function cupped(P, where, sd, out, dy) {
       const K = LCM.cup, S = P.scale || 1, H = P.waiHand[sd], sg = sd === 'Left' ? -1 : 1;
       let off = null;
       if (Array.isArray(where)) _cC.set(where[0], where[1], where[2]);
@@ -352,6 +352,7 @@
       } else { P.spine.getWorldPosition(_cC); off = K.chest; }
       partAxes(P.group, null);
       if (off) _cC.addScaledVector(_pY, off[1] * S).addScaledVector(_pZ, off[2] * S);
+      if (dy) _cC.addScaledVector(_pY, dy);                                // (v25.4) a tall thing is carried lower (`dy`, metres)
       out.n.copy(_pY).multiplyScalar(Math.cos(K.roll)).addScaledVector(_pX, sg * Math.sin(K.roll));
       out.f.copy(_pZ).multiplyScalar(Math.cos(K.toe)).addScaledVector(_pX, sg * Math.sin(K.toe));
       out.f.multiplyScalar(Math.cos(K.tip)).addScaledVector(_pY, Math.sin(K.tip));
@@ -375,7 +376,7 @@
       const sg = sd === 'Left' ? -1 : 1;
       out.k = out.ak = h.k == null ? 1 : h.k;
       if (h.wai != null) { joined(P, h.wai, sd, out); return out; }
-      if (h.cup != null) { cupped(P, h.cup, sd, out); return out; }
+      if (h.cup != null) { cupped(P, h.cup, sd, out, h.dy || 0); return out; }
       if (h.bowl) { cradled(P, sd, out); return out; }
       /* a reach: the hand's turn and its elbow's side in his body's frame, its palm or its wrist at a point of the room */
       const am = h.aim && typeof h.aim === 'object' ? h.aim : LCM.aim[h.aim || 'down'];
@@ -673,7 +674,10 @@
       for (const P of [cast.lersi, cast.pong]) whenReady(P, (Q) => { Q.group.visible = false; });
       whenReady(cast.goldman, (Q) => { Q.group.visible = true; });
       props.lcThings.visible = false; props.note.visible = true; props.envelope.visible = false;
-      pieceShow(true); lcBlockOn(false);
+      /* (v25.4) and the piece is on its shelf, whatever state this phase is applied over (applyPhase covers every phase,
+         v7.3): only the clearing's phases and reset() took it back off the cloth, so a jump back to the shop or the night
+         from a later beat left it on the master's cloth, hidden with his things (no play makes that jump; a probe did) */
+      clothPiece(false); pieceShow(true); lcBlockOn(false);
     }
     function shopBegin() {
       shopStage();
@@ -723,7 +727,7 @@
       shopCtl.night(true); shopCtl.shutter(0.42, 0); shopCtl.lights(0.28, 0); shopCtl.ceiling(0, 0); shopCtl.lap(''); shopCtl.phone('');
       for (const P of [cast.lersi, cast.pong, cast.goldman, cast.mallA, cast.mallB]) whenReady(P, (Q) => { Q.group.visible = false; });
       props.lcThings.visible = false; props.note.visible = true; props.wallet.visible = false; props.envelope.visible = false;
-      pieceShow(true); lcBlockOn(false);
+      clothPiece(false); pieceShow(true); lcBlockOn(false);
     }
     function toNight() {
       const run = ++worldRun;
@@ -961,12 +965,17 @@
     }
     /* the piece he took in chapter 1: on its shelf by the door (which one is his: the bag says, the save keeps it) */
     function pieceShow(on) { for (const k of PIECES) if (props.pieces[k]) props.pieces[k].visible = on && k === play.piece; }
+    /* (v25.4) where each piece stood before the cloth, kept in a map and never on the piece's userData: a clone copies
+       userData through JSON, and a parent kept there is a circle (a clone asked for after the piece had lain on the
+       cloth threw on every frame; no play reaches it, the clones being made on the examination's first frame, but a
+       probe that changed the piece between films did) */
+    const pieceHome = new WeakMap();
     function clothPiece(on) {
       const pc = props.pieces[play.piece]; if (!pc) return;
-      if (on) { if (pc.parent !== props.lcThings) { pc.userData.home = pc.userData.home || { p: pc.position.clone(), r: pc.rotation.clone(), parent: pc.parent };
+      if (on) { if (pc.parent !== props.lcThings) { if (!pieceHome.has(pc)) pieceHome.set(pc, { p: pc.position.clone(), r: pc.rotation.clone(), parent: pc.parent });
                   props.lcThings.add(pc); }
                 pc.position.set(props.cloth.position.x, props.clothTop + 0.002, props.cloth.position.z); pc.rotation.set(0, -0.4, 0); pc.visible = true; }
-      else if (pc.userData.home && pc.parent !== pc.userData.home.parent) { pc.userData.home.parent.add(pc); pc.position.copy(pc.userData.home.p); pc.rotation.copy(pc.userData.home.r); }
+      else { const hm = pieceHome.get(pc); if (hm && pc.parent !== hm.parent) { hm.parent.add(pc); pc.position.copy(hm.p); pc.rotation.copy(hm.r); } }
     }
 
     /* ---------------------------------------------------------------- the decision: Lersi Chin, on his mat */
@@ -1059,14 +1068,14 @@
        corridor), the fog's own music under play until the clearing, and the visit's after it — each eased; in a film the
        beds go down (every film cues its own sound, written to its pictures). The order is DATA.ambience.beds' */
     const MUS = { fog: 0.32, visit: 0.26 };
-    const bedMix = { mall: 0, night: 0, fogmus: 0, visitmus: 0, mallclear: 0 };
+    const bedMix = { mall: 0, night: 0, fogmus: 0, visitmus: 0, mallclear: 0, whisper: 0 };
     /* (v25.0 CP11) a film's own room: films.frame writes it from the film's clock (filmBedAt), films.end takes it off */
-    const filmBed = { on: false, mall: 0, night: 0, mallclear: 0 };
+    const filmBed = { on: false, mall: 0, night: 0, mallclear: 0, whisper: 0 };
     function mixBeds(wdt, st) {
       if (!(wdt > 0)) return;
-      const want = { mall: 0, night: 0, fogmus: 0, visitmus: 0, mallclear: 0 };
+      const want = { mall: 0, night: 0, fogmus: 0, visitmus: 0, mallclear: 0, whisper: 0 };
       if (st === 'cine') {
-        if (filmBed.on) { want.mall = filmBed.mall; want.night = filmBed.night; want.mallclear = filmBed.mallclear; }
+        if (filmBed.on) { want.mall = filmBed.mall; want.night = filmBed.night; want.mallclear = filmBed.mallclear; want.whisper = filmBed.whisper || 0; }
       } else {
         if (phase === 'shop') { want.mall = 0.3; want.fogmus = MUS.fog; }
         else if (phase === 'night') { want.night = 0.3; want.fogmus = MUS.fog * 0.8; }
@@ -1075,10 +1084,19 @@
           if (play.cleared) want.visitmus = MUS.visit; else want.fogmus = MUS.fog * 0.5;
         }
       }
-      for (const k in bedMix) bedMix[k] += (want[k] - bedMix[k]) * (1 - Math.exp(-wdt / (k === 'fogmus' || k === 'visitmus' ? 2.5 : 0.9)));
+      /* (v25.4) THE PIECE'S WHISPER, in play: while it stands on its shelf (the glow's own rule, pieceGlowTick), by how
+         near he is to it, and under a voice; to the side the shelf is on (the lens's own right, so no sign is guessed) */
+      const sdx = SHELF.x - camera.position.x, sdz = SHELF.z - camera.position.z, sd = Math.hypot(sdx, sdz) || 1;
+      if (st !== 'cine' && props.pieceGlow && props.pieceGlow.visible) {
+        const k = Math.min(1, Math.max(0, (WHISPER.far - sd) / (WHISPER.far - WHISPER.near)));
+        want.whisper = WHISPER.vol * k * k * (3 - 2 * k) * (speak.voiceTo > dayClock.t ? WHISPER.under : 1);
+      }
+      for (const k in bedMix) bedMix[k] += (want[k] - bedMix[k]) * (1 - Math.exp(-wdt / (k === 'fogmus' || k === 'visitmus' ? 2.5 : k === 'whisper' ? 0.3 : 0.9)));
       const B2 = DATA.ambience.beds;
       B2[0][1] = bedMix.mall; B2[1][1] = bedMix.night; B2[2][1] = bedMix.fogmus; B2[3][1] = bedMix.visitmus;
       B2[4][1] = bedMix.mallclear;
+      camera.updateMatrixWorld(); const ce = camera.matrixWorld.elements;
+      B2[5][1] = bedMix.whisper; B2[5][2] = Math.max(-0.8, Math.min(0.8, (sdx * ce[0] + sdz * ce[2]) / sd * 0.8));
     }
     function updatePile() {}
     function updateFire() {}

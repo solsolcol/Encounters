@@ -23,7 +23,14 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
    `masters/v22.0/previews/film-music-1..4.mp3`) and closing music (c, against a); episode 3 chapter 5's music
    (`masters/v23.0/previews/`, and v24.3's twelve cues); episode 4 chapter 2's eleven pieces of music (v25.0, three
    takes each, loudness-matched: `masters/v25.0/music/previews/`) and Lersi Chin's voice (three Thai-accented voices
-   reading his key lines, Mart-Podcast built: `masters/v25.0/audition/*-preview.mp3`). Send the reels again.
+   reading his key lines, Mart-Podcast built: `masters/v25.0/audition/*-preview.mp3`); and the whisper of the piece on
+   the shelf (v25.4: the black master's own whisper built; four previews, `masters/v25.4/previews/whisper-a..d.mp3`).
+   Send the reels again.
+4b. **Offered at v25.4, on his word** (docs/V25.4-E4C2-SHELF-PIECES.md): (i) the shelf moved to where his counter can
+   see it (the tall wall cabinet hides it from behind the counter; it is seen from the middle of the shop on and from
+   where he kneels); (ii) the same bigger sizes on chapter 1's tray, where the three still stand 7.5, 6.6 and 8.5 cm;
+   (iii) the glow, the smoke and the whisper kept on the piece after it leaves the shelf (in his hand, on the cloth):
+   built as he worded it, "as it sits on the shelf".
 5. ~~**Episode 4 chapter 2's build plan**~~ — WRITTEN at v24.40, docs/V25.0-E4C2-PLAN.md, and REVISED 9 Nov 2026 to his
    direction (Lersi Chin comes to his shop in Singapore, brought by Pong; all play in the shop; the decision rebuilt).
    **BUILT AND SHIPPED at v25.0** on his yes the same day (answer C his own: "ask Lersi Chin to send it back to whoever

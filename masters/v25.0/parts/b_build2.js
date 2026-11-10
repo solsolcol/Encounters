@@ -5,7 +5,7 @@
        them (the visit film shows them). */
     const props = { till: null, tillK: 0, tillTo: 0, bag: null, bagFlap: null, bagK: 0, bagTo: 0, jacket: null, jacketK: 0, jacketTo: 0,
                     fridge: null, fridgeDoor: null, fridgeLight: null, fridgeK: 0, fridgeTo: 0, wallet: null, note: null, sw: null, swDot: null,
-                    shelf: null, piece: null, pieces: {}, mat: null, matK: 1, matTo: 1, bowl: null, water: null,
+                    shelf: null, piece: null, pieces: {}, pieceGlow: null, glowHalo: null, glowWash: null, glowPool: null, glowSmoke: [], mat: null, matK: 1, matTo: 1, bowl: null, water: null,
                     cloth: null, khan: null, flames: [], yaam: null, envelope: null, stand: null, ribbons: [], sway: 0, lcThings: null,
                     ceil: null, ceilS: null, ceilK: 1, ceilFrom: 1, ceilTo: 1, c0: 0, c1: 0, night: false, nightShut: [], signs: [], corSky: null, corCeil: null };
     function buildProps() {
@@ -134,7 +134,9 @@
               d.position.set(m.position.x + sx * 0.0104, m.position.y + 0.0551, m.position.z + 0.0018); g.add(d); } }); }
       }
       /* THE SHELF beside the door, and on it the piece he took in chapter 1, facing the door as he was told — each of the
-         three made ready (which one is his, play decides), its light cut (the amulet rule: a few centimetres at a shelf) */
+         three made ready (which one is his, play decides), its light cut (v25.0: a few centimetres at a shelf; v25.4:
+         bigger, 19 to 21 cm, and still the light cut — photographed from the nearest a player can stand, a hand's length
+         off, its 1024 sheet holds) */
       { const g = new THREE.Group(); g.position.set(SHELF.x, SHELF.y, SHELF.z); S0.add(g); props.shelf = g;
         mesh(new THREE.BoxGeometry(0.2, 0.02, 0.3), M({ color: 0x5a3a24, roughness: 0.6 }), 0, -0.01, 0, g);
         for (const dz of [-0.11, 0.11]) mesh(new THREE.BoxGeometry(0.02, 0.07, 0.02), mBlackP, -0.08, -0.045, dz, g);
@@ -144,10 +146,43 @@
         { const standIn = [...g.children];
           fitModel('e4shelf', g, 0.3, 'z', Math.PI / 2, 0).then(m => { if (!m || !alive) return; for (const o of standIn) o.visible = false;
             m.position.y -= m.userData.fit.y; m.position.x += (SHOP.x0 + 0.008 + m.userData.fit.x / 2) - SHELF.x; }); }
-        mesh(new THREE.PlaneGeometry(0.16, 0.2), M({ color: 0x9a1418, roughness: 0.85 }), 0.005, 0.0012, 0, g).rotation.x = -Math.PI / 2;   // a red cloth under it
-        for (const [key, size, axis, ry, rz] of [['e4nangkwak', 0.075, 'y', 0, 0], ['e4takrut', 0.066, 'x', 0, Math.PI / 2], ['e4phayant', 0.085, 'x', 0.3, 0]]) {
-          const pg = new THREE.Group(); pg.visible = false; g.add(pg); props.pieces[key.slice(2)] = pg; pg.userData.dyn = true;
-          fitModel(key, pg, size, axis, ry, rz);
+        /* a red cloth under it ((v25.4) 26 cm along the 30 cm board, from 20: the piece stands toward its door end now) */
+        mesh(new THREE.PlaneGeometry(0.16, 0.26), M({ color: 0x9a1418, roughness: 0.85 }), 0.005, 0.0012, 0, g).rotation.x = -Math.PI / 2;
+        /* (v25.4) each at its new size (PIECE_FIT), at its own place and turn on the shelf; its height kept as a number
+           (the glow stands by it, pieceGlowTick) */
+        for (const id in PIECE_FIT) { const F = PIECE_FIT[id];
+          const pg = new THREE.Group(); pg.visible = false; g.add(pg); props.pieces[id] = pg; pg.userData.dyn = true;
+          pg.position.set(F.at[0], 0, F.at[1]); pg.rotation.y = F.turn; pg.userData.fit = F;
+          fitModel(F.key, pg, F.size, F.axis, F.ry, F.rz).then(m => { if (!m || !alive) return;
+            pg.userData.fitY = m.userData.fit.y; pg.userData.fitX = m.userData.fit.x; pg.userData.fitZ = m.userData.fit.z; });
+        }
+        /* (v25.4) THE RED GLOW, on while the piece stands here (pieceGlowTick): the halo, the wall's wash and the pool on
+           the shelf's top. The wall's face is 13 cm behind the shelf's middle; the board is 30 cm along it and 21 cm deep */
+        { const gl = new THREE.Group(); gl.visible = false; gl.userData.dyn = true; g.add(gl); props.pieceGlow = gl;
+          const tG = tex(makeGlow(THREE, cnv));
+          const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: tG, color: PGLOW.tint, transparent: true, opacity: 0, depthWrite: false, fog: false, blending: THREE.AdditiveBlending }));
+          halo.scale.set(PGLOW.haloD, PGLOW.haloD, 1); halo.userData.dyn = true; gl.add(halo); mats.push(halo.material);
+          const wash = new THREE.Mesh(new THREE.PlaneGeometry(PGLOW.washD, PGLOW.washD), B({ map: tG, color: PGLOW.wall, transparent: true, opacity: 0, depthWrite: false }));
+          wash.rotation.y = Math.PI / 2; wash.userData.dyn = true; g.add(wash);
+          const pool = new THREE.Mesh(new THREE.PlaneGeometry(0.2, 0.29), B({ map: tG, color: PGLOW.tint, transparent: true, opacity: 0, depthWrite: false, fog: false, blending: THREE.AdditiveBlending }));
+          pool.rotation.x = -Math.PI / 2; pool.position.set(-0.017, 0.004, 0); pool.userData.dyn = true; g.add(pool);
+          props.glowHalo = halo; props.glowWash = wash; props.glowPool = pool; wash.visible = pool.visible = false;
+          /* (v25.4) THE BLACK SMOKE: thin dark streams that leave the piece's own surface and lengthen upward before the
+             red, each drawn over what is behind it (smoke darkens; it is never added) and after the red halo (renderOrder:
+             a stream behind the halo's middle was drawn first and came out red). A stream's whole path is a function of
+             the wall clock and its own fixed numbers (thrown once, here), so play, a film and a seek draw the same smoke.
+             They stand evenly along the piece (`a`, from one end of its length to the other) on alternate sides of it
+             (`c`), two pictures of a stream dealt alternately */
+          const tS = [tex(makeDarkPuff(THREE, cnv, 7741)), tex(makeDarkPuff(THREE, cnv, 5153))], sr = rng(8813);
+          props.glowSmoke = [];
+          for (let i = 0; i < PGLOW.wisps; i++) {
+            const sm = new THREE.SpriteMaterial({ map: tS[i % 2], color: 0x0a0607, transparent: true, opacity: 0, depthWrite: false, fog: false });
+            const sp = new THREE.Sprite(sm); sp.userData.dyn = true; sp.renderOrder = 1; gl.add(sp); mats.push(sm);
+            sp.userData.w = { T: 3.4 + sr() * 2.2, ph: sr(), a: ((i * 5) % PGLOW.wisps + 0.15 + sr() * 0.7) / PGLOW.wisps * 2 - 1, c: i % 2 ? 1 : -1,
+                              dx: 0.004 + sr() * 0.03, dz: (sr() - 0.5) * 0.06,
+                              h0: 0.45 + sr() * 0.55, s: 0.07 + sr() * 0.04, rot: (sr() - 0.5) * 0.24, cw: sr() < 0.5 ? -1 : 1 };
+            props.glowSmoke.push(sp);
+          }
         }
       }
       /* LERSI CHIN'S THINGS (§2.2 #7), hidden until the visit: his woven mat on the floor (rolled up in the film until he
@@ -281,8 +316,65 @@
       lap(mode, o = {}) { shop.lapMode = mode || ''; shop.lapOn = mode ? 1 : 0; shop.lapO = o; }
     };
     const _swV = new THREE.Vector3();
+    /* (v25.4) THE PIECE'S TWO LOOKS: as his file has it, and lit red from within while it stands on the shelf. The lit
+       twin is the same material with a red emissive (no map: the same shader, so nothing is compiled when the looks
+       change, v15.1); his file's own material is never changed (v12.4). A clone made for a hand takes the file's look */
+    const pieceLitOf = new Map(), pieceBaseOf = new Map();
+    function pieceLit(root, on) {
+      root.traverse(o => {
+        if (!o.isMesh || Array.isArray(o.material) || !o.material || !o.material.emissive) return;
+        const base = pieceBaseOf.get(o.material) || o.material;
+        if (!on) { o.material = base; return; }
+        let lit = pieceLitOf.get(base);
+        if (!lit) { lit = base.clone(); mats.push(lit); lit.emissive.setHex(PGLOW.tint); lit.emissiveIntensity = PGLOW.self;
+                    pieceLitOf.set(base, lit); pieceBaseOf.set(lit, base); }
+        o.material = lit;
+      });
+    }
+    /* (v25.4) THE RED GLOW, derived on the frame from where the piece is (v11.6): on while it stands on its shelf, off the
+       frame it is taken down, never on the cloth or in a hand ("as it sits on the shelf"). It breathes on the wall clock,
+       in play and in films alike (as the cast's own clocks do, v5.19) */
+    function pieceGlowTick(now) {
+      const gl = props.pieceGlow; if (!gl) return;
+      let on = null;
+      for (const id in props.pieces) { const p = props.pieces[id]; if (!p.userData.fitY) continue;
+        const here = p.visible && p.parent === props.shelf;
+        if (here) on = p;
+        if (p.userData.lit !== here) { pieceLit(p, here); p.userData.lit = here; } }
+      gl.visible = props.glowWash.visible = props.glowPool.visible = !!on;
+      if (!on) return;
+      const br = (1 - PGLOW.breath * (0.5 - 0.5 * Math.cos(now * 2 * Math.PI / PGLOW.period))) * (props.night ? PGLOW.night : 1);
+      const h = on.userData.fitY;
+      gl.position.set(on.position.x, h * PGLOW.at, on.position.z);
+      props.glowWash.position.set(-0.128, h * PGLOW.at, on.position.z);                 // 2 mm off the wall's face
+      props.glowHalo.material.opacity = PGLOW.halo * br; props.glowWash.material.opacity = PGLOW.wash * br; props.glowPool.material.opacity = PGLOW.pool * br;
+      for (const lit of pieceLitOf.values()) lit.emissiveIntensity = PGLOW.self * br;
+      /* the smoke: each stream's foot is ROOTED on the piece's own surface for its whole life (lifted off it, a stream
+         hung in the air beside the two that lie: photographed), on the outline its height has there (the seated figure
+         narrowing by `taper` to her head; a tube or a roll widest at half its height), a finger outside it so that
+         some rise before the piece and some from behind it. It lengthens upward from that foot, leans a little into the
+         room (never into the wall), widens and thins.
+         The piece's own length and width: its box is measured after its model's turn (PIECE_FIT.ry), so they are taken
+         back out of it, and the streams stand along the piece as it lies, not along its box */
+      const F = on.userData.fit, ry = F.ry || 0, th = on.rotation.y + ry, cs = Math.cos(th), sn = Math.sin(th);
+      const bx = on.userData.fitX || 0.1, bz = on.userData.fitZ || 0.1, c0 = Math.abs(Math.cos(ry)), s0 = Math.abs(Math.sin(ry)), den = c0 * c0 - s0 * s0;
+      const rx = (bx * c0 - bz * s0) / den / 2 + 0.006, rz = (bz * c0 - bx * s0) / den / 2 + 0.006;
+      for (const sp of props.glowSmoke) { const w = sp.userData.w, u = (now / w.T + w.ph) % 1;
+        const kx = F.round ? 1 : 1 - (F.taper || 0) * w.h0, kz = F.round ? Math.sqrt(Math.max(0, 1 - (2 * w.h0 - 1) * (2 * w.h0 - 1))) : kx;
+        const lx = w.a * rx * kx, lz = w.c * rz * kz * Math.sqrt(1 - w.a * w.a);            // in the piece's own frame, along its length
+        const sway = Math.sin((u * 1.3 + w.ph) * Math.PI * 2) * 0.02 * u;
+        const tall = w.s * 2.4 * (0.5 + 1.5 * u), wide = w.s * (0.7 + 0.9 * u);
+        sp.position.set(lx * cs + lz * sn + w.dx * u + sway,
+                        h * (w.h0 - PGLOW.at) + tall * 0.4375,                             // the picture's foot is 0.4375 of its height under its middle
+                        -lx * sn + lz * cs + w.dz * u + sway * 0.6 * w.cw);
+        sp.scale.set(wide, tall, 1);
+        sp.material.rotation = w.rot * (0.3 + 0.7 * u);
+        sp.material.opacity = PGLOW.smoke * Math.min(1, u / 0.12) * Math.min(1, (1 - u) / 0.5);  // in at once, whole for half its climb, then thinning away
+      }
+    }
     function shopFrame(now) {
       stockLod();                                                                       // (v24.22) near or far, place by place
+      pieceGlowTick(now);
       const k = Math.min(1, Math.max(0, (now - shop.t0) / Math.max(0.001, shop.t1 - shop.t0)));
       if (shop.t1 > 0 && k < 1) shop.u = shop.uFrom + (shop.uTo - shop.uFrom) * k * k * (3 - 2 * k); else if (shop.t1 > 0) shop.u = shop.uTo;
       if (shop.curtain) {

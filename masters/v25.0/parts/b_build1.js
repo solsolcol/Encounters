@@ -53,6 +53,48 @@
        on the wall's line at 2.88): at 2.8 it was inside the pillar, unseen since v25.0 — the night's 'Switch on the light'
        pointed at nothing a player could see (found by photographing the switch from 44 cm at v25.2) */
     const SHELF = { x: SHOP.x0 + 0.13, y: 1.48, z: 2.36 };                     // a small shelf beside it: the piece, facing the door
+    /* (v25.4) THE PIECE HE TOOK, BIGGER, AND ITS RED GLOW ON THE SHELF. Chad, 10 Nov 2026: "The 3 possible items that the
+       player picks in the previous chapter, nang kwak, takrut, pha yant, needs to be made bigger on the shelf so that it is
+       actually visible. It is hard to see now. Also add a red glow to those items as it sits on the shelf."
+       Measured first (docs/V25.4-E4C2-SHELF-PIECES.md): at chapter 1's tray sizes (7.5, 6.6 and 8.5 cm, kept at v25.0) the
+       Nang Kwak stood 9 pixels tall on a phone from behind his counter, near black, on a shelf in a 45 cm strip of wall
+       between the wall cabinet and the door's pillar.
+       ONE SIZE WHEREVER THE PIECE IS SEEN in this chapter (the shelf, his hand, the master's palms, the cloth): made bigger
+       on the shelf alone it would shrink as he took it down, in one shot.
+       Each: its asset, its size in metres along `axis` (measured after the turns), its turns as its model lies, and its
+       place on the shelf from the shelf's own middle (dx into the room, dz along the wall toward the door) with its turn
+       there (ry); and its outline for the smoke, which leaves its surface and not the air beside it: `taper`, how much
+       narrower the seated figure is at her head than at her base, or `round` for the two that lie (a tube and a roll:
+       widest at half their height, a line along their top) */
+    const PIECE_FIT = {
+      /* each stands 4 to 5 cm toward the door from the shelf's middle: the wall cabinet's end (its corner post at
+         x -1.94, z 2.11) hid whatever stood at the middle from where he kneels in the examination, and the look that
+         turns to "the piece standing by the door" found half of it (measured, then photographed through that lens) */
+      nangkwak: { key: 'e4nangkwak', size: 0.19, axis: 'y', ry: 0, rz: 0, at: [-0.012, 0.05], turn: 0, taper: 0.6 },
+      /* the two that lie are laid along the wall, a little askew: pointing out from it (chapter 1's way on the tray) a
+         man facing the shelf saw each end-on, a disc, and at 21 cm the roll's far end was in the wall (photographed) */
+      takrut:   { key: 'e4takrut', size: 0.2, axis: 'x', ry: 0, rz: Math.PI / 2, at: [-0.017, 0.05], turn: 0.95, round: true },
+      phayant:  { key: 'e4phayant', size: 0.21, axis: 'x', ry: 0.3, rz: 0, at: [-0.012, 0.04], turn: 1.1, round: true }
+    };
+    /* the glow (no lamp, v9.4): a red halo that faces the lens (additive), a red wash on the wall behind it and a pool
+       on the shelf's top (the hue laid on, v8.8: additive red on a pale wall sums to pink), and the piece's own surface
+       lit red from within. `at`: the halo's middle, as a share of the piece's height. It breathes: `breath` of its
+       strength, once in `period` seconds. `night`: its strength with the shop's lights off (an unlit layer is not dimmed
+       by the dark, so it is) */
+    const PGLOW = { tint: 0xff2412, wall: 0xd4140a, halo: 0.42, haloD: 0.62, wash: 0.62, washD: 0.66, pool: 0.5, self: 0.12,
+                    at: 0.55, breath: 0.28, period: 3.6, night: 0.8,
+                    /* (v25.4) THE BLACK SMOKE (Chad, the same day: "Maybe also add some black smoke to the items to make it
+                       look more evil and some sound effects on those items to make it more creepy, like whispering
+                       sounds"): how many streams and how dark at their fullest (each rooted on the piece's own surface at
+                       its own place along it, from under half its height to its top, lengthening upward).
+                       Its strength is 0.42, from 0.8, on his word the same evening with it live ("make the black smoke
+                       more transclucent"): photographed at 0.8, 0.6, 0.45 and 0.32 with the smoke held still, the wall
+                       and the glow are seen through it from 0.45 down, and at 0.32 it is nearly gone from the middle of
+                       the shop on a phone (a correction does not overshoot, v22.0) */
+                    wisps: 12, smoke: 0.42 };
+    /* (v25.4) ITS WHISPER: a wordless loop (x2whisper) heard near the shelf while the piece stands on it, full within
+       `near` metres and gone by `far`, to the side it is on, and under a voice at `under` of itself */
+    const WHISPER = { vol: 0.5, near: 0.9, far: 3.6, under: 0.5 };
     const STAND = { x: 1.55, z: 2.36, ry: Math.PI + 0.42 };                    // the Grand Opening stand inside the door, turned in, its flowers dried
     const LC = { x: 0, z: -0.42 };                                             // Lersi Chin on his mat, facing the door; the altar's Buddha over his shoulder
     /* (v25.0 CP6) Lersi Chin's things made as models (masters/v25.0/models): their sizes in metres, and the places inside

@@ -8497,6 +8497,52 @@ What the baseline contains, by release:
     Continue from five saved phases on a phone, the leak and cine harnesses.
   - A NEW STANDING RULE (CLAUDE.md): a pose or a motion is judged full size, from in front of the body, from beside it
     and through the film's own lens at a phone's shape, and is never reported as natural from a contact sheet.
+- **v25.4** EPISODE 4 · CHAPTER 2: THE PIECE ON THE SHELF, BIGGER, GLOWING RED, SMOKING BLACK, WHISPERING. Chad, 10 Nov
+  2026 (while v25.3 was being checked): "The 3 possible items that the player picks in the previous chapter, nang kwak,
+  takrut, pha yant, needs to be made bigger on the shelf so that it is actually visible. It is hard to see now. Also add
+  a red glow to those items as it sits on the shelf.", and an hour later: "Maybe also add some black smoke to the items
+  to make it look more evil and some sound effects on those items to make it more creepy, like whispering sounds".
+  docs/V25.4-E4C2-SHELF-PIECES.md is the record (his words, the measures, the log); masters/v25.4/make.sh the whisper's.
+  - MEASURED FIRST: at chapter 1's tray sizes (7.5, 6.6 and 8.5 cm) the Nang Kwak stood 9 pixels tall on a phone from
+    behind his counter, near black, on a shelf in a 45 cm strip of wall beside the door; and from the counter the tall
+    wall cabinet hides that shelf altogether (the shelf's place is v25.0's: put to him, not moved).
+  - BIGGER, ONE SIZE WHEREVER IT IS SEEN IN THIS CHAPTER (19, 20 and 21 cm): bigger on the shelf alone it would have
+    shrunk in one shot as he took it down. Wider than his words, and said so; chapter 1's tray keeps its sizes. Each
+    stands toward the door from the shelf's middle (the cabinet's post hid half of it from where he kneels); the two that
+    lie are laid along the wall.
+  - THE RED GLOW, with no lamp: a halo that faces the lens, a red wash on the wall behind (laid on in the hue), a pool on
+    the shelf's top, and the piece lit red from within by a twin of its own material (the same shader). It breathes.
+  - THE BLACK SMOKE: twelve streams, each rooted on the piece's own surface and lengthening upward, drawn over what is
+    behind them and after the halo. Two tries were refused at full size first: round puffs (dark balls hanging over
+    it) and a ragged plume (slanted strokes of charcoal hanging over its head). MADE MORE TRANSLUCENT the same evening
+    on his word with it live ("make the black smoke more transclucent"): its strength 0.42, from 0.8, picked from
+    photographs at four strengths with the smoke held still; the bracket sent to him.
+  - THE WHISPER (`x2whisper`): the black master's own wordless whisper from chapter 1, laid over itself again, heard
+    near the shelf (silent at his counter, full within a metre, on the side the shelf is on, under every voice) and in
+    the examination as his look turns to it. Six generated takes were measured beside it; three were refused because a
+    transcriber found words in them. Four previews go to his ear (masters/v25.4/previews).
+  - GLOW, SMOKE AND WHISPER ARE THE SHELF'S, by one rule read every frame: off the frame he takes the piece down.
+  - WHAT THE BIGGER PIECE BROKE, each found by a photograph through the film's lens and fixed: the statue before the
+    master's mouth while he spoke of it (carried lower), the cloth's close-up cut and filled by a flat hand (taken from
+    the other side, holding the piece's box), the takrut running out of a phone's frame in his own fist (the two that
+    lie are held upright), a tube that read as balanced on the master's wrists (laid across the middle of his palms).
+  - MINE, FOUND ON THE WAY: since v25.2 Lersi Chin stayed bent over the cloth, his hands out to it, through "According
+    to my practice, I believe..." and every line after. He sits back up over a second, before he speaks.
+  - THE CAPTURED PRAYER, OWED FROM v25.3, measured against his wai (the table is in the record): his arms at the chest
+    are the captured person's arms (the same hang of the upper arm, the same distance between the wrists, the same bend
+    at the wrist); the fingers differ, the capture's pointing forward and a Thai wai's up, so nothing is changed by it.
+  - HARDENED (no play reaches either; a probe did): a clone of the piece made after it had lain on the cloth threw (its
+    parent was kept on its userData, which a clone copies through JSON); the shop's and the night's phases now take the
+    piece back off the cloth themselves.
+  - DEPLOYED FIRST (`6af36d3780c31fc3f391d71c`: 338 served files byte-identical to dist, the cache headers in force), the
+    chapter seen to boot and the shelf photographed from the build first. The sheet is unchanged (its export is
+    identical to v140). CHECKED on it: chaptertest clean, the voice scan (no voice over another), a finger's
+    play-through from the title to ending C's card (PASS: 58 voices, none over another, the ten chant captions, no page
+    error), Continue from five saved phases on a phone with each of the three pieces, the leak and cine harnesses. The
+    opening, the call and the visit were measured and photographed for the glow: the wall cabinet stands before the
+    shelf in every shot that looks its way, on a phone and on a desktop, so those films are as they were.
+  - DEPLOYED AGAIN for the lighter smoke (`6af37563b74070aa54ad3e98`: 3 files sent, 336 carried; 338 served files
+    byte-identical to dist), the chapter seen to boot from it and the examination run through once more on it.
 
 ## The sheet, version by version
 

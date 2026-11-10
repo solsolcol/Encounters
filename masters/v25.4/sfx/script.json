@@ -1,0 +1,11 @@
+{
+  "_flow": "SFnWUI9IMdhGxt73er5Q",
+  "_model": "eleven_text_to_sound_v2",
+  "_params": { "duration_seconds": 14, "loop": true, "prompt_influence": 0.4, "takes": 2 },
+  "_nodes": { "x2whisperA": "uXNiBhD17Gx79c3QXgi8", "x2whisperB": "cq6xe5YmRI6MSbum6cpp", "x2whisperC": "8SiSN3JoxI6XqFpmGzZu" },
+  "fx": [
+    ["x2whisperA", 14.0, true, "Several hushed voices whispering urgently and indistinctly, overlapping one another, close and dry, no clear words, breathy and sinister, continuous, no music, no room echo"],
+    ["x2whisperB", 14.0, true, "One low male voice whispering a slow rhythmic incantation very close to the ear, breathy, the words impossible to make out, dark and patient, continuous, no music, no room echo"],
+    ["x2whisperC", 14.0, true, "Faint ghostly whispers and breathy hisses drifting and overlapping, many soft voices murmuring, unintelligible, eerie and cold, continuous, no music, no words"]
+  ]
+}

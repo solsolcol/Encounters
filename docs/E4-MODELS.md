@@ -124,6 +124,7 @@ its credit row.
 | His mat | built in code: a flat woven mat, its reeds drawn | **IN** |
 | The clean cloth, his woven bag; his jacket, his bag, the till and the rest of the shop's props | built in code at v25.0; REAL MODELS since v25.2 (fourteen, each a checked picture on white, then Meshy and its remesh: docs/V25.2-E4C2-PHONE-MOTION-MODELS.md, masters/v25.2/make.sh) | **IN** |
 | The skein of white thread | built in code | **OUT at v25.3** (Chad: "no need for the tieing of string"): it served only the thread tied at his wrist |
+| The piece he took in chapter 1 (the Nang Kwak, the takrut or the pha yant), on its shelf by the door | Chad's own three scans, the light cuts chapter 1's tray draws (`e4nangkwak`, `e4takrut`, `e4phayant`), unchanged | **IN, BIGGER at v25.4** (Chad: "needs to be made bigger on the shelf so that it is actually visible"): 19, 20 and 21 cm wherever this chapter shows it (chapter 1's tray keeps 7.5, 6.6 and 8.5 cm), with a red glow, black smoke and a whisper while it sits on the shelf (no model: sprites, a painted wash and a sound). docs/V25.4-E4C2-SHELF-PIECES.md |
 
 Nothing in chapter 2 is NEEDED from Chad. All of it is in his shop in Singapore (chapter 1's World S); the first master is
 neither seen nor heard, the customers only heard. Its plan and build record: docs/V25.0-E4C2-PLAN.md.

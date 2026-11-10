@@ -12,6 +12,33 @@
   /* ====================================================== (v25.0) THIS CHAPTER'S OWN DRAWN SURFACES
      Each drawn on a canvas (CSP-safe, no download); words drawn into the world are art (v14.5), except the forum's,
      which are the sheet's like chapter 1's phone chat, so Chad can change them */
+  /* (v25.4) black smoke: ONE STREAM, drawn upright from the foot of the picture: thin and dark where it leaves the
+     thing, wavering, wider and fainter as it climbs, two thinner strands leaving it on the way, gone before the
+     picture's top (white in the sheet and blackened by its material; `seed` draws another stream, so two side by side
+     are not one shape twice). Photographed before this: round puffs read as dark balls hanging over the piece; one
+     ragged plume up a wide S read as slanted strokes of charcoal, every wisp leaning the same way; and a stream of a
+     hundred separate dabs read as a row of ink blots */
+  function makeDarkPuff(THREE, cnv, seed) {
+    const W = 128, H = 256, [c, x] = sized(cnv, W, H), r = rng(seed);
+    x.clearRect(0, 0, W, H);
+    /* one strand from share v0 to v1 of the height (0 the foot): a path of two slow waves that swing wider as it climbs,
+       stamped with hundreds of faint soft discs a pixel apart (a ribbon, never a row of beads), wider and fainter upward */
+    const strand = (x0, v0, v1, amp, wid, dens) => {
+      const p1 = r() * 6.283, p2 = r() * 6.283, f1 = 0.7 + r() * 0.5, f2 = 1.9 + r() * 0.9, n = Math.round(260 * (v1 - v0));
+      for (let i = 0; i < n; i++) {
+        const v = v0 + (v1 - v0) * (i + r()) / n, t = (v - v0) / (v1 - v0);
+        const px = W / 2 + x0 * (0.3 + v) + (Math.sin(v * f1 * 6.283 + p1) * 0.7 + Math.sin(v * f2 * 6.283 + p2) * 0.3) * amp * (0.25 + v);
+        const py = H - 16 - v * (H - 40), rr = wid * (0.5 + 1.9 * v) * (0.8 + r() * 0.4);
+        const a = dens * Math.min(1, t / 0.07) * Math.pow(1 - t, 1.3) * (0.7 + r() * 0.6);
+        const g = x.createRadialGradient(px, py, 0, px, py, rr);
+        g.addColorStop(0, `rgba(255,255,255,${a.toFixed(3)})`); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(px - rr, py - rr, rr * 2, rr * 2);
+      }
+    };
+    strand(0, 0, 1, 13, 8, 0.18);                                              // the stream
+    strand((r() - 0.5) * 16, 0.22 + r() * 0.15, 0.95, 16, 5, 0.12);            // two thinner strands that leave it on the way up
+    strand((r() - 0.5) * 20, 0.4 + r() * 0.15, 0.9, 12, 4, 0.09);
+    return done(THREE, c, false);
+  }
   /* a woven fabric: a grey sling bag's nylon weave, by its colour and seed */
   function makeCanvasCloth(THREE, cnv, hex, seed) {
     const S = 256, [c, x] = cnv(S), r = rng(seed);

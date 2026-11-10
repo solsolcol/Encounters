@@ -75,6 +75,38 @@
        the palm itself the fist hid it whole; with the walking hand it stood behind a pointing finger; photographed, twelve
        ways) */
     const AMU_P = 1, AMU_HELD = [0.0, 0.07, -0.01];
+    /* (v25.4) the middle of the piece where it stands on its shelf: what the films that look at it aim at (the shelf's
+       own middle was the aim while every piece was a few centimetres tall and stood there) */
+    function shelfPiece() {
+      const F = PIECE_FIT[play.piece] || PIECE_FIT.nangkwak, pc = props.pieces[play.piece];
+      return [SHELF.x + F.at[0], SHELF.y + ((pc && pc.userData.fitY) || 0.08) * 0.5, SHELF.z + F.at[1]];
+    }
+    const _pbb = new THREE.Box3();                                     // (v25.4) the piece's own box, for the shot that must hold it
+    /* (v25.4) THE PIECE IN HIS OWN HAND, at its new size. The seated figure stands on his fist by her base, as before. The
+       two that lie (a tube and a roll, 20 cm) are held UPRIGHT, their foot in the fist: laid across it as on the shelf,
+       the takrut ran out of a phone's frame, a fist over one end (photographed). Turned about the line to the lens after
+       it is faced there (its length up the screen), lifted by half its length less what the fist holds, and moved over
+       by half its thickness (it lies on its side: its middle line is that far off its own floor) */
+    function pieceHeld(ph) {
+      const F = PIECE_FIT[play.piece] || PIECE_FIT.nangkwak;
+      if (!F.round) { handHold(ph, { lens: AMU_HELD, face: true, tilt: -0.2 }); return; }
+      handHold(ph, { lens: [AMU_HELD[0] + (ph.userData.fitY || 0.05) / 2, AMU_HELD[1] + F.size / 2 - 0.045, AMU_HELD[2]], face: true, tilt: -0.2 });
+      ph.rotateZ(Math.PI / 2);
+    }
+    /* (v25.4) THE TWO THAT LIE, ON THE MASTER'S PALMS: laid across the MIDDLE of his two palms, 3 cm toward his fingers
+       from the tray's own point (the heels of his hands, where the seated figure's base stands). At that point a 20 cm
+       tube read through the film's lens as balanced on his wrists, his palms empty before it (photographed) */
+    const _pfA = new THREE.Vector3(), _pfB = new THREE.Vector3();
+    function palmsMiddle(obj) {
+      const W = cast.lersi && cast.lersi.waiHand; if (!W || !W.Left || !W.Right || !obj.parent) return;
+      let dx = 0, dy = 0, dz = 0;
+      for (const H of [W.Left, W.Right]) {
+        handPoint(H, H.palm[0], H.palm[1], _pfA); handPoint(H, H.palm[0] + 0.03 / H.mpu, H.palm[1], _pfB);
+        dx += _pfB.x - _pfA.x; dy += _pfB.y - _pfA.y; dz += _pfB.z - _pfA.z;
+      }
+      obj.parent.updateWorldMatrix(true, false); obj.getWorldPosition(_pfA); _pfA.x += dx / 2; _pfA.y += dy / 2; _pfA.z += dz / 2;
+      obj.position.copy(obj.parent.worldToLocal(_pfA));
+    }
     const BUDDHA_AT = [BUDDHA.x, BUDDHA.y, BUDDHA.z];
     /* (v25.2) HIS BODY IN THE FILMS (lcBody, b_build3): his look eased onto what he looks at. (v25.3) The joined hands'
        three places (at his brow, his head bowed to them: the Buddha's and his teachers'; before his chest: a greeting
@@ -198,6 +230,9 @@
       if (!held[slot] || held[slot].userData.piece !== play.piece) {
         if (held[slot] && held[slot].parent) held[slot].parent.remove(held[slot]);
         const c = src.clone(true); c.visible = false; c.userData.piece = play.piece; c.userData.dyn = true; world.add(c); held[slot] = c;
+        /* (v25.4) in a hand it is as his file has it: the glow is the shelf's (pieceLit, b_build2); and it stands on its
+           own foot, at no turn of the shelf's */
+        pieceLit(c, false); c.userData.lit = false; c.position.set(0, 0, 0); c.rotation.set(0, 0, 0);
       }
       return held[slot];
     }
@@ -441,24 +476,35 @@
     function examBody(t) {
       const X = EXAM, L = cast.lersi; if (!L || !L.ready) return;
       const tBack = X.fetch + 3.9, tCloth = X.lc2e8 + SECS.lc2e8 * 0.86;
-      const pl2 = pieceClone('lc'), c0 = props.cloth.position, shelf = [SHELF.x + 0.02, SHELF.y + 0.04, SHELF.z];
+      const pl2 = pieceClone('lc'), c0 = props.cloth.position, shelf = shelfPiece();
       const toCloth = { cup: [c0.x + 0.12, props.clothTop + 0.15, c0.z + 0.07] };
+      /* (v25.4) a tall piece is carried lower before his chest, by nine tenths of what it stands over the 8 cm the tray
+         was set for: on his palms at his chest the 19 cm Nang Kwak stood before his mouth through the line he says of
+         it (photographed) */
+      const pcH = (props.pieces[play.piece] && props.pieces[play.piece].userData.fitY) || 0.08;
+      const cChest = pcH > 0.09 ? { cup: 'chest', dy: -0.9 * (pcH - 0.08) } : C_CHEST;
       /* (the piece is back with him 2.3 s before he speaks of it: raised over 0.9 s, held a breath, lowered over 0.8 s as
          his head comes up; the raise and the lowering never overlap, or the hands would jump from one to the other) */
-      const two = [[tBack - 0.01, tBack, C_CHEST], [tBack + 0.3, tBack + 1.2, C_BROW], [X.lc2e8 - 0.8, X.lc2e8, C_CHEST],
-                   [tCloth - 1.3, tCloth - 0.1, toCloth]];
+      /* (v25.4) AND HE SITS BACK UP. Since v25.2 nothing took his hands, his lean and his turn off the cloth once the
+         piece was laid: he spoke "According to my practice, I believe..." and every line after it bent down to his right
+         over the cloth, his hands still out to it (mine; found photographing the cloth's shot for the bigger piece). His
+         hands come home and his back straightens over a second from the cut, done before he speaks */
+      const two = [[tBack - 0.01, tBack, cChest], [tBack + 0.3, tBack + 1.2, C_BROW], [X.lc2e8 - 0.8, X.lc2e8, cChest],
+                   [tCloth - 1.3, tCloth - 0.1, toCloth], [tCloth + 0.1, tCloth + 1.1, null]];
       const R = handKeys(t, [[X.lc2e1 + 0.3, X.lc2e1 + 1.45, { palm: [EX_WR[0] - 0.01, EX_WR[1] + 0.035, EX_WR[2]], aim: 'down', pole: 'reach' }],
                              [X.lc2e6 - 0.1, X.lc2e6 + 1.0, null]].concat(two));
       const Lh = handKeys(t, [[X.lc2e1 + 0.45, X.lc2e1 + 1.6, { palm: [EX_WR[0] + 0.03, EX_WR[1] - 0.035, EX_WR[2] - 0.01], aim: 'under', pole: 'reach' }],
                               [X.lc2e6 - 0.2, X.lc2e6 + 0.85, null]].concat(two));
       const lean = keyed(t, 0, [[X.lc2e1 + 0.2, X.lc2e1 + 1.4, 0.32], [X.lc2e6 - 0.1, X.lc2e6 + 1.0, 0],
                                 [X.still + 0.4, X.still + 2.0, 0.08], [X.eyes - 1.2, X.eyes - 0.2, 0],
-                                [tBack + 0.4, tBack + 1.2, 0.1], [X.lc2e8 - 0.8, X.lc2e8, 0.03], [tCloth - 1.3, tCloth - 0.1, 0.4]]);
-      const side = keyed(t, 0, [[tCloth - 1.3, tCloth - 0.1, -0.14]]), twist = keyed(t, 0, [[tCloth - 1.3, tCloth - 0.1, -0.28]]);
+                                [tBack + 0.4, tBack + 1.2, 0.1], [X.lc2e8 - 0.8, X.lc2e8, 0.03], [tCloth - 1.3, tCloth - 0.1, 0.4],
+                                [tCloth + 0.15, tCloth + 1.25, 0]]);
+      const side = keyed(t, 0, [[tCloth - 1.3, tCloth - 0.1, -0.14], [tCloth + 0.15, tCloth + 1.25, 0]]);
+      const twist = keyed(t, 0, [[tCloth - 1.3, tCloth - 0.1, -0.28], [tCloth + 0.15, tCloth + 1.25, 0]]);
       const neck = keyed(t, 0, [[tBack + 0.4, tBack + 1.2, 0.16], [X.lc2e8 - 0.8, X.lc2e8, 0]]);
       const hold = t >= tBack && t < tCloth ? pl2 : null;
       if (pl2) pl2.visible = !!hold;
-      lcBody({ R, L: Lh, lean, side, twist, neck, hold, holdBy: 'cup' });
+      lcBody({ R, L: Lh, lean, side, twist, neck, hold, holdBy: 'cup', holdAt: PIECE_FIT[play.piece] && PIECE_FIT[play.piece].round ? palmsMiddle : null });
       lcLook(t, [[X.lc2e1 + 0.35, X.lc2e1 + 1.1, EX_WR], [X.lc2e1 + 1.6, X.lc2e1 + 2.3, 'lens'],
                  [X.still - 0.3, X.still + 0.6, null], [X.eyes - 0.1, X.eyes + 0.9, shelf],
                  [tBack - 0.01, tBack, [LC.x, 0.5, LC.z + 0.28]], [tBack + 0.3, tBack + 1.0, null], [X.lc2e8 - 0.5, X.lc2e8 + 0.2, 'lens'],
@@ -478,7 +524,7 @@
       props.lcThings.visible = true; propsAt({ mat: 1 });
       const L = cast.lersi, P = cast.pong;
       if (P) { P.lookAt = L && L.head ? L.head : null; P.neck = null; }
-      const shelf = [SHELF.x + 0.02, SHELF.y + 0.04, SHELF.z];
+      const shelf = shelfPiece();
       /* the piece: on the shelf until he takes it; in his hand to the mat; in the master's hands; on the cloth */
       const tTake = X.fetch + 2.2, tBack = X.fetch + 3.9, tCloth = X.lc2e8 + SECS.lc2e8 * 0.86;
       pieceShow(t < tTake); clothPiece(t >= tCloth);
@@ -522,7 +568,7 @@
            at a point of the screen, it hung in the air before the shelf with his open hand below it, by photograph) */
         const A = FL.api, gk = smo(sgk(t, tTake - 0.8, tTake));
         if (gk > 0.001 && A && A.handPose) { A.handPose('place', gk, { p: AMU_P }); FL.grip = true; if (A.handsRoot) { A.handsRoot.visible = true; A.armR.visible = true; } }
-        if (t >= tTake && ph) handHold(ph, { lens: AMU_HELD, face: true, tilt: -0.2 });
+        if (t >= tTake && ph) pieceHeld(ph);
         else if (gk <= 0.001) handFree();
         return;
       }
@@ -538,7 +584,17 @@
         /* the piece on the cloth, the candles' light on it */
         const c0 = props.cloth.position;
         /* (v25.0 CP7) closer: the piece, not his bag */
-        shot([c0.x + 0.17, 0.5, c0.z + 0.42], [c0.x, c0.y + 0.03, c0.z], 36, 30);
+        /* (v25.4) from the cloth's OUTER side, and holding the whole piece: the lens stood between the cloth and his
+           knee, so his flat hand lay across the frame in front of the piece with his robe filling its right half, and
+           aimed at the cloth it cut the bigger piece off at the top (photographed). From his far right the piece stands
+           clear on its cloth, his hands leaving the frame's edge as he sits back; the piece's own box is what the shot
+           must hold, whichever piece and whichever screen */
+        const pc = props.pieces[play.piece], must = [];
+        let mid = [c0.x, c0.y + 0.03, c0.z];
+        if (pc && pc.visible) { pc.updateWorldMatrix(true, true); _pbb.setFromObject(pc);
+          const a = _pbb.min, b = _pbb.max; mid = [(a.x + b.x) / 2, (a.y + b.y) / 2, (a.z + b.z) / 2];
+          for (const x of [a.x, b.x]) for (const z of [a.z, b.z]) must.push([x, b.y + 0.015, z], [x, a.y, z]); }
+        fitShot([c0.x - 0.36, 0.4, c0.z + 0.52], mid, 36, 30, must);
         return;
       }
       /* "According to my practice, I believe..." — pushed in; "By him?" — "I didn't say that. I said on you." */
@@ -622,8 +678,8 @@
         /* his eyes down on his hands and the mat (the tray, the candles' light at the top of the frame); up as it lifts */
         const down = [CL.x, 0.25, CL.z - 0.65];                         // (v25.2) with the tray, 10 cm nearer him than v25.0's
         /* (v25.0 CP7) not one still frame for forty seconds: a slow push in on the tray's candles under Namo tassa, his
-           eyes drawn up to the master's joined hands and the leaves as the verses begin, up to his face as the grey
-           lifts; a breath under it all */
+           eyes drawn up to the master's joined hands as the verses begin (v25.3: the leaves are gone), up to his face as
+           the grey lifts; a breath under it all */
         const toHands = smo(sgk(t, K.sak - 1.0, K.sak + 3.0)), push = smo(sgk(t, K.homage + 1.0, K.sak)) * (1 - toHands);
         const base = aimEase(KN_EYE, down, [LC.x, 0.5, LC.z + 0.22], toHands * 0.75);
         fLens((isNarrow() ? 54 : 46) - 8 * push - 4 * toHands * (1 - lift));
@@ -964,12 +1020,15 @@
        lifted, from K.lift), each ending's night and its daylight (A's "days later", D's morning: the mall heard clear),
        C's air-con alone after the shutter comes down, and the coda's night. mixBeds eases to it. */
     function filmBedAt(key, t) {
-      const B = { mall: 0, night: 0, mallclear: 0 };
+      const B = { mall: 0, night: 0, mallclear: 0, whisper: 0 };
       const seg = (a, b) => Math.min(1, Math.max(0, (t - a) / (b - a)));      // 0 before a, 1 after b
       if (key === 'open') B.mall = 0.55 * (1 - seg(OPEN.black - 1.0, OPEN.end));               // out with the picture
       else if (key === 'call') B.night = 0.5 * (1 - seg(CALL.black - 0.6, CALL.end));          // to the next evening's black
       else if (key === 'visit') B.night = 0.45 * seg(0, 1.0);                                   // and in from it
-      else if (key === 'exam') B.night = 0.45;
+      else if (key === 'exam') { B.night = 0.45;
+        /* (v25.4) the piece's whisper under the look that finds it, nearer as he goes to it, gone as his hand closes on it */
+        const tTake = EXAM.fetch + 2.2;
+        B.whisper = WHISPER.vol * (0.36 * seg(EXAM.lc2e7 + 0.2, EXAM.lc2e7 + 1.6) + 0.56 * seg(EXAM.fetch, EXAM.fetch + 1.8)) * (1 - seg(tTake - 0.35, tTake - 0.05)); }
       else if (key === 'clear') B.night = t < CLEARF.lift ? 0.4 : 0.5;
       else if (END[key]) {
         const T = END[key];

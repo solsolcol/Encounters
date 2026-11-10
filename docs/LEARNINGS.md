@@ -7856,3 +7856,47 @@ cut (sharing its vertices and maps) when it is small.
 - **A plan's promise is checked off against the plan, not against the result.** v25.3's plan said the wai would come
   "from a real motion-captured prayer"; the poses were built from measures and sources and the capture was never read.
   Re-read the plan's own lines before writing "done", and say what was not done as planned.
+
+- **A prop made bigger is a different prop wherever it is carried.** The takrut and the pha yant, made 20 cm for
+  their shelf, ran out of a phone's frame in his fist and read as balanced on the master's wrists; the 19 cm statue
+  stood before his mouth while he spoke and its own close-up cut its head. Make it one size wherever one shot follows
+  another (bigger in one place only, it shrinks in a cut), then photograph each KIND of it through every lens that
+  carries it; a check of one of three is a third of a check (v25.4).
+- **A glow with no lamp is four layers.** A halo sprite that faces the lens (added), a wash on the wall behind it (laid
+  on in the hue: added red on a pale wall sums to pink), a pool on the surface it stands on, and the thing itself lit
+  from within by a TWIN of its material with a flat emissive colour (no map: the same shader, so nothing is compiled
+  when the look changes; the file's own material is never touched). A flat emissive strong enough to see alone turns
+  the thing into a silhouette: the layers round it carry the glow (v25.4).
+- **Smoke is a rooted ribbon, not puffs.** Round dark puffs hang as balls; a ragged plume shared by every sprite reads
+  as strokes of charcoal all leaning one way; discrete dabs read as ink blots. What reads as smoke: a stream drawn
+  upright as hundreds of faint discs a pixel apart (a ribbon), with thinner strands leaving it, two different
+  pictures dealt alternately, each sprite's FOOT held on the thing's own surface for its whole life (let go, it hangs
+  in the air beside a low thing) while it lengthens and fades. Dark smoke is drawn over what is behind it, never added
+  (v25.4).
+- **To compare strengths of a moving effect, hold it still.** Each smoke stream's clock was frozen at its own moment
+  (its period set huge in the lab), so four pictures at four strengths differed in the strength alone; taken a few
+  seconds apart with the smoke running they would have differed in shape too, and the eye would have judged the
+  shape. "More translucent" was then one number picked from a bracket, and the bracket went to him (v25.4).
+- **A sprite's scale is a length: a negative scale does not mirror it** (three reads the scale off the matrix's
+  columns). To mirror a sprite's picture, draw a second one, or flip the texture's own transform on a clone of it
+  (clones share one upload).
+- **Transparent things sort by their middles.** A dark sprite whose middle lay behind an added halo's middle was drawn
+  first and the halo added red over it; a layer that must be drawn over another is given the later renderOrder, not
+  left to the sort (v25.4).
+- **Never put an object in userData.** `Object3D.clone()` copies userData through JSON: a parent kept there
+  (`userData.home = { parent }`) is a circle, and the clone throws every time it is asked for. Keep such things in a
+  WeakMap beside the code that reads them (v25.4; no play reached it, a probe that changed the piece between films did).
+- **A phase's stage puts back everything a later phase may have moved**, not only what its own story changed: the
+  shop's and the night's stages showed the piece but never took it back off the master's cloth, so a jump back to them
+  left it hidden with his things. A probe jumps where no player does, and it is the cheapest test that applyPhase
+  covers every phase (v7.3, v25.4).
+- **"Wordless" is measured, with a transcriber.** Three of six generated whisper takes that sounded wordless came back
+  from a transcriber as English phrases or a whole sentence: a bed that says something nobody wrote. Screen every
+  wordless voice-like sound through one, and measure how voiced it is (a whisper is a few per cent voiced; 30 % is a
+  murmur). faster-whisper's own decoder failed here on these files: decode with ffmpeg to a 16 kHz float array and
+  hand it the array (v25.4; masters/v25.4/sfx/meas2.py).
+- **A captured take is a measure, not a model.** The game's one captured prayer, measured in the body's own frame in
+  arm lengths, matched Lersi Chin's wai in the arms (upper arm, wrist spacing, wrist bend) and differed in the one
+  thing that makes a wai a wai, the fingers (forward in the capture, up in a wai). Measure the reference before
+  building from it, and hold the result against it after: it confirms what it shares and says nothing for the rest
+  (v25.4; masters/v25.3/measure/praytake.mjs, tools/probes/poselab-arms.js).
