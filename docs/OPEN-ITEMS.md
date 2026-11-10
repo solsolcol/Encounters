@@ -144,6 +144,10 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
       108k) and 160–220k standing beside it looking away (its joined parts span the whole truck, so sphere culling
       keeps them). If the yard is slow on his phone: roll back to v24.27 on Netlify, or a distance level that keeps
       the clear-coated paint whole and cuts the rest (~170k, +~2 MB, photographed before it ships).
+    - n. (v25.2) On a phone the decision panel covers the lower half of the screen in every chapter, so what a decision
+      is about can stand under it: in episode 4 chapter 2, "Lersi Chin is packing his things" and, on a phone, only the
+      top of his headdress shows above the panel (Step back shows him, bent to his bowl). Lifting the view while the
+      panel is open on a phone would change every chapter's decision, so it is listed and not changed.
 
 11. **The beds' loop seams (found at v24.34, every chapter).** The engine loops a bed over [0.06, duration − 0.06] because
     mp3 decoding once padded both ends with silence; measured in today's Chromium, neither the game's mp3s nor its Opus

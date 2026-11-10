@@ -7814,3 +7814,14 @@ cut (sharing its vertices and maps) when it is small.
   answered from anywhere need no mark (`mark: false`).
 - **A press with no sound is a dead press.** "Stand still and watch" ran four seconds of the beds before the reveal's
   line: every press has its sound (his breath, slow, warmed with the night's).
+- **A talking take is a body take.** Lersi Chin's (a man sat back answering questions) carried his shoulders 10 cm back
+  whenever he spoke, so as he said "Drink. A little." over the bowl his hands stopped 9-11 cm short of it, and on the
+  line's end they landed; measured in silence (the decision) the same bend reached it exactly. A man whose hands or back
+  are in an action speaks without his gesture take (lcBusy), and a reach is measured with its line playing (v25.2).
+- **Hold a shot by the thing's extent, not its middle.** A phone framing that kept a note's middle in the frame put half
+  the note off the frame's edge at the push's end (its words cut), while the numbers said "in". Name the corners of what
+  must be read, simulate the lens first (masters/v25.2/fitsim.js), then photograph it on the phone (v25.2).
+- **A reach is measured, not seen.** Every posed moment of his has a `miss` (how far the wrist stopped short of where it
+  was sent: castInfo, tools/probes/lcmotion.mjs); a still that looks right can hold a hand 10 cm off what it holds, and a
+  palm "on" a bowl can stand 2 cm clear of it (the grip set from the stand-in's radius, not the model's, measured at its
+  height). Read the number at every posed moment, then photograph (v25.2).

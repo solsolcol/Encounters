@@ -8393,7 +8393,73 @@ What the baseline contains, by release:
     photographed with the altar clear and the laptop back in the coda; the touched play views on a desktop (the counter by day and lit, the fridge, the jacket, the stand three ways, kneeling, the decision). No words changed: the sheet stays v138
     (v44 the link to give him).
 
+- **v25.2** EPISODE 4 · CHAPTER 2: THE PHONE, LERSI CHIN'S MOVEMENTS, ONE TELLING, REAL PROPS. Chad, 10 Nov 2026 (after
+  v25.1): "On a phone screen, there are many things i cannot see in the intro cutscenes, the gameplay section, and the
+  intermediate cutscenes, and the ending cutscenes"; "lersi chin's animations, poses, body all look very awkward and bad,
+  his wai pose, he spraying water and taking water bowl, etc is all extremely bad ... the actions are all very abrupt and
+  sudden and not natural"; the four-card pick to tell Lersi Chin made one telling; "why are there such badly drawn models
+  like the wallet which is just a block of colour ... You already have meshy connected, why are you not using it
+  properly" (a standing rule since, CLAUDE.md); and while they were placed, "Make sure those models just generated are
+  not too compressed and dont lose too much quality". docs/V25.2-E4C2-PHONE-MOTION-MODELS.md is the record (§0 his
+  words, §1 the asks, §3 the prop audit, §4 the log, checkpoint by checkpoint). One build, one deploy, one round of checks.
+  - ONE TELLING (M1): after "Tell me what happened there." one badge, Tell him what you saw (q2tA, and Lersi Chin's
+    lc2tA), its awareness and note kept; old saves that told B, C or D go on as told; the pick's words, notes 52B-D and
+    the six unused takes retired (kept in masters).
+  - REAL PROPS (M2): fourteen code-built props made Chad's way, each a picture on white looked at first, then Meshy's
+    image-to-3D at its best and a remesh: the till, his bag, his jacket, the water, the drinks, the wallet, the switch,
+    the shelf, the cloth, the yaam, the phone, the calculator, the stand's flowers and, found later by the audit, his
+    notebook (the code-built ones drawn only if a file never lands). The first remeshes were too low and lost what can be
+    seen beside Meshy's originals (the wreath holed, the till's front cracked, the jacket crumpled): my miss, caught after
+    his note, every one remeshed again at the count it needs and compared again. And the light switch had stood INSIDE
+    the neighbour's pillar since v25.0, so the night's "Switch on the light" pointed at nothing a player could see: my
+    miss at v25.0, and v25.1's debug missed it too (found photographing the new switch from 44 cm).
+  - LERSI CHIN'S BODY (M3): one choreography per film on its clock — each hand its own place, elbow and turn, the forearm
+    taking the roll, his back leaning to what he reaches, every change eased by a minimum-jerk curve, his looks and bows
+    eased; the wai to the Buddha at the brow, a nod (not v25.0's two wais) to the shop's owner, the answering wais at the
+    chest; both hands to the client's wrist; the piece raised in his joined hands (in v25.0 the piece in his wai was never
+    shown: mine) and laid on the cloth; the bowl lifted, held out and tipped; the bundle dipped and flicked three times,
+    the drops on each snap; the thread wound and knotted; the packing that opens B and C. In the decision he now packs,
+    as its words have said since v25.0 ("Lersi Chin is packing his things" over a man sitting idle). Two faults the
+    probe's `miss` and the photographs found: his talking take pulled his shoulders back 10 cm while he spoke over an
+    action (his hands 9-11 cm short of the bowl as he said "Drink. A little."; he now speaks without it while his hands or
+    back act), and his palms stood 1.8 cm off the bowl's sides. Left: at ending C's start his hand stops about 6 cm short
+    of the thread, hidden from the film's lens by his knee.
+  - THE PHONE (M4): tools/probes/framecheck.mjs measures every film on a phone and a desktop by named subjects, and
+    framediff.py lists every stretch a subject is in the desktop's frame and out of the phone's. Two real losses, fixed
+    by naming what the shot must hold (fit/fitShot, a desktop unchanged by construction): the opening's note shot (the
+    phone off the edge — and, held by its middle, the note itself half off the other edge, found by the phone photograph:
+    its four corners held now) and Pong introducing Lersi Chin (both faces held). Everything else listed is set dressing
+    at the edge of a shot about something else. The decision panel covering the lower half of a phone in every chapter
+    (here, Lersi Chin packing) is the engine's, listed for Chad (OPEN-ITEMS C12.n).
+  - DEPLOYED FIRST (`6af32b9118dc738b269722ff`: 20 files sent, 320 carried; 339 served files byte-identical to dist,
+    the cache headers in force), the chapter seen to boot first (the opening's note shot photographed on a phone).
+  - A SOFT-LOCK OF MY OWN, LIVE FOR ABOUT AN HOUR: after the bow to the Buddha nothing could be pressed. The bow keeps
+    `play.busy` true, and M1's new telling (its badge and its objective) asks for `!play.busy`; the four-card pick it
+    replaced never asked. Only a Continue started clear, so my Continue check passed and the jump-probes passed. Found by
+    the finger's play-through ("STUCK ... busy:true"), fixed in `askTell` (it clears the flag as it offers the telling),
+    rebuilt and redeployed (`6af3308b7ec7af83c1d63c6e`, 339 served files byte-identical). The lesson was already written
+    (v24.9: an option that appears after a walk must not race the order that ends it; v24.10: check after a REAL
+    play-through): the finger's play-through runs BEFORE the first deploy is called good when a change touches what a
+    beat hands off to.
+  - CHECKED on the second deploy: chaptertest clean, the voice scan (no voice over another), leak and cine harnesses,
+    walk (the real collision grid), Continue from four phases, the decision with him packing, and a finger's
+    play-through from the title to ending B's card (PASS, no page error).
+  - AND M3 WAS NOT GOOD ENOUGH. I wrote that his homage, the bend to the bowl, the bowl held out, the flicks and the
+    thread "read naturally", having judged them small, on contact sheets, as their author. Chad, the same day, with a
+    phone screenshot of the visit's wai (two flat hands side by side before his face, two forearms squeezed together in
+    front of his chest): "i find it unacceptable that you find his poses natural, it clearly is not. You are not trying
+    hard enough" and "Look at how ridiculous this looks, and you said it looks natural, unbelievable". He is right, and
+    the claim was untrue. v25.3 (docs/V25.3-E4C2-NATURAL.md) is the answer: no pose is called natural again without
+    full-size photographs through the film's lens on a phone, and from beside him.
+
 ## The sheet, version by version
+
+**v139** (`masters/v25.2/masterz-text-v139.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from
+it): v138 with 15 rows gone, 2 added and 3 touched, nothing else moved — episode 4 chapter 2's telling made one: the
+four-card pick's words (`pickTitle`, `pickLabel`, `pickA`-`pickD`) and the notes for B to D (`note52B`-`note52D`) gone,
+with the voice rows of the three answers never told now (`q2tB`-`q2tD`, `lc2tB`-`lc2tD`); the objective and the badge
+that replace them added (`objTell`, `hotTell`); where `q2tA`, `lc2tA` and `lc2tell` are heard reworded (the telling,
+not the pick). 2150 rows. Exported, not published.
 
 **v138** (`masters/v25.0/masterz-text-v138.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from
 it): v137 with 187 rows added and nothing else moved — episode 4 chapter 2's words (96 rows, `e4c2.*`: its title, its

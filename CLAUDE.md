@@ -1108,7 +1108,10 @@ refuted by a second reader, is docs/research/V25.0-LERSI.md (and -VERDICTS.md, w
 music and models, every pick and why, masters/v25.0/make.sh. Its full debug, at Chad's word of 10 Nov 2026 ("Visual
 anomaly, glitches, things that don't look right or natural also count as issues"), shipped at v25.1 —
 **docs/V25.1-E4C2-DEBUG.md** (twelve findings, each verified and fixed, four of them my own from v25.0, and what was left
-alone and why). Chapter 3 (S1·12, Grandmaster Pho at the Wai Kru) is next. The episode's plan, with what remains his to decide:
+alone and why). His four asks of the same day (what a phone could not see in every film and in play, Lersi Chin's
+movements, one telling in place of the four-card pick, and every prop a real model, the last now a standing rule)
+shipped at v25.2 — **docs/V25.2-E4C2-PHONE-MOTION-MODELS.md** (his words, the prop audit, the log); its framing probes are
+tools/probes/framecheck.mjs and framediff.py, its body probe lcmotion.mjs. Chapter 3 (S1·12, Grandmaster Pho at the Wai Kru) is next. The episode's plan, with what remains his to decide:
 **docs/V24.0-EPISODE4-PLAN.md** (its sixth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is
 still his). S1·11 in two chapters (the master he did not know, who wears the original Sak Yant Ajarn's model; then the
 fog, Lersi Chin's clearing and the warning — built on Master Z's own trial episode, its 5.1 and 5.3 the two decisions
@@ -1245,13 +1248,13 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v138** (`masters/v25.0/masterz-text-v138.xlsx`, its CSV beside it: v25.0's words). It is
-EXPORTED and not published: the workbook (127 KB) is far past what the Drive connector's base64 route can carry (about
+**THE SHEET IS v139** (`masters/v25.2/masterz-text-v139.xlsx`, its CSV beside it: v25.2's words). It is
+EXPORTED and not published: the workbook (126 KB) is far past what the Drive connector's base64 route can carry (about
 20,000 characters — docs/EDITING-TEXT.md, "THE CEILING"), so the split export written down there no longer fits
 either. The way through is the Google Sheets connector, which writes the cells directly (docs/OPEN-ITEMS.md A1).
 **v44 is still the link to give Chad** until that is done:
 https://docs.google.com/spreadsheets/d/1bqnbQJPr1O6YslOlcsbVDFlZCohQtyKbPzm9EuY1IpM/edit
-Every sheet version's own diff, v138 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
+Every sheet version's own diff, v139 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
 first; a new version goes at its top).
 
 `docs/LEARNINGS.md` is the catalog of every hard-won lesson (CSP traps,

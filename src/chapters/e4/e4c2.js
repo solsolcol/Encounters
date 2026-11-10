@@ -2114,8 +2114,9 @@
           for (const sd in P.reach) worldS.add(P.reach[sd]);
           P.bowlGrip = { Left: new THREE.Object3D(), Right: new THREE.Object3D() };
           /* (v25.2) where each palm holds the bowl: on its side, below the rim, a little behind its middle (the hands carried
-             there by their palms, lcBody's `bowl`) */
-          if (props.bowl) { P.bowlGrip.Left.position.set(0.127, 0.085, -0.01); P.bowlGrip.Right.position.set(-0.127, 0.085, -0.01); props.bowl.add(P.bowlGrip.Left, P.bowlGrip.Right); }
+             there by their palms, lcBody's `bowl`): the model's side is 0.109 m from its axis at 0.085 m up (measured on
+             e4khannam as fitted, BOWL_W), the palm 4 mm off it (at 0.127 his palms stood clear of the bowl, by photograph) */
+          if (props.bowl) { P.bowlGrip.Left.position.set(0.113, 0.085, -0.01); P.bowlGrip.Right.position.set(-0.113, 0.085, -0.01); props.bowl.add(P.bowlGrip.Left, P.bowlGrip.Right); }
           waiHands(P);
           /* (v25.2) his back's three bones (the lean is shared down them), the lean laid on before the look (preLook), the
              hands turned and what he holds carried after the arms are solved */
@@ -2232,6 +2233,8 @@
     };
     const SPINE_SHARE = [0.45, 0.33, 0.22];                              // the lean down his back: low, middle, upper
     const LCS = { on: false, R: null, L: null, lean: 0, twist: 0, side: 0, holdBy: 'R', holdAt: null, holdMix: 0 };
+    /* his hands or his back in an action this frame (a film's lcBody) */
+    const lcBusy = () => LCS.on && (Math.abs(LCS.lean) > 0.02 || !!LCS.R || !!LCS.L);
     const hState = () => ({ p: new THREE.Vector3(), k: 0, ak: 0, pole: [0, 0, 0], f: new THREE.Vector3(), n: new THREE.Vector3() });
     const HS = { Left: hState(), Right: hState() }, _hA = hState(), _hB = hState();
     /* a film's word for his body this frame: R and L each a hand ({ wai: lift } | { bowl: 1 } | { palm: [x, y, z] } |
@@ -2812,7 +2815,11 @@
        standradized way. If not i have to review 4 outcomes, on top of another 4 outcomes at the end"): the answer that
        was the trial's best is the telling. A save from before that told B, C or D goes on as told (readMark keeps it). */
     const TELL_AWARE = 9;
-    function askTell() { play.asked = true; objectiveFor('clearing'); }
+    /* (v25.2) the bow's busy ends with his question: the bow holds `busy` from its press through the wai and his two lines,
+       and v25.0's pick never asked for it, but the telling's badge and objective wait for it to be clear — so in play
+       (not on a Continue, which starts clear) the badge never came and the chapter stood still after the bow (found by the
+       finger's play-through on the deployed v25.2 build) */
+    function askTell() { play.asked = true; play.busy = false; objectiveFor('clearing'); }
     function tellIt() {
       if (!play.asked || play.told || play.busy) return false;
       const run = play.run;
@@ -3211,7 +3218,12 @@
       for (const s of FL.stings) {
         const sp = SPEAKS[String(s.kind).slice(0, 2)]; if (!sp || CHANTS.has(s.kind) || /^pg2c|^pg2A/.test(s.kind)) continue;   // (Pong on the phone is not in the room)
         const d = SECS[s.kind]; if (!d || t < s.at || t > s.at + d) continue;
-        const P = speakerNow(sp); if (P) P.talkUntil = wallNow() + 0.25;
+        const P = speakerNow(sp); if (!P) continue;
+        /* (v25.2) his talking take is a man sat back answering questions: while his hands or his back are in an action it
+           pulled his shoulders back from what his hands were on (as he said "Drink. A little." they stopped 9-11 cm short of
+           the bowl's sides, measured; on the line's end they reached it), so he speaks without it then */
+        if (P === cast.lersi && lcBusy()) continue;
+        P.talkUntil = wallNow() + 0.25;
       }
     }
 
@@ -3614,8 +3626,13 @@
          the note alone, the phone off its edge (measured, tools/probes/framecheck.mjs) */
       const note = [NOTE.x, top0 + 0.001, NOTE.z], k = smo(sgk(t, O.o4, O.black));
       const e3 = lp3([HIS.x + 0.3, 1.5, HIS.z + 0.32], [NOTE.x - 0.02, 1.36, NOTE.z - 0.3], k);
-      const pb = shop.phone ? shop.phone.base : null;
-      fitShot(e3, note, lp(50, 36, k), lp(42, 28, k), [note, pb ? [pb.x, top0 + 0.005, pb.z] : null]);
+      /* the note's four corners (its words never cut: held by its middle alone it stood half off a phone's edge at the
+         push's end, by photograph) and the phone's middle (masters/v25.2/fitsim.js: the note whole at 0.25-0.81 of the
+         frame's half-width at the end, the phone's middle at -0.81) */
+      const pb = shop.phone ? shop.phone.base : null, nc = Math.cos(NOTE.ry) * 0.038, ns = Math.sin(NOTE.ry) * 0.038;
+      const must = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([a, b]) => [NOTE.x + nc * a + ns * b, top0 + 0.001, NOTE.z - ns * a + nc * b]);
+      if (pb) must.push([pb.x, top0 + 0.005, pb.z]);
+      fitShot(e3, note, lp(50, 36, k), lp(42, 28, k), must);
     }
 
     /* P3 · THE CALL (a film from play, §4.1): his phone up, ringing; Pong; the dark shop while they talk; "Bring him." */

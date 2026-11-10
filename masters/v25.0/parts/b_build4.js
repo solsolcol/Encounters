@@ -54,7 +54,12 @@
       for (const s of FL.stings) {
         const sp = SPEAKS[String(s.kind).slice(0, 2)]; if (!sp || CHANTS.has(s.kind) || /^pg2c|^pg2A/.test(s.kind)) continue;   // (Pong on the phone is not in the room)
         const d = SECS[s.kind]; if (!d || t < s.at || t > s.at + d) continue;
-        const P = speakerNow(sp); if (P) P.talkUntil = wallNow() + 0.25;
+        const P = speakerNow(sp); if (!P) continue;
+        /* (v25.2) his talking take is a man sat back answering questions: while his hands or his back are in an action it
+           pulled his shoulders back from what his hands were on (as he said "Drink. A little." they stopped 9-11 cm short of
+           the bowl's sides, measured; on the line's end they reached it), so he speaks without it then */
+        if (P === cast.lersi && lcBusy()) continue;
+        P.talkUntil = wallNow() + 0.25;
       }
     }
 
@@ -387,8 +392,13 @@
          the note alone, the phone off its edge (measured, tools/probes/framecheck.mjs) */
       const note = [NOTE.x, top0 + 0.001, NOTE.z], k = smo(sgk(t, O.o4, O.black));
       const e3 = lp3([HIS.x + 0.3, 1.5, HIS.z + 0.32], [NOTE.x - 0.02, 1.36, NOTE.z - 0.3], k);
-      const pb = shop.phone ? shop.phone.base : null;
-      fitShot(e3, note, lp(50, 36, k), lp(42, 28, k), [note, pb ? [pb.x, top0 + 0.005, pb.z] : null]);
+      /* the note's four corners (its words never cut: held by its middle alone it stood half off a phone's edge at the
+         push's end, by photograph) and the phone's middle (masters/v25.2/fitsim.js: the note whole at 0.25-0.81 of the
+         frame's half-width at the end, the phone's middle at -0.81) */
+      const pb = shop.phone ? shop.phone.base : null, nc = Math.cos(NOTE.ry) * 0.038, ns = Math.sin(NOTE.ry) * 0.038;
+      const must = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([a, b]) => [NOTE.x + nc * a + ns * b, top0 + 0.001, NOTE.z - ns * a + nc * b]);
+      if (pb) must.push([pb.x, top0 + 0.005, pb.z]);
+      fitShot(e3, note, lp(50, 36, k), lp(42, 28, k), must);
     }
 
     /* P3 · THE CALL (a film from play, §4.1): his phone up, ringing; Pong; the dark shop while they talk; "Bring him." */

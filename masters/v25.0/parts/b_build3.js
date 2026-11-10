@@ -24,8 +24,9 @@
           for (const sd in P.reach) worldS.add(P.reach[sd]);
           P.bowlGrip = { Left: new THREE.Object3D(), Right: new THREE.Object3D() };
           /* (v25.2) where each palm holds the bowl: on its side, below the rim, a little behind its middle (the hands carried
-             there by their palms, lcBody's `bowl`) */
-          if (props.bowl) { P.bowlGrip.Left.position.set(0.127, 0.085, -0.01); P.bowlGrip.Right.position.set(-0.127, 0.085, -0.01); props.bowl.add(P.bowlGrip.Left, P.bowlGrip.Right); }
+             there by their palms, lcBody's `bowl`): the model's side is 0.109 m from its axis at 0.085 m up (measured on
+             e4khannam as fitted, BOWL_W), the palm 4 mm off it (at 0.127 his palms stood clear of the bowl, by photograph) */
+          if (props.bowl) { P.bowlGrip.Left.position.set(0.113, 0.085, -0.01); P.bowlGrip.Right.position.set(-0.113, 0.085, -0.01); props.bowl.add(P.bowlGrip.Left, P.bowlGrip.Right); }
           waiHands(P);
           /* (v25.2) his back's three bones (the lean is shared down them), the lean laid on before the look (preLook), the
              hands turned and what he holds carried after the arms are solved */
@@ -142,6 +143,8 @@
     };
     const SPINE_SHARE = [0.45, 0.33, 0.22];                              // the lean down his back: low, middle, upper
     const LCS = { on: false, R: null, L: null, lean: 0, twist: 0, side: 0, holdBy: 'R', holdAt: null, holdMix: 0 };
+    /* his hands or his back in an action this frame (a film's lcBody) */
+    const lcBusy = () => LCS.on && (Math.abs(LCS.lean) > 0.02 || !!LCS.R || !!LCS.L);
     const hState = () => ({ p: new THREE.Vector3(), k: 0, ak: 0, pole: [0, 0, 0], f: new THREE.Vector3(), n: new THREE.Vector3() });
     const HS = { Left: hState(), Right: hState() }, _hA = hState(), _hB = hState();
     /* a film's word for his body this frame: R and L each a hand ({ wai: lift } | { bowl: 1 } | { palm: [x, y, z] } |
@@ -722,7 +725,11 @@
        standradized way. If not i have to review 4 outcomes, on top of another 4 outcomes at the end"): the answer that
        was the trial's best is the telling. A save from before that told B, C or D goes on as told (readMark keeps it). */
     const TELL_AWARE = 9;
-    function askTell() { play.asked = true; objectiveFor('clearing'); }
+    /* (v25.2) the bow's busy ends with his question: the bow holds `busy` from its press through the wai and his two lines,
+       and v25.0's pick never asked for it, but the telling's badge and objective wait for it to be clear — so in play
+       (not on a Continue, which starts clear) the badge never came and the chapter stood still after the bow (found by the
+       finger's play-through on the deployed v25.2 build) */
+    function askTell() { play.asked = true; play.busy = false; objectiveFor('clearing'); }
     function tellIt() {
       if (!play.asked || play.told || play.busy) return false;
       const run = play.run;
