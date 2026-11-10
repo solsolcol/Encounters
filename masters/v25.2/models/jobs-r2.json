@@ -1,0 +1,12 @@
+[{"name": "jacket", "image": "masters/v25.2/models/refs/jacket-b-2k.png", "symmetry": "auto", "remesh": 6000,
+  "texture": "navy blue cotton twill windbreaker folded neatly, soft natural creases, a silver metal zip with its pull, a stand-up collar"},
+ {"name": "till", "image": "masters/v25.2/models/refs/till-b-2k.png", "symmetry": "auto", "remesh": 8000,
+  "texture": "black painted metal cash drawer with worn edges, a silver key lock on the front panel, four stacks of plain banknotes in lilac, pale green, orange and pale blue under silver spring clips, silver and gold coins in five round cups"},
+ {"name": "water", "image": "masters/v25.2/models/refs/drinks-a-2k.png", "symmetry": "auto", "remesh": 6000,
+  "texture": "clear plastic water bottles with plain pale blue labels and blue screw caps, a little condensation, no printing"},
+ {"name": "calc", "image": "masters/v25.2/models/refs/calc-b-2k.png", "symmetry": "on", "remesh": 4000,
+  "texture": "matte grey plastic calculator body, dark grey and light grey rubber keys with white printed digits and symbols, a dark grey-green LCD screen showing nothing"},
+ {"name": "phone", "image": "masters/v25.2/models/refs/phone-a-2k.png", "symmetry": "on", "remesh": 2000,
+  "texture": "glossy black glass screen switched off, a slim dark graphite metal rim, rounded corners"},
+ {"name": "switch", "image": "masters/v25.2/models/refs/switch-a-2k.png", "symmetry": "on", "remesh": 2000,
+  "texture": "smooth off-white plastic switch plate with bevelled edges, two white rocker switches each with a tiny orange neon indicator window, two round screw covers"}]

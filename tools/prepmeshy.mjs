@@ -14,6 +14,7 @@
    TRUNK=a,b (a tree for plantTrees, whose contract is the trunk on the origin): instead of the footprint, the centroid
    of the vertices between a and b of the height (a slab of the bole, above the root flare) goes on the origin — a crown
    that leans or spreads to one side would otherwise stand the trunk off its spot.
+   FLIP=1: the model turned upside down (180 degrees about z) before anything else.
      node tools/prepmeshy.mjs <in.glb> <out.glb> <size> [axis=h] [ratio=0.1] [turnDeg=0] [px=1024] */
 import { NodeIO } from '@gltf-transform/core';
 import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
@@ -37,13 +38,15 @@ for (const a of root.listAnimations()) a.dispose();
 await doc.transform(prune(), flatten());
 for (const node of root.listNodes()) clearNodeTransform(node);
 const prims = []; for (const m of root.listMeshes()) for (const p of m.listPrimitives()) prims.push(p);
-/* the turn, then the box */
+/* the turn, then the box. FLIP=1 (v25.2): turned upside down first, 180 degrees about z — Meshy read a phone lying
+   face up as its back (a camera on the face that showed), and its other face is the screen */
+const FL = process.env.FLIP ? -1 : 1;
 const c = Math.cos(TURN), s = Math.sin(TURN);
 let lo = [Infinity, Infinity, Infinity], hi = [-Infinity, -Infinity, -Infinity];
 for (const p of prims) for (const sem of ['POSITION', 'NORMAL']) {
   const acc = p.getAttribute(sem); if (!acc) continue;
   const a = acc.getArray().slice();
-  for (let i = 0; i < a.length; i += 3) { const x = a[i], z = a[i + 2]; a[i] = c * x + s * z; a[i + 2] = -s * x + c * z;
+  for (let i = 0; i < a.length; i += 3) { const x = FL * a[i], z = a[i + 2]; a[i + 1] = FL * a[i + 1]; a[i] = c * x + s * z; a[i + 2] = -s * x + c * z;
     if (sem === 'POSITION') for (let k = 0; k < 3; k++) { lo[k] = Math.min(lo[k], a[i + k]); hi[k] = Math.max(hi[k], a[i + k]); } }
   acc.setArray(a).setNormalized(false);
 }

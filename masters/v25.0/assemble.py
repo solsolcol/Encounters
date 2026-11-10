@@ -38,11 +38,37 @@ EDITS = [
      "    const _igq = new THREE.Quaternion();            // (v25.0) a solved turn, copied before it is blended (gripTick)\n    function gripTick(P) {\n"),
     ("        armTo(a, _ig, _ic);\n      }\n    }\n",
      "        armTo(a, _ig, _ic);\n"
-     "        /* (v25.0) eased by P.gripK from where the take holds the arm (Lersi Chin's wai, reach and bowl) */\n"
-     "        if (P.gripK != null && P.gripK < 0.999) {\n"
-     "          _igq.copy(a.up.quaternion); a.up.quaternion.slerpQuaternions(a.wUp, _igq, P.gripK);\n"
-     "          _igq.copy(a.fore.quaternion); a.fore.quaternion.slerpQuaternions(a.wFore, _igq, P.gripK);\n"
+     "        /* (v25.0) eased by P.gripK from where the take holds the arm (Lersi Chin's wai, reach and bowl); (v25.2) each arm by\n"
+     "           its own share when the film gives one (P.gripKS) */\n"
+     "        const gk = P.gripKS ? P.gripKS[sd] : P.gripK;\n"
+     "        if (gk != null && gk < 0.999) {\n"
+     "          _igq.copy(a.up.quaternion); a.up.quaternion.slerpQuaternions(a.wUp, _igq, gk);\n"
+     "          _igq.copy(a.fore.quaternion); a.fore.quaternion.slerpQuaternions(a.wFore, _igq, gk);\n"
      "        }\n      }\n    }\n"),
+    # (v25.2) each arm's elbow pole by the action it does (Lersi Chin: low and in for a wai, out and back to the floor)
+    ("        const pl = (P.o.grip.pole || [0.35, -0.6, -0.15]);\n",
+     "        /* (v25.2) the action's own pole when the film gives one (P.gripPole) */\n"
+     "        const pl = (P.gripPole && P.gripPole[sd]) || P.o.grip.pole || [0.35, -0.6, -0.15];\n"),
+    # (v25.2) a lean laid on a take after the mixer and before the look (Lersi Chin bending to the mat), so the look turns
+    # the head on the leaned body and gripTick solves the arms from the leaned shoulders
+    # (v25.2) his notebook: the real one (a checked picture on white, then Meshy: masters/v25.2/make.sh), turned so its
+    # pages read from his side; the blue box stands in until it lands (Chad, 10 Nov: "the wallet which is just a block of
+    # colour" — the notebook was the same block, found by the prop audit)
+    ("        const cover = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.012, 0.31), M({ color: 0x2a3a5a, roughness: 0.6 })); cover.position.y = 0.006; bk.add(cover);\n",
+     "        const cover = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.012, 0.31), M({ color: 0x2a3a5a, roughness: 0.6 })); cover.position.y = 0.006; bk.add(cover);\n"
+     "        fitModel('e4notebook', bk, 0.46, 'x', Math.PI, 0).then(m => { if (!m || !alive) return; cover.visible = false; bk.userData.book = m;\n"
+     "          if (bk.userData.onBook) bk.userData.onBook(m); });\n"),
+    # (v25.2) a film may give the look's weight itself (P.lookK, Lersi Chin's eased looks): a head turns over a human time
+    # and a seek lands on the same turn; gaze() hands the weight back to the eased one
+    ("          P.lookW += (want - P.lookW) * (1 - Math.exp(-wdt * 2.4));\n",
+     "          /* (v25.2) a film's own weight for the look (P.lookK), eased on its clock; else eased here on the wall clock */\n"
+     "          if (P.lookK != null) P.lookW = P.lookK * want;\n"
+     "          else P.lookW += (want - P.lookW) * (1 - Math.exp(-wdt * 2.4));\n"),
+    ("      if (on) { P.lookAt = camera; P.neck = neck; P.lookW = 1; }\n",
+     "      if (on) { P.lookAt = camera; P.neck = neck; P.lookW = 1; P.lookK = null; }\n"),
+    ("          if (P.spine) { if (!P.spineWrote) P.spineWrote = new THREE.Quaternion(); P.spineWrote.copy(P.spine.quaternion); }\n",
+     "          if (P.spine) { if (!P.spineWrote) P.spineWrote = new THREE.Quaternion(); P.spineWrote.copy(P.spine.quaternion); }\n"
+     "          if (P.preLook) P.preLook(P);\n"),
     # the shop's ceiling lights and the ceiling itself on their own materials, off at night (shopCtl.ceiling); the
     # corridor's ceiling, its skylight and the open units' signs handed to the night (shopCtl.night)
     ("      shop.leds.push(mLed);\n",
@@ -134,6 +160,28 @@ EDITS = [
      "        const cnt = fm.map(() => 0), mm = new THREE.Matrix4(), rr = rng(seed), rf = rng(seed + 101), fe = new THREE.Euler();\n"),
     ("          mm.makeTranslation(Math.cos(a) * d, 1.5 + Math.sin(a) * d, 0.04 + (0.34 - d) * 0.18 + rr() * 0.02); ins[ci].setMatrixAt(cnt[ci]++, mm); }\n",
      "          mm.makeRotationFromEuler(fe.set((rf() - 0.5) * 0.9, (rf() - 0.5) * 0.9, rf() * Math.PI * 2)).setPosition(Math.cos(a) * d, 1.5 + Math.sin(a) * d, 0.04 + (0.34 - d) * 0.18 + rr() * 0.02); ins[ci].setMatrixAt(cnt[ci]++, mm); }\n"),
+    # (v25.2, Chad: "why are there such badly drawn models ... You already have meshy connected, why are you not using it
+    # properly") the counter's phone, the calculator and the dried stand's flowers, each a checked picture on white then
+    # Meshy (masters/v25.2/make.sh); the code-built ones stand in until each lands
+    ("        shop.phone = { g: ph, scr, base: ph.position.clone(), x: px, drawn: '' };\n",
+     "        shop.phone = { g: ph, scr, base: ph.position.clone(), x: px, drawn: '' };\n"
+     "        /* (v25.2) the phone itself (turned over at prep, its glass up), the drawn screen laid on its glass; the box stands in\n"
+     "           until it lands */\n"
+     "        fitModel('e4phone', ph, 0.158, 'z', 0, 0).then(m => { if (!m || !alive) return; body.visible = false; sc.position.y = m.userData.fit.y + 0.0004; });\n"),
+    ("        bx(0.09, 0.016, 0.13, M({ color: 0x2a2a2e, roughness: 0.6 }), 0.24, top + 0.008, C.z - 0.12).rotation.y = 0.2;   // the calculator\n",
+     "        const calcBox = bx(0.09, 0.016, 0.13, M({ color: 0x2a2a2e, roughness: 0.6 }), 0.24, top + 0.008, C.z - 0.12); calcBox.rotation.y = 0.2;\n"
+     "        /* (v25.2) the calculator itself, its display away from him as a calculator lies for its owner; the box stands in\n"
+     "           until it lands */\n"
+     "        { const cg = new THREE.Group(); cg.position.set(0.24, top, C.z - 0.12); cg.rotation.y = 0.2; S0.add(cg);\n"
+     "          fitModel('e4calc', cg, 0.13, 'z', Math.PI, 0).then(m => { if (!m || !alive) return; calcBox.visible = false; }); }\n"),
+    ("        ins.forEach((im, i) => { im.count = cnt[i]; g.add(im); });\n",
+     "        ins.forEach((im, i) => { im.count = cnt[i]; g.add(im); });\n"
+     "        /* (v25.2) the dried stand's flowers a real wreath, its round on the disc (kept as its backing board: the wreath's own\n"
+     "           back is open between the flowers), facing as the stand faces, its ribbons brought out over its face; the drawn\n"
+     "           heads stand in until it lands */\n"
+     "        if (sway) { const wg = new THREE.Group(); wg.position.set(0, 1.5, 0.05); g.add(wg);\n"
+     "          fitModel('e4wreath', wg, 0.74, 'x', 0, 0).then(m => { if (!m || !alive) return; for (const im of ins) im.visible = false;\n"
+     "            m.position.y -= m.userData.fit.y / 2; for (const rb of props.ribbons) rb.position.z = 0.1; }); }\n"),
 ]
 
 

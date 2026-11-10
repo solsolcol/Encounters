@@ -1,0 +1,70 @@
+v25.2 M2 · the reference pictures for the props Chad named and the audit found (Higgsfield gpt_image_2_6, quality high,
+resolution 2k, background opaque, 1:1), two of each. None is a sacred image (no photographs of a real piece needed first).
+
+wallet-a, wallet-b:
+Product photograph on a pure white background: a man's bifold wallet in worn dark brown leather, closed, lying flat, about 11 cm by 9 cm and 2 cm thick, stitched edges, softly rounded corners, gentle creases and a little shine from years of use. Seen from above at a three-quarter angle, the whole wallet in frame. Soft studio light from the upper left, realistic leather detail, nothing else in the picture, no logo, no text.
+
+jacket-a, jacket-b:
+Product photograph on a pure white background: a navy blue zip-up casual jacket (a light cotton windbreaker with a stand-up collar and a metal zip) folded once in half and laid down flat, the collar and the top of the zip on top, one sleeve hanging loose off the side, soft natural folds and wrinkles in the fabric. Seen from above at a three-quarter angle, the whole jacket in frame. Soft studio light from the upper left, realistic fabric detail, nothing else in the picture, no logo, no text.
+
+bag-a, bag-b:
+Product photograph on a pure white background: a man's grey canvas messenger sling bag about 34 cm wide, 24 cm tall and 13 cm deep, its front flap closed with a black plastic buckle, slightly worn, standing upright on its base, its long grey adjustable strap looped loosely beside it. Seen from the front at a three-quarter angle, the whole bag in frame. Soft studio light from the upper left, realistic canvas texture, nothing else in the picture, no logo, no text.
+
+till-a, till-b:
+Product photograph on a pure white background: an open black metal cash drawer from a shop's cash register, pulled fully out, about 40 cm wide and 40 cm deep, its tray holding a row of five round coin cups with silver and gold coins and four clips of paper banknotes in plain muted colours with no readable printing. Seen from above at a three-quarter angle from the front, the whole drawer in frame. Soft studio light from the upper left, realistic worn metal, nothing else in the picture, no text, no logo.
+
+drinks-a, drinks-b:
+Product photograph on a pure white background: a row of cold drinks standing side by side as on a fridge shelf - five clear plastic bottles of water with plain pale blue labels and four aluminium drink cans in plain red, silver and dark blue, a little condensation on them, no brand names, no printing, no text. Seen from the front at a slight angle from above, the whole row in frame. Soft studio light from the upper left, realistic plastic and metal, nothing else in the picture.
+
+yaam-a, yaam-b:
+Product photograph on a pure white background: a Thai handwoven cotton shoulder bag (yaam), a flat rectangular bag about 30 cm wide and 34 cm tall, woven with horizontal stripes of deep red, off-white and indigo, a short fringe along its bottom edge, a long woven strap in the same stripes, lying flat on the floor with the strap curled beside it, well used and soft. Seen from above at a three-quarter angle, the whole bag and strap in frame. Soft studio light from the upper left, realistic woven cotton texture, nothing else in the picture, no text.
+
+standdry-a, standdry-b:
+Product photograph on a pure white background: a congratulatory flower stand for a shop's grand opening in Singapore, left standing for weeks: a large round wreath about 75 cm across of dried, faded flowers - brown roses, dull dark red carnations, beige chrysanthemums and dry leaves - mounted on a tall thin gold-coloured metal tripod easel, about 1.6 metres tall in all. No ribbons, no banners, no text. Seen from the front at a slight angle, the full height in frame. Soft studio light from the upper left, realistic dried petals, nothing else in the picture.
+
+standfresh-a, standfresh-b:
+Product photograph on a pure white background: a congratulatory flower stand for a shop's grand opening in Singapore: a large round wreath about 75 cm across of fresh flowers - red roses, yellow chrysanthemums, pink gerberas and white lilies with green leaves - mounted on a tall thin gold-coloured metal tripod easel, about 1.6 metres tall in all. No ribbons, no banners, no text. Seen from the front at a slight angle, the full height in frame. Soft studio light from the upper left, realistic fresh petals, nothing else in the picture.
+
+calc-a, calc-b:
+Product photograph on a pure white background: a plain grey desktop electronic calculator about 15 cm by 10 cm, a small dark LCD screen showing nothing, rows of grey and dark grey rubber keys with simple symbols, lying flat on a table. Seen from above at a three-quarter angle, the whole calculator in frame. Soft studio light from the upper left, realistic plastic, nothing else in the picture, no brand name.
+
+---------------------------------------------------------------- the second round (after the audit, §3 of the plan)
+The first round's requests 3, 5, 7, 8 and 12-17 were refused by the service's rate limit (429) and never made. Looked at
+first: wallet-a/b, jacket-a, bag-a, till-a, drinks-b, yaam-a/b. Changed for the second round, by what the game needs:
+jacket-b folds compact (on the 34 cm stool seat a loose sleeve would stand out flat in the air); till-b is the drawer
+alone (it slides out of the cupboard; till-a's housing would slide with it); drinks-a is the water alone (the fridge's
+floor holds five small bottles and the wallet; drinks-b's mixed row goes on its wire shelf); the stands are the wreath
+alone (the tripod is three gold rods and the ribbons carry drawn words: both stay as built; the two fresh stands left
+the corridor at v25.0). Added: his phone, Lersi Chin's cloth, the light switch, the shelf by the door.
+
+jacket-b:
+Product photograph on a pure white background: a navy blue zip-up casual jacket (a light cotton windbreaker with a stand-up collar and a metal zip), folded neatly into a compact flat rectangle about 36 cm by 30 cm and 6 cm thick, both sleeves folded in under it so neither shows outside the rectangle, the stand-up collar and the top of the zip on top, soft natural folds and creases in the fabric. Seen from above at a three-quarter angle, the whole folded jacket in frame. Soft studio light from the upper left, realistic fabric detail, nothing else in the picture, no logo, no text.
+
+till-b:
+Product photograph on a pure white background: the removable drawer of a shop's cash register on its own, out of its housing: a black metal open-topped tray about 41 cm wide, 36 cm deep and 9 cm tall, with a flat black front panel carrying a small metal key lock, inside it a row of five round coin cups across the front holding silver and gold coins and behind them four compartments of paper banknotes in plain muted colours (lilac, pale green, orange, pale blue) held down by metal spring clips, no readable printing on the notes. Seen from above at a three-quarter angle from the front, the whole drawer in frame. Soft studio light from the upper left, realistic worn metal, nothing else in the picture, no text, no logo.
+
+drinks-a:
+Product photograph on a pure white background: a row of five small clear plastic bottles of drinking water (330 ml, about 16 cm tall and 5 cm across) standing side by side in a straight line, almost touching, plain pale blue labels with no printing, blue screw caps, a little condensation on them, no brand names, no text. Seen from the front at a slight angle from above, the whole row in frame. Soft studio light from the upper left, realistic clear plastic and water, nothing else in the picture.
+
+calc-a, calc-b: (as above)
+
+phone-a, phone-b:
+Product photograph on a pure white background: a modern black smartphone lying flat, face up, its screen black and switched off, thin even bezels and rounded corners, a slim dark metal rim around its edge, about 7.6 cm by 15.8 cm and 9 mm thick, no logo, no text, no camera bump visible from above. Seen from above at a three-quarter angle, the whole phone in frame. Soft studio light from the upper left, realistic glass and metal, nothing else in the picture.
+
+cloth-a, cloth-b:
+Product photograph on a pure white background: a clean plain cotton cloth in a soft natural ivory colour, folded neatly into a flat rectangle about 26 cm by 22 cm and 1 cm thick, soft rounded folded edges, a few gentle creases, lying flat. Seen from above at a three-quarter angle, the whole folded cloth in frame. Soft studio light from the upper left so its edges and folds cast soft shadows, realistic woven cotton texture, nothing else in the picture, no text.
+
+switch-a, switch-b:
+Product photograph on a pure white background: a Singapore wall light switch of the common kind, a square off-white plastic plate about 8.6 cm across with gently bevelled edges and two white rocker switches side by side in the middle, each rocker with a tiny orange neon indicator window, two small round screw covers, seen straight from the front at a slight angle so its thickness shows, the plate standing upright as if on a wall (the wall not shown). Soft studio light from the upper left, realistic plastic, nothing else in the picture, no text, no logo.
+
+shelf-a, shelf-b:
+Product photograph on a pure white background: a small wooden wall shelf: a plain board of dark brown stained wood about 30 cm long, 20 cm deep and 2 cm thick, with softly rounded edges, held up by two plain black metal L-shaped brackets screwed underneath near each end, as it would be fixed to a wall (the wall not shown, the brackets' upright arms flat at its back). Empty. Seen from the front at a three-quarter angle from slightly above. Soft studio light from the upper left, realistic wood grain, nothing else in the picture, no text.
+
+wreath-a, wreath-b:
+Product photograph on a pure white background: a large round congratulatory flower wreath of the kind that stands on a tall easel at a shop's grand opening in Singapore, about 75 cm across, left standing for weeks so every flower has dried and faded: brown roses, dull dark red carnations, beige and tan chrysanthemums, dried baby's breath and dry curled leaves packed densely on a round base, with some depth so the flowers stand out from it. Seen straight from the front, the whole round wreath in frame. No stand, no easel, no ribbons, no banners, no text. Soft studio light from the upper left, realistic dried petals, nothing else in the picture.
+
+notebook-a, notebook-b (2c, refused: each wrote invented diary lines on its left page):
+Product photograph on a pure white background: an open hardcover notebook lying flat, about 44 cm across the open spread and 30 cm tall, a dark navy blue cloth cover showing a little around the edges, cream ruled pages, a few short lines of faint pencil handwriting near the top of the left page, the right page blank, a thin dark red ribbon bookmark lying across the right page, the pages lying nearly flat with only a gentle dip at the spine, the page edges slightly worn from use. Seen from above at a three-quarter angle, the whole notebook in frame. Soft studio light from the upper left, realistic paper and cloth detail, nothing else in the picture, no logo, no printed text.
+
+notebook-c, notebook-d (2c; d picked):
+Product photograph on a pure white background: an open hardcover notebook lying flat, about 44 cm across the open spread and 30 cm tall, a dark navy blue cloth cover showing a little around the edges, cream ruled pages with faint blue lines and nothing written on them, a thin dark red ribbon bookmark lying across the right page, the pages lying nearly flat with only a gentle dip at the spine, the page edges slightly worn from use. Seen from above at a three-quarter angle, the whole notebook in frame. Soft studio light from the upper left, realistic paper and cloth detail, nothing else in the picture, no writing, no logo, no text.

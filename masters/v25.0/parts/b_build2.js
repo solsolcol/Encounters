@@ -23,6 +23,13 @@
         const cols = ['#c9a8d6', '#8cc2a2', '#e8b48a', '#a6bfe0'];                                                // the notes, by colour
         cols.forEach((c2, i) => mesh(new THREE.BoxGeometry(0.075, 0.022, 0.15), M({ color: c2, roughness: 0.8 }), -0.15 + i * 0.09, -H / 2 + 0.024, 0.2, g));
         for (let i = 0; i < 4; i++) mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.012, 14), M({ color: i % 2 ? 0xc8b070 : 0xb8bcc0, roughness: 0.35, metalness: 0.8 }), -0.15 + i * 0.09, -H / 2 + 0.018, 0.06, g);
+        /* (v25.2, Chad: "why are there such badly drawn models like the wallet which is just a block of colour ... You
+           already have meshy connected, why are you not using it properly") the drawer itself, a checked picture on white
+           then Meshy (masters/v25.2/make.sh): its lock to him, its front a few millimetres proud of the cupboard's back as
+           the boxes' was, its depth into the cupboard. The boxes above stand in only until it lands */
+        { const standIn = [...g.children];
+          fitModel('e4till', g, 0.42, 'x', Math.PI, 0).then(m => { if (!m || !alive) return; for (const o of standIn) o.visible = false;
+            m.position.y -= m.userData.fit.y / 2; m.position.z += m.userData.fit.z / 2 - 0.004; }); }
       }
       /* HIS BAG on the floor at the counter's end: a grey sling bag, its flap that lifts */
       { const g = new THREE.Group(); g.position.set(BAG.x, 0, BAG.z); g.rotation.y = 0.5; S0.add(g); props.bag = g;
@@ -34,6 +41,12 @@
         mesh(new THREE.BoxGeometry(0.06, 0.014, 0.03), mBlackP, 0, -0.004, 0.15, flapG);                     // its buckle
         const strap = mesh(new THREE.TorusGeometry(0.24, 0.012, 6, 28, Math.PI * 0.9), mBag, 0, 0.13, 0.02, g); strap.rotation.set(-Math.PI / 2 + 0.2, 0, Math.PI * 0.05);
         solids.push(hidBox(0.4, 0.3, 0.22, BAG.x, 0.15, BAG.z, S0));
+        /* (v25.2, Chad: "the jacket and bag dont even look like one") his bag itself (a checked picture on white, then
+           Meshy): its buckle turned to the room behind the counter, where he searches from (BAG.face); the boxes above
+           stand in until it lands. Searched, it is drawn toward him and tipped to be looked into (props.bagMove,
+           shopFrame), as the stand-in's flap lifted */
+        { const mv = new THREE.Group(); mv.position.set(BAG.x, 0, BAG.z); mv.rotation.y = BAG.face; S0.add(mv);
+          fitModel('e4bag', mv, 0.25, 'y', 0, 0).then(m => { if (!m || !alive) return; g.visible = false; props.bagMove = mv; }); }
       }
       /* HIS JACKET over his stool: a navy zip jacket, its body draped across the seat and down both sides, a sleeve
          hanging (the cloth bent over the seat's round top by its own vertices — a drape, never a box) */
@@ -51,6 +64,11 @@
            ring on top of the jacket from where he stands (measured, then photographed) */
         const slv = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.045, 0.42, 12, 6, false), mJ); slv.position.set(0.25, -0.26, 0.08); slv.rotation.set(0.25, 0, 0.18); g.add(slv);
         const zip = new THREE.Mesh(new THREE.BoxGeometry(0.006, 0.004, 0.36), mAluP); zip.position.set(-0.04, 0.02, 0); g.add(zip);
+        /* (v25.2, Chad: "the jacket and bag dont even look like one") his jacket itself (a checked picture on white, then
+           Meshy), folded on the seat (folded once it is wider than the seat, and a loose sleeve would stand out flat in
+           the air); the drape above stands in until it lands. The search lifts and tips the whole group, as before */
+        { const standIn = [...g.children];
+          fitModel('e4jacket', g, 0.33, 'x', 0, 0).then(m => { if (!m || !alive) return; for (const o of standIn) o.visible = false; }); }
       }
       /* THE DRINKS FRIDGE set into the cupboard's back, his side: a glass door in a black frame, lit inside, two
          shelves of water and canned drinks — and the wallet beside the water */
@@ -67,14 +85,28 @@
         const mPet = M({ color: 0xd6e8f2, roughness: 0.05, metalness: 0, transparent: true, opacity: 0.5, depthWrite: false });
         const mCap = M({ color: 0x2a6ac8, roughness: 0.4 }), mLab = M({ color: 0x4a8ad8, roughness: 0.6 });
         const canCols = [0xc81e24, 0x2a8a3a, 0xe8b21a, 0x1e4aa8, 0xc81e24];
+        const nB0 = g.children.length;
         for (let k = 0; k < 5; k++) { const x = -W / 2 + 0.07 + k * 0.075;
           const b = mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.15, 14), mPet, x, 0.04 + 0.075, 0.12, g); b.renderOrder = 2;
           mesh(new THREE.CylinderGeometry(0.0305, 0.0305, 0.045, 14), mLab, x, 0.04 + 0.07, 0.12, g);
           mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.02, 10), mCap, x, 0.04 + 0.16, 0.12, g); }
+        const nB1 = g.children.length;
         for (let k = 0; k < 5; k++) mesh(new THREE.CylinderGeometry(0.033, 0.033, 0.115, 16), M({ color: canCols[k], roughness: 0.3, metalness: 0.75 }), -W / 2 + 0.07 + k * 0.08, 0.2 + 0.06, 0.13, g);
+        /* (v25.2) the water and the drinks themselves (a checked picture on white each, then Meshy): five small bottles on
+           the floor beside the wallet, a row of cans and bottles on the wire shelf; the cylinders above stand in until
+           each lands */
+        { const bottles = g.children.slice(nB0, nB1), cans = g.children.slice(nB1);
+          const wg = new THREE.Group(); wg.position.set(-W / 2 + 0.154, 0.036, 0.11); g.add(wg);
+          fitModel('e4water', wg, 0.16, 'y', Math.PI, 0).then(m => { if (!m || !alive) return; for (const o of bottles) o.visible = false; });
+          const kg = new THREE.Group(); kg.position.set(0, 0.203, 0.12); g.add(kg);
+          fitModel('e4drinks', kg, 0.47, 'x', Math.PI, 0).then(m => { if (!m || !alive) return; for (const o of cans) o.visible = false; }); }
         /* the wallet: brown leather, folded, lying beside the bottles at the front of the floor */
         const wl = new THREE.Group(); wl.position.set(W / 2 - 0.075, 0.046, 0.07); wl.rotation.y = 0.35; g.add(wl); props.wallet = wl;
         mesh(new THREE.BoxGeometry(0.11, 0.018, 0.09), M({ map: tex(makeLeather(THREE, cnv)), roughness: 0.6 }), 0, 0.009, 0, wl);
+        /* (v25.2, Chad: "the wallet which is just a block of colour") the wallet itself (a checked picture on white, then
+           Meshy), worn brown leather folded, lying on the fridge's floor; the box above stands in until it lands */
+        { const standIn = [...wl.children];
+          fitModel('e4wallet', wl, 0.11, 'x', 0, 0).then(m => { if (!m || !alive) return; for (const o of standIn) o.visible = false; m.position.y -= 0.01; }); }
         /* the door: a black frame and its glass, hinged at its right edge, swinging open toward him */
         const hinge = new THREE.Group(); hinge.position.set(W / 2, 0, 0); g.add(hinge); props.fridgeDoor = hinge;
         const fr = (w, h, x, y) => mesh(new THREE.BoxGeometry(w, h, 0.03), mBlackP, x, y, -0.015, hinge);
@@ -91,12 +123,27 @@
       { const g = new THREE.Group(); g.position.set(SWITCH.x, SWITCH.y, SWITCH.z); g.rotation.y = Math.PI / 2; S0.add(g); props.sw = g;
         mesh(new THREE.BoxGeometry(0.086, 0.086, 0.008), M({ color: 0xf2f2ee, roughness: 0.45 }), 0, 0, 0.004, g);
         for (const sx of [-1, 1]) mesh(new THREE.BoxGeometry(0.03, 0.05, 0.008), M({ color: 0xe8e8e4, roughness: 0.4 }), sx * 0.018, 0, 0.011, g);
-        props.swDot = mesh(new THREE.CircleGeometry(0.0035, 10), B({ color: 0xff8a2a }), 0.018, -0.032, 0.0155, g); }
+        props.swDot = mesh(new THREE.CircleGeometry(0.0035, 10), B({ color: 0xff8a2a }), 0.018, -0.032, 0.0155, g);
+        /* (v25.2) the switch itself (a checked picture on white, then Meshy): its back on the wall, centred where the plate
+           was; its two neon windows lit as the stand-in's dot was (one material, so the night's colour lights both), where
+           the model's own colour sheet has them: 10.4 mm either side of its middle, 55.1 mm up, 1.1 mm out (masters/v25.2/make.sh) */
+        { const standIn = [...g.children];
+          fitModel('e4switch', g, 0.086, 'x', 0, 0).then(m => { if (!m || !alive) return; for (const o of standIn) o.visible = false;
+            m.position.y -= m.userData.fit.y / 2; m.position.z += m.userData.fit.z / 2;
+            for (const sx of [-1, 1]) { const d = new THREE.Mesh(new THREE.PlaneGeometry(0.0042, 0.0014), props.swDot.material);
+              d.position.set(m.position.x + sx * 0.0104, m.position.y + 0.0551, m.position.z + 0.0018); g.add(d); } }); }
+      }
       /* THE SHELF beside the door, and on it the piece he took in chapter 1, facing the door as he was told — each of the
          three made ready (which one is his, play decides), its light cut (the amulet rule: a few centimetres at a shelf) */
       { const g = new THREE.Group(); g.position.set(SHELF.x, SHELF.y, SHELF.z); S0.add(g); props.shelf = g;
         mesh(new THREE.BoxGeometry(0.2, 0.02, 0.3), M({ color: 0x5a3a24, roughness: 0.6 }), 0, -0.01, 0, g);
         for (const dz of [-0.11, 0.11]) mesh(new THREE.BoxGeometry(0.02, 0.07, 0.02), mBlackP, -0.08, -0.045, dz, g);
+        /* (v25.2) the shelf itself (a checked picture on white, then Meshy): a dark stained board on two black brackets,
+           its back on the wall and its top where the board's was (the cloth and the piece stand on it as before); the
+           boxes above stand in until it lands */
+        { const standIn = [...g.children];
+          fitModel('e4shelf', g, 0.3, 'z', Math.PI / 2, 0).then(m => { if (!m || !alive) return; for (const o of standIn) o.visible = false;
+            m.position.y -= m.userData.fit.y; m.position.x += (SHOP.x0 + 0.008 + m.userData.fit.x / 2) - SHELF.x; }); }
         mesh(new THREE.PlaneGeometry(0.16, 0.2), M({ color: 0x9a1418, roughness: 0.85 }), 0.005, 0.0012, 0, g).rotation.x = -Math.PI / 2;   // a red cloth under it
         for (const [key, size, axis, ry, rz] of [['e4nangkwak', 0.075, 'y', 0, 0], ['e4takrut', 0.066, 'x', 0, Math.PI / 2], ['e4phayant', 0.085, 'x', 0.3, 0]]) {
           const pg = new THREE.Group(); pg.visible = false; g.add(pg); props.pieces[key.slice(2)] = pg; pg.userData.dyn = true;
@@ -115,7 +162,9 @@
         mat.userData.plane = mp; mat.userData.roll = roll;
         const at = (dx, dz) => [LC.x + dx, LC.z + dz];
         /* the bowl: a turned silver bowl on its foot, water in it */
-        { const [x, z] = at(0.36, 0.3); const bg = new THREE.Group(); bg.position.set(x, 0.006, z); g.add(bg); props.bowl = bg;
+        /* (v25.2) before him, between his feet and the tray, in his hands' reach as he bends to it (at his left, v25.0's place,
+           his right hand could not reach the bundle standing in it: Lersi Chin's movement, docs/V25.2-E4C2-PHONE-MOTION-MODELS.md) */
+        { const [x, z] = at(0, 0.3); const bg = new THREE.Group(); bg.position.set(x, 0.006, z); g.add(bg); props.bowl = bg;
           const prof = [[0, 0], [0.05, 0], [0.055, 0.012], [0.045, 0.02], [0.07, 0.03], [0.1, 0.06], [0.112, 0.095], [0.108, 0.1], [0.098, 0.064], [0.07, 0.036], [0, 0.032]]
             .map(([r, y]) => new THREE.Vector2(r, y));
           const lathe = new THREE.Mesh(new THREE.LatheGeometry(prof, 40), M({ color: 0xd8dadc, roughness: 0.22, metalness: 0.9, envMapIntensity: 3, side: THREE.DoubleSide })); bg.add(lathe);
@@ -130,7 +179,8 @@
             wtr.position.y = m.userData.fit.y * BOWL_WATER[0]; wtr.scale.setScalar(m.userData.fit.x * BOWL_WATER[1] / 0.1); }); }
         /* the mayom bundle across the bowl's rim: seven sprigs tied. Its frame (what every pose turns): the tied end on the
            group's origin, the leaves along +x, their face up (+y) */
-        { const mg = new THREE.Group(); const [x, z] = at(0.36, 0.3); mg.position.set(x - 0.02, 0.11, z); mg.rotation.set(0, 0.6, 0.35); g.add(mg); props.mayom = mg;
+        /* (v25.2) standing in the water, its leaves up over the rim toward the client, its tie where his right palm takes it */
+        { const mg = new THREE.Group(); const [x, z] = at(0, 0.3); mg.position.set(x - 0.02, 0.11, z); mg.rotation.set(0, -1.03, 0.94); g.add(mg); props.mayom = mg;
           /* (v25.0 CP7) its two resting places: standing in the bowl's water, its leaves out over the rim (the bowl is chanted
              over with it in the water), and laid on the mat beside the bowl once it has been used (mayomAt) */
           mg.userData.bowlP = mg.position.clone(); mg.userData.bowlR = mg.rotation.clone();
@@ -154,9 +204,17 @@
         { const [x, z] = at(-0.34, 0.34); const th = new THREE.Group(); th.position.set(x, 0.012, z); g.add(th); props.thread = th;
           for (let k = 0; k < 3; k++) { const tr = new THREE.Mesh(new THREE.TorusGeometry(0.028 - k * 0.002, 0.0028, 6, 24), M({ color: 0xf4f2ea, roughness: 0.85 })); tr.rotation.x = Math.PI / 2; tr.position.y = k * 0.004; th.add(tr); } }
         /* the clean white cloth, folded, where the piece will be set */
-        { const [x, z] = at(-0.36, 0.08); const cl = mesh(new THREE.BoxGeometry(0.26, 0.008, 0.22), M({ color: 0xf6f4ee, roughness: 0.9 }), x, 0.008, z, g); props.cloth = cl; }
+        /* (v25.2) the cloth itself (a checked picture on white, then Meshy: a cotton cloth folded flat), pressed to a cloth's
+           thickness (Meshy folded it 3.6 cm thick), lying where the box lay; the piece is set on its top (props.clothTop,
+           clothPiece); the box stands in until it lands */
+        props.clothTop = 0.012;
+        { const [x, z] = at(-0.36, 0.08); const cg = new THREE.Group(); cg.position.set(x, 0.008, z); g.add(cg); props.cloth = cg;
+          const cl = mesh(new THREE.BoxGeometry(0.26, 0.008, 0.22), M({ color: 0xf6f4ee, roughness: 0.9 }), 0, 0, 0, cg);
+          fitModel('e4cloth', cg, 0.26, 'x', 0, 0).then(m => { if (!m || !alive) return; cl.visible = false;
+            m.scale.y *= 0.42; m.position.y = -0.004; props.clothTop = 0.004 + m.userData.fit.y * 0.42; }); }
         /* the homage tray between them: a footed brass phan, marigolds and jasmine on it, two candles, three sticks */
-        { const [x, z] = at(0, 0.52); const kg = new THREE.Group(); kg.position.set(x, 0.004, z); g.add(kg); props.khan = kg;
+        /* (v25.2) a little further out, so the bowl stands between it and his feet */
+        { const [x, z] = at(0, 0.62); const kg = new THREE.Group(); kg.position.set(x, 0.004, z); g.add(kg); props.khan = kg;
           /* (v25.0 CP6) the tray and its flowers (`stand`, a stand-in until the model lands) apart from the candles and the
              incense (`top`), which stand in the flowers whichever tray is drawn */
           const stand = new THREE.Group(), topG = new THREE.Group(); kg.add(stand, topG);
@@ -176,10 +234,15 @@
           fitModel('e4phan', kg, PHAN_W, 'x', 0, 0).then(m => { if (!m || !alive) return; stand.visible = false;
             topG.position.y = m.userData.fit.y * PHAN_TOP - 0.095; }); }
         /* his woven bag beside him: a yaam, its stripes, its long strap */
-        { const [x, z] = at(-0.56, -0.16); const yg = new THREE.Group(); yg.position.set(x, 0, z); yg.rotation.set(0, 0.4, 0); g.add(yg); props.yaam = yg;
+        /* (v25.2) beside him and a little back: the real bag (its strap looped) is larger than the box, and at (-0.56, -0.16)
+           its body lay over the clean cloth, by a photograph from above */
+        { const [x, z] = at(-0.62, -0.42); const yg = new THREE.Group(); yg.position.set(x, 0, z); yg.rotation.set(0, 0.4, 0); g.add(yg); props.yaam = yg;
           const mY = M({ map: tex(makeYaamCloth(THREE, cnv)), roughness: 0.95, side: THREE.DoubleSide });
           const bd = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.05, 0.34), mY); bd.position.y = 0.025; yg.add(bd);
-          const sp = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.01, 5, 24, Math.PI), mY); sp.rotation.x = -Math.PI / 2; sp.position.set(0, 0.012, -0.17); yg.add(sp); }
+          const sp = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.01, 5, 24, Math.PI), mY); sp.rotation.x = -Math.PI / 2; sp.position.set(0, 0.012, -0.17); yg.add(sp);
+          /* (v25.2) his yaam itself (a checked picture on white, then Meshy): striped handwoven cotton lying on the mat, its
+             strap looped beside it; the box and the ring stand in until it lands */
+          fitModel('e4yaam', yg, 0.6, 'z', 0, 0).then(m => { if (!m || !alive) return; bd.visible = false; sp.visible = false; m.position.y += 0.004; }); }
         /* the envelope for the temple (ending D): white, the piece in it, his hand's words on it */
         { const ev = mesh(new THREE.PlaneGeometry(0.17, 0.11), M({ map: tex(makeEnvelope(THREE, cnv, DATA.words.envelope || 'For the temple')), roughness: 0.85 }), -0.82, top + 0.0012, COUNTER.z - 0.02);
           ev.rotation.set(-Math.PI / 2, 0, Math.PI - 0.08); ev.visible = false; props.envelope = ev; }
@@ -223,6 +286,8 @@
       if (mode === 'ringing') { x.fillStyle = '#2fae5a'; x.beginPath(); x.arc(178, 470, 30, 0, Math.PI * 2); x.fill(); x.fillStyle = '#e0433a'; x.beginPath(); x.arc(78, 470, 30, 0, Math.PI * 2); x.fill(); }
       else { x.fillStyle = '#e0433a'; x.beginPath(); x.arc(128, 470, 30, 0, Math.PI * 2); x.fill(); }
       x.fillStyle = '#fff'; x.save(); x.translate(mode === 'ringing' ? 78 : 128, 470); x.rotate(2.36); x.fillRect(-14, -5, 28, 10); x.restore();
+      /* (v25.2) its corners rounded as the phone's glass is (the drawn screen is a square plane laid on it) */
+      if (x.roundRect) { x.fillStyle = '#000'; x.beginPath(); x.rect(0, 0, 256, 557); x.roundRect(0, 0, 256, 557, 26); x.fill('evenodd'); }
       P.scr.map.needsUpdate = true;
     }
     const shopCtl = {
@@ -268,6 +333,7 @@
       props.jacketK = ez(props.jacketK, props.jacketTo, 5); props.fridgeK = ez(props.fridgeK, props.fridgeTo, 4.5);
       if (props.till) props.till.position.z = TILL.z - 0.24 * props.tillK;
       if (props.bagFlap) props.bagFlap.rotation.x = -1.9 * props.bagK;
+      if (props.bagMove) { props.bagMove.rotation.x = 0.32 * props.bagK; props.bagMove.position.y = 0.045 * props.bagK; }
       if (props.jacket) { props.jacket.position.y = 0.685 + 0.12 * props.jacketK; props.jacket.rotation.z = 0.2 * props.jacketK; }
       if (props.fridgeDoor) props.fridgeDoor.rotation.y = -1.75 * props.fridgeK;
       if (props.fridgeLight) props.fridgeLight.color.setRGB(0.55 + 0.4 * props.fridgeK, 0.62 + 0.36 * props.fridgeK, 0.7 + 0.3 * props.fridgeK);

@@ -479,6 +479,20 @@ ASSETS = {
     'e4mayom':      ('assets/e4mayom.glb', True, False),      # e4c2 v25.0: Lersi Chin's mayom bundle, seven leafy stems tied with white thread, 24 cm — a picture on white (GPT Image 2.6), checked, then Meshy image-to-3D and its remesh, every triangle (8,166), 1024 sheets (masters/v25.0/models, make.sh models)
     'e4khannam':    ('assets/e4khannam.glb', True, False),    # e4c2 v25.0: his holy-water bowl, embossed silver on a foot, 22 cm (4,128 triangles; the same recipe)
     'e4phan':       ('assets/e4phan.glb', True, False),       # e4c2 v25.0: the homage tray, a footed brass phan of marigolds and jasmine, 26 cm (6,901 triangles; the same recipe)
+    'e4till':       ('assets/e4till.glb', True, False),       # e4c2 v25.2: his cash drawer, notes and coins, 42 cm — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh)
+    'e4bag':        ('assets/e4bag.glb', True, False),        # e4c2 v25.2: his grey canvas messenger bag, 25 cm tall — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh)
+    'e4jacket':     ('assets/e4jacket.glb', True, False),     # e4c2 v25.2: his navy zip jacket folded, 33 cm — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh)
+    'e4water':      ('assets/e4water.glb', True, False),      # e4c2 v25.2: five small bottles of water, 16 cm tall — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh)
+    'e4drinks':     ('assets/e4drinks.glb', True, False),     # e4c2 v25.2: a row of cans and water bottles, 47 cm — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh)
+    'e4wallet':     ('assets/e4wallet.glb', True, False),     # e4c2 v25.2: his worn brown leather wallet, 11 cm — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh)
+    'e4switch':     ('assets/e4switch.glb', True, False),     # e4c2 v25.2: the light switch by the door, two rockers and their neon, 8.6 cm — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh)
+    'e4shelf':      ('assets/e4shelf.glb', True, False),      # e4c2 v25.2: the small wall shelf by the door, 30 cm — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh)
+    'e4cloth':      ('assets/e4cloth.glb', True, False),      # e4c2 v25.2: Lersi Chin's folded cotton cloth, 26 cm — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh)
+    'e4yaam':       ('assets/e4yaam.glb', True, False),       # e4c2 v25.2: Lersi Chin's striped Thai shoulder bag, 60 cm with its strap — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh)
+    'e4phone':      ('assets/e4phone.glb', True, False),      # e4c2 v25.2: his phone, turned over at prep (its glass up), 15.8 cm — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh)
+    'e4calc':       ('assets/e4calc.glb', True, False),       # e4c2 v25.2: the calculator on his counter, 13 cm — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh)
+    'e4wreath':     ('assets/e4wreath.glb', True, False),     # e4c2 v25.2: the Grand Opening stand's dried flowers, 74 cm — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh)
+    'e4notebook':   ('assets/e4notebook.glb', True, False),   # e4c2 v25.2: his notebook on the counter, open, 46 cm across — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh); the prop audit's find
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
     # in white (two women, two men), Mixamo's Praying and Kneeling Idle applied
@@ -600,7 +614,8 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'firstmaster', 'e4sky', 'fmshadow', 'e4noi', 'e4pong', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4pickup', 'e4nangkwak', 'e4takrut', 'e4phayant', 'e4nangkwakhd', 'e4takruthd', 'e4phayanthd', 'iconnangkwak', 'icontakrut', 'iconphayant',
            'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd', 'e4buffalo', 'e4sandalsa', 'e4sandalsb', 'e4rahu', 'e4sedan', 'e4truck', 'e4suv', 'e4moto', 'e4seat',
            'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm',
-           'e4kuman', 'e4ngang', 'e4tani', 'e4phraioil', 'e4phraitab', 'e4praicase', 'e4tanitab', 'e4ghostjar', 'lersichin', 'e4mayom', 'e4khannam', 'e4phan'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
+           'e4kuman', 'e4ngang', 'e4tani', 'e4phraioil', 'e4phraitab', 'e4praicase', 'e4tanitab', 'e4ghostjar', 'lersichin', 'e4mayom', 'e4khannam', 'e4phan',
+           'e4till', 'e4bag', 'e4jacket', 'e4water', 'e4drinks', 'e4wallet', 'e4switch', 'e4shelf', 'e4cloth', 'e4yaam', 'e4phone', 'e4calc', 'e4wreath', 'e4notebook'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and

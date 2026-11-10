@@ -1,0 +1,8 @@
+[{"name": "wallet", "image": "masters/v25.2/models/refs/wallet-a-2k.png", "symmetry": "auto", "remesh": 3000,
+  "texture": "worn dark brown leather with natural creases and lighter rubbed edges, a line of tan stitching round the edge, a soft sheen from years of use"},
+ {"name": "bag", "image": "masters/v25.2/models/refs/bag-a-2k.png", "symmetry": "auto", "remesh": 8000,
+  "texture": "washed grey cotton canvas, faded and slightly worn at the edges and seams, a black plastic side-release buckle on a grey webbing tab, grey webbing strap with a metal slider"},
+ {"name": "yaam", "image": "masters/v25.2/models/refs/yaam-a-2k.png", "symmetry": "off", "remesh": 6000,
+  "texture": "handwoven Thai cotton in horizontal stripes of deep red, off-white and indigo blue, coarse visible weave, a short fringe of loose threads along the bottom, the long strap woven in the same stripes"},
+ {"name": "drinks", "image": "masters/v25.2/models/refs/drinks-b-2k.png", "symmetry": "off", "remesh": 8000,
+  "texture": "five clear plastic water bottles with pale blue plain labels and blue caps, then four aluminium drink cans in plain red, red, silver and blue, small condensation drops, no printing"}]

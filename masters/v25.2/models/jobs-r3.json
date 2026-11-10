@@ -1,0 +1,6 @@
+[{"name": "cloth", "image": "masters/v25.2/models/refs/cloth-a-2k.png", "symmetry": "auto", "remesh": 3000,
+  "texture": "plain natural ivory cotton cloth folded neatly, a fine visible weave, soft creases, softly rounded folded edges"},
+ {"name": "shelf", "image": "masters/v25.2/models/refs/shelf-b-2k.png", "symmetry": "on", "remesh": 3000,
+  "texture": "dark brown stained wooden board with visible wood grain and softly rounded edges, two matte black metal L-shaped brackets with small black screws"},
+ {"name": "wreath", "image": "masters/v25.2/models/refs/wreath-a-2k.png", "symmetry": "off", "remesh": 12000,
+  "texture": "dried faded flowers packed densely: brown roses, dull dark red carnations, beige and tan chrysanthemums, dried white baby's breath and dry curled brown leaves"}]
