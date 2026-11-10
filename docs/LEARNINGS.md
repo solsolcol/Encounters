@@ -7781,3 +7781,36 @@ cut (sharing its vertices and maps) when it is small.
 - **Water at roughness 0.04 is a mirror.** Indoors at night it mirrored the environment's cloudy sky. Still water in a bowl
   is a little dull, darker, and takes almost none of the environment (envMapIntensity 0.04: at 0.35 the sky's clouds
   still lay on it, brought up to his face).
+
+## v25.1 — what a deep glass case does to what lies on it, what a hand holds, and what a coda leaves behind
+
+- **A deep glass case puts what lies on its top on the floor.** Seen from where the dealer stands, the line through a note
+  on a display's glass top passes over the trays and leaves through the FRONT glass, so on a 52 cm-deep case the note,
+  the phone, the laptop all read as lying on the floor among the customers' stools. Making the glass clearer changes
+  nothing (a pale veil over a pale floor). Measure the sight line (eye, through the thing, to where it leaves the case)
+  and make the case shallow enough that the line meets the stock: a dealer's display is 16 cm deep, its tray close under
+  the glass.
+- **A cupboard built round a fridge must be built ROUND it.** One solid box under the counter with the fridge "inside"
+  drew its own face over the fridge's opening, so the fridge stood plain white, shut or open, with nothing in it — and
+  the wallet the scene sends him to find was in there. Build the cupboard from the pieces either side of, over and
+  behind the opening, and photograph the door open.
+- **A page laid flat by its x turn alone faces the far side.** PlaneGeometry's top is its +y; turned −90° about x it lies
+  with its top toward the viewer at +z, so from behind a counter every word stood upside down. Turn it about its own face
+  (z π) as well, and read it from where it is read.
+- **A coda's prop must be put away by the films' end.** The notebook page the coda opens was hidden by nothing: the
+  films' end() and reset() (which runs it) never closed it, so a replay opened on the months-later notebook from its
+  first noon. Whatever a film shows that play does not, its end() puts back, and reset() is the films' end() too.
+- **His hand's size on a phone is the pose's depth, nothing else.** The hands are drawn through their own fixed 52° lens,
+  so neither the film's lens nor the camera's aim makes his hand smaller: only a pose's own `p` (lower and further off).
+  And the wrist moves with it — past `place`'s p 0.3 the white thread tied at the wrist left the phone's frame. A held
+  hand's size, the thing it holds and where the thread is are one decision, made by photograph at a few values.
+- **A small thing is held by its foot at the top of the fist, not at the palm.** The `place` grip closes its fist round the
+  palm, so an amulet set at the palm vanished inside the fist (from behind, the knuckles are all a phone sees); held by
+  the walking hand it stood behind a pointing finger; set at a point of the screen it floated above an open hand. With
+  the grip lowered (p 1) and the piece's foot 7 cm above the palm in the lens's frame, turned to the lens, the fingers
+  close on its lower edge and its face shows. Twelve ways photographed on the phone before one was written down.
+- **A mark that rides a thing rides it out of the frame.** Kneeling, the eye is low and the marks over the bow and the
+  bowed head (0.55 m over their spots) sat at the top of a phone under the stats; presses that are named by the badge and
+  answered from anywhere need no mark (`mark: false`).
+- **A press with no sound is a dead press.** "Stand still and watch" ran four seconds of the beds before the reveal's
+  line: every press has its sound (his breath, slow, warmed with the night's).

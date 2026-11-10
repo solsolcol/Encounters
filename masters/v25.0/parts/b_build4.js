@@ -68,10 +68,15 @@
     /* (v25.0 CP13) the thread: how far he leans in (down, forward), where his eyes go (over the mat, his wrist below
        them), the hand's own lowering (`place`'s p), the master's lean to meet it, and the lens on a phone and a desktop */
     /* (v25.1 F6) pN: on a narrow screen the hand held lower and further off (`place`'s own p: 8 cm down, 6 cm away a unit):
-       at p 0 it was a dark shape over half a phone, a pointing finger at its tip (by photograph) */
-    const TIE = { dy: 0.06, dz: 0.28, aim: [0.03, 0.6, 0.05], p: 0, pN: 1.0, bow: 0.3, flN: 60, flD: 50 };
-    /* (v25.1 F7) ending D's piece held IN his hand: at the place grip's palm, this far off it in the lens's frame */
-    const AMU_HELD = [0.0, 0.035, -0.01];
+       at p 0 it was a dark shape over half a phone, a pointing finger at its tip, the master's right hand behind it; at 0.3
+       both his hands rest on it and the thread still shows at the wrist (at 0.5 and over, the wrist leaves the frame's
+       foot; photographed at 0.3, 0.5, 0.7 and 1) */
+    const TIE = { dy: 0.06, dz: 0.28, aim: [0.03, 0.6, 0.05], p: 0, pN: 0.3, bow: 0.3, flN: 60, flD: 50 };
+    /* (v25.1 F7) a small piece held IN his hand: the place grip lowered (its p) and the piece's foot at the top of the fist,
+       this far off its palm in the lens's frame, so the fingers close on its lower edge and its face shows above them (at
+       the palm itself the fist hid it whole; with the walking hand it stood behind a pointing finger; photographed, twelve
+       ways) */
+    const AMU_P = 1, AMU_HELD = [0.0, 0.07, -0.01];
     const BUDDHA_AT = [BUDDHA.x, BUDDHA.y, BUDDHA.z];
     const LC_HEAD = () => faceOf(cast.lersi, [LC.x, 0.74, LC.z]);
     const PG_HEAD = () => faceOf(cast.pong, [PSTOOL.x, 1.42, PSTOOL.z]);
@@ -436,8 +441,12 @@
         /* (v25.0 CP7) narrowed as he arrives: the piece large enough to know */
         fLens(lp(isNarrow() ? 56 : 48, isNarrow() ? 40 : 34, kw));
         camAt(e, [shelf[0], shelf[1] - 0.05 * kw, shelf[2]]);
-        if (t >= tTake && ph) handHold(ph, { screen: [0.1, lp(-0.35, -0.12, smo(sgk(t, tTake, tBack))), 0.36], face: false, rx: -0.3 });
-        else handFree();
+        /* (v25.1 F7) his hand reaches for it (the place grip, eased in before he takes it) and holds it at the palm (placed
+           at a point of the screen, it hung in the air before the shelf with his open hand below it, by photograph) */
+        const A = FL.api, gk = smo(sgk(t, tTake - 0.8, tTake));
+        if (gk > 0.001 && A && A.handPose) { A.handPose('place', gk, { p: AMU_P }); FL.grip = true; if (A.handsRoot) { A.handsRoot.visible = true; A.armR.visible = true; } }
+        if (t >= tTake && ph) handHold(ph, { lens: AMU_HELD, face: true, tilt: -0.2 });
+        else if (gk <= 0.001) handFree();
         return;
       }
       handFree();
@@ -810,7 +819,7 @@
            (placed at a point of the screen it stood in the air above an open hand, by photograph); handFree lets go */
         const A = FL.api;
         if (up > 0.001) {
-          if (A && A.handPose) { A.handPose('place', up, { p: 0 }); FL.grip = true; }
+          if (A && A.handPose) { A.handPose('place', up, { p: AMU_P }); FL.grip = true; }
           handHold(amuletHand, { lens: AMU_HELD, face: true, tilt: -0.2 });
         } else handFree();
         fLens(isNarrow() ? 54 : 46);
