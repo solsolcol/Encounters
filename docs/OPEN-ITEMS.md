@@ -130,6 +130,9 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
     - j. docs/V14.16-THE-AUDIT.md §4: pausing sound when an Android phone is put away; a lower frame rate behind the
       equipment screen; sharing chapter 3's two Phiboon parses; rebuilding an episode-2 chapter on a selector replay;
       an engine-owned clock for new chapters.
+    - k. On a phone, a hotspot's mark rides its thing, so when the thing stands at the top of the view its mark sits
+      under the HUD's stats until he turns to it (every chapter with marks; seen in episode 4 chapter 2's search, v25.1,
+      docs/V25.1-E4C2-DEBUG.md "Seen and left alone"). The engine's, so listed and not changed.
     - k. Kept and put to him at v21.16: the range's Figure 11 boards and e3c2's painted shadow on the mats.
     - ~~l. (v24.28) Per-material reflection strengths do nothing: three r185 gives every material lit by the scene's
       environment the scene's own strength (0.05; 0.025 for the hands), so the torch's 30 (e2), the shop's bronze 10
