@@ -232,6 +232,11 @@ that fits it, with the version it came from.
 - For a device-specific rendering report, ask him for the ?diag screenshot. (v15.2)
 - A new sheet's diff against the last one is exactly the cells changed. (v14.2)
 - A picture is judged by a reader who does not know what was meant. The end check hands every changed shot (phone crop and desktop) to an independent reviewer with only the pictures and the question of what looks fake, blank, floating, doubled or wrong, because the author sees what he intended. v24.33's bus-stop advert panel, lit and blank, passed every check as 'an advert' and read as a white block. (v24.35)
+- A pose or a motion of a body is judged FULL SIZE, one picture at a time: from in front of the body, from beside it, and
+  through the film's own lens at a phone's shape (tools/probes/poselab.mjs keeps the game open for it). Never on a
+  contact sheet, and never reported to him as natural without those pictures and the list of what still looks wrong
+  ("i find it unacceptable that you find his poses natural, it clearly is not. You are not trying hard enough": v25.2's
+  poses, judged small by their author, were two flat hands side by side for a wai). (v25.3)
 
 ### Models and assets
 
@@ -275,6 +280,10 @@ that fits it, with the version it came from.
 - An FPS viewmodel rig is not quantized; additive textures need no alpha; a greyscale map multiplies the material's colour. (v12.0)
 - A rig's face direction comes from its bind matrix and is proven by a render, never taken as the head bone's +Z. (v6.8)
 - A take name a rig does not have fails silently (rig.play returns false and the man stands in his bind pose), so every take is checked against the clips in the rig's own file. (v11.2)
+- Before a pose is written for a rig, measure the rig from its own takes: its elbow's hinge (a real one keeps the forearm in
+  one plane of the upper arm: solve the elbow about that axis, never by the shortest arc, which bends it sideways), how
+  far its forearm rolls and its wrist bends, and each hand's own surface and thumb side; place a hand on a face or a
+  thing from where that face or thing is drawn, not from a height in the room. (v25.3)
 
 ### Sound
 
@@ -1111,7 +1120,11 @@ anomaly, glitches, things that don't look right or natural also count as issues"
 alone and why). His four asks of the same day (what a phone could not see in every film and in play, Lersi Chin's
 movements, one telling in place of the four-card pick, and every prop a real model, the last now a standing rule)
 shipped at v25.2 — **docs/V25.2-E4C2-PHONE-MOTION-MODELS.md** (his words, the prop audit, the log); its framing probes are
-tools/probes/framecheck.mjs and framediff.py, its body probe lcmotion.mjs. Chapter 3 (S1·12, Grandmaster Pho at the Wai Kru) is next. The episode's plan, with what remains his to decide:
+tools/probes/framecheck.mjs and framediff.py, its body probe lcmotion.mjs. His notes on it the same day (no sprinkle of water, no thread
+tied, and "i find it unacceptable that you find his poses natural, it clearly is not") shipped at v25.3 —
+**docs/V25.3-E4C2-NATURAL.md** (his words, what was measured on Lersi Chin's rig, the wai's sources, what was seen and
+left); the rig's measures are masters/v25.3/make.sh, the pose lab tools/probes/poselab.mjs (with poselab-job.py and
+poselab.sh). Chapter 3 (S1·12, Grandmaster Pho at the Wai Kru) is next. The episode's plan, with what remains his to decide:
 **docs/V24.0-EPISODE4-PLAN.md** (its sixth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is
 still his). S1·11 in two chapters (the master he did not know, who wears the original Sak Yant Ajarn's model; then the
 fog, Lersi Chin's clearing and the warning — built on Master Z's own trial episode, its 5.1 and 5.3 the two decisions
@@ -1248,13 +1261,13 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v139** (`masters/v25.2/masterz-text-v139.xlsx`, its CSV beside it: v25.2's words). It is
+**THE SHEET IS v140** (`masters/v25.3/masterz-text-v140.xlsx`, its CSV beside it: v25.3's words). It is
 EXPORTED and not published: the workbook (126 KB) is far past what the Drive connector's base64 route can carry (about
 20,000 characters — docs/EDITING-TEXT.md, "THE CEILING"), so the split export written down there no longer fits
 either. The way through is the Google Sheets connector, which writes the cells directly (docs/OPEN-ITEMS.md A1).
 **v44 is still the link to give Chad** until that is done:
 https://docs.google.com/spreadsheets/d/1bqnbQJPr1O6YslOlcsbVDFlZCohQtyKbPzm9EuY1IpM/edit
-Every sheet version's own diff, v139 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
+Every sheet version's own diff, v140 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
 first; a new version goes at its top).
 
 `docs/LEARNINGS.md` is the catalog of every hard-won lesson (CSP traps,

@@ -98,13 +98,13 @@ cast lc2v1     voices/raw/lc2v1_b.mp3       -16 $F                         # the
 cast lc2sit    voices/raw/lc2sit_a.mp3      -16 $F                         # the tighter read; voice 0.08-2.68 s (the other 2.76 s)
 cast lc2tell   voices/raw/lc2tell_a.mp3     -16 --keep 1.82 $F             # the tighter read; voice 0.10-1.46 s (the other 1.44 s); its silent tail cut at the words' end + 0.3 s
 him  q2tA      voices/raw/q2tA_a.mp3        $F                             # the tighter read; voice 0.06-10.70 s (the other 11.04 s)
-him  q2tB      voices/raw/q2tB_b.mp3        $F                             # the tighter read; voice 0.02-4.94 s (the other 5.18 s)
-him  q2tC      voices/raw/q2tC_a.mp3        $F                             # only clean/valid take; voice 0.08-3.26 s (the other 3.02 s, ends ON a word)
-him  q2tD      voices/raw/q2tD_b.mp3        $F                             # the tighter read; voice 0.06-0.94 s (the other 1.90 s)
+# RETIRED v25.2 (out of the build and the repo; its take and this line are the record): him  q2tB      voices/raw/q2tB_b.mp3        $F                             # the tighter read; voice 0.02-4.94 s (the other 5.18 s)
+# RETIRED v25.2 (out of the build and the repo; its take and this line are the record): him  q2tC      voices/raw/q2tC_a.mp3        $F                             # only clean/valid take; voice 0.08-3.26 s (the other 3.02 s, ends ON a word)
+# RETIRED v25.2 (out of the build and the repo; its take and this line are the record): him  q2tD      voices/raw/q2tD_b.mp3        $F                             # the tighter read; voice 0.06-0.94 s (the other 1.90 s)
 cast lc2tA     voices/raw/lc2tA_a.mp3       -16 $F                         # the tighter read; voice 0.04-5.12 s (the other 5.64 s)
-cast lc2tB     voices/raw/lc2tB_a.mp3       -16 --keep 6.7 $F              # the tighter read; voice 0.00-6.40 s (the other 6.70 s); its silent tail cut at the words' end + 0.3 s
-cast lc2tC     voices/raw/lc2tC_b.mp3       -16 --keep 5.6 $F              # the tighter read; voice 0.12-5.30 s (the other 5.62 s); its silent tail cut at the words' end + 0.3 s
-cast lc2tD     voices/raw/lc2tD_a.mp3       -16 $F                         # the tighter read; voice 0.10-2.70 s (the other 2.86 s)
+# RETIRED v25.2 (out of the build and the repo; its take and this line are the record): cast lc2tB     voices/raw/lc2tB_a.mp3       -16 --keep 6.7 $F              # the tighter read; voice 0.00-6.40 s (the other 6.70 s); its silent tail cut at the words' end + 0.3 s
+# RETIRED v25.2 (out of the build and the repo; its take and this line are the record): cast lc2tC     voices/raw/lc2tC_b.mp3       -16 --keep 5.6 $F              # the tighter read; voice 0.12-5.30 s (the other 5.62 s); its silent tail cut at the words' end + 0.3 s
+# RETIRED v25.2 (out of the build and the repo; its take and this line are the record): cast lc2tD     voices/raw/lc2tD_a.mp3       -16 $F                         # the tighter read; voice 0.10-2.70 s (the other 2.86 s)
 cast lc2e1     voices/raw/lc2e1_a.mp3       -16 --keep 1.4 $F              # the tighter read; voice 0.08-1.10 s (the other 1.02 s); its silent tail cut at the words' end + 0.3 s
 cast lc2e2     voices/raw/lc2e2_a.mp3       -16 --keep 0.92 $F             # the tighter read; voice 0.12-0.62 s (the other 0.54 s); its silent tail cut at the words' end + 0.3 s
 him  q2e1      voices/raw/q2e1_b.mp3        $F                             # the tighter read; voice 0.06-0.70 s (the other 0.72 s)
@@ -127,7 +127,7 @@ cast lc2sak1   voices/raw/lc2sak1_a.mp3     -17 $F                         # the
 cast lc2sak2   voices/raw/lc2sak2_a.mp3     -17 $F                         # the chant (its words are Pali: not scored); the tighter read; voice 0.00-15.82 s (the other 15.98 s)
 cast lc2sak3   voices/raw/lc2sak3_b.mp3     -17 $F                         # the chant (its words are Pali: not scored); the tighter read; voice 0.00-14.54 s (the other 15.06 s)
 cast lc2drink  voices/raw/lc2drink_a.mp3    -17 $F                         # the tighter read; voice 0.06-1.48 s (the other 1.50 s)
-cast lc2wrist  voices/raw/lc2wrist_b.mp3    -17 --keep 1.12 $F             # the tighter read; voice 0.10-0.82 s (the other 0.74 s); its silent tail cut at the words' end + 0.3 s
+# RETIRED v25.3 (out of the build and the repo; its take and this line are the record): cast lc2wrist  voices/raw/lc2wrist_b.mp3    -17 --keep 1.12 $F             # the tighter read; voice 0.10-0.82 s (the other 0.74 s); its silent tail cut at the words' end + 0.3 s
 cast lc2k2     voices/raw/lc2k2_b.mp3       -16 --keep 6.82 $F             # the tighter read; voice 0.04-6.52 s (the other 7.74 s); its silent tail cut at the words' end + 0.3 s
 cast lc2w1     voices/raw/lc2w1_a.mp3       -16 $F                         # only clean/valid take; voice 0.04-9.90 s (the other 9.42 s, ends ON a word)
 cast pg2w1     voices/raw/pg2w1_a.mp3       -16 $F                         # the tighter read; voice 0.08-1.42 s (the other 1.44 s)
@@ -209,8 +209,8 @@ fx  x2pickpiece sfx/raw/x2pickpiece_a.mp3 -10 "atrim=0.15,asetpts=PTS-STARTPTS" 
 fx  x2breathslow sfx/raw/x2breathslow_a.mp3 -10                              # in (0.95 s), the pause, out (1.3 s): an even, calm rhythm
 fx  x2candle    sfx/raw/x2candle_b.mp3    -8                                 # the flick, the catch and the flame shaken out, with the flame's body (40 % in 120-500 Hz; a is all hiss, 94 % over 3 kHz)
 fx  x2sip       sfx/raw/x2sip_a.mp3       -10                                # the sip at 0.5 s and the swallow, 2.0 dB lost on a phone (b 5.2)
-fx  x2sprinkle  sfx/raw/x2sprinkle_a.mp3  -10                                # the droplets scattering (58 % over 3 kHz), 0.3 dB lost on a phone (b 0.9, a thump)
-fx  x2thread    sfx/raw/x2thread_b.mp3    -10                                # three pulls of the string (0.05, 1.05, 1.45 s) a phone plays whole (0.0 dB); a is a rub under 120 Hz (7.7 dB lost)
+# RETIRED v25.3 (out of the build and the repo; its take and this line are the record): fx  x2sprinkle  sfx/raw/x2sprinkle_a.mp3  -10                                # the droplets scattering (58 % over 3 kHz), 0.3 dB lost on a phone (b 0.9, a thump)
+# RETIRED v25.3 (out of the build and the repo; its take and this line are the record): fx  x2thread    sfx/raw/x2thread_b.mp3    -10                                # three pulls of the string (0.05, 1.05, 1.45 s) a phone plays whole (0.0 dB); a is a rub under 120 Hz (7.7 dB lost)
 fx  x2bowl      sfx/raw/x2bowl_a.mp3      -8                                 # set down with the slosh after it (to 0.5 s; b's is over by 0.3)
 fx  x2keys      sfx/raw/x2keys_a.mp3      -10                                # the typing to 2.7 s, 4.6 dB lost on a phone (b 6.6)
 fx  x2post      sfx/raw/x2post_b.mp3      -10                                # the send's two-part whoosh (to 0.65 s); a is a 0.2 s blip
@@ -294,6 +294,6 @@ fi
 if [ "$ONLY" = models ]; then
   cd ../..
   ERR=0.002 node tools/prepmeshy.mjs masters/v25.0/src/remeshed-bowl.glb  assets/e4khannam.glb 0.22 w 1 0 1024
-  ERR=0.002 node tools/prepmeshy.mjs masters/v25.0/src/remeshed-mayom.glb assets/e4mayom.glb   0.24 h 1 0 1024
+# RETIRED v25.3 (out of the build and the repo; its take and this line are the record): ERR=0.002 node tools/prepmeshy.mjs masters/v25.0/src/remeshed-mayom.glb assets/e4mayom.glb   0.24 h 1 0 1024
   ERR=0.002 node tools/prepmeshy.mjs masters/v25.0/src/remeshed-phan.glb  assets/e4phan.glb    0.26 w 1 0 1024
 fi

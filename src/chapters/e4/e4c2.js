@@ -95,7 +95,7 @@
     'lc2v1': 3.29, 'lc2sit': 2.7, 'lc2tell': 1.6, 'lc2tA': 5.21,
     'lc2e1': 1.2, 'lc2e2': 0.75, 'lc2e3': 0.58, 'lc2e4': 1.93, 'lc2e5': 1.18, 'lc2e6': 4.73, 'lc2e7': 1.74,
     'lc2e8': 5.26, 'lc2e9': 4.79, 'lc2e10': 2.73, 'lc2k0': 3.21, 'lc2namo': 17.13, 'lc2sak1': 14.65, 'lc2sak2': 15.85,
-    'lc2sak3': 14.57, 'lc2drink': 1.69, 'lc2wrist': 0.92, 'lc2k2': 6.66, 'lc2w1': 9.93, 'lc2B1': 7.53, 'lc2B2': 9.77,
+    'lc2sak3': 14.57, 'lc2drink': 1.69, 'lc2k2': 6.66, 'lc2w1': 9.93, 'lc2B1': 7.53, 'lc2B2': 9.77,
     'lc2C1': 1.88, 'lc2C2': 5.45, 'lc2C3': 5.52, 'lc2D1': 2.65
   };
   /* SECS END */
@@ -122,17 +122,18 @@
   const CALL = tl(0.6, [['@pick'], [2.6], ['@ans'], ['pg2c1', 0.5], ['q2c1', 0.6], ['@offer'], ['pg2c2', 0.9], ['q2c2', 0.6],
                         ['pg2c3', 1.1], ['q2c3', 1.3], ['@black'], [1.1]]);
   /* THE VISIT (§4.2): the next evening, the shutter lifted for them */
-  const VISIT_T = tl(1.0, [['@knock'], [2.4], ['@lift'], [2.2], ['@in'], ['q2v1', 0.6], ['@altar'], [3.4], ['@intro'], ['pg2v1', 0.5],
+  const VISIT_T = tl(1.0, [['@knock'], [2.4], ['@lift'], [2.2], ['@in'], ['q2v1', 0.6], ['@altar'], [4.4], ['@intro'], ['pg2v1', 0.5],
                            ['@turn'], ['lc2v1', 0.9], ['@wai'], [1.8], ['@mat'], [4.4], ['@black'], [1.0]]);
   /* THE EXAMINATION (§4.3 P6) */
   const EXAM = tl(0.6, [['lc2e1', 0.5], ['lc2e2', 0.3], ['q2e1', 0.5], ['lc2e3', 0.3], ['q2e2', 0.6], ['lc2e4', 0.4], ['q2e3', 0.6],
                         ['lc2e5', 0.4], ['q2e4', 0.6], ['lc2e6', 0.4], ['@still'], [6.2], ['@eyes'], ['lc2e7', 0.4], ['q2e5', 0.6],
-                        ['@fetch'], [5.6], ['lc2e8', 1.0], ['@believe'], ['lc2e9', 0.8], ['q2e6', 0.4], ['lc2e10', 1.4]]);
-  /* THE CLEARING (§4.3 P7): the homage, Namo tassa, the Sakkatvā verses, the water, the leaves, the thread — the fog
-     lifts under the second and third verses */
+                        ['@fetch'], [6.2], ['lc2e8', 1.0], ['@believe'], ['lc2e9', 0.8], ['q2e6', 0.4], ['lc2e10', 1.4]]);
+  /* THE CLEARING (§4.3 P7): the homage, Namo tassa, the Sakkatvā verses, the water — the fog lifts under the second and
+     third verses. (v25.3, Chad: "no need for lersi chin to sprinkle water with the leaf thing and no need for the tieing
+     of string": the leaves' six seconds and the thread's five and a half are out; the water's own time is the bowl
+     lifted, held out, tipped, set down and his hands home, 6.4 s) */
   const CLEARF = tl(0.8, [['lc2k0', 0.6], ['@homage'], [5.2], ['@namo'], ['lc2namo', 0.6], ['@sak'], ['lc2sak1', 0.4], ['@lift'],
-                          ['lc2sak2', 0.4], ['lc2sak3', 0.8], ['@water'], ['lc2drink', 0.6], [3.2], ['@sprinkle'], [6.0], ['@thread'],
-                          ['lc2wrist', 0.4], [4.2], ['@advice'], ['lc2k2', 1.4]]);
+                          ['lc2sak2', 0.4], ['lc2sak3', 0.8], ['@water'], ['lc2drink', 0.6], [4.1], ['@advice'], ['lc2k2', 1.4]]);
   /* THE ENDINGS (§4.5) and THE CODA (§4.6), each on its own clock; the coda follows each ending at `coda` */
   const END = {
     A: tl(0.6, [['@post'], [2.0], ['q2A1', 0.6], [2.4], ['@days'], [6.6], ['@call'], ['pg2A1', 0.5], ['q2A2', 0.4], ['pg2A2', 1.4],
@@ -193,7 +194,7 @@
     /* (§3.2) declared reuse, each with its reason — the shop is his (chapter 1's World S, Chad's direction, 9 Nov); Pong
        is the friend who sent him and now vouches first-hand; the piece he took in chapter 1 comes back to be seen as
        what it is; the mall's people are the same mall's */
-    assets: ['lersichin', 'e4pong', 'e4nangkwak', 'e4takrut', 'e4phayant', 'e4mayom', 'e4khannam', 'e4phan',
+    assets: ['lersichin', 'e4pong', 'e4nangkwak', 'e4takrut', 'e4phayant', 'e4khannam', 'e4phan',
              'e4till', 'e4bag', 'e4jacket', 'e4water', 'e4drinks', 'e4wallet', 'e4switch', 'e4shelf', 'e4cloth', 'e4yaam', 'e4phone', 'e4calc', 'e4wreath', 'e4notebook',
              'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm', 'filmlaptop',
              'staffman', 'sitwoman', 'wifewalk', 'sitangry', 'fatherwalk'],
@@ -529,7 +530,6 @@
        each that the code's own pieces stand at (shares of the fitted model's height and width, measured on the model) */
     const BOWL_W = 0.22, BOWL_WATER = [0.72, 0.4];                            // the bowl across; the water's height and radius
     const PHAN_W = 0.26, PHAN_TOP = 0.86;                                     // the tray across; where the candles stand in its flowers
-    const MAYOM_L = 0.24, MAYOM_TIE = 0.16;                                   // the bundle's length; its tie, from the cut end
     const CL = { x: 0, z: 0.78 };                                              // where he kneels before him, facing the altar
     const PSTOOL = { x: 1.15, z: COUNTER.z + COUNTER.d / 2 + 0.42 };           // the customers' right stool (buildShop's): Pong's
     const MAT = { x: 0, z: 0.18, w: 1.24, d: 2.1 };                            // the woven mat under both
@@ -1167,7 +1167,7 @@
        them (the visit film shows them). */
     const props = { till: null, tillK: 0, tillTo: 0, bag: null, bagFlap: null, bagK: 0, bagTo: 0, jacket: null, jacketK: 0, jacketTo: 0,
                     fridge: null, fridgeDoor: null, fridgeLight: null, fridgeK: 0, fridgeTo: 0, wallet: null, note: null, sw: null, swDot: null,
-                    shelf: null, piece: null, pieces: {}, mat: null, matK: 1, matTo: 1, bowl: null, water: null, mayom: null, thread: null,
+                    shelf: null, piece: null, pieces: {}, mat: null, matK: 1, matTo: 1, bowl: null, water: null,
                     cloth: null, khan: null, flames: [], yaam: null, envelope: null, stand: null, ribbons: [], sway: 0, lcThings: null,
                     ceil: null, ceilS: null, ceilK: 1, ceilFrom: 1, ceilTo: 1, c0: 0, c1: 0, night: false, nightShut: [], signs: [], corSky: null, corCeil: null };
     function buildProps() {
@@ -1313,9 +1313,11 @@
         }
       }
       /* LERSI CHIN'S THINGS (§2.2 #7), hidden until the visit: his woven mat on the floor (rolled up in the film until he
-         lays it), the holy-water bowl, the seven-leaf mayom bundle, a skein of white cotton thread, a clean white cloth,
-         the homage tray (a footed brass phan of marigolds and jasmine, two candles, three sticks of incense) and his
-         woven cloth bag */
+         lays it), the holy-water bowl, a clean white cloth, the homage tray (a footed brass phan of marigolds and
+         jasmine, two candles, three sticks of incense) and his woven cloth bag. (v25.3) The seven-leaf mayom bundle and
+         the skein of white thread are gone with the two things they were for (Chad, 10 Nov 2026: "no need for lersi chin
+         to sprinkle water with the leaf thing and no need for the tieing of string"; a prop serves the story or goes,
+         v9.5); the bundle's model and its recipe are kept in masters/v25.0 */
       { const g = new THREE.Group(); g.visible = false; S0.add(g); props.lcThings = g;
         const mat = new THREE.Group(); mat.position.set(MAT.x, 0.004, MAT.z - MAT.d / 2); g.add(mat); props.mat = mat;
         const mt = tex(makeReedMat(THREE, cnv, 5207)); mt.repeat.set(2, 3);
@@ -1324,8 +1326,8 @@
         mat.userData.plane = mp; mat.userData.roll = roll;
         const at = (dx, dz) => [LC.x + dx, LC.z + dz];
         /* the bowl: a turned silver bowl on its foot, water in it */
-        /* (v25.2) before him, between his feet and the tray, in his hands' reach as he bends to it (at his left, v25.0's place,
-           his right hand could not reach the bundle standing in it: Lersi Chin's movement, docs/V25.2-E4C2-PHONE-MOTION-MODELS.md) */
+        /* (v25.2) before him, between his feet and the tray, in his hands' reach as he bends to it (at his left, v25.0's
+           place, it was out of his right hand's reach: Lersi Chin's movement, docs/V25.2-E4C2-PHONE-MOTION-MODELS.md) */
         { const [x, z] = at(0, 0.3); const bg = new THREE.Group(); bg.position.set(x, 0.006, z); g.add(bg); props.bowl = bg;
           const prof = [[0, 0], [0.05, 0], [0.055, 0.012], [0.045, 0.02], [0.07, 0.03], [0.1, 0.06], [0.112, 0.095], [0.108, 0.1], [0.098, 0.064], [0.07, 0.036], [0, 0.032]]
             .map(([r, y]) => new THREE.Vector2(r, y));
@@ -1339,32 +1341,6 @@
              hidden the moment it lands, the water laid inside it at its own height */
           fitModel('e4khannam', bg, BOWL_W, 'x', 0, 0).then(m => { if (!m || !alive) return; lathe.visible = false;
             wtr.position.y = m.userData.fit.y * BOWL_WATER[0]; wtr.scale.setScalar(m.userData.fit.x * BOWL_WATER[1] / 0.1); }); }
-        /* the mayom bundle across the bowl's rim: seven sprigs tied. Its frame (what every pose turns): the tied end on the
-           group's origin, the leaves along +x, their face up (+y) */
-        /* (v25.2) standing in the water, its leaves up over the rim toward the client, its tie where his right palm takes it */
-        { const mg = new THREE.Group(); const [x, z] = at(0, 0.3); mg.position.set(x - 0.02, 0.11, z); mg.rotation.set(0, -1.03, 0.94); g.add(mg); props.mayom = mg;
-          /* (v25.0 CP7) its two resting places: standing in the bowl's water, its leaves out over the rim (the bowl is chanted
-             over with it in the water), and laid on the mat beside the bowl once it has been used (mayomAt) */
-          mg.userData.bowlP = mg.position.clone(); mg.userData.bowlR = mg.rotation.clone();
-          mg.userData.matP = new THREE.Vector3(x + 0.12, 0.012, z + 0.14); mg.userData.matR = new THREE.Euler(0, 0.9, 0);
-          /* (v25.0 CP6) the stand-in, drawn only if the model never lands */
-          const sg = new THREE.Group(); mg.add(sg);
-          const mLeafM = M({ color: 0x3e7a2e, roughness: 0.7, side: THREE.DoubleSide }), mStem = M({ color: 0x5a6a2a, roughness: 0.8 });
-          for (let k = 0; k < 7; k++) { const a = (k - 3) * 0.12, st = new THREE.Mesh(new THREE.CylinderGeometry(0.002, 0.002, 0.2, 5), mStem);
-            st.rotation.z = Math.PI / 2 + a; st.position.set(0.02, k * 0.002, (k - 3) * 0.008); sg.add(st);
-            for (let j = 0; j < 9; j++) { const lf = new THREE.Mesh(new THREE.PlaneGeometry(0.032, 0.014), mLeafM);
-              lf.position.set(0.04 + j * 0.013, Math.sin(a) * 0.05 + (j % 2 ? 0.006 : -0.006), (k - 3) * 0.008 + (j % 2 ? 0.01 : -0.01));
-              lf.rotation.set(Math.PI / 2 + (j % 2 ? 0.5 : -0.5), 0, a); sg.add(lf); } }
-          sg.add(new THREE.Mesh(new THREE.TorusGeometry(0.012, 0.003, 6, 14), M({ color: 0xf2f0e8, roughness: 0.8 })));
-          /* the bundle itself (a checked picture on white, then Meshy: masters/v25.0/models). Meshy made it a flat fan
-             standing in its own x-y plane, leaves up, tied 16 % from its foot: turned so the leaves run along +x and its
-             face lies up, the tie moved onto the origin */
-          const mm = new THREE.Group(); mm.rotation.x = -Math.PI / 2; mg.add(mm);
-          fitModel('e4mayom', mm, MAYOM_L, 'x', 0, -Math.PI / 2).then(m => { if (!m || !alive) return; sg.visible = false;
-            m.position.x += m.userData.fit.x * (0.5 - MAYOM_TIE); m.position.y -= m.userData.fit.y / 2; }); }
-        /* the white thread: a skein, coiled */
-        { const [x, z] = at(-0.34, 0.34); const th = new THREE.Group(); th.position.set(x, 0.012, z); g.add(th); props.thread = th;
-          for (let k = 0; k < 3; k++) { const tr = new THREE.Mesh(new THREE.TorusGeometry(0.028 - k * 0.002, 0.0028, 6, 24), M({ color: 0xf4f2ea, roughness: 0.85 })); tr.rotation.x = Math.PI / 2; tr.position.y = k * 0.004; th.add(tr); } }
         /* the clean white cloth, folded, where the piece will be set */
         /* (v25.2) the cloth itself (a checked picture on white, then Meshy: a cotton cloth folded flat), pressed to a cloth's
            thickness (Meshy folded it 3.6 cm thick), lying where the box lay; the piece is set on its top (props.clothTop,
@@ -2068,7 +2044,6 @@
       a.fore.parent.getWorldQuaternion(_iqp); a.fore.quaternion.copy(_iqa.premultiply(_iqp.invert()));
       a.fore.updateWorldMatrix(false, true);
     }
-    const _igq = new THREE.Quaternion();            // (v25.0) a solved turn, copied before it is blended (gripTick)
     function gripTick(P) {
       for (const sd in P.arms) {
         const a = P.arms[sd]; a.wUp.copy(a.up.quaternion); a.wFore.copy(a.fore.quaternion); a.wrote = true;
@@ -2076,18 +2051,10 @@
         t.getWorldPosition(_ig);
         /* the elbow's side: down, out to his own side and a little back, in the body's frame (his left is +x in a Mixamo
            rig's own frame) */
-        /* (v25.2) the action's own pole when the film gives one (P.gripPole) */
-        const pl = (P.gripPole && P.gripPole[sd]) || P.o.grip.pole || [0.35, -0.6, -0.15];
+        const pl = (P.o.grip.pole || [0.35, -0.6, -0.15]);
         a.up.getWorldPosition(_ib); P.group.getWorldQuaternion(_iqp);
         _ic.set(pl[0] * (sd === 'Left' ? 1 : -1), pl[1], pl[2]).applyQuaternion(_iqp).add(_ib);
         armTo(a, _ig, _ic);
-        /* (v25.0) eased by P.gripK from where the take holds the arm (Lersi Chin's wai, reach and bowl); (v25.2) each arm by
-           its own share when the film gives one (P.gripKS) */
-        const gk = P.gripKS ? P.gripKS[sd] : P.gripK;
-        if (gk != null && gk < 0.999) {
-          _igq.copy(a.up.quaternion); a.up.quaternion.slerpQuaternions(a.wUp, _igq, gk);
-          _igq.copy(a.fore.quaternion); a.fore.quaternion.slerpQuaternions(a.wFore, _igq, gk);
-        }
       }
     }
 
@@ -2108,18 +2075,11 @@
         grip: { pole: [0.35, -0.6, -0.15] },
         then: (P) => {
           for (const k of ['standLo', 'standUp']) if (P.L[k]) { P.L[k].time = LC_STAND_AT; P.L[k].setEffectiveTimeScale(0); }
-          P.waiGrip = { Left: new THREE.Object3D(), Right: new THREE.Object3D() };
-          for (const sd in P.waiGrip) P.group.add(P.waiGrip[sd]);
-          P.reach = { Left: new THREE.Object3D(), Right: new THREE.Object3D() }; P.reachR = { Right: P.reach.Right };
-          for (const sd in P.reach) worldS.add(P.reach[sd]);
-          P.bowlGrip = { Left: new THREE.Object3D(), Right: new THREE.Object3D() };
-          /* (v25.2) where each palm holds the bowl: on its side, below the rim, a little behind its middle (the hands carried
-             there by their palms, lcBody's `bowl`): the model's side is 0.109 m from its axis at 0.085 m up (measured on
-             e4khannam as fitted, BOWL_W), the palm 4 mm off it (at 0.127 his palms stood clear of the bowl, by photograph) */
-          if (props.bowl) { P.bowlGrip.Left.position.set(0.113, 0.085, -0.01); P.bowlGrip.Right.position.set(-0.113, 0.085, -0.01); props.bowl.add(P.bowlGrip.Left, P.bowlGrip.Right); }
+          /* (v25.3) his hands measured from their own vertices, his chest's and his head's rest turns, his neck (waiHands);
+             the points his wrists were carried to by the drivers' solver are gone with it (armSolve) */
           waiHands(P);
-          /* (v25.2) his back's three bones (the lean is shared down them), the lean laid on before the look (preLook), the
-             hands turned and what he holds carried after the arms are solved */
+          /* (v25.2) his back's three bones (the lean is shared down them), the lean laid on before the look (preLook);
+             (v25.3) his arms solved, his hands turned and what he holds carried after the look and the bow (after) */
           const bone = (re) => { let r = null; P.model.traverse(b => { if (!r && b.isBone && re.test(b.name)) r = b; }); return r; };
           P.spines = [bone(/Spine(_\d+)?$/), bone(/Spine1(_\d+)?$/), P.spine];
           P.spineQ = [new THREE.Quaternion(), new THREE.Quaternion()]; P.spineHeld = [false, false];
@@ -2133,29 +2093,48 @@
       cast.mallA = mkPerson('sitwoman', { parent: worldS, x: 3.4, z: 4.15, ry: -Math.PI / 2, height: 1.56, anims: 'wifewalk', sizeTake: 'Walking', posture: 'stand', stand: 'Walking', look: 0, noShadow: true, hidden: true });
       cast.mallB = mkPerson('sitangry', { parent: worldS, x: 4.0, z: 6.9, ry: -Math.PI / 2, height: 1.7, anims: 'fatherwalk', sizeTake: 'Walking', posture: 'stand', stand: 'Walking', look: 0, noShadow: true, hidden: true });
     }
-    /* HIS HANDS AND HIS BODY (Lersi Chin has no take for a wai, a reach or a bowl held). (v25.0) His wrists are carried
-       onto points by the arm solver the drivers use (armTo), blended from where his take holds them; in a wai each hand is
-       turned fingers up and palm to the middle (the palm found from the hand's own vertices at its bind, since his rig has
-       no finger bones).
-       (v25.2, Chad: "his wai pose, he spraying water and taking water bowl, etc is all extremely bad ... the actions are
-       all very abrupt and sudden and not natural") Measured on his seated take: his wrist reaches 0.49 m from his
-       shoulder, and the mat before his knees is 0.6 m off; a man sitting cross-legged reaches it by bending at the waist,
-       and v25.0's reaches, made with straight arms from an upright back, stopped in the air short of what they reached
-       for (the bowl floated ahead of his hands). So a film says, each frame and as a pure function of its clock
-       (lcBody): where EACH hand is (the wai's place before his chest, the bowl's sides, or a point in the room for the
-       wrist or the palm) and how far from his take (k); which way its elbow goes (the action's pole: low and in for a
-       wai, out and back to the floor); which way the hand turns (its fingers and its palm, for every action, not the
-       wai's alone), the forearm rolling to carry most of the turn as an arm does (a hand turned alone wrings the wrist);
-       how far he leans over his crossed legs, bends to a side and turns his chest, shared down his back (a back bends,
-       it is not a hinge); and what he holds, and in which hand. A hand on its way from one place to the next goes
-       straight there with a minimum-jerk curve (ez5: a reach's speed rises and falls as a person's does), never down to
-       his lap between; every change takes a human time. The lean is laid on his take before the look turns his head on
-       it (preLook), the arms are solved from the leaned shoulders (gripTick), the hands turned and what he holds carried
-       after (bodyAfter); every turn is undone before the mixer runs again (the v11.5 law) */
+    /* HIS HANDS AND HIS BODY (Lersi Chin has no take for a wai, a reach or a bowl held; his rig has one joint to a hand
+       and no fingers, so every pose is one a flat hand can make).
+       (v25.0) his wrists carried onto points by the drivers' arm solver. (v25.2) one choreography per film, said each
+       frame as a pure function of its clock (lcBody): where each hand is, how far he leans over his crossed legs, what
+       he holds; every change on a minimum-jerk curve (ez5: a reach's speed rises and falls as a person's does).
+       (v25.3, Chad, 10 Nov 2026, with v25.2's wai on his phone: "Look at how ridiculous this looks, and you said it
+       looks natural, unbelievable") What was wrong, each MEASURED on his file before anything was moved
+       (masters/v25.3/measure.cjs, hinge.cjs, twist.cjs, prof.cjs):
+       - HIS ELBOW IS A HINGE AND WAS NOT SOLVED AS ONE. In every key of his twelve takes the forearm's line stays in one
+         plane of the upper arm's frame (0.0 to 0.4 degrees out of it, flexing 3 to 145). The drivers' solver (armTo)
+         turns the forearm onto the wrist by the shortest arc, which bends it out of that plane: an elbow bent sideways.
+         His arms are solved here instead (armSolve): the elbow placed by its pole, the upper arm turned so its line
+         runs to the elbow AND its hinge lies square to the arm's plane (the shoulder rolls, as a shoulder does), the
+         forearm flexed about that hinge onto the wrist.
+       - HIS FOREARM NEVER ROLLS. In his own takes the forearm joint's roll about its own line is one number in every
+         key (18.15 degrees on his left, -17.54 on his right); the wrist does all the turning (to 100 degrees and
+         more). v25.2 gave the forearm 70 % of a hand's turn: a twist at the elbow no take of his has. The forearm keeps
+         his takes' roll and the hand turns at the wrist.
+       - THE PALMS WERE NEVER PRESSED. The wrists stood 2.8 cm either side of his middle with the hands upright; but
+         his hand is thick at the heel and thin at the fingers (its palm side stands 4 cm off the wrist's line at the
+         bracelet and 1 cm at the fingertips), so the fingers stood 4 cm apart, and from beside him they read as two
+         hands side by side. Each hand's palm side is measured from its own vertices (waiHands: the line it rests on,
+         as on a table) and the two are laid against one plane: bracelet to bracelet, fingertips to fingertips, each
+         hand leaning in by what its own shape asks (12 and 14 degrees).
+       - THE WAI HAD NO FACE IN IT. The joined hands were carried to a point before his chest however high they went,
+         his head upright behind them: a man hiding his face. A wai is measured on the face (the thumbs to the brow
+         for the Buddha and for one's teachers) and the head and the back bow to MEET the hands. The high wai is placed
+         from his head as it is drawn that frame (after his look and his bow), his thumbs' tips at his brow; the wai at
+         his chest from his chest as it is (its own turn, not his feet's), the heels of his hands resting on him.
+       - THE ELBOWS WENT STRAIGHT DOWN under hands at his middle, so both forearms stood upright and together before
+         his chest. They hang beside his ribs: each pose's pole is in his chest's own frame.
+       - THE BOWL WAS NOT HELD: two flat hands hung at its sides, fingers down. It is cradled: each palm under the curve
+         of its belly, where the model's side slopes 47 degrees (measured), the fingers round it. And a thing raised in
+         respect lies on both upturned palms (`cup`), not between pressed ones.
+       The frame's order: his take; the lean down his back and his neck (preLook); the look; the bow; then, his head and
+       his chest where they will be drawn, each hand's place and turn, the arms solved, the hands turned and what he
+       holds carried (after). Every turn of ours is undone before the mixer runs again (the v11.5 law) */
     const _wv = new THREE.Vector3(), _wq = new THREE.Quaternion(), _wF = new THREE.Vector3(), _wN = new THREE.Vector3(), _wX = new THREE.Vector3();
     const _wMw = new THREE.Matrix4(), _wMl = new THREE.Matrix4(), _wqT = new THREE.Quaternion(), _wqP = new THREE.Quaternion();
     const _wa = new THREE.Vector3(), _wb = new THREE.Vector3();
     const lerpN = (a, b, k) => a + (b - a) * k;
+    const HAND_BINS = 24;
     function waiHands(P) {
       const sks = []; P.model.traverse(m => { if (m.isSkinnedMesh) sks.push(m); });
       if (!sks.length) return;
@@ -2163,6 +2142,12 @@
       const idx = (re) => bones.findIndex(b => re.test(b.name));
       const bindAt = (i) => new THREE.Vector3().setFromMatrixPosition(new THREE.Matrix4().copy(inv[i]).invert());
       const hip = idx(/Hips(_\d+)?$/);
+      /* (v25.3) a part's own axes as it is drawn (his left, up, forward), whatever his take has done to it: its joint's
+         turn now against its turn at rest in the model's own axes (partAxes). And his neck, which shares a bow */
+      const restInv = (b) => { const i = bones.indexOf(b); if (i < 0) return null;
+        const q = new THREE.Quaternion(); new THREE.Matrix4().copy(inv[i]).invert().decompose(new THREE.Vector3(), q, new THREE.Vector3()); return q.invert(); };
+      P.restInv = { chest: P.spine ? restInv(P.spine) : null, head: P.head ? restInv(P.head) : null };
+      P.neckB = bones[idx(/Neck(_\d+)?$/)] || null; P.neckQ = new THREE.Quaternion(); P.neckHeld = false;
       P.waiHand = {};
       for (const sd of ['Left', 'Right']) {
         const hi = idx(new RegExp(sd + 'Hand(_\\d+)?$')), ti = idx(new RegExp(sd + 'HandMiddle\\d(_\\d+)?$'));
@@ -2195,8 +2180,51 @@
         const nL = u.clone().multiplyScalar(Math.cos(th)).addScaledVector(w2, Math.sin(th)).normalize();
         if (hip >= 0 && nL.dot(bindAt(hip).applyMatrix4(Hinv)) < 0) nL.negate();
         const xL = new THREE.Vector3().crossVectors(fL, nL);
-        P.waiHand[sd] = { bone: bones[hi], fL, nL, xL, q0: new THREE.Quaternion(), wrote: false };
+        /* (v25.3) THE HAND AS A THING, from those vertices, in the joint's own units (`mpu`, metres to a unit, is read off
+           the drawn joint the first time it is wanted): along the fingers (s), across (w), out of the palm (h) */
+        const C = pts.map(p => [p.dot(fL), p.dot(xL), p.dot(nL)]);
+        let len = 0; for (const c of C) len = Math.max(len, c[0]);
+        /* the four fingers' band across: the width of the last fifth of its length */
+        let w0 = Infinity, w1 = -Infinity;
+        for (const c of C) if (c[0] > 0.8 * len) { w0 = Math.min(w0, c[1]); w1 = Math.max(w1, c[1]); }
+        /* the thumb: the lobe standing outside that band, on the side that stands out further; its tip the point of it
+           furthest along the fingers */
+        let below = 0, above = 0;
+        for (const c of C) { below = Math.max(below, w0 - c[1]); above = Math.max(above, c[1] - w1); }
+        const tSide = above > below ? 1 : -1, tMin = 0.3 * (w1 - w0), thumb = [0.6 * len, tSide > 0 ? w1 + tMin : w0 - tMin];
+        let tBest = 0;
+        for (const c of C) { const out = tSide > 0 ? c[1] - w1 : w0 - c[1]; if (out > tMin && c[0] > tBest) { tBest = c[0]; thumb[0] = c[0]; thumb[1] = c[1]; } }
+        /* the palm side over that band, by steps of its length; and the line it RESTS on, as a hand laid palm down on a
+           table rests on its heel and its fingers' pads: the edge of that profile's hull that lies over the hand's
+           middle (h = a + b s) */
+        const Hs = new Array(HAND_BINS).fill(-Infinity);
+        for (const c of C) { if (c[1] < w0 || c[1] > w1 || c[0] < 0) continue;
+          const i = Math.min(HAND_BINS - 1, Math.floor(c[0] / len * HAND_BINS)); if (c[2] > Hs[i]) Hs[i] = c[2]; }
+        const sAt = (i) => (i + 0.5) * len / HAND_BINS, mid = 0.5 * len, tol = 0.002 * len;
+        let sup = null;
+        for (let i = 0; i < HAND_BINS && !sup; i++) {
+          if (!(Hs[i] > -Infinity) || sAt(i) > mid) continue;
+          for (let j = HAND_BINS - 1; j > i && !sup; j--) {
+            if (!(Hs[j] > -Infinity) || sAt(j) < mid) continue;
+            const sb = (Hs[j] - Hs[i]) / (sAt(j) - sAt(i)), sa = Hs[i] - sb * sAt(i);
+            let ok = true;
+            for (let q = 0; q < HAND_BINS && ok; q++) if (Hs[q] > sa + sb * sAt(q) + tol) ok = false;
+            if (ok) sup = { a: sa, b: sb, s0: sAt(i) };
+          }
+        }
+        if (!sup) sup = { a: 0.2 * len, b: -0.2, s0: 0.1 * len };
+        const pI = Math.floor(0.34 * HAND_BINS);
+        P.waiHand[sd] = { bone: bones[hi], fL, nL, xL, q0: new THREE.Quaternion(), wrote: false, mpu: 0, alignS: 0, alignU: 0,
+                          len, band: [w0, w1], tSide, thumb, sup, palm: [sAt(pI), Hs[pI] > -Infinity ? Hs[pI] : sup.a + sup.b * sAt(pI)],
+                          /* the palm side's height at a share k of its length (its own profile; the resting line where a step has no point) */
+                          hAt: (k) => { const q = Math.max(0, Math.min(HAND_BINS - 1, Math.floor(k * HAND_BINS))); return Hs[q] > -Infinity ? Hs[q] : sup.a + sup.b * sAt(q); } };
       }
+      /* the two hands laid on each other: each slid along its fingers so the fingertips are level (alignS) and toward its
+         thumb so the fingers' bands lie on each other (alignU), by half of what the two differ */
+      const HL = P.waiHand.Left, HR = P.waiHand.Right;
+      if (HL && HR) for (const H of [HL, HR]) { const O = H === HL ? HR : HL;
+        H.alignS = 0.5 * (O.len - H.len);
+        H.alignU = 0.5 * (0.5 * (O.band[0] + O.band[1]) * O.tSide - 0.5 * (H.band[0] + H.band[1]) * H.tSide); }
     }
     /* (v25.2) minimum jerk: a share of a move eased so its speed rises and falls as a person's does (no sudden start or
        stop: its first and second rates are nothing at both ends); `ezk` the eased share of [a, b] at t */
@@ -2219,50 +2247,79 @@
       }
       return prev;
     }
-    /* his moves' measures. Each elbow's pole is in his own frame, written for his LEFT arm (gripTick mirrors it for the
-       right); each hand's turn, its fingers `f` and its palm `n`, is written for his RIGHT hand (his left is +x; the left
-       hand's mirrors it). `palm`: the palm's middle from the wrist, along the fingers and out of the palm. `roll`: the
-       share of a hand's turn about the forearm that the forearm takes */
+    /* HIS MOVES' MEASURES (v25.3: every number here was set looking at him full size, from before him, beside him and
+       through the film's lens on a phone, never on a contact sheet).
+       `pole`: which way each elbow goes, written for his LEFT arm (his left is +x; the right arm's mirrors it): the
+       reaches' in his body's frame, the joined and the cupped hands' in his CHEST's (they ride his chest).
+       `aim`: a reaching hand's turn, its fingers `f` and its palm `n`, written for his RIGHT hand (the left's mirrors it).
+       `palm`: a reach's palm point from the wrist, along the fingers and out of the palm.
+       `wai`: the joined hands. `low` and `chest` in his chest's frame from its joint: the heel point's height and how far
+       before him (his robe and his belly stand 15 to 18 cm before that joint there, measured), and the fingers' slant
+       forward. `brow` in his head's frame: his brow from the head joint (his face's profile, measured), how far the
+       thumbs' tips stand off it, and the fingers' lean back toward his forehead. `press`: how far each hand leans in
+       past the line it rests on (radians).
+       `cup`: the two palms as a tray: their middles apart, each rolled in, toed in and tipped up; how far what lies on it
+       sits below the palms' middles (in the trough between them); where the tray is held, up and before him from his
+       chest's joint, and from his brow when it is raised.
+       `bowl`: the bowl cradled: where each hand bears it, low on its belly, in the bowl's own frame (the model's side as
+       fitted, measured: 7.2 cm from its axis at 3.5 cm up, where it faces 57 degrees downward); the palm's way in and
+       up; the fingers toed in under it; `at`, how far along the hand the bowl rests (past the palm, at the fingers'
+       roots, so the fingers end under its front and the heels lie under its back: borne at the palm's middle, flat
+       fingers stood 12 cm out in front of it like a tray's, by photograph); the hand's air off the silver */
     const LCM = {
-      pole: { wai: [0.12, -1, -0.12], bowl: [0.45, -0.8, -0.1], reach: [0.35, -0.75, -0.3], floor: [0.5, -0.3, -0.55],
-              flick: [0.4, -0.85, -0.2], tie: [0.45, -0.7, -0.15] },
-      aim: { wai: { f: [0, 1, 0.25], n: [1, 0, 0] }, bowl: { f: [0.25, -0.55, 0.8], n: [1, 0, 0] },
-             down: { f: [0.12, -0.45, 0.88], n: [0, -1, 0] }, stem: { f: [0.05, -0.35, 0.94], n: [1, 0, 0] },
-             tie: { f: [0.6, -0.3, 0.74], n: [0.2, -0.97, 0.1] }, under: { f: [0.6, -0.1, 0.8], n: [0, 1, 0] } },
-      palm: [0.075, 0.022], roll: 0.7
+      pole: { reach: [0.35, -0.75, -0.3], floor: [0.5, -0.3, -0.55], bowl: [0.55, -0.7, -0.35],
+              wai: [0.62, -0.74, -0.25], brow: [0.6, -0.78, 0.15], cup: [0.6, -0.72, -0.3] },
+      aim: { down: { f: [0.12, -0.45, 0.88], n: [0, -1, 0] }, under: { f: [0.6, -0.1, 0.8], n: [0, 1, 0] } },
+      palm: [0.075, 0.022],
+      wai: { low: { y: -0.15, z: 0.225, slant: 0.6 }, chest: { y: -0.075, z: 0.2, slant: 0.5 },
+             brow: { at: [0, 0.106, 0.118], off: 0.004, back: 0.45 }, press: 0.035 },
+      cup: { sep: 0.1, roll: 0.26, toe: 0.2, tip: 0.12, seat: -0.006, chest: [0, -0.03, 0.3], brow: [0, -0.04, 0.15] },
+      bowl: { r: 0.072, y: 0.035, z: 0, up: 1.0, toe: 0.35, at: 0.55, off: 0.003 }
     };
+    /* his elbow's hinge in the upper arm's own frame, and the roll his forearm keeps about its own line: his takes'
+       own, every key of all twelve (masters/v25.3/hinge.cjs, twist.cjs) */
+    const HINGE = { Left: new THREE.Vector3(0.740, 0, -0.672).normalize(), Right: new THREE.Vector3(0.734, 0, 0.679).normalize() };
+    const FORE_ROLL = { Left: 0.3168, Right: -0.3061 };
     const SPINE_SHARE = [0.45, 0.33, 0.22];                              // the lean down his back: low, middle, upper
-    const LCS = { on: false, R: null, L: null, lean: 0, twist: 0, side: 0, holdBy: 'R', holdAt: null, holdMix: 0 };
+    const LCS = { on: false, R: null, L: null, lean: 0, twist: 0, side: 0, neck: 0, holdBy: 'R', holdAt: null };
     /* his hands or his back in an action this frame (a film's lcBody) */
     const lcBusy = () => LCS.on && (Math.abs(LCS.lean) > 0.02 || !!LCS.R || !!LCS.L);
-    const hState = () => ({ p: new THREE.Vector3(), k: 0, ak: 0, pole: [0, 0, 0], f: new THREE.Vector3(), n: new THREE.Vector3() });
+    const hState = () => ({ p: new THREE.Vector3(), k: 0, ak: 0, pole: new THREE.Vector3(), f: new THREE.Vector3(), n: new THREE.Vector3(), bend: 0 });
     const HS = { Left: hState(), Right: hState() }, _hA = hState(), _hB = hState();
-    /* a film's word for his body this frame: R and L each a hand ({ wai: lift } | { bowl: 1 } | { palm: [x, y, z] } |
-       { at: [x, y, z] }, with `k` its share from his take, `pole` and `aim` the action's names or their own numbers; or
-       { mix: [a, b, u] }, on its way from a to b), `lean` (forward), `twist` (his chest turned to his left) and `side`
-       (bent to his left), in radians; `hold`, a thing in his right hand ('R'), between his palms ('both') or at his joined
-       hands ('wai'; `holdMix` 0-1 hands it from there into his right as his left lets go), carried there after his arms
-       are solved and turned there by `holdAt(obj, hand)`; null: his take */
+    /* a film's word for his body this frame: R and L each a hand: { wai: 'low' | 'chest' | 'brow' } (the joined hands),
+       { cup: 'chest' | 'brow' | [x, y, z] } (the two palms a tray, there or at a point of the room), { bowl: 1 } (the
+       bowl cradled), { palm: [x, y, z] } or { at: [x, y, z] } (a reach, by the palm or the wrist, with `aim` and `pole`
+       its action's names or their own numbers), each with `k`, its share from his take; or { mix: [a, b, u] }, on its
+       way from a to b. `lean` (forward), `twist` (his chest turned to his left) and `side` (bent to his left) down his
+       back, and `neck` (his neck forward), in radians. `hold`: a thing on his right palm ('R') or on both ('cup'),
+       carried there after his arms are solved and turned there by `holdAt(obj, hand)`. null: his take */
     function lcBody(o) {
       LCS.on = !!o;
       LCS.R = (o && o.R) || null; LCS.L = (o && o.L) || null;
-      LCS.lean = (o && o.lean) || 0; LCS.twist = (o && o.twist) || 0; LCS.side = (o && o.side) || 0;
-      LCS.holdBy = (o && o.holdBy) || 'R'; LCS.holdAt = (o && o.holdAt) || null; LCS.holdMix = (o && o.holdMix) || 0;
+      LCS.lean = (o && o.lean) || 0; LCS.twist = (o && o.twist) || 0; LCS.side = (o && o.side) || 0; LCS.neck = (o && o.neck) || 0;
+      LCS.holdBy = (o && o.holdBy) || 'R'; LCS.holdAt = (o && o.holdAt) || null;
       const P = cast.lersi; if (!P || !P.ready || !P.arms) return;
       P.holdObj = (o && o.hold) || null;
-      if (!o) { P.grip = null; P.gripK = 0; P.gripKS = null; }
+      if (!o) { P.gripK = 0; P.miss = null; }
     }
     /* v25.0's word for it, kept for the calls that still use it (the cast's API, a phase's rest) */
     function lcPose(mode, k = 1, o = {}) {
       if (!mode || !(k > 0.001)) return lcBody(null);
       const kk = Math.min(1, k);
-      if (mode === 'wai') { const w = { wai: o.lift || 0, k: kk }; return lcBody({ R: w, L: w, hold: o.hold, holdBy: 'wai' }); }
+      if (mode === 'wai') { const w = { wai: 'chest', k: kk }; return lcBody({ R: w, L: w }); }
       if (mode === 'bowl') { const b = { bowl: 1, k: kk }; return lcBody({ R: b, L: b }); }
       return lcBody({ R: { at: o.at, k: kk }, L: o.atL ? { at: o.atL, k: kk } : null, hold: o.hold });
     }
     /* (P.preLook: after his take has posed him, before the look) the lean, the side bend and the twist laid on his take,
-       the low back first; then each hand's place, elbow and turn from the leaned body */
-    const _sq = new THREE.Quaternion(), _sq2 = new THREE.Quaternion(), _bq = new THREE.Quaternion(), _bqi = new THREE.Quaternion(), _le = new THREE.Euler(), _hvW = new THREE.Vector3();
+       the low back first; and his neck's share of a bow (the head's own is the look's and the bow's, after this) */
+    const _sq = new THREE.Quaternion(), _sq2 = new THREE.Quaternion(), _bq = new THREE.Quaternion(), _bqi = new THREE.Quaternion(), _le = new THREE.Euler();
+    function bodyTurn(b, ex, ey, ez) {
+      b.updateWorldMatrix(true, false); b.getWorldQuaternion(_sq);
+      _sq2.setFromEuler(_le.set(ex, ey, ez, 'YXZ'));
+      _sq2.premultiply(_bq).multiply(_bqi);                               // his own frame's turn, as a turn in the room
+      _sq.premultiply(_sq2);
+      b.parent.getWorldQuaternion(_sq2); b.quaternion.copy(_sq2.invert().multiply(_sq));
+    }
     function lcPreLook(P) {
       if (!LCS.on) return;
       P.group.updateWorldMatrix(true, false); P.group.getWorldQuaternion(_bq); _bqi.copy(_bq).invert();
@@ -2271,24 +2328,23 @@
           const b = P.spines[i]; if (!b) continue;
           if (i < 2) { P.spineQ[i].copy(b.quaternion); P.spineHeld[i] = true; }
           const sh = SPINE_SHARE[i];
-          b.updateWorldMatrix(true, false); b.getWorldQuaternion(_sq);
-          _sq2.setFromEuler(_le.set(LCS.lean * sh, LCS.twist * sh, -LCS.side * sh, 'YXZ'));
-          _sq2.premultiply(_bq).multiply(_bqi);                           // his own frame's turn, as a turn in the room
-          _sq.premultiply(_sq2);
-          b.parent.getWorldQuaternion(_sq2); b.quaternion.copy(_sq2.invert().multiply(_sq));
+          bodyTurn(b, LCS.lean * sh, LCS.twist * sh, -LCS.side * sh);
         }
         P.spines[2].updateWorldMatrix(false, true);
       }
-      worldS.updateWorldMatrix(true, false);
-      if (!P.gripKS) { P.gripKS = { Left: 0, Right: 0 }; P.gripPole = { Left: null, Right: null }; }
-      const grip = {}; let any = false, kmax = 0;
-      for (const sd of ['Left', 'Right']) {
-        const H = HS[sd]; lcHandOf(P, sd === 'Left' ? LCS.L : LCS.R, sd, H);
-        P.gripKS[sd] = H.k; P.gripPole[sd] = H.pole;
-        if (H.k > 0.001) { P.reach[sd].position.copy(worldS.worldToLocal(_wv.copy(H.p))); grip[sd] = P.reach[sd]; any = true; kmax = Math.max(kmax, H.k); }
+      if (P.neckB && LCS.neck) {
+        P.neckQ.copy(P.neckB.quaternion); P.neckHeld = true;
+        bodyTurn(P.neckB, LCS.neck, 0, 0); P.neckB.updateWorldMatrix(false, true);
       }
-      P.grip = any ? grip : null; P.gripK = kmax;
     }
+    /* a part's own axes as it is drawn: his left, up and forward there (_pX, _pY, _pZ) */
+    const _pX = new THREE.Vector3(), _pY = new THREE.Vector3(), _pZ = new THREE.Vector3(), _pQ = new THREE.Quaternion();
+    function partAxes(bone, rInv) {
+      bone.getWorldQuaternion(_pQ); if (rInv) _pQ.multiply(rInv);
+      _pX.set(1, 0, 0).applyQuaternion(_pQ); _pY.set(0, 1, 0).applyQuaternion(_pQ); _pZ.set(0, 0, 1).applyQuaternion(_pQ);
+    }
+    /* an elbow's pole written for his left arm in a part's frame (its axes in _pX, _pY, _pZ), as a way in the room */
+    function poleOf(pl, sg, out) { return out.set(0, 0, 0).addScaledVector(_pX, -sg * pl[0]).addScaledVector(_pY, pl[1]).addScaledVector(_pZ, pl[2]).normalize(); }
     function lcHandOf(P, h, sd, out) {
       if (!h) { out.k = out.ak = 0; return out; }
       if (!h.mix) return handSpec(P, h, sd, out);
@@ -2298,100 +2354,186 @@
       if (!b) { handSpec(P, a, sd, out); fromTake(P, sd, out, 1 - u); return out; }   // from a back to his take
       handSpec(P, a, sd, _hA); handSpec(P, b, sd, _hB);
       out.p.lerpVectors(_hA.p, _hB.p, u); out.k = lerpN(_hA.k, _hB.k, u); out.ak = lerpN(_hA.ak, _hB.ak, u);
-      for (let i = 0; i < 3; i++) out.pole[i] = lerpN(_hA.pole[i], _hB.pole[i], u);
+      out.pole.lerpVectors(_hA.pole, _hB.pole, u).normalize();
       out.f.lerpVectors(_hA.f, _hB.f, u).normalize(); out.n.lerpVectors(_hA.n, _hB.n, u);
       out.n.addScaledVector(out.f, -out.n.dot(out.f)).normalize();
       return out;
     }
+    /* THE JOINED HANDS at a place: O the heel point on the plane between the palms, g the fingers' way in that plane, m
+       the plane's normal (his left), t the way to his body (the thumbs' way). Each hand is laid against the plane by
+       the line its own palm side rests on (waiHands), slid along the fingers so the two hands' fingertips are level
+       (his left hand is 9 mm the longer) and across so the fingers' bands lie on each other */
+    const _jO = new THREE.Vector3(), _jg = new THREE.Vector3(), _jm = new THREE.Vector3(), _jt = new THREE.Vector3();
+    function joined(P, name, sd, out) {
+      const W = LCM.wai[name] || LCM.wai.chest, S = P.scale || 1, HL = P.waiHand.Left, HR = P.waiHand.Right, H = P.waiHand[sd];
+      const sg = sd === 'Left' ? -1 : 1;
+      if (W.at && P.head) {
+        /* from his head as it is drawn: his thumbs' tips at his brow, the fingers leaning back to his forehead */
+        const sT = 0.5 * (HL.thumb[0] * HL.mpu + HR.thumb[0] * HR.mpu), wT = 0.5 * (Math.abs(HL.thumb[1]) * HL.mpu + Math.abs(HR.thumb[1]) * HR.mpu);
+        partAxes(P.head, P.restInv.head);
+        _jm.copy(_pX); _jg.copy(_pY).multiplyScalar(Math.cos(W.back)).addScaledVector(_pZ, -Math.sin(W.back)); _jt.crossVectors(_jg, _jm);
+        P.head.getWorldPosition(_jO).addScaledVector(_pX, W.at[0] * S).addScaledVector(_pY, W.at[1] * S).addScaledVector(_pZ, (W.at[2] + W.off) * S);
+        _jO.addScaledVector(_jg, -sT).addScaledVector(_jt, -wT);
+        partAxes(P.spine, P.restInv.chest); poleOf(LCM.pole.brow, sg, out.pole);
+      } else {
+        /* from his chest as it is drawn: the heel point before it. The fingers stand in his chest's own plane but upright
+           in the ROOM, slanted forward by `slant`: sitting, his chest leans 26 degrees over his crossed legs (measured),
+           and joined hands that leaned with it pointed at the client like a diver's */
+        partAxes(P.spine, P.restInv.chest);
+        _jm.copy(_pX); _jt.set(0, 1, 0).addScaledVector(_jm, -_jm.y).normalize(); _wv.crossVectors(_jm, _jt);
+        _jg.copy(_jt).multiplyScalar(Math.cos(W.slant)).addScaledVector(_wv, Math.sin(W.slant)); _jt.crossVectors(_jg, _jm);
+        P.spine.getWorldPosition(_jO).addScaledVector(_pY, W.y * S).addScaledVector(_pZ, W.z * S);
+        poleOf(LCM.pole.wai, sg, out.pole);
+      }
+      /* each hand leans in a little past its resting line, about its heel: flesh gives, and laid exactly on the line the
+         fingertips (which curl back at their ends) stood a centimetre apart, a small V between the hands from before him */
+      const b = H.sup.b - LCM.wai.press, c = Math.sqrt(1 + b * b), a = (H.sup.a + LCM.wai.press * H.sup.s0) * H.mpu;
+      out.n.copy(_jm).multiplyScalar(sg).addScaledVector(_jg, b).divideScalar(c);
+      out.f.copy(_jg).addScaledVector(_jm, -b * sg).divideScalar(c);
+      out.p.copy(_jO).addScaledVector(out.n, -a).addScaledVector(_jg, H.alignS * H.mpu).addScaledVector(_jt, H.alignU * H.mpu);
+    }
+    /* THE TWO PALMS A TRAY at a place (before his chest, before his brow, or over a point of the room): each palm's
+       middle half the gap from the tray's middle, its palm up and rolled in, its fingers forward, toed in and tipped
+       up. The tray is LEVEL IN THE ROOM wherever it is held (a thing carried on open palms is not tipped off them when
+       he bows his head to it): its place is found from his chest's joint or from his brow, and from there up and
+       before him in his body's own level frame */
+    const _cC = new THREE.Vector3();
+    function cupped(P, where, sd, out) {
+      const K = LCM.cup, S = P.scale || 1, H = P.waiHand[sd], sg = sd === 'Left' ? -1 : 1;
+      let off = null;
+      if (Array.isArray(where)) _cC.set(where[0], where[1], where[2]);
+      else if (where === 'brow' && P.head) {
+        partAxes(P.head, P.restInv.head);
+        P.head.getWorldPosition(_cC).addScaledVector(_pY, LCM.wai.brow.at[1] * S).addScaledVector(_pZ, LCM.wai.brow.at[2] * S);
+        off = K.brow;
+      } else { P.spine.getWorldPosition(_cC); off = K.chest; }
+      partAxes(P.group, null);
+      if (off) _cC.addScaledVector(_pY, off[1] * S).addScaledVector(_pZ, off[2] * S);
+      out.n.copy(_pY).multiplyScalar(Math.cos(K.roll)).addScaledVector(_pX, sg * Math.sin(K.roll));
+      out.f.copy(_pZ).multiplyScalar(Math.cos(K.toe)).addScaledVector(_pX, sg * Math.sin(K.toe));
+      out.f.multiplyScalar(Math.cos(K.tip)).addScaledVector(_pY, Math.sin(K.tip));
+      out.f.addScaledVector(out.n, -out.f.dot(out.n)).normalize();
+      out.p.copy(_cC).addScaledVector(_pX, -sg * K.sep / 2).addScaledVector(out.f, -H.palm[0] * H.mpu).addScaledVector(out.n, -H.palm[1] * H.mpu);
+      partAxes(P.spine, P.restInv.chest); poleOf(LCM.pole.cup, sg, out.pole);
+    }
+    /* THE BOWL CRADLED: each palm on the curve of its belly, in the bowl's own frame (it is lifted and tipped, and the
+       hands go with it): the palm's way in to its axis and up, the fingers forward and toed in round it */
+    function cradled(P, sd, out) {
+      const B = LCM.bowl, H = P.waiHand[sd], sg = sd === 'Left' ? -1 : 1;
+      props.bowl.updateWorldMatrix(true, false); props.bowl.getWorldQuaternion(_pQ);
+      out.n.set(sg * Math.cos(B.up), Math.sin(B.up), 0);
+      out.f.set(sg * Math.sin(B.toe), 0, Math.cos(B.toe)); out.f.addScaledVector(out.n, -out.f.dot(out.n)).normalize();
+      out.n.applyQuaternion(_pQ); out.f.applyQuaternion(_pQ);
+      props.bowl.localToWorld(out.p.set(-sg * B.r, B.y, B.z));
+      out.p.addScaledVector(out.n, -B.off - H.hAt(B.at) * H.mpu).addScaledVector(out.f, -B.at * H.len * H.mpu);
+      partAxes(P.group, null); poleOf(LCM.pole.bowl, sg, out.pole);
+    }
     function handSpec(P, h, sd, out) {
-      const sg = sd === 'Left' ? -1 : 1, wai = h.wai != null, bowl = !!h.bowl;
-      const am = h.aim && typeof h.aim === 'object' ? h.aim : LCM.aim[h.aim || (wai ? 'wai' : bowl ? 'bowl' : 'down')];
-      const pl = Array.isArray(h.pole) ? h.pole : LCM.pole[h.pole || (wai ? 'wai' : bowl ? 'bowl' : 'reach')];
-      out.pole[0] = pl[0]; out.pole[1] = pl[1]; out.pole[2] = pl[2];
-      out.f.set(am.f[0] * sg, am.f[1], am.f[2]).normalize(); out.n.set(am.n[0] * sg, am.n[1], am.n[2]);
-      _sq.setFromEuler(_le.set(LCS.lean, LCS.twist, -LCS.side, 'YXZ'));
-      if (wai) { out.f.applyQuaternion(_sq); out.n.applyQuaternion(_sq); }   // joined hands ride his leaning chest
-      out.f.applyQuaternion(_bq); out.n.applyQuaternion(_bq); out.n.addScaledVector(out.f, -out.n.dot(out.f)).normalize();
+      const sg = sd === 'Left' ? -1 : 1;
       out.k = out.ak = h.k == null ? 1 : h.k;
-      if (wai) {
-        /* the wai's place, before his chest as it stands now: the joined wrists a hand below his face at lift 1, at the
-           breastbone at 0, lower still below it */
-        const L = h.wai;
-        P.spines[2].getWorldPosition(out.p);
-        _hvW.set(-0.028 * sg, lerpN(-0.05, 0.13, L), lerpN(0.2, 0.15, L)).applyQuaternion(_sq.premultiply(_bq));
-        out.p.add(_hvW);
-      } else if (bowl) { P.bowlGrip[sd].getWorldPosition(out.p); palmToWrist(out); }
-      else if (h.palm) { out.p.set(h.palm[0], h.palm[1], h.palm[2]); palmToWrist(out); }
+      if (h.wai != null) { joined(P, h.wai, sd, out); return out; }
+      if (h.cup != null) { cupped(P, h.cup, sd, out); return out; }
+      if (h.bowl) { cradled(P, sd, out); return out; }
+      /* a reach: the hand's turn and its elbow's side in his body's frame, its palm or its wrist at a point of the room */
+      const am = h.aim && typeof h.aim === 'object' ? h.aim : LCM.aim[h.aim || 'down'];
+      const pl = Array.isArray(h.pole) ? h.pole : LCM.pole[h.pole || 'reach'];
+      partAxes(P.group, null); poleOf(pl, sg, out.pole);
+      out.f.set(am.f[0] * sg, am.f[1], am.f[2]).normalize().applyQuaternion(_pQ);
+      out.n.set(am.n[0] * sg, am.n[1], am.n[2]).applyQuaternion(_pQ); out.n.addScaledVector(out.f, -out.n.dot(out.f)).normalize();
+      if (h.palm) { out.p.set(h.palm[0], h.palm[1], h.palm[2]); out.p.addScaledVector(out.f, -LCM.palm[0]).addScaledVector(out.n, -LCM.palm[1]); }
       else if (h.at) out.p.set(h.at[0], h.at[1], h.at[2]);
       return out;
     }
-    function palmToWrist(o) { o.p.addScaledVector(o.f, -LCM.palm[0]).addScaledVector(o.n, -LCM.palm[1]); }
     /* a hand leaving his take for a place (or coming back to it): its wrist goes straight from where his take holds it
-       to the place, the arm handed from the take's pose to the solver over the first third of the way and the hand's turn
-       over the whole of it (blended in the arm's joints alone, the hands crossed on their way up into a wai, by
-       photograph) */
-    const _rw = new THREE.Vector3();
+       to the place, its elbow's side from where his take has it to the action's, and the hand's turn over the whole of
+       the way. (v25.3) The arm is solved all the way: his takes are hinge-true, so solving for his take's own wrist and
+       elbow gives his take's own arm back, and nothing has to be blended from one solver to another */
+    const _ra = new THREE.Vector3(), _rb = new THREE.Vector3(), _rw = new THREE.Vector3();
     function fromTake(P, sd, out, w) {
       const A = P.arms[sd]; if (!A) { out.k *= w; out.ak = out.k; return; }
-      A.hand.updateWorldMatrix(true, false); A.hand.getWorldPosition(_rw);
+      A.up.updateWorldMatrix(true, true);
+      A.up.getWorldPosition(_ra); A.fore.getWorldPosition(_rb); A.hand.getWorldPosition(_rw);
       out.p.lerpVectors(_rw, out.p, w);
-      out.ak = out.k * w; out.k *= ez5(w / 0.35);
+      _rw.sub(_ra).normalize(); _rb.sub(_ra); _rb.addScaledVector(_rw, -_rb.dot(_rw));
+      if (_rb.lengthSq() > 1e-6) out.pole.lerpVectors(_rb.normalize(), out.pole, w).normalize();
+      out.ak = out.k * w;
     }
-    /* before the mixer: every turn of ours given back (the hands', the low back's; the upper back's, the arms' and the
-       head's are given back by peopleTick) */
+    /* before the mixer: every turn of ours given back (the hands', the low back's, the neck's; the upper back's, the
+       arms' and the head's are given back by peopleTick) */
     function waiUpdate() {
       const P = cast.lersi; if (!P || !P.ready) return;
       if (P.waiHand) for (const sd in P.waiHand) { const H = P.waiHand[sd]; if (H.wrote) { H.bone.quaternion.copy(H.q0); H.wrote = false; } }
       if (P.spineHeld) for (let i = 0; i < 2; i++) if (P.spineHeld[i]) { P.spines[i].quaternion.copy(P.spineQ[i]); P.spineHeld[i] = false; }
+      if (P.neckHeld) { P.neckB.quaternion.copy(P.neckQ); P.neckHeld = false; }
     }
-    /* (P.after: after his arms are solved) each hand turned onto its action's turn, the forearm rolling to carry most of
-       it about its own length, blended from his take by its k; then what he holds carried to where it is held */
-    const _rq = new THREE.Quaternion(), _rq2 = new THREE.Quaternion(), _ra = new THREE.Vector3(), _rb = new THREE.Vector3(), _tw = new THREE.Quaternion();
-    function twistAbout(q, ax) {
-      const d = q.x * ax.x + q.y * ax.y + q.z * ax.z;
-      _tw.set(ax.x * d, ax.y * d, ax.z * d, q.w);
-      const l = Math.hypot(_tw.x, _tw.y, _tw.z, _tw.w); if (l < 1e-6) return null;
-      _tw.set(_tw.x / l, _tw.y / l, _tw.z / l, _tw.w / l);
-      if (_tw.w < 0) _tw.set(-_tw.x, -_tw.y, -_tw.z, -_tw.w);            // the short way round
-      return _tw;
+    /* ONE ARM SOLVED AS AN ARM (v25.3): the elbow over the target on the pole's side; the upper arm's line to the elbow
+       and its hinge square to the arm's plane (the hinge is pole × reach, whatever the bend); the forearm flexed about
+       the hinge onto the wrist, keeping his takes' roll. Blended from his take's own turns by k. Answers how far the
+       wrist stops short of the target (a reach past his arm's length) */
+    const _sS = new THREE.Vector3(), _sT = new THREE.Vector3(), _sP = new THREE.Vector3(), _sU = new THREE.Vector3(), _sH = new THREE.Vector3(),
+          _sZ = new THREE.Vector3(), _sV = new THREE.Vector3(), _sY = new THREE.Vector3(0, 1, 0), _sHl = new THREE.Vector3(), _sZl = new THREE.Vector3(),
+          _sQ = new THREE.Quaternion(), _sQ2 = new THREE.Quaternion(), _sQp = new THREE.Quaternion();
+    function armSolve(A, sd, target, pole, k) {
+      A.up.updateWorldMatrix(true, true);
+      A.up.getWorldPosition(_sS); A.fore.getWorldPosition(_sU); A.hand.getWorldPosition(_sV);
+      const la = _sS.distanceTo(_sU), lb = _sU.distanceTo(_sV);
+      _sT.copy(target).sub(_sS); const d0 = _sT.length(); if (d0 < 1e-5 || la < 1e-5 || lb < 1e-5) return 0;
+      _sT.divideScalar(d0); const d = THREE.MathUtils.clamp(d0, Math.abs(la - lb) + 1e-3, la + lb - 1e-3);
+      _sP.copy(pole).addScaledVector(_sT, -pole.dot(_sT)); if (_sP.lengthSq() < 1e-10) return 0; _sP.normalize();
+      const ca = THREE.MathUtils.clamp((la * la + d * d - lb * lb) / (2 * la * d), -1, 1), sa = Math.sqrt(1 - ca * ca);
+      _sU.copy(_sT).multiplyScalar(ca).addScaledVector(_sP, sa);          // the upper arm's line
+      _sH.crossVectors(_sP, _sT).normalize();                             // the hinge
+      _sZ.crossVectors(_sU, _sH);
+      _sV.copy(_sT).multiplyScalar(d).addScaledVector(_sU, -la).normalize();   // the forearm's line
+      _sHl.copy(HINGE[sd]); _sHl.y = 0; _sHl.normalize(); _sZl.crossVectors(_sY, _sHl);
+      _wMw.makeBasis(_sU, _sH, _sZ); _wMl.makeBasis(_sY, _sHl, _sZl).transpose(); _wMw.multiply(_wMl);
+      _sQ.setFromRotationMatrix(_wMw);
+      A.up.parent.getWorldQuaternion(_sQp); _sQ.premultiply(_sQp.invert());
+      _sQ2.setFromAxisAngle(_sHl, Math.acos(THREE.MathUtils.clamp(_sU.dot(_sV), -1, 1))).multiply(_sQp.setFromAxisAngle(_sY, FORE_ROLL[sd]));
+      if (k < 0.999) { A.up.quaternion.slerp(_sQ, k); A.fore.quaternion.slerp(_sQ2, k); }
+      else { A.up.quaternion.copy(_sQ); A.fore.quaternion.copy(_sQ2); }
+      A.up.updateWorldMatrix(false, true);
+      return d0 - d;
     }
-    function palmPoint(H, out) {
+    /* a point of a hand in the room: `s` along its fingers and `h` out of its palm from the wrist, in its own units */
+    function handPoint(H, s, h, out) {
       H.bone.getWorldPosition(out); H.bone.getWorldQuaternion(_wqP);
       _wF.copy(H.fL).applyQuaternion(_wqP); _wN.copy(H.nL).applyQuaternion(_wqP);
-      return out.addScaledVector(_wF, LCM.palm[0]).addScaledVector(_wN, LCM.palm[1] + 0.012);
+      return out.addScaledVector(_wF, s * H.mpu).addScaledVector(_wN, h * H.mpu);
     }
+    /* (P.after: his take, his lean, his look and his bow all laid on) each hand's place and turn from his body as it is
+       drawn, its arm solved, the hand turned at the wrist (blended from his take by its share); then what he holds
+       carried to where it is held */
     function bodyAfter(P) {
-      if (!LCS.on || !P.waiHand) { P.miss = null; return; }
-      let miss = 0;
+      if (!LCS.on || !P.waiHand || !P.arms) { P.miss = null; return; }
+      P.group.updateWorldMatrix(true, true);
+      for (const sd in P.waiHand) { const H = P.waiHand[sd]; if (!H.mpu) H.mpu = _wv.setFromMatrixScale(H.bone.matrixWorld).x; }
+      let miss = 0, kmax = 0;
       for (const sd of ['Left', 'Right']) {
-        const H = P.waiHand[sd], S = HS[sd], A = P.arms[sd]; if (!H || !A || !(Math.max(S.k, S.ak) > 0.001)) continue;
+        const H = P.waiHand[sd], S = HS[sd], A = P.arms[sd]; if (!H || !A) continue;
+        lcHandOf(P, sd === 'Left' ? LCS.L : LCS.R, sd, S);
+        if (!(Math.max(S.k, S.ak) > 0.001)) continue;
+        kmax = Math.max(kmax, S.k);
+        const short = armSolve(A, sd, S.p, S.pole, S.k);
         _wF.copy(S.f); _wN.copy(S.n); _wX.crossVectors(_wF, _wN);
         _wMw.makeBasis(_wF, _wN, _wX); _wMl.makeBasis(H.fL, H.nL, H.xL).transpose(); _wMw.multiply(_wMl);
         _wqT.setFromRotationMatrix(_wMw);                                    // the hand's turn, in the room
-        H.bone.updateWorldMatrix(true, false); H.bone.getWorldQuaternion(_rq);
-        _rq2.copy(_wqT).multiply(_rq.invert());                              // from where it is to where it is to be
-        A.fore.getWorldPosition(_ra); H.bone.getWorldPosition(_rb); _rb.sub(_ra).normalize();
-        const tw = twistAbout(_rq2, _rb);
-        if (tw) {
-          _rq.identity().slerp(tw, LCM.roll * S.ak); A.fore.getWorldQuaternion(_rq2); _rq2.premultiply(_rq);
-          A.fore.parent.getWorldQuaternion(_wqP); A.fore.quaternion.copy(_wqP.invert().multiply(_rq2)); A.fore.updateWorldMatrix(false, true);
-        }
         H.q0.copy(H.bone.quaternion); H.wrote = true;
         H.bone.parent.getWorldQuaternion(_wqP); _wqT.premultiply(_wqP.invert());
         H.bone.quaternion.slerp(_wqT, S.ak);
-        /* (a probe's measure: how far the wrist stopped short of its target, at full share) */
-        if (S.k > 0.98) { H.bone.updateWorldMatrix(true, false); H.bone.getWorldPosition(_wa); miss = Math.max(miss, _wa.distanceTo(S.p)); }
+        H.bone.updateWorldMatrix(false, true);
+        /* (a probe's measures: how far a wrist stopped short of where it was sent, at full share; and the wrist's bend,
+           the hand's line off the forearm's) */
+        if (S.k > 0.98) miss = Math.max(miss, short);
+        A.fore.getWorldPosition(_wa); H.bone.getWorldPosition(_wb); _wb.sub(_wa).normalize();
+        S.bend = Math.acos(THREE.MathUtils.clamp(_wb.dot(S.f), -1, 1));
       }
-      P.miss = miss;
+      P.gripK = kmax; P.miss = miss;
       const obj = P.holdObj;
       if (obj && obj.parent) {
         const L = P.waiHand.Left, R = P.waiHand.Right;
-        if (LCS.holdBy === 'wai' && L && R) {
-          L.bone.getWorldPosition(_wa); R.bone.getWorldPosition(_wb); _wa.add(_wb).multiplyScalar(0.5); _wa.y += 0.07;
-          if (LCS.holdMix > 0) _wa.lerp(palmPoint(R, _wb), LCS.holdMix);
-        }
-        else if (LCS.holdBy === 'both' && L && R) { palmPoint(L, _wa); palmPoint(R, _wb); _wa.add(_wb).multiplyScalar(0.5); }
-        else if (R) palmPoint(R, _wa);
+        if (LCS.holdBy === 'cup' && L && R) { handPoint(L, L.palm[0], L.palm[1], _wa); handPoint(R, R.palm[0], R.palm[1], _wb); _wa.add(_wb).multiplyScalar(0.5); _wa.y += LCM.cup.seat; }
+        else if (R) handPoint(R, R.palm[0], R.palm[1], _wa);
         else return;
         obj.parent.updateWorldMatrix(true, false); obj.position.copy(obj.parent.worldToLocal(_wa));
         if (LCS.holdAt && R) LCS.holdAt(obj, R);
@@ -2741,7 +2883,6 @@
       lcBlockOn(true);
       whenReady(cast.pong, (P) => { P.group.visible = true; personPut(P, PSTOOL.x, PSTOOL.z, PONG_RY, 0); seatNow(P, true); });
       props.lcThings.visible = true; props.matK = 1; props.note.visible = true; props.wallet.visible = false;
-      mayomAt('bowl');                                   // (v25.2) stood back in the water at the clearing's end
       pieceShow(!play.examined); props.cloth.userData.piece = play.examined;
       clothPiece(play.examined);
       for (const f of props.flames) f.material.opacity = play.examined ? 1 : 0;
@@ -3304,24 +3445,18 @@
 
     /* ---------------------------------------------------------------- (v25.0) the films' own helpers */
     const KN_EYE = [CL.x, KNEEL.y, CL.z];                               // his eye kneeling before Lersi Chin
-    /* (v25.0 CP13) the thread: how far he leans in (down, forward), where his eyes go (over the mat, his wrist below
-       them), the hand's own lowering (`place`'s p), the master's lean to meet it, and the lens on a phone and a desktop */
-    /* (v25.1 F6) pN: on a narrow screen the hand held lower and further off (`place`'s own p: 8 cm down, 6 cm away a unit):
-       at p 0 it was a dark shape over half a phone, a pointing finger at its tip, the master's right hand behind it; at 0.3
-       both his hands rest on it and the thread still shows at the wrist (at 0.5 and over, the wrist leaves the frame's
-       foot; photographed at 0.3, 0.5, 0.7 and 1) */
-    /* (v25.2) dz 0.4: he leans in further so his wrist comes within the master's reach (at 0.28 the master's hands, leaning
-       to it, stopped 10 cm short of the wrist, measured) */
-    const TIE = { dy: 0.06, dz: 0.4, aim: [0.03, 0.6, 0.05], p: 0, pN: 0.3, bow: 0.3, flN: 60, flD: 50 };
     /* (v25.1 F7) a small piece held IN his hand: the place grip lowered (its p) and the piece's foot at the top of the fist,
        this far off its palm in the lens's frame, so the fingers close on its lower edge and its face shows above them (at
        the palm itself the fist hid it whole; with the walking hand it stood behind a pointing finger; photographed, twelve
        ways) */
     const AMU_P = 1, AMU_HELD = [0.0, 0.07, -0.01];
     const BUDDHA_AT = [BUDDHA.x, BUDDHA.y, BUDDHA.z];
-    /* (v25.2) HIS BODY IN THE FILMS (lcBody, b_build3): the wai's three heights (the brow, the breastbone, the chest), his
-       look eased onto what he looks at, the bundle carried in the bowl as the bowl is lifted and tipped */
-    const VW_HI = { wai: 1 }, VW_LO = { wai: 0.12 }, VW_0 = { wai: 0 };
+    /* (v25.2) HIS BODY IN THE FILMS (lcBody, b_build3): his look eased onto what he looks at. (v25.3) The joined hands'
+       three places (at his brow, his head bowed to them: the Buddha's and his teachers'; before his chest: a greeting
+       answered; lower, at the foot of his chest, for the long verses), the two palms a tray before his chest and raised
+       to his brow, and the bowl cradled */
+    const W_BROW = { wai: 'brow' }, W_CHEST = { wai: 'chest' }, W_LOW = { wai: 'low' };
+    const C_CHEST = { cup: 'chest' }, C_BROW = { cup: 'brow' }, H_BOWL = { bowl: 1 };
     /* his look through keys [[t0, t1, target], ...] (target: 'lens', a point [x, y, z], or null for his take's own), each
        change eased from the one before between its two times: the head turns over a human time onto what he looks at (in
        v25.0 a look switched on in one frame, and his head turned there in it) */
@@ -3443,105 +3578,6 @@
     }
     /* a cased amulet from his tray (ending D: the customer's question answered) */
     const amuletHand = (() => { const g = new THREE.Group(); g.visible = false; g.userData.dyn = true; world.add(g); fitModel('e4somdej', g, 0.062, 'y', 0, 0); return g; })();
-    /* the holy water from the mayom's leaves: a few drops falling through his view, a pure function of the film's clock */
-    const drops = (() => {
-      const g = new THREE.Group(); g.visible = false; g.userData.dyn = true; world.add(g);
-      const m = B({ color: 0xe8f2f8, transparent: true, opacity: 0.55, depthWrite: false, fog: false });
-      const geo = new THREE.PlaneGeometry(0.004, 0.05);
-      for (let i = 0; i < 14; i++) { const d = new THREE.Mesh(geo, m); d.userData.seed = i; g.add(d); }
-      return g;
-    })();
-    /* (v25.2) the drops leave the leaves on each flick's snap (`flicks`: the snaps' times; null: none), each drop's numbers
-       drawn in one fixed order (v25.0 drew a hidden drop's three fewer, so every drop after it jumped when another came or
-       went) */
-    function dropsAt(t, flicks, eye) {
-      if (!flicks) { drops.visible = false; return; }
-      drops.visible = true;
-      const r = rng(9917);
-      drops.children.forEach((d, i) => {
-        const flick = flicks[i % flicks.length] + r() * 0.08, ox = (r() - 0.5) * 0.7, oy = r() * 0.1, oz = r() * 0.25, u = t - flick;
-        if (u < 0 || u > 0.9) { d.visible = false; return; }
-        d.visible = true;
-        d.position.set(eye[0] + ox, eye[1] + 0.35 - u * u * 4.9 - oy, eye[2] - 0.3 - oz);
-        d.lookAt(camera.position.x, d.position.y, camera.position.z);
-      });
-    }
-    /* the white thread on his wrist (the clearing's last gesture): a cotton loop on the right arm, drawn in the hands' pass */
-    const wristThread = (() => {
-      const g = new THREE.Group(); g.visible = false; g.userData.dyn = true;
-      /* (v25.0 CP13) three turns ROUND the wrist: a torus's axis is its own z, and the arm runs along the arm's z (its fingers
-         to −z), so the turns lie flat in the arm's xy and step along its z; turned a quarter about y, their axis lay across
-         the wrist and they ran lengthwise through it, hidden inside the arm (found by drawing them red, thick and over
-         everything, and reading their place off the arm) */
-      for (let k = 0; k < 3; k++) { const tr = new THREE.Mesh(new THREE.TorusGeometry(0.033, 0.0022, 6, 32), M({ color: 0xf6f4ec, roughness: 0.85 }));
-        tr.position.z = (k - 1) * 0.0055; g.add(tr); }
-      return g;
-    })();
-    const WRIST = [0.012, -0.03, -0.075];                                // the wrist, in the arm's own frame (a little behind the palm)
-    /* (v25.0 CP7) the mayom bundle set in one of its two resting places ('bowl' or 'mat'), as each film and phase needs */
-    function mayomAt(w) {
-      const g = props.mayom; if (!g || !g.userData.bowlP) return;
-      g.position.copy(w === 'mat' ? g.userData.matP : g.userData.bowlP); g.rotation.copy(w === 'mat' ? g.userData.matR : g.userData.bowlR);
-    }
-    /* (v25.2) the bundle standing in the water, carried with the bowl as he lifts and tips it: its place in the bowl turned
-       and moved as the bowl is (the bowl turns about its own foot) */
-    const _bwq = new THREE.Quaternion(), _X1 = new THREE.Vector3(1, 0, 0);
-    function stemInBowl(out) {
-      const g = props.mayom, B0 = props.bowl.userData.home || (props.bowl.userData.home = props.bowl.position.clone());
-      _bwq.setFromAxisAngle(_X1, props.bowl.rotation.x);
-      return out.copy(g.userData.bowlP).sub(B0).applyQuaternion(_bwq).add(props.bowl.position);
-    }
-    function mayomInBowl() {
-      const g = props.mayom; if (!g || !g.userData.bowlP) return;
-      stemInBowl(g.position);
-      g.quaternion.setFromEuler(g.userData.bowlR).premultiply(_bwq);
-    }
-    const _lpv = new THREE.Vector3();
-    /* (v25.0 CP7) a held thing turned so its +x runs along `ax` and its +y (the mayom's face) as near `up` as that allows;
-       (v25.2) let go, the film puts it back itself (the mayom stood in the water: mayomInBowl) */
-    const _ox = new THREE.Vector3(), _oy = new THREE.Vector3(), _oz = new THREE.Vector3(), _om = new THREE.Matrix4();
-    function orient(obj, ax, up) {
-      _ox.set(ax[0], ax[1], ax[2]).normalize();
-      _oy.set(up[0], up[1], up[2]); _oy.addScaledVector(_ox, -_oy.dot(_ox)).normalize();
-      _oz.crossVectors(_ox, _oy);
-      obj.quaternion.setFromRotationMatrix(_om.makeBasis(_ox, _oy, _oz));
-    }
-    /* (v25.0 CP7) the world point at a share (fx, fy) of the lens's frame, d metres out, for a lens of fovDeg — where a
-       hand the engine places by its share of the frame (HPOSE) stands on THIS screen */
-    function lensPoint(fx, fy, d, fovDeg) {
-      camera.updateWorldMatrix(true, false);
-      const hh = d * Math.tan(fovDeg * Math.PI / 360), hw = hh * camera.aspect;
-      _lpv.set(fx * hw, fy * hh, -d); camera.localToWorld(_lpv);
-      return [_lpv.x, _lpv.y, _lpv.z];
-    }
-    /* (v25.0 CP13) where his wrist IS on this screen: the hands are drawn in a scene of their own through their own lens
-       (main.js's vmCam, 52° and at that scene's origin, whatever the film's lens), so the wrist is read off his arm there and
-       given as its share of that frame and its depth — lensPoint then finds the room's point under it */
-    const VM_FOV = 52;
-    function wristShare() {
-      const A = FL.api; if (!A || !A.armR) return null;
-      A.armR.updateWorldMatrix(true, false);
-      _lpv.set(WRIST[0], WRIST[1], WRIST[2]); A.armR.localToWorld(_lpv);
-      const d = -_lpv.z; if (!(d > 0.05)) return null;
-      const hh = d * Math.tan(VM_FOV * Math.PI / 360);
-      return [_lpv.x / (hh * camera.aspect), _lpv.y / hh, d];
-    }
-    /* (v25.2) any point of his right arm, in the arm's own frame, as its share of the frame and its depth (wristShare's
-       measure, for the wrist's line as well as its place) */
-    function armShare(p) {
-      const A = FL.api; if (!A || !A.armR) return null;
-      A.armR.updateWorldMatrix(true, false);
-      _lpv.set(p[0], p[1], p[2]); A.armR.localToWorld(_lpv);
-      const d = -_lpv.z; if (!(d > 0.05)) return null;
-      const hh = d * Math.tan(VM_FOV * Math.PI / 360);
-      return [_lpv.x / (hh * camera.aspect), _lpv.y / hh, d];
-    }
-    function threadOn(on) {
-      const A = FL.api; if (!A || !A.armR) return;
-      if (on) { if (wristThread.parent !== A.armR) A.armR.add(wristThread); wristThread.position.set(WRIST[0], WRIST[1], WRIST[2]); wristThread.visible = true;
-                if (A.handsRoot) A.handsRoot.visible = true; A.armR.visible = true; }
-      else if (wristThread.parent) { wristThread.parent.remove(wristThread); wristThread.visible = false; }
-    }
     /* HIS NOTEBOOK on the counter, open: the masters he has checked, some crossed out (the coda) — a drawn page laid on
        the shop's own book, drawn only when what it shows changes */
     /* (v25.1 F3) laid with its top AWAY from him, so it reads upright from his place (laid flat by x alone, the page's
@@ -3675,6 +3711,9 @@
        up at the altar, and wais the Buddha before anyone; Pong's word; "New shop... tired owner"; his mat laid */
     const V_EYE = [-0.95, 1.62, -2.2];                                   // he waits behind the counter's left end, his altar to his right
     const LC_STANDS = { x: 0, z: -0.35 };                                // where Lersi Chin stops, before the counter
+    /* (v25.3) how far he bows into a wai at his brow, standing (the visit) and sitting (the clearing): his back, his
+       neck and his head, each its share, set looking at him from beside him */
+    const VW = { lean: 0.26, neck: 0.16, bow: 0.28 }, SW = { lean: 0.16, neck: 0.14, bow: 0.26 };
     const PG_STANDS = { x: 0.9, z: -0.25 };
     const _lv = new THREE.Vector3();
     function visitFrame(t) {
@@ -3702,18 +3741,23 @@
           /* his look: the left cabinet, the right, then up to the Buddha; at the turn, the one whose shop it is (v25.2: each
              eased over most of a second; v25.0 jumped from one to the next in a frame) */
           L.look = 0;
+          const A0 = V.altar, I0 = V.intro;
           lcLook(t, [[V.in + 2.2, V.in + 2.9, [-2.0, 1.3, 0.9]], [V.in + 4.0, V.in + 4.8, [2.0, 1.25, 0.2]],
-                     [V.altar - 1.3, V.altar - 0.4, BUDDHA_AT], [V.turn - 0.3, V.turn + 0.5, 'lens']], 1.1);
-          /* (v25.2) his wai to the Buddha, to the brow: the hands up over a second, his head and shoulders bowing into them
-             a little after, held, the head up before the hands come down; a nod to the one whose shop it is as he turns to
-             him (v25.0 gave a full wai there and another a breath later: an elder greeting first, and twice); and his answer
-             to the client's wai, to the chest, held into the cut. Each change over a human time, never in a frame */
-          const wH = handKeys(t, [[V.altar + 0.1, V.altar + 1.1, VW_HI], [V.intro - 0.95, V.intro - 0.05, null],
-                                  [V.wai + 0.25, V.wai + 1.15, VW_LO]]);
-          const lean = keyed(t, 0, [[V.altar + 0.45, V.altar + 1.3, 0.12], [V.intro - 1.15, V.intro - 0.3, 0], [V.wai + 0.5, V.wai + 1.25, 0.06]]);
-          lcBow(L, keyed(t, 0, [[V.altar + 0.45, V.altar + 1.3, 0.3], [V.intro - 1.15, V.intro - 0.35, 0],
+                     [A0 - 1.3, A0 - 0.4, BUDDHA_AT], [A0 + 0.9, A0 + 1.6, null], [I0 - 1.5, I0 - 0.8, BUDDHA_AT],
+                     [V.turn - 0.3, V.turn + 0.5, 'lens']], 1.1);
+          /* (v25.2) his wai to the Buddha; a nod to the one whose shop it is as he turns to him (v25.0 gave a full wai there
+             and another a breath later: an elder greeting first, and twice); and his answer to the client's wai, at his
+             chest, his head inclined, held into the cut. (v25.3) The wai as it is made: his hands joined before his chest,
+             then raised to his brow as his back, his neck and his head bow to MEET them (the thumbs to the brow, his eyes
+             lowered), held, and down the same way, his eyes back up to the Buddha. v25.2 stood his hands before an upright
+             face (Chad, with it on his phone: "Look at how ridiculous this looks"). Each change over a human time */
+          const wH = handKeys(t, [[A0 + 0.1, A0 + 0.9, W_CHEST], [A0 + 1.0, A0 + 1.8, W_BROW], [I0 - 1.6, I0 - 0.9, W_CHEST],
+                                  [I0 - 0.85, I0 - 0.1, null], [V.wai + 0.25, V.wai + 1.15, W_CHEST]]);
+          const lean = keyed(t, 0, [[A0 + 1.0, A0 + 1.8, VW.lean], [I0 - 1.6, I0 - 0.9, 0], [V.wai + 0.5, V.wai + 1.25, 0.07]]);
+          const neck = keyed(t, 0, [[A0 + 1.0, A0 + 1.8, VW.neck], [I0 - 1.6, I0 - 0.9, 0], [V.wai + 0.5, V.wai + 1.25, 0.08]]);
+          lcBow(L, keyed(t, 0, [[A0 + 1.0, A0 + 1.8, VW.bow], [I0 - 1.6, I0 - 0.9, 0],
                                 [V.turn + 0.3, V.turn + 0.75, 0.16], [V.turn + 0.85, V.turn + 1.45, 0], [V.wai + 0.5, V.wai + 1.2, 0.16]]));
-          lcBody(wH || lean ? { R: wH, L: wH, lean } : null);
+          lcBody(wH || lean ? { R: wH, L: wH, lean, neck } : null);
         }
         /* his own wai to the master (one wai; three bows are only for the Buddha) */
         waiAt(smo(sgk(t, V.wai, V.wai + 0.5)) * (1 - smo(sgk(t, V.wai + 1.3, V.mat - 0.05))));
@@ -3743,15 +3787,14 @@
         lcBody(null);
         if (P && P.ready) { fPut(P, PG_STANDS.x, PG_STANDS.z, faceTo(PG_STANDS.x, PG_STANDS.z, 0, 0.3), { y: 0, seated: false }); P.lookAt = null; }
         propsAt({ mat: smo(sgk(t, V.mat + 0.15, V.mat + 1.9)) });
-        for (const o of [props.bowl, props.mayom, props.thread, props.cloth, props.khan, props.yaam]) if (o) o.visible = false;
+        for (const o of [props.bowl, props.cloth, props.khan, props.yaam]) if (o) o.visible = false;
         const e = [-0.95, 1.6, 1.4];
         shot(e, [0, 0.0, lp(-0.6, 0.6, smo(sgk(t, V.mat, matT)))], 58, 50);
         return;
       }
       /* seated now, his things set out; Pong on his stool; the master looks up at him */
       propsAt({ mat: 1 });
-      for (const o of [props.bowl, props.mayom, props.thread, props.cloth, props.khan, props.yaam]) if (o) o.visible = true;
-      mayomAt('bowl');
+      for (const o of [props.bowl, props.cloth, props.khan, props.yaam]) if (o) o.visible = true;
       lcSeated(); pongSeated(); lcBlockOn(true);
       /* (v25.2) his eyes on his things, then up to the client, eased */
       if (L) { lcBow(L, 0); lcLook(t, [[matT - 0.01, matT, [LC.x, 0.1, LC.z + 0.33]], [matT + 0.45, matT + 1.15, 'lens']], 1.1); }
@@ -3763,40 +3806,40 @@
     /* P6 · THE EXAMINATION (§4.3, watched): his wrist, the ordinary questions, the doctor; the stillness; the piece by the
        door; a temple for it; what he believes, and what he did not say */
     /* (v25.2) HIS BODY in the examination, one choreography on the film's clock apart from the shots (examShots): both his
-       hands to the client's wrist, his right over it and his left under, as he leans in from the waist to meet it (v25.0's
-       right arm, straight out from an upright back, stopped short of a wrist 0.8 m off and hung in the air), his eyes down
-       to it and back up to the client's face; the stillness, his head lowered and his back easing over; his look to the
-       shelf by the door; the piece in his joined hands, raised to his brow and bowed over (in v25.0 the piece in his hands
-       was never shown); his left hand home and his right laying it on the clean cloth, bending to it. Each change over a
-       human time */
+       hands to the client's wrist, his right over it and his left under, as he leans in from the waist to meet it, his
+       eyes down to it and back up to the client's face; the stillness, his head lowered and his back easing over; his
+       look to the shelf by the door. (v25.3) The piece comes back to him on both his upturned palms (a thing honoured
+       is carried so; v25.2 pinched it between pressed hands, where it could not be seen): he raises it before his brow
+       and bows his head to it, lowers it to speak of it, and bends to the clean cloth with it in both hands; the cut
+       lays it there. Each change over a human time */
     const EX_WR = [LC.x + 0.02, 0.3, LC.z + 0.4];                      // the client's wrist, met between them, under the frame's foot
-    const EX_PW0 = { wai: 0.15 }, EX_PW1 = { wai: 0.6 };
     function examBody(t) {
       const X = EXAM, L = cast.lersi; if (!L || !L.ready) return;
       const tBack = X.fetch + 3.9, tCloth = X.lc2e8 + SECS.lc2e8 * 0.86;
       const pl2 = pieceClone('lc'), c0 = props.cloth.position, shelf = [SHELF.x + 0.02, SHELF.y + 0.04, SHELF.z];
-      const onCloth = { palm: [c0.x + 0.01, props.clothTop + 0.045, c0.z + 0.01], aim: 'down', pole: 'floor' };
+      const toCloth = { cup: [c0.x + 0.12, props.clothTop + 0.15, c0.z + 0.07] };
+      /* (the piece is back with him 2.3 s before he speaks of it: raised over 0.9 s, held a breath, lowered over 0.8 s as
+         his head comes up; the raise and the lowering never overlap, or the hands would jump from one to the other) */
+      const two = [[tBack - 0.01, tBack, C_CHEST], [tBack + 0.3, tBack + 1.2, C_BROW], [X.lc2e8 - 0.8, X.lc2e8, C_CHEST],
+                   [tCloth - 1.3, tCloth - 0.1, toCloth]];
       const R = handKeys(t, [[X.lc2e1 + 0.3, X.lc2e1 + 1.45, { palm: [EX_WR[0] - 0.01, EX_WR[1] + 0.035, EX_WR[2]], aim: 'down', pole: 'reach' }],
-                             [X.lc2e6 - 0.1, X.lc2e6 + 1.0, null],
-                             [tBack - 0.01, tBack, EX_PW0], [tBack + 0.25, tBack + 1.25, EX_PW1],
-                             [tCloth - 1.35, tCloth - 0.15, onCloth]]);
+                             [X.lc2e6 - 0.1, X.lc2e6 + 1.0, null]].concat(two));
       const Lh = handKeys(t, [[X.lc2e1 + 0.45, X.lc2e1 + 1.6, { palm: [EX_WR[0] + 0.03, EX_WR[1] - 0.035, EX_WR[2] - 0.01], aim: 'under', pole: 'reach' }],
-                              [X.lc2e6 - 0.2, X.lc2e6 + 0.85, null],
-                              [tBack - 0.01, tBack, EX_PW0], [tBack + 0.25, tBack + 1.25, EX_PW1],
-                              [tCloth - 1.6, tCloth - 0.75, null]]);
+                              [X.lc2e6 - 0.2, X.lc2e6 + 0.85, null]].concat(two));
       const lean = keyed(t, 0, [[X.lc2e1 + 0.2, X.lc2e1 + 1.4, 0.32], [X.lc2e6 - 0.1, X.lc2e6 + 1.0, 0],
                                 [X.still + 0.4, X.still + 2.0, 0.08], [X.eyes - 1.2, X.eyes - 0.2, 0],
-                                [tBack + 0.4, tBack + 1.3, 0.1], [tCloth - 1.35, tCloth - 0.2, 0.3]]);
-      const side = keyed(t, 0, [[tCloth - 1.35, tCloth - 0.2, -0.18]]), twist = keyed(t, 0, [[tCloth - 1.35, tCloth - 0.2, -0.2]]);
+                                [tBack + 0.4, tBack + 1.2, 0.1], [X.lc2e8 - 0.8, X.lc2e8, 0.03], [tCloth - 1.3, tCloth - 0.1, 0.4]]);
+      const side = keyed(t, 0, [[tCloth - 1.3, tCloth - 0.1, -0.14]]), twist = keyed(t, 0, [[tCloth - 1.3, tCloth - 0.1, -0.28]]);
+      const neck = keyed(t, 0, [[tBack + 0.4, tBack + 1.2, 0.16], [X.lc2e8 - 0.8, X.lc2e8, 0]]);
       const hold = t >= tBack && t < tCloth ? pl2 : null;
       if (pl2) pl2.visible = !!hold;
-      lcBody({ R, L: Lh, lean, side, twist, hold, holdBy: 'wai', holdMix: ezk(t, tCloth - 1.6, tCloth - 0.9) });
+      lcBody({ R, L: Lh, lean, side, twist, neck, hold, holdBy: 'cup' });
       lcLook(t, [[X.lc2e1 + 0.35, X.lc2e1 + 1.1, EX_WR], [X.lc2e1 + 1.6, X.lc2e1 + 2.3, 'lens'],
                  [X.still - 0.3, X.still + 0.6, null], [X.eyes - 0.1, X.eyes + 0.9, shelf],
-                 [tBack - 0.01, tBack, [LC.x, 0.55, LC.z + 0.22]], [X.lc2e8 - 0.5, X.lc2e8 + 0.2, 'lens'],
-                 [tCloth - 1.35, tCloth - 0.55, [c0.x, c0.y, c0.z]], [X.believe - 0.01, X.believe, 'lens']], 1.1);
+                 [tBack - 0.01, tBack, [LC.x, 0.5, LC.z + 0.28]], [tBack + 0.3, tBack + 1.0, null], [X.lc2e8 - 0.5, X.lc2e8 + 0.2, 'lens'],
+                 [tCloth - 1.3, tCloth - 0.5, [c0.x, c0.y, c0.z]], [X.believe - 0.01, X.believe, 'lens']], 1.1);
       lcBow(L, keyed(t, 0, [[X.still + 0.2, X.still + 1.5, 0.24], [X.eyes - 1.0, X.eyes - 0.15, 0],
-                            [tBack - 0.01, tBack, 0.12], [tBack + 0.4, tBack + 1.3, 0.26], [X.lc2e8 - 0.6, X.lc2e8, 0],
+                            [tBack - 0.01, tBack, 0.1], [tBack + 0.4, tBack + 1.2, 0.34], [X.lc2e8 - 0.8, X.lc2e8, 0],
                             [tCloth - 1.2, tCloth - 0.3, 0.12], [X.believe - 0.01, X.believe, 0]]));
       L.look = 1;
     }
@@ -3807,7 +3850,7 @@
       shopAt({ u: 0.42, led: 0.9, ceil: 0, night: true });
       castVis({ goldman: false, mallA: false, mallB: false, lersi: true, pong: true });
       lcSeated(); pongSeated();
-      props.lcThings.visible = true; propsAt({ mat: 1 }); mayomAt('bowl');
+      props.lcThings.visible = true; propsAt({ mat: 1 });
       const L = cast.lersi, P = cast.pong;
       if (P) { P.lookAt = L && L.head ? L.head : null; P.neck = null; }
       const shelf = [SHELF.x + 0.02, SHELF.y + 0.04, SHELF.z];
@@ -3880,108 +3923,46 @@
 
     /* P7 · THE CLEARING (§4.3, watched; unskippable the first time): his hands together, his eyes down; the homage to his
        teachers; Namo tassa three times; the three Sakkatvā verses (captioned, the Pali over its meaning); the fog lifting
-       under the second and third; the water; the leaves; the thread at his wrist; the advice */
-    /* (v25.2) THE CLEARING, HIS BODY: one choreography on the film's clock apart from the shots (clearShots). Chad, 10 Nov
-       2026: "his wai pose, he spraying water and taking water bowl, etc is all extremely bad ... the actions are all very
-       abrupt and sudden and not natural". The homage: his hands rise to a wai at his brow over a second, his head and back
-       bowing into it, and come down joined to the foot of his chest for the verses (v25.0 dropped them to his lap and
-       raised them again). The water: his joined hands part and go down to the bowl's sides as he bends to it; he lifts it,
-       the bundle standing in it, holds it out and tips it to the client, brings it back and sets it down (v25.0 slid the
-       bowl through the air ahead of hands that never reached it). The leaves: his right hand lifts the bundle from the
-       water, dips it once, raises it before his shoulder and flicks it three times, each a short cock and a quick snap of
-       the wrist, the water leaving the leaves on the snap (v25.0 waved it in slow circles, and the drops fell on their own
-       beat); the bundle stood back in the bowl. The thread: both hands to the client's wrist, the right winding the thread
-       round it and the knot pulled twice, then home. His look and his head go with each. The bowl is before him on the
-       mat now, in his reach (on his left, at v25.0's place, his right hand could not reach the bundle standing in it) */
-    const CB_HI = { wai: 0.7 }, CB_LO = { wai: -0.5 }, CB_BOWL = { bowl: 1 };
-    /* (v25.2) his back's lean to the bowl on the mat, his hands on its sides (both, or the right alone): measured, the wrists
-       land on the rim with nothing to spare — the clearing's lift and set-down, ending B's packing and the decision's */
-    const LEAN_MAT = 0.65;
-    const CB_OFF = [LC.x, 0.42, LC.z + 0.46];                          // the bowl held out to the client
-    const CB_FL = [LC.x - 0.06, 0.8, LC.z + 0.24];                     // his right palm raised for the flicks
-    const _cg = new THREE.Vector3(), _cw = new THREE.Vector3(), _cu = new THREE.Vector3(), _cv = new THREE.Vector3(), _cf = new THREE.Vector3(), _ce = new THREE.Vector3();
-    const _cqH = new THREE.Quaternion(), _cqB = new THREE.Quaternion(), _cF = new THREE.Vector3(), _cN = new THREE.Vector3(), _cA = new THREE.Vector3();
-    function clearSnaps() { const S = CLEARF.sprinkle; return [S + 2.4, S + 3.05, S + 3.7]; }
-    /* a value through the flicks: at rest, cocked just before each snap, snapped, and back */
-    function flickK(t, rest, cock, snap) {
-      const keys = [];
-      for (const s of clearSnaps()) keys.push([s - 0.32, s - 0.04, cock], [s - 0.04, s + 0.1, snap], [s + 0.1, s + 0.45, rest]);
-      return keyed(t, rest, keys);
-    }
-    /* the bowl: on the mat; lifted with the bundle standing in it and held out; tipped to him; set down again (placed
-       before the shots, which look at it) */
+       under the second and third; the water; the advice. (v25.3, Chad, 10 Nov 2026: "There is no need for lersi chin to
+       sprinkle water with the leaf thing and no need for the tieing of string": the leaves' flicks, their drops and the
+       thread at his wrist are out, with the bundle and the skein that served only them) */
+    /* THE CLEARING, HIS BODY: one choreography on the film's clock apart from the shots (clearShots). (v25.2, Chad: "his
+       wai pose, he spraying water and taking water bowl, etc is all extremely bad ... the actions are all very abrupt and
+       sudden and not natural") (v25.3, the same day, of v25.2's answer: "i find it unacceptable that you find his poses
+       natural, it clearly is not") The homage: his hands joined before his chest, raised to his brow as his back, his neck
+       and his head bow to meet them, held a breath, and down to his chest for Namo tassa; lower, at the foot of his
+       chest, for the long verses (hands held at the brow through a seventeen-second chant are a pose, not a man). The
+       water: his joined hands part and go down to the bowl as he bends to it, each palm under the curve of its belly; he
+       lifts it (up, then out), holds it out and tips it to the client, brings it back (in, then down), sets it on the
+       mat and sits up, his hands home to his lap. His look and his head go with each */
+    /* his back's lean to the bowl on the mat, his palms under its belly (measured: the wrists land with nothing short) —
+       the clearing's lift and set-down, the packing that opens B and C, and the decision's */
+    const LEAN_MAT = 0.68;
+    const CB_OFF = [LC.x, 0.44, LC.z + 0.4];                           // the bowl held out to the client
+    /* the bowl: on the mat; lifted and held out; tipped to him; brought back and set down (placed before the shots, which
+       look at it) */
     function clearBowl(t) {
-      const K = CLEARF, W = K.water, S = K.sprinkle;
+      const K = CLEARF, W = K.water;
       const B0 = props.bowl.userData.home || (props.bowl.userData.home = props.bowl.position.clone());
-      const bu = ezk(t, W + 0.6, W + 1.8) * (1 - ezk(t, W + 4.0, W + 5.1));
-      props.bowl.position.set(lp(B0.x, CB_OFF[0], bu), lp(B0.y, CB_OFF[1], bu), lp(B0.z, CB_OFF[2], bu));
-      props.bowl.rotation.x = 0.35 * ezk(t, W + 2.2, W + 2.85) * (1 - ezk(t, W + 3.4, W + 3.95));
-      if (!(t >= S + 0.5 && t < S + 4.9)) mayomInBowl();
+      const up = ezk(t, W + 0.7, W + 1.75) * (1 - ezk(t, W + 4.25, W + 5.15)), out = ezk(t, W + 0.95, W + 2.0) * (1 - ezk(t, W + 4.0, W + 4.95));
+      props.bowl.position.set(lp(B0.x, CB_OFF[0], out), lp(B0.y, CB_OFF[1], up), lp(B0.z, CB_OFF[2], out));
+      props.bowl.rotation.x = 0.35 * ezk(t, W + 2.25, W + 2.9) * (1 - ezk(t, W + 3.4, W + 3.95));
     }
     function clearBody(t) {
-      const K = CLEARF, L = cast.lersi, W = K.water, S = K.sprinkle, T = K.thread;
-      const B0 = props.bowl.userData.home;
-      const held = t >= S + 0.5 && t < S + 4.9;
-      if (!L || !L.ready || !B0) return;
-      /* his right palm where it takes the bundle standing in the water (the tie then lies in it where it stood) */
-      stemInBowl(_cg);
-      const grab = (dy) => ({ palm: [_cg.x - 0.012, _cg.y + dy, _cg.z], aim: 'stem', pole: 'floor' });
-      /* the flicks: the palm a little up and back as the wrist cocks, down and forward as it snaps; the fingers' pitch with it */
-      const fy = flickK(t, -0.35, 0.05, -0.75), dy = flickK(t, 0, 0.03, -0.04), dz = flickK(t, 0, -0.02, 0.05);
-      const fl = { palm: [CB_FL[0], CB_FL[1] + dy, CB_FL[2] + dz], aim: { f: [0.05, fy, 0.94], n: [1, 0, 0] }, pole: 'flick' };
-      /* the thread: the client's wrist where his hand is drawn, the line of his forearm, and the two ways round it */
-      let tieR = null, tieL = null;
-      if (t >= T - 0.1 && t < K.advice) {
-        const fov = camera.fov, w1 = armShare(WRIST), w2 = armShare([WRIST[0], WRIST[1], WRIST[2] - 0.08]);
-        const hw = w1 ? lensPoint(w1[0], w1[1], w1[2], fov) : lensPoint(0.296, -0.319, 0.42, fov);
-        const hh = w2 ? lensPoint(w2[0], w2[1], w2[2], fov) : [hw[0], hw[1], hw[2] - 0.08];
-        _cw.set(hw[0], hw[1], hw[2]); _cu.set(hh[0] - hw[0], hh[1] - hw[1], hh[2] - hw[2]).normalize();
-        camera.getWorldPosition(_ce); _cv.copy(_cw).sub(_ce); _cv.addScaledVector(_cu, -_cv.dot(_cu)).normalize();   // the far side
-        _cf.crossVectors(_cu, _cv).normalize(); if (_cf.y < 0) _cf.negate();                                        // over the top
-        /* the right hand on the wrist, winding to and fro over its far side three times; the left under it; the knot
-           pulled twice along it */
-        const u = (t - (T + 1.45)) / 1.9, amp = ez5(u / 0.15) * (1 - ez5((u - 0.85) / 0.15));
-        const th = 0.7 + 0.6 * Math.sin(2 * Math.PI * 3 * Math.max(0, Math.min(1, u))) * amp;
-        const pull = 0.025 * Math.abs(Math.sin(2 * Math.PI * Math.max(0, Math.min(1, (t - (T + 3.45)) / 0.65))));
-        const r = 0.042, pr = [hw[0] + r * (Math.cos(th) * _cf.x + Math.sin(th) * _cv.x) + _cu.x * pull,
-                               hw[1] + r * (Math.cos(th) * _cf.y + Math.sin(th) * _cv.y) + _cu.y * pull,
-                               hw[2] + r * (Math.cos(th) * _cf.z + Math.sin(th) * _cv.z) + _cu.z * pull];
-        tieR = { palm: pr, aim: 'tie', pole: 'tie' };
-        tieL = { palm: [hw[0] - 0.036 * _cf.x + 0.012 * _cv.x - _cu.x * pull, hw[1] - 0.036 * _cf.y + 0.012 * _cv.y - _cu.y * pull,
-                        hw[2] - 0.036 * _cf.z + 0.012 * _cv.z - _cu.z * pull], aim: 'under', pole: 'tie' };
-      }
-      const R = handKeys(t, [[K.homage + 1.4, K.homage + 2.5, CB_HI], [K.sak - 0.6, K.sak + 0.8, CB_LO],
-                             [W - 0.5, W + 0.5, CB_BOWL],
-                             [S - 0.2, S + 0.5, grab(0)], [S + 0.55, S + 0.95, grab(0.12)], [S + 1.0, S + 1.3, grab(0.025)],
-                             [S + 1.35, S + 2.15, fl], [S + 4.15, S + 4.9, grab(0)], [S + 4.95, S + 5.7, null],
-                             [T + 0.3, T + 1.4, tieR], [T + 4.15, T + 4.95, null]]);
-      const Lh = handKeys(t, [[K.homage + 1.4, K.homage + 2.5, CB_HI], [K.sak - 0.6, K.sak + 0.8, CB_LO],
-                              [W - 0.5, W + 0.5, CB_BOWL], [S - 0.25, S + 0.55, null],
-                              [T + 0.4, T + 1.45, tieL], [T + 4.1, T + 4.9, null]]);
-      const lean = keyed(t, 0, [[K.homage + 1.8, K.homage + 2.7, 0.12], [K.sak - 0.4, K.sak + 0.6, 0.05],
-                                [W - 0.5, W + 0.5, LEAN_MAT], [W + 0.6, W + 1.8, 0.3], [W + 4.0, W + 5.1, LEAN_MAT], [S - 0.2, S + 0.5, 0.55],
-                                [S + 1.35, S + 2.15, 0.08], [S + 4.15, S + 4.9, 0.55], [S + 4.95, S + 5.7, 0],
-                                [T + 0.2, T + 1.3, 0.6], [T + 4.1, T + 4.95, 0]]);
-      const twist = keyed(t, 0, [[S + 1.35, S + 2.15, 0.1], [S + 4.15, S + 4.9, 0]]);
-      /* the bundle in his hand: its leaves up out of his fist, swung back as the wrist cocks and down at the client as it
-         snaps; turned there from the way it stood in the water as he takes it, and back as he stands it in it again */
-      const swing = flickK(t, 0.25, -0.35, 1.4) + 0.95 * ezk(t, S + 1.0, S + 1.15) * (1 - ezk(t, S + 1.2, S + 1.35));
-      const toHand = ezk(t, S + 0.5, S + 0.95) * (1 - ezk(t, S + 4.45, S + 4.9));
-      const holdAt = (obj, H) => {
-        H.bone.getWorldQuaternion(_cqH); _cF.copy(H.fL).applyQuaternion(_cqH); _cN.copy(H.nL).applyQuaternion(_cqH);
-        _cA.crossVectors(_cF, _cN).multiplyScalar(Math.cos(swing)).addScaledVector(_cF, Math.sin(swing));
-        orient(obj, [_cA.x, _cA.y, _cA.z], [_cN.x, _cN.y, _cN.z]); _cqH.copy(obj.quaternion);
-        stemInBowl(_ce); _cqB.setFromEuler(obj.userData.bowlR).premultiply(_bwq);
-        obj.quaternion.slerpQuaternions(_cqB, _cqH, toHand);
-      };
-      lcBody({ R, L: Lh, lean, twist, hold: held ? props.mayom : null, holdBy: 'R', holdAt });
-      lcLook(t, [[W - 0.5, W + 0.2, [B0.x, 0.12, B0.z]], [W + 1.3, W + 2.0, 'lens'], [W + 3.9, W + 4.5, [B0.x, 0.12, B0.z]],
-                 [S + 1.35, S + 2.0, [CL.x, 1.0, CL.z]], [S + 4.1, S + 4.6, [B0.x, 0.12, B0.z]], [S + 5.0, S + 5.6, 'lens'],
-                 [T + 0.2, T + 0.9, tieR ? tieR.palm : 'lens'], [K.advice - 0.01, K.advice, 'lens']], 1.1);
-      lcBow(L, keyed(t, 0.08, [[K.homage + 1.8, K.homage + 2.7, 0.24], [K.sak - 0.4, K.sak + 0.6, 0.1], [K.lift + 0.5, K.lift + 2.5, 0.06],
-                               [W - 0.4, W + 0.4, 0.16], [W + 1.2, W + 1.9, 0], [W + 3.9, W + 4.5, 0.14], [W + 5.0, W + 5.6, 0.1],
-                               [S + 1.4, S + 2.1, -0.04], [S + 4.1, S + 4.6, 0.14], [S + 5.0, S + 5.8, 0],
-                               [T + 0.3, T + 1.3, TIE.bow], [T + 4.1, T + 4.9, 0]]));
+      const K = CLEARF, L = cast.lersi, W = K.water, H0 = K.homage;
+      if (!L || !L.ready) return;
+      const B0 = props.bowl.userData.home || props.bowl.position;
+      const h = handKeys(t, [[H0 + 1.3, H0 + 2.1, W_CHEST], [H0 + 2.2, H0 + 3.0, W_BROW], [H0 + 4.0, H0 + 4.8, W_CHEST],
+                             [K.sak - 0.6, K.sak + 0.8, W_LOW], [W - 0.5, W + 0.6, H_BOWL], [W + 5.2, W + 6.2, null]]);
+      const lean = keyed(t, 0, [[H0 + 2.2, H0 + 3.0, SW.lean], [H0 + 4.0, H0 + 4.8, 0.03],
+                                [W - 0.5, W + 0.6, LEAN_MAT], [W + 0.7, W + 1.9, 0.3], [W + 4.1, W + 5.15, LEAN_MAT], [W + 5.2, W + 6.2, 0]]);
+      const neck = keyed(t, 0, [[H0 + 2.2, H0 + 3.0, SW.neck], [H0 + 4.0, H0 + 4.8, 0.05], [W - 0.5, W + 0.4, 0.12], [W + 1.0, W + 1.8, 0],
+                                [W + 4.0, W + 4.6, 0.12], [W + 5.2, W + 6.0, 0]]);
+      lcBody({ R: h, L: h, lean, neck });
+      lcLook(t, [[W - 0.5, W + 0.2, [B0.x, 0.12, B0.z]], [W + 1.2, W + 1.9, 'lens'], [W + 3.9, W + 4.5, [B0.x, 0.12, B0.z]],
+                 [W + 5.2, W + 5.9, 'lens']], 1.1);
+      lcBow(L, keyed(t, 0.08, [[H0 + 2.2, H0 + 3.0, SW.bow], [H0 + 4.0, H0 + 4.8, 0.1], [K.lift + 0.5, K.lift + 2.5, 0.06],
+                               [W - 0.4, W + 0.4, 0.16], [W + 1.2, W + 1.9, 0], [W + 3.9, W + 4.5, 0.14], [W + 5.2, W + 6.0, 0]]));
       L.look = 1;
     }
     function clearFrame(t) { clearBowl(t); clearShots(t); clearBody(t); }
@@ -4001,20 +3982,18 @@
       /* the candles and the incense lit for the homage */
       const fl = smo(sgk(t, K.homage + 0.4, K.homage + 1.4));
       for (const f of props.flames) f.material.opacity = fl;
-      /* his own hands: together from "Hands together", down for the water and the thread, up again for the advice */
+      /* his own hands: together from "Hands together", down for the water */
       const handsK = smo(sgk(t, K.lc2k0 + 0.6, K.lc2k0 + 1.4)) * (1 - smo(sgk(t, K.water - 0.6, K.water)));
       waiAt(handsK);
-      /* (v25.0 CP13) his own right hand is drawn only while a clasp holds it and for the thread: hidden in every other frame
-         before it, so a seek lands on the same picture */
-      if (handsK <= 0.001 && t < K.thread && FL.api && FL.api.handsRoot) FL.api.handsRoot.visible = false;
+      /* (v25.0 CP13) his own hands are drawn only while a clasp holds them: hidden in every other frame, so a seek lands
+         on the same picture */
+      if (handsK <= 0.001 && FL.api && FL.api.handsRoot) FL.api.handsRoot.visible = false;
       /* (his eyes "closed" are the film's own fade track, dimmed and never black: clearFilm) */
-      /* the master: his wai to his teachers over the tray, the chant, the mayom, the bowl, the thread */
+      /* the master: his wai to his teachers over the tray, the chant, the bowl */
       let at = LC_HEAD();
       if (t < K.water) {
-        /* (his body: clearBody) (v25.0 CP7) the verses chanted with his hands joined over the bowl, the mayom standing in
-           its water (an open hand raised by his face to hold it read as "stop"; held between his palms, its leaves covered
-           his face — both by photograph); (v25.0 CP13) his wrists at the foot of his chest: at lift 0.3 the joined fingers
-           stood before his face from the kneeling eye, the wrists being what is carried to the point (by photograph) */
+        /* (his body: clearBody) the verses chanted with his hands joined at the foot of his chest, over the bowl: joined
+           higher, his fingers stood before his face from the kneeling eye (v25.0 CP13, by photograph) */
         /* his eyes down on his hands and the mat (the tray, the candles' light at the top of the frame); up as it lifts */
         const down = [CL.x, 0.25, CL.z - 0.65];                         // (v25.2) with the tray, 10 cm nearer him than v25.0's
         /* (v25.0 CP7) not one still frame for forty seconds: a slow push in on the tray's candles under Namo tassa, his
@@ -4026,49 +4005,20 @@
         camAt([KN_EYE[0], KN_EYE[1] + 0.004 * Math.sin(t * 2 * Math.PI / 4.6), KN_EYE[2]], aimEase(KN_EYE, base, LC_HEAD(), 0.15 + 0.85 * lift));
         return;
       }
-      if (t < K.sprinkle) {
-        /* "Drink. A little." — the bowl lifted and held out to him in both hands; he leans in to it; a sip (his body and
-           the bowl: clearBody). (v25.2) The bowl is where his hands can hold it out, half a metre before him, so the client
-           leans in to drink, and the lens goes with him */
-        const lean = ezk(t, K.water + 1.1, K.water + 2.1) * (1 - ezk(t, K.water + 3.6, K.water + 4.5));
-        const e = [KN_EYE[0], KN_EYE[1] - 0.14 * lean, KN_EYE[2] - 0.3 * lean], bw = props.bowl.position;
-        fLens(isNarrow() ? 54 : 46);
-        camAt(e, aimEase(e, LC_HEAD(), [bw.x, bw.y + 0.1, bw.z], 0.25 + 0.5 * ezk(t, K.water + 0.4, K.water + 1.6) * (1 - ezk(t, K.water + 3.8, K.water + 4.8))));
-        return;
-      }
-      if (t < K.thread) {
-        /* the leaves dipped and flicked toward him: the drops falling through his view on each snap (his body: clearBody) */
-        dropsAt(t, clearSnaps().map(s => s + 0.04), KN_EYE);
-        fLens(isNarrow() ? 56 : 48);
-        camAt(KN_EYE, [LC_HEAD()[0], LC_HEAD()[1] + 0.15, LC_HEAD()[2]]);
-        return;
-      }
-      dropsAt(t, null, KN_EYE);
       if (t < K.advice) {
-        /* "Your wrist." — his right hand out, the white thread tied round it in the master's hands */
-        /* (v25.0 CP7) his right hand held out INTO the frame (an engine pose, `place`: its palm at that share of the frame
-           on every screen; with `reach`'s, two thirds down, his wrist and the thread lay under the frame's edge, by
-           photograph) */
-        /* (v25.0 CP13) and he LEANS IN to it, his eyes going down from the master's face to his own wrist, the master
-           leaning to meet it: from where he knelt, his hand (drawn 35 cm from his eye) filled a phone from its middle down
-           and hid the master's face, and the master's hands, a metre off in the room, met it only on the screen (by
-           photograph). They go to the wrist where it is drawn (wristShare) */
-        const A = FL.api, lean = smo(sgk(t, K.thread, K.thread + 1.4));
-        if (A && A.handPose) A.handPose('place', smo(sgk(t, K.thread, K.thread + 0.9)), { p: isNarrow() ? TIE.pN : TIE.p });
-        if (A && A.handsRoot) { A.handsRoot.visible = true; A.armR.visible = true; }
-        const fl = lp(isNarrow() ? 56 : 48, isNarrow() ? TIE.flN : TIE.flD, lean);
-        fLens(fl);
-        const e = [KN_EYE[0], KN_EYE[1] - TIE.dy * lean, KN_EYE[2] - TIE.dz * lean], h0 = LC_HEAD();
-        camAt(e, aimEase(e, [h0[0], h0[1] + 0.15, h0[2]], TIE.aim, lean));
-        /* (his hands at the wrist: clearBody) the thread seen once his hands have wound it the first time */
-        threadOn(t > K.thread + 1.95);
+        /* "Drink. A little." — the bowl lifted in both his palms and held out to him; he leans in to it; a sip; the bowl
+           set down, the master sitting up (his body and the bowl: clearBody, clearBowl). (v25.2) The bowl is where his hands
+           can hold it out, half a metre before him, so the client leans in to drink, and the lens goes with him. (v25.3)
+           ONE shot from the water to the advice: his eyes go to the bowl with it and come back to the master's face as he
+           sits up, where the advice's own lens takes over with no jump (the leaves' shot and the thread's stood between
+           them; without them a cut from his face to his face a degree wider would have read as a fault) */
+        const W = K.water, lean = ezk(t, W + 1.1, W + 2.1) * (1 - ezk(t, W + 3.6, W + 4.5)), back = ezk(t, K.advice - 1.3, K.advice - 0.1);
+        const e = [KN_EYE[0], KN_EYE[1] - 0.14 * lean, KN_EYE[2] - 0.3 * lean], bw = props.bowl.position;
+        const onBowl = (0.25 * ezk(t, W, W + 0.7) + 0.5 * ezk(t, W + 0.4, W + 1.6) * (1 - ezk(t, W + 3.8, W + 4.8))) * (1 - back);
+        fLens(lp(isNarrow() ? 54 : 46, isNarrow() ? 52 : 44, back));
+        camAt(e, aimEase(e, LC_HEAD(), [bw.x, bw.y + 0.1, bw.z], onBowl));
         return;
       }
-      /* (v25.0 CP13) the advice opens on a cut back to his face, the hand and its thread put down in the cut (eased down
-         under the camera, `place` went back to the WALKING rest, still in the frame, by photograph) */
-      { const A = FL.api;
-        threadOn(false);
-        if (A && A.handsRoot) A.handsRoot.visible = false; }
       /* "Go to a temple this week..." — his face, the colour back, warm */
       fLens(lp(isNarrow() ? 52 : 44, isNarrow() ? 48 : 40, smo(sgk(t, K.advice, K.end))));
       camAt(KN_EYE, at);
@@ -4096,37 +4046,43 @@
       shopAt({ u: lp(0.42, 0.86, smo(sgk(t, t0 + 1.0, t0 + 2.4))) });
     }
 
-    /* (v25.2) at the start of B and C, packing: his right hand on what he puts away (the bowl, the thread), bent to it,
-       until he is asked; then he lets it be and sits up, his eyes from it to the client — over a second and more, where
-       v25.0 lifted a straight arm back from a point in the air */
-    function endPack(t, t0, t1, what) {
+    /* (v25.2) at the start of B and C he is packing, bent to the bowl, until he is asked; then he lets it be and sits
+       up, his eyes from it to the client — over a second and more, where v25.0 lifted a straight arm back from a point in
+       the air. (v25.3) Both his palms cradle the bowl (the pose the decision leaves him in); C opened on the thread, which
+       is gone with its tying */
+    function endPack(t, t0, t1) {
       const L = cast.lersi; if (!L || !L.ready) return;
-      const B0 = props.bowl.userData.home || props.bowl.position, th = props.thread.position, bowl = what === 'bowl';
-      const R = bowl ? { bowl: 1 } : { palm: [th.x, 0.045, th.z], aim: 'down', pole: 'floor' };
-      lcBody({ R: handKeys(t, [[-1, 0, R], [t0, t1, null]]), lean: keyed(t, bowl ? LEAN_MAT : 0.6, [[t0, t1 + 0.1, 0]]),
-               side: keyed(t, bowl ? 0 : -0.15, [[t0, t1 + 0.1, 0]]) });
-      lcLook(t, [[-1, 0, bowl ? [B0.x, 0.1, B0.z] : [th.x, 0.03, th.z]], [t0 + 0.2, t0 + 1.0, 'lens']], 1.1);
+      const B0 = props.bowl.userData.home || props.bowl.position;
+      const h = handKeys(t, [[-1, 0, H_BOWL], [t0, t1, null]]);
+      lcBody({ R: h, L: h, lean: keyed(t, LEAN_MAT, [[t0, t1 + 0.1, 0]]), neck: keyed(t, 0.1, [[t0, t1, 0]]) });
+      lcLook(t, [[-1, 0, [B0.x, 0.1, B0.z]], [t0 + 0.2, t0 + 1.0, 'lens']], 1.1);
       lcBow(L, keyed(t, 0.12, [[t0, t1, 0]]));
       L.look = 1;
     }
     /* (v25.2) THE DECISION, IN PLAY: he begins to pack, as its words say ("Lersi Chin is packing his things"; v25.0 left
-       him sitting idle under them) — bent to the bowl, his right hand on its side, his eyes on it: the pose ending B opens
-       on. Eased in over a second and a half of wall time from when it opens; a Continue lands with him already there.
-       Play's own: a film's frame sets his body itself, and films.end and reset() give it back */
-    const PACK_LOOK = new THREE.Vector3();
+       him sitting idle under them) — bent to the bowl, his eyes on it: the pose endings B and C open on. Eased in over a
+       second and a half of wall time from when it opens; a Continue lands with him already there. (v25.3) Both his palms
+       under the bowl; and he is not a still picture while the player reads: every eleven seconds he looks up at the one
+       who has not spoken yet, a breath, and back down to his things. Play's own: a film's frame sets his body itself,
+       and films.end and reset() give it back */
+    const PACK_LOOK = new THREE.Vector3(), _pkB = new THREE.Vector3();
     function packTick(now) {
       if (FL.key || phase !== 'decide' || !play.packAt) return;
       const L = cast.lersi; if (!L || !L.ready || !L.group.visible) return;
       const B0 = props.bowl.userData.home || props.bowl.position, u = now - play.packAt;
-      lcBody({ R: handKeys(u, [[0.35, 1.95, { bowl: 1 }]]), lean: keyed(u, 0, [[0.2, 1.9, LEAN_MAT]]) });
-      L.lookAt = PACK_LOOK.set(B0.x, 0.1, B0.z); L.lookK = null; L.neck = 1.1;
-      L.bow = u > 0.3 ? 0.12 : 0;
+      const h = handKeys(u, [[0.35, 1.95, H_BOWL]]);
+      lcBody({ R: h, L: h, lean: keyed(u, 0, [[0.2, 1.9, LEAN_MAT]]), neck: keyed(u, 0, [[0.3, 1.6, 0.1]]) });
+      const c = u < 7 ? -1 : (u - 7) % 11, up = c < 0 ? 0 : ezk(c, 0, 0.8) * (1 - ezk(c, 2.4, 3.3));
+      camera.getWorldPosition(PACK_LOOK); PACK_LOOK.lerp(_pkB.set(B0.x, 0.1, B0.z), 1 - up);
+      L.lookAt = PACK_LOOK; L.lookK = null; L.neck = 1.1;
+      L.bow = u > 0.3 ? 0.12 * (1 - up) : 0;
     }
-    /* (v25.2) his wai as they go (B, C): up over most of a second, his head bowing into it, held into the cut */
+    /* (v25.2) his wai as they go (B, C): up over most of a second, his head bowing into it, held into the cut; (v25.3) at
+       his chest, his back and his neck inclined with his head */
     function endWai(t, t0) {
       const L = cast.lersi; if (!L || !L.ready) return;
-      const w = handKeys(t, [[t0 + 0.05, t0 + 0.95, VW_0]]);
-      lcBody(w ? { R: w, L: w } : null);
+      const w = handKeys(t, [[t0 + 0.05, t0 + 0.95, W_CHEST]]);
+      lcBody(w ? { R: w, L: w, lean: keyed(t, 0, [[t0 + 0.35, t0 + 1.05, 0.07]]), neck: keyed(t, 0, [[t0 + 0.35, t0 + 1.05, 0.08]]) } : null);
       lcBow(L, keyed(t, 0, [[t0 + 0.35, t0 + 1.05, 0.16]]));
       lcLook(t, [[-1, 0, 'lens']], 1.1); L.look = 1;
     }
@@ -4193,9 +4149,9 @@
       clothPiece(true); pieceShow(false);
       const L = cast.lersi, P = cast.pong;
       if (t < T.go) {
-        lcSeated(); pongDoor(); props.lcThings.visible = true; mayomAt('bowl'); lcBlockOn(true);
+        lcSeated(); pongDoor(); props.lcThings.visible = true; lcBlockOn(true);
         /* packing (his hand on the bowl) until he is asked; then he lets it be, and the long look */
-        endPack(t, T.q2B1 + 0.9, T.q2B1 + 2.1, 'bowl');
+        endPack(t, T.q2B1 + 0.9, T.q2B1 + 2.1);
         if (P) { P.lookAt = t > T.pg2B1 - 0.4 && t < T.go ? camera : L && L.head ? L.head : null; P.neck = 1.0; }
         waiAt(smo(sgk(t, T.q2B1, T.q2B1 + 0.5)) * (1 - smo(sgk(t, T.q2B1 + SECS.q2B1 - 0.4, T.q2B1 + SECS.q2B1 + 0.3))));
         /* "Don't take Pong's word" — a look to Pong at the shutter; and his "This time we check first" */
@@ -4206,7 +4162,7 @@
       if (t < T.empty) {
         /* he wais; up (a cut), and the two go out under the shutter — Pong lifting it as they reach it */
         const tw = T.go + 1.5;
-        if (t < tw) { lcSeated(); pongDoor(); props.lcThings.visible = true; mayomAt('bowl');
+        if (t < tw) { lcSeated(); pongDoor(); props.lcThings.visible = true;
           const w = smo(sgk(t, T.go, T.go + 0.5)) * (1 - smo(sgk(t, tw - 0.4, tw)));
           endWai(t, T.go); waiAt(w); kneelShot(t, 46, 46); return; }
         waiAt(0);
@@ -4233,16 +4189,16 @@
       const L = cast.lersi, P = cast.pong;
       if (t < T.alone) { fLook('CLEAR'); fogFilm(0); shopAt({ u: 0.42, led: 1, ceil: 0, night: true }); }
       if (t < T.go) {
-        lcSeated(); pongDoor(); props.lcThings.visible = true; mayomAt('bowl'); lcBlockOn(true);
-        /* the thread going into his bag when he is asked; he stops; sits back; the long look, not unkind */
-        endPack(t, T.stop - 0.5, T.stop + 0.8, 'thread');
+        lcSeated(); pongDoor(); props.lcThings.visible = true; lcBlockOn(true);
+        /* packing (his hands on the bowl) when he is asked; he stops; sits back; the long look, not unkind */
+        endPack(t, T.stop - 0.5, T.stop + 0.8);
         if (P) { P.lookAt = t > T.pg2C1 - 0.3 && t < T.q2C2 + 0.4 ? camera : L && L.head ? L.head : null; P.neck = 1.0; }
         if (t > T.pg2C1 - 0.2 && t < T.q2C2 - 0.1) pongShot(); else kneelShot(t, 50, 40, [T.stop, T.lc2C3]);
         return;
       }
       if (t < T.alone) {
         const tw = T.go + 1.4;
-        if (t < tw) { lcSeated(); pongDoor(); props.lcThings.visible = true; mayomAt('bowl');
+        if (t < tw) { lcSeated(); pongDoor(); props.lcThings.visible = true;
           endWai(t, T.go); kneelShot(t, 46, 46); return; }
         goOut(t, tw, T.alone - 0.2);
         const e = [-0.35, 1.62, 0.9];
@@ -4275,12 +4231,12 @@
         castVis({ goldman: false, mallA: false, mallB: false, lersi: true, pong: true });
         if (t < T.go) {
           shopAt({ u: 0.42 });
-          lcSeated(); pongDoor(); props.lcThings.visible = true; mayomAt('bowl'); lcBlockOn(true);
+          lcSeated(); pongDoor(); props.lcThings.visible = true; lcBlockOn(true);
           const w = smo(sgk(t, T.q2D1, T.q2D1 + 0.5)) * (1 - smo(sgk(t, T.lc2D1 + SECS.lc2D1 * 0.6, T.lc2D1 + SECS.lc2D1)));
           waiAt(w);
           /* (v25.2) his wai answering the client's thanks: up over a second, his head bowing into it, down as his words end */
-          const wl = handKeys(t, [[T.lc2D1 - 0.5, T.lc2D1 + 0.45, VW_0], [T.lc2D1 + SECS.lc2D1 * 0.6, T.lc2D1 + SECS.lc2D1 + 0.25, null]]);
-          lcBody(wl ? { R: wl, L: wl } : null);
+          const wl = handKeys(t, [[T.lc2D1 - 0.5, T.lc2D1 + 0.45, W_CHEST], [T.lc2D1 + SECS.lc2D1 * 0.6, T.lc2D1 + SECS.lc2D1 + 0.25, null]]);
+          lcBody(wl ? { R: wl, L: wl, neck: keyed(t, 0, [[T.lc2D1 - 0.15, T.lc2D1 + 0.55, 0.08], [T.lc2D1 + SECS.lc2D1 * 0.5, T.lc2D1 + SECS.lc2D1 * 0.5 + 0.6, 0]]) } : null);
           lcBow(L, keyed(t, 0, [[T.lc2D1 - 0.15, T.lc2D1 + 0.55, 0.15], [T.lc2D1 + SECS.lc2D1 * 0.5, T.lc2D1 + SECS.lc2D1 * 0.5 + 0.6, 0]]));
           if (L) { L.look = 1; gaze(L, true, 1.1); }
           if (P) { P.lookAt = t > T.pg2D1 - 0.4 ? camera : L && L.head ? L.head : null; P.neck = 1.0; }
@@ -4440,10 +4396,10 @@
          play's (a scene's own end, a skip, a Retry) — the fog back on if play goes on in it */
       end() {
         const key = FL.key, fogBack = (key === 'call' || key === 'visit' || key === 'exam') && !play.cleared;
-        waiAt(0); handFree(); threadOn(false); lcPose(null, 0);
+        waiAt(0); handFree(); lcPose(null, 0);
         /* (v25.1 F4) the coda's page put away, so a replay (reset() runs this) never opens on the months-later notebook */
         namesAt(-1);
-        handPhone.visible = false; amuletHand.visible = false; drops.visible = false;
+        handPhone.visible = false; amuletHand.visible = false;
         for (const s of ['hand', 'lc']) if (held[s]) held[s].visible = false;
         if (shop.phone) shop.phone.g.visible = true;
         shop.phoneOn = 0; shop.phoneSecs = null;
@@ -4500,7 +4456,7 @@
       for (const f of props.flames) f.material.opacity = 0;
       clothPiece(false); pieceShow(true);
       props.lcThings.visible = false;
-      for (const o of [props.bowl, props.mayom, props.thread, props.cloth, props.khan, props.yaam]) if (o) o.visible = true;
+      for (const o of [props.bowl, props.cloth, props.khan, props.yaam]) if (o) o.visible = true;
       shopCtl.night(false); shopCtl.shutter(1, 0); shopCtl.lights(1, 0); shopCtl.ceiling(1, 0); shopCtl.lap('sales'); shopCtl.phone('');
       props.tillTo = props.bagTo = props.jacketTo = props.fridgeTo = 0;
       /* the people where the day began: Lersi Chin and Pong not yet come, the goldsmith's man at his counter */
@@ -4522,13 +4478,11 @@
     }
     function dispose() {
       alive = false;
-      threadOn(false);
       const geos = new Set(), ms = new Set();
       world.traverse(o => {
         if (o.geometry) geos.add(o.geometry);
         if (o.material) for (const m of (Array.isArray(o.material) ? o.material : [o.material])) ms.add(m);
       });
-      for (const o of [wristThread]) o.traverse(q => { if (q.geometry) geos.add(q.geometry); if (q.material) ms.add(q.material); });
       for (const p of parsedGlb.values()) p.then(({ scene: sc }) => sc.traverse(o => {
         if (o.geometry) o.geometry.dispose();
         if (o.material) for (const m of (Array.isArray(o.material) ? o.material : [o.material])) {
@@ -4575,8 +4529,11 @@
           P.head.updateWorldMatrix(true, false); P.head.getWorldQuaternion(hq); P.head.getWorldPosition(hp); camera.getWorldPosition(cp);
           return +THREE.MathUtils.radToDeg(P.faceLocal.clone().applyQuaternion(hq).angleTo(cp.sub(hp).normalize())).toFixed(1); })(),
         looking: P.lookAt === camera ? 'lens' : P.lookAt ? 'thing' : (P.look > 0 ? 'play' : null), lookW: +P.lookW.toFixed(2),
-        grip: P.grip ? Object.keys(P.grip).join('+') : null, gripK: +(P.gripK || 0).toFixed(2),
-        miss: P.miss != null ? +P.miss.toFixed(3) : null }])),                // (v25.2) how far a hand stopped short of where it was sent (m)
+        grip: (P.gripK || 0) > 0.001 ? 'solved' : null, gripK: +(P.gripK || 0).toFixed(2),
+        /* (v25.2) how far a hand stopped short of where it was sent (m); (v25.3) each wrist's bend, the hand's line off the
+           forearm's (degrees, left then right): his own takes bend it to 57 */
+        miss: P.miss != null ? +P.miss.toFixed(3) : null,
+        wrist: k === 'lersi' ? [HS.Left, HS.Right].map(h => Math.round(h.bend * 57.3)) : null }])),
       /* (v25.2) a probe's measure (tools/probes/framecheck.mjs): named points of what a shot may be about, in the room,
          each with whether it is drawn — the people's faces and hands, his things, the shop's — so a film's frames can be
          measured on a phone and a desktop by the same names */
@@ -4588,7 +4545,7 @@
           put(k + '.face', P.head || P.group, P.head ? 0.08 : 1.5);
           if (P.waiHand) { put(k + '.handL', P.waiHand.Left && P.waiHand.Left.bone); put(k + '.handR', P.waiHand.Right && P.waiHand.Right.bone); }
         }
-        for (const k of ['bowl', 'mayom', 'cloth', 'khan', 'thread', 'yaam', 'wallet', 'note', 'envelope', 'till', 'bag', 'jacket', 'fridge', 'sw', 'shelf', 'stand'])
+        for (const k of ['bowl', 'cloth', 'khan', 'yaam', 'wallet', 'note', 'envelope', 'till', 'bag', 'jacket', 'fridge', 'sw', 'shelf', 'stand'])
           put(k, props[k]);
         put('phone', shop.phone && shop.phone.g); put('handPhone', handPhone); put('notebook', shop.ledger); put('laptop', shop.lapG);
         put('piece', props.pieces && props.pieces[play.piece]); put('heldPiece', held.lc); put('amulet', amuletHand);
@@ -5485,11 +5442,6 @@
     sfx(K.lift + 0.2, 'x2lift', 0.45);         // the room's sound coming back clear as the grey goes (a soft opening of the air)
     sfx(K.lc2drink, 'lc2drink', 1);            // "Drink. A little."
     sfx(K.water + 2.1, 'x2sip', 0.5);         // (v25.2) its sip (0.5 s in) as the bowl he holds out tips to him
-    /* (v25.2) the droplets on each flick's snap (clearSnaps: 2.4, 3.05 and 3.7 s into the leaves; the sprinkle's own is
-       6.0 s, his hand taking the bundle, dipping it, flicking it and standing it back in the water) */
-    sfx(K.sprinkle + 2.38, 'x2sprinkle', 0.55); sfx(K.sprinkle + 3.03, 'x2sprinkle', 0.55); sfx(K.sprinkle + 3.68, 'x2sprinkle', 0.5);
-    sfx(K.lc2wrist, 'lc2wrist', 1);            // "Your wrist."
-    sfx(K.lc2wrist + 2.55, 'x2thread', 0.5);   // the cotton thread round it, knotted (v25.2: its last two pulls on the knot's two)
     sfx(K.lc2k2, 'lc2k2', 1);                  // "Go to a temple this week. Make merit. If the fog comes back, doctor first, then me."
     sfxFade(K.end - 2.0, K.end - 0.05, 'x2clearmus');
     step(K.end, () => stage.films.end());

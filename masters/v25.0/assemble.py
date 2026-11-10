@@ -32,25 +32,13 @@ EDITS = [
      "      stockLod();                                  // (v24.22) the stock's levels for THIS frame's lens, never the last one's (v25.0: one world)\n"),
     # chapter 1's ending D's sky point: not used here
     ("    const DUSK_SKY = new THREE.Vector3();\n", ""),
-    # gripTick: a grip eased in and out (P.gripK) — the solved turns blended from the take's own; copied first, because
-    # three's slerpQuaternions copies its first quaternion into the target before blending (v23.6)
-    ("    function gripTick(P) {\n",
-     "    const _igq = new THREE.Quaternion();            // (v25.0) a solved turn, copied before it is blended (gripTick)\n    function gripTick(P) {\n"),
-    ("        armTo(a, _ig, _ic);\n      }\n    }\n",
-     "        armTo(a, _ig, _ic);\n"
-     "        /* (v25.0) eased by P.gripK from where the take holds the arm (Lersi Chin's wai, reach and bowl); (v25.2) each arm by\n"
-     "           its own share when the film gives one (P.gripKS) */\n"
-     "        const gk = P.gripKS ? P.gripKS[sd] : P.gripK;\n"
-     "        if (gk != null && gk < 0.999) {\n"
-     "          _igq.copy(a.up.quaternion); a.up.quaternion.slerpQuaternions(a.wUp, _igq, gk);\n"
-     "          _igq.copy(a.fore.quaternion); a.fore.quaternion.slerpQuaternions(a.wFore, _igq, gk);\n"
-     "        }\n      }\n    }\n"),
-    # (v25.2) each arm's elbow pole by the action it does (Lersi Chin: low and in for a wai, out and back to the floor)
-    ("        const pl = (P.o.grip.pole || [0.35, -0.6, -0.15]);\n",
-     "        /* (v25.2) the action's own pole when the film gives one (P.gripPole) */\n"
-     "        const pl = (P.gripPole && P.gripPole[sd]) || P.o.grip.pole || [0.35, -0.6, -0.15];\n"),
+    # (v25.3) gripTick is chapter 1's own again: Lersi Chin's arms are no longer bent by the drivers' solver (v25.0's
+    # eased grip and v25.2's per-arm share and pole are out with it). His elbow is a hinge in every key of his takes and
+    # that solver bends it out of its plane; his arms are solved in the parts (b_build3: armSolve) after gripTick has
+    # kept each arm's own turns (wUp, wFore), which peopleTick gives back before the mixer runs again.
     # (v25.2) a lean laid on a take after the mixer and before the look (Lersi Chin bending to the mat), so the look turns
-    # the head on the leaned body and gripTick solves the arms from the leaned shoulders
+    # the head on the leaned body and the arms are solved from the leaned shoulders (v25.3: by the parts' bodyAfter, on
+    # P.after; the edit itself is the P.preLook line further down)
     # (v25.2) his notebook: the real one (a checked picture on white, then Meshy: masters/v25.2/make.sh), turned so its
     # pages read from his side; the blue box stands in until it lands (Chad, 10 Nov: "the wallet which is just a block of
     # colour" — the notebook was the same block, found by the prop audit)

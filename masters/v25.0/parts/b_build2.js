@@ -5,7 +5,7 @@
        them (the visit film shows them). */
     const props = { till: null, tillK: 0, tillTo: 0, bag: null, bagFlap: null, bagK: 0, bagTo: 0, jacket: null, jacketK: 0, jacketTo: 0,
                     fridge: null, fridgeDoor: null, fridgeLight: null, fridgeK: 0, fridgeTo: 0, wallet: null, note: null, sw: null, swDot: null,
-                    shelf: null, piece: null, pieces: {}, mat: null, matK: 1, matTo: 1, bowl: null, water: null, mayom: null, thread: null,
+                    shelf: null, piece: null, pieces: {}, mat: null, matK: 1, matTo: 1, bowl: null, water: null,
                     cloth: null, khan: null, flames: [], yaam: null, envelope: null, stand: null, ribbons: [], sway: 0, lcThings: null,
                     ceil: null, ceilS: null, ceilK: 1, ceilFrom: 1, ceilTo: 1, c0: 0, c1: 0, night: false, nightShut: [], signs: [], corSky: null, corCeil: null };
     function buildProps() {
@@ -151,9 +151,11 @@
         }
       }
       /* LERSI CHIN'S THINGS (§2.2 #7), hidden until the visit: his woven mat on the floor (rolled up in the film until he
-         lays it), the holy-water bowl, the seven-leaf mayom bundle, a skein of white cotton thread, a clean white cloth,
-         the homage tray (a footed brass phan of marigolds and jasmine, two candles, three sticks of incense) and his
-         woven cloth bag */
+         lays it), the holy-water bowl, a clean white cloth, the homage tray (a footed brass phan of marigolds and
+         jasmine, two candles, three sticks of incense) and his woven cloth bag. (v25.3) The seven-leaf mayom bundle and
+         the skein of white thread are gone with the two things they were for (Chad, 10 Nov 2026: "no need for lersi chin
+         to sprinkle water with the leaf thing and no need for the tieing of string"; a prop serves the story or goes,
+         v9.5); the bundle's model and its recipe are kept in masters/v25.0 */
       { const g = new THREE.Group(); g.visible = false; S0.add(g); props.lcThings = g;
         const mat = new THREE.Group(); mat.position.set(MAT.x, 0.004, MAT.z - MAT.d / 2); g.add(mat); props.mat = mat;
         const mt = tex(makeReedMat(THREE, cnv, 5207)); mt.repeat.set(2, 3);
@@ -162,8 +164,8 @@
         mat.userData.plane = mp; mat.userData.roll = roll;
         const at = (dx, dz) => [LC.x + dx, LC.z + dz];
         /* the bowl: a turned silver bowl on its foot, water in it */
-        /* (v25.2) before him, between his feet and the tray, in his hands' reach as he bends to it (at his left, v25.0's place,
-           his right hand could not reach the bundle standing in it: Lersi Chin's movement, docs/V25.2-E4C2-PHONE-MOTION-MODELS.md) */
+        /* (v25.2) before him, between his feet and the tray, in his hands' reach as he bends to it (at his left, v25.0's
+           place, it was out of his right hand's reach: Lersi Chin's movement, docs/V25.2-E4C2-PHONE-MOTION-MODELS.md) */
         { const [x, z] = at(0, 0.3); const bg = new THREE.Group(); bg.position.set(x, 0.006, z); g.add(bg); props.bowl = bg;
           const prof = [[0, 0], [0.05, 0], [0.055, 0.012], [0.045, 0.02], [0.07, 0.03], [0.1, 0.06], [0.112, 0.095], [0.108, 0.1], [0.098, 0.064], [0.07, 0.036], [0, 0.032]]
             .map(([r, y]) => new THREE.Vector2(r, y));
@@ -177,32 +179,6 @@
              hidden the moment it lands, the water laid inside it at its own height */
           fitModel('e4khannam', bg, BOWL_W, 'x', 0, 0).then(m => { if (!m || !alive) return; lathe.visible = false;
             wtr.position.y = m.userData.fit.y * BOWL_WATER[0]; wtr.scale.setScalar(m.userData.fit.x * BOWL_WATER[1] / 0.1); }); }
-        /* the mayom bundle across the bowl's rim: seven sprigs tied. Its frame (what every pose turns): the tied end on the
-           group's origin, the leaves along +x, their face up (+y) */
-        /* (v25.2) standing in the water, its leaves up over the rim toward the client, its tie where his right palm takes it */
-        { const mg = new THREE.Group(); const [x, z] = at(0, 0.3); mg.position.set(x - 0.02, 0.11, z); mg.rotation.set(0, -1.03, 0.94); g.add(mg); props.mayom = mg;
-          /* (v25.0 CP7) its two resting places: standing in the bowl's water, its leaves out over the rim (the bowl is chanted
-             over with it in the water), and laid on the mat beside the bowl once it has been used (mayomAt) */
-          mg.userData.bowlP = mg.position.clone(); mg.userData.bowlR = mg.rotation.clone();
-          mg.userData.matP = new THREE.Vector3(x + 0.12, 0.012, z + 0.14); mg.userData.matR = new THREE.Euler(0, 0.9, 0);
-          /* (v25.0 CP6) the stand-in, drawn only if the model never lands */
-          const sg = new THREE.Group(); mg.add(sg);
-          const mLeafM = M({ color: 0x3e7a2e, roughness: 0.7, side: THREE.DoubleSide }), mStem = M({ color: 0x5a6a2a, roughness: 0.8 });
-          for (let k = 0; k < 7; k++) { const a = (k - 3) * 0.12, st = new THREE.Mesh(new THREE.CylinderGeometry(0.002, 0.002, 0.2, 5), mStem);
-            st.rotation.z = Math.PI / 2 + a; st.position.set(0.02, k * 0.002, (k - 3) * 0.008); sg.add(st);
-            for (let j = 0; j < 9; j++) { const lf = new THREE.Mesh(new THREE.PlaneGeometry(0.032, 0.014), mLeafM);
-              lf.position.set(0.04 + j * 0.013, Math.sin(a) * 0.05 + (j % 2 ? 0.006 : -0.006), (k - 3) * 0.008 + (j % 2 ? 0.01 : -0.01));
-              lf.rotation.set(Math.PI / 2 + (j % 2 ? 0.5 : -0.5), 0, a); sg.add(lf); } }
-          sg.add(new THREE.Mesh(new THREE.TorusGeometry(0.012, 0.003, 6, 14), M({ color: 0xf2f0e8, roughness: 0.8 })));
-          /* the bundle itself (a checked picture on white, then Meshy: masters/v25.0/models). Meshy made it a flat fan
-             standing in its own x-y plane, leaves up, tied 16 % from its foot: turned so the leaves run along +x and its
-             face lies up, the tie moved onto the origin */
-          const mm = new THREE.Group(); mm.rotation.x = -Math.PI / 2; mg.add(mm);
-          fitModel('e4mayom', mm, MAYOM_L, 'x', 0, -Math.PI / 2).then(m => { if (!m || !alive) return; sg.visible = false;
-            m.position.x += m.userData.fit.x * (0.5 - MAYOM_TIE); m.position.y -= m.userData.fit.y / 2; }); }
-        /* the white thread: a skein, coiled */
-        { const [x, z] = at(-0.34, 0.34); const th = new THREE.Group(); th.position.set(x, 0.012, z); g.add(th); props.thread = th;
-          for (let k = 0; k < 3; k++) { const tr = new THREE.Mesh(new THREE.TorusGeometry(0.028 - k * 0.002, 0.0028, 6, 24), M({ color: 0xf4f2ea, roughness: 0.85 })); tr.rotation.x = Math.PI / 2; tr.position.y = k * 0.004; th.add(tr); } }
         /* the clean white cloth, folded, where the piece will be set */
         /* (v25.2) the cloth itself (a checked picture on white, then Meshy: a cotton cloth folded flat), pressed to a cloth's
            thickness (Meshy folded it 3.6 cm thick), lying where the box lay; the piece is set on its top (props.clothTop,

@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "25.2"
+VERSION = "25.3"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -476,7 +476,6 @@ ASSETS = {
     'e4tanitab':    ('assets/e4tanitab.glb', True, False),    # a Nang Tani powder tablet: pale green, a standing woman in relief (5.5 cm)
     'e4ghostjar':   ('assets/e4ghostjar.glb', True, False),   # e4c1 v24.39: Chad's "Thai ghost jar หม้อแม่นาค" by N0M4DXII (Sketchfab, CC BY-NC-SA 4.0), 16 cm, every triangle (12k), its metal kept to the band, levelled (masters/v24.39/make.sh), in the covered bowl's place on the master's low table
     'lersichin':    ('assets/lersichin.glb', True, False),    # e4c2 v25.0: Lersi Chin, Chad's own model (v24.38: his twelve takes; masters/v24.38/make.sh) — cast at last
-    'e4mayom':      ('assets/e4mayom.glb', True, False),      # e4c2 v25.0: Lersi Chin's mayom bundle, seven leafy stems tied with white thread, 24 cm — a picture on white (GPT Image 2.6), checked, then Meshy image-to-3D and its remesh, every triangle (8,166), 1024 sheets (masters/v25.0/models, make.sh models)
     'e4khannam':    ('assets/e4khannam.glb', True, False),    # e4c2 v25.0: his holy-water bowl, embossed silver on a foot, 22 cm (4,128 triangles; the same recipe)
     'e4phan':       ('assets/e4phan.glb', True, False),       # e4c2 v25.0: the homage tray, a footed brass phan of marigolds and jasmine, 26 cm (6,901 triangles; the same recipe)
     'e4till':       ('assets/e4till.glb', True, False),       # e4c2 v25.2: his cash drawer, notes and coins, 42 cm — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh)
@@ -614,7 +613,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'firstmaster', 'e4sky', 'fmshadow', 'e4noi', 'e4pong', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4pickup', 'e4nangkwak', 'e4takrut', 'e4phayant', 'e4nangkwakhd', 'e4takruthd', 'e4phayanthd', 'iconnangkwak', 'icontakrut', 'iconphayant',
            'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd', 'e4buffalo', 'e4sandalsa', 'e4sandalsb', 'e4rahu', 'e4sedan', 'e4truck', 'e4suv', 'e4moto', 'e4seat',
            'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm',
-           'e4kuman', 'e4ngang', 'e4tani', 'e4phraioil', 'e4phraitab', 'e4praicase', 'e4tanitab', 'e4ghostjar', 'lersichin', 'e4mayom', 'e4khannam', 'e4phan',
+           'e4kuman', 'e4ngang', 'e4tani', 'e4phraioil', 'e4phraitab', 'e4praicase', 'e4tanitab', 'e4ghostjar', 'lersichin', 'e4khannam', 'e4phan',
            'e4till', 'e4bag', 'e4jacket', 'e4water', 'e4drinks', 'e4wallet', 'e4switch', 'e4shelf', 'e4cloth', 'e4yaam', 'e4phone', 'e4calc', 'e4wreath', 'e4notebook'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY
 

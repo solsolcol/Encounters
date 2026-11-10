@@ -95,7 +95,7 @@
     'lc2v1': 3.29, 'lc2sit': 2.7, 'lc2tell': 1.6, 'lc2tA': 5.21,
     'lc2e1': 1.2, 'lc2e2': 0.75, 'lc2e3': 0.58, 'lc2e4': 1.93, 'lc2e5': 1.18, 'lc2e6': 4.73, 'lc2e7': 1.74,
     'lc2e8': 5.26, 'lc2e9': 4.79, 'lc2e10': 2.73, 'lc2k0': 3.21, 'lc2namo': 17.13, 'lc2sak1': 14.65, 'lc2sak2': 15.85,
-    'lc2sak3': 14.57, 'lc2drink': 1.69, 'lc2wrist': 0.92, 'lc2k2': 6.66, 'lc2w1': 9.93, 'lc2B1': 7.53, 'lc2B2': 9.77,
+    'lc2sak3': 14.57, 'lc2drink': 1.69, 'lc2k2': 6.66, 'lc2w1': 9.93, 'lc2B1': 7.53, 'lc2B2': 9.77,
     'lc2C1': 1.88, 'lc2C2': 5.45, 'lc2C3': 5.52, 'lc2D1': 2.65
   };
   /* SECS END */
@@ -122,17 +122,18 @@
   const CALL = tl(0.6, [['@pick'], [2.6], ['@ans'], ['pg2c1', 0.5], ['q2c1', 0.6], ['@offer'], ['pg2c2', 0.9], ['q2c2', 0.6],
                         ['pg2c3', 1.1], ['q2c3', 1.3], ['@black'], [1.1]]);
   /* THE VISIT (§4.2): the next evening, the shutter lifted for them */
-  const VISIT_T = tl(1.0, [['@knock'], [2.4], ['@lift'], [2.2], ['@in'], ['q2v1', 0.6], ['@altar'], [3.4], ['@intro'], ['pg2v1', 0.5],
+  const VISIT_T = tl(1.0, [['@knock'], [2.4], ['@lift'], [2.2], ['@in'], ['q2v1', 0.6], ['@altar'], [4.4], ['@intro'], ['pg2v1', 0.5],
                            ['@turn'], ['lc2v1', 0.9], ['@wai'], [1.8], ['@mat'], [4.4], ['@black'], [1.0]]);
   /* THE EXAMINATION (§4.3 P6) */
   const EXAM = tl(0.6, [['lc2e1', 0.5], ['lc2e2', 0.3], ['q2e1', 0.5], ['lc2e3', 0.3], ['q2e2', 0.6], ['lc2e4', 0.4], ['q2e3', 0.6],
                         ['lc2e5', 0.4], ['q2e4', 0.6], ['lc2e6', 0.4], ['@still'], [6.2], ['@eyes'], ['lc2e7', 0.4], ['q2e5', 0.6],
-                        ['@fetch'], [5.6], ['lc2e8', 1.0], ['@believe'], ['lc2e9', 0.8], ['q2e6', 0.4], ['lc2e10', 1.4]]);
-  /* THE CLEARING (§4.3 P7): the homage, Namo tassa, the Sakkatvā verses, the water, the leaves, the thread — the fog
-     lifts under the second and third verses */
+                        ['@fetch'], [6.2], ['lc2e8', 1.0], ['@believe'], ['lc2e9', 0.8], ['q2e6', 0.4], ['lc2e10', 1.4]]);
+  /* THE CLEARING (§4.3 P7): the homage, Namo tassa, the Sakkatvā verses, the water — the fog lifts under the second and
+     third verses. (v25.3, Chad: "no need for lersi chin to sprinkle water with the leaf thing and no need for the tieing
+     of string": the leaves' six seconds and the thread's five and a half are out; the water's own time is the bowl
+     lifted, held out, tipped, set down and his hands home, 6.4 s) */
   const CLEARF = tl(0.8, [['lc2k0', 0.6], ['@homage'], [5.2], ['@namo'], ['lc2namo', 0.6], ['@sak'], ['lc2sak1', 0.4], ['@lift'],
-                          ['lc2sak2', 0.4], ['lc2sak3', 0.8], ['@water'], ['lc2drink', 0.6], [3.2], ['@sprinkle'], [6.0], ['@thread'],
-                          ['lc2wrist', 0.4], [4.2], ['@advice'], ['lc2k2', 1.4]]);
+                          ['lc2sak2', 0.4], ['lc2sak3', 0.8], ['@water'], ['lc2drink', 0.6], [4.1], ['@advice'], ['lc2k2', 1.4]]);
   /* THE ENDINGS (§4.5) and THE CODA (§4.6), each on its own clock; the coda follows each ending at `coda` */
   const END = {
     A: tl(0.6, [['@post'], [2.0], ['q2A1', 0.6], [2.4], ['@days'], [6.6], ['@call'], ['pg2A1', 0.5], ['q2A2', 0.4], ['pg2A2', 1.4],
@@ -193,7 +194,7 @@
     /* (§3.2) declared reuse, each with its reason — the shop is his (chapter 1's World S, Chad's direction, 9 Nov); Pong
        is the friend who sent him and now vouches first-hand; the piece he took in chapter 1 comes back to be seen as
        what it is; the mall's people are the same mall's */
-    assets: ['lersichin', 'e4pong', 'e4nangkwak', 'e4takrut', 'e4phayant', 'e4mayom', 'e4khannam', 'e4phan',
+    assets: ['lersichin', 'e4pong', 'e4nangkwak', 'e4takrut', 'e4phayant', 'e4khannam', 'e4phan',
              'e4till', 'e4bag', 'e4jacket', 'e4water', 'e4drinks', 'e4wallet', 'e4switch', 'e4shelf', 'e4cloth', 'e4yaam', 'e4phone', 'e4calc', 'e4wreath', 'e4notebook',
              'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm', 'filmlaptop',
              'staffman', 'sitwoman', 'wifewalk', 'sitangry', 'fatherwalk'],

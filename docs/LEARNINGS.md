@@ -7825,3 +7825,34 @@ cut (sharing its vertices and maps) when it is small.
   was sent: castInfo, tools/probes/lcmotion.mjs); a still that looks right can hold a hand 10 cm off what it holds, and a
   palm "on" a bowl can stand 2 cm clear of it (the grip set from the stand-in's radius, not the model's, measured at its
   height). Read the number at every posed moment, then photograph (v25.2).
+- **A contact sheet cannot judge a body, and its author cannot judge it at all.** v25.2's wai was called natural from
+  thumbnails; at full size through the film's lens it was two flat hands side by side before his face. A pose is looked
+  at one picture at a time, full size, from in front, from beside the body and through the film's lens at a phone's
+  shape; the faults seen are written down before anything is said about it (v25.3; tools/probes/poselab.mjs).
+- **An elbow is a hinge: measure it, then solve about it.** In every key of Lersi Chin's twelve takes the forearm's line
+  lies in one plane of the upper arm (0.0-0.4° out), so the plane's normal IS the elbow's axis in the upper arm's frame.
+  A two-bone solver that turns each bone "the shortest way" bends the forearm about whatever axis is nearest: out of that
+  plane, sideways, the squeezed forearms of a bad wai. Solve the elbow's place by the pole, turn the upper arm to carry
+  it, and FLEX the forearm about the measured hinge. His forearm also never rolls in his takes (a constant 18°): every
+  turn of a hand is at the wrist, so a solver that shares the hand's turn with the forearm wrings the arm
+  (masters/v25.3/measure/hinge.cjs, twist.cjs).
+- **Two hands that meet are laid by their own surfaces, not by their wrists.** A rig's hands differ (20.9 and 19.9 cm, one
+  splayed wider, bracelets on both wrists): wrists set at a mirrored offset leave the fingers 3.6 cm apart. Measure each
+  palm's surface at the bind (its resting line, its fingers' band, its length, its thumb's side), lay both against one
+  plane, press them a little past their resting lines, and slide them so the fingertips are level.
+- **A gesture at a face is placed from the face.** A wai's level is where the thumbs are on HIS face (brow, nose, chin),
+  so the hands are placed from the head joint as drawn that frame (his face's profile measured once), and the head bows
+  into them; a height in the room is right for one posture only.
+- **"Upright" is the room's, even on a leaning chest.** Seated, his own take leans his chest 26° forward: hands joined in
+  the chest's frame pointed at the client like a diver's. Place the hands from the chest's joint, but stand the fingers
+  up in the room. A tray of palms is level in the room for the same reason (in the bowed head's frame it tipped its
+  load out).
+- **Hand keys must not overlap.** A raise that had not finished when the lowering's key began made the hands jump
+  between two half-done moves; each key begins where the last ended, and the timeline gives the action its seconds.
+- **A film's frame function re-poses the body every frame**, so a probe that poses a man inside a film photographs the
+  film's pose, not its own: pose from a play phase, and photograph a film by seeking it.
+- **`pkill -f name` kills the shell that typed it** when that shell's own command line contains the name (exit 144):
+  write the pattern so it cannot match itself (`pkill -f 'poselab[.]mjs'`).
+- **A plan's promise is checked off against the plan, not against the result.** v25.3's plan said the wai would come
+  "from a real motion-captured prayer"; the poses were built from measures and sources and the capture was never read.
+  Re-read the plan's own lines before writing "done", and say what was not done as planned.

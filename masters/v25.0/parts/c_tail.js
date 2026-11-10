@@ -324,11 +324,6 @@
     sfx(K.lift + 0.2, 'x2lift', 0.45);         // the room's sound coming back clear as the grey goes (a soft opening of the air)
     sfx(K.lc2drink, 'lc2drink', 1);            // "Drink. A little."
     sfx(K.water + 2.1, 'x2sip', 0.5);         // (v25.2) its sip (0.5 s in) as the bowl he holds out tips to him
-    /* (v25.2) the droplets on each flick's snap (clearSnaps: 2.4, 3.05 and 3.7 s into the leaves; the sprinkle's own is
-       6.0 s, his hand taking the bundle, dipping it, flicking it and standing it back in the water) */
-    sfx(K.sprinkle + 2.38, 'x2sprinkle', 0.55); sfx(K.sprinkle + 3.03, 'x2sprinkle', 0.55); sfx(K.sprinkle + 3.68, 'x2sprinkle', 0.5);
-    sfx(K.lc2wrist, 'lc2wrist', 1);            // "Your wrist."
-    sfx(K.lc2wrist + 2.55, 'x2thread', 0.5);   // the cotton thread round it, knotted (v25.2: its last two pulls on the knot's two)
     sfx(K.lc2k2, 'lc2k2', 1);                  // "Go to a temple this week. Make merit. If the fog comes back, doctor first, then me."
     sfxFade(K.end - 2.0, K.end - 0.05, 'x2clearmus');
     step(K.end, () => stage.films.end());

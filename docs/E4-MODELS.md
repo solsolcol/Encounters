@@ -118,10 +118,12 @@ its credit row.
 
 | Thing | How it was made | Status |
 |---|---|---|
-| The mayom bundle (seven leafy stems tied with white thread, 24 cm) | a picture on white (GPT Image 2.6, checked), then Meshy image-to-3D and its remesh, every triangle (8,166) — `assets/e4mayom.glb`, masters/v25.0/models, make.sh models | **IN** |
+| The mayom bundle (seven leafy stems tied with white thread, 24 cm) | a picture on white (GPT Image 2.6, checked), then Meshy image-to-3D and its remesh, every triangle (8,166) — masters/v25.0/models, make.sh models | **OUT at v25.3** (Chad: "no need for lersi chin to sprinkle water with the leaf thing"): it served only the sprinkle, so it left the build and the repo with it; git history holds `assets/e4mayom.glb` (to bbe50e1), the recipe is kept |
 | The holy-water bowl (embossed silver on a foot, 22 cm) | the same — `assets/e4khannam.glb` (4,128 triangles) | **IN** |
 | The homage tray (a footed brass phan of marigolds and jasmine, 26 cm) | the same — `assets/e4phan.glb` (6,901 triangles); its candles and incense in code, stood in its flowers | **IN** |
-| His mat, the white thread, the clean cloth, his woven bag; his jacket, his bag and the till in the shop | built in code (not plants or vessels) | **IN** |
+| His mat | built in code: a flat woven mat, its reeds drawn | **IN** |
+| The clean cloth, his woven bag; his jacket, his bag, the till and the rest of the shop's props | built in code at v25.0; REAL MODELS since v25.2 (fourteen, each a checked picture on white, then Meshy and its remesh: docs/V25.2-E4C2-PHONE-MOTION-MODELS.md, masters/v25.2/make.sh) | **IN** |
+| The skein of white thread | built in code | **OUT at v25.3** (Chad: "no need for the tieing of string"): it served only the thread tied at his wrist |
 
 Nothing in chapter 2 is NEEDED from Chad. All of it is in his shop in Singapore (chapter 1's World S); the first master is
 neither seen nor heard, the customers only heard. Its plan and build record: docs/V25.0-E4C2-PLAN.md.

@@ -8931,7 +8931,7 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
      lines: his own words, captioned, the clearing's music under them), the woman and the man at his counter */
   'cu2a1', 'cu2a1b', 'pg2c1', 'pg2c2', 'pg2c3', 'pg2v1', 'lc2v1', 'lc2sit', 'lc2tell', 'lc2tA',
   'lc2e1', 'lc2e2', 'lc2e3', 'lc2e4', 'lc2e5', 'lc2e6', 'lc2e7', 'lc2e8', 'lc2e9', 'lc2e10', 'lc2k0',
-  'lc2namo', 'lc2sak1', 'lc2sak2', 'lc2sak3', 'lc2drink', 'lc2wrist', 'lc2k2', 'lc2w1', 'pg2w1', 'pg2A1', 'pg2A2',
+  'lc2namo', 'lc2sak1', 'lc2sak2', 'lc2sak3', 'lc2drink', 'lc2k2', 'lc2w1', 'pg2w1', 'pg2A1', 'pg2A2',
   'cu2b1', 'lc2B1', 'lc2B2', 'pg2B1', 'lc2C1', 'lc2C2', 'pg2C1', 'lc2C3', 'lc2D1', 'pg2D1', 'cu2a2']);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
@@ -13311,7 +13311,7 @@ const STING_SAMPLE = {
   q2e3: ['q2e3', 1], lc2e5: ['lc2e5', 1], q2e4: ['q2e4', 1], lc2e6: ['lc2e6', 1], lc2e7: ['lc2e7', 1],
   q2e5: ['q2e5', 1], lc2e8: ['lc2e8', 1], lc2e9: ['lc2e9', 1], q2e6: ['q2e6', 1], lc2e10: ['lc2e10', 1],
   lc2k0: ['lc2k0', 1], lc2namo: ['lc2namo', 1], lc2sak1: ['lc2sak1', 1], lc2sak2: ['lc2sak2', 1],
-  lc2sak3: ['lc2sak3', 1], lc2drink: ['lc2drink', 1], lc2wrist: ['lc2wrist', 1], lc2k2: ['lc2k2', 1],
+  lc2sak3: ['lc2sak3', 1], lc2drink: ['lc2drink', 1], lc2k2: ['lc2k2', 1],
   lc2w1: ['lc2w1', 1], pg2w1: ['pg2w1', 1], q2A1: ['q2A1', 1], pg2A1: ['pg2A1', 1], q2A2: ['q2A2', 1],
   pg2A2: ['pg2A2', 1], cu2b1: ['cu2b1', 1], q2A3: ['q2A3', 1], q2B1: ['q2B1', 1], lc2B1: ['lc2B1', 1],
   lc2B2: ['lc2B2', 1], pg2B1: ['pg2B1', 1], q2B2: ['q2B2', 1], q2C1: ['q2C1', 1], lc2C1: ['lc2C1', 1],
@@ -13330,8 +13330,8 @@ const STING_SAMPLE = {
   x2pat: ['x2pat', 1], x2pickpiece: ['x2pickpiece', 1], x2pickup: ['x2pickup', 1], x2ping: ['x2ping', 1],
   x2post: ['x2post', 1], x2ring: ['x2ring', 1], x2rise: ['x2rise', 1], x2rustle: ['x2rustle', 1],
   x2scroll: ['x2scroll', 1], x2shutter: ['x2shutter', 1], x2shutterup: ['x2shutterup', 1], x2sip: ['x2sip', 1],
-  x2sprinkle: ['x2sprinkle', 1], x2steps: ['x2steps', 1], x2stepsin: ['x2stepsin', 1], x2switch: ['x2switch', 1],
-  x2thread: ['x2thread', 1], x2visit: ['x2visit', 1], x2visitmus: ['x2visitmus', 1], x2wallet: ['x2wallet', 1]
+  x2steps: ['x2steps', 1], x2stepsin: ['x2stepsin', 1], x2switch: ['x2switch', 1],
+  x2visit: ['x2visit', 1], x2visitmus: ['x2visitmus', 1], x2wallet: ['x2wallet', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays

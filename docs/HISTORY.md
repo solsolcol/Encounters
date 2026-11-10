@@ -8452,7 +8452,58 @@ What the baseline contains, by release:
     the claim was untrue. v25.3 (docs/V25.3-E4C2-NATURAL.md) is the answer: no pose is called natural again without
     full-size photographs through the film's lens on a phone, and from beside him.
 
+- **v25.3** EPISODE 4 · CHAPTER 2: NO SPRINKLE, NO STRING, AND LERSI CHIN'S BODY MADE NATURAL. Chad, 10 Nov 2026 (while
+  v25.2 was being checked): "There is no need for lersi chin to sprinkle water with the leaf thing and no need for the
+  tieing of string. Also i find it unacceptable that you find his poses natural, it clearly is not. You are not trying
+  hard enough", and, with a phone screenshot of the visit's wai: "Look at how ridiculous this looks, and you said it
+  looks natural, unbelievable". docs/V25.3-E4C2-NATURAL.md is the record (his words, the plan, the log, the wai's
+  sources); masters/v25.3/make.sh every measure.
+  - WHAT I HAD TOLD HIM WAS UNTRUE. At v25.2 I wrote that his poses "read naturally", having judged them small, on
+    contact sheets, as their author. Full size through the film's lens the wai was two flat hands side by side before
+    his face and two forearms squeezed together; the bowl was two boards beside a bowl.
+  - NO SPRINKLE, NO STRING: the clearing goes from the verses to the water to the advice (88.66 s, from 99.28). The two
+    shots, the drops, the thread on his wrist, his hand held out for it and every helper only they used are out; one
+    shot runs from the water to the advice. Retired completely: `x2sprinkle`, `x2thread`, the line `lc2wrist` ("Your
+    wrist."), `assets/e4mayom.glb` (files, STING_SAMPLE rows, the cast take set, SECS, the registry row, build.py's
+    rows); their takes and the bundle's pictures stay in masters/v25.0, whose recipe lines for them are marked RETIRED.
+    The bundle and the skein of thread left his things too, which is more than he asked: said to him, and either comes
+    back as dressing on his word.
+  - HIS BODY, MEASURED BEFORE A POSE WAS WRITTEN: his elbow is a hinge in every key of his twelve takes (0.0 to 0.4
+    degrees out of its plane) and chapter 1's solver, used since v25.0, bends it sideways out of that plane; his forearm
+    never rolls (a constant 18 degrees; every turn of a hand is at the wrist) and v25.2 gave it 70 % of the hand's turn;
+    his hands are one joint each, of different lengths, the left's fingers splayed wider, bracelets on both wrists; his
+    face's profile from the head joint. A Thai wai's levels were looked up (the thumbs between the eyebrows and the
+    head bowed for a sacred image, the hands at the chest and a nod to answer one, the elbows in).
+  - BUILT: an arm solver that flexes his elbow about his own hinge and turns his hands at the wrist; the two palms laid
+    against one plane by each hand's own measured surface and pressed, at his brow (placed from his face), his chest and
+    low at the foot of his chest (the fingers upright in the room though his seated chest leans 26 degrees); a tray of
+    two palms, level in the room, for the piece; both palms under the bowl's belly. The visit's wai is chest, brow with
+    the bow, chest, down, and its answer to the client's is at the chest with a nod; the piece is raised on both palms;
+    the bowl rises before it goes out; the packing is both hands on the bowl with a glance up now and then.
+  - JUDGED FULL SIZE, from in front of him, from beside him and through the film's own lens at a phone's shape, in a lab
+    that keeps the game open (tools/probes/poselab.mjs): the visit, sixteen moments of the clearing, six of the
+    examination, the decision and ending B. A hand never stops short of where it is sent (1 cm at most, at the bowl on
+    the mat).
+  - SEEN AND LEFT (his file's own, or outside the ask): flat hands whose fingers cannot curl, the thumbs standing out;
+    the left hand's wider fingers, so the joined fingertips are not one line from the front; the heels of his hands a
+    little apart for the bracelets; his wrists bent 68 degrees at most (his takes bend them to 57); his own talking
+    take's gestures in the advice; the decision panel over the lower half of a phone (the engine's, OPEN-ITEMS C12.n).
+    NOT DONE AS PLANNED: the plan named a motion-captured prayer as the wai's source and the game's one captured
+    prayer was not read first; it is measured and held against his wai in v25.4's record.
+  - DEPLOYED FIRST (`6af34c4084deae7332e13c29`: 6 files sent, 333 carried; 338 served files byte-identical to dist, the
+    cache headers in force), the chapter seen to boot and the visit's two wais photographed from the build first.
+    CHECKED on it: chaptertest clean, the voice scan (no voice over another), a finger's play-through from the title to
+    ending D's card (PASS: 57 voices, none over another, the ten chant captions, no retired cue, no page error),
+    Continue from five saved phases on a phone, the leak and cine harnesses.
+  - A NEW STANDING RULE (CLAUDE.md): a pose or a motion is judged full size, from in front of the body, from beside it
+    and through the film's own lens at a phone's shape, and is never reported as natural from a contact sheet.
+
 ## The sheet, version by version
+
+**v140** (`masters/v25.3/masterz-text-v140.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from
+it): v139 with one row gone and one touched, nothing else moved — the clearing without the thread: `voice.lc2wrist`
+("Your wrist.") gone with its take; where `voice.lc2drink` is heard reworded (the bowl held out to him in both hands).
+2149 rows. Exported, not published.
 
 **v139** (`masters/v25.2/masterz-text-v139.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from
 it): v138 with 15 rows gone, 2 added and 3 touched, nothing else moved — episode 4 chapter 2's telling made one: the
