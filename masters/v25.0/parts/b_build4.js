@@ -440,8 +440,11 @@
         const e = [lp(CL.x, SHELF.x + 0.62, kw), lp(KNEEL.y, 1.6, smo(sgk(t, X.fetch, X.fetch + 0.8))), lp(CL.z, SHELF.z - 0.42, kw)];
         /* (v25.0 CP7) narrowed as he arrives: the piece large enough to know */
         fLens(lp(isNarrow() ? 56 : 48, isNarrow() ? 40 : 34, kw));
-        camAt(e, [shelf[0], shelf[1] - 0.05 * kw, shelf[2]]);
-        /* (v25.1 F7) his hand reaches for it (the place grip, eased in before he takes it) and holds it at the palm (placed
+        /* (v25.1 F7) and his eyes go down to his hand as it closes: the piece leaves the shelf above the frame and is seen
+           in his hand (aimed at the shelf throughout, it jumped from the shelf into a fist half a frame below it) */
+        const dn = smo(sgk(t, tTake - 0.6, tTake + 0.2));
+        camAt(e, [shelf[0], shelf[1] - 0.05 * kw - 0.5 * dn, shelf[2]]);
+        /* (v25.1 F7) his hand reaches for it (the place grip, eased in before he takes it) and holds it by its foot (placed
            at a point of the screen, it hung in the air before the shelf with his open hand below it, by photograph) */
         const A = FL.api, gk = smo(sgk(t, tTake - 0.8, tTake));
         if (gk > 0.001 && A && A.handPose) { A.handPose('place', gk, { p: AMU_P }); FL.grip = true; if (A.handsRoot) { A.handsRoot.visible = true; A.armR.visible = true; } }
