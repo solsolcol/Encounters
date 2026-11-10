@@ -1106,7 +1106,7 @@ stops the assembly instead of shifting it) — edit the parts and assemble again
 refuted by a second reader, is docs/research/V25.0-LERSI.md (and -VERDICTS.md, which wins where they differ); its sound,
 music and models, every pick and why, masters/v25.0/make.sh. Its full debug, at Chad's word of 10 Nov 2026 ("Visual
 anomaly, glitches, things that don't look right or natural also count as issues"), shipped at v25.1 —
-**docs/V25.1-E4C2-DEBUG.md** (twelve findings, each verified and fixed, five of them my own from v25.0, and what was left
+**docs/V25.1-E4C2-DEBUG.md** (twelve findings, each verified and fixed, four of them my own from v25.0, and what was left
 alone and why). Chapter 3 (S1·12, Grandmaster Pho at the Wai Kru) is next. The episode's plan, with what remains his to decide:
 **docs/V24.0-EPISODE4-PLAN.md** (its sixth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is
 still his). S1·11 in two chapters (the master he did not know, who wears the original Sak Yant Ajarn's model; then the

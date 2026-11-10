@@ -8353,6 +8353,46 @@ What the baseline contains, by release:
   and the reassembled file), a complete history by `git bundle verify`; streamed straight into its parts, which replaced
   v24.0's in place (the disk had no room for a second copy); it replaces v24.0's.
 
+- **v25.1** EPISODE 4 · CHAPTER 2 DEBUGGED. Chad, 10 Nov 2026: "Run a full comprehensive debugging on this chapter. Visual
+  anomaly, glitches, things that don't look right or natural also count as issues." docs/V25.1-E4C2-DEBUG.md is the record
+  (§0 his words, §1 the method, §3 every finding with its verdict and fix, and what was seen and left alone, §4 the log).
+  - THE PICTURES AND THE LENSES: every film and ending photographed every 2 s on the phone crop and every 3 s on a desktop,
+    and 36 play views on each (day, night, lit, watched, walked up to, the clearing standing and kneeling, the decision), on
+    the live v25.0 build; read by me (no reviewers, his 7 Nov word), with the seven lenses (save and resume, geometry and
+    framing, sound, models and motion, words and HUD, the engine's grey seam, v25.0's late fixes).
+  - TWELVE FINDINGS, each verified before it was touched (measured, photographed or read), four of them my own from v25.0
+    (the fridge, the coda's page twice, the tie on a phone): everything on the counter's
+    glass read as lying on the floor (the case was 52 cm deep, so the line from his eye through the glass left by the front
+    glass: the display made a dealer's 16 cm, a clearer glass tried first at three strengths and changing nothing); the
+    drinks fridge plain white, its wallet unseen (the cupboard's face covered it: the cupboard built round it); the coda's
+    notebook page upside down from his place, and still open on the counter after a replay (turned about its own face; put
+    away by the films' end, which reset() runs); his laptop's black lid standing before the altar in every kneeling shot
+    (put away from the visit until ending A and the coda); his own hand over half a phone at the thread's tying (the place
+    pose's p 0.3 on a narrow screen, photographed at four depths: the hands' lens is fixed, so a smaller hand is a lower
+    wrist, and past 0.3 the thread leaves the frame); ending D's amulet floating over open fingers, and the examination's
+    piece hanging before the shelf (held by its foot at the top of the lowered fist, turned to the lens, chosen from twelve
+    ways photographed; his eyes going down to his hand as it takes the piece, which had jumped from the shelf into the
+    fist); the bow's marks at the top of a phone under the stats (marks off: presses named by the badge); the Grand Opening
+    stand's flowers smooth balls (each a crumpled head, turned by its own seeded stream); "Stand still and watch" silent
+    for four seconds (his slow breath on the press, warmed with the night's, a 3.0 s one-shot measured starting on the
+    press); the examination's look round to the shelf landing on a dark bracket (the lens narrowed onto it); the jacket's
+    open sleeve a dark ring on the stool (closed, and tucked under the drape).
+  - LEFT ALONE, with the reason written down: the search's marks under a phone's stats when he looks away (the engine's,
+    every chapter: listed for Chad, OPEN-ITEMS 12.k), the rising shutter, the wai seen edge-on, the homage's bowed view,
+    the bowl at the drink, C's empty shelf held, the outcome card under the bag button (the base game's), the laptop by day.
+  - THE FIRST FIXES FOR THE HAND AND THE HELD PIECE WERE NOT GOOD ENOUGH, and the photographs said so: the hand lowered
+    all the way lost the thread off the phone's frame; the amulet set at the grip's palm vanished inside the fist. A test
+    copy of the chapter read its settings from the page (never shipped) and each was photographed several ways in one
+    sitting before one was written down.
+  - DEPLOYED FIRST (`6af287bbdb09d06c52ab0c45`: four files sent, 322 carried; 325 served files byte-identical to dist),
+    the chapter seen to boot first; to fit the build on a disk at 708 MB free, only my own things were cleared (the test
+    copy of dist, ImageMagick's dead temp frames, npm's download cache). Then one round of checks on the live build:
+    chapter, walk, leak and cine green; a finger's play-through on a phone to ending D, the shape watched (every press by
+    its badge, the bow and the bowed head with their marks gone among them; 58 lines, none over another; no page error);
+    Continue from the visit, the cleared clearing and the decision; the replay (the coda's page put away); endings B and C
+    photographed with the altar clear and the laptop back in the coda; the touched play views on a desktop (the counter by day and lit, the fridge, the jacket, the stand three ways, kneeling, the decision). No words changed: the sheet stays v138
+    (v44 the link to give him).
+
 ## The sheet, version by version
 
 **v138** (`masters/v25.0/masterz-text-v138.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from
