@@ -194,6 +194,10 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
 ## D. Not built yet
 
 - Episode 4 chapters 3–5; Episode 5 (S1·16–S1·20); Episodes 6–10 (names still the v6.0 list).
+  - **Episode 4 chapter 3 (S1·12) has its full build plan, PROPOSED 11 Nov 2026 and not yet approved:**
+    docs/V26.0-E4C3-PLAN.md. Nothing is built. It waits on Chad's answers to its §2.3 (what Grandmaster Pho may be
+    heard saying, the four answers' wording, the two new beats, open and close played or watched, the real Wai Kru's
+    photographs, the models). Its research is a first pass, not yet refuted: docs/research/V26.0-WAIKRU.md.
 - Deferred by choice: ghost mesh compression (the biggest download saving left), a service worker / offline,
   canvas-resolution and backdrop-blur thermal options.
 

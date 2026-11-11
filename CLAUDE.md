@@ -1218,7 +1218,12 @@ shop through its side walls; three steps of the lens; the master's head at a pho
 breathing lens my first fix for it made), and what it put to him and left (§6: above all the look locked on Lersi
 Chin's living face in every close shot, measured as the films play: tools/probes/filmlive.mjs).
 Chapter 3 (S1·12, Grandmaster Pho at the Wai Kru) is next: his gold aura's colours and strengths wait in chapter 2's
-code (`AURA`, `AURA_K.gold`) for it to lift. The episode's plan, with what remains his to decide:
+code (`AURA`, `AURA_K.gold`) for it to lift. **Its full build plan is docs/V26.0-E4C3-PLAN.md, PROPOSED to Chad on 11 Nov
+2026 and NOT YET APPROVED: nothing of it is built, and it is built only on his yes and his answers to its §2.3** (what
+Grandmaster Pho may be heard saying, since he is a real teacher: the plan voices only what the case file makes public; the
+four answers to his question "What do you want it for?"; two beats that are not in the case file; OPEN AND CLOSE, the one
+new way to play, played or watched; photographs of the real Wai Kru; the models). Its research is a first pass, not yet
+refuted: docs/research/V26.0-WAIKRU.md. The episode's plan, with what remains his to decide:
 **docs/V24.0-EPISODE4-PLAN.md** (its sixth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is
 still his). S1·11 in two chapters (the master he did not know, who wears the original Sak Yant Ajarn's model; then the
 fog, Lersi Chin's clearing and the warning — built on Master Z's own trial episode, its 5.1 and 5.3 the two decisions
