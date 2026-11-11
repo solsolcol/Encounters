@@ -148,8 +148,8 @@ people, §6.3 the props). The roles below Grandmaster Pho's row are that plan's 
 | Role | Look (art direction) | Takes needed | Placeholder until then | Status |
 |---|---|---|---|---|
 | **Ton**, who posted the forum thread (`ton_udon`) and brings the group up from Singapore | Thai man, 35 to 45, lean; a plain white shirt, loose white trousers, a cloth shoulder bag; barefoot on the mats | standing idle, talking, walking, kneeling | a generated man | **NEEDED** (proposed) |
-| **The old woman disciple** ("Auntie") | Thai woman, 60s; a white blouse, a white tube skirt, a white sash across one shoulder; grey hair in a bun | standing idle, folding cloth, sitting on the floor, a faint | a generated woman | **NEEDED** (proposed) |
+| **The old woman disciple** ("Auntie") | Thai woman, 60s; a white blouse, a white tube skirt, a white sash across one shoulder; grey hair in a bun | standing idle, folding cloth, sitting at a table, holding out a hand and taking it back | a generated woman | **NEEDED** (proposed) |
 | **Three lay masters** on the dais (seen, never heard) | none in white: (1) heavy-set, 60s, a cream shirt and a red-checked sash; (2) thin, 70s, tattooed forearms, an indigo Isan work shirt; (3) 50s, a brown wrap and a plain rosary, NOT a tiger cloth | seated only | generated | **NEEDED** (proposed) |
 | **Devotees in white**, two women and two men of different ages | white shirts and blouses, white or dark trousers and skirts | the polite side sit, a kneeling sit with joined hands, a bow | generated; the rest of the crowd is the game's own people in their own clothes, counted first (never `admintee`, `granny` or `yinkeeper`) | **NEEDED** (proposed) |
-| **The newcomer** (ending D) | a young man in ordinary clothes | standing, a nod | one of the game's own, chosen by count | none needed |
+| **The newcomer** (ending B) | a young man in ordinary clothes | standing, a nod | one of the game's own, chosen by count | none needed |
 | **Monks**, three to five | Chad's monk (`monk`, seen once before, in episode 3 chapter 1) | seated | his own model, a declared reuse | none needed |

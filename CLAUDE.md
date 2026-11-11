@@ -1221,7 +1221,9 @@ Chapter 3 (S1·12, Grandmaster Pho at the Wai Kru) is next: his gold aura's colo
 code (`AURA`, `AURA_K.gold`) for it to lift. **Its full build plan is docs/V26.0-E4C3-PLAN.md, PROPOSED to Chad on 11 Nov
 2026 and NOT YET APPROVED: nothing of it is built, and it is built only on his yes and his answers to its §2.3** (what
 Grandmaster Pho may be heard saying, since he is a real teacher: the plan voices only what the case file makes public; the
-four answers to his question "What do you want it for?"; two beats that are not in the case file; OPEN AND CLOSE, the one
+decision, revised the same day at his word ("The question and answers need to be changed": its first form repeated episode
+3 chapter 1's) to what he does with the first lesson, four acts that are the four clauses of the case file's closing
+sentence, with two other decisions offered; two beats that are not in the case file; OPEN AND CLOSE, the one
 new way to play, played or watched; photographs of the real Wai Kru; the models). Its research is a first pass, not yet
 refuted: docs/research/V26.0-WAIKRU.md. The episode's plan, with what remains his to decide:
 **docs/V24.0-EPISODE4-PLAN.md** (its sixth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is
