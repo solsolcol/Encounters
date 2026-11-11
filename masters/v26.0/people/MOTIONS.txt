@@ -13,3 +13,12 @@ dance2    10   A woman performs a slow traditional Thai dance: both arms extende
 petals    4    A person sitting on a chair reaches the right hand down to a bowl beside the knee, scoops up a handful, and tosses it gently forward and upward in an arc, then lowers the arm to rest.
 handson   6    A person sitting on a chair leans a little forward and places both hands on an object held up in front at chest height, holds them there quite still for a few seconds, then sits back and rests the hands on the knees.
 standup   3.5  A person kneeling on both knees rises smoothly to stand upright, arms relaxed at the sides.
+
+# round 2 (11 Nov, after the first eleven were judged on a rig: "kneeling and sitting back on the heels" keeps the
+# shins on the ground where "kneeling upright" floats them)
+offer     7    A person kneeling and sitting back on the heels holds both hands up in front of the face, palms up and side by side as if lifting a wide bowl to forehead height, the head bowed low beneath it, and holds perfectly still for several seconds, then lowers the hands to the lap.
+seiza     8    A person kneeling and sitting back on the heels with a straight back and both hands resting on the thighs stays calm and still, breathing slowly, the head turning a little to look left and then right.
+sway      10   A person kneeling and sitting back on the heels with eyes closed and hands resting on the thighs sways the upper body slowly round in a circle, the head rolling loosely, shoulders trembling, as if in a deep trance.
+give      6    A person standing holds a wide bowl with both hands at chest height, steps forward and offers it out to someone in front with a small bow of the head, holds it out, then steps back and lowers empty hands.
+palmover  6    A person sitting on a chair leans forward and holds the open right hand out low in front, palm facing down, as if blessing the head of someone kneeling before the chair, holds it still for several seconds, then sits back.
+armsopen  9    A person kneeling and sitting back on the heels with the head tilted back slowly raises both arms out wide to the sides and up, open hands with two fingers extended, holds them there trembling, then slowly lowers them.

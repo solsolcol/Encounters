@@ -11,6 +11,8 @@ usage:
   python3 -I masters/v26.0/meshy26.py anim   <name> <set> <id,id,...>   # library actions onto <name>'s rig, one file
   python3 -I masters/v26.0/meshy26.py motion <name> <set> <motion_task_id>   # a text-to-motion clip onto the rig
   python3 -I masters/v26.0/meshy26.py refetch <name> <set>                   # a take's file again from its task (free)
+  python3 -I masters/v26.0/meshy26.py collect <name> ...                     # finished models fetched by name (free)
+  python3 -I masters/v26.0/meshy26.py peek <name> ...                        # their four thumbnails only
   python3 -I masters/v26.0/meshy26.py remesh <name> <triangles>   # a lighter level from the same task
   python3 -I masters/v26.0/meshy26.py t2m    <motion> <seconds> "<prompt>"   # a text-to-motion clip (skeleton-free)
   python3 -I masters/v26.0/meshy26.py balance
@@ -110,7 +112,7 @@ def cmd_model(jobs_path):
             'texture_resolution': j.get('tex', '8k'),  # the highest
             'should_remesh': True, 'topology': 'triangle',
             'target_polycount': j.get('polys', 300000),  # the highest the remesh gives; a rig takes at most 380,000
-            'save_pre_remeshed_model': True,           # and the untouched surface beside it
+            'save_pre_remeshed_model': j.get('pre', person),   # a person: the untouched surface beside it (a prop: not kept, for room)
             'image_enhancement': True,
             'target_formats': ['glb'],
             'multi_view_thumbnails': True,
@@ -130,6 +132,28 @@ def cmd_model(jobs_path):
             fetch(u, os.path.join(SRC, 'thumb-%s-%s.png' % (j['name'], side)))
         note(j['name'], credits=t.get('consumed_credits'), expires_at=t.get('expires_at'), sizes=sizes)
         print('done', j['name'], sizes, 'credits', t.get('consumed_credits'), flush=True)
+
+
+def cmd_collect(names, thumbs_only=False):
+    """finished image-to-3D tasks fetched by name (a job list that died half way, or a model held at Meshy until there
+    is room for it: Meshy keeps a task's files three days). A failed task is reported and passed over."""
+    for n in names:
+        L = ledger().get(n) or {}
+        tid = L.get('image_to_3d')
+        if not tid: print(n, 'has no image-to-3D task'); continue
+        t = call('GET', '/image-to-3d/' + tid)
+        while t['status'] in ('PENDING', 'IN_PROGRESS'):
+            time.sleep(15); t = call('GET', '/image-to-3d/' + tid)
+        if t['status'] != 'SUCCEEDED':
+            print(n, t['status'], (t.get('task_error') or {}).get('message'), flush=True); note(n, failed=t['status']); continue
+        for side, u in (t.get('thumbnail_urls') or {}).items():
+            fetch(u, os.path.join(SRC, 'thumb-%s-%s.png' % (n, side)))
+        if thumbs_only: print('thumbs', n, flush=True); continue
+        mu = t.get('model_urls', {}); sizes = {}
+        if mu.get('glb'): sizes['glb'] = fetch(mu['glb'], os.path.join(SRC, 'original-%s.glb' % n))
+        if mu.get('pre_remeshed_glb'): sizes['pre'] = fetch(mu['pre_remeshed_glb'], os.path.join(SRC, 'preremesh-%s.glb' % n))
+        note(n, credits=t.get('consumed_credits'), expires_at=t.get('expires_at'), sizes=sizes)
+        print('done', n, sizes, 'credits', t.get('consumed_credits'), flush=True)
 
 
 def cmd_rig(name, height='1.70'):
@@ -220,5 +244,7 @@ if __name__ == '__main__':
     elif a[0] == 'motion': cmd_motion(a[1], a[2], a[3])
     elif a[0] == 'remesh': cmd_remesh(a[1], a[2])
     elif a[0] == 'refetch': cmd_refetch(a[1], a[2])
+    elif a[0] == 'collect': cmd_collect(a[1:])
+    elif a[0] == 'peek': cmd_collect(a[1:], thumbs_only=True)
     elif a[0] == 't2m': cmd_t2m(a[1], a[2], a[3])
     else: raise SystemExit(__doc__)

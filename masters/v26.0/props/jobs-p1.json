@@ -1,0 +1,37 @@
+[
+ {
+  "name": "baisri",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/baisri-2k.png"
+ },
+ {
+  "name": "wheel",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/wheel-2k.png"
+ },
+ {
+  "name": "naga",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/naga-2k.png"
+ },
+ {
+  "name": "tower",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/tower-2k.png"
+ },
+ {
+  "name": "fan",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/fan-2k.png"
+ },
+ {
+  "name": "nagastaff",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/nagastaff-2k.png"
+ },
+ {
+  "name": "pewterbaisri",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/pewterbaisri-2k.png"
+ }
+]

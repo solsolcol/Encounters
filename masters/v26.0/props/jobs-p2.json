@@ -1,0 +1,57 @@
+[
+ {
+  "name": "parasol",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/parasol-2k.png"
+ },
+ {
+  "name": "chrys",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/chrys-2k.png"
+ },
+ {
+  "name": "candle",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/candle-2k.png"
+ },
+ {
+  "name": "purple",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/purple-2k.png"
+ },
+ {
+  "name": "fruit",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/fruit-2k.png"
+ },
+ {
+  "name": "sweets",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/sweets-2k.png"
+ },
+ {
+  "name": "roses",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/roses-2k.png"
+ },
+ {
+  "name": "khantok",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/khantok-2k.png"
+ },
+ {
+  "name": "satinpuff",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/satinpuff-2k.png"
+ },
+ {
+  "name": "seatchair",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/seatchair-2k.png"
+ },
+ {
+  "name": "lowtable",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/lowtable-2k.png"
+ }
+]

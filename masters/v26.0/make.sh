@@ -83,3 +83,33 @@
 #   Text-to-motion, judged on a rig (front, side and behind at six moments each; the verdicts are in the tracker's log):
 #   dance1 KEPT (reads as a Thai classical dance); trance2 kept as raw material (arms rising wide; the shins float);
 #   kneel, raise, wai, trance1 refused as they came. The prompts: masters/v26.0/people/MOTIONS.txt.
+#   Round two (11 Nov, evening): offer, seiza, sway, give, palmover, armsopen. The lesson of round one's floating shins:
+#   "kneeling and sitting back on the heels" keeps a kneeling body on the ground; "kneeling upright" floats it. Every
+#   verdict, library and written, is the table in docs/V26.0-E4C3-BUILD.md §5.
+#   Everyone's takes, one command (it skips what has landed, so after a lost machine it is simply run again):
+#     sh masters/v26.0/alltakes.sh          (per person: sh masters/v26.0/takes.sh <name> lib lib <ids> ; ... t2m <clips>)
+#   A file is removed only on the tool's own exit status, with no pipe between (a strip that REFUSED a file once had
+#   that file deleted behind it by `| grep ... && rm`; it came back free with `meshy26.py refetch <name> <set>`).
+#
+# ---------------------------------------------------------------------------------------------------------------------
+# 4. THE THINGS (masters/v26.0/props/)
+# ---------------------------------------------------------------------------------------------------------------------
+#   Chad: "You have to build out this chapter environment exactly to how the photos look like." So each thing begins as
+#   a CROP OF HIS PHOTOGRAPH (the object only: never a face, never a name; the sheet of names on the wheel painted out,
+#   the bottles' brands cropped away), uploaded to Higgsfield and given to GPT Image as its image reference beside a
+#   plain description:  props/PROMPTS.py (HEAD, REFNOTE, and one row a prop: name, crop, quality, shape, words).
+#   Heroes at max/2k (9 credits), table stock at high/2k (2.75). The picture is LOOKED AT (props/refs/<name>-2k.png,
+#   its 1024 copy committed); its job id is props/jobs-refs.json; props/get.sh fetches a finished picture by name.
+#   Then, for each:   sh masters/v26.0/props/prop.sh <name> ...
+#     1. meshy26.py model (props/jobs-p1.json, jobs-p2.json): image-to-3D at the highest settings, 40 credits; a prop
+#        does not ask for the untouched surface (a person does).
+#     2. meshy26.py remesh <name> <triangles>: Meshy's own remesh to the count the game draws (5 credits). Nothing is
+#        thinned here: a generated sheet is thousands of small islands and thinned it crumples along their seams (v25.5).
+#     3. ERR=0.002 node tools/prepmeshy.mjs <remeshed> assets/<key>.glb <size> <axis> 1 <turn> <px>: real metres, the
+#        origin on the base's centre, the sheets at the size the table gives.
+#     4. the remeshed file (about 105 MB: its sheets come back at 8192 as PNG) is removed on prep's own success, and the
+#        prop is photographed from four sides (tools/shootmodel.mjs).
+#   The table: props/TABLE.txt (name, key, size in metres, the axis that size is, triangles, sheet size, turn).
+#   Two pictures Meshy REFUSED ("image too complex"): the chrysanthemums and the roses, both a bunch of small blooms.
+#   Not charged; each is asked for again as fewer, larger blooms. meshy26.py collect <name>... fetches what finished
+#   and passes over what failed, where the first script stopped at the first refusal and left nine uncollected.
