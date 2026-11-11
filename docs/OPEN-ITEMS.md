@@ -42,6 +42,18 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
    own name for the forum, may also be a real forum's name (no real brand on props, v9.3): his call; (v) the yard's
    new cars cost a phone about 208,000 more triangles where all three show (+46 %): if the yard is slow on his phone,
    lighter cars or a distance level; (vi) a car modelled by hand (his, or bought) would still beat any generator.
+4d. **Put to him by the audit of 11 Nov** (docs/V25.5-AUDIT.md §6): (i) while the choice is open Lersi Chin sits
+   upright with his eyes lowered and never lifts his head on a timer, which is how I read "his head does not face to
+   look up every few seconds": if he meant the head should be UP, facing the player, it is one line; (ii) the light
+   switch at night keeps its own small mark beside the flowers' mark: one word takes it off; (iii) the calculator's
+   little screen looks crumpled when the opening's last shot comes close to the note (a generated model's paint, at
+   the foot of the frame for two seconds): repainted flat on his word; (iv) in every close shot of Lersi Chin the look
+   is locked on his living face, so the shop behind him slides as he talks (up to an eighth of a phone's width, there
+   and back; measured as the films play, tools/probes/filmlive.mjs): since v25.0, not one of his notes, left as it
+   was; on his word the look follows his head a third as far (one place, then every such shot photographed again),
+   or rests where he sits (every close shot re-staged); (v) his woman in green, asked for as one "never been shown to
+   the player before", stands once at the roadside stall in chapter 1's ending C: his to keep or to change. (The man
+   only heard in ending A is 4c iii: the natural cast is the man who walks past his shop.)
 5. ~~**Episode 4 chapter 2's build plan**~~ — WRITTEN at v24.40, docs/V25.0-E4C2-PLAN.md, and REVISED 9 Nov 2026 to his
    direction (Lersi Chin comes to his shop in Singapore, brought by Pong; all play in the shop; the decision rebuilt).
    **BUILT AND SHIPPED at v25.0** on his yes the same day (answer C his own: "ask Lersi Chin to send it back to whoever
@@ -167,8 +179,9 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
       is about can stand under it: in episode 4 chapter 2, "Lersi Chin is packing his things" and, on a phone, only the
       top of his headdress shows above the panel (Step back shows him, bent to his bowl). Lifting the view while the
       panel is open on a phone would change every chapter's decision, so it is listed and not changed.
-      **DONE FOR EPISODE 4 CHAPTER 2 at v25.5** (Chad: "if lersi chin is supposed to look at the player once in awhile, he
-      shouldnt be in hunchback position, because i cant see lersi chin's face at all"): he waits upright, and while the
+      **DONE FOR EPISODE 4 CHAPTER 2 at v25.5** (Chad: "when player is choosing options, lersi chin is in a very strange
+      super hunchback position, dont make him so hunchback, and his head does not face to look up every few seconds, the
+      look is a bit strange and unnatural"): he waits upright, and while the
       window is open the chapter eases the look so his face stands in the clear band above it on the screen in hand
       (six screen sizes photographed). The chapter's own; the engine and every other chapter's decision are as they were.
 

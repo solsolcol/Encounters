@@ -8547,9 +8547,9 @@ What the baseline contains, by release:
   COUNTER, A WHITE AURA, THE MANTRA OF SHIVA, AND A CAMERA THAT NO LONGER BOUNCES. Chad, 10 Nov 2026, three messages
   with v25.4 live (twenty-eight asks across the two chapters: "the 3 cars parked in the ajahn house, is still very low
   res and looks bad, it needs to look much better", "when the female customer asks a question, there is no female
-  customer in that cut scene, can you add one?", "The player's phone model looks pretty bad too", "if lersi chin is
-  supposed to look at the player once in awhile, he shouldnt be in hunchback position", "make these effects look
-  good", and the rest), and on 11 Nov, with each build on his phone, six more: "Dont use the yin amulet shoplady. Use
+  customer in that cut scene, can you add one?", "The player's phone model looks pretty bad too", "when player is
+  choosing options, lersi chin is in a very strange super hunchback position, dont make him so hunchback", "make these
+  effects look good", and the rest), and on 11 Nov, with each build on his phone, six more: "Dont use the yin amulet shoplady. Use
   another women model."; "maybe dont use golden aura and glow for lersi chin, use only white, and make the white glow
   more subtle. For both the meditation part and also the chanting and blessing part. Golden will be used for
   grandmaster pho only."; "Dont use this auntie as she has been used many times. Use the thai green shoplady that has
@@ -8671,6 +8671,35 @@ What the baseline contains, by release:
     engine changed). On the last build: the chapter booted, chaptertest, the voice scan, the lens through the opening
     and ending D (no bounce), and both films photographed at a phone's real size and on a desktop.
   - THE SHEET IS v141 (17 rows new, 24 gone, 13 touched against v140: 2142 rows), exported, not published.
+  - THE AUDIT OF 11 NOV (Chad: "Make sure that every single one of my feedback and messages and points over the past
+    2 days have all been fully  and completely addressed, and for any potential conflicts, the latest and newest
+    messages are the final word"): docs/V25.5-AUDIT.md. Every message of 9 to 11 Nov numbered from the records (68
+    points), each checked on the LIVE build by the thing itself, the twelve places two messages pull different ways
+    written down with the later one winning. FOUND AND FIXED, all mine: (1) HE COULD STILL WALK OUT OF HIS SHOP: the
+    front was walled and tried at the front; a flood of the real collision grid reached 257 square metres through
+    four gaps in the shop's SIDE walls (a set that was only filmed has no solid walls): both walls solid, 17 square
+    metres, and a stage may name the ground play must stay on (`stage.keepIn`), which walktest holds (proved on a
+    copy with the walls out: "240.4 square metres reached outside it"); (2) THREE STEPS OF THE LENS read as cuts
+    (the examination as his eyes open, 42 to 50 degrees at once; endings B and C at the master's wai, 48 to 54):
+    eased; (3) THE MASTER'S HEAD AT A PHONE'S EDGE in the visit (the fit held his face's middle, not his head): the
+    fit given each head's two sides; and (4) THAT FIX'S OWN FAULT: it leaned on Pong's living head, and a phone's
+    lens breathed 57.7 to 55.3 degrees and back as he talked, unseen by framecheck (a seek freezes every body): the
+    look rests on his mark and the fit holds his place with his take's travel beside it, still to a hundredth of a
+    degree as the film plays. NEW PROBES: filmlive.mjs and liveread.py (a film measured as it PLAYS, on a slowed
+    clock), walkmap.mjs and walkmap.py (the flood drawn); framecheck photographs each film and puts its black back
+    first (three films had come out nine tenths dark). A SENTENCE QUOTED AS HIS THAT WAS MINE, here and in
+    OPEN-ITEMS: put back to his words. PUT TO HIM AND LEFT: in every close shot of Lersi Chin the look rides his
+    living face (since v25.0), so the shop behind him slides up to an eighth of a phone's width as he talks; his
+    woman in green stands once at chapter 1's roadside stall; the two ways his note on Lersi Chin's head reads; the
+    man in ending A still only heard. DEPLOYED FOUR MORE TIMES (the ninth to the twelfth of v25.5: 6af4254d,
+    6af429dd, 6af437aa and `6af43a218ba0d9f230be3c9e`), every served file compared with dist each time (341
+    identical). CHECKED: chaptertest (errors: none); walktest over all thirteen chapters (155 checks) and again on
+    this chapter on the last build; a finger's play-through on a phone to ending D's card (54 voices, none over
+    another); the lens every tenth of a second through every film on a phone and a desktop (framebounce: only
+    cuts and steps under black) and every film as it plays on a phone; 261 phone and 128 desktop photographs read.
+    Six standing rules (CLAUDE.md): a way out is proved shut by the flood; a cut changes what is looked at; a fit is
+    given the extent of what it holds; a quote of his is found in his own message; a probe that seeks a film puts
+    its black back; a film is measured as it plays.
 
 ## The sheet, version by version
 

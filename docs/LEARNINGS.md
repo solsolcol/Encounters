@@ -8027,3 +8027,63 @@ made the mantra of Shiva with the white light gathered and sent. docs/V25.5-E4-N
   auntie's arm in a phone's corner; the woman in green, standing a little differently on the same mark, had her face
   across the frame's edge. A phone's frame is a third as wide: where a wide screen holds a bystander whole at its
   side, a phone cuts her; stop the look short of passing her there, or take it well past.
+
+## v25.5, the audit — a way out, a cut that was not one, a point that is not a head, a probe's own black, a fix that breathed
+
+Chad, 11 Nov 2026: "Make sure that every single one of my feedback and messages and points over the past 2 days have
+all been fully and completely addressed, and for any potential conflicts, the latest and newest messages are the final
+word". docs/V25.5-AUDIT.md is the record. What it taught:
+
+- **A way out is proved shut by the flood, never by the points one thought of.** He said he could "walk out of the
+  shop into other shops". I walled the shop's open front and pushed the player at seven points along it: all blocked.
+  The flood of the real collision grid from where he stands reached 257 square metres, the whole of the chapter's
+  bounds: the shop's own side walls had four gaps. A set that was only ever filmed has no solid walls: when a chapter
+  makes it walkable, its WALLS are made solid, not only what stands on its floor. And "into other shops" was the
+  clue: a front leads to a corridor, a side wall to a shop.
+- **A sealed route and an open one are the same flood read two ways.** walktest asked only whether what he must
+  reach can be reached (v7.1). A stage may now name the ground he must stay on (`keepIn`), and no reached cell may lie
+  outside it. Prove a check like this on a throwaway copy with the wall taken out: it must fail, and say how much
+  ground was reached.
+- **A cut changes what is looked at.** A lens that changes in one frame while the eye and the face it rests on stay
+  where they are is a jolt, however the code's comment names it. framebounce listed three and I had read all of them
+  as cuts because the numbers either side were whole. Read each listed step by where the picture's subjects stand
+  before and after: if the one in the middle of the frame is the same and has not moved, it is not a cut.
+- **A fit holds points; a head is not a point.** Asked to hold two faces, the fit held the middle of each: the master's
+  at 0.84 of a phone's half-width, as asked, and the far side of his head past the edge. Give a fit the EXTENT of
+  what must be held (the two sides of a head as that eye sees it; the corners of a thing), and measure the drawn
+  thing's own extent on the screen afterwards (the skin's points on his head bone, projected), not the point's.
+- **A film sought backwards keeps the black it ended on.** A seek applies the tracks it has passed; it does not undo
+  the ones it has left. A probe that measures a film to its end and then photographs it from its start shows a film
+  with no fade of its own until its close under that closing black (the call, three endings: nine tenths dark). Put
+  the layer back to what it was when the film began. And a film from play begins on the chapter's own black as it
+  stands: wait that out before starting one, or a loaded box photographs it under half of it.
+- **Do not dismiss a dark picture; do not believe it either. Measure the real path.** The dark call could have been
+  the game (a player who never switched the light on) or the probe. The real press in the lab settled it in a minute:
+  the film's black at 0, the picture at the night's own brightness.
+- **A quote is checked against the message, not against my notes.** Two documents carried a sentence of his that he
+  never wrote; it had come from my own summary. When a record quotes him, find the words in his message.
+- **Count where the player has met a model before saying he has not.** He asked for a woman "that has never been
+  shown to the player before"; she stands at a roadside stall in one ending of the chapter before. One line in the
+  report, the day she was cast, was owed.
+- **A fix to a shot is a new shot: measure it as it PLAYS.** The fit that holds two heads whole (above) was proved by
+  a photograph and a seek, deployed, and wrong: one of its four points was Pong's living head, his talking take
+  carries it 7 cm, and a phone's lens breathed with it (57.7 to 55.3 degrees and back in two seconds). A seek freezes
+  every body, so framecheck said 52 and still. tools/probes/filmlive.mjs lets the film play and writes the lens and
+  the look at every drawn frame; liveread.py marks what goes there and back. Run it on the shot you changed, before
+  the word "done".
+- **A two-shot rests on marks; a look that rides a face is a direction, and is said.** Where two stand and one
+  talks, the look goes to his MARK at his head's own height and the fit holds that place with his take's travel
+  beside it: a fit that leans on a living head breathes. A close shot whose look rides one living face (every close
+  shot of Lersi Chin in episode 4 chapter 2, since v25.0) turns the room behind him as he talks, up to 3.5 degrees
+  there and back: a choice, not a slip, but one nobody had measured; it was found, written down and put to Chad,
+  not changed. And keep the two heights a living point had: a head joint (`headOf`) is 8 cm under the face point
+  (`faceOf`); swapping one for the other tilts the frame (mine, for one deploy: 1.7 degrees).
+- **A slow box does not play a film; it samples it.** With no graphics card a frame takes half a second: the film's
+  clock and the cast's both take at most half a second a frame, so three seconds of film are seven pictures. To
+  watch a film move, slow the page's clock instead (`performance.now` and the time handed to each frame advancing a
+  fixed step a drawn frame): every clock that reads it stays in step. Hand the frames a time AHEAD of the page's: the
+  engine's frame limiter compares a frame's handed time with the last, and the last real one was a second later
+  than the page's clock (twenty frames skipped, then a half-second leap).
+- **Two keys of one name in an object are one key.** A probe's row had `w` (the wall's time) and, added later, `w`
+  (the world's places): the second silently took the first, and the printed seconds became NaN. Name a new field
+  by what it holds and search the literal for it first.

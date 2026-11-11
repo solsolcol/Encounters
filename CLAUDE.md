@@ -196,10 +196,29 @@ that fits it, with the version it came from.
   ask named (the calmer pace asked for endings B and C left ending D's walk out a doorway and two slivers). (v25.5)
 - A harness's test for "it built" counts the thing itself (the meshes drawn), never a shape of the scene graph (a
   healthy world of three groups failed `children.length > 3`). (v25.5)
+- A cut changes what is looked at: a lens that changes in one frame while the eye and the subject it rests on stay
+  where they are is a jolt, and every step framebounce lists is read by where the picture's subjects stand before
+  and after, never by the numbers being whole (three such steps passed as cuts). (v25.5)
+- A fit is given the EXTENT of what it must hold (a head's two sides as that eye sees it, a thing's corners), never
+  its middle, and afterwards the drawn thing's own extent on the screen is measured (the master's face held at 0.84
+  of a phone's half-width, as asked, and his head drawn out to 1.03). (v25.5)
+- A sentence written down as his is found in his own message first (two records quoted him in words that were
+  mine). (v25.5)
+- A probe that seeks a film back to its start puts the film's black back first (a seek applies the tracks it has
+  passed and undoes none: a film with no fade until its close was photographed under its closing black), and a dark
+  picture is neither dismissed nor believed until the real path is measured. (v25.5)
 - A camera move is MEASURED as a move: the lens and the subject's size on the screen at every tenth of a second, on a
   phone and a desktop (tools/probes/framecheck.mjs STEP=0.1, then framebounce.py). A still from each end cannot show
   a lens that jumps on the way (the note's shot: twelve jumps in three seconds), nor a "push" that makes its subject
   smaller (the same shot on a phone: the note 139 px wide down to 113). (v25.5)
+- A film is measured AS IT PLAYS too. A seek freezes every body, so a shot whose look or fit follows a LIVING head
+  (`headOf`, `faceOf`) stands still under framecheck and sways in the game. tools/probes/filmlive.mjs plays the film on
+  a slowed clock (the film and the cast a fixed step a drawn frame) and writes the lens and the look at each;
+  liveread.py marks the stretches where either goes there and back. A FIT never leans on a living head: it holds the
+  place a man stands with his take's travel beside it (my own fit, made that morning to hold two heads whole, breathed
+  a phone's lens 57.7 to 55.3 degrees and back as Pong talked). Where a held shot's LOOK rides a living face, that is
+  a direction to be measured and said (episode 4 chapter 2's close shots of Lersi Chin do, up to 3.5 degrees as he
+  talks: put to Chad, docs/V25.5-AUDIT.md §6). A fix to a shot is measured this way before it is called done. (v25.5)
 - Where a body's hands are sent is checked against that body's own cloth and limbs first: measure the height of what
   stands between (his lap, cell by cell), and photograph the pose from his side and from above, not only through the
   film's lens, which looked at his face while both forearms went through his lap. (v25.5)
@@ -233,6 +252,10 @@ that fits it, with the version it came from.
 - If the same fix fails twice, the measure is the wrong one; find the measured why. (v9.3)
 - Revert a guard written against a hypothesis the moment measurement disproves it. (v9.0)
 - Harnesses teleport, so they cannot see a sealed route: walktest floods the real collision grid from the spawn and from every arrival a stage names. (v7.4)
+- A way OUT is proved shut by that same flood, never by the points one thought of: a set that was only filmed has no
+  solid walls, and when a chapter makes it walkable its WALLS are made solid, not only what stands on its floor (his
+  shop's front was walled and tried at the front; through its side walls the flood reached 257 square metres for a
+  shop of 17). A chapter whose play is one place names it (`stage.keepIn`) and walktest holds it there. (v25.5)
 - Harnesses may run on a hard-linked snapshot of dist while the next version builds. (v21.13)
 - Reusable probes live in tools/probes, so they survive a replaced container. (v24.3)
 - Unshallow the clone before making the backup bundle, so the bundle holds the whole history. (v24.4)
@@ -1188,7 +1211,12 @@ it was 89; the camera's bounces at the note, the call and the forum; the order's
 "Call Pong"; Lersi Chin's arms out of his robe as he takes the wrist; "When I remember" re-said) shipped at v25.5 —
 **docs/V25.5-E4-NOTES.md** (his words, what each ask traced to, what was built, the log; masters/v25.5/make.sh every
 model, voice and sound). The woman at his counter is his own model now (`e4stall`); the one model still NEEDED is the
-taxi uncle (docs/E4-MODELS.md).
+taxi uncle (docs/E4-MODELS.md). His ask the same day to make sure every point of 9 to 11 Nov was fully addressed, the
+latest message winning any conflict, is **docs/V25.5-AUDIT.md**: every point with where it stands on the live build,
+the twelve places two messages pull different ways, what the audit found and fixed (he could still walk out of his
+shop through its side walls; three steps of the lens; the master's head at a phone's edge in the visit, and the
+breathing lens my first fix for it made), and what it put to him and left (§6: above all the look locked on Lersi
+Chin's living face in every close shot, measured as the films play: tools/probes/filmlive.mjs).
 Chapter 3 (S1·12, Grandmaster Pho at the Wai Kru) is next: his gold aura's colours and strengths wait in chapter 2's
 code (`AURA`, `AURA_K.gold`) for it to lift. The episode's plan, with what remains his to decide:
 **docs/V24.0-EPISODE4-PLAN.md** (its sixth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is
