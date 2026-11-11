@@ -18,6 +18,15 @@ import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
 const VIEW = process.env.VIEW || 'phone', PHONE = VIEW === 'phone', STEP = +(process.env.STEP || 0.25);
 const OUT = process.env.OUT || `/tmp/framecheck-${VIEW}.json`;
 const FILMS = process.env.OPT ? ['end:' + process.env.OPT] : (process.env.FILMS || 'open,call,visit,exam,clear').split(',');
+/* (v25.5) SHOTS=<dir> [EVERY=2] [FROM=s] [UNTIL=s] [SETTLE=700]: each film is also PHOTOGRAPHED every EVERY seconds of its own clock (from FROM to UNTIL when given), after it
+   is measured (the film sought, three frames drawn, SETTLE ms for what eases on the wall's clock), into
+   <dir>/<film>-<view>-<seconds>.jpg: one sitting gives the numbers and the pictures of a whole chapter (Chad, 11 Nov
+   2026: "Make sure that every single one of my feedback ... have all been fully and completely addressed"). The
+   captions are put away for the pictures: they run on the wall's clock from their cue (v21.30), so under a seek they
+   stand at the wrong moments. Unset, nothing here runs */
+const SHOTS = process.env.SHOTS || '', EVERY = +(process.env.EVERY || 2), SETTLE = +(process.env.SETTLE || 700);
+const FROM = process.env.FROM ? +process.env.FROM : null, UNTIL = process.env.UNTIL ? +process.env.UNTIL : Infinity;
+if (SHOTS) fs.mkdirSync(SHOTS, { recursive: true });
 const WAY = { call: { phase: 'night', film: 'call' }, visit: { phase: 'visit' }, exam: { phase: 'clearing:k,b,tA' },
               clear: { phase: 'clearing:k,b,tA,x', film: 'clear' } };
 const b = await chromium.launch(LAUNCH);
@@ -37,8 +46,11 @@ async function measure(key) {
   await p.waitForFunction(() => window.__enc.cine.t() > 0.2, null, { timeout: 600000, polling: 300 });
   await frames(4);
   const dur = await p.evaluate(() => window.__enc.cine.dur());
-  log('film', key, 'dur', dur.toFixed(2));
-  return p.evaluate(({ dur, step }) => {
+  /* the film's black as it stood when the film began (0 for a scene, the kit's own for a film from play, 1 for an
+     opening): kept for the pictures below */
+  const fade0 = await p.evaluate(() => { const el = document.getElementById('cineFade'); return el ? el.style.opacity || '0' : null; });
+  log('film', key, 'dur', dur.toFixed(2), 'fade at its start', fade0);
+  const rows = await p.evaluate(({ dur, step }) => {
     const E = window.__enc, cam = E.camera, V = cam.position.constructor, v = new V(), rows = [];
     for (let t = 0; t <= dur + 1e-6; t += step) {
       E.cine.seek(t);
@@ -54,6 +66,24 @@ async function measure(key) {
     }
     return rows;
   }, { dur, step: STEP });
+  if (SHOTS) {
+    await p.evaluate(() => { if (!document.getElementById('__fcNoCap')) { const s = document.createElement('style'); s.id = '__fcNoCap'; s.textContent = '#caption{display:none !important}'; document.head.appendChild(s); } });
+    /* THE BLACK IS PUT BACK FIRST. The measuring pass above ends on the film's last step, inside its closing fade, and
+       a seek applies only the tracks it has passed: sought back to its first seconds, a film with no fade of its own
+       until its end (the call, endings B, C and D) kept that closing black, and every picture of it came out nine
+       tenths dark while the game's own was bright (the audit's first sweep: mean brightness 4 of 255 against 46 to 83
+       on the real path). The layer is set to what it was when the film began, and the pictures run forward from there */
+    await p.evaluate((o) => { const el = document.getElementById('cineFade'); if (el && o != null) el.style.opacity = o; }, fade0);
+    let n = 0;
+    for (let t = FROM != null ? FROM : Math.min(1, dur / 2); t <= Math.min(dur - 0.05, UNTIL); t += EVERY) {
+      await p.evaluate((t) => window.__enc.cine.seek(t), t);
+      await frames(3); if (SETTLE) await p.waitForTimeout(SETTLE);
+      await p.screenshot({ path: `${SHOTS}/${key.replace(':', '')}-${VIEW}-${t.toFixed(1).padStart(5, '0')}.jpg`, type: 'jpeg', quality: 88 }); n++;
+    }
+    await p.evaluate(() => { const s = document.getElementById('__fcNoCap'); if (s) s.remove(); });
+    log('film', key, n, 'pictures');
+  }
+  return rows;
 }
 const out = {};
 for (const key of FILMS) {
@@ -76,6 +106,11 @@ for (const key of FILMS) {
   }
   const w = WAY[key];
   await p.waitForFunction(() => window.__enc.getState() === 'play', null, { timeout: 600000, polling: 500 });
+  /* (v25.5) the chapter's own black is waited out first: a film from play begins on the kit's fade as it stands
+     (kitFilm's startFade), and the film before this one in the list ended on a black that play was still lifting; on
+     a loaded box the next film began under half of it and kept it (the audit's desktop pass: the examination's first
+     34 seconds at half brightness, where the game's own begin on a clear picture: twenty seconds of play come first) */
+  await p.waitForFunction(() => !window.__enc.kit.getFade || window.__enc.kit.getFade() < 0.01, null, { timeout: 120000, polling: 250 }).catch(() => log('the black was still up after two minutes'));
   await p.evaluate((ph) => window.__enc.stage.applyPhase(ph), w.phase);
   if (w.film) {
     await p.waitForFunction(() => window.__enc.getState() === 'play', null, { timeout: 600000, polling: 500 });

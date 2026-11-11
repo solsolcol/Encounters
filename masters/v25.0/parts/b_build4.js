@@ -16,6 +16,15 @@
        the films walk the corridor on their own paths, which obey no collision, v5.03). The chapter's bounds still reach
        the corridor's far side, where the films stand */
     solids.push(hidBox(SHOP.x1 - SHOP.x0 + 0.6, 2.4, 0.2, 0, 1.2, SHOP.z1 + 0.24, worldS));
+    /* (v25.5, the audit of every ask of 9 to 11 Nov) AND ITS TWO SIDE WALLS, which nothing stopped him at. The shop was a
+       film set in chapter 1 and only what stands on its floor was made solid here, so beside the cabinets a wall was a
+       picture he walked through, into the units either side: "into other shops", his words. Measured on the live build
+       by flooding the real collision grid from where he stands (v7.4): four gaps, by the door (z 2.25 to 2.97) and
+       behind the counter (z -2.71 to -0.87) on both sides, and through them the whole of the chapter's bounds, 257
+       square metres for a shop of 30. The wall across the front closed the way he had named and was tried at the front
+       only; a route is proved shut by the flood, never by the points one thought of. Each side wall is solid from the
+       back wall to the front wall's outer face, just outside its own plane: he stops 14 cm short of it, as at the front */
+    for (const sx of [-1, 1]) solids.push(hidBox(0.2, 2.4, SHOP.z1 - SHOP.z0 + 0.34, sx * (SHOP.x1 + 0.1), 1.2, (SHOP.z0 + SHOP.z1 + 0.34) / 2, worldS));
     /* Lersi Chin on his mat: a blocker only while he sits there (its box emptied otherwise — the engine holds the same
        boxes, so the one box is opened and closed, never added) */
     const lcBlock = new THREE.Box3();
@@ -706,6 +715,15 @@
        neck and his head, each its share, set looking at him from beside him */
     const VW = { lean: 0.26, neck: 0.16, bow: 0.28 }, SW = { lean: 0.16, neck: 0.14, bow: 0.26 };
     const PG_STANDS = { x: 0.9, z: -0.25 };
+    /* (v25.5, the audit) WHERE PONG'S FACE IS FOR THE LENS as he stands there and talks: his mark's own point, not his
+       living head. His talking take carries his head some 7 cm to his left and back (measured through the film as it
+       plays, a twentieth of a second at a time: tools/probes/filmlive.mjs), and a lens that followed it swayed (a
+       desktop's look by a degree, there and back) or, fitted round it, breathed (a phone's lens 57.7 to 55.3 degrees
+       and out again in two seconds: mine, from the fit that holds both heads whole). The look rests on the mark, and
+       the fit holds a head's half-width and that travel beside it (PG_SWAY), so the frame stands still and he moves
+       inside it. Two heights, as the living points had: the look rests where his head's own joint stands (PG_LOOK,
+       1.52 m, measured), the fit holds his face 8 cm above it (PG_FACE), so the frame's tilt is what it was */
+    const PG_FACE = [PG_STANDS.x, 1.6, PG_STANDS.z], PG_LOOK = [PG_STANDS.x, 1.52, PG_STANDS.z], PG_SWAY = 0.19;
     const _lv = new THREE.Vector3();
     /* (v25.5, Chad: "lersi chin and pong stand for too long at the shop entrance before walking into the shop in the
        cutscene, just start with them walking into the shop. No need to stand and wait outside") THEY ARE WALKING IN AS THE
@@ -774,14 +792,18 @@
         if (t < V.intro) { const both = lp3(bP, bL, 0.62), kL = smo(sgk(t, 1.8, 4.6)), kH = smo(sgk(t, tLin - 0.6, tLin + 0.8));
           const hL = headOf(L, bL).slice(); hL[1] = Math.max(bL[1], hL[1] - 0.15);
           at = aimEase(V_EYE, aimEase(V_EYE, both, bL, kL), hL, kH); }
-        if (t >= V.intro && t < V.turn) at = aimEase(V_EYE, headOf(L, [0, 1.5, -0.35]), headOf(P, [PG_STANDS.x, 1.6, PG_STANDS.z]), smo(sgk(t, V.intro - 0.2, V.intro + 0.9)));
-        if (t >= V.turn) at = aimEase(V_EYE, headOf(P, [PG_STANDS.x, 1.6, PG_STANDS.z]), faceOf(L, [0, 1.55, -0.35]), smo(sgk(t, V.turn - 0.1, V.turn + 1.0)));
+        if (t >= V.intro && t < V.turn) at = aimEase(V_EYE, headOf(L, [0, 1.5, -0.35]), PG_LOOK, smo(sgk(t, V.intro - 0.2, V.intro + 0.9)));
+        if (t >= V.turn) at = aimEase(V_EYE, PG_LOOK, faceOf(L, [0, 1.55, -0.35]), smo(sgk(t, V.turn - 0.1, V.turn + 1.0)));
         const fl = t < V.turn ? (isNarrow() ? 52 : 44) : lp(isNarrow() ? 52 : 44, isNarrow() ? 44 : 36, smo(sgk(t, V.turn, V.wai)));
         /* (v25.2) Pong's word, introducing him: on a phone both their faces held in the frame (fit), eased in and out of it
            (the lens on Pong as he spoke had the master off the frame's edge; measured, tools/probes/framecheck.mjs) */
         const wF = ezk(t, V.intro - 0.5, V.intro + 0.3) * (1 - ezk(t, V.turn + 0.1, V.turn + 0.9));
         if (wF > 0 && isNarrow()) {
-          const F = fit(V_EYE, at, fl, [faceOf(L, [0, 1.55, -0.35]), faceOf(P, [PG_STANDS.x, 1.6, PG_STANDS.z])]);
+          /* (v25.5, the audit) EACH HEAD IS HELD WHOLE: a fit holds points, and the middle of the master's face held at
+             the safe part's edge left the far side of his head out of a phone's frame for the whole of Pong's line
+             (measured: his face's middle at 0.84 of the half-width, as asked, and his head drawn from 0.63 to 1.03).
+             The fit is given the two sides of each head as this eye sees them (headSides) */
+          const F = fit(V_EYE, at, fl, headSides(V_EYE, faceOf(L, [0, 1.55, -0.35])).concat(headSides(V_EYE, PG_FACE, PG_SWAY)));
           fLens(lp(fl, F.fl, wF)); camAt(V_EYE, aimEase(V_EYE, at, F.at, wF));
           return;
         }
@@ -923,7 +945,11 @@
         /* (v25.1 F11) narrowed onto the shelf as the look arrives: at 40/32 the piece was a few pixels on a dark bracket,
            2.8 m off and seen from below (photographed, both screens); (v25.5) and a breath further in while it is held */
         const push = smo(sgk(t, X.fetch - 0.4, tBack));
-        fLens(lp(isNarrow() ? 50 : 42, isNarrow() ? 22 : 17, smo(sgk(t, X.q2e5, X.fetch))) - (isNarrow() ? 2 : 1.5) * push);
+        /* (v25.5, the audit) THE LENS GOES ON FROM WHERE THE STILLNESS LEFT IT (42 on a phone, 34 on a wide screen) and
+           only narrows from there. It began this shot at 50 and 42: on the frame his eyes open, the same eye on the same
+           face, the picture sprang 8 degrees wider at once, the kind of jolt Chad calls a bounce (framebounce listed it
+           and I had read it as a cut; a cut changes what is looked at) */
+        fLens(lp(isNarrow() ? 42 : 34, isNarrow() ? 22 : 17, smo(sgk(t, X.q2e5, X.fetch))) - (isNarrow() ? 2 : 1.5) * push);
         camAt(KN_EYE, aimTurn(KN_EYE, LC_HEAD(), shelf, k, 1));
         return;
       }
@@ -1103,6 +1129,13 @@
 
     /* ================================================================ THE FOUR ENDINGS (§4.5) and THE CODA (§4.6) */
     /* the shared beats: kneeling before him (as the decision leaves him), Pong at the shutter, the two going out */
+    /* (v25.5, the audit) the two sides of a head as an eye sees it (0.13 m either way across the look, at the face's
+       height: a head is about 0.19 m across), for a fit that must hold the whole head and not the middle of the face */
+    function headSides(eye, f, r = 0.13) {
+      if (!f) return [];
+      const dx = f[0] - eye[0], dz = f[2] - eye[2], d = Math.hypot(dx, dz) || 1, rx = -dz / d * r, rz = dx / d * r;
+      return [[f[0] + rx, f[1], f[2] + rz], [f[0] - rx, f[1], f[2] - rz]];
+    }
     function kneelShot(t, fl0 = 50, fl1 = 44, push = [0, 1]) {
       fLens(lp(isNarrow() ? fl0 + 8 : fl0, isNarrow() ? fl1 + 8 : fl1, smo(sgk(t, push[0], push[1]))));
       camAt(KN_EYE, LC_HEAD());
@@ -1275,7 +1308,10 @@
       const tw = T.go + 1.5;
       if (t < tw) { lcSeated(); pongDoor(); props.lcThings.visible = true;
         const w = smo(sgk(t, T.go, T.go + 0.5)) * (1 - smo(sgk(t, tw - 0.4, tw)));
-        endWai(t, T.go); waiAt(w); kneelShot(t, 46, 46); return; }
+        /* (v25.5, the audit) the lens EASES out to take in his joined hands as they come up (0.9 s, his wai's own rise),
+           from where the talk left it: it sprang 6 degrees wider on the frame he began to wai, the same eye on the
+           same face (and in this ending a fifth of a second after the cut back from Pong: two jolts) */
+        endWai(t, T.go); waiAt(w); kneelShot(t, 40, 46, [T.go, T.go + 0.9]); return; }
       waiAt(0);
       const kT = smo(sgk(t, T.q2B2 + 2.0, T.q2B2 + 6.0));
       if (t < T.empty) {
@@ -1306,8 +1342,9 @@
       }
       if (t < T.alone) {
         const tw = T.go + 1.4;
+        /* (v25.5, the audit) the lens eased out over his wai's rise, as in B (it sprang 6 degrees wider at once) */
         if (t < tw) { lcSeated(); pongDoor(); props.lcThings.visible = true;
-          endWai(t, T.go); kneelShot(t, 46, 46); return; }
+          endWai(t, T.go); kneelShot(t, 40, 46, [T.go, T.go + 0.9]); return; }
         goOut(t, tw); goShot(t, tw);
         return;
       }
@@ -1674,6 +1711,9 @@
       skyAt: () => null,
       /* walktest: where play puts him besides the spawn (closing time at his altar; the clearing's first step) */
       arrivals: [{ what: 'his altar at closing time', x: HIS.x, z: HIS.z - 0.25 }, { what: 'the shop floor before the mat', x: -0.95, z: 1.25 }],
+      /* (v25.5, the audit) walktest: the ground he must STAY on. All play is in his shop (Chad, 9 Nov) and he must not
+         walk out of it (10 Nov): no cell the flood reaches from the spawn or an arrival may lie outside the unit */
+      keepIn: { what: 'his shop', minX: SX + SHOP.x0, maxX: SX + SHOP.x1, minZ: SHOP.z0, maxZ: SHOP.z1 + 0.06 },
       get phase() { return phase; },
       setPhase, applyPhase, after, dayClock, sayLine, queueLine, queueFn, queueGap,
       look, presets: PRESETS, shop: shopCtl, shopState: shop, props, films,

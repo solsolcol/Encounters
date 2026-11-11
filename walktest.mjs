@@ -97,8 +97,21 @@ for (const key of (process.env.WALK_ONLY ? KEYS.filter(k => process.env.WALK_ONL
     if (S.pileVia && arrivals.length && S.pile) targets.push({ what: 'the pile itself, from the arrival', x: S.pile.pos.x, z: S.pile.pos.z, r: 1.6 });
     if (typeof S.LINE_X === 'number') targets.push({ what: 'the fall-in line', x: S.LINE_X + 0.2, z: 0, r: 1.2 });
     for (const h of (S.hotspots || [])) targets.push({ what: 'hotspot ' + (h.id || h.prompt), x: h.pos.x, z: h.pos.z, r: Math.max(0.8, (h.radius || 1.5) - 0.3) });
+    /* v25.5: A CHAPTER MAY NAME THE GROUND HE MUST STAY ON (`stage.keepIn = { what, minX, maxX, minZ, maxZ }`), and no
+       cell the flood reaches may lie outside it. Chad, of episode 4 chapter 2: "do not allow the player to exit the shop
+       in the gameplay, i was able to walk out of the shop into other shops". v25.5 walled the open front and tried it at
+       the front; the side walls beside the cabinets were pictures, and through them the flood reached the whole of the
+       chapter's bounds (257 square metres, where the shop's own free floor is 17). A way OUT is the opposite fault to v7.1's sealed route, and
+       the same flood sees it. A chapter that names nothing is not asked */
+    let keep = null;
+    const K = S.keepIn;
+    if (K) { let n = 0, far = null, fd = 0;
+      for (let k = 0; k < seen.length; k++) if (seen[k]) { const x = BN.minX + ((k / nz) | 0) * ST, z = BN.minZ + (k % nz) * ST;
+        const d = Math.max(K.minX - x, x - K.maxX, K.minZ - z, z - K.maxZ);
+        if (d > 1e-6) { n++; if (d > fd) { fd = d; far = [x, z]; } } }
+      keep = { what: K.what || 'its ground', n, far, area: n * ST * ST }; }
     return { targets: targets.map(t => ({ ...t, reach: near(t.x, t.z, t.r) })),
-             spawnFree: !blocked[cell(D.spawn.x, D.spawn.z)],
+             spawnFree: !blocked[cell(D.spawn.x, D.spawn.z)], keep,
              arrivals: arrivals.map(a => ({ what: a.what, free: !blocked[a.k] })) };
   });
 
@@ -136,6 +149,8 @@ for (const key of (process.env.WALK_ONLY ? KEYS.filter(k => process.env.WALK_ONL
   for (const a of r.arrivals) ok(`${key}: ${a.what} is on open floor`, a.free);
   for (const t of r.targets)
     ok(`${key}: can WALK to ${t.what}`, t.reach, t.reach ? '' : `(${t.x.toFixed(2)}, ${t.z.toFixed(2)}) unreachable on foot`);
+  if (r.keep) ok(`${key}: cannot walk out of ${r.keep.what}`, r.keep.n === 0,
+    r.keep.n ? `${r.keep.area.toFixed(1)} square metres reached outside it, as far as (${r.keep.far[0].toFixed(2)}, ${r.keep.far[1].toFixed(2)})` : '');
 }
 
 await br.close();
