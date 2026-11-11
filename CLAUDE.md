@@ -45,9 +45,10 @@ from his **phone**. Consequences:
   you the real models. You just need to remember to ask me for the models so i don't forget or miss it."*). While a
   chapter stands on placeholders, EVERY report ends with the models still NEEDED in **docs/E4-MODELS.md** (the list,
   each role's look and takes, and what stands in). A placeholder is one of the game's own characters wearing the role,
-  never a block figure. A plant or a vehicle is a real model — his, or made his way (a checked reference picture,
-  then Meshy) — and one built in code is drawn only if its model never lands (v24.20: "replace all of them with real
-  truck models").
+  never a block figure. Since 11 Nov 2026 a character a chapter needs is MADE here end to end, his way (Chad's
+  standing rules, v26.0), so the ask is only for a model he has said he will send himself. A plant or a vehicle is a
+  real model — his, or made his way (a checked reference picture, then Meshy) — and one built in code is drawn only if
+  its model never lands (v24.20: "replace all of them with real truck models").
 
 ## The rules that never bend
 
@@ -183,6 +184,11 @@ that fits it, with the version it came from.
 - A model he sends with no place decided is prepared and kept ready, and placed only when he picks where. (v14.13)
 - A chapter opens where the last one left him, and nothing re-shows a journey the last chapter already made ("it does not link properly"); every decision's answers make sense where he stands (no answer sends him back across a border once the matter is settled) and teach different things in distinct ways ("All the decisions need to make sense, and teach different things in distinct ways"). (v24.56, the plan for episode 4 chapter 2)
 - A decision's answers each have a purpose and advance the story ("These answers have no purpose and dont advance the story", of four things to do with an afternoon once the story was already over), and none of them completely deviates from where he is going ("The options should not have those that completely deviate from his eventual path which is to become a master ... all options still lead to him accepting his path and mission"): from the chapter where he finds his teacher, the four options are four roads to the same place, each showing a different face of it. The decision sits AT the chapter's turning point, as his own did in episode 2 chapter 5 ("he is waiting for an answer"), never after the story has finished; and it is checked against every earlier chapter's decision before it is proposed (the first one proposed for episode 4 chapter 3 was episode 3 chapter 1's over again). (v26.0, the plan for episode 4 chapter 3)
+- A chapter's ending is never set in the future and never fast-forwards over what later chapters and episodes cover ("The ending should not fast forward to the future, he has to follow the journey of cultivation with pho which is covered in later episodes. That is totally jumping the gun. The ending should not be set in the future."): it stops at the next step, not where the road arrives. Before a chapter is planned the whole story's flow is read, and the plan says what it leaves for each later chapter ("understanding the flow of the entire story is important, knowing whats the next chapters and episodes and linking properly to those"). (v26.0, the plan for episode 4 chapter 3)
+- Grandmaster Pho may say more than the case files write, and every line of his is wise and profound ("Grandmaster pho can say more than whats written, but it needs to be all wise and profound"); each is still put to Chad before it is voiced. (v26.0, the plan for episode 4 chapter 3)
+- Grandmaster Pho's Wai Kru is festive, loud and colourful, and is shown so ("The entire wai kru ceremony tends to be quite festive, loud, and colourful. It needs to show that"): other people presenting their bai sri and going into trance, and dancers in traditional Thai clothes or naga-looking outfits dancing to show respect to the Thevadas (his "tewadas"). The empowerment is through the bai sri, raised in both hands with the master's hands on it, and no lersi mask is put on anyone ("No need to put lersi masks on the people, instead it should be empowered through the bai sri as shown in the photos"). (v26.0, the plan for episode 4 chapter 3)
+- When he gives photographs of a real place, the environment is built exactly as they look ("You have to build out this chapter environment exactly to how the photos look like."): each photograph is taken again in the game from the same place and laid beside the real one, and every difference is closed or put to him. His photographs win over an older ruling where the two differ (episode 4 chapter 3's ground has green, flags and long banners, which v16.3's temple rulings refused). His twelve of Grandmaster Pho's real Wai Kru (11 Nov 2026) are described in docs/V26.0-E4C3-PLAN.md §1.1. (v26.0, the plan for episode 4 chapter 3)
+- Every tool he has connected is used to its fullest to bring a chapter to life, and 3D models are generated at the highest possible settings ("Take full advantage and make full use of higgsfield mcp, meshy, eleven labs, gptimage, blender, everything to the maximum potential to bring this chapter to life. 3d models should be generated at the highest possible settings."). A character the game needs is MADE here, end to end, not asked of him: a reference of the person from GPT Image (photorealistic, against a white background, in an A pose), looked at; that picture to Meshy for the 3D model; then rigged; then given its animations ("Own it end to end."). (v26.0, the plan for episode 4 chapter 3)
 - Efficiency improves and the standards and quality stay exactly where they are ("I dont want quality and creativity and standards to drop because of this change, i want efficiency to improve while keeping the same standards and quality"): his asks are done in one shot, one build, one deploy and one round of checks at the end ("cant you do all of my asks in one shot, deploy, test once probe once?"), not one release per ask. Each ask is designed fully before it is built (what the real place has, what each shot sees), so the photographs confirm instead of discover. The work is saved by commits as it goes. Every check this file asks for is still made, once, where it can catch something, and never repeated after each tweak. A generated model's own checks (the reference picture, each model on its own) are part of making it, not probes of the game. (v24.35)
 
 ### How the work is done and checked
@@ -287,6 +293,14 @@ that fits it, with the version it came from.
   A take retargeted onto another body is a new motion and is judged the same way before it is wired in: the library's
   walks (the admin tee's, Meshy's own woman's walk) hold both arms out and swing a hand to the waist, a young man's
   march on an auntie, passed from small pictures and seen in the film (tools/retarget.mjs --calm brings the arms in). (v25.5)
+- Before a real ceremony or place is designed, he is asked what the real one is like and for photographs of it:
+  episode 4 chapter 3's Wai Kru was first designed as the calmest, whitest place in the game from written sources about
+  other lineages, and the real one is festive, loud and colourful. (v26.0)
+- THE REPOSITORY IS PUBLIC (checked 11 Nov 2026). Photographs of real people and lists of names are never committed: his
+  reference photographs live on the working machine under a path git ignores (`masters/v26.0/ref/`), are described in
+  words in the plan with their checksums in the research note, and are asked of him again if the machine is replaced. No
+  part of a photograph that shows a face or a name is sent to a picture service, and nobody in one is copied into the
+  game (no face, no tattoo, no name, no group's badge). (v26.0)
 
 ### Models and assets
 
@@ -1223,13 +1237,17 @@ breathing lens my first fix for it made), and what it put to him and left (§6: 
 Chin's living face in every close shot, measured as the films play: tools/probes/filmlive.mjs).
 Chapter 3 (S1·12, Grandmaster Pho at the Wai Kru) is next: his gold aura's colours and strengths wait in chapter 2's
 code (`AURA`, `AURA_K.gold`) for it to lift. **Its full build plan is docs/V26.0-E4C3-PLAN.md, PROPOSED to Chad on 11 Nov
-2026 and NOT YET APPROVED: nothing of it is built, and it is built only on his yes and his answers to its §2.3** (what
-Grandmaster Pho may be heard saying, since he is a real teacher: the plan voices only what the case file makes public; the
-decision, which is now HIS OWN FOUR, given that day after two of mine were withdrawn (accept your path, challenge the path,
-ask why, ask to make it stop: none leaves the path, and all four lead to his accepting his path and mission; still his to
-settle are their ranks and the lines said); two beats that are not in the case file; OPEN AND CLOSE, the one
-new way to play, played or watched; photographs of the real Wai Kru; the models). Its research is a first pass, not yet
-refuted: docs/research/V26.0-WAIKRU.md. The episode's plan, with what remains his to decide:
+2026 and NOT YET APPROVED: nothing of it is built, and it is built only on his yes and his answers to its §2.3.** It was
+revised that day to his words and to his twelve photographs of Grandmaster Pho's real Wai Kru (the plan's §0, §1.1): the
+Wai Kru is festive, loud and colourful and its ground is built exactly as the photographs look; other people present their
+bai sri, are empowered through it (no lersi mask on anyone) and go into trance, and dancers honour the Thevadas; Grandmaster
+Pho is heard, every line for Chad's yes; the decision is HIS OWN FOUR (accept your path, challenge the path, ask why, ask to
+make it stop: none leaves the path, and all four lead to his accepting his path and mission); and the ending stays in the
+present ("Tomorrow we begin."), leaving his cultivation to the later chapters (the plan's §1.2 says what each holds). Still
+his to settle: the ranks of the four; a read of Grandmaster Pho's lines; the three beats that are not in the case file;
+OPEN AND CLOSE, the one new way to play, played or watched; which man in the photographs he is; a picture of the dancers and
+what the music is; the models. The photographs are on the working machine only (`masters/v26.0/ref/`, ignored by git: the
+repository is public). Its research is a first pass, not yet refuted: docs/research/V26.0-WAIKRU.md. The episode's plan, with what remains his to decide:
 **docs/V24.0-EPISODE4-PLAN.md** (its sixth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is
 still his). S1·11 in two chapters (the master he did not know, who wears the original Sak Yant Ajarn's model; then the
 fog, Lersi Chin's clearing and the warning — built on Master Z's own trial episode, its 5.1 and 5.3 the two decisions

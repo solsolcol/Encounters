@@ -195,9 +195,13 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
 
 - Episode 4 chapters 3–5; Episode 5 (S1·16–S1·20); Episodes 6–10 (names still the v6.0 list).
   - **Episode 4 chapter 3 (S1·12) has its full build plan, PROPOSED 11 Nov 2026 and not yet approved:**
-    docs/V26.0-E4C3-PLAN.md. Nothing is built. It waits on Chad's answers to its §2.3 (what Grandmaster Pho may be
-    heard saying, the ranks and the lines of the decision's four (the four options are his own, 11 Nov), the two new beats, open and close played or watched, the real Wai Kru's
-    photographs, the models). Its research is a first pass, not yet refuted: docs/research/V26.0-WAIKRU.md.
+    docs/V26.0-E4C3-PLAN.md. Nothing is built. Revised the same day to his words and to his twelve photographs of
+    Grandmaster Pho's real Wai Kru (festive, loud and colourful; the environment built exactly as the photographs
+    look; the empowerment through the bai sri, no lersi mask on anyone; dancers for the Thevadas; the ending in the
+    present; Grandmaster Pho heard). It waits on Chad's answers to its §2.3 (a read of Grandmaster Pho's lines, the
+    ranks of the decision's four (the four options are his own), the three new beats, open and close played or
+    watched, which man in the photographs he is, a picture of the dancers and what the music is, the close, the
+    models). Its research is a first pass, not yet refuted: docs/research/V26.0-WAIKRU.md.
 - Deferred by choice: ghost mesh compression (the biggest download saving left), a service worker / offline,
   canvas-resolution and backdrop-blur thermal options.
 

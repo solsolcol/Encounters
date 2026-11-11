@@ -135,7 +135,13 @@ docs/V25.5-E4-NOTES.md.
 ## Episode 4 chapter 3 — not built yet (S1·12: the Wai Kru, the teacher in white)
 
 Its full build plan was PROPOSED to Chad on 11 Nov 2026 and waits on his answers: docs/V26.0-E4C3-PLAN.md (§6.1 the
-people, §6.3 the props). The roles below Grandmaster Pho's row are that plan's and stand only if he approves it.
+people, §6.3 the props). The roles below Grandmaster Pho's row are that plan's and stand only if he approves it. They
+were redrawn the same day from his twelve photographs of Grandmaster Pho's real Wai Kru (the plan's §1.1): each look
+below is a kind of dress seen there, never a likeness of a person in them. And they are no longer asked of him
+(Chad, 11 Nov 2026: *"For characters you need, can you first generate a reference of the person, describe it to
+GPTimage, person in photorealistic details, against a white background, in A pose. Once you have the reference image,
+send that to Meshy to generate the 3d model, then rig it, then add animations. Own it end to end."*): each is MADE
+here by those steps (the plan's §6.1), at the highest settings, and shown to him before it goes in.
 
 ### People
 
@@ -147,9 +153,12 @@ people, §6.3 the props). The roles below Grandmaster Pho's row are that plan's 
 
 | Role | Look (art direction) | Takes needed | Placeholder until then | Status |
 |---|---|---|---|---|
-| **Ton**, who posted the forum thread (`ton_udon`) and brings the group up from Singapore | Thai man, 35 to 45, lean; a plain white shirt, loose white trousers, a cloth shoulder bag; barefoot on the mats | standing idle, talking, walking, kneeling | a generated man | **NEEDED** (proposed) |
-| **The old woman disciple** ("Auntie") | Thai woman, 60s; a white blouse, a white tube skirt, a white sash across one shoulder; grey hair in a bun | standing idle, folding cloth, sitting and waiting | a generated woman | **NEEDED** (proposed) |
-| **Three lay masters** on the dais (seen, never heard) | none in white: (1) heavy-set, 60s, a cream shirt and a red-checked sash; (2) thin, 70s, tattooed forearms, an indigo Isan work shirt; (3) 50s, a brown wrap and a plain rosary, NOT a tiger cloth | seated only | generated | **NEEDED** (proposed) |
-| **Devotees in white**, two women and two men of different ages | white shirts and blouses, white or dark trousers and skirts | the polite side sit, a kneeling sit with joined hands, a bow | generated; the rest of the crowd is the game's own people in their own clothes, counted first (never `admintee`, `granny` or `yinkeeper`) | **NEEDED** (proposed) |
-| **The newcomer** (the coda) | a young man in ordinary clothes | standing, a nod | one of the game's own, chosen by count | none needed |
-| **Monks**, three to five | Chad's monk (`monk`, seen once before, in episode 3 chapter 1) | seated | his own model, a declared reuse | none needed |
+| **Ton**, who posted the forum thread (`ton_udon`) and brings the group up from Singapore | Thai man, 35 to 45, lean; a white shirt with an orange collar, white trousers, a cloth shoulder bag; barefoot | standing idle, talking, walking, kneeling | a photorealistic A-pose reference, then Meshy, the rig, the takes | **TO BE MADE HERE**, end to end (proposed) |
+| **The woman at Grandmaster Pho's bench** ("Auntie") | Thai woman, 60s; a white lace blouse and a long white skirt, jasmine in a grey bun, a long green bead necklace | standing idle, taking a bai sri and setting it down, sitting | a photorealistic A-pose reference, then Meshy, the rig, the takes | **TO BE MADE HERE**, end to end (proposed) |
+| **Hermit 1** (a lersi; seen, never heard) | thin, 60s; long matted hair and a beard; a brown robe; beads; a staff | seated, both hands laid on a bai sri, a handful of petals thrown | generated | **TO BE MADE HERE**, end to end (proposed) |
+| **Hermit 2** | 70s; long grey hair, a white beard; a pale yellow shawl; a staff | seated, a blessing | generated | **TO BE MADE HERE**, end to end (proposed) |
+| **The master in red** | heavy-set, 60s, shaven; a red jacket with gold trim; a tall staff | seated | generated | **TO BE MADE HERE**, end to end (proposed) |
+| **A second master in white** | shaven, 70s, glasses; plain white robes | seated, a blessing | generated | **TO BE MADE HERE**, end to end (proposed) |
+| **A dancer** (six on screen, drawn from two bodies) | Thai woman, 20s to 30s; white, a gold shawl across one shoulder, garlands, flowers in her hair (or a naga outfit: Chad's two) | a Thai dance (none exists in the game: his dancer with her dance is the best answer; else one found, or written from real footage and shown to him as a clip) | generated | **TO BE MADE HERE**, end to end (proposed) |
+| **Devotees in white**, two women and two men of different ages | white T-shirts, shirts and trousers; one in the group's shirt (white, an orange collar, a plain orange disc) | standing in line, kneeling and raising a bai sri, kneeling with joined hands, a bow, and two trances (bowed with the arms swept back; kneeling with both arms raised wide) | generated; the rest of the crowd is the game's own people, counted first (never `admintee`, `granny` or `yinkeeper`) | **TO BE MADE HERE**, end to end (proposed) |
+| **Monks**, three | Chad's monk (`monk`, seen once before, in episode 3 chapter 1) | seated | his own model, a declared reuse | none needed |
