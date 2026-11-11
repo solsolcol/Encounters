@@ -635,6 +635,46 @@
       if (kit.smear) kit.smear(on ? FOG.smear : 0, { secs });
     }
     function openDecision() { decOpen = true; if (getState() === 'play') startDecision(); }
+    /* (v25.5, found by the finger play-through at a phone's real size, 390 x 844: the decision's window covers the lower
+       half of the screen there, and Lersi Chin, who sits below the eye's level, was behind it from his topknot down.
+       Chad's note is about how he looks "when player is choosing options"; on such a phone he could not be seen at
+       all, and on a desktop only his topknot) HE IS SEEN WHILE THE CHOICE IS MADE. While the window is open and he
+       kneels before him, his look is eased (0.8 s, on the wall clock) so the master's face stands in the clear band
+       of THIS screen: under the stats where they lie over the screen's middle (a phone), over the window's top edge
+       (its laid-out place: its 40 px rise is a transform), a little below the band's middle so his topknot has room;
+       where the band is too short for his head and topknot both (a small phone, a browser's bars), his chin is put
+       just over the window's edge instead, so it is his face that shows and his topknot that goes under the stats.
+       The yaw comes back onto him too. The look is the player's again the moment the window closes (Step back):
+       nothing is put back, so nothing snaps. A screen with no band to speak of (under 48 px) is left as it is; a
+       screen turned or resized while the window is up is measured again, and eased onto from where the look is */
+    const DEC = { on: false, t0: 0, p0: 0, y0: 0, p1: null, w: 0, h: 0 }, _dcE = new THREE.Vector3();
+    function decidePitch() {
+      const P = document.querySelector('#decide .panel'); if (!P || !P.offsetHeight) return null;
+      const H = window.innerHeight, W = window.innerWidth, S = document.getElementById('stats'), sr = S ? S.getBoundingClientRect() : null;
+      const top = sr && sr.width > 0 && sr.left < W / 2 + 50 && sr.right > W / 2 - 50 ? sr.bottom + 8 : H * 0.07;
+      const bot = P.offsetTop; if (bot - top < 48) return null;
+      const fc = LC_HEAD();
+      camera.getWorldPosition(_dcE);
+      const tf = Math.tan(camera.fov * Math.PI / 360), hd = Math.hypot(fc[0] - _dcE.x, fc[2] - _dcE.z);
+      /* elev: how far above his eye's level a height stands, as an angle; solve: the pitch that draws a height at a
+         screen row */
+      const elev = (y) => Math.atan2(y - _dcE.y, hd);
+      const solve = (y, sy) => elev(y) - Math.atan((H / 2 - sy) / (H / 2) * tf);
+      let th = solve(fc[1], top + (bot - top) * 0.55);
+      /* (LC_HEAD is his brow: his eyes are 8 cm under it, his chin 20) */
+      if (H / 2 - (H / 2) * Math.tan(elev(fc[1] - 0.2) - th) / tf > bot - 8) th = solve(fc[1] - 0.2, bot - 8);
+      return Math.max(KNEEL.lo + 0.02, Math.min(KNEEL.hi, th));
+    }
+    function decideLook(now, st) {
+      if (st !== 'decide' || phase !== 'decide' || !play.knelt) { DEC.on = false; return; }
+      if (!DEC.on || DEC.w !== window.innerWidth || DEC.h !== window.innerHeight) {
+        DEC.on = true; DEC.t0 = now; DEC.p0 = pitch.rotation.x; DEC.y0 = yaw.rotation.y; DEC.p1 = null;
+        DEC.w = window.innerWidth; DEC.h = window.innerHeight; }
+      if (DEC.p1 == null) { DEC.p1 = decidePitch(); if (DEC.p1 == null) { DEC.t0 = now; return; } }
+      const k = smo(c01((now - DEC.t0) / 0.8));
+      pitch.rotation.x = lp(DEC.p0, DEC.p1, k);
+      yaw.rotation.y = DEC.y0 + angTo(DEC.y0, faceLC()) * k;
+    }
     /* the receipt is the note (v7.3): a note banked once, whatever a Continue replays — and the awareness with it */
     function bank(note, a = 0) {
       if (!kit || !note) return;
@@ -1075,6 +1115,7 @@
       shopFrame(now);
       lapTick();
       const st = getState();
+      decideLook(now, st);
       mixBeds(Math.min(1, raw), st);
       const liveSt = st === 'play' || st === 'unlock' || st === 'choose';
       if (!booted && !preplaced && kit) { const w0 = preStage(kit.getPhase()); if (w0) preplaced = w0; }

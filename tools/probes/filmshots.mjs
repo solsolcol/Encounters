@@ -20,6 +20,10 @@ const b = await chromium.launch(LAUNCH);
 const ctx = await b.newContext(PHONE ? { viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, hasTouch: true, isMobile: true }
                                      : { viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1 });
 const p = await ctx.newPage();
+/* (v25.5) SWAP=key=file.glb[,key=file.glb]: the real game served ANOTHER FILE for an asset (its request answered from disk),
+   so one film frame can be photographed with a model as it was and as it is, nothing else changed */
+for (const [key, file] of (process.env.SWAP || '').split(',').filter(Boolean).map(q => q.split('=')))
+  await p.route(new RegExp('/assets/' + key + '\\.[0-9a-f]+\\.glb$'), (r) => r.fulfill({ status: 200, contentType: 'model/gltf-binary', body: fs.readFileSync(file) }));
 const errs = [];
 p.on('pageerror', e => errs.push('PAGEERROR ' + e.message));
 p.on('console', m => { if (m.type() === 'error' || /failed|threw/i.test(m.text())) errs.push('CONSOLE ' + m.text().slice(0, 200)); });

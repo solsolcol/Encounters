@@ -2,6 +2,8 @@
 // pixel ratio 1.6, antialias off, no shadows), from where a player stands. Optional runtime A/B variants (no file touched):
 //   VARIANT=asis (default) | nonormal | aniso | nometal | nomip | all
 // ENC_DIST=<snapshot> CHROMIUM_PATH=... [VARIANT=..] [ONLY=tag,tag] node tools/probes/yardshots.mjs <outdir>
+//   SWAP=key=file.glb[,key=file.glb]  (v25.5) the real game served ANOTHER FILE for an asset (its request answered from disk): a
+//   model judged in the yard's own light before a build carries it (give it its own <outdir>)
 import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
 import fs from 'node:fs';
@@ -16,6 +18,8 @@ fs.mkdirSync(OUT, { recursive: true });
 const b = await chromium.launch(LAUNCH);
 const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
 const p = await ctx.newPage(); const errs = [];
+const SWAPS = (process.env.SWAP || '').split(',').filter(Boolean).map(q => q.split('='));
+for (const [key, file] of SWAPS) await p.route(new RegExp('/assets/' + key + '\\.[0-9a-f]+\\.glb$'), (r) => r.fulfill({ status: 200, contentType: 'model/gltf-binary', body: fs.readFileSync(file) }));
 p.on('pageerror', e => errs.push('PAGEERROR ' + e.message));
 p.on('console', m => { if (m.type() === 'error' || /failed|threw|warn/i.test(m.type() + m.text())) errs.push('CONSOLE ' + m.type() + ' ' + m.text().slice(0, 160)); });
 const T0 = Date.now(), el = () => ((Date.now() - T0) / 1000).toFixed(0) + 's';
@@ -85,6 +89,8 @@ const VIEWS = [
   ['sedan-front', 5.6, 1.0, -136, -9],        // the sedan's front-left three-quarter, ~3.8 m
   ['cars-rear', 6.4, 6.9, -32, -8],           // the sedan's rear-left, the truck and the SUV beyond
   ['truck-side', 8.9, 7.3, -24, -10],        // the white pickup's tail and right side, ~2.5 m
+  ['suv-rear', 12.1, 6.7, -17, -9],          // (v25.5) the dark SUV's tail from inside the yard, ~2.5 m
+  ['suv-front', 11.8, 0.6, -160, -9],        // (v25.5) the dark SUV's nose and left side, ~3 m
   ['moto', -9.0, -6.5, 43, -14],              // the underbone under the house, ~4.7 m
   ['raintree', 7.6, 2.0, -45, 32],            // the rain tree over the cars, looking up
   ['mango', -5.5, 5.0, 57, 12],               // the mango by the house, ~4.4 m

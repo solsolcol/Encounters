@@ -84,6 +84,10 @@ fi
 #      metal to reflect (v24.29): read as paint (metal x 0.25, roughness at least 0.33) it takes the light as today's
 #      cars did (theirs measured: metal 0.54 / 0 / 0.02, roughness 0.36 / 0.3 / 0.33). The SUV's base colour x (1 - 0.45 x
 #      its metal): a metal's base colour is how much it reflects, and as paint it stood lighter than its picture's grey.
+#      The SUV's roughness floor is 0.7, the other two 0.33: dark gloss shows every soft dent a generated body has, and
+#      photographed from inside the yard at arm's length (tools/probes/yardshots.mjs suv-rear, suv-front, with
+#      SWAP=e4suv=<file> serving each finish to the real game) its tailgate, bonnet and rear glass read as crumpled at
+#      0.33, calmer at 0.55 and clean at 0.7 (a dusty satin grey). The silver sedan and the white pickup hide theirs.
 #    BLOT: the roundel the generator invented on the sedan's boot and the ring on the SUV's tailgate (no maker's marks,
 #      v9.3), painted over on all three sheets and their bosses laid flat (24.7 and 28.3 mm), found by photographing each
 #      nose and tail straight on (the pickup has none).
@@ -96,7 +100,7 @@ if [ "$ONLY" = models ]; then
   V=masters/v25.5/src
   PXMR=1024 PAINT=0.25,0.33      BLOT="0,1.01,2.12,0.08"    node tools/prepmeshy.mjs $V/hunyuan-sedan-100k.glb  assets/e4sedan.glb 4.4  l 1 180 2048
   PXMR=1024                                                 node tools/prepmeshy.mjs $V/hunyuan-pickup-100k.glb assets/e4truck.glb 1.85 h 1 180 2048
-  PXMR=1024 PAINT=0.25,0.33,0.45 BLOT="0,1.233,2.19,0.085"  node tools/prepmeshy.mjs $V/hunyuan-suv-100k.glb    assets/e4suv.glb   1.82 h 1 180 2048
+  PXMR=1024 PAINT=0.25,0.7,0.45  BLOT="0,1.233,2.19,0.085"  node tools/prepmeshy.mjs $V/hunyuan-suv-100k.glb    assets/e4suv.glb   1.82 h 1 180 2048
   # his phone: its top (the lens end) away from him, as its drawn screen reads (turned 180); his notebook as generated
   node tools/prepmeshy.mjs $V/hunyuan-phone-40k.glb    assets/e4phone.glb    0.158 l 1 180 1024
   node tools/prepmeshy.mjs $V/hunyuan-notebook-40k.glb assets/e4notebook.glb 0.46  w 1 0   1024
