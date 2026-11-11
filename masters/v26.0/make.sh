@@ -147,6 +147,15 @@
 #        at 3,120 triangles: REFUSED by photograph, its file removed. The bush was drawn again with forty large leaves
 #        (hall/refs/croton2-1024.jpg, job 9ef71b83-7b5b-4ffd-b898-3c139c23b390), which Meshy takes: `croton2` in the table.
 #   Still to draw again: the chrysanthemums and the roses.
+#   Batch three (12 Nov, early; props/jobs-p4.json): two props the films need, each a checked picture on white first
+#   (GPT Image through Higgsfield, gpt_image_2_6, quality high, 2k; props/PROMPTS.py has the words), then Meshy at its
+#   highest settings, its own remesh to the count in TABLE.txt, and prepmeshy (prop.sh):
+#     the rolled reed mat  (ending A: "New ones roll the mats")   picture 8eebda1b-fe19-4343-a2c8-803756e92878
+#        image-to-3D 01a1ccd2-f49b-747a-9b27-2198540c54d2 · remesh 6,000 01a1ccd7-e597-73f0-bb59-87bd4fd548fa -> assets/w3matroll.glb (1.2 m long)
+#     the folded white T-shirt  (the opening film: what he packs)   picture 28920144-3ef0-4c76-b6e9-2d151d55c234
+#        image-to-3D 01a1ccd2-fbd4-73e5-a4af-48f29a765f3d · remesh 4,000 01a1ccdc-6716-7485-a137-e3c76bb92fcf -> assets/w3shirt.glb (0.30 m wide;
+#        modelled standing as its picture shows it: the chapter lays it on its back)
+#   Cost: 2 pictures, 2 models (40 credits each) and 2 remeshes (5 each): Meshy 1591 -> 1501.
 #
 # 4b. THE HALL (masters/v26.0/hall/; Chad, 11 Nov evening: "More images of the building behind, at the wai kru")
 #   Its statues, plants and lamp are models made the same way from crops of photographs 13 to 16 (objects only; the

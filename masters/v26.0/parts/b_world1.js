@@ -20,6 +20,7 @@
     const lp = (a, b, k) => a + (b - a) * k, lp3 = (a, b, k) => [lp(a[0], b[0], k), lp(a[1], b[1], k), lp(a[2], b[2], k)];
     const angTo = (a, b) => Math.atan2(Math.sin(b - a), Math.cos(b - a));
     const isNarrow = () => camera.aspect < 1;
+    const TOUCHY = !!((window.matchMedia && matchMedia('(pointer: coarse)').matches) || 'ontouchstart' in window);   // (the engine's HAS_TOUCH: which words a brief gives)
 
     /* ------------------------------------------------------------- THE GROUND'S PLAN (the tracker's §10)
        x east, z south, the origin the middle of the turf. Every place in this chapter is one of these numbers. */
@@ -217,8 +218,8 @@
       batches.clear();
     }
 
-    /* a seeded stream (v6.15): every scatter in this chapter is the same scatter on every run */
-    function rng(seed) { let s = seed >>> 0 || 1; return () => { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+    /* (a seeded stream, v6.15: every scatter in this chapter is the same scatter on every run. `rng` is at the file's
+       foot, beside the drawn surfaces that also use it) */
 
     /* ------------------------------------------------- a model stood once (a tree, a seat, the parasol)
        Prepped in real metres with its origin on its base's middle (v13.1), so a place is a place; `h` fits one that
@@ -238,9 +239,12 @@
         /* a file of TWO LEVELS (props/lods.sh: nodes <key>_near and <key>_far over the same vertices): the far one is
            drawn until the piece stands taller than a twenty-fifth of the screen (lodTick, the measure many() uses) */
         const near = [], far = []; m.traverse(q => { if (q.isMesh) { if (/_far$/.test(q.name)) far.push(q); else if (/_near$/.test(q.name)) near.push(q); } });
-        if (near.length && far.length) { g.updateWorldMatrix(true, true); const bb = new THREE.Box3().setFromObject(m), c = bb.getCenter(new THREE.Vector3());
+        /* (o.near: a copy that is only ever seen close, in his hands: its full level always, and no place in the world
+           for lodTick to measure) */
+        if (near.length && far.length && o.near) { for (const q of far) q.visible = false; }
+        else if (near.length && far.length) { g.updateWorldMatrix(true, true); const bb = new THREE.Box3().setFromObject(m), c = bb.getCenter(new THREE.Vector3());
           for (const q of near) q.visible = false;
-          standLods.push({ near, far, c, r: 0, size: Math.max(0.05, bb.max.y - bb.min.y), on: false }); }
+          standLods.push({ near, far, c, r: 0, size: Math.max(0.05, bb.max.y - bb.min.y), on: false, g, moves: !!o.moves }); }
       }).catch(err => { console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
       return g;
     }
@@ -252,7 +256,8 @@
       if (!standLods.length) return;
       camera.getWorldPosition(_sl2);
       const span = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
-      for (const L of standLods) { const d = Math.max(0.05, _sl2.distanceTo(L.c)), on = L.size / (d * span) > STOCK_NEAR;
+      for (const L of standLods) { if (L.g && L.moves) L.g.getWorldPosition(L.c).y += L.size / 2;                // (a thing the play carries about is measured where it is now)
+        const d = Math.max(0.05, _sl2.distanceTo(L.c)), on = L.size / (d * span) > STOCK_NEAR;
         if (on === L.on) continue; L.on = on;
         for (const q of L.near) q.visible = on; for (const q of L.far) q.visible = !on; }
     }
@@ -513,6 +518,11 @@
     const mFrameGreen = M({ color: 0x1f7a3a, roughness: 0.5, metalness: 0.3 });
     const satinMats = new Map();
     const satin = (hex) => { let m = satinMats.get(hex); if (!m) satinMats.set(hex, m = surf('satin', { tile: [0.7, 0.7], mirror: 'u', tint: hex, roughness: 0.42, side: THREE.DoubleSide })); return m; };
+    /* (the same cloth with its folds drawn two and a half times as wide: a band of it seen from a few metres, in a narrow
+       lens, with the folds at their first size and a gold tint in the shade, was a plank of wood: photographed in the
+       films at Grandmaster Pho's bench) */
+    const satinWideMats = new Map();
+    const satinWide = (hex) => { let m = satinWideMats.get(hex); if (!m) satinWideMats.set(hex, m = surf('satin', { tile: [1.8, 0.9], mirror: 'u', tint: hex, roughness: 0.42, side: THREE.DoubleSide })); return m; };
     /* a swag: cloth hung between two points of an eave and sagging between them, its folds running down it */
     function swag(mat, a, b, depth, drop, out, segs = 10) {
       const dx = b[0] - a[0], dz = b[2] - a[2], len = Math.hypot(dx, dz), nx = -dz / len, nz = dx / len;       // it bellies `out` metres to the left of its way (the side a wall drawn the same way faces)
@@ -539,7 +549,7 @@
         bar(frame, [xa, e, za], [xb, e, zb], 0.018, 4);
         quad(roof, [oa[0], e + 0.02, oa[1]], [ob[0], e + 0.02, ob[1]], [cx, pk, cz], [cx, pk, cz]);
         /* the valance: a band of cloth hanging from the eave, and swags over it */
-        const vm = satin(o.valance != null ? o.valance : 0xf4f4f0);
+        const vm = (o.wide ? satinWide : satin)(o.valance != null ? o.valance : 0xf4f4f0);
         wall(vm, xa, za, xb, zb, e - (o.band || 0.28), e + 0.01);
         const n = o.swags || 3, cols = o.swagCols || [0x18a044, 0xf4f4f0], sd = o.swagDepth || 0.42, dr = o.swagDrop || 0.2;
         for (let s = 0; s < n; s++) { const k0 = s / n, k1 = (s + 1) / n;

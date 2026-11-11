@@ -1,11 +1,15 @@
     /* ================================================================ THE PLAY (the plan's §4.1, §4.3, §9)
        Every beat on the chapter clock (wall time, v7.1); every line through the queue, one voice at a time; each beat's
-       receipt in the phase string, so a Continue lands where a reload would. */
+       receipt in the phase string, so a Continue lands where a reload would.
+       The plan's §3.7, "cinematic in play": the ground answers his feet (things happen at his marks, not on a clock);
+       his look is borrowed gently and given back; his hands are the actor (the bai sri carried all day); nothing is on
+       the screen but the world in the set pieces. */
     const PHASES = ['arrive', 'baisri', 'tables', 'place', 'festival', 'seen', 'check', 'dawn', 'knelt', 'told', 'breath', 'taught', 'decide'];
+    const DAY_TWO = new Set(['dawn', 'knelt', 'told', 'breath', 'taught', 'decide']);
     let phase = 'arrive';
-    let booted = false;
+    let booted = false, preplaced = '';
     const dayClock = { t: 0 };
-    let lastWall = 0;
+    let lastWall = 0, pausedAt = 0, lastWall0 = 0;
     const todo = [];
     function after(secs, fn) { todo.push({ at: dayClock.t + secs, fn }); todo.sort((a, b) => a.at - b.at); }
     function runTodo() { while (todo.length && todo[0].at <= dayClock.t) todo.shift().fn(); }
@@ -17,7 +21,7 @@
        have not landed is held a moment (v8.0) and then spoken silently, so a beat chained on a line never stops */
     function sayLine(name, vol = 1, onStart, pan) {
       if (dayClock.t < speak.until) return false;
-      const start = () => { speak.voiceTo = dayClock.t + (SECS[name] || 2.5); speak.until = speak.voiceTo + 0.25; heard.add(name); if (onStart) onStart(); };
+      const start = () => { speak.voiceTo = dayClock.t + (SECS[name] || 2.5); speak.until = speak.voiceTo + 0.25; heard.add(name); subs(name); if (onStart) onStart(); };
       if ((soundOff && soundOff()) || !worldSfx) { start(); return true; }
       if (worldSfx(name, vol, 1, pan)) { start(); return true; }
       speak.pending = { name, vol, start, pan, give: dayClock.t + 1.6 };
@@ -31,6 +35,12 @@
       if (worldSfx(q.name, q.vol, 1, q.pan)) { speak.pending = null; q.start(); }
       else speak.until = dayClock.t + 0.2;
     }
+    /* (PREVIEW ONLY: a line's words as a caption while it is said: a_head.js SUBS says why. Never over the homage's own
+       captions) */
+    function subs(name, secs) {
+      if (!DATA.preview || !SUBS || !kit || !kit.captions || (play && play.homage)) return;
+      const w = WORDS[name]; if (w) kit.captions([{ at: 0, end: Math.max(0.6, secs != null ? secs : (SECS[name] || 2.5)), text: w }]);
+    }
     const lineQ = [];
     function queueLine(name, onStart, vol = 1, pan = 0) { lineQ.push({ name, onStart, vol, pan }); }
     function queueFn(fn) { lineQ.push({ fn }); }
@@ -42,34 +52,569 @@
       if (q.gap) { speak.until = dayClock.t + q.gap; return; }
       sayLine(q.name, q.vol, q.onStart, q.pan);
     }
+    /* a line said by someone: he talks from its own start and rests after it (v11.4) */
+    function line(name, who, onStart) { queueLine(name, () => { if (who) talk(who, SECS[name] || 2.5); if (onStart) onStart(); }); }
+    /* a sound of the place, if its file is in the build (M7 makes them; until one lands its cue is simply silent) */
+    function fx(name, vol = 1, pan = 0) { if (worldSfx && !(soundOff && soundOff())) worldSfx(name, vol, 1, pan); }
 
     const W = DATA.words;
-    const play = { run: 0, busy: false };
+    const play = { run: 0, busy: false, turning: null, bow: null, bai: false, baiP: 0, baiTo: 0, baiSecs: 1, knelt: false, homage: false,
+                   pull: null, looked: false, asked: new Set(), checked: false, bowed: false, breath: null, lookEase: null };
     let decOpen = false;
-    function mark() { return ''; }
+    const live = (run) => alive && run === play.run;
+    /* the receipts inside a phase (§9): the homage made; who has been asked; the bow made; how the breaths went */
+    function mark() {
+      const t = [];
+      if (phase === 'place' && play.homage) t.push('h');
+      if (phase === 'check') { if (play.asked.has('ton')) t.push('t'); if (play.asked.has('aunt')) t.push('a'); if (play.checked) t.push('x'); }
+      if (phase === 'knelt' && play.bowed) t.push('b');
+      if (play.breath) t.push('c' + play.breath.closed, 'f' + play.breath.held);
+      return t.join(',');
+    }
     function readMark(p0) {
-      const [p1] = String(p0 || '').split(':');
-      return { p: PHASES.includes(p1) ? p1 : 'arrive' };
+      const [p1, tag = ''] = String(p0 || '').split(':');
+      const p = PHASES.includes(p1) ? p1 : 'arrive', f = new Set(tag.split(',').filter(Boolean));
+      const num = (c) => { for (const v of f) if (v[0] === c && /^\d$/.test(v.slice(1))) return +v.slice(1); return null; };
+      return { p, homage: f.has('h'), ton: f.has('t'), aunt: f.has('a'), checked: f.has('x'), bowed: f.has('b'), closed: num('c'), held: num('f') };
     }
     function setPhase(p, opts) { phase = p; if (kit) kit.setPhase(p + ':' + mark()); objectiveFor(p, opts); }
+    function saveMark() { if (kit) kit.setPhase(phase + ':' + mark()); }        // a beat inside a phase banks its receipt the moment it counts
+    function bank(note, a = 0) {
+      if (!kit || !note) return;
+      const got = kit.getConduct ? kit.getConduct().notes : [];
+      if (!got.includes(note)) kit.conduct({ note, s: 0, a });
+    }
+
+    /* ---------------------------------------------------------------- places (x east, z south; the tracker's §10) */
+    const EYE = 1.62;
+    const KNEEL = { y: 0.9, span: 1.2, lo: -0.9, hi: 0.55 };                  // his eye sat back on his heels, and how far he may look about
+    const TON_HEAD = () => { const g = cast.ton.group.position; return { x: g.x, y: cast.ton.seated ? 0.95 : 1.52, z: g.z }; };
+    const TABLES_AT = { x: 0, z: -8.85 };                                     // where he stands to pay his respects, on the gravel before the tables
+    const BUDDHA = { x: WHEEL.x, y: 1.95, z: WHEEL.z };                       // the small Buddha at the centre of the wheel of marigolds
+    const PLACE = { x: -2.25, z: 1.25 };                                      // his place on the turf, at the north-east corner of the group's rows
+    const PLACE_RY = Math.atan2(-(0 - PLACE.x), -(-11.2 - PLACE.z));          // (a look's yaw: toward the offering tables)
+    const TON_PLACE = { x: PLACE.x - 1.05, z: PLACE.z + 0.12 };
+    /* second in the line at his bench, half a step to one side of the one who kneels: straight behind him the young man
+       was hidden by the player's own bai sri the moment he sat back on his heels (photographed) */
+    const LINE_AT = (() => { const [x, z] = benchAt(0.95, 3.05); return { x, z }; })();
+    const TON_LINE = (() => { const [x, z] = benchAt(-0.7, 3.65); return { x, z }; })();
+    /* the woman at his bench, on day one: at the carpet's edge beside the lime pole, where each bai sri is handed to her
+       (by the table, the pole stood between her and anyone who came to ask her: photographed) */
+    const AUNT_LINE = (() => { const [x, z] = benchAt(1.5, 2.1), [kx, kz] = benchAt(0.46, 1.3); return { x, z, ry: faceTo(x, z, kx, kz) }; })();
+    const YM_B = 1.28;                                                        // how far before the bench the young man kneels (then moved so the two pairs of hands meet: ymPlace)
+    const DAWN_AT = { x: 2.1, z: 3.6 };                                       // where the morning finds him
+    /* HIS HANDS, KNEELING: on his knees, under the frame's foot. The walking hand the engine draws stood in the middle of
+       a phone's frame across his teacher's lap (photographed); it is put away the way a carried thing's hand is (kit.hold
+       `bare`, with nothing in it), and comes back for a bow (kit.pray draws both) and when he stands */
+    const noHand = new THREE.Group();
+    function handsAway(on) { play.away = !!on; if (!kit || !kit.hold) return; if (!on && kit.holding && kit.holding() === noHand) kit.hold(null); }
+    function awayTick() { if (!play.away || !kit || !kit.hold || play.bai) return; if (kit.praying && kit.praying()) return; if (!kit.holding()) kit.hold(noHand, { bare: true }); }
+    /* Ton, the morning after: a dozen degrees to the right of the line from where the player stands to Grandmaster Pho,
+       2.6 m off, so a portrait phone holds him whole beside the bench (he stood at its edge, cut in half: photographed) */
+    const TON_DAWN = (() => { const a = Math.atan2(PHO_AT[0] - DAWN_AT.x, PHO_AT[1] - DAWN_AT.z) - 0.21; return { x: DAWN_AT.x + Math.sin(a) * 2.6, z: DAWN_AT.z + Math.cos(a) * 2.6 }; })();
+    /* before Grandmaster Pho, on the carpet's outer half: 2.2 m from him, so his whole seated figure stands in a phone's
+       frame (at 1.5 m his chest filled it under the canopy's roof: photographed) */
+    const KNEEL2 = (() => { const [x, z] = benchAt(0.46, 2.25); return { x, z }; })();
+    const PHO_HEAD = { x: PHO_AT[0], y: 1.3, z: PHO_AT[1] };
+    const yawTo = (x, z, tx, tz) => Math.atan2(-(tx - x), -(tz - z));         // the look's yaw from a place onto a point
+    const phoYawFrom = (p) => yawTo(p.x, p.z, PHO_AT[0], PHO_AT[1]);
+    const AUNT_HEAD = () => { const g = cast.aunt.group.position; return { x: g.x, y: 1.42, z: g.z }; };
+
+    /* a person turned to a heading over a moment (never a snap: v14.5) */
+    const turns = [];
+    function turnPerson(P, to, secs) { if (!P) return; for (let i = turns.length - 1; i >= 0; i--) if (turns[i].P === P) turns.splice(i, 1); turns.push({ P, from: P.group.rotation.y, to, t: 0, secs: Math.max(0.05, secs) }); }
+    function turnsTick(wdt) { for (let i = turns.length - 1; i >= 0; i--) { const T2 = turns[i]; T2.t = Math.min(1, T2.t + wdt / T2.secs); T2.P.group.rotation.y = T2.from + angTo(T2.from, T2.to) * smo(T2.t); if (T2.t >= 1) turns.splice(i, 1); } }
+
+    /* the orders (§4.1, §4.3). `complete: false` where the change is not his doing (the v8.7 lie) */
     function objectiveFor(p, opts) {
       if (!kit) return;
       let o = null, wp = null;
-      if (p === 'arrive') { o = W.objTon; }
+      if (p === 'arrive') { if (!play.busy) { o = W.objTon; wp = TON_HEAD(); } }
+      else if (p === 'baisri') { if (!play.busy) { o = W.objTables; wp = { x: TABLES_AT.x, y: 1.25, z: TABLES_AT.z - 1.0 }; } }
+      else if (p === 'tables') { o = W.objPlace; wp = { x: PLACE.x, y: 0.5, z: PLACE.z }; }
+      else if (p === 'place') { if (play.knelt && !play.homage && !play.busy) o = W.objHomage; }
+      else if (p === 'festival') { if (play.pull && play.pull.offer && !play.looked) { o = W.objLook; wp = PHO_HEAD_NOW(); } else if (!play.looked) o = W.objLine; }
+      else if (p === 'check') { if (!play.checked && !play.busy) { o = W.objCheck; wp = !play.asked.has('ton') ? TON_HEAD() : !play.asked.has('aunt') ? AUNT_HEAD() : null; } }
+      else if (p === 'dawn') { o = W.objGo; wp = { x: KNEEL2.x, y: 0.5, z: KNEEL2.z }; }
+      else if (p === 'knelt') { if (!play.busy) o = play.bowed ? W.objTell : W.objBow; }
       kit.objective(o, opts);
       kit.waypoint(wp);
     }
+    const _ph = new THREE.Vector3();
+    function PHO_HEAD_NOW() { const P = cast.pho; if (P && P.ready && P.head) { P.head.getWorldPosition(_ph); return { x: _ph.x, y: _ph.y + 0.06, z: _ph.z }; } return PHO_HEAD; }
+
     /* THE LOOK: which of the looks the ground wears (a preset of light, the painted shade, and what only that day draws) */
     let lookName = 'DAY1';
+    const PHO_LEVEL = { DAY1: 1, DAWN: 0.86, OPENED: 1, SHUT: 0.8, AFTERNOON: 0.95, DUSK: 0.62, NIGHT: 0.3 };   // the unlit share of his look, dimmed to the hour (c_cast.js lookD)
     function look(name, secs = 0) {
       if (kit) kit.daylight(PRESETS[name] || null, secs);
       lookName = name;
       const two = name === 'DAWN' || name === 'OPENED' || name === 'SHUT' || name === 'AFTERNOON' || name === 'DUSK';
-      dayOne.visible = name === 'DAY1'; dayTwo.visible = two; nightG.visible = name === 'NIGHT';
+      dayOne.visible = name === 'DAY1'; dayTwo.visible = two; nightG.visible = name === 'NIGHT'; duskG.visible = name === 'DUSK';
       crowdSolid(dayOne.visible);
       paintShade(name === 'OPENED' || name === 'SHUT' ? 'DAWN' : name);
+      phoLook.level.value = PHO_LEVEL[name] != null ? PHO_LEVEL[name] : 1;
     }
     function openDecision() { decOpen = true; if (getState() === 'play') startDecision(); }
+
+    /* ---------------------------------------------------------------- his look, borrowed and given back (v11.1)
+       A glide and a turn to a heading with the eye easing to its height (chapter 2's turnTo), and for a standing man a
+       plain ease of the look onto a point; the player's own look is his again the moment either ends. */
+    function turnTo(to, secs, o, done) {
+      play.turning = { t: 0, from: yaw.rotation.y, to, secs, y: o.y, span: o.span, lo: o.lo, hi: o.hi, done, stand: !!o.stand,
+                       pos: o.pos || null, p0: { x: yaw.position.x, z: yaw.position.z }, pitch: o.pitch, pt0: pitch.rotation.x };
+    }
+    function turnTick(wdt) {
+      const T2 = play.turning; if (!T2) return;
+      T2.t += wdt / T2.secs;
+      const k = smo(Math.min(1, T2.t));
+      yaw.rotation.y = T2.from + angTo(T2.from, T2.to) * k;
+      if (T2.pos) { yaw.position.x = T2.p0.x + (T2.pos.x - T2.p0.x) * k; yaw.position.z = T2.p0.z + (T2.pos.z - T2.p0.z) * k; }
+      if (T2.pitch != null) pitch.rotation.x = T2.pt0 + (T2.pitch - T2.pt0) * k;
+      if (kit && !T2.stand) kit.pose('lying', { y: T2.y, yaw: yaw.rotation.y, span: 0.02, pitchLo: Math.min(T2.lo, pitch.rotation.x - 0.01), pitchHi: Math.max(T2.hi, pitch.rotation.x + 0.01), secs: 0.9 });
+      if (T2.t >= 1) {
+        play.turning = null;
+        if (kit && !T2.stand) kit.pose('lying', { y: T2.y, yaw: T2.to, span: T2.span, pitchLo: T2.lo, pitchHi: T2.hi, secs: 0.05 });
+        if (T2.done) T2.done();
+      }
+    }
+    /* standing: the look eased onto a point (and, with `pos`, his feet to a spot) */
+    function lookAt(pt, secs, done, pos) {
+      const px = pos ? pos.x : yaw.position.x, pz = pos ? pos.z : yaw.position.z, d = Math.hypot(pt.x - px, pt.z - pz);
+      turnTo(yawTo(px, pz, pt.x, pt.z), secs, { stand: true, pos: pos || null, pitch: Math.atan2(pt.y - yaw.position.y, Math.max(0.3, d)) }, done);
+    }
+
+    /* ---------------------------------------------------------------- THE BAI SRI IN HIS HANDS
+       Carried all day, his hands under the frame's foot (c_zfx.js BAI says why): low while he walks, only the top of its
+       cone in sight; raised when he offers it. It rides the hands' own frame (kit.hold, the hand out of sight), so it
+       bobs with his steps and shakes when his hands do. `p`: -1 gone down under the frame, 0 carried, 1 raised, 2 held
+       high before his face; eased on the wall clock. */
+    const _bq0 = new THREE.Quaternion(), _bv0 = new THREE.Vector3();
+    function baiHands(on, o = {}) {
+      play.bai = !!on;
+      if (!kit) return;
+      if (on) {
+        if (o.p != null) play.baiP = o.p;
+        if (o.from != null) { play.baiP = o.from; play.baiTo = o.p != null ? o.p : 0; play.baiSecs = Math.max(0.05, o.secs != null ? o.secs : 0.7); } else play.baiTo = play.baiP;
+        kit.hold(handBai, { bare: true }); baiPlace();
+      } else {
+        if (kit.holding && kit.holding() === handBai) kit.hold(null);
+        handBaiHolder.add(handBai);
+        play.baiP = play.baiTo = 0;
+      }
+    }
+    function baiRaise(p, secs = 1.2) { play.baiTo = p; play.baiSecs = Math.max(0.05, secs); }
+    /* where it stands in the hands' frame at p (a smooth path through its places), and the pull laid on it */
+    function baiPlace() {
+      const A = handBai.parent; if (!A || A === handBaiHolder) return;
+      const p = play.baiP, Pu = play.pull, k = Pu ? smo(Pu.k) : 0, t = dayClock.t;
+      const seg = p < 0 ? [BAI.carry, BAI.down, smo(c01(-p))] : p <= 1 ? [BAI.carry, BAI.raise, smo(c01(p))] : [BAI.raise, BAI.high, smo(c01(p - 1))];
+      let x = lp(seg[0][0], seg[1][0], seg[2]), y = lp(seg[0][1], seg[1][1], seg[2]), z = lp(seg[0][2], seg[1][2], seg[2]), tilt = 0;
+      /* the pull: his hands begin to lift it and to sway with it, slowly, by themselves */
+      if (k > 0) { y += k * (0.05 + 0.022 * Math.sin(t * 0.9) + 0.01 * Math.sin(t * 2.3)); x += k * 0.02 * Math.sin(t * 0.62); tilt = k * 0.09 * Math.sin(t * 0.62 + 0.6); }
+      _bq0.copy(A.quaternion).invert();
+      handBai.position.copy(_bv0.set(x, y, z).sub(A.position).applyQuaternion(_bq0));
+      handBai.quaternion.copy(_bq0); handBai.rotateY(BAI.yaw); if (tilt) handBai.rotateZ(tilt);
+    }
+    function baiTick(wdt) {
+      if (!play.bai || !kit) return;
+      if (kit.holding && kit.holding() !== handBai && getState() === 'play') kit.hold(handBai, { bare: true });   // (a film let go of it: it is his again)
+      if (play.baiP !== play.baiTo) { const st = wdt / play.baiSecs * Math.max(1, Math.abs(play.baiTo - play.baiP) > 1 ? 2 : 1); play.baiP = play.baiTo > play.baiP ? Math.min(play.baiTo, play.baiP + st) : Math.max(play.baiTo, play.baiP - st); }
+      baiPlace();
+    }
+
+    /* ================================================================ P1 · TON, AND THE BAI SRI */
+    const WARM_DAY1 = ['q3v', 'tn3a1', 'q3p1', 'tn3a2', 'q3u1', 'q3u2', 'tn3m1', 'q3u3', 'tn3m2', 'q3c1', 'tn3c1', 'q3c2', 'ds3c1', 'tn3c2', 'q3c3',
+                       'x3baitake', 'x3baiset', 'x3kneel', 'x3bowall', 'x3petals', 'x3chant', 'x3tone'];
+    const WARM_DAY2 = ['ph3g1', 'ph3b0', 'ph3b1', 'ph3b2', 'ph3b3', 'ph3b4', 'ph3bx', 'ph3by', 'ph3b5', 'ph3p1', 'ph3p2', 'ph3p3', 'x3kneel', 'x3baiset', 'x3bell'];
+    function dayOneStage() {
+      look('DAY1', 0); auraAt(0, 0); mistK = 1; burstsClear();
+      zoneAt(null);
+      whenReady(cast.pho, (P) => { rest(P, 0); gaze(P, null); });
+      whenReady(cast.ym, (P) => { P.group.visible = false; }); ymBai.visible = false;
+      whenReady(cast.aunt, (P) => { put(P, P.home.x, P.home.z, P.home.ry); rest(P, 0); P.group.visible = true; castSolid(); });
+      dayCast(true);
+    }
+    /* who is on the ground: the other masters and the monks on day one only (the next morning he sits alone) */
+    function dayCast(one) { for (const P of [cast.hermitA, cast.red, cast.hermitB, cast.white].concat(cast.monks)) whenReady(P, (Q) => { Q.group.visible = one; }); }
+    function tonHome() { whenReady(cast.ton, (P) => { put(P, P.home.x, P.home.z, P.home.ry); P.seated = false; rest(P, 0); P.rest.take = 'Idle_3'; take(P, 'Idle_3', 0); P.group.visible = true; castSolid(); }); }
+    function arriveBegin() {
+      dayOneStage(); setFormation('arrive'); tonHome();
+      baiPut(myBai, TON_BAI.x, TON_BAI.y, TON_BAI.z, TON_BAI.ry);
+      setPhase('arrive', { complete: false });
+      if (warmSounds) warmSounds(WARM_DAY1);
+      const run = play.run;
+      after(4.2, () => { if (live(run) && phase === 'arrive' && !play.busy && !heard.has('q3v')) queueLine('q3v'); });
+    }
+    function tonTalk() {
+      if (phase !== 'arrive' || play.busy) return false;
+      const run = play.run; play.busy = true; objectiveFor('arrive');
+      /* he is stood a stated distance before Ton and turned to his face (v14.1: never from wherever he happened to stop),
+         and held there while they speak; Ton turns to him */
+      { const g = cast.ton.group.position, dx = yaw.position.x - g.x, dz = yaw.position.z - g.z, d = Math.hypot(dx, dz) || 1, r = Math.max(1.9, Math.min(2.3, d));
+        const at = { x: g.x + dx / d * r, z: g.z + dz / d * r };
+        if (kit) kit.root(true);
+        lookAt({ x: g.x, y: 1.5, z: g.z }, 0.8, null, at);
+        whenReady(cast.ton, (P) => turnPerson(P, faceTo(g.x, g.z, at.x, at.z), 0.5)); }
+      line('tn3a1', cast.ton); queueGap(0.3); line('q3p1'); queueGap(0.3);
+      /* "Take one.": he turns to the table, takes it up and holds it out in both hands (his own take), and it is the
+         player's when the line has said so */
+      queueLine('tn3a2', () => { if (!live(run)) return;
+        const P = cast.ton, g = P.group.position, toTable = faceTo(g.x, g.z, TON_BAI.x, TON_BAI.z), toHim = faceTo(g.x, g.z, yaw.position.x, yaw.position.z);
+        P.actN++; turnPerson(P, toTable, 0.4); hold(P, 'give', 0.18, 0.5, 0.4);                       // his hands come up before his chest as he turns to the table
+        after(0.45, () => { if (live(run)) play.tonGive = { k: 0 }; fx('x3baitake', 0.4, -0.3); });   // it is in his hands
+        after(0.95, () => { if (!live(run)) return; turnPerson(P, toHim, 0.55); span(P, 'give', 0.5, 1.9, 1.4, { fade: 0.2, hold: 1.5 }); });   // and held out to him in both
+        after(1.7, () => { if (live(run)) lookAt({ x: myBai.position.x, y: myBai.position.y + 0.3, z: myBai.position.z }, 1.0); });           // his eyes go down to it
+        after(3.1, () => { if (!live(run)) return; play.tonGive = null; myBai.visible = false; fx('x3baitake', 0.6); baiHands(true, { from: -1, p: 0, secs: 0.8 });
+          span(P, 'give', 3.6, 5.85, 1.9, { fade: 0.3, then: (Q) => rest(Q, 0.7) });
+          after(0.9, () => { if (live(run)) lookAt({ x: g.x, y: 1.5, z: g.z }, 1.1); }); }); });                                                // and back up to Ton
+      queueFn(() => { if (!live(run)) return; play.busy = false; play.tonGive = null; if (kit) kit.root(false); if (!play.bai) { myBai.visible = false; baiHands(true, { from: -1, p: 0, secs: 0.5 }); } setPhase('baisri'); });
+      return true;
+    }
+    /* THE OFFERING TABLES: he raises the bai sri in both hands to the small Buddha at the centre of the wheel, and bows his head */
+    function payRespects() {
+      if (phase !== 'baisri' || play.busy || !play.bai) return false;
+      const run = play.run; play.busy = true; objectiveFor('baisri');
+      if (kit) kit.root(true);
+      lookAt(BUDDHA, 1.1, () => { if (!live(run)) return;
+        baiRaise(1, 1.4);
+        after(1.5, () => { if (!live(run)) return; play.bow = { t: 0, prev: 0, n: 1, secs: 3.4, depth: 0.5, run, sound: '', done: () => {
+          baiRaise(0, 1.3);
+          after(1.2, () => { if (!live(run)) return; if (kit) kit.root(false); play.busy = false; tonToPlace(); setPhase('tables'); }); } }; }); });
+      return true;
+    }
+    /* Ton goes to his group while the player's eyes are on the tables (a change made where no shot can see it: v24.12) */
+    function tonToPlace() { whenReady(cast.ton, (P) => { put(P, TON_PLACE.x, TON_PLACE.z, faceTo(TON_PLACE.x, TON_PLACE.z, 0, -11.2)); P.seated = true; P.rest.take = 'seiza'; P.rest.win = { seiza: [0.4, 6.8] }; rest(P, 0); castSolid(); }); }
+
+    /* ================================================================ P2 · A PLACE; P3 · THE HOMAGE */
+    function kneelPlace(instant) {
+      if (play.knelt && !instant) return false;
+      play.knelt = true; zoneAt(null);
+      if (kit) kit.root(true);
+      /* the bai sri goes down out of his hands under the frame's foot, and stands on the turf before him */
+      /* (a metre before him and a little to his left: nearer, it stood under the frame's foot and behind his own hand) */
+      const front = { x: PLACE.x - Math.sin(PLACE_RY) * 1.0 - Math.cos(PLACE_RY) * 0.3, z: PLACE.z - Math.cos(PLACE_RY) * 1.0 + Math.sin(PLACE_RY) * 0.3 };
+      const setDown = () => { baiHands(false); baiPut(myBai, front.x, 0.012, front.z, 0.6); handsAway(true); };
+      if (instant) {
+        setDown();
+        yaw.position.x = PLACE.x; yaw.position.z = PLACE.z; yaw.rotation.y = PLACE_RY; pitch.rotation.x = -0.05;
+        if (kit) kit.pose('lying', { y: KNEEL.y, yaw: PLACE_RY, span: KNEEL.span, pitchLo: KNEEL.lo, pitchHi: KNEEL.hi, secs: 0.05 });
+        return true;
+      }
+      const run = play.run; play.busy = true;
+      fx('x3kneel', 0.6); setPhase('place'); baiRaise(-1, 0.9);                // (it goes down under the frame's foot as he kneels, and is on the turf before him when he looks)
+      turnTo(PLACE_RY, 1.1, Object.assign({ pos: PLACE, pitch: -0.3 }, KNEEL), () => { if (!live(run)) return; fx('x3baiset', 0.5); setDown();
+        after(0.5, () => { if (!live(run)) return; play.busy = false; objectiveFor('place', { complete: false }); }); });
+      return true;
+    }
+    /* THE HOMAGE: the monks' chant over the loudspeakers; the whole ground makes the krap three times on its three
+       lines and once more for the teachers, and he with it, his hands joined. Each line is captioned as it is chanted
+       (v21.31), timed from the homage's own start so it is right when the game is muted. */
+    const HOMAGE = { bow: 5.6, n: 4, lead: 1.2 };
+    function homage() {
+      if (phase !== 'place' || !play.knelt || play.homage || play.busy) return false;
+      const run = play.run; play.busy = true; objectiveFor('place');
+      handsAway(false);
+      if (kit) { kit.pray(true, { secs: 0.9, y: -0.3 });
+        kit.pose('lying', { y: KNEEL.y, yaw: PLACE_RY, span: 0.02, pitchLo: -1.4, pitchHi: KNEEL.hi, secs: 0.3 });
+        if (kit.captions) kit.captions([1, 2, 3].map((k) => ({ at: HOMAGE.lead + (k - 1) * HOMAGE.bow + 0.2, end: HOMAGE.lead + k * HOMAGE.bow - 0.3, text: W['cap' + k], sub: W['cap' + k + 'Sub'] }))); }
+      fx('x3chant', 0.9);
+      whenReady(cast.ton, (P) => hold(P, 'prostrate', 0.15, 0.85, 0.6));
+      after(HOMAGE.lead, () => { if (!live(run)) return;
+        play.bow = { t: 0, prev: 0, n: HOMAGE.n, secs: HOMAGE.bow * HOMAGE.n, depth: 1.0, run, sound: 'x3bowall', done: () => homageDone(run) };
+        for (let k = 0; k < HOMAGE.n; k++) after(k * HOMAGE.bow, () => { if (!live(run)) return; crowdBow(HOMAGE.bow - 0.25, k === HOMAGE.n - 1);
+          span(cast.ton, 'prostrate', KRAP.from, KRAP.to, HOMAGE.bow - 0.3, { fade: 0.4, hold: k === HOMAGE.n - 1 ? 0 : -0.35, then: k === HOMAGE.n - 1 ? (P) => rest(P, 0.9) : null }); }); });
+      return true;
+    }
+    function homageDone(run) {
+      if (!live(run)) return;
+      play.homage = true; saveMark();
+      if (kit) { kit.pray(false, { secs: 1.2 }); kit.pose('lying', { y: KNEEL.y, yaw: PLACE_RY, span: KNEEL.span, pitchLo: KNEEL.lo, pitchHi: KNEEL.hi, secs: 0.3 }); if (kit.captions) kit.captions(null); }
+      after(1.4, () => { if (live(run)) festivalBegin(); });
+    }
+    /* THE BOWS, his own: the view lowered to the ground and brought back, laid on his look as a delta and taken off again
+       (v11.1), once for each bow of `n` over `secs` */
+    function bowTick(wdt) {
+      const Bw = play.bow; if (!Bw) return;
+      if (!live(Bw.run)) { play.bow = null; return; }
+      const t0 = Bw.t; Bw.t += wdt;
+      const one = Bw.secs / Bw.n, u = Math.min(1, Bw.t / Bw.secs);
+      const ph = (Bw.t % one) / one, d = -Bw.depth * Math.pow(Math.sin(Math.PI * Math.min(1, ph * 1.12)), 2) * (u < 1 ? 1 : 0);
+      pitch.rotation.x += d - Bw.prev; Bw.prev = d;
+      if (Bw.sound) for (let k = 0; k < Bw.n; k++) { const at = k * one + one * 0.3; if (t0 < at && Bw.t >= at) fx(Bw.sound, 0.5); }
+      if (u >= 1) { pitch.rotation.x -= Bw.prev; play.bow = null; if (Bw.done) Bw.done(); }
+    }
+
+    /* ================================================================ THE FILM OF THE FESTIVAL, THEN P4 · THE LINE AND THE PULL */
+    function festivalBegin() {
+      const run = play.run;
+      const ok = kit && kit.film && kit.film('festival', { onDone: () => { if (live(run)) lineBegin(false); } });
+      if (!ok) lineBegin(false);
+    }
+    /* the line at Grandmaster Pho's bench, as the film leaves it: the throngs before the masters, the young man kneeling
+       before the bench, the player second, Ton at his shoulder */
+    function lineStage() {
+      look('DAY1', 0); setFormation('bless'); zoneAt(null);
+      whenReady(cast.ton, (P) => { put(P, TON_LINE.x, TON_LINE.z, faceTo(TON_LINE.x, TON_LINE.z, PHO_AT[0], PHO_AT[1])); P.seated = false; P.rest.take = 'Idle_3'; P.rest.win = null; rest(P, 0); castSolid(); });
+      whenReady(cast.aunt, (P) => { put(P, AUNT_LINE.x, AUNT_LINE.z, AUNT_LINE.ry); rest(P, 0); castSolid(); });
+      ymPlace();
+      myBai.visible = false;
+    }
+    /* THE YOUNG MAN IS STOOD WHERE FOUR HANDS CAN MEET ON ONE BOWL: where Grandmaster Pho's two hands are when he lays
+       them forward (his own take, at its stillest moment) and where the young man's are when he raises his bai sri are
+       both measured on the bodies (handsAt), and the young man is moved so that the two middles stand over one another */
+    const PHO_ON = { take: 'Sitting_Answering_Questions', from: 3.5, len: 1.2 }, YM_UP = 2.6;
+    function ymPlace() {
+      const Y = cast.ym, Ph = cast.pho; if (!Y || !Ph) return;
+      const [bx, bz] = benchAt(0.46, YM_B), ry = faceTo(bx, bz, PHO_AT[0], PHO_AT[1]);
+      put(Y, bx, bz, ry);
+      whenReady(Y, () => whenReady(Ph, () => {
+        play.ymHands = meetHands(Ph, PHO_ON.take, PHO_ON.from + PHO_ON.len * 0.5, Y, 'offer', YM_UP);
+        Y.group.visible = true; rest(Y, 0);
+        baiPut(ymBai, Y.group.position.x, 0.012, Y.group.position.z, 0.4); ymBai.visible = false; }));
+    }
+    function lineBegin(resumed) {
+      const run = play.run;
+      lineStage();
+      yaw.position.set(LINE_AT.x, EYE, LINE_AT.z); yaw.rotation.y = phoYawFrom(LINE_AT); pitch.rotation.x = -0.08;
+      if (kit) { kit.pose('standing', { secs: 0.05 }); kit.root(true); if (kit.getFade && kit.getFade() > 0.01) kit.fade(0, 1.1); }
+      play.knelt = false; play.looked = false; play.busy = true; play.pull = null; handsAway(false);
+      baiHands(true, { p: 0, secs: 0.01 });
+      setPhase('festival', { complete: false });
+      /* THE BLESSING AHEAD OF HIM (photographs 5 and 6), then the pull */
+      const T = { up: 1.2, on: 2.6, petals: 6.4, down: 9.6, trance: 10.4, rise: 11.2, pull: 12.0, say: 15.5 };
+      after(T.up, () => { if (!live(run)) return; ymBai.visible = true; play.ymCarry = true; span(cast.ym, 'offer', 5.9, YM_UP, 1.5, { hold: 0.5, fade: 0.5 }); lay(cast.ym, ymGrip, { secs: 0.5 }); fx('x3baitake', 0.3, 0.2); });
+      after(T.on, () => { if (!live(run)) return; hold(cast.pho, PHO_ON.take, PHO_ON.from, PHO_ON.len, 0.9); lay(cast.pho, phoGrip, { secs: 1.0 }); });
+      after(T.petals, () => { if (!live(run)) return; lay(cast.pho, null, { secs: 0.45 }); span(cast.pho, 'Sit_Cheer_with_Left_Hand', 0.15, 2.5, 2.7, { fade: 0.5, then: (P) => rest(P, 0.8) });
+        after(1.3, () => { if (!live(run)) return; const Y = cast.ym.group.position, h = PHO_HAND_UP(); petalBurst(h, [Y.x, Y.z], dayClock.t, { r: 0.7, up: 1.2 }); fx('x3petals', 0.6, 0.2); }); });
+      after(T.down, () => { if (!live(run)) return; lay(cast.ym, null, { secs: 0.5 });
+        span(cast.ym, 'offer', YM_UP + 0.5, 6.4, 1.6, { fade: 0.2, then: (P) => { play.ymCarry = false; ymSetDown(); take(P, 'sway', 1.4); } }); });
+      after(T.rise, () => { if (live(run)) span(cast.pho, 'Sit_to_Stand_Transition_M', 0.3, 2.25, 2.6, { fade: 0.6, hold: 0.28 }); });
+      after(T.pull, () => { if (!live(run)) return; play.pull = { k: 0, to: 1, secs: 9, offer: false }; });
+      after(T.say, () => { if (!live(run)) return; queueLine('q3u1');
+        queueFn(() => { if (!live(run)) return;
+          /* he stands, and has lifted his eyes: he is looking straight at him */
+          span(cast.pho, 'Sit_to_Stand_Transition_M', 2.25, 3.4, 1.8, { fade: 0.3, hold: 0.5 }); gaze(cast.pho, 'lens', { secs: 1.6, reach: 0.9 });
+          play.pull.offer = true; play.busy = false; objectiveFor('festival', { complete: false }); }); });
+    }
+    /* where his raised hand is at the top of the throw */
+    /* FOUR HANDS ON ONE BOWL (photograph 5), in play as in the film: the young man's bai sri rides his take's hands
+       (measured before anything is laid on them: the grip is asked for before the hands are moved), his own hands
+       hold it under its swell, and Grandmaster Pho's are laid on it from above */
+    const ymGrip = () => { if (play.ymCarry) baiOnHands(ymBai, cast.ym, -0.03); const p = ymBai.position, g = cast.ym.group.position; return baiGrip([p.x, p.y, p.z], BAI.s, [g.x, g.z], 'under'); };
+    const phoGrip = () => { const p = ymBai.position, g = cast.pho.group.position; return baiGrip([p.x, p.y, p.z], BAI.s, [g.x, g.z], 'on'); };
+    /* (lowered, it is set down on the carpet before his knees) */
+    function ymSetDown() { const Y = cast.ym.group, p = ymBai.position, ry = Y.rotation.y; play.ymSet = { from: [p.x, p.y, p.z], to: [Y.position.x + Math.sin(ry) * 0.46, 0.012, Y.position.z + Math.cos(ry) * 0.46], k: 0 }; }
+    function PHO_HAND_UP() { const P = cast.pho; if (P && P.handR) { P.group.updateWorldMatrix(true, true); P.handR.getWorldPosition(_ph); return [_ph.x, _ph.y + 0.08, _ph.z]; } return [PHO_AT[0], 1.75, PHO_AT[1] - 0.3]; }
+    /* the pull, every frame: his hands, his heart, the edges of the day and its sound, all on one number */
+    function pullTick(wdt) {
+      const Pu = play.pull; if (!Pu || !kit) return;
+      if (Pu.k !== Pu.to) { const st = wdt / Pu.secs; Pu.k = Pu.to > Pu.k ? Math.min(Pu.to, Pu.k + st) : Math.max(Pu.to, Pu.k - st); }
+      const k = smo(Pu.k);
+      if (kit.tremble) kit.tremble(0.55 * k, { secs: 0.2 });
+      if (kit.pulse) kit.pulse(k > 0.02 ? { bpm: 72 + 54 * k, erratic: 0.25 * k, vol: 0.5 * k } : null);
+      if (kit.chill) kit.chill(0.5 * k, { secs: 0.2, tint: 'grey' });
+      if (kit.hush && !Pu.hushOwn) kit.hush(0.55 * k, { secs: 0.2 });
+      if (Pu.to === 0 && Pu.k === 0) { play.pull = null; if (kit.tremble) kit.tremble(0, { secs: 0.3 }); if (kit.pulse) kit.pulse(null); if (kit.chill) kit.chill(0, { secs: 0.5 }); if (kit.hush) kit.hush(0, { secs: 0.6 }); }
+    }
+    /* LOOK AT HIM: one press. The lens narrows a little on the man in white while the day's sound closes down to one
+       tone; he does nothing but look. The hands come down, the heart slows, and the music is only music again. */
+    function lookAtHim() {
+      const Pu = play.pull;
+      if (phase !== 'festival' || !Pu || !Pu.offer || play.looked || play.busy) return false;
+      const run = play.run; play.looked = true; play.busy = true; objectiveFor('festival');
+      Pu.hushOwn = true;
+      if (kit.hush) kit.hush(1, { secs: 1.3 }); if (kit.lens) kit.lens(46, { secs: 1.7 });
+      fx('x3tone', 0.7);
+      lookAt(PHO_HEAD_NOW(), 1.5, () => { if (!live(run)) return;
+        Pu.to = 0; Pu.secs = 3.2;
+        after(3.4, () => { if (!live(run)) return;
+          if (kit.lens) kit.lens(null, { secs: 2.4 }); if (kit.hush) kit.hush(0, { secs: 2.6 });
+          gaze(cast.pho, null, { secs: 1.4 });
+          span(cast.pho, 'Sit_to_Stand_Transition_M', 3.4, 0.3, 3.4, { fade: 0.3, then: (P) => rest(P, 0.8) });
+          whenReady(cast.ym, (P) => { P.rest.take = 'seiza'; rest(P, 2.0); });
+          setPhase('seen');
+          after(1.2, () => { if (live(run)) seenLines(run); }); }); });
+      return true;
+    }
+    function seenLines(run) {
+      play.busy = true;
+      queueLine('q3u2'); queueGap(0.4); line('tn3m1', cast.ton); queueGap(0.3); queueLine('q3u3'); queueGap(0.3); line('tn3m2', cast.ton);
+      queueFn(() => { if (live(run)) checkBegin(false); });
+    }
+
+    /* ================================================================ P5 · THE CHECK */
+    function checkBegin(resumed) {
+      play.busy = false; play.pull = null;
+      if (kit) { kit.root(false); if (resumed) { kit.pose('standing', { secs: 0.05 }); if (kit.getFade && kit.getFade() > 0.01) kit.fade(0, 0.9); } }
+      setPhase('check', { complete: false });
+      if (play.asked.size >= 2 && !play.checked) { const run = play.run; after(0.8, () => { if (live(run)) checkClose(run); }); }
+    }
+    function ask(who) {
+      if (phase !== 'check' || play.busy || play.asked.has(who) || play.checked) return false;
+      const run = play.run; play.busy = true; play.asked.add(who); saveMark(); objectiveFor('check');
+      const P = who === 'ton' ? cast.ton : cast.aunt;
+      whenReady(P, (Q) => { Q.group.rotation.y = faceTo(Q.group.position.x, Q.group.position.z, yaw.position.x, yaw.position.z); });
+      if (who === 'ton') { queueLine('q3c1'); queueGap(0.3); line('tn3c1', cast.ton); }
+      else { queueLine('q3c2'); queueGap(0.3); line('ds3c1', cast.aunt); }
+      queueFn(() => { if (!live(run)) return; play.busy = false;
+        if (play.asked.size >= 2) checkClose(run); else objectiveFor('check', { complete: false }); });
+      return true;
+    }
+    function checkClose(run) {
+      play.busy = true; objectiveFor('check');
+      queueGap(0.4); line('tn3c2', cast.ton); queueGap(0.4); queueLine('q3c3');
+      queueFn(() => { if (!live(run)) return; play.checked = true; bank(W.noteAsked, 3); saveMark(); play.busy = false; betweenBegin(); });
+    }
+
+    /* ================================================================ THE NIGHT BETWEEN (a film), THEN DAY TWO */
+    function betweenBegin() {
+      const run = play.run;
+      const ok = kit && kit.film && kit.film('between', { onDone: () => { if (live(run)) dawnBegin(false); } });
+      if (!ok) dawnBegin(false);
+    }
+    function dawnStage() {
+      look('DAWN', 0); auraAt(0, 0); mistK = 1; burstsClear(); zoneAt(null);
+      whenReady(cast.ym, (P) => { P.group.visible = false; }); ymBai.visible = false;
+      whenReady(cast.pho, (P) => { rest(P, 0); gaze(P, null); });
+      whenReady(cast.ton, (P) => { put(P, TON_DAWN.x, TON_DAWN.z, faceTo(TON_DAWN.x, TON_DAWN.z, DAWN_AT.x, DAWN_AT.z)); P.seated = false; P.rest.take = 'Idle_3'; P.rest.win = null; rest(P, 0); castSolid(); });
+      whenReady(cast.aunt, (P) => { put(P, P.home.x, P.home.z, P.home.ry); rest(P, 0); castSolid(); });
+      dayCast(false);
+    }
+    function dawnBegin(resumed) {
+      dawnStage();
+      yaw.position.set(DAWN_AT.x, EYE, DAWN_AT.z); yaw.rotation.y = phoYawFrom(DAWN_AT); pitch.rotation.x = -0.04;
+      if (kit) { kit.pose('standing', { secs: 0.05 }); kit.root(false); if (kit.getFade && kit.getFade() > 0.01) kit.fade(0, 1.4); }
+      play.knelt = false; play.bowed = false; play.busy = false; handsAway(false);
+      myBai.visible = false; baiHands(true, { p: 0, secs: 0.01 });
+      zoneAt(KNEEL2);
+      setPhase('dawn', { complete: false });
+      if (warmSounds) warmSounds(WARM_DAY2);
+    }
+    /* P6 · he kneels on the carpet before him, and sets the bai sri down beside him */
+    /* (0.45 m before the low table's front edge: at 1.5 m before the bench its bowl stood under the table's edge and its
+       candle came up through the table's top: photographed from above in the close) */
+    /* (and ON the carpet, whose edge is 0.95 m to the sitters' right of the bench's middle: at 0.98 it stood on the turf) */
+    const BESIDE = (() => { const [x, z] = benchAt(0.8, 1.9); return { x, z }; })();                   // beside his left knee and a little before it
+    function kneelPho(instant) {
+      if (play.knelt && !instant) return false;
+      play.knelt = true; zoneAt(null);
+      if (kit) kit.root(true);
+      const ry = phoYawFrom(KNEEL2), setDown = () => { baiHands(false); baiPut(myBai, BESIDE.x, 0.012, BESIDE.z, 0.6); handsAway(true); };
+      if (instant) {
+        setDown();
+        yaw.position.x = KNEEL2.x; yaw.position.z = KNEEL2.z; yaw.rotation.y = ry; pitch.rotation.x = 0.16;
+        if (kit) kit.pose('lying', { y: KNEEL.y, yaw: ry, span: KNEEL.span, pitchLo: KNEEL.lo, pitchHi: KNEEL.hi, secs: 0.05 });
+        return true;
+      }
+      const run = play.run; play.busy = true;
+      fx('x3kneel', 0.6); setPhase('knelt'); baiRaise(-1, 0.9);
+      turnTo(ry, 1.1, Object.assign({ pos: KNEEL2, pitch: 0.16 }, KNEEL), () => { if (!live(run)) return; fx('x3baiset', 0.5); setDown();
+        after(0.5, () => { if (!live(run)) return; play.busy = false; objectiveFor('knelt', { complete: false }); }); });
+      return true;
+    }
+    /* one bow, the bow owed a teacher; then he is told to sit */
+    function bowPho() {
+      if (phase !== 'knelt' || !play.knelt || play.bowed || play.busy) return false;
+      const run = play.run, ry = phoYawFrom(KNEEL2); play.busy = true; objectiveFor('knelt');
+      handsAway(false);
+      if (kit) { kit.pray(true, { secs: 0.8, y: -0.3 }); kit.pose('lying', { y: KNEEL.y, yaw: ry, span: 0.02, pitchLo: -1.4, pitchHi: KNEEL.hi, secs: 0.3 }); }
+      after(0.9, () => { if (!live(run)) return;
+        play.bow = { t: 0, prev: 0, n: 1, secs: 4.6, depth: 1.05, run, sound: 'x3kneel', done: () => { if (!live(run)) return;
+          play.bowed = true; saveMark();
+          if (kit) { kit.pray(false, { secs: 1.1 }); kit.pose('lying', { y: KNEEL.y, yaw: ry, span: KNEEL.span, pitchLo: KNEEL.lo, pitchHi: KNEEL.hi, secs: 0.3 }); }
+          after(1.25, () => { if (live(run)) handsAway(true); });
+          after(0.7, () => { if (!live(run)) return; line('ph3g1', cast.pho);
+            queueFn(() => { if (!live(run)) return; play.busy = false; objectiveFor('knelt', { complete: false }); }); }); } }; });
+      return true;
+    }
+    /* P7, P8 · the telling and the answers: two films, one after the other */
+    function tellAll() {
+      if (phase !== 'knelt' || !play.bowed || play.busy || !kit || !kit.film) return false;
+      const run = play.run; play.busy = true; objectiveFor('knelt');
+      const next = () => { if (!live(run)) return; const ok2 = kit.film('answers', { onDone: () => { if (live(run)) toldBegin(false); } }); if (!ok2) toldBegin(false); };
+      const ok = kit.film('tell', { onDone: next });
+      if (!ok) next();
+      return true;
+    }
+    function toldBegin(resumed) {
+      const run = play.run;
+      play.busy = true; setPhase('told', { complete: false }); handsAway(true);
+      if (kit && kit.getFade && kit.getFade() > 0.01) kit.fade(0, 1.0);
+      after(resumed ? 1.0 : 0.6, () => { if (!live(run)) return; line('ph3b0', cast.pho); queueFn(() => { if (live(run)) breathBegin(); }); });
+    }
+
+    /* ================================================================ P9 · OPEN AND CLOSE (the forty-sixth seam)
+       Hold to open, let go to close. While he holds, THE WORLD COMES IN: the light widens, the morning's mist thins, the
+       gold on Grandmaster Pho rises, and (M7) every sound of the ground comes near. Each breath has a band that is
+       enough, seconds wide, and an edge beyond it; nothing here tests a finger's speed. Three breaths: he is told when;
+       he chooses when; it pulls, and he closes anyway. */
+    const BREATHS = [{ enough: 2.6, edge: 7.5, told: true, lead: 1.4 }, { enough: 2.4, edge: 5.6 }, { enough: 2.4, edge: 5.2, pull: 1.3 }];
+    const open = { k: 0, shown: -1, over: 0 };
+    function breathBegin() {
+      if (!kit || !kit.event) { taughtBegin(false, { closed: 0, held: 0 }); return; }
+      const run = play.run;
+      play.busy = true; setPhase('breath', { complete: false });
+      const said = { open: false };
+      kit.event({
+        kind: 'breath', low: true, title: W.breathTitle, prompt: W.breathTitle, label: W.breathTitle,
+        brief: TOUCHY ? W.breathBrief : W.breathBriefKey, whereWord: TOUCHY ? W.breathWhere : W.breathWhereKey,
+        openWord: W.breathOpen, closeWord: W.breathClose, restWord: '', breaths: BREATHS, gain: 2, cost: 2, idle: 22, at: { sx: 0.5, sy: 0.74 },
+        onLevel: (k, held, i, st) => { open.k = k; open.i = i; open.st = st;
+          if (st === 'wait' && i === 0 && !said.open) { said.open = true; fxLine('ph3b1'); }
+          if (i === 2 && (st === 'open' || st === 'pull')) play.pull3 = k; else play.pull3 = 0; },
+        onEnough: (i) => { if (i === 0) fxLine('ph3b2'); },
+        onBreath: (rep) => { if (!live(run)) return 0;
+          if (rep.result === 'held') { open.over = 1; fxLine('ph3bx'); if (kit.flash) kit.flash({ color: '#fff6e0', secs: 0.9, k: 0.55 }); return 1.6; }
+          if (rep.result === 'unopened' && rep.again) { fxLine('ph3by'); return (SECS.ph3by || 5) + 0.5; }
+          const next = rep.i + 1;
+          if (next === 1) { fxLine('ph3b3'); return (SECS.ph3b3 || 3.5) + 0.4; }
+          if (next === 2) { fxLine('ph3b4'); return (SECS.ph3b4 || 4.2) + 0.4; }
+          return 0.6; },
+        onIdle: (i) => { if (i === 0) fxLine('ph3b1'); }
+      }).then((r) => { if (!live(run) || phase !== 'breath') return; open.k = 0; play.pull3 = 0;
+        if (r && r.aborted) return;                                              // (a film or a reset took it: whoever did owns what is next)
+        taughtBegin(false, { closed: r && r.closed != null ? r.closed : 0, held: r && r.held != null ? r.held : 0 }); });
+    }
+    /* a line said INSIDE the event: its clock is the event's, and the queue is held while a panel is up; it is one voice
+       at a time because the event waits each line's length before the next breath is live (onBreath's answer) */
+    function fxLine(name) { heard.add(name); whenReady(cast.pho, (P) => talk(P, SECS[name] || 1.2)); if (worldSfx && !(soundOff && soundOff())) worldSfx(name, 1, 1, 0); }
+    /* the world laid on the level, every frame: the light, the mist, the gold; past the band, the white and the lag */
+    const _lerpHex = (a, b, k) => _c1.setHex(a).lerp(_c2.setHex(b), k).getHex(), _c1 = new THREE.Color(), _c2 = new THREE.Color();
+    function dayBlend(A, Bp, k) {
+      const n = (x, y) => x + (y - x) * k, arr = (x, y, col) => x.map((v, i) => (col[i] ? _lerpHex(v, y[i], k) : n(v, y[i])));
+      return { stops: A.stops.map((s, i) => [n(s[0], Bp.stops[i][0]), '#' + _c1.set(s[1]).lerp(_c2.set(Bp.stops[i][1]), k).getHexString()]),
+               bg: _lerpHex(A.bg, Bp.bg, k), fog: arr(A.fog, Bp.fog, [1, 0]), hemi: arr(A.hemi, Bp.hemi, [1, 1, 0]), key: arr(A.key, Bp.key, [1, 0, 0, 0, 0]),
+               fill: arr(A.fill, Bp.fill, [1, 0]), stars: 0, moon: 0, sun: n(A.sun, Bp.sun), clouds: n(A.clouds, Bp.clouds),
+               vmHemi: arr(A.vmHemi, Bp.vmHemi, [1, 1, 0]), vmKey: arr(A.vmKey, Bp.vmKey, [1, 0]) };
+    }
+    function openTick(wdt, t) {
+      if (phase !== 'breath' && open.shown <= 0 && open.over <= 0) return;
+      const live2 = phase === 'breath', k = live2 ? open.k : 0, e = smo(c01(k / 0.9));
+      if (Math.abs(e - open.shown) > 0.004 || (!live2 && open.shown !== 0)) { open.shown = live2 ? e : 0;
+        if (kit) kit.daylight(open.shown > 0 ? dayBlend(DAWN, OPENED, open.shown) : PRESETS.DAWN, 0);
+        phoLook.level.value = PHO_LEVEL.DAWN + (PHO_LEVEL.OPENED - PHO_LEVEL.DAWN) * open.shown; mistK = 1 - 0.7 * open.shown; }
+      auraAt(open.shown * 0.95, t);
+      /* the third breath pulls: his hands begin to drift as they did in the line */
+      if (kit && kit.tremble) kit.tremble(live2 ? 0.4 * smo(c01((play.pull3 || 0) * 1.4 - 0.5)) : 0, { secs: 0.2 });
+      /* held to the edge: the picture lags and shakes a moment, and settles */
+      if (open.over > 0) { open.over = Math.max(0, open.over - wdt / 1.8); if (kit && kit.smear) kit.smear(0.6 * open.over, { secs: 0.1 }); }
+    }
+    function taughtBegin(resumed, res) {
+      const run = play.run;
+      play.breath = res || play.breath || { closed: 0, held: 0 };
+      play.busy = true; setPhase('taught', { complete: false });
+      const c = play.breath.closed;
+      bank(c >= 3 ? W.noteBreath3 : c === 2 ? W.noteBreath2 : c === 1 ? W.noteBreath1 : W.noteBreath0, 0);
+      after(resumed ? 1.0 : 0.9, () => { if (!live(run)) return;
+        line('ph3b5', cast.pho); queueGap(0.6); line('ph3p1', cast.pho); queueGap(0.35); line('ph3p2', cast.pho); queueGap(0.35); line('ph3p3', cast.pho);
+        queueFn(() => { if (live(run)) decideBegin(false); }); });
+    }
+    function decideBegin(resumed) {
+      play.busy = false;
+      setPhase('decide', { complete: false });
+      if (resumed) after(0.6, openDecision); else openDecision();
+    }
 
     /* ---------------------------------------------------------------- the decision: Grandmaster Pho, on his bench */
     const _ndc = new THREE.Vector3();
@@ -83,26 +628,137 @@
     function pointerHitsPile() { return pileLive() && pileDist() < INTERACT_R; }
     function interactPile() { if (!pileLive()) return false; startDecision(); return true; }
 
-    const hotspots = [];
+    /* ---------------------------------------------------------------- the hotspots (each pressed, never looked at: v21.9) */
+    const _hv = new THREE.Vector3();
+    const markHit = (posF, frac = 0.1) => (x, y) => { const p = posF(); camera.updateMatrixWorld(); _hv.set(p.x, p.y, p.z).project(camera);
+      return _hv.z < 1 && Math.hypot(x - _hv.x, (y - _hv.y) / Math.max(0.3, camera.aspect)) < frac; };
+    const hsTon = { id: 'ton', pos: { x: 0, y: 1.5, z: 0 }, radius: 2.9, prompt: W.hotTon, hits: markHit(TON_HEAD, 0.14),
+      enabled: () => phase === 'arrive' && !play.busy, onInteract() { return tonTalk(); } };
+    const hsAskTon = { id: 'askTon', pos: { x: 0, y: 1.5, z: 0 }, radius: 2.9, prompt: W.hotAskTon, hits: markHit(TON_HEAD, 0.14),
+      enabled: () => phase === 'check' && !play.busy && !play.checked && !play.asked.has('ton'), onInteract() { return ask('ton'); } };
+    const hsAskAunt = { id: 'askAunt', pos: { x: 0, y: 1.42, z: 0 }, radius: 2.9, prompt: W.hotAskAunt, hits: markHit(AUNT_HEAD, 0.14),
+      enabled: () => phase === 'check' && !play.busy && !play.checked && !play.asked.has('aunt'), onInteract() { return ask('aunt'); } };
+    const hsLook = { id: 'look', pos: { x: PHO_HEAD.x, y: PHO_HEAD.y, z: PHO_HEAD.z }, radius: 9, prompt: W.hotLook, anyView: true, hits: markHit(PHO_HEAD_NOW, 0.16),
+      enabled: () => phase === 'festival' && !!play.pull && play.pull.offer && !play.looked && !play.busy, onInteract() { return lookAtHim(); } };
+    const hotspots = [
+      hsTon,
+      { id: 'tables', pos: { x: TABLES_AT.x, y: 1.25, z: TABLES_AT.z - 1.0 }, radius: 2.6, prompt: W.hotTables, hits: markHit(() => BUDDHA, 0.2),
+        enabled: () => phase === 'baisri' && play.bai && !play.busy, onInteract() { return payRespects(); } },
+      { id: 'place', pos: { x: PLACE.x, y: 0.9, z: PLACE.z }, radius: 2.3, prompt: W.hotPlace, mark: false,
+        enabled: () => phase === 'tables' && !play.knelt && !play.busy, onInteract() { return kneelPlace(false); } },
+      /* (pressed from where he kneels, named by the badge, no mark: chapter 2's rule for a press made kneeling) */
+      { id: 'homage', pos: { x: PLACE.x, y: 0.9, z: PLACE.z }, radius: 4, anyView: true, prompt: W.hotHomage, mark: false,
+        enabled: () => phase === 'place' && play.knelt && !play.homage && !play.busy && !play.turning, onInteract() { return homage(); } },
+      hsLook, hsAskTon, hsAskAunt,
+      { id: 'kneel2', pos: { x: KNEEL2.x, y: 0.9, z: KNEEL2.z }, radius: 2.3, prompt: W.hotKneel, mark: false,
+        enabled: () => phase === 'dawn' && !play.knelt && !play.busy, onInteract() { return kneelPho(false); } },
+      { id: 'bow2', pos: { x: PHO_HEAD.x, y: 1.0, z: PHO_HEAD.z }, radius: 4, anyView: true, prompt: W.hotBow, mark: false,
+        enabled: () => phase === 'knelt' && play.knelt && !play.bowed && !play.busy && !play.turning, onInteract() { return bowPho(); } },
+      { id: 'tell', pos: { x: PHO_HEAD.x, y: 1.0, z: PHO_HEAD.z }, radius: 4, anyView: true, prompt: W.hotTell, mark: false,
+        enabled: () => phase === 'knelt' && play.bowed && !play.busy, onInteract() { return tellAll(); } }
+    ];
+    /* a mark rides the person it is on */
+    function hotTick() {
+      const t = TON_HEAD(); hsTon.pos.x = hsAskTon.pos.x = t.x; hsTon.pos.y = hsAskTon.pos.y = t.y; hsTon.pos.z = hsAskTon.pos.z = t.z;
+      const a = AUNT_HEAD(); hsAskAunt.pos.x = a.x; hsAskAunt.pos.z = a.z;
+      const h = PHO_HEAD_NOW(); hsLook.pos.x = h.x; hsLook.pos.y = h.y; hsLook.pos.z = h.z;
+    }
 
     /* ---------------------------------------------------------------- the frame */
-    function arriveBegin() { setPhase('arrive', { complete: false }); look('DAY1', 0); }
-    function applyPhase(p0) {
-      const R = readMark(p0);
-      arriveBegin();
-      return R;
-    }
     let windClock = 0;
     function updateNotes(dt, t) {
       const st = getState();
-      const now = wallNow(), wdt = lastWall ? Math.min(0.25, now - lastWall) : 0; lastWall = now;
-      if (st !== 'cine') { windClock += wdt; windTick(windClock); peopleTick(wdt, true); peopleLevels(); lodTick(); }
-      if (st !== 'play') return;
+      const now = wallNow(), raw = lastWall0 ? Math.max(0, now - lastWall0) : 0, wdt = Math.min(0.25, raw); lastWall0 = now;
+      /* (the people's own clocks run in a film too, v5.19: a film holds only those it has posed) */
+      windClock += wdt; windTick(windClock); peopleTick(wdt, st !== 'cine'); mistTick(windClock); flamesTick(windClock); bulbsTick(windClock);
+      if (st !== 'cine') { peopleLevels(); lodTick(); zoneTick(now); }
+      /* a Continue is placed before the card (the v4.8 contract): the saved moment's picture stands under it */
+      if (!booted && !preplaced && kit) { const w0 = preStage(kit.getPhase()); if (w0) preplaced = w0; }
+      const liveSt = st === 'play';
+      if (!liveSt) { if (!pausedAt) pausedAt = now; lastWall = 0; return; }
+      /* a voice plays on under a panel while the chapter's clock stands still: its booking comes forward by the time the
+         panel was up, as far as the voice's own end (e3c3's v21.21 law) */
+      if (pausedAt) { const away = Math.max(0, now - pausedAt); pausedAt = 0;
+        if (speak.voiceTo > dayClock.t) { const cut = Math.min(away, speak.voiceTo - dayClock.t); speak.until -= cut; speak.voiceTo -= cut; } }
+      if (lastWall) dayClock.t += Math.min(0.5, now - lastWall);
+      lastWall = now;
       if (!booted) { booted = true; applyPhase(kit ? kit.getPhase() : null); }
-      dayClock.t += wdt;
       runTodo(); runSpeak(); runQueue();
+      playTick(now, wdt);
+    }
+    function playTick(now, wdt) {
+      hotTick();
+      turnTick(wdt); bowTick(wdt); baiTick(wdt); awayTick(); pullTick(wdt); openTick(wdt, windClock);
+      burstsTick(dayClock.t);
+      /* what a person carries rides his hands */
+      if (play.tonGive) { const G = play.tonGive; G.k = Math.min(1, G.k + wdt / 0.45);                   // lifted off the table into his hands, then carried by them
+        if (handsMid(cast.ton, _hv)) { const k = smo(G.k); myBai.position.set(lp(TON_BAI.x, _hv.x, k), lp(TON_BAI.y, _hv.y - 0.02, k), lp(TON_BAI.z, _hv.z, k)); } }
+      turnsTick(wdt);
+      if (play.ymCarry && !(cast.ym.lay || cast.ym.layK > 0)) baiOnHands(ymBai, cast.ym, -0.03);     // (while his hands are laid on it, the grip itself carries it: ymGrip)
+      if (play.ymSet) { const G = play.ymSet; G.k = Math.min(1, G.k + wdt / 0.5); const k = smo(G.k); ymBai.position.set(lp(G.from[0], G.to[0], k), lp(G.from[1], G.to[1], k * k), lp(G.from[2], G.to[2], k)); if (G.k >= 1) play.ymSet = null; }
+      /* he walks onto the place: he kneels (the press is offered too) */
+      if (phase === 'tables' && !play.knelt && !play.busy && Math.hypot(yaw.position.x - PLACE.x, yaw.position.z - PLACE.z) < 0.45) kneelPlace(false);
+      if (phase === 'dawn' && !play.knelt && !play.busy && Math.hypot(yaw.position.x - KNEEL2.x, yaw.position.z - KNEEL2.z) < 0.45) kneelPho(false);
+      if (phase === 'tables' && !zone.g.visible && !play.knelt) zoneAt(PLACE);
     }
     function updatePile() {}
     function updateFire() {}
     function updateSlow() {}
+
+    /* ------------------------------------------------------------ a resume (§9)
+       A CONTINUE IS PLACED BEFORE THE CARD (the v4.8 contract): under the chapter card the saved moment's picture is set,
+       so nothing jumps when play begins; applyPhase does it all again on the first live frame, idempotently. The world's
+       state (day one, day two, the formation) is derived from the phase and never stored beside it (§9). */
+    function preStage(p0) {
+      const R = readMark(p0);
+      if (R.p === 'arrive') return '';
+      if (DAY_TWO.has(R.p)) { dawnStage();
+        const knelt = R.p !== 'dawn';
+        if (knelt) { yaw.position.x = KNEEL2.x; yaw.position.z = KNEEL2.z; yaw.rotation.y = phoYawFrom(KNEEL2); pitch.rotation.x = 0.16; baiPut(myBai, BESIDE.x, 0.012, BESIDE.z, 0.6);
+          if (kit) kit.pose('lying', { y: KNEEL.y, yaw: phoYawFrom(KNEEL2), span: KNEEL.span, pitchLo: KNEEL.lo, pitchHi: KNEEL.hi, secs: 0.05 }); }
+        else { yaw.position.set(DAWN_AT.x, EYE, DAWN_AT.z); yaw.rotation.y = phoYawFrom(DAWN_AT); pitch.rotation.x = -0.04; myBai.visible = false; }
+        return R.p; }
+      dayOneStage();
+      if (R.p === 'festival' || R.p === 'seen' || R.p === 'check') { lineStage(); yaw.position.set(LINE_AT.x, EYE, LINE_AT.z); yaw.rotation.y = phoYawFrom(LINE_AT); pitch.rotation.x = -0.08; return R.p; }
+      setFormation('arrive');
+      if (R.p === 'baisri') { tonHome(); myBai.visible = false; return R.p; }
+      tonToPlace();
+      if (R.p === 'tables') { myBai.visible = false; yaw.position.set(TABLES_AT.x, EYE, TABLES_AT.z); yaw.rotation.y = Math.PI; pitch.rotation.x = 0; return R.p; }
+      if (R.p === 'place') { kneelPlace(true); play.knelt = false; return R.p; }
+      return '';
+    }
+    function applyPhase(p0) {
+      const R = readMark(p0);
+      play.homage = R.homage; play.asked = new Set([R.ton && 'ton', R.aunt && 'aunt'].filter(Boolean)); play.checked = R.checked; play.bowed = R.bowed;
+      play.breath = R.closed != null ? { closed: R.closed, held: R.held || 0 } : null;
+      play.knelt = false; play.looked = false; play.pull = null; play.busy = false;
+      if (R.p === 'arrive') { arriveBegin(); return; }
+      if (DAY_TWO.has(R.p)) {
+        dawnBegin(true);
+        if (R.p === 'dawn') return;
+        kneelPho(true); setPhase('knelt', { complete: false });
+        if (R.p === 'knelt') { if (!play.bowed) return; play.busy = true; const run = play.run;
+          after(0.8, () => { if (!live(run)) return; line('ph3g1', cast.pho); queueFn(() => { if (live(run)) { play.busy = false; objectiveFor('knelt', { complete: false }); } }); }); return; }
+        play.bowed = true;
+        if (R.p === 'told' || R.p === 'breath') { toldBegin(true); return; }
+        if (R.p === 'taught') { taughtBegin(true, play.breath); return; }
+        play.breath = play.breath || { closed: 0, held: 0 };
+        decideBegin(true); return;
+      }
+      /* day one */
+      dayOneStage();
+      if (warmSounds) warmSounds(WARM_DAY1);
+      if (R.p === 'festival') { lineBegin(true); return; }
+      if (R.p === 'seen') { lineStage(); baiHands(true, { p: 0, secs: 0.01 }); if (kit) kit.root(true); play.looked = true; setPhase('seen', { complete: false }); const run = play.run; after(0.8, () => { if (live(run)) seenLines(run); }); return; }
+      if (R.p === 'check') { lineStage(); baiHands(true, { p: 0, secs: 0.01 }); play.looked = true;
+        if (play.checked) { betweenBegin(); return; }
+        checkBegin(true); return; }
+      setFormation('arrive');
+      if (R.p === 'baisri') { tonHome(); myBai.visible = false; baiHands(true, { p: 0, secs: 0.01 }); setPhase('baisri', { complete: false }); return; }
+      tonToPlace();
+      if (R.p === 'tables') { myBai.visible = false; baiHands(true, { p: 0, secs: 0.01 }); zoneAt(PLACE); setPhase('tables', { complete: false }); return; }
+      /* place */
+      kneelPlace(true); setPhase('place', { complete: false });
+      if (play.homage) { const run = play.run; play.busy = true; after(0.7, () => { if (live(run)) festivalBegin(); }); }
+    }
 

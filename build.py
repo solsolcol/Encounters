@@ -587,6 +587,8 @@ ASSETS = {
     'w3coconut':    ('assets/w3coconut.glb', True, False),
     'w3soda':       ('assets/w3soda.glb', True, False),
     'w3water':      ('assets/w3water.glb', True, False),
+    'w3matroll':    ('assets/w3matroll.glb', True, False),     # a rolled reed mat (ending A: the mats the new ones roll)
+    'w3shirt':      ('assets/w3shirt.glb', True, False),     # a folded white T-shirt (the opening film: what he packs)
     # e4c3: what stands at the hall (photographs 13 to 16; masters/v26.0/hall): each cut out of his photograph, a
     # checked picture on white, then Meshy
     'w3nagafount':  ('assets/w3nagafount.glb', True, False),     # the seven-headed golden naga fountain before the sign (photographs 13, 15, 16)
@@ -754,11 +756,11 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'w3wheel', 'w3parasol', 'w3tower', 'w3candle', 'w3fan', 'w3nagastaff', 'w3pewter', 'w3purple', 'w3fruit',
            'w3sweets', 'w3khantok', 'w3puff', 'w3chair', 'w3lowtable', 'w3bench', 'w3sofa', 'w3petalbowl',
            'w3petalsteel', 'w3smallbaisri', 'w3candlemid', 'w3candlesmall', 'w3kratip', 'w3chicken', 'w3coconut',
-           'w3soda', 'w3water', 'w3nagafount', 'w3nagagreen', 'w3nagawhite', 'w3ganesha', 'w3croton', 'w3dracaena',
-           'w3waterjar', 'w3walllamp', 'w3t_turf', 'w3t_petalturf', 'w3t_earth', 'w3t_gravel', 'w3t_redplank',
-           'w3t_tin', 'w3t_brick', 'w3t_skirt', 'w3t_satin', 'w3t_mat', 'w3t_carpet', 'w3t_swag', 'w3t_banner',
-           'w3t_treeline', 'w3t_redroof', 'w3t_hallbrick', 'w3t_steptile', 'w3t_lawn', 'w3t_kalae', 'w3t_fretwork',
-           'w3t_sign',
+           'w3soda', 'w3water', 'w3matroll', 'w3shirt', 'w3nagafount', 'w3nagagreen', 'w3nagawhite', 'w3ganesha',
+           'w3croton', 'w3dracaena', 'w3waterjar', 'w3walllamp', 'w3t_turf', 'w3t_petalturf', 'w3t_earth',
+           'w3t_gravel', 'w3t_redplank', 'w3t_tin', 'w3t_brick', 'w3t_skirt', 'w3t_satin', 'w3t_mat', 'w3t_carpet',
+           'w3t_swag', 'w3t_banner', 'w3t_treeline', 'w3t_redroof', 'w3t_hallbrick', 'w3t_steptile', 'w3t_lawn',
+           'w3t_kalae', 'w3t_fretwork', 'w3t_sign',
            # <<< e4c3 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY
@@ -961,10 +963,15 @@ print(f'  preload for {BOOT}: logo + {", ".join(preload_keys)}'
 
 zip_path = d / f'masterz-encounters-v{VERSION}.zip'
 zip_path.unlink(missing_ok=True)
-with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as z:
-    for f in sorted(dist.rglob('*')):
-        if f.is_file():
-            z.write(f, f.relative_to(dist))
+# v26.0: ENC_NOZIP=1 leaves the release zip unwritten (a build made only to be photographed or probed: deflating 700 MB
+# is a minute of every such build, and the zip is deleted after it anyway). A RELEASE is always built without it.
+import os as _os
+NOZIP = _os.environ.get('ENC_NOZIP') == '1'
+if not NOZIP:
+    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as z:
+        for f in sorted(dist.rglob('*')):
+            if f.is_file():
+                z.write(f, f.relative_to(dist))
 total = sum(f.stat().st_size for f in dist.rglob('*') if f.is_file())
 print(f'wrote dist/ ({total / 1024:.0f} KB in {sum(1 for f in dist.rglob("*") if f.is_file())} files) '
-      f'and {zip_path.name} ({zip_path.stat().st_size / 1024:.0f} KB)')
+      + ('and NO zip (ENC_NOZIP=1)' if NOZIP else f'and {zip_path.name} ({zip_path.stat().st_size / 1024:.0f} KB)'))

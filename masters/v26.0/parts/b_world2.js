@@ -43,7 +43,8 @@
       many('w3fruit', [{ x: -1.65, y: y1, z: zm + 0.16, ry: 0.2 }, { x: 0, y: y1, z: zm - 0.12, ry: 1.1 }, { x: 1.65, y: y1, z: zm + 0.16, ry: 2.4 }, { x: -0.6, y: y0, z: zf - 0.1, ry: 0.6 }, { x: 1.9, y: y0, z: zf - 0.12, ry: 1.7 }], world, 0.3);
       many('w3sweets', [{ x: -2.0, y: y0, z: zf - 0.1, ry: 0.3 }, { x: 0.65, y: y0, z: zf - 0.12, ry: 1.5 }], world, 0.2);
       many('w3khantok', [{ x: -1.3, y: y0, z: zf - 0.08, ry: 0.9 }, { x: 1.3, y: y0, z: zf - 0.06, ry: 2.0 }], world, 0.25);
-      many('w3candle', [{ x: -2.95, y: 0, z: -10.25, ry: 0.2 }, { x: 2.95, y: 0, z: -10.25, ry: 1.4 }, { x: -2.2, y: y2, z: -12.2, ry: 0 }, { x: 2.3, y: y2, z: -12.25, ry: 0.8 }], world, 1.25);
+      const talls = [{ x: -2.95, y: 0, z: -10.25, ry: 0.2 }, { x: 2.95, y: 0, z: -10.25, ry: 1.4 }, { x: -2.2, y: y2, z: -12.2, ry: 0 }, { x: 2.3, y: y2, z: -12.25, ry: 0.8 }];
+      many('w3candle', talls, world, 1.25);
       many('w3purple', [{ x: -3.9, y: 0, z: -10.2, ry: 0.5 }, { x: 3.9, y: 0, z: -10.2, ry: 2.2 }], world, 1.1);
       for (const sx of [-1, 1]) solidBox(0.7, 1.5, 0.7, sx * 3.25, 0.75, -11.0);
       /* THE SMALLER OFFERINGS (photographs 9, 10, 3): small candles in pink and blue along the front edge; candles in
@@ -55,8 +56,11 @@
       const smalls = []; for (let x = -2.31; x <= 2.32; x += 0.33) smalls.push({ x: x + j(0.02), y: y0, z: -10.09 + j(0.012), ry: turn() });
       many('w3candlesmall', smalls.filter((_, i) => i % 2 === 0), world, 0.24);                    // pink, as made
       many('w3candlesmall', smalls.filter((_, i) => i % 2 === 1), world, 0.24, hued(-118));        // and blue
-      many('w3candlemid', [-1.62, -0.82, 0.86, 1.64].map(x => ({ x: x + j(), y: y1, z: zm - 0.3 + j(), ry: turn() }))
-        .concat([{ x: -0.5, y: y2, z: zb - 0.22, ry: 0 }, { x: 0.55, y: y2, z: zb - 0.2, ry: 1 }]), world, 0.66);
+      const mids = [-1.62, -0.82, 0.86, 1.64].map(x => ({ x: x + j(), y: y1, z: zm - 0.3 + j(), ry: turn() }))
+        .concat([{ x: -0.5, y: y2, z: zb - 0.22, ry: 0 }, { x: 0.55, y: y2, z: zb - 0.2, ry: 1 }]);
+      many('w3candlemid', mids, world, 0.66);
+      /* (every candle's wick, for the night's flames: c_zfx.js. `s` is the flame's size on a candle of that size) */
+      stageList.flames = talls.map(c => ({ x: c.x, y: c.y + 1.25, z: c.z, s: 1.7 })).concat(mids.map(c => ({ x: c.x, y: c.y + 0.66, z: c.z, s: 1.15 })), smalls.map(c => ({ x: c.x, y: c.y + 0.24, z: c.z, s: 0.7 })));
       const rows = (x0, zs, xs) => { const L = []; for (const z of zs) for (const dx of xs) L.push({ x: x0 + dx + j(0.006), y: y0, z: z + j(0.006), ry: turn() }); return L; };
       const sodaZ = [-10.33, -10.42, -10.51];
       many('w3soda', rows(0.02, sodaZ, [-0.09]), world, 0.22);                                    // red
@@ -83,14 +87,14 @@
     const TON_TABLE = { x: -6.1, z: 8.3, ry: 0.0 }, WEST_TABLE = { x: -7.2, z: -6.5, ry: Math.PI / 2 };
     function buildBaiSriTables() {
       const rnd = rng(2611);
-      const rows = (T0, n, key, size) => {
+      const rows = (T0, n, key, size, own = -1) => {
         const h = foldTable(T0.x, T0.z, T0.ry), c = Math.cos(T0.ry), s = Math.sin(T0.ry), L = [];
         for (let i = 0; i < n; i++) { const lx = -0.72 + (i % (n / 2)) * (1.44 / (n / 2 - 1)), lz = i < n / 2 ? -0.17 : 0.18;
           L.push({ x: T0.x + lx * c + lz * s, y: h, z: T0.z - lx * s + lz * c, ry: rnd() * 6.28, s: size }); }
-        many(key, L, world, 0.6);
+        many(key, L.filter((_, i) => i !== own), world, 0.6);
         return L;
       };
-      stageList.tonBai = rows(TON_TABLE, 8, 'w3baisri', 0.85);                 // Ton's group's, at the way in: one of them is his
+      stageList.tonBai = rows(TON_TABLE, 8, 'w3baisri', 0.85, 7)[7];           // Ton's group's, at the way in: one of them is his (the corner by Ton is his own: a thing by itself, c_zfx.js)
       rows(WEST_TABLE, 10, 'w3pewter', 1);                                     // the table by the west tents (photographs 11, 12)
     }
     const stageList = {};
@@ -129,7 +133,7 @@
          puffs of lime cloth; maroon carpets deep in petals; his bench, a carved chair, a low dark table */
       /* (its drapes are deep: photographs 5 and 6 are taken under them, and what fills their top is swags of lime, gold
          and orange satin, not the dark cloth over them) */
-      const C = tent(CHIEF.x, CHIEF.z, { w: CHIEF.w, eave: CHIEF.eave, peak: CHIEF.peak, ry: CHIEF.ry, roof: satinRoof(0x2c4632, 0x1d2c22), valance: 0xd8a41c, band: 0.4,
+      const C = tent(CHIEF.x, CHIEF.z, { w: CHIEF.w, eave: CHIEF.eave, peak: CHIEF.peak, ry: CHIEF.ry, roof: satinRoof(0x2c4632, 0x1d2c22), valance: 0xf2c63c, wide: true, band: 0.4,
         swags: 3, swagCols: [0xb6d62e, 0xe2a61a, 0xf08a1c], swagDepth: 0.8, swagDrop: 0.36, swagStep: 1 });
       for (const [x, z] of C) solidBox(0.16, 2.2, 0.16, x, 1.1, z);
       /* THE LIME POLE (photographs 1, 5, 6): the canopy's front right pole, the one before the bench's right hand, wrapped
@@ -270,6 +274,7 @@
       surfLoad('treeline').then(t0 => { if (!t0 || !alive) return; const t = t0.clone(); t.needsUpdate = true; madeTex.push(t);
         t.wrapS = THREE.RepeatWrapping; t.wrapT = THREE.ClampToEdgeWrapping; t.repeat.set(1, -1); t.offset.set(0, 1); mRing.map = t; mRing.color.set(0xd8dcd4); mRing.needsUpdate = true; });
       const ring = new THREE.Mesh(g, mRing); ring.position.y = Hh / 2 - 1.2; ring.renderOrder = -5; world.add(ring); owned.push(ring);
+      stageList.ring = ring;
       ring.visible = have('w3t_treeline');
     }
 
@@ -297,8 +302,11 @@
     function buildPetals() {
       /* day one: before the chief bench, before the two west tents and the east one, and at the tables' front */
       petalField(LOW ? 1500 : 2600, 5101, mix(around(5.7, 8.7, 2.6), around(5.7, 8.7, 1.5), around(-7.6, -0.8, 2.2), around(-7.6, 5.0, 1.7), around(7.6, -2.0, 2.0), around(0, -9.3, 2.6)), dayOne);
+      /* (and a few at the way in, carried there on people's feet: what his eyes open on. Its own field and its own seed,
+         so the field above is the scatter it was) */
+      petalField(LOW ? 170 : 300, 5103, around(DATA.spawn.x, 10.6, 2.6), dayOne);
       /* day two: yesterday's petals everywhere, trodden into the turf */
-      petalField(LOW ? 3200 : 5600, 5102, mix((rnd) => [TURF.x0 + rnd() * (TURF.x1 - TURF.x0), TURF.z0 + rnd() * (TURF.z1 - TURF.z0)],
+      petalField(LOW ? 6500 : 11000, 5102, mix((rnd) => [TURF.x0 + rnd() * (TURF.x1 - TURF.x0), TURF.z0 + rnd() * (TURF.z1 - TURF.z0)],
         around(5.7, 8.7, 3.2), around(-7.6, -0.8, 2.8), around(7.6, -2.0, 2.6), around(0, -9.3, 3.0), around(0, 1.5, 6)), dayTwo);
     }
 

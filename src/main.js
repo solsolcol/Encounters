@@ -5695,8 +5695,10 @@ function evBreathFrame(e, o, wdt) {
      breath he is not told in keeps the panel's own word, and the ring's band is all that says when */
   const pe = $('evPrompt');
   if (pe) { const inBand = (e.bState === 'open' || e.bState === 'pull') && e.bk >= kE;
-    const want = inBand ? (b.told ? (o.closeWord || T('event.breathClose')) : (o.prompt || T('event.breath')))
-               : e.bState === 'close' || e.bState === 'lead' ? (o.prompt || T('event.breath')) : (o.openWord || T('event.breathOpen'));
+    /* (`restWord`: what stands there between breaths, while he is spoken to; a declared empty word is no word: v14.1) */
+    const restW = o.restWord != null ? o.restWord : (o.prompt || T('event.breath'));
+    const want = inBand ? (b.told ? (o.closeWord || T('event.breathClose')) : restW)
+               : e.bState === 'close' || e.bState === 'lead' ? restW : (o.openWord || T('event.breathOpen'));
     if (pe.textContent !== want) pe.textContent = want; }
   call(o.onLevel, e.bk, held && e.bState === 'open', e.bi, e.bState);
 }
