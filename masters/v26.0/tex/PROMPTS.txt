@@ -1,0 +1,73 @@
+v26.0 · THE GROUND'S SURFACES: the prompt of each picture (GPT Image gpt_image_2_6 through Higgsfield, quality high,
+resolution 2k; 2.75 credits each). Where a crop of Chad's photograph of the real surface exists, it went in as the image
+reference (objects and surfaces only: no face, no name). The job ids are jobs-tex.json; make.py turns each picture into
+the game's file. A surface that must be cut out is asked for on SOLID MAGENTA, which nothing in it wears.
+
+turf (1:1; reference: the turf of photograph 10)
+  Seamless tileable texture photographed straight down from above: bright green artificial grass turf exactly like the
+  reference, fine short plastic blades, completely even flat daylight, no shadows, no seams, no lines, no objects, no
+  leaves, uniform all over so it can repeat as a tile. Photorealistic.
+earth (1:1)
+  Seamless tileable texture photographed straight down from above: dry red-brown packed earth of a rural Thai yard, fine
+  dust, a few tiny pebbles and bits of dry leaf, completely even flat daylight, no shadows, no footprints, no objects,
+  uniform all over so it can repeat as a tile. Photorealistic.
+gravel (1:1)
+  Seamless tileable texture photographed straight down from above: small grey and pale beige crushed gravel on dusty
+  ground, stones about one to two centimetres, completely even flat daylight, no shadows, no objects, uniform all over
+  so it can repeat as a tile. Photorealistic.
+rooftile (1:1; reference: the hall's roof in photograph 8)
+  Seamless tileable texture, flat straight-on orthographic view with no perspective: a roof of faded red diamond-shaped
+  cement roof tiles laid in overlapping rows like fish scales, exactly the kind of roof in the reference, slightly
+  weathered, even daylight, no sky, no edges, no ridge, the pattern filling the whole image so it can repeat as a tile.
+redplank (1:1)
+  ... a wall of horizontal wooden planks painted deep red, old paint slightly faded and weathered, thin dark gaps
+  between the boards, a few nail heads, even daylight, no window, no door, no objects ...
+tin (1:1)
+  ... corrugated metal roofing sheet painted a faded pinkish red, vertical corrugations, a little dust and sun fade, a
+  horizontal overlap line of screws across the middle, even daylight, no sky, no edges ...
+timber (1:1)
+  ... an old Thai wooden house wall of vertical dark brown teak planks, weathered and sun-dried, narrow gaps between
+  boards, even daylight, no window, no door, no objects ...
+brick (1:1)
+  ... an old wall of red-brown fired clay bricks in running bond with grey cement mortar, rural Thailand, slightly
+  weathered and dusty, even daylight, no window, no door, no plants, no objects ...
+swag (16:9; reference: the tables' skirt and garlands in photograph 10)
+  One Thai flower garland swag exactly like the ones in the reference, isolated on a solid pure magenta (#FF00FF)
+  background: a draped lattice net of white jasmine buds hanging in a shallow curve from end to end, a string of yellow
+  marigold flowers along its lower edge, and a long white jasmine tassel with a yellow flower hanging at each end. Flat
+  straight-on orthographic view, the swag spanning the full width of the image, evenly lit, no table, no cloth, no
+  shadows, nothing else. Photorealistic.
+skirt (1:1; the same reference)
+  ... a table skirt of bright emerald green satin cloth hanging in regular vertical box pleats, exactly like the green
+  skirt in the reference but with no garland on it, glossy highlights down each pleat, even daylight, the pleats
+  filling the whole image from top to bottom so it can repeat sideways as a tile.
+satin (1:1)
+  ... plain white satin cloth gathered into soft vertical folds, gentle glossy highlights and pale grey shadows in the
+  folds, even light, the folds filling the whole image from top to bottom so it can repeat sideways as a tile. Pure
+  white cloth only, no pattern, no objects. (White, so each use tints it: the tents' swags, the pole's tiers.)
+banner (9:16; reference: a banner of photograph 8)
+  One tall hanging Thai ceremonial banner like the ones in the reference, isolated on a solid pure magenta (#FF00FF)
+  background: a narrow vertical column of about twelve stacked tiers of plain white woven cotton cloth, each tier a
+  short box-shaped lantern of cloth with a zigzag cut lower edge and small tassels, all tiers the same width, hanging
+  straight down. Flat straight-on orthographic view, the banner centred and filling the full height of the image from
+  top to bottom, evenly lit, pure white cloth with grey shading so it can be tinted any colour, no pole, no string,
+  nothing else. (White, so one picture is all six colours.)
+carpet (3:2)
+  A rectangular maroon and dark red machine-woven rug with a traditional oriental floral and medallion pattern in cream,
+  gold and navy, photographed straight down from above, flat orthographic view, the rug filling the whole image edge to
+  edge with its border visible on all four sides, even daylight, no fringe, no shadows, no floor visible, no objects.
+mat (1:1)
+  Seamless tileable texture photographed straight down from above: a Thai woven reed floor mat (sua), natural pale
+  straw colour with narrow woven stripes of red, green and blue running across it, fine weave, flat orthographic view,
+  even daylight, no shadows, no edges, no objects ...
+treeline (16:9)
+  A long continuous line of lush tropical trees of rural north-east Thailand seen straight-on from far away at eye level
+  in bright late-morning sun: mango trees, rain trees, tall bamboo clumps, banana plants, two coconut palms, a few
+  bare-branched dry-season trees, their crowns making an uneven skyline. The trees stand along the bottom of the image
+  and fill its lower two thirds from the left edge to the right edge with no gaps at the base; everything above and
+  behind the trees is a solid pure magenta (#FF00FF) background instead of sky. No ground, no buildings, no people, no
+  poles. Photorealistic.
+petalturf (1:1)
+  Seamless tileable texture photographed straight down from above: hundreds of loose yellow and orange marigold petals
+  scattered thickly and evenly over bright green artificial grass turf, the grass showing between the petals, completely
+  even flat daylight, no shadows, no whole flowers, no objects, uniform all over so it can repeat as a tile.

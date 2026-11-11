@@ -495,6 +495,35 @@ ASSETS = {
     'e4calc':       ('assets/e4calc.glb', True, False),       # e4c2 v25.2: the calculator on his counter, 13 cm — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh)
     'e4wreath':     ('assets/e4wreath.glb', True, False),     # e4c2 v25.2: the Grand Opening stand's dried flowers, 74 cm — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh)
     'e4notebook':   ('assets/e4notebook.glb', True, False),   # e4c2 v25.5 (v25.2's remade: Chad, "can you remove that glitchy looking red ribbon? Just use a normal notebook" — the ribbon was a torn strip of the model's own geometry): his notebook on the counter, open, 46 cm across, no ribbon — a new checked picture on white, then Hunyuan3D asked for 40,000 triangles (masters/v25.5/make.sh)
+    # e4c3 v26.0 (episode 4 chapter 3, the Wai Kru): its things, each from a crop of Chad's own photograph of the real one
+    # (a checked picture on white, then Meshy at the highest settings, its own remesh, tools/prepmeshy.mjs:
+    # masters/v26.0/make.sh section 4, masters/v26.0/props/TABLE.txt)
+    'w3baisri':     ('assets/w3baisri.glb', True, False),     # the bai sri on its golden bowl (photograph 7): in his hands all chapter, and dozens on the tables
+    'w3naga':       ('assets/w3naga.glb', True, False),       # a naga of folded banana leaf (photographs 4, 9)
+    'w3wheel':      ('assets/w3wheel.glb', True, False),      # the great bai sri and its wheel of marigolds (photographs 4, 9, 10)
+    'w3parasol':    ('assets/w3parasol.glb', True, False),    # the orange and gold parasol over it (photograph 4)
+    'w3tower':      ('assets/w3tower.glb', True, False),      # a tower ringed with marigolds (photographs 8, 9)
+    'w3candle':     ('assets/w3candle.glb', True, False),     # the tall yellow candle (photograph 3)
+    'w3fan':        ('assets/w3fan.glb', True, False),        # the peacock-feather fan (photographs 2, 8): chapter 5's too
+    'w3nagastaff':  ('assets/w3nagastaff.glb', True, False),  # the carved staff with a naga's head (photographs 2, 8): chapter 5's too
+    'w3pewter':     ('assets/w3pewter.glb', True, False),     # a bai sri on a pewter bowl, the tables' second kind (photograph 12)
+    # and the ground's surfaces, each a picture made from his photograph of the real surface (masters/v26.0/tex/make.py)
+    'w3t_turf':     ('assets/w3t_turf.jpg', True, False),
+    'w3t_earth':    ('assets/w3t_earth.jpg', True, False),
+    'w3t_gravel':   ('assets/w3t_gravel.jpg', True, False),
+    'w3t_rooftile': ('assets/w3t_rooftile.jpg', True, False),
+    'w3t_redplank': ('assets/w3t_redplank.jpg', True, False),
+    'w3t_tin':      ('assets/w3t_tin.jpg', True, False),
+    'w3t_timber':   ('assets/w3t_timber.jpg', True, False),
+    'w3t_swag':     ('assets/w3t_swag.webp', True, False),
+    'w3t_petalturf': ('assets/w3t_petalturf.jpg', True, False),
+    'w3t_brick':    ('assets/w3t_brick.jpg', True, False),
+    'w3t_skirt':    ('assets/w3t_skirt.jpg', True, False),
+    'w3t_satin':    ('assets/w3t_satin.jpg', True, False),
+    'w3t_mat':      ('assets/w3t_mat.jpg', True, False),
+    'w3t_carpet':   ('assets/w3t_carpet.jpg', True, False),
+    'w3t_banner':   ('assets/w3t_banner.webp', True, False),
+    'w3t_treeline': ('assets/w3t_treeline.webp', True, False),
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
     # in white (two women, two men), Mixamo's Praying and Kneeling Idle applied
@@ -617,7 +646,10 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd', 'e4buffalo', 'e4sandalsa', 'e4sandalsb', 'e4rahu', 'e4sedan', 'e4truck', 'e4suv', 'e4sedanfar', 'e4truckfar', 'e4suvfar', 'e4moto', 'e4seat',
            'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm',
            'e4kuman', 'e4ngang', 'e4tani', 'e4phraioil', 'e4phraitab', 'e4praicase', 'e4tanitab', 'e4ghostjar', 'lersichin', 'e4khannam', 'e4phan',
-           'e4till', 'e4bag', 'e4jacket', 'e4water', 'e4drinks', 'e4wallet', 'e4switch', 'e4shelf', 'e4cloth', 'e4yaam', 'e4phone', 'e4calc', 'e4wreath', 'e4notebook'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
+           'e4till', 'e4bag', 'e4jacket', 'e4water', 'e4drinks', 'e4wallet', 'e4switch', 'e4shelf', 'e4cloth', 'e4yaam', 'e4phone', 'e4calc', 'e4wreath', 'e4notebook',
+           'w3baisri', 'w3naga', 'w3wheel', 'w3parasol', 'w3tower', 'w3candle', 'w3fan', 'w3nagastaff', 'w3pewter',
+           'w3t_turf', 'w3t_earth', 'w3t_gravel', 'w3t_rooftile', 'w3t_redplank', 'w3t_tin', 'w3t_timber', 'w3t_swag',
+           'w3t_petalturf', 'w3t_brick', 'w3t_skirt', 'w3t_satin', 'w3t_mat', 'w3t_carpet', 'w3t_banner', 'w3t_treeline'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and

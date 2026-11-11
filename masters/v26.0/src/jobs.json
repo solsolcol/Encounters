@@ -206,11 +206,35 @@
   "sizes": {
    "glb": 75851352,
    "pre": 18476436
+  },
+  "takes": {
+   "lib": {
+    "actions": [
+     243,
+     56,
+     1,
+     32
+    ],
+    "credits": 12,
+    "size": 85216532,
+    "task": "01a1cb52-0fd3-7000-b600-7e7b2862da7e"
+   },
+   "prostrate": {
+    "credits": 3,
+    "motion": "01a1cafe-c2af-71c8-b5bf-df09e87b7ed1",
+    "size": 82246644,
+    "task": "01a1cb57-9226-76b9-91a1-fb4422d8a72e"
+   }
   }
  },
  "candle": {
+  "credits": 40,
+  "expires_at": 1794667667528,
   "image": "masters/v26.0/props/refs/candle-2k.png",
   "image_to_3d": "01a1cb10-b217-71f8-9790-827d0da4e48c",
+  "remesh": {
+   "3000": "01a1cb6a-d196-7481-88a1-8502b659c63a"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -228,6 +252,9 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 43872884
   }
  },
  "chrys": {
@@ -304,6 +331,14 @@
     "motion": "01a1cafe-c1dc-72f3-a751-5749d695fcdc",
     "size": 82366428,
     "task": "01a1cb05-b8e6-721e-a7fd-f47411a375a0"
+   },
+   "lib": {
+    "actions": [
+     243
+    ],
+    "credits": 3,
+    "size": 82366596,
+    "task": "01a1cb68-9718-7106-814d-4e2af873b18c"
    }
   }
  },
@@ -346,6 +381,22 @@
   "sizes": {
    "glb": 75928304,
    "pre": 20894344
+  },
+  "takes": {
+   "dance2": {
+    "credits": 3,
+    "motion": "01a1cafe-c1dc-72f3-a751-5749d695fcdc",
+    "size": 82779632,
+    "task": "01a1cb67-8230-773d-8dc0-ac8a1fc9cf73"
+   },
+   "lib": {
+    "actions": [
+     243
+    ],
+    "credits": 3,
+    "size": 82779892,
+    "task": "01a1cb66-b543-72e3-aad7-43114b6b06ad"
+   }
   }
  },
  "deva": {
@@ -454,7 +505,15 @@
      363,
      56
     ],
+    "credits": 9,
+    "size": 40584884,
     "task": "01a1cb4e-5c15-770a-b67e-bbf286b5fbf6"
+   },
+   "offer": {
+    "credits": 3,
+    "motion": "01a1cb0c-08c0-73fd-a495-d87895ec8b4f",
+    "size": 38089680,
+    "task": "01a1cb51-f73e-71fe-9b97-42de5964dff5"
    }
   }
  },
@@ -505,7 +564,15 @@
      363,
      56
     ],
+    "credits": 9,
+    "size": 47049600,
     "task": "01a1cb4f-579e-7740-9121-f99bb5269dad"
+   },
+   "offer": {
+    "credits": 3,
+    "motion": "01a1cb0c-08c0-73fd-a495-d87895ec8b4f",
+    "size": 45096252,
+    "task": "01a1cb52-bb21-76ef-9b62-bfc77ed020c0"
    }
   }
  },
@@ -548,6 +615,24 @@
   "sizes": {
    "glb": 45445108,
    "pre": 8451300
+  },
+  "takes": {
+   "lib": {
+    "actions": [
+     243,
+     363,
+     56
+    ],
+    "credits": 9,
+    "size": 52136748,
+    "task": "01a1cb53-85ba-712c-98e9-fb4c5b7627a0"
+   },
+   "prostrate": {
+    "credits": 3,
+    "motion": "01a1cafe-c2af-71c8-b5bf-df09e87b7ed1",
+    "size": 50149300,
+    "task": "01a1cb57-1e92-72a1-b29e-a08625c46060"
+   }
   }
  },
  "deve": {
@@ -589,6 +674,24 @@
   "sizes": {
    "glb": 70720424,
    "pre": 15964164
+  },
+  "takes": {
+   "lib": {
+    "actions": [
+     243,
+     363,
+     56
+    ],
+    "credits": 9,
+    "size": 79564724,
+    "task": "01a1cb52-90c2-7082-99a5-db4f77693416"
+   },
+   "offer": {
+    "credits": 3,
+    "motion": "01a1cb0c-08c0-73fd-a495-d87895ec8b4f",
+    "size": 77280368,
+    "task": "01a1cb56-9fdb-73ca-a690-86d54098c4c4"
+   }
   }
  },
  "devf": {
@@ -760,9 +863,11 @@
     "size": 47587416,
     "task": "01a1cb4d-a02f-74b3-9e1b-ebabaedd7e06"
    },
-   "offer": {
-    "motion": "01a1cb0c-08c0-73fd-a495-d87895ec8b4f",
-    "task": "01a1cb51-3c94-7597-8329-0d4f84be36c9"
+   "seiza": {
+    "credits": 3,
+    "motion": "01a1cb0c-08d0-768a-b16c-8f5789acd2ea",
+    "size": 45531472,
+    "task": "01a1cb51-3ca0-73be-8f8e-9bb7bb83e29d"
    }
   }
  },
@@ -771,6 +876,9 @@
   "expires_at": 1794667573989,
   "image": "masters/v26.0/props/refs/fan-2k.png",
   "image_to_3d": "01a1cb0d-25bb-775f-aaf3-755696257660",
+  "remesh": {
+   "8000": "01a1cb5c-2c45-733f-acd2-9650b3e8fb83"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -867,9 +975,11 @@
     "size": 82810616,
     "task": "01a1cb49-7306-73c8-85ab-b0c87551025d"
    },
-   "petals": {
-    "motion": "01a1cafe-c2a8-74e2-b89e-38bc272a841c",
-    "task": "01a1cb50-a441-74f1-90a1-61e84b57f94f"
+   "palmover": {
+    "credits": 3,
+    "motion": "01a1cb0c-07fb-7144-9f19-29a8ce088ead",
+    "size": 78711900,
+    "task": "01a1cb50-a353-709c-bf43-fcc0e7f77d56"
    }
   }
  },
@@ -912,6 +1022,25 @@
   "sizes": {
    "glb": 70121196,
    "pre": 23552776
+  },
+  "takes": {
+   "lib": {
+    "actions": [
+     307,
+     33,
+     243,
+     57
+    ],
+    "credits": 12,
+    "size": 80749940,
+    "task": "01a1cb51-b8e5-7665-8098-726ff9adf79e"
+   },
+   "petals": {
+    "credits": 3,
+    "motion": "01a1cafe-c2a8-74e2-b89e-38bc272a841c",
+    "size": 76950868,
+    "task": "01a1cb58-a75f-7288-9087-33cd90f6838b"
+   }
   }
  },
  "khantok": {
@@ -993,6 +1122,9 @@
   "expires_at": 1794667452055,
   "image": "masters/v26.0/props/refs/nagastaff-2k.png",
   "image_to_3d": "01a1cb0d-2f5a-7743-b478-5ef9e33e901d",
+  "remesh": {
+   "6000": "01a1cb61-1562-7080-897b-a2bd82316a92"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -1020,6 +1152,9 @@
   "expires_at": 1794667751010,
   "image": "masters/v26.0/props/refs/parasol-2k.png",
   "image_to_3d": "01a1cb10-a0d1-7421-a8fc-56b26378d733",
+  "remesh": {
+   "16000": "01a1cb57-8354-7029-ace9-5679c07224cb"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -1047,6 +1182,9 @@
   "expires_at": 1794667661684,
   "image": "masters/v26.0/props/refs/pewterbaisri-2k.png",
   "image_to_3d": "01a1cb0d-3626-74ca-bb1b-a5c90eb8a1e4",
+  "remesh": {
+   "16000": "01a1cb65-b7d8-713d-8f33-fb3d5fcedfef"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -1070,8 +1208,13 @@
   }
  },
  "purple": {
+  "credits": 40,
+  "expires_at": 1794668109177,
   "image": "masters/v26.0/props/refs/purple-2k.png",
   "image_to_3d": "01a1cb10-b96a-746e-a156-d9a293d91ebd",
+  "remesh": {
+   "16000": "01a1cb6f-20f5-7522-8176-ca2fb390948d"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -1089,6 +1232,9 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 88035260
   }
  },
  "red": {
@@ -1130,6 +1276,25 @@
   "sizes": {
    "glb": 45839264,
    "pre": 11200212
+  },
+  "takes": {
+   "lib": {
+    "actions": [
+     307,
+     33,
+     243,
+     57
+    ],
+    "credits": 12,
+    "size": 55008404,
+    "task": "01a1cb59-7998-72e0-b257-33d8ce722ddd"
+   },
+   "petals": {
+    "credits": 3,
+    "motion": "01a1cafe-c2a8-74e2-b89e-38bc272a841c",
+    "size": 50192392,
+    "task": "01a1cb5f-2d13-711d-ae08-aacbee088cd0"
+   }
   }
  },
  "roses": {
@@ -1304,6 +1469,9 @@
   "expires_at": 1794667562490,
   "image": "masters/v26.0/props/refs/tower-2k.png",
   "image_to_3d": "01a1cb0d-1c23-7036-93d1-212008e6a12d",
+  "remesh": {
+   "16000": "01a1cb52-6126-73e3-b981-1525a4cfcc65"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -1395,6 +1563,25 @@
   "sizes": {
    "glb": 41483240,
    "pre": 12713412
+  },
+  "takes": {
+   "lib": {
+    "actions": [
+     307,
+     33,
+     243,
+     57
+    ],
+    "credits": 12,
+    "size": 49358068,
+    "task": "01a1cb5f-fa67-72a7-ab41-2650061d9afa"
+   },
+   "palmover": {
+    "credits": 3,
+    "motion": "01a1cb0c-07fb-7144-9f19-29a8ce088ead",
+    "size": 46551556,
+    "task": "01a1cb65-e969-7554-95b1-997659e677b2"
+   }
   }
  }
 }

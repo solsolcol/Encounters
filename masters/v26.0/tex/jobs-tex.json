@@ -1,0 +1,21 @@
+{
+ "_note": "Higgsfield (GPT Image, high/2k) job of each surface picture; the recipe and the prompts are masters/v26.0/tex/PROMPTS.txt, the pictures masters/v26.0/tex/src/<name>.png (ignored), the game files assets/w3t_<name>.jpg",
+ "jobs": {
+  "turf": "f9b26c3c-27e5-49a5-aece-5f577223c354",
+  "earth": "885825d6-e509-4d0b-a39d-800235faf4cd",
+  "gravel": "934bf740-621b-484d-8a5c-74033e758ba9",
+  "rooftile": "3c712c65-9098-4fdd-a097-419505a85add",
+  "redplank": "13f48612-a508-4e9f-ae56-66b4a2088823",
+  "tin": "7968c054-cf90-425f-b113-306705cf43b7",
+  "timber": "6b8ec768-272f-4f85-b404-60d8f5edf7ae",
+  "swag": "d50b237e-a4c2-4b0d-b62c-904c792e4307",
+  "skirt": "293a4290-8e37-46d6-80bd-97e30fd9354c",
+  "satin": "64e9f818-495a-4039-b133-6bd144248174",
+  "banner": "e67aaab0-27a6-491c-b1d1-e8f70cfe9292",
+  "carpet": "90ceb479-c0bb-4b23-9bb6-d599f2584e92",
+  "mat": "f33a7af4-4e0f-4801-bc38-3fa79e38e952",
+  "treeline": "592f143c-1225-45ab-9bfc-136c4abf5701",
+  "brick": "eabaa8eb-cefc-4ff9-9ffe-d8d095edac72",
+  "petalturf": "ec932b79-a136-49bf-8181-b93fce5895d0"
+ }
+}

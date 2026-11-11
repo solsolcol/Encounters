@@ -113,3 +113,25 @@
 #   Two pictures Meshy REFUSED ("image too complex"): the chrysanthemums and the roses, both a bunch of small blooms.
 #   Not charged; each is asked for again as fewer, larger blooms. meshy26.py collect <name>... fetches what finished
 #   and passes over what failed, where the first script stopped at the first refusal and left nine uncollected.
+#
+# ---------------------------------------------------------------------------------------------------------------------
+# 5. THE GROUND'S SURFACES (masters/v26.0/tex/)
+# ---------------------------------------------------------------------------------------------------------------------
+#   The turf, the red earth, the gravel, the hall's roof tiles, its timber and brick, the red planks, the pink tin, the
+#   tables' green satin skirt and their jasmine garland, white satin, one tiered banner, a rug, a reed mat, the far line
+#   of trees and the turf deep in petals are PICTURES, each made by GPT Image (high/2k, 2.75 credits) from a crop of his
+#   photograph of the real surface where one exists: tex/PROMPTS.txt (every prompt), tex/jobs-tex.json (every job).
+#     HF_BASE=<this account's results folder> sh masters/v26.0/tex/get.sh <name>:<file> ...    (into tex/src, ignored)
+#     python3 -I masters/v26.0/tex/make.py                                                      (into assets/w3t_<name>)
+#   make.py: a surface with no pattern to break (grass, earth, gravel, petals) is made to repeat exactly; a patterned one
+#   is kept as it came and the chapter mirrors it or repeats it only where its join is clean; one that must be cut out
+#   was asked for on solid magenta, its alpha is how magenta a point is, the pink spill is taken off its edges, and the
+#   colour under the cut-away part is grown outward from the kept part so no magenta shows at a distance.
+#   Sixteen pictures, 44 credits.
+#
+# ---------------------------------------------------------------------------------------------------------------------
+# 6. THE CHAPTER'S FILE IS ASSEMBLED (masters/v26.0/assemble.py, masters/v26.0/parts/, masters/v26.0/script/)
+# ---------------------------------------------------------------------------------------------------------------------
+#     python3 -I masters/v26.0/script/secs.py     every line's length into the head part (lines.py: all 104 lines)
+#     python3 -I masters/v26.0/assemble.py        parts/*.js, with chapter 2's helpers copied in by pinned line ranges
+#   src/chapters/e4/e4c3.js is never edited by hand.
