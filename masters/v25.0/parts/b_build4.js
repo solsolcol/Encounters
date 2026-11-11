@@ -157,8 +157,11 @@
     const PG_HEAD = () => faceOf(cast.pong, [PSTOOL.x, 1.42, PSTOOL.z]);
     const UNDER = [0.3, 1.0, SHOP.z1 + 0.6];                             // under the shutter's edge, the corridor's light
     const top0 = COUNTER.h + 0.046;                                      // the counter's glass
-    /* (v25.5) his own way out behind the two of them in ending D, a curve (they turn left along the corridor) */
-    const D_EYE = walkCurve([[CL.x, CL.z], [0.05, 1.6], [0.2, 2.7], [0.15, 3.4], [-0.5, 4.0]]);
+    /* (v25.5) his own way out behind the two of them in ending D: from where he stands aside on the cut (B's and C's
+       own place, GO_EYE) into the master's wake, and after them to the shutter; when he sets off (from the cut), his
+       pace, and the share of his look that goes to Pong once the shutter is up */
+    const D_EYE = walkCurve([[-1.6, 0.2], [-0.9, 0.45], [-0.1, 0.9], [0.4, 1.7], [0.42, 2.6], [0.15, 3.3]]);
+    const D_OUT = { at: 2.4, v: 0.8, share: 0.4 };
     function shot(eye, at, fPhone, fDesk, roll = 0) { fLens(isNarrow() ? fPhone : fDesk); camAt(eye, at, roll); }
     /* (v25.2, Chad: "On a phone screen, there are many things i cannot see in the intro cutscenes, the gameplay section, and
        the intermediate cutscenes, and the ending cutscenes. Its not well optimized for mobile aspect ratio") A SHOT NAMES
@@ -1159,21 +1162,25 @@
         /* out under the shutter with them, into the corridor at night */
         waiAt(0);
         goOut(t, T.go);
-        /* (v25.0 CP9) behind him, never at his ear (started at 1.6 s he walked there); (v25.5) at the master's own new
-           pace, along a curve, his eyes on a point of the master's body that rides no step (his head's bone, which the
-           lens followed, bobs with every one) */
-        const s = walkS(t, T.go + 3.0, OUT_V.l), v = walkV(t, T.go + 3.0, OUT_V.l);
-        const y0 = lp(KNEEL.y, 1.62, smo(sgk(t, T.go, T.go + 1.2)));
-        const e = walkEye(D_EYE, s, v, () => 0); e[1] = Math.min(e[1], y0 + (e[1] - 1.62));
-        fLens(isNarrow() ? 60 : 52);
-        /* (v25.0 CP9) his eyes on the door until the master is a step or two ahead, then on him: tracking him as he rose
-           and passed put him a half metre from the lens, by photograph */
-        const hL = L && L.ready ? [L.group.position.x, 1.36, L.group.position.z] : [0.4, 1.36, 3.2];
-        camAt(e, aimEase(e, [0.45, 1.45, 3.2], hL, smo(sgk(Math.hypot(hL[0] - e[0], hL[2] - e[2]), 1.0, 1.8))));
+        /* (v25.5) HIS OWN WAY OUT BEHIND THEM. At the master's calmer pace the eye this shot had (from where he knelt,
+           on the door until the master was a step or two ahead, then following) showed a phone a doorway for four of
+           its six seconds, the two of them slivers at its edges (photographed). Now it begins as B's and C's does, on
+           the cut: on his feet, stepped aside by the left-hand cases, his look on the master's body (a point that rides
+           no step); as the master passes he falls in behind the two of them along a curve, two metres back, a share of
+           his look going to Pong, so a phone's frame holds both (simulated second by second, then photographed) */
+        const Ae = walkArc(t, T.go + D_OUT.at, pathLen(D_EYE), D_OUT.v);
+        const e = walkEye(D_EYE, Ae[0], Ae[1], () => 0);
+        fLens(isNarrow() ? 62 : 50);
+        const bL = L && L.ready ? [L.group.position.x, 1.3, L.group.position.z] : GO_DOOR;
+        const bP = P && P.ready ? [P.group.position.x, 1.3, P.group.position.z] : bL;
+        camAt(e, aimEase(e, bL, bP, D_OUT.share * smo(sgk(t, T.go + 1.0, T.go + 2.8))));
         return;
       }
       /* the next morning, in full colour (chapter 1's dawn shop again, clear this time) */
       fLook('MORNING'); fogFilm(0);
+      /* (v25.5) his hands are down by morning whatever frame came before (v6.4: a picture is a function of the film's
+         clock; a seek from his thanks straight to the morning left his wai in front of the piece, in the lab) */
+      waiAt(0);
       /* (v25.5, Chad: "when customer asks about the amulet, there is no customer, add the customer") she comes back up to
          his counter as her heels say (unseen: his eyes are on the envelope, well to her right), and stands at the piece
          on the glass; her eyes on it, up to him as she asks, and back to it as he tells her */
@@ -1213,7 +1220,9 @@
       const out = smo(sgk(t, T.last - 0.2, T.last + 3.0));
       const e = lp3(eye, [AMU_AT[0] + 0.03, 1.4, AMU_AT[2] - 0.38], dn);
       const at = aimEase(e, aimEase(e, face, AMU_AT, dn), [0.4, 1.4, 5.2], out);
-      const fl = lp(lp(isNarrow() ? 54 : 46, isNarrow() ? 26 : 21, dn), isNarrow() ? 58 : 50, out);
+      /* (v25.5) a desktop's lens on the piece is 14 (21: its wide frame took in her two hands hanging at her sides,
+         cut off at its edges beside the piece, by photograph; a phone's frame never reached them) */
+      const fl = lp(lp(isNarrow() ? 54 : 46, isNarrow() ? 26 : 14, dn), isNarrow() ? 58 : 50, out);
       if (dn > 0.5 && isNarrow()) {
         const Fa = fit(e, at, fl, amuletCorners()), w = smo(sgk(dn, 0.5, 0.95));
         fLens(lp(fl, Fa.fl, w)); camAt(e, aimEase(e, at, Fa.at, w));
@@ -1333,6 +1342,9 @@
         if (cast.woman && cast.woman.ready) { cast.woman.group.visible = false; cast.woman.filmWalk = 0; }
         amuletTop.visible = false; auraAt(0, 0, t);
         if (END[key] && t < END[key].coda) namesAt(-1);
+        /* (v25.5) and his own hands are down at the laptop whatever frame came before (a seek from his wai at an
+           ending's start straight into its coda left them pressed over the keys: the lab's photograph) */
+        else if (END[key] && END[key].coda != null) waiAt(0);
         fTalk(t);
         if (key === 'open') openFrame(t);
         else if (key === 'call') callFrame(t);
