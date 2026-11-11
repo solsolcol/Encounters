@@ -359,11 +359,10 @@
     sfx(O.cu2a1, 'cu2a1', 1);                  // "Boss, this one... from which temple ah? Who blessed it?"
     sfx(O.q2o2b, 'q2o2b', 1);                  // "Sorry... can you say again?"
     sfx(O.cu2a1b, 'cu2a1b', 1);                // "Aiyo, never mind. I come back another day."
-    /* (v25.5) her sandals: the auntie who wears the part since 11 Nov wears flat sandals, and the heels that were cued
-       here (x2heels, x2heelsin: retired) clicked under a woman who was only heard */
-    /* (a sandal's slap is short: at the heels' own peak the walk measures 7.5 dB under them by RMS, so it is cued
-       at 0.7 and 0.65 where they were 0.5 and 0.45) */
-    sfx(O.cu2a1b + SECS.cu2a1b - 0.6, 'x2sandals', 0.7);   // her sandals on the terrazzo, away
+    /* (v25.5) her shoes are v25.0's own four steps again (x2heels, x2heelsin): the woman in green wears low-heeled
+       flats, and the take measures as a soft shoe's tap, not a stiletto's click (3 % of it over 3 kHz). For the day
+       episode 1's auntie wore the part they were flat sandals (x2sandals, x2sandalsin: retired with her) */
+    sfx(O.cu2a1b + SECS.cu2a1b - 0.6, 'x2heels', 0.5);   // her shoes on the terrazzo, away
     sfx(O.q2o2, 'q2o2', 1);                    // "I could not think properly."
     sfx(O.o3 + 1.0, 'x2pat', 0.55); sfx(O.o3 + 2.1, 'x2pat', 0.5); sfx(O.o3 + 3.3, 'x2pat', 0.5);   // one pocket, the other, the back
     sfx(O.q2o3, 'q2o3', 1);                    // "I misplaced my wallet, and strangely..."
@@ -456,19 +455,20 @@
     step(0, () => stage.films.begin('clear', c, api));
     tr(0, K.end, (k, t) => stage.films.frame('clear', t, api), rawK);
     sfx(K.lc2k0, 'lc2k0', 1);                  // "Hands together. Close your eyes."
-    /* his eyes "closed": the picture dimmed (never black), and opened again as the fog lifts */
-    fade(K.lc2k0 + 1.6, K.homage + 0.6, 0, 0.42); fade(K.lift, K.water - 0.6, 0.42, 0);
+    /* his eyes "closed": the picture dimmed (never black). (v25.5) It lightens as the light gathers (seen through his
+       lids, and brighter with each saying), and the dim is gone as the light reaches him: the white is white */
+    fade(K.lc2k0 + 1.6, K.homage + 0.6, 0, 0.42); fade(K.om + 0.2, K.om + 6.4, 0.42, 0.14); fade(K.fly - 0.1, K.flash - 0.25, 0.14, 0);
+    /* THE WHITE (Chad: "the whole screen flashes and fades white quickly for a moment, before being fully cleared"): the
+       film's fade, in white (the engine's forty-third seam): up in a quarter of a second as the light reaches him, held
+       less than half a second (the room becomes the room cleared under it: clearShots), gone by `clear` */
+    fade(K.flash - 0.22, K.flash + 0.04, 0, 1, '#ffffff'); fade(K.flash + 0.42, K.clear, 1, 0, '#ffffff');
     sfx(K.homage + 0.4, 'x2candle', 0.5);      // the candles and the incense lit for his teachers
-    sfx(K.namo - 0.6, 'x2clearmus', 0.4);      // the clearing's music, under the chant and never over it
-    sfx(K.namo, 'lc2namo', 1);                 // Namo tassa bhagavato arahato sammā-sambuddhassa (×3)
-    step(K.namo, () => { if (K2 && K2.captions) K2.captions(chantCaps('lc2namo')); });
-    sfx(K.sak, 'lc2sak1', 1);                  // Sakkatvā buddha-ratanaṁ...
-    step(K.sak, () => { if (K2 && K2.captions) K2.captions(chantCaps('lc2sak1')); });
-    sfx(K.lc2sak2, 'lc2sak2', 1);              // Sakkatvā dhamma-ratanaṁ...
-    step(K.lc2sak2, () => { if (K2 && K2.captions) K2.captions(chantCaps('lc2sak2')); });
-    sfx(K.lc2sak3, 'lc2sak3', 1);              // Sakkatvā saṅgha-ratanaṁ...
-    step(K.lc2sak3, () => { if (K2 && K2.captions) K2.captions(chantCaps('lc2sak3')); });
-    sfx(K.lift + 0.2, 'x2lift', 0.45);         // the room's sound coming back clear as the grey goes (a soft opening of the air)
+    sfx(K.om - 0.6, 'x2clearmus', 0.4);        // the clearing's music, under the mantra and never over it: its second bell is on the white (masters/v25.5/make.sh)
+    sfx(K.om - 0.6, 'x2gather', 0.32);         // the light gathering: a rise that goes all the way to the sending, under his voice
+    sfx(K.om, 'lc2om', 1);                     // Om Namah Shivaya (×3)
+    step(K.om, () => { if (K2 && K2.captions) K2.captions(chantCaps('lc2om')); });
+    sfx(K.flash - 0.86, 'x2release', 0.62);    // the light sent: its rush in, and its burst (0.86 s into the file) on the white
+    sfx(K.flash + 0.3, 'x2lift', 0.45);        // the room's sound coming back clear as the white goes (a soft opening of the air)
     sfx(K.lc2drink, 'lc2drink', 1);            // "Drink. A little."
     sfx(K.water + 2.1, 'x2sip', 0.5);         // (v25.2) its sip (0.5 s in) as the bowl he holds out tips to him
     sfx(K.lc2k2, 'lc2k2', 1);                  // "Go to a temple this week. Make merit. If the fog comes back, doctor first, then me."
@@ -581,7 +581,7 @@
       sfx(T.morning + 0.1, 'x2endD', 0.6);                           // the ending's music: bright, unhurried
       sfx(T.morning + 0.2, 'x2shutterup', 0.7);                      // his shutter going up on a clear morning
       sfx(T.morning + 3.2, 'x2pat', 0.5); sfx(T.morning + 3.75, 'x2wallet', 0.5);  // his pocket — and the wallet in it
-      sfx(T.cu2a2 - 1.6, 'x2sandalsin', 0.65);                       // her sandals coming back up to his counter
+      sfx(T.cu2a2 - 1.6, 'x2heelsin', 0.45);                         // her shoes coming back up to his counter
       sfx(T.cu2a2, 'cu2a2', 1);                                      // "Boss, this one... from which temple ah?"
       sfx(T.q2D2, 'q2D2', 1);                                        // "This one? A temple in Ayutthaya. The card is inside, let me show you."
       /* (v25.5) the cased piece lies on the glass and is only looked at: the sound of it lifted from the tray is out (x2case, retired) */

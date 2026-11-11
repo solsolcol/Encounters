@@ -7952,3 +7952,78 @@ cut (sharing its vertices and maps) when it is small.
   restored from git. Read a recipe's first lines before running it.
 - **A new asset is not a reuse.** A clip made for this chapter and listed under `reuse` is refused by chaptertest
   ("no longer takes from an earlier episode"): `reuse` is for what an earlier episode shipped.
+
+## v25.5, second round — a lens that steps, a push that shrinks, a white that came out grey, arms through a lap
+
+Chad, 11 Nov 2026, playing the build: the camera "bounces several times" at the note, once at the forum, once in the
+call; the mark on the wrong side of the door; Lersi Chin's arms in his robe; "When I remember" cut off; and the chant
+made the mantra of Shiva with the white light gathered and sent. docs/V25.5-E4-NOTES.md has every measure.
+
+- **A solve that runs every frame must be smooth in its inputs.** v25.2's `fit` (the lens that holds named points on a
+  phone) widened the lens two degrees at a time until they fitted. In a still shot nobody can tell. In a push, the
+  lens asked for narrows smoothly and the lens given jumps back out by a step each time the points stop fitting:
+  twelve jumps in three seconds. Solved by halving between the asked lens and the widest allowed, with the aim turned
+  until it settles for each lens tried: the narrowest lens that holds them, a continuous function. Every stepped
+  search (`+= 2` in a loop until it fits) inside a per-frame function is this bug waiting for a moving shot.
+- **A fit names its one subject.** The call's shot fitted the phone's corners AND the aim the pan had reached. A pan
+  that begins far from the subject asks such a fit to hold two things a room apart: the lens went from 45 degrees to
+  70 and back to 37 in under a second. Fit the subject; ease the pan onto the fit.
+- **Measure what a push does to its subject.** On a phone the note's "push in" widened the lens all the way (to keep
+  the phone beside it in frame), and the note got smaller: 139 px to 113. Two stills, start and end, both "held the
+  note and the phone" and passed at v25.2. A camera move is a series; measure the subject's size along it.
+- **How to see a bounce without eyes.** Step the film's clock by a tenth of a second and list every lens change that
+  reverses or leaps against its own run where the picture does not cut (tools/probes/framebounce.py on
+  framecheck's file). Cuts between two shots of the same people still list: whole-number lenses on both sides are
+  shots' own constants.
+- **A white drawn in the picture is not a white screen.** The engine's vignette (`#grade`, a DOM layer over the
+  canvas) darkens whatever the canvas draws by up to a quarter at a phone's side edges: a white card before the lens
+  photographed as an oval with grey sides. And the hands' pass is drawn after the world: his own joined hands stood
+  on top of the white. A colour over the whole screen is a layer over the canvas: the film's fade, in that colour
+  (the forty-third seam). List the page's full-screen layers before designing an effect that must fill the screen.
+- **A sprite is a card at one depth.** The light at his hands was a sprite a hand's breadth before them; his bowed
+  face leaned through that card's plane, and the depth test cut the glow along the line where face met plane: a pale
+  veil over his chin with a hard curved edge. Light cards among a body draw with the depth test off.
+- **Send hands to a point only after measuring what stands in the way.** His lap (the cloth over his crossed legs) is
+  36 to 40 cm high for 37 cm in front of him. A wrist point 30 cm high and 40 cm out put both forearms through it
+  from the elbow, and the film's lens, looking at his face, showed only a stump at the frame's foot. Build a height
+  map of the body without its arms (every skinned point, 5 cm cells), then choose the point; photograph from the
+  side and above.
+- **The elbow's side decides whether a bent arm clears.** With the reach's usual pole (down and back) a bent elbow
+  drops into the lap; out to the sides it stays at the line's height. Holding something before the body with both
+  hands, elbows go out.
+- **Hands on a thing the film never draws stay out of frame by framing.** Raising the hold to clear the lap put his
+  hands in the picture, holding nothing. The shot closes on him while he has the wrist (the look lifted, the lens
+  tighter), eased with his reach, so the hands stay under the frame's foot on both screens.
+- **A three-word line is the easiest take to get wrong.** eleven_v3 returned "When I remember." cut inside its last
+  word (0.64 s, the file ending at -18 dBFS), and the picker's "tighter read" chose it. A clean end is checked on the
+  waveform's last 100 ms, not on the transcript, which reads whole either way.
+- **An order with no mark borrows the nearest one.** With "Something tall is standing by the door." on screen and its
+  own mark taken away, the only mark in the dark was the light switch's across the door: to the player, the order's
+  mark, on the wrong side. An observing order still carries its mark, on the thing observed.
+- **A cut-down music cue is matched to the old level, not to a peak.** The clearing's music was peak-matched to -3 on
+  a bell the short cut does not hold; matching the cut's peak again would have made it 4.9 dB louder. Match the level
+  of a passage both files share.
+- **A lab's caption is on the wall clock.** Seeking a film in the lab shows captions at the wrong moments (they run
+  from when their step fired). Judge captions in a played run (the drive probe records them), not in sought frames.
+- **A take is a motion; a still shows only its stance.** The woman in green was first stood in her `Listening_Gesture`,
+  picked from still pictures because she stood upright in them. Measured on her body over its 9.3 s (the action's
+  time stepped through, the head's and hips' places read at each step): her head travels 23.5 cm from side to side
+  and 17 cm front to back at 14 cm a second, 37 at most. Her `Idle_7`: 1.7 cm and 4 cm, 1.5 cm a second. Before a
+  take is cast, measure its head's and hips' travel and speed over its whole length; a standing figure in a close
+  shot wants centimetres, not decimetres.
+- **A look that follows a head hands the head's sway to the camera.** The films look at her face where her head is
+  on that frame (`faceOf`), which is right for a walk or a turn. With a head that swings 23 cm a metre from the lens,
+  her face stays in the middle and the whole picture behind her swings 6.6 degrees each way: on a phone, a third of
+  the screen. The player sees a camera that bounces, and nothing in the shot's code moved.
+- **A probe that seeks a film freezes every body in it.** framecheck steps a film's clock a tenth of a second at a
+  time and reads the picture: 82 seconds of film in about one second of the wall's clock. Every mixer stands almost
+  still through it, so a take's sway is one frozen moment (the same build's last look measured her face at one place,
+  where the lab, with the lens held still and the wall's clock running, saw it cross from 0.69 to 1.67 of the frame's
+  half-width). It measures the camera the film asks for. What a body does is measured on the body's own clock.
+- **The same film moment photographed twice catches two moments of a take.** In the lab a seek does not rewind a
+  body's take, so two shots of one film time, seconds apart on the wall, show the body at two phases against the
+  same camera: if the background has moved between them, the camera is following the body.
+- **A recast body is photographed through the last shot too.** The look "past her" at ending D's end left the
+  auntie's arm in a phone's corner; the woman in green, standing a little differently on the same mark, had her face
+  across the frame's edge. A phone's frame is a third as wide: where a wide screen holds a bystander whole at its
+  side, a phone cuts her; stop the look short of passing her there, or take it well past.

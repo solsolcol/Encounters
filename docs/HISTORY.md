@@ -8543,17 +8543,149 @@ What the baseline contains, by release:
     shelf in every shot that looks its way, on a phone and on a desktop, so those films are as they were.
   - DEPLOYED AGAIN for the lighter smoke (`6af37563b74070aa54ad3e98`: 3 files sent, 336 carried; 338 served files
     byte-identical to dist), the chapter seen to boot from it and the examination run through once more on it.
+- **v25.5** EPISODE 4: THE YARD'S CARS REMADE, CHAD'S TWENTY-EIGHT NOTES ON CHAPTER 2, THEN HIS WOMAN IN GREEN AT THE
+  COUNTER, A WHITE AURA, THE MANTRA OF SHIVA, AND A CAMERA THAT NO LONGER BOUNCES. Chad, 10 Nov 2026, three messages
+  with v25.4 live (twenty-eight asks across the two chapters: "the 3 cars parked in the ajahn house, is still very low
+  res and looks bad, it needs to look much better", "when the female customer asks a question, there is no female
+  customer in that cut scene, can you add one?", "The player's phone model looks pretty bad too", "if lersi chin is
+  supposed to look at the player once in awhile, he shouldnt be in hunchback position", "make these effects look
+  good", and the rest), and on 11 Nov, with each build on his phone, six more: "Dont use the yin amulet shoplady. Use
+  another women model."; "maybe dont use golden aura and glow for lersi chin, use only white, and make the white glow
+  more subtle. For both the meditation part and also the chanting and blessing part. Golden will be used for
+  grandmaster pho only."; "Dont use this auntie as she has been used many times. Use the thai green shoplady that has
+  never been shown to the player before"; "as lersi chin uses the power of shiva, remove all his current chants and
+  change them to Om Namah Shivaya. He chants it 3 times only, show the white energy gathering as he chants it, and
+  then it flies to the player and creates a clearing effect and the whole screen flashes and fades white quickly for a
+  moment, before being fully cleared."; "at the final last part when camera zooms into the call pong note, the camera
+  bounces several times", "the objective marker should be on the flowers but is misplaced at the other side", "have a
+  1 second delay before 'call pong' plays", "his arms clips into his robe", "'when u remember ' is cut off halfway too
+  fast"; and "The camera also bounces one time at the very final cutscene when it shows the forum thread of wai kru in
+  udon thani. It also bounces one time when calling pong, and the camera pans into the phone."
+  docs/V25.5-E4-NOTES.md is the record (his words verbatim, the asks numbered A1 to H11, what each traced to, what was
+  built, the log); masters/v25.5/make.sh every model, voice and sound.
+  - CHAPTER 1, THE CARS (the third time he asked; v24.26's bigger sheets were the wrong measure). The same three
+    checked pictures through three engines under one light; Hunyuan3D v3 for all three, ASKED FOR 100,000 triangles so
+    nothing is thinned here (my first try, 500,000 thinned to 30-110,000, crumpled every panel along the sheet's
+    seams and was thrown away). Their paint read as paint, the roundels the generator invented painted out, each at a
+    real car's size. The taxi street keeps v24.20's three under their own keys. COST, measured: about 208,000 more
+    triangles where all three show in a phone's view (+46 %); the files are smaller than the ones they replace.
+  - CHAPTER 2 (generated: masters/v25.0/parts): the woman at his counter SEEN in the opening film and in ending D; the
+    corridor's pillars and the altar's gold cap no longer share a plane with their neighbours; his phone remade and
+    the call taken on the speaker, the phone on the glass with a call screen drawn to be read; `Open drawer`; the
+    shop's front closed to him in play; the visit opens on the two walking in; the joss sticks upright; the piece is
+    on its shelf and then gone, no hand; the telling re-written and re-said; the water offered on his open palms from
+    his lap; Lersi Chin upright in his own seat while the choice is made; `Amulet Forums` redrawn (boards, tags,
+    avatars, an eased scroll, the new thread arriving in view and opening on its post and two replies), `practices`;
+    the notebook remade with no ribbon; an aura of painted light round him; the walks away at a robed man's pace under
+    one still eye; ending B's talk re-written round "I feel things, and sometimes I cannot control my body" and
+    re-said; ending D's piece looked at on the glass, no hand. The decision's prompt: "The clearing is done. What you
+    do now is your own." Every changed line is written out in the record.
+  - H1 AND H3, THE WOMAN AT HIS COUNTER, CAST THREE TIMES. The Yin shop's keeper wore the part in the first three
+    builds; then the auntie of episode 1 chapter 3 (`granny`), whose standing take holds her hips half a metre off her
+    own mark (she stood against the side cabinet: the take's hips track is brought onto the mark on her own copy of the
+    clip, `centreStand`) and whose made walk was a MARCH (both arms out, a hand swung to the waist: MINE, passed from
+    small pictures and seen in the film; tools/retarget.mjs gained `--calm`, opt-in, the same bytes unset). Then his
+    word that the auntie is overused: she is `e4stall` now, HIS OWN woman in the green blouse, on her own takes
+    (`Idle_7` standing, her own `Walking`: photographed large, natural as delivered), her hips on her mark by the same
+    `centreStand`. The auntie's walk file and the sandal steps made for her are retired again; v25.0's `x2heels` and
+    `x2heelsin` are back as they were. SAID TO HIM: she is not quite "never shown" (she is chapter 1's woman at the
+    roadside stall, far off in ending C; declared, and one word changes the stall). Two standing rules (CLAUDE.md):
+    neither `yinkeeper` nor `granny` is cast again, and a model's earlier appearances are counted before it is given a
+    part.
+  - H2, THE AURA. White only, in the examination's stillness and in the clearing both, at about half of its first
+    strengths (the room's dimming 0.7 to 0.34, the glow 0.56 to 0.3, the rays 0.5 to 0.2, the motes 1 to 0.55). The
+    gold's colours and strengths stay in the code for Grandmaster Pho; no film of this chapter asks for it. A standing
+    rule (CLAUDE.md).
+  - H4, THE MANTRA AND THE WHITE. Every chant of his is gone (`lc2namo`, `lc2sak1` to `lc2sak3`, their twenty caption
+    words; the takes stay in masters) and he chants "Om Namah Shivaya" three times, one take (`lc2om`, 9.07 s; six
+    takes measured, the pick by a clean end and the tighter read, every saying transcribed; four previews for his ear
+    in masters/v25.5/previews), captioned over "Om. Homage to Shiva.". THE SOURCES are in the record: the Panchakshara
+    with Om before it, "namah shivaya" from the Shri Rudram; NO source found ties this mantra to Thai Lersi in
+    particular, so that Lersi Chin works by the power of Shiva is Chad's word for his own character and the game says
+    no more. THE LIGHT is painted (no lamp): a core in a halo at his joined hands, a step brighter with each saying,
+    motes drawn in from round the room, a ring out as each saying ends; it leaves for the lens slowly and then fast;
+    the whole screen goes white (up in a quarter of a second, held 0.4 s, gone 1.7 s after it struck) and the room
+    under it is the room cleared. THE FILM IS 39 SECONDS where it was 89, every beat re-timed from the take's own
+    length. THE WHITE IS A NEW ENGINE SEAM, the forty-third: a film's `fade(t0, t1, from, to, color)`. I drew the white
+    first as a card before the lens and photographed it: the vignette lies over the canvas (the white came out an oval
+    with grey sides) and his own hands, drawn in their own pass, stood on top of it. The fade's layer is above both.
+    Opt-in and unchanged when no colour is given; the fixture's `flash` film and `fixturetest` prove both ways. Two
+    new sounds (`x2gather`, `x2release`, two takes each, picked by measure); the clearing's music is the same take
+    re-cut by hand to 39 s so its brightest bell strikes on the white, at the shipped file's own level. LOST WITH THE
+    OLD CHANTS, and said: the Triple Gem verses' meaning on screen, and the slow lift of the grey under them. A
+    standing rule (CLAUDE.md).
+  - H5, H10, H11, THE CAMERA'S BOUNCES, measured as moves (the lens every tenth of a second on a phone:
+    tools/probes/framecheck.mjs STEP=0.1 and the new tools/probes/framebounce.py): the note's shot, twelve jumps in
+    three seconds; the forum's push, five; the call, the lens thrown from 45 degrees to 70 and back to 37 inside a
+    second. TWO CAUSES, BOTH MINE (v25.2): the phone's fit widened its lens two degrees at a time until its points
+    fitted, so every push stepped (the lens is SOLVED now, by halving: the narrowest that holds them, a smooth function
+    of the film's clock); and the call's fit held the phone AND wherever the pan had got to (it fits the phone, and the
+    pan eases onto it). A THIRD FAULT under the first, found measuring it: on a phone the "push" on the note made the
+    note SMALLER (139 px wide down to 113); it is a real push now (132 to 241 px), a desktop's frame unchanged to the
+    number. AFTER, on the built game: no bounce in the opening, the call, the visit, the clearing or the forum; what
+    the probe still lists are cuts between shots.
+  - H6, THE MARK. With "Something tall is standing by the door." up, v25.0 took the order's own mark away, and the one
+    mark left in the dark was the light switch's, across the door from the flowers. The order's mark stands on the
+    flowers until he begins to find out what the shape is. SAID TO HIM: the switch keeps its own mark (it is one of the
+    three ways); one word takes it off.
+  - H7: "Call Pong" waits a second after the line before it (it came a quarter of a second after).
+  - H8, HIS ARMS IN HIS ROBE. Measured on his seated body, cell by cell: the cloth over his crossed legs stands 36 to
+    40 cm high for 37 cm in front of him, and v25.0 sent his hands to a point 30 cm high: both forearms went through
+    his lap, and the film's lens, on his face, never showed it. MINE. He meets the wrist past the lap's edge now (47 cm
+    up, 44 out), elbows out to his sides, leaning a little further in; the picture closes on him a little while he
+    holds it, so his hands (holding a wrist the film never draws) stay under the frame's foot. Photographed from his
+    side at five moments: clear.
+  - H9, "WHEN I REMEMBER..." The shipped take was 0.64 s long and ended on signal: the generator had returned it cut
+    inside its last word and I picked it at v25.0 as "the tighter read", against the rule. MINE. Re-said: of two takes
+    one ends clean (1.37 s), the other on signal again (refused).
+  - WHAT THE EARLIER ROUNDS OF LOOKING FOUND, each fixed: ending D's walk out, slowed with B's and C's, showed a phone
+    a doorway and two slivers (mine: re-staged from a simulation); Lersi Chin HIDDEN BEHIND THE DECISION'S WINDOW on a
+    real phone, missed because my lab's phone pictures were taken at twice a phone's size (the look is eased so his
+    face stands in the clear band above the choices, solved from the window's own edge; six screen sizes); the dark
+    SUV's gloss showing every dent (its roughness floor 0.33 to 0.7); leaktest's "it built" check counting the world's
+    direct children (three tidy groups failed it: it counts meshes now, proven on an empty world).
+  - RETIRED, against v25.4, with what cued them (files and rows; takes in masters): the sounds `x2knock`, `x2pickup`,
+    `x2bowl`, `x2case`, and the four chants.
+  - NOT CURED, AND SAID: a car modelled by hand would still beat any generator; the man at the counter in ending A is
+    still only heard; the taxi uncle is the one model still NEEDED (docs/E4-MODELS.md).
+  - THE ROUND OF CHECKS FOUND ONE MORE, MINE, AND IT WAS A BOUNCING CAMERA. The build with H3 to H11 stood the woman
+    in green in her `Listening_Gesture`, picked from still pictures. Photographing ending D on a phone, her face slid in
+    and out of the frame's edge. Measured: over that take's 9.3 s her head travels 23.5 cm from side to side at 14 cm a
+    second, and the films look at her HEAD, so the whole picture behind her swung 6.6 degrees each way (a third of a
+    phone's width) for as long as she stood at his counter, in the opening film and in ending D. She stands in
+    `Idle_7` now (1.7 cm, 1.5 cm a second), and on a phone ending D's last look stops short of passing her (0.55 of
+    the way), so she is whole at the picture's right with the morning mall across its left. framecheck could not have
+    seen it: seeking a film, it freezes every body. A standing rule (CLAUDE.md): a take is measured as a motion before
+    it is cast.
+  - DEPLOYED EIGHT TIMES, each the moment its build had booted the chapter, every served file fetched and compared
+    with dist each time: 6af3af7a, 6af3c775, 6af3d52b (the twenty-eight asks and what the first looks found), 6af3e0d9
+    and 6af3e6f4 (H1, H2), `6af3e99699dc55f2c9a2f6e0` (the auntie's walk calmed), `6af40510534d7efa4d5d85b0` (H3 to
+    H11) and `6af4130ac31fc69b39e86ce4` (her standing take and ending D's last look: 341 served files identical to
+    dist, the cache headers in force).
+  - CHECKED on the build with H3 to H11: chaptertest (errors: none) and the build's static scans; the voice scan (no
+    voice over another; the clearing 39.28 s); the lens every tenth of a second on a phone through every film
+    (framebounce: no bounce; what it lists are cuts); a finger's play-through from the title to ending B's card on a
+    phone (PASS: 53 voices heard, none over another, the mantra's caption up for its three sayings, every press by its
+    badge, no page error); Continue on a phone from five saved points (each landed where it was saved, and again in
+    the same sitting); the harnesses hosted, text, leak, cine, fixture and walk, and csp on the single-file build (the
+    engine changed). On the last build: the chapter booted, chaptertest, the voice scan, the lens through the opening
+    and ending D (no bounce), and both films photographed at a phone's real size and on a desktop.
+  - THE SHEET IS v141 (17 rows new, 24 gone, 13 touched against v140: 2142 rows), exported, not published.
 
 ## The sheet, version by version
 
 **v141** (`masters/v25.5/masterz-text-v141.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from
-it): v140 with fourteen rows new and twelve touched, nothing else moved. NEW, all episode 4 chapter 2's: the call
-screen's words (`e4c2.words.phoneIncoming`, `phoneDecline`, `phoneAccept`, `phoneKeys`) and the forum's
-(`forumBoard`, `forumTabs`, `forumBoards`, `thread5` to `thread8`, `threadNewBody`, `threadNewReply1`,
-`threadNewReply2`). TOUCHED: `e4c2.prompt` ("The clearing is done. What you do now is your own."), `hotTill` ("Open
-drawer"), `phoneCalling`, `forumName` ("Amulet Forums"), `postBody` and `e4c2.A.text` ("practices"); the re-said takes
-`voice.q2tA` (the telling), `voice.q2B1`, `voice.lc2B1`, `voice.lc2B2` (ending B's talk), each with its new words and
-measured length; and where `voice.cu2a1` and `voice.cu2a2` play (the woman is seen now). 2163 rows. Exported, not
+it): v140 with seventeen rows new, twenty-four gone and thirteen touched, nothing else moved. NEW, all episode 4
+chapter 2's: the call screen's words (`e4c2.words.phoneIncoming`, `phoneDecline`, `phoneAccept`, `phoneKeys`), the
+forum's (`forumBoard`, `forumTabs`, `forumBoards`, `thread5` to `thread8`, `threadNewBody`, `threadNewReply1`,
+`threadNewReply2`), and the mantra's: its caption `capOm` ("Om Namah Shivaya") over `capOmSub` ("Om. Homage to
+Shiva.") and its take `voice.lc2om`. GONE, with the four chants they belonged to: the twenty caption words
+(`capNamo`, `capSak1a` to `capSak3c`, each with its `Sub`) and the takes `voice.lc2namo`, `voice.lc2sak1`,
+`voice.lc2sak2`, `voice.lc2sak3`. TOUCHED: `e4c2.prompt` ("The clearing is done. What you do now is your own."),
+`hotTill` ("Open drawer"), `phoneCalling`, `forumName` ("Amulet Forums"), `postBody` and `e4c2.A.text` ("practices");
+the re-said takes `voice.q2tA` (the telling), `voice.q2B1`, `voice.lc2B1`, `voice.lc2B2` (ending B's talk) and
+`voice.q2e2` ("When I remember...", whole this time), each with its words and measured length; and where
+`voice.cu2a1` and `voice.cu2a2` play (the woman is seen now, and is his woman in green). 2142 rows. Exported, not
 published.
 
 **v140** (`masters/v25.3/masterz-text-v140.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from

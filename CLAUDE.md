@@ -141,6 +141,7 @@ that fits it, with the version it came from.
 - Every minigame gives its instructions first, with a START, before anything is timed. (v8.7)
 - A minigame must test the lesson, not the player's eyesight, memory or touch latency; one that does not serve is replaced by watching or by playing it out. (v24.12)
 - Objectives are completed by a press (tap, click or E), never by an auto timer for looking at them. (v21.9)
+- The order's mark stands on what the order is about: while "Something tall is standing by the door." was up with no mark of its own, the one mark left on screen (the light switch's, across the door) read as the order's, pointing the wrong way. (v25.5)
 - The next place to go is always marked and visible once it becomes the goal; episode 2 onward names it in the objective line, with a waypoint where the premise lives. (v14.8)
 - Nothing is offered to the player while a line it hands off to is still playing; the next objective appears only after that line and everything before it are done. (v21.21)
 - Every shot and screen must work on both desktop and phone framing. (v21.19)
@@ -156,6 +157,8 @@ that fits it, with the version it came from.
 - Episode 2's admin-tee buddy (`admintee`) is overused: never cast him again, not even as an extra walking past ("I dont want the admin green tshirt guy, he is overused"). (v24.37)
 - A GOLD aura or glow is Grandmaster Pho's alone ("Golden will be used for grandmaster pho only"). Lersi Chin's light is white only, and subtle, in his meditation and in his chanting and blessing both ("use only white, and make the white glow more subtle"); no other master is given gold. (v25.5)
 - Episode 3 chapter 4's Yin shop keeper (`yinkeeper`) does not stand in for another woman ("Dont use the yin amulet shoplady. Use another women model.", of the customer at his counter in episode 4 chapter 2): a new woman's part goes to another model. (v25.5)
+- The auntie of episode 1 chapter 3 (`granny`) is overused and is not cast again ("Dont use this auntie as she has been used many times. Use the thai green shoplady that has never been shown to the player before"): the woman at his counter in episode 4 chapter 2 is his own woman in the green blouse (`e4stall`), his pick. Before a model is given a new part, count where the player has already met it and say so. (v25.5)
+- Lersi Chin works by the power of Shiva ("as lersi chin uses the power of shiva"): his chant is "Om Namah Shivaya", three times and nothing else, captioned over "Om. Homage to Shiva."; the white light gathers at his joined hands as he chants it, is sent to the one he clears, and the whole screen goes white and clears. (v25.5)
 - Something he drops is closed for good: never ask for it again, and withdraw the ask from every doc that carried it. (v5.23)
 - His own models get no credit row; everyone else's work is credited with its link, and a credit row goes when its asset leaves the game. (v5.23)
 - His words are used exactly (lines, names, descriptions, punctuation), and any correction to them is said out loud. (v21.7)
@@ -193,6 +196,13 @@ that fits it, with the version it came from.
   ask named (the calmer pace asked for endings B and C left ending D's walk out a doorway and two slivers). (v25.5)
 - A harness's test for "it built" counts the thing itself (the meshes drawn), never a shape of the scene graph (a
   healthy world of three groups failed `children.length > 3`). (v25.5)
+- A camera move is MEASURED as a move: the lens and the subject's size on the screen at every tenth of a second, on a
+  phone and a desktop (tools/probes/framecheck.mjs STEP=0.1, then framebounce.py). A still from each end cannot show
+  a lens that jumps on the way (the note's shot: twelve jumps in three seconds), nor a "push" that makes its subject
+  smaller (the same shot on a phone: the note 139 px wide down to 113). (v25.5)
+- Where a body's hands are sent is checked against that body's own cloth and limbs first: measure the height of what
+  stands between (his lap, cell by cell), and photograph the pose from his side and from above, not only through the
+  film's lens, which looked at his face while both forearms went through his lap. (v25.5)
 - A phone probe must be a touch device, because the phone path depends on touch; a narrow desktop window is not a phone. (v14.5)
 - Read every frame of a film on both crops (desktop and the phone's centre crop, as contact sheets) before shipping it. (v6.8)
 - The deep-debug method: read-only lenses with one concern each (save and resume, geometry and framing, sound and timing, models and rigs, words and HUD, the engine since the last review, a regression audit of the last pass), a real-input phone play-through to every ending, every beat photographed on the phone crop, every finding verified before it is touched, and verdicts plus what was left alone written down. (v18.5)
@@ -271,6 +281,11 @@ that fits it, with the version it came from.
   DARK body a rough finish, because gloss shows every soft dent a generated body has at arm's length; paint out the
   roundels a generator invents (BLOT). (v25.5)
 - A take named 'idle' may fold the body over: sample it across its length and use its upright window. (v8.0)
+- A take is MEASURED AS A MOTION before it is cast: its head's and hips' travel and their speed over its whole length,
+  on the body that will wear it. A still shows a stance, never a sway: a "listening" take picked from stills moved the
+  woman's head 23 cm from side to side at 14 cm a second, and because the films look at her head (`faceOf`), on a
+  phone the whole picture behind her swung a third of the screen: a camera that bounced. A probe that seeks a film
+  (framecheck) freezes every body in it and cannot see this; the same film moment photographed twice in the lab can. (v25.5)
 - Measure a model's up axis, facing and ends, never assume them; the render settles the facing with the measures as its guard, and the prep tool asserts its contract before quantize() and refuses to write a wrong bake. (v12.1)
 - The material decides foliage and alpha, never the texture's name; keep an alpha sheet's alpha, do not simplify leaf cards, and give crowns anisotropy. (v6.16)
 - Simplify per part, gently or not at all where the silhouette is the model (tubes, leaf cards). (v9.0)
@@ -329,6 +344,7 @@ that fits it, with the version it came from.
 - Measure every take; a take can come back silent. (v12.1)
 - Whispers and breaths go round the voice bus; through its compressor they come out as loud as speech. (v6.9)
 - eleven_v3 will not truly whisper some lines or slow down between pauses: use eleven_v4 with one tag, verify a whisper by measurement, and voice children in a child's register, never pitch-shifted. (v21.5)
+- A short take is where the clean end is lost: a three-word line came back cut inside its last word and was picked as "the tighter read" (0.64 s, ending on signal; the chain's fade then took the syllable). An end on signal is refused before length is looked at, and a line said at twice the game's pace is a rushed line. (v25.5)
 - Pick takes by a clean end first (an end on signal must be a whole word, checked by word timings), then no odd hole, then the tighter read; check no tag was spoken; write every pick and why into the masters' make.sh. (v18.6)
 - A scene's closing line is said inside the scene and its music comes in under the last line (a cue fired at a scene's end dies with it); picture and music fade together. (v15.3)
 - A cue's volume multiplies its STING_SAMPLE row. (v6.14)
@@ -401,6 +417,9 @@ that fits it, with the version it came from.
 - A cramped interior gets a wider lens on a phone. (v24.21)
 - Frame and fade a rig by where its body actually is, not by its group's spot. (v24.4)
 - Lay a long thin strip near the lens in short lengths; it clips badly. (v22.3)
+- Whatever is solved every frame of a moving shot (a fit, a clamp, a level chosen) is a SMOOTH function of the film's clock: a lens widened a step at a time jumps each time the shot crosses a step. And a fit names the one subject it holds, never wherever a pan has got to (the call: the lens thrown out to hold the phone and the half-turned aim both). (v25.5)
+- A colour over the whole screen (a white flash) is the film's fade in that colour (`fade(.., color)`, the forty-third seam), never a card drawn in the picture: the vignette lies over the canvas (a white card comes out grey at the sides) and the hands' pass is drawn over the world (his own hands stand on it). (v25.5)
+- A flat card of light (a sprite) set among a body is drawn over what stands at its depth (`depthTest` off): tested against depth, a bowed face cuts it along a hard curved edge. (v25.5)
 - A cutscene ends at its last TRACK (a sting is not a track), so a cue written after it never plays: cue the last sound under the fade; chaptertest walks every film and scene and fails a late cue. (v12.3)
 - A verb a cutscene calls never plays the sound itself (the sound stays a scheduled cue that the cue log and chaptertest can see) and never writes what the cutscene owns, such as the pitch. (v13.2)
 
@@ -552,6 +571,7 @@ The declarations, all optional:
 | `kit.film(key, { noSkip })` / `ctx.sealedBefore(key)` | v23.0: a film that cannot be skipped — no button, no key — the first time; `sealedBefore` answers whether a chapter has ever been completed. Episode 3 chapter 5's possessions and counter films, unskippable until the chapter has been sealed once — the forty-first seam | — (skippable) |
 | `preview: true` | v23.0: a chapter REGISTERED but out of the run — never next, never reached, never a Continue, "In the works" in the selector, opened only by `?ch=` (which saves and unlocks nothing). Episode 3 chapter 5 was built and deployed as one for Chad to play (v22.6–v22.9) and released at v23.0 by taking it out — the forty-second seam | — (in the run) |
 | a film step `eventWait(t, opts, done)` | v23.0: an event opened FROM INSIDE a film that stops the film's clock until it resolves (a wall in its clock: a slow frame never runs past it); voices cued before it play on through the pause. Episode 3 chapter 5's COME BACK | — |
+| a film's `fade(t0, t1, from, to, color)` | v25.5: a FADE IN A COLOUR — the film's fade layer in any CSS colour (a white, for a flash) over the whole screen: the picture, the hands' pass and the vignette alike. The colour is the layer's only while such a fade stands above nothing; the black's again when it does not, when any plain fade is applied, and at every scene's start and end. Episode 4 chapter 2's clearing (the white as the light reaches him); the fixture's `flash` film proves it and that a plain fade is unchanged — the forty-third seam | — (black, as always) |
 | `kit.unlock(id, { onClose })` | v14.7: the ITEM UNLOCKED splash — the item's model turning in the middle (the `iv` renderer), its name, a Close button, its own sting; a screen state of its own (`unlock`) that closes every "is it play?" gate, with a 0.6 s guard so the press that took the item cannot also close it | — |
 | `kit.choose(ids, opts)` | v17.6: CHOOSE ONE — a centred window, one card per item (drawing, name, rarity, `item.<id>.power`, words), Confirm after a pick; answers a Promise of the id and gives nothing itself. Its own screen state (`choose`); episode 3 chapter 1's Sak Yant — the twenty-third seam | — |
 | `kit.hands(k, { secs })` | v18.0: the hands lifted out of añjali into a Thai gesture by k, the body swaying with them, eased on wall time; episode 3 chapter 2 — the twenty-fourth seam | — (the hands as they were) |
@@ -1161,10 +1181,14 @@ log, and the game's captured prayer held against Lersi Chin's wai); the whisper 
 (four previews in masters/v25.4/previews, every candidate and why in masters/v25.4/make.sh). His three messages of 10 Nov
 on the whole episode (twenty-eight asks: the yard's cars remade, and in chapter 2 the woman at his counter seen, the
 call on the speaker, the visit, the telling and ending B's talk re-said, the water, the forum, the notebook, the walks
-away, ending D) and his two of 11 Nov on that build (another woman for the customer; Lersi Chin's aura white and
-subtle, gold kept for Grandmaster Pho) shipped at v25.5 — **docs/V25.5-E4-NOTES.md** (his words, what each ask traced
-to, what was built, the log; masters/v25.5/make.sh every model, voice and sound). The woman at his counter is a
-STAND-IN (the auntie of episode 1 chapter 3) until Chad's model: NEEDED, with the taxi uncle (docs/E4-MODELS.md).
+away, ending D) and his six of 11 Nov on that build (another woman for the customer, then his own woman in green in
+place of the auntie; Lersi Chin's aura white and subtle, gold kept for Grandmaster Pho; the chant made "Om Namah
+Shivaya" three times with the white light gathered, sent and the screen flashed white, the clearing film 39 s where
+it was 89; the camera's bounces at the note, the call and the forum; the order's mark on the flowers; a second before
+"Call Pong"; Lersi Chin's arms out of his robe as he takes the wrist; "When I remember" re-said) shipped at v25.5 —
+**docs/V25.5-E4-NOTES.md** (his words, what each ask traced to, what was built, the log; masters/v25.5/make.sh every
+model, voice and sound). The woman at his counter is his own model now (`e4stall`); the one model still NEEDED is the
+taxi uncle (docs/E4-MODELS.md).
 Chapter 3 (S1·12, Grandmaster Pho at the Wai Kru) is next: his gold aura's colours and strengths wait in chapter 2's
 code (`AURA`, `AURA_K.gold`) for it to lift. The episode's plan, with what remains his to decide:
 **docs/V24.0-EPISODE4-PLAN.md** (its sixth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is

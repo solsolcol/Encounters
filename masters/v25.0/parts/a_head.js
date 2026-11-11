@@ -83,7 +83,7 @@
     'q2o1': 4.75, 'q2o2b': 1.97, 'q2o2': 1.69, 'q2o3': 5.37, 'q2o4': 2.33, 'q2till': 1.53, 'q2bag': 1.13,
     'q2jacket': 1.53, 'q2where': 1.51, 'q2fridge': 1.65, 'q2flowers': 3.05, 'q2note': 1.05, 'q2c1': 8.57,
     'q2c2': 2.41, 'q2c3': 0.97, 'q2v1': 6.57, 'q2tA': 16.43, 'q2e1': 0.73,
-    'q2e2': 0.65, 'q2e3': 0.89, 'q2e4': 1.93, 'q2e5': 2.73, 'q2e6': 1.12, 'q2A1': 1.77, 'q2A2': 1.51, 'q2A3': 5.61,
+    'q2e2': 1.37, 'q2e3': 0.89, 'q2e4': 1.93, 'q2e5': 2.73, 'q2e6': 1.12, 'q2A1': 1.77, 'q2A2': 1.51, 'q2A3': 5.61,
     'q2B1': 8.83, 'q2B2': 6.49, 'q2C1': 5.61, 'q2C2': 1.65, 'q2C3': 8.49, 'q2D1': 1.79, 'q2D2': 5.61, 'q2D3': 4.41,
     'q2K1': 10.01, 'q2K2': 9.93, 'q2K3': 10.73, 'q2K4': 7.13, 'q2A': 3.77, 'q2B': 3.53, 'q2C': 3.61, 'q2D': 3.29,
     /* the customers */
@@ -94,8 +94,8 @@
     /* Lersi Chin */
     'lc2v1': 3.29, 'lc2sit': 2.7, 'lc2tell': 1.6, 'lc2tA': 5.21,
     'lc2e1': 1.2, 'lc2e2': 0.75, 'lc2e3': 0.58, 'lc2e4': 1.93, 'lc2e5': 1.18, 'lc2e6': 4.73, 'lc2e7': 1.74,
-    'lc2e8': 5.26, 'lc2e9': 4.79, 'lc2e10': 2.73, 'lc2k0': 3.21, 'lc2namo': 17.13, 'lc2sak1': 14.65, 'lc2sak2': 15.85,
-    'lc2sak3': 14.57, 'lc2drink': 1.69, 'lc2k2': 6.66, 'lc2w1': 9.93, 'lc2B1': 12.67, 'lc2B2': 11.23,
+    'lc2e8': 5.26, 'lc2e9': 4.79, 'lc2e10': 2.73, 'lc2k0': 3.21, 'lc2om': 9.07,
+    'lc2drink': 1.69, 'lc2k2': 6.66, 'lc2w1': 9.93, 'lc2B1': 12.67, 'lc2B2': 11.23,
     'lc2C1': 1.88, 'lc2C2': 5.45, 'lc2C3': 5.52, 'lc2D1': 2.65
   };
   /* SECS END */
@@ -141,8 +141,18 @@
      third verses. (v25.3, Chad: "no need for lersi chin to sprinkle water with the leaf thing and no need for the tieing
      of string": the leaves' six seconds and the thread's five and a half are out; the water's own time is the bowl
      lifted, held out, tipped, set down and his hands home, 6.4 s) */
-  const CLEARF = tl(0.8, [['lc2k0', 0.6], ['@homage'], [5.2], ['@namo'], ['lc2namo', 0.6], ['@sak'], ['lc2sak1', 0.4], ['@lift'],
-                          ['lc2sak2', 0.4], ['lc2sak3', 0.8], ['@water'], ['lc2drink', 0.6], [4.1], ['@advice'], ['lc2k2', 1.4]]);
+  /* (v25.5, 11 Nov, Chad: "as lersi chin uses the power of shiva, remove all his current chants and change them to Om
+     Namah Shivaya. He chants it 3 times only, show the white energy gathering as he chants it, and then it flies to the
+     player and creates a clearing effect and the whole screen flashes and fades white quickly for a moment, before
+     being fully cleared. The entire duration and pacing and framing of the scenes may need to be readjusted given that
+     a long chant is now reduced to a very short one.") THE CLEARING IS 39 SECONDS (it was 89): his wai to his teachers
+     (`homage`), the mantra three times (`om`, 9.07 s: the light gathers at his joined hands, a surge to each saying),
+     the light sent (`fly`, 1.15 s to the lens), the white (`flash`: up in a quarter of a second, held less than half
+     a second, gone by `clear`), a breath in the room as it now is, and the water and the advice as they were */
+  const CLEARF = tl(0.8, [['lc2k0', 0.6], ['@homage'], [5.2], ['@om'], ['lc2om', 0.5], ['@fly'], [1.15], ['@flash'], [1.7], ['@clear'],
+                          [2.6], ['@water'], ['lc2drink', 0.6], [4.1], ['@advice'], ['lc2k2', 1.4]]);
+  /* the mantra's three sayings in the shipped take, from its start (masters/v25.5/make.sh: measured, 20 ms frames) */
+  const OM_REPS = [[0.06, 2.54], [3.26, 5.70], [6.50, 8.88]];
   /* THE ENDINGS (§4.5) and THE CODA (§4.6), each on its own clock; the coda follows each ending at `coda` */
   /* (v25.5, Chad, of endings B and C: "when lersi chin walks away, the camera movement is very jerky and weird and they
      walk away too fast") THE TWO GO OUT over GO_SECS: his wai, then a robed master's pace to the shutter and out (0.85 m
@@ -216,7 +226,7 @@
     assets: ['lersichin', 'e4pong', 'e4nangkwak', 'e4takrut', 'e4phayant', 'e4khannam', 'e4phan',
              'e4till', 'e4bag', 'e4jacket', 'e4water', 'e4drinks', 'e4wallet', 'e4switch', 'e4shelf', 'e4cloth', 'e4yaam', 'e4phone', 'e4calc', 'e4wreath', 'e4notebook',
              'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm', 'filmlaptop',
-             'staffman', 'sitwoman', 'wifewalk', 'sitangry', 'fatherwalk', 'granny', 'grannywalk'],
+             'staffman', 'sitwoman', 'wifewalk', 'sitangry', 'fatherwalk', 'e4stall'],
     /* FRESH (chaptertest) asks a chapter of episode 4 to declare what it takes from episodes 1-3 (`reuse`, printed on
        every run as a reminder); what it shares with chapter 1 of its own episode — his own shop, its stock, Pong — is
        the same story going on, declared here as data so it stays written down (Chad, v17.4: "any reuse is declared") */
@@ -224,9 +234,9 @@
              staffman: "the goldsmith's man across the corridor, the same neighbour as in chapter 1, seen at noon through his open front",
              sitwoman: "a woman walking past his shop at noon, the same mall's people as in chapter 1, a few metres off and blurred by the fog",
              wifewalk: "her walk, the clip alone",
-             sitangry: "a man walking past his shop at noon, the same mall's people as in chapter 1",
-             granny: "A STAND-IN (v25.5): the woman at his counter in the opening film and ending D, seen since Chad's note ('there is no female customer in that cut scene, can you add one?') — the auntie of episode 1 chapter 3's paper table (a customer again in episode 3 chapter 4's shop) wears the part until his model for her lands (docs/E4-MODELS.md). The Yin shop's keeper wore it first; Chad, 11 Nov 2026: 'Dont use the yin amulet shoplady. Use another women model.' Her walk (grannywalk) is this chapter's own, made for her: masters/v25.5/make.sh" },
-    reuseInEpisode: { e4pong: "Pong, the Bangkok dealer of chapter 1 — he sent him to the first master on someone else's word, and vouches first-hand for Lersi Chin here (§3.2)",
+             sitangry: "a man walking past his shop at noon, the same mall's people as in chapter 1" },
+    reuseInEpisode: { e4stall: "THE WOMAN AT HIS COUNTER in the opening film and ending D (seen since v25.5: Chad, 'there is no female customer in that cut scene, can you add one?'). Chad's own model, and his pick for the part on 11 Nov 2026 after the Yin shop's keeper and then episode 1's auntie had worn it: 'Dont use this auntie as she has been used many times. Use the thai green shoplady that has never been shown to the player before'. She is chapter 1's woman at the roadside stall, who stands far off as the pickup passes in ending C: told to him",
+             e4pong: "Pong, the Bangkok dealer of chapter 1 — he sent him to the first master on someone else's word, and vouches first-hand for Lersi Chin here (§3.2)",
              e4nangkwak: "the piece he took from the first master's tray in chapter 1, standing by his door as he was told to put it — Lersi Chin sees it and advises a temple (§2.2 #6)",
              e4takrut: "the same, when the piece he took was the takrut",
              e4phayant: "the same, when it was the pha yant",
@@ -290,27 +300,11 @@
       note52A: 'You told him what you saw, not what you made of it. Evidence first, interpretation second.',
       objBowHead: 'Bow your head',
       hotBowHead: 'Bow your head',
-      // the chant, captioned: the Pali as chanted over its meaning (A Chanting Guide, The Dhammayut Order in the USA)
-      capNamo: 'Namo tassa bhagavato arahato sammā-sambuddhassa',
-      capNamoSub: 'Homage to the Blessed One, the Worthy One, the Rightly Self-awakened One.',
-      capSak1a: 'Sakkatvā buddha-ratanaṁ, osathaṁ uttamaṁ varaṁ,',
-      capSak1aSub: 'Having revered the jewel of the Buddha, the highest, most excellent medicine,',
-      capSak1b: 'hitaṁ deva-manussānaṁ, buddha-tejena sotthinā,',
-      capSak1bSub: 'the welfare of human and heavenly beings: through the Buddha\'s majesty and safety,',
-      capSak1c: 'nassant\'upaddavā sabbe, dukkhā vūpasamentu te.',
-      capSak1cSub: 'may all obstacles vanish. May your sufferings grow totally calm.',
-      capSak2a: 'Sakkatvā dhamma-ratanaṁ, osathaṁ uttamaṁ varaṁ,',
-      capSak2aSub: 'Having revered the jewel of the Dhamma, the highest, most excellent medicine,',
-      capSak2b: 'pariḷāhūpasamanaṁ, dhamma-tejena sotthinā,',
-      capSak2bSub: 'the stiller of feverish passion: through the Dhamma\'s majesty and safety,',
-      capSak2c: 'nassant\'upaddavā sabbe, bhayā vūpasamentu te.',
-      capSak2cSub: 'may all obstacles vanish. May your fears grow totally calm.',
-      capSak3a: 'Sakkatvā saṅgha-ratanaṁ, osathaṁ uttamaṁ varaṁ,',
-      capSak3aSub: 'Having revered the jewel of the Saṅgha, the highest, most excellent medicine,',
-      capSak3b: 'āhuneyyaṁ pāhuneyyaṁ, saṅgha-tejena sotthinā,',
-      capSak3bSub: 'worthy of gifts, worthy of hospitality: through the Saṅgha\'s majesty and safety,',
-      capSak3c: 'nassant\'upaddavā sabbe, rogā vūpasamentu te.',
-      capSak3cSub: 'may all obstacles vanish. May your diseases grow totally calm.',
+      // the mantra, captioned as it is chanted over its meaning (v21.31). Om Namah Shivaya: the five-syllable mantra
+      // of Shiva (namah shivaya, from the Shri Rudram of the Yajur Veda, Taittiriya Samhita 4.5.8), with Om before it:
+      // "homage (namah) to Shiva (shivaya)". The sources are in docs/V25.5-E4-NOTES.md
+      capOm: 'Om Namah Shivaya',
+      capOmSub: 'Om. Homage to Shiva.',
       // the forum (ending A and the coda): its name Chad's (v25.5: "The forum shown on his laptop should be called 'Amulet
       // Forums'"); its look this game's own, no real site's
       forumName: 'Amulet Forums',
@@ -352,18 +346,14 @@
     sayPrefix: 'q2'
   };
 
-  /* THE CHANT'S CAPTIONS (v21.31's law: every chant with words is captioned, the Pali as chanted over its meaning, timed
-     on the take's own breaths from the line's start so it works muted too; translated from A Chanting Guide). The cut
-     points are fractions of each take's measured length until CP10 times them on the breaths */
-  /* (v25.0 CP10) each cut at the middle of a breath in the shipped take, measured (20 ms frames 32 dB under its peak):
-     Namo's three at its two long breaths (5.0-5.74 s, 10.94-11.76 s of 17.12); each Sakkatvā verse's six lines
-     paired, cut at its second and fourth breaths (lc2sak1 4.75 and 9.45 s of 14.64; lc2sak2 5.14 and 10.52 of 15.84;
-     lc2sak3 4.61 and 9.51 of 14.56) */
+  /* THE CHANT'S CAPTIONS (v21.31's law: every chant with words is captioned, as it is chanted over its meaning, timed
+     on the take's own breaths from the line's start so it works muted too). The cut points are fractions of the take's
+     measured length */
+  /* (v25.5, 11 Nov) the mantra's three sayings, each its own caption, cut at the middle of the breath between them in
+     the shipped take (measured: the breaths 2.54-3.26 s and 5.70-6.50 s of 9.07: 2.90 s and 6.10 s). v25.0's four
+     takes (Namo tassa and the three Sakkatvā verses) and their twenty caption lines went with Chad's word */
   const CHANT_CAPS = {
-    lc2namo: [['capNamo', 'capNamoSub', 0, 0.314], ['capNamo', 'capNamoSub', 0.314, 0.663], ['capNamo', 'capNamoSub', 0.663, 1]],
-    lc2sak1: [['capSak1a', 'capSak1aSub', 0, 0.324], ['capSak1b', 'capSak1bSub', 0.324, 0.646], ['capSak1c', 'capSak1cSub', 0.646, 1]],
-    lc2sak2: [['capSak2a', 'capSak2aSub', 0, 0.324], ['capSak2b', 'capSak2bSub', 0.324, 0.664], ['capSak2c', 'capSak2cSub', 0.664, 1]],
-    lc2sak3: [['capSak3a', 'capSak3aSub', 0, 0.317], ['capSak3b', 'capSak3bSub', 0.317, 0.653], ['capSak3c', 'capSak3cSub', 0.653, 1]]
+    lc2om: [['capOm', 'capOmSub', 0, 0.32], ['capOm', 'capOmSub', 0.32, 0.673], ['capOm', 'capOmSub', 0.673, 1]]
   };
   function chantCaps(name) {
     const L = SECS[name] || 10, W = DATA.words;

@@ -37,31 +37,36 @@
       cast.mallB = mkPerson('sitangry', { parent: worldS, x: 4.0, z: 6.9, ry: -Math.PI / 2, height: 1.7, anims: 'fatherwalk', sizeTake: 'Walking', posture: 'stand', stand: 'Walking', look: 0, noShadow: true, hidden: true });
       /* (v25.5, Chad: "when the female customer asks a question, there is no female customer in that cut scene, can you add
          one?" ... "when customer asks about the amulet, there is no customer, add the customer") THE WOMAN AT HIS COUNTER,
-         in the opening film and in ending D. A STAND-IN, declared (DATA.reuse), until Chad's model for her lands
-         (docs/E4-MODELS.md lists it as NEEDED). Only the films place her (b_build4: openFrame, endD).
-         (11 Nov 2026, Chad, of the Yin shop's keeper who wore the part first: "Dont use the yin amulet shoplady. Use
-         another women model.") The auntie of episode 1 chapter 3's paper table: a neighbourhood auntie in a floral
-         blouse and her own sandals, as a woman who asks a shop "from which temple ah?" is. Her standing take is her
-         own (Stand_and_Chat: arms down, her weight shifting, no gesture to speak of), her talk is her own at a third
-         (Talk_Passionately opens both arms wide at full weight: photographed), and her walk was made for her as the
-         mall's two passers-by got theirs (the admin tee's Walking retargeted onto her rig in world space, the clip
-         alone: `grannywalk`, masters/v25.5/make.sh), with her arms brought in: the take as it is holds both arms out
-         and swings a hand to the waist, a young man's march on an auntie (seen in the film, then photographed large
-         from the front, the side and behind at four moments of the stride) */
-      cast.woman = mkPerson('granny', { parent: worldS, x: -0.65, z: -0.92, ry: Math.PI, height: 1.55, anims: 'grannywalk', sizeTake: 'Stand_and_Chat',
-        posture: 'stand', stand: 'Stand_and_Chat', walk: 'Walking', talk: 'Talk_Passionately', talkWeight: 0.3, look: 0, noShadow: true, hidden: true,
+         in the opening film and in ending D. Only the films place her (b_build4: openFrame, endD).
+         WHO PLAYS HER, the third and the last: the Yin shop's keeper first (Chad, 11 Nov 2026: "Dont use the yin amulet
+         shoplady. Use another women model."), then episode 1's auntie ("Dont use this auntie as she has been used many
+         times. Use the thai green shoplady that has never been shown to the player before"). She is CHAD'S OWN MODEL,
+         the woman in the green blouse and the apron (`e4stall`, chapter 1's woman at the roadside stall: declared,
+         DATA.reuseInEpisode), on her own takes, nothing borrowed: she stands in her own Idle_7 and walks her own
+         Walking. She has no talking take.
+         HER STANDING TAKE IS THE STILL ONE, BY MEASURE. The first build with her stood her in Listening_Gesture, picked
+         from still pictures (upright, her arms by her sides). Measured on her body over its 9.3 s: her head travels
+         23 cm from side to side and 17 cm front to back, at 14 cm a second and up to 37; and the films' look at her
+         FOLLOWS HER HEAD (faceOf), so on a phone the whole picture behind her swung a third of the screen's width, back
+         and forth, for as long as she stood there: a camera that wobbles, mine, found when ending D's last shot was
+         photographed (her face sliding in and out of the frame's edge). Idle_7: her head travels 2 cm and 4 cm, at
+         1.5 cm a second (4 at most). Its looking about is under the films' own look at the piece and at him (pLook),
+         which leads her head whenever she is seen */
+      cast.woman = mkPerson('e4stall', { parent: worldS, x: -0.65, z: -0.92, ry: Math.PI, height: 1.58, sizeTake: 'Idle_7',
+        posture: 'stand', stand: 'Idle_7', walk: 'Walking', look: 0, noMip: true, noShadow: true, hidden: true,
         then: centreStand });
     }
     /* (v25.5: the shoes drawn onto the Yin shop's keeper for this part, she being barefoot in her own house, went with
-       her on 11 Nov; the auntie wears her own sandals)
-       HER STANDING TAKE, BROUGHT ONTO HER MARK. Stand_and_Chat holds her hips half a metre off her own origin (measured
-       in the film: her group at -0.65, -0.92, her hips at -1.01, -0.54), so she stood away from the counter and the
-       shot that looks at her face looked across the shop; and her walk, made for her, is on the origin, so a body
-       centred by its `centre` option (v24.5, for a figure who never walks) would have slid that half metre as she
-       turned to go. The take's own Hips track is moved instead: its mean place brought over her group's middle, flat
-       along the floor, in the track's own numbers (through the hips' parent, whatever turn or scale her armature
-       holds), on the copy mkPerson's lower layer plays (lowerOnly clones the clip: her file and the shared clip are
-       untouched). Standing and walking then share one place */
+       her on 11 Nov; the woman in green wears her own)
+       A STANDING TAKE, BROUGHT ONTO ITS MARK. A library's standing take may hold the hips off the model's own origin:
+       episode 1's auntie, who wore this part for a day, stood half a metre off hers in Stand_and_Chat (measured in the
+       film: her group at -0.65, -0.92, her hips at -1.01, -0.54), so she stood away from the counter and the shot
+       that looks at her face looked across the shop; and a walk is on the origin, so a body centred by mkPerson's
+       `centre` option (v24.5, for a figure who never walks) would slide by the offset as she turns to go. The take's
+       own Hips track is moved instead: its mean place brought over the group's middle, flat along the floor, in the
+       track's own numbers (through the hips' parent, whatever turn or scale the armature holds), on the copy
+       mkPerson's lower layer plays (lowerOnly clones the clip: the file and the shared clip are untouched). Standing
+       and walking then share one place, whoever wears the part */
     const _csA = new THREE.Vector3(), _csB = new THREE.Vector3(), _csM = new THREE.Matrix4();
     function centreStand(P) {
       const a = P.L && P.L.standLo, tr = a && a.getClip().tracks.find(q => /Hips(_\d+)?\.position$/.test(q.name));
@@ -620,7 +625,12 @@
         if (!play.wallet && play.searched.size >= 3) wp = { x: (FRIDGE.x0 + FRIDGE.x1) / 2, y: 1.0, z: FRIDGE.z - 0.1 }; }
       else if (p === 'night') {
         if (!play.shapeSeen) { o = W.objClose; wp = { x: 1.0, y: 1.1, z: SHOP.z1 - 0.15 }; }   // the shutter's pull: the way to it passes the stand
-        else if (!play.revealed) o = W.bannerShape;
+        /* (v25.5, Chad: "something tall standing by the door, the objective marker should be on the flowers but is
+           misplaced at the other side") THE MARK IS ON THE SHAPE: v25.0 took the order's mark away when the banner
+           came, and the only mark left in the dark was the light switch's own, on the wall across the door from the
+           stand: it read as the order's, pointing away from what the order is about. The order's mark now stands on
+           the shape itself until he has begun to find out what it is (the switch pressed, held still, or walked up to) */
+        else if (!play.revealed) { o = W.bannerShape; if (!play.busy) wp = STAND_HEAD; }   // (where 'Stand still and watch' is aimed and tapped)
         else if (play.noteOn) { o = W.objCall; wp = { x: NOTE.x, y: COUNTER.h + 0.25, z: NOTE.z }; }
       }
       else if (p === 'clearing') {
@@ -857,6 +867,7 @@
     function reveal(how) {
       if (play.revealed || play.busy) return false;
       const run = play.run; play.busy = true; play.how = how;
+      if (kit) kit.waypoint(null);                                         // (v25.5) the shape's mark has done its work
       if (how === 'light') { if (worldSfx) { worldSfx('x2switch', 0.7); worldSfx('x2ledhum', 0.35); }
         shopCtl.ceiling(1, 0.25); shopCtl.lights(1, 0.4); look('LIT', 0.35); }
       props.sway = 0;
@@ -872,6 +883,7 @@
     function watch() {
       if (play.revealed || play.busy) return false;
       const run = play.run; play.busy = true;
+      if (kit) kit.waypoint(null);                                         // (v25.5) nothing drawn over what he watches
       if (kit) { kit.root(true); if (kit.chill) kit.chill(FOG.chill * 0.6, { secs: 3.2, tint: 'grey' }); }
       /* (v25.1 F10) the press has its sound: his breath, slowed, as he holds still (four seconds of the beds alone before) */
       if (worldSfx) worldSfx('x2breathslow', 0.4);
@@ -883,7 +895,9 @@
     }
     function afterReveal(resumed) {
       const run = play.run;
-      if (!resumed) { line('q2note'); queueFn(() => { if (!live(run)) return; play.noteOn = true; objectiveFor('night', { complete: false }); }); }
+      /* (v25.5, Chad: "the voiceline 'call pong' comes too fast after the previous voiceline, have a 1 second delay before
+         'call pong' plays") a second of quiet after "...I never took them away." (a line's own 0.25 s and this) */
+      if (!resumed) { queueGap(0.75); line('q2note'); queueFn(() => { if (!live(run)) return; play.noteOn = true; objectiveFor('night', { complete: false }); }); }
       else { play.noteOn = true; objectiveFor('night', { complete: false }); }
     }
     /* THE CALL (§4.1 P3): a film from play; then the visit (a film) the next evening, and the clearing in play */

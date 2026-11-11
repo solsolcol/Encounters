@@ -136,6 +136,8 @@ fi
 # the upper arms were brought to the vertical; the bend had to come down with them. Her legs, hips and spine are the
 # take's own, so her feet land where they landed. Not cured: her fingers are straight (her scan has no finger bones)
 # and her knees stay a little bent through the stride (the take's).   ./make.sh walk
+# RETIRED 11 Nov 2026 with the auntie (Chad: "Dont use this auntie as she has been used many times"): `grannywalk` is out of
+# the build and the repo (git holds it to c890752); this section is the record of how it was made.
 if [ "$ONLY" = walk ]; then
   cd ../..
   O=${O:-/tmp/auntiewalk}; mkdir -p $O
@@ -161,6 +163,8 @@ fx() { # name src peak [ffmpeg filter]
   n=$1; s=$2; pk=$3; af=${4:-anull}
   ch=$(ffprobe -v error -show_entries stream=channels -of csv=p=0 "$s" | head -1)
   ffmpeg -v error -y -i "$s" -af "$af" -ar 48000 w_$n.wav; enc $n w_$n.wav $pk $pk 96k $ch; rm -f w_$n.wav; }
+# RETIRED 11 Nov 2026 with the auntie: x2sandals and x2sandalsin are out (files, table rows); the woman in green wears
+# flats and walks to v25.0's own x2heels and x2heelsin, restored from e66edb7. This section is the record.
 if [ "$ONLY" = sfx ]; then
   ffmpeg -v error -y -i sfx/raw/x2sandals_r2_b.mp3 -filter_complex "
     [0]atrim=0.50:0.96,asetpts=PTS-STARTPTS,afade=t=in:d=0.004,afade=t=out:st=0.38:d=0.08,asplit=2[a1][a3];
@@ -169,4 +173,91 @@ if [ "$ONLY" = sfx ]; then
     [d1][d2][d3][d4]amix=inputs=4:normalize=0:duration=longest,apad=whole_dur=3.0[o]" -map "[o]" -ar 48000 sfx/x2sandals_walk.wav
   fx x2sandals   sfx/x2sandals_walk.wav -10 "volume='pow(10,(-16*min(max(t-0.5,0)/2.2\,1))/20)':eval=frame,afade=t=out:st=2.6:d=0.3"
   fx x2sandalsin sfx/x2sandals_walk.wav -10 "atrim=0:2.6,asetpts=PTS-STARTPTS,volume='pow(10,(-16+16*min(t/2.3\,1))/20)':eval=frame,afade=t=out:st=2.4:d=0.2"
+fi
+
+# ======================================================================================================================
+# 11 Nov 2026 · THE CHANT (Chad: "For the chant, as lersi chin uses the power of shiva, remove all his current chants and
+# change them to Om Namah Shivaya. He chants it 3 times only ...")
+# Flow weil6DyvxhFEP1vcVglD, his voice (Mart-Podcast 2rg92Q2u0RWu8LiUcLQA), six takes in voices/raw, each measured
+# (20 ms frames 32 dB under its peak for the pauses; an autocorrelation pitch for how intoned it is) and transcribed
+# repetition by repetition (faster-whisper small: every one of the eighteen reads "Om Namah Shivaya", no tag spoken):
+#   lc2om_a, _b  eleven_v3  "[chanting] Om Namah Shivaya. Om Namah Shivaya. Om Namah Shivaya."
+#                sessions MRzkOjsWK3YUMcWYde9s, qooLdTV6huTBW5u9I4aK
+#                REFUSED: SAID, not chanted: 1.35 s a repetition (the three over in 5.2 s and 4.4 s), pitch 83-146 Hz
+#   lc2om_c, _d  eleven_v4  "[chanting slowly, deep and solemn] Om... Namah Shivaya. Om... Namah Shivaya. Om... Namah Shivaya."
+#                sessions Bs6JlxA7tYlwlwcPWkuz, BzXDJMMVN53Q5s7vUQzQ   (v21.5: v3 will not slow down between pauses)
+#                c 9.20 s: repetitions 0.08-2.56, 3.30-5.70, 6.52-8.88 (2.4 s each, a breath of 0.8 s between), pitch
+#                94-129 Hz; d 9.52 s: 0.12-2.62, 3.50-5.98, 6.86-9.36, pitch 88-126 Hz
+#   lc2om_e, _f  eleven_v3  "[chanting slowly] Om... Namah... Shivaya. Om... Namah... Shivaya. Om... Namah... Shivaya."
+#                sessions KJ1hvaoAhKJ7ebn2AzYd, IAAKjfYQc4WivbDxeNMY
+#                e 14.16 s, word by word (holes inside each repetition, 1.6 s between them), pitch 84-112 Hz; f 10.56 s
+#   (his voice elsewhere: spoken lines' median 122-124 Hz; v25.0's Namo tassa 114 Hz, 86-145; c 114, d 111, e 107, f 112)
+# THE PICK: c. A clean end (0.3 s of silence after the last word), no odd hole, the tighter of the two that are chanted
+# as one phrase; e is slower and halts between its words. It is a matter of taste, so his ear decides (v10.6): the
+# four chanted takes go to him loudness-matched, previews/chant-1..4.mp3 (c, d, e, f).   ./make.sh chant
+# RETIRED with it (files, rows, captions; their takes stay in masters/v25.0/voices/raw): lc2namo, lc2sak1, lc2sak2,
+# lc2sak3.
+if [ "$ONLY" = chant ]; then
+cast lc2om     voices/raw/lc2om_c.mp3      -17 $F                          # the chant, at the old chant's own level
+mkdir -p previews
+i=1; for k in c d e f; do python3 ../v21.0/prep.py voices/raw/lc2om_$k.mp3 pv_$k.wav $F >/dev/null; python3 ../v11.1/level.py pv_$k.wav pl_$k.wav -17
+  ffmpeg -v error -y -i pl_$k.wav -map_metadata -1 -c:a libmp3lame -b:a 128k -ar 44100 previews/chant-$i.mp3; rm -f pv_$k.wav pl_$k.wav pl_$k.wav.f32; i=$((i+1)); done
+fi
+
+# THE POWER'S TWO SOUNDS (the same ask: "show the white energy gathering as he chants it, and then it flies to the
+# player and creates a clearing effect and the whole screen flashes and fades white quickly for a moment").
+# eleven_text_to_sound_v2 in the same flow, each with its DURATION as a model parameter (v9.2), prompt_influence 0.4,
+# two takes each (sfx/raw), measured (level per half second; where the energy sits):
+#   x2gather_a, _b   12 s  "A soft ethereal shimmer of gathering energy, airy and glassy, slowly swelling and rising in
+#                    pitch from near silence, a calm sacred feeling, no melody, no rhythm, no voice"
+#                    sessions IeiNxcqm5NOB0wKqDl6e (a), VptVtKQ5Drpnu1cSxWY1 (b)
+#                    a RISES THE WHOLE WAY (-68 to -33 dB by the half second, never falling), all of it in 250 Hz-1 kHz
+#                    (a phone plays it; it sits under his voice and is cued 12 dB under the chant); b swells and dies
+#                    away from its 8th second (an arc: it would fall as the power peaks). PICK: a
+#   x2release_a, _b  5 s   "A ball of light rushing fast toward the listener, a quick airy whoosh for one second, then a
+#                    bright soft burst that blooms wide and rings out into a gentle shimmering tail, clean and calm, no
+#                    voice, no melody"   sessions Qdjdj2OoWeIOaA9HlAIc (a), X33d1UHW2ppiV1H0gO9W (b)
+#                    a: a rise from 0.84 s, its burst at 1.16 s, a bright tail (44 % over 4 kHz) gone by 3.5 s; b is a
+#                    boom at once, 70 % under 250 Hz (a phone plays almost none of it). PICK: a
+# x2gather: a's head (1.4 s at -60 dB) off, 10.6 s, faded in and out. x2release: from 0.3 s, so its burst lands 0.86 s
+# after the cue (c_tail cues it at the flash less that).   ./make.sh power
+if [ "$ONLY" = power ]; then
+  fx x2gather  sfx/raw/x2gather_a.mp3  -8 "atrim=1.4:12,asetpts=PTS-STARTPTS,afade=t=in:d=0.4,afade=t=out:st=10.1:d=0.5"
+  fx x2release sfx/raw/x2release_a.mp3 -3 "atrim=0.3:4.0,asetpts=PTS-STARTPTS,afade=t=in:d=0.05,afade=t=out:st=3.2:d=0.5"
+fi
+
+# ======================================================================================================================
+# 11 Nov 2026 · HIS LINE THAT WAS CUT (Chad: "the player voiceline 'when u remember ' is cut off halfway too fast")
+# MEASURED: v25.0's take (masters/v25.0/voices/raw/q2e2_b.mp3, "the tighter read") is 0.64 s long and ENDS ON SIGNAL
+# (-18 dBFS in its last 20 ms: the generator returned it cut inside "remember"), three words in 0.58 s; the chain's
+# 0.12 s fade then took the last syllable down with it. v25.0's other take (_a) ends on signal too (-28 dBFS). Mine:
+# the pick rule is a clean end FIRST (v18.6) and this one was passed on "tighter".
+# Re-said in chapter 2's flow (GN27ORLbMBtrQtkmAl5C), his voice (Brian bP8FJDHmWVEgXJDitdQd), eleven_v3, two takes:
+#   prompt "[tired] When I remember..."   (the registry's words, one tag, one ellipsis: v5.28)
+#   q2e2_c  session e6nVFsTjyfyBfxf62smw  2.24 s: voice 0.18-1.06 s, then its own decay to silence (-53 dBFS by 1.14 s)
+#   q2e2_d  session YA9ZyEezlcfDB9zYAiKi  1.04 s: ENDS ON SIGNAL (-22 dBFS): refused
+# THE PICK: c, the only clean end. Transcribed (scribe, word timings): "When I remember", no tag spoken (the file is
+# silent to 0.14 s). Its tail cut at the words' end + 0.3 s.   ./make.sh exam
+if [ "$ONLY" = exam ]; then
+him  q2e2      voices/raw/q2e2_c.mp3        --keep 1.36 $F                 # the only clean end; voice 0.18-1.06 s
+fi
+
+# ======================================================================================================================
+# 11 Nov 2026 · THE CLEARING'S MUSIC RE-CUT to the short chant (the film is 39 s where it was 89 s; Chad: "The entire
+# duration and pacing and framing of the scenes may need to be readjusted given that a long chant is now reduced to a
+# very short one"). The same take (masters/v25.0/music/raw/x2clearmus_c.mp3, 92 s, v25.0's measured pick), MEASURED
+# first: five bell strikes at 0.60, 24.95, 40.50, 55.50 and 72.75 s, each dying away over about fifteen seconds.
+# Cued where it always was (0.6 s before the chant), the uncut take's second bell would land under "Drink", its third
+# in the middle of his advice. THE CUT, three windows joined by hand:
+#   0 - 10.4 s      the first bell, under the chant's opening, dying away as the light gathers
+#   38.58 - 55.2 s  the third bell (the brightest), joined over 1.0 s so that it strikes 11.30 s in: ON THE WHITE
+#   57.0 - 72.0 s   the fourth bell's body without its strike (a 2.0 s join: a swell), under his advice to the black
+# 39.0 s; its last 1.6 s faded. The joints checked (levels by 2 s windows: no hole, no bump: -28 -24 -24 -25 -28 /
+# -27 -24 -26 -29 -32 -34 -36 / -30 -27 -29 -32 -34 -36 -39 dBFS before the gain). LEVEL: the shipped file's own
+# (its first ten seconds measured in both: +7.34 dB on the cut, whose peak is then -7.85 dBFS; v25.0 peak-matched the
+# whole take to -3 on a later bell this cut does not hold, so matching the peak again would have made it 4.9 dB louder).
+#   ./make.sh music
+if [ "$ONLY" = music ]; then
+ffmpeg -v error -y -i ../v25.0/music/raw/x2clearmus_c.mp3 -filter_complex "[0:a]atrim=0:10.4,asetpts=PTS-STARTPTS[a];[0:a]atrim=38.58:55.2,asetpts=PTS-STARTPTS[b];[0:a]atrim=57.0:72.0,asetpts=PTS-STARTPTS[c];[a][b]acrossfade=d=1.0:c1=tri:c2=tri[ab];[ab][c]acrossfade=d=2.0:c1=tri:c2=tri,afade=t=out:st=37.4:d=1.6" -ar 48000 m_x2clearmus.wav
+enc x2clearmus m_x2clearmus.wav -7.85 -7.85 128k 2; rm -f m_x2clearmus.wav
 fi

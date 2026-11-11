@@ -8931,7 +8931,7 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
      lines: his own words, captioned, the clearing's music under them), the woman and the man at his counter */
   'cu2a1', 'cu2a1b', 'pg2c1', 'pg2c2', 'pg2c3', 'pg2v1', 'lc2v1', 'lc2sit', 'lc2tell', 'lc2tA',
   'lc2e1', 'lc2e2', 'lc2e3', 'lc2e4', 'lc2e5', 'lc2e6', 'lc2e7', 'lc2e8', 'lc2e9', 'lc2e10', 'lc2k0',
-  'lc2namo', 'lc2sak1', 'lc2sak2', 'lc2sak3', 'lc2drink', 'lc2k2', 'lc2w1', 'pg2w1', 'pg2A1', 'pg2A2',
+  'lc2om', 'lc2drink', 'lc2k2', 'lc2w1', 'pg2w1', 'pg2A1', 'pg2A2',
   'cu2b1', 'lc2B1', 'lc2B2', 'pg2B1', 'lc2C1', 'lc2C2', 'pg2C1', 'lc2C3', 'lc2D1', 'pg2D1', 'cu2a2']);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
@@ -12789,6 +12789,15 @@ for (const id of ['startBtn', 'creditsLink', 'credClose', 'stepBack',
    ======================================================================== */
 
 const cineFadeEl = $('cineFade'), skipBtn = $('cineSkip');
+/* v25.5: A FILM'S FADE MAY BE A COLOUR — the forty-third seam (Chad, of episode 4 chapter 2's clearing: "the whole
+   screen flashes and fades white quickly for a moment"). `fade(t0, t1, from, to, color)` in the cutscene language lays
+   that colour over the whole screen instead of the black: over the picture, the hands' pass, the vignette (#grade
+   lies under this element, so a white drawn inside the canvas comes out grey at the screen's sides: measured). The
+   colour is this element's while such a fade stands above nothing (its value over a thousandth), and the black's again
+   the moment it does not, when any fade without a colour is applied, and at every scene's start and end — so a black
+   can never come up white. With no `color` the verb writes exactly what it always wrote (the fixture proves both) */
+let cineFadeTintNow = '';
+function cineFadeTint(c) { if (cineFadeTintNow !== c) { cineFadeTintNow = c; cineFadeEl.style.background = c; } }
 let cine = null;
 
 /* ------------------------------------------------------------ tiny sfx --
@@ -13310,8 +13319,7 @@ const STING_SAMPLE = {
   lc2e2: ['lc2e2', 1], q2e1: ['q2e1', 1], lc2e3: ['lc2e3', 1], q2e2: ['q2e2', 1], lc2e4: ['lc2e4', 1],
   q2e3: ['q2e3', 1], lc2e5: ['lc2e5', 1], q2e4: ['q2e4', 1], lc2e6: ['lc2e6', 1], lc2e7: ['lc2e7', 1],
   q2e5: ['q2e5', 1], lc2e8: ['lc2e8', 1], lc2e9: ['lc2e9', 1], q2e6: ['q2e6', 1], lc2e10: ['lc2e10', 1],
-  lc2k0: ['lc2k0', 1], lc2namo: ['lc2namo', 1], lc2sak1: ['lc2sak1', 1], lc2sak2: ['lc2sak2', 1],
-  lc2sak3: ['lc2sak3', 1], lc2drink: ['lc2drink', 1], lc2k2: ['lc2k2', 1],
+  lc2k0: ['lc2k0', 1], lc2om: ['lc2om', 1], lc2drink: ['lc2drink', 1], lc2k2: ['lc2k2', 1],
   lc2w1: ['lc2w1', 1], pg2w1: ['pg2w1', 1], q2A1: ['q2A1', 1], pg2A1: ['pg2A1', 1], q2A2: ['q2A2', 1],
   pg2A2: ['pg2A2', 1], cu2b1: ['cu2b1', 1], q2A3: ['q2A3', 1], q2B1: ['q2B1', 1], lc2B1: ['lc2B1', 1],
   lc2B2: ['lc2B2', 1], pg2B1: ['pg2B1', 1], q2B2: ['q2B2', 1], q2C1: ['q2C1', 1], lc2C1: ['lc2C1', 1],
@@ -13323,19 +13331,20 @@ const STING_SAMPLE = {
   x2callmus: ['x2callmus', 1], x2candle: ['x2candle', 1], x2clearmus: ['x2clearmus', 1],
   x2click: ['x2click', 1], x2cloth: ['x2cloth', 1], x2codamus: ['x2codamus', 1], x2corridor: ['x2corridor', 1],
   x2drawer: ['x2drawer', 1], x2endA: ['x2endA', 1], x2endB: ['x2endB', 1], x2endC: ['x2endC', 1],
-  x2endD: ['x2endD', 1], x2fogmus: ['x2fogmus', 1], x2fridge: ['x2fridge', 1], x2keys: ['x2keys', 1], x2kneel: ['x2kneel', 1],
+  x2endD: ['x2endD', 1], x2fogmus: ['x2fogmus', 1], x2fridge: ['x2fridge', 1], x2gather: ['x2gather', 1], x2heels: ['x2heels', 1],
+  x2heelsin: ['x2heelsin', 1], x2keys: ['x2keys', 1], x2kneel: ['x2kneel', 1],
   x2ledhum: ['x2ledhum', 1], x2lift: ['x2lift', 1], x2mallclear: ['x2mallclear', 1], x2mallfog: ['x2mallfog', 1],
   x2mat: ['x2mat', 1], x2nightroom: ['x2nightroom', 1], x2open: ['x2open', 1], x2page: ['x2page', 1],
-  x2pat: ['x2pat', 1], x2pickpiece: ['x2pickpiece', 1], x2ping: ['x2ping', 1],
+  x2pat: ['x2pat', 1], x2pickpiece: ['x2pickpiece', 1], x2ping: ['x2ping', 1], x2release: ['x2release', 1],
   x2post: ['x2post', 1], x2ring: ['x2ring', 1], x2rise: ['x2rise', 1], x2rustle: ['x2rustle', 1],
-  x2sandals: ['x2sandals', 1], x2sandalsin: ['x2sandalsin', 1],
   x2scroll: ['x2scroll', 1], x2shutter: ['x2shutter', 1], x2shutterup: ['x2shutterup', 1], x2sip: ['x2sip', 1],
   x2steps: ['x2steps', 1], x2stepsin: ['x2stepsin', 1], x2switch: ['x2switch', 1],
   x2visit: ['x2visit', 1], x2visitmus: ['x2visitmus', 1], x2wallet: ['x2wallet', 1],
   /* (v25.5) retired with what cued them (v24.3's rule: the files, these rows; their takes stay in masters/v25.0):
      x2knock (the visit opens on them walking in), x2pickup (the call stays on the glass, on the speaker), x2bowl (he no
-     longer packs his things while the choice is made), x2case (ending D's piece is only looked at); and x2heels and
-     x2heelsin, the heard woman's heels (the auntie who is seen at his counter wears sandals: x2sandals, x2sandalsin) */
+     longer packs his things while the choice is made), x2case (ending D's piece is only looked at); and x2sandals and
+     x2sandalsin, the sandals of episode 1's auntie, who wore the woman's part for one day (their takes and their
+     recipe in masters/v25.5; the woman in green who wears it now walks on v25.0's own x2heels and x2heelsin) */
   /* (v25.4) the whisper of the piece on his shelf, a loop (e4c2's ambience; its volume and side are mixBeds') */
   x2whisper: ['x2whisper', 1]
 };
@@ -13708,6 +13717,7 @@ function playCineFn(sceneFn, onDone, startFade = 0) {
   document.body.classList.add('cine');
   letterboxArm();                            // v15: once the bars are in, only the band between them is shaded
   cineFadeEl.classList.remove('clearing');   // a scene owns the fade outright
+  cineFadeTint('');                          // (v25.5) and it opens on the black's own colour
   cineFadeEl.style.opacity = String(startFade);
   document.exitPointerLock?.();
 }
@@ -13807,6 +13817,7 @@ function cineEnd() {
   if (cineMusicK !== 1) { cineMusicK = 1; musicRamp(musicVolNow(), 1.5); }   // v6.6: and the music, if a film held it
   stopCineVoices(!c.skipped);       // v5.30: speech finishes unless the player cut it
   restoreWorld(c.snap, c.keep);
+  cineFadeTint('');                 // (v25.5) whatever a scene's last fade was, what it leaves is the black
   cineFadeEl.style.opacity = String(c.endFade);
   /* Usually the black has nothing left to hide once the snap is done, so it
      goes. A scene that hands over to something else still black — a
@@ -13896,8 +13907,8 @@ function A(c) {
       } catch { /* already finished */ }
     }
   } });
-  const fade = (t0, t1, from, to) =>
-    tr(t0, t1, k => { cineFadeEl.style.opacity = String(from + (to - from) * k); }, rawK);
+  const fade = (t0, t1, from, to, color) =>
+    tr(t0, t1, k => { const v = from + (to - from) * k; cineFadeEl.style.opacity = String(v); cineFadeTint(color && v > 0.001 ? color : ''); }, rawK);
   const camTo = (t0, t1, from, to, ease) => tr(t0, t1, k => {
     yaw.position.x = from.x + (to.x - from.x) * k;
     yaw.position.y = (from.y ?? 1.62) + ((to.y ?? 1.62) - (from.y ?? 1.62)) * k;

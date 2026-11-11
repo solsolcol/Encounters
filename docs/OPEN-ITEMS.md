@@ -31,8 +31,12 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
    where he kneels); (ii) the same bigger sizes on chapter 1's tray, where the three still stand 7.5, 6.6 and 8.5 cm;
    (iii) the glow, the smoke and the whisper kept on the piece after it leaves the shelf (in his hand, on the cloth):
    built as he worded it, "as it sits on the shelf".
-4c. **Put to him at v25.5** (docs/V25.5-E4-NOTES.md): (i) the customer's sandal steps are MADE from two generated slaps
-   (no take gave a walk of four): his ear, `assets/audio/x2sandals.mp3` and `x2sandalsin.mp3`; (ii) the white aura's
+4c. **Put to him at v25.5** (docs/V25.5-E4-NOTES.md): (i) the woman at his counter (his woman in green, `e4stall`)
+   is also chapter 1's woman at the roadside stall, far off in ending C: if he would rather she were not both, the
+   stall takes another woman or stands empty; in ending D's close-up of the piece on the glass her cream apron stands
+   behind it (pale on pale: a dark pad under the piece, or the lens turned a little, on his word); and the mantra's
+   take is the measured pick of four chanted ones until his ear (masters/v25.5/previews/chant-1..4.mp3); (ii) the
+   white aura's
    strength round Lersi Chin, about half of its first: his eye, a number each in `AURA_K.white`; (iii) the man at his
    counter in ending A is still only heard: he can be seen too, with a model or a stand-in; (iv) "Amulet Forums", his
    own name for the forum, may also be a real forum's name (no real brand on props, v9.3): his call; (v) the yard's
@@ -79,8 +83,8 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
 
 ## C. Waiting on Chad
 
-9. **Models.** NEEDED (docs/E4-MODELS.md): the taxi uncle; the woman at his counter in episode 4 chapter 2 (seen since
-   v25.5; the auntie of episode 1 chapter 3 stands in, never the Yin shop's keeper). Episode 3 still on stand-ins (docs/E3-MODELS.md): chapter
+9. **Models.** NEEDED (docs/E4-MODELS.md): the taxi uncle. (The woman at his counter in episode 4 chapter 2 is his own
+   woman in green since 11 Nov 2026, `e4stall`, his pick: no longer needed.) Episode 3 still on stand-ins (docs/E3-MODELS.md): chapter
    3's shop staff man and the customers (the kneeling girl and man, the auntie, the youth, the shrine's wife and
    father, the passer-by); chapter 4's Chinatown towkay. To come for episode 4: Grandmaster Pho's voice (his model arrived
    3 Nov 2026 and is prepared, `pho`, v24.49: made upright at his word (v24.44), the drape on his left arm given a

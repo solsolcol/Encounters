@@ -83,7 +83,7 @@
     'q2o1': 4.75, 'q2o2b': 1.97, 'q2o2': 1.69, 'q2o3': 5.37, 'q2o4': 2.33, 'q2till': 1.53, 'q2bag': 1.13,
     'q2jacket': 1.53, 'q2where': 1.51, 'q2fridge': 1.65, 'q2flowers': 3.05, 'q2note': 1.05, 'q2c1': 8.57,
     'q2c2': 2.41, 'q2c3': 0.97, 'q2v1': 6.57, 'q2tA': 16.43, 'q2e1': 0.73,
-    'q2e2': 0.65, 'q2e3': 0.89, 'q2e4': 1.93, 'q2e5': 2.73, 'q2e6': 1.12, 'q2A1': 1.77, 'q2A2': 1.51, 'q2A3': 5.61,
+    'q2e2': 1.37, 'q2e3': 0.89, 'q2e4': 1.93, 'q2e5': 2.73, 'q2e6': 1.12, 'q2A1': 1.77, 'q2A2': 1.51, 'q2A3': 5.61,
     'q2B1': 8.83, 'q2B2': 6.49, 'q2C1': 5.61, 'q2C2': 1.65, 'q2C3': 8.49, 'q2D1': 1.79, 'q2D2': 5.61, 'q2D3': 4.41,
     'q2K1': 10.01, 'q2K2': 9.93, 'q2K3': 10.73, 'q2K4': 7.13, 'q2A': 3.77, 'q2B': 3.53, 'q2C': 3.61, 'q2D': 3.29,
     /* the customers */
@@ -94,8 +94,8 @@
     /* Lersi Chin */
     'lc2v1': 3.29, 'lc2sit': 2.7, 'lc2tell': 1.6, 'lc2tA': 5.21,
     'lc2e1': 1.2, 'lc2e2': 0.75, 'lc2e3': 0.58, 'lc2e4': 1.93, 'lc2e5': 1.18, 'lc2e6': 4.73, 'lc2e7': 1.74,
-    'lc2e8': 5.26, 'lc2e9': 4.79, 'lc2e10': 2.73, 'lc2k0': 3.21, 'lc2namo': 17.13, 'lc2sak1': 14.65, 'lc2sak2': 15.85,
-    'lc2sak3': 14.57, 'lc2drink': 1.69, 'lc2k2': 6.66, 'lc2w1': 9.93, 'lc2B1': 12.67, 'lc2B2': 11.23,
+    'lc2e8': 5.26, 'lc2e9': 4.79, 'lc2e10': 2.73, 'lc2k0': 3.21, 'lc2om': 9.07,
+    'lc2drink': 1.69, 'lc2k2': 6.66, 'lc2w1': 9.93, 'lc2B1': 12.67, 'lc2B2': 11.23,
     'lc2C1': 1.88, 'lc2C2': 5.45, 'lc2C3': 5.52, 'lc2D1': 2.65
   };
   /* SECS END */
@@ -141,8 +141,18 @@
      third verses. (v25.3, Chad: "no need for lersi chin to sprinkle water with the leaf thing and no need for the tieing
      of string": the leaves' six seconds and the thread's five and a half are out; the water's own time is the bowl
      lifted, held out, tipped, set down and his hands home, 6.4 s) */
-  const CLEARF = tl(0.8, [['lc2k0', 0.6], ['@homage'], [5.2], ['@namo'], ['lc2namo', 0.6], ['@sak'], ['lc2sak1', 0.4], ['@lift'],
-                          ['lc2sak2', 0.4], ['lc2sak3', 0.8], ['@water'], ['lc2drink', 0.6], [4.1], ['@advice'], ['lc2k2', 1.4]]);
+  /* (v25.5, 11 Nov, Chad: "as lersi chin uses the power of shiva, remove all his current chants and change them to Om
+     Namah Shivaya. He chants it 3 times only, show the white energy gathering as he chants it, and then it flies to the
+     player and creates a clearing effect and the whole screen flashes and fades white quickly for a moment, before
+     being fully cleared. The entire duration and pacing and framing of the scenes may need to be readjusted given that
+     a long chant is now reduced to a very short one.") THE CLEARING IS 39 SECONDS (it was 89): his wai to his teachers
+     (`homage`), the mantra three times (`om`, 9.07 s: the light gathers at his joined hands, a surge to each saying),
+     the light sent (`fly`, 1.15 s to the lens), the white (`flash`: up in a quarter of a second, held less than half
+     a second, gone by `clear`), a breath in the room as it now is, and the water and the advice as they were */
+  const CLEARF = tl(0.8, [['lc2k0', 0.6], ['@homage'], [5.2], ['@om'], ['lc2om', 0.5], ['@fly'], [1.15], ['@flash'], [1.7], ['@clear'],
+                          [2.6], ['@water'], ['lc2drink', 0.6], [4.1], ['@advice'], ['lc2k2', 1.4]]);
+  /* the mantra's three sayings in the shipped take, from its start (masters/v25.5/make.sh: measured, 20 ms frames) */
+  const OM_REPS = [[0.06, 2.54], [3.26, 5.70], [6.50, 8.88]];
   /* THE ENDINGS (§4.5) and THE CODA (§4.6), each on its own clock; the coda follows each ending at `coda` */
   /* (v25.5, Chad, of endings B and C: "when lersi chin walks away, the camera movement is very jerky and weird and they
      walk away too fast") THE TWO GO OUT over GO_SECS: his wai, then a robed master's pace to the shutter and out (0.85 m
@@ -216,7 +226,7 @@
     assets: ['lersichin', 'e4pong', 'e4nangkwak', 'e4takrut', 'e4phayant', 'e4khannam', 'e4phan',
              'e4till', 'e4bag', 'e4jacket', 'e4water', 'e4drinks', 'e4wallet', 'e4switch', 'e4shelf', 'e4cloth', 'e4yaam', 'e4phone', 'e4calc', 'e4wreath', 'e4notebook',
              'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm', 'filmlaptop',
-             'staffman', 'sitwoman', 'wifewalk', 'sitangry', 'fatherwalk', 'granny', 'grannywalk'],
+             'staffman', 'sitwoman', 'wifewalk', 'sitangry', 'fatherwalk', 'e4stall'],
     /* FRESH (chaptertest) asks a chapter of episode 4 to declare what it takes from episodes 1-3 (`reuse`, printed on
        every run as a reminder); what it shares with chapter 1 of its own episode — his own shop, its stock, Pong — is
        the same story going on, declared here as data so it stays written down (Chad, v17.4: "any reuse is declared") */
@@ -224,9 +234,9 @@
              staffman: "the goldsmith's man across the corridor, the same neighbour as in chapter 1, seen at noon through his open front",
              sitwoman: "a woman walking past his shop at noon, the same mall's people as in chapter 1, a few metres off and blurred by the fog",
              wifewalk: "her walk, the clip alone",
-             sitangry: "a man walking past his shop at noon, the same mall's people as in chapter 1",
-             granny: "A STAND-IN (v25.5): the woman at his counter in the opening film and ending D, seen since Chad's note ('there is no female customer in that cut scene, can you add one?') — the auntie of episode 1 chapter 3's paper table (a customer again in episode 3 chapter 4's shop) wears the part until his model for her lands (docs/E4-MODELS.md). The Yin shop's keeper wore it first; Chad, 11 Nov 2026: 'Dont use the yin amulet shoplady. Use another women model.' Her walk (grannywalk) is this chapter's own, made for her: masters/v25.5/make.sh" },
-    reuseInEpisode: { e4pong: "Pong, the Bangkok dealer of chapter 1 — he sent him to the first master on someone else's word, and vouches first-hand for Lersi Chin here (§3.2)",
+             sitangry: "a man walking past his shop at noon, the same mall's people as in chapter 1" },
+    reuseInEpisode: { e4stall: "THE WOMAN AT HIS COUNTER in the opening film and ending D (seen since v25.5: Chad, 'there is no female customer in that cut scene, can you add one?'). Chad's own model, and his pick for the part on 11 Nov 2026 after the Yin shop's keeper and then episode 1's auntie had worn it: 'Dont use this auntie as she has been used many times. Use the thai green shoplady that has never been shown to the player before'. She is chapter 1's woman at the roadside stall, who stands far off as the pickup passes in ending C: told to him",
+             e4pong: "Pong, the Bangkok dealer of chapter 1 — he sent him to the first master on someone else's word, and vouches first-hand for Lersi Chin here (§3.2)",
              e4nangkwak: "the piece he took from the first master's tray in chapter 1, standing by his door as he was told to put it — Lersi Chin sees it and advises a temple (§2.2 #6)",
              e4takrut: "the same, when the piece he took was the takrut",
              e4phayant: "the same, when it was the pha yant",
@@ -290,27 +300,11 @@
       note52A: 'You told him what you saw, not what you made of it. Evidence first, interpretation second.',
       objBowHead: 'Bow your head',
       hotBowHead: 'Bow your head',
-      // the chant, captioned: the Pali as chanted over its meaning (A Chanting Guide, The Dhammayut Order in the USA)
-      capNamo: 'Namo tassa bhagavato arahato sammā-sambuddhassa',
-      capNamoSub: 'Homage to the Blessed One, the Worthy One, the Rightly Self-awakened One.',
-      capSak1a: 'Sakkatvā buddha-ratanaṁ, osathaṁ uttamaṁ varaṁ,',
-      capSak1aSub: 'Having revered the jewel of the Buddha, the highest, most excellent medicine,',
-      capSak1b: 'hitaṁ deva-manussānaṁ, buddha-tejena sotthinā,',
-      capSak1bSub: 'the welfare of human and heavenly beings: through the Buddha\'s majesty and safety,',
-      capSak1c: 'nassant\'upaddavā sabbe, dukkhā vūpasamentu te.',
-      capSak1cSub: 'may all obstacles vanish. May your sufferings grow totally calm.',
-      capSak2a: 'Sakkatvā dhamma-ratanaṁ, osathaṁ uttamaṁ varaṁ,',
-      capSak2aSub: 'Having revered the jewel of the Dhamma, the highest, most excellent medicine,',
-      capSak2b: 'pariḷāhūpasamanaṁ, dhamma-tejena sotthinā,',
-      capSak2bSub: 'the stiller of feverish passion: through the Dhamma\'s majesty and safety,',
-      capSak2c: 'nassant\'upaddavā sabbe, bhayā vūpasamentu te.',
-      capSak2cSub: 'may all obstacles vanish. May your fears grow totally calm.',
-      capSak3a: 'Sakkatvā saṅgha-ratanaṁ, osathaṁ uttamaṁ varaṁ,',
-      capSak3aSub: 'Having revered the jewel of the Saṅgha, the highest, most excellent medicine,',
-      capSak3b: 'āhuneyyaṁ pāhuneyyaṁ, saṅgha-tejena sotthinā,',
-      capSak3bSub: 'worthy of gifts, worthy of hospitality: through the Saṅgha\'s majesty and safety,',
-      capSak3c: 'nassant\'upaddavā sabbe, rogā vūpasamentu te.',
-      capSak3cSub: 'may all obstacles vanish. May your diseases grow totally calm.',
+      // the mantra, captioned as it is chanted over its meaning (v21.31). Om Namah Shivaya: the five-syllable mantra
+      // of Shiva (namah shivaya, from the Shri Rudram of the Yajur Veda, Taittiriya Samhita 4.5.8), with Om before it:
+      // "homage (namah) to Shiva (shivaya)". The sources are in docs/V25.5-E4-NOTES.md
+      capOm: 'Om Namah Shivaya',
+      capOmSub: 'Om. Homage to Shiva.',
       // the forum (ending A and the coda): its name Chad's (v25.5: "The forum shown on his laptop should be called 'Amulet
       // Forums'"); its look this game's own, no real site's
       forumName: 'Amulet Forums',
@@ -352,18 +346,14 @@
     sayPrefix: 'q2'
   };
 
-  /* THE CHANT'S CAPTIONS (v21.31's law: every chant with words is captioned, the Pali as chanted over its meaning, timed
-     on the take's own breaths from the line's start so it works muted too; translated from A Chanting Guide). The cut
-     points are fractions of each take's measured length until CP10 times them on the breaths */
-  /* (v25.0 CP10) each cut at the middle of a breath in the shipped take, measured (20 ms frames 32 dB under its peak):
-     Namo's three at its two long breaths (5.0-5.74 s, 10.94-11.76 s of 17.12); each Sakkatvā verse's six lines
-     paired, cut at its second and fourth breaths (lc2sak1 4.75 and 9.45 s of 14.64; lc2sak2 5.14 and 10.52 of 15.84;
-     lc2sak3 4.61 and 9.51 of 14.56) */
+  /* THE CHANT'S CAPTIONS (v21.31's law: every chant with words is captioned, as it is chanted over its meaning, timed
+     on the take's own breaths from the line's start so it works muted too). The cut points are fractions of the take's
+     measured length */
+  /* (v25.5, 11 Nov) the mantra's three sayings, each its own caption, cut at the middle of the breath between them in
+     the shipped take (measured: the breaths 2.54-3.26 s and 5.70-6.50 s of 9.07: 2.90 s and 6.10 s). v25.0's four
+     takes (Namo tassa and the three Sakkatvā verses) and their twenty caption lines went with Chad's word */
   const CHANT_CAPS = {
-    lc2namo: [['capNamo', 'capNamoSub', 0, 0.314], ['capNamo', 'capNamoSub', 0.314, 0.663], ['capNamo', 'capNamoSub', 0.663, 1]],
-    lc2sak1: [['capSak1a', 'capSak1aSub', 0, 0.324], ['capSak1b', 'capSak1bSub', 0.324, 0.646], ['capSak1c', 'capSak1cSub', 0.646, 1]],
-    lc2sak2: [['capSak2a', 'capSak2aSub', 0, 0.324], ['capSak2b', 'capSak2bSub', 0.324, 0.664], ['capSak2c', 'capSak2cSub', 0.664, 1]],
-    lc2sak3: [['capSak3a', 'capSak3aSub', 0, 0.317], ['capSak3b', 'capSak3bSub', 0.317, 0.653], ['capSak3c', 'capSak3cSub', 0.653, 1]]
+    lc2om: [['capOm', 'capOmSub', 0, 0.32], ['capOm', 'capOmSub', 0.32, 0.673], ['capOm', 'capOmSub', 0.673, 1]]
   };
   function chantCaps(name) {
     const L = SECS[name] || 10, W = DATA.words;
@@ -2315,31 +2305,36 @@
       cast.mallB = mkPerson('sitangry', { parent: worldS, x: 4.0, z: 6.9, ry: -Math.PI / 2, height: 1.7, anims: 'fatherwalk', sizeTake: 'Walking', posture: 'stand', stand: 'Walking', look: 0, noShadow: true, hidden: true });
       /* (v25.5, Chad: "when the female customer asks a question, there is no female customer in that cut scene, can you add
          one?" ... "when customer asks about the amulet, there is no customer, add the customer") THE WOMAN AT HIS COUNTER,
-         in the opening film and in ending D. A STAND-IN, declared (DATA.reuse), until Chad's model for her lands
-         (docs/E4-MODELS.md lists it as NEEDED). Only the films place her (b_build4: openFrame, endD).
-         (11 Nov 2026, Chad, of the Yin shop's keeper who wore the part first: "Dont use the yin amulet shoplady. Use
-         another women model.") The auntie of episode 1 chapter 3's paper table: a neighbourhood auntie in a floral
-         blouse and her own sandals, as a woman who asks a shop "from which temple ah?" is. Her standing take is her
-         own (Stand_and_Chat: arms down, her weight shifting, no gesture to speak of), her talk is her own at a third
-         (Talk_Passionately opens both arms wide at full weight: photographed), and her walk was made for her as the
-         mall's two passers-by got theirs (the admin tee's Walking retargeted onto her rig in world space, the clip
-         alone: `grannywalk`, masters/v25.5/make.sh), with her arms brought in: the take as it is holds both arms out
-         and swings a hand to the waist, a young man's march on an auntie (seen in the film, then photographed large
-         from the front, the side and behind at four moments of the stride) */
-      cast.woman = mkPerson('granny', { parent: worldS, x: -0.65, z: -0.92, ry: Math.PI, height: 1.55, anims: 'grannywalk', sizeTake: 'Stand_and_Chat',
-        posture: 'stand', stand: 'Stand_and_Chat', walk: 'Walking', talk: 'Talk_Passionately', talkWeight: 0.3, look: 0, noShadow: true, hidden: true,
+         in the opening film and in ending D. Only the films place her (b_build4: openFrame, endD).
+         WHO PLAYS HER, the third and the last: the Yin shop's keeper first (Chad, 11 Nov 2026: "Dont use the yin amulet
+         shoplady. Use another women model."), then episode 1's auntie ("Dont use this auntie as she has been used many
+         times. Use the thai green shoplady that has never been shown to the player before"). She is CHAD'S OWN MODEL,
+         the woman in the green blouse and the apron (`e4stall`, chapter 1's woman at the roadside stall: declared,
+         DATA.reuseInEpisode), on her own takes, nothing borrowed: she stands in her own Idle_7 and walks her own
+         Walking. She has no talking take.
+         HER STANDING TAKE IS THE STILL ONE, BY MEASURE. The first build with her stood her in Listening_Gesture, picked
+         from still pictures (upright, her arms by her sides). Measured on her body over its 9.3 s: her head travels
+         23 cm from side to side and 17 cm front to back, at 14 cm a second and up to 37; and the films' look at her
+         FOLLOWS HER HEAD (faceOf), so on a phone the whole picture behind her swung a third of the screen's width, back
+         and forth, for as long as she stood there: a camera that wobbles, mine, found when ending D's last shot was
+         photographed (her face sliding in and out of the frame's edge). Idle_7: her head travels 2 cm and 4 cm, at
+         1.5 cm a second (4 at most). Its looking about is under the films' own look at the piece and at him (pLook),
+         which leads her head whenever she is seen */
+      cast.woman = mkPerson('e4stall', { parent: worldS, x: -0.65, z: -0.92, ry: Math.PI, height: 1.58, sizeTake: 'Idle_7',
+        posture: 'stand', stand: 'Idle_7', walk: 'Walking', look: 0, noMip: true, noShadow: true, hidden: true,
         then: centreStand });
     }
     /* (v25.5: the shoes drawn onto the Yin shop's keeper for this part, she being barefoot in her own house, went with
-       her on 11 Nov; the auntie wears her own sandals)
-       HER STANDING TAKE, BROUGHT ONTO HER MARK. Stand_and_Chat holds her hips half a metre off her own origin (measured
-       in the film: her group at -0.65, -0.92, her hips at -1.01, -0.54), so she stood away from the counter and the
-       shot that looks at her face looked across the shop; and her walk, made for her, is on the origin, so a body
-       centred by its `centre` option (v24.5, for a figure who never walks) would have slid that half metre as she
-       turned to go. The take's own Hips track is moved instead: its mean place brought over her group's middle, flat
-       along the floor, in the track's own numbers (through the hips' parent, whatever turn or scale her armature
-       holds), on the copy mkPerson's lower layer plays (lowerOnly clones the clip: her file and the shared clip are
-       untouched). Standing and walking then share one place */
+       her on 11 Nov; the woman in green wears her own)
+       A STANDING TAKE, BROUGHT ONTO ITS MARK. A library's standing take may hold the hips off the model's own origin:
+       episode 1's auntie, who wore this part for a day, stood half a metre off hers in Stand_and_Chat (measured in the
+       film: her group at -0.65, -0.92, her hips at -1.01, -0.54), so she stood away from the counter and the shot
+       that looks at her face looked across the shop; and a walk is on the origin, so a body centred by mkPerson's
+       `centre` option (v24.5, for a figure who never walks) would slide by the offset as she turns to go. The take's
+       own Hips track is moved instead: its mean place brought over the group's middle, flat along the floor, in the
+       track's own numbers (through the hips' parent, whatever turn or scale the armature holds), on the copy
+       mkPerson's lower layer plays (lowerOnly clones the clip: the file and the shared clip are untouched). Standing
+       and walking then share one place, whoever wears the part */
     const _csA = new THREE.Vector3(), _csB = new THREE.Vector3(), _csM = new THREE.Matrix4();
     function centreStand(P) {
       const a = P.L && P.L.standLo, tr = a && a.getClip().tracks.find(q => /Hips(_\d+)?\.position$/.test(q.name));
@@ -2898,7 +2893,12 @@
         if (!play.wallet && play.searched.size >= 3) wp = { x: (FRIDGE.x0 + FRIDGE.x1) / 2, y: 1.0, z: FRIDGE.z - 0.1 }; }
       else if (p === 'night') {
         if (!play.shapeSeen) { o = W.objClose; wp = { x: 1.0, y: 1.1, z: SHOP.z1 - 0.15 }; }   // the shutter's pull: the way to it passes the stand
-        else if (!play.revealed) o = W.bannerShape;
+        /* (v25.5, Chad: "something tall standing by the door, the objective marker should be on the flowers but is
+           misplaced at the other side") THE MARK IS ON THE SHAPE: v25.0 took the order's mark away when the banner
+           came, and the only mark left in the dark was the light switch's own, on the wall across the door from the
+           stand: it read as the order's, pointing away from what the order is about. The order's mark now stands on
+           the shape itself until he has begun to find out what it is (the switch pressed, held still, or walked up to) */
+        else if (!play.revealed) { o = W.bannerShape; if (!play.busy) wp = STAND_HEAD; }   // (where 'Stand still and watch' is aimed and tapped)
         else if (play.noteOn) { o = W.objCall; wp = { x: NOTE.x, y: COUNTER.h + 0.25, z: NOTE.z }; }
       }
       else if (p === 'clearing') {
@@ -3135,6 +3135,7 @@
     function reveal(how) {
       if (play.revealed || play.busy) return false;
       const run = play.run; play.busy = true; play.how = how;
+      if (kit) kit.waypoint(null);                                         // (v25.5) the shape's mark has done its work
       if (how === 'light') { if (worldSfx) { worldSfx('x2switch', 0.7); worldSfx('x2ledhum', 0.35); }
         shopCtl.ceiling(1, 0.25); shopCtl.lights(1, 0.4); look('LIT', 0.35); }
       props.sway = 0;
@@ -3150,6 +3151,7 @@
     function watch() {
       if (play.revealed || play.busy) return false;
       const run = play.run; play.busy = true;
+      if (kit) kit.waypoint(null);                                         // (v25.5) nothing drawn over what he watches
       if (kit) { kit.root(true); if (kit.chill) kit.chill(FOG.chill * 0.6, { secs: 3.2, tint: 'grey' }); }
       /* (v25.1 F10) the press has its sound: his breath, slowed, as he holds still (four seconds of the beds alone before) */
       if (worldSfx) worldSfx('x2breathslow', 0.4);
@@ -3161,7 +3163,9 @@
     }
     function afterReveal(resumed) {
       const run = play.run;
-      if (!resumed) { line('q2note'); queueFn(() => { if (!live(run)) return; play.noteOn = true; objectiveFor('night', { complete: false }); }); }
+      /* (v25.5, Chad: "the voiceline 'call pong' comes too fast after the previous voiceline, have a 1 second delay before
+         'call pong' plays") a second of quiet after "...I never took them away." (a line's own 0.25 s and this) */
+      if (!resumed) { queueGap(0.75); line('q2note'); queueFn(() => { if (!live(run)) return; play.noteOn = true; objectiveFor('night', { complete: false }); }); }
       else { play.noteOn = true; objectiveFor('night', { complete: false }); }
     }
     /* THE CALL (§4.1 P3): a film from play; then the visit (a film) the next evening, and the clearing in play */
@@ -3675,7 +3679,7 @@
     }
     /* who is speaking a line of the film's at t: his talking take, read off the film's own cues (a chant is not talk) */
     const SPEAKS = { pg: 'pong', lc: 'lersi', cu: 'woman' };   // (v25.5: 'cu' is the customers'; the man of ending A is only heard, and nobody stands for him)
-    const CHANTS = new Set(['lc2namo', 'lc2sak1', 'lc2sak2', 'lc2sak3']);
+    const CHANTS = new Set(['lc2om']);
     function speakerNow(who) {
       const P = cast[who]; if (!P || !P.ready) return null;
       let vis = P.group.visible; for (let q = P.group.parent; vis && q && q !== world; q = q.parent) vis = q.visible;
@@ -3883,21 +3887,41 @@
       let psi = Math.atan2(-dx, -dz), th = Math.atan2(dy, Math.hypot(dx, dz)), fov = fl;
       const pts = (must || []).filter(Boolean);
       if (isNarrow() && pts.length) {
-        const all = pts.concat([at]);
-        for (let it = 0; it < 24; it++) {
-          /* each point's bearing and height from the look, in angles; the turn that centres their spread where it overflows */
-          let a0 = Infinity, a1 = -Infinity, b0 = Infinity, b1 = -Infinity;
-          for (const P of all) { const q = fitProject(eye, psi, th, fov, P), ax = Math.atan2(q[2], q[4]), ay = Math.atan2(q[3], Math.hypot(q[2], q[4]));
-            a0 = Math.min(a0, ax); a1 = Math.max(a1, ax); b0 = Math.min(b0, ay); b1 = Math.max(b1, ay); }
-          const tv = Math.tan(fov * Math.PI / 360), AX = Math.atan(FIT.x * tv * camera.aspect), AY = Math.atan(FIT.y * tv);
-          const sx = a1 - a0 <= 2 * AX ? Math.min(Math.max(0, a1 - AX), a0 + AX) : (a0 + a1) / 2;
-          const sy = b1 - b0 <= 2 * AY ? Math.min(Math.max(0, b1 - AY), b0 + AY) : (b0 + b1) / 2;
-          psi -= sx; th += sy;
-          let out = false;
-          for (const P of all) { const q = fitProject(eye, psi, th, fov, P); if (Math.abs(q[0]) > FIT.x + 1e-3 || Math.abs(q[1]) > FIT.y + 1e-3) { out = true; break; } }
-          if (!out || fov >= FIT.max) break;
-          fov = Math.min(FIT.max, fov + 2);
+        const all = pts.concat([at]), psi0 = psi, th0 = th;
+        /* (v25.5, Chad: "at the final last part when camera zooms into the call pong note, the camera bounces several
+           times") THE LENS IS SOLVED, NOT STEPPED. v25.2 widened it two degrees at a time until the points fitted, one
+           turn of the aim to each step: as a shot pushed in, the lens it was asked for narrowed smoothly and the lens it
+           was given jumped back out by a step each time the points stopped fitting (measured on the note's push at a
+           phone's size: twelve jumps of about 1.5 degrees in three seconds). Now, for one lens, the aim is turned until
+           it settles (`aimFor`), and the lens is the narrowest that then holds every point, found by halving between
+           the lens asked for and FIT.max: a smooth function of the eye, the aim and the lens asked for, so a push is
+           one move. Where the asked lens already holds them, it is the asked lens exactly */
+        const aimFor = (fv) => {
+          let p = psi0, h = th0;
+          const tv = Math.tan(fv * Math.PI / 360), AX = Math.atan(FIT.x * tv * camera.aspect), AY = Math.atan(FIT.y * tv);
+          for (let it = 0; it < 40; it++) {
+            /* each point's bearing and height from the look, in angles; the turn that centres their spread where it overflows */
+            let a0 = Infinity, a1 = -Infinity, b0 = Infinity, b1 = -Infinity;
+            for (const P of all) { const q = fitProject(eye, p, h, fv, P), ax = Math.atan2(q[2], q[4]), ay = Math.atan2(q[3], Math.hypot(q[2], q[4]));
+              a0 = Math.min(a0, ax); a1 = Math.max(a1, ax); b0 = Math.min(b0, ay); b1 = Math.max(b1, ay); }
+            const sx = a1 - a0 <= 2 * AX ? Math.min(Math.max(0, a1 - AX), a0 + AX) : (a0 + a1) / 2;
+            const sy = b1 - b0 <= 2 * AY ? Math.min(Math.max(0, b1 - AY), b0 + AY) : (b0 + b1) / 2;
+            p -= sx; h += sy;
+            if (Math.abs(sx) + Math.abs(sy) < 1e-6) break;
+          }
+          let over = 0;                                                  // how far the worst point stands outside the safe part
+          for (const P of all) { const q = fitProject(eye, p, h, fv, P); over = Math.max(over, Math.abs(q[0]) - FIT.x, Math.abs(q[1]) - FIT.y); }
+          return { p, h, out: over > 1e-3 };
+        };
+        let A = aimFor(fov);
+        if (A.out && fov < FIT.max) {
+          const top = aimFor(FIT.max);
+          if (top.out) { A = top; fov = FIT.max; }
+          else { let lo = fov, hi = FIT.max; A = top;
+            for (let it = 0; it < 22; it++) { const mid = (lo + hi) / 2, M = aimFor(mid); if (M.out) lo = mid; else { hi = mid; A = M; } }
+            fov = hi; }
         }
+        psi = A.p; th = A.h;
       }
       FL.must = pts.map(P => { const q = fitProject(eye, psi, th, fov, P); return [+q[0].toFixed(3), +q[1].toFixed(3)]; });
       const cp = Math.cos(th);
@@ -4081,7 +4105,7 @@
       geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N * 3), 3)); geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(N * 3), 3));
       const pm = new THREE.PointsMaterial({ map: tDot, size: 0.05, sizeAttenuation: true, transparent: true, depthWrite: false, fog: false, blending: THREE.AdditiveBlending, vertexColors: true }); mats.push(pm);
       const pts = new THREE.Points(geo, pm); pts.frustumCulled = false; pts.renderOrder = 4; pts.userData.dyn = true; g.add(pts);
-      return { g, shade, hue, rays, glow, pool, rings, pts, seed, tm: new THREE.Color() };
+      return { g, shade, hue, rays, glow, pool, rings, pts, seed, tm: new THREE.Color(), tDot, tRing };
     })();
     function auraAt(kGold, kWhite, t) {
       const A = aura, k = Math.max(kGold, kWhite);
@@ -4112,6 +4136,111 @@
        Chad's "more subtle"; the gold as it was photographed, kept for Grandmaster Pho */
     const AURA_K = { gold: { shade: 0.66, hue: 0.78, glow: 0.55, rays: 0.5, pool: 0.5, ring: 0.26, mote: 1 }, white: { shade: 0.34, hue: 0.3, glow: 0.3, rays: 0.2, pool: 0.2, ring: 0.2, mote: 0.55 } };
 
+    /* (v25.5, 11 Nov, Chad: "He chants it 3 times only, show the white energy gathering as he chants it, and then it flies
+       to the player and creates a clearing effect and the whole screen flashes and fades white quickly for a moment,
+       before being fully cleared") THE POWER, GATHERED AND SENT. Painted light (no lamp, v15.1), white only (gold is
+       Grandmaster Pho's), every value a function of the clearing's clock (powerAt), built hidden here so the curtain
+       warms it (v14.15):
+         the light at his joined hands: a small hard core in a soft halo, a step brighter and larger with each saying
+           of the mantra (it does not swell evenly: it comes with the words, and holds through each breath);
+         the gathering itself: motes drawn in to his hands from round the room, along curved ways, more of them with
+           each saying; and a ring going out from his hands as each saying ends;
+         the sending: the light leaves his hands for the lens, slowly and then fast, growing as it comes;
+         the white: the film's own fade, in white (the engine's forty-third seam, v25.5: `fade(.., '#ffffff')` in
+           clearFilm). A white drawn in the room was tried first and photographed: the game's vignette lies over the
+           picture, so it came out an oval with grey sides, and his own joined hands stood on top of it. The fade lies
+           over the picture, the hands' pass and the vignette alike;
+         the clearing: a ring across the floor from where he kneels, out through the shop, and the last of the light
+           rising and going out round the room, under the white as it thins. */
+    const POWER = { motes: 96, drift: 54, core: 0xffffff, halo: 0xdfe8ff, mote: 0xeef3ff };
+    const power = (() => {
+      const g = new THREE.Group(); g.visible = false; g.userData.dyn = true; worldS.add(g);
+      /* (the light's three sprites are drawn over whatever stands at their depth: a sprite is a flat card, and his bowed
+         face came through the halo's card along a hard curved edge, a pale veil over his chin and none on his brow: by
+         photograph) */
+      const sprite = (map, blending, order) => {
+        const m = new THREE.SpriteMaterial({ map, transparent: true, opacity: 0, depthWrite: false, depthTest: false, fog: false, blending }); mats.push(m);
+        const s = new THREE.Sprite(m); s.renderOrder = order; s.userData.dyn = true; s.frustumCulled = false; g.add(s); return s;
+      };
+      const halo = sprite(aura.tDot, THREE.AdditiveBlending, 6), core = sprite(aura.tDot, THREE.AdditiveBlending, 7), pulse = sprite(aura.tRing, THREE.AdditiveBlending, 6);
+      halo.material.color.setHex(POWER.halo); core.material.color.setHex(POWER.core); pulse.material.color.setHex(POWER.halo);
+      const sweep = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), B({ map: aura.tRing, transparent: true, opacity: 0, depthWrite: false, fog: false, blending: THREE.AdditiveBlending, color: POWER.halo }));
+      sweep.rotation.x = -Math.PI / 2; sweep.position.set(CL.x, 0.012, CL.z); sweep.renderOrder = 2; sweep.userData.dyn = true; g.add(sweep);
+      const points = (n, size, order) => {
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n * 3), 3)); geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(n * 3), 3));
+        const pm = new THREE.PointsMaterial({ map: aura.tDot, size, sizeAttenuation: true, transparent: true, depthWrite: false, fog: false, blending: THREE.AdditiveBlending, vertexColors: true }); mats.push(pm);
+        const p = new THREE.Points(geo, pm); p.frustumCulled = false; p.renderOrder = order; p.userData.dyn = true; g.add(p); return p;
+      };
+      const motes = points(POWER.motes, 0.06, 5), drift = points(POWER.drift, 0.055, 5);
+      const r = rng(4417), mseed = [], dseed = [];
+      /* a mote's way in: from a point of a shell round his hands (the room's upper half and its sides, never from under the
+         floor or from behind the lens), turning a little round his hands as it comes */
+      for (let i = 0; i < POWER.motes; i++) mseed.push({ az: r() * 6.283, el: -0.15 + r() * 1.25, R: 0.75 + r() * 1.0, T: 1.25 + r() * 1.1, ph: r(), turn: (r() - 0.5) * 2.4, rank: r(), fl: r() * 40 });
+      for (let i = 0; i < POWER.drift; i++) dseed.push({ a: r() * 6.283, rad: 0.3 + r() * 2.1, y: 0.15 + r() * 1.3, wait: r() * 0.9, life: 1.3 + r() * 1.5, up: 0.1 + r() * 0.22, out: 0.1 + r() * 0.4, fl: r() * 40 });
+      return { g, halo, core, pulse, sweep, motes, drift, mseed, dseed, tm: new THREE.Color(POWER.mote), at: new THREE.Vector3(), H: new THREE.Vector3(), E: new THREE.Vector3(), d: new THREE.Vector3() };
+    })();
+    /* how far the light has gathered at a moment (0..1): a third with each saying, held through each breath */
+    function gathered(t) { const K = CLEARF; let s = 0; for (const [a, b] of OM_REPS) s += ezk(t, K.om + a, K.om + b); return s / OM_REPS.length; }
+    const _pwA = new THREE.Vector3(), _pwB = new THREE.Vector3();
+    /* `t` on the clearing's clock, `eye` this frame's lens (the light is sent to it); null puts it all away */
+    function powerAt(t, eye) {
+      const P = power, K = CLEARF;
+      if (t == null || t < K.om - 0.1 || t > K.clear + 2.4) { P.g.visible = false; return; }
+      P.g.visible = true;
+      /* where his joined palms are, and the lens */
+      const L = cast.lersi, W = L && L.ready && L.waiHand;
+      if (W && W.Left && W.Right) { handPoint(W.Left, W.Left.palm[0], W.Left.palm[1], _pwA); handPoint(W.Right, W.Right.palm[0], W.Right.palm[1], _pwB); P.H.addVectors(_pwA, _pwB).multiplyScalar(0.5); }
+      else P.H.set(LC.x, 0.6, LC.z + 0.24);
+      P.E.set(eye[0], eye[1], eye[2]); P.d.subVectors(P.E, P.H).normalize();
+      P.H.addScaledVector(P.d, 0.07).y += 0.035;                     // before his fingers, a little over their roots: the light is seen, not hidden in his hands
+      const gk = gathered(t), u = c01((t - K.fly) / (K.flash - K.fly)), fl = Math.pow(u, 2.3), sent = t >= K.flash;
+      const sh = 1 + 0.07 * Math.sin(t * 7.3) + 0.04 * Math.sin(t * 13.1), br = 0.9 + 0.1 * Math.sin(t * 2 * Math.PI / 2.9);
+      /* the light: at his hands while it gathers; on its way to the lens (to a hand's breadth before the near plane) */
+      P.at.copy(P.H).lerp(_pwA.copy(P.E).addScaledVector(P.d, -0.24), fl); P.at.y += 0.05 * Math.sin(Math.PI * u) * (1 - u);
+      const on = sent ? 0 : 1;
+      P.core.position.copy(P.at); P.halo.position.copy(P.at);
+      const cs = (0.05 + 0.19 * gk) * sh * (1 + 0.5 * u), hs = (0.3 + 0.85 * gk) * br * (1 + 0.9 * u);
+      P.core.scale.set(cs, cs, 1); P.halo.scale.set(hs, hs, 1);
+      P.core.material.opacity = on * Math.min(1, 0.25 + 0.95 * gk); P.halo.material.opacity = on * (0.16 + 0.56 * gk) * br;
+      /* a ring from his hands as each saying ends; and, as the white thins, one ring out from where the light struck
+         him to past the frame's edges: the clearing, seen going through the room */
+      let pv = -1; for (const [, b] of OM_REPS) { const v = (t - (K.om + b - 0.1)) / 1.0; if (v >= 0 && v <= 1) pv = v; }
+      /* (it crosses the frame while the white is thinning, not under it at its full: from the middle to past a phone's
+         edges and a desktop's in a second and a half, fast and then slower) */
+      const wv = (t - (K.flash + 0.55)) / 1.5;
+      if (wv >= 0 && wv <= 1) {
+        P.pulse.position.copy(P.E).addScaledVector(P.d, -0.7); const ws = 0.08 + 1.2 * (1 - (1 - wv) * (1 - wv)); P.pulse.scale.set(ws, ws, 1);
+        P.pulse.material.opacity = 0.55 * Math.sin(Math.PI * Math.min(1, wv * 1.15)) * (1 - 0.4 * wv);
+      } else {
+        P.pulse.position.copy(P.H); const ps = 0.16 + 1.25 * (pv < 0 ? 0 : ez5(pv)); P.pulse.scale.set(ps, ps, 1);
+        P.pulse.material.opacity = pv < 0 ? 0 : 0.5 * Math.sin(Math.PI * pv) * (1 - 0.45 * pv);
+      }
+      /* the motes drawn in: a mote's whole way lies inside the gathering, and there are more of them as it builds */
+      { const A = P.motes.geometry.attributes.position, C = P.motes.geometry.attributes.color, t0 = K.om + 0.15, t1 = K.fly + 0.15;
+        P.mseed.forEach((s, i) => {
+          const q = (t - t0) / s.T + s.ph, n = Math.floor(q), w = q - n, born = t0 + (n - s.ph) * s.T;
+          let al = 0;
+          if (born >= t0 - 0.02 && born + s.T <= t1 && s.rank <= 0.3 + 0.7 * gathered(born + s.T * 0.6)) {
+            const k = Math.pow(1 - w, 1.7), az = s.az + s.turn * w, ce = Math.cos(s.el), rr = s.R * k;
+            /* (never between his hands and the lens in the last of its way: it would cross his face) */
+            A.setXYZ(i, P.H.x + Math.cos(az) * ce * rr, Math.max(0.05, P.H.y + Math.sin(s.el) * rr), P.H.z + Math.sin(az) * ce * rr * 0.8 - 0.06 * (1 - k));
+            al = Math.pow(Math.sin(Math.PI * Math.min(1, w * 1.12)), 0.8) * (0.7 + 0.3 * Math.sin(t * 5.3 + s.fl)) * (0.75 + 0.25 * gk);
+          } else A.setXYZ(i, P.H.x, P.H.y, P.H.z);
+          C.setXYZ(i, P.tm.r * al, P.tm.g * al, P.tm.b * al); });
+        A.needsUpdate = true; C.needsUpdate = true; }
+      /* the clearing: the ring across the floor from where he kneels, and the last of the light rising round the room */
+      { const v = (t - (K.flash + 0.1)) / 1.7, ok = v >= 0 && v <= 1, d = 0.5 + 9 * (ok ? ez5(v) : 0);
+        P.sweep.scale.set(d, d, 1); P.sweep.material.opacity = ok ? 0.5 * Math.sin(Math.PI * v) * (1 - 0.5 * v) : 0;
+        const A = P.drift.geometry.attributes.position, C = P.drift.geometry.attributes.color;
+        P.dseed.forEach((s, i) => { const w = (t - (K.flash + 0.25) - s.wait) / s.life; let al = 0;
+          if (w >= 0 && w <= 1) { const rr = s.rad + s.out * w; A.setXYZ(i, CL.x + Math.cos(s.a) * rr, s.y + s.up * w * s.life, CL.z - 0.6 + Math.sin(s.a) * rr * 0.8);
+            al = Math.pow(Math.sin(Math.PI * w), 1.2) * (0.6 + 0.4 * Math.sin(t * 4.1 + s.fl)) * 0.85; }
+          else A.setXYZ(i, CL.x, 0.5, CL.z - 0.6);
+          C.setXYZ(i, P.tm.r * al, P.tm.g * al, P.tm.b * al); });
+        A.needsUpdate = true; C.needsUpdate = true; }
+    }
+
     /* ================================================================ THE FILMS' PICTURES (§4), each a pure function of
        its own clock: every shot his eyes (he is never seen, Chad 9 Nov), named by what it must hold */
 
@@ -4122,6 +4251,7 @@
        opening film she asks, waits, gives up and goes (W_OUT: she turns where she stands, then walks out and away along
        the corridor); in ending D she is back, at the piece that lies on the glass (D_WOMAN) */
     const O_WOMAN = { x: -0.65, z: -0.92 }, D_WOMAN = { x: -0.36, z: -0.93 };
+    const D_END = { past: 0.55 };                                      // ending D's last look on a phone: how far past her it goes (endD)
     const W_OUT = walkCurve([[O_WOMAN.x, O_WOMAN.z], [-0.45, 0.3], [0.05, 2.0], [0.5, 3.3], [2.2, 4.3], [5.6, 4.5]], 96);
     /* her turn from the counter to her way out (over `secs` from t0), then her walk at a customer's pace */
     function womanGoes(t, t0, secs = 0.9, v = 1.15) {
@@ -4187,12 +4317,27 @@
          On a phone the phone it says to use is kept in the frame beside it (fit): at the push's end a portrait frame held
          the note alone, the phone off its edge (measured, tools/probes/framecheck.mjs) */
       const note = [NOTE.x, top0 + 0.001, NOTE.z], k = smo(sgk(t, O.o4, O.black));
-      const e3 = lp3([HIS.x + 0.3, 1.5, HIS.z + 0.32], [NOTE.x - 0.02, 1.36, NOTE.z - 0.3], k);
+      const E0 = [HIS.x + 0.3, 1.5, HIS.z + 0.32], e3 = lp3(E0, [NOTE.x - 0.02, 1.36, NOTE.z - 0.3], k);
       /* the note's four corners (its words never cut: held by its middle alone it stood half off a phone's edge at the
          push's end, by photograph) and the phone's middle (masters/v25.2/fitsim.js: the note whole at 0.25-0.81 of the
          frame's half-width at the end, the phone's middle at -0.81) */
       const pb = shop.phone ? shop.phone.base : null, nc = Math.cos(NOTE.ry) * 0.038, ns = Math.sin(NOTE.ry) * 0.038;
       const must = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([a, b]) => [NOTE.x + nc * a + ns * b, top0 + 0.001, NOTE.z - ns * a + nc * b]);
+      /* (v25.5, Chad: "at the final last part when camera zooms into the call pong note, the camera bounces several
+         times") ON A PHONE THE PUSH IS A PUSH. Measured at a phone's size: to keep his phone in the picture to the
+         shot's end, the fit widened the lens the whole way in (50 to 74 degrees, in the jumps he saw), and the note it
+         was closing on got SMALLER (139 px wide down to 113) while the eye went from 0.67 m to 0.44 m of it. Now the
+         first picture is the one it always was (the note and the phone it says to use: `F0`, the fit of both from
+         where the push begins, a constant), the aim slides from there onto the note while the lens narrows as it was
+         asked to, and the push ends on the note alone, whole (its four corners held) and twice the size. A desktop's
+         frame is as it was */
+      if (isNarrow()) {
+        const F0 = fit(E0, note, 50, pb ? must.concat([[pb.x, top0 + 0.005, pb.z]]) : must);
+        const s = (top0 - E0[1]) / (F0.at[1] - E0[1]);                 // where that first look meets the glass
+        const P0 = [E0[0] + (F0.at[0] - E0[0]) * s, top0, E0[2] + (F0.at[2] - E0[2]) * s];
+        fitShot(e3, lp3(P0, note, smo(c01(k / 0.7))), lp(50, 36, k), 0, must);
+        return;
+      }
       if (pb) must.push([pb.x, top0 + 0.005, pb.z]);
       fitShot(e3, note, lp(50, 36, k), lp(42, 28, k), must);
     }
@@ -4239,7 +4384,13 @@
       /* on a wide screen the close shot holds CALL PONG, in his own hand, beside the phone that is calling him */
       if (onPh > 0 && !isNarrow()) at = aimEase(eye, at, [lp(ph[0], NOTE.x, 0.42), ph[1], lp(ph[2], NOTE.z, 0.42)], onPh);
       if (onPh > 0.5 && isNarrow()) {
-        const Fp = fit(eye, at, fl, phoneCorners()), w = smo(sgk(onPh, 0.5, 0.95));   // eased into the fit and out of it
+        /* (v25.5, Chad: "It also bounces one time when calling pong, and the camera pans into the phone") THE FIT IS OF
+           THE PHONE, not of wherever the pan has got to. v25.2 fitted the turning aim and the phone's four corners
+           together: at "trust me" his eyes are a third of the way round from his altar when the fit begins, the two
+           stood wide apart, and the lens was thrown out to hold them both and pulled back in as the pan arrived
+           (measured on a phone: 45 degrees to 70 and back to 37 in under a second). Fitted on the phone itself, the
+           lens only ever narrows onto it, and the pan is eased onto that aim */
+        const Fp = fit(eye, ph, fl, phoneCorners()), w = smo(sgk(onPh, 0.5, 0.95));   // eased into the fit and out of it
         fLens(lp(fl, Fp.fl, w)); camAt(eye, aimEase(eye, at, Fp.at, w));
         return;
       }
@@ -4370,7 +4521,17 @@
        is carried so; v25.2 pinched it between pressed hands, where it could not be seen): he raises it before his brow
        and bows his head to it, lowers it to speak of it, and bends to the clean cloth with it in both hands; the cut
        lays it there. Each change over a human time */
-    const EX_WR = [LC.x + 0.02, 0.3, LC.z + 0.4];                      // the client's wrist, met between them, under the frame's foot
+    /* (v25.5, Chad: "When lersi chin says give me your hand and asks questions, his arms clips into his robe") THE WRIST
+       IS MET OVER HIS LAP, NOT INSIDE IT. Measured on his seated body (every point of him that is not arm, in 5 cm cells):
+       the cloth over his crossed legs stands 0.36-0.40 m high from 0.15 to 0.37 m before him, and v25.0 sent his hands
+       to a point 0.30 m high and 0.40 m out: both forearms went through his lap from the elbow down (by photograph,
+       from the lens and from his side). The wrist is met 0.47 m up and 0.44 m out, past the lap's edge; he leans a
+       little further in to it, his elbows out to his sides (the pole: with a reach's own, down and back, a bent elbow
+       drops into the lap), so his forearms pass a hand's breadth over the cloth. And the picture closes on him while he
+       has it: the look lifted and the lens a little tighter, so his hands (on a wrist the film never draws) stay
+       under the frame's foot on a phone and a desktop both, as they did when the point was lower */
+    const EX_WR = [LC.x + 0.02, 0.47, LC.z + 0.44];                    // the client's wrist, met between them, under the frame's foot
+    const EXH = { lean: 0.4, up: 0.09, tight: [8, 5], pole: [0.85, -0.35, -0.2] };   // the hold: his lean in to it; the look's lift (metres at his head) and the lens's tightening (degrees: phone, desktop) while it lasts; his elbows' side
     /* (v25.5, Chad: "when the player takes down the item from the shelf, there is no need to have his hand try to take it
        down as the animation just looks awkward, just show the item being removed from the shelf and go straight to the
        next scene/frame") THE PIECE OFF ITS SHELF: his look holds on it where it stands; a blink (the film's own, a sixth
@@ -4395,11 +4556,11 @@
          hands come home and his back straightens over a second from the cut, done before he speaks */
       const two = [[tBack - 0.01, tBack, cChest], [tBack + 0.3, tBack + 1.2, C_BROW], [X.lc2e8 - 0.8, X.lc2e8, cChest],
                    [tCloth - 1.3, tCloth - 0.1, toCloth], [tCloth + 0.1, tCloth + 1.1, null]];
-      const R = handKeys(t, [[X.lc2e1 + 0.3, X.lc2e1 + 1.45, { palm: [EX_WR[0] - 0.01, EX_WR[1] + 0.035, EX_WR[2]], aim: 'down', pole: 'reach' }],
+      const R = handKeys(t, [[X.lc2e1 + 0.3, X.lc2e1 + 1.45, { palm: [EX_WR[0] - 0.01, EX_WR[1] + 0.035, EX_WR[2]], aim: 'down', pole: EXH.pole }],
                              [X.lc2e6 - 0.1, X.lc2e6 + 1.0, null]].concat(two));
-      const Lh = handKeys(t, [[X.lc2e1 + 0.45, X.lc2e1 + 1.6, { palm: [EX_WR[0] + 0.03, EX_WR[1] - 0.035, EX_WR[2] - 0.01], aim: 'under', pole: 'reach' }],
+      const Lh = handKeys(t, [[X.lc2e1 + 0.45, X.lc2e1 + 1.6, { palm: [EX_WR[0] + 0.03, EX_WR[1] - 0.035, EX_WR[2] - 0.01], aim: 'under', pole: EXH.pole }],
                               [X.lc2e6 - 0.2, X.lc2e6 + 0.85, null]].concat(two));
-      const lean = keyed(t, 0, [[X.lc2e1 + 0.2, X.lc2e1 + 1.4, 0.32], [X.lc2e6 - 0.1, X.lc2e6 + 1.0, 0],
+      const lean = keyed(t, 0, [[X.lc2e1 + 0.2, X.lc2e1 + 1.4, EXH.lean], [X.lc2e6 - 0.1, X.lc2e6 + 1.0, 0],
                                 [X.still + 0.4, X.still + 2.0, 0.08], [X.eyes - 1.2, X.eyes - 0.2, 0],
                                 [tBack + 0.4, tBack + 1.2, 0.1], [X.lc2e8 - 0.8, X.lc2e8, 0.03], [tCloth - 1.3, tCloth - 0.1, 0.4],
                                 [tCloth + 0.15, tCloth + 1.25, 0]]);
@@ -4439,7 +4600,9 @@
         /* the wrist taken (his hands out of the frame's foot) while the questions are asked (his body: examBody) */
         const down = smo(sgk(t, X.q2e3 - 0.1, X.q2e3 + 0.3)) * (1 - smo(sgk(t, X.lc2e5 - 0.3, X.lc2e5 + 0.3)));   // "...Yes." — his eyes drop
         const at = LC_HEAD(); at[1] -= 0.25 * down;
-        fLens(lp(isNarrow() ? 52 : 44, isNarrow() ? 48 : 40, smo(sgk(t, 0, X.still))));
+        const hold = smo(sgk(t, X.lc2e1 + 0.3, X.lc2e1 + 1.6)) * (1 - smo(sgk(t, X.lc2e6 - 0.2, X.lc2e6 + 1.0)));   // while he has the wrist
+        at[1] += EXH.up * hold;
+        fLens(lp(isNarrow() ? 52 : 44, isNarrow() ? 48 : 40, smo(sgk(t, 0, X.still))) - EXH.tight[isNarrow() ? 0 : 1] * hold);
         camAt(KN_EYE, at);
         return;
       }
@@ -4532,16 +4695,21 @@
       const K = CLEARF, L = cast.lersi, W = K.water, H0 = K.homage;
       if (!L || !L.ready) return;
       const lap = [CB_LAP[0], CB_LAP[1] - 0.04, CB_LAP[2]];
+      /* (v25.5, 11 Nov) the mantra is said with his hands joined before his chest, where the light gathers between his
+         palms and the kneeling eye sees it under his face (the long verses were chanted with them lower, at the foot
+         of his chest: `W_LOW`, no longer asked for here) */
       const h = handKeys(t, [[H0 + 1.3, H0 + 2.1, W_CHEST], [H0 + 2.2, H0 + 3.0, W_BROW], [H0 + 4.0, H0 + 4.8, W_CHEST],
-                             [K.sak - 0.6, K.sak + 0.8, W_LOW], [W + 0.3, W + 1.2, H_BOWL], [W + 5.0, W + 6.0, null]]);
+                             [W + 0.3, W + 1.2, H_BOWL], [W + 5.0, W + 6.0, null]]);
       const lean = keyed(t, 0, [[H0 + 2.2, H0 + 3.0, SW.lean], [H0 + 4.0, H0 + 4.8, 0.03],
                                 [W + 0.6, W + 1.9, 0.3], [W + 4.0, W + 5.2, 0]]);
       const neck = keyed(t, 0, [[H0 + 2.2, H0 + 3.0, SW.neck], [H0 + 4.0, H0 + 4.8, 0.05], [W - 0.1, W + 0.6, 0.1], [W + 1.1, W + 1.8, 0],
                                 [W + 4.2, W + 4.8, 0.1], [W + 5.2, W + 5.9, 0]]);
       lcBody({ R: h, L: h, lean, neck });
-      lcLook(t, [[W - 0.2, W + 0.5, lap], [W + 1.2, W + 1.9, 'lens'], [W + 4.1, W + 4.7, lap],
+      /* (v25.5) his head a little bowed over his hands through the mantra; up, his eyes on him, as he sends it */
+      lcLook(t, [[K.fly - 0.5, K.fly + 0.2, 'lens'], [W - 0.2, W + 0.5, lap], [W + 1.2, W + 1.9, 'lens'], [W + 4.1, W + 4.7, lap],
                  [W + 5.2, W + 5.9, 'lens']], 1.1);
-      lcBow(L, keyed(t, 0.08, [[H0 + 2.2, H0 + 3.0, SW.bow], [H0 + 4.0, H0 + 4.8, 0.1], [K.lift + 0.5, K.lift + 2.5, 0.06],
+      lcBow(L, keyed(t, 0.08, [[H0 + 2.2, H0 + 3.0, SW.bow], [H0 + 4.0, H0 + 4.8, 0.1], [K.om - 0.2, K.om + 1.0, 0.13],
+                               [K.fly - 0.5, K.fly + 0.2, 0.02],
                                [W - 0.1, W + 0.6, 0.14], [W + 1.2, W + 1.9, 0], [W + 4.1, W + 4.7, 0.12], [W + 5.2, W + 5.9, 0]]));
       L.look = 1;
     }
@@ -4549,10 +4717,13 @@
     function clearFrame(t) { clearBowl(t); clearShots(t); clearBody(t); }
     function clearShots(t) {
       const K = CLEARF;
-      /* the lift: grey to colour over the second and third verses (≈ 20 s), his eyes coming up as it goes */
-      const lift = smo(sgk(t, K.lift, K.water - 0.6));
-      fogFilm(1 - lift);
-      fLook(t < K.lift ? 'VISIT' : 'CLEAR', t < K.lift ? 0 : K.water - K.lift);
+      /* (v25.5, 11 Nov) THE CLEARING IS THE WHITE. The grey thins a little as the light gathers and is blown off as it
+         comes at him; under the white (a tenth of a second into it, the picture all white) the room becomes the room
+         cleared: its colour and its warmth back, the fog gone, the lens where the water's shot begins. v25.0 lifted
+         the grey over twenty seconds of the second and third verses */
+      const gk = gathered(t), cut = K.flash + 0.1, lift = t < cut ? 0 : 1;
+      fogFilm(lift ? 0 : (1 - 0.22 * gk) * (1 - ezk(t, K.fly + 0.45, K.flash - 0.06)));
+      fLook(lift ? 'CLEAR' : 'VISIT', 0);
       shopAt({ u: 0.42, led: lp(0.9, 1, lift), ceil: 0, night: true });
       castVis({ goldman: false, mallA: false, mallB: false, lersi: true, pong: true });
       lcSeated(); pongSeated();
@@ -4565,7 +4736,7 @@
       for (const f of props.flames) f.material.opacity = fl;
       /* (v25.5) the light round him from the chant's first words to the water given, gone as he sits back (white, and
          quiet, since 11 Nov: gold is Grandmaster Pho's) */
-      auraAt(0, ezk(t, K.namo - 0.3, K.namo + 3.0) * (1 - ezk(t, K.water + 4.3, K.water + 5.8)), t);
+      auraAt(0, ezk(t, K.om - 0.3, K.om + 3.0) * (1 - ezk(t, K.water + 4.3, K.water + 5.8)), t);
       /* his own hands: together from "Hands together", down for the water */
       const handsK = smo(sgk(t, K.lc2k0 + 0.6, K.lc2k0 + 1.4)) * (1 - smo(sgk(t, K.water - 0.6, K.water)));
       waiAt(handsK);
@@ -4583,14 +4754,25 @@
         /* (v25.0 CP7) not one still frame for forty seconds: a slow push in on the tray's candles under Namo tassa, his
            eyes drawn up to the master's joined hands as the verses begin (v25.3: the leaves are gone), up to his face as
            the grey lifts; a breath under it all */
-        const toHands = smo(sgk(t, K.sak - 1.0, K.sak + 3.0)), push = smo(sgk(t, K.homage + 1.0, K.sak)) * (1 - toHands);
-        const base = aimEase(KN_EYE, down, [LC.x, 0.5, LC.z + 0.22], toHands * 0.75);
-        /* (v25.5) and close on his face as the chant ends (W_TIGHT): the water's shot opens there */
-        fLens(lp((isNarrow() ? 54 : 46) - 8 * push - 4 * toHands * (1 - lift), isNarrow() ? W_TIGHT[0] : W_TIGHT[1], ezk(t, K.water - 1.6, K.water + 0.25)));
-        /* (v25.5) and his eyes come up to him sooner, as the chant begins: the light round him is in the picture from
-           its first words (they stayed on the tray until the grey lifted, the master at the frame's top edge or over it) */
-        const see = 0.15 + 0.4 * ezk(t, K.namo + 0.4, K.namo + 4.0);
-        camAt([KN_EYE[0], KN_EYE[1] + 0.004 * Math.sin(t * 2 * Math.PI / 4.6), KN_EYE[2]], aimEase(KN_EYE, base, LC_HEAD(), see + (1 - see) * lift));
+        /* (v25.5, 11 Nov) THE MANTRA'S SHOT: his eyes come up from the tray as the mantra begins, to the master's joined
+           hands and his face over them (the light between his palms at the picture's middle, his face over it, both
+           whole on a phone and a desktop), and the lens closes on them slowly through the three sayings; held as the
+           light comes. Under the white the lens is the cleared room's, on his face, and closes to the water's as before */
+        const eyeNow = [KN_EYE[0], KN_EYE[1] + 0.004 * Math.sin(t * 2 * Math.PI / 4.6), KN_EYE[2]];
+        const toHands = smo(sgk(t, K.om - 0.7, K.om + 1.9)), push = smo(sgk(t, K.homage + 1.0, K.om)) * (1 - toHands);
+        const face = LC_HEAD(), hands = [LC.x, face[1] - 0.2, LC.z + 0.2];
+        const closeIn = ezk(t, K.om + 1.2, K.fly);
+        let aim, fl;
+        if (!lift) {
+          aim = aimEase(KN_EYE, down, [lp(hands[0], face[0], 0.42), lp(hands[1], face[1], 0.42), lp(hands[2], face[2], 0.42)], toHands);
+          /* (a desktop's frame is short: closed in as far as a phone's, his topknot left its top as his head came up) */
+          fl = (isNarrow() ? 54 : 46) - 8 * push - (isNarrow() ? 9 : 4.5) * toHands * closeIn - 1.5 * toHands;
+        } else {
+          aim = face;
+          fl = lp(isNarrow() ? 50 : 42, isNarrow() ? W_TIGHT[0] : W_TIGHT[1], ezk(t, K.water - 1.6, K.water + 0.25));
+        }
+        fLens(fl); camAt(eyeNow, aim);
+        powerAt(t, eyeNow);
         return;
       }
       if (t < K.advice) {
@@ -4609,7 +4791,9 @@
         const tight = isNarrow() ? W_TIGHT[0] : W_TIGHT[1], wide = isNarrow() ? 54 : 46, rest = isNarrow() ? 52 : 44;
         const fl0 = lp(wide, tight, ezk(t, W - 1.6, W + 0.25));                       // (the chant's shot hands over mid-ease)
         fLens(lp(lp(fl0, wide, open), rest, ezk(t, W + CB_T.down + 0.05, K.advice - 0.05)));
-        camAt(e, aimEase(e, LC_HEAD(), [bw.x, bw.y + 0.1, bw.z], 0.75 * open));
+        const aimW = aimEase(e, LC_HEAD(), [bw.x, bw.y + 0.1, bw.z], 0.75 * open);
+        camAt(e, aimW);
+        powerAt(t, e);                                                 // (the last of the light, going out round the room)
         return;
       }
       /* "Go to a temple this week..." — his face, the colour back, warm */
@@ -4924,7 +5108,12 @@
       const dn = smo(sgk(t, T.q2D2 - 0.35, T.q2D2 + 1.0)) * (1 - smo(sgk(t, T.last - 0.3, T.last + 1.2)));
       const out = smo(sgk(t, T.last - 0.2, T.last + 3.0));
       const e = lp3(eye, [AMU_AT[0] + 0.03, 1.4, AMU_AT[2] - 0.38], dn);
-      const at = aimEase(e, aimEase(e, face, AMU_AT, dn), [0.4, 1.4, 5.2], out);
+      /* (v25.5, the woman in green) ON A PHONE HIS EYES STOP SHORT OF PASSING HER. The look up and out ends on the
+         corridor's point (D_END.past 1) on a wide screen, where she stands whole at the picture's right all the way. A
+         phone's frame is a third as wide: taken all the way, it put her head across its right edge (half a face, by
+         photograph; with the auntie before her, an arm in its corner). It stops at D_END.past of the way: the morning
+         mall across the left of the picture, his customer whole at its right, still at the piece */
+      const at = aimEase(e, aimEase(e, face, AMU_AT, dn), [0.4, 1.4, 5.2], out * (isNarrow() ? D_END.past : 1));
       /* (v25.5) a desktop's lens on the piece is 14 (21: its wide frame took in her two hands hanging at her sides,
          cut off at its edges beside the piece, by photograph; a phone's frame never reached them) */
       const fl = lp(lp(isNarrow() ? 54 : 46, isNarrow() ? 26 : 14, dn), isNarrow() ? 58 : 50, out);
@@ -4994,7 +5183,7 @@
 
     /* (v25.0 CP11) THE ROOM UNDER EACH FILM, a pure function of its clock: the mall muffled at noon in the opening, the
        shop at night under the call, the visit, the examination and the clearing (the room's sound fuller once the fog has
-       lifted, from K.lift), each ending's night and its daylight (A's "days later", D's morning: the mall heard clear),
+       lifted, from the white), each ending's night and its daylight (A's "days later", D's morning: the mall heard clear),
        C's air-con alone after the shutter comes down, and the coda's night. mixBeds eases to it. */
     function filmBedAt(key, t) {
       const B = { mall: 0, night: 0, mallclear: 0, whisper: 0 };
@@ -5007,7 +5196,7 @@
            moment it is off its shelf */
         const tTake = EXAM.fetch + EX_TAKE;
         B.whisper = WHISPER.vol * (0.36 * seg(EXAM.lc2e7 + 0.2, EXAM.lc2e7 + 1.6) + 0.56 * seg(EXAM.fetch - 1.0, EXAM.fetch + 0.5)) * (1 - seg(tTake - 0.2, tTake)); }
-      else if (key === 'clear') B.night = t < CLEARF.lift ? 0.4 : 0.5;
+      else if (key === 'clear') B.night = t < CLEARF.flash ? 0.4 : 0.5;
       else if (END[key]) {
         const T = END[key];
         if (t >= T.coda) B.night = 0.42 * (1 - seg(T.coda + CODA.black - 0.6, T.coda + CODA.end));
@@ -5045,7 +5234,7 @@
         /* (v25.5) what only some shots have is away unless this frame's shot brings it (a seek lands on the same picture):
            the woman at his counter, the piece on the glass, the master's aura, the coda's page */
         if (cast.woman && cast.woman.ready) { cast.woman.group.visible = false; cast.woman.filmWalk = 0; }
-        amuletTop.visible = false; auraAt(0, 0, t);
+        amuletTop.visible = false; auraAt(0, 0, t); powerAt(null);
         if (END[key] && t < END[key].coda) namesAt(-1);
         /* (v25.5) and his own hands are down at the laptop whatever frame came before (a seek from his wai at an
            ending's start straight into its coda left them pressed over the keys: the lab's photograph) */
@@ -5069,7 +5258,7 @@
         waiAt(0); handFree(); lcPose(null, 0);
         /* (v25.1 F4) the coda's page put away, so a replay (reset() runs this) never opens on the months-later notebook */
         namesAt(-1);
-        amuletTop.visible = false; auraAt(0, 0, 0);
+        amuletTop.visible = false; auraAt(0, 0, 0); powerAt(null);
         if (held.lc) held.lc.visible = false;
         shop.phoneOn = 0; shop.phoneSecs = null;
         if (props.bowl && props.bowl.userData.home) { props.bowl.position.copy(props.bowl.userData.home); props.bowl.rotation.x = 0; }
@@ -6146,11 +6335,10 @@
     sfx(O.cu2a1, 'cu2a1', 1);                  // "Boss, this one... from which temple ah? Who blessed it?"
     sfx(O.q2o2b, 'q2o2b', 1);                  // "Sorry... can you say again?"
     sfx(O.cu2a1b, 'cu2a1b', 1);                // "Aiyo, never mind. I come back another day."
-    /* (v25.5) her sandals: the auntie who wears the part since 11 Nov wears flat sandals, and the heels that were cued
-       here (x2heels, x2heelsin: retired) clicked under a woman who was only heard */
-    /* (a sandal's slap is short: at the heels' own peak the walk measures 7.5 dB under them by RMS, so it is cued
-       at 0.7 and 0.65 where they were 0.5 and 0.45) */
-    sfx(O.cu2a1b + SECS.cu2a1b - 0.6, 'x2sandals', 0.7);   // her sandals on the terrazzo, away
+    /* (v25.5) her shoes are v25.0's own four steps again (x2heels, x2heelsin): the woman in green wears low-heeled
+       flats, and the take measures as a soft shoe's tap, not a stiletto's click (3 % of it over 3 kHz). For the day
+       episode 1's auntie wore the part they were flat sandals (x2sandals, x2sandalsin: retired with her) */
+    sfx(O.cu2a1b + SECS.cu2a1b - 0.6, 'x2heels', 0.5);   // her shoes on the terrazzo, away
     sfx(O.q2o2, 'q2o2', 1);                    // "I could not think properly."
     sfx(O.o3 + 1.0, 'x2pat', 0.55); sfx(O.o3 + 2.1, 'x2pat', 0.5); sfx(O.o3 + 3.3, 'x2pat', 0.5);   // one pocket, the other, the back
     sfx(O.q2o3, 'q2o3', 1);                    // "I misplaced my wallet, and strangely..."
@@ -6243,19 +6431,20 @@
     step(0, () => stage.films.begin('clear', c, api));
     tr(0, K.end, (k, t) => stage.films.frame('clear', t, api), rawK);
     sfx(K.lc2k0, 'lc2k0', 1);                  // "Hands together. Close your eyes."
-    /* his eyes "closed": the picture dimmed (never black), and opened again as the fog lifts */
-    fade(K.lc2k0 + 1.6, K.homage + 0.6, 0, 0.42); fade(K.lift, K.water - 0.6, 0.42, 0);
+    /* his eyes "closed": the picture dimmed (never black). (v25.5) It lightens as the light gathers (seen through his
+       lids, and brighter with each saying), and the dim is gone as the light reaches him: the white is white */
+    fade(K.lc2k0 + 1.6, K.homage + 0.6, 0, 0.42); fade(K.om + 0.2, K.om + 6.4, 0.42, 0.14); fade(K.fly - 0.1, K.flash - 0.25, 0.14, 0);
+    /* THE WHITE (Chad: "the whole screen flashes and fades white quickly for a moment, before being fully cleared"): the
+       film's fade, in white (the engine's forty-third seam): up in a quarter of a second as the light reaches him, held
+       less than half a second (the room becomes the room cleared under it: clearShots), gone by `clear` */
+    fade(K.flash - 0.22, K.flash + 0.04, 0, 1, '#ffffff'); fade(K.flash + 0.42, K.clear, 1, 0, '#ffffff');
     sfx(K.homage + 0.4, 'x2candle', 0.5);      // the candles and the incense lit for his teachers
-    sfx(K.namo - 0.6, 'x2clearmus', 0.4);      // the clearing's music, under the chant and never over it
-    sfx(K.namo, 'lc2namo', 1);                 // Namo tassa bhagavato arahato sammā-sambuddhassa (×3)
-    step(K.namo, () => { if (K2 && K2.captions) K2.captions(chantCaps('lc2namo')); });
-    sfx(K.sak, 'lc2sak1', 1);                  // Sakkatvā buddha-ratanaṁ...
-    step(K.sak, () => { if (K2 && K2.captions) K2.captions(chantCaps('lc2sak1')); });
-    sfx(K.lc2sak2, 'lc2sak2', 1);              // Sakkatvā dhamma-ratanaṁ...
-    step(K.lc2sak2, () => { if (K2 && K2.captions) K2.captions(chantCaps('lc2sak2')); });
-    sfx(K.lc2sak3, 'lc2sak3', 1);              // Sakkatvā saṅgha-ratanaṁ...
-    step(K.lc2sak3, () => { if (K2 && K2.captions) K2.captions(chantCaps('lc2sak3')); });
-    sfx(K.lift + 0.2, 'x2lift', 0.45);         // the room's sound coming back clear as the grey goes (a soft opening of the air)
+    sfx(K.om - 0.6, 'x2clearmus', 0.4);        // the clearing's music, under the mantra and never over it: its second bell is on the white (masters/v25.5/make.sh)
+    sfx(K.om - 0.6, 'x2gather', 0.32);         // the light gathering: a rise that goes all the way to the sending, under his voice
+    sfx(K.om, 'lc2om', 1);                     // Om Namah Shivaya (×3)
+    step(K.om, () => { if (K2 && K2.captions) K2.captions(chantCaps('lc2om')); });
+    sfx(K.flash - 0.86, 'x2release', 0.62);    // the light sent: its rush in, and its burst (0.86 s into the file) on the white
+    sfx(K.flash + 0.3, 'x2lift', 0.45);        // the room's sound coming back clear as the white goes (a soft opening of the air)
     sfx(K.lc2drink, 'lc2drink', 1);            // "Drink. A little."
     sfx(K.water + 2.1, 'x2sip', 0.5);         // (v25.2) its sip (0.5 s in) as the bowl he holds out tips to him
     sfx(K.lc2k2, 'lc2k2', 1);                  // "Go to a temple this week. Make merit. If the fog comes back, doctor first, then me."
@@ -6368,7 +6557,7 @@
       sfx(T.morning + 0.1, 'x2endD', 0.6);                           // the ending's music: bright, unhurried
       sfx(T.morning + 0.2, 'x2shutterup', 0.7);                      // his shutter going up on a clear morning
       sfx(T.morning + 3.2, 'x2pat', 0.5); sfx(T.morning + 3.75, 'x2wallet', 0.5);  // his pocket — and the wallet in it
-      sfx(T.cu2a2 - 1.6, 'x2sandalsin', 0.65);                       // her sandals coming back up to his counter
+      sfx(T.cu2a2 - 1.6, 'x2heelsin', 0.45);                         // her shoes coming back up to his counter
       sfx(T.cu2a2, 'cu2a2', 1);                                      // "Boss, this one... from which temple ah?"
       sfx(T.q2D2, 'q2D2', 1);                                        // "This one? A temple in Ayutthaya. The card is inside, let me show you."
       /* (v25.5) the cased piece lies on the glass and is only looked at: the sound of it lifted from the tray is out (x2case, retired) */

@@ -528,6 +528,16 @@
     fade(3.4, 3.8, 0, 0);
   };
 
+  /* v25.5 · the forty-third seam: a film's fade in a COLOUR (a white flash over the whole screen), up and down again,
+     and a plain fade after it: the black must be the black again */
+  const fiFlash = (c, s, api) => {
+    const { fade, step } = api;
+    fade(0.3, 0.7, 0, 1, '#ffffff');
+    fade(1.5, 2.1, 1, 0, '#ffffff');
+    fade(2.5, 3.3, 0, 0.5);
+    step(3.5, () => {});
+  };
+
   /* v23.0 · S39: a film that PAUSES on a surface event (api.eventWait) — the climb back runs inside a film and the
      film goes on, and hands back to play, once it resolves */
   const fiClimb = (c, s, api) => {
@@ -541,7 +551,7 @@
 
   (window.__CHAPTERS__ = window.__CHAPTERS__ || {}).chtest = Object.assign(DATA, {
     build,
-    films: { probe: fiProbe, climb: fiClimb, phone: fiPhone },
+    films: { probe: fiProbe, climb: fiClimb, phone: fiPhone, flash: fiFlash },
     scenes: [scTake, scBreak, scLook, scLeave]
   });
 })();

@@ -49,7 +49,7 @@
     }
     /* who is speaking a line of the film's at t: his talking take, read off the film's own cues (a chant is not talk) */
     const SPEAKS = { pg: 'pong', lc: 'lersi', cu: 'woman' };   // (v25.5: 'cu' is the customers'; the man of ending A is only heard, and nobody stands for him)
-    const CHANTS = new Set(['lc2namo', 'lc2sak1', 'lc2sak2', 'lc2sak3']);
+    const CHANTS = new Set(['lc2om']);
     function speakerNow(who) {
       const P = cast[who]; if (!P || !P.ready) return null;
       let vis = P.group.visible; for (let q = P.group.parent; vis && q && q !== world; q = q.parent) vis = q.visible;
@@ -187,21 +187,41 @@
       let psi = Math.atan2(-dx, -dz), th = Math.atan2(dy, Math.hypot(dx, dz)), fov = fl;
       const pts = (must || []).filter(Boolean);
       if (isNarrow() && pts.length) {
-        const all = pts.concat([at]);
-        for (let it = 0; it < 24; it++) {
-          /* each point's bearing and height from the look, in angles; the turn that centres their spread where it overflows */
-          let a0 = Infinity, a1 = -Infinity, b0 = Infinity, b1 = -Infinity;
-          for (const P of all) { const q = fitProject(eye, psi, th, fov, P), ax = Math.atan2(q[2], q[4]), ay = Math.atan2(q[3], Math.hypot(q[2], q[4]));
-            a0 = Math.min(a0, ax); a1 = Math.max(a1, ax); b0 = Math.min(b0, ay); b1 = Math.max(b1, ay); }
-          const tv = Math.tan(fov * Math.PI / 360), AX = Math.atan(FIT.x * tv * camera.aspect), AY = Math.atan(FIT.y * tv);
-          const sx = a1 - a0 <= 2 * AX ? Math.min(Math.max(0, a1 - AX), a0 + AX) : (a0 + a1) / 2;
-          const sy = b1 - b0 <= 2 * AY ? Math.min(Math.max(0, b1 - AY), b0 + AY) : (b0 + b1) / 2;
-          psi -= sx; th += sy;
-          let out = false;
-          for (const P of all) { const q = fitProject(eye, psi, th, fov, P); if (Math.abs(q[0]) > FIT.x + 1e-3 || Math.abs(q[1]) > FIT.y + 1e-3) { out = true; break; } }
-          if (!out || fov >= FIT.max) break;
-          fov = Math.min(FIT.max, fov + 2);
+        const all = pts.concat([at]), psi0 = psi, th0 = th;
+        /* (v25.5, Chad: "at the final last part when camera zooms into the call pong note, the camera bounces several
+           times") THE LENS IS SOLVED, NOT STEPPED. v25.2 widened it two degrees at a time until the points fitted, one
+           turn of the aim to each step: as a shot pushed in, the lens it was asked for narrowed smoothly and the lens it
+           was given jumped back out by a step each time the points stopped fitting (measured on the note's push at a
+           phone's size: twelve jumps of about 1.5 degrees in three seconds). Now, for one lens, the aim is turned until
+           it settles (`aimFor`), and the lens is the narrowest that then holds every point, found by halving between
+           the lens asked for and FIT.max: a smooth function of the eye, the aim and the lens asked for, so a push is
+           one move. Where the asked lens already holds them, it is the asked lens exactly */
+        const aimFor = (fv) => {
+          let p = psi0, h = th0;
+          const tv = Math.tan(fv * Math.PI / 360), AX = Math.atan(FIT.x * tv * camera.aspect), AY = Math.atan(FIT.y * tv);
+          for (let it = 0; it < 40; it++) {
+            /* each point's bearing and height from the look, in angles; the turn that centres their spread where it overflows */
+            let a0 = Infinity, a1 = -Infinity, b0 = Infinity, b1 = -Infinity;
+            for (const P of all) { const q = fitProject(eye, p, h, fv, P), ax = Math.atan2(q[2], q[4]), ay = Math.atan2(q[3], Math.hypot(q[2], q[4]));
+              a0 = Math.min(a0, ax); a1 = Math.max(a1, ax); b0 = Math.min(b0, ay); b1 = Math.max(b1, ay); }
+            const sx = a1 - a0 <= 2 * AX ? Math.min(Math.max(0, a1 - AX), a0 + AX) : (a0 + a1) / 2;
+            const sy = b1 - b0 <= 2 * AY ? Math.min(Math.max(0, b1 - AY), b0 + AY) : (b0 + b1) / 2;
+            p -= sx; h += sy;
+            if (Math.abs(sx) + Math.abs(sy) < 1e-6) break;
+          }
+          let over = 0;                                                  // how far the worst point stands outside the safe part
+          for (const P of all) { const q = fitProject(eye, p, h, fv, P); over = Math.max(over, Math.abs(q[0]) - FIT.x, Math.abs(q[1]) - FIT.y); }
+          return { p, h, out: over > 1e-3 };
+        };
+        let A = aimFor(fov);
+        if (A.out && fov < FIT.max) {
+          const top = aimFor(FIT.max);
+          if (top.out) { A = top; fov = FIT.max; }
+          else { let lo = fov, hi = FIT.max; A = top;
+            for (let it = 0; it < 22; it++) { const mid = (lo + hi) / 2, M = aimFor(mid); if (M.out) lo = mid; else { hi = mid; A = M; } }
+            fov = hi; }
         }
+        psi = A.p; th = A.h;
       }
       FL.must = pts.map(P => { const q = fitProject(eye, psi, th, fov, P); return [+q[0].toFixed(3), +q[1].toFixed(3)]; });
       const cp = Math.cos(th);
@@ -385,7 +405,7 @@
       geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N * 3), 3)); geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(N * 3), 3));
       const pm = new THREE.PointsMaterial({ map: tDot, size: 0.05, sizeAttenuation: true, transparent: true, depthWrite: false, fog: false, blending: THREE.AdditiveBlending, vertexColors: true }); mats.push(pm);
       const pts = new THREE.Points(geo, pm); pts.frustumCulled = false; pts.renderOrder = 4; pts.userData.dyn = true; g.add(pts);
-      return { g, shade, hue, rays, glow, pool, rings, pts, seed, tm: new THREE.Color() };
+      return { g, shade, hue, rays, glow, pool, rings, pts, seed, tm: new THREE.Color(), tDot, tRing };
     })();
     function auraAt(kGold, kWhite, t) {
       const A = aura, k = Math.max(kGold, kWhite);
@@ -416,6 +436,111 @@
        Chad's "more subtle"; the gold as it was photographed, kept for Grandmaster Pho */
     const AURA_K = { gold: { shade: 0.66, hue: 0.78, glow: 0.55, rays: 0.5, pool: 0.5, ring: 0.26, mote: 1 }, white: { shade: 0.34, hue: 0.3, glow: 0.3, rays: 0.2, pool: 0.2, ring: 0.2, mote: 0.55 } };
 
+    /* (v25.5, 11 Nov, Chad: "He chants it 3 times only, show the white energy gathering as he chants it, and then it flies
+       to the player and creates a clearing effect and the whole screen flashes and fades white quickly for a moment,
+       before being fully cleared") THE POWER, GATHERED AND SENT. Painted light (no lamp, v15.1), white only (gold is
+       Grandmaster Pho's), every value a function of the clearing's clock (powerAt), built hidden here so the curtain
+       warms it (v14.15):
+         the light at his joined hands: a small hard core in a soft halo, a step brighter and larger with each saying
+           of the mantra (it does not swell evenly: it comes with the words, and holds through each breath);
+         the gathering itself: motes drawn in to his hands from round the room, along curved ways, more of them with
+           each saying; and a ring going out from his hands as each saying ends;
+         the sending: the light leaves his hands for the lens, slowly and then fast, growing as it comes;
+         the white: the film's own fade, in white (the engine's forty-third seam, v25.5: `fade(.., '#ffffff')` in
+           clearFilm). A white drawn in the room was tried first and photographed: the game's vignette lies over the
+           picture, so it came out an oval with grey sides, and his own joined hands stood on top of it. The fade lies
+           over the picture, the hands' pass and the vignette alike;
+         the clearing: a ring across the floor from where he kneels, out through the shop, and the last of the light
+           rising and going out round the room, under the white as it thins. */
+    const POWER = { motes: 96, drift: 54, core: 0xffffff, halo: 0xdfe8ff, mote: 0xeef3ff };
+    const power = (() => {
+      const g = new THREE.Group(); g.visible = false; g.userData.dyn = true; worldS.add(g);
+      /* (the light's three sprites are drawn over whatever stands at their depth: a sprite is a flat card, and his bowed
+         face came through the halo's card along a hard curved edge, a pale veil over his chin and none on his brow: by
+         photograph) */
+      const sprite = (map, blending, order) => {
+        const m = new THREE.SpriteMaterial({ map, transparent: true, opacity: 0, depthWrite: false, depthTest: false, fog: false, blending }); mats.push(m);
+        const s = new THREE.Sprite(m); s.renderOrder = order; s.userData.dyn = true; s.frustumCulled = false; g.add(s); return s;
+      };
+      const halo = sprite(aura.tDot, THREE.AdditiveBlending, 6), core = sprite(aura.tDot, THREE.AdditiveBlending, 7), pulse = sprite(aura.tRing, THREE.AdditiveBlending, 6);
+      halo.material.color.setHex(POWER.halo); core.material.color.setHex(POWER.core); pulse.material.color.setHex(POWER.halo);
+      const sweep = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), B({ map: aura.tRing, transparent: true, opacity: 0, depthWrite: false, fog: false, blending: THREE.AdditiveBlending, color: POWER.halo }));
+      sweep.rotation.x = -Math.PI / 2; sweep.position.set(CL.x, 0.012, CL.z); sweep.renderOrder = 2; sweep.userData.dyn = true; g.add(sweep);
+      const points = (n, size, order) => {
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n * 3), 3)); geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(n * 3), 3));
+        const pm = new THREE.PointsMaterial({ map: aura.tDot, size, sizeAttenuation: true, transparent: true, depthWrite: false, fog: false, blending: THREE.AdditiveBlending, vertexColors: true }); mats.push(pm);
+        const p = new THREE.Points(geo, pm); p.frustumCulled = false; p.renderOrder = order; p.userData.dyn = true; g.add(p); return p;
+      };
+      const motes = points(POWER.motes, 0.06, 5), drift = points(POWER.drift, 0.055, 5);
+      const r = rng(4417), mseed = [], dseed = [];
+      /* a mote's way in: from a point of a shell round his hands (the room's upper half and its sides, never from under the
+         floor or from behind the lens), turning a little round his hands as it comes */
+      for (let i = 0; i < POWER.motes; i++) mseed.push({ az: r() * 6.283, el: -0.15 + r() * 1.25, R: 0.75 + r() * 1.0, T: 1.25 + r() * 1.1, ph: r(), turn: (r() - 0.5) * 2.4, rank: r(), fl: r() * 40 });
+      for (let i = 0; i < POWER.drift; i++) dseed.push({ a: r() * 6.283, rad: 0.3 + r() * 2.1, y: 0.15 + r() * 1.3, wait: r() * 0.9, life: 1.3 + r() * 1.5, up: 0.1 + r() * 0.22, out: 0.1 + r() * 0.4, fl: r() * 40 });
+      return { g, halo, core, pulse, sweep, motes, drift, mseed, dseed, tm: new THREE.Color(POWER.mote), at: new THREE.Vector3(), H: new THREE.Vector3(), E: new THREE.Vector3(), d: new THREE.Vector3() };
+    })();
+    /* how far the light has gathered at a moment (0..1): a third with each saying, held through each breath */
+    function gathered(t) { const K = CLEARF; let s = 0; for (const [a, b] of OM_REPS) s += ezk(t, K.om + a, K.om + b); return s / OM_REPS.length; }
+    const _pwA = new THREE.Vector3(), _pwB = new THREE.Vector3();
+    /* `t` on the clearing's clock, `eye` this frame's lens (the light is sent to it); null puts it all away */
+    function powerAt(t, eye) {
+      const P = power, K = CLEARF;
+      if (t == null || t < K.om - 0.1 || t > K.clear + 2.4) { P.g.visible = false; return; }
+      P.g.visible = true;
+      /* where his joined palms are, and the lens */
+      const L = cast.lersi, W = L && L.ready && L.waiHand;
+      if (W && W.Left && W.Right) { handPoint(W.Left, W.Left.palm[0], W.Left.palm[1], _pwA); handPoint(W.Right, W.Right.palm[0], W.Right.palm[1], _pwB); P.H.addVectors(_pwA, _pwB).multiplyScalar(0.5); }
+      else P.H.set(LC.x, 0.6, LC.z + 0.24);
+      P.E.set(eye[0], eye[1], eye[2]); P.d.subVectors(P.E, P.H).normalize();
+      P.H.addScaledVector(P.d, 0.07).y += 0.035;                     // before his fingers, a little over their roots: the light is seen, not hidden in his hands
+      const gk = gathered(t), u = c01((t - K.fly) / (K.flash - K.fly)), fl = Math.pow(u, 2.3), sent = t >= K.flash;
+      const sh = 1 + 0.07 * Math.sin(t * 7.3) + 0.04 * Math.sin(t * 13.1), br = 0.9 + 0.1 * Math.sin(t * 2 * Math.PI / 2.9);
+      /* the light: at his hands while it gathers; on its way to the lens (to a hand's breadth before the near plane) */
+      P.at.copy(P.H).lerp(_pwA.copy(P.E).addScaledVector(P.d, -0.24), fl); P.at.y += 0.05 * Math.sin(Math.PI * u) * (1 - u);
+      const on = sent ? 0 : 1;
+      P.core.position.copy(P.at); P.halo.position.copy(P.at);
+      const cs = (0.05 + 0.19 * gk) * sh * (1 + 0.5 * u), hs = (0.3 + 0.85 * gk) * br * (1 + 0.9 * u);
+      P.core.scale.set(cs, cs, 1); P.halo.scale.set(hs, hs, 1);
+      P.core.material.opacity = on * Math.min(1, 0.25 + 0.95 * gk); P.halo.material.opacity = on * (0.16 + 0.56 * gk) * br;
+      /* a ring from his hands as each saying ends; and, as the white thins, one ring out from where the light struck
+         him to past the frame's edges: the clearing, seen going through the room */
+      let pv = -1; for (const [, b] of OM_REPS) { const v = (t - (K.om + b - 0.1)) / 1.0; if (v >= 0 && v <= 1) pv = v; }
+      /* (it crosses the frame while the white is thinning, not under it at its full: from the middle to past a phone's
+         edges and a desktop's in a second and a half, fast and then slower) */
+      const wv = (t - (K.flash + 0.55)) / 1.5;
+      if (wv >= 0 && wv <= 1) {
+        P.pulse.position.copy(P.E).addScaledVector(P.d, -0.7); const ws = 0.08 + 1.2 * (1 - (1 - wv) * (1 - wv)); P.pulse.scale.set(ws, ws, 1);
+        P.pulse.material.opacity = 0.55 * Math.sin(Math.PI * Math.min(1, wv * 1.15)) * (1 - 0.4 * wv);
+      } else {
+        P.pulse.position.copy(P.H); const ps = 0.16 + 1.25 * (pv < 0 ? 0 : ez5(pv)); P.pulse.scale.set(ps, ps, 1);
+        P.pulse.material.opacity = pv < 0 ? 0 : 0.5 * Math.sin(Math.PI * pv) * (1 - 0.45 * pv);
+      }
+      /* the motes drawn in: a mote's whole way lies inside the gathering, and there are more of them as it builds */
+      { const A = P.motes.geometry.attributes.position, C = P.motes.geometry.attributes.color, t0 = K.om + 0.15, t1 = K.fly + 0.15;
+        P.mseed.forEach((s, i) => {
+          const q = (t - t0) / s.T + s.ph, n = Math.floor(q), w = q - n, born = t0 + (n - s.ph) * s.T;
+          let al = 0;
+          if (born >= t0 - 0.02 && born + s.T <= t1 && s.rank <= 0.3 + 0.7 * gathered(born + s.T * 0.6)) {
+            const k = Math.pow(1 - w, 1.7), az = s.az + s.turn * w, ce = Math.cos(s.el), rr = s.R * k;
+            /* (never between his hands and the lens in the last of its way: it would cross his face) */
+            A.setXYZ(i, P.H.x + Math.cos(az) * ce * rr, Math.max(0.05, P.H.y + Math.sin(s.el) * rr), P.H.z + Math.sin(az) * ce * rr * 0.8 - 0.06 * (1 - k));
+            al = Math.pow(Math.sin(Math.PI * Math.min(1, w * 1.12)), 0.8) * (0.7 + 0.3 * Math.sin(t * 5.3 + s.fl)) * (0.75 + 0.25 * gk);
+          } else A.setXYZ(i, P.H.x, P.H.y, P.H.z);
+          C.setXYZ(i, P.tm.r * al, P.tm.g * al, P.tm.b * al); });
+        A.needsUpdate = true; C.needsUpdate = true; }
+      /* the clearing: the ring across the floor from where he kneels, and the last of the light rising round the room */
+      { const v = (t - (K.flash + 0.1)) / 1.7, ok = v >= 0 && v <= 1, d = 0.5 + 9 * (ok ? ez5(v) : 0);
+        P.sweep.scale.set(d, d, 1); P.sweep.material.opacity = ok ? 0.5 * Math.sin(Math.PI * v) * (1 - 0.5 * v) : 0;
+        const A = P.drift.geometry.attributes.position, C = P.drift.geometry.attributes.color;
+        P.dseed.forEach((s, i) => { const w = (t - (K.flash + 0.25) - s.wait) / s.life; let al = 0;
+          if (w >= 0 && w <= 1) { const rr = s.rad + s.out * w; A.setXYZ(i, CL.x + Math.cos(s.a) * rr, s.y + s.up * w * s.life, CL.z - 0.6 + Math.sin(s.a) * rr * 0.8);
+            al = Math.pow(Math.sin(Math.PI * w), 1.2) * (0.6 + 0.4 * Math.sin(t * 4.1 + s.fl)) * 0.85; }
+          else A.setXYZ(i, CL.x, 0.5, CL.z - 0.6);
+          C.setXYZ(i, P.tm.r * al, P.tm.g * al, P.tm.b * al); });
+        A.needsUpdate = true; C.needsUpdate = true; }
+    }
+
     /* ================================================================ THE FILMS' PICTURES (§4), each a pure function of
        its own clock: every shot his eyes (he is never seen, Chad 9 Nov), named by what it must hold */
 
@@ -426,6 +551,7 @@
        opening film she asks, waits, gives up and goes (W_OUT: she turns where she stands, then walks out and away along
        the corridor); in ending D she is back, at the piece that lies on the glass (D_WOMAN) */
     const O_WOMAN = { x: -0.65, z: -0.92 }, D_WOMAN = { x: -0.36, z: -0.93 };
+    const D_END = { past: 0.55 };                                      // ending D's last look on a phone: how far past her it goes (endD)
     const W_OUT = walkCurve([[O_WOMAN.x, O_WOMAN.z], [-0.45, 0.3], [0.05, 2.0], [0.5, 3.3], [2.2, 4.3], [5.6, 4.5]], 96);
     /* her turn from the counter to her way out (over `secs` from t0), then her walk at a customer's pace */
     function womanGoes(t, t0, secs = 0.9, v = 1.15) {
@@ -491,12 +617,27 @@
          On a phone the phone it says to use is kept in the frame beside it (fit): at the push's end a portrait frame held
          the note alone, the phone off its edge (measured, tools/probes/framecheck.mjs) */
       const note = [NOTE.x, top0 + 0.001, NOTE.z], k = smo(sgk(t, O.o4, O.black));
-      const e3 = lp3([HIS.x + 0.3, 1.5, HIS.z + 0.32], [NOTE.x - 0.02, 1.36, NOTE.z - 0.3], k);
+      const E0 = [HIS.x + 0.3, 1.5, HIS.z + 0.32], e3 = lp3(E0, [NOTE.x - 0.02, 1.36, NOTE.z - 0.3], k);
       /* the note's four corners (its words never cut: held by its middle alone it stood half off a phone's edge at the
          push's end, by photograph) and the phone's middle (masters/v25.2/fitsim.js: the note whole at 0.25-0.81 of the
          frame's half-width at the end, the phone's middle at -0.81) */
       const pb = shop.phone ? shop.phone.base : null, nc = Math.cos(NOTE.ry) * 0.038, ns = Math.sin(NOTE.ry) * 0.038;
       const must = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([a, b]) => [NOTE.x + nc * a + ns * b, top0 + 0.001, NOTE.z - ns * a + nc * b]);
+      /* (v25.5, Chad: "at the final last part when camera zooms into the call pong note, the camera bounces several
+         times") ON A PHONE THE PUSH IS A PUSH. Measured at a phone's size: to keep his phone in the picture to the
+         shot's end, the fit widened the lens the whole way in (50 to 74 degrees, in the jumps he saw), and the note it
+         was closing on got SMALLER (139 px wide down to 113) while the eye went from 0.67 m to 0.44 m of it. Now the
+         first picture is the one it always was (the note and the phone it says to use: `F0`, the fit of both from
+         where the push begins, a constant), the aim slides from there onto the note while the lens narrows as it was
+         asked to, and the push ends on the note alone, whole (its four corners held) and twice the size. A desktop's
+         frame is as it was */
+      if (isNarrow()) {
+        const F0 = fit(E0, note, 50, pb ? must.concat([[pb.x, top0 + 0.005, pb.z]]) : must);
+        const s = (top0 - E0[1]) / (F0.at[1] - E0[1]);                 // where that first look meets the glass
+        const P0 = [E0[0] + (F0.at[0] - E0[0]) * s, top0, E0[2] + (F0.at[2] - E0[2]) * s];
+        fitShot(e3, lp3(P0, note, smo(c01(k / 0.7))), lp(50, 36, k), 0, must);
+        return;
+      }
       if (pb) must.push([pb.x, top0 + 0.005, pb.z]);
       fitShot(e3, note, lp(50, 36, k), lp(42, 28, k), must);
     }
@@ -543,7 +684,13 @@
       /* on a wide screen the close shot holds CALL PONG, in his own hand, beside the phone that is calling him */
       if (onPh > 0 && !isNarrow()) at = aimEase(eye, at, [lp(ph[0], NOTE.x, 0.42), ph[1], lp(ph[2], NOTE.z, 0.42)], onPh);
       if (onPh > 0.5 && isNarrow()) {
-        const Fp = fit(eye, at, fl, phoneCorners()), w = smo(sgk(onPh, 0.5, 0.95));   // eased into the fit and out of it
+        /* (v25.5, Chad: "It also bounces one time when calling pong, and the camera pans into the phone") THE FIT IS OF
+           THE PHONE, not of wherever the pan has got to. v25.2 fitted the turning aim and the phone's four corners
+           together: at "trust me" his eyes are a third of the way round from his altar when the fit begins, the two
+           stood wide apart, and the lens was thrown out to hold them both and pulled back in as the pan arrived
+           (measured on a phone: 45 degrees to 70 and back to 37 in under a second). Fitted on the phone itself, the
+           lens only ever narrows onto it, and the pan is eased onto that aim */
+        const Fp = fit(eye, ph, fl, phoneCorners()), w = smo(sgk(onPh, 0.5, 0.95));   // eased into the fit and out of it
         fLens(lp(fl, Fp.fl, w)); camAt(eye, aimEase(eye, at, Fp.at, w));
         return;
       }
@@ -674,7 +821,17 @@
        is carried so; v25.2 pinched it between pressed hands, where it could not be seen): he raises it before his brow
        and bows his head to it, lowers it to speak of it, and bends to the clean cloth with it in both hands; the cut
        lays it there. Each change over a human time */
-    const EX_WR = [LC.x + 0.02, 0.3, LC.z + 0.4];                      // the client's wrist, met between them, under the frame's foot
+    /* (v25.5, Chad: "When lersi chin says give me your hand and asks questions, his arms clips into his robe") THE WRIST
+       IS MET OVER HIS LAP, NOT INSIDE IT. Measured on his seated body (every point of him that is not arm, in 5 cm cells):
+       the cloth over his crossed legs stands 0.36-0.40 m high from 0.15 to 0.37 m before him, and v25.0 sent his hands
+       to a point 0.30 m high and 0.40 m out: both forearms went through his lap from the elbow down (by photograph,
+       from the lens and from his side). The wrist is met 0.47 m up and 0.44 m out, past the lap's edge; he leans a
+       little further in to it, his elbows out to his sides (the pole: with a reach's own, down and back, a bent elbow
+       drops into the lap), so his forearms pass a hand's breadth over the cloth. And the picture closes on him while he
+       has it: the look lifted and the lens a little tighter, so his hands (on a wrist the film never draws) stay
+       under the frame's foot on a phone and a desktop both, as they did when the point was lower */
+    const EX_WR = [LC.x + 0.02, 0.47, LC.z + 0.44];                    // the client's wrist, met between them, under the frame's foot
+    const EXH = { lean: 0.4, up: 0.09, tight: [8, 5], pole: [0.85, -0.35, -0.2] };   // the hold: his lean in to it; the look's lift (metres at his head) and the lens's tightening (degrees: phone, desktop) while it lasts; his elbows' side
     /* (v25.5, Chad: "when the player takes down the item from the shelf, there is no need to have his hand try to take it
        down as the animation just looks awkward, just show the item being removed from the shelf and go straight to the
        next scene/frame") THE PIECE OFF ITS SHELF: his look holds on it where it stands; a blink (the film's own, a sixth
@@ -699,11 +856,11 @@
          hands come home and his back straightens over a second from the cut, done before he speaks */
       const two = [[tBack - 0.01, tBack, cChest], [tBack + 0.3, tBack + 1.2, C_BROW], [X.lc2e8 - 0.8, X.lc2e8, cChest],
                    [tCloth - 1.3, tCloth - 0.1, toCloth], [tCloth + 0.1, tCloth + 1.1, null]];
-      const R = handKeys(t, [[X.lc2e1 + 0.3, X.lc2e1 + 1.45, { palm: [EX_WR[0] - 0.01, EX_WR[1] + 0.035, EX_WR[2]], aim: 'down', pole: 'reach' }],
+      const R = handKeys(t, [[X.lc2e1 + 0.3, X.lc2e1 + 1.45, { palm: [EX_WR[0] - 0.01, EX_WR[1] + 0.035, EX_WR[2]], aim: 'down', pole: EXH.pole }],
                              [X.lc2e6 - 0.1, X.lc2e6 + 1.0, null]].concat(two));
-      const Lh = handKeys(t, [[X.lc2e1 + 0.45, X.lc2e1 + 1.6, { palm: [EX_WR[0] + 0.03, EX_WR[1] - 0.035, EX_WR[2] - 0.01], aim: 'under', pole: 'reach' }],
+      const Lh = handKeys(t, [[X.lc2e1 + 0.45, X.lc2e1 + 1.6, { palm: [EX_WR[0] + 0.03, EX_WR[1] - 0.035, EX_WR[2] - 0.01], aim: 'under', pole: EXH.pole }],
                               [X.lc2e6 - 0.2, X.lc2e6 + 0.85, null]].concat(two));
-      const lean = keyed(t, 0, [[X.lc2e1 + 0.2, X.lc2e1 + 1.4, 0.32], [X.lc2e6 - 0.1, X.lc2e6 + 1.0, 0],
+      const lean = keyed(t, 0, [[X.lc2e1 + 0.2, X.lc2e1 + 1.4, EXH.lean], [X.lc2e6 - 0.1, X.lc2e6 + 1.0, 0],
                                 [X.still + 0.4, X.still + 2.0, 0.08], [X.eyes - 1.2, X.eyes - 0.2, 0],
                                 [tBack + 0.4, tBack + 1.2, 0.1], [X.lc2e8 - 0.8, X.lc2e8, 0.03], [tCloth - 1.3, tCloth - 0.1, 0.4],
                                 [tCloth + 0.15, tCloth + 1.25, 0]]);
@@ -743,7 +900,9 @@
         /* the wrist taken (his hands out of the frame's foot) while the questions are asked (his body: examBody) */
         const down = smo(sgk(t, X.q2e3 - 0.1, X.q2e3 + 0.3)) * (1 - smo(sgk(t, X.lc2e5 - 0.3, X.lc2e5 + 0.3)));   // "...Yes." — his eyes drop
         const at = LC_HEAD(); at[1] -= 0.25 * down;
-        fLens(lp(isNarrow() ? 52 : 44, isNarrow() ? 48 : 40, smo(sgk(t, 0, X.still))));
+        const hold = smo(sgk(t, X.lc2e1 + 0.3, X.lc2e1 + 1.6)) * (1 - smo(sgk(t, X.lc2e6 - 0.2, X.lc2e6 + 1.0)));   // while he has the wrist
+        at[1] += EXH.up * hold;
+        fLens(lp(isNarrow() ? 52 : 44, isNarrow() ? 48 : 40, smo(sgk(t, 0, X.still))) - EXH.tight[isNarrow() ? 0 : 1] * hold);
         camAt(KN_EYE, at);
         return;
       }
@@ -836,16 +995,21 @@
       const K = CLEARF, L = cast.lersi, W = K.water, H0 = K.homage;
       if (!L || !L.ready) return;
       const lap = [CB_LAP[0], CB_LAP[1] - 0.04, CB_LAP[2]];
+      /* (v25.5, 11 Nov) the mantra is said with his hands joined before his chest, where the light gathers between his
+         palms and the kneeling eye sees it under his face (the long verses were chanted with them lower, at the foot
+         of his chest: `W_LOW`, no longer asked for here) */
       const h = handKeys(t, [[H0 + 1.3, H0 + 2.1, W_CHEST], [H0 + 2.2, H0 + 3.0, W_BROW], [H0 + 4.0, H0 + 4.8, W_CHEST],
-                             [K.sak - 0.6, K.sak + 0.8, W_LOW], [W + 0.3, W + 1.2, H_BOWL], [W + 5.0, W + 6.0, null]]);
+                             [W + 0.3, W + 1.2, H_BOWL], [W + 5.0, W + 6.0, null]]);
       const lean = keyed(t, 0, [[H0 + 2.2, H0 + 3.0, SW.lean], [H0 + 4.0, H0 + 4.8, 0.03],
                                 [W + 0.6, W + 1.9, 0.3], [W + 4.0, W + 5.2, 0]]);
       const neck = keyed(t, 0, [[H0 + 2.2, H0 + 3.0, SW.neck], [H0 + 4.0, H0 + 4.8, 0.05], [W - 0.1, W + 0.6, 0.1], [W + 1.1, W + 1.8, 0],
                                 [W + 4.2, W + 4.8, 0.1], [W + 5.2, W + 5.9, 0]]);
       lcBody({ R: h, L: h, lean, neck });
-      lcLook(t, [[W - 0.2, W + 0.5, lap], [W + 1.2, W + 1.9, 'lens'], [W + 4.1, W + 4.7, lap],
+      /* (v25.5) his head a little bowed over his hands through the mantra; up, his eyes on him, as he sends it */
+      lcLook(t, [[K.fly - 0.5, K.fly + 0.2, 'lens'], [W - 0.2, W + 0.5, lap], [W + 1.2, W + 1.9, 'lens'], [W + 4.1, W + 4.7, lap],
                  [W + 5.2, W + 5.9, 'lens']], 1.1);
-      lcBow(L, keyed(t, 0.08, [[H0 + 2.2, H0 + 3.0, SW.bow], [H0 + 4.0, H0 + 4.8, 0.1], [K.lift + 0.5, K.lift + 2.5, 0.06],
+      lcBow(L, keyed(t, 0.08, [[H0 + 2.2, H0 + 3.0, SW.bow], [H0 + 4.0, H0 + 4.8, 0.1], [K.om - 0.2, K.om + 1.0, 0.13],
+                               [K.fly - 0.5, K.fly + 0.2, 0.02],
                                [W - 0.1, W + 0.6, 0.14], [W + 1.2, W + 1.9, 0], [W + 4.1, W + 4.7, 0.12], [W + 5.2, W + 5.9, 0]]));
       L.look = 1;
     }
@@ -853,10 +1017,13 @@
     function clearFrame(t) { clearBowl(t); clearShots(t); clearBody(t); }
     function clearShots(t) {
       const K = CLEARF;
-      /* the lift: grey to colour over the second and third verses (≈ 20 s), his eyes coming up as it goes */
-      const lift = smo(sgk(t, K.lift, K.water - 0.6));
-      fogFilm(1 - lift);
-      fLook(t < K.lift ? 'VISIT' : 'CLEAR', t < K.lift ? 0 : K.water - K.lift);
+      /* (v25.5, 11 Nov) THE CLEARING IS THE WHITE. The grey thins a little as the light gathers and is blown off as it
+         comes at him; under the white (a tenth of a second into it, the picture all white) the room becomes the room
+         cleared: its colour and its warmth back, the fog gone, the lens where the water's shot begins. v25.0 lifted
+         the grey over twenty seconds of the second and third verses */
+      const gk = gathered(t), cut = K.flash + 0.1, lift = t < cut ? 0 : 1;
+      fogFilm(lift ? 0 : (1 - 0.22 * gk) * (1 - ezk(t, K.fly + 0.45, K.flash - 0.06)));
+      fLook(lift ? 'CLEAR' : 'VISIT', 0);
       shopAt({ u: 0.42, led: lp(0.9, 1, lift), ceil: 0, night: true });
       castVis({ goldman: false, mallA: false, mallB: false, lersi: true, pong: true });
       lcSeated(); pongSeated();
@@ -869,7 +1036,7 @@
       for (const f of props.flames) f.material.opacity = fl;
       /* (v25.5) the light round him from the chant's first words to the water given, gone as he sits back (white, and
          quiet, since 11 Nov: gold is Grandmaster Pho's) */
-      auraAt(0, ezk(t, K.namo - 0.3, K.namo + 3.0) * (1 - ezk(t, K.water + 4.3, K.water + 5.8)), t);
+      auraAt(0, ezk(t, K.om - 0.3, K.om + 3.0) * (1 - ezk(t, K.water + 4.3, K.water + 5.8)), t);
       /* his own hands: together from "Hands together", down for the water */
       const handsK = smo(sgk(t, K.lc2k0 + 0.6, K.lc2k0 + 1.4)) * (1 - smo(sgk(t, K.water - 0.6, K.water)));
       waiAt(handsK);
@@ -887,14 +1054,25 @@
         /* (v25.0 CP7) not one still frame for forty seconds: a slow push in on the tray's candles under Namo tassa, his
            eyes drawn up to the master's joined hands as the verses begin (v25.3: the leaves are gone), up to his face as
            the grey lifts; a breath under it all */
-        const toHands = smo(sgk(t, K.sak - 1.0, K.sak + 3.0)), push = smo(sgk(t, K.homage + 1.0, K.sak)) * (1 - toHands);
-        const base = aimEase(KN_EYE, down, [LC.x, 0.5, LC.z + 0.22], toHands * 0.75);
-        /* (v25.5) and close on his face as the chant ends (W_TIGHT): the water's shot opens there */
-        fLens(lp((isNarrow() ? 54 : 46) - 8 * push - 4 * toHands * (1 - lift), isNarrow() ? W_TIGHT[0] : W_TIGHT[1], ezk(t, K.water - 1.6, K.water + 0.25)));
-        /* (v25.5) and his eyes come up to him sooner, as the chant begins: the light round him is in the picture from
-           its first words (they stayed on the tray until the grey lifted, the master at the frame's top edge or over it) */
-        const see = 0.15 + 0.4 * ezk(t, K.namo + 0.4, K.namo + 4.0);
-        camAt([KN_EYE[0], KN_EYE[1] + 0.004 * Math.sin(t * 2 * Math.PI / 4.6), KN_EYE[2]], aimEase(KN_EYE, base, LC_HEAD(), see + (1 - see) * lift));
+        /* (v25.5, 11 Nov) THE MANTRA'S SHOT: his eyes come up from the tray as the mantra begins, to the master's joined
+           hands and his face over them (the light between his palms at the picture's middle, his face over it, both
+           whole on a phone and a desktop), and the lens closes on them slowly through the three sayings; held as the
+           light comes. Under the white the lens is the cleared room's, on his face, and closes to the water's as before */
+        const eyeNow = [KN_EYE[0], KN_EYE[1] + 0.004 * Math.sin(t * 2 * Math.PI / 4.6), KN_EYE[2]];
+        const toHands = smo(sgk(t, K.om - 0.7, K.om + 1.9)), push = smo(sgk(t, K.homage + 1.0, K.om)) * (1 - toHands);
+        const face = LC_HEAD(), hands = [LC.x, face[1] - 0.2, LC.z + 0.2];
+        const closeIn = ezk(t, K.om + 1.2, K.fly);
+        let aim, fl;
+        if (!lift) {
+          aim = aimEase(KN_EYE, down, [lp(hands[0], face[0], 0.42), lp(hands[1], face[1], 0.42), lp(hands[2], face[2], 0.42)], toHands);
+          /* (a desktop's frame is short: closed in as far as a phone's, his topknot left its top as his head came up) */
+          fl = (isNarrow() ? 54 : 46) - 8 * push - (isNarrow() ? 9 : 4.5) * toHands * closeIn - 1.5 * toHands;
+        } else {
+          aim = face;
+          fl = lp(isNarrow() ? 50 : 42, isNarrow() ? W_TIGHT[0] : W_TIGHT[1], ezk(t, K.water - 1.6, K.water + 0.25));
+        }
+        fLens(fl); camAt(eyeNow, aim);
+        powerAt(t, eyeNow);
         return;
       }
       if (t < K.advice) {
@@ -913,7 +1091,9 @@
         const tight = isNarrow() ? W_TIGHT[0] : W_TIGHT[1], wide = isNarrow() ? 54 : 46, rest = isNarrow() ? 52 : 44;
         const fl0 = lp(wide, tight, ezk(t, W - 1.6, W + 0.25));                       // (the chant's shot hands over mid-ease)
         fLens(lp(lp(fl0, wide, open), rest, ezk(t, W + CB_T.down + 0.05, K.advice - 0.05)));
-        camAt(e, aimEase(e, LC_HEAD(), [bw.x, bw.y + 0.1, bw.z], 0.75 * open));
+        const aimW = aimEase(e, LC_HEAD(), [bw.x, bw.y + 0.1, bw.z], 0.75 * open);
+        camAt(e, aimW);
+        powerAt(t, e);                                                 // (the last of the light, going out round the room)
         return;
       }
       /* "Go to a temple this week..." — his face, the colour back, warm */
@@ -1228,7 +1408,12 @@
       const dn = smo(sgk(t, T.q2D2 - 0.35, T.q2D2 + 1.0)) * (1 - smo(sgk(t, T.last - 0.3, T.last + 1.2)));
       const out = smo(sgk(t, T.last - 0.2, T.last + 3.0));
       const e = lp3(eye, [AMU_AT[0] + 0.03, 1.4, AMU_AT[2] - 0.38], dn);
-      const at = aimEase(e, aimEase(e, face, AMU_AT, dn), [0.4, 1.4, 5.2], out);
+      /* (v25.5, the woman in green) ON A PHONE HIS EYES STOP SHORT OF PASSING HER. The look up and out ends on the
+         corridor's point (D_END.past 1) on a wide screen, where she stands whole at the picture's right all the way. A
+         phone's frame is a third as wide: taken all the way, it put her head across its right edge (half a face, by
+         photograph; with the auntie before her, an arm in its corner). It stops at D_END.past of the way: the morning
+         mall across the left of the picture, his customer whole at its right, still at the piece */
+      const at = aimEase(e, aimEase(e, face, AMU_AT, dn), [0.4, 1.4, 5.2], out * (isNarrow() ? D_END.past : 1));
       /* (v25.5) a desktop's lens on the piece is 14 (21: its wide frame took in her two hands hanging at her sides,
          cut off at its edges beside the piece, by photograph; a phone's frame never reached them) */
       const fl = lp(lp(isNarrow() ? 54 : 46, isNarrow() ? 26 : 14, dn), isNarrow() ? 58 : 50, out);
@@ -1298,7 +1483,7 @@
 
     /* (v25.0 CP11) THE ROOM UNDER EACH FILM, a pure function of its clock: the mall muffled at noon in the opening, the
        shop at night under the call, the visit, the examination and the clearing (the room's sound fuller once the fog has
-       lifted, from K.lift), each ending's night and its daylight (A's "days later", D's morning: the mall heard clear),
+       lifted, from the white), each ending's night and its daylight (A's "days later", D's morning: the mall heard clear),
        C's air-con alone after the shutter comes down, and the coda's night. mixBeds eases to it. */
     function filmBedAt(key, t) {
       const B = { mall: 0, night: 0, mallclear: 0, whisper: 0 };
@@ -1311,7 +1496,7 @@
            moment it is off its shelf */
         const tTake = EXAM.fetch + EX_TAKE;
         B.whisper = WHISPER.vol * (0.36 * seg(EXAM.lc2e7 + 0.2, EXAM.lc2e7 + 1.6) + 0.56 * seg(EXAM.fetch - 1.0, EXAM.fetch + 0.5)) * (1 - seg(tTake - 0.2, tTake)); }
-      else if (key === 'clear') B.night = t < CLEARF.lift ? 0.4 : 0.5;
+      else if (key === 'clear') B.night = t < CLEARF.flash ? 0.4 : 0.5;
       else if (END[key]) {
         const T = END[key];
         if (t >= T.coda) B.night = 0.42 * (1 - seg(T.coda + CODA.black - 0.6, T.coda + CODA.end));
@@ -1349,7 +1534,7 @@
         /* (v25.5) what only some shots have is away unless this frame's shot brings it (a seek lands on the same picture):
            the woman at his counter, the piece on the glass, the master's aura, the coda's page */
         if (cast.woman && cast.woman.ready) { cast.woman.group.visible = false; cast.woman.filmWalk = 0; }
-        amuletTop.visible = false; auraAt(0, 0, t);
+        amuletTop.visible = false; auraAt(0, 0, t); powerAt(null);
         if (END[key] && t < END[key].coda) namesAt(-1);
         /* (v25.5) and his own hands are down at the laptop whatever frame came before (a seek from his wai at an
            ending's start straight into its coda left them pressed over the keys: the lab's photograph) */
@@ -1373,7 +1558,7 @@
         waiAt(0); handFree(); lcPose(null, 0);
         /* (v25.1 F4) the coda's page put away, so a replay (reset() runs this) never opens on the months-later notebook */
         namesAt(-1);
-        amuletTop.visible = false; auraAt(0, 0, 0);
+        amuletTop.visible = false; auraAt(0, 0, 0); powerAt(null);
         if (held.lc) held.lc.visible = false;
         shop.phoneOn = 0; shop.phoneSecs = null;
         if (props.bowl && props.bowl.userData.home) { props.bowl.position.copy(props.bowl.userData.home); props.bowl.rotation.x = 0; }

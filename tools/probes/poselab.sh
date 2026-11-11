@@ -3,7 +3,8 @@
 # episode 4 chapter 2's file in it replaced by src/chapters/e4/e4c2.js with two scratch handles added (never shipped):
 #   window.__lc  = { LCM, LCS, HS, body(o), HINGE, FORE_ROLL, cast, props,    his body's measures, state and lcBody;
 #                    PIECE_FIT, PGLOW, pieceLit, play }                       the piece on the shelf and its glow (v25.4)
-#   window.__lc2 = { VW, SW, OPEN, CALL, EXAM, CLEARF, VISIT_T, END, CODA, SECS, aura, lapPoint }   the films' bows, their timelines, (v25.5) the aura's strengths
+#   window.__lc2 = { VW, SW, OPEN, CALL, EXAM, CLEARF, VISIT_T, END, CODA, SECS, aura, lapPoint,    the films' bows, their timelines, (v25.5) the aura's strengths,
+#                    EX_WR, EXH, D_END }                                                          the examination's wrist point and its hold, ending D's last look on a phone (mutable: a job can try another)
 #   LABDIR=<dir> SNAP=<dir> ... poselab.sh @intro    (v25.5) stays INSIDE the opening film (seek it; skip it to go on to play)
 # so a job can pose him (window.__lc.body({ R: { wai: 'brow' }, L: { wai: 'brow' }, lean: 0.16, neck: 0.14 })) and change a
 # measure (window.__lc.LCM.wai.press = 0.035) and photograph it within seconds.
@@ -26,7 +27,7 @@ s = s.replace(a, a + "    window.__lc = { LCM, LCS, get HS() { return HS; }, bod
 b = "    const VW = { lean:"
 assert s.count(b) == 1, 'VW line moved'
 i = s.index(b); j = s.index('\n', i) + 1
-s = s[:j] + "    window.__lc2 = { VW, SW, OPEN, CALL, EXAM, CLEARF, VISIT_T, END, CODA, SECS, get aura() { return AURA_K; }, lapPoint: (a, d) => lapPoint(a, d) };\n" + s[j:]
+s = s[:j] + "    window.__lc2 = { VW, SW, OPEN, CALL, EXAM, CLEARF, VISIT_T, END, CODA, SECS, get aura() { return AURA_K; }, lapPoint: (a, d) => lapPoint(a, d), get EX_WR() { return EX_WR; }, get EXH() { return EXH; }, get D_END() { return D_END; } };\n" + s[j:]
 open(sys.argv[1], 'w').write(s)
 PY
 rm -f "$LABDIR/READY"

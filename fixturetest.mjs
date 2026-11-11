@@ -1218,6 +1218,23 @@ K.phoneInFilm = await p.evaluate(() => { const e = window.__enc; window.__phDone
   return ok; })
   && await until(() => window.__phDone === true && window.__enc.getState() === 'play', 60000).then(() => true, () => false)
   && await p.evaluate(() => window.__phSeen >= 1 && window.__enc.filmPhoneState().shown === false);
+/* v25.5: THE FORTY-THIRD SEAM — a film's fade in a colour. The fixture's `flash` film lays a white over the screen, takes
+   it off, then fades to half black: the fade's element is white while the white stands (at full strength at least
+   once), and the black's own colour whenever a plain fade stands and after the film; and a film with no coloured fade
+   (the phone's, just above) never moved the colour at all */
+K.fadeColour = await p.evaluate(() => { const e = window.__enc, el = document.getElementById('cineFade'); window.__fcDone = null;
+  window.__fc = { white: 0, whiteWrong: 0, black: 0, blackWrong: 0, inline0: el.style.background };
+  const ok = e.kit.film('flash', { onDone: () => { window.__fcDone = true; } });
+  const f = () => { const cs = getComputedStyle(el), op = +cs.opacity, bg = cs.backgroundColor, t = e.cine.active() ? e.cine.t() : -1, F = window.__fc;
+    if (t > 0.75 && t < 1.45) { if (bg === 'rgb(255, 255, 255)' && op > 0.95) F.white++; else F.whiteWrong++; }
+    if (t > 2.6 && t < 3.3 && op > 0.02) { if (bg === 'rgb(0, 0, 0)') F.black++; else F.blackWrong++; }
+    if (!window.__fcDone) requestAnimationFrame(f); };
+  requestAnimationFrame(f);
+  return ok; })
+  && await until(() => window.__fcDone === true && window.__enc.getState() === 'play', 60000).then(() => true, () => false)
+  && await p.evaluate(() => { const F = window.__fc, el = document.getElementById('cineFade');
+    return F.inline0 === '' && F.white >= 1 && F.whiteWrong === 0 && F.black >= 1 && F.blackWrong === 0
+      && el.style.background === '' && getComputedStyle(el).backgroundColor === 'rgb(0, 0, 0)'; });
 /* v24.0 · S46: A CHAPTER'S OWN KIT — the fixture plants a stand of two kinds of its own (a cone, a post) through the
    engine's plantTrees; it lands with one instanced mesh a kind, every spot planted (one marked `always`) */
 K.kitStand = await until(() => { const k = window.__enc.stage.kitStandInfo && window.__enc.stage.kitStandInfo(); return !!k && k.parts === 2; }, 60000).then(() => true, () => false)
