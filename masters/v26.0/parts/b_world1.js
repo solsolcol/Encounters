@@ -235,8 +235,26 @@
         if (o.s) m.scale.multiplyScalar(o.s);
         g.add(m); g.userData.model = m;
         if (o.done) o.done(m, g);
+        /* a file of TWO LEVELS (props/lods.sh: nodes <key>_near and <key>_far over the same vertices): the far one is
+           drawn until the piece stands taller than a twenty-fifth of the screen (lodTick, the measure many() uses) */
+        const near = [], far = []; m.traverse(q => { if (q.isMesh) { if (/_far$/.test(q.name)) far.push(q); else if (/_near$/.test(q.name)) near.push(q); } });
+        if (near.length && far.length) { g.updateWorldMatrix(true, true); const bb = new THREE.Box3().setFromObject(m), c = bb.getCenter(new THREE.Vector3());
+          for (const q of near) q.visible = false;
+          standLods.push({ near, far, c, r: 0, size: Math.max(0.05, bb.max.y - bb.min.y), on: false }); }
       }).catch(err => { console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
       return g;
+    }
+    /* every two-level thing's level, from the lens: called every frame of play, and by a film on its own clock (a cut
+       chooses from the cut's own lens: v24.22). stockLod is many()'s (the copied one); this is stand()'s, the same rule */
+    const standLods = [], _sl2 = new THREE.Vector3();
+    function lodTick() {
+      stockLod();
+      if (!standLods.length) return;
+      camera.getWorldPosition(_sl2);
+      const span = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
+      for (const L of standLods) { const d = Math.max(0.05, _sl2.distanceTo(L.c)), on = L.size / (d * span) > STOCK_NEAR;
+        if (on === L.on) continue; L.on = on;
+        for (const q of L.near) q.visible = on; for (const q of L.far) q.visible = !on; }
     }
     /* A HUE TURNED in a material (one soda bottle in red, orange and green; one small candle in pink and blue): the
        picture's own colour is turned about the grey axis before the light falls on it, so whites, blacks and greys

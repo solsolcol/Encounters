@@ -164,7 +164,7 @@
 
     /* units metres, y up; x east, z south; the origin the middle of the turf (the tracker's §10). Play begins at the
        turf's south edge, turned north to the offering tables: what a portrait phone must see first. */
-    spawn:     { x: -4.0, y: 1.62, z: 11.2, rot: 0 },
+    spawn:     { x: -4.55, y: 1.62, z: 11.2, rot: 0 },    // (Ton, 2.5 m ahead, stands inside a portrait phone's eighteen degrees: photographed)
     shrine:    { x: 0, z: -11.2 },            // the engine's anchor (ghost: null): the offering tables
     ghostHome: { x: 0, z: -11.2 },
     /* the ground he is kept on: the turf, the gravel before the tables and the tents' fronts (stage.keepIn is the same box) */
@@ -639,8 +639,26 @@
         if (o.s) m.scale.multiplyScalar(o.s);
         g.add(m); g.userData.model = m;
         if (o.done) o.done(m, g);
+        /* a file of TWO LEVELS (props/lods.sh: nodes <key>_near and <key>_far over the same vertices): the far one is
+           drawn until the piece stands taller than a twenty-fifth of the screen (lodTick, the measure many() uses) */
+        const near = [], far = []; m.traverse(q => { if (q.isMesh) { if (/_far$/.test(q.name)) far.push(q); else if (/_near$/.test(q.name)) near.push(q); } });
+        if (near.length && far.length) { g.updateWorldMatrix(true, true); const bb = new THREE.Box3().setFromObject(m), c = bb.getCenter(new THREE.Vector3());
+          for (const q of near) q.visible = false;
+          standLods.push({ near, far, c, r: 0, size: Math.max(0.05, bb.max.y - bb.min.y), on: false }); }
       }).catch(err => { console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
       return g;
+    }
+    /* every two-level thing's level, from the lens: called every frame of play, and by a film on its own clock (a cut
+       chooses from the cut's own lens: v24.22). stockLod is many()'s (the copied one); this is stand()'s, the same rule */
+    const standLods = [], _sl2 = new THREE.Vector3();
+    function lodTick() {
+      stockLod();
+      if (!standLods.length) return;
+      camera.getWorldPosition(_sl2);
+      const span = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
+      for (const L of standLods) { const d = Math.max(0.05, _sl2.distanceTo(L.c)), on = L.size / (d * span) > STOCK_NEAR;
+        if (on === L.on) continue; L.on = on;
+        for (const q of L.near) q.visible = on; for (const q of L.far) q.visible = !on; }
     }
     /* A HUE TURNED in a material (one soda bottle in red, orange and green; one small candle in pink and blue): the
        picture's own colour is turned about the grey axis before the light falls on it, so whites, blacks and greys
@@ -1069,7 +1087,7 @@
          puffs of lime cloth; maroon carpets deep in petals; his bench, a carved chair, a low dark table */
       /* (its drapes are deep: photographs 5 and 6 are taken under them, and what fills their top is swags of lime, gold
          and orange satin, not the dark cloth over them) */
-      const C = tent(CHIEF.x, CHIEF.z, { w: CHIEF.w, eave: CHIEF.eave, peak: CHIEF.peak, ry: CHIEF.ry, roof: satinRoof(0x23301f, 0x141c16), valance: 0xd8a41c, band: 0.4,
+      const C = tent(CHIEF.x, CHIEF.z, { w: CHIEF.w, eave: CHIEF.eave, peak: CHIEF.peak, ry: CHIEF.ry, roof: satinRoof(0x2c4632, 0x1d2c22), valance: 0xd8a41c, band: 0.4,
         swags: 3, swagCols: [0xb6d62e, 0xe2a61a, 0xf08a1c], swagDepth: 0.8, swagDrop: 0.36, swagStep: 1 });
       for (const [x, z] of C) solidBox(0.16, 2.2, 0.16, x, 1.1, z);
       /* THE LIME POLE (photographs 1, 5, 6): the canopy's front right pole, the one before the bench's right hand, wrapped
@@ -1584,6 +1602,14 @@
         q.material = Array.isArray(q.material) ? list : list[0]; });
     }
     buildCast();
+    /* those of the cast who STAND where he walks are things he walks round: a column each, set where its person stands
+       (the engine walks the very list it was handed, so a box is moved in place, and lifted clear when its person is
+       not on the ground) */
+    const castBlock = {};
+    for (const k of ['ton', 'aunt']) castBlock[k] = new THREE.Box3(new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 61, 0));
+    function castSolid() { for (const k in castBlock) { const P = cast[k], b = castBlock[k], on = !!(P && P.group.visible && !P.hidden), g = P.group.position, r = 0.32;
+      b.min.set(g.x - r, on ? 0 : 60, g.z - r); b.max.set(g.x + r, on ? 1.5 : 61, g.z + r); } }
+    for (const k in castBlock) whenReady(cast[k], castSolid);
 
 
     /* ================================================================ THE CROWD OF DAY ONE (the plan's §3.3; photographs 1, 8, 10, 12)
@@ -1755,7 +1781,7 @@
     function updateNotes(dt, t) {
       const st = getState();
       const now = wallNow(), wdt = lastWall ? Math.min(0.25, now - lastWall) : 0; lastWall = now;
-      if (st !== 'cine') { windClock += wdt; windTick(windClock); peopleTick(wdt, true); peopleLevels(); }
+      if (st !== 'cine') { windClock += wdt; windTick(windClock); peopleTick(wdt, true); peopleLevels(); lodTick(); }
       if (st !== 'play') return;
       if (!booted) { booted = true; applyPhase(kit ? kit.getPhase() : null); }
       dayClock.t += wdt;
@@ -1798,6 +1824,7 @@
       const solid = (o, pad = 0.14) => { o.updateWorldMatrix(true, false); const bb = new THREE.Box3().setFromObject(o); bb.expandByScalar(pad); bb.min.y = 0; bb.max.y = Math.max(bb.max.y, 1.40); out.push(bb); };
       for (const s of solids) solid(s);
       for (const b of crowdBlock) out.push(b);                                   // the crowd, a column a person (lifted out of his way when they are gone: crowdSolid)
+      for (const k in castBlock) out.push(castBlock[k]);                         // and those of the cast who stand on the turf (each follows its person: castSolid)
       return out;
     }
     function dispose() {

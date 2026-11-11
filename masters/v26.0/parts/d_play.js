@@ -96,7 +96,7 @@
     function updateNotes(dt, t) {
       const st = getState();
       const now = wallNow(), wdt = lastWall ? Math.min(0.25, now - lastWall) : 0; lastWall = now;
-      if (st !== 'cine') { windClock += wdt; windTick(windClock); peopleTick(wdt, true); peopleLevels(); }
+      if (st !== 'cine') { windClock += wdt; windTick(windClock); peopleTick(wdt, true); peopleLevels(); lodTick(); }
       if (st !== 'play') return;
       if (!booted) { booted = true; applyPhase(kit ? kit.getPhase() : null); }
       dayClock.t += wdt;

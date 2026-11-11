@@ -263,5 +263,13 @@
         q.material = Array.isArray(q.material) ? list : list[0]; });
     }
     buildCast();
+    /* those of the cast who STAND where he walks are things he walks round: a column each, set where its person stands
+       (the engine walks the very list it was handed, so a box is moved in place, and lifted clear when its person is
+       not on the ground) */
+    const castBlock = {};
+    for (const k of ['ton', 'aunt']) castBlock[k] = new THREE.Box3(new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 61, 0));
+    function castSolid() { for (const k in castBlock) { const P = cast[k], b = castBlock[k], on = !!(P && P.group.visible && !P.hidden), g = P.group.position, r = 0.32;
+      b.min.set(g.x - r, on ? 0 : 60, g.z - r); b.max.set(g.x + r, on ? 1.5 : 61, g.z + r); } }
+    for (const k in castBlock) whenReady(cast[k], castSolid);
 
 

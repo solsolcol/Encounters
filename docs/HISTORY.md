@@ -8700,6 +8700,27 @@ What the baseline contains, by release:
     Six standing rules (CLAUDE.md): a way out is proved shut by the flood; a cut changes what is looked at; a fit is
     given the extent of what it holds; a quote of his is found in his own message; a probe that seeks a film puts
     its black back; a film is measured as it plays.
+- **v25.6** EPISODE 4 CHAPTER 3, A PREVIEW TO WALK: THE GROUND OF THE WAI KRU (11 Nov 2026). Not a release of the
+    chapter: the first of the three preview deploys its build plan asks for (docs/V26.0-E4C3-BUILD.md, D12 and
+    CP3.6), so Chad can walk the place and hold it against his photographs while the play, the films and the sound
+    are built. The chapter is REGISTERED AS A PREVIEW (`preview: true`, the forty-second seam): it is opened only by
+    `?ch=e4c3`, it saves and unlocks nothing, the selector says "In the works", and nothing else in the game can
+    reach it; the seventeen released chapters and the engine are as v25.5 left them (no engine file is changed).
+    WHAT STANDS: the turf, the offering tables dressed from his photographs 3, 4, 9 and 10, the pole and its flags,
+    the banners, the tents, THE HALL rebuilt from his four later photographs (13 to 16) and held against 15 by
+    measure, the master's corner from 1, 5 and 6 (the bench faces the tables, two sit on it, the lime pole at its
+    front right), sixteen people made end to end (a reference on white in an A pose, Meshy at its highest settings,
+    its rig, its takes) at three levels each on one skeleton, a crowd of 43 on 24 hidden skeletons solved for
+    variety, Grandmaster Pho in look D with three monks. No story, no sound and no film yet: day one only.
+    MEASURED ON A PHONE'S FRAME (tools/probes/drawn.mjs, counted at the WebGL calls): 1,534,000 triangles a frame
+    from the spawn as first built; 878,000 with a far level for thirty things (masters/v26.0/props/lods.sh), under
+    episode 4 chapter 1's 1,049,000, which his phone already plays. Texture memory about 700 MB (chapter 1: 1,109).
+    The build's own record is the tracker; its commits begin `v26.0 (build)`. DEPLOYED: `6af4bdcb3fbc2e878db379c5`, every served file
+    compared with dist (451 identical), the cache headers in force. The engine and the seventeen released chapters
+    are the bytes v25.5 shipped (no file of theirs is in the diff); the chapter booted on a phone's frame with no
+    page error before it went live. ASKED OF CHAD with the link: the photographs of his album (Facebook answers its
+    link with a login page; not opened); whether the sign's generic words should be other words; what the small
+    golden figure at the fountain's west end is.
 
 ## The sheet, version by version
 
