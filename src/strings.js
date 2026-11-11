@@ -299,6 +299,12 @@ Object.assign(window.__TEXT__, {
   'event.surface':       'COME BACK UP',
   'event.surfaceWhere':  'Drag up to climb back',
   'event.surfaceWhereKey': 'Drag up, or tap W or ↑ again and again',
+  // v26.0 · S46: OPEN AND CLOSE (the breath) — its word in the panel, where the hold goes (a phone; a desktop), and its two words
+  'event.breath':        'OPEN AND CLOSE',
+  'event.breathWhere':   'Hold anywhere to open. Lift to close.',
+  'event.breathWhereKey': 'Hold the mouse button, E or Space to open. Let go to close.',
+  'event.breathOpen':    'OPEN',
+  'event.breathClose':   'CLOSE',
   'event.focus':         'TAP THE LIGHT',
   'event.focusKey':      'CLICK THE LIGHT',            // v21.0: the same, on a desktop
   // v24.0 · S44: WHAT CHANGED? — its word in the panel, and where the taps go (a phone; a desktop)

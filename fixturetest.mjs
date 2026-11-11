@@ -409,6 +409,48 @@ K.trembleSeam = await p.evaluate(async () => {
 }).catch(() => false);
 await settle();
 
+/* v26.0: THE PLAY LENS (the forty-seventh seam) — kit.lens(40) narrows the world's lens in play and kit.lens(null)
+   gives the world's own back; until a chapter asks, nothing here writes the lens at all (took is false and the angle is
+   the world's); a film takes the lens at its start, and the chapter's borrowed one is let go there */
+K.lensSeam = await p.evaluate(async () => {
+  const E = window.__enc;
+  const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
+  const a = E.lens();
+  E.kit.lens(40, { secs: 0 }); await frames(3);
+  const b = E.lens();
+  E.kit.lens(null, { secs: 0 }); await frames(3);
+  const c = E.lens();
+  return a.took === false && a.fov === 72 && b.took === true && Math.abs(b.fov - 40) < 1e-6 && c.took === false && c.fov === 72;
+}).catch(() => false);
+/* it eases (some angle between the two is drawn on the way), and arrives exactly */
+K.lensEases = await p.evaluate(async () => {
+  const E = window.__enc; const seen = new Set();
+  E.kit.lens(50, { secs: 1.2 });
+  const t0 = performance.now();
+  await new Promise(res => { const f = () => { seen.add(+E.lens().fov.toFixed(2)); if (performance.now() - t0 > 4000 || E.lens().fov === 50) res(); else requestAnimationFrame(f); }; requestAnimationFrame(f); });
+  const mid = [...seen].some(v => v < 72 && v > 50), end = E.lens().fov === 50;
+  E.kit.lens(null, { secs: 0 }); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+  return mid && end && E.lens().fov === 72;
+}).catch(() => false);
+/* THE HUSH (the forty-eighth seam) — kit.hush(1) lays a low-pass between the background bus and the master, and at 0
+   the filter is OUT of the path again (wired false: the bus goes to the master as it always did); a chapter that never
+   asks never has the node made */
+K.hushSeam = await p.evaluate(async () => {
+  const E = window.__enc;
+  const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
+  const a = E.hush();
+  E.kit.hush(1, { secs: 0 }); await frames(3);
+  const b = E.hush();
+  E.kit.hush(0.5, { secs: 0 }); await frames(2);
+  const m = E.hush();
+  E.kit.hush(0, { secs: 0 }); await frames(3);
+  const c = E.hush();
+  /* (with no sound yet the bus does not exist and nothing can be wired: then only the level is checked) */
+  const wired = !b.bus || (b.wired === true && b.hz <= 430 && m.wired === true && m.hz > 430 && m.hz < 18000 && c.wired === false);
+  return a.k === 0 && a.wired === false && a.node === false && b.k === 1 && m.k === 0.5 && c.k === 0 && wired;
+}).catch(() => false);
+await settle();
+
 /* v22.0: THE COLD (the thirty-third, -fourth and -fifth seams) — kit.chill shows the edge layer with a blur and
    puts a filter on the canvas, and at 0 takes both away entirely; kit.pulse beats on the wall clock at the rate
    asked (a beat is counted as it lands), its erratic heart comes early and drops beats, and null hands the monitor
@@ -542,6 +584,13 @@ async function runEvent(opts, drive) {
     // v23.0: a craft's steps and its foam, the same way
     if (o.stepTag) { const t = o.stepTag; o.onStep = i => { (window[t] = window[t] || []).push(i); }; }
     if (o.foamTag) { const t = o.foamTag; o.onFoam = () => { window[t] = (window[t] || 0) + 1; }; }
+    // v26.0: a breath's reports, its level and its states (each state's first moment on the event's own clock), the same way
+    if (o.breathTag) { const t = o.breathTag, G = window[t] = { reps: [], enough: [], idle: [], levels: 0, max: 0, states: [] }, lead = o.breathLead;
+      o.onBreath = (r) => { G.reps.push(r); return lead; };
+      o.onEnough = (i) => { G.enough.push(i); };
+      o.onIdle = (i) => { G.idle.push(i); };
+      o.onLevel = (k, held, i, st) => { G.levels++; G.max = Math.max(G.max, k); const L = G.states[G.states.length - 1];
+        if (!L || L[0] !== st || L[1] !== i) G.states.push([st, i, window.__enc.kitDebug().event.t]); }; }
     // v21.2: a steady focus target's ready() reads a flag the check flips
     if (o.readyTag) { const t = o.readyTag; o.targets = o.targets.map(q => Object.assign({}, q, { ready: () => !!window[t] })); }
     // a rapid-tap event is tapped from inside the page, on its own timer
@@ -1873,6 +1922,78 @@ r = await runEvent({ kind: 'yield', fill: 0.4, auto: true, autoAfter: 9999 }, as
   await untilEv(evGone, null, 30000);
 });
 K.yieldAutoTapLatched = r.ok === true;
+/* S46 · BREATH (v26.0), OPEN AND CLOSE: hold to open, let go to close. Every check drives the real press path and waits
+   on the event's own state, never a stopwatch (this box draws a frame a second; a held frame credits a second at most,
+   so each band here is far wider than that). */
+{
+  const inBand = () => { const d = window.__enc.kitDebug().event; return !d || ((d.bState === 'open' || d.bState === 'pull') && d.bk >= d.bE); };
+  const stateIs = (st) => { const d = window.__enc.kitDebug().event; return !d || d.bState === st; };
+  const tag = () => p.evaluate(() => window.__br);
+  /* let go inside the band: closed in time; the gain is paid on the spot; the chapter was told the band was reached and
+     was handed the level every frame; the ring stood on the screen */
+  /* (what a breath paid is read from its own REPORT, at the moment it charged: the fixture's ghost drains sanity the whole
+     time and a worn amulet may soak a cost, so the bars themselves are no measure here. Awareness nothing else moves.) */
+  const awWas = await p.evaluate(() => { const a = window.__enc.stats.awareness; window.__enc.stats.awareness = 50; return a; });   // (room to gain; put back below)
+  let aw0 = 50;
+  r = await runEvent({ kind: 'breath', breaths: [{ enough: 0.4, edge: 60, told: true }], lead: 0.1, gain: 2, cost: 2, breathTag: '__br', at: { sx: 0.5, sy: 0.6 } }, async () => {
+    await untilEv(stateIs, 'wait');
+    K.breathRing = await p.evaluate(() => { const el = document.getElementById('evBreath'); return !!el && !el.classList.contains('hide') && el.classList.contains('live'); });
+    await press(); await untilEv(inBand);
+    K.breathToldClose = await p.evaluate(() => document.getElementById('evPrompt').textContent === 'CLOSE');
+    await release();
+  });
+  let G = await tag();
+  K.breathClosed = r.kind === 'breath' && r.ok === true && r.closed === 1 && r.held === 0 && r.unopened === 0 && r.breaths[0].result === 'closed' && r.score === 1;
+  K.breathGainPaid = Math.abs(await p.evaluate(() => window.__enc.stats.awareness) - (aw0 + 2)) < 1e-9 && r.breaths[0].gain === 2 && r.breaths[0].paid === undefined;
+  await p.evaluate((a) => { window.__enc.stats.awareness = a; }, awWas);
+  K.breathCallbacks = G.reps.length === 1 && G.enough.join() === '0' && G.levels > 0 && G.max > 0 && G.max < 1;
+  /* held to the edge: it is closed FOR him (the cost paid on the spot), the level falls though the finger is still down,
+     and the next breath does not begin until that finger has lifted; then it is his again */
+  r = await runEvent({ kind: 'breath', breaths: [{ enough: 0.2, edge: 1.2 }, { enough: 0.4, edge: 60 }], lead: 0.1, gain: 0, cost: 3, breathTag: '__br' }, async () => {
+    await untilEv(stateIs, 'wait'); await press();
+    await untilEv(() => { const d = window.__enc.kitDebug().event; return !d || (d.bi === 1 && d.bState === 'lead' && d.bk <= 0); });
+    K.breathHeldPaid = await p.evaluate(() => { const q = window.__br.reps; return q.length === 1 && q[0].result === 'held' && q[0].paid === -3; });   // (charged already: his finger is still down)
+    await settle(); await settle();
+    K.breathWaitsForLift = await p.evaluate(() => { const d = window.__enc.kitDebug().event; return !!d && d.bi === 1 && d.bState === 'lead'; });
+    await release(); await untilEv(stateIs, 'wait'); await press(); await untilEv(inBand); await release();
+  });
+  G = await tag();
+  K.breathHeld = r.held === 1 && r.closed === 1 && r.breaths[0].result === 'held' && r.breaths[0].paid === -3 && r.breaths[1].result === 'closed' && r.ok === true && Math.abs(r.score - 0.5) < 1e-9;
+  /* let go under the band: not opened; that breath is taken once more (and a tap shorter than a frame is still a try);
+     the second time it counts, whatever he did; nothing is paid */
+  aw0 = await p.evaluate(() => window.__enc.stats.awareness);
+  r = await runEvent({ kind: 'breath', breaths: [{ enough: 40, edge: 60 }], lead: 0.1, breathTag: '__br' }, async () => {
+    await untilEv(stateIs, 'wait');
+    await p.evaluate(() => { window.__enc.evPress(); window.__enc.evRelease(); });        // down and up in one task: no frame saw it down
+    await untilEv(() => window.__br.reps.length >= 1);
+    await untilEv(stateIs, 'wait'); await press(); await untilEv(stateIs, 'open'); await release();
+  });
+  G = await tag();
+  K.breathUnopened = r.unopened === 1 && r.closed === 0 && r.breaths.length === 1 && r.ok === false && G.reps.length === 2 && G.reps[0].again === true && G.reps[1].again === false;
+  K.breathUnopenedFree = Math.abs(await p.evaluate(() => window.__enc.stats.awareness) - aw0) < 1e-9 && G.reps.every(q => q.gain === undefined && q.paid === undefined);
+  /* E holds it as a finger does */
+  r = await runEvent({ kind: 'breath', breaths: [{ enough: 0.4, edge: 60 }], lead: 0.1, gain: 0 }, async () => {
+    await untilEv(stateIs, 'wait'); await p.keyboard.down('KeyE'); await untilEv(inBand); await p.keyboard.up('KeyE');
+  });
+  K.breathKey = r.closed === 1;
+  /* a breath that pulls goes on opening after he lets go, then is his */
+  r = await runEvent({ kind: 'breath', breaths: [{ enough: 0.4, edge: 60, pull: 0.6 }], lead: 0.1, gain: 0, breathTag: '__br' }, async () => {
+    await untilEv(stateIs, 'wait'); await press(); await untilEv(inBand); await release();
+  });
+  G = await tag();
+  K.breathPull = r.closed === 1 && G.states.some(q => q[0] === 'pull');
+  /* the chapter's answer to a report is how long the next breath waits (the length of what it then says) */
+  r = await runEvent({ kind: 'breath', breaths: [{ enough: 0.4, edge: 60 }, { enough: 0.4, edge: 60 }], lead: 0.1, gain: 0, breathTag: '__br', breathLead: 1.4 }, async () => {
+    for (let k = 0; k < 2; k++) { await untilEv((i) => { const d = window.__enc.kitDebug().event; return !d || (d.bi === i && d.bState === 'wait'); }, k); await press(); await untilEv(inBand); await release(); }
+  });
+  G = await tag();
+  { const lead1 = G.states.find(q => q[0] === 'lead' && q[1] === 1), wait1 = G.states.find(q => q[0] === 'wait' && q[1] === 1);
+    K.breathLeadIsTheChapters = r.closed === 2 && !!lead1 && !!wait1 && wait1[2] - lead1[2] >= 1.4 - 1e-6; }
+  /* nobody touches it: the chapter is told once, and as long again later the breath is counted; it never soft-locks */
+  r = await runEvent({ kind: 'breath', breaths: [{ enough: 0.4, edge: 60 }], lead: 0.1, idle: 0.5, breathTag: '__br' }, null);
+  G = await tag();
+  K.breathNeverLocks = r.unopened === 1 && r.ok === false && G.idle.join() === '0' && G.reps.length === 1 && G.reps[0].again === false;
+}
 /* S39 · SURFACE: a finger dragging up climbs back; left alone it slips — sanity paid, never under the floor — and
    after `secs` it gives up for him (never a soft-lock) */
 r = await runEvent({ kind: 'surface', secs: 40, start: 0.3, sink: 0.04, pull: 0.04, goal: 0.8, hold: 0.2, lead: 0.2 }, async () => {
@@ -1907,7 +2028,8 @@ if (K.surfaceInFilm) {
 }
 /* and each briefing SHOWS its game (Chad's v18.2 rule): the kind's own picture — a fingertip circling a cap, a ring
    filling under a pressing finger, a mark climbing its gauge */
-for (const [kind, pic, extra] of [['craft', 'twist', { steps: [{ g: 'tap' }] }], ['yield', 'press', { fill: 0.2 }], ['surface', 'surface', { secs: 0.6 }]]) {
+for (const [kind, pic, extra] of [['craft', 'twist', { steps: [{ g: 'tap' }] }], ['yield', 'press', { fill: 0.2 }], ['surface', 'surface', { secs: 0.6 }],
+                                  ['breath', 'breath', { breaths: [{ enough: 0.3, edge: 60 }], lead: 0.1 }]]) {   // (v26.0: and a ring opening under a held finger)
   let shown = false;
   r = await runEvent(Object.assign({ kind, brief: 'How it is played.' }, extra), async () => {
     shown = await p.evaluate(pic => { const dm = document.getElementById('evDemo');
@@ -1915,6 +2037,8 @@ for (const [kind, pic, extra] of [['craft', 'twist', { steps: [{ g: 'tap' }] }],
     await tapOnce();                      // START
     if (kind === 'craft') { await p.waitForTimeout(300); await tapOnce(); }
     if (kind === 'yield') { await press(); await untilEv(evGone, null, 30000); await release(); }
+    if (kind === 'breath') { await untilEv(() => { const d = window.__enc.kitDebug().event; return !d || d.bState === 'wait'; }); await press();
+      await untilEv(() => { const d = window.__enc.kitDebug().event; return !d || (d.bState === 'open' && d.bk >= d.bE); }); await release(); }
   });
   K['brief_' + kind] = shown && r.ok === true;
 }
@@ -2070,12 +2194,14 @@ await p.waitForTimeout(1500);
 out.aliveAfterSwap = await p.evaluate(() =>
   isFinite(window.__enc.pileDist()) && window.__enc.getState() !== 'error');
 /* v23.0 · S40: and kitReset clears a pose (here, at the end — it clears the conduct the card above read) */
-await p.evaluate(() => { window.__enc.kit.handPose('cross', 1, { secs: 0 }); window.__enc.kit.rain(1); });   // (v24.0: and rain, for the reset to clear)
+await p.evaluate(() => { window.__enc.kit.handPose('cross', 1, { secs: 0 }); window.__enc.kit.rain(1); window.__enc.kit.lens(44, { secs: 0 }); window.__enc.kit.hush(1, { secs: 0 }); });   // (v24.0: and rain, for the reset to clear; v26.0: a borrowed lens and a hush)
 await until(() => window.__enc.hpose().on && window.__enc.armNow().lv, 20000).catch(() => {});
 await p.evaluate(() => window.__enc.kitReset());
 await p.waitForTimeout(400);
 K.hposeClearedByReset = await p.evaluate(() => { const e = window.__enc, a = e.armNow(); return e.hpose().on === false && a.lv === false; });
 K.rainClearedByReset = await p.evaluate(() => { const w = window.__enc.wxState(); return !w.visible && w.k === 0 && w.thunder === 0; });   // v24.0 (S45)
+K.lensClearedByReset = await p.evaluate(() => { const l = window.__enc.lens(); return l.took === false && l.fov === 72; });               // v26.0 (S47)
+K.hushClearedByReset = await p.evaluate(() => { const h = window.__enc.hush(); return h.k === 0 && h.wired === false; });                 // v26.0 (S48)
 
 console.log(JSON.stringify(out, null, 1));
 const MUST = ['bootedFixture', 'noChapterAssets', 'blockersFromChapter', 'cardShowsFixture',

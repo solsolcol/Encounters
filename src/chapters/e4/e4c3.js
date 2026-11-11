@@ -165,8 +165,8 @@
     /* units metres, y up; x east, z south; the origin the middle of the turf (the tracker's §10). Play begins at the
        turf's south edge, turned north to the offering tables: what a portrait phone must see first. */
     spawn:     { x: -4.55, y: 1.62, z: 11.2, rot: 0 },    // (Ton, 2.5 m ahead, stands inside a portrait phone's eighteen degrees: photographed)
-    shrine:    { x: 0, z: -11.2 },            // the engine's anchor (ghost: null): the offering tables
-    ghostHome: { x: 0, z: -11.2 },
+    shrine:    { x: 6.33, z: 9.03 },          // the engine's anchor (ghost: null): where Grandmaster Pho sits, the chapter's pile (c_cast.js PHO_AT)
+    ghostHome: { x: 6.33, z: 9.03 },
     /* the ground he is kept on: the turf, the gravel before the tables and the tents' fronts (stage.keepIn is the same box) */
     bounds:    { minX: -10.8, maxX: 10.8, minZ: -9.8, maxZ: 12.4 },
 

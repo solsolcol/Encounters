@@ -4264,6 +4264,7 @@ const EV_DEMO = {
   yield: 'press',                        // v23.0: a fingertip pressing and holding while a ring fills
   surface: 'surface',                    // v23.0: a mark climbing a gauge under a fingertip dragging up, sinking when let go
   change: 'change',                      // v24.0: a small room that blinks; one thing moves in the dark and a fingertip taps it; a blink where nothing moves and the finger holds back
+  breath: 'breath',                      // v26.0: a ring that opens under a held fingertip into its band, and shuts when the finger lifts
 };
 const EV_DEFAULT = {
   tap:       { secs: 4 },
@@ -4330,14 +4331,22 @@ const EV_DEFAULT = {
      player taps only what changed. A right tap pays `hit` awareness, a wrong one costs `falseCost` sanity, a change left
      untapped costs `miss` awareness — each on the spot, each a minigame's price (evCut). `tol` is how near a tap must
      land, as a share of the screen's shorter side */
-  change:    { secs: 0, lit: 2.5, dark: 1.5, lead: 0.6, hit: 3, falseCost: 3, miss: 1, tol: 0.11 }
+  change:    { secs: 0, lit: 2.5, dark: 1.5, lead: 0.6, hit: 3, falseCost: 3, miss: 1, tol: 0.11 },
+  /* v26.0: BREATH — OPEN AND CLOSE (the forty-sixth seam, see evBreathFrame): `breaths` is a list of { enough, edge,
+     lead, pull, told }, in seconds of HOLDING. Hold to open, let go to close. Let go between `enough` and `edge`: closed
+     in time (`gain` of `gainStat`, on the spot). Held to the edge: it is closed for him (`cost` of `costStat`, a
+     minigame's price). Let go under `enough`: not opened; that breath is taken once more, then counts whatever he
+     does. `fall` is how fast the level falls once let go (levels a second); `idle` the seconds a breath waits for a
+     first press before the chapter is told (`onIdle`), and as long again before it is counted not opened: it can
+     never soft-lock */
+  breath:    { secs: 0, fall: 1.6, idle: 20, lead: 0.5, gain: 2, cost: 2, gainStat: 'awareness', costStat: 'sanity' }
 };
 // the literals texttest looks for; the kind picks the row
 const EV_LABEL = { tap: 'event.tap', timed: 'event.timed', mash: 'event.mash', hold: 'event.hold',
                    stabilise: 'event.stabilise', heartbeat: 'event.heartbeat', focus: 'event.focus',
                    sequence: 'event.sequence', match: 'event.match', resist: 'event.resist',
                    steady: 'event.steady', craft: 'event.craft', yield: 'event.yield', surface: 'event.surface',
-                   change: 'event.change' };
+                   change: 'event.change', breath: 'event.breath' };
 /* ------------------------------------------------------ v9.3 · THE LADDER
    Chad, of the minigames: "no stakes, no damage, no repercussions ... they
    were supposed to require precise timing to pass, and every mistimed tap or
@@ -4686,7 +4695,7 @@ function evBrief() {
   $('evMatch').classList.add('hide');
   $('evDot').classList.add('hide');
   $('evSteady')?.classList.add('hide');   // v22.0
-  for (const id of ['evCraft', 'evYield', 'evSurface']) $(id)?.classList.add('hide');   // v23.0
+  for (const id of ['evCraft', 'evYield', 'evSurface', 'evBreath']) $(id)?.classList.add('hide');   // v23.0 (v26.0: and the breath's ring)
   snd('uiclick', 0.3);
 }
 function evStart() {
@@ -4747,6 +4756,7 @@ function evBegin() {
   if (e.kind === 'steady') $('evNote').textContent = o.whereWord || T(HAS_TOUCH ? 'event.steadyWhere' : 'event.steadyWhereKey');   // v22.0: where the drag goes
   if (e.kind === 'yield') $('evNote').textContent = o.whereWord || T(HAS_TOUCH ? 'event.yieldWhere' : 'event.yieldWhereKey');       // v23.0
   if (e.kind === 'surface') $('evNote').textContent = o.whereWord || T(HAS_TOUCH ? 'event.surfaceWhere' : 'event.surfaceWhereKey');
+  if (e.kind === 'breath') $('evNote').textContent = o.whereWord || T(HAS_TOUCH ? 'event.breathWhere' : 'event.breathWhereKey');   // v26.0 (a press anywhere: it keeps the lock, as a yield does)
   if (e.kind === 'sequence') evShowItem();
   /* v9.4: a drag needs a cursor, and under pointer lock there is none - the
      mouse's clientX/clientY freeze, so the tiles could never be picked up.
@@ -4817,7 +4827,7 @@ function evResolve(extra) {
     $('evDot').classList.add('hide'); $('evDrag').classList.add('hide');
     $('evDot').classList.remove('steady', 'pop');   // v21.2: a steady light's own look goes with its event
     $('evSteady')?.classList.add('hide');            // v22.0: and the steady ring with its
-    for (const id of ['evCraft', 'evYield', 'evSurface']) $(id)?.classList.add('hide');   // v23.0: the hands-on hints with theirs
+    for (const id of ['evCraft', 'evYield', 'evSurface', 'evBreath']) $(id)?.classList.add('hide');   // v23.0: the hands-on hints with theirs (v26.0: the breath's)
     $('evMatch').classList.add('hide');
     $('evIcon').textContent = ''; $('evCombo').textContent = '';
     $('evSrc').textContent = ''; $('evDst').textContent = '';
@@ -4834,6 +4844,10 @@ function evResolve(extra) {
   if (e.kind === 'craft') r.care = extra.care !== undefined ? !!extra.care : e.care !== false;
   if (e.kind === 'surface') { r.slips = e.slips || 0; r.gaveUp = !!extra.gaveUp; r.slipPaid = e.slipPaid || 0; }
   if (e.kind === 'change') { r.right = e.chRight || 0; r.wrong = e.chWrong || 0; r.missed = e.chMissed || 0; r.rounds = (e.chLog || []).slice(); }   // v24.0 (S44)
+  /* v26.0 (S46): every breath and how it ended (closed in time, held to the edge, or never opened), and the counts */
+  if (e.kind === 'breath') { r.breaths = (e.bLog || []).slice();
+    r.closed = r.breaths.filter(b => b.result === 'closed').length; r.held = r.breaths.filter(b => b.result === 'held').length;
+    r.unopened = r.breaths.filter(b => b.result === 'unopened').length; }
   const aw = e.o.award;
   if (aw && aw.stat && !r.aborted && !r.skipped) {
     if (e.band.length) {
@@ -5052,6 +5066,7 @@ function evPress(x, y, pid, ts) {
        shorter than a frame (a slow phone, or the probe's 0.3 s press at a frame a second) was never seen down, and the
        little one's door never opened */
     case 'yield': e.yPressed = true; break;
+    case 'breath': e.bTap = true; break;                   // v26.0: a tap shorter than a frame is still a press (opened and shut at once)
     case 'surface': if (e.keyHeld) evSurfaceRise(e, o.keyRise); else e.sy = y; break;   // v23.0: a key strikes it up; a finger drags it
     case 'change': evChangePress(e, x, y); e.down = false; break;   // v24.0: every tap is its own (S44)
     case 'heartbeat': {
@@ -5128,7 +5143,7 @@ function evPress(x, y, pid, ts) {
 }
 /* v22.0: a steady drag is one finger's; v23.0 CP13: and so are the hands-on gestures — a second finger landing on a
    phone (the hand that holds it) moved a twist's circle and its lifting let go of a held yield */
-const ONE_FINGER = new Set(['steady', 'craft', 'yield', 'surface']);
+const ONE_FINGER = new Set(['steady', 'craft', 'yield', 'surface', 'breath']);
 function evRelease(pid) {
   const e = ev; if (!e || !e.down) return;
   // v22.0: a steady drag is one finger's — a second thumb lifting does not end it
@@ -5581,6 +5596,110 @@ function evSurfaceFrame(e, o, wdt) {
 /* (v23.0 CP13: never before its first frame has set it up — a W struck between START and that frame made e.lv defined,
    so the set-up never ran: no pulls, a NaN hold that could never be met, and the gauge left hidden) */
 function evSurfaceRise(e, k) { if (e.lv === undefined) return; e.lv = Math.min(1, e.lv + k); }
+/* v26.0 · BREATH — OPEN AND CLOSE, THE FORTY-SIXTH SEAM (episode 4 chapter 3: what Grandmaster Pho teaches first is
+   control). A number of breaths, one after another. In each, a LEVEL rises while anything is held (a finger, the
+   mouse, E or Space) and falls when it is let go; the level is 1 at that breath's `edge` (seconds of holding) and its
+   band begins at `enough` (seconds). The level is handed to the chapter every frame (`onLevel(k, held, i, state)`),
+   and the chapter lays its world on it: its sound, its light, whatever opening is.
+     let go inside the band        -> 'closed'    (he opened, and shut it himself): `gain` paid on the spot
+     held to the edge              -> 'held'      (it is closed FOR him: the level falls though his finger is down, and
+                                                   the next breath does not begin until that finger has lifted): `cost`
+                                                   paid on the spot, a minigame's price (evCut)
+     let go under the band         -> 'unopened'  (the first time, that breath is taken once more: `again`; the second
+                                                   time it counts, whatever he did)
+   `onEnough(i)` when the level first reaches the band (the chapter may say so: a breath the player is TOLD in);
+   `onBreath(report)` at each end, whose answer, if a number, is the seconds before the next breath is live (the length
+   of whatever the chapter then says); `pull` (seconds) makes a breath go on opening that long after he lets go.
+   The hold is the time the finger was really down (e.wdtHeld, v24.1). It waits for a press as a yield does, and can
+   never soft-lock: after `idle` seconds without one the chapter is told (`onIdle`), and after as long again the breath
+   is counted not opened. Never graded on touch latency: its bands are seconds wide. Its own picture, `breath`. */
+function evBreathFrame(e, o, wdt) {
+  const B = Array.isArray(o.breaths) && o.breaths.length ? o.breaths : [{ enough: 2, edge: 5 }];
+  const call = (f, ...a) => { if (typeof f === 'function') { try { return f(...a); } catch (err) { console.warn('breath callback failed', err); } } return undefined; };
+  if (e.bi === undefined) {
+    e.bi = 0; e.bk = 0; e.bHeld = 0; e.bPeak = 0; e.bState = 'lead'; e.bT = 0; e.bTry = 0; e.bLog = []; e.bIdle = 0; e.bLeadNext = null; e.bTap = false;
+    $('evBreath')?.classList.remove('hide');
+  }
+  const b = B[Math.min(e.bi, B.length - 1)];
+  const edge = Math.max(0.3, +b.edge || 5), enough = Math.min(edge - 0.1, Math.max(0.05, +b.enough || 2)), kE = enough / edge;
+  e.bE = kE;
+  const held = !!(e.down || e.keyHeld);
+  e.bT += wdt;
+  let end = null;
+  switch (e.bState) {
+    case 'lead': {          // not live yet (a line is being said): a press does nothing, and a finger still down from the last breath must lift
+      e.bk = Math.max(0, e.bk - o.fall * wdt); e.bTap = false;
+      const lead = e.bLeadNext != null ? e.bLeadNext : (b.lead != null ? +b.lead : +o.lead || 0);
+      if (e.bT >= lead && !held) { e.bState = 'wait'; e.bT = 0; e.bIdle = 0; e.bIdled = false; e.bLeadNext = null; }
+      break; }
+    case 'wait':            // live, and waiting for the press
+      e.bk = Math.max(0, e.bk - o.fall * wdt);
+      if (held) { e.bState = 'open'; e.bHeld = 0; e.bPeak = 0; e.bEnoughSaid = false; e.bTap = false; }
+      else if (e.bTap) { e.bTap = false; e.bHeld = 0; e.bPeak = 0; end = 'unopened'; }
+      else if (o.idle > 0) { e.bIdle += wdt;
+        if (e.bIdle >= o.idle && !e.bIdled) { e.bIdled = true; call(o.onIdle, e.bi); }
+        if (e.bIdle >= o.idle * 2) { e.bHeld = 0; e.bPeak = 0; e.bTry = 1; end = 'unopened'; } }
+      break;
+    case 'open':
+      if (held) {
+        e.bHeld += (e.wdtHeld ?? wdt); e.bk = Math.min(1, e.bHeld / edge); e.bPeak = Math.max(e.bPeak, e.bk);
+        if (!e.bEnoughSaid && e.bk >= kE) { e.bEnoughSaid = true; call(o.onEnough, e.bi); }
+        if (e.bk >= 1) end = 'held';
+      } else if ((+b.pull || 0) > 0 && e.bk >= kE) { e.bState = 'pull'; e.bPullT = 0; }
+      else end = e.bk >= kE ? 'closed' : 'unopened';
+      break;
+    case 'pull':            // it goes on opening a moment after he lets go
+      e.bPullT += wdt; e.bHeld += wdt; e.bk = Math.min(1, e.bHeld / edge); e.bPeak = Math.max(e.bPeak, e.bk);
+      if (e.bk >= 1) end = 'held'; else if (e.bPullT >= +b.pull) end = 'closed';
+      break;
+    case 'close':           // shutting: the level falls to nothing whatever his finger does
+      e.bk = Math.max(0, e.bk - o.fall * wdt);
+      if (e.bk <= 0) {
+        if (e.bNext) { e.bi++; e.bTry = 0; }
+        if (e.bi >= B.length) { const n = e.bLog.filter(q => q.result === 'closed').length; e.bState = 'done';
+          if (ev === e) evResolve({ ok: n > 0, score: n / B.length }); return; }
+        e.bState = 'lead'; e.bT = 0;
+      }
+      break;
+    default: break;
+  }
+  if (end) {
+    const rep = { i: e.bi, result: end, peak: +e.bPeak.toFixed(3), held: +e.bHeld.toFixed(2), again: false };
+    if (end === 'unopened' && e.bTry === 0) { rep.again = true; e.bTry = 1; }
+    else {
+      e.bLog.push(rep);
+      /* (the report says what was really paid: the fixture reads it there, at the moment it was charged, because a ghost
+         may be draining the same stat all the while) */
+      if (end === 'closed' && +o.gain) { const s0 = stats[o.gainStat]; kitAward(o.gainStat, Math.abs(+o.gain), EV_PRICE); rep.gain = +((stats[o.gainStat] - s0) || 0).toFixed(3); }
+      if (end === 'held' && +o.cost) { rep.paid = evCut(-Math.abs(+o.cost)); kitAward(o.costStat, rep.paid, EV_PRICE); }
+    }
+    if (end === 'held' && o.haptic !== false) haptic([30, 40, 30]);
+    if (end === 'closed' && o.haptic !== false) haptic(24);
+    const w = call(o.onBreath, rep);
+    e.bLeadNext = Number.isFinite(w) ? Math.max(0, +w) : null;
+    e.bNext = !rep.again; e.bState = 'close'; e.bT = 0;
+  }
+  const el = $('evBreath');
+  if (el) {
+    const c = evAt(e);
+    el.style.transform = `translate(${c.x.toFixed(0)}px, ${c.y.toFixed(0)}px)`;
+    el.style.setProperty('--bk', e.bk.toFixed(3)); el.style.setProperty('--be', kE.toFixed(3));
+    el.classList.toggle('held', held && e.bState === 'open');
+    el.classList.toggle('band', (e.bState === 'open' || e.bState === 'pull') && e.bk >= kE);
+    el.classList.toggle('near', (e.bState === 'open' || e.bState === 'pull') && e.bk >= kE + (1 - kE) * 0.7);
+    el.classList.toggle('shut', e.bState === 'close' || e.bState === 'lead');
+    el.classList.toggle('live', e.bState === 'wait');
+    el.classList.toggle('off', !c.on);
+  }
+  /* the word: OPEN while it waits and opens; CLOSE once the band is reached, in a breath he is told in (`told`); a
+     breath he is not told in keeps the panel's own word, and the ring's band is all that says when */
+  const pe = $('evPrompt');
+  if (pe) { const inBand = (e.bState === 'open' || e.bState === 'pull') && e.bk >= kE;
+    const want = inBand ? (b.told ? (o.closeWord || T('event.breathClose')) : (o.prompt || T('event.breath')))
+               : e.bState === 'close' || e.bState === 'lead' ? (o.prompt || T('event.breath')) : (o.openWord || T('event.breathOpen'));
+    if (pe.textContent !== want) pe.textContent = want; }
+  call(o.onLevel, e.bk, held && e.bState === 'open', e.bi, e.bState);
+}
 function evNextItem() {
   const e = ev; e.idx++;
   e.slotT = 0;                       // v9.3: the new item's window starts now
@@ -5711,6 +5830,7 @@ function evFrame(dt, dLookX, dLookY) {
     case 'craft': evCraftFrame(e, o, wdt, bar); break;     // v23.0: the thirty-seventh
     case 'yield': evYieldFrame(e, o, wdt, bar); break;     // v23.0: the thirty-eighth
     case 'surface': evSurfaceFrame(e, o, wdt); break;      // v23.0: the thirty-ninth
+    case 'breath': evBreathFrame(e, o, wdt); break;        // v26.0: the forty-sixth
     case 'stabilise': {
       if (!e.down) { if (e.t > o.grace && e.downAt < 0) evResolve({ ok: false, score: 0 }); break; }
       const steady = 1 - Math.min(1, e.look / o.tol);
@@ -5888,7 +6008,7 @@ function evKey(e, isDown) {
   e.preventDefault();
   /* v23.0: a hands-on kind knows the press is a KEY's (E held twists, slides and holds; a press taps, flicks and
      strikes the surface up) — never the press that closes a briefing */
-  if (ev.kind === 'craft' || ev.kind === 'yield' || ev.kind === 'surface') ev.keyHeld = isDown && !ev.briefing;
+  if (ev.kind === 'craft' || ev.kind === 'yield' || ev.kind === 'surface' || ev.kind === 'breath') ev.keyHeld = isDown && !ev.briefing;   // (v26.0: a breath is held by E or Space too)
   /* v24.0 (CP13): WHAT CHANGED? is a tap ON a thing — a key has nowhere to tap, and the screen's centre was a false tap;
      its brief's START still takes the key */
   if (ev.kind === 'change' && !ev.briefing) return true;
@@ -6448,6 +6568,8 @@ function kitFrame(dt, t, dLookX, dLookY) {
      1 has always had (they are the base game's, and unchanged). */
   document.body.classList.toggle('cardup', state !== 'play');
   weaponFrame(dt);   // v12.0: the weapon's clips, its flash and its rounds
+  kitLensStep();     // v26.0: a chapter's own lens in play, if it asked (returns at once if it never did)
+  hushTick();        // v26.0: and the world's sound closing down, likewise
   // pose
   /* v19.2: on WALL time (the v7.4 law): on the clamped frame step a slow
      phone sank the eye for half a second after a chapter's own wall-clock
@@ -6529,6 +6651,65 @@ function kitFrame(dt, t, dLookX, dLookY) {
 }
 /* every chapter starts the kit clean; a resume re-seeds phase/conduct/choices
    through applyState afterwards */
+/* v26.0 · THE FORTY-SEVENTH SEAM — kit.lens(fov, { secs }): THE PLAY LENS, EASED BY A CHAPTER. Episode 4 chapter 3's
+   one look across a festival ("Look at him": the lens narrows a little on the man in white while the day's sound
+   closes down). The rifle's aim already narrows the play lens (v12.2); this asks the same of a chapter with no rifle.
+   `fov` is the vertical angle in degrees (the world's own is CAM_FOV, 72); `null` eases back to it. Eased on WALL
+   time with a smoothstep, from wherever the lens is. The look's own speed already scales with the lens (the frame's
+   `zk`). It hands back only the lens it TOOK (the v12.3 rule of the rifle's `adsLens`): a chapter that never asks
+   never has the lens written by this, bit for bit; while the rifle is aimed the rifle has the lens; under a film the
+   film has it (a scene's start lets go: playCineFn), and kitReset lets go. */
+const klens = { to: null, from: CAM_FOV, now: CAM_FOV, t0: 0, secs: 0, took: false };
+function kitLens(fov, opts = {}) {
+  klens.from = klens.took ? klens.now : CAM_FOV;
+  klens.to = fov == null ? null : Math.max(20, Math.min(110, +fov || CAM_FOV));
+  klens.secs = Math.max(0, +opts.secs || 0); klens.t0 = performance.now() / 1000;
+  if (klens.to != null) klens.took = true;
+}
+function kitLensStep() {
+  if (!klens.took || state === 'cine') return;
+  const target = klens.to == null ? CAM_FOV : klens.to;
+  const u = klens.secs > 0 ? Math.min(1, (performance.now() / 1000 - klens.t0) / klens.secs) : 1;
+  klens.now = klens.from + (target - klens.from) * (u * u * (3 - 2 * u));
+  if (adsLens) return;                              // the rifle's aim has the lens, and gives back its own
+  camLens(klens.now);
+  if (klens.to == null && u >= 1) { camLens(CAM_FOV); klens.took = false; klens.now = CAM_FOV; }
+}
+function kitLensOff() { if (klens.took && state !== 'cine' && !adsLens) camLens(CAM_FOV); klens.to = null; klens.took = false; klens.now = klens.from = CAM_FOV; }
+/* v26.0 · THE FORTY-EIGHTH SEAM — kit.hush(k, { secs, hz }): THE WORLD'S SOUND CLOSING DOWN. k 0…1 eased on wall time:
+   a low-pass laid between the background bus (`bgGain`: the music, the effects and the beds) and the master, its
+   corner sliding from wide open down to `hz` (420 by default) as k goes to 1, a straight line in pitch. Voices do
+   not pass through that bus (`voiceStage` goes to the master by itself), so a line stays as clear as it was while
+   the day goes under water round it. AT 0 THE FILTER IS OUT OF THE PATH (the bus is wired to the master exactly as
+   it always was, not through a filter opened wide), so a chapter that never asks sounds bit for bit as before.
+   A film drives it from its own clock with `secs: 0` (a seek lands on the same sound); kitReset clears it. */
+const hush = { k: 0, from: 0, to: 0, t0: 0, secs: 0, node: null, wired: false, hz0: 18000, hz1: 420 };
+function kitHush(k, opts = {}) {
+  hush.from = hush.k; hush.to = Math.max(0, Math.min(1, +k || 0));
+  hush.secs = Math.max(0, +opts.secs || 0); hush.t0 = performance.now() / 1000;
+  if (opts.hz) hush.hz1 = Math.max(60, Math.min(8000, +opts.hz));
+  if (!hush.secs) { hush.k = hush.to; hushApply(); }
+}
+function hushApply() {
+  if (!actx || !bgGain) return;                     // nothing has sounded yet: it is laid when the bus exists (hushTick)
+  const want = hush.k > 0.001;
+  try {
+    if (want && !hush.wired) {
+      if (!hush.node) { hush.node = actx.createBiquadFilter(); hush.node.type = 'lowpass'; hush.node.Q.value = 0.7; hush.node.frequency.value = hush.hz0; }
+      bgGain.disconnect(); bgGain.connect(hush.node); hush.node.connect(masterOut()); hush.wired = true;
+    } else if (!want && hush.wired) {
+      bgGain.disconnect(); hush.node.disconnect(); bgGain.connect(masterOut()); hush.wired = false;
+    }
+    if (hush.wired) hush.node.frequency.setTargetAtTime(hush.hz0 * Math.pow(hush.hz1 / hush.hz0, hush.k), actx.currentTime, 0.03);
+  } catch (err) { console.warn('hush failed', err); }
+}
+function hushTick() {
+  if (hush.k === hush.to && hush.wired === (hush.k > 0.001)) return;
+  const u = hush.secs > 0 ? Math.min(1, (performance.now() / 1000 - hush.t0) / hush.secs) : 1;
+  hush.k = u >= 1 ? hush.to : hush.from + (hush.to - hush.from) * u;
+  hushApply();
+}
+function hushOff() { hush.k = hush.from = hush.to = 0; hush.secs = 0; hushApply(); }
 function kitReset() {
   if (ev) evResolve({ ok: false, aborted: true });
   galCurs.clear();                  // v21.27: a gallery's reading is kept for the run, not past it — a chapter replayed
@@ -6557,6 +6738,8 @@ function kitReset() {
   handsOff();                            // v18.0: nor with them still moving on their own
   trem.k = trem.to = 0; trem.t = 0; trem.last = 0;   // v22.0: nor shaking
   coldOff();                             // v22.0: nor cold — no chill at the edges, his own heart back, no smear
+  kitLensOff();                          // v26.0: nor with a borrowed lens (the forty-seventh seam)
+  hushOff();                             // v26.0: nor with the world's sound still closed down (the forty-eighth)
   activeSpot = null;
   if (unl.id) unlockClose('force');      // v14.7: a splash never outlives the run it opened in
   if (cho.ids) chooseClose('force');     // v17.6: nor does a choice
@@ -6680,6 +6863,8 @@ const KIT = {
   captions: kitCaptionsSet,        // v21.30: the thirtieth seam — a voice's words at the bottom of the screen, and what they mean
   ledger: kitLedger,               // v24.0: S43 — his stock book: write a fact or a meaning, read it back (the forty-third seam)
   rain: kitRain,                   // v24.0: S45 — rain round the lens, k 0…1 eased over secs (the forty-fifth seam)
+  lens: kitLens,                   // v26.0: the play lens eased to a chapter's angle, and given back (the forty-seventh seam)
+  hush: kitHush,                   // v26.0: the world's sound closing down under a low-pass, voices untouched (the forty-eighth)
   lightning: kitLightning,         // v24.0: S45 — a flicker of the lights that are already there, a wash, the thunder by its distance
   rainNow: () => wx.k,
   flashNow: () => wx.level,        // v24.0: how bright the lightning is this frame (0 between strokes), for what a chapter painted
@@ -6817,6 +7002,8 @@ function kitDebug() {
                          /* v23.0: the hands-on kinds — a craft's step and its progress, a yield's fill, a surface's level */
                          si: ev.si, sk: ev.sk, steps: ev.steps ? ev.steps.length : undefined, care: ev.care, keyHeld: !!ev.keyHeld,
                          yk: ev.yk, lv: ev.lv, slips: ev.slips, goalT: ev.goalT, pulls: ev.pullN,
+                         /* v26.0: a breath — which one, its level (1 at the edge), where enough begins, its state */
+                         bi: ev.bi, bk: ev.bk, bE: ev.bE, bState: ev.bState, bTry: ev.bTry, bLog: ev.bLog ? ev.bLog.length : undefined,
                          /* v9.4: the rhythm game's run and the match's progress */
                          beat: ev.beat, combo: ev.combo, best: ev.bestCombo,
                          done: ev.done, wrong: ev.wrong } : null,
@@ -13699,6 +13886,7 @@ function playCineFn(sceneFn, onDone, startFade = 0) {
   handsFrom.k = hands.k; handsFrom.t = hands.t; handsFrom.roll = (hands.k > 0 || hands.was > 0) ? camera.rotation.z : 0;
   if (hands.k > 0 || hands.was > 0) snap.camRoll = 0;
   handsOff();
+  kitLensOff();                    // v26.0: and a scene has the lens (a chapter's own play lens lets go here)
   cineDuck = null;                 // a scene starts with the room at full
   cineMusicK = 1;                  // v6.6: and the music at the chapter's level
   camLens(CAM_FOV);                // v6.12: and on the chapter's own lens
@@ -16310,6 +16498,10 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                             heldL: !!heldPropL, held: !!heldProp };
                  },
                  tremble: () => ({ k: +trem.k.toFixed(3), to: trem.to, ox: trem.ox, oy: trem.oy, or: trem.or }),   // v22.0: the shake, for the fixture
+                 /* v26.0: the play lens a chapter borrowed, and the world's sound closed down, for the fixture */
+                 lens: () => ({ fov: camera.fov, to: klens.to, took: klens.took, now: +klens.now.toFixed(3) }),
+                 hush: () => ({ k: +hush.k.toFixed(3), to: hush.to, wired: hush.wired, node: !!hush.node, bus: !!bgGain,
+                                hz: hush.node ? Math.round(hush.hz0 * Math.pow(hush.hz1 / hush.hz0, hush.k)) : null }),
                  /* v22.0: the cold, for the fixture and the probes — the chill's layer and filter as painted, the heart's
                     beats as heard, the smear's draws and copies */
                  cold: () => {

@@ -848,6 +848,51 @@ body.finePtr .wpnBtn{position:relative;margin-bottom:12px}
   64%{transform:translateY(6px)}76%{transform:translateY(16px)}88%{transform:translateY(42px)}100%{transform:translateY(40px)}}
 @keyframes dsf{0%,10%{transform:translateY(48px);opacity:0}16%{transform:translateY(46px);opacity:.95}
   50%{transform:translateY(8px);opacity:.95}58%,100%{transform:translateY(2px);opacity:0}}
+/* v26.0 · breath — a ring that OPENS under a held fingertip, out into its band, and shuts when the finger lifts
+   (open and close: hold to open, lift to close) */
+#evDemo.breath .dbr,#evDemo.breath .dbb,#evDemo.breath .dbd,#evDemo.breath .dbf{display:block}
+#evDemo .dbr{position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;
+  border:2px solid rgba(255,236,200,.85);box-shadow:0 0 12px rgba(240,196,128,.3)}
+#evDemo .dbb{position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;
+  background:radial-gradient(circle,transparent 0 17px,rgba(99,214,200,.36) 18px 26px,transparent 27px)}
+#evDemo .dbd{position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,236,190,.95) 0 46%,rgba(240,196,128,.45) 64%,transparent 70%);
+  animation:dbd 3.4s ease-in-out infinite}
+#evDemo .dbf{position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;
+  background:rgba(255,255,255,.92);box-shadow:0 0 0 4px rgba(255,255,255,.22),0 0 14px rgba(255,255,255,.5);
+  animation:dbf 3.4s ease-in-out infinite}
+@keyframes dbd{0%,10%{transform:scale(.1);opacity:.25}58%{transform:scale(.82);opacity:1}64%{transform:scale(.84);opacity:1}
+  88%,100%{transform:scale(.1);opacity:.25}}
+@keyframes dbf{0%{transform:translate(34px,22px);opacity:0}9%{transform:translate(0,0);opacity:.95}
+  12%,60%{transform:translate(0,0) scale(.8);opacity:.95}68%{transform:translate(0,-6px) scale(1);opacity:.5}
+  78%,100%{transform:translate(34px,22px);opacity:0}}
+/* v26.0 · THE BREATH IN PLAY (the forty-sixth seam) — the world is the minigame, as for the hands-on kinds: the panel
+   small and see-through at the top (or the foot: `low`), and one ring where the chapter puts it. The ring is the EDGE,
+   the teal band inside it is ENOUGH, the light that grows is how far he has opened */
+#event.full.breath{align-items:flex-start;padding-bottom:0;background:transparent;
+  padding-top:calc(max(14px,env(safe-area-inset-top)) + 18px + var(--objH,40px) + 12px)}
+#event.full.breath .evpanel{width:min(84vw,320px);gap:6px;padding:9px 16px;background:rgba(7,8,11,.5)}
+#event.full.breath #evPrompt{font-size:1.02rem;letter-spacing:.16em;min-height:1.2em;font-weight:700;color:#F3E2C0;
+  text-shadow:0 0 12px rgba(240,196,128,.45)}
+#event.breath #evNote{font-size:.8rem;color:#EDE6D4;opacity:.9;letter-spacing:.05em;text-transform:none}
+#event.full.breath.low{align-items:flex-end;padding-top:0;padding-bottom:max(18px,env(safe-area-inset-bottom))}
+#evBreath{position:fixed;left:0;top:0;width:0;height:0;pointer-events:none;z-index:1}
+#evBreath.off{opacity:0}
+#evBreath .bring{position:absolute;left:0;top:0;width:136px;height:136px;margin:-68px 0 0 -68px;border-radius:50%;
+  box-sizing:border-box;border:2px solid rgba(255,236,200,.8);box-shadow:0 0 14px rgba(240,196,128,.3);
+  transition:border-color .2s,box-shadow .2s,opacity .3s}
+#evBreath .bband{position:absolute;left:0;top:0;width:136px;height:136px;margin:-68px 0 0 -68px;border-radius:50%;
+  background:radial-gradient(circle,transparent 0 calc(var(--be,.5) * 66px),rgba(99,214,200,.3) calc(var(--be,.5) * 66px + 1px) 65px,transparent 66px)}
+#evBreath .bdisc{position:absolute;left:0;top:0;width:132px;height:132px;margin:-66px 0 0 -66px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,240,200,.62) 0 52%,rgba(240,196,128,.34) 78%,rgba(240,196,128,.08) 96%,transparent 100%);
+  transform:scale(var(--bk,0));opacity:calc(.35 + .65 * var(--bk,0))}
+#evBreath.band .bdisc{background:radial-gradient(circle,rgba(230,255,246,.7) 0 52%,rgba(99,214,200,.42) 78%,rgba(99,214,200,.1) 96%,transparent 100%)}
+#evBreath.near .bring{border-color:rgba(255,150,120,.95);box-shadow:0 0 18px rgba(255,120,90,.55)}
+#evBreath.shut .bring{opacity:.55}
+#evBreath .bfinger{position:absolute;left:0;top:0;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;
+  background:rgba(255,255,255,.9);box-shadow:0 0 0 5px rgba(255,255,255,.2),0 0 18px rgba(255,255,255,.55);opacity:0;transition:opacity .25s}
+#evBreath.live .bfinger{opacity:1;animation:cHold 2.2s ease-in-out infinite}
+#evBreath.held .bfinger{opacity:0;animation:none}
 /* v23.0 · THE HANDS-ON KINDS IN PLAY — like steady's, the world is the minigame: the panel stands at the TOP, small and
    see-through, and the hint is drawn AT the thing (the prop in his hands, the figure on the altar, the gauge) */
 #event.full.craft,#event.full.yield,#event.full.surface{align-items:flex-start;padding-bottom:0;background:transparent;
@@ -1984,7 +2029,7 @@ body.capsOn #interact{padding-bottom:calc(var(--capTop,170px) + 14px)}
      height (`--objH`, measured by the frame), with 12 px of air. */
   body.hasObj #haunt{padding-top:calc(max(14px,env(safe-area-inset-top)) + 166px + var(--objH,0px) + 12px)}
   /* v21.1: and STAY PRESENT's panel — on a phone it stood at the desktop's +18 px, over the very bars its misses move */
-  #event.full.resist,#event.full.focus,#event.full.steady,#event.full.craft,#event.full.yield,#event.full.surface{padding-top:calc(max(14px,env(safe-area-inset-top)) + 166px + var(--objH,40px) + 12px)}   /* (v22.0: and STEADY's — over the bars its drift and slip move) */
+  #event.full.resist,#event.full.focus,#event.full.steady,#event.full.craft,#event.full.yield,#event.full.surface,#event.full.breath:not(.low){padding-top:calc(max(14px,env(safe-area-inset-top)) + 166px + var(--objH,40px) + 12px)}   /* (v22.0: and STEADY's — over the bars its drift and slip move) */
   /* v24.2 (L5-5): and COME BACK's gauge starts UNDER that panel — at 26vh it stood inside it (x 333–355 of the panel's
      35–355), so its goal line, and the mark the moment it reached it, were behind the panel's words */
   #event.full.surface:not(.low) #evSurface{top:calc(max(14px,env(safe-area-inset-top)) + 166px + var(--objH,40px) + 124px);height:min(40vh,calc(100vh - 430px))}
@@ -3393,7 +3438,7 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
     <span class="stencil" id="evLabel"></span>
     <!-- v10.3: the briefing's looping illustration - a tile dragged from the
          left column onto its slot on the right (shown for demo: 'drag') -->
-    <div id="evDemo" class="hide" aria-hidden="true"><i class="dslot"></i><i class="dslot dst"></i><b class="dtile"></b><span class="dhand"></span><i class="dbar"></i><i class="dfill"></i><i class="dband"></i><span class="dtap"></span><i class="dtgt"></i><i class="dring"></i><i class="dring r2"></i><span class="dhit"></span><i class="dhold"></i><span class="dfinger"></span><span class="dret"></span><i class="dspot"></i><i class="dsring"></i><span class="dstap"></span><i class="dqr"></i><b class="dqm"></b><span class="dqf"></span><i class="dwb"></i><i class="dwr"></i><span class="dwf"></span><i class="dto"></i><i class="dtc"></i><span class="dtf"></span><i class="dpr"></i><i class="dpg"></i><span class="dpf"></span><i class="dsg"></i><b class="dsm"></b><span class="dsf"></span><i class="dcroom"></i><b class="dcthing"></b><b class="dcstill"></b><span class="dcfinger"></span><i class="dcflash"></i></div>
+    <div id="evDemo" class="hide" aria-hidden="true"><i class="dbr"></i><i class="dbb"></i><i class="dbd"></i><span class="dbf"></span><i class="dslot"></i><i class="dslot dst"></i><b class="dtile"></b><span class="dhand"></span><i class="dbar"></i><i class="dfill"></i><i class="dband"></i><span class="dtap"></span><i class="dtgt"></i><i class="dring"></i><i class="dring r2"></i><span class="dhit"></span><i class="dhold"></i><span class="dfinger"></span><span class="dret"></span><i class="dspot"></i><i class="dsring"></i><span class="dstap"></span><i class="dqr"></i><b class="dqm"></b><span class="dqf"></span><i class="dwb"></i><i class="dwr"></i><span class="dwf"></span><i class="dto"></i><i class="dtc"></i><span class="dtf"></span><i class="dpr"></i><i class="dpg"></i><span class="dpf"></span><i class="dsg"></i><b class="dsm"></b><span class="dsf"></span><i class="dcroom"></i><b class="dcthing"></b><b class="dcstill"></b><span class="dcfinger"></span><i class="dcflash"></i></div>
     <!-- v9.7: THREE rings in flight, not one. A single ring had to both
          approach the next beat and show that you were late for the last one,
          and it could do neither: it froze on the target for the whole late
@@ -3418,6 +3463,7 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
        ring at the prop, a yield's ring filling round the figure, the surface's gauge -->
   <div id="evCraft" class="hide" aria-hidden="true"><i class="cprog"></i><i class="cpath"></i><i class="cline"></i><span class="cfinger"></span></div>
   <div id="evYield" class="hide" aria-hidden="true"><i class="yfill"></i><i class="yring"></i><span class="yfinger"></span></div>
+  <div id="evBreath" class="hide" aria-hidden="true"><i class="bband"></i><i class="bdisc"></i><i class="bring"></i><span class="bfinger"></span></div>
   <div id="evSurface" class="hide" aria-hidden="true"><i class="sgauge"></i><i class="sfloor"></i><i class="sgoal"></i><b class="smk"></b><span class="sfing"></span></div>
 </div>
 
