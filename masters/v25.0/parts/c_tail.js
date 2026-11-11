@@ -39,6 +39,46 @@
     strand((r() - 0.5) * 20, 0.4 + r() * 0.15, 0.9, 12, 4, 0.09);
     return done(THREE, c, false);
   }
+  /* (v25.5) THE MASTER'S AURA, three sheets, each white on nothing and tinted by its material (gold as he chants, white
+     as he searches): a soft light the shape of a man sitting (a wide low mass for his crossed legs, his trunk, his head
+     and over it), faded out at its foot where it stands on the floor; a fan of rays, each a thin bright wedge inside a
+     wider faint one, none reaching the sheet's edge; and a soft ring, for the ripples on the mat. No canvas filter is
+     used (iOS has none) */
+  function makeAuraBody(THREE, cnv) {
+    const S = 256, [c, x] = cnv(S);
+    x.clearRect(0, 0, S, S); x.globalCompositeOperation = 'lighter';
+    const blob = (cx, cy, rx, ry, a) => { x.save(); x.translate(cx, cy); x.scale(rx / 100, ry / 100);
+      const g = x.createRadialGradient(0, 0, 0, 0, 0, 100);
+      g.addColorStop(0, `rgba(255,255,255,${a})`); g.addColorStop(0.45, `rgba(255,255,255,${(a * 0.6).toFixed(3)})`); g.addColorStop(0.75, `rgba(255,255,255,${(a * 0.18).toFixed(3)})`); g.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = g; x.fillRect(-100, -100, 200, 200); x.restore(); };
+    blob(128, 178, 126, 72, 0.52); blob(128, 132, 92, 96, 0.5); blob(128, 82, 68, 74, 0.5);
+    x.globalCompositeOperation = 'destination-in';
+    const f = x.createLinearGradient(0, 0, 0, S); f.addColorStop(0, 'rgba(0,0,0,1)'); f.addColorStop(0.78, 'rgba(0,0,0,1)'); f.addColorStop(0.97, 'rgba(0,0,0,0)');
+    x.fillStyle = f; x.fillRect(0, 0, S, S);
+    x.globalCompositeOperation = 'source-over';
+    return done(THREE, c, false);
+  }
+  function makeAuraRays(THREE, cnv) {
+    const S = 512, [c, x] = cnv(S), r = rng(9161), N = 40;
+    x.clearRect(0, 0, S, S); x.save(); x.translate(S / 2, S / 2); x.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < N; i++) {
+      const a = (i + r() * 0.8) / N * Math.PI * 2, len = 150 + r() * 96, w = 0.014 + r() * 0.04, al = 0.1 + r() * 0.2;
+      for (const [ww, aa] of [[w * 2.4, al * 0.35], [w * 1.4, al * 0.6], [w * 0.6, al]]) {
+        const g = x.createRadialGradient(0, 0, 36, 0, 0, len); g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.3, `rgba(255,255,255,${aa.toFixed(3)})`); g.addColorStop(1, 'rgba(255,255,255,0)');
+        x.fillStyle = g; x.beginPath(); x.moveTo(0, 0); x.arc(0, 0, len, a - ww, a + ww); x.closePath(); x.fill();
+      }
+    }
+    x.restore(); x.globalCompositeOperation = 'source-over';
+    return done(THREE, c, false);
+  }
+  function makeAuraRing(THREE, cnv) {
+    const S = 256, [c, x] = cnv(S);
+    x.clearRect(0, 0, S, S);
+    const g = x.createRadialGradient(128, 128, 0, 128, 128, 128);
+    g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(0.6, 'rgba(255,255,255,0)'); g.addColorStop(0.8, 'rgba(255,255,255,0.7)'); g.addColorStop(0.86, 'rgba(255,255,255,0.7)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    x.fillStyle = g; x.fillRect(0, 0, S, S);
+    return done(THREE, c, false);
+  }
   /* a woven fabric: a grey sling bag's nylon weave, by its colour and seed */
   function makeCanvasCloth(THREE, cnv, hex, seed) {
     const S = 256, [c, x] = cnv(S), r = rng(seed);
@@ -104,105 +144,181 @@
     x.save(); x.translate(256, 236); x.rotate(-0.03); x.fillText(String(text || ''), 0, 0); x.restore();
     return done(THREE, c, false);
   }
-  /* HIS LAPTOP'S FORUM (ending A and the coda): a generic forum — no real site's name, logo or look (v9.3) — drawn on the
-     laptop's 1024 × 720 screen: `compose` (his post typed, `chars` of it, `post` once sent), `thread` (it, and `n` of the
-     replies), `list` (the threads: masters, a lineage chart, accounts; `newK` the new one arriving at the top, `cursor`
-     and `click` his finger on the pad), `post` (the new thread opened) */
+  /* HIS LAPTOP'S FORUM (ending A and the coda), drawn on the laptop's 1024 x 720 screen. Its name is Chad's (v25.5: "The
+     forum shown on his laptop should be called 'Amulet Forums'"); its look is this game's own, no real site's (v9.3).
+     (v25.5, Chad: "Please improve this look of this forum much further visually, it looks bad now. Also when he loads the
+     last thread about the wai kru, have some content in that thread, show the post content ... when the player scrolls
+     the forum, it is very slow and jerky, and the selected thread is visually cut off. Just please improve this whole
+     part.") What was wrong, measured: everything was drawn from the screen's left edge, and a phone sees the middle two
+     thirds of the screen (its first letters and the lineage panel were cut); the list moved 60 px in fifteen seconds,
+     in whole pixels; the new thread arrived at the top of a list already scrolled up under the header; and the opened
+     thread was a title over three grey bars. Now: ONE COLUMN IN THE MIDDLE of the screen (FX0..FX1, what a phone's crop
+     holds) carries everything that must be read, the gutters either side what a wide screen has room for (the boards,
+     a lineage chart); a header with its mark, its tabs and a search field; threads as cards (who, when, how many
+     answers); the scroll in pixels and fractions of them (`scroll`); the pointer drawn where the film puts it (`cx`,
+     `cy`), the card under it lit (`hover`), its click (`click`) and the page's loading bar (`load`).
+     Modes: `compose` (his post typed: `chars` of it, `caret`, `post` once sent), `thread` (it, and `n` of the answers,
+     the fraction the next one sliding in), `list` (the threads; `newK` the new one arriving at the top), `post` (the new
+     thread opened: its words, and two answers) */
+  const FX0 = 192, FX1 = 832;
   function drawForum(x, o = {}) {
-    const W = 1024, H = 720, Wd = o.words || {};
+    const W = 1024, H = 720, Wd = o.words || {}, CW = FX1 - FX0;
     const F = (s, w = '') => `${w} ${s}px "Helvetica Neue", Helvetica, Arial, sans-serif`;
-    x.setTransform(1, 0, 0, 1, 0, 0);
-    x.fillStyle = '#eef0f3'; x.fillRect(0, 0, W, H);
-    x.fillStyle = '#23423e'; x.fillRect(0, 0, W, 92);
-    x.fillStyle = '#f2d48a'; x.font = F(38, 'bold'); x.textAlign = 'left'; x.textBaseline = 'middle'; x.fillText(Wd.forumName || '', 32, 40);
-    x.fillStyle = '#b8cfc8'; x.font = F(20); x.fillText(Wd.forumSub || '', 34, 74);
-    const card = (y, h) => { x.fillStyle = '#ffffff'; x.fillRect(24, y, W - 48, h); x.strokeStyle = '#d6dbe2'; x.lineWidth = 2; x.strokeRect(24, y, W - 48, h); };
-    const wrap = (s, x0, y0, w, lh, max = 3) => {                         // words onto lines, `max` of them
-      const ws = String(s || '').split(' '); let line = '', y = y0, n = 0;
-      for (const w2 of ws) { const t = line ? line + ' ' + w2 : w2;
-        if (x.measureText(t).width > w && line) { x.fillText(line, x0, y); line = w2; y += lh; if (++n >= max) return y; } else line = t; }
-      if (line) { x.fillText(line, x0, y); y += lh; }
-      return y;
-    };
+    const SERIF = (s, w = '') => `${w} ${s}px Georgia, "Times New Roman", serif`;
+    const INK = '#1b2733', DIM = '#6d7a88', LINE = '#d9e0e7', GOLD = '#d9a441', TEAL = '#1e3338';
+    const c01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
+    x.setTransform(1, 0, 0, 1, 0, 0); x.globalAlpha = 1; x.textBaseline = 'alphabetic'; x.textAlign = 'left';
+    const rr = (px, py, w, h, r) => { x.beginPath(); x.moveTo(px + r, py); x.lineTo(px + w - r, py); x.quadraticCurveTo(px + w, py, px + w, py + r); x.lineTo(px + w, py + h - r);
+      x.quadraticCurveTo(px + w, py + h, px + w - r, py + h); x.lineTo(px + r, py + h); x.quadraticCurveTo(px, py + h, px, py + h - r); x.lineTo(px, py + r); x.quadraticCurveTo(px, py, px + r, py); x.closePath(); };
+    const card = (px, py, w, h, fill = '#ffffff', edge = LINE, lw = 1.5) => { x.fillStyle = 'rgba(20,34,48,0.06)'; rr(px, py + 2, w, h, 9); x.fill();
+      x.fillStyle = fill; rr(px, py, w, h, 9); x.fill(); x.strokeStyle = edge; x.lineWidth = lw; x.stroke(); };
+    /* words onto lines no wider than w: the lines, as many as `max` (the last one closed with … if words are left) */
+    const lines = (s, w, max = 9) => { const ws = String(s || '').split(' '), out = []; let line = '';
+      for (let i = 0; i < ws.length; i++) { const t = line ? line + ' ' + ws[i] : ws[i];
+        if (x.measureText(t).width > w && line) { out.push(line); line = ws[i]; if (out.length === max) { out[max - 1] += '…'; return out; } } else line = t; }
+      if (line) out.push(line); return out; };
+    const para = (s, px, py, w, lh, max) => { const L = lines(s, w, max); L.forEach((l, i) => x.fillText(l, px, py + i * lh)); return py + L.length * lh; };
+    /* a member's round picture: a colour by who it is, and the first letter */
+    const TINTS = ['#3f8f7b', '#c0703a', '#5a78b8', '#9a5aa8', '#b8923a', '#4f8fae', '#b85a6a', '#6a8a4a'];
+    const face = (cx, cy, r, who) => { let h = 0; for (const ch of who) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+      x.fillStyle = TINTS[h % TINTS.length]; x.beginPath(); x.arc(cx, cy, r, 0, Math.PI * 2); x.fill();
+      x.fillStyle = '#ffffff'; x.font = F(Math.round(r * 1.05), 'bold'); x.textAlign = 'center'; x.fillText(who.charAt(0).toUpperCase(), cx, cy + r * 0.37); x.textAlign = 'left'; };
+    const chip = (px, py, label, fill, ink) => { x.font = F(12, 'bold'); const w = x.measureText(label).width + 16; x.fillStyle = fill; rr(px, py, w, 20, 10); x.fill(); x.fillStyle = ink; x.fillText(label, px + 8, py + 14.5); return w; };
+
+    /* ---- the page, its header, its tabs */
+    x.fillStyle = '#edf0f3'; x.fillRect(0, 0, W, H);
+    const hg = x.createLinearGradient(0, 0, W, 0); hg.addColorStop(0, '#162a2e'); hg.addColorStop(0.5, '#22404a'); hg.addColorStop(1, '#162a2e');
+    x.fillStyle = hg; x.fillRect(0, 0, W, 66);
+    /* its mark: a lotus bud in a ring, drawn (no real site's) */
+    { const mx = FX0 + 22, my = 33; x.strokeStyle = '#f0cf7e'; x.lineWidth = 2; x.beginPath(); x.arc(mx, my, 19, 0, Math.PI * 2); x.stroke();
+      x.fillStyle = '#f0cf7e'; for (const a of [-0.55, 0, 0.55]) { x.save(); x.translate(mx, my + 9); x.rotate(a); x.beginPath(); x.moveTo(0, 0); x.quadraticCurveTo(-7, -11, 0, -21); x.quadraticCurveTo(7, -11, 0, 0); x.fill(); x.restore(); } }
+    x.fillStyle = '#f3d68e'; x.font = SERIF(27, 'bold'); x.fillText(Wd.forumName || '', FX0 + 52, 33);
+    x.fillStyle = '#a8c2bf'; x.font = F(13); x.fillText(Wd.forumSub || '', FX0 + 53, 52);
+    /* a search field, and who is signed in */
+    x.fillStyle = 'rgba(255,255,255,0.12)'; rr(FX1 - 210, 19, 158, 28, 14); x.fill();
+    x.strokeStyle = 'rgba(255,255,255,0.55)'; x.lineWidth = 1.8; x.beginPath(); x.arc(FX1 - 192, 32, 5.5, 0, Math.PI * 2); x.moveTo(FX1 - 188, 36); x.lineTo(FX1 - 184, 40); x.stroke();
+    face(FX1 - 18, 33, 15, 'newshop_sg');
+    x.fillStyle = '#12232a'; x.fillRect(0, 66, W, 38);
+    { let tx = FX0; x.font = F(15, 'bold');
+      String(Wd.forumTabs || '').split('|').forEach((tab, i) => { const w = x.measureText(tab).width, on = i === 1;
+        x.fillStyle = on ? '#f3d68e' : '#9db3b6'; x.fillText(tab, tx, 91); if (on) { x.fillStyle = '#f3d68e'; x.fillRect(tx, 100, w, 3); } tx += w + 30; }); }
+    /* the page loading (a bar under the tabs) */
+    if ((o.load || 0) > 0) { x.fillStyle = GOLD; x.fillRect(0, 104, W * c01(o.load) * 0.92, 3); }
+
+    /* ---- the gutters: what a wide screen has room for (a phone's crop does not reach them) */
+    { card(16, 122, 160, 236); x.fillStyle = DIM; x.font = F(12, 'bold'); x.fillText('BOARDS', 30, 146);
+      String(Wd.forumBoards || '').split('|').forEach((b, i) => { const by = 158 + i * 32, on = b === (Wd.forumBoard || '');
+        if (on) { x.fillStyle = '#eaf2f1'; rr(22, by, 148, 27, 6); x.fill(); x.fillStyle = '#2a6a62'; x.fillRect(22, by + 4, 3, 19); }
+        x.fillStyle = TINTS[(i * 3 + 1) % TINTS.length]; rr(32, by + 7, 13, 13, 3); x.fill();
+        x.fillStyle = on ? TEAL : '#44515e'; x.font = F(13, on ? 'bold' : ''); let lb = b; while (lb.length > 3 && x.measureText(lb).width > 112) lb = lb.slice(0, -2) + '…'; x.fillText(lb, 53, by + 18.5); });
+      /* the lineage chart: a teacher and his students, boxes and lines, no names that could be read */
+      const lx = FX1 + 16, lw = W - lx - 16; card(lx, 122, lw, 250); x.fillStyle = DIM; x.font = F(12, 'bold'); x.fillText('LINEAGE', lx + 14, 146);
+      const cx0 = lx + lw / 2, nd = [[0, 176], [-38, 232], [38, 232], [-56, 288], [-18, 288], [40, 288], [-18, 342]];
+      x.strokeStyle = '#8fada6'; x.lineWidth = 1.6;
+      for (const [a, b] of [[0, 1], [0, 2], [1, 3], [1, 4], [2, 5], [4, 6]]) { x.beginPath(); x.moveTo(cx0 + nd[a][0], nd[a][1]); x.lineTo(cx0 + nd[b][0], nd[b][1]); x.stroke(); }
+      nd.forEach(([dx, y], i) => { x.fillStyle = i ? '#e6eeeb' : '#f5e6bd'; rr(cx0 + dx - 17, y - 11, 34, 22, 5); x.fill(); x.strokeStyle = i ? '#8fada6' : '#c9a655'; x.stroke();
+        x.fillStyle = i ? '#a7bcb6' : '#c9a655'; x.fillRect(cx0 + dx - 10, y - 2, 20, 4); });
+      card(lx, 386, lw, 92); x.fillStyle = DIM; x.font = F(12, 'bold'); x.fillText('ONLINE', lx + 14, 410);
+      ['kopi_uncle', 'Mdm Tan', 'boonchai88', 'old_hand'].forEach((w2, i) => { face(lx + 28 + i * 33, 444, 13, w2); x.fillStyle = '#39b36b'; x.beginPath(); x.arc(lx + 38 + i * 33, 454, 4, 0, Math.PI * 2); x.fill(); }); }
+
+    const crumb = (tail) => { x.font = F(14); x.fillStyle = DIM; let cx = FX0; const parts = ['Forums', Wd.forumBoard || ''].concat(tail ? [tail] : []);
+      parts.forEach((p, i) => { const last = i === parts.length - 1; x.fillStyle = last ? INK : DIM; x.font = F(14, last ? 'bold' : ''); x.fillText(p, cx, 136); cx += x.measureText(p).width + 8;
+        if (!last) { x.fillStyle = '#9aa6b2'; x.font = F(14); x.fillText('›', cx, 136); cx += 15; } }); };
+    const button = (px, py, w, h, label, fill, ink) => { x.fillStyle = fill; rr(px, py, w, h, 8); x.fill(); x.fillStyle = ink; x.font = F(15, 'bold'); x.textAlign = 'center'; x.fillText(label, px + w / 2, py + h / 2 + 5.5); x.textAlign = 'left'; };
+    const pointer = (cx, cy, click) => {
+      if ((click || 0) > 0 && click < 1) { x.strokeStyle = `rgba(217,164,65,${(0.85 * (1 - click)).toFixed(3)})`; x.lineWidth = 3; x.beginPath(); x.arc(cx + 2, cy + 2, 8 + 20 * click, 0, Math.PI * 2); x.stroke(); }
+      x.fillStyle = '#16181c'; x.strokeStyle = '#ffffff'; x.lineWidth = 2; x.lineJoin = 'round';
+      x.beginPath(); x.moveTo(cx, cy); x.lineTo(cx, cy + 25); x.lineTo(cx + 6.5, cy + 19); x.lineTo(cx + 11.5, cy + 30); x.lineTo(cx + 16, cy + 28); x.lineTo(cx + 11, cy + 17.5); x.lineTo(cx + 19.5, cy + 17.5); x.closePath(); x.stroke(); x.fill(); };
     const mode = o.mode || 'list';
+
     if (mode === 'compose') {
-      const title = Wd.postTitle || '', body = Wd.postBody || '', n = o.chars || 0;
+      const title = Wd.postTitle || '', body = Wd.postBody || '', n = o.chars || 0, car = o.caret && !o.post ? '|' : '';
       const tT = title.slice(0, Math.min(n, title.length)), tB = body.slice(0, Math.max(0, n - title.length));
-      x.fillStyle = '#23423e'; x.font = F(30, 'bold'); x.fillText('New thread', 40, 136);
-      card(170, 72); card(262, 300);
-      x.fillStyle = '#7a8698'; x.font = F(18); x.fillText('Title', 44, 186); x.fillText('Message', 44, 278);
-      x.fillStyle = '#1e2a3a'; x.font = F(30, 'bold'); x.fillText(tT + (n < title.length && o.blink ? '|' : ''), 44, 220);
-      x.font = F(28); const yEnd = wrap(tB + (n >= title.length && !o.post && o.blink ? '|' : ''), 44, 318, W - 100, 40, 6); void yEnd;
-      x.fillStyle = o.post ? '#2f8a5a' : '#c8902a'; x.fillRect(W - 220, 590, 180, 64);
-      x.fillStyle = '#ffffff'; x.font = F(28, 'bold'); x.textAlign = 'center'; x.fillText(o.post ? 'Posted' : 'Post', W - 130, 622); x.textAlign = 'left';
+      crumb('New thread');
+      card(FX0, 152, CW, 470);
+      x.fillStyle = INK; x.font = SERIF(24, 'bold'); x.fillText('Start a new thread', FX0 + 24, 194);
+      x.fillStyle = DIM; x.font = F(13, 'bold'); x.fillText('TITLE', FX0 + 24, 228); x.fillText('MESSAGE', FX0 + 24, 310);
+      const field = (py, h, live) => { x.fillStyle = '#f7f9fb'; rr(FX0 + 24, py, CW - 48, h, 7); x.fill(); x.strokeStyle = live ? '#7fa8d8' : LINE; x.lineWidth = live ? 2 : 1.5; x.stroke(); };
+      field(238, 48, n < title.length); field(320, 216, n >= title.length && !o.post);
+      x.fillStyle = INK; x.font = F(21, 'bold'); x.fillText(tT + (n < title.length ? car : ''), FX0 + 38, 269);
+      x.font = F(20); para(tB + (n >= title.length ? car : ''), FX0 + 38, 354, CW - 80, 30, 6);
+      face(FX0 + 42, 580, 16, 'newshop_sg'); x.fillStyle = DIM; x.font = F(14); x.fillText('Posting as newshop_sg', FX0 + 68, 585);
+      if (o.post) { button(FX1 - 158, 560, 134, 42, 'Posted', '#2f8a5a', '#ffffff');
+        x.strokeStyle = '#ffffff'; x.lineWidth = 2.5; x.lineCap = 'round'; x.beginPath(); x.moveTo(FX1 - 140, 581); x.lineTo(FX1 - 134, 587); x.lineTo(FX1 - 124, 575); x.stroke(); x.lineCap = 'butt'; }
+      else button(FX1 - 158, 560, 134, 42, 'Post thread', GOLD, '#2a2110');
       return;
     }
     if (mode === 'thread') {
-      card(112, 170);
-      x.fillStyle = '#1e2a3a'; x.font = F(32, 'bold'); x.fillText(Wd.postTitle || '', 44, 150);
-      x.fillStyle = '#7a8698'; x.font = F(18); x.fillText('newshop_sg · 4 days ago', 44, 186);
-      x.fillStyle = '#2a3442'; x.font = F(26); wrap(Wd.postBody || '', 44, 226, W - 100, 34, 2);
+      crumb();
+      const n = Math.max(0, Math.min(5, o.n || 0)), full = Math.floor(n + 1e-6);
+      card(FX0, 152, CW, 150);
+      x.fillStyle = INK; x.font = SERIF(25, 'bold'); x.fillText(Wd.postTitle || '', FX0 + 22, 190);
+      face(FX0 + 38, 222, 15, 'newshop_sg'); x.fillStyle = INK; x.font = F(14, 'bold'); x.fillText('newshop_sg', FX0 + 62, 220);
+      x.fillStyle = DIM; x.font = F(13); x.fillText('4 days ago', FX0 + 62, 237);
+      x.fillStyle = '#2a3643'; x.font = F(19); para(Wd.postBody || '', FX0 + 22, 272, CW - 44, 27, 2);
+      x.fillStyle = DIM; x.font = F(14, 'bold'); x.textAlign = 'right'; x.fillText(`${full} ${full === 1 ? 'reply' : 'replies'}`, FX1 - 4, 136); x.textAlign = 'left';
       const reps = ['reply1', 'reply2', 'reply3', 'reply4', 'reply5'].map(k => Wd[k] || ''), who = ['kopi_uncle', 'Mdm Tan', 'boonchai88', 'pradit_sg', 'old_hand'];
-      const n = Math.max(0, Math.min(5, o.n || 0));
-      for (let i = 0; i < n; i++) { const y = 300 + i * 82; card(y, 72);
-        x.fillStyle = '#23423e'; x.font = F(18, 'bold'); x.fillText(who[i], 44, y + 22);
-        x.fillStyle = '#2a3442'; x.font = F(24); x.fillText(reps[i], 44, y + 52); }
-      x.fillStyle = '#7a8698'; x.font = F(18); x.textAlign = 'right'; x.fillText(`${n} ${n === 1 ? 'reply' : 'replies'}`, W - 40, 132); x.textAlign = 'left';
+      for (let i = 0; i < 5; i++) { const k = c01(n - i); if (k <= 0) break;
+        const y = 316 + i * 78 + 14 * (1 - k); x.globalAlpha = k; card(FX0, y, CW, 68, i === full && k < 1 ? '#fffbee' : '#ffffff');
+        face(FX0 + 36, y + 34, 17, who[i]);
+        x.fillStyle = TEAL; x.font = F(14, 'bold'); x.fillText(who[i], FX0 + 64, y + 26);
+        x.fillStyle = '#2a3643'; x.font = F(18); let rp = reps[i]; while (rp.length > 8 && x.measureText(rp).width > CW - 88) rp = rp.slice(0, -2) + '…'; x.fillText(rp, FX0 + 64, y + 50); x.globalAlpha = 1; }
       return;
     }
     if (mode === 'post') {
-      /* (v25.0 CP9) the chapter's last words, so they read whole on a phone: the title large and centred in the middle half
-         of the screen (a phone's crop of it at the coda's end), in as many lines as it needs (at 34 px across the full width
-         a phone saw "athering devotees for Wai Kru in U", by photograph) */
-      card(112, 560);
-      x.fillStyle = '#1e2a3a'; x.font = F(42, 'bold'); x.textAlign = 'center';
-      { const ws = String(Wd.threadNew || '').split(' '), lines = []; let line = '';
-        for (const w2 of ws) { const t2 = line ? line + ' ' + w2 : w2; if (x.measureText(t2).width > 440 && line) { lines.push(line); line = w2; } else line = t2; }
-        if (line) lines.push(line);
-        lines.slice(0, 4).forEach((l, i) => x.fillText(l, W / 2, 170 + i * 52));
-        x.fillStyle = '#7a8698'; x.font = F(20); x.fillText(Wd.threadNewSub || '', W / 2, 170 + Math.min(4, lines.length) * 52 + 4); }
-      x.textAlign = 'left';
-      x.fillStyle = '#d8dce2'; x.fillRect(W / 2 - 230, 400, 460, 150);                // a photograph, not yet loaded
-      x.fillStyle = '#b8bec8'; for (let i = 0; i < 3; i++) x.fillRect(W / 2 - 230, 572 + i * 26, i === 2 ? 300 : 460 - (i % 2) * 60, 11);
+      /* the thread opened: its own words (the chapter's last picture, so a phone's crop holds every line: the column) */
+      crumb(); x.globalAlpha = o.fade == null ? 1 : c01(o.fade);
+      card(FX0, 152, CW, 318, '#ffffff', '#e0c476', 2);
+      chip(FX0 + 22, 168, 'WAI KRU', '#f6e7bd', '#7a5a12'); chip(FX0 + 104, 168, 'UDON THANI', '#e3eef0', '#2a5f66');
+      x.fillStyle = INK; x.font = SERIF(25, 'bold'); const ty = para(Wd.threadNew || '', FX0 + 22, 222, CW - 44, 31, 2);
+      face(FX0 + 38, ty + 8, 15, 'ton_udon'); x.fillStyle = INK; x.font = F(14, 'bold'); x.fillText('ton_udon', FX0 + 62, ty + 6);
+      x.fillStyle = DIM; x.font = F(13); x.fillText(Wd.threadNewSub || '', FX0 + 62, ty + 23);
+      x.fillStyle = '#263240'; x.font = F(18.5); para(Wd.threadNewBody || '', FX0 + 22, ty + 56, CW - 44, 26.5, 7);
+      x.fillStyle = DIM; x.font = F(14, 'bold'); x.fillText('2 replies', FX0 + 4, 498);
+      [['kopi_uncle', Wd.threadNewReply1], ['Mdm Tan', Wd.threadNewReply2]].forEach(([w2, s], i) => { const y = 510 + i * 70; card(FX0, y, CW, 60);
+        face(FX0 + 34, y + 30, 16, w2); x.fillStyle = TEAL; x.font = F(14, 'bold'); x.fillText(w2, FX0 + 60, y + 24);
+        x.fillStyle = '#2a3643'; x.font = F(17); x.fillText(s || '', FX0 + 60, y + 46); });
+      x.fillStyle = '#f7f9fb'; rr(FX0, 656, CW - 110, 40, 8); x.fill(); x.strokeStyle = LINE; x.lineWidth = 1.5; x.stroke();
+      x.fillStyle = '#9aa6b2'; x.font = F(15); x.fillText('Write a reply…', FX0 + 16, 681); button(FX1 - 98, 656, 98, 40, 'Reply', GOLD, '#2a2110');
+      x.globalAlpha = 1;
       return;
     }
-    /* the list: the new thread arriving at the top, then the rest, read down; a lineage chart beside them */
-    const rows = ['thread1', 'thread2', 'thread3', 'thread4', 'thread2b', 'thread3b'].map(k => Wd[k] || '').filter(Boolean);
-    const newK = Math.max(0, Math.min(1, o.newK || 0)), off = Math.round((o.scroll || 0) * 60);
-    const LW = 640;
-    x.save(); x.beginPath(); x.rect(0, 100, W, H - 100); x.clip();
-    let y = 112 - off + 96 * newK;
+    /* ---- the list: the board's threads, read down; the new one arriving at the top (the rest moved down for it) */
+    crumb();
+    button(FX1 - 122, 116, 122, 30, 'New thread', GOLD, '#2a2110');
+    const keys = ['thread1', 'thread2', 'thread3', 'thread4', 'thread2b', 'thread3b', 'thread5', 'thread6', 'thread7', 'thread8'];
+    const rows = keys.map(k => Wd[k] || '').filter(Boolean);
+    const who = ['old_hand', 'pradit_sg', 'Mdm Tan', 'lersi_fan', 'kopi_uncle', 'boonchai88', 'ton_udon', 'ah_seng', 'nong_may', 'first_timer'];
+    const tags = [['PINNED', '#f6e7bd', '#7a5a12'], ['ACCOUNTS', '#e3eef0', '#2a5f66'], ['GUIDE', '#e6ecf8', '#33508a'], ['ACCOUNTS', '#e3eef0', '#2a5f66'], ['GUIDE', '#e6ecf8', '#33508a'],
+                  ['WAI KRU', '#f6e7bd', '#7a5a12'], ['WAI KRU', '#f6e7bd', '#7a5a12'], ['TEMPLES', '#efe6f4', '#6a3f86'], ['PICTURES', '#e9f2e4', '#3f6a2a'], ['NEWCOMERS', '#f8e9e4', '#8a4a33']];
+    const newK = c01(o.newK || 0), NEWH = 104, PITCH = 92, top = 158, hov = c01(o.hover || 0);
+    x.save(); x.beginPath(); x.rect(0, 150, W, H - 150); x.clip();
+    const y0 = top - (o.scroll || 0);
     if (newK > 0) {
-      const yN = 112 - off - 96 * (1 - newK) + 0;
-      x.globalAlpha = newK;
-      x.fillStyle = '#fff6d8'; x.fillRect(24, yN, LW, 84); x.strokeStyle = '#e0b84a'; x.lineWidth = 3; x.strokeRect(24, yN, LW, 84);
-      x.fillStyle = '#c84a2a'; x.font = F(16, 'bold'); x.fillText('NEW', 40, yN + 22);
-      x.fillStyle = '#1e2a3a'; x.font = F(24, 'bold'); wrap(Wd.threadNew || '', 40, yN + 50, LW - 40, 28, 1);
-      x.fillStyle = '#7a8698'; x.font = F(16); x.fillText(Wd.threadNewSub || '', 40, yN + 74);
+      const yN = y0 - (NEWH + 8) * (1 - newK); x.globalAlpha = newK;
+      card(FX0, yN, CW, NEWH, hov > 0 ? '#fff1c9' : '#fff7df', '#e0b84a', 2 + hov);
+      face(FX0 + 36, yN + 40, 20, 'ton_udon');
+      const cw2 = chip(FX0 + 68, yN + 12, 'NEW', '#d9532f', '#ffffff'); chip(FX0 + 74 + cw2, yN + 12, 'WAI KRU', '#f6e7bd', '#7a5a12');
+      x.fillStyle = INK; x.font = F(19.5, 'bold'); const ly = para(Wd.threadNew || '', FX0 + 68, yN + 56, CW - 96, 24, 2);
+      if (hov > 0.5) { x.fillStyle = INK; x.fillRect(FX0 + 68, yN + 59, Math.min(CW - 96, x.measureText(lines(Wd.threadNew || '', CW - 96, 2)[0] || '').width), 1.5); }
+      x.fillStyle = DIM; x.font = F(13.5); x.fillText('ton_udon · ' + (Wd.threadNewSub || ''), FX0 + 68, Math.max(ly, yN + 80) + 8);
       x.globalAlpha = 1;
     }
-    rows.forEach((t, i) => { const yy = y + i * 96;
-      x.fillStyle = '#ffffff'; x.fillRect(24, yy, LW, 84); x.strokeStyle = '#d6dbe2'; x.lineWidth = 2; x.strokeRect(24, yy, LW, 84);
-      x.fillStyle = '#1e2a3a'; x.font = F(24, 'bold'); wrap(t, 40, yy + 34, LW - 40, 28, 1);
-      x.fillStyle = '#7a8698'; x.font = F(16); x.fillText(`${12 + i * 7} replies · ${2 + i} days ago`, 40, yy + 66); });
+    rows.forEach((t, i) => { const yy = y0 + (NEWH + 8) * newK + i * PITCH; if (yy > H || yy + 84 < 150) return;
+      card(FX0, yy, CW, 84);
+      face(FX0 + 36, yy + 42, 20, who[i % who.length]);
+      x.fillStyle = INK; x.font = F(19.5, 'bold'); let tt = t; while (tt.length > 8 && x.measureText(tt).width > CW - 176) tt = tt.slice(0, -2) + '…'; x.fillText(tt, FX0 + 68, yy + 36);
+      x.fillStyle = DIM; x.font = F(13.5); const meta = `${who[i % who.length]} · ${2 + i} days ago`; x.fillText(meta, FX0 + 68, yy + 60);
+      const tg = tags[i % tags.length]; chip(FX0 + 80 + x.measureText(meta).width, yy + 45.5, tg[0], tg[1], tg[2]);
+      x.fillStyle = INK; x.font = F(18, 'bold'); x.textAlign = 'center'; x.fillText(String(12 + i * 7), FX1 - 44, yy + 40);
+      x.fillStyle = DIM; x.font = F(12); x.fillText('replies', FX1 - 44, yy + 58); x.textAlign = 'left'; });
     x.restore();
-    /* the lineage chart: a teacher and his students, boxes and lines, no names that could be read */
-    x.fillStyle = '#ffffff'; x.fillRect(LW + 48, 112, W - LW - 72, 420); x.strokeStyle = '#d6dbe2'; x.strokeRect(LW + 48, 112, W - LW - 72, 420);
-    x.fillStyle = '#23423e'; x.font = F(18, 'bold'); x.fillText('Lineage', LW + 64, 138);
-    const bx2 = (cx, cy) => { x.fillStyle = '#e4ece8'; x.fillRect(cx - 44, cy - 16, 88, 32); x.strokeStyle = '#7a9a90'; x.strokeRect(cx - 44, cy - 16, 88, 32);
-      x.fillStyle = '#9ab0a8'; x.fillRect(cx - 30, cy - 3, 60, 6); };
-    const cx0 = LW + 48 + (W - LW - 72) / 2;
-    x.strokeStyle = '#7a9a90'; x.lineWidth = 2;
-    for (const [a, b2] of [[[cx0, 190], [cx0 - 80, 280]], [[cx0, 190], [cx0 + 80, 280]], [[cx0 - 80, 280], [cx0 - 110, 380]], [[cx0 - 80, 280], [cx0 - 30, 380]], [[cx0 + 80, 280], [cx0 + 90, 380]], [[cx0 - 30, 380], [cx0 - 30, 470]]])
-      { x.beginPath(); x.moveTo(a[0], a[1]); x.lineTo(b2[0], b2[1]); x.stroke(); }
-    for (const p of [[cx0, 190], [cx0 - 80, 280], [cx0 + 80, 280], [cx0 - 110, 380], [cx0 - 30, 380], [cx0 + 90, 380], [cx0 - 30, 470]]) bx2(p[0], p[1]);
-    /* his finger on the pad: the arrow to the new thread, and its click */
-    if ((o.cursor || 0) > 0) {
-      const k = Math.max(0, Math.min(1, o.cursor)), cx = 820 - 520 * k, cy = 560 - 410 * k;
-      x.fillStyle = '#111'; x.strokeStyle = '#fff'; x.lineWidth = 2;
-      x.beginPath(); x.moveTo(cx, cy); x.lineTo(cx, cy + 30); x.lineTo(cx + 8, cy + 23); x.lineTo(cx + 14, cy + 36); x.lineTo(cx + 19, cy + 33); x.lineTo(cx + 13, cy + 21); x.lineTo(cx + 23, cy + 21); x.closePath(); x.fill(); x.stroke();
-      if (o.click) { x.strokeStyle = 'rgba(200,74,42,0.7)'; x.lineWidth = 3; x.beginPath(); x.arc(cx, cy, 18, 0, Math.PI * 2); x.stroke(); }
-    }
+    /* the list's own scroll bar, at the column's edge */
+    { const full = rows.length * PITCH + (NEWH + 8) * newK + 16, view = H - 150, k = Math.min(1, view / full), at = c01((o.scroll || 0) / Math.max(1, full - view));
+      x.fillStyle = 'rgba(30,50,60,0.10)'; rr(FX1 + 5, 156, 5, view - 12, 2.5); x.fill();
+      x.fillStyle = 'rgba(30,50,60,0.38)'; rr(FX1 + 5, 156 + (view - 12) * (1 - k) * at, 5, (view - 12) * k, 2.5); x.fill(); }
+    /* his finger on the pad: the pointer where the film has it, and its click */
+    if (o.cx != null) pointer(o.cx, o.cy, o.click);
   }
   /* HIS NOTEBOOK (the coda): the masters he has checked since, a line each — where, whose student, how many real
      accounts — and some crossed out. Initials, never a name: nobody real is judged in his book (v21.22) */
@@ -262,8 +378,8 @@
     c.keepFade = true; c.endFade = 1;
     step(0, () => stage.films.begin('call', c, api));
     tr(0, C.end, (k, t) => stage.films.frame('call', t, api), rawK);
-    sfx(C.pick - 0.4, 'x2pickup', 0.6);        // the phone off the glass
-    sfx(C.pick + 0.5, 'x2ring', 0.5);          // ringing in his ear: one ring-ring (Singapore's 0.4 on, 0.2 off, 0.4 on), and Pong answers before the next
+    /* (v25.5) the phone stays on the glass, on its speaker: the sound of it lifted off the glass is out (x2pickup, retired) */
+    sfx(C.pick + 0.5, 'x2ring', 0.55);         // ringing on its speaker: one ring-ring (Singapore's 0.4 on, 0.2 off, 0.4 on), and Pong answers before the next
     sfx(C.pg2c1, 'pg2c1', 1);                  // "Brother! Long time no reply. You OK or not?"   (the phone's band, CP10)
     sfx(C.q2c1, 'q2c1', 1);                    // "Not really. Since I came back... I can't think..."
     sfx(C.offer - 0.6, 'x2callmus', 0.6);      // a low pad under Pong's offer, opening up at "This one I can vouch for"
@@ -283,10 +399,11 @@
     step(0, () => stage.films.begin('visit', c, api));
     tr(0, V.end, (k, t) => stage.films.frame('visit', t, api), rawK);
     fade(0, 0.5, 1, 1); fade(0.5, 1.6, 1, 0);
-    sfx(V.knock + 0.1, 'x2knock', 0.7);        // a knock on the shutter, twice
-    sfx(V.lift, 'x2shutterup', 0.75);          // Pong lifting it
-    sfx(V.in + 0.3, 'x2steps', 0.45); sfx(V.in + 2.6, 'x2steps', 0.4);   // their feet on his tiles
-    sfx(V.in - 0.4, 'x2visit', 0.6);           // the visit's music: plain, open
+    /* (v25.5) it opens on them walking in: the knock is out (x2knock, retired), the shutter's last rattle is under the
+       black as its curtain comes to rest, and their feet are on his tiles from the first second to the master's stop */
+    sfx(0.02, 'x2shutterup', 0.6);             // the shutter going up for them, under the black
+    sfx(V.in + 0.3, 'x2steps', 0.45); sfx(V.in + 2.9, 'x2steps', 0.4); sfx(V.in + 5.3, 'x2steps', 0.3);   // their feet on his tiles
+    sfx(V.in - 0.38, 'x2visit', 0.6);          // the visit's music: plain, open
     sfx(V.q2v1, 'q2v1', 1);                    // "Eventually I approached another Thai practitioner I trusted..."
     sfx(V.pg2v1, 'pg2v1', 1);                  // "Lersi Chin, this is my friend. His shop."
     sfx(V.lc2v1, 'lc2v1', 1);                  // "Sawasdee krap. New shop... tired owner."
@@ -297,10 +414,12 @@
   }
   /* P6 · THE EXAMINATION (kit.film from play): it ends on play's own view, kneeling before him */
   function examFilm(c, s, api) {
-    const { tr, step, sfx, sfxFade, rawK, stage } = api;
+    const { tr, step, fade, sfx, sfxFade, rawK, stage } = api;
     const X = EXAM;
     step(0, () => stage.films.begin('exam', c, api));
     tr(0, X.end, (k, t) => stage.films.frame('exam', t, api), rawK);
+    /* (v25.5) the piece off its shelf: a blink of the film's own, and it is gone from it (the pictures: examShots) */
+    fade(X.fetch + EX_TAKE - 0.16, X.fetch + EX_TAKE, 0, 1); fade(X.fetch + EX_TAKE, X.fetch + EX_TAKE + 0.2, 1, 0);
     sfx(0.3, 'x2visitmus', 0.32);              // the visit's own bed, low, under the questions
     sfx(X.lc2e1, 'lc2e1', 1);                  // "Give me your hand."
     sfx(X.lc2e2, 'lc2e2', 1);                  // "You sleep?"
@@ -316,10 +435,7 @@
     sfx(X.still + 3.2, 'x2breathslow', 0.35);
     sfx(X.lc2e7, 'lc2e7', 1);                  // "That one... from there?"
     sfx(X.q2e5, 'q2e5', 1);                    // "...Yes. I was told to put it facing the door."
-    sfx(X.fetch + 0.1, 'x2rise', 0.5);         // up off the mat
-    sfx(X.fetch + 0.9, 'x2steps', 0.4);
-    sfx(X.fetch + 2.2, 'x2pickpiece', 0.5);    // the piece off its shelf
-    sfx(X.fetch + 3.8, 'x2kneel', 0.5);        // down again before him
+    sfx(X.fetch + EX_TAKE - 0.1, 'x2pickpiece', 0.55);   // the piece off its shelf (v25.5: his rising, his steps and his kneeling again went with the walk that is no longer shown)
     sfx(X.lc2e8, 'lc2e8', 1);                  // "This one, you give to a temple. Don't keep, don't sell, don't throw."
     sfx(X.lc2e8 + SECS.lc2e8 * 0.86, 'x2cloth', 0.4);   // set on the clean cloth
     sfx(X.lc2e9, 'lc2e9', 1);                  // "According to my practice, I believe something negative was placed on you."
@@ -374,6 +490,8 @@
     sfx(t0 + 0.3, 'x2codamus', 0.7);           // the coda's music: patient, the question still open
     sfx(t0 + C.q2K1, 'q2K1', 1);               // "Whether you interpret that spiritually or otherwise..."
     sfx(t0 + C.q2K1 + 3.0, 'x2scroll', 0.35);  // his finger on the pad, the list read down
+    sfx(t0 + 7.4, 'x2scroll', 0.28);           // (v25.5) and again, the third flick; and once more, back up to the top
+    sfx(t0 + C.thread - 4.7, 'x2scroll', 0.26);
     sfx(t0 + C.q2K2, 'q2K2', 1);               // "I research a master's lineage thoroughly..."
     sfx(t0 + C.q2K2 + 0.6, 'x2page', 0.4);     // the notebook's page turned
     sfx(t0 + C.q2K3, 'q2K3', 1);               // "And yet still, none of them could answer the question I actually carried..."
@@ -394,8 +512,7 @@
       sfx(T.q2A1 + SECS.q2A1 + 0.5, 'x2post', 0.6);                  // posted
       fade(T.days - 0.5, T.days, 0, 1); fade(T.days, T.days + 0.6, 1, 0);   // days later
       sfx(T.days + 1.4, 'x2ping', 0.45); sfx(T.days + 2.6, 'x2ping', 0.45); sfx(T.days + 3.7, 'x2ping', 0.45); sfx(T.days + 4.9, 'x2ping', 0.45);
-      sfx(T.call - 1.6, 'x2buzz', 0.6); sfx(T.call - 0.8, 'x2buzz', 0.6);   // his phone: Pong
-      sfx(T.call - 0.25, 'x2pickup', 0.5);
+      sfx(T.call - 1.6, 'x2buzz', 0.6); sfx(T.call - 0.8, 'x2buzz', 0.6);   // his phone: Pong (v25.5: taken on its speaker, where it lies)
       sfx(T.pg2A1, 'pg2A1', 1);                                      // "Bro, why you post? His people calling me..."   (the phone's band, CP10)
       sfx(T.q2A2, 'q2A2', 1);                                        // "I know what I saw."
       sfx(T.pg2A2, 'pg2A2', 1);                                      // "You saw. You don't know."
@@ -410,15 +527,15 @@
   function scRoad(c, s, api) {
     const { sfx, sfxFade } = api;
     endingScene(c, api, 'B', (T) => {
-      sfx(T.q2B1, 'q2B1', 1);                                        // "Lersi Chin... will you teach me? I see things. I don't know why."
-      sfx(T.q2B1 + 1.2, 'x2bowl', 0.45);                             // the bowl set down
+      sfx(T.q2B1, 'q2B1', 1);                                        // "Lersi Chin... will you teach me? I feel things, and sometimes I cannot control my body. I don't know why."
       sfx(T.look - 0.2, 'x2endB', 0.55);                             // the ending's music: warm, open (it holds the long look)
-      sfx(T.lc2B1, 'lc2B1', 1);                                      // "Why you see, what it is for... that question is bigger than my practice..."
-      sfx(T.lc2B2, 'lc2B2', 1);                                      // "Someone can. Not me. When you find him, don't take my word..."
+      sfx(T.lc2B1, 'lc2B1', 1);                                      // "Why you feel, why your body moves without you... what it is for. That question is bigger than my practice..."
+      sfx(T.lc2B2, 'lc2B2', 1);                                      // "Someone can teach you. Not me. When you find him, don't take my word..."
       sfx(T.pg2B1, 'pg2B1', 1);                                      // "This time we check first, bro."
+      /* (v25.5) the two go out at a master's pace: the shutter lifted first, their steps for as long as they walk */
       sfx(T.go + 1.5, 'x2rise', 0.5);                                // up, his bag on his shoulder
-      sfx(T.go + 2.0, 'x2steps', 0.45);
-      sfx(T.go + 2.6, 'x2shutterup', 0.6);                           // Pong lifting the shutter for them
+      sfx(T.go + 2.0, 'x2shutterup', 0.6);                           // Pong lifting the shutter for them
+      sfx(T.go + 2.3, 'x2steps', 0.45); sfx(T.go + 5.2, 'x2steps', 0.4); sfx(T.go + 8.0, 'x2steps', 0.26);
       sfx(T.q2B2, 'q2B2', 1);                                        // "He had cleared me. He could not tell me what I was for..."
       sfxFade(T.coda - 1.2, T.coda + 0.2, 'x2endB');
       codaCues(api, T);
@@ -436,8 +553,8 @@
       sfx(T.q2C2, 'q2C2', 1);                                        // "He did this to me."
       sfx(T.lc2C3, 'lc2C3', 1);                                      // "Maybe. Maybe not. Either way, you are clear now..."
       sfx(T.go + 1.4, 'x2rise', 0.5);
-      sfx(T.go + 1.9, 'x2steps', 0.45);
-      sfx(T.go + 2.5, 'x2shutterup', 0.6);
+      sfx(T.go + 1.9, 'x2shutterup', 0.6);
+      sfx(T.go + 2.2, 'x2steps', 0.45); sfx(T.go + 5.1, 'x2steps', 0.4); sfx(T.go + 7.6, 'x2steps', 0.26);
       sfx(T.alone + 0.1, 'x2shutter', 0.7);                          // the shutter pulled down behind them
       sfx(T.q2C3, 'q2C3', 1);                                        // "I wanted him to feel what I had felt..."
       sfxFade(T.coda - 1.2, T.coda + 0.2, 'x2endC');
@@ -452,8 +569,8 @@
       sfx(T.lc2D1, 'lc2D1', 1);                                      // "Go well. Make merit when you can."
       sfx(T.pg2D1, 'pg2D1', 1);                                      // "Bro, go eat something?"
       sfx(T.go + 0.2, 'x2rise', 0.5);
-      sfx(T.go + 1.6, 'x2steps', 0.45);
-      sfx(T.go + 2.3, 'x2shutterup', 0.6);
+      sfx(T.go + 0.5, 'x2shutterup', 0.6);
+      sfx(T.go + 0.9, 'x2steps', 0.45); sfx(T.go + 3.6, 'x2steps', 0.4);
       sfx(T.go + 3.0, 'x2corridor', 0.5);                            // the mall's corridor at night, empty, their steps in it
       sfxFade(T.morning - 0.6, T.morning, 'x2corridor');
       fade(T.morning - 0.5, T.morning, 0, 1); fade(T.morning, T.morning + 0.7, 1, 0);   // the next morning
@@ -463,7 +580,7 @@
       sfx(T.cu2a2 - 1.6, 'x2heelsin', 0.45);                         // her heels coming back up to his counter
       sfx(T.cu2a2, 'cu2a2', 1);                                      // "Boss, this one... from which temple ah?"
       sfx(T.q2D2, 'q2D2', 1);                                        // "This one? A temple in Ayutthaya. The card is inside, let me show you."
-      sfx(T.q2D2 + 0.5, 'x2case', 0.45);                             // the cased piece lifted from the tray
+      /* (v25.5) the cased piece lies on the glass and is only looked at: the sound of it lifted from the tray is out (x2case, retired) */
       sfx(T.q2D3, 'q2D3', 1);                                        // "I had enough to decide. There was nothing more worth proving."
       sfxFade(T.coda - 1.2, T.coda + 0.2, 'x2endD');
       codaCues(api, T);

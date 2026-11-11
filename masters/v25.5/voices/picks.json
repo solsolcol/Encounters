@@ -1,0 +1,154 @@
+{
+ "q2tA": {
+  "who": "jamesAdult",
+  "text": "[uneasy] While he chanted, the smoke kept leaning toward a covered jar, and the cloth over it moved by itself. His shadow moved a moment after he did. And I saw someone standing behind him... I looked again, and there was no one.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 16.431,
+    "first": 0.0,
+    "last": 16.28,
+    "tail": 0.151,
+    "tail_db": -31.7,
+    "hole": 1.24,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "While he chanted, the smoke kept leaning toward a covered jar, and the cloth over it moved by itself. His shadow moved a moment after he did. And I saw someone standing behind him... I looked again, and there was no one.",
+    "e_first": 0.06,
+    "e_last": 16.38
+   },
+   "b": {
+    "len": 17.711,
+    "first": 0.0,
+    "last": 17.58,
+    "tail": 0.131,
+    "tail_db": -91.0,
+    "hole": 1.26,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "While he chanted, the smoke kept leaning toward a covered jar, and the cloth over it moved by itself. His shadow moved a moment after he did. And I saw someone standing behind him... I looked again, and there was no one.",
+    "e_first": 0.06,
+    "e_last": 17.66
+   }
+  }
+ },
+ "q2B1": {
+  "who": "jamesAdult",
+  "text": "[hopeful] Lersi Chin... will you teach me? I feel things, and sometimes I cannot control my body. I don't know why.",
+  "pick": "b",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 9.326,
+    "first": 0.0,
+    "last": 9.16,
+    "tail": 0.166,
+    "tail_db": -91.0,
+    "hole": 1.06,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Lersi Chin... will you teach me? I feel things, and sometimes I cannot control my body. I don't know why.",
+    "e_first": 0.12,
+    "e_last": 9.26
+   },
+   "b": {
+    "len": 8.829,
+    "first": 0.0,
+    "last": 8.64,
+    "tail": 0.189,
+    "tail_db": -91.0,
+    "hole": 1.18,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Lersi Chin... will you teach me? I feel things, and sometimes I cannot control my body. I don't know why.",
+    "e_first": 0.14,
+    "e_last": 8.78
+   }
+  }
+ },
+ "lc2B1": {
+  "who": "lersichin",
+  "text": "[gentle] Why you feel, why your body moves without you... what it is for. That question is bigger than my practice. I clear. I cannot answer that one.",
+  "pick": "b",
+  "why": [
+   "only clean/valid take"
+  ],
+  "takes": {
+   "a": {
+    "len": 12.748,
+    "first": 0.0,
+    "last": 12.7,
+    "tail": 0.048,
+    "tail_db": -31.0,
+    "hole": 1.26,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": false,
+    "heard": "Why you feel, why your body moves without you... what it is for. That question is bigger than my practice. I clear. I cannot answer that one.",
+    "e_first": 0.02,
+    "e_last": 12.7
+   },
+   "b": {
+    "len": 12.669,
+    "first": 0.0,
+    "last": 12.62,
+    "tail": 0.049,
+    "tail_db": -91.0,
+    "hole": 1.28,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Why you feel, why your body moves without you... what it is for. That question is bigger than my practice. I clear. I cannot answer that one.",
+    "e_first": 0.06,
+    "e_last": 12.62
+   }
+  }
+ },
+ "lc2B2": {
+  "who": "lersichin",
+  "text": "[gentle] Someone can teach you. Not me. When you find him, don't take my word. Don't take Pong's word. Check his teacher. Check his people. Then go.",
+  "pick": "a",
+  "why": [
+   "the tighter read"
+  ],
+  "takes": {
+   "a": {
+    "len": 11.233,
+    "first": 0.0,
+    "last": 11.12,
+    "tail": 0.113,
+    "tail_db": -91.0,
+    "hole": 0.78,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Someone can teach you. Not me. When you find him, don't take my word. Don't take Pong's word. Check his teacher. Check his people. Then go.",
+    "e_first": 0.06,
+    "e_last": 11.18
+   },
+   "b": {
+    "len": 14.524,
+    "first": 0.0,
+    "last": 14.42,
+    "tail": 0.104,
+    "tail_db": -91.0,
+    "hole": 1.36,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "heard": "Someone can teach you. Not me. When you find him, don't take my word. Don't take Pong's word. Check his teacher. Check his people. Then go.",
+    "e_first": 0.28,
+    "e_last": 14.46
+   }
+  }
+ }
+}

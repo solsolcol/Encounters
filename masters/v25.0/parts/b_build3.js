@@ -35,6 +35,41 @@
       cast.goldman = mkPerson('staffman', { parent: worldS, x: -3.2, z: 9.95, ry: Math.PI, height: 1.66, sizeTake: 'Idle_9', posture: 'stand', stand: 'Idle_9', walk: false, look: 0, noShadow: true });
       cast.mallA = mkPerson('sitwoman', { parent: worldS, x: 3.4, z: 4.15, ry: -Math.PI / 2, height: 1.56, anims: 'wifewalk', sizeTake: 'Walking', posture: 'stand', stand: 'Walking', look: 0, noShadow: true, hidden: true });
       cast.mallB = mkPerson('sitangry', { parent: worldS, x: 4.0, z: 6.9, ry: -Math.PI / 2, height: 1.7, anims: 'fatherwalk', sizeTake: 'Walking', posture: 'stand', stand: 'Walking', look: 0, noShadow: true, hidden: true });
+      /* (v25.5, Chad: "when the female customer asks a question, there is no female customer in that cut scene, can you add
+         one?" ... "when customer asks about the amulet, there is no customer, add the customer") THE WOMAN AT HIS COUNTER,
+         in the opening film and in ending D. A STAND-IN, declared (DATA.reuse): episode 3 chapter 4's Yin-shop keeper, an
+         older woman with a standing rest, a talking take and a walk of her own, wears the part until Chad's model for
+         her lands (docs/E4-MODELS.md lists it as NEEDED). Only the films place her (b_build4: openFrame, endD) */
+      cast.woman = mkPerson('yinkeeper', { parent: worldS, x: -0.65, z: -0.92, ry: Math.PI, height: 1.57, sizeTake: 'Idle_9',
+        posture: 'stand', stand: 'Idle_9', walk: 'Walking', talk: 'Talk_with_Left_Hand_on_Hip', talkWeight: 0.85, look: 0, noMip: true, noShadow: true, hidden: true,
+        then: shoesOn });
+    }
+    /* (v25.5) HER SHOES. The keeper's model is barefoot (she keeps a shop in her own house, in episode 3); a woman who has
+       walked into a mall is not, and her feet are in the picture as she walks out. Put on at run time, her file untouched
+       (v12.4): the triangles of her skin whose three corners belong to her feet (each corner by what it is skinned to,
+       v21.16) are drawn a second time, on her own skeleton, in a plain dark leather, a hair in front of the skin
+       (polygonOffset; the same points, so nothing can part from the foot it covers). Plain flat shoes under black
+       trousers */
+    function shoesOn(P) {
+      const sks = []; P.model.traverse(m => { if (m.isSkinnedMesh) sks.push(m); });
+      const mShoe = M({ color: 0x17161a, roughness: 0.55, metalness: 0.05, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+      for (const sk of sks) {
+        const g = sk.geometry, si = g.attributes.skinIndex, sw = g.attributes.skinWeight, idx = g.index; if (!si || !sw) continue;
+        const foot = new Set(); sk.skeleton.bones.forEach((b, i) => { if (/Foot|Toe/.test(b.name)) foot.add(i); });
+        const isFoot = (v) => { let w = 0; for (let c = 0; c < 4; c++) if (foot.has(si.getComponent(v, c))) w += sw.getComponent(v, c); return w > 0.5; };
+        const n = idx ? idx.count : g.attributes.position.count, out = [];
+        for (let i = 0; i + 2 < n; i += 3) { const a = idx ? idx.getX(i) : i, b = idx ? idx.getX(i + 1) : i + 1, c = idx ? idx.getX(i + 2) : i + 2;
+          if (isFoot(a) && isFoot(b) && isFoot(c)) out.push(a, b, c); }
+        if (!out.length) continue;
+        const sg = new THREE.BufferGeometry();
+        for (const k of ['position', 'normal', 'skinIndex', 'skinWeight']) if (g.attributes[k]) sg.setAttribute(k, g.attributes[k]);
+        sg.setIndex(out);
+        const shoe = new THREE.SkinnedMesh(sg, mShoe);
+        shoe.position.copy(sk.position); shoe.quaternion.copy(sk.quaternion); shoe.scale.copy(sk.scale);
+        shoe.bind(sk.skeleton, sk.bindMatrix); shoe.castShadow = false; shoe.receiveShadow = false;
+        shoe.frustumCulled = sk.frustumCulled; if (sk.boundingSphere) shoe.boundingSphere = sk.boundingSphere;
+        sk.parent.add(shoe);
+      }
     }
     /* HIS HANDS AND HIS BODY (Lersi Chin has no take for a wai, a reach or a bowl held; his rig has one joint to a hand
        and no fingers, so every pose is one a flat hand can make).

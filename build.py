@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "25.4"
+VERSION = "25.5"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -445,9 +445,12 @@ ASSETS = {
     'e4sandalsa':   ('assets/e4sandalsa.glb', True, False),   # e4c1 v24.19: black rubber flip-flops at the room's steps — generated (8,105 triangles)
     'e4sandalsb':   ('assets/e4sandalsb.glb', True, False),   # e4c1 v24.19: brown plastic slides at the room's steps — generated (6,017 triangles)
     'e4rahu':       ('assets/e4rahu.glb', True, False),       # e4c1 v24.20: a Phra Rahu for the altar's middle tier — from photographs of REAL ones (Wat Si Sa Thong's black Rahu with the gold moon, an altar Rahu, an antique bronze) as the GPT Image reference's image references, then Meshy and its remesh, 41,565 triangles (masters/v24.20/make.sh)
-    'e4sedan':      ('assets/e4sedan.glb', True, False),      # e4c1 v24.20: the yard's silver sedan — a real model (GPT Image reference on white, Meshy image-to-3D and remesh), 30,502 triangles, 4.4 m, nose at -z
-    'e4truck':      ('assets/e4truck.glb', True, False),      # e4c1 v24.20: the yard's white double-cab pickup, red dust to its sills — generated the same way, 29,838 triangles, 5.3 m
-    'e4suv':        ('assets/e4suv.glb', True, False),        # e4c1 v24.20: the yard's dark grey SUV — generated the same way, 30,363 triangles, 4.8 m
+    'e4sedan':      ('assets/e4sedan.glb', True, False),      # e4c1 v25.5 (v24.20's remade: Chad, "still very low res and looks bad"): the yard's silver sedan — the same reference picture on white, Hunyuan3D image-to-3D asked for 100,000 triangles (99,474; nothing thinned here), its paint read as paint and the invented roundel off its boot (masters/v25.5/make.sh), 4.4 m, nose at -z
+    'e4truck':      ('assets/e4truck.glb', True, False),      # e4c1 v25.5: the yard's white double-cab pickup, red dust to its sills — remade the same way, 99,156 triangles, 1.85 m tall (4.89 m long)
+    'e4suv':        ('assets/e4suv.glb', True, False),        # e4c1 v25.5: the yard's dark grey SUV — remade the same way, 99,698 triangles, 1.82 m tall (4.48 m long), the invented ring off its tailgate
+    'e4sedanfar':   ('assets/e4sedanfar.glb', True, False),   # e4c1 v25.5: the taxi street's traffic — v24.20's sedan (Meshy and its remesh, 30,502 triangles, 4.4 m), its sheets at 1024 (512 the metal's): the yard's cars were remade and both sets at 2048 would be 150 MB of sheets
+    'e4truckfar':   ('assets/e4truckfar.glb', True, False),   # e4c1 v25.5: the taxi street's traffic — v24.20's pickup, 29,838 triangles, 5.3 m, the same lighter sheets
+    'e4suvfar':     ('assets/e4suvfar.glb', True, False),     # e4c1 v25.5: the taxi street's traffic — v24.20's SUV, 30,363 triangles, 4.8 m, the same lighter sheets
     'e4moto':       ('assets/e4moto.glb', True, False),       # e4c1 v24.20: the underbone motorbike under the house, its front basket — generated the same way, 19,529 triangles, 1.92 m, front at +z
     'e4seat':       ('assets/e4seat.glb', True, False),       # e4c1 v24.21: the taxi's two front seats — a reference picture of a car seat on white (GPT Image), checked, Meshy image-to-3D + remesh, 9,061 triangles at 1.08 m, facing −z (masters/v24.20/make.sh)
     # e4c1 v24.22: HIS SHOP'S STOCK (Chad: "have real amulets, look like a real shop. Have general amulets like somdej, khun
@@ -488,10 +491,10 @@ ASSETS = {
     'e4shelf':      ('assets/e4shelf.glb', True, False),      # e4c2 v25.2: the small wall shelf by the door, 30 cm — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh)
     'e4cloth':      ('assets/e4cloth.glb', True, False),      # e4c2 v25.2: Lersi Chin's folded cotton cloth, 26 cm — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh)
     'e4yaam':       ('assets/e4yaam.glb', True, False),       # e4c2 v25.2: Lersi Chin's striped Thai shoulder bag, 60 cm with its strap — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh)
-    'e4phone':      ('assets/e4phone.glb', True, False),      # e4c2 v25.2: his phone, turned over at prep (its glass up), 15.8 cm — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh)
+    'e4phone':      ('assets/e4phone.glb', True, False),      # e4c2 v25.5 (v25.2's remade: Chad, "The player's phone model looks pretty bad too" — Meshy had made a hollow case): his phone, its glass up and its top away from him, 15.8 cm — a new checked picture on white, then Hunyuan3D asked for 40,000 triangles so nothing is thinned here (masters/v25.5/make.sh)
     'e4calc':       ('assets/e4calc.glb', True, False),       # e4c2 v25.2: the calculator on his counter, 13 cm — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh)
     'e4wreath':     ('assets/e4wreath.glb', True, False),     # e4c2 v25.2: the Grand Opening stand's dried flowers, 74 cm — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh)
-    'e4notebook':   ('assets/e4notebook.glb', True, False),   # e4c2 v25.2: his notebook on the counter, open, 46 cm across — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh); the prop audit's find
+    'e4notebook':   ('assets/e4notebook.glb', True, False),   # e4c2 v25.5 (v25.2's remade: Chad, "can you remove that glitchy looking red ribbon? Just use a normal notebook" — the ribbon was a torn strip of the model's own geometry): his notebook on the counter, open, 46 cm across, no ribbon — a new checked picture on white, then Hunyuan3D asked for 40,000 triangles (masters/v25.5/make.sh)
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
     # in white (two women, two men), Mixamo's Praying and Kneeling Idle applied
@@ -611,7 +614,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'lersiamulet', 'lersiamuletlod', 'towkay',
            'kumanred', 'kumanshy', 'kumanlittle',
            'firstmaster', 'e4sky', 'fmshadow', 'e4noi', 'e4pong', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4pickup', 'e4nangkwak', 'e4takrut', 'e4phayant', 'e4nangkwakhd', 'e4takruthd', 'e4phayanthd', 'iconnangkwak', 'icontakrut', 'iconphayant',
-           'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd', 'e4buffalo', 'e4sandalsa', 'e4sandalsb', 'e4rahu', 'e4sedan', 'e4truck', 'e4suv', 'e4moto', 'e4seat',
+           'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd', 'e4buffalo', 'e4sandalsa', 'e4sandalsb', 'e4rahu', 'e4sedan', 'e4truck', 'e4suv', 'e4sedanfar', 'e4truckfar', 'e4suvfar', 'e4moto', 'e4seat',
            'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm',
            'e4kuman', 'e4ngang', 'e4tani', 'e4phraioil', 'e4phraitab', 'e4praicase', 'e4tanitab', 'e4ghostjar', 'lersichin', 'e4khannam', 'e4phan',
            'e4till', 'e4bag', 'e4jacket', 'e4water', 'e4drinks', 'e4wallet', 'e4switch', 'e4shelf', 'e4cloth', 'e4yaam', 'e4phone', 'e4calc', 'e4wreath', 'e4notebook'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)

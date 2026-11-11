@@ -39,10 +39,15 @@ const frames = (n = 3) => p.evaluate((n) => new Promise(r => { let k = 0; const 
 await p.goto(PAGE + '?ch=' + CH, { waitUntil: 'load', timeout: 240000 });
 await p.waitForFunction(() => !!window.__enc, null, { timeout: 120000 });
 await p.evaluate(() => document.getElementById('startBtn').click());
-await toPlay(p, 1500000);
-await p.waitForFunction(() => window.__enc.getState() === 'play', null, { timeout: 240000 });
-await frames(6);
-await p.evaluate((ph) => window.__enc.stage.applyPhase(ph), PHASE);
+/* (v25.5) PHASE=@intro: stay inside the opening film (its frames are photographed by seeking it; a job skips it to go on) */
+if (PHASE === '@intro') {
+  await p.waitForFunction(() => window.__enc.cine.active() && window.__enc.getState() === 'cine' && window.__enc.cine.t() > 0.2, null, { timeout: 1500000, polling: 300 });
+} else {
+  await toPlay(p, 1500000);
+  await p.waitForFunction(() => window.__enc.getState() === 'play', null, { timeout: 240000 });
+  await frames(6);
+  await p.evaluate((ph) => window.__enc.stage.applyPhase(ph), PHASE);
+}
 await p.waitForFunction((who) => { const c = window.__enc.stage.cast; return !c || !c[who] || c[who].ready; }, WHO, { timeout: 240000 });
 await frames(6);
 await p.evaluate((who) => {

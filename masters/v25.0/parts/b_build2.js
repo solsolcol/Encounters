@@ -238,8 +238,10 @@
           for (const sx of [-1, 1]) { const cd = new THREE.Mesh(new THREE.CylinderGeometry(0.007, 0.008, 0.09, 10), mCand); cd.position.set(sx * 0.07, 0.14, -0.04); topG.add(cd);
             const fl = new THREE.Mesh(new THREE.SphereGeometry(0.006, 8, 6), mFlame); fl.scale.y = 2; fl.position.set(sx * 0.07, 0.195, -0.04); topG.add(fl); props.flames.push(fl); }
           const mStk = M({ color: 0x9a2a1a, roughness: 0.7 });
-          for (let k = 0; k < 3; k++) { const st = new THREE.Mesh(new THREE.CylinderGeometry(0.0016, 0.0016, 0.22, 5), mStk); st.position.set((k - 1) * 0.012, 0.2, 0.03); st.rotation.z = (k - 1) * 0.12; topG.add(st);
-            const em = new THREE.Mesh(new THREE.SphereGeometry(0.003, 6, 4), mFlame); em.position.set((k - 1) * 0.012 + (k - 1) * 0.013, 0.31, 0.03); topG.add(em); props.flames.push(em); }
+          /* (v25.5, Chad: "the 3 joss sticks in front of lersi chin, why are they not standing straight up?") upright, a
+             finger's width apart (they were fanned, the outer two leaning 7 degrees) */
+          for (let k = 0; k < 3; k++) { const st = new THREE.Mesh(new THREE.CylinderGeometry(0.0016, 0.0016, 0.22, 5), mStk); st.position.set((k - 1) * 0.016, 0.2, 0.03); topG.add(st);
+            const em = new THREE.Mesh(new THREE.SphereGeometry(0.003, 6, 4), mFlame); em.position.set((k - 1) * 0.016, 0.31, 0.03); topG.add(em); props.flames.push(em); }
           /* the tray (a checked picture on white, then Meshy): the stand-in hidden when it lands, the candles and the incense
              raised to stand in its flowers (their feet were on the stand-in's top, 0.095) */
           fitModel('e4phan', kg, PHAN_W, 'x', 0, 0).then(m => { if (!m || !alive) return; stand.visible = false;
@@ -278,27 +280,70 @@
 
     /* ---------------------------------------------------- his phone and his laptop: what their screens show
        (drawn only when what they show changes; the screens are always mapped and only their colour lights them, v15.1) */
+    /* (v25.5, Chad: "in the scene where he calls pong, why does the phone fly away to the corner of the screen and
+       disappear? ... can you improve the presentation?") THE CALL IS ON THE SPEAKER, the phone lying on the glass with its
+       screen in the picture: so the screen is drawn to be read close — the hour and the battery, Pong's round picture
+       with a ring that breathes while it calls, his name, "Calling" and its dots or the call's own clock, the six
+       buttons of a call (the speaker's lit once he answers) and the red one. Drawn at twice v25.2's sharpness (the
+       canvas is 512 x 1114: an edit in the assembler), in v25.2's own 256 x 557 measures */
     function phoneDraw(mode, secs) {
       const P = shop.phone; if (!P) return;
-      const sig = mode + ':' + (mode === 'call' ? Math.floor(secs || 0) : '');
+      const s = Math.max(0, secs || 0), live = mode === 'call';
+      const sig = mode + ':' + (live ? Math.floor(s) : Math.floor(s * 2.5) % 4);
       if (P.drawn === sig) return; P.drawn = sig;
-      const x = P.x, Wd = DATA.words;
-      const g = x.createLinearGradient(0, 0, 0, 557); g.addColorStop(0, '#22324e'); g.addColorStop(1, '#0a0e18');
+      const x = P.x, Wd = DATA.words, K = x.canvas.width / 256, F = (px, w = '') => `${w} ${px}px "Helvetica Neue", Helvetica, Arial, sans-serif`;
+      x.setTransform(K, 0, 0, K, 0, 0);
+      const g = x.createLinearGradient(0, 0, 0, 557); g.addColorStop(0, '#1d2c48'); g.addColorStop(0.55, '#121a2c'); g.addColorStop(1, '#070a12');
       x.fillStyle = g; x.fillRect(0, 0, 256, 557);
-      x.textAlign = 'center'; x.textBaseline = 'alphabetic';
-      /* his contact's round picture: a P on green */
-      x.fillStyle = '#2f7a5a'; x.beginPath(); x.arc(128, 170, 52, 0, Math.PI * 2); x.fill();
-      x.fillStyle = '#ffffff'; x.font = 'bold 54px "Helvetica Neue", Arial, sans-serif'; x.fillText(String(Wd.phonePong || 'P').charAt(0), 128, 189);
-      x.font = '34px "Helvetica Neue", Arial, sans-serif'; x.fillText(Wd.phonePong || 'Pong', 128, 272);
-      x.fillStyle = 'rgba(255,255,255,0.72)'; x.font = '20px "Helvetica Neue", Arial, sans-serif';
-      const s = Math.max(0, Math.floor(secs || 0));
-      x.fillText(mode === 'calling' || mode === 'ringing' ? (Wd.phoneCalling || 'calling…') : `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`, 128, 306);
-      /* the buttons: red to end; a green to answer when it rings */
-      if (mode === 'ringing') { x.fillStyle = '#2fae5a'; x.beginPath(); x.arc(178, 470, 30, 0, Math.PI * 2); x.fill(); x.fillStyle = '#e0433a'; x.beginPath(); x.arc(78, 470, 30, 0, Math.PI * 2); x.fill(); }
-      else { x.fillStyle = '#e0433a'; x.beginPath(); x.arc(128, 470, 30, 0, Math.PI * 2); x.fill(); }
-      x.fillStyle = '#fff'; x.save(); x.translate(mode === 'ringing' ? 78 : 128, 470); x.rotate(2.36); x.fillRect(-14, -5, 28, 10); x.restore();
+      const gl = x.createRadialGradient(128, 168, 10, 128, 168, 170); gl.addColorStop(0, live ? 'rgba(60,170,120,0.34)' : 'rgba(70,140,200,0.30)'); gl.addColorStop(1, 'rgba(0,0,0,0)');
+      x.fillStyle = gl; x.fillRect(0, 0, 256, 380);
+      /* the status bar: the hour, the signal's four bars, the battery */
+      x.fillStyle = 'rgba(255,255,255,0.9)'; x.textBaseline = 'alphabetic'; x.textAlign = 'left'; x.font = F(13, '600'); x.fillText(mode === 'ringing' ? '14:26' : '22:07', 22, 30);   // (art, v14.5: the afternoon Pong rings him in ending A; the night he calls Pong)
+      for (let i = 0; i < 4; i++) x.fillRect(176 + i * 5, 29 - (4 + i * 2.2), 3.2, 4 + i * 2.2);
+      x.strokeStyle = 'rgba(255,255,255,0.9)'; x.lineWidth = 1.1; x.strokeRect(206, 19.5, 22, 10.5); x.fillRect(229, 22.5, 1.8, 4.5); x.fillRect(207.6, 21.1, 13, 7.3);
+      /* his contact's round picture, and its ring */
+      const pulse = live ? 0 : (Math.floor(s * 2.5) % 4) / 3;
+      x.strokeStyle = `rgba(120,200,255,${0.5 * (1 - pulse)})`; x.lineWidth = 2; x.beginPath(); x.arc(128, 168, 56 + 16 * pulse, 0, Math.PI * 2); x.stroke();
+      const ag = x.createLinearGradient(80, 120, 176, 216); ag.addColorStop(0, '#3fa37a'); ag.addColorStop(1, '#1f6b54');
+      x.fillStyle = ag; x.beginPath(); x.arc(128, 168, 50, 0, Math.PI * 2); x.fill();
+      x.strokeStyle = 'rgba(255,255,255,0.22)'; x.lineWidth = 1.5; x.beginPath(); x.arc(128, 168, 50, 0, Math.PI * 2); x.stroke();
+      x.textAlign = 'center'; x.fillStyle = '#ffffff'; x.font = F(50, '600'); x.fillText(String(Wd.phonePong || 'P').charAt(0), 128, 186);
+      x.font = F(32, '600'); x.fillText(Wd.phonePong || 'Pong', 128, 262);
+      x.fillStyle = 'rgba(255,255,255,0.74)'; x.font = F(17);
+      const sec = Math.floor(s);
+      const status = mode === 'ringing' ? (Wd.phoneIncoming || 'Incoming call') : !live ? (Wd.phoneCalling || 'Calling') + '.'.repeat(1 + Math.floor(s * 2.5) % 3)
+        : `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
+      x.fillText(status, 128, 290);
+      const ring = (cx, cy, r, fill) => { x.fillStyle = fill; x.beginPath(); x.arc(cx, cy, r, 0, Math.PI * 2); x.fill(); };
+      /* a telephone's handset: its bar arched over, an ear and a mouth piece at its ends; lying level it is "end the
+         call", tipped up on its end "answer" (a bare arc turned over read as a smile, by photograph) */
+      const handset = (cx, cy, turn, col) => { x.save(); x.translate(cx, cy); x.rotate(turn); x.strokeStyle = col; x.fillStyle = col; x.lineWidth = 4.6; x.lineCap = 'round';
+        x.beginPath(); x.arc(0, 12, 17, Math.PI * 1.25, Math.PI * 1.75); x.stroke();
+        for (const sx of [-1, 1]) { x.save(); x.translate(sx * 12.2, 1.8); x.rotate(sx * 0.62); x.beginPath(); x.rect(-4.6, -3.2, 9.2, 8.4); x.fill(); x.restore(); }
+        x.restore(); };
+      if (mode === 'ringing') {
+        ring(72, 468, 31, '#e0433a'); handset(72, 466, 0, '#fff');
+        ring(184, 468, 31, '#2fae5a'); handset(184, 468, -2.35, '#fff');
+        x.fillStyle = 'rgba(255,255,255,0.7)'; x.font = F(12); x.fillText(Wd.phoneDecline || 'Decline', 72, 517); x.fillText(Wd.phoneAccept || 'Accept', 184, 517);
+      } else {
+        /* the call's six buttons: mute, keypad, speaker / add, video, contacts — the speaker's lit once the call is live */
+        const labels = String(Wd.phoneKeys || 'mute|keypad|speaker').split('|');
+        for (let i = 0; i < 3; i++) {
+          const cx = 56 + i * 72, cy = 352, on = live && i === 2;
+          ring(cx, cy, 25, on ? 'rgba(255,255,255,0.94)' : 'rgba(255,255,255,0.14)');
+          x.strokeStyle = on ? '#1a2436' : 'rgba(255,255,255,0.92)'; x.fillStyle = x.strokeStyle; x.lineWidth = 2; x.lineCap = 'round'; x.lineJoin = 'round';
+          if (i === 0) { x.beginPath(); x.moveTo(cx - 3.5, cy - 9); x.lineTo(cx - 3.5, cy + 1); x.arc(cx, cy + 1, 3.5, Math.PI, 0, true); x.lineTo(cx + 3.5, cy - 9); x.arc(cx, cy - 9, 3.5, 0, Math.PI, true); x.stroke();
+            x.beginPath(); x.arc(cx, cy + 1, 7.5, 0, Math.PI); x.moveTo(cx, cy + 8.5); x.lineTo(cx, cy + 12); x.stroke(); }
+          else if (i === 1) { for (let a = 0; a < 3; a++) for (let b = 0; b < 3; b++) { x.beginPath(); x.arc(cx - 8 + a * 8, cy - 8 + b * 8, 2, 0, Math.PI * 2); x.fill(); } }
+          else { x.beginPath(); x.moveTo(cx - 11, cy - 4); x.lineTo(cx - 6, cy - 4); x.lineTo(cx, cy - 10); x.lineTo(cx, cy + 10); x.lineTo(cx - 6, cy + 4); x.lineTo(cx - 11, cy + 4); x.closePath(); x.fill();
+            x.beginPath(); x.arc(cx + 1, cy, 6, -0.9, 0.9); x.stroke(); x.beginPath(); x.arc(cx + 1, cy, 11, -0.9, 0.9); x.stroke(); }
+          x.fillStyle = 'rgba(255,255,255,0.66)'; x.font = F(11.5); x.fillText(labels[i] || '', cx, cy + 43);
+        }
+        ring(128, 468, 31, '#e0433a'); handset(128, 466, 0, '#fff');
+      }
       /* (v25.2) its corners rounded as the phone's glass is (the drawn screen is a square plane laid on it) */
       if (x.roundRect) { x.fillStyle = '#000'; x.beginPath(); x.rect(0, 0, 256, 557); x.roundRect(0, 0, 256, 557, 26); x.fill('evenodd'); }
+      x.setTransform(1, 0, 0, 1, 0, 0);
       P.scr.map.needsUpdate = true;
     }
     const shopCtl = {
@@ -419,13 +464,15 @@
       /* his laptop: the sales page by day (chapter 1's), the forum in ending A and the coda */
       if (shop.lap) {
         const L = shop.lap, on = !!shop.lapOn, o = shop.lapO || {};
-        /* (v25.0 CP9) the list's scroll and the cursor are in the signature too (the coda's list never moved without them) */
-        const sig = on ? [shop.lapMode, o.n || 0, o.chars || 0, o.newK || 0, o.post ? 1 : 0, Math.floor(now * 2.4) % 2,
-                          Math.round((o.scroll || 0) * 60), Math.round((o.cursor || 0) * 40), o.click ? 1 : 0].join(',') : 'off';
+        /* (v25.0 CP9) the list's scroll and the cursor are in the signature too (the coda's list never moved without them);
+           (v25.5) it is every value the film gave the screen, numbers to a 250th (a scroll is redrawn on every frame it
+           moves, in fractions of a pixel: it stepped four whole pixels a second), and nothing of the wall clock (the
+           typing's caret is the film's too) */
+        const sig = on ? shop.lapMode + '|' + (shop.lapMode === 'sales' ? shop.stockCount : '') + '|' + Object.keys(o).sort().map(k => k + ':' + (typeof o[k] === 'number' ? Math.round(o[k] * 250) / 250 : o[k] ? 1 : 0)).join(',') : 'off';
         if (sig !== L.sig) { L.sig = sig;
           if (on) { if (shop.lapMode === 'sales') drawSalesApp(L.x, { wed: 1, bar: 1, blink: true, stock: shop.stockCount });
                     /* (v25.0 CP9) its screen named: compose, thread, list or post (without it, always the list) */
-                    else drawForum(L.x, Object.assign({ blink: Math.floor(now * 2.4) % 2 === 0, words: DATA.words, mode: shop.lapMode }, o));
+                    else drawForum(L.x, Object.assign({ words: DATA.words, mode: shop.lapMode }, o));
                     L.t.needsUpdate = true; }
           L.m.color.setRGB(on ? 1 : 0.02, on ? 1 : 0.024, on ? 1 : 0.03); }
       }
@@ -433,6 +480,6 @@
         const P = shop.phone, on = shop.phoneOn ? now - shop.phoneOn : -1;
         if (on >= 0 && shop.phoneMode) { phoneDraw(shop.phoneMode, shop.phoneSecs != null ? shop.phoneSecs : on); P.scr.color.setRGB(1, 1, 1);
           const buzz = shop.phoneMode === 'ringing' ? Math.sin(on * 90) * 0.0012 * (Math.sin(on * 6) > 0 ? 1 : 0) : 0; P.g.position.x = P.base.x + buzz; }
-        else { P.scr.color.setRGB(0.02, 0.024, 0.03); P.g.position.x = P.base.x; }
+        else { P.scr.color.setRGB(0, 0, 0); P.g.position.x = P.base.x; }   // (v25.5: black, not a fiftieth of the last call's picture, which showed after one)
       }
     }

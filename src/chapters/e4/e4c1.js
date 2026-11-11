@@ -194,7 +194,7 @@
        are his files under the stand-ins' keys, `e4stall` replaces `e4joy`, and `e4ghost`, his old woman, replaces episode
        1's `granny`; nothing in the chapter is a stand-in for a person any more) */
     assets: ['firstmaster', 'fmshadow', 'e4sky', 'e4pong', 'e4noi', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4ghostjar', 'e4pickup', 'e4nangkwak', 'e4takrut', 'e4phayant',
-             'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd', 'e4buffalo', 'e4sandalsa', 'e4sandalsb', 'e4rahu', 'e4sedan', 'e4truck', 'e4suv', 'e4moto',
+             'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd', 'e4buffalo', 'e4sandalsa', 'e4sandalsb', 'e4rahu', 'e4sedan', 'e4truck', 'e4suv', 'e4sedanfar', 'e4truckfar', 'e4suvfar', 'e4moto',
              'e4seat', 'owner', 'sitman', 'sitclap', 'sitshout',
              'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm', 'filmlaptop',
              'e4kuman', 'e4ngang', 'e4tani', 'e4phraioil', 'e4phraitab', 'e4praicase', 'e4tanitab',
@@ -2371,8 +2371,8 @@
          village yard in the north-east parks under its tree — each a reference picture on white (GPT Image), checked,
          then Meshy and its remesh (masters/v24.20/make.sh), its nose at −z, its length and its footprint measured into
          the file (tools/prepmeshy.mjs): 4.4 / 5.3 / 4.8 m. Generic, no maker's marks. The code-built car stands in ONLY
-         if a file never lands — hidden from the first frame, shown by the failure (v21.16's placeholder rule, for a car) */
-      [['e4sedan', 8.3, 3.6, 0xb8bcc0, 'sedan', [1.8, 1.4, 4.4]], ['e4truck', 10.6, 3.4, 0xe8e8e4, 'suv', [1.9, 1.8, 5.3]], ['e4suv', 12.9, 3.7, 0x3a3e44, 'suv', [1.9, 1.8, 4.8]]]
+         if a file never lands — hidden from the first frame, shown by the failure (v21.16's placeholder rule, for a car). (v25.5) AND REMADE (Chad, for the third time: "the 3 cars parked in the ajahn house, is still very low res and looks bad, it needs to look much better"): v24.26's bigger sheets were the wrong measure, the geometry and the painting were the generator's. The same three reference pictures through Hunyuan3D, asked for 100,000 triangles so nothing is thinned here (thinning its 500,000 crumpled every panel along the sheet's seams), their paint read as paint, the invented roundels off the sedan's boot and the SUV's tailgate (masters/v25.5/make.sh); each at a real car's size by its HEIGHT where the generator made it chunky (the sedan 4.40 m long, the pickup 4.89 and 1.85 tall, the SUV 4.48 and 1.82 tall), its blocker its own footprint. The taxi's street keeps v24.20's three (`e4sedanfar`...) */
+      [['e4sedan', 8.3, 3.6, 0xb8bcc0, 'sedan', [1.8, 1.5, 4.4]], ['e4truck', 10.6, 3.4, 0xe8e8e4, 'suv', [1.9, 1.85, 4.9]], ['e4suv', 12.9, 3.7, 0x3a3e44, 'suv', [1.95, 1.8, 4.5]]]
         .forEach(([key, x, z, col, kind, [w, h, d]]) => {
           /* (kept out of the compound's merge — it bakes every still mesh whose OWN flag is visible, so a hidden group's
              meshes would be baked in and shown: the v24.14 chedi) */
@@ -2940,7 +2940,7 @@
       pl(1.5, 1.95, M({ map: tex(makeAltarPanel(THREE, cnv)), roughness: 0.55 }), 0, 1.92, SHOP.z0 + 0.012, 0, 0);
       { const A = SHRINE;                                                            // the altar cabinet and its three tiers
         bx(A.w, A.h, A.d, mRed, 0, A.h / 2, SHOP.z0 + A.d / 2);
-        bx(A.w + 0.02, 0.025, A.d + 0.02, mGoldTrim, 0, A.h - 0.0125, SHOP.z0 + A.d / 2);
+        bx(A.w + 0.02, 0.025, A.d + 0.02, mGoldTrim, 0, A.h - 0.011, SHOP.z0 + A.d / 2);   /* (v25.5) its top 1.5 mm over the cabinet's own: the two shared a plane before the lowest tier */
         bx(A.w - 0.04, 0.08, 0.01, mRedDk, 0, 0.04, SHOP.z0 + A.d + 0.006);              // its plinth, in shadow
         for (const sx of [-1, 1]) { bx(A.w / 2 - 0.06, A.h - 0.22, 0.008, mRedDk, sx * A.w / 4, A.h / 2 + 0.03, SHOP.z0 + A.d + 0.004);   // two doors
           bx(0.012, 0.09, 0.012, mGoldTrim, sx * 0.04, A.h / 2 + 0.05, SHOP.z0 + A.d + 0.012); }                                 // their handles
@@ -2960,7 +2960,7 @@
         mesh(new THREE.CylinderGeometry(0.06, 0.045, 0.07, 18), mGoldTrim, 0, T0.y + T0.h + 0.035, pz);
         mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.004, 18), M({ color: 0x8a7e6a, roughness: 0.95 }), 0, T0.y + T0.h + 0.066, pz);
         const mStick = M({ color: 0x9a2a1a, roughness: 0.7 });
-        for (const [dx, lean] of [[-0.018, -0.12], [0, 0], [0.018, 0.12]]) { const st = mesh(new THREE.CylinderGeometry(0.0018, 0.0018, 0.2, 5), mStick, dx + lean * 0.1, T0.y + T0.h + 0.17, pz); st.rotation.z = -lean;
+        for (const [dx, lean] of [[-0.018, 0], [0, 0], [0.018, 0]]) {   /* (v25.5) upright */ const st = mesh(new THREE.CylinderGeometry(0.0018, 0.0018, 0.2, 5), mStick, dx + lean * 0.1, T0.y + T0.h + 0.17, pz); st.rotation.z = -lean;
           const ember = mesh(new THREE.SphereGeometry(0.0035, 6, 4), mTip, dx + lean * 0.2, T0.y + T0.h + 0.27, pz); void ember; }
         /* three glasses of water, a plate of oranges, flowers in two brass vases */
         const mWater = M({ color: 0xdfeaf0, roughness: 0.06, metalness: 0.0, transparent: true, opacity: 0.42, depthWrite: false });
@@ -3351,7 +3351,7 @@
         q(V, [-W2, 0.003, 0], [W2, 0.003, 0], [W2, 0.003, -D], [-W2, 0.003, -D], lc(RM[1], 0.74));
         q(V, [-W2, HC, 0], [W2, HC, 0], [W2, HC, -D], [-W2, HC, -D], lc(0xf4f2ec, 0.9));
         q(V, [-W2, 0, -D], [W2, 0, -D], [W2, HC, -D], [-W2, HC, -D], lc(RM[2] || RM[0], 0.8));
-        for (const sx of [-1, 1]) q(V, [sx * W2, 0, 0], [sx * W2, 0, -D], [sx * W2, HC, -D], [sx * W2, HC, 0], lc(RM[0], 0.86));
+        for (const sx of [-1, 1]) q(V, [sx * W2, 0, -0.35], [sx * W2, 0, -D], [sx * W2, HC, -D], [sx * W2, HC, -0.35], lc(RM[0], 0.86));   /* (v25.5) from behind the unit's pillar, whose inner face is this plane */
         for (const [px, pz] of [[-1.1, -1.2], [1.1, -1.2], [-1.1, -3.4], [1.1, -3.4]]) box(px - 0.3, px + 0.3, HC - 0.02, HC - 0.005, pz - 0.3, pz + 0.3, 0xffffff, [1, 1, 1, 1, 1, 1]);
         box(-W2, W2, 0, 0.1, -D, -D + 0.02, 0x8a8478);                                     // the skirting
         /* a glass counter: its base, a coloured band, the tray under the glass, the glass box over it */
@@ -4207,14 +4207,14 @@
         });
       });
       /* the traffic: a car ahead in his lane, one pulling away in the next, two coming the other way (the chapter's own
-         models, v24.20: the nose at −z, its length measured into the file), each with its lights */
+         models, v24.20: the nose at −z, its length measured into the file), each with its lights. (v25.5) v24.20's three cars still, under keys of their own now that the yard's are remade: the same geometry, their sheets at 1024 (512 the metal's), for cars that pass at night in the rain; both sets at 2048 would have been 150 MB of sheets */
       const carLights = (o, front, red) => {
         const gl = new THREE.BufferGeometry(), z = front ? -2.12 : 2.12;
         gl.setAttribute('position', new THREE.BufferAttribute(new Float32Array([-0.62, 0.72, z, 0.62, 0.72, z]), 3));
         const p = new THREE.Points(gl, new THREE.PointsMaterial({ map: tGlow, color: red ? 0xff3a28 : 0xfff6e8, size: red ? 0.9 : 1.6, sizeAttenuation: true, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
         mats.push(p.material); p.frustumCulled = false; o.add(p); return p;
       };
-      for (const [key, x, oncoming, phase] of [['e4sedan', 0, false, 0], ['e4suv', 3.4, false, 0], ['e4sedan', 9.0, true, 0], ['e4truck', 12.4, true, 105]]) {
+      for (const [key, x, oncoming, phase] of [['e4sedanfar', 0, false, 0], ['e4suvfar', 3.4, false, 0], ['e4sedanfar', 9.0, true, 0], ['e4truckfar', 12.4, true, 105]]) {
         const car = { o: new THREE.Group(), x, oncoming, phase }; car.o.userData.dyn = true; car.o.visible = false; T0.add(car.o);
         carLights(car.o, oncoming, !oncoming);
         street.cars.push(car);

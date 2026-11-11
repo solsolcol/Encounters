@@ -13319,19 +13319,22 @@ const STING_SAMPLE = {
   q2D1: ['q2D1', 1], lc2D1: ['lc2D1', 1], pg2D1: ['pg2D1', 1], cu2a2: ['cu2a2', 1], q2D2: ['q2D2', 1],
   q2D3: ['q2D3', 1], q2K1: ['q2K1', 1], q2K2: ['q2K2', 1], q2K3: ['q2K3', 1], q2K4: ['q2K4', 1], q2A: ['q2A', 1],
   q2B: ['q2B', 1], q2C: ['q2C', 1], q2D: ['q2D', 1], x2bagzip: ['x2bagzip', 1], x2bow: ['x2bow', 1],
-  x2bowl: ['x2bowl', 1], x2breath: ['x2breath', 1], x2breathslow: ['x2breathslow', 1], x2buzz: ['x2buzz', 1],
-  x2callmus: ['x2callmus', 1], x2candle: ['x2candle', 1], x2case: ['x2case', 1], x2clearmus: ['x2clearmus', 1],
+  x2breath: ['x2breath', 1], x2breathslow: ['x2breathslow', 1], x2buzz: ['x2buzz', 1],
+  x2callmus: ['x2callmus', 1], x2candle: ['x2candle', 1], x2clearmus: ['x2clearmus', 1],
   x2click: ['x2click', 1], x2cloth: ['x2cloth', 1], x2codamus: ['x2codamus', 1], x2corridor: ['x2corridor', 1],
   x2drawer: ['x2drawer', 1], x2endA: ['x2endA', 1], x2endB: ['x2endB', 1], x2endC: ['x2endC', 1],
   x2endD: ['x2endD', 1], x2fogmus: ['x2fogmus', 1], x2fridge: ['x2fridge', 1], x2heels: ['x2heels', 1],
-  x2heelsin: ['x2heelsin', 1], x2keys: ['x2keys', 1], x2kneel: ['x2kneel', 1], x2knock: ['x2knock', 1],
+  x2heelsin: ['x2heelsin', 1], x2keys: ['x2keys', 1], x2kneel: ['x2kneel', 1],
   x2ledhum: ['x2ledhum', 1], x2lift: ['x2lift', 1], x2mallclear: ['x2mallclear', 1], x2mallfog: ['x2mallfog', 1],
   x2mat: ['x2mat', 1], x2nightroom: ['x2nightroom', 1], x2open: ['x2open', 1], x2page: ['x2page', 1],
-  x2pat: ['x2pat', 1], x2pickpiece: ['x2pickpiece', 1], x2pickup: ['x2pickup', 1], x2ping: ['x2ping', 1],
+  x2pat: ['x2pat', 1], x2pickpiece: ['x2pickpiece', 1], x2ping: ['x2ping', 1],
   x2post: ['x2post', 1], x2ring: ['x2ring', 1], x2rise: ['x2rise', 1], x2rustle: ['x2rustle', 1],
   x2scroll: ['x2scroll', 1], x2shutter: ['x2shutter', 1], x2shutterup: ['x2shutterup', 1], x2sip: ['x2sip', 1],
   x2steps: ['x2steps', 1], x2stepsin: ['x2stepsin', 1], x2switch: ['x2switch', 1],
   x2visit: ['x2visit', 1], x2visitmus: ['x2visitmus', 1], x2wallet: ['x2wallet', 1],
+  /* (v25.5) retired with what cued them (v24.3's rule: the files, these rows; their takes stay in masters/v25.0):
+     x2knock (the visit opens on them walking in), x2pickup (the call stays on the glass, on the speaker), x2bowl (he no
+     longer packs his things while the choice is made), x2case (ending D's piece is only looked at) */
   /* (v25.4) the whisper of the piece on his shelf, a loop (e4c2's ambience; its volume and side are mixBeds') */
   x2whisper: ['x2whisper', 1]
 };

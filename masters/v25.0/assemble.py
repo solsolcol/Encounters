@@ -23,7 +23,7 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 SRC1 = os.path.join(ROOT, 'src/chapters/e4/e4c1.js')
 OUT = os.path.join(ROOT, 'src/chapters/e4/e4c2.js')
 PARTS = ['a_head.js', 'b_build1.js', 'b_build2.js', 'b_build3.js', 'b_build4.js', 'c_tail.js']
-E4C1_SHA1 = '0c2c44f2044046dc5293ffee60cb257c91500f10'      # chapter 1 as of 28c92e8 (v24.39), the line numbers' version
+E4C1_SHA1 = '6478290170e949336994e9544c45c8e63ce167ee'      # chapter 1 as of v25.5 (eight lines changed in place since v24.39 — the shop's three, the yard's and the street's cars — none added or removed: the line numbers hold)
 
 # (old, new): each `old` must occur exactly once in the assembled text
 EDITS = [
@@ -153,9 +153,12 @@ EDITS = [
     # Meshy (masters/v25.2/make.sh); the code-built ones stand in until each lands
     ("        shop.phone = { g: ph, scr, base: ph.position.clone(), x: px, drawn: '' };\n",
      "        shop.phone = { g: ph, scr, base: ph.position.clone(), x: px, drawn: '' };\n"
-     "        /* (v25.2) the phone itself (turned over at prep, its glass up), the drawn screen laid on its glass; the box stands in\n"
+     "        /* (v25.2) the phone itself, the drawn screen laid on its glass (v25.5: remade, masters/v25.5/make.sh); the box stands in\n"
      "           until it lands */\n"
      "        fitModel('e4phone', ph, 0.158, 'z', 0, 0).then(m => { if (!m || !alive) return; body.visible = false; sc.position.y = m.userData.fit.y + 0.0004; });\n"),
+    # (v25.5) the phone's screen drawn at twice the sharpness (512 x 1114): it is read close now, the call on its speaker
+    ("        const [pc, px] = sized(cnv, 256, 557); px.fillStyle = '#000'; px.fillRect(0, 0, 256, 557);\n",
+     "        const [pc, px] = sized(cnv, 512, 1114); px.fillStyle = '#000'; px.fillRect(0, 0, 512, 1114);\n"),
     ("        bx(0.09, 0.016, 0.13, M({ color: 0x2a2a2e, roughness: 0.6 }), 0.24, top + 0.008, C.z - 0.12).rotation.y = 0.2;   // the calculator\n",
      "        const calcBox = bx(0.09, 0.016, 0.13, M({ color: 0x2a2a2e, roughness: 0.6 }), 0.24, top + 0.008, C.z - 0.12); calcBox.rotation.y = 0.2;\n"
      "        /* (v25.2) the calculator itself, its display away from him as a calculator lies for its owner; the box stands in\n"

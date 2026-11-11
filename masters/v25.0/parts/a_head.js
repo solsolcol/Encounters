@@ -82,9 +82,9 @@
     /* him */
     'q2o1': 4.75, 'q2o2b': 1.97, 'q2o2': 1.69, 'q2o3': 5.37, 'q2o4': 2.33, 'q2till': 1.53, 'q2bag': 1.13,
     'q2jacket': 1.53, 'q2where': 1.51, 'q2fridge': 1.65, 'q2flowers': 3.05, 'q2note': 1.05, 'q2c1': 8.57,
-    'q2c2': 2.41, 'q2c3': 0.97, 'q2v1': 6.57, 'q2tA': 10.73, 'q2e1': 0.73,
+    'q2c2': 2.41, 'q2c3': 0.97, 'q2v1': 6.57, 'q2tA': 16.43, 'q2e1': 0.73,
     'q2e2': 0.65, 'q2e3': 0.89, 'q2e4': 1.93, 'q2e5': 2.73, 'q2e6': 1.12, 'q2A1': 1.77, 'q2A2': 1.51, 'q2A3': 5.61,
-    'q2B1': 6.49, 'q2B2': 6.49, 'q2C1': 5.61, 'q2C2': 1.65, 'q2C3': 8.49, 'q2D1': 1.79, 'q2D2': 5.61, 'q2D3': 4.41,
+    'q2B1': 8.83, 'q2B2': 6.49, 'q2C1': 5.61, 'q2C2': 1.65, 'q2C3': 8.49, 'q2D1': 1.79, 'q2D2': 5.61, 'q2D3': 4.41,
     'q2K1': 10.01, 'q2K2': 9.93, 'q2K3': 10.73, 'q2K4': 7.13, 'q2A': 3.77, 'q2B': 3.53, 'q2C': 3.61, 'q2D': 3.29,
     /* the customers */
     'cu2a1': 4.55, 'cu2a1b': 2.73, 'cu2b1': 2.57, 'cu2a2': 2.81,
@@ -95,7 +95,7 @@
     'lc2v1': 3.29, 'lc2sit': 2.7, 'lc2tell': 1.6, 'lc2tA': 5.21,
     'lc2e1': 1.2, 'lc2e2': 0.75, 'lc2e3': 0.58, 'lc2e4': 1.93, 'lc2e5': 1.18, 'lc2e6': 4.73, 'lc2e7': 1.74,
     'lc2e8': 5.26, 'lc2e9': 4.79, 'lc2e10': 2.73, 'lc2k0': 3.21, 'lc2namo': 17.13, 'lc2sak1': 14.65, 'lc2sak2': 15.85,
-    'lc2sak3': 14.57, 'lc2drink': 1.69, 'lc2k2': 6.66, 'lc2w1': 9.93, 'lc2B1': 7.53, 'lc2B2': 9.77,
+    'lc2sak3': 14.57, 'lc2drink': 1.69, 'lc2k2': 6.66, 'lc2w1': 9.93, 'lc2B1': 12.67, 'lc2B2': 11.23,
     'lc2C1': 1.88, 'lc2C2': 5.45, 'lc2C3': 5.52, 'lc2D1': 2.65
   };
   /* SECS END */
@@ -122,12 +122,21 @@
   const CALL = tl(0.6, [['@pick'], [2.6], ['@ans'], ['pg2c1', 0.5], ['q2c1', 0.6], ['@offer'], ['pg2c2', 0.9], ['q2c2', 0.6],
                         ['pg2c3', 1.1], ['q2c3', 1.3], ['@black'], [1.1]]);
   /* THE VISIT (§4.2): the next evening, the shutter lifted for them */
-  const VISIT_T = tl(1.0, [['@knock'], [2.4], ['@lift'], [2.2], ['@in'], ['q2v1', 0.6], ['@altar'], [4.4], ['@intro'], ['pg2v1', 0.5],
+  /* (v25.5, Chad: "lersi chin and pong stand for too long at the shop entrance before walking into the shop in the
+     cutscene, just start with them walking into the shop. No need to stand and wait outside") the knock, the shutter's
+     lift and the two standing under it (5.6 s) are out: the shutter is up and they are walking in as the black lifts */
+  const VISIT_T = tl(0.4, [['@in'], [0.5], ['q2v1', 0.6], ['@altar'], [4.4], ['@intro'], ['pg2v1', 0.5],
                            ['@turn'], ['lc2v1', 0.9], ['@wai'], [1.8], ['@mat'], [4.4], ['@black'], [1.0]]);
   /* THE EXAMINATION (§4.3 P6) */
   const EXAM = tl(0.6, [['lc2e1', 0.5], ['lc2e2', 0.3], ['q2e1', 0.5], ['lc2e3', 0.3], ['q2e2', 0.6], ['lc2e4', 0.4], ['q2e3', 0.6],
                         ['lc2e5', 0.4], ['q2e4', 0.6], ['lc2e6', 0.4], ['@still'], [6.2], ['@eyes'], ['lc2e7', 0.4], ['q2e5', 0.6],
-                        ['@fetch'], [6.2], ['lc2e8', 1.0], ['@believe'], ['lc2e9', 0.8], ['q2e6', 0.4], ['lc2e10', 1.4]]);
+                        ['@fetch'], [4.0], ['lc2e8', 1.0], ['@believe'], ['lc2e9', 0.8], ['q2e6', 0.4], ['lc2e10', 1.4]]);
+  /* (v25.5, Chad: "when the player takes down the item from the shelf, there is no need to have his hand try to take it
+     down as the animation just looks awkward, just show the item being removed from the shelf and go straight to the
+     next scene/frame") the fetch is the piece on its shelf, a blink, the shelf without it, and a cut to it in the
+     master's hands: 4.0 s (his walk there, his hand's reach and his way back were 6.2). EX_TAKE the blink and EX_BACK
+     the cut, both from `fetch` (the pictures and the cues read the same two numbers) */
+  const EX_TAKE = 0.75, EX_BACK = 1.7;
   /* THE CLEARING (§4.3 P7): the homage, Namo tassa, the Sakkatvā verses, the water — the fog lifts under the second and
      third verses. (v25.3, Chad: "no need for lersi chin to sprinkle water with the leaf thing and no need for the tieing
      of string": the leaves' six seconds and the thread's five and a half are out; the water's own time is the bowl
@@ -135,17 +144,25 @@
   const CLEARF = tl(0.8, [['lc2k0', 0.6], ['@homage'], [5.2], ['@namo'], ['lc2namo', 0.6], ['@sak'], ['lc2sak1', 0.4], ['@lift'],
                           ['lc2sak2', 0.4], ['lc2sak3', 0.8], ['@water'], ['lc2drink', 0.6], [4.1], ['@advice'], ['lc2k2', 1.4]]);
   /* THE ENDINGS (§4.5) and THE CODA (§4.6), each on its own clock; the coda follows each ending at `coda` */
+  /* (v25.5, Chad, of endings B and C: "when lersi chin walks away, the camera movement is very jerky and weird and they
+     walk away too fast") THE TWO GO OUT over GO_SECS: his wai, then a robed master's pace to the shutter and out (0.85 m
+     a second; it was 5 m in 3.5 s), seen from a still eye whose look turns with him on a point that does not bob */
+  const GO_SECS = 9.4;
   const END = {
     A: tl(0.6, [['@post'], [2.0], ['q2A1', 0.6], [2.4], ['@days'], [6.6], ['@call'], ['pg2A1', 0.5], ['q2A2', 0.4], ['pg2A2', 1.4],
                 ['@cust'], ['cu2b1', 1.6], ['@last'], ['q2A3', 1.6], ['@coda']]),
-    B: tl(0.6, [['q2B1', 0.5], ['@look'], [2.6], ['lc2B1', 0.6], ['lc2B2', 0.8], ['pg2B1', 0.6], ['@go'], [5.6], ['@empty'],
+    B: tl(0.6, [['q2B1', 0.5], ['@look'], [2.6], ['lc2B1', 0.6], ['lc2B2', 0.8], ['pg2B1', 0.6], ['@go'], [GO_SECS - 3.0],
                 ['q2B2', 1.6], ['@coda']]),
     C: tl(0.6, [['q2C1', 0.5], ['@stop'], [2.8], ['lc2C1', 0.6], ['lc2C2', 0.6], ['pg2C1', 0.4], ['q2C2', 0.5], ['lc2C3', 0.8],
-                ['@go'], [5.2], ['@alone'], [3.6], ['q2C3', 2.0], ['@coda']]),
-    D: tl(0.6, [['q2D1', 0.4], ['lc2D1', 0.5], ['pg2D1', 0.6], ['@go'], [4.8], ['@morning'], [4.2], ['cu2a2', 0.5], ['q2D2', 1.0],
+                ['@go'], [GO_SECS], ['@alone'], [3.6], ['q2C3', 2.0], ['@coda']]),
+    D: tl(0.6, [['q2D1', 0.4], ['lc2D1', 0.5], ['pg2D1', 0.6], ['@go'], [6.6], ['@morning'], [4.6], ['cu2a2', 0.5], ['q2D2', 1.0],
                 ['@last'], ['q2D3', 1.6], ['@coda']])
   };
-  const CODA = tl(0, [['@forum'], [0.9], ['q2K1', 0.6], ['q2K2', 0.6], ['q2K3', 0.8], ['@thread'], ['q2K4', 1.0], ['@open'], [2.4],
+  /* (v25.5) B's shop stands empty from here: his last line begins three seconds before it, over their going */
+  END.B.empty = END.B.go + GO_SECS;
+  /* (v25.5, Chad: "when he loads the last thread about the wai kru, have some content in that thread, show the post
+     content") the opened thread stays up 4.2 s before the black (2.4: a title was all there was to see) */
+  const CODA = tl(0, [['@forum'], [0.9], ['q2K1', 0.6], ['q2K2', 0.6], ['q2K3', 0.8], ['@thread'], ['q2K4', 1.0], ['@open'], [4.2],
                       ['@black'], [1.4]]);
 
   const DATA = {
@@ -155,11 +172,13 @@
     cardLabel: 'Chapter 2',
     cardTitle: 'Not Every Master Should Be Trusted',
     brief: 'Back in Singapore, in your own shop, you cannot think straight. Pong knows a master he can vouch for this time.',
-    prompt: 'Lersi Chin is packing his things. What you do now is your own.',
+    /* (v25.5) "Lersi Chin is packing his things." gave way with the pose that showed it (Chad: "dont make him so
+       hunchback": bent to his bowl for as long as the player reads); he sits as he sits, and the words say what is true */
+    prompt: 'The clearing is done. What you do now is your own.',
     /* the decision (§4.4): A the trial's 5.5C, B new (S1·12's lesson), C Chad's own (9 Nov), D the trial's 5.3D —
        Master Z's verdicts and proportions where the option is his, the deltas the trial's ×3 as in chapter 1 */
     choices: [
-      { k: 'A', text: 'Tell others the first master practises black magic',
+      { k: 'A', text: 'Tell others the first master practices black magic',
         d: { sanity: -3, awareness: 0, wisdom: -18 }, verdict: 'worst', critical: true,
         say: 'I said it as fact. I only knew it as fear.',
         teach: 'Personal caution requires less certainty than making claims about another person. You were sure enough to stay away, and said as fact what you could not prove.' },
@@ -197,7 +216,7 @@
     assets: ['lersichin', 'e4pong', 'e4nangkwak', 'e4takrut', 'e4phayant', 'e4khannam', 'e4phan',
              'e4till', 'e4bag', 'e4jacket', 'e4water', 'e4drinks', 'e4wallet', 'e4switch', 'e4shelf', 'e4cloth', 'e4yaam', 'e4phone', 'e4calc', 'e4wreath', 'e4notebook',
              'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm', 'filmlaptop',
-             'staffman', 'sitwoman', 'wifewalk', 'sitangry', 'fatherwalk'],
+             'staffman', 'sitwoman', 'wifewalk', 'sitangry', 'fatherwalk', 'yinkeeper'],
     /* FRESH (chaptertest) asks a chapter of episode 4 to declare what it takes from episodes 1-3 (`reuse`, printed on
        every run as a reminder); what it shares with chapter 1 of its own episode — his own shop, its stock, Pong — is
        the same story going on, declared here as data so it stays written down (Chad, v17.4: "any reuse is declared") */
@@ -205,7 +224,8 @@
              staffman: "the goldsmith's man across the corridor, the same neighbour as in chapter 1, seen at noon through his open front",
              sitwoman: "a woman walking past his shop at noon, the same mall's people as in chapter 1, a few metres off and blurred by the fog",
              wifewalk: "her walk, the clip alone",
-             sitangry: "a man walking past his shop at noon, the same mall's people as in chapter 1" },
+             sitangry: "a man walking past his shop at noon, the same mall's people as in chapter 1",
+             yinkeeper: "A STAND-IN (v25.5): the woman at his counter in the opening film and ending D, seen since Chad's note ('there is no female customer in that cut scene, can you add one?') — the Yin shop's keeper of episode 3 chapter 4 wears the part until his model for her lands (docs/E4-MODELS.md)" },
     reuseInEpisode: { e4pong: "Pong, the Bangkok dealer of chapter 1 — he sent him to the first master on someone else's word, and vouches first-hand for Lersi Chin here (§3.2)",
              e4nangkwak: "the piece he took from the first master's tray in chapter 1, standing by his door as he was told to put it — Lersi Chin sees it and advises a temple (§2.2 #6)",
              e4takrut: "the same, when the piece he took was the takrut",
@@ -238,7 +258,7 @@
       actLineTouch: 'Tap to choose what you do',
       // PLAY I · the shop at noon (§4.1)
       objWallet: 'Find your wallet',
-      hotTill: 'The till',
+      hotTill: 'Open drawer',
       hotBag: 'Your bag',
       hotJacket: 'Your jacket',
       hotFridge: 'The drinks fridge',
@@ -251,7 +271,12 @@
       hotNote: 'Call Pong',
       // the call and the forum: his phone's screen and the laptop's (art, drawn into the world — words are the sheet's)
       phonePong: 'Pong',
-      phoneCalling: 'calling…',
+      // (v25.5) the call's own screen, read close now that the phone stays on the glass, on its speaker
+      phoneCalling: 'Calling',
+      phoneIncoming: 'Incoming call',
+      phoneDecline: 'Decline',
+      phoneAccept: 'Accept',
+      phoneKeys: 'mute|keypad|speaker',
       noteText: 'CALL PONG',
       // PLAY II · the clearing (§4.3)
       objKneel: 'Kneel before Lersi Chin',
@@ -286,11 +311,15 @@
       capSak3bSub: 'worthy of gifts, worthy of hospitality: through the Saṅgha\'s majesty and safety,',
       capSak3c: 'nassant\'upaddavā sabbe, rogā vūpasamentu te.',
       capSak3cSub: 'may all obstacles vanish. May your diseases grow totally calm.',
-      // the forum (ending A and the coda): generic, no real site's name or look
-      forumName: 'Masters & Lineages',
+      // the forum (ending A and the coda): its name Chad's (v25.5: "The forum shown on his laptop should be called 'Amulet
+      // Forums'"); its look this game's own, no real site's
+      forumName: 'Amulet Forums',
       forumSub: 'Real accounts, shared by devotees',
+      forumBoard: 'Masters & Teachers',
+      forumTabs: 'Home|Forums|Temples|Events|Gallery',
+      forumBoards: 'Masters & Teachers|Amulets|Temples|Chanting|Wai Kru|Newcomers',
       postTitle: 'Warning about an ajahn in Thailand',
-      postBody: 'He practises black magic. I went to him myself. Stay away.',
+      postBody: 'He practices black magic. I went to him myself. Stay away.',
       reply1: 'Proof?',
       reply2: 'My aunt has gone to him for years. He helped her.',
       reply3: 'Which shop are you? Say it to his face lah.',
@@ -302,8 +331,18 @@
       thread4: 'Lersi practice: accounts from devotees',
       thread2b: 'Keeping an altar at home: the basics',
       thread3b: 'First time at a Wai Kru: what to expect',
+      // (v25.5) four more, so the list is long enough to be read down
+      thread5: 'Wai Kru: what it is, and why people go',
+      thread6: 'Making merit: which temples do you visit?',
+      thread7: 'Pictures from my teacher\'s ceremony last year',
+      thread8: 'New here. Where do I start?',
       threadNew: 'LF> Gathering devotees for Wai Kru in Udon Thani!',
       threadNewSub: 'just now',
+      // (v25.5, Chad: "when he loads the last thread about the wai kru, have some content in that thread, show the post
+      // content") the thread opened: its post, and the first two answers under it
+      threadNewBody: 'Hi all. There will be a Wai Kru in Udon Thani next month. Many masters and practitioners will be there to pay respect to their teachers. A few of us are going up from Singapore together. Anyone sincere is welcome, first-timers too. Dress in white if you can. Reply here if you want to join.',
+      threadNewReply1: 'I went last year. Worth the trip. Count me in.',
+      threadNewReply2: 'First time for me. Can I follow?',
       envelope: 'For the temple',
       // the card's What you did, always: whether the stand was checked or waited out
       noteLight: 'In the dark you switched on the light and looked.',
