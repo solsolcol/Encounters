@@ -47,8 +47,39 @@
 #   dancera  1db0ce15-5e04-44fa-982c-c5f8dbc6deaa
 #   dancerb  c45fe6e8-7914-45b3-860e-b78df491da0f
 #   red      4526cab0-b5a3-4bfc-90e3-0c4a81233f22
+#   deve     716ee4e6-61bd-4867-8529-972a1da2a73a
+#   devg     5e68521b-a7d2-4d63-9603-8b88ee87105e
+#   devh     165afb7b-3473-400a-a77b-42851d5cc129
+#   round 3 (the robed and skirted four, held until the first rigs were seen):
+#   hermita  28ce9791-4020-481a-b252-cea5cfa27d46   hermitb 3f6d47f1-a6fb-433a-9387-031c34683ae8
+#   white    051d8dad-7d8f-4607-afdf-9cacf5de40be   bench   a9a37632-5e56-4053-83eb-22d273fd429d
+#   Every one LOOKED AT before it went to Meshy (hands, feet, face, dress, the A pose). All sixteen at max/2k, 9 credits.
 #
 # ---------------------------------------------------------------------------------------------------------------------
 # 2. THE PEOPLE: the models (ids are also in masters/v26.0/src/jobs.json, written by meshy26.py as each job starts)
 # ---------------------------------------------------------------------------------------------------------------------
 #   ton      image-to-3D 01a1cae4-fba4-7332-80bd-a33ffd4b4cf9   (highest settings, a-pose)
+#   the other fifteen, their rigs, their takes and the text-to-motion clips: every id is in masters/v26.0/src/jobs.json
+#   (committed) and in docs/V26.0-E4C3-BUILD.md §5, which is made from it.
+#     python3 -I masters/v26.0/meshy26.py model masters/v26.0/people/jobs-ton.json      (and jobs-r2.json, jobs-r3.json)
+#     sh masters/v26.0/rigall.sh ton:1.70 deva:1.62 devb:1.58 deve:1.55 devf:1.60 devc:1.74 devd:1.66 devg:1.72 \
+#        devh:1.68 dancera:1.62 dancerb:1.60 red:1.68 hermita:1.66 hermitb:1.62 white:1.64 bench:1.52
+#   What came back for the first man (measured): 313,088 triangles (300,000 asked), base colour a JPEG at 8192 x 8192,
+#   normal a PNG at 4096, metal-roughness a JPEG at 4096; the rig 66 joints with fingers (three bones a finger and an
+#   end bone), named as Mixamo names them, the body 1.70 m with its feet on the ground and its face along +z.
+#
+# ---------------------------------------------------------------------------------------------------------------------
+# 3. THE PEOPLE: takes (tools/mergetakes.mjs)
+# ---------------------------------------------------------------------------------------------------------------------
+#   Every animation request hands back another whole copy of the body. Each is stripped to its bones and its animation
+#   the moment it lands, after PROVING the body in it is the rig file's own (byte for byte for one take; bone for bone
+#   in the world for a file of several library takes, which is a re-export: --same-rig), and merged onto the rig file:
+#     python3 -I masters/v26.0/meshy26.py anim ton basics 0,56,47,30,41,313,365
+#     python3 -I masters/v26.0/meshy26.py motion ton raise raise        (a text-to-motion clip by its name in the ledger)
+#     node tools/mergetakes.mjs strip masters/v26.0/src/take-ton-basics.glb masters/v26.0/src/takes-ton-basics.glb \
+#          masters/v26.0/src/rigged-ton.glb --same-rig
+#     node tools/mergetakes.mjs merge masters/v26.0/src/rigged-ton.glb <out.glb> masters/v26.0/src/takes-ton-basics.glb \
+#          masters/v26.0/src/takes-ton-walking.glb:Walking ...
+#   Text-to-motion, judged on a rig (front, side and behind at six moments each; the verdicts are in the tracker's log):
+#   dance1 KEPT (reads as a Thai classical dance); trance2 kept as raw material (arms rising wide; the shins float);
+#   kneel, raise, wai, trance1 refused as they came. The prompts: masters/v26.0/people/MOTIONS.txt.

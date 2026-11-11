@@ -10,6 +10,7 @@ usage:
   python3 -I masters/v26.0/meshy26.py rig    <name> [height]  # auto-rig the model made for <name>
   python3 -I masters/v26.0/meshy26.py anim   <name> <set> <id,id,...>   # library actions onto <name>'s rig, one file
   python3 -I masters/v26.0/meshy26.py motion <name> <set> <motion_task_id>   # a text-to-motion clip onto the rig
+  python3 -I masters/v26.0/meshy26.py refetch <name> <set>                   # a take's file again from its task (free)
   python3 -I masters/v26.0/meshy26.py remesh <name> <triangles>   # a lighter level from the same task
   python3 -I masters/v26.0/meshy26.py t2m    <motion> <seconds> "<prompt>"   # a text-to-motion clip (skeleton-free)
   python3 -I masters/v26.0/meshy26.py balance
@@ -178,6 +179,14 @@ def cmd_motion(name, setname, motion_task):
     print('motion done', name, setname, size, flush=True)
 
 
+def cmd_refetch(name, setname):
+    """a take's file again from its task (no new credits; Meshy keeps a task's files three days)"""
+    tid = ledger()[name]['takes'][setname]['task']
+    t = call('GET', '/animations/' + tid)
+    size = fetch(t['result']['animation_glb_url'], os.path.join(SRC, 'take-%s-%s.glb' % (name, setname)))
+    print('refetched', name, setname, size, flush=True)
+
+
 def cmd_t2m(name, duration, prompt):
     """a text-to-motion clip (prime: the higher quality, an FBX; skeleton-free; kept 3 days; 10 credits)"""
     assert len(prompt) <= 400, 'prompt over 400 characters: %d' % len(prompt)
@@ -210,5 +219,6 @@ if __name__ == '__main__':
     elif a[0] == 'anim': cmd_anim(a[1], a[2], a[3])
     elif a[0] == 'motion': cmd_motion(a[1], a[2], a[3])
     elif a[0] == 'remesh': cmd_remesh(a[1], a[2])
+    elif a[0] == 'refetch': cmd_refetch(a[1], a[2])
     elif a[0] == 't2m': cmd_t2m(a[1], a[2], a[3])
     else: raise SystemExit(__doc__)

@@ -1,0 +1,22 @@
+[
+ {
+  "name": "hermita",
+  "kind": "person",
+  "image": "masters/v26.0/people/refs/hermita-a-2k.png"
+ },
+ {
+  "name": "hermitb",
+  "kind": "person",
+  "image": "masters/v26.0/people/refs/hermitb-a-2k.png"
+ },
+ {
+  "name": "white",
+  "kind": "person",
+  "image": "masters/v26.0/people/refs/white-a-2k.png"
+ },
+ {
+  "name": "bench",
+  "kind": "person",
+  "image": "masters/v26.0/people/refs/bench-a-2k.png"
+ }
+]

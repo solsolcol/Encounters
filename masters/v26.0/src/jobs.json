@@ -1,39 +1,106 @@
 {
  "_motions": {
   "dance1": {
+   "credits": 10,
    "duration": 10.0,
+   "expires_at": 1794665018797,
    "prompt": "A woman performs a slow graceful traditional Thai classical dance in place: knees softly bent and gently dipping, one arm rising to shoulder height as the other lowers, wrists rotating slowly with the fingers curved back, the head tilting with each movement.",
+   "size": 16932368,
    "task": "01a1caeb-8163-777f-bf7c-ad887a1df581"
   },
+  "dance2": {
+   "credits": 10,
+   "duration": 10.0,
+   "expires_at": 1794666272111,
+   "prompt": "A woman performs a slow traditional Thai dance: both arms extended to the sides at shoulder height with wrists turning and fingers bent back, small soft steps to the left and right, knees bending with each step, the body swaying gracefully.",
+   "size": 16932528,
+   "task": "01a1cafe-c1dc-72f3-a751-5749d695fcdc"
+  },
+  "handson": {
+   "credits": 10,
+   "duration": 6.0,
+   "expires_at": 1794666280891,
+   "prompt": "A person sitting on a chair leans a little forward and places both hands on an object held up in front at chest height, holds them there quite still for a few seconds, then sits back and rests the hands on the knees.",
+   "size": 16868848,
+   "task": "01a1cafe-c2b5-7452-8543-75dd5829d571"
+  },
   "kneel": {
+   "credits": 10,
    "duration": 5.0,
+   "expires_at": 1794665004568,
    "prompt": "A person standing calmly lowers down onto both knees and sits back on the heels with a straight back, hands resting on the thighs, and stays still.",
+   "size": 16826064,
    "task": "01a1caeb-805d-763a-81e6-e9ca4a8b12fa"
   },
+  "petals": {
+   "credits": 10,
+   "duration": 4.0,
+   "expires_at": 1794666267947,
+   "prompt": "A person sitting on a chair reaches the right hand down to a bowl beside the knee, scoops up a handful, and tosses it gently forward and upward in an arc, then lowers the arm to rest.",
+   "size": 16825904,
+   "task": "01a1cafe-c2a8-74e2-b89e-38bc272a841c"
+  },
+  "prostrate": {
+   "credits": 10,
+   "duration": 7.0,
+   "expires_at": 1794666282669,
+   "prompt": "A person kneeling and sitting on the heels with palms pressed together at the chest bows slowly forward until the forehead and both palms rest on the floor, holds, then rises back upright with the palms together again.",
+   "size": 16911776,
+   "task": "01a1cafe-c2af-71c8-b5bf-df09e87b7ed1"
+  },
   "raise": {
+   "credits": 10,
    "duration": 6.0,
+   "expires_at": 1794665031891,
    "prompt": "A person kneeling upright on both knees holds a heavy bowl in both hands at chest height, slowly lifts it to just above the forehead while bowing the head, holds it there quite still, then slowly lowers it back to the chest.",
+   "size": 16868848,
    "task": "01a1caeb-814f-7095-991a-6a38e733bc37"
   },
+  "standup": {
+   "credits": 10,
+   "duration": 3.5,
+   "expires_at": 1794666274630,
+   "prompt": "A person kneeling on both knees rises smoothly to stand upright, arms relaxed at the sides.",
+   "size": 16797296,
+   "task": "01a1cafe-c2ae-72b5-9089-eba8cd563a64"
+  },
   "trance1": {
+   "credits": 10,
    "duration": 9.0,
+   "expires_at": 1794665025249,
    "prompt": "A person kneeling on both knees folds forward at the waist with the head hanging low, both arms sweeping slowly out and back behind the body with the wrists turning, the whole body trembling gently, swaying as if in a deep trance.",
+   "size": 16898848,
    "task": "01a1caeb-813e-73d8-92e1-d4d1f100f3af"
   },
   "trance2": {
+   "credits": 10,
    "duration": 9.0,
+   "expires_at": 1794665010761,
    "prompt": "A person kneeling upright with the head tilted slightly back slowly raises both arms high and wide apart with open hands, holds them there trembling, the torso swaying gently from side to side, as if in a spiritual trance.",
+   "size": 16898016,
    "task": "01a1caeb-815a-7743-a13d-0a21ec346991"
   },
   "wai": {
+   "credits": 10,
    "duration": 4.0,
+   "expires_at": 1794665037662,
    "prompt": "A person standing presses both palms together in front of the chest in a respectful greeting, bows the head and shoulders slowly forward, holds a moment, then straightens up and lowers the hands.",
+   "size": 16825904,
    "task": "01a1caeb-8147-733b-bcb3-a3d30f8e5f00"
   }
  },
- "dancera": {
-  "image": "masters/v26.0/people/refs/dancera-a-2k.png",
-  "image_to_3d": "01a1caea-c834-75ff-827a-13ad8b4114a7",
+ "bench": {
+  "credits": 40,
+  "expires_at": 1794665947976,
+  "image": "masters/v26.0/people/refs/bench-a-2k.png",
+  "image_to_3d": "01a1caf5-cdbd-713d-81fc-3a2f1ff68cc8",
+  "rig": "01a1cafe-c2be-71e3-bd2c-802839161235",
+  "rig_settings": {
+   "height_meters": 1.52,
+   "include_fingers": true,
+   "input_task_id": "01a1caf5-cdbd-713d-81fc-3a2f1ff68cc8",
+   "skeleton_template": "meshyrig"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -52,11 +119,78 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 75851352,
+   "pre": 18476436
+  }
+ },
+ "dancera": {
+  "credits": 40,
+  "expires_at": 1794665248062,
+  "image": "masters/v26.0/people/refs/dancera-a-2k.png",
+  "image_to_3d": "01a1caea-c834-75ff-827a-13ad8b4114a7",
+  "rig": "01a1caf2-3f20-76fe-9c67-98d4e287f5b0",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.62,
+   "include_fingers": true,
+   "input_task_id": "01a1caea-c834-75ff-827a-13ad8b4114a7",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 80937660,
+   "walk": 81178776
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 75111684,
+   "pre": 23281672
+  },
+  "takes": {
+   "dance1": {
+    "credits": 3,
+    "motion": "01a1caeb-8163-777f-bf7c-ad887a1df581",
+    "size": 82366440,
+    "task": "01a1cafc-2f61-7460-8d67-550e15cdf708"
+   }
   }
  },
  "dancerb": {
+  "credits": 40,
+  "expires_at": 1794665233380,
   "image": "masters/v26.0/people/refs/dancerb-a-2k.png",
   "image_to_3d": "01a1caea-cf49-741c-ac37-d77ce693f6aa",
+  "rig": "01a1caf2-3f33-76a5-b81d-babe580f31b3",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.6,
+   "include_fingers": true,
+   "input_task_id": "01a1caea-cf49-741c-ac37-d77ce693f6aa",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 81351248,
+   "walk": 81591952
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -75,11 +209,29 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 75928304,
+   "pre": 20894344
   }
  },
  "deva": {
+  "credits": 40,
+  "expires_at": 1794665169890,
   "image": "masters/v26.0/people/refs/deva-a-2k.png",
   "image_to_3d": "01a1caea-92f2-7101-9602-e4d60bf9967c",
+  "rig": "01a1caf2-3f81-76d2-88b8-7e3de9673244",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.62,
+   "include_fingers": true,
+   "input_task_id": "01a1caea-92f2-7101-9602-e4d60bf9967c",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 51479568,
+   "walk": 51720432
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -98,11 +250,29 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 47506448,
+   "pre": 10418436
   }
  },
  "devb": {
+  "credits": 40,
+  "expires_at": 1794665175801,
   "image": "masters/v26.0/people/refs/devb-a-2k.png",
   "image_to_3d": "01a1caea-9921-731b-bbc9-cf631ed55bed",
+  "rig": "01a1caf2-3e55-70db-9f31-a0ffc18de5cf",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.58,
+   "include_fingers": true,
+   "input_task_id": "01a1caea-9921-731b-bbc9-cf631ed55bed",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 37551824,
+   "walk": 37678260
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -121,11 +291,29 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 33670368,
+   "pre": 8384384
   }
  },
  "devc": {
+  "credits": 40,
+  "expires_at": 1794665179800,
   "image": "masters/v26.0/people/refs/devc-a-2k.png",
   "image_to_3d": "01a1caea-ad76-72f0-8205-d0ff4770596f",
+  "rig": "01a1caf2-3f69-74e8-a1e0-17ea5a98900c",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.74,
+   "include_fingers": true,
+   "input_task_id": "01a1caea-ad76-72f0-8205-d0ff4770596f",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 44065920,
+   "walk": 44307312
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -144,11 +332,29 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 40013204,
+   "pre": 10600936
   }
  },
  "devd": {
+  "credits": 40,
+  "expires_at": 1794665210950,
   "image": "masters/v26.0/people/refs/devd-a-2k.png",
   "image_to_3d": "01a1caea-b415-775a-884a-ea46f118a38d",
+  "rig": "01a1caf2-3f51-7351-93a5-5bc03b107620",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.66,
+   "include_fingers": true,
+   "input_task_id": "01a1caea-b415-775a-884a-ea46f118a38d",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 49119116,
+   "walk": 49360244
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -167,11 +373,29 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 45445108,
+   "pre": 8451300
   }
  },
  "deve": {
+  "credits": 40,
+  "expires_at": 1794665228103,
   "image": "masters/v26.0/people/refs/deve-a-2k.png",
   "image_to_3d": "01a1caea-9f9a-7377-92da-ca38a596fc50",
+  "rig": "01a1caf2-3f69-776d-b4ee-f99028730682",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.55,
+   "include_fingers": true,
+   "input_task_id": "01a1caea-9f9a-7377-92da-ca38a596fc50",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 76250188,
+   "walk": 76491484
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -190,11 +414,29 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 70720424,
+   "pre": 15964164
   }
  },
  "devf": {
+  "credits": 40,
+  "expires_at": 1794665242323,
   "image": "masters/v26.0/people/refs/devf-a-2k.png",
   "image_to_3d": "01a1caea-a6d5-7357-acc6-785a18befec0",
+  "rig": "01a1caf2-3f57-73c0-a4c4-271335fa7e69",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.6,
+   "include_fingers": true,
+   "input_task_id": "01a1caea-a6d5-7357-acc6-785a18befec0",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 75120428,
+   "walk": 75360944
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -213,11 +455,29 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 67404064,
+   "pre": 30616840
   }
  },
  "devg": {
+  "credits": 40,
+  "expires_at": 1794665201614,
   "image": "masters/v26.0/people/refs/devg-a-2k.png",
   "image_to_3d": "01a1caea-baa1-754e-b726-c1a99c74ded5",
+  "rig": "01a1caf2-3f52-770a-b366-0a9e439fe203",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.72,
+   "include_fingers": true,
+   "input_task_id": "01a1caea-baa1-754e-b726-c1a99c74ded5",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 34454044,
+   "walk": 34694928
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -236,11 +496,29 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 31134520,
+   "pre": 6863316
   }
  },
  "devh": {
+  "credits": 40,
+  "expires_at": 1794665204257,
   "image": "masters/v26.0/people/refs/devh-a-2k.png",
   "image_to_3d": "01a1caea-c15a-701b-95e0-4285a55b2435",
+  "rig": "01a1caf2-3f5d-7320-a832-655f920ff42f",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.68,
+   "include_fingers": true,
+   "input_task_id": "01a1caea-c15a-701b-95e0-4285a55b2435",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 44549600,
+   "walk": 44754348
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -259,11 +537,101 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 40679328,
+   "pre": 9805140
+  }
+ },
+ "hermita": {
+  "credits": 40,
+  "expires_at": 1794666026253,
+  "image": "masters/v26.0/people/refs/hermita-a-2k.png",
+  "image_to_3d": "01a1caf5-b83c-730a-bdc4-e689e00a0b65",
+  "rig": "01a1cafe-c2b6-7351-b9d5-263c285aa2e6",
+  "rig_settings": {
+   "height_meters": 1.66,
+   "include_fingers": true,
+   "input_task_id": "01a1caf5-b83c-730a-bdc4-e689e00a0b65",
+   "skeleton_template": "meshyrig"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 70843852,
+   "pre": 62346620
+  }
+ },
+ "hermitb": {
+  "credits": 40,
+  "expires_at": 1794665957523,
+  "image": "masters/v26.0/people/refs/hermitb-a-2k.png",
+  "image_to_3d": "01a1caf5-c047-775d-beae-add88c36033b",
+  "rig": "01a1cafe-c2e2-722d-8056-040da1fe1bd8",
+  "rig_settings": {
+   "height_meters": 1.62,
+   "include_fingers": true,
+   "input_task_id": "01a1caf5-c047-775d-beae-add88c36033b",
+   "skeleton_template": "meshyrig"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 70121196,
+   "pre": 23552776
   }
  },
  "red": {
+  "credits": 40,
+  "expires_at": 1794665221816,
   "image": "masters/v26.0/people/refs/red-a-2k.png",
   "image_to_3d": "01a1caea-d642-73fb-9328-7afe38638844",
+  "rig": "01a1caf2-3f67-7758-9c48-94b9ca6624dd",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.68,
+   "include_fingers": true,
+   "input_task_id": "01a1caea-d642-73fb-9328-7afe38638844",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 49716108,
+   "walk": 49897900
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -282,6 +650,10 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 45839264,
+   "pre": 11200212
   }
  },
  "ton": {
@@ -290,11 +662,16 @@
   "image": "masters/v26.0/people/refs/ton-a-2k.png",
   "image_to_3d": "01a1cae4-fba4-7332-80bd-a33ffd4b4cf9",
   "rig": "01a1caea-926e-777b-a3c9-a9b74e437866",
+  "rig_credits": 5,
   "rig_settings": {
    "height_meters": 1.7,
    "include_fingers": true,
    "input_task_id": "01a1cae4-fba4-7332-80bd-a33ffd4b4cf9",
    "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 41145660,
+   "walk": 41386364
   },
   "settings": {
    "ai_model": "latest",
@@ -318,6 +695,63 @@
   "sizes": {
    "glb": 37171180,
    "pre": 9489688
+  },
+  "takes": {
+   "basics": {
+    "actions": [
+     0,
+     56,
+     47,
+     30,
+     41,
+     313,
+     365
+    ],
+    "credits": 21,
+    "size": 45106380,
+    "task": "01a1caf0-7c68-7100-8181-a7d243730418"
+   }
+  }
+ },
+ "white": {
+  "credits": 40,
+  "expires_at": 1794665925275,
+  "image": "masters/v26.0/people/refs/white-a-2k.png",
+  "image_to_3d": "01a1caf5-c6ae-73e4-b0ab-03f9570bff30",
+  "rig": "01a1cafe-c3bc-726c-8512-c061b39fc0ce",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.64,
+   "include_fingers": true,
+   "input_task_id": "01a1caf5-c6ae-73e4-b0ab-03f9570bff30",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 45648948,
+   "walk": 45891172
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 41483240,
+   "pre": 12713412
   }
  }
 }

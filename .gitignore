@@ -99,3 +99,9 @@ __pycache__/
 # Chad's photographs of the real Wai Kru (11 Nov 2026): real people, a child and a list of names.
 # This repository is public, so they are NEVER committed (docs/V26.0-E4C3-PLAN.md §1.1, §2.2 #21).
 masters/v26.0/ref/
+
+# the ledger lock and half-written downloads of the Meshy scripts
+masters/*/src/*.lock
+masters/*/src/*.tmp
+masters/*/src/*.part
+masters/*/src/*.fbx
