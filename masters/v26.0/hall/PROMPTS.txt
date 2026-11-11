@@ -1,0 +1,89 @@
+v26.0 · THE HALL OF PHOTOGRAPHS 13 TO 16: the prompt of each picture (GPT Image gpt_image_2_6 through Higgsfield, 2k).
+Chad, 11 Nov 2026, evening: "More images of the building behind, at the wai kru". Every picture was made from a crop of
+his photograph of the real thing (cut on this machine by hand: objects and surfaces only, no person, and never the sign
+board, which carries the place's name), given as the picture's image reference. Job ids: jobs-hall.json. The props then
+went to Meshy (jobs-m1.json, jobs-m2.json; masters/v26.0/props/TABLE.txt has their sizes) and the surfaces to
+masters/v26.0/tex/make.py. The sign is not a generated picture: sign.mjs draws it.
+
+Every prop's prompt begins with the props' own head (masters/v26.0/props/PROMPTS.py HEAD: one object, complete and alone,
+on pure white, soft studio light, no people, no text, no brand) and ends "Match the object in the reference photograph(s)
+exactly: its shapes, materials, colours and proportions."
+
+nagafount (max, 1:1; references: the fountain in 13, and in 16 from the front)
+  a painted cement Thai temple garden statue of a seven-headed naga serpent (Phaya Nak) as a small fountain: seven slender
+  golden necks fanned out like the fingers of a hand, each ending in a crested golden naga head with an open red mouth and
+  white fangs, red trim down each throat, rising about 1.5 metres from one thick neck with a golden chest ornament; its
+  long body, scaled in green and gold, lies coiled on the ground in two round loops, each loop the rim of a shallow empty
+  round basin; the whole on a low flat red base. No plinth, no water, no other figures, no pots.
+nagagreen (max, 3:2, seen from its side; references: the west naga in 13 and 16)
+  a painted cement Thai temple garden statue of a naga serpent about 2 metres long and 1.4 metres tall: a thick body
+  covered in glossy emerald-green scales with a belly of white bands edged in red, arched in a tall S curve like a wave,
+  its raised front bearing three crested heads close together with tall flame-shaped golden crests, open red mouths and
+  white fangs, a golden collar ornament below the heads, and at the other end a tail that curls up into a golden
+  flame-shaped finial. Seen in profile so the whole S curve reads, heads at the left. No plinth, no plants.
+nagawhite (max, 2:3; references: the east naga in 15 and 16)
+  a painted cement Thai temple garden statue of a three-headed naga serpent rearing upright, about 1.5 metres tall: one
+  thick upright neck whose front is white with red cross bands and whose back is green scales, dividing into three necks,
+  each with a crested golden head, an open red mouth and white fangs, the middle head tallest; a large golden chest
+  ornament shaped like a pointed leaf where the necks join; the base of the neck coils once on the ground. No plinth, no
+  bowl, no plants.
+ganesha (max, 1:1; reference: the small golden figure at the fountain's east end in 13)
+  a small Thai garden statue about 35 centimetres long, painted all over in bright metallic gold with small red details:
+  the Hindu-Thai deity Ganesha (Phra Phikanet), elephant-headed, wearing a tall pointed Thai crown and ornaments,
+  reclining at ease on his side on a low oval base, propped on one elbow, his trunk curled, one knee raised.
+croton (high, 1:1; reference: the yellow bush in 15)
+  a dense rounded garden shrub about 1.2 metres tall growing from the ground, a golden duranta or yellow croton bush:
+  masses of small bright yellow and lime-green leaves, darker green deeper inside, thin woody stems just visible at the
+  bottom, a small patch of soil at its foot. No pot.
+dracaena (high, 2:3; reference: the spiky plant in its jar in 15)
+  a potted dracaena plant about 1.5 metres tall: a slender bare grey-brown trunk leaning a little, topped by a round
+  spiky crown of long narrow pointed leaves striped lime-yellow and green, growing in a wide squat brown glazed ceramic
+  jar with a rolled rim.
+waterjar (high, 1:1; reference: the pots before the fountain in 16)
+  a large old Thai water jar, a wide squat dark-brown glazed earthenware jar about 60 centimetres across with a thick
+  rolled rim and a faint incised band, filled to the brim with water whose surface is completely covered by small bright
+  green floating water plants (duckweed and water lettuce).
+walllamp (high, 2:3; reference: the lamp on the corner post in 13)
+  an outdoor wall lantern of the old carriage-lamp kind: a dark bronze-black metal cage with a small domed cap and
+  finial, tapering six-sided panels of frosted amber glass, on a short curved metal bracket with a small round wall
+  plate. The lamp is not lit.
+
+redroof (high, 1:1; reference: the roof in 15)
+  Seamless tileable texture, flat straight-on orthographic view with no perspective: a roof of bright red pressed-metal
+  roofing sheets stamped to look like rows of rounded tiles, exactly the roof in the reference: straight horizontal rows
+  of scallop-ended tiles about 30 centimetres tall, each row overlapping the one below with a small shadow under its lower
+  edge, the tiles lined up in columns, satin red paint slightly sun-faded and dusty, even daylight, no sky, no edges, no
+  ridge, no gutter, the pattern filling the whole image about eight rows tall so it can repeat as a tile in both
+  directions. Photorealistic.
+hallbrick (high, 1:1; reference: the wall beside the door in 13)
+  ... a wall faced with long thin red-brown brick-look tiles exactly like the reference: smooth terracotta-red bricks
+  about 28 centimetres long and 7 centimetres tall in a running bond, thin pale grey mortar joints, slight colour
+  variation from brick to brick, a little weathering, even flat daylight, no shadows, no door, no window, no plants, no
+  objects, the pattern filling the whole image about twenty courses tall ...
+steptile (high, 1:1; reference: the steps in 13)
+  ... photographed straight down from above ... a floor of square terracotta-pink ceramic tiles exactly like the steps in
+  the reference, each tile about 30 centimetres, matt salmon-terracotta with a faint streaky wood-like grain and slight
+  wear, thin slightly darker grout lines in a straight grid, a little outdoor dust, completely even flat daylight, no
+  shadows, no white edge strips, no objects, a grid of four by four tiles ...
+lawn (high, 1:1; reference: the lawn in 16)
+  ... photographed straight down from above: a real lawn of short tropical carpet grass exactly like the reference,
+  slightly uneven and patchy, mostly fresh green with a few yellower blades and tiny bare specks, completely even flat
+  daylight, no shadows, no path, no leaves, no objects, uniform all over so it can repeat as a tile.
+kalae (high, 1:1, on solid magenta; reference: the gable in 15)
+  A flat straight-on front view, with no perspective, of ONE object on a perfectly uniform solid magenta background
+  (#FF00FF): the carved wooden roof finial of a northern Thai house called a kalae, exactly like the one at the peak of
+  the gable in the reference: two long slender carved wooden boards crossing each other in an X a little above their
+  feet, each board curving outward and tapering to a point, carved in openwork flame-like scrolls, weathered dark
+  grey-brown wood. The whole X centred, filling most of the frame, its two feet together at the bottom centre. No roof,
+  no sky, no shadow, no text.
+fretwork (high, 3:2, on solid magenta; reference: the gable in 15)
+  ... ONE horizontal strip of carved wooden eave fretwork, the scalloped lace-like fascia board that hangs under the
+  eaves of a Thai wooden house, exactly like the trim along the roof edges in the reference: a straight plain board along
+  the top edge, and below it a repeating row of pointed scallops, each pierced with a small teardrop hole and a round
+  hole, painted dark red-brown, slightly weathered. The strip runs the full width of the image from the left edge to the
+  right edge so it can repeat sideways, about one third of the image tall, placed across the middle; magenta above and
+  below it and showing through every pierced hole. No roof, no wall, no shadow, no text.
+
+WHAT WAS FOUND: all fifteen came back right at the first asking (four of the first twelve were refused by the service's
+rate limit with no job made, and were sent again). The roof picture is two whole repeats each way; the brick wraps
+sideways as it came and was cut to eighteen whole courses; the step tile to four by four whole tiles (tex/make.py `tile`).

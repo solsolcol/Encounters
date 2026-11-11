@@ -8,6 +8,9 @@ Each row: name, width, height, how:
           picture's own middle over the join of its wrapped copy with a soft edge
   asis    a patterned surface (planks, tiles, cloth): kept as it came; the chapter repeats it only in the direction its
           join is clean, or mirrors it (the table says which in the note, and the chapter's code follows it)
+  tile    a surface of whole repeats (roof tiles, bricks, floor tiles): the picture's own period is measured each way
+          (the shift at which it best lies on itself) and it is cut to a whole number of them, so it repeats exactly
+          with no blur laid over its pattern
   key     cut out of its magenta ground: alpha from how magenta a point is, the pink spill taken off its edges, and the
           colour under the cut-away part filled from its neighbours so no magenta shows at a distance
 The pictures are never retouched beyond that (v5.10: only the fill between islands is touched)."""
@@ -35,7 +38,15 @@ TABLE = [
     ('swag',      1024, 512,  'key',   'one garland swag, cut out'),
     ('banner',    256,  1024, 'key',   'one tiered banner, cut out; white, tinted by its material'),
     ('treeline',  2048, 640,  'key',   'the far line of trees, cut out; laid round the ground on a ring, mirrored at its joins'),
+    # ---- the hall of photographs 13 to 16 (jobs: masters/v26.0/hall/jobs-hall.json; prompts: hall/PROMPTS.txt)
+    ('redroof',   1024, 1024, 'tile',  'the hall roof: whole rows and columns of pressed tiles; repeats both ways'),
+    ('hallbrick', 1024, 1024, 'tile',  'the hall walls: whole courses and bricks; repeats both ways'),
+    ('steptile',  512,  512,  'tile',  'the steps and the floor: whole tiles; repeats both ways'),
+    ('lawn',      1024, 1024, 'blend', 'the lawn round the hall: repeats both ways, one tile 2.5 m'),
+    ('kalae',     512,  512,  'key',   'the crossed finial at the gable peak, cut out'),
+    ('fretwork',  1024, 128,  'key',   'the scalloped eave board, cut out; its full width kept so it repeats sideways'),
 ]
+FULLW = {'treeline', 'fretwork'}        # cut-outs that keep the picture's whole width (they repeat sideways)
 
 
 def blend(im):
@@ -49,6 +60,27 @@ def blend(im):
     m = np.maximum(my, mx); m = m * m * (3 - 2 * m)
     out = sh * (1 - m[..., None]) + a * m[..., None]
     return Image.fromarray(np.clip(out, 0, 255).astype(np.uint8))
+
+
+def period(profile, lo, hi):
+    """the period of a profile (the picture averaged along a row or a column): the smallest shift, lo..hi, at which it
+    lies on itself nearly as well as at its best shift (so the pattern's own period, not a multiple of it)"""
+    r = profile - profile.mean()
+    ac = [(float((r[:-q] * r[q:]).mean()), q) for q in range(lo, hi)]
+    top = max(ac)[0]
+    return min(q for sc, q in ac if sc >= top * 0.9)
+
+
+def tile(im, name):
+    g = np.asarray(im.convert('L')).astype(np.float32); h, w = g.shape
+    py = period(g.mean(1), h // 40, h // 3)                      # one row of the pattern (a course, a row of tiles)
+    px = period(g[: max(8, py - 4)].mean(0), w // 40, w // 2)    # one piece along that row
+    ky = (h // py) // 2 * 2                                      # an EVEN number of rows: a bond's rows alternate
+    lr = float(np.mean(np.abs(g[:, 0] - g[:, -1]))); inside = float(np.mean(np.abs(g[:, 1:] - g[:, :-1])))
+    kx = w // px; wx = w if lr <= inside * 1.5 else px * kx      # (a picture that already wraps sideways keeps its width)
+    box = (0, 0, wx, py * ky)
+    print('    %s: a row is %d px (%d kept, an even number), a piece %d px (%s); cut to %dx%d' % (name, py, ky, px, 'the picture wraps sideways as it is' if wx == w else '%d kept' % kx, box[2], box[3]))
+    return im.crop(box)
 
 
 def key(im):
@@ -81,14 +113,15 @@ def main():
         if not os.path.exists(p): print('%-10s (no source yet)' % name); continue
         im = Image.open(p).convert('RGB')
         if how == 'blend': im = blend(im)
+        if how == 'tile': im = tile(im, name)
         if how == 'key':
             k = key(im)
             # cut to what is kept (a hand's width of margin), so the picture fills its piece; the piece's shape is the
             # cut's own (printed below: the chapter sizes its piece by it)
             a = np.asarray(k)[..., 3] > 127; ys, xs = np.where(a)
             pad = max(4, k.size[0] // 200)
-            box = (0 if name == 'treeline' else max(0, xs.min() - pad), max(0, ys.min() - pad),
-                   k.size[0] if name == 'treeline' else min(k.size[0], xs.max() + pad), k.size[1] if name == 'treeline' else min(k.size[1], ys.max() + pad))
+            box = (0 if name in FULLW else max(0, xs.min() - pad), max(0, ys.min() - (0 if name == 'fretwork' else pad)),
+                   k.size[0] if name in FULLW else min(k.size[0], xs.max() + pad), k.size[1] if name == 'treeline' else min(k.size[1], ys.max() + pad))
             k = k.crop(box); note += '; cut to %dx%d, %.3f wide for 1 tall' % (k.size[0], k.size[1], k.size[0] / k.size[1])
             out = k.resize((w, h), Image.LANCZOS)
             dst = os.path.join(ROOT, 'assets', 'w3t_%s.webp' % name); out.save(dst, 'WEBP', quality=90, method=6, exact=True)

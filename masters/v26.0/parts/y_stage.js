@@ -30,12 +30,14 @@
       const out = [];
       const solid = (o, pad = 0.14) => { o.updateWorldMatrix(true, false); const bb = new THREE.Box3().setFromObject(o); bb.expandByScalar(pad); bb.min.y = 0; bb.max.y = Math.max(bb.max.y, 1.40); out.push(bb); };
       for (const s of solids) solid(s);
+      for (const b of crowdBlock) out.push(b);                                   // the crowd, a column a person (lifted out of his way when they are gone: crowdSolid)
       return out;
     }
     function dispose() {
       alive = false;
-      const geos = new Set(), ms = new Set();
+      const geos = new Set(), ms = new Set(), skels = new Set();
       world.traverse(o => {
+        if (o.isSkinnedMesh && o.skeleton) skels.add(o.skeleton);                  // each skin's bone sheet is a texture of its own
         if (o.geometry) geos.add(o.geometry);
         if (o.material) for (const m of (Array.isArray(o.material) ? o.material : [o.material])) ms.add(m);
       });
@@ -50,6 +52,7 @@
       for (const o of owned) { if (o.parent) o.parent.remove(o); o.dispose?.(); }
       owned.length = 0;
       for (const g of geos) g.dispose();
+      for (const k of skels) k.dispose();
       for (const m of ms) {
         for (const k of ['map', 'roughnessMap', 'metalnessMap', 'normalMap', 'emissiveMap', 'alphaMap']) m[k]?.dispose?.();
         m.dispose();
@@ -76,7 +79,8 @@
       keepIn: { what: 'the ground of the Wai Kru', minX: DATA.bounds.minX, maxX: DATA.bounds.maxX, minZ: DATA.bounds.minZ, maxZ: DATA.bounds.maxZ },
       get phase() { return phase; },
       setPhase, applyPhase, after, dayClock, sayLine, queueLine, queueFn, queueGap,
-      look, presets: PRESETS, films,
+      look, presets: PRESETS, films, crowdStats,
+      who: () => people.filter(P => !P.driver).map(P => ({ key: P.key, ready: P.ready, take: P.cur, skin: P.lvShown, skins: P.lv.map(v => (v ? 1 : 0)).join('') })),
       plan: { TURF, TABLES, HALL, TENT_W1, TENT_W2, TENT_E, CHIEF, BENCH, POLE, TON_TABLE, WEST_TABLE },
       info: () => ({ phase, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], until: +speak.until.toFixed(2),
                      pending: speak.pending ? speak.pending.name : null, decOpen, look: lookName, busy: play.busy,

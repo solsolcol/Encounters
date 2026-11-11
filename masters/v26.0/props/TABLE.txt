@@ -17,3 +17,30 @@ khantok       w3khantok     0.40  w  10000   512  0
 satinpuff     w3puff        0.75  h   4000   512  0
 seatchair     w3chair       1.15  h  12000  1024  0
 lowtable      w3lowtable    1.00  w   3000   512  0
+# ---- what stands at the hall (photographs 13 to 16; masters/v26.0/hall)
+nagafount     w3nagafount   1.55  h  40000  1024  0
+nagagreen     w3nagagreen   2.00  w  30000  1024  0
+nagawhite     w3nagawhite   1.50  h  24000  1024  0
+ganesha       w3ganesha     0.36  w  12000   512  0
+# (croton: Meshy refused its picture as 'too complex for 3D generation'; croton2 is the same bush drawn again with
+#  about forty large leaves (hall/refs/croton2-1024.jpg), which it takes)
+croton2       w3croton      1.45  h  16000  1024  0
+dracaena      w3dracaena    1.50  h  12000  1024  0
+waterjar      w3waterjar    0.62  w   6000   512  0
+walllamp      w3walllamp    0.42  h   4000   512  0
+# ---- the tables' and the tents' stock, second batch (references looked at 11 Nov, evening)
+smallbaisri   w3smallbaisri 0.38  w   8000   512  0
+sofa          w3sofa        0.95  w   8000  1024  0
+# (petalbowl, petalsteel: NOT made by prop.sh. Meshy's remesh of a heap of petals at 6,000 crumpled the bowl under it
+#  (photographed), and it refused the steel bowl's picture outright; both are Hunyuan3D v3's, asked for 40,000
+#  triangles, nothing thinned: masters/v26.0/make.sh, the things. Kept here for their sizes only.)
+#petalbowl    w3petalbowl   0.34  w  40000   512  0   src/hunyuan-petalbowl-40k.glb
+#petalsteel   w3petalsteel  0.36  w  40000   512  0   src/hunyuan-petalsteel-40k.glb
+seatbench     w3bench       1.50  w  16000  1024  0
+candlemid     w3candlemid   0.66  h   2000   256  0
+candlesmall   w3candlesmall 0.24  h   1500   256  0
+kratip        w3kratip      0.14  h   3000   512  0
+chicken       w3chicken     0.30  w   4000   512  0
+coconut       w3coconut     0.19  w   3000   512  0
+soda          w3soda        0.22  h   1500   256  0
+water         w3water       0.21  h   1500   256  0

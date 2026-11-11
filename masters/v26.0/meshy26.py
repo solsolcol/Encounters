@@ -35,23 +35,38 @@ LEDGER = os.path.join(SRC, 'jobs.json')
 
 
 def call(method, path, body=None):
-    req = urllib.request.Request(API + path, method=method, data=json.dumps(body).encode() if body is not None else None,
-                                 headers={'Authorization': 'Bearer ' + KEY, 'Content-Type': 'application/json'})
-    try:
-        with urllib.request.urlopen(req, timeout=180) as r:
-            return json.loads(r.read())
-    except urllib.error.HTTPError as e:
-        msg = e.read().decode('utf-8', 'replace')[:600]
-        raise SystemExit('HTTP %s on %s %s: %s' % (e.code, method, path, msg))
+    """one request. A GET (a status, a balance) that drops on the line is asked again, up to five times with a wait: a
+    forty-minute run of remeshes was lost to one reset connection. A POST is never repeated here (it would start, and
+    charge, a second job): a POST that drops is reported and the run that made it is run again by hand."""
+    tries = 5 if method == 'GET' else 1
+    for k in range(tries):
+        req = urllib.request.Request(API + path, method=method, data=json.dumps(body).encode() if body is not None else None,
+                                     headers={'Authorization': 'Bearer ' + KEY, 'Content-Type': 'application/json'})
+        try:
+            with urllib.request.urlopen(req, timeout=180) as r:
+                return json.loads(r.read())
+        except urllib.error.HTTPError as e:
+            msg = e.read().decode('utf-8', 'replace')[:600]
+            if method == 'GET' and e.code >= 500 and k < tries - 1: time.sleep(4 * (k + 1)); continue
+            raise SystemExit('HTTP %s on %s %s: %s' % (e.code, method, path, msg))
+        except (urllib.error.URLError, ConnectionError, TimeoutError) as e:
+            if k < tries - 1: time.sleep(4 * (k + 1)); continue
+            raise SystemExit('%s %s did not get through: %s' % (method, path, e))
 
 
 def fetch(url, out):
     tmp = out + '.part'
-    with urllib.request.urlopen(url, timeout=1800) as r, open(tmp, 'wb') as f:
-        while True:
-            b = r.read(1 << 20)
-            if not b: break
-            f.write(b)
+    for k in range(4):                       # a download that drops is begun again (the file is whole or it is not kept)
+        try:
+            with urllib.request.urlopen(url, timeout=1800) as r, open(tmp, 'wb') as f:
+                while True:
+                    b = r.read(1 << 20)
+                    if not b: break
+                    f.write(b)
+            break
+        except (urllib.error.URLError, ConnectionError, TimeoutError) as e:
+            if k == 3: raise SystemExit('the download did not get through: %s' % e)
+            time.sleep(5 * (k + 1))
     os.replace(tmp, out)
     return os.path.getsize(out)
 
@@ -227,9 +242,14 @@ def cmd_t2m(name, duration, prompt):
 
 def cmd_remesh(name, polys):
     L = ledger()[name]
-    tid = call('POST', '/remesh', {'input_task_id': L['image_to_3d'], 'target_formats': ['glb'], 'topology': 'triangle',
-                                   'target_polycount': int(polys)})['result']
-    rm = L.get('remesh', {}); rm[str(polys)] = tid; note(name, remesh=rm)
+    rm = L.get('remesh', {})
+    if str(polys) in rm and not os.environ.get('AGAIN'):
+        tid = rm[str(polys)]; print('  remesh %s %s: the job is in the ledger (%s): waited for, not started again' % (name, polys, tid), flush=True)
+    else:
+        tid = call('POST', '/remesh', {'input_task_id': L['image_to_3d'], 'target_formats': ['glb'], 'topology': 'triangle',
+                                       'target_polycount': int(polys)})['result']
+        with locked():
+            L2 = ledger(); r2 = L2.setdefault(name, {}).setdefault('remesh', {}); r2[str(polys)] = tid; save(L2)
     t = wait('/remesh', tid, 'remesh %s %s' % (name, polys))
     size = fetch(t['model_urls']['glb'], os.path.join(SRC, 'remeshed-%s-%s.glb' % (name, polys)))
     print('remesh done', name, polys, size, flush=True)

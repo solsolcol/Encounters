@@ -91,6 +91,28 @@
 #   A file is removed only on the tool's own exit status, with no pipe between (a strip that REFUSED a file once had
 #   that file deleted behind it by `| grep ... && rm`; it came back free with `meshy26.py refetch <name> <set>`).
 #
+# 3b. THE PEOPLE: from a rig and its takes to the game's files (11 Nov, evening and night)
+#   NOTHING IS THINNED HERE. The first people files were thinned here and refused by photograph (the strict simplifier
+#   stalled far over its count; the permissive one shredded faces; a sheet cut to 1024 smeared them). Chad: "I thought
+#   the issue is mostly due to textures and not the triangles. As long as texture remains high res, it should be ok?"
+#   He is right. So:
+#     sh masters/v26.0/bodies.sh <name> <triangles> [<name> <triangles> ...]
+#        meshy26.py remesh (Meshy's own remesh of the model to that count, 5 credits: it keeps the paint sharp), then
+#        tools/riglod.mjs lays the rig's skeleton and weights onto the remeshed body (the rig in its rest pose, the
+#        body fitted to it by its box and checked by the mean distance between the two surfaces: 0.1 to 4.5 mm);
+#        -> masters/v26.0/src/body-<name>-<count>.glb. 48 bodies: 16 people at their near count (40,000 the two he
+#        speaks to, 30,000 the masters and the dancers, 24,000 the devotees), 8,000 and 2,500.
+#     sh masters/v26.0/people.sh [name ...]
+#        mergetakes merge (the near body with every take the person wears), tools/calmarms.mjs (THE ARMS BROUGHT IN:
+#        the library's stands and walks hold both upper arms 15 to 19 degrees out; each is set to a mean of 6 to 7,
+#        its own movement kept at a share: CALM in the script; measure any file with `calmarms.mjs <file> --measure`),
+#        then tools/prepmonk.mjs with NOTHIN=1 NOMAP=1 a level at a time (colour 2048 for anyone seen close, 1024
+#        the devotees, 512 and 256 the two far levels), and for Ton and the woman at the bench the generator's own
+#        model whole as a fourth skin (`h`, 313,000 triangles, drawn inside 2.7 m): -> assets/e4<name>[m|f|h].glb.
+#   Rests judged by photograph (tools/clipsheet.mjs on the game's own files): the masters' is the seated idle's upright
+#   window; the monks' the first third of a second of Sit_Thumbs_Up_Right; Grandmaster Pho's the first third of a
+#   second of Sit_to_Stand_Transition_M (c_cast.js says why each).
+#
 # ---------------------------------------------------------------------------------------------------------------------
 # 4. THE THINGS (masters/v26.0/props/)
 # ---------------------------------------------------------------------------------------------------------------------
@@ -113,6 +135,27 @@
 #   Two pictures Meshy REFUSED ("image too complex"): the chrysanthemums and the roses, both a bunch of small blooms.
 #   Not charged; each is asked for again as fewer, larger blooms. meshy26.py collect <name>... fetches what finished
 #   and passes over what failed, where the first script stopped at the first refusal and left nine uncollected.
+#   Batch two (11 Nov, night; props/jobs-p3.json): the small bai sri, the sofa, the two bowls of petals, the bench, the
+#   mid and small candles, the sticky-rice basket, the boiled chicken, the coconut, the soda, the water.
+#   WHAT MESHY WOULD NOT OR COULD NOT DO, and who did it (Higgsfield's hunyuan3d_v3_image_to_3d, enable_pbr,
+#   generate_type Normal, face_count 40000 (its least), 19 credits each; nothing thinned; prepped by hand):
+#     the steel bowl of petals  refused by Meshy ("image too complex")   job 1402dcea-8aa0-4e8d-ada9-d3da09eb0517
+#        ERR=0.002 node tools/prepmeshy.mjs masters/v26.0/src/hunyuan-petalsteel-40k.glb assets/w3petalsteel.glb 0.36 w 1 0 512
+#     the golden bowl of petals  Meshy's remesh at 6,000 crumpled the bowl   job 06b886ea-530a-488a-8fb5-83433f84261a
+#        ERR=0.002 node tools/prepmeshy.mjs masters/v26.0/src/hunyuan-petalbowl-40k.glb assets/w3petalbowl.glb 0.34 w 1 0 512
+#     the bush (croton)  refused by Meshy; Hunyuan's (6b32c62b-0c1f-44f8-b0dc-34cdd2137063) came back a tuft of grass
+#        at 3,120 triangles: REFUSED by photograph, its file removed. The bush was drawn again with forty large leaves
+#        (hall/refs/croton2-1024.jpg, job 9ef71b83-7b5b-4ffd-b898-3c139c23b390), which Meshy takes: `croton2` in the table.
+#   Still to draw again: the chrysanthemums and the roses.
+#
+# 4b. THE HALL (masters/v26.0/hall/; Chad, 11 Nov evening: "More images of the building behind, at the wai kru")
+#   Its statues, plants and lamp are models made the same way from crops of photographs 13 to 16 (objects only; the
+#   sign board, which carries the real place's name, was never sent anywhere): hall/jobs-hall.json (the reference
+#   pictures), hall/PROMPTS.txt, hall/jobs-m1.json to jobs-m3.json (the models), the rows of props/TABLE.txt.
+#   Its six surfaces (red pressed roof, brick, step tile, lawn, the kalae, the fretwork) are tex/make.py's `tile` mode:
+#   a pattern's own period measured, the picture cut to a whole and even number of rows, so each repeats exactly.
+#   ITS SIGN IS DRAWN, not generated:  CHROMIUM_PATH=/opt/pw-browsers/chromium node masters/v26.0/hall/sign.mjs
+#   (a browser shapes the Thai; its words are generic and name nobody: assets/w3t_sign.webp, 2048 x 366).
 #
 # ---------------------------------------------------------------------------------------------------------------------
 # 5. THE GROUND'S SURFACES (masters/v26.0/tex/)
@@ -134,4 +177,8 @@
 # ---------------------------------------------------------------------------------------------------------------------
 #     python3 -I masters/v26.0/script/secs.py     every line's length into the head part (lines.py: all 104 lines)
 #     python3 -I masters/v26.0/assemble.py        parts/*.js, with chapter 2's helpers copied in by pinned line ranges
+#     python3 -I masters/v26.0/keys.py --write    EVERY ASSET KEY from one table: build.py's rows and hosted-only set and
+#                                                 the head part's list, between markers (only keys whose file is in
+#                                                 assets/; the rest are reported as not there yet). Run it after
+#                                                 anything lands, then assemble and build.
 #   src/chapters/e4/e4c3.js is never edited by hand.

@@ -66,6 +66,7 @@
       lookName = name;
       const two = name === 'DAWN' || name === 'OPENED' || name === 'SHUT' || name === 'AFTERNOON' || name === 'DUSK';
       dayOne.visible = name === 'DAY1'; dayTwo.visible = two; nightG.visible = name === 'NIGHT';
+      crowdSolid(dayOne.visible);
       paintShade(name === 'OPENED' || name === 'SHUT' ? 'DAWN' : name);
     }
     function openDecision() { decOpen = true; if (getState() === 'play') startDecision(); }
@@ -73,7 +74,7 @@
     /* ---------------------------------------------------------------- the decision: Grandmaster Pho, on his bench */
     const _ndc = new THREE.Vector3();
     const INTERACT_R = 3.4;
-    const PILE_POS = new THREE.Vector3(BENCH.x, 0, BENCH.z);
+    const PILE_POS = new THREE.Vector3(PHO_AT[0], 0, PHO_AT[1]);              // (he is the chapter's pile: where he sits, not the bench's middle)
     const pile = new THREE.Group(); pile.position.copy(PILE_POS); world.add(pile);
     const pileLive = () => decOpen && phase === 'decide';
     function pileDist() { return Math.hypot(yaw.position.x - PILE_POS.x, yaw.position.z - PILE_POS.z); }
@@ -95,7 +96,7 @@
     function updateNotes(dt, t) {
       const st = getState();
       const now = wallNow(), wdt = lastWall ? Math.min(0.25, now - lastWall) : 0; lastWall = now;
-      if (st !== 'cine') { windClock += wdt; windTick(windClock); }
+      if (st !== 'cine') { windClock += wdt; windTick(windClock); peopleTick(wdt, true); peopleLevels(); }
       if (st !== 'play') return;
       if (!booted) { booted = true; applyPhase(kit ? kit.getPhase() : null); }
       dayClock.t += wdt;

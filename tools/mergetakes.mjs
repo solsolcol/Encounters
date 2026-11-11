@@ -98,13 +98,18 @@ if (cmd === 'list') {
          file's own is what the takes are laid on: every bone's name and rest pose, the triangle count, the bounds. */
       const rb = new Map(rig.getRoot().listNodes().map(n => [n.getName(), n]));
       const d = (x, y) => Math.max(...x.map((v, i) => Math.abs(v - y[i])));
+      /* a bone rests at the same place (a fifth of a millimetre) and turned the same way (a thousandth in any term of
+         its matrix, about a twentieth of a degree: a re-export writes its finger tips' turns anew, and two of sixty-seven
+         came back 0.0004 off on a man whose every bone stood exactly in place) */
+      const restOff = (x, y) => Math.max(Math.hypot(x[12] - y[12], x[13] - y[13], x[14] - y[14]) / 2e-4,
+        Math.max(...[0, 1, 2, 4, 5, 6, 8, 9, 10].map(i => Math.abs(x[i] - y[i]))) / 1e-3);
       let bad = [];
       const bones = new Set(root.listSkins().flatMap(k => k.listJoints()));
       if (!bones.size) bad.push('no skin');
       for (const n of bones) {                       // where each bone RESTS IN THE WORLD (a re-export may stand its armature on another axis)
         const t = rb.get(n.getName());
         if (!t) { bad.push(n.getName() + ' (not in the rig)'); continue; }
-        if (d(n.getWorldMatrix(), t.getWorldMatrix()) > 2e-4) bad.push(n.getName());
+        if (restOff(n.getWorldMatrix(), t.getWorldMatrix()) > 1) bad.push(n.getName());
       }
       const tri = dd => dd.getRoot().listMeshes().reduce((x, m) => x + m.listPrimitives().reduce((y, q) => y + q.getIndices().getCount() / 3, 0), 0);
       const box = dd => { const q = dd.getRoot().listMeshes()[0].listPrimitives()[0].getAttribute('POSITION'); return [...q.getMin([]), ...q.getMax([])]; };

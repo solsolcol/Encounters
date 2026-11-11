@@ -19,10 +19,12 @@ import { MeshoptSimplifier, MeshoptEncoder, MeshoptDecoder } from 'meshoptimizer
 await Promise.all([MeshoptSimplifier.ready, MeshoptEncoder.ready, MeshoptDecoder.ready]);
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.encoder': MeshoptEncoder, 'meshopt.decoder': MeshoptDecoder });
 const [IN, OUT, R] = process.argv.slice(2);
-const RATIO = +(R || 0.25), ERR = +(process.env.ERR || 0.02), W = +(process.env.UVW || 1);
+let RATIO = +(R || 0.25); const ERR = +(process.env.ERR || 0.02), W = +(process.env.UVW || 1);
 const d = await io.read(IN);
 await d.transform(dequantize());
 let t0 = 0, t1 = 0;
+if (process.env.TRIS) { let all = 0; for (const m of d.getRoot().listMeshes()) for (const p of m.listPrimitives()) if (p.getIndices()) all += p.getIndices().getCount() / 3;
+  RATIO = Math.min(1, +process.env.TRIS / all); }
 for (const m of d.getRoot().listMeshes()) for (const p of m.listPrimitives()) {
   const pos = p.getAttribute('POSITION'), idx = p.getIndices();
   if (!idx) continue;
@@ -44,6 +46,10 @@ for (const m of d.getRoot().listMeshes()) for (const p of m.listPrimitives()) {
   compactPrimitive(p);
   t0 += I.length / 3; t1 += cut.length / 3;
 }
+/* v26.0 · NOANIM=1 writes no takes: a far level of a PERSON wears the near level's own skeleton at run time (bound to
+   its bones by name), so the takes are downloaded once, with the near file. TRIS=<n> asks for a triangle count in
+   place of a share (the share is n over what the file has). Unset, nothing here runs. */
+if (process.env.NOANIM) for (const an of d.getRoot().listAnimations()) { for (const ch of an.listChannels()) ch.dispose(); for (const sm of an.listSamplers()) sm.dispose(); an.dispose(); }
 if (process.env.NOTEX) for (const m of d.getRoot().listMaterials())
   m.setBaseColorTexture(null).setNormalTexture(null).setMetallicRoughnessTexture(null).setOcclusionTexture(null).setEmissiveTexture(null);
 /* (NOTEX keeps the UVs: prune() drops a vertex attribute no texture reads, and a far level that wears the near

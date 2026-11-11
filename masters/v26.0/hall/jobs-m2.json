@@ -1,0 +1,22 @@
+[
+ {
+  "name": "nagafount",
+  "image": "masters/v26.0/hall/src/nagafount.png",
+  "kind": "prop"
+ },
+ {
+  "name": "nagagreen",
+  "image": "masters/v26.0/hall/src/nagagreen.png",
+  "kind": "prop"
+ },
+ {
+  "name": "ganesha",
+  "image": "masters/v26.0/hall/src/ganesha.png",
+  "kind": "prop"
+ },
+ {
+  "name": "croton",
+  "image": "masters/v26.0/hall/src/croton.png",
+  "kind": "prop"
+ }
+]

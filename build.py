@@ -495,35 +495,132 @@ ASSETS = {
     'e4calc':       ('assets/e4calc.glb', True, False),       # e4c2 v25.2: the calculator on his counter, 13 cm — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh)
     'e4wreath':     ('assets/e4wreath.glb', True, False),     # e4c2 v25.2: the Grand Opening stand's dried flowers, 74 cm — a checked picture on white, then Meshy and its remesh (masters/v25.2/make.sh)
     'e4notebook':   ('assets/e4notebook.glb', True, False),   # e4c2 v25.5 (v25.2's remade: Chad, "can you remove that glitchy looking red ribbon? Just use a normal notebook" — the ribbon was a torn strip of the model's own geometry): his notebook on the counter, open, 46 cm across, no ribbon — a new checked picture on white, then Hunyuan3D asked for 40,000 triangles (masters/v25.5/make.sh)
-    # e4c3 v26.0 (episode 4 chapter 3, the Wai Kru): its things, each from a crop of Chad's own photograph of the real one
-    # (a checked picture on white, then Meshy at the highest settings, its own remesh, tools/prepmeshy.mjs:
-    # masters/v26.0/make.sh section 4, masters/v26.0/props/TABLE.txt)
+    # >>> e4c3 keys: written by masters/v26.0/keys.py from its table (edit the table, not these rows) >>>
+    # e4c3 v26.0 (episode 4 chapter 3, the Wai Kru): ITS PEOPLE, each made end to end for it (Chad, 11 Nov 2026: a
+    # photorealistic reference on white in an A pose from GPT Image, then Meshy at its highest settings, its rig, its
+    # takes). One skeleton and up to four skins a person, drawn by distance: the near body with the takes; `m` and
+    # `f` the two far bodies (Meshy's own remesh, the rig laid on by tools/riglod.mjs); `h` the generator's full model
+    # for the two he speaks to face to face. masters/v26.0/bodies.sh, people.sh; the tracker's section 5.
+    'e4ton':        ('assets/e4ton.glb', True, False),     # Ton, who posted the thread: the group's shirt, white trousers
+    'e4tonm':       ('assets/e4tonm.glb', True, False),
+    'e4tonf':       ('assets/e4tonf.glb', True, False),
+    'e4tonh':       ('assets/e4tonh.glb', True, False),
+    'e4bench':      ('assets/e4bench.glb', True, False),     # the woman at Grandmaster Pho's bench: white lace, a long white skirt
+    'e4benchm':     ('assets/e4benchm.glb', True, False),
+    'e4benchf':     ('assets/e4benchf.glb', True, False),
+    'e4benchh':     ('assets/e4benchh.glb', True, False),
+    'e4hermita':    ('assets/e4hermita.glb', True, False),     # a hermit in a brown robe
+    'e4hermitam':   ('assets/e4hermitam.glb', True, False),
+    'e4hermitaf':   ('assets/e4hermitaf.glb', True, False),
+    'e4hermitb':    ('assets/e4hermitb.glb', True, False),     # a hermit in a pale yellow shawl
+    'e4hermitbm':   ('assets/e4hermitbm.glb', True, False),
+    'e4hermitbf':   ('assets/e4hermitbf.glb', True, False),
+    'e4red':        ('assets/e4red.glb', True, False),     # the master in red
+    'e4redm':       ('assets/e4redm.glb', True, False),
+    'e4redf':       ('assets/e4redf.glb', True, False),
+    'e4white':      ('assets/e4white.glb', True, False),     # the second master in white
+    'e4whitem':     ('assets/e4whitem.glb', True, False),
+    'e4whitef':     ('assets/e4whitef.glb', True, False),
+    'e4dancera':    ('assets/e4dancera.glb', True, False),     # a dancer, white and gold
+    'e4danceram':   ('assets/e4danceram.glb', True, False),
+    'e4danceraf':   ('assets/e4danceraf.glb', True, False),
+    'e4dancerb':    ('assets/e4dancerb.glb', True, False),     # a dancer, white and gold
+    'e4dancerbm':   ('assets/e4dancerbm.glb', True, False),
+    'e4dancerbf':   ('assets/e4dancerbf.glb', True, False),
+    'e4deva':       ('assets/e4deva.glb', True, False),     # the devotees, eight bodies in white
+    'e4devam':      ('assets/e4devam.glb', True, False),
+    'e4devaf':      ('assets/e4devaf.glb', True, False),
+    'e4devb':       ('assets/e4devb.glb', True, False),
+    'e4devbm':      ('assets/e4devbm.glb', True, False),
+    'e4devbf':      ('assets/e4devbf.glb', True, False),
+    'e4devc':       ('assets/e4devc.glb', True, False),
+    'e4devcm':      ('assets/e4devcm.glb', True, False),
+    'e4devcf':      ('assets/e4devcf.glb', True, False),
+    'e4devd':       ('assets/e4devd.glb', True, False),
+    'e4devdm':      ('assets/e4devdm.glb', True, False),
+    'e4devdf':      ('assets/e4devdf.glb', True, False),
+    'e4deve':       ('assets/e4deve.glb', True, False),
+    'e4devem':      ('assets/e4devem.glb', True, False),
+    'e4devef':      ('assets/e4devef.glb', True, False),
+    'e4devf':       ('assets/e4devf.glb', True, False),
+    'e4devfm':      ('assets/e4devfm.glb', True, False),
+    'e4devff':      ('assets/e4devff.glb', True, False),
+    'e4devg':       ('assets/e4devg.glb', True, False),
+    'e4devgm':      ('assets/e4devgm.glb', True, False),
+    'e4devgf':      ('assets/e4devgf.glb', True, False),
+    'e4devh':       ('assets/e4devh.glb', True, False),
+    'e4devhm':      ('assets/e4devhm.glb', True, False),
+    'e4devhf':      ('assets/e4devhf.glb', True, False),
+    # e4c3: GRANDMASTER PHO, Chad's own model, cast for the first time (prepared over v24.38 to v24.56: masters/v24.56;
+    # 168,029 triangles, 19 takes, his face and hands on a sheet of their own); and his far skin, a permissive cut of the
+    # same body to 22,000 triangles with no sheets of its own, bound to his bones and wearing his materials, drawn only
+    # across the turf (tools/permcut.mjs NOTEX NOANIM TRIS=22000 ERR=0.03)
+    'pho':          ('assets/pho.glb', True, False),     # Grandmaster Pho
+    'phof':         ('assets/phof.glb', True, False),
+    # e4c3: its things, each from a crop of Chad's own photograph of the real one (a checked picture on white, then
+    # Meshy at the highest settings, its own remesh, tools/prepmeshy.mjs: masters/v26.0/props/TABLE.txt)
     'w3baisri':     ('assets/w3baisri.glb', True, False),     # the bai sri on its golden bowl (photograph 7): in his hands all chapter, and dozens on the tables
-    'w3naga':       ('assets/w3naga.glb', True, False),       # a naga of folded banana leaf (photographs 4, 9)
-    'w3wheel':      ('assets/w3wheel.glb', True, False),      # the great bai sri and its wheel of marigolds (photographs 4, 9, 10)
-    'w3parasol':    ('assets/w3parasol.glb', True, False),    # the orange and gold parasol over it (photograph 4)
-    'w3tower':      ('assets/w3tower.glb', True, False),      # a tower ringed with marigolds (photographs 8, 9)
+    'w3naga':       ('assets/w3naga.glb', True, False),     # a naga of folded banana leaf (photographs 4, 9)
+    'w3wheel':      ('assets/w3wheel.glb', True, False),     # the great bai sri and its wheel of marigolds (photographs 4, 9, 10)
+    'w3parasol':    ('assets/w3parasol.glb', True, False),     # the orange and gold parasol over it (photograph 4)
+    'w3tower':      ('assets/w3tower.glb', True, False),     # a tower ringed with marigolds (photographs 8, 9)
     'w3candle':     ('assets/w3candle.glb', True, False),     # the tall yellow candle (photograph 3)
-    'w3fan':        ('assets/w3fan.glb', True, False),        # the peacock-feather fan (photographs 2, 8): chapter 5's too
-    'w3nagastaff':  ('assets/w3nagastaff.glb', True, False),  # the carved staff with a naga's head (photographs 2, 8): chapter 5's too
+    'w3fan':        ('assets/w3fan.glb', True, False),     # the peacock-feather fan (photographs 2, 8): chapter 5's too
+    'w3nagastaff':  ('assets/w3nagastaff.glb', True, False),     # the carved staff with a naga's head (photographs 2, 8): chapter 5's too
     'w3pewter':     ('assets/w3pewter.glb', True, False),     # a bai sri on a pewter bowl, the tables' second kind (photograph 12)
-    # and the ground's surfaces, each a picture made from his photograph of the real surface (masters/v26.0/tex/make.py)
+    'w3purple':     ('assets/w3purple.glb', True, False),     # purple flowers and fern in a golden pot (photograph 11)
+    'w3fruit':      ('assets/w3fruit.glb', True, False),     # a rattan tray of fruit (photograph 9)
+    'w3sweets':     ('assets/w3sweets.glb', True, False),     # a carved tray of sweets (photograph 9)
+    'w3khantok':    ('assets/w3khantok.glb', True, False),     # a low rattan tray with a green coconut and water (photograph 2)
+    'w3puff':       ('assets/w3puff.glb', True, False),     # one gathered puff of satin (the chief canopy's pole, photograph 1)
+    'w3chair':      ('assets/w3chair.glb', True, False),     # the carved hardwood armchair (photographs 5, 6)
+    'w3lowtable':   ('assets/w3lowtable.glb', True, False),     # the low dark table with a pale top (photograph 5)
+    'w3bench':      ('assets/w3bench.glb', True, False),     # the slatted hardwood bench Grandmaster Pho sits on (photographs 1, 5, 6)
+    'w3sofa':       ('assets/w3sofa.glb', True, False),     # a pale green sofa under the west tent (photograph 11)
+    'w3petalbowl':  ('assets/w3petalbowl.glb', True, False),     # a golden bowl of marigold petals (photographs 1, 5)
+    'w3petalsteel': ('assets/w3petalsteel.glb', True, False),     # a steel bowl of petals (photograph 11)
+    'w3smallbaisri':('assets/w3smallbaisri.glb', True, False),     # a small bai sri of three cones (photograph 9)
+    'w3candlemid':  ('assets/w3candlemid.glb', True, False),
+    'w3candlesmall':('assets/w3candlesmall.glb', True, False),
+    'w3kratip':     ('assets/w3kratip.glb', True, False),
+    'w3chicken':    ('assets/w3chicken.glb', True, False),
+    'w3coconut':    ('assets/w3coconut.glb', True, False),
+    'w3soda':       ('assets/w3soda.glb', True, False),
+    'w3water':      ('assets/w3water.glb', True, False),
+    # e4c3: what stands at the hall (photographs 13 to 16; masters/v26.0/hall): each cut out of his photograph, a
+    # checked picture on white, then Meshy
+    'w3nagafount':  ('assets/w3nagafount.glb', True, False),     # the seven-headed golden naga fountain before the sign (photographs 13, 15, 16)
+    'w3nagagreen':  ('assets/w3nagagreen.glb', True, False),     # the green naga on the west plinth (photographs 13, 16)
+    'w3nagawhite':  ('assets/w3nagawhite.glb', True, False),     # the white-bellied three-headed naga on the east plinth (photographs 15, 16)
+    'w3ganesha':    ('assets/w3ganesha.glb', True, False),     # the small golden reclining Ganesha at the fountain's end (photograph 13)
+    'w3croton':     ('assets/w3croton.glb', True, False),     # a yellow-green bush (photographs 15, 16)
+    'w3dracaena':   ('assets/w3dracaena.glb', True, False),     # the dracaena in its brown glazed jar (photographs 13, 15)
+    'w3waterjar':   ('assets/w3waterjar.glb', True, False),     # the big water jar of floating plants (photograph 16)
+    'w3walllamp':   ('assets/w3walllamp.glb', True, False),     # a carriage lamp on a corner post (photographs 13, 16)
+    # e4c3: the ground's surfaces, each a picture made from his photograph of the real surface (masters/v26.0/tex/make.py;
+    # the hall's sign is drawn: masters/v26.0/hall/sign.mjs)
     'w3t_turf':     ('assets/w3t_turf.jpg', True, False),
+    'w3t_petalturf':('assets/w3t_petalturf.jpg', True, False),
     'w3t_earth':    ('assets/w3t_earth.jpg', True, False),
     'w3t_gravel':   ('assets/w3t_gravel.jpg', True, False),
-    'w3t_rooftile': ('assets/w3t_rooftile.jpg', True, False),
     'w3t_redplank': ('assets/w3t_redplank.jpg', True, False),
     'w3t_tin':      ('assets/w3t_tin.jpg', True, False),
-    'w3t_timber':   ('assets/w3t_timber.jpg', True, False),
-    'w3t_swag':     ('assets/w3t_swag.webp', True, False),
-    'w3t_petalturf': ('assets/w3t_petalturf.jpg', True, False),
     'w3t_brick':    ('assets/w3t_brick.jpg', True, False),
     'w3t_skirt':    ('assets/w3t_skirt.jpg', True, False),
     'w3t_satin':    ('assets/w3t_satin.jpg', True, False),
     'w3t_mat':      ('assets/w3t_mat.jpg', True, False),
     'w3t_carpet':   ('assets/w3t_carpet.jpg', True, False),
+    'w3t_swag':     ('assets/w3t_swag.webp', True, False),
     'w3t_banner':   ('assets/w3t_banner.webp', True, False),
     'w3t_treeline': ('assets/w3t_treeline.webp', True, False),
+    'w3t_redroof':  ('assets/w3t_redroof.jpg', True, False),
+    'w3t_hallbrick':('assets/w3t_hallbrick.jpg', True, False),
+    'w3t_steptile': ('assets/w3t_steptile.jpg', True, False),
+    'w3t_lawn':     ('assets/w3t_lawn.jpg', True, False),
+    'w3t_kalae':    ('assets/w3t_kalae.webp', True, False),
+    'w3t_fretwork': ('assets/w3t_fretwork.webp', True, False),
+    'w3t_sign':     ('assets/w3t_sign.webp', True, False),
+    # <<< e4c3 keys: the rows end <<<
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
     # in white (two women, two men), Mixamo's Praying and Kneeling Idle applied
@@ -647,9 +744,23 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm',
            'e4kuman', 'e4ngang', 'e4tani', 'e4phraioil', 'e4phraitab', 'e4praicase', 'e4tanitab', 'e4ghostjar', 'lersichin', 'e4khannam', 'e4phan',
            'e4till', 'e4bag', 'e4jacket', 'e4water', 'e4drinks', 'e4wallet', 'e4switch', 'e4shelf', 'e4cloth', 'e4yaam', 'e4phone', 'e4calc', 'e4wreath', 'e4notebook',
-           'w3baisri', 'w3naga', 'w3wheel', 'w3parasol', 'w3tower', 'w3candle', 'w3fan', 'w3nagastaff', 'w3pewter',
-           'w3t_turf', 'w3t_earth', 'w3t_gravel', 'w3t_rooftile', 'w3t_redplank', 'w3t_tin', 'w3t_timber', 'w3t_swag',
-           'w3t_petalturf', 'w3t_brick', 'w3t_skirt', 'w3t_satin', 'w3t_mat', 'w3t_carpet', 'w3t_banner', 'w3t_treeline'}   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
+           # >>> e4c3 keys (masters/v26.0/keys.py) >>>
+           'e4ton', 'e4tonm', 'e4tonf', 'e4tonh', 'e4bench', 'e4benchm', 'e4benchf', 'e4benchh', 'e4hermita',
+           'e4hermitam', 'e4hermitaf', 'e4hermitb', 'e4hermitbm', 'e4hermitbf', 'e4red', 'e4redm', 'e4redf',
+           'e4white', 'e4whitem', 'e4whitef', 'e4dancera', 'e4danceram', 'e4danceraf', 'e4dancerb', 'e4dancerbm',
+           'e4dancerbf', 'e4deva', 'e4devam', 'e4devaf', 'e4devb', 'e4devbm', 'e4devbf', 'e4devc', 'e4devcm',
+           'e4devcf', 'e4devd', 'e4devdm', 'e4devdf', 'e4deve', 'e4devem', 'e4devef', 'e4devf', 'e4devfm', 'e4devff',
+           'e4devg', 'e4devgm', 'e4devgf', 'e4devh', 'e4devhm', 'e4devhf', 'pho', 'phof', 'w3baisri', 'w3naga',
+           'w3wheel', 'w3parasol', 'w3tower', 'w3candle', 'w3fan', 'w3nagastaff', 'w3pewter', 'w3purple', 'w3fruit',
+           'w3sweets', 'w3khantok', 'w3puff', 'w3chair', 'w3lowtable', 'w3bench', 'w3sofa', 'w3petalbowl',
+           'w3petalsteel', 'w3smallbaisri', 'w3candlemid', 'w3candlesmall', 'w3kratip', 'w3chicken', 'w3coconut',
+           'w3soda', 'w3water', 'w3nagafount', 'w3nagagreen', 'w3nagawhite', 'w3ganesha', 'w3croton', 'w3dracaena',
+           'w3waterjar', 'w3walllamp', 'w3t_turf', 'w3t_petalturf', 'w3t_earth', 'w3t_gravel', 'w3t_redplank',
+           'w3t_tin', 'w3t_brick', 'w3t_skirt', 'w3t_satin', 'w3t_mat', 'w3t_carpet', 'w3t_swag', 'w3t_banner',
+           'w3t_treeline', 'w3t_redroof', 'w3t_hallbrick', 'w3t_steptile', 'w3t_lawn', 'w3t_kalae', 'w3t_fretwork',
+           'w3t_sign',
+           # <<< e4c3 keys <<<
+           }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY
 
 # The split packs are hosted-only: there is no __..._B64__ token for them and

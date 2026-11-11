@@ -61,5 +61,8 @@ for (const v of VIEWS) {
   await p.screenshot({ path: `${OUT}/${v.name}.jpg`, quality: 80, timeout: 240000 });
   console.log(el(), v.name, JSON.stringify(s).slice(0, 700));
 }
+const extra = await p.evaluate(() => { const S = window.__enc.stage; return { crowd: S.crowdStats ? S.crowdStats() : null, who: S.who ? S.who() : null }; });
+console.log(el(), 'crowd', JSON.stringify(extra.crowd));
+console.log(el(), 'who', JSON.stringify(extra.who));
 console.log(el(), 'errs', JSON.stringify(errs));
 await b.close();

@@ -140,7 +140,10 @@ if (THINLOCK > 0) {
     console.log(`  thinning: ${nl} points at his right armpit held (within ${THINLOCK} m of the joint, arm share 0.02-0.98, and their neighbours)`);
     return MeshoptSimplifier.simplifyWithAttributes(idx, pos, stride, new Float32Array(0), 0, [], lock, target, err, flags); } };
 }
-await doc.transform(simplify({ simplifier: thinner, ratio: RATIO, error: 0.0015 }), prune());
+/* v26.0 · NOTHIN=1: no thinning at all (a body the generator already rebuilt at the count wanted: tools/riglod.mjs).
+   Unset, the thinning runs as it always did. */
+if (process.env.NOTHIN) await doc.transform(prune());
+else await doc.transform(simplify({ simplifier: thinner, ratio: RATIO, error: 0.0015 }), prune());
 
 /* ---- v19.8: THE FOLDS. The simplifier can fold a thin flap flat onto
    itself, leaving two copies of one triangle facing opposite ways (none in

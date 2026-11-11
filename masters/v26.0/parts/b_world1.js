@@ -29,12 +29,24 @@
     const WHEEL = { x: 0, z: -12.0 };
     const PARASOL = { x: 0, z: -12.75 };
     const POLE = { x: 0.6, z: -13.6, h: 10 };
-    const HALL = { x0: -5, x1: 5, z0: -25, z1: -17, eave: 3.2, ridge: 6.0, over: 1.0 };
+    /* photographs 13 to 16; its front 9 m behind the tables (8, 10). Measured on 15, the front square on: the skirt rises
+       1.5 m and the gable 2.2 m above it, the gable's foot is 6.6 m wide; from 16 the skirt is steep enough to show its
+       tiles to a man standing before it, so both tiers are pitched at about thirty degrees */
+    const HALL = { x0: -5, x1: 5, z0: -29.7, z1: -21.7, floor: 0.48, wall: 3.1, over: 1.6, overS: 0.9, rise: 1.5, pitch: 30 * Math.PI / 180, gable: 2.2 };
     const SHED = { x0: -16, x1: -10.5, z0: -14, z1: -8, eave: 2.4 };
     const TENT_W1 = { x: -9, z: -1 }, TENT_W2 = { x: -9, z: 5 }, TENT_E = { x: 9, z: -2 };
     const TENT = { w: 4, eave: 2.2, peak: 3.3 };
-    const CHIEF = { x: 6, z: 9, w: 4.5, eave: 2.3, peak: 3.1 };                // Grandmaster Pho's canopy; his bench faces north-west
-    const BENCH = { x: 6.6, z: 9.6, ry: Math.atan2(-1, -1) + Math.PI };        // where he sits, turned to the turf's middle
+    /* HIS BENCH (photographs 1, 5, 6, read together): it stands at the canopy's south side and FACES THE OFFERING TABLES
+       AND THE HALL (photograph 1 is taken over its back rail: the hall stands ahead, the west tents to the left, the
+       lime pole at the front right), a little west of north. Two sit on it: he at its east end, the second master in
+       white at his left. People kneel before it, to its north. (My first reading had it facing north-west.) A body and
+       a seat face +z at a turn of 0. `benchAt(a, b)`: a point a metres to the sitters' right and b metres before them */
+    const BENCH = { x: 5.9, z: 9.2, ry: Math.atan2(-0.3, -1) };
+    const benchAt = (a, b) => { const fx = Math.sin(BENCH.ry), fz = Math.cos(BENCH.ry); return [BENCH.x - fz * a + fx * b, BENCH.z + fx * a + fz * b]; };
+    /* HIS CANOPY stands square to the bench, and its front right pole (the one wrapped in lime) is 1.65 m to the
+       sitters' right and 1.75 m before them: measured on photograph 1, where that pole fills a quarter of the frame's
+       height 2.9 m from the lens. So the bench sits under the canopy's back half, against the buildings behind */
+    const CHIEF = (() => { const [x, z] = benchAt(1.65 - 2.25, 1.75 - 2.25); return { x, z, w: 4.5, eave: 2.3, peak: 3.1, ry: BENCH.ry }; })();
     const HOUSE = { x: 12.5, z0: -7, z1: 6, h: 5.2 };
     const PLANK = { x0: 8.5, x1: 13, z: 11.5 };
     const GREY = { x0: 0, x1: 8.5, z: 13.2, h: 4.2 };
@@ -65,9 +77,11 @@
        by its repeat. `tile` is the size of one tile in metres (the geometry's UVs are metres). */
     const SURF = {
       turf: [0x3f9a22, 'image/jpeg'], petalturf: [0x9a9c2c, 'image/jpeg'], earth: [0xb0663e, 'image/jpeg'], gravel: [0x9b968d, 'image/jpeg'],
-      rooftile: [0xc66f63, 'image/jpeg'], redplank: [0x8a2c26, 'image/jpeg'], tin: [0xcb8083, 'image/jpeg'], timber: [0x57392a, 'image/jpeg'],
+      redplank: [0x8a2c26, 'image/jpeg'], tin: [0xcb8083, 'image/jpeg'],
       brick: [0x96573f, 'image/jpeg'], skirt: [0x1f9c3a, 'image/jpeg'], satin: [0xe9e9e9, 'image/jpeg'], mat: [0xc7b78a, 'image/jpeg'],
-      carpet: [0x74202a, 'image/jpeg'], swag: [0xf2f0e4, 'image/webp'], banner: [0xe8e8e8, 'image/webp'], treeline: [0x4c7a3a, 'image/webp']
+      carpet: [0x74202a, 'image/jpeg'], swag: [0xf2f0e4, 'image/webp'], banner: [0xe8e8e8, 'image/webp'], treeline: [0x4c7a3a, 'image/webp'],
+      redroof: [0xc8483f, 'image/jpeg'], hallbrick: [0x9a4f3f, 'image/jpeg'], steptile: [0xc98c80, 'image/jpeg'], lawn: [0x5c9a35, 'image/jpeg'],
+      kalae: [0x5a4a40, 'image/webp'], fretwork: [0x7a2a26, 'image/webp'], sign: [0xece8dc, 'image/webp']
     };
     const surfTex = new Map();
     function surfLoad(name) {
@@ -82,8 +96,9 @@
        once: its piece is drawn with tile = its own size), tint, basic (unlit), cut (its holes cut out), and whatever else
        a material takes */
     function surf(name, o = {}) {
-      const { tile = 1, mirror = '', tint = null, basic = false, cut = false, clampV = false, clamp = false, ...rest } = o;
-      const avg = new THREE.Color(SURF[name][0]); if (tint != null) avg.multiply(new THREE.Color(tint));
+      const { tile = 1, mirror = '', tint = null, gain = null, basic = false, cut = false, clampV = false, clamp = false, ...rest } = o;
+      const lift = (c) => { if (gain != null) { const k = Array.isArray(gain) ? gain : [gain, gain, gain]; c.r *= k[0]; c.g *= k[1]; c.b *= k[2]; } return c; };
+      const avg = lift(new THREE.Color(SURF[name][0])); if (tint != null) avg.multiply(new THREE.Color(tint));
       const base = { color: avg, ...rest };
       if (!basic) { if (base.roughness == null) base.roughness = 0.9; if (base.metalness == null) base.metalness = 0; }
       if (cut) { base.alphaTest = 0.5; base.side = THREE.DoubleSide; }
@@ -95,7 +110,23 @@
         t.wrapS = clamp ? THREE.ClampToEdgeWrapping : /u/.test(mirror) ? THREE.MirroredRepeatWrapping : THREE.RepeatWrapping;
         t.wrapT = clamp || clampV ? THREE.ClampToEdgeWrapping : /v/.test(mirror) ? THREE.MirroredRepeatWrapping : THREE.RepeatWrapping;
         t.repeat.set(1 / tu, -1 / tv); t.offset.set(0, 1);
-        m.map = t; m.color.set(tint != null ? tint : 0xffffff); m.needsUpdate = true;
+        m.map = t; lift(m.color.set(tint != null ? tint : 0xffffff)); m.needsUpdate = true;
+      });
+      return m;
+    }
+    /* a surface's picture with its own holes and ONE flat colour (a fretwork painted pale grey: the cut-out is the
+       picture's, the paint is not). The picture is drawn once onto a canvas and filled through its own alpha */
+    function surfFlat(name, css, o = {}) {
+      const { tile = 1, clampV = false, clamp = false, ...rest } = o;
+      const m = M({ color: css, roughness: 0.85, metalness: 0, alphaTest: 0.5, side: THREE.DoubleSide, ...rest });
+      surfLoad(name).then(t0 => {
+        if (!t0 || !alive || !t0.image) return;
+        const im = t0.image, c = document.createElement('canvas'); c.width = im.width; c.height = im.height;
+        const x = c.getContext('2d'); x.drawImage(im, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = '#ffffff'; x.fillRect(0, 0, c.width, c.height);
+        const t = tex(new THREE.CanvasTexture(c)); t.colorSpace = THREE.SRGBColorSpace; t.flipY = false;
+        const tu = Array.isArray(tile) ? tile[0] : tile, tv = Array.isArray(tile) ? tile[1] : tile;
+        t.wrapS = clamp ? THREE.ClampToEdgeWrapping : THREE.RepeatWrapping; t.wrapT = clamp || clampV ? THREE.ClampToEdgeWrapping : THREE.RepeatWrapping;
+        t.repeat.set(1 / tu, -1 / tv); t.offset.set(0, 1); m.map = t; m.needsUpdate = true;
       });
       return m;
     }
@@ -121,6 +152,19 @@
       const lu = Math.hypot(ax, az) || Math.hypot(ax, ay, az), hu = Math.hypot(dx, dz);
       const U = [[u0, v0], [u0 + lu, v0 + ay], [u0 + hu, v0 + dy]];
       [a, b, c].forEach((p, i) => { Bt.p.push(p[0], p[1], p[2]); Bt.n.push(nx, ny, nz); Bt.u.push(U[i][0], U[i][1]); });
+    }
+    /* a flat piece of any number of corners (anticlockwise from its front), its UVs true metres: u along its first edge,
+       v up the piece. A hip roof's trapezoid drawn as a quad() would squeeze its tiles toward the hip. */
+    function planar(mat, pts, u0 = 0, v0 = 0) {
+      const Bt = batchOf(mat), a = pts[0], b = pts[1], c = pts[2];
+      const ux = b[0] - a[0], uy = b[1] - a[1], uz = b[2] - a[2], ul = Math.hypot(ux, uy, uz) || 1, ex = ux / ul, ey = uy / ul, ez = uz / ul;
+      let nx = uy * (c[2] - a[2]) - uz * (c[1] - a[1]), ny = uz * (c[0] - a[0]) - ux * (c[2] - a[2]), nz = ux * (c[1] - a[1]) - uy * (c[0] - a[0]);
+      const nl = Math.hypot(nx, ny, nz) || 1; nx /= nl; ny /= nl; nz /= nl;
+      const vx = ny * ez - nz * ey, vy = nz * ex - nx * ez, vz = nx * ey - ny * ex;
+      for (let i = 1; i < pts.length - 1; i++) for (const q of [pts[0], pts[i], pts[i + 1]]) {
+        const dx = q[0] - a[0], dy = q[1] - a[1], dz = q[2] - a[2];
+        Bt.p.push(q[0], q[1], q[2]); Bt.n.push(nx, ny, nz); Bt.u.push(u0 + dx * ex + dy * ey + dz * ez, v0 + dx * vx + dy * vy + dz * vz);
+      }
     }
     const floor = (mat, x0, z0, x1, z1, y = 0) => quad(mat, [x0, y, z1], [x1, y, z1], [x1, y, z0], [x0, y, z0], x0, -z1);
     /* an upright piece from (x0, z0) to (x1, z1): it faces the left of that way (west to east faces south) */
@@ -194,6 +238,16 @@
       }).catch(err => { console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
       return g;
     }
+    /* A HUE TURNED in a material (one soda bottle in red, orange and green; one small candle in pink and blue): the
+       picture's own colour is turned about the grey axis before the light falls on it, so whites, blacks and greys
+       stay as they are. A program of its own for each angle (compiled under the curtain with the rest: v14.15) */
+    function hueTurn(mat, deg) {
+      const a = deg * Math.PI / 180, uHue = { value: new THREE.Vector2(Math.cos(a), Math.sin(a)) };
+      mat.onBeforeCompile = (sh) => { sh.uniforms.uHue = uHue;
+        sh.fragmentShader = 'uniform vec2 uHue;\n' + sh.fragmentShader.replace('#include <map_fragment>', '#include <map_fragment>\n{ vec3 hk = vec3(0.57735); vec3 hv = diffuseColor.rgb; diffuseColor.rgb = hv * uHue.x + cross(hk, hv) * uHue.y + hk * dot(hk, hv) * (1.0 - uHue.x); }'); };
+      mat.customProgramCacheKey = () => 'hueTurn';
+      mat.needsUpdate = true;
+    }
     /* many of one thing (the copied manyOf), asked for only once its file is in the build */
     function many(key, list, parent = world, size = 0.3, done = null) {
       if (!list.length) return;
@@ -210,6 +264,10 @@
       floor(mEarth, -46, -46, 46, 46, -0.012);
       floor(mTurf, TURF.x0, TURF.z0, TURF.x1, TURF.z1, 0);
       floor(mGravel, TURF.x0 - 0.6, GRAVEL.z0, TURF.x1 + 0.6, GRAVEL.z1, -0.004);
+      /* north of the gravel the ground is LAWN, up to the hall and round it (photographs 14 to 16), worn to a track of
+         gravel up its middle from the tables to the fountain */
+      floor(mLawn, -24, -40, 24, GRAVEL.z0, -0.008);
+      floor(mGravel, -0.9, HALL.z1 + 3.9, 0.9, TABLES.z0 - 0.25, -0.005);
       /* the turf is rolls laid side by side, north to south: where two meet, a thin teal line (photograph 10) */
       const mSeam = M({ color: 0x1f8f7c, roughness: 0.9 });
       for (let x = TURF.x0 + TURF.strip; x < TURF.x1 - 0.01; x += TURF.strip) floor(mSeam, x - 0.012, TURF.z0, x + 0.012, TURF.z1, 0.003);
@@ -219,76 +277,180 @@
       wall(mEdge, TURF.x1, TURF.z1, TURF.x1, TURF.z0, -0.012, 0.004); wall(mEdge, TURF.x0, TURF.z0, TURF.x0, TURF.z1, -0.012, 0.004);
     }
 
-    /* ================================================================ THE HALL (photographs 8, 10, 4, 1)
-       A wooden hall behind the tables: red-brown brick below and dark timber above, a dark doorway and steps; a red
-       tiled roof in two tiers, the upper a gable to the south with red barge boards, the lower a skirt all round; white
-       fretwork under the eaves. Built plainly: what stands behind it no photograph shows. */
-    const mTile = surf('rooftile', { tile: [2.2, 2.9], clampV: false, roughness: 0.85, side: THREE.DoubleSide });
-    const mTimber = surf('timber', { tile: 2.2, mirror: 'uv', roughness: 0.9 });
+    /* ================================================================ THE HALL (photographs 13 to 16; and 8, 10 behind the tables)
+       Chad, 11 Nov 2026: "More images of the building behind, at the wai kru". One storey, ten metres across its front:
+       three steps of terracotta tile, walls of long red-brown brick, a dark red post at each corner and one in the
+       middle of the front, two wide double doors of dark glass. Over it a roof in two tiers of bright red pressed tile:
+       a hipped skirt all round with a wide overhang, and a steep gable to the south over the middle, its triangle in
+       dark red boards. A fretwork board of pointed scallops hangs under every eave and up both rakes, and two carved
+       boards cross at the peak (a kalae). In front: a white plank sign between two rough posts, the seven-headed naga
+       fountain on its teal plinth, a naga on a plinth at each corner, bushes and jars. The tracker's §10 has the table.
+       He cannot walk to it (it stands north of the ground he is kept on): it is for his eyes and for a film's lens. */
+    const mRoofRed = surf('redroof', { tile: [2.4, 2.3], roughness: 0.62 });
+    const mHallBrick = surf('hallbrick', { tile: [1.47, 1.4], tint: 0xc4a6a6, roughness: 0.9 });   // (photograph 15: a darker, browner red than the sunlit corner of 13)
+    const mStep = surf('steptile', { tile: 1.2, roughness: 0.78 });
+    const mRiser = surf('steptile', { tile: 1.2, tint: 0xd8c9c6, roughness: 0.85 });
+    const mLawn = surf('lawn', { tile: 2.5, gain: [1.55, 1.3, 1.45], roughness: 1 });           // (dry and straw-pale in every photograph: lifted to them)
+    const mFret = surf('fretwork', { tile: [1.68, 0.26], cut: true, clampV: true, roughness: 0.8 });
+    const mSign = surf('sign', { tile: [2.4, 0.43], cut: true, clamp: true, roughness: 0.7 });
+    const mFretGrey = surfFlat('fretwork', '#c4cad2', { tile: [1.68, 0.26], clampV: true });        // the gable's lace is painted pale grey (photograph 15)
+    const mKalaeGrey = surfFlat('kalae', '#8e959c', { tile: [0.95, 0.97], clamp: true });           // and the kalae weathered grey
     const mBrick = surf('brick', { tile: 1.6, mirror: 'uv', roughness: 0.95 });
     const mRedPlank = surf('redplank', { tile: 2.0, mirror: 'uv', roughness: 0.85 });
+    const mGable = surf('redplank', { tile: 2.0, mirror: 'uv', tint: 0xa9d0e8, roughness: 0.85 });   // (dark purple-brown boards, photograph 15)
     const mTin = surf('tin', { tile: 1.8, roughness: 0.7, side: THREE.DoubleSide });
-    const mBarge = M({ color: 0xa02a22, roughness: 0.7 });
+    const mBarge = M({ color: 0xb23229, roughness: 0.6 });
     const mDark = M({ color: 0x15100c, roughness: 1 });
     const mWhite = M({ color: 0xf2efe6, roughness: 0.8 });
     const mConcrete = M({ color: 0xa9a49a, roughness: 0.95 });
+    const mPostRed = M({ color: 0x4d231f, roughness: 0.7 });
+    const mTeal = M({ color: 0x3a9a8e, roughness: 0.85 });
+    /* the shade the deep eave lays on a wall: dark under the roof, gone a man's height below it (painted: v9.4) */
+    const mEaveShade = (() => { const [c, x] = cnv(64); const g = x.createLinearGradient(0, 0, 0, 64);
+      x.clearRect(0, 0, 64, 64); g.addColorStop(0, 'rgba(10,6,6,0.78)'); g.addColorStop(0.45, 'rgba(10,6,6,0.5)'); g.addColorStop(1, 'rgba(10,6,6,0)');
+      x.fillStyle = g; x.fillRect(0, 0, 64, 64);
+      const t = tex(done(THREE, c, false)); t.wrapS = THREE.RepeatWrapping; t.wrapT = THREE.ClampToEdgeWrapping;
+      return B({ map: t, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }); })();
+    /* the doors' glass: dark, and holding a dim picture of what stands before it (the sky over the trees over the lawn),
+       painted, because nothing here is mirrored for real. Its quad's UVs are metres, so the sheet is fitted to a door */
+    const mGlass = (() => { const [c, x] = cnv(64); const g = x.createLinearGradient(0, 0, 0, 64);
+      g.addColorStop(0, '#31475e'); g.addColorStop(0.3, '#22313a'); g.addColorStop(0.42, '#15221a'); g.addColorStop(0.72, '#0e1611'); g.addColorStop(1, '#070909');
+      x.fillStyle = g; x.fillRect(0, 0, 64, 64);
+      const t = tex(done(THREE, c, false)); t.wrapS = THREE.RepeatWrapping; t.wrapT = THREE.ClampToEdgeWrapping; t.repeat.set(1, 1 / 2.25); t.offset.set(0, -HALL.floor / 2.25);
+      return B({ map: t }); })();
+    const mBronze = M({ color: 0x3b2f2a, roughness: 0.5, metalness: 0.4 });
+    const mSteel = M({ color: 0xb9bcc0, roughness: 0.35, metalness: 0.8 });
+    const mSoffit = M({ color: 0x8b8f92, roughness: 0.8 });
+    const mSignPost = M({ color: 0x4f3038, roughness: 1 });
+    const hall = { lamps: [] };
     function buildHall() {
-      const H = HALL, e = H.eave, ov = H.over, brickH = 1.1;
-      const cx = (H.x0 + H.x1) / 2;
-      /* the walls: brick to the sill, timber to the eave */
-      const ring = [[H.x0, H.z1, H.x1, H.z1], [H.x1, H.z1, H.x1, H.z0], [H.x1, H.z0, H.x0, H.z0], [H.x0, H.z0, H.x0, H.z1]];
-      for (const [xa, za, xb, zb] of ring) { wall(mBrick, xa, za, xb, zb, 0, brickH); wall(mTimber, xa, za, xb, zb, brickH, e + 0.5); }
-      /* the doorway, dark, with its frame; three steps up to it */
-      wall(mDark, cx - 0.75, H.z1 + 0.012, cx + 0.75, H.z1 + 0.012, 0.45, 2.55);
-      for (const sx of [-1, 1]) box(mWhite, cx + sx * 0.82, 1.5, H.z1 + 0.03, 0.1, 2.2, 0.08);
-      box(mWhite, cx, 2.62, H.z1 + 0.03, 1.74, 0.1, 0.08);
-      for (let st = 0; st < 3; st++) box(mConcrete, cx, (st + 1) * 0.075, H.z1 + 0.75 - st * 0.28, 2.4, (st + 1) * 0.15, 0.3);
-      /* two shuttered windows either side of the door */
-      const mShutter = M({ color: 0x3a2619, roughness: 0.85 });
-      for (const sx of [-1, 1]) { wall(mShutter, cx + sx * 3.1 - 0.55, H.z1 + 0.014, cx + sx * 3.1 + 0.55, H.z1 + 0.014, 1.3, 2.5);
-        box(mWhite, cx + sx * 3.1, 1.24, H.z1 + 0.03, 1.3, 0.07, 0.07); box(mWhite, cx + sx * 3.1, 2.56, H.z1 + 0.03, 1.3, 0.07, 0.07); }
-      /* THE LOWER ROOF: a skirt all round, from the eave line (overhanging) up to a ring part way in */
-      const y0 = e, y1 = e + 1.15, in0 = 1.9;                                  // the skirt rises 1.15 m over 1.9 + the overhang
-      const o = { x0: H.x0 - ov, x1: H.x1 + ov, z0: H.z0 - ov, z1: H.z1 + ov }, i = { x0: H.x0 + in0, x1: H.x1 - in0, z0: H.z0 + in0, z1: H.z1 - in0 };
-      quad(mTile, [o.x0, y0, o.z1], [o.x1, y0, o.z1], [i.x1, y1, i.z1], [i.x0, y1, i.z1]);            // south, facing the tables
-      quad(mTile, [o.x1, y0, o.z1], [o.x1, y0, o.z0], [i.x1, y1, i.z0], [i.x1, y1, i.z1]);            // east
-      quad(mTile, [o.x1, y0, o.z0], [o.x0, y0, o.z0], [i.x0, y1, i.z0], [i.x1, y1, i.z0]);            // north
-      quad(mTile, [o.x0, y0, o.z0], [o.x0, y0, o.z1], [i.x0, y1, i.z1], [i.x0, y1, i.z0]);            // west
-      /* its edge board, white, and the fretwork hanging under it on the side the tables see */
-      wall(mWhite, o.x0, o.z1, o.x1, o.z1, y0 - 0.16, y0 + 0.02); wall(mWhite, o.x1, o.z1, o.x1, o.z0, y0 - 0.16, y0 + 0.02);
-      wall(mWhite, o.x0, o.z0, o.x0, o.z1, y0 - 0.16, y0 + 0.02);
-      const mFret = B({ map: tex(makeFretwork(THREE, cnv)), transparent: false, alphaTest: 0.5, side: THREE.DoubleSide, color: 0xf4f1e8 });
-      { const g = new THREE.PlaneGeometry(o.x1 - o.x0, 0.34); const uv = g.attributes.uv; for (let k = 0; k < uv.count; k++) uv.setX(k, uv.getX(k) * (o.x1 - o.x0) / 0.68);
-        const m = new THREE.Mesh(g, mFret); m.position.set(cx, y0 - 0.32, o.z1 + 0.004); world.add(m); owned.push(m); }
-      /* the short wall between the two roofs, timber */
-      for (const [xa, za, xb, zb] of [[i.x0, i.z1, i.x1, i.z1], [i.x1, i.z1, i.x1, i.z0], [i.x1, i.z0, i.x0, i.z0], [i.x0, i.z0, i.x0, i.z1]]) wall(mTimber, xa, za, xb, zb, y1 - 0.05, y1 + 0.55);
-      /* THE UPPER ROOF: a gable whose ridge runs north to south, its end to the tables */
-      const g0 = y1 + 0.5, ridge = H.ridge + 0.6, gx0 = i.x0 - 0.45, gx1 = i.x1 + 0.45, gz0 = i.z0 - 0.3, gz1 = i.z1 + 0.5;
-      quad(mTile, [gx0, g0, gz0], [gx0, g0, gz1], [cx, ridge, gz1], [cx, ridge, gz0]);                 // west slope (its eave the picture's u, so the tiles hang down it)
-      quad(mTile, [gx1, g0, gz1], [gx1, g0, gz0], [cx, ridge, gz0], [cx, ridge, gz1]);                 // east slope
-      tri(mTimber, [i.x0, g0, i.z1 + 0.02], [i.x1, g0, i.z1 + 0.02], [cx, ridge - 0.12, i.z1 + 0.02]);  // the gable's end, timber
-      tri(mTimber, [i.x1, g0, i.z0 - 0.02], [i.x0, g0, i.z0 - 0.02], [cx, ridge - 0.12, i.z0 - 0.02]);
-      /* red barge boards up both rakes of the south gable, crossing at the ridge (the Thai way), and a white sun-burst
-         of slats under them */
-      bar(mBarge, [gx0 - 0.1, g0 - 0.12, gz1 + 0.03], [cx + 0.35, ridge + 0.42, gz1 + 0.03], 0.085, 4);
-      bar(mBarge, [gx1 + 0.1, g0 - 0.12, gz1 + 0.03], [cx - 0.35, ridge + 0.42, gz1 + 0.03], 0.085, 4);
-      for (let k = -3; k <= 3; k++) bar(mWhite, [cx + k * 0.42, g0 + 0.04, i.z1 + 0.05], [cx + k * 0.1, ridge - 0.5 - Math.abs(k) * 0.07, i.z1 + 0.05], 0.022, 4);
-      /* he cannot walk into it (it stands outside the ground he is kept on: this is for a film's lens) */
+      const H = HALL, fl = H.floor, eave = fl + H.wall, cx = (H.x0 + H.x1) / 2, zf = H.z1, ov = H.over;
+      /* THE STEPS: three across the whole front and a little past each corner, a white strip on each one's edge */
+      const sx0 = H.x0 - 0.6, sx1 = H.x1 + 0.6, zb = zf - 0.1;
+      const stepFront = (k) => zf + 0.9 + (2 - k) * 0.3;                        // k 0 the lowest: its front edge is the furthest south
+      for (let k = 0; k < 3; k++) { const top = (k + 1) * fl / 3, front = stepFront(k);
+        box(mRiser, cx, top / 2, (zb + front) / 2, sx1 - sx0, top, front - zb, 0, mStep);
+        floor(mWhite, sx0, front - 0.05, sx1, front, top + 0.003); }
+      hall.stepsFront = stepFront(0);
+      /* THE WALLS, the grey band at their foot, the thin white line of a conduit near their top */
+      /* (each wall runs up to just under the skirt where the skirt crosses it, so no slot of sky shows under the eave) */
+      const yo = eave - 0.22, yi = yo + H.rise, run = H.rise / Math.tan(H.pitch);
+      const topF = yo + H.rise * ov / run - 0.05, topS = yo + H.rise * H.overS / run - 0.05;
+      for (const [xa, za, xb, zw, top] of [[H.x0, zf, H.x1, zf, topF], [H.x1, zf, H.x1, H.z0, topS], [H.x1, H.z0, H.x0, H.z0, topF], [H.x0, H.z0, H.x0, zf, topS]]) wall(mHallBrick, xa, za, xb, zw, fl, top);
+      /* (the eave's shade, laid 8 mm off each wall, behind the grey band and the doors' glass: from the wall's top down 2.1 m) */
+      for (const [xa, za, xb, zw, top] of [[H.x0, zf, H.x1, zf, topF], [H.x1, zf, H.x1, H.z0, topS], [H.x1, H.z0, H.x0, H.z0, topF], [H.x0, H.z0, H.x0, zf, topS]]) {
+        const dx = xb - xa, dz = zw - za, L = Math.hypot(dx, dz), ox = -dz / L * 0.008, oz = dx / L * 0.008, y1 = top, y0 = top - 2.1;
+        const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), mEaveShade);
+        m.position.set((xa + xb) / 2 + ox, (y0 + y1) / 2, (za + zw) / 2 + oz); m.scale.set(L, y1 - y0, 1); m.rotation.y = Math.atan2(ox, oz); m.renderOrder = 1; world.add(m); owned.push(m); }
+      wall(mConcrete, H.x0, zf + 0.012, H.x1, zf + 0.012, fl, fl + 0.16);
+      bar(mWhite, [H.x0, fl + 2.72, zf + 0.02], [H.x1, fl + 2.72, zf + 0.02], 0.012, 4);
+      /* THE POSTS: dark red, at the four corners and the middle of the front */
+      for (const [px, pz] of [[H.x0 - 0.02, zf + 0.07], [cx, zf + 0.07], [H.x1 + 0.02, zf + 0.07], [H.x0 - 0.02, H.z0 - 0.07], [H.x1 + 0.02, H.z0 - 0.07]]) post(mPostRed, px, pz, 0.11, fl, eave + 0.15, 10);
+      /* THE TWO DOORS: dark glass in bronze frames, a leaf either side of the meeting stiles, long bar handles */
+      for (const sx of [-1, 1]) { const dx = cx + sx * 2.7, w = 2.3, h = 2.25, z = zf + 0.02;
+        wall(mGlass, dx - w / 2, z, dx + w / 2, z, fl + 0.02, fl + h);
+        box(mBronze, dx, fl + h + 0.035, z + 0.02, w + 0.14, 0.07, 0.07);
+        box(mBronze, dx, fl + 0.05, z + 0.02, w, 0.08, 0.06);
+        for (const jx of [-w / 2 - 0.035, w / 2 + 0.035]) box(mBronze, dx + jx, fl + h / 2, z + 0.02, 0.07, h, 0.07);
+        for (const jx of [-0.03, 0.03]) box(mBronze, dx + jx, fl + h / 2, z + 0.025, 0.05, h, 0.05);
+        for (const jx of [-0.13, 0.13]) bar(mSteel, [dx + jx, fl + 0.85, z + 0.075], [dx + jx, fl + 1.35, z + 0.075], 0.014, 6); }
+      /* THE LOWER ROOF: a skirt all round, from its edge out over the steps up to the foot of the upper roof. Each side
+         is a flat trapezoid with true UVs (planar), the eave its picture's u, so the rows of tiles lie along it */
+      const o = { x0: H.x0 - H.overS, x1: H.x1 + H.overS, z0: H.z0 - ov, z1: zf + ov }, g = { x0: o.x0 + run, x1: o.x1 - run, z0: o.z0 + run, z1: o.z1 - run };
+      const sides = [
+        [[o.x0, yo, o.z1], [o.x1, yo, o.z1], [g.x1, yi, g.z1], [g.x0, yi, g.z1]],      // south, the side the turf sees
+        [[o.x1, yo, o.z1], [o.x1, yo, o.z0], [g.x1, yi, g.z0], [g.x1, yi, g.z1]],      // east
+        [[o.x1, yo, o.z0], [o.x0, yo, o.z0], [g.x0, yi, g.z0], [g.x1, yi, g.z0]],      // north
+        [[o.x0, yo, o.z0], [o.x0, yo, o.z1], [g.x0, yi, g.z1], [g.x0, yi, g.z0]]];     // west
+      for (const q of sides) { planar(mRoofRed, q);
+        /* its underside: grey sheet, a hand under the tiles and facing down (the corners turned the other way round) */
+        planar(mSoffit, [q[1], q[0], q[3], q[2]].map(v => [v[0], v[1] - 0.05, v[2]])); }
+      /* the purlins under the overhang (dark red), three on the south and on each side */
+      for (const k of [0.12, 0.3, 0.46]) { const y = lp(yo, yi, k) - 0.09;
+        bar(mPostRed, [lp(o.x0, g.x0, k), y, lp(o.z1, g.z1, k)], [lp(o.x1, g.x1, k), y, lp(o.z1, g.z1, k)], 0.035, 4);
+        bar(mPostRed, [lp(o.x0, g.x0, k), y, lp(o.z0, g.z0, k)], [lp(o.x0, g.x0, k), y, lp(o.z1, g.z1, k)], 0.035, 4);
+        bar(mPostRed, [lp(o.x1, g.x1, k), y, lp(o.z0, g.z0, k)], [lp(o.x1, g.x1, k), y, lp(o.z1, g.z1, k)], 0.035, 4); }
+      /* its edge board, and THE FRETWORK hanging under it on all four sides (pointed scallops, dark red) */
+      const fh = 0.26;
+      for (const [xa, za, xb, zw] of [[o.x0, o.z1, o.x1, o.z1], [o.x1, o.z1, o.x1, o.z0], [o.x1, o.z0, o.x0, o.z0], [o.x0, o.z0, o.x0, o.z1]]) {
+        wall(mBarge, xa, za, xb, zw, yo - 0.07, yo + 0.03);
+        const dx = xb - xa, dz = zw - za, L = Math.hypot(dx, dz), ox = -dz / L * 0.012, oz = dx / L * 0.012;   // a finger outside the board
+        quad(mFret, [xa + ox, yo - 0.05 - fh, za + oz], [xb + ox, yo - 0.05 - fh, zw + oz], [xb + ox, yo - 0.05, zw + oz], [xa + ox, yo - 0.05, za + oz]); }
+      /* THE UPPER ROOF: a steep gable over the middle, its ridge running north to south, its end to the turf. It stands
+         a short upstand above the skirt so its eaves clear the skirt's tiles */
+      const g0 = yi + 0.25, ridge = g0 + H.gable, pitch = Math.atan2(H.gable, g.x1 - cx), eo = 0.3, ye = g0 - eo * Math.tan(pitch);
+      const ex0 = g.x0 - eo, ex1 = g.x1 + eo, zr0 = g.z0 - 0.45, zr1 = g.z1 + 0.45;
+      planar(mRoofRed, [[ex0, ye, zr0], [ex0, ye, zr1], [cx, ridge, zr1], [cx, ridge, zr0]]);          // the west slope
+      planar(mRoofRed, [[ex1, ye, zr1], [ex1, ye, zr0], [cx, ridge, zr0], [cx, ridge, zr1]]);          // the east slope
+      planar(mSoffit, [[ex0, ye - 0.04, zr1], [ex0, ye - 0.04, zr0], [cx, ridge - 0.04, zr0], [cx, ridge - 0.04, zr1]]);
+      planar(mSoffit, [[ex1, ye - 0.04, zr0], [ex1, ye - 0.04, zr1], [cx, ridge - 0.04, zr1], [cx, ridge - 0.04, zr0]]);
+      bar(mBarge, [cx, ridge + 0.02, zr0], [cx, ridge + 0.02, zr1], 0.06, 5);                           // the ridge cap
+      /* the band between the two roofs and the gable's triangle, in dark red boards */
+      for (const [xa, za, xb, zw] of [[g.x0, g.z1, g.x1, g.z1], [g.x1, g.z1, g.x1, g.z0], [g.x1, g.z0, g.x0, g.z0], [g.x0, g.z0, g.x0, g.z1]]) wall(mGable, xa, za, xb, zw, yi - 0.08, g0 + 0.02);
+      tri(mGable, [g.x0, g0, g.z1], [g.x1, g0, g.z1], [cx, ridge - 0.08, g.z1]);
+      tri(mGable, [g.x1, g0, g.z0], [g.x0, g0, g.z0], [cx, ridge - 0.08, g.z0]);
+      /* the fretwork across the gable's foot and up both rakes (each strip's top edge on the roof's edge, its scallops
+         hanging in the gable's plane), a red board along each rake's edge, and THE KALAE crossed at the peak */
+      const zk = zr1 + 0.006;
+      quad(mFret, [g.x0, g0 - fh, g.z1 + 0.03], [g.x1, g0 - fh, g.z1 + 0.03], [g.x1, g0, g.z1 + 0.03], [g.x0, g0, g.z1 + 0.03]);            // (dark red across the foot: photograph 15 has no pale lace there, only up the rakes)
+      { const c = Math.cos(pitch), sn = Math.sin(pitch);
+        const T0 = [ex0, ye, zk], T1 = [cx, ridge, zk], T2 = [ex1, ye, zk];
+        quad(mFretGrey, [T0[0] + fh * sn, T0[1] - fh * c, zk], [T1[0] + fh * sn, T1[1] - fh * c, zk], T1, T0);         // the west rake (up to the peak)
+        quad(mFretGrey, [T1[0] - fh * sn, T1[1] - fh * c, zk], [T2[0] - fh * sn, T2[1] - fh * c, zk], T2, T1);         // the east rake (down from it)
+        bar(mBarge, [T0[0], T0[1] + 0.03, zk], [T1[0], T1[1] + 0.03, zk], 0.045, 4); bar(mBarge, [T2[0], T2[1] + 0.03, zk], [T1[0], T1[1] + 0.03, zk], 0.045, 4); }
+      quad(mKalaeGrey, [cx - 0.475, ridge - 0.14, zk + 0.02], [cx + 0.475, ridge - 0.14, zk + 0.02], [cx + 0.475, ridge + 0.83, zk + 0.02], [cx - 0.475, ridge + 0.83, zk + 0.02]);
+      /* THE SIGN: a white wavy plank between two rough posts in front of the steps (its words are a picture: z_tail's
+         art; NOT the real place's name, v9.3) */
+      /* (measured on photograph 15 against the doors: the plank 2.4 m by 0.43 m, its foot two metres up, on two posts
+         that stand at the fountain's two sides; the fountain's plinth in two low tiers hard against the steps) */
+      const zs = hall.stepsFront + 0.78;
+      for (const sx of [-1, 1]) post(mSignPost, cx + sx * 1.1, zs, 0.085, 0, 2.02, 9, 0.075);
+      quad(mSign, [cx - 1.2, 1.98, zs + 0.09], [cx + 1.2, 1.98, zs + 0.09], [cx + 1.2, 2.41, zs + 0.09], [cx - 1.2, 2.41, zs + 0.09]);
+      /* THE PLINTHS, painted teal: the fountain's between the sign's posts, one at each corner for its naga */
+      hall.fountain = { x: cx, z: zs, top: 0.4 };
+      box(mTeal, hall.fountain.x, 0.1, hall.fountain.z, 2.05, 0.2, 1.4); box(mTeal, hall.fountain.x, 0.3, hall.fountain.z - 0.06, 1.8, 0.2, 1.12);
+      hall.west = { x: H.x0 - 1.7, z: zf + 1.35, top: 0.5 };  box(mTeal, hall.west.x, 0.25, hall.west.z, 2.4, 0.5, 0.95);
+      hall.east = { x: H.x1 + 0.3, z: zf + 1.0, top: 0.55 }; box(mTeal, hall.east.x, 0.275, hall.east.z, 1.8, 0.55, 0.95);
+      hall.lampAt = [[H.x0 - 0.02, fl + 1.95, zf + 0.2], [H.x1 + 0.02, fl + 1.95, zf + 0.2]];
+      /* A LAMP ON A POLE, front left (photograph 16): a round solar street lamp on a grey pole */
+      post(mConcrete, -7.4, zf + 2.4, 0.045, 0, 4.2, 8);
+      geo(mSteel, new THREE.CylinderGeometry(0.34, 0.3, 0.07, 14), _gm.makeTranslation(-7.4, 4.24, zf + 2.4));
+      geo(mDark, new THREE.CylinderGeometry(0.3, 0.3, 0.012, 14), _gm.makeTranslation(-7.4, 4.285, zf + 2.4));
+    }
+    /* what stands at the hall, each a model made from his photographs (masters/v26.0/hall): placed after the batch is
+       flushed, each on the spot buildHall measured out */
+    function dressHall() {
+      const F = hall.fountain, W = hall.west, E = hall.east;
+      stand('w3nagafount', F.x, F.top, F.z, 0);                                   // the seven heads, facing the turf
+      stand('w3ganesha', F.x + 0.72, F.top, F.z + 0.3, -0.5);                     // the small golden Ganesha at its east end
+      stand('w3ganesha', F.x - 0.72, F.top, F.z + 0.3, 0.5, { done: (m) => { m.scale.x *= -1; } });    // and its fellow at the west, turned to face it
+      stand('w3nagagreen', W.x, W.top, W.z, 0);                                   // west: the green naga, its heads to the west
+      stand('w3nagawhite', E.x, E.top, E.z, 0, { s: 1.22 });                      // east: the white-bellied naga, upright (1.85 m on its plinth, photograph 15)
+      /* (photograph 15: one yellow bush west of the fountain before the steps, one beyond the white naga; the dracaena
+         in its brown jar at the east post's foot, as tall as the sign; a bowl of floating plants before the plinth) */
+      stand('w3croton', F.x - 2.55, 0, F.z + 0.35, 0.6);
+      stand('w3croton', E.x + 2.3, 0, E.z + 0.6, 2.2, { s: 0.92 });
+      stand('w3dracaena', F.x + 1.55, 0, F.z + 0.45, 0.3, { s: 1.28 });
+      stand('w3waterjar', F.x + 0.1, 0, F.z + 1.0, 0, { s: 0.8 });
+      for (const [x, y, z] of hall.lampAt) hall.lamps.push(stand('w3walllamp', x, y, z, 0));
     }
 
     /* ================================================================ WHAT STANDS ROUND THE TURF
        The open shed (west), the white lattice fence, the red wooden house (east), the red plank wall and the pale grey
        building behind the chief canopy (south-east). Photographs 10, 12, 11, 5 and 6. */
     function buildSurround() {
-      /* the open shed: posts and a pink corrugated roof falling to the east (its high side to the west) */
-      const S0 = SHED, hi = S0.eave + 1.2, lo = S0.eave;
+      /* the open shed (photograph 10, read again beside 13 to 16): posts and a pink corrugated roof of TWO pitches, its
+         ridge running north to south and its open gable end to the turf; tables of bai sri stand under it */
+      const S0 = SHED, lo = S0.eave, hi = S0.eave + 1.25, sxc = (S0.x0 + S0.x1) / 2;
       const mPost = M({ color: 0x8a8376, roughness: 0.9 });
-      for (const x of [S0.x0 + 0.2, (S0.x0 + S0.x1) / 2, S0.x1 - 0.2]) for (const z of [S0.z0 + 0.2, (S0.z0 + S0.z1) / 2, S0.z1 - 0.2])
-        box(mPost, x, lp(hi, lo, (x - S0.x0) / (S0.x1 - S0.x0)) / 2, z, 0.1, lp(hi, lo, (x - S0.x0) / (S0.x1 - S0.x0)), 0.1);
+      for (const x of [S0.x0 + 0.2, S0.x1 - 0.2]) for (const z of [S0.z0 + 0.2, (S0.z0 + S0.z1) / 2, S0.z1 - 0.2]) box(mPost, x, lo / 2, z, 0.1, lo, 0.1);
+      for (const z of [S0.z0 + 0.2, S0.z1 - 0.2]) box(mPost, sxc, hi / 2, z, 0.1, hi, 0.1);
       /* (a tin roof's eave is its picture's u, so the corrugations run down the slope) */
-      quad(mTin, [S0.x1 + 0.6, lo - 0.02, S0.z1 + 0.5], [S0.x1 + 0.6, lo - 0.02, S0.z0 - 0.5], [S0.x0 - 0.5, hi + 0.09, S0.z0 - 0.5], [S0.x0 - 0.5, hi + 0.09, S0.z1 + 0.5]);
+      planar(mTin, [[S0.x0 - 0.5, lo - 0.18, S0.z0 - 0.5], [S0.x0 - 0.5, lo - 0.18, S0.z1 + 0.6], [sxc, hi + 0.06, S0.z1 + 0.6], [sxc, hi + 0.06, S0.z0 - 0.5]]);
+      planar(mTin, [[S0.x1 + 0.5, lo - 0.18, S0.z1 + 0.6], [S0.x1 + 0.5, lo - 0.18, S0.z0 - 0.5], [sxc, hi + 0.06, S0.z0 - 0.5], [sxc, hi + 0.06, S0.z1 + 0.6]]);
       const mRafter = M({ color: 0x5a4636, roughness: 0.9 });
-      for (const z of [S0.z0 + 0.2, (S0.z0 + S0.z1) / 2, S0.z1 - 0.2]) bar(mRafter, [S0.x0 + 0.2, hi + 0.02, z], [S0.x1 - 0.2, lo + 0.02, z], 0.045, 4);
+      for (const z of [S0.z0 + 0.2, (S0.z0 + S0.z1) / 2, S0.z1 - 0.2]) { bar(mRafter, [S0.x0 + 0.2, lo, z], [sxc, hi, z], 0.04, 4); bar(mRafter, [S0.x1 - 0.2, lo, z], [sxc, hi, z], 0.04, 4); bar(mRafter, [S0.x0 + 0.2, lo, z], [S0.x1 - 0.2, lo, z], 0.035, 4); }
+      bar(mRafter, [sxc, hi, S0.z0 + 0.2], [sxc, hi, S0.z1 - 0.2], 0.04, 4);
       /* a second, lower shed roof seen behind the west tents (photograph 10's left edge) */
       quad(mTin, [-12.2, 2.5, 9], [-12.2, 2.5, -6], [-17.5, 3.4, -6], [-17.5, 3.4, 9]);
       wall(mBrick, -12.4, 9, -12.4, -6, 0, 2.45); wall(mWhite, -12.38, 8.9, -12.38, -5.9, 0.9, 2.3);
@@ -346,23 +508,29 @@
         quad(mat, q0, q1, p1, p0, u, 0); u += len / segs;
       }
     }
+    const tentCorners = (cx, cz, w, ry = 0) => { const hw = w / 2, c = Math.cos(ry), s = Math.sin(ry);
+      return [[-hw, hw], [hw, hw], [hw, -hw], [-hw, -hw]].map(([lx, lz]) => [cx + lx * c + lz * s, cz - lx * s + lz * c]); };
     function tent(cx, cz, o = {}) {
       const w = o.w || TENT.w, e = o.eave || TENT.eave, pk = o.peak || TENT.peak, hw = w / 2;
       const roof = o.roof || satinRoof(0x18a044), frame = o.frame || mFrameGreen;
-      const C = [[cx - hw, cz + hw], [cx + hw, cz + hw], [cx + hw, cz - hw], [cx - hw, cz - hw]];        // SW, SE, NE, NW
+      /* its four poles: SW, SE, NE, NW when it stands square to the ground; turned by o.ry about its middle, the same
+         four in its own frame (a tent turned to face north has its first pole at its front right) */
+      const C = tentCorners(cx, cz, w, o.ry || 0), L = hw * Math.SQRT2, out = ([x, z]) => [x + (x - cx) / L * 0.085, z + (z - cz) / L * 0.085];
       for (const [x, z] of C) post(frame, x, z, 0.022, 0, e, 6);
-      for (let k = 0; k < 4; k++) { const [xa, za] = C[k], [xb, zb] = C[(k + 1) % 4];
+      for (let k = 0; k < 4; k++) { const [xa, za] = C[k], [xb, zb] = C[(k + 1) % 4], oa = out(C[k]), ob = out(C[(k + 1) % 4]);
         bar(frame, [xa, e, za], [xb, e, zb], 0.018, 4);
-        quad(roof, [xa - Math.sign(cx - xa) * 0.06, e + 0.02, za - Math.sign(cz - za) * 0.06], [xb - Math.sign(cx - xb) * 0.06, e + 0.02, zb - Math.sign(cz - zb) * 0.06], [cx, pk, cz], [cx, pk, cz]);
+        quad(roof, [oa[0], e + 0.02, oa[1]], [ob[0], e + 0.02, ob[1]], [cx, pk, cz], [cx, pk, cz]);
         /* the valance: a band of cloth hanging from the eave, and swags over it */
         const vm = satin(o.valance != null ? o.valance : 0xf4f4f0);
-        wall(vm, xa, za, xb, zb, e - 0.28, e + 0.01);
-        const n = o.swags || 3, cols = o.swagCols || [0x18a044, 0xf4f4f0];
+        wall(vm, xa, za, xb, zb, e - (o.band || 0.28), e + 0.01);
+        const n = o.swags || 3, cols = o.swagCols || [0x18a044, 0xf4f4f0], sd = o.swagDepth || 0.42, dr = o.swagDrop || 0.2;
         for (let s = 0; s < n; s++) { const k0 = s / n, k1 = (s + 1) / n;
-          swag(satin(cols[s % cols.length]), [lp(xa, xb, k0), e + 0.005, lp(za, zb, k0)], [lp(xa, xb, k1), e + 0.005, lp(za, zb, k1)], 0.42, 0.2, 0.07); }
+          swag(satin(cols[(s + k * (o.swagStep || 0)) % cols.length]), [lp(xa, xb, k0), e + 0.005, lp(za, zb, k0)], [lp(xa, xb, k1), e + 0.005, lp(za, zb, k1)], sd, dr, 0.07); }
       }
       return C;
     }
     const satinRoofs = new Map();
-    const satinRoof = (hex) => { let m = satinRoofs.get(hex); if (!m) satinRoofs.set(hex, m = M({ color: hex, roughness: 0.62, side: THREE.DoubleSide })); return m; };
+    /* (`glow`: a dark sheet seen from below still passes a little of the day: without it the chief canopy's top was a
+       black hole over him) */
+    const satinRoof = (hex, glow = 0) => { const k = hex + ':' + glow; let m = satinRoofs.get(k); if (!m) satinRoofs.set(k, m = M({ color: hex, roughness: 0.62, side: THREE.DoubleSide, emissive: glow })); return m; };
 

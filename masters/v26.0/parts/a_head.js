@@ -176,18 +176,32 @@
 
     /* (the list is long and grows with the build: one line a kind) */
     assets: [
-      /* the people made for this chapter (masters/v26.0/make.sh §1 to §3) */
-      /* this chapter's things, each from a crop of his photograph (masters/v26.0/make.sh §4) */
-      'w3baisri', 'w3naga', 'w3wheel', 'w3parasol', 'w3tower', 'w3candle', 'w3fan', 'w3nagastaff', 'w3pewter',
-      /* the ground's surfaces (masters/v26.0/tex) */
-      'w3t_turf', 'w3t_earth', 'w3t_gravel', 'w3t_rooftile', 'w3t_redplank', 'w3t_tin', 'w3t_timber', 'w3t_swag',
-      'w3t_petalturf', 'w3t_brick', 'w3t_skirt', 'w3t_satin', 'w3t_mat', 'w3t_carpet', 'w3t_banner', 'w3t_treeline',
+      /* the people, the things and the surfaces made for this chapter (masters/v26.0/make.sh) */
+      /* >>> this chapter's own keys: written by masters/v26.0/keys.py (edit its table, not this list) >>> */
+      'e4ton', 'e4tonm', 'e4tonf', 'e4tonh', 'e4bench', 'e4benchm', 'e4benchf', 'e4benchh', 'e4hermita',
+      'e4hermitam', 'e4hermitaf', 'e4hermitb', 'e4hermitbm', 'e4hermitbf', 'e4red', 'e4redm', 'e4redf', 'e4white',
+      'e4whitem', 'e4whitef', 'e4dancera', 'e4danceram', 'e4danceraf', 'e4dancerb', 'e4dancerbm', 'e4dancerbf',
+      'e4deva', 'e4devam', 'e4devaf', 'e4devb', 'e4devbm', 'e4devbf', 'e4devc', 'e4devcm', 'e4devcf', 'e4devd',
+      'e4devdm', 'e4devdf', 'e4deve', 'e4devem', 'e4devef', 'e4devf', 'e4devfm', 'e4devff', 'e4devg', 'e4devgm',
+      'e4devgf', 'e4devh', 'e4devhm', 'e4devhf', 'pho', 'phof', 'w3baisri', 'w3naga', 'w3wheel', 'w3parasol',
+      'w3tower', 'w3candle', 'w3fan', 'w3nagastaff', 'w3pewter', 'w3purple', 'w3fruit', 'w3sweets', 'w3khantok',
+      'w3puff', 'w3chair', 'w3lowtable', 'w3bench', 'w3sofa', 'w3petalbowl', 'w3petalsteel', 'w3smallbaisri',
+      'w3candlemid', 'w3candlesmall', 'w3kratip', 'w3chicken', 'w3coconut', 'w3soda', 'w3water', 'w3nagafount',
+      'w3nagagreen', 'w3nagawhite', 'w3ganesha', 'w3croton', 'w3dracaena', 'w3waterjar', 'w3walllamp', 'w3t_turf',
+      'w3t_petalturf', 'w3t_earth', 'w3t_gravel', 'w3t_redplank', 'w3t_tin', 'w3t_brick', 'w3t_skirt', 'w3t_satin',
+      'w3t_mat', 'w3t_carpet', 'w3t_swag', 'w3t_banner', 'w3t_treeline', 'w3t_redroof', 'w3t_hallbrick',
+      'w3t_steptile', 'w3t_lawn', 'w3t_kalae', 'w3t_fretwork', 'w3t_sign',
+      /* <<< this chapter's own keys <<< */
       /* the trees of this episode's first chapter (reuseInEpisode) */
-      'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd'
+      'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd',
+      /* Chad's monk as episode 3 has him (reuse). (Grandmaster Pho, Chad's own model, cast here for the first time, is
+         in the keys above.) */
+      'monkshop', 'monkrow'
     ],
     /* FRESH (chaptertest) asks a chapter of episode 4 to declare what it takes from episodes 1 to 3 (`reuse`), and what
        it shares with the chapters of its own episode (`reuseInEpisode`): Chad, v17.4, "any reuse is declared" */
-    reuse: {},
+    reuse: { monkshop: "Chad's monk, for the three monks who sit under the east tent as monks sit at a real Wai Kru (photograph 2): the one monk he has made, as episode 3 chapter 3's shop wears him",
+             monkrow: "the same monk's light cut (episode 3 chapter 2's row), drawn for those three when they are far across the turf" },
     reuseInEpisode: { e4raintree: "the rain tree of chapter 1's countryside, standing round the ground: the same country's trees, and no tree is built in code (v24.20)",
                       e4mango: "the mango of chapter 1's countryside, likewise",
                       e4raintreehd: "the same rain tree at its fuller level, for the one that stands over the turf",

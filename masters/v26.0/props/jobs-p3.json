@@ -1,0 +1,62 @@
+[
+ {
+  "name": "smallbaisri",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/smallbaisri-2k.png"
+ },
+ {
+  "name": "sofa",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/sofa-2k.png"
+ },
+ {
+  "name": "petalbowl",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/petalbowl-2k.png"
+ },
+ {
+  "name": "petalsteel",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/petalsteel-2k.png"
+ },
+ {
+  "name": "seatbench",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/seatbench-2k.png"
+ },
+ {
+  "name": "candlemid",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/candlemid-2k.png"
+ },
+ {
+  "name": "candlesmall",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/candlesmall-2k.png"
+ },
+ {
+  "name": "kratip",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/kratip-2k.png"
+ },
+ {
+  "name": "chicken",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/chicken-2k.png"
+ },
+ {
+  "name": "coconut",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/coconut-2k.png"
+ },
+ {
+  "name": "soda",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/soda-2k.png"
+ },
+ {
+  "name": "water",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/water-2k.png"
+ }
+]

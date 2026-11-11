@@ -172,6 +172,11 @@
   "expires_at": 1794665947976,
   "image": "masters/v26.0/people/refs/bench-a-2k.png",
   "image_to_3d": "01a1caf5-cdbd-713d-81fc-3a2f1ff68cc8",
+  "remesh": {
+   "2500": "01a1cba8-4dcd-723f-b849-ee5ed7824467",
+   "40000": "01a1cb8b-a0bf-7181-a282-a454fe3c2577",
+   "8000": "01a1cba3-914e-71e1-a779-ce2352f13b20"
+  },
   "rig": "01a1cafe-c2be-71e3-bd2c-802839161235",
   "rig_credits": 5,
   "rig_settings": {
@@ -257,6 +262,96 @@
    "glb": 43872884
   }
  },
+ "candlemid": {
+  "credits": 40,
+  "expires_at": 1794678108151,
+  "image": "masters/v26.0/props/refs/candlemid-2k.png",
+  "image_to_3d": "01a1cbaf-62f0-7792-95a3-94e6445dd27b",
+  "remesh": {
+   "2000": "01a1cbcf-7062-719d-911a-b8ac44e65663"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 42150896
+  }
+ },
+ "candlesmall": {
+  "credits": 40,
+  "expires_at": 1794678093639,
+  "image": "masters/v26.0/props/refs/candlesmall-2k.png",
+  "image_to_3d": "01a1cbaf-6966-749e-960c-deb6e7f04101",
+  "remesh": {
+   "1500": "01a1cbd3-ace6-76da-bff5-88138e229d45"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 44103256
+  }
+ },
+ "chicken": {
+  "credits": 40,
+  "expires_at": 1794678183483,
+  "image": "masters/v26.0/props/refs/chicken-2k.png",
+  "image_to_3d": "01a1cbaf-7b0f-76be-98ab-742539401939",
+  "remesh": {
+   "4000": "01a1cbdd-36af-753a-abe4-386d39130419"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 41718968
+  }
+ },
  "chrys": {
   "image": "masters/v26.0/props/refs/chrys-2k.png",
   "image_to_3d": "01a1cb10-a93c-76ec-b5a5-3b195e2fb30c",
@@ -279,11 +374,99 @@
    "topology": "triangle"
   }
  },
+ "coconut": {
+  "credits": 40,
+  "expires_at": 1794678165993,
+  "image": "masters/v26.0/props/refs/coconut-2k.png",
+  "image_to_3d": "01a1cbaf-82f6-722c-bb9a-4f628ad48fac",
+  "remesh": {
+   "3000": "01a1cbe1-76b0-7475-b6de-70fdd3bedcbc"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 58882076
+  }
+ },
+ "croton": {
+  "failed": "FAILED",
+  "image": "masters/v26.0/hall/src/croton.png",
+  "image_to_3d": "01a1cb97-af6a-7080-93da-6efc87ea703c",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "croton2": {
+  "credits": 40,
+  "expires_at": 1794680839903,
+  "image": "masters/v26.0/hall/src/croton2.png",
+  "image_to_3d": "01a1cbd5-945f-7004-ae0a-32a011acd940",
+  "remesh": {
+   "16000": "01a1cbdd-7c16-75ac-ba9e-eb248daeda2f"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 74335112
+  }
+ },
  "dancera": {
   "credits": 40,
   "expires_at": 1794665248062,
   "image": "masters/v26.0/people/refs/dancera-a-2k.png",
   "image_to_3d": "01a1caea-c834-75ff-827a-13ad8b4114a7",
+  "remesh": {
+   "2500": "01a1cba0-7b00-756e-bb00-98a1f3ea2be7",
+   "30000": "01a1cb8b-a0e6-71f5-906f-617150397bd8",
+   "8000": "01a1cb9b-3a84-760b-a011-4c33a65e5c5e"
+  },
   "rig": "01a1caf2-3f20-76fe-9c67-98d4e287f5b0",
   "rig_credits": 5,
   "rig_settings": {
@@ -347,6 +530,11 @@
   "expires_at": 1794665233380,
   "image": "masters/v26.0/people/refs/dancerb-a-2k.png",
   "image_to_3d": "01a1caea-cf49-741c-ac37-d77ce693f6aa",
+  "remesh": {
+   "2500": "01a1cba7-d0fe-71d5-8744-2e0c0756551b",
+   "30000": "01a1cb90-b886-7206-86fc-6318b589090b",
+   "8000": "01a1cba2-c9b7-760a-a5a7-6d46c0f05022"
+  },
   "rig": "01a1caf2-3f33-76a5-b81d-babe580f31b3",
   "rig_credits": 5,
   "rig_settings": {
@@ -404,6 +592,11 @@
   "expires_at": 1794665169890,
   "image": "masters/v26.0/people/refs/deva-a-2k.png",
   "image_to_3d": "01a1caea-92f2-7101-9602-e4d60bf9967c",
+  "remesh": {
+   "24000": "01a1cb96-4c54-7262-9b83-fbaff167782b",
+   "2500": "01a1cbb0-905e-7499-871d-1f015f29ed88",
+   "8000": "01a1cbac-5471-76d3-8945-3736eac26952"
+  },
   "rig": "01a1caf2-3f81-76d2-88b8-7e3de9673244",
   "rig_credits": 5,
   "rig_settings": {
@@ -463,6 +656,11 @@
   "expires_at": 1794665175801,
   "image": "masters/v26.0/people/refs/devb-a-2k.png",
   "image_to_3d": "01a1caea-9921-731b-bbc9-cf631ed55bed",
+  "remesh": {
+   "24000": "01a1cb9a-891f-70bb-a96c-181a9308f5c4",
+   "2500": "01a1cbb8-d7bc-74b4-bb76-dac23825a185",
+   "8000": "01a1cbb4-cbca-734c-90cd-b7d758888beb"
+  },
   "rig": "01a1caf2-3e55-70db-9f31-a0ffc18de5cf",
   "rig_credits": 5,
   "rig_settings": {
@@ -522,6 +720,11 @@
   "expires_at": 1794665179800,
   "image": "masters/v26.0/people/refs/devc-a-2k.png",
   "image_to_3d": "01a1caea-ad76-72f0-8205-d0ff4770596f",
+  "remesh": {
+   "24000": "01a1cb8b-a1c8-744e-bd80-65fb61ee942d",
+   "2500": "01a1cbc0-e011-7303-b9cb-d395390508c3",
+   "8000": "01a1cbbc-978a-7052-a2f4-4740fddd1cde"
+  },
   "rig": "01a1caf2-3f69-74e8-a1e0-17ea5a98900c",
   "rig_credits": 5,
   "rig_settings": {
@@ -581,6 +784,11 @@
   "expires_at": 1794665210950,
   "image": "masters/v26.0/people/refs/devd-a-2k.png",
   "image_to_3d": "01a1caea-b415-775a-884a-ea46f118a38d",
+  "remesh": {
+   "24000": "01a1cb90-2074-7549-ae9d-a384b807cf04",
+   "2500": "01a1cb9f-8a3b-777d-b76c-a493469402c8",
+   "8000": "01a1cb9b-3945-726b-9740-2a6a06aea96b"
+  },
   "rig": "01a1caf2-3f51-7351-93a5-5bc03b107620",
   "rig_credits": 5,
   "rig_settings": {
@@ -640,6 +848,11 @@
   "expires_at": 1794665228103,
   "image": "masters/v26.0/people/refs/deve-a-2k.png",
   "image_to_3d": "01a1caea-9f9a-7377-92da-ca38a596fc50",
+  "remesh": {
+   "24000": "01a1cb95-cd9b-77ab-ab31-9e883b94a4b1",
+   "2500": "01a1cba8-6d74-73dc-84f6-5b656cfba692",
+   "8000": "01a1cba3-5edc-7761-b638-ead48fadd06d"
+  },
   "rig": "01a1caf2-3f69-776d-b4ee-f99028730682",
   "rig_credits": 5,
   "rig_settings": {
@@ -699,6 +912,11 @@
   "expires_at": 1794665242323,
   "image": "masters/v26.0/people/refs/devf-a-2k.png",
   "image_to_3d": "01a1caea-a6d5-7357-acc6-785a18befec0",
+  "remesh": {
+   "24000": "01a1cb9b-2e44-75d6-826d-514f75721980",
+   "2500": "01a1cbaf-ab8a-7503-a87f-f4b3e963a042",
+   "8000": "01a1cbad-3a8d-7711-8e36-1c32c0245f80"
+  },
   "rig": "01a1caf2-3f57-73c0-a4c4-271335fa7e69",
   "rig_credits": 5,
   "rig_settings": {
@@ -758,6 +976,11 @@
   "expires_at": 1794665201614,
   "image": "masters/v26.0/people/refs/devg-a-2k.png",
   "image_to_3d": "01a1caea-baa1-754e-b726-c1a99c74ded5",
+  "remesh": {
+   "24000": "01a1cba0-3834-732a-8805-2ce5305aa221",
+   "2500": "01a1cbb8-c5f3-733b-8365-ccf8cb335262",
+   "8000": "01a1cbb4-6ab4-7683-bf72-ba6406da9279"
+  },
   "rig": "01a1caf2-3f52-770a-b366-0a9e439fe203",
   "rig_credits": 5,
   "rig_settings": {
@@ -817,6 +1040,11 @@
   "expires_at": 1794665204257,
   "image": "masters/v26.0/people/refs/devh-a-2k.png",
   "image_to_3d": "01a1caea-c15a-701b-95e0-4285a55b2435",
+  "remesh": {
+   "24000": "01a1cba4-155c-7597-a768-59804a269042",
+   "2500": "01a1cbc1-1b6e-7557-977d-6f09063a8afa",
+   "8000": "01a1cbbc-997a-7676-b45e-9ddc8cef3aaa"
+  },
   "rig": "01a1caf2-3f5d-7320-a832-655f920ff42f",
   "rig_credits": 5,
   "rig_settings": {
@@ -871,6 +1099,36 @@
    }
   }
  },
+ "dracaena": {
+  "credits": 40,
+  "expires_at": 1794676428986,
+  "image": "masters/v26.0/hall/src/dracaena.png",
+  "image_to_3d": "01a1cb93-a3c6-74f3-ad55-c0644a731090",
+  "remesh": {
+   "12000": "01a1cba9-c6c5-7728-b3f8-b0b330fb4ad4"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 86720012
+  }
+ },
  "fan": {
   "credits": 40,
   "expires_at": 1794667573989,
@@ -902,8 +1160,13 @@
   }
  },
  "fruit": {
+  "credits": 40,
+  "expires_at": 1794668081873,
   "image": "masters/v26.0/props/refs/fruit-2k.png",
   "image_to_3d": "01a1cb10-c206-73b1-9164-76092217a911",
+  "remesh": {
+   "16000": "01a1cb73-eca7-7394-b9d4-47a5cae5bc6e"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -921,6 +1184,39 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 92587836
+  }
+ },
+ "ganesha": {
+  "credits": 40,
+  "expires_at": 1794676712691,
+  "image": "masters/v26.0/hall/src/ganesha.png",
+  "image_to_3d": "01a1cb97-a1ad-7396-92f5-997ce72172d1",
+  "remesh": {
+   "12000": "01a1cbc3-2b93-75fa-99d0-0c74760f8f68"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 89062904
   }
  },
  "hermita": {
@@ -928,6 +1224,11 @@
   "expires_at": 1794666026253,
   "image": "masters/v26.0/people/refs/hermita-a-2k.png",
   "image_to_3d": "01a1caf5-b83c-730a-bdc4-e689e00a0b65",
+  "remesh": {
+   "2500": "01a1cb8d-0965-7787-96b9-606c04457762",
+   "30000": "01a1cb83-c945-7458-9904-1a1c2b29d8b9",
+   "8000": "01a1cb88-82d5-737b-9075-cea0d2351ded"
+  },
   "rig": "01a1cafe-c2b6-7351-b9d5-263c285aa2e6",
   "rig_credits": 5,
   "rig_settings": {
@@ -988,6 +1289,11 @@
   "expires_at": 1794665957523,
   "image": "masters/v26.0/people/refs/hermitb-a-2k.png",
   "image_to_3d": "01a1caf5-c047-775d-beae-add88c36033b",
+  "remesh": {
+   "2500": "01a1cbb2-0ab1-77a9-9b33-b266ff7addb2",
+   "30000": "01a1cb90-c8a7-77c0-8b84-7beff25db36b",
+   "8000": "01a1cbad-4585-7018-884c-4c6e1e8b5cbd"
+  },
   "rig": "01a1cafe-c2e2-722d-8056-040da1fe1bd8",
   "rig_credits": 5,
   "rig_settings": {
@@ -1044,8 +1350,13 @@
   }
  },
  "khantok": {
+  "credits": 40,
+  "expires_at": 1794667966275,
   "image": "masters/v26.0/props/refs/khantok-2k.png",
   "image_to_3d": "01a1cb10-e0b4-733e-bcb3-bf61ab58546c",
+  "remesh": {
+   "10000": "01a1cb7e-3e4c-77f1-8e6d-24b12891090f"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -1063,11 +1374,49 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 84878508
+  }
+ },
+ "kratip": {
+  "credits": 40,
+  "expires_at": 1794678294330,
+  "image": "masters/v26.0/props/refs/kratip-2k.png",
+  "image_to_3d": "01a1cbaf-7052-7756-812d-a002b4d48ac5",
+  "remesh": {
+   "3000": "01a1cbd8-320a-7551-b576-5aebc3f0f7e7"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 93761904
   }
  },
  "lowtable": {
+  "credits": 40,
+  "expires_at": 1794667764030,
   "image": "masters/v26.0/props/refs/lowtable-2k.png",
   "image_to_3d": "01a1cb11-0142-7387-bf4c-f2918a17d3ba",
+  "remesh": {
+   "3000": "01a1cb8c-4ad2-707b-adbf-5bc383b996d7"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -1085,6 +1434,9 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 58025724
   }
  },
  "naga": {
@@ -1117,6 +1469,66 @@
    "glb": 79010676
   }
  },
+ "nagafount": {
+  "credits": 40,
+  "expires_at": 1794676713903,
+  "image": "masters/v26.0/hall/src/nagafount.png",
+  "image_to_3d": "01a1cb97-8e45-719f-b571-5040141efc3b",
+  "remesh": {
+   "40000": "01a1cbb8-5f8b-77b0-987f-36d5e7b6500c"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 108223516
+  }
+ },
+ "nagagreen": {
+  "credits": 40,
+  "expires_at": 1794676644266,
+  "image": "masters/v26.0/hall/src/nagagreen.png",
+  "image_to_3d": "01a1cb97-98cd-71a5-85d2-0573be4f7d87",
+  "remesh": {
+   "30000": "01a1cbbd-872b-759b-b859-f5667027e18c"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 94559960
+  }
+ },
  "nagastaff": {
   "credits": 40,
   "expires_at": 1794667452055,
@@ -1147,6 +1559,36 @@
    "glb": 57935604
   }
  },
+ "nagawhite": {
+  "credits": 40,
+  "expires_at": 1794676363848,
+  "image": "masters/v26.0/hall/src/nagawhite.png",
+  "image_to_3d": "01a1cb93-9b44-75f5-8ae4-cee31a82d523",
+  "remesh": {
+   "24000": "01a1cba4-6aa0-76de-bcc5-24ab27c23702"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 98438620
+  }
+ },
  "parasol": {
   "credits": 40,
   "expires_at": 1794667751010,
@@ -1175,6 +1617,59 @@
   },
   "sizes": {
    "glb": 84052248
+  }
+ },
+ "petalbowl": {
+  "credits": 40,
+  "expires_at": 1794678738733,
+  "image": "masters/v26.0/props/refs/petalbowl-2k.png",
+  "image_to_3d": "01a1cbaf-4668-767c-955e-4b5b78baf0ba",
+  "remesh": {
+   "6000": "01a1cbc7-aa3b-737f-a558-5bc4bda80d49"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 79370240
+  }
+ },
+ "petalsteel": {
+  "failed": "FAILED",
+  "image": "masters/v26.0/props/refs/petalsteel-2k.png",
+  "image_to_3d": "01a1cbaf-51e5-720a-b58f-6531ec39fda2",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
   }
  },
  "pewterbaisri": {
@@ -1242,6 +1737,11 @@
   "expires_at": 1794665221816,
   "image": "masters/v26.0/people/refs/red-a-2k.png",
   "image_to_3d": "01a1caea-d642-73fb-9328-7afe38638844",
+  "remesh": {
+   "2500": "01a1cbbb-9ca5-70d1-b989-32b86b0bbfae",
+   "30000": "01a1cb96-209d-708d-bea0-10c1118dc9f0",
+   "8000": "01a1cbb7-846f-76cd-b78e-97875c7d7ed9"
+  },
   "rig": "01a1caf2-3f67-7758-9c48-94b9ca6624dd",
   "rig_credits": 5,
   "rig_settings": {
@@ -1321,8 +1821,13 @@
   }
  },
  "satinpuff": {
+  "credits": 40,
+  "expires_at": 1794667801763,
   "image": "masters/v26.0/props/refs/satinpuff-2k.png",
   "image_to_3d": "01a1cb10-ec1d-7437-9ddd-15c0dc7bb7d5",
+  "remesh": {
+   "4000": "01a1cb83-075f-75b0-a54f-1607f32dfa5c"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -1340,11 +1845,49 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 47937664
+  }
+ },
+ "seatbench": {
+  "credits": 40,
+  "expires_at": 1794678162443,
+  "image": "masters/v26.0/props/refs/seatbench-2k.png",
+  "image_to_3d": "01a1cbaf-5b4a-71e2-93a4-e853f73ab974",
+  "remesh": {
+   "16000": "01a1cbca-7375-74b8-b583-abd1338e0c44"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 64000044
   }
  },
  "seatchair": {
+  "credits": 40,
+  "expires_at": 1794667840116,
   "image": "masters/v26.0/props/refs/seatchair-2k.png",
   "image_to_3d": "01a1cb10-f5d8-76ee-982a-2b2c71ce05ea",
+  "remesh": {
+   "12000": "01a1cb87-0cea-745d-a4dd-3f7017da7ad4"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -1362,11 +1905,109 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 89172596
+  }
+ },
+ "smallbaisri": {
+  "credits": 40,
+  "expires_at": 1794678481549,
+  "image": "masters/v26.0/props/refs/smallbaisri-2k.png",
+  "image_to_3d": "01a1cbaf-2fa4-71d0-b290-46cb929f1cfb",
+  "remesh": {
+   "8000": "01a1cbbd-6668-749f-a602-17309f3e6b2a"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 90377764
+  }
+ },
+ "soda": {
+  "credits": 40,
+  "expires_at": 1794678115319,
+  "image": "masters/v26.0/props/refs/soda-2k.png",
+  "image_to_3d": "01a1cbaf-8cd6-7415-b3ea-589380a8a07f",
+  "remesh": {
+   "1500": "01a1cbe6-397b-7676-8cb8-28729ac2197a"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 34328360
+  }
+ },
+ "sofa": {
+  "credits": 40,
+  "expires_at": 1794678194941,
+  "image": "masters/v26.0/props/refs/sofa-2k.png",
+  "image_to_3d": "01a1cbaf-3956-7101-a8e9-133b5a59b77b",
+  "remesh": {
+   "8000": "01a1cbc2-c2e2-73c6-bb53-e73df9bd5577"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 69757484
   }
  },
  "sweets": {
+  "credits": 40,
+  "expires_at": 1794667930974,
   "image": "masters/v26.0/props/refs/sweets-2k.png",
   "image_to_3d": "01a1cb10-cdaa-7277-af18-d1b37d6433ce",
+  "remesh": {
+   "8000": "01a1cb79-37bb-74e8-803b-81ef63ec9a2c"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -1384,6 +2025,9 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 82750900
   }
  },
  "ton": {
@@ -1391,6 +2035,11 @@
   "expires_at": 1794664852433,
   "image": "masters/v26.0/people/refs/ton-a-2k.png",
   "image_to_3d": "01a1cae4-fba4-7332-80bd-a33ffd4b4cf9",
+  "remesh": {
+   "2500": "01a1cb9f-8572-707b-893a-ae8f84490b14",
+   "40000": "01a1cb8f-2e10-75eb-8b22-5df1528de03e",
+   "8000": "01a1cb9b-39fd-767d-b84c-56f22b440dab"
+  },
   "rig": "01a1caea-926e-777b-a3c9-a9b74e437866",
   "rig_credits": 5,
   "rig_settings": {
@@ -1494,6 +2143,96 @@
    "glb": 89565364
   }
  },
+ "walllamp": {
+  "credits": 40,
+  "expires_at": 1794676340488,
+  "image": "masters/v26.0/hall/src/walllamp.png",
+  "image_to_3d": "01a1cb93-b877-7242-819e-c0477d6c9be7",
+  "remesh": {
+   "4000": "01a1cbb4-3255-772d-b165-8df0098f4b31"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 56439644
+  }
+ },
+ "water": {
+  "credits": 40,
+  "expires_at": 1794678112995,
+  "image": "masters/v26.0/props/refs/water-2k.png",
+  "image_to_3d": "01a1cbaf-93c0-7574-a5d9-99655380e9e8",
+  "remesh": {
+   "1500": "01a1cbea-f17c-720f-831e-c13192507fe2"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 36716716
+  }
+ },
+ "waterjar": {
+  "credits": 40,
+  "expires_at": 1794676615060,
+  "image": "masters/v26.0/hall/src/waterjar.png",
+  "image_to_3d": "01a1cb93-ac70-73bd-97e2-5f381bbc5b4d",
+  "remesh": {
+   "6000": "01a1cbae-986f-731a-ab66-b4c03edf9721"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 92152212
+  }
+ },
  "wheel": {
   "credits": 40,
   "expires_at": 1794667635813,
@@ -1529,6 +2268,11 @@
   "expires_at": 1794665925275,
   "image": "masters/v26.0/people/refs/white-a-2k.png",
   "image_to_3d": "01a1caf5-c6ae-73e4-b0ab-03f9570bff30",
+  "remesh": {
+   "2500": "01a1cbc4-4677-7213-9c7d-d985b5affa07",
+   "30000": "01a1cb9a-700c-767b-95ff-f18de0f9ace9",
+   "8000": "01a1cbbf-bb95-7448-ad57-986f4df0486f"
+  },
   "rig": "01a1cafe-c3bc-726c-8512-c061b39fc0ce",
   "rig_credits": 5,
   "rig_settings": {

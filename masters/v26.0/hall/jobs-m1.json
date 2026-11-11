@@ -1,0 +1,22 @@
+[
+ {
+  "name": "nagawhite",
+  "image": "masters/v26.0/hall/src/nagawhite.png",
+  "kind": "prop"
+ },
+ {
+  "name": "dracaena",
+  "image": "masters/v26.0/hall/src/dracaena.png",
+  "kind": "prop"
+ },
+ {
+  "name": "waterjar",
+  "image": "masters/v26.0/hall/src/waterjar.png",
+  "kind": "prop"
+ },
+ {
+  "name": "walllamp",
+  "image": "masters/v26.0/hall/src/walllamp.png",
+  "kind": "prop"
+ }
+]

@@ -46,6 +46,27 @@
       many('w3candle', [{ x: -2.95, y: 0, z: -10.25, ry: 0.2 }, { x: 2.95, y: 0, z: -10.25, ry: 1.4 }, { x: -2.2, y: y2, z: -12.2, ry: 0 }, { x: 2.3, y: y2, z: -12.25, ry: 0.8 }], world, 1.25);
       many('w3purple', [{ x: -3.9, y: 0, z: -10.2, ry: 0.5 }, { x: 3.9, y: 0, z: -10.2, ry: 2.2 }], world, 1.1);
       for (const sx of [-1, 1]) solidBox(0.7, 1.5, 0.7, sx * 3.25, 0.75, -11.0);
+      /* THE SMALLER OFFERINGS (photographs 9, 10, 3): small candles in pink and blue along the front edge; candles in
+         clay pots between the bai sri; soda in rows of red, green and orange, and water; baskets of sticky rice; a
+         boiled chicken on its plate; green coconuts; small bai sri at the front corners. One model each: a colour is a
+         turn of its hue, and where each stands is a seeded scatter of a hand's width, so no row is ruled */
+      const rnd = rng(9126), j = (k = 0.03) => (rnd() - 0.5) * 2 * k, turn = () => rnd() * 6.283;
+      const hued = (deg) => (made) => { for (const im of made) hueTurn(im.material, deg); };
+      const smalls = []; for (let x = -2.31; x <= 2.32; x += 0.33) smalls.push({ x: x + j(0.02), y: y0, z: -10.09 + j(0.012), ry: turn() });
+      many('w3candlesmall', smalls.filter((_, i) => i % 2 === 0), world, 0.24);                    // pink, as made
+      many('w3candlesmall', smalls.filter((_, i) => i % 2 === 1), world, 0.24, hued(-118));        // and blue
+      many('w3candlemid', [-1.62, -0.82, 0.86, 1.64].map(x => ({ x: x + j(), y: y1, z: zm - 0.3 + j(), ry: turn() }))
+        .concat([{ x: -0.5, y: y2, z: zb - 0.22, ry: 0 }, { x: 0.55, y: y2, z: zb - 0.2, ry: 1 }]), world, 0.66);
+      const rows = (x0, zs, xs) => { const L = []; for (const z of zs) for (const dx of xs) L.push({ x: x0 + dx + j(0.006), y: y0, z: z + j(0.006), ry: turn() }); return L; };
+      const sodaZ = [-10.33, -10.42, -10.51];
+      many('w3soda', rows(0.02, sodaZ, [-0.09]), world, 0.22);                                    // red
+      many('w3soda', rows(0.02, sodaZ, [0]), world, 0.22, hued(112));                             // green
+      many('w3soda', rows(0.02, sodaZ, [0.09]), world, 0.22, hued(26));                           // orange
+      many('w3water', rows(0.98, [-10.34, -10.43], [-0.045, 0.045]), world, 0.21);
+      many('w3kratip', [{ x: -0.98, y: y0, z: -10.36, ry: 0.4 }, { x: -0.84, y: y0, z: -10.45, ry: 2.0 }, { x: -1.02, y: y0, z: -10.52, ry: 4.1 }], world, 0.14);
+      many('w3chicken', [{ x: 1.62, y: y0, z: -10.42, ry: 0.5 }], world, 0.3);
+      many('w3coconut', [{ x: -1.68, y: y0, z: -10.36, ry: 0.3 }, { x: -1.5, y: y0, z: -10.5, ry: 2.6 }, { x: 0.36, y: y1, z: zm + 0.3, ry: 1.2 }], world, 0.19);
+      many('w3smallbaisri', [{ x: -2.3, y: y0, z: -10.46, ry: 0.6 }, { x: 2.3, y: y0, z: -10.46, ry: 2.4 }], world, 0.38);
     }
 
     /* a plain folding table (a white top on blue steel legs: photographs 11, 12). A stand-in drawn in code until its
@@ -86,8 +107,9 @@
     function buildTents() {
       const opts = { valance: 0xf4f4f0, swagCols: [0x1ca548, 0xf4f4f0] };
       for (const T0 of [TENT_W1, TENT_W2, TENT_E]) { const C = tent(T0.x, T0.z, opts); for (const [x, z] of C) solidBox(0.16, 2.2, 0.16, x, 1.1, z); }
-      /* west tent 1: the hermit in brown, the master in red and the second master in white on pale green sofas, facing
-         east; straw mats and a striped mat before them */
+      /* west tent 1: the hermit in brown and the master in red on pale green sofas, facing east (a third sofa stands
+         empty: the second master in white sits with Grandmaster Pho, photographs 1 and 5); straw mats and a striped
+         mat before them */
       rug(mMat, -8.1, -1.0, 3.6, 1.8, Math.PI / 2); rug(mStripe, -7.0, -0.3, 1.9, 0.9, Math.PI / 2, 0.009);
       many('w3sofa', [{ x: -10.25, y: 0, z: -2.2, ry: Math.PI / 2 }, { x: -10.25, y: 0, z: -0.95, ry: Math.PI / 2 }, { x: -10.25, y: 0, z: 0.3, ry: Math.PI / 2 }], world, 0.9);
       solidBox(1.0, 1.4, 3.9, -10.3, 0.7, -0.95);
@@ -99,22 +121,42 @@
       solidBox(1.0, 1.4, 1.5, -10.3, 0.7, 5.0);
       /* the east tent: the monks' row, the naga staff and the peacock fan, low round trays with coconuts and water */
       rug(mMat, 8.1, -2.0, 3.6, 1.8, Math.PI / 2);
-      many('w3chair', [{ x: 10.2, y: 0, z: -3.2, ry: -Math.PI / 2 }, { x: 10.2, y: 0, z: -2.0, ry: -Math.PI / 2 }, { x: 10.2, y: 0, z: -0.8, ry: -Math.PI / 2 }], world, 1.15);
+      many('w3chair', [-3.2, -2.0, -0.8].map(z => ({ x: 10.2, y: 0, z, ry: -Math.PI / 2, s: 1.11 })), world, 1.28);   // (a tall carved armchair, drawn at 1.28 m: its seat 0.43 m up)
       solidBox(0.9, 1.4, 3.6, 10.25, 0.7, -2.0);
       many('w3khantok', [{ x: 9.2, y: 0, z: -2.6, ry: 0.4 }, { x: 9.2, y: 0, z: -1.2, ry: 1.9 }], world, 0.25);
       stand('w3nagastaff', 10.55, 0, -3.75, 0.3); stand('w3fan', 10.5, 0.02, -0.15, -1.2);
       /* THE CHIEF CANOPY (photographs 1, 5, 6): a dark top, a valance of gold and lime in swags, one pole wrapped in
          puffs of lime cloth; maroon carpets deep in petals; his bench, a carved chair, a low dark table */
-      const C = tent(CHIEF.x, CHIEF.z, { w: CHIEF.w, eave: CHIEF.eave, peak: CHIEF.peak, roof: satinRoof(0x23301f), valance: 0xd8a41c, swags: 4, swagCols: [0xb6d62e, 0xe2a61a] });
+      /* (its drapes are deep: photographs 5 and 6 are taken under them, and what fills their top is swags of lime, gold
+         and orange satin, not the dark cloth over them) */
+      const C = tent(CHIEF.x, CHIEF.z, { w: CHIEF.w, eave: CHIEF.eave, peak: CHIEF.peak, ry: CHIEF.ry, roof: satinRoof(0x23301f, 0x141c16), valance: 0xd8a41c, band: 0.4,
+        swags: 3, swagCols: [0xb6d62e, 0xe2a61a, 0xf08a1c], swagDepth: 0.8, swagDrop: 0.36, swagStep: 1 });
       for (const [x, z] of C) solidBox(0.16, 2.2, 0.16, x, 1.1, z);
-      many('w3puff', [0, 1, 2].map(k => ({ x: C[3][0], y: 0.02 + k * 0.72, z: C[3][1], ry: k * 1.1 })), world, 0.75);   // the north-west pole, the one the turf sees
-      rug(mCarpet, 5.2, 8.2, 2.4, 1.6, BENCH.ry + Math.PI / 2); rug(mCarpet, 3.9, 6.9, 2.4, 1.6, BENCH.ry + Math.PI / 2 + 0.06, 0.009);
-      stand('w3bench', BENCH.x, 0, BENCH.z, BENCH.ry);
-      solidBox(1.9, 1.4, 0.75, BENCH.x, 0.7, BENCH.z, BENCH.ry);
-      stand('w3chair', 7.75, 0, 8.35, BENCH.ry - 0.35);
-      stand('w3lowtable', 5.75, 0, 9.95, BENCH.ry + 0.2);
-      many('w3petalbowl', [{ x: 5.75, y: 0.42, z: 9.95, ry: 0 }, { x: 7.35, y: 0, z: 9.3, ry: 1 }], world, 0.3);
-      many('w3purple', [{ x: 8.05, y: 0, z: 7.05, ry: 2.0 }], world, 1.1);
+      /* THE LIME POLE (photographs 1, 5, 6): the canopy's front right pole, the one before the bench's right hand, wrapped
+         from the ground to the eave in seven gathered tiers of lime cloth, each wider than it is tall and a little
+         narrower than the one under it. The model is one puff of white satin (0.75 m tall, 0.52 across): each is drawn
+         wider and pressed down to 0.46 m about its own foot, and tinted */
+      { const [px, pz] = C[0], tiers = [0, 1, 2, 3, 4, 5, 6].map(k => ({ x: px, y: 0.01 + k * 0.31, z: pz, ry: k * 1.9, s: 1.22 - k * 0.04 }));   // (each 0.46 m tall on a rise of 0.31: they overlap, and no pole shows between)
+        many('w3puff', tiers, world, 0.75, (made) => { const m4 = new THREE.Matrix4(), sq = new THREE.Matrix4();
+          for (const im of made) { im.material.color.set(0xa6d82a);
+            tiers.forEach((t, i) => { im.getMatrixAt(i, m4);
+              sq.makeTranslation(0, t.y, 0).multiply(m4.clone().makeScale(1, 0.46 / (0.75 * t.s), 1)).multiply(new THREE.Matrix4().makeTranslation(0, -t.y, 0));
+              im.setMatrixAt(i, sq.multiply(m4)); });
+            im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere(); } }); }
+      /* his bench (brown hardwood: the model came lacquer red, its hue turned and darkened here), drawn 2.05 m long for
+         two; the low table at his right hand's front with a bowl of petals and a bai sri set down on it; a carved chair
+         beyond it; maroon carpets before the bench where people kneel; purple flowers at both ends */
+      const BA = (a, b) => benchAt(a, b), along = BENCH.ry + Math.PI / 2;
+      { const [x1, z1] = BA(0.15, 1.95), [x2, z2] = BA(-1.95, 1.8); rug(mCarpet, x1, z1, 2.4, 1.6, along); rug(mCarpet, x2, z2, 2.4, 1.6, along + 0.07, 0.009); }
+      stand('w3bench', BENCH.x, 0, BENCH.z, BENCH.ry, { s: 1.1, done: (m) => { m.scale.x *= 1.24; m.traverse(q => { if (q.isMesh) { hueTurn(q.material, 17); q.material.color.multiplyScalar(0.72); } }); } });
+      solidBox(2.2, 1.4, 0.8, BENCH.x, 0.7, BENCH.z, BENCH.ry);
+      { const [x, z] = BA(2.25, -0.05); stand('w3chair', x, 0, z, BENCH.ry - 0.25, { s: 1.11 }); solidBox(0.9, 1.4, 0.9, x, 0.7, z, BENCH.ry); }
+      const TB = BA(1.05, 1.1);
+      stand('w3lowtable', TB[0], 0, TB[1], BENCH.ry + 0.12); solidBox(1.05, 1.0, 1.05, TB[0], 0.5, TB[1], BENCH.ry);
+      { const [bx, bz] = BA(0.82, 1.28), [gx, gz] = BA(0.1, 0.72), [wx, wz] = BA(1.28, 0.98);
+        many('w3petalbowl', [{ x: bx, y: 0.38, z: bz, ry: 0 }, { x: gx, y: 0, z: gz, ry: 1 }], world, 0.3);
+        many('w3pewter', [{ x: wx, y: 0.38, z: wz, ry: 0.8 }], world, 0.5); }
+      { const [ax, az] = BA(-1.55, 0.15), [cx2, cz2] = BA(2.95, 0.7); many('w3purple', [{ x: ax, y: 0, z: az, ry: 2.0 }, { x: cx2, y: 0, z: cz2, ry: 0.4 }], world, 1.1); }
     }
 
     /* ================================================================ THE BANNERS, THE POLE, THE FLAGS (photographs 8, 10)
@@ -254,10 +296,10 @@
     const mix = (...fs) => (rnd) => fs[Math.floor(rnd() * fs.length) % fs.length](rnd);
     function buildPetals() {
       /* day one: before the chief bench, before the two west tents and the east one, and at the tables' front */
-      petalField(LOW ? 1500 : 2600, 5101, mix(around(4.6, 7.6, 2.6), around(4.6, 7.6, 1.5), around(-7.6, -0.8, 2.2), around(-7.6, 5.0, 1.7), around(7.6, -2.0, 2.0), around(0, -9.3, 2.6)), dayOne);
+      petalField(LOW ? 1500 : 2600, 5101, mix(around(5.7, 8.7, 2.6), around(5.7, 8.7, 1.5), around(-7.6, -0.8, 2.2), around(-7.6, 5.0, 1.7), around(7.6, -2.0, 2.0), around(0, -9.3, 2.6)), dayOne);
       /* day two: yesterday's petals everywhere, trodden into the turf */
       petalField(LOW ? 3200 : 5600, 5102, mix((rnd) => [TURF.x0 + rnd() * (TURF.x1 - TURF.x0), TURF.z0 + rnd() * (TURF.z1 - TURF.z0)],
-        around(4.6, 7.6, 3.2), around(-7.6, -0.8, 2.8), around(7.6, -2.0, 2.6), around(0, -9.3, 3.0), around(0, 1.5, 6)), dayTwo);
+        around(5.7, 8.7, 3.2), around(-7.6, -0.8, 2.8), around(7.6, -2.0, 2.6), around(0, -9.3, 3.0), around(0, 1.5, 6)), dayTwo);
     }
 
     /* ================================================================ PAINTED SHADOW (v9.3, v9.4)
@@ -293,7 +335,7 @@
       /* a standing box: its foot, its top's shade, and the four sides between */
       const boxS = (x0, z0, x1, z1, h) => { const F = [[x0, z0], [x1, z0], [x1, z1], [x0, z1]]; poly(F, 0); poly(F, h);
         for (let i = 0; i < 4; i++) { const p = F[i], q = F[(i + 1) % 4]; x.beginPath(); x.moveTo(X(p[0]), Z(p[1])); x.lineTo(X(q[0]), Z(q[1])); x.lineTo(X(q[0] + sx * h), Z(q[1] + sz * h)); x.lineTo(X(p[0] + sx * h), Z(p[1] + sz * h)); x.closePath(); x.fill(); } };
-      const tentS = (T0, w, e) => poly([[T0.x - w / 2, T0.z - w / 2], [T0.x + w / 2, T0.z - w / 2], [T0.x + w / 2, T0.z + w / 2], [T0.x - w / 2, T0.z + w / 2]], e + 0.3);
+      const tentS = (T0, w, e) => poly(tentCorners(T0.x, T0.z, w, T0.ry || 0), e + 0.3);
       for (const T0 of [TENT_W1, TENT_W2, TENT_E]) tentS(T0, TENT.w + 0.2, TENT.eave);
       tentS(CHIEF, CHIEF.w + 0.2, CHIEF.eave);
       boxS(TABLES.x0, TABLES.z0, TABLES.x1, TABLES.z1, 1.2);
@@ -331,7 +373,7 @@
     buildBanners();
     buildPole();
     flush();
-    dressTables();
+    dressTables(); dressHall();
     buildTrees();
     buildPetals();
     buildShade();

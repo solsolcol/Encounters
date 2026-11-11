@@ -1,0 +1,21 @@
+{
+ "_note": "Higgsfield (GPT Image) jobs for the hall of photographs 13 to 16: props are references on white (max for the statues, high for plants and the lamp), surfaces are tileable pictures (high, 2k). The crops that went in as image references are objects and surfaces only (no person, no lettering). Prompts: masters/v26.0/hall/PROMPTS.txt.",
+ "refs": {
+  "nagafount": "e65a93c2-10dc-43ad-84a0-ab110c72a53a",
+  "nagawhite": "7f65330a-735d-471c-9382-616950664464",
+  "dracaena": "f3766eb8-e3ad-4d04-8b44-1e413dea4cbc",
+  "waterjar": "7f7438fe-e4d1-451c-a6da-73f9f4b05f17",
+  "walllamp": "62c7f100-839e-4d6e-82f9-5e0e2c6801a2",
+  "nagagreen": "6f243ca8-676b-40fc-990e-89b260482d69",
+  "ganesha": "8c12b9b7-bc07-4dc5-b6db-27b407578ab8",
+  "croton": "8ded759a-1e87-4d85-ba14-2b6a68f2b3c2"
+ },
+ "tex": {
+  "redroof": "6064e484-1659-45d9-bec8-7ed65e52bf4d",
+  "hallbrick": "f89e36b1-0ff3-44d7-9896-7ba3ceb70421",
+  "lawn": "7b59752d-0444-451d-aff3-748723c397c1",
+  "steptile": "efc5dff6-4c95-4f60-a97e-ca1994223bd2",
+  "kalae": "44241c1d-de4d-42a7-b805-d301ed4e1b19",
+  "fretwork": "16d94e20-d9e1-4c86-b4f4-3bb53f7c358e"
+ }
+}

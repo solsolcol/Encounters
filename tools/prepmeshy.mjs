@@ -227,6 +227,9 @@ if (process.env.DEFLAT) for (const m of root.listMeshes()) for (const p of m.lis
   p.setAttribute('NORMAL', doc.createAccessor().setType('VEC3').setArray(N).setBuffer(root.listBuffers()[0]));
 }
 /* the sheets: every one kept, as JPEG */
+/* (v26.0) NONORMAL=1: the normal sheet is not kept (a small thing among dozens on a table, never seen from a hand's
+   length: its colour carries it). Unset, every sheet is kept as before */
+if (process.env.NONORMAL) for (const m of root.listMaterials()) m.setNormalTexture(null);
 let shellMask = null, maskW = 0, maskH = 0;
 for (const m of root.listMaterials()) {
   for (const [tx, q] of [[m.getBaseColorTexture(), 88], [m.getMetallicRoughnessTexture(), 88], [m.getNormalTexture(), 92]]) {
@@ -295,7 +298,11 @@ for (const m of root.listMaterials()) {
     /* (v24.26) PXMR: the metal-roughness sheet's own size (default PX). The cars at 2048 (Chad: "Why are the cars ... so
        low res and compressed"): halving their base colour blurs the lamps and halving their normal crumples the hood and
        the glass, while the metal-roughness at 1024 is identical on screen (each map shrunk alone, photographed) */
-    const px = process.env.PXMR && tx === m.getMetallicRoughnessTexture() ? Number(process.env.PXMR) : PX;
+    /* (v26.0) PXN: the normal sheet's own size (default PX), for a thing whose colour is seen close and whose surface
+       is not (episode 4 chapter 3's table stock: a sheet with its mipmaps is a third as much again of GPU memory, and a
+       ground of sixty things cannot hold three full sheets each on a phone). Unset, nothing changes */
+    const px = process.env.PXMR && tx === m.getMetallicRoughnessTexture() ? Number(process.env.PXMR)
+             : process.env.PXN && tx === m.getNormalTexture() ? Number(process.env.PXN) : PX;
     const out = await src.resize(px, px, { fit: 'inside', withoutEnlargement: true }).jpeg({ quality: q }).toBuffer();
     tx.setImage(out).setMimeType('image/jpeg').setURI(''); tx.__done = true;
   }

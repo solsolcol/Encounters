@@ -1,25 +1,13 @@
 
   /* ====================================================== THIS CHAPTER'S DRAWN SURFACES
      Flat things with holes in them that are drawn, not modelled (the plan's §6.3: cloth, woven things and wire): the
-     white fretwork under the hall's eaves, the lattice of the fence, a louvred window, and one handful of petals. */
+     lattice of the fence, a louvred window, and one handful of petals. */
   function done(THREE, c, rep) {
     const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
     if (rep) { t.wrapS = t.wrapT = THREE.RepeatWrapping; }
     return t;
   }
-  /* the fretwork: a board of pointed drops with a round hole in each, repeating sideways */
-  function makeFretwork(THREE, cnv) {
-    const [c, x] = cnv(256); c.height = 128; x.clearRect(0, 0, 256, 128);
-    x.fillStyle = '#ffffff';
-    for (let i = 0; i < 4; i++) {
-      const u = i * 64;
-      x.beginPath(); x.moveTo(u, 0); x.lineTo(u + 64, 0); x.lineTo(u + 64, 58); x.quadraticCurveTo(u + 50, 70, u + 32, 124); x.quadraticCurveTo(u + 14, 70, u, 58); x.closePath(); x.fill();
-      x.globalCompositeOperation = 'destination-out';
-      x.beginPath(); x.arc(u + 32, 50, 11, 0, 6.283); x.fill(); x.beginPath(); x.arc(u + 32, 86, 5, 0, 6.283); x.fill();
-      x.globalCompositeOperation = 'source-over';
-    }
-    return done(THREE, c, true);
-  }
+  /* (the hall's fretwork is a picture cut from his photograph now: the surface `fretwork`) */
   /* the fence's lattice: thin white laths crossed on the diagonal */
   function makeLattice(THREE, cnv) {
     const [c, x] = cnv(256); x.clearRect(0, 0, 256, 256);

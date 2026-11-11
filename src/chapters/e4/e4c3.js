@@ -176,18 +176,32 @@
 
     /* (the list is long and grows with the build: one line a kind) */
     assets: [
-      /* the people made for this chapter (masters/v26.0/make.sh §1 to §3) */
-      /* this chapter's things, each from a crop of his photograph (masters/v26.0/make.sh §4) */
-      'w3baisri', 'w3naga', 'w3wheel', 'w3parasol', 'w3tower', 'w3candle', 'w3fan', 'w3nagastaff', 'w3pewter',
-      /* the ground's surfaces (masters/v26.0/tex) */
-      'w3t_turf', 'w3t_earth', 'w3t_gravel', 'w3t_rooftile', 'w3t_redplank', 'w3t_tin', 'w3t_timber', 'w3t_swag',
-      'w3t_petalturf', 'w3t_brick', 'w3t_skirt', 'w3t_satin', 'w3t_mat', 'w3t_carpet', 'w3t_banner', 'w3t_treeline',
+      /* the people, the things and the surfaces made for this chapter (masters/v26.0/make.sh) */
+      /* >>> this chapter's own keys: written by masters/v26.0/keys.py (edit its table, not this list) >>> */
+      'e4ton', 'e4tonm', 'e4tonf', 'e4tonh', 'e4bench', 'e4benchm', 'e4benchf', 'e4benchh', 'e4hermita',
+      'e4hermitam', 'e4hermitaf', 'e4hermitb', 'e4hermitbm', 'e4hermitbf', 'e4red', 'e4redm', 'e4redf', 'e4white',
+      'e4whitem', 'e4whitef', 'e4dancera', 'e4danceram', 'e4danceraf', 'e4dancerb', 'e4dancerbm', 'e4dancerbf',
+      'e4deva', 'e4devam', 'e4devaf', 'e4devb', 'e4devbm', 'e4devbf', 'e4devc', 'e4devcm', 'e4devcf', 'e4devd',
+      'e4devdm', 'e4devdf', 'e4deve', 'e4devem', 'e4devef', 'e4devf', 'e4devfm', 'e4devff', 'e4devg', 'e4devgm',
+      'e4devgf', 'e4devh', 'e4devhm', 'e4devhf', 'pho', 'phof', 'w3baisri', 'w3naga', 'w3wheel', 'w3parasol',
+      'w3tower', 'w3candle', 'w3fan', 'w3nagastaff', 'w3pewter', 'w3purple', 'w3fruit', 'w3sweets', 'w3khantok',
+      'w3puff', 'w3chair', 'w3lowtable', 'w3bench', 'w3sofa', 'w3petalbowl', 'w3petalsteel', 'w3smallbaisri',
+      'w3candlemid', 'w3candlesmall', 'w3kratip', 'w3chicken', 'w3coconut', 'w3soda', 'w3water', 'w3nagafount',
+      'w3nagagreen', 'w3nagawhite', 'w3ganesha', 'w3croton', 'w3dracaena', 'w3waterjar', 'w3walllamp', 'w3t_turf',
+      'w3t_petalturf', 'w3t_earth', 'w3t_gravel', 'w3t_redplank', 'w3t_tin', 'w3t_brick', 'w3t_skirt', 'w3t_satin',
+      'w3t_mat', 'w3t_carpet', 'w3t_swag', 'w3t_banner', 'w3t_treeline', 'w3t_redroof', 'w3t_hallbrick',
+      'w3t_steptile', 'w3t_lawn', 'w3t_kalae', 'w3t_fretwork', 'w3t_sign',
+      /* <<< this chapter's own keys <<< */
       /* the trees of this episode's first chapter (reuseInEpisode) */
-      'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd'
+      'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd',
+      /* Chad's monk as episode 3 has him (reuse). (Grandmaster Pho, Chad's own model, cast here for the first time, is
+         in the keys above.) */
+      'monkshop', 'monkrow'
     ],
     /* FRESH (chaptertest) asks a chapter of episode 4 to declare what it takes from episodes 1 to 3 (`reuse`), and what
        it shares with the chapters of its own episode (`reuseInEpisode`): Chad, v17.4, "any reuse is declared" */
-    reuse: {},
+    reuse: { monkshop: "Chad's monk, for the three monks who sit under the east tent as monks sit at a real Wai Kru (photograph 2): the one monk he has made, as episode 3 chapter 3's shop wears him",
+             monkrow: "the same monk's light cut (episode 3 chapter 2's row), drawn for those three when they are far across the turf" },
     reuseInEpisode: { e4raintree: "the rain tree of chapter 1's countryside, standing round the ground: the same country's trees, and no tree is built in code (v24.20)",
                       e4mango: "the mango of chapter 1's countryside, likewise",
                       e4raintreehd: "the same rain tree at its fuller level, for the one that stands over the turf",
@@ -292,12 +306,24 @@
     const WHEEL = { x: 0, z: -12.0 };
     const PARASOL = { x: 0, z: -12.75 };
     const POLE = { x: 0.6, z: -13.6, h: 10 };
-    const HALL = { x0: -5, x1: 5, z0: -25, z1: -17, eave: 3.2, ridge: 6.0, over: 1.0 };
+    /* photographs 13 to 16; its front 9 m behind the tables (8, 10). Measured on 15, the front square on: the skirt rises
+       1.5 m and the gable 2.2 m above it, the gable's foot is 6.6 m wide; from 16 the skirt is steep enough to show its
+       tiles to a man standing before it, so both tiers are pitched at about thirty degrees */
+    const HALL = { x0: -5, x1: 5, z0: -29.7, z1: -21.7, floor: 0.48, wall: 3.1, over: 1.6, overS: 0.9, rise: 1.5, pitch: 30 * Math.PI / 180, gable: 2.2 };
     const SHED = { x0: -16, x1: -10.5, z0: -14, z1: -8, eave: 2.4 };
     const TENT_W1 = { x: -9, z: -1 }, TENT_W2 = { x: -9, z: 5 }, TENT_E = { x: 9, z: -2 };
     const TENT = { w: 4, eave: 2.2, peak: 3.3 };
-    const CHIEF = { x: 6, z: 9, w: 4.5, eave: 2.3, peak: 3.1 };                // Grandmaster Pho's canopy; his bench faces north-west
-    const BENCH = { x: 6.6, z: 9.6, ry: Math.atan2(-1, -1) + Math.PI };        // where he sits, turned to the turf's middle
+    /* HIS BENCH (photographs 1, 5, 6, read together): it stands at the canopy's south side and FACES THE OFFERING TABLES
+       AND THE HALL (photograph 1 is taken over its back rail: the hall stands ahead, the west tents to the left, the
+       lime pole at the front right), a little west of north. Two sit on it: he at its east end, the second master in
+       white at his left. People kneel before it, to its north. (My first reading had it facing north-west.) A body and
+       a seat face +z at a turn of 0. `benchAt(a, b)`: a point a metres to the sitters' right and b metres before them */
+    const BENCH = { x: 5.9, z: 9.2, ry: Math.atan2(-0.3, -1) };
+    const benchAt = (a, b) => { const fx = Math.sin(BENCH.ry), fz = Math.cos(BENCH.ry); return [BENCH.x - fz * a + fx * b, BENCH.z + fx * a + fz * b]; };
+    /* HIS CANOPY stands square to the bench, and its front right pole (the one wrapped in lime) is 1.65 m to the
+       sitters' right and 1.75 m before them: measured on photograph 1, where that pole fills a quarter of the frame's
+       height 2.9 m from the lens. So the bench sits under the canopy's back half, against the buildings behind */
+    const CHIEF = (() => { const [x, z] = benchAt(1.65 - 2.25, 1.75 - 2.25); return { x, z, w: 4.5, eave: 2.3, peak: 3.1, ry: BENCH.ry }; })();
     const HOUSE = { x: 12.5, z0: -7, z1: 6, h: 5.2 };
     const PLANK = { x0: 8.5, x1: 13, z: 11.5 };
     const GREY = { x0: 0, x1: 8.5, z: 13.2, h: 4.2 };
@@ -455,9 +481,11 @@
        by its repeat. `tile` is the size of one tile in metres (the geometry's UVs are metres). */
     const SURF = {
       turf: [0x3f9a22, 'image/jpeg'], petalturf: [0x9a9c2c, 'image/jpeg'], earth: [0xb0663e, 'image/jpeg'], gravel: [0x9b968d, 'image/jpeg'],
-      rooftile: [0xc66f63, 'image/jpeg'], redplank: [0x8a2c26, 'image/jpeg'], tin: [0xcb8083, 'image/jpeg'], timber: [0x57392a, 'image/jpeg'],
+      redplank: [0x8a2c26, 'image/jpeg'], tin: [0xcb8083, 'image/jpeg'],
       brick: [0x96573f, 'image/jpeg'], skirt: [0x1f9c3a, 'image/jpeg'], satin: [0xe9e9e9, 'image/jpeg'], mat: [0xc7b78a, 'image/jpeg'],
-      carpet: [0x74202a, 'image/jpeg'], swag: [0xf2f0e4, 'image/webp'], banner: [0xe8e8e8, 'image/webp'], treeline: [0x4c7a3a, 'image/webp']
+      carpet: [0x74202a, 'image/jpeg'], swag: [0xf2f0e4, 'image/webp'], banner: [0xe8e8e8, 'image/webp'], treeline: [0x4c7a3a, 'image/webp'],
+      redroof: [0xc8483f, 'image/jpeg'], hallbrick: [0x9a4f3f, 'image/jpeg'], steptile: [0xc98c80, 'image/jpeg'], lawn: [0x5c9a35, 'image/jpeg'],
+      kalae: [0x5a4a40, 'image/webp'], fretwork: [0x7a2a26, 'image/webp'], sign: [0xece8dc, 'image/webp']
     };
     const surfTex = new Map();
     function surfLoad(name) {
@@ -472,8 +500,9 @@
        once: its piece is drawn with tile = its own size), tint, basic (unlit), cut (its holes cut out), and whatever else
        a material takes */
     function surf(name, o = {}) {
-      const { tile = 1, mirror = '', tint = null, basic = false, cut = false, clampV = false, clamp = false, ...rest } = o;
-      const avg = new THREE.Color(SURF[name][0]); if (tint != null) avg.multiply(new THREE.Color(tint));
+      const { tile = 1, mirror = '', tint = null, gain = null, basic = false, cut = false, clampV = false, clamp = false, ...rest } = o;
+      const lift = (c) => { if (gain != null) { const k = Array.isArray(gain) ? gain : [gain, gain, gain]; c.r *= k[0]; c.g *= k[1]; c.b *= k[2]; } return c; };
+      const avg = lift(new THREE.Color(SURF[name][0])); if (tint != null) avg.multiply(new THREE.Color(tint));
       const base = { color: avg, ...rest };
       if (!basic) { if (base.roughness == null) base.roughness = 0.9; if (base.metalness == null) base.metalness = 0; }
       if (cut) { base.alphaTest = 0.5; base.side = THREE.DoubleSide; }
@@ -485,7 +514,23 @@
         t.wrapS = clamp ? THREE.ClampToEdgeWrapping : /u/.test(mirror) ? THREE.MirroredRepeatWrapping : THREE.RepeatWrapping;
         t.wrapT = clamp || clampV ? THREE.ClampToEdgeWrapping : /v/.test(mirror) ? THREE.MirroredRepeatWrapping : THREE.RepeatWrapping;
         t.repeat.set(1 / tu, -1 / tv); t.offset.set(0, 1);
-        m.map = t; m.color.set(tint != null ? tint : 0xffffff); m.needsUpdate = true;
+        m.map = t; lift(m.color.set(tint != null ? tint : 0xffffff)); m.needsUpdate = true;
+      });
+      return m;
+    }
+    /* a surface's picture with its own holes and ONE flat colour (a fretwork painted pale grey: the cut-out is the
+       picture's, the paint is not). The picture is drawn once onto a canvas and filled through its own alpha */
+    function surfFlat(name, css, o = {}) {
+      const { tile = 1, clampV = false, clamp = false, ...rest } = o;
+      const m = M({ color: css, roughness: 0.85, metalness: 0, alphaTest: 0.5, side: THREE.DoubleSide, ...rest });
+      surfLoad(name).then(t0 => {
+        if (!t0 || !alive || !t0.image) return;
+        const im = t0.image, c = document.createElement('canvas'); c.width = im.width; c.height = im.height;
+        const x = c.getContext('2d'); x.drawImage(im, 0, 0); x.globalCompositeOperation = 'source-in'; x.fillStyle = '#ffffff'; x.fillRect(0, 0, c.width, c.height);
+        const t = tex(new THREE.CanvasTexture(c)); t.colorSpace = THREE.SRGBColorSpace; t.flipY = false;
+        const tu = Array.isArray(tile) ? tile[0] : tile, tv = Array.isArray(tile) ? tile[1] : tile;
+        t.wrapS = clamp ? THREE.ClampToEdgeWrapping : THREE.RepeatWrapping; t.wrapT = clamp || clampV ? THREE.ClampToEdgeWrapping : THREE.RepeatWrapping;
+        t.repeat.set(1 / tu, -1 / tv); t.offset.set(0, 1); m.map = t; m.needsUpdate = true;
       });
       return m;
     }
@@ -511,6 +556,19 @@
       const lu = Math.hypot(ax, az) || Math.hypot(ax, ay, az), hu = Math.hypot(dx, dz);
       const U = [[u0, v0], [u0 + lu, v0 + ay], [u0 + hu, v0 + dy]];
       [a, b, c].forEach((p, i) => { Bt.p.push(p[0], p[1], p[2]); Bt.n.push(nx, ny, nz); Bt.u.push(U[i][0], U[i][1]); });
+    }
+    /* a flat piece of any number of corners (anticlockwise from its front), its UVs true metres: u along its first edge,
+       v up the piece. A hip roof's trapezoid drawn as a quad() would squeeze its tiles toward the hip. */
+    function planar(mat, pts, u0 = 0, v0 = 0) {
+      const Bt = batchOf(mat), a = pts[0], b = pts[1], c = pts[2];
+      const ux = b[0] - a[0], uy = b[1] - a[1], uz = b[2] - a[2], ul = Math.hypot(ux, uy, uz) || 1, ex = ux / ul, ey = uy / ul, ez = uz / ul;
+      let nx = uy * (c[2] - a[2]) - uz * (c[1] - a[1]), ny = uz * (c[0] - a[0]) - ux * (c[2] - a[2]), nz = ux * (c[1] - a[1]) - uy * (c[0] - a[0]);
+      const nl = Math.hypot(nx, ny, nz) || 1; nx /= nl; ny /= nl; nz /= nl;
+      const vx = ny * ez - nz * ey, vy = nz * ex - nx * ez, vz = nx * ey - ny * ex;
+      for (let i = 1; i < pts.length - 1; i++) for (const q of [pts[0], pts[i], pts[i + 1]]) {
+        const dx = q[0] - a[0], dy = q[1] - a[1], dz = q[2] - a[2];
+        Bt.p.push(q[0], q[1], q[2]); Bt.n.push(nx, ny, nz); Bt.u.push(u0 + dx * ex + dy * ey + dz * ez, v0 + dx * vx + dy * vy + dz * vz);
+      }
     }
     const floor = (mat, x0, z0, x1, z1, y = 0) => quad(mat, [x0, y, z1], [x1, y, z1], [x1, y, z0], [x0, y, z0], x0, -z1);
     /* an upright piece from (x0, z0) to (x1, z1): it faces the left of that way (west to east faces south) */
@@ -584,6 +642,16 @@
       }).catch(err => { console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
       return g;
     }
+    /* A HUE TURNED in a material (one soda bottle in red, orange and green; one small candle in pink and blue): the
+       picture's own colour is turned about the grey axis before the light falls on it, so whites, blacks and greys
+       stay as they are. A program of its own for each angle (compiled under the curtain with the rest: v14.15) */
+    function hueTurn(mat, deg) {
+      const a = deg * Math.PI / 180, uHue = { value: new THREE.Vector2(Math.cos(a), Math.sin(a)) };
+      mat.onBeforeCompile = (sh) => { sh.uniforms.uHue = uHue;
+        sh.fragmentShader = 'uniform vec2 uHue;\n' + sh.fragmentShader.replace('#include <map_fragment>', '#include <map_fragment>\n{ vec3 hk = vec3(0.57735); vec3 hv = diffuseColor.rgb; diffuseColor.rgb = hv * uHue.x + cross(hk, hv) * uHue.y + hk * dot(hk, hv) * (1.0 - uHue.x); }'); };
+      mat.customProgramCacheKey = () => 'hueTurn';
+      mat.needsUpdate = true;
+    }
     /* many of one thing (the copied manyOf), asked for only once its file is in the build */
     function many(key, list, parent = world, size = 0.3, done = null) {
       if (!list.length) return;
@@ -600,6 +668,10 @@
       floor(mEarth, -46, -46, 46, 46, -0.012);
       floor(mTurf, TURF.x0, TURF.z0, TURF.x1, TURF.z1, 0);
       floor(mGravel, TURF.x0 - 0.6, GRAVEL.z0, TURF.x1 + 0.6, GRAVEL.z1, -0.004);
+      /* north of the gravel the ground is LAWN, up to the hall and round it (photographs 14 to 16), worn to a track of
+         gravel up its middle from the tables to the fountain */
+      floor(mLawn, -24, -40, 24, GRAVEL.z0, -0.008);
+      floor(mGravel, -0.9, HALL.z1 + 3.9, 0.9, TABLES.z0 - 0.25, -0.005);
       /* the turf is rolls laid side by side, north to south: where two meet, a thin teal line (photograph 10) */
       const mSeam = M({ color: 0x1f8f7c, roughness: 0.9 });
       for (let x = TURF.x0 + TURF.strip; x < TURF.x1 - 0.01; x += TURF.strip) floor(mSeam, x - 0.012, TURF.z0, x + 0.012, TURF.z1, 0.003);
@@ -609,76 +681,180 @@
       wall(mEdge, TURF.x1, TURF.z1, TURF.x1, TURF.z0, -0.012, 0.004); wall(mEdge, TURF.x0, TURF.z0, TURF.x0, TURF.z1, -0.012, 0.004);
     }
 
-    /* ================================================================ THE HALL (photographs 8, 10, 4, 1)
-       A wooden hall behind the tables: red-brown brick below and dark timber above, a dark doorway and steps; a red
-       tiled roof in two tiers, the upper a gable to the south with red barge boards, the lower a skirt all round; white
-       fretwork under the eaves. Built plainly: what stands behind it no photograph shows. */
-    const mTile = surf('rooftile', { tile: [2.2, 2.9], clampV: false, roughness: 0.85, side: THREE.DoubleSide });
-    const mTimber = surf('timber', { tile: 2.2, mirror: 'uv', roughness: 0.9 });
+    /* ================================================================ THE HALL (photographs 13 to 16; and 8, 10 behind the tables)
+       Chad, 11 Nov 2026: "More images of the building behind, at the wai kru". One storey, ten metres across its front:
+       three steps of terracotta tile, walls of long red-brown brick, a dark red post at each corner and one in the
+       middle of the front, two wide double doors of dark glass. Over it a roof in two tiers of bright red pressed tile:
+       a hipped skirt all round with a wide overhang, and a steep gable to the south over the middle, its triangle in
+       dark red boards. A fretwork board of pointed scallops hangs under every eave and up both rakes, and two carved
+       boards cross at the peak (a kalae). In front: a white plank sign between two rough posts, the seven-headed naga
+       fountain on its teal plinth, a naga on a plinth at each corner, bushes and jars. The tracker's §10 has the table.
+       He cannot walk to it (it stands north of the ground he is kept on): it is for his eyes and for a film's lens. */
+    const mRoofRed = surf('redroof', { tile: [2.4, 2.3], roughness: 0.62 });
+    const mHallBrick = surf('hallbrick', { tile: [1.47, 1.4], tint: 0xc4a6a6, roughness: 0.9 });   // (photograph 15: a darker, browner red than the sunlit corner of 13)
+    const mStep = surf('steptile', { tile: 1.2, roughness: 0.78 });
+    const mRiser = surf('steptile', { tile: 1.2, tint: 0xd8c9c6, roughness: 0.85 });
+    const mLawn = surf('lawn', { tile: 2.5, gain: [1.55, 1.3, 1.45], roughness: 1 });           // (dry and straw-pale in every photograph: lifted to them)
+    const mFret = surf('fretwork', { tile: [1.68, 0.26], cut: true, clampV: true, roughness: 0.8 });
+    const mSign = surf('sign', { tile: [2.4, 0.43], cut: true, clamp: true, roughness: 0.7 });
+    const mFretGrey = surfFlat('fretwork', '#c4cad2', { tile: [1.68, 0.26], clampV: true });        // the gable's lace is painted pale grey (photograph 15)
+    const mKalaeGrey = surfFlat('kalae', '#8e959c', { tile: [0.95, 0.97], clamp: true });           // and the kalae weathered grey
     const mBrick = surf('brick', { tile: 1.6, mirror: 'uv', roughness: 0.95 });
     const mRedPlank = surf('redplank', { tile: 2.0, mirror: 'uv', roughness: 0.85 });
+    const mGable = surf('redplank', { tile: 2.0, mirror: 'uv', tint: 0xa9d0e8, roughness: 0.85 });   // (dark purple-brown boards, photograph 15)
     const mTin = surf('tin', { tile: 1.8, roughness: 0.7, side: THREE.DoubleSide });
-    const mBarge = M({ color: 0xa02a22, roughness: 0.7 });
+    const mBarge = M({ color: 0xb23229, roughness: 0.6 });
     const mDark = M({ color: 0x15100c, roughness: 1 });
     const mWhite = M({ color: 0xf2efe6, roughness: 0.8 });
     const mConcrete = M({ color: 0xa9a49a, roughness: 0.95 });
+    const mPostRed = M({ color: 0x4d231f, roughness: 0.7 });
+    const mTeal = M({ color: 0x3a9a8e, roughness: 0.85 });
+    /* the shade the deep eave lays on a wall: dark under the roof, gone a man's height below it (painted: v9.4) */
+    const mEaveShade = (() => { const [c, x] = cnv(64); const g = x.createLinearGradient(0, 0, 0, 64);
+      x.clearRect(0, 0, 64, 64); g.addColorStop(0, 'rgba(10,6,6,0.78)'); g.addColorStop(0.45, 'rgba(10,6,6,0.5)'); g.addColorStop(1, 'rgba(10,6,6,0)');
+      x.fillStyle = g; x.fillRect(0, 0, 64, 64);
+      const t = tex(done(THREE, c, false)); t.wrapS = THREE.RepeatWrapping; t.wrapT = THREE.ClampToEdgeWrapping;
+      return B({ map: t, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -1 }); })();
+    /* the doors' glass: dark, and holding a dim picture of what stands before it (the sky over the trees over the lawn),
+       painted, because nothing here is mirrored for real. Its quad's UVs are metres, so the sheet is fitted to a door */
+    const mGlass = (() => { const [c, x] = cnv(64); const g = x.createLinearGradient(0, 0, 0, 64);
+      g.addColorStop(0, '#31475e'); g.addColorStop(0.3, '#22313a'); g.addColorStop(0.42, '#15221a'); g.addColorStop(0.72, '#0e1611'); g.addColorStop(1, '#070909');
+      x.fillStyle = g; x.fillRect(0, 0, 64, 64);
+      const t = tex(done(THREE, c, false)); t.wrapS = THREE.RepeatWrapping; t.wrapT = THREE.ClampToEdgeWrapping; t.repeat.set(1, 1 / 2.25); t.offset.set(0, -HALL.floor / 2.25);
+      return B({ map: t }); })();
+    const mBronze = M({ color: 0x3b2f2a, roughness: 0.5, metalness: 0.4 });
+    const mSteel = M({ color: 0xb9bcc0, roughness: 0.35, metalness: 0.8 });
+    const mSoffit = M({ color: 0x8b8f92, roughness: 0.8 });
+    const mSignPost = M({ color: 0x4f3038, roughness: 1 });
+    const hall = { lamps: [] };
     function buildHall() {
-      const H = HALL, e = H.eave, ov = H.over, brickH = 1.1;
-      const cx = (H.x0 + H.x1) / 2;
-      /* the walls: brick to the sill, timber to the eave */
-      const ring = [[H.x0, H.z1, H.x1, H.z1], [H.x1, H.z1, H.x1, H.z0], [H.x1, H.z0, H.x0, H.z0], [H.x0, H.z0, H.x0, H.z1]];
-      for (const [xa, za, xb, zb] of ring) { wall(mBrick, xa, za, xb, zb, 0, brickH); wall(mTimber, xa, za, xb, zb, brickH, e + 0.5); }
-      /* the doorway, dark, with its frame; three steps up to it */
-      wall(mDark, cx - 0.75, H.z1 + 0.012, cx + 0.75, H.z1 + 0.012, 0.45, 2.55);
-      for (const sx of [-1, 1]) box(mWhite, cx + sx * 0.82, 1.5, H.z1 + 0.03, 0.1, 2.2, 0.08);
-      box(mWhite, cx, 2.62, H.z1 + 0.03, 1.74, 0.1, 0.08);
-      for (let st = 0; st < 3; st++) box(mConcrete, cx, (st + 1) * 0.075, H.z1 + 0.75 - st * 0.28, 2.4, (st + 1) * 0.15, 0.3);
-      /* two shuttered windows either side of the door */
-      const mShutter = M({ color: 0x3a2619, roughness: 0.85 });
-      for (const sx of [-1, 1]) { wall(mShutter, cx + sx * 3.1 - 0.55, H.z1 + 0.014, cx + sx * 3.1 + 0.55, H.z1 + 0.014, 1.3, 2.5);
-        box(mWhite, cx + sx * 3.1, 1.24, H.z1 + 0.03, 1.3, 0.07, 0.07); box(mWhite, cx + sx * 3.1, 2.56, H.z1 + 0.03, 1.3, 0.07, 0.07); }
-      /* THE LOWER ROOF: a skirt all round, from the eave line (overhanging) up to a ring part way in */
-      const y0 = e, y1 = e + 1.15, in0 = 1.9;                                  // the skirt rises 1.15 m over 1.9 + the overhang
-      const o = { x0: H.x0 - ov, x1: H.x1 + ov, z0: H.z0 - ov, z1: H.z1 + ov }, i = { x0: H.x0 + in0, x1: H.x1 - in0, z0: H.z0 + in0, z1: H.z1 - in0 };
-      quad(mTile, [o.x0, y0, o.z1], [o.x1, y0, o.z1], [i.x1, y1, i.z1], [i.x0, y1, i.z1]);            // south, facing the tables
-      quad(mTile, [o.x1, y0, o.z1], [o.x1, y0, o.z0], [i.x1, y1, i.z0], [i.x1, y1, i.z1]);            // east
-      quad(mTile, [o.x1, y0, o.z0], [o.x0, y0, o.z0], [i.x0, y1, i.z0], [i.x1, y1, i.z0]);            // north
-      quad(mTile, [o.x0, y0, o.z0], [o.x0, y0, o.z1], [i.x0, y1, i.z1], [i.x0, y1, i.z0]);            // west
-      /* its edge board, white, and the fretwork hanging under it on the side the tables see */
-      wall(mWhite, o.x0, o.z1, o.x1, o.z1, y0 - 0.16, y0 + 0.02); wall(mWhite, o.x1, o.z1, o.x1, o.z0, y0 - 0.16, y0 + 0.02);
-      wall(mWhite, o.x0, o.z0, o.x0, o.z1, y0 - 0.16, y0 + 0.02);
-      const mFret = B({ map: tex(makeFretwork(THREE, cnv)), transparent: false, alphaTest: 0.5, side: THREE.DoubleSide, color: 0xf4f1e8 });
-      { const g = new THREE.PlaneGeometry(o.x1 - o.x0, 0.34); const uv = g.attributes.uv; for (let k = 0; k < uv.count; k++) uv.setX(k, uv.getX(k) * (o.x1 - o.x0) / 0.68);
-        const m = new THREE.Mesh(g, mFret); m.position.set(cx, y0 - 0.32, o.z1 + 0.004); world.add(m); owned.push(m); }
-      /* the short wall between the two roofs, timber */
-      for (const [xa, za, xb, zb] of [[i.x0, i.z1, i.x1, i.z1], [i.x1, i.z1, i.x1, i.z0], [i.x1, i.z0, i.x0, i.z0], [i.x0, i.z0, i.x0, i.z1]]) wall(mTimber, xa, za, xb, zb, y1 - 0.05, y1 + 0.55);
-      /* THE UPPER ROOF: a gable whose ridge runs north to south, its end to the tables */
-      const g0 = y1 + 0.5, ridge = H.ridge + 0.6, gx0 = i.x0 - 0.45, gx1 = i.x1 + 0.45, gz0 = i.z0 - 0.3, gz1 = i.z1 + 0.5;
-      quad(mTile, [gx0, g0, gz0], [gx0, g0, gz1], [cx, ridge, gz1], [cx, ridge, gz0]);                 // west slope (its eave the picture's u, so the tiles hang down it)
-      quad(mTile, [gx1, g0, gz1], [gx1, g0, gz0], [cx, ridge, gz0], [cx, ridge, gz1]);                 // east slope
-      tri(mTimber, [i.x0, g0, i.z1 + 0.02], [i.x1, g0, i.z1 + 0.02], [cx, ridge - 0.12, i.z1 + 0.02]);  // the gable's end, timber
-      tri(mTimber, [i.x1, g0, i.z0 - 0.02], [i.x0, g0, i.z0 - 0.02], [cx, ridge - 0.12, i.z0 - 0.02]);
-      /* red barge boards up both rakes of the south gable, crossing at the ridge (the Thai way), and a white sun-burst
-         of slats under them */
-      bar(mBarge, [gx0 - 0.1, g0 - 0.12, gz1 + 0.03], [cx + 0.35, ridge + 0.42, gz1 + 0.03], 0.085, 4);
-      bar(mBarge, [gx1 + 0.1, g0 - 0.12, gz1 + 0.03], [cx - 0.35, ridge + 0.42, gz1 + 0.03], 0.085, 4);
-      for (let k = -3; k <= 3; k++) bar(mWhite, [cx + k * 0.42, g0 + 0.04, i.z1 + 0.05], [cx + k * 0.1, ridge - 0.5 - Math.abs(k) * 0.07, i.z1 + 0.05], 0.022, 4);
-      /* he cannot walk into it (it stands outside the ground he is kept on: this is for a film's lens) */
+      const H = HALL, fl = H.floor, eave = fl + H.wall, cx = (H.x0 + H.x1) / 2, zf = H.z1, ov = H.over;
+      /* THE STEPS: three across the whole front and a little past each corner, a white strip on each one's edge */
+      const sx0 = H.x0 - 0.6, sx1 = H.x1 + 0.6, zb = zf - 0.1;
+      const stepFront = (k) => zf + 0.9 + (2 - k) * 0.3;                        // k 0 the lowest: its front edge is the furthest south
+      for (let k = 0; k < 3; k++) { const top = (k + 1) * fl / 3, front = stepFront(k);
+        box(mRiser, cx, top / 2, (zb + front) / 2, sx1 - sx0, top, front - zb, 0, mStep);
+        floor(mWhite, sx0, front - 0.05, sx1, front, top + 0.003); }
+      hall.stepsFront = stepFront(0);
+      /* THE WALLS, the grey band at their foot, the thin white line of a conduit near their top */
+      /* (each wall runs up to just under the skirt where the skirt crosses it, so no slot of sky shows under the eave) */
+      const yo = eave - 0.22, yi = yo + H.rise, run = H.rise / Math.tan(H.pitch);
+      const topF = yo + H.rise * ov / run - 0.05, topS = yo + H.rise * H.overS / run - 0.05;
+      for (const [xa, za, xb, zw, top] of [[H.x0, zf, H.x1, zf, topF], [H.x1, zf, H.x1, H.z0, topS], [H.x1, H.z0, H.x0, H.z0, topF], [H.x0, H.z0, H.x0, zf, topS]]) wall(mHallBrick, xa, za, xb, zw, fl, top);
+      /* (the eave's shade, laid 8 mm off each wall, behind the grey band and the doors' glass: from the wall's top down 2.1 m) */
+      for (const [xa, za, xb, zw, top] of [[H.x0, zf, H.x1, zf, topF], [H.x1, zf, H.x1, H.z0, topS], [H.x1, H.z0, H.x0, H.z0, topF], [H.x0, H.z0, H.x0, zf, topS]]) {
+        const dx = xb - xa, dz = zw - za, L = Math.hypot(dx, dz), ox = -dz / L * 0.008, oz = dx / L * 0.008, y1 = top, y0 = top - 2.1;
+        const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), mEaveShade);
+        m.position.set((xa + xb) / 2 + ox, (y0 + y1) / 2, (za + zw) / 2 + oz); m.scale.set(L, y1 - y0, 1); m.rotation.y = Math.atan2(ox, oz); m.renderOrder = 1; world.add(m); owned.push(m); }
+      wall(mConcrete, H.x0, zf + 0.012, H.x1, zf + 0.012, fl, fl + 0.16);
+      bar(mWhite, [H.x0, fl + 2.72, zf + 0.02], [H.x1, fl + 2.72, zf + 0.02], 0.012, 4);
+      /* THE POSTS: dark red, at the four corners and the middle of the front */
+      for (const [px, pz] of [[H.x0 - 0.02, zf + 0.07], [cx, zf + 0.07], [H.x1 + 0.02, zf + 0.07], [H.x0 - 0.02, H.z0 - 0.07], [H.x1 + 0.02, H.z0 - 0.07]]) post(mPostRed, px, pz, 0.11, fl, eave + 0.15, 10);
+      /* THE TWO DOORS: dark glass in bronze frames, a leaf either side of the meeting stiles, long bar handles */
+      for (const sx of [-1, 1]) { const dx = cx + sx * 2.7, w = 2.3, h = 2.25, z = zf + 0.02;
+        wall(mGlass, dx - w / 2, z, dx + w / 2, z, fl + 0.02, fl + h);
+        box(mBronze, dx, fl + h + 0.035, z + 0.02, w + 0.14, 0.07, 0.07);
+        box(mBronze, dx, fl + 0.05, z + 0.02, w, 0.08, 0.06);
+        for (const jx of [-w / 2 - 0.035, w / 2 + 0.035]) box(mBronze, dx + jx, fl + h / 2, z + 0.02, 0.07, h, 0.07);
+        for (const jx of [-0.03, 0.03]) box(mBronze, dx + jx, fl + h / 2, z + 0.025, 0.05, h, 0.05);
+        for (const jx of [-0.13, 0.13]) bar(mSteel, [dx + jx, fl + 0.85, z + 0.075], [dx + jx, fl + 1.35, z + 0.075], 0.014, 6); }
+      /* THE LOWER ROOF: a skirt all round, from its edge out over the steps up to the foot of the upper roof. Each side
+         is a flat trapezoid with true UVs (planar), the eave its picture's u, so the rows of tiles lie along it */
+      const o = { x0: H.x0 - H.overS, x1: H.x1 + H.overS, z0: H.z0 - ov, z1: zf + ov }, g = { x0: o.x0 + run, x1: o.x1 - run, z0: o.z0 + run, z1: o.z1 - run };
+      const sides = [
+        [[o.x0, yo, o.z1], [o.x1, yo, o.z1], [g.x1, yi, g.z1], [g.x0, yi, g.z1]],      // south, the side the turf sees
+        [[o.x1, yo, o.z1], [o.x1, yo, o.z0], [g.x1, yi, g.z0], [g.x1, yi, g.z1]],      // east
+        [[o.x1, yo, o.z0], [o.x0, yo, o.z0], [g.x0, yi, g.z0], [g.x1, yi, g.z0]],      // north
+        [[o.x0, yo, o.z0], [o.x0, yo, o.z1], [g.x0, yi, g.z1], [g.x0, yi, g.z0]]];     // west
+      for (const q of sides) { planar(mRoofRed, q);
+        /* its underside: grey sheet, a hand under the tiles and facing down (the corners turned the other way round) */
+        planar(mSoffit, [q[1], q[0], q[3], q[2]].map(v => [v[0], v[1] - 0.05, v[2]])); }
+      /* the purlins under the overhang (dark red), three on the south and on each side */
+      for (const k of [0.12, 0.3, 0.46]) { const y = lp(yo, yi, k) - 0.09;
+        bar(mPostRed, [lp(o.x0, g.x0, k), y, lp(o.z1, g.z1, k)], [lp(o.x1, g.x1, k), y, lp(o.z1, g.z1, k)], 0.035, 4);
+        bar(mPostRed, [lp(o.x0, g.x0, k), y, lp(o.z0, g.z0, k)], [lp(o.x0, g.x0, k), y, lp(o.z1, g.z1, k)], 0.035, 4);
+        bar(mPostRed, [lp(o.x1, g.x1, k), y, lp(o.z0, g.z0, k)], [lp(o.x1, g.x1, k), y, lp(o.z1, g.z1, k)], 0.035, 4); }
+      /* its edge board, and THE FRETWORK hanging under it on all four sides (pointed scallops, dark red) */
+      const fh = 0.26;
+      for (const [xa, za, xb, zw] of [[o.x0, o.z1, o.x1, o.z1], [o.x1, o.z1, o.x1, o.z0], [o.x1, o.z0, o.x0, o.z0], [o.x0, o.z0, o.x0, o.z1]]) {
+        wall(mBarge, xa, za, xb, zw, yo - 0.07, yo + 0.03);
+        const dx = xb - xa, dz = zw - za, L = Math.hypot(dx, dz), ox = -dz / L * 0.012, oz = dx / L * 0.012;   // a finger outside the board
+        quad(mFret, [xa + ox, yo - 0.05 - fh, za + oz], [xb + ox, yo - 0.05 - fh, zw + oz], [xb + ox, yo - 0.05, zw + oz], [xa + ox, yo - 0.05, za + oz]); }
+      /* THE UPPER ROOF: a steep gable over the middle, its ridge running north to south, its end to the turf. It stands
+         a short upstand above the skirt so its eaves clear the skirt's tiles */
+      const g0 = yi + 0.25, ridge = g0 + H.gable, pitch = Math.atan2(H.gable, g.x1 - cx), eo = 0.3, ye = g0 - eo * Math.tan(pitch);
+      const ex0 = g.x0 - eo, ex1 = g.x1 + eo, zr0 = g.z0 - 0.45, zr1 = g.z1 + 0.45;
+      planar(mRoofRed, [[ex0, ye, zr0], [ex0, ye, zr1], [cx, ridge, zr1], [cx, ridge, zr0]]);          // the west slope
+      planar(mRoofRed, [[ex1, ye, zr1], [ex1, ye, zr0], [cx, ridge, zr0], [cx, ridge, zr1]]);          // the east slope
+      planar(mSoffit, [[ex0, ye - 0.04, zr1], [ex0, ye - 0.04, zr0], [cx, ridge - 0.04, zr0], [cx, ridge - 0.04, zr1]]);
+      planar(mSoffit, [[ex1, ye - 0.04, zr0], [ex1, ye - 0.04, zr1], [cx, ridge - 0.04, zr1], [cx, ridge - 0.04, zr0]]);
+      bar(mBarge, [cx, ridge + 0.02, zr0], [cx, ridge + 0.02, zr1], 0.06, 5);                           // the ridge cap
+      /* the band between the two roofs and the gable's triangle, in dark red boards */
+      for (const [xa, za, xb, zw] of [[g.x0, g.z1, g.x1, g.z1], [g.x1, g.z1, g.x1, g.z0], [g.x1, g.z0, g.x0, g.z0], [g.x0, g.z0, g.x0, g.z1]]) wall(mGable, xa, za, xb, zw, yi - 0.08, g0 + 0.02);
+      tri(mGable, [g.x0, g0, g.z1], [g.x1, g0, g.z1], [cx, ridge - 0.08, g.z1]);
+      tri(mGable, [g.x1, g0, g.z0], [g.x0, g0, g.z0], [cx, ridge - 0.08, g.z0]);
+      /* the fretwork across the gable's foot and up both rakes (each strip's top edge on the roof's edge, its scallops
+         hanging in the gable's plane), a red board along each rake's edge, and THE KALAE crossed at the peak */
+      const zk = zr1 + 0.006;
+      quad(mFret, [g.x0, g0 - fh, g.z1 + 0.03], [g.x1, g0 - fh, g.z1 + 0.03], [g.x1, g0, g.z1 + 0.03], [g.x0, g0, g.z1 + 0.03]);            // (dark red across the foot: photograph 15 has no pale lace there, only up the rakes)
+      { const c = Math.cos(pitch), sn = Math.sin(pitch);
+        const T0 = [ex0, ye, zk], T1 = [cx, ridge, zk], T2 = [ex1, ye, zk];
+        quad(mFretGrey, [T0[0] + fh * sn, T0[1] - fh * c, zk], [T1[0] + fh * sn, T1[1] - fh * c, zk], T1, T0);         // the west rake (up to the peak)
+        quad(mFretGrey, [T1[0] - fh * sn, T1[1] - fh * c, zk], [T2[0] - fh * sn, T2[1] - fh * c, zk], T2, T1);         // the east rake (down from it)
+        bar(mBarge, [T0[0], T0[1] + 0.03, zk], [T1[0], T1[1] + 0.03, zk], 0.045, 4); bar(mBarge, [T2[0], T2[1] + 0.03, zk], [T1[0], T1[1] + 0.03, zk], 0.045, 4); }
+      quad(mKalaeGrey, [cx - 0.475, ridge - 0.14, zk + 0.02], [cx + 0.475, ridge - 0.14, zk + 0.02], [cx + 0.475, ridge + 0.83, zk + 0.02], [cx - 0.475, ridge + 0.83, zk + 0.02]);
+      /* THE SIGN: a white wavy plank between two rough posts in front of the steps (its words are a picture: z_tail's
+         art; NOT the real place's name, v9.3) */
+      /* (measured on photograph 15 against the doors: the plank 2.4 m by 0.43 m, its foot two metres up, on two posts
+         that stand at the fountain's two sides; the fountain's plinth in two low tiers hard against the steps) */
+      const zs = hall.stepsFront + 0.78;
+      for (const sx of [-1, 1]) post(mSignPost, cx + sx * 1.1, zs, 0.085, 0, 2.02, 9, 0.075);
+      quad(mSign, [cx - 1.2, 1.98, zs + 0.09], [cx + 1.2, 1.98, zs + 0.09], [cx + 1.2, 2.41, zs + 0.09], [cx - 1.2, 2.41, zs + 0.09]);
+      /* THE PLINTHS, painted teal: the fountain's between the sign's posts, one at each corner for its naga */
+      hall.fountain = { x: cx, z: zs, top: 0.4 };
+      box(mTeal, hall.fountain.x, 0.1, hall.fountain.z, 2.05, 0.2, 1.4); box(mTeal, hall.fountain.x, 0.3, hall.fountain.z - 0.06, 1.8, 0.2, 1.12);
+      hall.west = { x: H.x0 - 1.7, z: zf + 1.35, top: 0.5 };  box(mTeal, hall.west.x, 0.25, hall.west.z, 2.4, 0.5, 0.95);
+      hall.east = { x: H.x1 + 0.3, z: zf + 1.0, top: 0.55 }; box(mTeal, hall.east.x, 0.275, hall.east.z, 1.8, 0.55, 0.95);
+      hall.lampAt = [[H.x0 - 0.02, fl + 1.95, zf + 0.2], [H.x1 + 0.02, fl + 1.95, zf + 0.2]];
+      /* A LAMP ON A POLE, front left (photograph 16): a round solar street lamp on a grey pole */
+      post(mConcrete, -7.4, zf + 2.4, 0.045, 0, 4.2, 8);
+      geo(mSteel, new THREE.CylinderGeometry(0.34, 0.3, 0.07, 14), _gm.makeTranslation(-7.4, 4.24, zf + 2.4));
+      geo(mDark, new THREE.CylinderGeometry(0.3, 0.3, 0.012, 14), _gm.makeTranslation(-7.4, 4.285, zf + 2.4));
+    }
+    /* what stands at the hall, each a model made from his photographs (masters/v26.0/hall): placed after the batch is
+       flushed, each on the spot buildHall measured out */
+    function dressHall() {
+      const F = hall.fountain, W = hall.west, E = hall.east;
+      stand('w3nagafount', F.x, F.top, F.z, 0);                                   // the seven heads, facing the turf
+      stand('w3ganesha', F.x + 0.72, F.top, F.z + 0.3, -0.5);                     // the small golden Ganesha at its east end
+      stand('w3ganesha', F.x - 0.72, F.top, F.z + 0.3, 0.5, { done: (m) => { m.scale.x *= -1; } });    // and its fellow at the west, turned to face it
+      stand('w3nagagreen', W.x, W.top, W.z, 0);                                   // west: the green naga, its heads to the west
+      stand('w3nagawhite', E.x, E.top, E.z, 0, { s: 1.22 });                      // east: the white-bellied naga, upright (1.85 m on its plinth, photograph 15)
+      /* (photograph 15: one yellow bush west of the fountain before the steps, one beyond the white naga; the dracaena
+         in its brown jar at the east post's foot, as tall as the sign; a bowl of floating plants before the plinth) */
+      stand('w3croton', F.x - 2.55, 0, F.z + 0.35, 0.6);
+      stand('w3croton', E.x + 2.3, 0, E.z + 0.6, 2.2, { s: 0.92 });
+      stand('w3dracaena', F.x + 1.55, 0, F.z + 0.45, 0.3, { s: 1.28 });
+      stand('w3waterjar', F.x + 0.1, 0, F.z + 1.0, 0, { s: 0.8 });
+      for (const [x, y, z] of hall.lampAt) hall.lamps.push(stand('w3walllamp', x, y, z, 0));
     }
 
     /* ================================================================ WHAT STANDS ROUND THE TURF
        The open shed (west), the white lattice fence, the red wooden house (east), the red plank wall and the pale grey
        building behind the chief canopy (south-east). Photographs 10, 12, 11, 5 and 6. */
     function buildSurround() {
-      /* the open shed: posts and a pink corrugated roof falling to the east (its high side to the west) */
-      const S0 = SHED, hi = S0.eave + 1.2, lo = S0.eave;
+      /* the open shed (photograph 10, read again beside 13 to 16): posts and a pink corrugated roof of TWO pitches, its
+         ridge running north to south and its open gable end to the turf; tables of bai sri stand under it */
+      const S0 = SHED, lo = S0.eave, hi = S0.eave + 1.25, sxc = (S0.x0 + S0.x1) / 2;
       const mPost = M({ color: 0x8a8376, roughness: 0.9 });
-      for (const x of [S0.x0 + 0.2, (S0.x0 + S0.x1) / 2, S0.x1 - 0.2]) for (const z of [S0.z0 + 0.2, (S0.z0 + S0.z1) / 2, S0.z1 - 0.2])
-        box(mPost, x, lp(hi, lo, (x - S0.x0) / (S0.x1 - S0.x0)) / 2, z, 0.1, lp(hi, lo, (x - S0.x0) / (S0.x1 - S0.x0)), 0.1);
+      for (const x of [S0.x0 + 0.2, S0.x1 - 0.2]) for (const z of [S0.z0 + 0.2, (S0.z0 + S0.z1) / 2, S0.z1 - 0.2]) box(mPost, x, lo / 2, z, 0.1, lo, 0.1);
+      for (const z of [S0.z0 + 0.2, S0.z1 - 0.2]) box(mPost, sxc, hi / 2, z, 0.1, hi, 0.1);
       /* (a tin roof's eave is its picture's u, so the corrugations run down the slope) */
-      quad(mTin, [S0.x1 + 0.6, lo - 0.02, S0.z1 + 0.5], [S0.x1 + 0.6, lo - 0.02, S0.z0 - 0.5], [S0.x0 - 0.5, hi + 0.09, S0.z0 - 0.5], [S0.x0 - 0.5, hi + 0.09, S0.z1 + 0.5]);
+      planar(mTin, [[S0.x0 - 0.5, lo - 0.18, S0.z0 - 0.5], [S0.x0 - 0.5, lo - 0.18, S0.z1 + 0.6], [sxc, hi + 0.06, S0.z1 + 0.6], [sxc, hi + 0.06, S0.z0 - 0.5]]);
+      planar(mTin, [[S0.x1 + 0.5, lo - 0.18, S0.z1 + 0.6], [S0.x1 + 0.5, lo - 0.18, S0.z0 - 0.5], [sxc, hi + 0.06, S0.z0 - 0.5], [sxc, hi + 0.06, S0.z1 + 0.6]]);
       const mRafter = M({ color: 0x5a4636, roughness: 0.9 });
-      for (const z of [S0.z0 + 0.2, (S0.z0 + S0.z1) / 2, S0.z1 - 0.2]) bar(mRafter, [S0.x0 + 0.2, hi + 0.02, z], [S0.x1 - 0.2, lo + 0.02, z], 0.045, 4);
+      for (const z of [S0.z0 + 0.2, (S0.z0 + S0.z1) / 2, S0.z1 - 0.2]) { bar(mRafter, [S0.x0 + 0.2, lo, z], [sxc, hi, z], 0.04, 4); bar(mRafter, [S0.x1 - 0.2, lo, z], [sxc, hi, z], 0.04, 4); bar(mRafter, [S0.x0 + 0.2, lo, z], [S0.x1 - 0.2, lo, z], 0.035, 4); }
+      bar(mRafter, [sxc, hi, S0.z0 + 0.2], [sxc, hi, S0.z1 - 0.2], 0.04, 4);
       /* a second, lower shed roof seen behind the west tents (photograph 10's left edge) */
       quad(mTin, [-12.2, 2.5, 9], [-12.2, 2.5, -6], [-17.5, 3.4, -6], [-17.5, 3.4, 9]);
       wall(mBrick, -12.4, 9, -12.4, -6, 0, 2.45); wall(mWhite, -12.38, 8.9, -12.38, -5.9, 0.9, 2.3);
@@ -736,25 +912,31 @@
         quad(mat, q0, q1, p1, p0, u, 0); u += len / segs;
       }
     }
+    const tentCorners = (cx, cz, w, ry = 0) => { const hw = w / 2, c = Math.cos(ry), s = Math.sin(ry);
+      return [[-hw, hw], [hw, hw], [hw, -hw], [-hw, -hw]].map(([lx, lz]) => [cx + lx * c + lz * s, cz - lx * s + lz * c]); };
     function tent(cx, cz, o = {}) {
       const w = o.w || TENT.w, e = o.eave || TENT.eave, pk = o.peak || TENT.peak, hw = w / 2;
       const roof = o.roof || satinRoof(0x18a044), frame = o.frame || mFrameGreen;
-      const C = [[cx - hw, cz + hw], [cx + hw, cz + hw], [cx + hw, cz - hw], [cx - hw, cz - hw]];        // SW, SE, NE, NW
+      /* its four poles: SW, SE, NE, NW when it stands square to the ground; turned by o.ry about its middle, the same
+         four in its own frame (a tent turned to face north has its first pole at its front right) */
+      const C = tentCorners(cx, cz, w, o.ry || 0), L = hw * Math.SQRT2, out = ([x, z]) => [x + (x - cx) / L * 0.085, z + (z - cz) / L * 0.085];
       for (const [x, z] of C) post(frame, x, z, 0.022, 0, e, 6);
-      for (let k = 0; k < 4; k++) { const [xa, za] = C[k], [xb, zb] = C[(k + 1) % 4];
+      for (let k = 0; k < 4; k++) { const [xa, za] = C[k], [xb, zb] = C[(k + 1) % 4], oa = out(C[k]), ob = out(C[(k + 1) % 4]);
         bar(frame, [xa, e, za], [xb, e, zb], 0.018, 4);
-        quad(roof, [xa - Math.sign(cx - xa) * 0.06, e + 0.02, za - Math.sign(cz - za) * 0.06], [xb - Math.sign(cx - xb) * 0.06, e + 0.02, zb - Math.sign(cz - zb) * 0.06], [cx, pk, cz], [cx, pk, cz]);
+        quad(roof, [oa[0], e + 0.02, oa[1]], [ob[0], e + 0.02, ob[1]], [cx, pk, cz], [cx, pk, cz]);
         /* the valance: a band of cloth hanging from the eave, and swags over it */
         const vm = satin(o.valance != null ? o.valance : 0xf4f4f0);
-        wall(vm, xa, za, xb, zb, e - 0.28, e + 0.01);
-        const n = o.swags || 3, cols = o.swagCols || [0x18a044, 0xf4f4f0];
+        wall(vm, xa, za, xb, zb, e - (o.band || 0.28), e + 0.01);
+        const n = o.swags || 3, cols = o.swagCols || [0x18a044, 0xf4f4f0], sd = o.swagDepth || 0.42, dr = o.swagDrop || 0.2;
         for (let s = 0; s < n; s++) { const k0 = s / n, k1 = (s + 1) / n;
-          swag(satin(cols[s % cols.length]), [lp(xa, xb, k0), e + 0.005, lp(za, zb, k0)], [lp(xa, xb, k1), e + 0.005, lp(za, zb, k1)], 0.42, 0.2, 0.07); }
+          swag(satin(cols[(s + k * (o.swagStep || 0)) % cols.length]), [lp(xa, xb, k0), e + 0.005, lp(za, zb, k0)], [lp(xa, xb, k1), e + 0.005, lp(za, zb, k1)], sd, dr, 0.07); }
       }
       return C;
     }
     const satinRoofs = new Map();
-    const satinRoof = (hex) => { let m = satinRoofs.get(hex); if (!m) satinRoofs.set(hex, m = M({ color: hex, roughness: 0.62, side: THREE.DoubleSide })); return m; };
+    /* (`glow`: a dark sheet seen from below still passes a little of the day: without it the chief canopy's top was a
+       black hole over him) */
+    const satinRoof = (hex, glow = 0) => { const k = hex + ':' + glow; let m = satinRoofs.get(k); if (!m) satinRoofs.set(k, m = M({ color: hex, roughness: 0.62, side: THREE.DoubleSide, emissive: glow })); return m; };
 
     /* ================================================================ THE OFFERING TABLES (photographs 10, 9, 4, 8)
        Three steps under white cloth, the lowest in front; a bright green satin skirt to the ground hung with swags of
@@ -804,6 +986,27 @@
       many('w3candle', [{ x: -2.95, y: 0, z: -10.25, ry: 0.2 }, { x: 2.95, y: 0, z: -10.25, ry: 1.4 }, { x: -2.2, y: y2, z: -12.2, ry: 0 }, { x: 2.3, y: y2, z: -12.25, ry: 0.8 }], world, 1.25);
       many('w3purple', [{ x: -3.9, y: 0, z: -10.2, ry: 0.5 }, { x: 3.9, y: 0, z: -10.2, ry: 2.2 }], world, 1.1);
       for (const sx of [-1, 1]) solidBox(0.7, 1.5, 0.7, sx * 3.25, 0.75, -11.0);
+      /* THE SMALLER OFFERINGS (photographs 9, 10, 3): small candles in pink and blue along the front edge; candles in
+         clay pots between the bai sri; soda in rows of red, green and orange, and water; baskets of sticky rice; a
+         boiled chicken on its plate; green coconuts; small bai sri at the front corners. One model each: a colour is a
+         turn of its hue, and where each stands is a seeded scatter of a hand's width, so no row is ruled */
+      const rnd = rng(9126), j = (k = 0.03) => (rnd() - 0.5) * 2 * k, turn = () => rnd() * 6.283;
+      const hued = (deg) => (made) => { for (const im of made) hueTurn(im.material, deg); };
+      const smalls = []; for (let x = -2.31; x <= 2.32; x += 0.33) smalls.push({ x: x + j(0.02), y: y0, z: -10.09 + j(0.012), ry: turn() });
+      many('w3candlesmall', smalls.filter((_, i) => i % 2 === 0), world, 0.24);                    // pink, as made
+      many('w3candlesmall', smalls.filter((_, i) => i % 2 === 1), world, 0.24, hued(-118));        // and blue
+      many('w3candlemid', [-1.62, -0.82, 0.86, 1.64].map(x => ({ x: x + j(), y: y1, z: zm - 0.3 + j(), ry: turn() }))
+        .concat([{ x: -0.5, y: y2, z: zb - 0.22, ry: 0 }, { x: 0.55, y: y2, z: zb - 0.2, ry: 1 }]), world, 0.66);
+      const rows = (x0, zs, xs) => { const L = []; for (const z of zs) for (const dx of xs) L.push({ x: x0 + dx + j(0.006), y: y0, z: z + j(0.006), ry: turn() }); return L; };
+      const sodaZ = [-10.33, -10.42, -10.51];
+      many('w3soda', rows(0.02, sodaZ, [-0.09]), world, 0.22);                                    // red
+      many('w3soda', rows(0.02, sodaZ, [0]), world, 0.22, hued(112));                             // green
+      many('w3soda', rows(0.02, sodaZ, [0.09]), world, 0.22, hued(26));                           // orange
+      many('w3water', rows(0.98, [-10.34, -10.43], [-0.045, 0.045]), world, 0.21);
+      many('w3kratip', [{ x: -0.98, y: y0, z: -10.36, ry: 0.4 }, { x: -0.84, y: y0, z: -10.45, ry: 2.0 }, { x: -1.02, y: y0, z: -10.52, ry: 4.1 }], world, 0.14);
+      many('w3chicken', [{ x: 1.62, y: y0, z: -10.42, ry: 0.5 }], world, 0.3);
+      many('w3coconut', [{ x: -1.68, y: y0, z: -10.36, ry: 0.3 }, { x: -1.5, y: y0, z: -10.5, ry: 2.6 }, { x: 0.36, y: y1, z: zm + 0.3, ry: 1.2 }], world, 0.19);
+      many('w3smallbaisri', [{ x: -2.3, y: y0, z: -10.46, ry: 0.6 }, { x: 2.3, y: y0, z: -10.46, ry: 2.4 }], world, 0.38);
     }
 
     /* a plain folding table (a white top on blue steel legs: photographs 11, 12). A stand-in drawn in code until its
@@ -844,8 +1047,9 @@
     function buildTents() {
       const opts = { valance: 0xf4f4f0, swagCols: [0x1ca548, 0xf4f4f0] };
       for (const T0 of [TENT_W1, TENT_W2, TENT_E]) { const C = tent(T0.x, T0.z, opts); for (const [x, z] of C) solidBox(0.16, 2.2, 0.16, x, 1.1, z); }
-      /* west tent 1: the hermit in brown, the master in red and the second master in white on pale green sofas, facing
-         east; straw mats and a striped mat before them */
+      /* west tent 1: the hermit in brown and the master in red on pale green sofas, facing east (a third sofa stands
+         empty: the second master in white sits with Grandmaster Pho, photographs 1 and 5); straw mats and a striped
+         mat before them */
       rug(mMat, -8.1, -1.0, 3.6, 1.8, Math.PI / 2); rug(mStripe, -7.0, -0.3, 1.9, 0.9, Math.PI / 2, 0.009);
       many('w3sofa', [{ x: -10.25, y: 0, z: -2.2, ry: Math.PI / 2 }, { x: -10.25, y: 0, z: -0.95, ry: Math.PI / 2 }, { x: -10.25, y: 0, z: 0.3, ry: Math.PI / 2 }], world, 0.9);
       solidBox(1.0, 1.4, 3.9, -10.3, 0.7, -0.95);
@@ -857,22 +1061,42 @@
       solidBox(1.0, 1.4, 1.5, -10.3, 0.7, 5.0);
       /* the east tent: the monks' row, the naga staff and the peacock fan, low round trays with coconuts and water */
       rug(mMat, 8.1, -2.0, 3.6, 1.8, Math.PI / 2);
-      many('w3chair', [{ x: 10.2, y: 0, z: -3.2, ry: -Math.PI / 2 }, { x: 10.2, y: 0, z: -2.0, ry: -Math.PI / 2 }, { x: 10.2, y: 0, z: -0.8, ry: -Math.PI / 2 }], world, 1.15);
+      many('w3chair', [-3.2, -2.0, -0.8].map(z => ({ x: 10.2, y: 0, z, ry: -Math.PI / 2, s: 1.11 })), world, 1.28);   // (a tall carved armchair, drawn at 1.28 m: its seat 0.43 m up)
       solidBox(0.9, 1.4, 3.6, 10.25, 0.7, -2.0);
       many('w3khantok', [{ x: 9.2, y: 0, z: -2.6, ry: 0.4 }, { x: 9.2, y: 0, z: -1.2, ry: 1.9 }], world, 0.25);
       stand('w3nagastaff', 10.55, 0, -3.75, 0.3); stand('w3fan', 10.5, 0.02, -0.15, -1.2);
       /* THE CHIEF CANOPY (photographs 1, 5, 6): a dark top, a valance of gold and lime in swags, one pole wrapped in
          puffs of lime cloth; maroon carpets deep in petals; his bench, a carved chair, a low dark table */
-      const C = tent(CHIEF.x, CHIEF.z, { w: CHIEF.w, eave: CHIEF.eave, peak: CHIEF.peak, roof: satinRoof(0x23301f), valance: 0xd8a41c, swags: 4, swagCols: [0xb6d62e, 0xe2a61a] });
+      /* (its drapes are deep: photographs 5 and 6 are taken under them, and what fills their top is swags of lime, gold
+         and orange satin, not the dark cloth over them) */
+      const C = tent(CHIEF.x, CHIEF.z, { w: CHIEF.w, eave: CHIEF.eave, peak: CHIEF.peak, ry: CHIEF.ry, roof: satinRoof(0x23301f, 0x141c16), valance: 0xd8a41c, band: 0.4,
+        swags: 3, swagCols: [0xb6d62e, 0xe2a61a, 0xf08a1c], swagDepth: 0.8, swagDrop: 0.36, swagStep: 1 });
       for (const [x, z] of C) solidBox(0.16, 2.2, 0.16, x, 1.1, z);
-      many('w3puff', [0, 1, 2].map(k => ({ x: C[3][0], y: 0.02 + k * 0.72, z: C[3][1], ry: k * 1.1 })), world, 0.75);   // the north-west pole, the one the turf sees
-      rug(mCarpet, 5.2, 8.2, 2.4, 1.6, BENCH.ry + Math.PI / 2); rug(mCarpet, 3.9, 6.9, 2.4, 1.6, BENCH.ry + Math.PI / 2 + 0.06, 0.009);
-      stand('w3bench', BENCH.x, 0, BENCH.z, BENCH.ry);
-      solidBox(1.9, 1.4, 0.75, BENCH.x, 0.7, BENCH.z, BENCH.ry);
-      stand('w3chair', 7.75, 0, 8.35, BENCH.ry - 0.35);
-      stand('w3lowtable', 5.75, 0, 9.95, BENCH.ry + 0.2);
-      many('w3petalbowl', [{ x: 5.75, y: 0.42, z: 9.95, ry: 0 }, { x: 7.35, y: 0, z: 9.3, ry: 1 }], world, 0.3);
-      many('w3purple', [{ x: 8.05, y: 0, z: 7.05, ry: 2.0 }], world, 1.1);
+      /* THE LIME POLE (photographs 1, 5, 6): the canopy's front right pole, the one before the bench's right hand, wrapped
+         from the ground to the eave in seven gathered tiers of lime cloth, each wider than it is tall and a little
+         narrower than the one under it. The model is one puff of white satin (0.75 m tall, 0.52 across): each is drawn
+         wider and pressed down to 0.46 m about its own foot, and tinted */
+      { const [px, pz] = C[0], tiers = [0, 1, 2, 3, 4, 5, 6].map(k => ({ x: px, y: 0.01 + k * 0.31, z: pz, ry: k * 1.9, s: 1.22 - k * 0.04 }));   // (each 0.46 m tall on a rise of 0.31: they overlap, and no pole shows between)
+        many('w3puff', tiers, world, 0.75, (made) => { const m4 = new THREE.Matrix4(), sq = new THREE.Matrix4();
+          for (const im of made) { im.material.color.set(0xa6d82a);
+            tiers.forEach((t, i) => { im.getMatrixAt(i, m4);
+              sq.makeTranslation(0, t.y, 0).multiply(m4.clone().makeScale(1, 0.46 / (0.75 * t.s), 1)).multiply(new THREE.Matrix4().makeTranslation(0, -t.y, 0));
+              im.setMatrixAt(i, sq.multiply(m4)); });
+            im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere(); } }); }
+      /* his bench (brown hardwood: the model came lacquer red, its hue turned and darkened here), drawn 2.05 m long for
+         two; the low table at his right hand's front with a bowl of petals and a bai sri set down on it; a carved chair
+         beyond it; maroon carpets before the bench where people kneel; purple flowers at both ends */
+      const BA = (a, b) => benchAt(a, b), along = BENCH.ry + Math.PI / 2;
+      { const [x1, z1] = BA(0.15, 1.95), [x2, z2] = BA(-1.95, 1.8); rug(mCarpet, x1, z1, 2.4, 1.6, along); rug(mCarpet, x2, z2, 2.4, 1.6, along + 0.07, 0.009); }
+      stand('w3bench', BENCH.x, 0, BENCH.z, BENCH.ry, { s: 1.1, done: (m) => { m.scale.x *= 1.24; m.traverse(q => { if (q.isMesh) { hueTurn(q.material, 17); q.material.color.multiplyScalar(0.72); } }); } });
+      solidBox(2.2, 1.4, 0.8, BENCH.x, 0.7, BENCH.z, BENCH.ry);
+      { const [x, z] = BA(2.25, -0.05); stand('w3chair', x, 0, z, BENCH.ry - 0.25, { s: 1.11 }); solidBox(0.9, 1.4, 0.9, x, 0.7, z, BENCH.ry); }
+      const TB = BA(1.05, 1.1);
+      stand('w3lowtable', TB[0], 0, TB[1], BENCH.ry + 0.12); solidBox(1.05, 1.0, 1.05, TB[0], 0.5, TB[1], BENCH.ry);
+      { const [bx, bz] = BA(0.82, 1.28), [gx, gz] = BA(0.1, 0.72), [wx, wz] = BA(1.28, 0.98);
+        many('w3petalbowl', [{ x: bx, y: 0.38, z: bz, ry: 0 }, { x: gx, y: 0, z: gz, ry: 1 }], world, 0.3);
+        many('w3pewter', [{ x: wx, y: 0.38, z: wz, ry: 0.8 }], world, 0.5); }
+      { const [ax, az] = BA(-1.55, 0.15), [cx2, cz2] = BA(2.95, 0.7); many('w3purple', [{ x: ax, y: 0, z: az, ry: 2.0 }, { x: cx2, y: 0, z: cz2, ry: 0.4 }], world, 1.1); }
     }
 
     /* ================================================================ THE BANNERS, THE POLE, THE FLAGS (photographs 8, 10)
@@ -1012,10 +1236,10 @@
     const mix = (...fs) => (rnd) => fs[Math.floor(rnd() * fs.length) % fs.length](rnd);
     function buildPetals() {
       /* day one: before the chief bench, before the two west tents and the east one, and at the tables' front */
-      petalField(LOW ? 1500 : 2600, 5101, mix(around(4.6, 7.6, 2.6), around(4.6, 7.6, 1.5), around(-7.6, -0.8, 2.2), around(-7.6, 5.0, 1.7), around(7.6, -2.0, 2.0), around(0, -9.3, 2.6)), dayOne);
+      petalField(LOW ? 1500 : 2600, 5101, mix(around(5.7, 8.7, 2.6), around(5.7, 8.7, 1.5), around(-7.6, -0.8, 2.2), around(-7.6, 5.0, 1.7), around(7.6, -2.0, 2.0), around(0, -9.3, 2.6)), dayOne);
       /* day two: yesterday's petals everywhere, trodden into the turf */
       petalField(LOW ? 3200 : 5600, 5102, mix((rnd) => [TURF.x0 + rnd() * (TURF.x1 - TURF.x0), TURF.z0 + rnd() * (TURF.z1 - TURF.z0)],
-        around(4.6, 7.6, 3.2), around(-7.6, -0.8, 2.8), around(7.6, -2.0, 2.6), around(0, -9.3, 3.0), around(0, 1.5, 6)), dayTwo);
+        around(5.7, 8.7, 3.2), around(-7.6, -0.8, 2.8), around(7.6, -2.0, 2.6), around(0, -9.3, 3.0), around(0, 1.5, 6)), dayTwo);
     }
 
     /* ================================================================ PAINTED SHADOW (v9.3, v9.4)
@@ -1051,7 +1275,7 @@
       /* a standing box: its foot, its top's shade, and the four sides between */
       const boxS = (x0, z0, x1, z1, h) => { const F = [[x0, z0], [x1, z0], [x1, z1], [x0, z1]]; poly(F, 0); poly(F, h);
         for (let i = 0; i < 4; i++) { const p = F[i], q = F[(i + 1) % 4]; x.beginPath(); x.moveTo(X(p[0]), Z(p[1])); x.lineTo(X(q[0]), Z(q[1])); x.lineTo(X(q[0] + sx * h), Z(q[1] + sz * h)); x.lineTo(X(p[0] + sx * h), Z(p[1] + sz * h)); x.closePath(); x.fill(); } };
-      const tentS = (T0, w, e) => poly([[T0.x - w / 2, T0.z - w / 2], [T0.x + w / 2, T0.z - w / 2], [T0.x + w / 2, T0.z + w / 2], [T0.x - w / 2, T0.z + w / 2]], e + 0.3);
+      const tentS = (T0, w, e) => poly(tentCorners(T0.x, T0.z, w, T0.ry || 0), e + 0.3);
       for (const T0 of [TENT_W1, TENT_W2, TENT_E]) tentS(T0, TENT.w + 0.2, TENT.eave);
       tentS(CHIEF, CHIEF.w + 0.2, CHIEF.eave);
       boxS(TABLES.x0, TABLES.z0, TABLES.x1, TABLES.z1, 1.2);
@@ -1089,11 +1313,349 @@
     buildBanners();
     buildPole();
     flush();
-    dressTables();
+    dressTables(); dressHall();
     buildTrees();
     buildPetals();
     buildShade();
     paintShade('DAY1');
+
+    /* ================================================================ THE PEOPLE (the plan's §3.3, §6.1; the tracker's §5)
+       Every body here was made for this chapter end to end (a reference on white in an A pose, Meshy at its highest
+       settings, its rig with fingers, the library's takes and written ones: masters/v26.0/make.sh §1 to §3), prepped in
+       real metres with its feet on the origin and its face along +z. Nobody is a block figure: a person is not drawn at
+       all until its model has landed (v21.16).
+
+       A PERSON is a group with the rig cloned into it and one mixer. Its takes all run, each at a weight; `take()` names
+       the one that should be full and the rest ease out. A take may hold the body off its own origin (v25.5: measured
+       per take, at its first moment), so each is brought back onto the person's spot as its weight rises. In a film a
+       person is posed by the film's clock (`pose()`: the take and the moment, absolute, so a seek lands on the same
+       picture: v6.4); in play the wall clock runs them.
+
+       ONE SKELETON, SEVERAL SKINS (the tracker's §5 "The levels"). A person's file holds the body drawn from near by;
+       `<key>m` and `<key>f` are the same body rebuilt lighter (Meshy's own remesh at 8,000 and 2,500 triangles, the
+       rig laid on each by tools/riglod.mjs), and `<key>h`, for the two he speaks to face to face, is the generator's
+       own model with every triangle. Each lighter or fuller skin is bound to the near body's own bones by name, so it
+       wears every take and costs no skeleton; which one is drawn is chosen every frame from the lens (and so at a cut
+       from the cut's own lens: v24.22), with a little slack so a person standing on a boundary does not flicker. */
+    const people = [];
+    const WALKS = /^(Walking|Casual_Walk|Walking_Woman)$/;
+    const LEVELS = [['h', 2.7], ['', 5.4], ['m', 11.5], ['f', Infinity]];        // each skin's suffix and how far it is drawn to
+    const _pv = new THREE.Vector3(), _pq = new THREE.Quaternion(), _lens = new THREE.Vector3();
+    /* the soft dark under a body (a phone draws no shadows, so a contact shadow is painted: v9.3) */
+    const blobTex = (() => { const [c, x] = cnv(64); const g = x.createRadialGradient(32, 32, 2, 32, 32, 31);
+      x.clearRect(0, 0, 64, 64);
+      g.addColorStop(0, 'rgba(0,0,0,0.62)'); g.addColorStop(0.55, 'rgba(0,0,0,0.3)'); g.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = g; x.fillRect(0, 0, 64, 64); return tex(done(THREE, c, false)); })();
+    const blobGeo = new THREE.PlaneGeometry(1, 1); blobGeo.rotateX(-Math.PI / 2);        // (dispose() finds it through the world, as it finds every geometry)
+    const blobMat = B({ map: blobTex, transparent: true, depthWrite: false, opacity: 0.8, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+    const blob = (parent, w = 0.85, d = 0.7) => { const m = new THREE.Mesh(blobGeo, blobMat); m.position.y = 0.014; m.scale.set(w, 1, d); m.renderOrder = 2; parent.add(m); return m; };
+
+    function mkPerson(key, x, z, ry, o = {}) {
+      const P = { key, o, group: new THREE.Group(), ready: false, acts: {}, w: {}, off: {}, offY: {}, cur: o.take || 'Idle_3', fade: 0.4, win: o.win || null,
+                  mixer: null, model: null, head: null, hips: null, bone: {}, lv: [null, null, null, null], lvNow: -1, force: null, members: [],
+                  hidden: !!o.hidden, driver: !!o.driver, filmT: null, rate: o.rate || 1, phase: o.phase || 0, clock: (o.phase || 0) * 10, then: [] };
+      P.group.position.set(x, o.y || 0, z); P.group.rotation.y = ry; P.group.visible = false; (o.parent || world).add(P.group);
+      people.push(P);
+      if (!have(key)) { waiting.add(key); return P; }
+      parseOnce(key).then(({ scene: src, animations }) => {
+        if (!alive) return;
+        const m = cloneSkinned(src), skins = [];
+        m.traverse(q => {
+          if (q.isSkinnedMesh) { q.castShadow = false; q.receiveShadow = false; q.frustumCulled = false; skins.push(q); }
+          if (q.isBone) { P.bone[q.name] = q; if (/^(mixamorig:?)?Head$/.test(q.name)) P.head = q; if (/^(mixamorig:?)?Hips$/.test(q.name)) P.hips = q; }
+        });
+        if (o.s) m.scale.multiplyScalar(o.s);
+        P.group.add(m); P.model = m; P.lv[1] = skins;
+        P.mixer = new THREE.AnimationMixer(m);
+        for (const clip0 of animations) {
+          let clip = clip0;
+          /* a walk is walked ON THE SPOT here: the group is what travels (so a path is a path), and the take's own
+             travel over the ground is taken out of its hips (their sway and their rise kept) */
+          if (WALKS.test(clip.name)) { clip = clip0.clone(); const tr0 = clip.tracks.find(t => /Hips\.position$/.test(t.name));
+            if (tr0) { const v = tr0.values, n = v.length / 3, x0 = v[0], z0 = v[2], x1 = v[(n - 1) * 3], z1 = v[(n - 1) * 3 + 2];
+              for (let i = 0; i < n; i++) { const k = n > 1 ? i / (n - 1) : 0; v[i * 3] -= (x1 - x0) * k; v[i * 3 + 2] -= (z1 - z0) * k; } } }
+          const a = P.mixer.clipAction(clip); a.enabled = true; a.setEffectiveWeight(0); a.play(); P.acts[clip.name] = a; P.w[clip.name] = 0;
+        }
+        /* where each take holds the hips at its first moment (or at its window's start), from the person's own spot */
+        if (P.hips) { const base = {};
+          for (const name in P.acts) { for (const k in P.acts) P.acts[k].setEffectiveWeight(k === name ? 1 : 0);
+            P.acts[name].time = P.win && P.win[name] ? P.win[name][0] : 0; P.mixer.update(0); P.group.updateWorldMatrix(true, true);
+            P.hips.getWorldPosition(_pv); P.group.worldToLocal(_pv); base[name] = [_pv.x, _pv.z, _pv.y]; }
+          const ref = o.centre ? [0, 0] : (base[o.ref || 'Idle_3'] || [0, 0]);    // centre: the hips themselves on the spot (a sitter on his seat)
+          for (const name in base) P.off[name] = (o.keepOff && o.keepOff.test(name)) ? [0, 0] : [base[name][0] - ref[0], base[name][1] - ref[1]];
+          /* A SITTER'S SEAT (o.seat: { y: the seat's top, over: how far the hips ride above it, takes: which takes sit }):
+             every sitting take holds the hips at its own height (measured: Grandmaster Pho's talk sits 3 cm lower than
+             his rest), so each is brought to the one height the seat asks for, and changing take never lifts him off
+             it or sinks him through it (v16.8) */
+          if (o.seat) for (const name in base) if (!o.seat.takes || o.seat.takes.test(name)) P.offY[name] = base[name][2] - (o.seat.y + (o.seat.over != null ? o.seat.over : 0.1)); }
+        if (!P.acts[P.cur]) { console.warn(key + ' has no take ' + P.cur + ' (it has: ' + Object.keys(P.acts).join(', ') + ')'); P.cur = Object.keys(P.acts)[0]; }
+        for (const k in P.acts) { P.w[k] = k === P.cur ? 1 : 0; P.acts[k].setEffectiveWeight(P.w[k]); P.acts[k].time = (P.phase * P.acts[k].getClip().duration) % P.acts[k].getClip().duration; }
+        P.ready = true; P.group.visible = !P.hidden && !P.driver;
+        if (!P.driver && !o.noBlob) P.blob = blob(P.group, o.blobW || 0.85, o.blobD || 0.7);
+        personSettle(P); windowTime(P); P.mixer.update(0);
+        if (ctx.cullBySphere && !P.driver) ctx.cullBySphere(P.group, 0, 0.9, 0, 1.9);
+        for (const M0 of P.members) memberSkin(M0, 1);
+        if (o.look) o.look(m);
+        if (o.skins !== false) for (const i of [0, 2, 3]) addLevel(P, i);
+        const L = P.then; P.then = []; for (const f of L) f(P);
+      }).catch(err => { console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
+      return P;
+    }
+    /* one more skin of a person, bound to the bones the near body already has */
+    function addLevel(P, i) {
+      const named = P.o.skins && P.o.skins[i], key = named || (P.o.skins ? null : P.key + LEVELS[i][0]);
+      if (!key) return;
+      if (!have(key)) { if (i !== 0 || named) waiting.add(key); return; }
+      parseOnce(key).then(({ scene: src }) => {
+        if (!alive || !P.model) return;
+        const made = [];
+        src.traverse(sm => { if (!sm.isSkinnedMesh) return;
+          const bones = sm.skeleton.bones.map(b => P.bone[b.name]);
+          if (bones.some(b => !b)) { console.warn(key + ': a bone of it is not on ' + P.key); return; }
+          let mat = sm.material;
+          if (!mat.map) { let near = null; for (const q of P.lv[1]) for (const nm of [].concat(q.material)) if (nm.name === mat.name) near = nm; if (near) mat = near; }
+          const mesh = new THREE.SkinnedMesh(sm.geometry, mat);
+          mesh.castShadow = false; mesh.receiveShadow = false; mesh.frustumCulled = false; mesh.visible = false;
+          P.model.add(mesh); mesh.bind(new THREE.Skeleton(bones, sm.skeleton.boneInverses), sm.bindMatrix); made.push(mesh); });
+        if (!made.length) return;
+        P.lv[i] = made; P.lvNow = -1;
+        if (ctx.cullBySphere && !P.driver) ctx.cullBySphere(P.group, 0, 0.9, 0, 1.9);
+        for (const M0 of P.members) memberSkin(M0, i);
+      }).catch(err => { console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
+    }
+    const whenReady = (P, fn) => { if (!P) return; if (P.ready) fn(P); else P.then.push(fn); };
+    /* the model slid so the body stands on the person's spot whatever its takes' own offsets, by their weights */
+    /* (and set down: two written takes hold the whole body a few centimetres over the ground, measured on a devotee) */
+    const SINK = { prostrate: 0.046, offer: 0.049 };
+    function personSettle(P) {
+      if (!P.model) return; let ox = 0, oz = 0, oy = 0;
+      for (const k in P.w) { const w = P.w[k], f = P.off[k]; if (w > 0 && f) { ox += f[0] * w; oz += f[1] * w; } if (w > 0 && SINK[k]) oy += SINK[k] * w; if (w > 0 && P.offY[k]) oy += P.offY[k] * w; }
+      P.model.position.x = -ox; P.model.position.z = -oz; P.model.position.y = -oy;
+    }
+    /* A WINDOW of a take (o.win: { take: [from, length] }): a take that is right only for part of its length is played
+       back and forth inside that part, eased at both ends (the seated idle leans far forward for five of its ten
+       seconds: only its upright ends are a master's rest). The window may run past the take's end: it wraps. */
+    function windowTime(P) {
+      if (!P.win) return;
+      for (const name in P.win) { const A = P.acts[name]; if (!A || !(P.w[name] > 0)) continue;
+        const [from, len] = P.win[name], d = A.getClip().duration, u = (P.clock / (len * 2)) % 1, k = 0.5 - 0.5 * Math.cos(u * 2 * Math.PI);
+        A.time = (((from + k * len) % d) + d) % d; A.timeScale = 0; }
+    }
+    /* which take a person wears from now on (eased over `fade` seconds); `restart` begins it at its start */
+    function take(P, name, fade = 0.4, restart = false) {
+      if (!P) return false;
+      if (!P.ready) { P.cur = name; P.then.push(() => take(P, name, 0, restart)); return true; }
+      if (!P.acts[name]) { console.warn(P.key + ' has no take ' + name); return false; }
+      if (restart || P.cur !== name) { if (restart || P.w[name] < 0.01) P.acts[name].time = 0; }
+      P.cur = name; P.fade = fade; P.filmT = null;
+      if (!(fade > 0)) { for (const k in P.acts) { P.w[k] = k === name ? 1 : 0; P.acts[k].setEffectiveWeight(P.w[k]); } personSettle(P); }
+      return true;
+    }
+    /* a film's pose: this take at this moment of its own length (held at its end, or wrapped if `loop`), absolutely */
+    function pose(P, name, t, loop = false, name2 = null, k2 = 0, t2 = 0) {
+      if (!P || !P.ready || !P.acts[name]) return;
+      for (const k in P.acts) { const w = k === name ? 1 - (name2 ? k2 : 0) : (k === name2 ? k2 : 0); P.w[k] = w; P.acts[k].setEffectiveWeight(w); }
+      const A = P.acts[name], d = A.getClip().duration; A.time = loop ? ((t % d) + d) % d : Math.max(0, Math.min(d - 1e-3, t));
+      if (name2 && P.acts[name2]) { const A2 = P.acts[name2], d2 = A2.getClip().duration; A2.time = Math.max(0, Math.min(d2 - 1e-3, t2)); }
+      P.cur = name; P.filmT = t; personSettle(P); P.mixer.update(0);
+    }
+    function put(P, x, z, ry, y = 0) { if (!P) return; P.group.position.set(x, y, z); if (ry != null) P.group.rotation.y = ry; }
+    const faceTo = (x, z, tx, tz) => Math.atan2(tx - x, tz - z);                 // the turn that faces a +z-facing body at a point
+    /* every frame of play: weights eased on the wall clock, takes run, bodies settled */
+    function peopleTick(wdt, live) {
+      for (const P of people) {
+        if (!P.ready || (!P.group.visible && !P.driver)) continue;
+        if (P.filmT != null && !live) continue;                                  // a film holds its people where it posed them
+        if (P.filmT != null) { P.filmT = null; }
+        let moved = false;
+        for (const k in P.acts) { const to = k === P.cur ? 1 : 0, w = P.w[k];
+          if (w !== to) { const st = P.fade > 0 ? wdt / P.fade : 1; P.w[k] = to > w ? Math.min(to, w + st) : Math.max(to, w - st); P.acts[k].setEffectiveWeight(P.w[k]); moved = true; } }
+        if (moved) personSettle(P);
+        P.clock += wdt * P.rate; windowTime(P);
+        P.mixer.update(wdt * P.rate);
+      }
+    }
+
+    /* THE CROWD (the tracker's §12). Forty-odd people cannot each have a skeleton on a phone. Each of the eight devotee
+       bodies has a few DRIVERS instead: a person nobody sees, with its mixer, wearing one take at one phase. A MEMBER of
+       the crowd is that body's skins drawn again from the driver's bones, wherever the member sits (three's detached
+       bind mode: the pose comes from the bones, the place from the member's own group; episode 1 chapter 3's crowd,
+       v5.21). So the whole crowd breathes, sways and bows on a score of mixers. A driver stands at the world's origin,
+       unturned, or every member would be thrown by its place. */
+    const crowd = [];
+    function mkDriver(key, o = {}) { return mkPerson(key, 0, 0, 0, Object.assign({ driver: true }, o)); }
+    function mkMember(D, x, z, ry, o = {}) {
+      const s = o.s || 1, M0 = { D, group: new THREE.Group(), lv: [null, null, null, null], lvNow: -1, s, o };
+      M0.group.position.set(x, o.y || 0, z); M0.group.rotation.y = ry; M0.group.scale.set(o.mirror ? -s : s, s, s); (o.parent || world).add(M0.group);
+      if (!o.noBlob) M0.blob = blob(M0.group, (o.blobW || 0.95) / s, (o.blobD || 0.9) / s);
+      crowd.push(M0); D.members.push(M0);
+      for (let i = 1; i < 4; i++) if (D.lv[i]) memberSkin(M0, i);
+      return M0;
+    }
+    function memberSkin(M0, i) {
+      const src = M0.D.lv[i]; if (!src || M0.lv[i]) return;
+      M0.lv[i] = src.map(sm => { const c = sm.clone(); c.bindMode = 'detached'; c.bindMatrix.identity(); c.bindMatrixInverse.identity();
+        c.frustumCulled = false; c.visible = false; M0.group.add(c); return c; });
+      M0.lvNow = -1;
+      if (ctx.cullBySphere) ctx.cullBySphere(M0.group, 0, 0.75, 0, 1.6);         // a sitter or a stander, and room for a bow
+    }
+
+    /* WHICH SKIN IS DRAWN, every frame, from the lens. b: a boundary is crossed only 7 % past it (no flicker). A missing
+       skin is stood in for by the next fuller one that is there. `force` (a film's close shot) names a level outright. */
+    function levelFor(now, d, max) {
+      let lv = 0;
+      for (let i = 0; i < 3; i++) { const b = LEVELS[i][1]; if (now > i ? !(d < b * 0.93) : d > b * 1.07) lv++; }
+      return Math.max(lv, max);
+    }
+    function showLevel(X, want) {
+      let k = want; while (k > 1 && !X.lv[k]) k--;                                // the far skins fall back on the near one
+      if (!X.lv[k]) k = 1;
+      if (!X.lv[k]) return;
+      if (k === X.lvShown && X.lvNow === want) return;
+      for (let i = 0; i < 4; i++) if (X.lv[i]) for (const m of X.lv[i]) m.visible = i === k;
+      X.lvShown = k; X.lvNow = want;
+    }
+    function peopleLevels(cam = camera) {
+      cam.getWorldPosition(_lens);
+      for (const P of people) { if (!P.ready || P.driver) { if (P.driver && P.ready && P.lvShown !== -2) { for (let i = 0; i < 4; i++) if (P.lv[i]) for (const m of P.lv[i]) m.visible = false; P.lvShown = -2; } continue; }
+        if (!P.group.visible) continue;
+        const g = P.group.position, d = Math.hypot(g.x - _lens.x, g.y + 1.0 - _lens.y, g.z - _lens.z);
+        showLevel(P, P.force != null ? P.force : levelFor(P.lvNow < 0 ? 3 : P.lvNow, d, P.lv[0] ? 0 : 1)); }
+      for (const M0 of crowd) { if (!M0.group.visible || !M0.D.ready) continue;
+        const g = M0.group.position, d = Math.hypot(g.x - _lens.x, g.y + 0.8 - _lens.y, g.z - _lens.z);
+        showLevel(M0, levelFor(M0.lvNow < 0 ? 3 : M0.lvNow, d, 1)); }
+    }
+
+    /* THE CAST OF DAY ONE AND DAY TWO. Who they are is the plan's §3.3. Each stands or sits where the photographs put
+       their kind: the masters under their tents on the west side, the monks under the east one, Grandmaster Pho under the
+       gold. (The crowd, the dancers and those who go up are placed by the play and the films.) */
+    const cast = {};
+    const SIT_E = Math.PI / 2, SIT_W = -Math.PI / 2;                            // seated facing east; facing west
+    const REST = { Chair_Sit_Idle_M: [9.4, 2.85] };                             // the seated idle's upright window (it wraps its end)
+    const PHO_AT = benchAt(0.46, 0.04);                                          // Grandmaster Pho's place: the bench's east end
+    /* each seat's top in metres, MEASURED on its model (tools/probes/seatmeasure.mjs: the sofa's cushion 0.46 and sat
+       into by 3 cm; the bench's slats 0.40 and the chair's seat 0.39, each at the size b_world2.js draws it) */
+    const SEATS = { sofa: 0.43, bench: 0.44, chair: 0.43 };
+    function buildCast() {
+      const tonAt = [TON_TABLE.x + 1.25, TON_TABLE.z + 0.35];
+      cast.ton = mkPerson('e4ton', tonAt[0], tonAt[1], faceTo(tonAt[0], tonAt[1], DATA.spawn.x, DATA.spawn.z), { take: 'Idle_3' });
+      /* the woman at his bench stands by the low table at his right hand, turned to those who kneel (photograph 6) */
+      { const [ax, az] = benchAt(1.95, 0.95), [kx, kz] = benchAt(0.3, 1.9);
+        cast.aunt = mkPerson('e4bench', ax, az, faceTo(ax, az, kx, kz), { take: 'Idle_3', phase: 0.4 }); }
+      /* (each on his sofa: its cushion's top is SEATS.sofa, his hips a little forward of the sofa's own middle) */
+      const seat = (key, x, z, phase) => mkPerson(key, x, z, SIT_E, { take: 'Chair_Sit_Idle_M', centre: true, win: REST, phase, blobW: 1.0, blobD: 1.1,
+        seat: { y: SEATS.sofa, takes: /^(Chair_Sit|Sitting_|handson|petals|palmover)/ } });
+      cast.hermitA = seat('e4hermita', -10.17, -2.2, 0.1);
+      cast.red = seat('e4red', -10.17, -0.95, 0.55);
+      /* the second master in white sits at Grandmaster Pho's left on the same bench (photographs 1, 5, 6) */
+      { const [wx, wz] = benchAt(-0.52, 0.04);
+        cast.white = mkPerson('e4white', wx, wz, BENCH.ry, { take: 'Chair_Sit_Idle_M', centre: true, win: REST, phase: 0.8, blobW: 1.0, blobD: 1.1,
+          seat: { y: SEATS.bench, takes: /^(Chair_Sit|Sitting_|handson|petals|palmover)/ } }); }
+      cast.hermitB = seat('e4hermitb', -10.17, 5.0, 0.3);
+      /* GRANDMASTER PHO (Chad's own model, prepared over v24.38 to v24.56: masters/v24.56/PLAN.md), on his bench under
+         the gold canopy, facing the offering tables and those who kneel to him. His look is D, Chad's pick ("unlit, except for the robe", v24.52):
+         lookD below. His rest is the first half second of his seated take, back and forth (the rest of it is talk). Far
+         across the turf he is drawn from a lighter cut of the same body (permissive: fit for distance only, v21.8). */
+      /* (his rest, judged on every seated take of his file at its first and last moments: the start of his rise from
+         a seat, where he sits upright with both hands on his knees; its first third of a second, back and forth. His
+         talk take holds both hands out before his chest from its first frame: that is talk, not rest) */
+      cast.pho = mkPerson('pho', PHO_AT[0], PHO_AT[1], BENCH.ry, { take: 'Sit_to_Stand_Transition_M', centre: true,
+        win: { Sit_to_Stand_Transition_M: [0.02, 0.3] }, seat: { y: SEATS.bench, takes: /^Sit/ }, skins: { 3: 'phof' }, look: lookD, blobW: 1.1, blobD: 1.2 });
+      /* THE MONKS' ROW under the east tent, on chairs, facing the turf (photograph 2). Chad's monk, as episode 3's shop
+         has him (declared: `reuse`), his far skin episode 3's row */
+      /* (each rests at a different moment of the seated take, so three of one man do not hold one pose) */
+      /* (their rest is the first and last third of a second of the seated take that begins and ends with both hands on
+         the thighs; the talking take holds the hands out in the air the whole way: photographed, and refused as a rest) */
+      cast.monks = [[-3.2, 0.05, 0.02, 0.32], [-2.0, 0.5, 3.5, 0.6], [-0.8, 0.85, 0.08, 0.26]].map(([z, ph, from, len]) => mkPerson('monkshop', 10.22, z, SIT_W, { take: 'Sit_Thumbs_Up_Right', centre: true,
+        win: { Sit_Thumbs_Up_Right: [from, len] }, phase: ph, seat: { y: SEATS.chair, takes: /^Sit/ }, skins: { 3: 'monkrow' }, blobW: 1.0, blobD: 1.1 }));
+    }
+    /* LOOK D on Grandmaster Pho: after the tone mapping, the scan's own colour is laid back wherever the texel is
+       saturated (his skin, his beads, the gold) and over the whole of his face-and-hands part; the white robe keeps the
+       scene's light and its folds. `level` scales the laid colour to the hour (an unlit colour ignores the sun: at dawn
+       or by candle it must be dimmed by hand): look() sets it. tools/probes/phoingame.mjs is where it was proved. */
+    const phoLook = { k: { value: 1 }, level: { value: 1 } };
+    function lookD(model) {
+      model.traverse(q => { if (!q.isMesh) return;
+        const list = [].concat(q.material).map(m0 => { const mt = m0.clone(); mats.push(mt); const WHOLE = /\(face and hands\)$/.test(m0.name);
+          mt.onBeforeCompile = (sh) => { sh.uniforms.uK = phoLook.k; sh.uniforms.uLevel = phoLook.level;
+            sh.fragmentShader = 'uniform float uLevel;\nuniform float uK;\n' + sh.fragmentShader.replace('#include <tonemapping_fragment>', '#include <tonemapping_fragment>\n'
+              + (WHOLE ? 'float skn = 1.0;\n' : 'vec3 sc = pow(max(diffuseColor.rgb, vec3(1e-4)), vec3(1.0 / 2.2)); float mxc = max(sc.r, max(sc.g, sc.b)); float skn = smoothstep(0.12, 0.25, (mxc - min(sc.r, min(sc.g, sc.b))) / max(mxc, 1e-4));\n')
+              + 'gl_FragColor.rgb = mix(gl_FragColor.rgb, diffuseColor.rgb * uLevel, clamp(uK * skn, 0.0, 1.0));'); };
+          mt.customProgramCacheKey = () => 'phoLookD' + (WHOLE ? ':whole' : ''); return mt; });
+        q.material = Array.isArray(q.material) ? list : list[0]; });
+    }
+    buildCast();
+
+
+    /* ================================================================ THE CROWD OF DAY ONE (the plan's §3.3; photographs 1, 8, 10, 12)
+       Devotees in white on the turf: most sit on their heels in loose rows facing the offering tables, some stand at the
+       edges and talk. Eight bodies were made for them; a crowd of copies reads as copies, so WHO SITS WHERE IS SOLVED
+       (Chad's rule, v5.29): a balanced deal of the eight over the places, then a seeded local search that swaps two
+       people whenever the swap puts the same body further from its own copies; every other one is mirrored and each is a
+       little taller or shorter. `stage.crowdStats()` reports what the solve reached, so the claim can be checked.
+
+       Each body has three drivers (c_cast.js): two sitting at different moments of the same take, one standing. So the
+       people of one body do not all breathe together, and the whole crowd is twenty-four mixers. */
+    const DEVOTEES = ['e4deva', 'e4devb', 'e4devc', 'e4devd', 'e4deve', 'e4devf', 'e4devg', 'e4devh'];
+    const crowdSeats = [];                                                       // { x, z, ry, kind: 'sit' | 'stand', body, mirror, s, drv }
+    const crowdDrivers = {};                                                     // key -> { sitA, sitB, stand }
+    const crowdBlock = [];
+    function planCrowd() {
+      const R = rng(41203);
+      const aim = (x, z) => faceTo(x, z, 0, -11.2);                              // toward the offering tables
+      /* the sitting blocks: a jittered grid in each, and only so many of its places taken (loose rows, small groups) */
+      const block = (x0, x1, z0, z1, n) => { const cells = [];
+        for (let z = z0; z <= z1 + 1e-6; z += 1.18) for (let x = x0 + ((Math.round((z - z0) / 1.18) % 2) ? 0.5 : 0); x <= x1 + 1e-6; x += 1.08) cells.push([x, z]);
+        for (let i = cells.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1)); const t = cells[i]; cells[i] = cells[j]; cells[j] = t; }
+        for (const [x, z] of cells.slice(0, n)) { const px = x + (R() - 0.5) * 0.3, pz = z + (R() - 0.5) * 0.3;
+          crowdSeats.push({ x: px, z: pz, ry: aim(px, pz) + (R() - 0.5) * 0.3, kind: 'sit' }); } };
+      block(-8.2, -2.4, 2.6, 6.6, 12);          // south-west of the middle
+      block(2.2, 5.4, 1.4, 5.2, 6);             // south-east, short of the chief canopy
+      block(-6.4, -2.4, -6.6, -2.8, 8);         // north-west, before the west tent
+      block(2.4, 6.4, -7.2, -3.6, 6);           // north-east, before the monks
+      /* those who stand: in twos and threes at the edges, turned to one another or to the tables */
+      const pair = (x, z, n, r = 0.55) => { const a0 = R() * 6.283;
+        for (let i = 0; i < n; i++) { const a = a0 + i * 6.283 / n, px = x + Math.sin(a) * r, pz = z + Math.cos(a) * r;
+          crowdSeats.push({ x: px, z: pz, ry: n > 1 ? faceTo(px, pz, x, z) + (R() - 0.5) * 0.4 : aim(px, pz), kind: 'stand' }); } };
+      pair(-8.6, 10.6, 2); pair(9.6, 3.6, 3, 0.62); pair(8.9, 6.2, 1); pair(-9.6, -8.4, 2); pair(4.4, -8.9, 2); pair(-1.9, 10.9, 1);
+      /* THE SOLVE: bodies dealt evenly, then swaps that part a body from its copies. The cost of a pair of the same body
+         falls with the square of the distance between them inside six metres */
+      const N = crowdSeats.length, body = new Int32Array(N);
+      const order = Array.from({ length: N }, (_, i) => i);
+      for (let i = N - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1)); const t = order[i]; order[i] = order[j]; order[j] = t; }
+      order.forEach((seat, k) => { body[seat] = k % DEVOTEES.length; });
+      const pairCost = (i, j) => { if (body[i] !== body[j]) return 0; const d = Math.hypot(crowdSeats[i].x - crowdSeats[j].x, crowdSeats[i].z - crowdSeats[j].z); return d < 6 ? (6 - d) * (6 - d) : 0; };
+      const costOf = (i) => { let c = 0; for (let j = 0; j < N; j++) if (j !== i) c += pairCost(i, j); return c; };
+      let swaps = 0;
+      for (let it = 0; it < 6000; it++) { const a = Math.floor(R() * N), b = Math.floor(R() * N); if (a === b || body[a] === body[b]) continue;
+        const before = costOf(a) + costOf(b); let t = body[a]; body[a] = body[b]; body[b] = t;
+        if (costOf(a) + costOf(b) < before - 1e-9) swaps++; else { t = body[a]; body[a] = body[b]; body[b] = t; } }
+      crowdSeats.forEach((s, i) => { s.body = body[i]; s.mirror = R() < 0.5; s.s = 0.955 + R() * 0.085; s.half = R() < 0.5 ? 'A' : 'B'; });
+      crowdSeats.swaps = swaps;
+    }
+    function crowdStats() {
+      const N = crowdSeats.length, per = DEVOTEES.map(() => 0); let near = Infinity, sum = 0, touching = 0;
+      for (let i = 0; i < N; i++) { per[crowdSeats[i].body]++; let best = Infinity;
+        for (let j = 0; j < N; j++) if (j !== i && crowdSeats[j].body === crowdSeats[i].body) best = Math.min(best, Math.hypot(crowdSeats[i].x - crowdSeats[j].x, crowdSeats[i].z - crowdSeats[j].z));
+        near = Math.min(near, best); sum += best; if (best < 1.6) touching++; }
+      return { people: N, sitting: crowdSeats.filter(s => s.kind === 'sit').length, standing: crowdSeats.filter(s => s.kind === 'stand').length,
+               perBody: per, nearestSameBody: +near.toFixed(2), meanNearestSameBody: +(sum / N).toFixed(2), sameBodyWithin1m6: touching, swaps: crowdSeats.swaps, drivers: Object.keys(crowdDrivers).length * 3 };
+    }
+    function buildCrowd() {
+      planCrowd();
+      const SIT = { seiza: [0.4, 6.8] };                                         // the kneeling sit, back and forth over nearly its whole length
+      for (const key of DEVOTEES) crowdDrivers[key] = {
+        A: mkDriver(key, { take: 'seiza', centre: true, win: SIT, phase: 0.07 + 0.11 * DEVOTEES.indexOf(key) }),
+        B: mkDriver(key, { take: 'seiza', centre: true, win: SIT, phase: 0.55 + 0.09 * DEVOTEES.indexOf(key), rate: 0.86 }),
+        S: mkDriver(key, { take: 'Idle_3', centre: true, phase: 0.13 * DEVOTEES.indexOf(key) }) };
+      for (const s of crowdSeats) { const D = crowdDrivers[DEVOTEES[s.body]][s.kind === 'stand' ? 'S' : s.half];
+        s.member = mkMember(D, s.x, s.z, s.ry, { s: s.s, mirror: s.mirror, parent: dayOne, blobW: s.kind === 'stand' ? 0.8 : 0.95, blobD: s.kind === 'stand' ? 0.7 : 1.0 });
+        /* a person is a thing he walks round: a column from the ground (collide() samples at a metre) */
+        const r = 0.3; crowdBlock.push(new THREE.Box3(new THREE.Vector3(s.x - r, 0, s.z - r), new THREE.Vector3(s.x + r, 1.5, s.z + r))); }
+    }
+    /* the crowd's columns stand only while the crowd does: the engine walks the very list it was handed, so each box is
+       lifted clear of his head height when the crowd is gone, and set down again when it is back */
+    function crowdSolid(on) { for (const b of crowdBlock) { b.min.y = on ? 0 : 60; b.max.y = on ? 1.5 : 61; } }
+    buildCrowd();
 
     /* ================================================================ THE PLAY (the plan's §4.1, §4.3, §9)
        Every beat on the chapter clock (wall time, v7.1); every line through the queue, one voice at a time; each beat's
@@ -1163,6 +1725,7 @@
       lookName = name;
       const two = name === 'DAWN' || name === 'OPENED' || name === 'SHUT' || name === 'AFTERNOON' || name === 'DUSK';
       dayOne.visible = name === 'DAY1'; dayTwo.visible = two; nightG.visible = name === 'NIGHT';
+      crowdSolid(dayOne.visible);
       paintShade(name === 'OPENED' || name === 'SHUT' ? 'DAWN' : name);
     }
     function openDecision() { decOpen = true; if (getState() === 'play') startDecision(); }
@@ -1170,7 +1733,7 @@
     /* ---------------------------------------------------------------- the decision: Grandmaster Pho, on his bench */
     const _ndc = new THREE.Vector3();
     const INTERACT_R = 3.4;
-    const PILE_POS = new THREE.Vector3(BENCH.x, 0, BENCH.z);
+    const PILE_POS = new THREE.Vector3(PHO_AT[0], 0, PHO_AT[1]);              // (he is the chapter's pile: where he sits, not the bench's middle)
     const pile = new THREE.Group(); pile.position.copy(PILE_POS); world.add(pile);
     const pileLive = () => decOpen && phase === 'decide';
     function pileDist() { return Math.hypot(yaw.position.x - PILE_POS.x, yaw.position.z - PILE_POS.z); }
@@ -1192,7 +1755,7 @@
     function updateNotes(dt, t) {
       const st = getState();
       const now = wallNow(), wdt = lastWall ? Math.min(0.25, now - lastWall) : 0; lastWall = now;
-      if (st !== 'cine') { windClock += wdt; windTick(windClock); }
+      if (st !== 'cine') { windClock += wdt; windTick(windClock); peopleTick(wdt, true); peopleLevels(); }
       if (st !== 'play') return;
       if (!booted) { booted = true; applyPhase(kit ? kit.getPhase() : null); }
       dayClock.t += wdt;
@@ -1234,12 +1797,14 @@
       const out = [];
       const solid = (o, pad = 0.14) => { o.updateWorldMatrix(true, false); const bb = new THREE.Box3().setFromObject(o); bb.expandByScalar(pad); bb.min.y = 0; bb.max.y = Math.max(bb.max.y, 1.40); out.push(bb); };
       for (const s of solids) solid(s);
+      for (const b of crowdBlock) out.push(b);                                   // the crowd, a column a person (lifted out of his way when they are gone: crowdSolid)
       return out;
     }
     function dispose() {
       alive = false;
-      const geos = new Set(), ms = new Set();
+      const geos = new Set(), ms = new Set(), skels = new Set();
       world.traverse(o => {
+        if (o.isSkinnedMesh && o.skeleton) skels.add(o.skeleton);                  // each skin's bone sheet is a texture of its own
         if (o.geometry) geos.add(o.geometry);
         if (o.material) for (const m of (Array.isArray(o.material) ? o.material : [o.material])) ms.add(m);
       });
@@ -1254,6 +1819,7 @@
       for (const o of owned) { if (o.parent) o.parent.remove(o); o.dispose?.(); }
       owned.length = 0;
       for (const g of geos) g.dispose();
+      for (const k of skels) k.dispose();
       for (const m of ms) {
         for (const k of ['map', 'roughnessMap', 'metalnessMap', 'normalMap', 'emissiveMap', 'alphaMap']) m[k]?.dispose?.();
         m.dispose();
@@ -1280,7 +1846,8 @@
       keepIn: { what: 'the ground of the Wai Kru', minX: DATA.bounds.minX, maxX: DATA.bounds.maxX, minZ: DATA.bounds.minZ, maxZ: DATA.bounds.maxZ },
       get phase() { return phase; },
       setPhase, applyPhase, after, dayClock, sayLine, queueLine, queueFn, queueGap,
-      look, presets: PRESETS, films,
+      look, presets: PRESETS, films, crowdStats,
+      who: () => people.filter(P => !P.driver).map(P => ({ key: P.key, ready: P.ready, take: P.cur, skin: P.lvShown, skins: P.lv.map(v => (v ? 1 : 0)).join('') })),
       plan: { TURF, TABLES, HALL, TENT_W1, TENT_W2, TENT_E, CHIEF, BENCH, POLE, TON_TABLE, WEST_TABLE },
       info: () => ({ phase, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], until: +speak.until.toFixed(2),
                      pending: speak.pending ? speak.pending.name : null, decOpen, look: lookName, busy: play.busy,
@@ -1305,25 +1872,13 @@
 
   /* ====================================================== THIS CHAPTER'S DRAWN SURFACES
      Flat things with holes in them that are drawn, not modelled (the plan's §6.3: cloth, woven things and wire): the
-     white fretwork under the hall's eaves, the lattice of the fence, a louvred window, and one handful of petals. */
+     lattice of the fence, a louvred window, and one handful of petals. */
   function done(THREE, c, rep) {
     const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
     if (rep) { t.wrapS = t.wrapT = THREE.RepeatWrapping; }
     return t;
   }
-  /* the fretwork: a board of pointed drops with a round hole in each, repeating sideways */
-  function makeFretwork(THREE, cnv) {
-    const [c, x] = cnv(256); c.height = 128; x.clearRect(0, 0, 256, 128);
-    x.fillStyle = '#ffffff';
-    for (let i = 0; i < 4; i++) {
-      const u = i * 64;
-      x.beginPath(); x.moveTo(u, 0); x.lineTo(u + 64, 0); x.lineTo(u + 64, 58); x.quadraticCurveTo(u + 50, 70, u + 32, 124); x.quadraticCurveTo(u + 14, 70, u, 58); x.closePath(); x.fill();
-      x.globalCompositeOperation = 'destination-out';
-      x.beginPath(); x.arc(u + 32, 50, 11, 0, 6.283); x.fill(); x.beginPath(); x.arc(u + 32, 86, 5, 0, 6.283); x.fill();
-      x.globalCompositeOperation = 'source-over';
-    }
-    return done(THREE, c, true);
-  }
+  /* (the hall's fretwork is a picture cut from his photograph now: the surface `fretwork`) */
   /* the fence's lattice: thin white laths crossed on the diagonal */
   function makeLattice(THREE, cnv) {
     const [c, x] = cnv(256); x.clearRect(0, 0, 256, 256);
