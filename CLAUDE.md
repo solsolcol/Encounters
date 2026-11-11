@@ -25,6 +25,9 @@ Chad (chadsor@gmail.com) has **zero game-dev experience** and often works
 from his **phone**. Consequences:
 
 - Explain in plain language. No jargon walls. Paths only in code blocks.
+- **Be extremely concise** (Chad, 11 Nov 2026, of a plan: *"i dont want to read an entire wall of text. Be extremely
+  concise and to the point."*). A plan or a report to him is the thing on one phone screen: numbered steps, a few
+  words each, then what is needed from him. The detail lives in the plan doc, not in the message.
 - **Never push him toward git commands or terminal steps.** Rollback for
   him means the Netlify Deploys page (open an older deploy, Publish
   deploy) or the `.bundle` backups he keeps. The claude.ai preview
@@ -179,6 +182,7 @@ that fits it, with the version it came from.
 - A chapter is built to full completion, nothing skipped, with its own music and sound generated. (v23.6)
 - A model he sends with no place decided is prepared and kept ready, and placed only when he picks where. (v14.13)
 - A chapter opens where the last one left him, and nothing re-shows a journey the last chapter already made ("it does not link properly"); every decision's answers make sense where he stands (no answer sends him back across a border once the matter is settled) and teach different things in distinct ways ("All the decisions need to make sense, and teach different things in distinct ways"). (v24.56, the plan for episode 4 chapter 2)
+- A decision's answers each have a purpose and advance the story ("These answers have no purpose and dont advance the story", of four things to do with an afternoon once the story was already over), and none of them completely deviates from where he is going ("The options should not have those that completely deviate from his eventual path which is to become a master ... all options still lead to him accepting his path and mission"): from the chapter where he finds his teacher, the four options are four roads to the same place, each showing a different face of it. The decision sits AT the chapter's turning point, as his own did in episode 2 chapter 5 ("he is waiting for an answer"), never after the story has finished; and it is checked against every earlier chapter's decision before it is proposed (the first one proposed for episode 4 chapter 3 was episode 3 chapter 1's over again). (v26.0, the plan for episode 4 chapter 3)
 - Efficiency improves and the standards and quality stay exactly where they are ("I dont want quality and creativity and standards to drop because of this change, i want efficiency to improve while keeping the same standards and quality"): his asks are done in one shot, one build, one deploy and one round of checks at the end ("cant you do all of my asks in one shot, deploy, test once probe once?"), not one release per ask. Each ask is designed fully before it is built (what the real place has, what each shot sees), so the photographs confirm instead of discover. The work is saved by commits as it goes. Every check this file asks for is still made, once, where it can catch something, and never repeated after each tweak. A generated model's own checks (the reference picture, each model on its own) are part of making it, not probes of the game. (v24.35)
 
 ### How the work is done and checked
@@ -1221,9 +1225,9 @@ Chapter 3 (S1·12, Grandmaster Pho at the Wai Kru) is next: his gold aura's colo
 code (`AURA`, `AURA_K.gold`) for it to lift. **Its full build plan is docs/V26.0-E4C3-PLAN.md, PROPOSED to Chad on 11 Nov
 2026 and NOT YET APPROVED: nothing of it is built, and it is built only on his yes and his answers to its §2.3** (what
 Grandmaster Pho may be heard saying, since he is a real teacher: the plan voices only what the case file makes public; the
-decision, revised the same day at his word ("The question and answers need to be changed": its first form repeated episode
-3 chapter 1's) to what he does with the first lesson, four acts that are the four clauses of the case file's closing
-sentence, with two other decisions offered; two beats that are not in the case file; OPEN AND CLOSE, the one
+decision, which is now HIS OWN FOUR, given that day after two of mine were withdrawn (accept your path, challenge the path,
+ask why, ask to make it stop: none leaves the path, and all four lead to his accepting his path and mission; still his to
+settle are their ranks and the lines said); two beats that are not in the case file; OPEN AND CLOSE, the one
 new way to play, played or watched; photographs of the real Wai Kru; the models). Its research is a first pass, not yet
 refuted: docs/research/V26.0-WAIKRU.md. The episode's plan, with what remains his to decide:
 **docs/V24.0-EPISODE4-PLAN.md** (its sixth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is
