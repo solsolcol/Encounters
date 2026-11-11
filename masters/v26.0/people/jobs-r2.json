@@ -1,0 +1,57 @@
+[
+ {
+  "name": "deva",
+  "kind": "person",
+  "image": "masters/v26.0/people/refs/deva-a-2k.png"
+ },
+ {
+  "name": "devb",
+  "kind": "person",
+  "image": "masters/v26.0/people/refs/devb-a-2k.png"
+ },
+ {
+  "name": "deve",
+  "kind": "person",
+  "image": "masters/v26.0/people/refs/deve-a-2k.png"
+ },
+ {
+  "name": "devf",
+  "kind": "person",
+  "image": "masters/v26.0/people/refs/devf-a-2k.png"
+ },
+ {
+  "name": "devc",
+  "kind": "person",
+  "image": "masters/v26.0/people/refs/devc-a-2k.png"
+ },
+ {
+  "name": "devd",
+  "kind": "person",
+  "image": "masters/v26.0/people/refs/devd-a-2k.png"
+ },
+ {
+  "name": "devg",
+  "kind": "person",
+  "image": "masters/v26.0/people/refs/devg-a-2k.png"
+ },
+ {
+  "name": "devh",
+  "kind": "person",
+  "image": "masters/v26.0/people/refs/devh-a-2k.png"
+ },
+ {
+  "name": "dancera",
+  "kind": "person",
+  "image": "masters/v26.0/people/refs/dancera-a-2k.png"
+ },
+ {
+  "name": "dancerb",
+  "kind": "person",
+  "image": "masters/v26.0/people/refs/dancerb-a-2k.png"
+ },
+ {
+  "name": "red",
+  "kind": "person",
+  "image": "masters/v26.0/people/refs/red-a-2k.png"
+ }
+]

@@ -1,0 +1,48 @@
+v26.0 · the people of episode 4 chapter 3: the reference pictures
+(Chad, 11 Nov 2026: "first generate a reference of the person, describe it to GPTimage, person in photorealistic
+details, against a white background, in A pose.")
+
+Higgsfield, model gpt_image_2_6, quality max, resolution 2k, aspect 2:3, background opaque: 9 credits a picture.
+Nobody is modelled on a person in Chad's photographs: each is a kind of dress seen there on an invented person.
+
+THE SHARED WORDING (WHO and DRESS change):
+  Photorealistic full-body studio photograph of WHO, standing upright in an A-pose: both arms straight and held about
+  35 degrees away from the body, palms facing the thighs, fingers slightly apart, feet shoulder-width apart, facing the
+  camera straight on, barefoot. DRESS. The whole figure is in frame from the top of the head to the toes with a clear
+  margin all round. Even soft studio lighting from the front, no cast shadow, pure white seamless background. Sharp
+  focus, neutral expression, mouth closed, natural skin texture, realistic cloth folds. No text, no logo, no watermark,
+  no props.
+
+ton     WHO  a Thai man in his early forties, lean build, short black hair, a calm friendly face
+        DRESS He wears a white short-sleeved polo shirt with an orange collar and orange trim on the sleeve ends, and
+              loose white cotton trousers
+deva    WHO  a Chinese Singaporean woman in her late twenties, slim, long straight black hair worn down past her shoulders
+        DRESS She wears a plain loose white short-sleeved T-shirt and white straight-leg cotton trousers
+devb    WHO  a Thai woman in her mid forties, medium build, shoulder-length black hair tied back in a low ponytail
+        DRESS She wears a white short-sleeved polo shirt with an orange collar and orange trim on the sleeve ends, and white cotton trousers
+deve    WHO  a Thai woman of about sixty, stout, short permed greying hair
+        DRESS She wears a loose white long-sleeved cotton blouse and loose white cotton trousers
+devf    WHO  a Thai woman in her early twenties, slight, black hair in a high ponytail
+        DRESS She wears a white short-sleeved cotton blouse and wide white cotton trousers
+devc    WHO  a Chinese Singaporean man in his early thirties, medium build, short black hair
+        DRESS He wears a plain white crew-neck T-shirt and cream cotton trousers, with a small plain black sling bag worn tight across his chest
+devd    WHO  a Thai man in his mid fifties, stocky, short greying hair
+        DRESS He wears a pale lilac short-sleeved round-collared cotton shirt and matching loose pale lilac cotton trousers
+devg    WHO  a Thai man in his late twenties, lean, very short cropped black hair
+        DRESS He wears a white short-sleeved polo shirt with an orange collar and orange trim on the sleeve ends, and white cotton trousers
+devh    WHO  a Chinese Singaporean man of about sixty, a little paunchy, balding with grey hair at the sides, thin-rimmed glasses
+        DRESS He wears a white short-sleeved button-up cotton shirt worn untucked and white cotton trousers
+dancera WHO  a Thai woman in her twenties, a dancer, her black hair up in a high bun dressed with white and yellow flowers and small gold ornaments
+        DRESS She wears traditional Thai dance dress in white and gold: a fitted white silk top, a gold brocade sabai shawl
+              pinned over her left shoulder and hanging down her back, a white-and-gold silk chong kraben (the traditional
+              Thai wrapped trousers gathered between the legs, ending below the knee), a gold belt, gold bracelets, and a
+              jasmine garland round her neck
+dancerb WHO  a Thai woman in her thirties, a dancer, her black hair in a low bun ringed with white jasmine and a gold hairpin
+        DRESS (as dancera)
+red     WHO  a heavy-set Thai man in his sixties with a shaven head and a broad calm face
+        DRESS He wears a bright red satin long-sleeved jacket with gold piping down the front and on the cuffs, matching
+              loose red satin trousers, white socks, and a string of dark wooden beads on his right wrist      (not barefoot)
+
+HELD until one robe has been through the rig (the robed and skirted ones are the risk): hermita, hermitb, white, bench.
+
+JOB IDS and PICKS: masters/v26.0/make.sh.

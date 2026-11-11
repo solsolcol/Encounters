@@ -1,0 +1,323 @@
+{
+ "_motions": {
+  "dance1": {
+   "duration": 10.0,
+   "prompt": "A woman performs a slow graceful traditional Thai classical dance in place: knees softly bent and gently dipping, one arm rising to shoulder height as the other lowers, wrists rotating slowly with the fingers curved back, the head tilting with each movement.",
+   "task": "01a1caeb-8163-777f-bf7c-ad887a1df581"
+  },
+  "kneel": {
+   "duration": 5.0,
+   "prompt": "A person standing calmly lowers down onto both knees and sits back on the heels with a straight back, hands resting on the thighs, and stays still.",
+   "task": "01a1caeb-805d-763a-81e6-e9ca4a8b12fa"
+  },
+  "raise": {
+   "duration": 6.0,
+   "prompt": "A person kneeling upright on both knees holds a heavy bowl in both hands at chest height, slowly lifts it to just above the forehead while bowing the head, holds it there quite still, then slowly lowers it back to the chest.",
+   "task": "01a1caeb-814f-7095-991a-6a38e733bc37"
+  },
+  "trance1": {
+   "duration": 9.0,
+   "prompt": "A person kneeling on both knees folds forward at the waist with the head hanging low, both arms sweeping slowly out and back behind the body with the wrists turning, the whole body trembling gently, swaying as if in a deep trance.",
+   "task": "01a1caeb-813e-73d8-92e1-d4d1f100f3af"
+  },
+  "trance2": {
+   "duration": 9.0,
+   "prompt": "A person kneeling upright with the head tilted slightly back slowly raises both arms high and wide apart with open hands, holds them there trembling, the torso swaying gently from side to side, as if in a spiritual trance.",
+   "task": "01a1caeb-815a-7743-a13d-0a21ec346991"
+  },
+  "wai": {
+   "duration": 4.0,
+   "prompt": "A person standing presses both palms together in front of the chest in a respectful greeting, bows the head and shoulders slowly forward, holds a moment, then straightens up and lowers the hands.",
+   "task": "01a1caeb-8147-733b-bcb3-a3d30f8e5f00"
+  }
+ },
+ "dancera": {
+  "image": "masters/v26.0/people/refs/dancera-a-2k.png",
+  "image_to_3d": "01a1caea-c834-75ff-827a-13ad8b4114a7",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "dancerb": {
+  "image": "masters/v26.0/people/refs/dancerb-a-2k.png",
+  "image_to_3d": "01a1caea-cf49-741c-ac37-d77ce693f6aa",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "deva": {
+  "image": "masters/v26.0/people/refs/deva-a-2k.png",
+  "image_to_3d": "01a1caea-92f2-7101-9602-e4d60bf9967c",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "devb": {
+  "image": "masters/v26.0/people/refs/devb-a-2k.png",
+  "image_to_3d": "01a1caea-9921-731b-bbc9-cf631ed55bed",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "devc": {
+  "image": "masters/v26.0/people/refs/devc-a-2k.png",
+  "image_to_3d": "01a1caea-ad76-72f0-8205-d0ff4770596f",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "devd": {
+  "image": "masters/v26.0/people/refs/devd-a-2k.png",
+  "image_to_3d": "01a1caea-b415-775a-884a-ea46f118a38d",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "deve": {
+  "image": "masters/v26.0/people/refs/deve-a-2k.png",
+  "image_to_3d": "01a1caea-9f9a-7377-92da-ca38a596fc50",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "devf": {
+  "image": "masters/v26.0/people/refs/devf-a-2k.png",
+  "image_to_3d": "01a1caea-a6d5-7357-acc6-785a18befec0",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "devg": {
+  "image": "masters/v26.0/people/refs/devg-a-2k.png",
+  "image_to_3d": "01a1caea-baa1-754e-b726-c1a99c74ded5",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "devh": {
+  "image": "masters/v26.0/people/refs/devh-a-2k.png",
+  "image_to_3d": "01a1caea-c15a-701b-95e0-4285a55b2435",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "red": {
+  "image": "masters/v26.0/people/refs/red-a-2k.png",
+  "image_to_3d": "01a1caea-d642-73fb-9328-7afe38638844",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "ton": {
+  "credits": 40,
+  "expires_at": 1794664852433,
+  "image": "masters/v26.0/people/refs/ton-a-2k.png",
+  "image_to_3d": "01a1cae4-fba4-7332-80bd-a33ffd4b4cf9",
+  "rig": "01a1caea-926e-777b-a3c9-a9b74e437866",
+  "rig_settings": {
+   "height_meters": 1.7,
+   "include_fingers": true,
+   "input_task_id": "01a1cae4-fba4-7332-80bd-a33ffd4b4cf9",
+   "skeleton_template": "meshyrig"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": true,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 37171180,
+   "pre": 9489688
+  }
+ }
+}
