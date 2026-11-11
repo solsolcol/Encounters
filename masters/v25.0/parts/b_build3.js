@@ -37,39 +37,45 @@
       cast.mallB = mkPerson('sitangry', { parent: worldS, x: 4.0, z: 6.9, ry: -Math.PI / 2, height: 1.7, anims: 'fatherwalk', sizeTake: 'Walking', posture: 'stand', stand: 'Walking', look: 0, noShadow: true, hidden: true });
       /* (v25.5, Chad: "when the female customer asks a question, there is no female customer in that cut scene, can you add
          one?" ... "when customer asks about the amulet, there is no customer, add the customer") THE WOMAN AT HIS COUNTER,
-         in the opening film and in ending D. A STAND-IN, declared (DATA.reuse): episode 3 chapter 4's Yin-shop keeper, an
-         older woman with a standing rest, a talking take and a walk of her own, wears the part until Chad's model for
-         her lands (docs/E4-MODELS.md lists it as NEEDED). Only the films place her (b_build4: openFrame, endD) */
-      cast.woman = mkPerson('yinkeeper', { parent: worldS, x: -0.65, z: -0.92, ry: Math.PI, height: 1.57, sizeTake: 'Idle_9',
-        posture: 'stand', stand: 'Idle_9', walk: 'Walking', talk: 'Talk_with_Left_Hand_on_Hip', talkWeight: 0.85, look: 0, noMip: true, noShadow: true, hidden: true,
-        then: shoesOn });
+         in the opening film and in ending D. A STAND-IN, declared (DATA.reuse), until Chad's model for her lands
+         (docs/E4-MODELS.md lists it as NEEDED). Only the films place her (b_build4: openFrame, endD).
+         (11 Nov 2026, Chad, of the Yin shop's keeper who wore the part first: "Dont use the yin amulet shoplady. Use
+         another women model.") The auntie of episode 1 chapter 3's paper table: a neighbourhood auntie in a floral
+         blouse and her own sandals, as a woman who asks a shop "from which temple ah?" is. Her standing take is her
+         own (Stand_and_Chat: arms down, her weight shifting, no gesture to speak of), her talk is her own at a third
+         (Talk_Passionately opens both arms wide at full weight: photographed), and her walk was made for her as the
+         mall's two passers-by got theirs (the admin tee's Walking retargeted onto her rig in world space, the clip
+         alone: `grannywalk`, masters/v25.5/make.sh), with her arms brought in: the take as it is holds both arms out
+         and swings a hand to the waist, a young man's march on an auntie (seen in the film, then photographed large
+         from the front, the side and behind at four moments of the stride) */
+      cast.woman = mkPerson('granny', { parent: worldS, x: -0.65, z: -0.92, ry: Math.PI, height: 1.55, anims: 'grannywalk', sizeTake: 'Stand_and_Chat',
+        posture: 'stand', stand: 'Stand_and_Chat', walk: 'Walking', talk: 'Talk_Passionately', talkWeight: 0.3, look: 0, noShadow: true, hidden: true,
+        then: centreStand });
     }
-    /* (v25.5) HER SHOES. The keeper's model is barefoot (she keeps a shop in her own house, in episode 3); a woman who has
-       walked into a mall is not, and her feet are in the picture as she walks out. Put on at run time, her file untouched
-       (v12.4): the triangles of her skin whose three corners belong to her feet (each corner by what it is skinned to,
-       v21.16) are drawn a second time, on her own skeleton, in a plain dark leather, a hair in front of the skin
-       (polygonOffset; the same points, so nothing can part from the foot it covers). Plain flat shoes under black
-       trousers */
-    function shoesOn(P) {
-      const sks = []; P.model.traverse(m => { if (m.isSkinnedMesh) sks.push(m); });
-      const mShoe = M({ color: 0x17161a, roughness: 0.55, metalness: 0.05, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
-      for (const sk of sks) {
-        const g = sk.geometry, si = g.attributes.skinIndex, sw = g.attributes.skinWeight, idx = g.index; if (!si || !sw) continue;
-        const foot = new Set(); sk.skeleton.bones.forEach((b, i) => { if (/Foot|Toe/.test(b.name)) foot.add(i); });
-        const isFoot = (v) => { let w = 0; for (let c = 0; c < 4; c++) if (foot.has(si.getComponent(v, c))) w += sw.getComponent(v, c); return w > 0.5; };
-        const n = idx ? idx.count : g.attributes.position.count, out = [];
-        for (let i = 0; i + 2 < n; i += 3) { const a = idx ? idx.getX(i) : i, b = idx ? idx.getX(i + 1) : i + 1, c = idx ? idx.getX(i + 2) : i + 2;
-          if (isFoot(a) && isFoot(b) && isFoot(c)) out.push(a, b, c); }
-        if (!out.length) continue;
-        const sg = new THREE.BufferGeometry();
-        for (const k of ['position', 'normal', 'skinIndex', 'skinWeight']) if (g.attributes[k]) sg.setAttribute(k, g.attributes[k]);
-        sg.setIndex(out);
-        const shoe = new THREE.SkinnedMesh(sg, mShoe);
-        shoe.position.copy(sk.position); shoe.quaternion.copy(sk.quaternion); shoe.scale.copy(sk.scale);
-        shoe.bind(sk.skeleton, sk.bindMatrix); shoe.castShadow = false; shoe.receiveShadow = false;
-        shoe.frustumCulled = sk.frustumCulled; if (sk.boundingSphere) shoe.boundingSphere = sk.boundingSphere;
-        sk.parent.add(shoe);
-      }
+    /* (v25.5: the shoes drawn onto the Yin shop's keeper for this part, she being barefoot in her own house, went with
+       her on 11 Nov; the auntie wears her own sandals)
+       HER STANDING TAKE, BROUGHT ONTO HER MARK. Stand_and_Chat holds her hips half a metre off her own origin (measured
+       in the film: her group at -0.65, -0.92, her hips at -1.01, -0.54), so she stood away from the counter and the
+       shot that looks at her face looked across the shop; and her walk, made for her, is on the origin, so a body
+       centred by its `centre` option (v24.5, for a figure who never walks) would have slid that half metre as she
+       turned to go. The take's own Hips track is moved instead: its mean place brought over her group's middle, flat
+       along the floor, in the track's own numbers (through the hips' parent, whatever turn or scale her armature
+       holds), on the copy mkPerson's lower layer plays (lowerOnly clones the clip: her file and the shared clip are
+       untouched). Standing and walking then share one place */
+    const _csA = new THREE.Vector3(), _csB = new THREE.Vector3(), _csM = new THREE.Matrix4();
+    function centreStand(P) {
+      const a = P.L && P.L.standLo, tr = a && a.getClip().tracks.find(q => /Hips(_\d+)?\.position$/.test(q.name));
+      if (!tr || !P.hips || !P.hips.parent) { console.warn('centreStand: no hips track to centre for ' + P.key); return; }
+      const v = tr.values, n = v.length / 3; let ax = 0, ay = 0, az = 0;
+      for (let i = 0; i < n; i++) { ax += v[i * 3]; ay += v[i * 3 + 1]; az += v[i * 3 + 2]; }
+      ax /= n; ay /= n; az /= n;
+      P.group.updateMatrixWorld(true);
+      /* where the take's mean hips stand, in her group's frame (x and z are the floor); the step back to its middle */
+      _csA.set(ax, ay, az).applyMatrix4(P.hips.parent.matrixWorld); P.group.worldToLocal(_csA);
+      /* that step, as the difference of two points carried from her group's frame into the hips' parent's */
+      _csM.copy(P.hips.parent.matrixWorld).invert().multiply(P.group.matrixWorld);
+      _csB.set(-_csA.x, 0, -_csA.z).applyMatrix4(_csM); _csA.set(0, 0, 0).applyMatrix4(_csM); _csB.sub(_csA);
+      for (let i = 0; i < n; i++) { v[i * 3] += _csB.x; v[i * 3 + 1] += _csB.y; v[i * 3 + 2] += _csB.z; }
     }
     /* HIS HANDS AND HIS BODY (Lersi Chin has no take for a wai, a reach or a bowl held; his rig has one joint to a hand
        and no fingers, so every pose is one a flat hand can make).

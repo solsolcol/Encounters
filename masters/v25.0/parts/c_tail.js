@@ -359,7 +359,11 @@
     sfx(O.cu2a1, 'cu2a1', 1);                  // "Boss, this one... from which temple ah? Who blessed it?"
     sfx(O.q2o2b, 'q2o2b', 1);                  // "Sorry... can you say again?"
     sfx(O.cu2a1b, 'cu2a1b', 1);                // "Aiyo, never mind. I come back another day."
-    sfx(O.cu2a1b + SECS.cu2a1b - 0.6, 'x2heels', 0.5);   // her heels on the terrazzo, away
+    /* (v25.5) her sandals: the auntie who wears the part since 11 Nov wears flat sandals, and the heels that were cued
+       here (x2heels, x2heelsin: retired) clicked under a woman who was only heard */
+    /* (a sandal's slap is short: at the heels' own peak the walk measures 7.5 dB under them by RMS, so it is cued
+       at 0.7 and 0.65 where they were 0.5 and 0.45) */
+    sfx(O.cu2a1b + SECS.cu2a1b - 0.6, 'x2sandals', 0.7);   // her sandals on the terrazzo, away
     sfx(O.q2o2, 'q2o2', 1);                    // "I could not think properly."
     sfx(O.o3 + 1.0, 'x2pat', 0.55); sfx(O.o3 + 2.1, 'x2pat', 0.5); sfx(O.o3 + 3.3, 'x2pat', 0.5);   // one pocket, the other, the back
     sfx(O.q2o3, 'q2o3', 1);                    // "I misplaced my wallet, and strangely..."
@@ -577,7 +581,7 @@
       sfx(T.morning + 0.1, 'x2endD', 0.6);                           // the ending's music: bright, unhurried
       sfx(T.morning + 0.2, 'x2shutterup', 0.7);                      // his shutter going up on a clear morning
       sfx(T.morning + 3.2, 'x2pat', 0.5); sfx(T.morning + 3.75, 'x2wallet', 0.5);  // his pocket — and the wallet in it
-      sfx(T.cu2a2 - 1.6, 'x2heelsin', 0.45);                         // her heels coming back up to his counter
+      sfx(T.cu2a2 - 1.6, 'x2sandalsin', 0.65);                       // her sandals coming back up to his counter
       sfx(T.cu2a2, 'cu2a2', 1);                                      // "Boss, this one... from which temple ah?"
       sfx(T.q2D2, 'q2D2', 1);                                        // "This one? A temple in Ayutthaya. The card is inside, let me show you."
       /* (v25.5) the cased piece lies on the glass and is only looked at: the sound of it lifted from the tray is out (x2case, retired) */

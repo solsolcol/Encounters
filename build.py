@@ -518,6 +518,7 @@ ASSETS = {
     'medium':       ('assets/medium.glb', True, False),       # e3c3 v21.0: Chad's black Taoist medium, ten takes on a Mixamo rig (CHARTFIX=1 tools/prepmonk.mjs 0.3: 594k -> 178k tris)
     'wifewalk':     ('assets/wifewalk.glb', True, False),     # e3c3 v21.0: the admin tee's Walking retargeted onto sitwoman, clip only (masters/v21.0/walk/make.sh)
     'fatherwalk':   ('assets/fatherwalk.glb', True, False),   # e3c3 v21.0: the same onto sitangry, clip only
+    'grannywalk':   ('assets/grannywalk.glb', True, False),   # e4c2 v25.5: the same onto granny (episode 1 chapter 3's auntie, the woman at his counter: a stand-in), clip only (masters/v25.5/make.sh)
     # e3c3 v21.8: the old masters on the amulet shop's wall are Chad's five photographs, each the source's own bytes,
     # unaltered (masters/v21.8/portraits/SOURCES.md has every page, file and sha1; credited in the panel)
     'mstr_somdejtoh':   ('assets/master_somdejtoh.png', True, False),
@@ -607,7 +608,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'kamaz', 'forest', 'rifle', 'ghostcyclist', 'fboaim',
            'muzzle', 'ammocrate', 'ammomags', 'icontorch', 'zavsoldier',
            'thaikit', 'wessred', 'wessgreen', 'naga', 'monk', 'ajarn', 'temple', 'slipper', 'lersimask', 'altarrow', 'customer', 'buddhahd', 'buddhalod', 'sangkathan', 'sitwomantalk', 'filmoffice', 'filmlaptop', 'actioncam', 'planecabin',
-           'cg_woman2', 'cg_man2', 'cg_woman2hd', 'cg_man2hd', 'cg_man2cross', 'monkrow', 'hanuman', 'medium', 'owner', 'staffman', 'timkplod', 'wifewalk', 'fatherwalk',
+           'cg_woman2', 'cg_man2', 'cg_woman2hd', 'cg_man2hd', 'cg_man2cross', 'monkrow', 'hanuman', 'medium', 'owner', 'staffman', 'timkplod', 'wifewalk', 'fatherwalk', 'grannywalk',
            'mstr_somdejtoh', 'mstr_achanmun', 'mstr_lpthuad', 'mstr_lptimpray', 'mstr_lptimbench', 'mstr_lpphiboon',
            'taoistrow', 'ptg_zhenwu', 'ptg_jade', 'yinptg', 'yingirl', 'yinghost', 'yinkeeper', 'yinamulet', 'yinamuletlod', 'yinshelf', 'yinshelflod', 'yinskull',
            'traynear', 'trayfar', 'amushelf', 'altarrowfar', 'monkshop', 'hanuamulet', 'hanuamuletlod',

@@ -350,9 +350,15 @@
        sitting, behind him, in two layers (the colour laid on as a colour, and the glow added over it: added alone, a
        colour over the pale counter behind him sums to white, v8.8); a fan of rays turning slowly behind that; a pool
        of the light on the mat round him, with rings going out across it; and motes rising round him, some before him
-       and some behind (the scene's own depth sorts them). GOLD as he chants and gives the water (the clearing); WHITE,
-       cooler and stiller, its rings slow ripples, as he sits in the stillness and finds the piece (the examination).
-       It breathes once in five seconds. Built hidden here, so the curtain warms it (v14.15) */
+       and some behind (the scene's own depth sorts them). It breathes once in five seconds. Built hidden here, so
+       the curtain warms it (v14.15).
+       (11 Nov 2026, Chad, with v25.5 on his phone: "maybe dont use golden aura and glow for lersi chin, use only white,
+       and make the white glow more subtle. For both the meditation part and also the chanting and blessing part.
+       Golden will be used for grandmaster pho only.") LERSI CHIN'S AURA IS WHITE, AND QUIET, in both films: as he sits
+       in the stillness and finds the piece (the examination) and as he chants and gives the water (the clearing),
+       cool, its rings slow ripples, at about half of what the white stood at (AURA_K). GOLD IS GRANDMASTER PHO'S
+       ALONE (a standing rule, CLAUDE.md): its colours and its strengths, set from photographs on 10 Nov, are kept
+       here for chapter 3 to lift, and no film of this chapter asks for it (auraAt's first number is 0 everywhere) */
     const AURA = { gold: { hue: 0xf0a41c, glow: 0xffc65a, mote: 0xffdc8c }, white: { hue: 0xbfd2f4, glow: 0xeef4ff, mote: 0xffffff }, motes: 64, rings: 3 };
     const aura = (() => {
       const g = new THREE.Group(); g.position.set(LC.x, 0, LC.z); g.visible = false; g.userData.dyn = true; worldS.add(g);
@@ -405,8 +411,10 @@
       P.needsUpdate = true; V.needsUpdate = true;
       A.pts.material.size = white ? 0.04 : 0.05;
     }
-    /* how strong each layer is, set from photographs on a phone's shape and a desktop's (masters/v25.5) */
-    const AURA_K = { gold: { shade: 0.66, hue: 0.78, glow: 0.55, rays: 0.5, pool: 0.5, ring: 0.26, mote: 1 }, white: { shade: 0.7, hue: 0.6, glow: 0.56, rays: 0.5, pool: 0.36, ring: 0.4, mote: 1 } };
+    /* how strong each layer is, set from photographs on a phone's shape and a desktop's (masters/v25.5). (11 Nov) the
+       white at about half of its first strengths (shade 0.7, hue 0.6, glow 0.56, rays 0.5, pool 0.36, ring 0.4, mote 1):
+       Chad's "more subtle"; the gold as it was photographed, kept for Grandmaster Pho */
+    const AURA_K = { gold: { shade: 0.66, hue: 0.78, glow: 0.55, rays: 0.5, pool: 0.5, ring: 0.26, mote: 1 }, white: { shade: 0.34, hue: 0.3, glow: 0.3, rays: 0.2, pool: 0.2, ring: 0.2, mote: 0.55 } };
 
     /* ================================================================ THE FILMS' PICTURES (§4), each a pure function of
        its own clock: every shot his eyes (he is never seen, Chad 9 Nov), named by what it must hold */
@@ -859,8 +867,9 @@
       /* the candles and the incense lit for the homage */
       const fl = smo(sgk(t, K.homage + 0.4, K.homage + 1.4));
       for (const f of props.flames) f.material.opacity = fl;
-      /* (v25.5) the gold light round him from the chant's first words to the water given, gone as he sits back */
-      auraAt(ezk(t, K.namo - 0.3, K.namo + 3.0) * (1 - ezk(t, K.water + 4.3, K.water + 5.8)), 0, t);
+      /* (v25.5) the light round him from the chant's first words to the water given, gone as he sits back (white, and
+         quiet, since 11 Nov: gold is Grandmaster Pho's) */
+      auraAt(0, ezk(t, K.namo - 0.3, K.namo + 3.0) * (1 - ezk(t, K.water + 4.3, K.water + 5.8)), t);
       /* his own hands: together from "Hands together", down for the water */
       const handsK = smo(sgk(t, K.lc2k0 + 0.6, K.lc2k0 + 1.4)) * (1 - smo(sgk(t, K.water - 0.6, K.water)));
       waiAt(handsK);

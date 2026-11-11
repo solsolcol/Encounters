@@ -7900,3 +7900,55 @@ cut (sharing its vertices and maps) when it is small.
   thing that makes a wai a wai, the fingers (forward in the capture, up in a wai). Measure the reference before
   building from it, and hold the result against it after: it confirms what it shares and says nothing for the rest
   (v25.4; masters/v25.3/measure/praytake.mjs, tools/probes/poselab-arms.js).
+
+## v25.5 — a generator's mesh, a phone's real size, a walk on another body, and what a slowed walk undoes
+
+- **Ask the generator for the size; do not thin its mesh.** Asked for 500,000 triangles and thinned here to 30-110,000,
+  every panel of three generated cars crumpled along the seams of the sheet: a generated sheet is thousands of small
+  islands, and each seam is an edge the simplifier may not move across. Kept normals were worse than rebuilt ones.
+  Asked for 100,000 and thinned by nothing, the same engine gave clean panels. Decide the count by what the phone can
+  draw, measured in the place's own views, and ask for that.
+- **Try the engines on one picture under one light.** The same checked reference through Hunyuan3D v3, Tripo and Meshy
+  7: real wheel spokes and lamp lenses; a real cabin and no glass at all; clean and faceted. The differences are of
+  kind, not degree, and only a photograph beside today's model shows them.
+- **A generated body's paint is all metal.** Fully metal and mirror-smooth, it draws dark and blotchy where the scene
+  has little to reflect: read it as paint at prep (metal x 0.25, a roughness floor). A metal's base colour is how much
+  it reflects, so as paint a dark car stands lighter than its picture until the colour is brought down with it.
+- **Gloss shows every dent a generated body has.** At arm's length a dark glossy SUV read as crumpled; at roughness
+  0.7 (a dusty satin) it read as clean. Silver and white hide theirs. Judge a finish from where the player can walk to,
+  in the place's own light, with each finish served to the real game (yardshots SWAP), never in a viewer.
+- **A generator invents a maker's mark.** A roundel on a boot, a ring on a tailgate: photograph each nose and tail
+  straight on, paint it out and lay its boss flat (v9.3: no maker's marks).
+- **A PHONE'S PICTURE IS TAKEN AT A PHONE'S SIZE IN CSS PIXELS.** The page lays its windows, its HUD and its captions
+  out in CSS pixels. The lab's "phone at full size" (780 x 1688) is a screen twice as tall as a phone to the page, so
+  the decision's window stood half as high in every lab picture and hid nothing; on a real 390 x 844 it covered Lersi
+  Chin from his topknot down. The finger play-through, which runs at 390 x 844, is what found it. A film's frame with
+  nothing laid over it may be taken larger; anything with a window on it may not.
+- **A thing behind a window is placed from the window's own edge.** The look that keeps his face above the choices is
+  solved each time from the panel's laid-out top and the stats' bottom on the screen in hand (and again if the screen
+  turns), not from a number that suited one phone.
+- **A slowed walk changes every shot that watches it.** The calmer pace asked for two endings also slowed the third's
+  walk out, and the eye that had followed two men to the door now showed a phone a doorway for four of its six
+  seconds. Simulate the path second by second on the phone's frame before photographing: a walk-out is a function of
+  the clock, and a table of where each body stands in the frame finds in seconds what a round of pictures finds in an
+  hour.
+- **A walk borrowed from a library is a young man's.** The admin tee's Walking and Meshy's own "Walking_Woman" both
+  hold the arms 13-18 degrees out, carry the elbows back and swing a hand to the waist. Retargeting copies that
+  faithfully. On an auntie it is a march, and it was passed from four small pictures and seen in the film. Bring the
+  arms in after the retarget, in world space on the target's own bones (tools/retarget.mjs --calm), and bring the
+  elbow's bend down WITH the upper arm: the take's bend on a vertical upper arm holds both hands before the belly.
+- **A standing take can stand somewhere else.** Stand_and_Chat holds her hips half a metre off her own origin; the
+  shot aimed at "her" looked across the shop at nobody. Measure the hips against the group in the shot. For a body
+  that also walks, move the take's hips track onto the mark on that person's own copy of the clip
+  (`AnimationClip.clone()` copies the key arrays in this three); a shift of the body's inner group would slide her
+  that half metre as the walk blends in.
+- **A harness's "it built" must count the thing.** `world.children.length > 3` passed for a year and failed the day a
+  chapter with three tidy groups lost a fourth: the world was whole. Count the meshes drawn.
+- **A step sound that is all thud is silent on a phone.** Two of four generated takes of sandals had 69 % and 100 % of
+  their energy under 250 Hz; the other two held one or two clean slaps and no walk. The walk of four was laid from
+  the two slaps, at the spacing the film already used.
+- **A recipe that takes its mode as an argument will run everything when handed a variable.** `ONLY=sfx ./make.sh` ran
+  the voices again (an .ogg differs on every encode); `./make.sh sfx` is the call. The four re-encoded files were
+  restored from git. Read a recipe's first lines before running it.
+- **A new asset is not a reuse.** A clip made for this chapter and listed under `reuse` is refused by chaptertest
+  ("no longer takes from an earlier episode"): `reuse` is for what an earlier episode shipped.

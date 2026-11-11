@@ -31,6 +31,13 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
    where he kneels); (ii) the same bigger sizes on chapter 1's tray, where the three still stand 7.5, 6.6 and 8.5 cm;
    (iii) the glow, the smoke and the whisper kept on the piece after it leaves the shelf (in his hand, on the cloth):
    built as he worded it, "as it sits on the shelf".
+4c. **Put to him at v25.5** (docs/V25.5-E4-NOTES.md): (i) the customer's sandal steps are MADE from two generated slaps
+   (no take gave a walk of four): his ear, `assets/audio/x2sandals.mp3` and `x2sandalsin.mp3`; (ii) the white aura's
+   strength round Lersi Chin, about half of its first: his eye, a number each in `AURA_K.white`; (iii) the man at his
+   counter in ending A is still only heard: he can be seen too, with a model or a stand-in; (iv) "Amulet Forums", his
+   own name for the forum, may also be a real forum's name (no real brand on props, v9.3): his call; (v) the yard's
+   new cars cost a phone about 208,000 more triangles where all three show (+46 %): if the yard is slow on his phone,
+   lighter cars or a distance level; (vi) a car modelled by hand (his, or bought) would still beat any generator.
 5. ~~**Episode 4 chapter 2's build plan**~~ — WRITTEN at v24.40, docs/V25.0-E4C2-PLAN.md, and REVISED 9 Nov 2026 to his
    direction (Lersi Chin comes to his shop in Singapore, brought by Pong; all play in the shop; the decision rebuilt).
    **BUILT AND SHIPPED at v25.0** on his yes the same day (answer C his own: "ask Lersi Chin to send it back to whoever
@@ -72,7 +79,8 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
 
 ## C. Waiting on Chad
 
-9. **Models.** NEEDED (docs/E4-MODELS.md): the taxi uncle. Episode 3 still on stand-ins (docs/E3-MODELS.md): chapter
+9. **Models.** NEEDED (docs/E4-MODELS.md): the taxi uncle; the woman at his counter in episode 4 chapter 2 (seen since
+   v25.5; the auntie of episode 1 chapter 3 stands in, never the Yin shop's keeper). Episode 3 still on stand-ins (docs/E3-MODELS.md): chapter
    3's shop staff man and the customers (the kneeling girl and man, the auntie, the youth, the shrine's wife and
    father, the passer-by); chapter 4's Chinatown towkay. To come for episode 4: Grandmaster Pho's voice (his model arrived
    3 Nov 2026 and is prepared, `pho`, v24.49: made upright at his word (v24.44), the drape on his left arm given a
@@ -155,6 +163,10 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
       is about can stand under it: in episode 4 chapter 2, "Lersi Chin is packing his things" and, on a phone, only the
       top of his headdress shows above the panel (Step back shows him, bent to his bowl). Lifting the view while the
       panel is open on a phone would change every chapter's decision, so it is listed and not changed.
+      **DONE FOR EPISODE 4 CHAPTER 2 at v25.5** (Chad: "if lersi chin is supposed to look at the player once in awhile, he
+      shouldnt be in hunchback position, because i cant see lersi chin's face at all"): he waits upright, and while the
+      window is open the chapter eases the look so his face stands in the clear band above it on the screen in hand
+      (six screen sizes photographed). The chapter's own; the engine and every other chapter's decision are as they were.
 
 11. **The beds' loop seams (found at v24.34, every chapter).** The engine loops a bed over [0.06, duration − 0.06] because
     mp3 decoding once padded both ends with silence; measured in today's Chromium, neither the game's mp3s nor its Opus

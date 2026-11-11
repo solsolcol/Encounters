@@ -8546,6 +8546,16 @@ What the baseline contains, by release:
 
 ## The sheet, version by version
 
+**v141** (`masters/v25.5/masterz-text-v141.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from
+it): v140 with fourteen rows new and twelve touched, nothing else moved. NEW, all episode 4 chapter 2's: the call
+screen's words (`e4c2.words.phoneIncoming`, `phoneDecline`, `phoneAccept`, `phoneKeys`) and the forum's
+(`forumBoard`, `forumTabs`, `forumBoards`, `thread5` to `thread8`, `threadNewBody`, `threadNewReply1`,
+`threadNewReply2`). TOUCHED: `e4c2.prompt` ("The clearing is done. What you do now is your own."), `hotTill` ("Open
+drawer"), `phoneCalling`, `forumName` ("Amulet Forums"), `postBody` and `e4c2.A.text` ("practices"); the re-said takes
+`voice.q2tA` (the telling), `voice.q2B1`, `voice.lc2B1`, `voice.lc2B2` (ending B's talk), each with its new words and
+measured length; and where `voice.cu2a1` and `voice.cu2a2` play (the woman is seen now). 2163 rows. Exported, not
+published.
+
 **v140** (`masters/v25.3/masterz-text-v140.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from
 it): v139 with one row gone and one touched, nothing else moved — the clearing without the thread: `voice.lc2wrist`
 ("Your wrist.") gone with its take; where `voice.lc2drink` is heard reworded (the bowl held out to him in both hands).

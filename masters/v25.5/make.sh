@@ -119,3 +119,54 @@ fi
 # lines in masters/v25.0/make.sh, which are NOT to be run again): x2knock (the visit opens on them walking in), x2pickup
 # (the call stays on the glass, on the speaker), x2bowl (he no longer packs while the choice is made), x2case (ending D's
 # piece is only looked at).
+#
+# ======================================================================================================================
+# 11 Nov 2026 · THE WOMAN AT HIS COUNTER RECAST (Chad: "Dont use the yin amulet shoplady. Use another women model.")
+# She is the auntie of episode 1 chapter 3's paper table now (assets/granny.glb, her file untouched): her standing and
+# talking takes are her own; her WALK is made as the mall's two passers-by got theirs (masters/v21.0/walk/make.sh): the
+# admin tee's Walking retargeted onto her rig in world space (--align: 17 bones swung onto the source's rest; --hips:
+# rest heights 0.966 -> 0.955), cut to a clip-only file bound to her clone by bone name.
+# HER ARMS BROUGHT IN (--calm, new in tools/retarget.mjs; unset, the tool writes the same bytes as before, compared).
+# The first walk was the take as it is, and in the film she marched: both upper arms 13-18 degrees out from her body
+# (up to 33), the elbows carried back and bent 37-39 degrees (up to 66), the forward hand at her waist. It is the
+# library's walk, not the retarget: the admin tee walks so himself, and so does Pa Noi's "Walking_Woman" (each
+# photographed front, side and back at four moments of the stride). --calm=9,0.4,0.5,18,0.4: her arms hang 9 degrees
+# out on average (what they vary by kept at 0.4), swing half as far, and the elbow's mean bend is 18 degrees (its
+# variation kept at 0.4). A first try that kept the take's own elbow bend held both hands in front of her belly once
+# the upper arms were brought to the vertical; the bend had to come down with them. Her legs, hips and spine are the
+# take's own, so her feet land where they landed. Not cured: her fingers are straight (her scan has no finger bones)
+# and her knees stay a little bent through the stride (the take's).   ./make.sh walk
+if [ "$ONLY" = walk ]; then
+  cd ../..
+  O=${O:-/tmp/auntiewalk}; mkdir -p $O
+  node tools/retarget.mjs assets/admintee.glb assets/granny.glb $O/granny1.glb Walking meshy --align --hips --calm=9,0.4,0.5,18,0.4
+  node masters/v21.0/walk/cliponly.mjs $O/granny1.glb Walking assets/grannywalk.glb
+fi
+# HER STEPS. The woman was heard and never seen when chapter 2 was made, and her steps were heels (x2heels, x2heelsin:
+# RETIRED here, their files and rows out, their takes in masters/v25.0/sfx/raw). The auntie wears flat sandals.
+# eleven_text_to_sound_v2, flow DuK7tKZHFhWqp23LPIk1, two prompts, two takes each (sfx/raw), measured (onsets, spacing,
+# the share of the sound a phone's speaker plays):
+#   x2sandals_a, _b      "Soft flat rubber sandals walking on a hard polished terrazzo floor ... four slow unhurried
+#                        steps ... each step a soft slap and scuff"  sessions oPKdY5HG3NRwaOwvTgU2, p3F3a4yI91LfyR1RdnbU
+#                        REFUSED: 69 % and 100 % of their energy under 250 Hz (thuds a phone does not play), rms -44 dB
+#   x2sandals_r2_a, _b   "Flip-flop sandals slapping on a tiled floor, a woman walking slowly, four clear steps, crisp
+#                        light rubber slaps with a small scuff"  sessions xpoMOMcj8T5kAFCgw2c6, rtAHXqS1O28ZENCnJWN4
+#                        r2_a is ONE slap (1.0 s); r2_b TWO, 0.9 s apart (0.56 s, 1.46 s), 2 % under 250 Hz, 15 % over
+#                        3 kHz: two clean slaps of two feet, and no walk of four in any take
+# So the walk is MADE (v24.3: when every take fails the measure, make the sound): r2_b's two slaps, each cut from 60 ms
+# before its peak with 0.4 s of its own decay, laid left-right-left-right 0.62 s apart (the heels' own spacing, so the
+# films' timing stands), the third and fourth a touch quieter; then the heels' own two shapes: going away (16 dB down
+# over 2.2 s) and coming back to his counter (16 dB up over the four steps).   ./make.sh sfx
+fx() { # name src peak [ffmpeg filter]
+  n=$1; s=$2; pk=$3; af=${4:-anull}
+  ch=$(ffprobe -v error -show_entries stream=channels -of csv=p=0 "$s" | head -1)
+  ffmpeg -v error -y -i "$s" -af "$af" -ar 48000 w_$n.wav; enc $n w_$n.wav $pk $pk 96k $ch; rm -f w_$n.wav; }
+if [ "$ONLY" = sfx ]; then
+  ffmpeg -v error -y -i sfx/raw/x2sandals_r2_b.mp3 -filter_complex "
+    [0]atrim=0.50:0.96,asetpts=PTS-STARTPTS,afade=t=in:d=0.004,afade=t=out:st=0.38:d=0.08,asplit=2[a1][a3];
+    [0]atrim=1.40:1.86,asetpts=PTS-STARTPTS,afade=t=in:d=0.004,afade=t=out:st=0.38:d=0.08,asplit=2[a2][a4];
+    [a1]adelay=300|300[d1];[a2]adelay=920|920[d2];[a3]adelay=1540|1540,volume=0.9[d3];[a4]adelay=2160|2160,volume=0.94[d4];
+    [d1][d2][d3][d4]amix=inputs=4:normalize=0:duration=longest,apad=whole_dur=3.0[o]" -map "[o]" -ar 48000 sfx/x2sandals_walk.wav
+  fx x2sandals   sfx/x2sandals_walk.wav -10 "volume='pow(10,(-16*min(max(t-0.5,0)/2.2\,1))/20)':eval=frame,afade=t=out:st=2.6:d=0.3"
+  fx x2sandalsin sfx/x2sandals_walk.wav -10 "atrim=0:2.6,asetpts=PTS-STARTPTS,volume='pow(10,(-16+16*min(t/2.3\,1))/20)':eval=frame,afade=t=out:st=2.4:d=0.2"
+fi

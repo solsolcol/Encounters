@@ -108,7 +108,14 @@ const out = await p.evaluate(async ({ CYCLES, WARM }) => {
       e.rebuildStage(window.__CHAPTERS__[k]);
       await drawn();
       const w = e.chapterWorld();
-      log.chapters[k] = !!w && w.children.length > 3
+      /* (v25.5) "the world has things in it" counts what is DRAWN, never the world's direct children. Episode 4
+         chapter 2 keeps its shop, its corridor and its cast in three groups (three children, hundreds of meshes),
+         and `children.length > 3` failed it the day a fourth group, a thing held in his hand, left the chapter: a
+         healthy world reported as one that had not built. A world that built nothing has no mesh at all, so this
+         still catches what the check was written for (proven on an empty world of three empty groups: false). */
+      let meshes = 0;
+      if (w) w.traverse(o => { if (o.isMesh) meshes++; });
+      log.chapters[k] = !!w && meshes > 3
                         && isFinite(e.pileDist()) && e.blockers.length > 0;
     } catch (err) {
       log.chapters[k] = 'threw: ' + (err && err.message);

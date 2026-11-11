@@ -210,7 +210,7 @@
     lersichin: { name: "Lersi Chin, the lersi Pong brings to his shop (episode 4, chapter 2)", voice: "2rg92Q2u0RWu8LiUcLQA", model: "eleven_v3",
               note: "Mart-Podcast: Thai-accented English, calm and unhurried at 2.34 words a second (CP1: Pikiir 3.50, Framel 2.88). He says what he BELIEVES, never what is certain; he says thank you, never anumodana. RMS -16; his soft lines and the chant -17." },
     cust2a: { name: "A woman at his counter (episode 4, chapter 2)", voice: "keq9BWrGRYbiHfZFjX0i", model: "eleven_v3",
-              note: "Jacqueline: a distinctive Singaporean accent. Heard only, never seen. Her first question smeared and slowed in the fog (make.sh). RMS -16." },
+              note: "Jacqueline: a distinctive Singaporean accent. Seen since v25.5 (a stand-in plays her until Chad's model: the auntie of episode 1 chapter 3, docs/E4-MODELS.md). Her first question smeared and slowed in the fog (make.sh). RMS -16." },
     cust2b: { name: "A man at his counter (episode 4, chapter 2)", voice: "y6hZ25Fcq4pmYsc7UsbQ", model: "eleven_v3",
               note: "Gavin: natural, warm, conversational. Heard only, never seen. RMS -16." },
     /* E4C1 SPEAKERS END */
@@ -1789,7 +1789,7 @@
     /* E4C2 LINES BEGIN — episode 4 chapter 2, Not Every Master Should Be Trusted (masters/v25.0: the script, the picks, the chain) */
     { id: "q2o1", who: "jamesAdult", ch: "e4c2", where: "The opening film: his shop at noon in the fog (the case file)",
       text: "[quiet] When I returned to Singapore my mind became extremely foggy.", secs: 4.75 },
-    { id: "cu2a1", who: "cust2a", ch: "e4c2", where: "The opening film: a woman at his counter, heard while his eyes stay on the tray (her words smeared and slowed at the master)",
+    { id: "cu2a1", who: "cust2a", ch: "e4c2", where: "The opening film: a woman at his counter asks about a piece; his eyes go down to the tray and stay there after she has finished (her words smeared and slowed at the master)",
       text: "Boss, this one... from which temple ah? Who blessed it?", secs: 4.55 },
     { id: "q2o2b", who: "jamesAdult", ch: "e4c2", where: "The opening film: he has not followed her",
       text: "[tired] Sorry... can you say again?", secs: 1.97 },
@@ -1933,7 +1933,7 @@
       text: "[warm] Go well. Make merit when you can.", secs: 2.65 },
     { id: "pg2D1", who: "pong", ch: "e4c2", where: "Ending D: at the shutter",
       text: "[cheerful] Bro, go eat something?", secs: 1.48 },
-    { id: "cu2a2", who: "cust2a", ch: "e4c2", where: "Ending D: the next morning, the woman from the opening, heard",
+    { id: "cu2a2", who: "cust2a", ch: "e4c2", where: "Ending D: the next morning, the woman from the opening, back at his counter",
       text: "Boss, this one... from which temple ah?", secs: 2.81 },
     { id: "q2D2", who: "jamesAdult", ch: "e4c2", where: "Ending D: he follows every word, and answers simply",
       text: "[warm] This one? A temple in Ayutthaya. The card is inside, let me show you.", secs: 5.61 },

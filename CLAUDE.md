@@ -154,6 +154,8 @@ that fits it, with the version it came from.
 - Each episode is themed around one core narrative, distinct from the next one. (v23.4)
 - Ajahn Krukai's model stays untouched; chaptertest pins it. (v23.5)
 - Episode 2's admin-tee buddy (`admintee`) is overused: never cast him again, not even as an extra walking past ("I dont want the admin green tshirt guy, he is overused"). (v24.37)
+- A GOLD aura or glow is Grandmaster Pho's alone ("Golden will be used for grandmaster pho only"). Lersi Chin's light is white only, and subtle, in his meditation and in his chanting and blessing both ("use only white, and make the white glow more subtle"); no other master is given gold. (v25.5)
+- Episode 3 chapter 4's Yin shop keeper (`yinkeeper`) does not stand in for another woman ("Dont use the yin amulet shoplady. Use another women model.", of the customer at his counter in episode 4 chapter 2): a new woman's part goes to another model. (v25.5)
 - Something he drops is closed for good: never ask for it again, and withdraw the ask from every doc that carried it. (v5.23)
 - His own models get no credit row; everyone else's work is credited with its link, and a credit row goes when its asset leaves the game. (v5.23)
 - His words are used exactly (lines, names, descriptions, punctuation), and any correction to them is said out loud. (v21.7)
@@ -183,6 +185,14 @@ that fits it, with the version it came from.
 - Verify a model by photographing each kind on its own, every clip, front and side, before wiring it in. (v6.17)
 - Judge a model at the distance the player can walk up to, never only from a wide shot. (v5.31)
 - Review on a phone at real size and pixel ratio (his only device): desktop and close-up previews miss the phone-only path and minified textures. (v5.11)
+- A phone picture that holds a window, a panel, the HUD or a caption is taken at the phone's real size in CSS pixels
+  (390 x 844), never at twice it: the page lays its windows out in CSS pixels, so at 780 x 1688 the decision's window
+  stood half its real height and hid nothing, and Lersi Chin, hidden behind it on a real phone, passed every lab
+  picture. A film's frame with no window on it may be taken larger. (v25.5)
+- A walk slowed or a path changed is photographed again through EVERY shot that watches it, not only the shots the
+  ask named (the calmer pace asked for endings B and C left ending D's walk out a doorway and two slivers). (v25.5)
+- A harness's test for "it built" counts the thing itself (the meshes drawn), never a shape of the scene graph (a
+  healthy world of three groups failed `children.length > 3`). (v25.5)
 - A phone probe must be a touch device, because the phone path depends on touch; a narrow desktop window is not a phone. (v14.5)
 - Read every frame of a film on both crops (desktop and the phone's centre crop, as contact sheets) before shipping it. (v6.8)
 - The deep-debug method: read-only lenses with one concern each (save and resume, geometry and framing, sound and timing, models and rigs, words and HUD, the engine since the last review, a regression audit of the last pass), a real-input phone play-through to every ending, every beat photographed on the phone crop, every finding verified before it is touched, and verdicts plus what was left alone written down. (v18.5)
@@ -237,6 +247,9 @@ that fits it, with the version it came from.
   contact sheet, and never reported to him as natural without those pictures and the list of what still looks wrong
   ("i find it unacceptable that you find his poses natural, it clearly is not. You are not trying hard enough": v25.2's
   poses, judged small by their author, were two flat hands side by side for a wai). (v25.3)
+  A take retargeted onto another body is a new motion and is judged the same way before it is wired in: the library's
+  walks (the admin tee's, Meshy's own woman's walk) hold both arms out and swing a hand to the waist, a young man's
+  march on an auntie, passed from small pictures and seen in the film (tools/retarget.mjs --calm brings the arms in). (v25.5)
 
 ### Models and assets
 
@@ -250,6 +263,13 @@ that fits it, with the version it came from.
 - Retarget across rigs in world space, never by name (even two Mixamo rigs differ at rest), and align a T-pose take to an A-pose rig. (v5.20)
 - Drop a model's unused clip library (its channels and samplers) at prep. (v5.20)
 - A flat-shaded export or a Meshy original cannot be simplified (every edge is an attribute seam): deflatten it, or use the remesh. (v8.0)
+- Ask a generator for the triangle count wanted and thin nothing here: a generated sheet is thousands of small islands,
+  and thinned, every panel crumples along their seams (the yard's cars: Hunyuan3D asked for 100,000, where 500,000
+  thinned to 30-110,000 was refused by photograph). Try the engines on one reference picture under one light before
+  choosing (Hunyuan3D v3, Tripo, Meshy: masters/v25.5/make.sh). (v25.5)
+- A generated body's paint comes fully metal and mirror-smooth: read it as paint at prep (prepmeshy PAINT), and give a
+  DARK body a rough finish, because gloss shows every soft dent a generated body has at arm's length; paint out the
+  roundels a generator invents (BLOT). (v25.5)
 - A take named 'idle' may fold the body over: sample it across its length and use its upright window. (v8.0)
 - Measure a model's up axis, facing and ends, never assume them; the render settles the facing with the measures as its guard, and the prep tool asserts its contract before quantize() and refuses to write a wrong bake. (v12.1)
 - The material decides foliage and alpha, never the texture's name; keep an alpha sheet's alpha, do not simplify leaf cards, and give crowns anisotropy. (v6.16)
@@ -264,6 +284,9 @@ that fits it, with the version it came from.
 - Meshy auto-rigs: diffuse the blocky skin weights over the full mesh before simplifying, share normals across seams, keep UV-seam twins moving as one, and export from the Character_output FBX. (v16.8)
 - Split back-to-back triangle pairs the simplifier folds, whose normals cancel and shade as NaN. (v19.8)
 - Seat a sitter on his posed skin, build the seat round every take he sits in, and cancel each take's root offset so changing take never slides him through it. (v16.8)
+- A STANDING take may hold the body off its own origin too (the auntie's Stand_and_Chat: half a metre): measure the
+  hips against the group in the shot, and where the body also walks bring the take's hips track onto the mark on the
+  person's own copy of the clip (e4c2's centreStand); mkPerson's `centre` is for a figure who never walks. (v25.5)
 - A Mixamo hand bone is the wrist; offset a grip to the fingers. (v17.1)
 - Parse each asset once and clone it (the original never touched), clone before touching (cloneSkinned copies transforms), measure scale and turn once on a shared posed take (never the standing bind pose; size a person standing), and give a clone its own materials before changing them. (v9.1)
 - A rig's culling sphere covers every pose of every clip, is built in world space round the posed skin, and is set on both the mesh and the geometry. (v8.4)
@@ -1135,8 +1158,15 @@ poselab.sh). His two asks while that was checked (the piece he took in chapter 1
 then black smoke on it and a whisper; the smoke made more translucent on his word the same evening) shipped at v25.4 —
 **docs/V25.4-E4C2-SHELF-PIECES.md** (his words, the measures, the
 log, and the game's captured prayer held against Lersi Chin's wai); the whisper is the measured pick until Chad's ear
-(four previews in masters/v25.4/previews, every candidate and why in masters/v25.4/make.sh). Chapter 3 (S1·12, Grandmaster
-Pho at the Wai Kru) is next. The episode's plan, with what remains his to decide:
+(four previews in masters/v25.4/previews, every candidate and why in masters/v25.4/make.sh). His three messages of 10 Nov
+on the whole episode (twenty-eight asks: the yard's cars remade, and in chapter 2 the woman at his counter seen, the
+call on the speaker, the visit, the telling and ending B's talk re-said, the water, the forum, the notebook, the walks
+away, ending D) and his two of 11 Nov on that build (another woman for the customer; Lersi Chin's aura white and
+subtle, gold kept for Grandmaster Pho) shipped at v25.5 — **docs/V25.5-E4-NOTES.md** (his words, what each ask traced
+to, what was built, the log; masters/v25.5/make.sh every model, voice and sound). The woman at his counter is a
+STAND-IN (the auntie of episode 1 chapter 3) until Chad's model: NEEDED, with the taxi uncle (docs/E4-MODELS.md).
+Chapter 3 (S1·12, Grandmaster Pho at the Wai Kru) is next: his gold aura's colours and strengths wait in chapter 2's
+code (`AURA`, `AURA_K.gold`) for it to lift. The episode's plan, with what remains his to decide:
 **docs/V24.0-EPISODE4-PLAN.md** (its sixth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is
 still his). S1·11 in two chapters (the master he did not know, who wears the original Sak Yant Ajarn's model; then the
 fog, Lersi Chin's clearing and the warning — built on Master Z's own trial episode, its 5.1 and 5.3 the two decisions
@@ -1273,13 +1303,13 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v140** (`masters/v25.3/masterz-text-v140.xlsx`, its CSV beside it: v25.3's words). It is
-EXPORTED and not published: the workbook (126 KB) is far past what the Drive connector's base64 route can carry (about
+**THE SHEET IS v141** (`masters/v25.5/masterz-text-v141.xlsx`, its CSV beside it: v25.5's words). It is
+EXPORTED and not published: the workbook (127 KB) is far past what the Drive connector's base64 route can carry (about
 20,000 characters — docs/EDITING-TEXT.md, "THE CEILING"), so the split export written down there no longer fits
 either. The way through is the Google Sheets connector, which writes the cells directly (docs/OPEN-ITEMS.md A1).
 **v44 is still the link to give Chad** until that is done:
 https://docs.google.com/spreadsheets/d/1bqnbQJPr1O6YslOlcsbVDFlZCohQtyKbPzm9EuY1IpM/edit
-Every sheet version's own diff, v140 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
+Every sheet version's own diff, v141 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
 first; a new version goes at its top).
 
 `docs/LEARNINGS.md` is the catalog of every hard-won lesson (CSP traps,

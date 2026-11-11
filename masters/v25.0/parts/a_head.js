@@ -216,7 +216,7 @@
     assets: ['lersichin', 'e4pong', 'e4nangkwak', 'e4takrut', 'e4phayant', 'e4khannam', 'e4phan',
              'e4till', 'e4bag', 'e4jacket', 'e4water', 'e4drinks', 'e4wallet', 'e4switch', 'e4shelf', 'e4cloth', 'e4yaam', 'e4phone', 'e4calc', 'e4wreath', 'e4notebook',
              'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm', 'filmlaptop',
-             'staffman', 'sitwoman', 'wifewalk', 'sitangry', 'fatherwalk', 'yinkeeper'],
+             'staffman', 'sitwoman', 'wifewalk', 'sitangry', 'fatherwalk', 'granny', 'grannywalk'],
     /* FRESH (chaptertest) asks a chapter of episode 4 to declare what it takes from episodes 1-3 (`reuse`, printed on
        every run as a reminder); what it shares with chapter 1 of its own episode — his own shop, its stock, Pong — is
        the same story going on, declared here as data so it stays written down (Chad, v17.4: "any reuse is declared") */
@@ -225,7 +225,7 @@
              sitwoman: "a woman walking past his shop at noon, the same mall's people as in chapter 1, a few metres off and blurred by the fog",
              wifewalk: "her walk, the clip alone",
              sitangry: "a man walking past his shop at noon, the same mall's people as in chapter 1",
-             yinkeeper: "A STAND-IN (v25.5): the woman at his counter in the opening film and ending D, seen since Chad's note ('there is no female customer in that cut scene, can you add one?') — the Yin shop's keeper of episode 3 chapter 4 wears the part until his model for her lands (docs/E4-MODELS.md)" },
+             granny: "A STAND-IN (v25.5): the woman at his counter in the opening film and ending D, seen since Chad's note ('there is no female customer in that cut scene, can you add one?') — the auntie of episode 1 chapter 3's paper table (a customer again in episode 3 chapter 4's shop) wears the part until his model for her lands (docs/E4-MODELS.md). The Yin shop's keeper wore it first; Chad, 11 Nov 2026: 'Dont use the yin amulet shoplady. Use another women model.' Her walk (grannywalk) is this chapter's own, made for her: masters/v25.5/make.sh" },
     reuseInEpisode: { e4pong: "Pong, the Bangkok dealer of chapter 1 — he sent him to the first master on someone else's word, and vouches first-hand for Lersi Chin here (§3.2)",
              e4nangkwak: "the piece he took from the first master's tray in chapter 1, standing by his door as he was told to put it — Lersi Chin sees it and advises a temple (§2.2 #6)",
              e4takrut: "the same, when the piece he took was the takrut",

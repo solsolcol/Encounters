@@ -216,7 +216,7 @@
     assets: ['lersichin', 'e4pong', 'e4nangkwak', 'e4takrut', 'e4phayant', 'e4khannam', 'e4phan',
              'e4till', 'e4bag', 'e4jacket', 'e4water', 'e4drinks', 'e4wallet', 'e4switch', 'e4shelf', 'e4cloth', 'e4yaam', 'e4phone', 'e4calc', 'e4wreath', 'e4notebook',
              'e4somdej', 'e4khunpaen', 'e4rian', 'e4pidta', 'e4jatukham', 'e4kring', 'e4meedmor', 'e4bucha', 'e4takrutsm', 'filmlaptop',
-             'staffman', 'sitwoman', 'wifewalk', 'sitangry', 'fatherwalk', 'yinkeeper'],
+             'staffman', 'sitwoman', 'wifewalk', 'sitangry', 'fatherwalk', 'granny', 'grannywalk'],
     /* FRESH (chaptertest) asks a chapter of episode 4 to declare what it takes from episodes 1-3 (`reuse`, printed on
        every run as a reminder); what it shares with chapter 1 of its own episode — his own shop, its stock, Pong — is
        the same story going on, declared here as data so it stays written down (Chad, v17.4: "any reuse is declared") */
@@ -225,7 +225,7 @@
              sitwoman: "a woman walking past his shop at noon, the same mall's people as in chapter 1, a few metres off and blurred by the fog",
              wifewalk: "her walk, the clip alone",
              sitangry: "a man walking past his shop at noon, the same mall's people as in chapter 1",
-             yinkeeper: "A STAND-IN (v25.5): the woman at his counter in the opening film and ending D, seen since Chad's note ('there is no female customer in that cut scene, can you add one?') — the Yin shop's keeper of episode 3 chapter 4 wears the part until his model for her lands (docs/E4-MODELS.md)" },
+             granny: "A STAND-IN (v25.5): the woman at his counter in the opening film and ending D, seen since Chad's note ('there is no female customer in that cut scene, can you add one?') — the auntie of episode 1 chapter 3's paper table (a customer again in episode 3 chapter 4's shop) wears the part until his model for her lands (docs/E4-MODELS.md). The Yin shop's keeper wore it first; Chad, 11 Nov 2026: 'Dont use the yin amulet shoplady. Use another women model.' Her walk (grannywalk) is this chapter's own, made for her: masters/v25.5/make.sh" },
     reuseInEpisode: { e4pong: "Pong, the Bangkok dealer of chapter 1 — he sent him to the first master on someone else's word, and vouches first-hand for Lersi Chin here (§3.2)",
              e4nangkwak: "the piece he took from the first master's tray in chapter 1, standing by his door as he was told to put it — Lersi Chin sees it and advises a temple (§2.2 #6)",
              e4takrut: "the same, when the piece he took was the takrut",
@@ -2315,39 +2315,45 @@
       cast.mallB = mkPerson('sitangry', { parent: worldS, x: 4.0, z: 6.9, ry: -Math.PI / 2, height: 1.7, anims: 'fatherwalk', sizeTake: 'Walking', posture: 'stand', stand: 'Walking', look: 0, noShadow: true, hidden: true });
       /* (v25.5, Chad: "when the female customer asks a question, there is no female customer in that cut scene, can you add
          one?" ... "when customer asks about the amulet, there is no customer, add the customer") THE WOMAN AT HIS COUNTER,
-         in the opening film and in ending D. A STAND-IN, declared (DATA.reuse): episode 3 chapter 4's Yin-shop keeper, an
-         older woman with a standing rest, a talking take and a walk of her own, wears the part until Chad's model for
-         her lands (docs/E4-MODELS.md lists it as NEEDED). Only the films place her (b_build4: openFrame, endD) */
-      cast.woman = mkPerson('yinkeeper', { parent: worldS, x: -0.65, z: -0.92, ry: Math.PI, height: 1.57, sizeTake: 'Idle_9',
-        posture: 'stand', stand: 'Idle_9', walk: 'Walking', talk: 'Talk_with_Left_Hand_on_Hip', talkWeight: 0.85, look: 0, noMip: true, noShadow: true, hidden: true,
-        then: shoesOn });
+         in the opening film and in ending D. A STAND-IN, declared (DATA.reuse), until Chad's model for her lands
+         (docs/E4-MODELS.md lists it as NEEDED). Only the films place her (b_build4: openFrame, endD).
+         (11 Nov 2026, Chad, of the Yin shop's keeper who wore the part first: "Dont use the yin amulet shoplady. Use
+         another women model.") The auntie of episode 1 chapter 3's paper table: a neighbourhood auntie in a floral
+         blouse and her own sandals, as a woman who asks a shop "from which temple ah?" is. Her standing take is her
+         own (Stand_and_Chat: arms down, her weight shifting, no gesture to speak of), her talk is her own at a third
+         (Talk_Passionately opens both arms wide at full weight: photographed), and her walk was made for her as the
+         mall's two passers-by got theirs (the admin tee's Walking retargeted onto her rig in world space, the clip
+         alone: `grannywalk`, masters/v25.5/make.sh), with her arms brought in: the take as it is holds both arms out
+         and swings a hand to the waist, a young man's march on an auntie (seen in the film, then photographed large
+         from the front, the side and behind at four moments of the stride) */
+      cast.woman = mkPerson('granny', { parent: worldS, x: -0.65, z: -0.92, ry: Math.PI, height: 1.55, anims: 'grannywalk', sizeTake: 'Stand_and_Chat',
+        posture: 'stand', stand: 'Stand_and_Chat', walk: 'Walking', talk: 'Talk_Passionately', talkWeight: 0.3, look: 0, noShadow: true, hidden: true,
+        then: centreStand });
     }
-    /* (v25.5) HER SHOES. The keeper's model is barefoot (she keeps a shop in her own house, in episode 3); a woman who has
-       walked into a mall is not, and her feet are in the picture as she walks out. Put on at run time, her file untouched
-       (v12.4): the triangles of her skin whose three corners belong to her feet (each corner by what it is skinned to,
-       v21.16) are drawn a second time, on her own skeleton, in a plain dark leather, a hair in front of the skin
-       (polygonOffset; the same points, so nothing can part from the foot it covers). Plain flat shoes under black
-       trousers */
-    function shoesOn(P) {
-      const sks = []; P.model.traverse(m => { if (m.isSkinnedMesh) sks.push(m); });
-      const mShoe = M({ color: 0x17161a, roughness: 0.55, metalness: 0.05, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
-      for (const sk of sks) {
-        const g = sk.geometry, si = g.attributes.skinIndex, sw = g.attributes.skinWeight, idx = g.index; if (!si || !sw) continue;
-        const foot = new Set(); sk.skeleton.bones.forEach((b, i) => { if (/Foot|Toe/.test(b.name)) foot.add(i); });
-        const isFoot = (v) => { let w = 0; for (let c = 0; c < 4; c++) if (foot.has(si.getComponent(v, c))) w += sw.getComponent(v, c); return w > 0.5; };
-        const n = idx ? idx.count : g.attributes.position.count, out = [];
-        for (let i = 0; i + 2 < n; i += 3) { const a = idx ? idx.getX(i) : i, b = idx ? idx.getX(i + 1) : i + 1, c = idx ? idx.getX(i + 2) : i + 2;
-          if (isFoot(a) && isFoot(b) && isFoot(c)) out.push(a, b, c); }
-        if (!out.length) continue;
-        const sg = new THREE.BufferGeometry();
-        for (const k of ['position', 'normal', 'skinIndex', 'skinWeight']) if (g.attributes[k]) sg.setAttribute(k, g.attributes[k]);
-        sg.setIndex(out);
-        const shoe = new THREE.SkinnedMesh(sg, mShoe);
-        shoe.position.copy(sk.position); shoe.quaternion.copy(sk.quaternion); shoe.scale.copy(sk.scale);
-        shoe.bind(sk.skeleton, sk.bindMatrix); shoe.castShadow = false; shoe.receiveShadow = false;
-        shoe.frustumCulled = sk.frustumCulled; if (sk.boundingSphere) shoe.boundingSphere = sk.boundingSphere;
-        sk.parent.add(shoe);
-      }
+    /* (v25.5: the shoes drawn onto the Yin shop's keeper for this part, she being barefoot in her own house, went with
+       her on 11 Nov; the auntie wears her own sandals)
+       HER STANDING TAKE, BROUGHT ONTO HER MARK. Stand_and_Chat holds her hips half a metre off her own origin (measured
+       in the film: her group at -0.65, -0.92, her hips at -1.01, -0.54), so she stood away from the counter and the
+       shot that looks at her face looked across the shop; and her walk, made for her, is on the origin, so a body
+       centred by its `centre` option (v24.5, for a figure who never walks) would have slid that half metre as she
+       turned to go. The take's own Hips track is moved instead: its mean place brought over her group's middle, flat
+       along the floor, in the track's own numbers (through the hips' parent, whatever turn or scale her armature
+       holds), on the copy mkPerson's lower layer plays (lowerOnly clones the clip: her file and the shared clip are
+       untouched). Standing and walking then share one place */
+    const _csA = new THREE.Vector3(), _csB = new THREE.Vector3(), _csM = new THREE.Matrix4();
+    function centreStand(P) {
+      const a = P.L && P.L.standLo, tr = a && a.getClip().tracks.find(q => /Hips(_\d+)?\.position$/.test(q.name));
+      if (!tr || !P.hips || !P.hips.parent) { console.warn('centreStand: no hips track to centre for ' + P.key); return; }
+      const v = tr.values, n = v.length / 3; let ax = 0, ay = 0, az = 0;
+      for (let i = 0; i < n; i++) { ax += v[i * 3]; ay += v[i * 3 + 1]; az += v[i * 3 + 2]; }
+      ax /= n; ay /= n; az /= n;
+      P.group.updateMatrixWorld(true);
+      /* where the take's mean hips stand, in her group's frame (x and z are the floor); the step back to its middle */
+      _csA.set(ax, ay, az).applyMatrix4(P.hips.parent.matrixWorld); P.group.worldToLocal(_csA);
+      /* that step, as the difference of two points carried from her group's frame into the hips' parent's */
+      _csM.copy(P.hips.parent.matrixWorld).invert().multiply(P.group.matrixWorld);
+      _csB.set(-_csA.x, 0, -_csA.z).applyMatrix4(_csM); _csA.set(0, 0, 0).applyMatrix4(_csM); _csB.sub(_csA);
+      for (let i = 0; i < n; i++) { v[i * 3] += _csB.x; v[i * 3 + 1] += _csB.y; v[i * 3 + 2] += _csB.z; }
     }
     /* HIS HANDS AND HIS BODY (Lersi Chin has no take for a wai, a reach or a bowl held; his rig has one joint to a hand
        and no fingers, so every pose is one a flat hand can make).
@@ -4040,9 +4046,15 @@
        sitting, behind him, in two layers (the colour laid on as a colour, and the glow added over it: added alone, a
        colour over the pale counter behind him sums to white, v8.8); a fan of rays turning slowly behind that; a pool
        of the light on the mat round him, with rings going out across it; and motes rising round him, some before him
-       and some behind (the scene's own depth sorts them). GOLD as he chants and gives the water (the clearing); WHITE,
-       cooler and stiller, its rings slow ripples, as he sits in the stillness and finds the piece (the examination).
-       It breathes once in five seconds. Built hidden here, so the curtain warms it (v14.15) */
+       and some behind (the scene's own depth sorts them). It breathes once in five seconds. Built hidden here, so
+       the curtain warms it (v14.15).
+       (11 Nov 2026, Chad, with v25.5 on his phone: "maybe dont use golden aura and glow for lersi chin, use only white,
+       and make the white glow more subtle. For both the meditation part and also the chanting and blessing part.
+       Golden will be used for grandmaster pho only.") LERSI CHIN'S AURA IS WHITE, AND QUIET, in both films: as he sits
+       in the stillness and finds the piece (the examination) and as he chants and gives the water (the clearing),
+       cool, its rings slow ripples, at about half of what the white stood at (AURA_K). GOLD IS GRANDMASTER PHO'S
+       ALONE (a standing rule, CLAUDE.md): its colours and its strengths, set from photographs on 10 Nov, are kept
+       here for chapter 3 to lift, and no film of this chapter asks for it (auraAt's first number is 0 everywhere) */
     const AURA = { gold: { hue: 0xf0a41c, glow: 0xffc65a, mote: 0xffdc8c }, white: { hue: 0xbfd2f4, glow: 0xeef4ff, mote: 0xffffff }, motes: 64, rings: 3 };
     const aura = (() => {
       const g = new THREE.Group(); g.position.set(LC.x, 0, LC.z); g.visible = false; g.userData.dyn = true; worldS.add(g);
@@ -4095,8 +4107,10 @@
       P.needsUpdate = true; V.needsUpdate = true;
       A.pts.material.size = white ? 0.04 : 0.05;
     }
-    /* how strong each layer is, set from photographs on a phone's shape and a desktop's (masters/v25.5) */
-    const AURA_K = { gold: { shade: 0.66, hue: 0.78, glow: 0.55, rays: 0.5, pool: 0.5, ring: 0.26, mote: 1 }, white: { shade: 0.7, hue: 0.6, glow: 0.56, rays: 0.5, pool: 0.36, ring: 0.4, mote: 1 } };
+    /* how strong each layer is, set from photographs on a phone's shape and a desktop's (masters/v25.5). (11 Nov) the
+       white at about half of its first strengths (shade 0.7, hue 0.6, glow 0.56, rays 0.5, pool 0.36, ring 0.4, mote 1):
+       Chad's "more subtle"; the gold as it was photographed, kept for Grandmaster Pho */
+    const AURA_K = { gold: { shade: 0.66, hue: 0.78, glow: 0.55, rays: 0.5, pool: 0.5, ring: 0.26, mote: 1 }, white: { shade: 0.34, hue: 0.3, glow: 0.3, rays: 0.2, pool: 0.2, ring: 0.2, mote: 0.55 } };
 
     /* ================================================================ THE FILMS' PICTURES (§4), each a pure function of
        its own clock: every shot his eyes (he is never seen, Chad 9 Nov), named by what it must hold */
@@ -4549,8 +4563,9 @@
       /* the candles and the incense lit for the homage */
       const fl = smo(sgk(t, K.homage + 0.4, K.homage + 1.4));
       for (const f of props.flames) f.material.opacity = fl;
-      /* (v25.5) the gold light round him from the chant's first words to the water given, gone as he sits back */
-      auraAt(ezk(t, K.namo - 0.3, K.namo + 3.0) * (1 - ezk(t, K.water + 4.3, K.water + 5.8)), 0, t);
+      /* (v25.5) the light round him from the chant's first words to the water given, gone as he sits back (white, and
+         quiet, since 11 Nov: gold is Grandmaster Pho's) */
+      auraAt(0, ezk(t, K.namo - 0.3, K.namo + 3.0) * (1 - ezk(t, K.water + 4.3, K.water + 5.8)), t);
       /* his own hands: together from "Hands together", down for the water */
       const handsK = smo(sgk(t, K.lc2k0 + 0.6, K.lc2k0 + 1.4)) * (1 - smo(sgk(t, K.water - 0.6, K.water)));
       waiAt(handsK);
@@ -6131,7 +6146,11 @@
     sfx(O.cu2a1, 'cu2a1', 1);                  // "Boss, this one... from which temple ah? Who blessed it?"
     sfx(O.q2o2b, 'q2o2b', 1);                  // "Sorry... can you say again?"
     sfx(O.cu2a1b, 'cu2a1b', 1);                // "Aiyo, never mind. I come back another day."
-    sfx(O.cu2a1b + SECS.cu2a1b - 0.6, 'x2heels', 0.5);   // her heels on the terrazzo, away
+    /* (v25.5) her sandals: the auntie who wears the part since 11 Nov wears flat sandals, and the heels that were cued
+       here (x2heels, x2heelsin: retired) clicked under a woman who was only heard */
+    /* (a sandal's slap is short: at the heels' own peak the walk measures 7.5 dB under them by RMS, so it is cued
+       at 0.7 and 0.65 where they were 0.5 and 0.45) */
+    sfx(O.cu2a1b + SECS.cu2a1b - 0.6, 'x2sandals', 0.7);   // her sandals on the terrazzo, away
     sfx(O.q2o2, 'q2o2', 1);                    // "I could not think properly."
     sfx(O.o3 + 1.0, 'x2pat', 0.55); sfx(O.o3 + 2.1, 'x2pat', 0.5); sfx(O.o3 + 3.3, 'x2pat', 0.5);   // one pocket, the other, the back
     sfx(O.q2o3, 'q2o3', 1);                    // "I misplaced my wallet, and strangely..."
@@ -6349,7 +6368,7 @@
       sfx(T.morning + 0.1, 'x2endD', 0.6);                           // the ending's music: bright, unhurried
       sfx(T.morning + 0.2, 'x2shutterup', 0.7);                      // his shutter going up on a clear morning
       sfx(T.morning + 3.2, 'x2pat', 0.5); sfx(T.morning + 3.75, 'x2wallet', 0.5);  // his pocket — and the wallet in it
-      sfx(T.cu2a2 - 1.6, 'x2heelsin', 0.45);                         // her heels coming back up to his counter
+      sfx(T.cu2a2 - 1.6, 'x2sandalsin', 0.65);                       // her sandals coming back up to his counter
       sfx(T.cu2a2, 'cu2a2', 1);                                      // "Boss, this one... from which temple ah?"
       sfx(T.q2D2, 'q2D2', 1);                                        // "This one? A temple in Ayutthaya. The card is inside, let me show you."
       /* (v25.5) the cased piece lies on the glass and is only looked at: the sound of it lifted from the tray is out (x2case, retired) */

@@ -318,6 +318,68 @@ for (const { dn, sn } of mapped) {
   dstWorld.set(dn, world); outLocal.set(dn, local);
 }
 
+/* v25.5 · --calm=<hang°>,<ka>,<ks>,<bend°>,<kb>: THE ARMS BROUGHT IN. A library walk made for a young man (the admin
+   tee's Walking, and Meshy's own woman's walk is the same) holds both upper arms 20° out from the body and swings the
+   hands up to the waist; on an older woman it reads as a march. This is done in WORLD space, after the retarget, on the
+   target's own bones, one side at a time:
+     the upper arm's direction is read as two angles, out from the body (about the walk's line) and fore-and-aft;
+     its mean angle out becomes <hang>, what it varies by is kept at a share <ka>, the swing at a share <ks>;
+     the elbow's bend (the angle between the upper arm and the forearm, about whatever hinge the take bends it on) has
+     its mean set to <bend>, and what it varies by kept at a share <kb>: the take carries its elbows back and its
+     forearms forward, so an upper arm brought to the vertical with the take's own bend holds both hands in front of
+     the belly (the first try, photographed);
+     the hand, and anything mapped under it, rides the forearm exactly as it did.
+   The legs, the hips and the spine are untouched, so the feet land where they landed. Without the flag nothing changes
+   (the same bytes: proven on the auntie's first walk, masters/v25.5/make.sh). */
+const CALMA = process.argv.find(a => a.startsWith('--calm='));
+if (CALMA) {
+  const [hang, ka, ks, bend, kb] = CALMA.slice(7).split(',').map(Number), D2R = Math.PI / 180;
+  if (![hang, ka, ks, bend, kb].every(Number.isFinite)) { console.error('--calm wants five numbers: hang,ka,ks,bend,kb'); process.exit(1); }
+  const qAxis = (ax, an) => { const s = Math.sin(an / 2); return [ax[0] * s, ax[1] * s, ax[2] * s, Math.cos(an / 2)]; };
+  const vCross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  const deg = (r) => (r / D2R).toFixed(1), rng = (a) => `${deg(Math.min(...a))}..${deg(Math.max(...a))}`;
+  for (const side of ['Left', 'Right']) {
+    const A = mapped.find(m => m.name === side + 'Arm'), Fo = mapped.find(m => m.name === side + 'ForeArm');
+    if (!A || !Fo) { console.log('   --calm: no ' + side + ' arm in the map'); continue; }
+    const tl = vNorm(Fo.dn.getTranslation()), th = vNorm((mapped.find(m => m.name === side + 'Hand') || Fo).dn.getTranslation());
+    if (!tl) { console.log('   --calm: the ' + side + ' forearm sits on its parent'); continue; }
+    const sg = side === 'Left' ? 1 : -1, wA = dstWorld.get(A.dn), wF = dstWorld.get(Fo.dn);
+    const abd = [], sw = [];
+    for (let f = 0; f < F; f++) { const d = qRot(wA[f], tl); abd.push(Math.atan2(sg * d[0], -d[1])); sw.push(Math.atan2(d[2], -d[1])); }
+    const mAbd = abd.reduce((a, b) => a + b, 0) / F;
+    /* the forearm against the upper arm, and its line in the upper arm's frame: the bend is the angle between the two
+       lines, the hinge the axis across them (a dead-straight frame borrows the hinge of the frame before it) */
+    const rel = wF.map((q, f) => qNorm(qMul(qInv(wA[f]), q)));
+    const fl = th ? rel.map(q => qRot(q, th)) : null;
+    const bd = fl ? fl.map(v => Math.acos(Math.max(-1, Math.min(1, tl[0] * v[0] + tl[1] * v[1] + tl[2] * v[2])))) : null;
+    const mBd = bd ? bd.reduce((a, b) => a + b, 0) / F : 0;
+    const nA = new Array(F), nF = new Array(F), abd2 = [], sw2 = [], bd2 = [];
+    let hx = null;
+    for (let f = 0; f < F; f++) {
+      const a2 = hang * D2R + ka * (abd[f] - mAbd), s2 = ks * sw[f];
+      abd2.push(a2); sw2.push(s2);
+      const d = qRot(wA[f], tl), d2 = vNorm([sg * Math.tan(a2), -1, Math.tan(s2)]);
+      nA[f] = qNorm(qMul(qFromTo(d, d2), wA[f]));
+      let r2 = rel[f];
+      if (fl) {
+        hx = vNorm(vCross(tl, fl[f])) || hx;
+        const b2 = bend * D2R + kb * (bd[f] - mBd); bd2.push(b2);
+        if (hx) r2 = qNorm(qMul(qAxis(hx, b2 - bd[f]), rel[f]));
+      }
+      nF[f] = qNorm(qMul(nA[f], r2));
+    }
+    /* everything mapped under the forearm rides it as it did */
+    const under = (n) => { for (let p = dstRest.parent.get(n); p; p = dstRest.parent.get(p)) if (p === Fo.dn) return true; return false; };
+    for (const m of mapped) if (under(m.dn)) { const w = dstWorld.get(m.dn); dstWorld.set(m.dn, w.map((q, f) => qNorm(qMul(nF[f], qMul(qInv(wF[f]), q))))); }
+    dstWorld.set(A.dn, nA); dstWorld.set(Fo.dn, nF);
+    for (const m of mapped) if (m.dn === A.dn || m.dn === Fo.dn || under(m.dn)) {
+      const dp = dstRest.parent.get(m.dn), w = dstWorld.get(m.dn);
+      outLocal.set(m.dn, w.map((q, f) => { const dpW = dp ? (dstWorld.get(dp)?.[f] || dstRest.rot.get(dp) || [0, 0, 0, 1]) : [0, 0, 0, 1]; return qNorm(qMul(qInv(dpW), q)); }));
+    }
+    console.log(`   --calm ${side}: out ${rng(abd)} (mean ${deg(mAbd)}) -> ${rng(abd2)}; swing ${rng(sw)} -> ${rng(sw2)}; elbow ${bd ? rng(bd) + ' (mean ' + deg(mBd) + ') -> ' + rng(bd2) : 'as it was (no hand mapped)'}`);
+  }
+}
+
 // ------------------------------------------------------------------- writing
 const buf = dst.getRoot().listBuffers()[0] || dst.createBuffer();
 const inputAcc = dst.createAccessor().setType('SCALAR').setArray(new Float32Array(times)).setBuffer(buf);
