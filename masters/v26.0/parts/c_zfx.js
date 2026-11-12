@@ -67,11 +67,15 @@
     const FLAT_Q = new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
     let burstNext = 0;
     /* thrown from `from` [x, y, z] so that it falls round `to` [x, z] (`r`: how wide it lands; `s`: a petal's length, 3.4 cm
-       unless said: a little over life, so a throw reads across the turf; a close lens asks for less); t0 on the clock it is run on */
+       unless said: a little over life, so a throw reads across the turf; a close lens asks for less); t0 on the clock it is run on.
+       `n`: how many petals of the handful there are (a child's is a third of a master's); the rest of the mesh's copies are
+       never shown. Unsaid, every copy is thrown and each lands where it always did */
     function petalBurst(from, to, t0, o = {}) {
       const Bu = bursts[burstNext++ % BURSTS], rnd = rng(o.seed || (7001 + burstNext * 131)), r = o.r != null ? o.r : 0.55, yg = o.ground != null ? o.ground : 0.014, col = new THREE.Color();
+      const nShown = o.n != null ? Math.min(BURST_N, o.n) : BURST_N;
       Bu.P.length = 0; Bu.t0 = t0; Bu.on = true; Bu.end = 0; Bu.im.visible = true;
       for (let i = 0; i < BURST_N; i++) {
+        if (i >= nShown) { Bu.P.push({ late: Infinity, land: 0 }); continue; }
         const an = rnd() * 6.283, d = r * Math.sqrt(rnd()), tx = to[0] + Math.cos(an) * d, tz = to[1] + Math.sin(an) * d;
         const p = { x0: from[0] + (rnd() - 0.5) * 0.08, y0: from[1] + (rnd() - 0.5) * 0.06, z0: from[2] + (rnd() - 0.5) * 0.08, tx, tz,
                     vy: (o.up != null ? o.up : 1.9) * (0.55 + rnd() * 0.9), vt: 0.75 + rnd() * 0.75, th: 0.42 + rnd() * 0.3, ty: 0.3 + rnd() * 0.12,

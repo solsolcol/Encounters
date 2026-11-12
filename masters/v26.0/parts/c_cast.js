@@ -26,7 +26,7 @@
        level; Chad's own models (Grandmaster Pho, the monk) are as he gave them and are not touched. */
     const NOMIP = /^e4/;
     /* (the children's runs and their skip too: c_crowd.js) */
-    const WALKS = /^(Walking|Casual_Walk|Walking_Woman|Run_02|Run_03|Skip_Forward)$/;
+    const WALKS = /^(Walking|Run_02|Run_03)$/;                                   // (the takes that travel: the dancers' walk, the children's two runs)
     /* (the full model's reach was 2.7 m until 13 Nov. Photographed at 2.55 m at both levels, on a phone's frame and a
        desktop's, magnified: no difference to be seen at that distance, and the full model is 310,000 triangles. At
        2.2 m (taken up inside 2.05, let go past 2.35, measured from the lens) it is drawn where he has walked up to
@@ -588,14 +588,17 @@
     /* THE DANCERS (§4.1 P3: "dancers in traditional thai clothes ... dancing to show respect to the tewadas", Chad). Six
        women in white and gold on the open turf, in two rows of three, turned to Grandmaster Pho's canopy: two bodies,
        each drawn three times from one hidden driver (they dance in unison, as a troupe does), every other one mirrored.
-       Seen only in the film of the festival, which poses the two drivers from its own clock. */
+       The film of the festival poses the two drivers from its own clock. In PLAY they are on the ground all of day one
+       (c_crowd.js, "the dancers on the ground": they wait, they cross ahead of him, they stand by after their dance), so
+       a driver rests in its stand and its walk's pace is measured; the film stands them on their dance places. */
     const danceG = new THREE.Group(); danceG.visible = false; world.add(danceG);
     const DANCE = { c: [0.2, -2.6], gap: 1.35, row: 0.75 };
-    const dancers = { A: mkDriver('e4dancera', { take: 'dance1' }), B: mkDriver('e4dancerb', { take: 'dance1' }), at: [] };
+    const dancers = { A: mkDriver('e4dancera', { take: 'Idle_3', pace: true }), B: mkDriver('e4dancerb', { take: 'Idle_3', pace: true, phase: 0.37 }), at: [], ry: 0, m: [] };
     { const fx = PHO_AT[0] - DANCE.c[0], fz = PHO_AT[1] - DANCE.c[1], fl = Math.hypot(fx, fz), f = [fx / fl, fz / fl], r = [f[1], -f[0]], ry = Math.atan2(f[0], f[1]);
       for (let row = 0; row < 2; row++) for (let k = -1; k <= 1; k++) { const x = DANCE.c[0] + f[0] * (row ? -DANCE.row : DANCE.row) + r[0] * k * DANCE.gap, z = DANCE.c[1] + f[1] * (row ? -DANCE.row : DANCE.row) + r[1] * k * DANCE.gap;
         const D = (row + k + 2) % 2 ? dancers.B : dancers.A;
-        mkMember(D, x, z, ry, { parent: danceG, mirror: k === 1 || (row === 1 && k === 0), s: 0.97 + 0.02 * ((row * 3 + k + 4) % 3), blobW: 0.8, blobD: 0.7 }); dancers.at.push([x, z]); } }
+        dancers.m.push(mkMember(D, x, z, ry, { parent: danceG, mirror: k === 1 || (row === 1 && k === 0), s: 0.97 + 0.02 * ((row * 3 + k + 4) % 3), blobW: 0.8, blobD: 0.7 })); dancers.at.push([x, z]); }
+      dancers.ry = ry; }
     /* THOSE WHO GO UP at the west tent in the film (photographs 11 and 12): a woman who raises her bai sri to the hermit
        and goes quite still; a man heaped with petals whose arms rise wide (his own take's upper body on a grounded
        kneel: o.mix). Each is stood where his hands and the master's can meet (meetHands) */

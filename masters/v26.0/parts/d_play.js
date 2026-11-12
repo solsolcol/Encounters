@@ -68,9 +68,25 @@
     const filmBed = { on: false, fest: 0, mus: 0, birds: 0, open: 0, crick: 0, pull: 0, shop: 0 };
     const BED_EASE = { fest: 1.0, mus: 1.6, birds: 1.0, open: 0.22, crick: 0.8, pull: 0.3, shop: 0.5 };
     const DAY1 = new Set(['arrive', 'baisri', 'tables', 'place', 'festival', 'seen', 'check']);
+    /* THE MIX FOLLOWS WHERE HE STANDS (the plan's §3.7: "each tent, the tables and the open turf has its own sound"; left
+       unbuilt until the release's closing pass: the beds were mixed by the beat alone). On day one, in play: the
+       loudspeakers' music stands up to a decibel and a quarter over its level beside a horn and as much under it across
+       the ground from all three, and it comes from where the horns are (the bed's own pan, eased); the crowd's noise is
+       fullest in among the people and a decibel under at the ground's edges; and each of the ground's own noises
+       (ambTick) is loudest where it is made. The levels written above are the middle of these */
+    const HORNS = [[-10.45, -9.2], [10.7, -8.1], [-9.5, 12.7]];                 // (c_zfx.js: the three poles)
+    let musPan = 0;
+    function placeMix() {
+      let w = 0, pan = 0; const x = yaw.position.x, z = yaw.position.z;
+      for (const [hx, hz] of HORNS) { const d2 = Math.max(4, (hx - x) * (hx - x) + (hz - z) * (hz - z)), k = 1 / d2; w += k; pan += k * panAt(hx, hz); }
+      const dh = 1 / Math.sqrt(w);                                               // one horn at this distance would sound as the three do
+      return { mus: lp(1.15, 0.87, smo(c01((dh - 3) / 9))), pan: 0.5 * pan / w,
+               fest: lp(1.06, 0.89, smo(c01((Math.hypot(x - crowdMid.x, z - crowdMid.z) - 4) / 9))) };
+    }
     function mixBeds(wdt, st) {
       if (!(wdt > 0)) return;
       const want = { fest: 0, mus: 0, birds: 0, open: 0, crick: 0, pull: 0, shop: 0 };
+      let panTo = 0;
       if (st === 'cine') { if (filmBed.on) for (const k in want) want[k] = filmBed[k]; }
       /* (on the title and the chapter's card nothing is heard: the engine holds every bed at 0 there. Nothing is RAISED
          there either: this frame runs under the title too, and the opening film began on a second of day one's crowd,
@@ -82,9 +98,12 @@
         want.fest = BED.fest * (1 - 0.5 * pk) * (phase === 'check' ? 0.8 : 1); want.mus = BED.mus * (1 - pk) * (phase === 'check' ? 0.8 : 1);
         want.pull = BED.pull * pk;
         if (play.chanting) { want.mus = 0; want.fest *= 0.55; }                             // the chant is on the loudspeakers, and the ground is bowing
+        if (st === 'play') { const PM = placeMix(); want.mus *= PM.mus; want.fest *= PM.fest; panTo = PM.pan; }
       } else { want.birds = BED.birds; if (phase === 'breath') want.open = BED.open * Math.max(0, open.shown); }
       for (const k in bedMix) bedMix[k] += (want[k] - bedMix[k]) * (1 - Math.exp(-wdt / BED_EASE[k]));
+      musPan += (panTo - musPan) * (1 - Math.exp(-wdt / 0.7));
       const B = DATA.ambience.beds; B[0][1] = bedMix.fest; B[1][1] = bedMix.mus; B[2][1] = bedMix.birds; B[3][1] = bedMix.open; B[4][1] = bedMix.crick; B[5][1] = bedMix.pull; B[6][1] = bedMix.shop;
+      B[1][2] = Math.abs(musPan) < 0.002 ? 0 : musPan;
     }
     /* where a sound of the ground is, on his screen */
     function panAt(x, z) {
@@ -104,7 +123,7 @@
     /* (which wick the taper stood at when last looked at, and what the children were doing: extrasSound, below) */
     let wickAt = -1, kidsPh = '';
     /* (how often each has sounded: a sound played through worldSfx is in no cue log, so the claim is made countable, v5.29) */
-    const extrasHeard = { wick: 0, laugh: 0 };
+    const extrasHeard = { wick: 0, laugh: 0, toss: 0 };
     function ambRand() {
       ambSeed = (ambSeed + 0x6D2B79F5) | 0; let t = ambSeed;
       t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
@@ -138,13 +157,15 @@
       let k = Math.floor(ambRand() * pool.length);
       if (pool[k].n === ambLast) k = (k + 1 + Math.floor(ambRand() * (pool.length - 1))) % pool.length;
       const sd = pool[k], at = sd.at();
-      const vol = sd.v * (dayClock.t < speak.until ? 0.66 : 1) * (0.85 + 0.3 * ambRand());
+      /* (and by how far off it is made: full within five metres, three fifths across the ground) */
+      const far = one ? lp(1, 0.6, smo(c01((Math.hypot(at.x - yaw.position.x, at.z - yaw.position.z) - 5) / 13))) : 1;
+      const vol = sd.v * far * (dayClock.t < speak.until ? 0.66 : 1) * (0.85 + 0.3 * ambRand());
       if (worldSfx(sd.n, vol, 0.95 + 0.1 * ambRand(), panAt(at.x, at.z))) {
         ambN++; ambLast = sd.n; ambBusy = dayClock.t + sd.len + 0.8;
         ambAt = dayClock.t + (one ? 6 + ambRand() * 8 : 9 + ambRand() * 11);
       } else ambAt = dayClock.t + 1.5;
     }
-    function ambReset() { ambSeed = AMB_SEED; ambAt = 0; ambBusy = 0; ambLast = ''; ambN = 0; for (const k in bedMix) bedMix[k] = 0; filmBed.on = false; wickAt = -1; kidsPh = ''; }
+    function ambReset() { ambSeed = AMB_SEED; ambAt = 0; ambBusy = 0; ambLast = ''; ambN = 0; for (const k in bedMix) bedMix[k] = 0; filmBed.on = false; wickAt = -1; kidsPh = ''; musPan = 0; }
 
     const W = DATA.words;
     const play = { run: 0, busy: false, turning: null, bow: null, bai: false, baiP: 0, baiTo: 0, baiSecs: 1, knelt: false, homage: false,
@@ -337,9 +358,30 @@
       const run = play.run;
       after(4.2, () => { if (live(run) && phase === 'arrive' && !play.busy && !heard.has('q3v')) queueLine('q3v'); });
     }
+    /* THE GIRL'S HANDFUL OF PETALS (the plan's §3.7, picture 2: "a handful of petals thrown beside him (play)"). The
+       children have come to Ton's table to watch (kidsCall); as the bai sri comes into his hands the girl jumps for joy
+       and throws up what she has gathered off the turf: one jump of her own take (its fifth second: crouch, both arms
+       thrown up, down again), a third of a master's handful let go as her hands pass her head, falling round her and
+       toward him, her laugh with it. If the two of them are not there (he spoke to Ton as they ran in), nothing is
+       thrown: a jump that begins from a run is a stumble. */
+    const JUMP = { t0: 4.42, t1: 5.42, secs: 1.2, let: 0.56 };
+    function kidsToss(run) {
+      const D = kidsDir, K = kids[0], P = K.P; D.hold = false; D.t = 0;
+      if (formNow !== 'arrive' || D.ph !== 'restW' || !P.ready || K.moving || !P.group.visible || !P.acts.Happy_jump) return false;
+      const g = P.group.position, dx = yaw.position.x - g.x, dz = yaw.position.z - g.z, d = Math.hypot(dx, dz) || 1, ux = dx / d, uz = dz / d;
+      span(P, 'Happy_jump', JUMP.t0, JUMP.t1, JUMP.secs, { fade: 0.22, then: (Q) => rest(Q, 0.35) });
+      after(JUMP.let, () => { if (!live(run) || !P.group.visible) return;
+        petalBurst([g.x + ux * 0.1, 1.62, g.z + uz * 0.1], [g.x + ux * 0.5, g.z + uz * 0.5], dayClock.t, { r: 0.6, up: 1.25, n: 56, s: 0.03, seed: 4417 });
+        if (worldSfx && !(soundOff && soundOff())) { const pan = panAt(g.x, g.z);
+          worldSfx('x3petals', 0.3, 1.08, pan);
+          if (worldSfx('x3os1', 0.34, 1, pan)) { ambLast = 'x3os1'; ambBusy = dayClock.t + 3.6; extrasHeard.laugh++; } }
+        extrasHeard.toss++; });
+      return true;
+    }
     function tonTalk() {
       if (phase !== 'arrive' || play.busy) return false;
       const run = play.run; play.busy = true; objectiveFor('arrive');
+      kidsCall();
       /* he is stood a stated distance before Ton and turned to his face (v14.1: never from wherever he happened to stop),
          and held there while they speak; Ton turns to him */
       { const g = cast.ton.group.position, dx = yaw.position.x - g.x, dz = yaw.position.z - g.z, d = Math.hypot(dx, dz) || 1, r = Math.max(1.9, Math.min(2.3, d));
@@ -356,10 +398,11 @@
         after(0.45, () => { if (live(run)) play.tonGive = { k: 0 }; fx('x3baitake', 0.3, -0.3); });   // it is in his hands
         after(0.95, () => { if (!live(run)) return; turnPerson(P, toHim, 0.55); span(P, 'give', 0.5, 1.9, 1.4, { fade: 0.2, hold: 1.5 }); });   // and held out to him in both
         after(1.7, () => { if (live(run)) lookAt({ x: myBai.position.x, y: myBai.position.y + 0.3, z: myBai.position.z }, 1.0); });           // his eyes go down to it
+        after(4.3, () => { if (live(run)) kidsToss(run); });                                                                                // and the girl by the table jumps for joy
         after(3.1, () => { if (!live(run)) return; play.tonGive = null; myBai.visible = false; fx('x3baitake', 0.36); baiHands(true, { from: -1, p: 0, secs: 0.8 });
           span(P, 'give', 3.6, 5.85, 1.9, { fade: 0.3, then: (Q) => rest(Q, 0.7) });
           after(0.9, () => { if (live(run)) lookAt({ x: g.x, y: 1.5, z: g.z }, 1.1); }); }); });                                                // and back up to Ton
-      queueFn(() => { if (!live(run)) return; play.busy = false; play.tonGive = null; if (kit) kit.root(false); if (!play.bai) { myBai.visible = false; baiHands(true, { from: -1, p: 0, secs: 0.5 }); } setPhase('baisri'); });
+      queueFn(() => { if (!live(run)) return; play.busy = false; play.tonGive = null; if (kit) kit.root(false); if (!play.bai) { myBai.visible = false; baiHands(true, { from: -1, p: 0, secs: 0.5 }); } kidsDir.hold = false; setPhase('baisri'); });
       return true;
     }
     /* THE OFFERING TABLES: he raises the bai sri in both hands to the small Buddha at the centre of the wheel, and bows his head */
@@ -779,7 +822,7 @@
       /* (the people's own clocks run in a film too, v5.19: a film holds only those it has posed) */
       windClock += wdt; windTick(windClock); peopleTick(wdt, st !== 'cine'); mistTick(windClock); hazeTick(windClock); flamesTick(windClock); bulbsTick(windClock);
       /* (after the people: what is laid on a body's arm is laid on the pose its take has just written) */
-      taperTick(windClock); kidsTick(wdt, st);
+      taperTick(windClock); kidsTick(wdt, st); dancersTick(wdt, st); dancersTurn(wdt);
       if (st !== 'cine') { peopleLevels(); lodTick(); zoneTick(now); }
       /* a Continue is placed before the card (the v4.8 contract): the saved moment's picture stands under it */
       if (!booted && !preplaced && kit) { const w0 = preStage(kit.getPhase()); if (w0) preplaced = w0; }
@@ -847,7 +890,7 @@
         return R.p; }
       dayOneStage();
       if (R.p === 'festival' || R.p === 'seen' || R.p === 'check') { lineStage(); yaw.position.set(LINE_AT.x, EYE, LINE_AT.z); yaw.rotation.y = phoYawFrom(LINE_AT); pitch.rotation.x = -0.08; return R.p; }
-      setFormation('arrive');
+      setFormation('arrive'); dancersForm('arrive', R.p);
       if (R.p === 'baisri') { tonHome(); myBai.visible = false; return R.p; }
       tonToPlace();
       if (R.p === 'tables') { myBai.visible = false; yaw.position.set(TABLES_AT.x, EYE, TABLES_AT.z); yaw.rotation.y = Math.PI; pitch.rotation.x = 0; return R.p; }
@@ -881,7 +924,7 @@
       if (R.p === 'check') { lineStage(); baiHands(true, { p: 0, secs: 0.01 }); play.looked = true;
         if (play.checked) { betweenBegin(); return; }
         checkBegin(true); return; }
-      setFormation('arrive');
+      setFormation('arrive'); dancersForm('arrive', R.p);                             // (at the tables and at his place the dancers have crossed: c_crowd.js)
       if (R.p === 'baisri') { tonHome(); myBai.visible = false; baiHands(true, { p: 0, secs: 0.01 }); setPhase('baisri', { complete: false }); return; }
       tonToPlace();
       if (R.p === 'tables') { myBai.visible = false; baiHands(true, { p: 0, secs: 0.01 }); zoneAt(PLACE); setPhase('tables', { complete: false }); return; }

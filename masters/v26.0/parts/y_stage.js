@@ -45,6 +45,7 @@
         whenReady(cast.goA, (A) => put(A, GO_A[0], GO_A[1], -Math.PI / 2));
         whenReady(cast.goB, (Bm) => put(Bm, GO_B[0], GO_B[1], -Math.PI / 2));
         FL.throwAt = null;
+        dancersDance();                                                          // (in play they stand at the masters' side: the dance is danced on its places)
       },
       frame(t, api) {
         const T = FEST, second = t >= T.cut + 0.62;                            // (the formation changes inside the cut's black)
@@ -57,6 +58,7 @@
         }
         danceG.visible = !second;
         for (const P of [cast.goA, cast.goB]) if (P.ready) P.group.visible = second;
+        if (!second && dancersDir.ph !== 'dance') dancersDance();              // (a seek back over the cut: the formation has stood them by)
         if (!second) {
           /* THE DANCE: the two drivers posed from the film's clock, the first take given over to the second near its end */
           const k2 = sgk(t, 9.0, 9.9);
@@ -133,7 +135,8 @@
           }
         }
       },
-      end() { danceG.visible = false; for (const P of [cast.goA, cast.goB]) P.group.visible = false; filmBurstsEnd(); auraAt(0, 0); }
+      /* (the dancers are the ground's again: where the formation has them, at rest; play's own frame shows them) */
+      end() { danceG.visible = false; dancersForm(); for (const P of [cast.goA, cast.goB]) P.group.visible = false; filmBurstsEnd(); auraAt(0, 0); }
     };
 
     /* ---------------------------------------------------------------- THE OPENING FILM (§4.0; its clock: OPENT)
@@ -825,7 +828,9 @@
     }
     const films = {
       key: '',
-      begin(key, c, api) { FL.key = films.key = key; FL.api = api; FL.once.clear(); FL.lit = lookName; if (FILMS[key] && FILMS[key].begin) FILMS[key].begin(api); },
+      /* (the dancers: play has them on the ground all of day one; every film but the festival's was directed without
+         them, so each begins with them put away, and play's frame shows them again) */
+      begin(key, c, api) { FL.key = films.key = key; FL.api = api; FL.once.clear(); FL.lit = lookName; danceG.visible = false; if (FILMS[key] && FILMS[key].begin) FILMS[key].begin(api); },
       /* (a film's own frame: play's frame does not run under it, so the levels are chosen here, from the film's lens: v24.22) */
       frame(key, t, api) { if (FILMS[key]) FILMS[key].frame(t, api);
         filmBeds(key, t);
@@ -894,6 +899,7 @@
       for (const s of solids) solid(s);
       for (const b of crowdBlock) out.push(b);                                   // the crowd, a column a person (lifted out of his way when they are gone: crowdSolid)
       for (const b of dawnBlock) out.push(b);                                    // the two who clear up on day two
+      for (const b of danceBlock) out.push(b);                                   // the six dancers, wherever they stand or walk (c_crowd.js)
       for (const k in castBlock) out.push(castBlock[k]);                         // and those of the cast who stand on the turf (each follows its person: castSolid)
       return out;
     }
@@ -947,11 +953,11 @@
       setPhase, applyPhase, after, dayClock, sayLine, queueLine, queueFn, queueGap,
       look, presets: PRESETS, films, crowdStats, setFormation,
       /* for the probes (tools/probes/e4c3drive.mjs): the play's own state and its beats by name */
-      dbg: { viewfinder(v) { FL.vf = v || null; }, clocks: { A: ENDT.A, B: ENDT.B, C: ENDT.C, D: ENDT.D, CLOSE, FEST, BETW, TELL, ANSW, OPEN: OPENT }, armsOf, handTo, handsTo, baiGrip, baiPut, play, open, cast, bursts, BAI, handBai, myBai, ymBai, petalBurst, auraAt, baiHands, baiRaise, lineBegin, dawnBegin, breathBegin, places: { PLACE, LINE_AT, KNEEL2, DAWN_AT, TABLES_AT }, kids, kidsDir, kidPath, taper, extrasHeard },
+      dbg: { viewfinder(v) { FL.vf = v || null; }, clocks: { A: ENDT.A, B: ENDT.B, C: ENDT.C, D: ENDT.D, CLOSE, FEST, BETW, TELL, ANSW, OPEN: OPENT }, armsOf, handTo, handsTo, baiGrip, baiPut, play, open, cast, bursts, BAI, handBai, myBai, ymBai, petalBurst, auraAt, baiHands, baiRaise, lineBegin, dawnBegin, breathBegin, places: { PLACE, LINE_AT, KNEEL2, DAWN_AT, TABLES_AT }, dancers, dancersDir, danceBlock, dancerSpot, kids, kidsDir, kidPath, taper, extrasHeard },
       who: () => people.filter(P => !P.driver).map(P => ({ key: P.key, ready: P.ready, take: P.cur, skin: P.lvShown, skins: P.lv.map(v => (v ? 1 : 0)).join('') })),
       plan: { TURF, TABLES, HALL, TENT_W1, TENT_W2, TENT_E, CHIEF, BENCH, POLE, TON_TABLE, WEST_TABLE },
       /* the ground's own noises (ambTick): how many have sounded, and the last (a probe counts them over a stretch of play) */
-      amb: () => ({ n: ambN, last: ambLast, next: +ambAt.toFixed(2), beds: Object.assign({}, bedMix) }),
+      amb: () => ({ n: ambN, last: ambLast, next: +ambAt.toFixed(2), beds: Object.assign({}, bedMix), pan: +musPan.toFixed(3) }),
       /* Grandmaster Pho's look, for a probe that brackets it (tools/probes/e4c3beats.mjs: eval E.stage.phoLook.lift.value = 0.4) */
       phoLook,
       info: () => ({ phase, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], until: +speak.until.toFixed(2),

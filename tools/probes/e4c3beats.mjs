@@ -102,7 +102,7 @@ for (const s of STEPS) {
     else if (s.lens != null) {
       const rows = await p.evaluate(([step, to]) => { const E = window.__enc, C = E.cine, c = E.camera, out = [], fd = document.getElementById('cineFade');
         const end = Math.min(to != null ? to : 1e9, C.dur() - 0.25);
-        for (let t = Math.ceil(C.t() / step) * step; t <= end + 1e-6; t += step) { C.seek(t); c.updateMatrixWorld(true); const e = c.matrixWorld.elements, dx = -e[8], dy = -e[9], dz = -e[10];
+        for (let t = Math.ceil(C.t() / step) * step; t <= end + 1e-6; t += step) { C.seek(t); c.updateWorldMatrix(true, false); const e = c.matrixWorld.elements, dx = -e[8], dy = -e[9], dz = -e[10];
           out.push([+t.toFixed(3), +c.fov.toFixed(4), +(Math.atan2(dx, -dz) * 180 / Math.PI).toFixed(4), +(Math.asin(Math.max(-1, Math.min(1, dy))) * 180 / Math.PI).toFixed(4),
                     +e[12].toFixed(4), +e[13].toFixed(4), +e[14].toFixed(4), +(parseFloat(fd && fd.style.opacity) || 0).toFixed(3), +(Math.atan2(e[1], e[5]) * 180 / Math.PI).toFixed(3)]); }
         return out; }, [s.lens, s.to != null ? s.to : null]);

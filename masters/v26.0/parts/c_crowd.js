@@ -144,8 +144,11 @@
       for (const key of DEVOTEES) { const D = crowdDrivers[key];
         if (name === 'bless' || name === 'photo') hold(D.B, 'prostrate', WAI[0], WAI[1], 0); else rest(D.B, 0);
         rest(D.A, 0); rest(D.S, 0); }
-      kidsForm(name); extrasLive();
+      { let sx = 0, sz = 0; for (const s of crowdSeats) { sx += s.at[name].x; sz += s.at[name].z; } crowdMid.x = sx / crowdSeats.length; crowdMid.z = sz / crowdSeats.length; }
+      kidsForm(name); dancersForm(name); extrasLive();
     }
+    /* (the middle of the crowd as it sits now: the crowd's own noise is fullest there, d_play.js mixBeds) */
+    const crowdMid = { x: 0, z: 0 };
     /* THE WHOLE GROUND BOWS (the homage): every kneeling driver makes the krap once, from the kneeling wai down to the
        ground and back, over `secs`; the members follow because they are drawn from its bones. Then each is back at rest */
     const KRAP = { from: 0.2, to: 6.75 };
@@ -270,11 +273,11 @@
       P.noBlock = true; cast[i ? 'boy' : 'girl'] = P; castBlock[i ? 'boy' : 'girl'] = new THREE.Box3(new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 61, 0));
       return { P, i, s: 0, v: 0, to: 0, wait: 0, run, moving: false, ry: 0, looks: false };
     });
-    const kidsDir = { ph: '', t: 0 };
+    const kidsDir = { ph: '', t: 0, hold: false };
     const _ko = { x: 0, z: 0, hx: 0, hz: 1 }, _ko2 = { x: 0, z: 0, hx: 0, hz: 1 };
     function kidsForm(name) {
       const run = name === 'arrive';
-      kidsDir.ph = run ? 'runW' : ''; kidsDir.t = 0;
+      kidsDir.ph = run ? 'runW' : ''; kidsDir.t = 0; kidsDir.hold = false;
       for (const K of kids) { const P = K.P; K.v = 0; K.moving = false; K.looks = false; P.noBlock = run; P.rate = 1;
         whenReady(P, () => { gaze(P, null); rest(P, 0); });
         if (run) { K.s = Math.min(kidPath.L, kidPath.L * 0.62 + K.i * 1.5); K.to = K.i * KID.gap; K.wait = 0.15 + K.i * 0.35;
@@ -318,13 +321,110 @@
         if (looks !== K.looks) { K.looks = looks; gaze(P, looks ? 'lens' : null, { reach: 0.9, secs: 0.7 }); }
       }
       if (running && (there || D.t > 14)) { D.ph = D.ph === 'runW' ? 'restW' : 'restE'; D.t = 0; }
-      else if (!running && D.t > (D.ph === 'restW' ? KID.restW : KID.restE)) {
+      else if (!running && !D.hold && D.t > (D.ph === 'restW' ? KID.restW : KID.restE)) {
         const east = D.ph === 'restW'; D.ph = east ? 'runE' : 'runW'; D.t = 0;
         /* whoever stands further along goes first; the other gives chase a moment later */
         const order = kids.slice().sort((p, q) => east ? q.s - p.s : p.s - q.s);
         order[0].to = east ? kidPath.L : 0; order[0].wait = 0;
         order[1].to = east ? kidPath.L - KID.gap : KID.gap; order[1].wait = KID.lag; }
     }
+    /* THE CHILDREN COME TO SEE (the plan's §3.7, picture 2: "a handful of petals thrown beside him (play)"). When he
+       speaks to Ton they run to their place by Ton's table, wherever their chase has them, and stay there while the two
+       men talk (children watch a stranger being given something); when the bai sri is in his hands the girl jumps for
+       joy and throws up a handful of the petals that lie everywhere (d_play.js kidsToss, which owns the clock and the
+       sound). Then their chase goes on. */
+    function kidsCall() {
+      const D = kidsDir; if (formNow !== 'arrive' || !D.ph) return;
+      D.hold = true;
+      if (D.ph === 'restW') { D.t = 0; return; }
+      if (D.ph === 'runW') return;                                               // (already on their way there)
+      D.ph = 'runW'; D.t = 0;
+      const order = kids.slice().sort((p, q) => p.s - q.s);
+      order[0].to = 0; order[0].wait = 0; order[1].to = KID.gap; order[1].wait = KID.lag;
+    }
+
+    /* ================================================================ THE DANCERS ON THE GROUND
+       (the plan's §3.7: picture 2, "The walk up the middle: dancers crossing ahead", and "the ground answers his feet ...
+       dancers cross as he passes the first tent". Never built until the release's closing pass: the six were drawn only
+       in the festival's film, so they came from nowhere and went back to it.)
+       All of day one they are somewhere on the ground, and the film's dance is one stretch of it:
+         `east`   while the ground gathers and he has not yet set off up it: lined up in three pairs at the east edge of
+                  the middle aisle, turned west, ready to go on;
+         `cross`  when he has the bai sri and steps north past Ton's table: they walk across the open band between the
+                  rows, AHEAD of him, right to left, to the masters' side. A file is one thing: if he steps into its
+                  way the whole of it stops and waits for him, and walks on when he is clear (so nobody walks through
+                  anybody, and each column is solid wherever she is);
+         `west`   standing before the masters' tent, turned to the open turf they will dance on (through his respects
+                  at the tables and the homage; the film's dance begins from here, on its own cut);
+         `home`   after the dance, at the blessings: resting in three pairs by the monks' tent on the east side.
+       Which of these it is on a Continue is read from the formation and the phase (dancersForm), never stored. The two
+       drivers walk on the spot and the members travel (c_cast.js WALKS), each driver's rate from the ground the file
+       covers (v7.1); pairs are one of each body, the two bodies half a stride apart so no pair marches in step. */
+    const DWALK = { z: -0.75, lat: 0.42, gap: 1.25, x0: 2.2, x1: -7.0, share: 0.8, halt: 1.15, up: 1.3, down: 3.2 };
+    const DHOME = [[7.35, 1.05], [8.15, 1.0], [7.3, 1.95], [8.2, 2.0], [7.75, 2.85], [8.55, 2.8]];
+    const dancersDir = { ph: 'east', d: 0, v: 0, walking: false, clear: 0, n: 0 };
+    const danceBlock = dancers.m.map(() => new THREE.Box3(new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 61, 0)));
+    const dancerSpot = (i, d) => { const pair = i >> 1, side = i & 1 ? 1 : -1; return [DWALK.x0 + pair * DWALK.gap - d, DWALK.z + side * DWALK.lat]; };
+    const DLEN = DWALK.x0 - DWALK.x1;
+    function dancersPlace() {
+      const D = dancersDir, on = dayOne.visible && danceG.visible, r = 0.3;
+      dancers.m.forEach((M0, i) => { let x, z, ry;
+        if (D.ph === 'dance') { [x, z] = dancers.at[i]; ry = dancers.ry; }
+        else if (D.ph === 'home') { [x, z] = DHOME[i]; const o = DHOME[i ^ 1]; ry = faceTo(x, z, o[0], o[1]) + (i & 1 ? 0.25 : -0.2); }
+        else { [x, z] = dancerSpot(i, D.ph === 'east' ? 0 : D.ph === 'west' ? DLEN : D.d);
+          ry = D.ph === 'west' ? M0.ryTo : -Math.PI / 2; }
+        M0.group.position.set(x, 0, z); M0.group.rotation.y = ry; M0.lvNow = -1;
+        danceBlock[i].min.set(x - r, on && D.ph !== 'dance' ? 0 : 60, z - r); danceBlock[i].max.set(x + r, on && D.ph !== 'dance' ? 1.5 : 61, z + r); });
+    }
+    dancers.m.forEach((M0, i) => { const [x, z] = dancerSpot(i, DLEN); M0.ryTo = faceTo(x, z, DANCE.c[0], DANCE.c[1]); });
+    /* where they are for this formation (and, on a Continue, this phase: at the tables and at his place they have crossed) */
+    function dancersForm(name = formNow, ph = null) {
+      const D = dancersDir; D.d = 0; D.v = 0; D.clear = 0; D.walking = false; D.n++;
+      D.ph = name === 'arrive' ? (ph === 'tables' || ph === 'place' ? 'west' : 'east') : 'home';
+      for (const Dr of [dancers.A, dancers.B]) { Dr.rate = 1; rest(Dr, 0); }
+      for (const M0 of dancers.m) M0.turn = null;
+      dancersPlace();
+    }
+    /* the film's dance: on their dance places (the film poses the drivers and shows the group itself) */
+    function dancersDance() { dancersDir.ph = 'dance'; dancersDir.v = 0; dancersDir.walking = false; dancersPlace(); }
+    function dancersTick(wdt, st) {
+      const D = dancersDir;
+      if (st === 'cine') return;                                                 // (a film shows or hides them itself: y_stage.js)
+      const show = dayOne.visible;
+      if (danceG.visible !== show) { danceG.visible = show; dancers.A.idle = dancers.B.idle = !show; dancersPlace(); }
+      if (!show || st !== 'play') { if (D.walking) { dancers.A.rate = 0; dancers.B.rate = 0; } return; }
+      if (D.ph === 'dance') dancersForm();                                       // (the film is over and nothing has said where they are: where the formation has them)
+      if (D.ph === 'east' && phase === 'baisri' && yaw.position.z < 9.4) D.ph = 'cross';
+      if (D.ph !== 'cross') return;
+      const A = dancers.A, B2 = dancers.B; if (!A.ready || !B2.ready) return;
+      const pA = (A.pace && A.pace.Walking) || 1.3, pB = (B2.pace && B2.pace.Walking) || 1.3, V = Math.min(pA, pB) * DWALK.share;
+      /* is he in their way? within reach of any of them, or just ahead of the two who lead */
+      let near = false; const px = yaw.position.x, pz = yaw.position.z;
+      for (let i = 0; i < dancers.m.length && !near; i++) { const [x, z] = dancerSpot(i, D.d); if (Math.hypot(px - x, pz - z) < DWALK.halt) near = true; }
+      { const [lx] = dancerSpot(0, D.d); if (Math.hypot(px - (lx - 0.75), pz - DWALK.z) < 1.0) near = true; }
+      D.clear = near ? 0 : D.clear + wdt;
+      const want = near ? 0 : (D.v < 0.01 && D.d > 0 && D.clear < 0.4 ? 0 : V);   // (stopped for him, they wait a moment after he is clear)
+      D.v = want > D.v ? Math.min(want, D.v + DWALK.up * wdt) : Math.max(want, D.v - DWALK.down * wdt);
+      D.d = Math.min(DLEN, D.d + D.v * wdt);
+      const mv = D.v > 0.1;
+      if (mv !== D.walking) { D.walking = mv;
+        if (mv) { take(A, 'Walking', 0.3, true); take(B2, 'Walking', 0.3, true); B2.acts.Walking.time = B2.acts.Walking.getClip().duration * 0.5; }
+        else { A.rate = 1; B2.rate = 1; rest(A, 0.35); rest(B2, 0.35); } }
+      if (D.walking) { A.rate = Math.max(0.5, Math.min(1.2, D.v / pA)); B2.rate = Math.max(0.5, Math.min(1.2, D.v / pB)); }
+      if (D.d >= DLEN - 1e-4) {                                                  // there: each turns to the open turf, and they wait
+        D.ph = 'west'; D.v = 0; D.walking = false; A.rate = 1; B2.rate = 1; rest(A, 0.4); rest(B2, 0.4);
+        dancers.m.forEach((M0) => { M0.turn = { from: -Math.PI / 2, t: 0 }; }); }
+      const r = 0.3;
+      dancers.m.forEach((M0, i) => { const [x, z] = dancerSpot(i, D.d); M0.group.position.set(x, 0, z);
+        danceBlock[i].min.set(x - r, 0, z - r); danceBlock[i].max.set(x + r, 1.5, z + r); });
+    }
+    /* (the turn on arriving, eased; apart from the walk's own tick so it runs on after the state has changed) */
+    function dancersTurn(wdt) {
+      for (const M0 of dancers.m) { const T = M0.turn; if (!T) continue; T.t = Math.min(1, T.t + wdt / 0.9);
+        const k = T.t * T.t * (3 - 2 * T.t), dq = Math.atan2(Math.sin(M0.ryTo - T.from), Math.cos(M0.ryTo - T.from));
+        M0.group.rotation.y = T.from + dq * k; if (T.t >= 1) M0.turn = null; }
+    }
+
     /* WHO OF THESE IS THERE: the woman with the taper only while the ground gathers; the children all of day one (in
        their chase, kidsTick draws them); none on any other day. Each one's own flag is set (a hidden person is not
        run, and castSolid stands a column only under one who is drawn: the children's only while they stand still) */
@@ -337,5 +437,5 @@
     }
     whenReady(taper.P, (P) => { gaze(P, taper.W[0], { reach: 0.6, secs: 0.01, down: 0 }); extrasLive(); });
     for (const K of kids) whenReady(K.P, extrasLive);
-    kidsForm('arrive');
+    kidsForm('arrive'); dancersForm('arrive');
 
