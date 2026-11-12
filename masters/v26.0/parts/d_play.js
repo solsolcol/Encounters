@@ -103,6 +103,8 @@
     let ambSeed = AMB_SEED, ambAt = 0, ambBusy = 0, ambLast = '', ambN = 0;
     /* (which wick the taper stood at when last looked at, and what the children were doing: extrasSound, below) */
     let wickAt = -1, kidsPh = '';
+    /* (how often each has sounded: a sound played through worldSfx is in no cue log, so the claim is made countable, v5.29) */
+    const extrasHeard = { wick: 0, laugh: 0 };
     function ambRand() {
       ambSeed = (ambSeed + 0x6D2B79F5) | 0; let t = ambSeed;
       t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
@@ -819,12 +821,12 @@
       const free = dayClock.t >= ambBusy && dayClock.t >= speak.until && !play.bow && !play.pull;
       if (taper.on && taper.P.ready) { const u = ((windClock % TAPER.T) + TAPER.T) % TAPER.T, at = u < 3 ? 0 : (u >= 4.5 && u < 7.5 ? 1 : -1);
         if (at >= 0 && at !== wickAt && free) { const wx = TAPER.at[0] - 0.2, wz = TAPER.at[1] - 0.84, d = Math.hypot(yaw.position.x - wx, yaw.position.z - wz);
-          if (d < 6 && worldSfx('x3wick', 0.3 * c01(1.25 - d / 6), 1, panAt(wx, wz))) ambBusy = dayClock.t + 1.4; }
+          if (d < 6 && worldSfx('x3wick', 0.3 * c01(1.25 - d / 6), 1, panAt(wx, wz))) { ambBusy = dayClock.t + 1.4; extrasHeard.wick++; } }
         wickAt = at; }
       const ph = kidsDir.ph;
       if (ph !== kidsPh) { kidsPh = ph;
         if ((ph === 'runE' || ph === 'runW') && free && dayOne.visible && kids[0].P.ready) { const g = kids[0].P.group.position;
-          if (worldSfx('x3os1', 0.34, 1, panAt(g.x, g.z))) { ambLast = 'x3os1'; ambBusy = dayClock.t + 3.8; } } }
+          if (worldSfx('x3os1', 0.34, 1, panAt(g.x, g.z))) { ambLast = 'x3os1'; ambBusy = dayClock.t + 3.8; extrasHeard.laugh++; } } }
     }
     function updatePile() {}
     function updateFire() {}
