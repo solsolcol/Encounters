@@ -8821,7 +8821,11 @@ What the baseline contains, by release:
     back, gables, soffit, trims, open shutters and curtains (masters/v26.1/make.sh: every picture's and model's ids; 108
     Higgsfield and 270 Meshy credits). (8) His feet on the grass: eight falls cut from a real walk on a lawn, dealt so
     none repeats (masters/v26.1/sound/steps.sh; x3step retired); five reels sent to his ear. Put to him: the red plank
-    building behind the chief bench stands on stilts in his photograph 5.
+    building behind the chief bench stands on stilts in his photograph 5. Live: deploy `6af64a8cc0af44bfca0cea81` (488
+    served files identical to dist), after the first (`6af6366f375e3b6b4c9c21c4`, the woman's missing arm). Harnesses:
+    csp, tick, sound, hosted, leak, cine, fixture green on the first build; walk on e4c3 green on the release build;
+    chaptertest and the voice scan clean. The picture check mine, every changed shot full size on a phone and a
+    desktop (no reviewer: his 7 Nov "Dont spawn reviewers"; one was started and stopped unread).
 
 ## The sheet, version by version
 

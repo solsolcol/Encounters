@@ -1299,7 +1299,11 @@ gold is lifted in this chapter (`auraAt`, c_zfx.js), from the colours chapter 2 
 (Grandmaster Pho's armpit, his bobbing, three different monks off their seats' insides, the dancers' loop) are the
 tracker's §15; two of my fixes went live wrong (the monks' arms, the armpit) and were replaced at build 77 (the release's deploy
 `6af5dd0621a2346e2cda05ea`): an arm at rest is designed and judged as §15.5 says, and what is left is
-docs/OPEN-ITEMS.md C13 o. Chapter 4 is next
+docs/OPEN-ITEMS.md C13 o. His nine notes of 12 Nov evening on it (the faces butchered, the woman with the taper, the kneelers too quick, the
+ground's empty edges and plain sky, a higher budget on a phone, "Pho" said "Puu", the children's petals every cycle,
+the footsteps not grass) shipped at v26.1 (the tracker's §16; deploy `6af64a8cc0af44bfca0cea81`), and with them his
+phone standard for every chapter; his ninth, the full debug of the chapter once all of it was live, is next.
+Chapter 4 is next after it
 (S1·13, case one: the woman who rose from her wheelchair).
 The episode's plan, with what remains his to decide:
 **docs/V24.0-EPISODE4-PLAN.md** (its sixth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is
