@@ -24,7 +24,9 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
    (`masters/v23.0/previews/`, and v24.3's twelve cues); episode 4 chapter 2's eleven pieces of music (v25.0, three
    takes each, loudness-matched: `masters/v25.0/music/previews/`) and Lersi Chin's voice (three Thai-accented voices
    reading his key lines, Mart-Podcast built: `masters/v25.0/audition/*-preview.mp3`); and the whisper of the piece on
-   the shelf (v25.4: the black master's own whisper built; four previews, `masters/v25.4/previews/whisper-a..d.mp3`).
+   the shelf (v25.4: the black master's own whisper built; four previews, `masters/v25.4/previews/whisper-a..d.mp3`);
+   and episode 4 chapter 3's three new voices (Grandmaster Pho, Ton, the woman at his bench: reels sent 12 Nov,
+   `masters/v26.0/audition/`) and thirteen music cues (one reel a cue, `masters/v26.0/sound/previews/`, sent 12 Nov).
    Send the reels again.
 4b. **Offered at v25.4, on his word** (docs/V25.4-E4C2-SHELF-PIECES.md): (i) the shelf moved to where his counter can
    see it (the tall wall cabinet hides it from behind the counter; it is seen from the middle of the shop on and from
@@ -191,17 +193,29 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
     e4c1's two music beds are padded to fit, LEARNINGS v24.34). Changing the engine's insets would move every bed in every
     chapter, episode 1's included, so it waits on his word. Also his: the new music's decoded cost in episode 4
     chapter 1 — 52 MB from the start of play, 51 MB more from the decision (docs/HISTORY.md, v24.34).
+13. **Episode 4 chapter 3 (v26.0), put to him 11 to 13 Nov 2026 and not yet answered** (each is one word from him to
+    change; the chapter stands on the default in docs/V26.0-E4C3-BUILD.md §3):
+    - a. Grandmaster Pho's 39 lines (docs/V26.0-PHO-LINES.md), and two BY NAME: `ph3n3` "What you feel was not put into
+      you. It was there already, asleep." and `ph3n4` "The ink, the chanting, the pieces you held... they did not give
+      it to you. They woke it." give a part of the answer to "why" that the casebook withholds
+      (docs/research/V26.0-WAIKRU-VERDICTS.md).
+    - b. The three new voices and the thirteen music cues, by his ear (A4).
+    - c. The ranks of his four answers (accept best, ask why good, challenge bad, make it stop worst).
+    - d. Which man in the photographs Grandmaster Pho is; a picture of the real dancers' dress; what the real music is.
+    - e. The small dark seated image before the wheel's hub in his photograph 10: which image is it? It is not made
+      (a sacred image is made only from photographs of the real one).
+    - f. The monks' robes: his model's are orange, photograph 2's are maroon. His paint is not altered unless he says.
+    - g. His Facebook album of the Wai Kru: it opens only behind a login, which is not worked round. Asked as files
+      (in the chat, or a Google Drive folder).
+    - h. An engine finding left as it is (it touches every chapter): only a film from play gives his hands back; an
+      opening film or an ending that hides them must show them itself. Chapter 3 does. Widen the engine's net?
+
 ## D. Not built yet
 
-- Episode 4 chapters 3–5; Episode 5 (S1·16–S1·20); Episodes 6–10 (names still the v6.0 list).
-  - **Episode 4 chapter 3 (S1·12) has its full build plan, PROPOSED 11 Nov 2026 and not yet approved:**
-    docs/V26.0-E4C3-PLAN.md. Nothing is built. Revised the same day to his words and to his twelve photographs of
-    Grandmaster Pho's real Wai Kru (festive, loud and colourful; the environment built exactly as the photographs
-    look; the empowerment through the bai sri, no lersi mask on anyone; dancers for the Thevadas; the ending in the
-    present; Grandmaster Pho heard). It waits on Chad's answers to its §2.3 (a read of Grandmaster Pho's lines, the
-    ranks of the decision's four (the four options are his own), the three new beats, open and close played or
-    watched, which man in the photographs he is, a picture of the dancers and what the music is, the close, the
-    models). Its research is a first pass, not yet refuted: docs/research/V26.0-WAIKRU.md.
+- Episode 4 chapters 4–5; Episode 5 (S1·16–S1·20); Episodes 6–10 (names still the v6.0 list).
+  - ~~Episode 4 chapter 3 (S1·12)~~ — SHIPPED at v26.0 (13 Nov 2026): docs/V26.0-E4C3-BUILD.md (its §13 is every ask of
+    his against the build). What it stands on until his word is C13 above. Chapter 4 (S1·13, case one: the woman who
+    rose from her wheelchair) is next and has no plan yet.
 - Deferred by choice: ghost mesh compression (the biggest download saving left), a service worker / offline,
   canvas-resolution and backdrop-blur thermal options.
 

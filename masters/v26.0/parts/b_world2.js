@@ -41,8 +41,8 @@
          them (3, 4, 9, 10): those are the devotees' own, carried and presented. The six I stood here at M3 are gone, and
          the tables hold what the photographs show instead: white chrysanthemums in silver bowls either side of the
          fruit before the wheel and at the ends, roses at the front corners, soda in rows of red, green and orange) */
-      many('w3chrys', [{ x: -0.92, y: y2, z: -11.86, ry: 0.4, s: 1.3 }, { x: 0.7, y: y2, z: -11.8, ry: 2.1, s: 1.3 }, { x: -2.08, y: y1, z: -11.22, ry: 1.2, s: 1.3 }, { x: 2.08, y: y1, z: -11.22, ry: 3.4, s: 1.3 }], world, 0.48);   // (a bunch is as wide as a fruit tray in photograph 9: the model at 1.3)
-      many('w3roses', [{ x: 2.14, y: y0, z: -10.46, ry: 0.25 }, { x: -2.2, y: y0, z: -10.46, ry: -0.3 }], world, 0.31);
+      many('w3chrys', [{ x: -0.92, y: y2, z: -11.86, ry: 0.4, s: 1.3 }, { x: 0.7, y: y2, z: -11.8, ry: 2.1, s: 1.3 }, { x: -2.08, y: y1, z: -11.22, ry: 1.2, s: 1.3 }, { x: 2.08, y: y1, z: -11.22, ry: 3.4, s: 1.3 }], world, 0.3);   // (a bunch is as wide as a fruit tray in photograph 9: the model at 1.3. Its full level is 36,700 triangles, Hunyuan's least, and all four are drawn if one is in view: the size given here brings it in inside 7 m, where the far level's dome would begin to show its facets)
+      many('w3roses', [{ x: 2.14, y: y0, z: -10.46, ry: 0.25 }, { x: -2.2, y: y0, z: -10.46, ry: -0.3 }], world, 0.25);
       many('w3pewter', [{ x: -1.55, y: y2, z: zb - 0.05, ry: 0.7 }, { x: -0.45, y: y1, z: zm + 0.1, ry: 1.9 }, { x: 0.5, y: y1, z: zm + 0.1, ry: 0.3 }], world, 0.5);
       many('w3fruit', [{ x: -1.65, y: y1, z: zm + 0.16, ry: 0.2 }, { x: 0, y: y1, z: zm - 0.12, ry: 1.1 }, { x: 1.65, y: y1, z: zm + 0.16, ry: 2.4 }, { x: -0.4, y: y0, z: zf - 0.1, ry: 0.6 }, { x: 1.2, y: y1, z: zm - 0.12, ry: 1.7 }], world, 0.3);
       many('w3sweets', [{ x: -1.76, y: y0, z: zf - 0.1, ry: 0.3 }, { x: 0.5, y: y0, z: zf - 0.12, ry: 1.5 }, { x: -1.12, y: y2, z: -12.18, ry: 2.6 }], world, 0.2);

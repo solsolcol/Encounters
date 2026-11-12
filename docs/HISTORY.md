@@ -8779,6 +8779,16 @@ What the baseline contains, by release:
 
 ## The sheet, version by version
 
+**v142** (`masters/v26.0/masterz-text-v142.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from
+it): v141 with 175 rows NEW and nothing changed or gone (checked key by key). All of them are episode 4 chapter 3's:
+its title, card, objectives, prompts, marks, the four answers and their cards, the four lines under them, the lesson
+and its notes, the breath's brief and words (`e4c3.*`), the chant's captions (`cap1` to `cap3`, each with its `Sub`
+from A Chanting Guide); the new minigame's own words in the UI tab (`event.breath`, `event.breathWhere`,
+`event.breathWhereKey`, `event.breathOpen`, `event.breathClose`); and its 104 voice lines (`voice.q3*`, `voice.ph3*`,
+`voice.tn3*`, `voice.ds3c1`), each with who says it, where, its words as heard and its measured length. 2317 rows;
+six tabs (UI TEXT 443, EPISODE 1 114, EPISODE 2 201, EPISODE 3 400, EPISODE 4 236, VOICE LINES 922). Exported,
+not published (135 KB).
+
 **v141** (`masters/v25.5/masterz-text-v141.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from
 it): v140 with seventeen rows new, twenty-four gone and thirteen touched, nothing else moved. NEW, all episode 4
 chapter 2's: the call screen's words (`e4c2.words.phoneIncoming`, `phoneDecline`, `phoneAccept`, `phoneKeys`), the

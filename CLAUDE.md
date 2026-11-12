@@ -4,8 +4,8 @@ A 3D first-person horror-education game based on Master Z's Spiritual
 Encounters (encounters.triplegem.asia, Triple Gem Affiliation Consultancy,
 Singapore). Multi-chapter; each chapter is one small dense location, one
 supernatural encounter, one decision with consequences and a Buddhist
-teaching. Seventeen chapters are live: three complete episodes of five and
-the first two chapters of the fourth. Episode 1, all at one block: The Hell Note
+teaching. Eighteen chapters are live: three complete episodes of five and
+the first three chapters of the fourth. Episode 1, all at one block: The Hell Note
 (a void deck, a burner, a note, her), The Presence (a bedroom, a fan, the
 gap beside the bed), The Gathering (a seventh-month tentage in the car
 park at ten in the morning, and one chair facing the wrong way), Back
@@ -190,6 +190,7 @@ that fits it, with the version it came from.
 - When he gives photographs of a real place, the environment is built exactly as they look ("You have to build out this chapter environment exactly to how the photos look like."): each photograph is taken again in the game from the same place and laid beside the real one, and every difference is closed or put to him. His photographs win over an older ruling where the two differ (episode 4 chapter 3's ground has green, flags and long banners, which v16.3's temple rulings refused). His twelve of Grandmaster Pho's real Wai Kru (11 Nov 2026) are described in docs/V26.0-E4C3-PLAN.md §1.1. (v26.0, the plan for episode 4 chapter 3)
 - Every tool he has connected is used to its fullest to bring a chapter to life, and 3D models are generated at the highest possible settings ("Take full advantage and make full use of higgsfield mcp, meshy, eleven labs, gptimage, blender, everything to the maximum potential to bring this chapter to life. 3d models should be generated at the highest possible settings."). A character the game needs is MADE here, end to end, not asked of him: a reference of the person from GPT Image (photorealistic, against a white background, in an A pose), looked at; that picture to Meshy for the 3D model; then rigged; then given its animations ("Own it end to end."). (v26.0, the plan for episode 4 chapter 3)
 - Episode 4 chapter 3 is the most important chapter in the game ("This is the most important chapter in the game, it needs to look the most impressive, and be the most cinematic episode ever, in not just cutscenes, but also gameplay portions. Directed with a powerful creative lens, have powerful storytelling, music, sound effects, ambient music and sounds, special effects and visuals. Highly polished."). It is built at full effort from a plan of many substeps, checkpoints and milestones, its progress recorded as it goes so the work survives a lost context, continuously until all of it is done with nothing missed or dropped ("build continuously until it is all done to perfection, with nothing missed or dropped"). Its tracker is docs/V26.0-E4C3-BUILD.md: read it first. (v26.0)
+- A lighter body keeps its paint: when a model must be made lighter for a phone, its triangles are lowered (by the generator's own remesh) and its texture stays high wherever it is seen close ("I thought the issue is mostly due to textures and not the triangles. As long as texture remains high res, it should be ok?": the first people of episode 4 chapter 3 had faces smeared by a sheet cut to 1024, not by their triangle count). (v26.0)
 - Efficiency improves and the standards and quality stay exactly where they are ("I dont want quality and creativity and standards to drop because of this change, i want efficiency to improve while keeping the same standards and quality"): his asks are done in one shot, one build, one deploy and one round of checks at the end ("cant you do all of my asks in one shot, deploy, test once probe once?"), not one release per ask. Each ask is designed fully before it is built (what the real place has, what each shot sees), so the photographs confirm instead of discover. The work is saved by commits as it goes. Every check this file asks for is still made, once, where it can catch something, and never repeated after each tweak. A generated model's own checks (the reference picture, each model on its own) are part of making it, not probes of the game. (v24.35)
 
 ### How the work is done and checked
@@ -614,6 +615,9 @@ The declarations, all optional:
 | `preview: true` | v23.0: a chapter REGISTERED but out of the run — never next, never reached, never a Continue, "In the works" in the selector, opened only by `?ch=` (which saves and unlocks nothing). Episode 3 chapter 5 was built and deployed as one for Chad to play (v22.6–v22.9) and released at v23.0 by taking it out — the forty-second seam | — (in the run) |
 | a film step `eventWait(t, opts, done)` | v23.0: an event opened FROM INSIDE a film that stops the film's clock until it resolves (a wall in its clock: a slow frame never runs past it); voices cued before it play on through the pause. Episode 3 chapter 5's COME BACK | — |
 | a film's `fade(t0, t1, from, to, color)` | v25.5: a FADE IN A COLOUR — the film's fade layer in any CSS colour (a white, for a flash) over the whole screen: the picture, the hands' pass and the vignette alike. The colour is the layer's only while such a fade stands above nothing; the black's again when it does not, when any plain fade is applied, and at every scene's start and end. Episode 4 chapter 2's clearing (the white as the light reaches him); the fixture's `flash` film proves it and that a plain fade is unchanged — the forty-third seam | — (black, as always) |
+| event kind `breath` | v26.0: OPEN AND CLOSE — a level that rises while anything is held and falls when it is let go, in breaths: `breaths: [{ enough, edge, lead, pull, told }]` in seconds of holding (a band that is enough, an edge beyond it, a breath that pulls), `gain`/`gainStat` paid on the spot for a breath closed in its band, `cost`/`costStat` through evCut for one held to its edge; `onLevel`, `onEnough`, `onBreath(report)` (a number answered is the seconds before the next breath is live), `onIdle`; its ring drawn at `at: { sx, sy }`; held by a finger anywhere, the mouse, E or Space; its own picture (`breath`). It answers `{ ok, score, closed, held, unopened, breaths }`. Nothing in it tests a finger's speed. Episode 4 chapter 3's first teaching, and the one breath inside its close (`eventWait`) — the forty-sixth seam (the forty-fourth is chapter 1's `change`, the forty-fifth its rain) | — |
+| `kit.lens(fov, { secs })` | v26.0: the PLAY lens eased on wall time to a chapter's angle and back (`null`); a scene and kitReset give it back. Episode 4 chapter 3's pull and its breaths — the forty-seventh seam | — (the game's 72°) |
+| `kit.hush(k, { secs, hz })` | v26.0: the world's sound CLOSING DOWN — a low-pass laid over the background bus by k, eased on wall time (voices are not on that bus and stay clear); kitReset clears it. Episode 4 chapter 3's pull, and ending D — the forty-eighth seam | — (open) |
 | `kit.unlock(id, { onClose })` | v14.7: the ITEM UNLOCKED splash — the item's model turning in the middle (the `iv` renderer), its name, a Close button, its own sting; a screen state of its own (`unlock`) that closes every "is it play?" gate, with a 0.6 s guard so the press that took the item cannot also close it | — |
 | `kit.choose(ids, opts)` | v17.6: CHOOSE ONE — a centred window, one card per item (drawing, name, rarity, `item.<id>.power`, words), Confirm after a pick; answers a Promise of the id and gives nothing itself. Its own screen state (`choose`); episode 3 chapter 1's Sak Yant — the twenty-third seam | — |
 | `kit.hands(k, { secs })` | v18.0: the hands lifted out of añjali into a Thai gesture by k, the body swaying with them, eased on wall time; episode 3 chapter 2 — the twenty-fourth seam | — (the hands as they were) |
@@ -1236,21 +1240,27 @@ the twelve places two messages pull different ways, what the audit found and fix
 shop through its side walls; three steps of the lens; the master's head at a phone's edge in the visit, and the
 breathing lens my first fix for it made), and what it put to him and left (§6: above all the look locked on Lersi
 Chin's living face in every close shot, measured as the films play: tools/probes/filmlive.mjs).
-Chapter 3 (S1·12, Grandmaster Pho at the Wai Kru) is next: his gold aura's colours and strengths wait in chapter 2's
-code (`AURA`, `AURA_K.gold`) for it to lift. **IT IS BEING BUILT. READ docs/V26.0-E4C3-BUILD.md FIRST: it is the build's tracker (where it stands, what is next,
-every asset's ids, every credit spent).** Its design is docs/V26.0-E4C3-PLAN.md, proposed to Chad on 11 Nov 2026 and
-approved to build the same day ("When you're ready, build it all out, with full maximum effort": the most important
-chapter in the game, the most cinematic in play as well as in film). It was
-revised that day to his words and to his twelve photographs of Grandmaster Pho's real Wai Kru (the plan's §0, §1.1): the
-Wai Kru is festive, loud and colourful and its ground is built exactly as the photographs look; other people present their
-bai sri, are empowered through it (no lersi mask on anyone) and go into trance, and dancers honour the Thevadas; Grandmaster
-Pho is heard, every line for Chad's yes; the decision is HIS OWN FOUR (accept your path, challenge the path, ask why, ask to
-make it stop: none leaves the path, and all four lead to his accepting his path and mission); and the ending stays in the
-present ("Tomorrow we begin."), leaving his cultivation to the later chapters (the plan's §1.2 says what each holds). What
-he has not answered is built on the defaults in the tracker's §3, each one word from him to change: the ranks of the four;
-a read of Grandmaster Pho's lines; the three beats that are not in the case file; OPEN AND CLOSE played; which man in the
-photographs he is; a picture of the dancers and what the music is. The people and the props are made here, end to end. The photographs are on the working machine only (`masters/v26.0/ref/`, ignored by git: the
-repository is public). Its research is a first pass, not yet refuted: docs/research/V26.0-WAIKRU.md. The episode's plan, with what remains his to decide:
+Chapter 3, I FINALLY FOUND MY ANSWERS (S1·12: the Wai Kru in Udon Thani, Grandmaster Pho, the first teaching:
+control, open and close), SHIPPED at v26.0 — **docs/V26.0-E4C3-BUILD.md** is its build memory (the tracker: §1 Chad's
+words, §3 the defaults it stands on, §4 every checkpoint, §5 every asset's ids, §7 the log, §8 the traps), its design
+docs/V26.0-E4C3-PLAN.md, built to his GO of 11 Nov 2026 ("the most important chapter in the game") and to his sixteen
+photographs of Grandmaster Pho's real Wai Kru (on the working machine only, `masters/v26.0/ref/`, ignored by git: the
+repository is public). **`src/chapters/e4/e4c3.js` is GENERATED**: masters/v26.0/assemble.py makes it from
+masters/v26.0/parts/*.js — edit the parts and assemble again, never the chapter file. Its people (sixteen bodies at
+three levels) and its things (forty-four) were made here end to end; its sound is remade by `bash
+masters/v26.0/sound.sh` then `python3 -I masters/v26.0/install.py`. The decision is HIS OWN FOUR (accept your path,
+challenge the path, ask why, ask to make it stop: none leaves the path) and the ending stays in the present ("Tomorrow
+we begin."). WHAT STANDS ON A DEFAULT UNTIL HIS WORD (the tracker's §3; each one word from him to change): the three
+new voices and the thirteen music cues (picked by measure; reels sent 12 Nov); Grandmaster Pho's 39 lines (put to him
+12 Nov, docs/V26.0-PHO-LINES.md; two of them, `ph3n3` and `ph3n4`, give a part of the answer to "why" that the
+casebook withholds: asked by name); the ranks of the four; which man in the photographs he is; a picture of the
+dancers and what the music is; his album of the Wai Kru (asked as files); the small dark seated image before the wheel
+in his photograph 10 (not made: a sacred image is never guessed) and the monks' robes (his model's orange, the
+photograph's maroon). The tracker's §13 is every ask of his against the build. Its research and the second pass over
+what the game states: docs/research/V26.0-WAIKRU.md and -VERDICTS.md (which wins where they differ). Grandmaster Pho's
+gold is lifted in this chapter (`auraAt`, c_zfx.js), from the colours chapter 2 kept for it. Chapter 4 is next
+(S1·13, case one: the woman who rose from her wheelchair).
+The episode's plan, with what remains his to decide:
 **docs/V24.0-EPISODE4-PLAN.md** (its sixth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is
 still his). S1·11 in two chapters (the master he did not know, who wears the original Sak Yant Ajarn's model; then the
 fog, Lersi Chin's clearing and the warning — built on Master Z's own trial episode, its 5.1 and 5.3 the two decisions
@@ -1387,13 +1397,13 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v141** (`masters/v25.5/masterz-text-v141.xlsx`, its CSV beside it: v25.5's words). It is
-EXPORTED and not published: the workbook (127 KB) is far past what the Drive connector's base64 route can carry (about
+**THE SHEET IS v142** (`masters/v26.0/masterz-text-v142.xlsx`, its CSV beside it: v26.0's words). It is
+EXPORTED and not published: the workbook (135 KB) is far past what the Drive connector's base64 route can carry (about
 20,000 characters — docs/EDITING-TEXT.md, "THE CEILING"), so the split export written down there no longer fits
 either. The way through is the Google Sheets connector, which writes the cells directly (docs/OPEN-ITEMS.md A1).
 **v44 is still the link to give Chad** until that is done:
 https://docs.google.com/spreadsheets/d/1bqnbQJPr1O6YslOlcsbVDFlZCohQtyKbPzm9EuY1IpM/edit
-Every sheet version's own diff, v141 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
+Every sheet version's own diff, v142 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
 first; a new version goes at its top).
 
 `docs/LEARNINGS.md` is the catalog of every hard-won lesson (CSP traps,

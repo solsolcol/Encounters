@@ -8087,3 +8087,210 @@ word". docs/V25.5-AUDIT.md is the record. What it taught:
 - **Two keys of one name in an object are one key.** A probe's row had `w` (the wall's time) and, added later, `w`
   (the world's places): the second silently took the first, and the printed seconds became NaN. Name a new field
   by what it holds and search the literal for it first.
+
+## v26.0 — a chapter made end to end: a generator's levels, a crowd on hidden drivers, a breath that is played, a mix by measure, and what the last photographs found
+
+Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8, lifted whole when it shipped).
+
+- **The repository is PUBLIC** (checked 11 Nov). Chad's photographs show real people and names: never committed
+  (`masters/v26.0/ref/` is ignored), never sent whole to a picture service.
+- **Higgsfield refuses about one in three of a batch of eleven** (429 rate_limit_reached). The refused ones are sent
+  again; the ones that went through are never resent (each costs).
+- **White clothes on a white background** (his wording asks for white): the picture is fine to the eye; whether Meshy
+  cuts the figure out cleanly is read on Ton's model first (CP0.4). If it does not, the same picture is asked for with
+  a transparent background, which is still white to the eye.
+- **Long skirts and robes are the rig's risk** (Grandmaster Pho's robe took seventeen versions). The dancers wear the
+  chong kraben (wrapped trousers, a true Thai dance dress) so their legs are two; the robed and skirted people (the
+  two hermits, the second master in white, the woman at his bench) are held back until one robe has been through the
+  rig.
+- **Never `rm` after a pipe.** `node strip ... | grep -v x && rm take.glb` deleted a download the strip had REFUSED to
+  drop: the pipe's exit status is grep's. (Mine, 11 Nov; the file came back free from its task with `meshy26.py
+  refetch`.) A file is removed only on the tool's own exit status, with no pipe between.
+- **A Meshy file of SEVERAL library takes is a re-export, not a copy.** One take (or one text-to-motion clip) comes
+  back on the rig file's own bytes. Several library actions in one request come back through another exporter: the
+  armature stood on another axis (a quarter turn about x, the hips' rest and tracks written in that frame), the
+  metal-roughness sheet a PNG, four more vertices. `mergetakes strip --same-rig` proves every bone rests at the same
+  place in the world instead, and `merge` re-expresses the hips' tracks in the rig file's frame.
+- **Meshy's library action 0, "Idle", is a fighter's ready stance** (feet wide, weight shifting, the body turned). A
+  calm stand is `Listening_Gesture` (47) or `Stand_and_Chat` (56). `Formal_Bow` (41) is a bow from the waist past
+  ninety degrees: not a Thai gesture.
+- **Text-to-motion does not know the ground under a kneeling body**: both kneeling clips hold the shins in the air
+  behind the knees. A kneeling clip is raw material; its legs are solved onto the floor before it is cast.
+- **Meshy's library has no wai, no kneeling sit, no Thai dance, no trance.** Text-to-motion first (10 credits a clip,
+  skeleton-free, laid on any rig for 3), then by hand in Blender what it cannot give.
+
+- **Text-to-motion keeps a kneeling body on the ground when the prompt says "sitting back on the heels".** "Kneeling
+  upright" and "kneels" float the shins behind the knees.
+- **A reference picture is uploaded to Higgsfield with curl** (`curl -X PUT -H "Content-Type: image/jpeg"
+  --data-binary @file <link>`): Python's own client is refused (403). The link is a credential: on the command line
+  only.
+- **Meshy refuses a picture of many small blooms** ("image too complex": the chrysanthemums, the roses). It is not
+  charged. The picture is made again with fewer, larger blooms; and a script that waits on a batch must pass over a
+  refused one instead of stopping (`meshy26.py collect`).
+- **A prop's sheets come back at 8192 as PNG (about 105 MB a remesh).** The remeshed file is prepped and removed at
+  once (`prop.sh`), or a dozen props fill the disk.
+- **`tools/shootclose.mjs` stands its subject on a 0.8 m plinth unless told `"floor": 0`**: a standing person was
+  framed at the waist.
+- **Texture memory is the phone's real price here, not triangles.** A 2048 sheet is about 22 MB on the GPU with its
+  mipmaps; a person with a 2048 colour and a 2048 normal is 44 MB. So: heroes (seen close) 2048; the crowd 1024 with
+  no normal map; props 512 to 1024. Measured at CP3.5 before the set is dressed.
+- **The seams' numbers in the code and in CLAUDE.md disagree** (v24.0 numbered six seams forty-third to forty-eighth
+  in `src/main.js`; CLAUDE.md's table calls v25.5's coloured fade the forty-third). Found, listed, left: this build
+  names its three new seams by name and gives them no number until the release's docs settle it.
+
+- **three reads a bare HSL as linear light**: `color.setHSL(h, s, l)` made marigold petals cream. Say the colour space:
+  `setHSL(h, s, l, THREE.SRGBColorSpace)`. (A hex number is read as sRGB and needs nothing.)
+- **A surface that must be cut out is asked for on solid magenta**, not white: white jasmine on white cannot be keyed.
+- **A picture laid on a plane from an ImageBitmap is upside down** unless its repeat is (1, -1) and its offset (0, 1):
+  an ImageBitmap ignores flipY.
+- **`npm run build` writes a 650 MB release zip every time.** It is deleted after every test build (a release zip is
+  the kind he approved for clearing; Netlify holds every deploy).
+- **Modifying a shell script while it runs breaks it** (sh reads it as it goes): a script that is running is left
+  alone, and a variant gets its own file.
+- **A generated PERSON is not thinned here either** (v25.5 said it of the yard's cars; I did it again to sixteen
+  people). The strict simplifier stalls on the sheet's islands, the permissive one shreds a face. Ask the generator
+  for the count (its remesh), and lay the rig on what comes back (`tools/riglod.mjs`).
+- **A face is judged CLOSE before anything else is built on the body** (`clipsheet --frame=head`, 560 px). Sixteen
+  people were prepped, wired into the chapter and budgeted before one face had been looked at.
+- **A person's sheet at 1024 gives the face about sixty texels across.** It needs 2048 where the player or a film
+  comes close. Chad saw it from one sentence of mine.
+- **A budget is set from what the game already holds, measured, not from a guess**: my 250 MB was a quarter of what
+  two shipped chapters hold.
+- **An idle take is read through its whole length on the body that wears it** (v8.0, again): the seated idle folds
+  the sitter forward for five of its ten seconds.
+- **A REST IS JUDGED BY ITS HANDS.** A talking take's first frames are not a rest: the monks' and Grandmaster Pho's
+  held both hands out before the chest. Photograph every seated take's first and last moments, front and side, and
+  take the one whose hands lie on the thighs (a rise from a seat begins with exactly that).
+- **A library stand holds the arms out** (15 degrees here, on every rig): measure it and bring it in at prep
+  (`tools/calmarms.mjs`); in a small picture it passes, and at walking distance it is a doll.
+- **`manyOf`'s `size` is not a scale** (it is the size its levels are chosen by): an instance is scaled by its own `s`.
+- **A picture a generator calls "too complex"** (a bush of hundreds of leaves, a heap of petals) is drawn again with
+  fewer, larger parts, or given to another engine; and what the other engine returns is LOOKED AT (a bush came back a
+  tuft of grass).
+- **A login wall is not worked round.** A link that answers with a login page is asked of Chad as files.
+- **A facing is `faceTo` and nothing added.** A body and a seat face +z at a turn of 0 here. `faceFrom(...) + π` is
+  the engine's rule for aiming a CAMERA's helper at a model (CLAUDE.md, v5.0); carried over to a seat it turned
+  Grandmaster Pho's back on his own Wai Kru.
+- **A roof is judged from where a man stands before it**, not only square on: a pitch that measures right in
+  elevation can lie edge-on to the eye. And a hip's side is a trapezoid: give it planar UVs.
+- **Two markers must not be one inside the other**: `keys.py`'s end marker for the rows was the tail of its end
+  marker for the set, and the tool refused to write (rightly).
+- **A status poll that drops must not lose the job**: one reset connection lost a forty-minute run of remeshes.
+  `meshy26.py` asks a GET again, never a POST, and `remesh` waits for a job the ledger already has instead of
+  starting (and paying for) another.
+- **A batch of twelve pictures can lose some to the service's rate limit** (4 of 12 came back `rate_limit_reached`
+  with no job made): read each item's status, resend only those.
+
+- **A check on a bar the fixture's ghost drains is a check on the ghost.** What an event paid is read from the
+  event's own report at the moment it charged, never from the bar before and after (three of the breath's first
+  checks failed for it; the event was right).
+- **His hands on a bowl (tried, measured, taken back out).** A two-handed pose was added to the engine's library with
+  a way to stand a thing between the two palms every frame, and six shapes of it were photographed: with the fingers
+  pointing away the arm points at the lens and FILLS THE SCREEN (the rig's arm is one straight piece); with the
+  fingers up and the palms facing each other the hands are seen edge-on, fingers fanned, and read as two fronds; cupped
+  from below they are open hands beside a bowl that floats. None touched the bowl. Both engine pieces were removed
+  before they were committed (nothing kept that serves no purpose, v9.5). The picture that works needs no hands:
+  the photograph of the real thing held up is cut at the wrists, and a bowl raised before a face hides the hands
+  that hold it.
+- **A thing in the hands' pass has no size in metres.** That pass has its own lens (52 degrees) and its own depth:
+  a bai sri 51 cm tall at any distance a hand could hold it fills a phone. Its size there is chosen by the frame
+  (what share of a phone's width and height it takes), and the world's copy is never in the same picture.
+- **Two scratch names that clash stop the chapter at its first line.** The parts share one scope with the helpers
+  copied from chapter 2 (`_gv`, `_bq` were theirs): a new scratch vector gets a prefix of its own, and
+  `node --check` is run on the assembled file before anything else.
+- **A window that runs past a take's end wraps to its start**: held on the last third of a second of the krap it
+  jumped to the first frame every cycle. A hold at a take's end runs BACKWARDS (a negative length).
+- **A span is in wall seconds whatever the person's own rate**: two drivers of one body at different rates bowed
+  out of time with the ground.
+- **A blessing shot from where the blessed person's friends stand is the backs of two heads.** The side-on view (the
+  giver and the receiver in profile, the thing between them) is the one that shows hands on a bowl. Try the lens with
+  the probe's viewfinder BEFORE writing the shot.
+- **Two takes of two bodies never put four hands on one bowl.** The bowl is the truth and the hands are solved onto
+  it (`handsTo`). And a hand's axes are measured, not assumed: the masters' rigs have finger bones and almost no skin
+  on the hand bone itself (the first measure, of the hand bone's own skin, found nothing on the hermit and silently
+  left his hands where his take had them).
+- **A cluster picture is not a petal.** The ground's petal sprite is sixteen petals on one card; thrown past a close
+  lens each card was a bunch of blades a hand long. A petal in the air is one petal at its own size.
+- **Petals "on" a body at typed heights stand inside it.** They are laid on the body's own skin in its bind pose
+  (the top of the hair, of the shoulders; the front of the thighs) and given to the bone under each.
+- **A seek applies the tracks it has passed in the order they were PUSHED.** Fades pushed as "all the lifts, then all
+  the falls" left a film black under every seek (the last pushed fall won). Push them in the order they happen.
+- **A face at the middle of the picture gives its top half to whatever is over the man's head** (here the dark
+  underside of a canopy). The look rests below the face by a fifth of what the lens sees (`faceTilt`).
+- **A thing held "in his hands" by standing it in the world before the lens changes size with the lens.** It is
+  drawn in the hands' own pass, where play draws it (`filmBai`).
+- **A cut-out picture of small things must not be mip-mapped**: minified, its alpha averages under the cut and what
+  is far is not drawn at all.
+- **A look that is only "a different sun" is the same day.** Photograph two looks side by side before calling them
+  two.
+- **A take that makes a man TALK also moves his head**, and a narrow lens aimed at his resting face loses him. Measure
+  the talking take's own mean face place once, and glide the look between the two by how much he is talking (a smooth
+  function of the film's clock); never ride the living head.
+- **People who are "waiting" must be far enough to be seen as people.** Four at two metres are one shoulder. Stand a
+  group ACROSS the line of sight, at a distance where a phone's frame holds them whole, and check what stands between
+  (a canopy's pole stood between the second and the third).
+- **A thing carried across the body is a band in a portrait frame.** Carry it along the line of sight.
+- **An eye that turns and lifts on one ease looks at the ground in the middle of the move.** Lift first, then turn.
+- **Whoever the last beat left standing somewhere is still standing there in the next shot.** Before each shot, ask
+  who else is on the ground (Ton, twice).
+- **A probe that SEEKS past a film's event wall photographs the event's brief, not the film.** `eventWait` stops the
+  film's clock at the wall; a seek beyond it opens the event and draws its window over every later picture. Play the
+  event (start, press, release) and then seek.
+- **A fit has a widest lens (FIT.max).** A row that needs more than it is cut, silently, at whichever end the aim
+  leaves out. Work the angle out first (half-width over distance, over the margin, over the picture's aspect, over
+  the band's share of the height), and tighten or move the row until it is inside the cap.
+- **A list of a workspace's voices is ten thousand tokens; a status answer for 18 takes is eight thousand.** Search
+  voices once with tight filters and write the ids down the same minute; hand the bulk generation and its downloads
+  to workers, and check their work here by transcribing every take.
+- **faster-whisper cannot open a path on this box** (`av.open() got an unexpected keyword argument
+  'metadata_errors'`): decode with ffmpeg to 16 kHz float samples and hand it the array.
+- **`S=... && ( ... ) &` puts the assignment in the background too:** the next command on the line has no `S`. Set
+  the variable on its own line.
+- **An effect is never peak-matched.** A voice is; a tick is not: its peak stood 24 dB over its loud frames, and at
+  a "sensible" volume it lay 30 dB under the music. Level a one-shot by its loudest 50 ms under a limiter
+  (sound/level_fx.py), then read sound/levels.py: every cue beside the music under it. A session has no ears: this
+  table is the only way a buried sound is found before Chad finds it.
+- **ffmpeg's `-ac 2` reads a mono file 3 dB low** (its upmix keeps the power). A browser plays a mono buffer whole from
+  both speakers. Measure a file in its own channels, or every mono sound is set 3 dB hot.
+- **The chapter's frame runs under the title.** Whatever it raises there (a bed's level) is at full when the film
+  begins, and the film opens on it. Raise nothing where nothing is heard.
+- **A helper's cues are invisible to the warm scan** (the engine and chaptertest read a scene's OWN source). A shared
+  close fired from `endingScene()` plays nothing the first time unless its names are in a literal
+  `warmSounds([...])` in the chapter.
+- **A film's clock stops at an eventWait; a sound does not.** Music cued before the wall runs on while the player
+  plays the event, and is somewhere else when the film resumes. Cut the cue in two at the wall (to it, unresolved;
+  after it, resolved).
+- **A cue fires once, and a seek fires none it has passed.** A sound probe reaches each cue by a seek to just before
+  it and a resume; reads a cue the film already passed from the log as it sounded; and waits for the samples to
+  decode first, as a player's reading of the four answers does (this box decodes slowly under software drawing).
+- **A second decision in one page finds the first one's buttons still in the document.** Wait for the STATE
+  (`getState() === 'decide'`), and give each ending a fresh load.
+- **A loop's seam is searched, not taken.** musicloop's flattest window met its own head at +0.38; of twenty windows
+  tried, one met at +0.53. Try several starts and lengths and keep the best.
+- **A deliberate silence is still under 1.5 s.** "It was quiet" wants a beat of true quiet; give it one second and
+  lead the next sound in (a J-cut), or the static scan and Chad both read it as a gap.
+
+- **A film that hides his hands gives them back where it ends, whatever kind of film it is.** The engine shows
+  `handsRoot` again only after a film from play (`kit.film`, v21.1's net). An OPENING film and an ending's scene are
+  not that: the opening film hid his hands and play began with them hidden, so the bai sri Ton hands him, the thing
+  day one is about, was held and never drawn until the festival's film had ended. It shipped in a preview because no
+  check asked whether what he holds is on screen. The chapter's own `films.end` shows them now, and the drive probe
+  fails a run where the chapter says he holds a thing and its meshes (or any parent) are not drawn.
+- **Lay the photograph of a thing IN USE beside the game, not only the photographs of places.** Nine of his sixteen
+  were never laid beside the game at M3 (the ones of things and people: 2, 3, 4, 7, 8, 9, 11, 12, 14). One of them
+  (7, a bai sri held up) found the bug above in a minute; three (3, 4, 9) showed the tables carried six golden bowls no
+  photograph has, and lacked the flowers every photograph has.
+- **A generator that refuses a picture once may refuse its simpler twin too.** Meshy refused the chrysanthemums and
+  the roses at 44 % ("image too complex") as bunches of small blooms AND as one closed mound of sixteen large ones. It
+  charges nothing for a refusal, so asking is free; but have the second engine ready (Hunyuan3D v3 took both, at its
+  least count of 40,000 triangles: price that on the phone before placing several).
+- **A probe's fixed wait is a race on a busy box.** The Continue probe waited twelve seconds for a resume to be
+  applied; with four browsers drawing in software a frame took longer, and it read the landing before the stage had
+  touched the save (`wanted check, got arrive`, the saved string still the seed). It polls the stage's own flag
+  (`stage.info().applied`) and then waits for drawn frames (v8.7's law: poll, never time).
+- **Seed a save probe with the strings the game writes.** The marks of this chapter's phase string are a phase's OWN
+  receipts only (`mark()`): `check:t`, never `check:h,t`. A seed the game never writes proves readMark's tolerance,
+  not a Continue; test both, and say which is which.
+- **A table of keys with one key twice writes it twice.** The flowers had rows in keys.py from the day their first
+  pictures were refused (a row is written only when its file lands); adding "new" rows gave build.py the key twice.
+  Harmless (a dict keeps the last), but search the table before adding to it.
