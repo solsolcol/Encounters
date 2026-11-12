@@ -551,6 +551,12 @@ ASSETS = {
     'e4devh':       ('assets/e4devh.glb', True, False),
     'e4devhm':      ('assets/e4devhm.glb', True, False),
     'e4devhf':      ('assets/e4devhf.glb', True, False),
+    'e4girl':       ('assets/e4girl.glb', True, False),     # the children of the festival (the plan's 4.1 and 3.7): a girl of seven
+    'e4girlm':      ('assets/e4girlm.glb', True, False),
+    'e4girlf':      ('assets/e4girlf.glb', True, False),
+    'e4boy':        ('assets/e4boy.glb', True, False),     # and a boy of five
+    'e4boym':       ('assets/e4boym.glb', True, False),
+    'e4boyf':       ('assets/e4boyf.glb', True, False),
     # e4c3: GRANDMASTER PHO, Chad's own model, cast for the first time (prepared over v24.38 to v24.56: masters/v24.56;
     # 168,029 triangles, 19 takes, his face and hands on a sheet of their own); and his far skin, a permissive cut of the
     # same body to 22,000 triangles with no sheets of its own, bound to his bones and wearing his materials, drawn only
@@ -594,6 +600,9 @@ ASSETS = {
     'w3claypot':    ('assets/w3claypot.glb', True, False),     # the clay pot of sand on the gravel before the tables (photograph 10)
     'w3pchair':     ('assets/w3pchair.glb', True, False),     # a plastic chair (photographs 5, 6: white behind the bench, blue at its side: one white model, the blue a tint)
     'w3horns':      ('assets/w3horns.glb', True, False),     # a pair of horn loudspeakers for a pole (where the music and the chanting come from)
+    'w3taper':      ('assets/w3taper.glb', True, False),     # the long yellow taper the woman at the offering tables lights the candles with (photograph 10)
+    'w3glass':      ('assets/w3glass.glb', True, False),     # a glass of red soda with a straw (photograph 12: by the hermit's sofa)
+    'w3tissue':     ('assets/w3tissue.glb', True, False),     # a roll of tissue (the low tables: photographs 2, 11)
     # e4c3: what stands at the hall (photographs 13 to 16; masters/v26.0/hall): each cut out of his photograph, a
     # checked picture on white, then Meshy
     'w3nagafount':  ('assets/w3nagafount.glb', True, False),     # the seven-headed golden naga fountain before the sign (photographs 13, 15, 16)
@@ -617,6 +626,7 @@ ASSETS = {
     'w3t_satin':    ('assets/w3t_satin.jpg', True, False),
     'w3t_mat':      ('assets/w3t_mat.jpg', True, False),
     'w3t_carpet':   ('assets/w3t_carpet.jpg', True, False),
+    'w3t_bluemat':  ('assets/w3t_bluemat.jpg', True, False),
     'w3t_swag':     ('assets/w3t_swag.webp', True, False),
     'w3t_banner':   ('assets/w3t_banner.webp', True, False),
     'w3t_treeline': ('assets/w3t_treeline.webp', True, False),
@@ -757,15 +767,17 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'e4white', 'e4whitem', 'e4whitef', 'e4dancera', 'e4danceram', 'e4danceraf', 'e4dancerb', 'e4dancerbm',
            'e4dancerbf', 'e4deva', 'e4devam', 'e4devaf', 'e4devb', 'e4devbm', 'e4devbf', 'e4devc', 'e4devcm',
            'e4devcf', 'e4devd', 'e4devdm', 'e4devdf', 'e4deve', 'e4devem', 'e4devef', 'e4devf', 'e4devfm', 'e4devff',
-           'e4devg', 'e4devgm', 'e4devgf', 'e4devh', 'e4devhm', 'e4devhf', 'pho', 'phof', 'w3baisri', 'w3naga',
-           'w3wheel', 'w3parasol', 'w3tower', 'w3candle', 'w3fan', 'w3nagastaff', 'w3pewter', 'w3purple', 'w3fruit',
-           'w3sweets', 'w3khantok', 'w3puff', 'w3chair', 'w3lowtable', 'w3bench', 'w3sofa', 'w3petalbowl',
-           'w3petalsteel', 'w3smallbaisri', 'w3candlemid', 'w3candlesmall', 'w3kratip', 'w3chicken', 'w3coconut',
-           'w3soda', 'w3water', 'w3matroll', 'w3shirt', 'w3chrys', 'w3roses', 'w3claypot', 'w3pchair', 'w3horns',
-           'w3nagafount', 'w3nagagreen', 'w3nagawhite', 'w3ganesha', 'w3croton', 'w3dracaena', 'w3waterjar',
-           'w3walllamp', 'w3t_turf', 'w3t_petalturf', 'w3t_earth', 'w3t_gravel', 'w3t_redplank', 'w3t_tin',
-           'w3t_brick', 'w3t_skirt', 'w3t_satin', 'w3t_mat', 'w3t_carpet', 'w3t_swag', 'w3t_banner', 'w3t_treeline',
-           'w3t_redroof', 'w3t_hallbrick', 'w3t_steptile', 'w3t_lawn', 'w3t_kalae', 'w3t_fretwork', 'w3t_sign',
+           'e4devg', 'e4devgm', 'e4devgf', 'e4devh', 'e4devhm', 'e4devhf', 'e4girl', 'e4girlm', 'e4girlf', 'e4boy',
+           'e4boym', 'e4boyf', 'pho', 'phof', 'w3baisri', 'w3naga', 'w3wheel', 'w3parasol', 'w3tower', 'w3candle',
+           'w3fan', 'w3nagastaff', 'w3pewter', 'w3purple', 'w3fruit', 'w3sweets', 'w3khantok', 'w3puff', 'w3chair',
+           'w3lowtable', 'w3bench', 'w3sofa', 'w3petalbowl', 'w3petalsteel', 'w3smallbaisri', 'w3candlemid',
+           'w3candlesmall', 'w3kratip', 'w3chicken', 'w3coconut', 'w3soda', 'w3water', 'w3matroll', 'w3shirt',
+           'w3chrys', 'w3roses', 'w3claypot', 'w3pchair', 'w3horns', 'w3taper', 'w3glass', 'w3tissue', 'w3nagafount',
+           'w3nagagreen', 'w3nagawhite', 'w3ganesha', 'w3croton', 'w3dracaena', 'w3waterjar', 'w3walllamp',
+           'w3t_turf', 'w3t_petalturf', 'w3t_earth', 'w3t_gravel', 'w3t_redplank', 'w3t_tin', 'w3t_brick',
+           'w3t_skirt', 'w3t_satin', 'w3t_mat', 'w3t_carpet', 'w3t_bluemat', 'w3t_swag', 'w3t_banner',
+           'w3t_treeline', 'w3t_redroof', 'w3t_hallbrick', 'w3t_steptile', 'w3t_lawn', 'w3t_kalae', 'w3t_fretwork',
+           'w3t_sign',
            # <<< e4c3 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY

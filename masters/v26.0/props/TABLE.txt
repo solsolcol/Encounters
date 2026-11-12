@@ -59,3 +59,10 @@ claypot       w3claypot     0.45  w   3000   512  0
 #  the music and the chant come over (a pair of horns; its pole is a post in code)
 pchair        w3pchair      0.80  h   4000   512  0
 horns         w3horns       0.95  w   5000   512  0
+# ---- the long taper the woman at the offering tables lights the candles with (photograph 10; the plan's 4.1 P1), found
+#  unbuilt by the same audit. A stick as thin as a finger: asked of the remesh at 1,500
+taper         w3taper       0.70  h   1500   256  0
+# ---- "the small real things on the low tables: glasses, a roll of tissue" (the plan's 6.3; photographs 2, 11, 12: a
+#  glass of red soda by the hermit's sofa), found unbuilt by the same audit
+glass         w3glass       0.15  h   1500   256  0
+tissue        w3tissue      0.11  h   1000   256  0

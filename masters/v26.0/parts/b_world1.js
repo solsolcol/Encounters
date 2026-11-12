@@ -80,7 +80,7 @@
       turf: [0x3f9a22, 'image/jpeg'], petalturf: [0x9a9c2c, 'image/jpeg'], earth: [0xb0663e, 'image/jpeg'], gravel: [0x9b968d, 'image/jpeg'],
       redplank: [0x8a2c26, 'image/jpeg'], tin: [0xcb8083, 'image/jpeg'],
       brick: [0x96573f, 'image/jpeg'], skirt: [0x1f9c3a, 'image/jpeg'], satin: [0xe9e9e9, 'image/jpeg'], mat: [0xc7b78a, 'image/jpeg'],
-      carpet: [0x74202a, 'image/jpeg'], swag: [0xf2f0e4, 'image/webp'], banner: [0xe8e8e8, 'image/webp'], treeline: [0x4c7a3a, 'image/webp'],
+      carpet: [0x74202a, 'image/jpeg'], bluemat: [0x86c9c0, 'image/jpeg'], swag: [0xf2f0e4, 'image/webp'], banner: [0xe8e8e8, 'image/webp'], treeline: [0x4c7a3a, 'image/webp'],
       redroof: [0xc8483f, 'image/jpeg'], hallbrick: [0x9a4f3f, 'image/jpeg'], steptile: [0xc98c80, 'image/jpeg'], lawn: [0x5c9a35, 'image/jpeg'],
       kalae: [0x5a4a40, 'image/webp'], fretwork: [0x7a2a26, 'image/webp'], sign: [0xece8dc, 'image/webp']
     };

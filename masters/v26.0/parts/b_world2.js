@@ -136,6 +136,8 @@
     const mCarpet = surf('carpet', { tile: [2.4, 1.6], clamp: true, roughness: 0.95 });
     const mMat = surf('mat', { tile: 1.1, mirror: 'uv', roughness: 0.9 });
     const mStripe = surf('mat', { tile: 0.8, mirror: 'uv', tint: 0xc8d8ff, roughness: 0.9 });
+    /* (the turquoise mat with round flowers that lies by the hermit's sofa: photograph 12. One picture, one mat) */
+    const mBlueMat = surf('bluemat', { tile: [1.9, 1.26], clamp: true, roughness: 0.92 });
     /* a rug or a mat lying on the turf: its long side `w` along its own x, turned ry */
     function rug(mat, x, z, w, d, ry, y = 0.007) {
       const c = Math.cos(ry), s = Math.sin(ry), P = (lx, lz) => [x + lx * c + lz * s, y, z - lx * s + lz * c];
@@ -151,6 +153,12 @@
       many('w3sofa', [{ x: -10.25, y: 0, z: -2.2, ry: Math.PI / 2 }, { x: -10.25, y: 0, z: -0.95, ry: Math.PI / 2 }, { x: -10.25, y: 0, z: 0.3, ry: Math.PI / 2 }], world, 0.9);
       solidBox(1.0, 1.4, 3.9, -10.3, 0.7, -0.95);
       many('w3petalsteel', [{ x: -9.1, y: 0, z: -1.6, ry: 0 }], world, 0.3);
+      /* (13 Nov, the plan's lists read against the build: its "blue patterned mat" and "the small real things on the low
+         tables: glasses, a roll of tissue" were never made. Photograph 12: a turquoise mat with round flowers lies by
+         the hermit's sofa and under its end; a bottle of water and a glass of red soda stand by his bowl of petals) */
+      rug(mBlueMat, -9.92, -2.6, 1.9, 1.26, 0, 0.0085);
+      many('w3glass', [{ x: -9.32, y: 0.008, z: -1.92, ry: 0.6 }], world, 0.15);
+      many('w3water', [{ x: -9.46, y: 0.008, z: -1.74, ry: 2.2 }], world, 0.21);
       many('w3purple', [{ x: -7.0, y: 0, z: 1.0, ry: 1.0 }], world, 1.1);
       /* west tent 2: the hermit in the yellow shawl */
       rug(mMat, -8.1, 5.0, 3.2, 1.8, Math.PI / 2);
@@ -193,6 +201,7 @@
       { const [bx, bz] = BA(0.82, 1.28), [gx, gz] = BA(0.1, 0.72), [wx, wz] = BA(1.28, 0.98);
         many('w3petalbowl', [{ x: bx, y: 0.38, z: bz, ry: 0 }, { x: gx, y: 0, z: gz, ry: 1 }], world, 0.3);
         many('w3pewter', [{ x: wx, y: 0.38, z: wz, ry: 0.8 }], world, 0.5); }
+      { const [gx, gz] = BA(0.74, 0.86), [tx, tz] = BA(1.4, 1.42); many('w3glass', [{ x: gx, y: 0.38, z: gz, ry: 1.3 }], world, 0.15); many('w3tissue', [{ x: tx, y: 0.38, z: tz, ry: 0.4 }], world, 0.11); }
       { const [ax, az] = BA(-1.55, 0.15), [cx2, cz2] = BA(2.95, 0.7); many('w3purple', [{ x: ax, y: 0, z: az, ry: 2.0 }, { x: cx2, y: 0, z: cz2, ry: 0.4 }], world, 1.1); }
     }
 

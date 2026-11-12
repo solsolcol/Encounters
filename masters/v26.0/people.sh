@@ -30,7 +30,7 @@ one() {  # one <name> <near triangles> <near sheet px> <take args...>
   node tools/calmarms.mjs $SRC/merged-$n.glb $SRC/merged-$n.glb $CALM >> $log 2>&1 || { echo "$n: calmarms failed (see $log)"; return; }
   if prep $SRC/merged-$n.glb assets/e4$n.glb $px $log; then rm $SRC/merged-$n.glb; else echo "$n: prep failed (see $log)"; return; fi
   made="near $(node tools/tricount.mjs --n assets/e4$n.glb)"
-  for lv in m:8000:512 f:2500:256; do s=${lv%%:*}; r=${lv#*:}; c=${r%%:*}; p=${r#*:}
+  for lv in ${LEVELS:-m:8000:512 f:2500:256}; do s=${lv%%:*}; r=${lv#*:}; c=${r%%:*}; p=${r#*:}
     if [ -f $SRC/body-$n-$c.glb ]; then prep $SRC/body-$n-$c.glb assets/e4$n$s.glb $p $log && made="$made, $s $(node tools/tricount.mjs --n assets/e4$n$s.glb)"
     else made="$made, $s NOT YET (no body at $c)"; fi
   done
@@ -61,4 +61,15 @@ go deve && dev deve
 go devf && dev devf $(T devf sway sway) $(T devf armsopen armsopen)
 go devg && dev devg $(T devg sway sway) $(T devg armsopen armsopen) $(T devg trance2 trance2)
 go devh && dev devh
+# THE CHILDREN (the plan's 4.1 "children running", 3.7 "children among them"; found unbuilt by the audit of 13 Nov): a girl
+# of seven and a boy of five. The library's stand, two runs, a skip and a jump of joy (243, 14, 15, 118 and 44, the
+# boy's jump 61). Their NEAR body is a grown person's 24,000, not half of it: a child's head is nearly a grown one's
+# size, and at 12,000 the few points of a small face shaded it dark from the lip down (photographed lit and unlit: the
+# paint was clean; the remesh's own normal sheet, tried at 1024, drew every facet, because the prep shares normals
+# across the sheet's seams). The two far bodies are half a grown person's (4,000 and 1,500), and the chapter draws a
+# child's levels at two thirds of a grown person's distances (c_cast.js: lodK), so the fine body is paid for only
+# where a child is walked up to. Colour at 2048 (Chad, v26.0: a lighter body keeps its paint).
+kid() { n=$1; LEVELS="m:4000:512 f:1500:256" one $n ${KIDNEAR:-24000} 2048 $(T $n kid Idle_3,Run_02,Run_03,Skip_Forward,Happy_jump) $(T $n walking Walking); }
+go girl && kid girl
+go boy && kid boy
 echo PEOPLE DONE

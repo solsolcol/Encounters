@@ -774,6 +774,8 @@
       const now = wallNow(), raw = lastWall0 ? Math.max(0, now - lastWall0) : 0, wdt = Math.min(0.25, raw); lastWall0 = now;
       /* (the people's own clocks run in a film too, v5.19: a film holds only those it has posed) */
       windClock += wdt; windTick(windClock); peopleTick(wdt, st !== 'cine'); mistTick(windClock); hazeTick(windClock); flamesTick(windClock); bulbsTick(windClock);
+      /* (after the people: what is laid on a body's arm is laid on the pose its take has just written) */
+      taperTick(windClock); kidsTick(wdt, st);
       if (st !== 'cine') { peopleLevels(); lodTick(); zoneTick(now); }
       /* a Continue is placed before the card (the v4.8 contract): the saved moment's picture stands under it */
       if (!booted && !preplaced && kit) { const w0 = preStage(kit.getPhase()); if (w0) preplaced = w0; }

@@ -45,4 +45,10 @@ red     WHO  a heavy-set Thai man in his sixties with a shaven head and a broad 
 
 HELD until one robe has been through the rig (the robed and skirted ones are the risk): hermita, hermitb, white, bench.
 
+THE CHILDREN (13 Nov: the plan's 4.1 "children running" and 3.7 "children among them", found unbuilt by the audit):
+girl    WHO  a Thai girl about seven years old, small and slight, black hair tied up in two small buns
+        DRESS She wears a plain white short-sleeved cotton T-shirt and loose white cotton trousers to the ankle
+boy     WHO  a Thai boy about five years old, small, short black hair with a straight fringe
+        DRESS He wears a plain white short-sleeved cotton T-shirt and loose white cotton shorts that end just below the knee
+
 JOB IDS and PICKS: masters/v26.0/make.sh.

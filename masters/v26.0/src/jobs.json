@@ -232,6 +232,66 @@
    }
   }
  },
+ "boy": {
+  "credits": 40,
+  "expires_at": 1794717966177,
+  "image": "masters/v26.0/people/refs/boy-a-2k.png",
+  "image_to_3d": "01a1ce0f-f8d9-714e-a6d2-f993a10f080e",
+  "remesh": {
+   "12000": "01a1ce19-84cf-712e-a203-154416e1fd49",
+   "1500": "01a1ce21-4425-777f-8de5-0388a5e54938",
+   "24000": "01a1ce27-7249-74b1-aee3-6233f36d71c0",
+   "4000": "01a1ce1d-80d2-73f3-8d23-b9d9e38dbf82"
+  },
+  "rig": "01a1ce14-a317-7454-a5d1-62a19677778e",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.05,
+   "include_fingers": true,
+   "input_task_id": "01a1ce0f-f8d9-714e-a6d2-f993a10f080e",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 51768940,
+   "walk": 51872016
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 46915352
+  },
+  "takes": {
+   "kid": {
+    "actions": [
+     243,
+     14,
+     15,
+     118,
+     61
+    ],
+    "credits": 15,
+    "size": 54808540,
+    "task": "01a1ce19-82d7-7272-acd6-6fdaa12d00e4"
+   }
+  }
+ },
  "candle": {
   "credits": 40,
   "expires_at": 1794667667528,
@@ -1271,6 +1331,124 @@
    "glb": 89062904
   }
  },
+ "girl": {
+  "credits": 40,
+  "expires_at": 1794717836100,
+  "image": "masters/v26.0/people/refs/girl-a-2k.png",
+  "image_to_3d": "01a1ce0e-20df-73b0-9d6e-3809777d8aec",
+  "remesh": {
+   "12000": "01a1ce14-f1f3-7667-bef8-240a6f75b5af",
+   "1500": "01a1ce1c-f5b7-77cd-8f97-613c6003f860",
+   "24000": "01a1ce22-36a0-7029-b3f3-3c8239716c25",
+   "4000": "01a1ce18-f85f-7270-b222-ee109322e2a1"
+  },
+  "rig": "01a1ce12-26ab-76b2-93d3-2326c3379e08",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.15,
+   "include_fingers": true,
+   "input_task_id": "01a1ce0e-20df-73b0-9d6e-3809777d8aec",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 51114548,
+   "walk": 51355656
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 47207088
+  },
+  "takes": {
+   "kid": {
+    "actions": [
+     243,
+     14,
+     15,
+     118,
+     44
+    ],
+    "credits": 15,
+    "size": 54604648,
+    "task": "01a1ce14-f0d8-7078-9fea-4aa02925d098"
+   }
+  }
+ },
+ "girl2": {
+  "credits": 40,
+  "expires_at": 1794719294844,
+  "image": "masters/v26.0/people/refs/girl-a-2k.png",
+  "image_to_3d": "01a1ce23-a493-748d-945e-45ea3712a5ca",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 68213524
+  }
+ },
+ "glass": {
+  "credits": 40,
+  "expires_at": 1794720592106,
+  "image": "masters/v26.0/props/refs/glass-2k.png",
+  "image_to_3d": "01a1ce37-cd4d-767e-8837-e50b39e8bcf8",
+  "remesh": {
+   "1500": "01a1ce3d-034b-70b8-addd-b74dd4b138ed"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 44530196
+  }
+ },
  "hermita": {
   "credits": 40,
   "expires_at": 1794666026253,
@@ -2223,6 +2401,66 @@
   },
   "sizes": {
    "glb": 82750900
+  }
+ },
+ "taper": {
+  "credits": 40,
+  "expires_at": 1794717920731,
+  "image": "masters/v26.0/props/refs/taper-2k.png",
+  "image_to_3d": "01a1ce0f-f99b-7620-be45-c32285645a0e",
+  "remesh": {
+   "1500": "01a1ce14-a478-7568-9a48-cafdfb87d3e4"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 25039492
+  }
+ },
+ "tissue": {
+  "credits": 40,
+  "expires_at": 1794720814158,
+  "image": "masters/v26.0/props/refs/tissue-2k.png",
+  "image_to_3d": "01a1ce37-d629-749c-bc70-392bb77ba1a9",
+  "remesh": {
+   "1000": "01a1ce3f-f10e-77d3-b13c-92127a20cdf3"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 54055544
   }
  },
  "ton": {

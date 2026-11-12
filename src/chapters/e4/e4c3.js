@@ -262,14 +262,15 @@
       'e4whitem', 'e4whitef', 'e4dancera', 'e4danceram', 'e4danceraf', 'e4dancerb', 'e4dancerbm', 'e4dancerbf',
       'e4deva', 'e4devam', 'e4devaf', 'e4devb', 'e4devbm', 'e4devbf', 'e4devc', 'e4devcm', 'e4devcf', 'e4devd',
       'e4devdm', 'e4devdf', 'e4deve', 'e4devem', 'e4devef', 'e4devf', 'e4devfm', 'e4devff', 'e4devg', 'e4devgm',
-      'e4devgf', 'e4devh', 'e4devhm', 'e4devhf', 'pho', 'phof', 'w3baisri', 'w3naga', 'w3wheel', 'w3parasol',
-      'w3tower', 'w3candle', 'w3fan', 'w3nagastaff', 'w3pewter', 'w3purple', 'w3fruit', 'w3sweets', 'w3khantok',
-      'w3puff', 'w3chair', 'w3lowtable', 'w3bench', 'w3sofa', 'w3petalbowl', 'w3petalsteel', 'w3smallbaisri',
-      'w3candlemid', 'w3candlesmall', 'w3kratip', 'w3chicken', 'w3coconut', 'w3soda', 'w3water', 'w3matroll',
-      'w3shirt', 'w3chrys', 'w3roses', 'w3claypot', 'w3pchair', 'w3horns', 'w3nagafount', 'w3nagagreen',
-      'w3nagawhite', 'w3ganesha', 'w3croton', 'w3dracaena', 'w3waterjar', 'w3walllamp', 'w3t_turf', 'w3t_petalturf',
-      'w3t_earth', 'w3t_gravel', 'w3t_redplank', 'w3t_tin', 'w3t_brick', 'w3t_skirt', 'w3t_satin', 'w3t_mat',
-      'w3t_carpet', 'w3t_swag', 'w3t_banner', 'w3t_treeline', 'w3t_redroof', 'w3t_hallbrick', 'w3t_steptile',
+      'e4devgf', 'e4devh', 'e4devhm', 'e4devhf', 'e4girl', 'e4girlm', 'e4girlf', 'e4boy', 'e4boym', 'e4boyf', 'pho',
+      'phof', 'w3baisri', 'w3naga', 'w3wheel', 'w3parasol', 'w3tower', 'w3candle', 'w3fan', 'w3nagastaff',
+      'w3pewter', 'w3purple', 'w3fruit', 'w3sweets', 'w3khantok', 'w3puff', 'w3chair', 'w3lowtable', 'w3bench',
+      'w3sofa', 'w3petalbowl', 'w3petalsteel', 'w3smallbaisri', 'w3candlemid', 'w3candlesmall', 'w3kratip',
+      'w3chicken', 'w3coconut', 'w3soda', 'w3water', 'w3matroll', 'w3shirt', 'w3chrys', 'w3roses', 'w3claypot',
+      'w3pchair', 'w3horns', 'w3taper', 'w3glass', 'w3tissue', 'w3nagafount', 'w3nagagreen', 'w3nagawhite',
+      'w3ganesha', 'w3croton', 'w3dracaena', 'w3waterjar', 'w3walllamp', 'w3t_turf', 'w3t_petalturf', 'w3t_earth',
+      'w3t_gravel', 'w3t_redplank', 'w3t_tin', 'w3t_brick', 'w3t_skirt', 'w3t_satin', 'w3t_mat', 'w3t_carpet',
+      'w3t_bluemat', 'w3t_swag', 'w3t_banner', 'w3t_treeline', 'w3t_redroof', 'w3t_hallbrick', 'w3t_steptile',
       'w3t_lawn', 'w3t_kalae', 'w3t_fretwork', 'w3t_sign',
       /* <<< this chapter's own keys <<< */
       /* the trees of this episode's first chapter (reuseInEpisode) */
@@ -578,7 +579,7 @@
       turf: [0x3f9a22, 'image/jpeg'], petalturf: [0x9a9c2c, 'image/jpeg'], earth: [0xb0663e, 'image/jpeg'], gravel: [0x9b968d, 'image/jpeg'],
       redplank: [0x8a2c26, 'image/jpeg'], tin: [0xcb8083, 'image/jpeg'],
       brick: [0x96573f, 'image/jpeg'], skirt: [0x1f9c3a, 'image/jpeg'], satin: [0xe9e9e9, 'image/jpeg'], mat: [0xc7b78a, 'image/jpeg'],
-      carpet: [0x74202a, 'image/jpeg'], swag: [0xf2f0e4, 'image/webp'], banner: [0xe8e8e8, 'image/webp'], treeline: [0x4c7a3a, 'image/webp'],
+      carpet: [0x74202a, 'image/jpeg'], bluemat: [0x86c9c0, 'image/jpeg'], swag: [0xf2f0e4, 'image/webp'], banner: [0xe8e8e8, 'image/webp'], treeline: [0x4c7a3a, 'image/webp'],
       redroof: [0xc8483f, 'image/jpeg'], hallbrick: [0x9a4f3f, 'image/jpeg'], steptile: [0xc98c80, 'image/jpeg'], lawn: [0x5c9a35, 'image/jpeg'],
       kalae: [0x5a4a40, 'image/webp'], fretwork: [0x7a2a26, 'image/webp'], sign: [0xece8dc, 'image/webp']
     };
@@ -1198,6 +1199,8 @@
     const mCarpet = surf('carpet', { tile: [2.4, 1.6], clamp: true, roughness: 0.95 });
     const mMat = surf('mat', { tile: 1.1, mirror: 'uv', roughness: 0.9 });
     const mStripe = surf('mat', { tile: 0.8, mirror: 'uv', tint: 0xc8d8ff, roughness: 0.9 });
+    /* (the turquoise mat with round flowers that lies by the hermit's sofa: photograph 12. One picture, one mat) */
+    const mBlueMat = surf('bluemat', { tile: [1.9, 1.26], clamp: true, roughness: 0.92 });
     /* a rug or a mat lying on the turf: its long side `w` along its own x, turned ry */
     function rug(mat, x, z, w, d, ry, y = 0.007) {
       const c = Math.cos(ry), s = Math.sin(ry), P = (lx, lz) => [x + lx * c + lz * s, y, z - lx * s + lz * c];
@@ -1213,6 +1216,12 @@
       many('w3sofa', [{ x: -10.25, y: 0, z: -2.2, ry: Math.PI / 2 }, { x: -10.25, y: 0, z: -0.95, ry: Math.PI / 2 }, { x: -10.25, y: 0, z: 0.3, ry: Math.PI / 2 }], world, 0.9);
       solidBox(1.0, 1.4, 3.9, -10.3, 0.7, -0.95);
       many('w3petalsteel', [{ x: -9.1, y: 0, z: -1.6, ry: 0 }], world, 0.3);
+      /* (13 Nov, the plan's lists read against the build: its "blue patterned mat" and "the small real things on the low
+         tables: glasses, a roll of tissue" were never made. Photograph 12: a turquoise mat with round flowers lies by
+         the hermit's sofa and under its end; a bottle of water and a glass of red soda stand by his bowl of petals) */
+      rug(mBlueMat, -9.92, -2.6, 1.9, 1.26, 0, 0.0085);
+      many('w3glass', [{ x: -9.32, y: 0.008, z: -1.92, ry: 0.6 }], world, 0.15);
+      many('w3water', [{ x: -9.46, y: 0.008, z: -1.74, ry: 2.2 }], world, 0.21);
       many('w3purple', [{ x: -7.0, y: 0, z: 1.0, ry: 1.0 }], world, 1.1);
       /* west tent 2: the hermit in the yellow shawl */
       rug(mMat, -8.1, 5.0, 3.2, 1.8, Math.PI / 2);
@@ -1255,6 +1264,7 @@
       { const [bx, bz] = BA(0.82, 1.28), [gx, gz] = BA(0.1, 0.72), [wx, wz] = BA(1.28, 0.98);
         many('w3petalbowl', [{ x: bx, y: 0.38, z: bz, ry: 0 }, { x: gx, y: 0, z: gz, ry: 1 }], world, 0.3);
         many('w3pewter', [{ x: wx, y: 0.38, z: wz, ry: 0.8 }], world, 0.5); }
+      { const [gx, gz] = BA(0.74, 0.86), [tx, tz] = BA(1.4, 1.42); many('w3glass', [{ x: gx, y: 0.38, z: gz, ry: 1.3 }], world, 0.15); many('w3tissue', [{ x: tx, y: 0.38, z: tz, ry: 0.4 }], world, 0.11); }
       { const [ax, az] = BA(-1.55, 0.15), [cx2, cz2] = BA(2.95, 0.7); many('w3purple', [{ x: ax, y: 0, z: az, ry: 2.0 }, { x: cx2, y: 0, z: cz2, ry: 0.4 }], world, 1.1); }
     }
 
@@ -1501,7 +1511,16 @@
        wears every take and costs no skeleton; which one is drawn is chosen every frame from the lens (and so at a cut
        from the cut's own lens: v24.22), with a little slack so a person standing on a boundary does not flicker. */
     const people = [];
-    const WALKS = /^(Walking|Casual_Walk|Walking_Woman)$/;
+    /* NO SHRUNKEN COPIES OF A GENERATED BODY'S PAINT (v5.11's law, found again on 13 Nov: photographed on a phone's frame,
+       every dark head on the turf was speckled white, a child's most of all). A generated body's sheet is hundreds of
+       small patches packed edge to edge, each padded into its neighbours: black hair lies flush against white cloth.
+       Every shrunken copy of the sheet averages one patch with the next, so a head drawn small is sampled from white
+       and black mixed, along every seam of its hair. Plain sampling of the sheet itself never reaches past a texel,
+       and the padding makes that texel the patch's own colour. Every body this chapter made (keys e4...), at every
+       level; Chad's own models (Grandmaster Pho, the monk) are as he gave them and are not touched. */
+    const NOMIP = /^e4/;
+    /* (the children's runs and their skip too: c_crowd.js) */
+    const WALKS = /^(Walking|Casual_Walk|Walking_Woman|Run_02|Run_03|Skip_Forward)$/;
     const LEVELS = [['h', 2.7], ['', 5.4], ['m', 11.5], ['f', Infinity]];        // each skin's suffix and how far it is drawn to
     const _pv = new THREE.Vector3(), _pq = new THREE.Quaternion(), _lens = new THREE.Vector3();
     /* the soft dark under a body (a phone draws no shadows, so a contact shadow is painted: v9.3) */
@@ -1528,6 +1547,7 @@
           if (q.isBone) { P.bone[q.name] = q; if (/^(mixamorig:?)?Head$/.test(q.name)) P.head = q; if (/^(mixamorig:?)?Hips$/.test(q.name)) P.hips = q; }
         });
         if (o.s) m.scale.multiplyScalar(o.s);
+        if (NOMIP.test(key)) for (const q of skins) for (const mm of [].concat(q.material)) if (mm && mm.map) noMip(THREE, mm.map);
         P.group.add(m); P.model = m; P.lv[1] = skins;
         P.mixer = new THREE.AnimationMixer(m);
         for (const clip0 of animations) {
@@ -1562,6 +1582,20 @@
              his rest), so each is brought to the one height the seat asks for, and changing take never lifts him off
              it or sinks him through it (v16.8) */
           if (o.seat) for (const name in base) if (!o.seat.takes || o.seat.takes.test(name)) P.offY[name] = base[name][2] - (o.seat.y + (o.seat.over != null ? o.seat.over : 0.1)); }
+        /* THE GROUND A WALK OR A RUN COVERS IN A SECOND (o.pace: asked for by whoever moves the group, who drives the take's
+           rate from the ground covered: v7.1). The library's walks and runs come on the spot (their hips travel nowhere:
+           measured, a few millimetres a second), so the pace is read from the foot that is down: under a body that stays
+           where it is, a planted foot goes back at the pace the body would go forward. Each foot at thirty-two moments of
+           the take, in the person's own frame; a foot is down while it is within 3.5 cm of the lowest either reaches */
+        if (o.pace) { const LF = P.bone.LeftFoot || P.bone['mixamorig:LeftFoot'], RF = P.bone.RightFoot || P.bone['mixamorig:RightFoot'];
+          if (LF && RF) for (const name in P.acts) { if (!WALKS.test(name)) continue;
+            const A = P.acts[name], d = A.getClip().duration, N = 32, F = [[], []];
+            for (const k in P.acts) P.acts[k].setEffectiveWeight(k === name ? 1 : 0);
+            for (let i = 0; i <= N; i++) { A.time = Math.min(d - 1e-4, d * i / N); P.mixer.update(0); P.group.updateWorldMatrix(true, true);
+              [LF, RF].forEach((b, j) => { b.getWorldPosition(_pv); P.group.worldToLocal(_pv); F[j].push([_pv.y, _pv.z]); }); }
+            let lo = Infinity; for (const f of F) for (const q of f) lo = Math.min(lo, q[0]);
+            let back = 0, n = 0; for (const f of F) for (let i = 0; i < N; i++) if (f[i][0] < lo + 0.035 && f[i + 1][0] < lo + 0.035) { back += f[i][1] - f[i + 1][1]; n++; }
+            if (n > 2 && back > 0) (P.pace = P.pace || {})[name] = back / (n * d / N); } }
         if (!P.acts[P.cur]) { console.warn(key + ' has no take ' + P.cur + ' (it has: ' + Object.keys(P.acts).join(', ') + ')'); P.cur = Object.keys(P.acts)[0]; }
         for (const k in P.acts) { P.w[k] = k === P.cur ? 1 : 0; P.acts[k].setEffectiveWeight(P.w[k]); P.acts[k].time = (P.phase * P.acts[k].getClip().duration) % P.acts[k].getClip().duration; }
         /* (for a look: which way the face looks, from the head's BIND turn, never from the bone's own axes: v6.8. Every
@@ -1594,6 +1628,7 @@
           if (bones.some(b => !b)) { console.warn(key + ': a bone of it is not on ' + P.key); return; }
           let mat = sm.material;
           if (!mat.map) { let near = null; for (const q of P.lv[1]) for (const nm of [].concat(q.material)) if (nm.name === mat.name) near = nm; if (near) mat = near; }
+          if (NOMIP.test(P.key) && mat.map) noMip(THREE, mat.map);
           const mesh = new THREE.SkinnedMesh(sm.geometry, mat);
           mesh.castShadow = false; mesh.receiveShadow = false; mesh.frustumCulled = false; mesh.visible = false;
           P.model.add(mesh); mesh.bind(new THREE.Skeleton(bones, sm.skeleton.boneInverses), sm.bindMatrix); made.push(mesh); });
@@ -1828,7 +1863,24 @@
       P.arms = out; return out;
     }
     /* (before a body's mixer runs: what was laid on its arms is taken off) */
-    function armsBack(P) { const A = P.arms; if (!A) return; for (const sd in A) { const a = A[sd]; if (!a.wrote) continue; a.up.quaternion.copy(a.qUp); a.fore.quaternion.copy(a.qFore); a.hand.quaternion.copy(a.qHand); a.wrote = false; } }
+    function armsBack(P) { const A = P.arms; if (!A) return; for (const sd in A) { const a = A[sd];
+      if (a.curled) { for (const F of a.fing) F.b.quaternion.copy(F.q); a.curled = false; }
+      if (!a.wrote) continue; a.up.quaternion.copy(a.qUp); a.fore.quaternion.copy(a.qFore); a.hand.quaternion.copy(a.qHand); a.wrote = false; } }
+    /* A HAND CLOSED ROUND A THING (the woman with the taper): each finger's three joints turned by `th` radians toward
+       the palm's own facing, about the hand's own measured across-axis as it lies in the world now. Laid on after
+       handTo() and taken off by armsBack() before the mixer runs again, as every laid pose is (v11.5). A rig with no
+       finger bones is left as it is. */
+    function curlFingers(P, sd, th) {
+      const As = P && P.ready ? armsOf(P) : null, a = As && As[sd]; if (!a) return;
+      if (!a.fing) { a.fing = []; const S0 = sd === 'L' ? 'Left' : 'Right';
+        for (const f of ['Index', 'Middle', 'Ring', 'Pinky']) for (let i = 1; i <= 3; i++) { const b = P.bone[S0 + 'Hand' + f + i] || P.bone['mixamorig:' + S0 + 'Hand' + f + i]; if (b) a.fing.push({ b, q: new THREE.Quaternion(), i }); } }
+      if (!a.fing.length) return;
+      if (!a.curled) { for (const F of a.fing) F.q.copy(F.b.quaternion); a.curled = true; }
+      a.hand.getWorldQuaternion(_hq); _hf.copy(a.fL).applyQuaternion(_hq); _hn.copy(a.nL).applyQuaternion(_hq); _ha.crossVectors(_hf, _hn).normalize();
+      for (const F of a.fing) { _hq.setFromAxisAngle(_ha, th * (F.i === 3 ? 0.7 : 1)); F.b.parent.getWorldQuaternion(_hq2);
+        /* world' = turn * world, so local' = parentWorld^-1 * turn * parentWorld * local */
+        F.b.quaternion.premultiply(_hq2).premultiply(_hq).premultiply(_hq2.invert()); }
+    }
     /* ONE HAND onto a thing, by k: its palm's middle at `at` (a point of the thing's surface), its fingers along `f`,
        its palm facing `n` (into the thing). o: { back: how far behind the palm's middle the wrist is, in metres (the
        hand's own measure unless said); off: how far the wrist stands off the surface; out, down: the elbow's side,
@@ -1843,6 +1895,8 @@
       a.hand.getWorldPosition(_hb); _hW.set(lp(_hb.x, _hW.x, ks), lp(_hb.y, _hW.y, ks), lp(_hb.z, _hW.z, ks));
       a.up.getWorldPosition(_hP); P.group.getWorldQuaternion(_hq); _hL.set(1, 0, 0).applyQuaternion(_hq);
       _hP.addScaledVector(_hL, a.side * (o.out != null ? o.out : 0.3)); _hP.y -= (o.down != null ? o.down : 0.32);
+      /* (o.aft: the elbow drawn behind the body too, for a hand held at the hip: the woman with the taper. Absent, nothing moves) */
+      if (o.aft) { _hL.set(0, 0, 1).applyQuaternion(_hq); _hP.addScaledVector(_hL, -o.aft); }
       armTo(a, _hW, _hP);
       _ha.crossVectors(_hn, _hf); _hm.makeBasis(_ha, _hn, _hf); _hm2.makeBasis(a.aL, a.nL, a.fL).transpose(); _hm.multiply(_hm2); _hq.setFromRotationMatrix(_hm);
       a.hand.parent.getWorldQuaternion(_hq2); _hq.premultiply(_hq2.invert());
@@ -1954,7 +2008,8 @@
       cam.getWorldPosition(_lens);
       for (const P of people) { if (!P.ready || P.driver) { if (P.driver && P.ready && P.lvShown !== -2) { for (let i = 0; i < 4; i++) if (P.lv[i]) for (const m of P.lv[i]) m.visible = false; P.lvShown = -2; } continue; }
         if (!P.group.visible) continue;
-        const g = P.group.position, d = Math.hypot(g.x - _lens.x, g.y + 1.0 - _lens.y, g.z - _lens.z);
+        /* (o.lodK: a child is two thirds of a grown body's height, and is drawn at each level two thirds as far) */
+        const g = P.group.position, d = Math.hypot(g.x - _lens.x, g.y + 1.0 - _lens.y, g.z - _lens.z) / (P.o.lodK || 1);
         showLevel(P, P.force != null ? P.force : levelFor(P.lvNow < 0 ? 3 : P.lvNow, d, P.lv[0] ? 0 : 1)); }
       for (const M0 of crowd) { if (!M0.group.visible || !M0.D.ready) continue;
         const g = M0.group.position, d = Math.hypot(g.x - _lens.x, g.y + 0.8 - _lens.y, g.z - _lens.z);
@@ -2123,7 +2178,7 @@
       P.home = { x, z, ry: faceTo(x, z, PHO_AT[0], PHO_AT[1]) }; return P; });
     const castBlock = {};
     for (const k of ['ton', 'aunt']) castBlock[k] = new THREE.Box3(new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 61, 0));
-    function castSolid() { for (const k in castBlock) { const P = cast[k], b = castBlock[k], on = !!(P && P.group.visible && !P.hidden), g = P.group.position, r = 0.32;
+    function castSolid() { for (const k in castBlock) { const P = cast[k], b = castBlock[k], on = !!(P && P.group.visible && !P.hidden && !P.noBlock), g = P.group.position, r = 0.32;
       b.min.set(g.x - r, on ? 0 : 60, g.z - r); b.max.set(g.x + r, on ? 1.5 : 61, g.z + r); } }
     for (const k in castBlock) whenReady(cast[k], castSolid);
 
@@ -2274,6 +2329,7 @@
       for (const key of DEVOTEES) { const D = crowdDrivers[key];
         if (name === 'bless' || name === 'photo') hold(D.B, 'prostrate', WAI[0], WAI[1], 0); else rest(D.B, 0);
         rest(D.A, 0); rest(D.S, 0); }
+      kidsForm(name); extrasLive();
     }
     /* THE WHOLE GROUND BOWS (the homage): every kneeling driver makes the krap once, from the kneeling wai down to the
        ground and back, over `secs`; the members follow because they are drawn from its bones. Then each is back at rest */
@@ -2292,8 +2348,181 @@
     function crowdLive() {
       for (const P of people) { if (!P.driver) continue;
         P.idle = !P.members.some(m => m.group.visible && (!m.group.parent || m.group.parent.visible)); }
+      extrasLive();
     }
     buildCrowd();
+
+    /* ================================================================ THE WOMAN WITH THE TAPER
+       (the plan's 4.1 P1: "a woman ahead of him lighting hers with a long taper"; photograph 10: at the head of the line
+       that waits at the offering tables a woman in white holds a long yellow taper to the candles on the front step.)
+       Found unbuilt by the audit of 13 Nov. A person of her own at the head of the game's line while the ground gathers
+       (the `arrive` formation), nobody of the photograph copied: the young woman with the ponytail (the long-haired
+       woman's body stands third in that same line: counted). Her LEFT hand carries the taper, the side he comes up on:
+       its tip goes from one small candle's wick to the next, is drawn back, and goes again, on the day's own clock; her
+       elbow stays at her side and her eyes are on the flame. The taper is a real model (w3taper, 0.70 m) laid along her
+       fingers, and a flame stands on its tip. */
+    const TAPER = { at: [1.5, -9.25], held: 0.12, len: 0.70, T: 12.5 };
+    const taper = (() => {
+      const y = TABLES.tops[0] + 0.245;
+      const P = mkPerson('e4devf', TAPER.at[0], TAPER.at[1], Math.PI, { take: 'Idle_3', phase: 0.63, parent: dayOne, hidden: true, blobW: 0.8, blobD: 0.7 });
+      const g = stand('w3taper', 0, -40, 0, 0, { parent: dayOne, near: true }); g.visible = false;
+      const gF = new THREE.PlaneGeometry(1, 1); gF.translate(0, 0.5, 0);
+      const fl = new THREE.Mesh(gF, B({ map: tex(makeFlame(THREE, cnv)), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, side: THREE.DoubleSide }));
+      fl.renderOrder = 4; fl.visible = false; fl.frustumCulled = false; dayOne.add(fl); owned.push(fl);
+      cast.taper = P; castBlock.taper = new THREE.Box3(new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 61, 0));
+      /* two wicks of the front row (b_world2.js: every 0.33 m along z -10.09), and the taper drawn back between them */
+      return { P, g, fl, on: false, W: [[1.32, y, -10.09], [0.99, y, -10.09], [1.17, y + 0.2, -9.94]], grip: { L: { at: [0, 0, 0], f: [0, 0, -1], n: [1, -0.25, 0], out: 0.1, down: 0.5, aft: 0.3 } }, tip: new THREE.Vector3() };
+    })();
+    /* where the taper's tip is asked to be at a moment of her round (seconds), eased from stop to stop */
+    const _tpA = [0, 0, 0];
+    function taperAim(t) {
+      const W = taper.W, u = ((t % TAPER.T) + TAPER.T) % TAPER.T;
+      /* at the first wick 3 s; over to the second 1.5; there 3; drawn back 1.5; held back 2; down to the first 1.5 */
+      const leg = (a, b, k, lift) => { const e = smo(c01(k)); _tpA[0] = lp(a[0], b[0], e); _tpA[1] = lp(a[1], b[1], e) + lift * Math.sin(Math.PI * e); _tpA[2] = lp(a[2], b[2], e); return _tpA; };
+      if (u < 3) return leg(W[0], W[0], 0, 0);
+      if (u < 4.5) return leg(W[0], W[1], (u - 3) / 1.5, 0.05);
+      if (u < 7.5) return leg(W[1], W[1], 0, 0);
+      if (u < 9) return leg(W[1], W[2], (u - 7.5) / 1.5, 0);
+      if (u < 11) return leg(W[2], W[2], 0, 0);
+      return leg(W[2], W[0], (u - 11) / 1.5, 0);
+    }
+    const _tpS = new THREE.Vector3(), _tpF = new THREE.Vector3(), _tpN = new THREE.Vector3(), _tpP = new THREE.Vector3(), _tpQ = new THREE.Quaternion(), _tpY = new THREE.Vector3(0, 1, 0), _tpC = new THREE.Vector3(),
+          _tpT = new THREE.Vector3(), _tpW = new THREE.Vector3();
+    function taperTick(t) {
+      const T = taper, P = T.P;
+      if (!T.on || !P.ready || !dayOne.visible) { if (T.g.visible) { T.g.visible = false; T.fl.visible = false; } return; }
+      const As = armsOf(P), a = As && As.L; if (!a) return;
+      /* THE ASK: the hand's place is solved from the tip. The taper is rigid, so the palm is the tip's place drawn back
+         along the taper by what stands before the hand; the taper runs from a place before her left hip to the tip */
+      const Q = taperAim(t), G = T.grip.L, hx = TAPER.at[0] - 0.19, hy = 1.11, hz = TAPER.at[1] - 0.3;
+      const dx = Q[0] - hx, dy = Q[1] - hy, dz = Q[2] - hz, dl = Math.hypot(dx, dy, dz) || 1, before = TAPER.len - TAPER.held;
+      /* HOW A TAPER IS HELD: not along the fingers and not square across them, but slantwise over the palm, out between
+         the thumb and the first finger, the fingers closed over it. So the hand's own length lies an eighth of a turn
+         off the taper's line, about the palm's facing (in, and a little down): the fingers run forward and down from a
+         wrist that hangs below the elbow, and the taper runs level from it */
+      _tpT.set(dx / dl, dy / dl, dz / dl); _tpN.set(0.8, -0.6, 0); _tpN.addScaledVector(_tpT, -_tpN.dot(_tpT)).normalize();
+      _tpW.crossVectors(_tpN, _tpT); _tpF.copy(_tpT).multiplyScalar(Math.SQRT1_2).addScaledVector(_tpW, -Math.SQRT1_2);
+      G.f[0] = _tpF.x; G.f[1] = _tpF.y; G.f[2] = _tpF.z; G.n[0] = _tpN.x; G.n[1] = _tpN.y; G.n[2] = _tpN.z;
+      G.at[0] = Q[0] - _tpT.x * before; G.at[1] = Q[1] - _tpT.y * before; G.at[2] = Q[2] - _tpT.z * before;
+      handTo(P, 'L', G.at, G.f, G.n, 1, G);
+      /* THE ANSWER: the taper lies where the hand came to be (the hand's own measured axes, in the world now): through
+         the palm's middle, a finger's thickness off it, along the slant between the fingers' line and the thumb's side */
+      P.group.updateWorldMatrix(true, true);
+      a.hand.getWorldPosition(_tpS); a.hand.getWorldQuaternion(_tpQ);
+      _tpF.copy(a.fL).applyQuaternion(_tpQ).normalize(); _tpN.copy(a.nL).applyQuaternion(_tpQ).normalize(); _tpW.crossVectors(_tpN, _tpF);
+      _tpT.copy(_tpF).add(_tpW).normalize();
+      _tpP.copy(_tpS).addScaledVector(_tpF, a.palm).addScaledVector(_tpN, 0.017);
+      T.g.position.copy(_tpP).addScaledVector(_tpT, -TAPER.held); T.g.quaternion.setFromUnitVectors(_tpY, _tpT); T.g.visible = true;
+      T.tip.copy(_tpP).addScaledVector(_tpT, before + 0.012);
+      curlFingers(P, 'L', 0.95);
+      camera.getWorldPosition(_tpC);
+      const fk = 0.84 + 0.11 * Math.sin(t * 9.1) + 0.05 * Math.sin(t * 23.7);
+      T.fl.position.copy(T.tip); T.fl.rotation.set(0, Math.atan2(_tpC.x - T.tip.x, _tpC.z - T.tip.z), 0.06 * Math.sin(t * 2.3)); T.fl.scale.set(0.026 * (1.12 - 0.12 * fk), 0.062 * fk, 1); T.fl.visible = true;
+    }
+
+    /* ================================================================ THE CHILDREN
+       (the plan's 4.1: "a full ground, children running"; 3.7: "children among them"; photographs 1 and 11: a small girl
+       among the people in white.) Found unbuilt by the same audit. A girl of seven and a boy of five, made here end to
+       end like every person (masters/v26.0/people; nobody in a photograph is copied). WHILE THE GROUND GATHERS (the
+       `arrive` formation) they chase one another along one line across the open turf south of the rows, between two
+       places where they stop for breath: beside Ton's table, inside the first frame he sees, and on the turf before the
+       chief canopy. The first run comes IN, so they are seen running in play's first seconds. AT THE BLESSINGS (`bless`,
+       `photo`) each stands by a grown person at a master's seat, as the photographs have them.
+       A running child is not solid: each stops short of him, and of the other, and waits. Their state is a run's, so it
+       is integrated on the wall clock while he plays (frozen under a panel), set again by every setFormation (reset()
+       names one), and in a film of the gathering they are not drawn (a film is its own clock's: v6.4). */
+    const KID = { gap: 0.7, V: 2.5, acc: 4.5, restW: 7.5, restE: 9.5, lag: 0.9, give: 1.25 };
+    /* (each: where the child stands, and what it faces: the girl beside the man at the edge of the throng before
+       Grandmaster Pho's bench, the boy beside the one who stands behind the kneelers at the west tent) */
+    const KID_STAND = [(() => { const [x, z] = benchAt(-3.5, 3.45); return [x, z, PHO_AT[0], PHO_AT[1]]; })(), [-5.0, 0.15, -10.17, -0.95]];
+    const kidPath = (() => {
+      const pts = [[-4.15, 7.3], [-1.6, 6.95], [0.6, 7.6], [1.25, 9.4], [0.3, 11.1]], out = [], N = 14;
+      const cr = (p0, p1, p2, p3, t) => 0.5 * ((2 * p1) + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t + (-p0 + 3 * p1 - 3 * p2 + p3) * t * t * t);
+      for (let i = 0; i < pts.length - 1; i++) { const a = pts[Math.max(0, i - 1)], b0 = pts[i], c = pts[i + 1], d = pts[Math.min(pts.length - 1, i + 2)];
+        for (let k = 0; k < N; k++) out.push([cr(a[0], b0[0], c[0], d[0], k / N), cr(a[1], b0[1], c[1], d[1], k / N), 0]); }
+      out.push([pts[pts.length - 1][0], pts[pts.length - 1][1], 0]);
+      let L = 0; for (let i = 1; i < out.length; i++) { L += Math.hypot(out[i][0] - out[i - 1][0], out[i][1] - out[i - 1][1]); out[i][2] = L; }
+      return { pts: out, L };
+    })();
+    /* the place s metres along it, and the way it runs there (west to east) */
+    function kidAt(s, o) {
+      const A = kidPath.pts; s = Math.max(0, Math.min(kidPath.L, s)); let i = 1; while (i < A.length - 1 && A[i][2] < s) i++;
+      const a = A[i - 1], b0 = A[i], dl = Math.max(1e-6, b0[2] - a[2]), k = (s - a[2]) / dl;
+      o.x = lp(a[0], b0[0], k); o.z = lp(a[1], b0[1], k); o.hx = (b0[0] - a[0]) / dl; o.hz = (b0[1] - a[1]) / dl; return o;
+    }
+    const kids = [['e4girl', 0.3, 'Run_02'], ['e4boy', 0.71, 'Run_03']].map(([key, phase, run], i) => {
+      const P = mkPerson(key, 0, 0, 0, { take: 'Idle_3', phase, parent: dayOne, hidden: true, blobW: 0.55, blobD: 0.5, lodK: 0.66, pace: true });
+      P.noBlock = true; cast[i ? 'boy' : 'girl'] = P; castBlock[i ? 'boy' : 'girl'] = new THREE.Box3(new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 61, 0));
+      return { P, i, s: 0, v: 0, to: 0, wait: 0, run, moving: false, ry: 0, looks: false };
+    });
+    const kidsDir = { ph: '', t: 0 };
+    const _ko = { x: 0, z: 0, hx: 0, hz: 1 }, _ko2 = { x: 0, z: 0, hx: 0, hz: 1 };
+    function kidsForm(name) {
+      const run = name === 'arrive';
+      kidsDir.ph = run ? 'runW' : ''; kidsDir.t = 0;
+      for (const K of kids) { const P = K.P; K.v = 0; K.moving = false; K.looks = false; P.noBlock = run; P.rate = 1;
+        whenReady(P, () => { gaze(P, null); rest(P, 0); });
+        if (run) { K.s = Math.min(kidPath.L, kidPath.L * 0.62 + K.i * 1.5); K.to = K.i * KID.gap; K.wait = 0.15 + K.i * 0.35;
+          kidAt(K.s, _ko); K.ry = Math.atan2(-_ko.hx, -_ko.hz); put(P, _ko.x, _ko.z, K.ry); }
+        else { const [x, z, tx, tz] = KID_STAND[K.i]; K.ry = faceTo(x, z, tx, tz); put(P, x, z, K.ry); } }
+    }
+    function kidsTick(wdt, st) {
+      const D = kidsDir; if (!D.ph || !dayOne.visible) return;
+      /* (not drawn in a film of the gathering; held as they are under a panel, their running stopped with them) */
+      const drawn = st !== 'cine';
+      for (const K of kids) { const P = K.P; if (P.ready && P.group.visible !== drawn) { P.group.visible = drawn; P.hidden = !drawn; } }
+      if (st !== 'play') { for (const K of kids) if (K.moving) K.P.rate = 0; return; }
+      D.t += wdt;
+      const running = D.ph === 'runW' || D.ph === 'runE', dir = D.ph === 'runE' ? 1 : -1;
+      let there = true;
+      for (const K of kids) {
+        const P = K.P; if (!P.ready) { there = false; continue; }
+        const O = kids[1 - K.i]; let want = 0;
+        kidAt(K.s, _ko);
+        const px = yaw.position.x - _ko.x, pz = yaw.position.z - _ko.z, pd = Math.hypot(px, pz);
+        if (running) { const left = Math.abs(K.to - K.s);
+          if (K.wait > 0) K.wait -= wdt;
+          else if (left > 0.02) { want = Math.min(KID.V, Math.sqrt(2 * KID.acc * left));
+            /* he is in the way, or the other child is: slower, then stopped short, and waiting */
+            if ((px * _ko.hx + pz * _ko.hz) * dir > -0.2 && pd < KID.give + 0.75) want *= c01((pd - KID.give) / 0.75);
+            const ds = (O.s - K.s) * dir; if (ds > 0 && ds < 1.05) want *= c01((ds - 0.55) / 0.5); }
+          if (left > 0.05) there = false; }
+        K.v = want > K.v ? Math.min(want, K.v + KID.acc * wdt) : Math.max(want, K.v - KID.acc * 1.6 * wdt);
+        if (K.v > 0) { K.s += dir * Math.min(K.v * wdt, Math.abs(K.to - K.s)); kidAt(K.s, _ko); }
+        const mv = K.v > 0.35;
+        if (mv !== K.moving) { K.moving = mv; take(P, mv ? K.run : 'Idle_3', mv ? 0.18 : 0.3); if (!mv) P.rate = 1; }
+        /* (the run's own rate from the ground covered: v7.1) */
+        if (K.moving) P.rate = Math.max(0.6, Math.min(1.3, K.v / ((P.pace && P.pace[K.run]) || KID.V)));
+        /* running, a child faces the way it runs; stopped, it turns to the other child; and it looks at a grown man who comes near */
+        let ry = K.ry;
+        if (K.v > 0.05) ry = Math.atan2(_ko.hx * dir, _ko.hz * dir);
+        else if (Math.abs(O.s - K.s) > 0.2) { kidAt(O.s, _ko2); ry = Math.atan2(_ko2.x - _ko.x, _ko2.z - _ko.z); }
+        const dq = Math.atan2(Math.sin(ry - K.ry), Math.cos(ry - K.ry)); K.ry += Math.max(-7 * wdt, Math.min(7 * wdt, dq));
+        P.group.position.set(_ko.x, 0, _ko.z); P.group.rotation.y = K.ry;
+        const looks = !K.moving && pd < 3.2;
+        if (looks !== K.looks) { K.looks = looks; gaze(P, looks ? 'lens' : null, { reach: 0.9, secs: 0.7 }); }
+      }
+      if (running && (there || D.t > 14)) { D.ph = D.ph === 'runW' ? 'restW' : 'restE'; D.t = 0; }
+      else if (!running && D.t > (D.ph === 'restW' ? KID.restW : KID.restE)) {
+        const east = D.ph === 'restW'; D.ph = east ? 'runE' : 'runW'; D.t = 0;
+        /* whoever stands further along goes first; the other gives chase a moment later */
+        const order = kids.slice().sort((p, q) => east ? q.s - p.s : p.s - q.s);
+        order[0].to = east ? kidPath.L : 0; order[0].wait = 0;
+        order[1].to = east ? kidPath.L - KID.gap : KID.gap; order[1].wait = KID.lag; }
+    }
+    /* WHO OF THESE IS THERE: the woman with the taper only while the ground gathers; the children all of day one (in
+       their chase, kidsTick draws them); none on any other day. Each one's own flag is set (a hidden person is not
+       run, and castSolid stands a column only under one who is drawn: the children's only while they stand still) */
+    function extrasLive() {
+      const one = dayOne.visible, tp = one && formNow === 'arrive';
+      taper.on = tp; taper.P.hidden = !tp; if (taper.P.ready) taper.P.group.visible = tp;
+      if (!tp) { taper.g.visible = false; taper.fl.visible = false; }
+      for (const K of kids) { if (one && kidsDir.ph) continue; K.P.hidden = !one; if (K.P.ready) K.P.group.visible = one; }
+      castSolid();
+    }
+    whenReady(taper.P, (P) => { gaze(P, taper.W[0], { reach: 0.6, secs: 0.01, down: 0 }); extrasLive(); });
+    for (const K of kids) whenReady(K.P, extrasLive);
+    kidsForm('arrive');
 
     /* ================================================================ WHAT THE PLAY MOVES, AND ITS EFFECTS (the plan's §3.7)
        His bai sri (one thing all day: on Ton's table, in Ton's hands, in his own, on the mat before him, beside him on
@@ -3543,6 +3772,8 @@
       const now = wallNow(), raw = lastWall0 ? Math.max(0, now - lastWall0) : 0, wdt = Math.min(0.25, raw); lastWall0 = now;
       /* (the people's own clocks run in a film too, v5.19: a film holds only those it has posed) */
       windClock += wdt; windTick(windClock); peopleTick(wdt, st !== 'cine'); mistTick(windClock); hazeTick(windClock); flamesTick(windClock); bulbsTick(windClock);
+      /* (after the people: what is laid on a body's arm is laid on the pose its take has just written) */
+      taperTick(windClock); kidsTick(wdt, st);
       if (st !== 'cine') { peopleLevels(); lodTick(); zoneTick(now); }
       /* a Continue is placed before the card (the v4.8 contract): the saved moment's picture stands under it */
       if (!booted && !preplaced && kit) { const w0 = preStage(kit.getPhase()); if (w0) preplaced = w0; }
@@ -4656,7 +4887,7 @@
       setPhase, applyPhase, after, dayClock, sayLine, queueLine, queueFn, queueGap,
       look, presets: PRESETS, films, crowdStats, setFormation,
       /* for the probes (tools/probes/e4c3drive.mjs): the play's own state and its beats by name */
-      dbg: { viewfinder(v) { FL.vf = v || null; }, clocks: { A: ENDT.A, B: ENDT.B, C: ENDT.C, D: ENDT.D, CLOSE, FEST, BETW, TELL, ANSW, OPEN: OPENT }, armsOf, handTo, handsTo, baiGrip, baiPut, play, open, cast, bursts, BAI, handBai, myBai, ymBai, petalBurst, auraAt, baiHands, baiRaise, lineBegin, dawnBegin, breathBegin, places: { PLACE, LINE_AT, KNEEL2, DAWN_AT, TABLES_AT } },
+      dbg: { viewfinder(v) { FL.vf = v || null; }, clocks: { A: ENDT.A, B: ENDT.B, C: ENDT.C, D: ENDT.D, CLOSE, FEST, BETW, TELL, ANSW, OPEN: OPENT }, armsOf, handTo, handsTo, baiGrip, baiPut, play, open, cast, bursts, BAI, handBai, myBai, ymBai, petalBurst, auraAt, baiHands, baiRaise, lineBegin, dawnBegin, breathBegin, places: { PLACE, LINE_AT, KNEEL2, DAWN_AT, TABLES_AT }, kids, kidsDir, kidPath, taper },
       who: () => people.filter(P => !P.driver).map(P => ({ key: P.key, ready: P.ready, take: P.cur, skin: P.lvShown, skins: P.lv.map(v => (v ? 1 : 0)).join('') })),
       plan: { TURF, TABLES, HALL, TENT_W1, TENT_W2, TENT_E, CHIEF, BENCH, POLE, TON_TABLE, WEST_TABLE },
       /* the ground's own noises (ambTick): how many have sounded, and the last (a probe counts them over a stretch of play) */

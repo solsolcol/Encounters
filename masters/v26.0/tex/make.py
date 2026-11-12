@@ -35,6 +35,7 @@ TABLE = [
     ('satin',     512,  512,  'asis',  'mirrored sideways; white, tinted by its material'),
     ('mat',       512,  512,  'asis',  'mirrored both ways'),
     ('carpet',    1024, 683,  'asis',  'one rug'),
+    ('bluemat',   1024, 680,  'asis',  'one mat: the turquoise one with round flowers under the west tent (photograph 12)'),
     ('swag',      1024, 512,  'key',   'one garland swag, cut out'),
     ('banner',    256,  1024, 'key',   'one tiered banner, cut out; white, tinted by its material'),
     ('treeline',  2048, 640,  'key',   'the far line of trees, cut out; laid round the ground on a ring, mirrored at its joins'),

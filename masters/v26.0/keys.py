@@ -36,7 +36,8 @@ group("e4c3 v26.0 (episode 4 chapter 3, the Wai Kru): ITS PEOPLE, each made end 
       person('red', 'the master in red') + person('white', 'the second master in white') +
       person('dancera', 'a dancer, white and gold') + person('dancerb', 'a dancer, white and gold') +
       person('deva', 'the devotees, eight bodies in white') + person('devb', '') + person('devc', '') + person('devd', '') +
-      person('deve', '') + person('devf', '') + person('devg', '') + person('devh', ''))
+      person('deve', '') + person('devf', '') + person('devg', '') + person('devh', '') +
+      person('girl', 'the children of the festival (the plan\'s 4.1 and 3.7): a girl of seven') + person('boy', 'and a boy of five'))
 group("e4c3: GRANDMASTER PHO, Chad's own model, cast for the first time (prepared over v24.38 to v24.56: masters/v24.56;\n"
       "168,029 triangles, 19 takes, his face and hands on a sheet of their own); and his far skin, a permissive cut of the\n"
       "same body to 22,000 triangles with no sheets of its own, bound to his bones and wearing his materials, drawn only\n"
@@ -73,7 +74,10 @@ group("e4c3: its things, each from a crop of Chad's own photograph of the real o
        ('w3roses', 'w3roses.glb', 'roses and daisies in a white bowl (photographs 9, 10: Hunyuan3D)'),
        ('w3claypot', 'w3claypot.glb', 'the clay pot of sand on the gravel before the tables (photograph 10)'),
        ('w3pchair', 'w3pchair.glb', 'a plastic chair (photographs 5, 6: white behind the bench, blue at its side: one white model, the blue a tint)'),
-       ('w3horns', 'w3horns.glb', 'a pair of horn loudspeakers for a pole (where the music and the chanting come from)')])
+       ('w3horns', 'w3horns.glb', 'a pair of horn loudspeakers for a pole (where the music and the chanting come from)'),
+       ('w3taper', 'w3taper.glb', 'the long yellow taper the woman at the offering tables lights the candles with (photograph 10)'),
+       ('w3glass', 'w3glass.glb', 'a glass of red soda with a straw (photograph 12: by the hermit\'s sofa)'),
+       ('w3tissue', 'w3tissue.glb', 'a roll of tissue (the low tables: photographs 2, 11)')])
 group("e4c3: what stands at the hall (photographs 13 to 16; masters/v26.0/hall): each cut out of his photograph, a\n"
       "checked picture on white, then Meshy",
       [('w3nagafount', 'w3nagafount.glb', 'the seven-headed golden naga fountain before the sign (photographs 13, 15, 16)'),
@@ -88,7 +92,7 @@ group("e4c3: the ground's surfaces, each a picture made from his photograph of t
       "the hall's sign is drawn: masters/v26.0/hall/sign.mjs)",
       [('w3t_' + n, 'w3t_%s.%s' % (n, e), '') for n, e in [
           ('turf', 'jpg'), ('petalturf', 'jpg'), ('earth', 'jpg'), ('gravel', 'jpg'), ('redplank', 'jpg'), ('tin', 'jpg'), ('brick', 'jpg'),
-          ('skirt', 'jpg'), ('satin', 'jpg'), ('mat', 'jpg'), ('carpet', 'jpg'), ('swag', 'webp'), ('banner', 'webp'), ('treeline', 'webp'),
+          ('skirt', 'jpg'), ('satin', 'jpg'), ('mat', 'jpg'), ('carpet', 'jpg'), ('bluemat', 'jpg'), ('swag', 'webp'), ('banner', 'webp'), ('treeline', 'webp'),
           ('redroof', 'jpg'), ('hallbrick', 'jpg'), ('steptile', 'jpg'), ('lawn', 'jpg'), ('kalae', 'webp'), ('fretwork', 'webp'), ('sign', 'webp')]])
 
 B0, B1 = '    # >>> e4c3 keys: written by masters/v26.0/keys.py from its table (edit the table, not these rows) >>>\n', '    # <<< e4c3 keys: the rows end <<<\n'

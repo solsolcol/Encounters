@@ -173,6 +173,40 @@
 #   bunch is a loose spray: what a generator would take); they stand at 1.3 of the model, on the middle and top steps.
 #   Cost: 3 pictures, 2 Hunyuan models (38 Higgsfield credits), 1 Meshy model and 1 remesh (45): Meshy 1501 -> 1456.
 #
+#   BATCH FIVE (13 Nov, after the release was live): WHAT THE PLAN LISTED AND THE BUILD NEVER MADE, found by reading the
+#   plan's own lists against the build (the tracker's log, 13 Nov): its 6.3 names plastic chairs and loudspeakers, its
+#   4.1 a woman lighting her candle with a long taper and children running, its 3.7 children among the people.
+#     a plastic chair (photographs 5, 6)          picture 9b967d3f-6f5e-4ee8-9314-c526580f6731
+#        Meshy image-to-3D 01a1cdf6-3d8a-7279-b42c-17a47a8f9974 · remesh 4,000 01a1cdfb-df27-77dd-87f6-261a376454a7 -> assets/w3pchair.glb (0.80 m)
+#     a pair of horn loudspeakers                 picture a48b9872-2764-4c0c-9371-5ce1a118f51c
+#        Meshy image-to-3D 01a1cdf6-4571-77ba-b0ef-6d5d8f47a4db · remesh 5,000 01a1cdff-6be2-77af-9110-643916095738 -> assets/w3horns.glb (0.95 m wide)
+#     the long taper (photograph 10)              picture 26af5e94-ceca-4088-9e79-1871653716c8
+#        Meshy image-to-3D 01a1ce0f-f99b-7620-be45-c32285645a0e · remesh 1,500 01a1ce14-a478-7568-9a48-cafdfb87d3e4 -> assets/w3taper.glb (0.70 m)
+#     a glass of red soda with a straw (photograph 12)   picture 1b666022-6ae3-44c6-9a29-c814f35b3a45
+#        Meshy image-to-3D 01a1ce37-cd4d-767e-8837-e50b39e8bcf8 · remesh 1,500 01a1ce3d-034b-70b8-addd-b74dd4b138ed -> assets/w3glass.glb (0.15 m)
+#     a roll of tissue (photographs 2, 11)        picture 0c90c1f6-3d6c-408c-bf2f-1fc6346f3d30
+#        Meshy image-to-3D 01a1ce37-d629-749c-bc70-392bb77ba1a9 · remesh 1,000 01a1ce3f-f10e-77d3-b13c-92127a20cdf3 -> assets/w3tissue.glb (0.11 m)
+#     (props/jobs-p7.json, jobs-p8.json, jobs-p9.json; sh masters/v26.0/props/prop.sh pchair horns taper glass tissue; each
+#      looked at from four sides. The glass's clear wall is not drawn: its rim stands as a ring over the drink)
+#     the turquoise mat with round flowers (photograph 12)   picture 3457980f-0b9b-47df-bf86-3ceeac373db1
+#        python3 -I masters/v26.0/tex/make.py bluemat -> assets/w3t_bluemat.jpg (1024 x 680, as it came: one mat)
+#   THE CHILDREN, made as every person was (people/PROMPTS.txt; people/jobs-kids-a.json, -b.json):
+#     a girl of seven   picture a7a3c24e-9f17-4417-909e-681bebaee6b3 · Meshy image-to-3D 01a1ce0e-20df-73b0-9d6e-3809777d8aec
+#        rig 01a1ce12-26ab-76b2-93d3-2326c3379e08 (1.15 m) · library takes 243, 14, 15, 118, 44: 01a1ce14-f0d8-7078-9fea-4aa02925d098
+#        remesh 24,000 01a1ce22-36a0-7029-b3f3-3c8239716c25 · 4,000 01a1ce18-f85f-7270-b222-ee109322e2a1 · 1,500 01a1ce1c-f5b7-77cd-8f97-613c6003f860
+#     a boy of five     picture 6eb16e5c-3a9c-4f07-9e14-6653a48d87f6 · Meshy image-to-3D 01a1ce0f-f8d9-714e-a6d2-f993a10f080e
+#        rig 01a1ce14-a317-7454-a5d1-62a19677778e (1.05 m) · library takes 243, 14, 15, 118, 61: 01a1ce19-82d7-7272-acd6-6fdaa12d00e4
+#        remesh 24,000 01a1ce27-7249-74b1-aee3-6233f36d71c0 · 4,000 01a1ce1d-80d2-73f3-8d23-b9d9e38dbf82 · 1,500 01a1ce21-4425-777f-8de5-0388a5e54938
+#     sh masters/v26.0/rigall.sh girl:1.15 boy:1.05 ; sh masters/v26.0/takes.sh girl lib kid 243,14,15,118,44 (boy: ...,61) ;
+#     sh masters/v26.0/bodies.sh girl 24000 girl 4000 girl 1500 boy 24000 boy 4000 boy 1500 ; sh masters/v26.0/people.sh girl boy
+#     MINE, AND WASTED: each child's first near body was asked at 12,000 (half a grown one's), and in the lab's light both
+#     faces came out dark from the lip down. I took it for the generator's paint and made the girl's model again
+#     (01a1ce23-a493-748d-945e-45ea3712a5ca, 40 credits, never used) before photographing her UNLIT: the paint was clean.
+#     It is shading: a small child's chin faces forward and down, and a steep light leaves it dark. The remesh's own
+#     normal sheet (tried on the boy at 1024) drew every facet, because the prep shares normals across the sheet's seams.
+#     Photograph a model lit AND unlit before blaming its paint. The near bodies are 24,000; the game's own light is the judge.
+#   Cost: 9 pictures (about 60 Higgsfield credits); Meshy 5 props (225) + 3 child models, 2 rigs, 2 take sets, 8 remeshes (200).
+#
 # 4b. THE HALL (masters/v26.0/hall/; Chad, 11 Nov evening: "More images of the building behind, at the wai kru")
 #   Its statues, plants and lamp are models made the same way from crops of photographs 13 to 16 (objects only; the
 #   sign board, which carries the real place's name, was never sent anywhere): hall/jobs-hall.json (the reference

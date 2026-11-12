@@ -60,9 +60,10 @@ await p.click('#chTabs .chTab[data-ep="4"]'); await p.waitForTimeout(200);
 out.writtenRowLocked = await p.evaluate(() => {
   const r = [...document.querySelectorAll('#chList .chTile')];
   /* v25.0: and its second (Not Every Master Should Be Trusted): two real rows, both locked on a fresh profile, three unwritten */
-  return r.length === 5 && r[0].dataset.ch === 'e4c1' && r[1].dataset.ch === 'e4c2'
-    && r.slice(0, 2).every(x => x.disabled && x.classList.contains('locked') && !x.classList.contains('unwritten'))
-    && r.slice(2).every(x => x.classList.contains('unwritten') && x.disabled)
+  /* v26.0: and its third (I Finally Found My Answers): three real rows, all locked on a fresh profile, two unwritten */
+  return r.length === 5 && r[0].dataset.ch === 'e4c1' && r[1].dataset.ch === 'e4c2' && r[2].dataset.ch === 'e4c3'
+    && r.slice(0, 3).every(x => x.disabled && x.classList.contains('locked') && !x.classList.contains('unwritten'))
+    && r.slice(3).every(x => x.classList.contains('unwritten') && x.disabled)
     && document.getElementById('chEpName').textContent.includes('Episode 4');
 });
 await p.click('#chTabs .chTab[data-ep="5"]'); await p.waitForTimeout(200);

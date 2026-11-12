@@ -1,0 +1,4 @@
+[
+  { "name": "glass", "kind": "prop", "image": "masters/v26.0/props/refs/glass-2k.png" },
+  { "name": "tissue", "kind": "prop", "image": "masters/v26.0/props/refs/tissue-2k.png" }
+]

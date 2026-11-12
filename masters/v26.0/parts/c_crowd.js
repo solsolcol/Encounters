@@ -144,6 +144,7 @@
       for (const key of DEVOTEES) { const D = crowdDrivers[key];
         if (name === 'bless' || name === 'photo') hold(D.B, 'prostrate', WAI[0], WAI[1], 0); else rest(D.B, 0);
         rest(D.A, 0); rest(D.S, 0); }
+      kidsForm(name); extrasLive();
     }
     /* THE WHOLE GROUND BOWS (the homage): every kneeling driver makes the krap once, from the kneeling wai down to the
        ground and back, over `secs`; the members follow because they are drawn from its bones. Then each is back at rest */
@@ -162,6 +163,179 @@
     function crowdLive() {
       for (const P of people) { if (!P.driver) continue;
         P.idle = !P.members.some(m => m.group.visible && (!m.group.parent || m.group.parent.visible)); }
+      extrasLive();
     }
     buildCrowd();
+
+    /* ================================================================ THE WOMAN WITH THE TAPER
+       (the plan's 4.1 P1: "a woman ahead of him lighting hers with a long taper"; photograph 10: at the head of the line
+       that waits at the offering tables a woman in white holds a long yellow taper to the candles on the front step.)
+       Found unbuilt by the audit of 13 Nov. A person of her own at the head of the game's line while the ground gathers
+       (the `arrive` formation), nobody of the photograph copied: the young woman with the ponytail (the long-haired
+       woman's body stands third in that same line: counted). Her LEFT hand carries the taper, the side he comes up on:
+       its tip goes from one small candle's wick to the next, is drawn back, and goes again, on the day's own clock; her
+       elbow stays at her side and her eyes are on the flame. The taper is a real model (w3taper, 0.70 m) laid along her
+       fingers, and a flame stands on its tip. */
+    const TAPER = { at: [1.5, -9.25], held: 0.12, len: 0.70, T: 12.5 };
+    const taper = (() => {
+      const y = TABLES.tops[0] + 0.245;
+      const P = mkPerson('e4devf', TAPER.at[0], TAPER.at[1], Math.PI, { take: 'Idle_3', phase: 0.63, parent: dayOne, hidden: true, blobW: 0.8, blobD: 0.7 });
+      const g = stand('w3taper', 0, -40, 0, 0, { parent: dayOne, near: true }); g.visible = false;
+      const gF = new THREE.PlaneGeometry(1, 1); gF.translate(0, 0.5, 0);
+      const fl = new THREE.Mesh(gF, B({ map: tex(makeFlame(THREE, cnv)), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, side: THREE.DoubleSide }));
+      fl.renderOrder = 4; fl.visible = false; fl.frustumCulled = false; dayOne.add(fl); owned.push(fl);
+      cast.taper = P; castBlock.taper = new THREE.Box3(new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 61, 0));
+      /* two wicks of the front row (b_world2.js: every 0.33 m along z -10.09), and the taper drawn back between them */
+      return { P, g, fl, on: false, W: [[1.32, y, -10.09], [0.99, y, -10.09], [1.17, y + 0.2, -9.94]], grip: { L: { at: [0, 0, 0], f: [0, 0, -1], n: [1, -0.25, 0], out: 0.1, down: 0.5, aft: 0.3 } }, tip: new THREE.Vector3() };
+    })();
+    /* where the taper's tip is asked to be at a moment of her round (seconds), eased from stop to stop */
+    const _tpA = [0, 0, 0];
+    function taperAim(t) {
+      const W = taper.W, u = ((t % TAPER.T) + TAPER.T) % TAPER.T;
+      /* at the first wick 3 s; over to the second 1.5; there 3; drawn back 1.5; held back 2; down to the first 1.5 */
+      const leg = (a, b, k, lift) => { const e = smo(c01(k)); _tpA[0] = lp(a[0], b[0], e); _tpA[1] = lp(a[1], b[1], e) + lift * Math.sin(Math.PI * e); _tpA[2] = lp(a[2], b[2], e); return _tpA; };
+      if (u < 3) return leg(W[0], W[0], 0, 0);
+      if (u < 4.5) return leg(W[0], W[1], (u - 3) / 1.5, 0.05);
+      if (u < 7.5) return leg(W[1], W[1], 0, 0);
+      if (u < 9) return leg(W[1], W[2], (u - 7.5) / 1.5, 0);
+      if (u < 11) return leg(W[2], W[2], 0, 0);
+      return leg(W[2], W[0], (u - 11) / 1.5, 0);
+    }
+    const _tpS = new THREE.Vector3(), _tpF = new THREE.Vector3(), _tpN = new THREE.Vector3(), _tpP = new THREE.Vector3(), _tpQ = new THREE.Quaternion(), _tpY = new THREE.Vector3(0, 1, 0), _tpC = new THREE.Vector3(),
+          _tpT = new THREE.Vector3(), _tpW = new THREE.Vector3();
+    function taperTick(t) {
+      const T = taper, P = T.P;
+      if (!T.on || !P.ready || !dayOne.visible) { if (T.g.visible) { T.g.visible = false; T.fl.visible = false; } return; }
+      const As = armsOf(P), a = As && As.L; if (!a) return;
+      /* THE ASK: the hand's place is solved from the tip. The taper is rigid, so the palm is the tip's place drawn back
+         along the taper by what stands before the hand; the taper runs from a place before her left hip to the tip */
+      const Q = taperAim(t), G = T.grip.L, hx = TAPER.at[0] - 0.19, hy = 1.11, hz = TAPER.at[1] - 0.3;
+      const dx = Q[0] - hx, dy = Q[1] - hy, dz = Q[2] - hz, dl = Math.hypot(dx, dy, dz) || 1, before = TAPER.len - TAPER.held;
+      /* HOW A TAPER IS HELD: not along the fingers and not square across them, but slantwise over the palm, out between
+         the thumb and the first finger, the fingers closed over it. So the hand's own length lies an eighth of a turn
+         off the taper's line, about the palm's facing (in, and a little down): the fingers run forward and down from a
+         wrist that hangs below the elbow, and the taper runs level from it */
+      _tpT.set(dx / dl, dy / dl, dz / dl); _tpN.set(0.8, -0.6, 0); _tpN.addScaledVector(_tpT, -_tpN.dot(_tpT)).normalize();
+      _tpW.crossVectors(_tpN, _tpT); _tpF.copy(_tpT).multiplyScalar(Math.SQRT1_2).addScaledVector(_tpW, -Math.SQRT1_2);
+      G.f[0] = _tpF.x; G.f[1] = _tpF.y; G.f[2] = _tpF.z; G.n[0] = _tpN.x; G.n[1] = _tpN.y; G.n[2] = _tpN.z;
+      G.at[0] = Q[0] - _tpT.x * before; G.at[1] = Q[1] - _tpT.y * before; G.at[2] = Q[2] - _tpT.z * before;
+      handTo(P, 'L', G.at, G.f, G.n, 1, G);
+      /* THE ANSWER: the taper lies where the hand came to be (the hand's own measured axes, in the world now): through
+         the palm's middle, a finger's thickness off it, along the slant between the fingers' line and the thumb's side */
+      P.group.updateWorldMatrix(true, true);
+      a.hand.getWorldPosition(_tpS); a.hand.getWorldQuaternion(_tpQ);
+      _tpF.copy(a.fL).applyQuaternion(_tpQ).normalize(); _tpN.copy(a.nL).applyQuaternion(_tpQ).normalize(); _tpW.crossVectors(_tpN, _tpF);
+      _tpT.copy(_tpF).add(_tpW).normalize();
+      _tpP.copy(_tpS).addScaledVector(_tpF, a.palm).addScaledVector(_tpN, 0.017);
+      T.g.position.copy(_tpP).addScaledVector(_tpT, -TAPER.held); T.g.quaternion.setFromUnitVectors(_tpY, _tpT); T.g.visible = true;
+      T.tip.copy(_tpP).addScaledVector(_tpT, before + 0.012);
+      curlFingers(P, 'L', 0.95);
+      camera.getWorldPosition(_tpC);
+      const fk = 0.84 + 0.11 * Math.sin(t * 9.1) + 0.05 * Math.sin(t * 23.7);
+      T.fl.position.copy(T.tip); T.fl.rotation.set(0, Math.atan2(_tpC.x - T.tip.x, _tpC.z - T.tip.z), 0.06 * Math.sin(t * 2.3)); T.fl.scale.set(0.026 * (1.12 - 0.12 * fk), 0.062 * fk, 1); T.fl.visible = true;
+    }
+
+    /* ================================================================ THE CHILDREN
+       (the plan's 4.1: "a full ground, children running"; 3.7: "children among them"; photographs 1 and 11: a small girl
+       among the people in white.) Found unbuilt by the same audit. A girl of seven and a boy of five, made here end to
+       end like every person (masters/v26.0/people; nobody in a photograph is copied). WHILE THE GROUND GATHERS (the
+       `arrive` formation) they chase one another along one line across the open turf south of the rows, between two
+       places where they stop for breath: beside Ton's table, inside the first frame he sees, and on the turf before the
+       chief canopy. The first run comes IN, so they are seen running in play's first seconds. AT THE BLESSINGS (`bless`,
+       `photo`) each stands by a grown person at a master's seat, as the photographs have them.
+       A running child is not solid: each stops short of him, and of the other, and waits. Their state is a run's, so it
+       is integrated on the wall clock while he plays (frozen under a panel), set again by every setFormation (reset()
+       names one), and in a film of the gathering they are not drawn (a film is its own clock's: v6.4). */
+    const KID = { gap: 0.7, V: 2.5, acc: 4.5, restW: 7.5, restE: 9.5, lag: 0.9, give: 1.25 };
+    /* (each: where the child stands, and what it faces: the girl beside the man at the edge of the throng before
+       Grandmaster Pho's bench, the boy beside the one who stands behind the kneelers at the west tent) */
+    const KID_STAND = [(() => { const [x, z] = benchAt(-3.5, 3.45); return [x, z, PHO_AT[0], PHO_AT[1]]; })(), [-5.0, 0.15, -10.17, -0.95]];
+    const kidPath = (() => {
+      const pts = [[-4.15, 7.3], [-1.6, 6.95], [0.6, 7.6], [1.25, 9.4], [0.3, 11.1]], out = [], N = 14;
+      const cr = (p0, p1, p2, p3, t) => 0.5 * ((2 * p1) + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t + (-p0 + 3 * p1 - 3 * p2 + p3) * t * t * t);
+      for (let i = 0; i < pts.length - 1; i++) { const a = pts[Math.max(0, i - 1)], b0 = pts[i], c = pts[i + 1], d = pts[Math.min(pts.length - 1, i + 2)];
+        for (let k = 0; k < N; k++) out.push([cr(a[0], b0[0], c[0], d[0], k / N), cr(a[1], b0[1], c[1], d[1], k / N), 0]); }
+      out.push([pts[pts.length - 1][0], pts[pts.length - 1][1], 0]);
+      let L = 0; for (let i = 1; i < out.length; i++) { L += Math.hypot(out[i][0] - out[i - 1][0], out[i][1] - out[i - 1][1]); out[i][2] = L; }
+      return { pts: out, L };
+    })();
+    /* the place s metres along it, and the way it runs there (west to east) */
+    function kidAt(s, o) {
+      const A = kidPath.pts; s = Math.max(0, Math.min(kidPath.L, s)); let i = 1; while (i < A.length - 1 && A[i][2] < s) i++;
+      const a = A[i - 1], b0 = A[i], dl = Math.max(1e-6, b0[2] - a[2]), k = (s - a[2]) / dl;
+      o.x = lp(a[0], b0[0], k); o.z = lp(a[1], b0[1], k); o.hx = (b0[0] - a[0]) / dl; o.hz = (b0[1] - a[1]) / dl; return o;
+    }
+    const kids = [['e4girl', 0.3, 'Run_02'], ['e4boy', 0.71, 'Run_03']].map(([key, phase, run], i) => {
+      const P = mkPerson(key, 0, 0, 0, { take: 'Idle_3', phase, parent: dayOne, hidden: true, blobW: 0.55, blobD: 0.5, lodK: 0.66, pace: true });
+      P.noBlock = true; cast[i ? 'boy' : 'girl'] = P; castBlock[i ? 'boy' : 'girl'] = new THREE.Box3(new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 61, 0));
+      return { P, i, s: 0, v: 0, to: 0, wait: 0, run, moving: false, ry: 0, looks: false };
+    });
+    const kidsDir = { ph: '', t: 0 };
+    const _ko = { x: 0, z: 0, hx: 0, hz: 1 }, _ko2 = { x: 0, z: 0, hx: 0, hz: 1 };
+    function kidsForm(name) {
+      const run = name === 'arrive';
+      kidsDir.ph = run ? 'runW' : ''; kidsDir.t = 0;
+      for (const K of kids) { const P = K.P; K.v = 0; K.moving = false; K.looks = false; P.noBlock = run; P.rate = 1;
+        whenReady(P, () => { gaze(P, null); rest(P, 0); });
+        if (run) { K.s = Math.min(kidPath.L, kidPath.L * 0.62 + K.i * 1.5); K.to = K.i * KID.gap; K.wait = 0.15 + K.i * 0.35;
+          kidAt(K.s, _ko); K.ry = Math.atan2(-_ko.hx, -_ko.hz); put(P, _ko.x, _ko.z, K.ry); }
+        else { const [x, z, tx, tz] = KID_STAND[K.i]; K.ry = faceTo(x, z, tx, tz); put(P, x, z, K.ry); } }
+    }
+    function kidsTick(wdt, st) {
+      const D = kidsDir; if (!D.ph || !dayOne.visible) return;
+      /* (not drawn in a film of the gathering; held as they are under a panel, their running stopped with them) */
+      const drawn = st !== 'cine';
+      for (const K of kids) { const P = K.P; if (P.ready && P.group.visible !== drawn) { P.group.visible = drawn; P.hidden = !drawn; } }
+      if (st !== 'play') { for (const K of kids) if (K.moving) K.P.rate = 0; return; }
+      D.t += wdt;
+      const running = D.ph === 'runW' || D.ph === 'runE', dir = D.ph === 'runE' ? 1 : -1;
+      let there = true;
+      for (const K of kids) {
+        const P = K.P; if (!P.ready) { there = false; continue; }
+        const O = kids[1 - K.i]; let want = 0;
+        kidAt(K.s, _ko);
+        const px = yaw.position.x - _ko.x, pz = yaw.position.z - _ko.z, pd = Math.hypot(px, pz);
+        if (running) { const left = Math.abs(K.to - K.s);
+          if (K.wait > 0) K.wait -= wdt;
+          else if (left > 0.02) { want = Math.min(KID.V, Math.sqrt(2 * KID.acc * left));
+            /* he is in the way, or the other child is: slower, then stopped short, and waiting */
+            if ((px * _ko.hx + pz * _ko.hz) * dir > -0.2 && pd < KID.give + 0.75) want *= c01((pd - KID.give) / 0.75);
+            const ds = (O.s - K.s) * dir; if (ds > 0 && ds < 1.05) want *= c01((ds - 0.55) / 0.5); }
+          if (left > 0.05) there = false; }
+        K.v = want > K.v ? Math.min(want, K.v + KID.acc * wdt) : Math.max(want, K.v - KID.acc * 1.6 * wdt);
+        if (K.v > 0) { K.s += dir * Math.min(K.v * wdt, Math.abs(K.to - K.s)); kidAt(K.s, _ko); }
+        const mv = K.v > 0.35;
+        if (mv !== K.moving) { K.moving = mv; take(P, mv ? K.run : 'Idle_3', mv ? 0.18 : 0.3); if (!mv) P.rate = 1; }
+        /* (the run's own rate from the ground covered: v7.1) */
+        if (K.moving) P.rate = Math.max(0.6, Math.min(1.3, K.v / ((P.pace && P.pace[K.run]) || KID.V)));
+        /* running, a child faces the way it runs; stopped, it turns to the other child; and it looks at a grown man who comes near */
+        let ry = K.ry;
+        if (K.v > 0.05) ry = Math.atan2(_ko.hx * dir, _ko.hz * dir);
+        else if (Math.abs(O.s - K.s) > 0.2) { kidAt(O.s, _ko2); ry = Math.atan2(_ko2.x - _ko.x, _ko2.z - _ko.z); }
+        const dq = Math.atan2(Math.sin(ry - K.ry), Math.cos(ry - K.ry)); K.ry += Math.max(-7 * wdt, Math.min(7 * wdt, dq));
+        P.group.position.set(_ko.x, 0, _ko.z); P.group.rotation.y = K.ry;
+        const looks = !K.moving && pd < 3.2;
+        if (looks !== K.looks) { K.looks = looks; gaze(P, looks ? 'lens' : null, { reach: 0.9, secs: 0.7 }); }
+      }
+      if (running && (there || D.t > 14)) { D.ph = D.ph === 'runW' ? 'restW' : 'restE'; D.t = 0; }
+      else if (!running && D.t > (D.ph === 'restW' ? KID.restW : KID.restE)) {
+        const east = D.ph === 'restW'; D.ph = east ? 'runE' : 'runW'; D.t = 0;
+        /* whoever stands further along goes first; the other gives chase a moment later */
+        const order = kids.slice().sort((p, q) => east ? q.s - p.s : p.s - q.s);
+        order[0].to = east ? kidPath.L : 0; order[0].wait = 0;
+        order[1].to = east ? kidPath.L - KID.gap : KID.gap; order[1].wait = KID.lag; }
+    }
+    /* WHO OF THESE IS THERE: the woman with the taper only while the ground gathers; the children all of day one (in
+       their chase, kidsTick draws them); none on any other day. Each one's own flag is set (a hidden person is not
+       run, and castSolid stands a column only under one who is drawn: the children's only while they stand still) */
+    function extrasLive() {
+      const one = dayOne.visible, tp = one && formNow === 'arrive';
+      taper.on = tp; taper.P.hidden = !tp; if (taper.P.ready) taper.P.group.visible = tp;
+      if (!tp) { taper.g.visible = false; taper.fl.visible = false; }
+      for (const K of kids) { if (one && kidsDir.ph) continue; K.P.hidden = !one; if (K.P.ready) K.P.group.visible = one; }
+      castSolid();
+    }
+    whenReady(taper.P, (P) => { gaze(P, taper.W[0], { reach: 0.6, secs: 0.01, down: 0 }); extrasLive(); });
+    for (const K of kids) whenReady(K.P, extrasLive);
+    kidsForm('arrive');
 
