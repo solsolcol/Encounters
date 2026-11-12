@@ -5,7 +5,7 @@
    arm to his side, tiny at rest, drawn 27 times longer when his arm swings forward to talk. A photograph shows one frame
    from one side; this reads every frame. The posing is tools/rigstrain.mjs's (the file's own animation sampled through
    its node tree and inverse bind matrices, in plain Node).
-     node tools/probes/webstretch.mjs <file.glb> [--joint=RightArm] [--radius=0.25] [--fps=10] [--over=3] [--json=out.json]
+     node tools/probes/webstretch.mjs <file.glb> [--joint=RightArm] [--radius=0.25] [--fps=10] [--over=3] [--json=out.json] [--takes=a,b]
    Prints the triangles drawn out past --over in any frame (part, triangle, worst stretch, take@t, area at rest and posed
    in cm2, the corners' main bones), and per take how many pass it at its worst frame. */
 import { NodeIO } from '@gltf-transform/core';
@@ -16,7 +16,7 @@ import { Matrix4, Quaternion, Vector3 } from 'three';
 import fs from 'node:fs';
 const FILE = process.argv[2], arg = (k, d) => { const a = process.argv.find(x => x.startsWith(`--${k}=`)); return a ? a.slice(k.length + 3) : d; };
 if (!FILE) { console.error('usage: node tools/probes/webstretch.mjs <file.glb> [--joint=RightArm] [--radius=0.25] [--fps=10] [--over=3] [--json=out.json]'); process.exit(1); }
-const JOINT = arg('joint', 'RightArm'), RAD = +arg('radius', 0.25), FPS = +arg('fps', 10), OVER = +arg('over', 3), JSONOUT = arg('json', '');
+const JOINT = arg('joint', 'RightArm'), RAD = +arg('radius', 0.25), FPS = +arg('fps', 10), OVER = +arg('over', 3), JSONOUT = arg('json', ''), TAKES = arg('takes', '') ? arg('takes', '').split(',') : null;   // (v26.0: --takes=a,b: only those)
 await MeshoptDecoder.ready;
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({ 'meshopt.decoder': MeshoptDecoder });
 const doc = await io.read(FILE); await doc.transform(dequantize());
@@ -78,7 +78,7 @@ const restE = near.map(t => [0, 1, 2].map(k => Math.max(len(R, TRI[3 * t + k], T
 const worst = near.map(() => ({ s: 1, take: '', t: 0, area: 0 }));
 const perTake = {};
 const X = new Float64Array(NV * 3);
-for (const an of root.listAnimations()) {
+for (const an of root.listAnimations()) { if (TAKES && !TAKES.includes(an.getName())) continue;
   const dur = Math.max(...an.listChannels().map(c => { const i = c.getSampler().getInput().getArray(); return i[i.length - 1]; })), n = Math.max(2, Math.ceil(dur * FPS) + 1);
   let takeWorst = 0;
   for (let f = 0; f < n; f++) { const t = dur * f / (n - 1); pose(an, t); skinMats(); deformPts(ptl, X); let cnt = 0;

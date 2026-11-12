@@ -8398,3 +8398,58 @@ Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8,
   a stopped orchestrator touched its own "all done" marker on the way out, and the harness queued behind that
   marker would have started beside four running probes. And `pkill -f` matches a command line, not a job: two
   chains given the same steps file are both hit by one pattern.
+- **A fault he names is photographed first from where he says he saw it** (v26.0, his four asks of 12 Nov). Of
+  Grandmaster Pho's armpit I looked from his right and from behind for an hour, where it is a tooth under the arm, and
+  fixed that. He then said where he sees it ("facing him straight head on, as he talks"): from his front it is a web of
+  skin across the robe's edge, and my first fix was WORSE there (it uncovered the ragged paint under the web). The
+  view that judges a fix is his.
+- **A scan with an arm at its side has no body behind the arm.** Sliced across the limb, the surface under his arm was
+  the two webs' roots meeting at the arm; the only wall behind was the arm's own. So taking the webs out opens the
+  armpit into the chest, and what they covered is crumpled layers painted a triangle at a time. Read the
+  cross-sections before choosing the fix (tools/probes/armslice.py draws the cut lines, coloured by what bones ride
+  them: a picture a slice said more than an hour of renders). My rebuild of that patch as a new surface
+  (tools/armround.mjs, live in build 62) was WORSE from his front, ragged and blotched, and was taken out: what the
+  slices showed instead was a PLEAT (two walls a centimetre apart) whose loose end rides the arm a centimetre off it.
+  Cut, a pleat opens a hole (it is the skin); LAID DOWN on the skin it hangs over (tools/armflap.mjs), it is gone, and
+  no triangle, paint or weight changes (the tracker's §15.6).
+- **One texel of paint is one texel of EVERY sheet the material reads.** A new triangle pointed at one texel of the
+  colour sheet also reads one texel of the normal sheet, and leans its own way under the light: grey blotches on a
+  white robe, on a surface whose own normals were smooth. The texel is taken where the normal sheet is flat.
+- **A short window of a take, played there and back at the take's own pace, is a bob.** His rest was 0.3 s of a take
+  every 0.6 s (head at 15 cm a second); held half risen on 0.28 s of the rise he bounced 16 cm every half second, all
+  the while the player was offered the press. I had judged each of those from stills (a still shows a stance, never a
+  sway: the v25.5 law, broken again). A window that is a rest says how long it takes there and back, and a rest is
+  read as a motion before it is cast (tools/probes/windowread.mjs: the head's and hips' path and speed, from the
+  take's own keys, no browser).
+- **A seat's height is the DRAWN model's.** The monks' armchair was drawn at 1.11 of its file and its seat written at
+  the file's own height: the three sat four centimetres into it. `manyOf`'s size argument is for its levels, not a
+  scale: the instance's `s` is. Measure the seat's top from the mesh as drawn. And a robed sitter is not seated by
+  his lowest skin (the robe's skirt hangs lowest, and set on the seat by it he was lifted): by his soles on the ground
+  and his shins clear of the seat's front (c_cast.js `seat.legs`), or, where his takes perch, by his bottom on the
+  seat with each leg solved down to the ground (`seat.down`).
+- **A face is photographed lit AND unlit before its fault is named.** Unlit shows the paint; lit shows the normals
+  and the facets. The two new monks' faces had flat grey patches lit and none unlit: I chased the chart fix, then
+  holes, then flipped faces (each measured, each refuted) before looking at the paint alone. One was the prep's
+  shared normals across a fold the remesh had closed on one place (prepmonk SIDED); the other is the remesh's own
+  coarse facet.
+- **A list a tool writes is changed in the tool's table.** build.py's rows and the chapter head's `assets` for
+  chapter 3 are written by masters/v26.0/keys.py between markers; added by hand they are undone by its next run.
+- **Do not change a script while it runs** (a shell reads its file as it goes: people.sh edited mid-run ran a line of
+  a comment as a command; prepmonk edited mid-run could have been read half written by the next level's prep). Queue
+  the edit, or work on something that script does not read.
+- **An arm laid by the shortest arc bends its elbow sideways** (v25.3's law, met again on the monks). Solve an arm about
+  its own elbow's HINGE, read off its takes (masters/v25.3/measure/hinge.cjs: these rigs' takes keep the forearm in
+  one plane of the upper arm to 0.0 degrees), the forearm's own roll kept as the take has it (c_cast.js `armHinge`).
+  And give the elbow a place, not only a side: an elbow bent toward a point behind the wrist went back and INSIDE the
+  flank, the forearm out through the robe's roll at the waist. It is turned out from the side step by step until the
+  upper arm and the forearm, swept at their own thickness, clear what is drawn of the body (c_cast.js `restHands`).
+- **A height read off a body is read off the part of the body meant.** The lap's crest was sought as the highest thing
+  drawn over each place; nearer the hips that place lay under his face, and a palm was sent to his nose. The heights
+  are the lap's only (up to 30 cm over the hip joints).
+- **A hand at rest continues its forearm.** Laid along the thigh while the forearm came in from the side, each wrist was
+  bent sideways by up to fifty degrees, and from the front the fingers splayed outward like a broken wrist. The fingers
+  follow the forearm's line seen from above, a quarter of the way toward the thigh's.
+- **No picture is judged small, and every picture is opened full size before anything is built on, deployed or
+  reported** (Chad, 12 Nov 2026: CLAUDE.md, "EVERY PICTURE IS VIEWED FULL SIZE, UNASKED" and "NO SMALL PICTURE IS EVER
+  A CHECK"). The monks went live with broken wrists my own notes described, and the armpit with a ragged hole, both
+  passed in pictures a fraction of their size. A sheet of small pictures finds a picture; it never judges one.

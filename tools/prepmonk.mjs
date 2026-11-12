@@ -293,12 +293,28 @@ for (const mesh of root.listMeshes()) for (const p of mesh.listPrimitives()) {
     const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;     // area-weighted
     for (const i of [a, b, c]) { const g = gid[i]; GN[3 * g] += nx; GN[3 * g + 1] += ny; GN[3 * g + 2] += nz; }
   }
-  let changed = 0; const old = [0, 0, 0];
+  /* v26.0 · SIDED=1: a point shares the normal of the faces at its place that look ITS way (within eighty degrees of the
+     normal it came with), and of no others. A remesh closes a fold by putting both its sides' points on one place (the
+     inner corner of an eye, the corner of a mouth): shared among all the faces there, the normal is the sum of two
+     sides and points along the fold, and the faces round it are lit as one flat grey patch (the two monks made on
+     12 Nov 2026: a patch over the bridge of the nose and one at the mouth, lit; unlit the paint is clean). Across a
+     sheet's seam the copies of a point look the same way and still agree. Unset, every point of a place shares one
+     normal, as it always did. */
+  const SIDED = !!process.env.SIDED, GF = SIDED ? Array.from({ length: G }, () => []) : null;
+  if (SIDED) for (let t = 0; t < I.length; t += 3) { if (inFold.has(t / 3)) continue; const a = I[t], b = I[t + 1], c = I[t + 2];
+    const ux = P[3 * b] - P[3 * a], uy = P[3 * b + 1] - P[3 * a + 1], uz = P[3 * b + 2] - P[3 * a + 2], vx = P[3 * c] - P[3 * a], vy = P[3 * c + 1] - P[3 * a + 1], vz = P[3 * c + 2] - P[3 * a + 2];
+    const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx; for (const g of new Set([gid[a], gid[b], gid[c]])) GF[g].push(nx, ny, nz); }
+  let changed = 0, sided = 0; const old = [0, 0, 0];
   for (let i = 0; i < n; i++) {
     const g = gid[i]; let x = GN[3 * g], y = GN[3 * g + 1], z = GN[3 * g + 2]; const L = Math.hypot(x, y, z) || 1; x /= L; y /= L; z /= L;
-    nor.getElement(i, old); if (old[0] * x + old[1] * y + old[2] * z < 0.985) changed++;
+    nor.getElement(i, old);
+    if (SIDED) { const F = GF[g]; let sx = 0, sy = 0, sz = 0, left = 0;
+      for (let k = 0; k < F.length; k += 3) { const fl = Math.hypot(F[k], F[k + 1], F[k + 2]) || 1; if ((F[k] * old[0] + F[k + 1] * old[1] + F[k + 2] * old[2]) / fl > 0.17) { sx += F[k]; sy += F[k + 1]; sz += F[k + 2]; } else left++; }
+      const sl = Math.hypot(sx, sy, sz); if (left && sl > 1e-12) { x = sx / sl; y = sy / sl; z = sz / sl; sided++; } }
+    if (old[0] * x + old[1] * y + old[2] * z < 0.985) changed++;
     nor.setElement(i, [x, y, z]);
   }
+  if (SIDED) console.log(`  sided: ${sided} points share only the faces at their place that look their way`);
   /* v19.8: each side of a fold, and any vertex no other face touches, takes its own face's normal */
   const face = t => { const a = I[3 * t], b = I[3 * t + 1], c = I[3 * t + 2];
     const ux = P[3 * b] - P[3 * a], uy = P[3 * b + 1] - P[3 * a + 1], uz = P[3 * b + 2] - P[3 * a + 2];

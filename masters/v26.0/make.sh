@@ -241,3 +241,14 @@
 #                                                 assets/; the rest are reported as not there yet). Run it after
 #                                                 anything lands, then assemble and build.
 #   src/chapters/e4/e4c3.js is never edited by hand.
+#
+# GRANDMASTER PHO'S RIGHT ARMPIT, second round (Chad, 12 Nov 2026: "can you fix it completely?"; "Pho's armpit problem
+#   can be seen directly in game, when facing him straight head on, as he talks"; the tracker's §15.6). The loose flaps
+#   of the armpit's front fold, laid down on the arm's own skin (tools/armflap.mjs), from his v24.56 file, in two passes:
+#     git show 5bad37b:assets/pho.glb > /tmp/pho-be554c7f.glb                     (sha1 be554c7f5476...)
+#     node tools/armflap.mjs /tmp/pho-be554c7f.glb /tmp/pho-flap-a.glb --s1=0.12  (as he talks, 0.7 s: 90 places)
+#     node tools/armflap.mjs /tmp/pho-flap-a.glb assets/pho.glb --t=8.2 --min=0.85 --s0=-0.02 --s1=0.16
+#                                                                                 (the talk's widest swing: 73 places)
+#   -> assets/pho.glb sha1 df95bef025b1... It replaces dac12804 (tools/armround.mjs, live in build 62 and worse from his
+#   front: §15.1). Judged as the game draws him (tools/probes/wire.mjs --game=1) at the talk's 0.7 and 8.2 s, the rise
+#   at 1.6 s and the throw at 0.8 s (tools/probes/armopen.mjs names the widest moments), and in the game itself.

@@ -42,8 +42,14 @@ const VIEW = process.env.VIEW || 'phone', OUT = process.env.OUT || '/tmp/e4c3bea
 const FAST = !!process.env.FAST;
 fs.mkdirSync(OUT, { recursive: true });
 const b = await chromium.launch(LAUNCH);
-const ctx = VIEW === 'phone' ? await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, hasTouch: true, isMobile: true })
-                             : await b.newContext({ viewport: FAST ? { width: 960, height: 540 } : { width: 1280, height: 720 }, deviceScaleFactor: 1 });   // (FAST: the same shape, fewer pixels to draw in software)
+/* HIGH RES, ALWAYS (Chad, 12 Nov 2026: "You are banned from ever using small picture check, everything needs to be high res,
+   full size images"). The window keeps a phone's real size in CSS pixels (390 x 844: the page lays its windows out in
+   those, v25.5) and is DRAWN at two device pixels to one, which is what his phone shows (the game caps its own canvas at
+   1.6 on a phone): a picture of 780 x 1688. DSF=3 for closer still. Only a FAST sweep that measures and judges nothing
+   by eye draws at 1. */
+const DSF = +process.env.DSF || (FAST ? 1 : 2);
+const ctx = VIEW === 'phone' ? await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: DSF, hasTouch: true, isMobile: true })
+                             : await b.newContext({ viewport: FAST ? { width: 960, height: 540 } : { width: 1280, height: 720 }, deviceScaleFactor: DSF });   // (FAST: the same shape, fewer pixels to draw in software)
 const p = await ctx.newPage();
 const errs = [];
 p.on('pageerror', e => errs.push('PAGEERROR ' + e.message + ' | ' + String(e.stack || '').split('\n').slice(1, 3).join(' ')));

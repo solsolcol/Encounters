@@ -166,8 +166,9 @@
       solidBox(1.0, 1.4, 1.5, -10.3, 0.7, 5.0);
       /* the east tent: the monks' row, the naga staff and the peacock fan, low round trays with coconuts and water */
       rug(mMat, 8.1, -2.0, 3.6, 1.8, Math.PI / 2);
-      many('w3chair', [-3.2, -2.0, -0.8].map(z => ({ x: 10.2, y: 0, z, ry: -Math.PI / 2, s: 1.11 })), world, 1.28);   // (a tall carved armchair, drawn at 1.28 m: its seat 0.43 m up)
-      solidBox(0.9, 1.4, 3.6, 10.25, 0.7, -2.0);
+      many('w3chair', MONKS.zs.map(z => ({ x: MONKS.chair, y: 0, z, ry: -Math.PI / 2, s: MONKS.s })), world, 1.28);   // (a tall carved armchair, drawn at 1.28 m: its seat 0.466 m up)
+      /* (one blocker for the row, as it was: from the sitters' knees, half a metre ahead of their spots, to the chairs' backs) */
+      { const x0 = MONKS.x - 0.5, x1 = MONKS.chair + MONKS.half; solidBox(x1 - x0, 1.4, 3.6, (x0 + x1) / 2, 0.7, -2.0); }
       many('w3khantok', [{ x: 9.2, y: 0, z: -2.6, ry: 0.4 }, { x: 9.2, y: 0, z: -1.2, ry: 1.9 }], world, 0.25);
       stand('w3nagastaff', 10.55, 0, -3.75, 0.3); stand('w3fan', 10.5, 0.02, -0.15, -1.2);
       /* THE CHIEF CANOPY (photographs 1, 5, 6): a dark top, a valance of gold and lime in swags, one pole wrapped in

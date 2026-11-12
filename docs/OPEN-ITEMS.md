@@ -225,6 +225,14 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
     - n. The plan's "a bed for each tent": the ground's sound is mixed by where he stands (the music nearer the horns,
       the crowd fuller among the people, each noise at its place); no tent has a sound of its own. One word makes some
       (the monks' tent, the masters' tent).
+    - o. Left of his four asks of 12 Nov (build 77, the tracker's §15.5 and §15.6, said in the report): at the very
+      corner of Grandmaster Pho's right armpit a notch about a centimetre across and a tooth of the robe's top edge,
+      seen close from his front as he talks; in the petals' throw, his arm overhead, a thin white sliver of robe along
+      it (his file's own). And Chad's monk's arms rest near straight (his arms are long for his chair: the reach to his
+      thighs is 0.87 to 0.93 of the arm wherever the hand is laid), his open hands flat on the cloth. Each is being
+      worked or is one word: none is hidden.
+    - p. Found and left, the same kind as his bobbing (§15.2, not asked): the four other masters' rest rocks slowly (18 cm
+      end to end every 5.7 s), and Ton kneeling before the homage sways 8.7 cm. One word calms either.
 
 ## D. Not built yet
 

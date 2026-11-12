@@ -32,6 +32,12 @@ const FLOORON = process.argv.includes('--floor');
    whose names match, by their share of each point: what his robe is tied to, seen (the robe glued under his right arm,
    --look='bone:Right(Shoulder|Arm|ForeArm|Hand)$@raw'); no regex with a colon or a quote */
 const LOOK = arg('look', 'lit'), LIGHT = arg('light', 'day'), EXPO = +arg('exposure', '1.2');
+/* v26.0 · --bg=<css colour>: what stands behind him (unset, the grey it always was). A hole through a body shows as
+   whatever is behind it: a loud colour makes one plain where grey hid it (his armpit, seen against a dark bench in the game) */
+const BG = arg('bg', '#6a6f78');
+/* v26.0 · --sides=double: every material drawn on both faces (unset, as his file says). What a hole would show if the
+   skin behind it were drawn from its back: the test of whether twinned faces would close it cleanly */
+const SIDES = arg('sides', 'file');                     // (or backs[:colour]: a face seen from behind drawn in that colour: a hole, found)
 const VIEWS = arg('views', '0:6,90:6,215:14').split(',').map(v => v.split(':').map(Number)), NV = VIEWS.length;
 const ROOT = resolve('.');
 const MIME = { '.js': 'text/javascript', '.mjs': 'text/javascript', '.html': 'text/html', '.glb': 'model/gltf-binary' };
@@ -52,7 +58,7 @@ const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffe
 renderer.setSize(S * ${NV}, S); renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.setScissorTest(true);
 renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = ${EXPO};
 document.body.appendChild(renderer.domElement);
-const scene = new THREE.Scene(); scene.background = new THREE.Color(0x6a6f78);
+const scene = new THREE.Scene(); scene.background = new THREE.Color('${BG}');
 const LK = '${LIGHT}' === 'dim' ? 0.3 : 1;
 scene.add(new THREE.HemisphereLight(0xffffff, 0x404048, 2.0 * LK));
 const key = new THREE.DirectionalLight(0xffffff, 2.2 * LK); key.position.set(3, 5, 4); scene.add(key);
@@ -88,6 +94,15 @@ new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).load('/model.glb', (gltf) => 
   /* v24.55: every skinned part and every point (a file whose head is a part of its own framed from the first part alone, and
      every 40th point of a reordered part, put the camera somewhere else: two files compared must be framed alike) */
   const skins = []; root.traverse(o => { if (o.isSkinnedMesh) skins.push(o); });
+  /* (--sides=backs[:colour]: every face drawn on both sides, and a face seen from BEHIND drawn flat in that colour: where
+     it shows, the lens is looking into the body through a hole in its surface. This page is a template string: its
+     backslashes are written doubled) */
+  { const SV = ${JSON.stringify(SIDES)};
+    if (SV === 'double' || SV.startsWith('backs')) root.traverse(o => { if (o.isMesh) for (const m of [].concat(o.material)) { m.side = THREE.DoubleSide;
+      if (SV.startsWith('backs')) { const prev = m.onBeforeCompile, col = new THREE.Color(SV.split(':')[1] || '#ff00ff'), pk = m.customProgramCacheKey;
+        m.onBeforeCompile = (sh, r) => { if (prev) prev.call(m, sh, r); sh.fragmentShader = sh.fragmentShader.replace(/}\\s*$/, '  if (!gl_FrontFacing) gl_FragColor = vec4(' + col.r.toFixed(3) + ', ' + col.g.toFixed(3) + ', ' + col.b.toFixed(3) + ', 1.0);\\n}'); };
+        m.customProgramCacheKey = () => (pk ? pk.call(m) : '') + ':backs'; }
+      m.needsUpdate = true; } }); }
   const posedBox = () => { box.makeEmpty(); if (!skins.length) return box.setFromObject(root);
     for (const sk of skins) { const P = sk.geometry.attributes.position; for (let i = 0; i < P.count; i++) { sk.getVertexPosition(i, v); v.applyMatrix4(sk.matrixWorld); box.expandByPoint(v); } } return box; };
   if (!gltf.animations.length) window.__clips = [{ name: 'static', dur: 1 }];   // a still (rigstrain's heat): one row

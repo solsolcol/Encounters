@@ -8776,6 +8776,27 @@ What the baseline contains, by release:
     the number in the game named); the voice reels of v25.7 still stand. NOT YET DONE, and said so: every film
     photographed again after the re-timing, each film measured as it plays, the finger's play-through with the sound
     on, the saves at every phase, the harnesses, the asks audit, the phone's budget (M8).
+- **v26.0** EPISODE 4 CHAPTER 3 · I FINALLY FOUND MY ANSWERS — built whole and released (Chad's GO of 11 Nov 2026: "the
+    most important chapter in the game"). The Wai Kru in Udon Thani as his sixteen photographs show it, Grandmaster Pho,
+    and the first teaching (open and close, the breath event); his own four answers, none leaving the path; the ending in
+    the present ("Tomorrow we begin."). Its build memory is docs/V26.0-E4C3-BUILD.md (milestones M0 to M9, every asset's
+    ids, the log); its design docs/V26.0-E4C3-PLAN.md; its people and things made here end to end (GPT Image reference
+    pictures on white, looked at; Meshy at its highest settings; rigged; their takes measured as motions). Eight deploys
+    of it on 12 Nov after the three previews (v25.6 to v25.8), build 77's `6af5d5f2269fe0f5a52e3d34`, and the release build's
+    `6af5dd0621a2346e2cda05ea` (476 served files identical to dist). The harnesses chapter, leak, walk and csp green
+    on build 77; its grounds walked in every phase (tools/probes/e4c3walk.mjs).
+    HIS FOUR ASKS OF 12 NOV, after build 60 (§15 of the tracker): Grandmaster Pho's armpit ("fix it completely"), his
+    bobbing at rest, three different monks not clipping their seats, the dancers looping up and down the ground in play.
+    Two of my fixes went live wrong and he saw them: the monks' arms (palms forced flat on the lap: wrists broken back,
+    elbows flared, fingers like claws: "completely unacceptable") and the armpit (a rebuilt patch, worse from his front:
+    a ragged opening, strips and blotches: "didn't you notice what's the problem here?"). Both had passed me in small
+    pictures. So two standing rules (CLAUDE.md, his words): EVERY PICTURE IS VIEWED FULL SIZE, UNASKED; NO SMALL
+    PICTURE IS EVER A CHECK. What replaced them: an arm at rest DESIGNED (the palm where the reach leaves the elbow
+    bent as a resting arm bends; the elbow turned out only as far as clears the body, swept at its own thickness; the
+    arm solved about its own elbow's hinge, read off the take; the hand along the forearm), and the armpit's loose
+    flaps (the loose end of a pleat the scan made of the front fold) LAID DOWN on the arm's own skin instead of cut
+    (tools/armflap.mjs: cut, each opened a hole). Left and said: a centimetre's notch at the armpit's corner; Chad's
+    monk's arms near straight (long for his seat).
 
 ## The sheet, version by version
 

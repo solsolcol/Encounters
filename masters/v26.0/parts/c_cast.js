@@ -26,7 +26,7 @@
        level; Chad's own models (Grandmaster Pho, the monk) are as he gave them and are not touched. */
     const NOMIP = /^e4/;
     /* (the children's runs and their skip too: c_crowd.js) */
-    const WALKS = /^(procession|Run_02|Run_03)$/;                                // (the takes that travel: the dancers' walk, the children's two runs)
+    const WALKS = /^(walkdance|Run_02|Run_03)$/;                                 // (the takes that travel: the dancers' walk-dance, the children's two runs)
     /* (the full model's reach was 2.7 m until 12 Nov. Photographed at 2.55 m at both levels, on a phone's frame and a
        desktop's, magnified: no difference to be seen at that distance, and the full model is 310,000 triangles. At
        2.2 m (taken up inside 2.05, let go past 2.35, measured from the lens) it is drawn where he has walked up to
@@ -123,6 +123,56 @@
              his rest), so each is brought to the one height the seat asks for, and changing take never lifts him off
              it or sinks him through it (v16.8) */
           if (o.seat) for (const name in base) if (!o.seat.takes || o.seat.takes.test(name)) P.offY[name] = base[name][2] - (o.seat.y + (o.seat.over != null ? o.seat.over : 0.1)); }
+        /* SEATED BY HIS OWN BODY (Chad, 12 Nov 2026, of the monks: "their body is clipping through the seats"; v16.8: a
+           sitter is seated on his posed skin). A hip joint held a fixed way over a seat seats nobody: where a rig's hip
+           joints ride in its body is the rig's own (Chad's monk's sit 17 cm over his knees in every seated take he
+           has, Grandmaster Pho's 6: tools/probes/sitread.mjs), and so is how long its legs are. The three monks sat
+           with their hips at the middle of a chair 0.93 m deep, their shins coming down through its seat and their
+           soles a hand's length under the ground. Two ways, each read from the take posed at its window's start:
+           o.seat.legs ({ edge, r, apron, sole }): a man on a CHAIR. He is set down by his SOLES (the lowest of what
+             rides his feet stands `sole` from the ground: a seated man's feet reach the floor, whatever the seat),
+             and brought forward until his SHINS (knee joint to ankle joint, read at the seat's top and at the foot of
+             its apron) stand a calf's half-thickness `r` past the seat's front face, `edge` ahead of his spot. What
+             is drawn of a robe below his thighs lies in the seat, as cloth does.
+           o.seat.floor ({ sink }): a man sitting CROSS-LEGGED on a seat's top, in a take made for the floor: the
+             lowest of all his skin (its second hundredth: the crossed ankles go under, as episode 3's cushion has
+             them) is set `sink` into the seat's top.
+           (updateMatrixWorld, not updateWorldMatrix: only the former is a skinned mesh's own, and it is there that
+           the matrix a posed point is brought back through is made again. Without it every point came back in the
+           world's frame and was moved by the group once more: a first build of this seated the monks metres from their
+           chairs, caught by the boot check's printed numbers) */
+        if (P.hips && o.seat && (o.seat.legs || o.seat.floor || o.seat.down) && skins[0] && skins[0].skeleton) for (const name in P.acts) { if (o.seat.takes && !o.seat.takes.test(name)) continue;
+          for (const k in P.acts) P.acts[k].setEffectiveWeight(k === name ? 1 : 0);
+          P.acts[name].time = P.win && P.win[name] ? P.win[name][0] : 0; P.mixer.update(0); P.model.position.set(0, 0, 0); P.group.updateWorldMatrix(true, false); P.group.updateMatrixWorld(true);
+          const ys = [], feet = [];
+          for (const q of skins) { const pos = q.geometry.attributes.position, si = q.geometry.attributes.skinIndex, sw = q.geometry.attributes.skinWeight; if (!pos || !si || !sw || !q.skeleton) continue;
+            const foot = q.skeleton.bones.map(b => /^(mixamorig:?)?(Left|Right)(Foot|Toe\w*)$/.test(b.name));
+            for (let i = 0; i < pos.count; i++) { q.getVertexPosition(i, _pv); _pv.applyMatrix4(q.matrixWorld); P.group.worldToLocal(_pv); ys.push(_pv.y);
+              let fw = 0; for (let c = 0; c < 4; c++) if (foot[si.getComponent(i, c)]) fw += sw.getComponent(i, c); if (fw >= 0.5) feet.push(_pv.y); } }
+          if (ys.length < 30) { console.warn(key + ': too little skin to seat him by'); continue; }
+          /* (his spot in the model's own frame: what `centre` or `ref` set for this take) */
+          const oz = P.off[name] ? P.off[name][1] : 0, rec = {}; let lift = 0, fwd = 0;
+          if (o.seat.floor) { ys.sort((u, v2) => u - v2); const low = ys[Math.floor(ys.length * 0.02)]; lift = (o.seat.y - (o.seat.floor.sink != null ? o.seat.floor.sink : 0.01)) - low; rec.low = +low.toFixed(3); }
+          else if (o.seat.down) { const r = seatDown(P, name, o.seat, skins); if (!r) continue; P.restLegs = r.legs; P.offY[name] = -r.lift; P.off[name] = [P.off[name] ? P.off[name][0] : 0, oz - r.fwd];
+            (P.seated = P.seated || {})[name] = r.rep; continue; }
+          else { const K = o.seat.legs, bone = (nm) => { const re = new RegExp('^(mixamorig:?)?' + nm + '$'); for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
+            if (!feet.length) { console.warn(key + ': nothing rides his feet to set him down by'); continue; }
+            let sole = Infinity; for (const y of feet) if (y < sole) sole = y;
+            lift = (K.sole != null ? K.sole : -0.005) - sole;
+            let back = Infinity, thigh = Infinity;
+            for (const sd of ['Left', 'Right']) { const kn = bone(sd + 'Leg'), an = bone(sd + 'Foot'); if (!kn || !an) continue;
+              kn.getWorldPosition(_pv); P.group.worldToLocal(_pv); const ky = _pv.y + lift, kz = _pv.z - oz;
+              an.getWorldPosition(_pv); P.group.worldToLocal(_pv); const ay = _pv.y + lift, az = _pv.z - oz;
+              P.hips.getWorldPosition(_pv); P.group.worldToLocal(_pv); thigh = Math.min(thigh, (ky + _pv.y + lift) / 2 - o.seat.y);
+              for (const h of [o.seat.y, o.seat.y - (K.apron != null ? K.apron : 0.14)]) { const t = ky > ay ? Math.max(0, Math.min(1, (ky - h) / (ky - ay))) : 0; back = Math.min(back, kz + t * (az - kz)); } }
+            if (!(back < Infinity)) { console.warn(key + ': no knees and ankles to seat him by'); continue; }
+            fwd = Math.max(0, K.edge + (K.r != null ? K.r : 0.055) - back);
+            rec.sole = +sole.toFixed(3); rec.back = +back.toFixed(3); rec.thigh = +thigh.toFixed(3);
+            /* (a thigh's own half-thickness is some 8 cm: an axis nearer the seat than 4 is a body in the wood) */
+            if (thigh < 0.04) console.warn(key + ': set down by his soles, his thighs lie in the seat (their axis ' + (thigh * 100).toFixed(0) + ' cm over it): this seat is too high for this take'); }
+          if (!(Math.abs(lift) < 0.8) || fwd > 0.45) { console.warn(key + ': the seat read from his body is not a seat (up ' + lift.toFixed(2) + ' m, forward ' + fwd.toFixed(2) + ' m): left on his hips'); continue; }
+          P.offY[name] = -lift; P.off[name] = [P.off[name] ? P.off[name][0] : 0, oz - fwd];
+          rec.lift = +lift.toFixed(3); rec.fwd = +fwd.toFixed(3); (P.seated = P.seated || {})[name] = rec; }
         /* THE GROUND A WALK OR A RUN COVERS IN A SECOND (o.pace: asked for by whoever moves the group, who drives the take's
            rate from the ground covered: v7.1). The library's walks and runs come on the spot (their hips travel nowhere:
            measured, a few millimetres a second), so the pace is read from the foot that is down: under a body that stays
@@ -161,6 +211,7 @@
         P.ready = true; P.group.visible = !P.hidden && !P.driver;
         if (!P.driver && !o.noBlob) P.blob = blob(P.group, o.blobW || 0.85, o.blobD || 0.7);
         personSettle(P); windowTime(P); P.mixer.update(0);
+        if (o.handsOn) restHands(P, o.handsOn);
         if (ctx.cullBySphere && !P.driver) ctx.cullBySphere(P.group, 0, 0.9, 0, 1.9);
         for (const M0 of P.members) memberSkin(M0, 1);
         if (o.look) o.look(m);
@@ -204,13 +255,18 @@
       for (const k in P.w) { const w = P.w[k], f = P.off[k]; if (w > 0 && f) { ox += f[0] * w; oz += f[1] * w; } const sk = SK && SK[k] != null ? SK[k] : SINK[k]; if (w > 0 && sk) oy += sk * w; if (w > 0 && P.offY[k]) oy += P.offY[k] * w; }
       P.model.position.x = -ox; P.model.position.z = -oz; P.model.position.y = -oy;
     }
-    /* A WINDOW of a take (o.win: { take: [from, length] }): a take that is right only for part of its length is played
-       back and forth inside that part, eased at both ends (the seated idle leans far forward for five of its ten
-       seconds: only its upright ends are a master's rest). The window may run past the take's end: it wraps. */
+    /* A WINDOW of a take (o.win: { take: [from, length, seconds] }): a take that is right only for part of its length is
+       played back and forth inside that part, eased at both ends (the seated idle leans far forward for five of its ten
+       seconds: only its upright ends are a master's rest). The window may run past the take's end: it wraps.
+       THERE AND BACK TAKES `seconds` (Chad, 12 Nov 2026: "grandmaster pho is bobbing and bouncing too much in his
+       passive pose, slow down the bobbing significantly"). Unsaid, it is twice the window's own length, the take's own
+       pace: and a SHORT window at the take's own pace is a bob (his rest was 0.3 s of a take there and back every
+       0.6 s: his head at 15 cm a second, measured by tools/probes/windowread.mjs; held half risen on 0.28 s of the rise
+       it went 16 cm there and back every 0.56 s). A window that is a REST says its seconds. */
     function windowTime(P) {
       if (!P.win) return;
       for (const name in P.win) { const A = P.acts[name]; if (!A || !(P.w[name] > 0)) continue;
-        const [from, len] = P.win[name], d = A.getClip().duration, u = (P.clock / (len * 2)) % 1, k = 0.5 - 0.5 * Math.cos(u * 2 * Math.PI);
+        const W = P.win[name], [from, len] = W, d = A.getClip().duration, u = (P.clock / (W[2] > 0 ? W[2] : len * 2)) % 1, k = 0.5 - 0.5 * Math.cos(u * 2 * Math.PI);
         A.time = (((from + k * len) % d) + d) % d; A.timeScale = 0; }
     }
     /* which take a person wears from now on (eased over `fade` seconds); `restart` begins it at its start */
@@ -257,17 +313,20 @@
         P.mixer.update(wdt * P.rate);
         if (P.gaze || P.gazeK > 0) gazeTick(P, wdt);
         if (P.lay || P.layK > 0) layTick(P, wdt);
+        if (P.restLegs) seatLegsLay(P);
+        if (P.restHands && !(P.layK > 0)) restHandsLay(P);
       }
     }
     /* A TAKE PLAYED ONCE between two of its own moments, over `secs` seconds, eased at both ends (t1 may be before t0:
        a rise played backwards is a sitting down), then HELD on a small window at its end (o.hold: seconds of the take,
-       back and forth from where it stopped; negative runs back) or handed on (o.then). A rise from a seat, a throw, a
+       back and forth from where it stopped; negative runs back; o.holdSecs: how long that takes there and back, where
+       the hold is a stillness and not a beat) or handed on (o.then). A rise from a seat, a throw, a
        bow. Its window and its end are the person's own state, so reset() need only name a take again. */
     function span(P, name, t0, t1, secs, o = {}) {
       if (!P) return;
       whenReady(P, () => { if (!P.acts[name]) { console.warn(P.key + ' has no take ' + name); return; }
         if (P.win && P.win[name]) delete P.win[name];
-        P.span = { name, t0, t1, secs: Math.max(0.05, secs), u: 0, hold: o.hold != null ? o.hold : 0, then: o.then || null, n: ++P.actN };
+        P.span = { name, t0, t1, secs: Math.max(0.05, secs), u: 0, hold: o.hold != null ? o.hold : 0, holdSecs: o.holdSecs > 0 ? o.holdSecs : 0, then: o.then || null, n: ++P.actN };
         take(P, name, o.fade != null ? o.fade : 0.4); P.acts[name].time = t0; P.acts[name].timeScale = 0; });
     }
     function spanTick(P, wdt) {
@@ -276,14 +335,15 @@
       const d = A.getClip().duration; A.time = Math.max(0, Math.min(d - 1e-3, Sp.t0 + (Sp.t1 - Sp.t0) * smo(Sp.u))); A.timeScale = 0;
       if (Sp.u < 1) return;
       P.span = null;
-      if (Sp.hold) { (P.win = P.win || {})[Sp.name] = [Sp.t1, Sp.hold]; P.clock = 0; }
+      if (Sp.hold) { (P.win = P.win || {})[Sp.name] = Sp.holdSecs > 0 ? [Sp.t1, Sp.hold, Sp.holdSecs] : [Sp.t1, Sp.hold]; P.clock = 0; }
       if (Sp.then) Sp.then(P);
     }
-    /* a take with a window of its own from now on (a pose held: both hands laid forward), or with none (it runs whole) */
-    function hold(P, name, from, len, fade = 0.5) {
+    /* a take with a window of its own from now on (a pose held: both hands laid forward), or with none (it runs whole);
+       `secs`, where said, is how long the window takes there and back (windowTime) */
+    function hold(P, name, from, len, fade = 0.5, secs = 0) {
       if (!P) return;
       whenReady(P, () => { if (!P.acts[name]) return; P.span = null; ++P.actN;
-        if (len == null) { if (P.win) delete P.win[name]; } else { (P.win = P.win || {})[name] = [from, len]; P.clock = 0; }
+        if (len == null) { if (P.win) delete P.win[name]; } else { (P.win = P.win || {})[name] = secs > 0 ? [from, len, secs] : [from, len]; P.clock = 0; }
         take(P, name, fade); if (len == null) P.acts[name].timeScale = 1; });
     }
     /* back to the take a person was built in, and its window */
@@ -399,8 +459,9 @@
       P.arms = out; return out;
     }
     /* (before a body's mixer runs: what was laid on its arms is taken off) */
-    function armsBack(P) { const A = P.arms; if (!A) return; for (const sd in A) { const a = A[sd];
-      if (a.curled) { for (const F of a.fing) F.b.quaternion.copy(F.q); a.curled = false; }
+    function armsBack(P) { const LG = P.restLegs; if (LG && LG.wrote) { for (const sd in LG.R) { const r = LG.R[sd]; r.up.quaternion.copy(r.qUp); r.fore.quaternion.copy(r.qFore); r.foot.quaternion.copy(r.qFoot); } LG.wrote = false; }
+      const A = P.arms; if (!A) return; for (const sd in A) { const a = A[sd];
+      if (a.curled) { for (const F of a.fing) F.b.quaternion.copy(F.q); if (a.fingRest) { for (const F of a.fingRest) F.b.quaternion.copy(F.q); a.fingRest = null; } a.curled = false; }
       if (!a.wrote) continue; a.up.quaternion.copy(a.qUp); a.fore.quaternion.copy(a.qFore); a.hand.quaternion.copy(a.qHand); a.wrote = false; } }
     /* A HAND CLOSED ROUND A THING (the woman with the taper): each finger's three joints turned by `th` radians toward
        the palm's own facing, about the hand's own measured across-axis as it lies in the world now. Laid on after
@@ -476,6 +537,301 @@
       P.layK = G ? Math.min(1, (P.layK || 0) + wdt / secs) : Math.max(0, (P.layK || 0) - wdt / secs);
       const L = G || P.layLast; if (!L || !(P.layK > 0)) return;
       handsTo(P, typeof L.grip === 'function' ? L.grip() : L.grip, P.layK);
+    }
+    /* HIS HANDS AT REST (o.handsOn; Chad, 12 Nov 2026, of the three monks as they first went live: "Look at the arms
+       and hands of those monks, its completely unacceptable, how did that pass your review?"). MINE, both times: a
+       seated take lays a body's hands where the body it was made on had its thighs, and on these robed bodies they went
+       into the cloth; my first fix sent each palm flat onto the lap whatever the arm had to do (the wrists broke back,
+       the elbows flared, the fingers stood stiff: claws), and my second moved the take's own arm as little as it could
+       (the take's fingers closed into fists on the robe; Chad's monk's hands hung in the air before his knees). Both
+       went past me in small pictures; and my third, the first laid as below, sent both elbows back and IN, inside his
+       flank, the forearms out through the roll of his robe at the waist (an elbow bent toward a point behind the wrist,
+       and by the shortest arc), seen only when the pictures were opened full size. So a rest is now DESIGNED as a body
+       rests, and every one is photographed full size, high res, from before him, from each side and close on each
+       hand, before it is built on (tracker §15.5).
+       how 'lap': THE PALMS ON THE THIGHS, THE ELBOWS AT HIS SIDES. Each palm's middle on what is drawn of his lap (his
+         body without his arms, read as heights up to 30 cm over his hip joints: `top`), wherever along the thigh leaves
+         the reach from shoulder to wrist `ratio` of the arm's length (0.87, an elbow bent as an arm at rest bends it),
+         the thigh's middle preferred where it cannot be had (or at `at`, if given); `out` to its outer side. The elbow
+         behind the line from shoulder to wrist and below it, turned out from his side a step at a time until the upper
+         arm and the forearm, each swept at its own thickness, clear what is drawn of him; the arm solved about its own
+         elbow's hinge, read off his take (armHinge). The fingers carried on along the forearm's own line seen from
+         above, a quarter of the way toward the thigh's, following the cloth's slope, the palm facing the cloth; the
+         wrist `off` above it. Fingers with bones are his file's own at rest (the bind pose: a relaxed open hand), each
+         joint curled by `curl` toward the palm, the little finger most. Measured once, on the take he rests in at its
+         window's start, and reported (P.restRep: where, the reach, how far turned out, the wrist's bend).
+       A HAND OF ONE PIECE (Chad's monk: no finger bones; each hand is his scan's, open, the fingers spread and a little
+         cupped: tools/probes/handaxes.mjs, and photographed) is laid the same way by its own measured axes (handAxes).
+         Palms joined before his chest were tried first, episode 3's solve and then one of mine, and refused by
+         photograph: open spread fingers cannot press flat, and from in front the two hands showed as two open palms
+         side by side.
+       Laid every frame after the mixer has posed him, and taken off before it runs again (armsBack: the v11.5 law) */
+    const _rhA = new THREE.Vector3(), _rhB = new THREE.Vector3(), _rhC = new THREE.Vector3(), _rhD = new THREE.Vector3(), _rhQ = new THREE.Quaternion(), _rhQ2 = new THREE.Quaternion();
+    const FINGERS = ['Index', 'Middle', 'Ring', 'Pinky'];
+    /* (a bone's turn in its parent in the bind pose, from the skin's own inverse binds) */
+    function bindLocal(P, b) {
+      for (const sm of P.lv[1] || []) { const sk = sm.skeleton, i = sk.bones.indexOf(b), ip = b.parent ? sk.bones.indexOf(b.parent) : -1; if (i < 0 || ip < 0) continue;
+        const m = new THREE.Matrix4().copy(sk.boneInverses[ip]).multiply(new THREE.Matrix4().copy(sk.boneInverses[i]).invert());     // (the parent's bind inverted, times this bone's bind)
+        const q = new THREE.Quaternion(); m.decompose(new THREE.Vector3(), q, new THREE.Vector3()); return q; }
+      return null;
+    }
+    /* A MAN SITTING ON A CHAIR AS PHOTOGRAPH 2'S MONKS SIT (o.seat.down: { y, sink, edge, r, apron, sole }): his bottom
+       on the seat, his feet flat on the ground below his knees, whatever take he sits in. Chad's monk's chair-sits
+       perch, made for a seat some 8 cm higher than this chair's (his hip joints 17 cm over his knees, his thighs sloping
+       thirty-three degrees: sitread.mjs), so set down by his soles his bottom hung over the seat, and set on the seat his
+       feet went under the ground. So his bottom is set on the seat (the second hundredth of the skin his hips and
+       thighs carry, `sink` into it), and each LEG is solved as two bones (armTo, the arms' own solver) from his hip
+       joint to where the take puts that ankle, on the ground (its sole `sole` from it), the knee forward; each foot
+       keeps the turn the take gives it in the world. Then he is brought forward until his shins, between the seat's
+       top and the foot of its apron, stand `r` past its front face (`edge` ahead of his spot), feet and all. Laid every
+       frame after the mixer has posed him and taken off before it runs again (armsBack), as a hand's grip is */
+    function seatDown(P, name, SE, skins) {
+      const bone = (nm) => { const re = new RegExp('^(mixamorig:?)?' + nm + '$'); for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
+      const v = new THREE.Vector3(), loc = (b) => { b.getWorldPosition(v); return P.group.worldToLocal(v.clone()); };
+      const under = [], feet = { Left: [], Right: [] };
+      for (const q of skins) { const pos = q.geometry.attributes.position, si = q.geometry.attributes.skinIndex, sw = q.geometry.attributes.skinWeight; if (!pos || !si || !sw || !q.skeleton) continue;
+        const role = q.skeleton.bones.map(b => /^(mixamorig:?)?(Hips|(Left|Right)UpLeg)$/.test(b.name) ? 'U' : /^(mixamorig:?)?Left(Foot|Toe\w*)$/.test(b.name) ? 'Left' : /^(mixamorig:?)?Right(Foot|Toe\w*)$/.test(b.name) ? 'Right' : '');
+        for (let i = 0; i < pos.count; i++) { const w = { U: 0, Left: 0, Right: 0 }; for (let c = 0; c < 4; c++) { const r = role[si.getComponent(i, c)]; if (r) w[r] += sw.getComponent(i, c); }
+          if (w.U < 0.5 && w.Left < 0.5 && w.Right < 0.5) continue; q.getVertexPosition(i, v); v.applyMatrix4(q.matrixWorld); P.group.worldToLocal(v);
+          if (w.U >= 0.5) under.push([v.y, v.z, v.x]); else feet[w.Left >= 0.5 ? 'Left' : 'Right'].push(v.y); } }
+      const H = loc(P.hips), legs = { R: {}, wrote: false }, K = SE.down;
+      /* (his bottom: `hipOver` under his hip joints. Read from his skin it cannot be: his scan is his robe, and what
+         hangs lowest under his hips in a seated take is the robe's skirt, 24 to 31 cm down (measured twice, and lifted
+         off the chair both times: photographed). A seated man's hip joints stand some 12 to 15 cm over the seat
+         (measured on the two new monks in the library's chair-sit: 15, in thick robes) */
+      const bottom = H.y - (K.hipOver != null ? K.hipOver : 0.13), drop = bottom - (SE.y - (K.sink != null ? K.sink : 0.01));
+      for (const S0 of ['Left', 'Right']) { const up = bone(S0 + 'UpLeg'), fore = bone(S0 + 'Leg'), foot = bone(S0 + 'Foot'); if (!up || !fore || !foot || !feet[S0].length) { console.warn(P.key + ': no ' + S0 + ' leg to seat'); return null; }
+        const sole = Math.min(...feet[S0]), A0 = loc(foot), K0 = loc(fore);
+        /* (the ankle where the take has it across the ground, its sole on it; the knee's pole well ahead of the take's knee) */
+        legs.R[S0] = { up, fore, foot, ank: new THREE.Vector3(A0.x, A0.y - sole + (K.sole != null ? K.sole : -0.005), A0.z), pole: new THREE.Vector3(K0.x * 1.15, K0.y + 0.1, K0.z + 0.6),
+          footQ: P.group.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(foot.getWorldQuaternion(new THREE.Quaternion())), qUp: new THREE.Quaternion(), qFore: new THREE.Quaternion(), qFoot: new THREE.Quaternion() }; }
+      /* lowered by `drop`: the targets in the group's frame are where the ground is, so they do not move with him */
+      P.restLegs = legs; P.model.position.set(0, -drop, 0); P.group.updateMatrixWorld(true); seatLegsLay(P);
+      /* forward until the shins clear the seat's front face */
+      let back = Infinity; const apron = K.apron != null ? K.apron : 0.14;
+      for (const S0 in legs.R) { const r = legs.R[S0], Kn = loc(r.fore), An = loc(r.foot);
+        for (const h of [SE.y, SE.y - apron]) { const t = Kn.y > An.y ? Math.max(0, Math.min(1, (Kn.y - h) / (Kn.y - An.y))) : 0; back = Math.min(back, Kn.z + t * (An.z - Kn.z) - H.z); } }
+      const fwd = Math.max(0, K.edge + (K.r != null ? K.r : 0.055) - back);
+      /* (measured with his model at the group's origin; played, it stands where `centre` puts his hips, `off`, and
+         `fwd` further forward: the feet go with him) */
+      const off = P.off[name] || [0, 0];
+      for (const S0 in legs.R) { const r = legs.R[S0]; r.ank.x -= off[0]; r.ank.z += fwd - off[1]; r.pole.x -= off[0]; r.pole.z += fwd - off[1]; }
+      armsBack(P); P.model.position.set(0, 0, 0); P.group.updateMatrixWorld(true);
+      return { legs, lift: -drop, fwd, rep: { bottom: +bottom.toFixed(3), drop: +drop.toFixed(3), fwd: +fwd.toFixed(3), shins: +back.toFixed(3) } };
+    }
+    const _slA = new THREE.Vector3(), _slB = new THREE.Vector3(), _slQ = new THREE.Quaternion();
+    function seatLegsLay(P) {
+      const LG = P.restLegs; if (!LG) return;
+      P.group.updateWorldMatrix(true, true); P.group.getWorldQuaternion(_slQ);
+      for (const S0 in LG.R) { const r = LG.R[S0];
+        if (!LG.wrote) { r.qUp.copy(r.up.quaternion); r.qFore.copy(r.fore.quaternion); r.qFoot.copy(r.foot.quaternion); }
+        _slA.copy(r.ank); P.group.localToWorld(_slA); _slB.copy(r.pole); P.group.localToWorld(_slB);
+        armTo({ up: r.up, fore: r.fore, hand: r.foot }, _slA, _slB);
+        r.foot.parent.getWorldQuaternion(_hq2); _hq.copy(_slQ).multiply(r.footQ); r.foot.quaternion.copy(_hq2.invert().multiply(_hq)); r.foot.updateWorldMatrix(false, true); }
+      LG.wrote = true;
+    }
+    /* A HAND OF ONE PIECE, MEASURED (tools/probes/handaxes.mjs reads the same from the file): its skin in the hand bone's
+       own bind frame, and its three axes (the longest is the fingers' line, signed toward the tip bone; the shortest, the
+       palm's facing, signed toward his middle as his arms hang at his sides in the bind pose); how long the hand is
+       along its fingers and how far the palm's skin stands from the bone. Chad's monk's tip bone lies 27 to 31 degrees
+       off his fingers' line: laid by it, his two hands met only at the heels, in a V */
+    function handAxes(P, A, sd) {
+      const a = A[sd], hand = a.hand, tip = hand.children.find(ch => ch.isBone), pts = [], S0 = sd === 'L' ? 'Left' : 'Right', v = new THREE.Vector3(); let ri = null;
+      for (const o of P.lv[1] || []) { if (!o.skeleton) continue; const bi = o.skeleton.bones.indexOf(hand), ti = tip ? o.skeleton.bones.indexOf(tip) : -1, sI = o.geometry.attributes.skinIndex, sW = o.geometry.attributes.skinWeight; if (bi < 0 || !sI || !sW) continue;
+        const bw = new THREE.Matrix4().copy(o.skeleton.boneInverses[bi]).invert(); if (!ri) ri = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().extractRotation(bw)).invert();
+        const pos = o.geometry.attributes.position, bwI = o.skeleton.boneInverses[bi];
+        for (let i = 0; i < pos.count; i++) { let w = 0; for (let k = 0; k < 4; k++) { const j = sI.getComponent(i, k); if (j === bi || (ti >= 0 && j === ti)) w += sW.getComponent(i, k); } if (w < 0.6) continue;
+          v.fromBufferAttribute(pos, i).applyMatrix4(o.bindMatrix).applyMatrix4(bwI); pts.push(v.clone()); } }
+      if (pts.length < 30 || !ri) { console.warn(P.key + ': too little skin on his ' + S0 + ' hand to measure'); return null; }
+      const mean = new THREE.Vector3(); for (const q of pts) mean.add(q); mean.multiplyScalar(1 / pts.length);
+      const Cv = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]; for (const q of pts) { const d = [q.x - mean.x, q.y - mean.y, q.z - mean.z]; for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) Cv[r][c] += d[r] * d[c]; }
+      const axes = []; for (let e = 0; e < 3; e++) { let x = [0.3 + e, 0.7, 0.2 - e];
+        for (let it = 0; it < 300; it++) { x = [0, 1, 2].map(r => Cv[r][0] * x[0] + Cv[r][1] * x[1] + Cv[r][2] * x[2]); const l = Math.hypot(x[0], x[1], x[2]) || 1; x = x.map(u => u / l); }
+        const lam = [0, 1, 2].reduce((sm, r) => sm + (Cv[r][0] * x[0] + Cv[r][1] * x[1] + Cv[r][2] * x[2]) * x[r], 0); axes.push(new THREE.Vector3(x[0], x[1], x[2]));
+        for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) Cv[r][c] -= lam * x[r] * x[c]; }
+      const fL = axes[0].clone(); if (tip ? fL.dot(tip.position) < 0 : fL.dot(a.fL) < 0) fL.negate();
+      let len = 0; for (const q of pts) len = Math.max(len, q.dot(fL));
+      const nL = axes[2].clone().addScaledVector(fL, -axes[2].dot(fL)).normalize();
+      { const bw = nL.clone().applyQuaternion(ri.clone().invert()); if (bw.x * (S0 === 'Left' ? 1 : -1) > 0) nL.negate(); }
+      const ds = pts.map(q => q.dot(nL)).sort((x, y) => x - y);
+      return { fL, nL, aL: new THREE.Vector3().crossVectors(nL, fL).normalize(), len, depth: ds[Math.floor(ds.length * 0.97)] };
+    }
+    function restHands(P, K = {}) {
+      const A = P && P.ready ? armsOf(P) : null, skins = P.lv[1]; P.restHands = null; P.restRep = null;
+      if (!A || !skins || !skins.length) return null;
+      const bone = (nm) => { const re = new RegExp('^(mixamorig:?)?' + nm + '$'); for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
+      armsBack(P); P.group.updateWorldMatrix(true, false); P.group.updateMatrixWorld(true);
+      /* (his legs where his seat lays them: the lap the hands lie on is theirs) */
+      if (P.restLegs) { seatLegsLay(P); P.group.updateMatrixWorld(true); }
+      /* (the take's own turns kept, so that what is solved here is taken off again: armsBack) */
+      for (const sd in A) { const a = A[sd]; a.qUp.copy(a.up.quaternion); a.qFore.copy(a.fore.quaternion); a.qHand.copy(a.hand.quaternion); a.wrote = true; }
+      const loc = (b, out) => { b.getWorldPosition(out); return P.group.worldToLocal(out); };
+      const R = {}, rep = {};
+      /* how 'lap': his body without his arms, as heights over the ground on a grid in his own frame */
+      const CELL = 0.012, X0 = -0.6, Z0 = -0.6, NX = 100, NZ = 112, H = new Float32Array(NX * NZ).fill(-Infinity), v = new THREE.Vector3();
+      /* (and the same points in cells of 3 cm, so an arm can be swept through him at its own thickness: clearSeg) */
+      const VC = 0.03, vox = new Map(), vk = (x, y, z) => ((Math.floor(x / VC) + 512) * 1024 + (Math.floor(y / VC) + 512)) * 1024 + (Math.floor(z / VC) + 512);
+      /* (the heights are his LAP's: nothing over his hip joints by more than 30 cm is read into them. Sought nearer his
+         hips, a palm's place came under his face, and the highest thing drawn there was his nose) */
+      const hipB = bone('Hips'), LAPTOP = hipB ? loc(hipB, new THREE.Vector3()).y + 0.3 : Infinity;
+      for (const q of skins) { const pos = q.geometry.attributes.position, si = q.geometry.attributes.skinIndex, sw = q.geometry.attributes.skinWeight; if (!pos || !si || !sw || !q.skeleton) continue;
+        const arm = q.skeleton.bones.map(b => /(Shoulder|Arm|Hand)/.test(b.name));
+        for (let i = 0; i < pos.count; i++) { let a = 0; for (let c = 0; c < 4; c++) if (arm[si.getComponent(i, c)]) a += sw.getComponent(i, c); if (a > 0.3) continue;
+          q.getVertexPosition(i, v); v.applyMatrix4(q.matrixWorld); P.group.worldToLocal(v);
+          { const k = vk(v.x, v.y, v.z); let L = vox.get(k); if (!L) vox.set(k, L = []); L.push(v.x, v.y, v.z); }
+          if (v.y > LAPTOP) continue;
+          const cx = Math.round((v.x - X0) / CELL), cz = Math.round((v.z - Z0) / CELL); if (cx < 0 || cz < 0 || cx >= NX || cz >= NZ) continue; if (v.y > H[cz * NX + cx]) H[cz * NX + cx] = v.y; } }
+      const H2 = new Float32Array(NX * NZ); for (let cz = 0; cz < NZ; cz++) for (let cx = 0; cx < NX; cx++) { let m = -Infinity; for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) { const x = cx + dx, z = cz + dz; if (x >= 0 && z >= 0 && x < NX && z < NZ && H[z * NX + x] > m) m = H[z * NX + x]; } H2[cz * NX + cx] = m; }
+      const top = (x, z) => { const cx = Math.round((x - X0) / CELL), cz = Math.round((z - Z0) / CELL); return cx < 0 || cz < 0 || cx >= NX || cz >= NZ ? -Infinity : H2[cz * NX + cx]; };
+      const OUT = K.out != null ? K.out : 0.01, TURN = K.turn != null ? K.turn : 0.2, OFF0 = K.off != null ? K.off : 0.022, RATIO = K.ratio != null ? K.ratio : 0.87;
+      const CURL = K.curl || [0.22, 0.38, 0.22], SPREAD = [1.0, 1.06, 1.14, 1.24];
+      /* (is anything drawn of him within r of p? and is a segment clear of him at that thickness, from `from` of its
+         length on, a ball of radius skipR about skipC aside: the cloth a palm lies on) */
+      const nearBody = (p, r) => { const n = Math.ceil(r / VC), cx = Math.floor(p.x / VC), cy = Math.floor(p.y / VC), cz = Math.floor(p.z / VC), r2 = r * r;
+        for (let dx = -n; dx <= n; dx++) for (let dy = -n; dy <= n; dy++) for (let dz = -n; dz <= n; dz++) {
+          const L = vox.get(((cx + dx + 512) * 1024 + (cy + dy + 512)) * 1024 + (cz + dz + 512)); if (!L) continue;
+          for (let i = 0; i < L.length; i += 3) { const x = L[i] - p.x, y = L[i + 1] - p.y, z = L[i + 2] - p.z; if (x * x + y * y + z * z < r2) return true; } }
+        return false; };
+      const clearSeg = (A0, B0, r, from, skipC, skipR) => { const p = new THREE.Vector3();
+        for (let s = 0; s <= 12; s++) { const u = from + (1 - from) * s / 12; p.lerpVectors(A0, B0, u); if (skipC && p.distanceTo(skipC) < skipR) continue; if (nearBody(p, r)) return false; }
+        return true; };
+      for (const [sd, S0, sg] of [['L', 'Left', 1], ['R', 'Right', -1]]) {
+        const a = A[sd], bu = bone(S0 + 'UpLeg'), bk = bone(S0 + 'Leg'); if (!bu || !bk) continue;
+        const U = loc(bu, new THREE.Vector3()), Kn = loc(bk, new THREE.Vector3()), Sh = loc(a.up, new THREE.Vector3()), E0 = loc(a.fore, new THREE.Vector3()), W0 = loc(a.hand, new THREE.Vector3());
+        const la = Sh.distanceTo(E0), lb = E0.distanceTo(W0), th = new THREE.Vector3(Kn.x - U.x, 0, Kn.z - U.z).normalize(), across = new THREE.Vector3(th.z, 0, -th.x); if (across.x * sg < 0) across.negate();
+        const HM = a.fingers ? null : handAxes(P, A, sd), PALM = HM ? HM.len * 0.45 : a.palm, OFF = HM ? Math.max(0.015, HM.depth) : OFF0;
+        const phi = -sg * TURN, fh = new THREE.Vector3(th.x * Math.cos(phi) + th.z * Math.sin(phi), 0, -th.x * Math.sin(phi) + th.z * Math.cos(phi));
+        let best = null;
+        /* (WHERE ON THE THIGH. With `at`, the palm there or as near it as his arm reaches. Without, wherever along the
+           thigh leaves his elbow bent as a resting arm is bent: the reach from his shoulder to his wrist `ratio` of the
+           arm's whole length (0.87: about 120 degrees inside the elbow). At a fixed share of the thigh, the long arms of
+           the two monks made here reached their knees all but straight: photographed full size, 12 Nov) */
+        /* (the hand's frame with its palm's middle at Cp and its fingers toward d seen from above: the fingers following
+           the cloth's slope along d, the palm facing the cloth. A hand at rest lies within twenty degrees of level along
+           its fingers, and its palm within twenty-five of facing straight down: the cloth's slope is followed only that far) */
+        const frameAt = (Cp, d) => { const e = 0.03, cx = Cp.x, cz = Cp.z, sl = (top(cx + d.x * e, cz + d.z * e) - top(cx - d.x * e, cz - d.z * e)) / (2 * e), gx = (top(cx + 0.025, cz) - top(cx - 0.025, cz)) / 0.05, gz = (top(cx, cz + 0.025) - top(cx, cz - 0.025)) / 0.05;
+          if (!isFinite(sl) || !isFinite(gx) || !isFinite(gz)) return null;
+          const f = new THREE.Vector3(d.x, Math.max(-0.36, Math.min(0.15, sl)), d.z).normalize(), nS = new THREE.Vector3(-gx, 1, -gz).normalize();
+          if (nS.y < Math.cos(0.44)) { const hz = Math.hypot(nS.x, nS.z) || 1; nS.set(nS.x / hz * Math.sin(0.44), Math.cos(0.44), nS.z / hz * Math.sin(0.44)); }
+          const n = nS.clone().negate(); n.addScaledVector(f, -n.dot(f)).normalize();
+          return { f, n, W: Cp.clone().addScaledVector(f, -PALM).addScaledVector(n, -OFF) }; };
+        const ts = K.at != null ? Array.from({ length: 13 }, (_, k) => K.at - 0.04 * k) : Array.from({ length: 15 }, (_, k) => 0.28 + 0.04 * k);
+        for (const t of ts) {
+          /* (on the CREST of what is drawn over the thigh: the highest point across its line within six centimetres of
+             `out`, the inner one where two are within 4 mm. Laid where the robe falls away down the thigh's outer side,
+             a hand followed that slope and hung down it, fingers to the floor: photographed on monk B's left, 12 Nov) */
+          /* (`inner`: how far toward his middle the crest may be sought. On a robe that drapes one lap over both knees the
+             crest is between them, and both hands went to it, one on the other: photographed on Chad's monk) */
+          let cx = 0, cz = 0, cy = -Infinity;
+          for (let o = -(K.inner != null ? K.inner : 0.06); o <= 0.0601; o += 0.01) { const x = U.x + (Kn.x - U.x) * t + across.x * (OUT + o), z = U.z + (Kn.z - U.z) * t + across.z * (OUT + o), y = top(x, z); if (y > cy + 0.004) { cx = x; cz = z; cy = y; } }
+          if (!(cy > 0.05)) continue;
+          const Cp = new THREE.Vector3(cx, cy, cz), fr = frameAt(Cp, fh); if (!fr) continue;
+          const { f, n, W } = fr, dS = W.distanceTo(Sh);
+          if (dS > la + lb - 0.012 || dS < Math.abs(la - lb) + 0.03) continue;
+          /* (and nearer the thigh's middle where the reach cannot be had: where every place on it left his arm straighter
+             than that, the nearest to his shoulder was his hip crease, and his elbow went out to his side as a hand on a
+             hip does: Chad's monk's right, photographed full size, 12 Nov) */
+          const score = K.at != null ? 0 : Math.abs(dS / (la + lb) - RATIO) + 0.25 * Math.abs(t - 0.55);
+          if (!best || score < best.score) best = { t, Cp, W, f, n, score, ratio: dS / (la + lb) };
+          if (K.at != null) break; }
+        if (!best) { console.warn(P.key + ': his ' + S0 + ' hand cannot reach his thigh: left as the take has it'); continue; }
+        /* (his elbow's HINGE, read off the take he rests in. The takes on these rigs keep the forearm in one plane of the
+           upper arm's frame, 0.0 degrees out of it at every key (masters/v25.3/measure/hinge.cjs, run on each monk's
+           file: the tracker's §15.3), so one flexed moment names it; and the forearm's turn about its own line is kept as
+           the take has it, as theirs never roll it) */
+        if (!a.hinge) { const uL = a.fore.position.clone().normalize(), dL = a.hand.position.clone().normalize().applyQuaternion(a.fore.quaternion);
+          const h = new THREE.Vector3().crossVectors(uL, dL); if (h.length() < 0.08) h.set(0.8, 0, sg > 0 ? -0.6 : 0.6); h.normalize();
+          const flex = Math.atan2(new THREE.Vector3().crossVectors(uL, dL).dot(h), uL.dot(dL));
+          a.hinge = { uL, h, rest: new THREE.Quaternion().setFromAxisAngle(h, -flex).multiply(a.fore.quaternion) }; }
+        /* THE ELBOW (12 Nov, the first pictures of it seen full size: both elbows had gone back and IN, inside his flank,
+           and each forearm came out through the roll of his robe at his waist). An arm at rest has its elbow behind the
+           line from the shoulder to the wrist and below it, turned out from the side only as far as it must be: so it is
+           turned out from straight behind a step at a time until the upper arm and the forearm, each swept at its own
+           thickness, pass clear of what is drawn of him without his arms (the cloth under the palm aside). The arm is
+           then solved as an arm, about its own elbow's hinge (armHinge) */
+        const back = th.clone().negate();
+        const findElbow = (Wt, Cpt) => { const T = Wt.clone().sub(Sh).normalize(), dW = Math.min(Sh.distanceTo(Wt), la + lb - 1e-3), ca = (la * la + dW * dW - lb * lb) / (2 * la * dW), sa = Math.sqrt(Math.max(0, 1 - ca * ca));
+          let B = across.clone();
+          for (let psi = 0.35; psi <= 1.56; psi += 0.087) {
+            const Bp = back.clone().multiplyScalar(Math.cos(psi)).addScaledVector(across, Math.sin(psi)); Bp.y -= 0.4;
+            Bp.addScaledVector(T, -Bp.dot(T)); if (Bp.lengthSq() < 1e-8) continue; B = Bp.normalize();
+            const E = Sh.clone().addScaledVector(T, la * ca).addScaledVector(B, la * sa);
+            if (clearSeg(Sh, E, 0.045, 0.3) && clearSeg(E, Wt, 0.035, 0, Cpt, 0.12)) return { pdir: B, psi, E, clear: true }; }
+          return { pdir: B, psi: 1.56, E: Sh.clone().addScaledVector(T, la * ca).addScaledVector(B, la * sa), clear: false }; };
+        let el = findElbow(best.W, best.Cp);
+        /* (THE HAND ALONG ITS FOREARM: its fingers carried on along the forearm's own line seen from above, a quarter of
+           the way toward the thigh's, and the elbow found again for that wrist. Laid along the thigh while the forearm came
+           in from his side, each wrist was bent sideways, by up to fifty degrees: photographed full size, 12 Nov) */
+        { const fa = best.W.clone().sub(el.E); fa.y = 0;
+          if (fa.lengthSq() > 1e-6) { const d2 = fa.normalize().multiplyScalar(0.75).addScaledVector(th, 0.25); d2.y = 0; d2.normalize(); const fr = frameAt(best.Cp, d2);
+            if (fr && fr.W.distanceTo(Sh) < la + lb - 0.012) { best.f = fr.f; best.n = fr.n; best.W = fr.W; el = findElbow(best.W, best.Cp); } } }
+        if (!el.clear) console.warn(P.key + ': his ' + S0 + ' arm finds no way clear of his body: laid turned out as far as was tried');
+        const pdir = el.pdir, psiAt = el.psi;
+        /* the fingers: his file's own at rest, each joint curled toward the palm about the hand's own across-axis,
+           worked out once in the hand's own frame */
+        const fing = [];
+        for (let fi = 0; fi < FINGERS.length; fi++) { let rel = new THREE.Quaternion(); const ax = a.aL.clone();
+          for (let j = 1; j <= 3; j++) { const b = bone(S0 + 'Hand' + FINGERS[fi] + j); if (!b) break; const q0 = bindLocal(P, b); if (!q0) break;
+            /* (this joint's parent turned in the hand's frame is `rel`; the across-axis in that parent's frame) */
+            /* (toward the palm is a turn the other way about the across-axis: armsOf's aL is the palm's facing crossed
+               with the fingers' line, and a finger turned about the fingers' line crossed with the palm's facing goes
+               toward the palm) */
+            const axP = ax.clone().applyQuaternion(rel.clone().invert()).normalize(), ang = CURL[j - 1] * SPREAD[fi];
+            const qj = new THREE.Quaternion().setFromAxisAngle(axP, -ang).multiply(q0);
+            fing.push({ b, q: qj }); rel = rel.multiply(qj); } }
+        R[sd] = { W: best.W, pdir, f: best.f, n: best.n, fing };
+        /* (a hand of one piece is laid by its own measured axes: armsOf's, for a hand with no finger bones, is the
+           forearm's line carried on) */
+        if (!a.fingers) { const m = handAxes(P, A, sd); if (m) { R[sd].fL = m.fL; R[sd].nL = m.nL; R[sd].aL = m.aL; } }
+        rep[sd] = { at: +best.t.toFixed(2), reach: +best.ratio.toFixed(3), turnedOut: +(psiAt * 180 / Math.PI).toFixed(0), palm: best.Cp.toArray().map(u => +u.toFixed(3)) }; }
+      P.restHands = { how: 'lap', R }; P.restRep = rep;
+      /* (once laid, the elbow and the wrist's bend are read and reported: what a picture of it must agree with) */
+      restHandsLay(P); P.group.updateMatrixWorld(true);
+      for (const sd in R) { const a = A[sd]; loc(a.up, _rhA); loc(a.fore, _rhB); loc(a.hand, _rhC);
+        const fa = _rhC.clone().sub(_rhB).normalize(), bend = Math.acos(Math.max(-1, Math.min(1, fa.dot(R[sd].f)))) * 180 / Math.PI;
+        rep[sd].elbow = _rhB.toArray().map(u => +u.toFixed(3)); rep[sd].elbowOut = +((Math.abs(_rhB.x) - Math.abs(_rhA.x))).toFixed(3); rep[sd].wristBend = +bend.toFixed(0); }
+      armsBack(P); P.group.updateMatrixWorld(true); return rep;
+    }
+    /* AN ARM SOLVED AS AN ARM (v25.3's law; episode 4 chapter 2's armSolve, made for any rig whose hinge has been read):
+       the elbow on the pole's side of the reach, the upper arm's line run to it with its hinge square to the arm's plane
+       (so the shoulder rolls, as a shoulder does), and the forearm flexed about that hinge onto the wrist, its turn about
+       its own line kept as the take has it. armTo (chapter 1's) turns each bone by the shortest arc, which bends an
+       elbow sideways, out of its hinge: the monks' first rest */
+    const _ahS = new THREE.Vector3(), _ahE = new THREE.Vector3(), _ahW = new THREE.Vector3(), _ahT = new THREE.Vector3(), _ahP = new THREE.Vector3(),
+          _ahU = new THREE.Vector3(), _ahH = new THREE.Vector3(), _ahZ = new THREE.Vector3(), _ahV = new THREE.Vector3(), _ahZl = new THREE.Vector3(),
+          _ahM = new THREE.Matrix4(), _ahM2 = new THREE.Matrix4(), _ahQ = new THREE.Quaternion(), _ahQp = new THREE.Quaternion();
+    function armHinge(a, target, pdir) {
+      const G = a.hinge; if (!G) { armTo(a, target, _ahP.copy(target).add(pdir)); return; }
+      a.up.updateWorldMatrix(true, true);
+      a.up.getWorldPosition(_ahS); a.fore.getWorldPosition(_ahE); a.hand.getWorldPosition(_ahW);
+      const la = _ahS.distanceTo(_ahE), lb = _ahE.distanceTo(_ahW);
+      _ahT.copy(target).sub(_ahS); const d0 = _ahT.length(); if (d0 < 1e-5 || la < 1e-5 || lb < 1e-5) return;
+      _ahT.divideScalar(d0); const d = THREE.MathUtils.clamp(d0, Math.abs(la - lb) + 1e-3, la + lb - 1e-3);
+      _ahP.copy(pdir).addScaledVector(_ahT, -pdir.dot(_ahT)); if (_ahP.lengthSq() < 1e-10) return; _ahP.normalize();
+      const ca = THREE.MathUtils.clamp((la * la + d * d - lb * lb) / (2 * la * d), -1, 1), sa = Math.sqrt(1 - ca * ca);
+      _ahU.copy(_ahT).multiplyScalar(ca).addScaledVector(_ahP, sa);                       // the upper arm's line
+      _ahH.crossVectors(_ahP, _ahT).normalize(); _ahZ.crossVectors(_ahU, _ahH);           // its hinge, flexion positive
+      _ahV.copy(_ahT).multiplyScalar(d).addScaledVector(_ahU, -la).normalize();          // the forearm's line
+      _ahZl.crossVectors(G.uL, G.h);
+      _ahM.makeBasis(_ahU, _ahH, _ahZ); _ahM2.makeBasis(G.uL, G.h, _ahZl).transpose(); _ahM.multiply(_ahM2);
+      _ahQ.setFromRotationMatrix(_ahM); a.up.parent.getWorldQuaternion(_ahQp); a.up.quaternion.copy(_ahQ.premultiply(_ahQp.invert()));
+      a.up.updateWorldMatrix(false, true);
+      a.fore.quaternion.setFromAxisAngle(G.h, Math.acos(THREE.MathUtils.clamp(_ahU.dot(_ahV), -1, 1))).multiply(G.rest);
+      a.fore.updateWorldMatrix(false, true);
+    }
+    /* (every frame, after the take has posed him) */
+    function restHandsLay(P) {
+      const RH = P.restHands, A = RH ? armsOf(P) : null; if (!A) return;
+      P.group.updateWorldMatrix(true, true); P.group.getWorldQuaternion(_rhQ);
+      for (const sd in RH.R) { const a = A[sd], r = RH.R[sd];
+        if (!a.wrote) { a.qUp.copy(a.up.quaternion); a.qFore.copy(a.fore.quaternion); a.qHand.copy(a.hand.quaternion); a.wrote = true; }
+        _rhA.copy(r.W); P.group.localToWorld(_rhA); _rhB.copy(r.pdir).applyQuaternion(_rhQ);
+        armHinge(a, _rhA, _rhB);
+        _rhC.copy(r.f).applyQuaternion(_rhQ); _rhD.copy(r.n).applyQuaternion(_rhQ);
+        _ha.crossVectors(_rhD, _rhC); _hm.makeBasis(_ha, _rhD, _rhC); _hm2.makeBasis(r.aL || a.aL, r.nL || a.nL, r.fL || a.fL).transpose(); _hm.multiply(_hm2); _hq.setFromRotationMatrix(_hm);
+        a.hand.parent.getWorldQuaternion(_hq2); a.hand.quaternion.copy(_hq2.invert().multiply(_hq)); a.hand.updateWorldMatrix(false, true);
+        if (r.fing.length) { if (!a.fing) a.fing = []; if (!a.curled) { a.fingRest = r.fing.map(F => ({ b: F.b, q: F.b.quaternion.clone(), i: 1 })); a.curled = true; }
+          for (const F of r.fing) F.b.quaternion.copy(F.q); } }
     }
     /* the middle of a person's two hands, in the world (what a raised bowl is stood on) */
     const HANDS = { L: /^(mixamorig:?)?LeftHand$/, R: /^(mixamorig:?)?RightHand$/ };
@@ -561,7 +917,9 @@
     const PHO_AT = benchAt(0.46, 0.04);                                          // Grandmaster Pho's place: the bench's east end
     /* each seat's top in metres, MEASURED on its model (tools/probes/seatmeasure.mjs: the sofa's cushion 0.46 and sat
        into by 3 cm; the bench's slats 0.40 and the chair's seat 0.39, each at the size b_world2.js draws it) */
-    const SEATS = { sofa: 0.43, bench: 0.44, chair: 0.43 };
+    /* (the monks' armchair is drawn at 1.11 of its file, where its seat's top is 0.42 m up: 0.466. It was written here
+       as 0.43, the file's own, and the three sat four centimetres into it: measured from the chair's own mesh, 12 Nov) */
+    const SEATS = { sofa: 0.43, bench: 0.44, chair: 0.466 };
     function buildCast() {
       const tonAt = [TON_TABLE.x + 1.25, TON_TABLE.z + 0.35];
       cast.ton = mkPerson('e4ton', tonAt[0], tonAt[1], faceTo(tonAt[0], tonAt[1], DATA.spawn.x, DATA.spawn.z), { take: 'Idle_3', talk: 'Stand_and_Chat' });
@@ -591,17 +949,37 @@
       /* (his rest, judged on every seated take of his file at its first and last moments: the start of his rise from
          a seat, where he sits upright with both hands on his knees; its first third of a second, back and forth. His
          talk take holds both hands out before his chest from its first frame: that is talk, not rest) */
+      /* (and that third of a second is there and back in PHO_BREATH seconds, a slow breath: at the take's own pace it
+         was a bob every 0.6 s, his head at 15 cm a second. Now 1.5 at its fastest: windowread.mjs) */
+      const PHO_BREATH = 6;
       cast.pho = mkPerson('pho', PHO_AT[0], PHO_AT[1], BENCH.ry, { take: 'Sit_to_Stand_Transition_M', centre: true,
-        win: { Sit_to_Stand_Transition_M: [0.02, 0.3] }, seat: { y: SEATS.bench, takes: /^Sit/ }, skins: { 3: 'phof' }, look: lookD, blobW: 1.1, blobD: 1.2,
+        win: { Sit_to_Stand_Transition_M: [0.02, 0.3, PHO_BREATH] }, seat: { y: SEATS.bench, takes: /^Sit/ }, skins: { 3: 'phof' }, look: lookD, blobW: 1.1, blobD: 1.2,
         talk: 'Sitting_Answering_Questions' });
       cast.pho.home = { x: PHO_AT[0], z: PHO_AT[1], ry: BENCH.ry };
-      /* THE MONKS' ROW under the east tent, on chairs, facing the turf (photograph 2). Chad's monk, as episode 3's shop
-         has him (declared: `reuse`), his far skin episode 3's row */
-      /* (each rests at a different moment of the seated take, so three of one man do not hold one pose) */
-      /* (their rest is the first and last third of a second of the seated take that begins and ends with both hands on
-         the thighs; the talking take holds the hands out in the air the whole way: photographed, and refused as a rest) */
-      cast.monks = [[-3.2, 0.05, 0.02, 0.32], [-2.0, 0.5, 3.5, 0.6], [-0.8, 0.85, 0.08, 0.26]].map(([z, ph, from, len]) => mkPerson('monkshop', 10.22, z, SIT_W, { take: 'Sit_Thumbs_Up_Right', centre: true,
-        win: { Sit_Thumbs_Up_Right: [from, len] }, phase: ph, seat: { y: SEATS.chair, takes: /^Sit/ }, skins: { 3: 'monkrow' }, blobW: 1.0, blobD: 1.1 }));
+      /* THE MONKS' ROW under the east tent, on chairs, facing the turf (photograph 2): THREE DIFFERENT MONKS (Chad,
+         12 Nov 2026: "the 3 monks are the same model, can we have different monks? And their body is clipping through
+         the seats"). His own monk (declared: `reuse`) keeps the middle chair, his far skin episode 3's row; either
+         side of him sit two made here end to end (an older, heavy monk in deep maroon and a slim young one in a dark
+         reddish brown: photograph 2's row is mixed, and the tracker's §5 has their ids).
+         THE TWO NEW MONKS wear the library's seated idle and sit as men sit on a chair: set down by their soles and
+         brought forward by their shins (o.seat.legs), which on a seat 0.93 m deep is its front; their hands laid on
+         their laps where the robe is drawn (o.handsOn). Each rests on 1.3 s of the idle's upright end (10.0 to 0.6 s
+         of it: the head goes 4 cm a way; the masters' longer window catches the start of its lean, 18 cm), there and
+         back in seven and a half and six and a half seconds, so no two breathe together: windowread.mjs.
+         HIS MONK SITS ON THE CHAIR WITH HIS FEET DOWN, as photograph 2's monks sit (cross-legged on it was tried and
+         refused by photograph: his feet went through the chair's sides). Every chair-sit his file has perches, made
+         for a seat some 8 cm higher (the hip joints 17 cm over the knees, the thighs sloping thirty-three degrees:
+         sitread.mjs), so his bottom is set on the seat and each leg solved down to the ground from it (o.seat.down,
+         seatDown). His hands are laid on his thighs as the others' are; he rests on 0.6 s of his thumbs-up take
+         where its end runs into its start, the thumb down (sitread.mjs), there and back in nine seconds */
+      const MONK_SEAT = { y: SEATS.chair, takes: /^Chair_Sit/, legs: { edge: MONKS.x - (MONKS.chair - MONKS.half), r: 0.055, apron: 0.14, sole: -0.005 } };
+      const MONK_HANDS = { how: 'lap' };
+      cast.monks = [
+        mkPerson('e4monkb', MONKS.x, MONKS.zs[0], SIT_W, { take: 'Chair_Sit_Idle_M', centre: true, win: { Chair_Sit_Idle_M: [10.0, 1.3, 7.5] }, phase: 0.05, seat: MONK_SEAT, handsOn: MONK_HANDS, blobW: 1.0, blobD: 1.1 }),
+        mkPerson('monkshop', MONKS.x, MONKS.zs[1], SIT_W, { take: 'Sit_Thumbs_Up_Right', centre: true, win: { Sit_Thumbs_Up_Right: [3.5, 0.6, 9] }, phase: 0.5,
+          seat: { y: SEATS.chair, takes: /^Sit_Thumbs/, down: { edge: MONKS.x - (MONKS.chair - MONKS.half), r: 0.055, apron: 0.14, sole: -0.005, sink: 0.01 } },
+          handsOn: { how: 'lap', out: 0.035, inner: 0, turn: 0.2 }, skins: { 3: 'monkrow' }, blobW: 1.0, blobD: 1.1 }),
+        mkPerson('e4monkc', MONKS.x, MONKS.zs[2], SIT_W, { take: 'Chair_Sit_Idle_M', centre: true, win: { Chair_Sit_Idle_M: [10.0, 1.3, 6.5] }, phase: 0.85, seat: MONK_SEAT, handsOn: MONK_HANDS, blobW: 1.0, blobD: 1.1 })];
     }
     /* LOOK D on Grandmaster Pho: after the tone mapping, the scan's own colour is laid back wherever the texel is
        saturated (his skin, his beads, the gold) and over the whole of his face-and-hands part; the white robe keeps the
@@ -637,13 +1015,19 @@
        a driver rests in its stand and its walk's pace is measured; the film stands them on their dance places. */
     const danceG = new THREE.Group(); danceG.visible = false; world.add(danceG);
     const DANCE = { c: [0.2, -2.6], gap: 1.35, row: 0.75 };
-    /* THEIR WALK is written for them (masters/v26.0/people/MOTIONS.txt `procession`: short unhurried steps, the back
-       straight, both hands held at the waist; the library's walk on them was a stride: photographed crossing the
-       ground, and refused). One cycle of it, heel to heel (2.433 to 4.4 s: gait.mjs), made a loop; each body's feet
-       set on the turf by her own measure. */
-    const DLOOP = { procession: [2.433, 4.4, 0.3] };
-    const dancers = { A: mkDriver('e4dancera', { take: 'Idle_3', pace: true, loops: DLOOP, sink: { procession: -0.024 } }),
-                      B: mkDriver('e4dancerb', { take: 'Idle_3', pace: true, phase: 0.37, loops: DLOOP, sink: { procession: 0.012 } }), at: [], ry: 0, m: [] };
+    /* THEIR WALK-DANCE is written for them (masters/v26.0/people/MOTIONS.txt `walkdance2`; Chad, 12 Nov 2026: "this
+       looping walk dance is just like a simple walk and dance at the same time"): she walks with small steps, both
+       arms out from her sides, rising and falling in turn. Two of its cycles, heel to heel (4.633 to 7.4 s: gait.mjs,
+       where its pace has settled: 0.92 m a second, straight ahead within a degree), made a loop; the file walks it
+       slowed to a dance's pace (c_crowd.js DWALK.rate). The walk written for their one crossing, `procession`, went
+       with that crossing (its take is out of their files; the motion is kept in masters/v26.0/src). The library's
+       walk on them was a stride: photographed crossing the ground, and refused. */
+    const DLOOP = { walkdance: [4.633, 7.4, 0.35] };
+    /* (each body's feet set on the turf by her own measure, gait.mjs: in this walk the second dancer's ankles never come
+       lower than 10.5 cm, where they stand at 8.3 at rest: she walked two and a half centimetres over the grass. The
+       first dancer's come to 7.5 and 8.1 against 8.1: left as they are) */
+    const dancers = { A: mkDriver('e4dancera', { take: 'Idle_3', pace: true, loops: DLOOP }),
+                      B: mkDriver('e4dancerb', { take: 'Idle_3', pace: true, phase: 0.37, loops: DLOOP, sink: { walkdance: 0.024 } }), at: [], ry: 0, m: [] };
     { const fx = PHO_AT[0] - DANCE.c[0], fz = PHO_AT[1] - DANCE.c[1], fl = Math.hypot(fx, fz), f = [fx / fl, fz / fl], r = [f[1], -f[0]], ry = Math.atan2(f[0], f[1]);
       for (let row = 0; row < 2; row++) for (let k = -1; k <= 1; k++) { const x = DANCE.c[0] + f[0] * (row ? -DANCE.row : DANCE.row) + r[0] * k * DANCE.gap, z = DANCE.c[1] + f[1] * (row ? -DANCE.row : DANCE.row) + r[1] * k * DANCE.gap;
         const D = (row + k + 2) % 2 ? dancers.B : dancers.A;

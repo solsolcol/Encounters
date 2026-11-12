@@ -24,7 +24,11 @@ prep() { # prep <in> <out> <sheet px> <log>
   # (CHARTFIX, 12 Nov: v19.8's law. A generated sheet has a few hundred charts thinner than a texel's reach, hair
   #  packed against white cloth: each speckled its surface white whatever the filtering. Each is pointed at a spot of
   #  its own colour: no painted pixel is touched)
-  NOTHIN=1 TEX=$3 NOMAP=1 CHARTFIX=1 node tools/prepmonk.mjs $1 $2 1 >> $4 2>&1
+  # (SIDED, for a body that asks it: a point shares the normal of the faces at its place that look its way and of no
+  #  others. A remesh closes the corner of a mouth or an eye by putting both sides' points on one place, and shared
+  #  among all the faces there the normal lies along the fold: a flat grey patch at the mouth of each monk made on
+  #  12 Nov, lit, with the head filling the frame. The bodies made before it are as they were: it is not on for them)
+  env NOTHIN=1 TEX=$3 NOMAP=1 CHARTFIX=1 ${SIDED:+SIDED=1} node tools/prepmonk.mjs $1 $2 1 >> $4 2>&1
 }
 one() {  # one <name> <near triangles> <near sheet px> <take args...>
   n=$1; near=$2; px=$3; shift 3; log=$SRC/$n-people.log; : > $log
@@ -63,10 +67,16 @@ go ton && one ton 40000 2048 $(T ton basics -,Stand_and_Chat,-,-,-,-,-) \
   $(T ton seiza seiza) $(T ton prostrate prostrate) $(T ton give give)
 go bench && one bench 40000 2048 $(T bench lib Idle_3,Stand_and_Chat,-,-) $(T bench give give) $(T bench seiza seiza) $(T bench prostrate prostrate)
 for m in hermita hermitb red white; do go $m && master $m; done
-# (the dancers' walk is their own, written for them: `procession` (people/MOTIONS.txt). The library's walk on a
-#  dancer was a stride: photographed crossing the ground on 12 Nov, and refused)
-go dancera && one dancera 30000 2048 $(T dancera lib Idle_3) $(T dancera procession procession) $(T dancera dance1 dance1) $(T dancera dance2 dance2)
-go dancerb && one dancerb 30000 2048 $(T dancerb lib Idle_3) $(T dancerb procession procession) $(T dancerb dance1 dance1) $(T dancerb dance2 dance2)
+# (the dancers' walk is their own, written for them. The library's walk on a dancer was a stride: photographed
+#  crossing the ground on 12 Nov, and refused. `procession`, the walk written for their one crossing of build 60, went
+#  with that crossing: nothing plays it, so it is not laid on them (v5.20); its motion is kept in src/)
+# (and their WALK-DANCE, for the loop up and down the ground in play: Chad, 12 Nov 2026, "this looping walk dance is
+#  just like a simple walk and dance at the same time, looping for more visual flair". Written for them the same way,
+#  MOTIONS.txt `${WALKDANCE:-walkdance2}`: the arms out and rising and falling in turn as she walks; the other one
+#  written, `walkdance`, is kept in src/)
+WD=${WALKDANCE:-walkdance2}
+go dancera && one dancera 30000 2048 $(T dancera lib Idle_3) $(T dancera dance1 dance1) $(T dancera dance2 dance2) $(T dancera $WD walkdance)
+go dancerb && one dancerb 30000 2048 $(T dancerb lib Idle_3) $(T dancerb dance1 dance1) $(T dancerb dance2 dance2) $(T dancerb $WD walkdance)
 # (who of the eight plays more than the kneel, the bow and the stand: the woman who goes up to the hermit sways (deva);
 #  the man whose arms rise is made of the arms of `armsopen` on the kneel's legs (devc: c_cast.js `mix`); the young man
 #  ahead of him in the line raises his bai sri and sways (devg))
@@ -90,4 +100,12 @@ go devh && dev devh
 kid() { n=$1; LEVELS="m:4000:512 f:1500:256" one $n ${KIDNEAR:-24000} 2048 $(T $n kid $2); }
 go girl && kid girl Idle_3,Run_02,-,-,Happy_jump
 go boy && kid boy Idle_3,-,Run_03,-,-
+# THE MONKS' ROW (Chad, 12 Nov 2026: "the 3 monks are the same model, can we have different monks?"). Two monks made
+# here end to end (people/PROMPTS.txt, "THE MONKS' ROW": an older, heavy monk in deep maroon and a slim young one in a
+# dark reddish brown, as photograph 2's row is mixed) sit either side of his own monk, who keeps the middle chair. Each
+# wears the library's seated idle and nothing else (33 of takes.sh's `lib 33,243`; the stand, 243, is left out: they
+# never rise). Seen close under their tent: 30,000 triangles, colour at 2048.
+monk() { n=$1; SIDED=1; one $n 30000 2048 $(T $n lib Chair_Sit_Idle_M,-); SIDED=; }
+go monkb && monk monkb
+go monkc && monk monkc
 echo PEOPLE DONE

@@ -37,9 +37,12 @@ group("e4c3 v26.0 (episode 4 chapter 3, the Wai Kru): ITS PEOPLE, each made end 
       person('dancera', 'a dancer, white and gold') + person('dancerb', 'a dancer, white and gold') +
       person('deva', 'the devotees, eight bodies in white') + person('devb', '') + person('devc', '') + person('devd', '') +
       person('deve', '') + person('devf', '') + person('devg', '') + person('devh', '') +
-      person('girl', 'the children of the festival (the plan\'s 4.1 and 3.7): a girl of seven') + person('boy', 'and a boy of five'))
+      person('girl', 'the children of the festival (the plan\'s 4.1 and 3.7): a girl of seven') + person('boy', 'and a boy of five') +
+      person('monkb', 'the two monks made for the row under the east tent (Chad, 12 Nov 2026: "can we have different monks?"; his own monk keeps the middle chair): an older, heavy monk in deep maroon') +
+      person('monkc', 'and a slim young monk in a dark red'))
 group("e4c3: GRANDMASTER PHO, Chad's own model, cast for the first time (prepared over v24.38 to v24.56: masters/v24.56;\n"
-      "168,029 triangles, 19 takes, his face and hands on a sheet of their own); and his far skin, a permissive cut of the\n"
+      "168,029 triangles, 19 takes, his face and hands on a sheet of their own; his right armpit's loose flaps laid down\n"
+      "on the arm on 12 Nov 2026: tools/armflap.mjs, the tracker's 15.6); and his far skin, a permissive cut of the\n"
       "same body to 22,000 triangles with no sheets of its own, bound to his bones and wearing his materials, drawn only\n"
       "across the turf (tools/permcut.mjs NOTEX NOANIM TRIS=22000 ERR=0.03)",
       [('pho', 'pho.glb', 'Grandmaster Pho'), ('phof', 'phof.glb', '')])

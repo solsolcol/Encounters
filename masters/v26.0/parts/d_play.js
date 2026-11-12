@@ -400,7 +400,6 @@
         after(0.95, () => { if (!live(run)) return; turnPerson(P, toHim, 0.55); span(P, 'give', 0.5, 1.9, 1.4, { fade: 0.2, hold: 1.5 }); });   // and held out to him in both
         after(1.7, () => { if (live(run)) lookAt({ x: myBai.position.x, y: myBai.position.y + 0.3, z: myBai.position.z }, 1.0); });           // his eyes go down to it
         after(3.1, () => { if (!live(run)) return; play.tonGive = null; myBai.visible = false; fx('x3baitake', 0.36); baiHands(true, { from: -1, p: 0, secs: 0.8 });
-          dancersGo();                                                                                                                      // (and across the ground the dancers set off: they are crossing his way by the time he walks up it)
           span(P, 'give', 3.6, 5.85, 1.9, { fade: 0.3, then: (Q) => rest(Q, 0.7) });
           after(0.9, () => { if (live(run)) lookAt({ x: g.x, y: 1.5, z: g.z }, 1.1); }); }); });                                                // and back up to Ton
       /* and as Ton's line ends, the girl by the table jumps for joy and throws up her petals: his eyes go to her (borrowed
@@ -465,6 +464,7 @@
         kit.pose('lying', { y: KNEEL.y, yaw: PLACE_RY, span: 0.02, pitchLo: -1.4, pitchHi: KNEEL.hi, secs: 0.3 });
         if (kit.captions) kit.captions([1, 2, 3].map((k) => ({ at: CHANT.near[k - 1][0], end: CHANT.near[k - 1][1], text: W['cap' + k], sub: W['cap' + k + 'Sub'] }))); }
       fx('x3chant', 0.64); play.chanting = true;                               // (the loudspeakers carry the chant now: the ground's music stops for it, mixBeds)
+      dancersStill();                                                          // (and the dancers stop where they are and turn to the tables: c_crowd.js)
       whenReady(cast.ton, (P) => hold(P, 'prostrate', 0.15, 0.85, 0.6));
       after(HOMAGE.lead, () => { if (!live(run)) return;
         play.bow = { t: 0, prev: 0, n: HOMAGE.n, secs: HOMAGE.bow * HOMAGE.n, depth: 1.0, run, sound: 'x3bowall', done: () => homageDone(run) };
@@ -510,6 +510,13 @@
        them forward (his own take, at its stillest moment) and where the young man's are when he raises his bai sri are
        both measured on the bodies (handsAt), and the young man is moved so that the two middles stand over one another */
     const PHO_ON = { take: 'Sitting_Answering_Questions', from: 3.5, len: 1.2 }, YM_UP = 2.6;
+    /* (his hands laid on it are a STILLNESS: a third of a second of that take round its middle, the pose the raised
+       bai sri was solved to meet, there and back in six seconds. Played whole at the take's pace, 1.2 s there and back
+       every 2.4, his head went 15 cm a way at 12 cm a second while his hands were pinned: Chad, 12 Nov, "bobbing and
+       bouncing too much". And held half risen and standing, below, on a twentieth and a tenth of a second of the rise
+       in six and seven seconds: on 0.28 and 0.5 s at the take's pace he bounced 16 and 11 cm, every half second and
+       every second, all the while the player was offered the press) */
+    const PHO_STILL = { len: 0.3, secs: 6 };
     function ymPlace() {
       const Y = cast.ym, Ph = cast.pho; if (!Y || !Ph) return;
       const [bx, bz] = benchAt(0.46, YM_B), ry = faceTo(bx, bz, PHO_AT[0], PHO_AT[1]);
@@ -530,17 +537,17 @@
       /* THE BLESSING AHEAD OF HIM (photographs 5 and 6), then the pull */
       const T = { up: 1.2, on: 2.6, petals: 6.4, down: 9.6, trance: 10.4, rise: 11.2, pull: 12.0, say: 15.5 };
       after(T.up, () => { if (!live(run)) return; ymBai.visible = true; play.ymCarry = true; span(cast.ym, 'offer', 5.9, YM_UP, 1.5, { hold: 0.5, fade: 0.5 }); lay(cast.ym, ymGrip, { secs: 0.5 }); fx('x3baitake', 0.22, 0.2); });
-      after(T.on, () => { if (!live(run)) return; hold(cast.pho, PHO_ON.take, PHO_ON.from, PHO_ON.len, 0.9); lay(cast.pho, phoGrip, { secs: 1.0 }); });
+      after(T.on, () => { if (!live(run)) return; hold(cast.pho, PHO_ON.take, PHO_ON.from + PHO_ON.len * 0.5 - PHO_STILL.len * 0.5, PHO_STILL.len, 0.9, PHO_STILL.secs); lay(cast.pho, phoGrip, { secs: 1.0 }); });
       after(T.petals, () => { if (!live(run)) return; lay(cast.pho, null, { secs: 0.45 }); span(cast.pho, 'Sit_Cheer_with_Left_Hand', 0.15, 2.5, 2.7, { fade: 0.5, then: (P) => rest(P, 0.8) });
         after(1.3, () => { if (!live(run)) return; const Y = cast.ym.group.position, h = PHO_HAND_UP(); petalBurst(h, [Y.x, Y.z], dayClock.t, { r: 0.7, up: 1.2 }); fx('x3petals', 0.45, 0.2); }); });
       after(T.down, () => { if (!live(run)) return; lay(cast.ym, null, { secs: 0.5 });
         span(cast.ym, 'offer', YM_UP + 0.5, 6.4, 1.6, { fade: 0.2, then: (P) => { play.ymCarry = false; ymSetDown(); take(P, 'sway', 1.4); } }); });
-      after(T.rise, () => { if (live(run)) span(cast.pho, 'Sit_to_Stand_Transition_M', 0.3, 2.25, 2.6, { fade: 0.6, hold: 0.28 }); });
+      after(T.rise, () => { if (live(run)) span(cast.pho, 'Sit_to_Stand_Transition_M', 0.3, 2.25, 2.6, { fade: 0.6, hold: 0.05, holdSecs: 6 }); });
       after(T.pull, () => { if (!live(run)) return; play.pull = { k: 0, to: 1, secs: 9, offer: false }; });
       after(T.say, () => { if (!live(run)) return; queueLine('q3u1');
         queueFn(() => { if (!live(run)) return;
           /* he stands, and has lifted his eyes: he is looking straight at him */
-          span(cast.pho, 'Sit_to_Stand_Transition_M', 2.25, 3.4, 1.8, { fade: 0.3, hold: 0.5 }); gaze(cast.pho, 'lens', { secs: 1.6, reach: 0.9 });
+          span(cast.pho, 'Sit_to_Stand_Transition_M', 2.25, 3.4, 1.8, { fade: 0.3, hold: 0.16, holdSecs: 7 }); gaze(cast.pho, 'lens', { secs: 1.6, reach: 0.9 });
           play.pull.offer = true; play.busy = false; objectiveFor('festival', { complete: false }); }); });
     }
     /* where his raised hand is at the top of the throw */
@@ -898,7 +905,7 @@
         return R.p; }
       dayOneStage();
       if (R.p === 'festival' || R.p === 'seen' || R.p === 'check') { lineStage(); yaw.position.set(LINE_AT.x, EYE, LINE_AT.z); yaw.rotation.y = phoYawFrom(LINE_AT); pitch.rotation.x = -0.08; return R.p; }
-      setFormation('arrive'); dancersForm('arrive', R.p);
+      setFormation('arrive');
       if (R.p === 'baisri') { tonHome(); myBai.visible = false; return R.p; }
       tonToPlace();
       if (R.p === 'tables') { myBai.visible = false; yaw.position.set(TABLES_AT.x, EYE, TABLES_AT.z); yaw.rotation.y = Math.PI; pitch.rotation.x = 0; return R.p; }
@@ -932,7 +939,7 @@
       if (R.p === 'check') { lineStage(); baiHands(true, { p: 0, secs: 0.01 }); play.looked = true;
         if (play.checked) { betweenBegin(); return; }
         checkBegin(true); return; }
-      setFormation('arrive'); dancersForm('arrive', R.p);                             // (at the tables and at his place the dancers have crossed: c_crowd.js)
+      setFormation('arrive');                                                         // (and the dancers begin their loop again: c_crowd.js dancersForm, which setFormation calls)
       if (R.p === 'baisri') { tonHome(); myBai.visible = false; baiHands(true, { p: 0, secs: 0.01 }); setPhase('baisri', { complete: false }); return; }
       tonToPlace();
       if (R.p === 'tables') { myBai.visible = false; baiHands(true, { p: 0, secs: 0.01 }); zoneAt(PLACE); setPhase('tables', { complete: false }); return; }

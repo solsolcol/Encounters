@@ -305,6 +305,24 @@ that fits it, with the version it came from.
 - Before a real ceremony or place is designed, he is asked what the real one is like and for photographs of it:
   episode 4 chapter 3's Wai Kru was first designed as the calmest, whitest place in the game from written sources about
   other lineages, and the real one is festive, loud and colourful. (v26.0)
+- EVERY PICTURE IS VIEWED FULL SIZE, UNASKED ("You SHOULD ALWAYS VIEW FULL SIZE AND NOT WAIT UNTIL I TELL YOU TO. IM SICK
+  OF THIS"; "how did that pass your review? This is not the first time i kept saying things that should not pass
+  review and you are absolutely blind"). Whatever the player will see that a change touches (a body, a pose, a hand, a
+  seat, a joint, a prop) is photographed at the phone's real size from where the player stands, and each picture is
+  opened at its full size, one at a time, BEFORE the change is built on, deployed or reported. A sheet of small
+  pictures is an index for finding one, never a judgement. What looks wrong in each is written down and fixed first;
+  nothing is called done, fixed, rebuilt or seated from a number, a lab view or a small picture. Looking at the thing
+  is part of making it, so deploy-first does not excuse it (the three monks went live with wrists broken back and
+  hands like claws that my own notes had already described; "Pho's armpit: rebuilt" was said before it had been looked
+  at from his front in the game, where it still had a ragged opening). (v26.0)
+- NO SMALL PICTURE IS EVER A CHECK ("You are banned from ever using small picture check, everything needs to be high res,
+  full size images. If you need to have multiple images in one image, it should be a high res image, everything you do
+  has been low res"). A photograph that judges anything is HIGH RES: a phone's window at its real size in CSS pixels
+  (390 x 844, so its windows are laid out as his phone lays them) DRAWN at two device pixels or more to one (780 x 1688
+  and up: tools/probes/e4c3beats.mjs does it by default), a lab picture at a thousand pixels or more a view, and a
+  detail taken with a narrower lens, never by enlarging a small picture. Several pictures in one image keep every
+  picture's own full pixels, and if the whole is larger than a viewer shows at its own size it is opened a piece at a
+  time. He sees the pictures the work is judged by: a low-res picture is a check nobody could have made. (v26.0)
 - THE REPOSITORY IS PUBLIC (checked 11 Nov 2026). Photographs of real people and lists of names are never committed: his
   reference photographs live on the working machine under a path git ignores (`masters/v26.0/ref/`), are described in
   words in the plan with their checksums in the research note, and are asked of him again if the machine is replaced. No
@@ -1274,7 +1292,11 @@ and each one word to change (the last image, a petal on his open hand; the flood
 table and not at the offering tables; no bed of sound for each tent; the gold never photographed at three strengths:
 the tracker's §13 SAID list, docs/OPEN-ITEMS.md C13). The tracker's §13 is every ask of his against the build. Its research and the second pass over
 what the game states: docs/research/V26.0-WAIKRU.md and -VERDICTS.md (which wins where they differ). Grandmaster Pho's
-gold is lifted in this chapter (`auraAt`, c_zfx.js), from the colours chapter 2 kept for it. Chapter 4 is next
+gold is lifted in this chapter (`auraAt`, c_zfx.js), from the colours chapter 2 kept for it. His four asks of 12 Nov
+(Grandmaster Pho's armpit, his bobbing, three different monks off their seats' insides, the dancers' loop) are the
+tracker's §15; two of my fixes went live wrong (the monks' arms, the armpit) and were replaced at build 77 (the release's deploy
+`6af5dd0621a2346e2cda05ea`): an arm at rest is designed and judged as §15.5 says, and what is left is
+docs/OPEN-ITEMS.md C13 o. Chapter 4 is next
 (S1·13, case one: the woman who rose from her wheelchair).
 The episode's plan, with what remains his to decide:
 **docs/V24.0-EPISODE4-PLAN.md** (its sixth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is

@@ -557,8 +557,15 @@ ASSETS = {
     'e4boy':        ('assets/e4boy.glb', True, False),     # and a boy of five
     'e4boym':       ('assets/e4boym.glb', True, False),
     'e4boyf':       ('assets/e4boyf.glb', True, False),
+    'e4monkb':      ('assets/e4monkb.glb', True, False),     # the two monks made for the row under the east tent (Chad, 12 Nov 2026: "can we have different monks?"; his own monk keeps the middle chair): an older, heavy monk in deep maroon
+    'e4monkbm':     ('assets/e4monkbm.glb', True, False),
+    'e4monkbf':     ('assets/e4monkbf.glb', True, False),
+    'e4monkc':      ('assets/e4monkc.glb', True, False),     # and a slim young monk in a dark red
+    'e4monkcm':     ('assets/e4monkcm.glb', True, False),
+    'e4monkcf':     ('assets/e4monkcf.glb', True, False),
     # e4c3: GRANDMASTER PHO, Chad's own model, cast for the first time (prepared over v24.38 to v24.56: masters/v24.56;
-    # 168,029 triangles, 19 takes, his face and hands on a sheet of their own); and his far skin, a permissive cut of the
+    # 168,029 triangles, 19 takes, his face and hands on a sheet of their own; his right armpit's loose flaps laid down
+    # on the arm on 12 Nov 2026: tools/armflap.mjs, the tracker's 15.6); and his far skin, a permissive cut of the
     # same body to 22,000 triangles with no sheets of its own, bound to his bones and wearing his materials, drawn only
     # across the turf (tools/permcut.mjs NOTEX NOANIM TRIS=22000 ERR=0.03)
     'pho':          ('assets/pho.glb', True, False),     # Grandmaster Pho
@@ -768,16 +775,16 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'e4dancerbf', 'e4deva', 'e4devam', 'e4devaf', 'e4devb', 'e4devbm', 'e4devbf', 'e4devc', 'e4devcm',
            'e4devcf', 'e4devd', 'e4devdm', 'e4devdf', 'e4deve', 'e4devem', 'e4devef', 'e4devf', 'e4devfm', 'e4devff',
            'e4devg', 'e4devgm', 'e4devgf', 'e4devh', 'e4devhm', 'e4devhf', 'e4girl', 'e4girlm', 'e4girlf', 'e4boy',
-           'e4boym', 'e4boyf', 'pho', 'phof', 'w3baisri', 'w3naga', 'w3wheel', 'w3parasol', 'w3tower', 'w3candle',
-           'w3fan', 'w3nagastaff', 'w3pewter', 'w3purple', 'w3fruit', 'w3sweets', 'w3khantok', 'w3puff', 'w3chair',
-           'w3lowtable', 'w3bench', 'w3sofa', 'w3petalbowl', 'w3petalsteel', 'w3smallbaisri', 'w3candlemid',
-           'w3candlesmall', 'w3kratip', 'w3chicken', 'w3coconut', 'w3soda', 'w3water', 'w3matroll', 'w3shirt',
-           'w3chrys', 'w3roses', 'w3claypot', 'w3pchair', 'w3horns', 'w3taper', 'w3glass', 'w3tissue', 'w3nagafount',
-           'w3nagagreen', 'w3nagawhite', 'w3ganesha', 'w3croton', 'w3dracaena', 'w3waterjar', 'w3walllamp',
-           'w3t_turf', 'w3t_petalturf', 'w3t_earth', 'w3t_gravel', 'w3t_redplank', 'w3t_tin', 'w3t_brick',
-           'w3t_skirt', 'w3t_satin', 'w3t_mat', 'w3t_carpet', 'w3t_bluemat', 'w3t_swag', 'w3t_banner',
-           'w3t_treeline', 'w3t_redroof', 'w3t_hallbrick', 'w3t_steptile', 'w3t_lawn', 'w3t_kalae', 'w3t_fretwork',
-           'w3t_sign',
+           'e4boym', 'e4boyf', 'e4monkb', 'e4monkbm', 'e4monkbf', 'e4monkc', 'e4monkcm', 'e4monkcf', 'pho', 'phof',
+           'w3baisri', 'w3naga', 'w3wheel', 'w3parasol', 'w3tower', 'w3candle', 'w3fan', 'w3nagastaff', 'w3pewter',
+           'w3purple', 'w3fruit', 'w3sweets', 'w3khantok', 'w3puff', 'w3chair', 'w3lowtable', 'w3bench', 'w3sofa',
+           'w3petalbowl', 'w3petalsteel', 'w3smallbaisri', 'w3candlemid', 'w3candlesmall', 'w3kratip', 'w3chicken',
+           'w3coconut', 'w3soda', 'w3water', 'w3matroll', 'w3shirt', 'w3chrys', 'w3roses', 'w3claypot', 'w3pchair',
+           'w3horns', 'w3taper', 'w3glass', 'w3tissue', 'w3nagafount', 'w3nagagreen', 'w3nagawhite', 'w3ganesha',
+           'w3croton', 'w3dracaena', 'w3waterjar', 'w3walllamp', 'w3t_turf', 'w3t_petalturf', 'w3t_earth',
+           'w3t_gravel', 'w3t_redplank', 'w3t_tin', 'w3t_brick', 'w3t_skirt', 'w3t_satin', 'w3t_mat', 'w3t_carpet',
+           'w3t_bluemat', 'w3t_swag', 'w3t_banner', 'w3t_treeline', 'w3t_redroof', 'w3t_hallbrick', 'w3t_steptile',
+           'w3t_lawn', 'w3t_kalae', 'w3t_fretwork', 'w3t_sign',
            # <<< e4c3 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY

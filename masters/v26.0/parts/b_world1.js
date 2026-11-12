@@ -37,6 +37,13 @@
     const SHED = { x0: -16, x1: -10.5, z0: -14, z1: -8, eave: 2.4 };
     const TENT_W1 = { x: -9, z: -1 }, TENT_W2 = { x: -9, z: 5 }, TENT_E = { x: 9, z: -2 };
     const TENT = { w: 4, eave: 2.2, peak: 3.3 };
+    /* THE MONKS' ROW under the east tent (photograph 2): three carved armchairs in one line, and the spot of each monk
+       who sits in one. One table for the chairs, their blocker and the sitters (v16.7). The chair is drawn at 1.11 of
+       its file: 0.946 m deep (its front face `half` ahead of its middle), its seat's top 0.466 m up, 0.708 m clear
+       between its arms (tools/probes/seatread.mjs assets/w3chair.glb 1.11). The chairs stand 21 cm behind the
+       sitters' spots: a seat that deep is sat on at its front, the shins down before its front face (c_cast.js:
+       o.seat.legs), and the one who sits cross-legged sits back in it (`deep`: his hips behind the seat's middle) */
+    const MONKS = { x: 10.22, zs: [-3.2, -2.0, -0.8], chair: 10.43, s: 1.11, half: 0.473, deep: 0.135 };
     /* HIS BENCH (photographs 1, 5, 6, read together): it stands at the canopy's south side and FACES THE OFFERING TABLES
        AND THE HALL (photograph 1 is taken over its back rail: the hall stands ahead, the west tents to the left, the
        lime pole at the front right), a little west of north. Two sit on it: he at its east end, the second master in

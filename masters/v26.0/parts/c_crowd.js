@@ -344,71 +344,69 @@
     }
 
     /* ================================================================ THE DANCERS ON THE GROUND
-       (the plan's §3.7: picture 2, "The walk up the middle: dancers crossing ahead", and "the ground answers his feet ...
-       dancers cross as he passes the first tent". Never built until the release's closing pass: the six were drawn only
-       in the festival's film, so they came from nowhere and went back to it.)
-       All of day one they are somewhere on the ground, and the film's dance is one stretch of it:
-         `east`   while the ground gathers and he has not yet set off up it: lined up in three pairs at the east edge of
-                  the middle aisle, turned west, ready to go on;
-         `cross`  as the bai sri comes into his hands (dancersGo; on a Continue, when he steps north past Ton's
-                  table): they walk across the open band between the rows, AHEAD of him, right to left, to the
-                  masters' side, at their walk's own slow pace (under half a metre a second: by the time Ton has
-                  spoken and he has walked up, the file is crossing his way; and if he has not come up past the
-                  first tent when they reach his way, they stand there until he does: DWALK.hold, DWALK.mark, and
-                  that is where a Continue with the bai sri in his hands finds them). A file is one thing: if he steps into
-                  its way the whole of it stops and waits for him, and walks on when he is clear (so nobody walks
-                  through anybody, and each column is solid wherever she is);
-         `west`   standing before the masters' tent, turned to the open turf they will dance on (through his respects
-                  at the tables and the homage; the film's dance begins from here, on its own cut);
-         `home`   after the dance, at the blessings: resting in three pairs by the monks' tent on the east side.
-       Which of these it is on a Continue is read from the formation and the phase (dancersForm), never stored. The two
-       drivers walk on the spot and the members travel (c_cast.js WALKS), each driver's rate from the ground the file
-       covers (v7.1); pairs are one of each body, the two bodies half a stride apart so no pair marches in step.
-       THE WALK GOES 21 DEGREES TO ITS OWN LEFT (gait.mjs: the take's travel inside its loop), so a walking dancer is
-       turned that much the other way and her steps fall along the file's line (`yaw`, eased in and out with the take:
-       standing, she faces the way she stands). On the ground all six are worn the same way round (a troupe's shawls
-       lie on the same shoulder; the film's dance mirrors every other one, as it did). */
-    /* THE CROSSING WAITS FOR HIS FEET (the plan's 3.7: "Things happen at his marks, not on a clock: dancers cross as he
-       passes the first tent"; and of its pictures, "none is left to chance"). Set off, the file comes on as far as his
-       way up the middle (`hold`: the two who lead at x -1.9, where the straight way from Ton's table to the offering
-       tables crosses their lane) and STANDS there, ready to go on; it crosses when he has come up the ground past Ton's
-       table and the first tent (`mark`: his z under 6.5). Most players are past the mark before the file is there, and
-       never see it stand (it takes ten seconds to come that far); one who lingers by Ton's table finds them waiting,
-       and they cross ahead of him when he comes. Either way the file is crossing his way as he walks up to it. */
-    const DWALK = { z: -0.75, lat: 0.42, gap: 1.25, x0: 2.2, x1: -7.0, share: 1, halt: 1.15, up: 0.7, down: 2.4, take: 'procession', yaw: 21.2 * Math.PI / 180,
-                    hold: 4.1, mark: 6.5 };
+       THEY LOOP (Chad, 12 Nov 2026: "can you make the dancers dance more often in a looping manner going/dancing from
+       one end of the venue, then dancing to the other end, then repeat and loop, during the gameplay sequence. The real
+       full dance happens in the cutscene, while this looping walk dance is just like a simple walk and dance at the same
+       time, looping for more visual flair."). This is the later word on the dancers in play, and it replaces what the
+       release's closing pass built from the plan's §3.7 (a file that set off as the bai sri came into his hands,
+       stood at his way until he came up past the first tent, crossed once and waited before the masters' tent).
+       All of day one's play the six go up and down the open band between the rows in three pairs, in their WALK-DANCE
+       (c_cast.js: a walk with the arms out and rising and falling in turn, written for them), from the east end of the
+       band to the west end, where each turns about by way of the offering tables, stands a breath, and comes back; and
+       again. The film's dance is its own stretch, on its own cut:
+         `loop`   while the ground gathers and through his respects (the formation `arrive`), and again at the blessings
+                  (`bless`: a shorter band, short of those who kneel before the west tent);
+         `still`  for the homage: when the chant begins they stop where they are, turn to the offering tables and
+                  stand, as the whole ground does (dancersStill);
+         `dance`  the film's dance, on their dance places (the film poses the drivers and shows the group itself);
+         `home`   any other ground of day one (the photograph): resting in three pairs by the monks' tent.
+       Which of these it is on a Continue is read from the formation (dancersForm), never stored: a loop begins at the
+       band's east end. A file is one thing: if he steps into its way the whole of it stops and waits for him, and goes
+       on when he is clear (so nobody walks through anybody, and each column is solid wherever she is). The two drivers
+       walk on the spot and the members travel (c_cast.js WALKS), each driver's rate from the ground the file covers
+       (v7.1); pairs are one of each body, the two bodies half a stride apart so no pair steps together. A walking
+       dancer is turned by her take's own heading, so her steps fall along the file's line (eased in and out with the
+       take: standing, she faces the way she stands). On the ground all six are worn the same way round (a troupe's
+       shawls lie on the same shoulder; the film's dance mirrors every other one, as it did). */
+    const DWALK = { z: -0.75, lat: 0.42, gap: 1.25, x0: 2.2, x1: { arrive: -7.0, bless: -3.9 }, rate: 0.72, halt: 1.15, up: 0.6, down: 1.6, take: 'walkdance',
+                    turn: 1.5, rest: 0.9, first: 1.2 };
     const DHOME = [[7.35, 1.05], [8.15, 1.0], [7.3, 1.95], [8.2, 2.0], [7.75, 2.85], [8.55, 2.8]];
-    const dancersDir = { ph: 'east', d: 0, v: 0, walking: false, clear: 0, n: 0, wk: 0, free: false };
+    /* (d: how far the file has come from the band's east end; dir: +1 going west, -1 coming back; at: 'walk', or 'turn'
+       at an end, t seconds into it) */
+    const dancersDir = { ph: 'loop', d: 0, dir: 1, at: 'turn', t: 0, v: 0, walking: false, clear: 0, n: 0, wk: 0, laps: 0 };
     const danceBlock = dancers.m.map(() => new THREE.Box3(new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 61, 0)));
     const dancerSpot = (i, d) => { const pair = i >> 1, side = i & 1 ? 1 : -1; return [DWALK.x0 + pair * DWALK.gap - d, DWALK.z + side * DWALK.lat]; };
-    const DLEN = DWALK.x0 - DWALK.x1;
+    const dLen = () => DWALK.x0 - (formNow === 'bless' ? DWALK.x1.bless : DWALK.x1.arrive);
+    const NORTH = Math.PI, facing = (dir) => (dir > 0 ? -Math.PI / 2 : Math.PI / 2);     // (a body at 0 faces +z: west is -90 degrees, the tables' way 180)
     function dancersPlace() {
       /* (their columns stand wherever day one is the ground, shown or put away for a film; never on the next morning) */
       const D = dancersDir, on = dayOne.visible, r = 0.3;
       dancers.m.forEach((M0, i) => { let x, z, ry;
         if (D.ph === 'dance') { [x, z] = dancers.at[i]; ry = dancers.ry; }
         else if (D.ph === 'home') { [x, z] = DHOME[i]; const o = DHOME[i ^ 1]; ry = faceTo(x, z, o[0], o[1]) + (i & 1 ? 0.25 : -0.2); }
-        else { [x, z] = dancerSpot(i, D.ph === 'east' ? 0 : D.ph === 'west' ? DLEN : D.d);
-          ry = D.ph === 'west' ? M0.ryTo : -Math.PI / 2; }
+        else { [x, z] = dancerSpot(i, D.d); ry = D.ph === 'still' ? NORTH : facing(D.dir); }
         M0.group.position.set(x, 0, z); M0.group.rotation.y = ry; M0.lvNow = -1;
         M0.group.scale.x = D.ph === 'dance' && M0.o.mirror ? -M0.s : M0.s;
         danceBlock[i].min.set(x - r, on && D.ph !== 'dance' ? 0 : 60, z - r); danceBlock[i].max.set(x + r, on && D.ph !== 'dance' ? 1.5 : 61, z + r); });
     }
-    dancers.m.forEach((M0, i) => { const [x, z] = dancerSpot(i, DLEN); M0.ryTo = faceTo(x, z, DANCE.c[0], DANCE.c[1]); });
-    /* where they are for this formation (and, on a Continue, this phase: with the bai sri in his hands they stand at
-       his way, waiting for him to come up; at the tables and at his place they have crossed) */
-    function dancersForm(name = formNow, ph = null) {
-      const D = dancersDir; D.v = 0; D.clear = 0; D.walking = false; D.wk = 0; D.free = false; D.n++;
-      D.ph = name === 'arrive' ? (ph === 'tables' || ph === 'place' ? 'west' : ph === 'baisri' ? 'cross' : 'east') : 'home';
-      D.d = D.ph === 'cross' ? DWALK.hold : 0;
+    /* where they are for this formation: on a ground they loop on, at the band's east end and about to set off west */
+    function dancersForm(name = formNow) {
+      const D = dancersDir; D.v = 0; D.clear = 0; D.walking = false; D.wk = 0; D.n++;
+      D.ph = name === 'arrive' || name === 'bless' ? 'loop' : 'home';
+      D.d = 0; D.dir = 1; D.at = 'turn'; D.t = DWALK.turn + DWALK.rest - DWALK.first; D.laps = 0;   // (they stand a moment, then set off)
       for (const Dr of [dancers.A, dancers.B]) { Dr.rate = 1; rest(Dr, 0); }
       for (const M0 of dancers.m) M0.turn = null;
       dancersPlace();
     }
     /* the film's dance: on their dance places (the film poses the drivers and shows the group itself) */
-    function dancersDance() { dancersDir.ph = 'dance'; dancersDir.v = 0; dancersDir.walking = false; dancersDir.wk = 0; dancersPlace(); }
-    /* they set off (the bai sri has come into his hands: d_play.js tonTalk) */
-    function dancersGo() { if (dancersDir.ph === 'east' && formNow === 'arrive' && dayOne.visible) dancersDir.ph = 'cross'; }
+    function dancersDance() { const D = dancersDir; D.ph = 'dance'; D.v = 0; D.walking = false; D.wk = 0; for (const M0 of dancers.m) M0.turn = null; dancersPlace(); }
+    /* THE HOMAGE: they stop where they are and turn to the offering tables (d_play.js, as the chant begins) */
+    function dancersStill() {
+      const D = dancersDir; if (D.ph !== 'loop') return;
+      D.ph = 'still'; D.v = 0; D.wk = 0;
+      if (D.walking) { D.walking = false; for (const Dr of [dancers.A, dancers.B]) { Dr.rate = 1; rest(Dr, 0.6); } }
+      for (const M0 of dancers.m) M0.turn = { from: M0.group.rotation.y, to: NORTH, t: 0, secs: 1.3 };
+    }
     function dancersTick(wdt, st) {
       const D = dancersDir;
       if (st === 'cine') return;                                                 // (a film shows or hides them itself: y_stage.js)
@@ -418,47 +416,53 @@
       if (danceG.visible !== show || D.shown !== show) { D.shown = show; danceG.visible = show; dancers.A.idle = dancers.B.idle = !show; dancersPlace(); }
       if (!show || st !== 'play') { if (D.walking) { dancers.A.rate = 0; dancers.B.rate = 0; } return; }
       if (D.ph === 'dance') dancersForm();                                       // (the film is over and nothing has said where they are: where the formation has them)
-      if (D.ph === 'east' && phase === 'baisri' && yaw.position.z < 9.4) D.ph = 'cross';
-      if (D.ph !== 'cross') return;
+      if (D.ph !== 'loop') return;
       const A = dancers.A, B2 = dancers.B; if (!A.ready || !B2.ready) return;
       /* (a probe's still: tools/probes/e4c3beats.mjs holds the file in mid-step to photograph a walk on a box that draws a
          frame a second; never set in play) */
       if (D.freeze) { A.rate = 0; B2.rate = 0; return; }
+      const TK = DWALK.take, L = dLen(), r = 0.3;
       /* (each body's own pace over the ground and the way its walk goes from its own front: c_cast.js `pace`. The file
-         goes at the slower body's pace, and the other's take is slowed to it, so both walk with their feet planted) */
-      const TK = DWALK.take, pA = (A.pace && A.pace[TK]) || 0.44, pB = (B2.pace && B2.pace[TK]) || 0.44, V = Math.min(pA, pB) * DWALK.share;
-      const hOf = (Dr) => (Dr.heading && Dr.heading[TK] != null ? Dr.heading[TK] : DWALK.yaw);
-      /* is he in their way? within reach of any of them, or just ahead of the two who lead */
-      let near = false; const px = yaw.position.x, pz = yaw.position.z;
-      for (let i = 0; i < dancers.m.length && !near; i++) { const [x, z] = dancerSpot(i, D.d); if (Math.hypot(px - x, pz - z) < DWALK.halt) near = true; }
-      { const [lx] = dancerSpot(0, D.d); if (Math.hypot(px - (lx - 0.75), pz - DWALK.z) < 1.0) near = true; }
-      D.clear = near ? 0 : D.clear + wdt;
-      /* (his mark: the bai sri is his and he has come up the ground past the first tent. Until then they go no further
-         than his way, and stand there) */
-      if (!D.free && phase !== 'arrive' && pz < DWALK.mark) D.free = true;
-      const dEnd = D.free ? DLEN : DWALK.hold, held = !D.free && D.d >= DWALK.hold - 0.06;   // (they slow into their stand; the walk's own end is the arrival, below)
-      const want = near || held ? 0 : (D.v < 0.01 && D.d > 0 && D.clear < 0.4 ? 0 : V);   // (stopped for him, they wait a moment after he is clear)
-      D.v = want > D.v ? Math.min(want, D.v + DWALK.up * wdt) : Math.max(want, D.v - DWALK.down * wdt);
-      D.d = Math.min(dEnd, D.d + D.v * wdt);
-      const mv = D.v > 0.1;
+         goes at the slower body's pace, slowed to a dance's, and each take is slowed to the file, so both walk with
+         their feet planted) */
+      const pA = (A.pace && A.pace[TK]) || 0.9, pB = (B2.pace && B2.pace[TK]) || 0.9, V = Math.min(pA, pB) * DWALK.rate;
+      const hOf = (Dr) => (Dr.heading && Dr.heading[TK] != null ? Dr.heading[TK] : 0);
+      if (D.at === 'turn') {
+        /* at an end: stopped, each turns about (by way of the offering tables), they stand a breath, and set off again */
+        D.t += wdt;
+        if (D.t >= DWALK.turn + DWALK.rest) { D.at = 'walk'; D.clear = 1; }
+      } else {
+        /* is he in their way? within reach of any of them, or just ahead of the two who lead */
+        let near = false; const px = yaw.position.x, pz = yaw.position.z, lead = D.dir > 0 ? 0 : dancers.m.length - 2;
+        for (let i = 0; i < dancers.m.length && !near; i++) { const [x, z] = dancerSpot(i, D.d); if (Math.hypot(px - x, pz - z) < DWALK.halt) near = true; }
+        { const [lx] = dancerSpot(lead, D.d); if (Math.hypot(px - (lx - D.dir * 0.75), pz - DWALK.z) < 1.0) near = true; }
+        D.clear = near ? 0 : D.clear + wdt;
+        /* (they slow into the end of the band: no faster than a stop from there asks) */
+        const left = D.dir > 0 ? L - D.d : D.d, cap = Math.sqrt(Math.max(0, 2 * DWALK.down * 0.5 * left)) + 0.04;
+        const want = near ? 0 : (D.v < 0.01 && D.clear < 0.4 ? 0 : Math.min(V, cap));   // (stopped for him, they wait a moment after he is clear)
+        D.v = want > D.v ? Math.min(want, D.v + DWALK.up * wdt) : Math.max(want, D.v - DWALK.down * wdt);
+        D.d = Math.max(0, Math.min(L, D.d + D.dir * D.v * wdt));
+        if ((D.dir > 0 ? L - D.d : D.d) < 1e-3) {                                // the end of the band: they stop, and turn about
+          D.v = 0; D.at = 'turn'; D.t = 0; D.laps++;
+          dancers.m.forEach((M0) => { M0.turn = { from: M0.group.rotation.y, dq: -D.dir * Math.PI, t: 0, secs: DWALK.turn }; });
+          D.dir = -D.dir; }
+      }
+      const mv = D.at === 'walk' && D.v > 0.08;
       if (mv !== D.walking) { D.walking = mv;
-        if (mv) { take(A, TK, 0.45, true); take(B2, TK, 0.45, true); if (B2.acts[TK]) B2.acts[TK].time = B2.acts[TK].getClip().duration * 0.5; }
-        else { A.rate = 1; B2.rate = 1; rest(A, 0.45); rest(B2, 0.45); } }
-      if (D.walking) { A.rate = Math.max(0.5, Math.min(1.2, D.v / pA)); B2.rate = Math.max(0.5, Math.min(1.2, D.v / pB)); }
-      D.wk = D.walking ? Math.min(1, D.wk + wdt / 0.45) : Math.max(0, D.wk - wdt / 0.45);
-      /* (a body is turned so that its WALK goes west, not its front: by the take's own heading, eased in with the take) */
-      const wkS = D.wk * D.wk * (3 - 2 * D.wk), ryOf = (M0) => -Math.PI / 2 - hOf(M0.D) * wkS;
-      if (D.d >= DLEN - 1e-4) {                                                  // there: each turns to the open turf, and they wait
-        dancers.m.forEach((M0) => { M0.turn = { from: ryOf(M0), t: 0 }; });
-        D.ph = 'west'; D.v = 0; D.walking = false; D.wk = 0; A.rate = 1; B2.rate = 1; rest(A, 0.45); rest(B2, 0.45); }
-      const r = 0.3;
-      dancers.m.forEach((M0, i) => { const [x, z] = dancerSpot(i, D.d); M0.group.position.set(x, 0, z); if (D.ph === 'cross') M0.group.rotation.y = ryOf(M0);
+        if (mv) { take(A, TK, 0.5, true); take(B2, TK, 0.5, true); if (B2.acts[TK]) B2.acts[TK].time = B2.acts[TK].getClip().duration * 0.5; }
+        else { A.rate = 1; B2.rate = 1; rest(A, 0.5); rest(B2, 0.5); } }
+      if (D.walking) { A.rate = Math.max(0.35, Math.min(1.2, D.v / pA)); B2.rate = Math.max(0.35, Math.min(1.2, D.v / pB)); }
+      D.wk = D.walking ? Math.min(1, D.wk + wdt / 0.5) : Math.max(0, D.wk - wdt / 0.5);
+      /* (a body is turned so that its WALK goes along the band, not its front: by the take's own heading, eased in with the take) */
+      const wkS = D.wk * D.wk * (3 - 2 * D.wk);
+      dancers.m.forEach((M0, i) => { const [x, z] = dancerSpot(i, D.d); M0.group.position.set(x, 0, z); if (D.at === 'walk' && !M0.turn) M0.group.rotation.y = facing(D.dir) - hOf(M0.D) * wkS;
         danceBlock[i].min.set(x - r, 0, z - r); danceBlock[i].max.set(x + r, 1.5, z + r); });
     }
-    /* (the turn on arriving, eased; apart from the walk's own tick so it runs on after the state has changed) */
+    /* (a turn, eased: about at an end of the band (`dq`, the way round given), or to a facing by the shorter way (`to`);
+       apart from the walk's own tick so it runs on after the state has changed) */
     function dancersTurn(wdt) {
-      for (const M0 of dancers.m) { const T = M0.turn; if (!T) continue; T.t = Math.min(1, T.t + wdt / 0.9);
-        const k = T.t * T.t * (3 - 2 * T.t), dq = Math.atan2(Math.sin(M0.ryTo - T.from), Math.cos(M0.ryTo - T.from));
+      for (const M0 of dancers.m) { const T = M0.turn; if (!T) continue; T.t = Math.min(1, T.t + wdt / (T.secs || 0.9));
+        const k = T.t * T.t * (3 - 2 * T.t), dq = T.dq != null ? T.dq : Math.atan2(Math.sin(T.to - T.from), Math.cos(T.to - T.from));
         M0.group.rotation.y = T.from + dq * k; if (T.t >= 1) M0.turn = null; }
     }
 
