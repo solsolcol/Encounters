@@ -353,7 +353,9 @@
          `cross`  as the bai sri comes into his hands (dancersGo; on a Continue, when he steps north past Ton's
                   table): they walk across the open band between the rows, AHEAD of him, right to left, to the
                   masters' side, at their walk's own slow pace (under half a metre a second: by the time Ton has
-                  spoken and he has walked up, the file is crossing his way). A file is one thing: if he steps into
+                  spoken and he has walked up, the file is crossing his way; and if he has not come up past the
+                  first tent when they reach his way, they stand there until he does: DWALK.hold, DWALK.mark, and
+                  that is where a Continue with the bai sri in his hands finds them). A file is one thing: if he steps into
                   its way the whole of it stops and waits for him, and walks on when he is clear (so nobody walks
                   through anybody, and each column is solid wherever she is);
          `west`   standing before the masters' tent, turned to the open turf they will dance on (through his respects
@@ -366,9 +368,17 @@
        turned that much the other way and her steps fall along the file's line (`yaw`, eased in and out with the take:
        standing, she faces the way she stands). On the ground all six are worn the same way round (a troupe's shawls
        lie on the same shoulder; the film's dance mirrors every other one, as it did). */
-    const DWALK = { z: -0.75, lat: 0.42, gap: 1.25, x0: 2.2, x1: -7.0, share: 1, halt: 1.15, up: 0.7, down: 2.4, take: 'procession', yaw: 21.2 * Math.PI / 180 };
+    /* THE CROSSING WAITS FOR HIS FEET (the plan's 3.7: "Things happen at his marks, not on a clock: dancers cross as he
+       passes the first tent"; and of its pictures, "none is left to chance"). Set off, the file comes on as far as his
+       way up the middle (`hold`: the two who lead at x -1.9, where the straight way from Ton's table to the offering
+       tables crosses their lane) and STANDS there, ready to go on; it crosses when he has come up the ground past Ton's
+       table and the first tent (`mark`: his z under 6.5). Most players are past the mark before the file is there, and
+       never see it stand (it takes ten seconds to come that far); one who lingers by Ton's table finds them waiting,
+       and they cross ahead of him when he comes. Either way the file is crossing his way as he walks up to it. */
+    const DWALK = { z: -0.75, lat: 0.42, gap: 1.25, x0: 2.2, x1: -7.0, share: 1, halt: 1.15, up: 0.7, down: 2.4, take: 'procession', yaw: 21.2 * Math.PI / 180,
+                    hold: 4.1, mark: 6.5 };
     const DHOME = [[7.35, 1.05], [8.15, 1.0], [7.3, 1.95], [8.2, 2.0], [7.75, 2.85], [8.55, 2.8]];
-    const dancersDir = { ph: 'east', d: 0, v: 0, walking: false, clear: 0, n: 0, wk: 0 };
+    const dancersDir = { ph: 'east', d: 0, v: 0, walking: false, clear: 0, n: 0, wk: 0, free: false };
     const danceBlock = dancers.m.map(() => new THREE.Box3(new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 61, 0)));
     const dancerSpot = (i, d) => { const pair = i >> 1, side = i & 1 ? 1 : -1; return [DWALK.x0 + pair * DWALK.gap - d, DWALK.z + side * DWALK.lat]; };
     const DLEN = DWALK.x0 - DWALK.x1;
@@ -385,10 +395,12 @@
         danceBlock[i].min.set(x - r, on && D.ph !== 'dance' ? 0 : 60, z - r); danceBlock[i].max.set(x + r, on && D.ph !== 'dance' ? 1.5 : 61, z + r); });
     }
     dancers.m.forEach((M0, i) => { const [x, z] = dancerSpot(i, DLEN); M0.ryTo = faceTo(x, z, DANCE.c[0], DANCE.c[1]); });
-    /* where they are for this formation (and, on a Continue, this phase: at the tables and at his place they have crossed) */
+    /* where they are for this formation (and, on a Continue, this phase: with the bai sri in his hands they stand at
+       his way, waiting for him to come up; at the tables and at his place they have crossed) */
     function dancersForm(name = formNow, ph = null) {
-      const D = dancersDir; D.d = 0; D.v = 0; D.clear = 0; D.walking = false; D.wk = 0; D.n++;
-      D.ph = name === 'arrive' ? (ph === 'tables' || ph === 'place' ? 'west' : 'east') : 'home';
+      const D = dancersDir; D.v = 0; D.clear = 0; D.walking = false; D.wk = 0; D.free = false; D.n++;
+      D.ph = name === 'arrive' ? (ph === 'tables' || ph === 'place' ? 'west' : ph === 'baisri' ? 'cross' : 'east') : 'home';
+      D.d = D.ph === 'cross' ? DWALK.hold : 0;
       for (const Dr of [dancers.A, dancers.B]) { Dr.rate = 1; rest(Dr, 0); }
       for (const M0 of dancers.m) M0.turn = null;
       dancersPlace();
@@ -421,9 +433,13 @@
       for (let i = 0; i < dancers.m.length && !near; i++) { const [x, z] = dancerSpot(i, D.d); if (Math.hypot(px - x, pz - z) < DWALK.halt) near = true; }
       { const [lx] = dancerSpot(0, D.d); if (Math.hypot(px - (lx - 0.75), pz - DWALK.z) < 1.0) near = true; }
       D.clear = near ? 0 : D.clear + wdt;
-      const want = near ? 0 : (D.v < 0.01 && D.d > 0 && D.clear < 0.4 ? 0 : V);   // (stopped for him, they wait a moment after he is clear)
+      /* (his mark: the bai sri is his and he has come up the ground past the first tent. Until then they go no further
+         than his way, and stand there) */
+      if (!D.free && phase !== 'arrive' && pz < DWALK.mark) D.free = true;
+      const dEnd = D.free ? DLEN : DWALK.hold, held = !D.free && D.d >= DWALK.hold - 0.06;   // (they slow into their stand; the walk's own end is the arrival, below)
+      const want = near || held ? 0 : (D.v < 0.01 && D.d > 0 && D.clear < 0.4 ? 0 : V);   // (stopped for him, they wait a moment after he is clear)
       D.v = want > D.v ? Math.min(want, D.v + DWALK.up * wdt) : Math.max(want, D.v - DWALK.down * wdt);
-      D.d = Math.min(DLEN, D.d + D.v * wdt);
+      D.d = Math.min(dEnd, D.d + D.v * wdt);
       const mv = D.v > 0.1;
       if (mv !== D.walking) { D.walking = mv;
         if (mv) { take(A, TK, 0.45, true); take(B2, TK, 0.45, true); if (B2.acts[TK]) B2.acts[TK].time = B2.acts[TK].getClip().duration * 0.5; }
