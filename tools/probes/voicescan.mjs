@@ -8,8 +8,10 @@
 // ITS BLIND SPOTS: a chapter's beds (DATA.ambience, set under a film by its own frame — e4c2's filmBedAt) and any sound a
 // stage starts itself are not cues, so a stretch held only by the room reads as bare here: read the film's bed before
 // calling a stretch silent (musiccensus.mjs has the same note).
-//   CH=e4c2 [GAP=1.5] [MUSIC=x2open,...] node tools/probes/voicescan.mjs     (exit 1 on any overlap)
-import { readFileSync } from 'node:fs';
+//   CH=e4c2 [GAP=1.5] [MUSIC=x2open,...] [OUT=cues.json] node tools/probes/voicescan.mjs     (exit 1 on any overlap)
+// (v26.0) OUT=<file.json> also writes what was walked: per film its length, every cue (at, kind, vol) in time order and
+// every fade. It is the list of what SHOULD sound, which a browser probe then holds against what did (e4c3sound.mjs).
+import { readFileSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
 import { DIR } from '../../testlib.mjs';
@@ -46,6 +48,7 @@ for (const [k, fn] of Object.entries(ch.films || {})) if (typeof fn === 'functio
 (ch.scenes || []).forEach((fn, i) => { if (typeof fn === 'function') list.push(['ending ' + 'ABCD'[i], fn]); });
 const fmt = x => x.toFixed(2);
 let fails = 0;
+const dump = {};
 for (const [label, fn] of list) {
   const tracks = [], cues = [], fades = [];
   const T = (t0, t1) => { tracks.push(Math.max(+t0 || 0, (t1 === undefined ? +t0 : +t1) || 0)); };
@@ -63,6 +66,7 @@ for (const [label, fn] of list) {
                    'rightHandModel', 'prayerArmL', 'PRAYER_R', 'PRAYER_L']) api[k] = anyProxy();
   try { fn(anyProxy(), anyProxy(), api); } catch (e) { console.log(label, 'could not be walked:', e.message); continue; }
   const dur = Math.max(1, ...tracks);
+  dump[label] = { dur, cues: cues.slice().sort((a, b) => a.at - b.at), fades };
   const span = q => {
     const f = fades.filter(x => x.kind === q.kind && x.t0 >= q.at - 1e-6).sort((a, b) => a.t0 - b.t0)[0];
     return { kind: q.kind, a: q.at, b: Math.min(dur, q.at + lenOf(q.kind), f ? f.t1 : Infinity) };
@@ -84,5 +88,6 @@ for (const [label, fn] of list) {
     console.log(`  no voice ${fmt(a).padStart(6)} → ${fmt(b).padStart(6)} (${fmt(b - a)} s): ${held.length ? held.join(', ') : 'NO CUE (the beds only)'}`);
   }
 }
+if (process.env.OUT) writeFileSync(process.env.OUT, JSON.stringify(dump, null, 1));
 console.log(`\n${fails ? fails + ' OVERLAP(S)' : 'no voice over another'}`);
 process.exit(fails ? 1 : 0);

@@ -1,0 +1,72 @@
+{
+ "flow": "10J7umsPGa5bj6bEmoBk",
+ "model": "eleven_v3",
+ "voice": "bP8FJDHmWVEgXJDitdQd",
+ "why": "q3A: both first takes were cut on the last word (their last 60 ms 4 to 6 dB under speaking level). The other seven: both first takes ran over 3.4 words a second over the voice alone; said again with a tag that asks for an easier read and, in q3t4, one added ellipsis (the words are the registry's). Letters c, d, e.",
+ "lines": {
+  "q3A": {
+   "prompt": "[reflective] I said yes. He made me say what to.",
+   "sessions": [
+    "dWUEKENVxGqcCQNvLXDW",
+    "INwW0IPwLn7v8tH6z8Yy",
+    "zrpY0aHYpPY99F0k2oTx"
+   ]
+  },
+  "q3t4": {
+   "prompt": "[haunted] I pick up a piece in a shop... and cold runs up my arm.",
+   "sessions": [
+    "HRrNVsDjaQFyZIajFzqJ",
+    "v2d0xntlX4BPQYIeL0bS",
+    "BhH9wMCGyVhDwENsmFU7"
+   ]
+  },
+  "q3c2": {
+   "prompt": "[hesitant] Auntie, can I ask you about him?",
+   "sessions": [
+    "DfGIAqb5XpXRWL9B1qnl",
+    "mXgg1w8GhVN6iDghzF6S",
+    "AHyyd4UupZ5W5AS7mzbr"
+   ]
+  },
+  "q3D5": {
+   "prompt": "[calm] I had asked him to take it away. He gave me the handle, and I found I could keep it.",
+   "sessions": [
+    "WIJY6H0Rg6unfQIF9hHk",
+    "VPqEzEeI7L10QFhamXqx",
+    "B20odfnldFpvL7K3o9cz"
+   ]
+  },
+  "q3o1": {
+   "prompt": "[weary] For years I had been searching for the answers to the same questions.",
+   "sessions": [
+    "Pxco3x8YOd95v2jaVCeY",
+    "PLedod7jMvFqclpuneaa",
+    "E3sgcP3ilwkwo5Q99Ueh"
+   ]
+  },
+  "q3K1": {
+   "prompt": "[solemn] For the first time in my life I had found the teacher who could guide me to the real answers, and I will always be grateful for it.",
+   "sessions": [
+    "8iBqMXa2diMLkBbvFA9M",
+    "4S6AJxZdKCOkgBvPQRYg",
+    "4RWQmD10dxSb5eCmIFrz"
+   ]
+  },
+  "q3t6": {
+   "prompt": "[weary] After one trip a fog sat on my mind until a hermit cleared it.",
+   "sessions": [
+    "daZOledSz2ZEbWlbDTa2",
+    "uSKbCGOcPQbXOqfrcLat",
+    "GlqKskvUmDVESZxuS5wG"
+   ]
+  },
+  "q3m1": {
+   "prompt": "[uneasy] One by one they went up with their bai sri, and some of them went somewhere I could not follow.",
+   "sessions": [
+    "RwpO34NbUhUh1UbgApgM",
+    "WATDi2cB9qxTSUitO0fP",
+    "EnNyH0ZJszohylZsy4Fm"
+   ]
+  }
+ }
+}

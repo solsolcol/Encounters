@@ -787,7 +787,7 @@
              limp hand hanging from a bent wrist, seen from the side it was never made to be seen from) */
           handStill(kH);
           if (ts >= 0.3 && !FL.once.has('chant')) { FL.once.add('chant'); FL.chantOn = true;
-            if (kit && kit.captions) kit.captions([1, 2, 3].map((n) => ({ at: 0.5 + (n - 1) * HOMAGE.bow, end: 0.2 + n * HOMAGE.bow, text: W['cap' + n], sub: W['cap' + n + 'Sub'] }))); }
+            if (kit && kit.captions) kit.captions([1, 2, 3].map((n) => ({ at: CHANT.far[n - 1][0], end: CHANT.far[n - 1][1], text: W['cap' + n], sub: W['cap' + n + 'Sub'] }))); }
         } else {
           if (FL.shot !== 'd4') { FL.shot = 'd4'; FL.chantOn = false; handStill(0); if (api.handsRoot) api.handsRoot.visible = false; myBai.visible = true; if (kit && kit.captions) kit.captions(null); }
           phoFace(); phoTalkFace(); const kTalk = speaks(Ph, t, T, ['ph3D4']); lookNow(Ph, 'lens', 1, 0.5, 0);
@@ -808,16 +808,41 @@
       FL.sub = cur;
       if (cur) subs(cur, T[cur] + (SECS[cur] || 2.5) - t); else if (kit && kit.captions) kit.captions(null);
     }
+    /* THE FILMS' OWN BEDS (M7): the ground's loops under each film, a pure function of the film's clock (the rest of a
+       film's sound is its cues: z_tail.js). Each is a share of play's own level (BED), so a film that begins or ends on
+       play's picture begins and ends on play's sound */
+    function filmBeds(key, t) {
+      let fest = 0, mus = 0, birds = 0, crick = 0, open = 0, shop = 0;
+      if (key === 'open') { const T = OPENT, k4 = smo(sgk(t, T.o4 + 0.2, T.o4 + 1.8)), kf = smo(sgk(t, T.o4 + 1.8, T.o4 + 3.6));
+        birds = 0.8 * k4 * (1 - 0.7 * kf); fest = kf; mus = 0.3 * kf;                      // his eyes open on the turf: birds, then the ground's noise comes up over them (its loudspeakers only a hint: the film's own music is still playing, and two musics at once are a clash; play begins on the ground's own)
+        shop = smo(sgk(t, T.o1 + 0.3, T.o1 + 1.6)) * (1 - smo(sgk(t, T.o4 - 1.4, T.o4 - 0.3))); }   // and before it, his shop at night: its fridge, the street far off
+      else if (key === 'festival') { const T = FEST, kc = smo(sgk(t, T.cut + 0.3, T.cut + 1.5)), kp = smo(sgk(t, T.sweep + 3.6, T.pho + 0.5));
+        fest = lp(0.75, 1, kc) * (1 - 0.8 * kp); mus = kc * (1 - kp); }                    // the dance has its own piece (a cue); the ground's music comes back at the cut, and all of it falls away for the man in white
+      else if (key === 'between') { const T = BETW;
+        fest = 0.6 * (1 - smo(sgk(t, T.n1 + 0.5, T.n1 + 3.6)));                           // the day's noise falls away under the night's music
+        crick = smo(sgk(t, T.n3 - 0.2, T.n3 + 0.8)) * (1 - smo(sgk(t, T.n5 - 0.5, T.n5 + 0.6)));
+        birds = smo(sgk(t, T.n5, T.n5 + 1.5)); }                                          // first light: play's own morning
+      else if (key === 'tell' || key === 'answers') birds = 0.45;
+      else if (key === 'A' || key === 'B' || key === 'C' || key === 'D') {
+        const T = ENDT[key]; birds = 0.5;
+        if (key === 'B') { birds = (0.5 + 0.6 * bump(t, T.silence, T.edge - 0.4, 0.6, 0.5)) * (1 - smo(sgk(t, T.edge - 0.5, T.edge + 0.1)));   // the long silence is held by the birds; the afternoon has its own bed (a cue)
+          crick = smo(sgk(t, T.dusk, T.dusk + 1.0)); }                                    // dusk, and on through the close
+        if (key === 'D') birds = 0.5 * (1 - smo(sgk(t, T.shut + 0.3, T.shut + 1.2))) + 0.25 * smo(sgk(t, T.back, T.back + 1.5));   // the world closes; he comes back to a quieter morning
+        if (t >= T.close) open = c01(FL.openK || 0);                                      // the close's one breath: the world heard open on its level
+      }
+      filmBed.on = true; filmBed.fest = BED.fest * fest; filmBed.mus = BED.mus * mus; filmBed.birds = BED.birds * birds; filmBed.crick = BED.crick * crick;
+      filmBed.open = BED.open * open; filmBed.pull = 0; filmBed.shop = BED.shop * shop;
+    }
     const films = {
       key: '',
       begin(key, c, api) { FL.key = films.key = key; FL.api = api; FL.once.clear(); FL.lit = lookName; FL.sub = ''; if (FILMS[key] && FILMS[key].begin) FILMS[key].begin(api); },
       /* (a film's own frame: play's frame does not run under it, so the levels are chosen here, from the film's lens: v24.22) */
       frame(key, t, api) { if (FILMS[key]) FILMS[key].frame(t, api);
-        filmSubs(key, t);
+        filmSubs(key, t); filmBeds(key, t);
         /* (a probe's viewfinder: tools/probes/e4c3beats.mjs tries a lens here before a shot is written; never set in play) */
         if (FL.vf) { fLens(FL.vf[6]); camAt([FL.vf[0], FL.vf[1], FL.vf[2]], [FL.vf[3], FL.vf[4], FL.vf[5]]); }
         peopleLevels(); lodTick(); },
-      end() { const F = FILMS[FL.key]; if (F && F.end) F.end(); FL.key = films.key = ''; FL.api = null; camera.rotation.z = 0; },
+      end() { const F = FILMS[FL.key]; if (F && F.end) F.end(); FL.key = films.key = ''; FL.api = null; camera.rotation.z = 0; filmBed.on = false; },
       /* THE CLOSE'S ONE BREATH (§4.6: "One breath, played"): the film waits for it (eventWait). While it is played the
          world is laid on its level here, because the film's own frame is standing still; when it ends the film runs on
          and eases the light shut from where he left it */
@@ -835,14 +860,14 @@
     function restore() {}
     function reset() {
       films.end();
-      dropTodo(); speakReset(); lineQ.length = 0; heard.clear(); turns.length = 0;
+      dropTodo(); speakReset(); lineQ.length = 0; heard.clear(); turns.length = 0; ambReset();
       booted = false; preplaced = ''; dayClock.t = 0; lastWall = 0; lastWall0 = 0; pausedAt = 0;
       decOpen = false;
       for (const h of hotspots) { h.done = false; h.dwellT = 0; }
       /* everything a run changes is put back (v8.1: a same-chapter replay never runs build() again) */
       play.run++;
       Object.assign(play, { busy: false, turning: null, bow: null, bai: false, baiP: 0, baiTo: 0, knelt: false, homage: false, pull: null, looked: false,
-                            checked: false, bowed: false, breath: null, tonGive: null, ymCarry: false, ymSet: null, pull3: 0, ymHands: null, away: false });
+                            checked: false, bowed: false, breath: null, tonGive: null, ymCarry: false, ymSet: null, pull3: 0, ymHands: null, away: false, chanting: false });
       play.asked = new Set(); open.k = 0; open.shown = -1; open.over = 0;
       if (kit) {
         if (kit.abortEvent) kit.abortEvent();
@@ -919,6 +944,7 @@
       drum: null, ash: null, embers: null, heroNote: null, smoke: null, flying: null,
       jossTips: [], fireLight: null,
       skyAt: () => FL.sky,                                                      // (the sky stands over the turf; a film's pocket set asks for it over itself)
+      stepSound: () => 'x3step',                                                // his own feet: he left his sandals at the turf's edge (the engine asks every footfall, v16.0)
       /* walktest: where play puts him besides the spawn, and the ground he must STAY on (v25.5): the turf, the gravel
          before the tables and the tents' fronts. He cannot leave it */
       arrivals: [{ what: 'in the line at his bench', x: LINE_AT.x, z: LINE_AT.z }, { what: 'the morning of day two', x: DAWN_AT.x, z: DAWN_AT.z },
@@ -931,6 +957,8 @@
       dbg: { viewfinder(v) { FL.vf = v || null; }, clocks: { A: ENDT.A, B: ENDT.B, C: ENDT.C, D: ENDT.D, CLOSE, FEST, BETW, TELL, ANSW, OPEN: OPENT }, armsOf, handTo, handsTo, baiGrip, baiPut, play, open, cast, bursts, BAI, handBai, myBai, ymBai, petalBurst, auraAt, baiHands, baiRaise, lineBegin, dawnBegin, breathBegin, places: { PLACE, LINE_AT, KNEEL2, DAWN_AT, TABLES_AT } },
       who: () => people.filter(P => !P.driver).map(P => ({ key: P.key, ready: P.ready, take: P.cur, skin: P.lvShown, skins: P.lv.map(v => (v ? 1 : 0)).join('') })),
       plan: { TURF, TABLES, HALL, TENT_W1, TENT_W2, TENT_E, CHIEF, BENCH, POLE, TON_TABLE, WEST_TABLE },
+      /* the ground's own noises (ambTick): how many have sounded, and the last (a probe counts them over a stretch of play) */
+      amb: () => ({ n: ambN, last: ambLast, next: +ambAt.toFixed(2), beds: Object.assign({}, bedMix) }),
       info: () => ({ phase, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], until: +speak.until.toFixed(2),
                      pending: speak.pending ? speak.pending.name : null, decOpen, look: lookName, busy: play.busy,
                      waiting: [...waiting].sort(), mends: twinMends }),

@@ -8742,6 +8742,40 @@ What the baseline contains, by release:
     error before it went live. PUT TO CHAD with the link: Grandmaster Pho's 39 lines for his yes before they are
     voiced (docs/V26.0-PHO-LINES.md), and one reel a role of the three voices auditioned for Grandmaster Pho, Ton
     and the woman at his bench (masters/v26.0/audition/previews; the picks by measure are in the tracker).
+- **v25.8** EPISODE 4 CHAPTER 3, A PREVIEW TO PLAY AND HEAR: THE WHOLE CHAPTER WITH ITS VOICES, ITS MUSIC AND ITS
+    SOUND (12 Nov 2026). The third of the three preview deploys of its build (docs/V26.0-E4C3-BUILD.md, M7); still a
+    PREVIEW (`?ch=e4c3` only; it saves and unlocks nothing; the seventeen released chapters are untouched). WHAT IS
+    NEW SINCE v25.7: every line is SPOKEN (104 lines: his 55 in Brian's voice as in episodes 3 and 4; Grandmaster
+    Pho's 39, Ton's 9 and the one line of the woman at his bench in three new voices, each auditioned against two
+    others and picked by measure until Chad's ear); the three lines of homage are chanted over the ground's
+    loudspeakers and captioned (the Pali over its meaning, timed on the chant's own breaths); 37 effects; seven beds
+    mixed by place and beat (the festival's crowd, its music over the loudspeakers, the morning's birds, the night's
+    crickets, his shop at night, the world heard OPEN on the breath's own level, the pull's drone on the pull's own
+    number); nine noises of the ground on a seeded stream; thirteen music cues (one palette: felt piano and strings
+    for him and his questions, a khim and a bamboo flute for the place and the teacher; two pieces play IN the world,
+    the festival's own music and the dance's). The silent preview's captions are gone (the chant keeps its own).
+    HOW IT WAS MIXED, with no ears: every file measured, and every cue of every film laid beside what sounds under
+    it (masters/v26.0/sound/levels.py -> LEVELS.txt). Three faults were found that way and fixed before the deploy:
+    the effects had been peak-matched like voice takes and 28 cues stood 11 to 31 dB under their music (each
+    one-shot is now levelled by its loudest twentieth of a second, masters/v26.0/sound/level_fx.py); day one stood
+    at a quiet room's level, where Chad's word for it is "festive, loud, and colourful" (its music and crowd are at
+    -25 dBFS together now, a voice still 17 dB over them through the duck); and the opening film began on a second
+    of day one's crowd (the chapter's frame had raised play's beds under the title). The films were RE-TIMED when
+    each line's measured length replaced its estimate (they are pure functions of their clocks): opening 54.7 s,
+    festival 45.5, the night 20.4, the telling 55.5, the answers 93.1; endings with the close 101 to 127 s.
+    THE ENGINE: its three tables only (a STING_SAMPLE row a sound, his lines in ADULT_TAKES, the cast's in
+    CAST_TAKES) and the registry's 104 rows; no code. Episode 1 cannot reach any of it.
+    PROVED before it went live: chaptertest errors none (every cue a known sound with a file, and warmed: the
+    close's eleven cues are fired by a helper the engine's scan cannot read, and are warmed by name as the decision
+    opens); the static scan (tools/probes/voicescan.mjs): no voice over another, every stretch of 1.5 s without a
+    voice held by music or an effect; and on a phone with the sound on (tools/probes/e4c3sound.mjs, new): 157 of
+    157 cues heard from their samples across the opening, the four films and the four endings (each ending on a
+    fresh load, the close's breath played), the beds settled where each phase puts them, no page error.
+    DEPLOYED: `6af51f15a5a1b80083a02136`, 455 served files identical to dist, the cache headers in force. PUT TO
+    CHAD with the link: one reel a music cue (thirteen, masters/v26.0/sound/previews: the takes loudness-matched,
+    the number in the game named); the voice reels of v25.7 still stand. NOT YET DONE, and said so: every film
+    photographed again after the re-timing, each film measured as it plays, the finger's play-through with the sound
+    on, the saves at every phase, the harnesses, the asks audit, the phone's budget (M8).
 
 ## The sheet, version by version
 

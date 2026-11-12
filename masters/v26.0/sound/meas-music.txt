@@ -1,0 +1,78 @@
+x3openmus_a.mp3       57.0s pk   0.1 rms -21.1  sub 14.6% 120-500 69.7% 500-3k 15.6% >3k  0.0%  cen  319  phone-lost  3.3dB  1-4k  0.3%  onset5 27.6%  1s-spread 21.8 drops 7  on 1.05 end 55.90 head -180.0 tail  -76.3
+   arc(2.5s, dB vs median -26.1): +8 -3 -10 +8 -5 +4 +6 -8 +10 +3 -10 +8 -0 +1 +9 -0 +7 +6 +0 +8 +4 -1 -13
+x3openmus_b.mp3       57.0s pk  -1.4 rms -19.1  sub  0.6% 120-500 51.0% 500-3k 48.4% >3k  0.0%  cen  472  phone-lost  1.3dB  1-4k  0.2%  onset5 41.0%  1s-spread  5.5 drops 2  on 0.00 end 55.45 head  -13.9 tail  -76.4
+   arc(2.5s, dB vs median -19.7): +0 +1 +1 -1 +0 +1 +1 -1 +1 +0 +1 +0 +2 +1 +0 -1 +2 +2 +2 -0 +1 +1 -21
+x3openmus_c.mp3       57.0s pk  -1.2 rms -23.0  sub  1.3% 120-500 59.3% 500-3k 39.4% >3k  0.0%  cen  451  phone-lost  1.3dB  1-4k  0.6%  onset5 35.5%  1s-spread  7.5 drops 4  on 0.80 end 54.15 head -180.0 tail  -84.5
+   arc(2.5s, dB vs median -27.7): +6 +5 -8 +10 -0 +3 +6 +1 +7 -2 -5 +8 -2 +7 +6 -3 +9 +1 +4 +7 -5 -12 -25
+x3dancemus_a.mp3      18.0s pk  -6.5 rms -21.4  sub  0.0% 120-500  2.3% 500-3k 96.8% >3k  0.9%  cen  759  phone-lost  0.2dB  1-4k  1.0%  onset5 60.3%  1s-spread 17.3 drops 1  on 1.30 end 18.00 head -118.0 tail  -23.1
+   arc(2.5s, dB vs median -21.6): -5 +1 -0 +2 -0 +2 -2
+x3dancemus_b.mp3      18.0s pk   0.5 rms -13.2  sub  9.1% 120-500 73.3% 500-3k 16.2% >3k  1.4%  cen  451  phone-lost  3.4dB  1-4k  3.0%  onset5 23.8%  1s-spread  1.2 drops 0  on 0.65 end 18.00 head -180.0 tail   -9.4
+   arc(2.5s, dB vs median -13.2): -2 -0 -0 +0 -0 +1 +1
+x3dancemus_c.mp3      18.0s pk   1.4 rms -16.0  sub  0.8% 120-500 22.5% 500-3k 74.7% >3k  2.1%  cen 1110  phone-lost  1.2dB  1-4k 50.8%  onset5 20.6%  1s-spread  2.3 drops 0  on 0.80 end 18.00 head -180.0 tail  -12.6
+   arc(2.5s, dB vs median -15.8): -4 -0 +2 +1 +1 -0 -3
+x3festmus_a.mp3       64.0s pk   2.1 rms -11.5  sub 26.0% 120-500 39.8% 500-3k 33.3% >3k  0.9%  cen  476  phone-lost  3.3dB  1-4k  5.0%  onset5 27.7%  1s-spread  6.7 drops 1  on 0.00 end 62.60 head  -12.2 tail  -83.2
+   arc(2.5s, dB vs median -11.4): +0 -1 -0 -1 -1 -1 -1 -1 -1 +1 +0 +1 +0 -0 +0 +0 -0 +0 +0 +0 +0 -0 +1 +1 -0 -34
+x3festmus_b.mp3       64.0s pk   2.8 rms -13.8  sub 47.9% 120-500 32.2% 500-3k 18.6% >3k  1.2%  cen  416  phone-lost  5.1dB  1-4k  9.3%  onset5 25.5%  1s-spread  8.2 drops 3  on 0.35 end 61.50 head -180.0 tail  -85.9
+   arc(2.5s, dB vs median -13.7): -1 -0 -0 +0 -0 +0 -0 +0 +0 +0 +1 +0 +0 +1 +0 +1 +1 +0 -1 -1 -1 -1 -0 -1 -7 -46
+x3festmus_c.mp3       64.0s pk   1.7 rms -12.3  sub 33.6% 120-500 56.5% 500-3k  8.4% >3k  1.4%  cen  353  phone-lost  5.8dB  1-4k  4.8%  onset5 23.8%  1s-spread  6.4 drops 3  on 0.00 end 62.45 head   -6.3 tail  -84.0
+   arc(2.5s, dB vs median -12.2): +0 -0 -0 -1 +1 -0 +1 +0 +1 -0 -0 +1 -1 +2 +1 +1 +1 +1 +0 -2 +0 -2 -0 -2 -7 -35
+x3sightmus_a.mp3      16.0s pk  -6.4 rms -26.2  sub  0.0% 120-500 86.6% 500-3k 13.4% >3k  0.0%  cen  416  phone-lost  1.7dB  1-4k  0.2%  onset5 25.5%  1s-spread 13.5 drops 4  on 1.05 end 14.05 head -180.0 tail  -83.5
+   arc(2.5s, dB vs median -33.1): +12 +6 -0 +9 +2 -11
+x3sightmus_b.mp3      16.0s pk  -8.1 rms -25.7  sub 12.6% 120-500 79.8% 500-3k  7.6% >3k  0.0%  cen  279  phone-lost  4.5dB  1-4k  0.5%  onset5 16.9%  1s-spread 16.0 drops 5  on 0.45 end 12.90 head -109.6 tail  -88.6
+   arc(2.5s, dB vs median -30.5): -4 +7 +10 +5 -4 -22
+x3sightmus_c.mp3      16.0s pk  -3.8 rms -19.4  sub 97.8% 120-500  2.0% 500-3k  0.2% >3k  0.0%  cen   80  phone-lost  9.7dB  1-4k  0.1%  onset5 32.8%  1s-spread 23.4 drops 4  on 0.00 end 12.20 head  -16.4 tail  -94.6
+   arc(2.5s, dB vs median -27.9): +15 +10 +5 -2 -10 -26
+x3nightmus_a.mp3      23.0s pk  -0.6 rms -16.0  sub  1.3% 120-500 90.3% 500-3k  8.4% >3k  0.0%  cen  347  phone-lost  3.1dB  1-4k  0.4%  onset5 32.9%  1s-spread  4.9 drops 1  on 0.00 end 22.75 head  -11.8 tail  -55.0
+   arc(2.5s, dB vs median -15.5): -0 +0 +0 +0 +1 +1 +0 -3 -9
+x3nightmus_b.mp3      23.0s pk  -7.3 rms -24.8  sub 21.5% 120-500 66.6% 500-3k 11.9% >3k  0.0%  cen  300  phone-lost  3.7dB  1-4k  0.1%  onset5 51.8%  1s-spread 51.7 drops 7  on 3.30 end 20.55 head -180.0 tail  -84.8
+   arc(2.5s, dB vs median -25.8): -154 +3 +4 -2 +4 +2 +3 -9 -24
+x3nightmus_c.mp3      23.0s pk  -4.2 rms -22.8  sub  1.6% 120-500 42.7% 500-3k 55.6% >3k  0.0%  cen  522  phone-lost  1.2dB  1-4k  2.6%  onset5 43.4%  1s-spread 32.6 drops 4  on 1.75 end 21.35 head -180.0 tail  -84.0
+   arc(2.5s, dB vs median -24.9): -5 -6 -1 +6 +5 +3 +5 +1 -11
+x3tellmus_a.mp3       58.0s pk  -7.8 rms -29.9  sub  3.1% 120-500 93.3% 500-3k  3.6% >3k  0.0%  cen  336  phone-lost  2.6dB  1-4k  0.3%  onset5 42.3%  1s-spread  8.2 drops 2  on 0.20 end 56.00 head -180.0 tail  -85.1
+   arc(2.5s, dB vs median -36.8): +12 +5 +2 +9 +6 +4 +11 +2 +10 +8 -1 +6 +6 +7 -3 -5 +11 +10 +4 +8 +5 +1 -14
+x3tellmus_b.mp3       58.0s pk  -6.4 rms -26.3  sub 13.0% 120-500 83.5% 500-3k  3.5% >3k  0.0%  cen  282  phone-lost  4.0dB  1-4k  0.1%  onset5 36.9%  1s-spread 10.0 drops 4  on 0.00 end 54.60 head  -23.0 tail  -88.8
+   arc(2.5s, dB vs median -28.5): +1 -3 +0 +3 +3 +1 +3 -3 +1 +2 +1 +4 +5 +4 +1 -2 +7 +5 -5 +5 -2 -10 -25
+x3tellmus_c.mp3       58.0s pk   1.3 rms -17.8  sub 32.2% 120-500 31.8% 500-3k 36.0% >3k  0.0%  cen  353  phone-lost  3.5dB  1-4k  0.3%  onset5 31.9%  1s-spread  8.5 drops 5  on 0.00 end 55.50 head  -15.9 tail  -83.5
+   arc(2.5s, dB vs median -22.0): -2 -0 -6 +1 +0 -6 +6 -3 +6 +5 +1 +5 +4 +5 +9 +5 +9 +7 +5 +8 -6 -13 -20
+x3answmus_a.mp3       96.0s pk   0.6 rms -14.4  sub  1.0% 120-500 50.5% 500-3k 48.0% >3k  0.4%  cen  581  phone-lost  1.8dB  1-4k  7.3%  onset5 15.8%  1s-spread 19.6 drops 10  on 1.65 end 91.50 head -180.0 tail  -91.3
+   arc(2.5s, dB vs median -14.6): -4 -3 -1 -1 -0 -0 -0 -0 -1 -1 +0 +0 +2 -1 +1 +2 +2 +2 +2 +1 +3 +0 +2 +2 +2 +2 +2 +2 +2 -1 +1 +0 -1 -3 -5 -14 -24 -40
+x3answmus_b.mp3       96.0s pk  -0.8 rms -13.8  sub  0.1% 120-500 85.7% 500-3k 13.9% >3k  0.3%  cen  424  phone-lost  2.4dB  1-4k  3.5%  onset5 11.7%  1s-spread  6.7 drops 4  on 0.80 end 94.70 head -180.0 tail  -69.9
+   arc(2.5s, dB vs median -14.5): -15 +1 +2 -5 +2 +1 -3 +3 -4 -3 +1 -4 +3 +1 -3 +2 -2 +1 +2 -4 +2 +1 -2 +3 +0 +0 +3 +2 -1 -1 -2 +3 +4 +4 +3 -2 -3 -8
+x3answmus_c.mp3       96.0s pk   1.1 rms -13.6  sub 12.2% 120-500 50.5% 500-3k 37.2% >3k  0.1%  cen  438  phone-lost  2.8dB  1-4k  2.6%  onset5 17.1%  1s-spread  9.1 drops 6  on 0.00 end 92.30 head  -18.2 tail  -87.6
+   arc(2.5s, dB vs median -13.5): -2 +0 +0 +2 +2 +1 -1 +1 -1 +1 +1 -1 -0 +1 -1 +2 +2 -2 -1 +0 +0 +1 +2 +1 -1 +1 -0 +1 +1 -2 -1 -0 -1 +0 -1 -5 -16 -33
+x3endA_a.mp3          46.0s pk  -4.2 rms -19.7  sub  0.0% 120-500 99.5% 500-3k  0.4% >3k  0.0%  cen  332  phone-lost  2.8dB  1-4k  0.1%  onset5 40.1%  1s-spread  8.1 drops 3  on 0.00 end 44.15 head  -18.6 tail  -77.5
+   arc(2.5s, dB vs median -20.3): +3 +1 +1 +1 -0 -3 +2 +4 +0 -3 +0 +1 +0 -4 +3 +2 -0 -10
+x3endA_b.mp3          46.0s pk   1.9 rms -18.1  sub  0.5% 120-500 87.5% 500-3k 10.4% >3k  1.6%  cen  401  phone-lost  4.2dB  1-4k  5.3%  onset5 33.9%  1s-spread 10.6 drops 6  on 0.00 end 43.55 head  -15.8 tail  -85.8
+   arc(2.5s, dB vs median -21.6): -1 +0 -3 -9 +2 +7 +5 -1 +6 +7 +2 +6 +5 +6 +8 +3 -5 -14
+x3endA_c.mp3          46.0s pk   1.4 rms -16.1  sub 10.5% 120-500 83.5% 500-3k  5.0% >3k  1.0%  cen  278  phone-lost  7.5dB  1-4k  2.1%  onset5 34.5%  1s-spread  9.0 drops 7  on 0.90 end 44.30 head -180.0 tail  -75.0
+   arc(2.5s, dB vs median -18.4): +6 +1 +4 +1 -4 +4 -4 +4 -4 +6 +3 +4 +0 +4 +4 -8 +4 -12
+x3endB_a.mp3          21.0s pk  -4.2 rms -26.2  sub 24.8% 120-500 62.3% 500-3k 12.9% >3k  0.0%  cen  271  phone-lost  4.3dB  1-4k  0.4%  onset5 47.2%  1s-spread 32.7 drops 3  on 1.05 end 13.35 head -180.0 tail  -87.7
+   arc(2.5s, dB vs median -44.8): +23 +14 +4 +24 +21 +1 -7 -9
+x3endB_b.mp3          21.0s pk  -5.9 rms -28.3  sub 11.6% 120-500 87.1% 500-3k  1.3% >3k  0.0%  cen  213  phone-lost  8.8dB  1-4k  0.0%  onset5 46.1%  1s-spread 13.2 drops 2  on 0.55 end 17.40 head -180.0 tail  -83.3
+   arc(2.5s, dB vs median -40.9): +19 +4 -1 -7 +18 +8 -0 -11
+x3endB_c.mp3          21.0s pk  -1.0 rms -22.9  sub 22.5% 120-500 64.9% 500-3k 12.6% >3k  0.0%  cen  246  phone-lost  4.2dB  1-4k  0.1%  onset5 45.4%  1s-spread 11.7 drops 5  on 0.80 end 17.95 head -180.0 tail  -73.6
+   arc(2.5s, dB vs median -28.8): +8 +12 +1 -13 +9 +0 -6 -15
+x3endC_a.mp3          39.0s pk   0.6 rms -13.1  sub  3.9% 120-500 85.8% 500-3k 10.2% >3k  0.1%  cen  396  phone-lost  2.0dB  1-4k  2.4%  onset5 14.1%  1s-spread 12.9 drops 5  on 0.35 end 35.70 head -180.0 tail  -76.7
+   arc(2.5s, dB vs median -12.8): -3 +2 +2 +3 -1 -2 +2 +1 +1 -4 -2 +1 -1 -8 -25 -52
+x3endC_b.mp3          39.0s pk  -1.9 rms -18.1  sub 10.1% 120-500 53.9% 500-3k 34.8% >3k  1.2%  cen  597  phone-lost  2.5dB  1-4k 11.8%  onset5 10.1%  1s-spread 14.3 drops 7  on 1.05 end 35.75 head -180.0 tail  -89.2
+   arc(2.5s, dB vs median -18.5): -12 +1 +0 +1 +3 -1 +3 -1 +1 +4 +2 +1 -0 -9 -25 -54
+x3endC_c.mp3          39.0s pk  -2.5 rms -19.3  sub 27.4% 120-500 41.0% 500-3k 31.3% >3k  0.3%  cen  486  phone-lost  4.3dB  1-4k 15.5%  onset5 13.8%  1s-spread 14.3 drops 8  on 1.30 end 36.20 head -180.0 tail  -88.6
+   arc(2.5s, dB vs median -20.4): -18 -7 +4 +4 +1 +1 +3 +5 +5 +2 +1 -1 -5 -7 -21 -52
+x3endD_a.mp3          31.0s pk  -4.0 rms -22.7  sub  0.2% 120-500 77.7% 500-3k 22.0% >3k  0.1%  cen  438  phone-lost  1.6dB  1-4k  1.1%  onset5 33.1%  1s-spread 11.6 drops 4  on 1.95 end 29.25 head -180.0 tail  -75.6
+   arc(2.5s, dB vs median -30.4): -18 -7 -3 -1 +0 +1 +13 +14 +9 +11 +8 -10
+x3endD_b.mp3          31.0s pk  -2.8 rms -17.5  sub  0.0% 120-500 61.2% 500-3k 38.6% >3k  0.2%  cen  482  phone-lost  1.6dB  1-4k  2.6%  onset5 13.2%  1s-spread 10.0 drops 5  on 1.30 end 30.10 head -180.0 tail  -80.7
+   arc(2.5s, dB vs median -17.6): -21 -11 -0 +3 +1 +2 +2 -1 +1 +2 +0 -4
+x3endD_c.mp3          31.0s pk  -3.7 rms -18.7  sub  0.0% 120-500 69.8% 500-3k 30.2% >3k  0.0%  cen  445  phone-lost  1.9dB  1-4k  2.4%  onset5 12.2%  1s-spread  9.6 drops 5  on 0.90 end 29.90 head -180.0 tail  -81.0
+   arc(2.5s, dB vs median -18.2): -14 -4 -2 -0 +1 +1 +1 +2 +3 +2 -4 -15
+x3closemus_a.mp3      32.0s pk  -1.2 rms -20.6  sub  1.9% 120-500 63.3% 500-3k 34.8% >3k  0.0%  cen  441  phone-lost  2.4dB  1-4k  1.0%  onset5 35.4%  1s-spread  9.3 drops 3  on 0.00 end 30.65 head  -14.5 tail  -82.7
+   arc(2.5s, dB vs median -26.1): +9 -2 +4 +8 -3 +6 +9 +0 +9 +6 -2 +4 -16
+x3closemus_b.mp3      32.0s pk  -3.9 rms -18.5  sub  0.5% 120-500 95.5% 500-3k  4.0% >3k  0.0%  cen  328  phone-lost  3.2dB  1-4k  0.2%  onset5 26.0%  1s-spread 12.0 drops 3  on 0.80 end 29.90 head -180.0 tail  -88.4
+   arc(2.5s, dB vs median -18.5): -1 +0 +0 +3 +0 +2 +1 -1 +1 +0 -1 -6 -37
+x3closemus_c.mp3      32.0s pk  -6.7 rms -25.2  sub 40.4% 120-500 52.9% 500-3k  6.5% >3k  0.2%  cen  256  phone-lost  5.1dB  1-4k  1.7%  onset5 31.0%  1s-spread 10.6 drops 5  on 0.30 end 29.75 head -180.0 tail  -85.5
+   arc(2.5s, dB vs median -26.3): +3 +0 +3 -1 -3 +2 +0 +4 +1 +5 -2 -12 -30
+x3lastmus_a.mp3       31.0s pk  -0.5 rms -13.0  sub  2.1% 120-500 18.0% 500-3k 79.9% >3k  0.0%  cen  603  phone-lost  1.0dB  1-4k  2.1%  onset5 16.4%  1s-spread 32.9 drops 6  on 3.30 end 28.45 head -180.0 tail  -82.6
+   arc(2.5s, dB vs median -12.7): -45 -1 +0 -1 +0 +2 +2 +2 +1 +1 -1 -18
+x3lastmus_b.mp3       31.0s pk  -2.2 rms -18.3  sub  1.8% 120-500 47.1% 500-3k 51.1% >3k  0.0%  cen  568  phone-lost  1.1dB  1-4k  8.1%  onset5 26.6%  1s-spread  9.9 drops 4  on 0.80 end 29.40 head -180.0 tail  -84.0
+   arc(2.5s, dB vs median -18.1): -6 +0 -3 -3 -1 -1 +1 +3 +4 +1 -2 -8
+x3lastmus_c.mp3       31.0s pk  -2.3 rms -18.2  sub  2.0% 120-500 33.0% 500-3k 64.7% >3k  0.3%  cen  602  phone-lost  0.9dB  1-4k  2.3%  onset5 22.3%  1s-spread 17.4 drops 4  on 1.20 end 29.90 head  -96.6 tail  -68.5
+   arc(2.5s, dB vs median -18.3): -6 +0 -1 +1 -1 +0 +0 +2 +3 +3 -1 -6

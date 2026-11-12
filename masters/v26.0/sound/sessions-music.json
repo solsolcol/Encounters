@@ -1,0 +1,85 @@
+{
+ "flow": "KjDinAQkQZQNeSNqqDp2",
+ "nodes": {
+  "x3openmus": "1vFJpjPRnrZXAgpq1SE2",
+  "x3dancemus": "5MqePFCyfJP0WFqv9PKy",
+  "x3festmus": "FWhYMP9hILA7SzqE5mK2",
+  "x3sightmus": "z7pZCXpggTtRg0KvsNhf",
+  "x3nightmus": "7ZVmD6rQn0VIbLL2kuCs",
+  "x3tellmus": "xptmYh0ecgkMwXGLObwY",
+  "x3answmus": "z9BZPI9cAJxiUqz27cXe",
+  "x3endA": "ON0hEGQ6aleSB9EhXqko",
+  "x3endB": "jxW2SpJOfKEdAqthM3g5",
+  "x3endC": "AK80vvxBs5HnMTSeS8yK",
+  "x3endD": "d5VkU61MnIrsc3dMzFMd",
+  "x3closemus": "hlXqheqDfva2RiN3j6Gj",
+  "x3lastmus": "THVDpCdVbXhlgBXMlSBm"
+ },
+ "sounds": {
+  "x3openmus": [
+   "fOjOA18cdAQ6yguRhhUn",
+   "FrH2pJg83Dhi9A7794Gy",
+   "F5RwlVvFJcmEsgcKl5ca"
+  ],
+  "x3dancemus": [
+   "mKxGkS8VaoIonlQsJQmh",
+   "qeoHpJyROx7kjnuvB5F8",
+   "zyZgc5PcRdEiLEPsN3F1"
+  ],
+  "x3festmus": [
+   "yKnPg9zG296D58VWJPrV",
+   "PoAJkjcZCSzsKQ4tUISP",
+   "ijgkxGu0OwsC3hZko2yt"
+  ],
+  "x3sightmus": [
+   "VBxKCuEozm8FSo4QMluL",
+   "Yv6DQ0VZaAt53wLflYZ0",
+   "GsqEH36EiUb0v9oQYfJ8"
+  ],
+  "x3nightmus": [
+   "U9ECls8QFrz34Jabfl0P",
+   "sOoivQDbapStj4AmAjSL",
+   "xbA0gY0rwGbFy3Y6bt3b"
+  ],
+  "x3tellmus": [
+   "Ghltr7B2XKRHk1qSk6cy",
+   "YhXQUBefynTB3mUyXyRs",
+   "hFNONTruqYZ9Q7Pe7efg"
+  ],
+  "x3answmus": [
+   "rikXnB8cbbvaLWGEKBVn",
+   "BZvcx5vD40VrrdE3aUPC",
+   "nuwlTr4zullAubzg6xeg"
+  ],
+  "x3endA": [
+   "NmeHE7FcGop7TFur4Xmy",
+   "gJGW3Myl5NzCAIl06YC9",
+   "TuuA9ONS8vGykZ9CZAzm"
+  ],
+  "x3endB": [
+   "C9TMImlwpwu7wLe5Qvek",
+   "5m3CYunO1ox6tbWvlBtY",
+   "WhywvX4YbWMIZKsNHNTI"
+  ],
+  "x3endC": [
+   "8Rtd3aeMaNiHSS2fLHhD",
+   "dvS5vAf6FaLyiW2AhX3g",
+   "2wjiFaVkxk2J0RORSR4x"
+  ],
+  "x3endD": [
+   "PYL1f2cXlumCCPSknGVI",
+   "nSiDiETZda1rnqki891z",
+   "XjQeLJP82azyrrqJaveK"
+  ],
+  "x3closemus": [
+   "xSlbAsDzbqAqTXrrpOaX",
+   "Jk7icGoOE9w4qdr30MmQ",
+   "A3SPFKOiy6tpMig6gFlX"
+  ],
+  "x3lastmus": [
+   "AZOL6S9orWZr77uuzGqK",
+   "Ir9WVwrfa5feTdApucV3",
+   "ZwYpH1MwOcXwkLTBkZGQ"
+  ]
+ }
+}

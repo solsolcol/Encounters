@@ -116,27 +116,27 @@
      moves what follows it. The names are QUOTED on purpose: build.py gives a sound to a chapter's own pack only when
      the chapter names it in quotes (v21.1). Written by masters/v26.0/script/secs.py from masters/v26.0/script/lines.py. */
   /* SECS BEGIN */
-  const SECS = {      // 0 of 104 MEASURED from their takes; the rest estimated at the speaker's pace
+  const SECS = {      // 104 of 104 MEASURED from their takes; the rest estimated at the speaker's pace
     /* him */
-    'q3o1': 6, 'q3o2': 2.52, 'q3o3': 4.26, 'q3o4': 6.44, 'q3o5': 12.19, 'q3o6': 7.31, 'q3v': 6.18, 'q3p1': 1.22,
-    'q3m0': 5.31, 'q3m1': 9.05, 'q3w1': 2.96, 'q3w2': 6, 'q3w3': 8.18, 'q3u1': 2.27, 'q3u2': 4.01, 'q3u3': 9.23,
-    'q3c1': 3.57, 'q3c2': 3.39, 'q3c3': 8.36, 'q3t1': 6, 'q3t2': 9.23, 'q3t3': 10.1, 'q3t4': 6.44, 'q3t5': 7.92,
-    'q3t6': 6.44, 'q3t7': 12.45, 'q3t8': 1.22, 'q3a1': 9.23, 'q3A0': 3.57, 'q3A1': 8.28, 'q3A2': 5.75, 'q3A3': 8.79,
-    'q3B0': 8.54, 'q3B1': 17.34, 'q3B2': 1.83, 'q3B3': 7.05, 'q3B4': 2.27, 'q3B5': 6.62, 'q3C0': 6.65, 'q3C1': 8.79,
-    'q3C2': 2.09, 'q3C3': 1.22, 'q3C4': 6.62, 'q3D0': 7.23, 'q3D1': 4.26, 'q3D2': 8.54, 'q3D3': 12.01, 'q3D4': 6.18,
-    'q3D5': 9.23, 'q3z1': 10.1, 'q3K1': 12.52, 'q3A': 4.44, 'q3B': 6.18, 'q3C': 4.44, 'q3D': 5.75,
+    'q3o1': 4.01, 'q3o2': 1.69, 'q3o3': 2.89, 'q3o4': 5.37, 'q3o5': 11.85, 'q3o6': 6.17, 'q3v': 4.41, 'q3p1': 0.97,
+    'q3m0': 5.69, 'q3m1': 5.93, 'q3w1': 2.33, 'q3w2': 4.25, 'q3w3': 6.67, 'q3u1': 1.93, 'q3u2': 3.13, 'q3u3': 6.49,
+    'q3c1': 2.81, 'q3c2': 2.33, 'q3c3': 7.21, 'q3t1': 3.85, 'q3t2': 7.13, 'q3t3': 7.93, 'q3t4': 4.97, 'q3t5': 8.01,
+    'q3t6': 4.49, 'q3t7': 8.73, 'q3t8': 1.07, 'q3a1': 7.61, 'q3A0': 2.33, 'q3A1': 7.61, 'q3A2': 6.01, 'q3A3': 6.09,
+    'q3B0': 5.69, 'q3B1': 14.89, 'q3B2': 2.89, 'q3B3': 5.21, 'q3B4': 1.83, 'q3B5': 5.69, 'q3C0': 7.05, 'q3C1': 6.57,
+    'q3C2': 1.21, 'q3C3': 1.77, 'q3C4': 5.13, 'q3D0': 5.93, 'q3D1': 2.97, 'q3D2': 7.85, 'q3D3': 10.21, 'q3D4': 4.33,
+    'q3D5': 5.85, 'q3z1': 7.61, 'q3K1': 8.01, 'q3A': 3.45, 'q3B': 4.17, 'q3C': 4.09, 'q3D': 3.85,
     /* Ton */
-    'tn3a1': 3.86, 'tn3a2': 7.79, 'tn3d1': 3.03, 'tn3m1': 2.2, 'tn3m2': 5.06, 'tn3c1': 7.38, 'tn3c2': 4.88,
-    'tn3n1': 2.61, 'tn3A1': 2.85,
+    'tn3a1': 2.89, 'tn3a2': 6.33, 'tn3d1': 2.65, 'tn3m1': 1.45, 'tn3m2': 4.56, 'tn3c1': 5.85, 'tn3c2': 4.25,
+    'tn3n1': 1.61, 'tn3A1': 2.09,
     /* the woman at his bench */
-    'ds3c1': 7.07,
+    'ds3c1': 7.37,
     /* Grandmaster Pho */
-    'ph3g1': 6.5, 'ph3n1': 10.71, 'ph3n2': 5.97, 'ph3n3': 9.13, 'ph3n4': 10.9, 'ph3n5': 8.95, 'ph3n6': 11.76,
-    'ph3n7': 7.75, 'ph3g2': 1.4, 'ph3g3': 13.87, 'ph3g4': 6.85, 'ph3g5': 6.5, 'ph3b0': 3.69, 'ph3b1': 0.9,
-    'ph3b2': 0.9, 'ph3b3': 3.69, 'ph3b4': 4.39, 'ph3bx': 0.9, 'ph3by': 5.79, 'ph3b5': 6.32, 'ph3p1': 5.79,
-    'ph3p2': 5.27, 'ph3p3': 5.27, 'ph3A1': 4.21, 'ph3A2': 7.55, 'ph3B1': 1.4, 'ph3B2': 5.79, 'ph3B3': 1.93,
-    'ph3B4': 4.56, 'ph3C1': 9.85, 'ph3C2': 3.69, 'ph3C3': 10.02, 'ph3D1': 4.21, 'ph3D2': 6.85, 'ph3D3': 3.16,
-    'ph3D4': 3.69, 'ph3z0': 8.6, 'ph3z1': 9.13, 'ph3z2': 1.93
+    'ph3g1': 4.41, 'ph3n1': 8.57, 'ph3n2': 6.01, 'ph3n3': 8.55, 'ph3n4': 7.76, 'ph3n5': 5.28, 'ph3n6': 6.89,
+    'ph3n7': 5.29, 'ph3g2': 1.93, 'ph3g3': 10.08, 'ph3g4': 5.36, 'ph3g5': 5.44, 'ph3b0': 3.02, 'ph3b1': 0.71,
+    'ph3b2': 0.73, 'ph3b3': 3.04, 'ph3b4': 4.1, 'ph3bx': 0.77, 'ph3by': 3.29, 'ph3b5': 5.77, 'ph3p1': 4.49,
+    'ph3p2': 3.61, 'ph3p3': 4.17, 'ph3A1': 3.13, 'ph3A2': 4.89, 'ph3B1': 1.38, 'ph3B2': 3.93, 'ph3B3': 1.53,
+    'ph3B4': 2.89, 'ph3C1': 6.09, 'ph3C2': 2.33, 'ph3C3': 9.12, 'ph3D1': 3.04, 'ph3D2': 4.49, 'ph3D3': 2.95,
+    'ph3D4': 2.73, 'ph3z0': 6.14, 'ph3z1': 6.25, 'ph3z2': 1.77
   };
   /* SECS END */
 
@@ -144,10 +144,10 @@
      build with no voice in it cannot be followed. So while the chapter is a preview each line's words stand as a
      caption for as long as it is "said" (d_play.js subs; y_stage.js filmSubs). The table and both readers go when the
      chapter leaves preview; SUBS false turns them off before that (once the takes are in). */
-  const SUBS = true;
+  const SUBS = false;
   /* (and until the takes are in the build a line is "said" silently, at once: held the moment a line is allowed for
      bytes to land, every line of a build with no voice in it began with 1.6 s of nothing. M7 sets this true) */
-  const VOICED = false;
+  const VOICED = true;
   /* WORDS BEGIN */
   const WORDS = {      // PREVIEW ONLY: 104 lines, written by masters/v26.0/script/words.py
     'q3o1': "For years I had been searching for the answers to the same questions.",
@@ -415,7 +415,12 @@
 
     musicVol: 0,
     /* the beds, every one at 0 here: mixBeds sets each by the day, the place he stands and the beat (M7) */
-    ambience: { beds: [] },
+    /* THE BEDS, every one at 0 here: mixBeds (d_play.js) sets each by the day and the beat, and a film sets its own
+       (filmBeds, y_stage.js). Loops, made at masters/v26.0/sound.sh: the festival's crowd, its music over the
+       loudspeakers, the morning's birds, the world heard OPEN (the breath's own level), the night's crickets (the
+       night between; ending B's dusk), the pull (a low drone that follows the pull's own number) and his shop at night
+       (the opening film: its 45 s are longer than one pass of the take) */
+    ambience: { beds: [['x3festbed', 0], ['x3festmus', 0], ['x3birds', 0], ['x3open', 0], ['x3crickets', 0], ['x3pull', 0], ['x3shophum', 0]] },
     voiceLine: null,
 
     words: {
@@ -2850,6 +2855,97 @@
     /* a sound of the place, if its file is in the build (M7 makes them; until one lands its cue is simply silent) */
     function fx(name, vol = 1, pan = 0) { if (worldSfx && !(soundOff && soundOff())) worldSfx(name, vol, 1, pan); }
 
+    /* ---- THE GROUND'S SOUND (M7). THE BEDS, each eased toward what the day and the beat want: the festival's crowd
+       and its music over the loudspeakers (day one), the morning's birds (day two), the world heard OPEN (the breath's
+       own level: the game's sound there, with kit.hush closing it), the pull's drone (the pull's own number: however
+       long he stands in it). In a film the beds are the film's (filmBed: y_stage.js writes it from the film's clock;
+       every film cues the rest of its sound itself). The engine ducks every bed under a voice (8 dB). The order is
+       DATA.ambience.beds'.
+       THE LEVELS are set from each file's measured level (masters/v26.0/sound/levels.py -> LEVELS.txt: the median of
+       its seconds), to where the bed stands with nobody speaking: the quiet places at the house's -35 dBFS (the morning's
+       birds, the night, his shop a little under), and DAY ONE LOUD, as the real one is (Chad: "festive, loud, and
+       colourful"): its music over the loudspeakers at -26.5 and the crowd at -31 under it, -25 together, which a
+       voice (-16) still stands 17 dB over through the duck. The world heard open at -28.5 when it is wide; the pull's
+       drone at -30 at its height, the ground's noise fallen away under it */
+    const BED = { fest: 0.64, mus: 0.38, birds: 0.56, open: 0.75, crick: 0.56, pull: 0.62, shop: 0.56 };
+    const bedMix = { fest: 0, mus: 0, birds: 0, open: 0, crick: 0, pull: 0, shop: 0 };
+    const filmBed = { on: false, fest: 0, mus: 0, birds: 0, open: 0, crick: 0, pull: 0, shop: 0 };
+    const BED_EASE = { fest: 1.0, mus: 1.6, birds: 1.0, open: 0.22, crick: 0.8, pull: 0.3, shop: 0.5 };
+    const DAY1 = new Set(['arrive', 'baisri', 'tables', 'place', 'festival', 'seen', 'check']);
+    function mixBeds(wdt, st) {
+      if (!(wdt > 0)) return;
+      const want = { fest: 0, mus: 0, birds: 0, open: 0, crick: 0, pull: 0, shop: 0 };
+      if (st === 'cine') { if (filmBed.on) for (const k in want) want[k] = filmBed[k]; }
+      /* (on the title and the chapter's card nothing is heard: the engine holds every bed at 0 there. Nothing is RAISED
+         there either: this frame runs under the title too, and the opening film began on a second of day one's crowd,
+         eased down from the level play would have had: my own fault, found by the sound probe's first reading) */
+      else if (st === 'title' || st === 'chapter') { /* all at 0 */ }
+      else if (DAY1.has(phase)) {
+        /* (the pull: the ground's own noise falls away under it, the music first; kit.hush closes the bus besides) */
+        const pk = play.pull ? smo(c01(play.pull.k)) : 0;
+        want.fest = BED.fest * (1 - 0.5 * pk) * (phase === 'check' ? 0.8 : 1); want.mus = BED.mus * (1 - pk) * (phase === 'check' ? 0.8 : 1);
+        want.pull = BED.pull * pk;
+        if (play.chanting) { want.mus = 0; want.fest *= 0.55; }                             // the chant is on the loudspeakers, and the ground is bowing
+      } else { want.birds = BED.birds; if (phase === 'breath') want.open = BED.open * Math.max(0, open.shown); }
+      for (const k in bedMix) bedMix[k] += (want[k] - bedMix[k]) * (1 - Math.exp(-wdt / BED_EASE[k]));
+      const B = DATA.ambience.beds; B[0][1] = bedMix.fest; B[1][1] = bedMix.mus; B[2][1] = bedMix.birds; B[3][1] = bedMix.open; B[4][1] = bedMix.crick; B[5][1] = bedMix.pull; B[6][1] = bedMix.shop;
+    }
+    /* where a sound of the ground is, on his screen */
+    function panAt(x, z) {
+      const dx = x - yaw.position.x, dz = z - yaw.position.z, a = Math.atan2(dx, -dz) + yaw.rotation.y;
+      return THREE.MathUtils.clamp(Math.sin(a) * 0.75, -0.75, 0.75);
+    }
+    /* THE GROUND'S OWN NOISES, one at a time on the chapter's clock from their own seeded stream (e3c3's shape, v21.13):
+       on day one a child running past, the loudspeaker's crackle, the flags and banners in a gust, bottles in a crate, a
+       master's hand bell, a burst of clapping; on day two a dove in the tree, a motorbike on the road, a far temple's
+       bell, the flags. Each panned to where it comes from, a third quieter while a line is being said. Never two at
+       once; never in the bows, the line and the pull, or OPEN AND CLOSE (those have their own sound); in play only;
+       reset() rewinds the stream (v8.1). Every one-shot file has its loudest twentieth of a second at -14 dBFS (sound.sh), so a
+       volume here says where it stands: day one's at -23 or so over a ground at -25 (heard as the ground's own, never
+       in front of it), the morning's at -29 over birds at -35 */
+    const AMB_SEED = 0x2603;
+    let ambSeed = AMB_SEED, ambAt = 0, ambBusy = 0, ambLast = '', ambN = 0;
+    function ambRand() {
+      ambSeed = (ambSeed + 0x6D2B79F5) | 0; let t = ambSeed;
+      t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    }
+    const ambSide = (lo, hi) => (ambRand() < 0.5 ? -1 : 1) * (lo + ambRand() * (hi - lo));
+    const AMB = {
+      one: [
+        { n: 'x3os1', v: 0.36, len: 3.0, at: () => ({ x: ambSide(2, 9), z: 2 + ambRand() * 8 }) },          // a child, somewhere among the mats
+        { n: 'x3os2', v: 0.28, len: 3.0, at: () => ({ x: 0, z: -13 }) },                                    // the loudspeakers, at the hall
+        { n: 'x3os3', v: 0.36, len: 4.0, at: () => ({ x: ambSide(0, 4), z: -2 + ambRand() * 4 }) },         // the pole's flags and the banners
+        { n: 'x3os4', v: 0.34, len: 2.5, at: () => ({ x: 9 + ambRand() * 3, z: ambSide(1, 6) }) },          // bottles, at the east tents
+        { n: 'x3os5', v: 0.34, len: 2.5, at: () => ({ x: -9.5, z: ambSide(0, 4) }) },                       // a hand bell, along the masters' row
+        { n: 'x3os6', v: 0.36, len: 4.0, at: () => ({ x: -8, z: 2 + ambRand() * 3 }) },                     // clapping, by the masters
+      ],
+      two: [
+        { n: 'x3os7', v: 0.18, len: 3.0, at: () => ({ x: 9, z: 8 }) },                                      // a dove, in the tree by his bench
+        { n: 'x3os8', v: 0.16, len: 5.0, at: () => ({ x: ambSide(20, 40), z: 25 }) },                       // a motorbike, on the road
+        { n: 'x3os9', v: 0.18, len: 5.0, at: () => ({ x: -40, z: -10 }) },                                  // a far temple's bell
+        { n: 'x3os3', v: 0.17, len: 4.0, at: () => ({ x: ambSide(0, 4), z: -2 + ambRand() * 4 }) },         // the flags
+      ],
+    };
+    function ambTick() {
+      if (!worldSfx || (soundOff && soundOff())) return;
+      const one = phase === 'arrive' || phase === 'baisri' || phase === 'tables' || phase === 'seen' || phase === 'check';
+      const two = phase === 'dawn' || phase === 'decide';
+      if (!(one || two) || play.bow || play.pull) { ambAt = 0; return; }
+      if (!ambAt) { ambAt = dayClock.t + 3 + ambRand() * 5; return; }
+      if (dayClock.t < ambAt || dayClock.t < ambBusy) return;
+      const pool = one ? AMB.one : AMB.two;
+      let k = Math.floor(ambRand() * pool.length);
+      if (pool[k].n === ambLast) k = (k + 1 + Math.floor(ambRand() * (pool.length - 1))) % pool.length;
+      const sd = pool[k], at = sd.at();
+      const vol = sd.v * (dayClock.t < speak.until ? 0.66 : 1) * (0.85 + 0.3 * ambRand());
+      if (worldSfx(sd.n, vol, 0.95 + 0.1 * ambRand(), panAt(at.x, at.z))) {
+        ambN++; ambLast = sd.n; ambBusy = dayClock.t + sd.len + 0.8;
+        ambAt = dayClock.t + (one ? 6 + ambRand() * 8 : 9 + ambRand() * 11);
+      } else ambAt = dayClock.t + 1.5;
+    }
+    function ambReset() { ambSeed = AMB_SEED; ambAt = 0; ambBusy = 0; ambLast = ''; ambN = 0; for (const k in bedMix) bedMix[k] = 0; filmBed.on = false; }
+
     const W = DATA.words;
     const play = { run: 0, busy: false, turning: null, bow: null, bai: false, baiP: 0, baiTo: 0, baiSecs: 1, knelt: false, homage: false,
                    pull: null, looked: false, asked: new Set(), checked: false, bowed: false, breath: null, lookEase: null };
@@ -3018,8 +3114,10 @@
 
     /* ================================================================ P1 · TON, AND THE BAI SRI */
     const WARM_DAY1 = ['q3v', 'tn3a1', 'q3p1', 'tn3a2', 'q3u1', 'q3u2', 'tn3m1', 'q3u3', 'tn3m2', 'q3c1', 'tn3c1', 'q3c2', 'ds3c1', 'tn3c2', 'q3c3',
-                       'x3baitake', 'x3baiset', 'x3kneel', 'x3bowall', 'x3petals', 'x3chant', 'x3tone'];
-    const WARM_DAY2 = ['ph3g1', 'ph3b0', 'ph3b1', 'ph3b2', 'ph3b3', 'ph3b4', 'ph3bx', 'ph3by', 'ph3b5', 'ph3p1', 'ph3p2', 'ph3p3', 'x3kneel', 'x3baiset', 'x3bell'];
+                       'x3baitake', 'x3baiset', 'x3kneel', 'x3bowall', 'x3petals', 'x3chant', 'x3tone',
+                       'x3step', 'x3os1', 'x3os2', 'x3os3', 'x3os4', 'x3os5', 'x3os6'];
+    const WARM_DAY2 = ['ph3g1', 'ph3b0', 'ph3b1', 'ph3b2', 'ph3b3', 'ph3b4', 'ph3bx', 'ph3by', 'ph3b5', 'ph3p1', 'ph3p2', 'ph3p3', 'x3kneel', 'x3baiset', 'x3bell',
+                       'x3step', 'x3os3', 'x3os7', 'x3os8', 'x3os9'];
     function dayOneStage() {
       look('DAY1', 0); auraAt(0, 0); mistK = 1; burstsClear();
       zoneAt(null);
@@ -3055,10 +3153,10 @@
       queueLine('tn3a2', () => { if (!live(run)) return;
         const P = cast.ton, g = P.group.position, toTable = faceTo(g.x, g.z, TON_BAI.x, TON_BAI.z), toHim = faceTo(g.x, g.z, yaw.position.x, yaw.position.z);
         P.actN++; turnPerson(P, toTable, 0.4); hold(P, 'give', 0.18, 0.5, 0.4);                       // his hands come up before his chest as he turns to the table
-        after(0.45, () => { if (live(run)) play.tonGive = { k: 0 }; fx('x3baitake', 0.4, -0.3); });   // it is in his hands
+        after(0.45, () => { if (live(run)) play.tonGive = { k: 0 }; fx('x3baitake', 0.3, -0.3); });   // it is in his hands
         after(0.95, () => { if (!live(run)) return; turnPerson(P, toHim, 0.55); span(P, 'give', 0.5, 1.9, 1.4, { fade: 0.2, hold: 1.5 }); });   // and held out to him in both
         after(1.7, () => { if (live(run)) lookAt({ x: myBai.position.x, y: myBai.position.y + 0.3, z: myBai.position.z }, 1.0); });           // his eyes go down to it
-        after(3.1, () => { if (!live(run)) return; play.tonGive = null; myBai.visible = false; fx('x3baitake', 0.6); baiHands(true, { from: -1, p: 0, secs: 0.8 });
+        after(3.1, () => { if (!live(run)) return; play.tonGive = null; myBai.visible = false; fx('x3baitake', 0.36); baiHands(true, { from: -1, p: 0, secs: 0.8 });
           span(P, 'give', 3.6, 5.85, 1.9, { fade: 0.3, then: (Q) => rest(Q, 0.7) });
           after(0.9, () => { if (live(run)) lookAt({ x: g.x, y: 1.5, z: g.z }, 1.1); }); }); });                                                // and back up to Ton
       queueFn(() => { if (!live(run)) return; play.busy = false; play.tonGive = null; if (kit) kit.root(false); if (!play.bai) { myBai.visible = false; baiHands(true, { from: -1, p: 0, secs: 0.5 }); } setPhase('baisri'); });
@@ -3095,8 +3193,8 @@
         return true;
       }
       const run = play.run; play.busy = true;
-      fx('x3kneel', 0.6); setPhase('place'); baiRaise(-1, 0.9);                // (it goes down under the frame's foot as he kneels, and is on the turf before him when he looks)
-      turnTo(PLACE_RY, 1.1, Object.assign({ pos: PLACE, pitch: -0.3 }, KNEEL), () => { if (!live(run)) return; fx('x3baiset', 0.5); setDown();
+      fx('x3kneel', 0.32); setPhase('place'); baiRaise(-1, 0.9);                // (it goes down under the frame's foot as he kneels, and is on the turf before him when he looks)
+      turnTo(PLACE_RY, 1.1, Object.assign({ pos: PLACE, pitch: -0.3 }, KNEEL), () => { if (!live(run)) return; fx('x3baiset', 0.36); setDown();
         after(0.5, () => { if (!live(run)) return; play.busy = false; objectiveFor('place', { complete: false }); }); });
       return true;
     }
@@ -3104,14 +3202,18 @@
        lines and once more for the teachers, and he with it, his hands joined. Each line is captioned as it is chanted
        (v21.31), timed from the homage's own start so it is right when the game is muted. */
     const HOMAGE = { bow: 5.6, n: 4, lead: 1.2 };
+    /* WHERE EACH LINE OF THE CHANT IS in its file, seconds from its start (masters/v26.0/chant/timing.json: the lines
+       are laid where the bows are, and measured there): on the ground's loudspeakers, and from the temple across the
+       fields (ending D). The captions stand on these, so they are right when the game is muted (v21.31) */
+    const CHANT = { near: [[1.4, 6.6], [7.0, 10.9], [12.6, 18.0]], far: [[0.5, 5.7], [6.1, 10.0], [11.7, 17.1]] };
     function homage() {
       if (phase !== 'place' || !play.knelt || play.homage || play.busy) return false;
       const run = play.run; play.busy = true; objectiveFor('place');
       handsAway(false);
       if (kit) { kit.pray(true, { secs: 0.9, y: -0.3 });
         kit.pose('lying', { y: KNEEL.y, yaw: PLACE_RY, span: 0.02, pitchLo: -1.4, pitchHi: KNEEL.hi, secs: 0.3 });
-        if (kit.captions) kit.captions([1, 2, 3].map((k) => ({ at: HOMAGE.lead + (k - 1) * HOMAGE.bow + 0.2, end: HOMAGE.lead + k * HOMAGE.bow - 0.3, text: W['cap' + k], sub: W['cap' + k + 'Sub'] }))); }
-      fx('x3chant', 0.9);
+        if (kit.captions) kit.captions([1, 2, 3].map((k) => ({ at: CHANT.near[k - 1][0], end: CHANT.near[k - 1][1], text: W['cap' + k], sub: W['cap' + k + 'Sub'] }))); }
+      fx('x3chant', 0.64); play.chanting = true;                               // (the loudspeakers carry the chant now: the ground's music stops for it, mixBeds)
       whenReady(cast.ton, (P) => hold(P, 'prostrate', 0.15, 0.85, 0.6));
       after(HOMAGE.lead, () => { if (!live(run)) return;
         play.bow = { t: 0, prev: 0, n: HOMAGE.n, secs: HOMAGE.bow * HOMAGE.n, depth: 1.0, run, sound: 'x3bowall', done: () => homageDone(run) };
@@ -3121,7 +3223,7 @@
     }
     function homageDone(run) {
       if (!live(run)) return;
-      play.homage = true; saveMark();
+      play.homage = true; play.chanting = false; saveMark();
       if (kit) { kit.pray(false, { secs: 1.2 }); kit.pose('lying', { y: KNEEL.y, yaw: PLACE_RY, span: KNEEL.span, pitchLo: KNEEL.lo, pitchHi: KNEEL.hi, secs: 0.3 }); if (kit.captions) kit.captions(null); }
       after(1.4, () => { if (live(run)) festivalBegin(); });
     }
@@ -3134,7 +3236,7 @@
       const one = Bw.secs / Bw.n, u = Math.min(1, Bw.t / Bw.secs);
       const ph = (Bw.t % one) / one, d = -Bw.depth * Math.pow(Math.sin(Math.PI * Math.min(1, ph * 1.12)), 2) * (u < 1 ? 1 : 0);
       pitch.rotation.x += d - Bw.prev; Bw.prev = d;
-      if (Bw.sound) for (let k = 0; k < Bw.n; k++) { const at = k * one + one * 0.3; if (t0 < at && Bw.t >= at) fx(Bw.sound, 0.5); }
+      if (Bw.sound) for (let k = 0; k < Bw.n; k++) { const at = k * one + one * 0.3; if (t0 < at && Bw.t >= at) fx(Bw.sound, 0.36); }
       if (u >= 1) { pitch.rotation.x -= Bw.prev; play.bow = null; if (Bw.done) Bw.done(); }
     }
 
@@ -3176,10 +3278,10 @@
       setPhase('festival', { complete: false });
       /* THE BLESSING AHEAD OF HIM (photographs 5 and 6), then the pull */
       const T = { up: 1.2, on: 2.6, petals: 6.4, down: 9.6, trance: 10.4, rise: 11.2, pull: 12.0, say: 15.5 };
-      after(T.up, () => { if (!live(run)) return; ymBai.visible = true; play.ymCarry = true; span(cast.ym, 'offer', 5.9, YM_UP, 1.5, { hold: 0.5, fade: 0.5 }); lay(cast.ym, ymGrip, { secs: 0.5 }); fx('x3baitake', 0.3, 0.2); });
+      after(T.up, () => { if (!live(run)) return; ymBai.visible = true; play.ymCarry = true; span(cast.ym, 'offer', 5.9, YM_UP, 1.5, { hold: 0.5, fade: 0.5 }); lay(cast.ym, ymGrip, { secs: 0.5 }); fx('x3baitake', 0.22, 0.2); });
       after(T.on, () => { if (!live(run)) return; hold(cast.pho, PHO_ON.take, PHO_ON.from, PHO_ON.len, 0.9); lay(cast.pho, phoGrip, { secs: 1.0 }); });
       after(T.petals, () => { if (!live(run)) return; lay(cast.pho, null, { secs: 0.45 }); span(cast.pho, 'Sit_Cheer_with_Left_Hand', 0.15, 2.5, 2.7, { fade: 0.5, then: (P) => rest(P, 0.8) });
-        after(1.3, () => { if (!live(run)) return; const Y = cast.ym.group.position, h = PHO_HAND_UP(); petalBurst(h, [Y.x, Y.z], dayClock.t, { r: 0.7, up: 1.2 }); fx('x3petals', 0.6, 0.2); }); });
+        after(1.3, () => { if (!live(run)) return; const Y = cast.ym.group.position, h = PHO_HAND_UP(); petalBurst(h, [Y.x, Y.z], dayClock.t, { r: 0.7, up: 1.2 }); fx('x3petals', 0.45, 0.2); }); });
       after(T.down, () => { if (!live(run)) return; lay(cast.ym, null, { secs: 0.5 });
         span(cast.ym, 'offer', YM_UP + 0.5, 6.4, 1.6, { fade: 0.2, then: (P) => { play.ymCarry = false; ymSetDown(); take(P, 'sway', 1.4); } }); });
       after(T.rise, () => { if (live(run)) span(cast.pho, 'Sit_to_Stand_Transition_M', 0.3, 2.25, 2.6, { fade: 0.6, hold: 0.28 }); });
@@ -3218,7 +3320,7 @@
       const run = play.run; play.looked = true; play.busy = true; objectiveFor('festival');
       Pu.hushOwn = true;
       if (kit.hush) kit.hush(1, { secs: 1.3 }); if (kit.lens) kit.lens(46, { secs: 1.7 });
-      fx('x3tone', 0.7);
+      fx('x3tone', 0.45);
       lookAt(PHO_HEAD_NOW(), 1.5, () => { if (!live(run)) return;
         Pu.to = 0; Pu.secs = 3.2;
         after(3.4, () => { if (!live(run)) return;
@@ -3301,8 +3403,8 @@
         return true;
       }
       const run = play.run; play.busy = true;
-      fx('x3kneel', 0.6); setPhase('knelt'); baiRaise(-1, 0.9);
-      turnTo(ry, 1.1, Object.assign({ pos: KNEEL2, pitch: 0.16 }, KNEEL), () => { if (!live(run)) return; fx('x3baiset', 0.5); setDown();
+      fx('x3kneel', 0.32); setPhase('knelt'); baiRaise(-1, 0.9);
+      turnTo(ry, 1.1, Object.assign({ pos: KNEEL2, pitch: 0.16 }, KNEEL), () => { if (!live(run)) return; fx('x3baiset', 0.36); setDown();
         after(0.5, () => { if (!live(run)) return; play.busy = false; objectiveFor('knelt', { complete: false }); }); });
       return true;
     }
@@ -3406,6 +3508,10 @@
     function decideBegin(resumed) {
       play.busy = false;
       setPhase('decide', { complete: false });
+      /* the four endings share one close, and its cues are fired by a helper (endingScene): the engine warms a scene's
+         cues by reading that scene's OWN source, so these would play nothing the first time. Warmed here by name, a
+         whole ending before they are wanted (chaptertest reads this list, and fails a cue of the close it lacks) */
+      if (warmSounds) warmSounds(['x3closemus', 'x3baitake', 'ph3z0', 'ph3z1', 'x3tone', 'x3petals', 'q3z1', 'x3lastmus', 'x3baiset', 'ph3z2', 'q3K1']);
       if (resumed) after(0.6, openDecision); else openDecision();
     }
 
@@ -3467,6 +3573,7 @@
       if (st !== 'cine') { peopleLevels(); lodTick(); zoneTick(now); }
       /* a Continue is placed before the card (the v4.8 contract): the saved moment's picture stands under it */
       if (!booted && !preplaced && kit) { const w0 = preStage(kit.getPhase()); if (w0) preplaced = w0; }
+      mixBeds(wdt, st);
       const liveSt = st === 'play';
       if (!liveSt) { if (!pausedAt) pausedAt = now; lastWall = 0; return; }
       /* a voice plays on under a panel while the chapter's clock stands still: its booking comes forward by the time the
@@ -3482,6 +3589,7 @@
     function playTick(now, wdt) {
       hotTick();
       turnTick(wdt); bowTick(wdt); baiTick(wdt); awayTick(); pullTick(wdt); openTick(wdt, windClock);
+      ambTick();
       burstsTick(dayClock.t);
       /* what a person carries rides his hands */
       if (play.tonGive) { const G = play.tonGive; G.k = Math.min(1, G.k + wdt / 0.45);                   // lifted off the table into his hands, then carried by them
@@ -3529,6 +3637,7 @@
       if (DAY_TWO.has(R.p)) {
         dawnBegin(true);
         if (R.p === 'dawn') return;
+        play.bowed = R.bowed;                                                    // (dawnBegin begins a fresh morning and forgets the bow: its receipt is given back. The resume sweep found it: a Continue after his bow offered the bow again)
         kneelPho(true); setPhase('knelt', { complete: false });
         if (R.p === 'knelt') { if (!play.bowed) return; play.busy = true; const run = play.run;
           after(0.8, () => { if (!live(run)) return; line('ph3g1', cast.pho); queueFn(() => { if (live(run)) { play.busy = false; objectiveFor('knelt', { complete: false }); } }); }); return; }
@@ -4414,7 +4523,7 @@
              limp hand hanging from a bent wrist, seen from the side it was never made to be seen from) */
           handStill(kH);
           if (ts >= 0.3 && !FL.once.has('chant')) { FL.once.add('chant'); FL.chantOn = true;
-            if (kit && kit.captions) kit.captions([1, 2, 3].map((n) => ({ at: 0.5 + (n - 1) * HOMAGE.bow, end: 0.2 + n * HOMAGE.bow, text: W['cap' + n], sub: W['cap' + n + 'Sub'] }))); }
+            if (kit && kit.captions) kit.captions([1, 2, 3].map((n) => ({ at: CHANT.far[n - 1][0], end: CHANT.far[n - 1][1], text: W['cap' + n], sub: W['cap' + n + 'Sub'] }))); }
         } else {
           if (FL.shot !== 'd4') { FL.shot = 'd4'; FL.chantOn = false; handStill(0); if (api.handsRoot) api.handsRoot.visible = false; myBai.visible = true; if (kit && kit.captions) kit.captions(null); }
           phoFace(); phoTalkFace(); const kTalk = speaks(Ph, t, T, ['ph3D4']); lookNow(Ph, 'lens', 1, 0.5, 0);
@@ -4435,16 +4544,41 @@
       FL.sub = cur;
       if (cur) subs(cur, T[cur] + (SECS[cur] || 2.5) - t); else if (kit && kit.captions) kit.captions(null);
     }
+    /* THE FILMS' OWN BEDS (M7): the ground's loops under each film, a pure function of the film's clock (the rest of a
+       film's sound is its cues: z_tail.js). Each is a share of play's own level (BED), so a film that begins or ends on
+       play's picture begins and ends on play's sound */
+    function filmBeds(key, t) {
+      let fest = 0, mus = 0, birds = 0, crick = 0, open = 0, shop = 0;
+      if (key === 'open') { const T = OPENT, k4 = smo(sgk(t, T.o4 + 0.2, T.o4 + 1.8)), kf = smo(sgk(t, T.o4 + 1.8, T.o4 + 3.6));
+        birds = 0.8 * k4 * (1 - 0.7 * kf); fest = kf; mus = 0.3 * kf;                      // his eyes open on the turf: birds, then the ground's noise comes up over them (its loudspeakers only a hint: the film's own music is still playing, and two musics at once are a clash; play begins on the ground's own)
+        shop = smo(sgk(t, T.o1 + 0.3, T.o1 + 1.6)) * (1 - smo(sgk(t, T.o4 - 1.4, T.o4 - 0.3))); }   // and before it, his shop at night: its fridge, the street far off
+      else if (key === 'festival') { const T = FEST, kc = smo(sgk(t, T.cut + 0.3, T.cut + 1.5)), kp = smo(sgk(t, T.sweep + 3.6, T.pho + 0.5));
+        fest = lp(0.75, 1, kc) * (1 - 0.8 * kp); mus = kc * (1 - kp); }                    // the dance has its own piece (a cue); the ground's music comes back at the cut, and all of it falls away for the man in white
+      else if (key === 'between') { const T = BETW;
+        fest = 0.6 * (1 - smo(sgk(t, T.n1 + 0.5, T.n1 + 3.6)));                           // the day's noise falls away under the night's music
+        crick = smo(sgk(t, T.n3 - 0.2, T.n3 + 0.8)) * (1 - smo(sgk(t, T.n5 - 0.5, T.n5 + 0.6)));
+        birds = smo(sgk(t, T.n5, T.n5 + 1.5)); }                                          // first light: play's own morning
+      else if (key === 'tell' || key === 'answers') birds = 0.45;
+      else if (key === 'A' || key === 'B' || key === 'C' || key === 'D') {
+        const T = ENDT[key]; birds = 0.5;
+        if (key === 'B') { birds = (0.5 + 0.6 * bump(t, T.silence, T.edge - 0.4, 0.6, 0.5)) * (1 - smo(sgk(t, T.edge - 0.5, T.edge + 0.1)));   // the long silence is held by the birds; the afternoon has its own bed (a cue)
+          crick = smo(sgk(t, T.dusk, T.dusk + 1.0)); }                                    // dusk, and on through the close
+        if (key === 'D') birds = 0.5 * (1 - smo(sgk(t, T.shut + 0.3, T.shut + 1.2))) + 0.25 * smo(sgk(t, T.back, T.back + 1.5));   // the world closes; he comes back to a quieter morning
+        if (t >= T.close) open = c01(FL.openK || 0);                                      // the close's one breath: the world heard open on its level
+      }
+      filmBed.on = true; filmBed.fest = BED.fest * fest; filmBed.mus = BED.mus * mus; filmBed.birds = BED.birds * birds; filmBed.crick = BED.crick * crick;
+      filmBed.open = BED.open * open; filmBed.pull = 0; filmBed.shop = BED.shop * shop;
+    }
     const films = {
       key: '',
       begin(key, c, api) { FL.key = films.key = key; FL.api = api; FL.once.clear(); FL.lit = lookName; FL.sub = ''; if (FILMS[key] && FILMS[key].begin) FILMS[key].begin(api); },
       /* (a film's own frame: play's frame does not run under it, so the levels are chosen here, from the film's lens: v24.22) */
       frame(key, t, api) { if (FILMS[key]) FILMS[key].frame(t, api);
-        filmSubs(key, t);
+        filmSubs(key, t); filmBeds(key, t);
         /* (a probe's viewfinder: tools/probes/e4c3beats.mjs tries a lens here before a shot is written; never set in play) */
         if (FL.vf) { fLens(FL.vf[6]); camAt([FL.vf[0], FL.vf[1], FL.vf[2]], [FL.vf[3], FL.vf[4], FL.vf[5]]); }
         peopleLevels(); lodTick(); },
-      end() { const F = FILMS[FL.key]; if (F && F.end) F.end(); FL.key = films.key = ''; FL.api = null; camera.rotation.z = 0; },
+      end() { const F = FILMS[FL.key]; if (F && F.end) F.end(); FL.key = films.key = ''; FL.api = null; camera.rotation.z = 0; filmBed.on = false; },
       /* THE CLOSE'S ONE BREATH (§4.6: "One breath, played"): the film waits for it (eventWait). While it is played the
          world is laid on its level here, because the film's own frame is standing still; when it ends the film runs on
          and eases the light shut from where he left it */
@@ -4462,14 +4596,14 @@
     function restore() {}
     function reset() {
       films.end();
-      dropTodo(); speakReset(); lineQ.length = 0; heard.clear(); turns.length = 0;
+      dropTodo(); speakReset(); lineQ.length = 0; heard.clear(); turns.length = 0; ambReset();
       booted = false; preplaced = ''; dayClock.t = 0; lastWall = 0; lastWall0 = 0; pausedAt = 0;
       decOpen = false;
       for (const h of hotspots) { h.done = false; h.dwellT = 0; }
       /* everything a run changes is put back (v8.1: a same-chapter replay never runs build() again) */
       play.run++;
       Object.assign(play, { busy: false, turning: null, bow: null, bai: false, baiP: 0, baiTo: 0, knelt: false, homage: false, pull: null, looked: false,
-                            checked: false, bowed: false, breath: null, tonGive: null, ymCarry: false, ymSet: null, pull3: 0, ymHands: null, away: false });
+                            checked: false, bowed: false, breath: null, tonGive: null, ymCarry: false, ymSet: null, pull3: 0, ymHands: null, away: false, chanting: false });
       play.asked = new Set(); open.k = 0; open.shown = -1; open.over = 0;
       if (kit) {
         if (kit.abortEvent) kit.abortEvent();
@@ -4546,6 +4680,7 @@
       drum: null, ash: null, embers: null, heroNote: null, smoke: null, flying: null,
       jossTips: [], fireLight: null,
       skyAt: () => FL.sky,                                                      // (the sky stands over the turf; a film's pocket set asks for it over itself)
+      stepSound: () => 'x3step',                                                // his own feet: he left his sandals at the turf's edge (the engine asks every footfall, v16.0)
       /* walktest: where play puts him besides the spawn, and the ground he must STAY on (v25.5): the turf, the gravel
          before the tables and the tents' fronts. He cannot leave it */
       arrivals: [{ what: 'in the line at his bench', x: LINE_AT.x, z: LINE_AT.z }, { what: 'the morning of day two', x: DAWN_AT.x, z: DAWN_AT.z },
@@ -4558,6 +4693,8 @@
       dbg: { viewfinder(v) { FL.vf = v || null; }, clocks: { A: ENDT.A, B: ENDT.B, C: ENDT.C, D: ENDT.D, CLOSE, FEST, BETW, TELL, ANSW, OPEN: OPENT }, armsOf, handTo, handsTo, baiGrip, baiPut, play, open, cast, bursts, BAI, handBai, myBai, ymBai, petalBurst, auraAt, baiHands, baiRaise, lineBegin, dawnBegin, breathBegin, places: { PLACE, LINE_AT, KNEEL2, DAWN_AT, TABLES_AT } },
       who: () => people.filter(P => !P.driver).map(P => ({ key: P.key, ready: P.ready, take: P.cur, skin: P.lvShown, skins: P.lv.map(v => (v ? 1 : 0)).join('') })),
       plan: { TURF, TABLES, HALL, TENT_W1, TENT_W2, TENT_E, CHIEF, BENCH, POLE, TON_TABLE, WEST_TABLE },
+      /* the ground's own noises (ambTick): how many have sounded, and the last (a probe counts them over a stretch of play) */
+      amb: () => ({ n: ambN, last: ambLast, next: +ambAt.toFixed(2), beds: Object.assign({}, bedMix) }),
       info: () => ({ phase, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], until: +speak.until.toFixed(2),
                      pending: speak.pending ? speak.pending.name : null, decOpen, look: lookName, busy: play.busy,
                      waiting: [...waiting].sort(), mends: twinMends }),
@@ -4887,21 +5024,26 @@
     cues(T);
     /* THE CLOSE: out of a short black, on his bai sri beside him */
     fade(t0 - 0.5, t0, 0, 1); fade(t0, t0 + 0.15, 1, 1); fade(t0 + 0.15, t0 + 0.9, 1, 0);
-    sfx(t0 - 4.5, 'x3closemus', 0.45);         // the close's music comes in under the ending's last line, and carries it
-    sfx(t0 + C.take + 0.7, 'x3baitake', 0.4);  // his bai sri taken up
+    sfx(t0 - 4.5, 'x3closemus', 0.39);         // the close's music comes in under the ending's last line, and carries it
+    sfx(t0 + C.take + 0.7, 'x3baitake', 0.32);  // his bai sri taken up
     sfx(t0 + C.ph3z0, 'ph3z0', 1);             // "Yesterday you would not kneel to a man you did not know. Good. Keep that."
     sfx(t0 + C.ph3z1, 'ph3z1', 1);             // "It is not the flowers you give a teacher. It is your trust. Give that slowly."
-    sfx(t0 + C.hands + 1.0, 'x3tone', 0.3);    // both his hands on the bowl: the held tone, low
-    sfx(t0 + C.petals + 1.6, 'x3petals', 0.5); // a handful of petals, falling past his eyes
+    sfx(t0 + C.hands + 1.0, 'x3tone', 0.28);    // both his hands on the bowl: the held tone, low
+    sfx(t0 + C.petals + 1.6, 'x3petals', 0.4); // a handful of petals, falling past his eyes
     sfxFade(t0 + C.petals + 2.6, t0 + C.breath, 'x3tone');
+    /* (no music under the breath: the world's own sound is the game there, and a cue that ran on through a wait of any
+       length would reach the film's end before the film did. The close's music is two cues: one to the breath, ending
+       unresolved; one after it, that resolves) */
+    sfxFade(t0 + C.breath - 1.4, t0 + C.breath - 0.05, 'x3closemus');
     api.eventWait(t0 + C.breath, stage.films.breathOpts(k), (r) => stage.films.breathDone(r));     // ONE BREATH, played
+    sfx(t0 + C.q3z1 - 0.3, 'x3lastmus', 0.45); // the breath is done: the close's second cue, resolved
     sfx(t0 + C.q3z1, 'q3z1', 1);               // "Yesterday I watched people go where I could not follow. Today I opened the door a hand's width..."
     fade(t0 + C.give + 1.9, t0 + C.give + 2.2, 0, 1); fade(t0 + C.give + 2.2, t0 + C.give + 2.6, 1, 1); fade(t0 + C.give + 2.6, t0 + C.give + 3.1, 1, 0);   // he bows his head as it is taken from him
     sfx(t0 + C.give + 2.45, 'x3baiset', 0.4);  // set down on the table: the last of the Wai Kru
     sfx(t0 + C.ph3z2, 'ph3z2', 1);             // "Tomorrow we begin."
     sfx(t0 + C.q3K1, 'q3K1', 1);               // "For the first time in my life I had found the teacher who could guide me to the real answers..."
     fade(t0 + C.black, t0 + C.end - 0.2, 0, 1);
-    sfxFade(t0 + C.black - 0.6, t0 + C.end - 0.05, 'x3closemus');
+    sfxFade(t0 + C.black - 0.6, t0 + C.end - 0.05, 'x3lastmus');
     step(total, () => stage.films.end());
     c.endFade = 1; c.keep.view = true;
   }
@@ -4910,16 +5052,16 @@
     const { sfx, sfxFade, fade } = api;
     endingScene(c, api, 'A', (T) => {
       sfx(T.q3A0, 'q3A0', 1);                  // "Then teach me. I will walk it."
-      sfx(T.long + 0.2, 'x3endA', 0.4);        // the ending's music: plain and warm, under the long moment he is looked at
+      sfx(T.long + 0.2, 'x3endA', 0.5);        // the ending's music: plain and warm, under the long moment he is looked at
       sfx(T.ph3A1, 'ph3A1', 1);                // "You say yes quickly. Yes to what?"
       sfx(T.q3A1, 'q3A1', 1);                  // "To hold it first. However many years. And then to use it for others. Not for myself."
       sfx(T.ph3A2, 'ph3A2', 1);                // "Good. Remember the order when it is slow. Slow is where people leave."
-      sfx(T.bow + 0.9, 'x3kneel', 0.4);        // he bows, once
+      sfx(T.bow + 0.9, 'x3kneel', 0.32);        // he bows, once
       sfx(T.tn3A1, 'tn3A1', 1);                // "New ones roll the mats, bro."
       fade(T.mats - 0.4, T.mats, 0, 1); fade(T.mats, T.mats + 0.12, 1, 1); fade(T.mats + 0.12, T.mats + 0.7, 1, 0);
-      sfx(T.mats + 0.5, 'x3matroll', 0.4);     // mats being rolled; bare feet on turf
+      sfx(T.mats + 0.5, 'x3matroll', 0.32);     // mats being rolled; bare feet on turf
       sfx(T.q3A2, 'q3A2', 1);                  // "I had imagined something grander. My path began with other people's mats."
-      sfx(T.q3A3 + 0.9, 'x3matset', 0.45);     // his mat laid on the stack
+      sfx(T.q3A3 + 0.9, 'x3matset', 0.4);     // his mat laid on the stack
       sfx(T.q3A3, 'q3A3', 1);                  // "I did not mind. For once I knew what I was doing, and who I was doing it under."
       sfxFade(T.close - 2.0, T.close, 'x3endA');
     });
@@ -4932,23 +5074,22 @@
       sfx(T.ph3B1, 'ph3B1', 1);                // "Nobody asks."
       sfx(T.ph3B2, 'ph3B2', 1);                // "Tell me again how you came to this mat. Slowly."
       sfx(T.q3B1, 'q3B1', 1);                  // "A Sak Yant, for luck. Then another. A shop I kept going back to..."
-      sfx(T.q3B1 + 0.6, 'x3endB', 0.36);       // the ending's music: spare, each step of his own named over it
+      sfx(T.q3B1 + 0.6, 'x3endB', 0.57);       // the ending's music: spare, each step of his own named over it
       sfx(T.ph3B3, 'ph3B3', 1);                // "Who carried you?"
-      sfx(T.silence + 0.3, 'x3birds', 0.4);    // the long silence, held by the birds
+      sfxFade(T.silence - 0.4, T.silence + 2.2, 'x3endB');   // the music lets go into the long silence (the birds hold it; then the afternoon, the dusk: the ground's own sound to the close)
+      /* (the long silence is held by the birds, and dusk by the crickets, on through the close: the beds, filmBeds) */
       sfx(T.q3B2, 'q3B2', 1);                  // "Nobody. I walked."
       fade(T.edge - 0.4, T.edge, 0, 1); fade(T.edge, T.edge + 0.15, 1, 1); fade(T.edge + 0.15, T.edge + 0.8, 1, 0);
-      sfx(T.edge + 0.3, 'x3afternoon', 0.4);   // the afternoon: cicadas, a broom on the turf, people talking low
+      sfx(T.edge + 0.3, 'x3afternoon', 0.5);   // the afternoon: cicadas, a broom on the turf, people talking low
       sfx(T.q3B3, 'q3B3', 1);                  // "I sat there angry until the light went yellow. He never once looked my way."
       fade(T.dusk - 0.4, T.dusk, 0, 1); fade(T.dusk, T.dusk + 0.15, 1, 1); fade(T.dusk + 0.15, T.dusk + 0.9, 1, 0);
       sfxFade(T.dusk - 0.5, T.dusk + 0.3, 'x3afternoon');
-      sfx(T.dusk + 0.2, 'x3crickets', 0.4);    // dusk: crickets; the bulbs come on
       sfx(T.dusk + 0.9, 'x3bulbs', 0.35);      // a switch, and the string of bulbs humming on
       fade(T.back - 0.4, T.back, 0, 1); fade(T.back, T.back + 0.15, 1, 1); fade(T.back + 0.15, T.back + 0.8, 1, 0);
-      sfx(T.back + 0.2, 'x3kneel', 0.4);       // he kneels in front of him again
+      sfx(T.back + 0.2, 'x3kneel', 0.32);       // he kneels in front of him again
       sfx(T.q3B4, 'q3B4', 1);                  // "All right. Teach me."
       sfx(T.ph3B4, 'ph3B4', 1);                // "A man who walked here can walk on."
       sfx(T.q3B5, 'q3B5', 1);                  // "I had not chosen the road. I had taken every step of it myself."
-      sfxFade(T.close - 2.0, T.close, 'x3endB');
     });
   }
   /* C · ASK WHY (good) */
@@ -4958,12 +5099,12 @@
       sfx(T.q3C0, 'q3C0', 1);                  // "Why me? Of everyone in that shop, in that temple... why me?"
       sfx(T.ph3C1, 'ph3C1', 1);                // "Why me... that question has no floor. A man can fall in it his whole life."
       sfx(T.ph3C2, 'ph3C2', 1);                // "Ask a better one. For whom?"
-      sfx(T.turn + 0.2, 'x3endC', 0.4);        // the ending's music: it opens as his head is turned
-      sfx(T.turn + 0.6, 'x3waiting', 0.35);    // those who wait: a cough, a low word, sandals shifted on the turf
+      sfx(T.turn + 0.2, 'x3endC', 0.45);        // the ending's music: it opens as his head is turned
+      sfx(T.turn + 0.6, 'x3waiting', 0.32);    // those who wait: a cough, a low word, sandals shifted on the turf
       sfx(T.q3C1, 'q3C1', 1);                  // "I had asked why it had happened to me. He turned my head and showed me who was waiting."
       sfx(T.ph3C3, 'ph3C3', 1);                // "What you have is for them. Not for you. One day. Not yet. First you hold it."
       sfx(T.q3C2, 'q3C2', 1);                  // "Then that is why."
-      sfx(T.bow + 0.9, 'x3kneel', 0.4);        // he bows
+      sfx(T.bow + 0.9, 'x3kneel', 0.32);        // he bows
       sfx(T.q3C3, 'q3C3', 1);                  // "Teach me."
       sfx(T.q3C4, 'q3C4', 1);                  // "I had asked why me. I was given something to do with it instead."
       sfxFade(T.close - 2.0, T.close, 'x3endC');
@@ -4981,14 +5122,14 @@
       sfx(T.shut + 0.7, 'x3shut', 0.5);        // the world's sound closing down: one soft falling tone, and the flat room of his own head
       sfx(T.q3D1, 'q3D1', 1);                  // "For the first time in years, it was quiet."
       fade(T.sit - 0.4, T.sit, 0, 1); fade(T.sit, T.sit + 0.15, 1, 1); fade(T.sit + 0.15, T.sit + 0.9, 1, 0);
-      sfx(T.sit + 0.4, 'x3sweep', 0.3);        // the ground cleared round him: a broom, mats, far voices, all of it flat
+      sfx(T.sit - 0.5, 'x3sweep', 0.6);        // the ground cleared round him: a broom, mats, far voices, all of it flat (it leads the black by half a second: his line is left one second of true quiet, never more: a longer bare stretch reads as a fault, v21.30)
       sfx(T.chant + 0.3, 'x3chantfar', 0.5);   // the chanting, from the temple across the fields, on its loudspeakers (captioned)
       sfx(T.q3D2, 'q3D2', 1);                  // "The chanting came, and I waited for it to take me. Nothing. My hands were only my hands."
       sfx(T.q3D3, 'q3D3', 1);                  // "And then I understood what I had been afraid of all those years..."
       sfx(T.q3D3 + 1.5, 'x3endD', 0.4);        // the ending's music: it comes in as his eyes rise to the far bench
       sfxFade(T.back - 1.2, T.back + 0.4, 'x3chantfar');
       fade(T.back - 0.4, T.back, 0, 1); fade(T.back, T.back + 0.15, 1, 1); fade(T.back + 0.15, T.back + 0.8, 1, 0);
-      sfx(T.back + 0.2, 'x3kneel', 0.4);       // he goes back, and kneels
+      sfx(T.back + 0.2, 'x3kneel', 0.32);       // he goes back, and kneels
       sfx(T.q3D4, 'q3D4', 1);                  // "If I can close it, I can carry it. Teach me the rest."
       sfx(T.ph3D4, 'ph3D4', 1);                // "Fear never closed it. You did."
       sfx(T.q3D5, 'q3D5', 1);                  // "I had asked him to take it away. He gave me the handle, and I found I could keep it."
@@ -5007,12 +5148,12 @@
     step(0, () => stage.films.begin('open', c, api));
     tr(0, T.end, (k, t) => stage.films.frame('open', t, api), rawK);
     fade(0, T.o1, 1, 1); fade(T.o1, T.o1 + 1.5, 1, 0);
-    sfx(0.4, 'x3openmus', 0.5);                 // the film's own cue, under all of it
-    sfx(T.o1 + 0.3, 'x3shophum', 0.25);         // the shop at night: its fridge, the street far off
+    sfx(0.4, 'x3openmus', 0.66);                 // the film's own cue, under all of it
+    /* (the shop at night, its fridge and the street far off: a bed, filmBeds) */
     sfx(T.q3o1, 'q3o1', 1);                     // "For years I had been searching for the answers to the same questions."
-    sfx(T.q3o1 + 1.0, 'x3keys', 0.4);           // typing it
-    sfx(T.q3o1 + SECS['q3o1'] + 0.9, 'x3send', 0.45);   // sent
-    sfx(T.o2 + 0.3, 'x3page', 0.3);             // his notebook drawn to him
+    sfx(T.q3o1 + 1.0, 'x3keys', 0.32);           // typing it
+    sfx(T.q3o1 + SECS['q3o1'] + 0.9, 'x3send', 0.4);   // sent
+    sfx(T.o2 + 0.3, 'x3page', 0.32);             // his notebook drawn to him
     sfx(T.q3o2, 'q3o2', 1);                     // "Why was I so sensitive?"
     sfx(T.q3o2 + 0.5, 'x3pen', 0.35);           // the pen, under each as he asks it
     sfx(T.q3o3, 'q3o3', 1);                     // "Could any of it be used to help others?"
@@ -5020,20 +5161,19 @@
     sfx(T.q3o4, 'q3o4', 1);                     // "How could I cultivate enough to control it — and eventually use it at will?"
     sfx(T.q3o4 + 1.2, 'x3pen', 0.35);
     sfx(T.q3o5, 'q3o5', 1);                     // "I had met many practitioners and many masters. Some gave me advice..."
-    sfx(T.q3o5 + SECS['q3o5'] - 1.6, 'x3page', 0.4);    // the page turned to a blank one on its last sentence
+    sfx(T.q3o5 + SECS['q3o5'] - 1.6, 'x3page', 0.36);    // the page turned to a blank one on its last sentence
     fade(T.o3 - 0.35, T.o3, 0, 1); fade(T.o3, T.o3 + 0.12, 1, 1); fade(T.o3 + 0.12, T.o3 + 0.6, 1, 0);
     sfx(T.o3 + 2.3, 'x3zip', 0.5);              // the zip: it is packed
     fade(T.o3 + 2.2, T.o3 + 2.4, 0, 1); fade(T.o3 + 2.4, T.o3 + 2.55, 1, 1); fade(T.o3 + 2.55, T.o3 + 2.9, 1, 0);
     fade(T.o4 - 1.3, T.o4 - 0.5, 0, 1); fade(T.o4 - 0.5, T.o4, 1, 1);
-    sfxFade(T.o4 - 1.4, T.o4 - 0.3, 'x3shophum');
-    sfx(T.o4 - 1.2, 'x3cabin', 0.4);            // under the black, an aircraft cabin's hum
-    sfxFade(T.o4 + 0.2, T.o4 + 1.4, 'x3cabin'); //   ... gives way to morning birds
-    sfx(T.o4 + 0.3, 'x3birds', 0.4);
+    sfx(T.o4 - 1.2, 'x3cabin', 0.34);            // under the black, an aircraft cabin's hum
+    sfxFade(T.o4 + 0.2, T.o4 + 1.4, 'x3cabin'); //   ... gives way to morning birds (the bed itself: filmBeds)
     fade(T.o4, T.o4 + 1.5, 1, 0);
-    sfx(T.o4 + 2.0, 'x3festbed', 0.5);          // up, and the noise with it: the ground's own bed, the loudspeakers
+    /* (up, and the noise with it: the ground's own crowd and its music are the BEDS, brought up by filmBeds, so the film
+       ends on play's own sound) */
     sfx(T.q3o6, 'q3o6', 1);                     // "I was attending a Wai Kru ceremony in Thailand where many masters and practitioners were present."
     fade(T.black, T.end - 0.2, 0, 1);
-    sfxFade(T.black - 0.6, T.end - 0.05, 'x3openmus'); sfxFade(T.black - 0.4, T.end - 0.05, 'x3festbed'); sfxFade(T.black - 0.4, T.end - 0.05, 'x3birds');
+    sfxFade(T.black - 0.6, T.end - 0.05, 'x3openmus');
     step(T.end, () => stage.films.end());
   }
 
@@ -5049,10 +5189,9 @@
     fade(0, T.n1, 0, 1);
     [T.n1, T.n2, T.n3, T.n4, T.n5].forEach((m, i) => { if (i) fade(m - 0.4, m, 0, 1); fade(m, m + 0.12, 1, 1); fade(m + 0.12, m + 0.62, 1, 0); });
     sfx(0.2, 'x3nightmus', 0.5);                // the film's own cue: the day's noise falls away under it
-    sfx(T.n1 + 2.5, 'x3shutter', 0.5);          // the photograph is taken
-    sfx(T.n3 - 0.1, 'x3crickets', 0.4);         // the night: crickets, frogs, a far dog (it runs through the room's shot)
-    sfxFade(T.n5 - 0.5, T.n5 + 0.6, 'x3crickets');
-    sfx(T.n5 + 0.5, 'x3cock', 0.35);            // first light: a cock, far off
+    sfx(T.n1 + 2.5, 'x3shutter', 0.45);          // the photograph is taken
+    /* (the night: crickets, frogs, a far dog, through the room's shot, then first light's birds: the beds, filmBeds) */
+    sfx(T.n5 + 0.5, 'x3cock', 0.25);            // first light: a cock, far off
     sfx(T.tn3n1, 'tn3n1', 1);                   // "Come. He is free now."
     sfxFade(T.tn3n1 + 0.4, T.end - 0.05, 'x3nightmus');
     step(T.end, () => stage.films.end());
@@ -5065,7 +5204,7 @@
     c.keepFade = true; c.endFade = 1;
     step(0, () => stage.films.begin('tell', c, api));
     tr(0, T.end, (k, t) => stage.films.frame('tell', t, api), rawK);
-    sfx(0.2, 'x3tellmus', 0.4);                 // the telling's own cue, low
+    sfx(0.2, 'x3tellmus', 0.62);                 // the telling's own cue, low
     sfx(T.q3t1, 'q3t1', 1);                     // "Since I was a boy I have felt things other people did not."
     sfx(T.q3t1 + 1.0, 'x3mem1', 0.2);           //   a void deck at night: a far lift, a burner's fire
     sfx(T.q3t2, 'q3t2', 1);                     // "When I listen to chanting, my hands move by themselves..."
@@ -5101,11 +5240,11 @@
     sfx(T.ph3n6, 'ph3n6', 1);                   // "What is it for? A lamp is not lit for the lamp. It is lit for whoever is in the room."
     sfx(T.ph3n7, 'ph3n7', 1);                   // "And how to use it... you ask that first. It comes last."
     fade(T.blink, T.blink + 0.2, 0, 1); fade(T.blink + 0.2, T.blink + 0.46, 1, 1); fade(T.blink + 0.46, T.blink + 0.85, 1, 0);   // his eyes close a moment, and open
-    sfx(T.blink + 0.1, 'x3bell', 0.3);          // one small bell, far, under his closed eyes
+    sfx(T.blink + 0.1, 'x3bell', 0.25);          // one small bell, far, under his closed eyes
     sfx(T.ph3g2, 'ph3g2', 1);                   // "First, control."
     sfx(T.ph3g3, 'ph3g3', 1);                   // "To feel is not enough. A door that cannot close is not a door..."
     sfx(T.ph3g4, 'ph3g4', 1);                   // "With control you open when you choose. You close when you choose."
-    sfx(T.ph3g4 + 0.6, 'x3tone', 0.28);         //   the gold rises on him: the held tone, low
+    sfx(T.ph3g4 + 0.6, 'x3tone', 0.25);         //   the gold rises on him: the held tone, low
     sfx(T.ph3g5, 'ph3g5', 1);                   // "When to open. When to close. That is the whole practice."
     sfxFade(T.ph3g5 + 2.5, T.end, 'x3answmus'); sfxFade(T.ph3g5 + 1.0, T.ph3g5 + 4.0, 'x3tone');
     step(T.end, () => stage.films.end());
@@ -5118,23 +5257,23 @@
     c.keepFade = true; c.endFade = 1;
     step(0, () => stage.films.begin('festival', c, api));
     tr(0, T.end, (k, t) => stage.films.frame('festival', t, api), rawK);
-    sfx(0.05, 'x3dancemus', 0.5);              // the music changes: the dance's own piece, over the loudspeakers
+    sfx(0.05, 'x3dancemus', 0.55);              // the music changes: the dance's own piece, over the loudspeakers
     sfx(T.tn3d1, 'tn3d1', 1);                  // "For the Thevadas. To show respect."
     sfx(T.q3m0, 'q3m0', 1);                    // "I knew those hands. Mine had moved like that, by themselves."
     fade(T.cut, T.cut + 0.45, 0, 1); fade(T.cut + 0.45, T.cut + 0.8, 1, 1); fade(T.cut + 0.8, T.masters + 0.1, 1, 0);
     sfxFade(T.cut - 0.6, T.cut + 0.7, 'x3dancemus');
-    sfx(T.cut + 0.5, 'x3festmus', 0.42);       // the festival's own music again, and the ground's noise
+    /* (the festival's own music again, and the ground's noise: the beds, filmBeds) */
     sfx(T.q3m1, 'q3m1', 1);                    // "One by one they went up with their bai sri..."
-    sfx(T.throw, 'x3petals', 0.5);             // the hermit's handful, falling on her
+    sfx(T.throw, 'x3petals', 0.4);             // the hermit's handful, falling on her
     sfx(T.man + 1.0, 'x3trance', 0.45);        // the man whose arms rise: a low voiced breath (wordless)
-    sfxFade(T.sweep + 3.6, T.pho + 0.5, 'x3festmus');
-    sfx(T.pho - 0.05, 'x3tone', 0.5);          // the man in white: one held tone and a bell, on the cut to him
-    sfx(T.throw2, 'x3petals', 0.4);            // his own handful
+    sfx(T.pho - 0.05, 'x3tone', 0.32);          // the man in white: one held tone and a bell, on the cut to him
+    sfx(T.pho + 0.6, 'x3sightmus', 0.7);      // and his own music, under the three sentences that name him
+    sfx(T.throw2, 'x3petals', 0.36);            // his own handful
     sfx(T.q3w1, 'q3w1', 1);                    // "Only one person caught my attention."
     sfx(T.q3w2, 'q3w2', 1);                    // "He was dressed in white and carried the presence of a true master."
     sfx(T.q3w3, 'q3w3', 1);                    // "That person was Grandmaster Pho, and something inside me knew..."
     fade(T.black, T.end - 0.15, 0, 1);
-    sfxFade(T.black - 0.4, T.end - 0.05, 'x3tone');
+    sfxFade(T.black - 0.4, T.end - 0.05, 'x3tone'); sfxFade(T.black - 0.5, T.end - 0.05, 'x3sightmus');
     step(T.end, () => stage.films.end());
   }
 

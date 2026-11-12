@@ -108,21 +108,26 @@
     cues(T);
     /* THE CLOSE: out of a short black, on his bai sri beside him */
     fade(t0 - 0.5, t0, 0, 1); fade(t0, t0 + 0.15, 1, 1); fade(t0 + 0.15, t0 + 0.9, 1, 0);
-    sfx(t0 - 4.5, 'x3closemus', 0.45);         // the close's music comes in under the ending's last line, and carries it
-    sfx(t0 + C.take + 0.7, 'x3baitake', 0.4);  // his bai sri taken up
+    sfx(t0 - 4.5, 'x3closemus', 0.39);         // the close's music comes in under the ending's last line, and carries it
+    sfx(t0 + C.take + 0.7, 'x3baitake', 0.32);  // his bai sri taken up
     sfx(t0 + C.ph3z0, 'ph3z0', 1);             // "Yesterday you would not kneel to a man you did not know. Good. Keep that."
     sfx(t0 + C.ph3z1, 'ph3z1', 1);             // "It is not the flowers you give a teacher. It is your trust. Give that slowly."
-    sfx(t0 + C.hands + 1.0, 'x3tone', 0.3);    // both his hands on the bowl: the held tone, low
-    sfx(t0 + C.petals + 1.6, 'x3petals', 0.5); // a handful of petals, falling past his eyes
+    sfx(t0 + C.hands + 1.0, 'x3tone', 0.28);    // both his hands on the bowl: the held tone, low
+    sfx(t0 + C.petals + 1.6, 'x3petals', 0.4); // a handful of petals, falling past his eyes
     sfxFade(t0 + C.petals + 2.6, t0 + C.breath, 'x3tone');
+    /* (no music under the breath: the world's own sound is the game there, and a cue that ran on through a wait of any
+       length would reach the film's end before the film did. The close's music is two cues: one to the breath, ending
+       unresolved; one after it, that resolves) */
+    sfxFade(t0 + C.breath - 1.4, t0 + C.breath - 0.05, 'x3closemus');
     api.eventWait(t0 + C.breath, stage.films.breathOpts(k), (r) => stage.films.breathDone(r));     // ONE BREATH, played
+    sfx(t0 + C.q3z1 - 0.3, 'x3lastmus', 0.45); // the breath is done: the close's second cue, resolved
     sfx(t0 + C.q3z1, 'q3z1', 1);               // "Yesterday I watched people go where I could not follow. Today I opened the door a hand's width..."
     fade(t0 + C.give + 1.9, t0 + C.give + 2.2, 0, 1); fade(t0 + C.give + 2.2, t0 + C.give + 2.6, 1, 1); fade(t0 + C.give + 2.6, t0 + C.give + 3.1, 1, 0);   // he bows his head as it is taken from him
     sfx(t0 + C.give + 2.45, 'x3baiset', 0.4);  // set down on the table: the last of the Wai Kru
     sfx(t0 + C.ph3z2, 'ph3z2', 1);             // "Tomorrow we begin."
     sfx(t0 + C.q3K1, 'q3K1', 1);               // "For the first time in my life I had found the teacher who could guide me to the real answers..."
     fade(t0 + C.black, t0 + C.end - 0.2, 0, 1);
-    sfxFade(t0 + C.black - 0.6, t0 + C.end - 0.05, 'x3closemus');
+    sfxFade(t0 + C.black - 0.6, t0 + C.end - 0.05, 'x3lastmus');
     step(total, () => stage.films.end());
     c.endFade = 1; c.keep.view = true;
   }
@@ -131,16 +136,16 @@
     const { sfx, sfxFade, fade } = api;
     endingScene(c, api, 'A', (T) => {
       sfx(T.q3A0, 'q3A0', 1);                  // "Then teach me. I will walk it."
-      sfx(T.long + 0.2, 'x3endA', 0.4);        // the ending's music: plain and warm, under the long moment he is looked at
+      sfx(T.long + 0.2, 'x3endA', 0.5);        // the ending's music: plain and warm, under the long moment he is looked at
       sfx(T.ph3A1, 'ph3A1', 1);                // "You say yes quickly. Yes to what?"
       sfx(T.q3A1, 'q3A1', 1);                  // "To hold it first. However many years. And then to use it for others. Not for myself."
       sfx(T.ph3A2, 'ph3A2', 1);                // "Good. Remember the order when it is slow. Slow is where people leave."
-      sfx(T.bow + 0.9, 'x3kneel', 0.4);        // he bows, once
+      sfx(T.bow + 0.9, 'x3kneel', 0.32);        // he bows, once
       sfx(T.tn3A1, 'tn3A1', 1);                // "New ones roll the mats, bro."
       fade(T.mats - 0.4, T.mats, 0, 1); fade(T.mats, T.mats + 0.12, 1, 1); fade(T.mats + 0.12, T.mats + 0.7, 1, 0);
-      sfx(T.mats + 0.5, 'x3matroll', 0.4);     // mats being rolled; bare feet on turf
+      sfx(T.mats + 0.5, 'x3matroll', 0.32);     // mats being rolled; bare feet on turf
       sfx(T.q3A2, 'q3A2', 1);                  // "I had imagined something grander. My path began with other people's mats."
-      sfx(T.q3A3 + 0.9, 'x3matset', 0.45);     // his mat laid on the stack
+      sfx(T.q3A3 + 0.9, 'x3matset', 0.4);     // his mat laid on the stack
       sfx(T.q3A3, 'q3A3', 1);                  // "I did not mind. For once I knew what I was doing, and who I was doing it under."
       sfxFade(T.close - 2.0, T.close, 'x3endA');
     });
@@ -153,23 +158,22 @@
       sfx(T.ph3B1, 'ph3B1', 1);                // "Nobody asks."
       sfx(T.ph3B2, 'ph3B2', 1);                // "Tell me again how you came to this mat. Slowly."
       sfx(T.q3B1, 'q3B1', 1);                  // "A Sak Yant, for luck. Then another. A shop I kept going back to..."
-      sfx(T.q3B1 + 0.6, 'x3endB', 0.36);       // the ending's music: spare, each step of his own named over it
+      sfx(T.q3B1 + 0.6, 'x3endB', 0.57);       // the ending's music: spare, each step of his own named over it
       sfx(T.ph3B3, 'ph3B3', 1);                // "Who carried you?"
-      sfx(T.silence + 0.3, 'x3birds', 0.4);    // the long silence, held by the birds
+      sfxFade(T.silence - 0.4, T.silence + 2.2, 'x3endB');   // the music lets go into the long silence (the birds hold it; then the afternoon, the dusk: the ground's own sound to the close)
+      /* (the long silence is held by the birds, and dusk by the crickets, on through the close: the beds, filmBeds) */
       sfx(T.q3B2, 'q3B2', 1);                  // "Nobody. I walked."
       fade(T.edge - 0.4, T.edge, 0, 1); fade(T.edge, T.edge + 0.15, 1, 1); fade(T.edge + 0.15, T.edge + 0.8, 1, 0);
-      sfx(T.edge + 0.3, 'x3afternoon', 0.4);   // the afternoon: cicadas, a broom on the turf, people talking low
+      sfx(T.edge + 0.3, 'x3afternoon', 0.5);   // the afternoon: cicadas, a broom on the turf, people talking low
       sfx(T.q3B3, 'q3B3', 1);                  // "I sat there angry until the light went yellow. He never once looked my way."
       fade(T.dusk - 0.4, T.dusk, 0, 1); fade(T.dusk, T.dusk + 0.15, 1, 1); fade(T.dusk + 0.15, T.dusk + 0.9, 1, 0);
       sfxFade(T.dusk - 0.5, T.dusk + 0.3, 'x3afternoon');
-      sfx(T.dusk + 0.2, 'x3crickets', 0.4);    // dusk: crickets; the bulbs come on
       sfx(T.dusk + 0.9, 'x3bulbs', 0.35);      // a switch, and the string of bulbs humming on
       fade(T.back - 0.4, T.back, 0, 1); fade(T.back, T.back + 0.15, 1, 1); fade(T.back + 0.15, T.back + 0.8, 1, 0);
-      sfx(T.back + 0.2, 'x3kneel', 0.4);       // he kneels in front of him again
+      sfx(T.back + 0.2, 'x3kneel', 0.32);       // he kneels in front of him again
       sfx(T.q3B4, 'q3B4', 1);                  // "All right. Teach me."
       sfx(T.ph3B4, 'ph3B4', 1);                // "A man who walked here can walk on."
       sfx(T.q3B5, 'q3B5', 1);                  // "I had not chosen the road. I had taken every step of it myself."
-      sfxFade(T.close - 2.0, T.close, 'x3endB');
     });
   }
   /* C · ASK WHY (good) */
@@ -179,12 +183,12 @@
       sfx(T.q3C0, 'q3C0', 1);                  // "Why me? Of everyone in that shop, in that temple... why me?"
       sfx(T.ph3C1, 'ph3C1', 1);                // "Why me... that question has no floor. A man can fall in it his whole life."
       sfx(T.ph3C2, 'ph3C2', 1);                // "Ask a better one. For whom?"
-      sfx(T.turn + 0.2, 'x3endC', 0.4);        // the ending's music: it opens as his head is turned
-      sfx(T.turn + 0.6, 'x3waiting', 0.35);    // those who wait: a cough, a low word, sandals shifted on the turf
+      sfx(T.turn + 0.2, 'x3endC', 0.45);        // the ending's music: it opens as his head is turned
+      sfx(T.turn + 0.6, 'x3waiting', 0.32);    // those who wait: a cough, a low word, sandals shifted on the turf
       sfx(T.q3C1, 'q3C1', 1);                  // "I had asked why it had happened to me. He turned my head and showed me who was waiting."
       sfx(T.ph3C3, 'ph3C3', 1);                // "What you have is for them. Not for you. One day. Not yet. First you hold it."
       sfx(T.q3C2, 'q3C2', 1);                  // "Then that is why."
-      sfx(T.bow + 0.9, 'x3kneel', 0.4);        // he bows
+      sfx(T.bow + 0.9, 'x3kneel', 0.32);        // he bows
       sfx(T.q3C3, 'q3C3', 1);                  // "Teach me."
       sfx(T.q3C4, 'q3C4', 1);                  // "I had asked why me. I was given something to do with it instead."
       sfxFade(T.close - 2.0, T.close, 'x3endC');
@@ -202,14 +206,14 @@
       sfx(T.shut + 0.7, 'x3shut', 0.5);        // the world's sound closing down: one soft falling tone, and the flat room of his own head
       sfx(T.q3D1, 'q3D1', 1);                  // "For the first time in years, it was quiet."
       fade(T.sit - 0.4, T.sit, 0, 1); fade(T.sit, T.sit + 0.15, 1, 1); fade(T.sit + 0.15, T.sit + 0.9, 1, 0);
-      sfx(T.sit + 0.4, 'x3sweep', 0.3);        // the ground cleared round him: a broom, mats, far voices, all of it flat
+      sfx(T.sit - 0.5, 'x3sweep', 0.6);        // the ground cleared round him: a broom, mats, far voices, all of it flat (it leads the black by half a second: his line is left one second of true quiet, never more: a longer bare stretch reads as a fault, v21.30)
       sfx(T.chant + 0.3, 'x3chantfar', 0.5);   // the chanting, from the temple across the fields, on its loudspeakers (captioned)
       sfx(T.q3D2, 'q3D2', 1);                  // "The chanting came, and I waited for it to take me. Nothing. My hands were only my hands."
       sfx(T.q3D3, 'q3D3', 1);                  // "And then I understood what I had been afraid of all those years..."
       sfx(T.q3D3 + 1.5, 'x3endD', 0.4);        // the ending's music: it comes in as his eyes rise to the far bench
       sfxFade(T.back - 1.2, T.back + 0.4, 'x3chantfar');
       fade(T.back - 0.4, T.back, 0, 1); fade(T.back, T.back + 0.15, 1, 1); fade(T.back + 0.15, T.back + 0.8, 1, 0);
-      sfx(T.back + 0.2, 'x3kneel', 0.4);       // he goes back, and kneels
+      sfx(T.back + 0.2, 'x3kneel', 0.32);       // he goes back, and kneels
       sfx(T.q3D4, 'q3D4', 1);                  // "If I can close it, I can carry it. Teach me the rest."
       sfx(T.ph3D4, 'ph3D4', 1);                // "Fear never closed it. You did."
       sfx(T.q3D5, 'q3D5', 1);                  // "I had asked him to take it away. He gave me the handle, and I found I could keep it."
@@ -228,12 +232,12 @@
     step(0, () => stage.films.begin('open', c, api));
     tr(0, T.end, (k, t) => stage.films.frame('open', t, api), rawK);
     fade(0, T.o1, 1, 1); fade(T.o1, T.o1 + 1.5, 1, 0);
-    sfx(0.4, 'x3openmus', 0.5);                 // the film's own cue, under all of it
-    sfx(T.o1 + 0.3, 'x3shophum', 0.25);         // the shop at night: its fridge, the street far off
+    sfx(0.4, 'x3openmus', 0.66);                 // the film's own cue, under all of it
+    /* (the shop at night, its fridge and the street far off: a bed, filmBeds) */
     sfx(T.q3o1, 'q3o1', 1);                     // "For years I had been searching for the answers to the same questions."
-    sfx(T.q3o1 + 1.0, 'x3keys', 0.4);           // typing it
-    sfx(T.q3o1 + SECS['q3o1'] + 0.9, 'x3send', 0.45);   // sent
-    sfx(T.o2 + 0.3, 'x3page', 0.3);             // his notebook drawn to him
+    sfx(T.q3o1 + 1.0, 'x3keys', 0.32);           // typing it
+    sfx(T.q3o1 + SECS['q3o1'] + 0.9, 'x3send', 0.4);   // sent
+    sfx(T.o2 + 0.3, 'x3page', 0.32);             // his notebook drawn to him
     sfx(T.q3o2, 'q3o2', 1);                     // "Why was I so sensitive?"
     sfx(T.q3o2 + 0.5, 'x3pen', 0.35);           // the pen, under each as he asks it
     sfx(T.q3o3, 'q3o3', 1);                     // "Could any of it be used to help others?"
@@ -241,20 +245,19 @@
     sfx(T.q3o4, 'q3o4', 1);                     // "How could I cultivate enough to control it — and eventually use it at will?"
     sfx(T.q3o4 + 1.2, 'x3pen', 0.35);
     sfx(T.q3o5, 'q3o5', 1);                     // "I had met many practitioners and many masters. Some gave me advice..."
-    sfx(T.q3o5 + SECS['q3o5'] - 1.6, 'x3page', 0.4);    // the page turned to a blank one on its last sentence
+    sfx(T.q3o5 + SECS['q3o5'] - 1.6, 'x3page', 0.36);    // the page turned to a blank one on its last sentence
     fade(T.o3 - 0.35, T.o3, 0, 1); fade(T.o3, T.o3 + 0.12, 1, 1); fade(T.o3 + 0.12, T.o3 + 0.6, 1, 0);
     sfx(T.o3 + 2.3, 'x3zip', 0.5);              // the zip: it is packed
     fade(T.o3 + 2.2, T.o3 + 2.4, 0, 1); fade(T.o3 + 2.4, T.o3 + 2.55, 1, 1); fade(T.o3 + 2.55, T.o3 + 2.9, 1, 0);
     fade(T.o4 - 1.3, T.o4 - 0.5, 0, 1); fade(T.o4 - 0.5, T.o4, 1, 1);
-    sfxFade(T.o4 - 1.4, T.o4 - 0.3, 'x3shophum');
-    sfx(T.o4 - 1.2, 'x3cabin', 0.4);            // under the black, an aircraft cabin's hum
-    sfxFade(T.o4 + 0.2, T.o4 + 1.4, 'x3cabin'); //   ... gives way to morning birds
-    sfx(T.o4 + 0.3, 'x3birds', 0.4);
+    sfx(T.o4 - 1.2, 'x3cabin', 0.34);            // under the black, an aircraft cabin's hum
+    sfxFade(T.o4 + 0.2, T.o4 + 1.4, 'x3cabin'); //   ... gives way to morning birds (the bed itself: filmBeds)
     fade(T.o4, T.o4 + 1.5, 1, 0);
-    sfx(T.o4 + 2.0, 'x3festbed', 0.5);          // up, and the noise with it: the ground's own bed, the loudspeakers
+    /* (up, and the noise with it: the ground's own crowd and its music are the BEDS, brought up by filmBeds, so the film
+       ends on play's own sound) */
     sfx(T.q3o6, 'q3o6', 1);                     // "I was attending a Wai Kru ceremony in Thailand where many masters and practitioners were present."
     fade(T.black, T.end - 0.2, 0, 1);
-    sfxFade(T.black - 0.6, T.end - 0.05, 'x3openmus'); sfxFade(T.black - 0.4, T.end - 0.05, 'x3festbed'); sfxFade(T.black - 0.4, T.end - 0.05, 'x3birds');
+    sfxFade(T.black - 0.6, T.end - 0.05, 'x3openmus');
     step(T.end, () => stage.films.end());
   }
 
@@ -270,10 +273,9 @@
     fade(0, T.n1, 0, 1);
     [T.n1, T.n2, T.n3, T.n4, T.n5].forEach((m, i) => { if (i) fade(m - 0.4, m, 0, 1); fade(m, m + 0.12, 1, 1); fade(m + 0.12, m + 0.62, 1, 0); });
     sfx(0.2, 'x3nightmus', 0.5);                // the film's own cue: the day's noise falls away under it
-    sfx(T.n1 + 2.5, 'x3shutter', 0.5);          // the photograph is taken
-    sfx(T.n3 - 0.1, 'x3crickets', 0.4);         // the night: crickets, frogs, a far dog (it runs through the room's shot)
-    sfxFade(T.n5 - 0.5, T.n5 + 0.6, 'x3crickets');
-    sfx(T.n5 + 0.5, 'x3cock', 0.35);            // first light: a cock, far off
+    sfx(T.n1 + 2.5, 'x3shutter', 0.45);          // the photograph is taken
+    /* (the night: crickets, frogs, a far dog, through the room's shot, then first light's birds: the beds, filmBeds) */
+    sfx(T.n5 + 0.5, 'x3cock', 0.25);            // first light: a cock, far off
     sfx(T.tn3n1, 'tn3n1', 1);                   // "Come. He is free now."
     sfxFade(T.tn3n1 + 0.4, T.end - 0.05, 'x3nightmus');
     step(T.end, () => stage.films.end());
@@ -286,7 +288,7 @@
     c.keepFade = true; c.endFade = 1;
     step(0, () => stage.films.begin('tell', c, api));
     tr(0, T.end, (k, t) => stage.films.frame('tell', t, api), rawK);
-    sfx(0.2, 'x3tellmus', 0.4);                 // the telling's own cue, low
+    sfx(0.2, 'x3tellmus', 0.62);                 // the telling's own cue, low
     sfx(T.q3t1, 'q3t1', 1);                     // "Since I was a boy I have felt things other people did not."
     sfx(T.q3t1 + 1.0, 'x3mem1', 0.2);           //   a void deck at night: a far lift, a burner's fire
     sfx(T.q3t2, 'q3t2', 1);                     // "When I listen to chanting, my hands move by themselves..."
@@ -322,11 +324,11 @@
     sfx(T.ph3n6, 'ph3n6', 1);                   // "What is it for? A lamp is not lit for the lamp. It is lit for whoever is in the room."
     sfx(T.ph3n7, 'ph3n7', 1);                   // "And how to use it... you ask that first. It comes last."
     fade(T.blink, T.blink + 0.2, 0, 1); fade(T.blink + 0.2, T.blink + 0.46, 1, 1); fade(T.blink + 0.46, T.blink + 0.85, 1, 0);   // his eyes close a moment, and open
-    sfx(T.blink + 0.1, 'x3bell', 0.3);          // one small bell, far, under his closed eyes
+    sfx(T.blink + 0.1, 'x3bell', 0.25);          // one small bell, far, under his closed eyes
     sfx(T.ph3g2, 'ph3g2', 1);                   // "First, control."
     sfx(T.ph3g3, 'ph3g3', 1);                   // "To feel is not enough. A door that cannot close is not a door..."
     sfx(T.ph3g4, 'ph3g4', 1);                   // "With control you open when you choose. You close when you choose."
-    sfx(T.ph3g4 + 0.6, 'x3tone', 0.28);         //   the gold rises on him: the held tone, low
+    sfx(T.ph3g4 + 0.6, 'x3tone', 0.25);         //   the gold rises on him: the held tone, low
     sfx(T.ph3g5, 'ph3g5', 1);                   // "When to open. When to close. That is the whole practice."
     sfxFade(T.ph3g5 + 2.5, T.end, 'x3answmus'); sfxFade(T.ph3g5 + 1.0, T.ph3g5 + 4.0, 'x3tone');
     step(T.end, () => stage.films.end());
@@ -339,23 +341,23 @@
     c.keepFade = true; c.endFade = 1;
     step(0, () => stage.films.begin('festival', c, api));
     tr(0, T.end, (k, t) => stage.films.frame('festival', t, api), rawK);
-    sfx(0.05, 'x3dancemus', 0.5);              // the music changes: the dance's own piece, over the loudspeakers
+    sfx(0.05, 'x3dancemus', 0.55);              // the music changes: the dance's own piece, over the loudspeakers
     sfx(T.tn3d1, 'tn3d1', 1);                  // "For the Thevadas. To show respect."
     sfx(T.q3m0, 'q3m0', 1);                    // "I knew those hands. Mine had moved like that, by themselves."
     fade(T.cut, T.cut + 0.45, 0, 1); fade(T.cut + 0.45, T.cut + 0.8, 1, 1); fade(T.cut + 0.8, T.masters + 0.1, 1, 0);
     sfxFade(T.cut - 0.6, T.cut + 0.7, 'x3dancemus');
-    sfx(T.cut + 0.5, 'x3festmus', 0.42);       // the festival's own music again, and the ground's noise
+    /* (the festival's own music again, and the ground's noise: the beds, filmBeds) */
     sfx(T.q3m1, 'q3m1', 1);                    // "One by one they went up with their bai sri..."
-    sfx(T.throw, 'x3petals', 0.5);             // the hermit's handful, falling on her
+    sfx(T.throw, 'x3petals', 0.4);             // the hermit's handful, falling on her
     sfx(T.man + 1.0, 'x3trance', 0.45);        // the man whose arms rise: a low voiced breath (wordless)
-    sfxFade(T.sweep + 3.6, T.pho + 0.5, 'x3festmus');
-    sfx(T.pho - 0.05, 'x3tone', 0.5);          // the man in white: one held tone and a bell, on the cut to him
-    sfx(T.throw2, 'x3petals', 0.4);            // his own handful
+    sfx(T.pho - 0.05, 'x3tone', 0.32);          // the man in white: one held tone and a bell, on the cut to him
+    sfx(T.pho + 0.6, 'x3sightmus', 0.7);      // and his own music, under the three sentences that name him
+    sfx(T.throw2, 'x3petals', 0.36);            // his own handful
     sfx(T.q3w1, 'q3w1', 1);                    // "Only one person caught my attention."
     sfx(T.q3w2, 'q3w2', 1);                    // "He was dressed in white and carried the presence of a true master."
     sfx(T.q3w3, 'q3w3', 1);                    // "That person was Grandmaster Pho, and something inside me knew..."
     fade(T.black, T.end - 0.15, 0, 1);
-    sfxFade(T.black - 0.4, T.end - 0.05, 'x3tone');
+    sfxFade(T.black - 0.4, T.end - 0.05, 'x3tone'); sfxFade(T.black - 0.5, T.end - 0.05, 'x3sightmus');
     step(T.end, () => stage.films.end());
   }
 

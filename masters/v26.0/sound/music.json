@@ -1,0 +1,93 @@
+[
+ {
+  "name": "x3openmus",
+  "secs": 57.0,
+  "takes": 3,
+  "prompt": "Quiet, searching underscore for a man alone with old questions late at night: slow felt piano and a soft sustained string pad, sparse and introspective. In its final quarter it lifts and brightens with a gentle Thai khim (hammered dulcimer) figure and warm strings, hopeful, arriving somewhere new. Cinematic, slow. Instrumental, no drums. No sub-bass, nothing deep.",
+  "where": "the opening film"
+ },
+ {
+  "name": "x3dancemus",
+  "secs": 18.0,
+  "takes": 3,
+  "prompt": "Traditional Thai ceremonial dance music played live by a small ensemble at a temple fair: ranat ek xylophone, khong wong gong circle, pi nai oboe, ching hand cymbals and soft hand drums; graceful, festive and reverent, mid tempo, starting at once. Heard outdoors. Instrumental. No sub-bass, nothing deep.",
+  "where": "the festival film: the dance for the Thevadas (in the world, over the loudspeakers)"
+ },
+ {
+  "name": "x3festmus",
+  "secs": 64.0,
+  "takes": 3,
+  "prompt": "Lively traditional Isan folk music from northeast Thailand played live at a temple fair: khaen mouth organ, phin lute, hand drums and small cymbals; bright and festive, one steady mid tempo groove from its first second to its last, with no breaks, no solo passages and no ending. Instrumental. No sub-bass, nothing deep.",
+  "where": "day one, in play and in its films: the ground's own music (in the world, over the loudspeakers; looped)"
+ },
+ {
+  "name": "x3sightmus",
+  "secs": 16.0,
+  "takes": 3,
+  "prompt": "One warm, still chord of soft strings with a single gentle gong stroke at its start and one Thai khim note above it; reverent, a moment of recognition, held and slowly fading to nothing. Instrumental, no drums. No sub-bass, nothing deep.",
+  "where": "the festival film: the man in white"
+ },
+ {
+  "name": "x3nightmus",
+  "secs": 23.0,
+  "takes": 3,
+  "prompt": "A gentle nocturne: soft felt piano and a distant Thai bamboo flute (khlui), calm, tired and thoughtful, night in the countryside, ending on a quiet hopeful rising phrase as dawn comes. Sparse and slow. Instrumental, no drums. No sub-bass, nothing deep.",
+  "where": "the night between"
+ },
+ {
+  "name": "x3tellmus",
+  "secs": 58.0,
+  "takes": 3,
+  "prompt": "Very quiet, intimate underscore under a spoken confession: a soft sustained string pad and a slow, sparse felt piano, patient and listening, a little sad, never melodramatic, the same low dynamic from start to end, no tune that draws attention. Instrumental, no drums. No sub-bass, nothing deep.",
+  "where": "the telling"
+ },
+ {
+  "name": "x3answmus",
+  "secs": 96.0,
+  "takes": 3,
+  "prompt": "Warm, slowly opening underscore under a wise teacher's words: sustained strings, a soft Thai khim and a bamboo flute; dignified, a calm revelation. It grows gradually brighter and fuller toward its end, hopeful but restrained, and ends on a held warm chord. Slow. Instrumental, no drums. No sub-bass, nothing deep.",
+  "where": "the answers"
+ },
+ {
+  "name": "x3endA",
+  "secs": 46.0,
+  "takes": 3,
+  "prompt": "A plain, warm, humble theme: a softly plucked Thai phin lute and gentle strings, content and unhurried, the dignity of simple work, ending gently. Slow. Instrumental, no drums. No sub-bass, nothing deep.",
+  "where": "ending A \u00b7 accept your path"
+ },
+ {
+  "name": "x3endB",
+  "secs": 21.0,
+  "takes": 3,
+  "prompt": "Spare and stubborn: single soft piano notes with long spaces between them and one lone cello under them, pride slowly giving way, ending unresolved on one held note that fades. Very slow. Instrumental, no drums. No sub-bass, nothing deep.",
+  "where": "ending B \u00b7 challenge the path"
+ },
+ {
+  "name": "x3endC",
+  "secs": 39.0,
+  "takes": 3,
+  "prompt": "Opening outward with compassion: warm strings swelling gently under a tender Thai bamboo flute melody, the sight of other people who are waiting, hopeful, ending softly. Slow. Instrumental, no drums. No sub-bass, nothing deep.",
+  "where": "ending C \u00b7 ask why"
+ },
+ {
+  "name": "x3endD",
+  "secs": 31.0,
+  "takes": 3,
+  "prompt": "Stillness and relief after years of noise: a soft high sustained pad and a slow, simple Thai khim melody; quiet, safe and gently hopeful, ending softly. Very slow. Instrumental, no drums. No sub-bass, nothing deep.",
+  "where": "ending D \u00b7 ask to make it stop"
+ },
+ {
+  "name": "x3closemus",
+  "secs": 32.0,
+  "takes": 3,
+  "prompt": "A reverent, expectant theme: soft strings and felt piano with a gentle Thai khim, a student before his teacher, tender and grave, rising slowly and ending suspended on an unresolved held chord. Slow. Instrumental, no drums. No sub-bass, nothing deep.",
+  "where": "the close, up to its one breath"
+ },
+ {
+  "name": "x3lastmus",
+  "secs": 31.0,
+  "takes": 3,
+  "prompt": "A reverent theme resolved: warm strings, felt piano, a Thai khim and a bamboo flute, grateful and calm, building gently to a full warm final chord that rings out and fades. Slow. Instrumental, no drums. No sub-bass, nothing deep.",
+  "where": "the close, after the breath, to \"Tomorrow we begin.\""
+ }
+]

@@ -9035,7 +9035,12 @@ const ADULT_TAKES = new Set([
   'q2o1', 'q2o2b', 'q2o2', 'q2o3', 'q2o4', 'q2till', 'q2bag', 'q2jacket', 'q2where', 'q2fridge', 'q2flowers',
   'q2note', 'q2c1', 'q2c2', 'q2c3', 'q2v1', 'q2tA', 'q2e1', 'q2e2', 'q2e3', 'q2e4', 'q2e5',
   'q2e6', 'q2A1', 'q2A2', 'q2A3', 'q2B1', 'q2B2', 'q2C1', 'q2C2', 'q2C3', 'q2D1', 'q2D2', 'q2D3', 'q2K1', 'q2K2',
-  'q2K3', 'q2K4', 'q2A', 'q2B', 'q2C', 'q2D']);
+  'q2K3', 'q2K4', 'q2A', 'q2B', 'q2C', 'q2D',
+  /* v26.0 · episode 4 chapter 3, I Finally Found My Answers (masters/v26.0/sound.sh) */
+  'q3o1', 'q3o2', 'q3o3', 'q3o4', 'q3o5', 'q3o6', 'q3v', 'q3p1', 'q3m0', 'q3m1', 'q3w1', 'q3w2', 'q3w3', 'q3u1',
+  'q3u2', 'q3u3', 'q3c1', 'q3c2', 'q3c3', 'q3t1', 'q3t2', 'q3t3', 'q3t4', 'q3t5', 'q3t6', 'q3t7', 'q3t8', 'q3a1',
+  'q3A0', 'q3A1', 'q3A2', 'q3A3', 'q3B0', 'q3B1', 'q3B2', 'q3B3', 'q3B4', 'q3B5', 'q3C0', 'q3C1', 'q3C2', 'q3C3',
+  'q3C4', 'q3D0', 'q3D1', 'q3D2', 'q3D3', 'q3D4', 'q3D5', 'q3z1', 'q3K1', 'q3A', 'q3B', 'q3C', 'q3D']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
 const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
@@ -9121,7 +9126,14 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   'cu2a1', 'cu2a1b', 'pg2c1', 'pg2c2', 'pg2c3', 'pg2v1', 'lc2v1', 'lc2sit', 'lc2tell', 'lc2tA',
   'lc2e1', 'lc2e2', 'lc2e3', 'lc2e4', 'lc2e5', 'lc2e6', 'lc2e7', 'lc2e8', 'lc2e9', 'lc2e10', 'lc2k0',
   'lc2om', 'lc2drink', 'lc2k2', 'lc2w1', 'pg2w1', 'pg2A1', 'pg2A2',
-  'cu2b1', 'lc2B1', 'lc2B2', 'pg2B1', 'lc2C1', 'lc2C2', 'pg2C1', 'lc2C3', 'lc2D1', 'pg2D1', 'cu2a2']);
+  'cu2b1', 'lc2B1', 'lc2B2', 'pg2B1', 'lc2C1', 'lc2C2', 'pg2C1', 'lc2C3', 'lc2D1', 'pg2D1', 'cu2a2',
+  /* v26.0 · episode 4 chapter 3: Grandmaster Pho, Ton, the woman at his bench (the chant is the ground's own sound, an
+     effect: not here) */
+  'tn3a1', 'tn3a2', 'tn3d1', 'tn3m1', 'tn3m2', 'tn3c1', 'ds3c1', 'tn3c2', 'tn3n1', 'ph3g1', 'ph3n1', 'ph3n2',
+  'ph3n3', 'ph3n4', 'ph3n5', 'ph3n6', 'ph3n7', 'ph3g2', 'ph3g3', 'ph3g4', 'ph3g5', 'ph3b0', 'ph3b1', 'ph3b2',
+  'ph3b3', 'ph3b4', 'ph3bx', 'ph3by', 'ph3b5', 'ph3p1', 'ph3p2', 'ph3p3', 'ph3A1', 'ph3A2', 'tn3A1', 'ph3B1',
+  'ph3B2', 'ph3B3', 'ph3B4', 'ph3C1', 'ph3C2', 'ph3C3', 'ph3D1', 'ph3D2', 'ph3D3', 'ph3D4', 'ph3z0', 'ph3z1',
+  'ph3z2']);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
@@ -13535,7 +13547,43 @@ const STING_SAMPLE = {
      x2sandalsin, the sandals of episode 1's auntie, who wore the woman's part for one day (their takes and their
      recipe in masters/v25.5; the woman in green who wears it now walks on v25.0's own x2heels and x2heelsin) */
   /* (v25.4) the whisper of the piece on his shelf, a loop (e4c2's ambience; its volume and side are mixBeds') */
-  x2whisper: ['x2whisper', 1]
+  x2whisper: ['x2whisper', 1],
+  /* v26.0 · episode 4 chapter 3: its voices, effects, beds and music (masters/v26.0/sound.sh) */
+  q3o1: ['q3o1', 1], q3o2: ['q3o2', 1], q3o3: ['q3o3', 1], q3o4: ['q3o4', 1], q3o5: ['q3o5', 1], q3o6: ['q3o6', 1],
+  q3v: ['q3v', 1], tn3a1: ['tn3a1', 1], q3p1: ['q3p1', 1], tn3a2: ['tn3a2', 1], tn3d1: ['tn3d1', 1],
+  q3m0: ['q3m0', 1], q3m1: ['q3m1', 1], q3w1: ['q3w1', 1], q3w2: ['q3w2', 1], q3w3: ['q3w3', 1], q3u1: ['q3u1', 1],
+  q3u2: ['q3u2', 1], tn3m1: ['tn3m1', 1], q3u3: ['q3u3', 1], tn3m2: ['tn3m2', 1], q3c1: ['q3c1', 1],
+  tn3c1: ['tn3c1', 1], q3c2: ['q3c2', 1], ds3c1: ['ds3c1', 1], tn3c2: ['tn3c2', 1], q3c3: ['q3c3', 1],
+  tn3n1: ['tn3n1', 1], ph3g1: ['ph3g1', 1], q3t1: ['q3t1', 1], q3t2: ['q3t2', 1], q3t3: ['q3t3', 1],
+  q3t4: ['q3t4', 1], q3t5: ['q3t5', 1], q3t6: ['q3t6', 1], q3t7: ['q3t7', 1], q3t8: ['q3t8', 1], q3a1: ['q3a1', 1],
+  ph3n1: ['ph3n1', 1], ph3n2: ['ph3n2', 1], ph3n3: ['ph3n3', 1], ph3n4: ['ph3n4', 1], ph3n5: ['ph3n5', 1],
+  ph3n6: ['ph3n6', 1], ph3n7: ['ph3n7', 1], ph3g2: ['ph3g2', 1], ph3g3: ['ph3g3', 1], ph3g4: ['ph3g4', 1],
+  ph3g5: ['ph3g5', 1], ph3b0: ['ph3b0', 1], ph3b1: ['ph3b1', 1], ph3b2: ['ph3b2', 1], ph3b3: ['ph3b3', 1],
+  ph3b4: ['ph3b4', 1], ph3bx: ['ph3bx', 1], ph3by: ['ph3by', 1], ph3b5: ['ph3b5', 1], ph3p1: ['ph3p1', 1],
+  ph3p2: ['ph3p2', 1], ph3p3: ['ph3p3', 1], q3A0: ['q3A0', 1], ph3A1: ['ph3A1', 1], q3A1: ['q3A1', 1],
+  ph3A2: ['ph3A2', 1], tn3A1: ['tn3A1', 1], q3A2: ['q3A2', 1], q3A3: ['q3A3', 1], q3B0: ['q3B0', 1],
+  ph3B1: ['ph3B1', 1], ph3B2: ['ph3B2', 1], q3B1: ['q3B1', 1], ph3B3: ['ph3B3', 1], q3B2: ['q3B2', 1],
+  q3B3: ['q3B3', 1], q3B4: ['q3B4', 1], ph3B4: ['ph3B4', 1], q3B5: ['q3B5', 1], q3C0: ['q3C0', 1],
+  ph3C1: ['ph3C1', 1], ph3C2: ['ph3C2', 1], q3C1: ['q3C1', 1], ph3C3: ['ph3C3', 1], q3C2: ['q3C2', 1],
+  q3C3: ['q3C3', 1], q3C4: ['q3C4', 1], q3D0: ['q3D0', 1], ph3D1: ['ph3D1', 1], ph3D2: ['ph3D2', 1],
+  ph3D3: ['ph3D3', 1], q3D1: ['q3D1', 1], q3D2: ['q3D2', 1], q3D3: ['q3D3', 1], q3D4: ['q3D4', 1],
+  ph3D4: ['ph3D4', 1], q3D5: ['q3D5', 1], ph3z0: ['ph3z0', 1], ph3z1: ['ph3z1', 1], q3z1: ['q3z1', 1],
+  ph3z2: ['ph3z2', 1], q3K1: ['q3K1', 1], q3A: ['q3A', 1], q3B: ['q3B', 1], q3C: ['q3C', 1], q3D: ['q3D', 1],
+  x3afternoon: ['x3afternoon', 1], x3answmus: ['x3answmus', 1], x3baiset: ['x3baiset', 1],
+  x3baitake: ['x3baitake', 1], x3bell: ['x3bell', 1], x3birds: ['x3birds', 1], x3bowall: ['x3bowall', 1],
+  x3bulbs: ['x3bulbs', 1], x3cabin: ['x3cabin', 1], x3chant: ['x3chant', 1], x3chantfar: ['x3chantfar', 1],
+  x3closemus: ['x3closemus', 1], x3cock: ['x3cock', 1], x3crickets: ['x3crickets', 1], x3dancemus: ['x3dancemus', 1],
+  x3endA: ['x3endA', 1], x3endB: ['x3endB', 1], x3endC: ['x3endC', 1], x3endD: ['x3endD', 1],
+  x3festbed: ['x3festbed', 1], x3festmus: ['x3festmus', 1], x3keys: ['x3keys', 1], x3kneel: ['x3kneel', 1],
+  x3lastmus: ['x3lastmus', 1], x3matroll: ['x3matroll', 1], x3matset: ['x3matset', 1], x3mem1: ['x3mem1', 1],
+  x3mem2: ['x3mem2', 1], x3mem3: ['x3mem3', 1], x3mem4: ['x3mem4', 1], x3mem5: ['x3mem5', 1], x3mem6: ['x3mem6', 1],
+  x3nightmus: ['x3nightmus', 1], x3open: ['x3open', 1], x3openmus: ['x3openmus', 1], x3os1: ['x3os1', 1],
+  x3os2: ['x3os2', 1], x3os3: ['x3os3', 1], x3os4: ['x3os4', 1], x3os5: ['x3os5', 1], x3os6: ['x3os6', 1],
+  x3os7: ['x3os7', 1], x3os8: ['x3os8', 1], x3os9: ['x3os9', 1], x3page: ['x3page', 1], x3pen: ['x3pen', 1],
+  x3petals: ['x3petals', 1], x3pull: ['x3pull', 1], x3send: ['x3send', 1], x3shophum: ['x3shophum', 1],
+  x3shut: ['x3shut', 1], x3shutter: ['x3shutter', 1], x3sightmus: ['x3sightmus', 1], x3step: ['x3step', 1],
+  x3sweep: ['x3sweep', 1], x3tellmus: ['x3tellmus', 1], x3tone: ['x3tone', 1], x3trance: ['x3trance', 1],
+  x3waiting: ['x3waiting', 1], x3zip: ['x3zip', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays

@@ -1,0 +1,354 @@
+[
+ {
+  "name": "x3shophum",
+  "secs": 30,
+  "loop": true,
+  "takes": 2,
+  "prompt": "Quiet small shop interior late at night: a display fridge compressor humming steadily, a fluorescent tube's faint buzz, very distant city traffic through a closed shutter. No voices, no music.",
+  "where": "opening film: the shop"
+ },
+ {
+  "name": "x3keys",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "Typing a short sentence on a laptop keyboard: soft quiet key presses, close microphone, dry room.",
+  "where": "opening film: the reply typed"
+ },
+ {
+  "name": "x3send",
+  "secs": 1.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A single soft digital message-sent whoosh from a laptop, short and gentle.",
+  "where": "opening film: sent"
+ },
+ {
+  "name": "x3page",
+  "secs": 1.5,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A paper notebook slid across a glass counter and one page turned over, close and dry.",
+  "where": "opening film: the notebook"
+ },
+ {
+  "name": "x3pen",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A ballpoint pen drawing one firm underline on notebook paper, close microphone.",
+  "where": "opening film: each question underlined"
+ },
+ {
+  "name": "x3zip",
+  "secs": 1.6,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A backpack's zipper pulled closed in one steady pull, close microphone.",
+  "where": "opening film: packed"
+ },
+ {
+  "name": "x3cabin",
+  "secs": 6.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "Inside an airliner cabin in flight: a steady low engine and air-conditioning drone. No voices.",
+  "where": "opening film: under the black"
+ },
+ {
+  "name": "x3birds",
+  "secs": 30,
+  "loop": true,
+  "takes": 2,
+  "prompt": "Calm early morning in a village garden in northeast Thailand: a few songbirds, a dove cooing, light air in leaves. No traffic, no voices, no music.",
+  "where": "the morning: day two, the opening, ending B"
+ },
+ {
+  "name": "x3festbed",
+  "secs": 30,
+  "loop": true,
+  "takes": 2,
+  "prompt": "A festive outdoor temple fair in rural Thailand at midday: a few hundred people talking and laughing all around, children playing, plastic chairs shifting, a public address loudspeaker's faint hum. Indistinct crowd murmur, no clear words, no music.",
+  "where": "day one: the ground"
+ },
+ {
+  "name": "x3afternoon",
+  "secs": 30,
+  "loop": true,
+  "takes": 2,
+  "prompt": "A hot quiet afternoon outdoors in rural Thailand after a festival has ended: cicadas, a straw broom sweeping slowly, a few people talking low far away, indistinct. No music.",
+  "where": "ending B: the afternoon"
+ },
+ {
+  "name": "x3crickets",
+  "secs": 30,
+  "loop": true,
+  "takes": 2,
+  "prompt": "Night in the Thai countryside: crickets and frogs, one dog barking once far away, still warm air. No voices, no music.",
+  "where": "the night between; ending B at dusk"
+ },
+ {
+  "name": "x3sweep",
+  "secs": 20,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A straw broom sweeping artificial grass in slow strokes, woven mats dragged aside, a few far voices, everything muffled and distant as if heard through closed ears.",
+  "where": "ending D: the ground cleared round him"
+ },
+ {
+  "name": "x3waiting",
+  "secs": 5.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A few people waiting quietly outdoors: one small cough, sandals shifting on grass, cloth rustling. No words.",
+  "where": "ending C: those who wait"
+ },
+ {
+  "name": "x3open",
+  "secs": 22,
+  "loop": true,
+  "takes": 2,
+  "prompt": "A bright shimmering airy tone with very close clear birdsong and soft wind chimes: luminous, open, weightless, like the world suddenly heard close and clear. No melody, no voices.",
+  "where": "OPEN AND CLOSE: the world heard open"
+ },
+ {
+  "name": "x3step",
+  "secs": 0.6,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A single soft bare footstep on short artificial grass, very close, dry.",
+  "where": "his own feet, barefoot on the turf"
+ },
+ {
+  "name": "x3kneel",
+  "secs": 1.3,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A person kneeling down onto a woven straw mat: cloth rustling and knees settling, close.",
+  "where": "he kneels; he bows"
+ },
+ {
+  "name": "x3bowall",
+  "secs": 3.5,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A crowd of several hundred people kneeling and bowing down together outdoors: one wide soft wave of cloth rustling, then stillness. No voices.",
+  "where": "day one: the whole ground bows"
+ },
+ {
+  "name": "x3baitake",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A brass offering bowl dressed with banana leaves and flowers lifted off a table: a soft metallic ring and leaves rustling, close.",
+  "where": "his bai sri taken up"
+ },
+ {
+  "name": "x3baiset",
+  "secs": 1.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A brass offering bowl set down gently on a woven mat: one soft dull metallic touch.",
+  "where": "his bai sri set down"
+ },
+ {
+  "name": "x3petals",
+  "secs": 1.8,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A handful of flower petals thrown and pattering softly down onto cloth and hair, very gentle, close.",
+  "where": "petals thrown"
+ },
+ {
+  "name": "x3matroll",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "Woven straw mats being rolled up by hand on grass, dry rustling, bare feet moving on grass.",
+  "where": "ending A: the mats"
+ },
+ {
+  "name": "x3matset",
+  "secs": 1.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A rolled straw mat dropped onto a stack of rolled mats: one soft dry thud.",
+  "where": "ending A: his mat on the stack"
+ },
+ {
+  "name": "x3shutter",
+  "secs": 0.6,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A smartphone camera shutter click, single, close.",
+  "where": "the night between: the photograph"
+ },
+ {
+  "name": "x3bulbs",
+  "secs": 2.2,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A wall switch clicked on, then a string of incandescent festoon bulbs humming softly as they light.",
+  "where": "ending B: the bulbs come on"
+ },
+ {
+  "name": "x3cock",
+  "secs": 2.6,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A rooster crowing once, far away across fields at dawn, distant, open air.",
+  "where": "first light"
+ },
+ {
+  "name": "x3bell",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 2,
+  "prompt": "One small temple hand bell struck once, far away, ringing out softly.",
+  "where": "the answers: under his closed eyes"
+ },
+ {
+  "name": "x3shut",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A soft deep falling tone, like sound draining away, ending in a close muffled quiet as if ears were covered. Calm, not frightening.",
+  "where": "ending D: the world closing"
+ },
+ {
+  "name": "x3tone",
+  "secs": 6.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "One deep warm sustained singing bowl tone with a soft high bell struck once at its start, reverent, slowly fading.",
+  "where": "the gold; the man in white"
+ },
+ {
+  "name": "x3trance",
+  "secs": 3.5,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A man breathing in sharply and letting out a low wordless voiced groan, deep in a trance, close, outdoors. No words.",
+  "where": "the festival: the man whose arms rise"
+ },
+ {
+  "name": "x3mem1",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "The concrete ground floor of an apartment block at night: a distant lift motor humming and a small metal burner's fire crackling, lonely, reverberant.",
+  "where": "the telling: since he was a boy"
+ },
+ {
+  "name": "x3mem2",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "Buddhist monks chanting together far away inside a temple hall, heard from outside as a low wordless hum, reverberant.",
+  "where": "the telling: the chanting"
+ },
+ {
+  "name": "x3mem3",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A Chinese temple shrine's drum and gong struck slowly, far away, reverberant.",
+  "where": "the telling: Buddha Day"
+ },
+ {
+  "name": "x3mem4",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A cold breath of air through a small shop and a glass display counter ticking and creaking faintly, quiet and eerie.",
+  "where": "the telling: the piece in a shop"
+ },
+ {
+  "name": "x3mem5",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A small wind-up music box playing three slow notes and stopping, close, slightly out of tune.",
+  "where": "the telling: the three kumanthong"
+ },
+ {
+  "name": "x3mem6",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A dull muffled room tone heard as if through thick cloth, pressure in the ears, low and close.",
+  "where": "the telling: the fog"
+ },
+ {
+  "name": "x3os1",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A small child laughing and running past outdoors, short, a little far away.",
+  "where": "day one, in play"
+ },
+ {
+  "name": "x3os2",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "An outdoor public address loudspeaker crackling on: a short feedback squeal and two taps on the microphone, far away. No words.",
+  "where": "day one, in play"
+ },
+ {
+  "name": "x3os3",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "Strings of small cloth flags and long cloth banners flapping in a gust of wind, outdoors.",
+  "where": "both days, in play"
+ },
+ {
+  "name": "x3os4",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 2,
+  "prompt": "Glass soda bottles clinking together in a plastic crate carried past.",
+  "where": "day one, in play"
+ },
+ {
+  "name": "x3os5",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A small brass hand bell rung three times quickly, outdoors, a little far away.",
+  "where": "day one, in play"
+ },
+ {
+  "name": "x3os6",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A short burst of warm applause and a few happy cheers from a small crowd outdoors, far away. No words.",
+  "where": "day one, in play"
+ },
+ {
+  "name": "x3os7",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A dove cooing three times close by in a tree, calm morning.",
+  "where": "day two, in play"
+ },
+ {
+  "name": "x3os8",
+  "secs": 5.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A small motorbike passing far away along a country road.",
+  "where": "day two, in play"
+ },
+ {
+  "name": "x3os9",
+  "secs": 5.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A large bronze temple bell struck once far away across fields, long slow decay.",
+  "where": "day two, in play"
+ }
+]

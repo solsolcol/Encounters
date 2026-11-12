@@ -57,6 +57,97 @@
     /* a sound of the place, if its file is in the build (M7 makes them; until one lands its cue is simply silent) */
     function fx(name, vol = 1, pan = 0) { if (worldSfx && !(soundOff && soundOff())) worldSfx(name, vol, 1, pan); }
 
+    /* ---- THE GROUND'S SOUND (M7). THE BEDS, each eased toward what the day and the beat want: the festival's crowd
+       and its music over the loudspeakers (day one), the morning's birds (day two), the world heard OPEN (the breath's
+       own level: the game's sound there, with kit.hush closing it), the pull's drone (the pull's own number: however
+       long he stands in it). In a film the beds are the film's (filmBed: y_stage.js writes it from the film's clock;
+       every film cues the rest of its sound itself). The engine ducks every bed under a voice (8 dB). The order is
+       DATA.ambience.beds'.
+       THE LEVELS are set from each file's measured level (masters/v26.0/sound/levels.py -> LEVELS.txt: the median of
+       its seconds), to where the bed stands with nobody speaking: the quiet places at the house's -35 dBFS (the morning's
+       birds, the night, his shop a little under), and DAY ONE LOUD, as the real one is (Chad: "festive, loud, and
+       colourful"): its music over the loudspeakers at -26.5 and the crowd at -31 under it, -25 together, which a
+       voice (-16) still stands 17 dB over through the duck. The world heard open at -28.5 when it is wide; the pull's
+       drone at -30 at its height, the ground's noise fallen away under it */
+    const BED = { fest: 0.64, mus: 0.38, birds: 0.56, open: 0.75, crick: 0.56, pull: 0.62, shop: 0.56 };
+    const bedMix = { fest: 0, mus: 0, birds: 0, open: 0, crick: 0, pull: 0, shop: 0 };
+    const filmBed = { on: false, fest: 0, mus: 0, birds: 0, open: 0, crick: 0, pull: 0, shop: 0 };
+    const BED_EASE = { fest: 1.0, mus: 1.6, birds: 1.0, open: 0.22, crick: 0.8, pull: 0.3, shop: 0.5 };
+    const DAY1 = new Set(['arrive', 'baisri', 'tables', 'place', 'festival', 'seen', 'check']);
+    function mixBeds(wdt, st) {
+      if (!(wdt > 0)) return;
+      const want = { fest: 0, mus: 0, birds: 0, open: 0, crick: 0, pull: 0, shop: 0 };
+      if (st === 'cine') { if (filmBed.on) for (const k in want) want[k] = filmBed[k]; }
+      /* (on the title and the chapter's card nothing is heard: the engine holds every bed at 0 there. Nothing is RAISED
+         there either: this frame runs under the title too, and the opening film began on a second of day one's crowd,
+         eased down from the level play would have had: my own fault, found by the sound probe's first reading) */
+      else if (st === 'title' || st === 'chapter') { /* all at 0 */ }
+      else if (DAY1.has(phase)) {
+        /* (the pull: the ground's own noise falls away under it, the music first; kit.hush closes the bus besides) */
+        const pk = play.pull ? smo(c01(play.pull.k)) : 0;
+        want.fest = BED.fest * (1 - 0.5 * pk) * (phase === 'check' ? 0.8 : 1); want.mus = BED.mus * (1 - pk) * (phase === 'check' ? 0.8 : 1);
+        want.pull = BED.pull * pk;
+        if (play.chanting) { want.mus = 0; want.fest *= 0.55; }                             // the chant is on the loudspeakers, and the ground is bowing
+      } else { want.birds = BED.birds; if (phase === 'breath') want.open = BED.open * Math.max(0, open.shown); }
+      for (const k in bedMix) bedMix[k] += (want[k] - bedMix[k]) * (1 - Math.exp(-wdt / BED_EASE[k]));
+      const B = DATA.ambience.beds; B[0][1] = bedMix.fest; B[1][1] = bedMix.mus; B[2][1] = bedMix.birds; B[3][1] = bedMix.open; B[4][1] = bedMix.crick; B[5][1] = bedMix.pull; B[6][1] = bedMix.shop;
+    }
+    /* where a sound of the ground is, on his screen */
+    function panAt(x, z) {
+      const dx = x - yaw.position.x, dz = z - yaw.position.z, a = Math.atan2(dx, -dz) + yaw.rotation.y;
+      return THREE.MathUtils.clamp(Math.sin(a) * 0.75, -0.75, 0.75);
+    }
+    /* THE GROUND'S OWN NOISES, one at a time on the chapter's clock from their own seeded stream (e3c3's shape, v21.13):
+       on day one a child running past, the loudspeaker's crackle, the flags and banners in a gust, bottles in a crate, a
+       master's hand bell, a burst of clapping; on day two a dove in the tree, a motorbike on the road, a far temple's
+       bell, the flags. Each panned to where it comes from, a third quieter while a line is being said. Never two at
+       once; never in the bows, the line and the pull, or OPEN AND CLOSE (those have their own sound); in play only;
+       reset() rewinds the stream (v8.1). Every one-shot file has its loudest twentieth of a second at -14 dBFS (sound.sh), so a
+       volume here says where it stands: day one's at -23 or so over a ground at -25 (heard as the ground's own, never
+       in front of it), the morning's at -29 over birds at -35 */
+    const AMB_SEED = 0x2603;
+    let ambSeed = AMB_SEED, ambAt = 0, ambBusy = 0, ambLast = '', ambN = 0;
+    function ambRand() {
+      ambSeed = (ambSeed + 0x6D2B79F5) | 0; let t = ambSeed;
+      t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    }
+    const ambSide = (lo, hi) => (ambRand() < 0.5 ? -1 : 1) * (lo + ambRand() * (hi - lo));
+    const AMB = {
+      one: [
+        { n: 'x3os1', v: 0.36, len: 3.0, at: () => ({ x: ambSide(2, 9), z: 2 + ambRand() * 8 }) },          // a child, somewhere among the mats
+        { n: 'x3os2', v: 0.28, len: 3.0, at: () => ({ x: 0, z: -13 }) },                                    // the loudspeakers, at the hall
+        { n: 'x3os3', v: 0.36, len: 4.0, at: () => ({ x: ambSide(0, 4), z: -2 + ambRand() * 4 }) },         // the pole's flags and the banners
+        { n: 'x3os4', v: 0.34, len: 2.5, at: () => ({ x: 9 + ambRand() * 3, z: ambSide(1, 6) }) },          // bottles, at the east tents
+        { n: 'x3os5', v: 0.34, len: 2.5, at: () => ({ x: -9.5, z: ambSide(0, 4) }) },                       // a hand bell, along the masters' row
+        { n: 'x3os6', v: 0.36, len: 4.0, at: () => ({ x: -8, z: 2 + ambRand() * 3 }) },                     // clapping, by the masters
+      ],
+      two: [
+        { n: 'x3os7', v: 0.18, len: 3.0, at: () => ({ x: 9, z: 8 }) },                                      // a dove, in the tree by his bench
+        { n: 'x3os8', v: 0.16, len: 5.0, at: () => ({ x: ambSide(20, 40), z: 25 }) },                       // a motorbike, on the road
+        { n: 'x3os9', v: 0.18, len: 5.0, at: () => ({ x: -40, z: -10 }) },                                  // a far temple's bell
+        { n: 'x3os3', v: 0.17, len: 4.0, at: () => ({ x: ambSide(0, 4), z: -2 + ambRand() * 4 }) },         // the flags
+      ],
+    };
+    function ambTick() {
+      if (!worldSfx || (soundOff && soundOff())) return;
+      const one = phase === 'arrive' || phase === 'baisri' || phase === 'tables' || phase === 'seen' || phase === 'check';
+      const two = phase === 'dawn' || phase === 'decide';
+      if (!(one || two) || play.bow || play.pull) { ambAt = 0; return; }
+      if (!ambAt) { ambAt = dayClock.t + 3 + ambRand() * 5; return; }
+      if (dayClock.t < ambAt || dayClock.t < ambBusy) return;
+      const pool = one ? AMB.one : AMB.two;
+      let k = Math.floor(ambRand() * pool.length);
+      if (pool[k].n === ambLast) k = (k + 1 + Math.floor(ambRand() * (pool.length - 1))) % pool.length;
+      const sd = pool[k], at = sd.at();
+      const vol = sd.v * (dayClock.t < speak.until ? 0.66 : 1) * (0.85 + 0.3 * ambRand());
+      if (worldSfx(sd.n, vol, 0.95 + 0.1 * ambRand(), panAt(at.x, at.z))) {
+        ambN++; ambLast = sd.n; ambBusy = dayClock.t + sd.len + 0.8;
+        ambAt = dayClock.t + (one ? 6 + ambRand() * 8 : 9 + ambRand() * 11);
+      } else ambAt = dayClock.t + 1.5;
+    }
+    function ambReset() { ambSeed = AMB_SEED; ambAt = 0; ambBusy = 0; ambLast = ''; ambN = 0; for (const k in bedMix) bedMix[k] = 0; filmBed.on = false; }
+
     const W = DATA.words;
     const play = { run: 0, busy: false, turning: null, bow: null, bai: false, baiP: 0, baiTo: 0, baiSecs: 1, knelt: false, homage: false,
                    pull: null, looked: false, asked: new Set(), checked: false, bowed: false, breath: null, lookEase: null };
@@ -225,8 +316,10 @@
 
     /* ================================================================ P1 · TON, AND THE BAI SRI */
     const WARM_DAY1 = ['q3v', 'tn3a1', 'q3p1', 'tn3a2', 'q3u1', 'q3u2', 'tn3m1', 'q3u3', 'tn3m2', 'q3c1', 'tn3c1', 'q3c2', 'ds3c1', 'tn3c2', 'q3c3',
-                       'x3baitake', 'x3baiset', 'x3kneel', 'x3bowall', 'x3petals', 'x3chant', 'x3tone'];
-    const WARM_DAY2 = ['ph3g1', 'ph3b0', 'ph3b1', 'ph3b2', 'ph3b3', 'ph3b4', 'ph3bx', 'ph3by', 'ph3b5', 'ph3p1', 'ph3p2', 'ph3p3', 'x3kneel', 'x3baiset', 'x3bell'];
+                       'x3baitake', 'x3baiset', 'x3kneel', 'x3bowall', 'x3petals', 'x3chant', 'x3tone',
+                       'x3step', 'x3os1', 'x3os2', 'x3os3', 'x3os4', 'x3os5', 'x3os6'];
+    const WARM_DAY2 = ['ph3g1', 'ph3b0', 'ph3b1', 'ph3b2', 'ph3b3', 'ph3b4', 'ph3bx', 'ph3by', 'ph3b5', 'ph3p1', 'ph3p2', 'ph3p3', 'x3kneel', 'x3baiset', 'x3bell',
+                       'x3step', 'x3os3', 'x3os7', 'x3os8', 'x3os9'];
     function dayOneStage() {
       look('DAY1', 0); auraAt(0, 0); mistK = 1; burstsClear();
       zoneAt(null);
@@ -262,10 +355,10 @@
       queueLine('tn3a2', () => { if (!live(run)) return;
         const P = cast.ton, g = P.group.position, toTable = faceTo(g.x, g.z, TON_BAI.x, TON_BAI.z), toHim = faceTo(g.x, g.z, yaw.position.x, yaw.position.z);
         P.actN++; turnPerson(P, toTable, 0.4); hold(P, 'give', 0.18, 0.5, 0.4);                       // his hands come up before his chest as he turns to the table
-        after(0.45, () => { if (live(run)) play.tonGive = { k: 0 }; fx('x3baitake', 0.4, -0.3); });   // it is in his hands
+        after(0.45, () => { if (live(run)) play.tonGive = { k: 0 }; fx('x3baitake', 0.3, -0.3); });   // it is in his hands
         after(0.95, () => { if (!live(run)) return; turnPerson(P, toHim, 0.55); span(P, 'give', 0.5, 1.9, 1.4, { fade: 0.2, hold: 1.5 }); });   // and held out to him in both
         after(1.7, () => { if (live(run)) lookAt({ x: myBai.position.x, y: myBai.position.y + 0.3, z: myBai.position.z }, 1.0); });           // his eyes go down to it
-        after(3.1, () => { if (!live(run)) return; play.tonGive = null; myBai.visible = false; fx('x3baitake', 0.6); baiHands(true, { from: -1, p: 0, secs: 0.8 });
+        after(3.1, () => { if (!live(run)) return; play.tonGive = null; myBai.visible = false; fx('x3baitake', 0.36); baiHands(true, { from: -1, p: 0, secs: 0.8 });
           span(P, 'give', 3.6, 5.85, 1.9, { fade: 0.3, then: (Q) => rest(Q, 0.7) });
           after(0.9, () => { if (live(run)) lookAt({ x: g.x, y: 1.5, z: g.z }, 1.1); }); }); });                                                // and back up to Ton
       queueFn(() => { if (!live(run)) return; play.busy = false; play.tonGive = null; if (kit) kit.root(false); if (!play.bai) { myBai.visible = false; baiHands(true, { from: -1, p: 0, secs: 0.5 }); } setPhase('baisri'); });
@@ -302,8 +395,8 @@
         return true;
       }
       const run = play.run; play.busy = true;
-      fx('x3kneel', 0.6); setPhase('place'); baiRaise(-1, 0.9);                // (it goes down under the frame's foot as he kneels, and is on the turf before him when he looks)
-      turnTo(PLACE_RY, 1.1, Object.assign({ pos: PLACE, pitch: -0.3 }, KNEEL), () => { if (!live(run)) return; fx('x3baiset', 0.5); setDown();
+      fx('x3kneel', 0.32); setPhase('place'); baiRaise(-1, 0.9);                // (it goes down under the frame's foot as he kneels, and is on the turf before him when he looks)
+      turnTo(PLACE_RY, 1.1, Object.assign({ pos: PLACE, pitch: -0.3 }, KNEEL), () => { if (!live(run)) return; fx('x3baiset', 0.36); setDown();
         after(0.5, () => { if (!live(run)) return; play.busy = false; objectiveFor('place', { complete: false }); }); });
       return true;
     }
@@ -311,14 +404,18 @@
        lines and once more for the teachers, and he with it, his hands joined. Each line is captioned as it is chanted
        (v21.31), timed from the homage's own start so it is right when the game is muted. */
     const HOMAGE = { bow: 5.6, n: 4, lead: 1.2 };
+    /* WHERE EACH LINE OF THE CHANT IS in its file, seconds from its start (masters/v26.0/chant/timing.json: the lines
+       are laid where the bows are, and measured there): on the ground's loudspeakers, and from the temple across the
+       fields (ending D). The captions stand on these, so they are right when the game is muted (v21.31) */
+    const CHANT = { near: [[1.4, 6.6], [7.0, 10.9], [12.6, 18.0]], far: [[0.5, 5.7], [6.1, 10.0], [11.7, 17.1]] };
     function homage() {
       if (phase !== 'place' || !play.knelt || play.homage || play.busy) return false;
       const run = play.run; play.busy = true; objectiveFor('place');
       handsAway(false);
       if (kit) { kit.pray(true, { secs: 0.9, y: -0.3 });
         kit.pose('lying', { y: KNEEL.y, yaw: PLACE_RY, span: 0.02, pitchLo: -1.4, pitchHi: KNEEL.hi, secs: 0.3 });
-        if (kit.captions) kit.captions([1, 2, 3].map((k) => ({ at: HOMAGE.lead + (k - 1) * HOMAGE.bow + 0.2, end: HOMAGE.lead + k * HOMAGE.bow - 0.3, text: W['cap' + k], sub: W['cap' + k + 'Sub'] }))); }
-      fx('x3chant', 0.9);
+        if (kit.captions) kit.captions([1, 2, 3].map((k) => ({ at: CHANT.near[k - 1][0], end: CHANT.near[k - 1][1], text: W['cap' + k], sub: W['cap' + k + 'Sub'] }))); }
+      fx('x3chant', 0.64); play.chanting = true;                               // (the loudspeakers carry the chant now: the ground's music stops for it, mixBeds)
       whenReady(cast.ton, (P) => hold(P, 'prostrate', 0.15, 0.85, 0.6));
       after(HOMAGE.lead, () => { if (!live(run)) return;
         play.bow = { t: 0, prev: 0, n: HOMAGE.n, secs: HOMAGE.bow * HOMAGE.n, depth: 1.0, run, sound: 'x3bowall', done: () => homageDone(run) };
@@ -328,7 +425,7 @@
     }
     function homageDone(run) {
       if (!live(run)) return;
-      play.homage = true; saveMark();
+      play.homage = true; play.chanting = false; saveMark();
       if (kit) { kit.pray(false, { secs: 1.2 }); kit.pose('lying', { y: KNEEL.y, yaw: PLACE_RY, span: KNEEL.span, pitchLo: KNEEL.lo, pitchHi: KNEEL.hi, secs: 0.3 }); if (kit.captions) kit.captions(null); }
       after(1.4, () => { if (live(run)) festivalBegin(); });
     }
@@ -341,7 +438,7 @@
       const one = Bw.secs / Bw.n, u = Math.min(1, Bw.t / Bw.secs);
       const ph = (Bw.t % one) / one, d = -Bw.depth * Math.pow(Math.sin(Math.PI * Math.min(1, ph * 1.12)), 2) * (u < 1 ? 1 : 0);
       pitch.rotation.x += d - Bw.prev; Bw.prev = d;
-      if (Bw.sound) for (let k = 0; k < Bw.n; k++) { const at = k * one + one * 0.3; if (t0 < at && Bw.t >= at) fx(Bw.sound, 0.5); }
+      if (Bw.sound) for (let k = 0; k < Bw.n; k++) { const at = k * one + one * 0.3; if (t0 < at && Bw.t >= at) fx(Bw.sound, 0.36); }
       if (u >= 1) { pitch.rotation.x -= Bw.prev; play.bow = null; if (Bw.done) Bw.done(); }
     }
 
@@ -383,10 +480,10 @@
       setPhase('festival', { complete: false });
       /* THE BLESSING AHEAD OF HIM (photographs 5 and 6), then the pull */
       const T = { up: 1.2, on: 2.6, petals: 6.4, down: 9.6, trance: 10.4, rise: 11.2, pull: 12.0, say: 15.5 };
-      after(T.up, () => { if (!live(run)) return; ymBai.visible = true; play.ymCarry = true; span(cast.ym, 'offer', 5.9, YM_UP, 1.5, { hold: 0.5, fade: 0.5 }); lay(cast.ym, ymGrip, { secs: 0.5 }); fx('x3baitake', 0.3, 0.2); });
+      after(T.up, () => { if (!live(run)) return; ymBai.visible = true; play.ymCarry = true; span(cast.ym, 'offer', 5.9, YM_UP, 1.5, { hold: 0.5, fade: 0.5 }); lay(cast.ym, ymGrip, { secs: 0.5 }); fx('x3baitake', 0.22, 0.2); });
       after(T.on, () => { if (!live(run)) return; hold(cast.pho, PHO_ON.take, PHO_ON.from, PHO_ON.len, 0.9); lay(cast.pho, phoGrip, { secs: 1.0 }); });
       after(T.petals, () => { if (!live(run)) return; lay(cast.pho, null, { secs: 0.45 }); span(cast.pho, 'Sit_Cheer_with_Left_Hand', 0.15, 2.5, 2.7, { fade: 0.5, then: (P) => rest(P, 0.8) });
-        after(1.3, () => { if (!live(run)) return; const Y = cast.ym.group.position, h = PHO_HAND_UP(); petalBurst(h, [Y.x, Y.z], dayClock.t, { r: 0.7, up: 1.2 }); fx('x3petals', 0.6, 0.2); }); });
+        after(1.3, () => { if (!live(run)) return; const Y = cast.ym.group.position, h = PHO_HAND_UP(); petalBurst(h, [Y.x, Y.z], dayClock.t, { r: 0.7, up: 1.2 }); fx('x3petals', 0.45, 0.2); }); });
       after(T.down, () => { if (!live(run)) return; lay(cast.ym, null, { secs: 0.5 });
         span(cast.ym, 'offer', YM_UP + 0.5, 6.4, 1.6, { fade: 0.2, then: (P) => { play.ymCarry = false; ymSetDown(); take(P, 'sway', 1.4); } }); });
       after(T.rise, () => { if (live(run)) span(cast.pho, 'Sit_to_Stand_Transition_M', 0.3, 2.25, 2.6, { fade: 0.6, hold: 0.28 }); });
@@ -425,7 +522,7 @@
       const run = play.run; play.looked = true; play.busy = true; objectiveFor('festival');
       Pu.hushOwn = true;
       if (kit.hush) kit.hush(1, { secs: 1.3 }); if (kit.lens) kit.lens(46, { secs: 1.7 });
-      fx('x3tone', 0.7);
+      fx('x3tone', 0.45);
       lookAt(PHO_HEAD_NOW(), 1.5, () => { if (!live(run)) return;
         Pu.to = 0; Pu.secs = 3.2;
         after(3.4, () => { if (!live(run)) return;
@@ -508,8 +605,8 @@
         return true;
       }
       const run = play.run; play.busy = true;
-      fx('x3kneel', 0.6); setPhase('knelt'); baiRaise(-1, 0.9);
-      turnTo(ry, 1.1, Object.assign({ pos: KNEEL2, pitch: 0.16 }, KNEEL), () => { if (!live(run)) return; fx('x3baiset', 0.5); setDown();
+      fx('x3kneel', 0.32); setPhase('knelt'); baiRaise(-1, 0.9);
+      turnTo(ry, 1.1, Object.assign({ pos: KNEEL2, pitch: 0.16 }, KNEEL), () => { if (!live(run)) return; fx('x3baiset', 0.36); setDown();
         after(0.5, () => { if (!live(run)) return; play.busy = false; objectiveFor('knelt', { complete: false }); }); });
       return true;
     }
@@ -613,6 +710,10 @@
     function decideBegin(resumed) {
       play.busy = false;
       setPhase('decide', { complete: false });
+      /* the four endings share one close, and its cues are fired by a helper (endingScene): the engine warms a scene's
+         cues by reading that scene's OWN source, so these would play nothing the first time. Warmed here by name, a
+         whole ending before they are wanted (chaptertest reads this list, and fails a cue of the close it lacks) */
+      if (warmSounds) warmSounds(['x3closemus', 'x3baitake', 'ph3z0', 'ph3z1', 'x3tone', 'x3petals', 'q3z1', 'x3lastmus', 'x3baiset', 'ph3z2', 'q3K1']);
       if (resumed) after(0.6, openDecision); else openDecision();
     }
 
@@ -674,6 +775,7 @@
       if (st !== 'cine') { peopleLevels(); lodTick(); zoneTick(now); }
       /* a Continue is placed before the card (the v4.8 contract): the saved moment's picture stands under it */
       if (!booted && !preplaced && kit) { const w0 = preStage(kit.getPhase()); if (w0) preplaced = w0; }
+      mixBeds(wdt, st);
       const liveSt = st === 'play';
       if (!liveSt) { if (!pausedAt) pausedAt = now; lastWall = 0; return; }
       /* a voice plays on under a panel while the chapter's clock stands still: its booking comes forward by the time the
@@ -689,6 +791,7 @@
     function playTick(now, wdt) {
       hotTick();
       turnTick(wdt); bowTick(wdt); baiTick(wdt); awayTick(); pullTick(wdt); openTick(wdt, windClock);
+      ambTick();
       burstsTick(dayClock.t);
       /* what a person carries rides his hands */
       if (play.tonGive) { const G = play.tonGive; G.k = Math.min(1, G.k + wdt / 0.45);                   // lifted off the table into his hands, then carried by them
@@ -736,6 +839,7 @@
       if (DAY_TWO.has(R.p)) {
         dawnBegin(true);
         if (R.p === 'dawn') return;
+        play.bowed = R.bowed;                                                    // (dawnBegin begins a fresh morning and forgets the bow: its receipt is given back. The resume sweep found it: a Continue after his bow offered the bow again)
         kneelPho(true); setPhase('knelt', { complete: false });
         if (R.p === 'knelt') { if (!play.bowed) return; play.busy = true; const run = play.run;
           after(0.8, () => { if (!live(run)) return; line('ph3g1', cast.pho); queueFn(() => { if (live(run)) { play.busy = false; objectiveFor('knelt', { complete: false }); } }); }); return; }

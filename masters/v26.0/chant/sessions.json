@@ -1,0 +1,12 @@
+{ "flow": "10J7umsPGa5bj6bEmoBk", "model": "eleven_v3",
+  "text": { "c1": "[chanting] Arahaṁ sammā-sambuddho bhagavā. Buddhaṁ bhagavantaṁ abhivādemi.",
+            "c2": "[chanting] Svākkhāto bhagavatā dhammo. Dhammaṁ namassāmi.",
+            "c3": "[chanting] Supaṭipanno bhagavato sāvaka-saṅgho. Saṅghaṁ namāmi." },
+  "lead":   { "voice": "XLXcyPK1jTjw1pYLLcM9", "name": "Somchai",
+              "c1": ["CFpuQVk5IT7xnDaeDPho", "MC8zooNFmQw9eCxtDdLH", "UmKAlQwjXadg6DWtOtAH"],
+              "c2": ["Ezn2nvGgh3O2f5NwCtue", "pk3Ok7S0GXxji0t54mG6", "Djkq9ARXzmo3NrbsAQz2"],
+              "c3": ["ZW7xXkkIsjSvRiyJumv1", "LmsS3qCiRjzd8R1nZPkQ", "kMgIJpQnDeA195ocJoE7"] },
+  "second": { "voice": "jucSqawHKM1rUNf78oZQ", "name": "Duang",
+              "c1": ["k4zfYu64sB6ZnIiKAAug", "ukdnJdonjuYGTcUEiEBz"],
+              "c2": ["IJVeI5ofZLyG57r3VBsK", "Q8gSewPeEeuddizHJVpt"],
+              "c3": ["KtJR0cLByHKP0uSLXRij", "HY74RzvA3sEAs8h48qmr"] } }

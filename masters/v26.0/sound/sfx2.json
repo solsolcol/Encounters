@@ -1,0 +1,8 @@
+[
+ { "name": "x3step2", "secs": 0.7, "loop": false, "takes": 4, "influence": 0.5,
+   "prompt": "Close foley: one barefoot step onto dry artificial turf, a short crisp rustle of plastic grass blades under the foot. Mid and high frequencies only, no low thud, no reverb.",
+   "where": "his own feet (made again: both first takes were 99 % under 150 Hz, which a phone's speaker does not play)" },
+ { "name": "x3bowall2", "secs": 3.5, "loop": false, "takes": 4, "influence": 0.5,
+   "prompt": "Foley: many people in cotton clothes kneeling down and bowing forward together on straw mats, one wide crisp rustle of fabric and mats swelling and settling. Mid and high frequencies, no rumble, no voices.",
+   "where": "day one: the whole ground bows (made again: both first takes were 98 % under 150 Hz)" }
+]

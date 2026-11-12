@@ -116,27 +116,27 @@
      moves what follows it. The names are QUOTED on purpose: build.py gives a sound to a chapter's own pack only when
      the chapter names it in quotes (v21.1). Written by masters/v26.0/script/secs.py from masters/v26.0/script/lines.py. */
   /* SECS BEGIN */
-  const SECS = {      // 0 of 104 MEASURED from their takes; the rest estimated at the speaker's pace
+  const SECS = {      // 104 of 104 MEASURED from their takes; the rest estimated at the speaker's pace
     /* him */
-    'q3o1': 6, 'q3o2': 2.52, 'q3o3': 4.26, 'q3o4': 6.44, 'q3o5': 12.19, 'q3o6': 7.31, 'q3v': 6.18, 'q3p1': 1.22,
-    'q3m0': 5.31, 'q3m1': 9.05, 'q3w1': 2.96, 'q3w2': 6, 'q3w3': 8.18, 'q3u1': 2.27, 'q3u2': 4.01, 'q3u3': 9.23,
-    'q3c1': 3.57, 'q3c2': 3.39, 'q3c3': 8.36, 'q3t1': 6, 'q3t2': 9.23, 'q3t3': 10.1, 'q3t4': 6.44, 'q3t5': 7.92,
-    'q3t6': 6.44, 'q3t7': 12.45, 'q3t8': 1.22, 'q3a1': 9.23, 'q3A0': 3.57, 'q3A1': 8.28, 'q3A2': 5.75, 'q3A3': 8.79,
-    'q3B0': 8.54, 'q3B1': 17.34, 'q3B2': 1.83, 'q3B3': 7.05, 'q3B4': 2.27, 'q3B5': 6.62, 'q3C0': 6.65, 'q3C1': 8.79,
-    'q3C2': 2.09, 'q3C3': 1.22, 'q3C4': 6.62, 'q3D0': 7.23, 'q3D1': 4.26, 'q3D2': 8.54, 'q3D3': 12.01, 'q3D4': 6.18,
-    'q3D5': 9.23, 'q3z1': 10.1, 'q3K1': 12.52, 'q3A': 4.44, 'q3B': 6.18, 'q3C': 4.44, 'q3D': 5.75,
+    'q3o1': 4.01, 'q3o2': 1.69, 'q3o3': 2.89, 'q3o4': 5.37, 'q3o5': 11.85, 'q3o6': 6.17, 'q3v': 4.41, 'q3p1': 0.97,
+    'q3m0': 5.69, 'q3m1': 5.93, 'q3w1': 2.33, 'q3w2': 4.25, 'q3w3': 6.67, 'q3u1': 1.93, 'q3u2': 3.13, 'q3u3': 6.49,
+    'q3c1': 2.81, 'q3c2': 2.33, 'q3c3': 7.21, 'q3t1': 3.85, 'q3t2': 7.13, 'q3t3': 7.93, 'q3t4': 4.97, 'q3t5': 8.01,
+    'q3t6': 4.49, 'q3t7': 8.73, 'q3t8': 1.07, 'q3a1': 7.61, 'q3A0': 2.33, 'q3A1': 7.61, 'q3A2': 6.01, 'q3A3': 6.09,
+    'q3B0': 5.69, 'q3B1': 14.89, 'q3B2': 2.89, 'q3B3': 5.21, 'q3B4': 1.83, 'q3B5': 5.69, 'q3C0': 7.05, 'q3C1': 6.57,
+    'q3C2': 1.21, 'q3C3': 1.77, 'q3C4': 5.13, 'q3D0': 5.93, 'q3D1': 2.97, 'q3D2': 7.85, 'q3D3': 10.21, 'q3D4': 4.33,
+    'q3D5': 5.85, 'q3z1': 7.61, 'q3K1': 8.01, 'q3A': 3.45, 'q3B': 4.17, 'q3C': 4.09, 'q3D': 3.85,
     /* Ton */
-    'tn3a1': 3.86, 'tn3a2': 7.79, 'tn3d1': 3.03, 'tn3m1': 2.2, 'tn3m2': 5.06, 'tn3c1': 7.38, 'tn3c2': 4.88,
-    'tn3n1': 2.61, 'tn3A1': 2.85,
+    'tn3a1': 2.89, 'tn3a2': 6.33, 'tn3d1': 2.65, 'tn3m1': 1.45, 'tn3m2': 4.56, 'tn3c1': 5.85, 'tn3c2': 4.25,
+    'tn3n1': 1.61, 'tn3A1': 2.09,
     /* the woman at his bench */
-    'ds3c1': 7.07,
+    'ds3c1': 7.37,
     /* Grandmaster Pho */
-    'ph3g1': 6.5, 'ph3n1': 10.71, 'ph3n2': 5.97, 'ph3n3': 9.13, 'ph3n4': 10.9, 'ph3n5': 8.95, 'ph3n6': 11.76,
-    'ph3n7': 7.75, 'ph3g2': 1.4, 'ph3g3': 13.87, 'ph3g4': 6.85, 'ph3g5': 6.5, 'ph3b0': 3.69, 'ph3b1': 0.9,
-    'ph3b2': 0.9, 'ph3b3': 3.69, 'ph3b4': 4.39, 'ph3bx': 0.9, 'ph3by': 5.79, 'ph3b5': 6.32, 'ph3p1': 5.79,
-    'ph3p2': 5.27, 'ph3p3': 5.27, 'ph3A1': 4.21, 'ph3A2': 7.55, 'ph3B1': 1.4, 'ph3B2': 5.79, 'ph3B3': 1.93,
-    'ph3B4': 4.56, 'ph3C1': 9.85, 'ph3C2': 3.69, 'ph3C3': 10.02, 'ph3D1': 4.21, 'ph3D2': 6.85, 'ph3D3': 3.16,
-    'ph3D4': 3.69, 'ph3z0': 8.6, 'ph3z1': 9.13, 'ph3z2': 1.93
+    'ph3g1': 4.41, 'ph3n1': 8.57, 'ph3n2': 6.01, 'ph3n3': 8.55, 'ph3n4': 7.76, 'ph3n5': 5.28, 'ph3n6': 6.89,
+    'ph3n7': 5.29, 'ph3g2': 1.93, 'ph3g3': 10.08, 'ph3g4': 5.36, 'ph3g5': 5.44, 'ph3b0': 3.02, 'ph3b1': 0.71,
+    'ph3b2': 0.73, 'ph3b3': 3.04, 'ph3b4': 4.1, 'ph3bx': 0.77, 'ph3by': 3.29, 'ph3b5': 5.77, 'ph3p1': 4.49,
+    'ph3p2': 3.61, 'ph3p3': 4.17, 'ph3A1': 3.13, 'ph3A2': 4.89, 'ph3B1': 1.38, 'ph3B2': 3.93, 'ph3B3': 1.53,
+    'ph3B4': 2.89, 'ph3C1': 6.09, 'ph3C2': 2.33, 'ph3C3': 9.12, 'ph3D1': 3.04, 'ph3D2': 4.49, 'ph3D3': 2.95,
+    'ph3D4': 2.73, 'ph3z0': 6.14, 'ph3z1': 6.25, 'ph3z2': 1.77
   };
   /* SECS END */
 
@@ -144,10 +144,10 @@
      build with no voice in it cannot be followed. So while the chapter is a preview each line's words stand as a
      caption for as long as it is "said" (d_play.js subs; y_stage.js filmSubs). The table and both readers go when the
      chapter leaves preview; SUBS false turns them off before that (once the takes are in). */
-  const SUBS = true;
+  const SUBS = false;
   /* (and until the takes are in the build a line is "said" silently, at once: held the moment a line is allowed for
      bytes to land, every line of a build with no voice in it began with 1.6 s of nothing. M7 sets this true) */
-  const VOICED = false;
+  const VOICED = true;
   /* WORDS BEGIN */
   const WORDS = {      // PREVIEW ONLY: 104 lines, written by masters/v26.0/script/words.py
     'q3o1': "For years I had been searching for the answers to the same questions.",
@@ -415,7 +415,12 @@
 
     musicVol: 0,
     /* the beds, every one at 0 here: mixBeds sets each by the day, the place he stands and the beat (M7) */
-    ambience: { beds: [] },
+    /* THE BEDS, every one at 0 here: mixBeds (d_play.js) sets each by the day and the beat, and a film sets its own
+       (filmBeds, y_stage.js). Loops, made at masters/v26.0/sound.sh: the festival's crowd, its music over the
+       loudspeakers, the morning's birds, the world heard OPEN (the breath's own level), the night's crickets (the
+       night between; ending B's dusk), the pull (a low drone that follows the pull's own number) and his shop at night
+       (the opening film: its 45 s are longer than one pass of the take) */
+    ambience: { beds: [['x3festbed', 0], ['x3festmus', 0], ['x3birds', 0], ['x3open', 0], ['x3crickets', 0], ['x3pull', 0], ['x3shophum', 0]] },
     voiceLine: null,
 
     words: {

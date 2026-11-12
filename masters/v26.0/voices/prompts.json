@@ -1,0 +1,730 @@
+[
+ {
+  "key": "q3o1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[reflective] For years I had been searching for the answers to the same questions."
+ },
+ {
+  "key": "q3o2",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[quiet] Why was I so sensitive?"
+ },
+ {
+  "key": "q3o3",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[quiet] Could any of it be used to help others?"
+ },
+ {
+  "key": "q3o4",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[quiet] How could I cultivate enough to control it — and eventually use it at will?"
+ },
+ {
+  "key": "q3o5",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[tired] I had met many practitioners and many masters. Some gave me advice. Some gave me experiences. Nobody could really explain the truth of it to me."
+ },
+ {
+  "key": "q3o6",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[reflective] I was attending a Wai Kru ceremony in Thailand where many masters and practitioners were present."
+ },
+ {
+  "key": "q3v",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[awed] So many masters in one place. I did not know where to look."
+ },
+ {
+  "key": "tn3a1",
+  "speaker": "ton",
+  "voice_id": "uI1epevl1X6hqrxEciKt",
+  "takes": 2,
+  "prompt": "[friendly] You are from the forum, right? First time?"
+ },
+ {
+  "key": "q3p1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "First time."
+ },
+ {
+  "key": "tn3a2",
+  "speaker": "ton",
+  "voice_id": "uI1epevl1X6hqrxEciKt",
+  "takes": 2,
+  "prompt": "[friendly] Take one. It is yours to present, when you are ready. Pay respect at the tables first."
+ },
+ {
+  "key": "tn3d1",
+  "speaker": "ton",
+  "voice_id": "uI1epevl1X6hqrxEciKt",
+  "takes": 2,
+  "prompt": "[quiet] For the Thevadas. To show respect."
+ },
+ {
+  "key": "q3m0",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[uneasy] I knew those hands. Mine had moved like that, by themselves."
+ },
+ {
+  "key": "q3m1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[quiet] One by one they went up with their bai sri, and some of them went somewhere I could not follow."
+ },
+ {
+  "key": "q3w1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[quiet] Only one person caught my attention."
+ },
+ {
+  "key": "q3w2",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[awed] He was dressed in white and carried the presence of a true master."
+ },
+ {
+  "key": "q3w3",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[reflective] That person was Grandmaster Pho, and something inside me knew I had to speak to him one day."
+ },
+ {
+  "key": "q3u1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[tense] Not here. Not now."
+ },
+ {
+  "key": "q3u2",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[shaken] It passed. He was looking straight at me."
+ },
+ {
+  "key": "tn3m1",
+  "speaker": "ton",
+  "voice_id": "uI1epevl1X6hqrxEciKt",
+  "takes": 2,
+  "prompt": "[encouraging] You are next. Go."
+ },
+ {
+  "key": "q3u3",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[wary] Not yet. The last time I knelt to a master I did not know, I went home in a fog."
+ },
+ {
+  "key": "tn3m2",
+  "speaker": "ton",
+  "voice_id": "uI1epevl1X6hqrxEciKt",
+  "takes": 2,
+  "prompt": "[gentle] Okay. Nobody pushes here. Keep it. When you are ready."
+ },
+ {
+  "key": "q3c1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[curious] The one in white. Who is he?"
+ },
+ {
+  "key": "tn3c1",
+  "speaker": "ton",
+  "voice_id": "uI1epevl1X6hqrxEciKt",
+  "takes": 2,
+  "prompt": "[serious] That is Grandmaster Pho. Don't take my word. Ask the people who have sat with him."
+ },
+ {
+  "key": "q3c2",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[polite] Auntie, can I ask you about him?"
+ },
+ {
+  "key": "ds3c1",
+  "speaker": "aunt",
+  "voice_id": "B4NdgwdU97lHqA8Udh2D",
+  "takes": 2,
+  "prompt": "[gentle] I came like you, with questions. Sit with him first. Then decide for yourself."
+ },
+ {
+  "key": "tn3c2",
+  "speaker": "ton",
+  "voice_id": "uI1epevl1X6hqrxEciKt",
+  "takes": 2,
+  "prompt": "[friendly] Tomorrow morning he receives people. Come early. I bring you."
+ },
+ {
+  "key": "q3c3",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[reflective] I had learned to ask first. Everything I heard said the same thing: go and sit with him."
+ },
+ {
+  "key": "tn3n1",
+  "speaker": "ton",
+  "voice_id": "uI1epevl1X6hqrxEciKt",
+  "takes": 2,
+  "prompt": "[quiet] Come. He is free now."
+ },
+ {
+  "key": "ph3g1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[warm] Sit. Ton tells me you carry questions. Put them down here."
+ },
+ {
+  "key": "q3t1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[quiet] Since I was a boy I have felt things other people did not."
+ },
+ {
+  "key": "q3t2",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[uneasy] When I listen to chanting, my hands move by themselves. In temples my body bows in ways I never learned."
+ },
+ {
+  "key": "q3t3",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[embarrassed] On Buddha Day something danced in my body for fifteen minutes. A medium called it a ghost, and it roared at him."
+ },
+ {
+  "key": "q3t4",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[quiet] I pick up a piece in a shop and cold runs up my arm."
+ },
+ {
+  "key": "q3t5",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[ashamed] I kept three kumanthong, and I opened myself to them, one by one. I should not have."
+ },
+ {
+  "key": "q3t6",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[tired] After one trip a fog sat on my mind until a hermit cleared it."
+ },
+ {
+  "key": "q3t7",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[heavy] I don't know why I am like this. I don't know what it is for. I don't know how to stop it, or how to use it."
+ },
+ {
+  "key": "q3t8",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[quiet] He listened."
+ },
+ {
+  "key": "q3a1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[awed] Then he said things that shocked me. He knew the answers to every question I had been carrying for years."
+ },
+ {
+  "key": "ph3n1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] When it takes your hands, you are awake. You watch it happen. You did not tell me that part."
+ },
+ {
+  "key": "ph3n2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[gentle] That is what frightens you. Not the moving. The watching."
+ },
+ {
+  "key": "ph3n3",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] You ask why. What you feel was not put into you. It was there already, asleep."
+ },
+ {
+  "key": "ph3n4",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] The ink, the chanting, the pieces you held... they did not give it to you. They woke it."
+ },
+ {
+  "key": "ph3n5",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] The rest of that answer is heavy. I will give it when you can carry it."
+ },
+ {
+  "key": "ph3n6",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[warm] What is it for? A lamp is not lit for the lamp. It is lit for whoever is in the room."
+ },
+ {
+  "key": "ph3n7",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[gentle] And how to use it... you ask that first. It comes last."
+ },
+ {
+  "key": "ph3g2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] First, control."
+ },
+ {
+  "key": "ph3g3",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] To feel is not enough. A door that cannot close is not a door. It is a hole in the wall, and everything walks through."
+ },
+ {
+  "key": "ph3g4",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] With control you open when you choose. You close when you choose."
+ },
+ {
+  "key": "ph3g5",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] When to open. When to close. That is the whole practice."
+ },
+ {
+  "key": "ph3b0",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[gentle] I show you. Breathe with me."
+ },
+ {
+  "key": "ph3b1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Open."
+ },
+ {
+  "key": "ph3b2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Close."
+ },
+ {
+  "key": "ph3b3",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Again. This time you choose when."
+ },
+ {
+  "key": "ph3b4",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] Once more. It will pull. Close anyway."
+ },
+ {
+  "key": "ph3bx",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Close."
+ },
+ {
+  "key": "ph3by",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[gentle] You did not open. Do not be afraid of it."
+ },
+ {
+  "key": "ph3b5",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[warm] Good. Now it is yours to open, and yours to close."
+ },
+ {
+  "key": "ph3p1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] This is a path. It does not end this morning."
+ },
+ {
+  "key": "ph3p2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] First you learn to hold it. That is years."
+ },
+ {
+  "key": "ph3p3",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Then you use it for others. Not for yourself."
+ },
+ {
+  "key": "q3A0",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[determined] Then teach me. I will walk it."
+ },
+ {
+  "key": "ph3A1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[amused] You say yes quickly. Yes to what?"
+ },
+ {
+  "key": "q3A1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[calm] To hold it first. However many years. And then to use it for others. Not for myself."
+ },
+ {
+  "key": "ph3A2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[warm] Good. Remember the order when it is slow. Slow is where people leave."
+ },
+ {
+  "key": "tn3A1",
+  "speaker": "ton",
+  "voice_id": "uI1epevl1X6hqrxEciKt",
+  "takes": 2,
+  "prompt": "[cheerful] New ones roll the mats, bro."
+ },
+ {
+  "key": "q3A2",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[wry] I had imagined something grander. My path began with other people's mats."
+ },
+ {
+  "key": "q3A3",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[content] I did not mind. For once I knew what I was doing, and who I was doing it under."
+ },
+ {
+  "key": "q3B0",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[defensive] I sell amulets. I came into all of this for my business. I never asked for a path."
+ },
+ {
+  "key": "ph3B1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Nobody asks."
+ },
+ {
+  "key": "ph3B2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[patient] Tell me again how you came to this mat. Slowly."
+ },
+ {
+  "key": "q3B1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[reluctant] A Sak Yant, for luck. Then another. A shop I kept going back to. Pieces I picked up to see what they would do. Three children I took home. A master I went to about my business."
+ },
+ {
+  "key": "ph3B3",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[gentle] Who carried you?"
+ },
+ {
+  "key": "q3B2",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[quiet] Nobody. I walked."
+ },
+ {
+  "key": "q3B3",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[bitter] I sat there angry until the light went yellow. He never once looked my way."
+ },
+ {
+  "key": "q3B4",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[humbled] All right. Teach me."
+ },
+ {
+  "key": "ph3B4",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[warm] A man who walked here can walk on."
+ },
+ {
+  "key": "q3B5",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[reflective] I had not chosen the road. I had taken every step of it myself."
+ },
+ {
+  "key": "q3C0",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[anguished] Why me? Of everyone in that shop, in that temple... why me?"
+ },
+ {
+  "key": "ph3C1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[gentle] Why me... that question has no floor. A man can fall in it his whole life."
+ },
+ {
+  "key": "ph3C2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Ask a better one. For whom?"
+ },
+ {
+  "key": "q3C1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[reflective] I had asked why it had happened to me. He turned my head and showed me who was waiting."
+ },
+ {
+  "key": "ph3C3",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] What you have is for them. Not for you. One day. Not yet. First you hold it."
+ },
+ {
+  "key": "q3C2",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[quiet] Then that is why."
+ },
+ {
+  "key": "q3C3",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[determined] Teach me."
+ },
+ {
+  "key": "q3C4",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[reflective] I had asked why me. I was given something to do with it instead."
+ },
+ {
+  "key": "q3D0",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[exhausted] Can you make it stop? I don't want a path. I want my life back."
+ },
+ {
+  "key": "ph3D1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[gentle] You are tired of it. I understand."
+ },
+ {
+  "key": "ph3D2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] I can teach you to close. I cannot take the door away."
+ },
+ {
+  "key": "ph3D3",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Close. And this time, stay."
+ },
+ {
+  "key": "q3D1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[relieved] For the first time in years, it was quiet."
+ },
+ {
+  "key": "q3D2",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[amazed] The chanting came, and I waited for it to take me. Nothing. My hands were only my hands."
+ },
+ {
+  "key": "q3D3",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[reflective] And then I understood what I had been afraid of all those years. It was never the door. It was that I could not shut it."
+ },
+ {
+  "key": "q3D4",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[determined] If I can close it, I can carry it. Teach me the rest."
+ },
+ {
+  "key": "ph3D4",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[warm] Fear never closed it. You did."
+ },
+ {
+  "key": "q3D5",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[grateful] I had asked him to take it away. He gave me the handle, and I found I could keep it."
+ },
+ {
+  "key": "ph3z0",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[warm] Yesterday you would not kneel to a man you did not know. Good. Keep that."
+ },
+ {
+  "key": "ph3z1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] It is not the flowers you give a teacher. It is your trust. Give that slowly."
+ },
+ {
+  "key": "q3z1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[calm] Yesterday I watched people go where I could not follow. Today I opened the door a hand's width, and shut it myself."
+ },
+ {
+  "key": "ph3z2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[warm] Tomorrow we begin."
+ },
+ {
+  "key": "q3K1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[grateful] For the first time in my life I had found the teacher who could guide me to the real answers, and I will always be grateful for it."
+ },
+ {
+  "key": "q3A",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[reflective] I said yes. He made me say what to."
+ },
+ {
+  "key": "q3B",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[reflective] I told him I never chose it. He asked who had carried me."
+ },
+ {
+  "key": "q3C",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[reflective] I asked why me. He showed me for whom."
+ },
+ {
+  "key": "q3D",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[reflective] I asked him to take it away. He gave me the handle."
+ }
+]
