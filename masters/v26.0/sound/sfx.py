@@ -32,6 +32,7 @@ SFX = [
     ('x3matroll', 4.0, False, 2, "Woven straw mats being rolled up by hand on grass, dry rustling, bare feet moving on grass.", 'ending A: the mats'),
     ('x3matset', 1.0, False, 2, "A rolled straw mat dropped onto a stack of rolled mats: one soft dry thud.", 'ending A: his mat on the stack'),
     ('x3shutter', 0.6, False, 2, "A smartphone camera shutter click, single, close.", 'the night between: the photograph'),
+    ('x3wick', 1.0, False, 2, "A candle wick catching fire from another flame: a soft short sputter and crackle as the wick takes, very close microphone, quiet, dry, no room echo, no music.", 'day one, in play: the woman with the taper at the offering tables (13 Nov: the plan listed it, the build had not made it)'),
     ('x3bulbs', 2.2, False, 2, "A wall switch clicked on, then a string of incandescent festoon bulbs humming softly as they light.", 'ending B: the bulbs come on'),
     ('x3cock', 2.6, False, 2, "A rooster crowing once, far away across fields at dawn, distant, open air.", 'first light'),
     ('x3bell', 2.5, False, 2, "One small temple hand bell struck once, far away, ringing out softly.", 'the answers: under his closed eyes'),

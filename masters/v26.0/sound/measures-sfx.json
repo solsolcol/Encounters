@@ -940,5 +940,25 @@
   "first": 0.0,
   "phone": 0.99,
   "voice": 0.91
+ },
+ "x3wick_a": {
+  "len": 0.48,
+  "asked": 1.0,
+  "peak": -8.5,
+  "level": -35.5,
+  "silent": 0.56,
+  "first": 0.0,
+  "phone": 0.96,
+  "voice": 0.9
+ },
+ "x3wick_b": {
+  "len": 1.0,
+  "asked": 1.0,
+  "peak": 2.6,
+  "level": -22.5,
+  "silent": 0.37,
+  "first": 0.05,
+  "phone": 0.84,
+  "voice": 0.46
  }
 }

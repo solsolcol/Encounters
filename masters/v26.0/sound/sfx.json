@@ -184,6 +184,14 @@
   "where": "the night between: the photograph"
  },
  {
+  "name": "x3wick",
+  "secs": 1.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A candle wick catching fire from another flame: a soft short sputter and crackle as the wick takes, very close microphone, quiet, dry, no room echo, no music.",
+  "where": "day one, in play: the woman with the taper at the offering tables (13 Nov: the plan listed it, the build had not made it)"
+ },
+ {
   "name": "x3bulbs",
   "secs": 2.2,
   "loop": false,

@@ -101,6 +101,8 @@
        in front of it), the morning's at -29 over birds at -35 */
     const AMB_SEED = 0x2603;
     let ambSeed = AMB_SEED, ambAt = 0, ambBusy = 0, ambLast = '', ambN = 0;
+    /* (which wick the taper stood at when last looked at, and what the children were doing: extrasSound, below) */
+    let wickAt = -1, kidsPh = '';
     function ambRand() {
       ambSeed = (ambSeed + 0x6D2B79F5) | 0; let t = ambSeed;
       t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
@@ -140,7 +142,7 @@
         ambAt = dayClock.t + (one ? 6 + ambRand() * 8 : 9 + ambRand() * 11);
       } else ambAt = dayClock.t + 1.5;
     }
-    function ambReset() { ambSeed = AMB_SEED; ambAt = 0; ambBusy = 0; ambLast = ''; ambN = 0; for (const k in bedMix) bedMix[k] = 0; filmBed.on = false; }
+    function ambReset() { ambSeed = AMB_SEED; ambAt = 0; ambBusy = 0; ambLast = ''; ambN = 0; for (const k in bedMix) bedMix[k] = 0; filmBed.on = false; wickAt = -1; kidsPh = ''; }
 
     const W = DATA.words;
     const play = { run: 0, busy: false, turning: null, bow: null, bai: false, baiP: 0, baiTo: 0, baiSecs: 1, knelt: false, homage: false,
@@ -311,7 +313,7 @@
     /* ================================================================ P1 · TON, AND THE BAI SRI */
     const WARM_DAY1 = ['q3v', 'tn3a1', 'q3p1', 'tn3a2', 'q3u1', 'q3u2', 'tn3m1', 'q3u3', 'tn3m2', 'q3c1', 'tn3c1', 'q3c2', 'ds3c1', 'tn3c2', 'q3c3',
                        'x3baitake', 'x3baiset', 'x3kneel', 'x3bowall', 'x3petals', 'x3chant', 'x3tone',
-                       'x3step', 'x3os1', 'x3os2', 'x3os3', 'x3os4', 'x3os5', 'x3os6'];
+                       'x3step', 'x3os1', 'x3os2', 'x3os3', 'x3os4', 'x3os5', 'x3os6', 'x3wick'];
     const WARM_DAY2 = ['ph3g1', 'ph3b0', 'ph3b1', 'ph3b2', 'ph3b3', 'ph3b4', 'ph3bx', 'ph3by', 'ph3b5', 'ph3p1', 'ph3p2', 'ph3p3', 'x3kneel', 'x3baiset', 'x3bell',
                        'x3step', 'x3os3', 'x3os7', 'x3os8', 'x3os9'];
     function dayOneStage() {
@@ -795,7 +797,7 @@
     function playTick(now, wdt) {
       hotTick();
       turnTick(wdt); bowTick(wdt); baiTick(wdt); awayTick(); pullTick(wdt); openTick(wdt, windClock);
-      ambTick();
+      ambTick(); extrasSound();
       burstsTick(dayClock.t);
       /* what a person carries rides his hands */
       if (play.tonGive) { const G = play.tonGive; G.k = Math.min(1, G.k + wdt / 0.45);                   // lifted off the table into his hands, then carried by them
@@ -807,6 +809,22 @@
       if (phase === 'tables' && !play.knelt && !play.busy && Math.hypot(yaw.position.x - PLACE.x, yaw.position.z - PLACE.z) < 0.45) kneelPlace(false);
       if (phase === 'dawn' && !play.knelt && !play.busy && Math.hypot(yaw.position.x - KNEEL2.x, yaw.position.z - KNEEL2.z) < 0.45) kneelPho(false);
       if (phase === 'tables' && !zone.g.visible && !play.knelt) zoneAt(PLACE);
+    }
+    /* TWO SOUNDS THAT BELONG TO SOMEONE (13 Nov). The wick catching, each time the taper's tip comes to a candle: heard
+       by one who stands near her, quieter the further he is. And the child's laugh the ground already had, the
+       children's own when they break into a run, at their place. Each waits its turn with the ground's other
+       one-shots (one at a time, never over a line, never in the bow or the pull) */
+    function extrasSound() {
+      if (!worldSfx || (soundOff && soundOff())) return;
+      const free = dayClock.t >= ambBusy && dayClock.t >= speak.until && !play.bow && !play.pull;
+      if (taper.on && taper.P.ready) { const u = ((windClock % TAPER.T) + TAPER.T) % TAPER.T, at = u < 3 ? 0 : (u >= 4.5 && u < 7.5 ? 1 : -1);
+        if (at >= 0 && at !== wickAt && free) { const wx = TAPER.at[0] - 0.2, wz = TAPER.at[1] - 0.84, d = Math.hypot(yaw.position.x - wx, yaw.position.z - wz);
+          if (d < 6 && worldSfx('x3wick', 0.3 * c01(1.25 - d / 6), 1, panAt(wx, wz))) ambBusy = dayClock.t + 1.4; }
+        wickAt = at; }
+      const ph = kidsDir.ph;
+      if (ph !== kidsPh) { kidsPh = ph;
+        if ((ph === 'runE' || ph === 'runW') && free && dayOne.visible && kids[0].P.ready) { const g = kids[0].P.group.position;
+          if (worldSfx('x3os1', 0.34, 1, panAt(g.x, g.z))) { ambLast = 'x3os1'; ambBusy = dayClock.t + 3.8; } } }
     }
     function updatePile() {}
     function updateFire() {}

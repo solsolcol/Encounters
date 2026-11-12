@@ -138,11 +138,11 @@ docs/V25.5-E4-NOTES.md.
 Grandmaster Pho and the monks (his own models) was MADE here, end to end, as he asked on 11 Nov 2026 (*"For characters
 you need, can you first generate a reference of the person, describe it to GPTimage, person in photorealistic details,
 against a white background, in A pose. Once you have the reference image, send that to Meshy to generate the 3d model,
-then rig it, then add animations. Own it end to end."*): sixteen bodies, each a kind of dress seen in his photographs
+then rig it, then add animations. Own it end to end."*): eighteen bodies (two of them children, a girl and a boy: 13 Nov), each a kind of dress seen in his photographs
 of Grandmaster Pho's real Wai Kru and never a likeness of a person in them, each at three levels (the paint kept high
 where it is seen close). Every job's id and every take: docs/V26.0-E4C3-BUILD.md §5; the recipe: masters/v26.0/make.sh.
 Asset keys: `e4ton`, `e4bench`, `e4hermita`, `e4hermitb`, `e4red`, `e4white`, `e4dancera`, `e4dancerb`, `e4deva` to
-`e4devh` (each with its lighter levels `…m`, `…f`, and `…h` for the two he speaks to). If he would rather send his own
+`e4devh`, `e4girl`, `e4boy` (each with its lighter levels `…m`, `…f`, and `…h` for the two he speaks to). If he would rather send his own
 model for any of them, it is a one-key swap.
 
 STILL HIS TO SAY (asked 11 to 13 Nov; none blocks the chapter): which man in the photographs Grandmaster Pho is (the

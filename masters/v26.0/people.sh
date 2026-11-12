@@ -9,8 +9,8 @@
 #   assets/e4<name>h.glb   for the two people he speaks to face to face (Ton, the woman at the bench): the generator's
 #                          own model, EVERY triangle (310,000), shown only within arm's reach and in a film's close shot.
 # Nothing is thinned here (a generated body cannot be: §8). Each level goes through tools/prepmonk.mjs with NOTHIN=1
-# (the rig's blocky weights diffused, normals shared across the sheet's seams; no thinning, no chart fix, no normal
-# sheet): colour at 2048 for anyone seen close, 1024 for the devotees, 512 and 256 for the two far levels.
+# (the rig's blocky weights diffused, normals shared across the sheet's seams, the sheet's thin charts fixed; no
+# thinning, no normal sheet): colour at 2048 for anyone seen close, 1024 for the devotees, 512 and 256 for the two far levels.
 #   1. tools/mergetakes.mjs merge: the near body with every take this person wears, each under the name the chapter asks
 #      for (a take whose verdict was "not used" is left out with "-": the tracker's table in §5);
 #   1b. tools/calmarms.mjs: the standing and walking takes' arms brought in (CALM below);
@@ -21,7 +21,10 @@ SRC=masters/v26.0/src; OUT=${OUT:-/tmp/claude-0/-home-user-Encounters/f1062235-c
 mkdir -p $OUT
 T() { echo "$SRC/takes-$1-$2.glb:$3"; }
 prep() { # prep <in> <out> <sheet px> <log>
-  NOTHIN=1 TEX=$3 NOMAP=1 node tools/prepmonk.mjs $1 $2 1 >> $4 2>&1
+  # (CHARTFIX, 13 Nov: v19.8's law. A generated sheet has a few hundred charts thinner than a texel's reach, hair
+  #  packed against white cloth: each speckled its surface white whatever the filtering. Each is pointed at a spot of
+  #  its own colour: no painted pixel is touched)
+  NOTHIN=1 TEX=$3 NOMAP=1 CHARTFIX=1 node tools/prepmonk.mjs $1 $2 1 >> $4 2>&1
 }
 one() {  # one <name> <near triangles> <near sheet px> <take args...>
   n=$1; near=$2; px=$3; shift 3; log=$SRC/$n-people.log; : > $log

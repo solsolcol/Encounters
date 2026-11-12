@@ -8294,3 +8294,37 @@ Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8,
 - **A table of keys with one key twice writes it twice.** The flowers had rows in keys.py from the day their first
   pictures were refused (a row is written only when its file lands); adding "new" rows gave build.py the key twice.
   Harmless (a dict keeps the last), but search the table before adding to it.
+- **`pkill -f` kills the shells that carry the whole script.** Two probes started as `( a ) & ( b; c ) &` in one
+  command: stopping `a` with `pkill -f "node tools/probes/a.mjs"` also killed BOTH wrapper shells (a forked subshell
+  of `bash -c "<script>"` has the whole script as its command line, so the pattern matched them), and `c` never
+  started. Kill by the process's own start: `pkill -f "^node tools/probes/a.mjs"`, or by pid.
+- **The harnesses need the browser's path here too.** `node runtests.mjs` without
+  `CHROMIUM_PATH=/opt/pw-browsers/chromium` reports every harness failed in a second (a launch error). Read the first
+  failure's text before believing 23 of them.
+- **A plan's list is audited against the build's own keys, not against memory.** The plan's §6.3 had a plastic chair
+  and a loudspeaker and its §3.7 a haze of incense; none was built, and three milestones were ticked over them. Found
+  only when the audit grepped the parts for each row of the list. Made at the release, a day late.
+- **A far level is looked at before it ships, even of a small thing.** The clay pot's (610 triangles, permissive)
+  opened its wall in black slivers; a thing of 3,000 triangles needs no far level at all.
+- **A level's distance is settled by the picture at that distance.** The bai sri on Ton's table (7 at 30,000) are 210,000
+  of the spawn's triangles; drawn at their far level from the spawn (3.3 m, 50 px tall on a phone) they are a little
+  mushier at three times life size, so they stay as they are and the spawn stays 1.7 % over chapter 1's heaviest look.
+
+- **A milestone is ticked against the PLAN'S OWN LISTS, row by row, not against what was built.** Eight things the
+  plan named were never made (chairs, loudspeakers, haze, the woman with the taper, children, a mat, glasses, a roll of
+  tissue): each list of the plan (the place, the cast, the props, each beat's prose) is grepped against the parts
+  before its milestone closes, and what is not there is made or said.
+- **Photograph a model LIT AND UNLIT before blaming its paint.** A dark lower face in the lab was shading, not paint
+  (a small chin faces down; the lab's key is steep), and a re-made model was 40 credits for nothing. And the lab is
+  not the judge of a face: the game's own light at a phone's size is.
+- **A generated body's sheet is drawn without mipmaps (v5.11, again).** Hundreds of patches edge to edge, hair against
+  white cloth: shrunken copies speckle every dark head. It does not show on a sheet of small pictures; crop a head
+  from a phone-size frame and magnify it.
+- **The library's walks and runs come on the spot.** Their hips travel nowhere, so a pace cannot be read from the
+  root: read it from the planted foot (in the person's frame, the foot that is down goes back at the body's pace).
+- **A thing held is held by a grip, not laid on a hand.** A stick along an open palm is a stick on a palm: lay it
+  slantwise over the palm and close the fingers (curlFingers), and solve the hand from where the thing's tip must be.
+- **A variable set before a function call in sh is not exported to what the function runs** (dash): `NTEX=1024 one ...`
+  reached the shell and not node. Export it in a subshell, or pass it on the command's own line.
+- **`S=... && ( ... ) &` sets S only inside the background list.** A second command on the next line has no S: set it
+  on a line of its own.

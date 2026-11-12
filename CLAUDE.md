@@ -1246,8 +1246,8 @@ words, §3 the defaults it stands on, §4 every checkpoint, §5 every asset's id
 docs/V26.0-E4C3-PLAN.md, built to his GO of 11 Nov 2026 ("the most important chapter in the game") and to his sixteen
 photographs of Grandmaster Pho's real Wai Kru (on the working machine only, `masters/v26.0/ref/`, ignored by git: the
 repository is public). **`src/chapters/e4/e4c3.js` is GENERATED**: masters/v26.0/assemble.py makes it from
-masters/v26.0/parts/*.js — edit the parts and assemble again, never the chapter file. Its people (sixteen bodies at
-three levels) and its things (forty-four) were made here end to end; its sound is remade by `bash
+masters/v26.0/parts/*.js — edit the parts and assemble again, never the chapter file. Its people (eighteen bodies at
+three levels, two of them children) and its things (forty-nine) were made here end to end; its sound is remade by `bash
 masters/v26.0/sound.sh` then `python3 -I masters/v26.0/install.py`. The decision is HIS OWN FOUR (accept your path,
 challenge the path, ask why, ask to make it stop: none leaves the path) and the ending stays in the present ("Tomorrow
 we begin."). WHAT STANDS ON A DEFAULT UNTIL HIS WORD (the tracker's §3; each one word from him to change): the three

@@ -13583,7 +13583,9 @@ const STING_SAMPLE = {
   x3petals: ['x3petals', 1], x3pull: ['x3pull', 1], x3send: ['x3send', 1], x3shophum: ['x3shophum', 1],
   x3shut: ['x3shut', 1], x3shutter: ['x3shutter', 1], x3sightmus: ['x3sightmus', 1], x3step: ['x3step', 1],
   x3sweep: ['x3sweep', 1], x3tellmus: ['x3tellmus', 1], x3tone: ['x3tone', 1], x3trance: ['x3trance', 1],
-  x3waiting: ['x3waiting', 1], x3zip: ['x3zip', 1]
+  x3waiting: ['x3waiting', 1], x3zip: ['x3zip', 1],
+  /* v26.0 · episode 4 chapter 3: its voices, effects, beds and music (masters/v26.0/sound.sh) */
+  x3wick: ['x3wick', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays

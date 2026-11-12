@@ -108,6 +108,7 @@ fx   x3kneel     $R/x3kneel_b.mp3     -14                                     # 
 fx   x3bowall    $R/x3bowall2_d.mp3   -14                                     # MADE AGAIN, d: the widest held rustle of the four (the highest level against its own peak), 99 % where a phone plays
 fx   x3baitake   $R/x3baitake_b.mp3   -14                                     # b: the ring and the leaves (a is a floor at -52)
 fx   x3baiset    $R/x3baiset_b.mp3    -14                                     # b: the touch with less silence round it
+fx   x3wick      $R/x3wick_b.mp3      -14 "afade=t=out:st=0.85:d=0.15"         # (13 Nov; flow WRJ4HzibEIDJwdJVaUy4, node qDC5iJNFvJd2nbq9A0iw, generations ZwVgic3gyvtJNezVcW1i and 2embmwOQqKSeIMBE42Qr) b: the sputter itself, a second long (a is a tick: half a second, its body at -35); b came peaking over full scale and is held at -2 by the levelling. The woman with the taper: the plan's 8.3 listed "a candle lit from a taper" and the build had not made it
 fx   x3petals    sound/made/x3petals.wav -14                                  # MADE (synth.py): both generated takes were 91 % silence
 fx   x3matroll   $R/x3matroll_b.mp3   -14                                     # b: the rolling from its first frame (a waits 0.3 s), 6 dB fuller
 fx   x3matset    $R/x3matset_b.mp3    -14                                     # b: one soft thud under full scale (a clips)
