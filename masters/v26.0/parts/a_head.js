@@ -140,123 +140,6 @@
   };
   /* SECS END */
 
-  /* PREVIEW ONLY (the tracker's D12): the chapter is shown to Chad at milestones before its voices are made (M7), and a
-     build with no voice in it cannot be followed. So while the chapter is a preview each line's words stand as a
-     caption for as long as it is "said" (d_play.js subs; y_stage.js filmSubs). The table and both readers go when the
-     chapter leaves preview; SUBS false turns them off before that (once the takes are in). */
-  const SUBS = false;
-  /* (and until the takes are in the build a line is "said" silently, at once: held the moment a line is allowed for
-     bytes to land, every line of a build with no voice in it began with 1.6 s of nothing. M7 sets this true) */
-  const VOICED = true;
-  /* WORDS BEGIN */
-  const WORDS = {      // PREVIEW ONLY: 104 lines, written by masters/v26.0/script/words.py
-    'q3o1': "For years I had been searching for the answers to the same questions.",
-    'q3o2': "Why was I so sensitive?",
-    'q3o3': "Could any of it be used to help others?",
-    'q3o4': "How could I cultivate enough to control it — and eventually use it at will?",
-    'q3o5': "I had met many practitioners and many masters. Some gave me advice. Some gave me experiences. Nobody could really explain the truth of it to me.",
-    'q3o6': "I was attending a Wai Kru ceremony in Thailand where many masters and practitioners were present.",
-    'q3v': "So many masters in one place. I did not know where to look.",
-    'tn3a1': "Ton: You are from the forum, right? First time?",
-    'q3p1': "First time.",
-    'tn3a2': "Ton: Take one. It is yours to present, when you are ready. Pay respect at the tables first.",
-    'tn3d1': "Ton: For the Thevadas. To show respect.",
-    'q3m0': "I knew those hands. Mine had moved like that, by themselves.",
-    'q3m1': "One by one they went up with their bai sri, and some of them went somewhere I could not follow.",
-    'q3w1': "Only one person caught my attention.",
-    'q3w2': "He was dressed in white and carried the presence of a true master.",
-    'q3w3': "That person was Grandmaster Pho, and something inside me knew I had to speak to him one day.",
-    'q3u1': "Not here. Not now.",
-    'q3u2': "It passed. He was looking straight at me.",
-    'tn3m1': "Ton: You are next. Go.",
-    'q3u3': "Not yet. The last time I knelt to a master I did not know, I went home in a fog.",
-    'tn3m2': "Ton: Okay. Nobody pushes here. Keep it. When you are ready.",
-    'q3c1': "The one in white. Who is he?",
-    'tn3c1': "Ton: That is Grandmaster Pho. Don't take my word. Ask the people who have sat with him.",
-    'q3c2': "Auntie, can I ask you about him?",
-    'ds3c1': "The woman at his bench: I came like you, with questions. Sit with him first. Then decide for yourself.",
-    'tn3c2': "Ton: Tomorrow morning he receives people. Come early. I bring you.",
-    'q3c3': "I had learned to ask first. Everything I heard said the same thing: go and sit with him.",
-    'tn3n1': "Ton: Come. He is free now.",
-    'ph3g1': "Grandmaster Pho: Sit. Ton tells me you carry questions. Put them down here.",
-    'q3t1': "Since I was a boy I have felt things other people did not.",
-    'q3t2': "When I listen to chanting, my hands move by themselves. In temples my body bows in ways I never learned.",
-    'q3t3': "On Buddha Day something danced in my body for fifteen minutes. A medium called it a ghost, and it roared at him.",
-    'q3t4': "I pick up a piece in a shop and cold runs up my arm.",
-    'q3t5': "I kept three kumanthong, and I opened myself to them, one by one. I should not have.",
-    'q3t6': "After one trip a fog sat on my mind until a hermit cleared it.",
-    'q3t7': "I don't know why I am like this. I don't know what it is for. I don't know how to stop it, or how to use it.",
-    'q3t8': "He listened.",
-    'q3a1': "Then he said things that shocked me. He knew the answers to every question I had been carrying for years.",
-    'ph3n1': "Grandmaster Pho: When it takes your hands, you are awake. You watch it happen. You did not tell me that part.",
-    'ph3n2': "Grandmaster Pho: That is what frightens you. Not the moving. The watching.",
-    'ph3n3': "Grandmaster Pho: You ask why. What you feel was not put into you. It was there already, asleep.",
-    'ph3n4': "Grandmaster Pho: The ink, the chanting, the pieces you held... they did not give it to you. They woke it.",
-    'ph3n5': "Grandmaster Pho: The rest of that answer is heavy. I will give it when you can carry it.",
-    'ph3n6': "Grandmaster Pho: What is it for? A lamp is not lit for the lamp. It is lit for whoever is in the room.",
-    'ph3n7': "Grandmaster Pho: And how to use it... you ask that first. It comes last.",
-    'ph3g2': "Grandmaster Pho: First, control.",
-    'ph3g3': "Grandmaster Pho: To feel is not enough. A door that cannot close is not a door. It is a hole in the wall, and everything walks through.",
-    'ph3g4': "Grandmaster Pho: With control you open when you choose. You close when you choose.",
-    'ph3g5': "Grandmaster Pho: When to open. When to close. That is the whole practice.",
-    'ph3b0': "Grandmaster Pho: I show you. Breathe with me.",
-    'ph3b1': "Grandmaster Pho: Open.",
-    'ph3b2': "Grandmaster Pho: Close.",
-    'ph3b3': "Grandmaster Pho: Again. This time you choose when.",
-    'ph3b4': "Grandmaster Pho: Once more. It will pull. Close anyway.",
-    'ph3bx': "Grandmaster Pho: Close.",
-    'ph3by': "Grandmaster Pho: You did not open. Do not be afraid of it.",
-    'ph3b5': "Grandmaster Pho: Good. Now it is yours to open, and yours to close.",
-    'ph3p1': "Grandmaster Pho: This is a path. It does not end this morning.",
-    'ph3p2': "Grandmaster Pho: First you learn to hold it. That is years.",
-    'ph3p3': "Grandmaster Pho: Then you use it for others. Not for yourself.",
-    'q3A0': "Then teach me. I will walk it.",
-    'ph3A1': "Grandmaster Pho: You say yes quickly. Yes to what?",
-    'q3A1': "To hold it first. However many years. And then to use it for others. Not for myself.",
-    'ph3A2': "Grandmaster Pho: Good. Remember the order when it is slow. Slow is where people leave.",
-    'tn3A1': "Ton: New ones roll the mats, bro.",
-    'q3A2': "I had imagined something grander. My path began with other people's mats.",
-    'q3A3': "I did not mind. For once I knew what I was doing, and who I was doing it under.",
-    'q3B0': "I sell amulets. I came into all of this for my business. I never asked for a path.",
-    'ph3B1': "Grandmaster Pho: Nobody asks.",
-    'ph3B2': "Grandmaster Pho: Tell me again how you came to this mat. Slowly.",
-    'q3B1': "A Sak Yant, for luck. Then another. A shop I kept going back to. Pieces I picked up to see what they would do. Three children I took home. A master I went to about my business.",
-    'ph3B3': "Grandmaster Pho: Who carried you?",
-    'q3B2': "Nobody. I walked.",
-    'q3B3': "I sat there angry until the light went yellow. He never once looked my way.",
-    'q3B4': "All right. Teach me.",
-    'ph3B4': "Grandmaster Pho: A man who walked here can walk on.",
-    'q3B5': "I had not chosen the road. I had taken every step of it myself.",
-    'q3C0': "Why me? Of everyone in that shop, in that temple... why me?",
-    'ph3C1': "Grandmaster Pho: Why me... that question has no floor. A man can fall in it his whole life.",
-    'ph3C2': "Grandmaster Pho: Ask a better one. For whom?",
-    'q3C1': "I had asked why it had happened to me. He turned my head and showed me who was waiting.",
-    'ph3C3': "Grandmaster Pho: What you have is for them. Not for you. One day. Not yet. First you hold it.",
-    'q3C2': "Then that is why.",
-    'q3C3': "Teach me.",
-    'q3C4': "I had asked why me. I was given something to do with it instead.",
-    'q3D0': "Can you make it stop? I don't want a path. I want my life back.",
-    'ph3D1': "Grandmaster Pho: You are tired of it. I understand.",
-    'ph3D2': "Grandmaster Pho: I can teach you to close. I cannot take the door away.",
-    'ph3D3': "Grandmaster Pho: Close. And this time, stay.",
-    'q3D1': "For the first time in years, it was quiet.",
-    'q3D2': "The chanting came, and I waited for it to take me. Nothing. My hands were only my hands.",
-    'q3D3': "And then I understood what I had been afraid of all those years. It was never the door. It was that I could not shut it.",
-    'q3D4': "If I can close it, I can carry it. Teach me the rest.",
-    'ph3D4': "Grandmaster Pho: Fear never closed it. You did.",
-    'q3D5': "I had asked him to take it away. He gave me the handle, and I found I could keep it.",
-    'ph3z0': "Grandmaster Pho: Yesterday you would not kneel to a man you did not know. Good. Keep that.",
-    'ph3z1': "Grandmaster Pho: It is not the flowers you give a teacher. It is your trust. Give that slowly.",
-    'q3z1': "Yesterday I watched people go where I could not follow. Today I opened the door a hand's width, and shut it myself.",
-    'ph3z2': "Grandmaster Pho: Tomorrow we begin.",
-    'q3K1': "For the first time in my life I had found the teacher who could guide me to the real answers, and I will always be grateful for it.",
-    'q3A': "I said yes. He made me say what to.",
-    'q3B': "I told him I never chose it. He asked who had carried me.",
-    'q3C': "I asked why me. He showed me for whom.",
-    'q3D': "I asked him to take it away. He gave me the handle."
-  };
-  /* WORDS END */
-
   /* A FILM'S TIMES are built from SECS: a list of ['line', gap] (the line starts where the last thing ended; `gap`
      seconds follow it), [secs] (a pause) and ['@mark'] (a named moment). The answer maps every line and mark to its
      start on the film's own clock, and `end` to where the list ends, so the cues (below the build) and the pictures
@@ -465,13 +348,14 @@
       breathOpen: 'OPEN',
       breathClose: 'CLOSE',
       // the chant's captions (the three lines of homage that go with the three bows): the Pali as chanted over its
-      // meaning (v21.31), from Thanissaro Bhikkhu's A Chanting Guide; checked against the book at CP7.2 before it ships
+      // meaning (v21.31), from Thanissaro Bhikkhu's A Chanting Guide: its Morning Chanting, read on the book's own page on
+      // 12 Nov 2026 and matched word for word, its ampersand and its Saṅgha included (docs/research/V26.0-WAIKRU-VERDICTS.md)
       cap1: 'Arahaṁ sammā-sambuddho bhagavā. Buddhaṁ bhagavantaṁ abhivādemi.',
-      cap1Sub: 'The Blessed One is Worthy and Rightly Self-awakened. I bow down before the Awakened, Blessed One.',
+      cap1Sub: 'The Blessed One is Worthy & Rightly Self-awakened. I bow down before the Awakened, Blessed One.',
       cap2: 'Svākkhāto bhagavatā dhammo. Dhammaṁ namassāmi.',
       cap2Sub: 'The Dhamma is well-expounded by the Blessed One. I pay homage to the Dhamma.',
       cap3: 'Supaṭipanno bhagavato sāvaka-saṅgho. Saṅghaṁ namāmi.',
-      cap3Sub: 'The Sangha of the Blessed One’s disciples has practiced well. I pay respect to the Sangha.',
+      cap3Sub: 'The Saṅgha of the Blessed One’s disciples has practiced well. I pay respect to the Saṅgha.',
       // the card's What you did
       noteAsked: 'You asked the people who knew him before you went near him.',
       noteBreath3: 'You closed in time, three breaths of three.',
@@ -479,11 +363,8 @@
       noteBreath1: 'Twice he had to close it for you.',
       noteBreath0: 'Three times he had to close it for you.',
       // the belief, said as belief (the card's note for the homage and the line: §4.7)
-      noteTrance: 'At a Wai Kru some people go into trance when a master blesses them: they tremble, or their arms rise, or they dance. Believers hold that it comes to those whose faith is strong. Master Z’s own word on such states: “Do not imitate these states, do not provoke them, and do not chase them out of curiosity.”'
+      noteTrance: 'At a Wai Kru some people go into trance when a master blesses them: they tremble, or their arms rise, or they dance. Some believers say it comes to those whose faith is strong. Master Z’s own word on such states: “Do not imitate these states, do not provoke them, and do not chase them out of curiosity.”'
     },
-    sayPrefix: 'q3',
-    /* (the tracker's D12) A PREVIEW until the whole chapter is proved: registered, opened only by ?ch=e4c3, saving and
-       unlocking nothing (the forty-second seam). Taken out at M9, when it joins the run. */
-    preview: true
+    sayPrefix: 'q3'
   };
 

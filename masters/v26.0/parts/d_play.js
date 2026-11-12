@@ -21,8 +21,8 @@
        have not landed is held a moment (v8.0) and then spoken silently, so a beat chained on a line never stops */
     function sayLine(name, vol = 1, onStart, pan) {
       if (dayClock.t < speak.until) return false;
-      const start = () => { speak.voiceTo = dayClock.t + (SECS[name] || 2.5); speak.until = speak.voiceTo + 0.25; heard.add(name); subs(name); if (onStart) onStart(); };
-      if ((soundOff && soundOff()) || !worldSfx || !VOICED) { start(); return true; }
+      const start = () => { speak.voiceTo = dayClock.t + (SECS[name] || 2.5); speak.until = speak.voiceTo + 0.25; heard.add(name); if (onStart) onStart(); };
+      if ((soundOff && soundOff()) || !worldSfx) { start(); return true; }
       if (worldSfx(name, vol, 1, pan)) { start(); return true; }
       speak.pending = { name, vol, start, pan, give: dayClock.t + 1.6 };
       speak.until = dayClock.t + 0.2;
@@ -34,12 +34,6 @@
       if (dayClock.t > q.give || (soundOff && soundOff())) { speak.pending = null; q.start(); return; }
       if (worldSfx(q.name, q.vol, 1, q.pan)) { speak.pending = null; q.start(); }
       else speak.until = dayClock.t + 0.2;
-    }
-    /* (PREVIEW ONLY: a line's words as a caption while it is said: a_head.js SUBS says why. Never over the homage's own
-       captions) */
-    function subs(name, secs) {
-      if (!DATA.preview || !SUBS || !kit || !kit.captions || (play && play.homage)) return;
-      const w = WORDS[name]; if (w) kit.captions([{ at: 0, end: Math.max(0.6, secs != null ? secs : (SECS[name] || 2.5)), text: w }]);
     }
     const lineQ = [];
     function queueLine(name, onStart, vol = 1, pan = 0) { lineQ.push({ name, onStart, vol, pan }); }
@@ -662,7 +656,15 @@
           if (i === 2 && (st === 'open' || st === 'pull')) play.pull3 = k; else play.pull3 = 0; },
         onEnough: (i) => { if (i === 0) fxLine('ph3b2'); },
         onBreath: (rep) => { if (!live(run)) return 0;
-          if (rep.result === 'held') { open.over = 1; fxLine('ph3bx'); if (kit.flash) kit.flash({ color: '#fff6e0', secs: 0.9, k: 0.55 }); return 1.6; }
+          if (rep.result === 'held') { open.over = 1; fxLine('ph3bx'); if (kit.flash) kit.flash({ color: '#fff6e0', secs: 0.9, k: 0.55 });
+            /* (he closes it for him, and THEN says what the next breath asks: held to its edge, the second breath went
+               straight to the third with "It will pull. Close anyway." never said. The finger's play-through found it,
+               on a box slow enough to hold two breaths past their edge) */
+            const nx = rep.i === 0 ? 'ph3b3' : rep.i === 1 ? 'ph3b4' : null;
+            if (!nx) return 1.6;
+            const gap = (SECS.ph3bx || 0.8) + 0.9;
+            after(gap, () => { if (live(run) && phase === 'breath') fxLine(nx); });
+            return gap + (SECS[nx] || 3.5) + 0.4; }
           if (rep.result === 'unopened' && rep.again) { fxLine('ph3by'); return (SECS.ph3by || 5) + 0.5; }
           const next = rep.i + 1;
           if (next === 1) { fxLine('ph3b3'); return (SECS.ph3b3 || 3.5) + 0.4; }

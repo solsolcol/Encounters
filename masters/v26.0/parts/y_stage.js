@@ -6,7 +6,7 @@
        at once (lookNow), a throw of petals is where its age puts it (burstAt), so a seek, a skip and a slow phone land
        on the same picture. Whatever a film changes in the world is put back by the play that follows it (lineBegin,
        dawnBegin, toldBegin stage everything again), so a film skipped leaves what a film played leaves (v24.12). */
-    const FL = { key: '', api: null, once: new Set(), must: null, lit: '', bursts: {}, vf: null, throwAt: null, throwPho: null, shot: '', sky: null, bai: false, wai: false, waiPos: null, waiQ: null, faces: {}, sub: '', openK: 0, openOut: 0, litE: -1, litA: -1, goldMin: 0, tabled: false, chantOn: false, rest0: null };
+    const FL = { key: '', api: null, once: new Set(), must: null, lit: '', bursts: {}, vf: null, throwAt: null, throwPho: null, shot: '', sky: null, bai: false, wai: false, waiPos: null, waiQ: null, faces: {}, openK: 0, openOut: 0, litE: -1, litA: -1, goldMin: 0, tabled: false, rest0: null };
     const PLAY_FOV = camera.fov;                                              // the lens play is seen through (a film that ends in the clear ends on it)
     const _ffv = new THREE.Vector3();
     function fLook(name, secs = 0) { if (FL.lit !== name) { FL.lit = name; look(name, secs); } }
@@ -786,28 +786,18 @@
              hand lay at the frame's foot under the chant's words; the engine's `reach` pose lifted clear of them was a
              limp hand hanging from a bent wrist, seen from the side it was never made to be seen from) */
           handStill(kH);
-          if (ts >= 0.3 && !FL.once.has('chant')) { FL.once.add('chant'); FL.chantOn = true;
+          if (ts >= 0.3 && !FL.once.has('chant')) { FL.once.add('chant');
             if (kit && kit.captions) kit.captions([1, 2, 3].map((n) => ({ at: CHANT.far[n - 1][0], end: CHANT.far[n - 1][1], text: W['cap' + n], sub: W['cap' + n + 'Sub'] }))); }
         } else {
-          if (FL.shot !== 'd4') { FL.shot = 'd4'; FL.chantOn = false; handStill(0); if (api.handsRoot) api.handsRoot.visible = false; myBai.visible = true; if (kit && kit.captions) kit.captions(null); }
+          if (FL.shot !== 'd4') { FL.shot = 'd4'; handStill(0); if (api.handsRoot) api.handsRoot.visible = false; myBai.visible = true; if (kit && kit.captions) kit.captions(null); }
           phoFace(); phoTalkFace(); const kTalk = speaks(Ph, t, T, ['ph3D4']); lookNow(Ph, 'lens', 1, 0.5, 0);
           const [fP, fD] = lensAt(t, [[T.back, 46, 34], [T.q3D4 + SECS['q3D4'], 34, 25], [T.ph3D4 + SECS['ph3D4'], 27, 20], [T.close, 31, 23]]);
           const [yF, pT] = toPho(EK, fP, fD, kTalk); eyes(EK, yF, pT, fP, fD);
         }
       },
-      end() { FL.chantOn = false; endTidy(); }
+      end() { endTidy(); }
     };
 
-    /* (PREVIEW ONLY: the line a film's clock is on, as a caption: a_head.js SUBS) */
-    const FILM_CLOCK = { festival: FEST, between: BETW, tell: TELL, answers: ANSW, open: OPENT };
-    function filmSubs(key, t0) {
-      /* (an ending's clock is its own until its close, and the close's after) */
-      const E = ENDT[key], inClose = E && t0 >= E.close, T = E ? (inClose ? CLOSE : E) : FILM_CLOCK[key], t = inClose ? t0 - E.close : t0; if (!T || !DATA.preview || !SUBS || FL.chantOn) return;   // (never over a chant's own captions)
-      let cur = ''; for (const n in T) if (WORDS[n] && t >= T[n] && t < T[n] + (SECS[n] || 2.5)) cur = n;
-      if (cur === FL.sub) return;
-      FL.sub = cur;
-      if (cur) subs(cur, T[cur] + (SECS[cur] || 2.5) - t); else if (kit && kit.captions) kit.captions(null);
-    }
     /* THE FILMS' OWN BEDS (M7): the ground's loops under each film, a pure function of the film's clock (the rest of a
        film's sound is its cues: z_tail.js). Each is a share of play's own level (BED), so a film that begins or ends on
        play's picture begins and ends on play's sound */
@@ -835,10 +825,10 @@
     }
     const films = {
       key: '',
-      begin(key, c, api) { FL.key = films.key = key; FL.api = api; FL.once.clear(); FL.lit = lookName; FL.sub = ''; if (FILMS[key] && FILMS[key].begin) FILMS[key].begin(api); },
+      begin(key, c, api) { FL.key = films.key = key; FL.api = api; FL.once.clear(); FL.lit = lookName; if (FILMS[key] && FILMS[key].begin) FILMS[key].begin(api); },
       /* (a film's own frame: play's frame does not run under it, so the levels are chosen here, from the film's lens: v24.22) */
       frame(key, t, api) { if (FILMS[key]) FILMS[key].frame(t, api);
-        filmSubs(key, t); filmBeds(key, t);
+        filmBeds(key, t);
         /* (a probe's viewfinder: tools/probes/e4c3beats.mjs tries a lens here before a shot is written; never set in play) */
         if (FL.vf) { fLens(FL.vf[6]); camAt([FL.vf[0], FL.vf[1], FL.vf[2]], [FL.vf[3], FL.vf[4], FL.vf[5]]); }
         peopleLevels(); lodTick(); },
@@ -959,6 +949,8 @@
       plan: { TURF, TABLES, HALL, TENT_W1, TENT_W2, TENT_E, CHIEF, BENCH, POLE, TON_TABLE, WEST_TABLE },
       /* the ground's own noises (ambTick): how many have sounded, and the last (a probe counts them over a stretch of play) */
       amb: () => ({ n: ambN, last: ambLast, next: +ambAt.toFixed(2), beds: Object.assign({}, bedMix) }),
+      /* Grandmaster Pho's look, for a probe that brackets it (tools/probes/e4c3beats.mjs: eval E.stage.phoLook.lift.value = 0.4) */
+      phoLook,
       info: () => ({ phase, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], until: +speak.until.toFixed(2),
                      pending: speak.pending ? speak.pending.name : null, decOpen, look: lookName, busy: play.busy,
                      waiting: [...waiting].sort(), mends: twinMends }),

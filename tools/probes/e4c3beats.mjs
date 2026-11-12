@@ -4,7 +4,7 @@
    own clock (never a stopwatch: this box draws a frame a second), and presses through the engine's own E path. A finger's
    play-through of the real input path is tools/probes/e4c3drive.mjs; this one is for seeing every beat quickly.
 
-     CHROMIUM_PATH=... VIEW=phone|desk OUT=<dir> node tools/probes/e4c3beats.mjs <steps.json>
+     CHROMIUM_PATH=... VIEW=phone|desk OUT=<dir> [FAST=1] node tools/probes/e4c3beats.mjs <steps.json>
 
    INTRO=1 runs the steps against the chapter's opening film (seek, seekAt, shot), which Start begins.
 
@@ -23,6 +23,7 @@
                                              clock (always forward: a seek undoes no fade it has passed), { "resume": true },
                                              { "skip": true }
      { "choose": 0 }                         the decision opened and its option pressed (0 to 3): the ending's scene plays
+     { "live": 3, "name": "pho talks" }     the film left to PLAY that long from where it stands; the lens's and the look's range reported
      { "seekAt": "T.A.mats + 2", "shot": "a-mats" }   a seek to a moment named on the chapter's own clocks (stage.dbg.clocks:
                                              T.A to T.D, T.CLOSE, T.FEST, T.BETW, T.TELL, T.ANSW), and a photograph of it */
 import { chromium } from 'playwright';
@@ -30,10 +31,13 @@ import fs from 'node:fs';
 import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
 const STEPS = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
 const VIEW = process.env.VIEW || 'phone', OUT = process.env.OUT || '/tmp/e4c3beats';
+/* FAST=1: a sweep of many shots on a slow box: two drawn frames after a seek and one before the picture, no settling wait
+   (a seek poses everything on the frame it is drawn; the wait is for single pictures that are read closely) */
+const FAST = !!process.env.FAST;
 fs.mkdirSync(OUT, { recursive: true });
 const b = await chromium.launch(LAUNCH);
 const ctx = VIEW === 'phone' ? await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, hasTouch: true, isMobile: true })
-                             : await b.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 1 });
+                             : await b.newContext({ viewport: FAST ? { width: 960, height: 540 } : { width: 1280, height: 720 }, deviceScaleFactor: 1 });   // (FAST: the same shape, fewer pixels to draw in software)
 const p = await ctx.newPage();
 const errs = [];
 p.on('pageerror', e => errs.push('PAGEERROR ' + e.message + ' | ' + String(e.stack || '').split('\n').slice(1, 3).join(' ')));
@@ -66,14 +70,29 @@ for (const s of STEPS) {
     else if (s.film) { const ok = await p.evaluate((k) => window.__enc.kit.film(k), s.film); await p.waitForFunction(() => window.__enc.cine.active() && window.__enc.cine.t() > 0.15, null, { timeout: 300000, polling: 200 }).catch(() => {});
       log('film', s.film, ok, 'dur', await p.evaluate(() => +window.__enc.cine.dur().toFixed(2))); }
     else if (s.seek != null) { await p.evaluate((t) => window.__enc.cine.seek(t), s.seek); await frames(3); await p.waitForTimeout(s.settle != null ? s.settle : 500); }
-    else if (s.seekAt != null) { const t = await p.evaluate(new Function('const T = window.__enc.stage.dbg.clocks; return (' + s.seekAt + ');')); await p.evaluate((t) => window.__enc.cine.seek(t), t); await frames(3); await p.waitForTimeout(s.settle != null ? s.settle : 500);
-      if (s.shot) { await frames(3); await p.screenshot({ path: `${OUT}/${String(++n).padStart(2, '0')}-${s.shot}.png`, timeout: 240000 }).catch(() => log('shot failed', s.shot)); log('shot', s.shot, 'at', t.toFixed(2)); } }
+    else if (s.seekAt != null) { const t = await p.evaluate(new Function('const T = window.__enc.stage.dbg.clocks; return (' + s.seekAt + ');')); await p.evaluate((t) => window.__enc.cine.seek(t), t); await frames(FAST ? 2 : 3); if (!FAST) await p.waitForTimeout(s.settle != null ? s.settle : 500);
+      if (s.shot) { if (!FAST) await frames(3); await p.screenshot({ path: `${OUT}/${String(++n).padStart(2, '0')}-${s.shot}.png`, timeout: 240000 }).catch(() => log('shot failed', s.shot)); log('shot', s.shot, 'at', t.toFixed(2)); } }
     else if (s.choose != null) { await p.evaluate(() => window.__enc.decide && window.__enc.decide());
       await p.waitForFunction(() => document.querySelectorAll('#choices button.choice').length >= 4, null, { timeout: 120000, polling: 300 }); await p.waitForTimeout(600);
       await p.evaluate((i) => document.querySelectorAll('#choices button.choice')[i].click(), s.choose);
       await p.waitForFunction(() => window.__enc.cine.active() && window.__enc.cine.t() > 0.15, null, { timeout: 300000, polling: 200 }).catch(() => {});
       log('choose', s.choose, 'dur', await p.evaluate(() => +window.__enc.cine.dur().toFixed(2))); }
     else if (s.resume) { await p.evaluate(() => window.__enc.cine.resume()); }
+    /* { "live": 3 }: THE FILM LEFT TO PLAY for that many seconds of its own clock from where it stands, the lens and the look
+       written at every poll (v25.5: a seek freezes every body, so a look or a fit that rode a living head would stand
+       still under a seek and sway in the game). Reports the lens's range and the look's, in degrees: a held shot holds */
+    else if (s.live != null) {
+      const t0 = await p.evaluate(() => { const C = window.__enc.cine; C.resume(); return C.t(); }); const rows = [];
+      for (;;) {
+        const r = await p.evaluate(() => { const E = window.__enc, c = E.camera; c.updateMatrixWorld(); const e = c.matrixWorld.elements;
+          const dx = -e[8], dy = -e[9], dz = -e[10]; return [E.cine.active() ? E.cine.t() : -1, c.fov, Math.atan2(dx, -dz) * 180 / Math.PI, Math.asin(Math.max(-1, Math.min(1, dy))) * 180 / Math.PI, e[12], e[13], e[14]]; });
+        if (r[0] < 0 || r[0] >= t0 + s.live) break; rows.push(r); await frames(1);
+      }
+      await p.evaluate(() => window.__enc.cine.seek(window.__enc.cine.t()));
+      const rng = (k) => { const v = rows.map(q => q[k]); return v.length ? [Math.min(...v), Math.max(...v)] : [0, 0]; };
+      const f = rng(1), y = rng(2), pt = rng(3), px = rng(4), py = rng(5), pz = rng(6);
+      log('live', (s.name || ''), `from ${t0.toFixed(2)} for ${s.live} s: ${rows.length} frames; lens ${f[0].toFixed(2)} to ${f[1].toFixed(2)}; turn ${y[0].toFixed(2)} to ${y[1].toFixed(2)}; tilt ${pt[0].toFixed(2)} to ${pt[1].toFixed(2)}; the lens moved ${Math.hypot(px[1] - px[0], py[1] - py[0], pz[1] - pz[0]).toFixed(3)} m`);
+    }
     else if (s.skip) { await p.evaluate(() => window.__enc.cine.skip()); await frames(3); }
     else if (s.shot) { await frames(3); await p.screenshot({ path: `${OUT}/${String(++n).padStart(2, '0')}-${s.shot}.png`, timeout: 240000 }).catch(() => log('shot failed', s.shot)); log('shot', s.shot); }
     else if (s.info) { const r = await p.evaluate(() => { const E = window.__enc, o = document.getElementById('objective'), b = document.getElementById('interact');

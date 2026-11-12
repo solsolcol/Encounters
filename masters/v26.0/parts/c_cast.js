@@ -510,15 +510,25 @@
     /* LOOK D on Grandmaster Pho: after the tone mapping, the scan's own colour is laid back wherever the texel is
        saturated (his skin, his beads, the gold) and over the whole of his face-and-hands part; the white robe keeps the
        scene's light and its folds. `level` scales the laid colour to the hour (an unlit colour ignores the sun: at dawn
-       or by candle it must be dimmed by hand): look() sets it. tools/probes/phoingame.mjs is where it was proved. */
-    const phoLook = { k: { value: 1 }, level: { value: 1 } };
+       or by candle it must be dimmed by hand): look() sets it. tools/probes/phoingame.mjs is where it was proved.
+       `lift` (M8): THE MAN IN WHITE MUST READ WHITE. Day two is a backlit dawn (its sun behind his bench): the robe,
+       lit only by the sky there, came out mid-grey under a face laid at 0.86, in every close shot of the morning: a
+       teacher in grey, darker than his own skin. So where the robe's lit colour falls under nine tenths of its own
+       colour at that hour, it is lifted `lift` of the way back to it: never past it, and nothing where the sun already
+       has it brighter. Its folds stay: they are the light's (kept in part) and the scan's own. Photographed at 0, 0.4,
+       0.55 and 0.75 in the morning's close shot and at 0 and 0.55 on day one (masters/v26.0: the tracker's log, M8):
+       0.55 is white with its folds; 0.75 is whiter and flat. Under his canopy he sits in shade on day one too, and is
+       lifted there as well: among three hundred in white, he is the one who reads as white. */
+    const phoLook = { k: { value: 1 }, level: { value: 1 }, lift: { value: 0.55 } };
     function lookD(model) {
       model.traverse(q => { if (!q.isMesh) return;
         const list = [].concat(q.material).map(m0 => { const mt = m0.clone(); mats.push(mt); const WHOLE = /\(face and hands\)$/.test(m0.name);
-          mt.onBeforeCompile = (sh) => { sh.uniforms.uK = phoLook.k; sh.uniforms.uLevel = phoLook.level;
-            sh.fragmentShader = 'uniform float uLevel;\nuniform float uK;\n' + sh.fragmentShader.replace('#include <tonemapping_fragment>', '#include <tonemapping_fragment>\n'
+          mt.onBeforeCompile = (sh) => { sh.uniforms.uK = phoLook.k; sh.uniforms.uLevel = phoLook.level; sh.uniforms.uLift = phoLook.lift;
+            sh.fragmentShader = 'uniform float uLevel;\nuniform float uK;\nuniform float uLift;\n' + sh.fragmentShader.replace('#include <tonemapping_fragment>', '#include <tonemapping_fragment>\n'
               + (WHOLE ? 'float skn = 1.0;\n' : 'vec3 sc = pow(max(diffuseColor.rgb, vec3(1e-4)), vec3(1.0 / 2.2)); float mxc = max(sc.r, max(sc.g, sc.b)); float skn = smoothstep(0.12, 0.25, (mxc - min(sc.r, min(sc.g, sc.b))) / max(mxc, 1e-4));\n')
-              + 'gl_FragColor.rgb = mix(gl_FragColor.rgb, diffuseColor.rgb * uLevel, clamp(uK * skn, 0.0, 1.0));'); };
+              + 'float kS = clamp(uK * skn, 0.0, 1.0); vec3 unl = diffuseColor.rgb * uLevel;\n'
+              + 'gl_FragColor.rgb += (1.0 - kS) * uK * uLift * max(vec3(0.0), unl * 0.9 - gl_FragColor.rgb);\n'
+              + 'gl_FragColor.rgb = mix(gl_FragColor.rgb, unl, kS);'); };
           mt.customProgramCacheKey = () => 'phoLookD' + (WHOLE ? ':whole' : ''); return mt; });
         q.material = Array.isArray(q.material) ? list : list[0]; });
     }
