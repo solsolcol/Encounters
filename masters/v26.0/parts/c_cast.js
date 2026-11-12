@@ -150,8 +150,14 @@
       return true;
     }
     /* a film's pose: this take at this moment of its own length (held at its end, or wrapped if `loop`), absolutely */
+    /* (a take a body does not have fails silently and the man stands as he was: v11.2. A film that asks for one is
+       told so once, in the console, where every probe of this chapter reads it) */
+    const _noTake = new Set();
+    function noTake(P, name) { const k = P.key + ':' + name; if (_noTake.has(k)) return; _noTake.add(k); console.warn(P.key + ' has no take ' + name + ' (a film asked for it; it has: ' + Object.keys(P.acts).join(', ') + ')'); }
     function pose(P, name, t, loop = false, name2 = null, k2 = 0, t2 = 0) {
-      if (!P || !P.ready || !P.acts[name]) return;
+      if (!P || !P.ready) return;
+      if (!P.acts[name]) { noTake(P, name); return; }
+      if (name2 && !P.acts[name2]) noTake(P, name2);
       for (const k in P.acts) { const w = k === name ? 1 - (name2 ? k2 : 0) : (k === name2 ? k2 : 0); P.w[k] = w; P.acts[k].setEffectiveWeight(w); }
       const A = P.acts[name], d = A.getClip().duration; A.time = loop ? ((t % d) + d) % d : Math.max(0, Math.min(d - 1e-3, t));
       if (name2 && P.acts[name2]) { const A2 = P.acts[name2], d2 = A2.getClip().duration; A2.time = Math.max(0, Math.min(d2 - 1e-3, t2)); }
@@ -356,6 +362,15 @@
           out[sd] = { at: [c[0] + Lf[0] * sg * r - F[0] * 0.03, c[1] + y, c[2] + Lf[1] * sg * r - F[1] * 0.03],
                       f: [F[0] * 0.85 - Lf[0] * sg * 0.22, 0.48, F[1] * 0.85 - Lf[1] * sg * 0.22], n: [-Lf[0] * sg * 0.8, 0.55, -Lf[1] * sg * 0.8], out: 0.22, down: 0.4 }; }
       }
+      return out;
+    }
+    /* WHERE TWO HANDS CARRY A TRAY that stands at `c` (the middle of its foot, in the world), its foot r in radius, for a
+       body at `from`: the palms up under its foot at either side, the fingers forward and a little in */
+    function trayGrip(c, r, from) {
+      const fx = c[0] - from[0], fz = c[2] - from[1], d = Math.hypot(fx, fz) || 1, F = [fx / d, fz / d], Lf = [F[1], -F[0]], out = {};
+      for (const [sd, sg] of [['L', 1], ['R', -1]])
+        out[sd] = { at: [c[0] + Lf[0] * sg * r * 0.84 - F[0] * 0.03, c[1] - 0.004, c[2] + Lf[1] * sg * r * 0.84 - F[1] * 0.03],
+                    f: [F[0] * 0.92 - Lf[0] * sg * 0.3, 0.1, F[1] * 0.92 - Lf[1] * sg * 0.3], n: [-Lf[0] * sg * 0.25, 0.95, -Lf[1] * sg * 0.25], out: 0.2, down: 0.42 };
       return out;
     }
     /* in play: a body's hands eased onto a grip and off it again (a grip may be a function, answering where the thing

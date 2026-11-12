@@ -145,6 +145,9 @@
      caption for as long as it is "said" (d_play.js subs; y_stage.js filmSubs). The table and both readers go when the
      chapter leaves preview; SUBS false turns them off before that (once the takes are in). */
   const SUBS = true;
+  /* (and until the takes are in the build a line is "said" silently, at once: held the moment a line is allowed for
+     bytes to land, every line of a build with no voice in it began with 1.6 s of nothing. M7 sets this true) */
+  const VOICED = false;
   /* WORDS BEGIN */
   const WORDS = {      // PREVIEW ONLY: 104 lines, written by masters/v26.0/script/words.py
     'q3o1': "For years I had been searching for the answers to the same questions.",

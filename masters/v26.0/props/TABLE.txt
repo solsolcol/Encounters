@@ -44,5 +44,5 @@ chicken       w3chicken     0.30  w   4000   512  0
 coconut       w3coconut     0.19  w   3000   512  0
 soda          w3soda        0.22  h   1500   256  0
 water         w3water       0.21  h   1500   256  0
-rolledmat     w3matroll     1.20  w   6000   512  0
+rolledmat     w3matroll     1.20  w   6000  1024  0
 shirt         w3shirt       0.30  w   4000   512  0

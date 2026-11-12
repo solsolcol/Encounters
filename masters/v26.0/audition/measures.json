@@ -1,0 +1,294 @@
+{
+ "pho-a-duang-1": {
+  "secs": 17.6,
+  "voice": [
+   0.06,
+   17.58
+  ],
+  "wps": 3.14,
+  "f0": 141,
+  "heard": 55,
+  "script": 55,
+  "missing": [
+   "sit"
+  ],
+  "hole": 0.72,
+  "rms": -19.799999237060547
+ },
+ "pho-a-duang-2": {
+  "secs": 19.04,
+  "voice": [
+   0.0,
+   19.02
+  ],
+  "wps": 2.89,
+  "f0": 133,
+  "heard": 55,
+  "script": 55,
+  "missing": [
+   "ton"
+  ],
+  "hole": 1.02,
+  "rms": -20.5
+ },
+ "pho-b-somchai-1": {
+  "secs": 18.48,
+  "voice": [
+   0.04,
+   18.3
+  ],
+  "wps": 3.01,
+  "f0": 118,
+  "heard": 55,
+  "script": 55,
+  "missing": [
+   "ton"
+  ],
+  "hole": 0.64,
+  "rms": -15.100000381469727
+ },
+ "pho-b-somchai-2": {
+  "secs": 19.28,
+  "voice": [
+   0.08,
+   19.26
+  ],
+  "wps": 2.87,
+  "f0": 120,
+  "heard": 55,
+  "script": 55,
+  "missing": [
+   "questions"
+  ],
+  "hole": 0.82,
+  "rms": -15.699999809265137
+ },
+ "pho-c-songkran-1": {
+  "secs": 23.28,
+  "voice": [
+   0.08,
+   23.26
+  ],
+  "wps": 2.37,
+  "f0": 87,
+  "heard": 55,
+  "script": 55,
+  "missing": [
+   "sit"
+  ],
+  "hole": 1.14,
+  "rms": -19.5
+ },
+ "pho-c-songkran-2": {
+  "secs": 18.16,
+  "voice": [
+   0.14,
+   18.0
+  ],
+  "wps": 3.08,
+  "f0": 82,
+  "heard": 55,
+  "script": 55,
+  "missing": [
+   "ton",
+   "lamp",
+   "lamp"
+  ],
+  "hole": 0.64,
+  "rms": -18.799999237060547
+ },
+ "ton-a-kirin-1": {
+  "secs": 14.32,
+  "voice": [
+   0.02,
+   14.3
+  ],
+  "wps": 2.45,
+  "f0": 129,
+  "heard": 36,
+  "script": 35,
+  "missing": [
+   "grandmaster",
+   "pho"
+  ],
+  "hole": 1.04,
+  "rms": -15.699999809265137
+ },
+ "ton-a-kirin-2": {
+  "secs": 14.88,
+  "voice": [
+   0.0,
+   14.86
+  ],
+  "wps": 2.36,
+  "f0": 127,
+  "heard": 35,
+  "script": 35,
+  "missing": [
+   "pho"
+  ],
+  "hole": 1.02,
+  "rms": -16.700000762939453
+ },
+ "ton-b-tonce-1": {
+  "secs": 9.36,
+  "voice": [
+   0.02,
+   9.34
+  ],
+  "wps": 3.76,
+  "f0": 128,
+  "heard": 36,
+  "script": 35,
+  "missing": [
+   "from",
+   "present",
+   "pho"
+  ],
+  "hole": 0.3,
+  "rms": -17.200000762939453
+ },
+ "ton-b-tonce-2": {
+  "secs": 11.44,
+  "voice": [
+   0.08,
+   11.36
+  ],
+  "wps": 3.1,
+  "f0": 127,
+  "heard": 33,
+  "script": 35,
+  "missing": [
+   "to",
+   "present",
+   "pho"
+  ],
+  "hole": 0.7,
+  "rms": -18.200000762939453
+ },
+ "ton-c-ohm-1": {
+  "secs": 11.52,
+  "voice": [
+   0.02,
+   11.36
+  ],
+  "wps": 3.09,
+  "f0": 111,
+  "heard": 37,
+  "script": 35,
+  "missing": [
+   "forum",
+   "present",
+   "ready",
+   "grandmaster",
+   "pho",
+   "sat"
+  ],
+  "hole": 0.62,
+  "rms": -20.0
+ },
+ "ton-c-ohm-2": {
+  "secs": 12.8,
+  "voice": [
+   0.0,
+   12.78
+  ],
+  "wps": 2.74,
+  "f0": 108,
+  "heard": 35,
+  "script": 35,
+  "missing": [
+   "forum",
+   "right",
+   "present",
+   "grandmaster",
+   "pho"
+  ],
+  "hole": 0.64,
+  "rms": -24.399999618530273
+ },
+ "aunt-a-siriporn-1": {
+  "secs": 9.04,
+  "voice": [
+   0.28,
+   9.02
+  ],
+  "wps": 1.6,
+  "f0": 172,
+  "heard": 14,
+  "script": 14,
+  "missing": [],
+  "hole": 1.86,
+  "rms": -19.100000381469727
+ },
+ "aunt-a-siriporn-2": {
+  "secs": 8.0,
+  "voice": [
+   0.04,
+   7.98
+  ],
+  "wps": 1.76,
+  "f0": 177,
+  "heard": 14,
+  "script": 14,
+  "missing": [],
+  "hole": 1.34,
+  "rms": -19.299999237060547
+ },
+ "aunt-b-kanya-1": {
+  "secs": 7.6,
+  "voice": [
+   0.02,
+   7.58
+  ],
+  "wps": 1.85,
+  "f0": 188,
+  "heard": 14,
+  "script": 14,
+  "missing": [],
+  "hole": 1.02,
+  "rms": -19.100000381469727
+ },
+ "aunt-b-kanya-2": {
+  "secs": 7.36,
+  "voice": [
+   0.22,
+   7.34
+  ],
+  "wps": 1.97,
+  "f0": 186,
+  "heard": 14,
+  "script": 14,
+  "missing": [],
+  "hole": 1.04,
+  "rms": -19.399999618530273
+ },
+ "aunt-c-hammy-1": {
+  "secs": 6.24,
+  "voice": [
+   0.1,
+   6.22
+  ],
+  "wps": 2.29,
+  "f0": 208,
+  "heard": 14,
+  "script": 14,
+  "missing": [],
+  "hole": 0.74,
+  "rms": -23.399999618530273
+ },
+ "aunt-c-hammy-2": {
+  "secs": 6.56,
+  "voice": [
+   0.16,
+   6.54
+  ],
+  "wps": 2.19,
+  "f0": 206,
+  "heard": 14,
+  "script": 14,
+  "missing": [],
+  "hole": 0.86,
+  "rms": -23.100000381469727
+ }
+}

@@ -8721,6 +8721,27 @@ What the baseline contains, by release:
     page error before it went live. ASKED OF CHAD with the link: the photographs of his album (Facebook answers its
     link with a login page; not opened); whether the sign's generic words should be other words; what the small
     golden figure at the fountain's west end is.
+- **v25.7** EPISODE 4 CHAPTER 3, A PREVIEW TO PLAY: THE WHOLE CHAPTER, SILENT, EVERY LINE A CAPTION (12 Nov 2026).
+    The second of the three preview deploys of its build (docs/V26.0-E4C3-BUILD.md, D12 and CP5.9); still a PREVIEW
+    (`?ch=e4c3` only; it saves and unlocks nothing; the seventeen released chapters are untouched). WHAT IS IN IT: the
+    opening film (the forum's reply, the three questions in his notebook, the bag, the turf); day one in play (Ton
+    and the bai sri, the tables, his place, the bow with the whole ground); the festival film (the dancers for the
+    Thevadas, people going up with their bai sri and going into trance, the petals thrown, the man in white); the
+    pull, played; the check; the night between; day two (the bow, the telling, the answers, OPEN AND CLOSE as a
+    breath held and let go, the road); HIS FOUR ANSWERS (accept your path, challenge the path, ask why, ask to make
+    it stop), each an ending of its own, and the close all four share, with one breath played inside it, ending on
+    "Tomorrow we begin." NO SOUND YET: no voice, music or effect is made until the build's next milestone, so every
+    line is drawn as a caption for its length (`SUBS`, `VOICED` in the chapter's head) and `chaptertest` is red on
+    this chapter's 117 sound cues and nothing else (expected until they are made).
+    THE ENGINE CHANGES IT RESTS ON (each opt-in, proved by the fixture at their own commit, f52e6fd): the breath
+    event, `kit.lens`, `kit.hush`; and since then one word, `restWord`, in the breath event. Episode 1 cannot reach
+    any of them (no chapter of it declares one).
+    PHOTOGRAPHED on a phone (390 x 844, touch) and a desktop (1280 x 720): every film and every ending, read frame
+    by frame, and what each showed is in the tracker's log. DEPLOYED: `6af505b253616ae34d79567f`, 453 served files
+    identical to dist, the cache headers in force; the chapter booted and reached an ending on a phone with no page
+    error before it went live. PUT TO CHAD with the link: Grandmaster Pho's 39 lines for his yes before they are
+    voiced (docs/V26.0-PHO-LINES.md), and one reel a role of the three voices auditioned for Grandmaster Pho, Ton
+    and the woman at his bench (masters/v26.0/audition/previews; the picks by measure are in the tracker).
 
 ## The sheet, version by version
 

@@ -1,0 +1,15 @@
+{ "flow": "10J7umsPGa5bj6bEmoBk",
+  "text": {
+    "pho": "[calm] Sit. Ton tells me you carry questions. Put them down here. A door that cannot close is not a door. It is a hole in the wall, and everything walks through. What is it for? A lamp is not lit for the lamp. It is lit for whoever is in the room. Tomorrow we begin.",
+    "ton": "[friendly] You are from the forum, right? First time? Take one. It is yours to present, when you are ready. That is Grandmaster Pho. Don't take my word. Ask the people who have sat with him.",
+    "aunt": "[gently] I came like you, with questions. Sit with him first. Then decide for yourself." },
+  "takes": {
+    "pho-a-duang":     { "voice": "jucSqawHKM1rUNf78oZQ", "sessions": ["j3HuKQsuOuhk2YHqG74I", "sGawYthrPlFdc131ovGe"] },
+    "pho-b-somchai":   { "voice": "XLXcyPK1jTjw1pYLLcM9", "sessions": ["zbk8a0Kj3MKPXQ20i0cM", "m9Sp1HQSQAkEVbzNClmk"] },
+    "pho-c-songkran":  { "voice": "xYmBpJREC3WfqEFpbPvO", "sessions": ["gg4p80yVZQqpTUSeRq8I", "LH7uOb48QertJGxb5gzu"] },
+    "ton-a-kirin":     { "voice": "uI1epevl1X6hqrxEciKt", "sessions": ["G9mrlsqdvLP4UBRc7RO6", "3j8aSHSDiG2TAZSAhTvz"] },
+    "ton-b-tonce":     { "voice": "yq05eeRaHPMGuWTVpqeP", "sessions": ["dZnkHBnBUGluWWO7JHCw", "M1VxUpRSelT6TtLdUS8f"] },
+    "ton-c-ohm":       { "voice": "tKtPl8obOBs5uPMei6yN", "sessions": ["PYHRZGhhEGvKsEvY21UM", "qcPDBGETWVCQPzLBRE3R"] },
+    "aunt-a-siriporn": { "voice": "v2NF9R77fF8wZRdbGYTg", "sessions": ["zwrOQDQirCmInHSsL5iH", "Id5c7WcYyIEE5BvOhd3O"] },
+    "aunt-b-kanya":    { "voice": "B4NdgwdU97lHqA8Udh2D", "sessions": ["GnmwlTHqGs2heoUooolE", "ObesuQI8X6eVGbiWxorK"] },
+    "aunt-c-hammy":    { "voice": "MYZYcGOqrkYQcwDunXl7", "sessions": ["AduXcBkc6Bj9xfaJE2Jd", "eMbbTVMo35vCAVEVOO9y"] } } }

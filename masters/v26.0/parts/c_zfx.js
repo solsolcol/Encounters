@@ -20,6 +20,10 @@
     const TON_BAI = stageList.tonBai;                                              // its place on Ton's table (b_world2.js keeps the corner by Ton free for it)
     const myBai = stand('w3baisri', TON_BAI.x, TON_BAI.y, TON_BAI.z, TON_BAI.ry, { s: BAI.s, moves: true });
     const ymBai = stand('w3baisri', 0, 0, 0, 0.6, { s: BAI.s, moves: true }); ymBai.visible = false;
+    /* WHAT THOSE WHO WAIT HAVE BROUGHT (endings B and C): a small bai sri on its brass tray each, carried in both hands.
+       The tray's foot is 0.19 m in radius as the model is made (tools/probes/bands.mjs), drawn here at WAIT_TRAY.s */
+    const WAIT_TRAY = { s: 0.8, r: 0.19 * 0.8 };
+    const waitBai = [0, 1, 2, 3].map(() => { const g = stand('w3smallbaisri', 0, 0, 0, 0, { s: WAIT_TRAY.s, moves: true }); g.visible = false; return g; });
     const handBaiHolder = new THREE.Group();                                       // (never in a scene: where the hands' copy waits when nobody holds it)
     const handBai = stand('w3baisri', 0, 0, 0, 0, { s: BAI.hand, near: true, parent: handBaiHolder });
     const baiPut = (g, x, y, z, ry) => { g.position.set(x, y, z); if (ry != null) g.rotation.y = ry; g.visible = true; };

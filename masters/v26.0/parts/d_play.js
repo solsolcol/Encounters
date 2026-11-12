@@ -22,7 +22,7 @@
     function sayLine(name, vol = 1, onStart, pan) {
       if (dayClock.t < speak.until) return false;
       const start = () => { speak.voiceTo = dayClock.t + (SECS[name] || 2.5); speak.until = speak.voiceTo + 0.25; heard.add(name); subs(name); if (onStart) onStart(); };
-      if ((soundOff && soundOff()) || !worldSfx) { start(); return true; }
+      if ((soundOff && soundOff()) || !worldSfx || !VOICED) { start(); return true; }
       if (worldSfx(name, vol, 1, pan)) { start(); return true; }
       speak.pending = { name, vol, start, pan, give: dayClock.t + 1.6 };
       speak.until = dayClock.t + 0.2;
