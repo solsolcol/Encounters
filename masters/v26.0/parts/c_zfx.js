@@ -424,3 +424,49 @@
       }).catch(err => { console.warn('slipper failed to load', err); if (ctx.loadFail) ctx.loadFail('slipper', err); });
     })();
 
+    /* ---- THE HAZE OVER THE OFFERING TABLES (day one; the plan's §3.7, look I: "a haze of incense and candle smoke that
+       catches it"; photograph 3: thin smoke standing in the sun above the candles). A few tall soft sheets that rise
+       slowly from the tables and from the pot of sand before them, lean with the air and thin as they climb: each a pure
+       function of the clock it is handed. Faint: air that catches the light, not an effect (found missing by the audit
+       of 13 Nov: the plan had it, the build did not) */
+    const haze = (() => {
+      const g = new THREE.Group(); dayOne.add(g);
+      const t0 = tex(makeGlow(THREE, cnv)), rnd = rng(7741), list = [];
+      for (const [x, z] of [[-1.7, -11.0], [-0.6, -11.5], [0.5, -10.9], [1.5, -11.4], [-0.1, -12.1], [2.1, -10.7], [-2.2, -11.8], [0.85, -9.7]]) {
+        const m = new THREE.SpriteMaterial({ map: t0, color: 0xfff3e0, transparent: true, opacity: 0, depthWrite: false, fog: false }); mats.push(m);
+        const sp = new THREE.Sprite(m); sp.renderOrder = 2; g.add(sp);
+        list.push({ s: sp, x, z, w: 0.9 + rnd() * 0.8, T: 14 + rnd() * 9, ph: rnd(), a: 0.1 + rnd() * 0.06, dr: 0.5 + rnd() * 0.7, y0: z > -10 ? 0.4 : 1.5 });
+      }
+      return { g, list };
+    })();
+    function hazeTick(t) {
+      if (!dayOne.visible) return;
+      for (const h of haze.list) { const u = (((t / h.T + h.ph) % 1) + 1) % 1;
+        h.s.position.set(h.x + h.dr * u * u + Math.sin(t * 0.23 + h.ph * 6.283) * 0.12 * (0.3 + u), h.y0 + 0.5 + 3.4 * u, h.z);
+        h.s.scale.set(h.w * (0.7 + 1.1 * u), 1.3 + 1.6 * u, 1);
+        h.s.material.opacity = h.a * Math.pow(Math.sin(Math.PI * Math.min(1, u * 1.15)), 1.2) * (1 - 0.35 * u); }
+    }
+
+    /* ---- THE PLASTIC CHAIRS AND THE LOUDSPEAKERS (the plan's §6.3; found unmade by the audit of 13 Nov).
+       CHAIRS (photographs 5 and 6: white ones behind the master's bench, blue ones at its east side, people's things on
+       them): one white model, the blue a tint of it (white times a colour is that colour). They are the day's: they
+       stand with the crowd and are stacked away by the morning, so they are day one's group and their columns are the
+       crowd's (lifted when the crowd is gone: crowdSolid). No far level: a chair's legs and slots ARE its outline. */
+    (function chairsAndHorns() {
+      const B2 = (a, b) => benchAt(a, b), to = benchAt(0.3, 2.2), r = 0.26;
+      const seat = (a, b, turn) => { const [x, z] = B2(a, b); crowdBlock.push(new THREE.Box3(new THREE.Vector3(x - r, 0, z - r), new THREE.Vector3(x + r, 1.5, z + r)));
+        return { x, y: 0, z, ry: faceTo(x, z, to[0], to[1]) + turn }; };
+      /* (and two at the way in, by the tables of bai sri: the plan's §3.2, "plastic chairs in blue and white") */
+      const at = (x, z, ry) => { crowdBlock.push(new THREE.Box3(new THREE.Vector3(x - r, 0, z - r), new THREE.Vector3(x + r, 1.5, z + r))); return { x, y: 0, z, ry }; };
+      many('w3pchair', [seat(-1.7, -1.45, 0.12), seat(-0.6, -1.7, -0.08), seat(1.15, -1.55, 0.2), at(-9.2, 9.0, 1.45)], dayOne, 0.8);
+      many('w3pchair', [seat(3.1, -0.75, -0.15), seat(3.6, -0.05, 0.1), at(-9.25, 9.8, 1.7)], dayOne, 0.8, (made) => { for (const im of made) im.material.color.set(0x2f62c8); });
+      /* LOUDSPEAKERS: a pair of grey horns on a steel pole at three corners of the ground, where the music and the
+         chanting come from (the pole is a post: structure, like the tents' frames; the horns are the model) */
+      const mPole = M({ color: 0x8b8e90, roughness: 0.55, metalness: 0.45 }), H = 4.1, list = [];
+      for (const [x, z, ry] of [[-10.45, -9.2, 0.9], [10.7, -8.1, -0.8], [-9.5, 12.7, 2.3]]) {
+        const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.04, H, 8), mPole); pole.position.set(x, H / 2, z); pole.matrixAutoUpdate = false; pole.updateMatrix();
+        world.add(pole); owned.push(pole); solidBox(0.2, 2.2, 0.2, x, 1.1, z);
+        list.push({ x, y: H - 0.3, z, ry });
+      }
+      many('w3horns', list, world, 0.6);
+    })();

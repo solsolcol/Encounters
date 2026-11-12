@@ -592,6 +592,8 @@ ASSETS = {
     'w3chrys':      ('assets/w3chrys.glb', True, False),     # white chrysanthemums in a silver pedestal bowl (photographs 4, 9, 10: Hunyuan3D, Meshy refused its picture twice)
     'w3roses':      ('assets/w3roses.glb', True, False),     # roses and daisies in a white bowl (photographs 9, 10: Hunyuan3D)
     'w3claypot':    ('assets/w3claypot.glb', True, False),     # the clay pot of sand on the gravel before the tables (photograph 10)
+    'w3pchair':     ('assets/w3pchair.glb', True, False),     # a plastic chair (photographs 5, 6: white behind the bench, blue at its side: one white model, the blue a tint)
+    'w3horns':      ('assets/w3horns.glb', True, False),     # a pair of horn loudspeakers for a pole (where the music and the chanting come from)
     # e4c3: what stands at the hall (photographs 13 to 16; masters/v26.0/hall): each cut out of his photograph, a
     # checked picture on white, then Meshy
     'w3nagafount':  ('assets/w3nagafount.glb', True, False),     # the seven-headed golden naga fountain before the sign (photographs 13, 15, 16)
@@ -759,10 +761,10 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'w3wheel', 'w3parasol', 'w3tower', 'w3candle', 'w3fan', 'w3nagastaff', 'w3pewter', 'w3purple', 'w3fruit',
            'w3sweets', 'w3khantok', 'w3puff', 'w3chair', 'w3lowtable', 'w3bench', 'w3sofa', 'w3petalbowl',
            'w3petalsteel', 'w3smallbaisri', 'w3candlemid', 'w3candlesmall', 'w3kratip', 'w3chicken', 'w3coconut',
-           'w3soda', 'w3water', 'w3matroll', 'w3shirt', 'w3chrys', 'w3roses', 'w3claypot', 'w3nagafount',
-           'w3nagagreen', 'w3nagawhite', 'w3ganesha', 'w3croton', 'w3dracaena', 'w3waterjar', 'w3walllamp',
-           'w3t_turf', 'w3t_petalturf', 'w3t_earth', 'w3t_gravel', 'w3t_redplank', 'w3t_tin', 'w3t_brick',
-           'w3t_skirt', 'w3t_satin', 'w3t_mat', 'w3t_carpet', 'w3t_swag', 'w3t_banner', 'w3t_treeline',
+           'w3soda', 'w3water', 'w3matroll', 'w3shirt', 'w3chrys', 'w3roses', 'w3claypot', 'w3pchair', 'w3horns',
+           'w3nagafount', 'w3nagagreen', 'w3nagawhite', 'w3ganesha', 'w3croton', 'w3dracaena', 'w3waterjar',
+           'w3walllamp', 'w3t_turf', 'w3t_petalturf', 'w3t_earth', 'w3t_gravel', 'w3t_redplank', 'w3t_tin',
+           'w3t_brick', 'w3t_skirt', 'w3t_satin', 'w3t_mat', 'w3t_carpet', 'w3t_swag', 'w3t_banner', 'w3t_treeline',
            'w3t_redroof', 'w3t_hallbrick', 'w3t_steptile', 'w3t_lawn', 'w3t_kalae', 'w3t_fretwork', 'w3t_sign',
            # <<< e4c3 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)

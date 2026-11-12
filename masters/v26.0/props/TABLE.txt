@@ -54,3 +54,8 @@ shirt         w3shirt       0.30  w   4000   512  0
 #roses2       w3roses       0.46  w  40000  1024  0   src/hunyuan-roses2-40k.glb
 # ---- the pot of sand that stands on the gravel before the tables (photograph 10)
 claypot       w3claypot     0.45  w   3000   512  0
+# ---- two things of the plan's list (6.3) that were never made, found by the audit of 13 Nov: the plastic chairs behind
+#  the masters' canopy (photographs 5, 6: white, and blue ones: one white model, the blue a tint), and the loudspeakers
+#  the music and the chant come over (a pair of horns; its pole is a post in code)
+pchair        w3pchair      0.80  h   4000   512  0
+horns         w3horns       0.95  w   5000   512  0

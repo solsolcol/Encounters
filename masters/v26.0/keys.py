@@ -71,7 +71,9 @@ group("e4c3: its things, each from a crop of Chad's own photograph of the real o
        ('w3shirt', 'w3shirt.glb', 'a folded white T-shirt (the opening film: what he packs)'),
        ('w3chrys', 'w3chrys.glb', 'white chrysanthemums in a silver pedestal bowl (photographs 4, 9, 10: Hunyuan3D, Meshy refused its picture twice)'),
        ('w3roses', 'w3roses.glb', 'roses and daisies in a white bowl (photographs 9, 10: Hunyuan3D)'),
-       ('w3claypot', 'w3claypot.glb', 'the clay pot of sand on the gravel before the tables (photograph 10)')])
+       ('w3claypot', 'w3claypot.glb', 'the clay pot of sand on the gravel before the tables (photograph 10)'),
+       ('w3pchair', 'w3pchair.glb', 'a plastic chair (photographs 5, 6: white behind the bench, blue at its side: one white model, the blue a tint)'),
+       ('w3horns', 'w3horns.glb', 'a pair of horn loudspeakers for a pole (where the music and the chanting come from)')])
 group("e4c3: what stands at the hall (photographs 13 to 16; masters/v26.0/hall): each cut out of his photograph, a\n"
       "checked picture on white, then Meshy",
       [('w3nagafount', 'w3nagafount.glb', 'the seven-headed golden naga fountain before the sign (photographs 13, 15, 16)'),
