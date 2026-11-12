@@ -220,6 +220,11 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
       behind the title card as every chapter does. Said so he knows the price of eighteen people at three levels.
     - l. The dancers' walk is a written take (made for them): a planted toe creeps a centimetre or two each quarter
       second, in the take itself. A walk with none would have to be motion-captured.
+    - m. The petals in play are thrown beside him at Ton's table (a girl's handful, as the bai sri comes into his
+      hands); the plan had them "as he reaches the tables". One word sends the children up for a second handful there.
+    - n. The plan's "a bed for each tent": the ground's sound is mixed by where he stands (the music nearer the horns,
+      the crowd fuller among the people, each noise at its place); no tent has a sound of its own. One word makes some
+      (the monks' tent, the masters' tent).
 
 ## D. Not built yet
 

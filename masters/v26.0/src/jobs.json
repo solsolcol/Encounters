@@ -143,6 +143,22 @@
    "prompt": "A person standing presses both palms together in front of the chest in a respectful greeting, bows the head and shoulders slowly forward, holds a moment, then straightens up and lowers the hands.",
    "size": 16825904,
    "task": "01a1caeb-8147-733b-bcb3-a3d30f8e5f00"
+  },
+  "walkdance": {
+   "credits": 10,
+   "duration": 8.0,
+   "expires_at": 1794737103359,
+   "prompt": "A woman in a long narrow skirt dances forward in a slow traditional Thai procession dance: small soft steps, knees gently bending, while her arms move gracefully, one hand rising to shoulder height as the other lowers to her hip, wrists turning with fingers curved back, her body swaying softly and her head tilting with each move. She keeps moving forward at the same slow pace the whole time.",
+   "size": 16954704,
+   "task": "01a1cf37-96da-7286-93ad-545c121fabb5"
+  },
+  "walkdance2": {
+   "credits": 10,
+   "duration": 8.0,
+   "expires_at": 1794737079469,
+   "prompt": "A woman in a long narrow skirt walks slowly forward with small graceful steps while dancing with her arms: both arms out to the sides at shoulder height, elbows soft, wrists bent back and fingers curled, the arms gently rising and falling alternately like slow wings in time with her steps, back straight, head level. She keeps walking forward at the same calm pace the whole time.",
+   "size": 16954704,
+   "task": "01a1cf37-1ed8-75bc-b21c-ca37ffc647c2"
   }
  },
  "baisri": {
@@ -648,6 +664,12 @@
     "motion": "01a1ced4-748c-77f1-9cf8-e37a1e9b5e0b",
     "size": 81834844,
     "task": "01a1ced5-4771-715b-a42a-0b7da9477675"
+   },
+   "walkdance": {
+    "credits": 3,
+    "motion": "01a1cf37-96da-7286-93ad-545c121fabb5",
+    "size": 82100676,
+    "task": "01a1cf39-b606-7615-98bd-1d0df2440a53"
    }
   }
  },
@@ -716,6 +738,12 @@
     "motion": "01a1ced4-748c-77f1-9cf8-e37a1e9b5e0b",
     "size": 82248120,
     "task": "01a1ced6-5bb7-70e3-905c-30a56b0efac9"
+   },
+   "walkdance": {
+    "credits": 3,
+    "motion": "01a1cf37-96da-7286-93ad-545c121fabb5",
+    "size": 82513896,
+    "task": "01a1cf3a-cc7d-776a-8c12-03cd45b7a6de"
    }
   }
  },
@@ -1717,6 +1745,118 @@
   },
   "sizes": {
    "glb": 58025724
+  }
+ },
+ "monkb": {
+  "credits": 40,
+  "expires_at": 1794737525486,
+  "image": "masters/v26.0/people/refs/monkb-a-2k.png",
+  "image_to_3d": "01a1cf39-6bce-73c3-81b9-ed406223561c",
+  "remesh": {
+   "2500": "01a1cf51-5ea6-73ca-bee4-8743628454fc",
+   "30000": "01a1cf48-8f9d-72fe-b644-b3dfe428f4f6",
+   "8000": "01a1cf4d-0ba2-7536-aa06-e9556588793b"
+  },
+  "rig": "01a1cf44-98d5-727f-8ca9-fa129550b243",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.66,
+   "include_fingers": true,
+   "input_task_id": "01a1cf39-6bce-73c3-81b9-ed406223561c",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 57339236,
+   "walk": 57580212
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 53359816
+  },
+  "takes": {
+   "lib": {
+    "actions": [
+     33,
+     243
+    ],
+    "credits": 6,
+    "size": 60685352,
+    "task": "01a1cf48-b8ed-7400-b3e9-cb10f171fd66"
+   }
+  }
+ },
+ "monkc": {
+  "credits": 40,
+  "expires_at": 1794737518300,
+  "image": "masters/v26.0/people/refs/monkc-a-2k.png",
+  "image_to_3d": "01a1cf39-7410-7320-8971-2ff9471b861a",
+  "remesh": {
+   "2500": "01a1cf51-2238-76e0-be2c-8e3a826eb06f",
+   "30000": "01a1cf48-8fed-709d-ac95-4243c360534e",
+   "8000": "01a1cf4d-0f07-711c-a4f2-e7f0cb271d1f"
+  },
+  "rig": "01a1cf44-985c-7753-98e0-8c94e25d28f0",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.76,
+   "include_fingers": true,
+   "input_task_id": "01a1cf39-7410-7320-8971-2ff9471b861a",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 43958752,
+   "walk": 44199832
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "pose_mode": "a-pose",
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 40187628
+  },
+  "takes": {
+   "lib": {
+    "actions": [
+     33,
+     243
+    ],
+    "credits": 6,
+    "size": 47234600,
+    "task": "01a1cf4c-d330-76d7-9d43-00d5eeb20a38"
+   }
   }
  },
  "naga": {

@@ -52,3 +52,19 @@ boy     WHO  a Thai boy about five years old, small, short black hair with a str
         DRESS He wears a plain white short-sleeved cotton T-shirt and loose white cotton shorts that end just below the knee
 
 JOB IDS and PICKS: masters/v26.0/make.sh.
+
+THE MONKS' ROW (12 Nov; Chad: "the 3 monks are the same model, can we have different monks?"). His own monk keeps the
+middle chair; two invented monks sit either side of him. Photograph 2's row is of different ages and builds, in maroon,
+dark red and orange: nobody of it is copied.
+monkb   WHO  a Thai Buddhist monk about fifty-five years old, broad and heavy-set with a round calm face and a soft
+             belly, his head and eyebrows shaved
+        DRESS He wears the plain cotton robes of a Thai forest monk in deep maroon: a lower robe wrapped round the
+             waist and falling to the shins, and an upper robe wound round the chest and over the left shoulder, lying
+             close on the shoulder and not hanging over the arm, so that the right shoulder and both arms are bare and
+             hang clear of the cloth; no jewellery, no bag, no beads.
+        (Higgsfield job 715e5037-bcbd-4b2f-8ddb-0d5b6af48c1c: refs/monkb-a-2k.png; looked at: a heavy older man, arms
+         clear, the robe off both arms)
+monkc   WHO  a Thai Buddhist monk about twenty-five years old, slim and tall with a narrow face, high cheekbones and
+             calm eyes, his head and eyebrows shaved
+        DRESS as monkb's, in dark reddish brown; no glasses.
+        (Higgsfield job af3b6386-1536-4edb-9560-292646a751cb: refs/monkc-a-2k.png; looked at: a slim young man, arms clear)

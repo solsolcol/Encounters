@@ -8393,3 +8393,8 @@ Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8,
   given the scratchpad to work in (`TMPDIR`).
 - **Read the clock, again.** Writing the hour into the tracker from my sense of it, I was 73 minutes ahead of the
   machine. `date -u` is typed before a time is.
+- **Kill a waiting script BEFORE its children, and look at its markers afterwards.** Killing the children of a
+  script that sits in `wait` makes the `wait` return, and the script runs its next line before the kill reaches it:
+  a stopped orchestrator touched its own "all done" marker on the way out, and the harness queued behind that
+  marker would have started beside four running probes. And `pkill -f` matches a command line, not a job: two
+  chains given the same steps file are both hit by one pattern.

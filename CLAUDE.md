@@ -1269,7 +1269,10 @@ new voices and the thirteen music cues (picked by measure; reels sent 12 Nov); G
 casebook withholds: asked by name); the ranks of the four; which man in the photographs he is; a picture of the
 dancers and what the music is; his album of the Wai Kru (asked as files); the small dark seated image before the wheel
 in his photograph 10 (not made: a sacred image is never guessed) and the monks' robes (his model's orange, the
-photograph's maroon). The tracker's §13 is every ask of his against the build. Its research and the second pass over
+photograph's maroon); and five places where the build and the plan's own direction (its 3.7) differ, each said
+and each one word to change (the last image, a petal on his open hand; the flood in gold; the petals thrown at Ton's
+table and not at the offering tables; no bed of sound for each tent; the gold never photographed at three strengths:
+the tracker's §13 SAID list, docs/OPEN-ITEMS.md C13). The tracker's §13 is every ask of his against the build. Its research and the second pass over
 what the game states: docs/research/V26.0-WAIKRU.md and -VERDICTS.md (which wins where they differ). Grandmaster Pho's
 gold is lifted in this chapter (`auraAt`, c_zfx.js), from the colours chapter 2 kept for it. Chapter 4 is next
 (S1·13, case one: the woman who rose from her wheelchair).
