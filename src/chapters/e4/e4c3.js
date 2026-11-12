@@ -1521,11 +1521,13 @@
     const NOMIP = /^e4/;
     /* (the children's runs and their skip too: c_crowd.js) */
     const WALKS = /^(Walking|Casual_Walk|Walking_Woman|Run_02|Run_03|Skip_Forward)$/;
-    /* (the full model's reach was 2.7 m until 13 Nov: Ton stands 2.55 m from where play begins, so the first frame he
-       sees paid for all 310,000 triangles of him, and the spawn drew 1.12 million, 7 % over what chapter 1 asks of a
-       phone. Photographed there at both levels, on a phone's frame and a desktop's, magnified: no difference to be seen
-       at that distance. At 2.2 m (taken up inside 2.05, let go past 2.35) the full model is drawn where he has walked
-       up to talk, which is what it was made for) */
+    /* (the full model's reach was 2.7 m until 13 Nov. Photographed at 2.55 m at both levels, on a phone's frame and a
+       desktop's, magnified: no difference to be seen at that distance, and the full model is 310,000 triangles. At
+       2.2 m (taken up inside 2.05, let go past 2.35, measured from the lens) it is drawn where he has walked up to
+       talk, which is what it was made for: the view from his place in the line, where the woman at the bench stood
+       inside the old reach, went from 832,000 triangles to 563,000. It was NOT the spawn's weight, as I first wrote:
+       from the spawn Ton was already outside the old reach's own taking-up (2.51 m from the lens). That was the
+       sandals behind him: c_zfx.js) */
     const LEVELS = [['h', 2.2], ['', 5.4], ['m', 11.5], ['f', Infinity]];        // each skin's suffix and how far it is drawn to
     const _pv = new THREE.Vector3(), _pq = new THREE.Quaternion(), _lens = new THREE.Vector3();
     /* the soft dark under a body (a phone draws no shadows, so a contact shadow is painted: v9.3) */
@@ -2949,8 +2951,16 @@
         const right = one.clone(); right.scale(-1, 1, 1);
         if (right.index) { const ix = right.index.array; for (let i = 0; i < ix.length; i += 3) { const t = ix[i + 1]; ix[i + 1] = ix[i + 2]; ix[i + 2] = t; } right.index.needsUpdate = true; } right.computeVertexNormals();
         const mat = M({ color: 0xffffff, roughness: 0.62 }), d = new THREE.Object3D(), col = new THREE.Color();
-        for (const [g, off] of [[one, -0.056], [right, 0.056]]) { const im = new THREE.InstancedMesh(g, mat, list.length);
-          list.forEach((q, i) => { d.position.set(q.x + off * Math.cos(q.ry), 0.004, q.z - off * Math.sin(q.ry)); d.rotation.set(0, q.ry, 0); d.updateMatrix(); im.setMatrixAt(i, d.matrix); im.setColorAt(i, col.setHex(q.col)); });
+        /* DRAWN IN SHORT LENGTHS OF A ROW (13 Nov; the same sandals in the same places, the picture bit for bit). They were
+           two meshes for all fifty-odd, and a mesh is handed to the GPU whole if its sphere touches the view: the rows lie
+           a step BEHIND where play begins, their one sphere (3.3 m) reached past the lens, and every frame he stood at
+           the way in paid 152,768 triangles for sandals behind his back (counted by mesh: the spawn drew 1.12 million, 7 %
+           over chapter 1's heaviest look, and I had put it down first to the bai sri and then to Ton's full model: both
+           wrong). A length of a row is a metre and a half: its sphere no longer reaches a lens that looks away */
+        const bins = new Map();
+        for (const q of list) { const k = Math.floor((q.x + 8) / 1.6) + (q.z > 12.5 ? ':b' : ':a'); if (!bins.has(k)) bins.set(k, []); bins.get(k).push(q); }
+        for (const part of bins.values()) for (const [g, off] of [[one, -0.056], [right, 0.056]]) { const im = new THREE.InstancedMesh(g, mat, part.length);
+          part.forEach((q, i) => { d.position.set(q.x + off * Math.cos(q.ry), 0.004, q.z - off * Math.sin(q.ry)); d.rotation.set(0, q.ry, 0); d.updateMatrix(); im.setMatrixAt(i, d.matrix); im.setColorAt(i, col.setHex(q.col)); });
           im.instanceMatrix.needsUpdate = true; im.instanceColor.needsUpdate = true; im.computeBoundingSphere(); im.castShadow = false; world.add(im); owned.push(im); }
       }).catch(err => { console.warn('slipper failed to load', err); if (ctx.loadFail) ctx.loadFail('slipper', err); });
     })();
@@ -2989,8 +2999,13 @@
         return { x, y: 0, z, ry: faceTo(x, z, to[0], to[1]) + turn }; };
       /* (and two at the way in, by the tables of bai sri: the plan's §3.2, "plastic chairs in blue and white") */
       const at = (x, z, ry) => { crowdBlock.push(new THREE.Box3(new THREE.Vector3(x - r, 0, z - r), new THREE.Vector3(x + r, 1.5, z + r))); return { x, y: 0, z, ry }; };
-      many('w3pchair', [seat(-1.7, -1.45, 0.12), seat(-0.6, -1.7, -0.08), seat(1.15, -1.55, 0.2), at(-9.2, 9.0, 1.45)], dayOne, 0.8);
-      many('w3pchair', [seat(3.1, -0.75, -0.15), seat(3.6, -0.05, 0.1), at(-9.25, 9.8, 1.7)], dayOne, 0.8, (made) => { for (const im of made) im.material.color.set(0x2f62c8); });
+      /* (each place its own mesh, 13 Nov: one mesh for the chairs at the bench AND the one at the way in had a sphere the
+         width of the ground, so all of them were handed to the GPU wherever he looked. The same chairs, the same places) */
+      const blue = (made) => { for (const im of made) im.material.color.set(0x2f62c8); };
+      many('w3pchair', [seat(-1.7, -1.45, 0.12), seat(-0.6, -1.7, -0.08), seat(1.15, -1.55, 0.2)], dayOne, 0.8);
+      many('w3pchair', [at(-9.2, 9.0, 1.45)], dayOne, 0.8);
+      many('w3pchair', [seat(3.1, -0.75, -0.15), seat(3.6, -0.05, 0.1)], dayOne, 0.8, blue);
+      many('w3pchair', [at(-9.25, 9.8, 1.7)], dayOne, 0.8, blue);
       /* LOUDSPEAKERS: a pair of grey horns on a steel pole at three corners of the ground, where the music and the
          chanting come from (the pole is a post: structure, like the tents' frames; the horns are the model) */
       const mPole = M({ color: 0x8b8e90, roughness: 0.55, metalness: 0.45 }), H = 4.1, list = [];
@@ -2999,7 +3014,8 @@
         world.add(pole); owned.push(pole); solidBox(0.2, 2.2, 0.2, x, 1.1, z);
         list.push({ x, y: H - 0.3, z, ry });
       }
-      many('w3horns', list, world, 0.6);
+      /* (a pole a mesh: three poles at three corners of the ground made one sphere over all of it) */
+      for (const horn of list) many('w3horns', [horn], world, 0.6);
     })();
     /* ================================================================ THE PLAY (the plan's §4.1, §4.3, §9)
        Every beat on the chapter clock (wall time, v7.1); every line through the queue, one voice at a time; each beat's

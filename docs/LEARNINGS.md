@@ -8328,3 +8328,13 @@ Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8,
   reached the shell and not node. Export it in a subshell, or pass it on the command's own line.
 - **`S=... && ( ... ) &` sets S only inside the background list.** A second command on the next line has no S: set it
   on a line of its own.
+- **Read every law of a kind before applying one.** White specks in hair are two laws (v5.11 no mipmaps on a packed
+  sheet; v19.8 thin charts pointed at their own colour), and the first alone left half of them: `grep -n "speck\|streak"
+  docs/LEARNINGS.md` before the first fix, not after its photograph.
+- **Find the weight by measuring it, not by guessing it, and measure the fix before writing its cause down.** The
+  spawn's excess was guessed twice (seven bai sri; then one man's full model, written into a commit and a deploy's
+  notes) and was neither: a census by mesh of the frame named 152,768 triangles of sandals BEHIND the lens.
+- **A mesh of many copies is handed to the GPU whole if its sphere touches the view.** Rows of small things laid
+  along an edge, or one kind of thing stood at two ends of a ground, make a sphere that is always in view: batch by
+  place (a metre or two a mesh), not by kind. `tools/probes/drawn.mjs` counts what is handed over; a census of
+  visible meshes by name says whose it is.

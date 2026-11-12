@@ -418,8 +418,16 @@
         const right = one.clone(); right.scale(-1, 1, 1);
         if (right.index) { const ix = right.index.array; for (let i = 0; i < ix.length; i += 3) { const t = ix[i + 1]; ix[i + 1] = ix[i + 2]; ix[i + 2] = t; } right.index.needsUpdate = true; } right.computeVertexNormals();
         const mat = M({ color: 0xffffff, roughness: 0.62 }), d = new THREE.Object3D(), col = new THREE.Color();
-        for (const [g, off] of [[one, -0.056], [right, 0.056]]) { const im = new THREE.InstancedMesh(g, mat, list.length);
-          list.forEach((q, i) => { d.position.set(q.x + off * Math.cos(q.ry), 0.004, q.z - off * Math.sin(q.ry)); d.rotation.set(0, q.ry, 0); d.updateMatrix(); im.setMatrixAt(i, d.matrix); im.setColorAt(i, col.setHex(q.col)); });
+        /* DRAWN IN SHORT LENGTHS OF A ROW (13 Nov; the same sandals in the same places, the picture bit for bit). They were
+           two meshes for all fifty-odd, and a mesh is handed to the GPU whole if its sphere touches the view: the rows lie
+           a step BEHIND where play begins, their one sphere (3.3 m) reached past the lens, and every frame he stood at
+           the way in paid 152,768 triangles for sandals behind his back (counted by mesh: the spawn drew 1.12 million, 7 %
+           over chapter 1's heaviest look, and I had put it down first to the bai sri and then to Ton's full model: both
+           wrong). A length of a row is a metre and a half: its sphere no longer reaches a lens that looks away */
+        const bins = new Map();
+        for (const q of list) { const k = Math.floor((q.x + 8) / 1.6) + (q.z > 12.5 ? ':b' : ':a'); if (!bins.has(k)) bins.set(k, []); bins.get(k).push(q); }
+        for (const part of bins.values()) for (const [g, off] of [[one, -0.056], [right, 0.056]]) { const im = new THREE.InstancedMesh(g, mat, part.length);
+          part.forEach((q, i) => { d.position.set(q.x + off * Math.cos(q.ry), 0.004, q.z - off * Math.sin(q.ry)); d.rotation.set(0, q.ry, 0); d.updateMatrix(); im.setMatrixAt(i, d.matrix); im.setColorAt(i, col.setHex(q.col)); });
           im.instanceMatrix.needsUpdate = true; im.instanceColor.needsUpdate = true; im.computeBoundingSphere(); im.castShadow = false; world.add(im); owned.push(im); }
       }).catch(err => { console.warn('slipper failed to load', err); if (ctx.loadFail) ctx.loadFail('slipper', err); });
     })();
@@ -458,8 +466,13 @@
         return { x, y: 0, z, ry: faceTo(x, z, to[0], to[1]) + turn }; };
       /* (and two at the way in, by the tables of bai sri: the plan's §3.2, "plastic chairs in blue and white") */
       const at = (x, z, ry) => { crowdBlock.push(new THREE.Box3(new THREE.Vector3(x - r, 0, z - r), new THREE.Vector3(x + r, 1.5, z + r))); return { x, y: 0, z, ry }; };
-      many('w3pchair', [seat(-1.7, -1.45, 0.12), seat(-0.6, -1.7, -0.08), seat(1.15, -1.55, 0.2), at(-9.2, 9.0, 1.45)], dayOne, 0.8);
-      many('w3pchair', [seat(3.1, -0.75, -0.15), seat(3.6, -0.05, 0.1), at(-9.25, 9.8, 1.7)], dayOne, 0.8, (made) => { for (const im of made) im.material.color.set(0x2f62c8); });
+      /* (each place its own mesh, 13 Nov: one mesh for the chairs at the bench AND the one at the way in had a sphere the
+         width of the ground, so all of them were handed to the GPU wherever he looked. The same chairs, the same places) */
+      const blue = (made) => { for (const im of made) im.material.color.set(0x2f62c8); };
+      many('w3pchair', [seat(-1.7, -1.45, 0.12), seat(-0.6, -1.7, -0.08), seat(1.15, -1.55, 0.2)], dayOne, 0.8);
+      many('w3pchair', [at(-9.2, 9.0, 1.45)], dayOne, 0.8);
+      many('w3pchair', [seat(3.1, -0.75, -0.15), seat(3.6, -0.05, 0.1)], dayOne, 0.8, blue);
+      many('w3pchair', [at(-9.25, 9.8, 1.7)], dayOne, 0.8, blue);
       /* LOUDSPEAKERS: a pair of grey horns on a steel pole at three corners of the ground, where the music and the
          chanting come from (the pole is a post: structure, like the tents' frames; the horns are the model) */
       const mPole = M({ color: 0x8b8e90, roughness: 0.55, metalness: 0.45 }), H = 4.1, list = [];
@@ -468,5 +481,6 @@
         world.add(pole); owned.push(pole); solidBox(0.2, 2.2, 0.2, x, 1.1, z);
         list.push({ x, y: H - 0.3, z, ry });
       }
-      many('w3horns', list, world, 0.6);
+      /* (a pole a mesh: three poles at three corners of the ground made one sphere over all of it) */
+      for (const horn of list) many('w3horns', [horn], world, 0.6);
     })();

@@ -27,11 +27,13 @@
     const NOMIP = /^e4/;
     /* (the children's runs and their skip too: c_crowd.js) */
     const WALKS = /^(Walking|Casual_Walk|Walking_Woman|Run_02|Run_03|Skip_Forward)$/;
-    /* (the full model's reach was 2.7 m until 13 Nov: Ton stands 2.55 m from where play begins, so the first frame he
-       sees paid for all 310,000 triangles of him, and the spawn drew 1.12 million, 7 % over what chapter 1 asks of a
-       phone. Photographed there at both levels, on a phone's frame and a desktop's, magnified: no difference to be seen
-       at that distance. At 2.2 m (taken up inside 2.05, let go past 2.35) the full model is drawn where he has walked
-       up to talk, which is what it was made for) */
+    /* (the full model's reach was 2.7 m until 13 Nov. Photographed at 2.55 m at both levels, on a phone's frame and a
+       desktop's, magnified: no difference to be seen at that distance, and the full model is 310,000 triangles. At
+       2.2 m (taken up inside 2.05, let go past 2.35, measured from the lens) it is drawn where he has walked up to
+       talk, which is what it was made for: the view from his place in the line, where the woman at the bench stood
+       inside the old reach, went from 832,000 triangles to 563,000. It was NOT the spawn's weight, as I first wrote:
+       from the spawn Ton was already outside the old reach's own taking-up (2.51 m from the lens). That was the
+       sandals behind him: c_zfx.js) */
     const LEVELS = [['h', 2.2], ['', 5.4], ['m', 11.5], ['f', Infinity]];        // each skin's suffix and how far it is drawn to
     const _pv = new THREE.Vector3(), _pq = new THREE.Quaternion(), _lens = new THREE.Vector3();
     /* the soft dark under a body (a phone draws no shadows, so a contact shadow is painted: v9.3) */
