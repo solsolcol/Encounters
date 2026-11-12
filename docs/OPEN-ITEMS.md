@@ -193,7 +193,7 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
     e4c1's two music beds are padded to fit, LEARNINGS v24.34). Changing the engine's insets would move every bed in every
     chapter, episode 1's included, so it waits on his word. Also his: the new music's decoded cost in episode 4
     chapter 1 — 52 MB from the start of play, 51 MB more from the decision (docs/HISTORY.md, v24.34).
-13. **Episode 4 chapter 3 (v26.0), put to him 11 to 13 Nov 2026 and not yet answered** (each is one word from him to
+13. **Episode 4 chapter 3 (v26.0), put to him 11 to 12 Nov 2026 and not yet answered** (each is one word from him to
     change; the chapter stands on the default in docs/V26.0-E4C3-BUILD.md §3):
     - a. Grandmaster Pho's 39 lines (docs/V26.0-PHO-LINES.md), and two BY NAME: `ph3n3` "What you feel was not put into
       you. It was there already, asleep." and `ph3n4` "The ink, the chanting, the pieces you held... they did not give
@@ -213,7 +213,7 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
 ## D. Not built yet
 
 - Episode 4 chapters 4–5; Episode 5 (S1·16–S1·20); Episodes 6–10 (names still the v6.0 list).
-  - ~~Episode 4 chapter 3 (S1·12)~~ — SHIPPED at v26.0 (13 Nov 2026): docs/V26.0-E4C3-BUILD.md (its §13 is every ask of
+  - ~~Episode 4 chapter 3 (S1·12)~~ — SHIPPED at v26.0 (12 Nov 2026): docs/V26.0-E4C3-BUILD.md (its §13 is every ask of
     his against the build). What it stands on until his word is C13 above. Chapter 4 (S1·13, case one: the woman who
     rose from her wheelchair) is next and has no plan yet.
 - Deferred by choice: ghost mesh compression (the biggest download saving left), a service worker / offline,

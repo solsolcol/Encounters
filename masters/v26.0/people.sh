@@ -21,7 +21,7 @@ SRC=masters/v26.0/src; OUT=${OUT:-/tmp/claude-0/-home-user-Encounters/f1062235-c
 mkdir -p $OUT
 T() { echo "$SRC/takes-$1-$2.glb:$3"; }
 prep() { # prep <in> <out> <sheet px> <log>
-  # (CHARTFIX, 13 Nov: v19.8's law. A generated sheet has a few hundred charts thinner than a texel's reach, hair
+  # (CHARTFIX, 12 Nov: v19.8's law. A generated sheet has a few hundred charts thinner than a texel's reach, hair
   #  packed against white cloth: each speckled its surface white whatever the filtering. Each is pointed at a spot of
   #  its own colour: no painted pixel is touched)
   NOTHIN=1 TEX=$3 NOMAP=1 CHARTFIX=1 node tools/prepmonk.mjs $1 $2 1 >> $4 2>&1
@@ -64,7 +64,7 @@ go deve && dev deve
 go devf && dev devf $(T devf sway sway) $(T devf armsopen armsopen)
 go devg && dev devg $(T devg sway sway) $(T devg armsopen armsopen) $(T devg trance2 trance2)
 go devh && dev devh
-# THE CHILDREN (the plan's 4.1 "children running", 3.7 "children among them"; found unbuilt by the audit of 13 Nov): a girl
+# THE CHILDREN (the plan's 4.1 "children running", 3.7 "children among them"; found unbuilt by the audit of 12 Nov): a girl
 # of seven and a boy of five. The library's stand, two runs, a skip and a jump of joy (243, 14, 15, 118 and 44, the
 # boy's jump 61). Their NEAR body is a grown person's 24,000, not half of it: a child's head is nearly a grown one's
 # size, and at 12,000 the few points of a small face shaded it dark from the lip down (photographed lit and unlit: the

@@ -9,7 +9,7 @@
 # a twenty-fifth of the screen and the far one beyond (the copied manyOf and stockLod).
 #   Each far level is LOOKED AT on its own before it ships (tools/probes/lodview.mjs, then tools/shootmodel.mjs).
 # A thing placed by stand() must NOT be given two levels (stand draws every node of its file): those keep one.
-# NOT the clay pot (w3claypot, 3,103 triangles): cut to 610 its wall opened in black slivers (looked at, 13 Nov), and a
+# NOT the clay pot (w3claypot, 3,103 triangles): cut to 610 its wall opened in black slivers (looked at, 12 Nov), and a
 # far level of a thing that light saves nothing. It keeps its one level (tools/probes/lodview.mjs <file> <out> near
 # took the far one back out of the file lods.sh had written).
 # It skips a file that already has its far level, so it is simply run again after props/prop.sh remakes a thing.

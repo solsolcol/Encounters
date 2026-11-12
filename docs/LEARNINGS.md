@@ -8338,3 +8338,7 @@ Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8,
   along an edge, or one kind of thing stood at two ends of a ground, make a sphere that is always in view: batch by
   place (a metre or two a mesh), not by kind. `tools/probes/drawn.mjs` counts what is handed over; a census of
   visible meshes by name says whose it is.
+- **Read the clock before dating anything (`date -u`).** A long build's sense of the day runs ahead of the
+  machine's: three log entries, eleven ledger rows and a release date were written as "13 Nov" on the 12th, and went
+  into comments that ship (v26.0; corrected in the docs and the recipes, the chapter's nine comments with its next
+  change).

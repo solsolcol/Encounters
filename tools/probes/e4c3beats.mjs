@@ -25,7 +25,13 @@
      { "choose": 0 }                         the decision opened and its option pressed (0 to 3): the ending's scene plays
      { "live": 3, "name": "pho talks" }     the film left to PLAY that long from where it stands; the lens's and the look's range reported
      { "seekAt": "T.A.mats + 2", "shot": "a-mats" }   a seek to a moment named on the chapter's own clocks (stage.dbg.clocks:
-                                             T.A to T.D, T.CLOSE, T.FEST, T.BETW, T.TELL, T.ANSW), and a photograph of it */
+                                             T.A to T.D, T.CLOSE, T.FEST, T.BETW, T.TELL, T.ANSW), and a photograph of it
+     { "lens": 0.1, "to": 97.7, "name": "D" }   THE CAMERA AS A MOVE (v25.5): the film sought from where it stands to `to` (its end
+                                             when not given) in steps of that many seconds, and at each the lens, where the
+                                             camera stands and looks and the film's black written to <OUT>/lens-<name>.json
+                                             (appended to when the name repeats: an ending is measured either side of its
+                                             breath). No frame is drawn: the camera is the film's on the seek. Read with
+                                             tools/probes/lensread.py */
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
@@ -92,6 +98,17 @@ for (const s of STEPS) {
       const rng = (k) => { const v = rows.map(q => q[k]); return v.length ? [Math.min(...v), Math.max(...v)] : [0, 0]; };
       const f = rng(1), y = rng(2), pt = rng(3), px = rng(4), py = rng(5), pz = rng(6);
       log('live', (s.name || ''), `from ${t0.toFixed(2)} for ${s.live} s: ${rows.length} frames; lens ${f[0].toFixed(2)} to ${f[1].toFixed(2)}; turn ${y[0].toFixed(2)} to ${y[1].toFixed(2)}; tilt ${pt[0].toFixed(2)} to ${pt[1].toFixed(2)}; the lens moved ${Math.hypot(px[1] - px[0], py[1] - py[0], pz[1] - pz[0]).toFixed(3)} m`);
+    }
+    else if (s.lens != null) {
+      const rows = await p.evaluate(([step, to]) => { const E = window.__enc, C = E.cine, c = E.camera, out = [], fd = document.getElementById('cineFade');
+        const end = Math.min(to != null ? to : 1e9, C.dur() - 0.25);
+        for (let t = Math.ceil(C.t() / step) * step; t <= end + 1e-6; t += step) { C.seek(t); c.updateMatrixWorld(true); const e = c.matrixWorld.elements, dx = -e[8], dy = -e[9], dz = -e[10];
+          out.push([+t.toFixed(3), +c.fov.toFixed(4), +(Math.atan2(dx, -dz) * 180 / Math.PI).toFixed(4), +(Math.asin(Math.max(-1, Math.min(1, dy))) * 180 / Math.PI).toFixed(4),
+                    +e[12].toFixed(4), +e[13].toFixed(4), +e[14].toFixed(4), +(parseFloat(fd && fd.style.opacity) || 0).toFixed(3), +(Math.atan2(e[1], e[5]) * 180 / Math.PI).toFixed(3)]); }
+        return out; }, [s.lens, s.to != null ? s.to : null]);
+      const f = `${OUT}/lens-${s.name || 'film'}.json`; let all = []; try { all = JSON.parse(fs.readFileSync(f, 'utf8')); } catch { /* the first part */ }
+      fs.writeFileSync(f, JSON.stringify(all.concat(rows)));
+      log('lens', s.name || '', rows.length, 'moments', rows.length ? `from ${rows[0][0]} to ${rows[rows.length - 1][0]}` : '', '->', f); await frames(2);
     }
     else if (s.skip) { await p.evaluate(() => window.__enc.cine.skip()); await frames(3); }
     else if (s.shot) { await frames(3); await p.screenshot({ path: `${OUT}/${String(++n).padStart(2, '0')}-${s.shot}.png`, timeout: 240000 }).catch(() => log('shot failed', s.shot)); log('shot', s.shot); }

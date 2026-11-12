@@ -134,18 +134,18 @@ docs/V25.5-E4-NOTES.md.
 
 ## Episode 4 chapter 3 — I Finally Found My Answers (v26.0: S1·12, the Wai Kru, the teacher in white)
 
-**BUILT AND SHIPPED at v26.0 (13 Nov 2026). NOTHING IS NEEDED OF HIM FOR THIS CHAPTER.** Every person in it but
+**BUILT AND SHIPPED at v26.0 (12 Nov 2026). NOTHING IS NEEDED OF HIM FOR THIS CHAPTER.** Every person in it but
 Grandmaster Pho and the monks (his own models) was MADE here, end to end, as he asked on 11 Nov 2026 (*"For characters
 you need, can you first generate a reference of the person, describe it to GPTimage, person in photorealistic details,
 against a white background, in A pose. Once you have the reference image, send that to Meshy to generate the 3d model,
-then rig it, then add animations. Own it end to end."*): eighteen bodies (two of them children, a girl and a boy: 13 Nov), each a kind of dress seen in his photographs
+then rig it, then add animations. Own it end to end."*): eighteen bodies (two of them children, a girl and a boy: 12 Nov), each a kind of dress seen in his photographs
 of Grandmaster Pho's real Wai Kru and never a likeness of a person in them, each at three levels (the paint kept high
 where it is seen close). Every job's id and every take: docs/V26.0-E4C3-BUILD.md §5; the recipe: masters/v26.0/make.sh.
 Asset keys: `e4ton`, `e4bench`, `e4hermita`, `e4hermitb`, `e4red`, `e4white`, `e4dancera`, `e4dancerb`, `e4deva` to
 `e4devh`, `e4girl`, `e4boy` (each with its lighter levels `…m`, `…f`, and `…h` for the two he speaks to). If he would rather send his own
 model for any of them, it is a one-key swap.
 
-STILL HIS TO SAY (asked 11 to 13 Nov; none blocks the chapter): which man in the photographs Grandmaster Pho is (the
+STILL HIS TO SAY (asked 11 to 12 Nov; none blocks the chapter): which man in the photographs Grandmaster Pho is (the
 chapter takes the elder in white, as his model is dressed); a picture of the real dancers' dress and what the real
 music is; the small dark seated image before the wheel's hub in his photograph 10 (not made: a sacred image is made
 only from photographs of the real one, and which image it is is his to say); the monks' robes (his model's are

@@ -156,7 +156,7 @@
 #        image-to-3D 01a1ccd2-fbd4-73e5-a4af-48f29a765f3d · remesh 4,000 01a1ccdc-6716-7485-a137-e3c76bb92fcf -> assets/w3shirt.glb (0.30 m wide;
 #        modelled standing as its picture shows it: the chapter lays it on its back)
 #   Cost: 2 pictures, 2 models (40 credits each) and 2 remeshes (5 each): Meshy 1591 -> 1501.
-#   Batch four (13 Nov, small hours; props/jobs-p5.json, jobs-p6.json): WHAT THE TABLES' PHOTOGRAPHS HAVE THAT THE GAME DID
+#   Batch four (12 Nov, small hours; props/jobs-p5.json, jobs-p6.json): WHAT THE TABLES' PHOTOGRAPHS HAVE THAT THE GAME DID
 #   NOT (M8, photographs 3, 4, 9, 10 laid beside the game). The two flowers Meshy refused on 11 Nov were drawn again as
 #   one closed mound of a few LARGE blooms (PROMPTS.py chrys2, roses2: pictures af13ccce-0565-434e-8106-24ef34595782 and
 #   dae16155-ef78-42ae-96af-863ffbc85441), and Meshy REFUSED BOTH AGAIN at 44 % ("image too complex": tasks
@@ -173,8 +173,8 @@
 #   bunch is a loose spray: what a generator would take); they stand at 1.3 of the model, on the middle and top steps.
 #   Cost: 3 pictures, 2 Hunyuan models (38 Higgsfield credits), 1 Meshy model and 1 remesh (45): Meshy 1501 -> 1456.
 #
-#   BATCH FIVE (13 Nov, after the release was live): WHAT THE PLAN LISTED AND THE BUILD NEVER MADE, found by reading the
-#   plan's own lists against the build (the tracker's log, 13 Nov): its 6.3 names plastic chairs and loudspeakers, its
+#   BATCH FIVE (12 Nov, after the release was live): WHAT THE PLAN LISTED AND THE BUILD NEVER MADE, found by reading the
+#   plan's own lists against the build (the tracker's log, 12 Nov): its 6.3 names plastic chairs and loudspeakers, its
 #   4.1 a woman lighting her candle with a long taper and children running, its 3.7 children among the people.
 #     a plastic chair (photographs 5, 6)          picture 9b967d3f-6f5e-4ee8-9314-c526580f6731
 #        Meshy image-to-3D 01a1cdf6-3d8a-7279-b42c-17a47a8f9974 · remesh 4,000 01a1cdfb-df27-77dd-87f6-261a376454a7 -> assets/w3pchair.glb (0.80 m)
