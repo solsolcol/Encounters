@@ -12,6 +12,9 @@ const ok = (name, pass, note = '') => { console.log(`${pass ? 'ok  ' : 'FAIL'} $
 const br = await chromium.launch(LAUNCH);
 const p = await (await br.newContext()).newPage();
 p.setDefaultNavigationTimeout(180000);
+/* (v26.0: and an action's own wait. A click's default is 30 s, and with other pages drawing on the same box Start's
+   click outwaited it: a harness polls and never times a thing, v8.7) */
+p.setDefaultTimeout(240000);
 
 /* v14.0: this harness walks INTO every episode-2 chapter and lets it run,
    which makes it the one place a PER-FRAME throw can be caught. It was not
@@ -33,7 +36,7 @@ p.on('pageerror', e => errs.push(where + ': ' + e.message));
    receiving room's door, and the room itself, where pressing that door puts him down */
 /* v25.0: and episode 4 chapter 2: his shop, from behind the counter to the stand by the door, the light switch, the
    shutter's pull and the mat on the customers' floor */
-const KEYS = ['ch3', 'e2c1', 'e2c2', 'e2c3', 'e2c4', 'e2c5', 'e3c1', 'e3c2', 'e3c3', 'e3c4', 'e3c5', 'e4c1', 'e4c2'];
+const KEYS = ['ch3', 'e2c1', 'e2c2', 'e2c3', 'e2c4', 'e2c5', 'e3c1', 'e3c2', 'e3c3', 'e3c4', 'e3c5', 'e4c1', 'e4c2', 'e4c3'];
 /* WALK_ONLY=e3c3 walks one chapter (a re-check after a fix, not the release run) */
 for (const key of (process.env.WALK_ONLY ? KEYS.filter(k => process.env.WALK_ONLY.split(',').includes(k)) : KEYS)) {
   where = key;

@@ -8340,5 +8340,56 @@ Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8,
   visible meshes by name says whose it is.
 - **Read the clock before dating anything (`date -u`).** A long build's sense of the day runs ahead of the
   machine's: three log entries, eleven ledger rows and a release date were written as "13 Nov" on the 12th, and went
-  into comments that ship (v26.0; corrected in the docs and the recipes, the chapter's nine comments with its next
-  change).
+  into comments that shipped in four deploys (v26.0; corrected in the docs, the recipes and, with the fifth deploy,
+  the chapter).
+- **A harness's list written by hand goes stale without a word.** walktest's chapters are a `KEYS` array, and it
+  stopped at episode 4 chapter 2: `walk` came back green four times for a release whose chapter it never walked.
+  A list a harness needs is derived, or guarded: chaptertest now fails any chapter in the run that walktest's list
+  lacks (proved by taking one out). When a harness passes on a new chapter, check that it ran on it.
+- **A chapter whose ground changes is walked in every one of its grounds.** walktest floods the first frame's
+  collision; this chapter has three (the gathering, the blessings, the next morning), each with its own people in
+  his way. `tools/probes/e4c3walk.mjs` puts the chapter in each phase the way a Continue lands, floods the collision
+  of that moment from where that phase puts him, and asks that everything the phase offers can be walked to and
+  that he cannot leave. An arrival named to walktest is tried against the first frame only: one that belongs to
+  another ground fails there for no fault of its own.
+- **This box is 16 GB with no swap.** Four pages of this chapter at once crashed the fourth at boot ("Target
+  crashed"); five browsers beside a harness made a click outwait its 30 s. Three pages at most, and NOTHING beside
+  a harness (walktest's own default timeout is 240 s now).
+- **Do not write "proved" before the harness has finished.** I wrote `walk` green on a build into the tracker while it
+  ran; it failed. A proof is written from its log's last line.
+- **A library walk on a costume is judged crossing the ground, at the player's distance** (v25.5, again). The
+  library's `Walking` on a dancer in a long narrow skirt passed from a small sheet and was a stride in the game. A
+  walk was WRITTEN for them (text-to-motion: "short, unhurried, graceful steps ... both hands held together in
+  front of her waist"): ten credits and a retarget each.
+- **A written take is not a loop.** Text-to-motion starts from standing and stops in mid-stride. Cut ONE cycle from
+  a heel's strike to the same heel's next, where the pace has settled (`tools/probes/gait.mjs` reads the strikes
+  from the take's own keys), take the hips' travel over it out evenly, and over its last third of a second ease
+  every joint onto what it was doing one cycle earlier (c_cast.js `loopOf`): the end is the start.
+- **A TAKE THAT TRAVELS IS PACED BY ITS TRAVEL, never by the planted foot.** The foot-that-is-down measure is for
+  the library's takes, which come on the spot. On a slow walk it read half (0.21 m a second for 0.46: the foot is
+  flat while the body waits over it, and the advance comes as the heel lifts), and the file crossed with every
+  planted foot sliding 17 cm a stance. The pace is the travel taken out of the hips over the take's length, exactly,
+  and the HEADING is that travel's own direction from the body's front (a written walk went 21 degrees to its left:
+  the body is turned that much the other way while it walks). Moved so, the hips do over the ground what the take
+  had them do. THE PROOF: each toe's movement over the ground a frame at a time in the game, beside the same from
+  the take's keys (`gait.mjs --toes=0.25`): the same 1 to 2 cm a quarter second, which is the written take's own.
+- **A measure is made while the thing is still happening.** My first reading of the feet sampled for forty seconds;
+  the file had arrived in twenty, and the "walk" stills after it were of six women standing. Hold what is measured
+  (the probe's `freeze`), read its state back (`v`, `d`, `walking`) before the photograph, and stand in a walker's
+  way while she is still walking.
+- **A replay is proved by reading the whole scene, and a difference is sorted by whether it is on screen.**
+  `tools/probes/e4c3replay.mjs` reads every object (shown, placed, turned, sized, its materials, a mesh of copies)
+  at the same second of a fresh run and of the run after Retry. Of 69 differences 61 were of things put away on
+  both runs, each read once for whether whoever shows it places it first (all did); of the eight on screen one was
+  a turn written two ways (a turn and its negative are one turn), one the engine's own clouds, and six one man's
+  skins. `tools/probes/e4c3who.mjs` turns a path in the graph into the chapter's own name for the thing. What
+  was real: a body's LEVEL has a memory (the band that stops it flickering), so a man with no middle body was drawn
+  in his full one from the spawn on a second run; and two people put away were still in a film's take. reset()
+  gives every level afresh and every such person his own take back (only those who left it: the rest keep their
+  clocks, or a bench of masters falls into step).
+- **A probe's printed answer is cut** (e4c3beats: 2,400 characters an eval): compute the summary in the page and
+  print that, never the samples.
+- **A tool that copies out of git cleans up after itself** (`samebody.mjs --git`: 30 MB a run left in /tmp), and is
+  given the scratchpad to work in (`TMPDIR`).
+- **Read the clock, again.** Writing the hour into the tracker from my sense of it, I was 73 minutes ahead of the
+  machine. `date -u` is typed before a time is.

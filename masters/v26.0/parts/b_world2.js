@@ -153,7 +153,7 @@
       many('w3sofa', [{ x: -10.25, y: 0, z: -2.2, ry: Math.PI / 2 }, { x: -10.25, y: 0, z: -0.95, ry: Math.PI / 2 }, { x: -10.25, y: 0, z: 0.3, ry: Math.PI / 2 }], world, 0.9);
       solidBox(1.0, 1.4, 3.9, -10.3, 0.7, -0.95);
       many('w3petalsteel', [{ x: -9.1, y: 0, z: -1.6, ry: 0 }], world, 0.3);
-      /* (13 Nov, the plan's lists read against the build: its "blue patterned mat" and "the small real things on the low
+      /* (12 Nov, the plan's lists read against the build: its "blue patterned mat" and "the small real things on the low
          tables: glasses, a roll of tissue" were never made. Photograph 12: a turquoise mat with round flowers lies by
          the hermit's sofa and under its end; a bottle of water and a glass of red soda stand by his bowl of petals) */
       rug(mBlueMat, -9.92, -2.6, 1.9, 1.26, 0, 0.0085);

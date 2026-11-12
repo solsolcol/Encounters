@@ -37,8 +37,8 @@ async function facts(file) {
   return F;
 }
 const args = process.argv.slice(2), git = (args.find(a => a.startsWith('--git=')) || '').slice(6), files = args.filter(a => !a.startsWith('--'));
-const pairs = [];
-if (git) { const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'samebody-'));
+const pairs = []; let tmp = null;
+if (git) { tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'samebody-'));
   for (const f of files) { const b = path.join(tmp, path.basename(f)); fs.writeFileSync(b, execFileSync('git', ['show', `${git}:${f}`], { maxBuffer: 1 << 30 })); pairs.push([b, f]); } }
 else for (let i = 0; i + 1 < files.length; i += 2) pairs.push([files[i], files[i + 1]]);
 if (!pairs.length) { console.error('usage: node tools/probes/samebody.mjs <before.glb> <after.glb> ... | --git=<rev> <file.glb> ...'); process.exit(2); }
@@ -62,4 +62,5 @@ for (const [fa, fb] of pairs) {
   if (diff.length) bad++;
 }
 console.log(bad ? `${bad} of ${pairs.length} differ in something kept` : `all ${pairs.length}: every mesh, picture, material, joint and kept take the same`);
+if (tmp) fs.rmSync(tmp, { recursive: true, force: true });                     // (the copies taken out of git: not left behind)
 process.exit(bad ? 1 : 0);

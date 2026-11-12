@@ -422,7 +422,7 @@
         const right = one.clone(); right.scale(-1, 1, 1);
         if (right.index) { const ix = right.index.array; for (let i = 0; i < ix.length; i += 3) { const t = ix[i + 1]; ix[i + 1] = ix[i + 2]; ix[i + 2] = t; } right.index.needsUpdate = true; } right.computeVertexNormals();
         const mat = M({ color: 0xffffff, roughness: 0.62 }), d = new THREE.Object3D(), col = new THREE.Color();
-        /* DRAWN IN SHORT LENGTHS OF A ROW (13 Nov; the same sandals in the same places, the picture bit for bit). They were
+        /* DRAWN IN SHORT LENGTHS OF A ROW (12 Nov; the same sandals in the same places, the picture bit for bit). They were
            two meshes for all fifty-odd, and a mesh is handed to the GPU whole if its sphere touches the view: the rows lie
            a step BEHIND where play begins, their one sphere (3.3 m) reached past the lens, and every frame he stood at
            the way in paid 152,768 triangles for sandals behind his back (counted by mesh: the spawn drew 1.12 million, 7 %
@@ -440,7 +440,7 @@
        catches it"; photograph 3: thin smoke standing in the sun above the candles). A few tall soft sheets that rise
        slowly from the tables and from the pot of sand before them, lean with the air and thin as they climb: each a pure
        function of the clock it is handed. Faint: air that catches the light, not an effect (found missing by the audit
-       of 13 Nov: the plan had it, the build did not) */
+       of 12 Nov: the plan had it, the build did not) */
     const haze = (() => {
       const g = new THREE.Group(); dayOne.add(g);
       const t0 = tex(makeGlow(THREE, cnv)), rnd = rng(7741), list = [];
@@ -459,7 +459,7 @@
         h.s.material.opacity = h.a * Math.pow(Math.sin(Math.PI * Math.min(1, u * 1.15)), 1.2) * (1 - 0.35 * u); }
     }
 
-    /* ---- THE PLASTIC CHAIRS AND THE LOUDSPEAKERS (the plan's §6.3; found unmade by the audit of 13 Nov).
+    /* ---- THE PLASTIC CHAIRS AND THE LOUDSPEAKERS (the plan's §6.3; found unmade by the audit of 12 Nov).
        CHAIRS (photographs 5 and 6: white ones behind the master's bench, blue ones at its east side, people's things on
        them): one white model, the blue a tint of it (white times a colour is that colour). They are the day's: they
        stand with the crowd and are stacked away by the morning, so they are day one's group and their columns are the
@@ -470,7 +470,7 @@
         return { x, y: 0, z, ry: faceTo(x, z, to[0], to[1]) + turn }; };
       /* (and two at the way in, by the tables of bai sri: the plan's §3.2, "plastic chairs in blue and white") */
       const at = (x, z, ry) => { crowdBlock.push(new THREE.Box3(new THREE.Vector3(x - r, 0, z - r), new THREE.Vector3(x + r, 1.5, z + r))); return { x, y: 0, z, ry }; };
-      /* (each place its own mesh, 13 Nov: one mesh for the chairs at the bench AND the one at the way in had a sphere the
+      /* (each place its own mesh, 12 Nov: one mesh for the chairs at the bench AND the one at the way in had a sphere the
          width of the ground, so all of them were handed to the GPU wherever he looked. The same chairs, the same places) */
       const blue = (made) => { for (const im of made) im.material.color.set(0x2f62c8); };
       many('w3pchair', [seat(-1.7, -1.45, 0.12), seat(-0.6, -1.7, -0.08), seat(1.15, -1.55, 0.2)], dayOne, 0.8);

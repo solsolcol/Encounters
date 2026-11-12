@@ -17,7 +17,7 @@
        wears every take and costs no skeleton; which one is drawn is chosen every frame from the lens (and so at a cut
        from the cut's own lens: v24.22), with a little slack so a person standing on a boundary does not flicker. */
     const people = [];
-    /* NO SHRUNKEN COPIES OF A GENERATED BODY'S PAINT (v5.11's law, found again on 13 Nov: photographed on a phone's frame,
+    /* NO SHRUNKEN COPIES OF A GENERATED BODY'S PAINT (v5.11's law, found again on 12 Nov: photographed on a phone's frame,
        every dark head on the turf was speckled white, a child's most of all). A generated body's sheet is hundreds of
        small patches packed edge to edge, each padded into its neighbours: black hair lies flush against white cloth.
        Every shrunken copy of the sheet averages one patch with the next, so a head drawn small is sampled from white
@@ -26,8 +26,8 @@
        level; Chad's own models (Grandmaster Pho, the monk) are as he gave them and are not touched. */
     const NOMIP = /^e4/;
     /* (the children's runs and their skip too: c_crowd.js) */
-    const WALKS = /^(Walking|Run_02|Run_03)$/;                                   // (the takes that travel: the dancers' walk, the children's two runs)
-    /* (the full model's reach was 2.7 m until 13 Nov. Photographed at 2.55 m at both levels, on a phone's frame and a
+    const WALKS = /^(procession|Run_02|Run_03)$/;                                // (the takes that travel: the dancers' walk, the children's two runs)
+    /* (the full model's reach was 2.7 m until 12 Nov. Photographed at 2.55 m at both levels, on a phone's frame and a
        desktop's, magnified: no difference to be seen at that distance, and the full model is 310,000 triangles. At
        2.2 m (taken up inside 2.05, let go past 2.35, measured from the lens) it is drawn where he has walked up to
        talk, which is what it was made for: the view from his place in the line, where the woman at the bench stood
@@ -44,6 +44,30 @@
     const blobMat = B({ map: blobTex, transparent: true, depthWrite: false, opacity: 0.8, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
     const blob = (parent, w = 0.85, d = 0.7) => { const m = new THREE.Mesh(blobGeo, blobMat); m.position.y = 0.014; m.scale.set(w, 1, d); m.renderOrder = 2; parent.add(m); return m; };
 
+    /* A WALK THAT IS NOT A LOOP, MADE ONE (o.loops: { take: [from, to, blend] }). A written take (text-to-motion) starts
+       from standing and stops in mid-stride: played round, it jumps at its end. So one whole cycle of it is cut out, from
+       a heel's strike to the same heel's next (tools/probes/gait.mjs reads the strikes), where the pace has settled; the
+       hips' travel over that cycle is taken out evenly (the group travels: WALKS, below), and over the last `blend`
+       seconds every joint is eased onto what it was doing one cycle earlier, so the end IS the start. v5.20: what is
+       missing is made from what the file has. */
+    const _lqa = new THREE.Quaternion(), _lqb = new THREE.Quaternion();
+    function loopOf(clip, t0, t1, blend) {
+      const L = t1 - t0, N = Math.max(8, Math.round(L * 30)), times = new Float32Array(N + 1); let travel = null;
+      for (let i = 0; i <= N; i++) times[i] = L * i / N;
+      const tracks = clip.tracks.map(tr => { const n = tr.getValueSize(), it = tr.createInterpolant(new Float32Array(n)), isQ = /\.quaternion$/.test(tr.name), hip = /Hips\.position$/.test(tr.name);
+        const at = (t) => Array.from(it.evaluate(Math.max(0, Math.min(clip.duration, t))));
+        const a0 = hip ? at(t0) : null, a1 = hip ? at(t1) : null;
+        if (hip) travel = [a1[0] - a0[0], a1[2] - a0[2]];
+        const val = (t) => { const v = at(t); if (hip) { const k = (t - t0) / L; v[0] -= (a1[0] - a0[0]) * k; v[2] -= (a1[2] - a0[2]) * k; } return v; };
+        const out = new Float32Array((N + 1) * n);
+        for (let i = 0; i <= N; i++) { const a = val(t0 + times[i]), w = blend > 0 ? smo(c01((times[i] - (L - blend)) / blend)) : 0;
+          if (w > 0) { const b = val(t0 + times[i] - L);
+            if (isQ) { _lqa.fromArray(a).slerp(_lqb.fromArray(b), w).toArray(a); } else for (let k = 0; k < n; k++) a[k] += (b[k] - a[k]) * w; }
+          out.set(a, i * n); }
+        return new tr.constructor(tr.name, times, out); });
+      const made = new THREE.AnimationClip(clip.name, L, tracks); made.travel = travel;
+      return made;
+    }
     function mkPerson(key, x, z, ry, o = {}) {
       const P = { key, o, group: new THREE.Group(), ready: false, acts: {}, w: {}, off: {}, offY: {}, cur: o.take || 'Idle_3', fade: 0.4, win: o.win || null,
                   mixer: null, model: null, head: null, hips: null, bone: {}, lv: [null, null, null, null], lvNow: -1, force: null, members: [],
@@ -65,11 +89,15 @@
         P.mixer = new THREE.AnimationMixer(m);
         for (const clip0 of animations) {
           let clip = clip0;
+          if (o.loops && o.loops[clip0.name]) clip = loopOf(clip0, o.loops[clip0.name][0], o.loops[clip0.name][1], o.loops[clip0.name][2]);
           /* a walk is walked ON THE SPOT here: the group is what travels (so a path is a path), and the take's own
              travel over the ground is taken out of its hips (their sway and their rise kept) */
-          if (WALKS.test(clip.name)) { clip = clip0.clone(); const tr0 = clip.tracks.find(t => /Hips\.position$/.test(t.name));
+          if (WALKS.test(clip.name)) { if (clip === clip0) clip = clip0.clone(); const tr0 = clip.tracks.find(t => /Hips\.position$/.test(t.name));
             if (tr0) { const v = tr0.values, n = v.length / 3, x0 = v[0], z0 = v[2], x1 = v[(n - 1) * 3], z1 = v[(n - 1) * 3 + 2];
-              for (let i = 0; i < n; i++) { const k = n > 1 ? i / (n - 1) : 0; v[i * 3] -= (x1 - x0) * k; v[i * 3 + 2] -= (z1 - z0) * k; } } }
+              for (let i = 0; i < n; i++) { const k = n > 1 ? i / (n - 1) : 0; v[i * 3] -= (x1 - x0) * k; v[i * 3 + 2] -= (z1 - z0) * k; }
+              /* (what was taken out, over the take's length, in the hips' own frame: a loop cut from a longer take has
+                 handed on its share. A take that really travels is paced by this, exactly: `pace`, below) */
+              (P.travel = P.travel || {})[clip.name] = [(clip.travel ? clip.travel[0] : 0) + (x1 - x0), (clip.travel ? clip.travel[1] : 0) + (z1 - z0)]; } }
           const a = P.mixer.clipAction(clip); a.enabled = true; a.setEffectiveWeight(0); a.play(); P.acts[clip.name] = a; P.w[clip.name] = 0;
         }
         /* A TAKE MADE FROM TWO (o.mix: [[name, upper, lower, at]]): the upper body of one take on the legs of another, held
@@ -99,10 +127,23 @@
            rate from the ground covered: v7.1). The library's walks and runs come on the spot (their hips travel nowhere:
            measured, a few millimetres a second), so the pace is read from the foot that is down: under a body that stays
            where it is, a planted foot goes back at the pace the body would go forward. Each foot at thirty-two moments of
-           the take, in the person's own frame; a foot is down while it is within 3.5 cm of the lowest either reaches */
+           the take, in the person's own frame; a foot is down while it is within 3.5 cm of the lowest either reaches.
+           A TAKE THAT TRAVELS (the dancers' written walk: nine tenths of a metre in the two seconds kept of it) is not read that way: its pace is the
+           travel taken out of its hips over its length, exactly, and `heading` the way that travel went from the body's
+           own front (this walk goes 21 degrees to her left). Moved at that pace along that line, the hips do over the
+           ground just what the take had them do, and a planted foot stays where it was planted. Read from the foot
+           that is down, this slow walk gave half its pace (0.21 m a second for 0.46: the foot is flat while the body
+           waits over it, and the body's advance comes as the heel lifts), and the file crossed with every foot
+           sliding back a hand's length a step: measured in the game on 12 Nov, a planted foot 17 cm in one stance */
         if (o.pace) { const LF = P.bone.LeftFoot || P.bone['mixamorig:LeftFoot'], RF = P.bone.RightFoot || P.bone['mixamorig:RightFoot'];
           if (LF && RF) for (const name in P.acts) { if (!WALKS.test(name)) continue;
             const A = P.acts[name], d = A.getClip().duration, N = 32, F = [[], []];
+            const tv = P.travel && P.travel[name];
+            if (tv && P.hips && P.hips.parent) { const par = P.hips.parent; P.group.updateWorldMatrix(true, true);
+              _pv.set(tv[0], 0, tv[1]); par.localToWorld(_pv); P.group.worldToLocal(_pv); const ax = _pv.x, az = _pv.z;
+              _pv.set(0, 0, 0); par.localToWorld(_pv); P.group.worldToLocal(_pv);
+              const dx = ax - _pv.x, dz = az - _pv.z, sp = Math.hypot(dx, dz) / d;
+              if (sp > 0.05) { (P.pace = P.pace || {})[name] = sp; (P.heading = P.heading || {})[name] = Math.atan2(dx, dz); continue; } }
             for (const k in P.acts) P.acts[k].setEffectiveWeight(k === name ? 1 : 0);
             for (let i = 0; i <= N; i++) { A.time = Math.min(d - 1e-4, d * i / N); P.mixer.update(0); P.group.updateWorldMatrix(true, true);
               [LF, RF].forEach((b, j) => { b.getWorldPosition(_pv); P.group.worldToLocal(_pv); F[j].push([_pv.y, _pv.z]); }); }
@@ -157,7 +198,10 @@
     const SINK = { prostrate: 0.046, offer: 0.049 };
     function personSettle(P) {
       if (!P.model) return; let ox = 0, oz = 0, oy = 0;
-      for (const k in P.w) { const w = P.w[k], f = P.off[k]; if (w > 0 && f) { ox += f[0] * w; oz += f[1] * w; } if (w > 0 && SINK[k]) oy += SINK[k] * w; if (w > 0 && P.offY[k]) oy += P.offY[k] * w; }
+      /* (o.sink: a body's own measure for a take: the same written walk lays one dancer's feet 2.5 cm under the turf and
+         the other's 1 cm over it: gait.mjs, each ankle against where it stands at rest) */
+      const SK = P.o.sink;
+      for (const k in P.w) { const w = P.w[k], f = P.off[k]; if (w > 0 && f) { ox += f[0] * w; oz += f[1] * w; } const sk = SK && SK[k] != null ? SK[k] : SINK[k]; if (w > 0 && sk) oy += sk * w; if (w > 0 && P.offY[k]) oy += P.offY[k] * w; }
       P.model.position.x = -ox; P.model.position.z = -oz; P.model.position.y = -oy;
     }
     /* A WINDOW of a take (o.win: { take: [from, length] }): a take that is right only for part of its length is played
@@ -593,7 +637,13 @@
        a driver rests in its stand and its walk's pace is measured; the film stands them on their dance places. */
     const danceG = new THREE.Group(); danceG.visible = false; world.add(danceG);
     const DANCE = { c: [0.2, -2.6], gap: 1.35, row: 0.75 };
-    const dancers = { A: mkDriver('e4dancera', { take: 'Idle_3', pace: true }), B: mkDriver('e4dancerb', { take: 'Idle_3', pace: true, phase: 0.37 }), at: [], ry: 0, m: [] };
+    /* THEIR WALK is written for them (masters/v26.0/people/MOTIONS.txt `procession`: short unhurried steps, the back
+       straight, both hands held at the waist; the library's walk on them was a stride: photographed crossing the
+       ground, and refused). One cycle of it, heel to heel (2.433 to 4.4 s: gait.mjs), made a loop; each body's feet
+       set on the turf by her own measure. */
+    const DLOOP = { procession: [2.433, 4.4, 0.3] };
+    const dancers = { A: mkDriver('e4dancera', { take: 'Idle_3', pace: true, loops: DLOOP, sink: { procession: -0.024 } }),
+                      B: mkDriver('e4dancerb', { take: 'Idle_3', pace: true, phase: 0.37, loops: DLOOP, sink: { procession: 0.012 } }), at: [], ry: 0, m: [] };
     { const fx = PHO_AT[0] - DANCE.c[0], fz = PHO_AT[1] - DANCE.c[1], fl = Math.hypot(fx, fz), f = [fx / fl, fz / fl], r = [f[1], -f[0]], ry = Math.atan2(f[0], f[1]);
       for (let row = 0; row < 2; row++) for (let k = -1; k <= 1; k++) { const x = DANCE.c[0] + f[0] * (row ? -DANCE.row : DANCE.row) + r[0] * k * DANCE.gap, z = DANCE.c[1] + f[1] * (row ? -DANCE.row : DANCE.row) + r[1] * k * DANCE.gap;
         const D = (row + k + 2) % 2 ? dancers.B : dancers.A;

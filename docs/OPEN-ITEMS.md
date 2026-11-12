@@ -209,6 +209,17 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
       (in the chat, or a Google Drive folder).
     - h. An engine finding left as it is (it touches every chapter): only a film from play gives his hands back; an
       opening film or an ending that hides them must show them itself. Chapter 3 does. Widen the engine's net?
+    - i. Two things of the plan's direction (its 3.7) that the close as built (its 4.6) does not carry: the last image
+      "one petal left on his open hand. Black.", and "the flood" as a fade in gold over the whole screen. One word adds
+      either.
+    - j. Grandmaster Pho's gold was set at one strength from the close's photographs, never photographed at three:
+      stronger or fainter is one word.
+    - k. The chapter is the game's biggest download: 117 MB of models and pictures and 17 MB of sound (it was 121
+      before each body was given only the takes it plays; episode 3 chapter 4: 105 and 13; episode 4 chapter 1: 89
+      and 18). Nothing is compressed to make it smaller; it loads
+      behind the title card as every chapter does. Said so he knows the price of eighteen people at three levels.
+    - l. The dancers' walk is a written take (made for them): a planted toe creeps a centimetre or two each quarter
+      second, in the take itself. A walk with none would have to be motion-captured.
 
 ## D. Not built yet
 

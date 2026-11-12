@@ -268,6 +268,13 @@ that fits it, with the version it came from.
   solid walls, and when a chapter makes it walkable its WALLS are made solid, not only what stands on its floor (his
   shop's front was walled and tried at the front; through its side walls the flood reached 257 square metres for a
   shop of 17). A chapter whose play is one place names it (`stage.keepIn`) and walktest holds it there. (v25.5)
+- walktest's list of chapters (`KEYS`) is written by hand: a new chapter is ADDED to it, and chaptertest fails any
+  chapter in the run that it lacks (`walk` was green four times for v26.0 without ever walking its chapter). When a
+  harness passes on a new chapter, check that it ran on it. (v26.0)
+- A chapter whose ground changes (a crowd that moves, a second day) is walked in each of its grounds: walktest
+  floods the first frame only, so each phase's own collision is flooded from where that phase puts him
+  (tools/probes/e4c3walk.mjs), and a same-chapter replay is read object by object against a fresh start through the
+  card's own buttons (tools/probes/e4c3replay.mjs; e4c3who.mjs names what a path is). (v26.0)
 - Harnesses may run on a hard-linked snapshot of dist while the next version builds. (v21.13)
 - Reusable probes live in tools/probes, so they survive a replaced container. (v24.3)
 - Unshallow the clone before making the backup bundle, so the bundle holds the whole history. (v24.4)
@@ -329,6 +336,12 @@ that fits it, with the version it came from.
   woman's head 23 cm from side to side at 14 cm a second, and because the films look at her head (`faceOf`), on a
   phone the whole picture behind her swung a third of the screen: a camera that bounced. A probe that seeks a film
   (framecheck) freezes every body in it and cannot see this; the same film moment photographed twice in the lab can. (v25.5)
+- A walk that moves a body over the ground is paced from the take itself: a take that TRAVELS by the travel taken out
+  of its hips over its length, and turned by that travel's own heading (a written walk went 21 degrees aside of its
+  front); only a take that comes on the spot (the library's) is read from the planted foot, which on a slow walk
+  reads half and leaves every foot sliding. A written take (text-to-motion) is not a loop: one cycle, heel to heel,
+  is cut and its end eased onto its start (tools/probes/gait.mjs reads the strikes, the pace, the heading and each
+  toe's creep; c_cast.js `loopOf`). (v26.0)
 - Measure a model's up axis, facing and ends, never assume them; the render settles the facing with the measures as its guard, and the prep tool asserts its contract before quantize() and refuses to write a wrong bake. (v12.1)
 - The material decides foliage and alpha, never the texture's name; keep an alpha sheet's alpha, do not simplify leaf cards, and give crowns anisotropy. (v6.16)
 - Simplify per part, gently or not at all where the silhouette is the model (tubes, leaf cards). (v9.0)

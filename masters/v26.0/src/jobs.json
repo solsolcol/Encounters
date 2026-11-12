@@ -72,6 +72,14 @@
    "size": 16825904,
    "task": "01a1cafe-c2a8-74e2-b89e-38bc272a841c"
   },
+  "procession": {
+   "credits": 10,
+   "duration": 6.0,
+   "expires_at": 1794730603096,
+   "prompt": "A woman wearing a long narrow skirt walks slowly forward in a ceremonial procession with short, unhurried, graceful steps, her back straight and her head level, both hands held together in front of her waist with one hand resting on the other and her elbows relaxed at her sides. She keeps walking forward at the same calm pace the whole time.",
+   "size": 16868848,
+   "task": "01a1ced4-748c-77f1-9cf8-e37a1e9b5e0b"
+  },
   "prostrate": {
    "credits": 10,
    "duration": 7.0,
@@ -634,6 +642,12 @@
     "credits": 3,
     "size": 82366596,
     "task": "01a1cb68-9718-7106-814d-4e2af873b18c"
+   },
+   "procession": {
+    "credits": 3,
+    "motion": "01a1ced4-748c-77f1-9cf8-e37a1e9b5e0b",
+    "size": 81834844,
+    "task": "01a1ced5-4771-715b-a42a-0b7da9477675"
    }
   }
  },
@@ -696,6 +710,12 @@
     "credits": 3,
     "size": 82779892,
     "task": "01a1cb66-b543-72e3-aad7-43114b6b06ad"
+   },
+   "procession": {
+    "credits": 3,
+    "motion": "01a1ced4-748c-77f1-9cf8-e37a1e9b5e0b",
+    "size": 82248120,
+    "task": "01a1ced6-5bb7-70e3-905c-30a56b0efac9"
    }
   }
  },

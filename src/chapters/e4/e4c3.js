@@ -1216,7 +1216,7 @@
       many('w3sofa', [{ x: -10.25, y: 0, z: -2.2, ry: Math.PI / 2 }, { x: -10.25, y: 0, z: -0.95, ry: Math.PI / 2 }, { x: -10.25, y: 0, z: 0.3, ry: Math.PI / 2 }], world, 0.9);
       solidBox(1.0, 1.4, 3.9, -10.3, 0.7, -0.95);
       many('w3petalsteel', [{ x: -9.1, y: 0, z: -1.6, ry: 0 }], world, 0.3);
-      /* (13 Nov, the plan's lists read against the build: its "blue patterned mat" and "the small real things on the low
+      /* (12 Nov, the plan's lists read against the build: its "blue patterned mat" and "the small real things on the low
          tables: glasses, a roll of tissue" were never made. Photograph 12: a turquoise mat with round flowers lies by
          the hermit's sofa and under its end; a bottle of water and a glass of red soda stand by his bowl of petals) */
       rug(mBlueMat, -9.92, -2.6, 1.9, 1.26, 0, 0.0085);
@@ -1511,7 +1511,7 @@
        wears every take and costs no skeleton; which one is drawn is chosen every frame from the lens (and so at a cut
        from the cut's own lens: v24.22), with a little slack so a person standing on a boundary does not flicker. */
     const people = [];
-    /* NO SHRUNKEN COPIES OF A GENERATED BODY'S PAINT (v5.11's law, found again on 13 Nov: photographed on a phone's frame,
+    /* NO SHRUNKEN COPIES OF A GENERATED BODY'S PAINT (v5.11's law, found again on 12 Nov: photographed on a phone's frame,
        every dark head on the turf was speckled white, a child's most of all). A generated body's sheet is hundreds of
        small patches packed edge to edge, each padded into its neighbours: black hair lies flush against white cloth.
        Every shrunken copy of the sheet averages one patch with the next, so a head drawn small is sampled from white
@@ -1520,8 +1520,8 @@
        level; Chad's own models (Grandmaster Pho, the monk) are as he gave them and are not touched. */
     const NOMIP = /^e4/;
     /* (the children's runs and their skip too: c_crowd.js) */
-    const WALKS = /^(Walking|Casual_Walk|Walking_Woman|Run_02|Run_03|Skip_Forward)$/;
-    /* (the full model's reach was 2.7 m until 13 Nov. Photographed at 2.55 m at both levels, on a phone's frame and a
+    const WALKS = /^(procession|Run_02|Run_03)$/;                                // (the takes that travel: the dancers' walk, the children's two runs)
+    /* (the full model's reach was 2.7 m until 12 Nov. Photographed at 2.55 m at both levels, on a phone's frame and a
        desktop's, magnified: no difference to be seen at that distance, and the full model is 310,000 triangles. At
        2.2 m (taken up inside 2.05, let go past 2.35, measured from the lens) it is drawn where he has walked up to
        talk, which is what it was made for: the view from his place in the line, where the woman at the bench stood
@@ -1538,6 +1538,30 @@
     const blobMat = B({ map: blobTex, transparent: true, depthWrite: false, opacity: 0.8, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
     const blob = (parent, w = 0.85, d = 0.7) => { const m = new THREE.Mesh(blobGeo, blobMat); m.position.y = 0.014; m.scale.set(w, 1, d); m.renderOrder = 2; parent.add(m); return m; };
 
+    /* A WALK THAT IS NOT A LOOP, MADE ONE (o.loops: { take: [from, to, blend] }). A written take (text-to-motion) starts
+       from standing and stops in mid-stride: played round, it jumps at its end. So one whole cycle of it is cut out, from
+       a heel's strike to the same heel's next (tools/probes/gait.mjs reads the strikes), where the pace has settled; the
+       hips' travel over that cycle is taken out evenly (the group travels: WALKS, below), and over the last `blend`
+       seconds every joint is eased onto what it was doing one cycle earlier, so the end IS the start. v5.20: what is
+       missing is made from what the file has. */
+    const _lqa = new THREE.Quaternion(), _lqb = new THREE.Quaternion();
+    function loopOf(clip, t0, t1, blend) {
+      const L = t1 - t0, N = Math.max(8, Math.round(L * 30)), times = new Float32Array(N + 1); let travel = null;
+      for (let i = 0; i <= N; i++) times[i] = L * i / N;
+      const tracks = clip.tracks.map(tr => { const n = tr.getValueSize(), it = tr.createInterpolant(new Float32Array(n)), isQ = /\.quaternion$/.test(tr.name), hip = /Hips\.position$/.test(tr.name);
+        const at = (t) => Array.from(it.evaluate(Math.max(0, Math.min(clip.duration, t))));
+        const a0 = hip ? at(t0) : null, a1 = hip ? at(t1) : null;
+        if (hip) travel = [a1[0] - a0[0], a1[2] - a0[2]];
+        const val = (t) => { const v = at(t); if (hip) { const k = (t - t0) / L; v[0] -= (a1[0] - a0[0]) * k; v[2] -= (a1[2] - a0[2]) * k; } return v; };
+        const out = new Float32Array((N + 1) * n);
+        for (let i = 0; i <= N; i++) { const a = val(t0 + times[i]), w = blend > 0 ? smo(c01((times[i] - (L - blend)) / blend)) : 0;
+          if (w > 0) { const b = val(t0 + times[i] - L);
+            if (isQ) { _lqa.fromArray(a).slerp(_lqb.fromArray(b), w).toArray(a); } else for (let k = 0; k < n; k++) a[k] += (b[k] - a[k]) * w; }
+          out.set(a, i * n); }
+        return new tr.constructor(tr.name, times, out); });
+      const made = new THREE.AnimationClip(clip.name, L, tracks); made.travel = travel;
+      return made;
+    }
     function mkPerson(key, x, z, ry, o = {}) {
       const P = { key, o, group: new THREE.Group(), ready: false, acts: {}, w: {}, off: {}, offY: {}, cur: o.take || 'Idle_3', fade: 0.4, win: o.win || null,
                   mixer: null, model: null, head: null, hips: null, bone: {}, lv: [null, null, null, null], lvNow: -1, force: null, members: [],
@@ -1559,11 +1583,15 @@
         P.mixer = new THREE.AnimationMixer(m);
         for (const clip0 of animations) {
           let clip = clip0;
+          if (o.loops && o.loops[clip0.name]) clip = loopOf(clip0, o.loops[clip0.name][0], o.loops[clip0.name][1], o.loops[clip0.name][2]);
           /* a walk is walked ON THE SPOT here: the group is what travels (so a path is a path), and the take's own
              travel over the ground is taken out of its hips (their sway and their rise kept) */
-          if (WALKS.test(clip.name)) { clip = clip0.clone(); const tr0 = clip.tracks.find(t => /Hips\.position$/.test(t.name));
+          if (WALKS.test(clip.name)) { if (clip === clip0) clip = clip0.clone(); const tr0 = clip.tracks.find(t => /Hips\.position$/.test(t.name));
             if (tr0) { const v = tr0.values, n = v.length / 3, x0 = v[0], z0 = v[2], x1 = v[(n - 1) * 3], z1 = v[(n - 1) * 3 + 2];
-              for (let i = 0; i < n; i++) { const k = n > 1 ? i / (n - 1) : 0; v[i * 3] -= (x1 - x0) * k; v[i * 3 + 2] -= (z1 - z0) * k; } } }
+              for (let i = 0; i < n; i++) { const k = n > 1 ? i / (n - 1) : 0; v[i * 3] -= (x1 - x0) * k; v[i * 3 + 2] -= (z1 - z0) * k; }
+              /* (what was taken out, over the take's length, in the hips' own frame: a loop cut from a longer take has
+                 handed on its share. A take that really travels is paced by this, exactly: `pace`, below) */
+              (P.travel = P.travel || {})[clip.name] = [(clip.travel ? clip.travel[0] : 0) + (x1 - x0), (clip.travel ? clip.travel[1] : 0) + (z1 - z0)]; } }
           const a = P.mixer.clipAction(clip); a.enabled = true; a.setEffectiveWeight(0); a.play(); P.acts[clip.name] = a; P.w[clip.name] = 0;
         }
         /* A TAKE MADE FROM TWO (o.mix: [[name, upper, lower, at]]): the upper body of one take on the legs of another, held
@@ -1593,10 +1621,23 @@
            rate from the ground covered: v7.1). The library's walks and runs come on the spot (their hips travel nowhere:
            measured, a few millimetres a second), so the pace is read from the foot that is down: under a body that stays
            where it is, a planted foot goes back at the pace the body would go forward. Each foot at thirty-two moments of
-           the take, in the person's own frame; a foot is down while it is within 3.5 cm of the lowest either reaches */
+           the take, in the person's own frame; a foot is down while it is within 3.5 cm of the lowest either reaches.
+           A TAKE THAT TRAVELS (the dancers' written walk: nine tenths of a metre in the two seconds kept of it) is not read that way: its pace is the
+           travel taken out of its hips over its length, exactly, and `heading` the way that travel went from the body's
+           own front (this walk goes 21 degrees to her left). Moved at that pace along that line, the hips do over the
+           ground just what the take had them do, and a planted foot stays where it was planted. Read from the foot
+           that is down, this slow walk gave half its pace (0.21 m a second for 0.46: the foot is flat while the body
+           waits over it, and the body's advance comes as the heel lifts), and the file crossed with every foot
+           sliding back a hand's length a step: measured in the game on 12 Nov, a planted foot 17 cm in one stance */
         if (o.pace) { const LF = P.bone.LeftFoot || P.bone['mixamorig:LeftFoot'], RF = P.bone.RightFoot || P.bone['mixamorig:RightFoot'];
           if (LF && RF) for (const name in P.acts) { if (!WALKS.test(name)) continue;
             const A = P.acts[name], d = A.getClip().duration, N = 32, F = [[], []];
+            const tv = P.travel && P.travel[name];
+            if (tv && P.hips && P.hips.parent) { const par = P.hips.parent; P.group.updateWorldMatrix(true, true);
+              _pv.set(tv[0], 0, tv[1]); par.localToWorld(_pv); P.group.worldToLocal(_pv); const ax = _pv.x, az = _pv.z;
+              _pv.set(0, 0, 0); par.localToWorld(_pv); P.group.worldToLocal(_pv);
+              const dx = ax - _pv.x, dz = az - _pv.z, sp = Math.hypot(dx, dz) / d;
+              if (sp > 0.05) { (P.pace = P.pace || {})[name] = sp; (P.heading = P.heading || {})[name] = Math.atan2(dx, dz); continue; } }
             for (const k in P.acts) P.acts[k].setEffectiveWeight(k === name ? 1 : 0);
             for (let i = 0; i <= N; i++) { A.time = Math.min(d - 1e-4, d * i / N); P.mixer.update(0); P.group.updateWorldMatrix(true, true);
               [LF, RF].forEach((b, j) => { b.getWorldPosition(_pv); P.group.worldToLocal(_pv); F[j].push([_pv.y, _pv.z]); }); }
@@ -1651,7 +1692,10 @@
     const SINK = { prostrate: 0.046, offer: 0.049 };
     function personSettle(P) {
       if (!P.model) return; let ox = 0, oz = 0, oy = 0;
-      for (const k in P.w) { const w = P.w[k], f = P.off[k]; if (w > 0 && f) { ox += f[0] * w; oz += f[1] * w; } if (w > 0 && SINK[k]) oy += SINK[k] * w; if (w > 0 && P.offY[k]) oy += P.offY[k] * w; }
+      /* (o.sink: a body's own measure for a take: the same written walk lays one dancer's feet 2.5 cm under the turf and
+         the other's 1 cm over it: gait.mjs, each ankle against where it stands at rest) */
+      const SK = P.o.sink;
+      for (const k in P.w) { const w = P.w[k], f = P.off[k]; if (w > 0 && f) { ox += f[0] * w; oz += f[1] * w; } const sk = SK && SK[k] != null ? SK[k] : SINK[k]; if (w > 0 && sk) oy += sk * w; if (w > 0 && P.offY[k]) oy += P.offY[k] * w; }
       P.model.position.x = -ox; P.model.position.z = -oz; P.model.position.y = -oy;
     }
     /* A WINDOW of a take (o.win: { take: [from, length] }): a take that is right only for part of its length is played
@@ -2108,7 +2152,13 @@
        a driver rests in its stand and its walk's pace is measured; the film stands them on their dance places. */
     const danceG = new THREE.Group(); danceG.visible = false; world.add(danceG);
     const DANCE = { c: [0.2, -2.6], gap: 1.35, row: 0.75 };
-    const dancers = { A: mkDriver('e4dancera', { take: 'Idle_3', pace: true }), B: mkDriver('e4dancerb', { take: 'Idle_3', pace: true, phase: 0.37 }), at: [], ry: 0, m: [] };
+    /* THEIR WALK is written for them (masters/v26.0/people/MOTIONS.txt `procession`: short unhurried steps, the back
+       straight, both hands held at the waist; the library's walk on them was a stride: photographed crossing the
+       ground, and refused). One cycle of it, heel to heel (2.433 to 4.4 s: gait.mjs), made a loop; each body's feet
+       set on the turf by her own measure. */
+    const DLOOP = { procession: [2.433, 4.4, 0.3] };
+    const dancers = { A: mkDriver('e4dancera', { take: 'Idle_3', pace: true, loops: DLOOP, sink: { procession: -0.024 } }),
+                      B: mkDriver('e4dancerb', { take: 'Idle_3', pace: true, phase: 0.37, loops: DLOOP, sink: { procession: 0.012 } }), at: [], ry: 0, m: [] };
     { const fx = PHO_AT[0] - DANCE.c[0], fz = PHO_AT[1] - DANCE.c[1], fl = Math.hypot(fx, fz), f = [fx / fl, fz / fl], r = [f[1], -f[0]], ry = Math.atan2(f[0], f[1]);
       for (let row = 0; row < 2; row++) for (let k = -1; k <= 1; k++) { const x = DANCE.c[0] + f[0] * (row ? -DANCE.row : DANCE.row) + r[0] * k * DANCE.gap, z = DANCE.c[1] + f[1] * (row ? -DANCE.row : DANCE.row) + r[1] * k * DANCE.gap;
         const D = (row + k + 2) % 2 ? dancers.B : dancers.A;
@@ -2368,7 +2418,7 @@
     /* ================================================================ THE WOMAN WITH THE TAPER
        (the plan's 4.1 P1: "a woman ahead of him lighting hers with a long taper"; photograph 10: at the head of the line
        that waits at the offering tables a woman in white holds a long yellow taper to the candles on the front step.)
-       Found unbuilt by the audit of 13 Nov. A person of her own at the head of the game's line while the ground gathers
+       Found unbuilt by the audit of 12 Nov. A person of her own at the head of the game's line while the ground gathers
        (the `arrive` formation), nobody of the photograph copied: the young woman with the ponytail (the long-haired
        woman's body stands third in that same line: counted). Her LEFT hand carries the taper, the side he comes up on:
        its tip goes from one small candle's wick to the next, is drawn back, and goes again, on the day's own clock; her
@@ -2545,54 +2595,72 @@
        All of day one they are somewhere on the ground, and the film's dance is one stretch of it:
          `east`   while the ground gathers and he has not yet set off up it: lined up in three pairs at the east edge of
                   the middle aisle, turned west, ready to go on;
-         `cross`  when he has the bai sri and steps north past Ton's table: they walk across the open band between the
-                  rows, AHEAD of him, right to left, to the masters' side. A file is one thing: if he steps into its
-                  way the whole of it stops and waits for him, and walks on when he is clear (so nobody walks through
-                  anybody, and each column is solid wherever she is);
+         `cross`  as the bai sri comes into his hands (dancersGo; on a Continue, when he steps north past Ton's
+                  table): they walk across the open band between the rows, AHEAD of him, right to left, to the
+                  masters' side, at their walk's own slow pace (under half a metre a second: by the time Ton has
+                  spoken and he has walked up, the file is crossing his way). A file is one thing: if he steps into
+                  its way the whole of it stops and waits for him, and walks on when he is clear (so nobody walks
+                  through anybody, and each column is solid wherever she is);
          `west`   standing before the masters' tent, turned to the open turf they will dance on (through his respects
                   at the tables and the homage; the film's dance begins from here, on its own cut);
          `home`   after the dance, at the blessings: resting in three pairs by the monks' tent on the east side.
        Which of these it is on a Continue is read from the formation and the phase (dancersForm), never stored. The two
        drivers walk on the spot and the members travel (c_cast.js WALKS), each driver's rate from the ground the file
-       covers (v7.1); pairs are one of each body, the two bodies half a stride apart so no pair marches in step. */
-    const DWALK = { z: -0.75, lat: 0.42, gap: 1.25, x0: 2.2, x1: -7.0, share: 0.8, halt: 1.15, up: 1.3, down: 3.2 };
+       covers (v7.1); pairs are one of each body, the two bodies half a stride apart so no pair marches in step.
+       THE WALK GOES 21 DEGREES TO ITS OWN LEFT (gait.mjs: the take's travel inside its loop), so a walking dancer is
+       turned that much the other way and her steps fall along the file's line (`yaw`, eased in and out with the take:
+       standing, she faces the way she stands). On the ground all six are worn the same way round (a troupe's shawls
+       lie on the same shoulder; the film's dance mirrors every other one, as it did). */
+    const DWALK = { z: -0.75, lat: 0.42, gap: 1.25, x0: 2.2, x1: -7.0, share: 1, halt: 1.15, up: 0.7, down: 2.4, take: 'procession', yaw: 21.2 * Math.PI / 180 };
     const DHOME = [[7.35, 1.05], [8.15, 1.0], [7.3, 1.95], [8.2, 2.0], [7.75, 2.85], [8.55, 2.8]];
-    const dancersDir = { ph: 'east', d: 0, v: 0, walking: false, clear: 0, n: 0 };
+    const dancersDir = { ph: 'east', d: 0, v: 0, walking: false, clear: 0, n: 0, wk: 0 };
     const danceBlock = dancers.m.map(() => new THREE.Box3(new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 61, 0)));
     const dancerSpot = (i, d) => { const pair = i >> 1, side = i & 1 ? 1 : -1; return [DWALK.x0 + pair * DWALK.gap - d, DWALK.z + side * DWALK.lat]; };
     const DLEN = DWALK.x0 - DWALK.x1;
     function dancersPlace() {
-      const D = dancersDir, on = dayOne.visible && danceG.visible, r = 0.3;
+      /* (their columns stand wherever day one is the ground, shown or put away for a film; never on the next morning) */
+      const D = dancersDir, on = dayOne.visible, r = 0.3;
       dancers.m.forEach((M0, i) => { let x, z, ry;
         if (D.ph === 'dance') { [x, z] = dancers.at[i]; ry = dancers.ry; }
         else if (D.ph === 'home') { [x, z] = DHOME[i]; const o = DHOME[i ^ 1]; ry = faceTo(x, z, o[0], o[1]) + (i & 1 ? 0.25 : -0.2); }
         else { [x, z] = dancerSpot(i, D.ph === 'east' ? 0 : D.ph === 'west' ? DLEN : D.d);
           ry = D.ph === 'west' ? M0.ryTo : -Math.PI / 2; }
         M0.group.position.set(x, 0, z); M0.group.rotation.y = ry; M0.lvNow = -1;
+        M0.group.scale.x = D.ph === 'dance' && M0.o.mirror ? -M0.s : M0.s;
         danceBlock[i].min.set(x - r, on && D.ph !== 'dance' ? 0 : 60, z - r); danceBlock[i].max.set(x + r, on && D.ph !== 'dance' ? 1.5 : 61, z + r); });
     }
     dancers.m.forEach((M0, i) => { const [x, z] = dancerSpot(i, DLEN); M0.ryTo = faceTo(x, z, DANCE.c[0], DANCE.c[1]); });
     /* where they are for this formation (and, on a Continue, this phase: at the tables and at his place they have crossed) */
     function dancersForm(name = formNow, ph = null) {
-      const D = dancersDir; D.d = 0; D.v = 0; D.clear = 0; D.walking = false; D.n++;
+      const D = dancersDir; D.d = 0; D.v = 0; D.clear = 0; D.walking = false; D.wk = 0; D.n++;
       D.ph = name === 'arrive' ? (ph === 'tables' || ph === 'place' ? 'west' : 'east') : 'home';
       for (const Dr of [dancers.A, dancers.B]) { Dr.rate = 1; rest(Dr, 0); }
       for (const M0 of dancers.m) M0.turn = null;
       dancersPlace();
     }
     /* the film's dance: on their dance places (the film poses the drivers and shows the group itself) */
-    function dancersDance() { dancersDir.ph = 'dance'; dancersDir.v = 0; dancersDir.walking = false; dancersPlace(); }
+    function dancersDance() { dancersDir.ph = 'dance'; dancersDir.v = 0; dancersDir.walking = false; dancersDir.wk = 0; dancersPlace(); }
+    /* they set off (the bai sri has come into his hands: d_play.js tonTalk) */
+    function dancersGo() { if (dancersDir.ph === 'east' && formNow === 'arrive' && dayOne.visible) dancersDir.ph = 'cross'; }
     function dancersTick(wdt, st) {
       const D = dancersDir;
       if (st === 'cine') return;                                                 // (a film shows or hides them itself: y_stage.js)
       const show = dayOne.visible;
-      if (danceG.visible !== show) { danceG.visible = show; dancers.A.idle = dancers.B.idle = !show; dancersPlace(); }
+      /* (shown, and solid, exactly while day one is the ground: a film puts the group away without telling this, and the
+         night between changes the day inside a film, so what was last done is kept here and not read off the group) */
+      if (danceG.visible !== show || D.shown !== show) { D.shown = show; danceG.visible = show; dancers.A.idle = dancers.B.idle = !show; dancersPlace(); }
       if (!show || st !== 'play') { if (D.walking) { dancers.A.rate = 0; dancers.B.rate = 0; } return; }
       if (D.ph === 'dance') dancersForm();                                       // (the film is over and nothing has said where they are: where the formation has them)
       if (D.ph === 'east' && phase === 'baisri' && yaw.position.z < 9.4) D.ph = 'cross';
       if (D.ph !== 'cross') return;
       const A = dancers.A, B2 = dancers.B; if (!A.ready || !B2.ready) return;
-      const pA = (A.pace && A.pace.Walking) || 1.3, pB = (B2.pace && B2.pace.Walking) || 1.3, V = Math.min(pA, pB) * DWALK.share;
+      /* (a probe's still: tools/probes/e4c3beats.mjs holds the file in mid-step to photograph a walk on a box that draws a
+         frame a second; never set in play) */
+      if (D.freeze) { A.rate = 0; B2.rate = 0; return; }
+      /* (each body's own pace over the ground and the way its walk goes from its own front: c_cast.js `pace`. The file
+         goes at the slower body's pace, and the other's take is slowed to it, so both walk with their feet planted) */
+      const TK = DWALK.take, pA = (A.pace && A.pace[TK]) || 0.44, pB = (B2.pace && B2.pace[TK]) || 0.44, V = Math.min(pA, pB) * DWALK.share;
+      const hOf = (Dr) => (Dr.heading && Dr.heading[TK] != null ? Dr.heading[TK] : DWALK.yaw);
       /* is he in their way? within reach of any of them, or just ahead of the two who lead */
       let near = false; const px = yaw.position.x, pz = yaw.position.z;
       for (let i = 0; i < dancers.m.length && !near; i++) { const [x, z] = dancerSpot(i, D.d); if (Math.hypot(px - x, pz - z) < DWALK.halt) near = true; }
@@ -2603,14 +2671,17 @@
       D.d = Math.min(DLEN, D.d + D.v * wdt);
       const mv = D.v > 0.1;
       if (mv !== D.walking) { D.walking = mv;
-        if (mv) { take(A, 'Walking', 0.3, true); take(B2, 'Walking', 0.3, true); B2.acts.Walking.time = B2.acts.Walking.getClip().duration * 0.5; }
-        else { A.rate = 1; B2.rate = 1; rest(A, 0.35); rest(B2, 0.35); } }
+        if (mv) { take(A, TK, 0.45, true); take(B2, TK, 0.45, true); if (B2.acts[TK]) B2.acts[TK].time = B2.acts[TK].getClip().duration * 0.5; }
+        else { A.rate = 1; B2.rate = 1; rest(A, 0.45); rest(B2, 0.45); } }
       if (D.walking) { A.rate = Math.max(0.5, Math.min(1.2, D.v / pA)); B2.rate = Math.max(0.5, Math.min(1.2, D.v / pB)); }
+      D.wk = D.walking ? Math.min(1, D.wk + wdt / 0.45) : Math.max(0, D.wk - wdt / 0.45);
+      /* (a body is turned so that its WALK goes west, not its front: by the take's own heading, eased in with the take) */
+      const wkS = D.wk * D.wk * (3 - 2 * D.wk), ryOf = (M0) => -Math.PI / 2 - hOf(M0.D) * wkS;
       if (D.d >= DLEN - 1e-4) {                                                  // there: each turns to the open turf, and they wait
-        D.ph = 'west'; D.v = 0; D.walking = false; A.rate = 1; B2.rate = 1; rest(A, 0.4); rest(B2, 0.4);
-        dancers.m.forEach((M0) => { M0.turn = { from: -Math.PI / 2, t: 0 }; }); }
+        dancers.m.forEach((M0) => { M0.turn = { from: ryOf(M0), t: 0 }; });
+        D.ph = 'west'; D.v = 0; D.walking = false; D.wk = 0; A.rate = 1; B2.rate = 1; rest(A, 0.45); rest(B2, 0.45); }
       const r = 0.3;
-      dancers.m.forEach((M0, i) => { const [x, z] = dancerSpot(i, D.d); M0.group.position.set(x, 0, z);
+      dancers.m.forEach((M0, i) => { const [x, z] = dancerSpot(i, D.d); M0.group.position.set(x, 0, z); if (D.ph === 'cross') M0.group.rotation.y = ryOf(M0);
         danceBlock[i].min.set(x - r, 0, z - r); danceBlock[i].max.set(x + r, 1.5, z + r); });
     }
     /* (the turn on arriving, eased; apart from the walk's own tick so it runs on after the state has changed) */
@@ -3058,7 +3129,7 @@
         const right = one.clone(); right.scale(-1, 1, 1);
         if (right.index) { const ix = right.index.array; for (let i = 0; i < ix.length; i += 3) { const t = ix[i + 1]; ix[i + 1] = ix[i + 2]; ix[i + 2] = t; } right.index.needsUpdate = true; } right.computeVertexNormals();
         const mat = M({ color: 0xffffff, roughness: 0.62 }), d = new THREE.Object3D(), col = new THREE.Color();
-        /* DRAWN IN SHORT LENGTHS OF A ROW (13 Nov; the same sandals in the same places, the picture bit for bit). They were
+        /* DRAWN IN SHORT LENGTHS OF A ROW (12 Nov; the same sandals in the same places, the picture bit for bit). They were
            two meshes for all fifty-odd, and a mesh is handed to the GPU whole if its sphere touches the view: the rows lie
            a step BEHIND where play begins, their one sphere (3.3 m) reached past the lens, and every frame he stood at
            the way in paid 152,768 triangles for sandals behind his back (counted by mesh: the spawn drew 1.12 million, 7 %
@@ -3076,7 +3147,7 @@
        catches it"; photograph 3: thin smoke standing in the sun above the candles). A few tall soft sheets that rise
        slowly from the tables and from the pot of sand before them, lean with the air and thin as they climb: each a pure
        function of the clock it is handed. Faint: air that catches the light, not an effect (found missing by the audit
-       of 13 Nov: the plan had it, the build did not) */
+       of 12 Nov: the plan had it, the build did not) */
     const haze = (() => {
       const g = new THREE.Group(); dayOne.add(g);
       const t0 = tex(makeGlow(THREE, cnv)), rnd = rng(7741), list = [];
@@ -3095,7 +3166,7 @@
         h.s.material.opacity = h.a * Math.pow(Math.sin(Math.PI * Math.min(1, u * 1.15)), 1.2) * (1 - 0.35 * u); }
     }
 
-    /* ---- THE PLASTIC CHAIRS AND THE LOUDSPEAKERS (the plan's §6.3; found unmade by the audit of 13 Nov).
+    /* ---- THE PLASTIC CHAIRS AND THE LOUDSPEAKERS (the plan's §6.3; found unmade by the audit of 12 Nov).
        CHAIRS (photographs 5 and 6: white ones behind the master's bench, blue ones at its east side, people's things on
        them): one white model, the blue a tint of it (white times a colour is that colour). They are the day's: they
        stand with the crowd and are stacked away by the morning, so they are day one's group and their columns are the
@@ -3106,7 +3177,7 @@
         return { x, y: 0, z, ry: faceTo(x, z, to[0], to[1]) + turn }; };
       /* (and two at the way in, by the tables of bai sri: the plan's §3.2, "plastic chairs in blue and white") */
       const at = (x, z, ry) => { crowdBlock.push(new THREE.Box3(new THREE.Vector3(x - r, 0, z - r), new THREE.Vector3(x + r, 1.5, z + r))); return { x, y: 0, z, ry }; };
-      /* (each place its own mesh, 13 Nov: one mesh for the chairs at the bench AND the one at the way in had a sphere the
+      /* (each place its own mesh, 12 Nov: one mesh for the chairs at the bench AND the one at the way in had a sphere the
          width of the ground, so all of them were handed to the GPU wherever he looked. The same chairs, the same places) */
       const blue = (made) => { for (const im of made) im.material.color.set(0x2f62c8); };
       many('w3pchair', [seat(-1.7, -1.45, 0.12), seat(-0.6, -1.7, -0.08), seat(1.15, -1.55, 0.2)], dayOne, 0.8);
@@ -3295,7 +3366,8 @@
 
     const W = DATA.words;
     const play = { run: 0, busy: false, turning: null, bow: null, bai: false, baiP: 0, baiTo: 0, baiSecs: 1, knelt: false, homage: false,
-                   pull: null, looked: false, asked: new Set(), checked: false, bowed: false, breath: null, lookEase: null };
+                   pull: null, looked: false, asked: new Set(), checked: false, bowed: false, breath: null, lookEase: null,
+                   tonGive: null, ymCarry: false, ymSet: null, pull3: 0, ymHands: null, away: false, chanting: false };
     let decOpen = false;
     const live = (run) => alive && run === play.run;
     /* the receipts inside a phase (§9): the homage made; who has been asked; the bow made; how the breaths went */
@@ -3485,11 +3557,11 @@
       after(4.2, () => { if (live(run) && phase === 'arrive' && !play.busy && !heard.has('q3v')) queueLine('q3v'); });
     }
     /* THE GIRL'S HANDFUL OF PETALS (the plan's §3.7, picture 2: "a handful of petals thrown beside him (play)"). The
-       children have come to Ton's table to watch (kidsCall); as the bai sri comes into his hands the girl jumps for joy
-       and throws up what she has gathered off the turf: one jump of her own take (its fifth second: crouch, both arms
-       thrown up, down again), a third of a master's handful let go as her hands pass her head, falling round her and
-       toward him, her laugh with it. If the two of them are not there (he spoke to Ton as they ran in), nothing is
-       thrown: a jump that begins from a run is a stumble. */
+       children have come to Ton's table to watch (kidsCall); when the bai sri is in his hands and Ton has said his line,
+       the girl jumps for joy and throws up what she has gathered off the turf: one jump of her own take (its fifth
+       second: crouch, both arms thrown up, down again), a third of a master's handful let go as her hands pass her head,
+       falling round her and toward him, her laugh with it; his eyes are on her for it (tonTalk). If the two of them are
+       not there (he spoke to Ton as they ran in), nothing is thrown: a jump that begins from a run is a stumble. */
     const JUMP = { t0: 4.42, t1: 5.42, secs: 1.2, let: 0.56 };
     function kidsToss(run) {
       const D = kidsDir, K = kids[0], P = K.P; D.hold = false; D.t = 0;
@@ -3524,11 +3596,18 @@
         after(0.45, () => { if (live(run)) play.tonGive = { k: 0 }; fx('x3baitake', 0.3, -0.3); });   // it is in his hands
         after(0.95, () => { if (!live(run)) return; turnPerson(P, toHim, 0.55); span(P, 'give', 0.5, 1.9, 1.4, { fade: 0.2, hold: 1.5 }); });   // and held out to him in both
         after(1.7, () => { if (live(run)) lookAt({ x: myBai.position.x, y: myBai.position.y + 0.3, z: myBai.position.z }, 1.0); });           // his eyes go down to it
-        after(4.3, () => { if (live(run)) kidsToss(run); });                                                                                // and the girl by the table jumps for joy
         after(3.1, () => { if (!live(run)) return; play.tonGive = null; myBai.visible = false; fx('x3baitake', 0.36); baiHands(true, { from: -1, p: 0, secs: 0.8 });
+          dancersGo();                                                                                                                      // (and across the ground the dancers set off: they are crossing his way by the time he walks up it)
           span(P, 'give', 3.6, 5.85, 1.9, { fade: 0.3, then: (Q) => rest(Q, 0.7) });
           after(0.9, () => { if (live(run)) lookAt({ x: g.x, y: 1.5, z: g.z }, 1.1); }); }); });                                                // and back up to Ton
-      queueFn(() => { if (!live(run)) return; play.busy = false; play.tonGive = null; if (kit) kit.root(false); if (!play.bai) { myBai.visible = false; baiHands(true, { from: -1, p: 0, secs: 0.5 }); } kidsDir.hold = false; setPhase('baisri'); });
+      /* and as Ton's line ends, the girl by the table jumps for joy and throws up her petals: his eyes go to her (borrowed
+         for the moment it takes, v11.1: wherever he stood to speak to Ton, the throw is in his frame), and then the
+         ground is his to walk */
+      queueFn(() => { if (!live(run)) return;
+        const tossed = kidsToss(run);
+        if (tossed) { const g = kids[0].P.group.position; lookAt({ x: g.x, y: 1.3, z: g.z }, 0.75); }
+        after(tossed ? 1.75 : 0, () => { if (!live(run)) return; play.busy = false; play.tonGive = null; if (kit) kit.root(false);
+          if (!play.bai) { myBai.visible = false; baiHands(true, { from: -1, p: 0, secs: 0.5 }); } kidsDir.hold = false; setPhase('baisri'); }); });
       return true;
     }
     /* THE OFFERING TABLES: he raises the bai sri in both hands to the small Buddha at the centre of the wheel, and bows his head */
@@ -3814,7 +3893,7 @@
        enough, seconds wide, and an edge beyond it; nothing here tests a finger's speed. Three breaths: he is told when;
        he chooses when; it pulls, and he closes anyway. */
     const BREATHS = [{ enough: 2.6, edge: 7.5, told: true, lead: 1.4 }, { enough: 2.4, edge: 5.6 }, { enough: 2.4, edge: 5.2, pull: 1.3 }];
-    const open = { k: 0, shown: -1, over: 0 };
+    const open = { k: 0, shown: -1, over: 0, i: -1, st: '' };
     function breathBegin() {
       if (!kit || !kit.event) { taughtBegin(false, { closed: 0, held: 0 }); return; }
       const run = play.run;
@@ -3981,7 +4060,7 @@
       if (phase === 'dawn' && !play.knelt && !play.busy && Math.hypot(yaw.position.x - KNEEL2.x, yaw.position.z - KNEEL2.z) < 0.45) kneelPho(false);
       if (phase === 'tables' && !zone.g.visible && !play.knelt) zoneAt(PLACE);
     }
-    /* TWO SOUNDS THAT BELONG TO SOMEONE (13 Nov). The wick catching, each time the taper's tip comes to a candle: heard
+    /* TWO SOUNDS THAT BELONG TO SOMEONE (12 Nov). The wick catching, each time the taper's tip comes to a candle: heard
        by one who stands near her, quieter the further he is. And the child's laugh the ground already had, the
        children's own when they break into a run, at their place. Each waits its turn with the ground's other
        one-shots (one at a time, never over a line, never in the bow or the pull) */
@@ -4995,9 +5074,9 @@
       for (const h of hotspots) { h.done = false; h.dwellT = 0; }
       /* everything a run changes is put back (v8.1: a same-chapter replay never runs build() again) */
       play.run++;
-      Object.assign(play, { busy: false, turning: null, bow: null, bai: false, baiP: 0, baiTo: 0, knelt: false, homage: false, pull: null, looked: false,
-                            checked: false, bowed: false, breath: null, tonGive: null, ymCarry: false, ymSet: null, pull3: 0, ymHands: null, away: false, chanting: false });
-      play.asked = new Set(); open.k = 0; open.shown = -1; open.over = 0;
+      Object.assign(play, { busy: false, turning: null, bow: null, bai: false, baiP: 0, baiTo: 0, baiSecs: 1, knelt: false, homage: false, pull: null, looked: false,
+                            checked: false, bowed: false, breath: null, lookEase: null, tonGive: null, ymCarry: false, ymSet: null, pull3: 0, ymHands: null, away: false, chanting: false });
+      play.asked = new Set(); open.k = 0; open.shown = -1; open.over = 0; open.i = -1; open.st = '';
       if (kit) {
         if (kit.abortEvent) kit.abortEvent();
         kit.objective(null, { complete: false });
@@ -5021,6 +5100,14 @@
       for (const P of people) { if (P.driver || !P.ready) continue; P.span = null; P.gaze = null; P.gazeK = 0; P.lay = null; P.layK = 0; armsBack(P); }
       whenReady(cast.pho, (P) => { P.rest.take = 'Sit_to_Stand_Transition_M'; });
       whenReady(cast.ym, (P) => { P.rest.take = 'seiza'; });
+      /* (v8.1: "takes a scene set". Whoever a film or a beat left in a take of its own is back in the one he was built
+         in: the man whose arms rose in the festival, the old man who knelt in an ending, both put away and both still
+         in those takes when the run was read after a Retry (tools/probes/e4c3replay.mjs, 12 Nov). One who is still in
+         his own is left alone, so his clock runs on and nobody on the bench falls into step with his neighbour. And
+         every body's level is chosen afresh, as a first run chooses it: Grandmaster Pho has no middle body, and on a
+         second run he was drawn in his full one from the spawn, held there by the band that stops a level flickering) */
+      for (const P of people) { if (P.driver || !P.ready) continue; P.lvNow = -1; if (P.cur !== P.rest.take) rest(P, 0); }
+      for (const M0 of crowd) M0.lvNow = -1;
       dayOneStage(); setFormation('arrive'); tonHome();
       baiPut(myBai, TON_BAI.x, TON_BAI.y, TON_BAI.z, TON_BAI.ry);
     }
@@ -5077,7 +5164,11 @@
       stepSound: () => 'x3step',                                                // his own feet: he left his sandals at the turf's edge (the engine asks every footfall, v16.0)
       /* walktest: where play puts him besides the spawn, and the ground he must STAY on (v25.5): the turf, the gravel
          before the tables and the tents' fronts. He cannot leave it */
-      arrivals: [{ what: 'in the line at his bench', x: LINE_AT.x, z: LINE_AT.z }, { what: 'the morning of day two', x: DAWN_AT.x, z: DAWN_AT.z },
+      /* (walktest reads the collision of the FIRST frame: the gathering, its people kneeling where the next morning
+         finds him. So the morning's own arrival is not named here, where it would be tried against yesterday's crowd
+         (it failed so the day the chapter was first put on walktest's list, 12 Nov): tools/probes/e4c3walk.mjs walks
+         each of the chapter's three grounds in its own collision, from where each phase puts him) */
+      arrivals: [{ what: 'in the line at his bench', x: LINE_AT.x, z: LINE_AT.z },
                  { what: 'kneeling at his place', x: PLACE.x, z: PLACE.z }, { what: 'kneeling before Grandmaster Pho', x: KNEEL2.x, z: KNEEL2.z }],
       keepIn: { what: 'the ground of the Wai Kru', minX: DATA.bounds.minX, maxX: DATA.bounds.maxX, minZ: DATA.bounds.minZ, maxZ: DATA.bounds.maxZ },
       get phase() { return phase; },

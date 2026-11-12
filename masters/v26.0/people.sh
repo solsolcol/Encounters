@@ -63,8 +63,10 @@ go ton && one ton 40000 2048 $(T ton basics -,Stand_and_Chat,-,-,-,-,-) \
   $(T ton seiza seiza) $(T ton prostrate prostrate) $(T ton give give)
 go bench && one bench 40000 2048 $(T bench lib Idle_3,Stand_and_Chat,-,-) $(T bench give give) $(T bench seiza seiza) $(T bench prostrate prostrate)
 for m in hermita hermitb red white; do go $m && master $m; done
-go dancera && one dancera 30000 2048 $(T dancera lib Idle_3) $(T dancera walking Walking) $(T dancera dance1 dance1) $(T dancera dance2 dance2)
-go dancerb && one dancerb 30000 2048 $(T dancerb lib Idle_3) $(T dancerb walking Walking) $(T dancerb dance1 dance1) $(T dancerb dance2 dance2)
+# (the dancers' walk is their own, written for them: `procession` (people/MOTIONS.txt). The library's walk on a
+#  dancer was a stride: photographed crossing the ground on 12 Nov, and refused)
+go dancera && one dancera 30000 2048 $(T dancera lib Idle_3) $(T dancera procession procession) $(T dancera dance1 dance1) $(T dancera dance2 dance2)
+go dancerb && one dancerb 30000 2048 $(T dancerb lib Idle_3) $(T dancerb procession procession) $(T dancerb dance1 dance1) $(T dancerb dance2 dance2)
 # (who of the eight plays more than the kneel, the bow and the stand: the woman who goes up to the hermit sways (deva);
 #  the man whose arms rise is made of the arms of `armsopen` on the kneel's legs (devc: c_cast.js `mix`); the young man
 #  ahead of him in the line raises his bai sri and sways (devg))

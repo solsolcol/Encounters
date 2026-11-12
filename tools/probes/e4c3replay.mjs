@@ -139,19 +139,22 @@ async function breathe(I) {
    in parts that are compared one by one: shown or hidden, where it stands, its materials, a mesh of copies' places */
 const digest = () => p.evaluate(() => {
   const E = window.__enc, objs = {}, r3 = (v) => Math.round(v * 1000) / 1000;
-  const walk = (o, path) => {
+  const walk = (o, path, up) => {
     if (o.isBone) return;
-    const rec = { v: o.visible ? 1 : 0, p: [o.position.x, o.position.y, o.position.z].map(r3).join(','),
-                  q: [o.quaternion.x, o.quaternion.y, o.quaternion.z, o.quaternion.w].map(r3).join(','), s: [o.scale.x, o.scale.y, o.scale.z].map(r3).join(',') };
+    /* (a turn and its negative are one turn: written with its last part not below zero. `sh`: drawn, with everything
+       above it shown: what a player could see of it at this moment) */
+    const Q = o.quaternion, sg = (Q.w < -1e-9 || (Math.abs(Q.w) <= 1e-9 && (Q.x + Q.y + Q.z) < 0)) ? -1 : 1, sh = up && o.visible;
+    const rec = { v: o.visible ? 1 : 0, sh: sh ? 1 : 0, p: [o.position.x, o.position.y, o.position.z].map(r3).join(','),
+                  q: [Q.x * sg, Q.y * sg, Q.z * sg, Q.w * sg].map(v => r3(v) + 0).join(','), s: [o.scale.x, o.scale.y, o.scale.z].map(r3).join(',') };
     if (o.material) rec.m = [].concat(o.material).map(m => (m ? [r3(m.opacity), m.transparent ? 1 : 0, m.visible ? 1 : 0, m.color ? m.color.getHexString() : '-',
       m.emissive ? m.emissive.getHexString() + '*' + r3(m.emissiveIntensity) : '-', m.map ? 1 : 0, m.depthTest ? 1 : 0, m.depthWrite ? 1 : 0, m.fog === false ? 0 : 1].join('/') : '-')).join(';');
     if (o.isInstancedMesh) { let h = 0; const a = o.instanceMatrix.array; for (let i = 0; i < o.count * 16; i++) h = (h * 31 + Math.round(a[i] * 500)) | 0; rec.i = o.count + '#' + h; }
     if (o.isLight) rec.l = r3(o.intensity) + '/' + (o.color ? o.color.getHexString() : '') + (o.groundColor ? '/' + o.groundColor.getHexString() : '');
     objs[path] = rec;
     const seen = {};
-    for (const c of o.children) { const nm = (c.name || c.type) + (c.isInstancedMesh ? '[' + c.count + ']' : ''); seen[nm] = (seen[nm] || 0) + 1; walk(c, path + '/' + nm + '#' + seen[nm]); }
+    for (const c of o.children) { const nm = (c.name || c.type) + (c.isInstancedMesh ? '[' + c.count + ']' : ''); seen[nm] = (seen[nm] || 0) + 1; walk(c, path + '/' + nm + '#' + seen[nm], sh); }
   };
-  walk(E.scene, 'scene');
+  walk(E.scene, 'scene', true);
   const S = E.stage, i = S.info(), D = S.dbg, flat = (o) => { const r = {}; for (const k in o) { const v = o[k]; if (v === null || typeof v === 'number' || typeof v === 'boolean' || typeof v === 'string') r[k] = typeof v === 'number' ? r3(v) : v; else if (v instanceof Set) r[k] = 'Set(' + [...v].sort().join(',') + ')'; else r[k] = v === undefined ? 'undefined' : typeof v; } return r; };
   const fog = E.scene.fog, bg = E.scene.background;
   let kd = {}; try { const k = E.kitDebug(); kd = flat(k); kd.event = k.event ? k.event.kind : null; } catch (e) { kd = { err: String(e) }; }
@@ -171,14 +174,16 @@ const digest = () => p.evaluate(() => {
 const PARTS = { v: 'shown', p: 'place', q: 'turn', s: 'size', m: 'material', i: 'copies', l: 'light' };
 function diffWorld(a, b, c, tag) {
   /* a, b: the fresh run, three seconds apart (what differs between them is moving); c: the replay */
-  const out = [], only = { fresh: [], replay: [] }; let moving = 0, same = 0;
+  const out = [], away = [], only = { fresh: [], replay: [] }; let moving = 0, same = 0;
   for (const k in a.objs) {
     if (!(k in c.objs)) { only.fresh.push(k); continue; }
     const A = a.objs[k], B = b.objs[k] || A, C = c.objs[k];
     for (const part in PARTS) {
       if (A[part] === C[part]) { same++; continue; }
       if (A[part] !== B[part] || (b.objs[k] && C[part] === B[part])) { moving++; continue; }
-      out.push(`${PARTS[part]}  ${k}\n      fresh  ${A[part]}\n      replay ${C[part]}`);
+      /* (what is put away on both runs cannot be seen as it is: it is listed apart, each to be read once for whether
+         it is placed again before it is shown) */
+      (A.sh || C.sh ? out : away).push(`${PARTS[part]}  ${k}\n      fresh  ${A[part]}\n      replay ${C[part]}`);
     }
   }
   for (const k in c.objs) if (!(k in a.objs)) only.replay.push(k);
@@ -191,9 +196,10 @@ function diffWorld(a, b, c, tag) {
   console.log(`\n==== ${tag}: ${Object.keys(a.objs).length} objects on the fresh run, ${Object.keys(c.objs).length} on the replay; ${same} parts the same, ${moving} moving (not compared)`);
   console.log(`OBJECTS ONLY ON THE FRESH RUN: ${only.fresh.length}${only.fresh.length ? '\n   ' + only.fresh.slice(0, 40).join('\n   ') : ''}`);
   console.log(`OBJECTS ONLY ON THE REPLAY: ${only.replay.length}${only.replay.length ? '\n   ' + only.replay.slice(0, 40).join('\n   ') : ''}`);
-  console.log(`PARTS THAT DIFFER AND ARE NOT MOVING: ${out.length}${out.length ? '\n   ' + out.slice(0, 120).join('\n   ') : ''}`);
+  console.log(`PARTS THAT DIFFER, ARE NOT MOVING, AND ARE ON SCREEN ON ONE RUN OR THE OTHER: ${out.length}${out.length ? '\n   ' + out.slice(0, 120).join('\n   ') : ''}`);
+  console.log(`PARTS THAT DIFFER ON WHAT IS PUT AWAY ON BOTH RUNS: ${away.length}${away.length ? '\n   ' + away.slice(0, 120).join('\n   ') : ''}`);
   console.log(`THE CHAPTER'S STATE THAT DIFFERS: ${st.length}${st.length ? '\n   ' + st.join('\n   ') : ''}`);
-  return { n: out.length, only: only.fresh.length + only.replay.length, st };
+  return { n: out.length, away: away.length, only: only.fresh.length + only.replay.length, st };
 }
 
 async function pass(n, opt) {
@@ -320,7 +326,7 @@ if (R1.card) {
   console.log(`beds by phase (which sound, not how loud): the same: ${bedKeys(R1) === bedKeys(R2)}${bedKeys(R1) === bedKeys(R2) ? '' : '\n   1: ' + bedKeys(R1) + '\n   2: ' + bedKeys(R2)}`);
 }
 const ok = R1.card && !R1.errs.length && R2 && R2.card && !R2.errs.length && !R2.unseen.length && !R2.over.length && !R2.badPress && !R2.stuck;
-log('result', !R1.card ? 'PASS 1 DID NOT REACH THE CARD' : !replayed ? 'NO REPLAY' : !R2.card ? 'THE REPLAY DID NOT REACH THE CARD' : ok ? `BOTH PASSES TO THE CARD; the world's differences at the start: ${D ? D.n + ' parts, ' + D.only + ' objects, ' + D.st.length + ' of the state (read them above)' : 'not read'}` : 'THE REPLAY HAS FAULTS (above)');
+log('result', !R1.card ? 'PASS 1 DID NOT REACH THE CARD' : !replayed ? 'NO REPLAY' : !R2.card ? 'THE REPLAY DID NOT REACH THE CARD' : ok ? `BOTH PASSES TO THE CARD; the world's differences at the start: ${D ? D.n + ' parts on screen (' + D.away + ' put away), ' + D.only + ' objects, ' + D.st.length + ' of the state (read them above)' : 'not read'}` : 'THE REPLAY HAS FAULTS (above)');
 console.log('errs', JSON.stringify(errs));
 await b.close();
 process.exit(ok ? 0 : 1);

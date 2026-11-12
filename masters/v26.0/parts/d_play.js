@@ -169,7 +169,8 @@
 
     const W = DATA.words;
     const play = { run: 0, busy: false, turning: null, bow: null, bai: false, baiP: 0, baiTo: 0, baiSecs: 1, knelt: false, homage: false,
-                   pull: null, looked: false, asked: new Set(), checked: false, bowed: false, breath: null, lookEase: null };
+                   pull: null, looked: false, asked: new Set(), checked: false, bowed: false, breath: null, lookEase: null,
+                   tonGive: null, ymCarry: false, ymSet: null, pull3: 0, ymHands: null, away: false, chanting: false };
     let decOpen = false;
     const live = (run) => alive && run === play.run;
     /* the receipts inside a phase (§9): the homage made; who has been asked; the bow made; how the breaths went */
@@ -359,11 +360,11 @@
       after(4.2, () => { if (live(run) && phase === 'arrive' && !play.busy && !heard.has('q3v')) queueLine('q3v'); });
     }
     /* THE GIRL'S HANDFUL OF PETALS (the plan's §3.7, picture 2: "a handful of petals thrown beside him (play)"). The
-       children have come to Ton's table to watch (kidsCall); as the bai sri comes into his hands the girl jumps for joy
-       and throws up what she has gathered off the turf: one jump of her own take (its fifth second: crouch, both arms
-       thrown up, down again), a third of a master's handful let go as her hands pass her head, falling round her and
-       toward him, her laugh with it. If the two of them are not there (he spoke to Ton as they ran in), nothing is
-       thrown: a jump that begins from a run is a stumble. */
+       children have come to Ton's table to watch (kidsCall); when the bai sri is in his hands and Ton has said his line,
+       the girl jumps for joy and throws up what she has gathered off the turf: one jump of her own take (its fifth
+       second: crouch, both arms thrown up, down again), a third of a master's handful let go as her hands pass her head,
+       falling round her and toward him, her laugh with it; his eyes are on her for it (tonTalk). If the two of them are
+       not there (he spoke to Ton as they ran in), nothing is thrown: a jump that begins from a run is a stumble. */
     const JUMP = { t0: 4.42, t1: 5.42, secs: 1.2, let: 0.56 };
     function kidsToss(run) {
       const D = kidsDir, K = kids[0], P = K.P; D.hold = false; D.t = 0;
@@ -398,11 +399,18 @@
         after(0.45, () => { if (live(run)) play.tonGive = { k: 0 }; fx('x3baitake', 0.3, -0.3); });   // it is in his hands
         after(0.95, () => { if (!live(run)) return; turnPerson(P, toHim, 0.55); span(P, 'give', 0.5, 1.9, 1.4, { fade: 0.2, hold: 1.5 }); });   // and held out to him in both
         after(1.7, () => { if (live(run)) lookAt({ x: myBai.position.x, y: myBai.position.y + 0.3, z: myBai.position.z }, 1.0); });           // his eyes go down to it
-        after(4.3, () => { if (live(run)) kidsToss(run); });                                                                                // and the girl by the table jumps for joy
         after(3.1, () => { if (!live(run)) return; play.tonGive = null; myBai.visible = false; fx('x3baitake', 0.36); baiHands(true, { from: -1, p: 0, secs: 0.8 });
+          dancersGo();                                                                                                                      // (and across the ground the dancers set off: they are crossing his way by the time he walks up it)
           span(P, 'give', 3.6, 5.85, 1.9, { fade: 0.3, then: (Q) => rest(Q, 0.7) });
           after(0.9, () => { if (live(run)) lookAt({ x: g.x, y: 1.5, z: g.z }, 1.1); }); }); });                                                // and back up to Ton
-      queueFn(() => { if (!live(run)) return; play.busy = false; play.tonGive = null; if (kit) kit.root(false); if (!play.bai) { myBai.visible = false; baiHands(true, { from: -1, p: 0, secs: 0.5 }); } kidsDir.hold = false; setPhase('baisri'); });
+      /* and as Ton's line ends, the girl by the table jumps for joy and throws up her petals: his eyes go to her (borrowed
+         for the moment it takes, v11.1: wherever he stood to speak to Ton, the throw is in his frame), and then the
+         ground is his to walk */
+      queueFn(() => { if (!live(run)) return;
+        const tossed = kidsToss(run);
+        if (tossed) { const g = kids[0].P.group.position; lookAt({ x: g.x, y: 1.3, z: g.z }, 0.75); }
+        after(tossed ? 1.75 : 0, () => { if (!live(run)) return; play.busy = false; play.tonGive = null; if (kit) kit.root(false);
+          if (!play.bai) { myBai.visible = false; baiHands(true, { from: -1, p: 0, secs: 0.5 }); } kidsDir.hold = false; setPhase('baisri'); }); });
       return true;
     }
     /* THE OFFERING TABLES: he raises the bai sri in both hands to the small Buddha at the centre of the wheel, and bows his head */
@@ -688,7 +696,7 @@
        enough, seconds wide, and an edge beyond it; nothing here tests a finger's speed. Three breaths: he is told when;
        he chooses when; it pulls, and he closes anyway. */
     const BREATHS = [{ enough: 2.6, edge: 7.5, told: true, lead: 1.4 }, { enough: 2.4, edge: 5.6 }, { enough: 2.4, edge: 5.2, pull: 1.3 }];
-    const open = { k: 0, shown: -1, over: 0 };
+    const open = { k: 0, shown: -1, over: 0, i: -1, st: '' };
     function breathBegin() {
       if (!kit || !kit.event) { taughtBegin(false, { closed: 0, held: 0 }); return; }
       const run = play.run;
@@ -855,7 +863,7 @@
       if (phase === 'dawn' && !play.knelt && !play.busy && Math.hypot(yaw.position.x - KNEEL2.x, yaw.position.z - KNEEL2.z) < 0.45) kneelPho(false);
       if (phase === 'tables' && !zone.g.visible && !play.knelt) zoneAt(PLACE);
     }
-    /* TWO SOUNDS THAT BELONG TO SOMEONE (13 Nov). The wick catching, each time the taper's tip comes to a candle: heard
+    /* TWO SOUNDS THAT BELONG TO SOMEONE (12 Nov). The wick catching, each time the taper's tip comes to a candle: heard
        by one who stands near her, quieter the further he is. And the child's laugh the ground already had, the
        children's own when they break into a run, at their place. Each waits its turn with the ground's other
        one-shots (one at a time, never over a line, never in the bow or the pull) */

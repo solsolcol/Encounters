@@ -864,9 +864,9 @@
       for (const h of hotspots) { h.done = false; h.dwellT = 0; }
       /* everything a run changes is put back (v8.1: a same-chapter replay never runs build() again) */
       play.run++;
-      Object.assign(play, { busy: false, turning: null, bow: null, bai: false, baiP: 0, baiTo: 0, knelt: false, homage: false, pull: null, looked: false,
-                            checked: false, bowed: false, breath: null, tonGive: null, ymCarry: false, ymSet: null, pull3: 0, ymHands: null, away: false, chanting: false });
-      play.asked = new Set(); open.k = 0; open.shown = -1; open.over = 0;
+      Object.assign(play, { busy: false, turning: null, bow: null, bai: false, baiP: 0, baiTo: 0, baiSecs: 1, knelt: false, homage: false, pull: null, looked: false,
+                            checked: false, bowed: false, breath: null, lookEase: null, tonGive: null, ymCarry: false, ymSet: null, pull3: 0, ymHands: null, away: false, chanting: false });
+      play.asked = new Set(); open.k = 0; open.shown = -1; open.over = 0; open.i = -1; open.st = '';
       if (kit) {
         if (kit.abortEvent) kit.abortEvent();
         kit.objective(null, { complete: false });
@@ -890,6 +890,14 @@
       for (const P of people) { if (P.driver || !P.ready) continue; P.span = null; P.gaze = null; P.gazeK = 0; P.lay = null; P.layK = 0; armsBack(P); }
       whenReady(cast.pho, (P) => { P.rest.take = 'Sit_to_Stand_Transition_M'; });
       whenReady(cast.ym, (P) => { P.rest.take = 'seiza'; });
+      /* (v8.1: "takes a scene set". Whoever a film or a beat left in a take of its own is back in the one he was built
+         in: the man whose arms rose in the festival, the old man who knelt in an ending, both put away and both still
+         in those takes when the run was read after a Retry (tools/probes/e4c3replay.mjs, 12 Nov). One who is still in
+         his own is left alone, so his clock runs on and nobody on the bench falls into step with his neighbour. And
+         every body's level is chosen afresh, as a first run chooses it: Grandmaster Pho has no middle body, and on a
+         second run he was drawn in his full one from the spawn, held there by the band that stops a level flickering) */
+      for (const P of people) { if (P.driver || !P.ready) continue; P.lvNow = -1; if (P.cur !== P.rest.take) rest(P, 0); }
+      for (const M0 of crowd) M0.lvNow = -1;
       dayOneStage(); setFormation('arrive'); tonHome();
       baiPut(myBai, TON_BAI.x, TON_BAI.y, TON_BAI.z, TON_BAI.ry);
     }
@@ -946,7 +954,11 @@
       stepSound: () => 'x3step',                                                // his own feet: he left his sandals at the turf's edge (the engine asks every footfall, v16.0)
       /* walktest: where play puts him besides the spawn, and the ground he must STAY on (v25.5): the turf, the gravel
          before the tables and the tents' fronts. He cannot leave it */
-      arrivals: [{ what: 'in the line at his bench', x: LINE_AT.x, z: LINE_AT.z }, { what: 'the morning of day two', x: DAWN_AT.x, z: DAWN_AT.z },
+      /* (walktest reads the collision of the FIRST frame: the gathering, its people kneeling where the next morning
+         finds him. So the morning's own arrival is not named here, where it would be tried against yesterday's crowd
+         (it failed so the day the chapter was first put on walktest's list, 12 Nov): tools/probes/e4c3walk.mjs walks
+         each of the chapter's three grounds in its own collision, from where each phase puts him) */
+      arrivals: [{ what: 'in the line at his bench', x: LINE_AT.x, z: LINE_AT.z },
                  { what: 'kneeling at his place', x: PLACE.x, z: PLACE.z }, { what: 'kneeling before Grandmaster Pho', x: KNEEL2.x, z: KNEEL2.z }],
       keepIn: { what: 'the ground of the Wai Kru', minX: DATA.bounds.minX, maxX: DATA.bounds.maxX, minZ: DATA.bounds.minZ, maxZ: DATA.bounds.maxZ },
       get phase() { return phase; },

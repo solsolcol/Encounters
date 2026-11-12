@@ -725,5 +725,15 @@ for (const [k, ch] of Object.entries(chapters)) {
   else console.log((r.stdout || '').trim());
 }
 
+/* v26.0: EVERY CHAPTER IN THE RUN FROM EPISODE 2 ON IS IN walktest's LIST. walktest names the chapters it walks by
+   hand (the first of them need Start pressed and a film skipped their own way), so a new chapter is walked only if
+   somebody adds it: episode 4 chapter 3 shipped without ever being walked, and `walk` was green four times over a list
+   that stopped at chapter 2. A chapter that is in the run and not in that list fails here, where no browser is needed */
+{ const m = readFileSync(join(DIR, 'walktest.mjs'), 'utf8').match(/const KEYS = \[([^\]]*)\]/);
+  if (!m) errs.push('walktest.mjs: its list of chapters (const KEYS = [...]) was not found');
+  else { const walked = new Set(m[1].match(/'[a-z0-9]+'/g).map(x => x.slice(1, -1)));
+    for (const [k, ch] of Object.entries(chapters)) if ((ch.episode || 1) >= 2 && !ch.preview && (ch.id || 0) < 90 && !walked.has(k)) errs.push(`${k}: is in the run and is not in walktest.mjs's list of chapters to walk`);
+    console.log(`walktest's list: ${walked.size} chapters, every chapter of episode 2 on that is in the run among them: ${!errs.some(e => /walktest/.test(e))}`); } }
+
 console.log('errors:', errs.length ? errs : 'none');
 if (errs.length) process.exit(1);
