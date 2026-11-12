@@ -175,7 +175,7 @@
     const KNEEL = { y: 0.9, span: 1.2, lo: -0.9, hi: 0.55 };                  // his eye sat back on his heels, and how far he may look about
     const TON_HEAD = () => { const g = cast.ton.group.position; return { x: g.x, y: cast.ton.seated ? 0.95 : 1.52, z: g.z }; };
     const TABLES_AT = { x: 0, z: -8.85 };                                     // where he stands to pay his respects, on the gravel before the tables
-    const BUDDHA = { x: WHEEL.x, y: 1.95, z: WHEEL.z };                       // the small Buddha at the centre of the wheel of marigolds
+    const BUDDHA = { x: WHEEL.x, y: 1.95, z: WHEEL.z };                       // where he looks as he pays his respects: the hub of the wheel of marigolds (the small seated image photograph 10 shows before it is not made until Chad says what it is: a sacred image is never guessed)
     const PLACE = { x: -2.25, z: 1.25 };                                      // his place on the turf, at the north-east corner of the group's rows
     const PLACE_RY = Math.atan2(-(0 - PLACE.x), -(-11.2 - PLACE.z));          // (a look's yaw: toward the offering tables)
     const TON_PLACE = { x: PLACE.x - 1.05, z: PLACE.z + 0.12 };

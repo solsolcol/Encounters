@@ -17,15 +17,18 @@ const OUT = process.env.OUT || '/tmp/e4c3cont';
 const SAME = process.env.SAME !== '0';
 const VIEW = process.env.VIEW || 'phone', PHONE = VIEW === 'phone';
 fs.mkdirSync(OUT, { recursive: true });
-const PH = (process.env.PH || ['done:e4c2', 'arrive', 'baisri', 'tables', 'place', 'place:h', 'festival:h', 'seen:h', 'check:h', 'check:h,t',
-  'check:h,t,a,x', 'dawn:h,t,a,x', 'knelt:h,t,a,x', 'knelt:h,t,a,x,b', 'told:h,t,a,x,b', 'breath:h,t,a,x,b', 'taught:h,t,a,x,b,c2,f1',
-  'decide:h,t,a,x,b,c3,f0'].join('|')).split('|');
+/* (M8) the strings are the game's OWN (setPhase writes `phase:` and that phase's marks only: mark()); the last three are
+   what it never writes (a phase with no colon, marks carried from other phases), which readMark must still take */
+const PH = (process.env.PH || ['done:e4c2', 'arrive:', 'baisri:', 'tables:', 'place:', 'place:h', 'festival:', 'seen:', 'check:', 'check:t', 'check:a',
+  'check:t,a', 'check:t,a,x', 'dawn:', 'knelt:', 'knelt:b', 'told:', 'breath:c0,f0', 'taught:c2,f1', 'decide:c3,f0',
+  'arrive', 'check:h,t', 'taught:h,t,a,x,b,c2,f1'].join('|')).split('|');
 /* where a Continue may be read (the phase's own name, or the one it moves to by itself) */
 const WANT = (ph) => { const p = ph.split(':')[0], m = ph.split(':')[1] || '', has = (c) => m.split(',').includes(c);
   if (ph.startsWith('done:')) return ['arrive'];
   if (p === 'place' && has('h')) return ['festival'];
   if (p === 'seen') return ['seen', 'check'];
   if (p === 'check' && has('x')) return ['dawn'];
+  if (p === 'check' && has('t') && has('a')) return ['check', 'dawn'];           // (both asked: the check closes by itself, then the night)
   if (p === 'told' || p === 'breath') return ['told', 'breath'];
   if (p === 'taught') return ['taught', 'decide'];
   return [p]; };
@@ -66,7 +69,12 @@ for (const ph of PH) {
       await p.evaluate(() => window.__enc.cine.skip());
       await p.waitForFunction(() => ['play', 'decide'].includes(window.__enc.getState()), null, { timeout: 600000, polling: 500 });
     }
-    await p.waitForTimeout(12000);
+    /* (M8) the landing is read only once the stage has APPLIED the save (its first live frame: stage.info().applied) and
+       two more frames are drawn. A fixed twelve seconds was not that: with four browsers on this box a frame took longer,
+       and `check:h,t` was read before its resume ran ("wanted check, got arrive", the saved string still the seed) */
+    const applied = () => p.waitForFunction(() => { try { return ['decide', 'cine'].includes(window.__enc.getState()) || window.__enc.stage.info().applied === true; } catch { return false; } }, null, { timeout: 900000, polling: 500 });
+    const drawn = async (n) => { for (let i = 0; i < n; i++) await p.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))); };
+    await applied(); await drawn(3); await p.waitForTimeout(3000); await drawn(2);
     /* (v25.0 CP13) a phase that starts a film from play on a Continue (the visit plays again, then hands to the clearing)
        is in play for a frame before its film starts, so the check above can see play and the landing was read inside the
        film ("WRONG (wanted clearing, got visit)", in the cine state): a film found after the wait is skipped the same way
@@ -75,7 +83,7 @@ for (const ph of PH) {
       await p.waitForFunction(() => !window.__enc.cine.active() || window.__enc.cine.t() > 3.1, null, { timeout: 600000, polling: 300 });
       await p.evaluate(() => window.__enc.cine.skip());
       await p.waitForFunction(() => ['play', 'decide'].includes(window.__enc.getState()), null, { timeout: 600000, polling: 500 });
-      await p.waitForTimeout(6000);
+      await applied(); await drawn(3); await p.waitForTimeout(3000); await drawn(2);
     }
   };
   const r = { ph };

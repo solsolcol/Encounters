@@ -832,7 +832,10 @@
         /* (a probe's viewfinder: tools/probes/e4c3beats.mjs tries a lens here before a shot is written; never set in play) */
         if (FL.vf) { fLens(FL.vf[6]); camAt([FL.vf[0], FL.vf[1], FL.vf[2]], [FL.vf[3], FL.vf[4], FL.vf[5]]); }
         peopleLevels(); lodTick(); },
-      end() { const F = FILMS[FL.key]; if (F && F.end) F.end(); FL.key = films.key = ''; FL.api = null; camera.rotation.z = 0; filmBed.on = false; },
+      /* (HIS HANDS COME BACK when a film ends. Every film here hides them at its start, and the engine shows them again
+         only after a film from play (v21.1): the opening film is not one, so play began with them hidden and the bai sri
+         Ton hands him was never drawn until the festival's film had ended. Found at M8 by a photograph of it held) */
+      end() { const F = FILMS[FL.key]; if (F && F.end) F.end(); if (FL.api && FL.api.handsRoot) FL.api.handsRoot.visible = true; FL.key = films.key = ''; FL.api = null; camera.rotation.z = 0; filmBed.on = false; },
       /* THE CLOSE'S ONE BREATH (§4.6: "One breath, played"): the film waits for it (eventWait). While it is played the
          world is laid on its level here, because the film's own frame is standing still; when it ends the film runs on
          and eases the light shut from where he left it */
@@ -952,7 +955,7 @@
       /* Grandmaster Pho's look, for a probe that brackets it (tools/probes/e4c3beats.mjs: eval E.stage.phoLook.lift.value = 0.4) */
       phoLook,
       info: () => ({ phase, t: +dayClock.t.toFixed(2), queued: lineQ.length, heard: [...heard], until: +speak.until.toFixed(2),
-                     pending: speak.pending ? speak.pending.name : null, decOpen, look: lookName, busy: play.busy,
+                     pending: speak.pending ? speak.pending.name : null, decOpen, look: lookName, busy: play.busy, applied: booted,
                      waiting: [...waiting].sort(), mends: twinMends }),
       /* how much the world draws, by counting the thing itself (v25.5): meshes, triangles, and the pictures' memory */
       census: () => {

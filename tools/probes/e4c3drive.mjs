@@ -55,7 +55,11 @@ const info = () => p.evaluate(() => {
   const o = document.getElementById('objective');
   let beds = {}; try { const M = E.stage.amb().beds; for (const k in M) if (M[k] > 0.01) beds[k] = +M[k].toFixed(2); } catch { /* */ }
   let knelt = false; try { knelt = !!E.stage.dbg.play.knelt; } catch { /* */ }
-  return { st: E.getState(), phase: i.phase, ev, knelt,
+  /* WHAT IS IN HIS HANDS IS DRAWN (M8: the opening film hid his hands and nothing showed them again, so the bai sri
+     Ton gives him was held and never seen until the festival's film had ended; every check passed, because none
+     asked): while the chapter says he holds it and it is not down under the frame, its meshes must be drawn */
+  let held = null; try { const D = E.stage.dbg; if (D.play.bai && D.play.baiP > -0.5) { let o = D.handBai, vis = true; while (o) { if (!o.visible) vis = false; o = o.parent; } held = vis; } } catch { /* */ }
+  return { st: E.getState(), phase: i.phase, ev, knelt, held,
            obj: o && !o.classList.contains('hide') ? (document.getElementById('objTxt') || o).textContent.trim() : null,
            cine: E.cine.active() ? +E.cine.t().toFixed(1) : null, dur: E.cine.active() ? +E.cine.dur().toFixed(1) : null, skip: E.cine.active() && E.cine.skipShown(),
            beds, queued: i.queued, pending: i.pending, busy: i.busy, voices: E.voices().length };
@@ -126,7 +130,7 @@ async function breathe(I) {
   log('  ' + breaths[breaths.length - 1]);
   await wait(1200);
 }
-const phases = [], bedsAt = {}, presses = [];
+const phases = [], bedsAt = {}, presses = [], unseen = [];
 let last = '', idle = 0, decided = false, cardAt = 0, lastCine = -1, lastVoices = 0, skips = [], films = [];
 const TMAX = 150 * 60 * 1000;
 while (Date.now() - T0 < TMAX) {
@@ -134,6 +138,7 @@ while (Date.now() - T0 < TMAX) {
   const key = `${I.st}|${I.phase}|${I.obj}|${I.ev ? I.ev.kind + (I.ev.briefing ? ':brief' : '') : ''}`;
   if (key !== last) {
     log(I.st, I.phase, JSON.stringify(I.obj), I.cine !== null ? `film ${I.cine} of ${I.dur}` : '', JSON.stringify(I.beds), I.ev ? 'event ' + I.ev.kind : '');
+    if (I.st === 'play' && I.held === false && !unseen.includes(I.phase)) unseen.push(I.phase);
     if (I.phase && phases[phases.length - 1] !== I.phase) { phases.push(I.phase); bedsAt[I.phase] = I.beds; await shot(I.phase.replace(/[^a-z0-9]/gi, '_')); }
     last = key; idle = 0;
   }
@@ -196,10 +201,11 @@ const bres = await p.evaluate(() => { try { return window.__enc.stage.dbg.play.b
 log('BREATHS', breaths.join(' | '), '| the engine counted:', JSON.stringify(bres));
 log('SKIPPED', skips.join(' ') || '(none: every film watched)');
 log('BEDS', JSON.stringify(bedsAt));
+log('HELD', unseen.length ? 'THE BAI SRI IS HELD AND NOT DRAWN in: ' + unseen.join(' ') : 'what he holds is drawn wherever he holds it');
 /* a press that was refused and then landed on the next try is a retry (the first contact of a phase can race the line
    that opens it); a press that needed the engine's E path, or was never accepted, is the fault */
 const badPress = presses.some((x, i) => /FALLBACK/.test(x) || (/REFUSED/.test(x) && !presses.slice(i + 1).some(y => y.split('=')[0] === x.split('=')[0] && !/REFUSED|FALLBACK/.test(y))));
-log('result', errs.length ? 'ERRORS' : !cardAt ? 'DID NOT REACH THE CARD' : over.length ? 'REACHED THE CARD, but a voice ran over another' : silent.length ? 'REACHED THE CARD, but a cue made no sound' : badPress ? 'REACHED THE CARD, but a press needed the E path' : 'PASS');
+log('result', errs.length ? 'ERRORS' : !cardAt ? 'DID NOT REACH THE CARD' : unseen.length ? 'REACHED THE CARD, but what he holds was not drawn' : over.length ? 'REACHED THE CARD, but a voice ran over another' : silent.length ? 'REACHED THE CARD, but a cue made no sound' : badPress ? 'REACHED THE CARD, but a press needed the E path' : 'PASS');
 console.log('errs', JSON.stringify(errs));
 await b.close();
 process.exit(errs.length || !cardAt || over.length ? 1 : 0);

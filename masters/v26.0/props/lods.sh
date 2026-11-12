@@ -15,7 +15,7 @@ for row in w3baisri:4000 w3pewter:2400 w3fruit:2200 w3purple:2000 w3khantok:1500
            w3naga:2000 w3tower:2500 w3petalbowl:2000 w3petalsteel:2000 w3chair:2000 w3sofa:1200 w3candle:500 \
            w3candlemid:400 w3candlesmall:300 w3kratip:500 w3chicken:600 w3coconut:500 w3soda:300 w3water:300 w3puff:800 \
            w3nagafount:6000 w3nagagreen:4500 w3nagawhite:3500 w3ganesha:1800 w3dracaena:1800 w3croton:2600 \
-           w3waterjar:700 w3walllamp:500; do
+           w3waterjar:700 w3walllamp:500 w3chrys:2400 w3roses:2400 w3claypot:500; do
   key=${row%%:*}; far=${row#*:}; f=assets/$key.glb
   [ -f $f ] || { echo "$key: not here yet"; continue; }
   if grep -a -q "${key}_near" $f; then echo "$key: has its far level"; continue; fi

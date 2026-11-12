@@ -374,6 +374,58 @@
    "topology": "triangle"
   }
  },
+ "chrys2": {
+  "image": "masters/v26.0/props/refs/chrys2-2k.png",
+  "image_to_3d": "01a1cdbf-eb07-71ed-a78d-be983585484d",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "claypot": {
+  "credits": 40,
+  "expires_at": 1794713394567,
+  "image": "masters/v26.0/props/refs/claypot-2k.png",
+  "image_to_3d": "01a1cdc8-4f92-745d-9e5a-71c3d5dcd624",
+  "remesh": {
+   "3000": "01a1cdce-81e0-7140-9cbb-b3113714afec"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 76844608
+  }
+ },
  "coconut": {
   "credits": 40,
   "expires_at": 1794678165993,
@@ -1831,6 +1883,29 @@
   "failed": "FAILED",
   "image": "masters/v26.0/props/refs/roses-2k.png",
   "image_to_3d": "01a1cb10-d779-7028-b984-8612769c77f5",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "roses2": {
+  "failed": "FAILED",
+  "image": "masters/v26.0/props/refs/roses2-2k.png",
+  "image_to_3d": "01a1cdbf-f429-73d9-9952-720334f4fa30",
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,

@@ -156,6 +156,22 @@
 #        image-to-3D 01a1ccd2-fbd4-73e5-a4af-48f29a765f3d · remesh 4,000 01a1ccdc-6716-7485-a137-e3c76bb92fcf -> assets/w3shirt.glb (0.30 m wide;
 #        modelled standing as its picture shows it: the chapter lays it on its back)
 #   Cost: 2 pictures, 2 models (40 credits each) and 2 remeshes (5 each): Meshy 1591 -> 1501.
+#   Batch four (13 Nov, small hours; props/jobs-p5.json, jobs-p6.json): WHAT THE TABLES' PHOTOGRAPHS HAVE THAT THE GAME DID
+#   NOT (M8, photographs 3, 4, 9, 10 laid beside the game). The two flowers Meshy refused on 11 Nov were drawn again as
+#   one closed mound of a few LARGE blooms (PROMPTS.py chrys2, roses2: pictures af13ccce-0565-434e-8106-24ef34595782 and
+#   dae16155-ef78-42ae-96af-863ffbc85441), and Meshy REFUSED BOTH AGAIN at 44 % ("image too complex": tasks
+#   01a1cdbf-eb07-71ed-a78d-be983585484d and 01a1cdbf-f429-73d9-9952-720334f4fa30, not charged). Hunyuan3D v3 took both
+#   (enable_pbr, generate_type Normal, face_count 40000, 19 credits each; nothing thinned):
+#     the white chrysanthemums in a silver bowl   job f3707bdc-60a0-4ee7-8f97-f0ac3cce80da -> src/hunyuan-chrys2-40k.glb
+#        ERR=0.002 node tools/prepmeshy.mjs masters/v26.0/src/hunyuan-chrys2-40k.glb assets/w3chrys.glb 0.48 h 1 0 1024   (36,704 triangles)
+#     the roses and daisies in a white bowl       job c4081ee3-f857-4a9f-b3d2-4fca513096ff -> src/hunyuan-roses2-40k.glb
+#        ERR=0.002 node tools/prepmeshy.mjs masters/v26.0/src/hunyuan-roses2-40k.glb assets/w3roses.glb 0.46 w 1 0 1024   (39,996)
+#     the clay pot of sand before the tables (photograph 10)   picture cde47ea2-d410-4e2e-b9e7-82ec14b78774
+#        Meshy image-to-3D 01a1cdc8-4f92-745d-9e5a-71c3d5dcd624 · remesh 3,000 01a1cdce-81e0-7140-9cbb-b3113714afec -> assets/w3claypot.glb (0.45 m wide)
+#     then sh masters/v26.0/props/lods.sh (far levels: 2,398, 2,922, 610) and python3 -I masters/v26.0/keys.py --write.
+#   Each looked at from four sides before it was placed. The chrysanthemums came out a closed dome in tiers (a real
+#   bunch is a loose spray: what a generator would take); they stand at 1.3 of the model, on the middle and top steps.
+#   Cost: 3 pictures, 2 Hunyuan models (38 Higgsfield credits), 1 Meshy model and 1 remesh (45): Meshy 1501 -> 1456.
 #
 # 4b. THE HALL (masters/v26.0/hall/; Chad, 11 Nov evening: "More images of the building behind, at the wai kru")
 #   Its statues, plants and lamp are models made the same way from crops of photographs 13 to 16 (objects only; the

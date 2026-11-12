@@ -46,3 +46,11 @@ soda          w3soda        0.22  h   1500   256  0
 water         w3water       0.21  h   1500   256  0
 rolledmat     w3matroll     1.20  w   6000  1024  0
 shirt         w3shirt       0.30  w   4000   512  0
+# ---- the tables' flowers, drawn again (12 Nov): Meshy refused the first pictures of both as 'too complex' (a bunch of
+#  small blooms). Each was drawn again as one closed mound of a few large blooms (refs/chrys2-2k.png, roses2-2k.png)
+# (Meshy refused the second pictures too. Both are Hunyuan3D v3's, 40,000 triangles, nothing thinned, prepped by hand:
+#  masters/v26.0/make.sh, the things. Kept here for their sizes only.)
+#chrys2       w3chrys       0.48  h  40000  1024  0   src/hunyuan-chrys2-40k.glb
+#roses2       w3roses       0.46  w  40000  1024  0   src/hunyuan-roses2-40k.glb
+# ---- the pot of sand that stands on the gravel before the tables (photograph 10)
+claypot       w3claypot     0.45  w   3000   512  0

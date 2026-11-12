@@ -37,19 +37,23 @@
       stand('w3parasol', PARASOL.x, 0, PARASOL.z, 0);                                              // the orange and gold parasol over it
       many('w3naga', [{ x: 1.15, y: y2, z: -11.95, ry: -0.5 }, { x: 1.6, y: y2, z: -12.1, ry: -0.75 }, { x: 2.05, y: y2, z: -11.9, ry: -1.0 }], world, 0.8);
       many('w3tower', [{ x: -3.25, y: 0, z: -11.0, ry: 0.3 }, { x: 3.25, y: 0, z: -11.0, ry: 2.1 }], world, 2.8);
-      many('w3baisri', [{ x: -2.05, y: y1, z: zm, ry: 0.4 }, { x: -1.2, y: y1, z: zm - 0.08, ry: 1.3 }, { x: 1.2, y: y1, z: zm - 0.08, ry: 2.2 }, { x: 2.05, y: y1, z: zm, ry: 0.9 },
-                        { x: -2.1, y: y2, z: zb, ry: 2.6 }, { x: -0.95, y: y2, z: zb + 0.12, ry: 0.2 }], world, 0.6);
+      /* (M8, the photographs laid beside the game: NO bai sri in a golden bowl stands on the offering tables in any of
+         them (3, 4, 9, 10): those are the devotees' own, carried and presented. The six I stood here at M3 are gone, and
+         the tables hold what the photographs show instead: white chrysanthemums in silver bowls either side of the
+         fruit before the wheel and at the ends, roses at the front corners, soda in rows of red, green and orange) */
+      many('w3chrys', [{ x: -0.92, y: y2, z: -11.86, ry: 0.4, s: 1.3 }, { x: 0.7, y: y2, z: -11.8, ry: 2.1, s: 1.3 }, { x: -2.08, y: y1, z: -11.22, ry: 1.2, s: 1.3 }, { x: 2.08, y: y1, z: -11.22, ry: 3.4, s: 1.3 }], world, 0.48);   // (a bunch is as wide as a fruit tray in photograph 9: the model at 1.3)
+      many('w3roses', [{ x: 2.14, y: y0, z: -10.46, ry: 0.25 }, { x: -2.2, y: y0, z: -10.46, ry: -0.3 }], world, 0.31);
       many('w3pewter', [{ x: -1.55, y: y2, z: zb - 0.05, ry: 0.7 }, { x: -0.45, y: y1, z: zm + 0.1, ry: 1.9 }, { x: 0.5, y: y1, z: zm + 0.1, ry: 0.3 }], world, 0.5);
-      many('w3fruit', [{ x: -1.65, y: y1, z: zm + 0.16, ry: 0.2 }, { x: 0, y: y1, z: zm - 0.12, ry: 1.1 }, { x: 1.65, y: y1, z: zm + 0.16, ry: 2.4 }, { x: -0.6, y: y0, z: zf - 0.1, ry: 0.6 }, { x: 1.9, y: y0, z: zf - 0.12, ry: 1.7 }], world, 0.3);
-      many('w3sweets', [{ x: -2.0, y: y0, z: zf - 0.1, ry: 0.3 }, { x: 0.65, y: y0, z: zf - 0.12, ry: 1.5 }], world, 0.2);
-      many('w3khantok', [{ x: -1.3, y: y0, z: zf - 0.08, ry: 0.9 }, { x: 1.3, y: y0, z: zf - 0.06, ry: 2.0 }], world, 0.25);
+      many('w3fruit', [{ x: -1.65, y: y1, z: zm + 0.16, ry: 0.2 }, { x: 0, y: y1, z: zm - 0.12, ry: 1.1 }, { x: 1.65, y: y1, z: zm + 0.16, ry: 2.4 }, { x: -0.4, y: y0, z: zf - 0.1, ry: 0.6 }, { x: 1.2, y: y1, z: zm - 0.12, ry: 1.7 }], world, 0.3);
+      many('w3sweets', [{ x: -1.76, y: y0, z: zf - 0.1, ry: 0.3 }, { x: 0.5, y: y0, z: zf - 0.12, ry: 1.5 }, { x: -1.12, y: y2, z: -12.18, ry: 2.6 }], world, 0.2);
+      many('w3khantok', [{ x: -1.1, y: y0, z: zf - 0.08, ry: 0.9 }, { x: 1.22, y: y0, z: zf - 0.06, ry: 2.0 }], world, 0.25);
       const talls = [{ x: -2.95, y: 0, z: -10.25, ry: 0.2 }, { x: 2.95, y: 0, z: -10.25, ry: 1.4 }, { x: -2.2, y: y2, z: -12.2, ry: 0 }, { x: 2.3, y: y2, z: -12.25, ry: 0.8 }];
       many('w3candle', talls, world, 1.25);
       many('w3purple', [{ x: -3.9, y: 0, z: -10.2, ry: 0.5 }, { x: 3.9, y: 0, z: -10.2, ry: 2.2 }], world, 1.1);
       for (const sx of [-1, 1]) solidBox(0.7, 1.5, 0.7, sx * 3.25, 0.75, -11.0);
       /* THE SMALLER OFFERINGS (photographs 9, 10, 3): small candles in pink and blue along the front edge; candles in
          clay pots between the bai sri; soda in rows of red, green and orange, and water; baskets of sticky rice; a
-         boiled chicken on its plate; green coconuts; small bai sri at the front corners. One model each: a colour is a
+         boiled chicken on its plate; green coconuts; small bai sri of leaf and lotus bud. One model each: a colour is a
          turn of its hue, and where each stands is a seeded scatter of a hand's width, so no row is ruled */
       const rnd = rng(9126), j = (k = 0.03) => (rnd() - 0.5) * 2 * k, turn = () => rnd() * 6.283;
       const hued = (deg) => (made) => { for (const im of made) hueTurn(im.material, deg); };
@@ -57,20 +61,49 @@
       many('w3candlesmall', smalls.filter((_, i) => i % 2 === 0), world, 0.24);                    // pink, as made
       many('w3candlesmall', smalls.filter((_, i) => i % 2 === 1), world, 0.24, hued(-118));        // and blue
       const mids = [-1.62, -0.82, 0.86, 1.64].map(x => ({ x: x + j(), y: y1, z: zm - 0.3 + j(), ry: turn() }))
-        .concat([{ x: -0.5, y: y2, z: zb - 0.22, ry: 0 }, { x: 0.55, y: y2, z: zb - 0.2, ry: 1 }]);
+        .concat([{ x: -0.5, y: y2, z: zb - 0.22, ry: 0 }, { x: 0.55, y: y2, z: zb - 0.2, ry: 1 }])
+        /* (photograph 10: yellow candles of this height stand among everything on the front step too) */
+        .concat([-1.9, -0.95, 0.25, 1.05].map(x => ({ x: x + j(0.015), y: y0, z: -10.72 + j(0.01), ry: turn() })));
       many('w3candlemid', mids, world, 0.66);
       /* (every candle's wick, for the night's flames: c_zfx.js. `s` is the flame's size on a candle of that size) */
       stageList.flames = talls.map(c => ({ x: c.x, y: c.y + 1.25, z: c.z, s: 1.7 })).concat(mids.map(c => ({ x: c.x, y: c.y + 0.66, z: c.z, s: 1.15 })), smalls.map(c => ({ x: c.x, y: c.y + 0.24, z: c.z, s: 0.7 })));
       const rows = (x0, zs, xs) => { const L = []; for (const z of zs) for (const dx of xs) L.push({ x: x0 + dx + j(0.006), y: y0, z: z + j(0.006), ry: turn() }); return L; };
       const sodaZ = [-10.33, -10.42, -10.51];
-      many('w3soda', rows(0.02, sodaZ, [-0.09]), world, 0.22);                                    // red
-      many('w3soda', rows(0.02, sodaZ, [0]), world, 0.22, hued(112));                             // green
-      many('w3soda', rows(0.02, sodaZ, [0.09]), world, 0.22, hued(26));                           // orange
-      many('w3water', rows(0.98, [-10.34, -10.43], [-0.045, 0.045]), world, 0.21);
-      many('w3kratip', [{ x: -0.98, y: y0, z: -10.36, ry: 0.4 }, { x: -0.84, y: y0, z: -10.45, ry: 2.0 }, { x: -1.02, y: y0, z: -10.52, ry: 4.1 }], world, 0.14);
-      many('w3chicken', [{ x: 1.62, y: y0, z: -10.42, ry: 0.5 }], world, 0.3);
-      many('w3coconut', [{ x: -1.68, y: y0, z: -10.36, ry: 0.3 }, { x: -1.5, y: y0, z: -10.5, ry: 2.6 }, { x: 0.36, y: y1, z: zm + 0.3, ry: 1.2 }], world, 0.19);
-      many('w3smallbaisri', [{ x: -2.3, y: y0, z: -10.46, ry: 0.6 }, { x: 2.3, y: y0, z: -10.46, ry: 2.4 }], world, 0.38);
+      const soda = [rows(0.02, sodaZ, [-0.09]), rows(0.02, sodaZ, [0]), rows(0.02, sodaZ, [0.09])];   // red, green, orange
+      /* a row of six along a step's edge, two of each colour side by side (photograph 9: red red, green green, orange orange) */
+      const sodaRow = (x0, y, z) => { for (let i = 0; i < 6; i++) soda[i >> 1].push({ x: x0 + i * 0.09 + j(0.006), y, z: z + j(0.008), ry: turn() }); };
+      sodaRow(-1.58, y2, -11.68); sodaRow(0.78, y1, -10.88); sodaRow(-1.25, y1, -10.88); sodaRow(1.46, y0, -10.7);
+      many('w3soda', soda[0], world, 0.22);                                                        // red
+      many('w3soda', soda[1], world, 0.22, hued(112));                                             // green
+      many('w3soda', soda[2], world, 0.22, hued(26));                                              // orange
+      many('w3water', rows(0.86, [-10.34, -10.43], [-0.045, 0.045]), world, 0.21);
+      many('w3kratip', [{ x: -0.78, y: y0, z: -10.36, ry: 0.4 }, { x: -0.7, y: y0, z: -10.5, ry: 2.0 }, { x: -0.8, y: y0, z: -10.62, ry: 4.1 },
+                        { x: -1.76, y: y2, z: -11.7, ry: 1.1 }, { x: -0.12, y: y1, z: -10.9, ry: 3.0 }, { x: -0.24, y: y1, z: -10.98, ry: 5.2 }], world, 0.14);
+      many('w3chicken', [{ x: 1.6, y: y0, z: -10.42, ry: 0.5 }], world, 0.3);
+      many('w3coconut', [{ x: -1.5, y: y0, z: -10.36, ry: 0.3 }, { x: -1.44, y: y0, z: -10.6, ry: 2.6 }, { x: 0.36, y: y1, z: zm + 0.3, ry: 1.2 }], world, 0.19);
+      many('w3smallbaisri', [{ x: -2.05, y: y2, z: -11.86, ry: 0.6 }, { x: -1.18, y: y1, z: -11.3, ry: 2.4 }], world, 0.38);
+      /* the clay pot of sand on the gravel before the tables, where the spent sticks go (photograph 10) */
+      many('w3claypot', [{ x: 0.85, y: 0, z: -9.68, ry: 0.7 }], world, 0.32);
+      solidBox(0.5, 0.7, 0.5, 0.85, 0.35, -9.68);
+      namesSheet();
+    }
+    /* THE SHEET ON THE WHEEL (photographs 4, 9, 10): a printed list clipped to the great bai sri's left side. In the
+       photographs it is a list of names: nobody's name is copied (the repository is public, and they are real people),
+       so it is drawn as what a phone sees of it at that distance, rows of grey that cannot be read (words drawn into
+       the world are art: v14.5). A sheet of paper is a flat thing: this is its real shape, not a stand-in */
+    function namesSheet() {
+      const [c, x] = cnv(256); c.height = 362;
+      x.fillStyle = '#f4f3ee'; x.fillRect(0, 0, 256, 362);
+      x.fillStyle = '#3d5a86'; x.fillRect(18, 16, 220, 15);                                      // its heading: one bar
+      const r = rng(5512);
+      for (let i = 0; i < 24; i++) { const y = 40 + i * 12.6;
+        x.fillStyle = i % 2 ? '#e3e6ec' : '#f4f3ee'; x.fillRect(18, y - 1.5, 220, 12.6);         // ruled rows, shaded in turn
+        x.fillStyle = '#5a5d66'; x.fillRect(22, y + 2.5, 9, 5);                                    // a number
+        x.fillStyle = '#44464e'; let px = 40; for (let w = 0, n = 2 + Math.floor(r() * 3); w < n; w++) { const len = 14 + r() * 30; x.fillRect(px, y + 2.5, len, 5); px += len + 5; } }
+      const t = tex(new THREE.CanvasTexture(c)); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(0.297, 0.42), M({ map: t, roughness: 0.9, side: THREE.DoubleSide }));
+      m.position.set(WHEEL.x - 0.37, TABLES.tops[2] + 0.7, WHEEL.z + 0.2); m.rotation.set(-0.12, 0.1, 0.17, 'YXZ');
+      world.add(m); owned.push(m);
     }
 
     /* a plain folding table (a white top on blue steel legs: photographs 11, 12). A stand-in drawn in code until its
