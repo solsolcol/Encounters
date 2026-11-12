@@ -191,6 +191,7 @@ that fits it, with the version it came from.
 - Every tool he has connected is used to its fullest to bring a chapter to life, and 3D models are generated at the highest possible settings ("Take full advantage and make full use of higgsfield mcp, meshy, eleven labs, gptimage, blender, everything to the maximum potential to bring this chapter to life. 3d models should be generated at the highest possible settings."). A character the game needs is MADE here, end to end, not asked of him: a reference of the person from GPT Image (photorealistic, against a white background, in an A pose), looked at; that picture to Meshy for the 3D model; then rigged; then given its animations ("Own it end to end."). (v26.0, the plan for episode 4 chapter 3)
 - Episode 4 chapter 3 is the most important chapter in the game ("This is the most important chapter in the game, it needs to look the most impressive, and be the most cinematic episode ever, in not just cutscenes, but also gameplay portions. Directed with a powerful creative lens, have powerful storytelling, music, sound effects, ambient music and sounds, special effects and visuals. Highly polished."). It is built at full effort from a plan of many substeps, checkpoints and milestones, its progress recorded as it goes so the work survives a lost context, continuously until all of it is done with nothing missed or dropped ("build continuously until it is all done to perfection, with nothing missed or dropped"). Its tracker is docs/V26.0-E4C3-BUILD.md: read it first. (v26.0)
 - A lighter body keeps its paint: when a model must be made lighter for a phone, its triangles are lowered (by the generator's own remesh) and its texture stays high wherever it is seen close ("I thought the issue is mostly due to textures and not the triangles. As long as texture remains high res, it should be ok?": the first people of episode 4 chapter 3 had faces smeared by a sheet cut to 1024, not by their triangle count). (v26.0)
+- Every phone, in every browser, is held to one standard ("I want you to also think of more ways to force all phones to have a consistent high res high quality experience, i see other phones using other browsers may have a very varied difference in experience, especially samsung browser"; of the options put to him he picked "Full sharpness", "Smooth edges" and "Lock text size"): every chapter draws two pixels a point on a phone (main.js `PHONE_RATIO`; a chapter may ask more, `render.phoneRatio`), antialiasing on, and the page's text measured at boot and divided out where a browser enlarges it (`textZoom`, `text-size-adjust`). The renderer asks for the high-performance chip, which a phone ignores: no page can switch off a phone's battery saver, and he was told so. (v26.1)
 - Efficiency improves and the standards and quality stay exactly where they are ("I dont want quality and creativity and standards to drop because of this change, i want efficiency to improve while keeping the same standards and quality"): his asks are done in one shot, one build, one deploy and one round of checks at the end ("cant you do all of my asks in one shot, deploy, test once probe once?"), not one release per ask. Each ask is designed fully before it is built (what the real place has, what each shot sees), so the photographs confirm instead of discover. The work is saved by commits as it goes. Every check this file asks for is still made, once, where it can catch something, and never repeated after each tweak. A generated model's own checks (the reference picture, each model on its own) are part of making it, not probes of the game. (v24.35)
 
 ### How the work is done and checked
@@ -315,6 +316,7 @@ that fits it, with the version it came from.
   is part of making it, so deploy-first does not excuse it (the three monks went live with wrists broken back and
   hands like claws that my own notes had already described; "Pho's armpit: rebuilt" was said before it had been looked
   at from his front in the game, where it still had a ragged opening). (v26.0)
+- A face, a body or any painted surface a phone draws is judged on a low-resolution phone too ("You also need to consider how it looks on a low res phone or 720p phone, the faces are really bad there": tools/probes/e4c3beats.mjs VIEW=low, 360 x 780 points at two pixels a point), and a still photograph that looks fine is not believed over his phone ("For some reason , it looks ok in your screenshot, but when i play it on my phone it looks absolutely horrendous"): a sheet drawn without mipmaps is SAMPLED, not averaged, where it is shrunk, and crawls as anything moves, which a still freezes into a sharp picture. Measure its texels a metre against the phone's pixels a metre where it is seen (tools/probes/texdensity.mjs). (v26.1)
 - NO SMALL PICTURE IS EVER A CHECK ("You are banned from ever using small picture check, everything needs to be high res,
   full size images. If you need to have multiple images in one image, it should be a high res image, everything you do
   has been low res"). A photograph that judges anything is HIGH RES: a phone's window at its real size in CSS pixels
@@ -371,6 +373,7 @@ that fits it, with the version it came from.
 - A normal map baked against the full mesh does not survive a heavy cut; recompute normals across seams, and let a statue's face set the floor of the cut. (v14.14)
 - Draw full detail only where it is big on screen: an LOD with a permissive cut over the same vertices (or a planar front for cased pieces) further off; item views get the full scan. (v18.8)
 - Meshy auto-rigs: diffuse the blocky skin weights over the full mesh before simplifying, share normals across seams, keep UV-seam twins moving as one, and export from the Character_output FBX. (v16.8)
+- A generated body's paint is laid out again before it is drawn on a phone: its thousands of flush charts re-cut with room between them (Blender's xatlas, the face given three times its share, the head two, the hands one and a half), the colour baked from the generator's own 8192 sheet through each triangle's old coordinates, and the sheet drawn with mipmaps (prepmonk REPAINT, tools/repaint.py, c_cast.js `sheetOf`). A packing is measured before it is baked (tools/probes/uvoverlap.mjs): one that overlaps or leaves the sheet falls back. (v26.1)
 - Split back-to-back triangle pairs the simplifier folds, whose normals cancel and shade as NaN. (v19.8)
 - Seat a sitter on his posed skin, build the seat round every take he sits in, and cancel each take's root offset so changing take never slides him through it. (v16.8)
 - A STANDING take may hold the body off its own origin too (the auntie's Stand_and_Chat: half a metre): measure the
@@ -1435,13 +1438,13 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v142** (`masters/v26.0/masterz-text-v142.xlsx`, its CSV beside it: v26.0's words). It is
+**THE SHEET IS v143** (`masters/v26.1/masterz-text-v143.xlsx`, its CSV beside it: v26.1's words). It is
 EXPORTED and not published: the workbook (135 KB) is far past what the Drive connector's base64 route can carry (about
 20,000 characters — docs/EDITING-TEXT.md, "THE CEILING"), so the split export written down there no longer fits
 either. The way through is the Google Sheets connector, which writes the cells directly (docs/OPEN-ITEMS.md A1).
 **v44 is still the link to give Chad** until that is done:
 https://docs.google.com/spreadsheets/d/1bqnbQJPr1O6YslOlcsbVDFlZCohQtyKbPzm9EuY1IpM/edit
-Every sheet version's own diff, v142 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
+Every sheet version's own diff, v143 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
 first; a new version goes at its top).
 
 `docs/LEARNINGS.md` is the catalog of every hard-won lesson (CSP traps,

@@ -117,12 +117,15 @@
     }
     /* each kneeling driver's rest: A sits on the heels, B sits too at the way in and holds a kneeling wai at the blessing
        (the krap's first second, back and forth); the bows of the homage are spans on both */
-    const SIT = { seiza: [0.4, 6.8] }, WAI = [0.15, 0.85];
+    const SIT = { seiza: SEIZA_WIN }, WAI = [0.15, 0.85];
+    /* (each driver starts at its own place round the kneel's slower cycle: a person's clock starts at ten times its phase, so
+       the phases are spread over 3.4 to keep the kneelers as far apart round it as they were round the take's own 13.6 s) */
+    const SITSPREAD = SEIZA_WIN[2] / 10;
     function buildCrowd() {
       planCrowd();
       for (const key of DEVOTEES) crowdDrivers[key] = {
-        A: mkDriver(key, { take: 'seiza', centre: true, win: SIT, phase: 0.07 + 0.11 * DEVOTEES.indexOf(key) }),
-        B: mkDriver(key, { take: 'seiza', centre: true, win: SIT, phase: 0.55 + 0.09 * DEVOTEES.indexOf(key), rate: 0.86 }),
+        A: mkDriver(key, { take: 'seiza', centre: true, win: SIT, phase: (0.07 + 0.11 * DEVOTEES.indexOf(key)) * SITSPREAD }),
+        B: mkDriver(key, { take: 'seiza', centre: true, win: SIT, phase: (0.55 + 0.09 * DEVOTEES.indexOf(key)) * SITSPREAD, rate: 0.86 }),
         S: mkDriver(key, { take: 'Idle_3', centre: true, phase: 0.13 * DEVOTEES.indexOf(key) }) };
       for (const s of crowdSeats) { const D = crowdDrivers[DEVOTEES[s.body]][s.kind === 'stand' ? 'S' : s.half], p = s.at.arrive;
         s.member = mkMember(D, p.x, p.z, p.ry, { s: s.s, mirror: s.mirror, parent: dayOne, blobW: s.kind === 'stand' ? 0.8 : 0.95, blobD: s.kind === 'stand' ? 0.7 : 1.0 });
@@ -179,7 +182,13 @@
        its tip goes from one small candle's wick to the next, is drawn back, and goes again, on the day's own clock; her
        elbow stays at her side and her eyes are on the flame. The taper is a real model (w3taper, 0.70 m) laid along her
        fingers, and a flame stands on its tip. */
-    const TAPER = { at: [1.5, -9.25], held: 0.12, len: 0.70, T: 12.5 };
+    /* (`hinge`: her left elbow's own, measured off her takes in her upper arm's frame (masters/v26.1/make.sh): 'prostrate'
+       bends it 128.6 degrees about (0.607, 0, -0.794), 'seiza' 27 degrees within 6 degrees of that; her standing take is
+       straight-armed and gives none. `wrist`: where her wrist rests from her shoulder, to her right, up and before her, in
+       metres: the upper arm hanging, the forearm reaching forward level (her arm is 0.46 m to the wrist); it follows the
+       wick by `follow`: half its way to her left or right, half its rise. `hold`: a probe's seam, a moment of her round
+       to stand at; null in play) */
+    const TAPER = { at: [1.5, -9.25], held: 0.12, len: 0.70, T: 12.5, slant: 0.32, hinge: [0.607, 0, -0.794], wrist: [-0.03, -0.20, 0.25], follow: [0.5, 0.5] };
     const taper = (() => {
       const y = TABLES.tops[0] + 0.245;
       const P = mkPerson('e4devf', TAPER.at[0], TAPER.at[1], Math.PI, { take: 'Idle_3', phase: 0.63, parent: dayOne, hidden: true, blobW: 0.8, blobD: 0.7 });
@@ -188,8 +197,10 @@
       const fl = new THREE.Mesh(gF, B({ map: tex(makeFlame(THREE, cnv)), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, side: THREE.DoubleSide }));
       fl.renderOrder = 4; fl.visible = false; fl.frustumCulled = false; dayOne.add(fl); owned.push(fl);
       cast.taper = P; castBlock.taper = new THREE.Box3(new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 61, 0));
-      /* two wicks of the front row (b_world2.js: every 0.33 m along z -10.09), and the taper drawn back between them */
-      return { P, g, fl, on: false, W: [[1.32, y, -10.09], [0.99, y, -10.09], [1.17, y + 0.2, -9.94]], grip: { L: { at: [0, 0, 0], f: [0, 0, -1], n: [1, -0.25, 0], out: 0.1, down: 0.5, aft: 0.3 } }, tip: new THREE.Vector3() };
+      /* two wicks of the front row (b_world2.js: every 0.33 m along z -10.09), and the taper held up between them (v26.1:
+         it was drawn back 15 cm and up 20; with a taper this long that brought her hand to her shoulder, the elbow folded
+         141 degrees and the wrist bent 74: measured, and moved out to where her arm holds it at rest) */
+      return { P, g, fl, on: false, W: [[1.32, y, -10.09], [0.99, y, -10.09], [1.15, y + 0.12, -10.03]], grip: { L: { at: [0, 0, 0], f: [0, 0, -1], n: [1, -0.25, 0], out: 0.1, down: 0.5, aft: 0.3 } }, tip: new THREE.Vector3(), hold: null };
     })();
     /* where the taper's tip is asked to be at a moment of her round (seconds), eased from stop to stop */
     const _tpA = [0, 0, 0];
@@ -206,33 +217,71 @@
     }
     const _tpS = new THREE.Vector3(), _tpF = new THREE.Vector3(), _tpN = new THREE.Vector3(), _tpP = new THREE.Vector3(), _tpQ = new THREE.Quaternion(), _tpY = new THREE.Vector3(0, 1, 0), _tpC = new THREE.Vector3(),
           _tpT = new THREE.Vector3(), _tpW = new THREE.Vector3();
+    const _tpR = new THREE.Vector3(), _tpU = new THREE.Vector3(), _tpB = new THREE.Vector3(), _tpPole = new THREE.Vector3(), _tpG = new THREE.Vector3(), _tpE = new THREE.Vector3(),
+          _tpHf = new THREE.Vector3(), _tpHn = new THREE.Vector3(), _tpHa = new THREE.Vector3(), _tpHd = new THREE.Vector3(), _tpM = new THREE.Matrix4(), _tpM2 = new THREE.Matrix4(),
+          _tpQ2 = new THREE.Quaternion(), _tpQ3 = new THREE.Quaternion(), _tpAim = new THREE.Vector3(), _tpD = new THREE.Vector3();
+    /* her hand from her forearm's line: the fingers along it, bent ten degrees down at the wrist; the palm to her right (her
+       middle: this is her left hand) and a little down, so the first finger and the thumb are on top (across, for a left
+       hand, runs from the little finger to the first: armsOf); the taper out along the fingers and a little toward the
+       thumb (TAPER.slant) */
+    function taperHand(fore, asIs) {
+      if (asIs) _tpHf.copy(fore); else _tpHf.copy(fore).addScaledVector(_tpU, -0.18).normalize();
+      _tpHn.copy(_tpR).addScaledVector(_tpU, -0.3); _tpHn.addScaledVector(_tpHf, -_tpHn.dot(_tpHf)).normalize();
+      _tpHa.crossVectors(_tpHn, _tpHf).normalize();
+      _tpHd.copy(_tpHf).addScaledVector(_tpHa, TAPER.slant).normalize();
+    }
     function taperTick(t) {
       const T = taper, P = T.P;
       if (!T.on || !P.ready || !dayOne.visible) { if (T.g.visible) { T.g.visible = false; T.fl.visible = false; } return; }
       const As = armsOf(P), a = As && As.L; if (!a) return;
-      /* THE ASK: the hand's place is solved from the tip. The taper is rigid, so the palm is the tip's place drawn back
-         along the taper by what stands before the hand; the taper runs from a place before her left hip to the tip */
-      const Q = taperAim(t), G = T.grip.L, hx = TAPER.at[0] - 0.19, hy = 1.11, hz = TAPER.at[1] - 0.3;
-      const dx = Q[0] - hx, dy = Q[1] - hy, dz = Q[2] - hz, dl = Math.hypot(dx, dy, dz) || 1, before = TAPER.len - TAPER.held;
-      /* HOW A TAPER IS HELD: not along the fingers and not square across them, but slantwise over the palm, out between
-         the thumb and the first finger, the fingers closed over it. So the hand's own length lies an eighth of a turn
-         off the taper's line, about the palm's facing (in, and a little down): the fingers run forward and down from a
-         wrist that hangs below the elbow, and the taper runs level from it */
-      _tpT.set(dx / dl, dy / dl, dz / dl); _tpN.set(0.8, -0.6, 0); _tpN.addScaledVector(_tpT, -_tpN.dot(_tpT)).normalize();
-      _tpW.crossVectors(_tpN, _tpT); _tpF.copy(_tpT).multiplyScalar(Math.SQRT1_2).addScaledVector(_tpW, -Math.SQRT1_2);
-      G.f[0] = _tpF.x; G.f[1] = _tpF.y; G.f[2] = _tpF.z; G.n[0] = _tpN.x; G.n[1] = _tpN.y; G.n[2] = _tpN.z;
-      G.at[0] = Q[0] - _tpT.x * before; G.at[1] = Q[1] - _tpT.y * before; G.at[2] = Q[2] - _tpT.z * before;
-      handTo(P, 'L', G.at, G.f, G.n, 1, G);
-      /* THE ANSWER: the taper lies where the hand came to be (the hand's own measured axes, in the world now): through
-         the palm's middle, a finger's thickness off it, along the slant between the fingers' line and the thumb's side */
-      P.group.updateWorldMatrix(true, true);
+      /* HOW SHE HOLDS IT, v26.1 (Chad, 12 Nov 2026: "The lady standing at the front of the altar lighting the candles have
+         very weird distorted arms and hands while lighting the candle"). Photographed from her side, the old ask had her
+         elbow solved by the shortest arc and her hand then turned to whatever the taper's line asked: the wrist folded
+         back over the forearm and the taper ran through the hand at her waist. Now it is solved as a person holds a taper
+         to a candle on a table before her, from the hand outward and in one pass (a first try moved the wrist by what the
+         tip missed and solved again: the taper's half-metre lever swung the tip further each round, and her hand rose
+         over her head):
+         1. her wrist's RESTING PLACE is taken from her own shoulder (TAPER.wrist): the upper arm hanging, the forearm
+            reaching forward level, the elbow near a right angle (a first try set the hand a fixed way back from each wick:
+            the far wick, 0.4 m to her left, was then out of her reach, and the near one folded the wrist 54 degrees);
+         2. the TAPER'S LINE is from that place to the wick; the hand is turned to carry it as a pen is held: the fingers
+            along the line less the slant toward the thumb, the palm toward her middle and a little down, so the thumb
+            and the first finger are on top;
+         3. the WRIST is where that hand, so turned, puts the taper's tip on the wick; the arm is solved to it once,
+            bending about its own measured hinge (armHinge; TAPER.hinge), the elbow down, a little out and back */
+      /* (taperAim answers an array, read here as a point: copied as it was, v26.1's first build solved her arm from NaN and
+         she stood with no left arm and no taper) */
+      const Q = _tpAim.fromArray(taperAim(T.hold != null ? T.hold : t)), Lt = TAPER.len - TAPER.held + 0.012;
+      P.group.updateWorldMatrix(true, true); P.group.getWorldQuaternion(_tpQ);
+      _tpR.set(-1, 0, 0).applyQuaternion(_tpQ); _tpU.set(0, 1, 0); _tpB.set(0, 0, 1).applyQuaternion(_tpQ);   // her right, up, her front
+      _tpPole.copy(_tpU).multiplyScalar(-1).addScaledVector(_tpR, -0.35).addScaledVector(_tpB, -0.25).normalize();   // the elbow: down, out to her left, back
+      hingeOf(a, 1, TAPER.hinge);
+      if (!a.wrote) { a.qUp.copy(a.up.quaternion); a.qFore.copy(a.fore.quaternion); a.qHand.copy(a.hand.quaternion); a.wrote = true; }   // (armsBack gives them back before the mixer: v11.5)
+      /* 1. her wrist's resting place (and where the wick takes it: a wick off to her left turns the forearm that way, not
+         the wrist; a raised one raises the hand. Measured on the first pass of this: the wick 0.35 m to her left bent the
+         wrist 45 degrees sideways, the raised one 42 degrees up) */
+      a.up.getWorldPosition(_tpS); _tpC.copy(Q).sub(_tpS);
+      const side = _tpC.dot(_tpR) - TAPER.wrist[0], rise = Q.y - taper.W[0][1];
+      _tpS.addScaledVector(_tpR, TAPER.wrist[0] + TAPER.follow[0] * side).addScaledVector(_tpU, TAPER.wrist[1] + TAPER.follow[1] * rise).addScaledVector(_tpB, TAPER.wrist[2]);
+      /* 2. the taper's line, and the hand turned to carry it (the fingers' line found in three rounds: it leans off the
+         taper by the slant, which is measured about the fingers themselves) */
+      _tpD.copy(Q).sub(_tpS).normalize(); _tpHf.copy(_tpD);
+      for (let it = 0; it < 3; it++) { taperHand(_tpHf, true); _tpHf.copy(_tpD).addScaledVector(_tpHa, -TAPER.slant).normalize(); }
+      taperHand(_tpHf, true);
+      /* 3. the wrist that puts the tip on the wick, and the arm to it */
+      _tpG.copy(Q).addScaledVector(_tpHd, -Lt).addScaledVector(_tpHf, -a.palm * 0.85).addScaledVector(_tpHa, -0.02).addScaledVector(_tpHn, -0.012);
+      armHinge(a, _tpG, _tpPole);
+      /* the hand turned to it: its own measured axes (across, palm, fingers) onto the ones asked */
+      _tpM.makeBasis(_tpHa, _tpHn, _tpHf); _tpM2.makeBasis(a.aL, a.nL, a.fL).transpose(); _tpM.multiply(_tpM2); _tpQ2.setFromRotationMatrix(_tpM);
+      a.hand.parent.getWorldQuaternion(_tpQ3); a.hand.quaternion.copy(_tpQ3.invert().multiply(_tpQ2)); a.hand.updateWorldMatrix(false, true);
+      /* THE ANSWER: the taper lies where the hand came to be, between the thumb and the first finger */
       a.hand.getWorldPosition(_tpS); a.hand.getWorldQuaternion(_tpQ);
       _tpF.copy(a.fL).applyQuaternion(_tpQ).normalize(); _tpN.copy(a.nL).applyQuaternion(_tpQ).normalize(); _tpW.crossVectors(_tpN, _tpF);
-      _tpT.copy(_tpF).add(_tpW).normalize();
-      _tpP.copy(_tpS).addScaledVector(_tpF, a.palm).addScaledVector(_tpN, 0.017);
+      _tpT.copy(_tpF).addScaledVector(_tpW, TAPER.slant).normalize();
+      _tpP.copy(_tpS).addScaledVector(_tpF, a.palm * 0.85).addScaledVector(_tpW, 0.02).addScaledVector(_tpN, 0.012);
       T.g.position.copy(_tpP).addScaledVector(_tpT, -TAPER.held); T.g.quaternion.setFromUnitVectors(_tpY, _tpT); T.g.visible = true;
-      T.tip.copy(_tpP).addScaledVector(_tpT, before + 0.012);
-      curlFingers(P, 'L', 0.95);
+      T.tip.copy(_tpP).addScaledVector(_tpT, Lt);
+      curlFingers(P, 'L', 0.62);
       camera.getWorldPosition(_tpC);
       const fk = 0.84 + 0.11 * Math.sin(t * 9.1) + 0.05 * Math.sin(t * 23.7);
       T.fl.position.copy(T.tip); T.fl.rotation.set(0, Math.atan2(_tpC.x - T.tip.x, _tpC.z - T.tip.z), 0.06 * Math.sin(t * 2.3)); T.fl.scale.set(0.026 * (1.12 - 0.12 * fk), 0.062 * fk, 1); T.fl.visible = true;
@@ -273,11 +322,11 @@
       P.noBlock = true; cast[i ? 'boy' : 'girl'] = P; castBlock[i ? 'boy' : 'girl'] = new THREE.Box3(new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 61, 0));
       return { P, i, s: 0, v: 0, to: 0, wait: 0, run, moving: false, ry: 0, looks: false };
     });
-    const kidsDir = { ph: '', t: 0, hold: false };
+    const kidsDir = { ph: '', t: 0, hold: false, toss: null, stops: 0 };
     const _ko = { x: 0, z: 0, hx: 0, hz: 1 }, _ko2 = { x: 0, z: 0, hx: 0, hz: 1 };
     function kidsForm(name) {
       const run = name === 'arrive';
-      kidsDir.ph = run ? 'runW' : ''; kidsDir.t = 0; kidsDir.hold = false;
+      kidsDir.ph = run ? 'runW' : ''; kidsDir.t = 0; kidsDir.hold = false; kidsDir.toss = null; kidsDir.stops = 0;
       for (const K of kids) { const P = K.P; K.v = 0; K.moving = false; K.looks = false; P.noBlock = run; P.rate = 1;
         whenReady(P, () => { gaze(P, null); rest(P, 0); });
         if (run) { K.s = Math.min(kidPath.L, kidPath.L * 0.62 + K.i * 1.5); K.to = K.i * KID.gap; K.wait = 0.15 + K.i * 0.35;
@@ -320,7 +369,16 @@
         const looks = !K.moving && pd < 3.2;
         if (looks !== K.looks) { K.looks = looks; gaze(P, looks ? 'lens' : null, { reach: 0.9, secs: 0.7 }); }
       }
-      if (running && (there || D.t > 14)) { D.ph = D.ph === 'runW' ? 'restW' : 'restE'; D.t = 0; }
+      if (running && (there || D.t > 14)) { D.ph = D.ph === 'runW' ? 'restW' : 'restE'; D.t = 0;
+        /* AT EVERY STOP THEY PLAY WITH THE PETALS (Chad, 12 Nov 2026: "The kids only play with the flowers once, and never
+           again. I want the kids to play the flowers more often as they loop running around. It should happen more than
+           once, and keep looping it every cycle"): a second after they stop, one jumps for joy and throws a handful up over
+           the other, and the other answers a moment later; who throws first changes from stop to stop (d_play.js kidThrow).
+           Not when they have come to watch him with Ton (kidsCall holds them: the girl's own throw is that stop's) */
+        D.stops++; const a = D.stops % 2, b = 1 - a;
+        D.toss = D.hold ? null : [{ i: a, at: 1.0 }, { i: b, at: 2.7 }]; }
+      else if (!running && D.toss && D.toss.length && !D.hold && D.t >= D.toss[0].at) {
+        const T0 = D.toss.shift(); kidThrow(kids[T0.i], kids[1 - T0.i]); }
       else if (!running && !D.hold && D.t > (D.ph === 'restW' ? KID.restW : KID.restE)) {
         const east = D.ph === 'restW'; D.ph = east ? 'runE' : 'runW'; D.t = 0;
         /* whoever stands further along goes first; the other gives chase a moment later */
@@ -335,7 +393,7 @@
        sound). Then their chase goes on. */
     function kidsCall() {
       const D = kidsDir; if (formNow !== 'arrive' || !D.ph) return;
-      D.hold = true;
+      D.hold = true; D.toss = null;
       if (D.ph === 'restW') { D.t = 0; return; }
       if (D.ph === 'runW') return;                                               // (already on their way there)
       D.ph = 'runW'; D.t = 0;

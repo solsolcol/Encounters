@@ -31,6 +31,11 @@
 }
 
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+/* v26.1: THE WORDS AT THEIR OWN SIZE (Chad, 12 Nov 2026, of every phone and browser, "especially samsung browser"; his
+   pick: the text size locked). Every word is laid out in rem, so the root's size is the whole HUD's: it is the game's own
+   16 px, whatever default a browser was set to; text-size-adjust stops a browser inflating text by guessing; and a text
+   zoom (Samsung Internet's "Webpage text size", 50 to 200 %) is measured at boot and divided out (main.js, textZoom) */
+html{font-size:16px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 html,body{height:100%;overflow:hidden;background:var(--void);color:var(--bone);
   font-family:var(--ui);
   overscroll-behavior:none;touch-action:none;

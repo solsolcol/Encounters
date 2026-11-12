@@ -165,7 +165,20 @@
         ambAt = dayClock.t + (one ? 6 + ambRand() * 8 : 9 + ambRand() * 11);
       } else ambAt = dayClock.t + 1.5;
     }
-    function ambReset() { ambSeed = AMB_SEED; ambAt = 0; ambBusy = 0; ambLast = ''; ambN = 0; for (const k in bedMix) bedMix[k] = 0; filmBed.on = false; wickAt = -1; kidsPh = ''; musPan = 0; }
+    /* (v26.1) HIS FEET ON THE GRASS: eight falls of one walk on a lawn, cut apart so each ends before the next begins (a
+       footfall comes every 0.22 s), dealt from a seeded stream so no fall comes twice running (Chad, 12 Nov 2026: "i dislike
+       the walking sound effect, it does not sound like walking on grass ground, do a better sound effect for it please":
+       masters/v26.1/sound/steps.sh). The engine asks every footfall (stage.stepSound, v16.0) */
+    const STEPS_GRASS = ['x3grass1', 'x3grass2', 'x3grass3', 'x3grass4', 'x3grass5', 'x3grass6', 'x3grass7', 'x3grass8'];
+    const STEP_SEED = 8807;
+    let stepSeed = STEP_SEED, stepLast = -1;
+    function stepNext() {
+      stepSeed = (stepSeed * 1664525 + 1013904223) >>> 0;
+      let i = Math.floor(stepSeed / 4294967296 * (STEPS_GRASS.length - (stepLast < 0 ? 0 : 1)));
+      if (stepLast >= 0 && i >= stepLast) i++;
+      stepLast = i; return STEPS_GRASS[i];
+    }
+    function ambReset() { ambSeed = AMB_SEED; ambAt = 0; ambBusy = 0; ambLast = ''; ambN = 0; for (const k in bedMix) bedMix[k] = 0; filmBed.on = false; wickAt = -1; kidsPh = ''; musPan = 0; stepSeed = STEP_SEED; stepLast = -1; }
 
     const W = DATA.words;
     const play = { run: 0, busy: false, turning: null, bow: null, bai: false, baiP: 0, baiTo: 0, baiSecs: 1, knelt: false, homage: false,
@@ -337,9 +350,9 @@
     /* ================================================================ P1 · TON, AND THE BAI SRI */
     const WARM_DAY1 = ['q3v', 'tn3a1', 'q3p1', 'tn3a2', 'q3u1', 'q3u2', 'tn3m1', 'q3u3', 'tn3m2', 'q3c1', 'tn3c1', 'q3c2', 'ds3c1', 'tn3c2', 'q3c3',
                        'x3baitake', 'x3baiset', 'x3kneel', 'x3bowall', 'x3petals', 'x3chant', 'x3tone',
-                       'x3step', 'x3os1', 'x3os2', 'x3os3', 'x3os4', 'x3os5', 'x3os6', 'x3wick'];
+                       'x3grass1', 'x3grass2', 'x3grass3', 'x3grass4', 'x3grass5', 'x3grass6', 'x3grass7', 'x3grass8', 'x3os1', 'x3os2', 'x3os3', 'x3os4', 'x3os5', 'x3os6', 'x3wick'];
     const WARM_DAY2 = ['ph3g1', 'ph3b0', 'ph3b1', 'ph3b2', 'ph3b3', 'ph3b4', 'ph3bx', 'ph3by', 'ph3b5', 'ph3p1', 'ph3p2', 'ph3p3', 'x3kneel', 'x3baiset', 'x3bell',
-                       'x3step', 'x3os3', 'x3os7', 'x3os8', 'x3os9'];
+                       'x3grass1', 'x3grass2', 'x3grass3', 'x3grass4', 'x3grass5', 'x3grass6', 'x3grass7', 'x3grass8', 'x3os3', 'x3os7', 'x3os8', 'x3os9'];
     function dayOneStage() {
       look('DAY1', 0); auraAt(0, 0); mistK = 1; burstsClear();
       zoneAt(null);
@@ -376,6 +389,26 @@
         if (worldSfx && !(soundOff && soundOff())) { const pan = panAt(g.x, g.z);
           worldSfx('x3petals', 0.3, 1.08, pan);
           if (worldSfx('x3os1', 0.34, 1, pan)) { ambLast = 'x3os1'; ambBusy = dayClock.t + 3.6; extrasHeard.laugh++; } }
+        extrasHeard.toss++; });
+      return true;
+    }
+    /* THEIR PLAY AT EVERY STOP OF THEIR CHASE (c_crowd.js kidsTick schedules it; Chad, 12 Nov 2026: "keep looping it every
+       cycle"). The child jumps for joy (its own jump: the girl's is JUMP above; the boy's, read from his take by
+       tools/probes/takeheights.mjs, crouches at 0.6 s and has his right hand over his head at 1.0 to 1.2) and lets go of a
+       handful as its hands pass its head, up over the other child, to fall round them both: a third of a master's handful,
+       from the children's own pool, lying on the turf eighteen seconds and then going into it (c_zfx.js). The petals'
+       rustle with it, quiet and by how near he is, never over a line, a bow or the pull; nothing is thrown in the pull */
+    const BOYJUMP = { t0: 0.55, t1: 1.55, secs: 1.25, let: 0.62, hand: 1.12 };
+    function kidThrow(K, O) {
+      const P = K.P; if (!P.ready || !P.group.visible || K.moving || !P.acts.Happy_jump || play.pull || play.bow || formNow !== 'arrive') return false;
+      const J = K.i ? BOYJUMP : JUMP, g = P.group.position, o = O.P.group.position, run = play.run;
+      const dx = o.x - g.x, dz = o.z - g.z, d = Math.hypot(dx, dz) || 1, ux = dx / d, uz = dz / d, reach = Math.min(0.85, 0.55 * d + 0.25);
+      span(P, 'Happy_jump', J.t0, J.t1, J.secs, { fade: 0.22, then: (Q) => rest(Q, 0.35) });
+      const seed = 5101 + 97 * kidsDir.stops + 31 * K.i;
+      after(J.let, () => { if (!live(run) || !P.group.visible || play.pull) return;
+        petalBurst([g.x + ux * 0.1, J.hand || 1.62, g.z + uz * 0.1], [g.x + ux * reach, g.z + uz * reach], dayClock.t, { r: 0.55, up: 1.15, n: 40, s: 0.03, seed, pool: kidPool, sink: 18 });
+        const dh = Math.hypot(yaw.position.x - g.x, yaw.position.z - g.z);
+        if (worldSfx && !(soundOff && soundOff()) && dayClock.t >= speak.until && !play.bow && dh < 9) worldSfx('x3petals', 0.26 * c01(1.3 - dh / 9), K.i ? 1.14 : 1.06, panAt(g.x, g.z));
         extrasHeard.toss++; });
       return true;
     }
@@ -425,7 +458,7 @@
       return true;
     }
     /* Ton goes to his group while the player's eyes are on the tables (a change made where no shot can see it: v24.12) */
-    function tonToPlace() { whenReady(cast.ton, (P) => { put(P, TON_PLACE.x, TON_PLACE.z, faceTo(TON_PLACE.x, TON_PLACE.z, 0, -11.2)); P.seated = true; P.rest.take = 'seiza'; P.rest.win = { seiza: [0.4, 6.8] }; rest(P, 0); castSolid(); }); }
+    function tonToPlace() { whenReady(cast.ton, (P) => { put(P, TON_PLACE.x, TON_PLACE.z, faceTo(TON_PLACE.x, TON_PLACE.z, 0, -11.2)); P.seated = true; P.rest.take = 'seiza'; P.rest.win = { seiza: SEIZA_WIN }; rest(P, 0); castSolid(); }); }
 
     /* ================================================================ P2 · A PLACE; P3 · THE HOMAGE */
     function kneelPlace(instant) {
@@ -835,7 +868,7 @@
       const st = getState();
       const now = wallNow(), raw = lastWall0 ? Math.max(0, now - lastWall0) : 0, wdt = Math.min(0.25, raw); lastWall0 = now;
       /* (the people's own clocks run in a film too, v5.19: a film holds only those it has posed) */
-      windClock += wdt; windTick(windClock); peopleTick(wdt, st !== 'cine'); mistTick(windClock); hazeTick(windClock); flamesTick(windClock); bulbsTick(windClock);
+      windClock += wdt; windTick(windClock); peopleTick(wdt, st !== 'cine'); mistTick(windClock); hazeTick(windClock); skyTick(windClock); flamesTick(windClock); bulbsTick(windClock);
       /* (after the people: what is laid on a body's arm is laid on the pose its take has just written) */
       taperTick(windClock); kidsTick(wdt, st); dancersTick(wdt, st); dancersTurn(wdt);
       if (st !== 'cine') { peopleLevels(); lodTick(); zoneTick(now); }

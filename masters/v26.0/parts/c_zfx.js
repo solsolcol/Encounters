@@ -63,18 +63,30 @@
         const col = new THREE.Color(); for (let i = 0; i < BURST_N; i++) { im.setMatrixAt(i, _wm.makeScale(0, 0, 0)); im.setColorAt(i, col.setRGB(1, 1, 1)); }
         im.instanceMatrix.needsUpdate = true; im.instanceColor.needsUpdate = true; world.add(im); owned.push(im);
         bursts.push({ im, on: false, t0: 0, P: [], end: 0 }); } }
+    /* (v26.1: THE CHILDREN'S OWN HANDFULS, a pool of their own so their throws at every stop of their chase never take a
+       master's handful off the carpet. Each is a third of a master's; what they throw lies on the turf a while and sinks
+       into it (`sink`), so the pool is never taken back from a handful still to be seen) */
+    const KIDB = 6, KID_N = 48, kidPool = [];
+    { const g0 = new THREE.PlaneGeometry(1, 1);
+      for (let b = 0; b < KIDB; b++) { const im = new THREE.InstancedMesh(g0, petalAirMat, KID_N); im.frustumCulled = false; im.visible = false; im.count = KID_N;
+        const col = new THREE.Color(); for (let i = 0; i < KID_N; i++) { im.setMatrixAt(i, _wm.makeScale(0, 0, 0)); im.setColorAt(i, col.setRGB(1, 1, 1)); }
+        im.instanceMatrix.needsUpdate = true; im.instanceColor.needsUpdate = true; world.add(im); owned.push(im);
+        kidPool.push({ im, on: false, t0: 0, P: [], end: 0, n: KID_N }); } }
+    let kidNext = 0;
     const _ptq = new THREE.Quaternion(), _pte = new THREE.Euler(), _ptp = new THREE.Vector3(), _pts = new THREE.Vector3(), _ptq2 = new THREE.Quaternion();
     const FLAT_Q = new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
     let burstNext = 0;
+    const PETAL_SINK = 3;                                                     // (how long a child's petal takes to go into the turf)
     /* thrown from `from` [x, y, z] so that it falls round `to` [x, z] (`r`: how wide it lands; `s`: a petal's length, 3.4 cm
        unless said: a little over life, so a throw reads across the turf; a close lens asks for less); t0 on the clock it is run on.
        `n`: how many petals of the handful there are (a child's is a third of a master's); the rest of the mesh's copies are
        never shown. Unsaid, every copy is thrown and each lands where it always did */
     function petalBurst(from, to, t0, o = {}) {
-      const Bu = bursts[burstNext++ % BURSTS], rnd = rng(o.seed || (7001 + burstNext * 131)), r = o.r != null ? o.r : 0.55, yg = o.ground != null ? o.ground : 0.014, col = new THREE.Color();
-      const nShown = o.n != null ? Math.min(BURST_N, o.n) : BURST_N;
-      Bu.P.length = 0; Bu.t0 = t0; Bu.on = true; Bu.end = 0; Bu.im.visible = true;
-      for (let i = 0; i < BURST_N; i++) {
+      const kid = o.pool === kidPool, CAP = kid ? KID_N : BURST_N;
+      const Bu = kid ? kidPool[kidNext++ % KIDB] : bursts[burstNext++ % BURSTS], rnd = rng(o.seed || (7001 + burstNext * 131)), r = o.r != null ? o.r : 0.55, yg = o.ground != null ? o.ground : 0.014, col = new THREE.Color();
+      const nShown = o.n != null ? Math.min(CAP, o.n) : CAP;
+      Bu.P.length = 0; Bu.t0 = t0; Bu.on = true; Bu.end = 0; Bu.im.visible = true; Bu.sink = o.sink || 0;
+      for (let i = 0; i < CAP; i++) {
         if (i >= nShown) { Bu.P.push({ late: Infinity, land: 0 }); continue; }
         const an = rnd() * 6.283, d = r * Math.sqrt(rnd()), tx = to[0] + Math.cos(an) * d, tz = to[1] + Math.sin(an) * d;
         const p = { x0: from[0] + (rnd() - 0.5) * 0.08, y0: from[1] + (rnd() - 0.5) * 0.06, z0: from[2] + (rnd() - 0.5) * 0.08, tx, tz,
@@ -84,7 +96,7 @@
         /* when it lands: the age at which its height meets the ground (it only falls after its apex: bisected) */
         const yAt = (a) => p.y0 + p.vy * p.ty * (1 - Math.exp(-a / p.ty)) - p.vt * (a - p.ty * (1 - Math.exp(-a / p.ty)));
         let lo = 0, hi = 12; for (let k = 0; k < 22; k++) { const m = (lo + hi) / 2; if (yAt(m) > p.yg) lo = m; else hi = m; }
-        p.land = hi; Bu.end = Math.max(Bu.end, hi + p.late + 0.4);
+        p.land = hi; Bu.end = Math.max(Bu.end, hi + p.late + (Bu.sink ? Bu.sink + PETAL_SINK + 0.1 : 0.4));
         Bu.P.push(p);
         Bu.im.setColorAt(i, col.setHSL(0.105 + rnd() * 0.04, 0.98, 0.5 + rnd() * 0.07, THREE.SRGBColorSpace));
       }
@@ -99,15 +111,19 @@
         if (age0 < p.late) { Bu.im.setMatrixAt(i, _wm.makeScale(0, 0, 0)); continue; }
         const fl = c01((a - p.land) / 0.25 + 1) * (a >= p.land ? 1 : 0), air = a < p.land ? 1 : 0;
         const x = p.x0 + (p.tx - p.x0) * kh + Math.sin(al * p.wf + p.wp) * p.wob * air * kh, z = p.z0 + (p.tz - p.z0) * kh + Math.cos(al * p.wf * 0.8 + p.wp) * p.wob * air * kh;
-        const y = a >= p.land ? p.yg : Math.max(p.yg, p.y0 + p.vy * p.ty * ky - p.vt * (al - p.ty * ky));
+        let y = a >= p.land ? p.yg : Math.max(p.yg, p.y0 + p.vy * p.ty * ky - p.vt * (al - p.ty * ky));
+        /* (a child's petal, `sink` seconds after it lands, goes down into the turf over PETAL_SINK seconds and is not drawn after) */
+        if (Bu.sink && a > p.land + Bu.sink) { const ks = (a - p.land - Bu.sink) / PETAL_SINK; if (ks >= 1) { Bu.im.setMatrixAt(i, _wm.makeScale(0, 0, 0)); continue; } y = p.yg - 0.03 * smo(ks); }
         _pte.set(al * p.sx, p.ry + al * 0.9, al * p.sz, 'YXZ'); _ptq.setFromEuler(_pte);
         if (a >= p.land) { _pte.set(-Math.PI / 2, 0, p.ry, 'YXZ'); _ptq2.setFromEuler(_pte); _ptq.slerp(_ptq2, smo(c01((a - p.land) / 0.18))); }
         Bu.im.setMatrixAt(i, _wm.compose(_ptp.set(x, y, z), _ptq, _pts.set(p.s, p.s, p.s))); }
       Bu.im.instanceMatrix.needsUpdate = true;
     }
     /* play's own clock runs them (a film calls burstAt with its own); one that has all landed is drawn once more and left */
-    function burstsTick(t) { for (const Bu of bursts) { if (!Bu.on || Bu.film) continue; burstAt(Bu, t); if (t - Bu.t0 > Bu.end) Bu.on = false; } }
-    function burstsClear() { for (const Bu of bursts) { Bu.on = false; Bu.film = false; Bu.im.visible = false; } }
+    function burstsTick(t) { for (const Bu of bursts) { if (!Bu.on || Bu.film) continue; burstAt(Bu, t); if (t - Bu.t0 > Bu.end) Bu.on = false; }
+      for (const Bu of kidPool) { if (!Bu.on) continue; burstAt(Bu, t); if (t - Bu.t0 > Bu.end) { Bu.on = false; Bu.im.visible = false; } } }
+    function burstsClear() { for (const Bu of bursts) { Bu.on = false; Bu.film = false; Bu.im.visible = false; }
+      for (const Bu of kidPool) { Bu.on = false; Bu.im.visible = false; } }
 
     /* ---- THE GOLD (the plan's §3.4: his alone; chapter 2 kept its colours and strengths for him, CLAUDE.md). Painted
        light, never a lamp (v15.1): a soft light the shape of a man sitting, behind him, in two layers (the colour laid

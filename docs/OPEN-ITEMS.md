@@ -233,6 +233,11 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
       worked or is one word: none is hidden.
     - p. Found and left, the same kind as his bobbing (§15.2, not asked): the four other masters' rest rocks slowly (18 cm
       end to end every 5.7 s), and Ton kneeling before the homage sways 8.7 cm. One word calms either.
+    - q. v26.1 (his nine notes of 12 Nov, evening; the tracker's §16): his feet on the grass are reel C (a real walk on a
+      lawn cut into eight steps) until his ear picks among the five reels sent (masters/v26.1/sound/previews); the
+      clouds, the sun's glare and rays are set by measure, one word to change any. PUT TO HIM: the red plank building
+      behind the chief bench stands on stilts in his photograph 5, open beneath; the game's wall goes to the ground
+      (raising it changes the background of every film at the bench).
 
 ## D. Not built yet
 

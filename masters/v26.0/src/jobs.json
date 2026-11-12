@@ -1289,6 +1289,186 @@
    "glb": 86720012
   }
  },
+ "envaircon": {
+  "credits": 40,
+  "expires_at": 1794775349777,
+  "image": "masters/v26.1/env/refs/aircon.png",
+  "image_to_3d": "01a1d179-55d4-7382-82d8-210bb909a720",
+  "remesh": {
+   "6000": "01a1d19d-c8e2-7397-b0a2-95dee506e0b7"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 71292856
+  }
+ },
+ "envbanana": {
+  "credits": 40,
+  "expires_at": 1794775276650,
+  "image": "masters/v26.1/env/refs/banana.png",
+  "image_to_3d": "01a1d179-251d-70ba-9086-b33eec19f41a",
+  "remesh": {
+   "14000": "01a1d189-9142-75c2-988e-dfe521d7ae66"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 77046672
+  }
+ },
+ "envfrangipani": {
+  "credits": 40,
+  "expires_at": 1794775357025,
+  "image": "masters/v26.1/env/refs/frangipani.png",
+  "image_to_3d": "01a1d179-3275-71e9-bb4d-de0ea198c6e5",
+  "remesh": {
+   "30000": "01a1d18e-8141-7134-8376-b75c21eadbb0"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 93217304
+  }
+ },
+ "envisanhouse": {
+  "credits": 40,
+  "expires_at": 1794775565965,
+  "image": "masters/v26.1/env/refs/isanhouse.png",
+  "image_to_3d": "01a1d179-3e19-7054-899f-624cf78d4a8a",
+  "remesh": {
+   "40000": "01a1d193-ee81-73e7-90b8-393187d361d9"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 101029952
+  }
+ },
+ "envscooter": {
+  "credits": 40,
+  "expires_at": 1794775286207,
+  "image": "masters/v26.1/env/refs/scooter.png",
+  "image_to_3d": "01a1d179-6228-7590-b8ec-2b7177e1a0bc",
+  "remesh": {
+   "20000": "01a1d1a0-8a7e-72db-a535-111065bef5ce"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 77993672
+  }
+ },
+ "envtank": {
+  "credits": 40,
+  "expires_at": 1794775265477,
+  "image": "masters/v26.1/env/refs/tank.png",
+  "image_to_3d": "01a1d179-4b46-76c9-9496-32383f353f50",
+  "remesh": {
+   "8000": "01a1d199-252c-70d1-8b55-efdb5d7a1524"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 68699940
+  }
+ },
  "fan": {
   "credits": 40,
   "expires_at": 1794667573989,

@@ -119,14 +119,14 @@
   const SECS = {      // 104 of 104 MEASURED from their takes; the rest estimated at the speaker's pace
     /* him */
     'q3o1': 4.01, 'q3o2': 1.69, 'q3o3': 2.89, 'q3o4': 5.37, 'q3o5': 11.85, 'q3o6': 6.17, 'q3v': 4.41, 'q3p1': 0.97,
-    'q3m0': 5.69, 'q3m1': 5.93, 'q3w1': 2.33, 'q3w2': 4.25, 'q3w3': 6.67, 'q3u1': 1.93, 'q3u2': 3.13, 'q3u3': 6.49,
+    'q3m0': 5.69, 'q3m1': 5.93, 'q3w1': 2.33, 'q3w2': 4.25, 'q3w3': 6.81, 'q3u1': 1.93, 'q3u2': 3.13, 'q3u3': 6.49,
     'q3c1': 2.81, 'q3c2': 2.33, 'q3c3': 7.21, 'q3t1': 3.85, 'q3t2': 7.13, 'q3t3': 7.93, 'q3t4': 4.97, 'q3t5': 8.01,
     'q3t6': 4.49, 'q3t7': 8.73, 'q3t8': 1.07, 'q3a1': 7.61, 'q3A0': 2.33, 'q3A1': 7.61, 'q3A2': 6.01, 'q3A3': 6.09,
     'q3B0': 5.69, 'q3B1': 14.89, 'q3B2': 2.89, 'q3B3': 5.21, 'q3B4': 1.83, 'q3B5': 5.69, 'q3C0': 7.05, 'q3C1': 6.57,
     'q3C2': 1.21, 'q3C3': 1.77, 'q3C4': 5.13, 'q3D0': 5.93, 'q3D1': 2.97, 'q3D2': 7.85, 'q3D3': 10.21, 'q3D4': 4.33,
     'q3D5': 5.85, 'q3z1': 7.61, 'q3K1': 8.01, 'q3A': 3.45, 'q3B': 4.17, 'q3C': 4.09, 'q3D': 3.85,
     /* Ton */
-    'tn3a1': 2.89, 'tn3a2': 6.33, 'tn3d1': 2.65, 'tn3m1': 1.45, 'tn3m2': 4.56, 'tn3c1': 5.85, 'tn3c2': 4.25,
+    'tn3a1': 2.89, 'tn3a2': 6.33, 'tn3d1': 2.65, 'tn3m1': 1.45, 'tn3m2': 4.56, 'tn3c1': 5.61, 'tn3c2': 4.25,
     'tn3n1': 1.61, 'tn3A1': 2.09,
     /* the woman at his bench */
     'ds3c1': 7.37,
@@ -272,9 +272,13 @@
       'w3walllamp', 'w3t_turf', 'w3t_petalturf', 'w3t_earth', 'w3t_gravel', 'w3t_redplank', 'w3t_tin', 'w3t_brick',
       'w3t_skirt', 'w3t_satin', 'w3t_mat', 'w3t_carpet', 'w3t_bluemat', 'w3t_swag', 'w3t_banner', 'w3t_treeline',
       'w3t_redroof', 'w3t_hallbrick', 'w3t_steptile', 'w3t_lawn', 'w3t_kalae', 'w3t_fretwork', 'w3t_sign',
+      'w3banana2', 'w3frangipani', 'w3isanhouse', 'w3tank', 'w3aircon', 'w3scooter', 'w3t_render', 'w3t_cloudbank',
+      'w3t_cloudtall', 'w3t_cloudflat', 'w3t_cloudthree', 'w3t_cirrus',
       /* <<< this chapter's own keys <<< */
       /* the trees of this episode's first chapter (reuseInEpisode) */
       'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd',
+      /* his palms and his banana, as chapter 1 has them (reuseInEpisode): the groves round the ground (v26.1) */
+      'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana',
       /* his bag, as chapter 2 packed it, and his notebook (reuseInEpisode) */
       'e4bag', 'e4notebook',
       /* his laptop, and the sandals left at the turf's edge (reuse) */
@@ -293,6 +297,11 @@
                       e4mango: "the mango of chapter 1's countryside, likewise",
                       e4raintreehd: "the same rain tree at its fuller level, for the one that stands over the turf",
                       e4mangohd: "the same mango at its fuller level, for the one behind the chief canopy",
+                      e4palm1far: "Chad's coconut palm (chapter 1's countryside), at its light level: groves of them stand round the ground 16 to 45 m out, where the bare earth ran to the painted ring of trees (Chad, 12 Nov 2026: \"Add more trees, fill out empty spaces\")",
+                      e4palm2far: "Chad's second palm, likewise",
+                      e4palm1: "Chad's coconut palm at its full level, for the groves within 32 m of the middle of the ground",
+                      e4palm2: "Chad's second palm at its full level, likewise",
+                      e4banana: "Chad's banana (chapter 1's clumps round the compound), in clumps round the ground's edges beside the chapter's own second banana",
                       e4bag: "his own bag, the one chapter 2 packed: on his counter in the opening film, and beside his bai sri on the sill of the rented room (the film between the days)",
                       e4notebook: "his own notebook, the one chapter 2's coda left open on his counter: the opening film reads its next page" },
     placeholders: {},

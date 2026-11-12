@@ -48,7 +48,10 @@ const b = await chromium.launch(LAUNCH);
    1.6 on a phone): a picture of 780 x 1688. DSF=3 for closer still. Only a FAST sweep that measures and judges nothing
    by eye draws at 1. */
 const DSF = +process.env.DSF || (FAST ? 1 : 2);
-const ctx = VIEW === 'phone' ? await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: DSF, hasTouch: true, isMobile: true })
+/* (v26.1: VIEW=low is a 720p phone, 360 x 780 points at two pixels to one: Chad, 12 Nov 2026, "You also need to consider how
+   it looks on a low res phone or 720p phone") */
+const PHONES = { phone: [390, 844], low: [360, 780] };
+const ctx = PHONES[VIEW] ? await b.newContext({ viewport: { width: PHONES[VIEW][0], height: PHONES[VIEW][1] }, deviceScaleFactor: DSF, hasTouch: true, isMobile: true })
                              : await b.newContext({ viewport: FAST ? { width: 960, height: 540 } : { width: 1280, height: 720 }, deviceScaleFactor: DSF });   // (FAST: the same shape, fewer pixels to draw in software)
 const p = await ctx.newPage();
 const errs = [];

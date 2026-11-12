@@ -367,6 +367,23 @@ const IS_PHONE = HAS_TOUCH && Math.max(innerWidth, innerHeight) < 1100;
 // off it -- the volume slider, and whether pointer lock is worth asking for.
 const FINE_PTR = matchMedia('(hover: hover) and (pointer: fine)').matches;
 const LOW = IS_PHONE;
+/* v26.1 · THE WORDS AT THEIR OWN SIZE ON EVERY BROWSER (Chad, 12 Nov 2026: "i see other phones using other browsers may
+   have a very varied difference in experience, especially samsung browser"; his pick: the text size locked). Samsung
+   Internet's "Webpage text size" (50 to 200 %) and a browser's text zoom multiply every font size a page sets; every word
+   of the game is laid out in rem, so at 150 % the whole HUD stood half again as large over the picture. The zoom is read
+   once, here, from a block whose line is asked to be 100 px (a zoom makes it more or less), and the root's 16 px is
+   divided by it, so every rem comes back to what it was designed at (shell.html sets the 16 and stops a browser
+   inflating text). Read by ?diag. */
+const textZoom = (() => {
+  try {
+    const d = document.createElement('div');
+    d.style.cssText = 'position:absolute;left:0;top:-9999px;visibility:hidden;font-size:100px;line-height:1;margin:0;padding:0;border:0';
+    d.textContent = 'M'; document.body.appendChild(d);
+    const k = d.offsetHeight / 100; d.remove();
+    if (k > 0.3 && k < 4 && Math.abs(k - 1) > 0.02) document.documentElement.style.fontSize = (16 / k).toFixed(3) + 'px';
+    return +k.toFixed(3);
+  } catch (e) { return 1; }
+})();
 
 /* ---------------------------------------------------------- procedural tex */
 function cnv(s = 512) {
@@ -637,9 +654,36 @@ function rescueTextures(gltf, buf, onMap) {   // onMap(material): optional, call
 }
 
 /* ------------------------------------------------------------- renderer */
+/* v26.1 · THE FORTY-NINTH SEAM — A CHAPTER'S OWN DRAWING BUDGET ON A PHONE (Chad, 12 Nov 2026, of episode 4 chapter 3:
+   "This chapter can have more detail and rendering budget as i already said its the most important chapter in the game,
+   so even on the phone, i want a higher rendering budget"; and "You also need to consider how it looks on a low res phone
+   or 720p phone, the faces are really bad there"). A phone drew the world at no more than 1.6 pixels a point, so a 720p
+   phone (two pixels a point) drew every frame at four fifths of its own pixels and stretched it; the same evening every
+   phone was given two (PHONE_RATIO, below). A chapter may declare `render: { phoneRatio }`: a phone then draws it at up to
+   that many pixels a point, never more than its screen has.
+   Applied at boot and on every change of chapter (setChapter), so the next chapter has its own; a desktop's 2 is not
+   touched. Absent, the ratio is exactly what it always was. `pixelRatioFor` is a pure function (the fixture proves it
+   both ways). */
+/* v26.1 · AND EVERY PHONE AT FULL SHARPNESS (Chad, 12 Nov 2026: "think of more ways to force all phones to have a
+   consistent high res high quality experience, i see other phones using other browsers may have a very varied difference
+   in experience, especially samsung browser"; his pick of four: full sharpness, smooth edges, the words' size locked). A
+   phone drew every chapter at 1.6 pixels a point at most: on a 720p phone four fifths of its own pixels, stretched, and on
+   every other phone its own share of a different number. Now a phone draws at its own pixels up to two a point, as a
+   desktop always has: PHONE_RATIO. A chapter may still ask for another (`render.phoneRatio`). */
+const PHONE_RATIO = 2;
+function pixelRatioFor(ch, low = LOW, dpr = devicePixelRatio) {
+  const want = ch && ch.render && ch.render.phoneRatio > 0 ? ch.render.phoneRatio : 0;
+  return Math.min(dpr, low ? (want || PHONE_RATIO) : 2);
+}
+function applyRender() {
+  const r = pixelRatioFor(CH);
+  if (renderer.getPixelRatio() !== r) { renderer.setPixelRatio(r); renderer.setSize(innerWidth, innerHeight); }
+}
 const canvas = document.getElementById('scene');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: !LOW, powerPreference: 'high-performance' });
-renderer.setPixelRatio(Math.min(devicePixelRatio, LOW ? 1.6 : 2));
+/* (v26.1: smooth edges on a phone too, Chad's pick of 12 Nov 2026: a phone had no anti-aliasing, so every edge of a body,
+   a roof or a pole stood in steps; a phone's graphics chip resolves it on the chip, where it costs least) */
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(pixelRatioFor(CH));
 renderer.setSize(innerWidth, innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFShadowMap;
@@ -13581,7 +13625,10 @@ const STING_SAMPLE = {
   x3os2: ['x3os2', 1], x3os3: ['x3os3', 1], x3os4: ['x3os4', 1], x3os5: ['x3os5', 1], x3os6: ['x3os6', 1],
   x3os7: ['x3os7', 1], x3os8: ['x3os8', 1], x3os9: ['x3os9', 1], x3page: ['x3page', 1], x3pen: ['x3pen', 1],
   x3petals: ['x3petals', 1], x3pull: ['x3pull', 1], x3send: ['x3send', 1], x3shophum: ['x3shophum', 1],
-  x3shut: ['x3shut', 1], x3shutter: ['x3shutter', 1], x3sightmus: ['x3sightmus', 1], x3step: ['x3step', 1],
+  x3shut: ['x3shut', 1], x3shutter: ['x3shutter', 1], x3sightmus: ['x3sightmus', 1],
+  /* v26.1: his feet on the grass (masters/v26.1/sound/steps.sh; x3step retired) */
+  x3grass1: ['x3grass1', 1], x3grass2: ['x3grass2', 1], x3grass3: ['x3grass3', 1], x3grass4: ['x3grass4', 1],
+  x3grass5: ['x3grass5', 1], x3grass6: ['x3grass6', 1], x3grass7: ['x3grass7', 1], x3grass8: ['x3grass8', 1],
   x3sweep: ['x3sweep', 1], x3tellmus: ['x3tellmus', 1], x3tone: ['x3tone', 1], x3trance: ['x3trance', 1],
   x3waiting: ['x3waiting', 1], x3zip: ['x3zip', 1],
   /* v26.0 · episode 4 chapter 3: its voices, effects, beds and music (masters/v26.0/sound.sh) */
@@ -13825,6 +13872,7 @@ function setChapter(key) {
   applyGhostTerritory();           // her reach is the new chapter's, not the old one's
   wxReset();                       // v24.0 (CP13): a lightning flash still live gives its lights back first ...
   applyDaylight();                 // and so is the time of day
+  applyRender();                   // and its drawing budget on a phone (v26.1, the forty-ninth seam)
   kitReset();                      // v7.0: and the play kit starts clean for it
   silenceChapterLoops();           // and so is the room tone
   releaseChapterSounds(leaving);   // v14.16: and the chapter left lets its decoded sounds go
@@ -16329,6 +16377,7 @@ function showDiag() {
   add('Browser', navigator.userAgent);
   add('Screen', `${screen.width} x ${screen.height}, pixel ratio ${devicePixelRatio}, window ${innerWidth} x ${innerHeight}`);
   add('Asks for dark', matchMedia('(prefers-color-scheme: dark)').matches ? 'yes' : 'no');
+  add('Text zoom', textZoom === 1 ? 'none' : `${textZoom}, divided out (v26.1)`);
   const glFacts = (name, r, asked) => {
     if (!r) { add(name, 'not made'); return; }
     try {
@@ -16346,7 +16395,7 @@ function showDiag() {
       }
     } catch (e) { add(name, 'error ' + e.message); }
   };
-  glFacts('World', renderer, !LOW);
+  glFacts('World', renderer, true);
   glFacts('Item views', ivInit() ? iv.r : null, OPT.ivMsaa);
   zavInit();
   glFacts('Figure', zav.r, OPT.ivMsaa);
@@ -16599,6 +16648,7 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                     geometries, textures) is a number, and a number nobody can
                     read is a number nobody checks. */
                  get renderer() { return renderer; }, get scene() { return scene; },
+                 pixelRatioFor,                            // v26.1: the forty-ninth seam's own function, for the fixture
                  /* v15: the optimization switches and the passes they gate, for the pixel-identity probe */
                  opt: OPT, cullInstances: (sh) => cullInstances(camera, !!sh), get camera() { return camera; }, shadowCasterSync,
                  worldCovered: () => worldCovered(), forceDraw: (n) => { forceDraw = n | 0; },

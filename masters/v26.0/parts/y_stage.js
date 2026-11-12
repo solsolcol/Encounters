@@ -951,7 +951,7 @@
       drum: null, ash: null, embers: null, heroNote: null, smoke: null, flying: null,
       jossTips: [], fireLight: null,
       skyAt: () => FL.sky,                                                      // (the sky stands over the turf; a film's pocket set asks for it over itself)
-      stepSound: () => 'x3step',                                                // his own feet: he left his sandals at the turf's edge (the engine asks every footfall, v16.0)
+      stepSound: stepNext,                                                      // his own feet on the grass: he left his sandals at the turf's edge (d_play.js STEPS_GRASS, v26.1)
       /* walktest: where play puts him besides the spawn, and the ground he must STAY on (v25.5): the turf, the gravel
          before the tables and the tents' fronts. He cannot leave it */
       /* (walktest reads the collision of the FIRST frame: the gathering, its people kneeling where the next morning

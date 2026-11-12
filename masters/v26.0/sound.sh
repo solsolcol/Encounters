@@ -103,7 +103,9 @@ fx   x3pen       $R/x3pen_a.mp3       -14                                     # 
 fx   x3zip       $R/x3zip_a.mp3       -14                                     # a: one pull, 14 dB fuller than b
 fx   x3cabin     $R/x3cabin_b.mp3     -14 "afade=t=in:d=0.5,afade=t=out:st=5.2:d=0.8"   # b: the drone with more a phone can play (41 % against 30); faded in and out, it is under a black
 # ---- foley
-fx   x3step      $R/x3step2_b.mp3     -16 "afade=t=out:st=0.45:d=0.2"         # MADE AGAIN, b: a crisp rustle, 78 % over 150 Hz and the fullest of the three that are (a is 97 % thud)
+# RETIRED at v26.1 (Chad, 12 Nov 2026: "it does not sound like walking on grass ground"): his feet are x3grass1..8, made by
+# masters/v26.1/sound/steps.sh. Its line was:
+# fx   x3step      $R/x3step2_b.mp3     -16 "afade=t=out:st=0.45:d=0.2"         # MADE AGAIN, b: a crisp rustle, 78 % over 150 Hz and the fullest of the three that are (a is 97 % thud)
 fx   x3kneel     $R/x3kneel_b.mp3     -14                                     # b: 7 dB fuller, the cloth and the knees
 fx   x3bowall    $R/x3bowall2_d.mp3   -14                                     # MADE AGAIN, d: the widest held rustle of the four (the highest level against its own peak), 99 % where a phone plays
 fx   x3baitake   $R/x3baitake_b.mp3   -14                                     # b: the ring and the leaves (a is a floor at -52)

@@ -89,7 +89,8 @@
       brick: [0x96573f, 'image/jpeg'], skirt: [0x1f9c3a, 'image/jpeg'], satin: [0xe9e9e9, 'image/jpeg'], mat: [0xc7b78a, 'image/jpeg'],
       carpet: [0x74202a, 'image/jpeg'], bluemat: [0x86c9c0, 'image/jpeg'], swag: [0xf2f0e4, 'image/webp'], banner: [0xe8e8e8, 'image/webp'], treeline: [0x4c7a3a, 'image/webp'],
       redroof: [0xc8483f, 'image/jpeg'], hallbrick: [0x9a4f3f, 'image/jpeg'], steptile: [0xc98c80, 'image/jpeg'], lawn: [0x5c9a35, 'image/jpeg'],
-      kalae: [0x5a4a40, 'image/webp'], fretwork: [0x7a2a26, 'image/webp'], sign: [0xece8dc, 'image/webp']
+      kalae: [0x5a4a40, 'image/webp'], fretwork: [0x7a2a26, 'image/webp'], sign: [0xece8dc, 'image/webp'],
+      render: [0xbdbebf, 'image/jpeg']                      // (v26.1: the grey building's rendered walls, masters/v26.1/env)
     };
     const surfTex = new Map();
     function surfLoad(name) {
@@ -513,11 +514,13 @@
       box(mWhite, 10.8, 1.2, P0.z - 0.03, 1.36, 0.08, 0.06); box(mWhite, 10.8, 2.5, P0.z - 0.03, 1.36, 0.08, 0.06); box(mWhite, 10.8, 1.85, P0.z - 0.03, 0.06, 1.3, 0.06);
       for (const dx of [-0.66, 0.66]) box(mWhite, 10.8 + dx, 1.85, P0.z - 0.03, 0.08, 1.38, 0.06);
       quad(mTin, [P0.x0 - 0.4, 3.55, P0.z - 0.7], [P0.x1 + 2, 3.55, P0.z - 0.7], [P0.x1 + 2, 4.5, P0.z + 4], [P0.x0 - 0.4, 4.5, P0.z + 4]);
-      const mGrey = M({ color: 0xb9bcbc, roughness: 0.95 }), mLouvre = B({ map: tex(makeLouvre(THREE, cnv)), color: 0xffffff });
+      /* (v26.1: its walls rendered and weathered, and its louvres lit as the wall is: drawn unlit, they glowed white in its
+         shade. Its frames, sills, roof and eave are b_world3.js's buildEdges) */
+      const mGrey = surf('render', { tile: 3, roughness: 0.95 }), mLouvre = M({ map: tex(makeLouvre(THREE, cnv)), color: 0xe4e7e8, roughness: 0.6 });
       wall(mGrey, GREY.x1, GREY.z, GREY.x0 - 6, GREY.z, 0, GREY.h); wall(mGrey, GREY.x0 - 6, GREY.z, GREY.x0 - 6, GREY.z + 6, 0, GREY.h);
       for (const x of [6.6, 4.2, 1.8, -0.6, -3.0]) { const g = new THREE.PlaneGeometry(1.1, 1.3); const m = new THREE.Mesh(g, mLouvre);
         m.position.set(x, 1.95, GREY.z - 0.012); m.rotation.y = Math.PI; world.add(m); owned.push(m); }
-      box(mGrey, 1.2, GREY.h + 0.08, GREY.z + 0.2, 16, 0.16, 1.2);
+      box(mGrey, 1.0, GREY.h + 0.08, GREY.z + 0.2, 15.1, 0.16, 1.2);           // (v26.1: under its new roof, not out past its ends)
     }
 
     /* ================================================================ A TENT (photographs 10, 11, 1)

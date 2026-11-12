@@ -119,14 +119,14 @@
   const SECS = {      // 104 of 104 MEASURED from their takes; the rest estimated at the speaker's pace
     /* him */
     'q3o1': 4.01, 'q3o2': 1.69, 'q3o3': 2.89, 'q3o4': 5.37, 'q3o5': 11.85, 'q3o6': 6.17, 'q3v': 4.41, 'q3p1': 0.97,
-    'q3m0': 5.69, 'q3m1': 5.93, 'q3w1': 2.33, 'q3w2': 4.25, 'q3w3': 6.67, 'q3u1': 1.93, 'q3u2': 3.13, 'q3u3': 6.49,
+    'q3m0': 5.69, 'q3m1': 5.93, 'q3w1': 2.33, 'q3w2': 4.25, 'q3w3': 6.81, 'q3u1': 1.93, 'q3u2': 3.13, 'q3u3': 6.49,
     'q3c1': 2.81, 'q3c2': 2.33, 'q3c3': 7.21, 'q3t1': 3.85, 'q3t2': 7.13, 'q3t3': 7.93, 'q3t4': 4.97, 'q3t5': 8.01,
     'q3t6': 4.49, 'q3t7': 8.73, 'q3t8': 1.07, 'q3a1': 7.61, 'q3A0': 2.33, 'q3A1': 7.61, 'q3A2': 6.01, 'q3A3': 6.09,
     'q3B0': 5.69, 'q3B1': 14.89, 'q3B2': 2.89, 'q3B3': 5.21, 'q3B4': 1.83, 'q3B5': 5.69, 'q3C0': 7.05, 'q3C1': 6.57,
     'q3C2': 1.21, 'q3C3': 1.77, 'q3C4': 5.13, 'q3D0': 5.93, 'q3D1': 2.97, 'q3D2': 7.85, 'q3D3': 10.21, 'q3D4': 4.33,
     'q3D5': 5.85, 'q3z1': 7.61, 'q3K1': 8.01, 'q3A': 3.45, 'q3B': 4.17, 'q3C': 4.09, 'q3D': 3.85,
     /* Ton */
-    'tn3a1': 2.89, 'tn3a2': 6.33, 'tn3d1': 2.65, 'tn3m1': 1.45, 'tn3m2': 4.56, 'tn3c1': 5.85, 'tn3c2': 4.25,
+    'tn3a1': 2.89, 'tn3a2': 6.33, 'tn3d1': 2.65, 'tn3m1': 1.45, 'tn3m2': 4.56, 'tn3c1': 5.61, 'tn3c2': 4.25,
     'tn3n1': 1.61, 'tn3A1': 2.09,
     /* the woman at his bench */
     'ds3c1': 7.37,
@@ -272,9 +272,13 @@
       'w3walllamp', 'w3t_turf', 'w3t_petalturf', 'w3t_earth', 'w3t_gravel', 'w3t_redplank', 'w3t_tin', 'w3t_brick',
       'w3t_skirt', 'w3t_satin', 'w3t_mat', 'w3t_carpet', 'w3t_bluemat', 'w3t_swag', 'w3t_banner', 'w3t_treeline',
       'w3t_redroof', 'w3t_hallbrick', 'w3t_steptile', 'w3t_lawn', 'w3t_kalae', 'w3t_fretwork', 'w3t_sign',
+      'w3banana2', 'w3frangipani', 'w3isanhouse', 'w3tank', 'w3aircon', 'w3scooter', 'w3t_render', 'w3t_cloudbank',
+      'w3t_cloudtall', 'w3t_cloudflat', 'w3t_cloudthree', 'w3t_cirrus',
       /* <<< this chapter's own keys <<< */
       /* the trees of this episode's first chapter (reuseInEpisode) */
       'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd',
+      /* his palms and his banana, as chapter 1 has them (reuseInEpisode): the groves round the ground (v26.1) */
+      'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana',
       /* his bag, as chapter 2 packed it, and his notebook (reuseInEpisode) */
       'e4bag', 'e4notebook',
       /* his laptop, and the sandals left at the turf's edge (reuse) */
@@ -293,6 +297,11 @@
                       e4mango: "the mango of chapter 1's countryside, likewise",
                       e4raintreehd: "the same rain tree at its fuller level, for the one that stands over the turf",
                       e4mangohd: "the same mango at its fuller level, for the one behind the chief canopy",
+                      e4palm1far: "Chad's coconut palm (chapter 1's countryside), at its light level: groves of them stand round the ground 16 to 45 m out, where the bare earth ran to the painted ring of trees (Chad, 12 Nov 2026: \"Add more trees, fill out empty spaces\")",
+                      e4palm2far: "Chad's second palm, likewise",
+                      e4palm1: "Chad's coconut palm at its full level, for the groves within 32 m of the middle of the ground",
+                      e4palm2: "Chad's second palm at its full level, likewise",
+                      e4banana: "Chad's banana (chapter 1's clumps round the compound), in clumps round the ground's edges beside the chapter's own second banana",
                       e4bag: "his own bag, the one chapter 2 packed: on his counter in the opening film, and beside his bai sri on the sill of the rented room (the film between the days)",
                       e4notebook: "his own notebook, the one chapter 2's coda left open on his counter: the opening film reads its next page" },
     placeholders: {},
@@ -588,7 +597,8 @@
       brick: [0x96573f, 'image/jpeg'], skirt: [0x1f9c3a, 'image/jpeg'], satin: [0xe9e9e9, 'image/jpeg'], mat: [0xc7b78a, 'image/jpeg'],
       carpet: [0x74202a, 'image/jpeg'], bluemat: [0x86c9c0, 'image/jpeg'], swag: [0xf2f0e4, 'image/webp'], banner: [0xe8e8e8, 'image/webp'], treeline: [0x4c7a3a, 'image/webp'],
       redroof: [0xc8483f, 'image/jpeg'], hallbrick: [0x9a4f3f, 'image/jpeg'], steptile: [0xc98c80, 'image/jpeg'], lawn: [0x5c9a35, 'image/jpeg'],
-      kalae: [0x5a4a40, 'image/webp'], fretwork: [0x7a2a26, 'image/webp'], sign: [0xece8dc, 'image/webp']
+      kalae: [0x5a4a40, 'image/webp'], fretwork: [0x7a2a26, 'image/webp'], sign: [0xece8dc, 'image/webp'],
+      render: [0xbdbebf, 'image/jpeg']                      // (v26.1: the grey building's rendered walls, masters/v26.1/env)
     };
     const surfTex = new Map();
     function surfLoad(name) {
@@ -1012,11 +1022,13 @@
       box(mWhite, 10.8, 1.2, P0.z - 0.03, 1.36, 0.08, 0.06); box(mWhite, 10.8, 2.5, P0.z - 0.03, 1.36, 0.08, 0.06); box(mWhite, 10.8, 1.85, P0.z - 0.03, 0.06, 1.3, 0.06);
       for (const dx of [-0.66, 0.66]) box(mWhite, 10.8 + dx, 1.85, P0.z - 0.03, 0.08, 1.38, 0.06);
       quad(mTin, [P0.x0 - 0.4, 3.55, P0.z - 0.7], [P0.x1 + 2, 3.55, P0.z - 0.7], [P0.x1 + 2, 4.5, P0.z + 4], [P0.x0 - 0.4, 4.5, P0.z + 4]);
-      const mGrey = M({ color: 0xb9bcbc, roughness: 0.95 }), mLouvre = B({ map: tex(makeLouvre(THREE, cnv)), color: 0xffffff });
+      /* (v26.1: its walls rendered and weathered, and its louvres lit as the wall is: drawn unlit, they glowed white in its
+         shade. Its frames, sills, roof and eave are b_world3.js's buildEdges) */
+      const mGrey = surf('render', { tile: 3, roughness: 0.95 }), mLouvre = M({ map: tex(makeLouvre(THREE, cnv)), color: 0xe4e7e8, roughness: 0.6 });
       wall(mGrey, GREY.x1, GREY.z, GREY.x0 - 6, GREY.z, 0, GREY.h); wall(mGrey, GREY.x0 - 6, GREY.z, GREY.x0 - 6, GREY.z + 6, 0, GREY.h);
       for (const x of [6.6, 4.2, 1.8, -0.6, -3.0]) { const g = new THREE.PlaneGeometry(1.1, 1.3); const m = new THREE.Mesh(g, mLouvre);
         m.position.set(x, 1.95, GREY.z - 0.012); m.rotation.y = Math.PI; world.add(m); owned.push(m); }
-      box(mGrey, 1.2, GREY.h + 0.08, GREY.z + 0.2, 16, 0.16, 1.2);
+      box(mGrey, 1.0, GREY.h + 0.08, GREY.z + 0.2, 15.1, 0.16, 1.2);           // (v26.1: under its new roof, not out past its ends)
     }
 
     /* ================================================================ A TENT (photographs 10, 11, 1)
@@ -1500,6 +1512,284 @@
     buildShade();
     paintShade('DAY1');
 
+    /* ================================================================ THE SKY: CLOUDS, THE SUN'S GLARE, RAYS (v26.1)
+       Chad, 12 Nov 2026: "I think the overall environment can be improved further with much more details ... and i think
+       the skybox can be added and improved with much better detail, especially adding clouds, sun, rays, etc." The
+       engine's sky is a gradient dome with its sun disc and a thin layer of cloud; over it now, painted (v15.1: no lamp):
+       1. CLOUDS: photographic cards (GPT Image at its best, a transparent ground: masters/v26.1/env/refs, looked at over a
+          blue before use) stood round the horizon above the line of the trees, each turned to face the middle of the
+          ground: a long low bank of fair-weather cumulus in four places, tall and flat ones higher between them, a cluster
+          of small ones, and wisps of cirrus higher still. A cloud lit from its upper right is turned round where the sun
+          stands on the left of it, so every cloud is lit from the sun's side;
+       2. THE SUN'S GLARE: a soft halo and a bright core where the hour's key light comes from, drawn additively and hidden
+          by whatever stands before it;
+       3. RAYS: shafts of light slanting down through the crowns of the two great trees along the sun's line, each turned
+          about its own length to face the lens, breathing a little as leaves move.
+       All of it follows the hour (the look, d_play.js `look`, y_stage.js `lit`): white at the late morning, warm at dawn,
+       rose at dusk; no rays in the flat light of ending D or after the sun is down; nothing at night or indoors. The sky
+       stands where the stage's sky stands (`skyAt`: a film's pocket set has its own). Its far side is inside the far plane
+       (160 m) from anywhere on the ground. */
+    Object.assign(SURF, { cloudbank: [0xffffff, 'image/webp'], cloudtall: [0xffffff, 'image/webp'], cloudflat: [0xffffff, 'image/webp'],
+                          cloudthree: [0xffffff, 'image/webp'], cirrus: [0xffffff, 'image/webp'] });
+    const SKY_R = 110;
+    /* each card: its azimuth (degrees from north, toward the east), the elevation of its middle and its width (degrees, as
+       seen from the middle of the ground), its picture and that picture's height for its width */
+    const SKY_CARDS = [
+      { az: 15, el: 17, w: 70, key: 'cloudbank', hw: 878 / 2048 }, { az: 105, el: 16, w: 66, key: 'cloudbank', hw: 878 / 2048 },
+      { az: 196, el: 17.5, w: 72, key: 'cloudbank', hw: 878 / 2048 }, { az: 287, el: 16.5, w: 68, key: 'cloudbank', hw: 878 / 2048 },
+      { az: 62, el: 25, w: 30, key: 'cloudtall', hw: 764 / 1024 }, { az: 248, el: 26, w: 32, key: 'cloudtall', hw: 764 / 1024 },
+      { az: 160, el: 29, w: 38, key: 'cloudflat', hw: 579 / 1024 }, { az: 334, el: 28, w: 36, key: 'cloudflat', hw: 579 / 1024 },
+      { az: 136, el: 22, w: 22, key: 'cloudthree', hw: 764 / 1024 }, { az: 302, el: 21, w: 24, key: 'cloudthree', hw: 764 / 1024 },
+      { az: 38, el: 40, w: 60, key: 'cirrus', hw: 579 / 1024 }, { az: 214, el: 42, w: 58, key: 'cirrus', hw: 579 / 1024 }
+    ];
+    /* the hour's sky: the clouds' colour and strength, the glare's colour and strength, the rays' strength */
+    const SKY_LOOK = {
+      DAY1: { cloud: [1, 1, 1, 1], sun: [1, 0.95, 0.84, 1], rays: 0.15 },
+      DAWN: { cloud: [1, 0.87, 0.76, 0.95], sun: [1, 0.76, 0.46, 1], rays: 0.17 },
+      OPENED: { cloud: [1, 0.9, 0.8, 1], sun: [1, 0.82, 0.55, 1], rays: 0.19 },
+      SHUT: { cloud: [0.82, 0.84, 0.88, 0.9], sun: null, rays: 0 },
+      AFTERNOON: { cloud: [1, 0.95, 0.86, 1], sun: [1, 0.88, 0.66, 1], rays: 0.13 },
+      DUSK: { cloud: [0.96, 0.64, 0.52, 0.85], sun: [1, 0.55, 0.3, 0.75], rays: 0 },
+      DUSKOPEN: { cloud: [1, 0.7, 0.56, 0.9], sun: [1, 0.6, 0.34, 0.85], rays: 0 }
+    };
+    const skyFx = { g: new THREE.Group(), cards: [], halo: null, core: null, burst: null, rays: [], rayMat: null, look: '', dir: new THREE.Vector3(0, 1, 0) };
+    /* the sun's own rays: thin streaks of light out from its core, of seeded lengths and strengths, each soft along its
+       length and across it (a picture drawn once; it turns very slowly, so the streaks are never quite still) */
+    function makeSunBurst() {
+      const N = 512, [c, x] = cnv(N); x.clearRect(0, 0, N, N); x.globalCompositeOperation = 'lighter';
+      const rnd = rng(5309), cx = N / 2;
+      for (let i = 0; i < 26; i++) {
+        const a = (i / 26) * 6.283 + (rnd() - 0.5) * 0.18, len = cx * (0.45 + 0.55 * rnd()), wd = 0.010 + 0.022 * rnd(), k = 0.25 + 0.75 * rnd();
+        x.save(); x.translate(cx, cx); x.rotate(a);
+        const g = x.createLinearGradient(0, 0, len, 0); g.addColorStop(0, `rgba(255,250,235,${(0.55 * k).toFixed(3)})`); g.addColorStop(0.35, `rgba(255,246,225,${(0.22 * k).toFixed(3)})`); g.addColorStop(1, 'rgba(255,240,215,0)');
+        x.fillStyle = g; x.beginPath(); x.moveTo(0, 0); x.lineTo(len, -len * wd); x.lineTo(len, len * wd); x.closePath(); x.fill(); x.restore();
+      }
+      return tex(done(THREE, c, false));
+    }
+    function makeRay() {
+      const [c, x] = cnv(64, 256); x.clearRect(0, 0, 64, 256);
+      const img = x.createImageData(64, 256), rnd = rng(9137), streak = [];
+      for (let i = 0; i < 64; i++) streak.push(0.75 + 0.25 * rnd());
+      for (let v = 0; v < 256; v++) for (let u = 0; u < 64; u++) {
+        const k = v / 255, across = (u - 31.5) / 31.5, side = Math.exp(-across * across * 3.2), along = Math.pow(1 - k, 1.6) * c01(k / 0.08);
+        const a = 255 * side * along * streak[u], o = (v * 64 + u) * 4; img.data[o] = img.data[o + 1] = img.data[o + 2] = 255; img.data[o + 3] = a; }
+      x.putImageData(img, 0, 0);
+      return tex(done(THREE, c, false));
+    }
+    function buildSky() {
+      skyFx.g.name = 'v26.1 sky'; world.add(skyFx.g); owned.push(skyFx.g);
+      const d2r = Math.PI / 180, sunAz = Math.atan2(17, -10);                   // (DAY1's key, east-south-east: which side a card is lit from)
+      for (const C of SKY_CARDS) {
+        const az = C.az * d2r, w = 2 * SKY_R * Math.tan(C.w * d2r / 2), h = w * C.hw;
+        const m = B({ color: 0xffffff, transparent: true, depthWrite: false, fog: false, opacity: 0 });
+        const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), m);
+        mesh.position.set(Math.sin(az) * SKY_R, 1.6 + Math.tan(C.el * d2r) * SKY_R, -Math.cos(az) * SKY_R);
+        mesh.lookAt(0, mesh.position.y, 0); mesh.renderOrder = -4; mesh.frustumCulled = false; skyFx.g.add(mesh);
+        /* (lit from its upper right in its picture: turned round where the sun is to the left of it as it is looked at) */
+        const flip = Math.sin(sunAz - az) < 0;
+        surfLoad(C.key).then(t0 => { if (!t0 || !alive) return; const t = t0.clone(); t.needsUpdate = true; madeTex.push(t);
+          t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; t.repeat.set(flip ? -1 : 1, -1); t.offset.set(flip ? 1 : 0, 1); m.map = t; m.needsUpdate = true; C.ready = true; });
+        skyFx.cards.push({ mesh, m, C });
+      }
+      const glow = tex(makeGlow(THREE, cnv));
+      const sm = (s) => { const m = new THREE.SpriteMaterial({ map: glow, color: 0xffffff, transparent: true, depthWrite: false, fog: false, blending: THREE.AdditiveBlending, opacity: 0 }); mats.push(m);
+        const sp = new THREE.Sprite(m); sp.scale.set(s, s, 1); sp.renderOrder = -3; sp.frustumCulled = false; skyFx.g.add(sp); return sp; };
+      skyFx.halo = sm(SKY_R * 0.62); skyFx.core = sm(SKY_R * 0.14);
+      { const m = new THREE.SpriteMaterial({ map: makeSunBurst(), color: 0xffffff, transparent: true, depthWrite: false, fog: false, blending: THREE.AdditiveBlending, opacity: 0 }); mats.push(m);
+        const sp = new THREE.Sprite(m); sp.scale.set(SKY_R * 0.95, SKY_R * 0.95, 1); sp.renderOrder = -3; sp.frustumCulled = false; skyFx.g.add(sp); skyFx.burst = sp; }
+      /* the rays: under the two great trees' crowns (b_world2.js TREES: the rain tree west of the turf, the mango behind
+         the chief canopy), each from a place in the crown, seeded */
+      skyFx.rayMat = B({ map: makeRay(), color: 0xfff1d6, transparent: true, depthWrite: false, fog: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, opacity: 0 });
+      const rnd = rng(4129), g0 = new THREE.PlaneGeometry(1, 1); g0.translate(0, -0.5, 0);
+      for (const [T0, n] of [[TREES[0], 10], [TREES[1], 6]]) for (let i = 0; i < n; i++) {
+        const an = rnd() * 6.283, r = T0.h * (0.12 + 0.3 * Math.sqrt(rnd())), y = T0.h * (0.55 + 0.22 * rnd());
+        const mesh = new THREE.Mesh(g0, skyFx.rayMat); mesh.frustumCulled = false; mesh.renderOrder = 3; world.add(mesh); owned.push(mesh);
+        skyFx.rays.push({ mesh, at: new THREE.Vector3(T0.x + Math.cos(an) * r, y, T0.z + Math.sin(an) * r), w: 0.3 + 0.6 * rnd(), ph: rnd() * 6.283, f: 0.35 + 0.5 * rnd() });
+      }
+    }
+    const _skC = new THREE.Vector3(), _skX = new THREE.Vector3(), _skV = new THREE.Vector3(), _skZ = new THREE.Vector3(), _skM = new THREE.Matrix4();
+    /* every frame, in play and in a film (d_play.js updateNotes): where the sky stands, the hour's colours when the hour
+       changes, and the rays turned to the lens */
+    function skyTick(t) {
+      const at = FL.sky; skyFx.g.position.set(at ? at.x : 0, 0, at ? at.z : 0);
+      const L = SKY_LOOK[lookName] || null;
+      if (skyFx.look !== lookName) {
+        skyFx.look = lookName;
+        const P0 = PRESETS[lookName], k = P0 && P0.key; if (k) skyFx.dir.set(k[2], k[3], k[4]).normalize();
+        for (const c of skyFx.cards) { c.m.visible = !!L; if (L) { c.m.color.setRGB(L.cloud[0], L.cloud[1], L.cloud[2]); c.m.opacity = L.cloud[3]; } }
+        for (const s of [skyFx.halo, skyFx.core, skyFx.burst]) { s.visible = !!(L && L.sun); if (L && L.sun) { s.material.color.setRGB(L.sun[0], L.sun[1], L.sun[2]); s.position.copy(skyFx.dir).multiplyScalar(SKY_R * 0.98); } }
+        skyFx.halo.material.opacity = L && L.sun ? 0.42 * L.sun[3] : 0; skyFx.core.material.opacity = L && L.sun ? 0.9 * L.sun[3] : 0;
+        skyFx.burst.material.opacity = L && L.sun ? 0.5 * L.sun[3] : 0;
+        skyFx.rayMat.opacity = L ? L.rays : 0;
+        for (const r of skyFx.rays) r.mesh.visible = !!(L && L.rays > 0 && skyFx.dir.y > 0.12);
+      }
+      if (skyFx.burst.visible) skyFx.burst.material.rotation = t * 0.012;
+      if (!(L && L.rays > 0 && skyFx.dir.y > 0.12)) return;
+      camera.getWorldPosition(_skC);
+      const d = skyFx.dir;
+      /* (light scattered out of a shaft is seen most looking toward the light and hardly at all looking away: in the first
+         photographs a shaft seen with the sun behind him lay across the grey wall as a pale smear) */
+      camera.getWorldDirection(_skV); const toward = c01((_skV.dot(d) - 0.25) / 0.6);
+      skyFx.rayMat.opacity = L.rays * toward * toward * (3 - 2 * toward);
+      for (const r of skyFx.rays) {
+        const len = Math.min(16, (r.at.y - 0.05) / d.y);
+        _skV.copy(_skC).sub(r.at); _skX.crossVectors(d, _skV); if (_skX.lengthSq() < 1e-8) continue; _skX.normalize(); _skZ.crossVectors(_skX, d);
+        _skM.makeBasis(_skX, d, _skZ); r.mesh.quaternion.setFromRotationMatrix(_skM);
+        const breathe = 0.72 + 0.28 * Math.sin(t * r.f + r.ph);
+        r.mesh.position.copy(r.at); r.mesh.scale.set(r.w * breathe, len, 1);
+      }
+    }
+    buildSky();
+
+    /* ================================================================ THE GROUND'S EDGES FILLED, ITS BUILDINGS FINISHED (v26.1)
+       Chad, 12 Nov 2026: "i can find many empty spaces at the peripheral background, and the side buildings all have very
+       basic and simple details ... Add more trees, fill out empty spaces, improve the overall environment much further."
+       His photograph 10 is a ground ringed by big trees, tin roofs and houses, and from the middle of the game's ground the
+       bare earth ran out to the painted ring of trees 64 m away on every side. Now:
+       1. GROVES: the trees of this country stood round the ground between 16 and 45 m out, each kind one InstancedMesh a
+          part (manyOf): his coconut palms and his banana (reuseInEpisode), the episode's rain tree and mango, a second
+          banana and a frangipani made for this chapter (a checked picture on white, then Meshy at its highest settings:
+          masters/v26.1/env);
+       2. a stilt house of the district out past the way in, its water tank and a motorbike by it; a motorbike and a tank at
+          the way in; the compressors of the grey building's cooling on its wall;
+       3. THE GREY BUILDING as his photographs 5 and 6 show it: rendered walls with their weather streaks (a picture made
+          for it: masters/v26.1/env/refs/render.png, made seamless), the louvred windows in dark frames on concrete sills,
+          a plinth, a deep eave in shadow, a dark tin roof with its gable, a fascia, a gutter and its downpipe;
+       4. THE RED HOUSE east of the turf finished: its back slope and both gables, a soffit and a fascia under the eave,
+          trims, and its windows given open shutters and curtains; the red plank building behind the chief canopy and the
+          white building behind the west tents given windows of their own.
+       Nothing here stands on ground he can walk (stage.keepIn), so nothing here needs a blocker. */
+    const R26 = rng(2611), turn26 = () => R26() * 6.283;
+    /* [x, z, height in metres] (east, south) */
+    const GROVES = {
+      /* (his palms at their full level within 32 m of the middle, where the light level's fronds came out soft against
+         the sky in the first photographs; at the light level beyond) */
+      e4palm1: [[-23, -12, 13], [-27, 4, 14.5], [26, -3, 14], [0, 24.5, 14], [7, 27, 13]],
+      e4palm1far: [[-35, -4, 15], [-8, -36, 14], [13, -33, 12], [-28, 28, 13], [-31, 13, 12]],
+      e4palm2: [[-18, -19, 12.5], [27, -12, 13.5], [25, 8, 12.5], [16, 19, 12], [-6, 28, 12.5]],
+      e4palm2far: [[-29, -18, 13.5], [6, -38, 13], [-16, 31, 12.5]],
+      e4banana: [[-19, -3, 4.2], [-18.5, 9.5, 3.8], [-21, 12, 4.4], [-24, -6, 4.0], [17, -11, 4.0], [14.5, 16, 4.0], [-2, 22, 3.8], [-15, 20.5, 4.2]],
+      w3banana2: [[-20.5, 1.5, 3.6], [-22.5, 7, 3.4], [-26, -1, 3.8], [23.5, 3, 3.6], [3, 21.5, 3.4], [-26.5, 19.5, 3.8]],
+      e4raintree: [[-38, 8, 12], [-24, -27, 11], [19, -40, 12], [33, 2, 13], [-3, 36, 12]],
+      e4mango: [[-33, 22, 9], [-2, -42, 10], [22, -22, 9.5], [22, 24, 9]],
+      w3frangipani: [[-9.2, 17.6, 4.4], [11.6, 17.4, 4.6], [14.4, -9.6, 4.2]]
+    };
+    /* a grove: every copy fitted to its height by the file's own height, its foot on the ground, turned its own seeded way;
+       the lift a tree standing alone is given (stand: lift 1) */
+    function grove(key, list) {
+      if (!list.length) return;
+      if (!have(key)) { waiting.add(key); return; }
+      const turns = list.map(() => turn26());
+      parseOnce(key).then(({ scene: src }) => {
+        if (!alive) return;
+        src.updateMatrixWorld(true);
+        const bb = new THREE.Box3().setFromObject(src), H0 = Math.max(1e-3, bb.max.y - bb.min.y);
+        manyOf(key, list.map(([x, z, h], i) => { const s = h / H0; return { x, y: -bb.min.y * s, z, ry: turns[i], s }; }), world, 1,
+          (made) => { for (const im of made) bronzeLift(im, 1); });
+      }).catch(err => { console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
+    }
+    /* the things by the houses: [key, x, y, z, turn] (a turn of 0 faces the model's own front to the south, +z; the
+       compressors' wall plates are behind them, so turned round they hang on the grey wall, 0.3 m up on their brackets) */
+    const EDGE_THINGS = [
+      ['w3isanhouse', -24, 0, 26.5, Math.atan2(24, -26.5)],          // its front toward the middle of the ground
+      ['w3tank', -19.4, 0, 24.2, 0.6], ['w3scooter', -20.6, 0, 21.4, 2.2],
+      ['w3tank', -7.3, 0, 15.6, -1.2], ['w3scooter', -7.9, 0, 13.9, 1.25],
+      ['w3aircon', 3.0, 0.3, GREY.z - 0.21, Math.PI], ['w3aircon', -4.75, 0.3, GREY.z - 0.21, Math.PI]
+    ];
+    /* a cloth hung inside a window: soft folds down it, a little lighter at its hem (one picture, every curtain) */
+    function makeCurtain() {
+      const [c, x] = cnv(64, 128); const g = x.createLinearGradient(0, 0, 64, 0);
+      for (let i = 0; i <= 8; i++) { const k = i / 8, f = 0.5 + 0.5 * Math.cos(k * Math.PI * 6); g.addColorStop(k, `rgb(${Math.round(196 + 44 * f)},${Math.round(200 + 40 * f)},${Math.round(204 + 38 * f)})`); }
+      x.fillStyle = g; x.fillRect(0, 0, 64, 128);
+      x.fillStyle = 'rgba(255,255,255,0.18)'; x.fillRect(0, 116, 64, 12);
+      /* (one curtain is about 0.3 m by 1.1 m, and a quad's UVs are metres: the picture spread over one) */
+      const t = tex(done(THREE, c, false)); t.wrapS = THREE.RepeatWrapping; t.repeat.set(1 / 0.3, 1 / 1.1); return t;
+    }
+    /* the shadow a deep eave lays on the wall under it: darkest under the eave, gone 0.8 m down */
+    function makeEaveShade() {
+      const [c, x] = cnv(4, 64); const g = x.createLinearGradient(0, 0, 0, 64);
+      g.addColorStop(0, 'rgba(18,16,14,0.55)'); g.addColorStop(0.45, 'rgba(18,16,14,0.22)'); g.addColorStop(1, 'rgba(18,16,14,0)');
+      x.fillStyle = g; x.fillRect(0, 0, 4, 64);
+      return tex(done(THREE, c, false));
+    }
+    function buildEdges() {
+      for (const key of Object.keys(GROVES)) grove(key, GROVES[key]);
+      /* (the tank's steel came from the generator fully metal: with nothing round it to reflect it drew black (v11.3). It is
+         read as a brushed steel's paint here, its own silver showing, the v25.5 law applied where it is drawn) */
+      const steel = (m) => m.traverse(q => { if (q.isMesh) for (const mt of [].concat(q.material)) if ('metalness' in mt) { mt.metalness = 0.35; mt.roughness = 0.55; mt.needsUpdate = true; } });
+      for (const [key, x, y, z, ry] of EDGE_THINGS) stand(key, x, y, z, ry, { lift: 1, done: key === 'w3tank' ? steel : null });
+      const mAlu = M({ color: 0x4a4f53, roughness: 0.55, metalness: 0.35 }), mSill = M({ color: 0xd2d0c8, roughness: 0.9 });
+      const mPlinth = surf('render', { tile: 3, roughness: 0.95, tint: 0x8f8f8a }), mRender = surf('render', { tile: 3, roughness: 0.95 });
+      const mTinBrown = surf('tin', { tile: 1.8, roughness: 0.7, side: THREE.DoubleSide, tint: 0x7a5546 });
+      const mCurtain = M({ map: makeCurtain(), roughness: 0.9 }), mCurtainRose = M({ map: mCurtain.map, color: 0xf1c9c4, roughness: 0.9 });
+      const mSoffit = M({ color: 0xe8e2d4, roughness: 0.9, side: THREE.DoubleSide });
+      /* ---- 3. THE GREY BUILDING: its front faces north (the turf), its face at z = GREY.z */
+      const zf = GREY.z, gx0 = GREY.x0 - 6, gx1 = GREY.x1;
+      for (const x of [6.6, 4.2, 1.8, -0.6, -3.0]) {
+        const w = 1.1, h = 1.3, y = 1.95, fr = 0.055, pd = 0.045;
+        box(mAlu, x, y + h / 2 + fr / 2, zf - pd / 2, w + 2 * fr, fr, pd); box(mAlu, x, y - h / 2 - fr / 2, zf - pd / 2, w + 2 * fr, fr, pd);
+        box(mAlu, x - w / 2 - fr / 2, y, zf - pd / 2, fr, h, pd); box(mAlu, x + w / 2 + fr / 2, y, zf - pd / 2, fr, h, pd);
+        box(mAlu, x, y, zf - 0.02, 0.04, h, 0.03);
+        box(mSill, x, y - h / 2 - fr - 0.035, zf - 0.075, w + 0.28, 0.07, 0.15);
+        box(mRender, x, y + h / 2 + fr + 0.08, zf - 0.012, w + 0.34, 0.14, 0.024);
+      }
+      box(mPlinth, (gx0 + gx1) / 2, 0.23, zf - 0.016, gx1 - gx0, 0.46, 0.032);
+      box(mPlinth, gx0 - 0.016, 0.23, zf + 3, 0.032, 0.46, 6);
+      /* its roof: a gable along its length, the north slope over the turf, the eave 0.9 m out */
+      const eY = 4.22, rY = 5.95, eZ = zf - 0.9, rZ = zf + 3, bZ = zf + 6.9, rx0 = gx0 - 0.6, rx1 = gx1 + 0.1;
+      quad(mTinBrown, [rx1, eY, eZ], [rx0, eY, eZ], [rx0, rY, rZ], [rx1, rY, rZ]);
+      quad(mTinBrown, [rx0, eY, bZ], [rx1, eY, bZ], [rx1, rY, rZ], [rx0, rY, rZ]);
+      /* its gable ends and its back, the gables up under the roof's own line (4.58 m where the slopes cross the walls) */
+      planar(mRender, [[gx0, GREY.h, zf], [gx0, GREY.h, zf + 6], [gx0, 4.58, zf + 6], [gx0, rY - 0.04, rZ], [gx0, 4.58, zf]]);
+      planar(mRender, [[gx1, GREY.h, zf + 6], [gx1, GREY.h, zf], [gx1, 4.58, zf], [gx1, rY - 0.04, rZ], [gx1, 4.58, zf + 6]]);
+      wall(mRender, gx1, zf + 6, gx1, zf, 0, GREY.h); wall(mRender, gx0, zf + 6, gx1, zf + 6, 0, GREY.h);
+      quad(mSoffit, [rx0, eY - 0.06, eZ + 0.02], [rx1, eY - 0.06, eZ + 0.02], [rx1, GREY.h - 0.02, zf - 0.005], [rx0, GREY.h - 0.02, zf - 0.005]);
+      box(mWhite, (rx0 + rx1) / 2, eY - 0.08, eZ - 0.02, rx1 - rx0, 0.2, 0.04);
+      bar(mAlu, [rx0 + 0.1, eY - 0.2, eZ - 0.09], [rx1, eY - 0.2, eZ - 0.09], 0.055, 8);
+      bar(mAlu, [gx0 + 0.25, eY - 0.22, eZ - 0.09], [gx0 + 0.25, eY - 0.6, zf - 0.07], 0.04, 6);
+      post(mAlu, gx0 + 0.25, zf - 0.07, 0.04, 0.05, eY - 0.6, 6);
+      /* the shadow of that eave on the wall */
+      const shadeM = B({ map: makeEaveShade(), transparent: true, depthWrite: false, fog: true });
+      const shM = new THREE.Mesh(new THREE.PlaneGeometry(gx1 - gx0, 0.85), shadeM);
+      shM.position.set((gx0 + gx1) / 2, GREY.h - 0.425, zf - 0.006); shM.rotation.y = Math.PI; shM.renderOrder = 1; world.add(shM); owned.push(shM);
+      /* ---- 4. THE RED HOUSE east of the turf (it faces west, its face at x = HOUSE.x) */
+      const Hh = HOUSE, xf = Hh.x, zA = Hh.z0 - 0.6, zB = Hh.z1 + 0.6, ridgeX = Hh.x + 4.5;
+      quad(mTin, [ridgeX, Hh.h, zA], [ridgeX, Hh.h, zB], [Hh.x + 9.8, Hh.h - 1.55, zB], [Hh.x + 9.8, Hh.h - 1.55, zA]);
+      tri(mRedPlank, [Hh.x + 9, Hh.h - 1.4, Hh.z0], [Hh.x, Hh.h - 1.4, Hh.z0], [ridgeX, Hh.h - 0.06, Hh.z0]);
+      tri(mRedPlank, [Hh.x, Hh.h - 1.4, Hh.z1], [Hh.x + 9, Hh.h - 1.4, Hh.z1], [ridgeX, Hh.h - 0.06, Hh.z1]);
+      wall(mRedPlank, Hh.x + 9, Hh.z1, Hh.x + 9, Hh.z0, 0, Hh.h - 1.4);
+      quad(mSoffit, [Hh.x - 0.78, Hh.h - 1.6, zB], [Hh.x - 0.78, Hh.h - 1.6, zA], [Hh.x, Hh.h - 1.4, zA], [Hh.x, Hh.h - 1.4, zB]);
+      box(mWhite, Hh.x - 0.8, Hh.h - 1.64, (zA + zB) / 2, 0.04, 0.2, zB - zA);
+      box(mWhite, xf - 0.022, 0.72, (Hh.z0 + Hh.z1) / 2, 0.03, 0.08, Hh.z1 - Hh.z0);
+      for (const z of [Hh.z0 + 0.07, Hh.z1 - 0.07]) box(mWhite, xf - 0.022, (0.7 + Hh.h - 1.4) / 2, z, 0.03, Hh.h - 2.1, 0.14);
+      for (const [i, z] of [-4.5, -1.5, 1.5, 4.2].entries()) {
+        /* two shutters of red planks in white frames, swung open flat against the planks beside the window */
+        for (const s of [-1, 1]) {
+          const cz = z + s * 0.83;
+          box(mRedPlank, xf - 0.05, 2.05, cz, 0.03, 1.08, 0.48);
+          for (const dz of [-0.225, 0.225]) box(mWhite, xf - 0.068, 2.05, cz + dz, 0.012, 1.08, 0.035);
+          for (const dy of [-0.52, 0.52]) box(mWhite, xf - 0.068, 2.05 + dy, cz, 0.012, 0.04, 0.48);
+        }
+        /* curtains drawn to each side inside */
+        for (const s of [-1, 1]) {
+          const m = i % 2 ? mCurtainRose : mCurtain, cz = z + s * 0.33;
+          quad(m, [xf - 0.016, 1.52, cz - 0.15], [xf - 0.016, 1.52, cz + 0.15], [xf - 0.016, 2.58, cz + 0.15], [xf - 0.016, 2.58, cz - 0.15]);
+        }
+      }
+      /* the red plank building behind the chief canopy: its window's curtains, the fascia of its eave */
+      const P0 = PLANK;
+      for (const s of [-1, 1]) quad(mCurtain, [10.8 + s * 0.36 + 0.14, 1.27, P0.z - 0.016], [10.8 + s * 0.36 - 0.14, 1.27, P0.z - 0.016], [10.8 + s * 0.36 - 0.14, 2.43, P0.z - 0.016], [10.8 + s * 0.36 + 0.14, 2.43, P0.z - 0.016]);
+      box(mWhite, (P0.x0 - 0.4 + P0.x1 + 2) / 2, 3.47, P0.z - 0.72, P0.x1 + 2 - (P0.x0 - 0.4), 0.17, 0.04);
+      /* the white building behind the west tents (photograph 10): its windows, dark glass in black frames */
+      const mBlack = M({ color: 0x1b1c1d, roughness: 0.6 }), mGlass = M({ color: 0x23292c, roughness: 0.15, metalness: 0.6 });
+      for (const z of [-3.6, 1.9, 7.2]) {
+        wall(mGlass, -12.365, z + 0.55, -12.365, z - 0.55, 1.22, 2.12);
+        box(mBlack, -12.35, 2.15, z, 0.04, 0.05, 1.2); box(mBlack, -12.35, 1.19, z, 0.04, 0.05, 1.2);
+        for (const dz of [-0.575, 0, 0.575]) box(mBlack, -12.35, 1.67, z + dz, 0.04, 0.92, 0.045);
+      }
+      flush();
+    }
+    buildEdges();
     /* ================================================================ THE PEOPLE (the plan's §3.3, §6.1; the tracker's §5)
        Every body here was made for this chapter end to end (a reference on white in an A pose, Meshy at its highest
        settings, its rig with fingers, the library's takes and written ones: masters/v26.0/make.sh §1 to §3), prepped in
@@ -1527,6 +1817,17 @@
        and the padding makes that texel the patch's own colour. Every body this chapter made (keys e4...), at every
        level; Chad's own models (Grandmaster Pho, the monk) are as he gave them and are not touched. */
     const NOMIP = /^e4/;
+    /* v26.1 · A SHEET LAID OUT AGAIN WITH ROOM BETWEEN ITS CHARTS IS DRAWN WITH MIPMAPS (Chad, 12 Nov 2026: the faces
+       "absolutely butchered", "really bad" on a 720p phone, "absolutely horrendous" on his own phone). Drawn without them, a
+       face with more texels than the phone has pixels was SAMPLED: it sparkled and crawled as anything moved, and a still
+       picture hides that. Every level of every body this chapter made is now baked into a sheet with a margin round each
+       chart (masters/v26.0/people.sh REPAINT, tools/repaint.py), named `repainted`: such a sheet takes mipmaps and a
+       little anisotropy, because averaging it can no longer bleed one chart into the next (v5.11's own answer). A sheet of
+       any other name is drawn as it was. */
+    function sheetOf(key, t) {
+      if (t.name === 'repainted') { t.generateMipmaps = true; t.minFilter = THREE.LinearMipmapLinearFilter; t.anisotropy = 4; t.needsUpdate = true; return t; }
+      return NOMIP.test(key) ? noMip(THREE, t) : t;
+    }
     /* (the children's runs and their skip too: c_crowd.js) */
     const WALKS = /^(walkdance|Run_02|Run_03)$/;                                 // (the takes that travel: the dancers' walk-dance, the children's two runs)
     /* (the full model's reach was 2.7 m until 12 Nov. Photographed at 2.55 m at both levels, on a phone's frame and a
@@ -1536,7 +1837,12 @@
        inside the old reach, went from 832,000 triangles to 563,000. It was NOT the spawn's weight, as I first wrote:
        from the spawn Ton was already outside the old reach's own taking-up (2.51 m from the lens). That was the
        sandals behind him: c_zfx.js) */
-    const LEVELS = [['h', 2.2], ['', 5.4], ['m', 11.5], ['f', Infinity]];        // each skin's suffix and how far it is drawn to
+    /* (v26.1: the near body drawn to 7 m, where it was 5.4, and the mid to 14, where it was 11.5: Chad, 12 Nov 2026, "even on
+       the phone, i want a higher rendering budget". Each body's paint is laid out with margins and drawn with mipmaps
+       now (sheetOf, above), and the face has three times the robe's share of each sheet: where the near body hands over,
+       its face is drawn at about the mid body's own detail, so nothing pops; measured on the brown hermit, 1,091 texels a
+       metre on the near face and 186 on the mid's, against a phone's 166 pixels a metre of a face at 7 m) */
+    const LEVELS = [['h', 2.2], ['', 7.0], ['m', 14], ['f', Infinity]];         // each skin's suffix and how far it is drawn to
     const _pv = new THREE.Vector3(), _pq = new THREE.Quaternion(), _lens = new THREE.Vector3();
     /* the soft dark under a body (a phone draws no shadows, so a contact shadow is painted: v9.3) */
     const blobTex = (() => { const [c, x] = cnv(64); const g = x.createRadialGradient(32, 32, 2, 32, 32, 31);
@@ -1586,7 +1892,7 @@
           if (q.isBone) { P.bone[q.name] = q; if (/^(mixamorig:?)?Head$/.test(q.name)) P.head = q; if (/^(mixamorig:?)?Hips$/.test(q.name)) P.hips = q; }
         });
         if (o.s) m.scale.multiplyScalar(o.s);
-        if (NOMIP.test(key)) for (const q of skins) for (const mm of [].concat(q.material)) if (mm && mm.map) noMip(THREE, mm.map);
+        for (const q of skins) for (const mm of [].concat(q.material)) if (mm && mm.map) sheetOf(key, mm.map);
         P.group.add(m); P.model = m; P.lv[1] = skins;
         P.mixer = new THREE.AnimationMixer(m);
         for (const clip0 of animations) {
@@ -1735,7 +2041,7 @@
           if (bones.some(b => !b)) { console.warn(key + ': a bone of it is not on ' + P.key); return; }
           let mat = sm.material;
           if (!mat.map) { let near = null; for (const q of P.lv[1]) for (const nm of [].concat(q.material)) if (nm.name === mat.name) near = nm; if (near) mat = near; }
-          if (NOMIP.test(P.key) && mat.map) noMip(THREE, mat.map);
+          if (mat.map) sheetOf(P.key, mat.map);
           const mesh = new THREE.SkinnedMesh(sm.geometry, mat);
           mesh.castShadow = false; mesh.receiveShadow = false; mesh.frustumCulled = false; mesh.visible = false;
           P.model.add(mesh); mesh.bind(new THREE.Skeleton(bones, sm.skeleton.boneInverses), sm.bindMatrix); made.push(mesh); });
@@ -2323,7 +2629,28 @@
     const _ahS = new THREE.Vector3(), _ahE = new THREE.Vector3(), _ahW = new THREE.Vector3(), _ahT = new THREE.Vector3(), _ahP = new THREE.Vector3(),
           _ahU = new THREE.Vector3(), _ahH = new THREE.Vector3(), _ahZ = new THREE.Vector3(), _ahV = new THREE.Vector3(), _ahZl = new THREE.Vector3(),
           _ahM = new THREE.Matrix4(), _ahM2 = new THREE.Matrix4(), _ahQ = new THREE.Quaternion(), _ahQp = new THREE.Quaternion();
+    /* AN ELBOW'S HINGE read off the pose its arm stands in now (the takes on these rigs keep the forearm in one plane of the
+       upper arm's frame: masters/v25.3/measure/hinge.cjs), as restHands reads it for the monks; kept on the arm. Read
+       before anything is laid on the arm (v26.1, for the woman with the taper) */
+    /* (v26.1: `hm`, a hinge MEASURED off another of the body's takes, in the upper arm's own frame. One who stands with her
+       arms straight gives no hinge from her rest, and the guess put her elbow's crease 16 degrees off the one her own
+       takes bend it about) */
+    function hingeOf(a, sg, hm) {
+      if (a.hinge) return a.hinge;
+      const uL = a.fore.position.clone().normalize(), dL = a.hand.position.clone().normalize().applyQuaternion(a.fore.quaternion);
+      const h = hm ? new THREE.Vector3().fromArray(hm) : new THREE.Vector3().crossVectors(uL, dL);
+      if (hm) h.addScaledVector(uL, -h.dot(uL)); else if (h.length() < 0.08) h.set(0.8, 0, sg > 0 ? -0.6 : 0.6);
+      h.normalize();
+      const flex = Math.atan2(new THREE.Vector3().crossVectors(uL, dL).dot(h), uL.dot(dL));
+      a.hinge = { uL, h, rest: new THREE.Quaternion().setFromAxisAngle(h, -flex).multiply(a.fore.quaternion) };
+      return a.hinge;
+    }
+    /* (the class of v26.1's first taper: a point that is not a number never reaches a bone. Once NaN is written into an
+       arm it stays there, for the take does not write it back, and the arm is not drawn; so it is refused, and said) */
+    const armBad = new Set();
     function armHinge(a, target, pdir) {
+      if (!(Number.isFinite(target.x + target.y + target.z) && Number.isFinite(pdir.x + pdir.y + pdir.z))) {
+        if (!armBad.has(a)) { armBad.add(a); console.warn('armHinge: a target that is not a number, refused'); } return; }
       const G = a.hinge; if (!G) { armTo(a, target, _ahP.copy(target).add(pdir)); return; }
       a.up.updateWorldMatrix(true, true);
       a.up.getWorldPosition(_ahS); a.fore.getWorldPosition(_ahE); a.hand.getWorldPosition(_ahW);
@@ -2437,6 +2764,11 @@
     const cast = {};
     const SIT_E = Math.PI / 2, SIT_W = -Math.PI / 2;                            // seated facing east; facing west
     const REST = { Chair_Sit_Idle_M: [9.4, 2.85] };                             // the seated idle's upright window (it wraps its end)
+    /* THE KNEEL'S WINDOW, there and back in 34 seconds (Chad, 12 Nov 2026: "The audience's facing left and right animation
+       plays too fast and can be slowed down"). The take's own pace sent the head 24 cm round its look to either side and
+       back in 13.6 s, at up to 11 cm a second (tools/probes/windowread.mjs on e4deva); at 34 s it is 4.4 at its fastest:
+       a calm look round. Every kneeler wears it: the crowd (c_crowd.js SIT), the young man, Ton when he kneels */
+    const SEIZA_WIN = [0.4, 6.8, 34];
     const PHO_AT = benchAt(0.46, 0.04);                                          // Grandmaster Pho's place: the bench's east end
     /* each seat's top in metres, MEASURED on its model (tools/probes/seatmeasure.mjs: the sofa's cushion 0.46 and sat
        into by 3 cm; the bench's slats 0.40 and the chair's seat 0.39, each at the size b_world2.js draws it) */
@@ -2454,7 +2786,7 @@
       /* THE YOUNG MAN WHO GOES UP at Grandmaster Pho's bench (photographs 5 and 6): the man in the group's shirt, a
          person of his own (he raises his bai sri, and goes somewhere the player cannot follow). Stood by the play, where
          his raised hands and the master's can meet on one bowl (ymPlace) */
-      cast.ym = mkPerson('e4devg', PHO_AT[0], PHO_AT[1] - 1.4, 0, { take: 'seiza', centre: true, win: { seiza: [0.4, 6.8] }, hidden: true, blobW: 0.95, blobD: 1.0 });
+      cast.ym = mkPerson('e4devg', PHO_AT[0], PHO_AT[1] - 1.4, 0, { take: 'seiza', centre: true, win: { seiza: SEIZA_WIN }, hidden: true, blobW: 0.95, blobD: 1.0 });
       /* (each on his sofa: its cushion's top is SEATS.sofa, his hips a little forward of the sofa's own middle) */
       const seat = (key, x, z, phase) => { const P = mkPerson(key, x, z, SIT_E, { take: 'Chair_Sit_Idle_M', centre: true, win: REST, phase, blobW: 1.0, blobD: 1.1,
         seat: { y: SEATS.sofa, takes: /^(Chair_Sit|Sitting_|handson|petals|palmover)/ } }); P.home = { x, z, ry: SIT_E }; return P; };
@@ -2754,12 +3086,15 @@
     }
     /* each kneeling driver's rest: A sits on the heels, B sits too at the way in and holds a kneeling wai at the blessing
        (the krap's first second, back and forth); the bows of the homage are spans on both */
-    const SIT = { seiza: [0.4, 6.8] }, WAI = [0.15, 0.85];
+    const SIT = { seiza: SEIZA_WIN }, WAI = [0.15, 0.85];
+    /* (each driver starts at its own place round the kneel's slower cycle: a person's clock starts at ten times its phase, so
+       the phases are spread over 3.4 to keep the kneelers as far apart round it as they were round the take's own 13.6 s) */
+    const SITSPREAD = SEIZA_WIN[2] / 10;
     function buildCrowd() {
       planCrowd();
       for (const key of DEVOTEES) crowdDrivers[key] = {
-        A: mkDriver(key, { take: 'seiza', centre: true, win: SIT, phase: 0.07 + 0.11 * DEVOTEES.indexOf(key) }),
-        B: mkDriver(key, { take: 'seiza', centre: true, win: SIT, phase: 0.55 + 0.09 * DEVOTEES.indexOf(key), rate: 0.86 }),
+        A: mkDriver(key, { take: 'seiza', centre: true, win: SIT, phase: (0.07 + 0.11 * DEVOTEES.indexOf(key)) * SITSPREAD }),
+        B: mkDriver(key, { take: 'seiza', centre: true, win: SIT, phase: (0.55 + 0.09 * DEVOTEES.indexOf(key)) * SITSPREAD, rate: 0.86 }),
         S: mkDriver(key, { take: 'Idle_3', centre: true, phase: 0.13 * DEVOTEES.indexOf(key) }) };
       for (const s of crowdSeats) { const D = crowdDrivers[DEVOTEES[s.body]][s.kind === 'stand' ? 'S' : s.half], p = s.at.arrive;
         s.member = mkMember(D, p.x, p.z, p.ry, { s: s.s, mirror: s.mirror, parent: dayOne, blobW: s.kind === 'stand' ? 0.8 : 0.95, blobD: s.kind === 'stand' ? 0.7 : 1.0 });
@@ -2816,7 +3151,13 @@
        its tip goes from one small candle's wick to the next, is drawn back, and goes again, on the day's own clock; her
        elbow stays at her side and her eyes are on the flame. The taper is a real model (w3taper, 0.70 m) laid along her
        fingers, and a flame stands on its tip. */
-    const TAPER = { at: [1.5, -9.25], held: 0.12, len: 0.70, T: 12.5 };
+    /* (`hinge`: her left elbow's own, measured off her takes in her upper arm's frame (masters/v26.1/make.sh): 'prostrate'
+       bends it 128.6 degrees about (0.607, 0, -0.794), 'seiza' 27 degrees within 6 degrees of that; her standing take is
+       straight-armed and gives none. `wrist`: where her wrist rests from her shoulder, to her right, up and before her, in
+       metres: the upper arm hanging, the forearm reaching forward level (her arm is 0.46 m to the wrist); it follows the
+       wick by `follow`: half its way to her left or right, half its rise. `hold`: a probe's seam, a moment of her round
+       to stand at; null in play) */
+    const TAPER = { at: [1.5, -9.25], held: 0.12, len: 0.70, T: 12.5, slant: 0.32, hinge: [0.607, 0, -0.794], wrist: [-0.03, -0.20, 0.25], follow: [0.5, 0.5] };
     const taper = (() => {
       const y = TABLES.tops[0] + 0.245;
       const P = mkPerson('e4devf', TAPER.at[0], TAPER.at[1], Math.PI, { take: 'Idle_3', phase: 0.63, parent: dayOne, hidden: true, blobW: 0.8, blobD: 0.7 });
@@ -2825,8 +3166,10 @@
       const fl = new THREE.Mesh(gF, B({ map: tex(makeFlame(THREE, cnv)), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, side: THREE.DoubleSide }));
       fl.renderOrder = 4; fl.visible = false; fl.frustumCulled = false; dayOne.add(fl); owned.push(fl);
       cast.taper = P; castBlock.taper = new THREE.Box3(new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 61, 0));
-      /* two wicks of the front row (b_world2.js: every 0.33 m along z -10.09), and the taper drawn back between them */
-      return { P, g, fl, on: false, W: [[1.32, y, -10.09], [0.99, y, -10.09], [1.17, y + 0.2, -9.94]], grip: { L: { at: [0, 0, 0], f: [0, 0, -1], n: [1, -0.25, 0], out: 0.1, down: 0.5, aft: 0.3 } }, tip: new THREE.Vector3() };
+      /* two wicks of the front row (b_world2.js: every 0.33 m along z -10.09), and the taper held up between them (v26.1:
+         it was drawn back 15 cm and up 20; with a taper this long that brought her hand to her shoulder, the elbow folded
+         141 degrees and the wrist bent 74: measured, and moved out to where her arm holds it at rest) */
+      return { P, g, fl, on: false, W: [[1.32, y, -10.09], [0.99, y, -10.09], [1.15, y + 0.12, -10.03]], grip: { L: { at: [0, 0, 0], f: [0, 0, -1], n: [1, -0.25, 0], out: 0.1, down: 0.5, aft: 0.3 } }, tip: new THREE.Vector3(), hold: null };
     })();
     /* where the taper's tip is asked to be at a moment of her round (seconds), eased from stop to stop */
     const _tpA = [0, 0, 0];
@@ -2843,33 +3186,71 @@
     }
     const _tpS = new THREE.Vector3(), _tpF = new THREE.Vector3(), _tpN = new THREE.Vector3(), _tpP = new THREE.Vector3(), _tpQ = new THREE.Quaternion(), _tpY = new THREE.Vector3(0, 1, 0), _tpC = new THREE.Vector3(),
           _tpT = new THREE.Vector3(), _tpW = new THREE.Vector3();
+    const _tpR = new THREE.Vector3(), _tpU = new THREE.Vector3(), _tpB = new THREE.Vector3(), _tpPole = new THREE.Vector3(), _tpG = new THREE.Vector3(), _tpE = new THREE.Vector3(),
+          _tpHf = new THREE.Vector3(), _tpHn = new THREE.Vector3(), _tpHa = new THREE.Vector3(), _tpHd = new THREE.Vector3(), _tpM = new THREE.Matrix4(), _tpM2 = new THREE.Matrix4(),
+          _tpQ2 = new THREE.Quaternion(), _tpQ3 = new THREE.Quaternion(), _tpAim = new THREE.Vector3(), _tpD = new THREE.Vector3();
+    /* her hand from her forearm's line: the fingers along it, bent ten degrees down at the wrist; the palm to her right (her
+       middle: this is her left hand) and a little down, so the first finger and the thumb are on top (across, for a left
+       hand, runs from the little finger to the first: armsOf); the taper out along the fingers and a little toward the
+       thumb (TAPER.slant) */
+    function taperHand(fore, asIs) {
+      if (asIs) _tpHf.copy(fore); else _tpHf.copy(fore).addScaledVector(_tpU, -0.18).normalize();
+      _tpHn.copy(_tpR).addScaledVector(_tpU, -0.3); _tpHn.addScaledVector(_tpHf, -_tpHn.dot(_tpHf)).normalize();
+      _tpHa.crossVectors(_tpHn, _tpHf).normalize();
+      _tpHd.copy(_tpHf).addScaledVector(_tpHa, TAPER.slant).normalize();
+    }
     function taperTick(t) {
       const T = taper, P = T.P;
       if (!T.on || !P.ready || !dayOne.visible) { if (T.g.visible) { T.g.visible = false; T.fl.visible = false; } return; }
       const As = armsOf(P), a = As && As.L; if (!a) return;
-      /* THE ASK: the hand's place is solved from the tip. The taper is rigid, so the palm is the tip's place drawn back
-         along the taper by what stands before the hand; the taper runs from a place before her left hip to the tip */
-      const Q = taperAim(t), G = T.grip.L, hx = TAPER.at[0] - 0.19, hy = 1.11, hz = TAPER.at[1] - 0.3;
-      const dx = Q[0] - hx, dy = Q[1] - hy, dz = Q[2] - hz, dl = Math.hypot(dx, dy, dz) || 1, before = TAPER.len - TAPER.held;
-      /* HOW A TAPER IS HELD: not along the fingers and not square across them, but slantwise over the palm, out between
-         the thumb and the first finger, the fingers closed over it. So the hand's own length lies an eighth of a turn
-         off the taper's line, about the palm's facing (in, and a little down): the fingers run forward and down from a
-         wrist that hangs below the elbow, and the taper runs level from it */
-      _tpT.set(dx / dl, dy / dl, dz / dl); _tpN.set(0.8, -0.6, 0); _tpN.addScaledVector(_tpT, -_tpN.dot(_tpT)).normalize();
-      _tpW.crossVectors(_tpN, _tpT); _tpF.copy(_tpT).multiplyScalar(Math.SQRT1_2).addScaledVector(_tpW, -Math.SQRT1_2);
-      G.f[0] = _tpF.x; G.f[1] = _tpF.y; G.f[2] = _tpF.z; G.n[0] = _tpN.x; G.n[1] = _tpN.y; G.n[2] = _tpN.z;
-      G.at[0] = Q[0] - _tpT.x * before; G.at[1] = Q[1] - _tpT.y * before; G.at[2] = Q[2] - _tpT.z * before;
-      handTo(P, 'L', G.at, G.f, G.n, 1, G);
-      /* THE ANSWER: the taper lies where the hand came to be (the hand's own measured axes, in the world now): through
-         the palm's middle, a finger's thickness off it, along the slant between the fingers' line and the thumb's side */
-      P.group.updateWorldMatrix(true, true);
+      /* HOW SHE HOLDS IT, v26.1 (Chad, 12 Nov 2026: "The lady standing at the front of the altar lighting the candles have
+         very weird distorted arms and hands while lighting the candle"). Photographed from her side, the old ask had her
+         elbow solved by the shortest arc and her hand then turned to whatever the taper's line asked: the wrist folded
+         back over the forearm and the taper ran through the hand at her waist. Now it is solved as a person holds a taper
+         to a candle on a table before her, from the hand outward and in one pass (a first try moved the wrist by what the
+         tip missed and solved again: the taper's half-metre lever swung the tip further each round, and her hand rose
+         over her head):
+         1. her wrist's RESTING PLACE is taken from her own shoulder (TAPER.wrist): the upper arm hanging, the forearm
+            reaching forward level, the elbow near a right angle (a first try set the hand a fixed way back from each wick:
+            the far wick, 0.4 m to her left, was then out of her reach, and the near one folded the wrist 54 degrees);
+         2. the TAPER'S LINE is from that place to the wick; the hand is turned to carry it as a pen is held: the fingers
+            along the line less the slant toward the thumb, the palm toward her middle and a little down, so the thumb
+            and the first finger are on top;
+         3. the WRIST is where that hand, so turned, puts the taper's tip on the wick; the arm is solved to it once,
+            bending about its own measured hinge (armHinge; TAPER.hinge), the elbow down, a little out and back */
+      /* (taperAim answers an array, read here as a point: copied as it was, v26.1's first build solved her arm from NaN and
+         she stood with no left arm and no taper) */
+      const Q = _tpAim.fromArray(taperAim(T.hold != null ? T.hold : t)), Lt = TAPER.len - TAPER.held + 0.012;
+      P.group.updateWorldMatrix(true, true); P.group.getWorldQuaternion(_tpQ);
+      _tpR.set(-1, 0, 0).applyQuaternion(_tpQ); _tpU.set(0, 1, 0); _tpB.set(0, 0, 1).applyQuaternion(_tpQ);   // her right, up, her front
+      _tpPole.copy(_tpU).multiplyScalar(-1).addScaledVector(_tpR, -0.35).addScaledVector(_tpB, -0.25).normalize();   // the elbow: down, out to her left, back
+      hingeOf(a, 1, TAPER.hinge);
+      if (!a.wrote) { a.qUp.copy(a.up.quaternion); a.qFore.copy(a.fore.quaternion); a.qHand.copy(a.hand.quaternion); a.wrote = true; }   // (armsBack gives them back before the mixer: v11.5)
+      /* 1. her wrist's resting place (and where the wick takes it: a wick off to her left turns the forearm that way, not
+         the wrist; a raised one raises the hand. Measured on the first pass of this: the wick 0.35 m to her left bent the
+         wrist 45 degrees sideways, the raised one 42 degrees up) */
+      a.up.getWorldPosition(_tpS); _tpC.copy(Q).sub(_tpS);
+      const side = _tpC.dot(_tpR) - TAPER.wrist[0], rise = Q.y - taper.W[0][1];
+      _tpS.addScaledVector(_tpR, TAPER.wrist[0] + TAPER.follow[0] * side).addScaledVector(_tpU, TAPER.wrist[1] + TAPER.follow[1] * rise).addScaledVector(_tpB, TAPER.wrist[2]);
+      /* 2. the taper's line, and the hand turned to carry it (the fingers' line found in three rounds: it leans off the
+         taper by the slant, which is measured about the fingers themselves) */
+      _tpD.copy(Q).sub(_tpS).normalize(); _tpHf.copy(_tpD);
+      for (let it = 0; it < 3; it++) { taperHand(_tpHf, true); _tpHf.copy(_tpD).addScaledVector(_tpHa, -TAPER.slant).normalize(); }
+      taperHand(_tpHf, true);
+      /* 3. the wrist that puts the tip on the wick, and the arm to it */
+      _tpG.copy(Q).addScaledVector(_tpHd, -Lt).addScaledVector(_tpHf, -a.palm * 0.85).addScaledVector(_tpHa, -0.02).addScaledVector(_tpHn, -0.012);
+      armHinge(a, _tpG, _tpPole);
+      /* the hand turned to it: its own measured axes (across, palm, fingers) onto the ones asked */
+      _tpM.makeBasis(_tpHa, _tpHn, _tpHf); _tpM2.makeBasis(a.aL, a.nL, a.fL).transpose(); _tpM.multiply(_tpM2); _tpQ2.setFromRotationMatrix(_tpM);
+      a.hand.parent.getWorldQuaternion(_tpQ3); a.hand.quaternion.copy(_tpQ3.invert().multiply(_tpQ2)); a.hand.updateWorldMatrix(false, true);
+      /* THE ANSWER: the taper lies where the hand came to be, between the thumb and the first finger */
       a.hand.getWorldPosition(_tpS); a.hand.getWorldQuaternion(_tpQ);
       _tpF.copy(a.fL).applyQuaternion(_tpQ).normalize(); _tpN.copy(a.nL).applyQuaternion(_tpQ).normalize(); _tpW.crossVectors(_tpN, _tpF);
-      _tpT.copy(_tpF).add(_tpW).normalize();
-      _tpP.copy(_tpS).addScaledVector(_tpF, a.palm).addScaledVector(_tpN, 0.017);
+      _tpT.copy(_tpF).addScaledVector(_tpW, TAPER.slant).normalize();
+      _tpP.copy(_tpS).addScaledVector(_tpF, a.palm * 0.85).addScaledVector(_tpW, 0.02).addScaledVector(_tpN, 0.012);
       T.g.position.copy(_tpP).addScaledVector(_tpT, -TAPER.held); T.g.quaternion.setFromUnitVectors(_tpY, _tpT); T.g.visible = true;
-      T.tip.copy(_tpP).addScaledVector(_tpT, before + 0.012);
-      curlFingers(P, 'L', 0.95);
+      T.tip.copy(_tpP).addScaledVector(_tpT, Lt);
+      curlFingers(P, 'L', 0.62);
       camera.getWorldPosition(_tpC);
       const fk = 0.84 + 0.11 * Math.sin(t * 9.1) + 0.05 * Math.sin(t * 23.7);
       T.fl.position.copy(T.tip); T.fl.rotation.set(0, Math.atan2(_tpC.x - T.tip.x, _tpC.z - T.tip.z), 0.06 * Math.sin(t * 2.3)); T.fl.scale.set(0.026 * (1.12 - 0.12 * fk), 0.062 * fk, 1); T.fl.visible = true;
@@ -2910,11 +3291,11 @@
       P.noBlock = true; cast[i ? 'boy' : 'girl'] = P; castBlock[i ? 'boy' : 'girl'] = new THREE.Box3(new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 61, 0));
       return { P, i, s: 0, v: 0, to: 0, wait: 0, run, moving: false, ry: 0, looks: false };
     });
-    const kidsDir = { ph: '', t: 0, hold: false };
+    const kidsDir = { ph: '', t: 0, hold: false, toss: null, stops: 0 };
     const _ko = { x: 0, z: 0, hx: 0, hz: 1 }, _ko2 = { x: 0, z: 0, hx: 0, hz: 1 };
     function kidsForm(name) {
       const run = name === 'arrive';
-      kidsDir.ph = run ? 'runW' : ''; kidsDir.t = 0; kidsDir.hold = false;
+      kidsDir.ph = run ? 'runW' : ''; kidsDir.t = 0; kidsDir.hold = false; kidsDir.toss = null; kidsDir.stops = 0;
       for (const K of kids) { const P = K.P; K.v = 0; K.moving = false; K.looks = false; P.noBlock = run; P.rate = 1;
         whenReady(P, () => { gaze(P, null); rest(P, 0); });
         if (run) { K.s = Math.min(kidPath.L, kidPath.L * 0.62 + K.i * 1.5); K.to = K.i * KID.gap; K.wait = 0.15 + K.i * 0.35;
@@ -2957,7 +3338,16 @@
         const looks = !K.moving && pd < 3.2;
         if (looks !== K.looks) { K.looks = looks; gaze(P, looks ? 'lens' : null, { reach: 0.9, secs: 0.7 }); }
       }
-      if (running && (there || D.t > 14)) { D.ph = D.ph === 'runW' ? 'restW' : 'restE'; D.t = 0; }
+      if (running && (there || D.t > 14)) { D.ph = D.ph === 'runW' ? 'restW' : 'restE'; D.t = 0;
+        /* AT EVERY STOP THEY PLAY WITH THE PETALS (Chad, 12 Nov 2026: "The kids only play with the flowers once, and never
+           again. I want the kids to play the flowers more often as they loop running around. It should happen more than
+           once, and keep looping it every cycle"): a second after they stop, one jumps for joy and throws a handful up over
+           the other, and the other answers a moment later; who throws first changes from stop to stop (d_play.js kidThrow).
+           Not when they have come to watch him with Ton (kidsCall holds them: the girl's own throw is that stop's) */
+        D.stops++; const a = D.stops % 2, b = 1 - a;
+        D.toss = D.hold ? null : [{ i: a, at: 1.0 }, { i: b, at: 2.7 }]; }
+      else if (!running && D.toss && D.toss.length && !D.hold && D.t >= D.toss[0].at) {
+        const T0 = D.toss.shift(); kidThrow(kids[T0.i], kids[1 - T0.i]); }
       else if (!running && !D.hold && D.t > (D.ph === 'restW' ? KID.restW : KID.restE)) {
         const east = D.ph === 'restW'; D.ph = east ? 'runE' : 'runW'; D.t = 0;
         /* whoever stands further along goes first; the other gives chase a moment later */
@@ -2972,7 +3362,7 @@
        sound). Then their chase goes on. */
     function kidsCall() {
       const D = kidsDir; if (formNow !== 'arrive' || !D.ph) return;
-      D.hold = true;
+      D.hold = true; D.toss = null;
       if (D.ph === 'restW') { D.t = 0; return; }
       if (D.ph === 'runW') return;                                               // (already on their way there)
       D.ph = 'runW'; D.t = 0;
@@ -3182,18 +3572,30 @@
         const col = new THREE.Color(); for (let i = 0; i < BURST_N; i++) { im.setMatrixAt(i, _wm.makeScale(0, 0, 0)); im.setColorAt(i, col.setRGB(1, 1, 1)); }
         im.instanceMatrix.needsUpdate = true; im.instanceColor.needsUpdate = true; world.add(im); owned.push(im);
         bursts.push({ im, on: false, t0: 0, P: [], end: 0 }); } }
+    /* (v26.1: THE CHILDREN'S OWN HANDFULS, a pool of their own so their throws at every stop of their chase never take a
+       master's handful off the carpet. Each is a third of a master's; what they throw lies on the turf a while and sinks
+       into it (`sink`), so the pool is never taken back from a handful still to be seen) */
+    const KIDB = 6, KID_N = 48, kidPool = [];
+    { const g0 = new THREE.PlaneGeometry(1, 1);
+      for (let b = 0; b < KIDB; b++) { const im = new THREE.InstancedMesh(g0, petalAirMat, KID_N); im.frustumCulled = false; im.visible = false; im.count = KID_N;
+        const col = new THREE.Color(); for (let i = 0; i < KID_N; i++) { im.setMatrixAt(i, _wm.makeScale(0, 0, 0)); im.setColorAt(i, col.setRGB(1, 1, 1)); }
+        im.instanceMatrix.needsUpdate = true; im.instanceColor.needsUpdate = true; world.add(im); owned.push(im);
+        kidPool.push({ im, on: false, t0: 0, P: [], end: 0, n: KID_N }); } }
+    let kidNext = 0;
     const _ptq = new THREE.Quaternion(), _pte = new THREE.Euler(), _ptp = new THREE.Vector3(), _pts = new THREE.Vector3(), _ptq2 = new THREE.Quaternion();
     const FLAT_Q = new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0));
     let burstNext = 0;
+    const PETAL_SINK = 3;                                                     // (how long a child's petal takes to go into the turf)
     /* thrown from `from` [x, y, z] so that it falls round `to` [x, z] (`r`: how wide it lands; `s`: a petal's length, 3.4 cm
        unless said: a little over life, so a throw reads across the turf; a close lens asks for less); t0 on the clock it is run on.
        `n`: how many petals of the handful there are (a child's is a third of a master's); the rest of the mesh's copies are
        never shown. Unsaid, every copy is thrown and each lands where it always did */
     function petalBurst(from, to, t0, o = {}) {
-      const Bu = bursts[burstNext++ % BURSTS], rnd = rng(o.seed || (7001 + burstNext * 131)), r = o.r != null ? o.r : 0.55, yg = o.ground != null ? o.ground : 0.014, col = new THREE.Color();
-      const nShown = o.n != null ? Math.min(BURST_N, o.n) : BURST_N;
-      Bu.P.length = 0; Bu.t0 = t0; Bu.on = true; Bu.end = 0; Bu.im.visible = true;
-      for (let i = 0; i < BURST_N; i++) {
+      const kid = o.pool === kidPool, CAP = kid ? KID_N : BURST_N;
+      const Bu = kid ? kidPool[kidNext++ % KIDB] : bursts[burstNext++ % BURSTS], rnd = rng(o.seed || (7001 + burstNext * 131)), r = o.r != null ? o.r : 0.55, yg = o.ground != null ? o.ground : 0.014, col = new THREE.Color();
+      const nShown = o.n != null ? Math.min(CAP, o.n) : CAP;
+      Bu.P.length = 0; Bu.t0 = t0; Bu.on = true; Bu.end = 0; Bu.im.visible = true; Bu.sink = o.sink || 0;
+      for (let i = 0; i < CAP; i++) {
         if (i >= nShown) { Bu.P.push({ late: Infinity, land: 0 }); continue; }
         const an = rnd() * 6.283, d = r * Math.sqrt(rnd()), tx = to[0] + Math.cos(an) * d, tz = to[1] + Math.sin(an) * d;
         const p = { x0: from[0] + (rnd() - 0.5) * 0.08, y0: from[1] + (rnd() - 0.5) * 0.06, z0: from[2] + (rnd() - 0.5) * 0.08, tx, tz,
@@ -3203,7 +3605,7 @@
         /* when it lands: the age at which its height meets the ground (it only falls after its apex: bisected) */
         const yAt = (a) => p.y0 + p.vy * p.ty * (1 - Math.exp(-a / p.ty)) - p.vt * (a - p.ty * (1 - Math.exp(-a / p.ty)));
         let lo = 0, hi = 12; for (let k = 0; k < 22; k++) { const m = (lo + hi) / 2; if (yAt(m) > p.yg) lo = m; else hi = m; }
-        p.land = hi; Bu.end = Math.max(Bu.end, hi + p.late + 0.4);
+        p.land = hi; Bu.end = Math.max(Bu.end, hi + p.late + (Bu.sink ? Bu.sink + PETAL_SINK + 0.1 : 0.4));
         Bu.P.push(p);
         Bu.im.setColorAt(i, col.setHSL(0.105 + rnd() * 0.04, 0.98, 0.5 + rnd() * 0.07, THREE.SRGBColorSpace));
       }
@@ -3218,15 +3620,19 @@
         if (age0 < p.late) { Bu.im.setMatrixAt(i, _wm.makeScale(0, 0, 0)); continue; }
         const fl = c01((a - p.land) / 0.25 + 1) * (a >= p.land ? 1 : 0), air = a < p.land ? 1 : 0;
         const x = p.x0 + (p.tx - p.x0) * kh + Math.sin(al * p.wf + p.wp) * p.wob * air * kh, z = p.z0 + (p.tz - p.z0) * kh + Math.cos(al * p.wf * 0.8 + p.wp) * p.wob * air * kh;
-        const y = a >= p.land ? p.yg : Math.max(p.yg, p.y0 + p.vy * p.ty * ky - p.vt * (al - p.ty * ky));
+        let y = a >= p.land ? p.yg : Math.max(p.yg, p.y0 + p.vy * p.ty * ky - p.vt * (al - p.ty * ky));
+        /* (a child's petal, `sink` seconds after it lands, goes down into the turf over PETAL_SINK seconds and is not drawn after) */
+        if (Bu.sink && a > p.land + Bu.sink) { const ks = (a - p.land - Bu.sink) / PETAL_SINK; if (ks >= 1) { Bu.im.setMatrixAt(i, _wm.makeScale(0, 0, 0)); continue; } y = p.yg - 0.03 * smo(ks); }
         _pte.set(al * p.sx, p.ry + al * 0.9, al * p.sz, 'YXZ'); _ptq.setFromEuler(_pte);
         if (a >= p.land) { _pte.set(-Math.PI / 2, 0, p.ry, 'YXZ'); _ptq2.setFromEuler(_pte); _ptq.slerp(_ptq2, smo(c01((a - p.land) / 0.18))); }
         Bu.im.setMatrixAt(i, _wm.compose(_ptp.set(x, y, z), _ptq, _pts.set(p.s, p.s, p.s))); }
       Bu.im.instanceMatrix.needsUpdate = true;
     }
     /* play's own clock runs them (a film calls burstAt with its own); one that has all landed is drawn once more and left */
-    function burstsTick(t) { for (const Bu of bursts) { if (!Bu.on || Bu.film) continue; burstAt(Bu, t); if (t - Bu.t0 > Bu.end) Bu.on = false; } }
-    function burstsClear() { for (const Bu of bursts) { Bu.on = false; Bu.film = false; Bu.im.visible = false; } }
+    function burstsTick(t) { for (const Bu of bursts) { if (!Bu.on || Bu.film) continue; burstAt(Bu, t); if (t - Bu.t0 > Bu.end) Bu.on = false; }
+      for (const Bu of kidPool) { if (!Bu.on) continue; burstAt(Bu, t); if (t - Bu.t0 > Bu.end) { Bu.on = false; Bu.im.visible = false; } } }
+    function burstsClear() { for (const Bu of bursts) { Bu.on = false; Bu.film = false; Bu.im.visible = false; }
+      for (const Bu of kidPool) { Bu.on = false; Bu.im.visible = false; } }
 
     /* ---- THE GOLD (the plan's §3.4: his alone; chapter 2 kept its colours and strengths for him, CLAUDE.md). Painted
        light, never a lamp (v15.1): a soft light the shape of a man sitting, behind him, in two layers (the colour laid
@@ -3774,7 +4180,20 @@
         ambAt = dayClock.t + (one ? 6 + ambRand() * 8 : 9 + ambRand() * 11);
       } else ambAt = dayClock.t + 1.5;
     }
-    function ambReset() { ambSeed = AMB_SEED; ambAt = 0; ambBusy = 0; ambLast = ''; ambN = 0; for (const k in bedMix) bedMix[k] = 0; filmBed.on = false; wickAt = -1; kidsPh = ''; musPan = 0; }
+    /* (v26.1) HIS FEET ON THE GRASS: eight falls of one walk on a lawn, cut apart so each ends before the next begins (a
+       footfall comes every 0.22 s), dealt from a seeded stream so no fall comes twice running (Chad, 12 Nov 2026: "i dislike
+       the walking sound effect, it does not sound like walking on grass ground, do a better sound effect for it please":
+       masters/v26.1/sound/steps.sh). The engine asks every footfall (stage.stepSound, v16.0) */
+    const STEPS_GRASS = ['x3grass1', 'x3grass2', 'x3grass3', 'x3grass4', 'x3grass5', 'x3grass6', 'x3grass7', 'x3grass8'];
+    const STEP_SEED = 8807;
+    let stepSeed = STEP_SEED, stepLast = -1;
+    function stepNext() {
+      stepSeed = (stepSeed * 1664525 + 1013904223) >>> 0;
+      let i = Math.floor(stepSeed / 4294967296 * (STEPS_GRASS.length - (stepLast < 0 ? 0 : 1)));
+      if (stepLast >= 0 && i >= stepLast) i++;
+      stepLast = i; return STEPS_GRASS[i];
+    }
+    function ambReset() { ambSeed = AMB_SEED; ambAt = 0; ambBusy = 0; ambLast = ''; ambN = 0; for (const k in bedMix) bedMix[k] = 0; filmBed.on = false; wickAt = -1; kidsPh = ''; musPan = 0; stepSeed = STEP_SEED; stepLast = -1; }
 
     const W = DATA.words;
     const play = { run: 0, busy: false, turning: null, bow: null, bai: false, baiP: 0, baiTo: 0, baiSecs: 1, knelt: false, homage: false,
@@ -3946,9 +4365,9 @@
     /* ================================================================ P1 · TON, AND THE BAI SRI */
     const WARM_DAY1 = ['q3v', 'tn3a1', 'q3p1', 'tn3a2', 'q3u1', 'q3u2', 'tn3m1', 'q3u3', 'tn3m2', 'q3c1', 'tn3c1', 'q3c2', 'ds3c1', 'tn3c2', 'q3c3',
                        'x3baitake', 'x3baiset', 'x3kneel', 'x3bowall', 'x3petals', 'x3chant', 'x3tone',
-                       'x3step', 'x3os1', 'x3os2', 'x3os3', 'x3os4', 'x3os5', 'x3os6', 'x3wick'];
+                       'x3grass1', 'x3grass2', 'x3grass3', 'x3grass4', 'x3grass5', 'x3grass6', 'x3grass7', 'x3grass8', 'x3os1', 'x3os2', 'x3os3', 'x3os4', 'x3os5', 'x3os6', 'x3wick'];
     const WARM_DAY2 = ['ph3g1', 'ph3b0', 'ph3b1', 'ph3b2', 'ph3b3', 'ph3b4', 'ph3bx', 'ph3by', 'ph3b5', 'ph3p1', 'ph3p2', 'ph3p3', 'x3kneel', 'x3baiset', 'x3bell',
-                       'x3step', 'x3os3', 'x3os7', 'x3os8', 'x3os9'];
+                       'x3grass1', 'x3grass2', 'x3grass3', 'x3grass4', 'x3grass5', 'x3grass6', 'x3grass7', 'x3grass8', 'x3os3', 'x3os7', 'x3os8', 'x3os9'];
     function dayOneStage() {
       look('DAY1', 0); auraAt(0, 0); mistK = 1; burstsClear();
       zoneAt(null);
@@ -3985,6 +4404,26 @@
         if (worldSfx && !(soundOff && soundOff())) { const pan = panAt(g.x, g.z);
           worldSfx('x3petals', 0.3, 1.08, pan);
           if (worldSfx('x3os1', 0.34, 1, pan)) { ambLast = 'x3os1'; ambBusy = dayClock.t + 3.6; extrasHeard.laugh++; } }
+        extrasHeard.toss++; });
+      return true;
+    }
+    /* THEIR PLAY AT EVERY STOP OF THEIR CHASE (c_crowd.js kidsTick schedules it; Chad, 12 Nov 2026: "keep looping it every
+       cycle"). The child jumps for joy (its own jump: the girl's is JUMP above; the boy's, read from his take by
+       tools/probes/takeheights.mjs, crouches at 0.6 s and has his right hand over his head at 1.0 to 1.2) and lets go of a
+       handful as its hands pass its head, up over the other child, to fall round them both: a third of a master's handful,
+       from the children's own pool, lying on the turf eighteen seconds and then going into it (c_zfx.js). The petals'
+       rustle with it, quiet and by how near he is, never over a line, a bow or the pull; nothing is thrown in the pull */
+    const BOYJUMP = { t0: 0.55, t1: 1.55, secs: 1.25, let: 0.62, hand: 1.12 };
+    function kidThrow(K, O) {
+      const P = K.P; if (!P.ready || !P.group.visible || K.moving || !P.acts.Happy_jump || play.pull || play.bow || formNow !== 'arrive') return false;
+      const J = K.i ? BOYJUMP : JUMP, g = P.group.position, o = O.P.group.position, run = play.run;
+      const dx = o.x - g.x, dz = o.z - g.z, d = Math.hypot(dx, dz) || 1, ux = dx / d, uz = dz / d, reach = Math.min(0.85, 0.55 * d + 0.25);
+      span(P, 'Happy_jump', J.t0, J.t1, J.secs, { fade: 0.22, then: (Q) => rest(Q, 0.35) });
+      const seed = 5101 + 97 * kidsDir.stops + 31 * K.i;
+      after(J.let, () => { if (!live(run) || !P.group.visible || play.pull) return;
+        petalBurst([g.x + ux * 0.1, J.hand || 1.62, g.z + uz * 0.1], [g.x + ux * reach, g.z + uz * reach], dayClock.t, { r: 0.55, up: 1.15, n: 40, s: 0.03, seed, pool: kidPool, sink: 18 });
+        const dh = Math.hypot(yaw.position.x - g.x, yaw.position.z - g.z);
+        if (worldSfx && !(soundOff && soundOff()) && dayClock.t >= speak.until && !play.bow && dh < 9) worldSfx('x3petals', 0.26 * c01(1.3 - dh / 9), K.i ? 1.14 : 1.06, panAt(g.x, g.z));
         extrasHeard.toss++; });
       return true;
     }
@@ -4034,7 +4473,7 @@
       return true;
     }
     /* Ton goes to his group while the player's eyes are on the tables (a change made where no shot can see it: v24.12) */
-    function tonToPlace() { whenReady(cast.ton, (P) => { put(P, TON_PLACE.x, TON_PLACE.z, faceTo(TON_PLACE.x, TON_PLACE.z, 0, -11.2)); P.seated = true; P.rest.take = 'seiza'; P.rest.win = { seiza: [0.4, 6.8] }; rest(P, 0); castSolid(); }); }
+    function tonToPlace() { whenReady(cast.ton, (P) => { put(P, TON_PLACE.x, TON_PLACE.z, faceTo(TON_PLACE.x, TON_PLACE.z, 0, -11.2)); P.seated = true; P.rest.take = 'seiza'; P.rest.win = { seiza: SEIZA_WIN }; rest(P, 0); castSolid(); }); }
 
     /* ================================================================ P2 · A PLACE; P3 · THE HOMAGE */
     function kneelPlace(instant) {
@@ -4444,7 +4883,7 @@
       const st = getState();
       const now = wallNow(), raw = lastWall0 ? Math.max(0, now - lastWall0) : 0, wdt = Math.min(0.25, raw); lastWall0 = now;
       /* (the people's own clocks run in a film too, v5.19: a film holds only those it has posed) */
-      windClock += wdt; windTick(windClock); peopleTick(wdt, st !== 'cine'); mistTick(windClock); hazeTick(windClock); flamesTick(windClock); bulbsTick(windClock);
+      windClock += wdt; windTick(windClock); peopleTick(wdt, st !== 'cine'); mistTick(windClock); hazeTick(windClock); skyTick(windClock); flamesTick(windClock); bulbsTick(windClock);
       /* (after the people: what is laid on a body's arm is laid on the pose its take has just written) */
       taperTick(windClock); kidsTick(wdt, st); dancersTick(wdt, st); dancersTurn(wdt);
       if (st !== 'cine') { peopleLevels(); lodTick(); zoneTick(now); }
@@ -5580,7 +6019,7 @@
       drum: null, ash: null, embers: null, heroNote: null, smoke: null, flying: null,
       jossTips: [], fireLight: null,
       skyAt: () => FL.sky,                                                      // (the sky stands over the turf; a film's pocket set asks for it over itself)
-      stepSound: () => 'x3step',                                                // his own feet: he left his sandals at the turf's edge (the engine asks every footfall, v16.0)
+      stepSound: stepNext,                                                      // his own feet on the grass: he left his sandals at the turf's edge (d_play.js STEPS_GRASS, v26.1)
       /* walktest: where play puts him besides the spawn, and the ground he must STAY on (v25.5): the turf, the gravel
          before the tables and the tents' fronts. He cannot leave it */
       /* (walktest reads the collision of the FIRST frame: the gathering, its people kneeling where the next morning

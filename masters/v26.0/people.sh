@@ -28,7 +28,20 @@ prep() { # prep <in> <out> <sheet px> <log>
   #  others. A remesh closes the corner of a mouth or an eye by putting both sides' points on one place, and shared
   #  among all the faces there the normal lies along the fold: a flat grey patch at the mouth of each monk made on
   #  12 Nov, lit, with the head filling the frame. The bodies made before it are as they were: it is not on for them)
-  env NOTHIN=1 TEX=$3 NOMAP=1 CHARTFIX=1 ${SIDED:+SIDED=1} node tools/prepmonk.mjs $1 $2 1 >> $4 2>&1
+  # (REPAINT, v26.1: Chad, 12 Nov 2026, the faces "absolutely butchered", "really bad" on a 720p phone, "absolutely
+  #  horrendous" on his own. Every level's paint is laid out again by xatlas with a margin round each chart and baked in
+  #  Blender from the generator's 8192 sheet (tools/repaint.py), the face given three times the room of the robe, the rest
+  #  of the head twice, the hands one and a half: so the chapter draws it with mipmaps, and a face far off is averaged
+  #  instead of sampled. Measured on the brown hermit's near body at 2048: the face 748 texels a metre -> 1,091, the rest of
+  #  his head 905 -> 797, his hands 451 -> 510, his robe 566 -> 420. BPY is Blender's Python with xatlas beside it:
+  #  masters/v26.1/make.sh says how it is made. The chart fix is not run on a sheet with margins: it does not need it)
+  # (a fifth word, `keep`, prepares a level with its paint as the generator laid it out: the two full models, Ton's and the
+  #  bench woman's, drawn within 2.2 m. Laid out again, the full model of 310,000 triangles came back from xatlas with its
+  #  charts piled over one another (tools/probes/uvcheck.mjs: 4,266 % of the square covered in sum on Ton's, 22,110
+  #  triangles with no area on the sheet), and the bench woman's left it: they keep their v26.0 files)
+  rp=1; [ "$5" = keep ] && rp=
+  env NOTHIN=1 TEX=$3 NOMAP=1 CHARTFIX=1 ${SIDED:+SIDED=1} REPAINT=$rp BPY=${BPY:?BPY is Blender\'s Python with xatlas: masters/v26.1/make.sh} \
+      FACE=3 HEADK=2 HANDK=1.5 PAD=$( [ $3 -ge 2048 ] && echo 3 || echo 2 ) node tools/prepmonk.mjs $1 $2 1 >> $4 2>&1
 }
 one() {  # one <name> <near triangles> <near sheet px> <take args...>
   n=$1; near=$2; px=$3; shift 3; log=$SRC/$n-people.log; : > $log
@@ -41,7 +54,7 @@ one() {  # one <name> <near triangles> <near sheet px> <take args...>
     if [ -f $SRC/body-$n-$c.glb ]; then prep $SRC/body-$n-$c.glb assets/e4$n$s.glb $p $log && made="$made, $s $(node tools/tricount.mjs --n assets/e4$n$s.glb)"
     else made="$made, $s NOT YET (no body at $c)"; fi
   done
-  case " $HERO " in *" $n "*) prep $SRC/rigged-$n.glb assets/e4${n}h.glb 2048 $log && made="$made, h $(node tools/tricount.mjs --n assets/e4${n}h.glb)";; esac
+  case " $HERO " in *" $n "*) prep $SRC/rigged-$n.glb assets/e4${n}h.glb 2048 $log keep && made="$made, h $(node tools/tricount.mjs --n assets/e4${n}h.glb)";; esac
   echo "$n -> assets/e4$n.glb ($made triangles)"
 }
 HERO="ton bench"
@@ -96,10 +109,11 @@ go devh && dev devh
 # across the sheet's seams). The two far bodies are half a grown person's (4,000 and 1,500), and the chapter draws a
 # child's levels at two thirds of a grown person's distances (c_cast.js: lodK), so the fine body is paid for only
 # where a child is walked up to. Colour at 2048 (Chad, v26.0: a lighter body keeps its paint).
-# (the girl runs Run_02 and jumps for joy as she throws her petals; the boy runs Run_03)
+# (the girl runs Run_02 and jumps for joy as she throws her petals; the boy runs Run_03, and since v26.1 jumps for joy too, his
+#  own jump, the take's fifth, as each throws petals at every stop of their chase: Chad, 12 Nov 2026, "keep looping it every cycle")
 kid() { n=$1; LEVELS="m:4000:512 f:1500:256" one $n ${KIDNEAR:-24000} 2048 $(T $n kid $2); }
 go girl && kid girl Idle_3,Run_02,-,-,Happy_jump
-go boy && kid boy Idle_3,-,Run_03,-,-
+go boy && kid boy Idle_3,-,Run_03,-,Happy_jump
 # THE MONKS' ROW (Chad, 12 Nov 2026: "the 3 monks are the same model, can we have different monks?"). Two monks made
 # here end to end (people/PROMPTS.txt, "THE MONKS' ROW": an older, heavy monk in deep maroon and a slim young one in a
 # dark reddish brown, as photograph 2's row is mixed) sit either side of his own monk, who keeps the middle chair. Each

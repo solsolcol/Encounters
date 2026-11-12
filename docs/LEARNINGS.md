@@ -8453,3 +8453,32 @@ Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8,
   reported** (Chad, 12 Nov 2026: CLAUDE.md, "EVERY PICTURE IS VIEWED FULL SIZE, UNASKED" and "NO SMALL PICTURE IS EVER
   A CHECK"). The monks went live with broken wrists my own notes described, and the armpit with a ragged hole, both
   passed in pictures a fraction of their size. A sheet of small pictures finds a picture; it never judges one.
+
+## v26.1 — a sheet a phone can shrink, a still picture that hides a crawl, a list read as a point, a thud a phone cannot play
+
+- **A generated body drawn without mipmaps looks fine in a still and "horrendous" in play.** Chad saw the faces crawl on
+  his phone while every probe's photograph looked clean: the sheet's charts sat flush (v5.11's law: such a sheet takes
+  no mipmaps), so wherever a face has more texels than the phone has pixels each pixel samples ONE texel, and which one
+  changes as anything moves by a hair. A still picture freezes that choice and shows a sharp face. The cure is a sheet
+  that CAN be shrunk: every chart laid out again with a margin (Blender's xatlas; the face given three times its share),
+  the colour baked from the generator's own 8192 sheet, mipmaps and anisotropy on (c_cast.js `sheetOf`). Judge a texture
+  for a phone by its texels a metre against the phone's pixels a metre at the distance it is seen (texdensity.mjs), not
+  by a photograph.
+- **A repack can overlap without saying so.** xatlas's second pass, asked for weighted charts at a large count, laid two
+  full bodies' charts over one another (the sum of the charts' areas 43 times the sheet). A packing is measured before it
+  is baked (tools/probes/uvoverlap.mjs: the share of the sheet two triangles both cover), and a pass that overlaps or
+  leaves the sheet falls back to the first.
+- **An array is not a point.** `Vector3.copy([x, y, z])` reads `.x` of an array: undefined, so NaN, silently. One NaN
+  written into a bone stays there (the take never writes that bone back) and the body is drawn with no arm. The woman
+  with the taper went live like that in v26.1's first deploy: a probe that read her taper's tip said NaN, which no
+  photograph of the ground could show. armHinge now refuses a point that is not a number and says so.
+- **A footstep is one footfall, short.** The engine plays a fall every 0.22 s at a walk; a step 0.65 s long sounds three
+  times at once, one rustle smeared over another. Cut each fall from a real walk (its rise, 0.21 s, its tail faded), and
+  deal them so none repeats twice running. And refuse a take whose energy is under 150 Hz: a phone's speaker plays a
+  thud as nothing.
+- **A light shaft is seen looking toward the light.** Shafts drawn at one strength laid a pale smear across a wall with
+  the sun behind him; scattered light is strong toward the sun and gone away from it, so its strength rides the angle
+  between the lens and the light.
+- **A transparent picture from a generator is rarely clear at its edges.** The cloud pictures came back with a faint
+  haze over their whole ground (alpha 1 to 12 over half the cloud bank's pixels): over a sky it drew a pale rectangle.
+  Clear the faint alpha under a threshold and fade the picture's own border to nothing before it is a card.

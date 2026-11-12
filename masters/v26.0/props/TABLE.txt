@@ -66,3 +66,12 @@ taper         w3taper       0.70  h   1500   256  0
 #  glass of red soda by the hermit's sofa), found unbuilt by the same audit
 glass         w3glass       0.15  h   1500   256  0
 tissue        w3tissue      0.11  h   1000   256  0
+# ---- v26.1: the ground's edges filled (Chad, 12 Nov 2026: "i can find many empty spaces at the peripheral background,
+#  and the side buildings all have very basic and simple details ... Add more trees, fill out empty spaces"): each a
+#  checked picture on white (masters/v26.1/env/refs), then Meshy at its highest settings (masters/v26.1/env/jobs-env.json)
+envbanana     w3banana2     3.60  h  14000  1024  0
+envfrangipani w3frangipani  4.60  h  30000  1024  0
+envisanhouse  w3isanhouse   5.60  h  40000  1024  0
+envtank       w3tank        1.95  h   8000   512  0
+envaircon     w3aircon      0.95  w   6000   512  0
+envscooter    w3scooter     1.88  w  20000  1024  0

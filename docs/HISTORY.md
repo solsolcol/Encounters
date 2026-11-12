@@ -8798,7 +8798,37 @@ What the baseline contains, by release:
     (tools/armflap.mjs: cut, each opened a hole). Left and said: a centimetre's notch at the armpit's corner; Chad's
     monk's arms near straight (long for his seat).
 
+- **v26.1** EPISODE 4 CHAPTER 3 · HIS NINE NOTES OF 12 NOV (evening), in one build (v24.35). His words and the plan are
+    the tracker's §16 (docs/V26.0-E4C3-BUILD.md), the log §16.1. (1, 5, 10, 11) THE FACES: every generated body drew its
+    paint without mipmaps (a sheet of flush charts takes none, v5.11), so on a phone a face was SAMPLED, not averaged, and
+    crawled as anything moved; a still photograph hid it. Every body's paint laid out again with room between its charts
+    (Blender's xatlas, the face weighted 3, the head 2, the hands 1.5) and baked from the generator's own 8192 sheet,
+    drawn with mipmaps and anisotropy 4 (prepmonk REPAINT, tools/repaint.py; c_cast.js `sheetOf`); the people's levels
+    drawn farther (near to 7 m, middle to 14 m). Ton's and the bench master's full bodies kept as v26.0 (their repaint
+    overlapped: uvoverlap.mjs). THE PHONE STANDARD, his pick for every chapter: full sharpness (`PHONE_RATIO` 2, a chapter
+    may ask its own: `render.phoneRatio`, the fixture's 1.9 proving it), smooth edges kept on, and the page's text
+    measured at boot and divided out where a browser enlarges it (`textZoom`, `text-size-adjust`): episode 1 reaches all
+    three (cine, hosted, tick and sound green as its control). (6) "Pho" said "Puu" in the two lines that say his name.
+    (7) The children throw petals at EVERY stop of their chase (the boy given his own jump), their petals sinking into
+    the turf. (3) The kneelers' turn at a third of its pace, no two together. (2) The woman with the taper: her arm
+    solved about its own elbow's hinge, the taper held between thumb and first finger; MY FIRST DEPLOY OF IT (6af6366f)
+    drew her with no arm (a list read as a point: NaN; walktest's NaN check and a probe both caught it; armHinge now
+    refuses a point that is not a number). (4) THE GROUND: a sky (twelve photographic clouds round the horizon, the sun's
+    glare and its own rays, shafts of light through the two great trees' crowns, all following the hour); groves round
+    the edges (his palms and banana, the episode's rain tree and mango, a second banana and a frangipani made for it); a
+    stilt house of the district with its tank and motorbike; a tank and a motorbike at the way in; the grey building
+    rendered and weathered with framed louvres, sills, plinth, eave, roof, gutter and its compressors; the red house its
+    back, gables, soffit, trims, open shutters and curtains (masters/v26.1/make.sh: every picture's and model's ids; 108
+    Higgsfield and 270 Meshy credits). (8) His feet on the grass: eight falls cut from a real walk on a lawn, dealt so
+    none repeats (masters/v26.1/sound/steps.sh; x3step retired); five reels sent to his ear. Put to him: the red plank
+    building behind the chief bench stands on stilts in his photograph 5.
+
 ## The sheet, version by version
+
+**v143** (`masters/v26.1/masterz-text-v143.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from
+it): v142 with two cells changed and nothing new or gone (checked key by key): `voice.q3w3` and `voice.tn3c1`, his
+name said "Puu" (Chad, 12 Nov 2026), each with its new measured length and why. 2317 rows; six tabs as v142.
+Exported, not published.
 
 **v142** (`masters/v26.0/masterz-text-v142.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from
 it): v141 with 175 rows NEW and nothing changed or gone (checked key by key). All of them are episode 4 chapter 3's:

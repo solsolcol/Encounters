@@ -60,6 +60,9 @@
        a world the engine has never seen. A torch (off until asked), and the
        banner's words for an unseen presence. */
     torch: { on: false, angle: 0.5 },
+    /* v26.1: the forty-ninth seam, a chapter's own drawing budget on a phone (fixturetest K.renderSeam): declared here at
+       a number no real chapter uses, so the proof cannot pass on a default */
+    render: { phoneRatio: 1.9 },
     /* v12.0: RIFLE MODE, declared with NO model — the seam (out while the
        item is in the hand slot, fire spends a round, the ray reaches the
        chapter's target, reload costs a magazine) is proved without the

@@ -1975,40 +1975,40 @@
  },
  "q3w3": {
   "who": "he",
-  "text": "[reflective] That person was Grandmaster Pho, and something inside me knew I had to speak to him one day.",
-  "pick": "b",
+  "text": "[reflective] That person was Grandmaster Puu, and something inside me knew I had to speak to him one day.",
+  "pick": "d",
   "why": "the tighter read",
-  "med": 6.44,
+  "med": 6.8100000000000005,
   "takes": {
-   "a": {
-    "len": 6.72,
+   "c": {
+    "len": 7.12,
     "first": 0.0,
-    "last": 6.6,
-    "e_first": 0.08,
-    "e_last": 6.7,
-    "tail_db": -25.5,
-    "hole": 0.64,
+    "last": 6.96,
+    "e_first": 0.18,
+    "e_last": 7.1,
+    "tail_db": -35.6,
+    "tail_rel": -22.0,
+    "hole": 0.26,
     "sim": 1.0,
     "tag_said": false,
     "clean_end": true,
-    "wps": 2.72,
-    "heard": "That person was Grandmaster Pho, and something inside me knew I had to speak to him one day.",
-    "tail_rel": -12.2
+    "wps": 2.6,
+    "heard": "That person was Grandmaster Puu, and something inside me knew I had to speak to him one day."
    },
-   "b": {
-    "len": 7.92,
+   "d": {
+    "len": 6.8,
     "first": 0.0,
-    "last": 6.24,
-    "e_first": 0.1,
-    "e_last": 6.36,
-    "tail_db": -52.0,
-    "hole": 0.36,
+    "last": 6.64,
+    "e_first": 0.08,
+    "e_last": 6.78,
+    "tail_db": -26.1,
+    "tail_rel": -12.3,
+    "hole": 0.34,
     "sim": 1.0,
     "tag_said": false,
     "clean_end": true,
-    "wps": 2.88,
-    "heard": "That person was Grandmaster Pho, and something inside me knew I had to speak to him one day.",
-    "tail_rel": -39.3
+    "wps": 2.69,
+    "heard": "That person was Grandmaster Puu, and something inside me knew I had to speak to him one day."
    }
   }
  },
@@ -2248,40 +2248,40 @@
  },
  "tn3c1": {
   "who": "ton",
-  "text": "[serious] That is Grandmaster Pho. Don't take my word. Ask the people who have sat with him.",
-  "pick": "b",
-  "why": "the tighter read",
-  "med": 5.800000000000001,
+  "text": "[serious] That is Grandmaster Puu. Don't take my word. Ask the people who have sat with him.",
+  "pick": "c",
+  "why": "the only clean and whole take",
+  "med": 5.57,
   "takes": {
-   "a": {
-    "len": 5.84,
+   "c": {
+    "len": 5.6,
     "first": 0.0,
-    "last": 5.66,
-    "e_first": 0.0,
-    "e_last": 5.82,
-    "tail_db": -27.5,
-    "hole": 0.52,
+    "last": 5.48,
+    "e_first": 0.02,
+    "e_last": 5.58,
+    "tail_db": -30.3,
+    "tail_rel": -19.5,
+    "hole": 0.46,
     "sim": 1.0,
     "tag_said": false,
     "clean_end": true,
-    "wps": 2.75,
-    "heard": "That is Grandmaster Pho. Don't take my word. Ask the people who have sat with him.",
-    "tail_rel": -17.1
+    "wps": 2.88,
+    "heard": "That is Grandmaster Puu. Don't take my word. Ask the people who have sat with him."
    },
-   "b": {
-    "len": 5.84,
+   "d": {
+    "len": 5.6,
     "first": 0.0,
-    "last": 5.66,
-    "e_first": 0.04,
-    "e_last": 5.82,
-    "tail_db": -31.2,
-    "hole": 0.58,
+    "last": 5.5,
+    "e_first": 0.0,
+    "e_last": 5.58,
+    "tail_db": -17.8,
+    "tail_rel": -7.2,
+    "hole": 0.5,
     "sim": 1.0,
     "tag_said": false,
-    "clean_end": true,
-    "wps": 2.77,
-    "heard": "That is Grandmaster Pho. Don't take my word. Ask the people who have sat with him.",
-    "tail_rel": -19.8
+    "clean_end": false,
+    "wps": 2.87,
+    "heard": "That is Grandmaster Puu. Don't take my word. Ask the people who have sat with him."
    }
   }
  },

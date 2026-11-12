@@ -1,0 +1,23 @@
+{
+ "flow": "10J7umsPGa5bj6bEmoBk",
+ "model": "eleven_v3",
+ "why": "Chad, 12 Nov 2026: \"all voicelines saying grandmaster pho, the word 'pho' should actually be pronounced as 'Puu'. Redo those voicelines.\" The two lines that say his name, said again with 'Puu' written for the voice (his spelling); the name stays 'Pho' wherever it is written. Takes a and b (which said 'Pho') moved to raw/said-pho/. Letters c, d.",
+ "lines": {
+  "q3w3": {
+   "voice": "bP8FJDHmWVEgXJDitdQd",
+   "prompt": "[reflective] That person was Grandmaster Puu, and something inside me knew I had to speak to him one day.",
+   "sessions": [
+    "tNZFn8cIYSoQIyakMC4O",
+    "GtJoAHHz5gl3cD7JZdNd"
+   ]
+  },
+  "tn3c1": {
+   "voice": "uI1epevl1X6hqrxEciKt",
+   "prompt": "[serious] That is Grandmaster Puu. Don't take my word. Ask the people who have sat with him.",
+   "sessions": [
+    "LmAe1ZWbwMRlR6XC2MnK",
+    "0lva2OOGzlzQMFP7gK0K"
+   ]
+  }
+ }
+}

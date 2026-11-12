@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "26.0"
+VERSION = "26.1"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -644,6 +644,23 @@ ASSETS = {
     'w3t_kalae':    ('assets/w3t_kalae.webp', True, False),
     'w3t_fretwork': ('assets/w3t_fretwork.webp', True, False),
     'w3t_sign':     ('assets/w3t_sign.webp', True, False),
+    # e4c3 v26.1: the ground's edges filled and its sky (Chad, 12 Nov 2026: "i can find many empty spaces at the
+    # peripheral background ... the skybox can be added and improved with much better detail, especially adding clouds,
+    # sun, rays, etc. Add more trees, fill out empty spaces"): each a checked picture on white (masters/v26.1/env/refs),
+    # then Meshy at its highest settings and its own remesh (masters/v26.0/props/TABLE.txt); the clouds and the render
+    # are pictures made for it (GPT Image, a transparent ground for the clouds): masters/v26.1/make.sh
+    'w3banana2':    ('assets/w3banana2.glb', True, False),     # a banana clump with its suckers, the second kind beside his own
+    'w3frangipani': ('assets/w3frangipani.glb', True, False),     # a frangipani, the temple-ground tree
+    'w3isanhouse':  ('assets/w3isanhouse.glb', True, False),     # a stilt house of the district, weathered teak and a rusted tin roof, out past the way in
+    'w3tank':       ('assets/w3tank.glb', True, False),     # a stainless water tank on its stand
+    'w3aircon':     ('assets/w3aircon.glb', True, False),     # an air conditioner's compressor on its brackets, its pipes up the wall
+    'w3scooter':    ('assets/w3scooter.glb', True, False),     # an underbone motorbike with a front basket
+    'w3t_render':   ('assets/w3t_render.jpg', True, False),
+    'w3t_cloudbank':('assets/w3t_cloudbank.webp', True, False),
+    'w3t_cloudtall':('assets/w3t_cloudtall.webp', True, False),
+    'w3t_cloudflat':('assets/w3t_cloudflat.webp', True, False),
+    'w3t_cloudthree':('assets/w3t_cloudthree.webp', True, False),
+    'w3t_cirrus':   ('assets/w3t_cirrus.webp', True, False),
     # <<< e4c3 keys: the rows end <<<
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
@@ -784,7 +801,9 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'w3croton', 'w3dracaena', 'w3waterjar', 'w3walllamp', 'w3t_turf', 'w3t_petalturf', 'w3t_earth',
            'w3t_gravel', 'w3t_redplank', 'w3t_tin', 'w3t_brick', 'w3t_skirt', 'w3t_satin', 'w3t_mat', 'w3t_carpet',
            'w3t_bluemat', 'w3t_swag', 'w3t_banner', 'w3t_treeline', 'w3t_redroof', 'w3t_hallbrick', 'w3t_steptile',
-           'w3t_lawn', 'w3t_kalae', 'w3t_fretwork', 'w3t_sign',
+           'w3t_lawn', 'w3t_kalae', 'w3t_fretwork', 'w3t_sign', 'w3banana2', 'w3frangipani', 'w3isanhouse', 'w3tank',
+           'w3aircon', 'w3scooter', 'w3t_render', 'w3t_cloudbank', 'w3t_cloudtall', 'w3t_cloudflat',
+           'w3t_cloudthree', 'w3t_cirrus',
            # <<< e4c3 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY

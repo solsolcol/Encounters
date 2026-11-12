@@ -1,0 +1,32 @@
+[
+ {
+  "name": "envbanana",
+  "image": "masters/v26.1/env/refs/banana.png",
+  "kind": "prop"
+ },
+ {
+  "name": "envfrangipani",
+  "image": "masters/v26.1/env/refs/frangipani.png",
+  "kind": "prop"
+ },
+ {
+  "name": "envisanhouse",
+  "image": "masters/v26.1/env/refs/isanhouse.png",
+  "kind": "prop"
+ },
+ {
+  "name": "envtank",
+  "image": "masters/v26.1/env/refs/tank.png",
+  "kind": "prop"
+ },
+ {
+  "name": "envaircon",
+  "image": "masters/v26.1/env/refs/aircon.png",
+  "kind": "prop"
+ },
+ {
+  "name": "envscooter",
+  "image": "masters/v26.1/env/refs/scooter.png",
+  "kind": "prop"
+ }
+]

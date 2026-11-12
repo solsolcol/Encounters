@@ -449,6 +449,16 @@ K.hushSeam = await p.evaluate(async () => {
   const wired = !b.bus || (b.wired === true && b.hz <= 430 && m.wired === true && m.hz > 430 && m.hz < 18000 && c.wired === false);
   return a.k === 0 && a.wired === false && a.node === false && b.k === 1 && m.k === 0.5 && c.k === 0 && wired;
 }).catch(() => false);
+/* THE DRAWING BUDGET (the forty-ninth seam, v26.1) — a chapter's `render.phoneRatio` lets a phone draw it at that many
+   pixels a point (never more than its screen has); a chapter that declares nothing has a phone's own (2 since v26.1,
+   Chad's "full sharpness"); a desktop keeps its 2 whatever is declared. The function both ways, and this page's renderer
+   at what it gives the fixture here */
+K.renderSeam = await p.evaluate(() => {
+  const E = window.__enc, f = E.pixelRatioFor, fx = window.__CHAPTERS__.chtest, none = {};
+  return !!(fx && fx.render && fx.render.phoneRatio === 1.9) && f(fx, true, 3) === 1.9 && f(fx, true, 1.5) === 1.5
+      && f(none, true, 3) === 2 && f(null, true, 3) === 2 && f(none, true, 1.5) === 1.5 && f(fx, false, 3) === 2 && f(none, false, 1) === 1
+      && E.renderer.getPixelRatio() === f(fx, false, devicePixelRatio);
+}).catch(() => false);
 await settle();
 
 /* v22.0: THE COLD (the thirty-third, -fourth and -fifth seams) — kit.chill shows the edge layer with a blur and

@@ -1,0 +1,48 @@
+{
+ "flow": "WRJ4HzibEIDJwdJVaUy4",
+ "why": "v26.1: Chad, 12 Nov 2026: \"i dislike the walking sound effect, it does not sound like walking on grass ground, do a better sound effect for it please\". Four kinds of grass step, four takes each (eleven_text_to_sound_v2, influence 0.5); C is a short walk of four steps, cut into its steps here.",
+ "nodes": {
+  "x3grassA": "7wK6h3wMULkRDypdpKb7",
+  "x3grassB": "7Jh8zaKlECxKYMZWPklT",
+  "x3grassC": "e81pzh5V9HDZBgmWP2Hb",
+  "x3grassD": "yFNAg3rLseMLHQHiDEqH"
+ },
+ "sessions": {
+  "x3grassA": [
+   "e6EUhnunCCRnVTQ54AnA",
+   "8YLZdNbXyELGVHZ7ArBy",
+   "12eOhgmmONP1vp8BlIWj",
+   "C7xUYbuVTyzMAPO9tvZD"
+  ],
+  "x3grassB": [
+   "qs2XQ5jU88gbiTZNaLEC",
+   "Xe5dsUNX9y5r2eTY2kBd",
+   "FUky2DAzUImPWla1558B",
+   "X1MvTYM9yCJMedNJ2HAx"
+  ],
+  "x3grassC": [
+   "TgsVfC6nzTIG3meJm4zX",
+   "ICNfkzJAfJzKTUjW63sA",
+   "xpemlTHdsbfWn7416A4t",
+   "7QCY55kfup8bqaMSyP9R"
+  ],
+  "x3grassD": [
+   "r80on79Kzf0G9PTjsrzr",
+   "luWPXtZGkUEQLf3NwKpR",
+   "Z3mBzKBGHbQIhQWGixHP",
+   "5q0QxsBKcS9zN3NBft9Y"
+  ]
+ },
+ "prompts": {
+  "x3grassA": "Close foley of a single footstep on a natural grass lawn: a soft heel-to-toe press with a gentle swishing crunch of grass blades under the foot, outdoors, close microphone, no reverb.",
+  "x3grassB": "One barefoot step on thick summer grass: a soft swish and a quiet crunch of grass blades under the sole, natural outdoor foley, close and dry.",
+  "x3grassC": "A person walking slowly across a grass lawn: four natural footsteps, bare feet on short grass, each step a soft swish and light crunch of blades, outdoors on a calm day, close microphone, evenly spaced.",
+  "x3grassD": "Footsteps on dry grass: a single step, the foot pressing into short dry grass with a crisp rustling crunch and a soft settle, mid and high frequencies, close foley, no reverb."
+ },
+ "secs": {
+  "x3grassA": 0.8,
+  "x3grassB": 0.8,
+  "x3grassC": 3.0,
+  "x3grassD": 0.7
+ }
+}

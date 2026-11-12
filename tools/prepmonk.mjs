@@ -420,11 +420,77 @@ if (process.env.BAKE) {
   console.log(`  bake: ${out.summary}; a part of its own: ${face.length / 3} triangles on ${m} points of their own${dm.getNormalTexture() ? '' : ', no normal map'}`);
 }
 
+/* v26.1 · REPAINT=1 (Chad, 12 Nov 2026: the faces "absolutely butchered", "really bad" on a 720p phone, "absolutely
+   horrendous" on his own): THE PAINT LAID OUT AGAIN WITH ROOM BETWEEN ITS CHARTS, so the body can be drawn with mipmaps.
+   A generated body's sheet is thousands of small charts laid edge to edge (the brown hermit's near body: 13,927), so it was
+   drawn with none (v5.11: a shrunken copy averages one chart into the next), and a face with more texels than the screen
+   has pixels was sampled, not averaged: it sparkled and crawled as anything moved, worse the fewer pixels a phone has.
+   Here (before the chart fix, which a sheet with margins does not need) the mesh, its sheet coordinates, which part of the
+   body each point rides, the way the face looks (the head joint to the one in front of it) and the colour sheet as read
+   (the generator's own, 8192 pixels) are handed to tools/repaint.py on Blender's Python (BPY): xatlas cuts the surface
+   into charts afresh and packs them with a margin (the face given 1.7 times the room, the rest of the head 1.25, the
+   hands 1.2), and Blender bakes the colour into the new sheet through each triangle's OLD coordinates, so every triangle
+   shows what it showed. Back here, a point on a new seam is copied (every attribute of the copy is its point's: it moves
+   and bends as before) and the sheet is the baked one, named `repainted`: the chapter draws a sheet of that name with
+   mipmaps (c_cast.js). Nothing else about the body changes. Unset, nothing here runs and the output is as it was. */
+let repainted = false;
+if (process.env.REPAINT) {
+  const { spawnSync } = await import('node:child_process');
+  const node = root.listNodes().find(x => x.getMesh() && x.getSkin()), mesh = node.getMesh(), prims = mesh.listPrimitives();
+  if (prims.length !== 1) throw new Error('REPAINT: one part expected');
+  const p0 = prims[0], mat0 = p0.getMaterial(), baseTex = mat0.getBaseColorTexture(), skin = node.getSkin();
+  if (!baseTex) throw new Error('REPAINT: no colour sheet');
+  const POS = p0.getAttribute('POSITION'), UVA = p0.getAttribute('TEXCOORD_0'), J = p0.getAttribute('JOINTS_0'), W = p0.getAttribute('WEIGHTS_0');
+  const n = POS.getCount(), I0 = Uint32Array.from(p0.getIndices().getArray()), m = I0.length / 3;
+  const P = new Float32Array(n * 3), U = new Float32Array(n * 2), reg = new Uint8Array(n), e = [], jj = [], ww = [];
+  const jn = skin.listJoints().map(j => j.getName());
+  for (let i = 0; i < n; i++) { POS.getElement(i, e); P.set(e, i * 3); UVA.getElement(i, e); U[i * 2] = e[0]; U[i * 2 + 1] = e[1];
+    J.getElement(i, jj); W.getElement(i, ww); const acc = {}; for (let k = 0; k < 4; k++) acc[jj[k]] = (acc[jj[k]] || 0) + ww[k];
+    let best = 0, bw = -1; for (const k in acc) if (acc[k] > bw) { bw = acc[k]; best = +k; } const nm = jn[best] || '';
+    reg[i] = /head|neck/i.test(nm) ? 1 : /Hand|Thumb|Index|Middle|Ring|Pinky/.test(nm) ? 2 : 0; }
+  /* where a joint stands in the bind pose: its inverse bind matrix, inverted (an affine matrix) */
+  const ibm = skin.getInverseBindMatrices(), jAt = (name) => { const k = jn.findIndex(x => x === name); if (k < 0 || !ibm) return null;
+    const a = []; ibm.getElement(k, a); const [m0, m1, m2, , m4, m5, m6, , m8, m9, m10, , tx, ty, tz] = a;
+    const det = m0 * (m5 * m10 - m6 * m9) - m4 * (m1 * m10 - m2 * m9) + m8 * (m1 * m6 - m2 * m5);
+    const inv = [(m5 * m10 - m6 * m9) / det, (m2 * m9 - m1 * m10) / det, (m1 * m6 - m2 * m5) / det, (m6 * m8 - m4 * m10) / det, (m0 * m10 - m2 * m8) / det, (m2 * m4 - m0 * m6) / det, (m4 * m9 - m5 * m8) / det, (m1 * m8 - m0 * m9) / det, (m0 * m5 - m1 * m4) / det];
+    return [-(inv[0] * tx + inv[3] * ty + inv[6] * tz), -(inv[1] * tx + inv[4] * ty + inv[7] * tz), -(inv[2] * tx + inv[5] * ty + inv[8] * tz)]; };
+  const hd = jAt('Head') || jAt('mixamorig:Head'), hf = jAt('headfront');
+  let fwd = [0, 0, 1]; if (hd && hf) { const d = [hf[0] - hd[0], 0, hf[2] - hd[2]], l = Math.hypot(d[0], d[2]); if (l > 1e-6) fwd = [d[0] / l, 0, d[2] / l]; }
+  const dir = process.env.REPAINT_DIR || fs.mkdtempSync('/tmp/repaint-'); fs.mkdirSync(dir, { recursive: true });
+  const bin = (f, a) => fs.writeFileSync(`${dir}/${f}`, Buffer.from(a.buffer, a.byteOffset, a.byteLength));
+  bin('pos.f32', P); bin('uv.f32', U); bin('idx.u32', I0); bin('reg.u8', reg);
+  const srcImg = Buffer.from(baseTex.getImage()), smd = await sharp(srcImg).metadata();
+  if (baseTex.getMimeType() === 'image/webp') await sharp(srcImg).png().toFile(`${dir}/src.png`); else fs.writeFileSync(`${dir}/src.${baseTex.getMimeType() === 'image/png' ? 'png' : 'jpg'}`, srcImg);
+  const srcName = baseTex.getMimeType() === 'image/jpeg' ? 'src.jpg' : 'src.png';
+  fs.writeFileSync(`${dir}/dump.json`, JSON.stringify({ n, tris: m, src: srcName, srcPx: [smd.width, smd.height], px: TEXPX, fwd, head: hd }));
+  const BPY = process.env.BPY || 'python3';
+  const r = spawnSync(BPY, ['tools/repaint.py', dir], { stdio: ['ignore', 'pipe', 'pipe'], env: Object.assign({}, process.env, { PX: String(TEXPX) }), maxBuffer: 1 << 26 });
+  const said = String(r.stdout || '').split('\n').filter(l => /^\[/.test(l)); for (const l of said) console.log('  repaint ' + l);
+  if (r.status !== 0) { console.error(String(r.stderr || '').slice(-3000)); throw new Error('REPAINT: tools/repaint.py failed'); }
+  const CU = new Float32Array(fs.readFileSync(`${dir}/corner_uv.f32`).buffer.slice(0));
+  if (CU.length !== m * 6) throw new Error('REPAINT: the coordinates are not one a corner');
+  /* one point per (point, new coordinate) */
+  const keyOf = new Map(), src = [], idxNew = new Uint32Array(m * 3), uvNew = [];
+  for (let c = 0; c < m * 3; c++) { const v = I0[c], ku = Math.round(CU[c * 2] * 1048576), kv = Math.round(CU[c * 2 + 1] * 1048576), k = `${v}:${ku}:${kv}`;
+    let id = keyOf.get(k); if (id === undefined) { id = src.length; keyOf.set(k, id); src.push(v); uvNew.push(CU[c * 2], CU[c * 2 + 1]); } idxNew[c] = id; }
+  const nv = src.length;
+  for (const sem of p0.listSemantics()) { const A = p0.getAttribute(sem), es = A.getElementSize();
+    if (sem === 'TEXCOORD_0') { A.setArray(Float32Array.from(uvNew)).setNormalized(false); continue; }
+    const old = A.getArray(), arr = new old.constructor(nv * es); for (let i = 0; i < nv; i++) for (let q = 0; q < es; q++) arr[i * es + q] = old[src[i] * es + q]; A.setArray(arr); }
+  if (p0.listTargets().length) throw new Error('REPAINT: morph targets are not carried');
+  p0.getIndices().setArray(nv > 65535 ? idxNew : Uint16Array.from(idxNew));
+  baseTex.setImage(fs.readFileSync(`${dir}/baked.png`)).setMimeType('image/png').setName('repainted');
+  const rep = JSON.parse(fs.readFileSync(`${dir}/baked.json`, 'utf8'));
+  console.log(`  repaint: ${n} points -> ${nv} (${nv - n} copied along the new seams), ${m} triangles; ${rep.summary}`);
+  if (!process.env.REPAINT_DIR) fs.rmSync(dir, { recursive: true, force: true });
+  repainted = true;
+}
+
 /* v19.8: the scan's two-texel charts, each pointed at a uniform spot of the
    colour its surface shows, so an edge fetch cannot bleed a neighbour into
    them (CHARTFIX=1; tools/chartfix.mjs has the measurement) */
 if (process.env.PREPACK) await io.write(process.env.PREPACK, doc);   // the cut before the fix, for probes
-if (process.env.CHARTFIX) {
+if (process.env.CHARTFIX && !repainted) {
   const rep = [];
   await fixThinCharts(doc, { finalPx: TEXPX, report: rep, inset: Number(process.env.INSET || 1.5), skip: chartSkip });
   const sz = rep.map(r => r.texels).sort((a, b) => b - a);

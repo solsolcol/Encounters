@@ -25,6 +25,17 @@
        and the padding makes that texel the patch's own colour. Every body this chapter made (keys e4...), at every
        level; Chad's own models (Grandmaster Pho, the monk) are as he gave them and are not touched. */
     const NOMIP = /^e4/;
+    /* v26.1 · A SHEET LAID OUT AGAIN WITH ROOM BETWEEN ITS CHARTS IS DRAWN WITH MIPMAPS (Chad, 12 Nov 2026: the faces
+       "absolutely butchered", "really bad" on a 720p phone, "absolutely horrendous" on his own phone). Drawn without them, a
+       face with more texels than the phone has pixels was SAMPLED: it sparkled and crawled as anything moved, and a still
+       picture hides that. Every level of every body this chapter made is now baked into a sheet with a margin round each
+       chart (masters/v26.0/people.sh REPAINT, tools/repaint.py), named `repainted`: such a sheet takes mipmaps and a
+       little anisotropy, because averaging it can no longer bleed one chart into the next (v5.11's own answer). A sheet of
+       any other name is drawn as it was. */
+    function sheetOf(key, t) {
+      if (t.name === 'repainted') { t.generateMipmaps = true; t.minFilter = THREE.LinearMipmapLinearFilter; t.anisotropy = 4; t.needsUpdate = true; return t; }
+      return NOMIP.test(key) ? noMip(THREE, t) : t;
+    }
     /* (the children's runs and their skip too: c_crowd.js) */
     const WALKS = /^(walkdance|Run_02|Run_03)$/;                                 // (the takes that travel: the dancers' walk-dance, the children's two runs)
     /* (the full model's reach was 2.7 m until 12 Nov. Photographed at 2.55 m at both levels, on a phone's frame and a
@@ -34,7 +45,12 @@
        inside the old reach, went from 832,000 triangles to 563,000. It was NOT the spawn's weight, as I first wrote:
        from the spawn Ton was already outside the old reach's own taking-up (2.51 m from the lens). That was the
        sandals behind him: c_zfx.js) */
-    const LEVELS = [['h', 2.2], ['', 5.4], ['m', 11.5], ['f', Infinity]];        // each skin's suffix and how far it is drawn to
+    /* (v26.1: the near body drawn to 7 m, where it was 5.4, and the mid to 14, where it was 11.5: Chad, 12 Nov 2026, "even on
+       the phone, i want a higher rendering budget". Each body's paint is laid out with margins and drawn with mipmaps
+       now (sheetOf, above), and the face has three times the robe's share of each sheet: where the near body hands over,
+       its face is drawn at about the mid body's own detail, so nothing pops; measured on the brown hermit, 1,091 texels a
+       metre on the near face and 186 on the mid's, against a phone's 166 pixels a metre of a face at 7 m) */
+    const LEVELS = [['h', 2.2], ['', 7.0], ['m', 14], ['f', Infinity]];         // each skin's suffix and how far it is drawn to
     const _pv = new THREE.Vector3(), _pq = new THREE.Quaternion(), _lens = new THREE.Vector3();
     /* the soft dark under a body (a phone draws no shadows, so a contact shadow is painted: v9.3) */
     const blobTex = (() => { const [c, x] = cnv(64); const g = x.createRadialGradient(32, 32, 2, 32, 32, 31);
@@ -84,7 +100,7 @@
           if (q.isBone) { P.bone[q.name] = q; if (/^(mixamorig:?)?Head$/.test(q.name)) P.head = q; if (/^(mixamorig:?)?Hips$/.test(q.name)) P.hips = q; }
         });
         if (o.s) m.scale.multiplyScalar(o.s);
-        if (NOMIP.test(key)) for (const q of skins) for (const mm of [].concat(q.material)) if (mm && mm.map) noMip(THREE, mm.map);
+        for (const q of skins) for (const mm of [].concat(q.material)) if (mm && mm.map) sheetOf(key, mm.map);
         P.group.add(m); P.model = m; P.lv[1] = skins;
         P.mixer = new THREE.AnimationMixer(m);
         for (const clip0 of animations) {
@@ -233,7 +249,7 @@
           if (bones.some(b => !b)) { console.warn(key + ': a bone of it is not on ' + P.key); return; }
           let mat = sm.material;
           if (!mat.map) { let near = null; for (const q of P.lv[1]) for (const nm of [].concat(q.material)) if (nm.name === mat.name) near = nm; if (near) mat = near; }
-          if (NOMIP.test(P.key) && mat.map) noMip(THREE, mat.map);
+          if (mat.map) sheetOf(P.key, mat.map);
           const mesh = new THREE.SkinnedMesh(sm.geometry, mat);
           mesh.castShadow = false; mesh.receiveShadow = false; mesh.frustumCulled = false; mesh.visible = false;
           P.model.add(mesh); mesh.bind(new THREE.Skeleton(bones, sm.skeleton.boneInverses), sm.bindMatrix); made.push(mesh); });
@@ -800,7 +816,28 @@
     const _ahS = new THREE.Vector3(), _ahE = new THREE.Vector3(), _ahW = new THREE.Vector3(), _ahT = new THREE.Vector3(), _ahP = new THREE.Vector3(),
           _ahU = new THREE.Vector3(), _ahH = new THREE.Vector3(), _ahZ = new THREE.Vector3(), _ahV = new THREE.Vector3(), _ahZl = new THREE.Vector3(),
           _ahM = new THREE.Matrix4(), _ahM2 = new THREE.Matrix4(), _ahQ = new THREE.Quaternion(), _ahQp = new THREE.Quaternion();
+    /* AN ELBOW'S HINGE read off the pose its arm stands in now (the takes on these rigs keep the forearm in one plane of the
+       upper arm's frame: masters/v25.3/measure/hinge.cjs), as restHands reads it for the monks; kept on the arm. Read
+       before anything is laid on the arm (v26.1, for the woman with the taper) */
+    /* (v26.1: `hm`, a hinge MEASURED off another of the body's takes, in the upper arm's own frame. One who stands with her
+       arms straight gives no hinge from her rest, and the guess put her elbow's crease 16 degrees off the one her own
+       takes bend it about) */
+    function hingeOf(a, sg, hm) {
+      if (a.hinge) return a.hinge;
+      const uL = a.fore.position.clone().normalize(), dL = a.hand.position.clone().normalize().applyQuaternion(a.fore.quaternion);
+      const h = hm ? new THREE.Vector3().fromArray(hm) : new THREE.Vector3().crossVectors(uL, dL);
+      if (hm) h.addScaledVector(uL, -h.dot(uL)); else if (h.length() < 0.08) h.set(0.8, 0, sg > 0 ? -0.6 : 0.6);
+      h.normalize();
+      const flex = Math.atan2(new THREE.Vector3().crossVectors(uL, dL).dot(h), uL.dot(dL));
+      a.hinge = { uL, h, rest: new THREE.Quaternion().setFromAxisAngle(h, -flex).multiply(a.fore.quaternion) };
+      return a.hinge;
+    }
+    /* (the class of v26.1's first taper: a point that is not a number never reaches a bone. Once NaN is written into an
+       arm it stays there, for the take does not write it back, and the arm is not drawn; so it is refused, and said) */
+    const armBad = new Set();
     function armHinge(a, target, pdir) {
+      if (!(Number.isFinite(target.x + target.y + target.z) && Number.isFinite(pdir.x + pdir.y + pdir.z))) {
+        if (!armBad.has(a)) { armBad.add(a); console.warn('armHinge: a target that is not a number, refused'); } return; }
       const G = a.hinge; if (!G) { armTo(a, target, _ahP.copy(target).add(pdir)); return; }
       a.up.updateWorldMatrix(true, true);
       a.up.getWorldPosition(_ahS); a.fore.getWorldPosition(_ahE); a.hand.getWorldPosition(_ahW);
@@ -914,6 +951,11 @@
     const cast = {};
     const SIT_E = Math.PI / 2, SIT_W = -Math.PI / 2;                            // seated facing east; facing west
     const REST = { Chair_Sit_Idle_M: [9.4, 2.85] };                             // the seated idle's upright window (it wraps its end)
+    /* THE KNEEL'S WINDOW, there and back in 34 seconds (Chad, 12 Nov 2026: "The audience's facing left and right animation
+       plays too fast and can be slowed down"). The take's own pace sent the head 24 cm round its look to either side and
+       back in 13.6 s, at up to 11 cm a second (tools/probes/windowread.mjs on e4deva); at 34 s it is 4.4 at its fastest:
+       a calm look round. Every kneeler wears it: the crowd (c_crowd.js SIT), the young man, Ton when he kneels */
+    const SEIZA_WIN = [0.4, 6.8, 34];
     const PHO_AT = benchAt(0.46, 0.04);                                          // Grandmaster Pho's place: the bench's east end
     /* each seat's top in metres, MEASURED on its model (tools/probes/seatmeasure.mjs: the sofa's cushion 0.46 and sat
        into by 3 cm; the bench's slats 0.40 and the chair's seat 0.39, each at the size b_world2.js draws it) */
@@ -931,7 +973,7 @@
       /* THE YOUNG MAN WHO GOES UP at Grandmaster Pho's bench (photographs 5 and 6): the man in the group's shirt, a
          person of his own (he raises his bai sri, and goes somewhere the player cannot follow). Stood by the play, where
          his raised hands and the master's can meet on one bowl (ymPlace) */
-      cast.ym = mkPerson('e4devg', PHO_AT[0], PHO_AT[1] - 1.4, 0, { take: 'seiza', centre: true, win: { seiza: [0.4, 6.8] }, hidden: true, blobW: 0.95, blobD: 1.0 });
+      cast.ym = mkPerson('e4devg', PHO_AT[0], PHO_AT[1] - 1.4, 0, { take: 'seiza', centre: true, win: { seiza: SEIZA_WIN }, hidden: true, blobW: 0.95, blobD: 1.0 });
       /* (each on his sofa: its cushion's top is SEATS.sofa, his hips a little forward of the sofa's own middle) */
       const seat = (key, x, z, phase) => { const P = mkPerson(key, x, z, SIT_E, { take: 'Chair_Sit_Idle_M', centre: true, win: REST, phase, blobW: 1.0, blobD: 1.1,
         seat: { y: SEATS.sofa, takes: /^(Chair_Sit|Sitting_|handson|petals|palmover)/ } }); P.home = { x, z, ry: SIT_E }; return P; };

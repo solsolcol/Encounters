@@ -98,6 +98,19 @@ group("e4c3: the ground's surfaces, each a picture made from his photograph of t
           ('skirt', 'jpg'), ('satin', 'jpg'), ('mat', 'jpg'), ('carpet', 'jpg'), ('bluemat', 'jpg'), ('swag', 'webp'), ('banner', 'webp'), ('treeline', 'webp'),
           ('redroof', 'jpg'), ('hallbrick', 'jpg'), ('steptile', 'jpg'), ('lawn', 'jpg'), ('kalae', 'webp'), ('fretwork', 'webp'), ('sign', 'webp')]])
 
+group("e4c3 v26.1: the ground's edges filled and its sky (Chad, 12 Nov 2026: \"i can find many empty spaces at the\n"
+      "peripheral background ... the skybox can be added and improved with much better detail, especially adding clouds,\n"
+      "sun, rays, etc. Add more trees, fill out empty spaces\"): each a checked picture on white (masters/v26.1/env/refs),\n"
+      "then Meshy at its highest settings and its own remesh (masters/v26.0/props/TABLE.txt); the clouds and the render\n"
+      "are pictures made for it (GPT Image, a transparent ground for the clouds): masters/v26.1/make.sh",
+      [('w3banana2', 'w3banana2.glb', 'a banana clump with its suckers, the second kind beside his own'),
+       ('w3frangipani', 'w3frangipani.glb', 'a frangipani, the temple-ground tree'),
+       ('w3isanhouse', 'w3isanhouse.glb', 'a stilt house of the district, weathered teak and a rusted tin roof, out past the way in'),
+       ('w3tank', 'w3tank.glb', 'a stainless water tank on its stand'),
+       ('w3aircon', 'w3aircon.glb', "an air conditioner's compressor on its brackets, its pipes up the wall"),
+       ('w3scooter', 'w3scooter.glb', 'an underbone motorbike with a front basket')] +
+      [('w3t_' + n, 'w3t_%s.%s' % (n, e), '') for n, e in [
+          ('render', 'jpg'), ('cloudbank', 'webp'), ('cloudtall', 'webp'), ('cloudflat', 'webp'), ('cloudthree', 'webp'), ('cirrus', 'webp')]])
 B0, B1 = '    # >>> e4c3 keys: written by masters/v26.0/keys.py from its table (edit the table, not these rows) >>>\n', '    # <<< e4c3 keys: the rows end <<<\n'
 S0, S1 = '           # >>> e4c3 keys (masters/v26.0/keys.py) >>>\n', '           # <<< e4c3 keys <<<\n'
 H0, H1 = '      /* >>> this chapter\'s own keys: written by masters/v26.0/keys.py (edit its table, not this list) >>> */\n', '      /* <<< this chapter\'s own keys <<< */\n'
