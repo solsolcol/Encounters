@@ -8991,6 +8991,39 @@ What the baseline contains, by release:
   right, and on the live v26.8 the dance scanned for clipping at ten moments (no dancer and no one of the crowd in any
   pair) and the lotus minigame photographed held on a slowed clock. Deploy `6af780b3317a264c323c5035` (494 served
   files identical to the build).
+- **v26.10 · 14 Nov 2026, small hours · episode 4 chapter 3: his own hands on his bai sri in the close (row M).** His ask
+  of 13 Nov, verbatim: "the second minigame part, instead of playing the minigame, just show the player hands vibrating
+  while a glow surronding him and his hands and his bai sri. all around his silohuette, to show that the player is now in
+  control while vibrating." v26.8 drew the light and the bai sri shaking, and not his hands (they stood under the frame's
+  foot). Now his own two arms are drawn IN THE WORLD on the bowl (c_zfx.js myArmsMake, myArmsAt, myGrip): a copy of the
+  engine's own rig (arms.glb, both arms; the left the engine shrinks away is given back), solved onto the bowl by the
+  chapter's two-bone solver, the hold his photograph 7's (the bowl raised to his eyes' height, both hands on its sides,
+  the thumbs across its near face, the backs of his hands toward him, the forearms rising from the frame's lower
+  corners). Each thing that shaped it was found by a picture or a measure first (docs/V26.8-E4C3-NOTES.md §2 M): the
+  rig's hands are children of its armature, not of their forearms (the first build's wrists stretched into two long
+  tubes across the picture; the copy gives each hand to its forearm, where the file stands it, 0.0 mm off); its fingers
+  ship fanned, and the walking curl bent every middle joint 28 to 37 degrees sideways (the copy starts from the prayer
+  pose and curls round the bowl); its arms reach 0.52 m to the wrist, so the bai sri raised 0.6 m out left the elbows
+  straight and the hands short of it; looked down on at the chest, the ring of marigolds hid both hands; reached down to
+  the carpet, the arms lay across the picture as smooth tubes. So the close is staged round them: his eyes rise to his
+  teacher before the bai sri is lifted (it comes up into the picture already raised); it is drawn in below the frame as
+  the petals fall; raised to his eyes as his light rises, his eyes going with it; shaking in his hands through his line;
+  lowered straight down within his reach, let go below the frame, and only then held out for his teacher, whose face it
+  uncovers. The light round his hands sits on his palms. Five placings of the hands photographed in one sitting
+  (tools/probes/e4c3beats.mjs eval steps changing `stage.dbg.myGrip` between shots): from 40 degrees round the bowl the
+  two thumbs met or crossed in its middle; 24 degrees kept. Measured: jointscan through the hold and the lowering
+  (elbows 46 degrees, wrists 18 back and 22 to the thumb side, fingers bending only as hinges); at his chest, below the
+  frame, the raised hold's fingers had read the wrists 36 to 55 degrees toward the thumb, so they point forward there
+  and turn up as he raises it (GRIP fUp0/fFwd0), and on their way down to his sides after letting go they had read 56
+  degrees, so there they are not drawn at all (MYARMS_SHOW); the close's camera measured as a move on a phone and a desktop
+  (lensread: no cut in the picture, no jolt, no fast move). The copy shares the engine hand's shape and pictures, so
+  it is taken out of the world before the chapter's dispose (myArmsDrop); PROVED BY BREAKING IT: with the guard
+  bypassed, leaving the chapter for another disposed the engine hand's shape; with it, nothing. It is drawn once behind
+  his eyes under the close's first black, so a phone builds its shading there. Also: jointscan's CHOOSE step presses
+  the choice until its film begins (the panel refuses an early press: the first run timed out). The working machine
+  restarted in the middle of the work (every edit survived; the picture runs were started again). Deploys
+  `6af799c5f4a2be51efa328a9`, then `6af7a2253913bc11b786928c` with the two wrist fixes below the frame (494 served
+  files identical to the build).
 
 ## The sheet, version by version
 

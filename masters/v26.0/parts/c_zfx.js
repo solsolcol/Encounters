@@ -199,6 +199,130 @@
         G.edge.material.opacity = 0.7 * k * br;
       }
     }
+    /* ---- HIS OWN HANDS ON HIS BAI SRI IN THE CLOSE (v26.8, row M). Chad, 13 Nov 2026, of the close: "just show the player
+       hands vibrating while a glow surronding him and his hands and his bai sri. all around his silohuette, to show that the
+       player is now in control while vibrating." v26.8 drew the bai sri shaking and the light, and not his hands: they were
+       under the frame's foot, where play carries it (BAI above: six ways of drawing two hands of the hands' pass on its
+       bowl were refused at v26.0, none of them touching it, for the hands' pass is drawn over the world and its arm is
+       one rigid piece). So they are drawn IN THE WORLD here, where the bowl is, and a finger behind the bowl is behind it:
+       his own arms (the engine's rig, arms.glb: both arms, with their elbows; the engine draws the right alone and shrinks
+       the left away, and this copy gives the left back), stood at his shoulders under his eyes and solved onto the bowl
+       as the chapter solves a master's hands (armsOf, handTo: two bones, the elbow down and out). The hold is his
+       photograph 7's, the bai sri held up in two hands as its holder sees it: the forearms rising from the frame's lower
+       corners, the palms on the bowl's sides under its swell, the fingers round them, the young man's offering in
+       photograph 5 (baiGrip 'under'). `myArmsAt(api, eye, ya, c, k, glow, t)`: the film's api (the hands' model is the
+       engine's, api.rightHand()), his eye, the way his body faces (a heading as eyes() takes it), the bai sri's foot in
+       the world (or null), how far his hands are on it (0 under the frame, 1 on it), the glow, the film's clock */
+    const MYARMS = { P: null, made: false, G: null, halos: [] };
+    const SHOULD = { drop: 0.21, back: 0.05, reach: 0.6, lean: 0.16 };   // (his shoulders' middle against his eye; how far he leans to a bowl beyond reach)
+    /* (MYGRIP: each finger's two nearer joints bent so far round the bowl's curve, the end joint 0.7 of it: c_cast.js
+       curlFingers. MYARMS_SHOW: how far his hands must be on their way to the bowl before they are drawn) */
+    const MYGRIP = 0.45, MYARMS_SHOW = 0.15;
+    function myArmsMake(api) {
+      if (MYARMS.made) return MYARMS.P; MYARMS.made = true;
+      const src = api && api.rightHand && api.rightHand(); if (!src) { console.warn('his arms: the hands model is not here'); return null; }
+      const m = cloneSkinned(src), bone = {};
+      m.traverse(o => { if (o.isBone) bone[o.name] = o; if (o.isMesh) { o.material = o.material.clone(); o.frustumCulled = false; } });
+      for (const n of ['upper_armL', 'handL']) if (bone[n]) bone[n].scale.setScalar(1);          // (the left the engine shrinks away, given back)
+      const skins = []; m.traverse(o => { if (o.isSkinnedMesh) skins.push(o); });
+      const piv = new THREE.Group(), G = new THREE.Group(); piv.add(m); G.add(piv); world.add(G); G.visible = false;
+      /* (the rig's own frame, measured from its bones as they stand: across from the right shoulder to the left, forward
+         from the shoulders to the hands; turned so its forward is the group's +z and its left +x, as a person's is) */
+      G.updateMatrixWorld(true);
+      /* (each hand given to its forearm: the rig carries both hands as children of its armature, beside the arms, because
+         the engine moves the hand and its arm as one rigid piece and never bends an elbow. Bent here, a hand left with the
+         armature stays where it was drawn and the skin of the wrist is drawn out to it in a long tube: photographed, the
+         first build. Each hand stands at its forearm's end in the file (0.0 mm apart), so it is attached keeping where it
+         is, and the arm carries it) */
+      for (const sd of ['L', 'R']) { const fa = bone['forearm' + sd], hd = bone['hand' + sd]; if (fa && hd && hd.parent !== fa) fa.attach(hd); }
+      const at = (n) => bone[n] ? bone[n].getWorldPosition(new THREE.Vector3()) : null;
+      const sL = at('upper_armL'), sR = at('upper_armR'), hL = at('handL'), hR = at('handR');
+      if (!sL || !sR || !hL || !hR) { console.warn('his arms: the rig has not the bones it should'); return null; }
+      const mid = sL.clone().add(sR).multiplyScalar(0.5), xa = sL.clone().sub(sR).normalize(), za = hL.clone().add(hR).multiplyScalar(0.5).sub(mid);
+      za.addScaledVector(xa, -za.dot(xa)).normalize(); const ya = new THREE.Vector3().crossVectors(za, xa).normalize();
+      const R = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(xa, ya, za)).invert();
+      piv.quaternion.copy(R); piv.position.copy(mid).applyQuaternion(R).negate();
+      const map = { Arm: 'upper_arm', ForeArm: 'forearm', Hand: 'hand' }, fin = { Index: 'f_index0', Middle: 'f_middle0', Ring: 'f_ring0', Pinky: 'f_pinky0', Thumb: 'thumb0' };
+      const P = { key: 'hisarms', ready: true, group: G, bone: {}, lv: { 1: skins } };
+      for (const [sd, S0] of [['L', 'Left'], ['R', 'Right']]) {
+        for (const k in map) P.bone[S0 + k] = bone[map[k] + sd];
+        for (const k in fin) for (let i = 1; i <= 3; i++) P.bone[S0 + 'Hand' + k + i] = bone[fin[k] + i + sd]; }
+      /* (his fingers, both hands: side by side, as a hand holding a bowl keeps them: the engine's prayer pose, the four
+         straight and together. The rig ships them fanned, and the walking curl, laid about one axis across a fanned hand,
+         bent every middle joint sideways, 28 to 37 degrees: measured on the first build (jointscan). The thumb as the
+         walking hand holds it, out from the palm and a little curled. Curled round the bowl each frame (curlFingers, in
+         myArmsAt). The left's copied over from the right by mirror, joint for joint, so the two are one hand twice) */
+      if (api.setHandCurl) api.setHandCurl(m, 1);
+      const th0 = {}; for (const nm in bone) if (/^thumb0[123]R$/.test(nm)) th0[nm] = bone[nm].quaternion.clone();
+      if (api.setHandPrayer) api.setHandPrayer(m, 1);
+      for (const nm in th0) bone[nm].quaternion.copy(th0[nm]);
+      for (const nm in bone) { const r = /^(f_(index|middle|ring|pinky)|thumb)0([123])R$/.exec(nm); if (!r) continue;
+        const bl = bone[nm.slice(0, -1) + 'L'], br = bone[nm]; if (bl) bl.quaternion.set(br.quaternion.x, -br.quaternion.y, -br.quaternion.z, br.quaternion.w); }
+      const hm = new THREE.SpriteMaterial({ map: tex(makeGlow(THREE, cnv)), color: 0xfff7ea, transparent: true, opacity: 0, depthTest: false, depthWrite: false, fog: false, blending: THREE.AdditiveBlending }); mats.push(hm);
+      for (let i = 0; i < 2; i++) { const sp = new THREE.Sprite(hm); sp.renderOrder = 998; sp.visible = false; world.add(sp); MYARMS.halos.push(sp); }
+      MYARMS.G = G; MYARMS.P = P; return P;
+    }
+    /* HIS GRIP, as his photograph 7 holds a bai sri up before the eyes: each palm on the bowl's lower body under its swell,
+       a little to his side of its middle (GRIP.round, in radians round from the side toward him), turned in to it; the
+       fingers up its side and round it; so each thumb lies across the side toward him and the backs of his hands are what
+       he sees, as in the photograph. The elbows low and in, under the bowl, the forearms rising to it. (baiGrip's
+       'under', the one who offers a bai sri to a master seen from beside, set the fingers forward along the bowl: from
+       his own eyes that put both hands behind it) */
+    /* (the fingers point up the bowl's side only as it is raised before his eyes; held at his chest, below the frame, they
+       point forward along it as a bowl held there is held: with the raised hold's fingers at his chest the joint scan read
+       his wrists 36 to 55 degrees toward the thumb, which no wrist does. `raised`, 0 at his chest to 1 at his eyes) */
+    const GRIP = { round: 0.42, up: 0.115, fUp: 0.82, fFwd: 0.38, fUp0: 0.3, fFwd0: 0.95, nUp: 0.18, out: 0.1, down: 0.46 };
+    function myGrip(c, s, from, raised = 1) {
+      const fx = c[0] - from[0], fz = c[2] - from[1], d = Math.hypot(fx, fz) || 1, F = [fx / d, fz / d], Lf = [F[1], -F[0]], out = {};
+      const r = 0.112 * s, y = GRIP.up * s, ca = Math.cos(GRIP.round), sa = Math.sin(GRIP.round), kr = smo(c01(raised));
+      const fu = lp(GRIP.fUp0, GRIP.fUp, kr), ff = lp(GRIP.fFwd0, GRIP.fFwd, kr);
+      for (const [sd, sg] of [['L', 1], ['R', -1]]) {
+        const rx = Lf[0] * sg * ca - F[0] * sa, rz = Lf[1] * sg * ca - F[1] * sa;          // (from the bowl's axis out to his palm)
+        out[sd] = { at: [c[0] + rx * r, c[1] + y, c[2] + rz * r],
+                    f: [F[0] * ff, fu, F[1] * ff], n: [-rx, GRIP.nUp, -rz], out: GRIP.out, down: GRIP.down };
+      }
+      return out;
+    }
+    function myArmsAt(api, eye, ya, c, k, glow, t, held, raised = 1) {
+      /* (`held`: drawn from the close's first frame, under the frame's foot where nothing of them is seen, so the phone
+         builds their shading under the close's black and not in the picture as his hands come up) */
+      /* (and drawn only while they are on the bowl or near it: on their way down to his sides, below the frame, the hand
+         turned for the bowl read the wrist 56 degrees toward the thumb (jointscan), so there they are not drawn at all) */
+      const drawn = !!c && (k > MYARMS_SHOW || !!held);
+      const P = drawn ? myArmsMake(api) : MYARMS.P;
+      if (!P || !drawn) { if (MYARMS.G) MYARMS.G.visible = false; for (const sp of MYARMS.halos) sp.visible = false; return; }
+      armsBack(P);
+      const G = MYARMS.G, fx = -Math.sin(ya), fz = -Math.cos(ya), lx = -Math.cos(ya), lz = Math.sin(ya);
+      /* (held and not on the bowl: drawn 1.2 m behind his eyes, where no look of his can see them) */
+      if (!(k > MYARMS_SHOW)) { G.position.set(eye[0] - fx * 1.2, eye[1] - SHOULD.drop, eye[2] - fz * 1.2); G.rotation.set(0, ya + Math.PI, 0); G.visible = true;
+        for (const sp of MYARMS.halos) sp.visible = false; return; }
+      let gx = eye[0] - fx * SHOULD.back, gy = eye[1] - SHOULD.drop, gz = eye[2] - fz * SHOULD.back;
+      /* (a bowl beyond his reach, on the carpet beside his knee: he leans to it, so far and no further) */
+      { const dx = c[0] - gx, dy = c[1] + 0.09 - gy, dz = c[2] - gz, d = Math.hypot(dx, dy, dz), ex = Math.min(SHOULD.lean, Math.max(0, d - SHOULD.reach)) * smo(c01(k));
+        if (ex > 0) { gx += dx / d * ex; gy += dy / d * ex; gz += dz / d * ex; } }
+      G.position.set(gx, gy, gz); G.rotation.set(0, ya + Math.PI, 0); G.visible = true; G.updateMatrixWorld(true);
+      const gr = myGrip(c, BAI.s, [eye[0], eye[2]], raised), ke = smo(c01(k));
+      const palm = {};
+      for (const sd of ['L', 'R']) { const g = gr[sd], sg = sd === 'L' ? 1 : -1;
+        /* (from under the frame: below his chest and to his side, eased up onto the bowl) */
+        const lo = [eye[0] + fx * 0.3 + lx * sg * 0.17, eye[1] - 0.62, eye[2] + fz * 0.3 + lz * sg * 0.17];
+        palm[sd] = [lp(lo[0], g.at[0], ke), lp(lo[1], g.at[1], ke), lp(lo[2], g.at[2], ke)];
+        handTo(P, sd, palm[sd], g.f, g.n, 1, g);
+        curlFingers(P, sd, MYGRIP * ke); }
+      /* the light round his hands as round the bai sri (it breathes with it): on each palm where it lies on the bowl (on
+         the wrist it stood off at the frame's corners: photographed) */
+      const on = glow > 0.002, br = 0.84 + 0.16 * Math.sin(t * 2 * Math.PI / 1.7);
+      MYARMS.halos.forEach((sp, i) => { sp.visible = on; if (!on) return; const q = palm[i ? 'R' : 'L']; sp.position.set(q[0], q[1], q[2]); sp.scale.set(0.3, 0.3, 1); sp.material.opacity = 0.42 * glow * br; });
+    }
+    /* (his arms are a copy of the engine's own hand: its shape and its pictures are the engine's, drawn in every
+       chapter's play, and never this chapter's to dispose. dispose() takes them out of the world before it disposes
+       what is left there, and gives back only what this copy made: its materials and its bone sheet) */
+    function myArmsDrop() {
+      const G = MYARMS.G; if (!G) return;
+      if (G.parent) G.parent.remove(G);
+      G.traverse(o => { if (o.isSkinnedMesh && o.skeleton) o.skeleton.dispose(); if (o.isMesh) for (const m of [].concat(o.material)) m.dispose(); });
+      MYARMS.G = null; MYARMS.P = null; MYARMS.made = false;
+    }
     let auraK = 0;
     function auraAt(k, t) {
       const A = aura; auraK = k;

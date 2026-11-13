@@ -271,10 +271,10 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
       brown hermit's left 20 to 27 at most moments (the same solve, `wristSolve`, can be tried on both).
     - w. v26.5: ASKED: making the chapter faster with nothing on screen changed: measured, and four ways in the order of
       what they save (docs/V26.6-E4C3-OPTIMIZE-PLAN.md).
-    - x. v26.8: his notes of 13 Nov evening (thirteen, docs/V26.8-E4C3-NOTES.md): LIVE at v26.8 and v26.9 but for
-      row M, his hands shown on his bai sri in the close (being built: his own arms in the world, set beside his
-      photograph 7). The petal bowl (row R) made again, then TAKEN OUT at his word ("Remove it", v26.9). The speed-ups
-      (w) come after M.
+    - x. v26.8: his notes of 13 Nov evening (thirteen, docs/V26.8-E4C3-NOTES.md): ALL LIVE, at v26.8, v26.9 and v26.10
+      (row M, v26.10: his own two arms drawn in the world on his bai sri in the close, the hold his photograph 7's,
+      shaking in his light; measured by jointscan and lensread, the engine hand's disposal guard proved by breaking it).
+      The petal bowl (row R) made again, then TAKEN OUT at his word ("Remove it", v26.9). The speed-ups (w) are next.
     - y. v26.9: MEASURED AND LEFT, each said to him (jointscan on the v26.9 build): the brown hermit's right hand turned
       51 to 56 degrees on its forearm, and his fingers' gaps (both older than v26.8); two kneelers in the blessing's
       kneeling wai (a wrist 30 degrees toward the thumb, a shoulder 15 over its A pose; a wai lifts the hands to the

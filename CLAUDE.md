@@ -1355,8 +1355,9 @@ look, Ton's shoulders, Grandmaster Pho's face under the tent, the minigame as "F
 photograph, his telling and Grandmaster Pho's lines rewritten and approved, the camera through long talk, one minigame
 only, and the glow in its place) are docs/V26.8-E4C3-NOTES.md: live at v26.8 (deploy `6af76bca86064920f357e570`)
 and v26.9 (deploy `6af780b3317a264c323c5035`: the petal bowl made again and then taken out at his word, "Remove it"; the
-kneelers' shoulders and the resting wrists solved); still open from it, his hands shown on his bai sri in the close (row
-M: being built as his own arms in the world, set beside his photograph 7). The speed-ups come after.
+kneelers' shoulders and the resting wrists solved) and v26.10 (deploy `6af7a2253913bc11b786928c`: row M, his own two
+arms drawn in the world on his bai sri in the close, the hold his photograph 7's: c_zfx.js myArmsAt). The speed-ups are
+next.
 Chapter 4 is next after it
 (S1·13, case one: the woman who rose from her wheelchair).
 The episode's plan, with what remains his to decide:

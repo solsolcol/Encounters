@@ -218,7 +218,12 @@ for (const ph of LIST) {
   if (process.env.CHOOSE != null && ph) {
     await p.evaluate(() => window.__enc.decide && window.__enc.decide());
     await p.waitForFunction(() => document.querySelectorAll('#choices button.choice').length >= 4, null, { timeout: 120000, polling: 300 });
-    await p.evaluate((i) => document.querySelectorAll('#choices button.choice')[i].click(), +process.env.CHOOSE);
+    /* (the panel refuses a press in its first moments, as a player's stray tap is refused: pressed again until the film
+       has begun, polled, never a fixed wait) */
+    for (let tries = 0; ; tries++) {
+      await p.evaluate((i) => { const b = document.querySelectorAll('#choices button.choice')[i]; if (b) b.click(); }, +process.env.CHOOSE);
+      const on = await p.waitForFunction(() => window.__enc.cine.active(), null, { timeout: 20000, polling: 200 }).then(() => true, () => false);
+      if (on) break; if (tries > 12) throw new Error('jointscan: the choice never began its film'); }
     await p.waitForFunction(() => window.__enc.cine.active() && window.__enc.cine.t() > 0.15, null, { timeout: 300000, polling: 200 });
     for (const ex of (process.env.SEEKS || '').split(';').map(x => x.trim()).filter(Boolean)) {
       const t = await p.evaluate(new Function('const T = window.__enc.stage.dbg.clocks; return (' + ex + ');'));

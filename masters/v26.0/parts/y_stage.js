@@ -570,6 +570,7 @@
     }
     function endTidy() {
       handsFilm(0); handStill(0); filmChill(0); filmBai(false); filmCarry(handMat, handMatHolder, false); youGlowAt(0, 0, null, null);
+      myArmsAt(null, null, 0, null, 0, 0, 0);
       for (const P of cast.wait) if (P.ready) P.group.visible = false;
       for (const b of waitBai) b.visible = false;
       matsG.visible = false; auraAt(0, 0); filmBurstsEnd();
@@ -598,6 +599,11 @@
       FL.litE = -1; FL.litA = -1; FL.goldMin = 0; FL.tabled = false;
       castSolid();
     }
+    /* (the bai sri raised before his eyes: how far before his eye, its foot how far below it, and where the look rests on
+       it, over its foot. Raised as his photograph 7 holds one: the bowl at his eyes' height, seen from a little below, so
+       his hands are seen on its sides under the ring of marigolds; held at his chest, looked down on, the marigolds hid
+       both hands: photographed, v26.10's third build) */
+    const HOLD = { d: 0.48, y: 0.12, mid: 0.24 };
     function closeFrame(tc, k, api) {
       const T = CLOSE, Ph = cast.pho, Au = cast.aunt;
       if (FL.shot !== 'close') { FL.shot = 'close'; closeStage(k); }
@@ -620,8 +626,18 @@
       closeLight(k, smo(c01(e / 0.9)), END_LOOK[k][0] !== END_LOOK[k][2] ? smo(sgk(tc, T.q3z1 + 0.3, T.q3z1 + 2.6)) : 0, tc);
       /* HIS BAI SRI: on the carpet beside him; taken up and raised before him in both hands; shaking as it rises in
          him; given into his teacher's hands; and, behind a bow of his head, on the table */
-      const H = [eye[0] + fx * 0.6, eye[1] - 0.42 + 0.004 * Math.sin(tc * 1.3), eye[2] + fz * 0.6];
-      const kl = smo(sgk(tc, T.take + 0.5, T.take + 2.5)), kg = smo(sgk(tc, T.give + 0.9, T.give + 2.0));
+      /* (v26.8 row M: raised before his teacher at arm's length for the old man's hands to meet it (0.6 m out); drawn in
+         and raised before his eyes, while his light rises and his hands hold it shaking (HOLD: where his arms hold a thing with their
+         elbows bent, his arms being the engine's, 0.27 m to the elbow and 0.25 on to the wrist: at 0.6 they stood straight
+         and short of it, measured), and held out again to be taken. Taken up from the carpet after his eyes have left it
+         for his teacher's face, so the lift is never seen without the hands that make it) */
+      /* (drawn in at his chest's height first, below the frame, then raised; lowered straight down before him again, his
+         hands on it all the way (at no point out of his arms' reach: the joint scan read the wrists 57 degrees over as one
+         move carried it out and down at once), let go below the frame, and only then held out for his teacher) */
+      const kNear = bump(tc, T.glow - 1.6, T.give + 0.6, 1.0, 0.7), kUp = bump(tc, T.glow - 0.5, T.give - 0.2, 1.5, 0.9);
+      const hd = lp(0.6, HOLD.d, kNear), hy = lp(0.42, HOLD.y, kUp);
+      const H = [eye[0] + fx * hd, eye[1] - hy + 0.004 * Math.sin(tc * 1.3), eye[2] + fz * hd];
+      const kl = smo(sgk(tc, T.take + 0.9, T.take + 2.7)), kg = smo(sgk(tc, T.give + 0.9, T.give + 2.0));
       const G1 = [PHO_AT[0] + Math.sin(BENCH.ry) * 0.5, 0.72, PHO_AT[1] + Math.cos(BENCH.ry) * 0.5];
       const tabled = tc >= T.give + 2.3;
       let bc = tabled ? TABLE_BAI.slice() : lp3(lp3([BESIDE.x, 0.012, BESIDE.z], H, kl), G1, kg);
@@ -630,6 +646,11 @@
         bc[0] += ks * 0.0045 * Math.sin(tc * 61); bc[1] += ks * 0.004 * Math.sin(tc * 53 + 1); bc[2] += ks * 0.0045 * Math.sin(tc * 47 + 2); }
       baiPut(myBai, bc[0], bc[1], bc[2], 0.6);
       youGlowAt(kG, tc, tabled ? null : bc, FL.api);
+      /* HIS OWN HANDS ON IT (v26.8 row M: c_zfx.js myArmsAt): on it below the frame's foot before he draws it in, held
+         while it shakes in his own light, and let go below the frame once it is held out to his teacher. Under the
+         close's first black they are drawn once behind his eyes (`held`), so their shading is built where nothing is seen */
+      const kMy = bump(tc, T.glow - 0.9, T.give + 0.1, 0.5, 0.5);
+      myArmsAt(api || FL.api, eye, yF, tabled ? null : bc, kMy, kG, tc, tc < 0.8, kUp);
       /* GRANDMASTER PHO: he speaks; both his hands on the bowl; a handful of petals; his hands on it again to take it */
       phoFace(); phoTalkFace();
       let kTalk = 0;
@@ -651,11 +672,16 @@
       /* HIS EYES: on his bai sri beside him; up to his teacher as he raises it; bowed a little while the old man's
          hands lie on it; to the table when it is set there; on the old man's face for "Tomorrow we begin."; and the
          whole of it at the last */
-      const [yB, pB] = aimOf(eye, [BESIDE.x, 0.3, BESIDE.z]), kB = 1 - smo(sgk(tc, T.take + 1.4, T.take + 3.1));
+      const [yB, pB] = aimOf(eye, [BESIDE.x, 0.3, BESIDE.z]), kB = 1 - smo(sgk(tc, T.take + 0.4, T.take + 2.0));
       const pWide = Math.atan2(0.05, 1.2), pFace = faceTilt(eye, phoF(kTalk), fP, fD), kFace = smo(sgk(tc, T.give + 3.4, T.ph3z2)) * (1 - smo(sgk(tc, T.q3K1 + 3.5, T.black - 1)));
       const kBow = bump(tc, T.hands + 0.9, T.hands + 2.8, 0.8, 0.9) * 0.05, [yTb, pTb] = aimOf(eye, [TABLE_BAI[0], TABLE_BAI[1] + 0.34, TABLE_BAI[2]]);
       const kTb = tc >= T.give + 2.3 ? 1 - smo(sgk(tc, T.give + 3.5, T.ph3z2 - 0.1)) : 0;
-      const ya = yawMix(yawMix(yF, yB, kB), yTb, kTb), pi = lp(lp(lp(pWide, pFace, kFace) - kBow, pB, kB), pTb, kTb);
+      /* (v26.8 row M: while his own light rises in him and his hands shake, his eyes go with the bai sri he raises before
+         them, his two hands on its bowl; and back to his teacher as he lowers it and the old man reaches to take it. The
+         look rests on the bai sri where it is held (HOLD), never on the bowl as it shakes) */
+      const kHold = bump(tc, T.glow - 0.4, T.give + 0.9, 1.6, 1.2);
+      const pHold = aimOf(eye, [eye[0] + fx * HOLD.d, eye[1] - HOLD.y + HOLD.mid, eye[2] + fz * HOLD.d])[1];
+      const ya = yawMix(yawMix(yF, yB, kB), yTb, kTb), pi = lp(lp(lp(lp(pWide, pFace, kFace) - kBow, pHold, kHold), pB, kB), pTb, kTb);
       eyes(eye, ya, pi, fP, fD);
     }
 
@@ -974,6 +1000,7 @@
     }
     function dispose() {
       alive = false;
+      myArmsDrop();                                                                 // (the engine's own hand is not this chapter's to dispose: c_zfx.js)
       const geos = new Set(), ms = new Set(), skels = new Set();
       world.traverse(o => {
         if (o.isSkinnedMesh && o.skeleton) skels.add(o.skeleton);                  // each skin's bone sheet is a texture of its own
@@ -1026,7 +1053,7 @@
       setPhase, applyPhase, after, dayClock, sayLine, queueLine, queueFn, queueGap,
       look, presets: PRESETS, films, crowdStats, setFormation,
       /* for the probes (tools/probes/e4c3drive.mjs): the play's own state and its beats by name */
-      dbg: { viewfinder(v) { FL.vf = v || null; }, clocks: { A: ENDT.A, B: ENDT.B, C: ENDT.C, D: ENDT.D, CLOSE, FEST, BETW, TELL, ANSW, OPEN: OPENT }, armsOf, handTo, handsTo, restHands, baiGrip, baiPut, play, open, cast, bursts, BAI, handBai, myBai, ymBai, petalBurst, auraAt, baiHands, baiRaise, lineBegin, dawnBegin, breathBegin, places: { PLACE, LINE_AT, KNEEL2, DAWN_AT, TABLES_AT }, dancers, dancersDir, danceBlock, dancerSpot, kids, kidsDir, kidPath, taper, extrasHeard, people, crowd, headDampLay },
+      dbg: { myGrip: GRIP, hold: HOLD, myArms: MYARMS, viewfinder(v) { FL.vf = v || null; }, clocks: { A: ENDT.A, B: ENDT.B, C: ENDT.C, D: ENDT.D, CLOSE, FEST, BETW, TELL, ANSW, OPEN: OPENT }, armsOf, handTo, handsTo, restHands, baiGrip, baiPut, play, open, cast, bursts, BAI, handBai, myBai, ymBai, petalBurst, auraAt, baiHands, baiRaise, lineBegin, dawnBegin, breathBegin, places: { PLACE, LINE_AT, KNEEL2, DAWN_AT, TABLES_AT }, dancers, dancersDir, danceBlock, dancerSpot, kids, kidsDir, kidPath, taper, extrasHeard, people, crowd, headDampLay },
       who: () => people.filter(P => !P.driver).map(P => ({ key: P.key, ready: P.ready, take: P.cur, skin: P.lvShown, skins: P.lv.map(v => (v ? 1 : 0)).join('') })),
       plan: { TURF, TABLES, HALL, TENT_W1, TENT_W2, TENT_E, CHIEF, BENCH, POLE, TON_TABLE, WEST_TABLE },
       /* the ground's own noises (ambTick): how many have sounded, and the last (a probe counts them over a stretch of play) */
