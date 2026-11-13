@@ -1387,7 +1387,10 @@
          shards from close by, which is what Chad saw in chapter 1's yard at v24.27) */
       { key: 'e4raintreehd', x: -15.5, z: 3, h: 13.5, ry: 0.4 },     // the huge tree west of the turf (photograph 10)
       { key: 'e4mangohd', x: 8.6, z: 12.6, h: 9.5, ry: 2.1 },        // the tree behind the chief canopy: its shade lies over the turf's south
-      { key: 'e4raintree', x: 10.5, z: -16, h: 10.5, ry: 3.0 },      // north-east (photograph 8)
+      { key: 'e4raintreehd', x: 10.5, z: -16, h: 10.5, ry: 3.0 },    // north-east (photograph 8)
+      /* (v26.2 debug: this one at its fuller level too. Ending B looks up past the chief canopy into its crown from
+         12 m, and the light file's crown, its leaves remeshed into big flat shards (v24.27), read there as crumpled foil.
+         Its files are the same tree; the fuller one is already loaded for the tree over the turf) */
       { key: 'e4mango', x: -13.5, z: 15.5, h: 8.5, ry: 5.0 }         // south-west, by the way in
     ];
     function buildTrees() {
@@ -2772,6 +2775,9 @@
     const PHO_AT = benchAt(0.46, 0.04);                                          // Grandmaster Pho's place: the bench's east end
     /* each seat's top in metres, MEASURED on its model (tools/probes/seatmeasure.mjs: the sofa's cushion 0.46 and sat
        into by 3 cm; the bench's slats 0.40 and the chair's seat 0.39, each at the size b_world2.js draws it) */
+    /* (v26.2 debug: the bench made again, its first seat's slats having come back from the generator torn and wavy. Its
+       frame's top is where the old slats were, 0.40 of its file, and its slats lie 4 to 5 cm inside it, 0.35: the two who
+       sit on it keep their height, on the frame, their robes over the slats, so nothing they sit in moved) */
     /* (the monks' armchair is drawn at 1.11 of its file, where its seat's top is 0.42 m up: 0.466. It was written here
        as 0.43, the file's own, and the three sat four centimetres into it: measured from the chair's own mesh, 12 Nov) */
     const SEATS = { sofa: 0.43, bench: 0.44, chair: 0.466 };
@@ -3633,6 +3639,14 @@
       for (const Bu of kidPool) { if (!Bu.on) continue; burstAt(Bu, t); if (t - Bu.t0 > Bu.end) { Bu.on = false; Bu.im.visible = false; } } }
     function burstsClear() { for (const Bu of bursts) { Bu.on = false; Bu.film = false; Bu.im.visible = false; }
       for (const Bu of kidPool) { Bu.on = false; Bu.im.visible = false; } }
+    /* (v26.2 debug) PLAY'S PETALS COME TO REST WHEN A FILM BEGINS. Play's clock throws them (burstsTick) and play's frame
+       does not run under a film, so a handful still in the air when a film began hung there for the whole film: the
+       festival's showed petals stuck on a kneeling man's hair and down his thigh, the same in every shot. At a film's
+       first frame (its cut) each is laid where it would come to rest: a grown hand's on the turf, a child's gone into it */
+    function burstsLand() {
+      for (const Bu of bursts) { if (!Bu.on || Bu.film) continue; burstAt(Bu, Bu.t0 + Bu.end); Bu.on = false; }
+      for (const Bu of kidPool) { if (!Bu.on) continue; burstAt(Bu, Bu.t0 + Bu.end); Bu.on = false; Bu.im.visible = false; }
+    }
 
     /* ---- THE GOLD (the plan's §3.4: his alone; chapter 2 kept its colours and strengths for him, CLAUDE.md). Painted
        light, never a lamp (v15.1): a soft light the shape of a man sitting, behind him, in two layers (the colour laid
@@ -5898,7 +5912,7 @@
       key: '',
       /* (the dancers: play has them on the ground all of day one; every film but the festival's was directed without
          them, so each begins with them put away, and play's frame shows them again) */
-      begin(key, c, api) { FL.key = films.key = key; FL.api = api; FL.once.clear(); FL.lit = lookName; danceG.visible = false; if (FILMS[key] && FILMS[key].begin) FILMS[key].begin(api); },
+      begin(key, c, api) { FL.key = films.key = key; FL.api = api; FL.once.clear(); FL.lit = lookName; danceG.visible = false; burstsLand(); if (FILMS[key] && FILMS[key].begin) FILMS[key].begin(api); },
       /* (a film's own frame: play's frame does not run under it, so the levels are chosen here, from the film's lens: v24.22) */
       frame(key, t, api) { if (FILMS[key]) FILMS[key].frame(t, api);
         filmBeds(key, t);

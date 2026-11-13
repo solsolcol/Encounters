@@ -305,7 +305,10 @@
          shards from close by, which is what Chad saw in chapter 1's yard at v24.27) */
       { key: 'e4raintreehd', x: -15.5, z: 3, h: 13.5, ry: 0.4 },     // the huge tree west of the turf (photograph 10)
       { key: 'e4mangohd', x: 8.6, z: 12.6, h: 9.5, ry: 2.1 },        // the tree behind the chief canopy: its shade lies over the turf's south
-      { key: 'e4raintree', x: 10.5, z: -16, h: 10.5, ry: 3.0 },      // north-east (photograph 8)
+      { key: 'e4raintreehd', x: 10.5, z: -16, h: 10.5, ry: 3.0 },    // north-east (photograph 8)
+      /* (v26.2 debug: this one at its fuller level too. Ending B looks up past the chief canopy into its crown from
+         12 m, and the light file's crown, its leaves remeshed into big flat shards (v24.27), read there as crumpled foil.
+         Its files are the same tree; the fuller one is already loaded for the tree over the turf) */
       { key: 'e4mango', x: -13.5, z: 15.5, h: 8.5, ry: 5.0 }         // south-west, by the way in
     ];
     function buildTrees() {

@@ -124,6 +124,14 @@
       for (const Bu of kidPool) { if (!Bu.on) continue; burstAt(Bu, t); if (t - Bu.t0 > Bu.end) { Bu.on = false; Bu.im.visible = false; } } }
     function burstsClear() { for (const Bu of bursts) { Bu.on = false; Bu.film = false; Bu.im.visible = false; }
       for (const Bu of kidPool) { Bu.on = false; Bu.im.visible = false; } }
+    /* (v26.2 debug) PLAY'S PETALS COME TO REST WHEN A FILM BEGINS. Play's clock throws them (burstsTick) and play's frame
+       does not run under a film, so a handful still in the air when a film began hung there for the whole film: the
+       festival's showed petals stuck on a kneeling man's hair and down his thigh, the same in every shot. At a film's
+       first frame (its cut) each is laid where it would come to rest: a grown hand's on the turf, a child's gone into it */
+    function burstsLand() {
+      for (const Bu of bursts) { if (!Bu.on || Bu.film) continue; burstAt(Bu, Bu.t0 + Bu.end); Bu.on = false; }
+      for (const Bu of kidPool) { if (!Bu.on) continue; burstAt(Bu, Bu.t0 + Bu.end); Bu.on = false; Bu.im.visible = false; }
+    }
 
     /* ---- THE GOLD (the plan's §3.4: his alone; chapter 2 kept its colours and strengths for him, CLAUDE.md). Painted
        light, never a lamp (v15.1): a soft light the shape of a man sitting, behind him, in two layers (the colour laid

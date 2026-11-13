@@ -830,7 +830,7 @@
       key: '',
       /* (the dancers: play has them on the ground all of day one; every film but the festival's was directed without
          them, so each begins with them put away, and play's frame shows them again) */
-      begin(key, c, api) { FL.key = films.key = key; FL.api = api; FL.once.clear(); FL.lit = lookName; danceG.visible = false; if (FILMS[key] && FILMS[key].begin) FILMS[key].begin(api); },
+      begin(key, c, api) { FL.key = films.key = key; FL.api = api; FL.once.clear(); FL.lit = lookName; danceG.visible = false; burstsLand(); if (FILMS[key] && FILMS[key].begin) FILMS[key].begin(api); },
       /* (a film's own frame: play's frame does not run under it, so the levels are chosen here, from the film's lens: v24.22) */
       frame(key, t, api) { if (FILMS[key]) FILMS[key].frame(t, api);
         filmBeds(key, t);

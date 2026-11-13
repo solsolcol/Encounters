@@ -959,6 +959,9 @@
     const PHO_AT = benchAt(0.46, 0.04);                                          // Grandmaster Pho's place: the bench's east end
     /* each seat's top in metres, MEASURED on its model (tools/probes/seatmeasure.mjs: the sofa's cushion 0.46 and sat
        into by 3 cm; the bench's slats 0.40 and the chair's seat 0.39, each at the size b_world2.js draws it) */
+    /* (v26.2 debug: the bench made again, its first seat's slats having come back from the generator torn and wavy. Its
+       frame's top is where the old slats were, 0.40 of its file, and its slats lie 4 to 5 cm inside it, 0.35: the two who
+       sit on it keep their height, on the frame, their robes over the slats, so nothing they sit in moved) */
     /* (the monks' armchair is drawn at 1.11 of its file, where its seat's top is 0.42 m up: 0.466. It was written here
        as 0.43, the file's own, and the three sat four centimetres into it: measured from the chair's own mesh, 12 Nov) */
     const SEATS = { sofa: 0.43, bench: 0.44, chair: 0.466 };
