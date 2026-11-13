@@ -8880,6 +8880,22 @@ What the baseline contains, by release:
     half with the forearm. Asked of him: the player's own hand, every chapter's (its middle, ring and little fingers bent
     28 to 37 degrees sideways): docs/OPEN-ITEMS.md C13 s. Deploy `6af6f14cd6218e64bb4e9b61` (488 served files identical
     to dist/, the cache headers in force).
+- **v26.4** EPISODE 4 CHAPTER 3 · THE BROWN HERMIT, CLOSE (his message of 13 Nov, sent while v26.3 was being finished,
+    of his phone picture standing over the hermit in play: "Why is the brown lersi so blocky here"). Measured where he
+    stood before anything was said (tools/probes/e4c3beats.mjs, the hermit's levels read at each picture): from 0.73 to
+    0.81 m the game drew the hermit's near body, Meshy's remesh at 30,665 triangles, made for 2.2 to 7 m; only Ton and
+    the woman at the bench had their full model for close range. Photographed at the phone's size from there: the
+    beard's end a flat shard, the hair spiked with slivers, the beads and locks in facets, the fingers in flat pieces.
+    My miss: the masters were photographed from 1.4 m, never from as close as the player can walk. The fix: his full
+    model (assets/e4hermitah.glb, 310,849 triangles, 7,992 KB) drawn within 2.2 m, made by Ton's recipe, his head's
+    and hands' 18,870 charts baked onto a 2048 sheet of their own with a gutter of 2 (34% covered, 1.5 times the texels
+    of his body sheet as it ships; the default gutter of 4 left it 16% covered and no sharper), drawn with mipmaps
+    (masters/v26.3/make.sh). Measured after: the full model drawn from 0.73 to 1.99 m and the near body from 2.49 m;
+    photographed from above, in front, beside and either side of the hand-over; his fingertips tested against his robe
+    by rays in 14 directions (6% of tip points with robe within 6 cm every way, an upper bound, against 12.5% on the
+    near body). The other people of the chapter are drawn the same way close up (the three other masters and the two
+    monks made here at 30,000 triangles, the devotees and children at 24,000): put to him with the cost (docs/OPEN-ITEMS.md
+    C13 u). docs/V26.3-E4C3-NOTES.md, item I. Deploy `6af6fc379714274aff128b15` (489 served files identical to dist/).
 
 ## The sheet, version by version
 

@@ -32,7 +32,8 @@ group("e4c3 v26.0 (episode 4 chapter 3, the Wai Kru): ITS PEOPLE, each made end 
       "for the two he speaks to face to face. masters/v26.0/bodies.sh, people.sh; the tracker's section 5.",
       person('ton', "Ton, who posted the thread: the group's shirt, white trousers", True) +
       person('bench', "the woman at Grandmaster Pho's bench: white lace, a long white skirt", True) +
-      person('hermita', 'a hermit in a brown robe') + person('hermitb', 'a hermit in a pale yellow shawl') +
+      person('hermita', 'a hermit in a brown robe (and his full model, drawn close: v26.4)', True) +
+      person('hermitb', 'a hermit in a pale yellow shawl') +
       person('red', 'the master in red') + person('white', 'the second master in white') +
       person('dancera', 'a dancer, white and gold') + person('dancerb', 'a dancer, white and gold') +
       person('deva', 'the devotees, eight bodies in white') + person('devb', '') + person('devc', '') + person('devd', '') +

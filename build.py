@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "26.3"
+VERSION = "26.4"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -509,9 +509,10 @@ ASSETS = {
     'e4benchm':     ('assets/e4benchm.glb', True, False),
     'e4benchf':     ('assets/e4benchf.glb', True, False),
     'e4benchh':     ('assets/e4benchh.glb', True, False),
-    'e4hermita':    ('assets/e4hermita.glb', True, False),     # a hermit in a brown robe
+    'e4hermita':    ('assets/e4hermita.glb', True, False),     # a hermit in a brown robe (and his full model, drawn close: v26.4)
     'e4hermitam':   ('assets/e4hermitam.glb', True, False),
     'e4hermitaf':   ('assets/e4hermitaf.glb', True, False),
+    'e4hermitah':   ('assets/e4hermitah.glb', True, False),
     'e4hermitb':    ('assets/e4hermitb.glb', True, False),     # a hermit in a pale yellow shawl
     'e4hermitbm':   ('assets/e4hermitbm.glb', True, False),
     'e4hermitbf':   ('assets/e4hermitbf.glb', True, False),
@@ -787,23 +788,23 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'e4till', 'e4bag', 'e4jacket', 'e4water', 'e4drinks', 'e4wallet', 'e4switch', 'e4shelf', 'e4cloth', 'e4yaam', 'e4phone', 'e4calc', 'e4wreath', 'e4notebook',
            # >>> e4c3 keys (masters/v26.0/keys.py) >>>
            'e4ton', 'e4tonm', 'e4tonf', 'e4tonh', 'e4bench', 'e4benchm', 'e4benchf', 'e4benchh', 'e4hermita',
-           'e4hermitam', 'e4hermitaf', 'e4hermitb', 'e4hermitbm', 'e4hermitbf', 'e4red', 'e4redm', 'e4redf',
-           'e4white', 'e4whitem', 'e4whitef', 'e4dancera', 'e4danceram', 'e4danceraf', 'e4dancerb', 'e4dancerbm',
-           'e4dancerbf', 'e4deva', 'e4devam', 'e4devaf', 'e4devb', 'e4devbm', 'e4devbf', 'e4devc', 'e4devcm',
-           'e4devcf', 'e4devd', 'e4devdm', 'e4devdf', 'e4deve', 'e4devem', 'e4devef', 'e4devf', 'e4devfm', 'e4devff',
-           'e4devg', 'e4devgm', 'e4devgf', 'e4devh', 'e4devhm', 'e4devhf', 'e4girl', 'e4girlm', 'e4girlf', 'e4boy',
-           'e4boym', 'e4boyf', 'e4monkb', 'e4monkbm', 'e4monkbf', 'e4monkc', 'e4monkcm', 'e4monkcf', 'pho', 'phof',
-           'w3baisri', 'w3naga', 'w3wheel', 'w3parasol', 'w3tower', 'w3candle', 'w3fan', 'w3nagastaff', 'w3pewter',
-           'w3purple', 'w3fruit', 'w3sweets', 'w3khantok', 'w3puff', 'w3chair', 'w3lowtable', 'w3bench', 'w3sofa',
-           'w3petalbowl', 'w3petalsteel', 'w3smallbaisri', 'w3candlemid', 'w3candlesmall', 'w3kratip', 'w3chicken',
-           'w3coconut', 'w3soda', 'w3water', 'w3matroll', 'w3shirt', 'w3chrys', 'w3roses', 'w3claypot', 'w3pchair',
-           'w3horns', 'w3taper', 'w3glass', 'w3tissue', 'w3nagafount', 'w3nagagreen', 'w3nagawhite', 'w3ganesha',
-           'w3croton', 'w3dracaena', 'w3waterjar', 'w3walllamp', 'w3t_turf', 'w3t_petalturf', 'w3t_earth',
-           'w3t_gravel', 'w3t_redplank', 'w3t_tin', 'w3t_brick', 'w3t_skirt', 'w3t_satin', 'w3t_mat', 'w3t_carpet',
-           'w3t_bluemat', 'w3t_swag', 'w3t_banner', 'w3t_treeline', 'w3t_redroof', 'w3t_hallbrick', 'w3t_steptile',
-           'w3t_lawn', 'w3t_kalae', 'w3t_fretwork', 'w3t_sign', 'w3banana2', 'w3frangipani', 'w3isanhouse', 'w3tank',
-           'w3aircon', 'w3scooter', 'w3t_render', 'w3t_cloudbank', 'w3t_cloudtall', 'w3t_cloudflat',
-           'w3t_cloudthree', 'w3t_cirrus',
+           'e4hermitam', 'e4hermitaf', 'e4hermitah', 'e4hermitb', 'e4hermitbm', 'e4hermitbf', 'e4red', 'e4redm',
+           'e4redf', 'e4white', 'e4whitem', 'e4whitef', 'e4dancera', 'e4danceram', 'e4danceraf', 'e4dancerb',
+           'e4dancerbm', 'e4dancerbf', 'e4deva', 'e4devam', 'e4devaf', 'e4devb', 'e4devbm', 'e4devbf', 'e4devc',
+           'e4devcm', 'e4devcf', 'e4devd', 'e4devdm', 'e4devdf', 'e4deve', 'e4devem', 'e4devef', 'e4devf', 'e4devfm',
+           'e4devff', 'e4devg', 'e4devgm', 'e4devgf', 'e4devh', 'e4devhm', 'e4devhf', 'e4girl', 'e4girlm', 'e4girlf',
+           'e4boy', 'e4boym', 'e4boyf', 'e4monkb', 'e4monkbm', 'e4monkbf', 'e4monkc', 'e4monkcm', 'e4monkcf', 'pho',
+           'phof', 'w3baisri', 'w3naga', 'w3wheel', 'w3parasol', 'w3tower', 'w3candle', 'w3fan', 'w3nagastaff',
+           'w3pewter', 'w3purple', 'w3fruit', 'w3sweets', 'w3khantok', 'w3puff', 'w3chair', 'w3lowtable', 'w3bench',
+           'w3sofa', 'w3petalbowl', 'w3petalsteel', 'w3smallbaisri', 'w3candlemid', 'w3candlesmall', 'w3kratip',
+           'w3chicken', 'w3coconut', 'w3soda', 'w3water', 'w3matroll', 'w3shirt', 'w3chrys', 'w3roses', 'w3claypot',
+           'w3pchair', 'w3horns', 'w3taper', 'w3glass', 'w3tissue', 'w3nagafount', 'w3nagagreen', 'w3nagawhite',
+           'w3ganesha', 'w3croton', 'w3dracaena', 'w3waterjar', 'w3walllamp', 'w3t_turf', 'w3t_petalturf',
+           'w3t_earth', 'w3t_gravel', 'w3t_redplank', 'w3t_tin', 'w3t_brick', 'w3t_skirt', 'w3t_satin', 'w3t_mat',
+           'w3t_carpet', 'w3t_bluemat', 'w3t_swag', 'w3t_banner', 'w3t_treeline', 'w3t_redroof', 'w3t_hallbrick',
+           'w3t_steptile', 'w3t_lawn', 'w3t_kalae', 'w3t_fretwork', 'w3t_sign', 'w3banana2', 'w3frangipani',
+           'w3isanhouse', 'w3tank', 'w3aircon', 'w3scooter', 'w3t_render', 'w3t_cloudbank', 'w3t_cloudtall',
+           'w3t_cloudflat', 'w3t_cloudthree', 'w3t_cirrus',
            # <<< e4c3 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY

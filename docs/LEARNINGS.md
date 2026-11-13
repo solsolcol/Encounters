@@ -8552,3 +8552,18 @@ Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8,
   the cloth (restHands flexMax, drape).
 - **A line under a word must answer both of the word's states.** The gate's panel said CLOSE over "Drag up to open the
   gate": the line that says where the hand goes says both ways now.
+
+## v26.4 — a person photographed from as close as the player can stand
+
+- **A person is photographed from as close as the player can stand, with the body drawn there read.** The masters were
+  judged from 1.4 m; in play the player stands 0.7 m from a seated master's chest, where a body of 30,000 triangles made
+  for 2.2 to 7 m shows every facet (the beard's end a shard, the hair spiked, the beads in facets). Only the two people
+  he talks to had their full model for close range. Read which body is drawn at each picture (the person's lvShown):
+  the picture does not say.
+- **A head of many small charts packs badly with a wide gutter.** The brown hermit's hair, beard and beads are 18,870
+  charts: with Ton's gutter of 4 pixels his face-and-hands sheet came out 16% covered and no sharper than his body's own
+  sheet; a gutter of 2 covers 34%, 1.5 times. Read the gain tools/rebake.py prints before applying the bake.
+- **A height map cannot tell a finger sunk into cloth from one curled over a knee.** Read as heights over his lap, the
+  full body's fingertips stood 3 to 6 cm under its top, which is also what a fingertip hanging down the front of a knee
+  reads. Rays from each fingertip in 14 directions against the robe and legs tell inside from outside: a point is inside
+  only if cloth is near every way (6% of his tip points at most, against 12.5% on the body that was live).

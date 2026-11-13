@@ -254,6 +254,11 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
       white's open hand at moments of his seated take (32 to 36 degrees between two fingers, a gesture of the take);
       Grandmaster Pho's and the young man's forearms turned 75 to 91 degrees at the elbow where their takes turn the
       palm up (a rig with no twist bones shares such a turn between the elbow and the wrist, never along the forearm).
+    - u. v26.4 (docs/V26.3-E4C3-NOTES.md, item I): ASKED: every other person of the chapter is drawn close up from a
+      lighter body, as the brown hermit was until v26.4 (the three other masters, the two monks made here and the two
+      dancers at 30,000 triangles; the eight devotees and the two children at 24,000). A full model for each, drawn within
+      2.2 m as his now is, costs about 8 MB of download a body (the three masters about 24 MB; all sixteen about 130 MB,
+      against the chapter's 160 MB) and some 15 minutes of making and checking a body.
 
 ## D. Not built yet
 

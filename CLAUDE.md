@@ -1338,6 +1338,8 @@ trees placed by their crowns, masters/v26.2/trees; the bench made again, its qua
 taper woman's arm; the brown hermit's hands; then "You dont see the problem with the hands and fingers?" and the new
 standing rule on bodies, with tools/probes/jointscan.mjs) went live at v26.3 (deploy `6af6f14cd6218e64bb4e9b61`):
 docs/V26.3-E4C3-NOTES.md.
+His question the same afternoon, why the brown hermit was so blocky up close, went live at v26.4 (his full model drawn
+within 2.2 m; the chapter's other people, drawn the same way close up, put to him: docs/OPEN-ITEMS.md C13 u).
 Chapter 4 is next after it
 (S1·13, case one: the woman who rose from her wheelchair).
 The episode's plan, with what remains his to decide:
