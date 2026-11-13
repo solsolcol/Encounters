@@ -200,7 +200,7 @@
       /* two wicks of the front row (b_world2.js: every 0.33 m along z -10.09), and the taper held up between them (v26.1:
          it was drawn back 15 cm and up 20; with a taper this long that brought her hand to her shoulder, the elbow folded
          141 degrees and the wrist bent 74: measured, and moved out to where her arm holds it at rest) */
-      return { P, g, fl, on: false, W: [[1.32, y, -10.09], [0.99, y, -10.09], [1.15, y + 0.12, -10.03]], grip: { L: { at: [0, 0, 0], f: [0, 0, -1], n: [1, -0.25, 0], out: 0.1, down: 0.5, aft: 0.3 } }, tip: new THREE.Vector3(), hold: null };
+      return { P, g, fl, on: false, W: [[1.32, y, -10.09], [0.99, y, -10.09], [1.15, y + 0.12, -10.03]], tip: new THREE.Vector3(), hold: null };
     })();
     /* where the taper's tip is asked to be at a moment of her round (seconds), eased from stop to stop */
     const _tpA = [0, 0, 0];

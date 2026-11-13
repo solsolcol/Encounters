@@ -123,6 +123,42 @@ if off.any():
 else:
     summary_note = ''
 
+# ---- (v26.1 debug, 13 Nov) A CORNER XATLAS NEVER PLACED is given its neighbour's place. A few of a remesh's tiny slivers
+#  (a fraction of a square millimetre, edges of a millimetre or two) come back from the packing with a corner at the
+#  sheet's own corner (0, 0): each such triangle then reaches across the whole sheet, and drawn, its thin body is
+#  painted with a streak of whatever lies along that reach. On Ton's near body 29 did (two lines of his collar's orange
+#  across his white trousers, a pale line down his face); 13 of the 20 bodies had some (tools/probes/uvstretch.mjs).
+#  A triangle whose sheet edge is over 6 texels and over 8 times what its body edge asks (the median of the body) has
+#  each corner pointed where a sound triangle at the same place has it, and if its corners still lie apart, all three
+#  at one of them: a sliver that size shows one colour, the colour of the surface it sits in.
+d3 = np.linalg.norm(W[LI] - W[np.roll(LI, -1, axis=1)], axis=2)                     # (m, 3) body edges, metres
+duv = np.linalg.norm(cu - np.roll(cu, -1, axis=1), axis=2) * PX                     # (m, 3) sheet edges, texels at PX
+okE = d3 > 1e-6
+medR = float(np.median(duv[okE] / d3[okE])) if okE.any() else 0.0
+badT = ((duv > 6) & ((~okE) | (duv > 8 * medR * np.maximum(d3, 1e-9)))).any(axis=1)
+nBad = int(badT.sum())
+if nBad:
+    good = np.nonzero(~badT)[0]
+    at_place = {}
+    for t in good:
+        for k in range(3):
+            q = int(LI[t, k])
+            if q not in at_place: at_place[q] = cu[t, k].copy()
+    cent = W[LI].mean(axis=1)
+    fixed = 0
+    for t in np.nonzero(badT)[0]:
+        new = [at_place.get(int(LI[t, k])) for k in range(3)]
+        have = [u for u in new if u is not None]
+        if not have:
+            g = good[int(np.argmin(np.linalg.norm(cent[good] - cent[t], axis=1)))]
+            have = [cu[g, 0].copy()]
+        new = [u if u is not None else have[0] for u in new]
+        tri = np.array(new)
+        if (np.linalg.norm(tri - np.roll(tri, -1, axis=0), axis=1) * PX).max() > 6: tri[:] = have[0]
+        cu[t] = tri; fixed += 1
+    log(f'{nBad} triangles reached across the sheet from a corner xatlas never placed: each given its neighbours\' place ({fixed})')
+summary_note += f'; {nBad} unplaced corners mended' if nBad else ''
+
 # ---- the texels a metre, as shipped and now (the old sheet at the size it shipped at, which the dump names: 'shipped')
 def uvarea(u): return 0.5 * np.abs((u[:, 1, 0] - u[:, 0, 0]) * (u[:, 2, 1] - u[:, 0, 1]) - (u[:, 2, 0] - u[:, 0, 0]) * (u[:, 1, 1] - u[:, 0, 1]))
 olduv = U[I].astype(np.float64)

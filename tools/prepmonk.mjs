@@ -474,6 +474,11 @@ if (process.env.REPAINT) {
   for (let c = 0; c < m * 3; c++) { const v = I0[c], ku = Math.round(CU[c * 2] * 1048576), kv = Math.round(CU[c * 2 + 1] * 1048576), k = `${v}:${ku}:${kv}`;
     let id = keyOf.get(k); if (id === undefined) { id = src.length; keyOf.set(k, id); src.push(v); uvNew.push(CU[c * 2], CU[c * 2 + 1]); } idxNew[c] = id; }
   const nv = src.length;
+  /* (v26.1 debug, 13 Nov) no triangle may reach across the sheet: a corner left at (0, 0) drew a streak across Ton's
+     trousers and down his face (tools/repaint.py mends them; this refuses a file in which one is left) */
+  { let reach = 0; for (let t = 0; t < m; t++) for (let k = 0; k < 3; k++) { const c0 = idxNew[t * 3 + k], c1 = idxNew[t * 3 + (k + 1) % 3];
+      reach = Math.max(reach, Math.hypot(uvNew[c0 * 2] - uvNew[c1 * 2], uvNew[c0 * 2 + 1] - uvNew[c1 * 2 + 1])); }
+    if (reach > 0.25) throw new Error(`REPAINT: a triangle reaches ${reach.toFixed(3)} of the sheet across it`); }
   for (const sem of p0.listSemantics()) { const A = p0.getAttribute(sem), es = A.getElementSize();
     if (sem === 'TEXCOORD_0') { A.setArray(Float32Array.from(uvNew)).setNormalized(false); continue; }
     const old = A.getArray(), arr = new old.constructor(nv * es); for (let i = 0; i < nv; i++) for (let q = 0; q < es; q++) arr[i * es + q] = old[src[i] * es + q]; A.setArray(arr); }
