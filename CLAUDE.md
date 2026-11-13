@@ -1349,7 +1349,11 @@ within 2.2 m), and at v26.5 the other important people his answer named (the thr
 lighting the candles; docs/OPEN-ITEMS.md C13 u), with v26.6: the red master's and the master in white's hands laid on
 their knees ("Look at the fingers of the red master, its butchered"; C13 v). His ask to make the chapter faster with
 nothing on screen changed is measured and planned in docs/V26.6-E4C3-OPTIMIZE-PLAN.md: exact results only, all of it in
-order (his pick), after the hermit in the shawl's hands.
+order (his pick), after the hermit in the shawl's hands, which went live at v26.7 (set beside a reference picture:
+deploy `6af73f7d894cdd7a17d60fe6`). His thirteen notes of 13 Nov evening (the dancers, the bai sri's arms, the audience's
+look, Ton's shoulders, Grandmaster Pho's face under the tent, the minigame as "Fill to the gold mark", the group
+photograph, his telling and Grandmaster Pho's lines rewritten and approved, the camera through long talk, one minigame
+only, and the glow in its place) are docs/V26.8-E4C3-NOTES.md, in progress; the speed-ups come after them.
 Chapter 4 is next after it
 (S1·13, case one: the woman who rose from her wheelchair).
 The episode's plan, with what remains his to decide:

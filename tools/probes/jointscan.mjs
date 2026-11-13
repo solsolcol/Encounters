@@ -12,6 +12,9 @@
      SHOULDER the upper arm pointing back behind the body
      HAND     across the body's middle (a reach across: said, not always a fault)
      KNEE     bent backward
+     AT REST  (v26.7) a hand a rest lays (the seated masters'): its wrist bent sideways past 20 degrees toward the little
+              finger or 15 toward the thumb, or past 35 either way along; on a palm turned up, the thumb raised more than
+              30 degrees off the palm or turned across it
    Ranges are a real adult's (flexion of the wrist to 80 degrees, extension 70, toward the thumb 20, toward the little
    finger 35; the forearm 85 each way from thumb-up; the elbow to 145; the shoulder back to 50; a finger's middle joint
    to 110 and none backward), flagged short of them where a body at rest never goes.
@@ -48,6 +51,9 @@ const MEASURE = ([WHO, NAMES]) => {
   const names = new Map(), C = (E.stage.dbg && E.stage.dbg.cast) || {};
   for (const k in C) if (C[k] && C[k].group) names.set(C[k].group, 'cast:' + k);
   const nameOf = (o) => { for (let q = o; q; q = q.parent) if (names.has(q)) return names.get(q); return null; };
+  /* (the bodies whose hands a rest lays (the seated masters': c_cast.js restHands), held to a resting hand's numbers too) */
+  const rests = new Set(); for (const k in C) if (C[k] && C[k].group && C[k].restHands) rests.add(C[k].group);
+  const restOf = (o) => { for (let q = o; q; q = q.parent) if (rests.has(q)) return true; return false; };
   const curOf = (o) => { for (const k in C) { const P = C[k]; if (!P || !P.group) continue; for (let q = o; q; q = q.parent) if (q === P.group) return P.cur || ''; } return ''; };
   const bodies = new Map(), skOf = new Map();
   /* (the player's own arms are another rig's names: upper_armL, forearmL, handL, f_index01L .. 03L, thumb01L .. 03L) */
@@ -64,7 +70,7 @@ const MEASURE = ([WHO, NAMES]) => {
     let root = o; while (root.parent && root.parent !== scene && !names.has(root) && root.parent.children.length <= 25) root = root.parent;
     const who = label || nameOf(o) || ('crowd ' + (o.name || '?'));
     if (WHO && !new RegExp(WHO).test(who)) return;
-    bodies.set(key, { who, cur: curOf(o), at: [+root.position.x.toFixed(2), +root.position.z.toFixed(2)], bones, sk: o.skeleton }); };
+    bodies.set(key, { who, cur: curOf(o), at: [+root.position.x.toFixed(2), +root.position.z.toFixed(2)], bones, sk: o.skeleton, rest: restOf(o) }); };
   scene.traverse(o => take(o, null));
   if (E.handsRoot) E.handsRoot.traverse(o => take(o, 'player-hand'));
   const Q = scene.quaternion.constructor, M4 = scene.matrixWorld.constructor;
@@ -110,6 +116,10 @@ const MEASURE = ([WHO, NAMES]) => {
           const wf = Math.atan2(f.dot(ne), f.dot(e)) * D, wd = Math.atan2(f.dot(re), f.dot(e)) * D; J.wristFlex = +wf.toFixed(1); J.wristDev = +wd.toFixed(1);
           if (wf > 70) flag(S0[0] + '.wrist.flexed', wf); if (wf < -60) flag(S0[0] + '.wrist.bentBack', wf);
           if (wd > 25) flag(S0[0] + '.wrist.toThumb', wd); if (wd < -40) flag(S0[0] + '.wrist.toLittle', wd);
+          /* AT REST (v26.7): a hand a rest lays is held to a resting hand's numbers, not only to a real wrist's limits:
+             the hermit in the pale yellow shawl's left wrist stood 35 degrees toward its little finger, passed by the
+             limit above and at the end of a real wrist's range, where no hand at rest lies */
+          if (B.rest) { if (wd < -20 || wd > 15) flag(S0[0] + '.rest.wrist.sideways', wd); if (Math.abs(wf) > 35) flag(S0[0] + '.rest.wrist.bent', wf); }
           /* the forearm's turn along its length: 0 with the thumb up (the palm toward the body's middle), +90 the palm down
              (toward the upper arm's side), -90 up; only read with the elbow bent, where the hinge names a side */
           if (phi > 25) { const h = v().crossVectors(u, e).normalize(), med = h.clone().multiplyScalar(side), dn = u.clone().addScaledVector(e, -u.dot(e)).normalize();
@@ -162,7 +172,12 @@ const MEASURE = ([WHO, NAMES]) => {
         const t1 = P(S0 + 'HandThumb1'), t2 = P(S0 + 'HandThumb2'), t3 = P(S0 + 'HandThumb3'), t4 = P(S0 + 'HandThumb4');
         if (t1 && t2 && t3) { const a1 = t2.clone().sub(t1).normalize(), a2 = t3.clone().sub(t2).normalize(); const b1 = Math.acos(Math.max(-1, Math.min(1, a1.dot(a2)))) * D; let b2 = null;
           if (t4) { const a3 = t4.clone().sub(t3); if (a3.length() > 1e-4) { a3.normalize(); b2 = Math.acos(Math.max(-1, Math.min(1, a2.dot(a3)))) * D; } }
-          J.thumb = [+b1.toFixed(0), b2 == null ? null : +b2.toFixed(0)]; if (b1 > 100 || (b2 != null && b2 > 100)) flag(S0[0] + '.thumb.folded', Math.max(b1, b2 || 0)); } }
+          J.thumb = [+b1.toFixed(0), b2 == null ? null : +b2.toFixed(0)]; if (b1 > 100 || (b2 != null && b2 > 100)) flag(S0[0] + '.thumb.folded', Math.max(b1, b2 || 0));
+          /* (AT REST, on a palm turned up: a thumb with nothing to hold lies out beside the palm, a little off it; the
+             hermit in the pale yellow shawl's stood 42 degrees off his palms and turned across them, pointing up (v26.7).
+             Lift: off the palm's plane toward its facing; out: from the index finger's line toward the thumb's side) */
+          if (B.rest && n && n.y > 0.5) { const td = (t4 || t3).clone().sub(t1).normalize(), lift = Math.asin(Math.max(-1, Math.min(1, td.dot(n)))) * D, ip = td.clone().addScaledVector(n, -td.dot(n)), out = rad ? Math.atan2(ip.dot(rad), ip.dot(f)) * D : 0;
+            J.thumbLift = +lift.toFixed(0); J.thumbOut = +out.toFixed(0); if (lift > 30 || out < -10) flag(S0[0] + '.rest.thumb.raised', lift, 'deg off the upturned palm, ' + out.toFixed(0) + ' from the index line'); } } }
       /* the knee */
       const hp = P(S0 + 'UpLeg'), kn = P(S0 + 'Leg'), an = P(S0 + 'Foot'), to = P(S0 + 'ToeBase');
       if (hp && kn && an && to) { const l = an.clone().sub(hp).normalize(), t = to.clone().sub(an); t.addScaledVector(l, -t.dot(l)); if (t.length() > 1e-4) { t.normalize();

@@ -8580,3 +8580,12 @@ Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8,
   it shipped; a rest is learned and measured for each body it is given to.
 - **The game's own code a frame is mostly people's bones.** v15 already composes only what changed; what is left is
   about 2,900 bones turned by takes and poses every frame, seen or not (tools/probes/frameprof.mjs).
+- **A take that holds the forearms rolled palm up cannot be laid palm down.** The hermit in the shawl's wrists stood
+  wrung 56 to 77 degrees at every palm-down setting; palm up, tipped onto the little finger's edge, the same arms
+  measure within a real body's. Try the hand's facing before the palm's place.
+- **Try a rest on the running game before building it.** stage.dbg.restHands lays a rest on a person as the chapter
+  would; jointscan's PRE runs it before measuring, so each setting costs a measure, not a build.
+- **A test for a hand in cloth must be proved on known cases both ways.** A fingertip test (cloth all round within
+  6 cm) passed the red master's hand pushed through one layer of his trousers; a crossing count along each finger's
+  bones flagged fingers lying over a curved knee too. The photographs from three sides and the hand drawn through
+  everything beside drawn as seen are what judged it.

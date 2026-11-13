@@ -262,11 +262,17 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
       devotees of the crowd and the children keep their lighter bodies (the full models of five devotees and the two
       monks, made before his answer, are kept outside the repository, not shipped).
     - v. v26.6 (Chad: "Look at the fingers of the red master, its butchered"): DONE for the red master and the master
-      in white (palms at their knees, measured and photographed: docs/V26.3-E4C3-NOTES.md, L). TO DO NEXT: the hermit in
-      the pale yellow shawl (forearms in his robe since v26.0; a palm laid down wrings his wrists at every setting: his
-      own hand position to be learned). SAID: the red master's thumb tips are flat pale wedges (his model's own).
+      in white (palms at their knees, measured and photographed: docs/V26.3-E4C3-NOTES.md, L), and the hermit in the pale
+      yellow shawl (palms up on his knees: K). ~~TO DO: his palm-up rest set beside a reference picture~~ DONE at v26.7:
+      his fingers, thumbs and wrists closed against the picture (K, v26.7). SAID: the red master's thumb tips are flat
+      pale wedges (his model's own); the hermit in the yellow shawl's hands rest on his knees where the picture's rest
+      mid-thigh, and he leans a little forward (his take's own). FOUND at v26.7 by jointscan's new resting-hand check, not
+      fixed: the master in white's right wrist 25 to 26 degrees toward the little finger at two moments in twelve; the
+      brown hermit's left 20 to 27 at most moments (the same solve, `wristSolve`, can be tried on both).
     - w. v26.5: ASKED: making the chapter faster with nothing on screen changed: measured, and four ways in the order of
       what they save (docs/V26.6-E4C3-OPTIMIZE-PLAN.md).
+    - x. v26.8: his notes of 13 Nov evening (thirteen, docs/V26.8-E4C3-NOTES.md): IN PROGRESS. The speed-ups (w) come
+      after them.
 
 ## D. Not built yet
 

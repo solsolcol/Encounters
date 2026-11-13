@@ -953,8 +953,15 @@
           if (!isFinite(sl) || !isFinite(gx) || !isFinite(gz)) return null;
           const f = new THREE.Vector3(d.x, Math.max(-0.36, Math.min(0.15, sl)), d.z).normalize(), nS = new THREE.Vector3(-gx, 1, -gz).normalize();
           if (nS.y < Math.cos(0.44)) { const hz = Math.hypot(nS.x, nS.z) || 1; nS.set(nS.x / hz * Math.sin(0.44), Math.cos(0.44), nS.z / hz * Math.sin(0.44)); }
-          const n = nS.clone().negate(); n.addScaledVector(f, -n.dot(f)).normalize();
-          return { f, n, W: Cp.clone().addScaledVector(f, -PALM).addScaledVector(n, -OFF) }; };
+          /* (K.palmUp, v26.6: THE PALM TURNED UP, the hand's back on the cloth, for a body whose take holds its forearms
+             rolled palm up: the hermit in the pale yellow shawl's wrists stood wrung 56 to 77 degrees at every setting of
+             a palm laid down. A seated sage's hands rest so on his knees as often as palm down. Absent, all as it was) */
+          const n = K.palmUp ? nS.clone() : nS.clone().negate(); n.addScaledVector(f, -n.dot(f)).normalize();
+          /* (K.palmTilt, v26.6: { L, R } radians, the palm turned about the fingers' line toward his middle, the hand on its
+             little finger's edge that much: a resting hand lies so as often as flat, and the forearm turns that much less.
+             Absent, flat as before) */
+          const tilt = K.palmTilt && K.palmTilt[sd]; if (tilt) n.applyAxisAngle(f, sg * (K.palmUp ? -tilt : tilt)).normalize();
+          return { f, n, W: Cp.clone().addScaledVector(f, -PALM).addScaledVector(n, K.palmUp ? OFF : -OFF) }; };
         const ts = K.at != null ? Array.from({ length: 13 }, (_, k) => K.at - 0.04 * k) : Array.from({ length: 15 }, (_, k) => 0.28 + 0.04 * k);
         for (const t of ts) {
           /* (on the CREST of what is drawn over the thigh: the highest point across its line within six centimetres of
@@ -1002,9 +1009,17 @@
         /* (THE HAND ALONG ITS FOREARM: its fingers carried on along the forearm's own line seen from above, a quarter of
            the way toward the thigh's, and the elbow found again for that wrist. Laid along the thigh while the forearm came
            in from his side, each wrist was bent sideways, by up to fifty degrees: photographed full size, 12 Nov) */
-        { const fa = best.W.clone().sub(el.E); fa.y = 0;
-          if (fa.lengthSq() > 1e-6) { const d2 = fa.normalize().multiplyScalar(0.75).addScaledVector(th, 0.25); d2.y = 0; d2.normalize(); const fr = frameAt(best.Cp, d2);
-            if (fr && fr.W.distanceTo(Sh) < la + lb - 0.012) { best.f = fr.f; best.n = fr.n; best.W = fr.W; el = findElbow(best.W, best.Cp); } } }
+        /* (K.along, v26.7: the forearm's share of that line; K.alongIt, how many times the step is taken, the elbow
+           found again for each new wrist; K.handYaw { L, R }, radians the line is then turned about the upright before
+           the hand is laid along it. At a quarter toward the thigh, the hermit in the pale yellow shawl's left hand,
+           palm up, stood bent 35 degrees toward its little finger, the end of a real wrist's range (jointscan, v26.7's
+           build); the whole way along the forearm four times over, the elbow moved each time and left the wrist bent 38
+           to 47 degrees toward the thumb and the forearm wrung 115 to 122. Absent, a share of 0.75 and one step, as before) */
+        { const SH = K.along != null ? K.along : 0.75, IT = K.alongIt || 1, YW = K.handYaw && K.handYaw[sd];
+          for (let it = 0; it < IT; it++) { const fa = best.W.clone().sub(el.E); fa.y = 0;
+            if (!(fa.lengthSq() > 1e-6)) break; const d2 = fa.normalize().multiplyScalar(SH).addScaledVector(th, 1 - SH); d2.y = 0; d2.normalize();
+            if (YW) d2.applyAxisAngle(new THREE.Vector3(0, 1, 0), YW); const fr = frameAt(best.Cp, d2);
+            if (!(fr && fr.W.distanceTo(Sh) < la + lb - 0.012)) break; best.f = fr.f; best.n = fr.n; best.W = fr.W; el = findElbow(best.W, best.Cp); } }
         /* (K.flexMax, v26.3: THE WRIST KEPT NEAR STRAIGHT. The brown hermit's body is short from hip to shoulder, so his
            elbow hangs at the height of his knees and his forearm climbs to them; his hand, laid along the cloth where it
            falls away over the knee, was bent down at the wrist 40 degrees (measured, tools/probes/jointscan.mjs; a real
@@ -1016,8 +1031,28 @@
           const flex = Math.atan2(f.dot(ne), f.dot(e)); if (flex <= K.flexMax + 0.005) break;
           const ax = new THREE.Vector3().crossVectors(n, f).normalize(), q = new THREE.Quaternion().setFromAxisAngle(ax, flex - K.flexMax);
           best.f = f.clone().applyQuaternion(q).normalize(); best.n = n.clone().applyQuaternion(q).normalize();
-          best.W = best.Cp.clone().addScaledVector(best.f, -PALM).addScaledVector(best.n, -OFF);
+          best.W = best.Cp.clone().addScaledVector(best.f, -PALM).addScaledVector(best.n, K.palmUp ? OFF : -OFF);
           el = findElbow(best.W, best.Cp); }
+        /* (K.wristSolve, v26.7: THE HAND'S LINE SOLVED AGAINST ITS FOREARM. Laid along a line of fixed shares (above),
+           the hermit in the pale yellow shawl's left wrist, palm up, stood 35 degrees toward its little finger; a whole
+           share, 40 the same way; turned 26 degrees by hand either way, 35 toward the thumb or 50 toward the little
+           finger, the forearm wrung past its range (jointscan, v26.7): each new wrist moves the elbow found for it. So
+           the hand's line over the cloth is tried every four degrees within sixty either side of where it stands, the
+           elbow found for each, and the one kept whose wrist is nearest straight with its forearm turned within a
+           forearm's range and its elbow clear of him, each measured as tools/probes/jointscan.mjs measures it) */
+        if (K.wristSolve) { const wsUp = new THREE.Vector3(0, 1, 0), wsD0 = new THREE.Vector3(best.f.x, 0, best.f.z), DG = 180 / Math.PI;
+          if (wsD0.lengthSq() > 1e-8) { wsD0.normalize(); let wsPick = null;
+            for (let wsK = -15; wsK <= 15; wsK++) { const wsFr = frameAt(best.Cp, wsD0.clone().applyAxisAngle(wsUp, wsK * 4 / DG)); if (!wsFr || wsFr.W.distanceTo(Sh) >= la + lb - 0.012) continue;
+              const wsEl = findElbow(wsFr.W, best.Cp); if (!wsEl.clear) continue;
+              const wsE = wsFr.W.clone().sub(wsEl.E).normalize(), wsU = wsEl.E.clone().sub(Sh).normalize(), wsRad = new THREE.Vector3().crossVectors(wsFr.n, wsFr.f).multiplyScalar(sg);
+              const wsRe = wsRad.clone().addScaledVector(wsE, -wsRad.dot(wsE)).normalize(), wsNe = wsFr.n.clone().addScaledVector(wsE, -wsFr.n.dot(wsE)).normalize();
+              const wsDev = Math.atan2(wsFr.f.dot(wsRe), wsFr.f.dot(wsE)) * DG, wsFlex = Math.atan2(wsFr.f.dot(wsNe), wsFr.f.dot(wsE)) * DG;
+              const wsMed = new THREE.Vector3().crossVectors(wsU, wsE).normalize().multiplyScalar(sg), wsDn = wsU.clone().addScaledVector(wsE, -wsU.dot(wsE)).normalize();
+              const wsTurn = Math.atan2(wsNe.dot(wsDn), wsNe.dot(wsMed)) * DG;
+              const wsC = Math.max(0, Math.abs(wsDev) - 8) ** 2 + 2 * Math.max(0, Math.abs(wsTurn) - 85) ** 2 + Math.max(0, Math.abs(wsFlex) - 25) ** 2 + 0.01 * wsK * wsK;
+              if (!wsPick || wsC < wsPick.c) wsPick = { c: wsC, fr: wsFr, el: wsEl, dev: wsDev, turn: wsTurn, flex: wsFlex, yaw: wsK * 4 }; }
+            if (wsPick) { best.f = wsPick.fr.f; best.n = wsPick.fr.n; best.W = wsPick.fr.W; el = wsPick.el;
+              best.solve = { yaw: wsPick.yaw, dev: +wsPick.dev.toFixed(1), turn: +wsPick.turn.toFixed(1), flex: +wsPick.flex.toFixed(1) }; } } }
         if (!el.clear) console.warn(P.key + ': his ' + S0 + ' arm finds no way clear of his body: laid turned out as far as was tried');
         const pdir = el.pdir, psiAt = el.psi;
         /* the fingers: his file's own at rest, each joint curled toward the palm about the hand's own across-axis,
@@ -1055,18 +1090,24 @@
             out.push({ b, q: qj, fi }); rel = rel.multiply(qj); }
           return out; };
         const fing = []; for (let fi = 0; fi < FINGERS.length; fi++) fing.push(...fingerQs(fi, 1));
+        /* (K.thumb 'bind', v26.7: THE THUMB AS HIS FILE RESTS IT. A take's thumb is posed for the hand it was made with,
+           and a palm turned up carries it with the palm: the hermit in the pale yellow shawl's thumbs stood lifted 42
+           degrees off his palms and turned across them, toward his little fingers, pointing up (measured; the reference
+           picture's lie out beside the palm, barely lifted). His file's own rest has each thumb 26 degrees out from his
+           index finger and 11 to 18 off the palm: laid so, joint by joint, while the rest is laid. Absent, the take's) */
+        if (K.thumb === 'bind') for (let j = 1; j <= 3; j++) { const b = bone(S0 + 'HandThumb' + j), q0 = b && bindLocal(P, b); if (q0) fing.push({ b, q: q0, fi: -1 }); }
         R[sd] = { W: best.W, pdir, f: best.f, n: best.n, fing, fingerQs };
         /* (a hand of one piece is laid by its own measured axes: armsOf's, for a hand with no finger bones, is the
            forearm's line carried on) */
         if (!a.fingers) { const m = handAxes(P, A, sd); if (m) { R[sd].fL = m.fL; R[sd].nL = m.nL; R[sd].aL = m.aL; } }
-        rep[sd] = { at: +best.t.toFixed(2), reach: +best.ratio.toFixed(3), turnedOut: +(psiAt * 180 / Math.PI).toFixed(0), palm: best.Cp.toArray().map(u => +u.toFixed(3)) }; }
+        rep[sd] = { at: +best.t.toFixed(2), reach: +best.ratio.toFixed(3), turnedOut: +(psiAt * 180 / Math.PI).toFixed(0), palm: best.Cp.toArray().map(u => +u.toFixed(3)) }; if (best.solve) rep[sd].solve = best.solve; }
       P.restHands = { how: 'lap', R }; P.restRep = rep;
       /* (once laid, the elbow and the wrist's bend are read and reported: what a picture of it must agree with) */
       restHandsLay(P); P.group.updateMatrixWorld(true);
       /* (K.drape, v26.3: EACH FINGER CURLED UNTIL ITS TIP RESTS ON WHAT IS DRAWN OF HIS LAP, r over it: a palm on top of a
          knee has its fingers curving down over the kneecap's front, each as far as it reaches the cloth, no further and no
          less. Found finger by finger by halving, on the curl from 0.3 to `max` times CURL) */
-      if (K.drape) { for (const sd in R) { const S0 = sd === 'L' ? 'Left' : 'Right', r = R[sd]; if (!r.fingerQs) continue; const kk = [];
+      if (K.drape && !K.palmUp) { for (const sd in R) { const S0 = sd === 'L' ? 'Left' : 'Right', r = R[sd]; if (!r.fingerQs) continue; const kk = [];
           for (let fi = 0; fi < FINGERS.length; fi++) {
             const t4 = bone(S0 + 'Hand' + FINGERS[fi] + '4'), t3 = bone(S0 + 'Hand' + FINGERS[fi] + '3'); if (!t3) { kk.push(null); continue; }
             const tipAt = (out) => { if (t4) t4.getWorldPosition(out); else { t3.getWorldPosition(out); const e3 = t3.matrixWorld.elements; out.add(new THREE.Vector3(e3[4], e3[5], e3[6]).normalize().multiplyScalar(0.02)); } return P.group.worldToLocal(out); };
@@ -1390,6 +1431,21 @@
          same rest at his knee measures within a real body's too) */
       cast.white.o.handsOn = kneeRest();
       cast.hermitB = seat('e4hermitb', -10.17, 5.0, 0.3);
+      /* (v26.6: his seated rest hung both forearms into his robe, his fingertips out of it before his knees (found
+         photographing his full body, v26.5). A palm laid down on his knee wrung his wrists 56 to 77 degrees at every
+         setting: his take holds his forearms rolled palm up. So his hands rest palm up on his knees, the backs of his
+         hands on his robe, as a seated sage's often do. Measured (jointscan) on the running game: flat palm up at the knee,
+         his right forearm turned 102 to 106 degrees, past a forearm's; each hand tipped 20 degrees onto its little
+         finger's edge (palmTilt), the forearms clear, an elbow 3 to 4 cm behind his shoulder at one moment in four; the
+         palm 0.16 of his thigh further on (`at` 1.16, over the front of the knee), every joint within a real body's at
+         all twelve moments sampled on the running game; built, his right forearm read 100.2 degrees at one moment in
+         eight, so tipped 23 degrees (0.40): within a real body's at all sixteen moments sampled) */
+      /* (v26.7, set beside its reference picture (masters/v26.3/make.sh): his fingers curled as the brown hermit's are
+         over a kneecap stood cupped like a beggar's, 33 to 53 degrees at their middle joints, where the picture's lie
+         gently curved; his thumbs stood up off his palms; his left wrist was bent 35 degrees toward its little finger.
+         So his fingers are curled about half as much at the middle and end joints (curl), his thumbs rest as his file
+         rests them (thumb), and each hand's line over his knee is solved against its forearm (wristSolve)) */
+      cast.hermitB.o.handsOn = Object.assign(kneeRest(), { palmUp: true, palmTilt: { L: -0.40, R: -0.40 }, at: 1.16, curl: [0.30, 0.32, 0.16], thumb: 'bind', wristSolve: true });
       /* GRANDMASTER PHO (Chad's own model, prepared over v24.38 to v24.56: masters/v24.56/PLAN.md), on his bench under
          the gold canopy, facing the offering tables and those who kneel to him. His look is D, Chad's pick ("unlit, except for the robe", v24.52):
          lookD below. His rest is the first half second of his seated take, back and forth (the rest of it is talk). Far

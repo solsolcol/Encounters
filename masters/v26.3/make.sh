@@ -59,3 +59,47 @@ done
 #      charts, 22%, 0.8 times).
 #   Made before his answer and NOT shipped (kept outside the repository, in the session's scratch folder): the full models
 #   of five devotees (deva to deve) and the two monks made here (monkb, monkc).
+#
+# ---- THE POSE REFERENCES (v26.3 and v26.7: a pose is learned from a picture of a real body before it is built, then set
+#      beside it). Made with Higgsfield's GPT Image 2.6 (gpt_image_2_6), one picture each, no image references; kept beside
+#      this file (src/ref-*.png, ignored by git). The prompts, word for word:
+#   src/ref-seat-front.png (3:4, sha1 5f859d04e9...), v26.3, the brown hermit's hands:
+#     "Photorealistic documentary photograph. An elderly Southeast Asian hermit with long grey dreadlocks and a grey beard,
+#     wearing a plain brown cloth robe wrapped over one shoulder, sits upright and relaxed in a pale green upholstered
+#     armchair. Both of his palms rest flat on top of his knees, fingers relaxed and close together, gently curving down
+#     over the front of each kneecap, thumbs resting along the inside of each thigh. Elbows bent, close to his sides,
+#     shoulders relaxed and low. Bare feet flat on a patterned rug, shins vertical in front of the chair's cushion. Camera
+#     at standing eye height, three-quarter front view from his right, whole body in frame, soft daylight, plain light
+#     background, natural human anatomy."
+#   src/ref-seat-side.png (3:4, sha1 11d8ef6d95...), v26.3:
+#     "Photorealistic documentary photograph, exact side view (profile). An elderly Southeast Asian hermit with long grey
+#     dreadlocks and a grey beard, wearing a plain brown cloth robe wrapped over one shoulder, sits upright and relaxed in a
+#     pale green upholstered armchair. His palm rests flat on top of his knee, fingers relaxed and close together, gently
+#     curving down over the front of the kneecap. Elbow bent, upper arm hanging close to his side, forearm sloping down and
+#     forward to the knee. Bare feet flat on a patterned rug, shins vertical in front of the chair's cushion. Whole body in
+#     frame, soft daylight, plain light background, natural human anatomy."
+#   src/ref-taper-side.png (3:4, sha1 1ee27aa0f1...), v26.3, the woman lighting the candles:
+#     "Photorealistic documentary photograph at a Thai temple ceremony. A young Thai woman with a dark ponytail, in a white
+#     short-sleeved blouse and white trousers, stands beside a table with a row of thin coloured candles. She lights one
+#     candle's wick with a long thin yellow wax taper about seventy centimetres long, held in her left hand near its end the
+#     way one holds a long pen, between the thumb and the first two fingers, the other fingers curled under it. Her left
+#     elbow is bent at about a right angle, close to her side and slightly in front of her body, her forearm pointing toward
+#     the candle, the taper angled gently down to the wick. Her right arm hangs relaxed at her side. She leans very slightly
+#     toward the table and looks at the flame. Seen from her left side at standing eye height, whole upper body and arms in
+#     frame, daylight, natural human anatomy."
+#   src/ref-taper-front.png (3:4, sha1 f9f2d1c68e...), v26.3:
+#     "Photorealistic documentary photograph at a Thai temple ceremony, seen from in front of her across the table. A young
+#     Thai woman with a dark ponytail, in a white short-sleeved blouse and white trousers, stands behind a table with a row
+#     of thin coloured candles. She lights one candle's wick with a long thin yellow wax taper about seventy centimetres
+#     long, held in her left hand near its end the way one holds a long pen, between the thumb and the first two fingers.
+#     Her left elbow is bent at about a right angle, close to her side, her forearm pointing forward toward the candle in
+#     front of her left hip, the taper angled down to the wick. Her right arm hangs relaxed at her side. She looks down at
+#     the flame. Whole upper body and arms in frame, daylight, natural human anatomy."
+#   src/ref-palmup-front.png (2:3, sha1 c6610866f3...), v26.7, the hermit in the pale yellow shawl's hands (his take holds
+#   his forearms rolled palm up, so a palm laid down needs more turn than a forearm and a wrist have):
+#     "Photorealistic reference photograph, full body, of an elderly Asian man with a long white beard and grey hair,
+#     wearing a plain white robe with a pale yellow shawl over his shoulders, seated upright in a plain armchair, both hands
+#     resting palm up on top of his knees, each hand tipped slightly onto its little finger edge, fingers relaxed and gently
+#     curled upward, thumbs relaxed, elbows hanging naturally at his sides, shoulders relaxed. Camera at standing eye height
+#     about one metre in front of him, looking slightly down. Plain white background, soft even studio light, sharp focus on
+#     the hands. Natural anatomy, five fingers on each hand."

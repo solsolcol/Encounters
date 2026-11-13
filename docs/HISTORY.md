@@ -8920,10 +8920,35 @@ What the baseline contains, by release:
     each man's own knee (`at` 1.0), found on the running game before anything was built: every joint of both men's arms
     within a real body's at every moment sampled (jointscan), both hands photographed lying on their knees from in front
     and both sides, drawn through everything beside drawn as seen. Said, not fixed: the red master's thumb tips are flat
-    pale wedges (his model's own); the hermit in the pale yellow shawl's rest needs another hand position (his wrists stay
-    wrung at every setting tried). His speed plan rewritten to his second message (nothing skipped or approximated; only
+    pale wedges (his model's own). And the hermit in the pale yellow shawl's forearms, in his robe since v26.0: a palm
+    laid down wrung his wrists at every setting, so his hands rest palm up on his knees, tipped onto their little
+    fingers' edges (two new options of the rest, off for everyone else; every joint within a real body's at all twelve
+    moments sampled). His speed plan rewritten to his second message (nothing skipped or approximated; only
     the same results computed with less overhead, on more cores or in faster code): docs/V26.6-E4C3-OPTIMIZE-PLAN.md, his
-    pick all of it in order after the masters' hands. Deploy DEPLOYID.
+    pick all of it in order after the masters' hands. Deploy `6af72bc5a517d47ff7d280ed` (493 served files identical to dist/).
+- **v26.7** EPISODE 4 CHAPTER 3 · THE HERMIT IN THE PALE YELLOW SHAWL'S HANDS, SET BESIDE THEIR REFERENCE (my own find from
+    his message of 13 Nov, "Look at the fingers of the red master, its butchered"; v26.6 put this hermit's hands palm up
+    and went live before the rule's last step, the reference, had been taken: mine). Beside a reference picture of a
+    seated old man resting his hands palm up (made with GPT Image, masters/v26.3/make.sh: a photo-real picture, not a
+    photograph of a real person), v26.6's hands were cupped like a beggar's (middle joints 33 to 53 degrees), the
+    thumbs stood up off the palms (42 degrees, turned across them) and the left wrist was bent 35 degrees toward its
+    little finger, inside jointscan's limit (40) by five and at the end of a real wrist's range. Now: the fingers
+    curled about half as much at their middle and end joints; the thumbs laid as his file rests them (26 degrees out
+    from the index finger, 11 to 18 off the palm: `thumb: 'bind'`, a new option of the rest); and each hand's line over
+    his knee SOLVED against its forearm (`wristSolve`: tried every four degrees within sixty either side, the elbow found
+    for each, the one kept whose wrist is nearest straight with the forearm in a forearm's range, measured as jointscan
+    measures). Two settings tried first and refused by measure: the hand laid the whole way along the forearm, four
+    times over (the elbow moved each time: the wrist 38 to 47 degrees toward the thumb, the forearm wrung 115 to 122),
+    and a fixed turn of 26 degrees either way (35 toward the thumb, or 50 toward the little finger). The solve runs once,
+    when he loads, at a fixed moment of his take: measured at twelve moments over eighteen seconds, every joint within a
+    resting hand's; re-solved on the running game at three other moments the right hand came out wrung (102 to 127) at
+    two, so the moment it runs at is the one measured. jointscan holds a laid rest to a RESTING hand now (its wrist within
+    20 degrees toward the little finger and 15 toward the thumb, 35 either way along; an upturned palm's thumb within 30
+    off it), and found two more: the master in white's right wrist 25 to 26 degrees toward the little finger at two moments
+    in twelve, and the brown hermit's left 20 to 27 at most moments (both live since v26.6 and v26.3): said, not fixed.
+    Still different from the reference, and said: his hands rest on his knees where the picture's rest mid-thigh, and he
+    leans a little forward (his take's own; nearer his hips his elbows go behind his shoulders: measured, v26.6).
+    Deploy `6af73f7d894cdd7a17d60fe6` (493 served files identical to the build).
 
 ## The sheet, version by version
 
