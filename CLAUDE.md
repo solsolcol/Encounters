@@ -1346,8 +1346,10 @@ standing rule on bodies, with tools/probes/jointscan.mjs) went live at v26.3 (de
 docs/V26.3-E4C3-NOTES.md.
 His question the same afternoon, why the brown hermit was so blocky up close, went live at v26.4 (his full model drawn
 within 2.2 m), and at v26.5 the other important people his answer named (the three other seated masters and the woman
-lighting the candles; docs/OPEN-ITEMS.md C13 u). His ask to make the chapter faster with nothing on screen changed is
-measured and planned in docs/V26.6-E4C3-OPTIMIZE-PLAN.md (put to him).
+lighting the candles; docs/OPEN-ITEMS.md C13 u), with v26.6: the red master's and the master in white's hands laid on
+their knees ("Look at the fingers of the red master, its butchered"; C13 v). His ask to make the chapter faster with
+nothing on screen changed is measured and planned in docs/V26.6-E4C3-OPTIMIZE-PLAN.md: exact results only, all of it in
+order (his pick), after the hermit in the shawl's hands.
 Chapter 4 is next after it
 (S1·13, case one: the woman who rose from her wheelchair).
 The episode's plan, with what remains his to decide:

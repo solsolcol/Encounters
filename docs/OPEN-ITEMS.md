@@ -261,11 +261,10 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
       the bench woman had theirs; Grandmaster Pho is his own model, drawn whole); the monks made here, the dancers, the
       devotees of the crowd and the children keep their lighter bodies (the full models of five devotees and the two
       monks, made before his answer, are kept outside the repository, not shipped).
-    - v. v26.5: TO DO NEXT (Chad: "Look at the fingers of the red master, its butchered"): every seated master's rest
-      puts his hands into his own clothes (the red master's left hand in his trousers, the master in white's right in
-      his thigh, the hermit in the shawl's forearms in his robe; live since v26.0). The brown hermit's lap rest failed its
-      measure on all three (docs/V26.3-E4C3-NOTES.md, K and L): each one's own rest, the palm on his own knee, to be
-      learned from a photograph, measured and photographed before it ships.
+    - v. v26.6 (Chad: "Look at the fingers of the red master, its butchered"): DONE for the red master and the master
+      in white (palms at their knees, measured and photographed: docs/V26.3-E4C3-NOTES.md, L). TO DO NEXT: the hermit in
+      the pale yellow shawl (forearms in his robe since v26.0; a palm laid down wrings his wrists at every setting: his
+      own hand position to be learned). SAID: the red master's thumb tips are flat pale wedges (his model's own).
     - w. v26.5: ASKED: making the chapter faster with nothing on screen changed: measured, and four ways in the order of
       what they save (docs/V26.6-E4C3-OPTIMIZE-PLAN.md).
 

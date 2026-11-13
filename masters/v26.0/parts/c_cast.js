@@ -1374,10 +1374,21 @@
          fingers over it, the gaps said to Chad) */
       cast.hermitA.o.handsOn = { how: 'lap', gather: 1, converge: 0.11, curl: [0.30, 0.60, 0.30], flexMax: 8 * Math.PI / 180, drape: { r: 0.008, min: 0.8, max: 1.5 } };
       cast.red = seat('e4red', -10.17, -0.95, 0.55);
+      /* (v26.5: Chad, 13 Nov 2026, "Look at the fingers of the red master, its butchered". His seated rest hung his left
+         hand down into his trousers, the cloth cutting the fingers off (photographed on both bodies; his joints measured
+         within a real hand's ranges: the cloth, not the bones). The brown hermit's rest as it stood, solved on his body,
+         set his hands at his belly with his elbows 4 to 9 cm behind his shoulders (jointscan); with the palm at his knee
+         (`at` 1.0 along the thigh), as a seated man's rests (the photograph of one, v26.3), every joint of both arms
+         measures within a real body's at every moment sampled. A copy each, so no man's rest is another's) */
+      const kneeRest = () => { const A = cast.hermitA.o.handsOn; return Object.assign({}, A, { curl: A.curl.slice(), drape: Object.assign({}, A.drape), at: 1.0 }); };
+      cast.red.o.handsOn = kneeRest();
       /* the second master in white sits at Grandmaster Pho's left on the same bench (photographs 1, 5, 6) */
       { const [wx, wz] = benchAt(-0.52, 0.04);
         cast.white = mkPerson('e4white', wx, wz, BENCH.ry, { take: 'Chair_Sit_Idle_M', centre: true, win: REST, phase: 0.8, blobW: 1.0, blobD: 1.1,
           seat: { y: SEATS.bench, takes: /^(Chair_Sit|Sitting_|handson|petals|palmover)/, down: BENCH_DOWN } }); cast.white.home = { x: wx, z: wz, ry: BENCH.ry }; }
+      /* (and the master in white's: his seated rest sank his right hand into his thigh, photographed from his side; the
+         same rest at his knee measures within a real body's too) */
+      cast.white.o.handsOn = kneeRest();
       cast.hermitB = seat('e4hermitb', -10.17, 5.0, 0.3);
       /* GRANDMASTER PHO (Chad's own model, prepared over v24.38 to v24.56: masters/v24.56/PLAN.md), on his bench under
          the gold canopy, facing the offering tables and those who kneel to him. His look is D, Chad's pick ("unlit, except for the robe", v24.52):

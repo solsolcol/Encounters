@@ -8911,8 +8911,19 @@ What the baseline contains, by release:
     measure on each (an arm wrung or pulled behind him, elbows behind the shoulders) and was taken back out before
     anything shipped: each one's own rest is next (docs/OPEN-ITEMS.md C13 v). His new
     standing rule on important people up close is in CLAUDE.md. And his ask to make the chapter faster with nothing on
-    screen changed: measured (tools/probes/frameprof.mjs) and planned, docs/V26.6-E4C3-OPTIMIZE-PLAN.md. Deploy
-    DEPLOYID.
+    screen changed: measured (tools/probes/frameprof.mjs) and planned, docs/V26.6-E4C3-OPTIMIZE-PLAN.md. Not deployed on
+    its own: Netlify's deploy service was down (Service Unavailable, then a bad gateway, for over an hour); it went live
+    with v26.6.
+- **v26.6** EPISODE 4 CHAPTER 3 · THE RED MASTER'S HANDS, AND THE MASTER IN WHITE'S (his message of 13 Nov: "Look at the
+    fingers of the red master, its butchered"). His seated rest hung his left hand into his trousers, the cloth cutting
+    the fingers off; the master in white's right hand sank into his thigh. The brown hermit's rest with the palm set at
+    each man's own knee (`at` 1.0), found on the running game before anything was built: every joint of both men's arms
+    within a real body's at every moment sampled (jointscan), both hands photographed lying on their knees from in front
+    and both sides, drawn through everything beside drawn as seen. Said, not fixed: the red master's thumb tips are flat
+    pale wedges (his model's own); the hermit in the pale yellow shawl's rest needs another hand position (his wrists stay
+    wrung at every setting tried). His speed plan rewritten to his second message (nothing skipped or approximated; only
+    the same results computed with less overhead, on more cores or in faster code): docs/V26.6-E4C3-OPTIMIZE-PLAN.md, his
+    pick all of it in order after the masters' hands. Deploy DEPLOYID.
 
 ## The sheet, version by version
 
