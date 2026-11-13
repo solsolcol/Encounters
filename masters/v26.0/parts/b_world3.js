@@ -146,19 +146,21 @@
           white building behind the west tents given windows of their own.
        Nothing here stands on ground he can walk (stage.keepIn), so nothing here needs a blocker. */
     const R26 = rng(2611), turn26 = () => R26() * 6.283;
-    /* [x, z, height in metres] (east, south) */
+    /* [x, z, height in metres] (east, south). (v26.2 debug: placed again so no crown passes through another, a building,
+       the power lines or a pole: Chad's picture of a palm growing up through a rain tree beyond the shed, 13 Nov 2026.
+       Each is the nearest place to where it stood that clears all of them at every height: masters/v26.2/trees) */
     const GROVES = {
       /* (his palms at their full level within 32 m of the middle, where the light level's fronds came out soft against
          the sky in the first photographs; at the light level beyond) */
-      e4palm1: [[-23, -12, 13], [-27, 4, 14.5], [26, -3, 14], [0, 24.5, 14], [7, 27, 13]],
-      e4palm1far: [[-35, -4, 15], [-8, -36, 14], [13, -33, 12], [-28, 28, 13], [-31, 13, 12]],
-      e4palm2: [[-18, -19, 12.5], [27, -12, 13.5], [25, 8, 12.5], [16, 19, 12], [-6, 28, 12.5]],
-      e4palm2far: [[-29, -18, 13.5], [6, -38, 13], [-16, 31, 12.5]],
-      e4banana: [[-19, -3, 4.2], [-18.5, 9.5, 3.8], [-21, 12, 4.4], [-24, -6, 4.0], [17, -11, 4.0], [14.5, 16, 4.0], [-2, 22, 3.8], [-15, 20.5, 4.2]],
-      w3banana2: [[-20.5, 1.5, 3.6], [-22.5, 7, 3.4], [-26, -1, 3.8], [23.5, 3, 3.6], [3, 21.5, 3.4], [-26.5, 19.5, 3.8]],
-      e4raintree: [[-38, 8, 12], [-24, -27, 11], [19, -40, 12], [33, 2, 13], [-3, 36, 12]],
-      e4mango: [[-33, 22, 9], [-2, -42, 10], [22, -22, 9.5], [22, 24, 9]],
-      w3frangipani: [[-9.2, 17.6, 4.4], [11.6, 17.4, 4.6], [14.4, -9.6, 4.2]]
+      e4palm1: [[-31.15, -14.45, 13], [-26.2, 15.2, 14.5], [20.95, 11.1, 14], [11, 29.25, 14], [12.25, 37.5, 13]],
+      e4palm1far: [[-38.25, -4, 15], [-8.6, -35.2, 14], [9.9, -27.85, 12], [-26.15, 34.75, 13], [-16.7, 23.5, 12]],
+      e4palm2: [[-16.4, -17.4, 12.5], [33.95, -12.7, 13.5], [27.9, 14.9, 12.5], [7.15, 22.45, 12], [-8.25, 23.85, 12.5]],
+      e4palm2far: [[-35.2, -21.2, 13.5], [5.8, -37.8, 13], [-16, 31, 12.5]],
+      e4banana: [[-19.6, -3.8, 4.2], [-19.25, 9.3, 3.8], [-21, 12, 4.4], [-24, -6, 4], [18.25, -11, 4], [16.2, 14.95, 4], [-0.9, 21, 3.8], [-12.35, 21.85, 4.2]],
+      w3banana2: [[-20.05, 2.1, 3.6], [-22.5, 7, 3.4], [-26, -1, 3.8], [24, 3, 3.6], [-0.4, 25.5, 3.4], [-26.5, 19.5, 3.8]],
+      e4raintree: [[-41.45, 11.65, 12], [-24, -27, 11], [19, -39.5, 12], [34.5, 2, 13], [-3, 36, 12]],
+      e4mango: [[-33.55, 25.45, 9], [-2, -42, 10], [32.05, -29.85, 9.5], [22.5, 24, 9]],
+      w3frangipani: [[-4.75, 22.3, 4.4], [3.3, 22.55, 4.6], [14.15, -10.3, 4.2]]
     };
     /* a grove: every copy fitted to its height by the file's own height, its foot on the ground, turned its own seeded way;
        the lift a tree standing alone is given (stand: lift 1) */
@@ -171,16 +173,17 @@
         src.updateMatrixWorld(true);
         const bb = new THREE.Box3().setFromObject(src), H0 = Math.max(1e-3, bb.max.y - bb.min.y);
         manyOf(key, list.map(([x, z, h], i) => { const s = h / H0; return { x, y: -bb.min.y * s, z, ry: turns[i], s }; }), world, 1,
-          (made) => { for (const im of made) bronzeLift(im, 1); });
+          (made) => { for (const im of made) { bronzeLift(im, 1); if (/^e4(raintree|mango)/.test(key)) leafMatte(im.material); } });
       }).catch(err => { console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
     }
     /* the things by the houses: [key, x, y, z, turn] (a turn of 0 faces the model's own front to the south, +z; the
-       compressors' wall plates are behind them, so turned round they hang on the grey wall, 0.3 m up on their brackets) */
+       compressors' wall plates are behind them, so turned round they hang on the grey wall, 0.3 m up on their brackets;
+       v26.2 debug: 3 cm further out, their backs had sunk into the wall's plinth: measured, tools/probes/clipscan.mjs) */
     const EDGE_THINGS = [
       ['w3isanhouse', -24, 0, 26.5, Math.atan2(24, -26.5)],          // its front toward the middle of the ground
       ['w3tank', -19.4, 0, 24.2, 0.6], ['w3scooter', -20.6, 0, 21.4, 2.2],
       ['w3tank', -7.3, 0, 15.6, -1.2], ['w3scooter', -7.9, 0, 13.9, 1.25],
-      ['w3aircon', 3.0, 0.3, GREY.z - 0.21, Math.PI], ['w3aircon', -4.75, 0.3, GREY.z - 0.21, Math.PI]
+      ['w3aircon', 3.0, 0.3, GREY.z - 0.24, Math.PI], ['w3aircon', -4.75, 0.3, GREY.z - 0.24, Math.PI]
     ];
     /* a cloth hung inside a window: soft folds down it, a little lighter at its hem (one picture, every curtain) */
     function makeCurtain() {

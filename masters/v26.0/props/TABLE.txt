@@ -37,7 +37,7 @@ sofa          w3sofa        0.95  w   8000  1024  0
 #petalbowl    w3petalbowl   0.34  w  40000   512  0   src/hunyuan-petalbowl-40k.glb
 #petalsteel   w3petalsteel  0.36  w  40000   512  0   src/hunyuan-petalsteel-40k.glb
 seatbench     w3bench       1.50  w  16000  1024  0
-seatbench2    w3bench       1.50  w  16000  1024  0
+seatbench2    w3bench       1.50  w  50000q 2048  0
 candlemid     w3candlemid   0.66  h   2000   256  0
 candlesmall   w3candlesmall 0.24  h   1500   256  0
 kratip        w3kratip      0.14  h   3000   512  0

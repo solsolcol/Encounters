@@ -74,7 +74,7 @@
        the ground from all three, and it comes from where the horns are (the bed's own pan, eased); the crowd's noise is
        fullest in among the people and a decibel under at the ground's edges; and each of the ground's own noises
        (ambTick) is loudest where it is made. The levels written above are the middle of these */
-    const HORNS = [[-10.45, -9.2], [10.7, -8.1], [-9.5, 12.7]];                 // (c_zfx.js: the three poles)
+    const HORNS = [[-9.7, -9.35], [10.7, -8.1], [-9.5, 12.7]];                  // (c_zfx.js: the three poles)
     let musPan = 0;
     function placeMix() {
       let w = 0, pan = 0; const x = yaw.position.x, z = yaw.position.z;
@@ -224,7 +224,9 @@
     const TON_LINE = (() => { const [x, z] = benchAt(-0.7, 3.65); return { x, z }; })();
     /* the woman at his bench, on day one: at the carpet's edge beside the lime pole, where each bai sri is handed to her
        (by the table, the pole stood between her and anyone who came to ask her: photographed) */
-    const AUNT_LINE = (() => { const [x, z] = benchAt(1.5, 2.1), [kx, kz] = benchAt(0.46, 1.3); return { x, z, ry: faceTo(x, z, kx, kz) }; })();
+    /* (v26.2 debug: at (1.5, 2.1) she stood 0.38 m from the lime pole's middle, inside its lowest puffs: measured,
+       tools/probes/clipscan.mjs. A step to her right and back) */
+    const AUNT_LINE = (() => { const [x, z] = benchAt(1.85, 2.5), [kx, kz] = benchAt(0.46, 1.3); return { x, z, ry: faceTo(x, z, kx, kz) }; })();
     const YM_B = 1.28;                                                        // how far before the bench the young man kneels (then moved so the two pairs of hands meet: ymPlace)
     const DAWN_AT = { x: 2.1, z: 3.6 };                                       // where the morning finds him
     /* HIS HANDS, KNEELING: on his knees, under the frame's foot. The walking hand the engine draws stood in the middle of
@@ -640,7 +642,9 @@
       if (phase !== 'check' || play.busy || play.asked.has(who) || play.checked) return false;
       const run = play.run; play.busy = true; play.asked.add(who); saveMark(); objectiveFor('check');
       const P = who === 'ton' ? cast.ton : cast.aunt;
-      whenReady(P, (Q) => { Q.group.rotation.y = faceTo(Q.group.position.x, Q.group.position.z, yaw.position.x, yaw.position.z); });
+      /* (turned to him over half a second: v14.5, never a snap. It was set outright, and the one asked swung round on
+         the frame of the press: the v26.2 debug's code lens) */
+      whenReady(P, (Q) => turnPerson(Q, faceTo(Q.group.position.x, Q.group.position.z, yaw.position.x, yaw.position.z), 0.55));
       if (who === 'ton') { queueLine('q3c1'); queueGap(0.3); line('tn3c1', cast.ton); }
       else { queueLine('q3c2'); queueGap(0.3); line('ds3c1', cast.aunt); }
       queueFn(() => { if (!live(run)) return; play.busy = false;

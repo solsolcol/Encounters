@@ -241,17 +241,20 @@ def cmd_t2m(name, duration, prompt):
 
 
 def cmd_remesh(name, polys):
+    # (TOPO=quad asks Meshy's quad remesh instead of its triangle one: v26.2, the bench's slats, which the triangle remesh
+    # crumpled at 16,000, 60,000 and 100,000 alike; a quad job is kept under '<polys>q' and written remeshed-<name>-<polys>q.glb)
+    topo = os.environ.get('TOPO', 'triangle'); tag = str(polys) + ('q' if topo == 'quad' else '')
     L = ledger()[name]
     rm = L.get('remesh', {})
-    if str(polys) in rm and not os.environ.get('AGAIN'):
-        tid = rm[str(polys)]; print('  remesh %s %s: the job is in the ledger (%s): waited for, not started again' % (name, polys, tid), flush=True)
+    if tag in rm and not os.environ.get('AGAIN'):
+        tid = rm[tag]; print('  remesh %s %s: the job is in the ledger (%s): waited for, not started again' % (name, tag, tid), flush=True)
     else:
-        tid = call('POST', '/remesh', {'input_task_id': L['image_to_3d'], 'target_formats': ['glb'], 'topology': 'triangle',
+        tid = call('POST', '/remesh', {'input_task_id': L['image_to_3d'], 'target_formats': ['glb'], 'topology': topo,
                                        'target_polycount': int(polys)})['result']
         with locked():
-            L2 = ledger(); r2 = L2.setdefault(name, {}).setdefault('remesh', {}); r2[str(polys)] = tid; save(L2)
-    t = wait('/remesh', tid, 'remesh %s %s' % (name, polys))
-    size = fetch(t['model_urls']['glb'], os.path.join(SRC, 'remeshed-%s-%s.glb' % (name, polys)))
+            L2 = ledger(); r2 = L2.setdefault(name, {}).setdefault('remesh', {}); r2[tag] = tid; save(L2)
+    t = wait('/remesh', tid, 'remesh %s %s' % (name, tag))
+    size = fetch(t['model_urls']['glb'], os.path.join(SRC, 'remeshed-%s-%s.glb' % (name, tag)))
     print('remesh done', name, polys, size, flush=True)
 
 

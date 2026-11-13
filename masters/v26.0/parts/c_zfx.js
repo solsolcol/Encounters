@@ -283,18 +283,36 @@
     const MATS_AT = { x: -6.25, z: 1.9, ry: 0.32 };
     const rolled = { stack: [], own: null, ton: [], carry: null, rolls: [] };
     { const c = Math.cos(MATS_AT.ry), sn = Math.sin(MATS_AT.ry), rnd = rng(3391);
-      const at = (dz, lvl, dx = 0) => { const lx = dx + (rnd() - 0.5) * 0.08; return stand('w3matroll', MATS_AT.x + lx * c + dz * sn, lvl * 0.128, MATS_AT.z - lx * sn + dz * c, MATS_AT.ry + (rnd() - 0.5) * 0.05, { parent: matsG }); };
-      for (const [dz, lvl] of [[-0.16, 0], [0, 0], [0.16, 0], [-0.08, 1], [0.08, 1]]) rolled.stack.push(at(dz, lvl));
+      /* (v26.2 debug: a roll is 0.232 m thick (tools/probes/glbbox.mjs w3matroll); laid 0.16 apart and 0.128 a level they
+         sank into one another, the stack a solid bank of stripes. Side by side now, each level in the hollow between two
+         below it: 0.24 apart, 0.2 a level. Then 0.27 apart: each roll's own small turn (up to 0.05 between two) brought
+         two 0.232 rolls together at their ends, measured in ending A by tools/probes/clipscan.mjs; the hollow above two
+         0.27 apart is 0.19 up, so 0.2 a level still rests each on the two below) */
+      const at = (dz, lvl, dx = 0) => { const lx = dx + (rnd() - 0.5) * 0.08; return stand('w3matroll', MATS_AT.x + lx * c + dz * sn, lvl * 0.2, MATS_AT.z - lx * sn + dz * c, MATS_AT.ry + (rnd() - 0.5) * 0.05, { parent: matsG }); };
+      for (const [dz, lvl] of [[-0.27, 0], [0, 0], [0.27, 0], [-0.135, 1], [0.135, 1]]) rolled.stack.push(at(dz, lvl));
       rolled.own = at(0, 2); rolled.own.visible = false;                           // his own: the stack's top, once he has laid it there
       for (let i = 0; i < 2; i++) rolled.ton.push(stand('w3matroll', 0, 0, 0, 0, { parent: matsG, moves: true }));
       rolled.carry = stand('w3matroll', 0, 0, 0, 0, { parent: matsG, moves: true });
       for (let i = 0; i < 2; i++) rolled.rolls.push(stand('w3matroll', 0, 0, 0, 0, { parent: matsG, moves: true })); }
     const handMatHolder = new THREE.Group();
     const handMat = stand('w3matroll', 0, 0, 0, 0, { s: 0.8, near: true, parent: handMatHolder });
-    /* a mat lying across a person's two forearms (`n`: the second lies on the first) */
-    const _mtv = new THREE.Vector3();
+    /* a mat lying across a person's two forearms (`n`: the second lies on the first). v26.2 debug (Chad's picture of ending
+       A, 13 Nov 2026: Ton's cupped hands stood out of the front of his two mats, the mats sunk through his forearms and into
+       each other): they LIE on his arms now. A mat's foot is its model's origin; it is set on his forearms' tops where it
+       crosses them, 13 cm back from his wrists (each forearm's bone line there, from its elbow to its wrist, raised by a
+       forearm's half-thickness), and the second on the first, 0.226 m up (a roll is 0.232 thick: the upper sits 6 mm into
+       the one below, as one soft roll does on another). Read off his own bones on
+       every frame, so his take's breathing carries them */
+    const _mtv = new THREE.Vector3(), _mte = new THREE.Vector3(), _mtw = new THREE.Vector3();
+    const FOREARMS = { L: /^(mixamorig:?)?LeftForeArm$/, R: /^(mixamorig:?)?RightForeArm$/ };
     function matOnArms(g, P, n = 0) { const m = handsMid(P, _mtv); if (!m) return false; const ry = P.group.rotation.y;
-      g.position.set(m.x - Math.sin(ry) * 0.13, m.y - 0.035 + n * 0.125, m.z - Math.cos(ry) * 0.13); g.rotation.set(0, ry + (n ? 0.07 : -0.04), 0); g.visible = true; return true; }
+      if (!P.foreL) for (const k in P.bone) { if (FOREARMS.L.test(k)) P.foreL = P.bone[k]; if (FOREARMS.R.test(k)) P.foreR = P.bone[k]; }
+      let top = m.y;
+      if (P.foreL && P.foreR && P.handL && P.handR) { let y = 0;
+        for (const [fb, hb] of [[P.foreL, P.handL], [P.foreR, P.handR]]) { fb.getWorldPosition(_mte); hb.getWorldPosition(_mtw);
+          const k = Math.min(1, 0.13 / Math.max(0.05, _mte.distanceTo(_mtw))); y += _mtw.y + (_mte.y - _mtw.y) * k; }
+        top = y / 2; }
+      g.position.set(m.x - Math.sin(ry) * 0.13, top + 0.04 + n * 0.226, m.z - Math.cos(ry) * 0.13); g.rotation.set(0, ry + (n ? 0.07 : -0.04), 0); g.visible = true; return true; }
 
     /* ---- THE BULBS AT DUSK (ending B: "the bulbs under the shed's roof come on"): a string of bare bulbs along the eaves
        of the chief canopy and the three tents, each a small warm glow turned to the lens, and the pool of their light
@@ -504,7 +522,9 @@
       /* LOUDSPEAKERS: a pair of grey horns on a steel pole at three corners of the ground, where the music and the
          chanting come from (the pole is a post: structure, like the tents' frames; the horns are the model) */
       const mPole = M({ color: 0x8b8e90, roughness: 0.55, metalness: 0.45 }), H = 4.1, list = [];
-      for (const [x, z, ry] of [[-10.45, -9.2, 0.9], [10.7, -8.1, -0.8], [-9.5, 12.7, 2.3]]) {
+      /* (v26.2 debug: the north-west pole stood at -10.45, under the open shed's eave, and went up through its roof (Chad's
+         picture of the corner by the fence); it stands clear of the eave now, outside the fence's corner) */
+      for (const [x, z, ry] of [[-9.7, -9.35, 0.9], [10.7, -8.1, -0.8], [-9.5, 12.7, 2.3]]) {
         const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.04, H, 8), mPole); pole.position.set(x, H / 2, z); pole.matrixAutoUpdate = false; pole.updateMatrix();
         world.add(pole); owned.push(pole); solidBox(0.2, 2.2, 0.2, x, 1.1, z);
         list.push({ x, y: H - 0.3, z, ry });

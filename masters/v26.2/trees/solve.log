@@ -1,0 +1,49 @@
+575 obstacles
+west raintree          e4raintreehd  ( -15.5,   3.0) -> (-21.16, -1.11) moved 7.00
+mango behind canopy    e4mangohd     (   8.6,  12.6) -> ( 13.75, 20.58) moved 9.50
+NE raintree            e4raintreehd  (  10.5, -16.0) -> ( 23.38,-17.75) moved 13.00
+SW mango               e4mango       ( -13.5,  15.5) -> (-13.50, 16.00) moved 0.50
+e4palm1#0              e4palm1       ( -23.0, -12.0) -> (-31.15,-14.43) moved 8.50
+e4palm1#1              e4palm1       ( -27.0,   4.0) -> (-26.21, 15.22) moved 11.25
+e4palm1#2              e4palm1       (  26.0,  -3.0) -> ( 20.93, 11.12) moved 15.00
+e4palm1#3              e4palm1       (   0.0,  24.5) -> ( 11.01, 29.27) moved 12.00
+e4palm1#4              e4palm1       (   7.0,  27.0) -> ( 12.26, 37.51) moved 11.75
+e4palm1far#0           e4palm1far    ( -35.0,  -4.0) -> (-38.25, -4.00) moved 3.25
+e4palm1far#1           e4palm1far    (  -8.0, -36.0) -> ( -8.60,-35.20) moved 1.00
+e4palm1far#2           e4palm1far    (  13.0, -33.0) -> (  9.90,-27.86) moved 6.00
+e4palm1far#3           e4palm1far    ( -28.0,  28.0) -> (-26.17, 34.76) moved 7.00
+e4palm1far#4           e4palm1far    ( -31.0,  13.0) -> (-16.68, 23.49) moved 17.75
+e4palm2#0              e4palm2       ( -18.0, -19.0) -> (-16.41,-17.41) moved 2.25
+e4palm2#1              e4palm2       (  27.0, -12.0) -> ( 33.96,-12.70) moved 7.00
+e4palm2#2              e4palm2       (  25.0,   8.0) -> ( 27.91, 14.91) moved 7.50
+e4palm2#3              e4palm2       (  16.0,  19.0) -> (  7.14, 22.43) moved 9.50
+e4palm2#4              e4palm2       (  -6.0,  28.0) -> ( -8.27, 23.83) moved 4.75
+e4palm2far#0           e4palm2far    ( -29.0, -18.0) -> (-35.22,-21.22) moved 7.00
+e4palm2far#1           e4palm2far    (   6.0, -38.0) -> (  5.82,-37.82) moved 0.25
+e4palm2far#2           e4palm2far    ( -16.0,  31.0) -> (-16.00, 31.00) moved 0.00
+e4banana#0             e4banana      ( -19.0,  -3.0) -> (-19.60, -3.80) moved 1.00
+e4banana#1             e4banana      ( -18.5,   9.5) -> (-19.23,  9.32) moved 0.75
+e4banana#2             e4banana      ( -21.0,  12.0) -> (-21.00, 12.00) moved 0.00
+e4banana#3             e4banana      ( -24.0,  -6.0) -> (-24.00, -6.00) moved 0.00
+e4banana#4             e4banana      (  17.0, -11.0) -> ( 18.25,-11.00) moved 1.25
+e4banana#5             e4banana      (  14.5,  16.0) -> ( 16.22, 14.97) moved 2.00
+e4banana#6             e4banana      (  -2.0,  22.0) -> ( -0.88, 21.01) moved 1.50
+e4banana#7             e4banana      ( -15.0,  20.5) -> (-12.33, 21.87) moved 3.00
+w3banana2#0            w3banana2     ( -20.5,   1.5) -> (-20.07,  2.12) moved 0.75
+w3banana2#1            w3banana2     ( -22.5,   7.0) -> (-22.50,  7.00) moved 0.00
+w3banana2#2            w3banana2     ( -26.0,  -1.0) -> (-26.00, -1.00) moved 0.00
+w3banana2#3            w3banana2     (  23.5,   3.0) -> ( 24.00,  3.00) moved 0.50
+w3banana2#4            w3banana2     (   3.0,  21.5) -> ( -0.39, 25.51) moved 5.25
+w3banana2#5            w3banana2     ( -26.5,  19.5) -> (-26.50, 19.50) moved 0.00
+e4raintree#0           e4raintree    ( -38.0,   8.0) -> (-41.44, 11.63) moved 5.00
+e4raintree#1           e4raintree    ( -24.0, -27.0) -> (-24.00,-27.00) moved 0.00
+e4raintree#2           e4raintree    (  19.0, -40.0) -> ( 19.00,-39.50) moved 0.50
+e4raintree#3           e4raintree    (  33.0,   2.0) -> ( 34.50,  2.00) moved 1.50
+e4raintree#4           e4raintree    (  -3.0,  36.0) -> ( -3.00, 36.00) moved 0.00
+e4mango#0              e4mango       ( -33.0,  22.0) -> (-33.53, 25.46) moved 3.50
+e4mango#1              e4mango       (  -2.0, -42.0) -> ( -2.00,-42.00) moved 0.00
+e4mango#2              e4mango       (  22.0, -22.0) -> ( 32.06,-29.83) moved 12.75
+e4mango#3              e4mango       (  22.0,  24.0) -> ( 22.50, 24.00) moved 0.50
+w3frangipani#0         w3frangipani  (  -9.2,  17.6) -> ( -4.73, 22.32) moved 6.50
+w3frangipani#1         w3frangipani  (  11.6,  17.4) -> (  3.32, 22.55) moved 9.75
+w3frangipani#2         w3frangipani  (  14.4,  -9.6) -> ( 14.13,-10.30) moved 0.75

@@ -29,7 +29,9 @@
     const TABLES = { x0: -2.5, x1: 2.5, z0: -12.4, z1: -10.0, tops: [0.75, 1.05, 1.35], step: 0.8 };   // three steps, the lowest in front (south)
     const WHEEL = { x: 0, z: -12.0 };
     const PARASOL = { x: 0, z: -12.75 };
-    const POLE = { x: 0.6, z: -13.6, h: 10 };
+    /* (v26.2 debug: at z -13.6 the pole went up through the parasol's canopy, 1.04 m from its middle, inside its 1.3 m rim:
+       measured, tools/probes/clipscan.mjs. Behind it now, clear of the drawn-larger parasol's rim, before the banners) */
+    const POLE = { x: 0.6, z: -14.3, h: 10 };
     /* photographs 13 to 16; its front 9 m behind the tables (8, 10). Measured on 15, the front square on: the skirt rises
        1.5 m and the gable 2.2 m above it, the gable's foot is 6.6 m wide; from 16 the skirt is steep enough to show its
        tiles to a man standing before it, so both tiers are pitched at about thirty degrees */
@@ -439,10 +441,15 @@
       quad(mSign, [cx - 1.2, 1.98, zs + 0.09], [cx + 1.2, 1.98, zs + 0.09], [cx + 1.2, 2.41, zs + 0.09], [cx - 1.2, 2.41, zs + 0.09]);
       /* THE PLINTHS, painted teal: the fountain's between the sign's posts, one at each corner for its naga */
       hall.fountain = { x: cx, z: zs, top: 0.4 };
-      box(mTeal, hall.fountain.x, 0.1, hall.fountain.z, 2.05, 0.2, 1.4); box(mTeal, hall.fountain.x, 0.3, hall.fountain.z - 0.06, 1.8, 0.2, 1.12);
+      /* (v26.2: the upper tier 2.0 wide and the lower 2.2, out to the posts' feet as photograph 15 has it, so each small Ganesha
+         sits on the top BESIDE the basin's end, between it and a post; at 1.8 the basin left no room and both stood half
+         inside its wall) */
+      box(mTeal, hall.fountain.x, 0.1, hall.fountain.z, 2.2, 0.2, 1.4); box(mTeal, hall.fountain.x, 0.3, hall.fountain.z - 0.06, 2.0, 0.2, 1.12);
       hall.west = { x: H.x0 - 1.7, z: zf + 1.35, top: 0.5 };  box(mTeal, hall.west.x, 0.25, hall.west.z, 2.4, 0.5, 0.95);
       hall.east = { x: H.x1 + 0.3, z: zf + 1.0, top: 0.55 }; box(mTeal, hall.east.x, 0.275, hall.east.z, 1.8, 0.55, 0.95);
-      hall.lampAt = [[H.x0 - 0.02, fl + 1.95, zf + 0.2], [H.x1 + 0.02, fl + 1.95, zf + 0.2]];
+      /* (each lamp's back plate on its post's front, the post 0.11 round about zf + 0.07: the lamp 0.106 from its back to its
+         middle, so its middle stands at zf + 0.29; at zf + 0.2 its back half was inside the post, v26.2) */
+      hall.lampAt = [[H.x0 - 0.02, fl + 1.95, zf + 0.29], [H.x1 + 0.02, fl + 1.95, zf + 0.29]];
       /* A LAMP ON A POLE, front left (photograph 16): a round solar street lamp on a grey pole */
       post(mConcrete, -7.4, zf + 2.4, 0.045, 0, 4.2, 8);
       geo(mSteel, new THREE.CylinderGeometry(0.34, 0.3, 0.07, 14), _gm.makeTranslation(-7.4, 4.24, zf + 2.4));
@@ -453,8 +460,11 @@
     function dressHall() {
       const F = hall.fountain, W = hall.west, E = hall.east;
       stand('w3nagafount', F.x, F.top, F.z, 0);                                   // the seven heads, facing the turf
-      stand('w3ganesha', F.x + 0.72, F.top, F.z + 0.3, -0.5);                     // the small golden Ganesha at its east end
-      stand('w3ganesha', F.x - 0.72, F.top, F.z + 0.3, 0.5, { done: (m) => { m.scale.x *= -1; } });    // and its fellow at the west, turned to face it
+      /* the small golden Ganesha at each end of the basin, turned to it (photographs 13 and 15): each on the top between the
+         basin and a post, 4.6 cm clear of the basin's wall and of the top's edges (fitted to both models' own points,
+         tools/probes/fitbeside.mjs, v26.2; at F.x +/- 0.72 each stood half inside the basin's wall) */
+      stand('w3ganesha', F.x + 0.85, F.top, F.z + 0.25, -1.6);
+      stand('w3ganesha', F.x - 0.85, F.top, F.z + 0.25, 1.6, { done: (m) => { m.scale.x *= -1; } });
       stand('w3nagagreen', W.x, W.top, W.z, 0);                                   // west: the green naga, its heads to the west
       stand('w3nagawhite', E.x, E.top, E.z, 0, { s: 1.22 });                      // east: the white-bellied naga, upright (1.85 m on its plinth, photograph 15)
       /* (photograph 15: one yellow bush west of the fountain before the steps, one beyond the white naga; the dracaena

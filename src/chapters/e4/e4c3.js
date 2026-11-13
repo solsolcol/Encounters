@@ -410,7 +410,9 @@
     const TABLES = { x0: -2.5, x1: 2.5, z0: -12.4, z1: -10.0, tops: [0.75, 1.05, 1.35], step: 0.8 };   // three steps, the lowest in front (south)
     const WHEEL = { x: 0, z: -12.0 };
     const PARASOL = { x: 0, z: -12.75 };
-    const POLE = { x: 0.6, z: -13.6, h: 10 };
+    /* (v26.2 debug: at z -13.6 the pole went up through the parasol's canopy, 1.04 m from its middle, inside its 1.3 m rim:
+       measured, tools/probes/clipscan.mjs. Behind it now, clear of the drawn-larger parasol's rim, before the banners) */
+    const POLE = { x: 0.6, z: -14.3, h: 10 };
     /* photographs 13 to 16; its front 9 m behind the tables (8, 10). Measured on 15, the front square on: the skirt rises
        1.5 m and the gable 2.2 m above it, the gable's foot is 6.6 m wide; from 16 the skirt is steep enough to show its
        tiles to a man standing before it, so both tiers are pitched at about thirty degrees */
@@ -947,10 +949,15 @@
       quad(mSign, [cx - 1.2, 1.98, zs + 0.09], [cx + 1.2, 1.98, zs + 0.09], [cx + 1.2, 2.41, zs + 0.09], [cx - 1.2, 2.41, zs + 0.09]);
       /* THE PLINTHS, painted teal: the fountain's between the sign's posts, one at each corner for its naga */
       hall.fountain = { x: cx, z: zs, top: 0.4 };
-      box(mTeal, hall.fountain.x, 0.1, hall.fountain.z, 2.05, 0.2, 1.4); box(mTeal, hall.fountain.x, 0.3, hall.fountain.z - 0.06, 1.8, 0.2, 1.12);
+      /* (v26.2: the upper tier 2.0 wide and the lower 2.2, out to the posts' feet as photograph 15 has it, so each small Ganesha
+         sits on the top BESIDE the basin's end, between it and a post; at 1.8 the basin left no room and both stood half
+         inside its wall) */
+      box(mTeal, hall.fountain.x, 0.1, hall.fountain.z, 2.2, 0.2, 1.4); box(mTeal, hall.fountain.x, 0.3, hall.fountain.z - 0.06, 2.0, 0.2, 1.12);
       hall.west = { x: H.x0 - 1.7, z: zf + 1.35, top: 0.5 };  box(mTeal, hall.west.x, 0.25, hall.west.z, 2.4, 0.5, 0.95);
       hall.east = { x: H.x1 + 0.3, z: zf + 1.0, top: 0.55 }; box(mTeal, hall.east.x, 0.275, hall.east.z, 1.8, 0.55, 0.95);
-      hall.lampAt = [[H.x0 - 0.02, fl + 1.95, zf + 0.2], [H.x1 + 0.02, fl + 1.95, zf + 0.2]];
+      /* (each lamp's back plate on its post's front, the post 0.11 round about zf + 0.07: the lamp 0.106 from its back to its
+         middle, so its middle stands at zf + 0.29; at zf + 0.2 its back half was inside the post, v26.2) */
+      hall.lampAt = [[H.x0 - 0.02, fl + 1.95, zf + 0.29], [H.x1 + 0.02, fl + 1.95, zf + 0.29]];
       /* A LAMP ON A POLE, front left (photograph 16): a round solar street lamp on a grey pole */
       post(mConcrete, -7.4, zf + 2.4, 0.045, 0, 4.2, 8);
       geo(mSteel, new THREE.CylinderGeometry(0.34, 0.3, 0.07, 14), _gm.makeTranslation(-7.4, 4.24, zf + 2.4));
@@ -961,8 +968,11 @@
     function dressHall() {
       const F = hall.fountain, W = hall.west, E = hall.east;
       stand('w3nagafount', F.x, F.top, F.z, 0);                                   // the seven heads, facing the turf
-      stand('w3ganesha', F.x + 0.72, F.top, F.z + 0.3, -0.5);                     // the small golden Ganesha at its east end
-      stand('w3ganesha', F.x - 0.72, F.top, F.z + 0.3, 0.5, { done: (m) => { m.scale.x *= -1; } });    // and its fellow at the west, turned to face it
+      /* the small golden Ganesha at each end of the basin, turned to it (photographs 13 and 15): each on the top between the
+         basin and a post, 4.6 cm clear of the basin's wall and of the top's edges (fitted to both models' own points,
+         tools/probes/fitbeside.mjs, v26.2; at F.x +/- 0.72 each stood half inside the basin's wall) */
+      stand('w3ganesha', F.x + 0.85, F.top, F.z + 0.25, -1.6);
+      stand('w3ganesha', F.x - 0.85, F.top, F.z + 0.25, 1.6, { done: (m) => { m.scale.x *= -1; } });
       stand('w3nagagreen', W.x, W.top, W.z, 0);                                   // west: the green naga, its heads to the west
       stand('w3nagawhite', E.x, E.top, E.z, 0, { s: 1.22 });                      // east: the white-bellied naga, upright (1.85 m on its plinth, photograph 15)
       /* (photograph 15: one yellow bush west of the fountain before the steps, one beyond the white naga; the dracaena
@@ -1116,7 +1126,9 @@
     function dressTables() {
       const [y0, y1, y2] = TABLES.tops, zf = -10.4, zm = -11.2, zb = -12.0;
       stand('w3wheel', WHEEL.x, y2, WHEEL.z, 0);                                                   // the great bai sri and its wheel of marigolds
-      stand('w3parasol', PARASOL.x, 0, PARASOL.z, 0);                                              // the orange and gold parasol over it
+      /* the orange and gold parasol over it (v26.2 debug: drawn a tenth larger, its canopy lifted clear of the wheel's top,
+         which it touched at 2.72 m: measured) */
+      stand('w3parasol', PARASOL.x, 0, PARASOL.z, 0, { s: 1.1 });
       many('w3naga', [{ x: 1.15, y: y2, z: -11.95, ry: -0.5 }, { x: 1.6, y: y2, z: -12.1, ry: -0.75 }, { x: 2.05, y: y2, z: -11.9, ry: -1.0 }], world, 0.8);
       many('w3tower', [{ x: -3.25, y: 0, z: -11.0, ry: 0.3 }, { x: 3.25, y: 0, z: -11.0, ry: 2.1 }], world, 2.8);
       /* (M8, the photographs laid beside the game: NO bai sri in a golden bowl stands on the offering tables in any of
@@ -1241,7 +1253,10 @@
       rug(mBlueMat, -9.92, -2.6, 1.9, 1.26, 0, 0.0085);
       many('w3glass', [{ x: -9.32, y: 0.008, z: -1.92, ry: 0.6 }], world, 0.15);
       many('w3water', [{ x: -9.46, y: 0.008, z: -1.74, ry: 2.2 }], world, 0.21);
-      many('w3purple', [{ x: -7.0, y: 0, z: 1.0, ry: 1.0 }], world, 1.1);
+      /* (v26.2 debug: at (-7.0, 1.0) it stood on the tent's corner pole, which went up through it: Chad's picture, measured.
+         Along the tent's open front now, 0.74 m from the pole, clear of those who kneel there at the blessing and of the
+         stack of rolled mats ending A lays south of it; and a thing he walks round) */
+      many('w3purple', [{ x: -6.75, y: 0, z: 0.3, ry: 1.0 }], world, 1.1); solidBox(0.62, 1.4, 0.62, -6.75, 0.7, 0.3);
       /* west tent 2: the hermit in the yellow shawl */
       rug(mMat, -8.1, 5.0, 3.2, 1.8, Math.PI / 2);
       many('w3sofa', [{ x: -10.25, y: 0, z: 5.0, ry: Math.PI / 2 }], world, 0.9);
@@ -1252,7 +1267,9 @@
       /* (one blocker for the row, as it was: from the sitters' knees, half a metre ahead of their spots, to the chairs' backs) */
       { const x0 = MONKS.x - 0.5, x1 = MONKS.chair + MONKS.half; solidBox(x1 - x0, 1.4, 3.6, (x0 + x1) / 2, 0.7, -2.0); }
       many('w3khantok', [{ x: 9.2, y: 0, z: -2.6, ry: 0.4 }, { x: 9.2, y: 0, z: -1.2, ry: 1.9 }], world, 0.25);
-      stand('w3nagastaff', 10.55, 0, -3.75, 0.3); stand('w3fan', 10.5, 0.02, -0.15, -1.2);
+      stand('w3nagastaff', 10.55, 0, -3.75, 0.3);
+      /* (the fan 4 cm clear of the third monk's chair: at z -0.15 its grille's edge stood in the chair's back corner, v26.2) */
+      stand('w3fan', 10.5, 0.02, -0.05, -1.2);
       /* THE CHIEF CANOPY (photographs 1, 5, 6): a dark top, a valance of gold and lime in swags, one pole wrapped in
          puffs of lime cloth; maroon carpets deep in petals; his bench, a carved chair, a low dark table */
       /* (its drapes are deep: photographs 5 and 6 are taken under them, and what fills their top is swags of lime, gold
@@ -1264,11 +1281,14 @@
          from the ground to the eave in seven gathered tiers of lime cloth, each wider than it is tall and a little
          narrower than the one under it. The model is one puff of white satin (0.75 m tall, 0.52 across): each is drawn
          wider and pressed down to 0.46 m about its own foot, and tinted */
-      { const [px, pz] = C[0], tiers = [0, 1, 2, 3, 4, 5, 6].map(k => ({ x: px, y: 0.01 + k * 0.31, z: pz, ry: k * 1.9, s: 1.22 - k * 0.04 }));   // (each 0.46 m tall on a rise of 0.31: they overlap, and no pole shows between)
+      /* (v26.2 debug: seven tiers 0.46 m tall on a rise of 0.31 reached 2.33 m, through the gold valance and the swags at
+         the canopy's corner (measured: tools/probes/clipscan.mjs). Seven tiers 0.40 m tall on a rise of 0.245 end at
+         1.88 m, under the valance, still overlapping so no pole shows between) */
+      { const [px, pz] = C[0], tiers = [0, 1, 2, 3, 4, 5, 6].map(k => ({ x: px, y: 0.01 + k * 0.245, z: pz, ry: k * 1.9, s: 1.22 - k * 0.04 }));
         many('w3puff', tiers, world, 0.75, (made) => { const m4 = new THREE.Matrix4(), sq = new THREE.Matrix4();
           for (const im of made) { im.material.color.set(0xa6d82a);
             tiers.forEach((t, i) => { im.getMatrixAt(i, m4);
-              sq.makeTranslation(0, t.y, 0).multiply(m4.clone().makeScale(1, 0.46 / (0.75 * t.s), 1)).multiply(new THREE.Matrix4().makeTranslation(0, -t.y, 0));
+              sq.makeTranslation(0, t.y, 0).multiply(m4.clone().makeScale(1, 0.40 / (0.75 * t.s), 1)).multiply(new THREE.Matrix4().makeTranslation(0, -t.y, 0));
               im.setMatrixAt(i, sq.multiply(m4)); });
             im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere(); } }); }
       /* his bench (brown hardwood: the model came lacquer red, its hue turned and darkened here), drawn 2.05 m long for
@@ -1279,13 +1299,19 @@
       stand('w3bench', BENCH.x, 0, BENCH.z, BENCH.ry, { s: 1.1, done: (m) => { m.scale.x *= 1.24; m.traverse(q => { if (q.isMesh) { hueTurn(q.material, 17); q.material.color.multiplyScalar(0.72); } }); } });
       solidBox(2.2, 1.4, 0.8, BENCH.x, 0.7, BENCH.z, BENCH.ry);
       { const [x, z] = BA(2.25, -0.05); stand('w3chair', x, 0, z, BENCH.ry - 0.25, { s: 1.11 }); solidBox(0.9, 1.4, 0.9, x, 0.7, z, BENCH.ry); }
-      const TB = BA(1.05, 1.1);
-      stand('w3lowtable', TB[0], 0, TB[1], BENCH.ry + 0.12); solidBox(1.05, 1.0, 1.05, TB[0], 0.5, TB[1], BENCH.ry);
-      { const [bx, bz] = BA(0.82, 1.28), [gx, gz] = BA(0.1, 0.72), [wx, wz] = BA(1.28, 0.98);
+      /* (v26.2 debug, measured by tools/probes/clipscan.mjs: the low table, a metre square at (1.05, 1.1), stood in the lime
+         pole's lowest puffs, under Grandmaster Pho's right foot and in the knee of the young man who kneels before him (and
+         his bai sri, set on it at the last, stood in its glass). Drawn 0.7 m square now, a little to his right, every one of
+         them 15 cm or more clear; and what stands on it is laid out on its smaller top, the bai sri's place left free) */
+      const TB = BA(1.2, 0.95);
+      stand('w3lowtable', TB[0], 0, TB[1], BENCH.ry + 0.12, { done: (m) => { m.scale.x *= 0.7; m.scale.z *= 0.7; } }); solidBox(0.74, 1.0, 0.74, TB[0], 0.5, TB[1], BENCH.ry);
+      { const [bx, bz] = BA(1.36, 1.12), [gx, gz] = BA(0.1, 0.72), [wx, wz] = BA(1.38, 0.78);
         many('w3petalbowl', [{ x: bx, y: 0.38, z: bz, ry: 0 }, { x: gx, y: 0, z: gz, ry: 1 }], world, 0.3);
         many('w3pewter', [{ x: wx, y: 0.38, z: wz, ry: 0.8 }], world, 0.5); }
-      { const [gx, gz] = BA(0.74, 0.86), [tx, tz] = BA(1.4, 1.42); many('w3glass', [{ x: gx, y: 0.38, z: gz, ry: 1.3 }], world, 0.15); many('w3tissue', [{ x: tx, y: 0.38, z: tz, ry: 0.4 }], world, 0.11); }
-      { const [ax, az] = BA(-1.55, 0.15), [cx2, cz2] = BA(2.95, 0.7); many('w3purple', [{ x: ax, y: 0, z: az, ry: 2.0 }, { x: cx2, y: 0, z: cz2, ry: 0.4 }], world, 1.1); }
+      { const [gx, gz] = BA(0.95, 1.2), [tx, tz] = BA(1.12, 1.22); many('w3glass', [{ x: gx, y: 0.38, z: gz, ry: 1.3 }], world, 0.15); many('w3tissue', [{ x: tx, y: 0.38, z: tz, ry: 0.4 }], world, 0.11); }
+      { const [ax, az] = BA(-1.55, 0.15), [cx2, cz2] = BA(2.95, 0.7); many('w3purple', [{ x: ax, y: 0, z: az, ry: 2.0 }, { x: cx2, y: 0, z: cz2, ry: 0.4 }], world, 1.1);
+        /* (v26.2 debug: he could walk into the flowers, the lens inside the bouquet: each a thing he walks round) */
+        solidBox(0.62, 1.4, 0.62, ax, 0.7, az); solidBox(0.62, 1.4, 0.62, cx2, 0.7, cz2); }
     }
 
     /* ================================================================ THE BANNERS, THE POLE, THE FLAGS (photographs 8, 10)
@@ -1305,11 +1331,18 @@
         bar(mBamboo, [x + Math.sin(lean) * 0.12, 4.2, z + Math.cos(lean) * 0.12], [tipX, BANNER.top + 0.12, tipZ], 0.02, 6);
         banners.list.push({ x: tipX, y: BANNER.top, z: tipZ, col, ph: rnd() * 6.28, ry: rnd() * 3.14, k: 0.7 + rnd() * 0.6 });
       };
-      order.forEach((c, i) => put(-11 + i * (22 / 13), -14.5 + (rnd() - 0.5) * 0.5, c, 0.2 + rnd() * 0.5));
-      [['pink', -8], ['white', -6], ['yellow', -4], ['red', -2]].forEach(([c, z]) => put(-11.5 + (rnd() - 0.5) * 0.3, z, c, 1.4 + rnd() * 0.4));
-      /* the picture twice, crossed, hanging DOWN from its own origin (so a turn about the origin is a swing from the tip) */
+      /* (v26.2 debug, measured by tools/probes/clipscan.mjs and seen in Chad's pictures of 13 Nov 2026: the row behind the
+         tables stood under the parasol's rim (and its west end under the open shed's roof); the west row's first hung
+         through the shed's roof and beams on its bamboo, its last through the west tent's eave. The row stands 0.8 m
+         further back; the west row between the shed and the first tent, and one between the two tents) */
+      order.forEach((c, i) => put(-11 + i * (22 / 13), -15.3 + (rnd() - 0.5) * 0.5, c, 0.2 + rnd() * 0.5));
+      [['pink', -6.9], ['white', -5.6], ['yellow', -4.3], ['red', 2.0]].forEach(([c, z]) => put(-11.5 + (rnd() - 0.5) * 0.3, z, c, 1.4 + rnd() * 0.4));
+      /* EACH IS ONE CLOTH, hanging DOWN from its own origin (so a turn about the origin is a swing from the tip), turned to
+         face the middle of the ground (v26.2 debug: the picture crossed with itself read as a square pillar close by, and
+         from far off as a red or yellow block: Chad's pictures) */
+      for (const b of banners.list) b.ry = Math.atan2(0 - b.x, 1.5 - b.z) + (b.ry - Math.PI / 2) * 0.25;
       const g = new THREE.BufferGeometry(), w = BANNER.w / 2, h = BANNER.h, P = [], U = [], N = [];
-      for (const [ax, az] of [[1, 0], [0, 1]]) {
+      for (const [ax, az] of [[1, 0]]) {
         const v = [[-w * ax, 0, -w * az, 0, 0], [w * ax, 0, w * az, 1, 0], [w * ax, -h, w * az, 1, 1], [-w * ax, -h, -w * az, 0, 1]];
         for (const k of [0, 2, 1, 0, 3, 2]) { P.push(v[k][0], v[k][1], v[k][2]); U.push(v[k][3], v[k][4]); N.push(az, 0, ax); }
       }
@@ -1349,7 +1382,11 @@
       /* from the top down, as photograph 10 shows it: teal, pink-white, yellow, yellow, red; then plainer ones below */
       puff(9.15, 0.75, 0.2, 0x16a698); puff(8.45, 0.72, 0.27, 0xf6dfe6); puff(7.8, 0.66, 0.3, 0xf5c81c); puff(7.2, 0.62, 0.29, 0xf2b616); puff(6.35, 0.86, 0.33, 0xd72a34);
       /* the strings: from the pole's top out to the trees, the tents, the hall and the sheds */
-      const ends = [[-15, 7.2, 3], [9, 6.8, -15], [-9, 3.5, -1], [9, 3.5, -2], [6, 3.3, 9], [-9, 3.5, 5], [-11, 3.8, -9.6], [11, 3.8, -9.6], [0, 6.8, -20], [-13.5, 3.7, -11], [3, 3.2, 12.6], [-5, 3.2, 12.6]];
+      /* (v26.2 debug: each string tied to a real thing. Two ran into the trees' crowns, their flags among the leaves, and one
+         onto the shed's roof, its last flags through the tin (Chad's pictures; measured). They end now where each first
+         meets its tree's leaves (tools/probes/stringend.mjs), on the tents' and the chief canopy's peaks, the two
+         loudspeaker poles' tops, the shed's gable end, the hall's gable and the grey building's fascia) */
+      const ends = [[-20.5, 6.9, -1.5], [14.25, 6.25, -16.35], [-9, 3.4, -1], [9, 3.4, -2], [5.47, 3.15, 9.85], [-9, 3.4, 5], [-9.7, 3.75, -9.35], [10.7, 3.75, -8.1], [0, 6.8, -20], [-13.25, 3.75, -7.45], [3, 4.15, 12.32], [-5, 4.15, 12.32]];
       const fl = [], lineP = [], rnd = rng(4410), FLAGS = [0x2fa64a, 0xf2c21c, 0x2f6fd0, 0xf07a1c, 0xf4f2ec, 0xe8528c];
       ends.forEach((e, si) => {
         const len = Math.hypot(e[0] - TOP[0], e[1] - TOP[1], e[2] - TOP[2]), n = Math.floor(len / 0.62), sag = len * 0.07;
@@ -1385,16 +1422,28 @@
     const TREES = [
       /* (the two that stand over the turf are the fuller level of each, whose crowns are leaves: the lighter level's are
          shards from close by, which is what Chad saw in chapter 1's yard at v24.27) */
-      { key: 'e4raintreehd', x: -15.5, z: 3, h: 13.5, ry: 0.4 },     // the huge tree west of the turf (photograph 10)
-      { key: 'e4mangohd', x: 8.6, z: 12.6, h: 9.5, ry: 2.1 },        // the tree behind the chief canopy: its shade lies over the turf's south
-      { key: 'e4raintreehd', x: 10.5, z: -16, h: 10.5, ry: 3.0 },    // north-east (photograph 8)
+      /* (v26.2 debug, Chad's pictures of 13 Nov 2026 and tools/probes/clipscan.mjs: the huge tree's trunk went up through the
+         lower shed roof behind the west tents; the mango stood inside the red plank building behind the chief canopy, its
+         crown through both roofs; the north-east tree's crown took in a power pole, the wires and a banner; and the four
+         crowns met the groves' palms. Each stands now where its crown, at every height, clears every roof, wall, pole,
+         wire, banner and other crown by 0.3 m (masters/v26.2/trees: the crowns measured from the files,
+         tools/probes/treeprofile.mjs, and the nearest such place solved for each, the four first) */
+      { key: 'e4raintreehd', x: -21.15, z: -1.1, h: 13.5, ry: 0.4 },     // the huge tree west of the turf (photograph 10)
+      { key: 'e4mangohd', x: 13.75, z: 20.6, h: 9.5, ry: 2.1 },        // the tree behind the chief canopy's buildings
+      { key: 'e4raintreehd', x: 23.4, z: -17.75, h: 10.5, ry: 3.0 },    // north-east (photograph 8)
       /* (v26.2 debug: this one at its fuller level too. Ending B looks up past the chief canopy into its crown from
          12 m, and the light file's crown, its leaves remeshed into big flat shards (v24.27), read there as crumpled foil.
          Its files are the same tree; the fuller one is already loaded for the tree over the turf) */
-      { key: 'e4mango', x: -13.5, z: 15.5, h: 8.5, ry: 5.0 }         // south-west, by the way in
+      { key: 'e4mango', x: -13.5, z: 16, h: 8.5, ry: 5.0 }         // south-west, by the way in
     ];
+    /* LEAVES ARE NOT FOIL (v26.2 debug, Chad's picture of the tree behind the chief canopy, 13 Nov 2026: its crown shone like
+       crumpled foil). The generated trees came with a metal-roughness sheet that reads their leaves as polished and partly
+       metal (the v25.5 law for a generated body's paint, applied where it is drawn): metal off, a leaf's rough finish, their
+       own colour and relief kept */
+    function leafMatte(mt) { for (const m of [].concat(mt)) { if (!m || !('roughness' in m)) continue;
+      m.metalnessMap = null; m.metalness = 0; m.roughnessMap = null; m.roughness = 0.88; m.needsUpdate = true; } }
     function buildTrees() {
-      for (const T0 of TREES) stand(T0.key, T0.x, 0, T0.z, T0.ry, { h: T0.h, lift: 1 });
+      for (const T0 of TREES) stand(T0.key, T0.x, 0, T0.z, T0.ry, { h: T0.h, lift: 1, done: (m) => m.traverse(q => { if (q.isMesh) leafMatte(q.material); }) });
       const R = 64, Hh = 20;
       const g = new THREE.CylinderGeometry(R, R, Hh, 56, 1, true);
       const uv = g.attributes.uv; for (let k = 0; k < uv.count; k++) uv.setX(k, uv.getX(k) * 5);
@@ -1663,19 +1712,21 @@
           white building behind the west tents given windows of their own.
        Nothing here stands on ground he can walk (stage.keepIn), so nothing here needs a blocker. */
     const R26 = rng(2611), turn26 = () => R26() * 6.283;
-    /* [x, z, height in metres] (east, south) */
+    /* [x, z, height in metres] (east, south). (v26.2 debug: placed again so no crown passes through another, a building,
+       the power lines or a pole: Chad's picture of a palm growing up through a rain tree beyond the shed, 13 Nov 2026.
+       Each is the nearest place to where it stood that clears all of them at every height: masters/v26.2/trees) */
     const GROVES = {
       /* (his palms at their full level within 32 m of the middle, where the light level's fronds came out soft against
          the sky in the first photographs; at the light level beyond) */
-      e4palm1: [[-23, -12, 13], [-27, 4, 14.5], [26, -3, 14], [0, 24.5, 14], [7, 27, 13]],
-      e4palm1far: [[-35, -4, 15], [-8, -36, 14], [13, -33, 12], [-28, 28, 13], [-31, 13, 12]],
-      e4palm2: [[-18, -19, 12.5], [27, -12, 13.5], [25, 8, 12.5], [16, 19, 12], [-6, 28, 12.5]],
-      e4palm2far: [[-29, -18, 13.5], [6, -38, 13], [-16, 31, 12.5]],
-      e4banana: [[-19, -3, 4.2], [-18.5, 9.5, 3.8], [-21, 12, 4.4], [-24, -6, 4.0], [17, -11, 4.0], [14.5, 16, 4.0], [-2, 22, 3.8], [-15, 20.5, 4.2]],
-      w3banana2: [[-20.5, 1.5, 3.6], [-22.5, 7, 3.4], [-26, -1, 3.8], [23.5, 3, 3.6], [3, 21.5, 3.4], [-26.5, 19.5, 3.8]],
-      e4raintree: [[-38, 8, 12], [-24, -27, 11], [19, -40, 12], [33, 2, 13], [-3, 36, 12]],
-      e4mango: [[-33, 22, 9], [-2, -42, 10], [22, -22, 9.5], [22, 24, 9]],
-      w3frangipani: [[-9.2, 17.6, 4.4], [11.6, 17.4, 4.6], [14.4, -9.6, 4.2]]
+      e4palm1: [[-31.15, -14.45, 13], [-26.2, 15.2, 14.5], [20.95, 11.1, 14], [11, 29.25, 14], [12.25, 37.5, 13]],
+      e4palm1far: [[-38.25, -4, 15], [-8.6, -35.2, 14], [9.9, -27.85, 12], [-26.15, 34.75, 13], [-16.7, 23.5, 12]],
+      e4palm2: [[-16.4, -17.4, 12.5], [33.95, -12.7, 13.5], [27.9, 14.9, 12.5], [7.15, 22.45, 12], [-8.25, 23.85, 12.5]],
+      e4palm2far: [[-35.2, -21.2, 13.5], [5.8, -37.8, 13], [-16, 31, 12.5]],
+      e4banana: [[-19.6, -3.8, 4.2], [-19.25, 9.3, 3.8], [-21, 12, 4.4], [-24, -6, 4], [18.25, -11, 4], [16.2, 14.95, 4], [-0.9, 21, 3.8], [-12.35, 21.85, 4.2]],
+      w3banana2: [[-20.05, 2.1, 3.6], [-22.5, 7, 3.4], [-26, -1, 3.8], [24, 3, 3.6], [-0.4, 25.5, 3.4], [-26.5, 19.5, 3.8]],
+      e4raintree: [[-41.45, 11.65, 12], [-24, -27, 11], [19, -39.5, 12], [34.5, 2, 13], [-3, 36, 12]],
+      e4mango: [[-33.55, 25.45, 9], [-2, -42, 10], [32.05, -29.85, 9.5], [22.5, 24, 9]],
+      w3frangipani: [[-4.75, 22.3, 4.4], [3.3, 22.55, 4.6], [14.15, -10.3, 4.2]]
     };
     /* a grove: every copy fitted to its height by the file's own height, its foot on the ground, turned its own seeded way;
        the lift a tree standing alone is given (stand: lift 1) */
@@ -1688,16 +1739,17 @@
         src.updateMatrixWorld(true);
         const bb = new THREE.Box3().setFromObject(src), H0 = Math.max(1e-3, bb.max.y - bb.min.y);
         manyOf(key, list.map(([x, z, h], i) => { const s = h / H0; return { x, y: -bb.min.y * s, z, ry: turns[i], s }; }), world, 1,
-          (made) => { for (const im of made) bronzeLift(im, 1); });
+          (made) => { for (const im of made) { bronzeLift(im, 1); if (/^e4(raintree|mango)/.test(key)) leafMatte(im.material); } });
       }).catch(err => { console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
     }
     /* the things by the houses: [key, x, y, z, turn] (a turn of 0 faces the model's own front to the south, +z; the
-       compressors' wall plates are behind them, so turned round they hang on the grey wall, 0.3 m up on their brackets) */
+       compressors' wall plates are behind them, so turned round they hang on the grey wall, 0.3 m up on their brackets;
+       v26.2 debug: 3 cm further out, their backs had sunk into the wall's plinth: measured, tools/probes/clipscan.mjs) */
     const EDGE_THINGS = [
       ['w3isanhouse', -24, 0, 26.5, Math.atan2(24, -26.5)],          // its front toward the middle of the ground
       ['w3tank', -19.4, 0, 24.2, 0.6], ['w3scooter', -20.6, 0, 21.4, 2.2],
       ['w3tank', -7.3, 0, 15.6, -1.2], ['w3scooter', -7.9, 0, 13.9, 1.25],
-      ['w3aircon', 3.0, 0.3, GREY.z - 0.21, Math.PI], ['w3aircon', -4.75, 0.3, GREY.z - 0.21, Math.PI]
+      ['w3aircon', 3.0, 0.3, GREY.z - 0.24, Math.PI], ['w3aircon', -4.75, 0.3, GREY.z - 0.24, Math.PI]
     ];
     /* a cloth hung inside a window: soft folds down it, a little lighter at its hem (one picture, every curtain) */
     function makeCurtain() {
@@ -2968,7 +3020,7 @@
       P.home = { x, z, ry: faceTo(x, z, PHO_AT[0], PHO_AT[1]) }; return P; });
     const castBlock = {};
     for (const k of ['ton', 'aunt']) castBlock[k] = new THREE.Box3(new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 61, 0));
-    function castSolid() { for (const k in castBlock) { const P = cast[k], b = castBlock[k], on = !!(P && P.group.visible && !P.hidden && !P.noBlock), g = P.group.position, r = 0.32;
+    function castSolid() { for (const k in castBlock) { const P = cast[k], b = castBlock[k], on = !!(P && P.group.visible && !P.hidden && !P.noBlock), g = P.group.position, r = 0.45;
       b.min.set(g.x - r, on ? 0 : 60, g.z - r); b.max.set(g.x + r, on ? 1.5 : 61, g.z + r); } }
     for (const k in castBlock) whenReady(cast[k], castSolid);
 
@@ -2995,6 +3047,8 @@
     const PHOTO = { x0: -3.3, dx: 0.6, z: -5.2 };                                     // each: [{ x, z, ry, kind }]
     const crowdDrivers = {};                                                     // key -> { A, B, S }
     const crowdBlock = [], dawnBlock = [];
+    /* how close he may come to one of them (v26.2 debug: buildCrowd) */
+    const PERSONAL = { sit: 0.5, stand: 0.45 };
     let formNow = '';
     /* the line of sight from where Grandmaster Pho sits to the one who kneels to him, and the line that waits behind */
     const LANE = { a0: -0.35, a1: 1.45 };
@@ -3016,7 +3070,9 @@
       const pair = (F, x, z, n, r = 0.55) => { const a0 = R() * 6.283;
         for (let i = 0; i < n; i++) { const a = a0 + i * 6.283 / n, px = x + Math.sin(a) * r, pz = z + Math.cos(a) * r;
           F.push({ x: px, z: pz, ry: n > 1 ? faceTo(px, pz, x, z) + (R() - 0.5) * 0.4 : aim(px, pz), kind: 'stand' }); } };
-      pair(A, -8.6, 10.6, 2); pair(A, 9.6, 3.6, 3, 0.62); pair(A, 8.9, 6.2, 1); pair(A, -9.6, -8.4, 2); pair(A, 4.4, -8.9, 2); pair(A, -1.9, 10.9, 1);
+      /* (v26.2 debug: the pair by the west fence stood at (-9.6, -8.4), one of them in the fence with an arm through its top
+         rail: Chad's picture, measured. They stand a step east of it now; the seeded stream draws as it did) */
+      pair(A, -8.6, 10.6, 2); pair(A, 9.6, 3.6, 3, 0.62); pair(A, 8.9, 6.2, 1); pair(A, -8.9, -8.1, 2); pair(A, 4.4, -8.9, 2); pair(A, -1.9, 10.9, 1);
       /* the line waiting its turn at the offering tables (photograph 10), east of the middle so the way up it is his */
       for (let i = 0; i < 4; i++) { const px = 1.55 + (R() - 0.5) * 0.16, pz = -8.5 + i * 0.92 + (R() - 0.5) * 0.1; A.push({ x: px, z: pz, ry: aim(px, pz) + (R() - 0.5) * 0.16, kind: 'stand' }); }
 
@@ -3029,7 +3085,9 @@
       /* before the hermit in brown and the master in red, on the mats under the west tent (nine); the two places right
          before their sofas are kept for those who go up */
       const iWest = Bf.length;
-      for (const [x, z] of [[-8.3, -3.1], [-8.2, -1.55], [-8.3, 0.0], [-7.4, -2.6], [-7.3, -1.3], [-7.4, -0.2], [-7.3, 0.85], [-6.4, -2.0], [-6.3, -0.8]]) sitTo(x, z, -10.2, z > -1.6 ? -0.95 : -2.2);
+      /* (v26.2: the kneeler at the tent's south-east corner moved from (-7.3, 0.85) to (-7.55, 0.55): there her shoulder was in
+         the tent's corner pole at (-7.0, 1.0), measured in the festival by tools/probes/clipscan.mjs) */
+      for (const [x, z] of [[-8.3, -3.1], [-8.2, -1.55], [-8.3, 0.0], [-7.4, -2.6], [-7.3, -1.3], [-7.4, -0.2], [-7.55, 0.55], [-6.4, -2.0], [-6.3, -0.8]]) sitTo(x, z, -10.2, z > -1.6 ? -0.95 : -2.2);
       /* before the hermit in the yellow shawl (five) */
       for (const [x, z] of [[-8.4, 4.2], [-8.3, 5.8], [-7.4, 4.0], [-7.5, 5.1], [-7.4, 6.2]]) sitTo(x, z, -10.2, 5.0);
       /* before the monks' row (five) */
@@ -3039,7 +3097,9 @@
       for (const [x, z] of [[-3.4, -5.6], [-2.3, -5.1], [2.6, -5.4]]) sitTo(x, z, 0, -11.2);
       /* the line at his bench, behind the place the player stands (three); friends at the throng's edge (three) */
       for (const [a, b] of [[0.9, 4.2], [0.98, 5.1], [0.84, 6.0]]) { const [x, z] = bA(a, b); standTo(x, z, PH[0], PH[1]); }
-      for (const [a, b] of [[-2.9, 3.7], [3.0, 3.2], [3.3, 2.1]]) { const [x, z] = bA(a, b); standTo(x, z, PH[0], PH[1]); }
+      /* (v26.2 debug: the second friend stood at (3.0, 3.2), 0.43 m from the kneeler at (2.7, 3.5): their legs passed through
+         one another, measured in the festival film by tools/probes/clipscan.mjs. A step further out) */
+      for (const [a, b] of [[-2.9, 3.7], [3.45, 3.5], [3.3, 2.1]]) { const [x, z] = bA(a, b); standTo(x, z, PH[0], PH[1]); }
       /* behind the kneelers at the west tents (three); at the tables (two); by the monks (one); talking at the edges (three) */
       standTo(-5.5, -2.9, -10.2, -2.2); standTo(-5.4, -0.4, -10.2, -0.95); standTo(-6.3, 5.2, -10.2, 5.0);
       standTo(1.3, -8.7, 0, -11.2); standTo(-1.6, -8.8, 0, -11.2);
@@ -3081,7 +3141,10 @@
       for (let i = 0; i < N; i++) crowdSeats[i].at.photo = Pf[seatP[i]];
       crowdSeats.swaps = { arrive: swapsA, bless: swapsB, photo: swapsP };
     }
-    function crowdStats(form = formNow || 'arrive') {
+    /* (v26.2 debug: `seats` true also lists who sits or stands where in the formation, so a probe can name a person it
+       photographs: tools/probes/clipscan.mjs) */
+    function crowdStats(form = formNow || 'arrive', seats = false) {
+      if (seats) return crowdSeats.map(s => ({ body: DEVOTEES[s.body], kind: s.kind, x: +s.at[form].x.toFixed(2), z: +s.at[form].z.toFixed(2) }));
       const N = crowdSeats.length, per = DEVOTEES.map(() => 0); let near = Infinity, sum = 0, touching = 0;
       const at = (i) => crowdSeats[i].at[form];
       for (let i = 0; i < N; i++) { per[crowdSeats[i].body]++; let best = Infinity;
@@ -3104,8 +3167,10 @@
         S: mkDriver(key, { take: 'Idle_3', centre: true, phase: 0.13 * DEVOTEES.indexOf(key) }) };
       for (const s of crowdSeats) { const D = crowdDrivers[DEVOTEES[s.body]][s.kind === 'stand' ? 'S' : s.half], p = s.at.arrive;
         s.member = mkMember(D, p.x, p.z, p.ry, { s: s.s, mirror: s.mirror, parent: dayOne, blobW: s.kind === 'stand' ? 0.8 : 0.95, blobD: s.kind === 'stand' ? 0.7 : 1.0 });
-        /* a person is a thing he walks round: a column from the ground (collide() samples at a metre) */
-        const r = 0.3; s.block = new THREE.Box3(new THREE.Vector3(p.x - r, 0, p.z - r), new THREE.Vector3(p.x + r, 1.5, p.z + r)); crowdBlock.push(s.block); }
+        /* a person is a thing he walks round: a column from the ground (collide() samples at a metre). (v26.2 debug: 0.3 m
+           each way let his eye come 10 cm from a woman's hair, Chad's picture: half a metre for one who kneels, whose knees
+           reach forward, 0.45 for one who stands) */
+        const r = PERSONAL[s.kind]; s.block = new THREE.Box3(new THREE.Vector3(p.x - r, 0, p.z - r), new THREE.Vector3(p.x + r, 1.5, p.z + r)); crowdBlock.push(s.block); }
       formNow = 'arrive';
       /* day two: two people far off by the offering tables, clearing up (the ground is not quite empty: §4.3) */
       for (const [key, x, z, ry] of [['e4devb', -3.3, -9.25, 2.6], ['e4devh', 3.9, -9.3, -2.2]]) { mkMember(crowdDrivers[key].S, x, z, ry, { parent: dayTwo, blobW: 0.8, blobD: 0.7 });
@@ -3116,8 +3181,8 @@
     function setFormation(name) {
       if (!FORMS[name]) return;
       formNow = name;
-      const on = dayOne.visible, r = 0.3;
-      for (const s of crowdSeats) { const p = s.at[name]; s.member.group.position.set(p.x, 0, p.z); s.member.group.rotation.y = p.ry; s.member.lvNow = -1;
+      const on = dayOne.visible;
+      for (const s of crowdSeats) { const p = s.at[name], r = PERSONAL[s.kind]; s.member.group.position.set(p.x, 0, p.z); s.member.group.rotation.y = p.ry; s.member.lvNow = -1;
         s.block.min.set(p.x - r, on ? 0 : 60, p.z - r); s.block.max.set(p.x + r, on ? 1.5 : 61, p.z + r); }
       for (const key of DEVOTEES) { const D = crowdDrivers[key];
         if (name === 'bless' || name === 'photo') hold(D.B, 'prostrate', WAI[0], WAI[1], 0); else rest(D.B, 0);
@@ -3798,18 +3863,36 @@
     const MATS_AT = { x: -6.25, z: 1.9, ry: 0.32 };
     const rolled = { stack: [], own: null, ton: [], carry: null, rolls: [] };
     { const c = Math.cos(MATS_AT.ry), sn = Math.sin(MATS_AT.ry), rnd = rng(3391);
-      const at = (dz, lvl, dx = 0) => { const lx = dx + (rnd() - 0.5) * 0.08; return stand('w3matroll', MATS_AT.x + lx * c + dz * sn, lvl * 0.128, MATS_AT.z - lx * sn + dz * c, MATS_AT.ry + (rnd() - 0.5) * 0.05, { parent: matsG }); };
-      for (const [dz, lvl] of [[-0.16, 0], [0, 0], [0.16, 0], [-0.08, 1], [0.08, 1]]) rolled.stack.push(at(dz, lvl));
+      /* (v26.2 debug: a roll is 0.232 m thick (tools/probes/glbbox.mjs w3matroll); laid 0.16 apart and 0.128 a level they
+         sank into one another, the stack a solid bank of stripes. Side by side now, each level in the hollow between two
+         below it: 0.24 apart, 0.2 a level. Then 0.27 apart: each roll's own small turn (up to 0.05 between two) brought
+         two 0.232 rolls together at their ends, measured in ending A by tools/probes/clipscan.mjs; the hollow above two
+         0.27 apart is 0.19 up, so 0.2 a level still rests each on the two below) */
+      const at = (dz, lvl, dx = 0) => { const lx = dx + (rnd() - 0.5) * 0.08; return stand('w3matroll', MATS_AT.x + lx * c + dz * sn, lvl * 0.2, MATS_AT.z - lx * sn + dz * c, MATS_AT.ry + (rnd() - 0.5) * 0.05, { parent: matsG }); };
+      for (const [dz, lvl] of [[-0.27, 0], [0, 0], [0.27, 0], [-0.135, 1], [0.135, 1]]) rolled.stack.push(at(dz, lvl));
       rolled.own = at(0, 2); rolled.own.visible = false;                           // his own: the stack's top, once he has laid it there
       for (let i = 0; i < 2; i++) rolled.ton.push(stand('w3matroll', 0, 0, 0, 0, { parent: matsG, moves: true }));
       rolled.carry = stand('w3matroll', 0, 0, 0, 0, { parent: matsG, moves: true });
       for (let i = 0; i < 2; i++) rolled.rolls.push(stand('w3matroll', 0, 0, 0, 0, { parent: matsG, moves: true })); }
     const handMatHolder = new THREE.Group();
     const handMat = stand('w3matroll', 0, 0, 0, 0, { s: 0.8, near: true, parent: handMatHolder });
-    /* a mat lying across a person's two forearms (`n`: the second lies on the first) */
-    const _mtv = new THREE.Vector3();
+    /* a mat lying across a person's two forearms (`n`: the second lies on the first). v26.2 debug (Chad's picture of ending
+       A, 13 Nov 2026: Ton's cupped hands stood out of the front of his two mats, the mats sunk through his forearms and into
+       each other): they LIE on his arms now. A mat's foot is its model's origin; it is set on his forearms' tops where it
+       crosses them, 13 cm back from his wrists (each forearm's bone line there, from its elbow to its wrist, raised by a
+       forearm's half-thickness), and the second on the first, 0.226 m up (a roll is 0.232 thick: the upper sits 6 mm into
+       the one below, as one soft roll does on another). Read off his own bones on
+       every frame, so his take's breathing carries them */
+    const _mtv = new THREE.Vector3(), _mte = new THREE.Vector3(), _mtw = new THREE.Vector3();
+    const FOREARMS = { L: /^(mixamorig:?)?LeftForeArm$/, R: /^(mixamorig:?)?RightForeArm$/ };
     function matOnArms(g, P, n = 0) { const m = handsMid(P, _mtv); if (!m) return false; const ry = P.group.rotation.y;
-      g.position.set(m.x - Math.sin(ry) * 0.13, m.y - 0.035 + n * 0.125, m.z - Math.cos(ry) * 0.13); g.rotation.set(0, ry + (n ? 0.07 : -0.04), 0); g.visible = true; return true; }
+      if (!P.foreL) for (const k in P.bone) { if (FOREARMS.L.test(k)) P.foreL = P.bone[k]; if (FOREARMS.R.test(k)) P.foreR = P.bone[k]; }
+      let top = m.y;
+      if (P.foreL && P.foreR && P.handL && P.handR) { let y = 0;
+        for (const [fb, hb] of [[P.foreL, P.handL], [P.foreR, P.handR]]) { fb.getWorldPosition(_mte); hb.getWorldPosition(_mtw);
+          const k = Math.min(1, 0.13 / Math.max(0.05, _mte.distanceTo(_mtw))); y += _mtw.y + (_mte.y - _mtw.y) * k; }
+        top = y / 2; }
+      g.position.set(m.x - Math.sin(ry) * 0.13, top + 0.04 + n * 0.226, m.z - Math.cos(ry) * 0.13); g.rotation.set(0, ry + (n ? 0.07 : -0.04), 0); g.visible = true; return true; }
 
     /* ---- THE BULBS AT DUSK (ending B: "the bulbs under the shed's roof come on"): a string of bare bulbs along the eaves
        of the chief canopy and the three tents, each a small warm glow turned to the lens, and the pool of their light
@@ -4019,7 +4102,9 @@
       /* LOUDSPEAKERS: a pair of grey horns on a steel pole at three corners of the ground, where the music and the
          chanting come from (the pole is a post: structure, like the tents' frames; the horns are the model) */
       const mPole = M({ color: 0x8b8e90, roughness: 0.55, metalness: 0.45 }), H = 4.1, list = [];
-      for (const [x, z, ry] of [[-10.45, -9.2, 0.9], [10.7, -8.1, -0.8], [-9.5, 12.7, 2.3]]) {
+      /* (v26.2 debug: the north-west pole stood at -10.45, under the open shed's eave, and went up through its roof (Chad's
+         picture of the corner by the fence); it stands clear of the eave now, outside the fence's corner) */
+      for (const [x, z, ry] of [[-9.7, -9.35, 0.9], [10.7, -8.1, -0.8], [-9.5, 12.7, 2.3]]) {
         const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.04, H, 8), mPole); pole.position.set(x, H / 2, z); pole.matrixAutoUpdate = false; pole.updateMatrix();
         world.add(pole); owned.push(pole); solidBox(0.2, 2.2, 0.2, x, 1.1, z);
         list.push({ x, y: H - 0.3, z, ry });
@@ -4103,7 +4188,7 @@
        the ground from all three, and it comes from where the horns are (the bed's own pan, eased); the crowd's noise is
        fullest in among the people and a decibel under at the ground's edges; and each of the ground's own noises
        (ambTick) is loudest where it is made. The levels written above are the middle of these */
-    const HORNS = [[-10.45, -9.2], [10.7, -8.1], [-9.5, 12.7]];                 // (c_zfx.js: the three poles)
+    const HORNS = [[-9.7, -9.35], [10.7, -8.1], [-9.5, 12.7]];                  // (c_zfx.js: the three poles)
     let musPan = 0;
     function placeMix() {
       let w = 0, pan = 0; const x = yaw.position.x, z = yaw.position.z;
@@ -4253,7 +4338,9 @@
     const TON_LINE = (() => { const [x, z] = benchAt(-0.7, 3.65); return { x, z }; })();
     /* the woman at his bench, on day one: at the carpet's edge beside the lime pole, where each bai sri is handed to her
        (by the table, the pole stood between her and anyone who came to ask her: photographed) */
-    const AUNT_LINE = (() => { const [x, z] = benchAt(1.5, 2.1), [kx, kz] = benchAt(0.46, 1.3); return { x, z, ry: faceTo(x, z, kx, kz) }; })();
+    /* (v26.2 debug: at (1.5, 2.1) she stood 0.38 m from the lime pole's middle, inside its lowest puffs: measured,
+       tools/probes/clipscan.mjs. A step to her right and back) */
+    const AUNT_LINE = (() => { const [x, z] = benchAt(1.85, 2.5), [kx, kz] = benchAt(0.46, 1.3); return { x, z, ry: faceTo(x, z, kx, kz) }; })();
     const YM_B = 1.28;                                                        // how far before the bench the young man kneels (then moved so the two pairs of hands meet: ymPlace)
     const DAWN_AT = { x: 2.1, z: 3.6 };                                       // where the morning finds him
     /* HIS HANDS, KNEELING: on his knees, under the frame's foot. The walking hand the engine draws stood in the middle of
@@ -4669,7 +4756,9 @@
       if (phase !== 'check' || play.busy || play.asked.has(who) || play.checked) return false;
       const run = play.run; play.busy = true; play.asked.add(who); saveMark(); objectiveFor('check');
       const P = who === 'ton' ? cast.ton : cast.aunt;
-      whenReady(P, (Q) => { Q.group.rotation.y = faceTo(Q.group.position.x, Q.group.position.z, yaw.position.x, yaw.position.z); });
+      /* (turned to him over half a second: v14.5, never a snap. It was set outright, and the one asked swung round on
+         the frame of the press: the v26.2 debug's code lens) */
+      whenReady(P, (Q) => turnPerson(Q, faceTo(Q.group.position.x, Q.group.position.z, yaw.position.x, yaw.position.z), 0.55));
       if (who === 'ton') { queueLine('q3c1'); queueGap(0.3); line('tn3c1', cast.ton); }
       else { queueLine('q3c2'); queueGap(0.3); line('ds3c1', cast.aunt); }
       queueFn(() => { if (!live(run)) return; play.busy = false;
@@ -5553,8 +5642,11 @@
     function phoThrow() { const Ph = cast.pho; if (!FL.throwPho && Ph.ready) { const v = handsAt(Ph, 'Sit_Cheer_with_Left_Hand', 1.32, new THREE.Vector3(), 'R'); if (v) { Ph.group.localToWorld(v); FL.throwPho = [v.x, v.y + 0.08, v.z]; } } return FL.throwPho; }
 
     const EKN = (() => { const [x, z] = benchAt(0.46, 1.3); return [x, KNEEL.y, z]; })();              // his eye, knelt nearer: where two pairs of hands meet on one bowl
-    const TABLE_BAI = (() => { const [x, z] = benchAt(0.78, 0.8); return [x, 0.38, z]; })();           // where his bai sri is set down at the last: the low table at the old man's right hand
-    const AUNT_TABLE = (() => { const [x, z] = benchAt(1.74, 0.92); return { x, z, ry: faceTo(x, z, TABLE_BAI[0], TABLE_BAI[2]) }; })();
+    /* (v26.2 debug: the low table is smaller and a little to the right, clear of his foot, of the young man's knee and of
+       the lime pole (b_world2.js TB); the bai sri is set on its front left, where nothing else stands, and the woman
+       stands at its right) */
+    const TABLE_BAI = (() => { const [x, z] = benchAt(1.03, 0.8); return [x, 0.38, z]; })();           // where his bai sri is set down at the last: the low table at the old man's right hand
+    const AUNT_TABLE = (() => { const [x, z] = benchAt(1.95, 1.1); return { x, z, ry: faceTo(x, z, TABLE_BAI[0], TABLE_BAI[2]) }; })();
     /* each ending's light at the close: the look it arrives in; what OPEN widens it to; the look it is left in */
     const END_LOOK = { A: ['DAWN', 'OPENED', 'DAWN'], B: ['DUSK', 'DUSKOPEN', 'DUSK'], C: ['DAWN', 'OPENED', 'DAWN'], D: ['SHUT', 'OPENED', 'DAWN'] };
     const shadeOf = (name) => (name === 'OPENED' || name === 'SHUT' ? 'DAWN' : name === 'DUSKOPEN' ? 'DUSK' : name);
@@ -5687,7 +5779,9 @@
           phoFace(); phoTalkFace(); const kTalk = speaks(Ph, t, T, ['ph3A1', 'ph3A2']); lookNow(Ph, 'lens', 1, 0.5, 0);
           pose(cast.aunt, 'Idle_3', 2 + t, true);
           pose(Tn, 'give', 2.6 + 0.12 * Math.sin(t * 0.8), false); lookNow(Tn, 'lens', 1, 0.7);
-          matOnArms(rolled.ton[0], Tn, 0); matOnArms(rolled.ton[1], Tn, 1);
+          /* (v26.2 debug: ONE mat on his arms. Two, lying on his forearms as they now do and not through them, stood 0.44 m
+             tall at his chest and hid his face from the kneeling eye: photographed. The second is not drawn) */
+          matOnArms(rolled.ton[0], Tn, 0); rolled.ton[1].visible = false;
           /* the yes; the long moment he is looked at; what he says yes to; the bow; and the turn to Ton behind him */
           const [fP, fD] = lensAt(t, [[0, 44, 33], [T.q3A0 + SECS['q3A0'], 40, 30], [T.ph3A1, 24, 17.5], [T.q3A1, 27, 20], [T.q3A1 + SECS['q3A1'], 23, 17], [T.ph3A2 + SECS['ph3A2'], 34, 25], [T.bow, 46, 34]]);
           const [yF, pT] = toPho(EK, fP, fD, kTalk);
@@ -5713,7 +5807,9 @@
              his arms down and the mat hung in the air beside him: photographed on a desktop) */
           pose(yng, 'Idle_3', 1 + t, true);
           { const g = yng.group, ry = g.rotation.y, fx = Math.sin(ry), fz = Math.cos(ry), c = [g.position.x + fx * 0.3, 1.0, g.position.z + fz * 0.3], m = rolled.carry;
-            m.position.set(c[0], c[1] - 0.064, c[2]); m.rotation.set(0, ry, 0); m.visible = true;
+            /* (v26.2 debug: the mat's foot at his hands' bones had his palms and fingers inside its lower half, measured in the
+               film by tools/probes/clipscan.mjs: it rests ON his palms now, a palm's thickness above his wrists' bones) */
+            m.position.set(c[0], c[1] - 0.064 + 0.045, c[2]); m.rotation.set(0, ry, 0); m.visible = true;
             for (const [sd, sg] of [['L', 1], ['R', -1]]) handTo(yng, sd, [c[0] + fz * sg * 0.3, c[1] - 0.064, c[2] - fx * sg * 0.3], [fx, 0.1, fz], [0, 1, 0], 1, { out: 0.2, down: 0.4 }); }
           pose(o60, 'Idle_3', 1 + t, true);
           pose(Tn, 'Idle_3', 3 + t, true); lookNow(Tn, 'lens', 1, 0.7);

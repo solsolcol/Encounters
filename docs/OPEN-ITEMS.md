@@ -238,6 +238,11 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
       clouds, the sun's glare and rays are set by measure, one word to change any. PUT TO HIM: the red plank building
       behind the chief bench stands on stilts in his photograph 5, open beneath; the game's wall goes to the ground
       (raising it changes the background of every film at the bench).
+    - r. v26.2 (the full debug, docs/V26.1-E4C3-DEBUG.md): PUT TO HIM: Grandmaster Pho's left wrist, a band of his
+      robe's web wrapped round it as a white ribbon with a hole, seated (his model's weights: V-1a); and a few triangles
+      of one woman's generated hair wound backwards (`e4deva`, third in the line at the tables, the largest about 1.3
+      cm at mid-back, drawn dark; tools/probes/openings.mjs finds them): turning them round, and reading every generated
+      body for the same, is one word.
 
 ## D. Not built yet
 

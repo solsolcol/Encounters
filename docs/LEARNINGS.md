@@ -8482,3 +8482,25 @@ Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8,
 - **A transparent picture from a generator is rarely clear at its edges.** The cloud pictures came back with a faint
   haze over their whole ground (alpha 1 to 12 over half the cloud bank's pixels): over a sky it drew a pale rectangle.
   Clear the faint alpha under a threshold and fade the picture's own border to nothing before it is a card.
+- **Things passing through one another are measured, not spotted** (v26.2, Chad: "The environment has many things that
+  clip into each other that can be seen in your screenshots, im amazed you were not able to pick up on that"). A
+  picture shows a clip only where a lens happens to look, and a reader looking at what a picture is OF misses where two
+  things meet. `tools/probes/clipscan.mjs` takes every visible surface in the chapter as an object (each placed model,
+  each instanced copy, each person posed on that frame, each separate piece of what the chapter builds in code, each
+  string), tests every pair that shares a 10 cm cell triangle against triangle, and lists what really crosses: at every
+  phase and every 9 s of every film. Each pair is a lead, photographed before anything is moved. Three traps in making
+  it: an instanced model's copies are separate objects (group them by their call, never count the parts of one copy
+  against each other); a large flat triangle (a roof, a canopy) spans many cells and must be sampled into all of them,
+  or a tree through a roof is never a candidate; a small model in a small group is still its own object.
+- **A joint is a crossing to a triangle test.** Posts through rails, frames in walls, a string tied to a pole, a flag on
+  its string, a foot on a table, hands round what they hold, a body pressed into a cushion: all cross, none is a fault.
+  Read every pair for which it is before moving anything; a scan's pair count says nothing by itself.
+- **A tree is placed by its crown at every height, not its trunk.** The trees and the groves were set by where their
+  trunks stood, and a crown 12 m across took in roofs, wires, poles, banners and other crowns. Each crown's reach is read
+  from its own file height by height (treeprofile.mjs) and each tree placed where every slice clears every obstacle by a
+  margin, solved (masters/v26.2/trees: the nearest such place to where it stood, the largest first).
+- **Meshy's triangle remesh crumples thin parallel parts** (a bench's slats: wavy and torn at 16,000, 60,000 and 100,000
+  alike); its QUAD remesh (`topology: quad`) keeps them straight at 50,000 quads. And a prop's own picture is taken at
+  1,100 px (prop.sh): the crumpled seat passed at 500.
+- **A standing take can carry the body half a metre off its own place** (again: the woman at the bench's `give`, 0.64 m):
+  wherever she is put, measure where her BODY and her hands go in that take before laying things out round her.

@@ -19,3 +19,16 @@
 #   each photographed alone at 1100 px (tools/shootmodel.mjs) and looked at; then
 #       sh masters/v26.0/props/prop.sh seatbench2     (TABLE.txt: remesh 16,000 01a1d2a5-038b-73e5-8c2d-2eb755c01197, 5 credits; -> assets/w3bench.glb)
 #   Measured (tools/probes/seatread.mjs): the frame's top 0.40 of the file, as the old slats were; the slats 0.35 inside.
+#   THEN MADE AGAIN FROM THE SAME MODEL, the same morning (my mistake: the 16,000 remesh was looked at only in prop.sh's
+#   500 px picture, and in the game its seat was crumpled again, wavy torn slats, photographed at the bench at 780 x 1688).
+#   Meshy's TRIANGLE remesh crumples the slats at any count (each looked at alone at 1100 px):
+#     16,000  01a1d2a5-038b-73e5-8c2d-2eb755c01197   torn
+#     60,000  01a1d319-33c4-77a5-972b-2e20eca9432e   wavy, jagged edges     (5 credits)
+#    100,000  01a1d319-324b-7316-877d-0906f60baf13   wavy, jagged edges     (5 credits)
+#   its QUAD remesh keeps them straight (meshy26.py TOPO=quad, new):
+#     50,000 quads 01a1d321-5de0-7577-949d-04306c8bb485   <- KEPT: 98,580 triangles, straight even slats (5 credits)
+#   (the model as generated, 301,796 triangles, is clean too: a third the price was the reason to pick the quad one.)
+#       sh masters/v26.0/props/prop.sh seatbench2     (TABLE.txt: 50000q, sheets 2048; -> assets/w3bench.glb)
+#   Measured again (seatread): the frame's top 0.40, the slats 0.34 (6 cm inside: two lower than the 16,000's); the box
+#   the same to the millimetre (x 1.50, y 0.833, z 0.713). The price: 82,000 triangles more than the torn one, drawn
+#   wherever the bench is (the chapter's own higher budget, his note 5).

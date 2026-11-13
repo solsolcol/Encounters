@@ -34,7 +34,9 @@
     function dressTables() {
       const [y0, y1, y2] = TABLES.tops, zf = -10.4, zm = -11.2, zb = -12.0;
       stand('w3wheel', WHEEL.x, y2, WHEEL.z, 0);                                                   // the great bai sri and its wheel of marigolds
-      stand('w3parasol', PARASOL.x, 0, PARASOL.z, 0);                                              // the orange and gold parasol over it
+      /* the orange and gold parasol over it (v26.2 debug: drawn a tenth larger, its canopy lifted clear of the wheel's top,
+         which it touched at 2.72 m: measured) */
+      stand('w3parasol', PARASOL.x, 0, PARASOL.z, 0, { s: 1.1 });
       many('w3naga', [{ x: 1.15, y: y2, z: -11.95, ry: -0.5 }, { x: 1.6, y: y2, z: -12.1, ry: -0.75 }, { x: 2.05, y: y2, z: -11.9, ry: -1.0 }], world, 0.8);
       many('w3tower', [{ x: -3.25, y: 0, z: -11.0, ry: 0.3 }, { x: 3.25, y: 0, z: -11.0, ry: 2.1 }], world, 2.8);
       /* (M8, the photographs laid beside the game: NO bai sri in a golden bowl stands on the offering tables in any of
@@ -159,7 +161,10 @@
       rug(mBlueMat, -9.92, -2.6, 1.9, 1.26, 0, 0.0085);
       many('w3glass', [{ x: -9.32, y: 0.008, z: -1.92, ry: 0.6 }], world, 0.15);
       many('w3water', [{ x: -9.46, y: 0.008, z: -1.74, ry: 2.2 }], world, 0.21);
-      many('w3purple', [{ x: -7.0, y: 0, z: 1.0, ry: 1.0 }], world, 1.1);
+      /* (v26.2 debug: at (-7.0, 1.0) it stood on the tent's corner pole, which went up through it: Chad's picture, measured.
+         Along the tent's open front now, 0.74 m from the pole, clear of those who kneel there at the blessing and of the
+         stack of rolled mats ending A lays south of it; and a thing he walks round) */
+      many('w3purple', [{ x: -6.75, y: 0, z: 0.3, ry: 1.0 }], world, 1.1); solidBox(0.62, 1.4, 0.62, -6.75, 0.7, 0.3);
       /* west tent 2: the hermit in the yellow shawl */
       rug(mMat, -8.1, 5.0, 3.2, 1.8, Math.PI / 2);
       many('w3sofa', [{ x: -10.25, y: 0, z: 5.0, ry: Math.PI / 2 }], world, 0.9);
@@ -170,7 +175,9 @@
       /* (one blocker for the row, as it was: from the sitters' knees, half a metre ahead of their spots, to the chairs' backs) */
       { const x0 = MONKS.x - 0.5, x1 = MONKS.chair + MONKS.half; solidBox(x1 - x0, 1.4, 3.6, (x0 + x1) / 2, 0.7, -2.0); }
       many('w3khantok', [{ x: 9.2, y: 0, z: -2.6, ry: 0.4 }, { x: 9.2, y: 0, z: -1.2, ry: 1.9 }], world, 0.25);
-      stand('w3nagastaff', 10.55, 0, -3.75, 0.3); stand('w3fan', 10.5, 0.02, -0.15, -1.2);
+      stand('w3nagastaff', 10.55, 0, -3.75, 0.3);
+      /* (the fan 4 cm clear of the third monk's chair: at z -0.15 its grille's edge stood in the chair's back corner, v26.2) */
+      stand('w3fan', 10.5, 0.02, -0.05, -1.2);
       /* THE CHIEF CANOPY (photographs 1, 5, 6): a dark top, a valance of gold and lime in swags, one pole wrapped in
          puffs of lime cloth; maroon carpets deep in petals; his bench, a carved chair, a low dark table */
       /* (its drapes are deep: photographs 5 and 6 are taken under them, and what fills their top is swags of lime, gold
@@ -182,11 +189,14 @@
          from the ground to the eave in seven gathered tiers of lime cloth, each wider than it is tall and a little
          narrower than the one under it. The model is one puff of white satin (0.75 m tall, 0.52 across): each is drawn
          wider and pressed down to 0.46 m about its own foot, and tinted */
-      { const [px, pz] = C[0], tiers = [0, 1, 2, 3, 4, 5, 6].map(k => ({ x: px, y: 0.01 + k * 0.31, z: pz, ry: k * 1.9, s: 1.22 - k * 0.04 }));   // (each 0.46 m tall on a rise of 0.31: they overlap, and no pole shows between)
+      /* (v26.2 debug: seven tiers 0.46 m tall on a rise of 0.31 reached 2.33 m, through the gold valance and the swags at
+         the canopy's corner (measured: tools/probes/clipscan.mjs). Seven tiers 0.40 m tall on a rise of 0.245 end at
+         1.88 m, under the valance, still overlapping so no pole shows between) */
+      { const [px, pz] = C[0], tiers = [0, 1, 2, 3, 4, 5, 6].map(k => ({ x: px, y: 0.01 + k * 0.245, z: pz, ry: k * 1.9, s: 1.22 - k * 0.04 }));
         many('w3puff', tiers, world, 0.75, (made) => { const m4 = new THREE.Matrix4(), sq = new THREE.Matrix4();
           for (const im of made) { im.material.color.set(0xa6d82a);
             tiers.forEach((t, i) => { im.getMatrixAt(i, m4);
-              sq.makeTranslation(0, t.y, 0).multiply(m4.clone().makeScale(1, 0.46 / (0.75 * t.s), 1)).multiply(new THREE.Matrix4().makeTranslation(0, -t.y, 0));
+              sq.makeTranslation(0, t.y, 0).multiply(m4.clone().makeScale(1, 0.40 / (0.75 * t.s), 1)).multiply(new THREE.Matrix4().makeTranslation(0, -t.y, 0));
               im.setMatrixAt(i, sq.multiply(m4)); });
             im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere(); } }); }
       /* his bench (brown hardwood: the model came lacquer red, its hue turned and darkened here), drawn 2.05 m long for
@@ -197,13 +207,19 @@
       stand('w3bench', BENCH.x, 0, BENCH.z, BENCH.ry, { s: 1.1, done: (m) => { m.scale.x *= 1.24; m.traverse(q => { if (q.isMesh) { hueTurn(q.material, 17); q.material.color.multiplyScalar(0.72); } }); } });
       solidBox(2.2, 1.4, 0.8, BENCH.x, 0.7, BENCH.z, BENCH.ry);
       { const [x, z] = BA(2.25, -0.05); stand('w3chair', x, 0, z, BENCH.ry - 0.25, { s: 1.11 }); solidBox(0.9, 1.4, 0.9, x, 0.7, z, BENCH.ry); }
-      const TB = BA(1.05, 1.1);
-      stand('w3lowtable', TB[0], 0, TB[1], BENCH.ry + 0.12); solidBox(1.05, 1.0, 1.05, TB[0], 0.5, TB[1], BENCH.ry);
-      { const [bx, bz] = BA(0.82, 1.28), [gx, gz] = BA(0.1, 0.72), [wx, wz] = BA(1.28, 0.98);
+      /* (v26.2 debug, measured by tools/probes/clipscan.mjs: the low table, a metre square at (1.05, 1.1), stood in the lime
+         pole's lowest puffs, under Grandmaster Pho's right foot and in the knee of the young man who kneels before him (and
+         his bai sri, set on it at the last, stood in its glass). Drawn 0.7 m square now, a little to his right, every one of
+         them 15 cm or more clear; and what stands on it is laid out on its smaller top, the bai sri's place left free) */
+      const TB = BA(1.2, 0.95);
+      stand('w3lowtable', TB[0], 0, TB[1], BENCH.ry + 0.12, { done: (m) => { m.scale.x *= 0.7; m.scale.z *= 0.7; } }); solidBox(0.74, 1.0, 0.74, TB[0], 0.5, TB[1], BENCH.ry);
+      { const [bx, bz] = BA(1.36, 1.12), [gx, gz] = BA(0.1, 0.72), [wx, wz] = BA(1.38, 0.78);
         many('w3petalbowl', [{ x: bx, y: 0.38, z: bz, ry: 0 }, { x: gx, y: 0, z: gz, ry: 1 }], world, 0.3);
         many('w3pewter', [{ x: wx, y: 0.38, z: wz, ry: 0.8 }], world, 0.5); }
-      { const [gx, gz] = BA(0.74, 0.86), [tx, tz] = BA(1.4, 1.42); many('w3glass', [{ x: gx, y: 0.38, z: gz, ry: 1.3 }], world, 0.15); many('w3tissue', [{ x: tx, y: 0.38, z: tz, ry: 0.4 }], world, 0.11); }
-      { const [ax, az] = BA(-1.55, 0.15), [cx2, cz2] = BA(2.95, 0.7); many('w3purple', [{ x: ax, y: 0, z: az, ry: 2.0 }, { x: cx2, y: 0, z: cz2, ry: 0.4 }], world, 1.1); }
+      { const [gx, gz] = BA(0.95, 1.2), [tx, tz] = BA(1.12, 1.22); many('w3glass', [{ x: gx, y: 0.38, z: gz, ry: 1.3 }], world, 0.15); many('w3tissue', [{ x: tx, y: 0.38, z: tz, ry: 0.4 }], world, 0.11); }
+      { const [ax, az] = BA(-1.55, 0.15), [cx2, cz2] = BA(2.95, 0.7); many('w3purple', [{ x: ax, y: 0, z: az, ry: 2.0 }, { x: cx2, y: 0, z: cz2, ry: 0.4 }], world, 1.1);
+        /* (v26.2 debug: he could walk into the flowers, the lens inside the bouquet: each a thing he walks round) */
+        solidBox(0.62, 1.4, 0.62, ax, 0.7, az); solidBox(0.62, 1.4, 0.62, cx2, 0.7, cz2); }
     }
 
     /* ================================================================ THE BANNERS, THE POLE, THE FLAGS (photographs 8, 10)
@@ -223,11 +239,18 @@
         bar(mBamboo, [x + Math.sin(lean) * 0.12, 4.2, z + Math.cos(lean) * 0.12], [tipX, BANNER.top + 0.12, tipZ], 0.02, 6);
         banners.list.push({ x: tipX, y: BANNER.top, z: tipZ, col, ph: rnd() * 6.28, ry: rnd() * 3.14, k: 0.7 + rnd() * 0.6 });
       };
-      order.forEach((c, i) => put(-11 + i * (22 / 13), -14.5 + (rnd() - 0.5) * 0.5, c, 0.2 + rnd() * 0.5));
-      [['pink', -8], ['white', -6], ['yellow', -4], ['red', -2]].forEach(([c, z]) => put(-11.5 + (rnd() - 0.5) * 0.3, z, c, 1.4 + rnd() * 0.4));
-      /* the picture twice, crossed, hanging DOWN from its own origin (so a turn about the origin is a swing from the tip) */
+      /* (v26.2 debug, measured by tools/probes/clipscan.mjs and seen in Chad's pictures of 13 Nov 2026: the row behind the
+         tables stood under the parasol's rim (and its west end under the open shed's roof); the west row's first hung
+         through the shed's roof and beams on its bamboo, its last through the west tent's eave. The row stands 0.8 m
+         further back; the west row between the shed and the first tent, and one between the two tents) */
+      order.forEach((c, i) => put(-11 + i * (22 / 13), -15.3 + (rnd() - 0.5) * 0.5, c, 0.2 + rnd() * 0.5));
+      [['pink', -6.9], ['white', -5.6], ['yellow', -4.3], ['red', 2.0]].forEach(([c, z]) => put(-11.5 + (rnd() - 0.5) * 0.3, z, c, 1.4 + rnd() * 0.4));
+      /* EACH IS ONE CLOTH, hanging DOWN from its own origin (so a turn about the origin is a swing from the tip), turned to
+         face the middle of the ground (v26.2 debug: the picture crossed with itself read as a square pillar close by, and
+         from far off as a red or yellow block: Chad's pictures) */
+      for (const b of banners.list) b.ry = Math.atan2(0 - b.x, 1.5 - b.z) + (b.ry - Math.PI / 2) * 0.25;
       const g = new THREE.BufferGeometry(), w = BANNER.w / 2, h = BANNER.h, P = [], U = [], N = [];
-      for (const [ax, az] of [[1, 0], [0, 1]]) {
+      for (const [ax, az] of [[1, 0]]) {
         const v = [[-w * ax, 0, -w * az, 0, 0], [w * ax, 0, w * az, 1, 0], [w * ax, -h, w * az, 1, 1], [-w * ax, -h, -w * az, 0, 1]];
         for (const k of [0, 2, 1, 0, 3, 2]) { P.push(v[k][0], v[k][1], v[k][2]); U.push(v[k][3], v[k][4]); N.push(az, 0, ax); }
       }
@@ -267,7 +290,11 @@
       /* from the top down, as photograph 10 shows it: teal, pink-white, yellow, yellow, red; then plainer ones below */
       puff(9.15, 0.75, 0.2, 0x16a698); puff(8.45, 0.72, 0.27, 0xf6dfe6); puff(7.8, 0.66, 0.3, 0xf5c81c); puff(7.2, 0.62, 0.29, 0xf2b616); puff(6.35, 0.86, 0.33, 0xd72a34);
       /* the strings: from the pole's top out to the trees, the tents, the hall and the sheds */
-      const ends = [[-15, 7.2, 3], [9, 6.8, -15], [-9, 3.5, -1], [9, 3.5, -2], [6, 3.3, 9], [-9, 3.5, 5], [-11, 3.8, -9.6], [11, 3.8, -9.6], [0, 6.8, -20], [-13.5, 3.7, -11], [3, 3.2, 12.6], [-5, 3.2, 12.6]];
+      /* (v26.2 debug: each string tied to a real thing. Two ran into the trees' crowns, their flags among the leaves, and one
+         onto the shed's roof, its last flags through the tin (Chad's pictures; measured). They end now where each first
+         meets its tree's leaves (tools/probes/stringend.mjs), on the tents' and the chief canopy's peaks, the two
+         loudspeaker poles' tops, the shed's gable end, the hall's gable and the grey building's fascia) */
+      const ends = [[-20.5, 6.9, -1.5], [14.25, 6.25, -16.35], [-9, 3.4, -1], [9, 3.4, -2], [5.47, 3.15, 9.85], [-9, 3.4, 5], [-9.7, 3.75, -9.35], [10.7, 3.75, -8.1], [0, 6.8, -20], [-13.25, 3.75, -7.45], [3, 4.15, 12.32], [-5, 4.15, 12.32]];
       const fl = [], lineP = [], rnd = rng(4410), FLAGS = [0x2fa64a, 0xf2c21c, 0x2f6fd0, 0xf07a1c, 0xf4f2ec, 0xe8528c];
       ends.forEach((e, si) => {
         const len = Math.hypot(e[0] - TOP[0], e[1] - TOP[1], e[2] - TOP[2]), n = Math.floor(len / 0.62), sag = len * 0.07;
@@ -303,16 +330,28 @@
     const TREES = [
       /* (the two that stand over the turf are the fuller level of each, whose crowns are leaves: the lighter level's are
          shards from close by, which is what Chad saw in chapter 1's yard at v24.27) */
-      { key: 'e4raintreehd', x: -15.5, z: 3, h: 13.5, ry: 0.4 },     // the huge tree west of the turf (photograph 10)
-      { key: 'e4mangohd', x: 8.6, z: 12.6, h: 9.5, ry: 2.1 },        // the tree behind the chief canopy: its shade lies over the turf's south
-      { key: 'e4raintreehd', x: 10.5, z: -16, h: 10.5, ry: 3.0 },    // north-east (photograph 8)
+      /* (v26.2 debug, Chad's pictures of 13 Nov 2026 and tools/probes/clipscan.mjs: the huge tree's trunk went up through the
+         lower shed roof behind the west tents; the mango stood inside the red plank building behind the chief canopy, its
+         crown through both roofs; the north-east tree's crown took in a power pole, the wires and a banner; and the four
+         crowns met the groves' palms. Each stands now where its crown, at every height, clears every roof, wall, pole,
+         wire, banner and other crown by 0.3 m (masters/v26.2/trees: the crowns measured from the files,
+         tools/probes/treeprofile.mjs, and the nearest such place solved for each, the four first) */
+      { key: 'e4raintreehd', x: -21.15, z: -1.1, h: 13.5, ry: 0.4 },     // the huge tree west of the turf (photograph 10)
+      { key: 'e4mangohd', x: 13.75, z: 20.6, h: 9.5, ry: 2.1 },        // the tree behind the chief canopy's buildings
+      { key: 'e4raintreehd', x: 23.4, z: -17.75, h: 10.5, ry: 3.0 },    // north-east (photograph 8)
       /* (v26.2 debug: this one at its fuller level too. Ending B looks up past the chief canopy into its crown from
          12 m, and the light file's crown, its leaves remeshed into big flat shards (v24.27), read there as crumpled foil.
          Its files are the same tree; the fuller one is already loaded for the tree over the turf) */
-      { key: 'e4mango', x: -13.5, z: 15.5, h: 8.5, ry: 5.0 }         // south-west, by the way in
+      { key: 'e4mango', x: -13.5, z: 16, h: 8.5, ry: 5.0 }         // south-west, by the way in
     ];
+    /* LEAVES ARE NOT FOIL (v26.2 debug, Chad's picture of the tree behind the chief canopy, 13 Nov 2026: its crown shone like
+       crumpled foil). The generated trees came with a metal-roughness sheet that reads their leaves as polished and partly
+       metal (the v25.5 law for a generated body's paint, applied where it is drawn): metal off, a leaf's rough finish, their
+       own colour and relief kept */
+    function leafMatte(mt) { for (const m of [].concat(mt)) { if (!m || !('roughness' in m)) continue;
+      m.metalnessMap = null; m.metalness = 0; m.roughnessMap = null; m.roughness = 0.88; m.needsUpdate = true; } }
     function buildTrees() {
-      for (const T0 of TREES) stand(T0.key, T0.x, 0, T0.z, T0.ry, { h: T0.h, lift: 1 });
+      for (const T0 of TREES) stand(T0.key, T0.x, 0, T0.z, T0.ry, { h: T0.h, lift: 1, done: (m) => m.traverse(q => { if (q.isMesh) leafMatte(q.material); }) });
       const R = 64, Hh = 20;
       const g = new THREE.CylinderGeometry(R, R, Hh, 56, 1, true);
       const uv = g.attributes.uv; for (let k = 0; k < uv.count; k++) uv.setX(k, uv.getX(k) * 5);

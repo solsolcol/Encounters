@@ -471,8 +471,11 @@
     function phoThrow() { const Ph = cast.pho; if (!FL.throwPho && Ph.ready) { const v = handsAt(Ph, 'Sit_Cheer_with_Left_Hand', 1.32, new THREE.Vector3(), 'R'); if (v) { Ph.group.localToWorld(v); FL.throwPho = [v.x, v.y + 0.08, v.z]; } } return FL.throwPho; }
 
     const EKN = (() => { const [x, z] = benchAt(0.46, 1.3); return [x, KNEEL.y, z]; })();              // his eye, knelt nearer: where two pairs of hands meet on one bowl
-    const TABLE_BAI = (() => { const [x, z] = benchAt(0.78, 0.8); return [x, 0.38, z]; })();           // where his bai sri is set down at the last: the low table at the old man's right hand
-    const AUNT_TABLE = (() => { const [x, z] = benchAt(1.74, 0.92); return { x, z, ry: faceTo(x, z, TABLE_BAI[0], TABLE_BAI[2]) }; })();
+    /* (v26.2 debug: the low table is smaller and a little to the right, clear of his foot, of the young man's knee and of
+       the lime pole (b_world2.js TB); the bai sri is set on its front left, where nothing else stands, and the woman
+       stands at its right) */
+    const TABLE_BAI = (() => { const [x, z] = benchAt(1.03, 0.8); return [x, 0.38, z]; })();           // where his bai sri is set down at the last: the low table at the old man's right hand
+    const AUNT_TABLE = (() => { const [x, z] = benchAt(1.95, 1.1); return { x, z, ry: faceTo(x, z, TABLE_BAI[0], TABLE_BAI[2]) }; })();
     /* each ending's light at the close: the look it arrives in; what OPEN widens it to; the look it is left in */
     const END_LOOK = { A: ['DAWN', 'OPENED', 'DAWN'], B: ['DUSK', 'DUSKOPEN', 'DUSK'], C: ['DAWN', 'OPENED', 'DAWN'], D: ['SHUT', 'OPENED', 'DAWN'] };
     const shadeOf = (name) => (name === 'OPENED' || name === 'SHUT' ? 'DAWN' : name === 'DUSKOPEN' ? 'DUSK' : name);
@@ -605,7 +608,9 @@
           phoFace(); phoTalkFace(); const kTalk = speaks(Ph, t, T, ['ph3A1', 'ph3A2']); lookNow(Ph, 'lens', 1, 0.5, 0);
           pose(cast.aunt, 'Idle_3', 2 + t, true);
           pose(Tn, 'give', 2.6 + 0.12 * Math.sin(t * 0.8), false); lookNow(Tn, 'lens', 1, 0.7);
-          matOnArms(rolled.ton[0], Tn, 0); matOnArms(rolled.ton[1], Tn, 1);
+          /* (v26.2 debug: ONE mat on his arms. Two, lying on his forearms as they now do and not through them, stood 0.44 m
+             tall at his chest and hid his face from the kneeling eye: photographed. The second is not drawn) */
+          matOnArms(rolled.ton[0], Tn, 0); rolled.ton[1].visible = false;
           /* the yes; the long moment he is looked at; what he says yes to; the bow; and the turn to Ton behind him */
           const [fP, fD] = lensAt(t, [[0, 44, 33], [T.q3A0 + SECS['q3A0'], 40, 30], [T.ph3A1, 24, 17.5], [T.q3A1, 27, 20], [T.q3A1 + SECS['q3A1'], 23, 17], [T.ph3A2 + SECS['ph3A2'], 34, 25], [T.bow, 46, 34]]);
           const [yF, pT] = toPho(EK, fP, fD, kTalk);
@@ -631,7 +636,9 @@
              his arms down and the mat hung in the air beside him: photographed on a desktop) */
           pose(yng, 'Idle_3', 1 + t, true);
           { const g = yng.group, ry = g.rotation.y, fx = Math.sin(ry), fz = Math.cos(ry), c = [g.position.x + fx * 0.3, 1.0, g.position.z + fz * 0.3], m = rolled.carry;
-            m.position.set(c[0], c[1] - 0.064, c[2]); m.rotation.set(0, ry, 0); m.visible = true;
+            /* (v26.2 debug: the mat's foot at his hands' bones had his palms and fingers inside its lower half, measured in the
+               film by tools/probes/clipscan.mjs: it rests ON his palms now, a palm's thickness above his wrists' bones) */
+            m.position.set(c[0], c[1] - 0.064 + 0.045, c[2]); m.rotation.set(0, ry, 0); m.visible = true;
             for (const [sd, sg] of [['L', 1], ['R', -1]]) handTo(yng, sd, [c[0] + fz * sg * 0.3, c[1] - 0.064, c[2] - fx * sg * 0.3], [fx, 0.1, fz], [0, 1, 0], 1, { out: 0.2, down: 0.4 }); }
           pose(o60, 'Idle_3', 1 + t, true);
           pose(Tn, 'Idle_3', 3 + t, true); lookNow(Tn, 'lens', 1, 0.7);

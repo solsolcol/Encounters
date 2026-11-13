@@ -2563,6 +2563,66 @@
    "glb": 64000044
   }
  },
+ "seatbench2": {
+  "credits": 40,
+  "expires_at": 1794793924164,
+  "image": "masters/v26.0/props/refs/seatbench-2k.png",
+  "image_to_3d": "01a1d296-2bbf-73ee-b68d-a20bee03ec7a",
+  "remesh": {
+   "100000": "01a1d319-324b-7316-877d-0906f60baf13",
+   "16000": "01a1d2a5-038b-73e5-8c2d-2eb755c01197",
+   "50000q": "01a1d321-5de0-7577-949d-04306c8bb485",
+   "60000": "01a1d319-33c4-77a5-972b-2e20eca9432e"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 62051884
+  }
+ },
+ "seatbench3": {
+  "credits": 40,
+  "expires_at": 1794793909045,
+  "image": "masters/v26.0/props/refs/seatbench-2k.png",
+  "image_to_3d": "01a1d296-34d9-7097-81f8-5bec46ad4711",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 60951928
+  }
+ },
  "seatchair": {
   "credits": 40,
   "expires_at": 1794667840116,

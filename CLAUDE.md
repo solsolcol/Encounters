@@ -242,6 +242,11 @@ that fits it, with the version it came from.
 - Before calling a chapter debugged, review the code added since the last review and play every ending with the sound on; report honestly anything that did not pass, and name your own regressions as yours. (v24.5)
 - Photograph endings after a REAL play-through as well as after a probe's jump, because what play changes and what an ending re-stages must be read together. (v24.10)
 - Never dismiss what a photograph shows as an artefact; measure it. (v24.5)
+- Things passing through one another are MEASURED, not spotted ("The environment has many things that clip into each
+  other that can be seen in your screenshots, im amazed you were not able to pick up on that"): tools/probes/clipscan.mjs
+  over every phase and every 9 s of every film, and each pair it finds is a lead, photographed full size and read as a
+  joint (a post through a rail, a foot on a table) or a clip before anything moves. A tree is placed by its crown at
+  every height (masters/v26.2/trees), never by its trunk. (v26.2)
 - Test saves at every phase: Continue from each saved phase through the title on a phone, a same-sitting Continue, every way into a chapter (Continue, the selector, natural progression), and saves from the previous version. (v7.3)
 - A ?ch= probe reads and writes no save, so test the real entry paths; and a save fix must also repair the saves already on his phone. (v18.4)
 - Test a same-chapter replay both ways: run the pass twice through the real replay path and diff it, and read what reset() forgets. (v8.2)
@@ -1302,7 +1307,10 @@ tracker's §15; two of my fixes went live wrong (the monks' arms, the armpit) an
 docs/OPEN-ITEMS.md C13 o. His nine notes of 12 Nov evening on it (the faces butchered, the woman with the taper, the kneelers too quick, the
 ground's empty edges and plain sky, a higher budget on a phone, "Pho" said "Puu", the children's petals every cycle,
 the footsteps not grass) shipped at v26.1 (the tracker's §16; deploy `6af64a8cc0af44bfca0cea81`), and with them his
-phone standard for every chapter; his ninth, the full debug of the chapter once all of it was live, is next.
+phone standard for every chapter; his ninth, the full debug of the chapter once all of it was live, went live at v26.2
+(docs/V26.1-E4C3-DEBUG.md; deploy `6af69ce2d967b774e0e4ac58`), with his message of 13 Nov on things passing through one
+another and his five pictures (§5 there: every clip measured by tools/probes/clipscan.mjs and fixed or named; the
+trees placed by their crowns, masters/v26.2/trees; the bench made again, its quad remesh).
 Chapter 4 is next after it
 (S1·13, case one: the woman who rose from her wheelchair).
 The episode's plan, with what remains his to decide:

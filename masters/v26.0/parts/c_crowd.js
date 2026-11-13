@@ -20,6 +20,8 @@
     const PHOTO = { x0: -3.3, dx: 0.6, z: -5.2 };                                     // each: [{ x, z, ry, kind }]
     const crowdDrivers = {};                                                     // key -> { A, B, S }
     const crowdBlock = [], dawnBlock = [];
+    /* how close he may come to one of them (v26.2 debug: buildCrowd) */
+    const PERSONAL = { sit: 0.5, stand: 0.45 };
     let formNow = '';
     /* the line of sight from where Grandmaster Pho sits to the one who kneels to him, and the line that waits behind */
     const LANE = { a0: -0.35, a1: 1.45 };
@@ -41,7 +43,9 @@
       const pair = (F, x, z, n, r = 0.55) => { const a0 = R() * 6.283;
         for (let i = 0; i < n; i++) { const a = a0 + i * 6.283 / n, px = x + Math.sin(a) * r, pz = z + Math.cos(a) * r;
           F.push({ x: px, z: pz, ry: n > 1 ? faceTo(px, pz, x, z) + (R() - 0.5) * 0.4 : aim(px, pz), kind: 'stand' }); } };
-      pair(A, -8.6, 10.6, 2); pair(A, 9.6, 3.6, 3, 0.62); pair(A, 8.9, 6.2, 1); pair(A, -9.6, -8.4, 2); pair(A, 4.4, -8.9, 2); pair(A, -1.9, 10.9, 1);
+      /* (v26.2 debug: the pair by the west fence stood at (-9.6, -8.4), one of them in the fence with an arm through its top
+         rail: Chad's picture, measured. They stand a step east of it now; the seeded stream draws as it did) */
+      pair(A, -8.6, 10.6, 2); pair(A, 9.6, 3.6, 3, 0.62); pair(A, 8.9, 6.2, 1); pair(A, -8.9, -8.1, 2); pair(A, 4.4, -8.9, 2); pair(A, -1.9, 10.9, 1);
       /* the line waiting its turn at the offering tables (photograph 10), east of the middle so the way up it is his */
       for (let i = 0; i < 4; i++) { const px = 1.55 + (R() - 0.5) * 0.16, pz = -8.5 + i * 0.92 + (R() - 0.5) * 0.1; A.push({ x: px, z: pz, ry: aim(px, pz) + (R() - 0.5) * 0.16, kind: 'stand' }); }
 
@@ -54,7 +58,9 @@
       /* before the hermit in brown and the master in red, on the mats under the west tent (nine); the two places right
          before their sofas are kept for those who go up */
       const iWest = Bf.length;
-      for (const [x, z] of [[-8.3, -3.1], [-8.2, -1.55], [-8.3, 0.0], [-7.4, -2.6], [-7.3, -1.3], [-7.4, -0.2], [-7.3, 0.85], [-6.4, -2.0], [-6.3, -0.8]]) sitTo(x, z, -10.2, z > -1.6 ? -0.95 : -2.2);
+      /* (v26.2: the kneeler at the tent's south-east corner moved from (-7.3, 0.85) to (-7.55, 0.55): there her shoulder was in
+         the tent's corner pole at (-7.0, 1.0), measured in the festival by tools/probes/clipscan.mjs) */
+      for (const [x, z] of [[-8.3, -3.1], [-8.2, -1.55], [-8.3, 0.0], [-7.4, -2.6], [-7.3, -1.3], [-7.4, -0.2], [-7.55, 0.55], [-6.4, -2.0], [-6.3, -0.8]]) sitTo(x, z, -10.2, z > -1.6 ? -0.95 : -2.2);
       /* before the hermit in the yellow shawl (five) */
       for (const [x, z] of [[-8.4, 4.2], [-8.3, 5.8], [-7.4, 4.0], [-7.5, 5.1], [-7.4, 6.2]]) sitTo(x, z, -10.2, 5.0);
       /* before the monks' row (five) */
@@ -64,7 +70,9 @@
       for (const [x, z] of [[-3.4, -5.6], [-2.3, -5.1], [2.6, -5.4]]) sitTo(x, z, 0, -11.2);
       /* the line at his bench, behind the place the player stands (three); friends at the throng's edge (three) */
       for (const [a, b] of [[0.9, 4.2], [0.98, 5.1], [0.84, 6.0]]) { const [x, z] = bA(a, b); standTo(x, z, PH[0], PH[1]); }
-      for (const [a, b] of [[-2.9, 3.7], [3.0, 3.2], [3.3, 2.1]]) { const [x, z] = bA(a, b); standTo(x, z, PH[0], PH[1]); }
+      /* (v26.2 debug: the second friend stood at (3.0, 3.2), 0.43 m from the kneeler at (2.7, 3.5): their legs passed through
+         one another, measured in the festival film by tools/probes/clipscan.mjs. A step further out) */
+      for (const [a, b] of [[-2.9, 3.7], [3.45, 3.5], [3.3, 2.1]]) { const [x, z] = bA(a, b); standTo(x, z, PH[0], PH[1]); }
       /* behind the kneelers at the west tents (three); at the tables (two); by the monks (one); talking at the edges (three) */
       standTo(-5.5, -2.9, -10.2, -2.2); standTo(-5.4, -0.4, -10.2, -0.95); standTo(-6.3, 5.2, -10.2, 5.0);
       standTo(1.3, -8.7, 0, -11.2); standTo(-1.6, -8.8, 0, -11.2);
@@ -106,7 +114,10 @@
       for (let i = 0; i < N; i++) crowdSeats[i].at.photo = Pf[seatP[i]];
       crowdSeats.swaps = { arrive: swapsA, bless: swapsB, photo: swapsP };
     }
-    function crowdStats(form = formNow || 'arrive') {
+    /* (v26.2 debug: `seats` true also lists who sits or stands where in the formation, so a probe can name a person it
+       photographs: tools/probes/clipscan.mjs) */
+    function crowdStats(form = formNow || 'arrive', seats = false) {
+      if (seats) return crowdSeats.map(s => ({ body: DEVOTEES[s.body], kind: s.kind, x: +s.at[form].x.toFixed(2), z: +s.at[form].z.toFixed(2) }));
       const N = crowdSeats.length, per = DEVOTEES.map(() => 0); let near = Infinity, sum = 0, touching = 0;
       const at = (i) => crowdSeats[i].at[form];
       for (let i = 0; i < N; i++) { per[crowdSeats[i].body]++; let best = Infinity;
@@ -129,8 +140,10 @@
         S: mkDriver(key, { take: 'Idle_3', centre: true, phase: 0.13 * DEVOTEES.indexOf(key) }) };
       for (const s of crowdSeats) { const D = crowdDrivers[DEVOTEES[s.body]][s.kind === 'stand' ? 'S' : s.half], p = s.at.arrive;
         s.member = mkMember(D, p.x, p.z, p.ry, { s: s.s, mirror: s.mirror, parent: dayOne, blobW: s.kind === 'stand' ? 0.8 : 0.95, blobD: s.kind === 'stand' ? 0.7 : 1.0 });
-        /* a person is a thing he walks round: a column from the ground (collide() samples at a metre) */
-        const r = 0.3; s.block = new THREE.Box3(new THREE.Vector3(p.x - r, 0, p.z - r), new THREE.Vector3(p.x + r, 1.5, p.z + r)); crowdBlock.push(s.block); }
+        /* a person is a thing he walks round: a column from the ground (collide() samples at a metre). (v26.2 debug: 0.3 m
+           each way let his eye come 10 cm from a woman's hair, Chad's picture: half a metre for one who kneels, whose knees
+           reach forward, 0.45 for one who stands) */
+        const r = PERSONAL[s.kind]; s.block = new THREE.Box3(new THREE.Vector3(p.x - r, 0, p.z - r), new THREE.Vector3(p.x + r, 1.5, p.z + r)); crowdBlock.push(s.block); }
       formNow = 'arrive';
       /* day two: two people far off by the offering tables, clearing up (the ground is not quite empty: §4.3) */
       for (const [key, x, z, ry] of [['e4devb', -3.3, -9.25, 2.6], ['e4devh', 3.9, -9.3, -2.2]]) { mkMember(crowdDrivers[key].S, x, z, ry, { parent: dayTwo, blobW: 0.8, blobD: 0.7 });
@@ -141,8 +154,8 @@
     function setFormation(name) {
       if (!FORMS[name]) return;
       formNow = name;
-      const on = dayOne.visible, r = 0.3;
-      for (const s of crowdSeats) { const p = s.at[name]; s.member.group.position.set(p.x, 0, p.z); s.member.group.rotation.y = p.ry; s.member.lvNow = -1;
+      const on = dayOne.visible;
+      for (const s of crowdSeats) { const p = s.at[name], r = PERSONAL[s.kind]; s.member.group.position.set(p.x, 0, p.z); s.member.group.rotation.y = p.ry; s.member.lvNow = -1;
         s.block.min.set(p.x - r, on ? 0 : 60, p.z - r); s.block.max.set(p.x + r, on ? 1.5 : 61, p.z + r); }
       for (const key of DEVOTEES) { const D = crowdDrivers[key];
         if (name === 'bless' || name === 'photo') hold(D.B, 'prostrate', WAI[0], WAI[1], 0); else rest(D.B, 0);

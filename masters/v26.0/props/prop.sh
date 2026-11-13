@@ -3,7 +3,8 @@
 #   1. the model, if it is not here yet (meshy26.py collect: free);
 #   2. Meshy's own remesh to the triangle count in TABLE.txt (5 credits: nothing is thinned here, v25.5);
 #   3. tools/prepmeshy.mjs: sized in metres, its base on the ground, every triangle kept, the sheets at the table's size;
-#   4. photographed alone (tools/shootmodel.mjs), for the look every prop gets before it is placed;
+#   4. photographed alone (tools/shootmodel.mjs) at 1100 px, for the look every prop gets before it is placed (v26.2: at
+#      500 px, a picture too small to judge, the bench's crumpled seat passed);
 #   5. the remesh file (about 100 MB, PNG sheets at 8192) cleared, on the prep's own exit status: it is an intermediate,
 #      and the model it was made from stays in masters/v26.0/src.
 cd "$(dirname "$0")/../../.."
@@ -14,11 +15,13 @@ for n in "$@"; do
   set -- $row; key=$2; size=$3; ax=$4; polys=$5; px=$6; turn=$7
   [ -f $SRC/original-$n.glb ] || python3 -I masters/v26.0/meshy26.py collect $n >> $SRC/props.log 2>&1
   [ -f $SRC/original-$n.glb ] || { echo "$n: no model" | tee -a $SRC/props.log; continue; }
-  [ -f $SRC/remeshed-$n-$polys.glb ] || python3 -I masters/v26.0/meshy26.py remesh $n $polys >> $SRC/props.log 2>&1
+  # (a count ending in q is Meshy's QUAD remesh, v26.2: the bench's slats, which its triangle remesh crumpled)
+  case $polys in *q) TOPO=quad; export TOPO; num=${polys%q};; *) unset TOPO; num=$polys;; esac
+  [ -f $SRC/remeshed-$n-$polys.glb ] || python3 -I masters/v26.0/meshy26.py remesh $n $num >> $SRC/props.log 2>&1
   [ -f $SRC/remeshed-$n-$polys.glb ] || { echo "$n: remesh failed" | tee -a $SRC/props.log; continue; }
   if ERR=0.002 node tools/prepmeshy.mjs $SRC/remeshed-$n-$polys.glb assets/$key.glb $size $ax 1 $turn $px >> $SRC/props.log 2>&1; then
     rm $SRC/remeshed-$n-$polys.glb
-    CHROMIUM_PATH=/opt/pw-browsers/chromium timeout 300 node tools/shootmodel.mjs assets/$key.glb $OUT/$n --size=500 >> $SRC/props.log 2>&1
+    CHROMIUM_PATH=/opt/pw-browsers/chromium timeout 300 node tools/shootmodel.mjs assets/$key.glb $OUT/$n --size=1100 >> $SRC/props.log 2>&1
     echo "$n -> assets/$key.glb $(stat -c %s assets/$key.glb) bytes" | tee -a $SRC/props.log
   else echo "$n: prep failed" | tee -a $SRC/props.log; fi
 done

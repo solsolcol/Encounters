@@ -8826,6 +8826,31 @@ What the baseline contains, by release:
     csp, tick, sound, hosted, leak, cine, fixture green on the first build; walk on e4c3 green on the release build;
     chaptertest and the voice scan clean. The picture check mine, every changed shot full size on a phone and a
     desktop (no reviewer: his 7 Nov "Dont spawn reviewers"; one was started and stopped unread).
+- **v26.2** EPISODE 4 CHAPTER 3 · THE FULL DEBUG (his ninth note of 12 Nov: "a full scale comprehensive debugging of this
+    chapter", once the batch was live), and inside it his message of 13 Nov: "The environment has many things that clip
+    into each other that can be seen in your screenshots, im amazed you were not able to pick up on that", with five of his
+    own phone pictures ("Look at these issues carefully"). The record is docs/V26.1-E4C3-DEBUG.md (§3 every finding with
+    its verdict, §4 the log, §5 the clipping). The morning's build (deploy 6af664c5): MY REGRESSION from v26.1, two lines
+    of a collar's orange across Ton's trousers and a pale line down his face, traced to the repaint (29 of his triangles
+    stretched across the new sheet) and every repainted body made again with the mend. Then fixed in the parts: play's
+    petals frozen in the air under a film (V-7), the bench's torn seat (V-9), the north-east tree's light file read as
+    crumpled foil (V-12), the one asked turning to him with a snap (L4-1), the blessing's handful thrown from no seed of
+    its own (L1-1). THE CLIPS: measured, not spotted (tools/probes/clipscan.mjs, new: every visible surface an object,
+    every pair sharing a 10 cm cell tested triangle against triangle, at every phase and every 9 s of every ending),
+    each pair photographed and read as a joint or a clip. His five pictures: flag strings into crowns and onto the shed's
+    roof (each now ends on a real thing); trees through roofs, wires, a pole and one another, and a crown shining like
+    foil (every tree and grove placed again by its crown at every height, masters/v26.2/trees, and the generated trees'
+    leaves made matte); the pink banner through the shed (the banners moved, each one cloth facing the middle); a woman in
+    the fence and the loudspeaker pole through the eave (moved); his eye 10 cm from a woman's hair (people 0.45 m and 0.5 m
+    columns); Ton's hands out of the front of two mats (one mat, on his forearms); the low table in the lime pole and the
+    tiers through the valance. Found by the measure: the parasol on the wheel, the pole through the parasol, the carried
+    mat through the young man's palms, the stacked mats, the vases, the compressors, the Ganeshas half inside the
+    fountain (the plinth widened as photograph 15 has it), the hall's lamps in their posts, the fan in a monk's chair, a
+    kneeler in a tent pole. MY SECOND REGRESSION: the bench made again that morning was crumpled again (Meshy's triangle
+    remesh breaks slats at any count; passed on a 500 px picture): its quad remesh kept (98,580 triangles), and prop.sh
+    photographs every prop at 1,100 px. Put to him: Grandmaster Pho's wrist band (his model, V-1a), a few backward
+    triangles in one woman's hair, and the woman at the bench whose take carries her into the low table's edge in the
+    close (hidden by her skirt from the film's lens). Deploy 6af69ce2d967b774e0e4ac58 (488 files byte-identical).
 
 ## The sheet, version by version
 
