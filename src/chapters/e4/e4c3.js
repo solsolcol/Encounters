@@ -276,15 +276,15 @@
       'e4devhm', 'e4devhf', 'e4girl', 'e4girlm', 'e4girlf', 'e4boy', 'e4boym', 'e4boyf', 'e4monkb', 'e4monkbm',
       'e4monkbf', 'e4monkc', 'e4monkcm', 'e4monkcf', 'pho', 'phof', 'w3baisri', 'w3naga', 'w3wheel', 'w3parasol',
       'w3tower', 'w3candle', 'w3fan', 'w3nagastaff', 'w3pewter', 'w3purple', 'w3fruit', 'w3sweets', 'w3khantok',
-      'w3puff', 'w3chair', 'w3lowtable', 'w3bench', 'w3sofa', 'w3petalbowl', 'w3petalsteel', 'w3smallbaisri',
-      'w3candlemid', 'w3candlesmall', 'w3kratip', 'w3chicken', 'w3coconut', 'w3soda', 'w3water', 'w3matroll',
-      'w3shirt', 'w3chrys', 'w3roses', 'w3claypot', 'w3pchair', 'w3horns', 'w3taper', 'w3glass', 'w3tissue',
-      'w3nagafount', 'w3nagagreen', 'w3nagawhite', 'w3ganesha', 'w3croton', 'w3dracaena', 'w3waterjar', 'w3walllamp',
-      'w3t_turf', 'w3t_petalturf', 'w3t_earth', 'w3t_gravel', 'w3t_redplank', 'w3t_tin', 'w3t_brick', 'w3t_skirt',
-      'w3t_satin', 'w3t_mat', 'w3t_carpet', 'w3t_bluemat', 'w3t_swag', 'w3t_banner', 'w3t_treeline', 'w3t_redroof',
-      'w3t_hallbrick', 'w3t_steptile', 'w3t_lawn', 'w3t_kalae', 'w3t_fretwork', 'w3t_sign', 'w3banana2',
-      'w3frangipani', 'w3isanhouse', 'w3tank', 'w3aircon', 'w3scooter', 'w3t_render', 'w3t_cloudbank',
-      'w3t_cloudtall', 'w3t_cloudflat', 'w3t_cloudthree', 'w3t_cirrus',
+      'w3puff', 'w3chair', 'w3lowtable', 'w3bench', 'w3sofa', 'w3petalsteel', 'w3smallbaisri', 'w3candlemid',
+      'w3candlesmall', 'w3kratip', 'w3chicken', 'w3coconut', 'w3soda', 'w3water', 'w3matroll', 'w3shirt', 'w3chrys',
+      'w3roses', 'w3claypot', 'w3pchair', 'w3horns', 'w3taper', 'w3glass', 'w3tissue', 'w3nagafount', 'w3nagagreen',
+      'w3nagawhite', 'w3ganesha', 'w3croton', 'w3dracaena', 'w3waterjar', 'w3walllamp', 'w3t_turf', 'w3t_petalturf',
+      'w3t_earth', 'w3t_gravel', 'w3t_redplank', 'w3t_tin', 'w3t_brick', 'w3t_skirt', 'w3t_satin', 'w3t_mat',
+      'w3t_carpet', 'w3t_bluemat', 'w3t_swag', 'w3t_banner', 'w3t_treeline', 'w3t_redroof', 'w3t_hallbrick',
+      'w3t_steptile', 'w3t_lawn', 'w3t_kalae', 'w3t_fretwork', 'w3t_sign', 'w3banana2', 'w3frangipani',
+      'w3isanhouse', 'w3tank', 'w3aircon', 'w3scooter', 'w3t_render', 'w3t_cloudbank', 'w3t_cloudtall',
+      'w3t_cloudflat', 'w3t_cloudthree', 'w3t_cirrus',
       /* <<< this chapter's own keys <<< */
       /* the trees of this episode's first chapter (reuseInEpisode) */
       'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd',
@@ -1308,7 +1308,7 @@
               im.setMatrixAt(i, sq.multiply(m4)); });
             im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere(); } }); }
       /* his bench (brown hardwood: the model came lacquer red, its hue turned and darkened here), drawn 2.05 m long for
-         two; the low table at his right hand's front with a bowl of petals and a bai sri set down on it; a carved chair
+         two; the low table at his right hand's front with a bai sri set down on it; a carved chair
          beyond it; maroon carpets before the bench where people kneel; purple flowers at both ends */
       const BA = (a, b) => benchAt(a, b), along = BENCH.ry + Math.PI / 2;
       { const [x1, z1] = BA(0.15, 1.95), [x2, z2] = BA(-1.95, 1.8); rug(mCarpet, x1, z1, 2.4, 1.6, along); rug(mCarpet, x2, z2, 2.4, 1.6, along + 0.07, 0.009); }
@@ -1321,8 +1321,10 @@
          them 15 cm or more clear; and what stands on it is laid out on its smaller top, the bai sri's place left free) */
       const TB = BA(1.2, 0.95);
       stand('w3lowtable', TB[0], 0, TB[1], BENCH.ry + 0.12, { done: (m) => { m.scale.x *= 0.7; m.scale.z *= 0.7; } }); solidBox(0.74, 1.0, 0.74, TB[0], 0.5, TB[1], BENCH.ry);
-      { const [bx, bz] = BA(1.36, 1.12), [gx, gz] = BA(0.1, 0.72), [wx, wz] = BA(1.38, 0.78);
-        many('w3petalbowl', [{ x: bx, y: 0.38, z: bz, ry: 0 }, { x: gx, y: 0, z: gz, ry: 1 }], world, 0.3);
+      /* (v26.8: the two golden bowls of petals, one on this table and one on the carpet by his foot, taken out at Chad's
+         word: "Actually is it even necessary to have this petal bowl? Or just remove it from the game", and his pick,
+         "Remove it". The steel bowl under the west tent stays: photograph 11) */
+      { const [wx, wz] = BA(1.38, 0.78);
         many('w3pewter', [{ x: wx, y: 0.38, z: wz, ry: 0.8 }], world, 0.5); }
       { const [gx, gz] = BA(0.95, 1.2), [tx, tz] = BA(1.12, 1.22); many('w3glass', [{ x: gx, y: 0.38, z: gz, ry: 1.3 }], world, 0.15); many('w3tissue', [{ x: tx, y: 0.38, z: tz, ry: 0.4 }], world, 0.11); }
       { const [ax, az] = BA(-1.55, 0.15), [cx2, cz2] = BA(2.95, 0.7); many('w3purple', [{ x: ax, y: 0, z: az, ry: 2.0 }, { x: cx2, y: 0, z: cz2, ry: 0.4 }], world, 1.1);
@@ -3023,13 +3025,14 @@
            man's palm rests on top of the knee with the wrist near straight and only the fingers curving down over it:
            masters/v26.3/make.sh). So the hand is turned up about its own across-axis, its palm's middle where it was,
            until it bends toward the palm no more than flexMax from the forearm's line, the elbow found again each time) */
-        if (K.flexMax != null) for (let it = 0; it < 4; it++) {
+        const flexHold = () => { for (let it = 0; it < 4; it++) {
           const e = best.W.clone().sub(el.E).normalize(), f = best.f, n = best.n, ne = n.clone().addScaledVector(e, -n.dot(e)); if (ne.lengthSq() < 1e-8) break; ne.normalize();
           const flex = Math.atan2(f.dot(ne), f.dot(e)); if (flex <= K.flexMax + 0.005) break;
           const ax = new THREE.Vector3().crossVectors(n, f).normalize(), q = new THREE.Quaternion().setFromAxisAngle(ax, flex - K.flexMax);
           best.f = f.clone().applyQuaternion(q).normalize(); best.n = n.clone().applyQuaternion(q).normalize();
           best.W = best.Cp.clone().addScaledVector(best.f, -PALM).addScaledVector(best.n, K.palmUp ? OFF : -OFF);
-          el = findElbow(best.W, best.Cp); }
+          el = findElbow(best.W, best.Cp); } };
+        if (K.flexMax != null) flexHold();
         /* (K.wristSolve, v26.7: THE HAND'S LINE SOLVED AGAINST ITS FOREARM. Laid along a line of fixed shares (above),
            the hermit in the pale yellow shawl's left wrist, palm up, stood 35 degrees toward its little finger; a whole
            share, 40 the same way; turned 26 degrees by hand either way, 35 toward the thumb or 50 toward the little
@@ -3037,10 +3040,24 @@
            the hand's line over the cloth is tried every four degrees within sixty either side of where it stands, the
            elbow found for each, and the one kept whose wrist is nearest straight with its forearm turned within a
            forearm's range and its elbow clear of him, each measured as tools/probes/jointscan.mjs measures it) */
+        /* (K.flexAfter, v26.8: THE WRIST KEPT NEAR STRAIGHT WHILE ITS LINE IS SOLVED. wristSolve lays the hand again along the
+           cloth's slope for each line it tries and lets the wrist bend toward the palm up to 25 degrees; on a body whose rest
+           holds it to flexMax (the brown hermit's, v26.3) each line tried is held to flexMax first, its elbow found again,
+           and only then measured. Held after the pick instead, the hold moved his elbow and undid the pick: his left wrist
+           stood 25 to 34 degrees toward its little finger, worse than the 20 to 27 it was mended for (jointscan, v26.9's
+           first build). holdOf is flexHold's own turn, on a line being tried. Absent, all as it was) */
+        const holdOf = (fr, e0) => { let f = fr.f, n = fr.n, W = fr.W, e1 = e0;
+          for (let it = 0; it < 4; it++) { const e = W.clone().sub(e1.E).normalize(), ne = n.clone().addScaledVector(e, -n.dot(e)); if (ne.lengthSq() < 1e-8) break; ne.normalize();
+            const flex = Math.atan2(f.dot(ne), f.dot(e)); if (flex <= K.flexMax + 0.005) break;
+            const ax = new THREE.Vector3().crossVectors(n, f).normalize(), q = new THREE.Quaternion().setFromAxisAngle(ax, flex - K.flexMax);
+            f = f.clone().applyQuaternion(q).normalize(); n = n.clone().applyQuaternion(q).normalize();
+            W = best.Cp.clone().addScaledVector(f, -PALM).addScaledVector(n, K.palmUp ? OFF : -OFF); e1 = findElbow(W, best.Cp); }
+          return { fr: { f, n, W }, el: e1 }; };
         if (K.wristSolve) { const wsUp = new THREE.Vector3(0, 1, 0), wsD0 = new THREE.Vector3(best.f.x, 0, best.f.z), DG = 180 / Math.PI;
           if (wsD0.lengthSq() > 1e-8) { wsD0.normalize(); let wsPick = null;
-            for (let wsK = -15; wsK <= 15; wsK++) { const wsFr = frameAt(best.Cp, wsD0.clone().applyAxisAngle(wsUp, wsK * 4 / DG)); if (!wsFr || wsFr.W.distanceTo(Sh) >= la + lb - 0.012) continue;
-              const wsEl = findElbow(wsFr.W, best.Cp); if (!wsEl.clear) continue;
+            for (let wsK = -15; wsK <= 15; wsK++) { let wsFr = frameAt(best.Cp, wsD0.clone().applyAxisAngle(wsUp, wsK * 4 / DG)); if (!wsFr || wsFr.W.distanceTo(Sh) >= la + lb - 0.012) continue;
+              let wsEl = findElbow(wsFr.W, best.Cp); if (!wsEl.clear) continue;
+              if (K.flexAfter && K.flexMax != null) { const wsH = holdOf(wsFr, wsEl); wsFr = wsH.fr; wsEl = wsH.el; if (!wsEl.clear) continue; }
               const wsE = wsFr.W.clone().sub(wsEl.E).normalize(), wsU = wsEl.E.clone().sub(Sh).normalize(), wsRad = new THREE.Vector3().crossVectors(wsFr.n, wsFr.f).multiplyScalar(sg);
               const wsRe = wsRad.clone().addScaledVector(wsE, -wsRad.dot(wsE)).normalize(), wsNe = wsFr.n.clone().addScaledVector(wsE, -wsFr.n.dot(wsE)).normalize();
               const wsDev = Math.atan2(wsFr.f.dot(wsRe), wsFr.f.dot(wsE)) * DG, wsFlex = Math.atan2(wsFr.f.dot(wsNe), wsFr.f.dot(wsE)) * DG;
@@ -3455,6 +3472,13 @@
          So his fingers are curled about half as much at the middle and end joints (curl), his thumbs rest as his file
          rests them (thumb), and each hand's line over his knee is solved against its forearm (wristSolve)) */
       cast.hermitB.o.handsOn = Object.assign(kneeRest(), { palmUp: true, palmTilt: { L: -0.40, R: -0.40 }, at: 1.16, curl: [0.30, 0.32, 0.16], thumb: 'bind', wristSolve: true });
+      /* (v26.8: the brown hermit's left wrist and the master in white's right stood bent sideways toward the little finger
+         20 to 27 degrees (and the white master's left 15.5 toward the thumb), past where a resting wrist lies (jointscan
+         on v26.8's build). Each hand's line is solved against its forearm as the pale-yellow hermit's is (wristSolve),
+         every line tried held within flexMax of straight first (flexAfter). New objects, made after every copy
+         above, so the red master's rest and the pale-yellow hermit's stand exactly as they were) */
+      cast.hermitA.o.handsOn = Object.assign({}, cast.hermitA.o.handsOn, { wristSolve: true, flexAfter: true });
+      cast.white.o.handsOn = Object.assign({}, cast.white.o.handsOn, { wristSolve: true, flexAfter: true });
       /* GRANDMASTER PHO (Chad's own model, prepared over v24.38 to v24.56: masters/v24.56/PLAN.md), on his bench under
          the gold canopy, facing the offering tables and those who kneel to him. His look is D, Chad's pick ("unlit, except for the robe", v24.52):
          lookD below. His rest is the first half second of his seated take, back and forth (the rest of it is talk). Far
@@ -3772,12 +3796,18 @@
        trousers, each hand sank into the thigh to the knuckles, its fingertips out through the cloth (photographed full
        size beside two of them, 13 Nov). A kneeler's palms rest on top of the thighs, as the masters' rest on their knees:
        the same lap rest (c_cast.js restHands), laid while the kneel is worn; their members wear the drivers' bones) */
-    const KNEEL_HANDS = { how: 'lap', gather: 1, converge: 0.11, curl: [0.30, 0.60, 0.30], flexMax: 8 * Math.PI / 180, drape: { r: 0.008, min: 0.8, max: 1.5 } };
+    /* (v26.8: and each hand's line solved against its forearm (c_cast.js wristSolve, flexAfter): jointscan on v26.8's
+       build read four kneelers' left wrists bent 27 to 45 degrees toward the thumb, past a real wrist's 20) */
+    const KNEEL_HANDS = { how: 'lap', gather: 1, converge: 0.11, curl: [0.30, 0.60, 0.30], flexMax: 8 * Math.PI / 180, drape: { r: 0.008, min: 0.8, max: 1.5 }, wristSolve: true, flexAfter: true };
+    /* (v26.8, row P: "fix all of them the way you fixed Ton. All of them." The stand and the talk were let down on every
+       body; jointscan then read the same shrug on the kneelers, 12 to 17 degrees over the A pose in their kneel (Ton's
+       stand was 37 and 49), so the kneel is let down the same way: KNEEL_SH, laid before their hands are laid on the lap) */
+    const KNEEL_SH = { seiza: 1 };
     function buildCrowd() {
       planCrowd();
       for (const key of DEVOTEES) crowdDrivers[key] = {
-        A: mkDriver(key, { take: 'seiza', centre: true, win: SIT, headDamp: SEIZA_LOOK, handsOn: KNEEL_HANDS, phase: (0.07 + 0.11 * DEVOTEES.indexOf(key)) * SITSPREAD }),
-        B: mkDriver(key, { take: 'seiza', centre: true, win: SIT, headDamp: SEIZA_LOOK, handsOn: KNEEL_HANDS, phase: (0.55 + 0.09 * DEVOTEES.indexOf(key)) * SITSPREAD, rate: 0.86 }),
+        A: mkDriver(key, { take: 'seiza', centre: true, win: SIT, headDamp: SEIZA_LOOK, handsOn: KNEEL_HANDS, shoulders: KNEEL_SH, phase: (0.07 + 0.11 * DEVOTEES.indexOf(key)) * SITSPREAD }),
+        B: mkDriver(key, { take: 'seiza', centre: true, win: SIT, headDamp: SEIZA_LOOK, handsOn: KNEEL_HANDS, shoulders: KNEEL_SH, phase: (0.55 + 0.09 * DEVOTEES.indexOf(key)) * SITSPREAD, rate: 0.86 }),
         S: mkDriver(key, { take: 'Idle_3', centre: true, phase: 0.13 * DEVOTEES.indexOf(key) }) };
       for (const s of crowdSeats) { const D = crowdDrivers[DEVOTEES[s.body]][s.kind === 'stand' ? 'S' : s.half], p = s.at.arrive;
         s.member = mkMember(D, p.x, p.z, p.ry, { s: s.s, mirror: s.mirror, parent: dayOne, blobW: s.kind === 'stand' ? 0.8 : 0.95, blobD: s.kind === 'stand' ? 0.7 : 1.0 });
@@ -6210,7 +6240,9 @@
        change in it is a move of his eyes (a push of the lens, a look away and back), never a cut on the man he is
        looking at (a lens that changes in one frame while the eye and its subject stay is a jolt: v25.5). The one place
        the lens changes unseen is behind his own eyelids, once, before the teaching. */
-    const EK = [KNEEL2.x, KNEEL.y, KNEEL2.z], BOWL = benchAt(0.1, 0.72);        // (his eye, kneeling; the golden bowl of petals on the carpet by Grandmaster Pho's foot: b_world2.js)
+    /* (his eye, kneeling; and FOOT, the carpet at Grandmaster Pho's foot, deep in petals, where his eyes drop on "kumanthong".
+       v26.8: a golden bowl of petals stood there and the drops looked into it; taken out at Chad's word, "Remove it") */
+    const EK = [KNEEL2.x, KNEEL.y, KNEEL2.z], FOOT = benchAt(0.1, 0.72);
     /* his eyes from a place: a heading and a tilt (up is positive), at a lens */
     function eyes(eye, ya, pi, fPhone, fDesk, roll = 0) { const c = Math.cos(pi); shot(eye, [eye[0] - Math.sin(ya) * c * 10, eye[1] + Math.sin(pi) * 10, eye[2] - Math.cos(ya) * c * 10], fPhone, fDesk, roll); }
     const aimOf = (eye, p) => [yawTo(eye[0], eye[2], p[0], p[2]), Math.atan2(p[1] - eye[1], Math.hypot(p[0] - eye[0], p[2] - eye[2]))];
@@ -6280,18 +6312,18 @@
            the man he looks at (v25.5): his sensitivity, a slow push on the old man's face; the chanting, down at his own
            hands as they begin to move by themselves, the picture swaying with them; the amulets, to the beads on his
            teacher's chest, the edge of his sight gone cold for "I can feel its energy"; the kumanthong, he cannot hold
-           the old man's eyes, and his own drop to the golden bowl of petals by his teacher's foot; "He listened.", the face
+           the old man's eyes, and his own drop to the petals on the carpet at his teacher's foot; "He listened.", the face
            again, nearer. (The plan had him look up at the cloth overhead: photographed twice, it is the dark underside
            of a roof and an eave seen from below) */
         const kH = bump(t, T.q3t2 + 0.4, T.q3t2 + SECS['q3t2'] + 0.4, 0.9, 1.0), kN = bump(t, T.q3t3 + 0.3, T.q3t3 + SECS['q3t3'] + 0.3, 1.0, 1.1);
         const kC = bump(t, T.q3t4 + 0.5, T.q3t4 + SECS['q3t4'] + 0.9, 1.1, 1.2);
-        const [yC, pC] = aimOf(EK, [BOWL[0], 0.24, BOWL[1]]), [yN, pN] = aimOf(EK, [F[0], F[1] - 0.34, F[2]]);
+        const [yC, pC] = aimOf(EK, [FOOT[0], 0.02, FOOT[1]]), [yN, pN] = aimOf(EK, [F[0], F[1] - 0.34, F[2]]);
         /* and the slow push on the old man's face through the whole telling */
         const kp = smo(sgk(t, 0, T.q3t8)), fP = lp(46, 25, kp), fD = lp(34, 18.5, kp), pT = faceTilt(EK, F, fP, fD);
         /* "my body moves by itself": for that sentence his body remembers it, and the picture sways a little */
         const kS = bump(t, T.q3t2 + 1.0, T.q3t2 + SECS['q3t2'] + 0.2, 1.3, 1.4), sway = kS * 0.03 * Math.sin((t - T.q3t2) * 1.7);
-        /* (v26.8: the drop to the bowl WIDE, his eyes on the ground at his teacher's foot: at 38 degrees the bowl filled
-           the frame and its heap read as dough) */
+        /* (v26.8: the drop WIDE, his eyes on the ground at his teacher's foot: at 38 degrees the bowl that stood there filled
+           the frame and its heap read as dough; the bowl is gone now, at his word, and his eyes drop to the carpet's petals) */
         eyes(EK, yF + (yN - yF) * kN + (yC - yF) * kC + sway * 0.5, pT + (-0.6 - pT) * kH + (pN - pT) * kN + (pC - pT) * kC,
           lp(lp(lp(fP, 60, kH), 33, kN), 56, kC), lp(lp(lp(fD, 46, kH), 24, kN), 42, kC), sway);
         handsFilm(kH, 0.36 * bump(t, T.q3t2 + 1.1, T.q3t2 + SECS['q3t2'] - 0.2, 1.2, 1.2), t - T.q3t2);
@@ -6316,12 +6348,12 @@
            brought, his bai sri on the carpet beside his knee, and come back up for "and different baramee"; "You were
            born with a gift", down to his own hands, risen into the picture, and up for "and with a mission"; "Without
            control, it will overwhelm you, and it will hurt you", a push on the old man's face and a greyness at the edge
-           of his sight; "You opened your body to the kumanthong", he cannot hold the old man's eyes: down to the golden
-           bowl of petals; his eyes close a moment; "To open when you choose, and to close when you choose", he draws
+           of his sight; "You opened your body to the kumanthong", he cannot hold the old man's eyes: down to the petals
+           on the carpet at his teacher's foot; his eyes close a moment; "To open when you choose, and to close when you choose", he draws
            back and the gold rises on his teacher. Every change is a move of his eyes or his lens, never a cut (v25.5) */
         const kB = bump(t, T.ph3n1 + W8.n1diff - 0.15, T.ph3n1 + W8.n1and + 0.25, 0.9, 1.0), [yB, pB] = aimOf(EK, [BESIDE.x, 0.27, BESIDE.z]);
         const kH = bump(t, T.ph3n2 + W8.n2born - 0.2, T.ph3n2 + W8.n2and + 0.3, 0.8, 0.8);
-        const kC = bump(t, T.ph3n3 + W8.n3you - 0.15, T.ph3n3 + SECS['ph3n3'] + 0.3, 1.0, 1.1), [yC, pC] = aimOf(EK, [BOWL[0], 0.24, BOWL[1]]);
+        const kC = bump(t, T.ph3n3 + W8.n3you - 0.15, T.ph3n3 + SECS['ph3n3'] + 0.3, 1.0, 1.1), [yC, pC] = aimOf(EK, [FOOT[0], 0.02, FOOT[1]]);
         /* THE LENS, one smooth line through the whole film (its knots: [second, phone, desktop]); a second line after
            his eyes have closed and opened */
         const first = t < T.blink + 0.33;
@@ -6334,7 +6366,7 @@
         /* it ends on play's own picture: play's heading, tilt and lens from where he kneels */
         const kEnd = smo(sgk(t, T.ph3n4 + SECS['ph3n4'] + 0.3, T.end - 0.4)), yaP = phoYawFrom(KNEEL2), piP = 0.16;
         const pT = faceTilt(EK, F, fP, fD);
-        /* (v26.8: the drop to the bowl wide, as in the telling) */
+        /* (v26.8: the drop wide, to the carpet's petals, as in the telling) */
         eyes(EK, lp(yF + (yB - yF) * kB + (yC - yF) * kC, yaP, kEnd), lp(pT + (pB - pT) * kB + (-0.6 - pT) * kH + (pC - pT) * kC, piP, kEnd),
           lp(lp(lp(fP, 52, kB), 56, kH), 56, kC), lp(lp(lp(fD, 40, kB), 42, kH), 42, kC));
         /* "born with a gift": his own hands, risen into the picture, held still */

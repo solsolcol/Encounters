@@ -1353,7 +1353,10 @@ order (his pick), after the hermit in the shawl's hands, which went live at v26.
 deploy `6af73f7d894cdd7a17d60fe6`). His thirteen notes of 13 Nov evening (the dancers, the bai sri's arms, the audience's
 look, Ton's shoulders, Grandmaster Pho's face under the tent, the minigame as "Fill to the gold mark", the group
 photograph, his telling and Grandmaster Pho's lines rewritten and approved, the camera through long talk, one minigame
-only, and the glow in its place) are docs/V26.8-E4C3-NOTES.md, in progress; the speed-ups come after them.
+only, and the glow in its place) are docs/V26.8-E4C3-NOTES.md: live at v26.8 (deploy `6af76bca86064920f357e570`)
+and v26.9 (deploy `6af780b3317a264c323c5035`: the petal bowl made again and then taken out at his word, "Remove it"; the
+kneelers' shoulders and the resting wrists solved); still open from it, his hands shown on his bai sri in the close (row
+M: being built as his own arms in the world, set beside his photograph 7). The speed-ups come after.
 Chapter 4 is next after it
 (S1·13, case one: the woman who rose from her wheelchair).
 The episode's plan, with what remains his to decide:
@@ -1493,13 +1496,13 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v144** (`masters/v26.3/masterz-text-v144.xlsx`, its CSV beside it: v26.3's words). It is
+**THE SHEET IS v145** (`masters/v26.8/masterz-text-v145.xlsx`, its CSV beside it: v26.8's words). It is
 EXPORTED and not published: the workbook (135 KB) is far past what the Drive connector's base64 route can carry (about
 20,000 characters — docs/EDITING-TEXT.md, "THE CEILING"), so the split export written down there no longer fits
 either. The way through is the Google Sheets connector, which writes the cells directly (docs/OPEN-ITEMS.md A1).
 **v44 is still the link to give Chad** until that is done:
 https://docs.google.com/spreadsheets/d/1bqnbQJPr1O6YslOlcsbVDFlZCohQtyKbPzm9EuY1IpM/edit
-Every sheet version's own diff, v144 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
+Every sheet version's own diff, v145 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
 first; a new version goes at its top).
 
 `docs/LEARNINGS.md` is the catalog of every hard-won lesson (CSP traps,

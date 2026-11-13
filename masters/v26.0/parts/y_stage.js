@@ -344,7 +344,9 @@
        change in it is a move of his eyes (a push of the lens, a look away and back), never a cut on the man he is
        looking at (a lens that changes in one frame while the eye and its subject stay is a jolt: v25.5). The one place
        the lens changes unseen is behind his own eyelids, once, before the teaching. */
-    const EK = [KNEEL2.x, KNEEL.y, KNEEL2.z], BOWL = benchAt(0.1, 0.72);        // (his eye, kneeling; the golden bowl of petals on the carpet by Grandmaster Pho's foot: b_world2.js)
+    /* (his eye, kneeling; and FOOT, the carpet at Grandmaster Pho's foot, deep in petals, where his eyes drop on "kumanthong".
+       v26.8: a golden bowl of petals stood there and the drops looked into it; taken out at Chad's word, "Remove it") */
+    const EK = [KNEEL2.x, KNEEL.y, KNEEL2.z], FOOT = benchAt(0.1, 0.72);
     /* his eyes from a place: a heading and a tilt (up is positive), at a lens */
     function eyes(eye, ya, pi, fPhone, fDesk, roll = 0) { const c = Math.cos(pi); shot(eye, [eye[0] - Math.sin(ya) * c * 10, eye[1] + Math.sin(pi) * 10, eye[2] - Math.cos(ya) * c * 10], fPhone, fDesk, roll); }
     const aimOf = (eye, p) => [yawTo(eye[0], eye[2], p[0], p[2]), Math.atan2(p[1] - eye[1], Math.hypot(p[0] - eye[0], p[2] - eye[2]))];
@@ -414,18 +416,18 @@
            the man he looks at (v25.5): his sensitivity, a slow push on the old man's face; the chanting, down at his own
            hands as they begin to move by themselves, the picture swaying with them; the amulets, to the beads on his
            teacher's chest, the edge of his sight gone cold for "I can feel its energy"; the kumanthong, he cannot hold
-           the old man's eyes, and his own drop to the golden bowl of petals by his teacher's foot; "He listened.", the face
+           the old man's eyes, and his own drop to the petals on the carpet at his teacher's foot; "He listened.", the face
            again, nearer. (The plan had him look up at the cloth overhead: photographed twice, it is the dark underside
            of a roof and an eave seen from below) */
         const kH = bump(t, T.q3t2 + 0.4, T.q3t2 + SECS['q3t2'] + 0.4, 0.9, 1.0), kN = bump(t, T.q3t3 + 0.3, T.q3t3 + SECS['q3t3'] + 0.3, 1.0, 1.1);
         const kC = bump(t, T.q3t4 + 0.5, T.q3t4 + SECS['q3t4'] + 0.9, 1.1, 1.2);
-        const [yC, pC] = aimOf(EK, [BOWL[0], 0.24, BOWL[1]]), [yN, pN] = aimOf(EK, [F[0], F[1] - 0.34, F[2]]);
+        const [yC, pC] = aimOf(EK, [FOOT[0], 0.02, FOOT[1]]), [yN, pN] = aimOf(EK, [F[0], F[1] - 0.34, F[2]]);
         /* and the slow push on the old man's face through the whole telling */
         const kp = smo(sgk(t, 0, T.q3t8)), fP = lp(46, 25, kp), fD = lp(34, 18.5, kp), pT = faceTilt(EK, F, fP, fD);
         /* "my body moves by itself": for that sentence his body remembers it, and the picture sways a little */
         const kS = bump(t, T.q3t2 + 1.0, T.q3t2 + SECS['q3t2'] + 0.2, 1.3, 1.4), sway = kS * 0.03 * Math.sin((t - T.q3t2) * 1.7);
-        /* (v26.8: the drop to the bowl WIDE, his eyes on the ground at his teacher's foot: at 38 degrees the bowl filled
-           the frame and its heap read as dough) */
+        /* (v26.8: the drop WIDE, his eyes on the ground at his teacher's foot: at 38 degrees the bowl that stood there filled
+           the frame and its heap read as dough; the bowl is gone now, at his word, and his eyes drop to the carpet's petals) */
         eyes(EK, yF + (yN - yF) * kN + (yC - yF) * kC + sway * 0.5, pT + (-0.6 - pT) * kH + (pN - pT) * kN + (pC - pT) * kC,
           lp(lp(lp(fP, 60, kH), 33, kN), 56, kC), lp(lp(lp(fD, 46, kH), 24, kN), 42, kC), sway);
         handsFilm(kH, 0.36 * bump(t, T.q3t2 + 1.1, T.q3t2 + SECS['q3t2'] - 0.2, 1.2, 1.2), t - T.q3t2);
@@ -450,12 +452,12 @@
            brought, his bai sri on the carpet beside his knee, and come back up for "and different baramee"; "You were
            born with a gift", down to his own hands, risen into the picture, and up for "and with a mission"; "Without
            control, it will overwhelm you, and it will hurt you", a push on the old man's face and a greyness at the edge
-           of his sight; "You opened your body to the kumanthong", he cannot hold the old man's eyes: down to the golden
-           bowl of petals; his eyes close a moment; "To open when you choose, and to close when you choose", he draws
+           of his sight; "You opened your body to the kumanthong", he cannot hold the old man's eyes: down to the petals
+           on the carpet at his teacher's foot; his eyes close a moment; "To open when you choose, and to close when you choose", he draws
            back and the gold rises on his teacher. Every change is a move of his eyes or his lens, never a cut (v25.5) */
         const kB = bump(t, T.ph3n1 + W8.n1diff - 0.15, T.ph3n1 + W8.n1and + 0.25, 0.9, 1.0), [yB, pB] = aimOf(EK, [BESIDE.x, 0.27, BESIDE.z]);
         const kH = bump(t, T.ph3n2 + W8.n2born - 0.2, T.ph3n2 + W8.n2and + 0.3, 0.8, 0.8);
-        const kC = bump(t, T.ph3n3 + W8.n3you - 0.15, T.ph3n3 + SECS['ph3n3'] + 0.3, 1.0, 1.1), [yC, pC] = aimOf(EK, [BOWL[0], 0.24, BOWL[1]]);
+        const kC = bump(t, T.ph3n3 + W8.n3you - 0.15, T.ph3n3 + SECS['ph3n3'] + 0.3, 1.0, 1.1), [yC, pC] = aimOf(EK, [FOOT[0], 0.02, FOOT[1]]);
         /* THE LENS, one smooth line through the whole film (its knots: [second, phone, desktop]); a second line after
            his eyes have closed and opened */
         const first = t < T.blink + 0.33;
@@ -468,7 +470,7 @@
         /* it ends on play's own picture: play's heading, tilt and lens from where he kneels */
         const kEnd = smo(sgk(t, T.ph3n4 + SECS['ph3n4'] + 0.3, T.end - 0.4)), yaP = phoYawFrom(KNEEL2), piP = 0.16;
         const pT = faceTilt(EK, F, fP, fD);
-        /* (v26.8: the drop to the bowl wide, as in the telling) */
+        /* (v26.8: the drop wide, to the carpet's petals, as in the telling) */
         eyes(EK, lp(yF + (yB - yF) * kB + (yC - yF) * kC, yaP, kEnd), lp(pT + (pB - pT) * kB + (-0.6 - pT) * kH + (pC - pT) * kC, piP, kEnd),
           lp(lp(lp(fP, 52, kB), 56, kH), 56, kC), lp(lp(lp(fD, 40, kB), 42, kH), 42, kC));
         /* "born with a gift": his own hands, risen into the picture, held still */

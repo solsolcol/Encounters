@@ -136,12 +136,18 @@
        trousers, each hand sank into the thigh to the knuckles, its fingertips out through the cloth (photographed full
        size beside two of them, 13 Nov). A kneeler's palms rest on top of the thighs, as the masters' rest on their knees:
        the same lap rest (c_cast.js restHands), laid while the kneel is worn; their members wear the drivers' bones) */
-    const KNEEL_HANDS = { how: 'lap', gather: 1, converge: 0.11, curl: [0.30, 0.60, 0.30], flexMax: 8 * Math.PI / 180, drape: { r: 0.008, min: 0.8, max: 1.5 } };
+    /* (v26.8: and each hand's line solved against its forearm (c_cast.js wristSolve, flexAfter): jointscan on v26.8's
+       build read four kneelers' left wrists bent 27 to 45 degrees toward the thumb, past a real wrist's 20) */
+    const KNEEL_HANDS = { how: 'lap', gather: 1, converge: 0.11, curl: [0.30, 0.60, 0.30], flexMax: 8 * Math.PI / 180, drape: { r: 0.008, min: 0.8, max: 1.5 }, wristSolve: true, flexAfter: true };
+    /* (v26.8, row P: "fix all of them the way you fixed Ton. All of them." The stand and the talk were let down on every
+       body; jointscan then read the same shrug on the kneelers, 12 to 17 degrees over the A pose in their kneel (Ton's
+       stand was 37 and 49), so the kneel is let down the same way: KNEEL_SH, laid before their hands are laid on the lap) */
+    const KNEEL_SH = { seiza: 1 };
     function buildCrowd() {
       planCrowd();
       for (const key of DEVOTEES) crowdDrivers[key] = {
-        A: mkDriver(key, { take: 'seiza', centre: true, win: SIT, headDamp: SEIZA_LOOK, handsOn: KNEEL_HANDS, phase: (0.07 + 0.11 * DEVOTEES.indexOf(key)) * SITSPREAD }),
-        B: mkDriver(key, { take: 'seiza', centre: true, win: SIT, headDamp: SEIZA_LOOK, handsOn: KNEEL_HANDS, phase: (0.55 + 0.09 * DEVOTEES.indexOf(key)) * SITSPREAD, rate: 0.86 }),
+        A: mkDriver(key, { take: 'seiza', centre: true, win: SIT, headDamp: SEIZA_LOOK, handsOn: KNEEL_HANDS, shoulders: KNEEL_SH, phase: (0.07 + 0.11 * DEVOTEES.indexOf(key)) * SITSPREAD }),
+        B: mkDriver(key, { take: 'seiza', centre: true, win: SIT, headDamp: SEIZA_LOOK, handsOn: KNEEL_HANDS, shoulders: KNEEL_SH, phase: (0.55 + 0.09 * DEVOTEES.indexOf(key)) * SITSPREAD, rate: 0.86 }),
         S: mkDriver(key, { take: 'Idle_3', centre: true, phase: 0.13 * DEVOTEES.indexOf(key) }) };
       for (const s of crowdSeats) { const D = crowdDrivers[DEVOTEES[s.body]][s.kind === 'stand' ? 'S' : s.half], p = s.at.arrive;
         s.member = mkMember(D, p.x, p.z, p.ry, { s: s.s, mirror: s.mirror, parent: dayOne, blobW: s.kind === 'stand' ? 0.8 : 0.95, blobD: s.kind === 'stand' ? 0.7 : 1.0 });

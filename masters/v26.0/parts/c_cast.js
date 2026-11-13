@@ -1132,13 +1132,14 @@
            man's palm rests on top of the knee with the wrist near straight and only the fingers curving down over it:
            masters/v26.3/make.sh). So the hand is turned up about its own across-axis, its palm's middle where it was,
            until it bends toward the palm no more than flexMax from the forearm's line, the elbow found again each time) */
-        if (K.flexMax != null) for (let it = 0; it < 4; it++) {
+        const flexHold = () => { for (let it = 0; it < 4; it++) {
           const e = best.W.clone().sub(el.E).normalize(), f = best.f, n = best.n, ne = n.clone().addScaledVector(e, -n.dot(e)); if (ne.lengthSq() < 1e-8) break; ne.normalize();
           const flex = Math.atan2(f.dot(ne), f.dot(e)); if (flex <= K.flexMax + 0.005) break;
           const ax = new THREE.Vector3().crossVectors(n, f).normalize(), q = new THREE.Quaternion().setFromAxisAngle(ax, flex - K.flexMax);
           best.f = f.clone().applyQuaternion(q).normalize(); best.n = n.clone().applyQuaternion(q).normalize();
           best.W = best.Cp.clone().addScaledVector(best.f, -PALM).addScaledVector(best.n, K.palmUp ? OFF : -OFF);
-          el = findElbow(best.W, best.Cp); }
+          el = findElbow(best.W, best.Cp); } };
+        if (K.flexMax != null) flexHold();
         /* (K.wristSolve, v26.7: THE HAND'S LINE SOLVED AGAINST ITS FOREARM. Laid along a line of fixed shares (above),
            the hermit in the pale yellow shawl's left wrist, palm up, stood 35 degrees toward its little finger; a whole
            share, 40 the same way; turned 26 degrees by hand either way, 35 toward the thumb or 50 toward the little
@@ -1146,10 +1147,24 @@
            the hand's line over the cloth is tried every four degrees within sixty either side of where it stands, the
            elbow found for each, and the one kept whose wrist is nearest straight with its forearm turned within a
            forearm's range and its elbow clear of him, each measured as tools/probes/jointscan.mjs measures it) */
+        /* (K.flexAfter, v26.8: THE WRIST KEPT NEAR STRAIGHT WHILE ITS LINE IS SOLVED. wristSolve lays the hand again along the
+           cloth's slope for each line it tries and lets the wrist bend toward the palm up to 25 degrees; on a body whose rest
+           holds it to flexMax (the brown hermit's, v26.3) each line tried is held to flexMax first, its elbow found again,
+           and only then measured. Held after the pick instead, the hold moved his elbow and undid the pick: his left wrist
+           stood 25 to 34 degrees toward its little finger, worse than the 20 to 27 it was mended for (jointscan, v26.9's
+           first build). holdOf is flexHold's own turn, on a line being tried. Absent, all as it was) */
+        const holdOf = (fr, e0) => { let f = fr.f, n = fr.n, W = fr.W, e1 = e0;
+          for (let it = 0; it < 4; it++) { const e = W.clone().sub(e1.E).normalize(), ne = n.clone().addScaledVector(e, -n.dot(e)); if (ne.lengthSq() < 1e-8) break; ne.normalize();
+            const flex = Math.atan2(f.dot(ne), f.dot(e)); if (flex <= K.flexMax + 0.005) break;
+            const ax = new THREE.Vector3().crossVectors(n, f).normalize(), q = new THREE.Quaternion().setFromAxisAngle(ax, flex - K.flexMax);
+            f = f.clone().applyQuaternion(q).normalize(); n = n.clone().applyQuaternion(q).normalize();
+            W = best.Cp.clone().addScaledVector(f, -PALM).addScaledVector(n, K.palmUp ? OFF : -OFF); e1 = findElbow(W, best.Cp); }
+          return { fr: { f, n, W }, el: e1 }; };
         if (K.wristSolve) { const wsUp = new THREE.Vector3(0, 1, 0), wsD0 = new THREE.Vector3(best.f.x, 0, best.f.z), DG = 180 / Math.PI;
           if (wsD0.lengthSq() > 1e-8) { wsD0.normalize(); let wsPick = null;
-            for (let wsK = -15; wsK <= 15; wsK++) { const wsFr = frameAt(best.Cp, wsD0.clone().applyAxisAngle(wsUp, wsK * 4 / DG)); if (!wsFr || wsFr.W.distanceTo(Sh) >= la + lb - 0.012) continue;
-              const wsEl = findElbow(wsFr.W, best.Cp); if (!wsEl.clear) continue;
+            for (let wsK = -15; wsK <= 15; wsK++) { let wsFr = frameAt(best.Cp, wsD0.clone().applyAxisAngle(wsUp, wsK * 4 / DG)); if (!wsFr || wsFr.W.distanceTo(Sh) >= la + lb - 0.012) continue;
+              let wsEl = findElbow(wsFr.W, best.Cp); if (!wsEl.clear) continue;
+              if (K.flexAfter && K.flexMax != null) { const wsH = holdOf(wsFr, wsEl); wsFr = wsH.fr; wsEl = wsH.el; if (!wsEl.clear) continue; }
               const wsE = wsFr.W.clone().sub(wsEl.E).normalize(), wsU = wsEl.E.clone().sub(Sh).normalize(), wsRad = new THREE.Vector3().crossVectors(wsFr.n, wsFr.f).multiplyScalar(sg);
               const wsRe = wsRad.clone().addScaledVector(wsE, -wsRad.dot(wsE)).normalize(), wsNe = wsFr.n.clone().addScaledVector(wsE, -wsFr.n.dot(wsE)).normalize();
               const wsDev = Math.atan2(wsFr.f.dot(wsRe), wsFr.f.dot(wsE)) * DG, wsFlex = Math.atan2(wsFr.f.dot(wsNe), wsFr.f.dot(wsE)) * DG;
@@ -1564,6 +1579,13 @@
          So his fingers are curled about half as much at the middle and end joints (curl), his thumbs rest as his file
          rests them (thumb), and each hand's line over his knee is solved against its forearm (wristSolve)) */
       cast.hermitB.o.handsOn = Object.assign(kneeRest(), { palmUp: true, palmTilt: { L: -0.40, R: -0.40 }, at: 1.16, curl: [0.30, 0.32, 0.16], thumb: 'bind', wristSolve: true });
+      /* (v26.8: the brown hermit's left wrist and the master in white's right stood bent sideways toward the little finger
+         20 to 27 degrees (and the white master's left 15.5 toward the thumb), past where a resting wrist lies (jointscan
+         on v26.8's build). Each hand's line is solved against its forearm as the pale-yellow hermit's is (wristSolve),
+         every line tried held within flexMax of straight first (flexAfter). New objects, made after every copy
+         above, so the red master's rest and the pale-yellow hermit's stand exactly as they were) */
+      cast.hermitA.o.handsOn = Object.assign({}, cast.hermitA.o.handsOn, { wristSolve: true, flexAfter: true });
+      cast.white.o.handsOn = Object.assign({}, cast.white.o.handsOn, { wristSolve: true, flexAfter: true });
       /* GRANDMASTER PHO (Chad's own model, prepared over v24.38 to v24.56: masters/v24.56/PLAN.md), on his bench under
          the gold canopy, facing the offering tables and those who kneel to him. His look is D, Chad's pick ("unlit, except for the robe", v24.52):
          lookD below. His rest is the first half second of his seated take, back and forth (the rest of it is talk). Far

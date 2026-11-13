@@ -205,7 +205,7 @@
               im.setMatrixAt(i, sq.multiply(m4)); });
             im.instanceMatrix.needsUpdate = true; im.computeBoundingSphere(); } }); }
       /* his bench (brown hardwood: the model came lacquer red, its hue turned and darkened here), drawn 2.05 m long for
-         two; the low table at his right hand's front with a bowl of petals and a bai sri set down on it; a carved chair
+         two; the low table at his right hand's front with a bai sri set down on it; a carved chair
          beyond it; maroon carpets before the bench where people kneel; purple flowers at both ends */
       const BA = (a, b) => benchAt(a, b), along = BENCH.ry + Math.PI / 2;
       { const [x1, z1] = BA(0.15, 1.95), [x2, z2] = BA(-1.95, 1.8); rug(mCarpet, x1, z1, 2.4, 1.6, along); rug(mCarpet, x2, z2, 2.4, 1.6, along + 0.07, 0.009); }
@@ -218,8 +218,10 @@
          them 15 cm or more clear; and what stands on it is laid out on its smaller top, the bai sri's place left free) */
       const TB = BA(1.2, 0.95);
       stand('w3lowtable', TB[0], 0, TB[1], BENCH.ry + 0.12, { done: (m) => { m.scale.x *= 0.7; m.scale.z *= 0.7; } }); solidBox(0.74, 1.0, 0.74, TB[0], 0.5, TB[1], BENCH.ry);
-      { const [bx, bz] = BA(1.36, 1.12), [gx, gz] = BA(0.1, 0.72), [wx, wz] = BA(1.38, 0.78);
-        many('w3petalbowl', [{ x: bx, y: 0.38, z: bz, ry: 0 }, { x: gx, y: 0, z: gz, ry: 1 }], world, 0.3);
+      /* (v26.8: the two golden bowls of petals, one on this table and one on the carpet by his foot, taken out at Chad's
+         word: "Actually is it even necessary to have this petal bowl? Or just remove it from the game", and his pick,
+         "Remove it". The steel bowl under the west tent stays: photograph 11) */
+      { const [wx, wz] = BA(1.38, 0.78);
         many('w3pewter', [{ x: wx, y: 0.38, z: wz, ry: 0.8 }], world, 0.5); }
       { const [gx, gz] = BA(0.95, 1.2), [tx, tz] = BA(1.12, 1.22); many('w3glass', [{ x: gx, y: 0.38, z: gz, ry: 1.3 }], world, 0.15); many('w3tissue', [{ x: tx, y: 0.38, z: tz, ry: 0.4 }], world, 0.11); }
       { const [ax, az] = BA(-1.55, 0.15), [cx2, cz2] = BA(2.95, 0.7); many('w3purple', [{ x: ax, y: 0, z: az, ry: 2.0 }, { x: cx2, y: 0, z: cz2, ry: 0.4 }], world, 1.1);

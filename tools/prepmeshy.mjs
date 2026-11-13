@@ -26,6 +26,10 @@
    inside the ball is painted over on all three sheets: its colour and its metal-roughness with the median of the
    triangles in the shell just outside it (r to 1.8 r), its normals flat, and its vertices laid onto the panel round
    it. For a maker's mark the generator invented on a boot lid (no real or invented marque on a prop, v9.3).
+   (v26.8, the petal bowl made again) MATTE=t,r: every texel of the metal-roughness sheet whose metal is under t (0..1)
+   made a non-metal with its roughness at least r, the rest left as they are. A generator paints a bowl of gold heaped
+   with petals on one sheet, the petals at metal 0.18 and roughness 0.23 (wet plastic), the gold at 0.5 to 1: PAINT
+   would dull the gold with them. Absent, nothing changes.
    TWOSIDE=1: the material left double-sided (a generator's shell can have faces that only show from behind).
    SHELLS=r2[,f,lum,km]: a generator makes a car as a body and four WHEELS, each a shell of its own (nothing joins it to
    the body). A wheel is where the eye goes and it is all outline (v9.0: simplify per part, gently where the silhouette
@@ -249,9 +253,10 @@ for (const m of root.listMaterials()) {
     }
     /* (v25.5) BLOT and PAINT, on the sheet at its own size, before it is shrunk */
     const PAINTV = process.env.PAINT ? process.env.PAINT.split(',').map(Number) : null;
+    const MATTEV = process.env.MATTE ? process.env.MATTE.split(',').map(Number) : null;
     const mrT = m.getMetallicRoughnessTexture(), darken = !!(PAINTV && PAINTV[2] > 0 && mrT && tx === m.getBaseColorTexture());
     const tyres = !!(SH && SH[1] > 0 && shellTris.length), isC = tx === m.getBaseColorTexture();
-    if (BLOTS.length || darken || (PAINTV && tx === mrT) || (tyres && (isC || tx === mrT))) {
+    if (BLOTS.length || darken || (PAINTV && tx === mrT) || (MATTEV && tx === mrT) || (tyres && (isC || tx === mrT))) {
       const { data, info } = await src.removeAlpha().raw().toBuffer({ resolveWithObject: true });
       const W = info.width, H = info.height, isN = tx === m.getNormalTexture();
       if (tyres && isC) {
@@ -293,6 +298,9 @@ for (const m of root.listMaterials()) {
         }
         if (PAINTV) console.log(`  PAINT: the metal x ${mk}${shellMask ? ` (the wheels' alloy x ${km})` : ''}, the roughness at least ${rmin}`);
       }
+      if (tx === mrT && MATTEV) { const t0 = Math.round(MATTEV[0] * 255), r0 = Math.round(MATTEV[1] * 255); let n = 0;
+        for (let i = 0; i < data.length; i += 3) if (data[i + 2] < t0) { data[i + 2] = 0; if (data[i + 1] < r0) data[i + 1] = r0; n++; }
+        console.log(`  MATTE: ${(n / (data.length / 3) * 100).toFixed(1)} % of the texels (metal under ${MATTEV[0]}) made non-metal, the roughness at least ${MATTEV[1]}`); }
       src = sharp(data, { raw: { width: W, height: H, channels: 3 } });
     }
     /* (v24.26) PXMR: the metal-roughness sheet's own size (default PX). The cars at 2048 (Chad: "Why are the cars ... so

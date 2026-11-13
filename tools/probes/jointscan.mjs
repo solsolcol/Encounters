@@ -19,6 +19,7 @@
    finger 35; the forearm 85 each way from thumb-up; the elbow to 145; the shoulder back to 50; a finger's middle joint
    to 110 and none backward), flagged short of them where a body at rest never goes.
      CHROMIUM_PATH=... [CH=e4c3] [PHASES=",festival,dawn,decide"] [N=4] [SPAN=0.7] [HOLDS="1.5,5.5,9.5"] [WHO=regex]
+       [CHOOSE=0 SEEKS="T.A.close + T.CLOSE.glow + 1.6;..."] (with PHASES=decide: an ending's moments measured)
        [OUT=file.json] node tools/probes/jointscan.mjs
    HOLDS: moments of the taper woman's round to stand her at (the chapter's own probe seam), one sample each, after the
    N sampled on the chapter's clock. WHO: measure only the bodies whose name matches. PRE: a line run in the page (E is the
@@ -210,7 +211,22 @@ for (const ph of LIST) {
   await p.waitForFunction(() => { try { const i = window.__enc.stage.info(); return !i.waiting || !i.waiting.length; } catch { return false; } }, null, { timeout: 600000, polling: 1000 }).catch(() => {});
   if (PRE) log('PRE', await p.evaluate((s) => { const E = window.__enc; return String(eval(s)); }, PRE));
   const all = [];
-  for (let k = 0; k < N; k++) {
+  /* (v26.8) CHOOSE=i SEEKS="expr;expr": at this phase the decision is opened and its option i pressed (the photo probe's
+     own path: the panel's button clicked), then the ending's film is sought to each moment named on the chapter's
+     clocks (T = stage.dbg.clocks, as e4c3beats' seekAt) and every body measured there: a seek holds every body still,
+     which is what a measure of a pose wants. The clock's own samples are skipped */
+  if (process.env.CHOOSE != null && ph) {
+    await p.evaluate(() => window.__enc.decide && window.__enc.decide());
+    await p.waitForFunction(() => document.querySelectorAll('#choices button.choice').length >= 4, null, { timeout: 120000, polling: 300 });
+    await p.evaluate((i) => document.querySelectorAll('#choices button.choice')[i].click(), +process.env.CHOOSE);
+    await p.waitForFunction(() => window.__enc.cine.active() && window.__enc.cine.t() > 0.15, null, { timeout: 300000, polling: 200 });
+    for (const ex of (process.env.SEEKS || '').split(';').map(x => x.trim()).filter(Boolean)) {
+      const t = await p.evaluate(new Function('const T = window.__enc.stage.dbg.clocks; return (' + ex + ');'));
+      await p.evaluate((t) => window.__enc.cine.seek(t), t);
+      await p.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
+      all.push(...await sample(ex)); }
+  }
+  for (let k = 0; k < (process.env.CHOOSE != null && ph ? 0 : N); k++) {
     const t0 = await p.evaluate(() => window.__enc.stage.dayClock.t);
     await p.waitForFunction(([t0, s]) => window.__enc.stage.dayClock.t >= t0 + s, [t0, SPAN], { timeout: 300000, polling: 200 }).catch(() => {});
     await p.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));

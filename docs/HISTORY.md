@@ -8950,6 +8950,48 @@ What the baseline contains, by release:
     leans a little forward (his take's own; nearer his hips his elbows go behind his shoulders: measured, v26.6).
     Deploy `6af73f7d894cdd7a17d60fe6` (493 served files identical to the build).
 
+- **v26.8 · 13 Nov 2026, night · episode 4 chapter 3: his thirteen notes of the evening, and four more that night, in one
+  build** (docs/V26.8-E4C3-NOTES.md: his words verbatim, one row each, the traces in its §2). The dancers dance their
+  one dance in place (A; their second take, which walked them through each other, out of their files); the woman's bai
+  sri raised close before her bowed head with her fingers open round it, the brown hermit sitting up to it (B); the
+  kneelers' look round restrained (C); every standing person's raised shoulders let down, Ton's first (D, P: a layer on
+  the stand and the talk, the arm's swing kept; jointscan measures a collar bone's rise now); the chief canopy's swags
+  higher so Grandmaster Pho's face is clear when he stands (E); the minigame as his pick, "Fill to the gold mark" (F);
+  the masters in a straight close row for the photograph, "Three, two, one!", a louder shutter (G); his telling,
+  Grandmaster Pho's answer and ending A's line in the words he approved (H, I, K; the sheet is v145); the camera moving
+  between the speaker and what the words are about (J); no second minigame, the close showing his light instead (L, M:
+  his hands themselves NOT in the picture, said); the woman and the man who go up at their full models, the level chosen
+  by the lens as well as the distance (N), and an engine fix found by it: a body registered again while culled kept the
+  cull's mask for good (main.js cullBySphere gives a root's own masks back first; episode 1 unchanged by construction,
+  cine and fixture green on the live build); the clouds feathered with a halo and drifting (O); the main music made
+  again as piphat ceremony music, his pick take b, levelled by its average to the old music's place (Q). Mine, named:
+  the brown hermit's lean jumped at the petals (fixed by a third take in pose()); two lines' lengths left stale in the
+  SECS table (fixed at v26.9); the petal bowl, seen at v26.2 and left. Deploy `6af76bca86064920f357e570` (495 served
+  files identical to the build).
+- **v26.9 · 13 Nov 2026, night · episode 4 chapter 3: the petal bowl taken out at his word; the kneelers' shoulders and
+  the resting wrists.** He asked "Rebuild the petal bowl"; it was made again his way (masters/v26.8/make.sh §7: two
+  pictures on white; Meshy refused the picked one as too complex; Hunyuan3D gave dough again; Meshy on the other picture
+  gave real thin petals but its own remesh at 80,000 and 150,000 turned the bowl's embossing to crumpled foil; Tripo
+  H3.1 at 150,000 kept every petal and the kranok, its petals made matte by prepmeshy's new MATTE). He then asked
+  "Actually is it even necessary to have this petal bowl? Or just remove it from the game", was given three choices,
+  and picked "Remove it": both bowls are out of the world, its key out of the table (keys.py --write; only the key left
+  build.py and a_head.js, checked word by word), the file out of the repository, and on "kumanthong" his eyes drop to
+  the petals on the carpet at his teacher's foot (y_stage.js FOOT; photographed on a phone in the telling and the
+  answer). The rebuilt bowl was never deployed. The joint scan of the live v26.8 then read the kneelers' kneel 12 to 17
+  degrees over the A pose at the collar bone (the same shrug: KNEEL_SH lets it down as the stand's was) and four
+  kneelers' left wrists 27 to 45 degrees toward the thumb; those, the master in white's resting wrists (right 23 to 24
+  toward the little finger, left 15.5 toward the thumb) and the brown hermit's left (20 to 27) are solved against their
+  forearms (wristSolve), each line tried held within flexMax of straight first (flexAfter, new). Mine, named: the first
+  v26.9 build held the wrist straight AFTER the pick, which moved his elbow and left the brown hermit's left wrist 25 to
+  34 degrees toward its little finger, worse than it was mended for; measured, moved inside the solve, rebuilt,
+  measured clean. Still flagged and left, each said: the brown hermit's right hand turned 51 to 56 degrees on its
+  forearm and his fingers' gaps (both older than tonight); two kneelers in the blessing's kneeling wai (a wrist 30
+  degrees toward the thumb, a shoulder 15 over: older, and a wai lifts the hands to the chest); the middle monk's
+  shoulders 11 to 12 and the red master's left 10 to 11. Also: the SECS table's two stale lengths (q3w3, tn3c1) put
+  right, and on the live v26.8 the dance scanned for clipping at ten moments (no dancer and no one of the crowd in any
+  pair) and the lotus minigame photographed held on a slowed clock. Deploy `6af780b3317a264c323c5035` (494 served
+  files identical to the build).
+
 ## The sheet, version by version
 
 **v145** (`masters/v26.8/masterz-text-v145.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from

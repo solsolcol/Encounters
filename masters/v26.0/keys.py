@@ -73,7 +73,7 @@ group("e4c3: its things, each from a crop of Chad's own photograph of the real o
        ('w3lowtable', 'w3lowtable.glb', 'the low dark table with a pale top (photograph 5)'),
        ('w3bench', 'w3bench.glb', "the slatted hardwood bench Grandmaster Pho sits on (photographs 1, 5, 6)"),
        ('w3sofa', 'w3sofa.glb', "a pale green sofa under the west tent (photograph 11)"),
-       ('w3petalbowl', 'w3petalbowl.glb', 'a golden bowl of marigold petals (photographs 1, 5)'),
+       # ('w3petalbowl': the golden bowls of petals, RETIRED v26.8 at Chad's word, "Remove it": masters/v26.8/make.sh §7)
        ('w3petalsteel', 'w3petalsteel.glb', 'a steel bowl of petals (photograph 11)'),
        ('w3smallbaisri', 'w3smallbaisri.glb', 'a small bai sri of three cones (photograph 9)'),
        ('w3candlemid', 'w3candlemid.glb', ''), ('w3candlesmall', 'w3candlesmall.glb', ''), ('w3kratip', 'w3kratip.glb', ''),

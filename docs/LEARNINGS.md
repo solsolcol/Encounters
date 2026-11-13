@@ -8617,3 +8617,25 @@ Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8,
   bodies without their recipe (droptake.mjs: no Blender here at first sight; it was in the scratchpad's blender-venv
   all along, so look by what it does, not by one name) was proved by samebody.mjs: every mesh, picture, joint and kept
   key the same.
+- **A body registered for culling AGAIN while it is culled keeps the cull's mask for good.** The engine's sphere cull
+  remembers each mesh's layer mask when a root is registered and sets it to 0 while the root is out of view; this
+  chapter registers a person again each time it adds one of their levels. Registered while out, the 0 was read as the
+  mesh's own and restored as 0 for ever: the man in trance was never drawn in his own shot (his near body measured
+  layers.mask 0 under parents all visible; painted red for one picture, nowhere). A probe that reads `visible` up the
+  chain sees nothing wrong: read the layers, and paint the thing red. Fixed in the engine for every chapter
+  (cullBySphere gives a re-registered root its own masks back first).
+- **The hands' pass is skipped while no mesh under the hands is visible** (main.js, v15's saving), and a film hides the
+  hands: anything a chapter lays in that pass outside the hands themselves (a sheet of light at the edge of his sight)
+  is never drawn in a film. Lay it before the film's own lens instead, just past the near plane (0.08 m).
+- **A kit event runs on the wall's time; a probe's "wait" counts the chapter's, capped a frame.** On a box that draws a
+  frame a second, a breath held for "1.6 s" of chapter time was held for minutes: it reached its edge, closed, paid its
+  price and waited for the finger to lift, and the picture showed no light on the ring. That was the probe, not the
+  game. Slow the page's clock to a fixed step a frame (e4c3beats `slow`, as filmlive does) before photographing a held
+  press.
+- **A measured-lengths file that a later re-say did not update writes the old lengths back** the next time the table is
+  regenerated from it (v26.1 re-said two lines and wrote their lengths into the chapter and the registry, not into
+  script/measured.json; v26.8's regeneration put the old ones back). Compare the chapter's table with the registry
+  line by line after any regeneration.
+- **A third take for a blend that changes its base.** Switching from a two-take blend (0.42 of one take over another)
+  to the whole of the second in one frame jumps the body by the difference: pose() takes an optional third take, so a
+  body goes on into a new take from exactly the blend it stands in.

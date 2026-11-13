@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "26.8"
+VERSION = "26.9"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -597,7 +597,6 @@ ASSETS = {
     'w3lowtable':   ('assets/w3lowtable.glb', True, False),     # the low dark table with a pale top (photograph 5)
     'w3bench':      ('assets/w3bench.glb', True, False),     # the slatted hardwood bench Grandmaster Pho sits on (photographs 1, 5, 6)
     'w3sofa':       ('assets/w3sofa.glb', True, False),     # a pale green sofa under the west tent (photograph 11)
-    'w3petalbowl':  ('assets/w3petalbowl.glb', True, False),     # a golden bowl of marigold petals (photographs 1, 5)
     'w3petalsteel': ('assets/w3petalsteel.glb', True, False),     # a steel bowl of petals (photograph 11)
     'w3smallbaisri':('assets/w3smallbaisri.glb', True, False),     # a small bai sri of three cones (photograph 9)
     'w3candlemid':  ('assets/w3candlemid.glb', True, False),
@@ -802,15 +801,15 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'e4devh', 'e4devhm', 'e4devhf', 'e4girl', 'e4girlm', 'e4girlf', 'e4boy', 'e4boym', 'e4boyf', 'e4monkb',
            'e4monkbm', 'e4monkbf', 'e4monkc', 'e4monkcm', 'e4monkcf', 'pho', 'phof', 'w3baisri', 'w3naga', 'w3wheel',
            'w3parasol', 'w3tower', 'w3candle', 'w3fan', 'w3nagastaff', 'w3pewter', 'w3purple', 'w3fruit', 'w3sweets',
-           'w3khantok', 'w3puff', 'w3chair', 'w3lowtable', 'w3bench', 'w3sofa', 'w3petalbowl', 'w3petalsteel',
-           'w3smallbaisri', 'w3candlemid', 'w3candlesmall', 'w3kratip', 'w3chicken', 'w3coconut', 'w3soda',
-           'w3water', 'w3matroll', 'w3shirt', 'w3chrys', 'w3roses', 'w3claypot', 'w3pchair', 'w3horns', 'w3taper',
-           'w3glass', 'w3tissue', 'w3nagafount', 'w3nagagreen', 'w3nagawhite', 'w3ganesha', 'w3croton', 'w3dracaena',
-           'w3waterjar', 'w3walllamp', 'w3t_turf', 'w3t_petalturf', 'w3t_earth', 'w3t_gravel', 'w3t_redplank',
-           'w3t_tin', 'w3t_brick', 'w3t_skirt', 'w3t_satin', 'w3t_mat', 'w3t_carpet', 'w3t_bluemat', 'w3t_swag',
-           'w3t_banner', 'w3t_treeline', 'w3t_redroof', 'w3t_hallbrick', 'w3t_steptile', 'w3t_lawn', 'w3t_kalae',
-           'w3t_fretwork', 'w3t_sign', 'w3banana2', 'w3frangipani', 'w3isanhouse', 'w3tank', 'w3aircon', 'w3scooter',
-           'w3t_render', 'w3t_cloudbank', 'w3t_cloudtall', 'w3t_cloudflat', 'w3t_cloudthree', 'w3t_cirrus',
+           'w3khantok', 'w3puff', 'w3chair', 'w3lowtable', 'w3bench', 'w3sofa', 'w3petalsteel', 'w3smallbaisri',
+           'w3candlemid', 'w3candlesmall', 'w3kratip', 'w3chicken', 'w3coconut', 'w3soda', 'w3water', 'w3matroll',
+           'w3shirt', 'w3chrys', 'w3roses', 'w3claypot', 'w3pchair', 'w3horns', 'w3taper', 'w3glass', 'w3tissue',
+           'w3nagafount', 'w3nagagreen', 'w3nagawhite', 'w3ganesha', 'w3croton', 'w3dracaena', 'w3waterjar',
+           'w3walllamp', 'w3t_turf', 'w3t_petalturf', 'w3t_earth', 'w3t_gravel', 'w3t_redplank', 'w3t_tin',
+           'w3t_brick', 'w3t_skirt', 'w3t_satin', 'w3t_mat', 'w3t_carpet', 'w3t_bluemat', 'w3t_swag', 'w3t_banner',
+           'w3t_treeline', 'w3t_redroof', 'w3t_hallbrick', 'w3t_steptile', 'w3t_lawn', 'w3t_kalae', 'w3t_fretwork',
+           'w3t_sign', 'w3banana2', 'w3frangipani', 'w3isanhouse', 'w3tank', 'w3aircon', 'w3scooter', 'w3t_render',
+           'w3t_cloudbank', 'w3t_cloudtall', 'w3t_cloudflat', 'w3t_cloudthree', 'w3t_cirrus',
            # <<< e4c3 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY

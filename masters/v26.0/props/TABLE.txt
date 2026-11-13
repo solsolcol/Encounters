@@ -35,6 +35,7 @@ sofa          w3sofa        0.95  w   8000  1024  0
 #  (photographed), and it refused the steel bowl's picture outright; both are Hunyuan3D v3's, asked for 40,000
 #  triangles, nothing thinned: masters/v26.0/make.sh, the things. Kept here for their sizes only.)
 #petalbowl    w3petalbowl   0.34  w  40000   512  0   src/hunyuan-petalbowl-40k.glb
+#  (v26.8: made again, Tripo H3.1 at 150,000, then RETIRED at Chad's word, "Remove it": masters/v26.8/make.sh §7)
 #petalsteel   w3petalsteel  0.36  w  40000   512  0   src/hunyuan-petalsteel-40k.glb
 seatbench     w3bench       1.50  w  16000  1024  0
 seatbench2    w3bench       1.50  w  50000q 2048  0
