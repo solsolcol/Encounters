@@ -137,6 +137,12 @@ that fits it, with the version it came from.
   copies and leftovers (old build snapshots, release zips, a bundle's sent pieces, intermediates a recipe remakes), with
   his yes, never by compressing a file. (v24.54)
 - Adopt an objectively better solution only when very sure of it, and prove that new work has not silently broken or undone earlier fixes. (v14.16)
+- An important person is never drawn up close from a lighter body ("30k triangles up close should never have been
+  allowed"): the people the story turns on (Ton, the woman at the bench, the seated masters, the woman lighting the
+  candles, Grandmaster Pho) switch to their full model within 2.2 m; the crowd, the dancers, the children and the
+  monks of the row keep their lighter bodies, because a full body costs about 50 MB of a phone's graphics memory ("Only
+  the important people like ton, candle lighter female, seated masters, pho, and those that already are built this way
+  can retain."). A person is photographed from as close as the player can walk, with the body drawn there read. (v26.5)
 - Loading must be smart: no stutter and no late pop-in; nothing heavy happens while the world is on screen. (v14.15)
 - The loading word is on screen whenever the player waits (the one exception: the title card straight after an opening film says no 'Loading'). (v15.3)
 - Work in checkpoints and milestones with the plan, the steps and the progress written down so the work survives memory loss; queued asks are recorded verbatim in a plan doc before work begins. (v13.0)
@@ -1339,7 +1345,9 @@ taper woman's arm; the brown hermit's hands; then "You dont see the problem with
 standing rule on bodies, with tools/probes/jointscan.mjs) went live at v26.3 (deploy `6af6f14cd6218e64bb4e9b61`):
 docs/V26.3-E4C3-NOTES.md.
 His question the same afternoon, why the brown hermit was so blocky up close, went live at v26.4 (his full model drawn
-within 2.2 m; the chapter's other people, drawn the same way close up, put to him: docs/OPEN-ITEMS.md C13 u).
+within 2.2 m), and at v26.5 the other important people his answer named (the three other seated masters and the woman
+lighting the candles; docs/OPEN-ITEMS.md C13 u). His ask to make the chapter faster with nothing on screen changed is
+measured and planned in docs/V26.6-E4C3-OPTIMIZE-PLAN.md (put to him).
 Chapter 4 is next after it
 (S1·13, case one: the woman who rose from her wheelchair).
 The episode's plan, with what remains his to decide:

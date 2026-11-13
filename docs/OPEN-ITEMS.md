@@ -254,11 +254,20 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
       white's open hand at moments of his seated take (32 to 36 degrees between two fingers, a gesture of the take);
       Grandmaster Pho's and the young man's forearms turned 75 to 91 degrees at the elbow where their takes turn the
       palm up (a rig with no twist bones shares such a turn between the elbow and the wrist, never along the forearm).
-    - u. v26.4 (docs/V26.3-E4C3-NOTES.md, item I): ASKED: every other person of the chapter is drawn close up from a
-      lighter body, as the brown hermit was until v26.4 (the three other masters, the two monks made here and the two
-      dancers at 30,000 triangles; the eight devotees and the two children at 24,000). A full model for each, drawn within
-      2.2 m as his now is, costs about 8 MB of download a body (the three masters about 24 MB; all sixteen about 130 MB,
-      against the chapter's 160 MB) and some 15 minutes of making and checking a body.
+    - u. v26.4 (docs/V26.3-E4C3-NOTES.md, items I and J): ANSWERED, DONE at v26.5: the other people drawn close up from a
+      lighter body. Told that a full body costs about 50 MB of a phone's graphics memory, his answer: "Only the important
+      people like ton, candle lighter female, seated masters, pho, and those that already are built this way can
+      retain." The four seated masters and the woman lighting the candles have their full models within 2.2 m (Ton and
+      the bench woman had theirs; Grandmaster Pho is his own model, drawn whole); the monks made here, the dancers, the
+      devotees of the crowd and the children keep their lighter bodies (the full models of five devotees and the two
+      monks, made before his answer, are kept outside the repository, not shipped).
+    - v. v26.5: TO DO NEXT (Chad: "Look at the fingers of the red master, its butchered"): every seated master's rest
+      puts his hands into his own clothes (the red master's left hand in his trousers, the master in white's right in
+      his thigh, the hermit in the shawl's forearms in his robe; live since v26.0). The brown hermit's lap rest failed its
+      measure on all three (docs/V26.3-E4C3-NOTES.md, K and L): each one's own rest, the palm on his own knee, to be
+      learned from a photograph, measured and photographed before it ships.
+    - w. v26.5: ASKED: making the chapter faster with nothing on screen changed: measured, and four ways in the order of
+      what they save (docs/V26.6-E4C3-OPTIMIZE-PLAN.md).
 
 ## D. Not built yet
 

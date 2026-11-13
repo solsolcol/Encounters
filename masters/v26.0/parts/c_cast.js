@@ -12,8 +12,13 @@
 
        ONE SKELETON, SEVERAL SKINS (the tracker's §5 "The levels"). A person's file holds the body drawn from near by;
        `<key>m` and `<key>f` are the same body rebuilt lighter (Meshy's own remesh at 8,000 and 2,500 triangles, the
-       rig laid on each by tools/riglod.mjs), and `<key>h`, for the two he speaks to face to face, is the generator's
-       own model with every triangle. Each lighter or fuller skin is bound to the near body's own bones by name, so it
+       rig laid on each by tools/riglod.mjs), and `<key>h` is the generator's own model with every triangle: for the two
+       he speaks to face to face, and since v26.4 for the four seated masters and the woman lighting the candles (Chad, 13
+       Nov 2026, of the brown hermit drawn from his 30,665-triangle body where he stood over him: "Why is the brown lersi
+       so blocky here"; "30k triangles up close should never have been allowed"; and, told what a full body costs a
+       phone: "Only the important people like ton, candle lighter female, seated masters, pho, and those that already are
+       built this way can retain."). A crowd's driver takes none: its members never draw one.
+       Each lighter or fuller skin is bound to the near body's own bones by name, so it
        wears every take and costs no skeleton; which one is drawn is chosen every frame from the lens (and so at a cut
        from the cut's own lens: v24.22), with a little slack so a person standing on a boundary does not flicker. */
     const people = [];
@@ -251,7 +256,7 @@
         if (ctx.cullBySphere && !P.driver) ctx.cullBySphere(P.group, 0, 0.9, 0, 1.9);
         for (const M0 of P.members) memberSkin(M0, 1);
         if (o.look) o.look(m);
-        if (o.skins !== false) for (const i of [0, 2, 3]) addLevel(P, i);
+        if (o.skins !== false) for (const i of [0, 2, 3]) if (i || !P.driver) addLevel(P, i);
         const L = P.then; P.then = []; for (const f of L) f(P);
       }).catch(err => { console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
       return P;

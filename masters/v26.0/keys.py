@@ -21,7 +21,10 @@ def group(title, rows): G.append((title, rows))
 
 
 def person(n, note, full=False):
-    """a person's levels: the near body with the takes, the two far bodies, and (the two he speaks to) the full model"""
+    """a person's levels: the near body with the takes, the two far bodies, and (the important people) the full model,
+    drawn close: Ton and the woman at the bench since v26.0; since v26.4 the four seated masters and the woman lighting the
+    candles too (Chad, 13 Nov 2026: "Only the important people like ton, candle lighter female, seated masters, pho, and
+    those that already are built this way can retain." Grandmaster Pho is his own model, drawn whole)"""
     return [('e4' + n, 'e4%s.glb' % n, note), ('e4%sm' % n, 'e4%sm.glb' % n, ''), ('e4%sf' % n, 'e4%sf.glb' % n, '')] + ([('e4%sh' % n, 'e4%sh.glb' % n, '')] if full else [])
 
 
@@ -33,11 +36,11 @@ group("e4c3 v26.0 (episode 4 chapter 3, the Wai Kru): ITS PEOPLE, each made end 
       person('ton', "Ton, who posted the thread: the group's shirt, white trousers", True) +
       person('bench', "the woman at Grandmaster Pho's bench: white lace, a long white skirt", True) +
       person('hermita', 'a hermit in a brown robe (and his full model, drawn close: v26.4)', True) +
-      person('hermitb', 'a hermit in a pale yellow shawl') +
-      person('red', 'the master in red') + person('white', 'the second master in white') +
+      person('hermitb', 'a hermit in a pale yellow shawl', True) +
+      person('red', 'the master in red', True) + person('white', 'the second master in white', True) +
       person('dancera', 'a dancer, white and gold') + person('dancerb', 'a dancer, white and gold') +
       person('deva', 'the devotees, eight bodies in white') + person('devb', '') + person('devc', '') + person('devd', '') +
-      person('deve', '') + person('devf', '') + person('devg', '') + person('devh', '') +
+      person('deve', '') + person('devf', '', True) + person('devg', '') + person('devh', '') +
       person('girl', 'the children of the festival (the plan\'s 4.1 and 3.7): a girl of seven') + person('boy', 'and a boy of five') +
       person('monkb', 'the two monks made for the row under the east tent (Chad, 12 Nov 2026: "can we have different monks?"; his own monk keeps the middle chair): an older, heavy monk in deep maroon') +
       person('monkc', 'and a slim young monk in a dark red'))

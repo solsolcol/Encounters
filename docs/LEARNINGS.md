@@ -8567,3 +8567,16 @@ Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8,
   full body's fingertips stood 3 to 6 cm under its top, which is also what a fingertip hanging down the front of a knee
   reads. Rays from each fingertip in 14 directions against the robe and legs tell inside from outside: a point is inside
   only if cloth is near every way (6% of his tip points at most, against 12.5% on the body that was live).
+
+## v26.5 — a full body's price, and a rest that is one man's
+
+- **A full body is about 50 MB of a phone's graphics memory** (two 2048 sheets decoded, one with mipmaps, and 310,000
+  triangles of skinned points), whatever its file's size. Before giving one to every person, the chapter's own total
+  was read (its sheets decoded: about 1.6 GB) and how many people can stand close at once (nine, in the crowd): the
+  answer was the important people only.
+- **A rest solved for one body is not a rest for another.** The brown hermit's lap rest, solved on the hermit in the
+  pale yellow shawl's own body, threw his shoulder back 72 degrees and wrung his forearm 145, his hands behind him at
+  the waist: his robe stands far out over his knees, and his lap as heights is that cloth. jointscan caught it before
+  it shipped; a rest is learned and measured for each body it is given to.
+- **The game's own code a frame is mostly people's bones.** v15 already composes only what changed; what is left is
+  about 2,900 bones turned by takes and poses every frame, seen or not (tools/probes/frameprof.mjs).

@@ -8896,6 +8896,23 @@ What the baseline contains, by release:
     near body). The other people of the chapter are drawn the same way close up (the three other masters and the two
     monks made here at 30,000 triangles, the devotees and children at 24,000): put to him with the cost (docs/OPEN-ITEMS.md
     C13 u). docs/V26.3-E4C3-NOTES.md, item I. Deploy `6af6fc379714274aff128b15` (489 served files identical to dist/).
+- **v26.5** EPISODE 4 CHAPTER 3 · THE IMPORTANT PEOPLE DRAWN WHOLE, CLOSE (his messages of 13 Nov: "Which characters in
+    this chapter also have such little triangles? Can't all characters have the same switching to the full triangle
+    version when near to them?"; "30k triangles up close should never have been allowed, and you spent so much time and
+    credits fixing it when you could have just switched to the full model. You are extremely inefficient"; and, told that
+    a full body costs about 50 MB of a phone's graphics memory, the chapter already near 1.7 GB, nine people within 2.2 m
+    of one spot in the crowd: "Only the important people like ton, candle lighter female, seated masters, pho, and those
+    that already are built this way can retain."). The three other seated masters and the woman lighting the candles
+    drawn from their full models within 2.2 m (the brown hermit's recipe, masters/v26.3/make.sh; 308,000 to 312,000
+    triangles each), photographed face and hands at walk-up distance on both bodies side by side, the masters'
+    fingertips tested against their robes. A crowd's driver never takes a full model. Found while photographing, and
+    named by Chad for the red master ("Look at the fingers of the red master, its butchered"): every seated master's rest
+    puts his hands into his own clothes (live since v26.0); the brown hermit's rest tried on the other three failed its
+    measure on each (an arm wrung or pulled behind him, elbows behind the shoulders) and was taken back out before
+    anything shipped: each one's own rest is next (docs/OPEN-ITEMS.md C13 v). His new
+    standing rule on important people up close is in CLAUDE.md. And his ask to make the chapter faster with nothing on
+    screen changed: measured (tools/probes/frameprof.mjs) and planned, docs/V26.6-E4C3-OPTIMIZE-PLAN.md. Deploy
+    DEPLOYID.
 
 ## The sheet, version by version
 

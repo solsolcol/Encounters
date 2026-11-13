@@ -42,3 +42,20 @@ MARGIN=2 DETPX=2048 DETGOLD=0 $BPY -I tools/rebake.py $D
 #      ships at 2048: 1.5x); 907 points copied where pieces touch at a corner
 env NOTHIN=1 TEX=2048 NOMAP=1 CHARTFIX=1 FACE=3 HEADK=2 HANDK=1.5 PAD=3 BAKE=apply:$D node tools/prepmonk.mjs $S/rigged-hermita.glb assets/e4hermitah.glb 1
 #   -> assets/e4hermitah.glb: 310,849 triangles, 7,992 KB (the body sheet 863 KB and the new one 1,075 KB, as WebP)
+#
+# ---- v26.5 · THE IMPORTANT PEOPLE'S FULL MODELS, DRAWN CLOSE (Chad, 13 Nov 2026: "Can't all characters have the same
+#      switching to the full triangle version when near to them?"; told that a full body costs about 50 MB of a phone's
+#      graphics memory: "Only the important people like ton, candle lighter female, seated masters, pho, and those that
+#      already are built this way can retain.")
+#   The three other seated masters and the woman lighting the candles, each by the brown hermit's recipe above:
+for n in hermitb red white devf; do D=/tmp/hb-$n
+  env NOTHIN=1 TEX=2048 NOMAP=1 CHARTFIX=1 FACE=3 HEADK=2 HANDK=1.5 PAD=3 BAKE=dump:$D node tools/prepmonk.mjs $S/rigged-$n.glb $D/unused.glb 1
+  MARGIN=2 DETPX=2048 DETGOLD=0 $BPY -I tools/rebake.py $D
+  env NOTHIN=1 TEX=2048 NOMAP=1 CHARTFIX=1 FACE=3 HEADK=2 HANDK=1.5 PAD=3 BAKE=apply:$D node tools/prepmonk.mjs $S/rigged-$n.glb assets/e4${n}h.glb 1
+done
+#   -> e4hermitbh 309,769 triangles, 6,876 KB (28,369 charts of head and hands, 29% covered, 0.92 times his body sheet's
+#      texels as it ships: his face and hands no sharper, but drawn with mipmaps); e4redh 312,194, 4,678 KB (1,176 charts,
+#      58%, 1.68 times); e4whiteh 310,592, 4,100 KB (1,071 charts, 63%, 2.2 times); e4devfh 308,424, 7,817 KB (43,051
+#      charts, 22%, 0.8 times).
+#   Made before his answer and NOT shipped (kept outside the repository, in the session's scratch folder): the full models
+#   of five devotees (deva to deve) and the two monks made here (monkb, monkc).
