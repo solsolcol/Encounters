@@ -8952,6 +8952,15 @@ What the baseline contains, by release:
 
 ## The sheet, version by version
 
+**v145** (`masters/v26.8/masterz-text-v145.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from
+it): v144 with eighteen cells changed, one new and twelve gone (checked key by key): episode 4 chapter 3's six words of
+the minigame rewritten for "Fill to the gold mark" (`e4c3.words.breathBrief`, `breathBriefKey`, `breathWhere`,
+`breathWhereKey`, `breathOpen`, `breathClose`); his telling and Grandmaster Pho's answer in the words Chad approved
+(`voice.q3t1` to `q3t4`, `ph3n1` to `ph3n4`, `ph3b0`, `ph3p1`, `ph3A2`, `q3B1`), each with its new measured length; the
+countdown at the photograph (`voice.ds3p1`, new); and the twelve lines no longer said (`voice.q3t5` to `q3t7`, `ph3n5` to
+`ph3n7`, `ph3g2` to `ph3g5`, `ph3p2`, `ph3p3`) gone. 2311 rows; six tabs (UI TEXT 448, EPISODE 1 114, EPISODE 2 201,
+EPISODE 3 400, EPISODE 4 236, VOICE LINES 911). Exported, not published.
+
 **v144** (`masters/v26.3/masterz-text-v144.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from
 it): v143 with nine cells changed or new and nothing gone: the four words of episode 4 chapter 3's OPEN AND CLOSE
 (`e4c3.words.breathBrief`, `breathBriefKey`, `breathWhere`, `breathWhereKey`) rewritten for the gate, and five new UI

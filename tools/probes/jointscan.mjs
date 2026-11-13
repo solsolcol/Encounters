@@ -100,6 +100,18 @@ const MEASURE = ([WHO, NAMES]) => {
       let n = null, f = null, rad = null;
       if (i1 && m1 && k1) { f = m1.clone().sub(wr).normalize(); const ac = i1.clone().sub(k1); ac.addScaledVector(f, -ac.dot(f)).normalize();
         n = v().crossVectors(f, ac).multiplyScalar(side).normalize(); rad = ac; }                  // n: the way the palm faces; rad: toward the thumb
+      /* (v26.8) THE SHOULDER RAISED (Chad, 13 Nov 2026: "ton's natural resting posture while standing, has his shoulders
+         very raised and tensed up"): the collar bone's rise, from its root at the neck (the rig's Shoulder bone) out to the
+         shoulder joint, above the plane square to the torso's up; and the same in the body's own bind pose, which is its
+         neutral (the generated people were made in an A pose, shoulders down). A relaxed collar bone rises a few degrees;
+         a shrug lifts it twenty and more */
+      { const cl = P(S0 + 'Shoulder'), bs = bn[S0 + 'Shoulder'];
+        if (cl && sh && U) { const d = sh.clone().sub(cl), up = d.dot(U), el0 = Math.atan2(up, d.clone().addScaledVector(U, -up).length()) * D; J.clavicle = +el0.toFixed(1);
+          const bp = (nm) => { const b0 = bn[nm], i = b0 ? B.sk.bones.indexOf(b0) : -1; return i < 0 ? null : v().setFromMatrixPosition(new M4().copy(B.sk.boneInverses[i]).invert()); };
+          const blh = bp('LeftUpLeg'), brh = bp('RightUpLeg'), bla = bp('LeftArm'), bra = bp('RightArm'), bcl = bs ? bp(S0 + 'Shoulder') : null, bsh = bp(S0 + 'Arm');
+          if (blh && brh && bla && bra && bcl && bsh) { const bU = bla.clone().add(bra).multiplyScalar(0.5).sub(blh.clone().add(brh).multiplyScalar(0.5)).normalize(), bd = bsh.clone().sub(bcl), bu = bd.dot(bU);
+            const el1 = Math.atan2(bu, bd.clone().addScaledVector(bU, -bu).length()) * D; J.clavicleBind = +el1.toFixed(1);
+            if (el0 - el1 > 10) flag(S0[0] + '.shoulder.raised', el0 - el1, 'degrees over its neutral (' + el1.toFixed(1) + ')'); } } }
       /* the arm */
       if (sh && el) { const u = el.clone().sub(sh).normalize(), e = wr.clone().sub(el).normalize();
         const phi = Math.acos(Math.max(-1, Math.min(1, u.dot(e)))) * D; J.elbow = +phi.toFixed(1);

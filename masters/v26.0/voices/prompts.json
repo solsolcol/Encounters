@@ -109,7 +109,7 @@
   "speaker": "he",
   "voice_id": "bP8FJDHmWVEgXJDitdQd",
   "takes": 2,
-  "prompt": "[reflective] That person was Grandmaster Puu, and something inside me knew I had to speak to him one day."
+  "prompt": "[reflective] That person was Grandmaster Pho, and something inside me knew I had to speak to him one day."
  },
  {
   "key": "q3u1",
@@ -158,7 +158,7 @@
   "speaker": "ton",
   "voice_id": "uI1epevl1X6hqrxEciKt",
   "takes": 2,
-  "prompt": "[serious] That is Grandmaster Puu. Don't take my word. Ask the people who have sat with him."
+  "prompt": "[serious] That is Grandmaster Pho. Don't take my word. Ask the people who have sat with him."
  },
  {
   "key": "q3c2",
@@ -189,6 +189,13 @@
   "prompt": "[reflective] I had learned to ask first. Everything I heard said the same thing: go and sit with him."
  },
  {
+  "key": "ds3p1",
+  "speaker": "aunt",
+  "voice_id": "B4NdgwdU97lHqA8Udh2D",
+  "takes": 2,
+  "prompt": "[cheerful] Three, two, one!"
+ },
+ {
   "key": "tn3n1",
   "speaker": "ton",
   "voice_id": "uI1epevl1X6hqrxEciKt",
@@ -207,49 +214,28 @@
   "speaker": "he",
   "voice_id": "bP8FJDHmWVEgXJDitdQd",
   "takes": 2,
-  "prompt": "[quiet] Since I was a boy I have felt things other people did not."
+  "prompt": "[quiet] Since I was a boy, I have been very sensitive. I feel things other people cannot feel."
  },
  {
   "key": "q3t2",
   "speaker": "he",
   "voice_id": "bP8FJDHmWVEgXJDitdQd",
   "takes": 2,
-  "prompt": "[uneasy] When I listen to chanting, my hands move by themselves. In temples my body bows in ways I never learned."
+  "prompt": "[uneasy] When I hear chanting, my body moves by itself, and I cannot control it."
  },
  {
   "key": "q3t3",
   "speaker": "he",
   "voice_id": "bP8FJDHmWVEgXJDitdQd",
   "takes": 2,
-  "prompt": "[embarrassed] On Buddha Day something danced in my body for fifteen minutes. A medium called it a ghost, and it roared at him."
+  "prompt": "[sincere] When I hold an amulet, I can feel its energy. Every amulet feels different."
  },
  {
   "key": "q3t4",
   "speaker": "he",
   "voice_id": "bP8FJDHmWVEgXJDitdQd",
   "takes": 2,
-  "prompt": "[quiet] I pick up a piece in a shop and cold runs up my arm."
- },
- {
-  "key": "q3t5",
-  "speaker": "he",
-  "voice_id": "bP8FJDHmWVEgXJDitdQd",
-  "takes": 2,
-  "prompt": "[ashamed] I kept three kumanthong, and I opened myself to them, one by one. I should not have."
- },
- {
-  "key": "q3t6",
-  "speaker": "he",
-  "voice_id": "bP8FJDHmWVEgXJDitdQd",
-  "takes": 2,
-  "prompt": "[tired] After one trip a fog sat on my mind until a hermit cleared it."
- },
- {
-  "key": "q3t7",
-  "speaker": "he",
-  "voice_id": "bP8FJDHmWVEgXJDitdQd",
-  "takes": 2,
-  "prompt": "[heavy] I don't know why I am like this. I don't know what it is for. I don't know how to stop it, or how to use it."
+  "prompt": "[ashamed] And I once kept three kumanthong, and opened my body to them."
  },
  {
   "key": "q3t8",
@@ -270,84 +256,35 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[calm] When it takes your hands, you are awake. You watch it happen. You did not tell me that part."
+  "prompt": "[calm] Every person is born carrying something from past lives. Different people bring different things, and different baramee."
  },
  {
   "key": "ph3n2",
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[gentle] That is what frightens you. Not the moving. The watching."
+  "prompt": "[warm] You brought yours with you. You were born with a gift, and with a mission."
  },
  {
   "key": "ph3n3",
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[calm] You ask why. What you feel was not put into you. It was there already, asleep."
+  "prompt": "[serious] But sensitivity alone is not enough. Without control, it will overwhelm you, and it will hurt you. You opened your body to the kumanthong, and you did not know how to close it."
  },
  {
   "key": "ph3n4",
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[calm] The ink, the chanting, the pieces you held... they did not give it to you. They woke it."
- },
- {
-  "key": "ph3n5",
-  "speaker": "pho",
-  "voice_id": "xYmBpJREC3WfqEFpbPvO",
-  "takes": 3,
-  "prompt": "[serious] The rest of that answer is heavy. I will give it when you can carry it."
- },
- {
-  "key": "ph3n6",
-  "speaker": "pho",
-  "voice_id": "xYmBpJREC3WfqEFpbPvO",
-  "takes": 3,
-  "prompt": "[warm] What is it for? A lamp is not lit for the lamp. It is lit for whoever is in the room."
- },
- {
-  "key": "ph3n7",
-  "speaker": "pho",
-  "voice_id": "xYmBpJREC3WfqEFpbPvO",
-  "takes": 3,
-  "prompt": "[gentle] And how to use it... you ask that first. It comes last."
- },
- {
-  "key": "ph3g2",
-  "speaker": "pho",
-  "voice_id": "xYmBpJREC3WfqEFpbPvO",
-  "takes": 3,
-  "prompt": "[calm] First, control."
- },
- {
-  "key": "ph3g3",
-  "speaker": "pho",
-  "voice_id": "xYmBpJREC3WfqEFpbPvO",
-  "takes": 3,
-  "prompt": "[serious] To feel is not enough. A door that cannot close is not a door. It is a hole in the wall, and everything walks through."
- },
- {
-  "key": "ph3g4",
-  "speaker": "pho",
-  "voice_id": "xYmBpJREC3WfqEFpbPvO",
-  "takes": 3,
-  "prompt": "[calm] With control you open when you choose. You close when you choose."
- },
- {
-  "key": "ph3g5",
-  "speaker": "pho",
-  "voice_id": "xYmBpJREC3WfqEFpbPvO",
-  "takes": 3,
-  "prompt": "[calm] When to open. When to close. That is the whole practice."
+  "prompt": "[calm] So first, you learn control. To open when you choose, and to close when you choose."
  },
  {
   "key": "ph3b0",
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[gentle] I show you. Breathe with me."
+  "prompt": "[gentle] Hold out your hands."
  },
  {
   "key": "ph3b1",
@@ -403,21 +340,7 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[calm] This is a path. It does not end this morning."
- },
- {
-  "key": "ph3p2",
-  "speaker": "pho",
-  "voice_id": "xYmBpJREC3WfqEFpbPvO",
-  "takes": 3,
-  "prompt": "[serious] First you learn to hold it. That is years."
- },
- {
-  "key": "ph3p3",
-  "speaker": "pho",
-  "voice_id": "xYmBpJREC3WfqEFpbPvO",
-  "takes": 3,
-  "prompt": "[calm] Then you use it for others. Not for yourself."
+  "prompt": "[calm] Holding it takes years. Then you use it for others, not for yourself."
  },
  {
   "key": "q3A0",
@@ -445,7 +368,7 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[warm] Good. Remember the order when it is slow. Slow is where people leave."
+  "prompt": "[warm] Good. Remember that order when progress is slow. That is when most people give up."
  },
  {
   "key": "tn3A1",
@@ -494,7 +417,7 @@
   "speaker": "he",
   "voice_id": "bP8FJDHmWVEgXJDitdQd",
   "takes": 2,
-  "prompt": "[reluctant] A Sak Yant, for luck. Then another. A shop I kept going back to. Pieces I picked up to see what they would do. Three children I took home. A master I went to about my business."
+  "prompt": "[reluctant] A Sak Yant, for luck. Then another. An amulet shop I kept going back to. Amulets I picked up to see what they would do. Three kumanthong I took home. A master I went to about my business."
  },
  {
   "key": "ph3B3",

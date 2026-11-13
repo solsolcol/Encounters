@@ -30,49 +30,47 @@ film festival (45.5 s)
     35.11  x3petals    x 0.36: its loudest 50 ms  -23.0 dBFS (peak  -10.7, 1.4 s); the music then  -25.0
 
 film between (20.4 s)
-     0.20  x3nightmus  MUSIC x 0.50: median  -23.9 dBFS (its quiet fifth  -25.0, its loud tenth  -22.5), sounding 20.2 s to 20.36
-     3.10  x3shutter   x 0.45: its loudest 50 ms  -25.1 dBFS (peak   -9.2, 0.6 s); the music then  -24.3
-    16.40  x3cock      x 0.25: its loudest 50 ms  -26.0 dBFS (peak  -15.6, 2.0 s); the music then  -23.8
+     0.20  x3nightmus  MUSIC x 0.50: median  -23.9 dBFS (its quiet fifth  -25.0, its loud tenth  -22.5), sounding 20.2 s to 20.39
+     3.35  x3shutter   x 1.00: its loudest 50 ms  -15.6 dBFS (peak   -2.0, 0.2 s); the music then  -24.3   HOT
+    16.43  x3cock      x 0.25: its loudest 50 ms  -26.0 dBFS (peak  -15.6, 2.0 s); the music then  -23.8
 
-film tell (55.5 s)
-     0.20  x3tellmus   MUSIC x 0.62: median  -27.3 dBFS (its quiet fifth  -31.1, its loud tenth  -22.2), sounding 55.3 s to 55.48
+film tell (31.3 s)
+     0.20  x3tellmus   MUSIC x 0.62: median  -26.9 dBFS (its quiet fifth  -31.0, its loud tenth  -22.9), sounding 31.1 s to 31.29
      1.90  x3mem1      x 0.20: its loudest 50 ms  -27.9 dBFS (peak  -16.9, 4.0 s); the music then  -27.3
-     6.35  x3mem2      x 0.20: its loudest 50 ms  -27.9 dBFS (peak  -19.8, 2.5 s); the music then  -28.5
-    14.58  x3mem3      x 0.20: its loudest 50 ms  -28.0 dBFS (peak  -16.8, 3.0 s); the music then  -31.4
-    23.91  x3mem4      x 0.22: its loudest 50 ms  -28.1 dBFS (peak  -17.0, 4.0 s); the music then  -22.4
-    28.88  x3mem5      x 0.20: its loudest 50 ms  -30.3 dBFS (peak  -15.4, 4.0 s); the music then  -24.4
-    37.69  x3mem6      x 0.20: its loudest 50 ms  -27.9 dBFS (peak  -20.4, 4.0 s); the music then  -30.5
+     9.73  x3mem2      x 0.20: its loudest 50 ms  -27.9 dBFS (peak  -19.8, 2.5 s); the music then  -25.8
+    16.62  x3mem4      x 0.22: its loudest 50 ms  -28.1 dBFS (peak  -17.0, 4.0 s); the music then  -23.0
+    23.35  x3mem5      x 0.20: its loudest 50 ms  -30.3 dBFS (peak  -15.4, 4.0 s); the music then  -33.3
 
-film answers (93.1 s)
-     0.30  x3answmus   MUSIC x 0.40: median  -25.3 dBFS (its quiet fifth  -27.1, its loud tenth  -23.6), sounding 92.8 s to 93.07
-    64.96  x3bell      x 0.25: its loudest 50 ms  -26.0 dBFS (peak  -15.5, 1.2 s); the music then  -24.0
-    80.77  x3tone      x 0.25: its loudest 50 ms  -26.1 dBFS (peak  -17.4, 5.2 s); the music then  -26.2
+film answers (48.1 s)
+     0.30  x3answmus   MUSIC x 0.40: median  -25.7 dBFS (its quiet fifth  -27.1, its loud tenth  -24.0), sounding 47.4 s to 47.73
+    38.36  x3bell      x 0.25: its loudest 50 ms  -26.0 dBFS (peak  -15.5, 1.2 s); the music then  -23.1
+    41.16  x3tone      x 0.25: its loudest 50 ms  -26.1 dBFS (peak  -17.4, 5.2 s); the music then  -23.5
 
-ending A (101.2 s)
-     3.93  x3endA      MUSIC x 0.50: median  -27.1 dBFS (its quiet fifth  -28.8, its loud tenth  -23.9), sounding 43.0 s to 46.95
-    24.46  x3kneel     x 0.32: its loudest 50 ms  -24.0 dBFS (peak  -12.3, 1.2 s); the music then  -27.9
-    31.35  x3matroll   x 0.32: its loudest 50 ms  -24.5 dBFS (peak  -11.8, 3.9 s); the music then  -27.1
-    40.36  x3matset    x 0.40: its loudest 50 ms  -22.4 dBFS (peak  -10.1, 0.7 s); the music then  -26.2
-    42.45  x3closemus  MUSIC x 0.39: median  -24.8 dBFS (its quiet fifth  -26.0, its loud tenth  -23.5), sounding 29.5 s to 71.99
-    48.35  x3baitake   x 0.32: its loudest 50 ms  -25.0 dBFS (peak  -13.8, 0.5 s); the music then  -24.1
-    66.24  x3tone      x 0.28: its loudest 50 ms  -25.1 dBFS (peak  -16.4, 5.2 s); the music then  -25.6
-    69.84  x3petals    x 0.40: its loudest 50 ms  -22.1 dBFS (peak   -9.8, 1.4 s); the music then  -29.7
-    73.14  x3lastmus   MUSIC x 0.45: median  -25.3 dBFS (its quiet fifth  -27.6, its loud tenth  -23.3), sounding 28.0 s to 101.18
-    84.50  x3baiset    x 0.40: its loudest 50 ms  -22.6 dBFS (peak   -9.8, 0.9 s); the music then  -27.8
+ending A (105.3 s)
+     3.93  x3endA      MUSIC x 0.50: median  -27.1 dBFS (its quiet fifth  -28.8, its loud tenth  -23.9), sounding 43.7 s to 47.59
+    25.10  x3kneel     x 0.32: its loudest 50 ms  -24.0 dBFS (peak  -12.3, 1.2 s); the music then  -27.9
+    31.99  x3matroll   x 0.32: its loudest 50 ms  -24.5 dBFS (peak  -11.8, 3.9 s); the music then  -28.0
+    41.00  x3matset    x 0.40: its loudest 50 ms  -22.4 dBFS (peak  -10.1, 0.7 s); the music then  -23.0
+    43.09  x3closemus  MUSIC x 0.39: median  -24.8 dBFS (its quiet fifth  -26.0, its loud tenth  -23.5), sounding 29.5 s to 72.63
+    48.99  x3baitake   x 0.32: its loudest 50 ms  -25.0 dBFS (peak  -13.8, 0.5 s); the music then  -24.1
+    66.88  x3tone      x 0.28: its loudest 50 ms  -25.1 dBFS (peak  -16.4, 5.2 s); the music then  -25.6
+    70.48  x3petals    x 0.40: its loudest 50 ms  -22.1 dBFS (peak   -9.8, 1.4 s); the music then  -29.7
+    77.18  x3lastmus   MUSIC x 0.45: median  -25.3 dBFS (its quiet fifth  -27.6, its loud tenth  -23.3), sounding 28.0 s to 105.22
+    88.54  x3baiset    x 0.40: its loudest 50 ms  -22.6 dBFS (peak   -9.8, 0.9 s); the music then  -27.8
 
-ending B (120.2 s)
-    15.20  x3endB      MUSIC x 0.57: median  -31.9 dBFS (its quiet fifth  -40.6, its loud tenth  -23.7), sounding 19.3 s to 34.52
-    39.51  x3afternoon x 0.50: where it sounds  -34.1 dBFS (peak  -20.0, 30.0 s)
-    48.22  x3bulbs     x 0.35: its loudest 50 ms  -25.6 dBFS (peak  -12.6, 1.3 s)
-    51.12  x3kneel     x 0.32: its loudest 50 ms  -24.0 dBFS (peak  -12.3, 1.2 s)
-    61.43  x3closemus  MUSIC x 0.39: median  -24.8 dBFS (its quiet fifth  -26.0, its loud tenth  -23.5), sounding 29.5 s to 90.97
-    67.33  x3baitake   x 0.32: its loudest 50 ms  -25.0 dBFS (peak  -13.8, 0.5 s); the music then  -24.1
-    85.22  x3tone      x 0.28: its loudest 50 ms  -25.1 dBFS (peak  -16.4, 5.2 s); the music then  -25.6
-    88.82  x3petals    x 0.40: its loudest 50 ms  -22.1 dBFS (peak   -9.8, 1.4 s); the music then  -29.7
-    92.12  x3lastmus   MUSIC x 0.45: median  -25.3 dBFS (its quiet fifth  -27.6, its loud tenth  -23.3), sounding 28.0 s to 120.16
-   103.48  x3baiset    x 0.40: its loudest 50 ms  -22.6 dBFS (peak   -9.8, 0.9 s); the music then  -27.8
+ending B (123.8 s)
+    15.20  x3endB      MUSIC x 0.57: median  -31.9 dBFS (its quiet fifth  -40.6, its loud tenth  -23.7), sounding 19.5 s to 34.68
+    39.67  x3afternoon x 0.50: where it sounds  -34.1 dBFS (peak  -20.0, 30.0 s)
+    48.38  x3bulbs     x 0.35: its loudest 50 ms  -25.6 dBFS (peak  -12.6, 1.3 s)
+    51.28  x3kneel     x 0.32: its loudest 50 ms  -24.0 dBFS (peak  -12.3, 1.2 s)
+    61.59  x3closemus  MUSIC x 0.39: median  -24.8 dBFS (its quiet fifth  -26.0, its loud tenth  -23.5), sounding 29.5 s to 91.13
+    67.49  x3baitake   x 0.32: its loudest 50 ms  -25.0 dBFS (peak  -13.8, 0.5 s); the music then  -24.1
+    85.38  x3tone      x 0.28: its loudest 50 ms  -25.1 dBFS (peak  -16.4, 5.2 s); the music then  -25.6
+    88.98  x3petals    x 0.40: its loudest 50 ms  -22.1 dBFS (peak   -9.8, 1.4 s); the music then  -29.7
+    95.68  x3lastmus   MUSIC x 0.45: median  -25.3 dBFS (its quiet fifth  -27.6, its loud tenth  -23.3), sounding 28.0 s to 123.72
+   107.04  x3baiset    x 0.40: its loudest 50 ms  -22.6 dBFS (peak   -9.8, 0.9 s); the music then  -27.8
 
-ending C (109.2 s)
+ending C (112.7 s)
     18.77  x3endC      MUSIC x 0.45: median  -26.7 dBFS (its quiet fifth  -29.6, its loud tenth  -23.8), sounding 36.2 s to 54.97
     19.17  x3waiting   x 0.32: its loudest 50 ms  -23.9 dBFS (peak  -13.5, 5.0 s); the music then  -41.8
     43.67  x3kneel     x 0.32: its loudest 50 ms  -24.0 dBFS (peak  -12.3, 1.2 s); the music then  -26.0
@@ -80,12 +78,12 @@ ending C (109.2 s)
     56.37  x3baitake   x 0.32: its loudest 50 ms  -25.0 dBFS (peak  -13.8, 0.5 s); the music then  -24.1
     74.26  x3tone      x 0.28: its loudest 50 ms  -25.1 dBFS (peak  -16.4, 5.2 s); the music then  -25.6
     77.86  x3petals    x 0.40: its loudest 50 ms  -22.1 dBFS (peak   -9.8, 1.4 s); the music then  -29.7
-    81.16  x3lastmus   MUSIC x 0.45: median  -25.3 dBFS (its quiet fifth  -27.6, its loud tenth  -23.3), sounding 28.0 s to 109.20
-    92.52  x3baiset    x 0.40: its loudest 50 ms  -22.6 dBFS (peak   -9.8, 0.9 s); the music then  -27.8
+    84.56  x3lastmus   MUSIC x 0.45: median  -25.3 dBFS (its quiet fifth  -27.6, its loud tenth  -23.3), sounding 28.0 s to 112.60
+    95.92  x3baiset    x 0.40: its loudest 50 ms  -22.6 dBFS (peak   -9.8, 0.9 s); the music then  -27.8
 
-ending D (126.9 s)
+ending D (130.3 s)
     21.21  x3shut      x 0.50: its loudest 50 ms  -20.0 dBFS (peak  -14.7, 2.8 s)
-    28.18  x3sweep     x 0.60: where it sounds  -37.2 dBFS (peak  -19.2, 15.6 s)
+    27.28  x3sweep     x 0.60: where it sounds  -37.2 dBFS (peak  -19.2, 15.6 s)
     31.48  x3chantfar  x 0.50: where it sounds  -28.0 dBFS (peak   -8.6, 14.9 s)
     45.13  x3endD      MUSIC x 0.40: median  -25.0 dBFS (its quiet fifth  -28.1, its loud tenth  -23.8), sounding 27.5 s to 72.65
     55.24  x3kneel     x 0.32: its loudest 50 ms  -24.0 dBFS (peak  -12.3, 1.2 s); the music then  -25.0
@@ -93,7 +91,7 @@ ending D (126.9 s)
     74.05  x3baitake   x 0.32: its loudest 50 ms  -25.0 dBFS (peak  -13.8, 0.5 s); the music then  -24.1
     91.94  x3tone      x 0.28: its loudest 50 ms  -25.1 dBFS (peak  -16.4, 5.2 s); the music then  -25.6
     95.54  x3petals    x 0.40: its loudest 50 ms  -22.1 dBFS (peak   -9.8, 1.4 s); the music then  -29.7
-    98.84  x3lastmus   MUSIC x 0.45: median  -25.3 dBFS (its quiet fifth  -27.6, its loud tenth  -23.3), sounding 28.0 s to 126.88
-   110.20  x3baiset    x 0.40: its loudest 50 ms  -22.6 dBFS (peak   -9.8, 0.9 s); the music then  -27.8
+   102.24  x3lastmus   MUSIC x 0.45: median  -25.3 dBFS (its quiet fifth  -27.6, its loud tenth  -23.3), sounding 28.0 s to 130.28
+   113.60  x3baiset    x 0.40: its loudest 50 ms  -22.6 dBFS (peak   -9.8, 0.9 s); the music then  -27.8
 
-0 cue(s) flagged
+1 cue(s) flagged

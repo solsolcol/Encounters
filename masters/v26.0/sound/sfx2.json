@@ -4,5 +4,8 @@
    "where": "his own feet (made again: both first takes were 99 % under 150 Hz, which a phone's speaker does not play)" },
  { "name": "x3bowall2", "secs": 3.5, "loop": false, "takes": 4, "influence": 0.5,
    "prompt": "Foley: many people in cotton clothes kneeling down and bowing forward together on straw mats, one wide crisp rustle of fabric and mats swelling and settling. Mid and high frequencies, no rumble, no voices.",
-   "where": "day one: the whole ground bows (made again: both first takes were 98 % under 150 Hz)" }
+   "where": "day one: the whole ground bows (made again: both first takes were 98 % under 150 Hz)" },
+ { "name": "x3shutter2", "secs": 0.8, "loop": false, "takes": 4, "influence": 0.5,
+   "prompt": "A loud, crisp camera shutter taking one photograph: a sharp mechanical click-clack of the shutter and mirror, very close microphone, dry, no echo, no voices, no beep.",
+   "where": "the night between: the photograph (made again at v26.8, Chad 13 Nov: \"The photo taking sound need to be regenerated to be more obvious and louder\")" }
 ]

@@ -871,6 +871,32 @@ body.finePtr .wpnBtn{position:relative;margin-bottom:12px}
 @keyframes dbf{0%{transform:translate(34px,22px);opacity:0}9%{transform:translate(0,0);opacity:.95}
   12%,60%{transform:translate(0,0) scale(.8);opacity:.95}68%{transform:translate(0,-6px) scale(1);opacity:.5}
   78%,100%{transform:translate(34px,22px);opacity:0}}
+/* v26.8 · lotus — a fingertip lands and holds: the lotus opens and the light climbs its ring into the big gold mark;
+   the finger lifts inside the gold and the lotus closes (hold to open, let go at the gold) */
+#evDemo .dlm,#evDemo .dlg,#evDemo .dll,#evDemo .dlf{display:none}
+#evDemo.lotus .dlm,#evDemo.lotus .dlg,#evDemo.lotus .dll,#evDemo.lotus .dlf{display:block}
+#evDemo .dlg{position:absolute;left:50%;top:50%;width:70px;height:70px;margin:-35px 0 0 -35px;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 0 .58turn,#F2C14E 0 .985turn,transparent 0);
+  -webkit-mask:radial-gradient(circle,transparent 0 22px,#000 23px 33px,transparent 34px);mask:radial-gradient(circle,transparent 0 22px,#000 23px 33px,transparent 34px)}
+#evDemo .dlm{position:absolute;left:50%;top:50%;width:62px;height:62px;margin:-31px 0 0 -31px;border-radius:50%;
+  background:conic-gradient(from 0deg,rgba(255,252,240,.98) 0 var(--dl,0turn),rgba(255,255,255,.16) 0);
+  -webkit-mask:radial-gradient(circle,transparent 0 24px,#000 25px 29px,transparent 30px);mask:radial-gradient(circle,transparent 0 24px,#000 25px 29px,transparent 30px);
+  animation:dlm 3.6s linear infinite}
+@property --dl{syntax:'<angle>';inherits:false;initial-value:0turn}
+@keyframes dlm{0%,12%{--dl:0turn}60%{--dl:.78turn}64%,100%{--dl:0turn}}
+#evDemo .dll{position:absolute;left:50%;top:calc(50% + 5px);width:0;height:0;animation:dll 3.6s ease-in-out infinite}
+#evDemo .dll b{position:absolute;left:-6px;top:-24px;width:12px;height:24px;border-radius:50% 50% 46% 46%/64% 64% 36% 36%;
+  transform-origin:50% 100%;background:linear-gradient(180deg,#FFF6F8,#E8A0B8)}
+#evDemo .dll b:nth-child(1){transform:rotate(calc(-2.5 * var(--da,10deg)))}#evDemo .dll b:nth-child(2){transform:rotate(calc(-1.5 * var(--da,10deg)))}
+#evDemo .dll b:nth-child(3){transform:rotate(calc(-.5 * var(--da,10deg)))}#evDemo .dll b:nth-child(4){transform:rotate(calc(.5 * var(--da,10deg)))}
+#evDemo .dll b:nth-child(5){transform:rotate(calc(1.5 * var(--da,10deg)))}#evDemo .dll b:nth-child(6){transform:rotate(calc(2.5 * var(--da,10deg)))}
+@property --da{syntax:'<angle>';inherits:true;initial-value:10deg}
+@keyframes dll{0%,12%{--da:8deg}60%{--da:52deg}64%{--da:52deg}88%,100%{--da:8deg}}
+#evDemo .dlf{position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;
+  background:rgba(255,255,255,.92);box-shadow:0 0 0 4px rgba(255,255,255,.22),0 0 14px rgba(255,255,255,.5);animation:dlf 3.6s ease-in-out infinite}
+@keyframes dlf{0%{transform:translate(38px,26px);opacity:0}9%{transform:translate(0,0);opacity:.95}
+  12%,60%{transform:translate(0,0) scale(.8);opacity:.95}68%{transform:translate(0,-6px) scale(1);opacity:.5}
+  78%,100%{transform:translate(38px,26px);opacity:0}}
 /* v26.0 · THE BREATH IN PLAY (the forty-sixth seam) — the world is the minigame, as for the hands-on kinds: the panel
    small and see-through at the top (or the foot: `low`), and one ring where the chapter puts it. The ring is the EDGE,
    the teal band inside it is ENOUGH, the light that grows is how far he has opened */
@@ -898,6 +924,37 @@ body.finePtr .wpnBtn{position:relative;margin-bottom:12px}
   background:rgba(255,255,255,.9);box-shadow:0 0 0 5px rgba(255,255,255,.2),0 0 18px rgba(255,255,255,.55);opacity:0;transition:opacity .25s}
 #evBreath.live .bfinger{opacity:1;animation:cHold 2.2s ease-in-out infinite}
 #evBreath.held .bfinger{opacity:0;animation:none}
+/* v26.8 · THE BREATH AS A LOTUS (Chad, 13 Nov 2026, his pick: "Fill to the gold mark: Hold to open the lotus, and let
+   go when its light reaches a big gold mark. Three times; on the third the chanting pulls it faster"), an opt-in look of
+   the same breath (`look: 'lotus'`): a lotus whose petals open as he holds, its heart filling with light; round it a ring
+   the light climbs, clockwise from the top; and on the ring a BIG GOLD MARK, from where it is enough to the edge. Inside
+   the mark it blazes and the word says LET GO; near its end it turns a warning red. The ring's old parts are off */
+#evBreath .bmark,#evBreath .bmeter,#evBreath .bheart,#evBreath .blot{display:none}
+#evBreath.lotus .bring,#evBreath.lotus .bband,#evBreath.lotus .bdisc{display:none}
+#evBreath.lotus .bmark,#evBreath.lotus .bmeter,#evBreath.lotus .bheart,#evBreath.lotus .blot{display:block}
+#evBreath.lotus .bmeter{position:absolute;left:0;top:0;width:212px;height:212px;margin:-106px 0 0 -106px;border-radius:50%;
+  background:conic-gradient(from 0deg,rgba(255,252,240,.98) 0 calc(var(--bk,0) * 1turn),rgba(255,255,255,.16) 0);
+  -webkit-mask:radial-gradient(circle,transparent 0 82px,#000 83px 96px,transparent 97px);
+  mask:radial-gradient(circle,transparent 0 82px,#000 83px 96px,transparent 97px);filter:drop-shadow(0 0 5px rgba(255,248,226,.75))}
+#evBreath.lotus .bmark{position:absolute;left:0;top:0;width:244px;height:244px;margin:-122px 0 0 -122px;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 0 calc(var(--be,.5) * 1turn),#F2C14E 0 calc(1turn - 4deg),transparent 0);
+  -webkit-mask:radial-gradient(circle,transparent 0 76px,#000 77px 108px,transparent 109px);
+  mask:radial-gradient(circle,transparent 0 76px,#000 77px 108px,transparent 109px);opacity:.78;transition:opacity .15s,filter .15s}
+#evBreath.lotus.band .bmark{opacity:1;filter:drop-shadow(0 0 12px rgba(255,214,110,1)) brightness(1.3)}
+#evBreath.lotus.near .bmark{background:conic-gradient(from 0deg,transparent 0 calc(var(--be,.5) * 1turn),#FF7F55 0 calc(1turn - 4deg),transparent 0)}
+#evBreath.lotus .bheart{position:absolute;left:0;top:0;width:156px;height:156px;margin:-78px 0 0 -78px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,252,236,.96) 0 16%,rgba(255,240,206,.5) 38%,transparent 68%);
+  transform:scale(calc(.3 + .8 * var(--bk,0)));opacity:calc(.3 + .7 * var(--bk,0))}
+#evBreath.lotus.band .bheart{background:radial-gradient(circle,#FFFBEA 0 20%,rgba(255,214,110,.7) 44%,transparent 70%)}
+#evBreath.lotus .blot{position:absolute;left:0;top:14px;width:0;height:0}
+#evBreath.lotus .blot b{position:absolute;left:-16px;top:-66px;width:32px;height:66px;border-radius:50% 50% 46% 46%/64% 64% 36% 36%;
+  transform-origin:50% 100%;background:linear-gradient(180deg,#FFF6F8 0%,#F7CFDB 52%,#E8A0B8 100%);
+  box-shadow:0 0 9px rgba(255,226,236,.5),inset 0 -8px 12px rgba(214,120,150,.35);
+  transform:rotate(calc((var(--i) - 3.5) * (7deg + 38deg * var(--bk,0)))) scale(calc(.7 + .3 * var(--bk,0)))}
+#evBreath.lotus .blot b:nth-child(1){--i:0}#evBreath.lotus .blot b:nth-child(2){--i:1}#evBreath.lotus .blot b:nth-child(3){--i:2}
+#evBreath.lotus .blot b:nth-child(4){--i:3}#evBreath.lotus .blot b:nth-child(5){--i:4}#evBreath.lotus .blot b:nth-child(6){--i:5}
+#evBreath.lotus .blot b:nth-child(7){--i:6}#evBreath.lotus .blot b:nth-child(8){--i:7}
+#evBreath.lotus.band .blot b{background:linear-gradient(180deg,#FFFDF2 0%,#FBE3B0 52%,#EFC06A 100%)}
 /* v26.3 · gate — a fingertip drags UP and the two leaves of a little gate slide apart, lights drifting out through it
    toward you; then it drags DOWN and the gate shuts (open and close: drag up to open, drag down to shut) */
 #evDemo.gate .dga,#evDemo.gate .dgl,#evDemo.gate .dgr,#evDemo.gate .dgo,#evDemo.gate .dgf{display:block}
@@ -3523,7 +3580,7 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
     <span class="stencil" id="evLabel"></span>
     <!-- v10.3: the briefing's looping illustration - a tile dragged from the
          left column onto its slot on the right (shown for demo: 'drag') -->
-    <div id="evDemo" class="hide" aria-hidden="true"><i class="dbr"></i><i class="dbb"></i><i class="dbd"></i><span class="dbf"></span><i class="dslot"></i><i class="dslot dst"></i><b class="dtile"></b><span class="dhand"></span><i class="dbar"></i><i class="dfill"></i><i class="dband"></i><span class="dtap"></span><i class="dtgt"></i><i class="dring"></i><i class="dring r2"></i><span class="dhit"></span><i class="dhold"></i><span class="dfinger"></span><span class="dret"></span><i class="dspot"></i><i class="dsring"></i><span class="dstap"></span><i class="dqr"></i><b class="dqm"></b><span class="dqf"></span><i class="dwb"></i><i class="dwr"></i><span class="dwf"></span><i class="dto"></i><i class="dtc"></i><span class="dtf"></span><i class="dpr"></i><i class="dpg"></i><span class="dpf"></span><i class="dsg"></i><b class="dsm"></b><span class="dsf"></span><i class="dcroom"></i><b class="dcthing"></b><b class="dcstill"></b><span class="dcfinger"></span><i class="dcflash"></i><i class="dga"></i><i class="dgl"></i><i class="dgr"></i><b class="dgo"></b><span class="dgf"></span></div>
+    <div id="evDemo" class="hide" aria-hidden="true"><i class="dbr"></i><i class="dbb"></i><i class="dbd"></i><span class="dbf"></span><i class="dslot"></i><i class="dslot dst"></i><b class="dtile"></b><span class="dhand"></span><i class="dbar"></i><i class="dfill"></i><i class="dband"></i><span class="dtap"></span><i class="dtgt"></i><i class="dring"></i><i class="dring r2"></i><span class="dhit"></span><i class="dhold"></i><span class="dfinger"></span><span class="dret"></span><i class="dspot"></i><i class="dsring"></i><span class="dstap"></span><i class="dqr"></i><b class="dqm"></b><span class="dqf"></span><i class="dwb"></i><i class="dwr"></i><span class="dwf"></span><i class="dto"></i><i class="dtc"></i><span class="dtf"></span><i class="dpr"></i><i class="dpg"></i><span class="dpf"></span><i class="dsg"></i><b class="dsm"></b><span class="dsf"></span><i class="dcroom"></i><b class="dcthing"></b><b class="dcstill"></b><span class="dcfinger"></span><i class="dcflash"></i><i class="dga"></i><i class="dgl"></i><i class="dgr"></i><b class="dgo"></b><span class="dgf"></span><i class="dlm"></i><i class="dlg"></i><i class="dll"><b></b><b></b><b></b><b></b><b></b><b></b></i><span class="dlf"></span></div>
     <!-- v9.7: THREE rings in flight, not one. A single ring had to both
          approach the next beat and show that you were late for the last one,
          and it could do neither: it froze on the target for the whole late
@@ -3548,7 +3605,7 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
        ring at the prop, a yield's ring filling round the figure, the surface's gauge -->
   <div id="evCraft" class="hide" aria-hidden="true"><i class="cprog"></i><i class="cpath"></i><i class="cline"></i><span class="cfinger"></span></div>
   <div id="evYield" class="hide" aria-hidden="true"><i class="yfill"></i><i class="yring"></i><span class="yfinger"></span></div>
-  <div id="evBreath" class="hide" aria-hidden="true"><i class="bband"></i><i class="bdisc"></i><i class="bring"></i><span class="bfinger"></span></div>
+  <div id="evBreath" class="hide" aria-hidden="true"><i class="bband"></i><i class="bdisc"></i><i class="bring"></i><i class="bmark"></i><i class="bmeter"></i><i class="bheart"></i><i class="blot"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></i><span class="bfinger"></span></div>
   <!-- v26.3: THE GATE — the light behind it, its two leaves in their arch, the lights that come through, the gauge of how
        many have come, and the fingertip that shows which way to drag -->
   <div id="evGate" class="hide" aria-hidden="true"><i class="ghalo"></i><span class="gdoor"><i class="glight"></i><i class="gleaf gl"></i><i class="gleaf gr"></i></span><i class="garch"></i><span class="gorbs"><i style="--j:0;--dx:-40"></i><i style="--j:1;--dx:34"></i><i style="--j:2;--dx:-16"></i><i style="--j:3;--dx:54"></i><i style="--j:4;--dx:-58"></i><i style="--j:5;--dx:10"></i><i style="--j:6;--dx:26"></i><i style="--j:7;--dx:-30"></i><i style="--j:8;--dx:46"></i><i style="--j:9;--dx:-6"></i><i style="--j:10;--dx:-50"></i><i style="--j:11;--dx:18"></i></span><span class="ggauge"><i class="gband"></i><i class="gfill"></i></span><span class="gfinger"></span></div>

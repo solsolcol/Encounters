@@ -214,6 +214,7 @@
         if (P.hips && o.seat && o.seat.rise && skins[0] && skins[0].skeleton) riseCurve(P, o.seat.rise, skins);
         if (P.hips && skins[0] && skins[0].skeleton) groundTakes(P, skins);
         if (o.headDamp) headDampInit(P);
+        if (o.shoulders !== null) shouldersInit(P);
         /* THE GROUND A WALK OR A RUN COVERS IN A SECOND (o.pace: asked for by whoever moves the group, who drives the take's
            rate from the ground covered: v7.1). The library's walks and runs come on the spot (their hips travel nowhere:
            measured, a few millimetres a second), so the pace is read from the foot that is down: under a body that stays
@@ -256,7 +257,8 @@
         if (ctx.cullBySphere && !P.driver) ctx.cullBySphere(P.group, 0, 0.9, 0, 1.9);
         for (const M0 of P.members) memberSkin(M0, 1);
         if (o.look) o.look(m);
-        if (o.skins !== false) for (const i of [0, 2, 3]) if (i || !P.driver) addLevel(P, i);
+        if (o.skins !== false) for (const i of [0, 2, 3]) if (i || (!P.driver && !o.fullFilm)) addLevel(P, i);
+        if (o.fullFilm && have(P.key + LEVELS[0][0])) parseOnce(P.key + LEVELS[0][0]).catch(() => {});
         const L = P.then; P.then = []; for (const f of L) f(P);
       }).catch(err => { console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
       return P;
@@ -283,6 +285,24 @@
         if (ctx.cullBySphere && !P.driver) ctx.cullBySphere(P.group, 0, 0.9, 0, 1.9);
         for (const M0 of P.members) memberSkin(M0, i);
       }).catch(err => { console.warn(key + ' failed to load', err); if (ctx.loadFail) ctx.loadFail(key, err); });
+    }
+    /* (v26.8, Chad, 13 Nov 2026, of the woman raising her bai sri to the brown hermit, with my picture of it: "look at how
+       bad and blocky the arms look , are these the full res models?"; they were not, and his answer to the two who go up:
+       "Yes, full models", for those close film shots only) A FULL BODY FOR ONE FILM (o.fullFilm): read with the chapter, so
+       nothing is decoded while the world is on screen, but laid on the bones only when the film that brings it close
+       begins, and given back when it ends (its buffers and its own sheets out of the phone's graphics memory: about 50 MB
+       each, v26.5's measure). The film first shows it after a black (the festival's second half begins under the cut's
+       black), so its upload is never on screen. A sheet the full body borrows from the near one is not given back */
+    function fullOn(P) { if (P && P.o.fullFilm && !P.lv[0]) whenReady(P, () => { if (!P.lv[0]) addLevel(P, 0); }); }
+    function fullOff(P) {
+      if (!P || !P.o.fullFilm || !P.lv[0]) return;
+      const near = new Set(); for (const q of P.lv[1] || []) for (const mt of [].concat(q.material)) near.add(mt);
+      for (const m of P.lv[0]) { P.model.remove(m); m.geometry.dispose();
+        for (const mt of [].concat(m.material)) if (!near.has(mt)) for (const k in mt) { const v = mt[k]; if (v && v.isTexture) v.dispose(); } }
+      P.lv[0] = null; P.lvNow = -1;
+      /* (and the cull's list of the body's meshes read again without them: v26.8, the engine gives a re-registered
+         body its own masks back first) */
+      if (ctx.cullBySphere && !P.driver) ctx.cullBySphere(P.group, 0, 0.9, 0, 1.9);
     }
     const whenReady = (P, fn) => { if (!P) return; if (P.ready) fn(P); else P.then.push(fn); };
     /* the model slid so the body stands on the person's spot whatever its takes' own offsets, by their weights */
@@ -409,6 +429,57 @@
       H.bones.forEach((b, j) => { _hdQ.copy(b.quaternion); b.quaternion.copy(M[j]).slerp(_hdQ, kk); });
       H.bones[0].updateWorldMatrix(false, true);
     }
+    /* THE SHOULDERS LET DOWN (o.shoulders: { take: k }; v26.8, Chad, 13 Nov 2026: "ton's natural resting posture while
+       standing, has his shoulders very raised and tensed up, make it look more natural"). Measured (tools/probes/
+       jointscan.mjs: the collar bone's rise from its root at the neck out to the shoulder joint, against the body's own A
+       pose, its neutral): the library's stand, laid on these bodies, holds both collar bones 27 to 49 degrees over their
+       neutral, a full shrug (Ton 37 and 49), on everyone who wears it: it was made on a body whose arms begin level, and
+       its collar bones came over raised. So while a take named here is worn, each collar bone is laid `k` of the way from
+       where the take holds it to its bind pose with the take's own motion about its middle kept (the mean of its turn over
+       the take's window: a breath that lifts the shoulders still lifts them), and the upper arm is given back its turn
+       against the collar bone's parent, so the arm hangs and swings exactly as the take has it and only the shoulder
+       comes down. Laid after the mixer and before any hand is laid (a hand on a thing reaches from the shoulder as it now
+       is), taken off by armsBack() before the mixer runs again (v11.5) */
+    /* (v26.8, Chad, the same evening, when the same shrug had been measured on everyone else who stands and left for his
+       word: "there are also many other standing audience models all with the same raised shoulder problem, fix all of
+       them the way you fixed Ton. All of them." So it is every body's: the stand and the talk let down wherever a body has
+       them, unless it says `shoulders: null`) */
+    const STAND_SH = { Idle_3: 1, Stand_and_Chat: 1 };
+    const _sdq = new THREE.Quaternion(), _sdq2 = new THREE.Quaternion();
+    function shouldersInit(P) {
+      const asked = P.o.shoulders !== undefined, D = asked ? P.o.shoulders : STAND_SH; if (!D) return;
+      if (!Object.keys(D).some(n => P.acts[n])) return;
+      const bone = (nm) => { const re = new RegExp('^(mixamorig:?)?' + nm + '$'); for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
+      const S = [];
+      for (const S0 of ['Left', 'Right']) { const cl = bone(S0 + 'Shoulder'), up = bone(S0 + 'Arm'); if (!cl || !up || up.parent !== cl) continue;
+        const qb = bindLocal(P, cl); if (qb) S.push({ cl, up, qb, scl: new THREE.Quaternion(), sup: new THREE.Quaternion(), M: {} }); }
+      if (!S.length) { if (asked) console.warn(P.key + ': o.shoulders asked, and no collar bone with its upper arm under it'); return; }
+      /* (each take's middle turn of each collar bone, over the window the take is worn in: headDampInit's measure) */
+      for (const name in D) { const A = P.acts[name]; if (!A) continue; const d = A.getClip().duration, W = P.win && P.win[name], N = 24, acc = S.map(() => [0, 0, 0, 0]), first = [];
+        for (const k in P.acts) P.acts[k].setEffectiveWeight(k === name ? 1 : 0);
+        for (let i = 0; i < N; i++) { A.time = W ? ((W[0] + W[1] * i / (N - 1)) % d + d) % d : d * i / N; P.mixer.update(0);
+          S.forEach((R, j) => { const q = R.cl.quaternion; if (i === 0) first[j] = q.clone();
+            const sg = q.x * first[j].x + q.y * first[j].y + q.z * first[j].z + q.w * first[j].w < 0 ? -1 : 1; acc[j][0] += q.x * sg; acc[j][1] += q.y * sg; acc[j][2] += q.z * sg; acc[j][3] += q.w * sg; }); }
+        S.forEach((R, j) => { R.M[name] = new THREE.Quaternion(acc[j][0], acc[j][1], acc[j][2], acc[j][3]).normalize(); }); }
+      P.shd = { S, take: Object.assign({}, D), on: false };
+    }
+    function shouldersLay(P) {
+      const H = P.shd; if (!H) return;
+      let best = null, bw = 0, k = 0;
+      for (const n in H.take) { const w = P.w[n] || 0; if (w > 0 && H.S[0].M[n]) { k += w * H.take[n]; if (w > bw) { bw = w; best = n; } } }
+      if (!best || !(k > 1e-4)) return;
+      k = Math.min(1, k);
+      for (const R of H.S) {
+        R.scl.copy(R.cl.quaternion); R.sup.copy(R.up.quaternion);
+        /* the collar bone: its bind pose, with the take's motion about its middle laid on it; k of the way there */
+        _sdq.copy(R.M[best]).invert().premultiply(R.cl.quaternion); _sdq2.copy(R.qb).multiply(_sdq);
+        R.cl.quaternion.slerp(_sdq2, k);
+        /* the upper arm: the same turn against the collar bone's parent as before (old collar * old arm = new collar * new arm) */
+        R.up.quaternion.copy(R.cl.quaternion).invert().multiply(R.scl).multiply(R.sup);
+        R.cl.updateWorldMatrix(false, true);
+      }
+      H.on = true;
+    }
     function riseOff(R, t, which = 'off') {
       const ts = R.ts, V = R[which], n = ts.length; if (t <= ts[0]) return V[0]; if (t >= ts[n - 1]) return V[n - 1];
       let i = 1; while (i < n - 1 && ts[i] < t) i++; const u = (t - ts[i - 1]) / (ts[i] - ts[i - 1]); return V[i - 1] + (V[i] - V[i - 1]) * u;
@@ -456,15 +527,22 @@
        told so once, in the console, where every probe of this chapter reads it) */
     const _noTake = new Set();
     function noTake(P, name) { const k = P.key + ':' + name; if (_noTake.has(k)) return; _noTake.add(k); console.warn(P.key + ' has no take ' + name + ' (a film asked for it; it has: ' + Object.keys(P.acts).join(', ') + ')'); }
-    function pose(P, name, t, loop = false, name2 = null, k2 = 0, t2 = 0) {
+    /* (v26.8: an optional THIRD take, name3 at k3 from t3, so a body blended between two takes can go on into a third
+       from exactly where it stands: the brown hermit sits up at 0.42 of his laying-on take, and at the petals the
+       film switched to the whole of it in one frame, his lean jumping from about ten degrees to twenty-five. Absent,
+       every weight is what it was) */
+    function pose(P, name, t, loop = false, name2 = null, k2 = 0, t2 = 0, name3 = null, k3 = 0, t3 = 0) {
       if (!P || !P.ready) return;
       if (!P.acts[name]) { noTake(P, name); return; }
       if (name2 && !P.acts[name2]) noTake(P, name2);
-      for (const k in P.acts) { const w = k === name ? 1 - (name2 ? k2 : 0) : (k === name2 ? k2 : 0); P.w[k] = w; P.acts[k].setEffectiveWeight(w); }
+      if (name3 && !P.acts[name3]) noTake(P, name3);
+      for (const k in P.acts) { const w = k === name ? 1 - (name2 ? k2 : 0) - (name3 ? k3 : 0) : (k === name2 ? k2 : (k === name3 ? k3 : 0)); P.w[k] = w; P.acts[k].setEffectiveWeight(w); }
       const A = P.acts[name], d = A.getClip().duration; A.time = loop ? ((t % d) + d) % d : Math.max(0, Math.min(d - 1e-3, t));
       if (name2 && P.acts[name2]) { const A2 = P.acts[name2], d2 = A2.getClip().duration; A2.time = Math.max(0, Math.min(d2 - 1e-3, t2)); }
+      if (name3 && P.acts[name3]) { const A3 = P.acts[name3], d3 = A3.getClip().duration; A3.time = Math.max(0, Math.min(d3 - 1e-3, t3)); }
       P.cur = name; P.filmT = t; armsBack(P); personSettle(P); P.mixer.update(0);
       if (P.hd) headDampLay(P);
+      if (P.shd) shouldersLay(P);
       if (P.restLegs) seatLegsLay(P);
       if (P.restHands && !(P.layK > 0)) restHandsLay(P);
       if (!P.htLate) handsTrue(P);
@@ -487,6 +565,7 @@
         armsBack(P);
         P.mixer.update(wdt * P.rate);
         if (P.hd) headDampLay(P);
+        if (P.shd) shouldersLay(P);
         if (P.gaze || P.gazeK > 0) gazeTick(P, wdt);
         if (P.lay || P.layK > 0) layTick(P, wdt);
         if (P.restLegs) seatLegsLay(P);
@@ -641,9 +720,11 @@
         for (const R of HT0.K) if (R.on) { R.b.quaternion.copy(R.sv); R.on = false; } HT0.on = false; }
       const LG = P.restLegs; if (LG && LG.wrote) { for (const sd in LG.R) { const r = LG.R[sd]; r.up.quaternion.copy(r.qUp); r.fore.quaternion.copy(r.qFore); r.foot.quaternion.copy(r.qFoot);
         if (r.gUp) r.gUp.quaternion.copy(r.qGUp); if (r.gLow) r.gLow.quaternion.copy(r.qGLow); } LG.wrote = false; }
-      const A = P.arms; if (!A) return; for (const sd in A) { const a = A[sd];
+      const A = P.arms; if (A) for (const sd in A) { const a = A[sd];
       if (a.curled) { for (const F of a.fing) F.b.quaternion.copy(F.q); if (a.fingRest) { for (const F of a.fingRest) F.b.quaternion.copy(F.q); a.fingRest = null; } a.curled = false; }
-      if (!a.wrote) continue; a.up.quaternion.copy(a.qUp); a.fore.quaternion.copy(a.qFore); a.hand.quaternion.copy(a.qHand); a.wrote = false; } }
+      if (!a.wrote) continue; a.up.quaternion.copy(a.qUp); a.fore.quaternion.copy(a.qFore); a.hand.quaternion.copy(a.qHand); a.wrote = false; }
+      /* (the shoulders let down were laid first, under every hand: so they are taken off last) */
+      const SH = P.shd; if (SH && SH.on) { for (const R of SH.S) { R.cl.quaternion.copy(R.scl); R.up.quaternion.copy(R.sup); } SH.on = false; } }
     /* A HAND CLOSED ROUND A THING (the woman with the taper): each finger's three joints turned by `th` radians toward
        the palm's own facing, about the hand's own measured across-axis as it lies in the world now. Laid on after
        handTo() and taken off by armsBack() before the mixer runs again, as every laid pose is (v11.5). A rig with no
@@ -658,6 +739,31 @@
       for (const F of a.fing) { _hq.setFromAxisAngle(_ha, th * (F.i === 3 ? 0.7 : 1)); F.b.parent.getWorldQuaternion(_hq2);
         /* world' = turn * world, so local' = parentWorld^-1 * turn * parentWorld * local */
         F.b.quaternion.premultiply(_hq2).premultiply(_hq).premultiply(_hq2.invert()); }
+    }
+    /* (v26.8) A HAND OPENED ROUND A THING HELD FROM BELOW (photograph 5: the kneeling man's fingers spread up the bowl's
+       sides, straight and a little bent, where the woman's take left hers closed in fists against it, Chad: "the arms of
+       the female ... dont look very natural and abit awkward while holding the bai sri"): each finger's and the thumb's
+       joints laid at the body's own A pose (open, relaxed: the generated people were made in it), then the four fingers
+       bent toward the palm by `curl` radians at their three joints (the bowl's curve), about the hand's own across-axis.
+       Laid after handTo() and taken off by armsBack() before the mixer runs again (the same bookkeeping curlFingers
+       keeps). A rig with no finger bones is left as it is */
+    function fingersOpen(P, sd, k = 1, curl = [0.18, 0.22, 0.12]) {
+      const As = P && P.ready ? armsOf(P) : null, a = As && As[sd]; if (!a || !(k > 0)) return;
+      if (!a.fing) { a.fing = []; const S0 = sd === 'L' ? 'Left' : 'Right';
+        for (const f of ['Index', 'Middle', 'Ring', 'Pinky']) for (let i = 1; i <= 3; i++) { const b = P.bone[S0 + 'Hand' + f + i] || P.bone['mixamorig:' + S0 + 'Hand' + f + i]; if (b) a.fing.push({ b, q: new THREE.Quaternion(), i }); } }
+      if (!a.thumb) { a.thumb = []; const S0 = sd === 'L' ? 'Left' : 'Right';
+        for (let i = 1; i <= 3; i++) { const b = P.bone[S0 + 'HandThumb' + i] || P.bone['mixamorig:' + S0 + 'HandThumb' + i]; if (b) a.thumb.push({ b, q: new THREE.Quaternion(), i }); } }
+      if (!a.fing.length) return;
+      if (!a.curled) { for (const F of a.fing) F.q.copy(F.b.quaternion); a.fingRest = a.thumb.map(F => ({ b: F.b, q: F.b.quaternion.clone(), i: F.i })); a.curled = true; }
+      for (const F of a.fing.concat(a.thumb)) { if (!F.qb) F.qb = bindLocal(P, F.b) || F.b.quaternion.clone(); F.b.quaternion.copy(F.qb); }
+      a.hand.updateWorldMatrix(true, true);
+      a.hand.getWorldQuaternion(_hq); _hf.copy(a.fL).applyQuaternion(_hq); _hn.copy(a.nL).applyQuaternion(_hq); _ha.crossVectors(_hf, _hn).normalize();
+      for (const F of a.fing) { _hq.setFromAxisAngle(_ha, curl[F.i - 1] || 0); F.b.parent.getWorldQuaternion(_hq2);
+        F.b.quaternion.premultiply(_hq2).premultiply(_hq).premultiply(_hq2.invert()); F.b.updateWorldMatrix(false, true); }
+      /* (part of the way, while the hold begins or ends: each joint eased from the take's own) */
+      if (k < 0.999) { for (const F of a.fing) { _hq.copy(F.b.quaternion); F.b.quaternion.copy(F.q).slerp(_hq, k); }
+        for (const F of a.fingRest) { _hq.copy(F.b.quaternion); F.b.quaternion.copy(F.q).slerp(_hq, k); }
+        a.hand.updateWorldMatrix(false, true); }
     }
     /* ONE HAND onto a thing, by k: its palm's middle at `at` (a point of the thing's surface), its fingers along `f`,
        its palm facing `n` (into the thing). o: { back: how far behind the palm's middle the wrist is, in metres (the
@@ -1336,15 +1442,23 @@
       for (let i = 0; i < 4; i++) if (X.lv[i]) for (const m of X.lv[i]) m.visible = i === k;
       X.lvShown = k; X.lvNow = want;
     }
+    /* (v26.8: A LEVEL BY THE SIZE ON THE SCREEN. A level was chosen by the distance from the lens alone, so a film's narrow
+       lens drew a man far off as big as one beside him and gave him the far man's body: the brown hermit, 2.3 m from the
+       lens at the festival's bai sri through a 26 to 45 degree lens, as big on the screen as a man 0.7 to 1.3 m away in
+       play's 72, drawn from his 30,000 triangles where his full model is made for that (Chad: "look at how bad and blocky
+       the arms look , are these the full res models?"). The distance is now read through the lens: times the lens's
+       half-height against play's. Play's own lens reads exactly as before) */
+    const LENS0 = Math.tan(72 * Math.PI / 360);
     function peopleLevels(cam = camera) {
       cam.getWorldPosition(_lens);
+      const lk = Math.tan((cam.fov || 72) * Math.PI / 360) / LENS0;
       for (const P of people) { if (!P.ready || P.driver) { if (P.driver && P.ready && P.lvShown !== -2) { for (let i = 0; i < 4; i++) if (P.lv[i]) for (const m of P.lv[i]) m.visible = false; P.lvShown = -2; } continue; }
         if (!P.group.visible) continue;
         /* (o.lodK: a child is two thirds of a grown body's height, and is drawn at each level two thirds as far) */
-        const g = P.group.position, d = Math.hypot(g.x - _lens.x, g.y + 1.0 - _lens.y, g.z - _lens.z) / (P.o.lodK || 1);
+        const g = P.group.position, d = lk * Math.hypot(g.x - _lens.x, g.y + 1.0 - _lens.y, g.z - _lens.z) / (P.o.lodK || 1);
         showLevel(P, P.force != null ? P.force : levelFor(P.lvNow < 0 ? 3 : P.lvNow, d, P.lv[0] ? 0 : 1)); }
       for (const M0 of crowd) { if (!M0.group.visible || !M0.D.ready) continue;
-        const g = M0.group.position, d = Math.hypot(g.x - _lens.x, g.y + 0.8 - _lens.y, g.z - _lens.z);
+        const g = M0.group.position, d = lk * Math.hypot(g.x - _lens.x, g.y + 0.8 - _lens.y, g.z - _lens.z);
         showLevel(M0, levelFor(M0.lvNow < 0 ? 3 : M0.lvNow, d, 1)); }
     }
 
@@ -1361,8 +1475,11 @@
     const SEIZA_WIN = [0.4, 6.8, 34];
     /* (and its look round RESTRAINED, a little: Chad, 13 Nov 2026, "slightly restrained so they are not looking so far
        left and so far right". 0.6 of the take's own turn about its middle: the face swept 54 and 61 degrees either side,
-       now about 33 and 36 (headDamp, headturn.mjs). Every kneeler wears it with the window) */
-    const SEIZA_LOOK = { seiza: [0.6] };
+       now about 33 and 36 (headDamp, headturn.mjs). Every kneeler wears it with the window). (v26.8, Chad, 13 Nov 2026,
+       evening: "the looking left and right passive animation of all the audience can further reduce the range of motion,
+       as they still look very far left and very far right and abit awkward": 0.35 of it, about 19 and 21 degrees either
+       side: still a look round, a calm one, not a stare ahead) */
+    const SEIZA_LOOK = { seiza: [0.35] };
     const PHO_AT = benchAt(0.46, 0.04);                                          // Grandmaster Pho's place: the bench's east end
     /* each seat's top in metres, MEASURED on its model (tools/probes/seatmeasure.mjs: the sofa's cushion 0.46 and sat
        into by 3 cm; the bench's slats 0.40 and the chair's seat 0.39, each at the size b_world2.js draws it) */
@@ -1388,7 +1505,8 @@
       const tonAt = [TON_TABLE.x + 1.25, TON_TABLE.z + 0.35];
       /* (lodK 1.25: his full model drawn to 2.75 m, not 2.2: he is talked to from 1.9 to 2.3 m, where the lighter body's soft
          face was what was seen. In the line he stands 1.8 m from the player, inside the old reach: no new cost there) */
-      cast.ton = mkPerson('e4ton', tonAt[0], tonAt[1], faceTo(tonAt[0], tonAt[1], DATA.spawn.x, DATA.spawn.z), { take: 'Idle_3', talk: 'Stand_and_Chat', headDamp: SEIZA_LOOK, lodK: 1.25 });
+      /* (v26.8: his shoulders let down in his stand and his talk: shouldersLay) */
+      cast.ton = mkPerson('e4ton', tonAt[0], tonAt[1], faceTo(tonAt[0], tonAt[1], DATA.spawn.x, DATA.spawn.z), { take: 'Idle_3', talk: 'Stand_and_Chat', headDamp: SEIZA_LOOK, lodK: 1.25, shoulders: { Idle_3: 1, Stand_and_Chat: 1 } });
       cast.ton.home = { x: tonAt[0], z: tonAt[1], ry: faceTo(tonAt[0], tonAt[1], DATA.spawn.x, DATA.spawn.z) };
       /* the woman at his bench stands by the low table at his right hand, turned to those who kneel (photograph 6) */
       { const [ax, az] = benchAt(1.95, 0.95), [kx, kz] = benchAt(0.3, 1.9);
@@ -1530,7 +1648,12 @@
        slowed to a dance's pace (c_crowd.js DWALK.rate). The walk written for their one crossing, `procession`, went
        with that crossing (its take is out of their files; the motion is kept in masters/v26.0/src). The library's
        walk on them was a stride: photographed crossing the ground, and refused. */
-    const DLOOP = { walkdance: [4.633, 7.4, 0.35] };
+    const DLOOP = { walkdance: [4.633, 7.4, 0.35],
+    /* (v26.8, Chad: "when the dancers start dancing, and they switch positions, they clip and collide into each other":
+       the film's second dance walked 2.6 m to one side, the mirrored dancers the other way, into their neighbours. The
+       film dances only their dance made in place, the whole 14.6 s: made a loop here, its last 1.2 s eased onto its
+       first pose (its hips come back within 10 cm of where they began, so the ease carries no step); people.sh) */
+                    dance1: [0, 9.95, 1.2] };
     /* (each body's feet set on the turf by her own measure, gait.mjs: in this walk the second dancer's ankles never come
        lower than 10.5 cm, where they stand at 8.3 at rest: she walked two and a half centimetres over the grass. The
        first dancer's come to 7.5 and 8.1 against 8.1: left as they are) */
@@ -1544,8 +1667,8 @@
     /* THOSE WHO GO UP at the west tent in the film (photographs 11 and 12): a woman who raises her bai sri to the hermit
        and goes quite still; a man heaped with petals whose arms rise wide (his own take's upper body on a grounded
        kneel: o.mix). Each is stood where his hands and the master's can meet (meetHands) */
-    cast.goA = mkPerson('e4deva', -9.2, -2.2, Math.PI / 2 * -1, { take: 'seiza', centre: true, hidden: true, blobW: 0.95, blobD: 1.0 });
-    cast.goB = mkPerson('e4devc', -9.2, -0.95, Math.PI / 2 * -1, { take: 'seiza', centre: true, hidden: true, blobW: 0.95, blobD: 1.0, mix: [['armsup', 'armsopen', 'seiza', 0.5]] });
+    cast.goA = mkPerson('e4deva', -9.2, -2.2, Math.PI / 2 * -1, { take: 'seiza', centre: true, hidden: true, blobW: 0.95, blobD: 1.0, fullFilm: true });
+    cast.goB = mkPerson('e4devc', -9.2, -0.95, Math.PI / 2 * -1, { take: 'seiza', centre: true, hidden: true, blobW: 0.95, blobD: 1.0, mix: [['armsup', 'armsopen', 'seiza', 0.5]], fullFilm: true });
     /* PETALS LYING ON A BODY (photograph 12: "heaped with petals from his hair to his lap"). Each petal is laid on the
        body's own surface in its bind pose and given to the bone under it (the crown to the head, the shoulders to the
        collar bones, the lap to the thighs: a thigh's front is its top when a man kneels), so it rides him as he moves,

@@ -13,7 +13,8 @@
   "x3endC": "AK80vvxBs5HnMTSeS8yK",
   "x3endD": "d5VkU61MnIrsc3dMzFMd",
   "x3closemus": "hlXqheqDfva2RiN3j6Gj",
-  "x3lastmus": "THVDpCdVbXhlgBXMlSBm"
+  "x3lastmus": "THVDpCdVbXhlgBXMlSBm",
+  "x3festmus2": "upnACslCf5nMiorhoJDF"
  },
  "sounds": {
   "x3openmus": [
@@ -80,6 +81,12 @@
    "AZOL6S9orWZr77uuzGqK",
    "Ir9WVwrfa5feTdApucV3",
    "ZwYpH1MwOcXwkLTBkZGQ"
+  ],
+  "x3festmus2": [
+   "xUK3uhJdpbIhQQuIKYxu",
+   "kNl00pci4q8uwETbooIQ",
+   "I4P9BLeQI4WJk1AGhOnA",
+   "IaWndYDJKQK1yNtYDWCk"
   ]
  }
 }

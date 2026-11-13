@@ -29,6 +29,11 @@ PROMPTS = json.load(open(os.path.join(HERE, 'prompts.json'), encoding='utf-8'))
 PACE = 2.3                                            # the game's median, words a second (v5.30)
 _rs = os.path.join(HERE, 'sessions-resay.json')       # lines said again: their takes c, d, e were given this prompt (the same words; another tag)
 RESAY = json.load(open(_rs, encoding='utf-8'))['lines'] if os.path.exists(_rs) else {}
+# (v26.8: the lines Chad had re-written are said in new words, every letter of them: an older re-say of the same key no
+#  longer names what its later letters say. q3t4's takes c to e were heard against "I pick up a piece..." and read 0.21)
+_v268 = os.path.join(HERE, 'sessions-v268.json')
+if os.path.exists(_v268):
+    for _k in json.load(open(_v268, encoding='utf-8'))['lines']: RESAY.pop(_k, None)
 
 def norm(s):
     s = re.sub(r'\[[^\]]*\]', ' ', s)

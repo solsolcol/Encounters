@@ -1424,6 +1424,11 @@ function cullEachInstance(im) {
 const sphereCull = new Set();
 const _scV = new THREE.Vector3();
 function cullBySphere(root, cx, cy, cz, radius) {
+  /* v26.8: a root registered AGAIN while it is culled (a chapter adding a body's level later) has its meshes' own masks
+     given back first: read while culled, the cull's 0 was taken as theirs, and they were never drawn again (episode 4
+     chapter 3's man in trance: his near body dark from the festival film's first frame, measured layers.mask 0 under
+     parents all visible). A first registration is as it was */
+  if (root.userData.__sc) sphereCullShow(root);
   const meshes = [];
   root.traverse(o => { if (o.isMesh || o.isPoints || o.isLine || o.isSprite) meshes.push(o); });
   if (!meshes.length || !(radius > 0)) return;
@@ -5677,6 +5682,10 @@ function evBreathFrame(e, o, wdt) {
   if (e.bi === undefined) {
     e.bi = 0; e.bk = 0; e.bHeld = 0; e.bPeak = 0; e.bState = 'lead'; e.bT = 0; e.bTry = 0; e.bLog = []; e.bIdle = 0; e.bLeadNext = null; e.bTap = false;
     $('evBreath')?.classList.remove('hide');
+    /* (v26.8: `look: 'lotus'`, an opt-in picture of the same breath: a lotus that opens as he holds, the light climbing a
+       ring round it to a big gold mark, which is the band (Chad's pick, "Fill to the gold mark"). shell.html draws it;
+       absent, the ring as it always was) */
+    $('evBreath')?.classList.toggle('lotus', o.look === 'lotus');
   }
   const b = B[Math.min(e.bi, B.length - 1)];
   const edge = Math.max(0.3, +b.edge || 5), enough = Math.min(edge - 0.1, Math.max(0.05, +b.enough || 2)), kE = enough / edge;
@@ -5700,7 +5709,9 @@ function evBreathFrame(e, o, wdt) {
       break;
     case 'open':
       if (held) {
-        e.bHeld += (e.wdtHeld ?? wdt); e.bk = Math.min(1, e.bHeld / edge); e.bPeak = Math.max(e.bPeak, e.bk);
+        /* (v26.8: a breath's `accel`, the chanting pulling it: it fills faster the fuller it is, by 1 + accel x the level
+           a second of holding. Absent, by 1: as it always was, bit for bit) */
+        e.bHeld += (e.wdtHeld ?? wdt) * (1 + (+b.accel || 0) * e.bk); e.bk = Math.min(1, e.bHeld / edge); e.bPeak = Math.max(e.bPeak, e.bk);
         if (!e.bEnoughSaid && e.bk >= kE) { e.bEnoughSaid = true; call(o.onEnough, e.bi); }
         if (e.bk >= 1) end = 'held';
       } else if ((+b.pull || 0) > 0 && e.bk >= kE) { e.bState = 'pull'; e.bPullT = 0; }
@@ -9218,7 +9229,7 @@ const ADULT_TAKES = new Set([
   'q2K3', 'q2K4', 'q2A', 'q2B', 'q2C', 'q2D',
   /* v26.0 · episode 4 chapter 3, I Finally Found My Answers (masters/v26.0/sound.sh) */
   'q3o1', 'q3o2', 'q3o3', 'q3o4', 'q3o5', 'q3o6', 'q3v', 'q3p1', 'q3m0', 'q3m1', 'q3w1', 'q3w2', 'q3w3', 'q3u1',
-  'q3u2', 'q3u3', 'q3c1', 'q3c2', 'q3c3', 'q3t1', 'q3t2', 'q3t3', 'q3t4', 'q3t5', 'q3t6', 'q3t7', 'q3t8', 'q3a1',
+  'q3u2', 'q3u3', 'q3c1', 'q3c2', 'q3c3', 'q3t1', 'q3t2', 'q3t3', 'q3t4', 'q3t8', 'q3a1',
   'q3A0', 'q3A1', 'q3A2', 'q3A3', 'q3B0', 'q3B1', 'q3B2', 'q3B3', 'q3B4', 'q3B5', 'q3C0', 'q3C1', 'q3C2', 'q3C3',
   'q3C4', 'q3D0', 'q3D1', 'q3D2', 'q3D3', 'q3D4', 'q3D5', 'q3z1', 'q3K1', 'q3A', 'q3B', 'q3C', 'q3D']);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
@@ -9309,9 +9320,9 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   'cu2b1', 'lc2B1', 'lc2B2', 'pg2B1', 'lc2C1', 'lc2C2', 'pg2C1', 'lc2C3', 'lc2D1', 'pg2D1', 'cu2a2',
   /* v26.0 · episode 4 chapter 3: Grandmaster Pho, Ton, the woman at his bench (the chant is the ground's own sound, an
      effect: not here) */
-  'tn3a1', 'tn3a2', 'tn3d1', 'tn3m1', 'tn3m2', 'tn3c1', 'ds3c1', 'tn3c2', 'tn3n1', 'ph3g1', 'ph3n1', 'ph3n2',
-  'ph3n3', 'ph3n4', 'ph3n5', 'ph3n6', 'ph3n7', 'ph3g2', 'ph3g3', 'ph3g4', 'ph3g5', 'ph3b0', 'ph3b1', 'ph3b2',
-  'ph3b3', 'ph3b4', 'ph3bx', 'ph3by', 'ph3b5', 'ph3p1', 'ph3p2', 'ph3p3', 'ph3A1', 'ph3A2', 'tn3A1', 'ph3B1',
+  'tn3a1', 'tn3a2', 'tn3d1', 'tn3m1', 'tn3m2', 'tn3c1', 'ds3c1', 'ds3p1', 'tn3c2', 'tn3n1', 'ph3g1', 'ph3n1', 'ph3n2',
+  'ph3n3', 'ph3n4', 'ph3b0', 'ph3b1', 'ph3b2',
+  'ph3b3', 'ph3b4', 'ph3bx', 'ph3by', 'ph3b5', 'ph3p1', 'ph3A1', 'ph3A2', 'tn3A1', 'ph3B1',
   'ph3B2', 'ph3B3', 'ph3B4', 'ph3C1', 'ph3C2', 'ph3C3', 'ph3D1', 'ph3D2', 'ph3D3', 'ph3D4', 'ph3z0', 'ph3z1',
   'ph3z2']);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
@@ -13733,14 +13744,13 @@ const STING_SAMPLE = {
   q3v: ['q3v', 1], tn3a1: ['tn3a1', 1], q3p1: ['q3p1', 1], tn3a2: ['tn3a2', 1], tn3d1: ['tn3d1', 1],
   q3m0: ['q3m0', 1], q3m1: ['q3m1', 1], q3w1: ['q3w1', 1], q3w2: ['q3w2', 1], q3w3: ['q3w3', 1], q3u1: ['q3u1', 1],
   q3u2: ['q3u2', 1], tn3m1: ['tn3m1', 1], q3u3: ['q3u3', 1], tn3m2: ['tn3m2', 1], q3c1: ['q3c1', 1],
-  tn3c1: ['tn3c1', 1], q3c2: ['q3c2', 1], ds3c1: ['ds3c1', 1], tn3c2: ['tn3c2', 1], q3c3: ['q3c3', 1],
+  tn3c1: ['tn3c1', 1], q3c2: ['q3c2', 1], ds3c1: ['ds3c1', 1], ds3p1: ['ds3p1', 1], tn3c2: ['tn3c2', 1], q3c3: ['q3c3', 1],
   tn3n1: ['tn3n1', 1], ph3g1: ['ph3g1', 1], q3t1: ['q3t1', 1], q3t2: ['q3t2', 1], q3t3: ['q3t3', 1],
-  q3t4: ['q3t4', 1], q3t5: ['q3t5', 1], q3t6: ['q3t6', 1], q3t7: ['q3t7', 1], q3t8: ['q3t8', 1], q3a1: ['q3a1', 1],
-  ph3n1: ['ph3n1', 1], ph3n2: ['ph3n2', 1], ph3n3: ['ph3n3', 1], ph3n4: ['ph3n4', 1], ph3n5: ['ph3n5', 1],
-  ph3n6: ['ph3n6', 1], ph3n7: ['ph3n7', 1], ph3g2: ['ph3g2', 1], ph3g3: ['ph3g3', 1], ph3g4: ['ph3g4', 1],
-  ph3g5: ['ph3g5', 1], ph3b0: ['ph3b0', 1], ph3b1: ['ph3b1', 1], ph3b2: ['ph3b2', 1], ph3b3: ['ph3b3', 1],
+  q3t4: ['q3t4', 1], q3t8: ['q3t8', 1], q3a1: ['q3a1', 1],
+  ph3n1: ['ph3n1', 1], ph3n2: ['ph3n2', 1], ph3n3: ['ph3n3', 1], ph3n4: ['ph3n4', 1],
+  ph3b0: ['ph3b0', 1], ph3b1: ['ph3b1', 1], ph3b2: ['ph3b2', 1], ph3b3: ['ph3b3', 1],
   ph3b4: ['ph3b4', 1], ph3bx: ['ph3bx', 1], ph3by: ['ph3by', 1], ph3b5: ['ph3b5', 1], ph3p1: ['ph3p1', 1],
-  ph3p2: ['ph3p2', 1], ph3p3: ['ph3p3', 1], q3A0: ['q3A0', 1], ph3A1: ['ph3A1', 1], q3A1: ['q3A1', 1],
+  q3A0: ['q3A0', 1], ph3A1: ['ph3A1', 1], q3A1: ['q3A1', 1],
   ph3A2: ['ph3A2', 1], tn3A1: ['tn3A1', 1], q3A2: ['q3A2', 1], q3A3: ['q3A3', 1], q3B0: ['q3B0', 1],
   ph3B1: ['ph3B1', 1], ph3B2: ['ph3B2', 1], q3B1: ['q3B1', 1], ph3B3: ['ph3B3', 1], q3B2: ['q3B2', 1],
   q3B3: ['q3B3', 1], q3B4: ['q3B4', 1], ph3B4: ['ph3B4', 1], q3B5: ['q3B5', 1], q3C0: ['q3C0', 1],
@@ -13756,7 +13766,7 @@ const STING_SAMPLE = {
   x3endA: ['x3endA', 1], x3endB: ['x3endB', 1], x3endC: ['x3endC', 1], x3endD: ['x3endD', 1],
   x3festbed: ['x3festbed', 1], x3festmus: ['x3festmus', 1], x3keys: ['x3keys', 1], x3kneel: ['x3kneel', 1],
   x3lastmus: ['x3lastmus', 1], x3matroll: ['x3matroll', 1], x3matset: ['x3matset', 1], x3mem1: ['x3mem1', 1],
-  x3mem2: ['x3mem2', 1], x3mem3: ['x3mem3', 1], x3mem4: ['x3mem4', 1], x3mem5: ['x3mem5', 1], x3mem6: ['x3mem6', 1],
+  x3mem2: ['x3mem2', 1], x3mem4: ['x3mem4', 1], x3mem5: ['x3mem5', 1],
   x3nightmus: ['x3nightmus', 1], x3open: ['x3open', 1], x3openmus: ['x3openmus', 1], x3os1: ['x3os1', 1],
   x3os2: ['x3os2', 1], x3os3: ['x3os3', 1], x3os4: ['x3os4', 1], x3os5: ['x3os5', 1], x3os6: ['x3os6', 1],
   x3os7: ['x3os7', 1], x3os8: ['x3os8', 1], x3os9: ['x3os9', 1], x3page: ['x3page', 1], x3pen: ['x3pen', 1],

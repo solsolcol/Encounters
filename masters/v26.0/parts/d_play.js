@@ -353,7 +353,7 @@
     const WARM_DAY1 = ['q3v', 'tn3a1', 'q3p1', 'tn3a2', 'q3u1', 'q3u2', 'tn3m1', 'q3u3', 'tn3m2', 'q3c1', 'tn3c1', 'q3c2', 'ds3c1', 'tn3c2', 'q3c3',
                        'x3baitake', 'x3baiset', 'x3kneel', 'x3bowall', 'x3petals', 'x3chant', 'x3tone',
                        'x3grass1', 'x3grass2', 'x3grass3', 'x3grass4', 'x3grass5', 'x3grass6', 'x3grass7', 'x3grass8', 'x3os1', 'x3os2', 'x3os3', 'x3os4', 'x3os5', 'x3os6', 'x3wick'];
-    const WARM_DAY2 = ['ph3g1', 'ph3b0', 'ph3b1', 'ph3b2', 'ph3b3', 'ph3b4', 'ph3bx', 'ph3by', 'ph3b5', 'ph3p1', 'ph3p2', 'ph3p3', 'x3kneel', 'x3baiset', 'x3bell',
+    const WARM_DAY2 = ['ph3g1', 'ph3b0', 'ph3b1', 'ph3b2', 'ph3b3', 'ph3b4', 'ph3bx', 'ph3by', 'ph3b5', 'ph3p1', 'x3kneel', 'x3baiset', 'x3bell',
                        'x3grass1', 'x3grass2', 'x3grass3', 'x3grass4', 'x3grass5', 'x3grass6', 'x3grass7', 'x3grass8', 'x3os3', 'x3os7', 'x3os8', 'x3os9'];
     function dayOneStage() {
       look('DAY1', 0); auraAt(0, 0); mistK = 1; burstsClear();
@@ -745,8 +745,15 @@
        you." The engine's gate, the forty-ninth seam). The same three breaths, their bands now seconds WIDE OPEN: a drag up
        opens it, the lights come in as fast as it stands open, and a drag down shuts it; the third pulls (heavier to shut,
        and it creeps open while he lets go). Grandmaster Pho's lines are the breath's, unchanged */
-    const BREATHS = [{ enough: 2.6, edge: 7.5, told: true, lead: 1.4 }, { enough: 2.4, edge: 5.6 }, { enough: 2.4, edge: 5.2, pull: 1.3 }];
-    const GATE_WORLD = 0.55;
+    /* FILL TO THE GOLD MARK (v26.8, Chad, 13 Nov 2026: "the minigame, looks very buggy, and i still dont understand how to
+       play it, nor is it fun. You need to improve it visually, and think of how to make it even more engaging and fun";
+       of three ways put to him, his: "Fill to the gold mark: Hold to open the lotus, and let go when its light reaches a
+       big gold mark. Three times; on the third the chanting pulls it faster"). The engine's breath (the forty-sixth
+       seam) in its lotus look: hold anywhere and the lotus opens, its light climbing a ring; the big gold mark on the
+       ring is the band; let go inside it. LET GO is said in the gold every time (`told`), so the rule is always on
+       screen. The third breath fills faster the fuller it is (`accel`): the chanting pulling it. Each band is about
+       two seconds of holding wide; nothing tests a finger's speed */
+    const BREATHS = [{ enough: 2.6, edge: 4.8, told: true, lead: 1.4 }, { enough: 2.4, edge: 4.6, told: true }, { enough: 2.2, edge: 4.6, told: true, accel: 1.3 }];
     const open = { k: 0, shown: -1, over: 0, i: -1, st: '' };
     function breathBegin() {
       if (!kit || !kit.event) { taughtBegin(false, { closed: 0, held: 0 }); return; }
@@ -754,11 +761,11 @@
       play.busy = true; setPhase('breath', { complete: false });
       const said = { open: false };
       kit.event({
-        kind: 'gate', low: true, title: W.breathTitle, prompt: W.breathTitle, label: W.breathTitle,
+        kind: 'breath', look: 'lotus', demo: 'lotus', low: true, title: W.breathTitle, prompt: W.breathTitle, label: W.breathTitle,
         brief: TOUCHY ? W.breathBrief : W.breathBriefKey, whereWord: TOUCHY ? W.breathWhere : W.breathWhereKey,
-        openWord: W.breathOpen, closeWord: W.breathClose, restWord: '', breaths: BREATHS, gain: 2, cost: 2, idle: 22, at: { sx: 0.5, sy: 0.74 },
-        /* (the world opens with the gate itself, a little, and with the lights that have come through it, the rest) */
-        onLevel: (k, held, i, st, gk) => { open.k = Math.max(k, GATE_WORLD * (gk || 0)); open.i = i; open.st = st;
+        openWord: W.breathOpen, closeWord: W.breathClose, restWord: '', breaths: BREATHS, gain: 2, cost: 2, idle: 22, fall: 1.4, at: { sx: 0.5, sy: 0.7 },
+        /* (the world opens with the lotus: the light, the mist, the gold on his teacher, and every sound of the ground) */
+        onLevel: (k, held, i, st) => { open.k = k; open.i = i; open.st = st;
           if (st === 'wait' && i === 0 && !said.open) { said.open = true; fxLine('ph3b1'); }
           if (i === 2 && (st === 'open' || st === 'pull')) play.pull3 = k; else play.pull3 = 0; },
         onEnough: (i) => { if (i === 0) fxLine('ph3b2'); },
@@ -813,7 +820,7 @@
       const c = play.breath.closed;
       bank(c >= 3 ? W.noteBreath3 : c === 2 ? W.noteBreath2 : c === 1 ? W.noteBreath1 : W.noteBreath0, 0);
       after(resumed ? 1.0 : 0.9, () => { if (!live(run)) return;
-        line('ph3b5', cast.pho); queueGap(0.6); line('ph3p1', cast.pho); queueGap(0.35); line('ph3p2', cast.pho); queueGap(0.35); line('ph3p3', cast.pho);
+        line('ph3b5', cast.pho); queueGap(0.6); line('ph3p1', cast.pho);           // (v26.8: the road in one line, Chad's "greatly shortened")
         queueFn(() => { if (live(run)) decideBegin(false); }); });
     }
     function decideBegin(resumed) {

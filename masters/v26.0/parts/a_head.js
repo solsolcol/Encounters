@@ -116,27 +116,26 @@
      moves what follows it. The names are QUOTED on purpose: build.py gives a sound to a chapter's own pack only when
      the chapter names it in quotes (v21.1). Written by masters/v26.0/script/secs.py from masters/v26.0/script/lines.py. */
   /* SECS BEGIN */
-  const SECS = {      // 104 of 104 MEASURED from their takes; the rest estimated at the speaker's pace
+  const SECS = {      // 93 of 93 MEASURED from their takes; the rest estimated at the speaker's pace
     /* him */
     'q3o1': 4.01, 'q3o2': 1.69, 'q3o3': 2.89, 'q3o4': 5.37, 'q3o5': 11.85, 'q3o6': 6.17, 'q3v': 4.41, 'q3p1': 0.97,
     'q3m0': 5.69, 'q3m1': 5.93, 'q3w1': 2.33, 'q3w2': 4.25, 'q3w3': 6.81, 'q3u1': 1.93, 'q3u2': 3.13, 'q3u3': 6.49,
-    'q3c1': 2.81, 'q3c2': 2.33, 'q3c3': 7.21, 'q3t1': 3.85, 'q3t2': 7.13, 'q3t3': 7.93, 'q3t4': 4.97, 'q3t5': 8.01,
-    'q3t6': 4.49, 'q3t7': 8.73, 'q3t8': 1.07, 'q3a1': 7.61, 'q3A0': 2.33, 'q3A1': 7.61, 'q3A2': 6.01, 'q3A3': 6.09,
-    'q3B0': 5.69, 'q3B1': 14.89, 'q3B2': 2.89, 'q3B3': 5.21, 'q3B4': 1.83, 'q3B5': 5.69, 'q3C0': 7.05, 'q3C1': 6.57,
-    'q3C2': 1.21, 'q3C3': 1.77, 'q3C4': 5.13, 'q3D0': 5.93, 'q3D1': 2.97, 'q3D2': 7.85, 'q3D3': 10.21, 'q3D4': 4.33,
-    'q3D5': 5.85, 'q3z1': 7.61, 'q3K1': 8.01, 'q3A': 3.45, 'q3B': 4.17, 'q3C': 4.09, 'q3D': 3.85,
+    'q3c1': 2.81, 'q3c2': 2.33, 'q3c3': 7.21, 'q3t1': 7.13, 'q3t2': 5.49, 'q3t3': 6.33, 'q3t4': 4.17, 'q3t8': 1.07,
+    'q3a1': 7.61, 'q3A0': 2.33, 'q3A1': 7.61, 'q3A2': 6.01, 'q3A3': 6.09, 'q3B0': 5.69, 'q3B1': 15.05, 'q3B2': 2.89,
+    'q3B3': 5.21, 'q3B4': 1.83, 'q3B5': 5.69, 'q3C0': 7.05, 'q3C1': 6.57, 'q3C2': 1.21, 'q3C3': 1.77, 'q3C4': 5.13,
+    'q3D0': 5.93, 'q3D1': 2.97, 'q3D2': 7.85, 'q3D3': 10.21, 'q3D4': 4.33, 'q3D5': 5.85, 'q3z1': 7.61, 'q3K1': 8.01,
+    'q3A': 3.45, 'q3B': 4.17, 'q3C': 4.09, 'q3D': 3.85,
     /* Ton */
     'tn3a1': 2.89, 'tn3a2': 6.33, 'tn3d1': 2.65, 'tn3m1': 1.45, 'tn3m2': 4.56, 'tn3c1': 5.61, 'tn3c2': 4.25,
     'tn3n1': 1.61, 'tn3A1': 2.09,
     /* the woman at his bench */
-    'ds3c1': 7.37,
+    'ds3c1': 7.37, 'ds3p1': 2.03,
     /* Grandmaster Pho */
-    'ph3g1': 4.41, 'ph3n1': 8.57, 'ph3n2': 6.01, 'ph3n3': 8.55, 'ph3n4': 7.76, 'ph3n5': 5.28, 'ph3n6': 6.89,
-    'ph3n7': 5.29, 'ph3g2': 1.93, 'ph3g3': 10.08, 'ph3g4': 5.36, 'ph3g5': 5.44, 'ph3b0': 3.02, 'ph3b1': 0.71,
-    'ph3b2': 0.73, 'ph3b3': 3.04, 'ph3b4': 4.1, 'ph3bx': 0.77, 'ph3by': 3.29, 'ph3b5': 5.77, 'ph3p1': 4.49,
-    'ph3p2': 3.61, 'ph3p3': 4.17, 'ph3A1': 3.13, 'ph3A2': 4.89, 'ph3B1': 1.38, 'ph3B2': 3.93, 'ph3B3': 1.53,
-    'ph3B4': 2.89, 'ph3C1': 6.09, 'ph3C2': 2.33, 'ph3C3': 9.12, 'ph3D1': 3.04, 'ph3D2': 4.49, 'ph3D3': 2.95,
-    'ph3D4': 2.73, 'ph3z0': 6.14, 'ph3z1': 6.25, 'ph3z2': 1.77
+    'ph3g1': 4.41, 'ph3n1': 8.73, 'ph3n2': 5.75, 'ph3n3': 11.37, 'ph3n4': 6.57, 'ph3b0': 1.87, 'ph3b1': 0.71,
+    'ph3b2': 0.73, 'ph3b3': 3.04, 'ph3b4': 4.1, 'ph3bx': 0.77, 'ph3by': 3.29, 'ph3b5': 5.77, 'ph3p1': 6.09,
+    'ph3A1': 3.13, 'ph3A2': 5.53, 'ph3B1': 1.38, 'ph3B2': 3.93, 'ph3B3': 1.53, 'ph3B4': 2.89, 'ph3C1': 6.09,
+    'ph3C2': 2.33, 'ph3C3': 9.12, 'ph3D1': 3.04, 'ph3D2': 4.49, 'ph3D3': 2.95, 'ph3D4': 2.73, 'ph3z0': 6.14,
+    'ph3z1': 6.25, 'ph3z2': 1.77
   };
   /* SECS END */
 
@@ -174,14 +173,24 @@
   /* THE NIGHT BETWEEN (§4.2): five pictures and no word until the last. The group's photograph in the afternoon, his
      bai sri still in his hands; the banners against a red evening; the offering tables by their own candles; his bai
      sri on the sill of a rented room as the window pales; first light on the turf, and Ton */
-  const BETW = tl(0, [[0.6], ['@n1'], [4.2], ['@n2'], [3.3], ['@n3'], [3.8], ['@n4'], [4.0], ['@n5'], [2.0], ['tn3n1', 0.9]]);
+  const BETW = tl(0, [[0.6], ['@n1'], [0.8], ['ds3p1', 1.4], ['@n2'], [3.3], ['@n3'], [3.8], ['@n4'], [4.0], ['@n5'], [2.0], ['tn3n1', 0.9]]);
 
-  /* THE TELLING (§4.3 P7): his eight sentences, a breath between each; "He listened."; a short black */
-  const TELL = tl(0, [[0.9], ['q3t1', 0.7], ['q3t2', 0.8], ['q3t3', 0.8], ['q3t4', 0.8], ['q3t5', 0.9], ['q3t6', 0.8], ['q3t7', 1.5], ['q3t8', 1.5], ['@black'], [0.6]]);
-  /* THE ANSWERS (§4.3 P8): out of that black; his line; Grandmaster Pho's seven; his eyes close a moment (@blink); the
-     first teaching, four lines; it ends in the clear on play's own picture */
-  const ANSW = tl(0, [[0.6], ['q3a1', 0.9], ['ph3n1', 0.8], ['ph3n2', 1.2], ['ph3n3', 0.8], ['ph3n4', 1.0], ['ph3n5', 1.3], ['ph3n6', 1.2], ['ph3n7', 1.1],
-                      ['@blink'], [0.9], ['ph3g2', 1.4], ['ph3g3', 1.0], ['ph3g4', 0.9], ['ph3g5', 1.2]]);
+  /* THE TELLING (§4.3 P7; v26.8, Chad, 13 Nov 2026: "Just focus on his sensitivity, him unable to control his body
+     movements when hearing chanting, him feeling the distinct energy of different amulets, and him opening up his body
+     to kumanthongs before. Be direct and straightforward."): his four sentences, a breath between each; "He listened.";
+     a short black */
+  const TELL = tl(0, [[0.9], ['q3t1', 0.8], ['q3t2', 0.9], ['q3t3', 0.9], ['q3t4', 1.5], ['q3t8', 1.5], ['@black'], [0.6]]);
+  /* THE ANSWERS (§4.3 P8; v26.8, Chad: "greatly shortened and more straight to the point. Start with talking about how
+     different people bring different things and baramee from past lives to the present life, how the player is born with
+     a gift and a mission, and how he should learn to control it by opening and closing at will"): out of that black; his
+     line; Grandmaster Pho's three; his eyes close a moment (@blink); the first teaching in one line; it ends in the clear
+     on play's own picture */
+  const ANSW = tl(0, [[0.6], ['q3a1', 0.9], ['ph3n1', 1.1], ['ph3n2', 1.2], ['ph3n3', 1.0], ['@blink'], [0.7], ['ph3n4', 2.2]]);
+  /* (where the words a look is cued on begin inside each take, in seconds from its start: the picked takes' own word
+     timings (faster-whisper on this machine, v26.8). Re-measure them when a take changes: "Different" and "and
+     different baramee" in ph3n1; "You were born" and "and with a mission" in ph3n2; "Without control" and "You opened"
+     in ph3n3; "To open" in ph3n4) */
+  const ANSW_WORDS = { n1diff: 5.00, n1and: 7.08, n2born: 2.56, n2and: 4.00, n3wo: 2.86, n3you: 7.14, n4to: 2.48 };
 
   /* THE FOUR ENDINGS (§4.5): each its own road to the same place; `close` is where the close all four share begins */
   const ENDT = {
@@ -195,9 +204,10 @@
               ['@chant'], [3.4], ['q3D2', 1.2], ['q3D3', 1.2], ['@back'], [1.4], ['q3D4', 0.9], ['ph3D4', 1.1], ['q3D5', 1.3], ['@close']])
   };
   /* THE CLOSE (§4.6), on its own clock from each ending's `close`: he takes his bai sri up and raises it; his teacher's
-     two lines; both the old man's hands laid on it; a handful of petals; ONE BREATH, played (the film waits for it);
-     his line; the bai sri taken from him and set on the table; "Tomorrow we begin."; the case file's last words */
-  const CLOSE = tl(0, [[0.7], ['@take'], [3.5], ['ph3z0', 0.8], ['ph3z1', 0.9], ['@hands'], [3.0], ['@petals'], [3.8], ['@breath'], [1.4], ['q3z1', 1.0],
+     two lines; both the old man's hands laid on it; a handful of petals; HIS OWN LIGHT, his hands shaking and in hand
+     (v26.8: the breath once played here is shown instead); his line; the bai sri taken from him and set on the table;
+     "Tomorrow we begin."; the case file's last words */
+  const CLOSE = tl(0, [[0.7], ['@take'], [3.5], ['ph3z0', 0.8], ['ph3z1', 0.9], ['@hands'], [3.0], ['@petals'], [3.8], ['@glow'], [4.8], ['q3z1', 1.0],
                        ['@give'], [4.6], ['ph3z2', 1.8], ['q3K1', 1.2], ['@black'], [1.8]]);
 
   /* THE OPENING FILM, THE QUESTIONS (§4.0): the forum's thread on his laptop, and his answer typed; his notebook, the
@@ -260,21 +270,21 @@
       'e4ton', 'e4tonm', 'e4tonf', 'e4tonh', 'e4bench', 'e4benchm', 'e4benchf', 'e4benchh', 'e4hermita',
       'e4hermitam', 'e4hermitaf', 'e4hermitah', 'e4hermitb', 'e4hermitbm', 'e4hermitbf', 'e4hermitbh', 'e4red',
       'e4redm', 'e4redf', 'e4redh', 'e4white', 'e4whitem', 'e4whitef', 'e4whiteh', 'e4dancera', 'e4danceram',
-      'e4danceraf', 'e4dancerb', 'e4dancerbm', 'e4dancerbf', 'e4deva', 'e4devam', 'e4devaf', 'e4devb', 'e4devbm',
-      'e4devbf', 'e4devc', 'e4devcm', 'e4devcf', 'e4devd', 'e4devdm', 'e4devdf', 'e4deve', 'e4devem', 'e4devef',
-      'e4devf', 'e4devfm', 'e4devff', 'e4devfh', 'e4devg', 'e4devgm', 'e4devgf', 'e4devh', 'e4devhm', 'e4devhf',
-      'e4girl', 'e4girlm', 'e4girlf', 'e4boy', 'e4boym', 'e4boyf', 'e4monkb', 'e4monkbm', 'e4monkbf', 'e4monkc',
-      'e4monkcm', 'e4monkcf', 'pho', 'phof', 'w3baisri', 'w3naga', 'w3wheel', 'w3parasol', 'w3tower', 'w3candle',
-      'w3fan', 'w3nagastaff', 'w3pewter', 'w3purple', 'w3fruit', 'w3sweets', 'w3khantok', 'w3puff', 'w3chair',
-      'w3lowtable', 'w3bench', 'w3sofa', 'w3petalbowl', 'w3petalsteel', 'w3smallbaisri', 'w3candlemid',
-      'w3candlesmall', 'w3kratip', 'w3chicken', 'w3coconut', 'w3soda', 'w3water', 'w3matroll', 'w3shirt', 'w3chrys',
-      'w3roses', 'w3claypot', 'w3pchair', 'w3horns', 'w3taper', 'w3glass', 'w3tissue', 'w3nagafount', 'w3nagagreen',
-      'w3nagawhite', 'w3ganesha', 'w3croton', 'w3dracaena', 'w3waterjar', 'w3walllamp', 'w3t_turf', 'w3t_petalturf',
-      'w3t_earth', 'w3t_gravel', 'w3t_redplank', 'w3t_tin', 'w3t_brick', 'w3t_skirt', 'w3t_satin', 'w3t_mat',
-      'w3t_carpet', 'w3t_bluemat', 'w3t_swag', 'w3t_banner', 'w3t_treeline', 'w3t_redroof', 'w3t_hallbrick',
-      'w3t_steptile', 'w3t_lawn', 'w3t_kalae', 'w3t_fretwork', 'w3t_sign', 'w3banana2', 'w3frangipani',
-      'w3isanhouse', 'w3tank', 'w3aircon', 'w3scooter', 'w3t_render', 'w3t_cloudbank', 'w3t_cloudtall',
-      'w3t_cloudflat', 'w3t_cloudthree', 'w3t_cirrus',
+      'e4danceraf', 'e4dancerb', 'e4dancerbm', 'e4dancerbf', 'e4deva', 'e4devam', 'e4devaf', 'e4devah', 'e4devb',
+      'e4devbm', 'e4devbf', 'e4devc', 'e4devcm', 'e4devcf', 'e4devch', 'e4devd', 'e4devdm', 'e4devdf', 'e4deve',
+      'e4devem', 'e4devef', 'e4devf', 'e4devfm', 'e4devff', 'e4devfh', 'e4devg', 'e4devgm', 'e4devgf', 'e4devh',
+      'e4devhm', 'e4devhf', 'e4girl', 'e4girlm', 'e4girlf', 'e4boy', 'e4boym', 'e4boyf', 'e4monkb', 'e4monkbm',
+      'e4monkbf', 'e4monkc', 'e4monkcm', 'e4monkcf', 'pho', 'phof', 'w3baisri', 'w3naga', 'w3wheel', 'w3parasol',
+      'w3tower', 'w3candle', 'w3fan', 'w3nagastaff', 'w3pewter', 'w3purple', 'w3fruit', 'w3sweets', 'w3khantok',
+      'w3puff', 'w3chair', 'w3lowtable', 'w3bench', 'w3sofa', 'w3petalbowl', 'w3petalsteel', 'w3smallbaisri',
+      'w3candlemid', 'w3candlesmall', 'w3kratip', 'w3chicken', 'w3coconut', 'w3soda', 'w3water', 'w3matroll',
+      'w3shirt', 'w3chrys', 'w3roses', 'w3claypot', 'w3pchair', 'w3horns', 'w3taper', 'w3glass', 'w3tissue',
+      'w3nagafount', 'w3nagagreen', 'w3nagawhite', 'w3ganesha', 'w3croton', 'w3dracaena', 'w3waterjar', 'w3walllamp',
+      'w3t_turf', 'w3t_petalturf', 'w3t_earth', 'w3t_gravel', 'w3t_redplank', 'w3t_tin', 'w3t_brick', 'w3t_skirt',
+      'w3t_satin', 'w3t_mat', 'w3t_carpet', 'w3t_bluemat', 'w3t_swag', 'w3t_banner', 'w3t_treeline', 'w3t_redroof',
+      'w3t_hallbrick', 'w3t_steptile', 'w3t_lawn', 'w3t_kalae', 'w3t_fretwork', 'w3t_sign', 'w3banana2',
+      'w3frangipani', 'w3isanhouse', 'w3tank', 'w3aircon', 'w3scooter', 'w3t_render', 'w3t_cloudbank',
+      'w3t_cloudtall', 'w3t_cloudflat', 'w3t_cloudthree', 'w3t_cirrus',
       /* <<< this chapter's own keys <<< */
       /* the trees of this episode's first chapter (reuseInEpisode) */
       'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd',
@@ -353,12 +363,12 @@
       forumSent: 'Sent',
       // OPEN AND CLOSE (§4.3 P9): the event's own words
       breathTitle: 'OPEN AND CLOSE',
-      breathBrief: 'Drag the gate up to open it. Soft lights will drift in toward you. Drag it down to shut it when it is enough, before they crowd you.',
-      breathBriefKey: 'Drag the gate up with the mouse, or hold W or ↑, to open it. Soft lights will drift in toward you. Drag it down, or hold S or ↓, to shut it when it is enough, before they crowd you.',
-      breathWhere: 'Drag up to open the gate. Drag down to shut it.',
-      breathWhereKey: 'Drag up, or hold W or ↑, to open the gate. Drag down, or hold S or ↓, to shut it.',
-      breathOpen: 'OPEN',
-      breathClose: 'CLOSE',
+      breathBrief: 'Hold your finger anywhere on the screen: the lotus opens and its light climbs the ring. Let go when the light is in the gold mark. Three times.',
+      breathBriefKey: 'Hold the mouse button, E or Space: the lotus opens and its light climbs the ring. Let go when the light is in the gold mark. Three times.',
+      breathWhere: 'Hold to open. Let go in the gold.',
+      breathWhereKey: 'Hold the mouse, E or Space to open. Let go in the gold.',
+      breathOpen: 'HOLD',
+      breathClose: 'LET GO',
       // the chant's captions (the three lines of homage that go with the three bows): the Pali as chanted over its
       // meaning (v21.31), from Thanissaro Bhikkhu's A Chanting Guide: its Morning Chanting, read on the book's own page on
       // 12 Nov 2026 and matched word for word, its ampersand and its Saṅgha included (docs/research/V26.0-WAIKRU-VERDICTS.md)

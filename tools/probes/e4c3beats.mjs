@@ -19,6 +19,8 @@
      { "shot": "name" }                      a photograph (a drawn frame is waited for first)
      { "info": true }                        the stage's info, the objective on screen, the badge, who is where
      { "ev": "press" | "release" | "start" } a kit event's own press path
+     { "slow": 50 }                          the page's clock slowed to that many ms a drawn frame from here on (a held
+                                             press photographed at its real time on a box that draws a frame a second)
      { "film": "festival" }                  a film from play begun (kit.film), then { "seek": 12.5 } to a moment of its own
                                              clock (always forward: a seek undoes no fade it has passed), { "resume": true },
                                              { "skip": true }
@@ -82,6 +84,18 @@ for (const s of STEPS) {
     else if (s.press) { await frames(2); const r = await p.evaluate(() => { const E = window.__enc; const b = document.getElementById('interact'); const badge = b && !b.classList.contains('hide') ? b.textContent.trim() : null; return { badge, ok: E.interactNow() }; }); log('press', JSON.stringify(r)); }
     else if (s.eval) { const r = await p.evaluate(new Function('const E = window.__enc; return (' + s.eval + ');')).catch(e => 'THREW ' + e.message); if (r !== undefined && r !== null) log('eval', String(s.eval).slice(0, 60), '->', JSON.stringify(r).slice(0, 2400)); }
     else if (s.ev) { await p.evaluate((k) => { const E = window.__enc; if (k === 'release') E.evRelease(); else E.evPress(); if (k === 'start') E.evRelease(); }, s.ev); await frames(2); }
+    /* { "slow": 50 } (v26.8): THE PAGE'S CLOCK SLOWED to that many milliseconds a drawn frame from here on, as
+       filmlive.mjs slows a film's: a kit event runs on the wall's time while "wait" counts the chapter's (capped a
+       frame), so on a box that draws a frame a second a breath held for "1.6" was held for many seconds and had long
+       passed its edge when it was photographed. Slowed, the wall, the chapter and the event all move one step a frame */
+    else if (s.slow) { await p.evaluate((ms) => {
+        if (window.__slowMs) { window.__slowMs = ms; return; }
+        const realNow = performance.now.bind(performance), realRaf = window.requestAnimationFrame.bind(window);
+        window.__slowMs = ms; let virt = realNow();
+        performance.now = () => virt;
+        window.requestAnimationFrame = (cb) => realRaf(() => cb(virt + 5000));
+        const tick = () => { virt += window.__slowMs; realRaf(tick); };
+        realRaf(tick); }, s.slow); await frames(3); log('slowed', s.slow, 'ms a frame'); }
     else if (s.film) { const ok = await p.evaluate((k) => window.__enc.kit.film(k), s.film); await p.waitForFunction(() => window.__enc.cine.active() && window.__enc.cine.t() > 0.15, null, { timeout: 300000, polling: 200 }).catch(() => {});
       log('film', s.film, ok, 'dur', await p.evaluate(() => +window.__enc.cine.dur().toFixed(2))); }
     else if (s.seek != null) { await p.evaluate((t) => window.__enc.cine.seek(t), s.seek); await frames(3); await p.waitForTimeout(s.settle != null ? s.settle : 500); }

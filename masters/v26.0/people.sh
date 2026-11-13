@@ -88,8 +88,15 @@ for m in hermita hermitb red white; do go $m && master $m; done
 #  MOTIONS.txt `${WALKDANCE:-walkdance2}`: the arms out and rising and falling in turn as she walks; the other one
 #  written, `walkdance`, is kept in src/)
 WD=${WALKDANCE:-walkdance2}
-go dancera && one dancera 30000 2048 $(T dancera lib Idle_3) $(T dancera dance1 dance1) $(T dancera dance2 dance2) $(T dancera $WD walkdance)
-go dancerb && one dancerb 30000 2048 $(T dancerb lib Idle_3) $(T dancerb dance1 dance1) $(T dancerb dance2 dance2) $(T dancerb $WD walkdance)
+# (v26.8, Chad, 13 Nov 2026: "during the cutscene, when the dancers start dancing, and they switch positions, they clip
+#  and collide into each other". Their second dance, `dance2`, was asked for "small soft steps to the left and right" and
+#  came back walking 2.6 m to one side (gait.mjs): the film gave it them from 9 s, and every other dancer is drawn
+#  mirrored, so neighbours walked 1.2 m each into one another. The film now dances `dance1`, the one made "in place",
+#  made a loop (c_cast.js DLOOP); `dance2` is played by nobody and is out of their files: taken out of the shipped files
+#  by tools/droptake.mjs, tools/probes/samebody.mjs proving everything kept the same (this recipe's repaint needs
+#  Blender's Python, which this machine did not have); its take file stays in src/)
+go dancera && one dancera 30000 2048 $(T dancera lib Idle_3) $(T dancera dance1 dance1) $(T dancera $WD walkdance)
+go dancerb && one dancerb 30000 2048 $(T dancerb lib Idle_3) $(T dancerb dance1 dance1) $(T dancerb $WD walkdance)
 # (who of the eight plays more than the kneel, the bow and the stand: the woman who goes up to the hermit sways (deva);
 #  the man whose arms rise is made of the arms of `armsopen` on the kneel's legs (devc: c_cast.js `mix`); the young man
 #  ahead of him in the line raises his bai sri and sways (devg))

@@ -38,7 +38,13 @@
       DUSK: { cloud: [0.96, 0.64, 0.52, 0.85], sun: [1, 0.55, 0.3, 0.75], rays: 0 },
       DUSKOPEN: { cloud: [1, 0.7, 0.56, 0.9], sun: [1, 0.6, 0.34, 0.85], rays: 0 }
     };
-    const skyFx = { g: new THREE.Group(), cards: [], halo: null, core: null, burst: null, rays: [], rayMat: null, look: '', dir: new THREE.Vector3(0, 1, 0) };
+    const skyFx = { g: new THREE.Group(), drift: new THREE.Group(), cards: [], halo: null, core: null, burst: null, rays: [], rayMat: null, look: '', dir: new THREE.Vector3(0, 1, 0) };
+    /* (v26.8, Chad, 13 Nov 2026: "Have the clouds or sky box move slowly like clouds drifting, without affecting the tree
+       background") THE CLOUDS DRIFT: the cards alone turn about the ground's middle, a tenth of a degree a second (a bank
+       crosses its own width in about twelve minutes; watched for ten seconds, one degree: a cloud on the move, not one
+       sliding). The sun, its glare and rays, the sky's gradient and the ring of trees stand still. On the wind's clock,
+       wall time, as the leaves and the rays are (a film cut never moves them) */
+    const DRIFT = 0.1 * Math.PI / 180;
     /* the sun's own rays: thin streaks of light out from its core, of seeded lengths and strengths, each soft along its
        length and across it (a picture drawn once; it turns very slowly, so the streaks are never quite still) */
     function makeSunBurst() {
@@ -63,14 +69,14 @@
       return tex(done(THREE, c, false));
     }
     function buildSky() {
-      skyFx.g.name = 'v26.1 sky'; world.add(skyFx.g); owned.push(skyFx.g);
+      skyFx.g.name = 'v26.1 sky'; world.add(skyFx.g); owned.push(skyFx.g); skyFx.drift.name = 'v26.8 drifting clouds'; skyFx.g.add(skyFx.drift);
       const d2r = Math.PI / 180, sunAz = Math.atan2(17, -10);                   // (DAY1's key, east-south-east: which side a card is lit from)
       for (const C of SKY_CARDS) {
         const az = C.az * d2r, w = 2 * SKY_R * Math.tan(C.w * d2r / 2), h = w * C.hw;
         const m = B({ color: 0xffffff, transparent: true, depthWrite: false, fog: false, opacity: 0 });
         const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), m);
         mesh.position.set(Math.sin(az) * SKY_R, 1.6 + Math.tan(C.el * d2r) * SKY_R, -Math.cos(az) * SKY_R);
-        mesh.lookAt(0, mesh.position.y, 0); mesh.renderOrder = -4; mesh.frustumCulled = false; skyFx.g.add(mesh);
+        mesh.lookAt(0, mesh.position.y, 0); mesh.renderOrder = -4; mesh.frustumCulled = false; skyFx.drift.add(mesh);
         /* (lit from its upper right in its picture: turned round where the sun is to the left of it as it is looked at) */
         const flip = Math.sin(sunAz - az) < 0;
         surfLoad(C.key).then(t0 => { if (!t0 || !alive) return; const t = t0.clone(); t.needsUpdate = true; madeTex.push(t);
@@ -110,6 +116,7 @@
         for (const r of skyFx.rays) r.mesh.visible = !!(L && L.rays > 0 && skyFx.dir.y > 0.12);
       }
       if (skyFx.burst.visible) skyFx.burst.material.rotation = t * 0.012;
+      skyFx.drift.rotation.y = -t * DRIFT;
       if (!(L && L.rays > 0 && skyFx.dir.y > 0.12)) return;
       camera.getWorldPosition(_skC);
       const d = skyFx.dir;

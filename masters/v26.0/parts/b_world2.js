@@ -182,8 +182,13 @@
          puffs of lime cloth; maroon carpets deep in petals; his bench, a carved chair, a low dark table */
       /* (its drapes are deep: photographs 5 and 6 are taken under them, and what fills their top is swags of lime, gold
          and orange satin, not the dark cloth over them) */
+      /* (v26.8, Chad, 13 Nov 2026: "when grandmaster pho stands up to look at the player for the first time ... the cover
+         sheet of the tent's top covers grandmaster pho's face". Its swags hung to 1.58 m at their middles, a standing man's
+         face: from where he waits in line the swag across the canopy's front hid Grandmaster Pho's head from the neck up,
+         and the lens narrowed onto the swag. Photograph 6 has them over the head of the master who stands under them, the
+         lowest at about 1.85 m: so here, ends 0.25 m under the eave and middles 0.45, where they were 0.36 and 0.72) */
       const C = tent(CHIEF.x, CHIEF.z, { w: CHIEF.w, eave: CHIEF.eave, peak: CHIEF.peak, ry: CHIEF.ry, roof: satinRoof(0x2c4632, 0x1d2c22), valance: 0xf2c63c, wide: true, band: 0.4,
-        swags: 3, swagCols: [0xb6d62e, 0xe2a61a, 0xf08a1c], swagDepth: 0.8, swagDrop: 0.36, swagStep: 1 });
+        swags: 3, swagCols: [0xb6d62e, 0xe2a61a, 0xf08a1c], swagDepth: 0.56, swagDrop: 0.2, swagStep: 1 });
       for (const [x, z] of C) solidBox(0.16, 2.2, 0.16, x, 1.1, z);
       /* THE LIME POLE (photographs 1, 5, 6): the canopy's front right pole, the one before the bench's right hand, wrapped
          from the ground to the eave in seven gathered tiers of lime cloth, each wider than it is tall and a little

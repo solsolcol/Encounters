@@ -114,7 +114,18 @@ fx   x3wick      $R/x3wick_b.mp3      -14 "afade=t=out:st=0.85:d=0.15"         #
 fx   x3petals    sound/made/x3petals.wav -14                                  # MADE (synth.py): both generated takes were 91 % silence
 fx   x3matroll   $R/x3matroll_b.mp3   -14                                     # b: the rolling from its first frame (a waits 0.3 s), 6 dB fuller
 fx   x3matset    $R/x3matset_b.mp3    -14                                     # b: one soft thud under full scale (a clips)
-fx   x3shutter   $R/x3shutter_b.mp3   -14                                     # b: the click (a came back silent: its peak is -55)
+# MADE AGAIN at v26.8 (Chad, 13 Nov 2026: "The photo taking sound need to be regenerated to be more obvious and louder"):
+# the first click was one tick 20 ms long, its loudest 50 ms at -18.3 dBFS in its file, -25.2 at its cue (0.45): LEVEL
+# with the night's music under it at that moment (-25.2), and the day's crowd still fading out over both. Its line was:
+# fx   x3shutter   $R/x3shutter_b.mp3   -14                                     # b: the click (a came back silent: its peak is -55)
+# Now sound/sfx2.json's x3shutter2, four takes: b, the one take that is ONE photograph (a sharp click at 0.024 s and its
+# clack at 0.068 s, its body to 0.16 s: a shutter and its mirror); a and d are bursts of three or more, c a rattle 0.2 s
+# long that starts at 0.23 s. Its stray tick at 0.47 s is cut. Levelled as every one-shot, its loudest 50 ms at -14 (a
+# click goes no higher: asked -13 the limiter takes 6 dB of its first hit and it stays at -14.1; at -14 it takes 5), and
+# CUED AT 1 where the first was cued at 0.45: -15.3 dBFS as encoded (10 dB over the first), 13 dB over the night's music
+# at its moment (-28.4: the music's swell to -19.8 comes 0.2 s after it), 6 dB under the loudest syllable of the "Three,
+# two, one!" before it (-9.4). (All measured on both channels: ffmpeg's fold to one channel reads a stereo file 3 dB high)
+fx   x3shutter   $R/x3shutter2_b.mp3  -14 "atrim=0:0.27,afade=t=out:st=0.19:d=0.08"
 fx   x3bulbs     $R/x3bulbs_a.mp3     -14                                     # a: the switch at 0.3 s and the hum after it (b's first sound is at 1.0 s)
 fx   x3cock      $R/x3cock_a.mp3      -14 "highpass=f=300,lowpass=f=5000,aecho=0.8:0.5:120:0.25"   # a (b clips harder); made far: its band narrowed, an open field's slap
 fx   x3bell      $R/x3bell_a.mp3      -14                                     # a: the longer ring
@@ -125,10 +136,14 @@ fx   x3waiting   $R/x3waiting_a.mp3   -14                                     # 
 # ---- the telling's six memories (faint under his words: z_tail.js plays them at 0.2)
 fx   x3mem1      $R/x3mem1_b.mp3      -14 "highpass=f=120"                    # b: the lift and the burner with more a phone can play (29 % against 21)
 fx   x3mem2      $R/x3mem2_a.mp3      -14 "highpass=f=120,equalizer=f=400:t=q:w=1:g=5"   # a: a hum with no word in it (b: the transcriber writes "Wow")
-fx   x3mem3      $R/x3mem3_a.mp3      -14                                     # a: the drum and the gong, the lower peak of two alike
+# RETIRED at v26.8 (his telling made four lines, Chad 13 Nov 2026: "Just focus on his sensitivity, ... chanting, ... amulets,
+# ... kumanthongs"; the memory it was heard under is no longer said; its takes stay in sound/raw). Its line was:
+# fx   x3mem3      $R/x3mem3_a.mp3      -14                                     # a: the drum and the gong, the lower peak of two alike
 fx   x3mem4      $R/x3mem4_a.mp3      -14                                     # a: the cold air and the glass's ticks
 fx   x3mem5      $R/x3mem5_b.mp3      -14                                     # b: the three notes, 9 dB fuller
-fx   x3mem6      $R/x3mem6_b.mp3      -14 "highpass=f=120,equalizer=f=300:t=q:w=1:g=8"   # b: a dull tone, by its nature low (11 % over 150 Hz): what a phone can play of it is lifted
+# RETIRED at v26.8 (his telling made four lines, Chad 13 Nov 2026: "Just focus on his sensitivity, ... chanting, ... amulets,
+# ... kumanthongs"; the memory it was heard under is no longer said; its takes stay in sound/raw). Its line was:
+# fx   x3mem6      $R/x3mem6_b.mp3      -14 "highpass=f=120,equalizer=f=300:t=q:w=1:g=8"   # b: a dull tone, by its nature low (11 % over 150 Hz): what a phone can play of it is lifted
 # ---- the ground's own noises in play
 fx   x3os1       $R/x3os1_a.mp3       -14                                     # a child laughing past: a (b clips harder)
 fx   x3os2       $R/x3os2_a.mp3       -14                                     # the loudspeaker's squeal and two taps: a, the squeal where a horn speaker squeals
@@ -179,10 +194,33 @@ mbed() { # name src seconds start filter: A MUSIC LOOP. The model writes a whole
   python3 ../v21.2/musicloop.py f_$n.wav $L $st
   python3 ../v24.34/music/padloop.py w_f_$n.wav p_$n.wav
   enc $n p_$n.wav -3.0 -3.0 128k 2; rm -f f_$n.wav w_f_$n.wav p_$n.wav; }
+mbedlv() { # name src seconds start filter rms: mbed's loop, levelled by its AVERAGE to where the mix has it (v26.8: the
+           # festival's music made again came out 2.4 dB under the music it replaced when matched by its peak, its crest
+           # higher). The gain and a 5 ms lookahead limiter at -1 dBFS only (../v21.12/level_rms.py with its compressor's
+           # threshold at 0 dBFS, so nothing under the peaks is touched: the treatment his previews had), run round the loop
+           # so the limiter's state runs on across its seam (../v26.8/looplevel.py); encoded as levelled
+  n=$1; s=$2; L=$3; st=$4; af=$5; t=$6
+  ffmpeg -v error -y -i "$s" -af "$af" -ar 48000 -ac 2 f_$n.wav
+  python3 ../v21.2/musicloop.py f_$n.wav $L $st
+  python3 -I ../v26.8/looplevel.py w_f_$n.wav l_$n.wav $t -1.0
+  python3 ../v24.34/music/padloop.py l_$n.wav p_$n.wav
+  flat $n p_$n.wav 2 128k; rm -f f_$n.wav w_f_$n.wav l_$n.wav p_$n.wav; }
 if [ -z "$ONLY" ] || [ "$ONLY" = music ]; then
 mus  x3openmus   $R/x3openmus_b.mp3   "afade=t=in:d=1.2"                      # the opening film (54.7 s): b, within 5 dB second by second for all of it (a and c are single notes with spaces: they fall 12 to 17 dB, some where nobody speaks), 1.3 dB lost on a phone; it begins on signal, so it is faded in
 mus  x3dancemus  $R/x3dancemus_a.mp3  "$(cuthead 1.2),$PA"                    # the dance for the Thevadas (to the cut at 14 s), in the world: a, the ranat's own band (96 % between 500 Hz and 1 kHz, 1 % in the consonants' 1-4 kHz where c has 51 %; b is 73 % under 500 Hz, which a horn does not carry); its 1.3 s silent head cut
-mbed x3festmus   $R/x3festmus_a.mp3 48 5 "$PA"                                # the festival's own music, in play and under day one's films, in the world: a, level within 1 dB for 62 s and the most of the three a phone plays (3.3 dB lost; b is 48 % under 120 Hz, c 5.8 dB lost). The loop is 5.0 to 52.9 s: of twenty windows tried (36 to 52 s long, from 3, 5, 7 and 9 s) the one whose end best meets its head (+0.53; the flattest window, from 7 s, met at +0.38)
+# MADE AGAIN at v26.8 (Chad, 13 Nov 2026: "the chapter's main music does not sound thai enough, it sounds like a carnival
+# music. It should sound like traditional thai ceremony kind of music"): it was written as an Isan folk groove (khaen and
+# phin, sound/music.json); the Wai Kru's own music is the piphat ceremonial ensemble (sound/music2.json x3festmus2: ranat
+# ek, gong circle, pi nai, taphon and klong that, ching; four takes). HIS EAR PICKED b ("festmus2-b.mp3 is the best, use
+# that", of his four previews levelled alike, masters/v26.8/previews/festmus2-*.mp3); the measure had put a first (the
+# one level for its first 60 s). b rises from its first second (-34 dBFS) and then holds within 5 dB from 1 to 58 s, so
+# its loop is cut inside that: of twelve windows tried (36 to 48 s long, from 3, 5, 7 and 9 s) the longest whose end
+# meets its head well, from 3 s for 48 (through the loudspeakers' treatment its end lands at 51.2 s: a 48.2 s loop, +0.31,
+# the seam at -45.4 dBFS; the best match, +0.44, was a 38 s loop from 9 s: shorter, so heard round sooner). Its first
+# line was:
+# mbed x3festmus   $R/x3festmus_a.mp3 48 5 "$PA"                                # the festival's own music, in play and under day one's films, in the world: a, level within 1 dB for 62 s and the most of the three a phone plays (3.3 dB lost; b is 48 % under 120 Hz, c 5.8 dB lost). The loop is 5.0 to 52.9 s: of twenty windows tried (36 to 52 s long, from 3, 5, 7 and 9 s) the one whose end best meets its head (+0.53; the flattest window, from 7 s, met at +0.38)
+# mbed x3festmus   $R/x3festmus2_a.mp3 48 5 "$PA"                               # (v26.8, the measure's pick before his ear: a)
+mbedlv x3festmus $R/x3festmus2_b.mp3 48 3 "$PA" -17.78                      # (its seconds' median -18.0 dBFS, the old music's, so the mix is as it was: LEVELS.txt)
 mus  x3sightmus  $R/x3sightmus_a.mp3  "$(cuthead 0.95)"                       # the man in white (12.5 s): a, nothing under 120 Hz, its stroke and a second swell at 8 s, sounding to the film's end (c is 98 % under 120 Hz: a phone plays none of it; b is gone 1.6 s sooner)
 mus  x3nightmus  $R/x3nightmus_a.mp3  "afade=t=in:d=1.5"                      # the night between (20.4 s, no word for 17.9): a, within 2 dB for 17 s and thinning under Ton's line (b is silent for 3.3 s and over 2.8 s early; c falls 14 dB in its fourth second); faded in: the day's noise falls away under it
 mus  x3tellmus   $R/x3tellmus_b.mp3   "afade=t=in:d=0.8"                      # the telling (55.5 s, under eight of his lines): b, the steadier of the two quiet ones and 0.1 % in 1-4 kHz (a swings 18 dB every four seconds; c grows 18 dB, clips, and is a third sub-bass)

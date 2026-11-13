@@ -8589,3 +8589,31 @@ Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8,
   6 cm) passed the red master's hand pushed through one layer of his trousers; a crossing count along each finger's
   bones flagged fingers lying over a curved knee too. The photographs from three sides and the hand drawn through
   everything beside drawn as seen are what judged it.
+
+## v26.8 — a retarget's collar bones, a dance that travels, and cloth at face height
+
+- **A take retargeted from a body whose arms begin level carries its collar bones raised.** The library's stand on
+  these generated bodies (made in an A pose) held both collar bones 27 to 54 degrees over their neutral on everyone who
+  wore it (Ton 37 and 49): a shrug Chad saw at once on Ton ("shoulders very raised and tensed up"), which no check
+  measured. jointscan now reads each collar bone's rise from its root at the neck to the shoulder joint against the body's
+  own bind pose (`shoulder.raised`, over 10 degrees). The cure keeps the arm: the collar bone is laid back to its bind
+  pose with the take's own motion about its middle, and the upper arm is given back its turn against the collar bone's
+  parent (old collar x old arm = new collar x new arm), so only the shoulder comes down (c_cast.js shouldersLay).
+- **A written take does not do what its prompt said; measure its travel before casting it.** "Small soft steps to the
+  left and right" came back walking 2.6 m to one side. Danced by a troupe in which every other body is drawn mirrored,
+  a travel becomes a collision: the mirrored ones go the other way, and by the cut each pair had walked through each
+  other (gait.mjs reads the hips' travel; clipscan sampled the film every 9 s and stepped over the 5 s it happened in).
+- **A mirrored body's travel cannot be compensated by moving its group.** Its feet still step the mirrored way, so the
+  group moved the other way makes them skate at twice the travel. A dance in place, or every body unmirrored, or no
+  travel at all.
+- **Cloth hung at face height hides a face from everyone outside it.** The chief canopy's swags were built sagging to
+  1.58 m (matched to photographs taken from under them, close): from the line outside, the swag across the front hid
+  Grandmaster Pho's head the moment he stood. Photograph 6, with a man standing under them, put them at about 1.85 m.
+  A shot that matters is photographed in play from where the player stands, not only from the photograph's own place.
+- **ffmpeg's fold of a stereo file to one channel reads it 3 dB high** (it sums both at -3 dB each). A level measured
+  with `-ac 1` against one measured on both channels is not a comparison: the click's "5 to 10 dB under the music" was
+  that, and on both channels it stood level with it.
+- **A one-off tool that rewrites a shipped file proves itself with the file's own proof.** Taking a take out of two
+  bodies without their recipe (droptake.mjs: no Blender here at first sight; it was in the scratchpad's blender-venv
+  all along, so look by what it does, not by one name) was proved by samebody.mjs: every mesh, picture, joint and kept
+  key the same.

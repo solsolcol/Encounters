@@ -78,5 +78,45 @@
   "first": 0.0,
   "phone": 0.99,
   "voice": 0.67
+ },
+ "x3shutter2_a": {
+  "len": 0.8,
+  "asked": 0.8,
+  "peak": -1.0,
+  "level": -27.2,
+  "silent": 0.27,
+  "first": 0.05,
+  "phone": 1.0,
+  "voice": 0.06
+ },
+ "x3shutter2_b": {
+  "len": 0.8,
+  "asked": 0.8,
+  "peak": -0.7,
+  "level": -21.4,
+  "silent": 0.53,
+  "first": 0.0,
+  "phone": 1.0,
+  "voice": 0.19
+ },
+ "x3shutter2_c": {
+  "len": 0.8,
+  "asked": 0.8,
+  "peak": -3.9,
+  "level": -21.2,
+  "silent": 0.53,
+  "first": 0.25,
+  "phone": 1.0,
+  "voice": 0.2
+ },
+ "x3shutter2_d": {
+  "len": 0.8,
+  "asked": 0.8,
+  "peak": -8.1,
+  "level": -32.0,
+  "silent": 0.47,
+  "first": 0.0,
+  "phone": 1.0,
+  "voice": 0.18
  }
 }

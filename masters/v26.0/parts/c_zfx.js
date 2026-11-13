@@ -164,6 +164,41 @@
       const pts = new THREE.Points(geo, pm); pts.frustumCulled = false; pts.renderOrder = 4; g.add(pts); owned.push(pts);
       return { g, shade, hue, rays, glow, pool, ring, pts, seed, tm: new THREE.Color() };
     })();
+    /* ---- HIS OWN LIGHT, IN THE CLOSE (v26.8, Chad, 13 Nov 2026: "the second minigame part, instead of playing the
+       minigame, just show the player hands vibrating while a glow surronding him and his hands and his bai sri. all
+       around his silohuette, to show that the player is now in control while vibrating"). He is never seen (every shot
+       is his eyes: v24.56), so the glow round his silhouette is drawn as he would see it: a light all round the edge of
+       his sight, a sheet laid over the hands' pass and fitted to its lens each frame; and a halo round the bai sri he
+       holds up, shaking in his hands. WHITE, faint warm: the gold is Grandmaster Pho's alone (v25.5). `youGlowAt(k, t,
+       at, vm)`: its strength, the film's clock, where the bai sri stands, and the film's hands' pass (or null) */
+    const youGlow = (() => {
+      const [c, x] = cnv(256), gr = x.createRadialGradient(128, 128, 54, 128, 128, 182);
+      gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(0.5, 'rgba(255,251,242,0.16)'); gr.addColorStop(0.82, 'rgba(255,248,234,0.62)'); gr.addColorStop(1, 'rgba(255,246,228,0.95)');
+      x.fillStyle = gr; x.fillRect(0, 0, 256, 256);
+      const tEdge = tex(new THREE.CanvasTexture(c)); tEdge.colorSpace = THREE.SRGBColorSpace;
+      const edge = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), B({ map: tEdge, transparent: true, opacity: 0, depthTest: false, depthWrite: false, fog: false, blending: THREE.AdditiveBlending, toneMapped: false }));
+      edge.renderOrder = 999; edge.frustumCulled = false; edge.visible = false; world.add(edge); owned.push(edge);
+      const hm = new THREE.SpriteMaterial({ map: tex(makeGlow(THREE, cnv)), color: 0xfff7ea, transparent: true, opacity: 0, depthTest: false, depthWrite: false, fog: false, blending: THREE.AdditiveBlending }); mats.push(hm);
+      const halo = new THREE.Sprite(hm); halo.renderOrder = 998; halo.visible = false; world.add(halo);
+      return { edge, halo };
+    })();
+    function youGlowAt(k, t, at, vm) {
+      const G = youGlow, on = k > 0.002;
+      G.halo.visible = on; G.edge.visible = on && !!vm;
+      if (!on) { if (G.edge.parent !== world) world.add(G.edge); return; }
+      const br = 0.84 + 0.16 * Math.sin(t * 2 * Math.PI / 1.7);                  // (it breathes, a little faster than his teacher's)
+      if (at) { G.halo.position.set(at[0], at[1] + 0.2, at[2]); G.halo.scale.set(0.95, 1.05, 1); }
+      G.halo.material.opacity = 0.62 * k * br;
+      /* (v26.8: the edge is laid before the film's OWN lens, in the world's pass, just past its near plane (0.08 m). It
+         was laid in the hands' pass, which the engine skips while no hand of his is drawn, and a film hides his hands:
+         photographed at its brightest, no light at the edge at all) */
+      if (vm) {
+        if (G.edge.parent !== camera) camera.add(G.edge);
+        const d = 0.1, h = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * d;
+        G.edge.position.set(0, 0, -d); G.edge.quaternion.identity(); G.edge.scale.set(h * camera.aspect * 1.04, h * 1.04, 1);
+        G.edge.material.opacity = 0.7 * k * br;
+      }
+    }
     let auraK = 0;
     function auraAt(k, t) {
       const A = aura; auraK = k;

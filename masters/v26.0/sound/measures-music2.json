@@ -1,0 +1,42 @@
+{
+ "x3festmus2_a": {
+  "len": 64.0,
+  "asked": 64.0,
+  "peak": 2.5,
+  "level": -13.1,
+  "silent": 0.01,
+  "first": 0.6,
+  "phone": 0.52,
+  "voice": 0.36
+ },
+ "x3festmus2_b": {
+  "len": 64.0,
+  "asked": 64.0,
+  "peak": -3.1,
+  "level": -20.6,
+  "silent": 0.05,
+  "first": 0.6,
+  "phone": 0.86,
+  "voice": 0.65
+ },
+ "x3festmus2_c": {
+  "len": 64.0,
+  "asked": 64.0,
+  "peak": 1.7,
+  "level": -19.7,
+  "silent": 0.01,
+  "first": 0.0,
+  "phone": 1.0,
+  "voice": 0.87
+ },
+ "x3festmus2_d": {
+  "len": 64.0,
+  "asked": 64.0,
+  "peak": -0.1,
+  "level": -14.5,
+  "silent": 0.03,
+  "first": 0.65,
+  "phone": 0.99,
+  "voice": 0.81
+ }
+}

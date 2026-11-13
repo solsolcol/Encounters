@@ -39,7 +39,10 @@ group("e4c3 v26.0 (episode 4 chapter 3, the Wai Kru): ITS PEOPLE, each made end 
       person('hermitb', 'a hermit in a pale yellow shawl', True) +
       person('red', 'the master in red', True) + person('white', 'the second master in white', True) +
       person('dancera', 'a dancer, white and gold') + person('dancerb', 'a dancer, white and gold') +
-      person('deva', 'the devotees, eight bodies in white') + person('devb', '') + person('devc', '') + person('devd', '') +
+      # (v26.8, Chad, 13 Nov 2026, of the woman raising her bai sri to the brown hermit: "are these the full res models?",
+      #  then "Yes, full models": the woman and the man in trance, the two who go up, get their full models, drawn in the
+      #  festival film's close shots only and given back when it ends: c_cast.js fullOn, fullOff)
+      person('deva', 'the devotees, eight bodies in white', True) + person('devb', '') + person('devc', '', True) + person('devd', '') +
       person('deve', '') + person('devf', '', True) + person('devg', '') + person('devh', '') +
       person('girl', 'the children of the festival (the plan\'s 4.1 and 3.7): a girl of seven') + person('boy', 'and a boy of five') +
       person('monkb', 'the two monks made for the row under the east tent (Chad, 12 Nov 2026: "can we have different monks?"; his own monk keeps the middle chair): an older, heavy monk in deep maroon') +
