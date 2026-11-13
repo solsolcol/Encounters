@@ -305,6 +305,12 @@ Object.assign(window.__TEXT__, {
   'event.breathWhereKey': 'Hold the mouse button, E or Space to open. Let go to close.',
   'event.breathOpen':    'OPEN',
   'event.breathClose':   'CLOSE',
+  // v26.3 · S49: OPEN AND CLOSE by a gate — its word in the panel, where the drag goes (a phone; a desktop), and its two words
+  'event.gate':          'OPEN AND CLOSE',
+  'event.gateWhere':     'Drag up to open the gate. Drag down to shut it.',
+  'event.gateWhereKey':  'Drag up, or hold W or ↑, to open the gate. Drag down, or hold S or ↓, to shut it.',
+  'event.gateOpen':      'OPEN',
+  'event.gateClose':     'CLOSE',
   'event.focus':         'TAP THE LIGHT',
   'event.focusKey':      'CLICK THE LIGHT',            // v21.0: the same, on a desktop
   // v24.0 · S44: WHAT CHANGED? — its word in the panel, and where the taps go (a phone; a desktop)

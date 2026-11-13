@@ -599,7 +599,7 @@ async function runEvent(opts, drive) {
       o.onBreath = (r) => { G.reps.push(r); return lead; };
       o.onEnough = (i) => { G.enough.push(i); };
       o.onIdle = (i) => { G.idle.push(i); };
-      o.onLevel = (k, held, i, st) => { G.levels++; G.max = Math.max(G.max, k); const L = G.states[G.states.length - 1];
+      o.onLevel = (k, held, i, st, gk) => { G.levels++; G.max = Math.max(G.max, k); if (gk != null) G.gk = Math.max(G.gk || 0, gk); const L = G.states[G.states.length - 1];
         if (!L || L[0] !== st || L[1] !== i) G.states.push([st, i, window.__enc.kitDebug().event.t]); }; }
     // v21.2: a steady focus target's ready() reads a flag the check flips
     if (o.readyTag) { const t = o.readyTag; o.targets = o.targets.map(q => Object.assign({}, q, { ready: () => !!window[t] })); }
@@ -2004,6 +2004,85 @@ K.yieldAutoTapLatched = r.ok === true;
   G = await tag();
   K.breathNeverLocks = r.unopened === 1 && r.ok === false && G.idle.join() === '0' && G.reps.length === 1 && G.reps[0].again === false;
 }
+/* S49 · THE GATE (v26.3), OPEN AND CLOSE BY HAND: a drag up opens it, the lights come in as fast as it stands open, a
+   drag down shuts it. The breath's bookkeeping under it (S46), so the same proofs, each by REAL pointer events on the
+   overlay (one finger, its own id) and the real keyboard, waiting on the event's own state (gk, bk, bState) */
+const gateDrag = async (k, id = 21) => { const L = k * 0.34 * C.h, y0 = C.y + L / 2;     // (k of the gate's span: up opens)
+  await ptr('pointerdown', C.x, y0, { id }); for (let i = 1; i <= 8; i++) await ptr('pointermove', C.x, y0 - L * i / 8, { id }); await ptr('pointerup', C.x, y0 - L, { id }); };
+{
+  const st = (s) => { const d = window.__enc.kitDebug().event; return !d || d.bState === s; };
+  const inBandG = () => { const d = window.__enc.kitDebug().event; return !d || (d.bState === 'open' && d.bk >= d.bE); };
+  const tag = () => p.evaluate(() => window.__br);
+  /* shut with enough come in: closed (the gain paid on the spot); the drag opened it; told, the word is CLOSE and the
+     finger shows the way down; the chapter was handed the level and the gate every frame */
+  const awWas = await p.evaluate(() => { const a = window.__enc.stats.awareness; window.__enc.stats.awareness = 50; return a; });
+  r = await runEvent({ kind: 'gate', breaths: [{ enough: 0.4, edge: 60, told: true }], lead: 0.1, gain: 2, cost: 2, breathTag: '__br', at: { sx: 0.5, sy: 0.6 } }, async () => {
+    await untilEv(st, 'wait');
+    K.gateShown = await p.evaluate(() => { const el = document.getElementById('evGate'); return !!el && !el.classList.contains('hide') && el.classList.contains('live'); });
+    await gateDrag(1); await untilEv(inBandG);
+    K.gateOpensByDrag = await p.evaluate(() => window.__enc.kitDebug().event.gk >= 0.9);
+    K.gateToldClose = await p.evaluate(() => document.getElementById('evPrompt').textContent === 'CLOSE' && document.getElementById('evGate').classList.contains('told'));
+    await gateDrag(-1);
+  });
+  let G = await tag();
+  K.gateClosed = r.kind === 'gate' && r.ok === true && r.closed === 1 && r.held === 0 && r.unopened === 0 && r.breaths[0].result === 'closed' && r.score === 1;
+  K.gateGainPaid = Math.abs(await p.evaluate(() => window.__enc.stats.awareness) - 52) < 1e-9 && r.breaths[0].gain === 2 && r.breaths[0].paid === undefined;
+  await p.evaluate((a) => { window.__enc.stats.awareness = a; }, awWas);
+  K.gateCallbacks = G.reps.length === 1 && G.enough.join() === '0' && G.levels > 0 && G.max > 0 && G.max < 1 && G.gk >= 0.9;
+  /* left wide open: they crowd him, it is shut FOR him (the cost on the spot), and the next breath waits for the finger
+     still down to lift; then it is his again */
+  r = await runEvent({ kind: 'gate', breaths: [{ enough: 0.2, edge: 1.2 }, { enough: 0.4, edge: 60 }], lead: 0.1, gain: 0, cost: 3, breathTag: '__br' }, async () => {
+    await untilEv(st, 'wait');
+    await ptr('pointerdown', C.x, C.y + 0.2 * C.h, { id: 22 }); for (let i = 1; i <= 8; i++) await ptr('pointermove', C.x, C.y + 0.2 * C.h - 0.4 * C.h * i / 8, { id: 22 });
+    await untilEv(() => { const d = window.__enc.kitDebug().event; return !d || (d.bi === 1 && d.bState === 'lead' && d.bk <= 0); });
+    K.gateHeldPaid = await p.evaluate(() => { const q = window.__br.reps; return q.length === 1 && q[0].result === 'held' && q[0].paid === -3; });
+    await settle(); await settle();
+    K.gateWaitsForLift = await p.evaluate(() => { const d = window.__enc.kitDebug().event; return !!d && d.bi === 1 && d.bState === 'lead'; });
+    await ptr('pointerup', C.x, C.y - 0.2 * C.h, { id: 22 });
+    await untilEv(st, 'wait'); await gateDrag(1); await untilEv(inBandG); await gateDrag(-1);
+  });
+  K.gateHeld = r.held === 1 && r.closed === 1 && r.breaths[0].result === 'held' && r.breaths[0].paid === -3 && r.breaths[1].result === 'closed' && r.ok === true && Math.abs(r.score - 0.5) < 1e-9;
+  /* a tap moves nothing (a drag opens it); shut before enough has come: not opened, that breath taken once more, and the
+     second time it counts; nothing is paid */
+  const aw0 = await p.evaluate(() => window.__enc.stats.awareness);
+  r = await runEvent({ kind: 'gate', breaths: [{ enough: 40, edge: 60 }], lead: 0.1, breathTag: '__br' }, async () => {
+    await untilEv(st, 'wait');
+    await ptr('pointerdown', C.x, C.y, { id: 23 }); await ptr('pointerup', C.x, C.y, { id: 23 }); await settle();
+    K.gateTapMovesNothing = await p.evaluate(() => { const d = window.__enc.kitDebug().event; return !!d && d.bState === 'wait' && d.gk === 0 && window.__br.reps.length === 0; });
+    await gateDrag(1); await untilEv(st, 'open'); await gateDrag(-1);
+    await untilEv(() => window.__br.reps.length >= 1);
+    await untilEv(st, 'wait'); await gateDrag(1); await untilEv(st, 'open'); await gateDrag(-1);
+  });
+  G = await tag();
+  K.gateUnopened = r.unopened === 1 && r.closed === 0 && r.breaths.length === 1 && r.ok === false && G.reps.length === 2 && G.reps[0].again === true && G.reps[1].again === false;
+  K.gateUnopenedFree = Math.abs(await p.evaluate(() => window.__enc.stats.awareness) - aw0) < 1e-9 && G.reps.every(q => q.gain === undefined && q.paid === undefined);
+  /* W held opens it, S held shuts it */
+  r = await runEvent({ kind: 'gate', breaths: [{ enough: 0.4, edge: 60 }], lead: 0.1, gain: 0 }, async () => {
+    await untilEv(st, 'wait'); await p.keyboard.down('KeyW'); await untilEv(inBandG); await p.keyboard.up('KeyW');
+    await p.keyboard.down('KeyS'); await untilEv(() => { const d = window.__enc.kitDebug().event; return !d || d.bState !== 'open'; }); await p.keyboard.up('KeyS');
+  });
+  K.gateKeys = r.closed === 1;
+  /* a gate that pulls: once it is enough it creeps open while he lets go, and a drag down shuts it only part as far */
+  r = await runEvent({ kind: 'gate', breaths: [{ enough: 0.4, edge: 60, pull: 1 }], lead: 0.1, gain: 0, breathTag: '__br' }, async () => {
+    await untilEv(st, 'wait'); await gateDrag(0.5); await untilEv(inBandG);
+    const g0 = (await evd()).gk; await settle(); await settle(); const g1 = (await evd()).gk;
+    K.gatePullCreeps = g1 > g0 + 0.01 && await p.evaluate(() => document.getElementById('evGate').classList.contains('pull'));
+    await gateDrag(-1); const d1 = await evd(); K.gatePullHeavy = !!d1 && d1.bState === 'open' && d1.gk > 0.2;
+    for (let k = 0; k < 4; k++) { const d = await evd(); if (!d || d.bState !== 'open') break; await gateDrag(-1); }
+  });
+  K.gatePull = r.closed === 1;
+  /* the chapter's answer to a report is how long the next breath waits */
+  r = await runEvent({ kind: 'gate', breaths: [{ enough: 0.4, edge: 60 }, { enough: 0.4, edge: 60 }], lead: 0.1, gain: 0, breathTag: '__br', breathLead: 1.4 }, async () => {
+    for (let k = 0; k < 2; k++) { await untilEv((i) => { const d = window.__enc.kitDebug().event; return !d || (d.bi === i && d.bState === 'wait'); }, k); await gateDrag(1); await untilEv(inBandG); await gateDrag(-1); }
+  });
+  G = await tag();
+  { const lead1 = G.states.find(q => q[0] === 'lead' && q[1] === 1), wait1 = G.states.find(q => q[0] === 'wait' && q[1] === 1);
+    K.gateLeadIsTheChapters = r.closed === 2 && !!lead1 && !!wait1 && wait1[2] - lead1[2] >= 1.4 - 1e-6; }
+  /* nobody touches it: the chapter is told once, and as long again later the breath is counted; it never soft-locks */
+  r = await runEvent({ kind: 'gate', breaths: [{ enough: 0.4, edge: 60 }], lead: 0.1, idle: 0.5, breathTag: '__br' }, null);
+  G = await tag();
+  K.gateNeverLocks = r.unopened === 1 && r.ok === false && G.idle.join() === '0' && G.reps.length === 1 && G.reps[0].again === false;
+}
 /* S39 · SURFACE: a finger dragging up climbs back; left alone it slips — sanity paid, never under the floor — and
    after `secs` it gives up for him (never a soft-lock) */
 r = await runEvent({ kind: 'surface', secs: 40, start: 0.3, sink: 0.04, pull: 0.04, goal: 0.8, hold: 0.2, lead: 0.2 }, async () => {
@@ -2039,7 +2118,8 @@ if (K.surfaceInFilm) {
 /* and each briefing SHOWS its game (Chad's v18.2 rule): the kind's own picture — a fingertip circling a cap, a ring
    filling under a pressing finger, a mark climbing its gauge */
 for (const [kind, pic, extra] of [['craft', 'twist', { steps: [{ g: 'tap' }] }], ['yield', 'press', { fill: 0.2 }], ['surface', 'surface', { secs: 0.6 }],
-                                  ['breath', 'breath', { breaths: [{ enough: 0.3, edge: 60 }], lead: 0.1 }]]) {   // (v26.0: and a ring opening under a held finger)
+                                  ['breath', 'breath', { breaths: [{ enough: 0.3, edge: 60 }], lead: 0.1 }],     // (v26.0: and a ring opening under a held finger)
+                                  ['gate', 'gate', { breaths: [{ enough: 0.3, edge: 60 }], lead: 0.1 }]]) {      // (v26.3: and a gate dragged open and shut)
   let shown = false;
   r = await runEvent(Object.assign({ kind, brief: 'How it is played.' }, extra), async () => {
     shown = await p.evaluate(pic => { const dm = document.getElementById('evDemo');
@@ -2049,6 +2129,8 @@ for (const [kind, pic, extra] of [['craft', 'twist', { steps: [{ g: 'tap' }] }],
     if (kind === 'yield') { await press(); await untilEv(evGone, null, 30000); await release(); }
     if (kind === 'breath') { await untilEv(() => { const d = window.__enc.kitDebug().event; return !d || d.bState === 'wait'; }); await press();
       await untilEv(() => { const d = window.__enc.kitDebug().event; return !d || (d.bState === 'open' && d.bk >= d.bE); }); await release(); }
+    if (kind === 'gate') { await untilEv(() => { const d = window.__enc.kitDebug().event; return !d || d.bState === 'wait'; }); await gateDrag(1);
+      await untilEv(() => { const d = window.__enc.kitDebug().event; return !d || (d.bState === 'open' && d.bk >= d.bE); }); await gateDrag(-1); }
   });
   K['brief_' + kind] = shown && r.ok === true;
 }

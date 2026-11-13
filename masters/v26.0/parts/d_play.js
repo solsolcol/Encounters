@@ -739,7 +739,14 @@
        gold on Grandmaster Pho rises, and (M7) every sound of the ground comes near. Each breath has a band that is
        enough, seconds wide, and an edge beyond it; nothing here tests a finger's speed. Three breaths: he is told when;
        he chooses when; it pulls, and he closes anyway. */
+    /* OPEN AND CLOSE BY A GATE (v26.3, Chad, 13 Nov 2026: "the mini game is hard to play, can you change the mechanism to
+       something else, or something that is more fun and engaging?", and his pick of four: "Drag a glowing gate open with
+       one finger: soft lights of presences drift in toward you. Drag it shut when you feel it is enough, before they crowd
+       you." The engine's gate, the forty-ninth seam). The same three breaths, their bands now seconds WIDE OPEN: a drag up
+       opens it, the lights come in as fast as it stands open, and a drag down shuts it; the third pulls (heavier to shut,
+       and it creeps open while he lets go). Grandmaster Pho's lines are the breath's, unchanged */
     const BREATHS = [{ enough: 2.6, edge: 7.5, told: true, lead: 1.4 }, { enough: 2.4, edge: 5.6 }, { enough: 2.4, edge: 5.2, pull: 1.3 }];
+    const GATE_WORLD = 0.55;
     const open = { k: 0, shown: -1, over: 0, i: -1, st: '' };
     function breathBegin() {
       if (!kit || !kit.event) { taughtBegin(false, { closed: 0, held: 0 }); return; }
@@ -747,10 +754,11 @@
       play.busy = true; setPhase('breath', { complete: false });
       const said = { open: false };
       kit.event({
-        kind: 'breath', low: true, title: W.breathTitle, prompt: W.breathTitle, label: W.breathTitle,
+        kind: 'gate', low: true, title: W.breathTitle, prompt: W.breathTitle, label: W.breathTitle,
         brief: TOUCHY ? W.breathBrief : W.breathBriefKey, whereWord: TOUCHY ? W.breathWhere : W.breathWhereKey,
         openWord: W.breathOpen, closeWord: W.breathClose, restWord: '', breaths: BREATHS, gain: 2, cost: 2, idle: 22, at: { sx: 0.5, sy: 0.74 },
-        onLevel: (k, held, i, st) => { open.k = k; open.i = i; open.st = st;
+        /* (the world opens with the gate itself, a little, and with the lights that have come through it, the rest) */
+        onLevel: (k, held, i, st, gk) => { open.k = Math.max(k, GATE_WORLD * (gk || 0)); open.i = i; open.st = st;
           if (st === 'wait' && i === 0 && !said.open) { said.open = true; fxLine('ph3b1'); }
           if (i === 2 && (st === 'open' || st === 'pull')) play.pull3 = k; else play.pull3 = 0; },
         onEnough: (i) => { if (i === 0) fxLine('ph3b2'); },

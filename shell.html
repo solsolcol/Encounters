@@ -898,6 +898,86 @@ body.finePtr .wpnBtn{position:relative;margin-bottom:12px}
   background:rgba(255,255,255,.9);box-shadow:0 0 0 5px rgba(255,255,255,.2),0 0 18px rgba(255,255,255,.55);opacity:0;transition:opacity .25s}
 #evBreath.live .bfinger{opacity:1;animation:cHold 2.2s ease-in-out infinite}
 #evBreath.held .bfinger{opacity:0;animation:none}
+/* v26.3 · gate — a fingertip drags UP and the two leaves of a little gate slide apart, lights drifting out through it
+   toward you; then it drags DOWN and the gate shuts (open and close: drag up to open, drag down to shut) */
+#evDemo.gate .dga,#evDemo.gate .dgl,#evDemo.gate .dgr,#evDemo.gate .dgo,#evDemo.gate .dgf{display:block}
+#evDemo .dga{position:absolute;left:50%;top:50%;width:46px;height:58px;margin:-29px 0 0 -23px;box-sizing:border-box;
+  border:2px solid rgba(255,226,170,.92);border-radius:23px 23px 3px 3px;box-shadow:0 0 10px rgba(240,196,128,.4);
+  background:radial-gradient(ellipse 60% 70% at 50% 62%,rgba(255,248,226,.95),rgba(240,196,128,.45) 48%,transparent 80%)}
+#evDemo .dgl,#evDemo .dgr{position:absolute;top:50%;width:20px;height:54px;margin-top:-27px;box-sizing:border-box;
+  background:linear-gradient(90deg,#2e1c10,#6a4424 50%,#2e1c10);border:1px solid rgba(240,196,128,.6)}
+#evDemo .dgl{left:50%;margin-left:-21px;border-radius:20px 0 0 2px;animation:dgl 3.8s ease-in-out infinite}
+#evDemo .dgr{left:50%;margin-left:1px;border-radius:0 20px 2px 0;animation:dgr 3.8s ease-in-out infinite}
+#evDemo .dgo{position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-6px 0 0 -3px;border-radius:50%;background:#FFF8E4;
+  box-shadow:0 0 7px 2px rgba(255,226,170,.85),-13px 7px 0 -1px #FFF3D6,13px 5px 0 -1px #FFF3D6;animation:dgo 3.8s ease-in infinite}
+#evDemo .dgf{position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 30px;border-radius:50%;
+  background:rgba(255,255,255,.92);box-shadow:0 0 0 4px rgba(255,255,255,.22),0 0 14px rgba(255,255,255,.5);animation:dgf 3.8s ease-in-out infinite}
+@keyframes dgl{0%,10%{transform:translateX(0);opacity:1}42%,64%{transform:translateX(-18px);opacity:.3}88%,100%{transform:translateX(0);opacity:1}}
+@keyframes dgr{0%,10%{transform:translateX(0);opacity:1}42%,64%{transform:translateX(18px);opacity:.3}88%,100%{transform:translateX(0);opacity:1}}
+@keyframes dgo{0%,30%{transform:translate(0,0) scale(.3);opacity:0}40%{opacity:1}64%{transform:translate(0,20px) scale(1.3);opacity:.9}
+  74%,100%{transform:translate(0,28px) scale(1.5);opacity:0}}
+@keyframes dgf{0%{transform:translateY(24px);opacity:0}8%{transform:translateY(24px);opacity:.95}42%,64%{transform:translateY(-18px);opacity:.95}
+  88%{transform:translateY(24px);opacity:.95}96%,100%{transform:translateY(24px);opacity:0}}
+/* v26.3 · THE GATE IN PLAY (the forty-ninth seam) — as the breath's: the world is the minigame and the panel stands small
+   at the foot (`low`). A gate in an arch where the chapter puts it: its two leaves slide apart as far as it stands open
+   (--gk), the light behind it grows with them, and the lights that have come in (--bn of the twelve) drift out through it
+   toward him, gold once it is enough (the band) and burning red-white near the edge. The gauge beside it is how many
+   have come: its teal band is enough, its red cap the edge. A fingertip shows which way to drag: up while it waits; down
+   once it is enough, in a breath he is told in */
+#event.full.gate{align-items:flex-start;padding-bottom:0;background:transparent;
+  padding-top:calc(max(14px,env(safe-area-inset-top)) + 18px + var(--objH,40px) + 12px)}
+#event.full.gate .evpanel{width:min(84vw,320px);gap:6px;padding:9px 16px;background:rgba(7,8,11,.5)}
+#event.full.gate #evPrompt{font-size:1.02rem;letter-spacing:.16em;min-height:1.2em;font-weight:700;color:#F3E2C0;
+  text-shadow:0 0 12px rgba(240,196,128,.45)}
+#event.gate #evNote{font-size:.8rem;color:#EDE6D4;opacity:.9;letter-spacing:.05em;text-transform:none}
+#event.full.gate.low{align-items:flex-end;padding-top:0;padding-bottom:max(18px,env(safe-area-inset-bottom))}
+#evGate{position:fixed;left:0;top:0;width:0;height:0;pointer-events:none;z-index:1;--gk:0;--bk:0;--be:.5;--bn:0}
+#evGate.off{opacity:0}
+#evGate .ghalo{position:absolute;left:-120px;top:-132px;width:240px;height:240px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,238,200,.42) 0 22%,rgba(240,196,128,.18) 48%,transparent 70%);
+  opacity:calc(var(--gk) * .95);transform:scale(calc(.55 + .6 * var(--gk)))}
+#evGate .gdoor{position:absolute;left:-56px;top:-72px;width:112px;height:144px;border-radius:56px 56px 4px 4px;overflow:hidden;
+  background:rgba(8,8,12,.55)}
+#evGate .glight{position:absolute;left:0;top:0;width:100%;height:100%;
+  background:radial-gradient(ellipse 60% 70% at 50% 62%,rgba(255,250,232,.98) 0 18%,rgba(255,226,170,.75) 42%,rgba(240,196,128,.25) 70%,transparent 90%);
+  opacity:var(--gk);transform:scaleX(calc(.25 + .75 * var(--gk)))}
+#evGate .gleaf{position:absolute;top:0;width:56px;height:144px;box-sizing:border-box;
+  background:linear-gradient(90deg,#2e1c10,#5b3a1f 30%,#6e4826 50%,#5b3a1f 70%,#2e1c10);
+  border:1px solid rgba(240,196,128,.55);box-shadow:inset 0 0 0 5px rgba(20,12,6,.35),inset 0 0 0 6px rgba(240,196,128,.35)}
+#evGate .gl{left:0;border-radius:56px 0 0 3px;transform:translateX(calc(var(--gk) * -54px))}
+#evGate .gr{right:0;border-radius:0 56px 3px 0;transform:translateX(calc(var(--gk) * 54px))}
+#evGate.pull .gdoor{animation:gTug .42s ease-in-out infinite}
+@keyframes gTug{0%,100%{transform:translateX(0)}50%{transform:translateX(1.6px)}}
+#evGate .garch{position:absolute;left:-60px;top:-76px;width:120px;height:152px;box-sizing:border-box;border-radius:60px 60px 5px 5px;
+  border:3px solid rgba(255,226,170,.92);box-shadow:0 0 14px rgba(240,196,128,.45),inset 0 0 10px rgba(240,196,128,.3);
+  transition:border-color .25s,box-shadow .25s,opacity .3s}
+#evGate.live .garch{animation:gWake 2.2s ease-in-out infinite}
+@keyframes gWake{0%,100%{box-shadow:0 0 14px rgba(240,196,128,.45),inset 0 0 10px rgba(240,196,128,.3)}
+  50%{box-shadow:0 0 28px rgba(255,226,170,.85),inset 0 0 14px rgba(255,226,170,.5)}}
+#evGate.near .garch{border-color:rgba(255,150,120,.95);box-shadow:0 0 22px rgba(255,120,90,.6)}
+#evGate.shut .garch{opacity:.6}
+#evGate .gorbs i{position:absolute;left:0;top:-6px;width:0;height:0;opacity:clamp(0,calc(var(--bn) - var(--j)),1);transition:opacity .4s}
+#evGate .gorbs i::before{content:'';position:absolute;left:-8px;top:-8px;width:16px;height:16px;border-radius:50%;
+  background:radial-gradient(circle,#FFF9EA 0 28%,rgba(255,226,170,.78) 52%,transparent 72%);box-shadow:0 0 12px rgba(255,226,170,.75);
+  animation:gOrb 3.1s ease-in infinite;animation-delay:calc(var(--j) * -.26s)}
+#evGate.band .gorbs i::before{background:radial-gradient(circle,#FFFDF2 0 30%,rgba(255,214,120,.88) 55%,transparent 74%);box-shadow:0 0 14px rgba(255,214,120,.9)}
+#evGate.near .gorbs i::before{background:radial-gradient(circle,#FFFFFF 0 30%,rgba(255,150,120,.88) 55%,transparent 74%);box-shadow:0 0 16px rgba(255,120,90,.9)}
+@keyframes gOrb{0%{transform:translate(0,0) scale(.3);opacity:0}15%{opacity:1}80%{opacity:.9}
+  100%{transform:translate(calc(var(--dx) * 1.5px),calc(70px + var(--j) * 3px)) scale(1.7);opacity:0}}
+#evGate .ggauge{position:absolute;left:74px;top:-70px;width:10px;height:140px;box-sizing:border-box;border-radius:5px;overflow:hidden;
+  border:1px solid rgba(255,236,200,.7);background:rgba(8,8,12,.5)}
+#evGate .gband{position:absolute;left:0;right:0;top:0;bottom:calc(var(--be) * 100%);
+  background:linear-gradient(0deg,rgba(99,214,200,.5),rgba(99,214,200,.34) 80%,rgba(255,120,90,.65) 88%)}
+#evGate .gfill{position:absolute;left:0;right:0;bottom:0;height:calc(var(--bk) * 100%);
+  background:linear-gradient(0deg,rgba(240,196,128,.85),rgba(255,244,214,.98))}
+#evGate.near .ggauge{border-color:rgba(255,150,120,.95)}
+#evGate .gfinger{position:absolute;left:-13px;top:40px;width:26px;height:26px;border-radius:50%;
+  background:rgba(255,255,255,.9);box-shadow:0 0 0 5px rgba(255,255,255,.2),0 0 18px rgba(255,255,255,.55);opacity:0;transition:opacity .25s}
+#evGate.live .gfinger{opacity:1;animation:gUp 1.9s ease-in-out infinite}
+#evGate.told .gfinger{opacity:1;animation:gDown 1.9s ease-in-out infinite}
+#evGate.held:not(.told) .gfinger{opacity:0;animation:none}
+@keyframes gUp{0%{transform:translateY(46px);opacity:0}15%{opacity:.95}70%{transform:translateY(-40px);opacity:.95}85%,100%{transform:translateY(-46px);opacity:0}}
+@keyframes gDown{0%{transform:translateY(-40px);opacity:0}15%{opacity:.95}70%{transform:translateY(46px);opacity:.95}85%,100%{transform:translateY(52px);opacity:0}}
 /* v23.0 · THE HANDS-ON KINDS IN PLAY — like steady's, the world is the minigame: the panel stands at the TOP, small and
    see-through, and the hint is drawn AT the thing (the prop in his hands, the figure on the altar, the gauge) */
 #event.full.craft,#event.full.yield,#event.full.surface{align-items:flex-start;padding-bottom:0;background:transparent;
@@ -3443,7 +3523,7 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
     <span class="stencil" id="evLabel"></span>
     <!-- v10.3: the briefing's looping illustration - a tile dragged from the
          left column onto its slot on the right (shown for demo: 'drag') -->
-    <div id="evDemo" class="hide" aria-hidden="true"><i class="dbr"></i><i class="dbb"></i><i class="dbd"></i><span class="dbf"></span><i class="dslot"></i><i class="dslot dst"></i><b class="dtile"></b><span class="dhand"></span><i class="dbar"></i><i class="dfill"></i><i class="dband"></i><span class="dtap"></span><i class="dtgt"></i><i class="dring"></i><i class="dring r2"></i><span class="dhit"></span><i class="dhold"></i><span class="dfinger"></span><span class="dret"></span><i class="dspot"></i><i class="dsring"></i><span class="dstap"></span><i class="dqr"></i><b class="dqm"></b><span class="dqf"></span><i class="dwb"></i><i class="dwr"></i><span class="dwf"></span><i class="dto"></i><i class="dtc"></i><span class="dtf"></span><i class="dpr"></i><i class="dpg"></i><span class="dpf"></span><i class="dsg"></i><b class="dsm"></b><span class="dsf"></span><i class="dcroom"></i><b class="dcthing"></b><b class="dcstill"></b><span class="dcfinger"></span><i class="dcflash"></i></div>
+    <div id="evDemo" class="hide" aria-hidden="true"><i class="dbr"></i><i class="dbb"></i><i class="dbd"></i><span class="dbf"></span><i class="dslot"></i><i class="dslot dst"></i><b class="dtile"></b><span class="dhand"></span><i class="dbar"></i><i class="dfill"></i><i class="dband"></i><span class="dtap"></span><i class="dtgt"></i><i class="dring"></i><i class="dring r2"></i><span class="dhit"></span><i class="dhold"></i><span class="dfinger"></span><span class="dret"></span><i class="dspot"></i><i class="dsring"></i><span class="dstap"></span><i class="dqr"></i><b class="dqm"></b><span class="dqf"></span><i class="dwb"></i><i class="dwr"></i><span class="dwf"></span><i class="dto"></i><i class="dtc"></i><span class="dtf"></span><i class="dpr"></i><i class="dpg"></i><span class="dpf"></span><i class="dsg"></i><b class="dsm"></b><span class="dsf"></span><i class="dcroom"></i><b class="dcthing"></b><b class="dcstill"></b><span class="dcfinger"></span><i class="dcflash"></i><i class="dga"></i><i class="dgl"></i><i class="dgr"></i><b class="dgo"></b><span class="dgf"></span></div>
     <!-- v9.7: THREE rings in flight, not one. A single ring had to both
          approach the next beat and show that you were late for the last one,
          and it could do neither: it froze on the target for the whole late
@@ -3469,6 +3549,9 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
   <div id="evCraft" class="hide" aria-hidden="true"><i class="cprog"></i><i class="cpath"></i><i class="cline"></i><span class="cfinger"></span></div>
   <div id="evYield" class="hide" aria-hidden="true"><i class="yfill"></i><i class="yring"></i><span class="yfinger"></span></div>
   <div id="evBreath" class="hide" aria-hidden="true"><i class="bband"></i><i class="bdisc"></i><i class="bring"></i><span class="bfinger"></span></div>
+  <!-- v26.3: THE GATE — the light behind it, its two leaves in their arch, the lights that come through, the gauge of how
+       many have come, and the fingertip that shows which way to drag -->
+  <div id="evGate" class="hide" aria-hidden="true"><i class="ghalo"></i><span class="gdoor"><i class="glight"></i><i class="gleaf gl"></i><i class="gleaf gr"></i></span><i class="garch"></i><span class="gorbs"><i style="--j:0;--dx:-40"></i><i style="--j:1;--dx:34"></i><i style="--j:2;--dx:-16"></i><i style="--j:3;--dx:54"></i><i style="--j:4;--dx:-58"></i><i style="--j:5;--dx:10"></i><i style="--j:6;--dx:26"></i><i style="--j:7;--dx:-30"></i><i style="--j:8;--dx:46"></i><i style="--j:9;--dx:-6"></i><i style="--j:10;--dx:-50"></i><i style="--j:11;--dx:18"></i></span><span class="ggauge"><i class="gband"></i><i class="gfill"></i></span><span class="gfinger"></span></div>
   <div id="evSurface" class="hide" aria-hidden="true"><i class="sgauge"></i><i class="sfloor"></i><i class="sgoal"></i><b class="smk"></b><span class="sfing"></span></div>
 </div>
 

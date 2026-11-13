@@ -352,10 +352,10 @@
       forumSent: 'Sent',
       // OPEN AND CLOSE (§4.3 P9): the event's own words
       breathTitle: 'OPEN AND CLOSE',
-      breathBrief: 'Hold your finger down to open. Lift it to close. Close before it is too much.',
-      breathBriefKey: 'Hold the mouse button or Space to open. Let go to close. Close before it is too much.',
-      breathWhere: 'Hold anywhere to open',
-      breathWhereKey: 'Hold the mouse button or Space to open',
+      breathBrief: 'Drag the gate up to open it. Soft lights will drift in toward you. Drag it down to shut it when it is enough, before they crowd you.',
+      breathBriefKey: 'Drag the gate up with the mouse, or hold W or ↑, to open it. Soft lights will drift in toward you. Drag it down, or hold S or ↓, to shut it when it is enough, before they crowd you.',
+      breathWhere: 'Drag up to open the gate. Drag down to shut it.',
+      breathWhereKey: 'Drag up, or hold W or ↑, to open the gate. Drag down, or hold S or ↓, to shut it.',
       breathOpen: 'OPEN',
       breathClose: 'CLOSE',
       // the chant's captions (the three lines of homage that go with the three bows): the Pali as chanted over its

@@ -193,6 +193,20 @@ that fits it, with the version it came from.
 - A lighter body keeps its paint: when a model must be made lighter for a phone, its triangles are lowered (by the generator's own remesh) and its texture stays high wherever it is seen close ("I thought the issue is mostly due to textures and not the triangles. As long as texture remains high res, it should be ok?": the first people of episode 4 chapter 3 had faces smeared by a sheet cut to 1024, not by their triangle count). (v26.0)
 - Every phone, in every browser, is held to one standard ("I want you to also think of more ways to force all phones to have a consistent high res high quality experience, i see other phones using other browsers may have a very varied difference in experience, especially samsung browser"; of the options put to him he picked "Full sharpness", "Smooth edges" and "Lock text size"): every chapter draws two pixels a point on a phone (main.js `PHONE_RATIO`; a chapter may ask more, `render.phoneRatio`), antialiasing on, and the page's text measured at boot and divided out where a browser enlarges it (`textZoom`, `text-size-adjust`). The renderer asks for the high-performance chip, which a phone ignores: no page can switch off a phone's battery saver, and he was told so. (v26.1)
 - Efficiency improves and the standards and quality stay exactly where they are ("I dont want quality and creativity and standards to drop because of this change, i want efficiency to improve while keeping the same standards and quality"): his asks are done in one shot, one build, one deploy and one round of checks at the end ("cant you do all of my asks in one shot, deploy, test once probe once?"), not one release per ask. Each ask is designed fully before it is built (what the real place has, what each shot sees), so the photographs confirm instead of discover. The work is saved by commits as it goes. Every check this file asks for is still made, once, where it can catch something, and never repeated after each tweak. A generated model's own checks (the reference picture, each model on its own) are part of making it, not probes of the game. (v24.35)
+- MY EYE IS NOT A CHECK FOR A BODY ("Know your own limits, and dont pretend you know everything"; "If you are not sure why
+  you are not able to tell whats the problem, then dont act smart and say it is solved"; "Stop pretending you know what is
+  the problem"; "I want a real solution to this stupid blindness of yours, not for you to keep apologizing and fixing only
+  when i repeat it"; "Biggest joke ever to see you call that arm natural": of the taper woman's arm, her elbow behind her
+  back, and the brown hermit's fingers, which I had reported as looking right; and of my first answer, which left the
+  judging to him: "This is NOT the solution, the solution is for you to know how to fix it, not for me to do more work for
+  you"). A body, a pose, a hand, an arm or a finger is never called natural, right or fixed on my own judgement of a
+  picture, and the checking is mine, never his. Each pose is LEARNED before it is built (how a real person holds it, from
+  real photographs: which hand, where the elbow is, the wrist's bend, the fingers' curl and spacing, written down as
+  numbers), BUILT to those numbers, MEASURED against what a real body does (tools/probes/jointscan.mjs: every finger,
+  wrist, forearm, elbow, shoulder and knee of every person against human ranges), and set BESIDE A REAL PHOTOGRAPH of a
+  person doing the same thing from the same angle, every difference written down and closed. It goes to him only once all
+  of that passes. A report says what was checked and what I am unsure of, never "looks right"; I never guess at what he
+  points to and call the guess the problem. (v26.3)
 
 ### How the work is done and checked
 
@@ -242,6 +256,14 @@ that fits it, with the version it came from.
 - Before calling a chapter debugged, review the code added since the last review and play every ending with the sound on; report honestly anything that did not pass, and name your own regressions as yours. (v24.5)
 - Photograph endings after a REAL play-through as well as after a probe's jump, because what play changes and what an ending re-stages must be read together. (v24.10)
 - Never dismiss what a photograph shows as an artefact; measure it. (v24.5)
+- Feet on the ground are MEASURED too ("You didn't notice many masters have their feet sunk clipping into the ground?"):
+  tools/probes/feetscan.mjs at every phase, on each person's near skin (LEVEL=1), every foot against the floor under it.
+  clipscan leaves the ground out (everything stands on it), so a sole under it was never a pair, and a take made on another
+  body keeps that body's hips: a body is set down by its own lowest contact (c_cast.js groundTakes), a seated one has its
+  legs laid down to the ground from its seat and is brought forward until its shins clear the seat's front. (v26.3)
+- A take's motion of a head is measured before it is cast (tools/probes/headturn.mjs: the face's turn against the body,
+  over the window it is played in): the kneel's look round swept 54 and 61 degrees either side and Grandmaster Pho's talk
+  56 to his right before Chad saw them ("too extreme", "moves too much"). (v26.3)
 - Things passing through one another are MEASURED, not spotted ("The environment has many things that clip into each
   other that can be seen in your screenshots, im amazed you were not able to pick up on that"): tools/probes/clipscan.mjs
   over every phase and every 9 s of every film, and each pair it finds is a lead, photographed full size and read as a
@@ -655,6 +677,7 @@ The declarations, all optional:
 | a film step `eventWait(t, opts, done)` | v23.0: an event opened FROM INSIDE a film that stops the film's clock until it resolves (a wall in its clock: a slow frame never runs past it); voices cued before it play on through the pause. Episode 3 chapter 5's COME BACK | — |
 | a film's `fade(t0, t1, from, to, color)` | v25.5: a FADE IN A COLOUR — the film's fade layer in any CSS colour (a white, for a flash) over the whole screen: the picture, the hands' pass and the vignette alike. The colour is the layer's only while such a fade stands above nothing; the black's again when it does not, when any plain fade is applied, and at every scene's start and end. Episode 4 chapter 2's clearing (the white as the light reaches him); the fixture's `flash` film proves it and that a plain fade is unchanged — the forty-third seam | — (black, as always) |
 | event kind `breath` | v26.0: OPEN AND CLOSE — a level that rises while anything is held and falls when it is let go, in breaths: `breaths: [{ enough, edge, lead, pull, told }]` in seconds of holding (a band that is enough, an edge beyond it, a breath that pulls), `gain`/`gainStat` paid on the spot for a breath closed in its band, `cost`/`costStat` through evCut for one held to its edge; `onLevel`, `onEnough`, `onBreath(report)` (a number answered is the seconds before the next breath is live), `onIdle`; its ring drawn at `at: { sx, sy }`; held by a finger anywhere, the mouse, E or Space; its own picture (`breath`). It answers `{ ok, score, closed, held, unopened, breaths }`. Nothing in it tests a finger's speed. Episode 4 chapter 3's first teaching, and the one breath inside its close (`eventWait`) — the forty-sixth seam (the forty-fourth is chapter 1's `change`, the forty-fifth its rain) | — |
+| event kind `gate` | v26.3: OPEN AND CLOSE BY HAND (Chad, 13 Nov 2026, the breath "hard to play"; his pick of four: "Drag a glowing gate open with one finger: soft lights of presences drift in toward you. Drag it shut when you feel it is enough, before they crowd you") — the breath's bookkeeping (its breaths, bands, prices, reports, callbacks and answer) under a gate the hand drives: a drag UP opens it and a drag DOWN shuts it by the drag's own length (a third of the screen from shut to wide), W, ↑, E or Space held opens it, S or ↓ shuts it, and it stays wherever it is left; `gk` how far it stands open; the lights come in at gk / edge a second (the band and the edge in seconds wide open); shut with the level in the band 'closed', the level at the edge 'held' (it swings shut FOR him), shut under the band 'unopened' (taken once more); a breath with `pull` creeps open by itself once in the band and is heavier to shut; `onLevel(k, held, i, state, gk)`; drawn at `at`; its own picture (`gate`). Episode 4 chapter 3's first teaching and its close's one breath; the breath kind is kept, still proven — the forty-ninth seam | — |
 | `kit.lens(fov, { secs })` | v26.0: the PLAY lens eased on wall time to a chapter's angle and back (`null`); a scene and kitReset give it back. Episode 4 chapter 3's pull and its breaths — the forty-seventh seam | — (the game's 72°) |
 | `kit.hush(k, { secs, hz })` | v26.0: the world's sound CLOSING DOWN — a low-pass laid over the background bus by k, eased on wall time (voices are not on that bus and stay clear); kitReset clears it. Episode 4 chapter 3's pull, and ending D — the forty-eighth seam | — (open) |
 | `kit.unlock(id, { onClose })` | v14.7: the ITEM UNLOCKED splash — the item's model turning in the middle (the `iv` renderer), its name, a Close button, its own sting; a screen state of its own (`unlock`) that closes every "is it play?" gate, with a 0.6 s guard so the press that took the item cannot also close it | — |
@@ -1310,7 +1333,11 @@ the footsteps not grass) shipped at v26.1 (the tracker's §16; deploy `6af64a8cc
 phone standard for every chapter; his ninth, the full debug of the chapter once all of it was live, went live at v26.2
 (docs/V26.1-E4C3-DEBUG.md; deploy `6af69ce2d967b774e0e4ac58`), with his message of 13 Nov on things passing through one
 another and his five pictures (§5 there: every clip measured by tools/probes/clipscan.mjs and fixed or named; the
-trees placed by their crowns, masters/v26.2/trees; the bench made again, its quad remesh).
+trees placed by their crowns, masters/v26.2/trees; the bench made again, its quad remesh). His notes of 13 Nov after it
+(feet in the ground, the minigame remade as his pick, the gate; the look round and Pho's head restrained; Ton's face; the
+taper woman's arm; the brown hermit's hands; then "You dont see the problem with the hands and fingers?" and the new
+standing rule on bodies, with tools/probes/jointscan.mjs) went live at v26.3 (deploy `6af6f14cd6218e64bb4e9b61`):
+docs/V26.3-E4C3-NOTES.md.
 Chapter 4 is next after it
 (S1·13, case one: the woman who rose from her wheelchair).
 The episode's plan, with what remains his to decide:
@@ -1450,13 +1477,13 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v143** (`masters/v26.1/masterz-text-v143.xlsx`, its CSV beside it: v26.1's words). It is
+**THE SHEET IS v144** (`masters/v26.3/masterz-text-v144.xlsx`, its CSV beside it: v26.3's words). It is
 EXPORTED and not published: the workbook (135 KB) is far past what the Drive connector's base64 route can carry (about
 20,000 characters — docs/EDITING-TEXT.md, "THE CEILING"), so the split export written down there no longer fits
 either. The way through is the Google Sheets connector, which writes the cells directly (docs/OPEN-ITEMS.md A1).
 **v44 is still the link to give Chad** until that is done:
 https://docs.google.com/spreadsheets/d/1bqnbQJPr1O6YslOlcsbVDFlZCohQtyKbPzm9EuY1IpM/edit
-Every sheet version's own diff, v143 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
+Every sheet version's own diff, v144 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
 first; a new version goes at its top).
 
 `docs/LEARNINGS.md` is the catalog of every hard-won lesson (CSP traps,

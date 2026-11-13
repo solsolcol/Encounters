@@ -8504,3 +8504,51 @@ Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8,
   1,100 px (prop.sh): the crumpled seat passed at 500.
 - **A standing take can carry the body half a metre off its own place** (again: the woman at the bench's `give`, 0.64 m):
   wherever she is put, measure where her BODY and her hands go in that take before laying things out round her.
+
+## v26.3 — feet set down by their own contact, a gate for a breath, and the joints held to a real body
+
+- **A body's standing height from its bind pose is no height.** The generated rigs' bind poses read 2 to 15 cm tall at
+  the hips, so every standing take was judged "low" and left as it was. A body's standing height is read from its own
+  tallest take (c_cast.js groundTakes), and a take is set down by the body's own lowest contact in it.
+- **A cache of a body's points is kept by its skin's slot, never by the mesh object.** groundPoints cached the points of
+  the first person made from a file, and every crowd driver of that file was then read in that first person's pose: the
+  kneelers went 6 cm deeper. Cache which vertices; read their positions from the body being measured.
+- **Legs laid for a seat are laid only while a take that sits is worn**, by that take's weight: laid in every take, the
+  masters' feet stayed pinned where they sat while they stood in the afternoon's photograph. A rise fades them out
+  (riseCurve). A graft (Grandmaster Pho's legs on bones of their own) is turned with the legs it stands for.
+- **Under cloth baked for a take's own thighs, keep the thigh and swing the shin.** Two-bone IK from the hip lifted Pho's
+  knees through his robe (the cloth was baked round the take's thighs); turning only the shin about the knee kept the
+  robe whole.
+- **Measure what a sitter's legs pass through before laying them down to the ground.** "Nobody moved forward" was decided
+  for the sofas and the bench without measuring their fronts, and the hermit in white's shins went through his cushion in
+  my own test picture: Chad saw it before I did. Each seat's front is measured on the model as drawn (SOFA_DOWN,
+  BENCH_DOWN), and the sitter brought forward until the shins clear it.
+- **My eye is not a check for a body** (Chad's standing rule of v26.3). A picture of an arm or a hand is judged by its
+  author as what he meant to make. tools/probes/jointscan.mjs holds every joint of every person to what a real body does
+  (fingers' bends and sideways bends, the spread between them, the wrist's bend and deviation, the forearm's turn, the
+  roll of a bone on its own line against its parent, the elbow's fold and where it stands against the shoulder, the
+  shoulder thrown back, a straight knee bent backward). It found what I had passed: the taper woman's elbow behind her
+  shoulder and her wrist bent 43 degrees toward the little finger; my own lap rest for the brown hermit with his hands
+  wrung round on his wrists by 77 and 111 degrees, his fingers 12 to 16 degrees apart and his wrists bent down 40; the
+  seated takes on three masters and two crowd bodies with fingers bent 30 to 70 degrees sideways at their hinges.
+- **A measure is proved on cases already known, both ways, before it is believed.** jointscan's first two measures were
+  wrong: a knee "bent backward" read against the toes' line flagged every kneeler (in a deep kneel the foot points back),
+  and a finger's sideways bend read against the hand's palm flagged half the crowd. Each was made right against what was
+  known (the v26.2 hermit's claw, which must flag; a standing knee, which must not), and the sideways bend is now read
+  directly against the knuckles' line, in degrees.
+- **A rig with no twist bones carries a forearm's turn at one joint, and the skin there wrings.** A hand turned absolutely
+  (a palm laid on a knee) on a forearm the take left unturned puts the whole difference at the wrist. The class fix
+  (c_cast.js handsTrue): of the hand's turn about the forearm's line beyond 25 degrees, 0.6 is laid on the forearm about
+  its own line and the hand turned back by as much, so the hand stays where and as it was; and each finger's middle and
+  end joint keeps only its turn about its own hinge. Laid last of every lay, taken off before the mixer runs.
+- **Where a tool's length decides the hand, measure where the wrist lands, not where it was asked to stand.** The taper
+  woman's wrist was asked for 25 cm before her shoulder and landed at 17: the taper's 0.73 m from wrist to tip, aimed at
+  a wick 0.84 m before her, drew it back to her chest. She stands 6 cm further back now, her elbow solved under her
+  shoulder and a little forward, the taper leaning down from her fingers instead of up.
+- **A short-bodied sitter's elbow hangs at his knees' height.** The brown hermit's forearm climbed to his knee, and his
+  hand, laid along the cloth where it falls away over the knee, bent down 40 degrees at the wrist. A real man's palm rests
+  on top of the knee with the wrist near straight and only the fingers curved down over it (photographed for it): the
+  hand is turned up until it bends no more than 8 degrees from the forearm, and each finger curled until its tip rests on
+  the cloth (restHands flexMax, drape).
+- **A line under a word must answer both of the word's states.** The gate's panel said CLOSE over "Drag up to open the
+  gate": the line that says where the hand goes says both ways now.

@@ -132,11 +132,16 @@
     /* (each driver starts at its own place round the kneel's slower cycle: a person's clock starts at ten times its phase, so
        the phases are spread over 3.4 to keep the kneelers as far apart round it as they were round the take's own 13.6 s) */
     const SITSPREAD = SEIZA_WIN[2] / 10;
+    /* (v26.3: THEIR HANDS ON THEIR THIGHS. The kneel was made on a body with thinner thighs, and on these, in their loose
+       trousers, each hand sank into the thigh to the knuckles, its fingertips out through the cloth (photographed full
+       size beside two of them, 13 Nov). A kneeler's palms rest on top of the thighs, as the masters' rest on their knees:
+       the same lap rest (c_cast.js restHands), laid while the kneel is worn; their members wear the drivers' bones) */
+    const KNEEL_HANDS = { how: 'lap', gather: 1, converge: 0.11, curl: [0.30, 0.60, 0.30], flexMax: 8 * Math.PI / 180, drape: { r: 0.008, min: 0.8, max: 1.5 } };
     function buildCrowd() {
       planCrowd();
       for (const key of DEVOTEES) crowdDrivers[key] = {
-        A: mkDriver(key, { take: 'seiza', centre: true, win: SIT, phase: (0.07 + 0.11 * DEVOTEES.indexOf(key)) * SITSPREAD }),
-        B: mkDriver(key, { take: 'seiza', centre: true, win: SIT, phase: (0.55 + 0.09 * DEVOTEES.indexOf(key)) * SITSPREAD, rate: 0.86 }),
+        A: mkDriver(key, { take: 'seiza', centre: true, win: SIT, headDamp: SEIZA_LOOK, handsOn: KNEEL_HANDS, phase: (0.07 + 0.11 * DEVOTEES.indexOf(key)) * SITSPREAD }),
+        B: mkDriver(key, { take: 'seiza', centre: true, win: SIT, headDamp: SEIZA_LOOK, handsOn: KNEEL_HANDS, phase: (0.55 + 0.09 * DEVOTEES.indexOf(key)) * SITSPREAD, rate: 0.86 }),
         S: mkDriver(key, { take: 'Idle_3', centre: true, phase: 0.13 * DEVOTEES.indexOf(key) }) };
       for (const s of crowdSeats) { const D = crowdDrivers[DEVOTEES[s.body]][s.kind === 'stand' ? 'S' : s.half], p = s.at.arrive;
         s.member = mkMember(D, p.x, p.z, p.ry, { s: s.s, mirror: s.mirror, parent: dayOne, blobW: s.kind === 'stand' ? 0.8 : 0.95, blobD: s.kind === 'stand' ? 0.7 : 1.0 });
@@ -201,10 +206,21 @@
        metres: the upper arm hanging, the forearm reaching forward level (her arm is 0.46 m to the wrist); it follows the
        wick by `follow`: half its way to her left or right, half its rise. `hold`: a probe's seam, a moment of her round
        to stand at; null in play) */
-    const TAPER = { at: [1.5, -9.25], held: 0.12, len: 0.70, T: 12.5, slant: 0.32, hinge: [0.607, 0, -0.794], wrist: [-0.03, -0.20, 0.25], follow: [0.5, 0.5] };
+    /* (v26.3: Chad, 13 Nov 2026, "This arm is natural to you?" and "Biggest joke ever to see you call that arm natural", of
+       her from her left side. MEASURED (tools/probes/jointscan.mjs): her elbow 4.5 cm behind her shoulder and folded 115
+       degrees, her wrist 17 cm before her shoulder and bent 43 degrees toward the little finger, past what a wrist does.
+       Why: she stood so near the wicks that the taper's 0.73 m from wrist to tip drew her hand back to her chest, the elbow
+       solved toward a point behind her, and the taper leaned toward the thumb (up, her thumb being on top) so the hand
+       had to bend down hard to bring it to the wick. A real woman lighting a candle with a long taper (photographed for
+       it: masters/v26.3/make.sh) holds the elbow at her side under the shoulder, the forearm forward and near level, the
+       taper along her fingers and a little down. So: `back`, she stands 6 cm further from the table; `wrist`, her wrist's
+       place 24 cm before her shoulder, 22 under it, 6 out; `slant`, the taper a little toward the little finger (down);
+       and her elbow solved toward a point under the shoulder, a little out and a little forward (taperTick)) */
+    const TAPER = { at: [1.5, -9.25], back: 0.06, held: 0.12, len: 0.70, T: 12.5, slant: -0.1, hinge: [0.607, 0, -0.794], wrist: [-0.06, -0.22, 0.24], follow: [0.5, 0.5], roll: 0.65, turn: 0.7 };
     const taper = (() => {
       const y = TABLES.tops[0] + 0.245;
-      const P = mkPerson('e4devf', TAPER.at[0], TAPER.at[1], Math.PI, { take: 'Idle_3', phase: 0.63, parent: dayOne, hidden: true, blobW: 0.8, blobD: 0.7 });
+      const P = mkPerson('e4devf', TAPER.at[0], TAPER.at[1] + TAPER.back, Math.PI, { take: 'Idle_3', phase: 0.63, parent: dayOne, hidden: true, blobW: 0.8, blobD: 0.7 });
+      P.htLate = true;                                                         // (her hands are held true after her arm is laid: taperTick)
       const g = stand('w3taper', 0, -40, 0, 0, { parent: dayOne, near: true }); g.visible = false;
       const gF = new THREE.PlaneGeometry(1, 1); gF.translate(0, 0.5, 0);
       const fl = new THREE.Mesh(gF, B({ map: tex(makeFlame(THREE, cnv)), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, side: THREE.DoubleSide }));
@@ -232,11 +248,12 @@
           _tpT = new THREE.Vector3(), _tpW = new THREE.Vector3();
     const _tpR = new THREE.Vector3(), _tpU = new THREE.Vector3(), _tpB = new THREE.Vector3(), _tpPole = new THREE.Vector3(), _tpG = new THREE.Vector3(), _tpE = new THREE.Vector3(),
           _tpHf = new THREE.Vector3(), _tpHn = new THREE.Vector3(), _tpHa = new THREE.Vector3(), _tpHd = new THREE.Vector3(), _tpM = new THREE.Matrix4(), _tpM2 = new THREE.Matrix4(),
-          _tpQ2 = new THREE.Quaternion(), _tpQ3 = new THREE.Quaternion(), _tpAim = new THREE.Vector3(), _tpD = new THREE.Vector3();
+          _tpQ2 = new THREE.Quaternion(), _tpQ3 = new THREE.Quaternion(), _tpAim = new THREE.Vector3(), _tpD = new THREE.Vector3(), _tpQT = new THREE.Quaternion(), _tpQ4 = new THREE.Quaternion();
     /* her hand from her forearm's line: the fingers along it, bent ten degrees down at the wrist; the palm to her right (her
        middle: this is her left hand) and a little down, so the first finger and the thumb are on top (across, for a left
-       hand, runs from the little finger to the first: armsOf); the taper out along the fingers and a little toward the
-       thumb (TAPER.slant) */
+       hand, runs from the little finger to the first: armsOf); the taper out along the fingers, leaning by TAPER.slant
+       toward the thumb (since v26.3 a negative lean: toward the little finger, down, as a held taper points to a wick
+       below the hand) */
     function taperHand(fore, asIs) {
       if (asIs) _tpHf.copy(fore); else _tpHf.copy(fore).addScaledVector(_tpU, -0.18).normalize();
       _tpHn.copy(_tpR).addScaledVector(_tpU, -0.3); _tpHn.addScaledVector(_tpHf, -_tpHn.dot(_tpHf)).normalize();
@@ -245,8 +262,8 @@
     }
     function taperTick(t) {
       const T = taper, P = T.P;
-      if (!T.on || !P.ready || !dayOne.visible) { if (T.g.visible) { T.g.visible = false; T.fl.visible = false; } return; }
-      const As = armsOf(P), a = As && As.L; if (!a) return;
+      if (!T.on || !P.ready || !dayOne.visible) { if (P.ready) { P.group.rotation.y = Math.PI; handsTrue(P); } if (T.g.visible) { T.g.visible = false; T.fl.visible = false; } return; }
+      const As = armsOf(P), a = As && As.L; if (!a) { handsTrue(P); return; }
       /* HOW SHE HOLDS IT, v26.1 (Chad, 12 Nov 2026: "The lady standing at the front of the altar lighting the candles have
          very weird distorted arms and hands while lighting the candle"). Photographed from her side, the old ask had her
          elbow solved by the shortest arc and her hand then turned to whatever the taper's line asked: the wrist folded
@@ -265,9 +282,15 @@
       /* (taperAim answers an array, read here as a point: copied as it was, v26.1's first build solved her arm from NaN and
          she stood with no left arm and no taper) */
       const Q = _tpAim.fromArray(taperAim(T.hold != null ? T.hold : t)), Lt = TAPER.len - TAPER.held + 0.012;
+      /* SHE TURNS TOWARD THE WICK SHE LIGHTS (v26.3: reaching to the far wick, 0.51 m to her left, with her body square to
+         the table, her arm went all but straight and her wrist bent 35 degrees toward the thumb: tools/probes/jointscan.mjs).
+         A person lighting a row of candles turns her body to each: TAPER.turn of the way from square to facing the
+         wick, on the day's clock, so a seek lands on the same turn; square again when she is not lighting */
+      { let dY = Math.atan2(Q.x - P.group.position.x, Q.z - P.group.position.z) - Math.PI; while (dY > Math.PI) dY -= 2 * Math.PI; while (dY < -Math.PI) dY += 2 * Math.PI;
+        P.group.rotation.y = Math.PI + TAPER.turn * dY; }
       P.group.updateWorldMatrix(true, true); P.group.getWorldQuaternion(_tpQ);
       _tpR.set(-1, 0, 0).applyQuaternion(_tpQ); _tpU.set(0, 1, 0); _tpB.set(0, 0, 1).applyQuaternion(_tpQ);   // her right, up, her front
-      _tpPole.copy(_tpU).multiplyScalar(-1).addScaledVector(_tpR, -0.35).addScaledVector(_tpB, -0.25).normalize();   // the elbow: down, out to her left, back
+      _tpPole.copy(_tpU).multiplyScalar(-1).addScaledVector(_tpR, -0.15).addScaledVector(_tpB, 0.15).normalize();   // the elbow: down under the shoulder, a little out to her left and forward (v26.3)
       hingeOf(a, 1, TAPER.hinge);
       if (!a.wrote) { a.qUp.copy(a.up.quaternion); a.qFore.copy(a.fore.quaternion); a.qHand.copy(a.hand.quaternion); a.wrote = true; }   // (armsBack gives them back before the mixer: v11.5)
       /* 1. her wrist's resting place (and where the wick takes it: a wick off to her left turns the forearm that way, not
@@ -286,6 +309,18 @@
       armHinge(a, _tpG, _tpPole);
       /* the hand turned to it: its own measured axes (across, palm, fingers) onto the ones asked */
       _tpM.makeBasis(_tpHa, _tpHn, _tpHf); _tpM2.makeBasis(a.aL, a.nL, a.fL).transpose(); _tpM.multiply(_tpM2); _tpQ2.setFromRotationMatrix(_tpM);
+      /* THE FOREARM TAKES ITS SHARE OF THE TURN (v26.3: Chad, 13 Nov 2026, "the candle lighter female's arm still looks thin
+         and distorted and strange"). The hand's turn about the forearm itself was all laid at the wrist, so the skin of
+         her forearm, which rides both, was wrung: photographed from her left and from before her, half a forearm's width
+         and pinched at the elbow. A forearm turns along its length (the radius rolls round the ulna), so TAPER.roll of
+         that turn is laid on the forearm, about its own line, and the wrist keeps the rest; the hand ends where it was
+         asked to be. T.twist keeps the turn read, in degrees, for a probe */
+      a.fore.getWorldPosition(_tpE); a.hand.getWorldPosition(_tpW); _tpW.sub(_tpE).normalize();
+      a.hand.getWorldQuaternion(_tpQ3); _tpQ3.invert().premultiply(_tpQ2);                  // (the turn still to make, in the world)
+      { const d = _tpQ3.x * _tpW.x + _tpQ3.y * _tpW.y + _tpQ3.z * _tpW.z; _tpQT.set(_tpW.x * d, _tpW.y * d, _tpW.z * d, _tpQ3.w);
+        if (_tpQT.lengthSq() > 1e-12) { _tpQT.normalize(); T.twist = +(2 * Math.atan2(d, _tpQ3.w) * 180 / Math.PI).toFixed(1);
+          _tpQ3.identity().slerp(_tpQT, TAPER.roll); a.fore.getWorldQuaternion(_tpQ4); _tpQ4.premultiply(_tpQ3);
+          a.fore.parent.getWorldQuaternion(_tpQ3); a.fore.quaternion.copy(_tpQ3.invert().multiply(_tpQ4)); a.fore.updateWorldMatrix(false, true); } }
       a.hand.parent.getWorldQuaternion(_tpQ3); a.hand.quaternion.copy(_tpQ3.invert().multiply(_tpQ2)); a.hand.updateWorldMatrix(false, true);
       /* THE ANSWER: the taper lies where the hand came to be, between the thumb and the first finger */
       a.hand.getWorldPosition(_tpS); a.hand.getWorldQuaternion(_tpQ);
@@ -295,6 +330,7 @@
       T.g.position.copy(_tpP).addScaledVector(_tpT, -TAPER.held); T.g.quaternion.setFromUnitVectors(_tpY, _tpT); T.g.visible = true;
       T.tip.copy(_tpP).addScaledVector(_tpT, Lt);
       curlFingers(P, 'L', 0.62);
+      handsTrue(P);
       camera.getWorldPosition(_tpC);
       const fk = 0.84 + 0.11 * Math.sin(t * 9.1) + 0.05 * Math.sin(t * 23.7);
       T.fl.position.copy(T.tip); T.fl.rotation.set(0, Math.atan2(_tpC.x - T.tip.x, _tpC.z - T.tip.z), 0.06 * Math.sin(t * 2.3)); T.fl.scale.set(0.026 * (1.12 - 0.12 * fk), 0.062 * fk, 1); T.fl.visible = true;

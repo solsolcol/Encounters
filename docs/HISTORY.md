@@ -8851,8 +8851,43 @@ What the baseline contains, by release:
     photographs every prop at 1,100 px. Put to him: Grandmaster Pho's wrist band (his model, V-1a), a few backward
     triangles in one woman's hair, and the woman at the bench whose take carries her into the low table's edge in the
     close (hidden by her skirt from the film's lens). Deploy 6af69ce2d967b774e0e4ac58 (488 files byte-identical).
+- **v26.3** EPISODE 4 CHAPTER 3 · HIS NOTES OF 13 NOV (after v26.2), and what they taught: docs/V26.3-E4C3-NOTES.md (his
+    fifteen messages verbatim, what each was, the log). (A) The masters' and the crowd's feet sunk 3 to 8.5 cm into the
+    ground (measured, tools/probes/feetscan.mjs, new): every take that does not sit set down by the body's own lowest
+    contact (c_cast.js groundTakes), the seated masters' legs laid down to the ground from their seats and brought forward
+    clear of their seats' fronts (SOFA_DOWN, BENCH_DOWN: my own test picture had the hermit in white's shins through his
+    cushion, his message 7), Grandmaster Pho's grafted legs with his, his knees kept and his shins swung so his robe stays
+    whole, lifted as he rises; after: the deepest sole 2 to 2.7 cm. (B) OPEN AND CLOSE remade as his pick, the GATE (the
+    forty-ninth seam): drag up to open, lights drift in, drag down to shut; fixturetest S49. (C) The kneelers' look round
+    restrained (54 to 61 degrees either side before, 48 to 49 after: tools/probes/headturn.mjs, new); (D) Grandmaster Pho's
+    head as he talks greatly restrained (56 degrees to his right before, 23 after). (E) Ton's face: his head baked into a
+    2048 sheet of its own with mipmaps (1.6 times the texels, sampled before and averaged now) and his full model drawn to
+    2.75 m (masters/v26.3/make.sh). Then his messages 8 to 15 ("This arm is natural to you?", "You dont see the problem
+    with the hands and fingers?", "Stop pretending you know what is the problem", "I want a real solution to this stupid
+    blindness of yours", "This is NOT the solution, the solution is for you to know how to fix it"): a new standing rule
+    (CLAUDE.md, MY EYE IS NOT A CHECK FOR A BODY) and its tool, tools/probes/jointscan.mjs, which holds every joint of
+    every person and the player's own hand to a real body's ranges; four reference photographs made for the two poses.
+    What it found that I had passed, and what was done: (F) the taper woman's elbow behind her shoulder and her wrist bent
+    43 degrees: she stands 6 cm further back, her elbow solved under her shoulder, the taper leaning down from her
+    fingers, her body turned toward each wick (after: elbow 6 cm before the shoulder, wrist 4 degrees off straight); (G)
+    the brown hermit's crossed arms (fingers bent 54 to 70 degrees sideways) and then MY OWN lap rest for him (hands wrung
+    77 and 111 degrees on the wrists, fingers apart, wrists bent down 40): palms on his knees with the wrist within 8
+    degrees of straight, fingers drawn together, the wrist's turn shared with the forearm; what is still wrong is said:
+    his thin fingers show gaps between them, and a loose curled hand, tried, dug into his robe and was taken back out;
+    the kneeling crowd's fingers sunk into their thighs, the tips out through the cloth: their palms laid on top of their
+    thighs (the same lap rest); and for every person (c_cast.js handsTrue) a finger's middle and end joints keep only
+    their hinge's bend, a knuckle loses any roll, and a hand's turn about its forearm past 25 degrees is shared half and
+    half with the forearm. Asked of him: the player's own hand, every chapter's (its middle, ring and little fingers bent
+    28 to 37 degrees sideways): docs/OPEN-ITEMS.md C13 s. Deploy `6af6f14cd6218e64bb4e9b61` (488 served files identical
+    to dist/, the cache headers in force).
 
 ## The sheet, version by version
+
+**v144** (`masters/v26.3/masterz-text-v144.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from
+it): v143 with nine cells changed or new and nothing gone: the four words of episode 4 chapter 3's OPEN AND CLOSE
+(`e4c3.words.breathBrief`, `breathBriefKey`, `breathWhere`, `breathWhereKey`) rewritten for the gate, and five new UI
+rows for the gate kind (`event.gate`, `event.gateWhere`, `event.gateWhereKey`, `event.gateOpen`, `event.gateClose`).
+2322 rows; six tabs as v143. Exported, not published.
 
 **v143** (`masters/v26.1/masterz-text-v143.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from
 it): v142 with two cells changed and nothing new or gone (checked key by key): `voice.q3w3` and `voice.tn3c1`, his

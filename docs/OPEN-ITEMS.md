@@ -243,6 +243,17 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
       of one woman's generated hair wound backwards (`e4deva`, third in the line at the tables, the largest about 1.3
       cm at mid-back, drawn dark; tools/probes/openings.mjs finds them): turning them round, and reading every generated
       body for the same, is one word.
+    - s. v26.3 (docs/V26.3-E4C3-NOTES.md): ASKED: THE PLAYER'S OWN HAND, every chapter's (the base game's, so his word
+      first): tools/probes/jointscan.mjs reads its middle, ring and little fingers bent 28 to 37 degrees sideways at
+      their middle joints, and the left wrist 49 degrees toward the thumb, in its walking rest; photographed in play,
+      the middle finger hangs down and aside under the pointing first finger. Holding its fingers true, as every
+      person's are held in episode 4 chapter 3 since v26.3 (c_cast.js handsTrue), is the fix offered.
+    - t. v26.3: SAID, left as they are: the taper woman's wrist bends 29 degrees toward the thumb at the far wick (her
+      arm all but straight there, reaching; past the 25 the scan flags, short of a wrist's limit); Ton's orange mark (the
+      objective's) stands on his eye as he is walked up to (it is set at his head, d_play.js TON_HEAD); the master in
+      white's open hand at moments of his seated take (32 to 36 degrees between two fingers, a gesture of the take);
+      Grandmaster Pho's and the young man's forearms turned 75 to 91 degrees at the elbow where their takes turn the
+      palm up (a rig with no twist bones shares such a turn between the elbow and the wrist, never along the forearm).
 
 ## D. Not built yet
 

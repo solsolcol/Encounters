@@ -92,7 +92,9 @@ e1 = lp[li[:, 1]] - lp[li[:, 0]]; e2 = lp[li[:, 2]] - lp[li[:, 0]]; area3 = 0.5 
 A = np.bincount(finv, weights=area3, minlength=C)
 def share(mask): return np.bincount(finv, weights=area3 * mask, minlength=C) / np.maximum(A, 1e-12)
 cls = {'head': (lreg[li] == 1).sum(1) >= 2, 'hands': (lreg[li] == 2).sum(1) >= 2, 'gold': (sat > 0.35) & (mx > 120) & (hue > 30) & (hue < 65)}
-det_chart = ~point & ((share(cls['head'] | cls['hands']) >= 0.3) | ((share(cls['gold']) >= 0.3) if GOLD else False))
+# (v26.3, Ton's face: DETHANDS=0 takes his head alone, so the face has the new sheet's room to itself; unset, as before)
+HANDS = bool(int(os.environ.get('DETHANDS', 1)))
+det_chart = ~point & ((share(cls['head'] | (cls['hands'] if HANDS else False)) >= 0.3) | ((share(cls['gold']) >= 0.3) if GOLD else False))
 det = det_chart[finv]
 def uvarea(u):
     return 0.5 * np.abs((u[:, 1, 0] - u[:, 0, 0]) * (u[:, 2, 1] - u[:, 0, 1]) - (u[:, 2, 0] - u[:, 0, 0]) * (u[:, 1, 1] - u[:, 0, 1]))

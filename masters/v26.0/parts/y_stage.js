@@ -852,10 +852,10 @@
          world is laid on its level here, because the film's own frame is standing still; when it ends the film runs on
          and eases the light shut from where he left it */
       breathOpts(k) {
-        return { kind: 'breath', low: true, title: W.breathTitle, prompt: W.breathTitle, label: W.breathTitle,
+        return { kind: 'gate', low: true, title: W.breathTitle, prompt: W.breathTitle, label: W.breathTitle,
           brief: TOUCHY ? W.breathBrief : W.breathBriefKey, whereWord: TOUCHY ? W.breathWhere : W.breathWhereKey,
           openWord: W.breathOpen, closeWord: W.breathClose, restWord: '', breaths: [{ enough: 2.2, edge: 6.0, lead: 0.5 }], gain: 0, cost: 0, idle: 14, at: { sx: 0.5, sy: 0.74 },
-          onLevel: (lv) => { FL.openK = lv; if (FL.key === k) closeLight(k, smo(c01(lv / 0.9)), 0, wallNow()); } };
+          onLevel: (lv, held, i, st, gk) => { FL.openK = Math.max(lv, GATE_WORLD * (gk || 0)); if (FL.key === k) closeLight(k, smo(c01(FL.openK / 0.9)), 0, wallNow()); } };
       },
       breathDone(r) { FL.openOut = r && r.skipped ? 0 : FL.openK; }
     };
@@ -972,7 +972,7 @@
       setPhase, applyPhase, after, dayClock, sayLine, queueLine, queueFn, queueGap,
       look, presets: PRESETS, films, crowdStats, setFormation,
       /* for the probes (tools/probes/e4c3drive.mjs): the play's own state and its beats by name */
-      dbg: { viewfinder(v) { FL.vf = v || null; }, clocks: { A: ENDT.A, B: ENDT.B, C: ENDT.C, D: ENDT.D, CLOSE, FEST, BETW, TELL, ANSW, OPEN: OPENT }, armsOf, handTo, handsTo, restHands, baiGrip, baiPut, play, open, cast, bursts, BAI, handBai, myBai, ymBai, petalBurst, auraAt, baiHands, baiRaise, lineBegin, dawnBegin, breathBegin, places: { PLACE, LINE_AT, KNEEL2, DAWN_AT, TABLES_AT }, dancers, dancersDir, danceBlock, dancerSpot, kids, kidsDir, kidPath, taper, extrasHeard },
+      dbg: { viewfinder(v) { FL.vf = v || null; }, clocks: { A: ENDT.A, B: ENDT.B, C: ENDT.C, D: ENDT.D, CLOSE, FEST, BETW, TELL, ANSW, OPEN: OPENT }, armsOf, handTo, handsTo, restHands, baiGrip, baiPut, play, open, cast, bursts, BAI, handBai, myBai, ymBai, petalBurst, auraAt, baiHands, baiRaise, lineBegin, dawnBegin, breathBegin, places: { PLACE, LINE_AT, KNEEL2, DAWN_AT, TABLES_AT }, dancers, dancersDir, danceBlock, dancerSpot, kids, kidsDir, kidPath, taper, extrasHeard, people, headDampLay },
       who: () => people.filter(P => !P.driver).map(P => ({ key: P.key, ready: P.ready, take: P.cur, skin: P.lvShown, skins: P.lv.map(v => (v ? 1 : 0)).join('') })),
       plan: { TURF, TABLES, HALL, TENT_W1, TENT_W2, TENT_E, CHIEF, BENCH, POLE, TON_TABLE, WEST_TABLE },
       /* the ground's own noises (ambTick): how many have sounded, and the last (a probe counts them over a stretch of play) */

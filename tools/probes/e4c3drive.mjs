@@ -4,7 +4,9 @@
    the thing itself or its mark; only if all three are refused, the engine's E path, reported as FALLBACK). He never
    moves while he kneels (the press is made from where he is). OPEN AND CLOSE is played by the finger itself: START
    tapped, then each breath a touch HELD (a CDP touchStart, the finger really down) until the level is past "enough"
-   and let go, well short of the edge; the close's one breath, inside the ending's film, the same way. The decision is a
+   and let go, well short of the edge; the close's one breath, inside the ending's film, the same way. Since v26.3 it is
+   a GATE: each breath a touch DRAGGED UP a gate's span (CDP touchStart, touchMoves, touchEnd), left open until the
+   lights are past "enough", then dragged DOWN until it is shut (openGate). The decision is a
    tap on OPT. Films: WATCH=1 watches every one; otherwise the opening and the films from play are skipped by a TAP on
    the Skip button once it is offered (the real skip path), and the ENDING is always watched whole.
    Reports: the phases with the objective on screen and the beds at each; every press and how it landed; the breaths; the
@@ -130,6 +132,24 @@ async function breathe(I) {
   log('  ' + breaths[breaths.length - 1]);
   await wait(1200);
 }
+/* v26.3 · ONE BREATH OF THE GATE, by the finger: a touch put down below the middle and DRAGGED UP a gate's span in short
+   moves (it opens), left until the lights are past "enough" (bE) with a margin and short of the edge, then dragged DOWN
+   until it is shut (a gate that pulls takes more than one drag). Reported with what the engine made of it */
+async function openGate(I) {
+  const x = W * 0.5, span = 0.34 * H;
+  const dragBy = async (dy) => { const y0 = H * 0.55 - dy / 2; await touch('touchStart', x, y0);
+    for (let i = 1; i <= 10; i++) { await touch('touchMove', x, y0 + dy * i / 10); await wait(30); }
+    await touch('touchEnd', x, y0 + dy); tid++; };
+  const t0 = Date.now();
+  await dragBy(-span);
+  const top = await p.waitForFunction(() => { const e = window.__enc.kitDebug().event; if (!e) return 'gone';
+    return (e.bState !== 'open' || e.bk >= Math.min(0.92, (e.bE || 0.5) + 0.14)) ? String(e.bk) : false; }, null, { timeout: 180000, polling: 120 }).then(h => h.jsonValue(), () => 'timeout');
+  let drags = 0;
+  for (; drags < 6; drags++) { const e = await p.evaluate(() => window.__enc.kitDebug().event); if (!e || e.bState !== 'open') break; await dragBy(span); }
+  breaths.push(`gate ${I.ev.bi + 1}: open ${((Date.now() - t0) / 1000).toFixed(1)} s of the box's time, shut from level ${isNaN(+top) ? top : (+top).toFixed(2)} (enough from ${(I.ev.bE || 0).toFixed(2)}) by ${drags} drag(s) down`);
+  log('  ' + breaths[breaths.length - 1]);
+  await wait(1200);
+}
 const phases = [], bedsAt = {}, presses = [], unseen = [];
 let last = '', idle = 0, decided = false, cardAt = 0, lastCine = -1, lastVoices = 0, skips = [], films = [];
 const TMAX = 150 * 60 * 1000;
@@ -149,6 +169,7 @@ while (Date.now() - T0 < TMAX) {
   if (I.ev) {
     if (I.ev.briefing) { await shot('brief-' + I.ev.kind); const bt = await box('#evBtn'); if (bt) { await tap(bt.x, bt.y); log('  START tapped'); } await wait(1200); continue; }
     if (I.ev.kind === 'breath') { if (I.ev.bState === 'wait' && !I.ev.down) { await breathe(I); await shot('breath' + (I.ev.bi + 1)); } else await wait(400); idle = 0; continue; }
+    if (I.ev.kind === 'gate') { if (I.ev.bState === 'wait' && !I.ev.down) { await openGate(I); await shot('gate' + (I.ev.bi + 1)); } else await wait(400); idle = 0; continue; }
   }
   if (I.st === 'cine') {
     if (!films.length || films[films.length - 1].k !== (decided ? 'ending' : I.phase || 'opening') + ':' + I.dur) films.push({ k: (decided ? 'ending' : I.phase || 'opening') + ':' + I.dur, at: Date.now() });

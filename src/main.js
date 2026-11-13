@@ -4309,6 +4309,7 @@ const EV_DEMO = {
   surface: 'surface',                    // v23.0: a mark climbing a gauge under a fingertip dragging up, sinking when let go
   change: 'change',                      // v24.0: a small room that blinks; one thing moves in the dark and a fingertip taps it; a blink where nothing moves and the finger holds back
   breath: 'breath',                      // v26.0: a ring that opens under a held fingertip into its band, and shuts when the finger lifts
+  gate: 'gate',                          // v26.3: a fingertip dragging a little gate open, lights coming through it, and dragging it shut
 };
 const EV_DEFAULT = {
   tap:       { secs: 4 },
@@ -4383,14 +4384,18 @@ const EV_DEFAULT = {
      does. `fall` is how fast the level falls once let go (levels a second); `idle` the seconds a breath waits for a
      first press before the chapter is told (`onIdle`), and as long again before it is counted not opened: it can
      never soft-lock */
-  breath:    { secs: 0, fall: 1.6, idle: 20, lead: 0.5, gain: 2, cost: 2, gainStat: 'awareness', costStat: 'sanity' }
+  breath:    { secs: 0, fall: 1.6, idle: 20, lead: 0.5, gain: 2, cost: 2, gainStat: 'awareness', costStat: 'sanity' },
+  /* v26.3: THE GATE — OPEN AND CLOSE BY HAND (the forty-ninth seam, see evGateFrame): the breath's list of breaths, its
+     bands, prices and idle, under a gate the finger drags open and shut; `edge` is now seconds WIDE OPEN (the lights come
+     in as fast as it stands open), and `fall` how fast they go once it is shut */
+  gate:      { secs: 0, fall: 1.6, idle: 20, lead: 0.5, gain: 2, cost: 2, gainStat: 'awareness', costStat: 'sanity' }
 };
 // the literals texttest looks for; the kind picks the row
 const EV_LABEL = { tap: 'event.tap', timed: 'event.timed', mash: 'event.mash', hold: 'event.hold',
                    stabilise: 'event.stabilise', heartbeat: 'event.heartbeat', focus: 'event.focus',
                    sequence: 'event.sequence', match: 'event.match', resist: 'event.resist',
                    steady: 'event.steady', craft: 'event.craft', yield: 'event.yield', surface: 'event.surface',
-                   change: 'event.change', breath: 'event.breath' };
+                   change: 'event.change', breath: 'event.breath', gate: 'event.gate' };
 /* ------------------------------------------------------ v9.3 · THE LADDER
    Chad, of the minigames: "no stakes, no damage, no repercussions ... they
    were supposed to require precise timing to pass, and every mistimed tap or
@@ -4739,7 +4744,7 @@ function evBrief() {
   $('evMatch').classList.add('hide');
   $('evDot').classList.add('hide');
   $('evSteady')?.classList.add('hide');   // v22.0
-  for (const id of ['evCraft', 'evYield', 'evSurface', 'evBreath']) $(id)?.classList.add('hide');   // v23.0 (v26.0: and the breath's ring)
+  for (const id of ['evCraft', 'evYield', 'evSurface', 'evBreath', 'evGate']) $(id)?.classList.add('hide');   // v23.0 (v26.0: and the breath's ring)
   snd('uiclick', 0.3);
 }
 function evStart() {
@@ -4801,6 +4806,7 @@ function evBegin() {
   if (e.kind === 'yield') $('evNote').textContent = o.whereWord || T(HAS_TOUCH ? 'event.yieldWhere' : 'event.yieldWhereKey');       // v23.0
   if (e.kind === 'surface') $('evNote').textContent = o.whereWord || T(HAS_TOUCH ? 'event.surfaceWhere' : 'event.surfaceWhereKey');
   if (e.kind === 'breath') $('evNote').textContent = o.whereWord || T(HAS_TOUCH ? 'event.breathWhere' : 'event.breathWhereKey');   // v26.0 (a press anywhere: it keeps the lock, as a yield does)
+  if (e.kind === 'gate') $('evNote').textContent = o.whereWord || T(HAS_TOUCH ? 'event.gateWhere' : 'event.gateWhereKey');         // v26.3 (a drag anywhere, up or down)
   if (e.kind === 'sequence') evShowItem();
   /* v9.4: a drag needs a cursor, and under pointer lock there is none - the
      mouse's clientX/clientY freeze, so the tiles could never be picked up.
@@ -4821,6 +4827,8 @@ function evBegin() {
      handed back as for the match; a yield is a press anywhere, and keeps the lock */
   else if (e.kind === 'craft') { evCraftBuild(e); $('evCraft')?.classList.remove('hide'); document.exitPointerLock?.(); }
   else if (e.kind === 'surface') document.exitPointerLock?.();
+  /* v26.3: and the gate is dragged, so it needs the cursor back as the surface does */
+  else if (e.kind === 'gate') document.exitPointerLock?.();
   /* v24.0: WHAT CHANGED? is a tap ON the thing — a desktop needs its cursor back (as the graded focus) */
   else if (e.kind === 'change') { evChangeBuild(e); document.exitPointerLock?.(); $('evNote').textContent = o.whereWord || T(HAS_TOUCH ? 'event.changeWhere' : 'event.changeWhereKey'); }
   snd('uiclick', 0.3);
@@ -4871,7 +4879,7 @@ function evResolve(extra) {
     $('evDot').classList.add('hide'); $('evDrag').classList.add('hide');
     $('evDot').classList.remove('steady', 'pop');   // v21.2: a steady light's own look goes with its event
     $('evSteady')?.classList.add('hide');            // v22.0: and the steady ring with its
-    for (const id of ['evCraft', 'evYield', 'evSurface', 'evBreath']) $(id)?.classList.add('hide');   // v23.0: the hands-on hints with theirs (v26.0: the breath's)
+    for (const id of ['evCraft', 'evYield', 'evSurface', 'evBreath', 'evGate']) $(id)?.classList.add('hide');   // v23.0: the hands-on hints with theirs (v26.0: the breath's)
     $('evMatch').classList.add('hide');
     $('evIcon').textContent = ''; $('evCombo').textContent = '';
     $('evSrc').textContent = ''; $('evDst').textContent = '';
@@ -4889,7 +4897,7 @@ function evResolve(extra) {
   if (e.kind === 'surface') { r.slips = e.slips || 0; r.gaveUp = !!extra.gaveUp; r.slipPaid = e.slipPaid || 0; }
   if (e.kind === 'change') { r.right = e.chRight || 0; r.wrong = e.chWrong || 0; r.missed = e.chMissed || 0; r.rounds = (e.chLog || []).slice(); }   // v24.0 (S44)
   /* v26.0 (S46): every breath and how it ended (closed in time, held to the edge, or never opened), and the counts */
-  if (e.kind === 'breath') { r.breaths = (e.bLog || []).slice();
+  if (e.kind === 'breath' || e.kind === 'gate') { r.breaths = (e.bLog || []).slice();
     r.closed = r.breaths.filter(b => b.result === 'closed').length; r.held = r.breaths.filter(b => b.result === 'held').length;
     r.unopened = r.breaths.filter(b => b.result === 'unopened').length; }
   const aw = e.o.award;
@@ -5111,6 +5119,7 @@ function evPress(x, y, pid, ts) {
        little one's door never opened */
     case 'yield': e.yPressed = true; break;
     case 'breath': e.bTap = true; break;                   // v26.0: a tap shorter than a frame is still a press (opened and shut at once)
+    case 'gate': e.gy = y; break;                          // v26.3: the gate's drag begins where the finger lands (a tap moves nothing)
     case 'surface': if (e.keyHeld) evSurfaceRise(e, o.keyRise); else e.sy = y; break;   // v23.0: a key strikes it up; a finger drags it
     case 'change': evChangePress(e, x, y); e.down = false; break;   // v24.0: every tap is its own (S44)
     case 'heartbeat': {
@@ -5187,7 +5196,7 @@ function evPress(x, y, pid, ts) {
 }
 /* v22.0: a steady drag is one finger's; v23.0 CP13: and so are the hands-on gestures — a second finger landing on a
    phone (the hand that holds it) moved a twist's circle and its lifting let go of a held yield */
-const ONE_FINGER = new Set(['steady', 'craft', 'yield', 'surface', 'breath']);
+const ONE_FINGER = new Set(['steady', 'craft', 'yield', 'surface', 'breath', 'gate']);
 function evRelease(pid) {
   const e = ev; if (!e || !e.down) return;
   // v22.0: a steady drag is one finger's — a second thumb lifting does not end it
@@ -5199,6 +5208,7 @@ function evRelease(pid) {
   if (e.kind === 'match') { evMatchDrop(e.lastX, e.lastY); return; }
   if (e.kind === 'craft') evCraftRelease(e);              // v23.0
   if (e.kind === 'surface') e.sy = undefined;
+  if (e.kind === 'gate') e.gy = undefined;
   if (e.kind === 'hold' && e.t < e.o.secs) evResolve({ ok: false, score: 0 });
   if (e.kind === 'stabilise' && e.t < e.o.secs) evResolve({ ok: false, score: 0 });
 }
@@ -5213,6 +5223,10 @@ function evMove(x, y, pid, ts) {
   if (e.kind === 'surface' && e.started && !e.briefing && e.sy !== undefined) {
     const dy = e.sy - y; e.sy = y;
     if (dy > 0) evSurfaceRise(e, dy / Math.max(60, e.o.span * innerHeight));
+  }
+  /* v26.3: the gate goes with the drag, by its length (up opens it, down shuts it), and the frame lays it on */
+  if (e.kind === 'gate' && e.started && !e.briefing && e.gy !== undefined) {
+    const dy = e.gy - y; e.gy = y; e.gDrag = (e.gDrag || 0) + dy / Math.max(90, GATE_SPAN * innerHeight);
   }
   /* v22.0: the mark moves with the DRAG, by its delta, so a finger may land
      anywhere and answer the tremor from there */
@@ -5746,6 +5760,119 @@ function evBreathFrame(e, o, wdt) {
     if (pe.textContent !== want) pe.textContent = want; }
   call(o.onLevel, e.bk, held && e.bState === 'open', e.bi, e.bState);
 }
+/* v26.3 · THE GATE — OPEN AND CLOSE BY HAND, THE FORTY-NINTH SEAM (episode 4 chapter 3's first teaching, made again:
+   Chad, 13 Nov 2026, "the mini game is hard to play, can you change the mechanism to something else, or something that
+   is more fun and engaging?", and of the four ways put to him, his: "Drag a glowing gate open with one finger: soft
+   lights of presences drift in toward you. Drag it shut when you feel it is enough, before they crowd you."). The
+   breath's bookkeeping (S46: its breaths, their bands, the reports, the prices, the callbacks and the answer) under a
+   gate the hand drives. A drag UP opens it and a drag DOWN shuts it, by the drag's own length (a finger may land
+   anywhere; GATE_SPAN of the screen's height takes it from shut to wide); W, ↑, E or Space held opens it and S or ↓
+   held shuts it. It stays wherever it is left. `gk` is how far it stands open, 0 to 1. While it is open the lights
+   come in: the LEVEL rises at gk / edge a second (wide open it reaches the edge in `edge` seconds, half open in twice
+   that), and the band is `enough` to `edge`, as the breath's, in seconds wide open. A breath is OPENED once the gate
+   passes GATE_OPEN, and it ends when
+     the gate is shut (under GATE_SHUT) with the level in the band   -> 'closed'   (`gain`, paid on the spot)
+     the level reaches the edge                                     -> 'held'     (they crowd him: the gate swings shut
+                                                                                   FOR him, `cost` through evCut, and the
+                                                                                   next breath waits for his finger to lift)
+     the gate is shut under the band                                -> 'unopened' (taken once more the first time)
+   A breath with a `pull` is a gate that pulls: once the level is in the band, it creeps open by itself while nothing
+   holds it (GATE_PULL a second), and a drag down shuts it only GATE_HEAVY as far ("It will pull. Close anyway.").
+   `onLevel(k, held, i, state, gk)`; `onEnough`, `onBreath` (its answer the seconds before the next is live) and
+   `onIdle` as the breath's, and it never soft-locks: left open the lights reach the edge; never opened, the idle
+   counts it. Nothing in it tests a finger's speed. Its own picture, `gate`. */
+const GATE_SPAN = 0.32, GATE_OPEN = 0.16, GATE_SHUT = 0.08, GATE_PULL = 0.22, GATE_HEAVY = 0.55, GATE_KEY = 1.1, GATE_ORBS = 12;
+function evGateFrame(e, o, wdt) {
+  const B = Array.isArray(o.breaths) && o.breaths.length ? o.breaths : [{ enough: 2, edge: 5 }];
+  const call = (f, ...a) => { if (typeof f === 'function') { try { return f(...a); } catch (err) { console.warn('gate callback failed', err); } } return undefined; };
+  if (e.bi === undefined) {
+    e.bi = 0; e.bk = 0; e.gk = 0; e.gDrag = 0; e.bHeld = 0; e.bPeak = 0; e.bState = 'lead'; e.bT = 0; e.bTry = 0; e.bLog = []; e.bIdle = 0; e.bLeadNext = null;
+    $('evGate')?.classList.remove('hide');
+  }
+  const b = B[Math.min(e.bi, B.length - 1)];
+  const edge = Math.max(0.3, +b.edge || 5), enough = Math.min(edge - 0.1, Math.max(0.05, +b.enough || 2)), kE = enough / edge;
+  e.bE = kE;
+  const keyOpen = !!e.gKeyUp, keyShut = !!e.gKeyDown, held = !!e.down || keyOpen || keyShut;
+  /* (what the hand did since the last frame: the drag evMove handed on, up being open, and the keys held) */
+  let dg = e.gDrag || 0; e.gDrag = 0;
+  if (keyOpen) dg += wdt / GATE_KEY;
+  if (keyShut) dg -= wdt / GATE_KEY;
+  e.bT += wdt;
+  let end = null;
+  const pulling = (+b.pull || 0) > 0 && e.bState === 'open' && e.bk >= kE;
+  switch (e.bState) {
+    case 'lead': {          // not live yet (a line is being said): the gate stays shut, and a finger still down from the last breath must lift
+      e.gk = Math.max(0, e.gk - wdt / 0.45); e.bk = Math.max(0, e.bk - o.fall * wdt);
+      const lead = e.bLeadNext != null ? e.bLeadNext : (b.lead != null ? +b.lead : +o.lead || 0);
+      if (e.bT >= lead && !held) { e.bState = 'wait'; e.bT = 0; e.bIdle = 0; e.bIdled = false; e.bLeadNext = null; }
+      break; }
+    case 'wait':            // live: the gate is his, and waits to be opened
+      e.bk = Math.max(0, e.bk - o.fall * wdt);
+      e.gk = Math.max(0, Math.min(1, e.gk + dg));
+      if (e.gk >= GATE_OPEN) { e.bState = 'open'; e.bHeld = 0; e.bPeak = 0; e.bEnoughSaid = false; }
+      else if (o.idle > 0 && !held) { e.bIdle += wdt;
+        if (e.bIdle >= o.idle && !e.bIdled) { e.bIdled = true; call(o.onIdle, e.bi); }
+        if (e.bIdle >= o.idle * 2) { e.bHeld = 0; e.bPeak = 0; e.bTry = 1; end = 'unopened'; } }
+      break;
+    case 'open': {
+      e.gk = Math.max(0, Math.min(1, e.gk + (pulling && dg < 0 ? dg * GATE_HEAVY : dg) + (pulling && !held ? GATE_PULL * wdt : 0)));
+      e.bHeld += wdt * e.gk;                                                     // (seconds wide open, as the breath's were seconds held)
+      e.bk = Math.min(1, e.bHeld / edge); e.bPeak = Math.max(e.bPeak, e.bk);
+      if (!e.bEnoughSaid && e.bk >= kE) { e.bEnoughSaid = true; call(o.onEnough, e.bi); }
+      if (e.bk >= 1) end = 'held';
+      else if (e.gk <= GATE_SHUT) end = e.bk >= kE ? 'closed' : 'unopened';
+      break; }
+    case 'close':           // the gate swings to and the lights go, whatever his finger does
+      e.gk = Math.max(0, e.gk - wdt / 0.45); e.bk = Math.max(0, e.bk - o.fall * wdt);
+      if (e.bk <= 0 && e.gk <= 0) {
+        if (e.bNext) { e.bi++; e.bTry = 0; }
+        if (e.bi >= B.length) { const n = e.bLog.filter(q => q.result === 'closed').length; e.bState = 'done';
+          if (ev === e) evResolve({ ok: n > 0, score: n / B.length }); return; }
+        e.bState = 'lead'; e.bT = 0;
+      }
+      break;
+    default: break;
+  }
+  if (end) {
+    const rep = { i: e.bi, result: end, peak: +e.bPeak.toFixed(3), held: +e.bHeld.toFixed(2), again: false };
+    if (end === 'unopened' && e.bTry === 0) { rep.again = true; e.bTry = 1; }
+    else {
+      e.bLog.push(rep);
+      if (end === 'closed' && +o.gain) { const s0 = stats[o.gainStat]; kitAward(o.gainStat, Math.abs(+o.gain), EV_PRICE); rep.gain = +((stats[o.gainStat] - s0) || 0).toFixed(3); }
+      if (end === 'held' && +o.cost) { rep.paid = evCut(-Math.abs(+o.cost)); kitAward(o.costStat, rep.paid, EV_PRICE); }
+    }
+    if (end === 'held' && o.haptic !== false) haptic([30, 40, 30]);
+    if (end === 'closed' && o.haptic !== false) haptic(24);
+    const w = call(o.onBreath, rep);
+    e.bLeadNext = Number.isFinite(w) ? Math.max(0, +w) : null;
+    e.bNext = !rep.again; e.bState = 'close'; e.bT = 0;
+  }
+  const el = $('evGate');
+  if (el) {
+    const c = evAt(e), live = e.bState === 'open', inBand = live && e.bk >= kE;
+    el.style.transform = `translate(${c.x.toFixed(0)}px, ${c.y.toFixed(0)}px)`;
+    el.style.setProperty('--gk', e.gk.toFixed(3)); el.style.setProperty('--bk', e.bk.toFixed(3)); el.style.setProperty('--be', kE.toFixed(3));
+    /* (the lights that have come in: GATE_ORBS of them at the edge) */
+    el.style.setProperty('--bn', (e.bk * GATE_ORBS).toFixed(2));
+    el.classList.toggle('held', held && live);
+    el.classList.toggle('band', inBand);
+    el.classList.toggle('near', live && e.bk >= kE + (1 - kE) * 0.7);
+    el.classList.toggle('told', inBand && !!b.told);
+    el.classList.toggle('pull', pulling);
+    el.classList.toggle('shut', e.bState === 'close' || e.bState === 'lead');
+    el.classList.toggle('live', e.bState === 'wait');
+    el.classList.toggle('off', !c.on);
+  }
+  /* the word: OPEN while it waits and opens; CLOSE once the band is reached, in a breath he is told in (`told`); a
+     breath he is not told in keeps the panel's own word, and the gauge's band is all that says when */
+  const pe = $('evPrompt');
+  if (pe) { const inBand = e.bState === 'open' && e.bk >= kE;
+    const restW = o.restWord != null ? o.restWord : (o.prompt || T('event.gate'));
+    const want = inBand ? (b.told ? (o.closeWord || T('event.gateClose')) : restW)
+               : e.bState === 'close' || e.bState === 'lead' ? restW : (o.openWord || T('event.gateOpen'));
+    if (pe.textContent !== want) pe.textContent = want; }
+  call(o.onLevel, e.bk, held && e.bState === 'open', e.bi, e.bState, e.gk);
+}
 function evNextItem() {
   const e = ev; e.idx++;
   e.slotT = 0;                       // v9.3: the new item's window starts now
@@ -5877,6 +6004,7 @@ function evFrame(dt, dLookX, dLookY) {
     case 'yield': evYieldFrame(e, o, wdt, bar); break;     // v23.0: the thirty-eighth
     case 'surface': evSurfaceFrame(e, o, wdt); break;      // v23.0: the thirty-ninth
     case 'breath': evBreathFrame(e, o, wdt); break;        // v26.0: the forty-sixth
+    case 'gate': evGateFrame(e, o, wdt); break;            // v26.3: the forty-ninth
     case 'stabilise': {
       if (!e.down) { if (e.t > o.grace && e.downAt < 0) evResolve({ ok: false, score: 0 }); break; }
       const steady = 1 - Math.min(1, e.look / o.tol);
@@ -6044,6 +6172,13 @@ function evFrame(dt, dLookX, dLookY) {
 function evKey(e, isDown) {
   if (!ev || !ev.started) return false;
   const up = ev.kind === 'surface' && (e.code === 'KeyW' || e.code === 'ArrowUp');   // v23.0: the surface climbs on W and ↑ too
+  /* v26.3: the gate is opened by W, ↑, E or Space held, and shut by S or ↓ held: never a press, so it stays wherever it
+     is left (the briefing's START still takes Space, Enter and E, below) */
+  if (ev.kind === 'gate' && !ev.briefing && /^(KeyW|ArrowUp|KeyE|Space|KeyS|ArrowDown)$/.test(e.code)) {
+    e.preventDefault(); if (isDown && e.repeat) return true;
+    if (e.code === 'KeyS' || e.code === 'ArrowDown') ev.gKeyDown = isDown; else ev.gKeyUp = isDown;
+    return true;
+  }
   if (e.code !== 'Space' && e.code !== 'Enter' && e.code !== 'KeyE' && !up) return false;
   /* v24.2 (L1-4): a key still held from the press that OPENED a hold — E on the jug, on a child — is that hold: its
      first repeat begins it (a briefing's START never comes from one; a key held from a step before stays needUp's).
@@ -7050,6 +7185,7 @@ function kitDebug() {
                          yk: ev.yk, lv: ev.lv, slips: ev.slips, goalT: ev.goalT, pulls: ev.pullN,
                          /* v26.0: a breath — which one, its level (1 at the edge), where enough begins, its state */
                          bi: ev.bi, bk: ev.bk, bE: ev.bE, bState: ev.bState, bTry: ev.bTry, bLog: ev.bLog ? ev.bLog.length : undefined,
+                         gk: ev.gk,                          // v26.3: how far the gate stands open
                          /* v9.4: the rhythm game's run and the match's progress */
                          beat: ev.beat, combo: ev.combo, best: ev.bestCombo,
                          done: ev.done, wrong: ev.wrong } : null,
