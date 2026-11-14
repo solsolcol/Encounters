@@ -80,7 +80,9 @@ from his **phone**. Consequences:
    **The backup bundle is MILESTONE-ONLY since v4.81** (Chad's call — "i
    feel it is unnecesary", and he was right): refresh
    `Encounters-backup.bundle` (`git bundle create
-   Encounters-backup.bundle --all`, split at 20 MB for the upload limit)
+   Encounters-backup.bundle --all`, split at 20 MB for the upload limit;
+   the branch `claude/model-sources` (v26.12: the 3D sources generated here, 9.24 GiB, tools/srcbackup.py) is never
+   fetched into a working copy except to restore, never by a bare `git fetch` or `git pull`, and never in the bundle)
    when a CHAPTER ships, or whenever he asks — not every release. Why the
    old rule is retired: GitHub now holds the branch and its whole history,
    Netlify holds every published build with two-tap rollback, so the
@@ -169,6 +171,7 @@ that fits it, with the version it came from.
 - Episode 3 chapter 4's Yin shop keeper (`yinkeeper`) does not stand in for another woman ("Dont use the yin amulet shoplady. Use another women model.", of the customer at his counter in episode 4 chapter 2): a new woman's part goes to another model. (v25.5)
 - The auntie of episode 1 chapter 3 (`granny`) is overused and is not cast again ("Dont use this auntie as she has been used many times. Use the thai green shoplady that has never been shown to the player before"): the woman at his counter in episode 4 chapter 2 is his own woman in the green blouse (`e4stall`), his pick. Before a model is given a new part, count where the player has already met it and say so. (v25.5)
 - Lersi Chin works by the power of Shiva ("as lersi chin uses the power of shiva"): his chant is "Om Namah Shivaya", three times and nothing else, captioned over "Om. Homage to Shiva."; the white light gathers at his joined hands as he chants it, is sent to the one he clears, and the whole screen goes white and clears. (v25.5)
+- "Finish all of it" (or "what else is not done") means everything HE asked, for the chapter he is working on ("Why are you working on old chapters? I didnt ask for that, did i? I only asked for the latest chapter"): an old chapter's open item or my own finding is never started unasked, only listed for him. (v26.12)
 - Something he drops is closed for good: never ask for it again, and withdraw the ask from every doc that carried it. (v5.23)
 - His own models get no credit row; everyone else's work is credited with its link, and a credit row goes when its asset leaves the game. (v5.23)
 - His words are used exactly (lines, names, descriptions, punctuation), and any correction to them is said out loud. (v21.7)

@@ -8659,3 +8659,23 @@ Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8,
   give back only what no other body draws (c_cast.js fullOff, KEEPSHARED).
 - **The chat's file send stops at 500 MiB.** A release zip (797 MB at v26.11) cannot be handed over that way; the very
   same build is held on Netlify, whose Deploys page keeps every deploy.
+
+## v26.12 — nine gigabytes to a branch through one gigabyte of disk, and "all of it" is his chapter
+
+- **A backup bigger than the disk goes up in a scratch repository, as a chain.** The game's own repository is never
+  where the work happens (a `git prune` there could take objects the game still needs): a second repository beside it,
+  the same remote, each chunk hashed in, committed ON the last one (one branch, the tip holding everything), pushed,
+  the branch read back from GitHub (`ls-remote` = the commit pushed; GitHub checks every object before it moves a
+  branch), and only then that chunk's blobs deleted from the scratch store. The trees and commits stay: they are what
+  lets the next push send only its own new files (`write-tree --missing-ok` builds a tree over blobs that are gone;
+  `push --no-thin` never reads one as a delta base). tools/srcbackup.py, 17 pushes of about 600 MB in 30 to 66 s each.
+- **A clone made for all branches fetches every branch.** This machine's copy had `+refs/heads/*` (unshallowed for a
+  bundle): one bare `git fetch` after the backup would have pulled 9 GB into a disk with 1 GB free. Set the fetch to
+  the game's branch, fetch by name, and never bundle the backup.
+- **Scan what goes public before it goes.** A generator's logs and job lists can carry signed links or an account's
+  folder address; this set held two documentation links and nothing else, found by reading every text file and every
+  GLB's JSON chunk and PNG's text chunks, not by assuming.
+- **"Finish all of it" is everything HE asked, for the chapter he is on** (14 Nov: "Why are you working on old
+  chapters? I didnt ask for that, did i? I only asked for the latest chapter"). I read it as every open item of the
+  whole game and started on episode 3 and episode 4 chapter 1; none of it went live, and it is parked whole
+  (masters/v26.12/parked). The old chapters' open items and my own findings stay listed for him, never started unasked.

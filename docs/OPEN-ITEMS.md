@@ -17,6 +17,8 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
    can write the cells directly: publish v133 that way, then diff every cell (`tools/verifytabs.py`).
 2. **The three Sak Yant icons** (`yantgaoyord`, `yanthahtaew`, `yantsroi` in `ITEM_DEFS`) are the last line-drawn
    icons a player can get (the rifle is given by no chapter). Paint them in his torch-icon style (v24.20's recipe).
+   (14 Nov: started without his ask and stopped at his word, "I only asked for the latest chapter": two of the three
+   painted and the wiring made, all of it parked in masters/v26.12/parked, not in the game.)
 3. **The last code-built vehicles:** episode 3 chapter 3's city buses (`makeCityBus` — the one he rides in the film,
    the lorong's passes, ending C's night bus) and the Hat Yai coach (`makeTourCoach`). Make real ones his way
    (a reference on white, checked, Meshy). (Episode 2 chapter 1's ferry is a code-built set too.)
@@ -69,6 +71,7 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
    disposes the old, so those materials keep reflecting the dead one and their metal goes dark until the chapter is
    rebuilt. Rare (iOS under memory pressure), and nothing breaks. The fix is v24.30's: each such value as a lift on the
    scene's own environment (its absolute value over the scene's 0.05), the same frame to the pixel, proven per chapter.
+   (14 Nov: started without his ask and stopped at his word; the unbuilt change is parked in masters/v26.12/parked.)
 7. **Episode 4 chapter 1's room: what the v24.39 reviewer found that was there before the jar** (v24.40 fixed only what
    the jar's change or the jar's shots owned: its contact shadow and the four see-through vessels). Each was in the room
    since v24.0–v24.31 and is outside his ask, so it is listed with the reason and left: the old woman in the doorway
@@ -329,3 +332,13 @@ CLOSED 14 Nov 2026: items 6 to 8 below were put to him together (docs/V26.12-WHA
   trees, cars, Phra Rahu, the amulets and kumanthong) are in no commit and no bundle, and Meshy deletes its own after
   three days. Chad's own models came from his Drive. Put to him: A, keep them on GitHub on a branch of their own that a
   fresh copy of the project does not download (recommended); B, send them to him in 20 MB pieces; C, leave them here.
+  **DONE 14 Nov 2026 (v26.12)**, his pick "GitHub branch (Recommended)": every source GENERATED here (822 files, 9.24
+  GiB: masters/v24.19, v24.20, v24.22, v24.36, v25.0, v25.2, v25.5 and v26.0's src, by then far more than the 64 counted
+  above) is on the branch `claude/model-sources`, its last commit 5836c937 holding every file at its own path, a
+  manifest in sha256sum's format and a README on restoring; none of his own models, no bought model, no photograph
+  (tools/srcbackup.py, which says how to restore: fetch the branch by name and unpack it with git archive, never a
+  checkout into the game's copy). Three files over GitHub's limit went up in two pieces each. Read back from GitHub
+  (the README and the folder's listing). A correction to what was put to him: a full `git clone` of the project would
+  download the branch too; the copies these sessions make are shallow and of one branch, which do not, and this
+  machine's copy fetches the game's branch only (`remote.origin.fetch`). Never fetch it into a working copy unless
+  restoring, and never put it in the backup bundle (CLAUDE.md, rule 3).

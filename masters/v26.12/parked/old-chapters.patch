@@ -1,0 +1,326 @@
+diff --git a/build.py b/build.py
+index fe93e03..164a4ff 100644
+--- a/build.py
++++ b/build.py
+@@ -435,6 +435,9 @@ ASSETS = {
+     'iconnangkwak': ('assets/iconnangkwak.jpg', True, False),  # e4c1 v24.18: the Nang Kwak's icon; v24.20: painted in the style of Chad's own (GPT Image, his torch and amulet icons as the style references and her full scan's render as the object — masters/v24.20/icons)
+     'icontakrut':   ('assets/icontakrut.jpg', True, False),    # e4c1 v24.18: the takrut's icon; v24.20: in Chad's icon style, the same way
+     'iconphayant':  ('assets/iconphayant.jpg', True, False),   # e4c1 v24.18: the pha yant's icon; v24.20: in Chad's icon style, the same way
++    'iconyantgao':  ('assets/iconyantgao.jpg', True, False),   # e3c1 v26.12: the Gao Yord's icon in Chad's icon style (GPT Image: his torch and amulet icons the style, the game's drawing of the design the object; masters/v26.12/icons)
++    'iconyanthah':  ('assets/iconyanthah.jpg', True, False),   # e3c1 v26.12: the Hah Taew Chat Petch's icon, the same way
++    'iconyantsroi': ('assets/iconyantsroi.jpg', True, False),  # e3c1 v26.12: the Sroi Sangwan's icon, the same way
+     'e4bamboo':     ('assets/e4bamboo.glb', True, False),     # e4c1 v24.19: the bamboo clump — generated (a GPT Image reference on white, Meshy image-to-3D and remesh), 37,374 triangles, base colour + metal-roughness + normal at 1024, one metre tall for the stand (tools/prepmeshy.mjs, masters/v24.19/make.sh)
+     'e4takhian':    ('assets/e4takhian.glb', True, False),    # e4c1 v24.19: the takhian, a buttressed bole and a high narrow crown — generated (71,860 triangles; its birch-white bark toned grey-brown, TINTGREY), trunk on the origin
+     'e4raintree':   ('assets/e4raintree.glb', True, False),   # e4c1 v24.19: the rain tree, a wide low umbrella — generated (34,787 triangles), trunk on the origin
+@@ -785,6 +788,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
+            'taoistrow', 'ptg_zhenwu', 'ptg_jade', 'yinptg', 'yingirl', 'yinghost', 'yinkeeper', 'yinamulet', 'yinamuletlod', 'yinshelf', 'yinshelflod', 'yinskull',
+            'traynear', 'trayfar', 'amushelf', 'altarrowfar', 'monkshop', 'hanuamulet', 'hanuamuletlod',
+            'lersiamulet', 'lersiamuletlod', 'towkay',
++           'iconyantgao', 'iconyanthah', 'iconyantsroi',
+            'kumanred', 'kumanshy', 'kumanlittle',
+            'firstmaster', 'e4sky', 'fmshadow', 'e4noi', 'e4pong', 'e4stall', 'e4ghost', 'e4dog', 'e4palm1', 'e4palm2', 'e4palm1far', 'e4palm2far', 'e4banana', 'e4buddha', 'e4pickup', 'e4nangkwak', 'e4takrut', 'e4phayant', 'e4nangkwakhd', 'e4takruthd', 'e4phayanthd', 'iconnangkwak', 'icontakrut', 'iconphayant',
+            'e4bamboo', 'e4takhian', 'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd', 'e4buffalo', 'e4sandalsa', 'e4sandalsb', 'e4rahu', 'e4sedan', 'e4truck', 'e4suv', 'e4sedanfar', 'e4truckfar', 'e4suvfar', 'e4moto', 'e4seat',
+diff --git a/src/chapters/e3/e3c1.js b/src/chapters/e3/e3c1.js
+index 570c07d..2d36927 100644
+--- a/src/chapters/e3/e3c1.js
++++ b/src/chapters/e3/e3c1.js
+@@ -431,9 +431,24 @@
+        0.05, kept low for everything else); the materials are shared clones,
+        and the dispose sweep never frees an envMap. */
+     const BUDDHA_H = 0.527, BUDDHA_ENV = 0.15, _bMat = new Map();   // 0.15: bracketed in the hall at 0 / 0.15 / 0.3 / 0.5 — 0 left the unlit images bronze-dark, 0.3 up washed the gold pale
++    /* (v26.12) THE ROOM'S REFLECTION AS A LIFT (docs/OPEN-ITEMS.md A6). Every strength handed to envLift is an absolute
++       share of the room's reflection, drawn as a lift on the SCENE's own environment (three multiplies the two since
++       v24.29, tools/patchthree.mjs), never as an envMap of the material's own: a phone that loses its graphics and gets
++       them back draws the room's environment again into a new texture (main.js roomEnvAgain), and an envMap of the
++       material's own kept the dead one, so the images' and the trays' gilt went dark until the chapter was rebuilt.
++       The same uniform to the bit (each strength checked through Math.fround) and the same frame to the pixel
++       (tools/probes/envlift.mjs); `?opt=envLift:0` draws the old way. The strength stays on the material
++       (userData.envLift, a number) for that probe. */
++    const ENVLIFT = !ctx.opt || ctx.opt('envLift');
++    const envLift = (m, k) => {
++      m.userData.envLift = k;
++      if (ENVLIFT) { m.envMap = null; m.envMapIntensity = k / scene.environmentIntensity; }
++      else { m.envMap = scene.environment || null; m.envMapIntensity = k; }
++      return m;
++    };
+     function buddhaMat(m) {
+       let c = _bMat.get(m);
+-      if (!c) { c = m.clone(); c.envMap = scene.environment || null; c.envMapIntensity = BUDDHA_ENV; _bMat.set(m, c); }
++      if (!c) { c = m.clone(); envLift(c, BUDDHA_ENV); _bMat.set(m, c); }
+       return c;
+     }
+     function chadBuddha(g, o) {
+@@ -4450,7 +4465,7 @@
+               o.castShadow = false; o.receiveShadow = false;
+               if (!camMats.has(o.material)) {
+                 const m = o.material.clone(); m.fog = false; m.metalness = 0.1; m.roughness = 0.45;
+-                m.envMap = scene.environment || null; m.envMapIntensity = 0.22;   // at 0.9 the black bodies read WHITE (photographed)
++                envLift(m, 0.22);   // at 0.9 the black bodies read WHITE (photographed)
+                 camMats.set(o.material, m);
+               }
+               o.material = camMats.get(o.material);
+diff --git a/src/chapters/e3/e3c2.js b/src/chapters/e3/e3c2.js
+index 56f277d..9d8e28f 100644
+--- a/src/chapters/e3/e3c2.js
++++ b/src/chapters/e3/e3c2.js
+@@ -276,9 +276,24 @@
+        0.05, kept low for everything else); the materials are shared clones,
+        and the dispose sweep never frees an envMap. */
+     const BUDDHA_H = 0.527, BUDDHA_ENV = 0.15, _bMat = new Map();   // 0.15: bracketed in the hall at 0 / 0.15 / 0.3 / 0.5 — 0 left the unlit images bronze-dark, 0.3 up washed the gold pale
++    /* (v26.12) THE ROOM'S REFLECTION AS A LIFT (docs/OPEN-ITEMS.md A6). Every strength handed to envLift is an absolute
++       share of the room's reflection, drawn as a lift on the SCENE's own environment (three multiplies the two since
++       v24.29, tools/patchthree.mjs), never as an envMap of the material's own: a phone that loses its graphics and gets
++       them back draws the room's environment again into a new texture (main.js roomEnvAgain), and an envMap of the
++       material's own kept the dead one, so the images' and the trays' gilt went dark until the chapter was rebuilt.
++       The same uniform to the bit (each strength checked through Math.fround) and the same frame to the pixel
++       (tools/probes/envlift.mjs); `?opt=envLift:0` draws the old way. The strength stays on the material
++       (userData.envLift, a number) for that probe. */
++    const ENVLIFT = !ctx.opt || ctx.opt('envLift');
++    const envLift = (m, k) => {
++      m.userData.envLift = k;
++      if (ENVLIFT) { m.envMap = null; m.envMapIntensity = k / scene.environmentIntensity; }
++      else { m.envMap = scene.environment || null; m.envMapIntensity = k; }
++      return m;
++    };
+     function buddhaMat(m) {
+       let c = _bMat.get(m);
+-      if (!c) { c = m.clone(); c.envMap = scene.environment || null; c.envMapIntensity = BUDDHA_ENV; _bMat.set(m, c); }
++      if (!c) { c = m.clone(); envLift(c, BUDDHA_ENV); _bMat.set(m, c); }
+       return c;
+     }
+     function chadBuddha(g, o) {
+@@ -2647,7 +2662,7 @@
+     /* ============================================================ THE FILM SETS
+        Five pockets far outside the hall (the far plane is 160 m: distance
+        does the hiding, v8.9). Fog-free, painted light (the v4.9 recipe). */
+-    const film = buildFilm(ctx, world, { tex, parseOnce, thai, box, cyl, alive: () => alive, owned, mkSitter, whiteOf, matFloor, matMat, matCream, matFlame, matGold, matDark, matWood, makeSignTex, KIND, HALL, kit, scene });
++    const film = buildFilm(ctx, world, { tex, parseOnce, thai, box, cyl, alive: () => alive, owned, mkSitter, whiteOf, matFloor, matMat, matCream, matFlame, matGold, matDark, matWood, makeSignTex, KIND, HALL, kit, scene, envLift });
+     /* v18.4: the film's clock is the INTRO's (scene B is 44.7 s long: a
+        film-clock prop must not wake under an ending). v19.5: what it runs is
+        the flat's two lights — on only while the film plays, dark otherwise
+@@ -2813,8 +2828,8 @@
+     /* the rod (khem sak): a thin steel needle, its origin AT THE POINT and the
+        shaft running back from it, up and to the right toward the lens (the
+        near plane is 8 cm: at this tilt the shaft leaves the frame first) */
+-    const steel = new THREE.MeshStandardMaterial({ color: 0xc9ccd1, metalness: 0.9, roughness: 0.28, fog: false,
+-                                                   envMap: (h.scene && h.scene.environment) || null, envMapIntensity: 1.1, emissive: 0x2a2622, emissiveIntensity: 0.6 });
++    const steel = h.envLift(new THREE.MeshStandardMaterial({ color: 0xc9ccd1, metalness: 0.9, roughness: 0.28, fog: false,
++                                                   emissive: 0x2a2622, emissiveIntensity: 0.6 }), 1.1);
+     const rod = new THREE.Group(); Y.add(rod);
+     { const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.0018, 0.002, 0.6, 16), steel);
+       shaft.rotation.x = Math.PI / 2; shaft.position.z = -0.035 - 0.3; rod.add(shaft);
+@@ -2953,7 +2968,7 @@
+           o.castShadow = o.receiveShadow = false;
+           if (!camMats.has(o.material)) {
+             const m = o.material.clone(); m.fog = false; m.metalness = 0.1; m.roughness = 0.45;
+-            m.envMap = (h.scene && h.scene.environment) || null; m.envMapIntensity = 0.22;
++            h.envLift(m, 0.22);
+             camMats.set(o.material, m);
+           }
+           o.material = camMats.get(o.material);
+diff --git a/src/chapters/e3/e3c3.js b/src/chapters/e3/e3c3.js
+index 2f0609e..ab580f7 100644
+--- a/src/chapters/e3/e3c3.js
++++ b/src/chapters/e3/e3c3.js
+@@ -436,9 +436,24 @@
+        kit Buddha's place at the kit's footprint — a LOD per image, the
+        PRINCIPAL one (`hd`) the full statue while it is big on screen. */
+     const BUDDHA_H = 0.527, BUDDHA_ENV = 0.15, _bMat = new Map();
++    /* (v26.12) THE ROOM'S REFLECTION AS A LIFT (docs/OPEN-ITEMS.md A6). Every strength handed to envLift is an absolute
++       share of the room's reflection, drawn as a lift on the SCENE's own environment (three multiplies the two since
++       v24.29, tools/patchthree.mjs), never as an envMap of the material's own: a phone that loses its graphics and gets
++       them back draws the room's environment again into a new texture (main.js roomEnvAgain), and an envMap of the
++       material's own kept the dead one, so the images' and the trays' gilt went dark until the chapter was rebuilt.
++       The same uniform to the bit (each strength checked through Math.fround) and the same frame to the pixel
++       (tools/probes/envlift.mjs); `?opt=envLift:0` draws the old way. The strength stays on the material
++       (userData.envLift, a number) for that probe. */
++    const ENVLIFT = !ctx.opt || ctx.opt('envLift');
++    const envLift = (m, k) => {
++      m.userData.envLift = k;
++      if (ENVLIFT) { m.envMap = null; m.envMapIntensity = k / scene.environmentIntensity; }
++      else { m.envMap = scene.environment || null; m.envMapIntensity = k; }
++      return m;
++    };
+     function buddhaMat(m) {
+       let c = _bMat.get(m);
+-      if (!c) { c = m.clone(); c.envMap = scene.environment || null; c.envMapIntensity = BUDDHA_ENV; _bMat.set(m, c); owned.push({ dispose: () => c.dispose() }); }
++      if (!c) { c = m.clone(); envLift(c, BUDDHA_ENV); _bMat.set(m, c); owned.push({ dispose: () => c.dispose() }); }
+       return c;
+     }
+     function chadBuddha(g, o) {
+@@ -564,7 +579,7 @@
+     const trayGroups = [];                                      // { lists: [tray placements], standIns, parent }
+     let trayLevels = null;                                      // [{ geo, mat, node }] near, mid, far, once both files have landed
+     const _trayMat = new Map();
+-    const trayMat = (m) => { let c = _trayMat.get(m); if (!c) { c = m.clone(); c.envMap = scene.environment || null; c.envMapIntensity = TRAY_ENV; _trayMat.set(m, c); owned.push({ dispose: () => c.dispose() }); } return c; };
++    const trayMat = (m) => { let c = _trayMat.get(m); if (!c) { c = m.clone(); envLift(c, TRAY_ENV); _trayMat.set(m, c); owned.push({ dispose: () => c.dispose() }); } return c; };
+     /* one group of trays: `list` is [x, y, z, euler, scale] per tray (the tray's middle), in pairs; `standIns` are the
+        drawn things it replaces */
+     function trayGroup(list, standIns, parent = shopG) {
+@@ -3230,7 +3245,7 @@ float nvn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f)
+           m.traverse(o => {
+             if (!o.isMesh) return;
+             o.castShadow = false; o.receiveShadow = true;
+-            if (!mat) { mat = o.material.clone(); mat.envMap = scene.environment || null; mat.envMapIntensity = 0.25; owned.push({ dispose: () => mat.dispose() }); }
++            if (!mat) { mat = o.material.clone(); envLift(mat, 0.25); owned.push({ dispose: () => mat.dispose() }); }
+             o.material = mat;
+           });
+           lod.addLevel(m, d);
+diff --git a/src/chapters/e3/e3c4.js b/src/chapters/e3/e3c4.js
+index eab82e7..41a653e 100644
+--- a/src/chapters/e3/e3c4.js
++++ b/src/chapters/e3/e3c4.js
+@@ -337,9 +337,24 @@
+        (CP6 — a chapter imports nothing): one parse, every piece a clone; the PRINCIPAL image (`hd`) is the full statue
+        while it is big on screen, a lighter cut beyond */
+     const BUDDHA_H = 0.527, BUDDHA_ENV = 0.15, _bMat = new Map();
++    /* (v26.12) THE ROOM'S REFLECTION AS A LIFT (docs/OPEN-ITEMS.md A6). Every strength handed to envLift is an absolute
++       share of the room's reflection, drawn as a lift on the SCENE's own environment (three multiplies the two since
++       v24.29, tools/patchthree.mjs), never as an envMap of the material's own: a phone that loses its graphics and gets
++       them back draws the room's environment again into a new texture (main.js roomEnvAgain), and an envMap of the
++       material's own kept the dead one, so the images' and the trays' gilt went dark until the chapter was rebuilt.
++       The same uniform to the bit (each strength checked through Math.fround) and the same frame to the pixel
++       (tools/probes/envlift.mjs); `?opt=envLift:0` draws the old way. The strength stays on the material
++       (userData.envLift, a number) for that probe. */
++    const ENVLIFT = !ctx.opt || ctx.opt('envLift');
++    const envLift = (m, k) => {
++      m.userData.envLift = k;
++      if (ENVLIFT) { m.envMap = null; m.envMapIntensity = k / scene.environmentIntensity; }
++      else { m.envMap = scene.environment || null; m.envMapIntensity = k; }
++      return m;
++    };
+     function buddhaMat(m) {
+       let c = _bMat.get(m);
+-      if (!c) { c = m.clone(); c.envMap = scene.environment || null; c.envMapIntensity = BUDDHA_ENV; _bMat.set(m, c); owned.push({ dispose: () => c.dispose() }); }
++      if (!c) { c = m.clone(); envLift(c, BUDDHA_ENV); _bMat.set(m, c); owned.push({ dispose: () => c.dispose() }); }
+       return c;
+     }
+     function chadBuddha(g, o) {
+@@ -2320,7 +2335,7 @@
+       const trayGroups = [];                                      // { lists: [tray placements], standIns, parent }
+       let trayLevels = null;                                      // [{ geo, mat, node }] near, mid, far, once both files have landed
+       const _trayMat = new Map();
+-      const trayMat = (m) => { let c = _trayMat.get(m); if (!c) { c = m.clone(); c.envMap = scene.environment || null; c.envMapIntensity = TRAY_ENV; _trayMat.set(m, c); owned.push({ dispose: () => c.dispose() }); } return c; };
++      const trayMat = (m) => { let c = _trayMat.get(m); if (!c) { c = m.clone(); envLift(c, TRAY_ENV); _trayMat.set(m, c); owned.push({ dispose: () => c.dispose() }); } return c; };
+       /* one group of trays: `list` is [x, y, z, euler, scale] per tray (the tray's middle), in pairs; `standIns` are the
+          drawn things it replaces */
+       function trayGroup(list, standIns, parent = shopG) {
+diff --git a/src/chapters/e3/e3c5.js b/src/chapters/e3/e3c5.js
+index b99f8cf..43d1bf0 100644
+--- a/src/chapters/e3/e3c5.js
++++ b/src/chapters/e3/e3c5.js
+@@ -655,9 +655,24 @@
+     /* THE THAI KIT (v16.6's file) and CHAD'S BUDDHA (v18.8), chapter 4's own helpers, copied: one parse, every piece a
+        clone; `fit` scales a piece so its longest level side spans that many metres */
+     const BUDDHA_H = 0.527, BUDDHA_ENV = 0.15, _bMat = new Map();
++    /* (v26.12) THE ROOM'S REFLECTION AS A LIFT (docs/OPEN-ITEMS.md A6). Every strength handed to envLift is an absolute
++       share of the room's reflection, drawn as a lift on the SCENE's own environment (three multiplies the two since
++       v24.29, tools/patchthree.mjs), never as an envMap of the material's own: a phone that loses its graphics and gets
++       them back draws the room's environment again into a new texture (main.js roomEnvAgain), and an envMap of the
++       material's own kept the dead one, so the images' and the trays' gilt went dark until the chapter was rebuilt.
++       The same uniform to the bit (each strength checked through Math.fround) and the same frame to the pixel
++       (tools/probes/envlift.mjs); `?opt=envLift:0` draws the old way. The strength stays on the material
++       (userData.envLift, a number) for that probe. */
++    const ENVLIFT = !ctx.opt || ctx.opt('envLift');
++    const envLift = (m, k) => {
++      m.userData.envLift = k;
++      if (ENVLIFT) { m.envMap = null; m.envMapIntensity = k / scene.environmentIntensity; }
++      else { m.envMap = scene.environment || null; m.envMapIntensity = k; }
++      return m;
++    };
+     function buddhaMat(m) {
+       let c = _bMat.get(m);
+-      if (!c) { c = m.clone(); c.envMap = scene.environment || null; c.envMapIntensity = BUDDHA_ENV; _bMat.set(m, c); owned.push({ dispose: () => c.dispose() }); }
++      if (!c) { c = m.clone(); envLift(c, BUDDHA_ENV); _bMat.set(m, c); owned.push({ dispose: () => c.dispose() }); }
+       return c;
+     }
+     function chadBuddha(g, o) {
+@@ -1380,7 +1395,7 @@
+       const trayGroups = [];                                      // { lists: [tray placements], standIns, parent }
+       let trayLevels = null;                                      // [{ geo, mat, node }] near, mid, far, once both files have landed
+       const _trayMat = new Map();
+-      const trayMat = (m) => { let c = _trayMat.get(m); if (!c) { c = m.clone(); c.envMap = scene.environment || null; c.envMapIntensity = TRAY_ENV; _trayMat.set(m, c); owned.push({ dispose: () => c.dispose() }); } return c; };
++      const trayMat = (m) => { let c = _trayMat.get(m); if (!c) { c = m.clone(); envLift(c, TRAY_ENV); _trayMat.set(m, c); owned.push({ dispose: () => c.dispose() }); } return c; };
+       /* one group of trays: `list` is [x, y, z, euler, scale] per tray (the tray's middle), in pairs; `standIns` are the
+          drawn things it replaces */
+       function trayGroup(list, standIns, parent = shopG) {
+diff --git a/src/main.js b/src/main.js
+index e26b459..2f7cac6 100644
+--- a/src/main.js
++++ b/src/main.js
+@@ -1161,7 +1161,7 @@ function treeKit() {
+ /* v15: every engine optimization has a switch, ON by default, so a probe can
+    draw the SAME frozen frame with it off and on and compare every pixel —
+    the proof that an optimization changed nothing on screen. */
+-const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true, lightSets: true, ctxRestore: true, herSounds: true, musicPark: true, lightMem: true, lightSeeds: true, skelMerge: true, ivSharp: true, ivMsaa: true, onePass: true, noGarbage: true, lazyRot: true, fastTwins: true, fastSkin: true, freePics: true, sheetOnce: true, keepShared: true };
++const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true, lightSets: true, ctxRestore: true, herSounds: true, musicPark: true, lightMem: true, lightSeeds: true, skelMerge: true, ivSharp: true, ivMsaa: true, onePass: true, noGarbage: true, lazyRot: true, fastTwins: true, fastSkin: true, freePics: true, sheetOnce: true, keepShared: true, envLift: true };
+ /* a probe may switch any of them off from the address (`?opt=boneSkip:0,warmTiny:0`),
+    so a switch that acts at LOAD time can be compared build against itself */
+ { const m = /[?&]opt=([^&]*)/.exec(location.search);
+@@ -1172,6 +1172,8 @@ const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: tru
+    (NOGARB); lazyRot: its bodies' bones' angles worked out when read (LAZYROT); fastTwins and fastSkin: its load's
+    own measuring done without the overhead (FASTTWINS, FASTSKIN); sheetOnce: a body's sheet set up once, never uploaded
+    again for nothing (SHEETONCE); keepShared: a film's full body gives back only what no other body draws (KEEPSHARED).
++   envLift (v26.12): episode 3's five chapters draw their images', trays' and a few pieces' share of the room's
++   reflection as a lift on the scene's own environment, never an envMap of their own (docs/OPEN-ITEMS.md A6).
+    No other chapter reads any key: unchanged by construction */
+ /* v26.11: ONE COPY OF EACH PICTURE (episode 4 chapter 3's speed-ups, the fourth: Chad, 14 Nov 2026, of the question
+    whether to free them, "Yes, free the copies (Recommended)"). A picture on the graphics chip is held twice: the chip's
+@@ -10294,9 +10296,11 @@ const ITEM_DEFS = {
+      weapons and danger" cuts the sudden hit; the Five Rows and the Diamond
+      Canopy, "support during difficult periods", slow the long dread; Sroi
+      Sangwan, "the ability to overcome obstacles", steadies the hand. */
+-  yantgaoyord: { icon: 'e-ygao', slot: 'body', fixed: true, shockGuard: 0.4, rarity: 'rare' },
+-  yanthahtaew: { icon: 'e-yhah', slot: 'body', fixed: true, drainGuard: 0.35, rarity: 'rare' },
+-  yantsroi: { icon: 'e-ysroi', slot: 'body', fixed: true, evGuard: 0.3, rarity: 'rare' },
++  /* (v26.12) each Sak Yant's painted icon (`art`) in the style of Chad's own: the game's drawing of the design, inked on
++     a back or a chest (masters/v26.12/icons) */
++  yantgaoyord: { icon: 'e-ygao', art: 'iconyantgao', slot: 'body', fixed: true, shockGuard: 0.4, rarity: 'rare' },
++  yanthahtaew: { icon: 'e-yhah', art: 'iconyanthah', slot: 'body', fixed: true, drainGuard: 0.35, rarity: 'rare' },
++  yantsroi: { icon: 'e-ysroi', art: 'iconyantsroi', slot: 'body', fixed: true, evGuard: 0.3, rarity: 'rare' },
+   /* v24.0: the three pieces on the first master's tray (episode 4 chapter 1, §4.3 P5): he takes one, and nothing later
+      hangs on which — ordinary pieces, no power. Whichever he took rides in his bag.
+      v24.17: their models are Chad's own scans, and the bag's views draw each at FULL detail — every triangle, the
+@@ -11399,7 +11403,7 @@ const cho = { ids: null, sel: -1, t0: 0, resolve: null, outT: 0, sealing: false,
+ const CHOOSE_SEAL_MS = 1350, CHOOSE_SEAL_FRAMES = 8;
+ /* v24.18: a card shows the item's PICTURE when it has one (Chad: "why are you still using drawn icons, when you already
+    have the full models"): its painted or rendered icon (`art`), drawn when its bytes land; the line drawing stands in until
+-   then, and for an item with no picture (episode 3 chapter 1's yants are their drawings) */
++   then, and for an item with no picture (episode 3 chapter 1's yants were their drawings until v26.12) */
+ function choArtHTML(id) {
+   const def = ITEM_DEFS[id], a = def.art ? itemArt[id] : null;
+   if (a && a !== 'loading' && a !== 'none') return `<canvas class="choIcon art" data-art="${id}"></canvas>`;
+@@ -14701,6 +14705,8 @@ function chapterFiles(key) {
+   for (const id of (Array.isArray(c.items) ? c.items : [])) {
+     const d = ITEM_DEFS[id];
+     if (d && d.model) { out.add(d.model); if (d.art) out.add(d.art); }
++    /* (v26.12) a painted icon with no model (a Sak Yant) comes ahead too */
++    else if (d && d.art) out.add(d.art);
+   }
+   return [...out].filter(k => HOSTED && ASSET_MAP[k] && !_assetSeen.has(k) && !prefetched.has(k));
+ }
+@@ -14748,6 +14754,16 @@ function curtainItems() {
+   for (const id of (Array.isArray(CH.items) ? CH.items : [])) ids.add(id);
+   return [...ids].filter(id => ITEM_DEFS[id] && ITEM_DEFS[id].model);
+ }
++/* (v26.12) the items whose picture is painted and who have no model (episode 3 chapter 1's Sak Yants): their pictures are
++   fetched under the cover too, so the choose window and the bag never show the line drawing first. Kept out of
++   curtainItems, whose every item the curtain waits on to have a model ready or none */
++function curtainArt() {
++  const ids = new Set();
++  for (const k of GEAR_SLOTS) if (inv.gear[k]) ids.add(inv.gear[k]);
++  for (const id of inv.bag) if (id) ids.add(id);
++  for (const id of (Array.isArray(CH.items) ? CH.items : [])) ids.add(id);
++  return [...ids].filter(id => ITEM_DEFS[id] && ITEM_DEFS[id].art && !ITEM_DEFS[id].model);
++}
+ /* v14.16: DRAW EVERYTHING ONCE, UNDER THE COVER. compile() builds programs
+    for hidden objects too, but a mesh's GEOMETRY reaches the GPU only when
+    it is first drawn — so a thing hidden when the curtain lifts (ch3's
+@@ -15070,6 +15086,7 @@ function whenWorldReady(then, capMs = WORLD_CAP, keepWord = false, silent = fals
+   const items = curtainItems();
+   try { zavInit(); zavLoad(); } catch {}
+   for (const id of items) { try { ivModel(id); itemArtGet(id); } catch {} }   // the model and the painted icon
++  for (const id of curtainArt()) { try { itemArtGet(id); } catch {} }
+   const seen = new Set(loadLog.filter(r => !r.t1));    // what this wait counts, for the percentage
+   let calm = 0, warming = false, warmedAt = -1, quietSince = -1;
+   /* v14.16: and its SOUNDS. Since the dialogue left the shared pack (build.py,
