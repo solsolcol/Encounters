@@ -248,7 +248,7 @@
         /* (as it buds, each petal turns about a point that climbs from its foot to its tip, so the eight tips meet in one
            point and their feet open a little below it: a bud's petals wrapped round it. Turned about their feet to the
            last, their points fanned into a jagged crown: drawn in the lab and refused) */
-        const s2 = 0.7 + 0.3 * k, fan = (7 + 38 * k) * (1 - 0.55 * b) * Math.PI / 180, pt = b * b, py = b * (-66 - 8 * pt);
+        const s2 = 0.7 + 0.3 * k, fan = (7 + 38 * k) * (1 - 0.55 * b) * Math.PI / 180, pt = b * b, py = (1 - (1 - b) * (1 - b)) * (-66 - 8 * pt);
         for (let i = 0; i < 8; i++) {
           x.save(); x.globalAlpha = a; x.translate(0, 14 + py * s2); x.rotate((i - 3.5) * fan); x.scale(s2, s2); x.translate(0, -py);
           petalPath(x, pt);

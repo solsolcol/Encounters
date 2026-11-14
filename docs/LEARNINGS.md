@@ -8721,5 +8721,10 @@ Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8,
   black sheet before the lens (where no hand of his is drawn, and the vignette over black is black).
 - **A drift sped up moves what a probe aims at.** Aimed by the clouds' old places, the second photograph of the tall
   cloud found sky: the cards had turned while the page booted. Aim at where a moving thing IS, or stop it for the picture.
+- **A film from play is started from the phase play starts it in.** Begun from 'knelt' (a day-TWO phase: the masters
+  have gone home), the festival film (a day-one film) drew every master's sofa empty and the woman's bai sri held up to
+  nobody: a world no player can reach, read for a minute as a missing hermit. Read the phase list (PHASES, DAY_TWO)
+  before choosing where a probe starts a film; when a picture shows someone missing, read the body's own state (ready,
+  visible, its levels) before believing either the picture or a guess.
 - **The working disk filled during a build** (its release zip): the zip half-written is worthless and is the first thing
   to clear, then my own probe pictures; the build itself needs about 1.7 GB free (dist rewritten, then the zip).

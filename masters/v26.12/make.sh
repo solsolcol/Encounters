@@ -114,3 +114,6 @@
 #    in minutes, and each card is lit from one side (a card lit from its upper right is turned round where the sun is to its
 #    left, v26.1): so a card is turned round again only while the lens cannot see it (its bounding sphere outside the
 #    camera's frustum), as any change in the world is made (v24.12).
+#    (After the deploy, the desktop's picture a tenth of a second before the shut showed a small flat nub at the bud's tip
+#    while its eight points finished meeting, some 0.15 s. The points now meet sooner than they sharpen (py on 1 - (1 - b)^2,
+#    pt on b^2): built and photographed with the next build.)
