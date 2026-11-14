@@ -213,7 +213,7 @@
        photograph 5 (baiGrip 'under'). `myArmsAt(api, eye, ya, c, k, glow, t)`: the film's api (the hands' model is the
        engine's, api.rightHand()), his eye, the way his body faces (a heading as eyes() takes it), the bai sri's foot in
        the world (or null), how far his hands are on it (0 under the frame, 1 on it), the glow, the film's clock */
-    const MYARMS = { P: null, made: false, G: null, halos: [] };
+    const MYARMS = { P: null, made: false, G: null, halos: [], left: null, petal: null };
     const SHOULD = { drop: 0.21, back: 0.05, reach: 0.6, lean: 0.16 };   // (his shoulders' middle against his eye; how far he leans to a bowl beyond reach)
     /* (MYGRIP: each finger's two nearer joints bent so far round the bowl's curve, the end joint 0.7 of it: c_cast.js
        curlFingers. MYARMS_SHOW: how far his hands must be on their way to the bowl before they are drawn) */
@@ -260,6 +260,7 @@
         const bl = bone[nm.slice(0, -1) + 'L'], br = bone[nm]; if (bl) bl.quaternion.set(br.quaternion.x, -br.quaternion.y, -br.quaternion.z, br.quaternion.w); }
       const hm = new THREE.SpriteMaterial({ map: tex(makeGlow(THREE, cnv)), color: 0xfff7ea, transparent: true, opacity: 0, depthTest: false, depthWrite: false, fog: false, blending: THREE.AdditiveBlending }); mats.push(hm);
       for (let i = 0; i < 2; i++) { const sp = new THREE.Sprite(hm); sp.renderOrder = 998; sp.visible = false; world.add(sp); MYARMS.halos.push(sp); }
+      MYARMS.left = bone.upper_armL || null;                                  // (v26.12: shrunk away again while his right hand is open alone: myOpenHand)
       MYARMS.G = G; MYARMS.P = P; return P;
     }
     /* HIS GRIP, as his photograph 7 holds a bai sri up before the eyes: each palm on the bowl's lower body under its swell,
@@ -292,6 +293,7 @@
       const P = drawn ? myArmsMake(api) : MYARMS.P;
       if (!P || !drawn) { if (MYARMS.G) MYARMS.G.visible = false; for (const sp of MYARMS.halos) sp.visible = false; return; }
       armsBack(P);
+      if (MYARMS.left) MYARMS.left.scale.setScalar(1);
       const G = MYARMS.G, fx = -Math.sin(ya), fz = -Math.cos(ya), lx = -Math.cos(ya), lz = Math.sin(ya);
       /* (held and not on the bowl: drawn 1.2 m behind his eyes, where no look of his can see them) */
       if (!(k > MYARMS_SHOW)) { G.position.set(eye[0] - fx * 1.2, eye[1] - SHOULD.drop, eye[2] - fz * 1.2); G.rotation.set(0, ya + Math.PI, 0); G.visible = true;
@@ -314,10 +316,62 @@
       const on = glow > 0.002, br = 0.84 + 0.16 * Math.sin(t * 2 * Math.PI / 1.7);
       MYARMS.halos.forEach((sp, i) => { sp.visible = on; if (!on) return; const q = palm[i ? 'R' : 'L']; sp.position.set(q[0], q[1], q[2]); sp.scale.set(0.3, 0.3, 1); sp.material.opacity = 0.42 * glow * br; });
     }
+    /* (v26.12, his answer of 14 Nov to the close's last image, "Petal on his hand") ONE PETAL LEFT ON HIS OPEN HAND, then
+       black: one of the marigold petals his teacher threw over him, kept on his palm. His right hand, open and palm up, held
+       before his lower chest as a man holds a hand to look into it, LEARNED from two reference pictures before it was built
+       (masters/v26.12/make.sh: from his own eyes, and from his side): the upper arm hanging close to his side, the elbow
+       bent about 120 degrees, the forearm rising some 30 degrees forward, the wrist straight but for a little lift (the
+       fingers rise some 15 degrees, the forearm 30), the fingers on along the forearm's line and some 20 degrees in toward
+       his middle, gently curved, the thumb relaxed out from the palm; the palm some 0.42 m from his eye, a little right of
+       his middle. The left arm is shrunk away as the engine shrinks it in play: it is in no picture of this.
+       OPENHAND: the palm's middle forward of his eye, below it, to his right; the fingers' way (in, up, against forward 1);
+       the palm's facing (back toward him, in toward his middle, against up 1); the elbow's side (out, down, aft: the
+       upper arm hanging); the fingers' curl at each joint (radians); the petal's length, how far it lies off the palm and
+       how far its length is turned from the fingers' line */
+    const OPENHAND = { fwd: 0.27, down: 0.32, right: 0.085, fIn: 0.36, fUp: 0.27, nBack: 0.27, nIn: 0.18, out: 0.1, edown: 0.5, aft: 0.06,
+                       curl: 0.24, petal: 0.032, lift: 0.004, turn: 0.7 };
+    const _ohP = new THREE.Vector3(), _ohQ = new THREE.Quaternion(), _ohF = new THREE.Vector3(), _ohN = new THREE.Vector3(), _ohA = new THREE.Vector3(),
+          _ohY = new THREE.Vector3(), _ohS = new THREE.Vector3(), _ohM = new THREE.Matrix4();
+    /* (where the palm is held, for his eyes too: they look at where it is held, never chase it as it comes up) */
+    function openHandAt(eye, ya) {
+      const fx = -Math.sin(ya), fz = -Math.cos(ya), rx = Math.cos(ya), rz = -Math.sin(ya);
+      return [eye[0] + fx * OPENHAND.fwd + rx * OPENHAND.right, eye[1] - OPENHAND.down, eye[2] + fz * OPENHAND.fwd + rz * OPENHAND.right];
+    }
+    /* `myOpenHand(api, eye, ya, k)`: k 0 below the frame's foot (nothing drawn: his arms are then myArmsAt's), 1 held open
+       before him. Called after myArmsAt in the same frame, which has hidden his arms by then once the bowl is given */
+    function myOpenHand(api, eye, ya, k) {
+      if (!eye || !(k > 0.001)) { if (MYARMS.petal) MYARMS.petal.visible = false; return; }
+      const P = myArmsMake(api); if (!P) return;
+      armsBack(P);
+      if (MYARMS.left) MYARMS.left.scale.setScalar(1e-4);
+      for (const sp of MYARMS.halos) sp.visible = false;
+      const G = MYARMS.G, fx = -Math.sin(ya), fz = -Math.cos(ya), lx = -Math.cos(ya), lz = Math.sin(ya);
+      G.position.set(eye[0] - fx * SHOULD.back, eye[1] - SHOULD.drop, eye[2] - fz * SHOULD.back); G.rotation.set(0, ya + Math.PI, 0); G.visible = true; G.updateMatrixWorld(true);
+      /* (from under the frame, below his chest and to his right, as myArmsAt brings his hands up, eased to where it is held) */
+      const ke = smo(c01(k)), at = openHandAt(eye, ya), lo = [eye[0] + fx * 0.3 - lx * 0.17, eye[1] - 0.62, eye[2] + fz * 0.3 - lz * 0.17];
+      const pt = [lp(lo[0], at[0], ke), lp(lo[1], at[1], ke), lp(lo[2], at[2], ke)];
+      const f = [fx + lx * OPENHAND.fIn, OPENHAND.fUp, fz + lz * OPENHAND.fIn], n = [-fx * OPENHAND.nBack + lx * OPENHAND.nIn, 1, -fz * OPENHAND.nBack + lz * OPENHAND.nIn];
+      handTo(P, 'R', pt, f, n, 1, { out: OPENHAND.out, down: OPENHAND.edown, aft: OPENHAND.aft });
+      curlFingers(P, 'R', OPENHAND.curl);
+      /* THE PETAL: one of the handful's own (the same picture, the same marigold, the same shading: a copy of the handfuls'
+         drawing, so no new program is built on screen), lying on the middle of his palm, from the hand as it is drawn */
+      if (!MYARMS.petal) { const im = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1), petalAirMat, 1); im.frustumCulled = false; im.count = 1;
+        im.setColorAt(0, new THREE.Color().setHSL(0.12, 0.98, 0.53, THREE.SRGBColorSpace)); im.instanceColor.needsUpdate = true; world.add(im); MYARMS.petal = im; }
+      const a = armsOf(P) && armsOf(P).R; if (!a) { MYARMS.petal.visible = false; return; }
+      a.hand.updateWorldMatrix(true, false); a.hand.getWorldPosition(_ohP); a.hand.getWorldQuaternion(_ohQ);
+      _ohF.copy(a.fL).applyQuaternion(_ohQ).normalize(); _ohN.copy(a.nL).applyQuaternion(_ohQ).normalize();
+      _ohP.addScaledVector(_ohF, a.palm * 0.95).addScaledVector(_ohN, 0.022 + OPENHAND.lift);
+      _ohA.copy(_ohF).applyAxisAngle(_ohN, OPENHAND.turn); _ohY.crossVectors(_ohN, _ohA).normalize(); _ohA.crossVectors(_ohY, _ohN).normalize();
+      _ohM.makeBasis(_ohA, _ohY, _ohN).scale(_ohS.set(OPENHAND.petal, OPENHAND.petal, 1)).setPosition(_ohP);
+      MYARMS.petal.setMatrixAt(0, _ohM); MYARMS.petal.instanceMatrix.needsUpdate = true; MYARMS.petal.visible = true;
+    }
     /* (his arms are a copy of the engine's own hand: its shape and its pictures are the engine's, drawn in every
        chapter's play, and never this chapter's to dispose. dispose() takes them out of the world before it disposes
        what is left there, and gives back only what this copy made: its materials and its bone sheet) */
     function myArmsDrop() {
+      /* (the petal on his palm: its own sheet of places and its own square; its drawing is the handfuls', never this one's to dispose) */
+      if (MYARMS.petal) { const im = MYARMS.petal; if (im.parent) im.parent.remove(im); im.geometry.dispose(); im.dispose(); MYARMS.petal = null; }
+      MYARMS.left = null;
       const G = MYARMS.G; if (!G) return;
       if (G.parent) G.parent.remove(G);
       G.traverse(o => { if (o.isSkinnedMesh && o.skeleton) o.skeleton.dispose(); if (o.isMesh) for (const m of [].concat(o.material)) m.dispose(); });

@@ -261,6 +261,28 @@
        of his frame on both screens (she is heard, not seen) */
     const PHOTO_ROW = { x0: -1.32, dx: 0.66, z: PHOTO.z - 0.92, hold: [9.0, 9.0, null, 4.0, 7.0] }, PHOTO_CAM = { x: 0, z: PHOTO.z + 5.5 };
     function hipsTo(P, x, z) { if (!P || !P.ready || !P.hips) return; P.group.updateWorldMatrix(true, true); P.hips.getWorldPosition(_ffv); P.group.position.x += x - _ffv.x; P.group.position.z += z - _ffv.z; }
+    /* (v26.12, Chad, 14 Nov 2026, asked whether a devotee standing 2.5 m behind the five, who on a desktop read as a sixth
+       man in the row, should be moved: "Move him (Recommended)") WHOEVER WOULD STAND IN THE ROW STEPS ASIDE: anyone the
+       afternoon's seats put behind the row and inside the five's span as the photograph's lens (BW.eye1) sees it, the
+       span widened by a master's half-width each side, stands for this one shot behind the woman who takes it, out of the
+       frame on both screens, turned to the row; any other shot puts him back exactly where his seat had him. (Measured on
+       v26.11: one man, the standing e4devd 9.42 m from the lens, between the hermit in the yellow shawl and the red master) */
+    const ASIDE = { dx: 1.0, dz: 1.2, gap: 0.7, edge: 0.04, behind: 0.3 }, asideOf = [];
+    function stepAside(on) {
+      while (asideOf.length) { const [g, x, z, ry] = asideOf.pop(); g.position.x = x; g.position.z = z; g.rotation.y = ry; }
+      if (!on) return;
+      const E = BW.eye1, ang = (x, z) => Math.atan2(z - E[2], x - E[0]);
+      const a0 = ang(PHOTO_ROW.x0, PHOTO_ROW.z), a1 = ang(PHOTO_ROW.x0 + 4 * PHOTO_ROW.dx, PHOTO_ROW.z);
+      const lo = Math.min(a0, a1) - ASIDE.edge, hi = Math.max(a0, a1) + ASIDE.edge;
+      for (const st of crowdSeats) {
+        const g = st.member && st.member.group; if (!g) continue;
+        if (g.position.z > PHOTO_ROW.z - ASIDE.behind) continue;                 // (in front of the row: the kneelers)
+        const a = ang(g.position.x, g.position.z); if (a < lo || a > hi) continue;
+        const x = PHOTO_CAM.x + ASIDE.dx + asideOf.length * ASIDE.gap, z = PHOTO_CAM.z + ASIDE.dz;
+        asideOf.push([g, g.position.x, g.position.z, g.rotation.y]);
+        g.position.x = x; g.position.z = z; g.rotation.y = faceTo(x, z, 0, PHOTO_ROW.z);
+      }
+    }
     FILMS.between = {
       begin(api) { if (api.handsRoot) api.handsRoot.visible = false; FL.shot = ''; FL.bai = false; },
       stage(n) {
@@ -274,10 +296,11 @@
           row.forEach((P, i) => put(P, PHOTO_ROW.x0 + i * PHOTO_ROW.dx, PHOTO_ROW.z, 0));
           put(cast.ton, PHOTO.x0 + 12 * PHOTO.dx + 0.06, PHOTO.z + 0.04, -0.1); put(cast.aunt, PHOTO_CAM.x, PHOTO_CAM.z, faceTo(PHOTO_CAM.x, PHOTO_CAM.z, 0, PHOTO.z));
           for (const P of [cast.ym, cast.goA, cast.goB]) if (P.ready) P.group.visible = false;
-          ymBai.visible = false; myBai.visible = false; castSolid();
+          ymBai.visible = false; myBai.visible = false; stepAside(true); castSolid();
           return;
         }
         /* (everyone the photograph stood up or moved is back where the days keep him, and at rest) */
+        stepAside(false);
         for (const P of row) { if (P.home) put(P, P.home.x, P.home.z, P.home.ry); if (P.ready) rest(P, 0); }
         for (const P of [cast.ton, cast.aunt]) { put(P, P.home.x, P.home.z, P.home.ry); if (P.ready) rest(P, 0); }
         myBai.visible = false;
@@ -570,7 +593,7 @@
     }
     function endTidy() {
       handsFilm(0); handStill(0); filmChill(0); filmBai(false); filmCarry(handMat, handMatHolder, false); youGlowAt(0, 0, null, null);
-      myArmsAt(null, null, 0, null, 0, 0, 0);
+      myArmsAt(null, null, 0, null, 0, 0, 0); myOpenHand(null, null, 0, 0);
       for (const P of cast.wait) if (P.ready) P.group.visible = false;
       for (const b of waitBai) b.visible = false;
       matsG.visible = false; auraAt(0, 0); filmBurstsEnd();
@@ -616,7 +639,9 @@
          given nearly a phone's lens: at 50 it cut his brow at the top and his hands at the foot: photographed. And at 33
          and 30 his face from 1.3 m was brow to lip) */
       const [fP, fD] = lensAt(tc, [[0, 58, 46], [T.take + 3.3, 66, 64], [T.glow, 66, 64], [T.q3z1 + SECS['q3z1'], 60, 58], [T.give + 3.2, 60, 58], [T.ph3z2, 44, 40],
-                                   [T.ph3z2 + SECS['ph3z2'] + 0.9, 40, 36], [T.q3K1 + 3.5, 48, 44], [T.black, 66, 62]]);
+                                   [T.ph3z2 + SECS['ph3z2'] + 0.9, 40, 36], [T.q3K1 + 3.5, 48, 44], [T.palm + 1.7, 46, 42], [T.black + 1.8, 40, 36]]);
+      /* (v26.12: no longer widened to the whole of it at the last: held on his open hand, and drawn in on it a little as the
+         line ends and the black comes) */
       /* THE LIGHT */
       /* (v26.8: the close's breath is no longer played, but shown (docs/V26.8-E4C3-NOTES.md M): his own light comes up on
          him and his bai sri while his hands shake, the world opening a little round him, and lets go as he says he shut
@@ -651,6 +676,11 @@
          close's first black they are drawn once behind his eyes (`held`), so their shading is built where nothing is seen */
       const kMy = bump(tc, T.glow - 0.9, T.give + 0.1, 0.5, 0.5);
       myArmsAt(api || FL.api, eye, yF, tabled ? null : bc, kMy, kG, tc, tc < 0.8, kUp);
+      /* ONE PETAL LEFT ON HIS OPEN HAND (v26.12, his answer of 14 Nov, "Petal on his hand": c_zfx.js myOpenHand): his right
+         hand comes up open before him with one of his teacher's petals on it as he says the teacher could guide him; the
+         black comes down on it */
+      const kOpen = smo(sgk(tc, T.palm - 0.5, T.palm + 1.3));
+      myOpenHand(api || FL.api, eye, yF, kOpen);
       /* GRANDMASTER PHO: he speaks; both his hands on the bowl; a handful of petals; his hands on it again to take it */
       phoFace(); phoTalkFace();
       let kTalk = 0;
@@ -682,7 +712,9 @@
       const kHold = bump(tc, T.glow - 0.4, T.give + 0.9, 1.6, 1.2);
       const pHold = aimOf(eye, [eye[0] + fx * HOLD.d, eye[1] - HOLD.y + HOLD.mid, eye[2] + fz * HOLD.d])[1];
       const ya = yawMix(yawMix(yF, yB, kB), yTb, kTb), pi = lp(lp(lp(lp(pWide, pFace, kFace) - kBow, pHold, kHold), pB, kB), pTb, kTb);
-      eyes(eye, ya, pi, fP, fD);
+      /* (v26.12: and down to his open hand, where it is held, for the line's last words and the black) */
+      const kPalm = smo(sgk(tc, T.palm - 0.1, T.palm + 1.7)), [yPm, pPm] = aimOf(eye, openHandAt(eye, yF));
+      eyes(eye, yawMix(ya, yPm, kPalm), lp(pi, pPm, kPalm), fP, fD);
     }
 
     FILMS.A = {

@@ -414,6 +414,31 @@
         extrasHeard.toss++; });
       return true;
     }
+    /* (v26.12: "Add a second") AS HE RAISES HIS BAI SRI AT THE TABLES the children who followed him there (c_crowd.js
+       kidsFollow) throw their handfuls up over him, to fall before him past his eyes: the girl, and the boy a moment after
+       her, each from its own jump (JUMP, BOYJUMP), each a third of a master's handful from the children's pool, lying on
+       the gravel and going into it as theirs do; her laugh with it. A child not with him (a Continue into the phase: they
+       are on their chase), or not standing still within four metres, throws nothing: a throw from out of reach is not one */
+    const TABLE_TOSS = { ahead: 0.7, reach: 4.0, gap: 0.65, first: 0.15 };
+    function kidsTables(run) {
+      if (!kidsDir.follow) return false;
+      const fx = -Math.sin(yaw.rotation.y), fz = -Math.cos(yaw.rotation.y), to = [yaw.position.x + fx * TABLE_TOSS.ahead, yaw.position.z + fz * TABLE_TOSS.ahead];
+      let n = 0;
+      for (const K of kids) {
+        const P = K.P, g = P.group.position;
+        if (!P.ready || !P.group.visible || K.moving || !P.acts.Happy_jump || Math.hypot(yaw.position.x - g.x, yaw.position.z - g.z) > TABLE_TOSS.reach) continue;
+        const J = K.i ? BOYJUMP : JUMP, i = n++;
+        after(TABLE_TOSS.first + i * TABLE_TOSS.gap, () => { if (!live(run) || !P.group.visible) return;
+          span(P, 'Happy_jump', J.t0, J.t1, J.secs, { fade: 0.22, then: (Q) => rest(Q, 0.35) });
+          after(J.let, () => { if (!live(run) || !P.group.visible) return;
+            petalBurst([g.x, J.hand || 1.62, g.z], to, dayClock.t, { r: 0.6, up: 1.35, n: 44, s: 0.03, seed: 6203 + 17 * K.i, pool: kidPool, sink: 18 });
+            if (worldSfx && !(soundOff && soundOff())) { const pan = panAt(g.x, g.z);
+              worldSfx('x3petals', 0.3, K.i ? 1.12 : 1.06, pan);
+              if (!K.i && worldSfx('x3os1', 0.3, 1, pan)) { ambLast = 'x3os1'; ambBusy = dayClock.t + 3.6; extrasHeard.laugh++; } }
+            extrasHeard.toss++; }); });
+      }
+      return n > 0;
+    }
     function tonTalk() {
       if (phase !== 'arrive' || play.busy) return false;
       const run = play.run; play.busy = true; objectiveFor('arrive');
@@ -444,7 +469,7 @@
         const tossed = kidsToss(run);
         if (tossed) { const g = kids[0].P.group.position; lookAt({ x: g.x, y: 1.3, z: g.z }, 0.75); }
         after(tossed ? 1.75 : 0, () => { if (!live(run)) return; play.busy = false; play.tonGive = null; if (kit) kit.root(false);
-          if (!play.bai) { myBai.visible = false; baiHands(true, { from: -1, p: 0, secs: 0.5 }); } kidsDir.hold = false; setPhase('baisri'); }); });
+          if (!play.bai) { myBai.visible = false; baiHands(true, { from: -1, p: 0, secs: 0.5 }); } kidsDir.hold = false; setPhase('baisri'); kidsFollow(true); }); });
       return true;
     }
     /* THE OFFERING TABLES: he raises the bai sri in both hands to the small Buddha at the centre of the wheel, and bows his head */
@@ -453,10 +478,10 @@
       const run = play.run; play.busy = true; objectiveFor('baisri');
       if (kit) kit.root(true);
       lookAt(BUDDHA, 1.1, () => { if (!live(run)) return;
-        baiRaise(1, 1.4);
+        baiRaise(1, 1.4); kidsTables(run);
         after(1.5, () => { if (!live(run)) return; play.bow = { t: 0, prev: 0, n: 1, secs: 3.4, depth: 0.5, run, sound: '', done: () => {
           baiRaise(0, 1.3);
-          after(1.2, () => { if (!live(run)) return; if (kit) kit.root(false); play.busy = false; tonToPlace(); setPhase('tables'); }); } }; }); });
+          after(1.2, () => { if (!live(run)) return; if (kit) kit.root(false); play.busy = false; tonToPlace(); kidsForm('arrive'); setPhase('tables'); }); } }; }); });
       return true;
     }
     /* Ton goes to his group while the player's eyes are on the tables (a change made where no shot can see it: v24.12) */
@@ -992,7 +1017,7 @@
         if (play.checked) { betweenBegin(); return; }
         checkBegin(true); return; }
       setFormation('arrive');                                                         // (and the dancers begin their loop again: c_crowd.js dancersForm, which setFormation calls)
-      if (R.p === 'baisri') { tonHome(); myBai.visible = false; baiHands(true, { p: 0, secs: 0.01 }); setPhase('baisri', { complete: false }); return; }
+      if (R.p === 'baisri') { tonHome(); myBai.visible = false; baiHands(true, { p: 0, secs: 0.01 }); setPhase('baisri', { complete: false }); kidsFollow(true); return; }
       tonToPlace();
       if (R.p === 'tables') { myBai.visible = false; baiHands(true, { p: 0, secs: 0.01 }); zoneAt(PLACE); setPhase('tables', { complete: false }); return; }
       /* place */

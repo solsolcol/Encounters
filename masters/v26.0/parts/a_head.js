@@ -209,6 +209,9 @@
      "Tomorrow we begin."; the case file's last words */
   const CLOSE = tl(0, [[0.7], ['@take'], [3.5], ['ph3z0', 0.8], ['ph3z1', 0.9], ['@hands'], [3.0], ['@petals'], [3.8], ['@glow'], [4.8], ['q3z1', 1.0],
                        ['@give'], [4.6], ['ph3z2', 1.8], ['q3K1', 1.2], ['@black'], [1.8]]);
+  /* (v26.12, "Petal on his hand": his open hand comes up as he says the teacher could guide him "to the real answers", and
+     his eyes are on it for "and I will always be grateful for it"; inside the line, so nothing in the film moves) */
+  CLOSE.palm = CLOSE.q3K1 + 3.6;
 
   /* THE OPENING FILM, THE QUESTIONS (§4.0): the forum's thread on his laptop, and his answer typed; his notebook, the
      three questions underlined as he asks them, and the page turned; what he takes, and it packed; then the turf */

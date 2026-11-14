@@ -209,6 +209,9 @@
      "Tomorrow we begin."; the case file's last words */
   const CLOSE = tl(0, [[0.7], ['@take'], [3.5], ['ph3z0', 0.8], ['ph3z1', 0.9], ['@hands'], [3.0], ['@petals'], [3.8], ['@glow'], [4.8], ['q3z1', 1.0],
                        ['@give'], [4.6], ['ph3z2', 1.8], ['q3K1', 1.2], ['@black'], [1.8]]);
+  /* (v26.12, "Petal on his hand": his open hand comes up as he says the teacher could guide him "to the real answers", and
+     his eyes are on it for "and I will always be grateful for it"; inside the line, so nothing in the film moves) */
+  CLOSE.palm = CLOSE.q3K1 + 3.6;
 
   /* THE OPENING FILM, THE QUESTIONS (§4.0): the forum's thread on his laptop, and his answer typed; his notebook, the
      three questions underlined as he asks them, and the page turned; what he takes, and it packed; then the turf */
@@ -4284,7 +4287,7 @@
     const _ko = { x: 0, z: 0, hx: 0, hz: 1 }, _ko2 = { x: 0, z: 0, hx: 0, hz: 1 };
     function kidsForm(name) {
       const run = name === 'arrive';
-      kidsDir.ph = run ? 'runW' : ''; kidsDir.t = 0; kidsDir.hold = false; kidsDir.toss = null; kidsDir.stops = 0;
+      kidsDir.ph = run ? 'runW' : ''; kidsDir.t = 0; kidsDir.hold = false; kidsDir.toss = null; kidsDir.stops = 0; kidsDir.follow = null;
       for (const K of kids) { const P = K.P; K.v = 0; K.moving = false; K.looks = false; P.noBlock = run; P.rate = 1;
         whenReady(P, () => { gaze(P, null); rest(P, 0); });
         if (run) { K.s = Math.min(kidPath.L, kidPath.L * 0.62 + K.i * 1.5); K.to = K.i * KID.gap; K.wait = 0.15 + K.i * 0.35;
@@ -4293,6 +4296,7 @@
     }
     function kidsTick(wdt, st) {
       const D = kidsDir; if (!D.ph || !dayOne.visible) return;
+      if (D.follow) { kidsFollowTick(wdt, st); return; }
       /* (not drawn in a film of the gathering; held as they are under a panel, their running stopped with them) */
       const drawn = st !== 'cine';
       for (const K of kids) { const P = K.P; if (P.ready && P.group.visible !== drawn) { P.group.visible = drawn; P.hidden = !drawn; } }
@@ -4343,6 +4347,58 @@
         const order = kids.slice().sort((p, q) => east ? q.s - p.s : p.s - q.s);
         order[0].to = east ? kidPath.L : 0; order[0].wait = 0;
         order[1].to = east ? kidPath.L - KID.gap : KID.gap; order[1].wait = KID.lag; }
+    }
+    /* (v26.12, Chad, 14 Nov 2026, asked whether the children should throw a second handful as he reaches the offering
+       tables: "Add a second") THE CHILDREN FOLLOW HIM TO THE TABLES: once the bai sri is in his hands (`baisri`) the two
+       leave their chase and run after him along the very way he walks (a trail of where he has been: they go only where he
+       went, so through nobody), the girl FOLLOW.girl metres behind him along it and the boy FOLLOW.boy, stopping there
+       when he stops and turning to him; at the tables they throw their handfuls over him as he raises his bai sri
+       (d_play.js kidsTables), and after his bow they are back on their chase while his eyes are on the tables (a change
+       no shot sees: v24.12). Their state is a run's: begun by kidsFollow, cleared by every setFormation (kidsForm) */
+    const FOLLOW = { girl: 1.7, boy: 2.5, crumb: 0.25, V: 2.6 };
+    function kidsFollow(on) {
+      const D = kidsDir;
+      if (!on) { D.follow = null; return; }
+      if (formNow !== 'arrive' || !D.ph) return;
+      D.follow = { crumbs: [[yaw.position.x, yaw.position.z]] }; D.hold = true; D.toss = null;
+      for (const K of kids) { K.ft = null; K.fs = 0; K.v = 0; }
+    }
+    function kidsFollowTick(wdt, st) {
+      const F = kidsDir.follow, drawn = st !== 'cine';
+      for (const K of kids) { const P = K.P; if (P.ready && P.group.visible !== drawn) { P.group.visible = drawn; P.hidden = !drawn; } }
+      if (st !== 'play') { for (const K of kids) if (K.moving) K.P.rate = 0; return; }
+      /* his trail: a crumb each FOLLOW.crumb metres he moves, given to both children's own trails (each begins where that
+         child stood when he set off) */
+      const hx = yaw.position.x, hz = yaw.position.z, last = F.crumbs[F.crumbs.length - 1];
+      const crumb = Math.hypot(hx - last[0], hz - last[1]) >= FOLLOW.crumb;
+      if (crumb) F.crumbs.push([hx, hz]);
+      for (const K of kids) {
+        const P = K.P; if (!P.ready) continue;
+        if (!K.ft) { const g = P.group.position; K.ft = { pts: [[g.x, g.z]], L: [0] }; K.fs = 0; }
+        const T = K.ft;
+        if (crumb) { const q0 = T.pts[T.pts.length - 1]; T.pts.push([hx, hz]); T.L.push(T.L[T.L.length - 1] + Math.hypot(hx - q0[0], hz - q0[1])); }
+        const n = T.pts.length, q = T.pts[n - 1], end = T.L[n - 1] + Math.hypot(hx - q[0], hz - q[1]);
+        const want = Math.max(K.fs, end - (K.i ? FOLLOW.boy : FOLLOW.girl)), left = want - K.fs;
+        const v = left > 0.02 ? Math.min(FOLLOW.V, Math.sqrt(2 * KID.acc * left)) : 0;
+        K.v = v > K.v ? Math.min(v, K.v + KID.acc * wdt) : Math.max(v, K.v - KID.acc * 1.6 * wdt);
+        K.fs = Math.min(want, K.fs + K.v * wdt);
+        /* where that is along the trail (past its last crumb, on the way to him) and the way it runs there */
+        let x, z, dx = 0, dz = 1;
+        if (K.fs >= T.L[n - 1]) { const d = Math.max(1e-6, end - T.L[n - 1]), k = Math.min(1, (K.fs - T.L[n - 1]) / d);
+          x = lp(q[0], hx, k); z = lp(q[1], hz, k); dx = (hx - q[0]) / d; dz = (hz - q[1]) / d; }
+        else { let i = 1; while (i < n - 1 && T.L[i] < K.fs) i++;
+          const a = T.pts[i - 1], b0 = T.pts[i], dl = Math.max(1e-6, T.L[i] - T.L[i - 1]), k = (K.fs - T.L[i - 1]) / dl;
+          x = lp(a[0], b0[0], k); z = lp(a[1], b0[1], k); dx = (b0[0] - a[0]) / dl; dz = (b0[1] - a[1]) / dl; }
+        const mv = K.v > 0.35;
+        if (mv !== K.moving) { K.moving = mv; take(P, mv ? K.run : 'Idle_3', mv ? 0.18 : 0.3); if (!mv) P.rate = 1; }
+        if (K.moving) P.rate = Math.max(0.6, Math.min(1.3, K.v / ((P.pace && P.pace[K.run]) || KID.V)));
+        /* running, a child faces the way it runs; stopped, it turns to him */
+        const ry = K.v > 0.05 ? Math.atan2(dx, dz) : Math.atan2(hx - x, hz - z);
+        const dq = Math.atan2(Math.sin(ry - K.ry), Math.cos(ry - K.ry)); K.ry += Math.max(-7 * wdt, Math.min(7 * wdt, dq));
+        P.group.position.set(x, 0, z); P.group.rotation.y = K.ry;
+        const looks = !K.moving && Math.hypot(hx - x, hz - z) < 3.2;
+        if (looks !== K.looks) { K.looks = looks; gaze(P, looks ? 'lens' : null, { reach: 0.9, secs: 0.7 }); }
+      }
     }
     /* THE CHILDREN COME TO SEE (the plan's §3.7, picture 2: "a handful of petals thrown beside him (play)"). When he
        speaks to Ton they run to their place by Ton's table, wherever their chase has them, and stay there while the two
@@ -4711,7 +4767,7 @@
        photograph 5 (baiGrip 'under'). `myArmsAt(api, eye, ya, c, k, glow, t)`: the film's api (the hands' model is the
        engine's, api.rightHand()), his eye, the way his body faces (a heading as eyes() takes it), the bai sri's foot in
        the world (or null), how far his hands are on it (0 under the frame, 1 on it), the glow, the film's clock */
-    const MYARMS = { P: null, made: false, G: null, halos: [] };
+    const MYARMS = { P: null, made: false, G: null, halos: [], left: null, petal: null };
     const SHOULD = { drop: 0.21, back: 0.05, reach: 0.6, lean: 0.16 };   // (his shoulders' middle against his eye; how far he leans to a bowl beyond reach)
     /* (MYGRIP: each finger's two nearer joints bent so far round the bowl's curve, the end joint 0.7 of it: c_cast.js
        curlFingers. MYARMS_SHOW: how far his hands must be on their way to the bowl before they are drawn) */
@@ -4758,6 +4814,7 @@
         const bl = bone[nm.slice(0, -1) + 'L'], br = bone[nm]; if (bl) bl.quaternion.set(br.quaternion.x, -br.quaternion.y, -br.quaternion.z, br.quaternion.w); }
       const hm = new THREE.SpriteMaterial({ map: tex(makeGlow(THREE, cnv)), color: 0xfff7ea, transparent: true, opacity: 0, depthTest: false, depthWrite: false, fog: false, blending: THREE.AdditiveBlending }); mats.push(hm);
       for (let i = 0; i < 2; i++) { const sp = new THREE.Sprite(hm); sp.renderOrder = 998; sp.visible = false; world.add(sp); MYARMS.halos.push(sp); }
+      MYARMS.left = bone.upper_armL || null;                                  // (v26.12: shrunk away again while his right hand is open alone: myOpenHand)
       MYARMS.G = G; MYARMS.P = P; return P;
     }
     /* HIS GRIP, as his photograph 7 holds a bai sri up before the eyes: each palm on the bowl's lower body under its swell,
@@ -4790,6 +4847,7 @@
       const P = drawn ? myArmsMake(api) : MYARMS.P;
       if (!P || !drawn) { if (MYARMS.G) MYARMS.G.visible = false; for (const sp of MYARMS.halos) sp.visible = false; return; }
       armsBack(P);
+      if (MYARMS.left) MYARMS.left.scale.setScalar(1);
       const G = MYARMS.G, fx = -Math.sin(ya), fz = -Math.cos(ya), lx = -Math.cos(ya), lz = Math.sin(ya);
       /* (held and not on the bowl: drawn 1.2 m behind his eyes, where no look of his can see them) */
       if (!(k > MYARMS_SHOW)) { G.position.set(eye[0] - fx * 1.2, eye[1] - SHOULD.drop, eye[2] - fz * 1.2); G.rotation.set(0, ya + Math.PI, 0); G.visible = true;
@@ -4812,10 +4870,62 @@
       const on = glow > 0.002, br = 0.84 + 0.16 * Math.sin(t * 2 * Math.PI / 1.7);
       MYARMS.halos.forEach((sp, i) => { sp.visible = on; if (!on) return; const q = palm[i ? 'R' : 'L']; sp.position.set(q[0], q[1], q[2]); sp.scale.set(0.3, 0.3, 1); sp.material.opacity = 0.42 * glow * br; });
     }
+    /* (v26.12, his answer of 14 Nov to the close's last image, "Petal on his hand") ONE PETAL LEFT ON HIS OPEN HAND, then
+       black: one of the marigold petals his teacher threw over him, kept on his palm. His right hand, open and palm up, held
+       before his lower chest as a man holds a hand to look into it, LEARNED from two reference pictures before it was built
+       (masters/v26.12/make.sh: from his own eyes, and from his side): the upper arm hanging close to his side, the elbow
+       bent about 120 degrees, the forearm rising some 30 degrees forward, the wrist straight but for a little lift (the
+       fingers rise some 15 degrees, the forearm 30), the fingers on along the forearm's line and some 20 degrees in toward
+       his middle, gently curved, the thumb relaxed out from the palm; the palm some 0.42 m from his eye, a little right of
+       his middle. The left arm is shrunk away as the engine shrinks it in play: it is in no picture of this.
+       OPENHAND: the palm's middle forward of his eye, below it, to his right; the fingers' way (in, up, against forward 1);
+       the palm's facing (back toward him, in toward his middle, against up 1); the elbow's side (out, down, aft: the
+       upper arm hanging); the fingers' curl at each joint (radians); the petal's length, how far it lies off the palm and
+       how far its length is turned from the fingers' line */
+    const OPENHAND = { fwd: 0.27, down: 0.32, right: 0.085, fIn: 0.36, fUp: 0.27, nBack: 0.27, nIn: 0.18, out: 0.1, edown: 0.5, aft: 0.06,
+                       curl: 0.24, petal: 0.032, lift: 0.004, turn: 0.7 };
+    const _ohP = new THREE.Vector3(), _ohQ = new THREE.Quaternion(), _ohF = new THREE.Vector3(), _ohN = new THREE.Vector3(), _ohA = new THREE.Vector3(),
+          _ohY = new THREE.Vector3(), _ohS = new THREE.Vector3(), _ohM = new THREE.Matrix4();
+    /* (where the palm is held, for his eyes too: they look at where it is held, never chase it as it comes up) */
+    function openHandAt(eye, ya) {
+      const fx = -Math.sin(ya), fz = -Math.cos(ya), rx = Math.cos(ya), rz = -Math.sin(ya);
+      return [eye[0] + fx * OPENHAND.fwd + rx * OPENHAND.right, eye[1] - OPENHAND.down, eye[2] + fz * OPENHAND.fwd + rz * OPENHAND.right];
+    }
+    /* `myOpenHand(api, eye, ya, k)`: k 0 below the frame's foot (nothing drawn: his arms are then myArmsAt's), 1 held open
+       before him. Called after myArmsAt in the same frame, which has hidden his arms by then once the bowl is given */
+    function myOpenHand(api, eye, ya, k) {
+      if (!eye || !(k > 0.001)) { if (MYARMS.petal) MYARMS.petal.visible = false; return; }
+      const P = myArmsMake(api); if (!P) return;
+      armsBack(P);
+      if (MYARMS.left) MYARMS.left.scale.setScalar(1e-4);
+      for (const sp of MYARMS.halos) sp.visible = false;
+      const G = MYARMS.G, fx = -Math.sin(ya), fz = -Math.cos(ya), lx = -Math.cos(ya), lz = Math.sin(ya);
+      G.position.set(eye[0] - fx * SHOULD.back, eye[1] - SHOULD.drop, eye[2] - fz * SHOULD.back); G.rotation.set(0, ya + Math.PI, 0); G.visible = true; G.updateMatrixWorld(true);
+      /* (from under the frame, below his chest and to his right, as myArmsAt brings his hands up, eased to where it is held) */
+      const ke = smo(c01(k)), at = openHandAt(eye, ya), lo = [eye[0] + fx * 0.3 - lx * 0.17, eye[1] - 0.62, eye[2] + fz * 0.3 - lz * 0.17];
+      const pt = [lp(lo[0], at[0], ke), lp(lo[1], at[1], ke), lp(lo[2], at[2], ke)];
+      const f = [fx + lx * OPENHAND.fIn, OPENHAND.fUp, fz + lz * OPENHAND.fIn], n = [-fx * OPENHAND.nBack + lx * OPENHAND.nIn, 1, -fz * OPENHAND.nBack + lz * OPENHAND.nIn];
+      handTo(P, 'R', pt, f, n, 1, { out: OPENHAND.out, down: OPENHAND.edown, aft: OPENHAND.aft });
+      curlFingers(P, 'R', OPENHAND.curl);
+      /* THE PETAL: one of the handful's own (the same picture, the same marigold, the same shading: a copy of the handfuls'
+         drawing, so no new program is built on screen), lying on the middle of his palm, from the hand as it is drawn */
+      if (!MYARMS.petal) { const im = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1), petalAirMat, 1); im.frustumCulled = false; im.count = 1;
+        im.setColorAt(0, new THREE.Color().setHSL(0.12, 0.98, 0.53, THREE.SRGBColorSpace)); im.instanceColor.needsUpdate = true; world.add(im); MYARMS.petal = im; }
+      const a = armsOf(P) && armsOf(P).R; if (!a) { MYARMS.petal.visible = false; return; }
+      a.hand.updateWorldMatrix(true, false); a.hand.getWorldPosition(_ohP); a.hand.getWorldQuaternion(_ohQ);
+      _ohF.copy(a.fL).applyQuaternion(_ohQ).normalize(); _ohN.copy(a.nL).applyQuaternion(_ohQ).normalize();
+      _ohP.addScaledVector(_ohF, a.palm * 0.95).addScaledVector(_ohN, 0.022 + OPENHAND.lift);
+      _ohA.copy(_ohF).applyAxisAngle(_ohN, OPENHAND.turn); _ohY.crossVectors(_ohN, _ohA).normalize(); _ohA.crossVectors(_ohY, _ohN).normalize();
+      _ohM.makeBasis(_ohA, _ohY, _ohN).scale(_ohS.set(OPENHAND.petal, OPENHAND.petal, 1)).setPosition(_ohP);
+      MYARMS.petal.setMatrixAt(0, _ohM); MYARMS.petal.instanceMatrix.needsUpdate = true; MYARMS.petal.visible = true;
+    }
     /* (his arms are a copy of the engine's own hand: its shape and its pictures are the engine's, drawn in every
        chapter's play, and never this chapter's to dispose. dispose() takes them out of the world before it disposes
        what is left there, and gives back only what this copy made: its materials and its bone sheet) */
     function myArmsDrop() {
+      /* (the petal on his palm: its own sheet of places and its own square; its drawing is the handfuls', never this one's to dispose) */
+      if (MYARMS.petal) { const im = MYARMS.petal; if (im.parent) im.parent.remove(im); im.geometry.dispose(); im.dispose(); MYARMS.petal = null; }
+      MYARMS.left = null;
       const G = MYARMS.G; if (!G) return;
       if (G.parent) G.parent.remove(G);
       G.traverse(o => { if (o.isSkinnedMesh && o.skeleton) o.skeleton.dispose(); if (o.isMesh) for (const m of [].concat(o.material)) m.dispose(); });
@@ -5605,6 +5715,31 @@
         extrasHeard.toss++; });
       return true;
     }
+    /* (v26.12: "Add a second") AS HE RAISES HIS BAI SRI AT THE TABLES the children who followed him there (c_crowd.js
+       kidsFollow) throw their handfuls up over him, to fall before him past his eyes: the girl, and the boy a moment after
+       her, each from its own jump (JUMP, BOYJUMP), each a third of a master's handful from the children's pool, lying on
+       the gravel and going into it as theirs do; her laugh with it. A child not with him (a Continue into the phase: they
+       are on their chase), or not standing still within four metres, throws nothing: a throw from out of reach is not one */
+    const TABLE_TOSS = { ahead: 0.7, reach: 4.0, gap: 0.65, first: 0.15 };
+    function kidsTables(run) {
+      if (!kidsDir.follow) return false;
+      const fx = -Math.sin(yaw.rotation.y), fz = -Math.cos(yaw.rotation.y), to = [yaw.position.x + fx * TABLE_TOSS.ahead, yaw.position.z + fz * TABLE_TOSS.ahead];
+      let n = 0;
+      for (const K of kids) {
+        const P = K.P, g = P.group.position;
+        if (!P.ready || !P.group.visible || K.moving || !P.acts.Happy_jump || Math.hypot(yaw.position.x - g.x, yaw.position.z - g.z) > TABLE_TOSS.reach) continue;
+        const J = K.i ? BOYJUMP : JUMP, i = n++;
+        after(TABLE_TOSS.first + i * TABLE_TOSS.gap, () => { if (!live(run) || !P.group.visible) return;
+          span(P, 'Happy_jump', J.t0, J.t1, J.secs, { fade: 0.22, then: (Q) => rest(Q, 0.35) });
+          after(J.let, () => { if (!live(run) || !P.group.visible) return;
+            petalBurst([g.x, J.hand || 1.62, g.z], to, dayClock.t, { r: 0.6, up: 1.35, n: 44, s: 0.03, seed: 6203 + 17 * K.i, pool: kidPool, sink: 18 });
+            if (worldSfx && !(soundOff && soundOff())) { const pan = panAt(g.x, g.z);
+              worldSfx('x3petals', 0.3, K.i ? 1.12 : 1.06, pan);
+              if (!K.i && worldSfx('x3os1', 0.3, 1, pan)) { ambLast = 'x3os1'; ambBusy = dayClock.t + 3.6; extrasHeard.laugh++; } }
+            extrasHeard.toss++; }); });
+      }
+      return n > 0;
+    }
     function tonTalk() {
       if (phase !== 'arrive' || play.busy) return false;
       const run = play.run; play.busy = true; objectiveFor('arrive');
@@ -5635,7 +5770,7 @@
         const tossed = kidsToss(run);
         if (tossed) { const g = kids[0].P.group.position; lookAt({ x: g.x, y: 1.3, z: g.z }, 0.75); }
         after(tossed ? 1.75 : 0, () => { if (!live(run)) return; play.busy = false; play.tonGive = null; if (kit) kit.root(false);
-          if (!play.bai) { myBai.visible = false; baiHands(true, { from: -1, p: 0, secs: 0.5 }); } kidsDir.hold = false; setPhase('baisri'); }); });
+          if (!play.bai) { myBai.visible = false; baiHands(true, { from: -1, p: 0, secs: 0.5 }); } kidsDir.hold = false; setPhase('baisri'); kidsFollow(true); }); });
       return true;
     }
     /* THE OFFERING TABLES: he raises the bai sri in both hands to the small Buddha at the centre of the wheel, and bows his head */
@@ -5644,10 +5779,10 @@
       const run = play.run; play.busy = true; objectiveFor('baisri');
       if (kit) kit.root(true);
       lookAt(BUDDHA, 1.1, () => { if (!live(run)) return;
-        baiRaise(1, 1.4);
+        baiRaise(1, 1.4); kidsTables(run);
         after(1.5, () => { if (!live(run)) return; play.bow = { t: 0, prev: 0, n: 1, secs: 3.4, depth: 0.5, run, sound: '', done: () => {
           baiRaise(0, 1.3);
-          after(1.2, () => { if (!live(run)) return; if (kit) kit.root(false); play.busy = false; tonToPlace(); setPhase('tables'); }); } }; }); });
+          after(1.2, () => { if (!live(run)) return; if (kit) kit.root(false); play.busy = false; tonToPlace(); kidsForm('arrive'); setPhase('tables'); }); } }; }); });
       return true;
     }
     /* Ton goes to his group while the player's eyes are on the tables (a change made where no shot can see it: v24.12) */
@@ -6183,7 +6318,7 @@
         if (play.checked) { betweenBegin(); return; }
         checkBegin(true); return; }
       setFormation('arrive');                                                         // (and the dancers begin their loop again: c_crowd.js dancersForm, which setFormation calls)
-      if (R.p === 'baisri') { tonHome(); myBai.visible = false; baiHands(true, { p: 0, secs: 0.01 }); setPhase('baisri', { complete: false }); return; }
+      if (R.p === 'baisri') { tonHome(); myBai.visible = false; baiHands(true, { p: 0, secs: 0.01 }); setPhase('baisri', { complete: false }); kidsFollow(true); return; }
       tonToPlace();
       if (R.p === 'tables') { myBai.visible = false; baiHands(true, { p: 0, secs: 0.01 }); zoneAt(PLACE); setPhase('tables', { complete: false }); return; }
       /* place */
@@ -6524,6 +6659,28 @@
        of his frame on both screens (she is heard, not seen) */
     const PHOTO_ROW = { x0: -1.32, dx: 0.66, z: PHOTO.z - 0.92, hold: [9.0, 9.0, null, 4.0, 7.0] }, PHOTO_CAM = { x: 0, z: PHOTO.z + 5.5 };
     function hipsTo(P, x, z) { if (!P || !P.ready || !P.hips) return; P.group.updateWorldMatrix(true, true); P.hips.getWorldPosition(_ffv); P.group.position.x += x - _ffv.x; P.group.position.z += z - _ffv.z; }
+    /* (v26.12, Chad, 14 Nov 2026, asked whether a devotee standing 2.5 m behind the five, who on a desktop read as a sixth
+       man in the row, should be moved: "Move him (Recommended)") WHOEVER WOULD STAND IN THE ROW STEPS ASIDE: anyone the
+       afternoon's seats put behind the row and inside the five's span as the photograph's lens (BW.eye1) sees it, the
+       span widened by a master's half-width each side, stands for this one shot behind the woman who takes it, out of the
+       frame on both screens, turned to the row; any other shot puts him back exactly where his seat had him. (Measured on
+       v26.11: one man, the standing e4devd 9.42 m from the lens, between the hermit in the yellow shawl and the red master) */
+    const ASIDE = { dx: 1.0, dz: 1.2, gap: 0.7, edge: 0.04, behind: 0.3 }, asideOf = [];
+    function stepAside(on) {
+      while (asideOf.length) { const [g, x, z, ry] = asideOf.pop(); g.position.x = x; g.position.z = z; g.rotation.y = ry; }
+      if (!on) return;
+      const E = BW.eye1, ang = (x, z) => Math.atan2(z - E[2], x - E[0]);
+      const a0 = ang(PHOTO_ROW.x0, PHOTO_ROW.z), a1 = ang(PHOTO_ROW.x0 + 4 * PHOTO_ROW.dx, PHOTO_ROW.z);
+      const lo = Math.min(a0, a1) - ASIDE.edge, hi = Math.max(a0, a1) + ASIDE.edge;
+      for (const st of crowdSeats) {
+        const g = st.member && st.member.group; if (!g) continue;
+        if (g.position.z > PHOTO_ROW.z - ASIDE.behind) continue;                 // (in front of the row: the kneelers)
+        const a = ang(g.position.x, g.position.z); if (a < lo || a > hi) continue;
+        const x = PHOTO_CAM.x + ASIDE.dx + asideOf.length * ASIDE.gap, z = PHOTO_CAM.z + ASIDE.dz;
+        asideOf.push([g, g.position.x, g.position.z, g.rotation.y]);
+        g.position.x = x; g.position.z = z; g.rotation.y = faceTo(x, z, 0, PHOTO_ROW.z);
+      }
+    }
     FILMS.between = {
       begin(api) { if (api.handsRoot) api.handsRoot.visible = false; FL.shot = ''; FL.bai = false; },
       stage(n) {
@@ -6537,10 +6694,11 @@
           row.forEach((P, i) => put(P, PHOTO_ROW.x0 + i * PHOTO_ROW.dx, PHOTO_ROW.z, 0));
           put(cast.ton, PHOTO.x0 + 12 * PHOTO.dx + 0.06, PHOTO.z + 0.04, -0.1); put(cast.aunt, PHOTO_CAM.x, PHOTO_CAM.z, faceTo(PHOTO_CAM.x, PHOTO_CAM.z, 0, PHOTO.z));
           for (const P of [cast.ym, cast.goA, cast.goB]) if (P.ready) P.group.visible = false;
-          ymBai.visible = false; myBai.visible = false; castSolid();
+          ymBai.visible = false; myBai.visible = false; stepAside(true); castSolid();
           return;
         }
         /* (everyone the photograph stood up or moved is back where the days keep him, and at rest) */
+        stepAside(false);
         for (const P of row) { if (P.home) put(P, P.home.x, P.home.z, P.home.ry); if (P.ready) rest(P, 0); }
         for (const P of [cast.ton, cast.aunt]) { put(P, P.home.x, P.home.z, P.home.ry); if (P.ready) rest(P, 0); }
         myBai.visible = false;
@@ -6833,7 +6991,7 @@
     }
     function endTidy() {
       handsFilm(0); handStill(0); filmChill(0); filmBai(false); filmCarry(handMat, handMatHolder, false); youGlowAt(0, 0, null, null);
-      myArmsAt(null, null, 0, null, 0, 0, 0);
+      myArmsAt(null, null, 0, null, 0, 0, 0); myOpenHand(null, null, 0, 0);
       for (const P of cast.wait) if (P.ready) P.group.visible = false;
       for (const b of waitBai) b.visible = false;
       matsG.visible = false; auraAt(0, 0); filmBurstsEnd();
@@ -6879,7 +7037,9 @@
          given nearly a phone's lens: at 50 it cut his brow at the top and his hands at the foot: photographed. And at 33
          and 30 his face from 1.3 m was brow to lip) */
       const [fP, fD] = lensAt(tc, [[0, 58, 46], [T.take + 3.3, 66, 64], [T.glow, 66, 64], [T.q3z1 + SECS['q3z1'], 60, 58], [T.give + 3.2, 60, 58], [T.ph3z2, 44, 40],
-                                   [T.ph3z2 + SECS['ph3z2'] + 0.9, 40, 36], [T.q3K1 + 3.5, 48, 44], [T.black, 66, 62]]);
+                                   [T.ph3z2 + SECS['ph3z2'] + 0.9, 40, 36], [T.q3K1 + 3.5, 48, 44], [T.palm + 1.7, 46, 42], [T.black + 1.8, 40, 36]]);
+      /* (v26.12: no longer widened to the whole of it at the last: held on his open hand, and drawn in on it a little as the
+         line ends and the black comes) */
       /* THE LIGHT */
       /* (v26.8: the close's breath is no longer played, but shown (docs/V26.8-E4C3-NOTES.md M): his own light comes up on
          him and his bai sri while his hands shake, the world opening a little round him, and lets go as he says he shut
@@ -6914,6 +7074,11 @@
          close's first black they are drawn once behind his eyes (`held`), so their shading is built where nothing is seen */
       const kMy = bump(tc, T.glow - 0.9, T.give + 0.1, 0.5, 0.5);
       myArmsAt(api || FL.api, eye, yF, tabled ? null : bc, kMy, kG, tc, tc < 0.8, kUp);
+      /* ONE PETAL LEFT ON HIS OPEN HAND (v26.12, his answer of 14 Nov, "Petal on his hand": c_zfx.js myOpenHand): his right
+         hand comes up open before him with one of his teacher's petals on it as he says the teacher could guide him; the
+         black comes down on it */
+      const kOpen = smo(sgk(tc, T.palm - 0.5, T.palm + 1.3));
+      myOpenHand(api || FL.api, eye, yF, kOpen);
       /* GRANDMASTER PHO: he speaks; both his hands on the bowl; a handful of petals; his hands on it again to take it */
       phoFace(); phoTalkFace();
       let kTalk = 0;
@@ -6945,7 +7110,9 @@
       const kHold = bump(tc, T.glow - 0.4, T.give + 0.9, 1.6, 1.2);
       const pHold = aimOf(eye, [eye[0] + fx * HOLD.d, eye[1] - HOLD.y + HOLD.mid, eye[2] + fz * HOLD.d])[1];
       const ya = yawMix(yawMix(yF, yB, kB), yTb, kTb), pi = lp(lp(lp(lp(pWide, pFace, kFace) - kBow, pHold, kHold), pB, kB), pTb, kTb);
-      eyes(eye, ya, pi, fP, fD);
+      /* (v26.12: and down to his open hand, where it is held, for the line's last words and the black) */
+      const kPalm = smo(sgk(tc, T.palm - 0.1, T.palm + 1.7)), [yPm, pPm] = aimOf(eye, openHandAt(eye, yF));
+      eyes(eye, yawMix(ya, yPm, kPalm), lp(pi, pPm, kPalm), fP, fD);
     }
 
     FILMS.A = {

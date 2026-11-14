@@ -381,7 +381,7 @@
     const _ko = { x: 0, z: 0, hx: 0, hz: 1 }, _ko2 = { x: 0, z: 0, hx: 0, hz: 1 };
     function kidsForm(name) {
       const run = name === 'arrive';
-      kidsDir.ph = run ? 'runW' : ''; kidsDir.t = 0; kidsDir.hold = false; kidsDir.toss = null; kidsDir.stops = 0;
+      kidsDir.ph = run ? 'runW' : ''; kidsDir.t = 0; kidsDir.hold = false; kidsDir.toss = null; kidsDir.stops = 0; kidsDir.follow = null;
       for (const K of kids) { const P = K.P; K.v = 0; K.moving = false; K.looks = false; P.noBlock = run; P.rate = 1;
         whenReady(P, () => { gaze(P, null); rest(P, 0); });
         if (run) { K.s = Math.min(kidPath.L, kidPath.L * 0.62 + K.i * 1.5); K.to = K.i * KID.gap; K.wait = 0.15 + K.i * 0.35;
@@ -390,6 +390,7 @@
     }
     function kidsTick(wdt, st) {
       const D = kidsDir; if (!D.ph || !dayOne.visible) return;
+      if (D.follow) { kidsFollowTick(wdt, st); return; }
       /* (not drawn in a film of the gathering; held as they are under a panel, their running stopped with them) */
       const drawn = st !== 'cine';
       for (const K of kids) { const P = K.P; if (P.ready && P.group.visible !== drawn) { P.group.visible = drawn; P.hidden = !drawn; } }
@@ -440,6 +441,58 @@
         const order = kids.slice().sort((p, q) => east ? q.s - p.s : p.s - q.s);
         order[0].to = east ? kidPath.L : 0; order[0].wait = 0;
         order[1].to = east ? kidPath.L - KID.gap : KID.gap; order[1].wait = KID.lag; }
+    }
+    /* (v26.12, Chad, 14 Nov 2026, asked whether the children should throw a second handful as he reaches the offering
+       tables: "Add a second") THE CHILDREN FOLLOW HIM TO THE TABLES: once the bai sri is in his hands (`baisri`) the two
+       leave their chase and run after him along the very way he walks (a trail of where he has been: they go only where he
+       went, so through nobody), the girl FOLLOW.girl metres behind him along it and the boy FOLLOW.boy, stopping there
+       when he stops and turning to him; at the tables they throw their handfuls over him as he raises his bai sri
+       (d_play.js kidsTables), and after his bow they are back on their chase while his eyes are on the tables (a change
+       no shot sees: v24.12). Their state is a run's: begun by kidsFollow, cleared by every setFormation (kidsForm) */
+    const FOLLOW = { girl: 1.7, boy: 2.5, crumb: 0.25, V: 2.6 };
+    function kidsFollow(on) {
+      const D = kidsDir;
+      if (!on) { D.follow = null; return; }
+      if (formNow !== 'arrive' || !D.ph) return;
+      D.follow = { crumbs: [[yaw.position.x, yaw.position.z]] }; D.hold = true; D.toss = null;
+      for (const K of kids) { K.ft = null; K.fs = 0; K.v = 0; }
+    }
+    function kidsFollowTick(wdt, st) {
+      const F = kidsDir.follow, drawn = st !== 'cine';
+      for (const K of kids) { const P = K.P; if (P.ready && P.group.visible !== drawn) { P.group.visible = drawn; P.hidden = !drawn; } }
+      if (st !== 'play') { for (const K of kids) if (K.moving) K.P.rate = 0; return; }
+      /* his trail: a crumb each FOLLOW.crumb metres he moves, given to both children's own trails (each begins where that
+         child stood when he set off) */
+      const hx = yaw.position.x, hz = yaw.position.z, last = F.crumbs[F.crumbs.length - 1];
+      const crumb = Math.hypot(hx - last[0], hz - last[1]) >= FOLLOW.crumb;
+      if (crumb) F.crumbs.push([hx, hz]);
+      for (const K of kids) {
+        const P = K.P; if (!P.ready) continue;
+        if (!K.ft) { const g = P.group.position; K.ft = { pts: [[g.x, g.z]], L: [0] }; K.fs = 0; }
+        const T = K.ft;
+        if (crumb) { const q0 = T.pts[T.pts.length - 1]; T.pts.push([hx, hz]); T.L.push(T.L[T.L.length - 1] + Math.hypot(hx - q0[0], hz - q0[1])); }
+        const n = T.pts.length, q = T.pts[n - 1], end = T.L[n - 1] + Math.hypot(hx - q[0], hz - q[1]);
+        const want = Math.max(K.fs, end - (K.i ? FOLLOW.boy : FOLLOW.girl)), left = want - K.fs;
+        const v = left > 0.02 ? Math.min(FOLLOW.V, Math.sqrt(2 * KID.acc * left)) : 0;
+        K.v = v > K.v ? Math.min(v, K.v + KID.acc * wdt) : Math.max(v, K.v - KID.acc * 1.6 * wdt);
+        K.fs = Math.min(want, K.fs + K.v * wdt);
+        /* where that is along the trail (past its last crumb, on the way to him) and the way it runs there */
+        let x, z, dx = 0, dz = 1;
+        if (K.fs >= T.L[n - 1]) { const d = Math.max(1e-6, end - T.L[n - 1]), k = Math.min(1, (K.fs - T.L[n - 1]) / d);
+          x = lp(q[0], hx, k); z = lp(q[1], hz, k); dx = (hx - q[0]) / d; dz = (hz - q[1]) / d; }
+        else { let i = 1; while (i < n - 1 && T.L[i] < K.fs) i++;
+          const a = T.pts[i - 1], b0 = T.pts[i], dl = Math.max(1e-6, T.L[i] - T.L[i - 1]), k = (K.fs - T.L[i - 1]) / dl;
+          x = lp(a[0], b0[0], k); z = lp(a[1], b0[1], k); dx = (b0[0] - a[0]) / dl; dz = (b0[1] - a[1]) / dl; }
+        const mv = K.v > 0.35;
+        if (mv !== K.moving) { K.moving = mv; take(P, mv ? K.run : 'Idle_3', mv ? 0.18 : 0.3); if (!mv) P.rate = 1; }
+        if (K.moving) P.rate = Math.max(0.6, Math.min(1.3, K.v / ((P.pace && P.pace[K.run]) || KID.V)));
+        /* running, a child faces the way it runs; stopped, it turns to him */
+        const ry = K.v > 0.05 ? Math.atan2(dx, dz) : Math.atan2(hx - x, hz - z);
+        const dq = Math.atan2(Math.sin(ry - K.ry), Math.cos(ry - K.ry)); K.ry += Math.max(-7 * wdt, Math.min(7 * wdt, dq));
+        P.group.position.set(x, 0, z); P.group.rotation.y = K.ry;
+        const looks = !K.moving && Math.hypot(hx - x, hz - z) < 3.2;
+        if (looks !== K.looks) { K.looks = looks; gaze(P, looks ? 'lens' : null, { reach: 0.9, secs: 0.7 }); }
+      }
     }
     /* THE CHILDREN COME TO SEE (the plan's §3.7, picture 2: "a handful of petals thrown beside him (play)"). When he
        speaks to Ton they run to their place by Ton's table, wherever their chase has them, and stay there while the two

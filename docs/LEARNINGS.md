@@ -8679,3 +8679,13 @@ Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8,
   chapters? I didnt ask for that, did i? I only asked for the latest chapter"). I read it as every open item of the
   whole game and started on episode 3 and episode 4 chapter 1; none of it went live, and it is parked whole
   (masters/v26.12/parked). The old chapters' open items and my own findings stay listed for him, never started unasked.
+- **A mesh fix is photographed before and after, at a hand's length AND where the player meets it, before it is kept**
+  (14 Nov: "I think your fix without visually checking the models is a little dangerous, you sometimes add more problems
+  than you fix"). I turned 5,944 "inside-out" triangles in 63 body files and proved it only by numbers (every byte but the
+  corners' order the same, the test then finding none). Photographed after his word (tools/probes/flipshot.mjs: each
+  changed place before | after | the changed triangles in red, measured; tools/probes/flipview.mjs: the body at the
+  distance its level is drawn, four sides, a phone's screen), most places were the same or a little better and one was
+  plainly worse: Ton's far body, a smooth collar made a dark wedge. All 63 went back. Read the material before reading
+  the mesh: every body is drawn TWO-SIDED, so a "turned" triangle was never a hole, and turning one only changes which
+  way it is lit; where a body's normals point the wrong way (a fold, a collar's turn), a test of the winding against the
+  normals calls the RIGHT triangle turned. Measure the change in the picture, never only in the file.
