@@ -639,10 +639,10 @@
          given nearly a phone's lens: at 50 it cut his brow at the top and his hands at the foot: photographed. And at 33
          and 30 his face from 1.3 m was brow to lip) */
       const [fP, fD] = lensAt(tc, [[0, 58, 46], [T.take + 3.3, 66, 64], [T.glow, 66, 64], [T.q3z1 + SECS['q3z1'], 60, 58], [T.give + 3.2, 60, 58], [T.ph3z2, 44, 40],
-                                   [T.ph3z2 + SECS['ph3z2'] + 0.9, 40, 36], [T.q3K1 + 3.5, 48, 44], [T.palm + 1.5, 60, 50], [T.black + 1.8, 54, 45]]);
+                                   [T.ph3z2 + SECS['ph3z2'] + 0.9, 40, 36], [T.q3K1 + 3.5, 48, 44], [T.palm + 0.999, 48, 44], [T.palm + 1.0, 60, 50], [T.black + 1.8, 54, 45]]);
       /* (v26.12: no longer widened to the whole of it at the last: held on his open hand, and drawn in on it a little as the
          line ends and the black comes. Wide enough that a phone holds the whole hand: at 46 its fingers ran out of the
-         frame's side, photographed) */
+         frame's side, photographed. Its lens is the new shot's, from the cut: T.palm + 1.0) */
       /* THE LIGHT */
       /* (v26.8: the close's breath is no longer played, but shown (docs/V26.8-E4C3-NOTES.md M): his own light comes up on
          him and his bai sri while his hands shake, the world opening a little round him, and lets go as he says he shut
@@ -680,7 +680,7 @@
       /* ONE PETAL LEFT ON HIS OPEN HAND (v26.12, his answer of 14 Nov, "Petal on his hand": c_zfx.js myOpenHand): his right
          hand comes up open before him with one of his teacher's petals on it as he says the teacher could guide him; the
          black comes down on it */
-      const kOpen = smo(sgk(tc, T.palm - 0.6, T.palm + 1.0));
+      const kOpen = smo(sgk(tc, T.palm - 0.6, T.palm + 0.8));
       myOpenHand(api || FL.api, eye, yF, kOpen);
       /* GRANDMASTER PHO: he speaks; both his hands on the bowl; a handful of petals; his hands on it again to take it */
       phoFace(); phoTalkFace();
@@ -713,10 +713,12 @@
       const kHold = bump(tc, T.glow - 0.4, T.give + 0.9, 1.6, 1.2);
       const pHold = aimOf(eye, [eye[0] + fx * HOLD.d, eye[1] - HOLD.y + HOLD.mid, eye[2] + fz * HOLD.d])[1];
       const ya = yawMix(yawMix(yF, yB, kB), yTb, kTb), pi = lp(lp(lp(lp(pWide, pFace, kFace) - kBow, pHold, kHold), pB, kB), pTb, kTb);
-      /* (v26.12: and down to his open hand, where it is held, for the line's last words and the black. The hand is there
-         before his eyes come down to it, and they come down in 1.3 s: on the way his eyes pass over his teacher's lap, close,
-         and a slower look lingered on it, photographed) */
-      const kPalm = smo(sgk(tc, T.palm + 0.2, T.palm + 1.5)), [yPm, pPm] = aimOf(eye, openHandAt(eye, yF));
+      /* (v26.12: and his open hand, where it is held, for the line's last words and the black: A CUT, on the line's comma,
+         from his teacher's face ("...the teacher who could guide me to the real answers,") to his hand ("and I will always
+         be grateful for it."). A look carried down from the face passed over the old man's lap and his left wrist close
+         and large, his model's ragged robe at the waist and the band round his wrist (photographed on a phone and a
+         desktop, at 1.8 s and at 1.3 s): the cut shows neither. The hand has come up below the frame before it) */
+      const kPalm = tc >= T.palm + 1.0 ? 1 : 0, [yPm, pPm] = aimOf(eye, openHandAt(eye, yF));
       eyes(eye, yawMix(ya, yPm, kPalm), lp(pi, pPm, kPalm), fP, fD);
     }
 

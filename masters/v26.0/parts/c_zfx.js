@@ -329,8 +329,9 @@
        upper arm hanging); the fingers' curl at each joint (radians); the petal's length, how far it lies off the palm and
        how far its length is turned from the fingers' line. (Its first build, photographed: the palm stood nearly face on to
        his eye, where the reference's is seen aslant: the fingers now rise some 8 degrees where they rose 15, and the wrist
-       is read again by the joint scan) */
-    const OPENHAND = { fwd: 0.28, down: 0.31, right: 0.05, fIn: 0.36, fUp: 0.15, nBack: 0.15, nIn: 0.18, out: 0.1, edown: 0.5, aft: 0.06,
+       is read again by the joint scan. Its second: the fingers ran some 40 degrees in toward his middle in the picture where
+       the reference's run 21: now some 9 in, in the world) */
+    const OPENHAND = { fwd: 0.28, down: 0.31, right: 0.05, fIn: 0.15, fUp: 0.15, nBack: 0.15, nIn: 0.18, out: 0.1, edown: 0.5, aft: 0.06,
                        curl: 0.24, petal: 0.032, lift: 0.004, turn: 0.7 };
     const _ohP = new THREE.Vector3(), _ohQ = new THREE.Quaternion(), _ohF = new THREE.Vector3(), _ohN = new THREE.Vector3(), _ohA = new THREE.Vector3(),
           _ohY = new THREE.Vector3(), _ohS = new THREE.Vector3(), _ohM = new THREE.Matrix4();
