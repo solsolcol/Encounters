@@ -302,3 +302,11 @@ f3d4a12e1ed4be007e6cfc87af4f4f00742df83e6982009b7550f960a2b11857  masters/v26.0/
 175818110b6d396e5a59c7003352dcf85bd0cfd0447c343479193cbb88848db5  masters/v26.0/src/original-kratip.glb
 9ee0dc8b4965f460185e73c4c4fbaf4110737234e4b3a9df0aff2e740031713e  masters/v26.0/src/original-lowtable.glb
 8d1ed37a4343e32319afdf7c56e04a2b258192d0143741a5a19a95976e4a8cb9  masters/v26.0/src/original-monkb.glb
+9eec7cb56685e0de646bbe7e704b58631014c5319b23c27478cf96f9cdbb5f02  masters/v26.0/src/original-monkc.glb
+4f423ec01d01445e4316c387166a63198e9be1f5e252e605a4509b72aea2ed6c  masters/v26.0/src/original-naga.glb
+3093e2f82751a8e563b4b30cfc50cc781bead680054e62cc2200c8db7c85268d  masters/v26.0/src/original-nagafount.glb
+611ec138fcc5cf172eef1aaa47ca29dbdac7651f75c7c61f0a35efa30b0ecdaa  masters/v26.0/src/original-nagagreen.glb
+a1a3775bae6812f12266888e26eea330cd134ef8ba48e94e13cb23c71cba8908  masters/v26.0/src/original-nagastaff.glb
+d5e7598016dfffc9c31df902e7701907a6b928377792198d375cc6ab4b1c1bea  masters/v26.0/src/original-nagawhite.glb
+940afe8ddb562799baaaf82bef285588afaedfd5144f7a568af7ada63f350966  masters/v26.0/src/original-parasol.glb
+c242d54ab0e9af37a2249dc459f2843c12cc5e2cbca4412ed45b6cdba0a602ea  masters/v26.0/src/original-pchair.glb
