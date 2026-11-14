@@ -9134,6 +9134,11 @@ What the baseline contains, by release:
   the picks stand until he hears them (C13 z). Recipes: masters/v26.12/make.sh §3 to §5. On the way: the working disk
   filled during a build (the half-written release zip and my own old probe pictures cleared; none of his files); a new
   name clashed with one in another part of the chapter, which the build's syntax check caught.
+- **v26.14 · 14 Nov 2026 · episode 4 chapter 3: ending D's bud closes to one clean point.** After the v26.13 deploy,
+  the desktop's picture a tenth of a second before the shut showed a small flat nub at the bud's tip while its eight
+  points finished meeting (some 0.15 s): the points now meet before they sharpen (c_zfx.js lotusPaint), photographed
+  on a phone at 2.1 and 2.2 s past "stay" (a clean rounded bud, then a clean point). Deploy `6af8f05e77ccebc8777f8fb5`
+  (494 files byte for byte). The full debug's last round runs on this build.
 
 ## The sheet, version by version
 
