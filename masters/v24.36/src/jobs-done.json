@@ -1,0 +1,12 @@
+{
+ "praicase": {
+  "image_to_3d": "01a19d57-7785-7203-a8a1-6277db8e219e",
+  "remesh": "01a19d5a-04bd-74a7-9727-623626bb2135",
+  "target": 2000
+ },
+ "tanitab": {
+  "image_to_3d": "01a19d57-a3da-74bd-b0e6-1584ff5cbe3e",
+  "remesh": "01a19d5a-0ae1-707a-a34e-61287d1cf53e",
+  "target": 2000
+ }
+}
