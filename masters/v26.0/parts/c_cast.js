@@ -67,9 +67,19 @@
       for (let k = 0; k < 4; k++) { const w = _svW.getComponent(k); if (w !== 0) { const b = _svI.getComponent(k); target.addScaledVector(_sv4.copy(_svB).applyMatrix4(L[b]), w); } }
       return target.applyMatrix4(q.bindMatrixInverse);
     }
+    /* (v26.11: ONCE. A body made for one film borrows the near body's sheet (addLevel), and setting it up again asked the
+       chip for a second upload of the same picture with the same settings, at the film's start. A sheet this has already
+       set, whose settings are still the ones it set, is left as it is: what is on the chip is what that upload would have
+       put there. `?opt=sheetOnce:0` sets it again as before) */
+    const SHEETED = new WeakSet();
     function sheetOf(key, t) {
-      if (t.name === 'repainted' || (t.name === 'detail' && NOMIP.test(key))) { t.generateMipmaps = true; t.minFilter = THREE.LinearMipmapLinearFilter; t.anisotropy = 4; t.needsUpdate = true; return t; }
-      return NOMIP.test(key) ? noMip(THREE, t) : t;
+      if (t.name === 'repainted' || (t.name === 'detail' && NOMIP.test(key))) {
+        if (SHEETONCE && SHEETED.has(t) && t.generateMipmaps === true && t.minFilter === THREE.LinearMipmapLinearFilter && t.anisotropy === 4) return t;
+        t.generateMipmaps = true; t.minFilter = THREE.LinearMipmapLinearFilter; t.anisotropy = 4; t.needsUpdate = true; SHEETED.add(t); return t; }
+      if (!NOMIP.test(key)) return t;
+      if (SHEETONCE && SHEETED.has(t) && t.generateMipmaps === false && t.minFilter === THREE.LinearFilter) return t;
+      SHEETED.add(t);
+      return noMip(THREE, t);
     }
     /* (the children's runs and their skip too: c_crowd.js) */
     const WALKS = /^(walkdance|Run_02|Run_03)$/;                                 // (the takes that travel: the dancers' walk-dance, the children's two runs)

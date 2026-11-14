@@ -41,6 +41,7 @@
     const LAZYROT = !ctx.opt || ctx.opt('lazyRot');
     const FASTTWINS = !ctx.opt || ctx.opt('fastTwins');               // (the seams' twins found by whole-number cells: twinsFast)
     const FASTSKIN = !ctx.opt || ctx.opt('fastSkin');                 // (a posed vertex with each bone's matrix made once a pose: skinVertex)
+    const SHEETONCE = !ctx.opt || ctx.opt('sheetOnce');               // (a body's sheet set up once, never uploaded again for nothing: c_cast.js sheetOf)
     function lazyRot(o) { if (LAZYROT) lazyInstall(o); }
     const LAZY = new WeakSet();
     function lazyInstall(o) {

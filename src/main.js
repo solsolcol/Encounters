@@ -1161,7 +1161,7 @@ function treeKit() {
 /* v15: every engine optimization has a switch, ON by default, so a probe can
    draw the SAME frozen frame with it off and on and compare every pixel —
    the proof that an optimization changed nothing on screen. */
-const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true, lightSets: true, ctxRestore: true, herSounds: true, musicPark: true, lightMem: true, lightSeeds: true, skelMerge: true, ivSharp: true, ivMsaa: true, onePass: true, noGarbage: true, lazyRot: true, fastTwins: true, fastSkin: true, freePics: true };
+const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true, lightSets: true, ctxRestore: true, herSounds: true, musicPark: true, lightMem: true, lightSeeds: true, skelMerge: true, ivSharp: true, ivMsaa: true, onePass: true, noGarbage: true, lazyRot: true, fastTwins: true, fastSkin: true, freePics: true, sheetOnce: true };
 /* a probe may switch any of them off from the address (`?opt=boneSkip:0,warmTiny:0`),
    so a switch that acts at LOAD time can be compared build against itself */
 { const m = /[?&]opt=([^&]*)/.exec(location.search);
@@ -1170,7 +1170,8 @@ const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: tru
    reads one through ctx.opt(key) and never writes it. onePass: episode 4 chapter 3's flat see-through cards drawn in
    one pass (its b_world1.js ONEPASS); noGarbage: its frame's lists kept and refilled where they were made anew
    (NOGARB); lazyRot: its bodies' bones' angles worked out when read (LAZYROT); fastTwins and fastSkin: its load's
-   own measuring done without the overhead (FASTTWINS, FASTSKIN). No other chapter reads any key: unchanged by construction */
+   own measuring done without the overhead (FASTTWINS, FASTSKIN); sheetOnce: a body's sheet set up once, never uploaded
+   again for nothing (SHEETONCE). No other chapter reads any key: unchanged by construction */
 /* v26.11: ONE COPY OF EACH PICTURE (episode 4 chapter 3's speed-ups, the fourth: Chad, 14 Nov 2026, of the question
    whether to free them, "Yes, free the copies (Recommended)"). A picture on the graphics chip is held twice: the chip's
    copy, and the page's own decoded ImageBitmap, which three keeps on its texture in case it must upload again (1,316 MB
@@ -1188,10 +1189,19 @@ const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: tru
      again from the recipe first, and only then uploads (on the chip the old copy is drawn meanwhile); and when the
      graphics are reset (the context lost and restored), nothing is drawn while every freed picture is decoded again,
      the loading word up (his answer: "'Loading' shows for a second or two"), then the world is warmed, drawn, and its
-     pictures freed again.
+     pictures freed again;
+   - AND EVERY OTHER WAY A PICTURE COULD BE ASKED FOR AGAIN: a texture of one DISPOSED while its chapter stands (a body
+     made for one film and given back as it ends, episode 4 chapter 3's fullOff: drawn again at the next viewing, three
+     uploads it from its picture) has its picture decoded again first, and only then lets the chip's copy go, so it is
+     drawn from the chip until then and from a real picture after; a NEW texture copied from one (clone, copy) joins it
+     and the world is not drawn until its picture is back; a texture HANDED a new picture keeps that picture (nothing
+     decodes the old one over it); a chapter being LEFT (rebuildStage) lets all of its own go at once and decodes
+     nothing; a decode that fails is tried once more, and a copy that could not be decoded again is never let go.
    `?opt=freePics:0` keeps every copy (the recipes are still kept, so a probe can decode each again beside the picture it
    would replace: __enc.picsProve). Episode 1 declares nothing: unchanged by construction. */
-const PICS = { rec: new WeakMap(), parsed: new WeakMap(), freed: new Set(), again: new Map(), guarded: new WeakSet(), hold: false, closed: 0, bytes: 0, redone: 0, hits: 0 };
+const PICS = { rec: new WeakMap(), parsed: new WeakMap(), freed: new Set(), again: new Map(), guarded: new WeakSet(), hold: false, waits: 0, redoing: false, closed: 0, bytes: 0, redone: 0, hits: 0, hitWhere: [], copies: 0 };
+/* (where an upload was asked of a freed picture, the first few, for the probes: a stack line or two) */
+const picsHit = () => { PICS.hits++; if (PICS.hitWhere.length < 8) PICS.hitWhere.push(String(new Error().stack || '').split('\n').slice(3, 6).map(l => l.trim()).join(' | ')); };
 const picsChapter = () => !!(CH && CH.render && CH.render.freePictures);
 const picsOn = () => OPT.freePics && picsChapter();
 const picsDecode = typeof window.createImageBitmap === 'function' ? window.createImageBitmap.bind(window) : null;
@@ -1213,23 +1223,82 @@ function picsGuard(src, texs) {
   if (!PICS.guarded.has(src)) {
     PICS.guarded.add(src);
     Object.defineProperty(src, 'needsUpdate', { configurable: true, get() { return undefined; },
-      set(v) { if (v !== true) return; if (PICS.freed.has(src)) { PICS.hits++; picsAgain(src).then(() => { src.version++; }); } else src.version++; } });
+      set(v) { if (v !== true) return; if (PICS.freed.has(src)) { picsHit(); picsAgain(src).then(() => { src.version++; }); } else src.version++; } });
+    /* (a NEW picture handed to it, texture.image = ..., which three writes to its Source's data, is its picture from
+       then on: its recipe is forgotten, and nothing decodes the old one over it) */
+    let data = src.data;
+    Object.defineProperty(src, 'data', { configurable: true, enumerable: true, get() { return data; },
+      set(v) { data = v; if (!PICS.redoing && PICS.freed.has(src)) { PICS.freed.delete(src); delete src.__picsRec; } } });
   }
   for (const t of texs) {
     if (PICS.guarded.has(t)) continue;
     PICS.guarded.add(t);
     Object.defineProperty(t, 'needsUpdate', { configurable: true, get() { return undefined; },
-      set(v) { if (v !== true) return; if (PICS.freed.has(t.source)) { PICS.hits++; picsAgain(t.source).then(() => picsBump(t)); } else picsBump(t); } });
+      set(v) { if (v !== true) return; if (PICS.freed.has(t.source)) { picsHit(); picsAgain(t.source).then(() => picsBump(t)); } else picsBump(t); } });
+    /* (disposed while its picture is freed and its chapter stands: decoded again first, and only then is the chip's
+       copy let go; one that could not be decoded again keeps the chip's copy, the only one left) */
+    const disposeOf = t.dispose;
+    Object.defineProperty(t, 'dispose', { configurable: true, writable: true, value: function () {
+      if (!PICS.freed.has(this.source)) return disposeOf.call(this);
+      picsAgain(this.source).then(() => { if (!PICS.freed.has(this.source)) disposeOf.call(this); });
+    } });
   }
 }
+/* (each texture of a freed picture counted while it lives; the last one disposed forgets the recipe) */
+function picsLive(src, texs) {
+  let live = src.__picsLive;
+  if (!live) { live = new Set(); Object.defineProperty(src, '__picsLive', { configurable: true, value: live }); }
+  for (const t of texs) {
+    if (live.has(t)) continue;
+    live.add(t);
+    t.addEventListener('dispose', () => { live.delete(t); if (live.size) return;
+      PICS.freed.delete(src); delete src.__picsRec; delete src.__picsTex; });
+  }
+}
+/* (a chapter being left, from rebuildStage: its freed pictures are forgotten, recipes and all, so the disposes its
+   dispose() makes, at once or a moment later, let the chip's copies go and decode nothing. Nothing of a chapter that
+   is gone is drawn again: its world is out of the scene and its parses die with its build) */
+function picsLeave() {
+  for (const src of PICS.freed) delete src.__picsRec;
+  PICS.freed.clear();
+}
+/* (a NEW texture copied from one of these pictures, by clone() or copy(), shares the picture. Made BEFORE it is freed,
+   it is counted with it, so the picture is not freed until that copy too is on the chip (one kept aside to be shown
+   later keeps its picture). Made AFTER, it joins it and is guarded like the rest, and the world is not drawn until the
+   picture is decoded again, so the chip is never asked for a copy of it from a closed picture: no chapter does this,
+   and the console says so if one ever does. Anything else: three's own copy, untouched) */
+const picsCopyOf = THREE.Texture.prototype.copy;
+THREE.Texture.prototype.copy = function (from) {
+  const r = picsCopyOf.call(this, from);
+  const src = this.source;
+  const S = src ? PICS.parsed.get(src) : null;
+  if (S) S.add(this);
+  if (src && PICS.freed.has(src)) {
+    console.error('[pictures] a freed picture was copied into a new texture: the world waits for it to be decoded again');
+    PICS.copies++;
+    const all = src.__picsTex || new Set(); all.add(this);
+    if (!src.__picsTex) Object.defineProperty(src, '__picsTex', { configurable: true, value: all });
+    picsGuard(src, [this]); picsLive(src, [this]);
+    PICS.waits++;
+    picsAgain(src).finally(() => { PICS.waits--; });
+  }
+  return r;
+};
 /* a freed picture decoded again from its recipe, by the same call with the same options (once, however many ask) */
 function picsAgain(src) {
   if (!PICS.freed.has(src)) return Promise.resolve();
   let p = PICS.again.get(src);
   if (p) return p;
   const r = src.__picsRec;
-  p = (r && picsDecode ? picsDecode(r.blob, ...(r.opts ? [r.opts] : [])) : Promise.reject(new Error('no recipe')))
-    .then(bmp => { PICS.rec.set(bmp, r); src.data = bmp; PICS.freed.delete(src); PICS.redone++;
+  const decode = () => (r && picsDecode ? picsDecode(r.blob, ...(r.opts ? [r.opts] : [])) : Promise.reject(new Error('no recipe')));
+  p = decode()
+    .catch(() => new Promise(res => setTimeout(res, 250)).then(decode))     // (once more, a moment later: a decode refused under memory pressure)
+    .then(bmp => {
+      /* (handed a picture of its own meanwhile, or its chapter left: this one is not wanted) */
+      if (!PICS.freed.has(src)) { try { bmp.close(); } catch {} return; }
+      PICS.rec.set(bmp, r);
+      PICS.redoing = true; try { src.data = bmp; } finally { PICS.redoing = false; }
+      PICS.freed.delete(src); PICS.redone++;
       /* (every texture of it asked to upload again: whatever was tried while it was closed is drawn over) */
       for (const t of (src.__picsTex || [])) picsBump(t); })
     .catch(e => { console.error('[pictures] a freed picture could not be decoded again:', e); })
@@ -1251,18 +1320,16 @@ function picsFree() {
   for (const [src, texs] of inScene) {
     const img = src.data, mine = PICS.parsed.get(src);
     if (!mine || inVm.has(src) || PICS.freed.has(src) || !(img instanceof ImageBitmap) || !(img.width > 0) || !PICS.rec.has(img)) continue;
+    /* (every texture of it: the parse's, the scene's, and any that joined it before, each on the chip at its version) */
+    const all = new Set([...mine, ...texs, ...(src.__picsTex || [])]);
     let ok = true;
-    for (const t of mine) if (!on(t)) { ok = false; break; }
-    if (ok) for (const t of texs) if (!on(t)) { ok = false; break; }
+    for (const t of all) if (!on(t)) { ok = false; break; }
     if (!ok) continue;
-    const all = new Set([...mine, ...texs]);
     picsGuard(src, all);
     Object.defineProperty(src, '__picsRec', { configurable: true, value: PICS.rec.get(img) });
     Object.defineProperty(src, '__picsTex', { configurable: true, value: all });
-    /* (forgotten, recipe and all, once every texture of it is disposed: its chapter is gone) */
-    if (!src.__picsLive) { const live = new Set(all); Object.defineProperty(src, '__picsLive', { configurable: true, value: live });
-      for (const t of all) t.addEventListener('dispose', () => { live.delete(t); if (live.size) return;
-        PICS.freed.delete(src); delete src.__picsRec; delete src.__picsTex; }); }
+    picsLive(src, all);
+    for (const t of all) { if (!t.__picsW) Object.defineProperty(t, '__picsW', { configurable: true, writable: true, value: img.width }); if (!t.__picsH) Object.defineProperty(t, '__picsH', { configurable: true, writable: true, value: img.height }); }
     PICS.bytes += img.width * img.height * 4; PICS.closed++;
     try { img.close(); } catch {}
     PICS.freed.add(src); n++;
@@ -14095,6 +14162,7 @@ function rebuildStage(next) {
      Shown back first (its layers are its own again), then forgotten; the
      trees the sweep left detached go the same way. */
   sphereCullAll(true); sphereCull.clear();
+  picsLeave();                       // v26.11: the old chapter's freed pictures let go with it, nothing decoded again
   stage.dispose();
   for (const im of instCull) if (!inScene(im)) instCull.delete(im);
   stage = ch.build(CHCTX);
@@ -16530,7 +16598,7 @@ function tick(now = 0) {
      date so anything that reads them sees them as fresh as ever. The warm
      frames under the curtain are FORCED (forceDraw), because drawing under
      the cover is their whole purpose. */
-  if (PICS.hold || worldCovered()) {          // (v26.11: PICS.hold, the freed pictures being decoded again after a reset)
+  if (PICS.hold || PICS.waits > 0 || worldCovered()) {   // (v26.11: the freed pictures being decoded again after a reset, or for a copy of one)
     scene.updateMatrixWorld();
     vmScene.updateMatrixWorld();
     smear.at = -1;                         // v22.0: a smear never lays a frame from before a cover over one after it
@@ -16915,7 +16983,7 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                     from its recipe and compares it, byte for byte through a 2D canvas, with the picture it would replace (run
                     with ?opt=freePics:0, when every copy is still open); picsReset() loses and restores the graphics, as a
                     phone can */
-                 pics: () => ({ on: picsOn(), freed: PICS.freed.size, closed: PICS.closed, mb: +(PICS.bytes / 1048576).toFixed(1), redone: PICS.redone, hold: PICS.hold, asked: PICS.hits }),
+                 pics: () => ({ on: picsOn(), freed: PICS.freed.size, closed: PICS.closed, mb: +(PICS.bytes / 1048576).toFixed(1), redone: PICS.redone, hold: PICS.hold, waits: PICS.waits, copies: PICS.copies, asked: PICS.hits, where: PICS.hitWhere.slice() }),
                  picsProve: async (limit = 1e9) => {
                    const seen = new Set(), out = { compared: 0, differing: 0, bytes: 0, skipped: 0, worst: [] };
                    const px = (bmp) => { const c = new OffscreenCanvas(bmp.width, bmp.height), x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(bmp, 0, 0); return x.getImageData(0, 0, bmp.width, bmp.height).data; };
@@ -16929,6 +16997,24 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                      b2.close(); out.compared++; out.bytes += A.length; if (d) { out.differing++; if (out.worst.length < 6) out.worst.push([img.width + 'x' + img.height, d]); }
                    }
                    return out;
+                 },
+                 /* (every freed picture's level 0 read back from the graphics chip and hashed: taken before a reset and after,
+                    the two lists must be the same; nothing else of the frame is compared, since banners, haze, clouds and
+                    the people a film does not pose all run on the wall clock while the reset is under way) */
+                 picsGpuHash: () => {
+                   const gl = renderer.getContext(), was = gl.getParameter(gl.FRAMEBUFFER_BINDING), fb = gl.createFramebuffer(), out = {}; let n = 0, bytes = 0;
+                   gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+                   for (const src of PICS.freed) for (const t of (src.__picsTex || [])) {
+                     const p = renderer.properties.get(t), tex = p && p.__webglTexture; if (!tex) continue;
+                     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+                     if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) continue;
+                     const w = t.__picsW || 0, h = t.__picsH || 0; if (!(w > 0 && h > 0)) continue;
+                     const px = new Uint8Array(w * h * 4); gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, px);
+                     let hh = 2166136261; for (let i = 0; i < px.length; i += 7) { hh ^= px[i]; hh = Math.imul(hh, 16777619); }
+                     out[t.uuid] = (hh >>> 0).toString(16) + ':' + w + 'x' + h; n++; bytes += px.length;
+                   }
+                   gl.bindFramebuffer(gl.FRAMEBUFFER, was); gl.deleteFramebuffer(fb);
+                   return { textures: n, mb: +(bytes / 1048576).toFixed(1), hash: out };
                  },
                  picsReset: () => { const x = renderer.getContext().getExtension('WEBGL_lose_context'); if (!x) return false; x.loseContext(); setTimeout(() => x.restoreContext(), 400); return true; },
                  worldCovered: () => worldCovered(), forceDraw: (n) => { forceDraw = n | 0; },

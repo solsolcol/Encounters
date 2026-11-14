@@ -270,7 +270,16 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
       fixed: the master in white's right wrist 25 to 26 degrees toward the little finger at two moments in twelve; the
       brown hermit's left 20 to 27 at most moments (the same solve, `wristSolve`, can be tried on both).
     - w. v26.5: ASKED: making the chapter faster with nothing on screen changed: measured, and four ways in the order of
-      what they save (docs/V26.6-E4C3-OPTIMIZE-PLAN.md).
+      what they save (docs/V26.6-E4C3-OPTIMIZE-PLAN.md). BUILT at v26.11, each behind its own switch and each proved exact:
+      (1) flat see-through cards in one pass and no per-frame lists (17 draws and 34 shader look-ups a frame fewer); (2) a
+      bone's angles worked out only when read (the bodies' animation 5.62 -> 3.77 ms a run on this box); (3) the load's own
+      measuring without the overhead (to play 99.8 -> 67.9 s here, the chapter's main-thread time 33.7 -> 11.5 s); (4) the
+      page's decoded copy of each picture freed once it is on the chip, his answer "Yes, free the copies (Recommended)"
+      (1,316 -> 130.5 MB). LEFT, with the reason: three's animation sampler rewritten to the same bits (a large surface for
+      a third of a few milliseconds); drawing on its own thread (OffscreenCanvas), the plan's item 5, still to be put to him.
+      FOUND on the way and left, no player can reach it: the head damping (v26.3) is the one pose laid after the take that
+      armsBack does not take off (v11.5's rule), so a film held on a step (eventWait, which this chapter no longer has) would
+      compound it and turn a kneeler's head toward the middle while the film stood still.
     - x. v26.8: his notes of 13 Nov evening (thirteen, docs/V26.8-E4C3-NOTES.md): ALL LIVE, at v26.8, v26.9 and v26.10
       (row M, v26.10: his own two arms drawn in the world on his bai sri in the close, the hold his photograph 7's,
       shaking in his light; measured by jointscan and lensread, the engine hand's disposal guard proved by breaking it).
