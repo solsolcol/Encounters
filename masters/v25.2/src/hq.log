@@ -1,0 +1,28 @@
+started remesh wreath 100000 01a1c580-02b8-751c-a53f-eac145dff981
+started remesh till 40000 01a1c580-0436-760f-b2b2-4e65f302c414
+started remesh jacket 30000 01a1c580-05bf-738e-ae61-6f5d497914e6
+started remesh bag 30000 01a1c580-075f-7217-ad9e-0c5b516815cc
+started remesh drinks 30000 01a1c580-08e7-7052-aabc-96912881819b
+started remesh water 20000 01a1c580-0a61-71be-90f3-c95c435b590f
+started remesh yaam 20000 01a1c580-0bd7-7458-8024-ce1f0091bb7e
+started remesh calc 12000 01a1c580-0d73-776e-a485-b9b404c3e5f2
+started remesh shelf 10000 01a1c580-0f07-7385-80bb-cc7dd5322ad6
+started remesh cloth 10000 01a1c580-1097-7548-a1a8-3c6c844eefdc
+started remesh switch 8000 01a1c580-122a-723a-8233-99f456767638
+started remesh wallet 10000 01a1c580-1489-73d9-8879-2b6e5e0ac250
+started remesh phone 6000 01a1c580-15fa-7145-bdff-86a27be7b1da
+remesh done drinks 30000
+remesh done calc 12000
+remesh done shelf 10000
+remesh done cloth 10000
+remesh done switch 8000
+remesh done wallet 10000
+remesh done phone 6000
+remesh done till 40000
+remesh done jacket 30000
+remesh done bag 30000
+remesh done water 20000
+remesh done yaam 20000
+remesh done wreath 100000
+all done: ['bag', 'calc', 'cloth', 'drinks', 'jacket', 'phone', 'shelf', 'switch', 'till', 'wallet', 'water', 'wreath', 'yaam']
+DONE

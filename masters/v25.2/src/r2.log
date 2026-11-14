@@ -1,0 +1,20 @@
+started image-to-3d jacket 01a1c562-5919-75f3-90a9-c1d817a92709
+started image-to-3d till 01a1c562-6b43-77d0-b96f-b8b307770b63
+started image-to-3d water 01a1c562-7ded-716e-a3da-acd37848f278
+started image-to-3d calc 01a1c562-912a-722f-b0fd-00ed697eb9e1
+started image-to-3d phone 01a1c562-a47c-7424-9c69-a48d4c008e65
+started image-to-3d switch 01a1c562-b5ae-7029-af0f-d2d7c110bd8b
+image-to-3d done jacket -> remesh 01a1c565-7659-70e6-ad73-d76f8e6fb410
+image-to-3d done calc -> remesh 01a1c565-7e33-778f-a9fe-079a33b341c7
+image-to-3d done phone -> remesh 01a1c565-82e0-7260-a6d2-991a22e7fbe5
+image-to-3d done till -> remesh 01a1c565-dd60-7310-aaf5-f12b46302c2d
+image-to-3d done switch -> remesh 01a1c565-e76a-774a-a6d3-bcb3bd6cd552
+image-to-3d done water -> remesh 01a1c566-3f97-76ee-ad02-5d4975f4bbe6
+remesh done jacket
+remesh done calc
+remesh done phone
+remesh done switch
+remesh done till
+remesh done water
+all done: ['calc', 'jacket', 'phone', 'switch', 'till', 'water']
+DONE

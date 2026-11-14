@@ -1,0 +1,124 @@
+{
+ "wallet": {
+  "image_to_3d": "01a1c560-fe9b-724c-bd7a-61ea640dea99",
+  "remesh": "01a1c564-3b53-759b-9585-c9e1e7fa42cf",
+  "target": 3000,
+  "hq": {
+   "remesh": "01a1c580-1489-73d9-8879-2b6e5e0ac250",
+   "target": 10000
+  }
+ },
+ "drinks": {
+  "image_to_3d": "01a1c561-3dc4-76dd-ac4a-591e5ac31a89",
+  "remesh": "01a1c564-4382-76c6-9b8c-70bf86431a9e",
+  "target": 8000,
+  "hq": {
+   "remesh": "01a1c580-08e7-7052-aabc-96912881819b",
+   "target": 30000
+  }
+ },
+ "bag": {
+  "image_to_3d": "01a1c561-159a-737e-9479-60e7a060d244",
+  "remesh": "01a1c564-eff7-73fa-ab25-3672fc6cccde",
+  "target": 8000,
+  "hq": {
+   "remesh": "01a1c580-075f-7217-ad9e-0c5b516815cc",
+   "target": 30000
+  }
+ },
+ "yaam": {
+  "image_to_3d": "01a1c561-2987-74af-99aa-6a319f6c5778",
+  "remesh": "01a1c564-9948-72af-89fd-285909230ac4",
+  "target": 6000,
+  "hq": {
+   "remesh": "01a1c580-0bd7-7458-8024-ce1f0091bb7e",
+   "target": 20000
+  }
+ },
+ "jacket": {
+  "image_to_3d": "01a1c562-5919-75f3-90a9-c1d817a92709",
+  "remesh": "01a1c565-7659-70e6-ad73-d76f8e6fb410",
+  "target": 6000,
+  "hq": {
+   "remesh": "01a1c580-05bf-738e-ae61-6f5d497914e6",
+   "target": 30000
+  }
+ },
+ "calc": {
+  "image_to_3d": "01a1c562-912a-722f-b0fd-00ed697eb9e1",
+  "remesh": "01a1c565-7e33-778f-a9fe-079a33b341c7",
+  "target": 4000,
+  "hq": {
+   "remesh": "01a1c580-0d73-776e-a485-b9b404c3e5f2",
+   "target": 12000
+  }
+ },
+ "phone": {
+  "image_to_3d": "01a1c562-a47c-7424-9c69-a48d4c008e65",
+  "remesh": "01a1c565-82e0-7260-a6d2-991a22e7fbe5",
+  "target": 2000,
+  "hq": {
+   "remesh": "01a1c580-15fa-7145-bdff-86a27be7b1da",
+   "target": 6000
+  }
+ },
+ "switch": {
+  "image_to_3d": "01a1c562-b5ae-7029-af0f-d2d7c110bd8b",
+  "remesh": "01a1c565-e76a-774a-a6d3-bcb3bd6cd552",
+  "target": 2000,
+  "hq": {
+   "remesh": "01a1c580-122a-723a-8233-99f456767638",
+   "target": 8000
+  }
+ },
+ "till": {
+  "image_to_3d": "01a1c562-6b43-77d0-b96f-b8b307770b63",
+  "remesh": "01a1c565-dd60-7310-aaf5-f12b46302c2d",
+  "target": 8000,
+  "hq": {
+   "remesh": "01a1c580-0436-760f-b2b2-4e65f302c414",
+   "target": 40000
+  }
+ },
+ "water": {
+  "image_to_3d": "01a1c562-7ded-716e-a3da-acd37848f278",
+  "remesh": "01a1c566-3f97-76ee-ad02-5d4975f4bbe6",
+  "target": 6000,
+  "hq": {
+   "remesh": "01a1c580-0a61-71be-90f3-c95c435b590f",
+   "target": 20000
+  }
+ },
+ "cloth": {
+  "image_to_3d": "01a1c565-6d81-76b4-a351-a136aa03658f",
+  "remesh": "01a1c567-ed71-7158-906d-dd5064e331c6",
+  "target": 3000,
+  "hq": {
+   "remesh": "01a1c580-1097-7548-a1a8-3c6c844eefdc",
+   "target": 10000
+  }
+ },
+ "shelf": {
+  "image_to_3d": "01a1c565-8215-70a7-839b-8626de3a3d3e",
+  "remesh": "01a1c568-453d-768a-9c82-3aed5f0306c7",
+  "target": 3000,
+  "hq": {
+   "remesh": "01a1c580-0f07-7385-80bb-cc7dd5322ad6",
+   "target": 10000
+  }
+ },
+ "wreath": {
+  "image_to_3d": "01a1c565-926a-7420-b3e2-ec3670171ff9",
+  "remesh": "01a1c56b-78cf-7406-844f-b2a22601074f",
+  "target": 12000,
+  "hq": {
+   "remesh": "01a1c580-02b8-751c-a53f-eac145dff981",
+   "target": 100000
+  }
+ },
+ "notebook": {
+  "image_to_3d": "01a1c5a4-1f3f-7155-b6b0-2307ff81f3dc",
+  "remesh": "01a1c5a7-0dda-7706-9b24-aa584673f02d",
+  "target": 20000
+ }
+}

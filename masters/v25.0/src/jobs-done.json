@@ -1,0 +1,17 @@
+{
+ "mayom": {
+  "image_to_3d": "01a1c1d4-ed4c-709b-a59f-0edefd6fce47",
+  "remesh": "01a1c1d7-c499-7593-a151-de96360c9cb1",
+  "target": 8000
+ },
+ "bowl": {
+  "image_to_3d": "01a1c1d5-00d3-7326-a625-2a03cd139f24",
+  "remesh": "01a1c1d8-1ceb-76e7-980d-c8d10c501647",
+  "target": 4000
+ },
+ "phan": {
+  "image_to_3d": "01a1c1d5-152e-772d-82a0-97cced0ebe19",
+  "remesh": "01a1c1da-b52f-70d3-900a-2710ef2ea09d",
+  "target": 8000
+ }
+}

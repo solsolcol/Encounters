@@ -1,0 +1,14 @@
+started image-to-3d wallet 01a1c560-fe9b-724c-bd7a-61ea640dea99
+started image-to-3d bag 01a1c561-159a-737e-9479-60e7a060d244
+started image-to-3d yaam 01a1c561-2987-74af-99aa-6a319f6c5778
+started image-to-3d drinks 01a1c561-3dc4-76dd-ac4a-591e5ac31a89
+image-to-3d done wallet -> remesh 01a1c564-3b53-759b-9585-c9e1e7fa42cf
+image-to-3d done drinks -> remesh 01a1c564-4382-76c6-9b8c-70bf86431a9e
+image-to-3d done yaam -> remesh 01a1c564-9948-72af-89fd-285909230ac4
+image-to-3d done bag -> remesh 01a1c564-eff7-73fa-ab25-3672fc6cccde
+remesh done wallet
+remesh done drinks
+remesh done bag
+remesh done yaam
+all done: ['bag', 'drinks', 'wallet', 'yaam']
+DONE

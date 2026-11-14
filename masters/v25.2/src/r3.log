@@ -1,0 +1,11 @@
+started image-to-3d cloth 01a1c565-6d81-76b4-a351-a136aa03658f
+started image-to-3d shelf 01a1c565-8215-70a7-839b-8626de3a3d3e
+started image-to-3d wreath 01a1c565-926a-7420-b3e2-ec3670171ff9
+image-to-3d done cloth -> remesh 01a1c567-ed71-7158-906d-dd5064e331c6
+image-to-3d done shelf -> remesh 01a1c568-453d-768a-9c82-3aed5f0306c7
+remesh done cloth
+remesh done shelf
+image-to-3d done wreath -> remesh 01a1c56b-78cf-7406-844f-b2a22601074f
+remesh done wreath
+all done: ['cloth', 'shelf', 'wreath']
+DONE
