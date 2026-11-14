@@ -1,0 +1,25 @@
+started image-to-3d parasol 01a1cb10-a0d1-7421-a8fc-56b26378d733
+started image-to-3d chrys 01a1cb10-a93c-76ec-b5a5-3b195e2fb30c
+started image-to-3d candle 01a1cb10-b217-71f8-9790-827d0da4e48c
+started image-to-3d purple 01a1cb10-b96a-746e-a156-d9a293d91ebd
+started image-to-3d fruit 01a1cb10-c206-73b1-9164-76092217a911
+started image-to-3d sweets 01a1cb10-cdaa-7277-af18-d1b37d6433ce
+started image-to-3d roses 01a1cb10-d779-7028-b984-8612769c77f5
+started image-to-3d khantok 01a1cb10-e0b4-733e-bcb3-bf61ab58546c
+started image-to-3d satinpuff 01a1cb10-ec1d-7437-9ddd-15c0dc7bb7d5
+started image-to-3d seatchair 01a1cb10-f5d8-76ee-982a-2b2c71ce05ea
+started image-to-3d lowtable 01a1cb11-0142-7387-bf4c-f2918a17d3ba
+  parasol IN_PROGRESS 26%
+  parasol IN_PROGRESS 30%
+  parasol IN_PROGRESS 34%
+  parasol IN_PROGRESS 37%
+  parasol IN_PROGRESS 41%
+  parasol IN_PROGRESS 45%
+  parasol IN_PROGRESS 53%
+  parasol IN_PROGRESS 58%
+  parasol IN_PROGRESS 80%
+  parasol IN_PROGRESS 99%
+  parasol SUCCEEDED 100%
+done parasol {'glb': 84052248} credits 40
+  chrys FAILED 45%
+chrys FAILED: {'type': 'invalid_input', 'code': 'image_too_complex', 'message': 'The uploaded image is too complex for 3D generation.', 'doc_url': 'https://docs.meshy.ai/en/api/errors#image-too-complex'}

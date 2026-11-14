@@ -1,0 +1,31 @@
+started image-to-3d baisri 01a1cb0d-0096-76ef-90f0-11a8e59aa265
+started image-to-3d wheel 01a1cb0d-09ec-77d8-855b-deac10f7830d
+started image-to-3d naga 01a1cb0d-1357-7299-80de-b2b0df896af4
+started image-to-3d tower 01a1cb0d-1c23-7036-93d1-212008e6a12d
+started image-to-3d fan 01a1cb0d-25bb-775f-aaf3-755696257660
+started image-to-3d nagastaff 01a1cb0d-2f5a-7743-b478-5ef9e33e901d
+started image-to-3d pewterbaisri 01a1cb0d-3626-74ca-bb1b-a5c90eb8a1e4
+  baisri IN_PROGRESS 10%
+  baisri IN_PROGRESS 27%
+  baisri IN_PROGRESS 31%
+  baisri IN_PROGRESS 35%
+  baisri IN_PROGRESS 39%
+  baisri IN_PROGRESS 45%
+  baisri IN_PROGRESS 58%
+  baisri IN_PROGRESS 80%
+  baisri IN_PROGRESS 99%
+  baisri SUCCEEDED 100%
+done baisri {'glb': 82485692} credits 40
+  wheel IN_PROGRESS 99%
+  wheel SUCCEEDED 100%
+done wheel {'glb': 84362108} credits 40
+  naga SUCCEEDED 100%
+done naga {'glb': 79010676} credits 40
+  tower SUCCEEDED 100%
+done tower {'glb': 89565364} credits 40
+  fan SUCCEEDED 100%
+done fan {'glb': 102950492} credits 40
+  nagastaff SUCCEEDED 100%
+done nagastaff {'glb': 57935604} credits 40
+  pewterbaisri SUCCEEDED 100%
+done pewterbaisri {'glb': 98392604} credits 40
