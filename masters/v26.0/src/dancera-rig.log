@@ -1,0 +1,10 @@
+started rig dancera 01a1caf2-3f20-76fe-9c67-98d4e287f5b0
+  rig dancera IN_PROGRESS 0%
+  rig dancera IN_PROGRESS 47%
+  rig dancera IN_PROGRESS 90%
+  rig dancera IN_PROGRESS 95%
+  rig dancera SUCCEEDED 100%
+rig done dancera {'rigged': 80937660, 'walk': 81178776}
+body identical to masters/v26.0/src/rigged-dancera.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-dancera-walking.glb 97548 bytes ["retarget_clip (132 ch, 1.03 s)"]

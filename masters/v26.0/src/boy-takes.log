@@ -1,0 +1,16 @@
+started animation boy kid 01a1ce19-82d7-7272-acd6-6fdaa12d00e4
+  anim boy kid IN_PROGRESS 1%
+  anim boy kid IN_PROGRESS 24%
+  anim boy kid IN_PROGRESS 66%
+  anim boy kid IN_PROGRESS 83%
+  anim boy kid IN_PROGRESS 86%
+  anim boy kid IN_PROGRESS 90%
+  anim boy kid IN_PROGRESS 94%
+  anim boy kid IN_PROGRESS 95%
+  anim boy kid SUCCEEDED 100%
+animation done boy kid 54808540
+a re-export of masters/v26.0/src/rigged-boy.glb: 32 bones at the same rest pose in the world, 310051 triangles, the same bounds; 2 of 3 images byte-identical
+prune: Removed types... Primitive (1), Accessor (7)
+wrote masters/v26.0/src/takes-boy-kid.glb 377212 bytes ["Idle_3 (96 ch, 9.97 s)","Run_02 (96 ch, 0.70 s)","Run_03 (96 ch, 0.80 s)","Skip_Forward (96 ch, 2.83 s)","happy_jump_m (96 ch, 9.83 s)"]
+boy kid strip exit 0
+boy lib done

@@ -1,0 +1,42 @@
+started animation devd lib 01a1cb53-85ba-712c-98e9-fb4c5b7627a0
+  anim devd lib IN_PROGRESS 1%
+  anim devd lib IN_PROGRESS 82%
+  anim devd lib IN_PROGRESS 86%
+  anim devd lib IN_PROGRESS 90%
+  anim devd lib IN_PROGRESS 93%
+  anim devd lib IN_PROGRESS 95%
+  anim devd lib SUCCEEDED 100%
+animation done devd lib 52136748
+a re-export of masters/v26.0/src/rigged-devd.glb: 66 bones at the same rest pose in the world, 314270 triangles, the same bounds; 2 of 3 images byte-identical
+prune: Removed types... Primitive (1), Accessor (7)
+wrote masters/v26.0/src/takes-devd-lib.glb 550104 bytes ["Idle_3 (198 ch, 9.97 s)","Sit_Cross_Legged_on_Floor (198 ch, 2.50 s)","Stand_and_Chat (198 ch, 5.17 s)"]
+devd lib strip exit 0
+devd lib done
+  motion devd offer IN_PROGRESS 1%
+  motion devd prostrate IN_PROGRESS 1%
+  motion devd seiza IN_PROGRESS 1%
+  motion devd offer IN_PROGRESS 47%
+  motion devd prostrate IN_PROGRESS 42%
+  motion devd seiza IN_PROGRESS 47%
+  motion devd offer IN_PROGRESS 84%
+  motion devd seiza IN_PROGRESS 84%
+  motion devd prostrate IN_PROGRESS 84%
+  motion devd offer SUCCEEDED 100%
+  motion devd seiza SUCCEEDED 100%
+  motion devd prostrate SUCCEEDED 100%
+motion done devd offer 50149328
+motion done devd seiza 50282208
+motion done devd prostrate 50149300
+body identical to masters/v26.0/src/rigged-devd.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-devd-offer.glb 430260 bytes ["retarget_clip (132 ch, 6.97 s)"]
+devd offer strip exit 0
+body identical to masters/v26.0/src/rigged-devd.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-devd-seiza.glb 486232 bytes ["retarget_clip (132 ch, 7.97 s)"]
+devd seiza strip exit 0
+body identical to masters/v26.0/src/rigged-devd.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-devd-prostrate.glb 430260 bytes ["retarget_clip (132 ch, 6.97 s)"]
+devd prostrate strip exit 0
+devd t2m done

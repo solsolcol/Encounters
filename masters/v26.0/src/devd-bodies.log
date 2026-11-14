@@ -1,0 +1,33 @@
+  remesh devd 24000 IN_PROGRESS 1%
+  remesh devd 24000 IN_PROGRESS 35%
+  remesh devd 24000 IN_PROGRESS 64%
+  remesh devd 24000 IN_PROGRESS 89%
+  remesh devd 24000 IN_PROGRESS 90%
+  remesh devd 24000 SUCCEEDED 100%
+remesh done devd 24000 71298652
+  fit: turn 0 degrees, size x0.8733, moved [0.0011, 0.8309, -0.0006]; a remeshed point lies 0.16 mm from the rig's points on average, 3.1 mm at worst (the other turns: 34.5, 61.0, 61.4 mm)
+  weights: 22043 points from 182512; 41 reached further than 4 cm, 12 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-devd-24000.glb: 24876 triangles on 66 joints; sheets colour 11.9 MB, normal 2.1 MB, mr 0.0 MB; 15.5 MB
+  remesh devd 8000 IN_PROGRESS 1%
+  remesh devd 8000 IN_PROGRESS 35%
+  remesh devd 8000 IN_PROGRESS 60%
+  remesh devd 8000 IN_PROGRESS 89%
+  remesh devd 8000 IN_PROGRESS 90%
+  remesh devd 8000 SUCCEEDED 100%
+remesh done devd 8000 71523612
+  fit: turn 0 degrees, size x0.8738, moved [0.0011, 0.8306, -0.0006]; a remeshed point lies 0.38 mm from the rig's points on average, 1.2 mm at worst (the other turns: 33.8, 63.0, 63.9 mm)
+  weights: 10299 points from 182512; 13 reached further than 4 cm, 0 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-devd-8000.glb: 8286 triangles on 66 joints; sheets colour 12.1 MB, normal 2.2 MB, mr 0.0 MB; 14.9 MB
+  remesh devd 2500 IN_PROGRESS 1%
+  remesh devd 2500 IN_PROGRESS 35%
+  remesh devd 2500 IN_PROGRESS 64%
+  remesh devd 2500 IN_PROGRESS 89%
+  remesh devd 2500 IN_PROGRESS 90%
+  remesh devd 2500 SUCCEEDED 100%
+remesh done devd 2500 69023032
+  fit: turn 0 degrees, size x0.8738, moved [0.0008, 0.8306, -0.0006]; a remeshed point lies 0.51 mm from the rig's points on average, 1.3 mm at worst (the other turns: 36.0, 65.3, 66.0 mm)
+  weights: 4712 points from 182512; 7 reached further than 4 cm, 1 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-devd-2500.glb: 2605 triangles on 66 joints; sheets colour 11.7 MB, normal 2.1 MB, mr 0.0 MB; 14.1 MB

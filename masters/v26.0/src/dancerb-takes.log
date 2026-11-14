@@ -1,0 +1,64 @@
+started animation dancerb lib 01a1cb66-b543-72e3-aad7-43114b6b06ad
+  anim dancerb lib IN_PROGRESS 0%
+  anim dancerb lib IN_PROGRESS 47%
+  anim dancerb lib IN_PROGRESS 84%
+  anim dancerb lib SUCCEEDED 100%
+animation done dancerb lib 82779892
+body identical to masters/v26.0/src/rigged-dancerb.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-dancerb-lib.glb 598476 bytes ["retarget_clip (132 ch, 9.97 s)"]
+dancerb lib strip exit 0
+dancerb lib done
+  motion dancerb dance2 IN_PROGRESS 1%
+  motion dancerb dance1 IN_PROGRESS 1%
+  motion dancerb dance2 IN_PROGRESS 42%
+  motion dancerb dance1 IN_PROGRESS 47%
+  motion dancerb dance2 IN_PROGRESS 84%
+  motion dancerb dance1 IN_PROGRESS 84%
+  motion dancerb dance2 IN_PROGRESS 90%
+  motion dancerb dance1 IN_PROGRESS 90%
+  motion dancerb dance2 SUCCEEDED 100%
+  motion dancerb dance1 SUCCEEDED 100%
+motion done dancerb dance1 82779636
+motion done dancerb dance2 82779632
+body identical to masters/v26.0/src/rigged-dancerb.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-dancerb-dance1.glb 598476 bytes ["retarget_clip (132 ch, 9.97 s)"]
+dancerb dance1 strip exit 0
+body identical to masters/v26.0/src/rigged-dancerb.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-dancerb-dance2.glb 598476 bytes ["retarget_clip (132 ch, 9.97 s)"]
+dancerb dance2 strip exit 0
+dancerb t2m done
+  motion dancerb procession IN_PROGRESS 1%
+  motion dancerb procession IN_PROGRESS 42%
+  motion dancerb procession IN_PROGRESS 84%
+  motion dancerb procession IN_PROGRESS 95%
+  motion dancerb procession SUCCEEDED 100%
+motion done dancerb procession 82248120
+body identical to masters/v26.0/src/rigged-dancerb.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-dancerb-procession.glb 374584 bytes ["retarget_clip (132 ch, 5.97 s)"]
+dancerb procession strip exit 0
+dancerb t2m done
+  motion dancerb walkdance2 IN_PROGRESS 1%
+  motion dancerb walkdance IN_PROGRESS 1%
+  motion dancerb walkdance2 IN_PROGRESS 42%
+  motion dancerb walkdance IN_PROGRESS 42%
+  motion dancerb walkdance2 IN_PROGRESS 84%
+  motion dancerb walkdance IN_PROGRESS 84%
+  motion dancerb walkdance2 IN_PROGRESS 90%
+  motion dancerb walkdance IN_PROGRESS 90%
+  motion dancerb walkdance2 SUCCEEDED 100%
+  motion dancerb walkdance SUCCEEDED 100%
+motion done dancerb walkdance2 82513904
+motion done dancerb walkdance 82513896
+body identical to masters/v26.0/src/rigged-dancerb.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-dancerb-walkdance2.glb 486532 bytes ["retarget_clip (132 ch, 7.97 s)"]
+dancerb walkdance2 strip exit 0
+body identical to masters/v26.0/src/rigged-dancerb.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-dancerb-walkdance.glb 486532 bytes ["retarget_clip (132 ch, 7.97 s)"]
+dancerb walkdance strip exit 0
+dancerb t2m done

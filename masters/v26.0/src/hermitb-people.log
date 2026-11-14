@@ -1,0 +1,58 @@
+masters/v26.0/src/takes-hermitb-lib.glb: Hips, Mesh_0 re-expressed in the rig file's frame
+NOTE: resting at another place IN THE WORLD in a takes file than in the rig file: Mesh_0, SmartRigArmature
+wrote masters/v26.0/src/merged-hermitb.glb 26415760 bytes
+["Sitting_Answering_Questions (198 ch, 9.67 s)","Chair_Sit_Idle_M (198 ch, 10.67 s)","Idle_3 (198 ch, 9.97 s)","handson (132 ch, 5.97 s)","petals (132 ch, 3.97 s)","palmover (132 ch, 5.97 s)"]
+calmarms masters/v26.0/src/merged-hermitb.glb: the body's left 1.00,0.00,-0.03, its face 0.03,0.00,1.00
+  Idle_3: Left out 9.0..19.0 (mean 15.1) -> 2.3..8.3; swing 3.8..12.9 -> 3.8..12.9 | Right out 11.1..18.9 (mean 15.2) -> 3.5..8.2; swing 2.2..10.2 -> 2.2..10.2
+  Stand_and_Chat: not in this file (left out)
+  Listening_Gesture: not in this file (left out)
+  Walking: not in this file (left out)
+  Casual_Walk: not in this file (left out)
+  Walking_Woman: not in this file (left out)
+wrote masters/v26.0/src/merged-hermitb.glb
+  skin weights: 45697 vertices in 14901 positions over 65 joints, 24 diffusion passes; 6745 vertices' main weight moved
+prune: Removed types... Texture (1), Accessor (2)
+  45697 vertices in 14901 positions; 34610 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.0s] 45697 points joined into 14901 places; 30373 triangles
+  repaint [   0.0s] the face 3643 triangles, the rest of the head 8411, the hands 1422, the body 16897 (looking [-0.0, 0.0, 1.0])
+  repaint [   5.5s] xatlas: 2287 charts, 77% of the square used
+  repaint [   7.5s] packed again: 2287 charts in a 2916x2926 square drawn at 2048 (78% used), a margin of 3.5 pixels at 2048
+  repaint [   7.6s] 2 triangles reached across the sheet from a corner xatlas never placed: each given its neighbours' place (2)
+  repaint [   7.6s] texels a metre at 2048, before -> now: face 1592 -> 1831, head 1744 -> 1392, hands 1370 -> 816, body 781 -> 681; 2288 charts, margin 3.5 px; 2 unplaced corners mended
+  repaint [   7.7s] baking 2048x2048 at 16 samples a texel from the 8192 sheet
+  repaint [  16.7s] baked
+  repaint [  16.7s] written
+  repaint: 45697 points -> 49238 (3541 copied along the new seams), 30373 triangles; texels a metre at 2048, before -> now: face 1592 -> 1831, head 1744 -> 1392, hands 1370 -> 816, body 781 -> 681; 2288 charts, margin 3.5 px; 2 unplaced corners mended
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk e4hermitb.glb: tris 30373 -> 30373, 6 takes, 2381 KB
+  skin weights: 14226 vertices in 3839 positions over 65 joints, 24 diffusion passes; 4750 vertices' main weight moved
+prune: Removed types... Texture (1)
+  14226 vertices in 3839 positions; 11858 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.0s] 14226 points joined into 3839 places; 7814 triangles
+  repaint [   0.0s] the face 870 triangles, the rest of the head 1811, the hands 382, the body 4751 (looking [-0.0, 0.0, 1.0])
+  repaint [   0.5s] xatlas: 1008 charts, 83% of the square used
+  repaint [   0.8s] packed again: 1008 charts in a 866x868 square drawn at 512 (78% used), a margin of 2.4 pixels at 512
+  repaint [   0.8s] texels a metre at 512, before -> now: face 374 -> 367, head 413 -> 282, hands 409 -> 153, body 208 -> 134; 1009 charts, margin 2.4 px
+  repaint [   0.9s] baking 512x512 at 256 samples a texel from the 8192 sheet
+  repaint [   3.1s] baked
+  repaint [   3.1s] written
+  repaint: 14226 points -> 14913 (687 copied along the new seams), 7814 triangles; texels a metre at 512, before -> now: face 374 -> 367, head 413 -> 282, hands 409 -> 153, body 208 -> 134; 1009 charts, margin 2.4 px
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk e4hermitbm.glb: tris 7814 -> 7814, 0 takes, 380 KB
+  skin weights: 5065 vertices in 1190 positions over 65 joints, 24 diffusion passes; 3162 vertices' main weight moved
+prune: Removed types... Texture (1)
+  5065 vertices in 1190 positions; 4368 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.0s] 5065 points joined into 1190 places; 2386 triangles
+  repaint [   0.0s] the face 223 triangles, the rest of the head 407, the hands 138, the body 1618 (looking [-0.0, 0.0, 1.0])
+  repaint [   0.1s] xatlas: 352 charts, 81% of the square used
+  repaint [   0.2s] packed again: 352 charts in a 449x449 square drawn at 256 (78% used), a margin of 2.3 pixels at 256
+  repaint [   0.2s] texels a metre at 256, before -> now: face 197 -> 145, head 194 -> 119, hands 204 -> 80, body 111 -> 64; 353 charts, margin 2.3 px
+  repaint [   0.3s] baking 256x256 at 256 samples a texel from the 8192 sheet
+  repaint [   1.6s] baked
+  repaint [   1.6s] written
+  repaint: 5065 points -> 5249 (184 copied along the new seams), 2386 triangles; texels a metre at 256, before -> now: face 197 -> 145, head 194 -> 119, hands 204 -> 80, body 111 -> 64; 353 charts, margin 2.3 px
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk e4hermitbf.glb: tris 2386 -> 2386, 0 takes, 149 KB

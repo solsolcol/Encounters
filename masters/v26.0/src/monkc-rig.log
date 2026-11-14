@@ -1,0 +1,9 @@
+started rig monkc 01a1cf44-985c-7753-98e0-8c94e25d28f0
+  rig monkc IN_PROGRESS 0%
+  rig monkc IN_PROGRESS 47%
+  rig monkc IN_PROGRESS 90%
+  rig monkc SUCCEEDED 100%
+rig done monkc {'rigged': 43958752, 'walk': 44199832}
+body identical to masters/v26.0/src/rigged-monkc.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-monkc-walking.glb 98356 bytes ["retarget_clip (132 ch, 1.03 s)"]

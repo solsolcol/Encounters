@@ -1,0 +1,10 @@
+started rig deve 01a1caf2-3f69-776d-b4ee-f99028730682
+  rig deve IN_PROGRESS 0%
+  rig deve IN_PROGRESS 47%
+  rig deve IN_PROGRESS 84%
+  rig deve IN_PROGRESS 90%
+  rig deve SUCCEEDED 100%
+rig done deve {'rigged': 76250188, 'walk': 76491484}
+body identical to masters/v26.0/src/rigged-deve.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-deve-walking.glb 98384 bytes ["retarget_clip (132 ch, 1.03 s)"]

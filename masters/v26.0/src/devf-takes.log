@@ -1,0 +1,66 @@
+started animation devf lib 01a1cb49-7319-72fb-a370-6f9e071d72fe
+  anim devf lib IN_PROGRESS 1%
+  anim devf lib IN_PROGRESS 56%
+  anim devf lib IN_PROGRESS 82%
+  anim devf lib IN_PROGRESS 86%
+  anim devf lib IN_PROGRESS 90%
+  anim devf lib IN_PROGRESS 93%
+  anim devf lib IN_PROGRESS 95%
+  anim devf lib SUCCEEDED 100%
+animation done devf lib 79478896
+a re-export of masters/v26.0/src/rigged-devf.glb: 66 bones at the same rest pose in the world, 308424 triangles, the same bounds; 2 of 3 images byte-identical
+prune: Removed types... Primitive (1), Accessor (7)
+wrote masters/v26.0/src/takes-devf-lib.glb 549812 bytes ["Idle_3 (198 ch, 9.97 s)","Sit_Cross_Legged_on_Floor (198 ch, 2.50 s)","Stand_and_Chat (198 ch, 5.17 s)"]
+devf lib strip exit 0
+devf lib done
+  motion devf prostrate IN_PROGRESS 1%
+  motion devf offer IN_PROGRESS 1%
+  motion devf seiza IN_PROGRESS 1%
+  motion devf armsopen IN_PROGRESS 1%
+  motion devf sway IN_PROGRESS 1%
+  motion devf prostrate IN_PROGRESS 42%
+  motion devf offer IN_PROGRESS 42%
+  motion devf armsopen IN_PROGRESS 42%
+  motion devf sway IN_PROGRESS 42%
+  motion devf seiza IN_PROGRESS 42%
+  motion devf prostrate IN_PROGRESS 84%
+  motion devf offer IN_PROGRESS 84%
+  motion devf seiza IN_PROGRESS 84%
+  motion devf sway IN_PROGRESS 84%
+  motion devf armsopen IN_PROGRESS 84%
+  motion devf prostrate IN_PROGRESS 95%
+  motion devf offer IN_PROGRESS 90%
+  motion devf seiza IN_PROGRESS 90%
+  motion devf sway IN_PROGRESS 90%
+  motion devf armsopen IN_PROGRESS 90%
+  motion devf prostrate SUCCEEDED 100%
+  motion devf offer SUCCEEDED 100%
+  motion devf seiza SUCCEEDED 100%
+  motion devf sway SUCCEEDED 100%
+  motion devf armsopen SUCCEEDED 100%
+motion done devf offer 76149844
+body identical to masters/v26.0/src/rigged-devf.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-devf-offer.glb 429824 bytes ["retarget_clip (132 ch, 6.97 s)"]
+devf offer strip exit 0
+motion done devf prostrate 76149860
+body identical to masters/v26.0/src/rigged-devf.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-devf-prostrate.glb 429824 bytes ["retarget_clip (132 ch, 6.97 s)"]
+devf prostrate strip exit 0
+motion done devf seiza 76282756
+motion done devf sway 76548464
+motion done devf armsopen 76415648
+body identical to masters/v26.0/src/rigged-devf.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-devf-seiza.glb 485800 bytes ["retarget_clip (132 ch, 7.97 s)"]
+devf seiza strip exit 0
+body identical to masters/v26.0/src/rigged-devf.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-devf-sway.glb 597744 bytes ["retarget_clip (132 ch, 9.97 s)"]
+devf sway strip exit 0
+body identical to masters/v26.0/src/rigged-devf.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-devf-armsopen.glb 541772 bytes ["retarget_clip (132 ch, 8.97 s)"]
+devf armsopen strip exit 0
+devf t2m done

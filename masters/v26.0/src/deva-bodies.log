@@ -1,0 +1,33 @@
+  remesh deva 24000 IN_PROGRESS 1%
+  remesh deva 24000 IN_PROGRESS 35%
+  remesh deva 24000 IN_PROGRESS 64%
+  remesh deva 24000 IN_PROGRESS 89%
+  remesh deva 24000 IN_PROGRESS 90%
+  remesh deva 24000 SUCCEEDED 100%
+remesh done deva 24000 63091788
+  fit: turn 0 degrees, size x0.8522, moved [0.0003, 0.8109, 0.0024]; a remeshed point lies 0.16 mm from the rig's points on average, 3.2 mm at worst (the other turns: 19.4, 42.8, 44.1 mm)
+  weights: 25607 points from 197317; 15 reached further than 4 cm, 3 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-deva-24000.glb: 24851 triangles on 66 joints; sheets colour 12.0 MB, normal 2.4 MB, mr 0.0 MB; 16.1 MB
+  remesh deva 8000 IN_PROGRESS 1%
+  remesh deva 8000 IN_PROGRESS 35%
+  remesh deva 8000 IN_PROGRESS 64%
+  remesh deva 8000 IN_PROGRESS 89%
+  remesh deva 8000 IN_PROGRESS 90%
+  remesh deva 8000 SUCCEEDED 100%
+remesh done deva 8000 61519372
+  fit: turn 0 degrees, size x0.8522, moved [0.0002, 0.8109, 0.0027]; a remeshed point lies 0.34 mm from the rig's points on average, 4.4 mm at worst (the other turns: 20.1, 45.2, 46.7 mm)
+  weights: 11902 points from 197317; 6 reached further than 4 cm, 0 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-deva-8000.glb: 8284 triangles on 66 joints; sheets colour 11.7 MB, normal 2.5 MB, mr 0.0 MB; 15.0 MB
+  remesh deva 2500 IN_PROGRESS 1%
+  remesh deva 2500 IN_PROGRESS 35%
+  remesh deva 2500 IN_PROGRESS 64%
+  remesh deva 2500 IN_PROGRESS 89%
+  remesh deva 2500 IN_PROGRESS 90%
+  remesh deva 2500 SUCCEEDED 100%
+remesh done deva 2500 58389104
+  fit: turn 0 degrees, size x0.8534, moved [-0.0003, 0.8103, 0.0027]; a remeshed point lies 0.90 mm from the rig's points on average, 2.9 mm at worst (the other turns: 20.2, 48.9, 49.8 mm)
+  weights: 4932 points from 197317; 5 reached further than 4 cm, 1 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-deva-2500.glb: 2576 triangles on 66 joints; sheets colour 10.8 MB, normal 2.4 MB, mr 0.0 MB; 13.4 MB

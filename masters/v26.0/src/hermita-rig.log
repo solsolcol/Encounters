@@ -1,0 +1,10 @@
+started rig hermita 01a1cafe-c2b6-7351-b9d5-263c285aa2e6
+  rig hermita IN_PROGRESS 0%
+  rig hermita IN_PROGRESS 47%
+  rig hermita IN_PROGRESS 84%
+  rig hermita IN_PROGRESS 90%
+  rig hermita SUCCEEDED 100%
+rig done hermita {'rigged': 77814864, 'walk': 78055784}
+body identical to masters/v26.0/src/rigged-hermita.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-hermita-walking.glb 97888 bytes ["retarget_clip (132 ch, 1.03 s)"]

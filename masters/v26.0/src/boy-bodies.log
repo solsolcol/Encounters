@@ -1,0 +1,43 @@
+  remesh boy 12000 IN_PROGRESS 1%
+  remesh boy 12000 IN_PROGRESS 35%
+  remesh boy 12000 IN_PROGRESS 64%
+  remesh boy 12000 IN_PROGRESS 89%
+  remesh boy 12000 IN_PROGRESS 90%
+  remesh boy 12000 SUCCEEDED 100%
+remesh done boy 12000 62348856
+  fit: turn 0 degrees, size x0.5519, moved [0.0006, 0.5251, -0.0003]; a remeshed point lies 0.15 mm from the rig's points on average, 4.2 mm at worst (the other turns: 15.6, 32.7, 33.2 mm)
+  weights: 14760 points from 241173; 5 reached further than 4 cm, 0 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-boy-12000.glb: 12494 triangles on 32 joints; sheets colour 9.4 MB, normal 2.3 MB, mr 0.0 MB; 12.7 MB
+  remesh boy 4000 IN_PROGRESS 1%
+  remesh boy 4000 IN_PROGRESS 35%
+  remesh boy 4000 IN_PROGRESS 64%
+  remesh boy 4000 IN_PROGRESS 89%
+  remesh boy 4000 IN_PROGRESS 90%
+  remesh boy 4000 SUCCEEDED 100%
+remesh done boy 4000 60376948
+  fit: turn 0 degrees, size x0.5522, moved [0.0004, 0.5254, -0.0003]; a remeshed point lies 0.40 mm from the rig's points on average, 2.0 mm at worst (the other turns: 16.4, 37.8, 38.1 mm)
+  weights: 6575 points from 241173; 5 reached further than 4 cm, 1 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-boy-4000.glb: 4164 triangles on 32 joints; sheets colour 9.0 MB, normal 2.2 MB, mr 0.0 MB; 11.6 MB
+  remesh boy 1500 IN_PROGRESS 1%
+  remesh boy 1500 IN_PROGRESS 35%
+  remesh boy 1500 IN_PROGRESS 64%
+  remesh boy 1500 IN_PROGRESS 90%
+  remesh boy 1500 SUCCEEDED 100%
+remesh done boy 1500 57815272
+  fit: turn 0 degrees, size x0.5526, moved [0.0007, 0.5248, -0.0008]; a remeshed point lies 0.73 mm from the rig's points on average, 3.3 mm at worst (the other turns: 16.9, 39.0, 39.5 mm)
+  weights: 3191 points from 241173; 1 reached further than 4 cm, 0 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-boy-1500.glb: 1560 triangles on 32 joints; sheets colour 8.4 MB, normal 2.1 MB, mr 0.0 MB; 10.7 MB
+  remesh boy 24000 IN_PROGRESS 1%
+  remesh boy 24000 IN_PROGRESS 35%
+  remesh boy 24000 IN_PROGRESS 60%
+  remesh boy 24000 IN_PROGRESS 89%
+  remesh boy 24000 IN_PROGRESS 90%
+  remesh boy 24000 SUCCEEDED 100%
+remesh done boy 24000 63573868
+  fit: turn 0 degrees, size x0.5518, moved [0.0008, 0.5251, -0.0003]; a remeshed point lies 0.19 mm from the rig's points on average, 6.1 mm at worst (the other turns: 14.9, 27.1, 27.5 mm)
+  weights: 27041 points from 241173; 8 reached further than 4 cm, 0 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-boy-24000.glb: 24974 triangles on 32 joints; sheets colour 9.4 MB, normal 2.5 MB, mr 0.0 MB; 13.6 MB

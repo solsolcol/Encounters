@@ -1,0 +1,14 @@
+started animation monkc lib 01a1cf4c-d330-76d7-9d43-00d5eeb20a38
+  anim monkc lib IN_PROGRESS 1%
+  anim monkc lib IN_PROGRESS 82%
+  anim monkc lib IN_PROGRESS 86%
+  anim monkc lib IN_PROGRESS 90%
+  anim monkc lib IN_PROGRESS 94%
+  anim monkc lib IN_PROGRESS 95%
+  anim monkc lib SUCCEEDED 100%
+animation done monkc lib 47234600
+a re-export of masters/v26.0/src/rigged-monkc.glb: 66 bones at the same rest pose in the world, 312219 triangles, the same bounds; 2 of 3 images byte-identical
+prune: Removed types... Primitive (1), Accessor (7)
+wrote masters/v26.0/src/takes-monkc-lib.glb 612832 bytes ["Chair_Sit_Idle_M (198 ch, 10.67 s)","Idle_3 (198 ch, 9.97 s)"]
+monkc lib strip exit 0
+monkc lib done

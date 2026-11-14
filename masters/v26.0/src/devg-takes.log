@@ -1,0 +1,69 @@
+started animation devg lib 01a1cb49-7368-73d1-a6a9-568cba9f13eb
+  anim devg lib IN_PROGRESS 1%
+  anim devg lib IN_PROGRESS 56%
+  anim devg lib IN_PROGRESS 83%
+  anim devg lib IN_PROGRESS 87%
+  anim devg lib IN_PROGRESS 90%
+  anim devg lib IN_PROGRESS 94%
+  anim devg lib IN_PROGRESS 95%
+  anim devg lib SUCCEEDED 100%
+animation done devg lib 37146848
+a re-export of masters/v26.0/src/rigged-devg.glb: 66 bones at the same rest pose in the world, 298493 triangles, the same bounds; 2 of 3 images byte-identical
+prune: Removed types... Primitive (1), Accessor (7)
+wrote masters/v26.0/src/takes-devg-lib.glb 550248 bytes ["Idle_3 (198 ch, 9.97 s)","Sit_Cross_Legged_on_Floor (198 ch, 2.50 s)","Stand_and_Chat (198 ch, 5.17 s)"]
+devg lib strip exit 0
+devg lib done
+  motion devg prostrate PENDING 0%
+  motion devg seiza PENDING 0%
+  motion devg sway PENDING 0%
+  motion devg trance2 PENDING 0%
+  motion devg armsopen PENDING 0%
+  motion devg offer PENDING 0%
+  motion devg prostrate IN_PROGRESS 42%
+  motion devg seiza IN_PROGRESS 42%
+  motion devg sway IN_PROGRESS 42%
+  motion devg trance2 IN_PROGRESS 42%
+  motion devg offer IN_PROGRESS 42%
+  motion devg armsopen IN_PROGRESS 42%
+  motion devg prostrate IN_PROGRESS 95%
+  motion devg sway IN_PROGRESS 95%
+  motion devg seiza SUCCEEDED 100%
+  motion devg trance2 IN_PROGRESS 79%
+  motion devg offer IN_PROGRESS 79%
+  motion devg armsopen IN_PROGRESS 84%
+motion done devg seiza 35616760
+body identical to masters/v26.0/src/rigged-devg.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-devg-seiza.glb 486092 bytes ["retarget_clip (132 ch, 7.97 s)"]
+devg seiza strip exit 0
+  motion devg sway SUCCEEDED 100%
+  motion devg prostrate SUCCEEDED 100%
+  motion devg trance2 SUCCEEDED 100%
+  motion devg offer SUCCEEDED 100%
+  motion devg armsopen SUCCEEDED 100%
+motion done devg sway 35882512
+motion done devg trance2 35749640
+body identical to masters/v26.0/src/rigged-devg.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+body identical to masters/v26.0/src/rigged-devg.glb (5 prints)
+wrote masters/v26.0/src/takes-devg-sway.glb 598036 bytes ["retarget_clip (132 ch, 9.97 s)"]
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-devg-trance2.glb 542064 bytes ["retarget_clip (132 ch, 8.97 s)"]
+devg sway strip exit 0
+devg trance2 strip exit 0
+motion done devg prostrate 35483852
+motion done devg armsopen 35749692
+motion done devg offer 35483876
+body identical to masters/v26.0/src/rigged-devg.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-devg-prostrate.glb 430120 bytes ["retarget_clip (132 ch, 6.97 s)"]
+devg prostrate strip exit 0
+body identical to masters/v26.0/src/rigged-devg.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-devg-armsopen.glb 542064 bytes ["retarget_clip (132 ch, 8.97 s)"]
+devg armsopen strip exit 0
+body identical to masters/v26.0/src/rigged-devg.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-devg-offer.glb 430120 bytes ["retarget_clip (132 ch, 6.97 s)"]
+devg offer strip exit 0
+devg t2m done

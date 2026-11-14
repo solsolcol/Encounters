@@ -1,0 +1,9 @@
+started rig devh 01a1caf2-3f5d-7320-a832-655f920ff42f
+  rig devh IN_PROGRESS 0%
+  rig devh IN_PROGRESS 47%
+  rig devh IN_PROGRESS 90%
+  rig devh SUCCEEDED 100%
+rig done devh {'rigged': 44549600, 'walk': 44754348}
+body identical to masters/v26.0/src/rigged-devh.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (154)
+wrote masters/v26.0/src/takes-devh-walking.glb 94556 bytes ["retarget_clip (128 ch, 1.03 s)"]

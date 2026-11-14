@@ -1,0 +1,31 @@
+  remesh monkb 30000 IN_PROGRESS 1%
+  remesh monkb 30000 IN_PROGRESS 35%
+  remesh monkb 30000 IN_PROGRESS 64%
+  remesh monkb 30000 IN_PROGRESS 89%
+  remesh monkb 30000 IN_PROGRESS 90%
+  remesh monkb 30000 SUCCEEDED 100%
+remesh done monkb 30000 78758020
+  fit: turn 0 degrees, size x0.8724, moved [0.0017, 0.8302, 0.0044]; a remeshed point lies 0.15 mm from the rig's points on average, 4.2 mm at worst (the other turns: 32.3, 41.7, 43.8 mm)
+  weights: 28122 points from 197675; 10 reached further than 4 cm, 3 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-monkb-30000.glb: 31120 triangles on 66 joints; sheets colour 12.7 MB, normal 2.1 MB, mr 0.0 MB; 16.6 MB
+  remesh monkb 8000 IN_PROGRESS 1%
+  remesh monkb 8000 IN_PROGRESS 35%
+  remesh monkb 8000 IN_PROGRESS 64%
+  remesh monkb 8000 IN_PROGRESS 90%
+  remesh monkb 8000 SUCCEEDED 100%
+remesh done monkb 8000 77982976
+  fit: turn 0 degrees, size x0.8730, moved [0.0018, 0.8297, 0.0045]; a remeshed point lies 0.65 mm from the rig's points on average, 6.3 mm at worst (the other turns: 33.0, 43.6, 46.0 mm)
+  weights: 11722 points from 197675; 12 reached further than 4 cm, 1 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-monkb-8000.glb: 8297 triangles on 66 joints; sheets colour 12.8 MB, normal 2.2 MB, mr 0.0 MB; 15.7 MB
+  remesh monkb 2500 IN_PROGRESS 1%
+  remesh monkb 2500 IN_PROGRESS 35%
+  remesh monkb 2500 IN_PROGRESS 64%
+  remesh monkb 2500 IN_PROGRESS 90%
+  remesh monkb 2500 SUCCEEDED 100%
+remesh done monkb 2500 76502604
+  fit: turn 0 degrees, size x0.8731, moved [0.0002, 0.8295, 0.0046]; a remeshed point lies 1.44 mm from the rig's points on average, 6.6 mm at worst (the other turns: 33.5, 45.8, 48.3 mm)
+  weights: 5195 points from 197675; 12 reached further than 4 cm, 6 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-monkb-2500.glb: 2588 triangles on 66 joints; sheets colour 12.8 MB, normal 2.2 MB, mr 0.0 MB; 15.3 MB

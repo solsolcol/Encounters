@@ -1,0 +1,54 @@
+  motion dancera dance2 IN_PROGRESS 1%
+  motion dancera dance2 IN_PROGRESS 42%
+  motion dancera dance2 IN_PROGRESS 84%
+  motion dancera dance2 IN_PROGRESS 90%
+  motion dancera dance2 SUCCEEDED 100%
+motion done dancera dance2 82366428
+body identical to masters/v26.0/src/rigged-dancera.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-dancera-dance2.glb 597816 bytes ["retarget_clip (132 ch, 9.97 s)"]
+dancera dance2 strip exit 0
+dancera t2m done
+started animation dancera lib 01a1cb68-9718-7106-814d-4e2af873b18c
+  anim dancera lib IN_PROGRESS 0%
+  anim dancera lib IN_PROGRESS 47%
+  anim dancera lib IN_PROGRESS 84%
+  anim dancera lib SUCCEEDED 100%
+animation done dancera lib 82366596
+body identical to masters/v26.0/src/rigged-dancera.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-dancera-lib.glb 597816 bytes ["retarget_clip (132 ch, 9.97 s)"]
+dancera lib strip exit 0
+dancera lib done
+  motion dancera procession IN_PROGRESS 1%
+  motion dancera procession IN_PROGRESS 47%
+  motion dancera procession IN_PROGRESS 84%
+  motion dancera procession IN_PROGRESS 90%
+  motion dancera procession SUCCEEDED 100%
+motion done dancera procession 81834844
+body identical to masters/v26.0/src/rigged-dancera.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-dancera-procession.glb 373924 bytes ["retarget_clip (132 ch, 5.97 s)"]
+dancera procession strip exit 0
+dancera t2m done
+  motion dancera walkdance2 IN_PROGRESS 1%
+  motion dancera walkdance IN_PROGRESS 1%
+  motion dancera walkdance2 IN_PROGRESS 42%
+  motion dancera walkdance IN_PROGRESS 42%
+  motion dancera walkdance2 IN_PROGRESS 84%
+  motion dancera walkdance IN_PROGRESS 84%
+  motion dancera walkdance2 IN_PROGRESS 90%
+  motion dancera walkdance IN_PROGRESS 90%
+  motion dancera walkdance2 SUCCEEDED 100%
+  motion dancera walkdance SUCCEEDED 100%
+motion done dancera walkdance2 82100676
+motion done dancera walkdance 82100676
+body identical to masters/v26.0/src/rigged-dancera.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-dancera-walkdance2.glb 485872 bytes ["retarget_clip (132 ch, 7.97 s)"]
+dancera walkdance2 strip exit 0
+body identical to masters/v26.0/src/rigged-dancera.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-dancera-walkdance.glb 485872 bytes ["retarget_clip (132 ch, 7.97 s)"]
+dancera walkdance strip exit 0
+dancera t2m done

@@ -1,0 +1,109 @@
+  remesh dancera 30000 IN_PROGRESS 1%
+  remesh dancera 30000 IN_PROGRESS 35%
+  remesh dancera 30000 IN_PROGRESS 60%
+  remesh dancera 30000 IN_PROGRESS 89%
+  remesh dancera 30000 IN_PROGRESS 90%
+  remesh dancera 30000 SUCCEEDED 100%
+remesh done dancera 30000 99418288
+  fit: turn 0 degrees, size x0.8511, moved [0.0010, 0.8100, -0.0070]; a remeshed point lies 0.45 mm from the rig's points on average, 8.2 mm at worst (the other turns: 25.0, 39.7, 42.2 mm)
+  weights: 42088 points from 288729; 0 reached further than 4 cm, 0 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-dancera-30000.glb: 30806 triangles on 66 joints; sheets colour 20.9 MB, normal 3.7 MB, mr 0.0 MB; 27.2 MB
+  remesh dancera 8000 IN_PROGRESS 1%
+  remesh dancera 8000 IN_PROGRESS 35%
+  remesh dancera 8000 IN_PROGRESS 60%
+  remesh dancera 8000 IN_PROGRESS 89%
+  remesh dancera 8000 IN_PROGRESS 90%
+  remesh dancera 8000 SUCCEEDED 100%
+remesh done dancera 8000 97970964
+  fit: turn 0 degrees, size x0.8514, moved [0.0017, 0.8097, -0.0053]; a remeshed point lies 1.64 mm from the rig's points on average, 6.9 mm at worst (the other turns: 24.3, 40.2, 42.7 mm)
+  weights: 15014 points from 288729; 2 reached further than 4 cm, 0 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-dancera-8000.glb: 8092 triangles on 66 joints; sheets colour 20.6 MB, normal 3.7 MB, mr 0.0 MB; 25.3 MB
+  remesh dancera 2500 IN_PROGRESS 1%
+  remesh dancera 2500 IN_PROGRESS 35%
+  remesh dancera 2500 IN_PROGRESS 60%
+  remesh dancera 2500 IN_PROGRESS 89%
+  remesh dancera 2500 IN_PROGRESS 90%
+Traceback (most recent call last):
+  File "/usr/lib/python3.13/urllib/request.py", line 1331, in do_open
+    h.request(req.get_method(), req.selector, req.data, headers,
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              encode_chunked=req.has_header('Transfer-encoding'))
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/http/client.py", line 1386, in request
+    self._send_request(method, url, body, headers, encode_chunked)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/http/client.py", line 1432, in _send_request
+    self.endheaders(body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/http/client.py", line 1381, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/http/client.py", line 1141, in _send_output
+    self.send(msg)
+    ~~~~~~~~~^^^^^
+  File "/usr/lib/python3.13/http/client.py", line 1085, in send
+    self.connect()
+    ~~~~~~~~~~~~^^
+  File "/usr/lib/python3.13/http/client.py", line 1527, in connect
+    self.sock = self._context.wrap_socket(self.sock,
+                ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^
+                                          server_hostname=server_hostname)
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/ssl.py", line 469, in wrap_socket
+    return self.sslsocket_class._create(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sock=sock,
+        ^^^^^^^^^^
+    ...<5 lines>...
+        session=session
+        ^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/usr/lib/python3.13/ssl.py", line 1087, in _create
+    self.do_handshake()
+    ~~~~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.13/ssl.py", line 1383, in do_handshake
+    self._sslobj.do_handshake()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/user/Encounters/masters/v26.0/meshy26.py", line 245, in <module>
+    elif a[0] == 'remesh': cmd_remesh(a[1], a[2])
+                           ~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/user/Encounters/masters/v26.0/meshy26.py", line 233, in cmd_remesh
+    t = wait('/remesh', tid, 'remesh %s %s' % (name, polys))
+  File "/home/user/Encounters/masters/v26.0/meshy26.py", line 91, in wait
+    t = call('GET', '%s/%s' % (path, tid))
+  File "/home/user/Encounters/masters/v26.0/meshy26.py", line 41, in call
+    with urllib.request.urlopen(req, timeout=180) as r:
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/urllib/request.py", line 189, in urlopen
+    return opener.open(url, data, timeout)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/urllib/request.py", line 489, in open
+    response = self._open(req, data)
+  File "/usr/lib/python3.13/urllib/request.py", line 506, in _open
+    result = self._call_chain(self.handle_open, protocol, protocol +
+                              '_open', req)
+  File "/usr/lib/python3.13/urllib/request.py", line 466, in _call_chain
+    result = func(*args)
+  File "/usr/lib/python3.13/urllib/request.py", line 1379, in https_open
+    return self.do_open(http.client.HTTPSConnection, req,
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                        context=self._context)
+                        ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.13/urllib/request.py", line 1334, in do_open
+    raise URLError(err)
+urllib.error.URLError: <urlopen error [Errno 104] Connection reset by peer>
+  remesh dancera 2500: the job is in the ledger (01a1cba0-7b00-756e-bb00-98a1f3ea2be7): waited for, not started again
+  remesh dancera 2500 SUCCEEDED 100%
+remesh done dancera 2500 97784832
+  fit: turn 0 degrees, size x0.8519, moved [0.0017, 0.8102, -0.0064]; a remeshed point lies 1.16 mm from the rig's points on average, 3.9 mm at worst (the other turns: 24.5, 39.2, 41.4 mm)
+  weights: 5442 points from 288729; 1 reached further than 4 cm, 0 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-dancera-2500.glb: 2476 triangles on 66 joints; sheets colour 20.6 MB, normal 3.6 MB, mr 0.0 MB; 24.5 MB

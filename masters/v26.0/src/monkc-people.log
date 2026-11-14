@@ -1,0 +1,61 @@
+masters/v26.0/src/takes-monkc-lib.glb: Hips, Mesh_0 re-expressed in the rig file's frame
+NOTE: resting at another place IN THE WORLD in a takes file than in the rig file: Mesh_0, SmartRigArmature
+wrote masters/v26.0/src/merged-monkc.glb 15822000 bytes
+["Chair_Sit_Idle_M (198 ch, 10.67 s)"]
+calmarms masters/v26.0/src/merged-monkc.glb: the body's left 1.00,0.00,0.06, its face -0.06,0.00,1.00
+  Idle_3: not in this file (left out)
+  Stand_and_Chat: not in this file (left out)
+  Listening_Gesture: not in this file (left out)
+  Walking: not in this file (left out)
+  Casual_Walk: not in this file (left out)
+  Walking_Woman: not in this file (left out)
+wrote masters/v26.0/src/merged-monkc.glb
+  skin weights: 26934 vertices in 15576 positions over 65 joints, 24 diffusion passes; 5467 vertices' main weight moved
+prune: Removed types... Texture (1)
+  sided: 1702 points share only the faces at their place that look their way
+  26934 vertices in 15576 positions; 9607 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.0s] 26934 points joined into 15576 places; 31144 triangles
+  repaint [   0.0s] the face 1170 triangles, the rest of the head 1438, the hands 2372, the body 26164 (looking [0.0, 0.0, 1.0])
+  repaint [   6.6s] xatlas: 558 charts, 67% of the square used
+  repaint [   8.4s] packed again: 558 charts in a 2483x2463 square drawn at 2048 (72% used), a margin of 4.1 pixels at 2048
+  repaint [   8.5s] 3 triangles reached across the sheet from a corner xatlas never placed: each given its neighbours' place (3)
+  repaint [   8.5s] texels a metre at 2048, before -> now: face 1111 -> 2162, head 1064 -> 1752, hands 1688 -> 1078, body 1056 -> 833; 558 charts, margin 4.1 px; 3 unplaced corners mended
+  repaint [   8.6s] baking 2048x2048 at 16 samples a texel from the 8192 sheet
+  repaint [  19.4s] baked
+  repaint [  19.4s] written
+  repaint: 26934 points -> 31516 (4582 copied along the new seams), 31144 triangles; texels a metre at 2048, before -> now: face 1111 -> 2162, head 1064 -> 1752, hands 1688 -> 1078, body 1056 -> 833; 558 charts, margin 4.1 px; 3 unplaced corners mended
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk e4monkc.glb: tris 31144 -> 31144, 1 takes, 1126 KB
+  skin weights: 11010 vertices in 4153 positions over 65 joints, 24 diffusion passes; 5294 vertices' main weight moved
+prune: Removed types... Texture (1)
+  sided: 2345 points share only the faces at their place that look their way
+  11010 vertices in 4153 positions; 6401 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.0s] 11010 points joined into 4153 places; 8301 triangles
+  repaint [   0.0s] the face 336 triangles, the rest of the head 428, the hands 588, the body 6949 (looking [0.0, 0.0, 1.0])
+  repaint [   0.6s] xatlas: 309 charts, 74% of the square used
+  repaint [   0.9s] packed again: 309 charts in a 649x647 square drawn at 512 (78% used), a margin of 2.4 pixels at 512
+  repaint [   0.9s] texels a metre at 512, before -> now: face 307 -> 499, head 280 -> 359, hands 399 -> 242, body 254 -> 188; 309 charts, margin 2.4 px
+  repaint [   1.0s] baking 512x512 at 256 samples a texel from the 8192 sheet
+  repaint [   3.8s] baked
+  repaint [   3.8s] written
+  repaint: 11010 points -> 12153 (1143 copied along the new seams), 8301 triangles; texels a metre at 512, before -> now: face 307 -> 499, head 280 -> 359, hands 399 -> 242, body 254 -> 188; 309 charts, margin 2.4 px
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk e4monkcm.glb: tris 8301 -> 8301, 0 takes, 302 KB
+  skin weights: 4815 vertices in 1309 positions over 65 joints, 24 diffusion passes; 3681 vertices' main weight moved
+prune: Removed types... Texture (1)
+  sided: 1915 points share only the faces at their place that look their way
+  4815 vertices in 1309 positions; 3330 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.0s] 4815 points joined into 1309 places; 2613 triangles
+  repaint [   0.0s] the face 112 triangles, the rest of the head 161, the hands 196, the body 2144 (looking [0.0, 0.0, 1.0])
+  repaint [   0.1s] xatlas: 186 charts, 79% of the square used
+  repaint [   0.2s] packed again: 186 charts in a 392x392 square drawn at 256 (78% used), a margin of 2.6 pixels at 256
+  repaint [   0.2s] texels a metre at 256, before -> now: face 152 -> 182, head 159 -> 150, hands 210 -> 102, body 129 -> 76; 186 charts, margin 2.6 px
+  repaint [   0.3s] baking 256x256 at 256 samples a texel from the 8192 sheet
+  repaint [   1.7s] baked
+  repaint [   1.7s] written
+  repaint: 4815 points -> 5108 (293 copied along the new seams), 2613 triangles; texels a metre at 256, before -> now: face 152 -> 182, head 159 -> 150, hands 210 -> 102, body 129 -> 76; 186 charts, margin 2.6 px
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk e4monkcf.glb: tris 2613 -> 2613, 0 takes, 141 KB

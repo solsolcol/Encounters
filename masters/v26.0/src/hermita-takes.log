@@ -1,0 +1,46 @@
+started animation hermita lib 01a1cb49-7306-73c8-85ab-b0c87551025d
+  anim hermita lib IN_PROGRESS 1%
+  anim hermita lib IN_PROGRESS 45%
+  anim hermita lib IN_PROGRESS 82%
+  anim hermita lib IN_PROGRESS 86%
+  anim hermita lib IN_PROGRESS 90%
+  anim hermita lib IN_PROGRESS 94%
+  anim hermita lib IN_PROGRESS 95%
+  anim hermita lib SUCCEEDED 100%
+animation done hermita lib 82810616
+a re-export of masters/v26.0/src/rigged-hermita.glb: 66 bones at the same rest pose in the world, 310849 triangles, the same bounds; 2 of 3 images byte-identical
+prune: Removed types... Primitive (1), Accessor (7)
+wrote masters/v26.0/src/takes-hermita-lib.glb 972832 bytes ["Sitting_Answering_Questions (198 ch, 9.67 s)","Chair_Sit_Idle_M (198 ch, 10.67 s)","Idle_3 (198 ch, 9.97 s)","Stand_to_Sit_Transition_M (198 ch, 4.73 s)"]
+hermita lib strip exit 0
+hermita lib done
+  motion hermita handson IN_PROGRESS 1%
+  motion hermita palmover IN_PROGRESS 1%
+  motion hermita petals IN_PROGRESS 1%
+  motion hermita handson IN_PROGRESS 42%
+  motion hermita palmover IN_PROGRESS 42%
+  motion hermita petals IN_PROGRESS 42%
+  motion hermita handson IN_PROGRESS 84%
+  motion hermita palmover IN_PROGRESS 84%
+  motion hermita petals IN_PROGRESS 84%
+  motion hermita handson IN_PROGRESS 90%
+  motion hermita palmover IN_PROGRESS 90%
+  motion hermita petals IN_PROGRESS 90%
+  motion hermita handson SUCCEEDED 100%
+  motion hermita palmover SUCCEEDED 100%
+  motion hermita petals SUCCEEDED 100%
+motion done hermita handson 78711924
+body identical to masters/v26.0/src/rigged-hermita.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-hermita-handson.glb 374264 bytes ["retarget_clip (132 ch, 5.97 s)"]
+hermita handson strip exit 0
+motion done hermita petals 78446104
+body identical to masters/v26.0/src/rigged-hermita.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-hermita-petals.glb 262308 bytes ["retarget_clip (132 ch, 3.97 s)"]
+hermita petals strip exit 0
+motion done hermita palmover 78711900
+body identical to masters/v26.0/src/rigged-hermita.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-hermita-palmover.glb 374264 bytes ["retarget_clip (132 ch, 5.97 s)"]
+hermita palmover strip exit 0
+hermita t2m done

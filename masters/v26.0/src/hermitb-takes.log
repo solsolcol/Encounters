@@ -1,0 +1,42 @@
+started animation hermitb lib 01a1cb51-b8e5-7665-8098-726ff9adf79e
+  anim hermitb lib IN_PROGRESS 1%
+  anim hermitb lib IN_PROGRESS 80%
+  anim hermitb lib IN_PROGRESS 84%
+  anim hermitb lib IN_PROGRESS 88%
+  anim hermitb lib IN_PROGRESS 91%
+  anim hermitb lib IN_PROGRESS 95%
+  anim hermitb lib SUCCEEDED 100%
+animation done hermitb lib 80749940
+a re-export of masters/v26.0/src/rigged-hermitb.glb: 66 bones at the same rest pose in the world, 309769 triangles, the same bounds; 2 of 3 images byte-identical
+prune: Removed types... Primitive (1), Accessor (7)
+wrote masters/v26.0/src/takes-hermitb-lib.glb 972532 bytes ["Sitting_Answering_Questions (198 ch, 9.67 s)","Chair_Sit_Idle_M (198 ch, 10.67 s)","Idle_3 (198 ch, 9.97 s)","Stand_to_Sit_Transition_M (198 ch, 4.73 s)"]
+hermitb lib strip exit 0
+hermitb lib done
+  motion hermitb petals IN_PROGRESS 1%
+  motion hermitb handson IN_PROGRESS 1%
+  motion hermitb palmover IN_PROGRESS 1%
+  motion hermitb handson IN_PROGRESS 47%
+  motion hermitb petals IN_PROGRESS 42%
+  motion hermitb palmover IN_PROGRESS 42%
+  motion hermitb handson IN_PROGRESS 84%
+  motion hermitb petals IN_PROGRESS 84%
+  motion hermitb palmover IN_PROGRESS 84%
+  motion hermitb handson SUCCEEDED 100%
+  motion hermitb petals SUCCEEDED 100%
+  motion hermitb palmover SUCCEEDED 100%
+motion done hermitb handson 77216672
+motion done hermitb palmover 77216644
+motion done hermitb petals 76950868
+body identical to masters/v26.0/src/rigged-hermitb.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-hermitb-handson.glb 374184 bytes ["retarget_clip (132 ch, 5.97 s)"]
+hermitb handson strip exit 0
+body identical to masters/v26.0/src/rigged-hermitb.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-hermitb-palmover.glb 374184 bytes ["retarget_clip (132 ch, 5.97 s)"]
+hermitb palmover strip exit 0
+body identical to masters/v26.0/src/rigged-hermitb.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-hermitb-petals.glb 262228 bytes ["retarget_clip (132 ch, 3.97 s)"]
+hermitb petals strip exit 0
+hermitb t2m done

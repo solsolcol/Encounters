@@ -1,0 +1,61 @@
+started animation deva lib 01a1cb49-7307-73d7-ae0f-ce8bcf40192f
+  anim deva lib IN_PROGRESS 1%
+  anim deva lib IN_PROGRESS 81%
+  anim deva lib IN_PROGRESS 85%
+  anim deva lib IN_PROGRESS 89%
+  anim deva lib IN_PROGRESS 93%
+  anim deva lib IN_PROGRESS 95%
+  anim deva lib SUCCEEDED 100%
+animation done deva lib 55054044
+a re-export of masters/v26.0/src/rigged-deva.glb: 66 bones at the same rest pose in the world, 312173 triangles, the same bounds; 2 of 3 images byte-identical
+prune: Removed types... Primitive (1), Accessor (7)
+wrote masters/v26.0/src/takes-deva-lib.glb 550556 bytes ["Idle_3 (198 ch, 9.97 s)","Sit_Cross_Legged_on_Floor (198 ch, 2.50 s)","Stand_and_Chat (198 ch, 5.17 s)"]
+deva lib strip exit 0
+deva lib done
+  motion deva seiza PENDING 0%
+  motion deva offer PENDING 0%
+  motion deva prostrate PENDING 0%
+  motion deva armsopen PENDING 0%
+  motion deva sway PENDING 0%
+  motion deva offer IN_PROGRESS 42%
+  motion deva prostrate IN_PROGRESS 42%
+  motion deva seiza IN_PROGRESS 42%
+  motion deva armsopen IN_PROGRESS 47%
+  motion deva sway IN_PROGRESS 47%
+  motion deva offer IN_PROGRESS 84%
+  motion deva prostrate IN_PROGRESS 84%
+  motion deva seiza IN_PROGRESS 84%
+  motion deva armsopen IN_PROGRESS 84%
+  motion deva sway IN_PROGRESS 90%
+  motion deva offer SUCCEEDED 100%
+  motion deva prostrate SUCCEEDED 100%
+  motion deva seiza IN_PROGRESS 90%
+  motion deva armsopen SUCCEEDED 100%
+motion done deva offer 52509528
+motion done deva prostrate 52509536
+body identical to masters/v26.0/src/rigged-deva.glb (5 prints)
+body identical to masters/v26.0/src/rigged-deva.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-deva-prostrate.glb 430564 bytes ["retarget_clip (132 ch, 6.97 s)"]
+wrote masters/v26.0/src/takes-deva-offer.glb 430564 bytes ["retarget_clip (132 ch, 6.97 s)"]
+motion done deva armsopen 52775344
+deva prostrate strip exit 0
+deva offer strip exit 0
+body identical to masters/v26.0/src/rigged-deva.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-deva-armsopen.glb 542512 bytes ["retarget_clip (132 ch, 8.97 s)"]
+deva armsopen strip exit 0
+  motion deva seiza SUCCEEDED 100%
+  motion deva sway SUCCEEDED 100%
+motion done deva seiza 52642440
+motion done deva sway 52908192
+body identical to masters/v26.0/src/rigged-deva.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-deva-seiza.glb 486536 bytes ["retarget_clip (132 ch, 7.97 s)"]
+deva seiza strip exit 0
+body identical to masters/v26.0/src/rigged-deva.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-deva-sway.glb 598480 bytes ["retarget_clip (132 ch, 9.97 s)"]
+deva sway strip exit 0
+deva t2m done

@@ -1,0 +1,9 @@
+started rig girl 01a1ce12-26ab-76b2-93d3-2326c3379e08
+  rig girl IN_PROGRESS 0%
+  rig girl IN_PROGRESS 47%
+  rig girl IN_PROGRESS 90%
+  rig girl SUCCEEDED 100%
+rig done girl {'rigged': 51114548, 'walk': 51355656}
+body identical to masters/v26.0/src/rigged-girl.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-girl-walking.glb 97888 bytes ["retarget_clip (132 ch, 1.03 s)"]

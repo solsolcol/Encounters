@@ -1,0 +1,10 @@
+started rig dancerb 01a1caf2-3f33-76a5-b81d-babe580f31b3
+  rig dancerb IN_PROGRESS 0%
+  rig dancerb IN_PROGRESS 47%
+  rig dancerb IN_PROGRESS 84%
+  rig dancerb IN_PROGRESS 90%
+  rig dancerb SUCCEEDED 100%
+rig done dancerb {'rigged': 81351248, 'walk': 81591952}
+body identical to masters/v26.0/src/rigged-dancerb.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-dancerb-walking.glb 98208 bytes ["retarget_clip (132 ch, 1.03 s)"]

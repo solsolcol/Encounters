@@ -1,0 +1,11 @@
+started rig devc 01a1caf2-3f69-74e8-a1e0-17ea5a98900c
+  rig devc IN_PROGRESS 0%
+  rig devc IN_PROGRESS 47%
+  rig devc IN_PROGRESS 84%
+  rig devc IN_PROGRESS 90%
+  rig devc IN_PROGRESS 95%
+  rig devc SUCCEEDED 100%
+rig done devc {'rigged': 44065920, 'walk': 44307312}
+body identical to masters/v26.0/src/rigged-devc.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-devc-walking.glb 97972 bytes ["retarget_clip (132 ch, 1.03 s)"]

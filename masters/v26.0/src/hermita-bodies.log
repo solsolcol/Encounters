@@ -1,0 +1,8 @@
+  fit: turn 0 degrees, size x0.8788, moved [0.0012, 0.8348, 0.0013]; a remeshed point lies 3.63 mm from the rig's points on average, 10.2 mm at worst (the other turns: 20.7, 23.1, 24.2 mm)
+  weights: 17587 points from 345550; 0 reached further than 4 cm, 0 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-hermita-8000.glb: 7926 triangles on 66 joints; sheets colour 15.9 MB, normal 3.6 MB, mr 0.0 MB; 20.6 MB
+  fit: turn 0 degrees, size x0.8819, moved [-0.0013, 0.8377, 0.0039]; a remeshed point lies 4.48 mm from the rig's points on average, 15.6 mm at worst (the other turns: 22.3, 27.4, 27.8 mm)
+  weights: 5277 points from 345550; 0 reached further than 4 cm, 0 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-hermita-2500.glb: 2215 triangles on 66 joints; sheets colour 5.5 MB, normal 1.1 MB, mr 0.0 MB; 7.0 MB

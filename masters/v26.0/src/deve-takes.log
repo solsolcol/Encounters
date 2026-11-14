@@ -1,0 +1,45 @@
+started animation deve lib 01a1cb52-90c2-7082-99a5-db4f77693416
+  anim deve lib IN_PROGRESS 1%
+  anim deve lib IN_PROGRESS 80%
+  anim deve lib IN_PROGRESS 84%
+  anim deve lib IN_PROGRESS 88%
+  anim deve lib IN_PROGRESS 91%
+  anim deve lib IN_PROGRESS 95%
+  anim deve lib SUCCEEDED 100%
+animation done deve lib 79564724
+a re-export of masters/v26.0/src/rigged-deve.glb: 66 bones at the same rest pose in the world, 311297 triangles, the same bounds; 2 of 3 images byte-identical
+prune: Removed types... Primitive (1), Accessor (7)
+wrote masters/v26.0/src/takes-deve-lib.glb 550644 bytes ["Idle_3 (198 ch, 9.97 s)","Sit_Cross_Legged_on_Floor (198 ch, 2.50 s)","Stand_and_Chat (198 ch, 5.17 s)"]
+deve lib strip exit 0
+deve lib done
+  motion deve offer IN_PROGRESS 1%
+  motion deve prostrate IN_PROGRESS 1%
+  motion deve seiza IN_PROGRESS 1%
+  motion deve prostrate IN_PROGRESS 42%
+  motion deve offer IN_PROGRESS 42%
+  motion deve seiza IN_PROGRESS 47%
+  motion deve prostrate IN_PROGRESS 84%
+  motion deve offer IN_PROGRESS 84%
+  motion deve seiza IN_PROGRESS 84%
+  motion deve prostrate IN_PROGRESS 90%
+  motion deve offer IN_PROGRESS 95%
+  motion deve seiza IN_PROGRESS 90%
+  motion deve prostrate SUCCEEDED 100%
+  motion deve seiza SUCCEEDED 100%
+  motion deve offer SUCCEEDED 100%
+motion done deve seiza 77413308
+body identical to masters/v26.0/src/rigged-deve.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-deve-seiza.glb 486708 bytes ["retarget_clip (132 ch, 7.97 s)"]
+deve seiza strip exit 0
+motion done deve prostrate 77280396
+motion done deve offer 77280368
+body identical to masters/v26.0/src/rigged-deve.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-deve-prostrate.glb 430736 bytes ["retarget_clip (132 ch, 6.97 s)"]
+deve prostrate strip exit 0
+body identical to masters/v26.0/src/rigged-deve.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-deve-offer.glb 430736 bytes ["retarget_clip (132 ch, 6.97 s)"]
+deve offer strip exit 0
+deve t2m done

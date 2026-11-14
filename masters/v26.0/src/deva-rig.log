@@ -1,0 +1,10 @@
+started rig deva 01a1caf2-3f81-76d2-88b8-7e3de9673244
+  rig deva IN_PROGRESS 0%
+  rig deva IN_PROGRESS 47%
+  rig deva IN_PROGRESS 84%
+  rig deva IN_PROGRESS 90%
+  rig deva SUCCEEDED 100%
+rig done deva {'rigged': 51479568, 'walk': 51720432}
+body identical to masters/v26.0/src/rigged-deva.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-deva-walking.glb 98216 bytes ["retarget_clip (132 ch, 1.03 s)"]

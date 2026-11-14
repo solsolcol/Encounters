@@ -1,0 +1,40 @@
+started animation devb lib 01a1cb4e-5c15-770a-b67e-bbf286b5fbf6
+  anim devb lib IN_PROGRESS 1%
+  anim devb lib IN_PROGRESS 33%
+  anim devb lib IN_PROGRESS 82%
+  anim devb lib IN_PROGRESS 86%
+  anim devb lib IN_PROGRESS 90%
+  anim devb lib IN_PROGRESS 94%
+  anim devb lib IN_PROGRESS 95%
+  anim devb lib SUCCEEDED 100%
+animation done devb lib 40584884
+a re-export of masters/v26.0/src/rigged-devb.glb: 36 bones at the same rest pose in the world, 314046 triangles, the same bounds; 2 of 3 images byte-identical
+prune: Removed types... Primitive (1), Accessor (7)
+wrote masters/v26.0/src/takes-devb-lib.glb 312232 bytes ["Idle_3 (108 ch, 9.97 s)","Sit_Cross_Legged_on_Floor (108 ch, 2.50 s)","Stand_and_Chat (108 ch, 5.17 s)"]
+devb lib strip exit 0
+devb lib done
+  motion devb seiza IN_PROGRESS 1%
+  motion devb offer IN_PROGRESS 1%
+  motion devb prostrate IN_PROGRESS 1%
+  motion devb seiza IN_PROGRESS 47%
+  motion devb offer IN_PROGRESS 47%
+  motion devb prostrate IN_PROGRESS 47%
+  motion devb seiza SUCCEEDED 100%
+  motion devb offer SUCCEEDED 100%
+  motion devb prostrate SUCCEEDED 100%
+motion done devb seiza 38158960
+body identical to masters/v26.0/src/rigged-devb.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (106)
+wrote masters/v26.0/src/takes-devb-seiza.glb 267328 bytes ["retarget_clip (72 ch, 7.97 s)"]
+devb seiza strip exit 0
+motion done devb prostrate 38089672
+body identical to masters/v26.0/src/rigged-devb.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (106)
+wrote masters/v26.0/src/takes-devb-prostrate.glb 236556 bytes ["retarget_clip (72 ch, 6.97 s)"]
+devb prostrate strip exit 0
+motion done devb offer 38089680
+body identical to masters/v26.0/src/rigged-devb.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (106)
+wrote masters/v26.0/src/takes-devb-offer.glb 236556 bytes ["retarget_clip (72 ch, 6.97 s)"]
+devb offer strip exit 0
+devb t2m done

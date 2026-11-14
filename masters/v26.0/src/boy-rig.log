@@ -1,0 +1,9 @@
+started rig boy 01a1ce14-a317-7454-a5d1-62a19677778e
+  rig boy IN_PROGRESS 0%
+  rig boy IN_PROGRESS 47%
+  rig boy IN_PROGRESS 90%
+  rig boy SUCCEEDED 100%
+rig done boy {'rigged': 51768940, 'walk': 51872016}
+body identical to masters/v26.0/src/rigged-boy.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (82)
+wrote masters/v26.0/src/takes-boy-walking.glb 47796 bytes ["retarget_clip (64 ch, 1.03 s)"]
