@@ -1,0 +1,5 @@
+started text-to-motion give 01a1cb0c-0863-7537-97f3-af3e358a6686
+  t2m give IN_PROGRESS 10%
+  t2m give IN_PROGRESS 90%
+  t2m give SUCCEEDED 100%
+t2m done give 16868848

@@ -1,0 +1,10 @@
+started rig white 01a1cafe-c3bc-726c-8512-c061b39fc0ce
+  rig white IN_PROGRESS 0%
+  rig white IN_PROGRESS 47%
+  rig white IN_PROGRESS 84%
+  rig white IN_PROGRESS 90%
+  rig white SUCCEEDED 100%
+rig done white {'rigged': 45648948, 'walk': 45891172}
+body identical to masters/v26.0/src/rigged-white.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-white-walking.glb 99176 bytes ["retarget_clip (134 ch, 1.03 s)"]

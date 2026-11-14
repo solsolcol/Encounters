@@ -1,0 +1,40 @@
+started animation white lib 01a1cb5f-fa67-72a7-ab41-2650061d9afa
+  anim white lib IN_PROGRESS 1%
+  anim white lib IN_PROGRESS 81%
+  anim white lib IN_PROGRESS 85%
+  anim white lib IN_PROGRESS 89%
+  anim white lib IN_PROGRESS 93%
+  anim white lib IN_PROGRESS 95%
+  anim white lib SUCCEEDED 100%
+animation done white lib 49358068
+mergetakes: masters/v26.0/src/take-white-lib.glb is not masters/v26.0/src/rigged-white.glb's rig: RightHandMiddle3, RightHand_End
+white lib strip exit 1
+white lib done
+  motion white handson IN_PROGRESS 1%
+  motion white petals IN_PROGRESS 1%
+  motion white palmover IN_PROGRESS 1%
+  motion white handson IN_PROGRESS 42%
+  motion white petals IN_PROGRESS 47%
+  motion white palmover IN_PROGRESS 47%
+  motion white handson IN_PROGRESS 84%
+  motion white palmover IN_PROGRESS 84%
+  motion white petals IN_PROGRESS 95%
+  motion white handson SUCCEEDED 100%
+  motion white petals SUCCEEDED 100%
+  motion white palmover SUCCEEDED 100%
+motion done white handson 46551572
+motion done white petals 46284072
+motion done white palmover 46551556
+body identical to masters/v26.0/src/rigged-white.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-white-handson.glb 379700 bytes ["retarget_clip (134 ch, 5.97 s)"]
+white handson strip exit 0
+body identical to masters/v26.0/src/rigged-white.glb (5 prints)
+body identical to masters/v26.0/src/rigged-white.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-white-palmover.glb 379700 bytes ["retarget_clip (134 ch, 5.97 s)"]
+wrote masters/v26.0/src/takes-white-petals.glb 266064 bytes ["retarget_clip (134 ch, 3.97 s)"]
+white petals strip exit 0
+white palmover strip exit 0
+white t2m done

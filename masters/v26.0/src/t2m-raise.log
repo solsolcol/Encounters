@@ -1,0 +1,6 @@
+started text-to-motion raise 01a1caeb-814f-7095-991a-6a38e733bc37
+  t2m raise IN_PROGRESS 10%
+  t2m raise IN_PROGRESS 13%
+  t2m raise IN_PROGRESS 17%
+  t2m raise SUCCEEDED 100%
+t2m done raise 16868848

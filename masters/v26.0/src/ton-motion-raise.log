@@ -1,0 +1,4 @@
+  motion ton raise IN_PROGRESS 1%
+  motion ton raise IN_PROGRESS 47%
+  motion ton raise SUCCEEDED 100%
+motion done ton raise 42042496

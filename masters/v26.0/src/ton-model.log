@@ -1,0 +1,11 @@
+started image-to-3d ton 01a1cae4-fba4-7332-80bd-a33ffd4b4cf9
+  ton IN_PROGRESS 1%
+  ton IN_PROGRESS 25%
+  ton IN_PROGRESS 29%
+  ton IN_PROGRESS 45%
+  ton IN_PROGRESS 58%
+  ton IN_PROGRESS 67%
+  ton IN_PROGRESS 80%
+  ton IN_PROGRESS 99%
+  ton SUCCEEDED 100%
+done ton {'glb': 37171180, 'pre': 9489688} credits 40

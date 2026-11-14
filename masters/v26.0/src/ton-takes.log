@@ -1,0 +1,102 @@
+started animation ton sit 01a1cb05-b8f1-75b3-a67c-183ea5c2017b
+  anim ton sit IN_PROGRESS 1%
+  motion ton handson IN_PROGRESS 1%
+  motion ton petals IN_PROGRESS 1%
+  motion ton standup IN_PROGRESS 1%
+  motion ton prostrate IN_PROGRESS 1%
+  motion ton standup IN_PROGRESS 47%
+  motion ton handson IN_PROGRESS 47%
+  motion ton petals IN_PROGRESS 47%
+  motion ton prostrate IN_PROGRESS 42%
+  anim ton sit IN_PROGRESS 45%
+  motion ton standup SUCCEEDED 100%
+  motion ton petals IN_PROGRESS 90%
+  motion ton handson IN_PROGRESS 84%
+  motion ton prostrate IN_PROGRESS 84%
+motion done ton standup 41710388
+body identical to masters/v26.0/src/rigged-ton.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-ton-standup.glb 234228 bytes ["retarget_clip (132 ch, 3.47 s)"]
+ton standup strip exit 0
+  anim ton sit IN_PROGRESS 82%
+  motion ton prostrate SUCCEEDED 100%
+  motion ton petals SUCCEEDED 100%
+  motion ton handson SUCCEEDED 100%
+motion done ton prostrate 42175392
+motion done ton handson 42042516
+motion done ton petals 41776716
+body identical to masters/v26.0/src/rigged-ton.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-ton-prostrate.glb 430152 bytes ["retarget_clip (132 ch, 6.97 s)"]
+ton prostrate strip exit 0
+body identical to masters/v26.0/src/rigged-ton.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-ton-petals.glb 262220 bytes ["retarget_clip (132 ch, 3.97 s)"]
+body identical to masters/v26.0/src/rigged-ton.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-ton-handson.glb 374176 bytes ["retarget_clip (132 ch, 5.97 s)"]
+ton petals strip exit 0
+ton handson strip exit 0
+ton t2m done
+  anim ton sit IN_PROGRESS 86%
+  anim ton sit IN_PROGRESS 89%
+  anim ton sit IN_PROGRESS 93%
+  anim ton sit IN_PROGRESS 95%
+  anim ton sit SUCCEEDED 100%
+animation done ton sit 45240064
+a re-export of masters/v26.0/src/rigged-ton.glb: 66 bones at the same rest pose in the world, 313088 triangles, the same bounds; 2 of 3 images byte-identical
+prune: Removed types... Primitive (1), Accessor (7)
+wrote masters/v26.0/src/takes-ton-sit.glb 1357616 bytes ["Sit_Cross_Legged_on_Floor (198 ch, 2.50 s)","Sitting_Answering_Questions (198 ch, 9.67 s)","Talk_with_Right_Hand_Open (198 ch, 3.73 s)","Talk_with_Left_Hand_Raised (198 ch, 4.63 s)","Stand_Up1 (198 ch, 8.27 s)","Stand_to_Sit_Transition_M (198 ch, 4.73 s)","Idle_02 (198 ch, 1.87 s)","Idle_3 (198 ch, 9.97 s)"]
+ton sit strip exit 0
+ton lib done
+  motion ton seiza IN_PROGRESS 1%
+  motion ton sway IN_PROGRESS 1%
+  motion ton palmover IN_PROGRESS 1%
+  motion ton give IN_PROGRESS 1%
+  motion ton armsopen IN_PROGRESS 1%
+  motion ton offer IN_PROGRESS 1%
+  motion ton seiza IN_PROGRESS 47%
+  motion ton sway IN_PROGRESS 31%
+  motion ton palmover IN_PROGRESS 47%
+  motion ton give IN_PROGRESS 47%
+  motion ton offer IN_PROGRESS 47%
+  motion ton armsopen IN_PROGRESS 31%
+  motion ton seiza SUCCEEDED 100%
+  motion ton sway IN_PROGRESS 74%
+  motion ton palmover SUCCEEDED 100%
+  motion ton offer SUCCEEDED 100%
+  motion ton give SUCCEEDED 100%
+  motion ton armsopen IN_PROGRESS 68%
+motion done ton seiza 42308236
+body identical to masters/v26.0/src/rigged-ton.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-ton-seiza.glb 486124 bytes ["retarget_clip (132 ch, 7.97 s)"]
+ton seiza strip exit 0
+motion done ton offer 42175404
+motion done ton palmover 42042468
+motion done ton give 42042496
+body identical to masters/v26.0/src/rigged-ton.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-ton-offer.glb 430152 bytes ["retarget_clip (132 ch, 6.97 s)"]
+body identical to masters/v26.0/src/rigged-ton.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-ton-palmover.glb 374176 bytes ["retarget_clip (132 ch, 5.97 s)"]
+ton offer strip exit 0
+ton palmover strip exit 0
+body identical to masters/v26.0/src/rigged-ton.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-ton-give.glb 374176 bytes ["retarget_clip (132 ch, 5.97 s)"]
+ton give strip exit 0
+  motion ton sway SUCCEEDED 100%
+  motion ton armsopen SUCCEEDED 100%
+motion done ton sway 42574052
+body identical to masters/v26.0/src/rigged-ton.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-ton-sway.glb 598068 bytes ["retarget_clip (132 ch, 9.97 s)"]
+ton sway strip exit 0
+motion done ton armsopen 42441176
+body identical to masters/v26.0/src/rigged-ton.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-ton-armsopen.glb 542096 bytes ["retarget_clip (132 ch, 8.97 s)"]
+ton armsopen strip exit 0
+ton t2m done
