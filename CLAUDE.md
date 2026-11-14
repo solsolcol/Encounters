@@ -1356,8 +1356,11 @@ photograph, his telling and Grandmaster Pho's lines rewritten and approved, the 
 only, and the glow in its place) are docs/V26.8-E4C3-NOTES.md: live at v26.8 (deploy `6af76bca86064920f357e570`)
 and v26.9 (deploy `6af780b3317a264c323c5035`: the petal bowl made again and then taken out at his word, "Remove it"; the
 kneelers' shoulders and the resting wrists solved) and v26.10 (deploy `6af7a2253913bc11b786928c`: row M, his own two
-arms drawn in the world on his bai sri in the close, the hold his photograph 7's: c_zfx.js myArmsAt). The speed-ups are
-next.
+arms drawn in the world on his bai sri in the close, the hold his photograph 7's: c_zfx.js myArmsAt). The speed-ups
+went live at v26.11 (deploy `6af7ed1b6d57421ceffbce18`): all four of his list, each behind its own switch and proved
+exact, with what they found on the way (docs/V26.6-E4C3-OPTIMIZE-PLAN.md §4); drawing on its own thread (the plan's 5)
+is still to be put to him. Next: the full debug's last round on this build (every ending with sound, Continue, a
+replay, a desktop), and his row G checked on it.
 Chapter 4 is next after it
 (S1·13, case one: the woman who rose from her wheelchair).
 The episode's plan, with what remains his to decide:

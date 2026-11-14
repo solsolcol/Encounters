@@ -1,29 +1,51 @@
 [
-{ "wait": 3 },
-{ "eval": "(() => { window.__F0 = E.pics().freed; window.__HT = (t) => { const R = E.renderer, gl = R.getContext(), p = R.properties.get(t), tex = p && p.__webglTexture; if (!tex || !(t.version > 0 && p.__version === t.version)) return null; const im = t.image; const w = (im && im.width) || t.__picsW || 0, h = (im && im.height) || t.__picsH || 0; if (!(w > 0 && h > 0)) return 'nosize'; const was = gl.getParameter(gl.FRAMEBUFFER_BINDING), fb = gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER, fb); gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0); let r = 'incomplete'; if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE) { const px = new Uint8Array(w * h * 4); gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, px); let hh = 2166136261; for (let i = 0; i < px.length; i += 7) { hh ^= px[i]; hh = Math.imul(hh, 16777619); } r = (hh >>> 0).toString(16) + ':' + w + 'x' + h; } gl.bindFramebuffer(gl.FRAMEBUFFER, was); gl.deleteFramebuffer(fb); return r; }; window.__V = () => { const m = new Map(); E.scene.traverse(o => { for (const mt of [].concat(o.material || [])) if (mt) for (const k in mt) { const v = mt[k]; if (v && v.isTexture) m.set(v, v.version); } }); return m; }; window.__v0 = window.__V(); window.__FULL = () => { const D = E.stage.dbg, out = []; for (const P of [D.cast.goA, D.cast.goB]) { if (!P || !P.lv[0]) continue; const near = new Set(); for (const q of P.lv[1] || []) for (const mt of [].concat(q.material)) near.add(mt); for (const m of P.lv[0]) for (const mt of [].concat(m.material)) for (const k in mt) { const v = mt[k]; if (v && v.isTexture) out.push({ t: v, own: !near.has(mt), who: P.key }); } } return out; }; return 'start ' + JSON.stringify(E.pics()) + ' | scene textures ' + window.__v0.size; })()" },
-{ "film": "festival" },
-{ "wait": 2 },
-{ "eval": "(() => { let changed = 0; for (const [t, v] of window.__v0) if (t.version !== v) changed++; const f = window.__FULL(); return 'festival begun: scene textures asked to upload again ' + changed + ' | full bodies textures ' + f.length + ' (own ' + f.filter(x => x.own).length + ') | ' + JSON.stringify(E.pics()); })()" },
-{ "seekAt": "T.FEST.masters + 1" },
-{ "wait": 3 },
-{ "eval": "(() => { const f = window.__FULL(); window.__h1 = {}; let on = 0; for (const x of f) { const h = window.__HT(x.t); window.__h1[x.t.uuid] = h; if (h && h.indexOf(':') > 0) on++; } window.__fullT = f; return 'first viewing: full bodies textures ' + f.length + ', read back from the chip ' + on + ' | ' + JSON.stringify(Object.values(window.__h1).slice(0, 6)); })()" },
-{ "eval": "String(E.picsReset())" },
-{ "until": "E.pics().hold === false && E.pics().redone >= window.__F0", "ms": 900000 },
-{ "wait": 4 },
-{ "eval": "(() => { const f = window.__fullT; const P = E.pics(); return 'after the reset: freed ' + P.freed + ' (was ' + window.__F0 + '), full bodies textures now closed ' + f.filter(x => x.t.image && !(x.t.image.width > 0)).length + ' of ' + f.length + ' | ' + JSON.stringify(P); })()" },
-{ "skip": true },
-{ "wait": 4 },
-{ "eval": "(() => { const f = window.__fullT, R = E.renderer; const P = E.pics(); const st = f.map(x => { const p = R.properties.get(x.t); return (x.own ? 'own' : 'near') + ':' + ((x.t.image && x.t.image.width > 0) ? 'picture' : 'CLOSED') + ':' + (p && p.__webglTexture ? 'chip' : 'off-chip'); }); return 'film ended (its full bodies given back): freed ' + P.freed + ', redone ' + P.redone + ' | ' + JSON.stringify(st) + ' | ' + JSON.stringify(P); })()" },
-{ "film": "festival" },
-{ "seekAt": "T.FEST.masters + 1" },
-{ "wait": 4 },
-{ "eval": "(() => { const f = window.__FULL(), A = window.__h1; let same = 0, diff = 0, none = 0, newT = 0; const bad = []; for (const x of f) { const h = window.__HT(x.t); if (!(x.t.uuid in A)) { newT++; continue; } if (!h || h.indexOf(':') < 0) { none++; bad.push(x.t.uuid.slice(0, 8) + '=' + h); continue; } if (h === A[x.t.uuid]) same++; else { diff++; bad.push(x.t.uuid.slice(0, 8)); } } return 'second viewing, read back from the chip against the first: same ' + same + ', different ' + diff + ', not readable ' + none + ', new textures ' + newT + ' ' + JSON.stringify(bad) + ' | ' + JSON.stringify(E.pics()); })()" },
-{ "skip": true },
-{ "wait": 3 },
-{ "eval": "(() => { let t = null; E.scene.traverse(o => { if (t) return; for (const mt of [].concat(o.material || [])) if (mt && mt.map && mt.map.source && mt.map.source.__picsRec && !(mt.map.image && mt.map.image.width > 0)) { t = mt.map; break; } }); if (!t) return 'clone test: no freed texture found'; window.__ct = t; const before = E.pics(); const c = t.clone(); window.__cc = c; const P = E.pics(); return 'clone test: copies ' + before.copies + ' -> ' + P.copies + ', waits ' + P.waits + ', joined its picture ' + (t.source.__picsTex && t.source.__picsTex.has(c)); })()" },
-{ "until": "E.pics().waits === 0", "ms": 120000 },
-{ "eval": "(() => { const t = window.__ct; return 'clone test after: waits ' + E.pics().waits + ', the picture decoded again ' + (t.image && t.image.width > 0) + ', the copy guarded ' + Object.getOwnPropertyDescriptor(window.__cc, 'needsUpdate') ; })()" },
-{ "eval": "(async () => { let u = null; E.scene.traverse(o => { if (u) return; for (const mt of [].concat(o.material || [])) if (mt && mt.map && mt.map !== window.__ct && mt.map.source && mt.map.source.__picsRec && !(mt.map.image && mt.map.image.width > 0)) { u = mt.map; break; } }); if (!u) return 'picture test: no freed texture found'; const a0 = E.pics().asked; const bmp = await createImageBitmap(new ImageData(new Uint8ClampedArray([255, 0, 0, 255]), 1, 1)); u.image = bmp; const rec = !!u.source.__picsRec; u.needsUpdate = true; await new Promise(r => setTimeout(r, 400)); return 'picture test: the recipe kept after a new picture ' + rec + ', the new picture kept ' + (u.image === bmp) + ', asked ' + a0 + ' -> ' + E.pics().asked; })()" },
-{ "wait": 2 },
-{ "eval": "JSON.stringify(E.pics())" }
+ {
+  "wait": 3
+ },
+ {
+  "eval": "(() => { window.__errs = []; const ce = console.error.bind(console); console.error = (...a) => { window.__errs.push((window.__step || '') + ': ' + a.map(x => String(x && x.message || x)).join(' ').slice(0, 160)); return ce(...a); }; window.__step = 'start'; window.__HT = (t) => { const R = E.renderer, gl = R.getContext(), p = R.properties.get(t), tex = p && p.__webglTexture; if (!tex || !(t.version > 0 && p.__version === t.version)) return 'off-chip'; const im = t.image; const w = (im && im.width) || t.__picsW || 0, h = (im && im.height) || t.__picsH || 0; if (!(w > 0 && h > 0)) return 'nosize'; const was = gl.getParameter(gl.FRAMEBUFFER_BINDING), fb = gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER, fb); gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0); let r = 'incomplete'; if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE) { const px = new Uint8Array(w * h * 4); gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, px); let hh = 2166136261, lit = 0; for (let i = 0; i < px.length; i += 7) { hh ^= px[i]; hh = Math.imul(hh, 16777619); } for (let i = 0; i < px.length; i += 4096) lit += px[i] + px[i + 1] + px[i + 2]; r = (hh >>> 0).toString(16) + ':' + w + 'x' + h + ':' + (lit > 0 ? 'lit' : 'BLACK'); } gl.bindFramebuffer(gl.FRAMEBUFFER, was); gl.deleteFramebuffer(fb); return r; }; const D = E.stage.dbg, seen = new Set(), list = []; const shared = new Set(['e4deva', 'e4devc']); for (const P of D.people) { if (!P || !shared.has(P.key) || P.o.fullFilm || !P.lv[0]) continue; for (const m of P.lv[0]) for (const mt of [].concat(m.material)) for (const k in mt) { const v = mt[k]; if (v && v.isTexture && v.image instanceof ImageBitmap && !seen.has(v)) { seen.add(v); list.push({ t: v, who: P.key }); } } } window.__sh = list; window.__h0 = list.map(x => window.__HT(x.t)); return 'shared full-body pictures of people who stand all chapter: ' + list.length + ' (' + [...new Set(list.map(x => x.who))].join(', ') + '), freed ' + list.filter(x => !(x.t.image.width > 0)).length + ' | ' + JSON.stringify(window.__h0) + ' | ' + JSON.stringify(E.pics()); })()"
+ },
+ {
+  "eval": "(() => { window.__step = 'festival'; return 'ok'; })()"
+ },
+ {
+  "film": "festival"
+ },
+ {
+  "skip": true
+ },
+ {
+  "wait": 4
+ },
+ {
+  "eval": "(() => { window.__step = 'after'; const R = E.renderer; const st = window.__sh.map(x => { const p = R.properties.get(x.t); return ((x.t.image && x.t.image.width > 0) ? 'picture' : 'CLOSED') + '/' + (p && p.__webglTexture ? 'chip' : 'off-chip'); }); return 'festival ended (its full bodies given back): ' + JSON.stringify(st) + ' | ' + JSON.stringify(E.pics()); })()"
+ },
+ {
+  "eval": "(() => { window.__step = 'drawn again'; const R = E.renderer, A = window.__h0; let same = 0, diff = 0; const out = []; window.__sh.forEach((x, i) => { R.initTexture(x.t); const h = window.__HT(x.t); out.push(h); if (h === A[i]) same++; else diff++; }); return 'drawn again after the film (uploaded from its picture), read back against before the film: same ' + same + ', different ' + diff + ' | ' + JSON.stringify(out) + ' | errors so far ' + JSON.stringify(window.__errs); })()"
+ },
+ {
+  "eval": "(() => { window.__step = 'tests on purpose'; return 'ok'; })()"
+ },
+ {
+  "eval": "(() => { let t = null; E.scene.traverse(o => { if (t) return; for (const mt of [].concat(o.material || [])) if (mt && mt.map && mt.map.source && mt.map.source.__picsRec && !(mt.map.image && mt.map.image.width > 0)) { t = mt.map; break; } }); if (!t) return 'clone test: no freed texture found'; window.__ct = t; const before = E.pics(); const c = t.clone(); window.__cc = c; const P = E.pics(); return 'clone test: copies ' + before.copies + ' -> ' + P.copies + ', waits ' + P.waits + ', joined its picture ' + (t.source.__picsTex && t.source.__picsTex.has(c)); })()"
+ },
+ {
+  "until": "E.pics().waits === 0",
+  "ms": 120000
+ },
+ {
+  "eval": "(() => { const t = window.__ct; return 'clone test after: waits ' + E.pics().waits + ', the picture decoded again ' + (t.image && t.image.width > 0) + ', the copy guarded ' + Object.getOwnPropertyDescriptor(window.__cc, 'needsUpdate') ; })()"
+ },
+ {
+  "eval": "(async () => { let u = null; E.scene.traverse(o => { if (u) return; for (const mt of [].concat(o.material || [])) if (mt && mt.map && mt.map !== window.__ct && mt.map.source && mt.map.source.__picsRec && !(mt.map.image && mt.map.image.width > 0)) { u = mt.map; break; } }); if (!u) return 'picture test: no freed texture found'; const a0 = E.pics().asked; const bmp = await createImageBitmap(new ImageData(new Uint8ClampedArray([255, 0, 0, 255]), 1, 1)); u.image = bmp; const rec = !!u.source.__picsRec; u.needsUpdate = true; await new Promise(r => setTimeout(r, 400)); return 'picture test: the recipe kept after a new picture ' + rec + ', the new picture kept ' + (u.image === bmp) + ', asked ' + a0 + ' -> ' + E.pics().asked; })()"
+ },
+ {
+  "eval": "(() => { window.__step = 'BROKEN ON PURPOSE'; let X = null; E.scene.traverse(o => { if (X) return; for (const mt of [].concat(o.material || [])) if (mt && mt.map && mt.map.source && mt.map.source.__picsRec && !(mt.map.image && mt.map.image.width > 0) && window.__sh.every(s => s.t !== mt.map)) { X = mt.map; break; } }); if (!X) return 'no freed picture to break'; const R = E.renderer, h0 = window.__HT(X); Object.getPrototypeOf(X).dispose.call(X); R.initTexture(X); const h1 = window.__HT(X); return 'the guard bypassed on one freed picture (disposed past it, then drawn): before ' + h0 + ', after ' + h1 + ' | errors in this step ' + window.__errs.filter(e => e.startsWith('BROKEN')).length; })()"
+ },
+ {
+  "wait": 2
+ },
+ {
+  "eval": "JSON.stringify({ errs: window.__errs, pics: E.pics() })"
+ }
 ]

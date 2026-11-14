@@ -10,10 +10,12 @@
   film at five moments, each after a CONTROL (the new way twice) came out identical; the angles' own proof.
   `CHROMIUM_PATH=/opt/pw-browsers/chromium VIEW=phone FAST=1 OUT=<dir> node tools/probes/e4c3beats.mjs masters/v26.11/proof-steps.json`
 - `texmem.js`: a census of the pictures the page holds decoded (for tools/probes/loadprof.mjs EVAL=).
-- `edge-steps.json`: the run that proved speed-up 4's edges (14 Nov): the festival film begun (no upload asked of the
-  scene's pictures), its two full bodies read back from the chip at the first viewing, a forced graphics reset with the
-  film paused (their pictures freed too by the restore's warm), the film ended (their textures given back: each picture
-  decoded again first), the film seen again and its full bodies read back against the first viewing; then the guards
-  tried on purpose: a freed picture copied into a new texture (the world waits, the copy joins it, its one console line
-  expected) and a freed picture handed a new one (the new one kept, no recipe decoded over it).
-  `CHROMIUM_PATH=/opt/pw-browsers/chromium VIEW=phone FAST=1 OUT=<dir> node tools/probes/e4c3beats.mjs masters/v26.11/edge-steps.json`
+- `edge-steps.json`: the run that proved speed-up 4's edges on the release build (14 Nov). The sheets of the people who
+  wear the festival's film bodies at full detail all chapter (a man of the waiting line, e4devc), read back from the
+  chip before the film; the festival begun and skipped (its end gives its film bodies back); those sheets drawn again
+  and read back against before; then the guards tried on purpose (a freed picture copied: the world waits, the copy
+  joins it, its one console line expected; a freed picture handed a new one: the new one kept) and one guard bypassed
+  (disposed past it, then drawn: left incomplete on the chip, with nothing on the console).
+  `CHROMIUM_PATH=/opt/pw-browsers/chromium VIEW=phone FAST=1 OUT=<dir> node tools/probes/e4c3beats.mjs masters/v26.11/edge-steps.json`,
+  and again with `QS='&opt=keepShared:0'` (the old give-back, so the guard that decodes a disposed picture again is what
+  the line's man is drawn from).

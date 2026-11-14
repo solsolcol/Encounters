@@ -437,6 +437,7 @@
     const FASTTWINS = !ctx.opt || ctx.opt('fastTwins');               // (the seams' twins found by whole-number cells: twinsFast)
     const FASTSKIN = !ctx.opt || ctx.opt('fastSkin');                 // (a posed vertex with each bone's matrix made once a pose: skinVertex)
     const SHEETONCE = !ctx.opt || ctx.opt('sheetOnce');               // (a body's sheet set up once, never uploaded again for nothing: c_cast.js sheetOf)
+    const KEEPSHARED = !ctx.opt || ctx.opt('keepShared');             // (a film's full body gives back only what no other body draws: c_cast.js fullOff)
     function lazyRot(o) { if (LAZYROT) lazyInstall(o); }
     const LAZY = new WeakSet();
     function lazyInstall(o) {
@@ -2378,11 +2379,20 @@
        each, v26.5's measure). The film first shows it after a black (the festival's second half begins under the cut's
        black), so its upload is never on screen. A sheet the full body borrows from the near one is not given back */
     function fullOn(P) { if (P && P.o.fullFilm && !P.lv[0]) whenReady(P, () => { if (!P.lv[0]) addLevel(P, 0); }); }
+    /* (v26.11: AND NOTHING ANOTHER BODY DRAWS. A full body is read once a file and shared (parseOnce), so the film's two
+       share their shapes and sheets with whoever else wears the same body at full detail all chapter (a man of the
+       waiting line wears the second one's, e4devc): given back as the film ended, they were taken off the chip under him
+       too, and put back on it, on screen, the next time the player walked up to him. What any other body draws, at any
+       level, is kept now, as the near body's own always was; what is this body's alone is given back as before. Nothing
+       drawn changes. `?opt=keepShared:0` gives everything back as before) */
     function fullOff(P) {
       if (!P || !P.o.fullFilm || !P.lv[0]) return;
       const near = new Set(); for (const q of P.lv[1] || []) for (const mt of [].concat(q.material)) near.add(mt);
-      for (const m of P.lv[0]) { P.model.remove(m); m.geometry.dispose();
-        for (const mt of [].concat(m.material)) if (!near.has(mt)) for (const k in mt) { const v = mt[k]; if (v && v.isTexture) v.dispose(); } }
+      const keep = new Set();
+      if (KEEPSHARED) for (const Q of people) if (Q !== P) for (const L of Q.lv) if (L) for (const q of L) {
+        keep.add(q.geometry); for (const mt of [].concat(q.material)) { keep.add(mt); for (const k in mt) { const v = mt[k]; if (v && v.isTexture) keep.add(v); } } }
+      for (const m of P.lv[0]) { P.model.remove(m); if (!keep.has(m.geometry)) m.geometry.dispose();
+        for (const mt of [].concat(m.material)) if (!near.has(mt) && !keep.has(mt)) for (const k in mt) { const v = mt[k]; if (v && v.isTexture && !keep.has(v)) v.dispose(); } }
       P.lv[0] = null; P.lvNow = -1;
       /* (and the cull's list of the body's meshes read again without them: v26.8, the engine gives a re-registered
          body its own masks back first) */

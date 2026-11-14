@@ -1161,7 +1161,7 @@ function treeKit() {
 /* v15: every engine optimization has a switch, ON by default, so a probe can
    draw the SAME frozen frame with it off and on and compare every pixel —
    the proof that an optimization changed nothing on screen. */
-const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true, lightSets: true, ctxRestore: true, herSounds: true, musicPark: true, lightMem: true, lightSeeds: true, skelMerge: true, ivSharp: true, ivMsaa: true, onePass: true, noGarbage: true, lazyRot: true, fastTwins: true, fastSkin: true, freePics: true, sheetOnce: true };
+const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true, lightSets: true, ctxRestore: true, herSounds: true, musicPark: true, lightMem: true, lightSeeds: true, skelMerge: true, ivSharp: true, ivMsaa: true, onePass: true, noGarbage: true, lazyRot: true, fastTwins: true, fastSkin: true, freePics: true, sheetOnce: true, keepShared: true };
 /* a probe may switch any of them off from the address (`?opt=boneSkip:0,warmTiny:0`),
    so a switch that acts at LOAD time can be compared build against itself */
 { const m = /[?&]opt=([^&]*)/.exec(location.search);
@@ -1171,7 +1171,8 @@ const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: tru
    one pass (its b_world1.js ONEPASS); noGarbage: its frame's lists kept and refilled where they were made anew
    (NOGARB); lazyRot: its bodies' bones' angles worked out when read (LAZYROT); fastTwins and fastSkin: its load's
    own measuring done without the overhead (FASTTWINS, FASTSKIN); sheetOnce: a body's sheet set up once, never uploaded
-   again for nothing (SHEETONCE). No other chapter reads any key: unchanged by construction */
+   again for nothing (SHEETONCE); keepShared: a film's full body gives back only what no other body draws (KEEPSHARED).
+   No other chapter reads any key: unchanged by construction */
 /* v26.11: ONE COPY OF EACH PICTURE (episode 4 chapter 3's speed-ups, the fourth: Chad, 14 Nov 2026, of the question
    whether to free them, "Yes, free the copies (Recommended)"). A picture on the graphics chip is held twice: the chip's
    copy, and the page's own decoded ImageBitmap, which three keeps on its texture in case it must upload again (1,316 MB

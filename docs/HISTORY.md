@@ -9024,6 +9024,51 @@ What the baseline contains, by release:
   restarted in the middle of the work (every edit survived; the picture runs were started again). Deploys
   `6af799c5f4a2be51efa328a9`, then `6af7a2253913bc11b786928c` with the two wrist fixes below the frame (494 served
   files identical to the build).
+- **v26.11 · 14 Nov 2026 · episode 4 chapter 3 made faster, nothing on screen changed: the four speed-ups.** His ask of
+  13 Nov, after the measure, verbatim: "Like i said before, i dont want the slightest risk that the player ever sees the
+  trickery or compromise made, even by the smallest accident or edge case bug, that is why i asked not to resort to these
+  cheap tricks that can affect visually. I want true deep technical optimization, think true engine level,
+  multithreading, bare metal optimization, removing overhead etc, those sort of infra optimizations that has nothing to
+  do with visual tricks"; his pick of the revised list, "All four, in order (Recommended)"
+  (docs/V26.6-E4C3-OPTIMIZE-PLAN.md §2; §4 is the log, every proof and every number). Each is behind its own switch
+  (main.js OPT, read by the chapter through ctx.opt, so `?opt=<key>:0` puts three's way back) and was proved by the same
+  thing computed both ways: (1) NO MEMORY MADE AND THROWN AWAY EACH FRAME (`onePass`, `noGarbage`): three draws a
+  see-through two-sided material in two passes, each preceded by a program look-up, so the sixteen sun rays and the
+  taper's flame cost 34 look-ups and 17 draws that paint nothing a frame; the five flat plain cards are given one pass
+  (forceSinglePass, each checked flat and plain as the world is built), the fingers' resting lists and the banners' and
+  heads' loops refilled instead of made anew: 0 bytes different in every one of the frames compared, every bone the same
+  bits (the proof had to put back three's mixer buffers between the two runs: PropertyMixer writes a bone only when it
+  changed). (2) A BONE'S ANGLES WORKED OUT ONLY WHEN READ (`lazyRot`): three works out three angles every time a
+  quaternion changes, for 2,986 bones turned thousands of times a frame and never read; now worked out by three's own
+  setFromQuaternion the moment anything reads them: the bodies' animation 5.62 -> 3.77 ms a run here, every angle read
+  both ways the same. (3) THE LOAD'S OWN MEASURING WITHOUT THE OVERHEAD (`fastTwins`, `fastSkin`; the decoding was
+  already off the main thread, measured by tools/probes/loadprof.mjs): the seams' twins search and the posed-skin
+  measures, to the same results (every skin of 137 files hashes the same; 7,237,222 vertices the same): to play
+  99.8 -> 67.9 s on this box, the chapter's main-thread time 33.7 -> 11.5 s. (4) ONE COPY OF EACH PICTURE (`freePics`,
+  the chapter's `render: { freePictures: true }`), his answer to the question, "Yes, free the copies (Recommended)": the
+  page's decoded copy of each picture closed once the chip holds it, its compressed bytes kept as the recipe: 294
+  pictures, the page's decoded pictures 1,316 -> 130.5 MB at play; every freed picture decoded again and compared byte
+  for byte (1,243,070,160 bytes, none different), and read back from the chip across a forced graphics reset (294, the
+  same 294). Then every other way a freed picture could be asked for again was read in the code before it stayed live,
+  and ONE WAS IN EVERY PLAY-THROUGH: the festival's two film-only full bodies (v26.8) share their file with whoever wears
+  the same body at full detail all chapter, and a man of the waiting line wears the second one's; the film's end gave
+  his sheets back with the film's body, so with his pictures freed he would have been drawn black when the player walked
+  up to him (a closed picture uploaded leaves the chip's copy incomplete, without a word on the console: measured on purpose,
+  and the line I had written in the log saying it would log an error was wrong and is corrected there). The engine now
+  guards every such path (a picture disposed mid-chapter is decoded again first; a chapter left lets go at once; a copy
+  is counted with its picture; a new picture is kept; a failed decode is tried again and never lets the chip's copy go),
+  and at its root a stutter there since v26.8 is gone: fullOff gives back only what no other body draws (`keepShared`),
+  so his body is no longer put back on the chip on screen; and a body's sheet is set up once (`sheetOnce`: the film
+  body's borrowed sheet was uploaded again for nothing at the film's start). Proved on the release build both ways: his
+  two sheets read back from the chip before the festival and after it identical, the guards tried on purpose, and the
+  guard bypassed on one picture: incomplete. Found on the way and left (no player reaches it): the head damping (v26.3)
+  is not taken off before the next frame's take, so a film held on a step would compound it. Left, with the reason:
+  three's animation sampler rewritten to the same bits (a large surface for a third of a few milliseconds); drawing on
+  its own thread, the plan's fifth, to be put to him. Harnesses chapter, csp, leak, fixture and walk: 5 of 5 passed
+  (episode 1 the control: it declares none of it, unchanged by construction). Deploys `6af7e3ece44d353b73fbc943`, then
+  `6af7e6666b4a5fcc2de88063` with `keepShared`, then `6af7ed1b6d57421ceffbce18`, the same build with one comment in the
+  chapter corrected (I had written "a woman of the waiting line"; e4devc is a man: the engine's file byte for byte the
+  same, the chapter's differing in that comment only; 494 served files identical to the build).
 
 ## The sheet, version by version
 

@@ -275,7 +275,11 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
       bone's angles worked out only when read (the bodies' animation 5.62 -> 3.77 ms a run on this box); (3) the load's own
       measuring without the overhead (to play 99.8 -> 67.9 s here, the chapter's main-thread time 33.7 -> 11.5 s); (4) the
       page's decoded copy of each picture freed once it is on the chip, his answer "Yes, free the copies (Recommended)"
-      (1,316 -> 130.5 MB). LEFT, with the reason: three's animation sampler rewritten to the same bits (a large surface for
+      (1,316 -> 130.5 MB), with every way a freed picture could be asked for again closed in the engine first (one was in
+      every play-through: the festival's film-only body shared the sheets of a man in the waiting line and gave them back
+      as the film ended, which would have drawn him black when the player walked up to him; and at its root a stutter
+      since v26.8, his body put back on the chip on screen: fixed, `keepShared`). Live at v26.11, deploy `6af7ed1b6d57421ceffbce18`.
+      LEFT, with the reason: three's animation sampler rewritten to the same bits (a large surface for
       a third of a few milliseconds); drawing on its own thread (OffscreenCanvas), the plan's item 5, still to be put to him.
       FOUND on the way and left, no player can reach it: the head damping (v26.3) is the one pose laid after the take that
       armsBack does not take off (v11.5's rule), so a film held on a step (eventWait, which this chapter no longer has) would
