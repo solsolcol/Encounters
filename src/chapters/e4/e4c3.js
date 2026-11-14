@@ -432,17 +432,28 @@
        turns (stage.lazyProof) and every bone compared. `?opt=lazyRot:0` leaves three's way */
     const LAZYROT = !ctx.opt || ctx.opt('lazyRot');
     function lazyRot(o) { if (LAZYROT) lazyInstall(o); }
+    const LAZY = new WeakSet();
     function lazyInstall(o) {
       const q = o.quaternion, e = o.rotation;
-      if (!q || !e || e.__lazy) return;
+      if (!q || !e || LAZY.has(e)) return;
       let dirty = false, x = e._x, y = e._y, z = e._z, order = e._order;
       const sync = () => { dirty = false; e.setFromQuaternion(q, undefined, false); };
       Object.defineProperty(e, '_x', { get() { if (dirty) sync(); return x; }, set(v) { if (dirty) sync(); x = v; }, configurable: true });
       Object.defineProperty(e, '_y', { get() { if (dirty) sync(); return y; }, set(v) { if (dirty) sync(); y = v; }, configurable: true });
       Object.defineProperty(e, '_z', { get() { if (dirty) sync(); return z; }, set(v) { if (dirty) sync(); z = v; }, configurable: true });
       Object.defineProperty(e, '_order', { get() { if (dirty) sync(); return order; }, set(v) { if (dirty) sync(); order = v; }, configurable: true });
-      Object.defineProperty(e, '__lazy', { value: true });
+      LAZY.add(e);
       q._onChange(() => { dirty = true; });
+    }
+    /* (a probe's: the angles back to three's own way on this object, the numbers as they stand) */
+    function lazyUninstall(o) {
+      const q = o.quaternion, e = o.rotation;
+      if (!q || !e || !LAZY.has(e)) return;
+      const x = e._x, y = e._y, z = e._z, order = e._order;
+      delete e._x; delete e._y; delete e._z; delete e._order;
+      e._x = x; e._y = y; e._z = z; e._order = order;
+      LAZY.delete(e);
+      q._onChange(() => { e.setFromQuaternion(q, undefined, false); });
     }
     /* (the proof, for a probe: pairs of objects, one turned the old way and one the new, put through the same long string
        of turns and reads, every read and every quaternion compared bit for bit; then every bone of every body read
@@ -479,7 +490,7 @@
       for (let i = 0; i < A.length; i++) { const a = A[i], b = Bq[i]; const ea = a.rotation.toArray(), eb = b.rotation.toArray(); for (let j = 0; j < 4; j++) chk(ea[j], eb[j]);
         a.updateMatrix(); b.updateMatrix(); for (let j = 0; j < 16; j++) chk(a.matrix.elements[j], b.matrix.elements[j]); }
       let bones = 0, boneBad = 0;
-      world.traverse(o => { if (!o.isBone || !o.rotation.__lazy) return; bones++; te.setFromQuaternion(o.quaternion, o.rotation.order, false);
+      world.traverse(o => { if (!o.isBone || !LAZY.has(o.rotation)) return; bones++; te.setFromQuaternion(o.quaternion, o.rotation.order, false);
         if (!same(te.x, o.rotation.x) || !same(te.y, o.rotation.y) || !same(te.z, o.rotation.z)) boneBad++; });
       return { compared: n, differed: bad, lazyBones: bones, bonesDiffering: boneBad };
     }
@@ -7220,6 +7231,13 @@
           if (P.hd) headDampLay(P); if (P.shd) shouldersLay(P); if (P.restLegs) seatLegsLay(P);
           if (P.restHands && !(P.layK > 0)) restHandsLay(P); if (!P.htLate) handsTrue(P); } return n; },
       wind(t) { windTick(t); return banners.im ? Array.from(banners.im.instanceMatrix.array) : null; },
+      /* (a probe's timing: every ready body's take run and its poses laid n times, ms each time; lazy(on) puts every
+         body's bones' angles the lazy way or three's own, so the two are timed on the same bodies in one page) */
+      animBench(n = 20, dt = 1 / 60) { const t0 = performance.now(); for (let k = 0; k < n; k++) for (const P of people) { if (!P.ready) continue;
+          armsBack(P); P.mixer.update(dt); if (P.hd) headDampLay(P); if (P.shd) shouldersLay(P); if (P.restLegs) seatLegsLay(P);
+          if (P.restHands && !(P.layK > 0)) restHandsLay(P); if (!P.htLate) handsTrue(P); }
+        return +((performance.now() - t0) / n).toFixed(3); },
+      lazy(on) { let n = 0; for (const P of people) for (const k in P.bone) { (on ? lazyInstall : lazyUninstall)(P.bone[k]); n++; } return n; },
       plan: { TURF, TABLES, HALL, TENT_W1, TENT_W2, TENT_E, CHIEF, BENCH, POLE, TON_TABLE, WEST_TABLE },
       /* the ground's own noises (ambTick): how many have sounded, and the last (a probe counts them over a stretch of play) */
       amb: () => ({ n: ambN, last: ambLast, next: +ambAt.toFixed(2), beds: Object.assign({}, bedMix), pan: +musPan.toFixed(3) }),

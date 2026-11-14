@@ -1077,6 +1077,13 @@
           if (P.hd) headDampLay(P); if (P.shd) shouldersLay(P); if (P.restLegs) seatLegsLay(P);
           if (P.restHands && !(P.layK > 0)) restHandsLay(P); if (!P.htLate) handsTrue(P); } return n; },
       wind(t) { windTick(t); return banners.im ? Array.from(banners.im.instanceMatrix.array) : null; },
+      /* (a probe's timing: every ready body's take run and its poses laid n times, ms each time; lazy(on) puts every
+         body's bones' angles the lazy way or three's own, so the two are timed on the same bodies in one page) */
+      animBench(n = 20, dt = 1 / 60) { const t0 = performance.now(); for (let k = 0; k < n; k++) for (const P of people) { if (!P.ready) continue;
+          armsBack(P); P.mixer.update(dt); if (P.hd) headDampLay(P); if (P.shd) shouldersLay(P); if (P.restLegs) seatLegsLay(P);
+          if (P.restHands && !(P.layK > 0)) restHandsLay(P); if (!P.htLate) handsTrue(P); }
+        return +((performance.now() - t0) / n).toFixed(3); },
+      lazy(on) { let n = 0; for (const P of people) for (const k in P.bone) { (on ? lazyInstall : lazyUninstall)(P.bone[k]); n++; } return n; },
       plan: { TURF, TABLES, HALL, TENT_W1, TENT_W2, TENT_E, CHIEF, BENCH, POLE, TON_TABLE, WEST_TABLE },
       /* the ground's own noises (ambTick): how many have sounded, and the last (a probe counts them over a stretch of play) */
       amb: () => ({ n: ambN, last: ambLast, next: +ambAt.toFixed(2), beds: Object.assign({}, bedMix), pan: +musPan.toFixed(3) }),
