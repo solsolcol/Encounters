@@ -8639,3 +8639,23 @@ Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8,
 - **A third take for a blend that changes its base.** Switching from a two-take blend (0.42 of one take over another)
   to the whole of the second in one frame jumps the body by the difference: pose() takes an optional third take, so a
   body goes on into a new take from exactly the blend it stands in.
+
+## v26.11 — a picture let go must have every way back guarded, and the silence of a closed one
+
+- **A freed picture can be asked for again by more than an upload.** Closing the page's copy of a picture once the chip
+  holds it (main.js PICS) is exact only while nothing asks the chip for it again. Three asks in four ways, and only one
+  of them is `needsUpdate`: a texture DISPOSED and drawn again uploads from its picture (three forgets it was ever
+  there); a texture COPIED (clone, copy) shares the picture and, with other settings, needs its own upload; a context
+  lost and restored uploads everything; and a new picture handed in must not be decoded over. Read every place a
+  chapter throws a texture away, copies one or tears itself down before freeing anything: the one found was in every
+  play-through (a film-only full body shares its file, parseOnce, with a man of the waiting line, and gave his sheets
+  back as the film ended).
+- **A closed picture uploaded fails in silence.** Its width and height are 0, so the chip is asked for a picture of no
+  size: no exception, no console line, the chip's copy left incomplete and drawn black. A quiet console proves nothing
+  here; the proof is the picture read back from the chip (a framebuffer on the texture, readPixels, a hash), before and
+  after, and the guard proved by bypassing it on purpose.
+- **A body shared by its file is shared on the chip.** Giving back a film-only body's shapes and sheets gave back
+  whatever else wore the same file at the same level, and put it back on the chip on screen the next time it was drawn:
+  give back only what no other body draws (c_cast.js fullOff, KEEPSHARED).
+- **The chat's file send stops at 500 MiB.** A release zip (797 MB at v26.11) cannot be handed over that way; the very
+  same build is held on Netlify, whose Deploys page keeps every deploy.
