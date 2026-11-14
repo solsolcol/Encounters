@@ -1,0 +1,9 @@
+started rig red 01a1caf2-3f67-7758-9c48-94b9ca6624dd
+  rig red IN_PROGRESS 0%
+  rig red IN_PROGRESS 47%
+  rig red IN_PROGRESS 90%
+  rig red SUCCEEDED 100%
+rig done red {'rigged': 49716108, 'walk': 49897900}
+body identical to masters/v26.0/src/rigged-red.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (154)
+wrote masters/v26.0/src/takes-red-walking.glb 74060 bytes ["retarget_clip (100 ch, 1.03 s)"]

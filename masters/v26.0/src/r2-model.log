@@ -1,0 +1,41 @@
+started image-to-3d deva 01a1caea-92f2-7101-9602-e4d60bf9967c
+started image-to-3d devb 01a1caea-9921-731b-bbc9-cf631ed55bed
+started image-to-3d deve 01a1caea-9f9a-7377-92da-ca38a596fc50
+started image-to-3d devf 01a1caea-a6d5-7357-acc6-785a18befec0
+started image-to-3d devc 01a1caea-ad76-72f0-8205-d0ff4770596f
+started image-to-3d devd 01a1caea-b415-775a-884a-ea46f118a38d
+started image-to-3d devg 01a1caea-baa1-754e-b726-c1a99c74ded5
+started image-to-3d devh 01a1caea-c15a-701b-95e0-4285a55b2435
+started image-to-3d dancera 01a1caea-c834-75ff-827a-13ad8b4114a7
+started image-to-3d dancerb 01a1caea-cf49-741c-ac37-d77ce693f6aa
+started image-to-3d red 01a1caea-d642-73fb-9328-7afe38638844
+  deva IN_PROGRESS 1%
+  deva IN_PROGRESS 26%
+  deva IN_PROGRESS 30%
+  deva IN_PROGRESS 45%
+  deva IN_PROGRESS 58%
+  deva IN_PROGRESS 80%
+  deva IN_PROGRESS 99%
+  deva SUCCEEDED 100%
+done deva {'glb': 47506448, 'pre': 10418436} credits 40
+  devb SUCCEEDED 100%
+done devb {'glb': 33670368, 'pre': 8384384} credits 40
+  deve IN_PROGRESS 99%
+  deve SUCCEEDED 100%
+done deve {'glb': 70720424, 'pre': 15964164} credits 40
+  devf SUCCEEDED 100%
+done devf {'glb': 67404064, 'pre': 30616840} credits 40
+  devc SUCCEEDED 100%
+done devc {'glb': 40013204, 'pre': 10600936} credits 40
+  devd SUCCEEDED 100%
+done devd {'glb': 45445108, 'pre': 8451300} credits 40
+  devg SUCCEEDED 100%
+done devg {'glb': 31134520, 'pre': 6863316} credits 40
+  devh SUCCEEDED 100%
+done devh {'glb': 40679328, 'pre': 9805140} credits 40
+  dancera SUCCEEDED 100%
+done dancera {'glb': 75111684, 'pre': 23281672} credits 40
+  dancerb SUCCEEDED 100%
+done dancerb {'glb': 75928304, 'pre': 20894344} credits 40
+  red SUCCEEDED 100%
+done red {'glb': 45839264, 'pre': 11200212} credits 40

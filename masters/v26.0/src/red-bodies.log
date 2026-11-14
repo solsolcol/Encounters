@@ -1,0 +1,33 @@
+  remesh red 30000 IN_PROGRESS 1%
+  remesh red 30000 IN_PROGRESS 35%
+  remesh red 30000 IN_PROGRESS 60%
+  remesh red 30000 IN_PROGRESS 89%
+  remesh red 30000 IN_PROGRESS 90%
+  remesh red 30000 SUCCEEDED 100%
+remesh done red 30000 70347808
+  fit: turn 0 degrees, size x0.8829, moved [-0.0005, 0.8416, -0.0058]; a remeshed point lies 0.16 mm from the rig's points on average, 4.7 mm at worst (the other turns: 30.3, 68.0, 68.9 mm)
+  weights: 27135 points from 192816; 21 reached further than 4 cm, 0 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-red-30000.glb: 31164 triangles on 50 joints; sheets colour 10.9 MB, normal 1.9 MB, mr 0.0 MB; 14.6 MB
+  remesh red 8000 IN_PROGRESS 1%
+  remesh red 8000 IN_PROGRESS 35%
+  remesh red 8000 IN_PROGRESS 64%
+  remesh red 8000 IN_PROGRESS 89%
+  remesh red 8000 IN_PROGRESS 90%
+  remesh red 8000 SUCCEEDED 100%
+remesh done red 8000 70176124
+  fit: turn 0 degrees, size x0.8832, moved [-0.0007, 0.8417, -0.0061]; a remeshed point lies 0.40 mm from the rig's points on average, 3.3 mm at worst (the other turns: 31.2, 77.0, 78.0 mm)
+  weights: 10924 points from 192816; 18 reached further than 4 cm, 6 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-red-8000.glb: 8307 triangles on 50 joints; sheets colour 11.0 MB, normal 2.1 MB, mr 0.0 MB; 13.7 MB
+  remesh red 2500 IN_PROGRESS 1%
+  remesh red 2500 IN_PROGRESS 35%
+  remesh red 2500 IN_PROGRESS 64%
+  remesh red 2500 IN_PROGRESS 89%
+  remesh red 2500 IN_PROGRESS 90%
+  remesh red 2500 SUCCEEDED 100%
+remesh done red 2500 68372976
+  fit: turn 0 degrees, size x0.8837, moved [-0.0001, 0.8416, -0.0052]; a remeshed point lies 0.93 mm from the rig's points on average, 3.3 mm at worst (the other turns: 31.8, 76.7, 76.7 mm)
+  weights: 5067 points from 192816; 3 reached further than 4 cm, 0 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-red-2500.glb: 2604 triangles on 50 joints; sheets colour 10.9 MB, normal 2.1 MB, mr 0.0 MB; 13.3 MB

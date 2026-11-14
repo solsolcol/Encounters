@@ -1,0 +1,42 @@
+started animation red lib 01a1cb59-7998-72e0-b257-33d8ce722ddd
+  anim red lib IN_PROGRESS 1%
+  anim red lib IN_PROGRESS 81%
+  anim red lib IN_PROGRESS 85%
+  anim red lib IN_PROGRESS 89%
+  anim red lib IN_PROGRESS 93%
+  anim red lib IN_PROGRESS 95%
+  anim red lib SUCCEEDED 100%
+animation done red lib 55008404
+a re-export of masters/v26.0/src/rigged-red.glb: 50 bones at the same rest pose in the world, 312194 triangles, the same bounds; 2 of 3 images byte-identical
+prune: Removed types... Primitive (1), Accessor (7)
+wrote masters/v26.0/src/takes-red-lib.glb 754680 bytes ["Sitting_Answering_Questions (150 ch, 9.67 s)","Chair_Sit_Idle_M (150 ch, 10.67 s)","Idle_3 (150 ch, 9.97 s)","Stand_to_Sit_Transition_M (150 ch, 4.73 s)"]
+red lib strip exit 0
+red lib done
+  motion red handson IN_PROGRESS 1%
+  motion red palmover IN_PROGRESS 1%
+  motion red petals IN_PROGRESS 1%
+  motion red handson IN_PROGRESS 42%
+  motion red palmover IN_PROGRESS 47%
+  motion red petals IN_PROGRESS 47%
+  motion red handson IN_PROGRESS 84%
+  motion red palmover IN_PROGRESS 84%
+  motion red petals IN_PROGRESS 84%
+  motion red handson SUCCEEDED 100%
+  motion red palmover SUCCEEDED 100%
+  motion red petals SUCCEEDED 100%
+motion done red handson 50392872
+motion done red palmover 50392884
+motion done red petals 50192392
+body identical to masters/v26.0/src/rigged-red.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (154)
+wrote masters/v26.0/src/takes-red-handson.glb 284068 bytes ["retarget_clip (100 ch, 5.97 s)"]
+red handson strip exit 0
+body identical to masters/v26.0/src/rigged-red.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (154)
+wrote masters/v26.0/src/takes-red-palmover.glb 284068 bytes ["retarget_clip (100 ch, 5.97 s)"]
+red palmover strip exit 0
+body identical to masters/v26.0/src/rigged-red.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (154)
+wrote masters/v26.0/src/takes-red-petals.glb 198992 bytes ["retarget_clip (100 ch, 3.97 s)"]
+red petals strip exit 0
+red t2m done

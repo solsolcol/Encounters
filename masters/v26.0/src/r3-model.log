@@ -1,0 +1,24 @@
+started image-to-3d hermita 01a1caf5-b83c-730a-bdc4-e689e00a0b65
+started image-to-3d hermitb 01a1caf5-c047-775d-beae-add88c36033b
+started image-to-3d white 01a1caf5-c6ae-73e4-b0ab-03f9570bff30
+started image-to-3d bench 01a1caf5-cdbd-713d-81fc-3a2f1ff68cc8
+  hermita IN_PROGRESS 1%
+  hermita IN_PROGRESS 9%
+  hermita IN_PROGRESS 26%
+  hermita IN_PROGRESS 30%
+  hermita IN_PROGRESS 34%
+  hermita IN_PROGRESS 37%
+  hermita IN_PROGRESS 41%
+  hermita IN_PROGRESS 45%
+  hermita IN_PROGRESS 58%
+  hermita IN_PROGRESS 67%
+  hermita IN_PROGRESS 80%
+  hermita IN_PROGRESS 99%
+  hermita SUCCEEDED 100%
+done hermita {'glb': 70843852, 'pre': 62346620} credits 40
+  hermitb SUCCEEDED 100%
+done hermitb {'glb': 70121196, 'pre': 23552776} credits 40
+  white SUCCEEDED 100%
+done white {'glb': 41483240, 'pre': 12713412} credits 40
+  bench SUCCEEDED 100%
+done bench {'glb': 75851352, 'pre': 18476436} credits 40

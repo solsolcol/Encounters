@@ -1,0 +1,2146 @@
+  CONTRACT: w 0.270  h 0.800  l 0.317 m (x -0.135..0.135, z -0.159..0.159)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3naga.glb: 12452 -> 12452 triangles; 100.5 MB -> 1308 KB
+{
+ "info": {
+  "size": [
+   0.270247509138852,
+   0.800000011920929,
+   0.3171239403924969
+  ],
+  "min": [
+   -0.135123754569426,
+   0,
+   -0.15856197019624846
+  ],
+  "max": [
+   0.135123754569426,
+   0.800000011920929,
+   0.15856197019624846
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 12452
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.135,0,-0.159],[0.135,0.8,0.159]],"size":[0.27,0.8,0.317]}
+errs []
+naga -> assets/w3naga.glb 1339152 bytes
+  remesh baisri 30000 IN_PROGRESS 1%
+  remesh baisri 30000 IN_PROGRESS 35%
+  remesh baisri 30000 IN_PROGRESS 60%
+  remesh baisri 30000 IN_PROGRESS 89%
+  remesh baisri 30000 IN_PROGRESS 90%
+  remesh baisri 30000 SUCCEEDED 100%
+remesh done baisri 30000 83763040
+  CONTRACT: w 0.347  h 0.600  l 0.371 m (x -0.174..0.174, z -0.185..0.185)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3baisri.glb: 30071 -> 30071 triangles; 79.9 MB -> 1739 KB
+{
+ "info": {
+  "size": [
+   0.3472151998074071,
+   0.6000000238418579,
+   0.3705801715906711
+  ],
+  "min": [
+   -0.17360759990370356,
+   0,
+   -0.18529008579533554
+  ],
+  "max": [
+   0.17360759990370356,
+   0.6000000238418579,
+   0.18529008579533554
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 30071
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.174,0,-0.185],[0.174,0.6,0.185]],"size":[0.347,0.6,0.371]}
+errs []
+baisri -> assets/w3baisri.glb 1781120 bytes
+  remesh wheel 40000 IN_PROGRESS 1%
+  remesh wheel 40000 IN_PROGRESS 35%
+  remesh wheel 40000 IN_PROGRESS 60%
+  remesh wheel 40000 IN_PROGRESS 89%
+  remesh wheel 40000 IN_PROGRESS 90%
+  remesh wheel 40000 SUCCEEDED 100%
+remesh done wheel 40000 92627468
+  CONTRACT: w 0.954  h 1.500  l 0.748 m (x -0.477..0.477, z -0.374..0.374)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3wheel.glb: 41472 -> 41472 triangles; 88.3 MB -> 2153 KB
+{
+ "info": {
+  "size": [
+   0.9539170506912442,
+   1.5,
+   0.7475051118503372
+  ],
+  "min": [
+   -0.4769585253456221,
+   0,
+   -0.3737525559251686
+  ],
+  "max": [
+   0.4769585253456221,
+   1.5,
+   0.3737525559251686
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 41472
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.477,0,-0.374],[0.477,1.5,0.374]],"size":[0.954,1.5,0.748]}
+errs []
+wheel -> assets/w3wheel.glb 2205040 bytes
+  remesh tower 16000 IN_PROGRESS 1%
+  remesh tower 16000 IN_PROGRESS 35%
+  remesh tower 16000 IN_PROGRESS 64%
+  remesh tower 16000 IN_PROGRESS 89%
+  remesh tower 16000 IN_PROGRESS 90%
+  remesh tower 16000 SUCCEEDED 100%
+remesh done tower 16000 99016372
+  CONTRACT: w 0.510  h 2.800  l 0.489 m (x -0.255..0.255, z -0.245..0.245)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3tower.glb: 16164 -> 16164 triangles; 94.4 MB -> 1465 KB
+{
+ "info": {
+  "size": [
+   0.5099764920628554,
+   2.799999952316284,
+   0.48912624674393174
+  ],
+  "min": [
+   -0.2549882460314277,
+   0,
+   -0.24456312337196587
+  ],
+  "max": [
+   0.2549882460314277,
+   2.799999952316284,
+   0.24456312337196587
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 16164
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.255,0,-0.245],[0.255,2.8,0.245]],"size":[0.51,2.8,0.489]}
+errs []
+tower -> assets/w3tower.glb 1499872 bytes
+  remesh parasol 16000 IN_PROGRESS 1%
+  remesh parasol 16000 IN_PROGRESS 31%
+  remesh parasol 16000 IN_PROGRESS 60%
+  remesh parasol 16000 IN_PROGRESS 89%
+  remesh parasol 16000 IN_PROGRESS 90%
+  remesh parasol 16000 SUCCEEDED 100%
+remesh done parasol 16000 101742564
+  CONTRACT: w 2.641  h 3.400  l 2.655 m (x -1.321..1.321, z -1.327..1.327)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3parasol.glb: 12816 -> 12816 triangles; 97.0 MB -> 1149 KB
+{
+ "info": {
+  "size": [
+   2.6412855137051903,
+   3.4000000953674316,
+   2.654567169401685
+  ],
+  "min": [
+   -1.3206427568525951,
+   0,
+   -1.3272835847008424
+  ],
+  "max": [
+   1.3206427568525951,
+   3.4000000953674316,
+   1.3272835847008424
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 12816
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-1.321,0,-1.327],[1.321,3.4,1.327]],"size":[2.641,3.4,2.655]}
+errs []
+parasol -> assets/w3parasol.glb 1176108 bytes
+  remesh fan 8000 IN_PROGRESS 1%
+  remesh fan 8000 IN_PROGRESS 35%
+  remesh fan 8000 IN_PROGRESS 60%
+  remesh fan 8000 IN_PROGRESS 89%
+  remesh fan 8000 IN_PROGRESS 90%
+  remesh fan 8000 SUCCEEDED 100%
+remesh done fan 8000 104303476
+  CONTRACT: w 0.508  h 0.750  l 0.050 m (x -0.254..0.254, z -0.025..0.025)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3fan.glb: 7432 -> 7432 triangles; 99.5 MB -> 1248 KB
+{
+ "info": {
+  "size": [
+   0.5076296273689993,
+   0.75,
+   0.05026398510696738
+  ],
+  "min": [
+   -0.25381481368449965,
+   0,
+   -0.02513199255348369
+  ],
+  "max": [
+   0.25381481368449965,
+   0.75,
+   0.02513199255348369
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 7432
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.254,0,-0.025],[0.254,0.75,0.025]],"size":[0.508,0.75,0.05]}
+errs []
+fan -> assets/w3fan.glb 1277504 bytes
+  remesh nagastaff 6000 IN_PROGRESS 1%
+  remesh nagastaff 6000 IN_PROGRESS 35%
+  remesh nagastaff 6000 IN_PROGRESS 60%
+  remesh nagastaff 6000 IN_PROGRESS 89%
+  remesh nagastaff 6000 IN_PROGRESS 90%
+  remesh nagastaff 6000 SUCCEEDED 100%
+remesh done nagastaff 6000 87430220
+  CONTRACT: w 0.178  h 1.600  l 0.113 m (x -0.089..0.089, z -0.056..0.056)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3nagastaff.glb: 6244 -> 6244 triangles; 83.4 MB -> 406 KB
+{
+ "info": {
+  "size": [
+   0.17813043876385076,
+   1.600000023841858,
+   0.1126987534723047
+  ],
+  "min": [
+   -0.08906521938192538,
+   0,
+   -0.05634937673615235
+  ],
+  "max": [
+   0.08906521938192538,
+   1.600000023841858,
+   0.05634937673615235
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 6244
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.089,0,-0.056],[0.089,1.6,0.056]],"size":[0.178,1.6,0.113]}
+errs []
+nagastaff -> assets/w3nagastaff.glb 415948 bytes
+  remesh pewterbaisri 16000 IN_PROGRESS 1%
+  remesh pewterbaisri 16000 IN_PROGRESS 35%
+  remesh pewterbaisri 16000 IN_PROGRESS 60%
+  remesh pewterbaisri 16000 IN_PROGRESS 89%
+  remesh pewterbaisri 16000 IN_PROGRESS 90%
+  remesh pewterbaisri 16000 SUCCEEDED 100%
+remesh done pewterbaisri 16000 104611832
+  CONTRACT: w 0.305  h 0.500  l 0.278 m (x -0.152..0.152, z -0.139..0.139)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3pewter.glb: 16059 -> 16059 triangles; 99.8 MB -> 1609 KB
+{
+ "info": {
+  "size": [
+   0.30491042817468794,
+   0.5,
+   0.2782372508926664
+  ],
+  "min": [
+   -0.15245521408734397,
+   0,
+   -0.1391186254463332
+  ],
+  "max": [
+   0.15245521408734397,
+   0.5,
+   0.1391186254463332
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 16059
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.152,0,-0.139],[0.152,0.5,0.139]],"size":[0.305,0.5,0.278]}
+errs []
+pewterbaisri -> assets/w3pewter.glb 1647748 bytes
+done candle {'glb': 43872884} credits 40
+  remesh candle 3000 IN_PROGRESS 1%
+  remesh candle 3000 IN_PROGRESS 35%
+  remesh candle 3000 IN_PROGRESS 64%
+  remesh candle 3000 IN_PROGRESS 89%
+  remesh candle 3000 IN_PROGRESS 90%
+  remesh candle 3000 SUCCEEDED 100%
+remesh done candle 3000 72201664
+  CONTRACT: w 0.267  h 1.250  l 0.267 m (x -0.134..0.134, z -0.134..0.134)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3candle.glb: 3099 -> 3099 triangles; 68.9 MB -> 316 KB
+{
+ "info": {
+  "size": [
+   0.26703695791497545,
+   1.25,
+   0.26718955046235543
+  ],
+  "min": [
+   -0.13351847895748772,
+   0,
+   -0.13359477523117771
+  ],
+  "max": [
+   0.13351847895748772,
+   1.25,
+   0.13359477523117771
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 3099
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.134,0,-0.134],[0.134,1.25,0.134]],"size":[0.267,1.25,0.267]}
+errs []
+candle -> assets/w3candle.glb 323992 bytes
+done purple {'glb': 88035260} credits 40
+  remesh purple 16000 IN_PROGRESS 1%
+  remesh purple 16000 IN_PROGRESS 35%
+  remesh purple 16000 IN_PROGRESS 64%
+  remesh purple 16000 IN_PROGRESS 89%
+  remesh purple 16000 IN_PROGRESS 90%
+  remesh purple 16000 SUCCEEDED 100%
+remesh done purple 16000 76413784
+  CONTRACT: w 0.647  h 1.100  l 0.562 m (x -0.323..0.323, z -0.281..0.281)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3purple.glb: 13559 -> 13559 triangles; 72.9 MB -> 1413 KB
+{
+ "info": {
+  "size": [
+   0.6466322964947009,
+   1.100000023841858,
+   0.5614978606152201
+  ],
+  "min": [
+   -0.32331614824735044,
+   0,
+   -0.28074893030761006
+  ],
+  "max": [
+   0.32331614824735044,
+   1.100000023841858,
+   0.28074893030761006
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 13559
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.323,0,-0.281],[0.323,1.1,0.281]],"size":[0.647,1.1,0.561]}
+errs []
+purple -> assets/w3purple.glb 1446856 bytes
+done fruit {'glb': 92587836} credits 40
+  remesh fruit 16000 IN_PROGRESS 1%
+  remesh fruit 16000 IN_PROGRESS 35%
+  remesh fruit 16000 IN_PROGRESS 64%
+  remesh fruit 16000 IN_PROGRESS 89%
+  remesh fruit 16000 IN_PROGRESS 90%
+  remesh fruit 16000 SUCCEEDED 100%
+remesh done fruit 16000 99318332
+  CONTRACT: w 0.450  h 0.413  l 0.435 m (x -0.225..0.225, z -0.217..0.217)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3fruit.glb: 15267 -> 15267 triangles; 94.7 MB -> 1416 KB
+{
+ "info": {
+  "size": [
+   0.44999998807907104,
+   0.4128650667324172,
+   0.43456372639503293
+  ],
+  "min": [
+   -0.22499999403953552,
+   -0.000011828643804112637,
+   -0.21728186319751647
+  ],
+  "max": [
+   0.22499999403953552,
+   0.4128532380886131,
+   0.21728186319751647
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 15267
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.225,0,-0.217],[0.225,0.413,0.217]],"size":[0.45,0.413,0.435]}
+errs []
+fruit -> assets/w3fruit.glb 1449764 bytes
+done sweets {'glb': 82750900} credits 40
+  remesh sweets 8000 IN_PROGRESS 1%
+  remesh sweets 8000 IN_PROGRESS 35%
+  remesh sweets 8000 IN_PROGRESS 60%
+  remesh sweets 8000 IN_PROGRESS 89%
+  remesh sweets 8000 IN_PROGRESS 90%
+  remesh sweets 8000 SUCCEEDED 100%
+remesh done sweets 8000 89254076
+  CONTRACT: w 0.300  h 0.243  l 0.302 m (x -0.150..0.150, z -0.151..0.151)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3sweets.glb: 7543 -> 7543 triangles; 85.1 MB -> 533 KB
+{
+ "info": {
+  "size": [
+   0.2999891576162463,
+   0.24278513936355867,
+   0.30212831497192383
+  ],
+  "min": [
+   -0.14999457880812314,
+   -0.000008209785596319241,
+   -0.15106415748596191
+  ],
+  "max": [
+   0.14999457880812314,
+   0.24277692957796235,
+   0.15106415748596191
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 7543
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.15,0,-0.151],[0.15,0.243,0.151]],"size":[0.3,0.243,0.302]}
+errs []
+sweets -> assets/w3sweets.glb 546004 bytes
+done khantok {'glb': 84878508} credits 40
+  remesh khantok 10000 IN_PROGRESS 1%
+  remesh khantok 10000 IN_PROGRESS 35%
+  remesh khantok 10000 IN_PROGRESS 64%
+  remesh khantok 10000 IN_PROGRESS 89%
+  remesh khantok 10000 IN_PROGRESS 90%
+  remesh khantok 10000 SUCCEEDED 100%
+remesh done khantok 10000 106929356
+  CONTRACT: w 0.400  h 0.367  l 0.401 m (x -0.200..0.200, z -0.201..0.201)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3khantok.glb: 10229 -> 10229 triangles; 102.0 MB -> 481 KB
+{
+ "info": {
+  "size": [
+   0.40001664037677837,
+   0.36649713016052576,
+   0.40143778920173645
+  ],
+  "min": [
+   -0.20000832018838918,
+   0.000008359072111413512,
+   -0.20071889460086823
+  ],
+  "max": [
+   0.20000832018838918,
+   0.36650548923263715,
+   0.20071889460086823
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 10229
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.2,0,-0.201],[0.2,0.367,0.201]],"size":[0.4,0.366,0.401]}
+errs []
+khantok -> assets/w3khantok.glb 492764 bytes
+done satinpuff {'glb': 47937664} credits 40
+  remesh satinpuff 4000 IN_PROGRESS 1%
+  remesh satinpuff 4000 IN_PROGRESS 35%
+  remesh satinpuff 4000 IN_PROGRESS 64%
+  remesh satinpuff 4000 IN_PROGRESS 90%
+  remesh satinpuff 4000 SUCCEEDED 100%
+remesh done satinpuff 4000 69669248
+  CONTRACT: w 0.522  h 0.750  l 0.556 m (x -0.261..0.261, z -0.278..0.278)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3puff.glb: 4116 -> 4116 triangles; 66.4 MB -> 367 KB
+{
+ "info": {
+  "size": [
+   0.5215460676900541,
+   0.75,
+   0.5556047242652669
+  ],
+  "min": [
+   -0.26077303384502704,
+   0,
+   -0.27780236213263343
+  ],
+  "max": [
+   0.26077303384502704,
+   0.75,
+   0.27780236213263343
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 4116
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.261,0,-0.278],[0.261,0.75,0.278]],"size":[0.522,0.75,0.556]}
+errs []
+satinpuff -> assets/w3puff.glb 375968 bytes
+done seatchair {'glb': 89172596} credits 40
+  remesh seatchair 12000 IN_PROGRESS 1%
+  remesh seatchair 12000 IN_PROGRESS 31%
+  remesh seatchair 12000 IN_PROGRESS 60%
+  remesh seatchair 12000 IN_PROGRESS 89%
+  remesh seatchair 12000 IN_PROGRESS 90%
+  remesh seatchair 12000 SUCCEEDED 100%
+remesh done seatchair 12000 109345956
+  CONTRACT: w 0.842  h 1.150  l 0.851 m (x -0.421..0.421, z -0.426..0.426)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3chair.glb: 12199 -> 12199 triangles; 104.3 MB -> 1313 KB
+{
+ "info": {
+  "size": [
+   0.8416791109416353,
+   1.149999976158142,
+   0.8513656856484944
+  ],
+  "min": [
+   -0.42083955547081764,
+   0,
+   -0.4256828428242472
+  ],
+  "max": [
+   0.42083955547081764,
+   1.149999976158142,
+   0.4256828428242472
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 12199
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.421,0,-0.426],[0.421,1.15,0.426]],"size":[0.842,1.15,0.851]}
+errs []
+seatchair -> assets/w3chair.glb 1344624 bytes
+done lowtable {'glb': 58025724} credits 40
+  remesh lowtable 3000 IN_PROGRESS 1%
+  remesh lowtable 3000 IN_PROGRESS 35%
+  remesh lowtable 3000 IN_PROGRESS 64%
+  remesh lowtable 3000 IN_PROGRESS 89%
+  remesh lowtable 3000 IN_PROGRESS 90%
+  remesh lowtable 3000 SUCCEEDED 100%
+remesh done lowtable 3000 69130492
+  CONTRACT: w 1.000  h 0.382  l 0.999 m (x -0.500..0.500, z -0.499..0.499)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3lowtable.glb: 2725 -> 2725 triangles; 65.9 MB -> 264 KB
+{
+ "info": {
+  "size": [
+   1,
+   0.38224433118686485,
+   0.9989013336588641
+  ],
+  "min": [
+   -0.5,
+   -0.000012329491900442413,
+   -0.49945066682943207
+  ],
+  "max": [
+   0.5,
+   0.3822320016949644,
+   0.49945066682943207
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 2725
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.5,0,-0.499],[0.5,0.382,0.499]],"size":[1,0.382,0.999]}
+errs []
+lowtable -> assets/w3lowtable.glb 270064 bytes
+  remesh nagawhite 24000 IN_PROGRESS 1%
+  remesh nagawhite 24000 IN_PROGRESS 35%
+  remesh nagawhite 24000 IN_PROGRESS 60%
+  remesh nagawhite 24000 IN_PROGRESS 89%
+  remesh nagawhite 24000 IN_PROGRESS 90%
+  remesh nagawhite 24000 SUCCEEDED 100%
+remesh done nagawhite 24000 133538524
+  CONTRACT: w 0.638  h 1.500  l 0.681 m (x -0.319..0.319, z -0.341..0.341)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3nagawhite.glb: 25094 -> 25094 triangles; 127.4 MB -> 1735 KB
+{
+ "info": {
+  "size": [
+   0.6376384777367474,
+   1.5,
+   0.6814020203253274
+  ],
+  "min": [
+   -0.3188192388683737,
+   0,
+   -0.3407010101626637
+  ],
+  "max": [
+   0.3188192388683737,
+   1.5,
+   0.3407010101626637
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 25094
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.319,0,-0.341],[0.319,1.5,0.341]],"size":[0.638,1.5,0.681]}
+errs []
+nagawhite -> assets/w3nagawhite.glb 1776472 bytes
+  remesh dracaena 12000 IN_PROGRESS 1%
+  remesh dracaena 12000 IN_PROGRESS 35%
+  remesh dracaena 12000 IN_PROGRESS 60%
+  remesh dracaena 12000 IN_PROGRESS 89%
+  remesh dracaena 12000 IN_PROGRESS 90%
+  remesh dracaena 12000 SUCCEEDED 100%
+remesh done dracaena 12000 81807136
+  CONTRACT: w 0.811  h 1.500  l 0.736 m (x -0.405..0.405, z -0.368..0.368)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3dracaena.glb: 11505 -> 11505 triangles; 78.0 MB -> 1325 KB
+{
+ "info": {
+  "size": [
+   0.8107242042298654,
+   1.5,
+   0.7356028931546983
+  ],
+  "min": [
+   -0.4053621021149327,
+   0,
+   -0.36780144657734914
+  ],
+  "max": [
+   0.4053621021149327,
+   1.5,
+   0.36780144657734914
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 11505
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.405,0,-0.368],[0.405,1.5,0.368]],"size":[0.811,1.5,0.736]}
+errs []
+dracaena -> assets/w3dracaena.glb 1356372 bytes
+  remesh waterjar 6000 IN_PROGRESS 1%
+  remesh waterjar 6000 IN_PROGRESS 35%
+  remesh waterjar 6000 IN_PROGRESS 60%
+  remesh waterjar 6000 IN_PROGRESS 89%
+  remesh waterjar 6000 IN_PROGRESS 90%
+  remesh waterjar 6000 SUCCEEDED 100%
+remesh done waterjar 6000 100615128
+  CONTRACT: w 0.620  h 0.462  l 0.621 m (x -0.310..0.310, z -0.311..0.311)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3waterjar.glb: 5217 -> 5217 triangles; 96.0 MB -> 377 KB
+{
+ "info": {
+  "size": [
+   0.6199761074696105,
+   0.4618879807720463,
+   0.621037483215332
+  ],
+  "min": [
+   -0.30998805373480526,
+   0.000012116991982835668,
+   -0.310518741607666
+  ],
+  "max": [
+   0.30998805373480526,
+   0.4619000977640291,
+   0.310518741607666
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 5217
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.31,0,-0.311],[0.31,0.462,0.311]],"size":[0.62,0.462,0.621]}
+errs []
+waterjar -> assets/w3waterjar.glb 385588 bytes
+  remesh walllamp 4000 IN_PROGRESS 1%
+  remesh walllamp 4000 IN_PROGRESS 35%
+  remesh walllamp 4000 IN_PROGRESS 60%
+  remesh walllamp 4000 IN_PROGRESS 89%
+  remesh walllamp 4000 IN_PROGRESS 90%
+  remesh walllamp 4000 SUCCEEDED 100%
+remesh done walllamp 4000 80694356
+  CONTRACT: w 0.206  h 0.420  l 0.212 m (x -0.103..0.103, z -0.106..0.106)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3walllamp.glb: 4023 -> 4023 triangles; 77.0 MB -> 284 KB
+{
+ "info": {
+  "size": [
+   0.20632770131289674,
+   0.41999998688697815,
+   0.2123392371217896
+  ],
+  "min": [
+   -0.10316385065644837,
+   0,
+   -0.1061696185608948
+  ],
+  "max": [
+   0.10316385065644837,
+   0.41999998688697815,
+   0.1061696185608948
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 4023
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.103,0,-0.106],[0.103,0.42,0.106]],"size":[0.206,0.42,0.212]}
+errs []
+walllamp -> assets/w3walllamp.glb 291232 bytes
+  remesh nagafount 40000 IN_PROGRESS 1%
+  remesh nagafount 40000 IN_PROGRESS 35%
+  remesh nagafount 40000 IN_PROGRESS 60%
+  remesh nagafount 40000 IN_PROGRESS 89%
+  remesh nagafount 40000 IN_PROGRESS 90%
+  remesh nagafount 40000 SUCCEEDED 100%
+remesh done nagafount 40000 138224536
+  remesh smallbaisri 8000 IN_PROGRESS 1%
+  CONTRACT: w 1.457  h 1.550  l 0.830 m (x -0.728..0.728, z -0.415..0.415)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3nagafount.glb: 41645 -> 41645 triangles; 131.8 MB -> 2186 KB
+{
+ "info": {
+  "size": [
+   1.4567170791216766,
+   1.5499999523162842,
+   0.8299905137284928
+  ],
+  "min": [
+   -0.7283585395608383,
+   0,
+   -0.4149952568642464
+  ],
+  "max": [
+   0.7283585395608383,
+   1.5499999523162842,
+   0.4149952568642464
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 41645
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.728,0,-0.415],[0.728,1.55,0.415]],"size":[1.457,1.55,0.83]}
+errs []
+nagafount -> assets/w3nagafount.glb 2238432 bytes
+  remesh nagagreen 30000 IN_PROGRESS 1%
+  remesh smallbaisri 8000 IN_PROGRESS 35%
+  remesh nagagreen 30000 IN_PROGRESS 35%
+  remesh smallbaisri 8000 IN_PROGRESS 60%
+  remesh nagagreen 30000 IN_PROGRESS 60%
+  remesh smallbaisri 8000 IN_PROGRESS 89%
+  remesh nagagreen 30000 IN_PROGRESS 89%
+  remesh smallbaisri 8000 IN_PROGRESS 90%
+  remesh nagagreen 30000 IN_PROGRESS 90%
+  remesh smallbaisri 8000 SUCCEEDED 100%
+remesh done smallbaisri 8000 99256284
+  CONTRACT: w 0.380  h 0.428  l 0.377 m (x -0.190..0.190, z -0.189..0.189)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3smallbaisri.glb: 8189 -> 8189 triangles; 94.7 MB -> 613 KB
+{
+ "info": {
+  "size": [
+   0.3800283784552293,
+   0.42804956436157227,
+   0.3770499153467836
+  ],
+  "min": [
+   -0.19001418922761465,
+   0,
+   -0.1885249576733918
+  ],
+  "max": [
+   0.19001418922761465,
+   0.42804956436157227,
+   0.1885249576733918
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 8189
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.19,0,-0.189],[0.19,0.428,0.189]],"size":[0.38,0.428,0.377]}
+errs []
+smallbaisri -> assets/w3smallbaisri.glb 627496 bytes
+  remesh sofa 8000 IN_PROGRESS 1%
+  remesh nagagreen 30000 SUCCEEDED 100%
+  remesh sofa 8000 IN_PROGRESS 35%
+remesh done nagagreen 30000 130027132
+  CONTRACT: w 2.000  h 1.494  l 0.505 m (x -1.000..1.000, z -0.253..0.253)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3nagagreen.glb: 31340 -> 31340 triangles; 124.0 MB -> 1988 KB
+{
+ "info": {
+  "size": [
+   2,
+   1.4938200018311107,
+   0.5054475539414655
+  ],
+  "min": [
+   -1,
+   0.00005940092084000259,
+   -0.2527237769707327
+  ],
+  "max": [
+   1,
+   1.4938794027519506,
+   0.2527237769707327
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 31340
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-1,0,-0.253],[1,1.494,0.253]],"size":[2,1.494,0.505]}
+errs []
+nagagreen -> assets/w3nagagreen.glb 2035976 bytes
+  remesh ganesha 12000 IN_PROGRESS 1%
+  remesh sofa 8000 IN_PROGRESS 64%
+  remesh ganesha 12000 IN_PROGRESS 35%
+  remesh sofa 8000 IN_PROGRESS 89%
+  remesh ganesha 12000 IN_PROGRESS 64%
+  remesh sofa 8000 IN_PROGRESS 90%
+  remesh ganesha 12000 IN_PROGRESS 89%
+  remesh ganesha 12000 IN_PROGRESS 90%
+  remesh sofa 8000 SUCCEEDED 100%
+remesh done sofa 8000 95554012
+  CONTRACT: w 0.950  h 0.744  l 0.846 m (x -0.475..0.475, z -0.423..0.423)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3sofa.glb: 8201 -> 8201 triangles; 91.1 MB -> 700 KB
+{
+ "info": {
+  "size": [
+   0.949999988079071,
+   0.743804733242853,
+   0.8455107166463195
+  ],
+  "min": [
+   -0.4749999940395355,
+   -0.000014176113537711643,
+   -0.42275535832315975
+  ],
+  "max": [
+   0.4749999940395355,
+   0.7437905571293153,
+   0.42275535832315975
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 8201
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.475,0,-0.423],[0.475,0.744,0.423]],"size":[0.95,0.744,0.846]}
+errs []
+sofa -> assets/w3sofa.glb 716380 bytes
+  remesh petalbowl 6000 IN_PROGRESS 1%
+  remesh petalbowl 6000 IN_PROGRESS 35%
+  remesh ganesha 12000 SUCCEEDED 100%
+  remesh petalbowl 6000 IN_PROGRESS 60%
+remesh done ganesha 12000 118773348
+  CONTRACT: w 0.360  h 0.329  l 0.213 m (x -0.180..0.180, z -0.106..0.106)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3ganesha.glb: 12488 -> 12488 triangles; 113.3 MB -> 610 KB
+{
+ "info": {
+  "size": [
+   0.36000001430511475,
+   0.32897367559856106,
+   0.21272378542361617
+  ],
+  "min": [
+   -0.18000000715255737,
+   8.072307411399748e-7,
+   -0.10636189271180808
+  ],
+  "max": [
+   0.18000000715255737,
+   0.3289744828293022,
+   0.10636189271180808
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 12488
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.18,0,-0.106],[0.18,0.329,0.106]],"size":[0.36,0.329,0.213]}
+errs []
+ganesha -> assets/w3ganesha.glb 624192 bytes
+croton FAILED The uploaded image is too complex for 3D generation.
+croton: no model
+  remesh petalbowl 6000 IN_PROGRESS 89%
+  remesh petalbowl 6000 IN_PROGRESS 90%
+  remesh petalbowl 6000 SUCCEEDED 100%
+remesh done petalbowl 6000 30951860
+  CONTRACT: w 0.340  h 0.333  l 0.340 m (x -0.170..0.170, z -0.170..0.170)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3petalbowl.glb: 8063 -> 8063 triangles; 29.5 MB -> 343 KB
+{
+ "info": {
+  "size": [
+   0.34001348272730436,
+   0.33286471042291943,
+   0.34047067165374756
+  ],
+  "min": [
+   -0.17000674136365218,
+   -0.000002403424464808568,
+   -0.17023533582687378
+  ],
+  "max": [
+   0.17000674136365218,
+   0.33286230699845465,
+   0.17023533582687378
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 8063
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.17,0,-0.17],[0.17,0.333,0.17]],"size":[0.34,0.333,0.34]}
+errs []
+petalbowl -> assets/w3petalbowl.glb 351552 bytes
+petalsteel FAILED The uploaded image is too complex for 3D generation.
+petalsteel: no model
+done seatbench {'glb': 64000044} credits 40
+  remesh seatbench 16000 IN_PROGRESS 1%
+  remesh seatbench 16000 IN_PROGRESS 35%
+  remesh seatbench 16000 IN_PROGRESS 64%
+  remesh seatbench 16000 IN_PROGRESS 89%
+  remesh seatbench 16000 IN_PROGRESS 90%
+  remesh seatbench 16000 SUCCEEDED 100%
+remesh done seatbench 16000 84330872
+  CONTRACT: w 1.500  h 0.833  l 0.730 m (x -0.750..0.750, z -0.365..0.365)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3bench.glb: 16302 -> 16302 triangles; 80.4 MB -> 1059 KB
+{
+ "info": {
+  "size": [
+   1.5,
+   0.8332468642231512,
+   0.7295602282784509
+  ],
+  "min": [
+   -0.75,
+   -0.00002040333731417876,
+   -0.36478011413922545
+  ],
+  "max": [
+   0.75,
+   0.8332264608858371,
+   0.36478011413922545
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 16302
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.75,0,-0.365],[0.75,0.833,0.365]],"size":[1.5,0.833,0.73]}
+errs []
+seatbench -> assets/w3bench.glb 1084132 bytes
+done candlemid {'glb': 42150896} credits 40
+  remesh candlemid 2000 IN_PROGRESS 1%
+  remesh candlemid 2000 IN_PROGRESS 35%
+  remesh candlemid 2000 IN_PROGRESS 64%
+  remesh candlemid 2000 IN_PROGRESS 89%
+  remesh candlemid 2000 IN_PROGRESS 90%
+  remesh candlemid 2000 SUCCEEDED 100%
+remesh done candlemid 2000 60329824
+  CONTRACT: w 0.097  h 0.660  l 0.097 m (x -0.049..0.049, z -0.049..0.049)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3candlemid.glb: 1909 -> 1909 triangles; 57.5 MB -> 116 KB
+{
+ "info": {
+  "size": [
+   0.09716605507109088,
+   0.6600000262260437,
+   0.09716605507109088
+  ],
+  "min": [
+   -0.04858302753554544,
+   0,
+   -0.04858302753554544
+  ],
+  "max": [
+   0.04858302753554544,
+   0.6600000262260437,
+   0.04858302753554544
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 1909
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.049,0,-0.049],[0.049,0.66,0.049]],"size":[0.097,0.66,0.097]}
+errs []
+candlemid -> assets/w3candlemid.glb 118828 bytes
+done candlesmall {'glb': 44103256} credits 40
+  remesh candlesmall 1500 IN_PROGRESS 1%
+  remesh candlesmall 1500 IN_PROGRESS 35%
+  remesh candlesmall 1500 IN_PROGRESS 64%
+  remesh candlesmall 1500 IN_PROGRESS 89%
+  remesh candlesmall 1500 IN_PROGRESS 90%
+  remesh candlesmall 1500 SUCCEEDED 100%
+remesh done candlesmall 1500 73824668
+  CONTRACT: w 0.038  h 0.240  l 0.038 m (x -0.019..0.019, z -0.019..0.019)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3candlesmall.glb: 1446 -> 1446 triangles; 70.4 MB -> 112 KB
+{
+ "info": {
+  "size": [
+   0.03826288558538408,
+   0.23999999463558197,
+   0.03826288558538408
+  ],
+  "min": [
+   -0.01913144279269204,
+   0,
+   -0.01913144279269204
+  ],
+  "max": [
+   0.01913144279269204,
+   0.23999999463558197,
+   0.01913144279269204
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 1446
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.019,0,-0.019],[0.019,0.24,0.019]],"size":[0.038,0.24,0.038]}
+errs []
+candlesmall -> assets/w3candlesmall.glb 115144 bytes
+done kratip {'glb': 93761904} credits 40
+  remesh kratip 3000 IN_PROGRESS 1%
+  remesh kratip 3000 IN_PROGRESS 35%
+  remesh kratip 3000 IN_PROGRESS 60%
+  remesh kratip 3000 IN_PROGRESS 89%
+  remesh kratip 3000 IN_PROGRESS 90%
+  remesh kratip 3000 SUCCEEDED 100%
+remesh done kratip 3000 114443852
+  CONTRACT: w 0.127  h 0.140  l 0.120 m (x -0.064..0.064, z -0.060..0.060)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3kratip.glb: 2855 -> 2855 triangles; 109.1 MB -> 346 KB
+{
+ "info": {
+  "size": [
+   0.12714804583079764,
+   0.14000000059604645,
+   0.11969664652541402
+  ],
+  "min": [
+   -0.06357402291539882,
+   0,
+   -0.05984832326270701
+  ],
+  "max": [
+   0.06357402291539882,
+   0.14000000059604645,
+   0.05984832326270701
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 2855
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.064,0,-0.06],[0.064,0.14,0.06]],"size":[0.127,0.14,0.12]}
+errs []
+kratip -> assets/w3kratip.glb 354040 bytes
+done chicken {'glb': 41718968} credits 40
+  remesh chicken 4000 IN_PROGRESS 1%
+  remesh chicken 4000 IN_PROGRESS 35%
+  remesh croton2 16000 IN_PROGRESS 1%
+  remesh chicken 4000 IN_PROGRESS 64%
+  remesh croton2 16000 IN_PROGRESS 35%
+  remesh chicken 4000 IN_PROGRESS 89%
+  remesh croton2 16000 IN_PROGRESS 60%
+  remesh chicken 4000 IN_PROGRESS 90%
+  remesh croton2 16000 IN_PROGRESS 89%
+  remesh croton2 16000 IN_PROGRESS 90%
+  remesh chicken 4000 SUCCEEDED 100%
+remesh done chicken 4000 66338380
+  CONTRACT: w 0.300  h 0.118  l 0.300 m (x -0.150..0.150, z -0.150..0.150)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3chicken.glb: 4167 -> 4167 triangles; 63.3 MB -> 344 KB
+{
+ "info": {
+  "size": [
+   0.2999939288464574,
+   0.11783216598305524,
+   0.3003973066806793
+  ],
+  "min": [
+   -0.1499969644232287,
+   0.000002281354499748811,
+   -0.15019865334033966
+  ],
+  "max": [
+   0.1499969644232287,
+   0.11783444733755499,
+   0.15019865334033966
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 4167
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.15,0,-0.15],[0.15,0.118,0.15]],"size":[0.3,0.118,0.3]}
+errs []
+chicken -> assets/w3chicken.glb 352684 bytes
+done coconut {'glb': 58882076} credits 40
+  remesh coconut 3000 IN_PROGRESS 1%
+  remesh coconut 3000 IN_PROGRESS 35%
+  remesh croton2 16000 SUCCEEDED 100%
+remesh done croton2 16000 87114552
+  CONTRACT: w 1.304  h 1.450  l 1.273 m (x -0.652..0.652, z -0.636..0.636)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3croton.glb: 16178 -> 16178 triangles; 83.1 MB -> 1354 KB
+{
+ "info": {
+  "size": [
+   1.303791967678009,
+   1.4500000476837158,
+   1.2728156795412067
+  ],
+  "min": [
+   -0.6518959838390045,
+   0,
+   -0.6364078397706033
+  ],
+  "max": [
+   0.6518959838390045,
+   1.4500000476837158,
+   0.6364078397706033
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 16178
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.652,0,-0.636],[0.652,1.45,0.636]],"size":[1.304,1.45,1.273]}
+errs []
+croton2 -> assets/w3croton.glb 1386088 bytes
+  remesh coconut 3000 IN_PROGRESS 64%
+  remesh coconut 3000 IN_PROGRESS 89%
+  remesh coconut 3000 IN_PROGRESS 90%
+  remesh coconut 3000 SUCCEEDED 100%
+remesh done coconut 3000 87865828
+  CONTRACT: w 0.190  h 0.260  l 0.190 m (x -0.095..0.095, z -0.095..0.095)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3coconut.glb: 3078 -> 3078 triangles; 83.8 MB -> 253 KB
+{
+ "info": {
+  "size": [
+   0.18999626361501917,
+   0.2598550617694855,
+   0.19040864385159906
+  ],
+  "min": [
+   -0.09499813180750959,
+   0,
+   -0.09520432192579953
+  ],
+  "max": [
+   0.09499813180750959,
+   0.2598550617694855,
+   0.09520432192579953
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 3078
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.095,0,-0.095],[0.095,0.26,0.095]],"size":[0.19,0.26,0.19]}
+errs []
+coconut -> assets/w3coconut.glb 259360 bytes
+done soda {'glb': 34328360} credits 40
+  remesh soda 1500 IN_PROGRESS 1%
+  remesh soda 1500 IN_PROGRESS 35%
+  remesh soda 1500 IN_PROGRESS 64%
+  remesh soda 1500 IN_PROGRESS 90%
+  remesh soda 1500 SUCCEEDED 100%
+remesh done soda 1500 60050224
+  CONTRACT: w 0.073  h 0.220  l 0.073 m (x -0.037..0.037, z -0.036..0.036)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3soda.glb: 1568 -> 1568 triangles; 57.3 MB -> 106 KB
+{
+ "info": {
+  "size": [
+   0.07305581795797104,
+   0.2199999988079071,
+   0.07297524909339098
+  ],
+  "min": [
+   -0.03652790897898552,
+   0,
+   -0.03648762454669549
+  ],
+  "max": [
+   0.03652790897898552,
+   0.2199999988079071,
+   0.03648762454669549
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 1568
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.037,0,-0.036],[0.037,0.22,0.036]],"size":[0.073,0.22,0.073]}
+errs []
+soda -> assets/w3soda.glb 108700 bytes
+done water {'glb': 36716716} credits 40
+  remesh water 1500 IN_PROGRESS 1%
+  remesh water 1500 IN_PROGRESS 35%
+  remesh water 1500 IN_PROGRESS 64%
+  remesh water 1500 IN_PROGRESS 89%
+  remesh water 1500 IN_PROGRESS 90%
+  remesh water 1500 SUCCEEDED 100%
+remesh done water 1500 64952196
+  CONTRACT: w 0.063  h 0.210  l 0.063 m (x -0.031..0.031, z -0.031..0.031)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3water.glb: 1572 -> 1572 triangles; 61.9 MB -> 114 KB
+{
+ "info": {
+  "size": [
+   0.06286477052178058,
+   0.20999999344348907,
+   0.06294167716325895
+  ],
+  "min": [
+   -0.03143238526089029,
+   0,
+   -0.031470838581629475
+  ],
+  "max": [
+   0.03143238526089029,
+   0.20999999344348907,
+   0.031470838581629475
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 1572
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.031,0,-0.031],[0.031,0.21,0.031]],"size":[0.063,0.21,0.063]}
+errs []
+water -> assets/w3water.glb 116744 bytes
+  remesh rolledmat 6000 IN_PROGRESS 1%
+  remesh rolledmat 6000 IN_PROGRESS 35%
+  remesh rolledmat 6000 IN_PROGRESS 64%
+  remesh rolledmat 6000 IN_PROGRESS 89%
+  remesh rolledmat 6000 IN_PROGRESS 90%
+  remesh rolledmat 6000 SUCCEEDED 100%
+remesh done rolledmat 6000 115316040
+  CONTRACT: w 1.200  h 0.232  l 0.254 m (x -0.600..0.600, z -0.127..0.127)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3matroll.glb: 6238 -> 6238 triangles; 110.0 MB -> 418 KB
+{
+ "info": {
+  "size": [
+   1.2000000476837158,
+   0.23233131817088815,
+   0.2544511347180535
+  ],
+  "min": [
+   -0.6000000238418579,
+   0.00003912423498285411,
+   -0.12722556735902674
+  ],
+  "max": [
+   0.6000000238418579,
+   0.232370442405871,
+   0.12722556735902674
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 6238
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.6,0,-0.127],[0.6,0.232,0.127]],"size":[1.2,0.232,0.254]}
+errs []
+rolledmat -> assets/w3matroll.glb 428180 bytes
+  remesh shirt 4000 IN_PROGRESS 1%
+  remesh shirt 4000 IN_PROGRESS 35%
+  remesh shirt 4000 IN_PROGRESS 64%
+  remesh shirt 4000 IN_PROGRESS 90%
+  remesh shirt 4000 SUCCEEDED 100%
+remesh done shirt 4000 79521352
+  CONTRACT: w 0.300  h 0.312  l 0.049 m (x -0.150..0.150, z -0.024..0.024)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3shirt.glb: 4145 -> 4145 triangles; 75.8 MB -> 236 KB
+{
+ "info": {
+  "size": [
+   0.30000250609981843,
+   0.3118811547756195,
+   0.04899942578767935
+  ],
+  "min": [
+   -0.15000125304990922,
+   0,
+   -0.024499712893839676
+  ],
+  "max": [
+   0.15000125304990922,
+   0.3118811547756195,
+   0.024499712893839676
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 4145
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.15,0,-0.024],[0.15,0.312,0.024]],"size":[0.3,0.312,0.049]}
+errs []
+shirt -> assets/w3shirt.glb 241792 bytes
+  remesh rolledmat 6000: the job is in the ledger (01a1ccd7-e597-73f0-bb59-87bd4fd548fa): waited for, not started again
+  remesh rolledmat 6000 SUCCEEDED 100%
+remesh done rolledmat 6000 115316040
+  CONTRACT: w 1.200  h 0.232  l 0.254 m (x -0.600..0.600, z -0.127..0.127)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3matroll.glb: 6238 -> 6238 triangles; 110.0 MB -> 1122 KB
+{
+ "info": {
+  "size": [
+   1.2000000476837158,
+   0.23233131817088815,
+   0.2544511347180535
+  ],
+  "min": [
+   -0.6000000238418579,
+   0.00003912423498285411,
+   -0.12722556735902674
+  ],
+  "max": [
+   0.6000000238418579,
+   0.232370442405871,
+   0.12722556735902674
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 6238
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.6,0,-0.127],[0.6,0.232,0.127]],"size":[1.2,0.232,0.254]}
+errs []
+rolledmat -> assets/w3matroll.glb 1148576 bytes
+  remesh claypot 3000 IN_PROGRESS 1%
+  remesh claypot 3000 IN_PROGRESS 35%
+  remesh claypot 3000 IN_PROGRESS 64%
+  remesh claypot 3000 IN_PROGRESS 89%
+  remesh claypot 3000 IN_PROGRESS 90%
+  remesh claypot 3000 SUCCEEDED 100%
+remesh done claypot 3000 100437800
+  CONTRACT: w 0.450  h 0.332  l 0.451 m (x -0.225..0.225, z -0.225..0.225)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3claypot.glb: 3103 -> 3103 triangles; 95.8 MB -> 297 KB
+{
+ "info": {
+  "size": [
+   0.4500244720107225,
+   0.3318227554155625,
+   0.4505194425582886
+  ],
+  "min": [
+   -0.22501223600536124,
+   -0.0000044417775291738515,
+   -0.2252597212791443
+  ],
+  "max": [
+   0.22501223600536124,
+   0.3318183136380333,
+   0.2252597212791443
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 3103
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.225,0,-0.225],[0.225,0.332,0.225]],"size":[0.45,0.332,0.451]}
+errs []
+claypot -> assets/w3claypot.glb 304012 bytes
+  remesh pchair 4000 IN_PROGRESS 1%
+  remesh pchair 4000 IN_PROGRESS 35%
+  remesh pchair 4000 IN_PROGRESS 64%
+  remesh pchair 4000 IN_PROGRESS 90%
+  remesh pchair 4000 SUCCEEDED 100%
+remesh done pchair 4000 71403184
+  CONTRACT: w 0.491  h 0.800  l 0.542 m (x -0.245..0.245, z -0.271..0.271)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3pchair.glb: 3842 -> 3842 triangles; 68.1 MB -> 292 KB
+{
+ "info": {
+  "size": [
+   0.4906888100707062,
+   0.800000011920929,
+   0.5421552252179371
+  ],
+  "min": [
+   -0.2453444050353531,
+   0,
+   -0.27107761260896857
+  ],
+  "max": [
+   0.2453444050353531,
+   0.800000011920929,
+   0.27107761260896857
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 3842
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.245,0,-0.271],[0.245,0.8,0.271]],"size":[0.491,0.8,0.542]}
+errs []
+pchair -> assets/w3pchair.glb 299420 bytes
+  remesh horns 5000 IN_PROGRESS 1%
+  remesh horns 5000 IN_PROGRESS 35%
+  remesh horns 5000 IN_PROGRESS 64%
+  remesh horns 5000 IN_PROGRESS 89%
+  remesh horns 5000 IN_PROGRESS 90%
+  remesh horns 5000 SUCCEEDED 100%
+remesh done horns 5000 93619992
+  CONTRACT: w 0.950  h 0.907  l 0.533 m (x -0.475..0.475, z -0.267..0.267)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3horns.glb: 5151 -> 5151 triangles; 89.3 MB -> 387 KB
+{
+ "info": {
+  "size": [
+   0.949999988079071,
+   0.907438875297917,
+   0.5331736131099618
+  ],
+  "min": [
+   -0.4749999940395355,
+   -0.000012994339174565717,
+   -0.2665868065549809
+  ],
+  "max": [
+   0.4749999940395355,
+   0.9074258809587424,
+   0.2665868065549809
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 5151
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.475,0,-0.267],[0.475,0.907,0.267]],"size":[0.95,0.907,0.533]}
+errs []
+horns -> assets/w3horns.glb 396316 bytes
+  remesh taper 1500 IN_PROGRESS 1%
+  remesh taper 1500 IN_PROGRESS 35%
+  remesh taper 1500 IN_PROGRESS 64%
+  remesh taper 1500 IN_PROGRESS 90%
+  remesh taper 1500 SUCCEEDED 100%
+remesh done taper 1500 45465436
+  CONTRACT: w 0.022  h 0.700  l 0.021 m (x -0.011..0.011, z -0.011..0.011)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3taper.glb: 1564 -> 1564 triangles; 43.4 MB -> 105 KB
+{
+ "info": {
+  "size": [
+   0.02187566721985439,
+   0.699999988079071,
+   0.021192052619233938
+  ],
+  "min": [
+   -0.010937833609927195,
+   0,
+   -0.010596026309616969
+  ],
+  "max": [
+   0.010937833609927195,
+   0.699999988079071,
+   0.010596026309616969
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 1564
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.011,0,-0.011],[0.011,0.7,0.011]],"size":[0.022,0.7,0.021]}
+errs []
+taper -> assets/w3taper.glb 107144 bytes
+  remesh glass 1500 IN_PROGRESS 1%
+  remesh glass 1500 IN_PROGRESS 35%
+  remesh glass 1500 IN_PROGRESS 64%
+  remesh glass 1500 IN_PROGRESS 89%
+  remesh glass 1500 IN_PROGRESS 90%
+  remesh tissue 1000 IN_PROGRESS 1%
+  remesh tissue 1000 IN_PROGRESS 35%
+  remesh tissue 1000 IN_PROGRESS 64%
+  remesh tissue 1000 IN_PROGRESS 89%
+  remesh glass 1500 SUCCEEDED 100%
+remesh done glass 1500 67979008
+  CONTRACT: w 0.057  h 0.150  l 0.056 m (x -0.028..0.028, z -0.028..0.028)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3glass.glb: 1448 -> 1448 triangles; 64.8 MB -> 116 KB
+  remesh tissue 1000 IN_PROGRESS 90%
+{
+ "info": {
+  "size": [
+   0.05658589659344161,
+   0.15000000596046448,
+   0.05647602995496232
+  ],
+  "min": [
+   -0.028292948296720806,
+   0,
+   -0.02823801497748116
+  ],
+  "max": [
+   0.028292948296720806,
+   0.15000000596046448,
+   0.02823801497748116
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 1448
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.028,0,-0.028],[0.028,0.15,0.028]],"size":[0.057,0.15,0.056]}
+errs []
+glass -> assets/w3glass.glb 118544 bytes
+  remesh tissue 1000 SUCCEEDED 100%
+remesh done tissue 1000 64788056
+  CONTRACT: w 0.117  h 0.110  l 0.119 m (x -0.059..0.059, z -0.059..0.059)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3tissue.glb: 984 -> 984 triangles; 61.8 MB -> 91 KB
+{
+ "info": {
+  "size": [
+   0.11714536906089985,
+   0.10999631414060157,
+   0.11854913085699081
+  ],
+  "min": [
+   -0.05857268453044993,
+   0.000001842631675984252,
+   -0.05927456542849541
+  ],
+  "max": [
+   0.05857268453044993,
+   0.10999815677227756,
+   0.05927456542849541
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 984
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.059,0,-0.059],[0.059,0.11,0.059]],"size":[0.117,0.11,0.119]}
+errs []
+tissue -> assets/w3tissue.glb 92716 bytes
+  remesh envbanana 14000 IN_PROGRESS 1%
+  remesh envbanana 14000 IN_PROGRESS 35%
+  remesh envbanana 14000 IN_PROGRESS 64%
+  remesh envbanana 14000 IN_PROGRESS 89%
+  remesh envbanana 14000 IN_PROGRESS 90%
+  remesh envbanana 14000 SUCCEEDED 100%
+remesh done envbanana 14000 92353596
+  CONTRACT: w 3.551  h 3.600  l 2.503 m (x -1.775..1.775, z -1.252..1.252)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3banana2.glb: 14119 -> 14119 triangles; 88.1 MB -> 1144 KB
+{
+ "info": {
+  "size": [
+   3.550779653853571,
+   3.5999999046325684,
+   2.502981592069435
+  ],
+  "min": [
+   -1.7753898269267856,
+   0,
+   -1.2514907960347175
+  ],
+  "max": [
+   1.7753898269267856,
+   3.5999999046325684,
+   1.2514907960347175
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 14119
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-1.775,0,-1.251],[1.775,3.6,1.251]],"size":[3.551,3.6,2.503]}
+errs []
+envbanana -> assets/w3banana2.glb 1171000 bytes
+  remesh envfrangipani 30000 IN_PROGRESS 1%
+  remesh envfrangipani 30000 IN_PROGRESS 35%
+  remesh envfrangipani 30000 IN_PROGRESS 64%
+  remesh envfrangipani 30000 IN_PROGRESS 89%
+  remesh envfrangipani 30000 IN_PROGRESS 90%
+  remesh envfrangipani 30000 SUCCEEDED 100%
+remesh done envfrangipani 30000 102733252
+  CONTRACT: w 4.867  h 4.600  l 4.790 m (x -2.433..2.433, z -2.395..2.395)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3frangipani.glb: 25505 -> 25505 triangles; 98.0 MB -> 1614 KB
+{
+ "info": {
+  "size": [
+   4.866818428039551,
+   4.600062060451458,
+   4.790177957173484
+  ],
+  "min": [
+   -2.4334092140197754,
+   -0.000031077909445009766,
+   -2.395088978586742
+  ],
+  "max": [
+   2.4334092140197754,
+   4.600030982542013,
+   2.395088978586742
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 25505
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-2.433,0,-2.395],[2.433,4.6,2.395]],"size":[4.867,4.6,4.79]}
+errs []
+envfrangipani -> assets/w3frangipani.glb 1652828 bytes
+  remesh envisanhouse 40000 IN_PROGRESS 1%
+  remesh envisanhouse 40000 IN_PROGRESS 35%
+  remesh envisanhouse 40000 IN_PROGRESS 60%
+  remesh envisanhouse 40000 IN_PROGRESS 89%
+  remesh envisanhouse 40000 IN_PROGRESS 90%
+  remesh envisanhouse 40000 SUCCEEDED 100%
+remesh done envisanhouse 40000 105728944
+  CONTRACT: w 6.531  h 5.600  l 6.176 m (x -3.266..3.266, z -3.088..3.088)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3isanhouse.glb: 39955 -> 39955 triangles; 100.8 MB -> 2022 KB
+{
+ "info": {
+  "size": [
+   6.53126859664917,
+   5.600024146942303,
+   6.176470839697496
+  ],
+  "min": [
+   -3.265634298324585,
+   -0.000012121154866928663,
+   -3.088235419848748
+  ],
+  "max": [
+   3.265634298324585,
+   5.600012025787436,
+   3.088235419848748
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 39955
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-3.266,0,-3.088],[3.266,5.6,3.088]],"size":[6.531,5.6,6.176]}
+errs []
+envisanhouse -> assets/w3isanhouse.glb 2070828 bytes
+  remesh envtank 8000 IN_PROGRESS 1%
+  remesh envtank 8000 IN_PROGRESS 35%
+  remesh envtank 8000 IN_PROGRESS 64%
+  remesh envtank 8000 IN_PROGRESS 89%
+  remesh envtank 8000 IN_PROGRESS 90%
+  remesh envtank 8000 SUCCEEDED 100%
+remesh done envtank 8000 95296584
+  CONTRACT: w 1.202  h 1.950  l 1.546 m (x -0.601..0.601, z -0.773..0.773)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3tank.glb: 8184 -> 8184 triangles; 90.9 MB -> 410 KB
+{
+ "info": {
+  "size": [
+   1.202481184224896,
+   1.9500000476837158,
+   1.5462767796553236
+  ],
+  "min": [
+   -0.601240592112448,
+   0,
+   -0.7731383898276618
+  ],
+  "max": [
+   0.601240592112448,
+   1.9500000476837158,
+   0.7731383898276618
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 8184
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.601,0,-0.773],[0.601,1.95,0.773]],"size":[1.202,1.95,1.546]}
+errs []
+envtank -> assets/w3tank.glb 420212 bytes
+  remesh envaircon 6000 IN_PROGRESS 1%
+  remesh envaircon 6000 IN_PROGRESS 35%
+  remesh envaircon 6000 IN_PROGRESS 64%
+  remesh envaircon 6000 IN_PROGRESS 89%
+  remesh envaircon 6000 IN_PROGRESS 90%
+  remesh envaircon 6000 SUCCEEDED 100%
+remesh done envaircon 6000 45112488
+  CONTRACT: w 0.950  h 0.872  l 0.408 m (x -0.475..0.475, z -0.204..0.204)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3aircon.glb: 5491 -> 5491 triangles; 43.0 MB -> 307 KB
+{
+ "info": {
+  "size": [
+   0.949999988079071,
+   0.8722998639281903,
+   0.4084765108812535
+  ],
+  "min": [
+   -0.4749999940395355,
+   -0.00001958709638882894,
+   -0.20423825544062674
+  ],
+  "max": [
+   0.4749999940395355,
+   0.8722802768318014,
+   0.20423825544062674
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 5491
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.475,0,-0.204],[0.475,0.872,0.204]],"size":[0.95,0.872,0.408]}
+errs []
+envaircon -> assets/w3aircon.glb 314048 bytes
+  remesh envscooter 20000 IN_PROGRESS 1%
+  remesh envscooter 20000 IN_PROGRESS 35%
+  remesh envscooter 20000 IN_PROGRESS 64%
+  remesh envscooter 20000 IN_PROGRESS 89%
+  remesh envscooter 20000 IN_PROGRESS 90%
+  remesh envscooter 20000 SUCCEEDED 100%
+remesh done envscooter 20000 93031636
+  CONTRACT: w 1.880  h 1.252  l 0.635 m (x -0.940..0.940, z -0.318..0.318)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3scooter.glb: 20386 -> 20386 triangles; 88.7 MB -> 1632 KB
+{
+ "info": {
+  "size": [
+   1.8799999952316284,
+   1.2520328347405805,
+   0.6355406337834024
+  ],
+  "min": [
+   -0.9399999976158142,
+   0.00005640663102213228,
+   -0.3177703168917012
+  ],
+  "max": [
+   0.9399999976158142,
+   1.2520892413716025,
+   0.3177703168917012
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 20386
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.94,0,-0.318],[0.94,1.252,0.318]],"size":[1.88,1.252,0.636]}
+errs []
+envscooter -> assets/w3scooter.glb 1671216 bytes
+  remesh seatbench2 16000 IN_PROGRESS 1%
+  remesh seatbench2 16000 IN_PROGRESS 35%
+  remesh seatbench2 16000 IN_PROGRESS 64%
+  remesh seatbench2 16000 IN_PROGRESS 89%
+  remesh seatbench2 16000 IN_PROGRESS 90%
+  remesh seatbench2 16000 SUCCEEDED 100%
+remesh done seatbench2 16000 84568724
+  CONTRACT: w 1.500  h 0.833  l 0.713 m (x -0.750..0.750, z -0.357..0.357)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3bench.glb: 16387 -> 16387 triangles; 80.7 MB -> 996 KB
+{
+ "info": {
+  "size": [
+   1.5,
+   0.8328806421094392,
+   0.7130802331614123
+  ],
+  "min": [
+   -0.75,
+   3.744694960228223e-7,
+   -0.35654011658070617
+  ],
+  "max": [
+   0.75,
+   0.8328810165789353,
+   0.35654011658070617
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 16387
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.75,0,-0.357],[0.75,0.833,0.357]],"size":[1.5,0.833,0.713]}
+errs []
+seatbench2 -> assets/w3bench.glb 1019456 bytes
