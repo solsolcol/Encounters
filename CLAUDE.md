@@ -1363,7 +1363,11 @@ arms drawn in the world on his bai sri in the close, the hold his photograph 7's
 went live at v26.11 (deploy `6af7ed1b6d57421ceffbce18`): all four of his list, each behind its own switch and proved
 exact, with what they found on the way (docs/V26.6-E4C3-OPTIMIZE-PLAN.md §4); drawing on its own thread (the plan's 5)
 he chose to skip (14 Nov). His message of 14 Nov ("What else is not done or complete? Finish all of it") is
-docs/V26.12-WHAT-IS-LEFT.md: every open item, what he answered, and the order (the full debug's last round comes last).
+docs/V26.12-WHAT-IS-LEFT.md: every open item, what he answered, and the order (the full debug's last round comes last). His
+answers to the chapter's small choices went live at v26.12 (deploy `6af852891f22844fc56b4dda`; §3 and §4 there): the
+devotee out of the group photograph, the close's last image his open hand with one petal (reached by a cut), a second
+handful of petals at the tables; the hair fix, checked only by numbers, darkened a body when photographed and was put
+back ("I think your fix without visually checking the models is a little dangerous").
 Chapter 4 is next after it
 (S1·13, case one: the woman who rose from her wheelchair).
 The episode's plan, with what remains his to decide:

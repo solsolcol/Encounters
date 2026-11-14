@@ -8689,3 +8689,10 @@ Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8,
   the mesh: every body is drawn TWO-SIDED, so a "turned" triangle was never a hole, and turning one only changes which
   way it is lit; where a body's normals point the wrong way (a fold, a collar's turn), a test of the winding against the
   normals calls the RIGHT triangle turned. Measure the change in the picture, never only in the file.
+- **A camera move passes everything between its two ends.** The close's look carried down from Grandmaster Pho's face
+  to the open hand crossed his lap and his left wrist at arm's length, his model's worst places (the ragged robe, the band
+  round the wrist), photographed on both crops; a faster tilt only shortened it. A cut on the line's comma, from the face
+  to the hand, shows neither and reads as an edit. Photograph a move's middle, not only its ends.
+- **A beat on the wall's clock is photographed with the page slowed** (e4c3beats `slow`): the children's throw ran its
+  whole course inside one 60-second screenshot on this box, and the pictures showed petals already on the ground.
+- **This box holds two of the chapter's pages at once, not three**: the third crashed two of them while loading.

@@ -9070,6 +9070,36 @@ What the baseline contains, by release:
   chapter corrected (I had written "a woman of the waiting line"; e4devc is a man: the engine's file byte for byte the
   same, the chapter's differing in that comment only; 494 served files identical to the build).
 
+- **v26.12 · 14 Nov 2026 · episode 4 chapter 3: his answers of 14 Nov built, each photographed full size first; the
+  generated 3D sources backed up; a fix checked only by numbers put back.** His message after v26.11, verbatim: "Shouldn't
+  you complete all of my tasks and messages and the thread stuff  before debugging ? What else is not done or complete?
+  Finish all of it"; then, while I worked on old chapters, "Why are you working on old chapters? I didnt ask for that,
+  did i? I only asked for the latest chapter" (a new standing rule: "Finish all of it" is his asks for the chapter he is
+  on; the old-chapter work stopped and parked whole in masters/v26.12/parked, never built); his answers in taps
+  (docs/V26.12-WHAT-IS-LEFT.md §1 and §3): the thread "Skip it (Recommended)", episode 1 "Skip", the sources "GitHub
+  branch (Recommended)", and ten for chapter 3. Built: (1) the devotee who stood behind the five masters in the group
+  photograph steps aside for that shot ("Move him (Recommended)"; y_stage.js stepAside); (2) the close's last image, "one
+  petal left on his open hand, then black" ("Petal on his hand"): his right hand, open, one of his teacher's marigold
+  petals on it, the pose read first from two reference pictures (masters/v26.12/make.sh §2) and measured by the joint
+  scan (no flags: elbow 104, the wrist back 27 against the reference's 14, the palm up), reached by a CUT on the last
+  line's comma from his teacher's face, because any look carried down passed close over the old man's lap and wrist
+  (his model's ragged robe and the band round his wrist, photographed) (c_zfx.js myOpenHand, y_stage.js closeFrame); (3) a
+  second handful at the offering tables ("Add a second"): the children follow him there along his own trail and throw
+  over him as he raises his bai sri, landing 1.5 m before him where his eyes see it (at 0.7 m it fell unseen under his
+  bai sri: photographed) (c_crowd.js kidsFollow, d_play.js kidsTables). The rest of the ten unchanged at his word
+  (docs/OPEN-ITEMS.md C13). (4) The hair ("Fix and check all (Recommended)"): 5,944 triangles turned in the chapter's 63
+  body files, checked only by numbers; his message, verbatim: "I think your fix without visually checking the models is a
+  little dangerous, you sometimes add more problems than you fix". Photographed before and after (tools/probes/flipshot.mjs,
+  flipview.mjs, new), it darkened Ton's far body (a dark wedge on his collar): all 63 files put back as they were, the
+  tool made report-only (masters/v26.12/make.sh §1, LEARNINGS). The generated 3D sources (822 files, 9.24 GiB) are on the
+  branch `claude/model-sources` (tools/srcbackup.py), none of his own models among them. On the way: the probes'
+  three chapter pages at once crashed two of them (this box holds two); the first photographs of the open hand found its
+  fingers cut by a phone's frame, its palm face on, its fingers 40 degrees in (all closed and photographed again); a
+  finger-closing step I wrote from a picture was taken out before it was built when the joint scan read the fingers 2 to
+  7 degrees apart already. Deploys `6af851597a7e2fb55bd32426` and, with the version under Credits, `6af852891f22844fc56b4dda`
+  (494 files byte for byte). The full debug's last round (every ending with the sound on, Continue, a replay, a desktop,
+  every film's camera as a move) runs on this build next, as he asked: last.
+
 ## The sheet, version by version
 
 **v145, PUBLISHED 14 Nov 2026** (docs/V26.12-WHAT-IS-LEFT.md row 4): the first sheet he has had since v42. Uploaded whole
