@@ -262,6 +262,9 @@
     ghost: null,
     fireLight: null,
     daylight: DAY1,
+    /* (v26.11, the speed-ups' fourth: once a picture of a body or a thing is on the graphics chip, the page's own decoded
+       copy is let go, 1,316 MB of them at play; Chad, 14 Nov 2026, "Yes, free the copies (Recommended)". The engine's PICS) */
+    render: { freePictures: true },
 
     /* (the list is long and grows with the build: one line a kind) */
     assets: [

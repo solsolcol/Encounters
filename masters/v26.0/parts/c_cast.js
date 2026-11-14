@@ -43,6 +43,30 @@
        where he is talked to his face had three texels a pixel, sampled. His head's charts are baked by Blender into a 2048
        sheet of their own with a gutter round each (tools/rebake.py DETHANDS=0, masters/v26.3/make.sh), 1.6 times the
        texels, so it takes mipmaps as a repainted sheet does. Grandmaster Pho's own `detail` is his and is not touched) */
+    /* A POSED VERTEX WITH EACH BONE'S MATRIX MADE ONCE A POSE (v26.11, FASTSKIN: the speed-ups' third, the load's own
+       work). three's getVertexPosition multiplies a bone's world matrix by its inverse bind for every weight of every
+       vertex it is asked for, and the chapter asks for every vertex of every body, at every moment it measures (the
+       feet on the ground, the seats, the shins, the room round a body: several seconds of the load on this box). The
+       product is the same sixteen numbers for every vertex of one pose, so it is made once a pose and a bone, by the
+       same multiplyMatrices, and every vertex then takes three's own steps with it in the same order: the same base
+       position (Mesh's, morphs and all), the same bind, the same weighted sum, the same inverse. `?opt=fastSkin:0` asks
+       three every time; the proof reads every vertex of every body both ways (stage.skinProof) */
+    const _svI = new THREE.Vector4(), _svW = new THREE.Vector4(), _svB = new THREE.Vector4(), _sv4 = new THREE.Vector4(), _svMats = new WeakMap();
+    function skinMats(q) {
+      const S = q.skeleton, bones = S.bones, inv = S.boneInverses;
+      let L = _svMats.get(q); if (!L || L.length !== bones.length) { L = bones.map(() => new THREE.Matrix4()); _svMats.set(q, L); }
+      for (let b = 0; b < bones.length; b++) L[b].multiplyMatrices(bones[b].matrixWorld, inv[b]);
+      return L;
+    }
+    function skinVertex(q, i, target, L) {
+      THREE.Mesh.prototype.getVertexPosition.call(q, i, target);
+      const g = q.geometry;
+      _svI.fromBufferAttribute(g.attributes.skinIndex, i); _svW.fromBufferAttribute(g.attributes.skinWeight, i);
+      _svB.set(target.x, target.y, target.z, 1); target.set(0, 0, 0);
+      _svB.applyMatrix4(q.bindMatrix);
+      for (let k = 0; k < 4; k++) { const w = _svW.getComponent(k); if (w !== 0) { const b = _svI.getComponent(k); target.addScaledVector(_sv4.copy(_svB).applyMatrix4(L[b]), w); } }
+      return target.applyMatrix4(q.bindMatrixInverse);
+    }
     function sheetOf(key, t) {
       if (t.name === 'repainted' || (t.name === 'detail' && NOMIP.test(key))) { t.generateMipmaps = true; t.minFilter = THREE.LinearMipmapLinearFilter; t.anisotropy = 4; t.needsUpdate = true; return t; }
       return NOMIP.test(key) ? noMip(THREE, t) : t;
@@ -174,7 +198,8 @@
           const ys = [], feet = [];
           for (const q of skins) { const pos = q.geometry.attributes.position, si = q.geometry.attributes.skinIndex, sw = q.geometry.attributes.skinWeight; if (!pos || !si || !sw || !q.skeleton) continue;
             const foot = q.skeleton.bones.map(b => /^(mixamorig:?)?(Left|Right)(Foot|Toe\w*)$/.test(b.name));
-            for (let i = 0; i < pos.count; i++) { q.getVertexPosition(i, _pv); _pv.applyMatrix4(q.matrixWorld); P.group.worldToLocal(_pv); ys.push(_pv.y);
+            const SM = FASTSKIN ? skinMats(q) : null;
+            for (let i = 0; i < pos.count; i++) { if (SM) skinVertex(q, i, _pv, SM); else q.getVertexPosition(i, _pv); _pv.applyMatrix4(q.matrixWorld); P.group.worldToLocal(_pv); ys.push(_pv.y);
               let fw = 0; for (let c = 0; c < 4; c++) if (foot[si.getComponent(i, c)]) fw += sw.getComponent(i, c); if (fw >= 0.5) feet.push(_pv.y); } }
           if (ys.length < 30) { console.warn(key + ': too little skin to seat him by'); continue; }
           /* (his spot in the model's own frame: what `centre` or `ref` set for this take) */
@@ -353,9 +378,10 @@
         groundPts.set(P.key + '|H', standH); }
       if (!(standH > 0.3)) { if (standH > -Infinity) console.warn(P.key + ': no standing height to read its takes against (' + standH.toFixed(2) + ')'); return; }
       const PTS = groundPoints(P, skins);
-      const lowOf = (list) => { let m = Infinity; const mats = new Map();
+      const lowOf = (list) => { let m = Infinity; const mats = new Map(), sms = new Map();
         for (const [k, i] of list) { const q = skins[k]; if (!q) continue; let M = mats.get(q); if (!M) { M = new THREE.Matrix4().multiplyMatrices(_grI, q.matrixWorld); mats.set(q, M); }
-          q.getVertexPosition(i, _grV); _grV.applyMatrix4(M); if (_grV.y < m) m = _grV.y; } return m; };
+          if (FASTSKIN) { let SM = sms.get(q); if (!SM) { SM = skinMats(q).map(x => x.clone()); sms.set(q, SM); } skinVertex(q, i, _grV, SM); } else q.getVertexPosition(i, _grV);
+          _grV.applyMatrix4(M); if (_grV.y < m) m = _grV.y; } return m; };
       for (const name in P.acts) { if (seatT(name)) continue;
         const A = P.acts[name], d = A.getClip().duration, W = P.win && P.win[name], memo = P.key + '|' + name + '|' + (W ? W[0] + ',' + W[1] : '');
         let R = groundMemo.get(memo);
@@ -385,7 +411,10 @@
       P.model.position.set(0, 0, 0);
       for (let i = 0; i < N; i++) { const t = Math.min(d - 1e-3, d * i / (N - 1)); A.time = t; P.mixer.update(0); P.group.updateWorldMatrix(true, false); P.group.updateMatrixWorld(true);
         _grI.copy(P.group.matrixWorld).invert(); let m = Infinity;
-        for (const [k, j] of PTS.foot) { const q = skins[k]; if (!q) continue; _grM.multiplyMatrices(_grI, q.matrixWorld); q.getVertexPosition(j, _grV); _grV.applyMatrix4(_grM); if (_grV.y < m) m = _grV.y; }
+        const sms = FASTSKIN ? new Map() : null;
+        for (const [k, j] of PTS.foot) { const q = skins[k]; if (!q) continue; _grM.multiplyMatrices(_grI, q.matrixWorld);
+          if (sms) { let SM = sms.get(q); if (!SM) { SM = skinMats(q).map(x => x.clone()); sms.set(q, SM); } skinVertex(q, j, _grV, SM); } else q.getVertexPosition(j, _grV);
+          _grV.applyMatrix4(_grM); if (_grV.y < m) m = _grV.y; }
         ts.push(t); hs.push(P.hips.getWorldPosition(_grV).applyMatrix4(_grI).y); fs.push(m); }
       const W = P.win && P.win[name], t0 = W ? W[0] : 0; let h0 = hs[0]; for (let i = 0; i < N; i++) if (ts[i] <= t0) h0 = hs[i];
       const h1 = Math.max(...hs), seat = P.offY[name], off = [];
@@ -890,8 +919,9 @@
       const under = [], feet = { Left: [], Right: [] };
       for (const q of skins) { const pos = q.geometry.attributes.position, si = q.geometry.attributes.skinIndex, sw = q.geometry.attributes.skinWeight; if (!pos || !si || !sw || !q.skeleton) continue;
         const role = q.skeleton.bones.map(b => /^(mixamorig:?)?(Hips|(Left|Right)UpLeg)$/.test(b.name) ? 'U' : /^(mixamorig:?)?Left(Foot|Toe\w*)$/.test(b.name) ? 'Left' : /^(mixamorig:?)?Right(Foot|Toe\w*)$/.test(b.name) ? 'Right' : '');
+        const SM = FASTSKIN ? skinMats(q) : null;
         for (let i = 0; i < pos.count; i++) { const w = { U: 0, Left: 0, Right: 0 }; for (let c = 0; c < 4; c++) { const r = role[si.getComponent(i, c)]; if (r) w[r] += sw.getComponent(i, c); }
-          if (w.U < 0.5 && w.Left < 0.5 && w.Right < 0.5) continue; q.getVertexPosition(i, v); v.applyMatrix4(q.matrixWorld); P.group.worldToLocal(v);
+          if (w.U < 0.5 && w.Left < 0.5 && w.Right < 0.5) continue; if (SM) skinVertex(q, i, v, SM); else q.getVertexPosition(i, v); v.applyMatrix4(q.matrixWorld); P.group.worldToLocal(v);
           if (w.U >= 0.5) under.push([v.y, v.z, v.x]); else feet[w.Left >= 0.5 ? 'Left' : 'Right'].push([v.x, v.y, v.z]); } }
       const H = loc(P.hips), K = SE.down, legs = { R: {}, wrote: false, keepKnee: K.knees === 'keep', tuck: K.tuck !== false };
       /* (his bottom: `hipOver` under his hip joints. Read from his skin it cannot be: his scan is his robe, and what
@@ -1034,8 +1064,9 @@
       const hipB = bone('Hips'), LAPTOP = hipB ? loc(hipB, new THREE.Vector3()).y + 0.3 : Infinity;
       for (const q of skins) { const pos = q.geometry.attributes.position, si = q.geometry.attributes.skinIndex, sw = q.geometry.attributes.skinWeight; if (!pos || !si || !sw || !q.skeleton) continue;
         const arm = q.skeleton.bones.map(b => /(Shoulder|Arm|Hand)/.test(b.name));
+        const SM = FASTSKIN ? skinMats(q) : null;
         for (let i = 0; i < pos.count; i++) { let a = 0; for (let c = 0; c < 4; c++) if (arm[si.getComponent(i, c)]) a += sw.getComponent(i, c); if (a > 0.3) continue;
-          q.getVertexPosition(i, v); v.applyMatrix4(q.matrixWorld); P.group.worldToLocal(v);
+          if (SM) skinVertex(q, i, v, SM); else q.getVertexPosition(i, v); v.applyMatrix4(q.matrixWorld); P.group.worldToLocal(v);
           { const k = vk(v.x, v.y, v.z); let L = vox.get(k); if (!L) vox.set(k, L = []); L.push(v.x, v.y, v.z); }
           if (v.y > LAPTOP) continue;
           const cx = Math.round((v.x - X0) / CELL), cz = Math.round((v.z - Z0) / CELL); if (cx < 0 || cz < 0 || cx >= NX || cz >= NZ) continue; if (v.y > H[cz * NX + cx]) H[cz * NX + cx] = v.y; } }

@@ -262,6 +262,9 @@
     ghost: null,
     fireLight: null,
     daylight: DAY1,
+    /* (v26.11, the speed-ups' fourth: once a picture of a body or a thing is on the graphics chip, the page's own decoded
+       copy is let go, 1,316 MB of them at play; Chad, 14 Nov 2026, "Yes, free the copies (Recommended)". The engine's PICS) */
+    render: { freePictures: true },
 
     /* (the list is long and grows with the build: one line a kind) */
     assets: [
@@ -431,6 +434,8 @@
        a write to one angle finds the others as the old way had them. Proved by every angle read both ways after the same
        turns (stage.lazyProof) and every bone compared. `?opt=lazyRot:0` leaves three's way */
     const LAZYROT = !ctx.opt || ctx.opt('lazyRot');
+    const FASTTWINS = !ctx.opt || ctx.opt('fastTwins');               // (the seams' twins found by whole-number cells: twinsFast)
+    const FASTSKIN = !ctx.opt || ctx.opt('fastSkin');                 // (a posed vertex with each bone's matrix made once a pose: skinVertex)
     function lazyRot(o) { if (LAZYROT) lazyInstall(o); }
     const LAZY = new WeakSet();
     function lazyInstall(o) {
@@ -691,30 +696,82 @@
         const bones = m.skeleton ? m.skeleton.bones : [], near = (a, b2) => { const A = bones[a], B = bones[b2];
           return !A || !B || A === B || A.parent === B || B.parent === A; };   // a joint's own boundary is never mended
         if (!(tol > 0)) return;
-        const cell = (v) => Math.floor(v / tol), cells = new Map(), K = (a, b2, c) => a + ',' + b2 + ',' + c;
-        for (let i = 0; i < pa.count; i++) {
-          const k = K(cell(pa.getX(i)), cell(pa.getY(i)), cell(pa.getZ(i)));
-          let c = cells.get(k); if (!c) cells.set(k, c = []); c.push(i);
-        }
-        const dom = (i) => { let k = 0; for (let q = 1; q < 4; q++) if (sw.getComponent(i, q) > sw.getComponent(i, k)) k = q; return si.getComponent(i, k); };
-        const weightOn = (i, bone) => { let w = 0; for (let q = 0; q < 4; q++) if (si.getComponent(i, q) === bone) w += sw.getComponent(i, q); return w; };
-        for (let i = 0; i < pa.count; i++) {
-          const x = pa.getX(i), y = pa.getY(i), z = pa.getZ(i), cx = cell(x), cy = cell(y), cz = cell(z), tw = [];
-          for (let a = -1; a <= 1; a++) for (let b2 = -1; b2 <= 1; b2++) for (let c = -1; c <= 1; c++) {
-            const l = cells.get(K(cx + a, cy + b2, cz + c)); if (!l) continue;
-            for (const j of l) if (j !== i && Math.hypot(pa.getX(j) - x, pa.getY(j) - y, pa.getZ(j) - z) <= tol) tw.push(j);
+        const fast = FASTTWINS ? twinsFast(pa, si, sw, tol, near) : -1;
+        if (fast >= 0) { n += fast; mine += fast; }
+        else {
+          const cell = (v) => Math.floor(v / tol), cells = new Map(), K = (a, b2, c) => a + ',' + b2 + ',' + c;
+          for (let i = 0; i < pa.count; i++) {
+            const k = K(cell(pa.getX(i)), cell(pa.getY(i)), cell(pa.getZ(i)));
+            let c = cells.get(k); if (!c) cells.set(k, c = []); c.push(i);
           }
-          if (tw.length < 2) continue;
-          const d0 = dom(tw[0]);
-          if (!tw.every(j => dom(j) === d0) || weightOn(i, d0) > 0 || near(dom(i), d0)) continue;
-          for (let q = 0; q < 4; q++) { si.setComponent(i, q, si.getComponent(tw[0], q)); sw.setComponent(i, q, sw.getComponent(tw[0], q)); }
-          n++; mine++;
+          const dom = (i) => { let k = 0; for (let q = 1; q < 4; q++) if (sw.getComponent(i, q) > sw.getComponent(i, k)) k = q; return si.getComponent(i, k); };
+          const weightOn = (i, bone) => { let w = 0; for (let q = 0; q < 4; q++) if (si.getComponent(i, q) === bone) w += sw.getComponent(i, q); return w; };
+          for (let i = 0; i < pa.count; i++) {
+            const x = pa.getX(i), y = pa.getY(i), z = pa.getZ(i), cx = cell(x), cy = cell(y), cz = cell(z), tw = [];
+            for (let a = -1; a <= 1; a++) for (let b2 = -1; b2 <= 1; b2++) for (let c = -1; c <= 1; c++) {
+              const l = cells.get(K(cx + a, cy + b2, cz + c)); if (!l) continue;
+              for (const j of l) if (j !== i && Math.hypot(pa.getX(j) - x, pa.getY(j) - y, pa.getZ(j) - z) <= tol) tw.push(j);
+            }
+            if (tw.length < 2) continue;
+            const d0 = dom(tw[0]);
+            if (!tw.every(j => dom(j) === d0) || weightOn(i, d0) > 0 || near(dom(i), d0)) continue;
+            for (let q = 0; q < 4; q++) { si.setComponent(i, q, si.getComponent(tw[0], q)); sw.setComponent(i, q, sw.getComponent(tw[0], q)); }
+            n++; mine++;
+          }
         }
         if (mine) { si.needsUpdate = true; sw.needsUpdate = true; }
       });
       if (n) twinMends[key] = n;
     }
 
+    /* (v26.11, FASTTWINS: the speed-ups' third, the load's own work. The search above built a text key for every vertex and
+       twenty-seven more for its neighbours' cells, on every vertex of every body file: 31 of the 96 seconds this box took
+       to reach play. Here the same cells, of the same Math.floor(v / tol), are keyed by one exact whole number (the three
+       cell numbers in mixed radix over the file's own range of cells, -0 the same as 0 as the text was), each cell's list
+       in the vertices' own order, the neighbours visited in the same order, each position read once (the same doubles
+       getX gives), the same distance test: so every vertex finds the same twins in the same order and is mended with the
+       same weights. A file with a coordinate that is not a finite number takes the search above. `?opt=fastTwins:0`
+       takes it always; the proof hashes every mended skin both ways (stage.twinHash)) */
+    function twinsFast(pa, si, sw, tol, near) {
+      const N = pa.count, X = new Float64Array(N), Y = new Float64Array(N), Z = new Float64Array(N), C = new Float64Array(3 * N);
+      let x0 = Infinity, y0 = Infinity, z0 = Infinity, x1 = -Infinity, y1 = -Infinity, z1 = -Infinity;
+      for (let i = 0; i < N; i++) {
+        const x = pa.getX(i), y = pa.getY(i), z = pa.getZ(i);
+        if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) return -1;
+        X[i] = x; Y[i] = y; Z[i] = z;
+        const cx = Math.floor(x / tol), cy = Math.floor(y / tol), cz = Math.floor(z / tol);
+        C[3 * i] = cx; C[3 * i + 1] = cy; C[3 * i + 2] = cz;
+        if (cx < x0) x0 = cx; if (cx > x1) x1 = cx; if (cy < y0) y0 = cy; if (cy > y1) y1 = cy; if (cz < z0) z0 = cz; if (cz > z1) z1 = cz;
+      }
+      if (!(N > 0)) return 0;
+      const sy = y1 - y0 + 3, sz = z1 - z0 + 3;
+      if (!((x1 - x0 + 3) * sy * sz < 4503599627370496)) return -1;          // (2^52: every key an exact whole number)
+      const key = (a, b2, c) => ((a - x0 + 1) * sy + (b2 - y0 + 1)) * sz + (c - z0 + 1);
+      const cells = new Map();
+      for (let i = 0; i < N; i++) { const k = key(C[3 * i], C[3 * i + 1], C[3 * i + 2]); let c = cells.get(k); if (!c) cells.set(k, c = []); c.push(i); }
+      const dom = (i) => { let k = 0; for (let q = 1; q < 4; q++) if (sw.getComponent(i, q) > sw.getComponent(i, k)) k = q; return si.getComponent(i, k); };
+      const weightOn = (i, bone) => { let w = 0; for (let q = 0; q < 4; q++) if (si.getComponent(i, q) === bone) w += sw.getComponent(i, q); return w; };
+      /* (a neighbour's key is the vertex's own plus a fixed whole number, in the old order: a, then b2, then c, each -1 to
+         1; and the distance test is decided by the squares where they are clear of tol by a millionth of a millionth,
+         Math.hypot only in between, so every decision is Math.hypot's own) */
+      const syz = sy * sz, OFF = [], t2 = tol * tol, t2lo = t2 * (1 - 1e-9), t2hi = t2 * (1 + 1e-9);
+      for (let a = -1; a <= 1; a++) for (let b2 = -1; b2 <= 1; b2++) for (let c = -1; c <= 1; c++) OFF.push(a * syz + b2 * sz + c);
+      let mine = 0; const tw = [];
+      for (let i = 0; i < N; i++) {
+        const x = X[i], y = Y[i], z = Z[i], kc = key(C[3 * i], C[3 * i + 1], C[3 * i + 2]); tw.length = 0;
+        for (let o = 0; o < 27; o++) {
+          const l = cells.get(kc + OFF[o]); if (!l) continue;
+          for (const j of l) { if (j === i) continue; const dx = X[j] - x, dy = Y[j] - y, dz = Z[j] - z, q = dx * dx + dy * dy + dz * dz;
+            if (q > t2hi) continue; if (q < t2lo || Math.hypot(dx, dy, dz) <= tol) tw.push(j); }
+        }
+        if (tw.length < 2) continue;
+        const d0 = dom(tw[0]);
+        if (!tw.every(j => dom(j) === d0) || weightOn(i, d0) > 0 || near(dom(i), d0)) continue;
+        for (let q = 0; q < 4; q++) { si.setComponent(i, q, si.getComponent(tw[0], q)); sw.setComponent(i, q, sw.getComponent(tw[0], q)); }
+        mine++;
+      }
+      return mine;
+    }
 
     /* ------------------------------------------------- the ground's surfaces (masters/v26.0/tex)
        Each is a picture made from his photograph of the real surface. A material stands in its surface's own average
@@ -2034,6 +2091,30 @@
        where he is talked to his face had three texels a pixel, sampled. His head's charts are baked by Blender into a 2048
        sheet of their own with a gutter round each (tools/rebake.py DETHANDS=0, masters/v26.3/make.sh), 1.6 times the
        texels, so it takes mipmaps as a repainted sheet does. Grandmaster Pho's own `detail` is his and is not touched) */
+    /* A POSED VERTEX WITH EACH BONE'S MATRIX MADE ONCE A POSE (v26.11, FASTSKIN: the speed-ups' third, the load's own
+       work). three's getVertexPosition multiplies a bone's world matrix by its inverse bind for every weight of every
+       vertex it is asked for, and the chapter asks for every vertex of every body, at every moment it measures (the
+       feet on the ground, the seats, the shins, the room round a body: several seconds of the load on this box). The
+       product is the same sixteen numbers for every vertex of one pose, so it is made once a pose and a bone, by the
+       same multiplyMatrices, and every vertex then takes three's own steps with it in the same order: the same base
+       position (Mesh's, morphs and all), the same bind, the same weighted sum, the same inverse. `?opt=fastSkin:0` asks
+       three every time; the proof reads every vertex of every body both ways (stage.skinProof) */
+    const _svI = new THREE.Vector4(), _svW = new THREE.Vector4(), _svB = new THREE.Vector4(), _sv4 = new THREE.Vector4(), _svMats = new WeakMap();
+    function skinMats(q) {
+      const S = q.skeleton, bones = S.bones, inv = S.boneInverses;
+      let L = _svMats.get(q); if (!L || L.length !== bones.length) { L = bones.map(() => new THREE.Matrix4()); _svMats.set(q, L); }
+      for (let b = 0; b < bones.length; b++) L[b].multiplyMatrices(bones[b].matrixWorld, inv[b]);
+      return L;
+    }
+    function skinVertex(q, i, target, L) {
+      THREE.Mesh.prototype.getVertexPosition.call(q, i, target);
+      const g = q.geometry;
+      _svI.fromBufferAttribute(g.attributes.skinIndex, i); _svW.fromBufferAttribute(g.attributes.skinWeight, i);
+      _svB.set(target.x, target.y, target.z, 1); target.set(0, 0, 0);
+      _svB.applyMatrix4(q.bindMatrix);
+      for (let k = 0; k < 4; k++) { const w = _svW.getComponent(k); if (w !== 0) { const b = _svI.getComponent(k); target.addScaledVector(_sv4.copy(_svB).applyMatrix4(L[b]), w); } }
+      return target.applyMatrix4(q.bindMatrixInverse);
+    }
     function sheetOf(key, t) {
       if (t.name === 'repainted' || (t.name === 'detail' && NOMIP.test(key))) { t.generateMipmaps = true; t.minFilter = THREE.LinearMipmapLinearFilter; t.anisotropy = 4; t.needsUpdate = true; return t; }
       return NOMIP.test(key) ? noMip(THREE, t) : t;
@@ -2165,7 +2246,8 @@
           const ys = [], feet = [];
           for (const q of skins) { const pos = q.geometry.attributes.position, si = q.geometry.attributes.skinIndex, sw = q.geometry.attributes.skinWeight; if (!pos || !si || !sw || !q.skeleton) continue;
             const foot = q.skeleton.bones.map(b => /^(mixamorig:?)?(Left|Right)(Foot|Toe\w*)$/.test(b.name));
-            for (let i = 0; i < pos.count; i++) { q.getVertexPosition(i, _pv); _pv.applyMatrix4(q.matrixWorld); P.group.worldToLocal(_pv); ys.push(_pv.y);
+            const SM = FASTSKIN ? skinMats(q) : null;
+            for (let i = 0; i < pos.count; i++) { if (SM) skinVertex(q, i, _pv, SM); else q.getVertexPosition(i, _pv); _pv.applyMatrix4(q.matrixWorld); P.group.worldToLocal(_pv); ys.push(_pv.y);
               let fw = 0; for (let c = 0; c < 4; c++) if (foot[si.getComponent(i, c)]) fw += sw.getComponent(i, c); if (fw >= 0.5) feet.push(_pv.y); } }
           if (ys.length < 30) { console.warn(key + ': too little skin to seat him by'); continue; }
           /* (his spot in the model's own frame: what `centre` or `ref` set for this take) */
@@ -2344,9 +2426,10 @@
         groundPts.set(P.key + '|H', standH); }
       if (!(standH > 0.3)) { if (standH > -Infinity) console.warn(P.key + ': no standing height to read its takes against (' + standH.toFixed(2) + ')'); return; }
       const PTS = groundPoints(P, skins);
-      const lowOf = (list) => { let m = Infinity; const mats = new Map();
+      const lowOf = (list) => { let m = Infinity; const mats = new Map(), sms = new Map();
         for (const [k, i] of list) { const q = skins[k]; if (!q) continue; let M = mats.get(q); if (!M) { M = new THREE.Matrix4().multiplyMatrices(_grI, q.matrixWorld); mats.set(q, M); }
-          q.getVertexPosition(i, _grV); _grV.applyMatrix4(M); if (_grV.y < m) m = _grV.y; } return m; };
+          if (FASTSKIN) { let SM = sms.get(q); if (!SM) { SM = skinMats(q).map(x => x.clone()); sms.set(q, SM); } skinVertex(q, i, _grV, SM); } else q.getVertexPosition(i, _grV);
+          _grV.applyMatrix4(M); if (_grV.y < m) m = _grV.y; } return m; };
       for (const name in P.acts) { if (seatT(name)) continue;
         const A = P.acts[name], d = A.getClip().duration, W = P.win && P.win[name], memo = P.key + '|' + name + '|' + (W ? W[0] + ',' + W[1] : '');
         let R = groundMemo.get(memo);
@@ -2376,7 +2459,10 @@
       P.model.position.set(0, 0, 0);
       for (let i = 0; i < N; i++) { const t = Math.min(d - 1e-3, d * i / (N - 1)); A.time = t; P.mixer.update(0); P.group.updateWorldMatrix(true, false); P.group.updateMatrixWorld(true);
         _grI.copy(P.group.matrixWorld).invert(); let m = Infinity;
-        for (const [k, j] of PTS.foot) { const q = skins[k]; if (!q) continue; _grM.multiplyMatrices(_grI, q.matrixWorld); q.getVertexPosition(j, _grV); _grV.applyMatrix4(_grM); if (_grV.y < m) m = _grV.y; }
+        const sms = FASTSKIN ? new Map() : null;
+        for (const [k, j] of PTS.foot) { const q = skins[k]; if (!q) continue; _grM.multiplyMatrices(_grI, q.matrixWorld);
+          if (sms) { let SM = sms.get(q); if (!SM) { SM = skinMats(q).map(x => x.clone()); sms.set(q, SM); } skinVertex(q, j, _grV, SM); } else q.getVertexPosition(j, _grV);
+          _grV.applyMatrix4(_grM); if (_grV.y < m) m = _grV.y; }
         ts.push(t); hs.push(P.hips.getWorldPosition(_grV).applyMatrix4(_grI).y); fs.push(m); }
       const W = P.win && P.win[name], t0 = W ? W[0] : 0; let h0 = hs[0]; for (let i = 0; i < N; i++) if (ts[i] <= t0) h0 = hs[i];
       const h1 = Math.max(...hs), seat = P.offY[name], off = [];
@@ -2902,8 +2988,9 @@
       const under = [], feet = { Left: [], Right: [] };
       for (const q of skins) { const pos = q.geometry.attributes.position, si = q.geometry.attributes.skinIndex, sw = q.geometry.attributes.skinWeight; if (!pos || !si || !sw || !q.skeleton) continue;
         const role = q.skeleton.bones.map(b => /^(mixamorig:?)?(Hips|(Left|Right)UpLeg)$/.test(b.name) ? 'U' : /^(mixamorig:?)?Left(Foot|Toe\w*)$/.test(b.name) ? 'Left' : /^(mixamorig:?)?Right(Foot|Toe\w*)$/.test(b.name) ? 'Right' : '');
+        const SM = FASTSKIN ? skinMats(q) : null;
         for (let i = 0; i < pos.count; i++) { const w = { U: 0, Left: 0, Right: 0 }; for (let c = 0; c < 4; c++) { const r = role[si.getComponent(i, c)]; if (r) w[r] += sw.getComponent(i, c); }
-          if (w.U < 0.5 && w.Left < 0.5 && w.Right < 0.5) continue; q.getVertexPosition(i, v); v.applyMatrix4(q.matrixWorld); P.group.worldToLocal(v);
+          if (w.U < 0.5 && w.Left < 0.5 && w.Right < 0.5) continue; if (SM) skinVertex(q, i, v, SM); else q.getVertexPosition(i, v); v.applyMatrix4(q.matrixWorld); P.group.worldToLocal(v);
           if (w.U >= 0.5) under.push([v.y, v.z, v.x]); else feet[w.Left >= 0.5 ? 'Left' : 'Right'].push([v.x, v.y, v.z]); } }
       const H = loc(P.hips), K = SE.down, legs = { R: {}, wrote: false, keepKnee: K.knees === 'keep', tuck: K.tuck !== false };
       /* (his bottom: `hipOver` under his hip joints. Read from his skin it cannot be: his scan is his robe, and what
@@ -3046,8 +3133,9 @@
       const hipB = bone('Hips'), LAPTOP = hipB ? loc(hipB, new THREE.Vector3()).y + 0.3 : Infinity;
       for (const q of skins) { const pos = q.geometry.attributes.position, si = q.geometry.attributes.skinIndex, sw = q.geometry.attributes.skinWeight; if (!pos || !si || !sw || !q.skeleton) continue;
         const arm = q.skeleton.bones.map(b => /(Shoulder|Arm|Hand)/.test(b.name));
+        const SM = FASTSKIN ? skinMats(q) : null;
         for (let i = 0; i < pos.count; i++) { let a = 0; for (let c = 0; c < 4; c++) if (arm[si.getComponent(i, c)]) a += sw.getComponent(i, c); if (a > 0.3) continue;
-          q.getVertexPosition(i, v); v.applyMatrix4(q.matrixWorld); P.group.worldToLocal(v);
+          if (SM) skinVertex(q, i, v, SM); else q.getVertexPosition(i, v); v.applyMatrix4(q.matrixWorld); P.group.worldToLocal(v);
           { const k = vk(v.x, v.y, v.z); let L = vox.get(k); if (!L) vox.set(k, L = []); L.push(v.x, v.y, v.z); }
           if (v.y > LAPTOP) continue;
           const cx = Math.round((v.x - X0) / CELL), cz = Math.round((v.z - Z0) / CELL); if (cx < 0 || cz < 0 || cx >= NX || cz >= NZ) continue; if (v.y > H[cz * NX + cx]) H[cz * NX + cx] = v.y; } }
@@ -7238,6 +7326,20 @@
           if (P.restHands && !(P.layK > 0)) restHandsLay(P); if (!P.htLate) handsTrue(P); }
         return +((performance.now() - t0) / n).toFixed(3); },
       lazy(on) { let n = 0; for (const P of people) for (const k in P.bone) { (on ? lazyInstall : lazyUninstall)(P.bone[k]); n++; } return n; },
+      /* (the load's proofs: every skinned mesh of every parsed file, its weights' bytes hashed after the seams' mends, with
+         the mends' counts, to be compared with a load where fastTwins is off; and every vertex of every skinned mesh in the
+         world read by three's getVertexPosition and by skinVertex in its pose as it stands, compared bit for bit) */
+      async twinHash() { const out = {}; for (const [key, pr] of parsedGlb) { const r = await Promise.resolve(pr).catch(() => null); if (!r || !r.scene) continue; const hs = [];
+          r.scene.traverse(o => { if (!o.isSkinnedMesh) return; for (const nm of ['skinIndex', 'skinWeight']) { const a = o.geometry.attributes[nm]; if (!a) continue;
+            const ar = a.isInterleavedBufferAttribute ? a.data.array : a.array, u = new Uint8Array(ar.buffer, ar.byteOffset, ar.byteLength); let h = 2166136261;
+            for (let i = 0; i < u.length; i++) { h ^= u[i]; h = Math.imul(h, 16777619); } hs.push((h >>> 0).toString(16)); } });
+          out[key] = hs.join(' '); }
+        return { mends: Object.assign({}, twinMends), files: Object.keys(out).length, hash: out }; },
+      skinProof() { let meshes = 0, verts = 0, bad = 0; const A = new THREE.Vector3(), B = new THREE.Vector3();
+        world.updateMatrixWorld(true);
+        world.traverse(q => { if (!q.isSkinnedMesh || !q.skeleton || !q.geometry.attributes.skinIndex) return; meshes++; const L = skinMats(q), n = q.geometry.attributes.position.count;
+          for (let i = 0; i < n; i++) { q.getVertexPosition(i, A); skinVertex(q, i, B, L); verts++; if (!Object.is(A.x, B.x) || !Object.is(A.y, B.y) || !Object.is(A.z, B.z)) bad++; } });
+        return { meshes, verts, differing: bad }; },
       plan: { TURF, TABLES, HALL, TENT_W1, TENT_W2, TENT_E, CHIEF, BENCH, POLE, TON_TABLE, WEST_TABLE },
       /* the ground's own noises (ambTick): how many have sounded, and the last (a probe counts them over a stretch of play) */
       amb: () => ({ n: ambN, last: ambLast, next: +ambAt.toFixed(2), beds: Object.assign({}, bedMix), pan: +musPan.toFixed(3) }),

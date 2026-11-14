@@ -1084,6 +1084,20 @@
           if (P.restHands && !(P.layK > 0)) restHandsLay(P); if (!P.htLate) handsTrue(P); }
         return +((performance.now() - t0) / n).toFixed(3); },
       lazy(on) { let n = 0; for (const P of people) for (const k in P.bone) { (on ? lazyInstall : lazyUninstall)(P.bone[k]); n++; } return n; },
+      /* (the load's proofs: every skinned mesh of every parsed file, its weights' bytes hashed after the seams' mends, with
+         the mends' counts, to be compared with a load where fastTwins is off; and every vertex of every skinned mesh in the
+         world read by three's getVertexPosition and by skinVertex in its pose as it stands, compared bit for bit) */
+      async twinHash() { const out = {}; for (const [key, pr] of parsedGlb) { const r = await Promise.resolve(pr).catch(() => null); if (!r || !r.scene) continue; const hs = [];
+          r.scene.traverse(o => { if (!o.isSkinnedMesh) return; for (const nm of ['skinIndex', 'skinWeight']) { const a = o.geometry.attributes[nm]; if (!a) continue;
+            const ar = a.isInterleavedBufferAttribute ? a.data.array : a.array, u = new Uint8Array(ar.buffer, ar.byteOffset, ar.byteLength); let h = 2166136261;
+            for (let i = 0; i < u.length; i++) { h ^= u[i]; h = Math.imul(h, 16777619); } hs.push((h >>> 0).toString(16)); } });
+          out[key] = hs.join(' '); }
+        return { mends: Object.assign({}, twinMends), files: Object.keys(out).length, hash: out }; },
+      skinProof() { let meshes = 0, verts = 0, bad = 0; const A = new THREE.Vector3(), B = new THREE.Vector3();
+        world.updateMatrixWorld(true);
+        world.traverse(q => { if (!q.isSkinnedMesh || !q.skeleton || !q.geometry.attributes.skinIndex) return; meshes++; const L = skinMats(q), n = q.geometry.attributes.position.count;
+          for (let i = 0; i < n; i++) { q.getVertexPosition(i, A); skinVertex(q, i, B, L); verts++; if (!Object.is(A.x, B.x) || !Object.is(A.y, B.y) || !Object.is(A.z, B.z)) bad++; } });
+        return { meshes, verts, differing: bad }; },
       plan: { TURF, TABLES, HALL, TENT_W1, TENT_W2, TENT_E, CHIEF, BENCH, POLE, TON_TABLE, WEST_TABLE },
       /* the ground's own noises (ambTick): how many have sounded, and the last (a probe counts them over a stretch of play) */
       amb: () => ({ n: ambN, last: ambLast, next: +ambAt.toFixed(2), beds: Object.assign({}, bedMix), pan: +musPan.toFixed(3) }),

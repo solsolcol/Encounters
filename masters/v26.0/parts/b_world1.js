@@ -39,6 +39,8 @@
        a write to one angle finds the others as the old way had them. Proved by every angle read both ways after the same
        turns (stage.lazyProof) and every bone compared. `?opt=lazyRot:0` leaves three's way */
     const LAZYROT = !ctx.opt || ctx.opt('lazyRot');
+    const FASTTWINS = !ctx.opt || ctx.opt('fastTwins');               // (the seams' twins found by whole-number cells: twinsFast)
+    const FASTSKIN = !ctx.opt || ctx.opt('fastSkin');                 // (a posed vertex with each bone's matrix made once a pose: skinVertex)
     function lazyRot(o) { if (LAZYROT) lazyInstall(o); }
     const LAZY = new WeakSet();
     function lazyInstall(o) {
@@ -195,7 +197,95 @@
       m.position.set(x, y, z); m.rotation.y = ry; m.visible = false; world.add(m); solids.push(m); return m;
     };
 
-//@@COPY 396-523 :: /* ------------------------------------------------- one parse per asset */
+//@@COPY 396-487 :: /* ------------------------------------------------- one parse per asset */
+    function mendTwins(key, root) {
+      let n = 0;
+      root.traverse(m => {
+        if (!m.isSkinnedMesh) return;
+        const g = m.geometry, pa = g.attributes.position, si = g.attributes.skinIndex, sw = g.attributes.skinWeight;
+        if (!pa || !si || !sw) return;
+        let mine = 0;
+        g.computeBoundingBox(); const bb = g.boundingBox;
+        const tol = 1.5e-3 * Math.max(bb.max.x - bb.min.x, bb.max.y - bb.min.y, bb.max.z - bb.min.z);   // ~2.5 mm on a body
+        const bones = m.skeleton ? m.skeleton.bones : [], near = (a, b2) => { const A = bones[a], B = bones[b2];
+          return !A || !B || A === B || A.parent === B || B.parent === A; };   // a joint's own boundary is never mended
+        if (!(tol > 0)) return;
+        const fast = FASTTWINS ? twinsFast(pa, si, sw, tol, near) : -1;
+        if (fast >= 0) { n += fast; mine += fast; }
+        else {
+          const cell = (v) => Math.floor(v / tol), cells = new Map(), K = (a, b2, c) => a + ',' + b2 + ',' + c;
+          for (let i = 0; i < pa.count; i++) {
+            const k = K(cell(pa.getX(i)), cell(pa.getY(i)), cell(pa.getZ(i)));
+            let c = cells.get(k); if (!c) cells.set(k, c = []); c.push(i);
+          }
+          const dom = (i) => { let k = 0; for (let q = 1; q < 4; q++) if (sw.getComponent(i, q) > sw.getComponent(i, k)) k = q; return si.getComponent(i, k); };
+          const weightOn = (i, bone) => { let w = 0; for (let q = 0; q < 4; q++) if (si.getComponent(i, q) === bone) w += sw.getComponent(i, q); return w; };
+          for (let i = 0; i < pa.count; i++) {
+            const x = pa.getX(i), y = pa.getY(i), z = pa.getZ(i), cx = cell(x), cy = cell(y), cz = cell(z), tw = [];
+            for (let a = -1; a <= 1; a++) for (let b2 = -1; b2 <= 1; b2++) for (let c = -1; c <= 1; c++) {
+              const l = cells.get(K(cx + a, cy + b2, cz + c)); if (!l) continue;
+              for (const j of l) if (j !== i && Math.hypot(pa.getX(j) - x, pa.getY(j) - y, pa.getZ(j) - z) <= tol) tw.push(j);
+            }
+            if (tw.length < 2) continue;
+            const d0 = dom(tw[0]);
+            if (!tw.every(j => dom(j) === d0) || weightOn(i, d0) > 0 || near(dom(i), d0)) continue;
+            for (let q = 0; q < 4; q++) { si.setComponent(i, q, si.getComponent(tw[0], q)); sw.setComponent(i, q, sw.getComponent(tw[0], q)); }
+            n++; mine++;
+          }
+        }
+        if (mine) { si.needsUpdate = true; sw.needsUpdate = true; }
+      });
+      if (n) twinMends[key] = n;
+    }
+
+    /* (v26.11, FASTTWINS: the speed-ups' third, the load's own work. The search above built a text key for every vertex and
+       twenty-seven more for its neighbours' cells, on every vertex of every body file: 31 of the 96 seconds this box took
+       to reach play. Here the same cells, of the same Math.floor(v / tol), are keyed by one exact whole number (the three
+       cell numbers in mixed radix over the file's own range of cells, -0 the same as 0 as the text was), each cell's list
+       in the vertices' own order, the neighbours visited in the same order, each position read once (the same doubles
+       getX gives), the same distance test: so every vertex finds the same twins in the same order and is mended with the
+       same weights. A file with a coordinate that is not a finite number takes the search above. `?opt=fastTwins:0`
+       takes it always; the proof hashes every mended skin both ways (stage.twinHash)) */
+    function twinsFast(pa, si, sw, tol, near) {
+      const N = pa.count, X = new Float64Array(N), Y = new Float64Array(N), Z = new Float64Array(N), C = new Float64Array(3 * N);
+      let x0 = Infinity, y0 = Infinity, z0 = Infinity, x1 = -Infinity, y1 = -Infinity, z1 = -Infinity;
+      for (let i = 0; i < N; i++) {
+        const x = pa.getX(i), y = pa.getY(i), z = pa.getZ(i);
+        if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) return -1;
+        X[i] = x; Y[i] = y; Z[i] = z;
+        const cx = Math.floor(x / tol), cy = Math.floor(y / tol), cz = Math.floor(z / tol);
+        C[3 * i] = cx; C[3 * i + 1] = cy; C[3 * i + 2] = cz;
+        if (cx < x0) x0 = cx; if (cx > x1) x1 = cx; if (cy < y0) y0 = cy; if (cy > y1) y1 = cy; if (cz < z0) z0 = cz; if (cz > z1) z1 = cz;
+      }
+      if (!(N > 0)) return 0;
+      const sy = y1 - y0 + 3, sz = z1 - z0 + 3;
+      if (!((x1 - x0 + 3) * sy * sz < 4503599627370496)) return -1;          // (2^52: every key an exact whole number)
+      const key = (a, b2, c) => ((a - x0 + 1) * sy + (b2 - y0 + 1)) * sz + (c - z0 + 1);
+      const cells = new Map();
+      for (let i = 0; i < N; i++) { const k = key(C[3 * i], C[3 * i + 1], C[3 * i + 2]); let c = cells.get(k); if (!c) cells.set(k, c = []); c.push(i); }
+      const dom = (i) => { let k = 0; for (let q = 1; q < 4; q++) if (sw.getComponent(i, q) > sw.getComponent(i, k)) k = q; return si.getComponent(i, k); };
+      const weightOn = (i, bone) => { let w = 0; for (let q = 0; q < 4; q++) if (si.getComponent(i, q) === bone) w += sw.getComponent(i, q); return w; };
+      /* (a neighbour's key is the vertex's own plus a fixed whole number, in the old order: a, then b2, then c, each -1 to
+         1; and the distance test is decided by the squares where they are clear of tol by a millionth of a millionth,
+         Math.hypot only in between, so every decision is Math.hypot's own) */
+      const syz = sy * sz, OFF = [], t2 = tol * tol, t2lo = t2 * (1 - 1e-9), t2hi = t2 * (1 + 1e-9);
+      for (let a = -1; a <= 1; a++) for (let b2 = -1; b2 <= 1; b2++) for (let c = -1; c <= 1; c++) OFF.push(a * syz + b2 * sz + c);
+      let mine = 0; const tw = [];
+      for (let i = 0; i < N; i++) {
+        const x = X[i], y = Y[i], z = Z[i], kc = key(C[3 * i], C[3 * i + 1], C[3 * i + 2]); tw.length = 0;
+        for (let o = 0; o < 27; o++) {
+          const l = cells.get(kc + OFF[o]); if (!l) continue;
+          for (const j of l) { if (j === i) continue; const dx = X[j] - x, dy = Y[j] - y, dz = Z[j] - z, q = dx * dx + dy * dy + dz * dz;
+            if (q > t2hi) continue; if (q < t2lo || Math.hypot(dx, dy, dz) <= tol) tw.push(j); }
+        }
+        if (tw.length < 2) continue;
+        const d0 = dom(tw[0]);
+        if (!tw.every(j => dom(j) === d0) || weightOn(i, d0) > 0 || near(dom(i), d0)) continue;
+        for (let q = 0; q < 4; q++) { si.setComponent(i, q, si.getComponent(tw[0], q)); sw.setComponent(i, q, sw.getComponent(tw[0], q)); }
+        mine++;
+      }
+      return mine;
+    }
 
     /* ------------------------------------------------- the ground's surfaces (masters/v26.0/tex)
        Each is a picture made from his photograph of the real surface. A material stands in its surface's own average
