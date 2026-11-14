@@ -293,3 +293,12 @@ ee15ff087296576c3d5bbac759701b3ce8c8bcc6411c905dcced258c27e4875c  masters/v26.0/
 020db46f0d2318b070725a77db0f6f6c7b2aafddfbfd116343a9f02c180f8ad9  masters/v26.0/src/original-fruit.glb
 53432de4ed7800a887f565adda5274be688f96e280af92d49fe592c059cc50a9  masters/v26.0/src/original-ganesha.glb
 f3d4a12e1ed4be007e6cfc87af4f4f00742df83e6982009b7550f960a2b11857  masters/v26.0/src/original-girl.glb
+2d5ca6f7ef202b9fb74bbb86f47415c96f82984860cdfe06e3582d05a734578c  masters/v26.0/src/original-girl2.glb
+97c6570a185a47610b80575e258d361ca9fa2b66003687cad0a097b6cd276ed7  masters/v26.0/src/original-glass.glb
+51acb9c8f9ca3c4f7ea0b9832f374b9b55f5c88517089d39ce1cbc5f5a285490  masters/v26.0/src/original-hermita.glb
+163c51a6afcd660ed2f0aa9e60d4a4be084eae8cb94d8a5a86ea04baa132b670  masters/v26.0/src/original-hermitb.glb
+57e187321676f25cf0734738f5a3a70041bb54c81b960c60d4decf394c412b4b  masters/v26.0/src/original-horns.glb
+0c910813681a10150e45444728a07eb53789d7a90ab4b21029324ff86f2f4d94  masters/v26.0/src/original-khantok.glb
+175818110b6d396e5a59c7003352dcf85bd0cfd0447c343479193cbb88848db5  masters/v26.0/src/original-kratip.glb
+9ee0dc8b4965f460185e73c4c4fbaf4110737234e4b3a9df0aff2e740031713e  masters/v26.0/src/original-lowtable.glb
+8d1ed37a4343e32319afdf7c56e04a2b258192d0143741a5a19a95976e4a8cb9  masters/v26.0/src/original-monkb.glb
