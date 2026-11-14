@@ -208,19 +208,21 @@ CLOSED 14 Nov 2026: items 6 to 8 below were put to him together (docs/V26.12-WHA
       it to you. They woke it." give a part of the answer to "why" that the casebook withholds
       (docs/research/V26.0-WAIKRU-VERDICTS.md).
     - b. The three new voices and the thirteen music cues, by his ear (A4).
-    - c. The ranks of his four answers (accept best, ask why good, challenge bad, make it stop worst).
+    - c. ANSWERED 14 Nov, "Keep these ranks": unchanged. The ranks of his four answers (accept best, ask why good, challenge bad, make it stop worst).
     - d. Which man in the photographs Grandmaster Pho is; a picture of the real dancers' dress; what the real music is.
     - e. The small dark seated image before the wheel's hub in his photograph 10: which image is it? It is not made
       (a sacred image is made only from photographs of the real one).
-    - f. The monks' robes: his model's are orange, photograph 2's are maroon. His paint is not altered unless he says.
+    - f. ANSWERED 14 Nov, "[No preference]": kept orange, his model as he made it. The monks' robes: his model's are orange, photograph 2's are maroon. His paint is not altered unless he says.
     - g. His Facebook album of the Wai Kru: it opens only behind a login, which is not worked round. Asked as files
       (in the chat, or a Google Drive folder).
     - h. An engine finding left as it is (it touches every chapter): only a film from play gives his hands back; an
       opening film or an ending that hides them must show them itself. Chapter 3 does. Widen the engine's net?
-    - i. Two things of the plan's direction (its 3.7) that the close as built (its 4.6) does not carry: the last image
+    - i. ANSWERED 14 Nov, "Petal on his hand": BUILT at v26.12, the close ends on his open right hand with one of his
+      teacher's petals on it, reached by a cut on the last line's comma, then black; no gold flood (c_zfx.js myOpenHand).
+      Two things of the plan's direction (its 3.7) that the close as built (its 4.6) does not carry: the last image
       "one petal left on his open hand. Black.", and "the flood" as a fade in gold over the whole screen. One word adds
       either.
-    - j. Grandmaster Pho's gold was set at one strength from the close's photographs, never photographed at three:
+    - j. ANSWERED 14 Nov, "Keep as is": unchanged. Grandmaster Pho's gold was set at one strength from the close's photographs, never photographed at three:
       stronger or fainter is one word.
     - k. The chapter is the game's biggest download: 117 MB of models and pictures and 17 MB of sound (it was 121
       before each body was given only the takes it plays; episode 3 chapter 4: 105 and 13; episode 4 chapter 1: 89
@@ -228,9 +230,11 @@ CLOSED 14 Nov 2026: items 6 to 8 below were put to him together (docs/V26.12-WHA
       behind the title card as every chapter does. Said so he knows the price of eighteen people at three levels.
     - l. The dancers' walk is a written take (made for them): a planted toe creeps a centimetre or two each quarter
       second, in the take itself. A walk with none would have to be motion-captured.
-    - m. The petals in play are thrown beside him at Ton's table (a girl's handful, as the bai sri comes into his
+    - m. ANSWERED 14 Nov, "Add a second": BUILT at v26.12, the children follow him to the offering tables along his own
+      trail and throw a second handful over him as he raises his bai sri (c_crowd.js kidsFollow, d_play.js kidsTables).
+      The petals in play are thrown beside him at Ton's table (a girl's handful, as the bai sri comes into his
       hands); the plan had them "as he reaches the tables". One word sends the children up for a second handful there.
-    - n. The plan's "a bed for each tent": the ground's sound is mixed by where he stands (the music nearer the horns,
+    - n. ANSWERED 14 Nov, "Leave as is": unchanged. The plan's "a bed for each tent": the ground's sound is mixed by where he stands (the music nearer the horns,
       the crowd fuller among the people, each noise at its place); no tent has a sound of its own. One word makes some
       (the monks' tent, the masters' tent).
     - o. Left of his four asks of 12 Nov (build 77, the tracker's §15.5 and §15.6, said in the report): at the very
@@ -239,18 +243,23 @@ CLOSED 14 Nov 2026: items 6 to 8 below were put to him together (docs/V26.12-WHA
       it (his file's own). And Chad's monk's arms rest near straight (his arms are long for his chair: the reach to his
       thighs is 0.87 to 0.93 of the arm wherever the hand is laid), his open hands flat on the cloth. Each is being
       worked or is one word: none is hidden.
-    - p. Found and left, the same kind as his bobbing (§15.2, not asked): the four other masters' rest rocks slowly (18 cm
+    - p. ANSWERED 14 Nov, "Leave both": unchanged. Found and left, the same kind as his bobbing (§15.2, not asked): the four other masters' rest rocks slowly (18 cm
       end to end every 5.7 s), and Ton kneeling before the homage sways 8.7 cm. One word calms either.
     - q. v26.1 (his nine notes of 12 Nov, evening; the tracker's §16): his feet on the grass are reel C (a real walk on a
       lawn cut into eight steps) until his ear picks among the five reels sent (masters/v26.1/sound/previews); the
-      clouds, the sun's glare and rays are set by measure, one word to change any. PUT TO HIM: the red plank building
+      clouds, the sun's glare and rays are set by measure, one word to change any. PUT TO HIM, ANSWERED 14 Nov, "Leave it"
+      (unchanged): the red plank building
       behind the chief bench stands on stilts in his photograph 5, open beneath; the game's wall goes to the ground
       (raising it changes the background of every film at the bench).
     - r. v26.2 (the full debug, docs/V26.1-E4C3-DEBUG.md): PUT TO HIM: Grandmaster Pho's left wrist, a band of his
       robe's web wrapped round it as a white ribbon with a hole, seated (his model's weights: V-1a); and a few triangles
       of one woman's generated hair wound backwards (`e4deva`, third in the line at the tables, the largest about 1.3
       cm at mid-back, drawn dark; tools/probes/openings.mjs finds them): turning them round, and reading every generated
-      body for the same, is one word.
+      body for the same, is one word. ANSWERED 14 Nov, "Fix and check all (Recommended)": TRIED AND PUT BACK at v26.12.
+      Turning the 5,944 triangles of the 63 body files, checked first only by numbers, was photographed after his word ("I
+      think your fix without visually checking the models is a little dangerous") and found to darken Ton's far body (a
+      dark wedge on his collar): all 63 files are as they were (masters/v26.12/make.sh §1). The hair's slivers stay: unseen
+      where a player meets her. A cure would be in the normals at those places: not attempted.
     - s. v26.3 (docs/V26.3-E4C3-NOTES.md): ASKED: THE PLAYER'S OWN HAND, every chapter's (the base game's, so his word
       first): tools/probes/jointscan.mjs reads its middle, ring and little fingers bent 28 to 37 degrees sideways at
       their middle joints, and the left wrist 49 degrees toward the thumb, in its walking rest; photographed in play,
