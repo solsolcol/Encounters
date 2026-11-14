@@ -2863,6 +2863,26 @@
         /* world' = turn * world, so local' = parentWorld^-1 * turn * parentWorld * local */
         F.b.quaternion.premultiply(_hq2).premultiply(_hq).premultiply(_hq2.invert()); }
     }
+    /* (v26.12) THE FINGERS BROUGHT TOGETHER, as a relaxed open hand holds them (his open hand at the close: the reference
+       picture's fingers "close together with small natural gaps"): each finger's knuckle turned about the palm's own facing
+       so that, seen on the palm, it lies `gaps[i]` degrees from the middle finger (the first finger, the ring, the little:
+       its side kept); the middle finger stays. Laid AFTER the fingers' resting turns are kept (curlFingers(P, sd, 0) first)
+       and before they are curled, so armsBack takes it off with the rest. The engine's prayer pose closes a fanned rig only
+       part of the way: seen edge on in a prayer it never shows; seen on an open palm, it was a hand spread like a rake */
+    const _cfM = new THREE.Vector3(), _cfS = new THREE.Vector3(), _cfN = new THREE.Vector3(), _cfP1 = new THREE.Vector3(), _cfP2 = new THREE.Vector3(), _cfQ = new THREE.Quaternion(), _cfQ2 = new THREE.Quaternion(), _cfC = new THREE.Vector3();
+    function closeFingers(P, sd, gaps) {
+      const As = P && P.ready ? armsOf(P) : null, a = As && As[sd]; if (!a || !a.fing || !a.curled) return;
+      const S0 = sd === 'L' ? 'Left' : 'Right', B = (f, i) => P.bone[S0 + 'Hand' + f + i] || P.bone['mixamorig:' + S0 + 'Hand' + f + i];
+      a.hand.updateWorldMatrix(true, true); a.hand.getWorldQuaternion(_cfQ); _cfN.copy(a.nL).applyQuaternion(_cfQ).normalize();
+      const seg = (f, out) => { const b1 = B(f, 1), b2 = B(f, 2); if (!b1 || !b2) return null; b1.getWorldPosition(_cfP1); b2.getWorldPosition(_cfP2);
+        out.subVectors(_cfP2, _cfP1); out.addScaledVector(_cfN, -out.dot(_cfN)); return out.lengthSq() > 1e-10 ? out.normalize() : null; };
+      if (!seg('Middle', _cfM)) return;
+      ['Index', 'Ring', 'Pinky'].forEach((f, k) => {
+        const b1 = B(f, 1); if (!b1 || !seg(f, _cfS)) return;
+        const th = Math.atan2(_cfN.dot(_cfC.crossVectors(_cfM, _cfS)), _cfS.dot(_cfM)), want = Math.sign(th || 1) * gaps[k] * Math.PI / 180;
+        _cfQ.setFromAxisAngle(_cfN, want - th); b1.parent.getWorldQuaternion(_cfQ2);
+        b1.quaternion.premultiply(_cfQ2).premultiply(_cfQ).premultiply(_cfQ2.invert()); b1.updateWorldMatrix(false, true); });
+    }
     /* (v26.11, NOGARB) a hand's resting turns, kept before a pose is laid on them: ONE list a hand and a caller (`key`),
        its turns copied in again each time (the same numbers a new list held: q copied from the bone as clone() made it;
        `i` the joint's own, or the one given), where a new list and a new turn for each joint were made every frame */
@@ -4880,10 +4900,11 @@
        his middle. The left arm is shrunk away as the engine shrinks it in play: it is in no picture of this.
        OPENHAND: the palm's middle forward of his eye, below it, to his right; the fingers' way (in, up, against forward 1);
        the palm's facing (back toward him, in toward his middle, against up 1); the elbow's side (out, down, aft: the
-       upper arm hanging); the fingers' curl at each joint (radians); the petal's length, how far it lies off the palm and
+       upper arm hanging); the fingers' curl at each joint (radians); the fingers' gaps from the middle one, seen on the
+       palm (the first, the ring, the little: degrees); the petal's length, how far it lies off the palm and
        how far its length is turned from the fingers' line */
-    const OPENHAND = { fwd: 0.27, down: 0.32, right: 0.085, fIn: 0.36, fUp: 0.27, nBack: 0.27, nIn: 0.18, out: 0.1, edown: 0.5, aft: 0.06,
-                       curl: 0.24, petal: 0.032, lift: 0.004, turn: 0.7 };
+    const OPENHAND = { fwd: 0.28, down: 0.3, right: 0.05, fIn: 0.36, fUp: 0.27, nBack: 0.27, nIn: 0.18, out: 0.1, edown: 0.5, aft: 0.06,
+                       curl: 0.24, gaps: [5, 5, 11], petal: 0.032, lift: 0.004, turn: 0.7 };
     const _ohP = new THREE.Vector3(), _ohQ = new THREE.Quaternion(), _ohF = new THREE.Vector3(), _ohN = new THREE.Vector3(), _ohA = new THREE.Vector3(),
           _ohY = new THREE.Vector3(), _ohS = new THREE.Vector3(), _ohM = new THREE.Matrix4();
     /* (where the palm is held, for his eyes too: they look at where it is held, never chase it as it comes up) */
@@ -4906,7 +4927,9 @@
       const pt = [lp(lo[0], at[0], ke), lp(lo[1], at[1], ke), lp(lo[2], at[2], ke)];
       const f = [fx + lx * OPENHAND.fIn, OPENHAND.fUp, fz + lz * OPENHAND.fIn], n = [-fx * OPENHAND.nBack + lx * OPENHAND.nIn, 1, -fz * OPENHAND.nBack + lz * OPENHAND.nIn];
       handTo(P, 'R', pt, f, n, 1, { out: OPENHAND.out, down: OPENHAND.edown, aft: OPENHAND.aft });
-      curlFingers(P, 'R', OPENHAND.curl);
+      /* (the fingers' resting turns kept, brought together (closeFingers: the prayer pose closed them only part of the way,
+         a rake on an open palm: photographed), then curled) */
+      curlFingers(P, 'R', 0); closeFingers(P, 'R', OPENHAND.gaps); curlFingers(P, 'R', OPENHAND.curl);
       /* THE PETAL: one of the handful's own (the same picture, the same marigold, the same shading: a copy of the handfuls'
          drawing, so no new program is built on screen), lying on the middle of his palm, from the hand as it is drawn */
       if (!MYARMS.petal) { const im = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1), petalAirMat, 1); im.frustumCulled = false; im.count = 1;
@@ -7037,9 +7060,10 @@
          given nearly a phone's lens: at 50 it cut his brow at the top and his hands at the foot: photographed. And at 33
          and 30 his face from 1.3 m was brow to lip) */
       const [fP, fD] = lensAt(tc, [[0, 58, 46], [T.take + 3.3, 66, 64], [T.glow, 66, 64], [T.q3z1 + SECS['q3z1'], 60, 58], [T.give + 3.2, 60, 58], [T.ph3z2, 44, 40],
-                                   [T.ph3z2 + SECS['ph3z2'] + 0.9, 40, 36], [T.q3K1 + 3.5, 48, 44], [T.palm + 1.7, 46, 42], [T.black + 1.8, 40, 36]]);
+                                   [T.ph3z2 + SECS['ph3z2'] + 0.9, 40, 36], [T.q3K1 + 3.5, 48, 44], [T.palm + 1.5, 60, 50], [T.black + 1.8, 54, 45]]);
       /* (v26.12: no longer widened to the whole of it at the last: held on his open hand, and drawn in on it a little as the
-         line ends and the black comes) */
+         line ends and the black comes. Wide enough that a phone holds the whole hand: at 46 its fingers ran out of the
+         frame's side, photographed) */
       /* THE LIGHT */
       /* (v26.8: the close's breath is no longer played, but shown (docs/V26.8-E4C3-NOTES.md M): his own light comes up on
          him and his bai sri while his hands shake, the world opening a little round him, and lets go as he says he shut
@@ -7077,7 +7101,7 @@
       /* ONE PETAL LEFT ON HIS OPEN HAND (v26.12, his answer of 14 Nov, "Petal on his hand": c_zfx.js myOpenHand): his right
          hand comes up open before him with one of his teacher's petals on it as he says the teacher could guide him; the
          black comes down on it */
-      const kOpen = smo(sgk(tc, T.palm - 0.5, T.palm + 1.3));
+      const kOpen = smo(sgk(tc, T.palm - 0.6, T.palm + 1.0));
       myOpenHand(api || FL.api, eye, yF, kOpen);
       /* GRANDMASTER PHO: he speaks; both his hands on the bowl; a handful of petals; his hands on it again to take it */
       phoFace(); phoTalkFace();
@@ -7110,8 +7134,10 @@
       const kHold = bump(tc, T.glow - 0.4, T.give + 0.9, 1.6, 1.2);
       const pHold = aimOf(eye, [eye[0] + fx * HOLD.d, eye[1] - HOLD.y + HOLD.mid, eye[2] + fz * HOLD.d])[1];
       const ya = yawMix(yawMix(yF, yB, kB), yTb, kTb), pi = lp(lp(lp(lp(pWide, pFace, kFace) - kBow, pHold, kHold), pB, kB), pTb, kTb);
-      /* (v26.12: and down to his open hand, where it is held, for the line's last words and the black) */
-      const kPalm = smo(sgk(tc, T.palm - 0.1, T.palm + 1.7)), [yPm, pPm] = aimOf(eye, openHandAt(eye, yF));
+      /* (v26.12: and down to his open hand, where it is held, for the line's last words and the black. The hand is there
+         before his eyes come down to it, and they come down in 1.3 s: on the way his eyes pass over his teacher's lap, close,
+         and a slower look lingered on it, photographed) */
+      const kPalm = smo(sgk(tc, T.palm + 0.2, T.palm + 1.5)), [yPm, pPm] = aimOf(eye, openHandAt(eye, yF));
       eyes(eye, yawMix(ya, yPm, kPalm), lp(pi, pPm, kPalm), fP, fD);
     }
 

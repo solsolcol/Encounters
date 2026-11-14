@@ -789,6 +789,26 @@
         /* world' = turn * world, so local' = parentWorld^-1 * turn * parentWorld * local */
         F.b.quaternion.premultiply(_hq2).premultiply(_hq).premultiply(_hq2.invert()); }
     }
+    /* (v26.12) THE FINGERS BROUGHT TOGETHER, as a relaxed open hand holds them (his open hand at the close: the reference
+       picture's fingers "close together with small natural gaps"): each finger's knuckle turned about the palm's own facing
+       so that, seen on the palm, it lies `gaps[i]` degrees from the middle finger (the first finger, the ring, the little:
+       its side kept); the middle finger stays. Laid AFTER the fingers' resting turns are kept (curlFingers(P, sd, 0) first)
+       and before they are curled, so armsBack takes it off with the rest. The engine's prayer pose closes a fanned rig only
+       part of the way: seen edge on in a prayer it never shows; seen on an open palm, it was a hand spread like a rake */
+    const _cfM = new THREE.Vector3(), _cfS = new THREE.Vector3(), _cfN = new THREE.Vector3(), _cfP1 = new THREE.Vector3(), _cfP2 = new THREE.Vector3(), _cfQ = new THREE.Quaternion(), _cfQ2 = new THREE.Quaternion(), _cfC = new THREE.Vector3();
+    function closeFingers(P, sd, gaps) {
+      const As = P && P.ready ? armsOf(P) : null, a = As && As[sd]; if (!a || !a.fing || !a.curled) return;
+      const S0 = sd === 'L' ? 'Left' : 'Right', B = (f, i) => P.bone[S0 + 'Hand' + f + i] || P.bone['mixamorig:' + S0 + 'Hand' + f + i];
+      a.hand.updateWorldMatrix(true, true); a.hand.getWorldQuaternion(_cfQ); _cfN.copy(a.nL).applyQuaternion(_cfQ).normalize();
+      const seg = (f, out) => { const b1 = B(f, 1), b2 = B(f, 2); if (!b1 || !b2) return null; b1.getWorldPosition(_cfP1); b2.getWorldPosition(_cfP2);
+        out.subVectors(_cfP2, _cfP1); out.addScaledVector(_cfN, -out.dot(_cfN)); return out.lengthSq() > 1e-10 ? out.normalize() : null; };
+      if (!seg('Middle', _cfM)) return;
+      ['Index', 'Ring', 'Pinky'].forEach((f, k) => {
+        const b1 = B(f, 1); if (!b1 || !seg(f, _cfS)) return;
+        const th = Math.atan2(_cfN.dot(_cfC.crossVectors(_cfM, _cfS)), _cfS.dot(_cfM)), want = Math.sign(th || 1) * gaps[k] * Math.PI / 180;
+        _cfQ.setFromAxisAngle(_cfN, want - th); b1.parent.getWorldQuaternion(_cfQ2);
+        b1.quaternion.premultiply(_cfQ2).premultiply(_cfQ).premultiply(_cfQ2.invert()); b1.updateWorldMatrix(false, true); });
+    }
     /* (v26.11, NOGARB) a hand's resting turns, kept before a pose is laid on them: ONE list a hand and a caller (`key`),
        its turns copied in again each time (the same numbers a new list held: q copied from the bone as clone() made it;
        `i` the joint's own, or the one given), where a new list and a new turn for each joint were made every frame */

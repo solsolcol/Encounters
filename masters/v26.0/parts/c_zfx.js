@@ -326,10 +326,11 @@
        his middle. The left arm is shrunk away as the engine shrinks it in play: it is in no picture of this.
        OPENHAND: the palm's middle forward of his eye, below it, to his right; the fingers' way (in, up, against forward 1);
        the palm's facing (back toward him, in toward his middle, against up 1); the elbow's side (out, down, aft: the
-       upper arm hanging); the fingers' curl at each joint (radians); the petal's length, how far it lies off the palm and
+       upper arm hanging); the fingers' curl at each joint (radians); the fingers' gaps from the middle one, seen on the
+       palm (the first, the ring, the little: degrees); the petal's length, how far it lies off the palm and
        how far its length is turned from the fingers' line */
-    const OPENHAND = { fwd: 0.27, down: 0.32, right: 0.085, fIn: 0.36, fUp: 0.27, nBack: 0.27, nIn: 0.18, out: 0.1, edown: 0.5, aft: 0.06,
-                       curl: 0.24, petal: 0.032, lift: 0.004, turn: 0.7 };
+    const OPENHAND = { fwd: 0.28, down: 0.3, right: 0.05, fIn: 0.36, fUp: 0.27, nBack: 0.27, nIn: 0.18, out: 0.1, edown: 0.5, aft: 0.06,
+                       curl: 0.24, gaps: [5, 5, 11], petal: 0.032, lift: 0.004, turn: 0.7 };
     const _ohP = new THREE.Vector3(), _ohQ = new THREE.Quaternion(), _ohF = new THREE.Vector3(), _ohN = new THREE.Vector3(), _ohA = new THREE.Vector3(),
           _ohY = new THREE.Vector3(), _ohS = new THREE.Vector3(), _ohM = new THREE.Matrix4();
     /* (where the palm is held, for his eyes too: they look at where it is held, never chase it as it comes up) */
@@ -352,7 +353,9 @@
       const pt = [lp(lo[0], at[0], ke), lp(lo[1], at[1], ke), lp(lo[2], at[2], ke)];
       const f = [fx + lx * OPENHAND.fIn, OPENHAND.fUp, fz + lz * OPENHAND.fIn], n = [-fx * OPENHAND.nBack + lx * OPENHAND.nIn, 1, -fz * OPENHAND.nBack + lz * OPENHAND.nIn];
       handTo(P, 'R', pt, f, n, 1, { out: OPENHAND.out, down: OPENHAND.edown, aft: OPENHAND.aft });
-      curlFingers(P, 'R', OPENHAND.curl);
+      /* (the fingers' resting turns kept, brought together (closeFingers: the prayer pose closed them only part of the way,
+         a rake on an open palm: photographed), then curled) */
+      curlFingers(P, 'R', 0); closeFingers(P, 'R', OPENHAND.gaps); curlFingers(P, 'R', OPENHAND.curl);
       /* THE PETAL: one of the handful's own (the same picture, the same marigold, the same shading: a copy of the handfuls'
          drawing, so no new program is built on screen), lying on the middle of his palm, from the hand as it is drawn */
       if (!MYARMS.petal) { const im = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1), petalAirMat, 1); im.frustumCulled = false; im.count = 1;
