@@ -1,0 +1,104 @@
+[
+ {
+  "name": "x3chantb",
+  "secs": 4.5,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "An old Thai hermit softly murmuring a Buddhist blessing chant under his breath, close and gentle, a low steady monotone voice, the words indistinct and blurred, no music",
+  "where": "the festival film: the brown hermit's soft chant as his hands rest on the woman's bai sri (Chad, 14 Nov 2026: 'add a soft chanting voice to the brown lersi as he touches the bai sri, that the player cannot really hear')",
+  "flow": "QhNNjZhuufj9eTGXY7au",
+  "node": "Qj7xVY3sOEVxDJ7cADFu",
+  "generations": {
+   "a": "pqFMU7Zik4uPDhjOvP1G",
+   "b": "RxBA04zSHWeLEmf59jRy",
+   "c": "FIfoySbqzOuMuD8NtSjs",
+   "d": "7XuuznRqPmheNqnhpT9j"
+  }
+ },
+ {
+  "name": "x3chanty",
+  "secs": 7,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "An elderly man softly chanting a Pali blessing in a hushed murmur, slow and rhythmic, the words unclear, intimate and calm, no music",
+  "where": "the festival film: the hermit in the yellow shawl's soft chant as the man before him goes into trance (Chad, 14 Nov 2026: 'add a soft chanting sound to the lersi who is making him trance. Soft enough that the player cannot really hear what is being chanted')",
+  "flow": "QhNNjZhuufj9eTGXY7au",
+  "node": "A9egfY5HDdMf7L2TA6MJ",
+  "generations": {
+   "a": "yzKOZtIcjbtQBgeFuQu0",
+   "b": "RvjFhBV22TelxK9vTznz",
+   "c": "uDmZ0PdwQGDE0Mdex0N7",
+   "d": "p2AnfY1Qbt5yB1KtJWdZ"
+  }
+ },
+ {
+  "name": "x3cry",
+  "secs": 3,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A man in a religious trance cries out: a sharp gasp, then a long trembling rising cry with no words, overwhelmed and ecstatic, outdoors, no music",
+  "where": "the festival film: the man in trance cries out (Chad, 14 Nov 2026: 'can you maybe add a voiceline to the guy as he trances?')",
+  "flow": "QhNNjZhuufj9eTGXY7au",
+  "node": "3ln81dLFEbICzXqutE1J",
+  "generations": {
+   "a": "4P0pYRvXmvQkjDgX8jdW",
+   "b": "9aKBTm7WhdsISkWzLXEp",
+   "c": "KhXWUzJELaeEXfFuvCVh",
+   "d": "q9wQMHCrLci0EaniEoLj"
+  }
+ },
+ {
+  "name": "x3chantb2",
+  "secs": 5,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "An old man softly mumbling a blessing chant under his breath, slow rhythmic syllables in a low hushed voice, the words blurred and unclear, close and calm, no music",
+  "where": "the brown hermit's chant MADE AGAIN: x3chantb's two takes the transcriber heard nothing in (a, d) are one held tone with no syllable in it, a hum and not a chant (their spectrograms: flat lines for 4 s); its other two, b and c, the transcriber writes 'Aww' from. 'steady monotone' was dropped from the prompt for 'slow rhythmic syllables'",
+  "flow": "QhNNjZhuufj9eTGXY7au",
+  "node": "0Faq1PyphOUFirjkISzT",
+  "generations": {
+   "a": "tCiPCdstYBdYWv0qyEHM",
+   "b": "Y3U9LPZcQ41vAxgVKae2",
+   "c": "RDLfIWLEbZFtRYEUOaNu",
+   "d": "YXebBv1r5lKgb9sFM7eM"
+  }
+ },
+ {
+  "name": "x3close1",
+  "secs": 3,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A soft magical closing sound: a gentle shimmer of light folding inward and settling into a warm soft hum that fades to silence, calm and sacred, airy mid and high frequencies, no deep rumble, no voices, no music",
+  "where": "ending D, his opening closed (Chad, 14 Nov 2026: 'the closing sound effect of option D, when grandmaster pho closes the player's ability, that sound effect is very strange. Please generate a proper sound effect'): the lotus of light folding shut",
+  "flow": "QhNNjZhuufj9eTGXY7au",
+  "node": "fCyPYUibYQCe3oqF7Kcb",
+  "generations": {
+   "a": "puNOzSHPgY9azqPch5lr",
+   "b": "z7EwnY4bJaHw5XsXjxQ3",
+   "c": "13zrczcoxhgrHIQKACMH",
+   "d": "23KpeQK3FnzJTglPXXkk"
+  }
+ },
+ {
+  "name": "x3close2",
+  "secs": 3,
+  "loop": false,
+  "takes": 4,
+  "influence": 0.5,
+  "prompt": "A calm spiritual sound of a door of light closing: a soft inward whoosh, a gentle muffled bell tone, then a peaceful hush, mid and high frequencies, no deep rumble, no voices, no music",
+  "where": "ending D, the same moment, the other way to say it: a door of light closing",
+  "flow": "QhNNjZhuufj9eTGXY7au",
+  "node": "YHiCJBDBeyzQ02bm3YD3",
+  "generations": {
+   "a": "eZvFtkBnZDaF8rN4Q1p3",
+   "b": "wPyC4gNo4UvtXj1MmZ61",
+   "c": "5BUkOBNGd3cqBIo3vHds",
+   "d": "Qa8hKoLMY79DAGlrSHuh"
+  }
+ }
+]

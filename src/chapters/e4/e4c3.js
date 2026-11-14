@@ -156,7 +156,7 @@
 
   /* THE FILM OF THE FESTIVAL (§4.1 P3): the dance; the cut to the masters, and those who go up; the lens along the
      masters to the one in white */
-  const FEST = tl(0, [['@dance'], [3.2], ['tn3d1', 1.07], ['q3m0', 1.4], ['@cut'], [1.2], ['@masters'], [1.8], ['q3m1', 2.4],
+  const FEST = tl(0, [['@dance'], [3.2], ['tn3d1', 1.07], ['q3m0', 1.4], ['@cut'], [1.2], ['@masters'], [1.8], ['q3m1', 3.4],
                       ['@sweep'], [4.2], ['q3w1', 0.64], ['q3w2', 0.6], ['q3w3', 0.3], ['@black'], [1.2]]);
   /* (the moments inside it that the pictures and the cues both read. The cut to the man whose arms rise lands on the
      second half of the line said over it, "and some of them went somewhere I could not follow": HALF is where that
@@ -168,7 +168,11 @@
     T.low = T.man + 0.4;                      // she sets her bai sri down (behind the cut)
     T.pho = T.q3w2 - 0.12;                    // the cut in to the man in white
     T.cheer = T.q3w2 + 1.3;                   // his own handful, over those who kneel to him (photograph 1)
-    T.throw2 = T.cheer + 1.3; }
+    T.throw2 = T.cheer + 1.3;
+    /* (v26.12, Chad, 14 Nov 2026: "can you maybe add a voiceline to the guy as he trances?": he cries out in the pause
+       after the line said over him, a gasp and then a long cry with no word in it. The pause is 3.4 s where it was 2.4,
+       so the cry ends in his own shot and not over the cut to the masters) */
+    T.cry = T.q3m1 + SECS['q3m1'] + 0.35; }
 
   /* THE NIGHT BETWEEN (§4.2): five pictures and no word until the last. The group's photograph in the afternoon, his
      bai sri still in his hands; the banners against a red evening; the offering tables by their own candles; his bai
@@ -200,9 +204,16 @@
               ['@edge'], [1.7], ['q3B3', 1.2], ['@dusk'], [3.6], ['@back'], [1.3], ['q3B4', 0.9], ['ph3B4', 1.1], ['q3B5', 1.3], ['@close']]),
     C: tl(0, [[0.9], ['q3C0', 0.9], ['ph3C1', 0.8], ['ph3C2', 0.5], ['@turn'], [3.2], ['q3C1', 1.1], ['@backto'], [1.5], ['ph3C3', 1.0],
               ['q3C2', 0.5], ['@bow'], [3.0], ['q3C3', 1.0], ['q3C4', 1.3], ['@close']]),
-    D: tl(0, [[0.9], ['q3D0', 0.9], ['ph3D1', 0.8], ['ph3D2', 1.0], ['ph3D3', 0.5], ['@shut'], [2.8], ['q3D1', 1.5], ['@sit'], [3.4],
+    D: tl(0, [[0.9], ['q3D0', 0.9], ['ph3D1', 0.8], ['ph3D2', 1.0], ['ph3D3', 0.5], ['@shut'], [4.4], ['q3D1', 1.5], ['@sit'], [3.4],
               ['@chant'], [3.4], ['q3D2', 1.2], ['q3D3', 1.2], ['@back'], [1.4], ['q3D4', 0.9], ['ph3D4', 1.1], ['q3D5', 1.3], ['@close']])
   };
+  /* ENDING D'S CLOSING, SEEN (v26.12, Chad, 14 Nov 2026: "the closing sound effect of option D, when grandmaster pho closes
+     the player's ability, that sound effect is very strange. Please generate a proper sound effect, and have a visual
+     effect to go along with it, so the player know what happened"): in seconds from the ending's `shut`, his eyes close
+     (eyes); in the dark, the lotus of his first teaching, open and lit (show); it folds shut (fold), and on the shut the
+     world's sound closes and its look changes, under the dark; the last of its light goes out in a ring (ring, gone);
+     his eyes open on the plain world (wake). The pause after "stay" is 4.4 s where it was 2.8 */
+  const SHUTV = { eyes: [0.2, 0.8], show: [0.6, 1.1], fold: [1.2, 2.3], ring: [2.3, 2.9], gone: [2.35, 2.95], wake: [3.2, 4.2] };
   /* THE CLOSE (§4.6), on its own clock from each ending's `close`: he takes his bai sri up and raises it; his teacher's
      two lines; both the old man's hands laid on it; a handful of petals; HIS OWN LIGHT, his hands shaking and in hand
      (v26.8: the breath once played here is shown instead); his line; the bai sri taken from him and set on the table;
@@ -1809,7 +1820,10 @@
        crosses its own width in about twelve minutes; watched for ten seconds, one degree: a cloud on the move, not one
        sliding). The sun, its glare and rays, the sky's gradient and the ring of trees stand still. On the wind's clock,
        wall time, as the leaves and the rays are (a film cut never moves them) */
-    const DRIFT = 0.1 * Math.PI / 180;
+    /* (v26.12, Chad, 14 Nov 2026: "the clouds move too slowly": three tenths of a degree a second, three times what it was. A
+       bank crosses its own width in about four minutes; watched for ten seconds, three degrees, about thirty pixels of a
+       phone held upright: a drift that is seen, where the tenth was a pixel a second and read as still) */
+    const DRIFT = 0.3 * Math.PI / 180;
     /* the sun's own rays: thin streaks of light out from its core, of seeded lengths and strengths, each soft along its
        length and across it (a picture drawn once; it turns very slowly, so the streaks are never quite still) */
     function makeSunBurst() {
@@ -1833,9 +1847,32 @@
       x.putImageData(img, 0, 0);
       return tex(done(THREE, c, false));
     }
+    /* THE CLOUDS' PICTURES, DECODED AS THEY ARE (v26.12, Chad, 14 Nov 2026: "the clouds still have very distinct dark edges
+       that look weird"). Measured on a phone's picture of the game: across a cloud's outline the light fell to 128-132,
+       where the sky beside it stands at 156 and the cloud at 180-200; the same picture laid over that sky's colour by hand
+       has no such band (masters/v26.12/make.sh §5). The engine decodes a picture with the browser's default
+       (createImageBitmap(blob)), which in Chrome multiplies each pixel's colour by its alpha; a texture made from a bitmap
+       is uploaded as it is (WebGL ignores its unpack flags for one), and the material multiplies by the alpha again, so a
+       rim pixel at alpha 0.42 was drawn at 0.42 x 0.42 of its colour (predicted 125). Here the clouds are decoded with
+       their colour left as it is ('none'), as the material expects. The engine's loader is left alone: it draws every
+       chapter's pictures, and a change there is put to Chad, not made in passing (v19.2) */
+    const skyTex = new Map();
+    function skyLoad(key) {
+      const name = 'w3t_' + key;
+      if (!skyTex.has(key)) {
+        if (!have(name)) { waiting.add(name); skyTex.set(key, Promise.resolve(null)); }
+        else skyTex.set(key, assetBytes(name, true)
+          .then(bytes => createImageBitmap(new Blob([bytes], { type: SURF[key][1] }), { premultiplyAlpha: 'none' }))
+          .then(bmp => { const t = new THREE.Texture(bmp); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; t.needsUpdate = true;
+            if (alive) madeTex.push(t); return alive ? t : null; })
+          .catch((err) => { console.warn('a cloud picture did not load', name, err); return null; }));
+      }
+      return skyTex.get(key);
+    }
     function buildSky() {
       skyFx.g.name = 'v26.1 sky'; world.add(skyFx.g); owned.push(skyFx.g); skyFx.drift.name = 'v26.8 drifting clouds'; skyFx.g.add(skyFx.drift);
       const d2r = Math.PI / 180, sunAz = Math.atan2(17, -10);                   // (DAY1's key, east-south-east: which side a card is lit from)
+      skyFx.sunAz = sunAz;
       for (const C of SKY_CARDS) {
         const az = C.az * d2r, w = 2 * SKY_R * Math.tan(C.w * d2r / 2), h = w * C.hw;
         const m = B({ color: 0xffffff, transparent: true, depthWrite: false, fog: false, opacity: 0 });
@@ -1843,10 +1880,10 @@
         mesh.position.set(Math.sin(az) * SKY_R, 1.6 + Math.tan(C.el * d2r) * SKY_R, -Math.cos(az) * SKY_R);
         mesh.lookAt(0, mesh.position.y, 0); mesh.renderOrder = -4; mesh.frustumCulled = false; skyFx.drift.add(mesh);
         /* (lit from its upper right in its picture: turned round where the sun is to the left of it as it is looked at) */
-        const flip = Math.sin(sunAz - az) < 0;
-        surfLoad(C.key).then(t0 => { if (!t0 || !alive) return; const t = t0.clone(); t.needsUpdate = true; madeTex.push(t);
-          t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; t.repeat.set(flip ? -1 : 1, -1); t.offset.set(flip ? 1 : 0, 1); m.map = t; m.needsUpdate = true; C.ready = true; });
-        skyFx.cards.push({ mesh, m, C });
+        const card = { mesh, m, C, az, flip: Math.sin(sunAz - az) < 0, r: 0.5 * Math.hypot(w, h) };
+        skyLoad(C.key).then(t0 => { if (!t0 || !alive) return; const t = t0.clone(); t.needsUpdate = true; madeTex.push(t);
+          t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; t.repeat.set(card.flip ? -1 : 1, -1); t.offset.set(card.flip ? 1 : 0, 1); m.map = t; m.needsUpdate = true; C.ready = true; });
+        skyFx.cards.push(card);
       }
       const glow = tex(makeGlow(THREE, cnv));
       const sm = (s) => { const m = new THREE.SpriteMaterial({ map: glow, color: 0xffffff, transparent: true, depthWrite: false, fog: false, blending: THREE.AdditiveBlending, opacity: 0 }); mats.push(m);
@@ -1865,6 +1902,7 @@
       }
     }
     const _skC = new THREE.Vector3(), _skX = new THREE.Vector3(), _skV = new THREE.Vector3(), _skZ = new THREE.Vector3(), _skM = new THREE.Matrix4();
+    const _cdF = new THREE.Frustum(), _cdPV = new THREE.Matrix4(), _cdS = new THREE.Sphere();
     /* every frame, in play and in a film (d_play.js updateNotes): where the sky stands, the hour's colours when the hour
        changes, and the rays turned to the lens */
     function skyTick(t) {
@@ -1882,6 +1920,18 @@
       }
       if (skyFx.burst.visible) skyFx.burst.material.rotation = t * 0.012;
       skyFx.drift.rotation.y = -t * DRIFT;
+      /* (v26.12: drifting three times as fast, a card crosses the sun's side in minutes, and one lit from the far side is a
+         cloud lit from where no sun is. It is turned round again only while the lens cannot see it, as any change in the
+         world is made (v24.12); one not yet loaded takes the side it will be drawn on) */
+      _cdF.setFromProjectionMatrix(_cdPV.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
+      for (const c of skyFx.cards) {
+        const want = Math.sin(skyFx.sunAz - (c.az + t * DRIFT)) < 0;
+        if (want === c.flip) continue;
+        if (!c.m.map) { c.flip = want; continue; }
+        c.mesh.getWorldPosition(_cdS.center); _cdS.radius = c.r;
+        if (_cdF.intersectsSphere(_cdS)) continue;
+        c.flip = want; c.m.map.repeat.x = want ? -1 : 1; c.m.map.offset.x = want ? 1 : 0;
+      }
       if (!(L && L.rays > 0 && skyFx.dir.y > 0.12)) return;
       camera.getWorldPosition(_skC);
       const d = skyFx.dir;
@@ -4753,6 +4803,99 @@
         G.edge.material.opacity = 0.7 * k * br;
       }
     }
+    /* ---- ENDING D: HIS OPENING CLOSED, SEEN (v26.12, Chad, 14 Nov 2026: "the closing sound effect of option D, when
+       grandmaster pho closes the player's ability, that sound effect is very strange. Please generate a proper sound
+       effect, and have a visual effect to go along with it, so the player know what happened"). His eyes close on "stay";
+       in the dark is the lotus of his first teaching, the breath's own picture (shell.html, #evBreath.lotus: its eight
+       petals, their colours, their fan and their heart of light, drawn here number for number), open and lit; it folds
+       shut, and the world's sound closes with it; the last of its light goes out in a ring; his eyes open on the plain
+       world. The dark is a sheet before the film's own lens, as his light in the close is (youGlow): the film's fade is
+       drawn over the whole picture, the lotus too. (The rule that a colour over the whole screen is the film's fade is for
+       a colour: the vignette greys a white card at its sides, and his hands' pass is drawn over the world. Neither holds
+       here: under the vignette a black sheet is black, and no hand of his is drawn in this shot.) `shutVisionAt(u)`: u
+       the seconds from the ending's `shut` (SHUTV); before it or past the waking nothing is drawn */
+    const shutVision = (() => {
+      const blk = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), B({ color: 0x000000, transparent: true, opacity: 0, depthTest: false, depthWrite: false, fog: false, toneMapped: false }));
+      blk.renderOrder = 1000; blk.frustumCulled = false; blk.visible = false; world.add(blk); owned.push(blk);
+      const [svC, svX] = cnv(512), svT = tex(new THREE.CanvasTexture(svC)); svT.colorSpace = THREE.SRGBColorSpace;
+      const lot = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), B({ map: svT, transparent: true, depthTest: false, depthWrite: false, fog: false, toneMapped: false }));
+      lot.renderOrder = 1001; lot.frustumCulled = false; lot.visible = false; world.add(lot); owned.push(lot);
+      return { blk, lot, svX, svT, drawn: '' };
+    })();
+    /* (one petal as the breath's CSS draws it, 32 x 66 px, its foot at the origin: border-radius 50% 50% 46% 46% / 64% 64%
+       36% 36%, an egg, its top two quarter ellipses drawn as the curves that make them. pt, 0 to 1, draws its top up to a
+       POINT, as a bud's petals close: the egg stacked eight deep read as a pink pill, photographed) */
+    function petalPath(x, pt) {
+      const ty = -66 - 8 * pt, c1y = -23.76 - 0.5523 * 42.24, c2x = 8.84 - 5.34 * pt, c2y = -66 + 14 * pt;
+      x.beginPath();
+      x.moveTo(-16, -23.76);
+      x.bezierCurveTo(-16, c1y, -c2x, c2y, 0, ty);
+      x.bezierCurveTo(c2x, c2y, 16, c1y, 16, -23.76);
+      x.ellipse(1.28, -23.76, 14.72, 23.76, 0, 0, Math.PI * 0.5);
+      x.ellipse(-1.28, -23.76, 14.72, 23.76, 0, Math.PI * 0.5, Math.PI);
+      x.closePath();
+    }
+    /* (the lotus at k open, 1 wide and 0 the breath's own closed fan, drawn at a (its fade); b how far that fan has drawn in
+       to a BUD, its petals laid one on another to a point (the breath's closed fan, its eight tips in a row, read as a tooth:
+       photographed); its heart of light, 156 px, scaled .3 + .8k and lit .3 + .7k as the breath's is; a ring of soft light r
+       of the way out, at light g. In the canvas's 512 pixels, the picture's 256 about its middle, as the breath's own
+       pixels doubled) */
+    function lotusPaint(k, a, r, g, b) {
+      const S = shutVision, x = S.svX, key = [k, a, r, g, b].map((v) => v.toFixed(3)).join(',');
+      if (key === S.drawn) return; S.drawn = key;
+      x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, 512, 512); x.setTransform(2, 0, 0, 2, 256, 256);
+      if (a > 0.002) {
+        const sc = 0.3 + 0.8 * k, lit = (0.3 + 0.7 * k) * a, R = 110.3 * sc, hg = x.createRadialGradient(0, 0, 0, 0, 0, R);
+        hg.addColorStop(0, `rgba(255,252,236,${(0.96 * lit).toFixed(3)})`); hg.addColorStop(0.16, `rgba(255,252,236,${(0.96 * lit).toFixed(3)})`);
+        hg.addColorStop(0.38, `rgba(255,240,206,${(0.5 * lit).toFixed(3)})`); hg.addColorStop(0.68, 'rgba(255,240,206,0)'); hg.addColorStop(1, 'rgba(255,240,206,0)');
+        x.fillStyle = hg; x.beginPath(); x.arc(0, 0, 78 * sc, 0, Math.PI * 2); x.fill();
+        /* (as it buds, each petal turns about a point that climbs from its foot to its tip, so the eight tips meet in one
+           point and their feet open a little below it: a bud's petals wrapped round it. Turned about their feet to the
+           last, their points fanned into a jagged crown: drawn in the lab and refused) */
+        const s2 = 0.7 + 0.3 * k, fan = (7 + 38 * k) * (1 - 0.55 * b) * Math.PI / 180, pt = b * b, py = b * (-66 - 8 * pt);
+        for (let i = 0; i < 8; i++) {
+          x.save(); x.globalAlpha = a; x.translate(0, 14 + py * s2); x.rotate((i - 3.5) * fan); x.scale(s2, s2); x.translate(0, -py);
+          petalPath(x, pt);
+          const pg = x.createLinearGradient(0, -66, 0, 0); pg.addColorStop(0, '#FFF6F8'); pg.addColorStop(0.52, '#F7CFDB'); pg.addColorStop(1, '#E8A0B8');
+          x.shadowColor = 'rgba(255,226,236,0.5)'; x.shadowBlur = 18 * s2; x.fillStyle = pg; x.fill();
+          x.shadowBlur = 0; x.shadowColor = 'rgba(0,0,0,0)'; x.clip();
+          const ig = x.createLinearGradient(0, -20, 0, 0); ig.addColorStop(0, 'rgba(214,120,150,0)'); ig.addColorStop(1, 'rgba(214,120,150,0.35)');
+          x.fillStyle = ig; x.fillRect(-16, -66, 32, 66);
+          x.restore();
+        }
+      }
+      if (g > 0.002) {
+        /* (a band of soft light, not a drawn line: the first, a stroke 2.4 px wide, read as a circle drawn on the dark) */
+        const R = 14 + 104 * r, wd = 9 + 14 * r, rg = x.createRadialGradient(0, -6, Math.max(0, R - wd), 0, -6, R + wd);
+        rg.addColorStop(0, 'rgba(255,248,232,0)'); rg.addColorStop(0.5, `rgba(255,248,232,${(0.42 * g).toFixed(3)})`); rg.addColorStop(1, 'rgba(255,248,232,0)');
+        x.fillStyle = rg; x.beginPath(); x.arc(0, -6, R + wd, 0, Math.PI * 2); x.fill();
+      }
+      S.svT.needsUpdate = true;
+    }
+    function shutVisionAt(u) {
+      const S = shutVision, V = SHUTV;
+      const kE = u < 0 ? 0 : smo(sgk(u, V.eyes[0], V.eyes[1])) * (1 - smo(sgk(u, V.wake[0], V.wake[1])));
+      if (kE <= 0.001) {
+        S.blk.visible = false; S.lot.visible = false;
+        for (const m of [S.blk, S.lot]) if (m.parent !== world) world.add(m);
+        return;
+      }
+      for (const m of [S.blk, S.lot]) if (m.parent !== camera) camera.add(m);
+      const view = (d) => { const h = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * d; return [h * camera.aspect, h]; };
+      const [bw, bh] = view(0.1);
+      S.blk.position.set(0, 0, -0.1); S.blk.quaternion.identity(); S.blk.scale.set(bw * 1.1, bh * 1.1, 1); S.blk.material.opacity = kE; S.blk.visible = true;
+      /* (open and lit as it comes; a breath of movement while it stands open; then it folds; its light goes out in a ring) */
+      const a = smo(sgk(u, V.show[0], V.show[1])) * (1 - smo(sgk(u, V.gone[0], V.gone[1])));
+      const kf = smo(sgk(u, V.fold[0], V.fold[1])), k = (1 - kf) * (1 - 0.035 * (0.5 - 0.5 * Math.cos(u * 2 * Math.PI / 1.6)) * (1 - smo(sgk(u, V.fold[0] - 0.2, V.fold[0]))));
+      const r = sgk(u, V.ring[0], V.ring[1]), g = smo(sgk(u, V.ring[0] - 0.02, V.ring[0] + 0.08)) * (1 - smo(sgk(u, V.ring[0] + 0.08, V.ring[1])));
+      const b = smo(sgk(u, V.fold[1] - 0.45, V.fold[1]));
+      if (a <= 0.001 && g <= 0.001) { S.lot.visible = false; return; }
+      lotusPaint(k, a, r, g, b);
+      /* (its size: the breath's 256 px picture over nine tenths of the screen's shorter side, so the open lotus stands
+         about 45 % of it, on a phone held upright and on a desktop alike: at three quarters, 35 % of a phone's width) */
+      const [lw, lh] = view(0.099), side = 0.9 * Math.min(lw, lh);
+      S.lot.position.set(0, 0, -0.099); S.lot.quaternion.identity(); S.lot.scale.set(side, side, 1); S.lot.visible = true;
+    }
     /* ---- HIS OWN HANDS ON HIS BAI SRI IN THE CLOSE (v26.8, row M). Chad, 13 Nov 2026, of the close: "just show the player
        hands vibrating while a glow surronding him and his hands and his bai sri. all around his silohuette, to show that the
        player is now in control while vibrating." v26.8 drew the bai sri shaking and the light, and not his hands: they were
@@ -6997,7 +7140,7 @@
       castSolid();
     }
     function endTidy() {
-      handsFilm(0); handStill(0); filmChill(0); filmBai(false); filmCarry(handMat, handMatHolder, false); youGlowAt(0, 0, null, null);
+      handsFilm(0); handStill(0); filmChill(0); filmBai(false); filmCarry(handMat, handMatHolder, false); youGlowAt(0, 0, null, null); shutVisionAt(-1);
       myArmsAt(null, null, 0, null, 0, 0, 0); myOpenHand(null, null, 0, 0);
       for (const P of cast.wait) if (P.ready) P.group.visible = false;
       for (const b of waitBai) b.visible = false;
@@ -7306,13 +7449,14 @@
       begin(api) { if (api.handsRoot) api.handsRoot.visible = false; FL.wai = false; FL.bai = false; endStage(); },
       frame(t, api) {
         const T = ENDT.D, Ph = cast.pho;
+        shutVisionAt(t - T.shut);                                                  // (v26.12: his opening closed, seen: SHUTV)
         if (t >= T.close) { closeFrame(t - T.close, 'D', api); return; }
         pose(cast.aunt, 'Idle_3', 2 + t, true);
         if (t < T.sit) {
           /* (his eyes close on "stay", and open on a plain world: the look changes behind them) */
-          if (t >= T.shut + 1.15 && FL.shot !== 'd2') { FL.shot = 'd2'; lit('SHUT', 'two'); paintShade('DAWN'); mistK = 0; if (kit && kit.hush) kit.hush(0.85, { secs: 0.8 }); }
+          if (t >= T.shut + SHUTV.fold[1] && FL.shot !== 'd2') { FL.shot = 'd2'; lit('SHUT', 'two'); paintShade('DAWN'); mistK = 0; if (kit && kit.hush) kit.hush(0.85, { secs: 0.8 }); }
           phoFace(); phoTalkFace(); const kTalk = speaks(Ph, t, T, ['ph3D1', 'ph3D2', 'ph3D3']); lookNow(Ph, 'lens', 1, 0.5, 0);
-          const [fP, fD] = lensAt(t, [[0, 44, 33], [T.q3D0 + SECS['q3D0'], 36, 27], [T.ph3D2 + SECS['ph3D2'], 28, 20], [T.shut, 25, 18], [T.shut + 1.15, 25, 18], [T.shut + 1.2, 48, 36], [T.sit, 44, 33]]);
+          const [fP, fD] = lensAt(t, [[0, 44, 33], [T.q3D0 + SECS['q3D0'], 36, 27], [T.ph3D2 + SECS['ph3D2'], 28, 20], [T.shut, 25, 18], [T.shut + SHUTV.fold[1] - 0.05, 25, 18], [T.shut + SHUTV.fold[1], 48, 36], [T.sit, 44, 33]]);
           const [yF, pT] = toPho(EK, fP, fD, kTalk); eyes(EK, yF, pT, fP, fD);
         } else if (t < T.back) {
           if (FL.shot !== 'd3') { FL.shot = 'd3'; myBai.visible = false; if (cast.ton.ready) cast.ton.group.visible = false; castSolid(); }   // (Ton is clearing the ground: where the morning stood him, his back filled the far look at the bench: photographed)
@@ -7359,7 +7503,8 @@
         const T = ENDT[key]; birds = 0.5;
         if (key === 'B') { birds = (0.5 + 0.6 * bump(t, T.silence, T.edge - 0.4, 0.6, 0.5)) * (1 - smo(sgk(t, T.edge - 0.5, T.edge + 0.1)));   // the long silence is held by the birds; the afternoon has its own bed (a cue)
           crick = smo(sgk(t, T.dusk, T.dusk + 1.0)); }                                    // dusk, and on through the close
-        if (key === 'D') birds = 0.5 * (1 - smo(sgk(t, T.shut + 0.3, T.shut + 1.2))) + 0.25 * smo(sgk(t, T.back, T.back + 1.5));   // the world closes; he comes back to a quieter morning
+        if (key === 'D') { birds = 0.5 * (1 - smo(sgk(t, T.shut + SHUTV.show[0], T.shut + SHUTV.fold[1]))) + 0.25 * smo(sgk(t, T.back, T.back + 1.5));   // the world closes; he comes back to a quieter morning
+          open = 0.7 * bump(t, T.shut + SHUTV.show[0], T.shut + SHUTV.fold[1] - 0.3, 0.5, 0.8); }                      // (v26.12: the world heard open, as the lotus was in his first teaching, while it stands open in the dark)
         if (t >= T.close) { const tc = t - T.close; open = 0.6 * bump(tc, CLOSE.glow + 0.2, CLOSE.q3z1 + 2.0, 1.4, 1.6); }   // his own light in the close: the world heard a little open while it is on him
       }
       filmBed.on = true; filmBed.fest = BED.fest * fest; filmBed.mus = BED.mus * mus; filmBed.birds = BED.birds * birds; filmBed.crick = BED.crick * crick;
@@ -7968,8 +8113,10 @@
       sfx(T.ph3D1, 'ph3D1', 1);                // "You are tired of it. I understand."
       sfx(T.ph3D2, 'ph3D2', 1);                // "I can teach you to close. I cannot take the door away."
       sfx(T.ph3D3, 'ph3D3', 1);                // "Close. And this time, stay."
-      fade(T.shut + 0.2, T.shut + 0.8, 0, 1); fade(T.shut + 0.8, T.shut + 1.5, 1, 1); fade(T.shut + 1.5, T.shut + 2.6, 1, 0);   // his eyes close, and open on a plain world
-      sfx(T.shut + 0.7, 'x3shut', 0.5);        // the world's sound closing down: one soft falling tone, and the flat room of his own head
+      /* (his eyes close, and open on a plain world. v26.12: the dark is the stage's own, a sheet before the lens (SHUTV,
+         c_zfx.js shutVisionAt), because the film's fade is drawn over the whole picture and would hide the lotus seen in it;
+         the falling tone that was here, x3shut, is retired: Chad, "that sound effect is very strange") */
+      sfx(T.shut + SHUTV.fold[1] - 0.35, 'x3fold', 0.5);   // the lotus folds shut: a soft shimmer that gathers in (its crest 0.35 s in, on the shut) and settles
       sfx(T.q3D1, 'q3D1', 1);                  // "For the first time in years, it was quiet."
       fade(T.sit - 0.4, T.sit, 0, 1); fade(T.sit, T.sit + 0.15, 1, 1); fade(T.sit + 0.15, T.sit + 0.9, 1, 0);
       sfx(T.sit - 0.5, 'x3sweep', 0.6);        // the ground cleared round him: a broom, mats, far voices, all of it flat (it leads the black by half a second: his line is left one second of true quiet, never more: a longer bare stretch reads as a fault, v21.30)
@@ -8103,7 +8250,16 @@
     fade(T.cut, T.cut + 0.45, 0, 1); fade(T.cut + 0.45, T.cut + 0.8, 1, 1); fade(T.cut + 0.8, T.masters + 0.1, 1, 0);
     sfxFade(T.cut - 0.6, T.cut + 0.7, 'x3dancemus');
     /* (the festival's own music again, and the ground's noise: the beds, filmBeds) */
+    /* (v26.12, Chad, 14 Nov 2026: "add a soft chanting voice to the brown lersi as he touches the bai sri, that the player
+       cannot really hear", and "add a soft chanting sound to the lersi who is making him trance. Soft enough that the
+       player cannot really hear what is being chanted": each hermit murmurs while his hands work, a murmur with no word
+       a transcriber can hear, under the ground's music and crowd, and under the line through the voice's duck) */
+    sfx(T.masters + 0.45, 'x3chantb', 0.32);    // the hermit in brown, as his hands come onto her bai sri
+    sfxFade(T.pet - 0.2, T.pet + 0.45, 'x3chantb');   //   and gone as they leave it for the petals
     sfx(T.q3m1, 'q3m1', 1);                    // "One by one they went up with their bai sri..."
+    sfx(T.man + 0.05, 'x3chanty', 0.32);        // the hermit in the yellow shawl, his hand held out over the man
+    sfxFade(T.sweep - 0.8, T.sweep + 0.1, 'x3chanty');
+    sfx(T.cry, 'x3cry', 0.55);                 // the man in trance cries out: a gasp, then a long cry (wordless)
     sfx(T.throw, 'x3petals', 0.4);             // the hermit's handful, falling on her
     sfx(T.man + 1.0, 'x3trance', 0.45);        // the man whose arms rise: a low voiced breath (wordless)
     sfx(T.pho - 0.05, 'x3tone', 0.32);          // the man in white: one held tone and a bell, on the cut to him

@@ -9099,6 +9099,41 @@ What the baseline contains, by release:
   7 degrees apart already. Deploys `6af851597a7e2fb55bd32426` and, with the version under Credits, `6af852891f22844fc56b4dda`
   (494 files byte for byte). The full debug's last round (every ending with the sound on, Continue, a replay, a desktop,
   every film's camera as a move) runs on this build next, as he asked: last.
+- **v26.13 · 14 Nov 2026 · episode 4 chapter 3: the two hermits murmur and the man in trance cries out; ending D's
+  closing given a sound and a picture; the clouds' dark edges and their drift.** His four messages after v26.12, verbatim
+  (docs/V26.12-WHAT-IS-LEFT.md §6): "the audience guy who trances when passing bai sri in the cutscene, can you maybe add
+  a voiceline to the guy as he trances? also add a soft chanting sound to the lersi who is making him trance. Soft enough
+  that the player cannot really hear what is being chanted."; "the lady who passes the bai sri to the brown lersi, also
+  add a soft chanting voice to the brown lersi as he touches the bai sri, that the player cannot really hear"; "the
+  clouds still have very distinct dark edges that look weird, and the clouds move too slowly"; "also the closing sound
+  effect of option D, when grandmaster pho closes the player's ability, that sound effect is very strange. Please
+  generate a proper sound effect, and have a visual effect to go along with it, so the player know what happened".
+  Built: (1) THE FESTIVAL FILM: the brown hermit murmurs while his hands rest on the woman's bai sri, the hermit in the
+  yellow shawl while his hand is held over the man, both soft (their loudest at -24 dBFS under the ground's music and
+  crowd at -25, and under the line said over them the duck takes them 8 dB more), wordless to a transcriber; the man
+  cries out, a gasp and a long cry with no word in it, in the pause after the line over him (3.4 s where it was 2.4, so
+  the cry ends in his own shot). Twenty takes generated and measured (sfx3.json, measures-sfx3.json, each spectrogram
+  read): the first "chant" takes a transcriber passed were a single held tone, a hum, and were made again with "slow
+  rhythmic syllables"; takes the transcriber wrote words from were refused ("Aww", "I will be with you, and you will be
+  with me.", "NOOOOO", "AHHHH"). (2) ENDING D: his eyes close on "stay"; in the dark, the lotus of his first teaching
+  (the breath's own picture, drawn number for number), open and lit with the world heard open under it; it folds shut to
+  a bud and the new sound gathers in and settles on the shut; the world's sound closes; its last light goes out in a ring;
+  his eyes open on the plain world (c_zfx.js shutVisionAt, a_head.js SHUTV; the pause after "stay" 4.4 s where it was
+  2.8). The sound: of eight takes, the four of "a door of light closing" were all under 150 Hz (nothing on a phone), the
+  four of "a shimmer of light folding inward" all over it; the one that rises to its crest before settling was picked
+  (x3fold). x3shut, the falling tone, retired. The first photographs of the lotus found its closed fan reading as a tooth
+  and its ring as a drawn line: it now closes to a point and the ring is a band of soft light, and it stands a little
+  larger on a phone (45 % of the screen's shorter side). (3) THE CLOUDS: measured across a cloud's outline in the game, the
+  light fell 30 under the sky; the same picture composited by hand over the same sky had no band. The engine's loader
+  decodes with the browser's default, which in Chrome multiplies colour by alpha, and the material multiplies again:
+  the chapter now decodes its clouds with their colour as it is (b_world3.js skyLoad). Proved on the same view: the
+  darkest point just outside the cloud, below the sky, median 29.6 before and 1.0 after. The engine's loader is left as
+  it is and listed for him (it would lighten every soft edge in the game: docs/OPEN-ITEMS.md C13 aa). The drift three
+  times as fast (0.3 degree a second), each cloud turned to be lit from the sun's side again only while the lens cannot
+  see it. Every candidate of the four new sounds is in loudness-matched previews for his ear (masters/v26.12/previews);
+  the picks stand until he hears them (C13 z). Recipes: masters/v26.12/make.sh §3 to §5. On the way: the working disk
+  filled during a build (the half-written release zip and my own old probe pictures cleared; none of his files); a new
+  name clashed with one in another part of the chapter, which the build's syntax check caught.
 
 ## The sheet, version by version
 

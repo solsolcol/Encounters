@@ -202,8 +202,10 @@
       sfx(T.ph3D1, 'ph3D1', 1);                // "You are tired of it. I understand."
       sfx(T.ph3D2, 'ph3D2', 1);                // "I can teach you to close. I cannot take the door away."
       sfx(T.ph3D3, 'ph3D3', 1);                // "Close. And this time, stay."
-      fade(T.shut + 0.2, T.shut + 0.8, 0, 1); fade(T.shut + 0.8, T.shut + 1.5, 1, 1); fade(T.shut + 1.5, T.shut + 2.6, 1, 0);   // his eyes close, and open on a plain world
-      sfx(T.shut + 0.7, 'x3shut', 0.5);        // the world's sound closing down: one soft falling tone, and the flat room of his own head
+      /* (his eyes close, and open on a plain world. v26.12: the dark is the stage's own, a sheet before the lens (SHUTV,
+         c_zfx.js shutVisionAt), because the film's fade is drawn over the whole picture and would hide the lotus seen in it;
+         the falling tone that was here, x3shut, is retired: Chad, "that sound effect is very strange") */
+      sfx(T.shut + SHUTV.fold[1] - 0.35, 'x3fold', 0.5);   // the lotus folds shut: a soft shimmer that gathers in (its crest 0.35 s in, on the shut) and settles
       sfx(T.q3D1, 'q3D1', 1);                  // "For the first time in years, it was quiet."
       fade(T.sit - 0.4, T.sit, 0, 1); fade(T.sit, T.sit + 0.15, 1, 1); fade(T.sit + 0.15, T.sit + 0.9, 1, 0);
       sfx(T.sit - 0.5, 'x3sweep', 0.6);        // the ground cleared round him: a broom, mats, far voices, all of it flat (it leads the black by half a second: his line is left one second of true quiet, never more: a longer bare stretch reads as a fault, v21.30)
@@ -337,7 +339,16 @@
     fade(T.cut, T.cut + 0.45, 0, 1); fade(T.cut + 0.45, T.cut + 0.8, 1, 1); fade(T.cut + 0.8, T.masters + 0.1, 1, 0);
     sfxFade(T.cut - 0.6, T.cut + 0.7, 'x3dancemus');
     /* (the festival's own music again, and the ground's noise: the beds, filmBeds) */
+    /* (v26.12, Chad, 14 Nov 2026: "add a soft chanting voice to the brown lersi as he touches the bai sri, that the player
+       cannot really hear", and "add a soft chanting sound to the lersi who is making him trance. Soft enough that the
+       player cannot really hear what is being chanted": each hermit murmurs while his hands work, a murmur with no word
+       a transcriber can hear, under the ground's music and crowd, and under the line through the voice's duck) */
+    sfx(T.masters + 0.45, 'x3chantb', 0.32);    // the hermit in brown, as his hands come onto her bai sri
+    sfxFade(T.pet - 0.2, T.pet + 0.45, 'x3chantb');   //   and gone as they leave it for the petals
     sfx(T.q3m1, 'q3m1', 1);                    // "One by one they went up with their bai sri..."
+    sfx(T.man + 0.05, 'x3chanty', 0.32);        // the hermit in the yellow shawl, his hand held out over the man
+    sfxFade(T.sweep - 0.8, T.sweep + 0.1, 'x3chanty');
+    sfx(T.cry, 'x3cry', 0.55);                 // the man in trance cries out: a gasp, then a long cry (wordless)
     sfx(T.throw, 'x3petals', 0.4);             // the hermit's handful, falling on her
     sfx(T.man + 1.0, 'x3trance', 0.45);        // the man whose arms rise: a low voiced breath (wordless)
     sfx(T.pho - 0.05, 'x3tone', 0.32);          // the man in white: one held tone and a bell, on the cut to him

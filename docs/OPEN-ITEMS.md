@@ -310,6 +310,16 @@ CLOSED 14 Nov 2026: items 6 to 8 below were put to him together (docs/V26.12-WHA
       51 to 56 degrees on its forearm, and his fingers' gaps (both older than v26.8); two kneelers in the blessing's
       kneeling wai (a wrist 30 degrees toward the thumb, a shoulder 15 over its A pose; a wai lifts the hands to the
       chest); the middle monk's shoulders 11 to 12 over, the red master's left 10 to 11. Fixable on his word.
+    - z. v26.13: FOUR NEW SOUNDS BY HIS EAR (his messages of 14 Nov, docs/V26.12-WHAT-IS-LEFT.md §6): the brown hermit's
+      murmur, the yellow-shawl hermit's, the man's cry in trance, and ending D's closing sound, each the pick by measure
+      until he hears every candidate (masters/v26.12/previews, made by its make.sh; the picks and why in
+      masters/v26.12/make.sh §3 and §4).
+    - aa. v26.13: FOUND AND LEFT FOR HIM, THE WHOLE GAME (v19.2): the engine's picture loader (main.js loadImageTexture)
+      decodes with createImageBitmap(blob) and no options, which in Chrome multiplies each pixel's colour by its alpha,
+      and the material multiplies again, so every soft edge of a picture the engine loads is drawn darker than it is
+      (measured on chapter 3's clouds: a band 30 under the sky; masters/v26.12/make.sh §5). Fixed for the clouds alone,
+      in the chapter. One option in the loader ({ premultiplyAlpha: 'none' }) would lighten the soft edges of every
+      chapter's pictures (banners, cut-out leaves, signs): his word, and then every chapter photographed.
 
 ## D. Not built yet
 

@@ -44,7 +44,10 @@
        crosses its own width in about twelve minutes; watched for ten seconds, one degree: a cloud on the move, not one
        sliding). The sun, its glare and rays, the sky's gradient and the ring of trees stand still. On the wind's clock,
        wall time, as the leaves and the rays are (a film cut never moves them) */
-    const DRIFT = 0.1 * Math.PI / 180;
+    /* (v26.12, Chad, 14 Nov 2026: "the clouds move too slowly": three tenths of a degree a second, three times what it was. A
+       bank crosses its own width in about four minutes; watched for ten seconds, three degrees, about thirty pixels of a
+       phone held upright: a drift that is seen, where the tenth was a pixel a second and read as still) */
+    const DRIFT = 0.3 * Math.PI / 180;
     /* the sun's own rays: thin streaks of light out from its core, of seeded lengths and strengths, each soft along its
        length and across it (a picture drawn once; it turns very slowly, so the streaks are never quite still) */
     function makeSunBurst() {
@@ -68,9 +71,32 @@
       x.putImageData(img, 0, 0);
       return tex(done(THREE, c, false));
     }
+    /* THE CLOUDS' PICTURES, DECODED AS THEY ARE (v26.12, Chad, 14 Nov 2026: "the clouds still have very distinct dark edges
+       that look weird"). Measured on a phone's picture of the game: across a cloud's outline the light fell to 128-132,
+       where the sky beside it stands at 156 and the cloud at 180-200; the same picture laid over that sky's colour by hand
+       has no such band (masters/v26.12/make.sh §5). The engine decodes a picture with the browser's default
+       (createImageBitmap(blob)), which in Chrome multiplies each pixel's colour by its alpha; a texture made from a bitmap
+       is uploaded as it is (WebGL ignores its unpack flags for one), and the material multiplies by the alpha again, so a
+       rim pixel at alpha 0.42 was drawn at 0.42 x 0.42 of its colour (predicted 125). Here the clouds are decoded with
+       their colour left as it is ('none'), as the material expects. The engine's loader is left alone: it draws every
+       chapter's pictures, and a change there is put to Chad, not made in passing (v19.2) */
+    const skyTex = new Map();
+    function skyLoad(key) {
+      const name = 'w3t_' + key;
+      if (!skyTex.has(key)) {
+        if (!have(name)) { waiting.add(name); skyTex.set(key, Promise.resolve(null)); }
+        else skyTex.set(key, assetBytes(name, true)
+          .then(bytes => createImageBitmap(new Blob([bytes], { type: SURF[key][1] }), { premultiplyAlpha: 'none' }))
+          .then(bmp => { const t = new THREE.Texture(bmp); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; t.needsUpdate = true;
+            if (alive) madeTex.push(t); return alive ? t : null; })
+          .catch((err) => { console.warn('a cloud picture did not load', name, err); return null; }));
+      }
+      return skyTex.get(key);
+    }
     function buildSky() {
       skyFx.g.name = 'v26.1 sky'; world.add(skyFx.g); owned.push(skyFx.g); skyFx.drift.name = 'v26.8 drifting clouds'; skyFx.g.add(skyFx.drift);
       const d2r = Math.PI / 180, sunAz = Math.atan2(17, -10);                   // (DAY1's key, east-south-east: which side a card is lit from)
+      skyFx.sunAz = sunAz;
       for (const C of SKY_CARDS) {
         const az = C.az * d2r, w = 2 * SKY_R * Math.tan(C.w * d2r / 2), h = w * C.hw;
         const m = B({ color: 0xffffff, transparent: true, depthWrite: false, fog: false, opacity: 0 });
@@ -78,10 +104,10 @@
         mesh.position.set(Math.sin(az) * SKY_R, 1.6 + Math.tan(C.el * d2r) * SKY_R, -Math.cos(az) * SKY_R);
         mesh.lookAt(0, mesh.position.y, 0); mesh.renderOrder = -4; mesh.frustumCulled = false; skyFx.drift.add(mesh);
         /* (lit from its upper right in its picture: turned round where the sun is to the left of it as it is looked at) */
-        const flip = Math.sin(sunAz - az) < 0;
-        surfLoad(C.key).then(t0 => { if (!t0 || !alive) return; const t = t0.clone(); t.needsUpdate = true; madeTex.push(t);
-          t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; t.repeat.set(flip ? -1 : 1, -1); t.offset.set(flip ? 1 : 0, 1); m.map = t; m.needsUpdate = true; C.ready = true; });
-        skyFx.cards.push({ mesh, m, C });
+        const card = { mesh, m, C, az, flip: Math.sin(sunAz - az) < 0, r: 0.5 * Math.hypot(w, h) };
+        skyLoad(C.key).then(t0 => { if (!t0 || !alive) return; const t = t0.clone(); t.needsUpdate = true; madeTex.push(t);
+          t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; t.repeat.set(card.flip ? -1 : 1, -1); t.offset.set(card.flip ? 1 : 0, 1); m.map = t; m.needsUpdate = true; C.ready = true; });
+        skyFx.cards.push(card);
       }
       const glow = tex(makeGlow(THREE, cnv));
       const sm = (s) => { const m = new THREE.SpriteMaterial({ map: glow, color: 0xffffff, transparent: true, depthWrite: false, fog: false, blending: THREE.AdditiveBlending, opacity: 0 }); mats.push(m);
@@ -100,6 +126,7 @@
       }
     }
     const _skC = new THREE.Vector3(), _skX = new THREE.Vector3(), _skV = new THREE.Vector3(), _skZ = new THREE.Vector3(), _skM = new THREE.Matrix4();
+    const _cdF = new THREE.Frustum(), _cdPV = new THREE.Matrix4(), _cdS = new THREE.Sphere();
     /* every frame, in play and in a film (d_play.js updateNotes): where the sky stands, the hour's colours when the hour
        changes, and the rays turned to the lens */
     function skyTick(t) {
@@ -117,6 +144,18 @@
       }
       if (skyFx.burst.visible) skyFx.burst.material.rotation = t * 0.012;
       skyFx.drift.rotation.y = -t * DRIFT;
+      /* (v26.12: drifting three times as fast, a card crosses the sun's side in minutes, and one lit from the far side is a
+         cloud lit from where no sun is. It is turned round again only while the lens cannot see it, as any change in the
+         world is made (v24.12); one not yet loaded takes the side it will be drawn on) */
+      _cdF.setFromProjectionMatrix(_cdPV.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
+      for (const c of skyFx.cards) {
+        const want = Math.sin(skyFx.sunAz - (c.az + t * DRIFT)) < 0;
+        if (want === c.flip) continue;
+        if (!c.m.map) { c.flip = want; continue; }
+        c.mesh.getWorldPosition(_cdS.center); _cdS.radius = c.r;
+        if (_cdF.intersectsSphere(_cdS)) continue;
+        c.flip = want; c.m.map.repeat.x = want ? -1 : 1; c.m.map.offset.x = want ? 1 : 0;
+      }
       if (!(L && L.rays > 0 && skyFx.dir.y > 0.12)) return;
       camera.getWorldPosition(_skC);
       const d = skyFx.dir;

@@ -592,7 +592,7 @@
       castSolid();
     }
     function endTidy() {
-      handsFilm(0); handStill(0); filmChill(0); filmBai(false); filmCarry(handMat, handMatHolder, false); youGlowAt(0, 0, null, null);
+      handsFilm(0); handStill(0); filmChill(0); filmBai(false); filmCarry(handMat, handMatHolder, false); youGlowAt(0, 0, null, null); shutVisionAt(-1);
       myArmsAt(null, null, 0, null, 0, 0, 0); myOpenHand(null, null, 0, 0);
       for (const P of cast.wait) if (P.ready) P.group.visible = false;
       for (const b of waitBai) b.visible = false;
@@ -901,13 +901,14 @@
       begin(api) { if (api.handsRoot) api.handsRoot.visible = false; FL.wai = false; FL.bai = false; endStage(); },
       frame(t, api) {
         const T = ENDT.D, Ph = cast.pho;
+        shutVisionAt(t - T.shut);                                                  // (v26.12: his opening closed, seen: SHUTV)
         if (t >= T.close) { closeFrame(t - T.close, 'D', api); return; }
         pose(cast.aunt, 'Idle_3', 2 + t, true);
         if (t < T.sit) {
           /* (his eyes close on "stay", and open on a plain world: the look changes behind them) */
-          if (t >= T.shut + 1.15 && FL.shot !== 'd2') { FL.shot = 'd2'; lit('SHUT', 'two'); paintShade('DAWN'); mistK = 0; if (kit && kit.hush) kit.hush(0.85, { secs: 0.8 }); }
+          if (t >= T.shut + SHUTV.fold[1] && FL.shot !== 'd2') { FL.shot = 'd2'; lit('SHUT', 'two'); paintShade('DAWN'); mistK = 0; if (kit && kit.hush) kit.hush(0.85, { secs: 0.8 }); }
           phoFace(); phoTalkFace(); const kTalk = speaks(Ph, t, T, ['ph3D1', 'ph3D2', 'ph3D3']); lookNow(Ph, 'lens', 1, 0.5, 0);
-          const [fP, fD] = lensAt(t, [[0, 44, 33], [T.q3D0 + SECS['q3D0'], 36, 27], [T.ph3D2 + SECS['ph3D2'], 28, 20], [T.shut, 25, 18], [T.shut + 1.15, 25, 18], [T.shut + 1.2, 48, 36], [T.sit, 44, 33]]);
+          const [fP, fD] = lensAt(t, [[0, 44, 33], [T.q3D0 + SECS['q3D0'], 36, 27], [T.ph3D2 + SECS['ph3D2'], 28, 20], [T.shut, 25, 18], [T.shut + SHUTV.fold[1] - 0.05, 25, 18], [T.shut + SHUTV.fold[1], 48, 36], [T.sit, 44, 33]]);
           const [yF, pT] = toPho(EK, fP, fD, kTalk); eyes(EK, yF, pT, fP, fD);
         } else if (t < T.back) {
           if (FL.shot !== 'd3') { FL.shot = 'd3'; myBai.visible = false; if (cast.ton.ready) cast.ton.group.visible = false; castSolid(); }   // (Ton is clearing the ground: where the morning stood him, his back filled the far look at the bench: photographed)
@@ -954,7 +955,8 @@
         const T = ENDT[key]; birds = 0.5;
         if (key === 'B') { birds = (0.5 + 0.6 * bump(t, T.silence, T.edge - 0.4, 0.6, 0.5)) * (1 - smo(sgk(t, T.edge - 0.5, T.edge + 0.1)));   // the long silence is held by the birds; the afternoon has its own bed (a cue)
           crick = smo(sgk(t, T.dusk, T.dusk + 1.0)); }                                    // dusk, and on through the close
-        if (key === 'D') birds = 0.5 * (1 - smo(sgk(t, T.shut + 0.3, T.shut + 1.2))) + 0.25 * smo(sgk(t, T.back, T.back + 1.5));   // the world closes; he comes back to a quieter morning
+        if (key === 'D') { birds = 0.5 * (1 - smo(sgk(t, T.shut + SHUTV.show[0], T.shut + SHUTV.fold[1]))) + 0.25 * smo(sgk(t, T.back, T.back + 1.5));   // the world closes; he comes back to a quieter morning
+          open = 0.7 * bump(t, T.shut + SHUTV.show[0], T.shut + SHUTV.fold[1] - 0.3, 0.5, 0.8); }                      // (v26.12: the world heard open, as the lotus was in his first teaching, while it stands open in the dark)
         if (t >= T.close) { const tc = t - T.close; open = 0.6 * bump(tc, CLOSE.glow + 0.2, CLOSE.q3z1 + 2.0, 1.4, 1.6); }   // his own light in the close: the world heard a little open while it is on him
       }
       filmBed.on = true; filmBed.fest = BED.fest * fest; filmBed.mus = BED.mus * mus; filmBed.birds = BED.birds * birds; filmBed.crick = BED.crick * crick;

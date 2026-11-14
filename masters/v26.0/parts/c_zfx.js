@@ -199,6 +199,99 @@
         G.edge.material.opacity = 0.7 * k * br;
       }
     }
+    /* ---- ENDING D: HIS OPENING CLOSED, SEEN (v26.12, Chad, 14 Nov 2026: "the closing sound effect of option D, when
+       grandmaster pho closes the player's ability, that sound effect is very strange. Please generate a proper sound
+       effect, and have a visual effect to go along with it, so the player know what happened"). His eyes close on "stay";
+       in the dark is the lotus of his first teaching, the breath's own picture (shell.html, #evBreath.lotus: its eight
+       petals, their colours, their fan and their heart of light, drawn here number for number), open and lit; it folds
+       shut, and the world's sound closes with it; the last of its light goes out in a ring; his eyes open on the plain
+       world. The dark is a sheet before the film's own lens, as his light in the close is (youGlow): the film's fade is
+       drawn over the whole picture, the lotus too. (The rule that a colour over the whole screen is the film's fade is for
+       a colour: the vignette greys a white card at its sides, and his hands' pass is drawn over the world. Neither holds
+       here: under the vignette a black sheet is black, and no hand of his is drawn in this shot.) `shutVisionAt(u)`: u
+       the seconds from the ending's `shut` (SHUTV); before it or past the waking nothing is drawn */
+    const shutVision = (() => {
+      const blk = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), B({ color: 0x000000, transparent: true, opacity: 0, depthTest: false, depthWrite: false, fog: false, toneMapped: false }));
+      blk.renderOrder = 1000; blk.frustumCulled = false; blk.visible = false; world.add(blk); owned.push(blk);
+      const [svC, svX] = cnv(512), svT = tex(new THREE.CanvasTexture(svC)); svT.colorSpace = THREE.SRGBColorSpace;
+      const lot = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), B({ map: svT, transparent: true, depthTest: false, depthWrite: false, fog: false, toneMapped: false }));
+      lot.renderOrder = 1001; lot.frustumCulled = false; lot.visible = false; world.add(lot); owned.push(lot);
+      return { blk, lot, svX, svT, drawn: '' };
+    })();
+    /* (one petal as the breath's CSS draws it, 32 x 66 px, its foot at the origin: border-radius 50% 50% 46% 46% / 64% 64%
+       36% 36%, an egg, its top two quarter ellipses drawn as the curves that make them. pt, 0 to 1, draws its top up to a
+       POINT, as a bud's petals close: the egg stacked eight deep read as a pink pill, photographed) */
+    function petalPath(x, pt) {
+      const ty = -66 - 8 * pt, c1y = -23.76 - 0.5523 * 42.24, c2x = 8.84 - 5.34 * pt, c2y = -66 + 14 * pt;
+      x.beginPath();
+      x.moveTo(-16, -23.76);
+      x.bezierCurveTo(-16, c1y, -c2x, c2y, 0, ty);
+      x.bezierCurveTo(c2x, c2y, 16, c1y, 16, -23.76);
+      x.ellipse(1.28, -23.76, 14.72, 23.76, 0, 0, Math.PI * 0.5);
+      x.ellipse(-1.28, -23.76, 14.72, 23.76, 0, Math.PI * 0.5, Math.PI);
+      x.closePath();
+    }
+    /* (the lotus at k open, 1 wide and 0 the breath's own closed fan, drawn at a (its fade); b how far that fan has drawn in
+       to a BUD, its petals laid one on another to a point (the breath's closed fan, its eight tips in a row, read as a tooth:
+       photographed); its heart of light, 156 px, scaled .3 + .8k and lit .3 + .7k as the breath's is; a ring of soft light r
+       of the way out, at light g. In the canvas's 512 pixels, the picture's 256 about its middle, as the breath's own
+       pixels doubled) */
+    function lotusPaint(k, a, r, g, b) {
+      const S = shutVision, x = S.svX, key = [k, a, r, g, b].map((v) => v.toFixed(3)).join(',');
+      if (key === S.drawn) return; S.drawn = key;
+      x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, 512, 512); x.setTransform(2, 0, 0, 2, 256, 256);
+      if (a > 0.002) {
+        const sc = 0.3 + 0.8 * k, lit = (0.3 + 0.7 * k) * a, R = 110.3 * sc, hg = x.createRadialGradient(0, 0, 0, 0, 0, R);
+        hg.addColorStop(0, `rgba(255,252,236,${(0.96 * lit).toFixed(3)})`); hg.addColorStop(0.16, `rgba(255,252,236,${(0.96 * lit).toFixed(3)})`);
+        hg.addColorStop(0.38, `rgba(255,240,206,${(0.5 * lit).toFixed(3)})`); hg.addColorStop(0.68, 'rgba(255,240,206,0)'); hg.addColorStop(1, 'rgba(255,240,206,0)');
+        x.fillStyle = hg; x.beginPath(); x.arc(0, 0, 78 * sc, 0, Math.PI * 2); x.fill();
+        /* (as it buds, each petal turns about a point that climbs from its foot to its tip, so the eight tips meet in one
+           point and their feet open a little below it: a bud's petals wrapped round it. Turned about their feet to the
+           last, their points fanned into a jagged crown: drawn in the lab and refused) */
+        const s2 = 0.7 + 0.3 * k, fan = (7 + 38 * k) * (1 - 0.55 * b) * Math.PI / 180, pt = b * b, py = b * (-66 - 8 * pt);
+        for (let i = 0; i < 8; i++) {
+          x.save(); x.globalAlpha = a; x.translate(0, 14 + py * s2); x.rotate((i - 3.5) * fan); x.scale(s2, s2); x.translate(0, -py);
+          petalPath(x, pt);
+          const pg = x.createLinearGradient(0, -66, 0, 0); pg.addColorStop(0, '#FFF6F8'); pg.addColorStop(0.52, '#F7CFDB'); pg.addColorStop(1, '#E8A0B8');
+          x.shadowColor = 'rgba(255,226,236,0.5)'; x.shadowBlur = 18 * s2; x.fillStyle = pg; x.fill();
+          x.shadowBlur = 0; x.shadowColor = 'rgba(0,0,0,0)'; x.clip();
+          const ig = x.createLinearGradient(0, -20, 0, 0); ig.addColorStop(0, 'rgba(214,120,150,0)'); ig.addColorStop(1, 'rgba(214,120,150,0.35)');
+          x.fillStyle = ig; x.fillRect(-16, -66, 32, 66);
+          x.restore();
+        }
+      }
+      if (g > 0.002) {
+        /* (a band of soft light, not a drawn line: the first, a stroke 2.4 px wide, read as a circle drawn on the dark) */
+        const R = 14 + 104 * r, wd = 9 + 14 * r, rg = x.createRadialGradient(0, -6, Math.max(0, R - wd), 0, -6, R + wd);
+        rg.addColorStop(0, 'rgba(255,248,232,0)'); rg.addColorStop(0.5, `rgba(255,248,232,${(0.42 * g).toFixed(3)})`); rg.addColorStop(1, 'rgba(255,248,232,0)');
+        x.fillStyle = rg; x.beginPath(); x.arc(0, -6, R + wd, 0, Math.PI * 2); x.fill();
+      }
+      S.svT.needsUpdate = true;
+    }
+    function shutVisionAt(u) {
+      const S = shutVision, V = SHUTV;
+      const kE = u < 0 ? 0 : smo(sgk(u, V.eyes[0], V.eyes[1])) * (1 - smo(sgk(u, V.wake[0], V.wake[1])));
+      if (kE <= 0.001) {
+        S.blk.visible = false; S.lot.visible = false;
+        for (const m of [S.blk, S.lot]) if (m.parent !== world) world.add(m);
+        return;
+      }
+      for (const m of [S.blk, S.lot]) if (m.parent !== camera) camera.add(m);
+      const view = (d) => { const h = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * d; return [h * camera.aspect, h]; };
+      const [bw, bh] = view(0.1);
+      S.blk.position.set(0, 0, -0.1); S.blk.quaternion.identity(); S.blk.scale.set(bw * 1.1, bh * 1.1, 1); S.blk.material.opacity = kE; S.blk.visible = true;
+      /* (open and lit as it comes; a breath of movement while it stands open; then it folds; its light goes out in a ring) */
+      const a = smo(sgk(u, V.show[0], V.show[1])) * (1 - smo(sgk(u, V.gone[0], V.gone[1])));
+      const kf = smo(sgk(u, V.fold[0], V.fold[1])), k = (1 - kf) * (1 - 0.035 * (0.5 - 0.5 * Math.cos(u * 2 * Math.PI / 1.6)) * (1 - smo(sgk(u, V.fold[0] - 0.2, V.fold[0]))));
+      const r = sgk(u, V.ring[0], V.ring[1]), g = smo(sgk(u, V.ring[0] - 0.02, V.ring[0] + 0.08)) * (1 - smo(sgk(u, V.ring[0] + 0.08, V.ring[1])));
+      const b = smo(sgk(u, V.fold[1] - 0.45, V.fold[1]));
+      if (a <= 0.001 && g <= 0.001) { S.lot.visible = false; return; }
+      lotusPaint(k, a, r, g, b);
+      /* (its size: the breath's 256 px picture over nine tenths of the screen's shorter side, so the open lotus stands
+         about 45 % of it, on a phone held upright and on a desktop alike: at three quarters, 35 % of a phone's width) */
+      const [lw, lh] = view(0.099), side = 0.9 * Math.min(lw, lh);
+      S.lot.position.set(0, 0, -0.099); S.lot.quaternion.identity(); S.lot.scale.set(side, side, 1); S.lot.visible = true;
+    }
     /* ---- HIS OWN HANDS ON HIS BAI SRI IN THE CLOSE (v26.8, row M). Chad, 13 Nov 2026, of the close: "just show the player
        hands vibrating while a glow surronding him and his hands and his bai sri. all around his silohuette, to show that the
        player is now in control while vibrating." v26.8 drew the bai sri shaking and the light, and not his hands: they were

@@ -10,7 +10,7 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__)); SR = 32000
 table = sys.argv[1]; only = sys.argv[2:]
 ROWS = json.load(open(os.path.join(HERE, table + '.json')))
-WORDLESS = {'x3festbed', 'x3afternoon', 'x3waiting', 'x3trance', 'x3mem2', 'x3os1', 'x3os2', 'x3os6', 'x3sweep', 'x3bowall', 'x3crickets', 'x3birds', 'x3open', 'x3pull'}
+WORDLESS = {'x3festbed', 'x3afternoon', 'x3waiting', 'x3trance', 'x3mem2', 'x3os1', 'x3os2', 'x3os6', 'x3sweep', 'x3bowall', 'x3crickets', 'x3birds', 'x3open', 'x3pull', 'x3chantb', 'x3chanty', 'x3cry', 'x3chantb2', 'x3close1', 'x3close2'}
 
 def dec(p, ch=1):
     raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', p, '-ac', str(ch), '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True).stdout

@@ -129,10 +129,25 @@ fx   x3shutter   $R/x3shutter2_b.mp3  -14 "atrim=0:0.27,afade=t=out:st=0.19:d=0.
 fx   x3bulbs     $R/x3bulbs_a.mp3     -14                                     # a: the switch at 0.3 s and the hum after it (b's first sound is at 1.0 s)
 fx   x3cock      $R/x3cock_a.mp3      -14 "highpass=f=300,lowpass=f=5000,aecho=0.8:0.5:120:0.25"   # a (b clips harder); made far: its band narrowed, an open field's slap
 fx   x3bell      $R/x3bell_a.mp3      -14                                     # a: the longer ring
-fx   x3shut      sound/made/x3shut.wav -14                                    # MADE (synth.py): both generated takes were under 150 Hz
+# RETIRED at v26.12 (Chad, 14 Nov 2026, of ending D: "the closing sound effect of option D, when grandmaster pho closes the
+# player's ability, that sound effect is very strange. Please generate a proper sound effect"): its falling tone made here
+# (synth.py, which still makes it, kept with its recipe) is x3fold now, below. Its line was:
+# fx   x3shut      sound/made/x3shut.wav -14                                    # MADE (synth.py): both generated takes were under 150 Hz
 fx   x3tone      $R/x3tone_a.mp3      -14 "afade=t=out:st=4.6:d=1.4"          # a: the bowl and its bell, 65 % where a phone plays (b 1 %)
 fx   x3trance    $R/x3trance_a.mp3    -14 "highpass=f=110,equalizer=f=450:t=q:w=1:g=6"   # a: wordless (b: the transcriber writes "Ugh..."); a low groan, so its body between 200 and 900 Hz is lifted for a phone
 fx   x3waiting   $R/x3waiting_a.mp3   -14                                     # a: the cough and the sandals, 85 % where a phone plays (b 14 %); no word heard in either
+# ---- v26.12 (Chad, 14 Nov 2026): the festival film's two hermits murmuring as their hands work, and the man in trance
+# crying out (flow QhNNjZhuufj9eTGXY7au; sound/sfx3.json every prompt and generation; sound/measures-sfx3.json every
+# measure; masters/v26.12/make.sh the pick and why, each standing until Chad's ear: previews in masters/v26.12/previews)
+fx   x3chantb    $R/x3chantb2_c.mp3   -14 "highpass=f=110"                    # x3chantb2 c: syllables at 3.5 a second, 83 % where a phone plays, 56 % in the voice's band; no word heard
+fx   x3chanty    $R/x3chanty_b.mp3    -14 "highpass=f=110,afade=t=in:d=0.15"  # b: the most a chant (its formants move, breaths at 0.7, 1.8 and 3.3 s), all 7 s of the shot; it begins on signal, so faded in
+fx   x3cry       $R/x3cry_c.mp3       -14 "highpass=f=120"                    # c: the gasp and then the cry, as asked, its end clean; no word heard (a writes "NOOOOO", d "AHHHH")
+# ending D, his opening closed (the lotus seen folding shut in the dark: c_zfx.js shutVisionAt): x3close1's four takes are
+# all where a phone plays (99 to 100 % over 150 Hz); x3close2's four, "a door of light", are all under it (95 to 100 %), so
+# none of them. d: the one take that RISES to its crest (0.35 s in) before it settles, so it gathers in and closes rather
+# than strikes; its partials at 520 and 660 Hz; gone to -30 dB by 1.45 s. It begins on signal (faded in 40 ms); its
+# silence after 2.2 s is cut
+fx   x3fold      $R/x3close1_d.mp3    -14 "highpass=f=120,afade=t=in:d=0.04,atrim=0:2.2,afade=t=out:st=1.7:d=0.5"
 # ---- the telling's six memories (faint under his words: z_tail.js plays them at 0.2)
 fx   x3mem1      $R/x3mem1_b.mp3      -14 "highpass=f=120"                    # b: the lift and the burner with more a phone can play (29 % against 21)
 fx   x3mem2      $R/x3mem2_a.mp3      -14 "highpass=f=120,equalizer=f=400:t=q:w=1:g=5"   # a: a hum with no word in it (b: the transcriber writes "Wow")

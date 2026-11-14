@@ -8696,3 +8696,30 @@ Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8,
 - **A beat on the wall's clock is photographed with the page slowed** (e4c3beats `slow`): the children's throw ran its
   whole course inside one 60-second screenshot on this box, and the pictures showed petals already on the ground.
 - **This box holds two of the chapter's pages at once, not three**: the third crashed two of them while loading.
+
+## v26.13 — a dark edge made by the loader, a hum that read as a chant, and a door no phone could hear
+
+- **A dark rim round a soft picture can be made by the loader, not the picture.** The clouds' rims fell 30 under the sky
+  in the game, and the same picture laid over the same sky by hand had no rim at all (and none at any shrunk level). The
+  engine decodes with `createImageBitmap(blob)` and no options: Chrome hands back a bitmap whose colour is already
+  multiplied by its alpha; WebGL takes a bitmap as it is (its unpack flags are ignored for one); and a straight-alpha
+  material multiplies again. A rim pixel at alpha 0.42 is drawn at 0.18 of its colour. Decode with `{ premultiplyAlpha:
+  'none' }` where the material expects straight colour. Test it the way it was found: the game's own picture measured
+  across the edge, against the texture composited by hand over the measured sky.
+- **Measure a picture's edge where nothing else crosses it.** The first before-and-after rows crossed the bunting's
+  wires and flags, and read a "dip" of 120 on both builds; only rows that run from the sky straight into the cloud say
+  anything (before median 29.6, after 1.0).
+- **A wordless take can be wordless and still wrong.** Two of the brown hermit's four "chant" takes passed the
+  transcriber (it heard nothing) and were a single held tone for four seconds, flat lines in their spectrograms: a hum,
+  not a chant. "Steady monotone" in the prompt made a drone; "slow rhythmic syllables" made a murmur. Look at the
+  spectrogram of a voice that must not be understood: a chant has syllables (vertical breaks) and moving formants.
+- **Ask a generator for the band a phone plays, and check it anyway.** All four takes of "a door of light closing" came
+  back 95 to 100 % under 150 Hz, as v26.0's two takes for the same moment did, despite "mid and high frequencies, no deep
+  rumble" in the prompt; the four of "a shimmer of light folding inward" were all over it. A door's sound is a thud.
+- **A picture drawn on a film's black is drawn on a black of the stage's own.** The film's fade is the top layer of
+  the page; anything the world draws under it is hidden while it is black. The lotus seen with his eyes closed needed a
+  black sheet before the lens (where no hand of his is drawn, and the vignette over black is black).
+- **A drift sped up moves what a probe aims at.** Aimed by the clouds' old places, the second photograph of the tall
+  cloud found sky: the cards had turned while the page booted. Aim at where a moving thing IS, or stop it for the picture.
+- **The working disk filled during a build** (its release zip): the zip half-written is worthless and is the first thing
+  to clear, then my own probe pictures; the build itself needs about 1.7 GB free (dist rewritten, then the zip).

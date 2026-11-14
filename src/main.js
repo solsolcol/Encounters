@@ -13953,14 +13953,17 @@ const STING_SAMPLE = {
   x3os2: ['x3os2', 1], x3os3: ['x3os3', 1], x3os4: ['x3os4', 1], x3os5: ['x3os5', 1], x3os6: ['x3os6', 1],
   x3os7: ['x3os7', 1], x3os8: ['x3os8', 1], x3os9: ['x3os9', 1], x3page: ['x3page', 1], x3pen: ['x3pen', 1],
   x3petals: ['x3petals', 1], x3pull: ['x3pull', 1], x3send: ['x3send', 1], x3shophum: ['x3shophum', 1],
-  x3shut: ['x3shut', 1], x3shutter: ['x3shutter', 1], x3sightmus: ['x3sightmus', 1],
+  x3shutter: ['x3shutter', 1], x3sightmus: ['x3sightmus', 1],
   /* v26.1: his feet on the grass (masters/v26.1/sound/steps.sh; x3step retired) */
   x3grass1: ['x3grass1', 1], x3grass2: ['x3grass2', 1], x3grass3: ['x3grass3', 1], x3grass4: ['x3grass4', 1],
   x3grass5: ['x3grass5', 1], x3grass6: ['x3grass6', 1], x3grass7: ['x3grass7', 1], x3grass8: ['x3grass8', 1],
   x3sweep: ['x3sweep', 1], x3tellmus: ['x3tellmus', 1], x3tone: ['x3tone', 1], x3trance: ['x3trance', 1],
   x3waiting: ['x3waiting', 1], x3zip: ['x3zip', 1],
   /* v26.0 · episode 4 chapter 3: its voices, effects, beds and music (masters/v26.0/sound.sh) */
-  x3wick: ['x3wick', 1]
+  x3wick: ['x3wick', 1],
+  /* v26.12: the festival film's two hermits murmuring, and the man in trance crying out; ending D's lotus folding shut
+     (x3shut retired) (masters/v26.0/sound.sh) */
+  x3chantb: ['x3chantb', 1], x3chanty: ['x3chanty', 1], x3cry: ['x3cry', 1], x3fold: ['x3fold', 1]
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays

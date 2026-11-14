@@ -1367,7 +1367,10 @@ docs/V26.12-WHAT-IS-LEFT.md: every open item, what he answered, and the order (t
 answers to the chapter's small choices went live at v26.12 (deploy `6af852891f22844fc56b4dda`; §3 and §4 there): the
 devotee out of the group photograph, the close's last image his open hand with one petal (reached by a cut), a second
 handful of petals at the tables; the hair fix, checked only by numbers, darkened a body when photographed and was put
-back ("I think your fix without visually checking the models is a little dangerous").
+back ("I think your fix without visually checking the models is a little dangerous"). His four messages after it (the
+two hermits' murmurs and the trance man's cry in the festival film, ending D's closing sound and a picture of it, the
+clouds' dark edges and their drift) went live at v26.13 (deploy `6af8e8404ba37a88a23a31fa`; docs/V26.12-WHAT-IS-LEFT.md
+§6, masters/v26.12/make.sh §3 to §5); the four new sounds stand on the measured pick until his ear (C13 z).
 Chapter 4 is next after it
 (S1·13, case one: the woman who rose from her wheelchair).
 The episode's plan, with what remains his to decide:

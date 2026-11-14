@@ -156,7 +156,7 @@
 
   /* THE FILM OF THE FESTIVAL (§4.1 P3): the dance; the cut to the masters, and those who go up; the lens along the
      masters to the one in white */
-  const FEST = tl(0, [['@dance'], [3.2], ['tn3d1', 1.07], ['q3m0', 1.4], ['@cut'], [1.2], ['@masters'], [1.8], ['q3m1', 2.4],
+  const FEST = tl(0, [['@dance'], [3.2], ['tn3d1', 1.07], ['q3m0', 1.4], ['@cut'], [1.2], ['@masters'], [1.8], ['q3m1', 3.4],
                       ['@sweep'], [4.2], ['q3w1', 0.64], ['q3w2', 0.6], ['q3w3', 0.3], ['@black'], [1.2]]);
   /* (the moments inside it that the pictures and the cues both read. The cut to the man whose arms rise lands on the
      second half of the line said over it, "and some of them went somewhere I could not follow": HALF is where that
@@ -168,7 +168,11 @@
     T.low = T.man + 0.4;                      // she sets her bai sri down (behind the cut)
     T.pho = T.q3w2 - 0.12;                    // the cut in to the man in white
     T.cheer = T.q3w2 + 1.3;                   // his own handful, over those who kneel to him (photograph 1)
-    T.throw2 = T.cheer + 1.3; }
+    T.throw2 = T.cheer + 1.3;
+    /* (v26.12, Chad, 14 Nov 2026: "can you maybe add a voiceline to the guy as he trances?": he cries out in the pause
+       after the line said over him, a gasp and then a long cry with no word in it. The pause is 3.4 s where it was 2.4,
+       so the cry ends in his own shot and not over the cut to the masters) */
+    T.cry = T.q3m1 + SECS['q3m1'] + 0.35; }
 
   /* THE NIGHT BETWEEN (§4.2): five pictures and no word until the last. The group's photograph in the afternoon, his
      bai sri still in his hands; the banners against a red evening; the offering tables by their own candles; his bai
@@ -200,9 +204,16 @@
               ['@edge'], [1.7], ['q3B3', 1.2], ['@dusk'], [3.6], ['@back'], [1.3], ['q3B4', 0.9], ['ph3B4', 1.1], ['q3B5', 1.3], ['@close']]),
     C: tl(0, [[0.9], ['q3C0', 0.9], ['ph3C1', 0.8], ['ph3C2', 0.5], ['@turn'], [3.2], ['q3C1', 1.1], ['@backto'], [1.5], ['ph3C3', 1.0],
               ['q3C2', 0.5], ['@bow'], [3.0], ['q3C3', 1.0], ['q3C4', 1.3], ['@close']]),
-    D: tl(0, [[0.9], ['q3D0', 0.9], ['ph3D1', 0.8], ['ph3D2', 1.0], ['ph3D3', 0.5], ['@shut'], [2.8], ['q3D1', 1.5], ['@sit'], [3.4],
+    D: tl(0, [[0.9], ['q3D0', 0.9], ['ph3D1', 0.8], ['ph3D2', 1.0], ['ph3D3', 0.5], ['@shut'], [4.4], ['q3D1', 1.5], ['@sit'], [3.4],
               ['@chant'], [3.4], ['q3D2', 1.2], ['q3D3', 1.2], ['@back'], [1.4], ['q3D4', 0.9], ['ph3D4', 1.1], ['q3D5', 1.3], ['@close']])
   };
+  /* ENDING D'S CLOSING, SEEN (v26.12, Chad, 14 Nov 2026: "the closing sound effect of option D, when grandmaster pho closes
+     the player's ability, that sound effect is very strange. Please generate a proper sound effect, and have a visual
+     effect to go along with it, so the player know what happened"): in seconds from the ending's `shut`, his eyes close
+     (eyes); in the dark, the lotus of his first teaching, open and lit (show); it folds shut (fold), and on the shut the
+     world's sound closes and its look changes, under the dark; the last of its light goes out in a ring (ring, gone);
+     his eyes open on the plain world (wake). The pause after "stay" is 4.4 s where it was 2.8 */
+  const SHUTV = { eyes: [0.2, 0.8], show: [0.6, 1.1], fold: [1.2, 2.3], ring: [2.3, 2.9], gone: [2.35, 2.95], wake: [3.2, 4.2] };
   /* THE CLOSE (§4.6), on its own clock from each ending's `close`: he takes his bai sri up and raises it; his teacher's
      two lines; both the old man's hands laid on it; a handful of petals; HIS OWN LIGHT, his hands shaking and in hand
      (v26.8: the breath once played here is shown instead); his line; the bai sri taken from him and set on the table;
