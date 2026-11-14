@@ -369,3 +369,14 @@ f58c15b0904616c2b78f20b9d8ca3b17865c0ea2b9b471a324813df8670cfeb3  masters/v26.0/
 67a30e09d2dbeca81192c46b574cc2dbf5c8dcd100829836994aba0c347f9b8a  masters/v26.0/src/rigged-devb.glb
 d697e30c6056eacf32cbc4f68b625932d9c3d8310dfd71b4ca5acfc191069425  masters/v26.0/src/rigged-devc.glb
 3020244ee20ecd24325f014ad68efd252b3a20673b57875b4ce50c3f9ac47d91  masters/v26.0/src/rigged-devd.glb
+3bfcd8b0b00836e4d7777e22c41dbb6b4f910c8e985c193696a962e0a5cfa759  masters/v26.0/src/rigged-deve.glb
+b0b0f1e1dacce625fbad1ac07bebd69852280cbb18cc19233b91fc31f6b20424  masters/v26.0/src/rigged-devf.glb
+876832aabdf6b74bf39489feeb45f2f99beb93a1f645f46457473d8e9dcf082e  masters/v26.0/src/rigged-devg.glb
+18a361c7f54f9b83f0aab6632931731304c5d20ac370dfefeb431520fc6f57e7  masters/v26.0/src/rigged-devh.glb
+dade72d831a6d9428549a6852995ae96220b75f0860aa59b21768b061b8fa756  masters/v26.0/src/rigged-girl.glb
+c9b2eb326ba126962cc182dc806cb6c445270aeb225b7c58b12984b63f3d3273  masters/v26.0/src/rigged-hermita.glb
+5a0ebd584fe3f3671b8445a13f23cdb06faaf3216798178cd47b98c6f987ad32  masters/v26.0/src/rigged-hermitb.glb
+eacb295cac1424677adb9f49e3d0bf9c858639b6dbd84e66d1e7d55a53cd8174  masters/v26.0/src/rigged-monkb.glb
+577d4ffa624b147fe89e707f7d3c137e235974e66ba78474ae07a1b91d8361fe  masters/v26.0/src/rigged-monkc.glb
+8dceb67375e38ce82c33b13704c45635272002148467e6d4381aac071147654f  masters/v26.0/src/rigged-red.glb
+4c82405fb70a5baadd920ccaf9bd38c500e06460cad2f0335aac2f192669c0c4  masters/v26.0/src/rigged-ton.glb
