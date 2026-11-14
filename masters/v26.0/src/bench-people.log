@@ -1,0 +1,67 @@
+masters/v26.0/src/takes-bench-lib.glb: Hips, Mesh_0 re-expressed in the rig file's frame
+NOTE: resting at another place IN THE WORLD in a takes file than in the rig file: Mesh_0, SmartRigArmature
+wrote masters/v26.0/src/merged-bench.glb 29847836 bytes
+["Idle_3 (198 ch, 9.97 s)","Stand_and_Chat (198 ch, 5.17 s)","give (132 ch, 5.97 s)","seiza (132 ch, 7.97 s)","prostrate (132 ch, 6.97 s)"]
+calmarms masters/v26.0/src/merged-bench.glb: the body's left 1.00,0.00,0.01, its face -0.01,0.00,1.00
+  Idle_3: Left out 9.2..19.1 (mean 15.3) -> 2.3..8.3; swing 2.9..12.0 -> 2.9..12.0 | Right out 10.7..18.9 (mean 15.0) -> 3.4..8.3; swing 2.8..10.6 -> 2.8..10.6
+  Stand_and_Chat: Left out 1.0..20.4 (mean 10.7) -> -2.7..16.7; swing -3.2..41.1 -> -3.2..41.1 | Right out 3.2..25.3 (mean 15.5) -> -5.3..16.7; swing -19.5..7.0 -> -19.5..7.0
+  Listening_Gesture: not in this file (left out)
+  Walking: not in this file (left out)
+  Casual_Walk: not in this file (left out)
+  Walking_Woman: not in this file (left out)
+wrote masters/v26.0/src/merged-bench.glb
+  skin weights: 47265 vertices in 20733 positions over 65 joints, 24 diffusion passes; 5439 vertices' main weight moved
+prune: Removed types... Texture (1), Accessor (4)
+  47265 vertices in 20733 positions; 28972 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.0s] 47265 points joined into 20733 places; 41608 triangles
+  repaint [   0.0s] the face 3864 triangles, the rest of the head 12449, the hands 2354, the body 22941 (looking [-0.0, 0.0, 1.0])
+  repaint [   6.1s] xatlas: 1261 charts, 75% of the square used
+  repaint [   8.0s] packed again: 1261 charts in a 2624x2629 square drawn at 2048 (79% used), a margin of 3.9 pixels at 2048
+  repaint [   8.1s] 1 triangles reached across the sheet from a corner xatlas never placed: each given its neighbours' place (1)
+  repaint [   8.1s] texels a metre at 2048, before -> now: face 1892 -> 2504, head 2284 -> 1893, hands 1656 -> 1213, body 998 -> 911; 1266 charts, margin 3.9 px; 1 unplaced corners mended
+  repaint [   8.2s] baking 2048x2048 at 16 samples a texel from the 8192 sheet
+  repaint [  14.2s] baked
+  repaint [  14.2s] written
+  repaint: 47265 points -> 52479 (5214 copied along the new seams), 41608 triangles; texels a metre at 2048, before -> now: face 1892 -> 2504, head 2284 -> 1893, hands 1656 -> 1213, body 998 -> 911; 1266 charts, margin 3.9 px; 1 unplaced corners mended
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk e4bench.glb: tris 41608 -> 41608, 5 takes, 2465 KB
+  skin weights: 13451 vertices in 4100 positions over 65 joints, 24 diffusion passes; 4654 vertices' main weight moved
+prune: Removed types... Texture (1)
+  13451 vertices in 4100 positions; 10387 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.0s] 13451 points joined into 4100 places; 8298 triangles
+  repaint [   0.0s] the face 684 triangles, the rest of the head 1779, the hands 470, the body 5365 (looking [-0.0, 0.0, 1.0])
+  repaint [   0.4s] xatlas: 476 charts, 83% of the square used
+  repaint [   0.6s] packed again: 476 charts in a 747x746 square drawn at 512 (81% used), a margin of 2.7 pixels at 512
+  repaint [   0.6s] texels a metre at 512, before -> now: face 486 -> 538, head 513 -> 406, hands 459 -> 269, body 257 -> 195; 476 charts, margin 2.7 px
+  repaint [   0.7s] baking 512x512 at 256 samples a texel from the 8192 sheet
+  repaint [   2.8s] baked
+  repaint [   2.8s] written
+  repaint: 13451 points -> 14197 (746 copied along the new seams), 8298 triangles; texels a metre at 512, before -> now: face 486 -> 538, head 513 -> 406, hands 459 -> 269, body 257 -> 195; 476 charts, margin 2.7 px
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk e4benchm.glb: tris 8298 -> 8298, 0 takes, 362 KB
+  skin weights: 5001 vertices in 1251 positions over 65 joints, 24 diffusion passes; 3015 vertices' main weight moved
+prune: Removed types... Texture (1)
+  5001 vertices in 1251 positions; 4170 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.0s] 5001 points joined into 1251 places; 2553 triangles
+  repaint [   0.0s] the face 208 triangles, the rest of the head 492, the hands 108, the body 1745 (looking [-0.0, 0.0, 1.0])
+  repaint [   0.1s] xatlas: 299 charts, 83% of the square used
+  repaint [   0.2s] packed again: 299 charts in a 415x415 square drawn at 256 (80% used), a margin of 2.5 pixels at 256
+  repaint [   0.2s] texels a metre at 256, before -> now: face 246 -> 214, head 257 -> 165, hands 270 -> 108, body 129 -> 81; 299 charts, margin 2.5 px
+  repaint [   0.3s] baking 256x256 at 256 samples a texel from the 8192 sheet
+  repaint [   1.3s] baked
+  repaint [   1.3s] written
+  repaint: 5001 points -> 5222 (221 copied along the new seams), 2553 triangles; texels a metre at 256, before -> now: face 246 -> 214, head 257 -> 165, hands 270 -> 108, body 129 -> 81; 299 charts, margin 2.5 px
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk e4benchf.glb: tris 2553 -> 2553, 0 takes, 146 KB
+  skin weights: 265605 vertices in 155317 positions over 65 joints, 24 diffusion passes; 5567 vertices' main weight moved
+prune: Removed types... Texture (2), Accessor (1)
+  265605 vertices in 155317 positions; 118751 normals turned more than 10° to agree across a seam; normals of no length: 0
+  thin charts: 240 of 1122 charts (1095 triangles) were edge-only and bled their neighbours — each pointed at a uniform spot of its colour, 28 taking the colour of the surface round it; 10285 triangles on the thin arms of solid charts; 18603 border vertices pulled 1.5 texels in from a neighbour of another colour (1565 left where the pull would fold a triangle) (worst match 0.168)
+  largest fixed charts (texels at 2048): 118 67 56 54 54 52 50 41 41 40 38 33
+prune: Removed types... Accessor (6)
+quantize: Skipping TEXCOORD_0; out of [0,1] range.
+prune: Removed types... Skin (1), Accessor (4)
+prepmonk e4benchh.glb: tris 310742 -> 310742, 0 takes, 6384 KB

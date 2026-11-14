@@ -1,0 +1,10 @@
+started rig bench 01a1cafe-c2be-71e3-bd2c-802839161235
+  rig bench IN_PROGRESS 0%
+  rig bench IN_PROGRESS 47%
+  rig bench IN_PROGRESS 84%
+  rig bench IN_PROGRESS 90%
+  rig bench SUCCEEDED 100%
+rig done bench {'rigged': 81216220, 'walk': 81457576}
+body identical to masters/v26.0/src/rigged-bench.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-bench-walking.glb 98032 bytes ["retarget_clip (132 ch, 1.03 s)"]

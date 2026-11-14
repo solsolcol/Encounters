@@ -1,0 +1,45 @@
+started animation bench lib 01a1cb52-0fd3-7000-b600-7e7b2862da7e
+  anim bench lib IN_PROGRESS 1%
+  anim bench lib IN_PROGRESS 80%
+  anim bench lib IN_PROGRESS 84%
+  anim bench lib IN_PROGRESS 88%
+  anim bench lib IN_PROGRESS 91%
+  anim bench lib IN_PROGRESS 95%
+  anim bench lib SUCCEEDED 100%
+animation done bench lib 85216532
+a re-export of masters/v26.0/src/rigged-bench.glb: 66 bones at the same rest pose in the world, 310742 triangles, the same bounds; 2 of 3 images byte-identical
+prune: Removed types... Primitive (1), Accessor (7)
+wrote masters/v26.0/src/takes-bench-lib.glb 883616 bytes ["Idle_3 (198 ch, 9.97 s)","Stand_and_Chat (198 ch, 5.17 s)","Walking_Woman (198 ch, 0.97 s)","Chair_Sit_Idle_F (198 ch, 11.33 s)"]
+bench lib strip exit 0
+bench lib done
+  motion bench give IN_PROGRESS 1%
+  motion bench seiza IN_PROGRESS 1%
+  motion bench prostrate IN_PROGRESS 1%
+  motion bench give IN_PROGRESS 42%
+  motion bench seiza IN_PROGRESS 42%
+  motion bench prostrate IN_PROGRESS 42%
+  motion bench give IN_PROGRESS 84%
+  motion bench seiza IN_PROGRESS 84%
+  motion bench prostrate IN_PROGRESS 84%
+  motion bench give IN_PROGRESS 90%
+  motion bench seiza IN_PROGRESS 90%
+  motion bench prostrate IN_PROGRESS 95%
+  motion bench give SUCCEEDED 100%
+  motion bench seiza SUCCEEDED 100%
+  motion bench prostrate SUCCEEDED 100%
+motion done bench give 82113752
+motion done bench seiza 82379480
+body identical to masters/v26.0/src/rigged-bench.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-bench-give.glb 374408 bytes ["retarget_clip (132 ch, 5.97 s)"]
+bench give strip exit 0
+motion done bench prostrate 82246644
+body identical to masters/v26.0/src/rigged-bench.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-bench-seiza.glb 486352 bytes ["retarget_clip (132 ch, 7.97 s)"]
+bench seiza strip exit 0
+body identical to masters/v26.0/src/rigged-bench.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v26.0/src/takes-bench-prostrate.glb 430380 bytes ["retarget_clip (132 ch, 6.97 s)"]
+bench prostrate strip exit 0
+bench t2m done

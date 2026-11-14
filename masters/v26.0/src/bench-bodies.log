@@ -1,0 +1,33 @@
+  remesh bench 40000 IN_PROGRESS 1%
+  remesh bench 40000 IN_PROGRESS 35%
+  remesh bench 40000 IN_PROGRESS 60%
+  remesh bench 40000 IN_PROGRESS 89%
+  remesh bench 40000 IN_PROGRESS 90%
+  remesh bench 40000 SUCCEEDED 100%
+remesh done bench 40000 100646888
+  fit: turn 0 degrees, size x0.7990, moved [0.0002, 0.7605, 0.0019]; a remeshed point lies 0.32 mm from the rig's points on average, 9.5 mm at worst (the other turns: 20.5, 32.2, 32.7 mm)
+  weights: 47284 points from 265789; 18 reached further than 4 cm, 12 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-bench-40000.glb: 41608 triangles on 66 joints; sheets colour 19.7 MB, normal 3.6 MB, mr 0.0 MB; 26.3 MB
+  remesh bench 8000 IN_PROGRESS 1%
+  remesh bench 8000 IN_PROGRESS 35%
+  remesh bench 8000 IN_PROGRESS 60%
+  remesh bench 8000 IN_PROGRESS 89%
+  remesh bench 8000 IN_PROGRESS 90%
+  remesh bench 8000 SUCCEEDED 100%
+remesh done bench 8000 97212200
+  fit: turn 0 degrees, size x0.7991, moved [-0.0007, 0.7604, 0.0025]; a remeshed point lies 0.75 mm from the rig's points on average, 5.5 mm at worst (the other turns: 22.9, 38.1, 38.2 mm)
+  weights: 13457 points from 265789; 0 reached further than 4 cm, 0 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-bench-8000.glb: 8298 triangles on 66 joints; sheets colour 19.1 MB, normal 3.6 MB, mr 0.0 MB; 23.5 MB
+  remesh bench 2500 IN_PROGRESS 1%
+  remesh bench 2500 IN_PROGRESS 35%
+  remesh bench 2500 IN_PROGRESS 60%
+  remesh bench 2500 IN_PROGRESS 89%
+  remesh bench 2500 IN_PROGRESS 90%
+  remesh bench 2500 SUCCEEDED 100%
+remesh done bench 2500 94350892
+  fit: turn 0 degrees, size x0.7993, moved [-0.0004, 0.7604, 0.0025]; a remeshed point lies 0.65 mm from the rig's points on average, 3.2 mm at worst (the other turns: 23.1, 43.3, 43.4 mm)
+  weights: 5003 points from 265789; 4 reached further than 4 cm, 1 found too few that face their way and took the nearest
+prune: Removed types... Texture (3), Accessor (7)
+riglod body-bench-2500.glb: 2553 triangles on 66 joints; sheets colour 18.6 MB, normal 3.5 MB, mr 0.0 MB; 22.4 MB
