@@ -286,3 +286,10 @@ d44dc944ce2f793541dfd6abf033523c289fa3160b15cddc30093fa4a781d238  masters/v26.0/
 86d30a5f7deb41440adfd919c9e90fb1a2eb01deac75c400eb4f9ddbaee06a84  masters/v26.0/src/original-envaircon.glb
 86f127223c747f53c17c18da99fc248197f5537e5e52ac994710bdf502d2a33c  masters/v26.0/src/original-envbanana.glb
 f0b4e7ce1204f97f438a988b0e2979c5f88b6fbc7ba8a37da9863f636193873b  masters/v26.0/src/original-envfrangipani.glb
+0d2e7437369f30df17349702c202ee4ff4e19603bb17defb657da2d793aabbdc  masters/v26.0/src/original-envisanhouse.glb
+8641677198715170b7380c2b4bb87f5a7d47cec1a1a3b7e62c34f57dde0902ab  masters/v26.0/src/original-envscooter.glb
+4ae734e8a8b068f14659fbbe2a058b2f0dd83135d5f1b42fd1f52e1ced36ccf8  masters/v26.0/src/original-envtank.glb
+ee15ff087296576c3d5bbac759701b3ce8c8bcc6411c905dcced258c27e4875c  masters/v26.0/src/original-fan.glb
+020db46f0d2318b070725a77db0f6f6c7b2aafddfbfd116343a9f02c180f8ad9  masters/v26.0/src/original-fruit.glb
+53432de4ed7800a887f565adda5274be688f96e280af92d49fe592c059cc50a9  masters/v26.0/src/original-ganesha.glb
+f3d4a12e1ed4be007e6cfc87af4f4f00742df83e6982009b7550f960a2b11857  masters/v26.0/src/original-girl.glb
