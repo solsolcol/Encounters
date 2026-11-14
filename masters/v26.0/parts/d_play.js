@@ -417,9 +417,10 @@
     /* (v26.12: "Add a second") AS HE RAISES HIS BAI SRI AT THE TABLES the children who followed him there (c_crowd.js
        kidsFollow) throw their handfuls up over him, to fall before him past his eyes: the girl, and the boy a moment after
        her, each from its own jump (JUMP, BOYJUMP), each a third of a master's handful from the children's pool, lying on
-       the gravel and going into it as theirs do; her laugh with it. A child not with him (a Continue into the phase: they
-       are on their chase), or not standing still within four metres, throws nothing: a throw from out of reach is not one */
-    const TABLE_TOSS = { ahead: 0.7, reach: 4.0, gap: 0.65, first: 0.15 };
+       the gravel and going into it as theirs do; her laugh with it. A child not standing still within four metres of him
+       (still on the way) throws nothing: a throw from out of reach is not one. Thrown high to land 1.5 m before him, where
+       his eyes on the tables see them come down: at 0.7 m they fell under his raised bai sri, unseen (photographed) */
+    const TABLE_TOSS = { ahead: 1.5, reach: 4.0, gap: 0.65, first: 0.15 };
     function kidsTables(run) {
       if (!kidsDir.follow) return false;
       const fx = -Math.sin(yaw.rotation.y), fz = -Math.cos(yaw.rotation.y), to = [yaw.position.x + fx * TABLE_TOSS.ahead, yaw.position.z + fz * TABLE_TOSS.ahead];
@@ -431,7 +432,7 @@
         after(TABLE_TOSS.first + i * TABLE_TOSS.gap, () => { if (!live(run) || !P.group.visible) return;
           span(P, 'Happy_jump', J.t0, J.t1, J.secs, { fade: 0.22, then: (Q) => rest(Q, 0.35) });
           after(J.let, () => { if (!live(run) || !P.group.visible) return;
-            petalBurst([g.x, J.hand || 1.62, g.z], to, dayClock.t, { r: 0.6, up: 1.35, n: 44, s: 0.03, seed: 6203 + 17 * K.i, pool: kidPool, sink: 18 });
+            petalBurst([g.x, J.hand || 1.62, g.z], to, dayClock.t, { r: 0.7, up: 1.7, n: 44, s: 0.03, seed: 6203 + 17 * K.i, pool: kidPool, sink: 18 });
             if (worldSfx && !(soundOff && soundOff())) { const pan = panAt(g.x, g.z);
               worldSfx('x3petals', 0.3, K.i ? 1.12 : 1.06, pan);
               if (!K.i && worldSfx('x3os1', 0.3, 1, pan)) { ambLast = 'x3os1'; ambBusy = dayClock.t + 3.6; extrasHeard.laugh++; } }
