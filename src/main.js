@@ -1161,11 +1161,16 @@ function treeKit() {
 /* v15: every engine optimization has a switch, ON by default, so a probe can
    draw the SAME frozen frame with it off and on and compare every pixel —
    the proof that an optimization changed nothing on screen. */
-const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true, lightSets: true, ctxRestore: true, herSounds: true, musicPark: true, lightMem: true, lightSeeds: true, skelMerge: true, ivSharp: true, ivMsaa: true };
+const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true, lightSets: true, ctxRestore: true, herSounds: true, musicPark: true, lightMem: true, lightSeeds: true, skelMerge: true, ivSharp: true, ivMsaa: true, onePass: true, noGarbage: true, lazyRot: true };
 /* a probe may switch any of them off from the address (`?opt=boneSkip:0,warmTiny:0`),
    so a switch that acts at LOAD time can be compared build against itself */
 { const m = /[?&]opt=([^&]*)/.exec(location.search);
   if (m) for (const kv of decodeURIComponent(m[1]).split(',')) { const [k, v] = kv.split(':'); if (k in OPT) OPT[k] = v !== '0'; } }
+/* (v26.11) A CHAPTER'S OWN SWITCHES live in this table too, so the address turns them off the same way; a chapter
+   reads one through ctx.opt(key) and never writes it. onePass: episode 4 chapter 3's flat see-through cards drawn in
+   one pass (its b_world1.js ONEPASS); noGarbage: its frame's lists kept and refilled where they were made anew
+   (NOGARB); lazyRot: its bodies' bones' angles worked out when read (LAZYROT). No other chapter reads any key:
+   unchanged by construction */
 /* v15: A MATRIX IS COMPOSED ONLY WHEN WHAT IT IS MADE OF CHANGED. three.js
    recomposes every object's local matrix from its position, rotation and
    scale on every frame and flags its world matrix dirty — so the root of
@@ -7275,6 +7280,8 @@ const CHCTX = {
      from (a sealed result on record). Episode 3 chapter 5 keeps its films unskippable until it has been (noSkip). A
      function, so the store is read at the moment of asking (sealedResults is declared further down). */
   sealedBefore: (key) => { if (SEALED_NOW.has(key)) return true; try { return !!sealedResults()[key]; } catch { return false; } },
+  /* (v26.11) a switch of the OPT table, read-only: true unless the address turned it off (`?opt=onePass:0`) */
+  opt: (key) => OPT[key] !== false,
   unifySkeletons,                     // v15.2: one exact skeleton per freshly parsed model
   /* THE HEAD BONE, named once for everybody (v5.01). Every rigged human in
      this game is a Mixamo skeleton, and glTF SANITIZES its node names:

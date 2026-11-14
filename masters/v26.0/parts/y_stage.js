@@ -1029,6 +1029,8 @@
       S = null;
     }
 
+    onePassCheck();                                      // (b_world1.js: every card given one pass is one flat plain card)
+    const SNAP = [];                                     // (the proof's snapshot: stage.proofSnap)
     return (S = {
       world, noteTex, blockers: blockers(),
       ready: () => true,
@@ -1055,6 +1057,26 @@
       /* for the probes (tools/probes/e4c3drive.mjs): the play's own state and its beats by name */
       dbg: { myGrip: GRIP, hold: HOLD, myArms: MYARMS, viewfinder(v) { FL.vf = v || null; }, clocks: { A: ENDT.A, B: ENDT.B, C: ENDT.C, D: ENDT.D, CLOSE, FEST, BETW, TELL, ANSW, OPEN: OPENT }, armsOf, handTo, handsTo, restHands, baiGrip, baiPut, play, open, cast, bursts, BAI, handBai, myBai, ymBai, petalBurst, auraAt, baiHands, baiRaise, lineBegin, dawnBegin, breathBegin, places: { PLACE, LINE_AT, KNEEL2, DAWN_AT, TABLES_AT }, dancers, dancersDir, danceBlock, dancerSpot, kids, kidsDir, kidPath, taper, extrasHeard, people, crowd, headDampLay },
       who: () => people.filter(P => !P.driver).map(P => ({ key: P.key, ready: P.ready, take: P.cur, skin: P.lvShown, skins: P.lv.map(v => (v ? 1 : 0)).join('') })),
+      /* (v26.11) THE SPEED-UPS' PROOF IN ONE PAGE: garb(on) turns NOGARB over. proofSnap() takes every ready body's laid
+         poses off (armsBack) and keeps its bones' turns, places and sizes and its mixer's own buffers (three's mixer writes
+         a bone only when its value changed since its last write, so what a run lays on depends on those buffers too);
+         proofUnsnap() takes the poses off again and puts all of it back, so the two ways start from the same bits.
+         relay() runs each body's take where it stands and lays every pose after it (what peopleTick lays); wind(t) the
+         banners at t, their matrices returned; lazyProof (b_world1.js) the angles' own proof */
+      garb(on) { NOGARB = !!on; return NOGARB; },
+      lazyProof,
+      proofSnap() { SNAP.length = 0; for (const P of people) { if (!P.ready) continue; armsBack(P);
+          const B = []; for (const n in P.bone) { const b = P.bone[n]; B.push([b, b.quaternion.clone(), b.position.clone(), b.scale.clone()]); }
+          const M = P.mixer, bufs = M ? M._bindings.map(x => [x, x.buffer.slice(), x.cumulativeWeight, x.cumulativeWeightAdditive]) : [];
+          SNAP.push([P, B, M ? M._accuIndex : 0, bufs]); } return SNAP.length; },
+      proofUnsnap() { for (const [P, B, ai, bufs] of SNAP) { armsBack(P);
+          for (const [b, q, p0, s0] of B) { b.quaternion.copy(q); b.position.copy(p0); b.scale.copy(s0); }
+          if (P.mixer) { P.mixer._accuIndex = ai; for (const [x, buf, cw, ca] of bufs) { x.buffer.set(buf); x.cumulativeWeight = cw; x.cumulativeWeightAdditive = ca; } } }
+        return SNAP.length; },
+      relay() { let n = 0; for (const P of people) { if (!P.ready) continue; n++; armsBack(P); P.mixer.update(0);
+          if (P.hd) headDampLay(P); if (P.shd) shouldersLay(P); if (P.restLegs) seatLegsLay(P);
+          if (P.restHands && !(P.layK > 0)) restHandsLay(P); if (!P.htLate) handsTrue(P); } return n; },
+      wind(t) { windTick(t); return banners.im ? Array.from(banners.im.instanceMatrix.array) : null; },
       plan: { TURF, TABLES, HALL, TENT_W1, TENT_W2, TENT_E, CHIEF, BENCH, POLE, TON_TABLE, WEST_TABLE },
       /* the ground's own noises (ambTick): how many have sounded, and the last (a probe counts them over a stretch of play) */
       amb: () => ({ n: ambN, last: ambLast, next: +ambAt.toFixed(2), beds: Object.assign({}, bedMix), pan: +musPan.toFixed(3) }),

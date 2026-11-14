@@ -11,7 +11,7 @@
    heap's growth over the window (what the collector will have to take back). This box draws in software, so the GPU's
    own cost is not what a phone's is: the CPU side is what this measures, and that is the side a phone heats with.
 
-     CHROMIUM_PATH=... [SECS=8] [TOP=40] [SPOTS=spawn,masters,crowd,tables] OUT=<file.json> node tools/probes/frameprof.mjs
+     CHROMIUM_PATH=... [SECS=8] [TOP=40] [SPOTS=spawn,masters,crowd,tables] [ALLOC=1] [QS='&opt=lazyRot:0'] OUT=<file.json> node tools/probes/frameprof.mjs
 */
 import { chromium } from 'playwright';
 import fs from 'node:fs';
@@ -29,7 +29,7 @@ const p = await ctx.newPage();
 const errs = [];
 p.on('pageerror', e => errs.push('PAGEERROR ' + e.message));
 const T0 = Date.now(), log = (...a) => console.log(((Date.now() - T0) / 1000).toFixed(0) + 's', ...a);
-await p.goto(PAGE + '?ch=e4c3', { waitUntil: 'load', timeout: 240000 });
+await p.goto(PAGE + '?ch=e4c3' + (process.env.QS || ''), { waitUntil: 'load', timeout: 240000 });   // (QS: '&opt=onePass:0' measures with a switch off)
 await p.waitForFunction(() => !!window.__enc, null, { timeout: 120000 });
 await p.evaluate(() => document.getElementById('startBtn').click());
 await toPlay(p, 1500000);
@@ -47,7 +47,9 @@ for (const name of WANT) {
   const info = await p.evaluate(() => { const E = window.__enc, R = E.renderer; R.render(E.scene, E.camera); return { calls: R.info.render.calls, triangles: R.info.render.triangles, programs: (R.info.programs || []).length, geometries: R.info.memory.geometries, textures: R.info.memory.textures }; });
   const heap0 = await p.evaluate(() => (performance.memory ? performance.memory.usedJSHeapSize : 0));
   await p.evaluate(() => { window.__fp = 0; const f = () => { window.__fp++; window.__fpr = requestAnimationFrame(f); }; window.__fpr = requestAnimationFrame(f); });
-  if (ALLOC) await cdp.send('HeapProfiler.startSampling', { samplingInterval: 1024 });
+  /* (the sampler reports only what is still alive when it stops unless told to keep what the collector took: and what
+     the collector took is the garbage this mode is for. Both flags, or the report shows the world's own lasting memory) */
+  if (ALLOC) await cdp.send('HeapProfiler.startSampling', { samplingInterval: 1024, includeObjectsCollectedByMajorGC: true, includeObjectsCollectedByMinorGC: true });
   await cdp.send('Profiler.start');
   const t0 = Date.now(); await new Promise(r => setTimeout(r, SECS * 1000)); const wall = (Date.now() - t0) / 1000;
   const { profile } = await cdp.send('Profiler.stop');

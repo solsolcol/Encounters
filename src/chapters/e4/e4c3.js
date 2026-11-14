@@ -405,6 +405,111 @@
     const mats = [];
     const M = (o) => { const m = new THREE.MeshStandardMaterial(o); mats.push(m); return m; };
     const B = (o) => { const m = new THREE.MeshBasicMaterial(o); mats.push(m); return m; };   // unlit: a glow, a painted layer
+    /* ONE PASS FOR A FLAT CARD (v26.11, the speed-ups' first: no memory made and thrown away each frame). three draws a
+       see-through two-sided material in two passes, its back faces and then its front faces, and looks its program up
+       again before each (renderObject sets material.needsUpdate both times: two look-ups a card a frame, each a
+       hundred-field object built and thrown away, and a draw that paints nothing). A card that is ONE FLAT FACE is wholly
+       front or wholly back to any eye, so of the two passes one draws nothing and the other draws every triangle in the
+       geometry's own order; one pass (forceSinglePass) draws the same triangles in the same order, and an unlit material
+       that reads no normal (MeshBasicMaterial with no envMap) shades them the same. Only such cards are given it, where
+       they are made (the sun's rays, the taper's flame, the place to kneel), and each is checked when the world is built
+       (onePassCheck): a material given it whose every user is not one flat plain card is drawn as three draws it, and the
+       console says so. `?opt=onePass:0` draws all of them as three does: the proof compares the two pixel for pixel. */
+    const ONEPASS = !ctx.opt || ctx.opt('onePass');
+    /* NO LIST MADE AND THROWN AWAY EACH FRAME (v26.11): where a frame made a new list or a new turn to hold numbers it had
+       (a hand's resting finger turns, two lists joined to walk them), it keeps one and fills it again: the same numbers
+       copied into it in the same order, so every turn laid after it is the same to the bit. `?opt=noGarbage:0` makes
+       them anew as before (the proof compares every bone of every body, the two ways) */
+    let NOGARB = !ctx.opt || ctx.opt('noGarbage');                   // (a probe turns it over in one page: stage.garb)
+    /* A BONE'S ANGLES WORKED OUT WHEN THEY ARE READ (v26.11, the speed-ups' second: the bones' arithmetic without the
+       machinery's overhead). three keeps every object's turn twice, as a quaternion and as three angles, and each time the
+       quaternion changes it works the angles out again at once (Object3D's onQuaternionChange: a rotation matrix and an
+       arcsine and two arctangents). A body's bones turn thousands of times a frame (every take writes each one, every pose
+       laid after it turns it again) and nothing ever reads their angles: the matrices are made from the quaternion. So a
+       bone's quaternion only marks its angles stale, and they are worked out, by three's own setFromQuaternion on the same
+       quaternion, the moment anything reads or writes any of them: every read gives the very numbers the old way held, and
+       a write to one angle finds the others as the old way had them. Proved by every angle read both ways after the same
+       turns (stage.lazyProof) and every bone compared. `?opt=lazyRot:0` leaves three's way */
+    const LAZYROT = !ctx.opt || ctx.opt('lazyRot');
+    function lazyRot(o) { if (LAZYROT) lazyInstall(o); }
+    function lazyInstall(o) {
+      const q = o.quaternion, e = o.rotation;
+      if (!q || !e || e.__lazy) return;
+      let dirty = false, x = e._x, y = e._y, z = e._z, order = e._order;
+      const sync = () => { dirty = false; e.setFromQuaternion(q, undefined, false); };
+      Object.defineProperty(e, '_x', { get() { if (dirty) sync(); return x; }, set(v) { if (dirty) sync(); x = v; }, configurable: true });
+      Object.defineProperty(e, '_y', { get() { if (dirty) sync(); return y; }, set(v) { if (dirty) sync(); y = v; }, configurable: true });
+      Object.defineProperty(e, '_z', { get() { if (dirty) sync(); return z; }, set(v) { if (dirty) sync(); z = v; }, configurable: true });
+      Object.defineProperty(e, '_order', { get() { if (dirty) sync(); return order; }, set(v) { if (dirty) sync(); order = v; }, configurable: true });
+      Object.defineProperty(e, '__lazy', { value: true });
+      q._onChange(() => { dirty = true; });
+    }
+    /* (the proof, for a probe: pairs of objects, one turned the old way and one the new, put through the same long string
+       of turns and reads, every read and every quaternion compared bit for bit; then every bone of every body read
+       against its angles worked out afresh from its quaternion. Answers the count of numbers compared and of those
+       that differed) */
+    function lazyProof(seed = 1, steps = 4000) {
+      let r = seed >>> 0; const rnd = () => ((r = (r * 1664525 + 1013904223) >>> 0) / 4294967296);
+      const same = (a, b) => Object.is(a, b);
+      let n = 0, bad = 0; const chk = (a, b) => { n++; if (!same(a, b)) bad++; };
+      const A = [], Bq = [];
+      for (let i = 0; i < 6; i++) { const a = new THREE.Object3D(), b = new THREE.Object3D(); lazyInstall(b); A.push(a); Bq.push(b); }
+      const tq = new THREE.Quaternion(), te = new THREE.Euler(), ax = new THREE.Vector3(), arr = [0, 0, 0, 0], orders = ['XYZ', 'YXZ', 'ZXY', 'ZYX', 'YZX', 'XZY'];
+      for (let k = 0; k < steps; k++) {
+        const i = Math.floor(rnd() * A.length), a = A[i], b = Bq[i], op = Math.floor(rnd() * 12);
+        const v = [rnd() * 2 - 1, rnd() * 2 - 1, rnd() * 2 - 1, rnd() * 2 - 1], ang = (rnd() * 2 - 1) * 3.2;
+        tq.set(v[0], v[1], v[2], v[3]).normalize();
+        for (const o of [a, b]) {
+          if (op === 0) o.quaternion.copy(tq);
+          else if (op === 1) o.quaternion.slerp(tq, 0.37);
+          else if (op === 2) o.quaternion.premultiply(tq);
+          else if (op === 3) { arr[0] = tq.x; arr[1] = tq.y; arr[2] = tq.z; arr[3] = tq.w; o.quaternion.fromArray(arr); }
+          else if (op === 4) o.rotation.x = ang;
+          else if (op === 5) o.rotation.y = ang;
+          else if (op === 6) o.rotation.set(ang, -ang * 0.5, ang * 0.25, orders[k % 6]);
+          else if (op === 7) o.rotation.reorder(orders[(k + 3) % 6]);
+          else if (op === 8) o.quaternion.setFromAxisAngle(ax.set(v[0], v[1], v[2]).normalize(), ang);
+          else if (op === 9) o.rotateY(ang);
+          else if (op === 10) o.quaternion.invert();
+          else o.lookAt(v[0] * 5, v[1] * 5, v[2] * 5);
+        }
+        if (rnd() < 0.5) { chk(a.rotation.x, b.rotation.x); chk(a.rotation.y, b.rotation.y); chk(a.rotation.z, b.rotation.z); chk(a.rotation.order, b.rotation.order); }
+        chk(a.quaternion.x, b.quaternion.x); chk(a.quaternion.y, b.quaternion.y); chk(a.quaternion.z, b.quaternion.z); chk(a.quaternion.w, b.quaternion.w);
+      }
+      for (let i = 0; i < A.length; i++) { const a = A[i], b = Bq[i]; const ea = a.rotation.toArray(), eb = b.rotation.toArray(); for (let j = 0; j < 4; j++) chk(ea[j], eb[j]);
+        a.updateMatrix(); b.updateMatrix(); for (let j = 0; j < 16; j++) chk(a.matrix.elements[j], b.matrix.elements[j]); }
+      let bones = 0, boneBad = 0;
+      world.traverse(o => { if (!o.isBone || !o.rotation.__lazy) return; bones++; te.setFromQuaternion(o.quaternion, o.rotation.order, false);
+        if (!same(te.x, o.rotation.x) || !same(te.y, o.rotation.y) || !same(te.z, o.rotation.z)) boneBad++; });
+      return { compared: n, differed: bad, lazyBones: bones, bonesDiffering: boneBad };
+    }
+    function flatCard(g) {
+      const p = g && g.attributes && g.attributes.position; if (!p || (g.morphAttributes && g.morphAttributes.position)) return false;
+      const ix = g.index ? g.index.array : null, n = ix ? ix.length : p.count;
+      let have = false, nx = 0, ny = 0, nz = 0, ax = 0, ay = 0, az = 0, off = 0, size = 0;
+      for (let t = 0; t + 2 < n; t += 3) {
+        const a = ix ? ix[t] : t, b = ix ? ix[t + 1] : t + 1, c = ix ? ix[t + 2] : t + 2;
+        const Ax = p.getX(a), Ay = p.getY(a), Az = p.getZ(a), ux = p.getX(b) - Ax, uy = p.getY(b) - Ay, uz = p.getZ(b) - Az, wx = p.getX(c) - Ax, wy = p.getY(c) - Ay, wz = p.getZ(c) - Az;
+        const cx = uy * wz - uz * wy, cy = uz * wx - ux * wz, cz = ux * wy - uy * wx, L = Math.hypot(cx, cy, cz);
+        if (!(L > 1e-12)) continue;
+        if (!have) { nx = cx / L; ny = cy / L; nz = cz / L; ax = Ax; ay = Ay; az = Az; have = true; }
+        if ((cx * nx + cy * ny + cz * nz) / L < 0.999999) return false;                    // (a triangle facing another way)
+        for (let k = 0; k < 3; k++) { const X = Ax + (k === 1 ? ux : k === 2 ? wx : 0), Y = Ay + (k === 1 ? uy : k === 2 ? wy : 0), Z = Az + (k === 1 ? uz : k === 2 ? wz : 0);
+          off = Math.max(off, Math.abs((X - ax) * nx + (Y - ay) * ny + (Z - az) * nz)); size = Math.max(size, Math.hypot(X - ax, Y - ay, Z - az)); }
+      }
+      return have && off <= 1e-6 * Math.max(size, 1e-6);
+    }
+    function onePassCheck() {
+      const users = new Map();
+      world.traverse(o => { if (!o.material) return; for (const m of [].concat(o.material)) if (m && m.forceSinglePass) { if (!users.has(m)) users.set(m, []); users.get(m).push(o); } });
+      for (const [m, os] of users) {
+        const bad = !m.isMeshBasicMaterial || !!m.envMap ? m.type : (os.find(o => !o.isMesh || o.isInstancedMesh || o.isSkinnedMesh || o.isBatchedMesh || !flatCard(o.geometry)) || null);
+        if (!bad) continue;
+        m.forceSinglePass = false;
+        console.warn('onePass: a material given one pass is drawn in two (' + (typeof bad === 'string' ? bad : (bad.name || bad.type) + ' is not one flat plain card') + ')');
+      }
+      return users.size;
+    }
     const wallNow = () => performance.now() / 1000;
     const have = (key) => DATA.assets.includes(key);      // a thing is asked for only once its file is in the build
     const waiting = new Set();                            // the keys the world names that have not landed yet (stage.info)
@@ -1381,12 +1486,15 @@
        the film's in a film (so a seek lands on the same picture, v6.4), the wall's in play */
     function windTick(t) {
       const im = banners.im; if (!im) return;
-      banners.list.forEach((b, i) => {
-        const a = Math.sin(t * 0.9 * b.k + b.ph), c = Math.sin(t * 0.53 * b.k + b.ph * 1.7);
-        _we.set(0.045 * a + 0.02, b.ry + 0.5 * c, 0.035 * c, 'YXZ'); _wq.setFromEuler(_we);
-        im.setMatrixAt(i, _wm.compose(_wp.set(b.x, b.y, b.z), _wq, _ws));
-      });
+      /* (NOGARB: the same body in a plain loop, in the same order, where forEach was handed a new closure each frame) */
+      if (NOGARB) { const L = banners.list; for (let i = 0; i < L.length; i++) windOne(im, t, L[i], i); }
+      else banners.list.forEach((b, i) => windOne(im, t, b, i));
       im.instanceMatrix.needsUpdate = true;
+    }
+    function windOne(im, t, b, i) {
+      const a = Math.sin(t * 0.9 * b.k + b.ph), c = Math.sin(t * 0.53 * b.k + b.ph * 1.7);
+      _we.set(0.045 * a + 0.02, b.ry + 0.5 * c, 0.035 * c, 'YXZ'); _wq.setFromEuler(_we);
+      im.setMatrixAt(i, _wm.compose(_wp.set(b.x, b.y, b.z), _wq, _ws));
     }
     /* the pole wrapped in tiers of coloured satin, and the strings of small flags that run from its top (photograph 8) */
     const TOP = [POLE.x, POLE.h - 0.25, POLE.z];
@@ -1675,7 +1783,7 @@
         const sp = new THREE.Sprite(m); sp.scale.set(SKY_R * 0.95, SKY_R * 0.95, 1); sp.renderOrder = -3; sp.frustumCulled = false; skyFx.g.add(sp); skyFx.burst = sp; }
       /* the rays: under the two great trees' crowns (b_world2.js TREES: the rain tree west of the turf, the mango behind
          the chief canopy), each from a place in the crown, seeded */
-      skyFx.rayMat = B({ map: makeRay(), color: 0xfff1d6, transparent: true, depthWrite: false, fog: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, opacity: 0 });
+      skyFx.rayMat = B({ map: makeRay(), color: 0xfff1d6, transparent: true, depthWrite: false, fog: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, forceSinglePass: ONEPASS, opacity: 0 });
       const rnd = rng(4129), g0 = new THREE.PlaneGeometry(1, 1); g0.translate(0, -0.5, 0);
       for (const [T0, n] of [[TREES[0], 10], [TREES[1], 6]]) for (let i = 0; i < n; i++) {
         const an = rnd() * 6.283, r = T0.h * (0.12 + 0.3 * Math.sqrt(rnd())), y = T0.h * (0.55 + 0.22 * rnd());
@@ -1980,7 +2088,7 @@
         const m = cloneSkinned(src), skins = [];
         m.traverse(q => {
           if (q.isSkinnedMesh) { q.castShadow = false; q.receiveShadow = false; q.frustumCulled = false; skins.push(q); }
-          if (q.isBone) { P.bone[q.name] = q; if (/^(mixamorig:?)?Head$/.test(q.name)) P.head = q; if (/^(mixamorig:?)?Hips$/.test(q.name)) P.hips = q; }
+          if (q.isBone) { P.bone[q.name] = q; lazyRot(q); if (/^(mixamorig:?)?Head$/.test(q.name)) P.head = q; if (/^(mixamorig:?)?Hips$/.test(q.name)) P.hips = q; }
         });
         if (o.s) m.scale.multiplyScalar(o.s);
         for (const q of skins) for (const mm of [].concat(q.material)) if (mm && mm.map) sheetOf(key, mm.map);
@@ -2298,7 +2406,8 @@
       for (const n in H.take) { const w = P.w[n] || 0; if (w > 0) { cut += w * (1 - H.take[n].k); if (w > bw) { bw = w; best = n; } } }
       if (!best || !(cut > 1e-4)) return;
       const M = H.take[best].M, kk = 1 - Math.min(1, cut);
-      H.bones.forEach((b, j) => { _hdQ.copy(b.quaternion); b.quaternion.copy(M[j]).slerp(_hdQ, kk); });
+      if (NOGARB) { const L = H.bones; for (let j = 0; j < L.length; j++) { const b = L[j]; _hdQ.copy(b.quaternion); b.quaternion.copy(M[j]).slerp(_hdQ, kk); } }
+      else H.bones.forEach((b, j) => { _hdQ.copy(b.quaternion); b.quaternion.copy(M[j]).slerp(_hdQ, kk); });
       H.bones[0].updateWorldMatrix(false, true);
     }
     /* THE SHOULDERS LET DOWN (o.shoulders: { take: k }; v26.8, Chad, 13 Nov 2026: "ton's natural resting posture while
@@ -2633,6 +2742,15 @@
         /* world' = turn * world, so local' = parentWorld^-1 * turn * parentWorld * local */
         F.b.quaternion.premultiply(_hq2).premultiply(_hq).premultiply(_hq2.invert()); }
     }
+    /* (v26.11, NOGARB) a hand's resting turns, kept before a pose is laid on them: ONE list a hand and a caller (`key`),
+       its turns copied in again each time (the same numbers a new list held: q copied from the bone as clone() made it;
+       `i` the joint's own, or the one given), where a new list and a new turn for each joint were made every frame */
+    function restList(a, key, from, i1) {
+      let L = a[key];
+      if (!L || L.length !== from.length) { L = a[key] = from.map(F => ({ b: F.b, q: new THREE.Quaternion(), i: 0 })); }
+      for (let j = 0; j < from.length; j++) { const F = from[j], R = L[j]; R.b = F.b; R.q.copy(F.b.quaternion); R.i = i1 > 0 ? i1 : F.i; }
+      return L;
+    }
     /* (v26.8) A HAND OPENED ROUND A THING HELD FROM BELOW (photograph 5: the kneeling man's fingers spread up the bowl's
        sides, straight and a little bent, where the woman's take left hers closed in fists against it, Chad: "the arms of
        the female ... dont look very natural and abit awkward while holding the bai sri"): each finger's and the thumb's
@@ -2647,8 +2765,10 @@
       if (!a.thumb) { a.thumb = []; const S0 = sd === 'L' ? 'Left' : 'Right';
         for (let i = 1; i <= 3; i++) { const b = P.bone[S0 + 'HandThumb' + i] || P.bone['mixamorig:' + S0 + 'HandThumb' + i]; if (b) a.thumb.push({ b, q: new THREE.Quaternion(), i }); } }
       if (!a.fing.length) return;
-      if (!a.curled) { for (const F of a.fing) F.q.copy(F.b.quaternion); a.fingRest = a.thumb.map(F => ({ b: F.b, q: F.b.quaternion.clone(), i: F.i })); a.curled = true; }
-      for (const F of a.fing.concat(a.thumb)) { if (!F.qb) F.qb = bindLocal(P, F.b) || F.b.quaternion.clone(); F.b.quaternion.copy(F.qb); }
+      if (!a.curled) { for (const F of a.fing) F.q.copy(F.b.quaternion); a.fingRest = NOGARB ? restList(a, 'frT', a.thumb, 0) : a.thumb.map(F => ({ b: F.b, q: F.b.quaternion.clone(), i: F.i })); a.curled = true; }
+      if (NOGARB) { for (const F of a.fing) { if (!F.qb) F.qb = bindLocal(P, F.b) || F.b.quaternion.clone(); F.b.quaternion.copy(F.qb); }
+        for (const F of a.thumb) { if (!F.qb) F.qb = bindLocal(P, F.b) || F.b.quaternion.clone(); F.b.quaternion.copy(F.qb); } }
+      else for (const F of a.fing.concat(a.thumb)) { if (!F.qb) F.qb = bindLocal(P, F.b) || F.b.quaternion.clone(); F.b.quaternion.copy(F.qb); }
       a.hand.updateWorldMatrix(true, true);
       a.hand.getWorldQuaternion(_hq); _hf.copy(a.fL).applyQuaternion(_hq); _hn.copy(a.nL).applyQuaternion(_hq); _ha.crossVectors(_hf, _hn).normalize();
       for (const F of a.fing) { _hq.setFromAxisAngle(_ha, curl[F.i - 1] || 0); F.b.parent.getWorldQuaternion(_hq2);
@@ -3200,10 +3320,13 @@
         _rhC.copy(r.f).applyQuaternion(_rhQ); _rhD.copy(r.n).applyQuaternion(_rhQ);
         _ha.crossVectors(_rhD, _rhC); _hm.makeBasis(_ha, _rhD, _rhC); _hm2.makeBasis(r.aL || a.aL, r.nL || a.nL, r.fL || a.fL).transpose(); _hm.multiply(_hm2); _hq.setFromRotationMatrix(_hm);
         a.hand.parent.getWorldQuaternion(_hq2); a.hand.quaternion.copy(_hq2.invert().multiply(_hq)); a.hand.updateWorldMatrix(false, true);
-        if (r.fing.length) { if (!a.fing) a.fing = []; if (!a.curled) { a.fingRest = r.fing.map(F => ({ b: F.b, q: F.b.quaternion.clone(), i: 1 })); a.curled = true; }
+        if (r.fing.length) { if (!a.fing) a.fing = []; if (!a.curled) { a.fingRest = NOGARB ? restList(a, 'frR', r.fing, 1) : r.fing.map(F => ({ b: F.b, q: F.b.quaternion.clone(), i: 1 })); a.curled = true; }
           for (const F of r.fing) F.b.quaternion.copy(F.q); }
         /* (part of the way, while a gesture fades in or out: each turn eased from the take's own) */
-        if (share < 0.999) { for (const [b, q0] of [[a.up, a.qUp], [a.fore, a.qFore], [a.hand, a.qHand]]) { _rhT.copy(b.quaternion); b.quaternion.copy(q0).slerp(_rhT, share); }
+        if (share < 0.999) { if (NOGARB) { _rhT.copy(a.up.quaternion); a.up.quaternion.copy(a.qUp).slerp(_rhT, share);
+            _rhT.copy(a.fore.quaternion); a.fore.quaternion.copy(a.qFore).slerp(_rhT, share);
+            _rhT.copy(a.hand.quaternion); a.hand.quaternion.copy(a.qHand).slerp(_rhT, share); }
+          else for (const [b, q0] of [[a.up, a.qUp], [a.fore, a.qFore], [a.hand, a.qHand]]) { _rhT.copy(b.quaternion); b.quaternion.copy(q0).slerp(_rhT, share); }
           if (a.fingRest) for (const F of a.fingRest) { _rhT.copy(F.b.quaternion); F.b.quaternion.copy(F.q).slerp(_rhT, share); }
           a.up.updateWorldMatrix(false, true); } }
     }
@@ -3889,7 +4012,7 @@
       P.htLate = true;                                                         // (her hands are held true after her arm is laid: taperTick)
       const g = stand('w3taper', 0, -40, 0, 0, { parent: dayOne, near: true }); g.visible = false;
       const gF = new THREE.PlaneGeometry(1, 1); gF.translate(0, 0.5, 0);
-      const fl = new THREE.Mesh(gF, B({ map: tex(makeFlame(THREE, cnv)), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, side: THREE.DoubleSide }));
+      const fl = new THREE.Mesh(gF, B({ map: tex(makeFlame(THREE, cnv)), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, side: THREE.DoubleSide, forceSinglePass: ONEPASS }));
       fl.renderOrder = 4; fl.visible = false; fl.frustumCulled = false; dayOne.add(fl); owned.push(fl);
       cast.taper = P; castBlock.taper = new THREE.Box3(new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 61, 0));
       /* two wicks of the front row (b_world2.js: every 0.33 m along z -10.09), and the taper held up between them (v26.1:
@@ -4289,7 +4412,7 @@
     /* ---- THE PLACE TO KNEEL: a soft ring on the ground, breathing (white: gold is one man's) */
     const zone = (() => {
       const g = new THREE.Group(); g.visible = false; world.add(g);
-      const flatM = (geo, o) => { const m = new THREE.Mesh(geo, B(Object.assign({ color: 0xffffff, transparent: true, depthWrite: false, fog: false, side: THREE.DoubleSide }, o))); m.rotation.x = -Math.PI / 2; m.renderOrder = 3; g.add(m); return m; };
+      const flatM = (geo, o) => { const m = new THREE.Mesh(geo, B(Object.assign({ color: 0xffffff, transparent: true, depthWrite: false, fog: false, side: THREE.DoubleSide, forceSinglePass: ONEPASS }, o))); m.rotation.x = -Math.PI / 2; m.renderOrder = 3; g.add(m); return m; };
       const disc = flatM(new THREE.CircleGeometry(0.4, 32), { opacity: 0.18 });
       const ring = flatM(new THREE.RingGeometry(0.36, 0.43, 40), { opacity: 0.85 }); ring.position.y = 0.003;
       const wave = flatM(new THREE.RingGeometry(0.38, 0.43, 40), { opacity: 0.7 }); wave.position.y = 0.005;
@@ -7049,6 +7172,8 @@
       S = null;
     }
 
+    onePassCheck();                                      // (b_world1.js: every card given one pass is one flat plain card)
+    const SNAP = [];                                     // (the proof's snapshot: stage.proofSnap)
     return (S = {
       world, noteTex, blockers: blockers(),
       ready: () => true,
@@ -7075,6 +7200,26 @@
       /* for the probes (tools/probes/e4c3drive.mjs): the play's own state and its beats by name */
       dbg: { myGrip: GRIP, hold: HOLD, myArms: MYARMS, viewfinder(v) { FL.vf = v || null; }, clocks: { A: ENDT.A, B: ENDT.B, C: ENDT.C, D: ENDT.D, CLOSE, FEST, BETW, TELL, ANSW, OPEN: OPENT }, armsOf, handTo, handsTo, restHands, baiGrip, baiPut, play, open, cast, bursts, BAI, handBai, myBai, ymBai, petalBurst, auraAt, baiHands, baiRaise, lineBegin, dawnBegin, breathBegin, places: { PLACE, LINE_AT, KNEEL2, DAWN_AT, TABLES_AT }, dancers, dancersDir, danceBlock, dancerSpot, kids, kidsDir, kidPath, taper, extrasHeard, people, crowd, headDampLay },
       who: () => people.filter(P => !P.driver).map(P => ({ key: P.key, ready: P.ready, take: P.cur, skin: P.lvShown, skins: P.lv.map(v => (v ? 1 : 0)).join('') })),
+      /* (v26.11) THE SPEED-UPS' PROOF IN ONE PAGE: garb(on) turns NOGARB over. proofSnap() takes every ready body's laid
+         poses off (armsBack) and keeps its bones' turns, places and sizes and its mixer's own buffers (three's mixer writes
+         a bone only when its value changed since its last write, so what a run lays on depends on those buffers too);
+         proofUnsnap() takes the poses off again and puts all of it back, so the two ways start from the same bits.
+         relay() runs each body's take where it stands and lays every pose after it (what peopleTick lays); wind(t) the
+         banners at t, their matrices returned; lazyProof (b_world1.js) the angles' own proof */
+      garb(on) { NOGARB = !!on; return NOGARB; },
+      lazyProof,
+      proofSnap() { SNAP.length = 0; for (const P of people) { if (!P.ready) continue; armsBack(P);
+          const B = []; for (const n in P.bone) { const b = P.bone[n]; B.push([b, b.quaternion.clone(), b.position.clone(), b.scale.clone()]); }
+          const M = P.mixer, bufs = M ? M._bindings.map(x => [x, x.buffer.slice(), x.cumulativeWeight, x.cumulativeWeightAdditive]) : [];
+          SNAP.push([P, B, M ? M._accuIndex : 0, bufs]); } return SNAP.length; },
+      proofUnsnap() { for (const [P, B, ai, bufs] of SNAP) { armsBack(P);
+          for (const [b, q, p0, s0] of B) { b.quaternion.copy(q); b.position.copy(p0); b.scale.copy(s0); }
+          if (P.mixer) { P.mixer._accuIndex = ai; for (const [x, buf, cw, ca] of bufs) { x.buffer.set(buf); x.cumulativeWeight = cw; x.cumulativeWeightAdditive = ca; } } }
+        return SNAP.length; },
+      relay() { let n = 0; for (const P of people) { if (!P.ready) continue; n++; armsBack(P); P.mixer.update(0);
+          if (P.hd) headDampLay(P); if (P.shd) shouldersLay(P); if (P.restLegs) seatLegsLay(P);
+          if (P.restHands && !(P.layK > 0)) restHandsLay(P); if (!P.htLate) handsTrue(P); } return n; },
+      wind(t) { windTick(t); return banners.im ? Array.from(banners.im.instanceMatrix.array) : null; },
       plan: { TURF, TABLES, HALL, TENT_W1, TENT_W2, TENT_E, CHIEF, BENCH, POLE, TON_TABLE, WEST_TABLE },
       /* the ground's own noises (ambTick): how many have sounded, and the last (a probe counts them over a stretch of play) */
       amb: () => ({ n: ambN, last: ambLast, next: +ambAt.toFixed(2), beds: Object.assign({}, bedMix), pan: +musPan.toFixed(3) }),

@@ -4,7 +4,7 @@
    own clock (never a stopwatch: this box draws a frame a second), and presses through the engine's own E path. A finger's
    play-through of the real input path is tools/probes/e4c3drive.mjs; this one is for seeing every beat quickly.
 
-     CHROMIUM_PATH=... VIEW=phone|desk OUT=<dir> [FAST=1] node tools/probes/e4c3beats.mjs <steps.json>
+     CHROMIUM_PATH=... VIEW=phone|desk OUT=<dir> [FAST=1] [QS='&opt=onePass:0'] node tools/probes/e4c3beats.mjs <steps.json>
 
    INTRO=1 runs the steps against the chapter's opening film (seek, seekAt, shot), which Start begins.
 
@@ -61,7 +61,8 @@ p.on('pageerror', e => errs.push('PAGEERROR ' + e.message + ' | ' + String(e.sta
 p.on('console', m => { if (m.type() === 'error' || /failed|threw|has no take|no pose/i.test(m.text())) errs.push('CONSOLE ' + m.text().slice(0, 260)); });
 const T0 = Date.now(), el = () => ((Date.now() - T0) / 1000).toFixed(0) + 's', log = (...a) => console.log(el(), ...a);
 const frames = (n = 3) => p.evaluate((n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); }), n);
-await p.goto(PAGE + '?ch=e4c3', { waitUntil: 'load', timeout: 240000 });
+/* (QS: more of the address, e.g. `&opt=onePass:0` to draw with a speed-up's switch off) */
+await p.goto(PAGE + '?ch=e4c3' + (process.env.QS || ''), { waitUntil: 'load', timeout: 240000 });
 await p.waitForFunction(() => !!window.__enc, null, { timeout: 120000 });
 await p.evaluate(() => document.getElementById('startBtn').click());
 /* INTRO=1: the steps are run against the chapter's OPENING FILM (Start begins it): it is waited for, not skipped */

@@ -91,7 +91,7 @@
         const sp = new THREE.Sprite(m); sp.scale.set(SKY_R * 0.95, SKY_R * 0.95, 1); sp.renderOrder = -3; sp.frustumCulled = false; skyFx.g.add(sp); skyFx.burst = sp; }
       /* the rays: under the two great trees' crowns (b_world2.js TREES: the rain tree west of the turf, the mango behind
          the chief canopy), each from a place in the crown, seeded */
-      skyFx.rayMat = B({ map: makeRay(), color: 0xfff1d6, transparent: true, depthWrite: false, fog: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, opacity: 0 });
+      skyFx.rayMat = B({ map: makeRay(), color: 0xfff1d6, transparent: true, depthWrite: false, fog: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, forceSinglePass: ONEPASS, opacity: 0 });
       const rnd = rng(4129), g0 = new THREE.PlaneGeometry(1, 1); g0.translate(0, -0.5, 0);
       for (const [T0, n] of [[TREES[0], 10], [TREES[1], 6]]) for (let i = 0; i < n; i++) {
         const an = rnd() * 6.283, r = T0.h * (0.12 + 0.3 * Math.sqrt(rnd())), y = T0.h * (0.55 + 0.22 * rnd());

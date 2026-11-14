@@ -13,6 +13,111 @@
     const mats = [];
     const M = (o) => { const m = new THREE.MeshStandardMaterial(o); mats.push(m); return m; };
     const B = (o) => { const m = new THREE.MeshBasicMaterial(o); mats.push(m); return m; };   // unlit: a glow, a painted layer
+    /* ONE PASS FOR A FLAT CARD (v26.11, the speed-ups' first: no memory made and thrown away each frame). three draws a
+       see-through two-sided material in two passes, its back faces and then its front faces, and looks its program up
+       again before each (renderObject sets material.needsUpdate both times: two look-ups a card a frame, each a
+       hundred-field object built and thrown away, and a draw that paints nothing). A card that is ONE FLAT FACE is wholly
+       front or wholly back to any eye, so of the two passes one draws nothing and the other draws every triangle in the
+       geometry's own order; one pass (forceSinglePass) draws the same triangles in the same order, and an unlit material
+       that reads no normal (MeshBasicMaterial with no envMap) shades them the same. Only such cards are given it, where
+       they are made (the sun's rays, the taper's flame, the place to kneel), and each is checked when the world is built
+       (onePassCheck): a material given it whose every user is not one flat plain card is drawn as three draws it, and the
+       console says so. `?opt=onePass:0` draws all of them as three does: the proof compares the two pixel for pixel. */
+    const ONEPASS = !ctx.opt || ctx.opt('onePass');
+    /* NO LIST MADE AND THROWN AWAY EACH FRAME (v26.11): where a frame made a new list or a new turn to hold numbers it had
+       (a hand's resting finger turns, two lists joined to walk them), it keeps one and fills it again: the same numbers
+       copied into it in the same order, so every turn laid after it is the same to the bit. `?opt=noGarbage:0` makes
+       them anew as before (the proof compares every bone of every body, the two ways) */
+    let NOGARB = !ctx.opt || ctx.opt('noGarbage');                   // (a probe turns it over in one page: stage.garb)
+    /* A BONE'S ANGLES WORKED OUT WHEN THEY ARE READ (v26.11, the speed-ups' second: the bones' arithmetic without the
+       machinery's overhead). three keeps every object's turn twice, as a quaternion and as three angles, and each time the
+       quaternion changes it works the angles out again at once (Object3D's onQuaternionChange: a rotation matrix and an
+       arcsine and two arctangents). A body's bones turn thousands of times a frame (every take writes each one, every pose
+       laid after it turns it again) and nothing ever reads their angles: the matrices are made from the quaternion. So a
+       bone's quaternion only marks its angles stale, and they are worked out, by three's own setFromQuaternion on the same
+       quaternion, the moment anything reads or writes any of them: every read gives the very numbers the old way held, and
+       a write to one angle finds the others as the old way had them. Proved by every angle read both ways after the same
+       turns (stage.lazyProof) and every bone compared. `?opt=lazyRot:0` leaves three's way */
+    const LAZYROT = !ctx.opt || ctx.opt('lazyRot');
+    function lazyRot(o) { if (LAZYROT) lazyInstall(o); }
+    function lazyInstall(o) {
+      const q = o.quaternion, e = o.rotation;
+      if (!q || !e || e.__lazy) return;
+      let dirty = false, x = e._x, y = e._y, z = e._z, order = e._order;
+      const sync = () => { dirty = false; e.setFromQuaternion(q, undefined, false); };
+      Object.defineProperty(e, '_x', { get() { if (dirty) sync(); return x; }, set(v) { if (dirty) sync(); x = v; }, configurable: true });
+      Object.defineProperty(e, '_y', { get() { if (dirty) sync(); return y; }, set(v) { if (dirty) sync(); y = v; }, configurable: true });
+      Object.defineProperty(e, '_z', { get() { if (dirty) sync(); return z; }, set(v) { if (dirty) sync(); z = v; }, configurable: true });
+      Object.defineProperty(e, '_order', { get() { if (dirty) sync(); return order; }, set(v) { if (dirty) sync(); order = v; }, configurable: true });
+      Object.defineProperty(e, '__lazy', { value: true });
+      q._onChange(() => { dirty = true; });
+    }
+    /* (the proof, for a probe: pairs of objects, one turned the old way and one the new, put through the same long string
+       of turns and reads, every read and every quaternion compared bit for bit; then every bone of every body read
+       against its angles worked out afresh from its quaternion. Answers the count of numbers compared and of those
+       that differed) */
+    function lazyProof(seed = 1, steps = 4000) {
+      let r = seed >>> 0; const rnd = () => ((r = (r * 1664525 + 1013904223) >>> 0) / 4294967296);
+      const same = (a, b) => Object.is(a, b);
+      let n = 0, bad = 0; const chk = (a, b) => { n++; if (!same(a, b)) bad++; };
+      const A = [], Bq = [];
+      for (let i = 0; i < 6; i++) { const a = new THREE.Object3D(), b = new THREE.Object3D(); lazyInstall(b); A.push(a); Bq.push(b); }
+      const tq = new THREE.Quaternion(), te = new THREE.Euler(), ax = new THREE.Vector3(), arr = [0, 0, 0, 0], orders = ['XYZ', 'YXZ', 'ZXY', 'ZYX', 'YZX', 'XZY'];
+      for (let k = 0; k < steps; k++) {
+        const i = Math.floor(rnd() * A.length), a = A[i], b = Bq[i], op = Math.floor(rnd() * 12);
+        const v = [rnd() * 2 - 1, rnd() * 2 - 1, rnd() * 2 - 1, rnd() * 2 - 1], ang = (rnd() * 2 - 1) * 3.2;
+        tq.set(v[0], v[1], v[2], v[3]).normalize();
+        for (const o of [a, b]) {
+          if (op === 0) o.quaternion.copy(tq);
+          else if (op === 1) o.quaternion.slerp(tq, 0.37);
+          else if (op === 2) o.quaternion.premultiply(tq);
+          else if (op === 3) { arr[0] = tq.x; arr[1] = tq.y; arr[2] = tq.z; arr[3] = tq.w; o.quaternion.fromArray(arr); }
+          else if (op === 4) o.rotation.x = ang;
+          else if (op === 5) o.rotation.y = ang;
+          else if (op === 6) o.rotation.set(ang, -ang * 0.5, ang * 0.25, orders[k % 6]);
+          else if (op === 7) o.rotation.reorder(orders[(k + 3) % 6]);
+          else if (op === 8) o.quaternion.setFromAxisAngle(ax.set(v[0], v[1], v[2]).normalize(), ang);
+          else if (op === 9) o.rotateY(ang);
+          else if (op === 10) o.quaternion.invert();
+          else o.lookAt(v[0] * 5, v[1] * 5, v[2] * 5);
+        }
+        if (rnd() < 0.5) { chk(a.rotation.x, b.rotation.x); chk(a.rotation.y, b.rotation.y); chk(a.rotation.z, b.rotation.z); chk(a.rotation.order, b.rotation.order); }
+        chk(a.quaternion.x, b.quaternion.x); chk(a.quaternion.y, b.quaternion.y); chk(a.quaternion.z, b.quaternion.z); chk(a.quaternion.w, b.quaternion.w);
+      }
+      for (let i = 0; i < A.length; i++) { const a = A[i], b = Bq[i]; const ea = a.rotation.toArray(), eb = b.rotation.toArray(); for (let j = 0; j < 4; j++) chk(ea[j], eb[j]);
+        a.updateMatrix(); b.updateMatrix(); for (let j = 0; j < 16; j++) chk(a.matrix.elements[j], b.matrix.elements[j]); }
+      let bones = 0, boneBad = 0;
+      world.traverse(o => { if (!o.isBone || !o.rotation.__lazy) return; bones++; te.setFromQuaternion(o.quaternion, o.rotation.order, false);
+        if (!same(te.x, o.rotation.x) || !same(te.y, o.rotation.y) || !same(te.z, o.rotation.z)) boneBad++; });
+      return { compared: n, differed: bad, lazyBones: bones, bonesDiffering: boneBad };
+    }
+    function flatCard(g) {
+      const p = g && g.attributes && g.attributes.position; if (!p || (g.morphAttributes && g.morphAttributes.position)) return false;
+      const ix = g.index ? g.index.array : null, n = ix ? ix.length : p.count;
+      let have = false, nx = 0, ny = 0, nz = 0, ax = 0, ay = 0, az = 0, off = 0, size = 0;
+      for (let t = 0; t + 2 < n; t += 3) {
+        const a = ix ? ix[t] : t, b = ix ? ix[t + 1] : t + 1, c = ix ? ix[t + 2] : t + 2;
+        const Ax = p.getX(a), Ay = p.getY(a), Az = p.getZ(a), ux = p.getX(b) - Ax, uy = p.getY(b) - Ay, uz = p.getZ(b) - Az, wx = p.getX(c) - Ax, wy = p.getY(c) - Ay, wz = p.getZ(c) - Az;
+        const cx = uy * wz - uz * wy, cy = uz * wx - ux * wz, cz = ux * wy - uy * wx, L = Math.hypot(cx, cy, cz);
+        if (!(L > 1e-12)) continue;
+        if (!have) { nx = cx / L; ny = cy / L; nz = cz / L; ax = Ax; ay = Ay; az = Az; have = true; }
+        if ((cx * nx + cy * ny + cz * nz) / L < 0.999999) return false;                    // (a triangle facing another way)
+        for (let k = 0; k < 3; k++) { const X = Ax + (k === 1 ? ux : k === 2 ? wx : 0), Y = Ay + (k === 1 ? uy : k === 2 ? wy : 0), Z = Az + (k === 1 ? uz : k === 2 ? wz : 0);
+          off = Math.max(off, Math.abs((X - ax) * nx + (Y - ay) * ny + (Z - az) * nz)); size = Math.max(size, Math.hypot(X - ax, Y - ay, Z - az)); }
+      }
+      return have && off <= 1e-6 * Math.max(size, 1e-6);
+    }
+    function onePassCheck() {
+      const users = new Map();
+      world.traverse(o => { if (!o.material) return; for (const m of [].concat(o.material)) if (m && m.forceSinglePass) { if (!users.has(m)) users.set(m, []); users.get(m).push(o); } });
+      for (const [m, os] of users) {
+        const bad = !m.isMeshBasicMaterial || !!m.envMap ? m.type : (os.find(o => !o.isMesh || o.isInstancedMesh || o.isSkinnedMesh || o.isBatchedMesh || !flatCard(o.geometry)) || null);
+        if (!bad) continue;
+        m.forceSinglePass = false;
+        console.warn('onePass: a material given one pass is drawn in two (' + (typeof bad === 'string' ? bad : (bad.name || bad.type) + ' is not one flat plain card') + ')');
+      }
+      return users.size;
+    }
     const wallNow = () => performance.now() / 1000;
     const have = (key) => DATA.assets.includes(key);      // a thing is asked for only once its file is in the build
     const waiting = new Set();                            // the keys the world names that have not landed yet (stage.info)

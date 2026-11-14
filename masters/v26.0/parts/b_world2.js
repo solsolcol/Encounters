@@ -278,12 +278,15 @@
        the film's in a film (so a seek lands on the same picture, v6.4), the wall's in play */
     function windTick(t) {
       const im = banners.im; if (!im) return;
-      banners.list.forEach((b, i) => {
-        const a = Math.sin(t * 0.9 * b.k + b.ph), c = Math.sin(t * 0.53 * b.k + b.ph * 1.7);
-        _we.set(0.045 * a + 0.02, b.ry + 0.5 * c, 0.035 * c, 'YXZ'); _wq.setFromEuler(_we);
-        im.setMatrixAt(i, _wm.compose(_wp.set(b.x, b.y, b.z), _wq, _ws));
-      });
+      /* (NOGARB: the same body in a plain loop, in the same order, where forEach was handed a new closure each frame) */
+      if (NOGARB) { const L = banners.list; for (let i = 0; i < L.length; i++) windOne(im, t, L[i], i); }
+      else banners.list.forEach((b, i) => windOne(im, t, b, i));
       im.instanceMatrix.needsUpdate = true;
+    }
+    function windOne(im, t, b, i) {
+      const a = Math.sin(t * 0.9 * b.k + b.ph), c = Math.sin(t * 0.53 * b.k + b.ph * 1.7);
+      _we.set(0.045 * a + 0.02, b.ry + 0.5 * c, 0.035 * c, 'YXZ'); _wq.setFromEuler(_we);
+      im.setMatrixAt(i, _wm.compose(_wp.set(b.x, b.y, b.z), _wq, _ws));
     }
     /* the pole wrapped in tiers of coloured satin, and the strings of small flags that run from its top (photograph 8) */
     const TOP = [POLE.x, POLE.h - 0.25, POLE.z];

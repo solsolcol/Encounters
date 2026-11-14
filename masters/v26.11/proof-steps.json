@@ -1,0 +1,116 @@
+[
+{
+"wait": 3
+},
+{
+"eval": "/* the speed-ups' proofs in one page:\n   __cmp(label): the world drawn twice in one task, the flat see-through two-sided cards in two passes (three's way) and\n     then in one (forceSinglePass), every byte of the two pictures compared; and for each card's material, how many bytes\n     it paints (drawn once more without it), so a card that is not on screen is not counted as proved\n   __bones(): every bone of every skinned body in the world, its local turn, place, size and world matrix, as numbers\n   __same(A, B): the two lists compared with Object.is (bit for bit: -0 is not 0)\n   __aim(x, y, z): the lens turned to look at a point */\n(() => {\n  const flatOf = new WeakMap();\n  const flat = (g) => {\n    if (flatOf.has(g)) return flatOf.get(g);\n    const p = g.attributes.position, ix = g.index ? g.index.array : null, n = ix ? ix.length : (p ? p.count : 0);\n    let ok = !!p && !(g.morphAttributes && g.morphAttributes.position), nx = 0, ny = 0, nz = 0, have = false, ax = 0, ay = 0, az = 0, size = 0, off = 0;\n    for (let t = 0; ok && t + 2 < n; t += 3) {\n      const a = ix ? ix[t] : t, b = ix ? ix[t + 1] : t + 1, c = ix ? ix[t + 2] : t + 2;\n      const Ax = p.getX(a), Ay = p.getY(a), Az = p.getZ(a), ux = p.getX(b) - Ax, uy = p.getY(b) - Ay, uz = p.getZ(b) - Az, wx = p.getX(c) - Ax, wy = p.getY(c) - Ay, wz = p.getZ(c) - Az;\n      const cx = uy * wz - uz * wy, cy = uz * wx - ux * wz, cz = ux * wy - uy * wx, L = Math.hypot(cx, cy, cz);\n      if (!(L > 1e-12)) continue;\n      if (!have) { nx = cx / L; ny = cy / L; nz = cz / L; ax = Ax; ay = Ay; az = Az; have = true; }\n      if ((cx * nx + cy * ny + cz * nz) / L < 0.999999) ok = false;\n      for (const [X, Y, Z] of [[Ax, Ay, Az], [Ax + ux, Ay + uy, Az + uz], [Ax + wx, Ay + wy, Az + wz]]) {\n        off = Math.max(off, Math.abs((X - ax) * nx + (Y - ay) * ny + (Z - az) * nz)); size = Math.max(size, Math.hypot(X - ax, Y - ay, Z - az)); }\n    }\n    const r = ok && have && off <= 1e-6 * Math.max(size, 1e-6);\n    flatOf.set(g, r); return r;\n  };\n  const cards = () => {\n    const users = new Map();\n    E.scene.traverse(o => { if (!o.isMesh) return; for (const m of [].concat(o.material)) { if (!m || !m.transparent || m.side !== 2) continue;\n      if (!users.has(m)) users.set(m, []); users.get(m).push(o); } });\n    const take = [], left = [];\n    for (const [m, os] of users) (m.isMeshBasicMaterial && !m.envMap && os.every(o => !o.isInstancedMesh && !o.isSkinnedMesh && !o.isBatchedMesh && o.geometry && flat(o.geometry)) ? take : left).push(m);\n    return { take, left, users };\n  };\n  const shown = (o) => { for (let q = o; q; q = q.parent) if (!q.visible) return false; return true; };\n  window.__cmp = (label) => {\n    const R = E.renderer, gl = R.getContext(), S = E.scene, C = E.camera, { take, left, users } = cards();\n    const w = gl.drawingBufferWidth, h = gl.drawingBufferHeight, N = w * h * 4;\n    const draw = (buf) => { R.setRenderTarget(null); R.render(S, C); gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, buf); return R.info.render.calls; };\n    const A = new Uint8Array(N), B = new Uint8Array(N), D = new Uint8Array(N);\n    const was = take.map(m => m.forceSinglePass);\n    for (const m of take) { m.forceSinglePass = false; m.needsUpdate = true; } const cA = draw(A);\n    for (const m of take) { m.forceSinglePass = true; m.needsUpdate = true; } const cB = draw(B);\n    let diff = 0, maxd = 0; for (let i = 0; i < N; i++) if (A[i] !== B[i]) { diff++; maxd = Math.max(maxd, Math.abs(A[i] - B[i])); }\n    const per = [];\n    for (const m of take) { if (!users.get(m).some(shown) || !(m.opacity > 0)) continue; const v0 = m.visible; m.visible = false; draw(D); m.visible = v0;\n      let paint = 0; for (let i = 0; i < N; i++) if (D[i] !== B[i]) paint++; per.push(m.id + ':' + paint); }\n    take.forEach((m, i) => { m.forceSinglePass = was[i]; m.needsUpdate = true; });\n    return label + ' | cards ' + take.length + ' (on screen, bytes each paints: ' + (per.join(' ') || 'none') + ') not flat ' + left.length + ' | calls ' + cA + ' -> ' + cB + ' | bytes differing two passes vs one: ' + diff + ' (max ' + maxd + ') of ' + N;\n  };\n  window.__bones = () => {\n    const out = []; E.scene.updateMatrixWorld(true);\n    E.scene.traverse(o => { if (!o.isSkinnedMesh || !o.skeleton) return; for (const b of o.skeleton.bones) {\n      const q = b.quaternion, p = b.position, s = b.scale; out.push(q.x, q.y, q.z, q.w, p.x, p.y, p.z, s.x, s.y, s.z); for (const e of b.matrixWorld.elements) out.push(e); } });\n    return out;\n  };\n  window.__same = (A, B) => { if (A.length !== B.length) return 'LENGTH ' + A.length + ' vs ' + B.length; let d = 0, first = -1; for (let i = 0; i < A.length; i++) if (!Object.is(A[i], B[i])) { d++; if (first < 0) first = i; }\n    return d ? ('DIFFER ' + d + ' of ' + A.length + ' (first at ' + first + ': ' + A[first] + ' vs ' + B[first] + ')') : ('identical, ' + A.length + ' numbers'); };\n  window.__aim = (x, y, z) => { const c = new E.camera.position.constructor(); E.camera.getWorldPosition(c); const dx = x - c.x, dy = y - c.y, dz = z - c.z;\n    E.yaw.rotation.y = Math.atan2(-dx, -dz); E.pitch.rotation.x = Math.atan2(dy, Math.hypot(dx, dz)); return 'aimed'; };\n  window.__cardAt = (pred) => { let f = null; E.scene.traverse(o => { if (!f && o.isMesh && o.material && !Array.isArray(o.material) && o.material.forceSinglePass && pred(o)) f = o; }); if (!f) return null; const v = new E.camera.position.constructor(); f.getWorldPosition(v); return [v.x, v.y, v.z]; };\n  return 'proofs ready';\n})()\n"
+},
+{
+"eval": "(() => { const g = E.stage; g.proofSnap(); g.garb(true); const n = g.relay(); const A = __bones(); g.proofUnsnap(); g.garb(true); g.relay(); const B = __bones(); g.proofUnsnap(); g.garb(true); return 'relay spawn control (true/true, ' + n + ' bodies): ' + __same(A, B); })()"
+},
+{
+"eval": "(() => { const g = E.stage; g.proofSnap(); g.garb(false); const n = g.relay(); const A = __bones(); g.proofUnsnap(); g.garb(true); g.relay(); const B = __bones(); g.proofUnsnap(); g.garb(true); return 'relay spawn (false/true, ' + n + ' bodies): ' + __same(A, B); })()"
+},
+{
+"eval": "(() => { const g = E.stage; g.garb(false); const A = g.wind(12.345); g.garb(true); const B = g.wind(12.345); return 'wind: ' + __same(A, B); })()"
+},
+{
+"eval": "(() => { let k = 0, f = null; E.scene.traverse(o => { if (o.isMesh && o.material && o.material.forceSinglePass && o.geometry.type === 'PlaneGeometry' && o.renderOrder === 3 && o.material.blending === 2) { if (k++ === 0) f = o; } }); if (!f) return 'no ray'; const v = new E.camera.position.constructor(); f.getWorldPosition(v); const L = Math.hypot(17, 20, 10), dx = 17 / L, dy = 20 / L, dz = 10 / L, len = Math.min(16, (v.y - 0.05) / dy), fx = v.x - dx * len * 0.6, fz = v.z - dz * len * 0.6, h = Math.hypot(dx, dz); E.yaw.position.x = fx - dx / h * 9; E.yaw.position.z = fz - dz / h * 9; E.yaw.rotation.y = Math.atan2(-dx, -dz); E.pitch.rotation.x = 0.2; return 'lens set back from ray 0 at ' + [E.yaw.position.x, E.yaw.position.z].map(a => a.toFixed(1)); })()"
+},
+{
+"wait": 1
+},
+{
+"eval": "__cmp('ray 0 looking along the light')"
+},
+{
+"eval": "(() => { let k = 0, f = null; E.scene.traverse(o => { if (o.isMesh && o.material && o.material.forceSinglePass && o.geometry.type === 'PlaneGeometry' && o.renderOrder === 3 && o.material.blending === 2) { if (k++ === 4) f = o; } }); if (!f) return 'no ray'; const v = new E.camera.position.constructor(); f.getWorldPosition(v); const L = Math.hypot(17, 20, 10), dx = 17 / L, dy = 20 / L, dz = 10 / L, len = Math.min(16, (v.y - 0.05) / dy), fx = v.x - dx * len * 0.6, fz = v.z - dz * len * 0.6, h = Math.hypot(dx, dz); E.yaw.position.x = fx - dx / h * 9; E.yaw.position.z = fz - dz / h * 9; E.yaw.rotation.y = Math.atan2(-dx, -dz); E.pitch.rotation.x = 0.2; return 'lens set back from ray 4 at ' + [E.yaw.position.x, E.yaw.position.z].map(a => a.toFixed(1)); })()"
+},
+{
+"wait": 1
+},
+{
+"eval": "__cmp('ray 4 looking along the light')"
+},
+{
+"eval": "(() => { let k = 0, f = null; E.scene.traverse(o => { if (o.isMesh && o.material && o.material.forceSinglePass && o.geometry.type === 'PlaneGeometry' && o.renderOrder === 3 && o.material.blending === 2) { if (k++ === 8) f = o; } }); if (!f) return 'no ray'; const v = new E.camera.position.constructor(); f.getWorldPosition(v); const L = Math.hypot(17, 20, 10), dx = 17 / L, dy = 20 / L, dz = 10 / L, len = Math.min(16, (v.y - 0.05) / dy), fx = v.x - dx * len * 0.6, fz = v.z - dz * len * 0.6, h = Math.hypot(dx, dz); E.yaw.position.x = fx - dx / h * 9; E.yaw.position.z = fz - dz / h * 9; E.yaw.rotation.y = Math.atan2(-dx, -dz); E.pitch.rotation.x = 0.2; return 'lens set back from ray 8 at ' + [E.yaw.position.x, E.yaw.position.z].map(a => a.toFixed(1)); })()"
+},
+{
+"wait": 1
+},
+{
+"eval": "__cmp('ray 8 looking along the light')"
+},
+{
+"eval": "(() => { let k = 0, f = null; E.scene.traverse(o => { if (o.isMesh && o.material && o.material.forceSinglePass && o.geometry.type === 'PlaneGeometry' && o.renderOrder === 3 && o.material.blending === 2) { if (k++ === 11) f = o; } }); if (!f) return 'no ray'; const v = new E.camera.position.constructor(); f.getWorldPosition(v); const L = Math.hypot(17, 20, 10), dx = 17 / L, dy = 20 / L, dz = 10 / L, len = Math.min(16, (v.y - 0.05) / dy), fx = v.x - dx * len * 0.6, fz = v.z - dz * len * 0.6, h = Math.hypot(dx, dz); E.yaw.position.x = fx - dx / h * 9; E.yaw.position.z = fz - dz / h * 9; E.yaw.rotation.y = Math.atan2(-dx, -dz); E.pitch.rotation.x = 0.2; return 'lens set back from ray 11 at ' + [E.yaw.position.x, E.yaw.position.z].map(a => a.toFixed(1)); })()"
+},
+{
+"wait": 1
+},
+{
+"eval": "__cmp('ray 11 looking along the light')"
+},
+{
+"eval": "(() => { let k = 0, f = null; E.scene.traverse(o => { if (o.isMesh && o.material && o.material.forceSinglePass && o.geometry.type === 'PlaneGeometry' && o.renderOrder === 3 && o.material.blending === 2) { if (k++ === 14) f = o; } }); if (!f) return 'no ray'; const v = new E.camera.position.constructor(); f.getWorldPosition(v); const L = Math.hypot(17, 20, 10), dx = 17 / L, dy = 20 / L, dz = 10 / L, len = Math.min(16, (v.y - 0.05) / dy), fx = v.x - dx * len * 0.6, fz = v.z - dz * len * 0.6, h = Math.hypot(dx, dz); E.yaw.position.x = fx - dx / h * 9; E.yaw.position.z = fz - dz / h * 9; E.yaw.rotation.y = Math.atan2(-dx, -dz); E.pitch.rotation.x = 0.2; return 'lens set back from ray 14 at ' + [E.yaw.position.x, E.yaw.position.z].map(a => a.toFixed(1)); })()"
+},
+{
+"wait": 1
+},
+{
+"eval": "__cmp('ray 14 looking along the light')"
+},
+{
+"phase": "tables"
+},
+{
+"wait": 3
+},
+{
+"eval": "(() => { const g = E.stage; g.proofSnap(); g.garb(true); const n = g.relay(); const A = __bones(); g.proofUnsnap(); g.garb(true); g.relay(); const B = __bones(); g.proofUnsnap(); g.garb(true); return 'relay tables control (true/true, ' + n + ' bodies): ' + __same(A, B); })()"
+},
+{
+"eval": "(() => { const g = E.stage; g.proofSnap(); g.garb(false); const n = g.relay(); const A = __bones(); g.proofUnsnap(); g.garb(true); g.relay(); const B = __bones(); g.proofUnsnap(); g.garb(true); return 'relay tables (false/true, ' + n + ' bodies): ' + __same(A, B); })()"
+},
+{
+"wait": 2
+},
+{
+"eval": "(() => { const g = E.stage; g.proofSnap(); g.garb(false); const n = g.relay(); const A = __bones(); g.proofUnsnap(); g.garb(true); g.relay(); const B = __bones(); g.proofUnsnap(); g.garb(true); return 'relay tables later (false/true, ' + n + ' bodies): ' + __same(A, B); })()"
+},
+{
+"film": "festival"
+},
+{
+"eval": "(() => { const g = E.stage, T = g.dbg.clocks, t = (T.FEST.masters + 0.6); g.proofSnap(); g.garb(true); E.cine.seek(t); const A = __bones(); g.proofUnsnap(); g.garb(true); E.cine.seek(t); const B = __bones(); g.garb(true); return 'film masters control (true/true) at ' + t.toFixed(2) + ': ' + __same(A, B); })()"
+},
+{
+"eval": "(() => { const g = E.stage, T = g.dbg.clocks, t = (T.FEST.masters + 0.6); g.proofSnap(); g.garb(false); E.cine.seek(t); const A = __bones(); g.proofUnsnap(); g.garb(true); E.cine.seek(t); const B = __bones(); g.garb(true); return 'film masters (false/true) at ' + t.toFixed(2) + ': ' + __same(A, B); })()"
+},
+{
+"eval": "(() => { const g = E.stage, T = g.dbg.clocks, t = (T.FEST.low + 1.5); g.proofSnap(); g.garb(true); E.cine.seek(t); const A = __bones(); g.proofUnsnap(); g.garb(true); E.cine.seek(t); const B = __bones(); g.garb(true); return 'film the bowl lowered control (true/true) at ' + t.toFixed(2) + ': ' + __same(A, B); })()"
+},
+{
+"eval": "(() => { const g = E.stage, T = g.dbg.clocks, t = (T.FEST.low + 1.5); g.proofSnap(); g.garb(false); E.cine.seek(t); const A = __bones(); g.proofUnsnap(); g.garb(true); E.cine.seek(t); const B = __bones(); g.garb(true); return 'film the bowl lowered (false/true) at ' + t.toFixed(2) + ': ' + __same(A, B); })()"
+},
+{
+"eval": "(() => { const g = E.stage, T = g.dbg.clocks, t = (T.FEST.pet + 0.3); g.proofSnap(); g.garb(true); E.cine.seek(t); const A = __bones(); g.proofUnsnap(); g.garb(true); E.cine.seek(t); const B = __bones(); g.garb(true); return 'film petals control (true/true) at ' + t.toFixed(2) + ': ' + __same(A, B); })()"
+},
+{
+"eval": "(() => { const g = E.stage, T = g.dbg.clocks, t = (T.FEST.pet + 0.3); g.proofSnap(); g.garb(false); E.cine.seek(t); const A = __bones(); g.proofUnsnap(); g.garb(true); E.cine.seek(t); const B = __bones(); g.garb(true); return 'film petals (false/true) at ' + t.toFixed(2) + ': ' + __same(A, B); })()"
+},
+{
+"eval": "(() => { const g = E.stage, T = g.dbg.clocks, t = (T.FEST.dance + 2); g.proofSnap(); g.garb(true); E.cine.seek(t); const A = __bones(); g.proofUnsnap(); g.garb(true); E.cine.seek(t); const B = __bones(); g.garb(true); return 'film dance control (true/true) at ' + t.toFixed(2) + ': ' + __same(A, B); })()"
+},
+{
+"eval": "(() => { const g = E.stage, T = g.dbg.clocks, t = (T.FEST.dance + 2); g.proofSnap(); g.garb(false); E.cine.seek(t); const A = __bones(); g.proofUnsnap(); g.garb(true); E.cine.seek(t); const B = __bones(); g.garb(true); return 'film dance (false/true) at ' + t.toFixed(2) + ': ' + __same(A, B); })()"
+},
+{
+"eval": "(() => { const g = E.stage, T = g.dbg.clocks, t = (T.FEST.pho + 1); g.proofSnap(); g.garb(true); E.cine.seek(t); const A = __bones(); g.proofUnsnap(); g.garb(true); E.cine.seek(t); const B = __bones(); g.garb(true); return 'film the man in white control (true/true) at ' + t.toFixed(2) + ': ' + __same(A, B); })()"
+},
+{
+"eval": "(() => { const g = E.stage, T = g.dbg.clocks, t = (T.FEST.pho + 1); g.proofSnap(); g.garb(false); E.cine.seek(t); const A = __bones(); g.proofUnsnap(); g.garb(true); E.cine.seek(t); const B = __bones(); g.garb(true); return 'film the man in white (false/true) at ' + t.toFixed(2) + ': ' + __same(A, B); })()"
+},
+{
+"eval": "JSON.stringify(E.stage.lazyProof(23, 4000))"
+}
+]

@@ -34,7 +34,7 @@
     /* ---- THE PLACE TO KNEEL: a soft ring on the ground, breathing (white: gold is one man's) */
     const zone = (() => {
       const g = new THREE.Group(); g.visible = false; world.add(g);
-      const flatM = (geo, o) => { const m = new THREE.Mesh(geo, B(Object.assign({ color: 0xffffff, transparent: true, depthWrite: false, fog: false, side: THREE.DoubleSide }, o))); m.rotation.x = -Math.PI / 2; m.renderOrder = 3; g.add(m); return m; };
+      const flatM = (geo, o) => { const m = new THREE.Mesh(geo, B(Object.assign({ color: 0xffffff, transparent: true, depthWrite: false, fog: false, side: THREE.DoubleSide, forceSinglePass: ONEPASS }, o))); m.rotation.x = -Math.PI / 2; m.renderOrder = 3; g.add(m); return m; };
       const disc = flatM(new THREE.CircleGeometry(0.4, 32), { opacity: 0.18 });
       const ring = flatM(new THREE.RingGeometry(0.36, 0.43, 40), { opacity: 0.85 }); ring.position.y = 0.003;
       const wave = flatM(new THREE.RingGeometry(0.38, 0.43, 40), { opacity: 0.7 }); wave.position.y = 0.005;

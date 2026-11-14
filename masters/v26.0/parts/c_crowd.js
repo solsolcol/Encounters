@@ -229,7 +229,7 @@
       P.htLate = true;                                                         // (her hands are held true after her arm is laid: taperTick)
       const g = stand('w3taper', 0, -40, 0, 0, { parent: dayOne, near: true }); g.visible = false;
       const gF = new THREE.PlaneGeometry(1, 1); gF.translate(0, 0.5, 0);
-      const fl = new THREE.Mesh(gF, B({ map: tex(makeFlame(THREE, cnv)), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, side: THREE.DoubleSide }));
+      const fl = new THREE.Mesh(gF, B({ map: tex(makeFlame(THREE, cnv)), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, side: THREE.DoubleSide, forceSinglePass: ONEPASS }));
       fl.renderOrder = 4; fl.visible = false; fl.frustumCulled = false; dayOne.add(fl); owned.push(fl);
       cast.taper = P; castBlock.taper = new THREE.Box3(new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 61, 0));
       /* two wicks of the front row (b_world2.js: every 0.33 m along z -10.09), and the taper held up between them (v26.1:
