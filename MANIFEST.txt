@@ -265,3 +265,14 @@ c13bc18d4397d9f191db6529ca6e326190888f667f28b02b0735086f3f11b16e  masters/v26.0/
 c157be5e0a9e80250b458c53850677e41b17e1f9be2e6c0fa12b1ef7f86cfab3  masters/v26.0/src/original-baisri.glb
 e24ece76a172749893219676ed6efe7d56f3e6b0643226c732e98721d29cef6a  masters/v26.0/src/original-bench.glb
 3566506647b350f3c74b43e04ca64820e8be7424695edb969376f70fe865be34  masters/v26.0/src/original-boy.glb
+3dba326220efb3de022985cb6d66a42b316efa8147812b06f3463bc8de0f1b6f  masters/v26.0/src/original-candle.glb
+bd14a7ea30867f28643fbebb7c4b28cb1fcf77b43c41f95896fe77f48f2c9450  masters/v26.0/src/original-candlemid.glb
+af8e54bc4ae3c8af0e03d794654d8577decff9d05307e7ada6401c0ec4cad5b7  masters/v26.0/src/original-candlesmall.glb
+f07e69379cc3cb01a352574172c35cd34e31167944d7a6ba382f05167cf0bd79  masters/v26.0/src/original-chicken.glb
+a0a5415eeb1ba81eec8858818a6ecc964076e8b1eeac309f43d469500a0d06e5  masters/v26.0/src/original-claypot.glb
+2ead21cfa8c24c04498e386cc998c22ece5b1f97af51afb0351edae6484ee8f9  masters/v26.0/src/original-coconut.glb
+500395435357b6202d1b7393dded3f45b0f35e65f3e0c548cd9b7f0fa282516f  masters/v26.0/src/original-croton2.glb
+5d8a04524106fc562f0621e28ea5766e551c676024f017170ce8ee263e68ee53  masters/v26.0/src/original-dancera.glb
+175a8fbb1bc5259c10faaf7f0f1559f9f0f6d66b93d891bf9d756b447d7f5eee  masters/v26.0/src/original-dancerb.glb
+5c3fcb62c3f0a592d267fcea86871b8ae84c2aba72d5785546c40ca3f11e5b00  masters/v26.0/src/original-deva.glb
+6051bd1eccdb5ae92b82f3b6a3796021773ccc08cfa659809596ca63e837331a  masters/v26.0/src/original-devb.glb
