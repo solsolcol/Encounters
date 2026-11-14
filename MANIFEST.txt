@@ -276,3 +276,13 @@ a0a5415eeb1ba81eec8858818a6ecc964076e8b1eeac309f43d469500a0d06e5  masters/v26.0/
 175a8fbb1bc5259c10faaf7f0f1559f9f0f6d66b93d891bf9d756b447d7f5eee  masters/v26.0/src/original-dancerb.glb
 5c3fcb62c3f0a592d267fcea86871b8ae84c2aba72d5785546c40ca3f11e5b00  masters/v26.0/src/original-deva.glb
 6051bd1eccdb5ae92b82f3b6a3796021773ccc08cfa659809596ca63e837331a  masters/v26.0/src/original-devb.glb
+f27e32a0b5662297fd2a8b10a85687fc1fa03d5c41c226f34ace43a8ec22c00a  masters/v26.0/src/original-devc.glb
+970b1f30ed1e9153f8bf574537305429195ae96105e60f7d371b97d72a490d20  masters/v26.0/src/original-devd.glb
+05caac7a317a53494b4ae726dfe5af57f92c781f421748a4f2ad6f0bafc13cff  masters/v26.0/src/original-deve.glb
+dfb6db2eaa339682de9b46a4e94bfd6634c03706d437da9bb7c7833d065594d2  masters/v26.0/src/original-devf.glb
+0eceaf6adf5ca53cb90a3505d4bd0eac8345a1b390432abb45d2dee7b1ebd43a  masters/v26.0/src/original-devg.glb
+d44dc944ce2f793541dfd6abf033523c289fa3160b15cddc30093fa4a781d238  masters/v26.0/src/original-devh.glb
+016b06220ab528167c803b6f3abab10d913866b854be65dcde51f2a4ddb02d5a  masters/v26.0/src/original-dracaena.glb
+86d30a5f7deb41440adfd919c9e90fb1a2eb01deac75c400eb4f9ddbaee06a84  masters/v26.0/src/original-envaircon.glb
+86f127223c747f53c17c18da99fc248197f5537e5e52ac994710bdf502d2a33c  masters/v26.0/src/original-envbanana.glb
+f0b4e7ce1204f97f438a988b0e2979c5f88b6fbc7ba8a37da9863f636193873b  masters/v26.0/src/original-envfrangipani.glb
