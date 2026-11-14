@@ -1359,8 +1359,8 @@ kneelers' shoulders and the resting wrists solved) and v26.10 (deploy `6af7a2253
 arms drawn in the world on his bai sri in the close, the hold his photograph 7's: c_zfx.js myArmsAt). The speed-ups
 went live at v26.11 (deploy `6af7ed1b6d57421ceffbce18`): all four of his list, each behind its own switch and proved
 exact, with what they found on the way (docs/V26.6-E4C3-OPTIMIZE-PLAN.md §4); drawing on its own thread (the plan's 5)
-is still to be put to him. Next: the full debug's last round on this build (every ending with sound, Continue, a
-replay, a desktop), and his row G checked on it.
+he chose to skip (14 Nov). His message of 14 Nov ("What else is not done or complete? Finish all of it") is
+docs/V26.12-WHAT-IS-LEFT.md: every open item, what he answered, and the order (the full debug's last round comes last).
 Chapter 4 is next after it
 (S1·13, case one: the woman who rose from her wheelchair).
 The episode's plan, with what remains his to decide:
@@ -1500,12 +1500,12 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v145** (`masters/v26.8/masterz-text-v145.xlsx`, its CSV beside it: v26.8's words). It is
-EXPORTED and not published: the workbook (135 KB) is far past what the Drive connector's base64 route can carry (about
-20,000 characters — docs/EDITING-TEXT.md, "THE CEILING"), so the split export written down there no longer fits
-either. The way through is the Google Sheets connector, which writes the cells directly (docs/OPEN-ITEMS.md A1).
-**v44 is still the link to give Chad** until that is done:
-https://docs.google.com/spreadsheets/d/1bqnbQJPr1O6YslOlcsbVDFlZCohQtyKbPzm9EuY1IpM/edit
+**THE SHEET IS v145, PUBLISHED 14 Nov 2026** (`masters/v26.8/masterz-text-v145.xlsx`: v26.8's words, unchanged since).
+The link to give Chad:
+https://docs.google.com/spreadsheets/d/1yDHBCpg_ediTpfK1bCFsSxZTev-dNKlet4_S0mE_Fvw/edit
+The base64 ceiling is gone: the Drive connector's `create_file` takes a FILE REFERENCE (`sha256:<hex>:<path>`, filled in
+on his approval), so a workbook goes up whole at any size; read it back tab by tab with the Sheets connector's
+`get_values` and compare every cell before the link goes to him (docs/EDITING-TEXT.md, "THE CURRENT SHEET").
 Every sheet version's own diff, v145 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
 first; a new version goes at its top).
 
@@ -1524,7 +1524,8 @@ question, to be saved and revisited. It holds four confirmed bugs
 spinning through its own silent beat; the volume slider skips a cutscene;
 a light dip can stick dimmed): the volume slider's was fixed at v6.6 (a
 tap no longer skips a scene) and the other three are still in the code,
-waiting on Chad's OK because they are episode 1's (docs/OPEN-ITEMS.md B6).
+left there at Chad's word (14 Nov 2026, "Skip": episode 1 stays as it is;
+docs/OPEN-ITEMS.md B6).
 And it holds the fragile-but-not-broken list, and the viewport answer. **Read Part One
 before touching cutscene framing**: the camera's 72° is VERTICAL and
 fixed, so a portrait phone is a CENTRE CROP at a third of the width — and

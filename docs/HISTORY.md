@@ -9072,6 +9072,11 @@ What the baseline contains, by release:
 
 ## The sheet, version by version
 
+**v145, PUBLISHED 14 Nov 2026** (docs/V26.12-WHAT-IS-LEFT.md row 4): the first sheet he has had since v42. Uploaded whole
+by a file reference (the Drive connector now fills the file in on his approval, which ends the base64 ceiling of v7.9),
+id `1yDHBCpg_ediTpfK1bCFsSxZTev-dNKlet4_S0mE_Fvw`, every one of its 9,864 cells read back and compared with the
+workbook: none different. The v42 sheet held no edit of his (checked first).
+
 **v145** (`masters/v26.8/masterz-text-v145.xlsx`, its CSV beside it, and the repo's `masterz-text.csv` refreshed from
 it): v144 with eighteen cells changed, one new and twelve gone (checked key by key): episode 4 chapter 3's six words of
 the minigame rewritten for "Fill to the gold mark" (`e4c3.words.breathBrief`, `breathBriefKey`, `breathWhere`,

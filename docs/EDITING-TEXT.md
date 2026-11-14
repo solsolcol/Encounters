@@ -11,6 +11,20 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
+**THE CURRENT SHEET (14 Nov 2026): Master Z's Encounters — GAME TEXT v145 (edit here)**, id
+`1yDHBCpg_ediTpfK1bCFsSxZTev-dNKlet4_S0mE_Fvw`, six tabs: UI TEXT (449 rows with its header), EPISODE 1 (115), EPISODE 2
+(202), EPISODE 3 (401), EPISODE 4 (237), VOICE LINES (912).
+<https://docs.google.com/spreadsheets/d/1yDHBCpg_ediTpfK1bCFsSxZTev-dNKlet4_S0mE_Fvw/edit>
+It is v145 exactly (`masters/v26.8/masterz-text-v145.xlsx`, sha256 bf169734...a671, and the game's own export on the
+day byte for byte the same). THE CEILING BELOW IS GONE: the Drive connector's `create_file` now takes a FILE REFERENCE
+in place of typed base64 (`base64Content` set to `sha256:<64 hex>:<absolute path>`; the app fills in the file once Chad
+approves the call), so the workbook goes up whole, at any size, with nothing retyped. Read back tab by tab with the
+Google Sheets connector's `get_values` (`'<tab>'!A1:Z1000`; a large tab is saved by the harness to a file, a small one
+is taken from the session's own record, never retyped) and compared cell by cell with the workbook by
+`tools/sheetcmp.py` (the same parse as verifytabs; `--transcript` takes the small tabs from the session record): 9,864 cells, mismatched cells: 0. The v42 sheet below was
+checked first (created 22:20:36.4, modified 22:20:37.4: the conversion itself), so it held no edit of his.
+Supersedes everything from v42 to v144, none of which was ever published.
+
 **Master Z's Encounters — GAME TEXT v42 (edit here)** in his Drive
 (id `1bqnbQJPr1O6YslOlcsbVDFlZCohQtyKbPzm9EuY1IpM` — the **v42** sheet,
 made at v7.1, tabbed: **UI TEXT** (234 rows, the engine's words),

@@ -9,7 +9,9 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
 
 ## A. Can be done now, on his word
 
-1. **The Google Sheet is stale.** The link he has is v44; the game's text is v133 (`masters/v24.17/`). The Drive
+1. ~~**The Google Sheet is stale.**~~ **DONE 14 Nov 2026**: v145 published whole by a file reference and read back
+   cell by cell (9,864 cells, none different): https://docs.google.com/spreadsheets/d/1yDHBCpg_ediTpfK1bCFsSxZTev-dNKlet4_S0mE_Fvw/edit
+   (docs/EDITING-TEXT.md). Was: The link he has is v44; the game's text is v133 (`masters/v24.17/`). The Drive
    connector's base64 route is far past its wall (the v133 workbook is 118 KB; the wall is ~20 K characters of
    base64), so the v7.9 "split export" no longer fits either. The Google Sheets connector (update_values and friends)
    can write the cells directly: publish v133 that way, then diff every cell (`tools/verifytabs.py`).
@@ -79,6 +81,9 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
    plain red block; the hands' smooth mitts. Fix any on his word (the photographs: the session's review2439).
 
 ## B. Episode 1 (the reference game) — only with his OK
+
+CLOSED 14 Nov 2026: items 6 to 8 below were put to him together (docs/V26.12-WHAT-IS-LEFT.md), his answer "Skip": episode
+1 is left as it is and these are not asked again. Kept below as the record of what is there.
 
 6. Three bugs from docs/AUDIT-2026-09.md Part Two, still in the code:
    - #1 chapter 3: the scripted head tilts of the medium in the intro, `scWatch` and `scJoin` write the hidden
@@ -280,7 +285,8 @@ the code as it stands at v24.23. Cross an item off here the day it is done, with
       as the film ended, which would have drawn him black when the player walked up to him; and at its root a stutter
       since v26.8, his body put back on the chip on screen: fixed, `keepShared`). Live at v26.11, deploy `6af7ed1b6d57421ceffbce18`.
       LEFT, with the reason: three's animation sampler rewritten to the same bits (a large surface for
-      a third of a few milliseconds); drawing on its own thread (OffscreenCanvas), the plan's item 5, still to be put to him.
+      a third of a few milliseconds); drawing on its own thread (OffscreenCanvas), the plan's item 5: put to him 14 Nov with
+      its cost, his answer "Skip it (Recommended)": CLOSED, not asked again.
       FOUND on the way and left, no player can reach it: the head damping (v26.3) is the one pose laid after the take that
       armsBack does not take off (v11.5's rule), so a film held on a step (eventWait, which this chapter no longer has) would
       compound it and turn a kneeler's head toward the middle while the film stood still.
