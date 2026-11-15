@@ -42,6 +42,10 @@ const VIEW = process.env.VIEW || 'phone', OUT = process.env.OUT || '/tmp/e4c3bea
 /* FAST=1: a sweep of many shots on a slow box: two drawn frames after a seek and one before the picture, no settling wait
    (a seek poses everything on the frame it is drawn; the wait is for single pictures that are read closely) */
 const FAST = !!process.env.FAST;
+/* QUICK=1 (v26.15): FAST's waits (two drawn frames after a seek, no settling wait, none before the picture) at the full
+   size and pixels of a picture that judges. Used only where it is first proved to give the settled picture pixel for
+   pixel (the last round proved it on ending D's four moments against a settled run before its sweeps used it) */
+const QUICK = !!process.env.QUICK;
 fs.mkdirSync(OUT, { recursive: true });
 const b = await chromium.launch(LAUNCH);
 /* HIGH RES, ALWAYS (Chad, 12 Nov 2026: "You are banned from ever using small picture check, everything needs to be high res,
@@ -100,8 +104,8 @@ for (const s of STEPS) {
     else if (s.film) { const ok = await p.evaluate((k) => window.__enc.kit.film(k), s.film); await p.waitForFunction(() => window.__enc.cine.active() && window.__enc.cine.t() > 0.15, null, { timeout: 300000, polling: 200 }).catch(() => {});
       log('film', s.film, ok, 'dur', await p.evaluate(() => +window.__enc.cine.dur().toFixed(2))); }
     else if (s.seek != null) { await p.evaluate((t) => window.__enc.cine.seek(t), s.seek); await frames(3); await p.waitForTimeout(s.settle != null ? s.settle : 500); }
-    else if (s.seekAt != null) { const t = await p.evaluate(new Function('const T = window.__enc.stage.dbg.clocks; return (' + s.seekAt + ');')); await p.evaluate((t) => window.__enc.cine.seek(t), t); await frames(FAST ? 2 : 3); if (!FAST) await p.waitForTimeout(s.settle != null ? s.settle : 500);
-      if (s.shot) { if (!FAST) await frames(3); await p.screenshot({ path: `${OUT}/${String(++n).padStart(2, '0')}-${s.shot}.png`, timeout: 240000 }).catch(() => log('shot failed', s.shot)); log('shot', s.shot, 'at', t.toFixed(2)); } }
+    else if (s.seekAt != null) { const t = await p.evaluate(new Function('const T = window.__enc.stage.dbg.clocks; return (' + s.seekAt + ');')); await p.evaluate((t) => window.__enc.cine.seek(t), t); await frames(FAST || QUICK ? 2 : 3); if (!FAST && !QUICK) await p.waitForTimeout(s.settle != null ? s.settle : 500);
+      if (s.shot) { if (!FAST && !QUICK) await frames(3); await p.screenshot({ path: `${OUT}/${String(++n).padStart(2, '0')}-${s.shot}.png`, timeout: 240000 }).catch(() => log('shot failed', s.shot)); log('shot', s.shot, 'at', t.toFixed(2)); } }
     else if (s.choose != null) { await p.evaluate(() => window.__enc.decide && window.__enc.decide());
       await p.waitForFunction(() => document.querySelectorAll('#choices button.choice').length >= 4, null, { timeout: 120000, polling: 300 }); await p.waitForTimeout(600);
       await p.evaluate((i) => document.querySelectorAll('#choices button.choice')[i].click(), s.choose);

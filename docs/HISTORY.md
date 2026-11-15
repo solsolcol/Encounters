@@ -9137,8 +9137,23 @@ What the baseline contains, by release:
 - **v26.14 · 14 Nov 2026 · episode 4 chapter 3: ending D's bud closes to one clean point.** After the v26.13 deploy,
   the desktop's picture a tenth of a second before the shut showed a small flat nub at the bud's tip while its eight
   points finished meeting (some 0.15 s): the points now meet before they sharpen (c_zfx.js lotusPaint), photographed
-  on a phone at 2.1 and 2.2 s past "stay" (a clean rounded bud, then a clean point). Deploy `6af8f05e77ccebc8777f8fb5`
+  on a phone at 2.1 and 2.2 s past "stay" (called a clean rounded bud, then a clean point: WRONG at 2.1, where a
+  stub still stood on the tip, seen only once the picture was opened at its own size: v26.15). Deploy `6af8f05e77ccebc8777f8fb5`
   (494 files byte for byte). The full debug's last round runs on this build.
+- **v26.15 · 15 Nov 2026 · episode 4 chapter 3: ending D's closing bud, the stub really gone (and my v26.14 claim
+  named wrong).** Starting the debug's last round, the v26.14 pictures were opened at their own pixels: at 2.1 s past
+  "stay" a stub still stood on the bud's tip, on the phone and plainly on the desktop. I had judged the phone picture
+  whole, reduced by the viewer, against the standing rule (a picture larger than the viewer is opened a piece at a
+  time). The cause, read in a lab page drawn from the chapter's own source (tools/probes/lotuslab.py and .mjs: it drew
+  the same stub from the old code before it was trusted): every petal turned by the same angle about a point partway
+  up it, so the eight crossed there, an hourglass with the tips standing above its waist. Two more designs drawn and
+  refused (slid to the bud, pointed and crossing: a jagged flat top on a waist). Built: each petal keeps its own side,
+  its tip comes in to the bud's one point while still round, its foot goes out a little to its own side, and only then
+  does the tip draw to a point (c_zfx.js lotusPaint): a closing cup, a round bud, a pointed bud, the same final shape
+  as before. Checked in the lab at sixteen moments and in the game at 1.95, 2.075, 2.15 and 2.25 s on a phone and a
+  desktop, each opened at its own size. Deploy `6af8f79d82b1c6f44fe17745` (494 files byte for byte). The debug's last
+  round restarted on this build (its first minutes on v26.14 kept only where nothing changed: the films from play
+  measured on a phone, no jolt; the answers' two quick turns are his designed glance down to his bai sri and back).
 
 ## The sheet, version by version
 

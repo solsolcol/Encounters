@@ -8728,3 +8728,23 @@ Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8,
   visible, its levels) before believing either the picture or a guess.
 - **The working disk filled during a build** (its release zip): the zip half-written is worthless and is the first thing
   to clear, then my own probe pictures; the build itself needs about 1.7 GB free (dist rewritten, then the zip).
+
+## v26.15 — a stub three pixels wide, and petals that cross
+
+- **A phone's picture is 780 x 1688: the viewer shows it reduced, and a small fault inside it vanishes.** v26.14 was
+  reported as "a clean rounded bud" from the whole phone picture; opened at its own pixels (the middle cropped), the same
+  picture had a stub standing on the bud's tip, and the desktop's had it plainly. The rule was already written (open a
+  picture larger than the viewer a piece at a time); I did not keep it. Crop the place the change is at its own size
+  before calling it clean.
+- **A drawn effect is checked in a lab made from the chapter's own source.** The lotus is canvas drawing: a page that
+  copies `petalPath`, `lotusPaint`, the easing and `SHUTV` out of the parts by a script (never retyped), and the lines
+  of `shutVisionAt` that turn a moment into its five numbers, draws exactly what the game draws at any moment in a
+  second, against the minutes a game photograph costs (tools/probes/lotuslab.py writes it, lotuslab.mjs draws its
+  moments). Drawn with the OLD code beside it first, it showed the very stub the game did: the lab proved before it was
+  trusted.
+- **Rigid petals turned about one point cross at it.** Every petal turned by the same angle about a point partway up
+  it is an X there: an hourglass, and above its waist the tips stood as a stub. Slid from the fold to the bud, each
+  petal still crossed to the other side (the bud's turn about its tip is the fold's turn mirrored), and their pointed
+  tips met in a row: a jagged flat top on a waist. What reads as a bud closing: each petal keeps its own side, its tip
+  comes in to the one point while it is still ROUND (eight round tips close together make a smooth dome; eight points
+  make a crown), and only then does it draw to a point.

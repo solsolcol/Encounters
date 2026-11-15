@@ -4849,12 +4849,19 @@
         hg.addColorStop(0, `rgba(255,252,236,${(0.96 * lit).toFixed(3)})`); hg.addColorStop(0.16, `rgba(255,252,236,${(0.96 * lit).toFixed(3)})`);
         hg.addColorStop(0.38, `rgba(255,240,206,${(0.5 * lit).toFixed(3)})`); hg.addColorStop(0.68, 'rgba(255,240,206,0)'); hg.addColorStop(1, 'rgba(255,240,206,0)');
         x.fillStyle = hg; x.beginPath(); x.arc(0, 0, 78 * sc, 0, Math.PI * 2); x.fill();
-        /* (as it buds, each petal turns about a point that climbs from its foot to its tip, so the eight tips meet in one
-           point and their feet open a little below it: a bud's petals wrapped round it. Turned about their feet to the
-           last, their points fanned into a jagged crown: drawn in the lab and refused) */
-        const s2 = 0.7 + 0.3 * k, fan = (7 + 38 * k) * (1 - 0.55 * b) * Math.PI / 180, pt = b * b, py = (1 - (1 - b) * (1 - b)) * (-66 - 8 * pt);
+        /* (as it buds, each petal keeps its side: its tip slides in from where the fold has it to the bud's one point
+           while it is still round, its foot slides out to where the bud has it, a little below and to its own side, and
+           only then does its tip draw to a point: a bud's petals wrapped round it. Each is drawn from its foot to its tip,
+           as wide as ever. Refused, each drawn and photographed: turned about their feet to the last, the points fanned
+           into a jagged crown; turned about a point that climbed from foot to tip, every petal crossed to the other side
+           at it and stood a stub on the bud's shoulders (v26.14, photographed full size); slid there pointed and crossing,
+           a jagged flat top on a waist) */
+        const s2 = 0.7 + 0.3 * k, fan = (7 + 38 * k) * (1 - 0.55 * b) * Math.PI / 180, pt = smo(sgk(b, 0.7, 1)), lpl = 66 + 8 * pt, lTy = -lpl * s2;
+        const leT = smo(sgk(b, 0, 0.75)), leF = smo(sgk(b, 0.25, 1));
         for (let i = 0; i < 8; i++) {
-          x.save(); x.globalAlpha = a; x.translate(0, 14 + py * s2); x.rotate((i - 3.5) * fan); x.scale(s2, s2); x.translate(0, -py);
+          const lth = (i - 3.5) * fan, lsn = Math.sin(lth), lcs = Math.cos(lth);
+          const lfx = -leF * lTy * lsn, lfy = 14 + leF * (lTy - lTy * lcs), ltx = -(1 - leT) * lTy * lsn, lty = 14 + lTy * lcs + leT * (lTy - lTy * lcs);
+          x.save(); x.globalAlpha = a; x.translate(lfx, lfy); x.rotate(Math.atan2(ltx - lfx, lfy - lty)); x.scale(s2, Math.hypot(ltx - lfx, lty - lfy) / lpl);
           petalPath(x, pt);
           const pg = x.createLinearGradient(0, -66, 0, 0); pg.addColorStop(0, '#FFF6F8'); pg.addColorStop(0.52, '#F7CFDB'); pg.addColorStop(1, '#E8A0B8');
           x.shadowColor = 'rgba(255,226,236,0.5)'; x.shadowBlur = 18 * s2; x.fillStyle = pg; x.fill();
