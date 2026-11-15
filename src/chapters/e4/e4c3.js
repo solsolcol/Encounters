@@ -2005,7 +2005,10 @@
       ['w3isanhouse', -24, 0, 26.5, Math.atan2(24, -26.5)],          // its front toward the middle of the ground
       ['w3tank', -19.4, 0, 24.2, 0.6], ['w3scooter', -20.6, 0, 21.4, 2.2],
       ['w3tank', -7.3, 0, 15.6, -1.2], ['w3scooter', -7.9, 0, 13.9, 1.25],
-      ['w3aircon', 3.0, 0.3, GREY.z - 0.24, Math.PI], ['w3aircon', -4.75, 0.3, GREY.z - 0.24, Math.PI]
+      ['w3aircon', 3.0, 0.3, GREY.z - 0.24, Math.PI], ['w3aircon', 5.4, 0.3, GREY.z - 0.24, Math.PI]
+      /* (v26.16, the last round's sweep: the second stood at x -4.75, at the way in itself, his own sandals' row under it:
+         the opening opened his eyes over its top, a grey slab at the foot of the frame. On the wall between the windows at
+         4.2 and 6.6 now: 0.95 m wide, 3.5 cm clear of either sill, as its twin at 3.0 is) */
     ];
     /* a cloth hung inside a window: soft folds down it, a little lighter at its hem (one picture, every curtain) */
     function makeCurtain() {
@@ -4798,8 +4801,7 @@
          photographed at its brightest, no light at the edge at all) */
       if (vm) {
         if (G.edge.parent !== camera) camera.add(G.edge);
-        const d = 0.1, h = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * d;
-        G.edge.position.set(0, 0, -d); G.edge.quaternion.identity(); G.edge.scale.set(h * camera.aspect * 1.04, h * 1.04, 1);
+        G.edge.position.set(0, 0, -0.1); G.edge.quaternion.identity(); cardsToLens();
         G.edge.material.opacity = 0.7 * k * br;
       }
     }
@@ -4888,9 +4890,8 @@
         return;
       }
       for (const m of [S.blk, S.lot]) if (m.parent !== camera) camera.add(m);
-      const view = (d) => { const h = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * d; return [h * camera.aspect, h]; };
-      const [bw, bh] = view(0.1);
-      S.blk.position.set(0, 0, -0.1); S.blk.quaternion.identity(); S.blk.scale.set(bw * 1.1, bh * 1.1, 1); S.blk.material.opacity = kE; S.blk.visible = true;
+      S.blk.position.set(0, 0, -0.1); S.blk.quaternion.identity(); S.blk.material.opacity = kE; S.blk.visible = true;
+      S.lot.position.set(0, 0, -0.099); S.lot.quaternion.identity(); cardsToLens();
       /* (open and lit as it comes; a breath of movement while it stands open; then it folds; its light goes out in a ring) */
       const a = smo(sgk(u, V.show[0], V.show[1])) * (1 - smo(sgk(u, V.gone[0], V.gone[1])));
       const kf = smo(sgk(u, V.fold[0], V.fold[1])), k = (1 - kf) * (1 - 0.035 * (0.5 - 0.5 * Math.cos(u * 2 * Math.PI / 1.6)) * (1 - smo(sgk(u, V.fold[0] - 0.2, V.fold[0]))));
@@ -4898,10 +4899,20 @@
       const b = smo(sgk(u, V.fold[1] - 0.45, V.fold[1]));
       if (a <= 0.001 && g <= 0.001) { S.lot.visible = false; return; }
       lotusPaint(k, a, r, g, b);
-      /* (its size: the breath's 256 px picture over nine tenths of the screen's shorter side, so the open lotus stands
-         about 45 % of it, on a phone held upright and on a desktop alike: at three quarters, 35 % of a phone's width) */
-      const [lw, lh] = view(0.099), side = 0.9 * Math.min(lw, lh);
-      S.lot.position.set(0, 0, -0.099); S.lot.quaternion.identity(); S.lot.scale.set(side, side, 1); S.lot.visible = true;
+      S.lot.visible = true;
+    }
+    /* THE CARDS LAID BEFORE THE FILM'S OWN LENS, sized from it (v26.15): the black and the lotus of ending D's shut, his
+       light's edge in the close. Sized as each is laid AND again by films.frame once the film's frame has set its lens:
+       sized only as the frame began, a card lagged the lens by a frame, and where the lens moves fast under it (ending
+       D's shut: 25 to 48 degrees on a phone in a twentieth of a second, three frames of a phone's sixty) the black stood
+       up to a fifth too small and the world showed round it, and the bud shrank. (The lotus: the breath's 256 px picture
+       over nine tenths of the screen's shorter side, so the open lotus stands about 45 % of it, on a phone held upright
+       and on a desktop alike: at three quarters, 35 % of a phone's width) */
+    function cardsToLens() {
+      const h = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)), w = h * camera.aspect, S = shutVision, G = youGlow;
+      if (S.blk.parent === camera) S.blk.scale.set(w * 0.1 * 1.1, h * 0.1 * 1.1, 1);
+      if (S.lot.parent === camera) { const side = 0.9 * 0.099 * Math.min(w, h); S.lot.scale.set(side, side, 1); }
+      if (G.edge.parent === camera) G.edge.scale.set(w * 0.1 * 1.04, h * 0.1 * 1.04, 1);
     }
     /* ---- HIS OWN HANDS ON HIS BAI SRI IN THE CLOSE (v26.8, row M). Chad, 13 Nov 2026, of the close: "just show the player
        hands vibrating while a glow surronding him and his hands and his bai sri. all around his silohuette, to show that the
@@ -6569,6 +6580,10 @@
     /* a shot that must hold `must` on every screen: fit, then the lens and the aim */
     function fitShot(eye, at, fPhone, fDesk, must, roll = 0) { const F = fit(eye, at, isNarrow() ? fPhone : fDesk, must); fLens(F.fl); camAt(eye, F.at, roll); }
     const E0 = [PLACE.x, KNEEL.y, PLACE.z];                                   // his eye, kneeling at his place
+    /* (v26.16, the last round's sweep: as he turns to Ton his eye leans 18 cm to his right. From E0 itself the red banner
+       beyond Ton stood straight up out of the top of his head, on a phone and a desktop alike: Ton 1.1 m off and the banner
+       some fifteen, the lean moves one against the other by nine degrees) */
+    const E0T = [PLACE.x, KNEEL.y, PLACE.z - 0.18];
     const E2 = [-5.0, EYE, -1.55];                                            // his eye, standing among the people before the west tent
     /* the festival's second half: those who go up (the woman before the hermit in brown, the man before the hermit in
        the yellow shawl), her bai sri raised and then set down at her left knee, and where he is to see each: at the
@@ -6636,7 +6651,7 @@
           lookNow(cast.ton, 'lens', sgk(t, T.tn3d1 - 0.5, T.tn3d1 + 0.3) * (1 - sgk(t, T.q3m0 - 0.9, T.q3m0 - 0.2)), 1.2);
           const dc = [DANCE.c[0], 1.3, DANCE.c[1]], lead = [dancers.at[1][0], 1.36, dancers.at[1][1]];
           if (t < T.tn3d1 - 0.45) fitShot(E0, lp3([0.4, 1.3, -9.5], dc, smo(sgk(t, 0.1, 1.9))), 66, 56, dancers.at.map(p => [p[0], 1.65, p[1]]));
-          else if (t < T.q3m0 - 0.75) shot(E0, [TON_PLACE.x, 0.98, TON_PLACE.z], 52, 42);
+          else if (t < T.q3m0 - 0.75) shot(E0T, [TON_PLACE.x, 0.98, TON_PLACE.z], 52, 42);
           else { const k = smo(sgk(t, T.q3m0 - 0.75, T.cut)); shot(E0, lead, lp(34, 25, k), lp(27, 20, k)); }
           auraAt(0, t);
         } else {
@@ -6753,8 +6768,25 @@
           if (!col[0] || !leaf[0]) { shot([X, 1.36, Z - 0.66], [X, top + 0.1, Z], 50, 40); return; }
           const kb = smo(sgk(t, T.o2, T.o2 + 1.8)), kp = smo(sgk(t, T.q3o1 + 0.3, tSend - 0.4)), kq = smo(sgk(t, T.q3o2, T.q3o5 + 6));
           const cS = mid(col), cL = mid(leaf), eye = lp3([cS[0], 1.36, Z - 0.68], [cL[0], 1.46, cL[2] - 0.4], kb), nar = isNarrow();
+          /* (v26.16, the last round's sweep: DOWN THE PAGE, QUESTION BY QUESTION, AND BACK. The page was held whole, and the
+             leaf's width binds a phone held upright, so the push asked for was never given: 25 s on his four lines and not
+             a degree of movement, measured, against Chad's word of 13 Nov, "When grandmaster pho or the player talks for
+             very long stretches, you should rotate between different camera panning, angles, etc". Now his eyes go down
+             the page with his questions: the leaf held as before, the look TILTED from its first question to its last as
+             he asks them (a share of the lens's half-height, so a phone and a desktop move alike and no line leaves the
+             frame), never turned (looking down on a page, a turn reads as the page rolling: built so first, photographed
+             and refused, as was a frame closed on each question, which cut the next one's lines at a phone's edge); then,
+             through "I had met many practitioners... Nobody could really explain the truth of it to me", he sits back from
+             it: the eye drawn slowly up and back along its own line, the desk round the book coming into the frame, and
+             the leaf turns over blank in the wider look) */
+          const k1 = smo(sgk(t, T.q3o2 - 0.6, T.q3o2 + 0.9)), k2 = smo(sgk(t, T.q3o3 - 0.4, T.q3o3 + 1.2)), k3 = smo(sgk(t, T.q3o4 - 0.4, T.q3o4 + 1.8)), k4 = smo(sgk(t, T.q3o5 + 0.6, tTurn - 0.4));
           const F1 = fit(eye, cS, nar ? 46 : 34, col), F2 = fit(eye, mid(low), nar ? 30 : 22, low), F3 = fit(eye, cL, nar ? lp(40, 36, kq) : lp(30, 27, kq), leaf);
-          fLens(lp(lp(F1.fl, F2.fl, kp), F3.fl, kb)); camAt(eye, lp3(lp3(F1.at, F2.at, kp), F3.at, kb));
+          const bx = eye[0] - F3.at[0], by = eye[1] - F3.at[1], bz = eye[2] - F3.at[2], bl = Math.hypot(bx, by, bz) || 1;
+          const eyeQ = [eye[0] + bx / bl * 0.24 * k4, eye[1] + by / bl * 0.24 * k4 + 0.05 * k4, eye[2] + bz / bl * 0.24 * k4];
+          const tk = lp(lp(lp(lp(0, 0.12, k1), -0.04, k2), -0.2, k3), -0.03, k4), qx = F3.at[0] - eyeQ[0], qy = F3.at[1] - eyeQ[1], qz = F3.at[2] - eyeQ[2];
+          const qpsi = Math.atan2(-qx, -qz), qth = Math.atan2(qy, Math.hypot(qx, qz)) + tk * F3.fl / 2 * Math.PI / 180;
+          const qAt = [eyeQ[0] - Math.cos(qth) * Math.sin(qpsi), eyeQ[1] + Math.sin(qth), eyeQ[2] - Math.cos(qth) * Math.cos(qpsi)];
+          fLens(lp(lp(F1.fl, F2.fl, kp), F3.fl, kb)); camAt(lp3(eye, eyeQ, kb), lp3(lp3(F1.at, F2.at, kp), qAt, kb));
         } else if (n === 'pack1') {
           /* WHAT HE TAKES: a folded white shirt, before his open bag */
           const k = smo(sgk(t, T.o3, T.o3 + 2.4));
@@ -7527,6 +7559,8 @@
         filmBeds(key, t);
         /* (a probe's viewfinder: tools/probes/e4c3beats.mjs tries a lens here before a shot is written; never set in play) */
         if (FL.vf) { fLens(FL.vf[6]); camAt([FL.vf[0], FL.vf[1], FL.vf[2]], [FL.vf[3], FL.vf[4], FL.vf[5]]); }
+        /* (the cards before the lens, sized from the lens this frame ends on: c_zfx.js cardsToLens) */
+        cardsToLens();
         peopleLevels(); lodTick(); },
       /* (HIS HANDS COME BACK when a film ends. Every film here hides them at its start, and the engine shows them again
          only after a film from play (v21.1): the opening film is not one, so play began with them hidden and the bai sri
@@ -7649,7 +7683,10 @@
       setPhase, applyPhase, after, dayClock, sayLine, queueLine, queueFn, queueGap,
       look, presets: PRESETS, films, crowdStats, setFormation,
       /* for the probes (tools/probes/e4c3drive.mjs): the play's own state and its beats by name */
-      dbg: { myGrip: GRIP, hold: HOLD, myArms: MYARMS, viewfinder(v) { FL.vf = v || null; }, clocks: { A: ENDT.A, B: ENDT.B, C: ENDT.C, D: ENDT.D, CLOSE, FEST, BETW, TELL, ANSW, OPEN: OPENT }, armsOf, handTo, handsTo, restHands, baiGrip, baiPut, play, open, cast, bursts, BAI, handBai, myBai, ymBai, petalBurst, auraAt, baiHands, baiRaise, lineBegin, dawnBegin, breathBegin, places: { PLACE, LINE_AT, KNEEL2, DAWN_AT, TABLES_AT }, dancers, dancersDir, danceBlock, dancerSpot, kids, kidsDir, kidPath, taper, extrasHeard, people, crowd, headDampLay },
+      dbg: { myGrip: GRIP, hold: HOLD, myArms: MYARMS, viewfinder(v) { FL.vf = v || null; }, clocks: { A: ENDT.A, B: ENDT.B, C: ENDT.C, D: ENDT.D, CLOSE, FEST, BETW, TELL, ANSW, OPEN: OPENT }, armsOf, handTo, handsTo, restHands, baiGrip, baiPut, play, open, cast, bursts, BAI, handBai, myBai, ymBai, petalBurst, auraAt, baiHands, baiRaise, lineBegin, dawnBegin, breathBegin, places: { PLACE, LINE_AT, KNEEL2, DAWN_AT, TABLES_AT }, dancers, dancersDir, danceBlock, dancerSpot, kids, kidsDir, kidPath, taper, extrasHeard, people, crowd, headDampLay,
+        /* (v26.15: the stage's own black over the picture, 0 to 1: ending D's shut lays a black of its own before the lens,
+           which the film's fade layer does not show; tools/probes/e4c3beats.mjs's lens step counts it as the black it is) */
+        black: () => (shutVision.blk.visible && shutVision.blk.parent === camera ? shutVision.blk.material.opacity : 0) },
       who: () => people.filter(P => !P.driver).map(P => ({ key: P.key, ready: P.ready, take: P.cur, skin: P.lvShown, skins: P.lv.map(v => (v ? 1 : 0)).join('') })),
       /* (v26.11) THE SPEED-UPS' PROOF IN ONE PAGE: garb(on) turns NOGARB over. proofSnap() takes every ready body's laid
          poses off (armsBack) and keeps its bones' turns, places and sizes and its mixer's own buffers (three's mixer writes

@@ -9154,6 +9154,23 @@ What the baseline contains, by release:
   desktop, each opened at its own size. Deploy `6af8f79d82b1c6f44fe17745` (494 files byte for byte). The debug's last
   round restarted on this build (its first minutes on v26.14 kept only where nothing changed: the films from play
   measured on a phone, no jolt; the answers' two quick turns are his designed glance down to his bai sri and back).
+- **v26.16 · 15 Nov 2026 · episode 4 chapter 3: four things the full debug's last round found, fixed.** The round's
+  first pass (every film's camera measured as a move on a phone and a desktop; every shot of every film and every play
+  beat photographed on both, each picture opened at its own size) found: (1) ending D's shut: the black laid before
+  the lens and the lotus were sized from the lens at the START of the frame and the lens set after, so on the three
+  frames the lens eased 25 to 48 degrees the black covered 0.79 to 0.95 of the view (the world at its edges for a
+  twentieth of a second) and the bud shrank; now sized again after the film's frame (c_zfx.js cardsToLens, called by
+  films.frame): 1.1 of the view on every frame, phone and desktop, measured frame by frame. (2) The opening: his eyes
+  opened on the turf over the top of a compressor at his feet (the second on the grey wall stood at the way in itself):
+  moved along the wall between two windows. (3) The festival: the red banner beyond Ton stood straight up out of his
+  head in his close-up, on both screens: his eye leans 18 cm for that shot (E0T). (4) The opening's notebook: 25 s of
+  his four lines with the camera not moving at all on a phone (a push asked for, never given), against his 13 Nov word
+  on long talk: his look now goes down the page with each question and he sits back from it on the last line (a first
+  build turned and closed on each question; photographed, it rolled the page and cut a line at the frame's edge:
+  refused, said). Every change photographed on both screens at full size before the deploy; the lens probe now counts
+  a black the stage lays itself (stage.dbg.black). Deploy `6af913fa26b1beb644ef8e03` (494 files byte for byte), built
+  without the release zip (ENC_NOZIP: the working disk holds 0.9 GB beside the round's pictures; Netlify holds the
+  deploy). The rest of the round runs on this build.
 
 ## The sheet, version by version
 

@@ -229,7 +229,10 @@
       ['w3isanhouse', -24, 0, 26.5, Math.atan2(24, -26.5)],          // its front toward the middle of the ground
       ['w3tank', -19.4, 0, 24.2, 0.6], ['w3scooter', -20.6, 0, 21.4, 2.2],
       ['w3tank', -7.3, 0, 15.6, -1.2], ['w3scooter', -7.9, 0, 13.9, 1.25],
-      ['w3aircon', 3.0, 0.3, GREY.z - 0.24, Math.PI], ['w3aircon', -4.75, 0.3, GREY.z - 0.24, Math.PI]
+      ['w3aircon', 3.0, 0.3, GREY.z - 0.24, Math.PI], ['w3aircon', 5.4, 0.3, GREY.z - 0.24, Math.PI]
+      /* (v26.16, the last round's sweep: the second stood at x -4.75, at the way in itself, his own sandals' row under it:
+         the opening opened his eyes over its top, a grey slab at the foot of the frame. On the wall between the windows at
+         4.2 and 6.6 now: 0.95 m wide, 3.5 cm clear of either sill, as its twin at 3.0 is) */
     ];
     /* a cloth hung inside a window: soft folds down it, a little lighter at its hem (one picture, every curtain) */
     function makeCurtain() {

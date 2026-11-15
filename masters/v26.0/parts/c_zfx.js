@@ -194,8 +194,7 @@
          photographed at its brightest, no light at the edge at all) */
       if (vm) {
         if (G.edge.parent !== camera) camera.add(G.edge);
-        const d = 0.1, h = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * d;
-        G.edge.position.set(0, 0, -d); G.edge.quaternion.identity(); G.edge.scale.set(h * camera.aspect * 1.04, h * 1.04, 1);
+        G.edge.position.set(0, 0, -0.1); G.edge.quaternion.identity(); cardsToLens();
         G.edge.material.opacity = 0.7 * k * br;
       }
     }
@@ -284,9 +283,8 @@
         return;
       }
       for (const m of [S.blk, S.lot]) if (m.parent !== camera) camera.add(m);
-      const view = (d) => { const h = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * d; return [h * camera.aspect, h]; };
-      const [bw, bh] = view(0.1);
-      S.blk.position.set(0, 0, -0.1); S.blk.quaternion.identity(); S.blk.scale.set(bw * 1.1, bh * 1.1, 1); S.blk.material.opacity = kE; S.blk.visible = true;
+      S.blk.position.set(0, 0, -0.1); S.blk.quaternion.identity(); S.blk.material.opacity = kE; S.blk.visible = true;
+      S.lot.position.set(0, 0, -0.099); S.lot.quaternion.identity(); cardsToLens();
       /* (open and lit as it comes; a breath of movement while it stands open; then it folds; its light goes out in a ring) */
       const a = smo(sgk(u, V.show[0], V.show[1])) * (1 - smo(sgk(u, V.gone[0], V.gone[1])));
       const kf = smo(sgk(u, V.fold[0], V.fold[1])), k = (1 - kf) * (1 - 0.035 * (0.5 - 0.5 * Math.cos(u * 2 * Math.PI / 1.6)) * (1 - smo(sgk(u, V.fold[0] - 0.2, V.fold[0]))));
@@ -294,10 +292,20 @@
       const b = smo(sgk(u, V.fold[1] - 0.45, V.fold[1]));
       if (a <= 0.001 && g <= 0.001) { S.lot.visible = false; return; }
       lotusPaint(k, a, r, g, b);
-      /* (its size: the breath's 256 px picture over nine tenths of the screen's shorter side, so the open lotus stands
-         about 45 % of it, on a phone held upright and on a desktop alike: at three quarters, 35 % of a phone's width) */
-      const [lw, lh] = view(0.099), side = 0.9 * Math.min(lw, lh);
-      S.lot.position.set(0, 0, -0.099); S.lot.quaternion.identity(); S.lot.scale.set(side, side, 1); S.lot.visible = true;
+      S.lot.visible = true;
+    }
+    /* THE CARDS LAID BEFORE THE FILM'S OWN LENS, sized from it (v26.15): the black and the lotus of ending D's shut, his
+       light's edge in the close. Sized as each is laid AND again by films.frame once the film's frame has set its lens:
+       sized only as the frame began, a card lagged the lens by a frame, and where the lens moves fast under it (ending
+       D's shut: 25 to 48 degrees on a phone in a twentieth of a second, three frames of a phone's sixty) the black stood
+       up to a fifth too small and the world showed round it, and the bud shrank. (The lotus: the breath's 256 px picture
+       over nine tenths of the screen's shorter side, so the open lotus stands about 45 % of it, on a phone held upright
+       and on a desktop alike: at three quarters, 35 % of a phone's width) */
+    function cardsToLens() {
+      const h = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)), w = h * camera.aspect, S = shutVision, G = youGlow;
+      if (S.blk.parent === camera) S.blk.scale.set(w * 0.1 * 1.1, h * 0.1 * 1.1, 1);
+      if (S.lot.parent === camera) { const side = 0.9 * 0.099 * Math.min(w, h); S.lot.scale.set(side, side, 1); }
+      if (G.edge.parent === camera) G.edge.scale.set(w * 0.1 * 1.04, h * 0.1 * 1.04, 1);
     }
     /* ---- HIS OWN HANDS ON HIS BAI SRI IN THE CLOSE (v26.8, row M). Chad, 13 Nov 2026, of the close: "just show the player
        hands vibrating while a glow surronding him and his hands and his bai sri. all around his silohuette, to show that the
