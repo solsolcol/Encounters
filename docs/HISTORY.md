@@ -9181,8 +9181,15 @@ What the baseline contains, by release:
   WHITE: the generated bench's varnish under the props' reflection lift gave back the sky tripled; four finishes were
   photographed on the page from above and low along the seat, and a rougher finish (roughness 1.7 times its map's) read
   as wood in both where a lower lift alone left it pale. Both photographed in the build on both screens before the
-  deploy. Deploy `6af934bf3fbc8566ec243132`, built without the release zip (the working disk holds 0.6 GB). Then on this build:
-  the four play-throughs by finger with the sound on, Continue at every phase, the same-chapter replay.
+  deploy. Deploy `6af934bf3fbc8566ec243132`, built without the release zip (the working disk holds 0.6 GB). Then on this build,
+  the round's last checks, all passed: the four play-throughs by finger on a phone with the sound on, each ending
+  watched whole (every voice heard and none over another, every cue from its sample, every press by the badge, no page
+  error); Continue at all 23 saved phases (each landed where it should, the same sitting the same); the same-chapter
+  replay (both passes to the card; nothing a player sees differs from a fresh start: the close's arms, halos and palm
+  petal are kept hidden for the next close, and its light cards go back to the end of the world's list). In every
+  play-through the minigame counted the breaths held too long: the probe's finger, on a box drawing a frame a second
+  under two pages, let go a second late; on a slowed clock all three closed in their band. The full debug's round is
+  complete (docs/V26.1-E4C3-DEBUG.md §6).
 
 ## The sheet, version by version
 

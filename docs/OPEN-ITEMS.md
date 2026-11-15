@@ -320,6 +320,17 @@ CLOSED 14 Nov 2026: items 6 to 8 below were put to him together (docs/V26.12-WHA
       (measured on chapter 3's clouds: a band 30 under the sky; masters/v26.12/make.sh §5). Fixed for the clouds alone,
       in the chapter. One option in the loader ({ premultiplyAlpha: 'none' }) would lighten the soft edges of every
       chapter's pictures (banners, cut-out leaves, signs): his word, and then every chapter photographed.
+    - ab. v26.16 and v26.17: THE FULL DEBUG'S LAST ROUND (his ask of 12 Nov; docs/V26.1-E4C3-DEBUG.md §6): every film's
+      camera measured as a move on a phone and a desktop, every shot of every film, ending and play beat photographed on
+      both and read at its own size, the endings each from a fresh boot. Six found and FIXED, all live (v26.16: ending D's
+      black a frame behind its lens, the compressor at his feet in the opening, the banner out of Ton's head, the
+      notebook's frozen camera; v26.17: the telling's half face on a desktop, the bench's white seat). SEEN AND LEFT, each
+      with its reason in §6: the generated trees read faceted through a narrow lens (a remake of the trees is his call);
+      the night window's treeline card's ragged top; the folded shirt's two seam marks; the bench's small notch at its
+      front slat (the generated model's own).
+      On v26.17 the round's last checks passed: the four play-throughs by finger with the sound on, Continue at all 23
+      saved phases, the same-chapter replay (nothing a player sees differs), the minigame's band on a slowed clock. THE
+      ROUND IS COMPLETE.
 
 ## D. Not built yet
 

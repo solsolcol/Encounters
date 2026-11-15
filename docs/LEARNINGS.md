@@ -8785,3 +8785,14 @@ Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8,
   close over it, and ending B began with A's raised hand floating before Grandmaster Pho. A player cannot get there (a
   film ends or is skipped before anything else begins). Each ending a probe photographs starts from a fresh boot; a
   picture that shows a thing out of place is measured on a fresh boot before it is called the game's.
+- **A finger on a loaded box lets go late; a minigame's band is proved on a slowed clock.** The four play-throughs held
+  every breath to the edge: the probe let go when it saw 0.83 to 0.87 of the edge, well inside the band, and on a
+  software renderer drawing a frame a second under two pages the release landed a second later, at the edge. The real
+  touch path proves the presses land; the band is proved by the event's own press and release on a clock slowed to a
+  step a frame (tools/probes/e4c3beats.mjs `slow`), where all three closed. Read "held" from a play-through as the box's
+  latency until the slowed run says otherwise.
+- **A replay compared object by object pairs neighbours once one object moves in a list.** The close's light cards are
+  laid before the lens and given back to the world at the END of its children, so every later object's number shifted
+  by one and the replay probe reported twenty "differences on screen" that were each the next object's place and paint.
+  Read the objects only on one side first, and match a shifted run by what the objects are, before calling a difference
+  something reset() forgot.
