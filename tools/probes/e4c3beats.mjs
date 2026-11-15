@@ -129,7 +129,7 @@ for (const s of STEPS) {
     }
     else if (s.lens != null) {
       const rows = await p.evaluate(([step, to]) => { const E = window.__enc, C = E.cine, c = E.camera, out = [], fd = document.getElementById('cineFade');
-        /* (v26.15: a stage that lays a black of its own before the lens says how black (stage.dbg.black): counted as the film's black is) */
+        /* (v26.16: a stage that lays a black of its own before the lens says how black (stage.dbg.black): counted as the film's black is) */
         const sb = () => { try { return E.stage.dbg && E.stage.dbg.black ? +E.stage.dbg.black() || 0 : 0; } catch { return 0; } };
         const end = Math.min(to != null ? to : 1e9, C.dur() - 0.25);
         for (let t = Math.ceil(C.t() / step) * step; t <= end + 1e-6; t += step) { C.seek(t); c.updateWorldMatrix(true, false); const e = c.matrixWorld.elements, dx = -e[8], dy = -e[9], dz = -e[10];

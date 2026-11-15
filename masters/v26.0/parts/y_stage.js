@@ -465,7 +465,11 @@
            of a roof and an eave seen from below) */
         const kH = bump(t, T.q3t2 + 0.4, T.q3t2 + SECS['q3t2'] + 0.4, 0.9, 1.0), kN = bump(t, T.q3t3 + 0.3, T.q3t3 + SECS['q3t3'] + 0.3, 1.0, 1.1);
         const kC = bump(t, T.q3t4 + 0.5, T.q3t4 + SECS['q3t4'] + 0.9, 1.1, 1.2);
-        const [yC, pC] = aimOf(EK, [FOOT[0], 0.02, FOOT[1]]), [yN, pN] = aimOf(EK, [F[0], F[1] - 0.34, F[2]]);
+        /* (v26.17, the last round's desktop pictures: the beads at 0.34 m under his face through a desktop's 24 degrees put
+           the frame's top edge through his nose for the six seconds of the line. On a desktop the look goes to 0.40 m
+           under it through 18 degrees: an insert of the beads and the pendant from his neck down. A phone's tall frame
+           holds his face and the beads together, as before) */
+        const [yC, pC] = aimOf(EK, [FOOT[0], 0.02, FOOT[1]]), [yN, pN] = aimOf(EK, [F[0], F[1] - (isNarrow() ? 0.34 : 0.40), F[2]]);
         /* and the slow push on the old man's face through the whole telling */
         const kp = smo(sgk(t, 0, T.q3t8)), fP = lp(46, 25, kp), fD = lp(34, 18.5, kp), pT = faceTilt(EK, F, fP, fD);
         /* "my body moves by itself": for that sentence his body remembers it, and the picture sways a little */
@@ -473,7 +477,7 @@
         /* (v26.8: the drop WIDE, his eyes on the ground at his teacher's foot: at 38 degrees the bowl that stood there filled
            the frame and its heap read as dough; the bowl is gone now, at his word, and his eyes drop to the carpet's petals) */
         eyes(EK, yF + (yN - yF) * kN + (yC - yF) * kC + sway * 0.5, pT + (-0.6 - pT) * kH + (pN - pT) * kN + (pC - pT) * kC,
-          lp(lp(lp(fP, 60, kH), 33, kN), 56, kC), lp(lp(lp(fD, 46, kH), 24, kN), 42, kC), sway);
+          lp(lp(lp(fP, 60, kH), 33, kN), 56, kC), lp(lp(lp(fD, 46, kH), 18, kN), 42, kC), sway);
         handsFilm(kH, 0.36 * bump(t, T.q3t2 + 1.1, T.q3t2 + SECS['q3t2'] - 0.2, 1.2, 1.2), t - T.q3t2);
         /* what the amulets' sentence remembers, laid over his sight for as long as it is said: the cold of a piece in
            the shop, its energy in his hand */
@@ -1118,7 +1122,7 @@
       look, presets: PRESETS, films, crowdStats, setFormation,
       /* for the probes (tools/probes/e4c3drive.mjs): the play's own state and its beats by name */
       dbg: { myGrip: GRIP, hold: HOLD, myArms: MYARMS, viewfinder(v) { FL.vf = v || null; }, clocks: { A: ENDT.A, B: ENDT.B, C: ENDT.C, D: ENDT.D, CLOSE, FEST, BETW, TELL, ANSW, OPEN: OPENT }, armsOf, handTo, handsTo, restHands, baiGrip, baiPut, play, open, cast, bursts, BAI, handBai, myBai, ymBai, petalBurst, auraAt, baiHands, baiRaise, lineBegin, dawnBegin, breathBegin, places: { PLACE, LINE_AT, KNEEL2, DAWN_AT, TABLES_AT }, dancers, dancersDir, danceBlock, dancerSpot, kids, kidsDir, kidPath, taper, extrasHeard, people, crowd, headDampLay,
-        /* (v26.15: the stage's own black over the picture, 0 to 1: ending D's shut lays a black of its own before the lens,
+        /* (v26.16: the stage's own black over the picture, 0 to 1: ending D's shut lays a black of its own before the lens,
            which the film's fade layer does not show; tools/probes/e4c3beats.mjs's lens step counts it as the black it is) */
         black: () => (shutVision.blk.visible && shutVision.blk.parent === camera ? shutVision.blk.material.opacity : 0) },
       who: () => people.filter(P => !P.driver).map(P => ({ key: P.key, ready: P.ready, take: P.cur, skin: P.lvShown, skins: P.lv.map(v => (v ? 1 : 0)).join('') })),

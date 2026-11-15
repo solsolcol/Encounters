@@ -1372,7 +1372,8 @@ two hermits' murmurs and the trance man's cry in the festival film, ending D's c
 clouds' dark edges and their drift) went live at v26.13 (deploy `6af8e8404ba37a88a23a31fa`; docs/V26.12-WHAT-IS-LEFT.md
 §6, masters/v26.12/make.sh §3 to §5; the bud's tip, called clean at v26.14 and not, made clean at v26.15, deploy `6af8f79d82b1c6f44fe17745`); the
 four new sounds stand on the measured pick until his ear (C13 z). The full debug's last round found four more, fixed at
-v26.16 (deploy `6af913fa26b1beb644ef8e03`; docs/V26.1-E4C3-DEBUG.md §6).
+v26.16 (deploy `6af913fa26b1beb644ef8e03`; docs/V26.1-E4C3-DEBUG.md §6), and two more at v26.17 (the telling's bead
+shot on a desktop, the bench's white seat: deploy `6af934bf3fbc8566ec243132`).
 Chapter 4 is next after it
 (S1·13, case one: the woman who rose from her wheelchair).
 The episode's plan, with what remains his to decide:

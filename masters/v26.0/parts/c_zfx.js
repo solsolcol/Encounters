@@ -294,7 +294,7 @@
       lotusPaint(k, a, r, g, b);
       S.lot.visible = true;
     }
-    /* THE CARDS LAID BEFORE THE FILM'S OWN LENS, sized from it (v26.15): the black and the lotus of ending D's shut, his
+    /* THE CARDS LAID BEFORE THE FILM'S OWN LENS, sized from it (v26.16): the black and the lotus of ending D's shut, his
        light's edge in the close. Sized as each is laid AND again by films.frame once the film's frame has set its lens:
        sized only as the frame began, a card lagged the lens by a frame, and where the lens moves fast under it (ending
        D's shut: 25 to 48 degrees on a phone in a twentieth of a second, three frames of a phone's sixty) the black stood

@@ -8748,3 +8748,40 @@ Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8,
   tips met in a row: a jagged flat top on a waist. What reads as a bud closing: each petal keeps its own side, its tip
   comes in to the one point while it is still ROUND (eight round tips close together make a smooth dome; eight points
   make a crown), and only then does it draw to a point.
+
+## v26.16 — a card a frame behind its lens, a push the fit never gave, and what is under a point of the screen
+
+- **A card laid before the lens is sized from the lens this frame ENDS on.** Ending D's black and lotus were sized from
+  camera.fov at the top of the film's frame, and the frame set the lens after; on the three frames the lens eased 25 to
+  48 degrees the black covered 0.79 of the view, so the world showed at its edges for a twentieth of a second. Size such
+  cards after everything that sets the lens (the film's frame, a probe's viewfinder). A probe's seek runs one frame and
+  stops, so a single seek never shows a lag of one frame: measure two seeks in one task, 1/60 s apart, as two drawn
+  frames are.
+- **A fit that binds is a camera that never moves.** The notebook's push was written as a lens that narrows (40 to 36
+  on a phone), but the fit held the whole leaf, and a portrait phone's width bound it: the lens asked for was never the
+  lens given, and for 25 s of speech the camera held to the third decimal. Read a long talking shot's lens and look over
+  its whole length (lens-*.json) before calling it a move; a move that must happen on every screen is a tilt or a turn
+  of a share of the lens's own half-angle, not a narrower lens a fit can overrule.
+- **A turn looking down on a page reads as the page rolling.** Panned across a book seen from above, the text tilted
+  like a page sliding off a table; the same travel as a tilt (down the page) reads as eyes reading.
+- **What is under a point of the screen: cast the ray and list what it passes.** A grey slab at the foot of a frame was
+  nameless in the code; a ray through that screen point listed the meshes whose spheres it crossed (one with 5,491
+  triangles at the way in), and the files' triangle counts named it in a second (dbg-whatat.mjs's method; the scratch
+  copy is gitignored, the method is the lesson).
+- **A lens step under black can be a stage's own black.** lensread flagged a 20-degree step that was under ending D's
+  black sheet, which the film's fade layer did not show: a stage that lays a black of its own says so
+  (`stage.dbg.black`), and the probe counts it.
+
+## v26.17 — half a face at the top of the frame, and a probe that ran one ending into the next
+
+- **A look that leaves a face goes all the way off it.** The telling's drop to the beads aimed 0.34 m under the old
+  man's face, which on a phone's tall frame holds his face and his beads together; through a desktop's lens (24
+  degrees, a wide short frame) the same aim put the frame's top edge through his nose for six seconds: half a face, the
+  worst of both. Each screen gets a whole picture: on a desktop the look goes lower through a narrower lens (0.40 m,
+  18 degrees), an insert from the neck down. A look aimed to frame two things together on one screen is checked on the
+  other at the moment it arrives, not only at its ends.
+- **A probe that jumps from one ending into the next carries the first into the second.** A sweep that set the
+  decision's phase again while ending A's film still played reset the stage, but the engine's film went on drawing A's
+  close over it, and ending B began with A's raised hand floating before Grandmaster Pho. A player cannot get there (a
+  film ends or is skipped before anything else begins). Each ending a probe photographs starts from a fresh boot; a
+  picture that shows a thing out of place is measured on a fresh boot before it is called the game's.

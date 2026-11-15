@@ -209,7 +209,12 @@
          beyond it; maroon carpets before the bench where people kneel; purple flowers at both ends */
       const BA = (a, b) => benchAt(a, b), along = BENCH.ry + Math.PI / 2;
       { const [x1, z1] = BA(0.15, 1.95), [x2, z2] = BA(-1.95, 1.8); rug(mCarpet, x1, z1, 2.4, 1.6, along); rug(mCarpet, x2, z2, 2.4, 1.6, along + 0.07, 0.009); }
-      stand('w3bench', BENCH.x, 0, BENCH.z, BENCH.ry, { s: 1.1, done: (m) => { m.scale.x *= 1.24; m.traverse(q => { if (q.isMesh) { hueTurn(q.material, 17); q.material.color.multiplyScalar(0.72); } }); } });
+      /* (v26.17, the last round's phone pictures: seen low along its seat, as ending C's turn passes it, the seat read
+         WHITE: the generated bench's varnish (its roughness map's median 0.38) under the props' reflection lift (3) gave
+         back the sky, tripled. Photographed at four finishes in that look and from above: the lift alone at 1.5 left it
+         pale; a rougher finish read as wood in both, so the bench has one (its roughness 1.7 times its map's, 0.65 at the
+         median), the v25.5 law for a dark generated body, and keeps the lift every prop has) */
+      stand('w3bench', BENCH.x, 0, BENCH.z, BENCH.ry, { s: 1.1, done: (m) => { m.scale.x *= 1.24; m.traverse(q => { if (q.isMesh) { hueTurn(q.material, 17); q.material.color.multiplyScalar(0.72); q.material.roughness = 1.7; } }); } });
       solidBox(2.2, 1.4, 0.8, BENCH.x, 0.7, BENCH.z, BENCH.ry);
       { const [x, z] = BA(2.25, -0.05); stand('w3chair', x, 0, z, BENCH.ry - 0.25, { s: 1.11 }); solidBox(0.9, 1.4, 0.9, x, 0.7, z, BENCH.ry); }
       /* (v26.2 debug, measured by tools/probes/clipscan.mjs: the low table, a metre square at (1.05, 1.1), stood in the lime

@@ -9171,6 +9171,18 @@ What the baseline contains, by release:
   a black the stage lays itself (stage.dbg.black). Deploy `6af913fa26b1beb644ef8e03` (494 files byte for byte), built
   without the release zip (ENC_NOZIP: the working disk holds 0.9 GB beside the round's pictures; Netlify holds the
   deploy). The rest of the round runs on this build.
+- **v26.17 · 15 Nov 2026 · episode 4 chapter 3: the last round's two more, fixed.** On v26.16 the four endings were
+  photographed again on a phone and a desktop, each from a fresh boot (the first sweep had run ending A's close into
+  ending B by a phase jump while A's film still played, and B began with A's raised hand before Grandmaster Pho: the
+  probe's path, not a player's; from a fresh boot B has no hand there), with the desktop's remaining films and the play
+  beats from a player's places. Two things found: (1) the telling's drop to the beads put a desktop frame's top edge
+  through the old man's nose for six seconds (a phone's tall frame was right): on a desktop the look goes lower through a
+  narrower lens, an insert from his neck down. (2) His bench's seat, seen low along it as ending C's turn passes it, read
+  WHITE: the generated bench's varnish under the props' reflection lift gave back the sky tripled; four finishes were
+  photographed on the page from above and low along the seat, and a rougher finish (roughness 1.7 times its map's) read
+  as wood in both where a lower lift alone left it pale. Both photographed in the build on both screens before the
+  deploy. Deploy `6af934bf3fbc8566ec243132`, built without the release zip (the working disk holds 0.6 GB). Then on this build:
+  the four play-throughs by finger with the sound on, Continue at every phase, the same-chapter replay.
 
 ## The sheet, version by version
 

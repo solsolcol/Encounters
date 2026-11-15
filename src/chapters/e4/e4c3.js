@@ -1501,7 +1501,12 @@
          beyond it; maroon carpets before the bench where people kneel; purple flowers at both ends */
       const BA = (a, b) => benchAt(a, b), along = BENCH.ry + Math.PI / 2;
       { const [x1, z1] = BA(0.15, 1.95), [x2, z2] = BA(-1.95, 1.8); rug(mCarpet, x1, z1, 2.4, 1.6, along); rug(mCarpet, x2, z2, 2.4, 1.6, along + 0.07, 0.009); }
-      stand('w3bench', BENCH.x, 0, BENCH.z, BENCH.ry, { s: 1.1, done: (m) => { m.scale.x *= 1.24; m.traverse(q => { if (q.isMesh) { hueTurn(q.material, 17); q.material.color.multiplyScalar(0.72); } }); } });
+      /* (v26.17, the last round's phone pictures: seen low along its seat, as ending C's turn passes it, the seat read
+         WHITE: the generated bench's varnish (its roughness map's median 0.38) under the props' reflection lift (3) gave
+         back the sky, tripled. Photographed at four finishes in that look and from above: the lift alone at 1.5 left it
+         pale; a rougher finish read as wood in both, so the bench has one (its roughness 1.7 times its map's, 0.65 at the
+         median), the v25.5 law for a dark generated body, and keeps the lift every prop has) */
+      stand('w3bench', BENCH.x, 0, BENCH.z, BENCH.ry, { s: 1.1, done: (m) => { m.scale.x *= 1.24; m.traverse(q => { if (q.isMesh) { hueTurn(q.material, 17); q.material.color.multiplyScalar(0.72); q.material.roughness = 1.7; } }); } });
       solidBox(2.2, 1.4, 0.8, BENCH.x, 0.7, BENCH.z, BENCH.ry);
       { const [x, z] = BA(2.25, -0.05); stand('w3chair', x, 0, z, BENCH.ry - 0.25, { s: 1.11 }); solidBox(0.9, 1.4, 0.9, x, 0.7, z, BENCH.ry); }
       /* (v26.2 debug, measured by tools/probes/clipscan.mjs: the low table, a metre square at (1.05, 1.1), stood in the lime
@@ -4901,7 +4906,7 @@
       lotusPaint(k, a, r, g, b);
       S.lot.visible = true;
     }
-    /* THE CARDS LAID BEFORE THE FILM'S OWN LENS, sized from it (v26.15): the black and the lotus of ending D's shut, his
+    /* THE CARDS LAID BEFORE THE FILM'S OWN LENS, sized from it (v26.16): the black and the lotus of ending D's shut, his
        light's edge in the close. Sized as each is laid AND again by films.frame once the film's frame has set its lens:
        sized only as the frame began, a card lagged the lens by a frame, and where the lens moves fast under it (ending
        D's shut: 25 to 48 degrees on a phone in a twentieth of a second, three frames of a phone's sixty) the black stood
@@ -7031,7 +7036,11 @@
            of a roof and an eave seen from below) */
         const kH = bump(t, T.q3t2 + 0.4, T.q3t2 + SECS['q3t2'] + 0.4, 0.9, 1.0), kN = bump(t, T.q3t3 + 0.3, T.q3t3 + SECS['q3t3'] + 0.3, 1.0, 1.1);
         const kC = bump(t, T.q3t4 + 0.5, T.q3t4 + SECS['q3t4'] + 0.9, 1.1, 1.2);
-        const [yC, pC] = aimOf(EK, [FOOT[0], 0.02, FOOT[1]]), [yN, pN] = aimOf(EK, [F[0], F[1] - 0.34, F[2]]);
+        /* (v26.17, the last round's desktop pictures: the beads at 0.34 m under his face through a desktop's 24 degrees put
+           the frame's top edge through his nose for the six seconds of the line. On a desktop the look goes to 0.40 m
+           under it through 18 degrees: an insert of the beads and the pendant from his neck down. A phone's tall frame
+           holds his face and the beads together, as before) */
+        const [yC, pC] = aimOf(EK, [FOOT[0], 0.02, FOOT[1]]), [yN, pN] = aimOf(EK, [F[0], F[1] - (isNarrow() ? 0.34 : 0.40), F[2]]);
         /* and the slow push on the old man's face through the whole telling */
         const kp = smo(sgk(t, 0, T.q3t8)), fP = lp(46, 25, kp), fD = lp(34, 18.5, kp), pT = faceTilt(EK, F, fP, fD);
         /* "my body moves by itself": for that sentence his body remembers it, and the picture sways a little */
@@ -7039,7 +7048,7 @@
         /* (v26.8: the drop WIDE, his eyes on the ground at his teacher's foot: at 38 degrees the bowl that stood there filled
            the frame and its heap read as dough; the bowl is gone now, at his word, and his eyes drop to the carpet's petals) */
         eyes(EK, yF + (yN - yF) * kN + (yC - yF) * kC + sway * 0.5, pT + (-0.6 - pT) * kH + (pN - pT) * kN + (pC - pT) * kC,
-          lp(lp(lp(fP, 60, kH), 33, kN), 56, kC), lp(lp(lp(fD, 46, kH), 24, kN), 42, kC), sway);
+          lp(lp(lp(fP, 60, kH), 33, kN), 56, kC), lp(lp(lp(fD, 46, kH), 18, kN), 42, kC), sway);
         handsFilm(kH, 0.36 * bump(t, T.q3t2 + 1.1, T.q3t2 + SECS['q3t2'] - 0.2, 1.2, 1.2), t - T.q3t2);
         /* what the amulets' sentence remembers, laid over his sight for as long as it is said: the cold of a piece in
            the shop, its energy in his hand */
@@ -7684,7 +7693,7 @@
       look, presets: PRESETS, films, crowdStats, setFormation,
       /* for the probes (tools/probes/e4c3drive.mjs): the play's own state and its beats by name */
       dbg: { myGrip: GRIP, hold: HOLD, myArms: MYARMS, viewfinder(v) { FL.vf = v || null; }, clocks: { A: ENDT.A, B: ENDT.B, C: ENDT.C, D: ENDT.D, CLOSE, FEST, BETW, TELL, ANSW, OPEN: OPENT }, armsOf, handTo, handsTo, restHands, baiGrip, baiPut, play, open, cast, bursts, BAI, handBai, myBai, ymBai, petalBurst, auraAt, baiHands, baiRaise, lineBegin, dawnBegin, breathBegin, places: { PLACE, LINE_AT, KNEEL2, DAWN_AT, TABLES_AT }, dancers, dancersDir, danceBlock, dancerSpot, kids, kidsDir, kidPath, taper, extrasHeard, people, crowd, headDampLay,
-        /* (v26.15: the stage's own black over the picture, 0 to 1: ending D's shut lays a black of its own before the lens,
+        /* (v26.16: the stage's own black over the picture, 0 to 1: ending D's shut lays a black of its own before the lens,
            which the film's fade layer does not show; tools/probes/e4c3beats.mjs's lens step counts it as the black it is) */
         black: () => (shutVision.blk.visible && shutVision.blk.parent === camera ? shutVision.blk.material.opacity : 0) },
       who: () => people.filter(P => !P.driver).map(P => ({ key: P.key, ready: P.ready, take: P.cur, skin: P.lvShown, skins: P.lv.map(v => (v ? 1 : 0)).join('') })),
