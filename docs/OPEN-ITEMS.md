@@ -105,7 +105,8 @@ CLOSED 14 Nov 2026: items 6 to 8 below were put to him together (docs/V26.12-WHA
 
 ## C. Waiting on Chad
 
-9. **Models.** NEEDED (docs/E4-MODELS.md): the taxi uncle. (The woman at his counter in episode 4 chapter 2 is his own
+9. **Models.** Nothing NEEDED for episode 4 (docs/E4-MODELS.md): the taxi uncle's ask CLOSED at his word (15 Nov 2026,
+   "Stop asking for the taxi uncle."): its stand-in stays, never asked again. (The woman at his counter in episode 4 chapter 2 is his own
    woman in green since 11 Nov 2026, `e4stall`, his pick: no longer needed.) Episode 3 still on stand-ins (docs/E3-MODELS.md): chapter
    3's shop staff man and the customers (the kneeling girl and man, the auntie, the youth, the shrine's wife and
    father, the passer-by); chapter 4's Chinatown towkay. To come for episode 4: Grandmaster Pho's voice (his model arrived

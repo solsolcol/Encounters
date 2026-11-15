@@ -8,6 +8,11 @@ just need to remember to ask me for the models so i don't forget or miss it."*
   NEEDED, so none is forgotten.
 - A model is crossed off here the day it lands and is wired in. A placeholder is never "done".
 - `chaptertest` prints every placeholder still in use, as a reminder that cannot be missed.
+- **15 Nov 2026: nothing in this file is NEEDED.** The last, the taxi uncle, was closed at Chad's word ("Stop asking
+  for the taxi uncle."): its stand-in stays at the wheel, and it is never asked for again (the v5.23 rule: something he
+  drops is closed for good). Chapter 1's own note on it (`reuse.owner` in src/chapters/e4/e4c1.js, which chaptertest
+  prints) still says "until Chad's model": that file is left exactly as it is, because chapter 2's assembly copies its
+  lines under a pinned checksum (masters/v25.0/assemble.py). This line, not that one, is the record.
 
 **What a placeholder is here:**
 - **People:** one of the game's own characters, wearing the role until Chad's model arrives. Chad has allowed this,
@@ -30,7 +35,7 @@ just need to remember to ask me for the models so i don't forget or miss it."*
 | ~~**Khun Joy**, a Bangkok office worker~~ | — | — | — | **DROPPED** (v24.9, Chad's call: the yard is straight in — no queue, no customers) |
 | ~~**Uncle Lim**, from Kuala Lumpur~~ | — | — | — | **DROPPED** (v24.9; his stand-in `e4lim` left the build) |
 | ~~**Ta Sombat**, the farmer from next door~~ | — | — | — | **DROPPED** (v24.9) |
-| **The taxi uncle** (the coda: the taxi home in the rain; seen from the rear seat — his shoulder, his head, his hands on the wheel) | Singaporean Chinese man, 50s–60s; a short-sleeved polo or a white shirt; greying hair; glasses optional | seated driving (hands on the wheel), a glance at the mirror | `owner` (episode 3 chapter 3's amulet-shop owner, an older Chinese man, on his own upright seated take), his hands put on the wheel by the chapter (v24.21) | **NEEDED** (v24.21: Chad, 30 Oct, "The taxi scene has no driver in front") |
+| **The taxi uncle** (the coda: the taxi home in the rain; seen from the rear seat — his shoulder, his head, his hands on the wheel) | Singaporean Chinese man, 50s–60s; a short-sleeved polo or a white shirt; greying hair; glasses optional | seated driving (hands on the wheel), a glance at the mirror | `owner` (episode 3 chapter 3's amulet-shop owner, an older Chinese man, on his own upright seated take), his hands put on the wheel by the chapter (v24.21) | **CLOSED, NEVER ASKED AGAIN** (15 Nov 2026, Chad: "Stop asking for the taxi uncle."): `owner` stays at the wheel as he is (v24.21: Chad, 30 Oct, "The taxi scene has no driver in front") |
 | **The presence** | Thai woman, elderly, in old-fashioned dress (a faded breast cloth, a dark tube skirt — a pha thung); short cropped grey hair; barefoot | standing idle only (very still, head slightly bowed) | `granny` (episode 1's scolding grandmother, her own standing take), desaturated and faded by where she is on the screen — `yinghost` was the first thought, but she is episode 3's Yin ghost, and one ghost wearing another's face would say they are the same woman | **IN v24.15**: Chad's own old woman — a still scan (571k → 69k triangles at 1.5 m), `e4ghost`, dressed and faded exactly as the stand-in was |
 
 ### The first master
