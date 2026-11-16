@@ -155,7 +155,7 @@
     /* photographs 13 to 16; its front 9 m behind the tables (8, 10). Measured on 15, the front square on: the skirt rises
        1.5 m and the gable 2.2 m above it, the gable's foot is 6.6 m wide; from 16 the skirt is steep enough to show its
        tiles to a man standing before it, so both tiers are pitched at about thirty degrees */
-    const HALL = { x0: -5, x1: 5, z0: -29.7, z1: -21.7, floor: 0.48, wall: 3.1, over: 1.6, overS: 0.9, rise: 1.5, pitch: 30 * Math.PI / 180, gable: 2.2 };
+    const HALL = { x0: -5, x1: 5, z0: -38.72, z1: -21.7, floor: 0.48, wall: 3.1, over: 1.6, overS: 0.9, rise: 1.5, pitch: 30 * Math.PI / 180, gable: 2.2 };
     /* THE HALL'S INSIDE (v26.18: Chad, 16 Nov 2026, the morning's meeting moved inside it, "it needs to look exactly the
        same as the photos": his eleven photographs of it, read into a build sheet with every size and place, on the
        working machine only, masters/v26.0/ref/hall/notes/inventory.md; described in words in the tracker,
@@ -600,13 +600,15 @@
       /* THE POSTS: dark red, at the four corners and the middle of the front */
       for (const [px, pz] of [[H.x0 - 0.02, zf + 0.07], [cx, zf + 0.07], [H.x1 + 0.02, zf + 0.07], [H.x0 - 0.02, H.z0 - 0.07], [H.x1 + 0.02, H.z0 - 0.07]]) post(mPostRed, px, pz, 0.11, fl, eave + 0.15, 10);
       /* THE TWO DOORS: dark glass in bronze frames, a leaf either side of the meeting stiles, long bar handles */
-      for (const sx of [-1, 1]) { const dx = cx + sx * 2.7, w = 2.3, h = 2.25, z = zf + 0.02;
-        wall(mGlass, dx - w / 2, z, dx + w / 2, z, fl + 0.02, fl + h);
+      /* (v26.18: the WEST door's half nearer the middle is a leaf that slides, built in a group of its own where it stands
+         shut (b_world1h.js buildHallLeaf: its glass, its meeting stile, its handle): shut, the door is the picture it was) */
+      for (const sx of [-1, 1]) { const dx = cx + sx * 2.7, w = 2.3, h = 2.25, z = zf + 0.02, slides = sx < 0;
+        wall(mGlass, dx - w / 2, z, slides ? dx : dx + w / 2, z, fl + 0.02, fl + h);
         box(mBronze, dx, fl + h + 0.035, z + 0.02, w + 0.14, 0.07, 0.07);
         box(mBronze, dx, fl + 0.05, z + 0.02, w, 0.08, 0.06);
         for (const jx of [-w / 2 - 0.035, w / 2 + 0.035]) box(mBronze, dx + jx, fl + h / 2, z + 0.02, 0.07, h, 0.07);
-        for (const jx of [-0.03, 0.03]) box(mBronze, dx + jx, fl + h / 2, z + 0.025, 0.05, h, 0.05);
-        for (const jx of [-0.13, 0.13]) bar(mSteel, [dx + jx, fl + 0.85, z + 0.075], [dx + jx, fl + 1.35, z + 0.075], 0.014, 6); }
+        for (const jx of (slides ? [-0.03] : [-0.03, 0.03])) box(mBronze, dx + jx, fl + h / 2, z + 0.025, 0.05, h, 0.05);
+        for (const jx of (slides ? [-0.13] : [-0.13, 0.13])) bar(mSteel, [dx + jx, fl + 0.85, z + 0.075], [dx + jx, fl + 1.35, z + 0.075], 0.014, 6); }
       /* THE LOWER ROOF: a skirt all round, from its edge out over the steps up to the foot of the upper roof. Each side
          is a flat trapezoid with true UVs (planar), the eave its picture's u, so the rows of tiles lie along it */
       const o = { x0: H.x0 - H.overS, x1: H.x1 + H.overS, z0: H.z0 - ov, z1: zf + ov }, g = { x0: o.x0 + run, x1: o.x1 - run, z0: o.z0 + run, z1: o.z1 - run };
@@ -615,12 +617,21 @@
         [[o.x1, yo, o.z1], [o.x1, yo, o.z0], [g.x1, yi, g.z0], [g.x1, yi, g.z1]],      // east
         [[o.x1, yo, o.z0], [o.x0, yo, o.z0], [g.x0, yi, g.z0], [g.x1, yi, g.z0]],      // north
         [[o.x0, yo, o.z0], [o.x0, yo, o.z1], [g.x0, yi, g.z1], [g.x0, yi, g.z0]]];     // west
+      /* (v26.18: the underside is drawn only OUTSIDE the walls, under the eaves, where it was ever seen. The room inside has
+         a ceiling of its own at floor + 3.65, and along the side walls the skirt's underside came down through it. Each
+         side's sheet is cut by the walls' four lines in turn, each piece kept where it lies outside) */
+      const clipTo = (pts, ax, k, keepLess) => { const out = [], n = pts.length; for (let i = 0; i < n; i++) { const a = pts[i], b = pts[(i + 1) % n], da = (a[ax] - k) * (keepLess ? -1 : 1), db = (b[ax] - k) * (keepLess ? -1 : 1);
+        if (da >= 0) out.push(a); if ((da >= 0) !== (db >= 0)) { const t = da / (da - db); out.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]); } } return out; };
+      const outsideWalls = (pts) => { const pieces = []; let rest = pts;
+        for (const [ax, k, less] of [[0, H.x0, true], [0, H.x1, false], [2, zf, false], [2, H.z0, true]]) { const pc = clipTo(rest, ax, k, less); if (pc.length >= 3) pieces.push(pc); rest = clipTo(rest, ax, k, !less); if (rest.length < 3) break; }
+        return pieces; };
       for (const q of sides) { planar(mRoofRed, q);
         /* its underside: grey sheet, a hand under the tiles and facing down (the corners turned the other way round) */
-        planar(mSoffit, [q[1], q[0], q[3], q[2]].map(v => [v[0], v[1] - 0.05, v[2]])); }
+        for (const pc of outsideWalls([q[1], q[0], q[3], q[2]].map(v => [v[0], v[1] - 0.05, v[2]]))) planar(mSoffit, pc); }
       /* the purlins under the overhang (dark red), three on the south and on each side */
       for (const k of [0.12, 0.3, 0.46]) { const y = lp(yo, yi, k) - 0.09;
         bar(mPostRed, [lp(o.x0, g.x0, k), y, lp(o.z1, g.z1, k)], [lp(o.x1, g.x1, k), y, lp(o.z1, g.z1, k)], 0.035, 4);
+        if (lp(o.x0, g.x0, k) > H.x0) continue;                                 // (v26.18: a side purlin inside the wall's line ran through the room)
         bar(mPostRed, [lp(o.x0, g.x0, k), y, lp(o.z0, g.z0, k)], [lp(o.x0, g.x0, k), y, lp(o.z1, g.z1, k)], 0.035, 4);
         bar(mPostRed, [lp(o.x1, g.x1, k), y, lp(o.z0, g.z0, k)], [lp(o.x1, g.x1, k), y, lp(o.z1, g.z1, k)], 0.035, 4); }
       /* its edge board, and THE FRETWORK hanging under it on all four sides (pointed scallops, dark red) */

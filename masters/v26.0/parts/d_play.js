@@ -271,15 +271,20 @@
 
     /* THE LOOK: which of the looks the ground wears (a preset of light, the painted shade, and what only that day draws) */
     let lookName = 'DAY1';
-    const PHO_LEVEL = { DAY1: 1, DAWN: 0.86, OPENED: 1, SHUT: 0.8, AFTERNOON: 0.95, DUSK: 0.62, NIGHT: 0.3 };   // the unlit share of his look, dimmed to the hour (c_cast.js lookD)
+    const PHO_LEVEL = { DAY1: 1, DAWN: 0.86, OPENED: 1, SHUT: 0.8, AFTERNOON: 0.95, DUSK: 0.62, NIGHT: 0.3, HALLDAY: 1, HALLOPEN: 1, HALLSHUT: 0.86, HALLNOON: 1, HALLDUSK: 0.95 };   // the unlit share of his look, dimmed to the hour (c_cast.js lookD)
+    /* (v26.18: a look INSIDE THE HALL is its hour's look outside with the room's own light: the ground wears the hour's
+       shade and dressing, and the hall's glass is set to the hour) */
+    const HALL_HOUR = { HALLDAY: ['DAWN', 'MORNING'], HALLOPEN: ['DAWN', 'OPEN'], HALLSHUT: ['DAWN', 'SHUT'], HALLNOON: ['AFTERNOON', 'NOON'], HALLDUSK: ['DUSK', 'DUSK'] };
     function look(name, secs = 0) {
       if (kit) kit.daylight(PRESETS[name] || null, secs);
       lookName = name;
-      const two = name === 'DAWN' || name === 'OPENED' || name === 'SHUT' || name === 'AFTERNOON' || name === 'DUSK';
-      dayOne.visible = name === 'DAY1'; dayTwo.visible = two; nightG.visible = name === 'NIGHT'; duskG.visible = name === 'DUSK';
+      const inHall = HALL_HOUR[name] || null, out = inHall ? inHall[0] : name;
+      const two = out === 'DAWN' || out === 'OPENED' || out === 'SHUT' || out === 'AFTERNOON' || out === 'DUSK';
+      dayOne.visible = out === 'DAY1'; dayTwo.visible = two; nightG.visible = out === 'NIGHT'; duskG.visible = out === 'DUSK';
       crowdSolid(dayOne.visible);
-      paintShade(name === 'OPENED' || name === 'SHUT' ? 'DAWN' : name);
+      paintShade(out === 'OPENED' || out === 'SHUT' ? 'DAWN' : out);
       phoLook.level.value = PHO_LEVEL[name] != null ? PHO_LEVEL[name] : 1;
+      hallGlass(inHall ? inHall[1] : out === 'DUSK' || out === 'NIGHT' ? 'DUSK' : out === 'AFTERNOON' ? 'NOON' : 'MORNING');
     }
     function openDecision() { decOpen = true; if (getState() === 'play') startDecision(); }
 

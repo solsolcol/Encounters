@@ -1062,6 +1062,7 @@
       for (const b of dawnBlock) out.push(b);                                    // the two who clear up on day two
       for (const b of danceBlock) out.push(b);                                   // the six dancers, wherever they stand or walk (c_crowd.js)
       for (const k in castBlock) out.push(castBlock[k]);                         // and those of the cast who stand on the turf (each follows its person: castSolid)
+      for (const g of hin.gates) out.push(g.box);                                // (v26.18) the turf's north gate and the hall's west door, shut until the morning's walk (hallShow)
       return out;
     }
     function dispose() {
@@ -1116,12 +1117,15 @@
          each of the chapter's three grounds in its own collision, from where each phase puts him) */
       arrivals: [{ what: 'in the line at his bench', x: LINE_AT.x, z: LINE_AT.z },
                  { what: 'kneeling at his place', x: PLACE.x, z: PLACE.z }, { what: 'kneeling before Grandmaster Pho', x: KNEEL2.x, z: KNEEL2.z }],
-      keepIn: { what: 'the ground of the Wai Kru', minX: DATA.bounds.minX, maxX: DATA.bounds.maxX, minZ: DATA.bounds.minZ, maxZ: DATA.bounds.maxZ },
+      /* (v26.18: the chapter's box reaches the hall's north wall now; on day one, which walktest floods, he is still held on
+         the ground of the Wai Kru, by the gate across the lane's mouth and the columns either side of it) */
+      keepIn: { what: 'the ground of the Wai Kru', minX: DATA.bounds.minX, maxX: DATA.bounds.maxX, minZ: -9.8, maxZ: DATA.bounds.maxZ },
+      groundAt: hallGround,                                                     // the hall's steps and its floor, 0.48 m up (b_world1h.js)
       get phase() { return phase; },
       setPhase, applyPhase, after, dayClock, sayLine, queueLine, queueFn, queueGap,
       look, presets: PRESETS, films, crowdStats, setFormation,
       /* for the probes (tools/probes/e4c3drive.mjs): the play's own state and its beats by name */
-      dbg: { myGrip: GRIP, hold: HOLD, myArms: MYARMS, viewfinder(v) { FL.vf = v || null; }, clocks: { A: ENDT.A, B: ENDT.B, C: ENDT.C, D: ENDT.D, CLOSE, FEST, BETW, TELL, ANSW, OPEN: OPENT }, armsOf, handTo, handsTo, restHands, baiGrip, baiPut, play, open, cast, bursts, BAI, handBai, myBai, ymBai, petalBurst, auraAt, baiHands, baiRaise, lineBegin, dawnBegin, breathBegin, places: { PLACE, LINE_AT, KNEEL2, DAWN_AT, TABLES_AT }, dancers, dancersDir, danceBlock, dancerSpot, kids, kidsDir, kidPath, taper, extrasHeard, people, crowd, headDampLay,
+      dbg: { hallShow, hallGlass, hin, hallIn, hallAtV, myGrip: GRIP, hold: HOLD, myArms: MYARMS, viewfinder(v) { FL.vf = v || null; }, clocks: { A: ENDT.A, B: ENDT.B, C: ENDT.C, D: ENDT.D, CLOSE, FEST, BETW, TELL, ANSW, OPEN: OPENT }, armsOf, handTo, handsTo, restHands, baiGrip, baiPut, play, open, cast, bursts, BAI, handBai, myBai, ymBai, petalBurst, auraAt, baiHands, baiRaise, lineBegin, dawnBegin, breathBegin, places: { PLACE, LINE_AT, KNEEL2, DAWN_AT, TABLES_AT }, dancers, dancersDir, danceBlock, dancerSpot, kids, kidsDir, kidPath, taper, extrasHeard, people, crowd, headDampLay,
         /* (v26.16: the stage's own black over the picture, 0 to 1: ending D's shut lays a black of its own before the lens,
            which the film's fade layer does not show; tools/probes/e4c3beats.mjs's lens step counts it as the black it is) */
         black: () => (shutVision.blk.visible && shutVision.blk.parent === camera ? shutVision.blk.material.opacity : 0) },

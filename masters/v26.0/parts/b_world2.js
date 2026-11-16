@@ -481,6 +481,9 @@
     buildBanners();
     buildPole();
     flush();
+    buildHallIn(); buildHallWay(); flush(hallIn);          // (v26.18: the hall's inside, a group of its own, drawn from the morning's walk on)
+    buildHallLeaf(); flush(hin.leaf);
+    dressHallIn(); dressHallThings();
     dressTables(); dressHall();
     buildTrees();
     buildPetals();

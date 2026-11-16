@@ -109,7 +109,16 @@
     bg: 0x0a0806, fog: [0x0a0806, 0.02],
     hemi: [0x5a4a3c, 0x1a120c, 0.34], key: [0xffd6a4, 1.9, -1.6, 8, -3.2], fill: [0x39425a, 0.1],
     vmHemi: [0x5a4a3c, 0x1a120c, 0.4], vmKey: [0xffd6a4, 0.6] });
-  const PRESETS = { DAY1, NIGHT, DAWN, OPENED, SHUT, AFTERNOON, DUSK, DUSKOPEN, ROOM0, ROOM1, COUNTER };
+  /* INSIDE THE HALL (v26.18: the morning's meeting moved inside it). The sky and the sun stay each hour's own, for what
+     the doors show; the light on what stands in the room is the room's: its lamps are on (his photographs), so it is even,
+     near white and from above, whatever the hour, and the hour is told by the glass (b_world1h.js hallGlass) and by how
+     much of the day's colour comes in. The air inside is clear: the ground's mist would grey the far wall 17 m away */
+  const HALLDAY = Object.assign({}, DAWN, { fog: [0xecd4b0, 0.0016], hemi: [0xf2f4fa, 0xa89e8c, 1.1], key: [0xfdf6ea, 0.85, -3, 12, 4], fill: [0xffe2c0, 0.22], vmHemi: [0xf4f4f8, 0x9a9488, 1.0], vmKey: [0xfff2e0, 0.7] });
+  const HALLOPEN = Object.assign({}, OPENED, { fog: [0xfff0d0, 0.0014], hemi: [0xfff6e6, 0xb0a68c, 1.35], key: [0xfff0d0, 1.05, -3, 12, 4], fill: [0xffe8c8, 0.34] });
+  const HALLSHUT = Object.assign({}, SHUT, { fog: [0xd6d8d6, 0.0014], hemi: [0xe4e6e8, 0x8a8a84, 0.92], key: [0xeef0f0, 0.7, -3, 12, 4], fill: [0xc4ccd6, 0.2] });
+  const HALLNOON = Object.assign({}, AFTERNOON, { fog: [0xe8dcb8, 0.0014], hemi: [0xfff0d4, 0xa49a80, 1.05], key: [0xffe6b0, 0.85, -3, 12, 4], fill: [0xffdca0, 0.3] });
+  const HALLDUSK = Object.assign({}, DUSK, { fog: [0x4a3a3a, 0.0014], hemi: [0xe8ecf6, 0x8a8478, 0.95], key: [0xf4f6ff, 0.75, -3, 12, 4], fill: [0xffd8a8, 0.2] });
+  const PRESETS = { DAY1, NIGHT, DAWN, OPENED, SHUT, AFTERNOON, DUSK, DUSKOPEN, ROOM0, ROOM1, COUNTER, HALLDAY, HALLOPEN, HALLSHUT, HALLNOON, HALLDUSK };
 
   /* every line's length: an ESTIMATE at the speaker's pace until its take is measured at M7 (the registry will carry
      the same numbers); the queue books its window by it and every film's times are built from it, so a re-said line
@@ -271,7 +280,9 @@
     shrine:    { x: 6.33, z: 9.03 },          // the engine's anchor (ghost: null): where Grandmaster Pho sits, the chapter's pile (c_cast.js PHO_AT)
     ghostHome: { x: 6.33, z: 9.03 },
     /* the ground he is kept on: the turf, the gravel before the tables and the tents' fronts (stage.keepIn is the same box) */
-    bounds:    { minX: -10.8, maxX: 10.8, minZ: -9.8, maxZ: 12.4 },
+    /* (v26.18: its north edge is the hall's north wall now. He is still kept on the turf until the morning's walk, by a gate
+       across the lane's mouth and columns over everything between that is not the lane: b_world1h.js buildHallWay) */
+    bounds:    { minX: -10.8, maxX: 10.8, minZ: -38.5, maxZ: 12.4 },
 
     ghost: null,
     fireLight: null,
