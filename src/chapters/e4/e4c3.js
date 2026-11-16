@@ -1425,6 +1425,12 @@
       const t = hRep(tex(done(THREE, c, true)), 0.6, 0.6); t.anisotropy = 8;
       return B({ color: 0x6c6b69, map: t }); })();
     const mInPost = M({ color: 0x3d2830, roughness: 0.34 });
+    /* (v26.18, his photographs 8, 9 and 11 laid beside the game's from the same places and measured: the posts are a
+       plum maroon, (63, 43, 50) from the back of the hall beside the wall's (132, 87, 64), and the game drew them (31, 15,
+       18) beside a wall it draws (145, 99, 70): half as bright and redder. Tried in the game at two paints: this one
+       draws (73, 50, 55) from the back, as his photograph; from the front, on the post's side the room's light misses,
+       (47, 30, 36)) */
+    mInPost.color.setHex(0x664f58);
     const mInWhite = M({ color: 0xf1efe9, roughness: 0.6 });
     const mInDark = M({ color: 0x241f1d, roughness: 0.6 });
     const mAltarTop = M({ color: 0xd9d9d6, roughness: 0.32 });
@@ -1699,11 +1705,17 @@
          photograph 10, of an afternoon's work, has them out.) A flame stands on each wick (c_zfx.js hallFlames), the
          ground's own flame and glow at the size of its candle: a wick is the candle's top, 0.66 m on the middle one's
          model and 1.25 on the tall one's, as the night's tables have it (b_world2.js) */
+      /* (v26.18, the dais's two laid beside his photograph 4 at its own size: each stands straight behind its gold bai
+         sri and rises well over its fronds, the west one 0.62 m and the east one 0.79 (measured against the bai sri's
+         0.88, behind it on the dais), about 6 cm thick, a deep golden yellow (183, 122, 5) lit; the game's stood 0.45 m,
+         hidden behind the fronds, and drew orange (196, 93, 30). Each keeps its thickness and is drawn taller (`sy`), its
+         flame at its new wick; tried in the game, the yellow draws (196, 129, 38). The one before the red table is as it
+         was) */
       const HCAND = {
-        mid: [{ u: 2.75, v: 2.48, h: DH, s: 0.68, tint: 0xf0a020 }, { u: 3.8, v: 2.5, h: DH, s: 0.68, tint: 0xf0a020 }, { u: 0.15, v: 2.0, h: AH, s: 0.53, tint: 0xf0a020 }],
+        mid: [{ u: 2.75, v: 2.48, h: DH, s: 0.68, sy: 1.38, tint: 0xf0de00 }, { u: 3.8, v: 2.5, h: DH, s: 0.68, sy: 1.76, tint: 0xf0de00 }, { u: 0.15, v: 2.0, h: AH, s: 0.53, tint: 0xf0a020 }],
         tall: [{ u: -3.35, v: 1.3, h: AH, s: 0.76 }, { u: -2.0, v: 1.3, h: AH, s: 0.72 }] };
       stageList.hallFlames = HCAND.mid.map(c => [c, 0.66, 1.15]).concat(HCAND.tall.map(c => [c, 1.25, 1.7]))
-        .map(([c, top, fs]) => { const p = hallAtV(c.u, c.v, c.h + top * c.s); return { x: p.x, y: p.y, z: p.z, s: fs * c.s }; });
+        .map(([c, top, fs]) => { const p = hallAtV(c.u, c.v, c.h + top * c.s * (c.sy || 1)); return { x: p.x, y: p.y, z: p.z, s: fs * c.s }; });
       /* the dais: the master's seat and its pillows (D8, D9), the four columns of drums at the wall (D4: the inner two
          gold), the two gold bai sri and the peacock before the lotus (D10, D11), the thick candles (D13) */
       /* THE WHITE BUDDHA ON ITS GOLD LOTUS (D1, D2): the hall's main image, in the dais's north-east, under the recess of
@@ -1805,13 +1817,27 @@
       hallMany('w3hnagagroup', [{ u: -4.25, v: 3.5, h: 0, ry: E }]);
       hallMany('w3hpedfan', [{ u: -3.6, v: 4.6, h: 0, s: 0.78, ry: 2.4 }, { u: 4.2, v: 9.8, h: 0, ry: -1.9 }]);
       /* (the armchair of the set is the three-seater made narrow: the chapter's own sofa is green, and no tint makes it beige) */
-      hallMany('w3hsofa3', [{ u: -4.3, v: 6.55, h: 0, ry: E }, { u: -4.3, v: 8.15, h: 0, ry: E, sx: 0.46 }, { u: 4.3, v: 12.3, h: 0, ry: W, tint: 0x86c4b0 }, { u: 4.3, v: 14.6, h: 0, ry: W, tint: 0xb8c070, s: 0.86 }]);
+      /* (v26.18, his photograph 9 at its own size: BOTH sofas on the east wall are the same mint vinyl, (85, 126, 115) on
+         the nearer one's seat, the further a shade darker in its corner; the game drew the first a grass green and the
+         second olive. The beige model has too little blue for any tint under one to reach mint, so each is given in the
+         renderer's linear terms, over one in blue and green (a multiply of a beige that never reaches one): tried in the
+         game, the nearer draws (89, 138, 123) where his photograph has (92, 139, 125) in the game's light) */
+      const mint = (k) => new THREE.Color().setRGB(0.28 * k, 0.96 * k, 1.34 * k, THREE.LinearSRGBColorSpace);
+      hallMany('w3hsofa3', [{ u: -4.3, v: 6.55, h: 0, ry: E }, { u: -4.3, v: 8.15, h: 0, ry: E, sx: 0.46 }, { u: 4.3, v: 12.3, h: 0, ry: W, tint: mint(1) }, { u: 4.3, v: 14.6, h: 0, ry: W, tint: mint(0.9), s: 0.86 }]);
       /* the east wall: the strapped cushions (E1) and the grey mats (E2), the blue chairs stacked in the corner (E7) */
       hallMany('w3hcushions', [{ u: 4.3, v: 6.9, h: 0, ry: W }]);
       hallMany('w3hgreymats', [{ u: 4.3, v: 8.3, h: 0, ry: W }]);
       hallMany('w3pchair', [0, 1].flatMap(c => Array.from({ length: 9 }, (_, i) => ({ u: 4.32 - c * 0.62, v: 16.25, h: i * 0.062, ry: Math.PI, tint: 0x4f66d8 }))));
       /* the south wall: the bench with its folded mattresses (S1) */
-      hallMany('w3bench', [{ u: 1.1, v: 15.6, h: 0, ry: Math.PI, s: 1.47 }]);
+      /* (v26.18, his photograph 9 at its own size: the bench under the mattresses is plain brown wood, (93, 62, 43) along
+         its rail, hue 23 degrees and half saturated; the game drew the chapter's own bench in its red lacquer, (71, 4, 6).
+         Its paint turned toward the wood in the shader (the hue turned 24 degrees, its colour taken a little over a third
+         of the way from grey, lifted 2.1 times): tried in the game, its back draws (90, 61, 40), hue 25, as his photograph) */
+      const woodTurn = (mat) => { const P = { h: { value: new THREE.Vector2(Math.cos(24 * Math.PI / 180), Math.sin(24 * Math.PI / 180)) }, s: { value: 0.36 }, g: { value: 2.1 } };
+        mat.onBeforeCompile = (sh) => { sh.uniforms.uHue = P.h; sh.uniforms.uSat = P.s; sh.uniforms.uGain = P.g;
+          sh.fragmentShader = 'uniform vec2 uHue;\nuniform float uSat;\nuniform float uGain;\n' + sh.fragmentShader.replace('#include <map_fragment>', '#include <map_fragment>\n{ vec3 hk = vec3(0.57735); vec3 hv = diffuseColor.rgb; vec3 r = hv * uHue.x + cross(hk, hv) * uHue.y + hk * dot(hk, hv) * (1.0 - uHue.x); float l = dot(r, vec3(0.2126, 0.7152, 0.0722)); diffuseColor.rgb = mix(vec3(l), r, uSat) * uGain; }'); };
+        mat.customProgramCacheKey = () => 'woodTurn'; mat.needsUpdate = true; };
+      hallMany('w3bench', [{ u: 1.1, v: 15.6, h: 0, ry: Math.PI, s: 1.47 }], 3, woodTurn);
       hallMany('w3hmattresses', [{ u: 1.1, v: 15.6, h: 0.47, ry: Math.PI }]);
       /* THE MATS, laid in their grid (S3): four columns 1.7 m apart, five rows 1.8 m apart; the one before the master's
          seat is the one he is shown to, 2.2 m from Grandmaster Pho */
