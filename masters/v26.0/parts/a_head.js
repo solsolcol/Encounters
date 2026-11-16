@@ -301,7 +301,8 @@
       'w3t_carpet', 'w3t_bluemat', 'w3t_swag', 'w3t_banner', 'w3t_treeline', 'w3t_redroof', 'w3t_hallbrick',
       'w3t_steptile', 'w3t_lawn', 'w3t_kalae', 'w3t_fretwork', 'w3t_sign', 'w3banana2', 'w3frangipani',
       'w3isanhouse', 'w3tank', 'w3aircon', 'w3scooter', 'w3t_render', 'w3t_cloudbank', 'w3t_cloudtall',
-      'w3t_cloudflat', 'w3t_cloudthree', 'w3t_cirrus',
+      'w3t_cloudflat', 'w3t_cloudthree', 'w3t_cirrus', 'w3pholap', 'w3hseat', 'w3hpillow', 'w3hframe', 'w3hdrums',
+      'w3hgoldbaisri', 'w3hpeacock', 'w3hmat',
       /* <<< this chapter's own keys <<< */
       /* the trees of this episode's first chapter (reuseInEpisode) */
       'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd',

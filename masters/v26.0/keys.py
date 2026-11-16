@@ -123,6 +123,21 @@ S0, S1 = '           # >>> e4c3 keys (masters/v26.0/keys.py) >>>\n', '          
 H0, H1 = '      /* >>> this chapter\'s own keys: written by masters/v26.0/keys.py (edit its table, not this list) >>> */\n', '      /* <<< this chapter\'s own keys <<< */\n'
 
 
+group("e4c3 v26.18: THE HALL'S INSIDE (Chad, 16 Nov 2026: the morning's meeting moved inside the main hall, its inside\n"
+      "\"exactly the same as the photos\"). Each thing from a crop of his own photograph of the real one (the thing\n"
+      "alone: no person, no face, no print), a checked picture on white, then Meshy at its highest and its remesh:\n"
+      "masters/v26.0/props (TABLE.txt, jobs-hallin.json). The cloth over Grandmaster Pho's crossed legs is made in\n"
+      "Blender on his own posed skin: masters/v26.18/pho.",
+      [('w3pholap', 'w3pholap.glb', "the white cloth over Grandmaster Pho's crossed legs (made: masters/v26.18/pho/lapcloth.py)"),
+       ('w3hseat', 'w3hseat.glb', "the master's seat: a maroon mattress cushion under an ochre-tan cloth (the build sheet's D8)"),
+       ('w3hpillow', 'w3hpillow.glb', "a maroon Thai triangle pillow behind the seat (D9)"),
+       ('w3hframe', 'w3hframe.glb', "an ornate dark-and-gold picture frame, empty: a grey board where its picture goes (G1)"),
+       ('w3hdrums', 'w3hdrums.glb', "one column of stacked pressed-metal drums with a spear, mirror silver; the gold ones a tint (D4)"),
+       ('w3hgoldbaisri', 'w3hgoldbaisri.glb', "the gold-foil bai sri in its silver pedestal bowl (D10)"),
+       ('w3hpeacock', 'w3hpeacock.glb', "the peacock bai sri, of plain pale paper (D11)"),
+       ('w3hmat', 'w3hmat.glb', "a white quilted satin floor mat (S3)")])
+
+
 def between(s, a, b, new, what):
     assert s.count(a) == 1 and s.count(b) == 1, '%s: its markers are not there once (%d, %d)' % (what, s.count(a), s.count(b))
     i, j = s.index(a) + len(a), s.index(b)

@@ -156,6 +156,18 @@
        1.5 m and the gable 2.2 m above it, the gable's foot is 6.6 m wide; from 16 the skirt is steep enough to show its
        tiles to a man standing before it, so both tiers are pitched at about thirty degrees */
     const HALL = { x0: -5, x1: 5, z0: -29.7, z1: -21.7, floor: 0.48, wall: 3.1, over: 1.6, overS: 0.9, rise: 1.5, pitch: 30 * Math.PI / 180, gable: 2.2 };
+    /* THE HALL'S INSIDE (v26.18: Chad, 16 Nov 2026, the morning's meeting moved inside it, "it needs to look exactly the
+       same as the photos": his eleven photographs of it, read into a build sheet with every size and place, on the
+       working machine only, masters/v26.0/ref/hall/notes/inventory.md; described in words in the tracker,
+       docs/V26.18-E4C3-HALL.md). The room is 9.6 m wide and 16.8 m long under a ceiling 3.65 m up, its altars at the
+       north end and its two glass doors at the south: so it stands BEHIND THE REAL FRONT, in place, at true size, its
+       north wall at z -38.6 (the front built in v26.0 was 8 m deep: the shell is lengthened north). The sheet's own
+       coordinates are kept: u is x (east), v is metres south of the north wall, h is height over the hall's floor.
+       HALLSEAT is where the master sits: on his cushion on the main dais (0.28 m), by its front west corner, facing
+       the doors; its y is the cushion's top, where his cross-legged seat stands him (c_cast.js). */
+    const HIN = { x0: -4.8, x1: 4.8, zN: -38.6, zS: -21.8, ceil: 3.65, floor: HALL.floor, dais: { x0: 1.4, x1: 4.8, v1: 3.4, h: 0.28 }, cushion: 0.08 };
+    const hallAt = (u, v, h = 0) => [u, HIN.floor + h, HIN.zN + v];              // the build sheet's (u, v, h) in the world
+    const HALLSEAT = { x: 2.1, z: HIN.zN + 2.9, y: HIN.floor + HIN.dais.h + HIN.cushion, ry: 0 };
     const SHED = { x0: -16, x1: -10.5, z0: -14, z1: -8, eave: 2.4 };
     const TENT_W1 = { x: -9, z: -1 }, TENT_W2 = { x: -9, z: 5 }, TENT_E = { x: 9, z: -2 };
     const TENT = { w: 4, eave: 2.2, peak: 3.3 };

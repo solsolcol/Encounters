@@ -129,6 +129,171 @@
       const made = new THREE.AnimationClip(clip.name, L, tracks); made.travel = travel;
       return made;
     }
+    /* THE CROSS-LEGGED SEAT (v26.18: Chad, 16 Nov 2026, the morning's meeting moved inside the main hall: "Grandmaster pho
+       is seated inside the main hall, waiting for the player", its inside "exactly the same as the photos"; in his
+       photographs 2 to 4 of it the master sits cross-legged on the dais, in white, his lower cloth smooth over both
+       knees, his right hand over the front of his lap, his left in it). o.cross seats a body so, from what its own
+       file has (v5.20), and it is asked for by one person only, the hall's Grandmaster Pho: the bench's is a person of
+       his own and is exactly as he was. Every step was photographed in the pose lab before the next was built, and
+       three first tries were refused by photograph (the tracker's log, docs/V26.18-E4C3-HALL.md):
+       1. THE TAKES ARE MIXED (crossTakes). His own floor take cannot be drawn close: its robe below the waist is a
+          slab with a torn notch (one tube of cloth cannot wrap two crossed legs: v24.47), and it leans back 23
+          degrees. So his hips, his legs and the bones of his robe below the waist are HELD at one moment of it
+          (K.low at K.at), and everything above comes from a bench take, as it moves. His spine is given the turn that
+          keeps his trunk as the bench take has it IN THE WORLD (the two takes hold his hips 27 degrees apart), and
+          then his trunk is stood upright and square: over the stretch named (t0 to t1) its own frame is read (his
+          left, his spine's line, his front) and turned onto a trunk leaning `lean` degrees forward (measured: his
+          bench rest leans 16.5 degrees forward, 5.5 to his left and is turned 8; his bench talk leans back 6).
+       2. HIS ROBE IS ENDED IN A LEVEL HEM, K.hem over the cushion (crossHem): his robe below the waist is a skin of its
+          own and is not drawn; of his main skin, his legs are not drawn, nor any triangle wholly under the hem (his
+          arms aside); a low point of a triangle that crosses the hem is brought up onto it, where the pose has it,
+          and set back through its own skinning (a point his robe's waist bone carried is given to his spine: the hem
+          is of one piece with his trunk, and NO point of him is his hip bone's). An ARM is what an arm's bones carry
+          AND stands within a hand's breadth of the arm's own line: the cloth that hangs from his left arm is carried
+          by it too, and is cloth. Hidden by "any point the robe carries", icicles 8 cm long hung from him.
+       3. THE CLOTH OVER HIS LEGS IS MADE (masters/v26.18/pho/lapcloth.py, in Blender, on his skin as the game poses
+          it; K.lap its key): laid taut on a ring under the hem and on his legs, then let settle. Its top leans with
+          his trunk: it is bound here to his spine and his hips, each point's share of his spine read off its height
+          under the ring and its way out from his waist's middle (so nothing rides on an attribute a pack might
+          drop). It takes his robe's own look (o.look, after this), so the two are one white.
+       4. HIS HANDS REST ON THE CLOTH (crossHands), by numbers read off photograph 3: where each palm's middle lies,
+          the way its fingers run, how far down the cloth's fall they may follow it, where its elbow stands.
+       His hip joint rides K.hips over the cushion's top (the lowest of his legs 6 mm over it), and the person's
+       group stands ON the cushion's top: put() him there with its height. */
+    const CROSS_LOW = /^(mixamorig:?)?(Hips|(Left|Right)(UpLeg|Leg|Foot|Toe\w*)|(Left|Right)LegGraft\w*|Skirt\w*|Cloth\w*)\./;
+    const _cxA = new THREE.Vector3(), _cxB = new THREE.Vector3();
+    function crossTakes(P, animations, K) {
+      const Lw = animations.find(c => c.name === K.low); if (!Lw) { console.warn(P.key + ': no take ' + K.low + ' to sit cross-legged in'); return; }
+      const bone = (nm) => { const re = new RegExp('^(mixamorig:?)?' + nm + '$'); for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
+      const held = [], hipQ = new THREE.Quaternion();
+      for (const t of Lw.tracks) { if (!CROSS_LOW.test(t.name)) continue; const v = Array.from(t.createInterpolant(new Float32Array(t.getValueSize())).evaluate(K.at)); held.push([t, v]); if (/Hips\.quaternion$/.test(t.name)) hipQ.fromArray(v); }
+      const nk = bone('Neck'), sp = bone('Spine'), la = bone('LeftArm'), ra = bone('RightArm');
+      P.group.updateWorldMatrix(true, false);
+      for (const name in K.takes) { const U = animations.find(c => c.name === name), A0 = P.acts[name], F = K.takes[name];
+        if (!U || !A0) { console.warn(P.key + ': no take ' + name + ' to sit cross-legged with'); continue; }
+        const fix = new THREE.Quaternion();
+        if (nk && sp && la && ra && P.hips && P.hips.parent) { const u = new THREE.Vector3(), s = new THREE.Vector3(), N = 9, t0 = F.t0 || 0, t1 = F.t1 != null ? F.t1 : U.duration;
+          for (const k in P.acts) P.acts[k].setEffectiveWeight(k === name ? 1 : 0);
+          for (let i = 0; i < N; i++) { A0.time = t0 + (t1 - t0) * i / (N - 1); P.mixer.update(0); P.group.updateWorldMatrix(false, true);
+            nk.getWorldPosition(_cxA); P.group.worldToLocal(_cxA); sp.getWorldPosition(_cxB); P.group.worldToLocal(_cxB); u.add(_cxA.sub(_cxB).normalize());
+            la.getWorldPosition(_cxA); P.group.worldToLocal(_cxA); ra.getWorldPosition(_cxB); P.group.worldToLocal(_cxB); s.add(_cxA.sub(_cxB).normalize()); }
+          A0.setEffectiveWeight(0);
+          u.normalize(); s.addScaledVector(u, -s.dot(u)).normalize(); const f = new THREE.Vector3().crossVectors(s, u).normalize(), Ln = (F.lean || 0) * Math.PI / 180;
+          const M0 = new THREE.Matrix4().makeBasis(s, u, f), M1 = new THREE.Matrix4().makeBasis(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, Math.cos(Ln), Math.sin(Ln)), new THREE.Vector3(0, -Math.sin(Ln), Math.cos(Ln)));
+          const Rg = new THREE.Quaternion().setFromRotationMatrix(M1.multiply(M0.transpose())), aw = new THREE.Quaternion(), gw = new THREE.Quaternion();
+          P.hips.parent.getWorldQuaternion(aw); P.group.getWorldQuaternion(gw); const c = aw.invert().multiply(gw); fix.copy(c).multiply(Rg).multiply(c.clone().invert()); }
+        const tracks = U.tracks.filter(t => !CROSS_LOW.test(t.name)).map(t => t.clone());
+        for (const [t, v] of held) tracks.push(new t.constructor(t.name, [0, U.duration], v.concat(v)));
+        const hT = U.tracks.find(t => /Hips\.quaternion$/.test(t.name)), sT = tracks.find(t => /Spine\.quaternion$/.test(t.name));
+        if (hT && sT) { const it = hT.createInterpolant(new Float32Array(4)), inv = hipQ.clone().invert(), a = new THREE.Quaternion(), b = new THREE.Quaternion(), vals = sT.values;
+          /* (F.sway: on a bench his hips rock as he talks and all of him goes with them; cross-legged his seat is planted, and
+             the whole of that rocking, given to his spine, swayed his trunk 15 degrees each way: so his hips' turn is taken
+             only `sway` of the way from its middle over the take) */
+          const mid = new THREE.Quaternion(), sway = F.sway != null ? F.sway : 1;
+          if (sway < 1) { const acc = [0, 0, 0, 0], M = 24; for (let i = 0; i < M; i++) { a.fromArray(it.evaluate(U.duration * i / (M - 1))); if (i && a.x * acc[0] + a.y * acc[1] + a.z * acc[2] + a.w * acc[3] < 0) a.set(-a.x, -a.y, -a.z, -a.w); acc[0] += a.x; acc[1] += a.y; acc[2] += a.z; acc[3] += a.w; } mid.fromArray(acc).normalize(); }
+          for (let i = 0; i < sT.times.length; i++) { a.fromArray(it.evaluate(sT.times[i])); if (sway < 1) a.copy(b.copy(mid).slerp(a, sway)); b.fromArray(vals, i * 4); a.multiply(b).premultiply(fix).premultiply(inv).normalize();
+            if (i && (a.x * vals[i * 4 - 4] + a.y * vals[i * 4 - 3] + a.z * vals[i * 4 - 2] + a.w * vals[i * 4 - 1]) < 0) a.set(-a.x, -a.y, -a.z, -a.w);
+            a.toArray(vals, i * 4); } }
+        A0.stop(); P.mixer.uncacheAction(A0.getClip());
+        const clip = new THREE.AnimationClip(name, U.duration, tracks), A = P.mixer.clipAction(clip); A.enabled = true; A.setEffectiveWeight(0); A.play(); P.acts[name] = A; P.w[name] = 0; }
+    }
+    /* (his hands on the cloth: `top` is the cloth's height under a point of his own frame) */
+    function crossHands(P, spec, top) {
+      const A = armsOf(P), R = {}, rep = {}; P.restHands = null; if (!A) return null;
+      const loc = (b, out) => { b.getWorldPosition(out); return P.group.worldToLocal(out); };
+      for (const [sd, sg] of [['L', 1], ['R', -1]]) { const a = A[sd], sp = spec[sd]; if (!sp) continue;
+        hingeOf(a, sg);
+        const d = new THREE.Vector3(Math.sin(sp.yaw), 0, Math.cos(sp.yaw)), e = 0.03, x = sp.x, z = sp.z, y = top(x, z);
+        if (!(y > -1)) { console.warn(P.key + ': no cloth under his ' + sd + ' hand at ' + x + ', ' + z); continue; }
+        const sl = Math.max(-(sp.slope != null ? sp.slope : 0.4), Math.min(0.2, (top(x + d.x * e, z + d.z * e) - top(x - d.x * e, z - d.z * e)) / (2 * e)));
+        const gx = (top(x + 0.03, z) - top(x - 0.03, z)) / 0.06, gz = (top(x, z + 0.03) - top(x, z - 0.03)) / 0.06;
+        if (!isFinite(sl) || !isFinite(gx) || !isFinite(gz)) { console.warn(P.key + ': the cloth ends under his ' + sd + ' hand'); continue; }
+        const f = new THREE.Vector3(d.x, sl, d.z).normalize(), n = new THREE.Vector3(gx, -1, gz).normalize(); n.addScaledVector(f, -n.dot(f)).normalize();
+        const HM = a.fingers ? null : handAxes(P, A, sd), PALM = sp.palm != null ? sp.palm : (HM ? HM.len * 0.45 : a.palm), OFF = sp.off != null ? sp.off : (HM ? Math.max(0.015, HM.depth) : 0.022);
+        const Cp = new THREE.Vector3(x, y + (sp.lift || 0), z), W = Cp.clone().addScaledVector(f, -PALM).addScaledVector(n, -OFF);
+        const Sh = loc(a.up, new THREE.Vector3()), lu = loc(a.fore, new THREE.Vector3()).distanceTo(Sh), lf = loc(a.hand, new THREE.Vector3()).distanceTo(loc(a.fore, new THREE.Vector3()));
+        R[sd] = { W, pdir: new THREE.Vector3().fromArray(sp.pole).normalize(), f, n, fing: [] };
+        if (sp.follow) { const fl = sp.follow.map(nm => P.bone[nm]).filter(b => b && b.parent === a.up.parent).map(b => ({ b, q: new THREE.Quaternion(), on: false })); if (fl.length) R[sd].fol = fl; }
+        if (HM) { R[sd].fL = HM.fL; R[sd].nL = HM.nL; R[sd].aL = HM.aL; }
+        rep[sd] = { palm: [x, +y.toFixed(3), z], wrist: W.toArray().map(q => +q.toFixed(3)), reach: +(W.distanceTo(Sh) / (lu + lf)).toFixed(3), slope: +sl.toFixed(2) }; }
+      P.restHands = { how: 'lap', R, hold: spec.hold || null }; return rep;
+    }
+    /* (his robe's hem, cut in the pose he stands in now) */
+    function crossHem(P, q, HEM) {
+      const g = q.geometry, pos = g.attributes.position, si = g.attributes.skinIndex, sw = g.attributes.skinWeight, idx = g.index, n = pos.count, v = new THREE.Vector3(), bones = q.skeleton.bones;
+      if (!pos || !si || !sw || !idx) return null;
+      const sideB = bones.map(b => /^(mixamorig:?)?Left(Arm|ForeArm|Hand)/.test(b.name) ? 1 : (/^(mixamorig:?)?Right(Arm|ForeArm|Hand)/.test(b.name) ? 2 : 0));
+      const legB = bones.map(b => /(UpLeg|Leg|Foot|Toe)/.test(b.name)), robeB = bones.map(b => /^(Skirt|Cloth)/.test(b.name)), spineI = bones.findIndex(b => /^(mixamorig:?)?Spine$/.test(b.name));
+      P.group.updateWorldMatrix(true, true); P.group.updateMatrixWorld(true);
+      const SM = skinMats(q), toG = new THREE.Matrix4().copy(P.group.matrixWorld).invert().multiply(q.matrixWorld), A = armsOf(P), w3 = new THREE.Vector3(), w4 = new THREE.Vector3(), w5 = new THREE.Vector3();
+      const line = (sd) => { const a = A && A[sd]; if (!a) return null; const pts = [a.up, a.fore, a.hand].map(b => P.group.worldToLocal(b.getWorldPosition(new THREE.Vector3()))), tip = a.hand.children.find(c => c.isBone);
+        if (tip) pts.push(P.group.worldToLocal(tip.getWorldPosition(new THREE.Vector3()))); return pts; };
+      const LN = [null, line('L'), line('R')], RAD = [0.085, 0.085, 0.1];
+      const near = (p, pts) => { if (!pts) return true; for (let k = 0; k < pts.length - 1; k++) { const a = pts[k], ab = w3.copy(pts[k + 1]).sub(a), t = c01(ab.dot(w4.copy(p).sub(a)) / ab.lengthSq()); if (w5.copy(a).addScaledVector(ab, t).distanceTo(p) < RAD[k]) return true; } return false; };
+      const V = new Float32Array(n * 3), Y = new Float32Array(n), arm = new Uint8Array(n), leg = new Uint8Array(n), robe = new Uint8Array(n), below = new Uint8Array(n);
+      for (let i = 0; i < n; i++) { skinVertex(q, i, v, SM); V[i * 3] = v.x; V[i * 3 + 1] = v.y; V[i * 3 + 2] = v.z; v.applyMatrix4(toG); Y[i] = v.y; const aw = [0, 0, 0]; let lw = 0, rw = 0;
+        for (let c = 0; c < 4; c++) { const j = si.getComponent(i, c), w = sw.getComponent(i, c); if (sideB[j]) aw[sideB[j]] += w; else if (legB[j]) lw += w; else if (robeB[j]) rw += w; }
+        const sd = aw[1] >= aw[2] ? 1 : 2; arm[i] = aw[sd] > 0.5 && near(v, LN[sd]) ? 1 : 0; leg[i] = lw > 0.5 ? 1 : 0; robe[i] = rw > 0.5 ? 1 : 0; below[i] = !arm[i] && (leg[i] || robe[i] || Y[i] < HEM) ? 1 : 0; }
+      const a = idx.array, out = new a.constructor(a.length), acc = new Float64Array(n * 5); let m = 0, cut = 0;
+      for (let i = 0; i < a.length; i += 3) { const T = [a[i], a[i + 1], a[i + 2]], nb = below[T[0]] + below[T[1]] + below[T[2]];
+        if (nb === 3 || (leg[T[0]] && leg[T[1]] && leg[T[2]])) continue;
+        out[m++] = T[0]; out[m++] = T[1]; out[m++] = T[2]; if (!nb) continue; cut++;
+        for (const p of T) if (below[p]) for (const u of T) if (!below[u] && Y[u] >= HEM) { acc[p * 5] += V[u * 3]; acc[p * 5 + 1] += V[u * 3 + 1]; acc[p * 5 + 2] += V[u * 3 + 2]; acc[p * 5 + 3] += Y[u]; acc[p * 5 + 4] += 1; } }
+      /* (a triangle with a low point that nothing it keeps can bring up is not drawn either: the cloth that ran from his sleeve to his robe below the waist) */
+      let m2 = 0, dropped = 0; for (let i = 0; i < m; i += 3) { const T0 = out[i], T1 = out[i + 1], T2 = out[i + 2];
+        if ((below[T0] && !acc[T0 * 5 + 4]) || (below[T1] && !acc[T1 * 5 + 4]) || (below[T2] && !acc[T2 * 5 + 4])) { dropped++; continue; } out[m2++] = T0; out[m2++] = T1; out[m2++] = T2; }
+      const copyOf = (at) => { const c2 = new THREE.BufferAttribute(new at.array.constructor(n * at.itemSize), at.itemSize, at.normalized); for (let i = 0; i < n; i++) for (let k = 0; k < at.itemSize; k++) c2.setComponent(i, k, at.getComponent(i, k)); return c2; };
+      const p2 = copyOf(pos), si2 = copyOf(si), sw2 = copyOf(sw), Mq = new THREE.Matrix4(), Mb = new THREE.Matrix4(), e = new Float64Array(16); let moved = 0, given = 0;
+      for (let p = 0; p < n; p++) { const c = acc[p * 5 + 4]; if (!c) continue; const my = acc[p * 5 + 3] / c, k = c01((HEM - Y[p]) / Math.max(1e-6, my - Y[p]));
+        v.set(V[p * 3] + (acc[p * 5] / c - V[p * 3]) * k, V[p * 3 + 1] + (acc[p * 5 + 1] / c - V[p * 3 + 1]) * k, V[p * 3 + 2] + (acc[p * 5 + 2] / c - V[p * 3 + 2]) * k);
+        e.fill(0);
+        if (robe[p] && spineI >= 0) { const E0 = SM[spineI].elements; for (let x = 0; x < 16; x++) e[x] = E0[x]; si2.setXYZW(p, spineI, 0, 0, 0); sw2.setXYZW(p, 1, 0, 0, 0); given++; }
+        else for (let c2 = 0; c2 < 4; c2++) { const w = sw.getComponent(p, c2); if (!w) continue; const E0 = SM[si.getComponent(p, c2)].elements; for (let x = 0; x < 16; x++) e[x] += E0[x] * w; }
+        Mb.fromArray(e); Mq.copy(q.bindMatrixInverse).multiply(Mb).multiply(q.bindMatrix).invert(); v.applyMatrix4(Mq); p2.setXYZ(p, v.x, v.y, v.z); moved++; }
+      const g2 = new THREE.BufferGeometry(); for (const k in g.attributes) g2.setAttribute(k, k === 'position' ? p2 : (k === 'skinIndex' ? si2 : (k === 'skinWeight' ? sw2 : g.attributes[k])));
+      g2.setIndex(new THREE.BufferAttribute(out.slice(0, m2), 1)); g2.boundingSphere = g.boundingSphere; g2.boundingBox = g.boundingBox; q.geometry = g2;
+      return { drawn: m2 / 3, of: a.length / 3, crossing: cut, moved, given, dropped };
+    }
+    function crossDress(P, K, lap) {
+      const skins = P.lv[1], bone = (nm) => { const re = new RegExp('^(mixamorig:?)?' + nm + '$'); for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
+      const spine = bone('Spine'), rest = K.ref[0]; if (!skins || !spine || !P.hips || !P.acts[rest]) { console.warn(P.key + ': cannot be seated cross-legged (no skin, spine, hips or rest)'); return; }
+      const rep = P.crossRep = {};
+      /* (his rest, as he will sit in it) */
+      for (const k in P.acts) { P.w[k] = k === rest ? 1 : 0; P.acts[k].setEffectiveWeight(P.w[k]); }
+      P.acts[rest].time = K.ref[1]; personSettle(P); P.mixer.update(0); P.group.updateWorldMatrix(true, true); P.group.updateMatrixWorld(true);
+      const robe = skins.find(q => /\(both sides\)$/.test([].concat(q.material)[0].name)), main = skins.find(q => !/\)$/.test([].concat(q.material)[0].name));
+      if (robe) { if (robe.parent) robe.parent.remove(robe); skins.splice(skins.indexOf(robe), 1); }
+      /* (the cloth: its points in his own frame, in metres, whatever the pack did to the file's numbers) */
+      let top = () => -Infinity;
+      /* (HIS BEADS: Chad, 16 Nov 2026, of this seat: "The beads get cut off". His two black strands close in a V on his
+         robe below the waist, which is not drawn here: so the cloth's file carries them on again from the hem, his own
+         beads laid over the cloth in a hanging loop (masters/v26.18/pho/beadtail.py: a mesh named 'beads', its points
+         in his own frame, its coordinates his body sheet's). It is drawn with his body's own material and bound as the
+         cloth is; a hand rests on the cloth, so the beads are not part of `top`.) */
+      if (lap) { let src = null, beads = null; lap.scene.updateMatrixWorld(true);
+        lap.scene.traverse(q => { if (!q.isMesh) return; if (/beads/i.test(q.name) || (q.parent && /beads/i.test(q.parent.name))) beads = beads || q; else src = src || q; });
+        const C = 0.015, cells = new Map(), gI = new THREE.Matrix4().copy(P.group.matrixWorld).invert(), inv = [spine, P.hips].map(b => new THREE.Matrix4().multiplyMatrices(gI, b.matrixWorld).invert());
+        for (const [from, material, name] of [[src, src && src.material, 'lap'], [beads, main && [].concat(main.material)[0], 'beads']]) { if (!from || !material || (name === 'beads' && !P.lap)) continue;
+          const g0 = from.geometry, p0 = g0.attributes.position, n0 = g0.attributes.normal, n = p0.count, pos = new Float32Array(n * 3), nor = new Float32Array(n * 3), si = new Uint8Array(n * 4), sw = new Float32Array(n * 4);
+          const v = new THREE.Vector3(), nm = new THREE.Matrix3().getNormalMatrix(from.matrixWorld);
+          for (let i = 0; i < n; i++) { v.fromBufferAttribute(p0, i).applyMatrix4(from.matrixWorld); pos[i * 3] = v.x; pos[i * 3 + 1] = v.y; pos[i * 3 + 2] = v.z;
+            if (name === 'lap') { const ck = Math.round(v.x / C) * 4096 + Math.round(v.z / C), cy = cells.get(ck); if (cy === undefined || v.y > cy) cells.set(ck, v.y); }
+            const w = smo(c01((v.y - (K.ringY - K.reach)) / K.reach)) * (1 - smo(c01((Math.hypot(v.x - K.middle[0], v.z - K.middle[1]) - 0.2) / 0.1)));
+            si[i * 4 + 1] = 1; sw[i * 4] = w; sw[i * 4 + 1] = 1 - w;
+            if (n0) { v.fromBufferAttribute(n0, i).applyMatrix3(nm).normalize(); nor[i * 3] = v.x; nor[i * 3 + 1] = v.y; nor[i * 3 + 2] = v.z; } }
+          const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); if (n0) g.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+          if (g0.attributes.uv) g.setAttribute('uv', g0.attributes.uv); g.setIndex(g0.index); g.setAttribute('skinIndex', new THREE.BufferAttribute(si, 4)); g.setAttribute('skinWeight', new THREE.BufferAttribute(sw, 4));
+          if (!n0) g.computeVertexNormals();
+          const mesh = new THREE.SkinnedMesh(g, material); mesh.castShadow = false; mesh.receiveShadow = false; mesh.frustumCulled = false; mesh.name = name;
+          P.model.add(mesh); mesh.bind(new THREE.Skeleton([spine, P.hips], inv.map(m4 => m4.clone())), new THREE.Matrix4()); skins.push(mesh); P[name] = mesh;
+          rep[name] = { points: n, triangles: g0.index ? g0.index.count / 3 : n / 3 }; }
+        if (P.lap) top = (x, z) => { const a = Math.round(x / C), b = Math.round(z / C); let best = -Infinity; for (let dx = -1; dx <= 1; dx++) for (let dz = -1; dz <= 1; dz++) { const y = cells.get((a + dx) * 4096 + (b + dz)); if (y !== undefined && y > best) best = y; } return best; }; }
+      else console.warn(P.key + ': the cloth over his legs has not landed: he is drawn without it');
+      P.crossTop = top;
+      if (K.hands && P.lap) { rep.hands = crossHands(P, K.hands, top); if (P.restHands) restHandsLay(P); P.group.updateWorldMatrix(true, true); }
+      if (main && K.hem != null) rep.hem = crossHem(P, main, K.hem);
+      armsBack(P); P.cross = K;
+    }
     function mkPerson(key, x, z, ry, o = {}) {
       const P = { key, o, group: new THREE.Group(), ready: false, acts: {}, w: {}, off: {}, offY: {}, cur: o.take || 'Idle_3', fade: 0.4, win: o.win || null,
                   mixer: null, model: null, head: null, hips: null, bone: {}, lv: [null, null, null, null], lvNow: -1, force: null, members: [],
@@ -137,7 +302,8 @@
       P.group.position.set(x, o.y || 0, z); P.group.rotation.y = ry; P.group.visible = false; (o.parent || world).add(P.group);
       people.push(P);
       if (!have(key)) { waiting.add(key); return P; }
-      parseOnce(key).then(({ scene: src, animations }) => {
+      if (o.cross && o.cross.lap && !have(o.cross.lap)) waiting.add(o.cross.lap);
+      (o.cross && o.cross.lap && have(o.cross.lap) ? Promise.all([parseOnce(key), parseOnce(o.cross.lap)]).then(([body, lap]) => { P.lapSrc = lap; return body; }) : parseOnce(key)).then(({ scene: src, animations }) => {
         if (!alive) return;
         const m = cloneSkinned(src), skins = [];
         m.traverse(q => {
@@ -172,6 +338,7 @@
           for (const t of L.tracks) { if (!LOWER.test(t.name)) continue; const n = t.getValueSize(), T = t.times; let i = 0; while (i < T.length - 1 && T[i + 1] <= (at || 0)) i++;
             const v = Array.from(t.values.slice(i * n, i * n + n)); tracks.push(new t.constructor(t.name, [0, U.duration], v.concat(v))); }
           const clip = new THREE.AnimationClip(name, U.duration, tracks), a = P.mixer.clipAction(clip); a.enabled = true; a.setEffectiveWeight(0); a.play(); P.acts[name] = a; P.w[name] = 0; }
+        if (o.cross) crossTakes(P, animations, o.cross);
         /* where each take holds the hips at its first moment (or at its window's start), from the person's own spot */
         if (P.hips) { const base = {};
           for (const name in P.acts) { for (const k in P.acts) P.acts[k].setEffectiveWeight(k === name ? 1 : 0);
@@ -288,6 +455,7 @@
         P.ready = true; P.group.visible = !P.hidden && !P.driver;
         if (!P.driver && !o.noBlob) P.blob = blob(P.group, o.blobW || 0.85, o.blobD || 0.7);
         personSettle(P); windowTime(P); P.mixer.update(0);
+        if (o.cross) { crossDress(P, o.cross, P.lapSrc || null); personSettle(P); windowTime(P); P.mixer.update(0); }
         if (o.handsOn) restHands(P, o.handsOn);
         if (ctx.cullBySphere && !P.driver) ctx.cullBySphere(P.group, 0, 0.9, 0, 1.9);
         for (const M0 of P.members) memberSkin(M0, 1);
@@ -772,6 +940,7 @@
       const A = P.arms; if (A) for (const sd in A) { const a = A[sd];
       if (a.curled) { for (const F of a.fing) F.b.quaternion.copy(F.q); if (a.fingRest) { for (const F of a.fingRest) F.b.quaternion.copy(F.q); a.fingRest = null; } a.curled = false; }
       if (!a.wrote) continue; a.up.quaternion.copy(a.qUp); a.fore.quaternion.copy(a.qFore); a.hand.quaternion.copy(a.qHand); a.wrote = false; }
+      const RH0 = P.restHands; if (RH0) for (const sd in RH0.R) { const fl = RH0.R[sd].fol; if (fl) for (const F of fl) if (F.on) { F.b.quaternion.copy(F.q); F.on = false; } }
       /* (the shoulders let down were laid first, under every hand: so they are taken off last) */
       const SH = P.shd; if (SH && SH.on) { for (const R of SH.S) { R.cl.quaternion.copy(R.scl); R.up.quaternion.copy(R.sup); } SH.on = false; } }
     /* A HAND CLOSED ROUND A THING (the woman with the taper): each finger's three joints turned by `th` radians toward
@@ -1360,7 +1529,11 @@
     const _rhT = new THREE.Quaternion();
     function restHandsLay(P) {
       const RH = P.restHands, A = RH ? armsOf(P) : null; if (!A) return;
-      const rt = P.rest && P.rest.take, share = rt && P.w[rt] != null ? Math.min(1, P.w[rt]) : 1; if (!(share > 0.001)) return;
+      const rt = P.rest && P.rest.take; let share = rt && P.w[rt] != null ? Math.min(1, P.w[rt]) : 1;
+      /* (v26.18: the takes a rest's hands stay laid through too. The hall's Grandmaster Pho talks with his hands in his lap:
+         his talk is a bench's, and its left hand, which lay on his thigh there, hung in the air over his crossed legs) */
+      if (RH.hold) for (const k in P.w) if (k !== rt && RH.hold.test(k)) share = Math.min(1, share + P.w[k]);
+      if (!(share > 0.001)) return;
       P.group.updateWorldMatrix(true, true); P.group.getWorldQuaternion(_rhQ);
       for (const sd in RH.R) { const a = A[sd], r = RH.R[sd];
         if (!a.wrote) { a.qUp.copy(a.up.quaternion); a.qFore.copy(a.fore.quaternion); a.qHand.copy(a.hand.quaternion); a.wrote = true; }
@@ -1377,7 +1550,12 @@
             _rhT.copy(a.hand.quaternion); a.hand.quaternion.copy(a.qHand).slerp(_rhT, share); }
           else for (const [b, q0] of [[a.up, a.qUp], [a.fore, a.qFore], [a.hand, a.qHand]]) { _rhT.copy(b.quaternion); b.quaternion.copy(q0).slerp(_rhT, share); }
           if (a.fingRest) for (const F of a.fingRest) { _rhT.copy(F.b.quaternion); F.b.quaternion.copy(F.q).slerp(_rhT, share); }
-          a.up.updateWorldMatrix(false, true); } }
+          a.up.updateWorldMatrix(false, true); }
+        /* (v26.18: bones that carry cloth hanging from this arm, and are its upper arm's brothers (his sleeve's drape), are
+           given the turn the laying gave the upper arm: left as the take had them, the sleeve stood where the take's arm
+           was and the laid arm came through it) */
+        if (r.fol) { _rhT.copy(a.qUp).invert().premultiply(a.up.quaternion);
+          for (const F of r.fol) { if (!F.on) { F.q.copy(F.b.quaternion); F.on = true; } F.b.quaternion.copy(F.q).premultiply(_rhT); } } }
     }
     /* THE HANDS HELD TRUE (v26.3: Chad, 13 Nov 2026, "You dont see the problem with the hands and fingers?", and of my
        answer, "Stop pretending you know what is the problem"). MEASURED on every person (tools/probes/jointscan.mjs),
@@ -1569,6 +1747,12 @@
     /* (the monks' armchair is drawn at 1.11 of its file, where its seat's top is 0.42 m up: 0.466. It was written here
        as 0.43, the file's own, and the three sat four centimetres into it: measured from the chair's own mesh, 12 Nov) */
     const SEATS = { sofa: 0.43, bench: 0.44, chair: 0.466 };
+    /* (v26.18: the cross-legged seat's numbers. hips, hem, ringY, middle: masters/v26.18/pho/lapcloth.py's own, written
+       into lap.json with the cloth; the takes' leans measured in the pose lab; the hands read off his photograph 3 of
+       the hall and laid on the cloth's own heights: the tracker's log) */
+    const CROSS = { low: 'Sit_Cross_Legged_on_Floor', at: 1.25, hips: 0.0848, hem: 0.276, ringY: 0.262, reach: 0.08, middle: [-0.0035, -0.1226], lap: 'w3pholap', ref: ['Sit_to_Stand_Transition_M', 0.15],
+      takes: { Sit_to_Stand_Transition_M: { lean: 3, t0: 0.02, t1: 0.3 }, Sitting_Answering_Questions: { lean: 1, sway: 0.4 }, Sit_Cheer_with_Left_Hand: { lean: 1, t0: 0, t1: 0.2 } },
+      hands: { hold: /^Sitting_Answering_Questions$/, R: { x: -0.19, z: 0.32, yaw: 0.25, slope: 1.2, pole: [-0.35, -0.25, -0.9] }, L: { x: 0.02, z: 0.17, yaw: -1.0, slope: 0.3, pole: [0.8, -0.35, -0.5], follow: ['DrapeArm', 'DrapeHang'] } } };
     /* (v26.2 debug: THE MASTERS' FEET ON THE GROUND. Set on their seats by their hips, the sitters on the sofas and the
        bench had their soles 3 to 8.5 cm under the ground: feetscan.mjs. So they sit as the monk in the middle sits
        (o.seat.down): the bottom where it was (hipOver 0.11 with sink 0.01 puts the hip joints 0.10 over the seat, the
@@ -1669,6 +1853,15 @@
         win: { Sit_to_Stand_Transition_M: [0.02, 0.3, PHO_BREATH] }, seat: { y: SEATS.bench, takes: /^Sit/, down: Object.assign({}, MASTER_DOWN, { knees: 'keep', tuck: true }), rise: 'Sit_to_Stand_Transition_M' }, skins: { 3: 'phof' }, look: lookD, blobW: 1.1, blobD: 1.2,
         talk: 'Sitting_Answering_Questions', headDamp: PHO_TALK_HEAD });
       cast.pho.home = { x: PHO_AT[0], z: PHO_AT[1], ry: BENCH.ry };
+      /* GRANDMASTER PHO IN THE HALL (v26.18): the same body, a person of his own, seated cross-legged on the dais's
+         cushion (o.cross, above mkPerson: every number of CROSS is measured there or in masters/v26.18/pho). He is
+         hidden until the morning; the bench's Grandmaster Pho is day one's and is not touched. His rest, his talk and
+         his throw are the bench's own takes by name, each with his legs crossed under it, so a film asks him for a
+         take exactly as it asks the bench's. No far body: the hall is 17 m long and he is its middle. */
+      cast.phoH = mkPerson('pho', HALLSEAT.x, HALLSEAT.z, HALLSEAT.ry, { y: HALLSEAT.y, take: 'Sit_to_Stand_Transition_M', centre: true, hidden: true,
+        win: { Sit_to_Stand_Transition_M: [0.02, 0.3, PHO_BREATH] }, seat: { y: 0, over: CROSS.hips, takes: /^Sit/ }, skins: false, look: lookD, blobW: 1.05, blobD: 0.85,
+        talk: 'Sitting_Answering_Questions', headDamp: PHO_TALK_HEAD, cross: CROSS });
+      cast.phoH.home = { x: HALLSEAT.x, z: HALLSEAT.z, ry: HALLSEAT.ry, y: HALLSEAT.y };
       /* THE MONKS' ROW under the east tent, on chairs, facing the turf (photograph 2): THREE DIFFERENT MONKS (Chad,
          12 Nov 2026: "the 3 monks are the same model, can we have different monks? And their body is clipping through
          the seats"). His own monk (declared: `reuse`) keeps the middle chair, his far skin episode 3's row; either

@@ -667,6 +667,19 @@ ASSETS = {
     'w3t_cloudflat':('assets/w3t_cloudflat.webp', True, False),
     'w3t_cloudthree':('assets/w3t_cloudthree.webp', True, False),
     'w3t_cirrus':   ('assets/w3t_cirrus.webp', True, False),
+    # e4c3 v26.18: THE HALL'S INSIDE (Chad, 16 Nov 2026: the morning's meeting moved inside the main hall, its inside
+    # "exactly the same as the photos"). Each thing from a crop of his own photograph of the real one (the thing
+    # alone: no person, no face, no print), a checked picture on white, then Meshy at its highest and its remesh:
+    # masters/v26.0/props (TABLE.txt, jobs-hallin.json). The cloth over Grandmaster Pho's crossed legs is made in
+    # Blender on his own posed skin: masters/v26.18/pho.
+    'w3pholap':     ('assets/w3pholap.glb', True, False),     # the white cloth over Grandmaster Pho's crossed legs (made: masters/v26.18/pho/lapcloth.py)
+    'w3hseat':      ('assets/w3hseat.glb', True, False),     # the master's seat: a maroon mattress cushion under an ochre-tan cloth (the build sheet's D8)
+    'w3hpillow':    ('assets/w3hpillow.glb', True, False),     # a maroon Thai triangle pillow behind the seat (D9)
+    'w3hframe':     ('assets/w3hframe.glb', True, False),     # an ornate dark-and-gold picture frame, empty: a grey board where its picture goes (G1)
+    'w3hdrums':     ('assets/w3hdrums.glb', True, False),     # one column of stacked pressed-metal drums with a spear, mirror silver; the gold ones a tint (D4)
+    'w3hgoldbaisri':('assets/w3hgoldbaisri.glb', True, False),     # the gold-foil bai sri in its silver pedestal bowl (D10)
+    'w3hpeacock':   ('assets/w3hpeacock.glb', True, False),     # the peacock bai sri, of plain pale paper (D11)
+    'w3hmat':       ('assets/w3hmat.glb', True, False),     # a white quilted satin floor mat (S3)
     # <<< e4c3 keys: the rows end <<<
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
@@ -809,7 +822,8 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'w3t_brick', 'w3t_skirt', 'w3t_satin', 'w3t_mat', 'w3t_carpet', 'w3t_bluemat', 'w3t_swag', 'w3t_banner',
            'w3t_treeline', 'w3t_redroof', 'w3t_hallbrick', 'w3t_steptile', 'w3t_lawn', 'w3t_kalae', 'w3t_fretwork',
            'w3t_sign', 'w3banana2', 'w3frangipani', 'w3isanhouse', 'w3tank', 'w3aircon', 'w3scooter', 'w3t_render',
-           'w3t_cloudbank', 'w3t_cloudtall', 'w3t_cloudflat', 'w3t_cloudthree', 'w3t_cirrus',
+           'w3t_cloudbank', 'w3t_cloudtall', 'w3t_cloudflat', 'w3t_cloudthree', 'w3t_cirrus', 'w3pholap', 'w3hseat',
+           'w3hpillow', 'w3hframe', 'w3hdrums', 'w3hgoldbaisri', 'w3hpeacock', 'w3hmat',
            # <<< e4c3 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY

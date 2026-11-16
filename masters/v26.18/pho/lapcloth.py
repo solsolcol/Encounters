@@ -36,7 +36,8 @@ HEM = E('HEM', 0.276)                                 # his robe's hem over the 
 RING_DY, COLLAR, INSET = E('RING_DY', -0.014), E('COLLAR', 0.05), E('INSET', 0.025)       # the ring under the hem, the band up inside his robe, how far inside
 LIE, MARGIN, CLEAR = E('LIE', 0.025), E('MARGIN', 0.03), E('CLEAR', 0.007)
 SAG = E('SAG', 6.0)                                   # how far it sags between what holds it: a span of 10 cm sags 7 mm at 6 (it lies ON him, and bridges only gaps)
-FRAMES, QUAL, SELF = int(E('FRAMES', 90)), int(E('QUAL', 10)), int(E('SELF', 1))
+# (a gentle settling: with the cloth held off itself and ninety frames it fell in on itself, a point 56 cm from where it was laid)
+FRAMES, QUAL, SELF = int(E('FRAMES', 40)), int(E('QUAL', 10)), int(E('SELF', 0))
 BEND, MASS = E('BEND', 2.0), E('MASS', 0.3)
 SPINE_REACH = E('SPINE_REACH', 0.09)                  # how far down the sheet his spine's share dies away
 KNEE_TOP, ANKLE_Y = E('KNEE_TOP', 0.18), E('ANKLE_Y', 0.052)          # his knees' tops and his ankles' middles over the cushion (0 for KNEE_TOP: as his take has them)
@@ -196,7 +197,7 @@ for i in range(NS):
         if j: a, b = V[vid(i, j - 1)], V[vid(i, j)]; s += math.dist(a, b)
         arc.append(s)
 AMAX = max(arc) + ring[0]
-UV = [(0.5 + math.cos(TH[k // (NR + 1)]) * (ring[k // (NR + 1)] + arc[k]) / (AMAX + 0.3) * 0.5, 0.5 + math.sin(TH[k // (NR + 1)]) * (ring[k // (NR + 1)] + arc[k]) / (AMAX + 0.3) * 0.5) for k in range(len(V))]
+UV = [(0.5 + math.cos(TH[k // (NR + 1)]) * (ring[k // (NR + 1)] + arc[k]) / (AMAX * 1.04) * 0.5, 0.5 + math.sin(TH[k // (NR + 1)]) * (ring[k // (NR + 1)] + arc[k]) / (AMAX * 1.04) * 0.5) for k in range(len(V))]
 def set_uv(ob, name, data):
     uvl = ob.data.uv_layers.new(name=name)
     for poly in ob.data.polygons:
@@ -249,7 +250,7 @@ uv0 = bmx.loops.layers.uv['UVMap']; uv1 = bmx.loops.layers.uv['spine']
 prev = [bmx.verts[k] for k in pin]; NC = 4; cuv = {bmx.verts[k]: UV[k] for k in pin}
 for c in range(1, NC + 1):
     cur = [bmx.verts.new(B((cx + math.cos(TH[i]) * (ring[i] - 0.012 * c / NC), RING_Y + COLLAR * c / NC, cz + math.sin(TH[i]) * (ring[i] - 0.012 * c / NC)))) for i in range(NS)]
-    for i in range(NS): q = ring[i] * (1 - 0.5 * c / NC) / (AMAX + 0.3) * 0.5; cuv[cur[i]] = (0.5 + math.cos(TH[i]) * q, 0.5 + math.sin(TH[i]) * q)
+    for i in range(NS): q = ring[i] * (1 - 0.5 * c / NC) / (AMAX * 1.04) * 0.5; cuv[cur[i]] = (0.5 + math.cos(TH[i]) * q, 0.5 + math.sin(TH[i]) * q)
     for i in range(NS):
         f = bmx.faces.new((prev[i], prev[(i + 1) % NS], cur[(i + 1) % NS], cur[i])); f.smooth = True
         for lp in f.loops: lp[uv0].uv = cuv[lp.vert]; lp[uv1].uv = (1.0, 0.5)
