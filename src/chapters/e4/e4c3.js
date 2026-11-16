@@ -126,7 +126,7 @@
      moves what follows it. The names are QUOTED on purpose: build.py gives a sound to a chapter's own pack only when
      the chapter names it in quotes (v21.1). Written by masters/v26.0/script/secs.py from masters/v26.0/script/lines.py. */
   /* SECS BEGIN */
-  const SECS = {      // 93 of 93 MEASURED from their takes; the rest estimated at the speaker's pace
+  const SECS = {      // 95 of 95 MEASURED from their takes; the rest estimated at the speaker's pace
     /* him */
     'q3o1': 4.01, 'q3o2': 1.69, 'q3o3': 2.89, 'q3o4': 5.37, 'q3o5': 11.85, 'q3o6': 6.17, 'q3v': 4.41, 'q3p1': 0.97,
     'q3m0': 5.69, 'q3m1': 5.93, 'q3w1': 2.33, 'q3w2': 4.25, 'q3w3': 6.81, 'q3u1': 1.93, 'q3u2': 3.13, 'q3u3': 6.49,
@@ -137,7 +137,7 @@
     'q3A': 3.45, 'q3B': 4.17, 'q3C': 4.09, 'q3D': 3.85,
     /* Ton */
     'tn3a1': 2.89, 'tn3a2': 6.33, 'tn3d1': 2.65, 'tn3m1': 1.45, 'tn3m2': 4.56, 'tn3c1': 5.61, 'tn3c2': 4.25,
-    'tn3n1': 1.61, 'tn3A1': 2.09, 'tn3h1': 3.4, 'tn3h2': 2.4,
+    'tn3n1': 1.61, 'tn3h1': 4.33, 'tn3h2': 2.09, 'tn3A1': 2.09,
     /* the woman at his bench */
     'ds3c1': 7.37, 'ds3p1': 2.03,
     /* Grandmaster Pho */
@@ -317,8 +317,9 @@
       'w3hgoldbaisri', 'w3hpeacock', 'w3hmat', 'w3t_hmural', 'w3hgreencol', 'w3hwheel', 'w3hbrownbaisri',
       'w3hbooktable', 'w3hnagabronze', 'w3hlotusvase', 'w3hredtable', 'w3hnagagold', 'w3hstripemat', 'w3hnagagroup',
       'w3hpedfan', 'w3hsofa3', 'w3hgreymats', 'w3hmattresses', 'w3hwhitebuddha', 'w3hlotus', 'w3t_hpleat',
-      'w3hcanopy', 'w3hbroom', 'w3hclock', 'w3hclothsets', 'w3hexhaust', 'w3hhorn', 'w3hpabox', 'w3hpapercone',
-      'w3hswan', 'w3hconetower', 'w3hcushions', 'w3hwallfan',
+      'w3hemerald', 'w3hgoldbuddha', 'w3hsomdej', 'w3hwheel2', 'w3hfan', 'w3htabletstand', 'w3hcanopy', 'w3hbroom',
+      'w3hclock', 'w3hclothsets', 'w3hexhaust', 'w3hhorn', 'w3hpabox', 'w3hpapercone', 'w3hswan', 'w3hconetower',
+      'w3hcushions', 'w3hwallfan',
       /* <<< this chapter's own keys <<< */
       /* the trees of this episode's first chapter (reuseInEpisode) */
       'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd',
@@ -1405,6 +1406,13 @@
        as dark as wet earth, where his photographs have it pale grey and bright round each lamp: the pools are painted) */
     const mCeil = B({ color: 0x6c6b69 });
     const mCeilDark = B({ color: 0x3e3c3b });
+    /* (the recess's step faces: a shade under the ceiling's grey. Its top was drawn in the dark grey and read, beside
+       his photograph 6, as a dark hole over the canopy: in the photograph the recess's top is the ceiling's own grey
+       and only its faces read darker) */
+    const mCeilLip = B({ color: 0x504f4d });
+    /* (and its west slope a shade lighter, as the lamp beside it lights it in his photographs 4 and 6, and its top a
+       shade under the flat ceiling: all three the one grey, the recess did not read at all, laid beside photograph 6) */
+    const mCeilSlope = B({ color: 0x7d7c79 }), mCeilTop = B({ color: 0x61605e });
     const mInPost = M({ color: 0x3d2830, roughness: 0.34 });
     const mInWhite = M({ color: 0xf1efe9, roughness: 0.6 });
     const mInDark = M({ color: 0x241f1d, roughness: 0.6 });
@@ -1416,6 +1424,9 @@
        alone in his photograph and laid once to the skirt's height, its gathers at the top: masters/v26.18/skirt) */
     const mSkirtOlive = surf('hpleat', { tile: [0.765, HIN.dais.h], mirror: 'u', roughness: 0.4, side: THREE.DoubleSide });
     const skirtWall = (mat, x0, z0, x1, z1, y0, y1, u0 = 0) => quad(mat, [x0, y0, z0], [x1, y0, z1], [x1, y1, z1], [x0, y1, z0], u0, 0);
+    /* (the second altar's skirt: his photographs 5 and 6 have it gathered in close soft folds, a fold every 0.1 to 0.12 m,
+       where the plain satin drew it flat. The dais skirt's own picture, its folds closer, lifted to lemon) */
+    const mSkirtLemon = surf('hpleat', { tile: [0.45, 0.65], mirror: 'u', gain: [1.27, 1.06, 0.7], roughness: 0.4, side: THREE.DoubleSide });
     /* (the braid along each skirt's top: a gold zigzag on the lemon one; green and gold with sequins on the olive one) */
     /* (the dais's braid is a narrow one in his photograph 4: about 3 cm, a dull olive green sewn with a fine gold wave
        and small sequins; the bold green band with a broad zigzag, 4.5 cm, read as a painted border) */
@@ -1487,16 +1498,16 @@
       const down = (mat, ax, az, bx, bz, y) => quad(mat, [ax, y, az], [bx, y, az], [bx, y, bz], [ax, y, bz], ax, az);   // a piece that faces down (az north of bz)
       const RC = { u0: 1.3, v1: 4.2, in: 0.3, step: 0.25 };
       down(mCeil, x0, zN, RC.u0, zS, cy); down(mCeil, RC.u0, Z(RC.v1), x1, zS, cy);
-      wall(mCeil, RC.u0, Z(RC.v1), RC.u0, zN, cy, cy + RC.step); wall(mCeil, x1, Z(RC.v1), RC.u0, Z(RC.v1), cy, cy + RC.step);                       // the first step's faces (west, south)
+      wall(mCeilLip, RC.u0, Z(RC.v1), RC.u0, zN, cy, cy + RC.step); wall(mCeilLip, x1, Z(RC.v1), RC.u0, Z(RC.v1), cy, cy + RC.step);                       // the first step's faces (west, south)
       down(mCeil, RC.u0, zN, RC.u0 + RC.in, Z(RC.v1), cy + RC.step); down(mCeil, RC.u0 + RC.in, Z(RC.v1 - RC.in), x1, Z(RC.v1), cy + RC.step);        // its ledge
-      wall(mCeil, RC.u0 + RC.in, Z(RC.v1 - RC.in), RC.u0 + RC.in, zN, cy + RC.step, cy + 2 * RC.step); wall(mCeil, x1, Z(RC.v1 - RC.in), RC.u0 + RC.in, Z(RC.v1 - RC.in), cy + RC.step, cy + 2 * RC.step);
-      down(mCeilDark, RC.u0 + RC.in, zN, x1, Z(RC.v1 - RC.in), cy + 2 * RC.step);
+      wall(mCeilLip, RC.u0 + RC.in, Z(RC.v1 - RC.in), RC.u0 + RC.in, zN, cy + RC.step, cy + 2 * RC.step); wall(mCeilLip, x1, Z(RC.v1 - RC.in), RC.u0 + RC.in, Z(RC.v1 - RC.in), cy + RC.step, cy + 2 * RC.step);
+      down(mCeilTop, RC.u0 + RC.in, zN, x1, Z(RC.v1 - RC.in), cy + 2 * RC.step);
       /* (laid beside his photographs 4, 5 and 6: the recess's west side is one broad slope, rising from the flat
          ceiling's edge to the recess's top, not steps: the grey plane over the top left of his photograph 4 and the
          one coming down over the right of photograph 5. It is laid over the steps, which stay behind it unseen. The
          wall inside the recess over the dais is grey in them, not terracotta: the north wall's terracotta stops at the
          flat ceiling's line, the east wall's goes on up) */
-      quad(mCeil, [RC.u0, cy, zN], [RC.u0 + 2 * RC.in, cy + 2 * RC.step, zN], [RC.u0 + 2 * RC.in, cy + 2 * RC.step, Z(RC.v1 - RC.in)], [RC.u0, cy, Z(RC.v1)]);
+      quad(mCeilSlope, [RC.u0, cy, zN], [RC.u0 + 2 * RC.in, cy + 2 * RC.step, zN], [RC.u0 + 2 * RC.in, cy + 2 * RC.step, Z(RC.v1 - RC.in)], [RC.u0, cy, Z(RC.v1)]);
       /* THE WALLS: the north wall and the first bay of each side painted terracotta; bare brick south of the first posts */
       wall(mTerra, x0, zN, x1, zN, fy, cy); wall(mCeil, RC.u0, zN, x1, zN, cy, cy + 2 * RC.step);
       wall(mTerra, x1, zN, x1, Z(BAY), fy, cy); wall(mTerra, x1, zN, x1, Z(RC.v1), cy, cy + 2 * RC.step);
@@ -1554,7 +1565,7 @@
          skirt to the floor with a gold zigzag braid; behind it the printed backdrop, 4.4 by 2.8 */
       const A = { x0: x0, x1: 1.0, v1: 2.2, h: 0.65 };
       box(mAltarTop, (A.x0 + A.x1) / 2, Y(A.h / 2), Z(A.v1 / 2), A.x1 - A.x0, A.h, A.v1);
-      wall(mSkirtYellow, A.x0, Z(A.v1) + 0.012, A.x1 + 0.012, Z(A.v1) + 0.012, fy, Y(A.h)); wall(mSkirtYellow, A.x1 + 0.012, Z(A.v1) + 0.012, A.x1 + 0.012, zN, fy, Y(A.h));                 // its south face (faces south), its east end (faces east)
+      skirtWall(mSkirtLemon, A.x0, Z(A.v1) + 0.012, A.x1 + 0.012, Z(A.v1) + 0.012, fy, Y(A.h)); skirtWall(mSkirtLemon, A.x1 + 0.012, Z(A.v1) + 0.012, A.x1 + 0.012, zN, fy, Y(A.h), 0.2);                 // its south face (faces south), its east end (faces east)
       wall(mBraidGold, A.x0, Z(A.v1) + 0.016, A.x1 + 0.016, Z(A.v1) + 0.016, Y(A.h - 0.035), Y(A.h - 0.005)); wall(mBraidGold, A.x1 + 0.016, Z(A.v1) + 0.016, A.x1 + 0.016, zN, Y(A.h - 0.035), Y(A.h - 0.005));
       /* THE PRINTED BANNER behind the second altar: the hall's own picture (Chad, 16 Nov 2026: "I believe this is the wall
          mural at the back of the hall, but you need to adjust the colour to look like the reference photo"). His picture
@@ -1697,10 +1708,15 @@
          to the east wall, high up, hanging slack near the hand. From the fingers as the model has them (0.24 m to the
          statue's right, 0.86 m over its seat, 0.255 m before its middle) to the wall at 2.95 m: where it leaves his
          photograph 4's right edge, solved from that photograph's own camera) */
-      { const A = hallAt(3.35 - 0.24 * 1.2, 1.25 + 0.255 * 1.2, DH + 0.921 + 0.86 * 1.2), Bq = hallAt(HIN.x1 - 0.02, 1.1, 2.95), pts = [], N = 18;
-        for (let i = 0; i < N; i++) for (const k of [i / N, (i + 1) / N]) pts.push(lp(A[0], Bq[0], k), A[1] + (Bq[1] - A[1]) * (1.6 * k * k - 0.6 * k), lp(A[2], Bq[2], k));
+      /* (v26.18, Chad, 16 Nov 2026: "Make the black string attached to the buddha a white string instead, and attach it
+         to the top ceiling". So it is white, and it rises from the same fingers to the recess's top over the dais, 2.9 m
+         from the north wall: in front of the canopy, whose fringe hangs from 3.2 m over the floor and reaches 1.93 m
+         from the wall, so the thread passes it 0.3 m clear at that height; and a little to the statue's right, so it rises
+         away from the face. Taut enough to sag only a little) */
+      { const A = hallAt(3.35 - 0.24 * 1.2, 1.25 + 0.255 * 1.2, DH + 0.921 + 0.86 * 1.2), Bq = hallAt(2.75, 2.9, HIN.ceil + 2 * 0.25 - 0.002), pts = [], N = 18;
+        for (let i = 0; i < N; i++) for (const k of [i / N, (i + 1) / N]) pts.push(lp(A[0], Bq[0], k), A[1] + (Bq[1] - A[1]) * (k - 0.12 * k * (1 - k)), lp(A[2], Bq[2], k));
         const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
-        const ln = new THREE.LineSegments(lg, new THREE.LineBasicMaterial({ color: 0x2a2622 })); mats.push(ln.material); ln.name = 'hall:thread'; hallIn.add(ln); owned.push(ln); }
+        const ln = new THREE.LineSegments(lg, new THREE.LineBasicMaterial({ color: 0xf2efe8 })); mats.push(ln.material); ln.name = 'hall:thread'; hallIn.add(ln); owned.push(ln); }
       hallMany('w3hseat', [{ u: 2.1, v: 2.9, h: DH, sy: 0.5 }]);
       hallMany('w3hpillow', [{ u: 2.42, v: 2.26, h: DH, ry: 0.25 }, { u: 2.96, v: 2.2, h: DH, ry: -0.3 }]);
       hallMany('w3hdrums', [{ u: 1.7, v: 0.2, h: DH }, { u: 1.95, v: 0.2, h: DH, tint: 0xe8c060, ry: 1 }, { u: 4.3, v: 0.2, h: DH, tint: 0xe8c060, ry: 2 }, { u: 4.55, v: 0.2, h: DH, ry: 3 }], 4);
@@ -1708,6 +1724,13 @@
       hallMany('w3hpeacock', [{ u: 3.3, v: 2.85, h: DH }]);
       hallMany('w3candlemid', [{ u: 2.75, v: 2.48, h: DH, s: 0.68, tint: 0xf0a020 }, { u: 3.8, v: 2.5, h: DH, s: 0.68, tint: 0xf0a020 }, { u: 0.15, v: 2.0, h: AH, s: 0.53, tint: 0xf0a020 }]);
       hallMany('w3hgreencol', [{ u: 2.55, v: 0.15, h: DH }, { u: 4.15, v: 0.15, h: DH, ry: 2 }]);
+      /* (the orange talapat fan on its pole in its stand, behind his left shoulder: his photographs 2, 4 and 6. Its blade
+         is about 0.3 m across there (60 px at 6 m in photograph 6, 57 px behind him in photograph 4), so the model is
+         drawn at 0.62, its top near his head) */
+      hallMany('w3hfan', [{ u: 2.45, v: 2.45, h: DH, s: 0.62 }]);
+      /* (the black tablet on its floor stand west of the dais, its back to his photograph 4's lens: its screen turned
+         north-west, to the room) */
+      hallMany('w3htabletstand', [{ u: 1.15, v: 3.0, h: 0, ry: 0.8 }]);
       hallMany('w3hcanopy', [{ u: 3.35, v: 1.25, h: 3.2 }]);
       hallMany('w3hwheel', [{ u: 4.4, v: 2.45, h: DH, ry: -0.35 }]);
       hallMany('w3hbrownbaisri', [{ u: 2.78, v: 2.02, h: DH + 0.925 }, { u: 3.36, v: 2.12, h: DH + 0.925, ry: 1 }, { u: 3.95, v: 2.0, h: DH + 0.925, ry: 2 },
@@ -1720,15 +1743,30 @@
          heads (L7), the swan (L6), the red table (L15), the bouquet (L22), the gold naga heads at its east end (L23) */
       hallMany('w3naga', [[-4.26, 1.34, 0.5, 0.2], [-4.1, 1.45, 0.28, 0.1], [-3.94, 1.5, 0, 0], [-3.78, 1.45, -0.28, -0.1], [-3.62, 1.34, -0.5, -0.2]].map(([u, s, ry, rz]) => ({ u, v: 0.55, h: AH, s, ry, rz })));
       hallMany('w3candle', [{ u: -3.35, v: 1.3, h: AH, s: 0.76 }, { u: -2.0, v: 1.3, h: AH, s: 0.72 }]);
-      hallMany('w3hconetower', [{ u: -2.95, v: 0.9, h: AH }, { u: -2.15, v: 0.9, h: AH, ry: 1.5 }]);
-      hallMany('w3hnagabronze', [{ u: -3.2, v: 1.0, h: AH }, { u: -1.55, v: 1.0, h: AH, ry: 0.4 }]);
+      hallMany('w3hconetower', [{ u: -2.95, v: 0.4, h: AH }, { u: -2.15, v: 0.4, h: AH, ry: 1.5 }]);
+      hallMany('w3hnagabronze', [{ u: -3.2, v: 1.0, h: AH }, { u: -1.6, v: 0.45, h: AH, ry: 0.4 }]);
+      /* (v26.18, Chad, 16 Nov 2026: "Where are the other assets, models, props, like the emerald buddha statue? And somdej
+         toh's golden bucha?" The second altar's sacred images, each a checked picture, then Meshy (masters/v26.0/props/
+         TABLE.txt), set where his photographs 5 and 11 have them: the gold Buddha between its two cone towers (which
+         stand behind it there, so they go back), Somdej Toh's golden bucha on a small dark stand before the bronze
+         naga carvings (behind it there), the green wheel on another beside the red table, each top at the height
+         photograph 11 gives it; the Emerald Buddha on its throne on the red table, its base 0.39 m up, the table's top) */
+      /* (the gold Buddha's paint came pale, a butter yellow beside his photograph 5's deep gilding: tinted toward it) */
+      hallMany('w3hgoldbuddha', [{ u: -2.55, v: 0.75, h: AH, s: 1.1, tint: 0xffd36a }]);
+      hallMany('w3lowtable', [{ u: -1.58, v: 0.95, h: AH, s: 0.55 }, { u: -1.05, v: 0.45, h: AH, s: 0.55 }]);
+      hallMany('w3hsomdej', [{ u: -1.58, v: 0.95, h: AH + 0.21, tint: 0xffd36a }]);
+      hallMany('w3hwheel2', [{ u: -1.05, v: 0.45, h: AH + 0.21, s: 1.1, tint: 0xfff2c8 }]);
+      /* (laid beside his photograph 5 from its own place: the Emerald Buddha stands 1.12 times as tall for its width
+         as the picture made it, and the red table is a quarter wider and reaches further east, his bouquet past its end) */
+      hallMany('w3hemerald', [{ u: -0.12, v: 0.85, h: AH + 0.389, sy: 1.12 }]);
       hallMany('w3hswan', [{ u: -3.1, v: 1.65, h: AH, ry: 0.5 }]);
       hallMany('w3hlotusvase', [{ u: -3.7, v: 1.35, h: AH, s: 0.73 }, { u: 0.34, v: 1.45, h: AH, s: 0.73, ry: 2 }]);
-      hallMany('w3hredtable', [{ u: -0.12, v: 0.95, h: AH }]);
+      hallMany('w3hredtable', [{ u: 0.05, v: 0.95, h: AH, sx: 1.25 }]);
       hallMany('w3hpapercone', [{ u: -0.44, v: 1.5, h: AH }, { u: 0.2, v: 1.5, h: AH, ry: 1.2 }]);       // (L18: two small cones of folded paper in gold bowls, before the red table)
-      hallMany('w3roses', [{ u: 0.66, v: 1.2, h: AH, s: 1.5 }]);
+      hallMany('w3roses', [{ u: 0.98, v: 1.2, h: AH, s: 1.5 }]);
       hallMany('w3hnagagold', [{ u: 0.84, v: 1.85, h: AH, ry: 0.3 }]);
-      hallMany('w3hstripemat', [{ u: -0.12, v: 2.62, h: 0 }]);
+      /* (the mat tinted: his photograph 6's is maroon, black and cream, darker than the model's red and white) */
+      hallMany('w3hstripemat', [{ u: -0.12, v: 2.62, h: 0, tint: 0x9a6060 }]);
       /* the floor between the altars: the cloth sets (G3), the water (G5), the clay pot (G6), the tray (L24) */
       hallMany('w3hclothsets', [{ u: 1.26, v: 3.3, h: 0, ry: E }]);
       hallMany('w3water', [0, 1, 2, 3].flatMap(i => [0, 1, 2].map(j => ({ u: 1.14 + j * 0.068, v: 4.18 + i * 0.068, h: 0 }))));
@@ -3773,13 +3811,79 @@
       armsBack(P); P.model.position.set(0, 0, 0); P.group.updateMatrixWorld(true);
       return { legs, lift: -drop, fwd, rep: { bottom: +bottom.toFixed(3), drop: +drop.toFixed(3), fwd: +fwd.toFixed(3), shins: +back.toFixed(3), flat: legs.flat || null } };
     }
+    /* A KNEEL LAID ON THE FLOOR (v26.18). The kneel the woman who serves him and Ton wear in the hall was made on
+       another body, and on theirs it knelt with the shins in the air: measured in the lab, her knees 13 and 16 cm over
+       the tile, her ankles 15 and 17, the whole body held up on the tips of her toes behind her (the lowest of her skin),
+       and the same on Ton. A real kneel sits back on the heels: the knees on the floor in front, the shins flat along it,
+       the tops of the feet flat behind, the hips a little over the heels. So the body is let down (`drop`), the take's
+       thigh kept to its own heading in plan and brought down until the knee is on the floor, the shin laid flat back
+       along its own heading, and the foot turned to point back along the floor: the legs laid by the seated legs' own
+       layer (seatLegsLay, armTo), only while the kneel is worn (P.kneelTakes, seatShare). Measured at the window's middle
+       of the take; its own legs barely move across the window (the knees 2 cm) */
+    function kneelLegs(P, name = 'seiza', K = {}) {
+      if (!P || !P.ready || !P.acts[name] || !P.hips || P.kneelTakes) return null;
+      const drop = K.drop != null ? K.drop : 0.09, kneeY = K.knee != null ? K.knee : 0.065, ankY = K.ankle != null ? K.ankle : 0.065, toeY = K.toe != null ? K.toe : 0.055;
+      const bone = (nm) => { const re = new RegExp('^(mixamorig:?)?' + nm + '$'); for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
+      armsBack(P);
+      const W = P.win && P.win[name], A = P.acts[name], d = A.getClip().duration, w0 = {};
+      for (const k in P.acts) { w0[k] = P.acts[k].getEffectiveWeight(); P.acts[k].setEffectiveWeight(k === name ? 1 : 0); }
+      const t0 = A.time; A.time = W ? (((W[0] + W[1] / 2) % d) + d) % d : d / 2; P.mixer.update(0);
+      const m0 = P.model.position.clone(); P.model.position.set(0, 0, 0); P.group.updateMatrixWorld(true);
+      const inv = new THREE.Matrix4().copy(P.group.matrixWorld).invert(), gq = P.group.getWorldQuaternion(new THREE.Quaternion()).invert();
+      const loc = (b) => b.getWorldPosition(new THREE.Vector3()).applyMatrix4(inv);
+      const legs = { R: {}, kneel: true }, rep = {};
+      for (const S0 of ['Left', 'Right']) {
+        const up = bone(S0 + 'UpLeg'), fore = bone(S0 + 'Leg'), foot = bone(S0 + 'Foot'), toe = bone(S0 + 'ToeBase');
+        if (!up || !fore || !foot || !toe) { console.warn(P.key + ': no ' + S0 + ' leg to kneel'); legs.R = null; break; }
+        const H = loc(up), Kn = loc(fore), An = loc(foot), Tn = loc(toe);
+        const L1 = H.distanceTo(Kn), L2 = Kn.distanceTo(An), L3 = An.distanceTo(Tn);
+        H.y -= drop;
+        const th = new THREE.Vector2(Kn.x - H.x, Kn.z - H.z).normalize(), dy1 = H.y - kneeY, r1 = Math.sqrt(Math.max(0, L1 * L1 - dy1 * dy1));
+        const knee = new THREE.Vector3(H.x + th.x * r1, kneeY, H.z + th.y * r1);
+        const sh = new THREE.Vector2(An.x - Kn.x, An.z - Kn.z).normalize(), dy2 = kneeY - ankY, r2 = Math.sqrt(Math.max(0, L2 * L2 - dy2 * dy2));
+        const ank = new THREE.Vector3(knee.x + sh.x * r2, ankY, knee.z + sh.y * r2);
+        const ft = new THREE.Vector2(Tn.x - An.x, Tn.z - An.z).normalize(), dy3 = ankY - toeY, r3 = Math.sqrt(Math.max(0, L3 * L3 - dy3 * dy3));
+        const vNow = new THREE.Vector3().subVectors(Tn, An).normalize(), vNew = new THREE.Vector3(ft.x * r3, toeY - ankY, ft.y * r3).normalize();
+        const footQ = new THREE.Quaternion().setFromUnitVectors(vNow, vNew).multiply(gq.clone().multiply(foot.getWorldQuaternion(new THREE.Quaternion())));
+        /* (the pole points out from the hip-to-ankle line through the knee wanted, so the solve puts the knee there and
+           nowhere lower: a pole set under and before it drew the knees 2 cm into the tile, measured in the hall) */
+        const ax = new THREE.Vector3().subVectors(ank, H).normalize(), foot0 = H.clone().addScaledVector(ax, new THREE.Vector3().subVectors(knee, H).dot(ax));
+        const pole = knee.clone().addScaledVector(new THREE.Vector3().subVectors(knee, foot0).normalize(), 0.5);
+        legs.R[S0] = { up, fore, foot, ank, pole, footQ,
+          qUp: new THREE.Quaternion(), qFore: new THREE.Quaternion(), qFoot: new THREE.Quaternion(), gUp: null, gLow: null, qGUp: new THREE.Quaternion(), qGLow: new THREE.Quaternion() };
+        rep[S0] = { kneeWas: +Kn.y.toFixed(3), ankleWas: +An.y.toFixed(3), toeWas: +Tn.y.toFixed(3), knee: [knee.x, knee.z].map(v => +v.toFixed(3)), ankle: [ank.x, ank.z].map(v => +v.toFixed(3)) };
+      }
+      A.time = t0; for (const k in P.acts) P.acts[k].setEffectiveWeight(w0[k]); P.model.position.copy(m0); P.mixer.update(0); P.group.updateMatrixWorld(true);
+      if (!legs.R) return null;
+      P.offY[name] = (P.offY[name] || 0) + drop; P.restLegs = legs; P.kneelTakes = new RegExp('^' + name + '$');
+      personSettle(P); P.kneelRep = rep; return rep;
+    }
+    /* THE KNEELERS' HANDS ON THEIR THIGHS (v26.18). Laid on the floor, the kneel's own arms hung straight down past the
+       thighs to the tile, photographed from her side and front in the hall: a woman kneeling to serve, and Ton kneeling
+       beside the mat, rest their hands on their thighs. The seated people's own layer lays them (restHands, 'lap': the
+       hands on what the body offers under them), solved in the kneel at its window's middle and drawn only while the
+       kneel is worn (`only`), with the kneeling crowd's own options (c_crowd.js KNEEL_HANDS: the wrist solved against
+       its forearm; the monks' options left her wrists 35 degrees toward the thumb, jointscan) */
+    function kneelHands(P, name = 'seiza', K = { how: 'lap', out: 0.035, inner: 0, turn: 0.2 }) {
+      if (!P || !P.ready || !P.acts[name] || !P.kneelTakes) return null;
+      const W = P.win && P.win[name], A = P.acts[name], d = A.getClip().duration, w0 = {}, pw0 = Object.assign({}, P.w);
+      for (const k in P.acts) { w0[k] = P.acts[k].getEffectiveWeight(); P.acts[k].setEffectiveWeight(k === name ? 1 : 0); }
+      for (const k in P.w) P.w[k] = 0; P.w[name] = 1;
+      const t0 = A.time; A.time = W ? (((W[0] + W[1] / 2) % d) + d) % d : d / 2; P.mixer.update(0); personSettle(P); P.group.updateMatrixWorld(true);
+      const r = restHands(P, K);
+      if (P.restHands) P.restHands.only = new RegExp('^' + name + '$');
+      armsBack(P); A.time = t0; for (const k in P.acts) P.acts[k].setEffectiveWeight(w0[k]);
+      for (const k in P.w) delete P.w[k]; Object.assign(P.w, pw0); P.mixer.update(0); personSettle(P); P.group.updateMatrixWorld(true);
+      return r;
+    }
     const _slA = new THREE.Vector3(), _slB = new THREE.Vector3(), _slQ = new THREE.Quaternion();
     const _slQ1 = new THREE.Quaternion(), _slQ2 = new THREE.Quaternion(), _slQ3 = new THREE.Quaternion(), _slQ4 = new THREE.Quaternion(), _slQd = new THREE.Quaternion(), _slQp = new THREE.Quaternion();
     /* (how far he wears a take that SITS, by the takes' weights: a seated man's legs are laid only while he sits. In the
        late afternoon's photograph the masters stand in Idle_3, and laid there their feet were pinned to where they
        sit: v26.2 debug. A fade between a seat and a stand lays them that share of the way) */
     const _slT = new THREE.Quaternion();
-    function seatShare(P) { const so = P.o.seat; if (!so || !so.takes) return 1 - (P.riseK || 0); let k = 0; for (const n in P.w) if (so.takes.test(n)) k += P.w[n]; return Math.min(1, k) * (1 - (P.riseK || 0)); }
+    function seatShare(P) { if (P.kneelTakes) { let k = 0; for (const n in P.w) if (P.kneelTakes.test(n)) k += P.w[n]; return Math.min(1, k); }
+      const so = P.o.seat; if (!so || !so.takes) return 1 - (P.riseK || 0); let k = 0; for (const n in P.w) if (so.takes.test(n)) k += P.w[n]; return Math.min(1, k) * (1 - (P.riseK || 0)); }
     /* THE SHIN SWUNG, THE KNEE KEPT (o.seat.down.knees 'keep': Grandmaster Pho). His robe below the waist is cloth baked
        round each take's own thighs (robesim, robeshell: v24.47), so legs laid from the hip (armTo) lifted his knees
        through it: skin through the white, photographed (v26.2 debug). So his thigh stays as the take has it and only the
@@ -4148,6 +4252,8 @@
       /* (v26.18: the takes a rest's hands stay laid through too. The hall's Grandmaster Pho talks with his hands in his lap:
          his talk is a bench's, and its left hand, which lay on his thigh there, hung in the air over his crossed legs) */
       if (RH.hold) for (const k in P.w) if (k !== rt && RH.hold.test(k)) share = Math.min(1, share + P.w[k]);
+      /* (v26.18: hands laid for one take only (a kneel), whatever the person's rest is: kneelHands) */
+      if (RH.only) { share = 0; for (const k in P.w) if (RH.only.test(k)) share += P.w[k]; share = Math.min(1, share); }
       if (!(share > 0.001)) return;
       P.group.updateWorldMatrix(true, true); P.group.getWorldQuaternion(_rhQ);
       for (const sd in RH.R) { const a = A[sd], r = RH.R[sd];
@@ -4385,12 +4491,14 @@
       /* (lodK 1.25: his full model drawn to 2.75 m, not 2.2: he is talked to from 1.9 to 2.3 m, where the lighter body's soft
          face was what was seen. In the line he stands 1.8 m from the player, inside the old reach: no new cost there) */
       /* (v26.8: his shoulders let down in his stand and his talk: shouldersLay) */
-      cast.ton = mkPerson('e4ton', tonAt[0], tonAt[1], faceTo(tonAt[0], tonAt[1], DATA.spawn.x, DATA.spawn.z), { take: 'Idle_3', talk: 'Stand_and_Chat', headDamp: SEIZA_LOOK, lodK: 1.25, shoulders: { Idle_3: 1, Stand_and_Chat: 1, Walking: 1 }, pace: true });   // (v26.18: his own rig's walk, for the morning's way to the hall: paced from its planted foot)
+      cast.ton = mkPerson('e4ton', tonAt[0], tonAt[1], faceTo(tonAt[0], tonAt[1], DATA.spawn.x, DATA.spawn.z), { take: 'Idle_3', talk: 'Stand_and_Chat', headDamp: SEIZA_LOOK, lodK: 1.25, shoulders: { Idle_3: 1, Stand_and_Chat: 1, Walking: 1, seiza: 1 }, pace: true });   // (v26.18: his own rig's walk, for the morning's way to the hall: paced from its planted foot)
       cast.ton.home = { x: tonAt[0], z: tonAt[1], ry: faceTo(tonAt[0], tonAt[1], DATA.spawn.x, DATA.spawn.z) };
       /* the woman at his bench stands by the low table at his right hand, turned to those who kneel (photograph 6) */
       { const [ax, az] = benchAt(1.95, 0.95), [kx, kz] = benchAt(0.3, 1.9);
         cast.aunt = mkPerson('e4bench', ax, az, faceTo(ax, az, kx, kz), { take: 'Idle_3', phase: 0.4, talk: 'Stand_and_Chat' });
         cast.aunt.home = { x: ax, z: az, ry: faceTo(ax, az, kx, kz) }; }
+      /* (in the hall both kneel: laid on the floor, as a kneel is: kneelLegs) */
+      for (const P of [cast.aunt, cast.ton]) whenReady(P, (Q) => { Q.win = Object.assign({}, Q.win, { seiza: SEIZA_WIN }); kneelLegs(Q, 'seiza'); Q.kneelHandsRep = kneelHands(Q, 'seiza', KNEEL_HANDS); });
       /* THE YOUNG MAN WHO GOES UP at Grandmaster Pho's bench (photographs 5 and 6): the man in the group's shirt, a
          person of his own (he raises his bai sri, and goes somewhere the player cannot follow). Stood by the play, where
          his raised hands and the master's can meet on one bowl (ymPlace) */
@@ -5945,7 +6053,11 @@
         for (const [fb, hb] of [[P.foreL, P.handL], [P.foreR, P.handR]]) { fb.getWorldPosition(_mte); hb.getWorldPosition(_mtw);
           const k = Math.min(1, 0.13 / Math.max(0.05, _mte.distanceTo(_mtw))); y += _mtw.y + (_mte.y - _mtw.y) * k; }
         top = y / 2; }
-      g.position.set(m.x - Math.sin(ry) * 0.13, top + 0.04 + n * 0.226, m.z - Math.cos(ry) * 0.13); if (g.parent === matsG) g.position.sub(matsG.position);
+      /* (v26.18, in the hall: his 'give' take holds the forearms sloping down to open palms, and the roll laid at the
+         forearms' point 13 cm up from the wrists hung 10 cm over his empty palms, photographed in ending A. It lies on
+         the palms now: its foot 2 cm over the higher wrist's joint, a little nearer the palms) */
+      const wy = Math.max(P.handL.getWorldPosition(_mte).y, P.handR.getWorldPosition(_mtw).y) - 0.02, back = top > wy ? 0.07 : 0.13; top = Math.min(top, wy);
+      g.position.set(m.x - Math.sin(ry) * back, top + 0.04 + n * 0.226, m.z - Math.cos(ry) * back); if (g.parent === matsG) g.position.sub(matsG.position);
       g.rotation.set(0, ry + (n ? 0.07 : -0.04), 0); g.visible = true; return true; }
 
     /* ---- THE BULBS AT DUSK (ending B: "the bulbs under the shed's roof come on"): a string of bare bulbs along the eaves
@@ -6546,7 +6658,7 @@
     const WARM_DAY1 = ['q3v', 'tn3a1', 'q3p1', 'tn3a2', 'q3u1', 'q3u2', 'tn3m1', 'q3u3', 'tn3m2', 'q3c1', 'tn3c1', 'q3c2', 'ds3c1', 'tn3c2', 'q3c3',
                        'x3baitake', 'x3baiset', 'x3kneel', 'x3bowall', 'x3petals', 'x3chant', 'x3tone',
                        'x3grass1', 'x3grass2', 'x3grass3', 'x3grass4', 'x3grass5', 'x3grass6', 'x3grass7', 'x3grass8', 'x3os1', 'x3os2', 'x3os3', 'x3os4', 'x3os5', 'x3os6', 'x3wick'];
-    const WARM_DAY2 = ['ph3g1', 'ph3b0', 'ph3b1', 'ph3b2', 'ph3b3', 'ph3b4', 'ph3bx', 'ph3by', 'ph3b5', 'ph3p1', 'x3kneel', 'x3baiset', 'x3bell',
+    const WARM_DAY2 = ['tn3h1', 'tn3h2', 'ph3g1', 'ph3b0', 'ph3b1', 'ph3b2', 'ph3b3', 'ph3b4', 'ph3bx', 'ph3by', 'ph3b5', 'ph3p1', 'x3kneel', 'x3baiset', 'x3bell',
                        'x3grass1', 'x3grass2', 'x3grass3', 'x3grass4', 'x3grass5', 'x3grass6', 'x3grass7', 'x3grass8', 'x3os3', 'x3os7', 'x3os8', 'x3os9'];
     function dayOneStage() {
       look('DAY1', 0); auraAt(0, 0); mistK = 1; burstsClear();
@@ -6880,6 +6992,9 @@
     /* ================================================================ THE NIGHT BETWEEN (a film), THEN DAY TWO */
     function betweenBegin() {
       const run = play.run;
+      /* (v26.18: the morning's sounds decoded under the night film, so Ton's first line, half a second into the morning,
+         is never asked of a cold buffer) */
+      if (warmSounds) warmSounds(WARM_DAY2);
       const ok = kit && kit.film && kit.film('between', { onDone: () => { if (live(run)) dawnBegin(false); } });
       if (!ok) dawnBegin(false);
     }

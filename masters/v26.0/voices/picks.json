@@ -5053,5 +5053,83 @@
     "heard": "Three, two, one!"
    }
   }
+ },
+ "tn3h1": {
+  "who": "ton",
+  "text": "[friendly] This way. In the morning he sits in the hall.",
+  "pick": "b",
+  "why": "the only clean and whole take",
+  "med": 3.98,
+  "takes": {
+   "a": {
+    "len": 3.68,
+    "first": 0.0,
+    "last": 3.66,
+    "e_first": 0.0,
+    "e_last": 3.66,
+    "tail_db": -17.0,
+    "tail_rel": -7.3,
+    "hole": 1.16,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": false,
+    "wps": 2.73,
+    "heard": "This way. In the morning he sits in the hall."
+   },
+   "b": {
+    "len": 4.32,
+    "first": 0.0,
+    "last": 4.2,
+    "e_first": 0.0,
+    "e_last": 4.3,
+    "tail_db": -26.2,
+    "tail_rel": -14.6,
+    "hole": 0.96,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.33,
+    "heard": "This way. In the morning he sits in the hall."
+   }
+  }
+ },
+ "tn3h2": {
+  "who": "ton",
+  "text": "[quiet] Go in. He is waiting for you.",
+  "pick": "b",
+  "why": "the easier pace",
+  "med": 2.01,
+  "takes": {
+   "a": {
+    "len": 2.0,
+    "first": 0.0,
+    "last": 1.88,
+    "e_first": 0.0,
+    "e_last": 1.98,
+    "tail_db": -20.5,
+    "tail_rel": -10.9,
+    "hole": 0.22,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 3.54,
+    "heard": "Go in. He is waiting for you."
+   },
+   "b": {
+    "len": 2.08,
+    "first": 0.0,
+    "last": 2.0,
+    "e_first": 0.02,
+    "e_last": 2.06,
+    "tail_db": -25.7,
+    "tail_rel": -16.2,
+    "hole": 0.26,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 3.43,
+    "heard": "Go in. He is waiting for you."
+   }
+  }
  }
 }

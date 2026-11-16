@@ -135,6 +135,14 @@ def cmd_model(jobs_path):
         if person: body['pose_mode'] = 'a-pose'
         if j.get('texture'): body['texture_prompt'] = j['texture']
         j['task'] = call('POST', '/image-to-3d', body)['result']
+        # (16 Nov 2026: a model made again under its old name kept the old model's remesh jobs in its row, and the remesh
+        #  step, finding one there, fetched the OLD model's remesh: Somdej Toh came back with the glasses he never wore.
+        #  The old model's jobs are set aside under 'superseded', never reused)
+        with locked():
+            L0 = ledger(); row = L0.get(j['name'])
+            if row and row.get('image_to_3d') and row['image_to_3d'] != j['task'] and row.get('remesh'):
+                row.setdefault('superseded', []).append({'image_to_3d': row['image_to_3d'], 'remesh': row.pop('remesh')})
+                save(L0)
         note(j['name'], image_to_3d=j['task'], image=j['image'], settings={k: v for k, v in body.items() if k != 'image_url'})
         print('started image-to-3d', j['name'], j['task'], flush=True)
     for j in jobs:

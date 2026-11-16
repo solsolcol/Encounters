@@ -16,7 +16,7 @@ TAGS = {
     'q3v': 'awed', 'q3m0': 'uneasy', 'q3m1': 'quiet', 'q3w1': 'quiet', 'q3w2': 'awed', 'q3w3': 'reflective',
     'q3u1': 'tense', 'q3u2': 'shaken', 'q3u3': 'wary', 'q3c1': 'curious', 'q3c2': 'polite', 'q3c3': 'reflective',
     'tn3a1': 'friendly', 'tn3a2': 'friendly', 'tn3d1': 'quiet', 'tn3m1': 'encouraging', 'tn3m2': 'gentle', 'tn3c1': 'serious',
-    'tn3c2': 'friendly', 'tn3n1': 'quiet', 'tn3A1': 'cheerful', 'ds3c1': 'gentle', 'ds3p1': 'cheerful',
+    'tn3c2': 'friendly', 'tn3n1': 'quiet', 'tn3h1': 'friendly', 'tn3h2': 'quiet', 'tn3A1': 'cheerful', 'ds3c1': 'gentle', 'ds3p1': 'cheerful',
     # the telling: a grown man laying it down before a teacher
     'q3t1': 'quiet', 'q3t2': 'uneasy', 'q3t3': 'sincere', 'q3t4': 'ashamed',
     'q3t8': 'quiet', 'q3a1': 'awed',

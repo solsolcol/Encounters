@@ -1160,13 +1160,79 @@
       armsBack(P); P.model.position.set(0, 0, 0); P.group.updateMatrixWorld(true);
       return { legs, lift: -drop, fwd, rep: { bottom: +bottom.toFixed(3), drop: +drop.toFixed(3), fwd: +fwd.toFixed(3), shins: +back.toFixed(3), flat: legs.flat || null } };
     }
+    /* A KNEEL LAID ON THE FLOOR (v26.18). The kneel the woman who serves him and Ton wear in the hall was made on
+       another body, and on theirs it knelt with the shins in the air: measured in the lab, her knees 13 and 16 cm over
+       the tile, her ankles 15 and 17, the whole body held up on the tips of her toes behind her (the lowest of her skin),
+       and the same on Ton. A real kneel sits back on the heels: the knees on the floor in front, the shins flat along it,
+       the tops of the feet flat behind, the hips a little over the heels. So the body is let down (`drop`), the take's
+       thigh kept to its own heading in plan and brought down until the knee is on the floor, the shin laid flat back
+       along its own heading, and the foot turned to point back along the floor: the legs laid by the seated legs' own
+       layer (seatLegsLay, armTo), only while the kneel is worn (P.kneelTakes, seatShare). Measured at the window's middle
+       of the take; its own legs barely move across the window (the knees 2 cm) */
+    function kneelLegs(P, name = 'seiza', K = {}) {
+      if (!P || !P.ready || !P.acts[name] || !P.hips || P.kneelTakes) return null;
+      const drop = K.drop != null ? K.drop : 0.09, kneeY = K.knee != null ? K.knee : 0.065, ankY = K.ankle != null ? K.ankle : 0.065, toeY = K.toe != null ? K.toe : 0.055;
+      const bone = (nm) => { const re = new RegExp('^(mixamorig:?)?' + nm + '$'); for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
+      armsBack(P);
+      const W = P.win && P.win[name], A = P.acts[name], d = A.getClip().duration, w0 = {};
+      for (const k in P.acts) { w0[k] = P.acts[k].getEffectiveWeight(); P.acts[k].setEffectiveWeight(k === name ? 1 : 0); }
+      const t0 = A.time; A.time = W ? (((W[0] + W[1] / 2) % d) + d) % d : d / 2; P.mixer.update(0);
+      const m0 = P.model.position.clone(); P.model.position.set(0, 0, 0); P.group.updateMatrixWorld(true);
+      const inv = new THREE.Matrix4().copy(P.group.matrixWorld).invert(), gq = P.group.getWorldQuaternion(new THREE.Quaternion()).invert();
+      const loc = (b) => b.getWorldPosition(new THREE.Vector3()).applyMatrix4(inv);
+      const legs = { R: {}, kneel: true }, rep = {};
+      for (const S0 of ['Left', 'Right']) {
+        const up = bone(S0 + 'UpLeg'), fore = bone(S0 + 'Leg'), foot = bone(S0 + 'Foot'), toe = bone(S0 + 'ToeBase');
+        if (!up || !fore || !foot || !toe) { console.warn(P.key + ': no ' + S0 + ' leg to kneel'); legs.R = null; break; }
+        const H = loc(up), Kn = loc(fore), An = loc(foot), Tn = loc(toe);
+        const L1 = H.distanceTo(Kn), L2 = Kn.distanceTo(An), L3 = An.distanceTo(Tn);
+        H.y -= drop;
+        const th = new THREE.Vector2(Kn.x - H.x, Kn.z - H.z).normalize(), dy1 = H.y - kneeY, r1 = Math.sqrt(Math.max(0, L1 * L1 - dy1 * dy1));
+        const knee = new THREE.Vector3(H.x + th.x * r1, kneeY, H.z + th.y * r1);
+        const sh = new THREE.Vector2(An.x - Kn.x, An.z - Kn.z).normalize(), dy2 = kneeY - ankY, r2 = Math.sqrt(Math.max(0, L2 * L2 - dy2 * dy2));
+        const ank = new THREE.Vector3(knee.x + sh.x * r2, ankY, knee.z + sh.y * r2);
+        const ft = new THREE.Vector2(Tn.x - An.x, Tn.z - An.z).normalize(), dy3 = ankY - toeY, r3 = Math.sqrt(Math.max(0, L3 * L3 - dy3 * dy3));
+        const vNow = new THREE.Vector3().subVectors(Tn, An).normalize(), vNew = new THREE.Vector3(ft.x * r3, toeY - ankY, ft.y * r3).normalize();
+        const footQ = new THREE.Quaternion().setFromUnitVectors(vNow, vNew).multiply(gq.clone().multiply(foot.getWorldQuaternion(new THREE.Quaternion())));
+        /* (the pole points out from the hip-to-ankle line through the knee wanted, so the solve puts the knee there and
+           nowhere lower: a pole set under and before it drew the knees 2 cm into the tile, measured in the hall) */
+        const ax = new THREE.Vector3().subVectors(ank, H).normalize(), foot0 = H.clone().addScaledVector(ax, new THREE.Vector3().subVectors(knee, H).dot(ax));
+        const pole = knee.clone().addScaledVector(new THREE.Vector3().subVectors(knee, foot0).normalize(), 0.5);
+        legs.R[S0] = { up, fore, foot, ank, pole, footQ,
+          qUp: new THREE.Quaternion(), qFore: new THREE.Quaternion(), qFoot: new THREE.Quaternion(), gUp: null, gLow: null, qGUp: new THREE.Quaternion(), qGLow: new THREE.Quaternion() };
+        rep[S0] = { kneeWas: +Kn.y.toFixed(3), ankleWas: +An.y.toFixed(3), toeWas: +Tn.y.toFixed(3), knee: [knee.x, knee.z].map(v => +v.toFixed(3)), ankle: [ank.x, ank.z].map(v => +v.toFixed(3)) };
+      }
+      A.time = t0; for (const k in P.acts) P.acts[k].setEffectiveWeight(w0[k]); P.model.position.copy(m0); P.mixer.update(0); P.group.updateMatrixWorld(true);
+      if (!legs.R) return null;
+      P.offY[name] = (P.offY[name] || 0) + drop; P.restLegs = legs; P.kneelTakes = new RegExp('^' + name + '$');
+      personSettle(P); P.kneelRep = rep; return rep;
+    }
+    /* THE KNEELERS' HANDS ON THEIR THIGHS (v26.18). Laid on the floor, the kneel's own arms hung straight down past the
+       thighs to the tile, photographed from her side and front in the hall: a woman kneeling to serve, and Ton kneeling
+       beside the mat, rest their hands on their thighs. The seated people's own layer lays them (restHands, 'lap': the
+       hands on what the body offers under them), solved in the kneel at its window's middle and drawn only while the
+       kneel is worn (`only`), with the kneeling crowd's own options (c_crowd.js KNEEL_HANDS: the wrist solved against
+       its forearm; the monks' options left her wrists 35 degrees toward the thumb, jointscan) */
+    function kneelHands(P, name = 'seiza', K = { how: 'lap', out: 0.035, inner: 0, turn: 0.2 }) {
+      if (!P || !P.ready || !P.acts[name] || !P.kneelTakes) return null;
+      const W = P.win && P.win[name], A = P.acts[name], d = A.getClip().duration, w0 = {}, pw0 = Object.assign({}, P.w);
+      for (const k in P.acts) { w0[k] = P.acts[k].getEffectiveWeight(); P.acts[k].setEffectiveWeight(k === name ? 1 : 0); }
+      for (const k in P.w) P.w[k] = 0; P.w[name] = 1;
+      const t0 = A.time; A.time = W ? (((W[0] + W[1] / 2) % d) + d) % d : d / 2; P.mixer.update(0); personSettle(P); P.group.updateMatrixWorld(true);
+      const r = restHands(P, K);
+      if (P.restHands) P.restHands.only = new RegExp('^' + name + '$');
+      armsBack(P); A.time = t0; for (const k in P.acts) P.acts[k].setEffectiveWeight(w0[k]);
+      for (const k in P.w) delete P.w[k]; Object.assign(P.w, pw0); P.mixer.update(0); personSettle(P); P.group.updateMatrixWorld(true);
+      return r;
+    }
     const _slA = new THREE.Vector3(), _slB = new THREE.Vector3(), _slQ = new THREE.Quaternion();
     const _slQ1 = new THREE.Quaternion(), _slQ2 = new THREE.Quaternion(), _slQ3 = new THREE.Quaternion(), _slQ4 = new THREE.Quaternion(), _slQd = new THREE.Quaternion(), _slQp = new THREE.Quaternion();
     /* (how far he wears a take that SITS, by the takes' weights: a seated man's legs are laid only while he sits. In the
        late afternoon's photograph the masters stand in Idle_3, and laid there their feet were pinned to where they
        sit: v26.2 debug. A fade between a seat and a stand lays them that share of the way) */
     const _slT = new THREE.Quaternion();
-    function seatShare(P) { const so = P.o.seat; if (!so || !so.takes) return 1 - (P.riseK || 0); let k = 0; for (const n in P.w) if (so.takes.test(n)) k += P.w[n]; return Math.min(1, k) * (1 - (P.riseK || 0)); }
+    function seatShare(P) { if (P.kneelTakes) { let k = 0; for (const n in P.w) if (P.kneelTakes.test(n)) k += P.w[n]; return Math.min(1, k); }
+      const so = P.o.seat; if (!so || !so.takes) return 1 - (P.riseK || 0); let k = 0; for (const n in P.w) if (so.takes.test(n)) k += P.w[n]; return Math.min(1, k) * (1 - (P.riseK || 0)); }
     /* THE SHIN SWUNG, THE KNEE KEPT (o.seat.down.knees 'keep': Grandmaster Pho). His robe below the waist is cloth baked
        round each take's own thighs (robesim, robeshell: v24.47), so legs laid from the hip (armTo) lifted his knees
        through it: skin through the white, photographed (v26.2 debug). So his thigh stays as the take has it and only the
@@ -1535,6 +1601,8 @@
       /* (v26.18: the takes a rest's hands stay laid through too. The hall's Grandmaster Pho talks with his hands in his lap:
          his talk is a bench's, and its left hand, which lay on his thigh there, hung in the air over his crossed legs) */
       if (RH.hold) for (const k in P.w) if (k !== rt && RH.hold.test(k)) share = Math.min(1, share + P.w[k]);
+      /* (v26.18: hands laid for one take only (a kneel), whatever the person's rest is: kneelHands) */
+      if (RH.only) { share = 0; for (const k in P.w) if (RH.only.test(k)) share += P.w[k]; share = Math.min(1, share); }
       if (!(share > 0.001)) return;
       P.group.updateWorldMatrix(true, true); P.group.getWorldQuaternion(_rhQ);
       for (const sd in RH.R) { const a = A[sd], r = RH.R[sd];
@@ -1772,12 +1840,14 @@
       /* (lodK 1.25: his full model drawn to 2.75 m, not 2.2: he is talked to from 1.9 to 2.3 m, where the lighter body's soft
          face was what was seen. In the line he stands 1.8 m from the player, inside the old reach: no new cost there) */
       /* (v26.8: his shoulders let down in his stand and his talk: shouldersLay) */
-      cast.ton = mkPerson('e4ton', tonAt[0], tonAt[1], faceTo(tonAt[0], tonAt[1], DATA.spawn.x, DATA.spawn.z), { take: 'Idle_3', talk: 'Stand_and_Chat', headDamp: SEIZA_LOOK, lodK: 1.25, shoulders: { Idle_3: 1, Stand_and_Chat: 1, Walking: 1 }, pace: true });   // (v26.18: his own rig's walk, for the morning's way to the hall: paced from its planted foot)
+      cast.ton = mkPerson('e4ton', tonAt[0], tonAt[1], faceTo(tonAt[0], tonAt[1], DATA.spawn.x, DATA.spawn.z), { take: 'Idle_3', talk: 'Stand_and_Chat', headDamp: SEIZA_LOOK, lodK: 1.25, shoulders: { Idle_3: 1, Stand_and_Chat: 1, Walking: 1, seiza: 1 }, pace: true });   // (v26.18: his own rig's walk, for the morning's way to the hall: paced from its planted foot)
       cast.ton.home = { x: tonAt[0], z: tonAt[1], ry: faceTo(tonAt[0], tonAt[1], DATA.spawn.x, DATA.spawn.z) };
       /* the woman at his bench stands by the low table at his right hand, turned to those who kneel (photograph 6) */
       { const [ax, az] = benchAt(1.95, 0.95), [kx, kz] = benchAt(0.3, 1.9);
         cast.aunt = mkPerson('e4bench', ax, az, faceTo(ax, az, kx, kz), { take: 'Idle_3', phase: 0.4, talk: 'Stand_and_Chat' });
         cast.aunt.home = { x: ax, z: az, ry: faceTo(ax, az, kx, kz) }; }
+      /* (in the hall both kneel: laid on the floor, as a kneel is: kneelLegs) */
+      for (const P of [cast.aunt, cast.ton]) whenReady(P, (Q) => { Q.win = Object.assign({}, Q.win, { seiza: SEIZA_WIN }); kneelLegs(Q, 'seiza'); Q.kneelHandsRep = kneelHands(Q, 'seiza', KNEEL_HANDS); });
       /* THE YOUNG MAN WHO GOES UP at Grandmaster Pho's bench (photographs 5 and 6): the man in the group's shirt, a
          person of his own (he raises his bai sri, and goes somewhere the player cannot follow). Stood by the play, where
          his raised hands and the master's can meet on one bowl (ymPlace) */

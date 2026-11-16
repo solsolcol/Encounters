@@ -652,7 +652,11 @@
         for (const [fb, hb] of [[P.foreL, P.handL], [P.foreR, P.handR]]) { fb.getWorldPosition(_mte); hb.getWorldPosition(_mtw);
           const k = Math.min(1, 0.13 / Math.max(0.05, _mte.distanceTo(_mtw))); y += _mtw.y + (_mte.y - _mtw.y) * k; }
         top = y / 2; }
-      g.position.set(m.x - Math.sin(ry) * 0.13, top + 0.04 + n * 0.226, m.z - Math.cos(ry) * 0.13); if (g.parent === matsG) g.position.sub(matsG.position);
+      /* (v26.18, in the hall: his 'give' take holds the forearms sloping down to open palms, and the roll laid at the
+         forearms' point 13 cm up from the wrists hung 10 cm over his empty palms, photographed in ending A. It lies on
+         the palms now: its foot 2 cm over the higher wrist's joint, a little nearer the palms) */
+      const wy = Math.max(P.handL.getWorldPosition(_mte).y, P.handR.getWorldPosition(_mtw).y) - 0.02, back = top > wy ? 0.07 : 0.13; top = Math.min(top, wy);
+      g.position.set(m.x - Math.sin(ry) * back, top + 0.04 + n * 0.226, m.z - Math.cos(ry) * back); if (g.parent === matsG) g.position.sub(matsG.position);
       g.rotation.set(0, ry + (n ? 0.07 : -0.04), 0); g.visible = true; return true; }
 
     /* ---- THE BULBS AT DUSK (ending B: "the bulbs under the shed's roof come on"): a string of bare bulbs along the eaves

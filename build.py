@@ -698,6 +698,12 @@ ASSETS = {
     'w3hwhitebuddha':('assets/w3hwhitebuddha.glb', True, False),     # the great white Buddha of the dais, 1.97 m: his photographs 3 and 6 and the second reader's brief (docs/research/V26.18-HALL-IMAGES-VERDICTS.md), a checked picture, then Meshy (D1)
     'w3hlotus':     ('assets/w3hlotus.glb', True, False),     # the round gold lotus the white Buddha sits on: two rows of upturned petals, silver at their edges (D2)
     'w3t_hpleat':   ('assets/w3t_hpleat.jpg', True, False),     # the dais's skirt: gathered olive-gold satin in wide box pleats, from the cloth alone in his photograph 4 (masters/v26.18/skirt)
+    'w3hemerald':   ('assets/w3hemerald.glb', True, False),     # the replica of the Emerald Buddha in its summer costume on its gold throne base, on the red table (L17): Chad, 16 Nov 2026, "Where are the other assets, models, props, like the emerald buddha statue?"; a checked picture, then Meshy
+    'w3hgoldbuddha':('assets/w3hgoldbuddha.glb', True, False),     # the gold seated Buddha (maravijaya) with its gold cloth and its dark wooden stand, on the second altar (L9): a checked picture, then Meshy
+    'w3hsomdej':    ('assets/w3hsomdej.glb', True, False),     # Somdej Toh's golden bucha (L11, named by Chad, 16 Nov 2026): gilded, in round spectacles, from his photograph 5 and photographs of the real cast images; a checked picture, then Meshy
+    'w3hwheel2':    ('assets/w3hwheel2.glb', True, False),     # the green ribbon wheel of eight spokes with its small gold standing Buddha, on the second altar (L12): a checked picture, then Meshy
+    'w3hfan':       ('assets/w3hfan.glb', True, False),     # the orange talapat fan with its printed seated Buddha, on its pole in its low stand, on the dais: a checked picture, then Meshy
+    'w3htabletstand':('assets/w3htabletstand.glb', True, False),     # the black tablet on its floor stand by the dais's west end, its back to the room (his photographs 4 and 6): a checked picture, then Meshy
     'w3hcanopy':    ('assets/w3hcanopy.glb', True, False),     # the round gold cloth canopy hung over the white Buddha, its bead fringe all round (D3)
     'w3hbroom':     ('assets/w3hbroom.glb', True, False),     # a soft grass broom, laid on the dais at the master's right (D-row)
     'w3hclock':     ('assets/w3hclock.glb', True, False),     # the round wall clock under the high frame (L21)
@@ -856,9 +862,9 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'w3hpillow', 'w3hframe', 'w3hdrums', 'w3hgoldbaisri', 'w3hpeacock', 'w3hmat', 'w3t_hmural', 'w3hgreencol',
            'w3hwheel', 'w3hbrownbaisri', 'w3hbooktable', 'w3hnagabronze', 'w3hlotusvase', 'w3hredtable',
            'w3hnagagold', 'w3hstripemat', 'w3hnagagroup', 'w3hpedfan', 'w3hsofa3', 'w3hgreymats', 'w3hmattresses',
-           'w3hwhitebuddha', 'w3hlotus', 'w3t_hpleat', 'w3hcanopy', 'w3hbroom', 'w3hclock', 'w3hclothsets',
-           'w3hexhaust', 'w3hhorn', 'w3hpabox', 'w3hpapercone', 'w3hswan', 'w3hconetower', 'w3hcushions',
-           'w3hwallfan',
+           'w3hwhitebuddha', 'w3hlotus', 'w3t_hpleat', 'w3hemerald', 'w3hgoldbuddha', 'w3hsomdej', 'w3hwheel2',
+           'w3hfan', 'w3htabletstand', 'w3hcanopy', 'w3hbroom', 'w3hclock', 'w3hclothsets', 'w3hexhaust', 'w3hhorn',
+           'w3hpabox', 'w3hpapercone', 'w3hswan', 'w3hconetower', 'w3hcushions', 'w3hwallfan',
            # <<< e4c3 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY

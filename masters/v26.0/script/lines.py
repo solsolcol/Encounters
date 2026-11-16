@@ -41,6 +41,8 @@ LINES = [
     ('ds3p1', 'aunt', 'film: between', "Three, two, one!"),
     ('tn3n1', 'ton', 'film: between', "Come. He is free now."),
     # ---- play II, the chance (§4.3)
+    ('tn3h1', 'ton', 'play, the morning', "This way. In the morning he sits in the hall."),
+    ('tn3h2', 'ton', "play, at the hall's door", "Go in. He is waiting for you."),
     ('ph3g1', 'pho', 'play, day two', "Sit. Ton tells me you carry questions. Put them down here."),
     ('q3t1', 'he', 'film: tell', "Since I was a boy, I have been very sensitive. I feel things other people cannot feel."),
     ('q3t2', 'he', 'film: tell', "When I hear chanting, my body moves by itself, and I cannot control it."),

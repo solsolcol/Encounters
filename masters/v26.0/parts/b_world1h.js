@@ -51,6 +51,13 @@
        as dark as wet earth, where his photographs have it pale grey and bright round each lamp: the pools are painted) */
     const mCeil = B({ color: 0x6c6b69 });
     const mCeilDark = B({ color: 0x3e3c3b });
+    /* (the recess's step faces: a shade under the ceiling's grey. Its top was drawn in the dark grey and read, beside
+       his photograph 6, as a dark hole over the canopy: in the photograph the recess's top is the ceiling's own grey
+       and only its faces read darker) */
+    const mCeilLip = B({ color: 0x504f4d });
+    /* (and its west slope a shade lighter, as the lamp beside it lights it in his photographs 4 and 6, and its top a
+       shade under the flat ceiling: all three the one grey, the recess did not read at all, laid beside photograph 6) */
+    const mCeilSlope = B({ color: 0x7d7c79 }), mCeilTop = B({ color: 0x61605e });
     const mInPost = M({ color: 0x3d2830, roughness: 0.34 });
     const mInWhite = M({ color: 0xf1efe9, roughness: 0.6 });
     const mInDark = M({ color: 0x241f1d, roughness: 0.6 });
@@ -62,6 +69,9 @@
        alone in his photograph and laid once to the skirt's height, its gathers at the top: masters/v26.18/skirt) */
     const mSkirtOlive = surf('hpleat', { tile: [0.765, HIN.dais.h], mirror: 'u', roughness: 0.4, side: THREE.DoubleSide });
     const skirtWall = (mat, x0, z0, x1, z1, y0, y1, u0 = 0) => quad(mat, [x0, y0, z0], [x1, y0, z1], [x1, y1, z1], [x0, y1, z0], u0, 0);
+    /* (the second altar's skirt: his photographs 5 and 6 have it gathered in close soft folds, a fold every 0.1 to 0.12 m,
+       where the plain satin drew it flat. The dais skirt's own picture, its folds closer, lifted to lemon) */
+    const mSkirtLemon = surf('hpleat', { tile: [0.45, 0.65], mirror: 'u', gain: [1.27, 1.06, 0.7], roughness: 0.4, side: THREE.DoubleSide });
     /* (the braid along each skirt's top: a gold zigzag on the lemon one; green and gold with sequins on the olive one) */
     /* (the dais's braid is a narrow one in his photograph 4: about 3 cm, a dull olive green sewn with a fine gold wave
        and small sequins; the bold green band with a broad zigzag, 4.5 cm, read as a painted border) */
@@ -133,16 +143,16 @@
       const down = (mat, ax, az, bx, bz, y) => quad(mat, [ax, y, az], [bx, y, az], [bx, y, bz], [ax, y, bz], ax, az);   // a piece that faces down (az north of bz)
       const RC = { u0: 1.3, v1: 4.2, in: 0.3, step: 0.25 };
       down(mCeil, x0, zN, RC.u0, zS, cy); down(mCeil, RC.u0, Z(RC.v1), x1, zS, cy);
-      wall(mCeil, RC.u0, Z(RC.v1), RC.u0, zN, cy, cy + RC.step); wall(mCeil, x1, Z(RC.v1), RC.u0, Z(RC.v1), cy, cy + RC.step);                       // the first step's faces (west, south)
+      wall(mCeilLip, RC.u0, Z(RC.v1), RC.u0, zN, cy, cy + RC.step); wall(mCeilLip, x1, Z(RC.v1), RC.u0, Z(RC.v1), cy, cy + RC.step);                       // the first step's faces (west, south)
       down(mCeil, RC.u0, zN, RC.u0 + RC.in, Z(RC.v1), cy + RC.step); down(mCeil, RC.u0 + RC.in, Z(RC.v1 - RC.in), x1, Z(RC.v1), cy + RC.step);        // its ledge
-      wall(mCeil, RC.u0 + RC.in, Z(RC.v1 - RC.in), RC.u0 + RC.in, zN, cy + RC.step, cy + 2 * RC.step); wall(mCeil, x1, Z(RC.v1 - RC.in), RC.u0 + RC.in, Z(RC.v1 - RC.in), cy + RC.step, cy + 2 * RC.step);
-      down(mCeilDark, RC.u0 + RC.in, zN, x1, Z(RC.v1 - RC.in), cy + 2 * RC.step);
+      wall(mCeilLip, RC.u0 + RC.in, Z(RC.v1 - RC.in), RC.u0 + RC.in, zN, cy + RC.step, cy + 2 * RC.step); wall(mCeilLip, x1, Z(RC.v1 - RC.in), RC.u0 + RC.in, Z(RC.v1 - RC.in), cy + RC.step, cy + 2 * RC.step);
+      down(mCeilTop, RC.u0 + RC.in, zN, x1, Z(RC.v1 - RC.in), cy + 2 * RC.step);
       /* (laid beside his photographs 4, 5 and 6: the recess's west side is one broad slope, rising from the flat
          ceiling's edge to the recess's top, not steps: the grey plane over the top left of his photograph 4 and the
          one coming down over the right of photograph 5. It is laid over the steps, which stay behind it unseen. The
          wall inside the recess over the dais is grey in them, not terracotta: the north wall's terracotta stops at the
          flat ceiling's line, the east wall's goes on up) */
-      quad(mCeil, [RC.u0, cy, zN], [RC.u0 + 2 * RC.in, cy + 2 * RC.step, zN], [RC.u0 + 2 * RC.in, cy + 2 * RC.step, Z(RC.v1 - RC.in)], [RC.u0, cy, Z(RC.v1)]);
+      quad(mCeilSlope, [RC.u0, cy, zN], [RC.u0 + 2 * RC.in, cy + 2 * RC.step, zN], [RC.u0 + 2 * RC.in, cy + 2 * RC.step, Z(RC.v1 - RC.in)], [RC.u0, cy, Z(RC.v1)]);
       /* THE WALLS: the north wall and the first bay of each side painted terracotta; bare brick south of the first posts */
       wall(mTerra, x0, zN, x1, zN, fy, cy); wall(mCeil, RC.u0, zN, x1, zN, cy, cy + 2 * RC.step);
       wall(mTerra, x1, zN, x1, Z(BAY), fy, cy); wall(mTerra, x1, zN, x1, Z(RC.v1), cy, cy + 2 * RC.step);
@@ -200,7 +210,7 @@
          skirt to the floor with a gold zigzag braid; behind it the printed backdrop, 4.4 by 2.8 */
       const A = { x0: x0, x1: 1.0, v1: 2.2, h: 0.65 };
       box(mAltarTop, (A.x0 + A.x1) / 2, Y(A.h / 2), Z(A.v1 / 2), A.x1 - A.x0, A.h, A.v1);
-      wall(mSkirtYellow, A.x0, Z(A.v1) + 0.012, A.x1 + 0.012, Z(A.v1) + 0.012, fy, Y(A.h)); wall(mSkirtYellow, A.x1 + 0.012, Z(A.v1) + 0.012, A.x1 + 0.012, zN, fy, Y(A.h));                 // its south face (faces south), its east end (faces east)
+      skirtWall(mSkirtLemon, A.x0, Z(A.v1) + 0.012, A.x1 + 0.012, Z(A.v1) + 0.012, fy, Y(A.h)); skirtWall(mSkirtLemon, A.x1 + 0.012, Z(A.v1) + 0.012, A.x1 + 0.012, zN, fy, Y(A.h), 0.2);                 // its south face (faces south), its east end (faces east)
       wall(mBraidGold, A.x0, Z(A.v1) + 0.016, A.x1 + 0.016, Z(A.v1) + 0.016, Y(A.h - 0.035), Y(A.h - 0.005)); wall(mBraidGold, A.x1 + 0.016, Z(A.v1) + 0.016, A.x1 + 0.016, zN, Y(A.h - 0.035), Y(A.h - 0.005));
       /* THE PRINTED BANNER behind the second altar: the hall's own picture (Chad, 16 Nov 2026: "I believe this is the wall
          mural at the back of the hall, but you need to adjust the colour to look like the reference photo"). His picture
@@ -343,10 +353,15 @@
          to the east wall, high up, hanging slack near the hand. From the fingers as the model has them (0.24 m to the
          statue's right, 0.86 m over its seat, 0.255 m before its middle) to the wall at 2.95 m: where it leaves his
          photograph 4's right edge, solved from that photograph's own camera) */
-      { const A = hallAt(3.35 - 0.24 * 1.2, 1.25 + 0.255 * 1.2, DH + 0.921 + 0.86 * 1.2), Bq = hallAt(HIN.x1 - 0.02, 1.1, 2.95), pts = [], N = 18;
-        for (let i = 0; i < N; i++) for (const k of [i / N, (i + 1) / N]) pts.push(lp(A[0], Bq[0], k), A[1] + (Bq[1] - A[1]) * (1.6 * k * k - 0.6 * k), lp(A[2], Bq[2], k));
+      /* (v26.18, Chad, 16 Nov 2026: "Make the black string attached to the buddha a white string instead, and attach it
+         to the top ceiling". So it is white, and it rises from the same fingers to the recess's top over the dais, 2.9 m
+         from the north wall: in front of the canopy, whose fringe hangs from 3.2 m over the floor and reaches 1.93 m
+         from the wall, so the thread passes it 0.3 m clear at that height; and a little to the statue's right, so it rises
+         away from the face. Taut enough to sag only a little) */
+      { const A = hallAt(3.35 - 0.24 * 1.2, 1.25 + 0.255 * 1.2, DH + 0.921 + 0.86 * 1.2), Bq = hallAt(2.75, 2.9, HIN.ceil + 2 * 0.25 - 0.002), pts = [], N = 18;
+        for (let i = 0; i < N; i++) for (const k of [i / N, (i + 1) / N]) pts.push(lp(A[0], Bq[0], k), A[1] + (Bq[1] - A[1]) * (k - 0.12 * k * (1 - k)), lp(A[2], Bq[2], k));
         const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
-        const ln = new THREE.LineSegments(lg, new THREE.LineBasicMaterial({ color: 0x2a2622 })); mats.push(ln.material); ln.name = 'hall:thread'; hallIn.add(ln); owned.push(ln); }
+        const ln = new THREE.LineSegments(lg, new THREE.LineBasicMaterial({ color: 0xf2efe8 })); mats.push(ln.material); ln.name = 'hall:thread'; hallIn.add(ln); owned.push(ln); }
       hallMany('w3hseat', [{ u: 2.1, v: 2.9, h: DH, sy: 0.5 }]);
       hallMany('w3hpillow', [{ u: 2.42, v: 2.26, h: DH, ry: 0.25 }, { u: 2.96, v: 2.2, h: DH, ry: -0.3 }]);
       hallMany('w3hdrums', [{ u: 1.7, v: 0.2, h: DH }, { u: 1.95, v: 0.2, h: DH, tint: 0xe8c060, ry: 1 }, { u: 4.3, v: 0.2, h: DH, tint: 0xe8c060, ry: 2 }, { u: 4.55, v: 0.2, h: DH, ry: 3 }], 4);
@@ -354,6 +369,13 @@
       hallMany('w3hpeacock', [{ u: 3.3, v: 2.85, h: DH }]);
       hallMany('w3candlemid', [{ u: 2.75, v: 2.48, h: DH, s: 0.68, tint: 0xf0a020 }, { u: 3.8, v: 2.5, h: DH, s: 0.68, tint: 0xf0a020 }, { u: 0.15, v: 2.0, h: AH, s: 0.53, tint: 0xf0a020 }]);
       hallMany('w3hgreencol', [{ u: 2.55, v: 0.15, h: DH }, { u: 4.15, v: 0.15, h: DH, ry: 2 }]);
+      /* (the orange talapat fan on its pole in its stand, behind his left shoulder: his photographs 2, 4 and 6. Its blade
+         is about 0.3 m across there (60 px at 6 m in photograph 6, 57 px behind him in photograph 4), so the model is
+         drawn at 0.62, its top near his head) */
+      hallMany('w3hfan', [{ u: 2.45, v: 2.45, h: DH, s: 0.62 }]);
+      /* (the black tablet on its floor stand west of the dais, its back to his photograph 4's lens: its screen turned
+         north-west, to the room) */
+      hallMany('w3htabletstand', [{ u: 1.15, v: 3.0, h: 0, ry: 0.8 }]);
       hallMany('w3hcanopy', [{ u: 3.35, v: 1.25, h: 3.2 }]);
       hallMany('w3hwheel', [{ u: 4.4, v: 2.45, h: DH, ry: -0.35 }]);
       hallMany('w3hbrownbaisri', [{ u: 2.78, v: 2.02, h: DH + 0.925 }, { u: 3.36, v: 2.12, h: DH + 0.925, ry: 1 }, { u: 3.95, v: 2.0, h: DH + 0.925, ry: 2 },
@@ -366,15 +388,30 @@
          heads (L7), the swan (L6), the red table (L15), the bouquet (L22), the gold naga heads at its east end (L23) */
       hallMany('w3naga', [[-4.26, 1.34, 0.5, 0.2], [-4.1, 1.45, 0.28, 0.1], [-3.94, 1.5, 0, 0], [-3.78, 1.45, -0.28, -0.1], [-3.62, 1.34, -0.5, -0.2]].map(([u, s, ry, rz]) => ({ u, v: 0.55, h: AH, s, ry, rz })));
       hallMany('w3candle', [{ u: -3.35, v: 1.3, h: AH, s: 0.76 }, { u: -2.0, v: 1.3, h: AH, s: 0.72 }]);
-      hallMany('w3hconetower', [{ u: -2.95, v: 0.9, h: AH }, { u: -2.15, v: 0.9, h: AH, ry: 1.5 }]);
-      hallMany('w3hnagabronze', [{ u: -3.2, v: 1.0, h: AH }, { u: -1.55, v: 1.0, h: AH, ry: 0.4 }]);
+      hallMany('w3hconetower', [{ u: -2.95, v: 0.4, h: AH }, { u: -2.15, v: 0.4, h: AH, ry: 1.5 }]);
+      hallMany('w3hnagabronze', [{ u: -3.2, v: 1.0, h: AH }, { u: -1.6, v: 0.45, h: AH, ry: 0.4 }]);
+      /* (v26.18, Chad, 16 Nov 2026: "Where are the other assets, models, props, like the emerald buddha statue? And somdej
+         toh's golden bucha?" The second altar's sacred images, each a checked picture, then Meshy (masters/v26.0/props/
+         TABLE.txt), set where his photographs 5 and 11 have them: the gold Buddha between its two cone towers (which
+         stand behind it there, so they go back), Somdej Toh's golden bucha on a small dark stand before the bronze
+         naga carvings (behind it there), the green wheel on another beside the red table, each top at the height
+         photograph 11 gives it; the Emerald Buddha on its throne on the red table, its base 0.39 m up, the table's top) */
+      /* (the gold Buddha's paint came pale, a butter yellow beside his photograph 5's deep gilding: tinted toward it) */
+      hallMany('w3hgoldbuddha', [{ u: -2.55, v: 0.75, h: AH, s: 1.1, tint: 0xffd36a }]);
+      hallMany('w3lowtable', [{ u: -1.58, v: 0.95, h: AH, s: 0.55 }, { u: -1.05, v: 0.45, h: AH, s: 0.55 }]);
+      hallMany('w3hsomdej', [{ u: -1.58, v: 0.95, h: AH + 0.21, tint: 0xffd36a }]);
+      hallMany('w3hwheel2', [{ u: -1.05, v: 0.45, h: AH + 0.21, s: 1.1, tint: 0xfff2c8 }]);
+      /* (laid beside his photograph 5 from its own place: the Emerald Buddha stands 1.12 times as tall for its width
+         as the picture made it, and the red table is a quarter wider and reaches further east, his bouquet past its end) */
+      hallMany('w3hemerald', [{ u: -0.12, v: 0.85, h: AH + 0.389, sy: 1.12 }]);
       hallMany('w3hswan', [{ u: -3.1, v: 1.65, h: AH, ry: 0.5 }]);
       hallMany('w3hlotusvase', [{ u: -3.7, v: 1.35, h: AH, s: 0.73 }, { u: 0.34, v: 1.45, h: AH, s: 0.73, ry: 2 }]);
-      hallMany('w3hredtable', [{ u: -0.12, v: 0.95, h: AH }]);
+      hallMany('w3hredtable', [{ u: 0.05, v: 0.95, h: AH, sx: 1.25 }]);
       hallMany('w3hpapercone', [{ u: -0.44, v: 1.5, h: AH }, { u: 0.2, v: 1.5, h: AH, ry: 1.2 }]);       // (L18: two small cones of folded paper in gold bowls, before the red table)
-      hallMany('w3roses', [{ u: 0.66, v: 1.2, h: AH, s: 1.5 }]);
+      hallMany('w3roses', [{ u: 0.98, v: 1.2, h: AH, s: 1.5 }]);
       hallMany('w3hnagagold', [{ u: 0.84, v: 1.85, h: AH, ry: 0.3 }]);
-      hallMany('w3hstripemat', [{ u: -0.12, v: 2.62, h: 0 }]);
+      /* (the mat tinted: his photograph 6's is maroon, black and cream, darker than the model's red and white) */
+      hallMany('w3hstripemat', [{ u: -0.12, v: 2.62, h: 0, tint: 0x9a6060 }]);
       /* the floor between the altars: the cloth sets (G3), the water (G5), the clay pot (G6), the tray (L24) */
       hallMany('w3hclothsets', [{ u: 1.26, v: 3.3, h: 0, ry: E }]);
       hallMany('w3water', [0, 1, 2, 3].flatMap(i => [0, 1, 2].map(j => ({ u: 1.14 + j * 0.068, v: 4.18 + i * 0.068, h: 0 }))));

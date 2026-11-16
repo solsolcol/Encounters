@@ -2002,6 +2002,36 @@
    "glb": 60741620
   }
  },
+ "hemerald": {
+  "credits": 40,
+  "expires_at": 1795111287194,
+  "image": "masters/v26.0/props/refs/hemerald-2k.png",
+  "image_to_3d": "01a1e580-6402-77ea-adee-d8cd0462a462",
+  "remesh": {
+   "40000": "01a1e588-7143-761a-8773-3f0008eccffd"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 89920652
+  }
+ },
  "hermita": {
   "credits": 40,
   "expires_at": 1794666026253,
@@ -2164,6 +2194,36 @@
    "glb": 61549936
   }
  },
+ "hfan": {
+  "credits": 40,
+  "expires_at": 1795111217553,
+  "image": "masters/v26.0/props/refs/hfan-2k.png",
+  "image_to_3d": "01a1e580-7907-772f-942a-ff63786d1024",
+  "remesh": {
+   "12000": "01a1e592-0cf9-7541-98e5-267b9ee0e30a"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 75789244
+  }
+ },
  "hframe": {
   "credits": 40,
   "expires_at": 1795087924172,
@@ -2223,6 +2283,36 @@
   },
   "sizes": {
    "glb": 73439344
+  }
+ },
+ "hgoldbuddha": {
+  "credits": 40,
+  "expires_at": 1795111249264,
+  "image": "masters/v26.0/props/refs/hgoldbuddha-2k.png",
+  "image_to_3d": "01a1e580-6ebe-728b-99c1-731388f4ca74",
+  "remesh": {
+   "40000": "01a1e58d-be80-72d4-9e6b-3764e18a247d"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 59092456
   }
  },
  "hgreencol": {
@@ -2891,6 +2981,45 @@
    "glb": 43879000
   }
  },
+ "hsomdej": {
+  "credits": 40,
+  "expires_at": 1795114981595,
+  "image": "masters/v26.0/props/refs/hsomdej-2k.png",
+  "image_to_3d": "01a1e5b9-0f0b-75b9-9f15-8bab596db043",
+  "remesh": {
+   "40000": "01a1e5c1-f592-72b9-a608-96d82ff4332d"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 70187948
+  },
+  "superseded": [
+   {
+    "image_to_3d": "01a1e589-5852-72a4-a497-4caf28af2d28",
+    "remesh": {
+     "40000": "01a1e596-5d12-7411-9f48-338d199a7864"
+    },
+    "why": "the first model, made from the reference with spectacles and the hands at the belly (wrong); its file is original-hsomdej-glasses-WRONG.glb"
+   }
+  ]
+ },
  "hstripemat": {
   "credits": 40,
   "expires_at": 1795098267969,
@@ -2981,6 +3110,36 @@
    "glb": 57556976
   }
  },
+ "htabletstand": {
+  "credits": 40,
+  "expires_at": 1795113068573,
+  "image": "masters/v26.0/props/refs/htabletstand-2k.png",
+  "image_to_3d": "01a1e59c-0adc-7154-90f2-168e848801f2",
+  "remesh": {
+   "16000": "01a1e5a0-dd51-733b-8c66-7b3e30e5580a"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 32673664
+  }
+ },
  "hwallfan": {
   "credits": 40,
   "expires_at": 1795100930883,
@@ -3042,6 +3201,36 @@
   },
   "sizes": {
    "glb": 101686896
+  }
+ },
+ "hwheel2": {
+  "credits": 40,
+  "expires_at": 1795111402403,
+  "image": "masters/v26.0/props/refs/hwheel2-2k.png",
+  "image_to_3d": "01a1e580-fddd-764f-b551-8a6ee4c15914",
+  "remesh": {
+   "40000": "01a1e590-a411-735d-8d0d-588be50e68e3"
+  },
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 85709276
   }
  },
  "hwhitebuddha": {

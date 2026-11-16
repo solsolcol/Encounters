@@ -649,5 +649,19 @@
   "voice_id": "bP8FJDHmWVEgXJDitdQd",
   "takes": 2,
   "prompt": "[reflective] I asked him to take it away. He gave me the handle."
+ },
+ {
+  "key": "tn3h1",
+  "speaker": "ton",
+  "voice_id": "uI1epevl1X6hqrxEciKt",
+  "takes": 2,
+  "prompt": "[friendly] This way. In the morning he sits in the hall."
+ },
+ {
+  "key": "tn3h2",
+  "speaker": "ton",
+  "voice_id": "uI1epevl1X6hqrxEciKt",
+  "takes": 2,
+  "prompt": "[quiet] Go in. He is waiting for you."
  }
 ]

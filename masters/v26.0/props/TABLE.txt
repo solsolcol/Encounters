@@ -219,3 +219,25 @@ hcanopy2      w3hcanopy     1.35  w  12000   512  0
 hwhitebuddha  w3hwhitebuddha 1.97 h  60000  2048  0
 #  the round gold lotus it sits on (D2): two rows of upturned petals, silver at their edges
 hlotus        w3hlotus      1.90  w  16000  1024  0
+# ---- the hall's sacred images asked for again (Chad, 16 Nov 2026: "Where are the other assets, models, props, like the
+#  emerald buddha statue? And somdej toh's golden bucha?"), each from its reference picture checked against his
+#  photographs 5, 6, 10 and 11 and the second reader's briefs. All prepared with PAINT=0.3,0.5 (gold read as paint)
+#  the replica of the Emerald Buddha in its summer costume on its gold throne base, L17 (1.5 m: base on the red table to
+#  the crown's tip, his photograph 11's 1.04 to 2.54 m)
+hemerald      w3hemerald    1.50  h  40000  2048  0
+#  the gold seated Buddha (maravijaya) with its gold cloth and its dark wooden stand, L9 (the figure and its base 1.17 m
+#  in his photographs; its stand, mostly hidden there, is the picture's: 1.52 m in all)
+hgoldbuddha   w3hgoldbuddha 1.52  h  40000  2048  0
+#  the orange talapat fan with its printed seated Buddha, on its pole in its low stand, D? (the blade 0.55 m tall)
+hfan          w3hfan        1.16  h  12000  1024  0
+#  the green ribbon wheel (eight spokes, measured on his photographs 5 and 10) with its small gold standing Buddha, L12
+hwheel2       w3hwheel2     0.60  w  40000  1024  0
+#  Somdej Toh's golden bucha (L11, named by Chad, 16 Nov 2026). Made again at his word ("Somdej toh does not wear
+#  glasses"; "Somdej toh bucha always have the hands together near the heart area"): the first picture's spectacles and
+#  hands at the belly were my misreading (refs/hsomdej-glasses-WRONG-2k.png, kept as the record). Now from a real bucha
+#  of him (a cast of 2528, a dealer's photograph, its lettered base blanked: masters/v26.0/ref/hall/web/14-somdej-toh,
+#  ignored by git): no glasses, the hands held together before the chest at the heart, the robe over both shoulders.
+#  The figure and its base 0.5 m, its stand the picture's: 0.58 m in all
+hsomdej       w3hsomdej     0.58  h  40000  1024  0
+#  the black tablet on its floor stand by the second altar's east end (his photographs 4 and 6), its back to the room
+htabletstand  w3htabletstand 1.30 h  16000   512  0
