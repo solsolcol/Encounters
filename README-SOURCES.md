@@ -1,8 +1,8 @@
 # The 3D sources generated for Master Z's Encounters
 
 Originals, remeshes and rigs made for the game by Meshy, Hunyuan3D, Tripo and the rigging, at their own paths
-in the game's repository (masters/<version>/src, which the game's branch ignores): 17 of 17
-chunks, 822 files. Made by tools/srcbackup.py on the game's branch. Only what was generated for
+in the game's repository (masters/<version>/src, which the game's branch ignores): 18 of 25
+chunks, 831 files. Made by tools/srcbackup.py on the game's branch. Only what was generated for
 the game is here: none of Chad's own models, no bought model, no photograph.
 
 ## Restoring
@@ -22,4 +22,6 @@ file against the manifest (sha256sum's format, one line a whole file):
 
 - masters/v26.0/src/original-envisanhouse.glb (2 pieces)
 - masters/v26.0/src/original-fan.glb (2 pieces)
+- masters/v26.0/src/original-hcanopy.glb (2 pieces)
+- masters/v26.0/src/original-hcanopy2.glb (2 pieces)
 - masters/v26.0/src/original-nagafount.glb (2 pieces)

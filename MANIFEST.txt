@@ -233,10 +233,12 @@ b8e07427cc68ef08b1dffa4d469b69d0a3890b00a87fe618e0a9e01f7ed112ec  masters/v26.0/
 676ed4c41f2486f63853840d6d950f57ad751180cf892fe3683e0a94216f7a04  masters/v26.0/src/devh-people.log
 f41bbfd0755761acf711b689537b58c380004a51fca90f9ce1262ab268aa5b09  masters/v26.0/src/devh-rig.log
 1c1b21ed4268f8d7fc9f57e817d2247088e9a7b1019ad110fabbd6af020394ae  masters/v26.0/src/devh-takes.log
+02857980da0a6c66d8df12118b8e9113dc564ff99d1111174132796a650cf61d  masters/v26.0/src/game-hnagagroup-90000-2048.glb
 9fdfe0b1dbb4885fdba5bbcfc0e246512d7b52140f20cd3759f3b74206e8a205  masters/v26.0/src/girl-bodies.log
 27062fbf1f270b61f311bbd5e148321918a18c1217c3190163edc7090feeab4a  masters/v26.0/src/girl-people.log
 0cec64eafc7ec3882b9e06be9555d1c56be1020a654b42f1e10bf873eca66158  masters/v26.0/src/girl-rig.log
 800fd6a780faa6da74b6c6a9464aec2582fd2f8410d1c9d5fd14fa9e47304c8c  masters/v26.0/src/girl-takes.log
+6f9e3ea3e415a70a62e6cb3d2a73ee429e5a51658a3f93d2d061240d6c1c8197  masters/v26.0/src/hallin-model.log
 ca0f4b65b0b38b45b8cfe51845689b5259d358c4869c248bbd63190d809b3da0  masters/v26.0/src/hermita-bodies.log
 9fea391e7e97427110e9ce139697d4ff0680cf3f8553b2decd81375e5de7e67b  masters/v26.0/src/hermita-people.log
 ca751c84bd47dcca77064bdbab0ea0fd2e345781adde5b7c3f4d09fc052506b3  masters/v26.0/src/hermita-rig.log
@@ -249,7 +251,7 @@ ce368aa16acaf315581339f6c77669a8ce9da521d48f2f2fb8b05512c6c0a2bc  masters/v26.0/
 cb8d95d379b86adfb7bdb03c5d4c0f0e89aee25caae68cf12068d660d5c6ab99  masters/v26.0/src/hunyuan-petalbowl-40k.glb
 a96fa49b8c5433a7212805aaa266c33b787a8d2557aac7d9c9ac1fb880add004  masters/v26.0/src/hunyuan-petalsteel-40k.glb
 2d4794330175aa0814179678c90717cf244cd1569f42d1ff0ae2b95ccd84a291  masters/v26.0/src/hunyuan-roses2-40k.glb
-d337b256a6346b57087a135359a97ae2b91713fd383f07e14278935dce2f11f7  masters/v26.0/src/jobs.json
+16932c599468a817fe44dd2ed1f262726f2d8a3725a02d93798904949903c38b  masters/v26.0/src/jobs.json
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  masters/v26.0/src/jobs.json.lock
 84ee857f81d497d9e0890ab36f100319352057672e53d229abd6e5622fab6bbd  masters/v26.0/src/monkb-bodies.log
 ae83f40c592fa1857ace186ec2b5769a3d063c327cf1214b03ac84db2ec9daa0  masters/v26.0/src/monkb-people.log
@@ -295,6 +297,13 @@ ee15ff087296576c3d5bbac759701b3ce8c8bcc6411c905dcced258c27e4875c  masters/v26.0/
 f3d4a12e1ed4be007e6cfc87af4f4f00742df83e6982009b7550f960a2b11857  masters/v26.0/src/original-girl.glb
 2d5ca6f7ef202b9fb74bbb86f47415c96f82984860cdfe06e3582d05a734578c  masters/v26.0/src/original-girl2.glb
 97c6570a185a47610b80575e258d361ca9fa2b66003687cad0a097b6cd276ed7  masters/v26.0/src/original-glass.glb
+a1687b49cbf2aec920ef65f30a50a0d4b7c43244f29f49a9c3c48ca7f89bf9ee  masters/v26.0/src/original-hbooktable.glb
+1a63d1d28d158d4231c6a0122d8fcf056b3b9c945ac8ee5505de515d45123ed0  masters/v26.0/src/original-hbroom.glb
+89481ba8096abc2cfefd3a0a63ad9ea01922e33e48277946cc0f34bd8b2ca7e3  masters/v26.0/src/original-hbrownbaisri.glb
+1ede37af240d3c572062928292de78f927a5ba9e91c12e08e5a7058ca555e333  masters/v26.0/src/original-hcanopy.glb
+59db4badade497dafc1c22b21e1130aac1e144430eeb10823e05090792d3bb8f  masters/v26.0/src/original-hcanopy2.glb
+bd49c6407ad5582104f17838fb3161a99dd4a2fe3c19925dac6766f7b6114bf9  masters/v26.0/src/original-hclock.glb
+7159f7d47700a1307f00823288b91af29e2dfd0b9c3e0c7a89fc38308b50d9a8  masters/v26.0/src/original-hclothsets.glb
 51acb9c8f9ca3c4f7ea0b9832f374b9b55f5c88517089d39ce1cbc5f5a285490  masters/v26.0/src/original-hermita.glb
 163c51a6afcd660ed2f0aa9e60d4a4be084eae8cb94d8a5a86ea04baa132b670  masters/v26.0/src/original-hermitb.glb
 57e187321676f25cf0734738f5a3a70041bb54c81b960c60d4decf394c412b4b  masters/v26.0/src/original-horns.glb

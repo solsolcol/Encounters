@@ -1,0 +1,40 @@
+started image-to-3d hseat 01a1e41b-8fb6-7537-b274-937ddfcb6a5a
+started image-to-3d hpillow 01a1e41b-97b8-758c-8c18-bcac4053fd64
+started image-to-3d hframe 01a1e41b-aa65-737e-b9ff-bd1349a5c547
+started image-to-3d hdrums 01a1e41b-b714-7706-b085-33ae09f9ba00
+started image-to-3d hgoldbaisri 01a1e41b-bf71-72c3-b828-ba46166df4bb
+started image-to-3d hcanopy 01a1e41b-c9a8-76f0-ad89-337eb2e1913a
+started image-to-3d hpeacock 01a1e41b-d4ed-75f2-9f1d-afb636a7835a
+started image-to-3d hmat 01a1e41b-e239-72d0-9a2b-43cf7c5f90d1
+  hseat IN_PROGRESS 25%
+  hseat IN_PROGRESS 29%
+  hseat IN_PROGRESS 33%
+  hseat IN_PROGRESS 37%
+  hseat IN_PROGRESS 45%
+  hseat IN_PROGRESS 53%
+  hseat IN_PROGRESS 58%
+  hseat IN_PROGRESS 67%
+  hseat IN_PROGRESS 80%
+  hseat IN_PROGRESS 99%
+  hseat SUCCEEDED 100%
+done hseat {'glb': 60619132} credits 40
+  hpillow IN_PROGRESS 99%
+  hpillow SUCCEEDED 100%
+done hpillow {'glb': 92078008} credits 40
+  hframe SUCCEEDED 100%
+done hframe {'glb': 78791964} credits 40
+  hdrums SUCCEEDED 100%
+done hdrums {'glb': 60741620} credits 40
+  hgoldbaisri IN_PROGRESS 99%
+  hgoldbaisri SUCCEEDED 100%
+done hgoldbaisri {'glb': 73439344} credits 40
+  hcanopy IN_PROGRESS 67%
+  hcanopy IN_PROGRESS 80%
+  hcanopy IN_PROGRESS 99%
+  hcanopy SUCCEEDED 100%
+done hcanopy {'glb': 102518320} credits 40
+  hpeacock SUCCEEDED 100%
+done hpeacock {'glb': 93711280} credits 40
+  hmat SUCCEEDED 100%
+done hmat {'glb': 54955168} credits 40
+exit 0
