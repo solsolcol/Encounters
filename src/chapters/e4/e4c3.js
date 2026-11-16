@@ -6117,7 +6117,7 @@
        forearm's half-thickness), and the second on the first, 0.226 m up (a roll is 0.232 thick: the upper sits 6 mm into
        the one below, as one soft roll does on another). Read off his own bones on
        every frame, so his take's breathing carries them */
-    const _mtv = new THREE.Vector3(), _mte = new THREE.Vector3(), _mtw = new THREE.Vector3();
+    const _mtv = new THREE.Vector3(), _mte = new THREE.Vector3(), _mtw = new THREE.Vector3(), _mpL = new THREE.Vector3(), _mpR = new THREE.Vector3();
     const FOREARMS = { L: /^(mixamorig:?)?LeftForeArm$/, R: /^(mixamorig:?)?RightForeArm$/ };
     function matOnArms(g, P, n = 0) { const m = handsMid(P, _mtv); if (!m) return false; const ry = P.group.rotation.y;
       if (!P.foreL) for (const k in P.bone) { if (FOREARMS.L.test(k)) P.foreL = P.bone[k]; if (FOREARMS.R.test(k)) P.foreR = P.bone[k]; }
@@ -6129,6 +6129,19 @@
       /* (v26.18, in the hall: his 'give' take holds the forearms sloping down to open palms, and the roll laid at the
          forearms' point 13 cm up from the wrists hung 10 cm over his empty palms, photographed in ending A. It lies on
          the palms now: its foot 2 cm over the higher wrist's joint, a little nearer the palms) */
+      /* (v26.18, ending A on build 12, photographed: laid by the higher wrist alone, the roll touched one hand's fingertips
+         and stood 5 cm over the other palm, his 'give' holding that hand lower. It lies on BOTH palms now: each palm's
+         middle, halfway from its wrist to its middle finger's root and 1.5 cm up to the skin of a palm turned up, the
+         roll's foot on the line between the two and turned to its slope) */
+      if (P.knL === undefined) { P.knL = P.knR = null;
+        for (const k in P.bone) { if (/^(mixamorig:?)?LeftHandMiddle1$/.test(k)) P.knL = P.bone[k]; if (/^(mixamorig:?)?RightHandMiddle1$/.test(k)) P.knR = P.bone[k]; } }
+      if (P.knL && P.knR) {
+        P.handL.getWorldPosition(_mpL).lerp(P.knL.getWorldPosition(_mte), 0.5); _mpL.y += 0.015;
+        P.handR.getWorldPosition(_mpR).lerp(P.knR.getWorldPosition(_mtw), 0.5); _mpR.y += 0.015;
+        const yw = ry + (n ? 0.07 : -0.04), dl = (_mpR.x - _mpL.x) * Math.cos(yw) - (_mpR.z - _mpL.z) * Math.sin(yw);   // (the right palm along the roll's length from the left: its local x, turned by the yaw)
+        const tilt = Math.abs(dl) > 0.02 ? Math.atan((_mpR.y - _mpL.y) / dl) : 0;
+        g.position.set((_mpL.x + _mpR.x) / 2, (_mpL.y + _mpR.y) / 2 + n * 0.226, (_mpL.z + _mpR.z) / 2); if (g.parent === matsG) g.position.sub(matsG.position);
+        g.rotation.set(0, yw, tilt); g.visible = true; return true; }
       const wy = Math.max(P.handL.getWorldPosition(_mte).y, P.handR.getWorldPosition(_mtw).y) - 0.02, back = top > wy ? 0.07 : 0.13; top = Math.min(top, wy);
       g.position.set(m.x - Math.sin(ry) * back, top + 0.04 + n * 0.226, m.z - Math.cos(ry) * back); if (g.parent === matsG) g.position.sub(matsG.position);
       g.rotation.set(0, ry + (n ? 0.07 : -0.04), 0); g.visible = true; return true; }
@@ -8588,7 +8601,10 @@
        nothing takes him */
     /* (v26.18, his answer of 16 Nov: everything inside. He sits at the back of the emptied hall, on a mat of its last row,
        east of the hall's one free post, so the long look to his teacher across the room runs clear of it) */
-    const D_SIT = [0.85, HF + KNEEL.y, HIN.zN + 12.3];
+    /* (on the row's EAST mat: from its third, the look to the second altar's banner ran through the free post, which stood
+       in the middle of a phone's picture and cut the banner's face in two (photographed, v26.18); from here the post is
+       twelve degrees west of the banner's middle, at the frame's side, and the look to his teacher is straight ahead) */
+    const D_SIT = [2.55, HF + KNEEL.y, HIN.zN + 12.3];
     FILMS.D = {
       begin(api) { if (api.handsRoot) api.handsRoot.visible = false; FL.wai = false; FL.bai = false; endStage(); },
       frame(t, api) {

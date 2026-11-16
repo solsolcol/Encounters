@@ -25,6 +25,9 @@
 #   python3 -I tools/srcbackup.py plan             the chunks, nothing written
 #   python3 -I tools/srcbackup.py start            the branch's first commit: the README alone (proves the push works)
 #   python3 -I tools/srcbackup.py push [N ...]     add chunk N (or every chunk not yet up), one at a time
+#   python3 -I tools/srcbackup.py pushnew          (v26.18) every file new or changed since the last push, in chunks of
+#                                                  its own numbered after the last one up (the plan's numbers stop
+#                                                  matching the chunks already up once files are cleared or added)
 #
 # RESTORING (the README on the branch says the same): fetch the branch BY NAME and unpack it with git archive, never a
 # checkout or a restore into the game's working copy (both would stage, or delete, the game's own files under masters/):
@@ -38,6 +41,7 @@ GENERATED = ['v24.19', 'v24.20', 'v24.22', 'v24.36', 'v25.0', 'v25.2', 'v25.5', 
 CHUNK = 600 * 1024 * 1024
 PIECE = 95 * 1024 * 1024
 BRANCH = 'claude/model-sources'
+LABEL = os.environ.get('SRCBACKUP_LABEL', 'v26.12')          # (the version a chunk's commit message begins with)
 SCR = os.environ.get('SRCBACKUP_GIT')
 TRAILER = ('\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n'
            'Claude-Session: https://claude.ai/code/session_012dssR6qAN57acivr6t6QeS\n')
@@ -175,7 +179,7 @@ def add_chunk(i, chunk, total):
         st['cut'][rel] = k
     g('update-index', '--index-info', input=''.join(f'100644 {sha}\t{path}\n' for sha, path in entries))
     st['done'] = sorted(st['done'] + [i])
-    c = commit(st, total, f'v26.12 · model sources: chunk {i} of {total}, {len(chunk)} files (tools/srcbackup.py)')
+    c = commit(st, total, f'{LABEL} · model sources: chunk {i} of {total}, {len(chunk)} files (tools/srcbackup.py)')
     t1 = time.time()
     push(c)
     st['commit'] = c; save(st)
@@ -200,5 +204,17 @@ if __name__ == '__main__':
         st = load()
         want = [int(x) for x in sys.argv[2:]] or [i for i in range(1, len(chunks) + 1) if i not in st['done']]
         for i in want: add_chunk(i, chunks[i - 1], len(chunks))
+        print('DONE', load()['done'], flush=True)
+    elif cmd == 'pushnew':
+        st = load()
+        fresh = [(rel, n) for rel, n in files() if st['manifest'].get(rel) != sha256(os.path.join(ROOT, rel))]
+        news, cur, size = [], [], 0
+        for rel, n in fresh:
+            if cur and size + n > CHUNK: news.append(cur); cur, size = [], 0
+            cur.append((rel, n)); size += n
+        if cur: news.append(cur)
+        base = max(st['done'] or [0]); total = base + len(news)
+        print(f'{len(fresh)} files new or changed, {sum(n for _, n in fresh) >> 20} MiB, in {len(news)} chunks after chunk {base}', flush=True)
+        for k, c in enumerate(news): add_chunk(base + k + 1, c, total)
         print('DONE', load()['done'], flush=True)
     else: raise SystemExit(f'unknown command {cmd}')

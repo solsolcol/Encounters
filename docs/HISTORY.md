@@ -9220,7 +9220,11 @@ What the baseline contains, by release:
   job (the job ledger now sets a remade model's old jobs aside); and I told him the wheel's small Buddha was a quarter too
   big when it was the photograph's size. Built on Fable 5.2 at max effort until its weekly limit, then on Opus 5.5 at his
   word ("Continue exactly where you left off"). Deploy `6afb6119e1b77b3564995dbe` (540 files byte for byte), built without
-  the release zip (the working disk holds 2.3 GB; Netlify holds the deploy). Sheet v146.
+  the release zip (the working disk holds 2.3 GB; Netlify holds the deploy). Sheet v146. THE CHECKS ON IT: the walk
+  harness failed, rightly (the hall's three places stood behind a gate the first frame keeps shut), and was taught a
+  chapter's LATER grounds (`stage.grounds`, a hotspot's `ground`, a keep-in of several boxes), proved by breaking it on a
+  throwaway copy; the four endings photographed inside found one staging fault, ending D's emptied hall looked through
+  the hall's free post, and his seat moved to the row's east mat. Build 12, deploy `6afb6b865107fbac543201f7`.
 
 ## The sheet, version by version
 

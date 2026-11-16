@@ -156,7 +156,10 @@ hmattresses   w3hmattresses 2.00  w   8000   512  0
 #  3D generation'; a second (hcushions2: sixteen smooth blocks) was a drawing of a grid and was not sent; the third
 #  (hcushions3: twenty soft plump blocks, one a bundle) is the one made
 #hcushions    w3hcushions   1.60  w   6000   512  0   REFUSED by Meshy (its picture too complex)
-hcushions3    w3hcushions   1.60  w   6000   512  0
+# (v26.18, ending A on build 12: the stack stands in the foreground of the shot of Ton with his roll, 1.9 m from a kneeling
+#  eye, and the player can walk up to it; at 6000 triangles and a 512 sheet its blocks read as faceted white stones:
+#  photographed. Remeshed at 30000 with a 1024 sheet, and the grey mats beside it at 24000 with a 1024 sheet)
+hcushions3    w3hcushions   1.60  w  30000  1024  0
 #  one green tiered column, D5 (0.3 across, 2.6 tall): seven tiers
 hgreencol     w3hgreencol   2.60  h  16000   512  0
 #  the big pedestal fan on its tripod, E4 (1.55 tall; its guard 0.67, not the sheet's 0.85: PROMPTS.py). ITS FIRST MODEL
@@ -168,7 +171,7 @@ hpedfan2      w3hpedfan     1.55  h   8000   512  0
 #  the brown-leaf Dhamma wheel with its naga on its stacked base, D14
 hwheel        w3hwheel      1.80  h  60000  1024  0
 #  the stack of flat grey mats, E2 (0.9 x 0.6 x 0.6)
-hgreymats     w3hgreymats   0.90  w  12000   512  0
+hgreymats     w3hgreymats   0.90  w  24000  1024  0
 #  the striped floor mattress, L25 (1.4 x 0.5 x 0.1). ITS FIRST MODEL FAILED (hstripemat: Meshy's own model a SQUARE
 #  quilted pad, 1.40 x 1.35 m, painted a mottled pink with no stripe: its picture showed the mat low and foreshortened).
 #  Made again as hstripemat2, from a picture seen from above with its long side across the frame
