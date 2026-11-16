@@ -1,0 +1,42 @@
+[
+ {
+  "name": "hseat",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hseat-2k.png"
+ },
+ {
+  "name": "hpillow",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hpillow-2k.png"
+ },
+ {
+  "name": "hframe",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hframe-2k.png"
+ },
+ {
+  "name": "hdrums",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hdrums-2k.png"
+ },
+ {
+  "name": "hgoldbaisri",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hgoldbaisri-2k.png"
+ },
+ {
+  "name": "hcanopy",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hcanopy-2k.png"
+ },
+ {
+  "name": "hpeacock",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hpeacock-2k.png"
+ },
+ {
+  "name": "hmat",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hmat-2k.png"
+ }
+]

@@ -1,0 +1,37 @@
+[
+ {
+  "name": "hsofa3",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hsofa3-2k.png"
+ },
+ {
+  "name": "hnagagroup",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hnagagroup-2k.png"
+ },
+ {
+  "name": "hmattresses",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hmattresses-2k.png"
+ },
+ {
+  "name": "hcushions",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hcushions-2k.png"
+ },
+ {
+  "name": "hgreencol",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hgreencol-2k.png"
+ },
+ {
+  "name": "hpedfan",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hpedfan-2k.png"
+ },
+ {
+  "name": "hwheel",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hwheel-2k.png"
+ }
+]

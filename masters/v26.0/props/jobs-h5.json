@@ -1,0 +1,47 @@
+[
+ {
+  "name": "hpillow2",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hpillow2-2k.png"
+ },
+ {
+  "name": "hbroom",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hbroom-2k.png"
+ },
+ {
+  "name": "hclothsets",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hclothsets-2k.png"
+ },
+ {
+  "name": "hhorn",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hhorn-2k.png"
+ },
+ {
+  "name": "hpabox",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hpabox-2k.png"
+ },
+ {
+  "name": "hpapercone",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hpapercone-2k.png"
+ },
+ {
+  "name": "hswan",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hswan-2k.png"
+ },
+ {
+  "name": "hexhaust",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hexhaust-2k.png"
+ },
+ {
+  "name": "hclock",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hclock-2k.png"
+ }
+]

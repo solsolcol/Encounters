@@ -1,0 +1,42 @@
+[
+ {
+  "name": "hgreymats",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hgreymats-2k.png"
+ },
+ {
+  "name": "hstripemat",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hstripemat-2k.png"
+ },
+ {
+  "name": "hredtable",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hredtable-2k.png"
+ },
+ {
+  "name": "hnagagold",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hnagagold-2k.png"
+ },
+ {
+  "name": "hnagabronze",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hnagabronze-2k.png"
+ },
+ {
+  "name": "hbooktable",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hbooktable-2k.png"
+ },
+ {
+  "name": "hlotusvase",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hlotusvase-2k.png"
+ },
+ {
+  "name": "hbrownbaisri",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hbrownbaisri-2k.png"
+ }
+]

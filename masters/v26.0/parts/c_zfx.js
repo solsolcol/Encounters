@@ -40,7 +40,7 @@
       const wave = flatM(new THREE.RingGeometry(0.38, 0.43, 40), { opacity: 0.7 }); wave.position.y = 0.005;
       return { g, disc, ring, wave };
     })();
-    function zoneAt(p) { if (!p) { zone.g.visible = false; return; } zone.g.position.set(p.x, 0.03, p.z); zone.g.visible = true; }
+    function zoneAt(p) { if (!p) { zone.g.visible = false; return; } zone.g.position.set(p.x, hallGround(p.x, p.z) + 0.03, p.z); zone.g.visible = true; }
     function zoneTick(now) {
       if (!zone.g.visible) return;
       const k = (now % 2) / 2;
@@ -164,6 +164,14 @@
       const pts = new THREE.Points(geo, pm); pts.frustumCulled = false; pts.renderOrder = 4; g.add(pts); owned.push(pts);
       return { g, shade, hue, rays, glow, pool, ring, pts, seed, tm: new THREE.Color() };
     })();
+    /* (v26.18) WHERE THE GOLD STANDS: at the bench on day one, as it was built; in the morning on the hall's dais, raised by
+       what his head is raised (0.265 m: a floor sit on a cushion on the dais against a chair sit on the bench), and its pool
+       on the tile before the dais (on the dais's own top it would hang past its edge) */
+    function auraSeat(two) {
+      const A = aura, up = two ? HALLSEAT.y + 0.725 - 1.3 : 0;
+      A.g.position.set(two ? HALLSEAT.x : PHO_AT[0], up, two ? HALLSEAT.z : PHO_AT[1]); A.g.rotation.y = two ? HALLSEAT.ry : BENCH.ry;
+      A.pool.position.set(0, two ? HIN.floor + 0.024 - up : 0.024, two ? 1.25 : 0.5); A.ring.position.set(0, two ? HIN.floor + 0.027 - up : 0.027, two ? 1.25 : 0.5);
+    }
     /* ---- HIS OWN LIGHT, IN THE CLOSE (v26.8, Chad, 13 Nov 2026: "the second minigame part, instead of playing the
        minigame, just show the player hands vibrating while a glow surronding him and his hands and his bai sri. all
        around his silohuette, to show that the player is now in control while vibrating"). He is never seen (every shot
@@ -608,6 +616,11 @@
        (made his way: a checked picture on white, then Meshy: masters/v26.0/make.sh) */
     const matsG = new THREE.Group(); world.add(matsG); matsG.visible = false;
     const MATS_AT = { x: -6.25, z: 1.9, ry: 0.32 };
+    /* (v26.18: ending A is inside the hall. The whole picture of the mats (the stack, those who roll, the one who carries,
+       his own walk) is carried as it was built to the back of the hall: MATD, from its place on the turf to the floor
+       between the door and the hall's last rows of mats. What the film sets by a place in the world, it sets less MATD) */
+    const MATD = { x: 4.8, y: HALL.floor, z: -27.45 };
+    matsG.position.set(MATD.x, MATD.y, MATD.z);
     const rolled = { stack: [], own: null, ton: [], carry: null, rolls: [] };
     { const c = Math.cos(MATS_AT.ry), sn = Math.sin(MATS_AT.ry), rnd = rng(3391);
       /* (v26.2 debug: a roll is 0.232 m thick (tools/probes/glbbox.mjs w3matroll); laid 0.16 apart and 0.128 a level they
@@ -639,7 +652,8 @@
         for (const [fb, hb] of [[P.foreL, P.handL], [P.foreR, P.handR]]) { fb.getWorldPosition(_mte); hb.getWorldPosition(_mtw);
           const k = Math.min(1, 0.13 / Math.max(0.05, _mte.distanceTo(_mtw))); y += _mtw.y + (_mte.y - _mtw.y) * k; }
         top = y / 2; }
-      g.position.set(m.x - Math.sin(ry) * 0.13, top + 0.04 + n * 0.226, m.z - Math.cos(ry) * 0.13); g.rotation.set(0, ry + (n ? 0.07 : -0.04), 0); g.visible = true; return true; }
+      g.position.set(m.x - Math.sin(ry) * 0.13, top + 0.04 + n * 0.226, m.z - Math.cos(ry) * 0.13); if (g.parent === matsG) g.position.sub(matsG.position);
+      g.rotation.set(0, ry + (n ? 0.07 : -0.04), 0); g.visible = true; return true; }
 
     /* ---- THE BULBS AT DUSK (ending B: "the bulbs under the shed's roof come on"): a string of bare bulbs along the eaves
        of the chief canopy and the three tents, each a small warm glow turned to the lens, and the pool of their light

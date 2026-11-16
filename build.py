@@ -680,6 +680,36 @@ ASSETS = {
     'w3hgoldbaisri':('assets/w3hgoldbaisri.glb', True, False),     # the gold-foil bai sri in its silver pedestal bowl (D10)
     'w3hpeacock':   ('assets/w3hpeacock.glb', True, False),     # the peacock bai sri, of plain pale paper (D11)
     'w3hmat':       ('assets/w3hmat.glb', True, False),     # a white quilted satin floor mat (S3)
+    'w3t_hmural':   ('assets/w3t_hmural.jpg', True, False),     # the hall's printed banner: the picture Chad sent (16 Nov 2026), in the colours of the hall's own print as his photographs 5 and 10 show them (masters/v26.18/backdrop)
+    'w3hgreencol':  ('assets/w3hgreencol.glb', True, False),     # a tall green column of tiers of leaf crests, a bud on its top (D5)
+    'w3hwheel':     ('assets/w3hwheel.glb', True, False),     # the brown-leaf Dhamma wheel with its naga, on stacked rings, at the dais's east end (D-row)
+    'w3hbrownbaisri':('assets/w3hbrownbaisri.glb', True, False),     # a small bai sri of brown leaf on a gold bowl (D6; the row along the altar's front)
+    'w3hbooktable': ('assets/w3hbooktable.glb', True, False),     # the low table with its stack of books at the master's right (D16)
+    'w3hnagabronze':('assets/w3hnagabronze.glb', True, False),     # a dark bronze naga rearing on its stand (L7)
+    'w3hlotusvase': ('assets/w3hlotusvase.glb', True, False),     # white lotuses of cloth in a cream-and-brown patterned vase (D6, L4)
+    'w3hredtable':  ('assets/w3hredtable.glb', True, False),     # the low red table under the green Buddha's throne (L15)
+    'w3hnagagold':  ('assets/w3hnagagold.glb', True, False),     # the gold naga heads at the altar's east end (L23)
+    'w3hstripemat': ('assets/w3hstripemat.glb', True, False),     # a striped maroon cushion mat on the tile before the altar (G2)
+    'w3hnagagroup': ('assets/w3hnagagroup.glb', True, False),     # the nagas by the west wall: five heads over pink lotus petals (W1)
+    'w3hpedfan':    ('assets/w3hpedfan.glb', True, False),     # a fan on its tripod stand (W2; and the east wall's)
+    'w3hsofa3':     ('assets/w3hsofa3.glb', True, False),     # the beige three-seat sofa of the west wall (W3); its armchair and the east wall's two are this one narrowed or tinted
+    'w3hgreymats':  ('assets/w3hgreymats.glb', True, False),     # a stack of grey floor mats at the east wall (E2)
+    'w3hmattresses':('assets/w3hmattresses.glb', True, False),     # folded mattresses on the bench at the south wall (S1)
+    'w3hwhitebuddha':('assets/w3hwhitebuddha.glb', True, False),     # the great white Buddha of the dais, 1.97 m: his photographs 3 and 6 and the second reader's brief (docs/research/V26.18-HALL-IMAGES-VERDICTS.md), a checked picture, then Meshy (D1)
+    'w3hlotus':     ('assets/w3hlotus.glb', True, False),     # the round gold lotus the white Buddha sits on: two rows of upturned petals, silver at their edges (D2)
+    'w3t_hpleat':   ('assets/w3t_hpleat.jpg', True, False),     # the dais's skirt: gathered olive-gold satin in wide box pleats, from the cloth alone in his photograph 4 (masters/v26.18/skirt)
+    'w3hcanopy':    ('assets/w3hcanopy.glb', True, False),     # the round gold cloth canopy hung over the white Buddha, its bead fringe all round (D3)
+    'w3hbroom':     ('assets/w3hbroom.glb', True, False),     # a soft grass broom, laid on the dais at the master's right (D-row)
+    'w3hclock':     ('assets/w3hclock.glb', True, False),     # the round wall clock under the high frame (L21)
+    'w3hclothsets': ('assets/w3hclothsets.glb', True, False),     # folded sets of white cloth in their wrappers, on the tile between the altars (G3)
+    'w3hexhaust':   ('assets/w3hexhaust.glb', True, False),     # a cream exhaust fan in its square housing, high on the side walls (one a bay)
+    'w3hhorn':      ('assets/w3hhorn.glb', True, False),     # a cream horn loudspeaker on the free post
+    'w3hpabox':     ('assets/w3hpabox.glb', True, False),     # a black loudspeaker box on its bracket, on the first wall posts
+    'w3hpapercone': ('assets/w3hpapercone.glb', True, False),     # a small cone of folded plain paper in a gold pedestal bowl, two before the red table on the second altar (L18)
+    'w3hswan':      ('assets/w3hswan.glb', True, False),     # the white swan on the second altar (L6)
+    'w3hconetower': ('assets/w3hconetower.glb', True, False),     # a dark-green cone tower of folded leaf on the second altar, two of them (L8)
+    'w3hcushions':  ('assets/w3hcushions.glb', True, False),     # strapped bundles of cushions against the east wall (E1)
+    'w3hwallfan':   ('assets/w3hwallfan.glb', True, False),     # a wall fan on its bracket, two on the free post
     # <<< e4c3 keys: the rows end <<<
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
@@ -823,7 +853,12 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'w3t_treeline', 'w3t_redroof', 'w3t_hallbrick', 'w3t_steptile', 'w3t_lawn', 'w3t_kalae', 'w3t_fretwork',
            'w3t_sign', 'w3banana2', 'w3frangipani', 'w3isanhouse', 'w3tank', 'w3aircon', 'w3scooter', 'w3t_render',
            'w3t_cloudbank', 'w3t_cloudtall', 'w3t_cloudflat', 'w3t_cloudthree', 'w3t_cirrus', 'w3pholap', 'w3hseat',
-           'w3hpillow', 'w3hframe', 'w3hdrums', 'w3hgoldbaisri', 'w3hpeacock', 'w3hmat',
+           'w3hpillow', 'w3hframe', 'w3hdrums', 'w3hgoldbaisri', 'w3hpeacock', 'w3hmat', 'w3t_hmural', 'w3hgreencol',
+           'w3hwheel', 'w3hbrownbaisri', 'w3hbooktable', 'w3hnagabronze', 'w3hlotusvase', 'w3hredtable',
+           'w3hnagagold', 'w3hstripemat', 'w3hnagagroup', 'w3hpedfan', 'w3hsofa3', 'w3hgreymats', 'w3hmattresses',
+           'w3hwhitebuddha', 'w3hlotus', 'w3t_hpleat', 'w3hcanopy', 'w3hbroom', 'w3hclock', 'w3hclothsets',
+           'w3hexhaust', 'w3hhorn', 'w3hpabox', 'w3hpapercone', 'w3hswan', 'w3hconetower', 'w3hcushions',
+           'w3hwallfan',
            # <<< e4c3 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY

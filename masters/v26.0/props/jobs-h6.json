@@ -1,0 +1,22 @@
+[
+ {
+  "name": "hcanopy2",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hcanopy2-2k.png"
+ },
+ {
+  "name": "hwallfan",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hwallfan-2k.png"
+ },
+ {
+  "name": "hconetower",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hconetower-2k.png"
+ },
+ {
+  "name": "hcushions3",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hcushions3-2k.png"
+ }
+]

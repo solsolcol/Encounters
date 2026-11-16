@@ -77,3 +77,145 @@ envisanhouse  w3isanhouse   5.60  h  40000  1024  0
 envtank       w3tank        1.95  h   8000   512  0
 envaircon     w3aircon      0.95  w   6000   512  0
 envscooter    w3scooter     1.88  w  20000  1024  0
+# ====================================================================================================================
+# the hall's inside (v26.18)
+# ====================================================================================================================
+#  Chad, 16 Nov 2026: the hall's inside "needs to look exactly the same as the photos". Sizes are the build sheet's
+#  (masters/v26.0/ref/hall/notes/inventory.md §2; each carries about +/- 10 %). Keys begin w3h. SHEETS: 1024 for what
+#  stands within 2.5 m of where a man kneels 2.2 m before the master's seat, 512 beyond it, 256 for small things.
+#  Pictures: PROMPTS.py 'the hall's inside (v26.18)', jobs-hallin.json; crops: crops_hallin.py; models: jobs-h1.json.
+#  SIZED ON the build sheet's leading measure; what the other measures came out at is each row's note (a generator
+#  keeps its picture's proportions, not the words'): where one is off, the chapter may scale that one axis.
+# ---- first batch (16 Nov): made, photographed (each one's four sides at 1100 px; what was seen is each row's note).
+#  SEVEN are game files; the canopy's model failed and its row is not live. The two mirror metals (hdrums and the foil
+#  and bowl of hgoldbaisri) are FULL METALS (their sheets: metal 0.99, roughness 0.35): with nothing to reflect they
+#  draw near black, and read as paint (prepmeshy PAINT=0.25,0.3, tried on scratch copies) they draw pale yellow and
+#  white. Neither is the look: they need the hall's environment, its strength set by photographs in the hall's own
+#  light (v24.29, tools/probes/shine.mjs BRACKET). Their files are as the generator painted them.
+#  the master's seat, D8 (1.0 x 0.7 x 0.08). Came out 1.00 x 0.765 x 0.163 (4,120 triangles): TWICE as thick as the
+#  sheet's 8 cm (its picture drew it so); a plain slab takes a y scale of 0.5 where it is placed. Its paint is the
+#  build sheet's: cushion #461524 (the sheet's base #3a1c24), cloth #99704a (#9a7a52)
+hseat         w3hseat       1.00  w   4000  1024  0
+#  a triangle pillow, D9 (0.5 x 0.3 x 0.35), behind the seat. Came out 0.50 long x 0.286 deep x 0.284 tall (6,186
+#  triangles; the sheet: 0.35 tall). PAINTED TOO RED: its cloth is #701728 (crimson, saturation 0.79) where the real
+#  one in hall-03, read against the white robe beside it, is about #442b2f (dark aubergine, 0.37). No multiply reaches
+#  that (it would have to lift green 2.8 times): a tint of #a1ffff brings the red to #441728 and greys the woven bands;
+#  what would match is the red texels desaturated at prep. NOT repainted (the coordinator's word, 16 Nov)
+hpillow       w3hpillow     0.50  w   6000   512  0
+#  the frame on the floor between the altars, G1 (0.65 x 0.8), EMPTY: a flat mid-grey board where its picture goes
+#  (what goes there is Chad's to say). Came out 0.647 x 0.80 x 0.041: the frame alone, with no foot (in hall-06 and
+#  hall-07 it stands on the low table of books, D17, behind the books, leaning back).
+#  ITS REMESH, TWICE: asked of the triangle remesh at 6,000 (5,160 came) its front was clean and its 4 cm edges and its
+#  back board came out torn (photographed from its side and its back); so it is Meshy's QUAD remesh, 8,000 quads
+#  (16,066 triangles), as the bench's slats were (v26.2): a count ending in q. Clean from every side
+hframe        w3hframe      0.80  h   8000q 1024  0
+#  one column of stacked pressed-metal drums with its spear, D4 (0.2 across, 2.8 tall), in mirror silver: the two gold
+#  columns are a tint of it. Came out 0.196 across (12,496 triangles): nine drums, four rows of crescents, gold rims
+hdrums        w3hdrums      2.80  h  12000   512  0
+#  the gold-foil bai sri in its silver pedestal bowl, D10 (0.45 across, 0.88 tall). Came out 0.384 x 0.88 x 0.392
+#  (24,218 triangles): every part there, its fronds a fishbone of bead-tipped ribs as the real ones are
+hgoldbaisri   w3hgoldbaisri 0.88  h  24000  1024  0
+#  the round gold cloth canopy over the white Buddha, D3 (1.35 across; drum 0.38, fringe 0.25): hung from above, no pole.
+#  ITS MODEL FAILED and its row is NOT LIVE: the generator's own model (300,000 triangles) is whole, but the remesh
+#  (asked 12,000, came 8,685; 1.35 x 0.673) cannot hold a fringe of hundreds of bead strands: two dozen stray shards,
+#  the gathered cloth a crumple of slivers (photographed). Its game file is not in assets/. It is DRAWN AGAIN as one
+#  closed shape (PROMPTS.py hcanopy2: the fringe a solid beaded band, no dangling tassels, taut cloth; the picture is
+#  checked), and waits for credits: 45 (a model 40, its remesh 5). Then:  a jobs json naming hcanopy2, meshy26.py model,
+#  its row below made live, prop.sh hcanopy2
+#hcanopy      w3hcanopy     1.35  w  12000   512  0   FAILED at this count (above)
+#  (hcanopy2's row is live at the foot of this table, with the second batch)
+#  the peacock bai sri, D11 (0.55 x 0.65), of plain pale pink-lilac paper: no banknote, no portrait, no print. Came
+#  out 0.564 x 0.65 x 0.40 (20,782 triangles); its paper #d6bbcb, saturation 0.13, as hall-02's
+hpeacock      w3hpeacock    0.65  h  20000  1024  0
+#  one white quilted satin floor mat with three stuffed sections along one edge, S3 (about 1.2 x 0.7). Came out
+#  1.20 x 1.027 deep x 0.119 (3,062 triangles): TOO DEEP and one even slab (the real one is a thin pad with a raised
+#  roll along its front; its picture was drawn from too low to show its depth). Placed, it takes a z scale of 0.68
+#  (0.70 deep) and a y scale of 0.6 (7 cm): photographed so, its quilting is paisley puffs with two straight seams, no
+#  squares, and nothing in it shows the stretch. A redraw from above would give the raised roll
+hmat          w3hmat        1.20  w   3000  1024  0
+# ---- second batch (16 Nov, later; credits topped up). Each picture drawn again at max, 2k (jobs-hallin.json `final`),
+#  then Meshy at its highest and its remesh to the count here (jobs-h3.json .. jobs-h6.json; every id in
+#  masters/v26.0/src/jobs.json). Each row's note is what its four photographs at 1100 px showed, opened at full size.
+#  FIVE SIZES of the first table were wrong and are CORRECTED here, each measured again in the photographs (the
+#  measures: PROMPTS.py's notes and jobs-hallin.json):
+#    hwheel      1.10 -> 1.80  the wheel alone is 0.77; its rim's top is 1.45 over the dais and the gold spray rises above
+#                              it (hall-04: spray tip 2.13 m over the floor, stand's foot 0.36)
+#    hconetower  1.00 -> 1.45  hall-05, against the gold Buddha beside it: 1.43 and 1.58 m, 0.26 across
+#    hnagagold   0.70 -> 1.05  it stands on the FLOOR at the altar's east end, on a tall column of coils (hall-05)
+#    hnagabronze 0.50 -> 1.10  hall-05 and hall-10: its crests reach the gold Buddha's shoulder
+#    hswan       0.35 -> 0.28  hall-05: the bird itself; the tall white spire behind it is another thing
+#  and humbrella is NOT MADE: it is hpapercone (0.38 tall: a small cone of folded paper in a gold bowl; PROMPTS.py).
+#  the puffy three-seat sofa, W3 and E5 (2.1 x 0.9 x 0.85), beige: the mint one is a tint
+hsofa3        w3hsofa3      2.10  w  12000   512  0
+#  the west wall's five-headed naga, W1 (1.1 wide, 2.1 tall)
+hnagagroup    w3hnagagroup  2.10  h  90000  1024  0
+#  the folded cream mattresses as they lie on the bench, S1 (2.0 x 0.55 x 0.5)
+hmattresses   w3hmattresses 2.00  w   8000   512  0
+#  the strapped bundles of white cushions with three grey ones on top, E1 (1.6 x 0.5 x 1.1). Its first picture
+#  (hcushions: every bundle five thin cushions under crinkled clear plastic) was REFUSED by Meshy as 'too complex for
+#  3D generation'; a second (hcushions2: sixteen smooth blocks) was a drawing of a grid and was not sent; the third
+#  (hcushions3: twenty soft plump blocks, one a bundle) is the one made
+#hcushions    w3hcushions   1.60  w   6000   512  0   REFUSED by Meshy (its picture too complex)
+hcushions3    w3hcushions   1.60  w   6000   512  0
+#  one green tiered column, D5 (0.3 across, 2.6 tall): seven tiers
+hgreencol     w3hgreencol   2.60  h  16000   512  0
+#  the big pedestal fan on its tripod, E4 (1.55 tall; its guard 0.67, not the sheet's 0.85: PROMPTS.py). ITS FIRST MODEL
+#  FAILED my look at it (hpedfan: whole and clean, and a flat black drum on a tripod: no motor, no blade to be seen, a
+#  gong from the front; its picture had asked for 'a closed shallow drum'). Made again as hpedfan2: a domed cage of
+#  fine mesh, the blades showing through, a motor housing behind
+#hpedfan      w3hpedfan     1.55  h   8000   512  0   FAILED (above): read as a drum
+hpedfan2      w3hpedfan     1.55  h   8000   512  0
+#  the brown-leaf Dhamma wheel with its naga on its stacked base, D14
+hwheel        w3hwheel      1.80  h  60000  1024  0
+#  the stack of flat grey mats, E2 (0.9 x 0.6 x 0.6)
+hgreymats     w3hgreymats   0.90  w  12000   512  0
+#  the striped floor mattress, L25 (1.4 x 0.5 x 0.1). ITS FIRST MODEL FAILED (hstripemat: Meshy's own model a SQUARE
+#  quilted pad, 1.40 x 1.35 m, painted a mottled pink with no stripe: its picture showed the mat low and foreshortened).
+#  Made again as hstripemat2, from a picture seen from above with its long side across the frame
+#hstripemat   w3hstripemat  1.40  w   4000  1024  0   FAILED (above): square, pink, no stripes
+hstripemat2   w3hstripemat  1.40  w   4000  1024  0
+#  the red carved low table, L15 (1.15 x 0.5 x 0.4). ITS FIRST MODEL FAILED (hredtable: 1.15 x 1.15 m, SQUARE, its flat
+#  top creased by the triangle remesh). Made again as hredtable2, from a picture seen from above, and by the QUAD remesh
+#hredtable    w3hredtable   1.15  w   4000   512  0   FAILED (above): square, its top creased
+hredtable2    w3hredtable   1.15  w   4000q  512  0
+#  the gold naga heads on their column of coils, L23
+hnagagold     w3hnagagold   1.05  h  50000  1024  0
+#  the dark bronze five-headed naga, L7
+hnagabronze   w3hnagabronze 1.10  h  40000  1024  0
+#  the low red-brown table with thick books, D17 (0.6 x 0.4 x 0.3 without the books)
+hbooktable    w3hbooktable  0.60  w   6000  1024  0
+#  the white lotus bouquet in its patterned vase, D6
+hlotusvase    w3hlotusvase  0.55  h  16000  1024  0
+#  the brown-leaf bai sri on its gold pedestal bowl, D12 and L13
+hbrownbaisri  w3hbrownbaisri 0.45 h  16000   512  0
+#  a triangle pillow, D9, DRAWN AND MADE AGAIN in the real cloth's dark plum: it REPLACES assets/w3hpillow.glb
+hpillow2      w3hpillow     0.50  w   6000   512  0
+#  a soft grass broom, lying, D17
+hbroom        w3hbroom      1.05  w   3000   512  0
+#  the folded cloth sets in gold satin, G3 (0.4 x 0.3 x 0.35)
+hclothsets    w3hclothsets  0.40  w   4000  1024  0
+#  a cream horn loudspeaker (the free post, 2.05 m up)
+hhorn         w3hhorn       0.40  h   4000   512  0
+#  a black PA speaker box (the first wall posts, 2.5 m up)
+hpabox        w3hpabox      0.45  h   4000q  512  0
+#  a small cone of folded paper in a gold pedestal bowl, L18 (two of them before the green Buddha's throne)
+hpapercone    w3hpapercone  0.38  h   6000   512  0
+#  the white swan, L6
+hswan         w3hswan       0.28  h   8000   512  0
+#  a square cream louvred exhaust fan
+hexhaust      w3hexhaust    0.38  w   2000   256  0
+#  the round wall clock, L21, a plain face
+hclock        w3hclock      0.33  w   2000q  512  0
+#  a wall fan on its bracket (the free post, 2.3 m up)
+hwallfan      w3hwallfan    0.45  h   6000   512  0
+#  a dark-green cone tower (khan mak beng), L8: two of them
+hconetower    w3hconetower  1.45  h  12000   512  0
+#  the round gold cloth canopy over the white Buddha, D3 (1.35 across), drawn as one closed shape
+hcanopy2      w3hcanopy     1.35  w  12000   512  0
+#  the hall's great white Buddha (D1), from his photographs 3 and 6 and the second reader's brief. Prepared with
+#  BASECUT=0.102 PAINT=0.3,0.5 in the environment (prop.sh passes the environment on): the plinth the generator set it
+#  on is cut off (the real one sits on the lotus, D2, a model of its own: 1.97 m is its seat to its flame), and its
+#  gold cloth is read as cloth (as mirror metal it drew near black: the photographs' is a bright gold brocade)
+hwhitebuddha  w3hwhitebuddha 1.97 h  60000  2048  0
+#  the round gold lotus it sits on (D2): two rows of upturned petals, silver at their edges
+hlotus        w3hlotus      1.90  w  16000  1024  0

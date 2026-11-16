@@ -118,7 +118,8 @@
   const HALLSHUT = Object.assign({}, SHUT, { fog: [0xd6d8d6, 0.0014], hemi: [0xe4e6e8, 0x8a8a84, 0.92], key: [0xeef0f0, 0.7, -3, 12, 4], fill: [0xc4ccd6, 0.2] });
   const HALLNOON = Object.assign({}, AFTERNOON, { fog: [0xe8dcb8, 0.0014], hemi: [0xfff0d4, 0xa49a80, 1.05], key: [0xffe6b0, 0.85, -3, 12, 4], fill: [0xffdca0, 0.3] });
   const HALLDUSK = Object.assign({}, DUSK, { fog: [0x4a3a3a, 0.0014], hemi: [0xe8ecf6, 0x8a8478, 0.95], key: [0xf4f6ff, 0.75, -3, 12, 4], fill: [0xffd8a8, 0.2] });
-  const PRESETS = { DAY1, NIGHT, DAWN, OPENED, SHUT, AFTERNOON, DUSK, DUSKOPEN, ROOM0, ROOM1, COUNTER, HALLDAY, HALLOPEN, HALLSHUT, HALLNOON, HALLDUSK };
+  const HALLDUSKOPEN = Object.assign({}, DUSKOPEN, { fog: [0x6a4a3c, 0.0014], hemi: [0xfff0dc, 0xa0907a, 1.25], key: [0xffe8c8, 1.0, -3, 12, 4], fill: [0xffd8a0, 0.3] });
+  const PRESETS = { DAY1, NIGHT, DAWN, OPENED, SHUT, AFTERNOON, DUSK, DUSKOPEN, ROOM0, ROOM1, COUNTER, HALLDAY, HALLOPEN, HALLSHUT, HALLNOON, HALLDUSK, HALLDUSKOPEN };
 
   /* every line's length: an ESTIMATE at the speaker's pace until its take is measured at M7 (the registry will carry
      the same numbers); the queue books its window by it and every film's times are built from it, so a re-said line
@@ -136,7 +137,7 @@
     'q3A': 3.45, 'q3B': 4.17, 'q3C': 4.09, 'q3D': 3.85,
     /* Ton */
     'tn3a1': 2.89, 'tn3a2': 6.33, 'tn3d1': 2.65, 'tn3m1': 1.45, 'tn3m2': 4.56, 'tn3c1': 5.61, 'tn3c2': 4.25,
-    'tn3n1': 1.61, 'tn3A1': 2.09,
+    'tn3n1': 1.61, 'tn3A1': 2.09, 'tn3h1': 3.4, 'tn3h2': 2.4,
     /* the woman at his bench */
     'ds3c1': 7.37, 'ds3p1': 2.03,
     /* Grandmaster Pho */
@@ -313,7 +314,11 @@
       'w3t_steptile', 'w3t_lawn', 'w3t_kalae', 'w3t_fretwork', 'w3t_sign', 'w3banana2', 'w3frangipani',
       'w3isanhouse', 'w3tank', 'w3aircon', 'w3scooter', 'w3t_render', 'w3t_cloudbank', 'w3t_cloudtall',
       'w3t_cloudflat', 'w3t_cloudthree', 'w3t_cirrus', 'w3pholap', 'w3hseat', 'w3hpillow', 'w3hframe', 'w3hdrums',
-      'w3hgoldbaisri', 'w3hpeacock', 'w3hmat',
+      'w3hgoldbaisri', 'w3hpeacock', 'w3hmat', 'w3t_hmural', 'w3hgreencol', 'w3hwheel', 'w3hbrownbaisri',
+      'w3hbooktable', 'w3hnagabronze', 'w3hlotusvase', 'w3hredtable', 'w3hnagagold', 'w3hstripemat', 'w3hnagagroup',
+      'w3hpedfan', 'w3hsofa3', 'w3hgreymats', 'w3hmattresses', 'w3hwhitebuddha', 'w3hlotus', 'w3t_hpleat',
+      'w3hcanopy', 'w3hbroom', 'w3hclock', 'w3hclothsets', 'w3hexhaust', 'w3hhorn', 'w3hpabox', 'w3hpapercone',
+      'w3hswan', 'w3hconetower', 'w3hcushions', 'w3hwallfan',
       /* <<< this chapter's own keys <<< */
       /* the trees of this episode's first chapter (reuseInEpisode) */
       'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd',
@@ -325,14 +330,17 @@
       'filmlaptop', 'slipper',
       /* Chad's monk as episode 3 has him (reuse). (Grandmaster Pho, Chad's own model, cast here for the first time, is
          in the keys above.) */
-      'monkshop', 'monkrow'
+      'monkshop', 'monkrow',
+      /* Luang Pu Phiboon's photograph, in the frame hung high in the hall (reuse) */
+      'mstr_lpphiboon'
     ],
     /* FRESH (chaptertest) asks a chapter of episode 4 to declare what it takes from episodes 1 to 3 (`reuse`), and what
        it shares with the chapters of its own episode (`reuseInEpisode`): Chad, v17.4, "any reuse is declared" */
     reuse: { filmlaptop: "his own laptop on his counter (episode 3 chapter 1's, as chapters 1 and 2 of this episode have it): its screen the forum's thread chapter 2 ended on, in the opening film",
              slipper: "Chad's sandals, for the rows of them left at the turf's edge as at any Thai ceremony ground (the opening film): the one sandal he has given, a colour a pair",
              monkshop: "Chad's monk, in the middle chair of the three monks who sit under the east tent as monks sit at a real Wai Kru (photograph 2): the one monk he has made, sitting on its chair with its feet down, its hands on its thighs; met before in episode 3 chapter 3's shop, sitting on the floor; the two either side of him are new (Chad, 12 Nov 2026: \"can we have different monks?\")",
-             monkrow: "the same monk's light cut (episode 3 chapter 2's row), drawn for him when he is far across the turf" },
+             monkrow: "the same monk's light cut (episode 3 chapter 2's row), drawn for him when he is far across the turf",
+             mstr_lpphiboon: "Luang Pu Phiboon's photograph (episode 3 chapter 3's gallery), in the gold frame hung high on the hall's north wall as the real hall has it (Chad, 16 Nov 2026: \"i believe one of the photo frames hung very high near the ceiling is the lp phiboon photo that you already have\"): its own bytes, whole and unretouched" },
     reuseInEpisode: { e4raintree: "the rain tree of chapter 1's countryside, standing round the ground: the same country's trees, and no tree is built in code (v24.20)",
                       e4mango: "the mango of chapter 1's countryside, likewise",
                       e4raintreehd: "the same rain tree at its fuller level, for the one that stands over the turf",
@@ -381,6 +389,7 @@
       hotAskTon: 'Ask Ton',
       hotAskAunt: 'Ask her',
       // PLAY II · the chance (§4.3)
+      objHall: 'Follow Ton to the hall',
       objGo: 'Go to Grandmaster Pho',
       hotKneel: 'Kneel',
       objBow: 'Bow to your teacher',
@@ -589,6 +598,9 @@
     const HIN = { x0: -4.8, x1: 4.8, zN: -38.6, zS: -21.8, ceil: 3.65, floor: HALL.floor, dais: { x0: 1.4, x1: 4.8, v1: 3.4, h: 0.28 }, cushion: 0.08 };
     const hallAt = (u, v, h = 0) => [u, HIN.floor + h, HIN.zN + v];              // the build sheet's (u, v, h) in the world
     const HALLSEAT = { x: 2.1, z: HIN.zN + 2.9, y: HIN.floor + HIN.dais.h + HIN.cushion, ry: 0 };
+    /* a place by his seat on the dais, as the bench's are by the bench (benchAt's own two numbers: a metres to his right, b
+       before him), so every look the morning's films make keeps its shape inside the hall (v26.18) */
+    const seatAt = (a, b) => [HALLSEAT.x + 0.46 - a, HALLSEAT.z - 0.04 + b];
     const SHED = { x0: -16, x1: -10.5, z0: -14, z1: -8, eave: 2.4 };
     const TENT_W1 = { x: -9, z: -1 }, TENT_W2 = { x: -9, z: 5 }, TENT_E = { x: 9, z: -2 };
     const TENT = { w: 4, eave: 2.2, peak: 3.3 };
@@ -821,6 +833,7 @@
       turf: [0x3f9a22, 'image/jpeg'], petalturf: [0x9a9c2c, 'image/jpeg'], earth: [0xb0663e, 'image/jpeg'], gravel: [0x9b968d, 'image/jpeg'],
       redplank: [0x8a2c26, 'image/jpeg'], tin: [0xcb8083, 'image/jpeg'],
       brick: [0x96573f, 'image/jpeg'], skirt: [0x1f9c3a, 'image/jpeg'], satin: [0xe9e9e9, 'image/jpeg'], mat: [0xc7b78a, 'image/jpeg'],
+      hpleat: [0xa79e46, 'image/jpeg'],                     // (v26.18: the gathered olive-gold satin of the hall's dais, masters/v26.18/skirt)
       carpet: [0x74202a, 'image/jpeg'], bluemat: [0x86c9c0, 'image/jpeg'], swag: [0xf2f0e4, 'image/webp'], banner: [0xe8e8e8, 'image/webp'], treeline: [0x4c7a3a, 'image/webp'],
       redroof: [0xc8483f, 'image/jpeg'], hallbrick: [0x9a4f3f, 'image/jpeg'], steptile: [0xc98c80, 'image/jpeg'], lawn: [0x5c9a35, 'image/jpeg'],
       kalae: [0x5a4a40, 'image/webp'], fretwork: [0x7a2a26, 'image/webp'], sign: [0xece8dc, 'image/webp'],
@@ -1101,13 +1114,25 @@
       /* (each wall runs up to just under the skirt where the skirt crosses it, so no slot of sky shows under the eave) */
       const yo = eave - 0.22, yi = yo + H.rise, run = H.rise / Math.tan(H.pitch);
       const topF = yo + H.rise * ov / run - 0.05, topS = yo + H.rise * H.overS / run - 0.05;
-      for (const [xa, za, xb, zw, top] of [[H.x0, zf, H.x1, zf, topF], [H.x1, zf, H.x1, H.z0, topS], [H.x1, H.z0, H.x0, H.z0, topF], [H.x0, H.z0, H.x0, zf, topS]]) wall(mHallBrick, xa, za, xb, zw, fl, top);
+      /* (v26.18: THE FRONT WALL IS OPEN BEHIND THE WEST DOOR'S SLIDING HALF. It was one sheet of brick with the doors' glass
+         laid before it, and with the leaf slid open the brick stood in the doorway (photographed from the lawn, 16 Nov).
+         The wall is laid in three pieces round the opening, its bricks in line (each piece's own start along the wall);
+         shut, the leaf's glass covers the opening and the front is the picture it was) */
+      const dA = cx - 2.7, dB = dA + 1.15, dTop = fl + 2.25;
+      wall(mHallBrick, H.x0, zf, dA, zf, fl, topF); wall(mHallBrick, dB, zf, H.x1, zf, fl, topF, dB - H.x0); wall(mHallBrick, dA, zf, dB, zf, dTop, topF, dA - H.x0);
+      for (const [xa, za, xb, zw, top] of [[H.x1, zf, H.x1, H.z0, topS], [H.x1, H.z0, H.x0, H.z0, topF], [H.x0, H.z0, H.x0, zf, topS]]) wall(mHallBrick, xa, za, xb, zw, fl, top);
       /* (the eave's shade, laid 8 mm off each wall, behind the grey band and the doors' glass: from the wall's top down 2.1 m) */
-      for (const [xa, za, xb, zw, top] of [[H.x0, zf, H.x1, zf, topF], [H.x1, zf, H.x1, H.z0, topS], [H.x1, H.z0, H.x0, H.z0, topF], [H.x0, H.z0, H.x0, zf, topS]]) {
-        const dx = xb - xa, dz = zw - za, L = Math.hypot(dx, dz), ox = -dz / L * 0.008, oz = dx / L * 0.008, y1 = top, y0 = top - 2.1;
-        const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), mEaveShade);
-        m.position.set((xa + xb) / 2 + ox, (y0 + y1) / 2, (za + zw) / 2 + oz); m.scale.set(L, y1 - y0, 1); m.rotation.y = Math.atan2(ox, oz); m.renderOrder = 1; world.add(m); owned.push(m); }
-      wall(mConcrete, H.x0, zf + 0.012, H.x1, zf + 0.012, fl, fl + 0.16);
+      /* (a piece of it between two heights, `lo` to `hi`, keeps its place in the shade's own fall: the front's is laid round
+         the west door's opening as the wall is, v26.18) */
+      const shade = (xa, za, xb, zw, top, lo = top - 2.1, hi = top) => {
+        const dx = xb - xa, dz = zw - za, L = Math.hypot(dx, dz), ox = -dz / L * 0.008, oz = dx / L * 0.008, y0 = top - 2.1;
+        const g = new THREE.PlaneGeometry(1, 1);
+        if (lo !== y0 || hi !== top) { const uv = g.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setY(i, (lo - y0) / 2.1 + uv.getY(i) * (hi - lo) / 2.1); }
+        const m = new THREE.Mesh(g, mEaveShade);
+        m.position.set((xa + xb) / 2 + ox, (lo + hi) / 2, (za + zw) / 2 + oz); m.scale.set(L, hi - lo, 1); m.rotation.y = Math.atan2(ox, oz); m.renderOrder = 1; world.add(m); owned.push(m); };
+      shade(H.x0, zf, dA, zf, topF); shade(dB, zf, H.x1, zf, topF); shade(dA, zf, dB, zf, topF, dTop + 0.07, topF);
+      for (const [xa, za, xb, zw, top] of [[H.x1, zf, H.x1, H.z0, topS], [H.x1, H.z0, H.x0, H.z0, topF], [H.x0, H.z0, H.x0, zf, topS]]) shade(xa, za, xb, zw, top);
+      wall(mConcrete, H.x0, zf + 0.012, dA, zf + 0.012, fl, fl + 0.16); wall(mConcrete, dB, zf + 0.012, H.x1, zf + 0.012, fl, fl + 0.16, dB - H.x0);
       bar(mWhite, [H.x0, fl + 2.72, zf + 0.02], [H.x1, fl + 2.72, zf + 0.02], 0.012, 4);
       /* THE POSTS: dark red, at the four corners and the middle of the front */
       for (const [px, pz] of [[H.x0 - 0.02, zf + 0.07], [cx, zf + 0.07], [H.x1 + 0.02, zf + 0.07], [H.x0 - 0.02, H.z0 - 0.07], [H.x1 + 0.02, H.z0 - 0.07]]) post(mPostRed, px, pz, 0.11, fl, eave + 0.15, 10);
@@ -1117,7 +1142,9 @@
       for (const sx of [-1, 1]) { const dx = cx + sx * 2.7, w = 2.3, h = 2.25, z = zf + 0.02, slides = sx < 0;
         wall(mGlass, dx - w / 2, z, slides ? dx : dx + w / 2, z, fl + 0.02, fl + h);
         box(mBronze, dx, fl + h + 0.035, z + 0.02, w + 0.14, 0.07, 0.07);
-        box(mBronze, dx, fl + 0.05, z + 0.02, w, 0.08, 0.06);
+        /* (the sliding half's bottom rail goes with its leaf, b_world1h.js; in the opening lies the low track it runs on) */
+        if (slides) { box(mBronze, dx - w / 4, fl + 0.05, z + 0.02, w / 2, 0.08, 0.06); box(mBronze, dx + w / 4, fl + 0.011, z + 0.02, w / 2, 0.018, 0.05); }
+        else box(mBronze, dx, fl + 0.05, z + 0.02, w, 0.08, 0.06);
         for (const jx of [-w / 2 - 0.035, w / 2 + 0.035]) box(mBronze, dx + jx, fl + h / 2, z + 0.02, 0.07, h, 0.07);
         for (const jx of (slides ? [-0.03] : [-0.03, 0.03])) box(mBronze, dx + jx, fl + h / 2, z + 0.025, 0.05, h, 0.05);
         for (const jx of (slides ? [-0.13] : [-0.13, 0.13])) bar(mSteel, [dx + jx, fl + 0.85, z + 0.075], [dx + jx, fl + 1.35, z + 0.075], 0.014, 6); }
@@ -1338,29 +1365,34 @@
        bright by morning and dark by dusk (hallGlass).
        Nothing of it is drawn on day one (hallIn hidden; the west door's leaf shut): hallShow(). */
     const hallIn = new THREE.Group(); hallIn.visible = false; world.add(hallIn);
-    const hin = { leaf: new THREE.Group(), leafSlide: 1.09, gates: [], bulbs: [], glows: [], solidsAt: [] };
+    const hin = { leaf: new THREE.Group(), leafSlide: 1.09, gates: [], bulbs: [], glows: [], solidsAt: [], many: {}, matRows: 5 };
     world.add(hin.leaf);
     const hRep = (t, tu, tv) => { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(1 / tu, 1 / tv); return t; };
+    /* (v26.18, THE ROOM'S TONES ARE MEASURED: the same surfaces sampled in his photographs 4 and 11 and in the game's
+       pictures taken from their places, and each paint solved through the renderer's own tone mapping (ACES at the
+       chapter's exposure) for the tone the photographs show. The plaster drew (125,72,45) where theirs is (138,97,74);
+       the brick (95,41,24) for (90,55,36); the ceiling (190,187,180) for (140,138,136); the tile (209,208,206) for
+       (190,193,188); the dais's skirt (131,118,43) for (158,147,67)) */
     /* (bare brick: long thin bricks, about 0.23 by 0.05, in running bond; inside, under the lamps, the joints read
        darker than the brick, where outside in the sun they read pale) */
     const mInBrick = (() => { const [c, x] = cnv(512), r = rng(3186), W = 512, BW = 128, N = 18, BH = W / N;
-      x.fillStyle = '#5a3a30'; x.fillRect(0, 0, W, W);
+      x.fillStyle = '#66483c'; x.fillRect(0, 0, W, W);
       for (let j = 0; j < N; j++) for (let i = -1; i < 5; i++) { const ox = (j % 2 ? BW / 2 : 0) + i * BW, k = 0.84 + r() * 0.3, g = 0.94 + r() * 0.12;
-        x.fillStyle = 'rgb(' + Math.round(150 * k) + ',' + Math.round(82 * k * g) + ',' + Math.round(52 * k * g) + ')'; x.fillRect(ox + 1.5, j * BH + 2, BW - 3, BH - 4);
+        x.fillStyle = 'rgb(' + Math.round(140 * k) + ',' + Math.round(95 * k * g) + ',' + Math.round(66 * k * g) + ')'; x.fillRect(ox + 1.5, j * BH + 2, BW - 3, BH - 4);
         x.fillStyle = 'rgba(255,220,190,' + (0.03 + r() * 0.05).toFixed(3) + ')'; x.fillRect(ox + 2, j * BH + 2.5, BW - 4, 3); }
       for (let i = 0; i < 2600; i++) { x.fillStyle = r() < 0.5 ? 'rgba(20,10,8,0.10)' : 'rgba(255,225,200,0.06)'; x.fillRect(r() * W, r() * W, 1 + r() * 3, 1 + r() * 2); }
       return M({ map: hRep(tex(done(THREE, c, true)), 0.92, 0.99), roughness: 0.94 }); })();
     /* (smooth plaster painted terracotta, brush-mottled, matt) */
     const mTerra = (() => { const [c, x] = cnv(512), r = rng(5521), W = 512;
-      x.fillStyle = '#a86e4c'; x.fillRect(0, 0, W, W);
+      x.fillStyle = '#b48568'; x.fillRect(0, 0, W, W);
       for (let i = 0; i < 520; i++) { const px = r() * W, py = r() * W, rad = 26 + r() * 70, g = x.createRadialGradient(px, py, 0, px, py, rad), d = r() < 0.5;
-        g.addColorStop(0, d ? 'rgba(104,66,48,0.16)' : 'rgba(176,124,92,0.14)'); g.addColorStop(1, d ? 'rgba(104,66,48,0)' : 'rgba(176,124,92,0)');
+        g.addColorStop(0, d ? 'rgba(124,86,66,0.16)' : 'rgba(198,152,122,0.14)'); g.addColorStop(1, d ? 'rgba(124,86,66,0)' : 'rgba(198,152,122,0)');
         x.fillStyle = g; for (const ox of [-W, 0, W]) for (const oy of [-W, 0, W]) { x.setTransform(1, 0, 0, 1, ox, oy); x.fillRect(px - rad, py - rad, rad * 2, rad * 2); } x.setTransform(1, 0, 0, 1, 0, 0); }
       return M({ map: hRep(tex(done(THREE, c, true)), 2.6, 2.6), roughness: 0.96 }); })();
     /* (the floor: glossy warm-white tiles 0.40 m square, a faint streak in each, joints two or three millimetres wide) */
     const mTile = (() => { const [c, x] = cnv(1024), r = rng(7740), W = 1024, T = 256;
       for (let j = 0; j < 4; j++) for (let i = 0; i < 4; i++) { const k = 0.975 + r() * 0.05;
-        x.fillStyle = 'rgb(' + Math.round(216 * k) + ',' + Math.round(214 * k) + ',' + Math.round(206 * k) + ')'; x.fillRect(i * T, j * T, T, T);
+        x.fillStyle = 'rgb(' + Math.round(186 * k) + ',' + Math.round(190 * k) + ',' + Math.round(182 * k) + ')'; x.fillRect(i * T, j * T, T, T);
         x.save(); x.beginPath(); x.rect(i * T, j * T, T, T); x.clip();
         for (let s = 0; s < 5; s++) { const y0 = j * T + r() * T, a = (r() - 0.5) * 0.5, w = 6 + r() * 26, g = x.createLinearGradient(0, y0 - w, 0, y0 + w);
           g.addColorStop(0, 'rgba(150,154,160,0)'); g.addColorStop(0.5, 'rgba(150,154,160,' + (0.05 + r() * 0.07).toFixed(3) + ')'); g.addColorStop(1, 'rgba(150,154,160,0)');
@@ -1371,22 +1403,30 @@
       return M({ map: t, roughness: 0.28, metalness: 0 }); })();
     /* (the ceiling is unlit paint: a face that looks down takes only the ground's share of the chapter's light and drew
        as dark as wet earth, where his photographs have it pale grey and bright round each lamp: the pools are painted) */
-    const mCeil = B({ color: 0x98938c });
+    const mCeil = B({ color: 0x6c6b69 });
+    const mCeilDark = B({ color: 0x3e3c3b });
     const mInPost = M({ color: 0x3d2830, roughness: 0.34 });
     const mInWhite = M({ color: 0xf1efe9, roughness: 0.6 });
     const mInDark = M({ color: 0x241f1d, roughness: 0.6 });
     const mAltarTop = M({ color: 0xd9d9d6, roughness: 0.32 });
-    const mSkirtYellow = satin(0xe6c62e);
-    const mSkirtOlive = surf('satin', { tile: [0.42, 0.3], mirror: 'u', tint: 0xa59b46, roughness: 0.4, side: THREE.DoubleSide });
+    const mSkirtYellow = satin(0xdbbd3e);
+    /* (the dais's skirt: his photograph 4 has it in wide soft box pleats, a fold every 0.15 to 0.25 m, bright along each
+       crest and dark in the tucks. The game's white satin tiled small and tinted olive drew as fine wavy lines, the
+       grain of a plank. Its own picture now: gathered olive-gold satin, four pleats to 0.765 m, made from the cloth
+       alone in his photograph and laid once to the skirt's height, its gathers at the top: masters/v26.18/skirt) */
+    const mSkirtOlive = surf('hpleat', { tile: [0.765, HIN.dais.h], mirror: 'u', roughness: 0.4, side: THREE.DoubleSide });
+    const skirtWall = (mat, x0, z0, x1, z1, y0, y1, u0 = 0) => quad(mat, [x0, y0, z0], [x1, y0, z1], [x1, y1, z1], [x0, y1, z0], u0, 0);
     /* (the braid along each skirt's top: a gold zigzag on the lemon one; green and gold with sequins on the olive one) */
+    /* (the dais's braid is a narrow one in his photograph 4: about 3 cm, a dull olive green sewn with a fine gold wave
+       and small sequins; the bold green band with a broad zigzag, 4.5 cm, read as a painted border) */
     const braid = (sequins) => { const [c, x] = cnv(128), W = 128;
-      x.fillStyle = sequins ? '#2f6a3a' : '#8a6a1c'; x.fillRect(0, 0, W, W);
-      x.strokeStyle = sequins ? '#d9b648' : '#f0d060'; x.lineWidth = 12; x.lineJoin = 'miter'; x.beginPath();
-      for (let i = -1; i <= 4; i++) { x.lineTo(i * 32, 104); x.lineTo(i * 32 + 16, 24); } x.stroke();
-      if (sequins) { const cols = ['#e86aa8', '#4c8fe0', '#58c070']; for (let i = 0; i < 8; i++) { x.fillStyle = cols[i % 3]; x.beginPath(); x.arc(i * 16 + 8, i % 2 ? 44 : 86, 6, 0, 7); x.fill(); x.fillStyle = 'rgba(255,255,255,0.7)'; x.beginPath(); x.arc(i * 16 + 6, (i % 2 ? 44 : 86) - 2, 2, 0, 7); x.fill(); } }
+      x.fillStyle = sequins ? '#56603a' : '#8a6a1c'; x.fillRect(0, 0, W, W);
+      x.strokeStyle = sequins ? '#b89a44' : '#f0d060'; x.lineWidth = sequins ? 7 : 12; x.lineJoin = sequins ? 'round' : 'miter'; x.beginPath();
+      for (let i = -1; i <= 4; i++) { x.lineTo(i * 32, sequins ? 96 : 104); x.lineTo(i * 32 + 16, sequins ? 40 : 24); } x.stroke();
+      if (sequins) { const cols = ['#c8587c', '#5a86c0', '#6aa860', '#d8c060']; for (let i = 0; i < 8; i++) { x.fillStyle = cols[i % 4]; x.beginPath(); x.arc(i * 16 + 8, i % 2 ? 30 : 104, 4, 0, 7); x.fill(); x.fillStyle = 'rgba(255,255,255,0.6)'; x.beginPath(); x.arc(i * 16 + 7, (i % 2 ? 30 : 104) - 1.5, 1.4, 0, 7); x.fill(); } }
       const t = tex(done(THREE, c, true)); return M({ map: t, roughness: 0.45, metalness: sequins ? 0.1 : 0.3 }); };
     const mBraidGold = (() => { const m = braid(false); hRep(m.map, 0.12, 0.03); return m; })();
-    const mBraidDais = (() => { const m = braid(true); hRep(m.map, 0.16, 0.04); return m; })();
+    const mBraidDais = (() => { const m = braid(true); hRep(m.map, 0.12, 0.03); return m; })();
     /* (GLASS: the windows' panes and the strips of glass blocks. Unlit, and one colour each for the hour: hallGlass) */
     const mPane = B({ color: 0xe8eef2 });
     const mBlocks = (() => { const [c, x] = cnv(128), W = 128;
@@ -1415,6 +1455,18 @@
       x.strokeStyle = '#27334d'; x.lineWidth = 14; x.strokeRect(7, 7, W - 14, W - 14);
       return M({ map: tex(done(THREE, c, false)), roughness: 0.55 }); })();
     const HDOOR = { cx: -2.7, w: 2.3, h: 2.25, head: 1.95 };                    // the west door (buildHall's own numbers); its head inside
+    /* A PICTURE OF ITS OWN ON A CARD (the banner's print, a framed photograph): the engine's loader, the picture laid once
+       and upright (a bitmap comes in top row first: turned over by its repeat, as every surface of this chapter is). It is
+       drawn as it is, unlit and outside the tone map (`mPic`), so the screen shows the picture's own colours; the hour's
+       look dims or warms it a little (hallGlass) */
+    function picLoad(key, mime) {
+      if (!have(key)) { waiting.add(key); return Promise.resolve(null); }
+      return loadImageTexture(key, mime).then(t => { if (!t || !alive) return null; madeTex.push(t);
+        t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; t.repeat.set(1, -1); t.offset.set(0, 1); t.needsUpdate = true; return t; }).catch(() => null);
+    }
+    const mPic = () => B({ color: 0xffffff, fog: false, toneMapped: false });
+    const hallPics = [];                                                       // (every such card's material and its own level: hallGlass sets each to the hour)
+    const mMural = mPic(); hallPics.push([mMural, 1]);
     const hallAtV = (u, v, h = 0) => new THREE.Vector3(u, HIN.floor + h, HIN.zN + v);
 
     /* THE FLOOR UNDER A POINT (the engine's twenty-first seam): the three steps across the hall's front, the landing
@@ -1438,9 +1490,15 @@
       wall(mCeil, RC.u0, Z(RC.v1), RC.u0, zN, cy, cy + RC.step); wall(mCeil, x1, Z(RC.v1), RC.u0, Z(RC.v1), cy, cy + RC.step);                       // the first step's faces (west, south)
       down(mCeil, RC.u0, zN, RC.u0 + RC.in, Z(RC.v1), cy + RC.step); down(mCeil, RC.u0 + RC.in, Z(RC.v1 - RC.in), x1, Z(RC.v1), cy + RC.step);        // its ledge
       wall(mCeil, RC.u0 + RC.in, Z(RC.v1 - RC.in), RC.u0 + RC.in, zN, cy + RC.step, cy + 2 * RC.step); wall(mCeil, x1, Z(RC.v1 - RC.in), RC.u0 + RC.in, Z(RC.v1 - RC.in), cy + RC.step, cy + 2 * RC.step);
-      down(mCeil, RC.u0 + RC.in, zN, x1, Z(RC.v1 - RC.in), cy + 2 * RC.step);
+      down(mCeilDark, RC.u0 + RC.in, zN, x1, Z(RC.v1 - RC.in), cy + 2 * RC.step);
+      /* (laid beside his photographs 4, 5 and 6: the recess's west side is one broad slope, rising from the flat
+         ceiling's edge to the recess's top, not steps: the grey plane over the top left of his photograph 4 and the
+         one coming down over the right of photograph 5. It is laid over the steps, which stay behind it unseen. The
+         wall inside the recess over the dais is grey in them, not terracotta: the north wall's terracotta stops at the
+         flat ceiling's line, the east wall's goes on up) */
+      quad(mCeil, [RC.u0, cy, zN], [RC.u0 + 2 * RC.in, cy + 2 * RC.step, zN], [RC.u0 + 2 * RC.in, cy + 2 * RC.step, Z(RC.v1 - RC.in)], [RC.u0, cy, Z(RC.v1)]);
       /* THE WALLS: the north wall and the first bay of each side painted terracotta; bare brick south of the first posts */
-      wall(mTerra, x0, zN, x1, zN, fy, cy); wall(mTerra, RC.u0, zN, x1, zN, cy, cy + 2 * RC.step);
+      wall(mTerra, x0, zN, x1, zN, fy, cy); wall(mCeil, RC.u0, zN, x1, zN, cy, cy + 2 * RC.step);
       wall(mTerra, x1, zN, x1, Z(BAY), fy, cy); wall(mTerra, x1, zN, x1, Z(RC.v1), cy, cy + 2 * RC.step);
       wall(mInBrick, x1, Z(BAY), x1, zS, fy, cy);
       wall(mInBrick, x0, zS, x0, Z(BAY), fy, cy); wall(mTerra, x0, Z(BAY), x0, zN, fy, cy);
@@ -1463,11 +1521,11 @@
       for (const [u, v] of [[-0.15, 0.0], [0, 16.8], [x0, BAY], [x0, 2 * BAY], [x0, 3 * BAY], [x1, BAY], [x1, 2 * BAY], [x1, 3 * BAY], [x0, 0], [x1, 0], [x0, 16.8], [x1, 16.8]]) post(mInPost, u, Z(v), PR, fy, cy, 12);
       /* THE WHITE TRUNKING: round the room at 2.32 m, and across the ceiling at each line of posts, its bulbs under it */
       const ty = Y(2.32), tin = 0.02;
-      for (const [a, b] of [[[x0 + tin, zN + tin], [x1 - tin, zN + tin]], [[x1 - tin, zN + tin], [x1 - tin, zS - tin]], [[x0 + tin, zS - tin], [x0 + tin, zN + tin]]]) box(mInWhite, (a[0] + b[0]) / 2, ty, (a[1] + b[1]) / 2, Math.abs(b[0] - a[0]) + 0.04, 0.04, Math.abs(b[1] - a[1]) + 0.04);
+      for (const [a, b] of [[[x1 - tin, Z(BAY)], [x1 - tin, zS - tin]], [[x0 + tin, zS - tin], [x0 + tin, Z(BAY)]]]) box(mInWhite, (a[0] + b[0]) / 2, ty, (a[1] + b[1]) / 2, Math.abs(b[0] - a[0]) + 0.04, 0.04, Math.abs(b[1] - a[1]) + 0.04);
       const ROWS = [[BAY, [-3.2, -1.35, 0.65, 2.5]], [2 * BAY, [-4.3, -2.0, 0.4, 2.6]], [3 * BAY, [-4.3, -2.0, 0.4, 2.6]]];
       for (const [v, us] of ROWS) { box(mInWhite, 0, cy - 0.02, Z(v), x1 - x0 - 0.3, 0.04, 0.06);
         for (const u of us) hin.bulbs.push([u, H.ceil - 0.17, v, 1]); }
-      for (const q of [[RC.u0 + RC.in + 0.03, H.ceil + 0.36, 2.0, 0.55], [x1 - 0.06, H.ceil + 0.36, 2.0, 0.55], [3.2, H.ceil + 0.19, RC.v1 - 0.04, 0.9]]) hin.bulbs.push(q);   // in the recess: its west face, its east face, the middle of its south lip
+      for (const q of [[RC.u0 + 0.5, H.ceil + 0.3, 2.0, 0.55], [x1 - 0.06, H.ceil + 0.36, 2.0, 0.55], [3.2, H.ceil + 0.19, RC.v1 - 0.04, 0.9]]) hin.bulbs.push(q);   // in the recess: on its west slope, its east face, the middle of its south lip
       for (const [u, h, v, k] of hin.bulbs) { geo(mInWhite, new THREE.CylinderGeometry(0.03, 0.035, 0.07, 8), _gm.makeTranslation(u, Y(h) + 0.105, Z(v)));
         geo(mBulb, new THREE.CapsuleGeometry(0.048 * (k < 1 ? 0.7 : 1), 0.09 * (k < 1 ? 0.6 : 1), 3, 8), _gm.makeTranslation(u, Y(h), Z(v))); }
       for (const u of [-3.4, -1.7]) box(mInWhite, u, cy - 0.09, Z(BAY) - 0.06, 0.07, 0.1, 0.07);                              // two small spot heads on the first trunking
@@ -1489,8 +1547,8 @@
          olive-gold satin skirt in deep pleats on its two open sides, its braid along the top */
       const D = H.dais, dv = D.v1, dh = D.h;
       box(mAltarTop, (D.x0 + D.x1) / 2, Y(dh / 2), Z(dv / 2), D.x1 - D.x0, dh, dv, 0, mTile);
-      wall(mSkirtOlive, D.x0 - 0.012, Z(dv) + 0.012, D.x1, Z(dv) + 0.012, fy, Y(dh)); wall(mSkirtOlive, D.x0 - 0.012, zN, D.x0 - 0.012, Z(dv) + 0.012, fy, Y(dh));                 // its south face (faces south), its west face (faces west)
-      wall(mBraidDais, D.x0 - 0.016, Z(dv) + 0.016, D.x1, Z(dv) + 0.016, Y(dh - 0.045), Y(dh - 0.005)); wall(mBraidDais, D.x0 - 0.016, zN, D.x0 - 0.016, Z(dv) + 0.016, Y(dh - 0.045), Y(dh - 0.005));
+      skirtWall(mSkirtOlive, D.x0 - 0.012, Z(dv) + 0.012, D.x1, Z(dv) + 0.012, fy, Y(dh)); skirtWall(mSkirtOlive, D.x0 - 0.012, zN, D.x0 - 0.012, Z(dv) + 0.012, fy, Y(dh), 0.38);                 // its south face (faces south), its west face (faces west)
+      wall(mBraidDais, D.x0 - 0.016, Z(dv) + 0.016, D.x1, Z(dv) + 0.016, Y(dh - 0.03), Y(dh)); wall(mBraidDais, D.x0 - 0.016, zN, D.x0 - 0.016, Z(dv) + 0.016, Y(dh - 0.03), Y(dh));
       box(mSteel, (D.x0 + D.x1) / 2, Y(dh) + 0.003, Z(dv) - 0.01, D.x1 - D.x0, 0.008, 0.03);
       /* THE SECOND ALTAR (the west half of the north wall): 5.8 long, 2.2 deep, 0.65 high; its lemon-yellow gathered
          skirt to the floor with a gold zigzag braid; behind it the printed backdrop, 4.4 by 2.8 */
@@ -1498,8 +1556,15 @@
       box(mAltarTop, (A.x0 + A.x1) / 2, Y(A.h / 2), Z(A.v1 / 2), A.x1 - A.x0, A.h, A.v1);
       wall(mSkirtYellow, A.x0, Z(A.v1) + 0.012, A.x1 + 0.012, Z(A.v1) + 0.012, fy, Y(A.h)); wall(mSkirtYellow, A.x1 + 0.012, Z(A.v1) + 0.012, A.x1 + 0.012, zN, fy, Y(A.h));                 // its south face (faces south), its east end (faces east)
       wall(mBraidGold, A.x0, Z(A.v1) + 0.016, A.x1 + 0.016, Z(A.v1) + 0.016, Y(A.h - 0.035), Y(A.h - 0.005)); wall(mBraidGold, A.x1 + 0.016, Z(A.v1) + 0.016, A.x1 + 0.016, zN, Y(A.h - 0.035), Y(A.h - 0.005));
-      { const bz = zN + 0.075, a = [-4.6, Y(0.8), bz], b = [-0.2, Y(0.8), bz], m = new THREE.Mesh(new THREE.PlaneGeometry(4.4, 2.8), mBackdrop);
-        m.position.set((a[0] + b[0]) / 2, Y(0.8) + 1.4, bz); hallIn.add(m); owned.push(m); }
+      /* THE PRINTED BANNER behind the second altar: the hall's own picture (Chad, 16 Nov 2026: "I believe this is the wall
+         mural at the back of the hall, but you need to adjust the colour to look like the reference photo"). His picture
+         whole, stretched to the banner's shape as the hall's print is (1.8 times wider than tall: measured on his
+         photographs 5 and 10), in the print's own colours as those two photographs show them, its darker left side and
+         its navy border in the picture (masters/v26.18/backdrop: register.py, mural.py). 4.4 m by 2.9 m and a border of
+         3 cm, from the altar's top to under the ceiling. Until its picture lands, the placeholder's mist stands there */
+      { const bz = zN + 0.075, m = new THREE.Mesh(new THREE.PlaneGeometry(4.46, 2.96), mBackdrop);
+        m.position.set(-2.4, Y(0.65 + 1.48), bz); hallIn.add(m); owned.push(m);
+        picLoad('w3t_hmural', 'image/jpeg').then(t => { if (!t || !alive) return; mMural.map = t; mMural.needsUpdate = true; m.material = mMural; }); }
       /* WHAT HE CANNOT WALK THROUGH: the shell's walls (its south wall with the west door's gap), the two platforms and
          what stands on the floor between them, the free post, and the big things along the walls (each a column) */
       const col = (ua, va, ub, vb) => solidBox(Math.abs(ub - ua), 3, Math.abs(vb - va), (ua + ub) / 2, 1.5, Z((va + vb) / 2));
@@ -1516,6 +1581,7 @@
     function buildHallLeaf() {
       const fl = HALL.floor, z = HALL.z1 + 0.02, a = HDOOR.cx, b = HDOOR.cx + HDOOR.w / 2;
       wall(mGlass, a, z, b, z, fl + 0.02, fl + HDOOR.h);
+      box(mBronze, (a + b) / 2, fl + 0.05, z + 0.02, b - a, 0.08, 0.06);                  // its own bottom rail (the fixed half keeps its own: b_world1.js)
       box(mBronze, a + 0.03, fl + HDOOR.h / 2, z + 0.025, 0.05, HDOOR.h, 0.05); box(mBronze, b - 0.03, fl + HDOOR.h / 2, z + 0.025, 0.05, HDOOR.h, 0.05);
       bar(mSteel, [a + 0.13, fl + 0.85, z + 0.075], [a + 0.13, fl + 1.35, z + 0.075], 0.014, 6);
       wall(mGlassIn, b, z - 0.004, a, z - 0.004, fl + 0.02, fl + HDOOR.head);
@@ -1541,12 +1607,16 @@
        hall's north wall, and what lies between is shut by columns (never drawn): the lawn west of the lane, the tables
        and the lawn east of it, the steps east of the door. The lane runs from the turf's gravel west of the tables to
        the steps before the west door, 2.35 m wide; one banner pole stands in it. */
-    const HLANE = { x0: -5.3, x1: -2.95, z0: HALL.z1 + 1.5, z1: -9.94 };              // (z1: with a column's 0.14 m of padding, the turf's old north edge to the centimetre)
+    /* (v26.18, after the first walk: 2.35 m wide it was a corridor on an open lawn, and whoever stepped aside of Ton met
+       a wall he could not see. It is 3.65 m now, from the tables' end west past two of the banners' poles; its west
+       side stops at the green naga's plinth) */
+    const HLANE = { x0: -6.6, x1: -2.95, z0: HALL.z1 + 1.5, z1: -9.94 };              // (z1: with a column's 0.14 m of padding, the turf's old north edge to the centimetre)
     function buildHallWay() {
       const b = (xa, za, xb, zb) => solidBox(Math.abs(xb - xa), 3, Math.abs(zb - za), (xa + xb) / 2, 1.5, (za + zb) / 2);
       b(-11.2, -40, HLANE.x0, HLANE.z1); b(HLANE.x1, HLANE.z0, 11.2, HLANE.z1);                    // west of the lane (all the way north); the tables and the lawn east of it
       b(-1.3, HALL.z1 - 0.1, 11.2, HLANE.z0); b(5.3, -40, 11.2, HALL.z1);                            // the steps east of the door; the lawn east of the hall
-      b(-4.37, -15.7, -4.09, -15.0);                                                               // the banner pole that stands in the lane
+      b(-4.37, -15.7, -4.09, -15.0); b(-6.06, -15.7, -5.78, -15.0);                                // the two banner poles that stand in the lane
+      b(HLANE.x0, -40, -5.3, -19.75);                                                              // the green naga's plinth and the hall's west side beyond it
     }
     const hallShown = { on: false, open: false };
     /* (on: the inside is drawn. open: the turf's gate and the west door stand open, its leaf slid west) */
@@ -1555,9 +1625,19 @@
       hallIn.visible = !!on; hin.leaf.position.x = open ? -hin.leafSlide : 0; hin.leaf.position.z = open ? 0.045 : 0;
       for (const g of hin.gates) { g.box.min.y = open ? 60 : g.lo; g.box.max.y = open ? 61 : g.hi; }
     }
+    /* how many of the five rows of white mats lie on the floor, counted from the dais (ending A: the two at the back are
+       already taken up) */
+    function hallMats(rows) { hin.matRows = rows; for (const im of hin.many.w3hmat || []) im.count = Math.min(20, rows * 4); }
     /* THE GLASS BY THE HOUR: bright with the morning, yellow with the afternoon, dark at dusk (his photographs' own look) */
-    const HGLASS = { MORNING: [0xe8eef2, 0xffffff, 0.09], OPEN: [0xfff6e0, 0xfffaf0, 0.09], NOON: [0xf6e2a8, 0xfff0c8, 0.09], DUSK: [0x0c0e12, 0x4a5456, 0.22], SHUT: [0xdfe2e2, 0xf4f6f4, 0.09] };
-    function hallGlass(name) { const q = HGLASS[name] || HGLASS.MORNING; mPane.color.setHex(q[0]); mBlocks.color.setHex(q[1]); mGlassIn.opacity = q[2]; }
+    /* (the fourth number: the light on the room's own pictures, the banner's print and the framed photograph, that hour) */
+    const HGLASS = { MORNING: [0xe8eef2, 0xffffff, 0.09, 0xffffff], OPEN: [0xfff6e0, 0xfffaf0, 0.09, 0xfffaf0], NOON: [0xf6e2a8, 0xfff0c8, 0.09, 0xfff6e2], DUSK: [0x0c0e12, 0x4a5456, 0.22, 0xe4e0e4], SHUT: [0xdfe2e2, 0xf4f6f4, 0.09, 0xd6d6da] };
+    function hallGlass(name) { const q = HGLASS[name] || HGLASS.MORNING; mPane.color.setHex(q[0]); mBlocks.color.setHex(q[1]); mGlassIn.opacity = q[2];
+      for (const [m, k] of hallPics) m.color.setHex(q[3]).multiplyScalar(k); }
+    /* (one hour's glass eased into another's: the light opening with the lotus) */
+    const _hg = new THREE.Color();
+    function hallGlassMix(a, b, k) { const p = HGLASS[a], q = HGLASS[b]; if (!p || !q) return;
+      mPane.color.setHex(p[0]).lerp(_hg.setHex(q[0]), k); mBlocks.color.setHex(p[1]).lerp(_hg.setHex(q[1]), k); mGlassIn.opacity = p[2] + (q[2] - p[2]) * k;
+      for (const [m, lv] of hallPics) m.color.setHex(p[3]).lerp(_hg.setHex(q[3]), k).multiplyScalar(lv); }
     /* MANY OF ONE MODEL INSIDE THE HALL: as the copied manyOf, in the room's own (u, v, h), with a scale an axis and a
        tint a place where the room needs one (a mat made for a square laid long; two of the four drum columns gold).
        A thing is asked for only once its file is in the build: until then nothing stands in its place */
@@ -1579,6 +1659,7 @@
             if (tinted) im.setColorAt(i, col.set(it.tint != null ? it.tint : 0xffffff)); });
           im.instanceMatrix.needsUpdate = true; if (im.instanceColor) im.instanceColor.needsUpdate = true;
           im.computeBoundingSphere(); im.castShadow = false; im.receiveShadow = false; im.name = 'hall:' + key;
+          (hin.many[key] = hin.many[key] || []).push(im); if (key === 'w3hmat') im.count = Math.min(list.length, hin.matRows * 4);
           hallIn.add(im); owned.push(im);
         });
       });
@@ -1588,18 +1669,48 @@
        images are not here: each waits for its real references and the research's second reader. */
     function dressHallThings() {
       const DH = HIN.dais.h, AH = 0.65, E = Math.PI / 2, W = -Math.PI / 2;
+      const PIC_V = 0.2;                                                         // (a frame's middle on the north wall's middle post: the post stands 0.14 m into the room)
       /* the dais: the master's seat and its pillows (D8, D9), the four columns of drums at the wall (D4: the inner two
          gold), the two gold bai sri and the peacock before the lotus (D10, D11), the thick candles (D13) */
+      /* THE WHITE BUDDHA ON ITS GOLD LOTUS (D1, D2): the hall's main image, in the dais's north-east, under the recess of
+         the ceiling (Chad, 16 Nov 2026: "Where is the big buddha statue"). Made from his own photographs 3 and 6 of it
+         and the second reader's brief (docs/research/V26.18-HALL-IMAGES-VERDICTS.md: seated, the right hand raised before
+         the chest, palm out; the gold cloth over the left shoulder): the statue 1.97 m from its seat to its flame and
+         the lotus 1.9 m across and 0.95 tall, two models so that each stands at its own measure; the finial's tip at
+         3.2 m over the floor. (The lotus's model is 0.80 tall for its 1.9: it is drawn 1.19 times its height. Its flat
+         top, inside its rim, is then at 0.925 m, and the statue's seat is set 4 mm into it: the generator's own plinth
+         under the statue was cut off at prep, masters/v26.0/props/TABLE.txt) */
+      /* (v26.18, laid beside his photographs: from the places his photographs 2, 4 and 6 were taken, the real lotus is
+         1.26 times as wide as the one first built and the statue 1.2 to 1.27 times as tall, while the canopy over them
+         and the lotus's rim stand where the photographs have them. His square-on photograph 1 gives the same shape in
+         its own ratios: the statue from rim to flame 1.03 times the lotus's width, its lap 0.66 of it, the canopy's foot
+         0.83 of it over the rim. So the lotus is 2.4 m across at the same height, and the statue 1.2 times its model:
+         2.36 m from its seat to its flame, which goes up into the canopy as it does in every photograph) */
+      hallMany('w3hlotus', [{ u: 3.35, v: 1.25, h: DH, sx: 1.263, sy: 1.19, sz: 1.263 }]);
+      hallMany('w3hwhitebuddha', [{ u: 3.35, v: 1.25, h: DH + 0.921, s: 1.2 }], 2);
+      /* on the lotus's ledge before his knees (D6, his photographs 2 and 4): the white lotuses in their vases at its two
+         ends, three small brown-leaf bai sri on their gold bowls, and two slim cones of folded plain paper with gold tips */
+      const LEDGE = DH + 0.925;
+      hallMany('w3hlotusvase', [{ u: 2.45, v: 1.8, h: LEDGE, s: 0.73 }, { u: 4.25, v: 1.8, h: LEDGE, s: 0.73, ry: 2.4 }]);
+      hallMany('w3hpapercone', [{ u: 3.05, v: 2.0, h: LEDGE, s: 1.25 }, { u: 3.68, v: 2.0, h: LEDGE, s: 1.25, ry: 1.9 }]);
+      /* (the thread: his photographs 2 and 4 have a thin dark thread tied round the raised hand's fingers and running off
+         to the east wall, high up, hanging slack near the hand. From the fingers as the model has them (0.24 m to the
+         statue's right, 0.86 m over its seat, 0.255 m before its middle) to the wall at 2.95 m: where it leaves his
+         photograph 4's right edge, solved from that photograph's own camera) */
+      { const A = hallAt(3.35 - 0.24 * 1.2, 1.25 + 0.255 * 1.2, DH + 0.921 + 0.86 * 1.2), Bq = hallAt(HIN.x1 - 0.02, 1.1, 2.95), pts = [], N = 18;
+        for (let i = 0; i < N; i++) for (const k of [i / N, (i + 1) / N]) pts.push(lp(A[0], Bq[0], k), A[1] + (Bq[1] - A[1]) * (1.6 * k * k - 0.6 * k), lp(A[2], Bq[2], k));
+        const lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
+        const ln = new THREE.LineSegments(lg, new THREE.LineBasicMaterial({ color: 0x2a2622 })); mats.push(ln.material); ln.name = 'hall:thread'; hallIn.add(ln); owned.push(ln); }
       hallMany('w3hseat', [{ u: 2.1, v: 2.9, h: DH, sy: 0.5 }]);
       hallMany('w3hpillow', [{ u: 2.42, v: 2.26, h: DH, ry: 0.25 }, { u: 2.96, v: 2.2, h: DH, ry: -0.3 }]);
       hallMany('w3hdrums', [{ u: 1.7, v: 0.2, h: DH }, { u: 1.95, v: 0.2, h: DH, tint: 0xe8c060, ry: 1 }, { u: 4.3, v: 0.2, h: DH, tint: 0xe8c060, ry: 2 }, { u: 4.55, v: 0.2, h: DH, ry: 3 }], 4);
       hallMany('w3hgoldbaisri', [{ u: 2.75, v: 2.7, h: DH }, { u: 3.8, v: 2.7, h: DH, ry: 1.3 }]);
       hallMany('w3hpeacock', [{ u: 3.3, v: 2.85, h: DH }]);
-      hallMany('w3candlemid', [{ u: 2.9, v: 2.2, h: DH, s: 0.68, tint: 0xf0a020 }, { u: 4.0, v: 2.0, h: DH, s: 0.68, tint: 0xf0a020 }, { u: 0.15, v: 2.0, h: AH, s: 0.53, tint: 0xf0a020 }]);
-      hallMany('w3hgreencol', [{ u: 2.55, v: 0.4, h: DH }, { u: 4.15, v: 0.4, h: DH, ry: 2 }]);
+      hallMany('w3candlemid', [{ u: 2.75, v: 2.48, h: DH, s: 0.68, tint: 0xf0a020 }, { u: 3.8, v: 2.5, h: DH, s: 0.68, tint: 0xf0a020 }, { u: 0.15, v: 2.0, h: AH, s: 0.53, tint: 0xf0a020 }]);
+      hallMany('w3hgreencol', [{ u: 2.55, v: 0.15, h: DH }, { u: 4.15, v: 0.15, h: DH, ry: 2 }]);
       hallMany('w3hcanopy', [{ u: 3.35, v: 1.25, h: 3.2 }]);
-      hallMany('w3hwheel', [{ u: 4.3, v: 2.2, h: DH, ry: -0.35 }]);
-      hallMany('w3hbrownbaisri', [{ u: 2.95, v: 2.12, h: DH }, { u: 3.42, v: 2.05, h: DH, ry: 1 }, { u: 3.9, v: 2.14, h: DH, ry: 2 },
+      hallMany('w3hwheel', [{ u: 4.4, v: 2.45, h: DH, ry: -0.35 }]);
+      hallMany('w3hbrownbaisri', [{ u: 2.78, v: 2.02, h: DH + 0.925 }, { u: 3.36, v: 2.12, h: DH + 0.925, ry: 1 }, { u: 3.95, v: 2.0, h: DH + 0.925, ry: 2 },
         ...[-2.2, -1.92, -1.64, -1.36, -1.08, -0.8, -0.52, -0.24].map((u, i) => ({ u, v: 1.95, h: AH, s: 0.67, ry: i * 1.1 }))]);
       hallMany('w3purple', [{ u: 4.3, v: 3.1, h: DH, s: 0.45 }, { u: -4.3, v: 1.5, h: AH, s: 0.41, ry: 1 }]);
       hallMany('w3hbooktable', [{ u: 1.68, v: 2.55, h: DH, ry: E }]);
@@ -1614,21 +1725,22 @@
       hallMany('w3hswan', [{ u: -3.1, v: 1.65, h: AH, ry: 0.5 }]);
       hallMany('w3hlotusvase', [{ u: -3.7, v: 1.35, h: AH, s: 0.73 }, { u: 0.34, v: 1.45, h: AH, s: 0.73, ry: 2 }]);
       hallMany('w3hredtable', [{ u: -0.12, v: 0.95, h: AH }]);
+      hallMany('w3hpapercone', [{ u: -0.44, v: 1.5, h: AH }, { u: 0.2, v: 1.5, h: AH, ry: 1.2 }]);       // (L18: two small cones of folded paper in gold bowls, before the red table)
       hallMany('w3roses', [{ u: 0.66, v: 1.2, h: AH, s: 1.5 }]);
       hallMany('w3hnagagold', [{ u: 0.84, v: 1.85, h: AH, ry: 0.3 }]);
-      hallMany('w3hstripemat', [{ u: 0.3, v: 2.62, h: 0 }]);
+      hallMany('w3hstripemat', [{ u: -0.12, v: 2.62, h: 0 }]);
       /* the floor between the altars: the cloth sets (G3), the water (G5), the clay pot (G6), the tray (L24) */
       hallMany('w3hclothsets', [{ u: 1.26, v: 3.3, h: 0, ry: E }]);
       hallMany('w3water', [0, 1, 2, 3].flatMap(i => [0, 1, 2].map(j => ({ u: 1.14 + j * 0.068, v: 4.18 + i * 0.068, h: 0 }))));
-      hallMany('w3claypot', [{ u: 1.47, v: 2.95, h: 0, s: 0.67 }]);
+      hallMany('w3claypot', [{ u: 1.2, v: 2.95, h: 0, s: 0.67 }]);                        // (in the gap between the altar's end and the dais: at u 1.47 it stood inside the dais)
       /* the west wall: the naga group (W1), the fan on its tripod (W2), the beige sofa and its armchair (W3) */
       hallMany('w3hnagagroup', [{ u: -4.25, v: 3.5, h: 0, ry: E }]);
       hallMany('w3hpedfan', [{ u: -3.6, v: 4.6, h: 0, s: 0.78, ry: 2.4 }, { u: 4.2, v: 9.8, h: 0, ry: -1.9 }]);
       /* (the armchair of the set is the three-seater made narrow: the chapter's own sofa is green, and no tint makes it beige) */
       hallMany('w3hsofa3', [{ u: -4.3, v: 6.55, h: 0, ry: E }, { u: -4.3, v: 8.15, h: 0, ry: E, sx: 0.46 }, { u: 4.3, v: 12.3, h: 0, ry: W, tint: 0x86c4b0 }, { u: 4.3, v: 14.6, h: 0, ry: W, tint: 0xb8c070, s: 0.86 }]);
       /* the east wall: the strapped cushions (E1) and the grey mats (E2), the blue chairs stacked in the corner (E7) */
-      hallMany('w3hcushions', [{ u: 4.3, v: 5.8, h: 0, ry: W }]);
-      hallMany('w3hgreymats', [{ u: 4.3, v: 7.2, h: 0, ry: W }]);
+      hallMany('w3hcushions', [{ u: 4.3, v: 6.9, h: 0, ry: W }]);
+      hallMany('w3hgreymats', [{ u: 4.3, v: 8.3, h: 0, ry: W }]);
       hallMany('w3pchair', [0, 1].flatMap(c => Array.from({ length: 9 }, (_, i) => ({ u: 4.32 - c * 0.62, v: 16.25, h: i * 0.062, ry: Math.PI, tint: 0x4f66d8 }))));
       /* the south wall: the bench with its folded mattresses (S1) */
       hallMany('w3bench', [{ u: 1.1, v: 15.6, h: 0, ry: Math.PI, s: 1.47 }]);
@@ -1643,7 +1755,18 @@
       hallMany('w3hhorn', [{ u: -0.2, v: 8.4, h: 1.85, ry: W }, { u: 0.2, v: 8.4, h: 1.85, ry: E }]);
       hallMany('w3hpabox', [{ u: -4.62, v: 4.2, h: 2.28, ry: E + 0.5 }, { u: 4.62, v: 4.2, h: 2.28, ry: W - 0.5 }]);
       hallMany('w3hexhaust', [{ u: 4.76, v: 2.5, h: 2.31, ry: W }, { u: 4.76, v: 8.8, h: 2.31, ry: W }, { u: 4.76, v: 13.0, h: 2.31, ry: W }, { u: -4.76, v: 4.7, h: 2.31, ry: E }, { u: -4.76, v: 8.8, h: 2.31, ry: E }, { u: -4.76, v: 13.0, h: 2.31, ry: E }]);
-      hallMany('w3hclock', [{ u: -0.15, v: 0.17, h: 2.185 }]);
+      /* THE FRAME HUNG HIGH ON THE NORTH WALL'S MIDDLE POST, over the banner's corner, and the clock under it (L20, L21):
+         Luang Pu Phiboon's photograph (Chad, 16 Nov 2026: "i believe one of the photo frames hung very high near the
+         ceiling is the lp phiboon photo that you already have"): the game's own picture of him (episode 3 chapter 3's
+         gallery, `mstr_lpphiboon`), its own bytes, whole at its own shape and never retouched (v21.11): the frame's
+         opening is made to it (0.438 by 0.689 m). Measured on his photographs 5 and 10: the frame 0.60 by 0.90 m, its
+         top at 3.5 m; the clock 0.38 m across, its top over the frame's foot */
+      { const FR = { u: -0.08, v: PIC_V, h: 2.6, sx: 0.93, sy: 1.13 };
+        hallMany('w3hframe', [{ u: FR.u, v: FR.v, h: FR.h, sx: FR.sx, sy: FR.sy }]);
+        const pm = mPic(), pic = new THREE.Mesh(new THREE.PlaneGeometry(0.471 * FR.sx, 0.610 * FR.sy), pm); hallPics.push([pm, 0.92]); pm.color.multiplyScalar(0.92);
+        pic.position.copy(hallAtV(FR.u, FR.v + 0.0105, FR.h + 0.385 * FR.sy)); pic.visible = false; hallIn.add(pic); owned.push(pic);
+        picLoad('mstr_lpphiboon', 'image/jpeg').then(t => { if (!t || !alive) return; pm.map = t; pm.needsUpdate = true; pic.visible = true; }); }
+      hallMany('w3hclock', [{ u: -0.14, v: PIC_V + 0.04, h: 2.29, s: 1.15 }]);
     }
     /* ================================================================ THE OFFERING TABLES (photographs 10, 9, 4, 8)
        Three steps under white cloth, the lowest in front; a bright green satin skirt to the ground hung with swags of
@@ -2551,7 +2674,7 @@
       return noMip(THREE, t);
     }
     /* (the children's runs and their skip too: c_crowd.js) */
-    const WALKS = /^(walkdance|Run_02|Run_03)$/;                                 // (the takes that travel: the dancers' walk-dance, the children's two runs)
+    const WALKS = /^(walkdance|Run_02|Run_03|Walking)$/;                                 // (the takes that travel: the dancers' walk-dance, the children's two runs)
     /* (the full model's reach was 2.7 m until 12 Nov. Photographed at 2.55 m at both levels, on a phone's frame and a
        desktop's, magnified: no difference to be seen at that distance, and the full model is 310,000 triangles. At
        2.2 m (taken up inside 2.05, let go past 2.35, measured from the lens) it is drawn where he has walked up to
@@ -3233,7 +3356,9 @@
       if (P.restHands && !(P.layK > 0)) restHandsLay(P);
       if (!P.htLate) handsTrue(P);
     }
-    function put(P, x, z, ry, y = 0) { if (!P) return; P.group.position.set(x, y, z); if (ry != null) P.group.rotation.y = ry; }
+    /* (v26.18: a person put somewhere stands on the floor that is there: the hall's is 0.48 m up, its steps between; on the
+       ground of the Wai Kru that is 0, as it was) */
+    function put(P, x, z, ry, y = hallGround(x, z)) { if (!P) return; P.group.position.set(x, y, z); if (ry != null) P.group.rotation.y = ry; }
     const faceTo = (x, z, tx, tz) => Math.atan2(tx - x, tz - z);                 // the turn that faces a +z-facing body at a point
     /* every frame of play: weights eased on the wall clock, takes run, bodies settled */
     function peopleTick(wdt, live) {
@@ -4260,7 +4385,7 @@
       /* (lodK 1.25: his full model drawn to 2.75 m, not 2.2: he is talked to from 1.9 to 2.3 m, where the lighter body's soft
          face was what was seen. In the line he stands 1.8 m from the player, inside the old reach: no new cost there) */
       /* (v26.8: his shoulders let down in his stand and his talk: shouldersLay) */
-      cast.ton = mkPerson('e4ton', tonAt[0], tonAt[1], faceTo(tonAt[0], tonAt[1], DATA.spawn.x, DATA.spawn.z), { take: 'Idle_3', talk: 'Stand_and_Chat', headDamp: SEIZA_LOOK, lodK: 1.25, shoulders: { Idle_3: 1, Stand_and_Chat: 1 } });
+      cast.ton = mkPerson('e4ton', tonAt[0], tonAt[1], faceTo(tonAt[0], tonAt[1], DATA.spawn.x, DATA.spawn.z), { take: 'Idle_3', talk: 'Stand_and_Chat', headDamp: SEIZA_LOOK, lodK: 1.25, shoulders: { Idle_3: 1, Stand_and_Chat: 1, Walking: 1 }, pace: true });   // (v26.18: his own rig's walk, for the morning's way to the hall: paced from its planted foot)
       cast.ton.home = { x: tonAt[0], z: tonAt[1], ry: faceTo(tonAt[0], tonAt[1], DATA.spawn.x, DATA.spawn.z) };
       /* the woman at his bench stands by the low table at his right hand, turned to those who kneel (photograph 6) */
       { const [ax, az] = benchAt(1.95, 0.95), [kx, kz] = benchAt(0.3, 1.9);
@@ -4502,14 +4627,16 @@
        waiting"): people of their own, so each can look where he looks. The other endings borrow them: one kneels to
        Grandmaster Pho in ending B's afternoon while two wait; two roll mats and one carries one in ending A. Hidden
        until an ending stands them (a hidden person is not run: peopleTick) */
-    const WAIT_AT = [[2.3, 3.0], [2.95, 3.35], [3.5, 3.85], [4.2, 4.05]].map(([a, b]) => benchAt(a, b));
+    /* (v26.18: they are the morning's people, and the morning is in the hall: their places by his seat on the dais, the
+       bench's own numbers; on the hall's floor) */
+    const WAIT_AT = [[2.3, 3.0], [2.95, 3.35], [3.5, 3.85], [4.2, 4.05]].map(([a, b]) => seatAt(a, b));
     cast.wait = ['e4devh', 'e4deve', 'e4devb', 'e4devc'].map((key, i) => { const [x, z] = WAIT_AT[i];
-      const P = mkPerson(key, x, z, faceTo(x, z, PHO_AT[0], PHO_AT[1]), { take: 'Idle_3', hidden: true, phase: 0.17 + 0.23 * i, blobW: 0.8, blobD: 0.7 });
-      P.home = { x, z, ry: faceTo(x, z, PHO_AT[0], PHO_AT[1]) }; return P; });
+      const P = mkPerson(key, x, z, faceTo(x, z, HALLSEAT.x, HALLSEAT.z), { y: HALL.floor, take: 'Idle_3', hidden: true, phase: 0.17 + 0.23 * i, blobW: 0.8, blobD: 0.7 });
+      P.home = { x, z, ry: faceTo(x, z, HALLSEAT.x, HALLSEAT.z) }; return P; });
     const castBlock = {};
     for (const k of ['ton', 'aunt']) castBlock[k] = new THREE.Box3(new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 61, 0));
     function castSolid() { for (const k in castBlock) { const P = cast[k], b = castBlock[k], on = !!(P && P.group.visible && !P.hidden && !P.noBlock), g = P.group.position, r = 0.45;
-      b.min.set(g.x - r, on ? 0 : 60, g.z - r); b.max.set(g.x + r, on ? 1.5 : 61, g.z + r); } }
+      b.min.set(g.x - r, on ? g.y : 60, g.z - r); b.max.set(g.x + r, on ? g.y + 1.5 : 61, g.z + r); } }   // (v26.18: from the floor its person is on: the hall's is 0.48 m up)
     for (const k in castBlock) whenReady(cast[k], castSolid);
 
 
@@ -4672,7 +4799,10 @@
         const r = PERSONAL[s.kind]; s.block = new THREE.Box3(new THREE.Vector3(p.x - r, 0, p.z - r), new THREE.Vector3(p.x + r, 1.5, p.z + r)); crowdBlock.push(s.block); }
       formNow = 'arrive';
       /* day two: two people far off by the offering tables, clearing up (the ground is not quite empty: §4.3) */
-      for (const [key, x, z, ry] of [['e4devb', -3.3, -9.25, 2.6], ['e4devh', 3.9, -9.3, -2.2]]) { mkMember(crowdDrivers[key].S, x, z, ry, { parent: dayTwo, blobW: 0.8, blobD: 0.7 });
+      /* (v26.18: the morning begins west of the tables now, looking at the hall's door, and the one who stood at -3.3 was
+         straight behind Ton in that first picture, a second head at his shoulder, a metre from the way he leads. She
+         stands 1.4 m further along the tables: clear of him in the picture, and of the way) */
+      for (const [key, x, z, ry] of [['e4devb', -1.9, -9.25, 2.6], ['e4devh', 3.9, -9.3, -2.2]]) { mkMember(crowdDrivers[key].S, x, z, ry, { parent: dayTwo, blobW: 0.8, blobD: 0.7 });
         dawnBlock.push(new THREE.Box3(new THREE.Vector3(x - 0.3, 60, z - 0.3), new THREE.Vector3(x + 0.3, 61, z + 0.3))); }
     }
     /* THE FORMATION, by name: every member onto his seat in it, his column with him; the kneelers' second driver to the
@@ -5203,7 +5333,7 @@
       const wave = flatM(new THREE.RingGeometry(0.38, 0.43, 40), { opacity: 0.7 }); wave.position.y = 0.005;
       return { g, disc, ring, wave };
     })();
-    function zoneAt(p) { if (!p) { zone.g.visible = false; return; } zone.g.position.set(p.x, 0.03, p.z); zone.g.visible = true; }
+    function zoneAt(p) { if (!p) { zone.g.visible = false; return; } zone.g.position.set(p.x, hallGround(p.x, p.z) + 0.03, p.z); zone.g.visible = true; }
     function zoneTick(now) {
       if (!zone.g.visible) return;
       const k = (now % 2) / 2;
@@ -5327,6 +5457,14 @@
       const pts = new THREE.Points(geo, pm); pts.frustumCulled = false; pts.renderOrder = 4; g.add(pts); owned.push(pts);
       return { g, shade, hue, rays, glow, pool, ring, pts, seed, tm: new THREE.Color() };
     })();
+    /* (v26.18) WHERE THE GOLD STANDS: at the bench on day one, as it was built; in the morning on the hall's dais, raised by
+       what his head is raised (0.265 m: a floor sit on a cushion on the dais against a chair sit on the bench), and its pool
+       on the tile before the dais (on the dais's own top it would hang past its edge) */
+    function auraSeat(two) {
+      const A = aura, up = two ? HALLSEAT.y + 0.725 - 1.3 : 0;
+      A.g.position.set(two ? HALLSEAT.x : PHO_AT[0], up, two ? HALLSEAT.z : PHO_AT[1]); A.g.rotation.y = two ? HALLSEAT.ry : BENCH.ry;
+      A.pool.position.set(0, two ? HIN.floor + 0.024 - up : 0.024, two ? 1.25 : 0.5); A.ring.position.set(0, two ? HIN.floor + 0.027 - up : 0.027, two ? 1.25 : 0.5);
+    }
     /* ---- HIS OWN LIGHT, IN THE CLOSE (v26.8, Chad, 13 Nov 2026: "the second minigame part, instead of playing the
        minigame, just show the player hands vibrating while a glow surronding him and his hands and his bai sri. all
        around his silohuette, to show that the player is now in control while vibrating"). He is never seen (every shot
@@ -5771,6 +5909,11 @@
        (made his way: a checked picture on white, then Meshy: masters/v26.0/make.sh) */
     const matsG = new THREE.Group(); world.add(matsG); matsG.visible = false;
     const MATS_AT = { x: -6.25, z: 1.9, ry: 0.32 };
+    /* (v26.18: ending A is inside the hall. The whole picture of the mats (the stack, those who roll, the one who carries,
+       his own walk) is carried as it was built to the back of the hall: MATD, from its place on the turf to the floor
+       between the door and the hall's last rows of mats. What the film sets by a place in the world, it sets less MATD) */
+    const MATD = { x: 4.8, y: HALL.floor, z: -27.45 };
+    matsG.position.set(MATD.x, MATD.y, MATD.z);
     const rolled = { stack: [], own: null, ton: [], carry: null, rolls: [] };
     { const c = Math.cos(MATS_AT.ry), sn = Math.sin(MATS_AT.ry), rnd = rng(3391);
       /* (v26.2 debug: a roll is 0.232 m thick (tools/probes/glbbox.mjs w3matroll); laid 0.16 apart and 0.128 a level they
@@ -5802,7 +5945,8 @@
         for (const [fb, hb] of [[P.foreL, P.handL], [P.foreR, P.handR]]) { fb.getWorldPosition(_mte); hb.getWorldPosition(_mtw);
           const k = Math.min(1, 0.13 / Math.max(0.05, _mte.distanceTo(_mtw))); y += _mtw.y + (_mte.y - _mtw.y) * k; }
         top = y / 2; }
-      g.position.set(m.x - Math.sin(ry) * 0.13, top + 0.04 + n * 0.226, m.z - Math.cos(ry) * 0.13); g.rotation.set(0, ry + (n ? 0.07 : -0.04), 0); g.visible = true; return true; }
+      g.position.set(m.x - Math.sin(ry) * 0.13, top + 0.04 + n * 0.226, m.z - Math.cos(ry) * 0.13); if (g.parent === matsG) g.position.sub(matsG.position);
+      g.rotation.set(0, ry + (n ? 0.07 : -0.04), 0); g.visible = true; return true; }
 
     /* ---- THE BULBS AT DUSK (ending B: "the bulbs under the shed's roof come on"): a string of bare bulbs along the eaves
        of the chief canopy and the three tents, each a small warm glow turned to the lens, and the pool of their light
@@ -6028,8 +6172,10 @@
        The plan's §3.7, "cinematic in play": the ground answers his feet (things happen at his marks, not on a clock);
        his look is borrowed gently and given back; his hands are the actor (the bai sri carried all day); nothing is on
        the screen but the world in the set pieces. */
-    const PHASES = ['arrive', 'baisri', 'tables', 'place', 'festival', 'seen', 'check', 'dawn', 'knelt', 'told', 'breath', 'taught', 'decide'];
-    const DAY_TWO = new Set(['dawn', 'knelt', 'told', 'breath', 'taught', 'decide']);
+    /* (v26.18: `hall`, between the morning's walk and the kneel: he is inside the hall and has not knelt. A Continue made there
+       lands inside its door; without it, it began the walk again from the turf) */
+    const PHASES = ['arrive', 'baisri', 'tables', 'place', 'festival', 'seen', 'check', 'dawn', 'hall', 'knelt', 'told', 'breath', 'taught', 'decide'];
+    const DAY_TWO = new Set(['dawn', 'hall', 'knelt', 'told', 'breath', 'taught', 'decide']);
     let phase = 'arrive';
     let booted = false, preplaced = '';
     const dayClock = { t: 0 };
@@ -6173,7 +6319,7 @@
     function ambTick() {
       if (!worldSfx || (soundOff && soundOff())) return;
       const one = phase === 'arrive' || phase === 'baisri' || phase === 'tables' || phase === 'seen' || phase === 'check';
-      const two = phase === 'dawn' || phase === 'decide';
+      const two = phase === 'dawn' || phase === 'hall' || phase === 'decide';
       if (!(one || two) || play.bow || play.pull) { ambAt = 0; return; }
       if (!ambAt) { ambAt = dayClock.t + 3 + ambRand() * 5; return; }
       if (dayClock.t < ambAt || dayClock.t < ambBusy) return;
@@ -6207,7 +6353,8 @@
     const W = DATA.words;
     const play = { run: 0, busy: false, turning: null, bow: null, bai: false, baiP: 0, baiTo: 0, baiSecs: 1, knelt: false, homage: false,
                    pull: null, looked: false, asked: new Set(), checked: false, bowed: false, breath: null, lookEase: null,
-                   tonGive: null, ymCarry: false, ymSet: null, pull3: 0, ymHands: null, away: false, chanting: false };
+                   tonGive: null, ymCarry: false, ymSet: null, pull3: 0, ymHands: null, away: false, chanting: false,
+                   walk: null, said2: false, inK: -1 };                           // (v26.18: Ton's walk to the hall, his line at its door, and how far inside its light he stands)
     let decOpen = false;
     const live = (run) => alive && run === play.run;
     /* the receipts inside a phase (§9): the homage made; who has been asked; the bow made; how the breaths went */
@@ -6236,7 +6383,7 @@
     /* ---------------------------------------------------------------- places (x east, z south; the tracker's §10) */
     const EYE = 1.62;
     const KNEEL = { y: 0.9, span: 1.2, lo: -0.9, hi: 0.55 };                  // his eye sat back on his heels, and how far he may look about
-    const TON_HEAD = () => { const g = cast.ton.group.position; return { x: g.x, y: cast.ton.seated ? 0.95 : 1.52, z: g.z }; };
+    const TON_HEAD = () => { const g = cast.ton.group.position; return { x: g.x, y: g.y + (cast.ton.seated ? 0.95 : 1.52), z: g.z }; };
     const TABLES_AT = { x: 0, z: -8.85 };                                     // where he stands to pay his respects, on the gravel before the tables
     const BUDDHA = { x: WHEEL.x, y: 1.95, z: WHEEL.z };                       // where he looks as he pays his respects: the hub of the wheel of marigolds (the small seated image photograph 10 shows before it is not made until Chad says what it is: a sacred image is never guessed)
     const PLACE = { x: -2.25, z: 1.25 };                                      // his place on the turf, at the north-east corner of the group's rows
@@ -6252,7 +6399,17 @@
        tools/probes/clipscan.mjs. A step to her right and back) */
     const AUNT_LINE = (() => { const [x, z] = benchAt(1.85, 2.5), [kx, kz] = benchAt(0.46, 1.3); return { x, z, ry: faceTo(x, z, kx, kz) }; })();
     const YM_B = 1.28;                                                        // how far before the bench the young man kneels (then moved so the two pairs of hands meet: ymPlace)
-    const DAWN_AT = { x: 2.1, z: 3.6 };                                       // where the morning finds him
+    /* THE MORNING IS IN THE HALL (v26.18: Chad, 16 Nov 2026). Its places are measured from Grandmaster Pho's seat on the
+       dais as the bench's were from the bench (`seatAt(a, b)`, b_world1.js: a metres to his right, b before him: benchAt's
+       own two numbers, so every look the films make keeps its shape), and every height typed for the morning inside is
+       over the hall's floor, HF up. Day one keeps the bench and the ground. */
+    const HF = HALL.floor;
+    const PHO2_AT = [HALLSEAT.x, HALLSEAT.z];
+    const HDOOR_AT = { x: HDOOR.cx + HDOOR.w / 4, z: HALL.z1 };                 // the middle of the west door's open half
+    /* where the morning finds him: on the turf west of the offering tables, where the line of his eyes to the hall's open
+       door runs clear of the tables and their tower and between two of the banners' poles (photographed) */
+    const DAWN_AT = { x: -5.2, z: -4.0 };
+    const DAWN_PITCH = -0.04;                                                 // (the tilt play begins the morning in, and the night's film ends on: one number, v5.25)
     /* HIS HANDS, KNEELING: on his knees, under the frame's foot. The walking hand the engine draws stood in the middle of
        a phone's frame across his teacher's lap (photographed); it is put away the way a carried thing's hand is (kit.hold
        `bare`, with nothing in it), and comes back for a bow (kit.pray draws both) and when he stands */
@@ -6261,13 +6418,17 @@
     function awayTick() { if (!play.away || !kit || !kit.hold || play.bai) return; if (kit.praying && kit.praying()) return; if (!kit.holding()) kit.hold(noHand, { bare: true }); }
     /* Ton, the morning after: a dozen degrees to the right of the line from where the player stands to Grandmaster Pho,
        2.6 m off, so a portrait phone holds him whole beside the bench (he stood at its edge, cut in half: photographed) */
-    const TON_DAWN = (() => { const a = Math.atan2(PHO_AT[0] - DAWN_AT.x, PHO_AT[1] - DAWN_AT.z) - 0.21; return { x: DAWN_AT.x + Math.sin(a) * 2.6, z: DAWN_AT.z + Math.cos(a) * 2.6 }; })();
+    const TON_DAWN = (() => { const a = Math.atan2(HDOOR_AT.x - DAWN_AT.x, HDOOR_AT.z - DAWN_AT.z) - 0.21; return { x: DAWN_AT.x + Math.sin(a) * 2.6, z: DAWN_AT.z + Math.cos(a) * 2.6 }; })();   // (v26.18: the line is to the hall's door now)
     /* before Grandmaster Pho, on the carpet's outer half: 2.2 m from him, so his whole seated figure stands in a phone's
        frame (at 1.5 m his chest filled it under the canopy's roof: photographed) */
-    const KNEEL2 = (() => { const [x, z] = benchAt(0.46, 2.25); return { x, z }; })();
+    const KNEEL2 = (() => { const [x, z] = seatAt(0.46, 2.25); return { x, z }; })();          // (v26.18: on the hall's mat, 2.2 m before his seat on the dais)
+    const KNEELH = Object.assign({}, KNEEL, { y: KNEEL.y + HF });                             // his kneeling eye over the hall's floor (a pose keeps its own height: the engine's twenty-first seam)
+    const HALL_IN = { x: HDOOR_AT.x, z: HALL.z1 - 1.3 };                                      // a step and a half inside the door: where a Continue made inside finds him
     const PHO_HEAD = { x: PHO_AT[0], y: 1.3, z: PHO_AT[1] };
+    const PHO2_HEAD = { x: PHO2_AT[0], y: HALLSEAT.y + 0.725, z: PHO2_AT[1] };                // his head as he sits cross-legged on the dais (measured: 0.725 over his cushion)
     const yawTo = (x, z, tx, tz) => Math.atan2(-(tx - x), -(tz - z));         // the look's yaw from a place onto a point
     const phoYawFrom = (p) => yawTo(p.x, p.z, PHO_AT[0], PHO_AT[1]);
+    const pho2YawFrom = (p) => yawTo(p.x, p.z, PHO2_AT[0], PHO2_AT[1]), doorYawFrom = (p) => yawTo(p.x, p.z, HDOOR_AT.x, HDOOR_AT.z);
     const AUNT_HEAD = () => { const g = cast.aunt.group.position; return { x: g.x, y: 1.42, z: g.z }; };
 
     /* a person turned to a heading over a moment (never a snap: v14.5) */
@@ -6285,20 +6446,23 @@
       else if (p === 'place') { if (play.knelt && !play.homage && !play.busy) o = W.objHomage; }
       else if (p === 'festival') { if (play.pull && play.pull.offer && !play.looked) { o = W.objLook; wp = PHO_HEAD_NOW(); } else if (!play.looked) o = W.objLine; }
       else if (p === 'check') { if (!play.checked && !play.busy) { o = W.objCheck; wp = !play.asked.has('ton') ? TON_HEAD() : !play.asked.has('aunt') ? AUNT_HEAD() : null; } }
-      else if (p === 'dawn') { o = W.objGo; wp = { x: KNEEL2.x, y: 0.5, z: KNEEL2.z }; }
+      else if (p === 'dawn') { if (!play.busy) { o = W.objHall; wp = { x: HDOOR_AT.x, y: HF + 1.3, z: HDOOR_AT.z }; } }   // (v26.18: the order names the hall, its mark on the door: v14.8, v25.5)
+      else if (p === 'hall') { if (!play.busy) { o = W.objGo; wp = { x: KNEEL2.x, y: HF + 0.5, z: KNEEL2.z }; } }
       else if (p === 'knelt') { if (!play.busy) o = play.bowed ? W.objTell : W.objBow; }
       kit.objective(o, opts);
       kit.waypoint(wp);
     }
     const _ph = new THREE.Vector3();
-    function PHO_HEAD_NOW() { const P = cast.pho; if (P && P.ready && P.head) { P.head.getWorldPosition(_ph); return { x: _ph.x, y: _ph.y + 0.06, z: _ph.z }; } return PHO_HEAD; }
+    /* (v26.18: the morning's Grandmaster Pho is the one on the hall's dais, a person of his own: c_cast.js cast.phoH) */
+    const phoOf = () => (DAY_TWO.has(phase) ? cast.phoH : cast.pho);
+    function PHO_HEAD_NOW() { const two = DAY_TWO.has(phase), P = two ? cast.phoH : cast.pho; if (P && P.ready && P.head) { P.head.getWorldPosition(_ph); return { x: _ph.x, y: _ph.y + 0.06, z: _ph.z }; } return two ? PHO2_HEAD : PHO_HEAD; }
 
     /* THE LOOK: which of the looks the ground wears (a preset of light, the painted shade, and what only that day draws) */
     let lookName = 'DAY1';
-    const PHO_LEVEL = { DAY1: 1, DAWN: 0.86, OPENED: 1, SHUT: 0.8, AFTERNOON: 0.95, DUSK: 0.62, NIGHT: 0.3, HALLDAY: 1, HALLOPEN: 1, HALLSHUT: 0.86, HALLNOON: 1, HALLDUSK: 0.95 };   // the unlit share of his look, dimmed to the hour (c_cast.js lookD)
+    const PHO_LEVEL = { DAY1: 1, DAWN: 0.86, OPENED: 1, SHUT: 0.8, AFTERNOON: 0.95, DUSK: 0.62, NIGHT: 0.3, HALLDAY: 1, HALLOPEN: 1, HALLSHUT: 0.86, HALLNOON: 1, HALLDUSK: 0.95, HALLDUSKOPEN: 1 };   // the unlit share of his look, dimmed to the hour (c_cast.js lookD)
     /* (v26.18: a look INSIDE THE HALL is its hour's look outside with the room's own light: the ground wears the hour's
        shade and dressing, and the hall's glass is set to the hour) */
-    const HALL_HOUR = { HALLDAY: ['DAWN', 'MORNING'], HALLOPEN: ['DAWN', 'OPEN'], HALLSHUT: ['DAWN', 'SHUT'], HALLNOON: ['AFTERNOON', 'NOON'], HALLDUSK: ['DUSK', 'DUSK'] };
+    const HALL_HOUR = { HALLDAY: ['DAWN', 'MORNING'], HALLOPEN: ['DAWN', 'OPEN'], HALLSHUT: ['DAWN', 'SHUT'], HALLNOON: ['AFTERNOON', 'NOON'], HALLDUSK: ['DUSK', 'DUSK'], HALLDUSKOPEN: ['DUSK', 'DUSK'] };
     function look(name, secs = 0) {
       if (kit) kit.daylight(PRESETS[name] || null, secs);
       lookName = name;
@@ -6386,10 +6550,11 @@
                        'x3grass1', 'x3grass2', 'x3grass3', 'x3grass4', 'x3grass5', 'x3grass6', 'x3grass7', 'x3grass8', 'x3os3', 'x3os7', 'x3os8', 'x3os9'];
     function dayOneStage() {
       look('DAY1', 0); auraAt(0, 0); mistK = 1; burstsClear();
-      zoneAt(null);
+      zoneAt(null); hallDay(false);
+      whenReady(cast.ton, (P) => { P.noBlock = false; P.rate = 1; gaze(P, null); });
       whenReady(cast.pho, (P) => { rest(P, 0); gaze(P, null); });
       whenReady(cast.ym, (P) => { P.group.visible = false; }); ymBai.visible = false;
-      whenReady(cast.aunt, (P) => { put(P, P.home.x, P.home.z, P.home.ry); rest(P, 0); P.group.visible = true; castSolid(); });
+      whenReady(cast.aunt, (P) => { put(P, P.home.x, P.home.z, P.home.ry); P.seated = false; P.rest.take = 'Idle_3'; P.rest.win = null; rest(P, 0); P.group.visible = true; castSolid(); });
       dayCast(true);
     }
     /* who is on the ground: the other masters and the monks on day one only (the next morning he sits alone) */
@@ -6718,58 +6883,167 @@
       const ok = kit && kit.film && kit.film('between', { onDone: () => { if (live(run)) dawnBegin(false); } });
       if (!ok) dawnBegin(false);
     }
+    /* THE MORNING'S STAGE (v26.18, Chad, 16 Nov 2026: "instead of meeting him outside, i would like the scene to be set
+       inside the main hall that has the naga statues outside"). The hall stands open, its inside drawn; Grandmaster Pho
+       sits on its dais (the bench outside stands empty); the woman who serves him sits on the tile at his right hand; he
+       is the chapter's pile where he sits. `hallDay(false)` puts day one back: the hall shut behind its glass, the
+       bench's own man on it. */
+    function hallDay(on) {
+      hallShow(on, on);
+      whenReady(cast.pho, (P) => { P.group.visible = !on; });
+      whenReady(cast.phoH, (P) => { P.group.visible = on; if (on) { put(P, P.home.x, P.home.z, P.home.ry, P.home.y); rest(P, 0); gaze(P, null); } });
+      PILE_POS.set(on ? PHO2_AT[0] : PHO_AT[0], on ? HF : 0, on ? PHO2_AT[1] : PHO_AT[1]); pile.position.copy(PILE_POS);
+      auraSeat(on);
+      play.inK = -1;
+    }
+    /* the woman who serves him, inside: seated on the tile at his right hand (the bench's own two numbers, from his seat),
+       turned to the one who kneels. Nobody stands over a master who sits on the floor */
+    const AUNT_IN = (() => { const [x, z] = seatAt(1.95, 0.95), [kx, kz] = seatAt(0.3, 1.9); return { x, z, ry: faceTo(x, z, kx, kz) }; })();
+    function auntIn() { whenReady(cast.aunt, (P) => { put(P, AUNT_IN.x, AUNT_IN.z, AUNT_IN.ry); P.seated = true; P.rest.take = 'seiza'; P.rest.win = { seiza: SEIZA_WIN }; rest(P, 0); P.group.visible = true; castSolid(); }); }
+    function tonStand(x, z, ry) { whenReady(cast.ton, (P) => { put(P, x, z, ry); P.seated = false; P.noBlock = false; P.rate = 1; P.rest.take = 'Idle_3'; P.rest.win = null; rest(P, 0); gaze(P, null); P.group.visible = true; castSolid(); }); }
+    function tonSit() { whenReady(cast.ton, (P) => { put(P, TON_MAT.x, TON_MAT.z, faceTo(TON_MAT.x, TON_MAT.z, PHO2_AT[0], PHO2_AT[1])); P.seated = true; P.noBlock = false; P.rate = 1; P.rest.take = 'seiza'; P.rest.win = { seiza: SEIZA_WIN }; rest(P, 0); gaze(P, null); P.group.visible = true; castSolid(); }); }
     function dawnStage() {
       look('DAWN', 0); auraAt(0, 0); mistK = 1; burstsClear(); zoneAt(null);
       whenReady(cast.ym, (P) => { P.group.visible = false; }); ymBai.visible = false;
-      whenReady(cast.pho, (P) => { rest(P, 0); gaze(P, null); });
-      whenReady(cast.ton, (P) => { put(P, TON_DAWN.x, TON_DAWN.z, faceTo(TON_DAWN.x, TON_DAWN.z, DAWN_AT.x, DAWN_AT.z)); P.seated = false; P.rest.take = 'Idle_3'; P.rest.win = null; rest(P, 0); castSolid(); });
-      whenReady(cast.aunt, (P) => { put(P, P.home.x, P.home.z, P.home.ry); rest(P, 0); castSolid(); });
+      hallDay(true); play.walk = null;
+      tonStand(TON_DAWN.x, TON_DAWN.z, faceTo(TON_DAWN.x, TON_DAWN.z, DAWN_AT.x, DAWN_AT.z));
+      auntIn();
       dayCast(false);
     }
+    /* TON LEADS THE WAY (v26.18, Chad: "I want Ton to guide the player and walk together from the main outdoor waikru area,
+       and walk towards the main hall and enter the main hall inside"). He says where they are going, turns and walks:
+       by the lane west of the offering tables, east of the banner's pole that stands in it, up the three steps, to the
+       landing beside the open half of the west door, where he turns and waits. Nothing here is timed (v7.4): he walks
+       at his own walk's pace (the take's planted foot: c_cast.js `pace`), his take's rate driven from the ground he
+       covers (v7.1); he stops and looks back when the one he leads is far behind, and goes on when he has come up; if
+       he is passed he keeps walking. At the door he says his second line, lets him in first, follows, and sits down on
+       a mat at the back when nobody is looking at him (a change made where no shot can see it: v24.12). */
+    const TON_DOOR = { x: -3.3, z: HALL.z1 + 0.55 };                              // on the landing, before the door's fixed half
+    const TON_MAT = { x: -0.85, z: HIN.zN + 8.7 };                                // the third row's mat, west of the hall's free post: 140 degrees behind the one who kneels, outside any frame
+    const TON_WAY = [[TON_DAWN.x, TON_DAWN.z], [-4.35, -9.6], [-3.55, -15.35], [-3.4, -19.9], [TON_DOOR.x, TON_DOOR.z],
+                     [HDOOR_AT.x - 0.12, HALL.z1 + 0.5], [HDOOR_AT.x, HALL.z1 - 1.0], [-1.25, -25.6], [TON_MAT.x, TON_MAT.z]];
+    const TON_STOP = 4;                                                          // (the way's point at the door: he goes no further until the one he leads is inside)
+    const WAY_END = [HDOOR_AT.x, HALL.z1];
+    function turnDrop(P) { for (let i = turns.length - 1; i >= 0; i--) if (turns[i].P === P) turns.splice(i, 1); }
+    function tonLead() { play.walk = { i: 1, v: 0, moving: false, waiting: false, hold: false, sat: false }; whenReady(cast.ton, (P) => { P.noBlock = true; castSolid(); }); }
+    function walkTick(wdt) {
+      const Wk = play.walk, P = cast.ton; if (!Wk || !P || !P.ready) return;
+      const g = P.group.position, px = yaw.position.x, pz = yaw.position.z;
+      const stop = (look) => { if (Wk.moving) { Wk.moving = false; Wk.v = 0; P.rate = 1; rest(P, 0.35); }
+        if (look && !Wk.looking) { Wk.looking = true; turnPerson(P, faceTo(g.x, g.z, px, pz), 0.7); gaze(P, 'lens', { secs: 0.8, reach: 0.7 }); } };
+      /* at his mat: he stands turned to the dais, and kneels once he is out of every frame */
+      if (Wk.i >= TON_WAY.length) {
+        if (Wk.moving) { stop(false); turnPerson(P, faceTo(g.x, g.z, PHO2_AT[0], PHO2_AT[1]), 0.6); }
+        camera.updateMatrixWorld(); _hv.set(g.x, g.y + 1.1, g.z).project(camera);
+        const seen = _hv.z < 1 && Math.abs(_hv.x) < 1.3 && Math.abs(_hv.y) < 1.5;
+        if (!seen || play.knelt) { tonSit(); play.walk = null; }
+        return; }
+      if (Wk.hold) { stop(true); return; }                                       // (he is speaking: a line is finished before he moves off, v11.4)
+      /* at the door he waits for the one he leads to go in first */
+      if (Wk.i === TON_STOP + 1 && phase === 'dawn') { stop(true); return; }
+      /* how far behind him the one he leads is, by each one's way left to the door */
+      const lag = Wk.i <= TON_STOP ? Math.hypot(px - WAY_END[0], pz - WAY_END[1]) - Math.hypot(g.x - WAY_END[0], g.z - WAY_END[1]) : 0;
+      if (Wk.i <= TON_STOP) { if (!Wk.waiting && lag > 6.5) Wk.waiting = true; else if (Wk.waiting && lag < 3.6) Wk.waiting = false; }
+      else Wk.waiting = false;
+      if (Wk.waiting) { stop(true); return; }
+      if (!Wk.moving) { Wk.moving = true; Wk.looking = false; turnDrop(P); gaze(P, null, { secs: 0.5 }); P.actN++; take(P, 'Walking', 0.3); }
+      const pace = (P.pace && P.pace.Walking) || 1.25, to = TON_WAY[Wk.i], dx = to[0] - g.x, dz = to[1] - g.z, d = Math.hypot(dx, dz);
+      Wk.v += (pace * (lag < 0.6 ? 1.2 : 1) - Wk.v) * Math.min(1, wdt * 3.5);     // (eased into his stride; a little quicker when he has been passed)
+      const step = Wk.v * wdt;
+      if (d <= Math.max(step, 0.02)) { g.x = to[0]; g.z = to[1]; Wk.i++; }
+      else { g.x += dx / d * step; g.z += dz / d * step; P.group.rotation.y += angTo(P.group.rotation.y, Math.atan2(dx, dz)) * Math.min(1, wdt * 5.5); }
+      g.y += (hallGround(g.x, g.z) - g.y) * Math.min(1, wdt * 9);                 // (the steps are climbed as a stair: the floor under him, eased)
+      P.rate = Math.max(0.5, Math.min(1.35, Wk.v / pace));
+    }
+    /* the line at the door, once: said when the one he leads comes to the steps (wherever Ton has got to: passed on the
+       way, he says it from where he stands and comes on after), and never over another line */
+    function doorTick() {
+      if (phase !== 'dawn' || play.said2 || play.busy || lineQ.length || dayClock.t < speak.until) return;
+      if (Math.hypot(yaw.position.x - HDOOR_AT.x, yaw.position.z - HDOOR_AT.z) > 4.4) return;
+      const run = play.run; play.said2 = true;
+      if (play.walk) { play.walk.hold = true; play.walk.looking = false; }
+      line('tn3h2', cast.ton);
+      queueFn(() => { if (live(run) && play.walk) play.walk.hold = false; });
+    }
+    /* HE IS INSIDE (the phase `hall`): banked the moment it counts. The order to go to his teacher comes when Ton's line
+       is over (v21.21), with the ring on his mat */
+    function hallEnter() {
+      const run = play.run;
+      play.busy = true; setPhase('hall');
+      queueFn(() => { if (!live(run) || phase !== 'hall') return; play.busy = false; zoneAt(KNEEL2); objectiveFor('hall', { complete: false }); });
+    }
+    /* THE HALL'S LIGHT, BY WHERE HE STANDS: the morning's own outside, the room's inside, and between the foot of its
+       steps and a metre past its door the one eased into the other by his place (never by a clock: he may stand in the
+       doorway as long as he likes, and walk out again) */
+    function hallLightTick() {
+      if (phase !== 'dawn' && phase !== 'hall') return;
+      const k = smo(c01((HALL.z1 + 1.5 - yaw.position.z) / 2.6));
+      if (Math.abs(k - play.inK) < 0.008 && !(k !== play.inK && (k === 0 || k === 1))) return;
+      play.inK = k;
+      if (kit) kit.daylight(k <= 0 ? PRESETS.DAWN : k >= 1 ? PRESETS.HALLDAY : dayBlend(DAWN, HALLDAY, k), 0);
+      phoLook.level.value = PHO_LEVEL.DAWN + (PHO_LEVEL.HALLDAY - PHO_LEVEL.DAWN) * k;
+      lookName = k >= 1 ? 'HALLDAY' : 'DAWN';
+    }
     function dawnBegin(resumed) {
+      const run = play.run;
       dawnStage();
-      yaw.position.set(DAWN_AT.x, EYE, DAWN_AT.z); yaw.rotation.y = phoYawFrom(DAWN_AT); pitch.rotation.x = -0.04;
-      if (kit) { kit.pose('standing', { secs: 0.05 }); kit.root(false); if (kit.getFade && kit.getFade() > 0.01) kit.fade(0, 1.4); }
-      play.knelt = false; play.bowed = false; play.busy = false; handsAway(false);
+      yaw.position.set(DAWN_AT.x, EYE, DAWN_AT.z); yaw.rotation.y = doorYawFrom(DAWN_AT); pitch.rotation.x = DAWN_PITCH;
+      if (kit) { kit.pose('standing', { secs: 0.05 }); kit.root(true); if (kit.getFade && kit.getFade() > 0.01) kit.fade(0, 1.4); }
+      play.knelt = false; play.bowed = false; play.busy = true; play.said2 = false; handsAway(false);
       myBai.visible = false; baiHands(true, { p: 0, secs: 0.01 });
-      zoneAt(KNEEL2);
       setPhase('dawn', { complete: false });
       if (warmSounds) warmSounds(WARM_DAY2);
+      /* Ton says where they are going; then the ground is his to walk, and Ton turns and leads */
+      after(resumed ? 0.9 : 0.5, () => { if (!live(run)) return; line('tn3h1', cast.ton);
+        queueFn(() => { if (!live(run) || phase !== 'dawn') return; if (kit) kit.root(false); play.busy = false; tonLead(); objectiveFor('dawn', { complete: false }); }); });
     }
-    /* P6 · he kneels on the carpet before him, and sets the bai sri down beside him */
-    /* (0.45 m before the low table's front edge: at 1.5 m before the bench its bowl stood under the table's edge and its
-       candle came up through the table's top: photographed from above in the close) */
-    /* (and ON the carpet, whose edge is 0.95 m to the sitters' right of the bench's middle: at 0.98 it stood on the turf) */
-    const BESIDE = (() => { const [x, z] = benchAt(0.8, 1.9); return { x, z }; })();                   // beside his left knee and a little before it
+    /* a Continue made inside the hall: he stands a step and a half inside its door, his teacher across the room */
+    function hallBegin() {
+      dawnStage();
+      yaw.position.set(HALL_IN.x, EYE, HALL_IN.z); yaw.rotation.y = pho2YawFrom(HALL_IN); pitch.rotation.x = -0.02;
+      if (kit) { kit.pose('standing', { secs: 0.05 }); kit.root(false); if (kit.getFade && kit.getFade() > 0.01) kit.fade(0, 1.4); }
+      play.knelt = false; play.bowed = false; play.busy = false; play.said2 = true; handsAway(false);
+      myBai.visible = false; baiHands(true, { p: 0, secs: 0.01 });
+      tonSit(); zoneAt(KNEEL2);
+      setPhase('hall', { complete: false });
+      if (warmSounds) warmSounds(WARM_DAY2);
+    }
+    /* P6 · he kneels on the mat before him, and sets the bai sri down beside him */
+    /* (v26.18: inside the hall, from his seat on the dais by the bench's own two numbers: on the tile beside the mat, by his
+       left knee and a little before it) */
+    const BESIDE = (() => { const [x, z] = seatAt(0.8, 1.9); return { x, z }; })();
+    const BESIDE_Y = HF + 0.012;
     function kneelPho(instant) {
       if (play.knelt && !instant) return false;
       play.knelt = true; zoneAt(null);
       if (kit) kit.root(true);
-      const ry = phoYawFrom(KNEEL2), setDown = () => { baiHands(false); baiPut(myBai, BESIDE.x, 0.012, BESIDE.z, 0.6); handsAway(true); };
+      const ry = pho2YawFrom(KNEEL2), setDown = () => { baiHands(false); baiPut(myBai, BESIDE.x, BESIDE_Y, BESIDE.z, 0.6); handsAway(true); };
       if (instant) {
         setDown();
         yaw.position.x = KNEEL2.x; yaw.position.z = KNEEL2.z; yaw.rotation.y = ry; pitch.rotation.x = 0.16;
-        if (kit) kit.pose('lying', { y: KNEEL.y, yaw: ry, span: KNEEL.span, pitchLo: KNEEL.lo, pitchHi: KNEEL.hi, secs: 0.05 });
+        if (kit) kit.pose('lying', { y: KNEELH.y, yaw: ry, span: KNEELH.span, pitchLo: KNEELH.lo, pitchHi: KNEELH.hi, secs: 0.05 });
+        look('HALLDAY', 0); play.inK = 1;
         return true;
       }
       const run = play.run; play.busy = true;
       fx('x3kneel', 0.32); setPhase('knelt'); baiRaise(-1, 0.9);
-      turnTo(ry, 1.1, Object.assign({ pos: KNEEL2, pitch: 0.16 }, KNEEL), () => { if (!live(run)) return; fx('x3baiset', 0.36); setDown();
+      look('HALLDAY', 0.5); play.inK = 1;
+      turnTo(ry, 1.1, Object.assign({ pos: KNEEL2, pitch: 0.16 }, KNEELH), () => { if (!live(run)) return; fx('x3baiset', 0.36); setDown();
         after(0.5, () => { if (!live(run)) return; play.busy = false; objectiveFor('knelt', { complete: false }); }); });
       return true;
     }
     /* one bow, the bow owed a teacher; then he is told to sit */
     function bowPho() {
       if (phase !== 'knelt' || !play.knelt || play.bowed || play.busy) return false;
-      const run = play.run, ry = phoYawFrom(KNEEL2); play.busy = true; objectiveFor('knelt');
+      const run = play.run, ry = pho2YawFrom(KNEEL2); play.busy = true; objectiveFor('knelt');
       handsAway(false);
-      if (kit) { kit.pray(true, { secs: 0.8, y: -0.3 }); kit.pose('lying', { y: KNEEL.y, yaw: ry, span: 0.02, pitchLo: -1.4, pitchHi: KNEEL.hi, secs: 0.3 }); }
+      if (kit) { kit.pray(true, { secs: 0.8, y: -0.3 }); kit.pose('lying', { y: KNEELH.y, yaw: ry, span: 0.02, pitchLo: -1.4, pitchHi: KNEELH.hi, secs: 0.3 }); }
       after(0.9, () => { if (!live(run)) return;
         play.bow = { t: 0, prev: 0, n: 1, secs: 4.6, depth: 1.05, run, sound: 'x3kneel', done: () => { if (!live(run)) return;
           play.bowed = true; saveMark();
-          if (kit) { kit.pray(false, { secs: 1.1 }); kit.pose('lying', { y: KNEEL.y, yaw: ry, span: KNEEL.span, pitchLo: KNEEL.lo, pitchHi: KNEEL.hi, secs: 0.3 }); }
+          if (kit) { kit.pray(false, { secs: 1.1 }); kit.pose('lying', { y: KNEELH.y, yaw: ry, span: KNEELH.span, pitchLo: KNEELH.lo, pitchHi: KNEELH.hi, secs: 0.3 }); }
           after(1.25, () => { if (live(run)) handsAway(true); });
-          after(0.7, () => { if (!live(run)) return; line('ph3g1', cast.pho);
+          after(0.7, () => { if (!live(run)) return; line('ph3g1', cast.phoH);
             queueFn(() => { if (!live(run)) return; play.busy = false; objectiveFor('knelt', { complete: false }); }); }); } }; });
       return true;
     }
@@ -6786,7 +7060,7 @@
       const run = play.run;
       play.busy = true; setPhase('told', { complete: false }); handsAway(true);
       if (kit && kit.getFade && kit.getFade() > 0.01) kit.fade(0, 1.0);
-      after(resumed ? 1.0 : 0.6, () => { if (!live(run)) return; line('ph3b0', cast.pho); queueFn(() => { if (live(run)) breathBegin(); }); });
+      after(resumed ? 1.0 : 0.6, () => { if (!live(run)) return; line('ph3b0', cast.phoH); queueFn(() => { if (live(run)) breathBegin(); }); });
     }
 
     /* ================================================================ P9 · OPEN AND CLOSE (the forty-sixth seam)
@@ -6846,7 +7120,7 @@
     }
     /* a line said INSIDE the event: its clock is the event's, and the queue is held while a panel is up; it is one voice
        at a time because the event waits each line's length before the next breath is live (onBreath's answer) */
-    function fxLine(name) { heard.add(name); whenReady(cast.pho, (P) => talk(P, SECS[name] || 1.2)); if (worldSfx && !(soundOff && soundOff())) worldSfx(name, 1, 1, 0); }
+    function fxLine(name) { heard.add(name); whenReady(cast.phoH, (P) => talk(P, SECS[name] || 1.2)); if (worldSfx && !(soundOff && soundOff())) worldSfx(name, 1, 1, 0); }
     /* the world laid on the level, every frame: the light, the mist, the gold; past the band, the white and the lag */
     const _lerpHex = (a, b, k) => _c1.setHex(a).lerp(_c2.setHex(b), k).getHex(), _c1 = new THREE.Color(), _c2 = new THREE.Color();
     function dayBlend(A, Bp, k) {
@@ -6860,8 +7134,10 @@
       if (phase !== 'breath' && open.shown <= 0 && open.over <= 0) return;
       const live2 = phase === 'breath', k = live2 ? open.k : 0, e = smo(c01(k / 0.9));
       if (Math.abs(e - open.shown) > 0.004 || (!live2 && open.shown !== 0)) { open.shown = live2 ? e : 0;
-        if (kit) kit.daylight(open.shown > 0 ? dayBlend(DAWN, OPENED, open.shown) : PRESETS.DAWN, 0);
-        phoLook.level.value = PHO_LEVEL.DAWN + (PHO_LEVEL.OPENED - PHO_LEVEL.DAWN) * open.shown; mistK = 1 - 0.7 * open.shown; }
+        /* (v26.18: inside the hall, the room's own pair of looks; the light in its glass warms with it) */
+        if (kit) kit.daylight(open.shown > 0 ? dayBlend(HALLDAY, HALLOPEN, open.shown) : PRESETS.HALLDAY, 0);
+        hallGlassMix('MORNING', 'OPEN', open.shown);
+        phoLook.level.value = PHO_LEVEL.HALLDAY + (PHO_LEVEL.HALLOPEN - PHO_LEVEL.HALLDAY) * open.shown; mistK = 1 - 0.7 * open.shown; }
       auraAt(open.shown * 0.95, t);
       /* the third breath pulls: his hands begin to drift as they did in the line */
       if (kit && kit.tremble) kit.tremble(live2 ? 0.4 * smo(c01((play.pull3 || 0) * 1.4 - 0.5)) : 0, { secs: 0.2 });
@@ -6875,7 +7151,7 @@
       const c = play.breath.closed;
       bank(c >= 3 ? W.noteBreath3 : c === 2 ? W.noteBreath2 : c === 1 ? W.noteBreath1 : W.noteBreath0, 0);
       after(resumed ? 1.0 : 0.9, () => { if (!live(run)) return;
-        line('ph3b5', cast.pho); queueGap(0.6); line('ph3p1', cast.pho);           // (v26.8: the road in one line, Chad's "greatly shortened")
+        line('ph3b5', cast.phoH); queueGap(0.6); line('ph3p1', cast.phoH);         // (v26.8: the road in one line, Chad's "greatly shortened")
         queueFn(() => { if (live(run)) decideBegin(false); }); });
     }
     function decideBegin(resumed) {
@@ -6891,11 +7167,11 @@
     /* ---------------------------------------------------------------- the decision: Grandmaster Pho, on his bench */
     const _ndc = new THREE.Vector3();
     const INTERACT_R = 3.4;
-    const PILE_POS = new THREE.Vector3(PHO_AT[0], 0, PHO_AT[1]);              // (he is the chapter's pile: where he sits, not the bench's middle)
+    const PILE_POS = new THREE.Vector3(PHO_AT[0], 0, PHO_AT[1]);              // (he is the chapter's pile: where he sits, not the bench's middle; in the morning, on the hall's dais: hallDay)
     const pile = new THREE.Group(); pile.position.copy(PILE_POS); world.add(pile);
     const pileLive = () => decOpen && phase === 'decide';
     function pileDist() { return Math.hypot(yaw.position.x - PILE_POS.x, yaw.position.z - PILE_POS.z); }
-    function pileScreen() { camera.updateMatrixWorld(); return _ndc.set(PILE_POS.x, 1.0, PILE_POS.z).project(camera); }
+    function pileScreen() { camera.updateMatrixWorld(); return _ndc.set(PILE_POS.x, PILE_POS.y + 1.0, PILE_POS.z).project(camera); }
     function pileInView() { if (!pileLive()) return false; const n = pileScreen(); return n.z < 1 && Math.abs(n.x) < 1.1 && Math.abs(n.y) < 1.1; }
     function pointerHitsPile() { return pileLive() && pileDist() < INTERACT_R; }
     function interactPile() { if (!pileLive()) return false; startDecision(); return true; }
@@ -6922,11 +7198,11 @@
       { id: 'homage', pos: { x: PLACE.x, y: 0.9, z: PLACE.z }, radius: 4, anyView: true, prompt: W.hotHomage, mark: false,
         enabled: () => phase === 'place' && play.knelt && !play.homage && !play.busy && !play.turning, onInteract() { return homage(); } },
       hsLook, hsAskTon, hsAskAunt,
-      { id: 'kneel2', pos: { x: KNEEL2.x, y: 0.9, z: KNEEL2.z }, radius: 2.3, prompt: W.hotKneel, mark: false,
-        enabled: () => phase === 'dawn' && !play.knelt && !play.busy, onInteract() { return kneelPho(false); } },
-      { id: 'bow2', pos: { x: PHO_HEAD.x, y: 1.0, z: PHO_HEAD.z }, radius: 4, anyView: true, prompt: W.hotBow, mark: false,
+      { id: 'kneel2', pos: { x: KNEEL2.x, y: HF + 0.9, z: KNEEL2.z }, radius: 2.3, prompt: W.hotKneel, mark: false,
+        enabled: () => phase === 'hall' && !play.knelt && !play.busy, onInteract() { return kneelPho(false); } },
+      { id: 'bow2', pos: { x: PHO2_HEAD.x, y: HF + 1.0, z: PHO2_HEAD.z }, radius: 4, anyView: true, prompt: W.hotBow, mark: false,
         enabled: () => phase === 'knelt' && play.knelt && !play.bowed && !play.busy && !play.turning, onInteract() { return bowPho(); } },
-      { id: 'tell', pos: { x: PHO_HEAD.x, y: 1.0, z: PHO_HEAD.z }, radius: 4, anyView: true, prompt: W.hotTell, mark: false,
+      { id: 'tell', pos: { x: PHO2_HEAD.x, y: HF + 1.0, z: PHO2_HEAD.z }, radius: 4, anyView: true, prompt: W.hotTell, mark: false,
         enabled: () => phase === 'knelt' && play.bowed && !play.busy, onInteract() { return tellAll(); } }
     ];
     /* a mark rides the person it is on */
@@ -6964,6 +7240,7 @@
     function playTick(now, wdt) {
       hotTick();
       turnTick(wdt); bowTick(wdt); baiTick(wdt); awayTick(); pullTick(wdt); openTick(wdt, windClock);
+      walkTick(wdt); doorTick(); hallLightTick();
       ambTick(); extrasSound();
       burstsTick(dayClock.t);
       /* what a person carries rides his hands */
@@ -6974,7 +7251,10 @@
       if (play.ymSet) { const G = play.ymSet; G.k = Math.min(1, G.k + wdt / 0.5); const k = smo(G.k); ymBai.position.set(lp(G.from[0], G.to[0], k), lp(G.from[1], G.to[1], k * k), lp(G.from[2], G.to[2], k)); if (G.k >= 1) play.ymSet = null; }
       /* he walks onto the place: he kneels (the press is offered too) */
       if (phase === 'tables' && !play.knelt && !play.busy && Math.hypot(yaw.position.x - PLACE.x, yaw.position.z - PLACE.z) < 0.45) kneelPlace(false);
-      if (phase === 'dawn' && !play.knelt && !play.busy && Math.hypot(yaw.position.x - KNEEL2.x, yaw.position.z - KNEEL2.z) < 0.45) kneelPho(false);
+      /* (v26.18) he steps through the hall's door: he is inside; and onto his mat: he kneels */
+      if (phase === 'dawn' && yaw.position.z < HALL.z1 - 0.35) hallEnter();
+      if (phase === 'hall' && !play.knelt && !play.busy && Math.hypot(yaw.position.x - KNEEL2.x, yaw.position.z - KNEEL2.z) < 0.45) kneelPho(false);
+      if (phase === 'hall' && !zone.g.visible && !play.knelt && !play.busy) zoneAt(KNEEL2);
       if (phase === 'tables' && !zone.g.visible && !play.knelt) zoneAt(PLACE);
     }
     /* TWO SOUNDS THAT BELONG TO SOMEONE (12 Nov). The wick catching, each time the taper's tip comes to a candle: heard
@@ -7005,10 +7285,12 @@
       const R = readMark(p0);
       if (R.p === 'arrive') return '';
       if (DAY_TWO.has(R.p)) { dawnStage();
-        const knelt = R.p !== 'dawn';
-        if (knelt) { yaw.position.x = KNEEL2.x; yaw.position.z = KNEEL2.z; yaw.rotation.y = phoYawFrom(KNEEL2); pitch.rotation.x = 0.16; baiPut(myBai, BESIDE.x, 0.012, BESIDE.z, 0.6);
-          if (kit) kit.pose('lying', { y: KNEEL.y, yaw: phoYawFrom(KNEEL2), span: KNEEL.span, pitchLo: KNEEL.lo, pitchHi: KNEEL.hi, secs: 0.05 }); }
-        else { yaw.position.set(DAWN_AT.x, EYE, DAWN_AT.z); yaw.rotation.y = phoYawFrom(DAWN_AT); pitch.rotation.x = -0.04; myBai.visible = false; }
+        const knelt = R.p !== 'dawn' && R.p !== 'hall';
+        if (knelt) { tonSit(); look('HALLDAY', 0); play.inK = 1;
+          yaw.position.x = KNEEL2.x; yaw.position.z = KNEEL2.z; yaw.rotation.y = pho2YawFrom(KNEEL2); pitch.rotation.x = 0.16; baiPut(myBai, BESIDE.x, BESIDE_Y, BESIDE.z, 0.6);
+          if (kit) kit.pose('lying', { y: KNEELH.y, yaw: pho2YawFrom(KNEEL2), span: KNEELH.span, pitchLo: KNEELH.lo, pitchHi: KNEELH.hi, secs: 0.05 }); }
+        else if (R.p === 'hall') { tonSit(); look('HALLDAY', 0); play.inK = 1; yaw.position.set(HALL_IN.x, EYE, HALL_IN.z); yaw.rotation.y = pho2YawFrom(HALL_IN); pitch.rotation.x = -0.02; myBai.visible = false; }
+        else { yaw.position.set(DAWN_AT.x, EYE, DAWN_AT.z); yaw.rotation.y = doorYawFrom(DAWN_AT); pitch.rotation.x = DAWN_PITCH; myBai.visible = false; }
         return R.p; }
       dayOneStage();
       if (R.p === 'festival' || R.p === 'seen' || R.p === 'check') { lineStage(); yaw.position.set(LINE_AT.x, EYE, LINE_AT.z); yaw.rotation.y = phoYawFrom(LINE_AT); pitch.rotation.x = -0.08; return R.p; }
@@ -7026,12 +7308,13 @@
       play.knelt = false; play.looked = false; play.pull = null; play.busy = false;
       if (R.p === 'arrive') { arriveBegin(); return; }
       if (DAY_TWO.has(R.p)) {
-        dawnBegin(true);
-        if (R.p === 'dawn') return;
-        play.bowed = R.bowed;                                                    // (dawnBegin begins a fresh morning and forgets the bow: its receipt is given back. The resume sweep found it: a Continue after his bow offered the bow again)
+        if (R.p === 'dawn') { dawnBegin(true); return; }
+        hallBegin();                                                              // (v26.18: every later morning phase finds him inside the hall, Ton on his mat at the back)
+        if (R.p === 'hall') return;
+        play.bowed = R.bowed;                                                    // (the morning's stage begins fresh and forgets the bow: its receipt is given back. The resume sweep found it: a Continue after his bow offered the bow again)
         kneelPho(true); setPhase('knelt', { complete: false });
         if (R.p === 'knelt') { if (!play.bowed) return; play.busy = true; const run = play.run;
-          after(0.8, () => { if (!live(run)) return; line('ph3g1', cast.pho); queueFn(() => { if (live(run)) { play.busy = false; objectiveFor('knelt', { complete: false }); } }); }); return; }
+          after(0.8, () => { if (!live(run)) return; line('ph3g1', cast.phoH); queueFn(() => { if (live(run)) { play.busy = false; objectiveFor('knelt', { complete: false }); } }); }); return; }
         play.bowed = true;
         if (R.p === 'told' || R.p === 'breath') { toldBegin(true); return; }
         if (R.p === 'taught') { taughtBegin(true, play.breath); return; }
@@ -7376,10 +7659,13 @@
     function lit(name, day) {
       if (kit) kit.daylight(PRESETS[name] || null, 0);
       lookName = name; FL.lit = name;
-      dayOne.visible = /one/.test(day); dayTwo.visible = /two/.test(day); nightG.visible = /night/.test(day); duskG.visible = name === 'DUSK';
+      /* (v26.18: a look inside the hall wears its hour's dressing outside, and sets the hall's glass and pictures to the hour) */
+      const hh = HALL_HOUR[name], out = hh ? hh[0] : name;
+      dayOne.visible = /one/.test(day); dayTwo.visible = /two/.test(day); nightG.visible = /night/.test(day); duskG.visible = out === 'DUSK';
       crowdSolid(dayOne.visible);
-      paintShade(name);
+      paintShade(out);
       phoLook.level.value = PHO_LEVEL[name] != null ? PHO_LEVEL[name] : 1;
+      hallGlass(hh ? hh[1] : out === 'DUSK' || out === 'NIGHT' ? 'DUSK' : out === 'AFTERNOON' ? 'NOON' : 'MORNING');
       mistK = 0;
     }
     /* HIS BAI SRI IN HIS HANDS, IN A FILM: exactly as play carries it (the hands' own pass, his hands under the frame's
@@ -7435,6 +7721,7 @@
       begin(api) { if (api.handsRoot) api.handsRoot.visible = false; FL.shot = ''; FL.bai = false; },
       stage(n) {
         FL.shot = n; filmBai(n === 'n1');
+        if (n !== 'n5') hallDay(false);                                          // (v26.18: the hall stands shut, and the bench's own man is on it, until first light)
         const row = [cast.hermitB, cast.red, cast.pho, cast.white, cast.hermitA];
         FL.sky = n === 'n4' ? { x: ROOM.x, z: ROOM.z } : null;
         if (n === 'n1') {
@@ -7496,9 +7783,10 @@
           { const X = ROOM.x, Zw = ROOM.wall, sl = ROOM.sill, hw = ROOM.w / 2 + 0.06;
             fitShot(BW.eye4, [X, sl + lp(0.5, 0.46, k), Zw], lp(60, 54, k), lp(46, 41, k), [[X - hw, sl - 0.1, Zw], [X + hw, sl - 0.1, Zw], [X - hw, sl + 1.1, Zw], [X + hw, sl + 1.1, Zw]]); }
         } else {
-          /* FIRST LIGHT ON THE TURF: his eyes come up from yesterday's petals to the bench across the turf, where one
-             man sits; and Ton, beside him. It ends on the very picture play begins the morning in */
-          const k = smo(sgk(t, T.n5 + 0.3, T.tn3n1 + 0.2)), ya = phoYawFrom(DAWN_AT), pi = lp(-0.6, -0.04, k), eye = [DAWN_AT.x, EYE, DAWN_AT.z];
+          /* FIRST LIGHT ON THE TURF: his eyes come up from yesterday's petals to the hall beyond the offering tables, its
+             west door standing open (v26.18: his teacher sits inside it that morning; the bench is empty); and Ton,
+             beside him. It ends on the very picture play begins the morning in */
+          const k = smo(sgk(t, T.n5 + 0.3, T.tn3n1 + 0.2)), ya = doorYawFrom(DAWN_AT), pi = lp(-0.6, DAWN_PITCH, k), eye = [DAWN_AT.x, EYE, DAWN_AT.z];
           shot(eye, [eye[0] - Math.sin(ya) * Math.cos(pi) * 10, EYE + Math.sin(pi) * 10, eye[2] - Math.cos(ya) * Math.cos(pi) * 10], PLAY_FOV, PLAY_FOV);
           mistK = 1;
           /* Ton says it, and is at rest again before play has him */
@@ -7517,7 +7805,16 @@
        the lens changes unseen is behind his own eyelids, once, before the teaching. */
     /* (his eye, kneeling; and FOOT, the carpet at Grandmaster Pho's foot, deep in petals, where his eyes drop on "kumanthong".
        v26.8: a golden bowl of petals stood there and the drops looked into it; taken out at Chad's word, "Remove it") */
-    const EK = [KNEEL2.x, KNEEL.y, KNEEL2.z], FOOT = benchAt(0.1, 0.72);
+    /* (v26.18: inside the hall. His eye over its floor; FOOT, the white tile and the hem of the dais's skirt at his
+       teacher's foot: the same drop of his eyes, onto the new ground) */
+    const EK = [KNEEL2.x, KNEELH.y, KNEEL2.z], FOOT = seatAt(0.1, 0.72);
+    /* (where his eyes DROP to, photographed: at the tile before the skirt through a phone's 56 degrees, two thirds of the
+       picture was blank white tile. They drop to the front of his teacher's seat instead, the hem of the white cloth on
+       the cushion: the old man's still hands over it, the cushion's edge, the skirt and a strip of the tile under it;
+       narrower, so nothing of the face is in it) */
+    const DROP = [HALLSEAT.x + 0.16, HF + HIN.dais.h + 0.07, HIN.zN + HIN.dais.v1 - 0.16];
+    /* the woman who serves him, seated at his right hand: quite still */
+    const auntRest = (t) => pose(cast.aunt, 'seiza', 1.5 + 0.3 * Math.sin(t * 0.5), false);
     /* his eyes from a place: a heading and a tilt (up is positive), at a lens */
     function eyes(eye, ya, pi, fPhone, fDesk, roll = 0) { const c = Math.cos(pi); shot(eye, [eye[0] - Math.sin(ya) * c * 10, eye[1] + Math.sin(pi) * 10, eye[2] - Math.cos(ya) * c * 10], fPhone, fDesk, roll); }
     const aimOf = (eye, p) => [yawTo(eye[0], eye[2], p[0], p[2]), Math.atan2(p[1] - eye[1], Math.hypot(p[0] - eye[0], p[2] - eye[2]))];
@@ -7536,7 +7833,7 @@
        rides the living head (v25.5: a look locked to a talking head sways the whole picture behind it) */
     function faceAt(id, P, restTake, restT) {
       if (!FL.faces[id] && P && P.ready) { pose(P, restTake, restT, false); const h = headOf(P, null); if (h) FL.faces[id] = [h[0], h[1] + 0.06, h[2]]; }
-      return FL.faces[id] || [P.group.position.x, 1.3, P.group.position.z];
+      return FL.faces[id] || [P.group.position.x, P === cast.phoH ? HALLSEAT.y + 0.72 : 1.3, P.group.position.z];
     }
     /* A SEATED MASTER SPEAKS, in a film: his talking take under each of his lines (eased in at the line's start and out
        at its end; each line begins the take somewhere else, so no two begin with one gesture), his rest between */
@@ -7576,11 +7873,11 @@
     FILMS.tell = {
       begin(api) { if (api.handsRoot) api.handsRoot.visible = false; FL.wai = false; },
       frame(t, api) {
-        const T = TELL, Ph = cast.pho, F = faceAt('pho', Ph, 'Sit_to_Stand_Transition_M', 0.16), [yF, pF] = aimOf(EK, F);
+        const T = TELL, Ph = cast.phoH, F = phoFace(), [yF, pF] = aimOf(EK, F);
         /* he listens: quite still, his eyes on the one who speaks */
         pose(Ph, 'Sit_to_Stand_Transition_M', 0.16 + 0.13 * Math.sin(t * 0.7), false);
         lookNow(Ph, 'lens', 1, 0.5, 0);
-        pose(cast.aunt, 'Idle_3', 2 + t, true);
+        auntRest(t);
         /* A LOOK OF ITS OWN FOR EACH SENTENCE (v26.8, Chad: "When grandmaster pho or the player talks for very long
            stretches, you should rotate between different camera panning, angles, etc, to make it less static and boring,
            so there is sustained visual interest"). Every change is still a move of his eyes or his lens, never a cut on
@@ -7596,7 +7893,7 @@
            the frame's top edge through his nose for the six seconds of the line. On a desktop the look goes to 0.40 m
            under it through 18 degrees: an insert of the beads and the pendant from his neck down. A phone's tall frame
            holds his face and the beads together, as before) */
-        const [yC, pC] = aimOf(EK, [FOOT[0], 0.02, FOOT[1]]), [yN, pN] = aimOf(EK, [F[0], F[1] - (isNarrow() ? 0.34 : 0.40), F[2]]);
+        const [yC, pC] = aimOf(EK, DROP), [yN, pN] = aimOf(EK, [F[0], F[1] - (isNarrow() ? 0.34 : 0.40), F[2]]);
         /* and the slow push on the old man's face through the whole telling */
         const kp = smo(sgk(t, 0, T.q3t8)), fP = lp(46, 25, kp), fD = lp(34, 18.5, kp), pT = faceTilt(EK, F, fP, fD);
         /* "my body moves by itself": for that sentence his body remembers it, and the picture sways a little */
@@ -7615,12 +7912,12 @@
     FILMS.answers = {
       begin(api) { if (api.handsRoot) api.handsRoot.visible = false; FL.wai = false; },
       frame(t, api) {
-        const T = ANSW, Ph = cast.pho, Au = cast.aunt, W8 = ANSW_WORDS;
+        const T = ANSW, Ph = cast.phoH, Au = cast.aunt, W8 = ANSW_WORDS;
         phoFace(); phoTalkFace();                                                // (both his places measured before he is posed)
         const kTalk = speaks(Ph, t, T, ['ph3n1', 'ph3n2', 'ph3n3', 'ph3n4']);
         const F = phoF(kTalk), [yF, pF] = aimOf(EK, F);
         lookNow(Ph, 'lens', 1, 0.5, 0);
-        pose(Au, 'Idle_3', 2 + t, true);
+        auntRest(t);
         /* A LOOK OF ITS OWN FOR EACH THING HE SAYS (v26.8, Chad: "When grandmaster pho or the player talks for very long
            stretches, you should rotate between different camera panning, angles, etc"), each on the word it is about,
            measured on the takes (ANSW_WORDS): "Different people bring different things", his eyes go down to what he
@@ -7630,9 +7927,9 @@
            of his sight; "You opened your body to the kumanthong", he cannot hold the old man's eyes: down to the petals
            on the carpet at his teacher's foot; his eyes close a moment; "To open when you choose, and to close when you choose", he draws
            back and the gold rises on his teacher. Every change is a move of his eyes or his lens, never a cut (v25.5) */
-        const kB = bump(t, T.ph3n1 + W8.n1diff - 0.15, T.ph3n1 + W8.n1and + 0.25, 0.9, 1.0), [yB, pB] = aimOf(EK, [BESIDE.x, 0.27, BESIDE.z]);
+        const kB = bump(t, T.ph3n1 + W8.n1diff - 0.15, T.ph3n1 + W8.n1and + 0.25, 0.9, 1.0), [yB, pB] = aimOf(EK, [BESIDE.x, HF + 0.27, BESIDE.z]);
         const kH = bump(t, T.ph3n2 + W8.n2born - 0.2, T.ph3n2 + W8.n2and + 0.3, 0.8, 0.8);
-        const kC = bump(t, T.ph3n3 + W8.n3you - 0.15, T.ph3n3 + SECS['ph3n3'] + 0.3, 1.0, 1.1), [yC, pC] = aimOf(EK, [FOOT[0], 0.02, FOOT[1]]);
+        const kC = bump(t, T.ph3n3 + W8.n3you - 0.15, T.ph3n3 + SECS['ph3n3'] + 0.3, 1.0, 1.1), [yC, pC] = aimOf(EK, DROP);
         /* THE LENS, one smooth line through the whole film (its knots: [second, phone, desktop]); a second line after
            his eyes have closed and opened */
         const first = t < T.blink + 0.33;
@@ -7643,7 +7940,7 @@
         let fP = L[0][1], fD = L[0][2];
         for (let i = 0; i < L.length - 1; i++) if (t >= L[i][0]) { const k = smo(sgk(t, L[i][0], L[i + 1][0])); fP = lp(L[i][1], L[i + 1][1], k); fD = lp(L[i][2], L[i + 1][2], k); }
         /* it ends on play's own picture: play's heading, tilt and lens from where he kneels */
-        const kEnd = smo(sgk(t, T.ph3n4 + SECS['ph3n4'] + 0.3, T.end - 0.4)), yaP = phoYawFrom(KNEEL2), piP = 0.16;
+        const kEnd = smo(sgk(t, T.ph3n4 + SECS['ph3n4'] + 0.3, T.end - 0.4)), yaP = pho2YawFrom(KNEEL2), piP = 0.16;
         const pT = faceTilt(EK, F, fP, fD);
         /* (v26.8: the drop wide, to the carpet's petals, as in the telling) */
         eyes(EK, lp(yF + (yB - yF) * kB + (yC - yF) * kC, yaP, kEnd), lp(pT + (pB - pT) * kB + (-0.6 - pT) * kH + (pC - pT) * kC, piP, kEnd),
@@ -7664,18 +7961,18 @@
        each comes back to that carpet for the close all four share. Pictures only: the cues are below the build. */
     const lensAt = (t, L) => { let fP = L[0][1], fD = L[0][2]; for (let i = 0; i < L.length - 1; i++) if (t >= L[i][0]) { const k = smo(sgk(t, L[i][0], L[i + 1][0])); fP = lp(L[i][1], L[i + 1][1], k); fD = lp(L[i][2], L[i + 1][2], k); } return [fP, fD]; };
     const yawMix = (a, b, k) => a + angTo(a, b) * k;                          // from heading a to heading b the short way, by k (angTo: the signed short turn)
-    const phoFace = () => faceAt('pho', cast.pho, 'Sit_to_Stand_Transition_M', 0.16);
+    const phoFace = () => faceAt('phoH', cast.phoH, 'Sit_to_Stand_Transition_M', 0.16);   // (v26.18: the morning's man, cross-legged on the hall's dais)
     /* WHERE HIS FACE IS WHILE HE TALKS: his talking take leans him forward and sets his head a hand lower than his rest
        does (from 1.3 m, in a narrow lens, his face fell out of the foot of the picture: photographed on "Tomorrow we
        begin."). A look still never rides a living head (v25.5), so the take's own MEAN place is measured once, and the
        look glides between the two places by how much he is talking (`speaks` answers it: a smooth function of the
        film's clock) */
     function phoTalkFace() {
-      const P = cast.pho;
-      if (!FL.faces.phoTalk && P.ready && P.acts[P.talkTake]) { const d = P.acts[P.talkTake].getClip().duration, s = [0, 0, 0]; let n = 0;
+      const P = cast.phoH;
+      if (!FL.faces.phoHTalk && P.ready && P.acts[P.talkTake]) { const d = P.acts[P.talkTake].getClip().duration, s = [0, 0, 0]; let n = 0;
         for (let i = 0; i < 12; i++) { pose(P, P.talkTake, (i + 0.5) / 12 * d, false); const h = headOf(P, null); if (h) { s[0] += h[0]; s[1] += h[1] + 0.06; s[2] += h[2]; n++; } }
-        if (n) FL.faces.phoTalk = [s[0] / n, s[1] / n, s[2] / n]; }
-      return FL.faces.phoTalk || phoFace();
+        if (n) FL.faces.phoHTalk = [s[0] / n, s[1] / n, s[2] / n]; }
+      return FL.faces.phoHTalk || phoFace();
     }
     const phoF = (k = 0) => (k > 0.001 ? lp3(phoFace(), phoTalkFace(), c01(k)) : phoFace());
     /* his eyes on Grandmaster Pho from an eye: the heading, and the tilt that holds the face well at this lens (k: how
@@ -7703,17 +8000,21 @@
     }
     const _bqe = new THREE.Quaternion();
     /* where his hand lets a handful of petals go: his own take's hand at its throw, measured once */
-    function phoThrow() { const Ph = cast.pho; if (!FL.throwPho && Ph.ready) { const v = handsAt(Ph, 'Sit_Cheer_with_Left_Hand', 1.32, new THREE.Vector3(), 'R'); if (v) { Ph.group.localToWorld(v); FL.throwPho = [v.x, v.y + 0.08, v.z]; } } return FL.throwPho; }
+    function phoThrow() { const Ph = cast.phoH; if (!FL.throwPho && Ph.ready) { const v = handsAt(Ph, 'Sit_Cheer_with_Left_Hand', 1.32, new THREE.Vector3(), 'R'); if (v) { Ph.group.localToWorld(v); FL.throwPho = [v.x, v.y + 0.08, v.z]; } } return FL.throwPho; }
 
-    const EKN = (() => { const [x, z] = benchAt(0.46, 1.3); return [x, KNEEL.y, z]; })();              // his eye, knelt nearer: where two pairs of hands meet on one bowl
+    const EKN = (() => { const [x, z] = seatAt(0.46, 1.3); return [x, KNEELH.y, z]; })();              // his eye, knelt nearer: where two pairs of hands meet on one bowl
     /* (v26.2 debug: the low table is smaller and a little to the right, clear of his foot, of the young man's knee and of
        the lime pole (b_world2.js TB); the bai sri is set on its front left, where nothing else stands, and the woman
        stands at its right) */
-    const TABLE_BAI = (() => { const [x, z] = benchAt(1.03, 0.8); return [x, 0.38, z]; })();           // where his bai sri is set down at the last: the low table at the old man's right hand
-    const AUNT_TABLE = (() => { const [x, z] = benchAt(1.95, 1.1); return { x, z, ry: faceTo(x, z, TABLE_BAI[0], TABLE_BAI[2]) }; })();
+    /* (v26.18: inside the hall there is no low table at his hand, and the dais beside him is full (his photograph 3). His
+       bai sri is set among the offerings on the altar at his right, at its front by its east end, by the woman who serves
+       him: she rises from where she sits and stands before it, and is seen as her hands leave it, as she was at the
+       bench) */
+    const TABLE_BAI = hallAt(0.5, 2.1, 0.65 + 0.012);
+    const AUNT_TABLE = (() => { const x = 0.58, z = HIN.zN + 2.2 + 0.4; return { x, z, ry: faceTo(x, z, TABLE_BAI[0], TABLE_BAI[2]) }; })();
     /* each ending's light at the close: the look it arrives in; what OPEN widens it to; the look it is left in */
-    const END_LOOK = { A: ['DAWN', 'OPENED', 'DAWN'], B: ['DUSK', 'DUSKOPEN', 'DUSK'], C: ['DAWN', 'OPENED', 'DAWN'], D: ['SHUT', 'OPENED', 'DAWN'] };
-    const shadeOf = (name) => (name === 'OPENED' || name === 'SHUT' ? 'DAWN' : name === 'DUSKOPEN' ? 'DUSK' : name);
+    const END_LOOK = { A: ['HALLDAY', 'HALLOPEN', 'HALLDAY'], B: ['HALLDUSK', 'HALLDUSKOPEN', 'HALLDUSK'], C: ['HALLDAY', 'HALLOPEN', 'HALLDAY'], D: ['HALLSHUT', 'HALLOPEN', 'HALLDAY'] };   // (v26.18: the hall's own)
+    const shadeOf = (name) => { const o = HALL_HOUR[name] ? HALL_HOUR[name][0] : name; return o === 'OPENED' || o === 'SHUT' ? 'DAWN' : o === 'DUSKOPEN' ? 'DUSK' : o; };
     /* THOSE WHO WAIT CARRY WHAT THEY BROUGHT: a small bai sri on its tray, in both hands at the waist (a hand's width
        under the elbow's height, measured from that body's own shoulder), the hands solved onto the tray's foot. Called
        after the body's take is posed, every frame it is seen */
@@ -7727,18 +8028,27 @@
       b.position.set(c[0], c[1], c[2]); b.rotation.y = ry + i * 1.3; b.visible = true;
       handsTo(P, trayGrip(c, WAIT_TRAY.r, [g.position.x, g.position.z]), 1);
     }
-    /* the world as play left it at the decision: the morning of day two, Grandmaster Pho on his bench, his bai sri on the
-       carpet beside him; and everything an ending may stand, put away */
+    /* (v26.18) INSIDE THE HALL THEY SIT: nobody stands over a master who sits on the floor (his photographs 5 and 10: every
+       devotee in the hall is on the tile). Each waits on his heels, and what he brought stands on the tile before his
+       knees, as offerings wait in a hall; his hands lie in his lap, the take's own. Called after the body is posed */
+    function waitSet(i, t) {
+      const P = cast.wait[i], b = waitBai[i]; if (!P.ready || !P.group.visible) { b.visible = false; return; }
+      pose(P, 'seiza', 1.3 + 0.9 * i + 0.3 * Math.sin(t * (0.45 + 0.04 * i) + i * 1.7), false);
+      const g = P.group, ry = g.rotation.y;
+      b.position.set(g.position.x + Math.sin(ry) * 0.5, g.position.y + 0.004, g.position.z + Math.cos(ry) * 0.5); b.rotation.y = ry + i * 1.3; b.visible = true;
+    }
+    /* the world as play left it at the decision: the morning of day two, Grandmaster Pho on the hall's dais, the woman who
+       serves him seated at his right hand, Ton on his mat at the back, his bai sri on the tile beside him; and everything
+       an ending may stand, put away */
     function endStage() {
-      lit('DAWN', 'two'); mistK = 0.6; dayCast(false);
-      for (const P of [cast.pho, cast.aunt]) { put(P, P.home.x, P.home.z, P.home.ry); if (P.ready) P.group.visible = true; }
-      put(cast.ton, TON_DAWN.x, TON_DAWN.z, faceTo(TON_DAWN.x, TON_DAWN.z, KNEEL2.x, KNEEL2.z)); if (cast.ton.ready) cast.ton.group.visible = true;
+      lit('HALLDAY', 'two'); mistK = 0.6; dayCast(false); hallDay(true); hallMats(5);
+      auntIn(); tonSit();
       for (const P of cast.wait) { if (P.ready) P.group.visible = false; put(P, P.home.x, P.home.z, P.home.ry); }
       for (const b of waitBai) b.visible = false;
       for (const P of [cast.ym, cast.goA, cast.goB]) if (P.ready) P.group.visible = false;
       matsG.visible = false; rolled.own.visible = false; ymBai.visible = false;
       for (const g of rolled.ton.concat(rolled.rolls, [rolled.carry])) g.visible = false;
-      baiPut(myBai, BESIDE.x, 0.012, BESIDE.z, 0.6); myBai.visible = true;
+      baiPut(myBai, BESIDE.x, BESIDE_Y, BESIDE.z, 0.6); myBai.visible = true;
       auraAt(0, 0); FL.litE = -1; FL.litA = -1; FL.goldMin = 0; FL.shot = '';
       if (kit && kit.hush) kit.hush(0, { secs: 0 });
       castSolid();
@@ -7748,7 +8058,7 @@
       myArmsAt(null, null, 0, null, 0, 0, 0); myOpenHand(null, null, 0, 0);
       for (const P of cast.wait) if (P.ready) P.group.visible = false;
       for (const b of waitBai) b.visible = false;
-      matsG.visible = false; auraAt(0, 0); filmBurstsEnd();
+      matsG.visible = false; hallMats(5); auraAt(0, 0); filmBurstsEnd();
       if (kit && kit.hush) kit.hush(0, { secs: 0 });
       if (kit && kit.captions) kit.captions(null);
     }
@@ -7761,16 +8071,17 @@
         let d = e > 0.004 ? dayBlend(PRESETS[base], PRESETS[opn], e) : PRESETS[base];
         if (a > 0.004) d = dayBlend(d, PRESETS[aft], a);
         if (kit) kit.daylight(d, 0);
-        phoLook.level.value = lp(lp(PHO_LEVEL[base], PHO_LEVEL.OPENED, e), PHO_LEVEL[aft], a); mistK = base === 'DUSK' ? 0 : 0.6 - 0.4 * e; }
+        { const g0 = HALL_HOUR[base][1]; if (a > 0.004) hallGlassMix(g0, HALL_HOUR[aft][1], a); else hallGlassMix(g0, g0 === 'DUSK' ? 'DUSK' : 'OPEN', e); }
+        phoLook.level.value = lp(lp(PHO_LEVEL[base], PHO_LEVEL.HALLOPEN, e), PHO_LEVEL[aft], a); mistK = 0; }
       auraAt(Math.max(e * 0.95, FL.goldMin || 0), t);
     }
     function closeStage(k) {
       const [base] = END_LOOK[k];
       endTidy();
-      lit(base, 'two'); paintShade(shadeOf(base)); mistK = base === 'DUSK' ? 0 : 0.6; dayCast(false);
-      for (const P of [cast.pho, cast.aunt]) { put(P, P.home.x, P.home.z, P.home.ry); if (P.ready) P.group.visible = true; }
-      put(cast.ton, TON_DAWN.x, TON_DAWN.z, faceTo(TON_DAWN.x, TON_DAWN.z, KNEEL2.x, KNEEL2.z));
-      baiPut(myBai, BESIDE.x, 0.012, BESIDE.z, 0.6); myBai.visible = true;
+      lit(base, 'two'); mistK = 0; dayCast(false); hallDay(true); hallMats(5);
+      auntIn();
+      { const T0 = cast.ton, was = T0.ready ? T0.group.visible : true; tonSit(); if (T0.ready) T0.group.visible = was; }     // (an ending that put him away keeps him away)
+      baiPut(myBai, BESIDE.x, BESIDE_Y, BESIDE.z, 0.6); myBai.visible = true;
       FL.litE = -1; FL.litA = -1; FL.goldMin = 0; FL.tabled = false;
       castSolid();
     }
@@ -7780,7 +8091,7 @@
        both hands: photographed, v26.10's third build) */
     const HOLD = { d: 0.48, y: 0.12, mid: 0.24 };
     function closeFrame(tc, k, api) {
-      const T = CLOSE, Ph = cast.pho, Au = cast.aunt;
+      const T = CLOSE, Ph = cast.phoH, Au = cast.aunt;
       if (FL.shot !== 'close') { FL.shot = 'close'; closeStage(k); }
       /* THE EYE: from where he knelt, forward on his knees to where four hands can meet on one bowl */
       const kf = smo(sgk(tc, T.take + 1.3, T.take + 3.3)), eye = lp3(EK, EKN, kf);
@@ -7816,9 +8127,9 @@
       const hd = lp(0.6, HOLD.d, kNear), hy = lp(0.42, HOLD.y, kUp);
       const H = [eye[0] + fx * hd, eye[1] - hy + 0.004 * Math.sin(tc * 1.3), eye[2] + fz * hd];
       const kl = smo(sgk(tc, T.take + 0.9, T.take + 2.7)), kg = smo(sgk(tc, T.give + 0.9, T.give + 2.0));
-      const G1 = [PHO_AT[0] + Math.sin(BENCH.ry) * 0.5, 0.72, PHO_AT[1] + Math.cos(BENCH.ry) * 0.5];
+      const G1 = [PHO2_AT[0] + Math.sin(HALLSEAT.ry) * 0.5, HALLSEAT.y + 0.28, PHO2_AT[1] + Math.cos(HALLSEAT.ry) * 0.5];   // (v26.18: half a metre before him, as far over his seat as it was over the bench's)
       const tabled = tc >= T.give + 2.3;
-      let bc = tabled ? TABLE_BAI.slice() : lp3(lp3([BESIDE.x, 0.012, BESIDE.z], H, kl), G1, kg);
+      let bc = tabled ? TABLE_BAI.slice() : lp3(lp3([BESIDE.x, BESIDE_Y, BESIDE.z], H, kl), G1, kg);
       if (!tabled) { bc[1] += 0.1 * Math.sin(Math.PI * kl) * (1 - kl);                                 // (lifted in an arc, not dragged)
         const ks = smo(sgk(tc, T.petals + 2.2, T.glow + 0.4)) * (1 - smo(sgk(tc, T.q3z1, T.q3z1 + 1.6)));
         bc[0] += ks * 0.0045 * Math.sin(tc * 61); bc[1] += ks * 0.004 * Math.sin(tc * 53 + 1); bc[2] += ks * 0.0045 * Math.sin(tc * 47 + 2); }
@@ -7847,15 +8158,15 @@
       const kpb = bump(tc, T.hands + 0.2, T.hands + 2.4, 0.7, 0.8);
       lookNow(Ph, 'lens', 1 - kpb, 0.5, 0); if (kpb > 0) lookNow(Ph, [bc[0], bc[1] + 0.3, bc[2]], kpb, 0.5, 0);
       const pt = phoThrow();
-      filmBurst('close', tc, T.petals + 1.6, pt, [eye[0] + fx * 0.42, eye[2] + fz * 0.42], { r: 0.42, up: 1.15, seed: 5521, s: 0.03 });
-      /* the woman at his bench: she takes it from him and sets it on the table (seen as her hands leave it) */
+      filmBurst('close', tc, T.petals + 1.6, pt, [eye[0] + fx * 0.42, eye[2] + fz * 0.42], { r: 0.42, up: 1.15, seed: 5521, s: 0.03, ground: HF + 0.014 });   // (they land on the hall's tile)
+      /* the woman who serves him: she takes it from him and sets it on the altar (seen as her hands leave it) */
       if (tabled && !FL.tabled) { FL.tabled = true; put(Au, AUNT_TABLE.x, AUNT_TABLE.z, AUNT_TABLE.ry); castSolid(); }
       if (tabled) pose(Au, 'give', lp(3.7, 5.7, smo(sgk(tc, T.give + 2.4, T.give + 4.4))), false, 'Idle_3', smo(sgk(tc, T.give + 4.2, T.give + 5.4)), 2 + tc);
-      else pose(Au, 'Idle_3', 2 + tc, true);
+      else auntRest(tc);
       /* HIS EYES: on his bai sri beside him; up to his teacher as he raises it; bowed a little while the old man's
          hands lie on it; to the table when it is set there; on the old man's face for "Tomorrow we begin."; and the
          whole of it at the last */
-      const [yB, pB] = aimOf(eye, [BESIDE.x, 0.3, BESIDE.z]), kB = 1 - smo(sgk(tc, T.take + 0.4, T.take + 2.0));
+      const [yB, pB] = aimOf(eye, [BESIDE.x, HF + 0.3, BESIDE.z]), kB = 1 - smo(sgk(tc, T.take + 0.4, T.take + 2.0));
       const pWide = Math.atan2(0.05, 1.2), pFace = faceTilt(eye, phoF(kTalk), fP, fD), kFace = smo(sgk(tc, T.give + 3.4, T.ph3z2)) * (1 - smo(sgk(tc, T.q3K1 + 3.5, T.black - 1)));
       const kBow = bump(tc, T.hands + 0.9, T.hands + 2.8, 0.8, 0.9) * 0.05, [yTb, pTb] = aimOf(eye, [TABLE_BAI[0], TABLE_BAI[1] + 0.34, TABLE_BAI[2]]);
       const kTb = tc >= T.give + 2.3 ? 1 - smo(sgk(tc, T.give + 3.5, T.ph3z2 - 0.1)) : 0;
@@ -7877,15 +8188,16 @@
     FILMS.A = {
       begin(api) { if (api.handsRoot) api.handsRoot.visible = false; FL.wai = false; FL.bai = false; endStage(); },
       frame(t, api) {
-        const T = ENDT.A, Ph = cast.pho, Tn = cast.ton;
+        const T = ENDT.A, Ph = cast.phoH, Tn = cast.ton;
         if (t >= T.close) { closeFrame(t - T.close, 'A', api); return; }
         const [o60, w60, w40, yng] = cast.wait;
         if (t < T.mats) {
           if (FL.shot !== 'a1') { FL.shot = 'a1';
-            /* Ton, behind him, with an armful of rolled mats; by the west tents the ground is being cleared */
-            const [tx, tz] = benchAt(-1.7, 5.1); put(Tn, tx, tz, faceTo(tx, tz, KNEEL2.x, KNEEL2.z)); matsG.visible = true; castSolid(); }      // (3.5 m off: at 1.9 m a kneeling eye saw two mats and no face)
+            /* Ton, behind him, with a rolled mat on his arms, by the mats stacked at the hall's east wall; at the back of
+               the hall the floor is being cleared (v26.18: inside the hall) */
+            put(Tn, TON_A1.x, TON_A1.z, faceTo(TON_A1.x, TON_A1.z, KNEEL2.x, KNEEL2.z)); if (Tn.ready) Tn.group.visible = true; matsG.visible = true; castSolid(); }      // (3.5 m off: at 1.9 m a kneeling eye saw two mats and no face)
           phoFace(); phoTalkFace(); const kTalk = speaks(Ph, t, T, ['ph3A1', 'ph3A2']); lookNow(Ph, 'lens', 1, 0.5, 0);
-          pose(cast.aunt, 'Idle_3', 2 + t, true);
+          auntRest(t);
           pose(Tn, 'give', 2.6 + 0.12 * Math.sin(t * 0.8), false); lookNow(Tn, 'lens', 1, 0.7);
           /* (v26.2 debug: ONE mat on his arms. Two, lying on his forearms as they now do and not through them, stood 0.44 m
              tall at his chest and hid his face from the kneeling eye: photographed. The second is not drawn) */
@@ -7895,42 +8207,47 @@
           const [yF, pT] = toPho(EK, fP, fD, kTalk);
           if (t < T.bow) eyes(EK, yF, pT, fP, fD);
           else if (t < T.ton) bowEyes(EK, yF, pT, (t - T.bow) / (T.ton - T.bow), 46, 34);
-          else { handsFilm(0); const kT = smo(sgk(t, T.ton, T.ton + 1.5)), [yN, pN] = aimOf(EK, [Tn.group.position.x, 1.02, Tn.group.position.z]);
+          else { handsFilm(0); const kT = smo(sgk(t, T.ton, T.ton + 1.5)), [yN, pN] = aimOf(EK, [Tn.group.position.x, Tn.group.position.y + 1.02, Tn.group.position.z]);
             eyes(EK, yawMix(yF, yN, kT), lp(pT, pN, kT), lp(46, 50, kT), lp(34, 36, kT)); }
         } else {
           if (FL.shot !== 'a2') { FL.shot = 'a2'; handsFilm(0);
             /* THE MATS: Ton has set his down and stands by the stack; two kneel and roll, one carries; he walks up with
                one in his arms */
-            put(Tn, MATS_AT.x - 1.35, MATS_AT.z + 0.55, faceTo(MATS_AT.x - 1.35, MATS_AT.z + 0.55, A_W1[0], A_W1[1]));
-            for (const g of rolled.ton) g.visible = false;
-            put(w60, -7.55, -0.35, -1.9); put(w40, -8.15, 1.25, -1.35); put(yng, -5.5, 0.15, faceTo(-5.5, 0.15, MATS_AT.x, MATS_AT.z)); put(o60, -8.9, 3.3, 1.2);
+            /* (v26.18: the same picture, carried whole to the back of the hall: MATD, c_zfx.js. The hall's own white mats
+               of its two back rows are already taken up) */
+            { const sx = MATS_AT.x + MATD.x, sz = MATS_AT.z + MATD.z, dx = MATD.x, dz = MATD.z;
+              put(Tn, sx - 1.35, sz + 0.55, faceTo(sx - 1.35, sz + 0.55, A_W1[0], A_W1[1]));
+              for (const g of rolled.ton) g.visible = false;
+              put(w60, -7.55 + dx, -0.35 + dz, -1.9); put(w40, -8.15 + dx, 1.25 + dz, -1.35); put(yng, -5.5 + dx, 0.15 + dz, faceTo(-5.5 + dx, 0.15 + dz, sx, sz)); put(o60, -8.9 + dx, 3.3 + dz, 1.2); }
+            hallMats(3);
             for (const P of cast.wait) if (P.ready) P.group.visible = true;
             castSolid(); }
           /* those who work: two on their knees with their hands on a mat, rolling it; one walking it to the stack; the
              old man watching, his hands behind him */
           [w60, w40].forEach((P, i) => { pose(P, 'prostrate', 2.35 + 0.22 * Math.sin(t * 1.5 + i * 2), false);
-            const ry = P.group.rotation.y, g = rolled.rolls[i]; g.position.set(P.group.position.x + Math.sin(ry) * 0.62, 0, P.group.position.z + Math.cos(ry) * 0.62); g.rotation.set(0, ry, 0); g.visible = true; });
+            const ry = P.group.rotation.y, g = rolled.rolls[i]; g.position.set(P.group.position.x + Math.sin(ry) * 0.62 - MATD.x, 0, P.group.position.z + Math.cos(ry) * 0.62 - MATD.z); g.rotation.set(0, ry, 0); g.visible = true; });
           /* (the young man carries one before him in both hands: his body has no take that holds a thing out, so the
              mat is the truth and his hands are solved under its two ends. Posed by a take he does not have, he stood with
              his arms down and the mat hung in the air beside him: photographed on a desktop) */
           pose(yng, 'Idle_3', 1 + t, true);
-          { const g = yng.group, ry = g.rotation.y, fx = Math.sin(ry), fz = Math.cos(ry), c = [g.position.x + fx * 0.3, 1.0, g.position.z + fz * 0.3], m = rolled.carry;
+          { const g = yng.group, ry = g.rotation.y, fx = Math.sin(ry), fz = Math.cos(ry), c = [g.position.x + fx * 0.3, g.position.y + 1.0, g.position.z + fz * 0.3], m = rolled.carry;
             /* (v26.2 debug: the mat's foot at his hands' bones had his palms and fingers inside its lower half, measured in the
                film by tools/probes/clipscan.mjs: it rests ON his palms now, a palm's thickness above his wrists' bones) */
-            m.position.set(c[0], c[1] - 0.064 + 0.045, c[2]); m.rotation.set(0, ry, 0); m.visible = true;
+            m.position.set(c[0] - MATD.x, c[1] - 0.064 + 0.045 - MATD.y, c[2] - MATD.z); m.rotation.set(0, ry, 0); m.visible = true;
             for (const [sd, sg] of [['L', 1], ['R', -1]]) handTo(yng, sd, [c[0] + fz * sg * 0.3, c[1] - 0.064, c[2] - fx * sg * 0.3], [fx, 0.1, fz], [0, 1, 0], 1, { out: 0.2, down: 0.4 }); }
           pose(o60, 'Idle_3', 1 + t, true);
           pose(Tn, 'Idle_3', 3 + t, true); lookNow(Tn, 'lens', 1, 0.7);
-          pose(Ph, 'Sit_to_Stand_Transition_M', 0.16 + 0.13 * Math.sin(t * 0.7), false); pose(cast.aunt, 'Idle_3', 2 + t, true);
-          /* HE WALKS, a mat in his arms: across the turf to the stack, his eyes on those who roll and then on the stack */
+          pose(Ph, 'Sit_to_Stand_Transition_M', 0.16 + 0.13 * Math.sin(t * 0.7), false); auntRest(t);
+          /* HE WALKS, a mat in his arms: across the back of the hall to the stack, his eyes on those who roll and then on
+             the stack */
           const kw = smo(sgk(t, T.mats + 0.5, T.q3A3 + 0.5)), ex = lp(A_W0[0], A_W1[0], kw), ez = lp(A_W0[1], A_W1[1], kw), dist = 3.62 * kw;
-          const eye = [ex, EYE + 0.02 * Math.sin(dist * 2 * Math.PI / 0.72) * Math.min(1, 6 * kw * (1 - kw)), ez], ts = t - T.q3A3;
-          const [yR, pR] = aimOf(eye, [-7.7, 0.5, 0.3]), [yS, pS] = aimOf(eye, [MATS_AT.x, 0.25, MATS_AT.z]), [yT, pT] = aimOf(eye, [Tn.group.position.x, 1.5, Tn.group.position.z]);
+          const eye = [ex, HF + EYE + 0.02 * Math.sin(dist * 2 * Math.PI / 0.72) * Math.min(1, 6 * kw * (1 - kw)), ez], ts = t - T.q3A3;
+          const [yR, pR] = aimOf(eye, [-7.7 + MATD.x, HF + 0.5, 0.3 + MATD.z]), [yS, pS] = aimOf(eye, [MATS_AT.x + MATD.x, HF + 0.25, MATS_AT.z + MATD.z]), [yT, pT] = aimOf(eye, [Tn.group.position.x, Tn.group.position.y + 1.5, Tn.group.position.z]);
           const [yP, pP] = aimOf(eye, phoFace());
           const k1 = smo(sgk(t, T.q3A2 + 2.6, T.q3A3 - 0.2)), k2 = smo(sgk(ts, 0.1, 1.0)) * (1 - smo(sgk(ts, 1.5, 2.3)));
           const ya0 = yawMix(yawMix(yR, yS, k1), yT, k2), pi0 = lp(lp(lp(pR, -0.12, 0.6), pS, k1 * smo(sgk(ts, 1.5, 2.4))), pT, k2);
-          /* (his eyes come UP off the stack first, and then go round to the far bench: turned and lifted on one ease, the
-             middle of the move was a frame of turf) */
+          /* (his eyes come UP off the stack first, and then go round to the dais across the hall: turned and lifted on one
+             ease, the middle of the move was a frame of floor) */
           const kUp = smo(sgk(ts, 3.3, 4.5)), kRound = smo(sgk(ts, 3.9, 6.3)), kz = smo(sgk(ts, 5.6, 8.8));
           eyes(eye, yawMix(ya0, yP, kRound), lp(lp(pi0, 0.02, kUp), pP, kRound), lp(60, 13, kz), lp(46, 9.5, kz));
           /* his own mat: under his arm as he walks; lowered onto the stack while his eyes are on Ton; and there, on the
@@ -7944,18 +8261,21 @@
       },
       end() { endTidy(); }
     };
-    const A_W0 = [-1.7, 2.95], A_W1 = [-5.3, 2.55];
+    const A_W0 = [-1.7 + MATD.x, 2.95 + MATD.z], A_W1 = [-5.3 + MATD.x, 2.55 + MATD.z];
+    const TON_A1 = { x: 3.55, z: -30.3 };                                       // (v26.18) by the stack of mats at the hall's east wall, 3.5 m behind the one who kneels and to his right
 
     /* B · CHALLENGE THE PATH: he is asked to tell again how he came there; he sits apart until the light goes; he comes back */
-    const B_EDGE = (() => { const [x, z] = benchAt(-4.6, 7.2); return [x, 0.86, z]; })();              // where he sits apart: before the bench and well to its side, the old man seen between the canopy's two front poles
+    /* (v26.18: inside the hall. The hall's width is to the west of the dais, so he sits apart on that side: the bench's own
+       place for it, turned over the line from his teacher to the one who kneels) */
+    const B_EDGE = (() => { const [x, z] = seatAt(5.52, 7.2); return [x, HF + 0.86, z]; })();          // where he sits apart: on a mat at the back of the hall and well to its west, the old man seen across the room
     FILMS.B = {
       begin(api) { if (api.handsRoot) api.handsRoot.visible = false; FL.wai = false; FL.bai = false; endStage(); },
       frame(t, api) {
-        const T = ENDT.B, Ph = cast.pho;
+        const T = ENDT.B, Ph = cast.phoH;
         if (t >= T.close) { closeFrame(t - T.close, 'B', api); return; }
         const [o60, w60, w40] = cast.wait;
         if (t < T.edge) {
-          phoFace(); phoTalkFace(); const kTalk = speaks(Ph, t, T, ['ph3B1', 'ph3B2', 'ph3B3']); lookNow(Ph, 'lens', 1, 0.5, 0); pose(cast.aunt, 'Idle_3', 2 + t, true);
+          phoFace(); phoTalkFace(); const kTalk = speaks(Ph, t, T, ['ph3B1', 'ph3B2', 'ph3B3']); lookNow(Ph, 'lens', 1, 0.5, 0); auntRest(t);
           const [fP, fD] = lensAt(t, [[0, 44, 33], [T.q3B0 + SECS['q3B0'], 38, 28], [T.ph3B1, 29, 21], [T.ph3B2 + SECS['ph3B2'], 33, 24], [T.q3B1 + 1, 50, 38], [T.q3B1 + 13, 50, 38],
                                       [T.q3B1 + SECS['q3B1'], 31, 23], [T.ph3B3 + 1.2, 22, 16], [T.q3B2, 23, 17], [T.edge, 28, 20]]);
           const [yF, pT] = toPho(EK, fP, fD, kTalk);
@@ -7968,33 +8288,35 @@
         } else if (t < T.dusk) {
           if (FL.shot !== 'b2') { FL.shot = 'b2';
             /* the afternoon, from where he sits apart: one kneels to him, two wait */
-            lit('AFTERNOON', 'two'); mistK = 0; myBai.visible = true;
+            lit('HALLNOON', 'two'); mistK = 0; myBai.visible = true;
             if (cast.ton.ready) cast.ton.group.visible = false;                 // (Ton has gone to help clear the ground: where the morning stood him he filled this picture, his back to it: photographed)
-            put(o60, KNEEL2.x, KNEEL2.z, faceTo(KNEEL2.x, KNEEL2.z, PHO_AT[0], PHO_AT[1])); put(w60, cast.wait[1].home.x, cast.wait[1].home.z, cast.wait[1].home.ry); put(w40, cast.wait[2].home.x, cast.wait[2].home.z, cast.wait[2].home.ry);
+            put(o60, KNEEL2.x, KNEEL2.z, faceTo(KNEEL2.x, KNEEL2.z, PHO2_AT[0], PHO2_AT[1]));
+            /* (the two who wait, on the tile beyond the one who kneels: from where he sits apart they are clear of the old man) */
+            for (const [P, x, z] of [[w60, 2.9, -31.5], [w40, 3.4, -30.5]]) put(P, x, z, faceTo(x, z, PHO2_AT[0], PHO2_AT[1]));
             for (const P of [o60, w60, w40]) if (P.ready) P.group.visible = true;
             castSolid(); }
           const u = t - T.edge;
-          pose(o60, 'seiza', 1.2 + 0.3 * Math.sin(u * 0.6), false); pose(w60, 'Idle_3', 1 + u, true); pose(w40, 'Idle_3', 4 + u, true); pose(cast.aunt, 'Idle_3', 2 + t, true);
-          waitCarry(1); waitCarry(2);
+          pose(o60, 'seiza', 1.2 + 0.3 * Math.sin(u * 0.6), false); auntRest(t);
+          waitSet(1, u); waitSet(2, u);
           /* he talks with the one who kneels, and never once looks this way */
           { const A2 = Ph.ready && Ph.acts[Ph.talkTake], d = A2 ? A2.getClip().duration : 1; pose(Ph, Ph.talkTake, (1.3 + u) % d, false); }
-          lookNow(Ph, [KNEEL2.x, 0.95, KNEEL2.z], 1, 0.5, 0);
+          lookNow(Ph, [KNEEL2.x, HF + 0.95, KNEEL2.z], 1, 0.5, 0);
           const k = smo(sgk(t, T.edge, T.dusk)), F = phoFace();
           /* (both of them WHOLE: the old man's far shoulder and the kneeler's back are named, not only their middles: a
              fit is given the extent of what it must hold, v25.5. Named by their middles, each was cut by an edge:
              photographed) */
-          const [s0x, s0z] = benchAt(-0.1, 0.1), [k0x, k0z] = benchAt(0.46, 2.85);
-          fitShot(B_EDGE, [lp(F[0], KNEEL2.x, 0.45), 0.95, lp(F[2], KNEEL2.z, 0.45)], lp(31, 28, k), lp(22, 19.5, k), [[F[0], F[1] + 0.18, F[2]], [s0x, 1.2, s0z], [k0x, 0.7, k0z], [KNEEL2.x, 0.08, KNEEL2.z]]);
+          const [s0x, s0z] = seatAt(-0.1, 0.1), [s1x, s1z] = seatAt(1.02, 0.1), [k0x, k0z] = seatAt(0.46, 2.85);
+          fitShot(B_EDGE, [lp(F[0], KNEEL2.x, 0.45), HF + 0.9, lp(F[2], KNEEL2.z, 0.45)], lp(31, 28, k), lp(22, 19.5, k), [[F[0], F[1] + 0.18, F[2]], [s0x, HALLSEAT.y + 0.45, s0z], [s1x, HALLSEAT.y + 0.45, s1z], [k0x, HF + 0.7, k0z], [KNEEL2.x, HF + 0.08, KNEEL2.z]]);
         } else if (t < T.back) {
           if (FL.shot !== 'b3') { FL.shot = 'b3';
             /* dusk: they have gone; the bulbs along the eaves are on; he sits there still */
-            lit('DUSK', 'two'); for (const P of cast.wait) if (P.ready) P.group.visible = false; for (const b of waitBai) b.visible = false; castSolid(); }
-          pose(Ph, 'Sit_to_Stand_Transition_M', 0.16 + 0.13 * Math.sin(t * 0.7), false); pose(cast.aunt, 'Idle_3', 2 + t, true);
+            lit('HALLDUSK', 'two'); for (const P of cast.wait) if (P.ready) P.group.visible = false; for (const b of waitBai) b.visible = false; castSolid(); }
+          pose(Ph, 'Sit_to_Stand_Transition_M', 0.16 + 0.13 * Math.sin(t * 0.7), false); auntRest(t);
           const k = smo(sgk(t, T.dusk, T.back)), F = phoFace();
-          shot(B_EDGE, [F[0] - 0.3, lp(1.75, 1.5, k), F[2]], lp(46, 40, k), lp(34, 29, k));
+          shot(B_EDGE, [F[0] - 0.3, F[1] + lp(0.45, 0.2, k), F[2]], lp(46, 40, k), lp(34, 29, k));
         } else {
           if (FL.shot !== 'b4') { FL.shot = 'b4'; }
-          phoFace(); phoTalkFace(); const kTalk = speaks(Ph, t, T, ['ph3B4']); lookNow(Ph, 'lens', 1, 0.5, 0); pose(cast.aunt, 'Idle_3', 2 + t, true);
+          phoFace(); phoTalkFace(); const kTalk = speaks(Ph, t, T, ['ph3B4']); lookNow(Ph, 'lens', 1, 0.5, 0); auntRest(t);
           const [fP, fD] = lensAt(t, [[T.back, 46, 34], [T.q3B4 + SECS['q3B4'], 36, 27], [T.ph3B4 + SECS['ph3B4'], 28, 20], [T.close, 32, 24]]);
           const [yF, pT] = toPho(EK, fP, fD, kTalk); eyes(EK, yF, pT, fP, fD);
         }
@@ -8009,23 +8331,27 @@
        filled the picture, and hid the other three: photographed) */
     /* (and clear of the canopy's front left pole, which stood between the second of them and the third when they waited
        at the carpet's side: photographed. From where he kneels the pole is five degrees outside this row's end) */
-    const WAIT_C = (() => { const [cx, cz] = benchAt(-3.4, 3.0), d = Math.hypot(cx - KNEEL2.x, cz - KNEEL2.z), ux = (cx - KNEEL2.x) / d, uz = (cz - KNEEL2.z) / d, dep = [0.14, -0.1, 0.18, -0.05];
+    /* (v26.18: inside the hall the open floor is to his LEFT as he kneels, the dais running on to the east wall at his
+       right: the bench's own place for them, turned over his own line to his teacher. They sit on their heels there, on
+       the mats and the tile: waitSet) */
+    const WAIT_C = (() => { const [cx, cz] = seatAt(4.32, 3.0), d = Math.hypot(cx - KNEEL2.x, cz - KNEEL2.z), ux = (cx - KNEEL2.x) / d, uz = (cz - KNEEL2.z) / d, dep = [0.14, -0.1, 0.18, -0.05];
       return [-0.84, -0.28, 0.28, 0.84].map((s, i) => [cx - uz * s + ux * dep[i], cz + ux * s + uz * dep[i]]); })();     // (0.56 m apart: at 0.67 a phone's widest lens cut the first of them down his middle: photographed)
     FILMS.C = {
       begin(api) { if (api.handsRoot) api.handsRoot.visible = false; FL.wai = false; FL.bai = false; endStage(); },
       frame(t, api) {
-        const T = ENDT.C, Ph = cast.pho, Wt = cast.wait;
+        const T = ENDT.C, Ph = cast.phoH, Wt = cast.wait;
         if (t >= T.close) { closeFrame(t - T.close, 'C', api); return; }
         if (FL.shot !== 'c1') { FL.shot = 'c1';
-          Wt.forEach((P, i) => { put(P, WAIT_C[i][0], WAIT_C[i][1], faceTo(WAIT_C[i][0], WAIT_C[i][1], PHO_AT[0], PHO_AT[1]) + [0.1, -0.12, 0.06, -0.08][i]); if (P.ready) P.group.visible = true; });
+          Wt.forEach((P, i) => { put(P, WAIT_C[i][0], WAIT_C[i][1], faceTo(WAIT_C[i][0], WAIT_C[i][1], PHO2_AT[0], PHO2_AT[1]) + [0.1, -0.12, 0.06, -0.08][i]); if (P.ready) P.group.visible = true; });
           if (cast.ton.ready) cast.ton.group.visible = false; castSolid(); }
-        const mid = [(WAIT_C[1][0] + WAIT_C[2][0]) / 2, 1.0, (WAIT_C[1][1] + WAIT_C[2][1]) / 2];
-        phoFace(); phoTalkFace(); const kTalk = speaks(Ph, t, T, ['ph3C1', 'ph3C2', 'ph3C3']); pose(cast.aunt, 'Idle_3', 2 + t, true);
+        const mid = [(WAIT_C[1][0] + WAIT_C[2][0]) / 2, HF + 0.62, (WAIT_C[1][1] + WAIT_C[2][1]) / 2];
+        phoFace(); phoTalkFace(); const kTalk = speaks(Ph, t, T, ['ph3C1', 'ph3C2', 'ph3C3']); auntRest(t);
         /* "For whom?": his own eyes go to them first */
         const kq = bump(t, T.ph3C2 + 1.6, T.backto + 0.6, 0.9, 1.0);
         lookNow(Ph, 'lens', 1 - kq, 0.5, 0); if (kq > 0) lookNow(Ph, mid, kq, 0.6, 0);
-        /* those who wait: they stand, and look to the old man on his bench; the first of them meets his eye, and nods */
-        Wt.forEach((P, i) => { pose(P, 'Idle_3', 1.5 + i * 2.3 + t, true); waitCarry(i); });
+        /* those who wait: they sit on their heels, and look to the old man on his dais; the first of them meets his eye,
+           and nods */
+        Wt.forEach((P, i) => waitSet(i, t));
         const kn = bump(t, T.q3C1 + 2.2, T.q3C1 + 6.4, 0.9, 1.0);
         lookNow(Wt[0], 'lens', kn, 0.7, 0.02 + 0.06 * kn * Math.max(0, Math.sin((t - T.q3C1 - 3.2) * 2.4)));
         const kW = smo(sgk(t, T.turn, T.turn + 2.4)) * (1 - smo(sgk(t, T.backto, T.backto + 1.5)));
@@ -8035,11 +8361,12 @@
         /* his head is turned: the four of them, whole, in one picture (a fit, for this screen); a slow drift along them
            as he says what he was shown */
         const pan = smo(sgk(t, T.turn + 2.0, T.q3C1 + SECS['q3C1'])), must = [];
-        for (const [wx, wz] of WAIT_C) { must.push([wx, 1.72, wz]); must.push([wx, 0.05, wz]); }
+        for (const [wx, wz] of WAIT_C) { must.push([wx, HF + 1.08, wz]); must.push([wx, HF + 0.02, wz]);
+          const a = faceTo(wx, wz, PHO2_AT[0], PHO2_AT[1]); must.push([wx + Math.sin(a) * 0.6, HF + 0.3, wz + Math.cos(a) * 0.6]); }     // (and what each brought, on the tile before him)
         /* (and the row's two ends by their far SHOULDERS, not their middles: a fit is given the extent of what it holds, v25.5) */
         { const ex = WAIT_C[3][0] - WAIT_C[0][0], ez = WAIT_C[3][1] - WAIT_C[0][1], el = Math.hypot(ex, ez) || 1;
-          must.push([WAIT_C[0][0] - ex / el * 0.32, 1.3, WAIT_C[0][1] - ez / el * 0.32]); must.push([WAIT_C[3][0] + ex / el * 0.32, 1.3, WAIT_C[3][1] + ez / el * 0.32]); }
-        const Fw = fit(EK, [mid[0], 0.95, mid[2]], isNarrow() ? 50 : 34, must), [yW0, pW] = aimOf(EK, Fw.at), yW = yW0 + 0.03 * (pan - 0.5);
+          must.push([WAIT_C[0][0] - ex / el * 0.32, HF + 0.8, WAIT_C[0][1] - ez / el * 0.32]); must.push([WAIT_C[3][0] + ex / el * 0.32, HF + 0.8, WAIT_C[3][1] + ez / el * 0.32]); }
+        const Fw = fit(EK, [mid[0], HF + 0.58, mid[2]], isNarrow() ? 50 : 34, must), [yW0, pW] = aimOf(EK, Fw.at), yW = yW0 + 0.03 * (pan - 0.5);
         if (t >= T.bow && t < T.q3C3) bowEyes(EK, yF, pT, (t - T.bow) / (T.q3C3 - T.bow), 46, 34);
         else { handsFilm(0); eyes(EK, yawMix(yF, yW, kW), lp(pT, pW, kW), lp(fP, Fw.fl, kW), lp(fD, Fw.fl, kW)); }
       },
@@ -8048,26 +8375,29 @@
 
     /* D · ASK TO MAKE IT STOP: he is taught to close and stay closed; he sits in the quiet; the chanting comes, and
        nothing takes him */
-    const D_SIT = [PLACE.x, KNEEL.y, PLACE.z];
+    /* (v26.18, his answer of 16 Nov: everything inside. He sits at the back of the emptied hall, on a mat of its last row,
+       east of the hall's one free post, so the long look to his teacher across the room runs clear of it) */
+    const D_SIT = [0.85, HF + KNEEL.y, HIN.zN + 12.3];
     FILMS.D = {
       begin(api) { if (api.handsRoot) api.handsRoot.visible = false; FL.wai = false; FL.bai = false; endStage(); },
       frame(t, api) {
-        const T = ENDT.D, Ph = cast.pho;
+        const T = ENDT.D, Ph = cast.phoH;
         shutVisionAt(t - T.shut);                                                  // (v26.12: his opening closed, seen: SHUTV)
         if (t >= T.close) { closeFrame(t - T.close, 'D', api); return; }
-        pose(cast.aunt, 'Idle_3', 2 + t, true);
+        auntRest(t);
         if (t < T.sit) {
           /* (his eyes close on "stay", and open on a plain world: the look changes behind them) */
-          if (t >= T.shut + SHUTV.fold[1] && FL.shot !== 'd2') { FL.shot = 'd2'; lit('SHUT', 'two'); paintShade('DAWN'); mistK = 0; if (kit && kit.hush) kit.hush(0.85, { secs: 0.8 }); }
+          if (t >= T.shut + SHUTV.fold[1] && FL.shot !== 'd2') { FL.shot = 'd2'; lit('HALLSHUT', 'two'); mistK = 0; if (kit && kit.hush) kit.hush(0.85, { secs: 0.8 }); }
           phoFace(); phoTalkFace(); const kTalk = speaks(Ph, t, T, ['ph3D1', 'ph3D2', 'ph3D3']); lookNow(Ph, 'lens', 1, 0.5, 0);
           const [fP, fD] = lensAt(t, [[0, 44, 33], [T.q3D0 + SECS['q3D0'], 36, 27], [T.ph3D2 + SECS['ph3D2'], 28, 20], [T.shut, 25, 18], [T.shut + SHUTV.fold[1] - 0.05, 25, 18], [T.shut + SHUTV.fold[1], 48, 36], [T.sit, 44, 33]]);
           const [yF, pT] = toPho(EK, fP, fD, kTalk); eyes(EK, yF, pT, fP, fD);
         } else if (t < T.back) {
           if (FL.shot !== 'd3') { FL.shot = 'd3'; myBai.visible = false; if (cast.ton.ready) cast.ton.group.visible = false; castSolid(); }   // (Ton is clearing the ground: where the morning stood him, his back filled the far look at the bench: photographed)
           pose(Ph, 'Sit_to_Stand_Transition_M', 0.16 + 0.13 * Math.sin(t * 0.7), false);
-          /* THE EMPTIED GROUND, from where he knelt yesterday: the tables, the pole, two people clearing up; then the
-             chanting from across the fields, and his own hand, which is only his hand; then, far off, the old man */
-          const ts = t - T.chant, [yN, pN] = aimOf(D_SIT, [1.2, 1.9, -9.5]), [yP, pP] = aimOf(D_SIT, phoFace());
+          /* THE EMPTIED HALL, from a mat at its back: the rows of mats nobody sits on, the altar and its banner under the
+             lamps; then the chanting from across the fields, through the walls, and his own hand, which is only his hand;
+             then, across the room, the old man */
+          const ts = t - T.chant, [yN, pN] = aimOf(D_SIT, [-2.2, HF + 1.75, HIN.zN + 0.1]), [yP, pP] = aimOf(D_SIT, phoFace());
           const kH = smo(sgk(ts, 0.9, 2.4)) * (1 - smo(sgk(t, T.q3D3 + 0.3, T.q3D3 + 2.2))), kP = smo(sgk(t, T.q3D3 + 0.6, T.q3D3 + 3.4)), kz = smo(sgk(t, T.q3D3 + 2.6, T.back - 0.6));
           const drift = 0.05 * Math.sin((t - T.sit) * 0.25);
           eyes(D_SIT, yawMix(yN + drift, yP, kP), lp(lp(pN, -0.52, kH), pP, kP), lp(62, 12.5, kz), lp(48, 9.5, kz));
@@ -8145,7 +8475,8 @@
       /* everything a run changes is put back (v8.1: a same-chapter replay never runs build() again) */
       play.run++;
       Object.assign(play, { busy: false, turning: null, bow: null, bai: false, baiP: 0, baiTo: 0, baiSecs: 1, knelt: false, homage: false, pull: null, looked: false,
-                            checked: false, bowed: false, breath: null, lookEase: null, tonGive: null, ymCarry: false, ymSet: null, pull3: 0, ymHands: null, away: false, chanting: false });
+                            checked: false, bowed: false, breath: null, lookEase: null, tonGive: null, ymCarry: false, ymSet: null, pull3: 0, ymHands: null, away: false, chanting: false,
+                            walk: null, said2: false, inK: -1 });
       play.asked = new Set(); open.k = 0; open.shown = -1; open.over = 0; open.i = -1; open.st = '';
       if (kit) {
         if (kit.abortEvent) kit.abortEvent();
@@ -8243,7 +8574,7 @@
          (it failed so the day the chapter was first put on walktest's list, 12 Nov): tools/probes/e4c3walk.mjs walks
          each of the chapter's three grounds in its own collision, from where each phase puts him) */
       arrivals: [{ what: 'in the line at his bench', x: LINE_AT.x, z: LINE_AT.z },
-                 { what: 'kneeling at his place', x: PLACE.x, z: PLACE.z }, { what: 'kneeling before Grandmaster Pho', x: KNEEL2.x, z: KNEEL2.z }],
+                 { what: 'kneeling at his place', x: PLACE.x, z: PLACE.z }],           // (v26.18: where he kneels before Grandmaster Pho is inside the hall now, behind a gate that is shut on the day walktest floods: tools/probes/e4c3walk.mjs walks the morning's own ground)
       /* (v26.18: the chapter's box reaches the hall's north wall now; on day one, which walktest floods, he is still held on
          the ground of the Wai Kru, by the gate across the lane's mouth and the columns either side of it) */
       keepIn: { what: 'the ground of the Wai Kru', minX: DATA.bounds.minX, maxX: DATA.bounds.maxX, minZ: -9.8, maxZ: DATA.bounds.maxZ },

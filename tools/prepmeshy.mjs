@@ -73,6 +73,46 @@ for (const p of prims) for (const sem of ['POSITION', 'NORMAL']) {
     if (sem === 'POSITION') for (let k = 0; k < 3; k++) { lo[k] = Math.min(lo[k], a[i + k]); hi[k] = Math.max(hi[k], a[i + k]); } }
   acc.setArray(a).setNormalized(false);
 }
+/* BASECUT=f (v26.18, the hall's white Buddha): everything under f of the model's height is CUT OFF, each triangle that
+   crosses that level clipped against it (v21.16: geometry is cut by clipping, never by height or by centroid), before
+   the sizing, so SIZE is the size of what is left. A generator sets a seated image on a plinth of its own; the real
+   one sits on a lotus that is another model, and its measure is from its seat to its flame. Absent, nothing changes. */
+const BASECUT = Number(process.env.BASECUT || 0);
+if (BASECUT > 0) {
+  const yc = lo[1] + BASECUT * (hi[1] - lo[1]); let dropped = 0, split = 0, kept = 0;
+  lo = [Infinity, Infinity, Infinity]; hi = [-Infinity, -Infinity, -Infinity];
+  for (const p of prims) {
+    const sems = p.listSemantics(), accs = sems.map(sm => p.getAttribute(sm));
+    for (const a of accs) if (a.getComponentType() !== 5126) throw new Error('BASECUT needs float attributes');
+    const arrs = accs.map(a => Array.from(a.getArray())), sizes = accs.map(a => a.getElementSize());
+    const pi = sems.indexOf('POSITION'), ni = sems.indexOf('NORMAL'), P = arrs[pi];
+    const ix = p.getIndices() ? Array.from(p.getIndices().getArray()) : Array.from({ length: P.length / 3 }, (_, i) => i);
+    /* a new vertex on the edge A-B, u of the way along it: every attribute mixed, its normal made a unit again */
+    const mix = (A, B, u) => { const n = P.length / 3;
+      arrs.forEach((a, j) => { const sz = sizes[j]; for (let q = 0; q < sz; q++) a.push(a[A * sz + q] + u * (a[B * sz + q] - a[A * sz + q])); });
+      if (ni >= 0) { const N = arrs[ni], o = N.length - 3, L = Math.hypot(N[o], N[o + 1], N[o + 2]) || 1; N[o] /= L; N[o + 1] /= L; N[o + 2] /= L; }
+      return n; };
+    const out = [];
+    for (let t = 0; t < ix.length; t += 3) {
+      const v = [ix[t], ix[t + 1], ix[t + 2]], up = v.map(i => P[3 * i + 1] >= yc), n = up.filter(Boolean).length;
+      if (n === 3) { out.push(v[0], v[1], v[2]); kept++; continue; }
+      if (n === 0) { dropped++; continue; }
+      const poly = [];
+      for (let e = 0; e < 3; e++) { const A = v[e], B = v[(e + 1) % 3], ya = P[3 * A + 1] - yc, yb = P[3 * B + 1] - yc;
+        if (ya >= 0) poly.push(A);
+        if ((ya >= 0) !== (yb >= 0)) poly.push(mix(A, B, ya / (ya - yb))); }
+      for (let q = 1; q + 1 < poly.length; q++) out.push(poly[0], poly[q], poly[q + 1]);
+      split++;
+    }
+    /* only the vertices still drawn are kept (one under the level would stretch the box the sizing reads) */
+    const map = new Map(), fresh = arrs.map(() => []);
+    const idx = out.map(i => { let j = map.get(i); if (j === undefined) { j = map.size; map.set(i, j); arrs.forEach((a, q) => { const sz = sizes[q]; for (let w = 0; w < sz; w++) fresh[q].push(a[i * sz + w]); }); } return j; });
+    accs.forEach((a, q) => a.setArray(new Float32Array(fresh[q])));
+    if (p.getIndices()) p.getIndices().setArray(new Uint32Array(idx)); else p.setIndices(doc.createAccessor().setType('SCALAR').setArray(new Uint32Array(idx)));
+    const Q = fresh[pi]; for (let i = 0; i < Q.length; i += 3) for (let q = 0; q < 3; q++) { lo[q] = Math.min(lo[q], Q[i + q]); hi[q] = Math.max(hi[q], Q[i + q]); }
+  }
+  console.log(`  BASECUT ${BASECUT}: ${dropped} triangles under the level gone, ${split} clipped at it, ${kept} untouched`);
+}
 const ext = { h: hi[1] - lo[1], l: hi[2] - lo[2], w: hi[0] - lo[0] }[AXIS], k = SIZE / ext;
 let cx = (lo[0] + hi[0]) / 2, cz = (lo[2] + hi[2]) / 2;
 if (process.env.TRUNK) {

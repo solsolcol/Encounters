@@ -82,7 +82,7 @@
       return noMip(THREE, t);
     }
     /* (the children's runs and their skip too: c_crowd.js) */
-    const WALKS = /^(walkdance|Run_02|Run_03)$/;                                 // (the takes that travel: the dancers' walk-dance, the children's two runs)
+    const WALKS = /^(walkdance|Run_02|Run_03|Walking)$/;                                 // (the takes that travel: the dancers' walk-dance, the children's two runs)
     /* (the full model's reach was 2.7 m until 12 Nov. Photographed at 2.55 m at both levels, on a phone's frame and a
        desktop's, magnified: no difference to be seen at that distance, and the full model is 310,000 triangles. At
        2.2 m (taken up inside 2.05, let go past 2.35, measured from the lens) it is drawn where he has walked up to
@@ -764,7 +764,9 @@
       if (P.restHands && !(P.layK > 0)) restHandsLay(P);
       if (!P.htLate) handsTrue(P);
     }
-    function put(P, x, z, ry, y = 0) { if (!P) return; P.group.position.set(x, y, z); if (ry != null) P.group.rotation.y = ry; }
+    /* (v26.18: a person put somewhere stands on the floor that is there: the hall's is 0.48 m up, its steps between; on the
+       ground of the Wai Kru that is 0, as it was) */
+    function put(P, x, z, ry, y = hallGround(x, z)) { if (!P) return; P.group.position.set(x, y, z); if (ry != null) P.group.rotation.y = ry; }
     const faceTo = (x, z, tx, tz) => Math.atan2(tx - x, tz - z);                 // the turn that faces a +z-facing body at a point
     /* every frame of play: weights eased on the wall clock, takes run, bodies settled */
     function peopleTick(wdt, live) {
@@ -1770,7 +1772,7 @@
       /* (lodK 1.25: his full model drawn to 2.75 m, not 2.2: he is talked to from 1.9 to 2.3 m, where the lighter body's soft
          face was what was seen. In the line he stands 1.8 m from the player, inside the old reach: no new cost there) */
       /* (v26.8: his shoulders let down in his stand and his talk: shouldersLay) */
-      cast.ton = mkPerson('e4ton', tonAt[0], tonAt[1], faceTo(tonAt[0], tonAt[1], DATA.spawn.x, DATA.spawn.z), { take: 'Idle_3', talk: 'Stand_and_Chat', headDamp: SEIZA_LOOK, lodK: 1.25, shoulders: { Idle_3: 1, Stand_and_Chat: 1 } });
+      cast.ton = mkPerson('e4ton', tonAt[0], tonAt[1], faceTo(tonAt[0], tonAt[1], DATA.spawn.x, DATA.spawn.z), { take: 'Idle_3', talk: 'Stand_and_Chat', headDamp: SEIZA_LOOK, lodK: 1.25, shoulders: { Idle_3: 1, Stand_and_Chat: 1, Walking: 1 }, pace: true });   // (v26.18: his own rig's walk, for the morning's way to the hall: paced from its planted foot)
       cast.ton.home = { x: tonAt[0], z: tonAt[1], ry: faceTo(tonAt[0], tonAt[1], DATA.spawn.x, DATA.spawn.z) };
       /* the woman at his bench stands by the low table at his right hand, turned to those who kneel (photograph 6) */
       { const [ax, az] = benchAt(1.95, 0.95), [kx, kz] = benchAt(0.3, 1.9);
@@ -2012,14 +2014,16 @@
        waiting"): people of their own, so each can look where he looks. The other endings borrow them: one kneels to
        Grandmaster Pho in ending B's afternoon while two wait; two roll mats and one carries one in ending A. Hidden
        until an ending stands them (a hidden person is not run: peopleTick) */
-    const WAIT_AT = [[2.3, 3.0], [2.95, 3.35], [3.5, 3.85], [4.2, 4.05]].map(([a, b]) => benchAt(a, b));
+    /* (v26.18: they are the morning's people, and the morning is in the hall: their places by his seat on the dais, the
+       bench's own numbers; on the hall's floor) */
+    const WAIT_AT = [[2.3, 3.0], [2.95, 3.35], [3.5, 3.85], [4.2, 4.05]].map(([a, b]) => seatAt(a, b));
     cast.wait = ['e4devh', 'e4deve', 'e4devb', 'e4devc'].map((key, i) => { const [x, z] = WAIT_AT[i];
-      const P = mkPerson(key, x, z, faceTo(x, z, PHO_AT[0], PHO_AT[1]), { take: 'Idle_3', hidden: true, phase: 0.17 + 0.23 * i, blobW: 0.8, blobD: 0.7 });
-      P.home = { x, z, ry: faceTo(x, z, PHO_AT[0], PHO_AT[1]) }; return P; });
+      const P = mkPerson(key, x, z, faceTo(x, z, HALLSEAT.x, HALLSEAT.z), { y: HALL.floor, take: 'Idle_3', hidden: true, phase: 0.17 + 0.23 * i, blobW: 0.8, blobD: 0.7 });
+      P.home = { x, z, ry: faceTo(x, z, HALLSEAT.x, HALLSEAT.z) }; return P; });
     const castBlock = {};
     for (const k of ['ton', 'aunt']) castBlock[k] = new THREE.Box3(new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 61, 0));
     function castSolid() { for (const k in castBlock) { const P = cast[k], b = castBlock[k], on = !!(P && P.group.visible && !P.hidden && !P.noBlock), g = P.group.position, r = 0.45;
-      b.min.set(g.x - r, on ? 0 : 60, g.z - r); b.max.set(g.x + r, on ? 1.5 : 61, g.z + r); } }
+      b.min.set(g.x - r, on ? g.y : 60, g.z - r); b.max.set(g.x + r, on ? g.y + 1.5 : 61, g.z + r); } }   // (v26.18: from the floor its person is on: the hall's is 0.48 m up)
     for (const k in castBlock) whenReady(cast[k], castSolid);
 
 

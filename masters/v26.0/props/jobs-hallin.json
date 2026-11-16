@@ -1,0 +1,708 @@
+{
+ "_note": "Higgsfield (GPT Image, gpt_image_2_6) job of each reference picture of the hall's inside (v26.18). The picture is masters/v26.0/props/refs/<name>-2k.png (first batch) or <name>-1k.png (second batch: a draft made at 1k), its copy <name>-1024.jpg committed. Words: props/PROMPTS.py, 'the hall's inside (v26.18)'. Crops that went in as image references: props/crops_hallin.py (objects only: no person, no face, no lettering, no sacred image; each opened and looked at first). `made` is the quality and size each was made at and `credits` what it cost: NOTHING was made at max (16 Nov 2026: 30 credits in hand, a max/2k picture is 9), so a redraw at max/2k of any of them is a known step with the same words. `look` is what the picture was judged to be, opened at its full size against the photographs; `verdict` (second batch) is 'good as it is' (its words and its crops need no change) or 'draw again' (with what to change). EVERY second-batch picture is a low-quality 1k draft: with credits in hand each is drawn at high/2k (2.75; the naga pieces at max, 9) with its words before its model is made, a picture being 2.75 credits against a model's 45.",
+ "first_batch": {
+  "hseat": {
+   "job": "08f326ce-72bc-42ee-b0b4-32e99306d9bf",
+   "made": "medium/2k",
+   "ar": "3:2",
+   "crops": [
+    "hseat (hall-03)"
+   ],
+   "look": "right: a maroon mattress cushion under an ochre-tan cloth, as hall-03; drawn about twice as thick as the build sheet's 8 cm",
+   "credits": 1
+  },
+  "hpillow": {
+   "job": "dc69cf1e-bb3e-4901-a370-148977265117",
+   "made": "medium/2k",
+   "ar": "1:1",
+   "crops": [],
+   "look": "right: ten tubes (4, 3, 2, 1), maroon with woven bands; no crop could go in (the pillows stand behind the seated master), so the bands' cream, grey and olive are read from hall-02 by eye",
+   "credits": 1
+  },
+  "hframe": {
+   "job": "4ddc184a-e1d5-4799-921b-7e9bd9243936",
+   "made": "high/2k",
+   "ar": "4:5",
+   "crops": [
+    "hframe (hall-02, the moulding only)"
+   ],
+   "look": "right: dark red-brown moulding, a beaded outer rim, an antique-gold scroll band, an even grey board; its gold is paler than the photograph's and a tab of its foot shows at the top",
+   "credits": 2.75
+  },
+  "hdrums": {
+   "job": "711f3b52-06a7-418f-aed7-5b53b2ab852e",
+   "made": "high/2k",
+   "ar": "9:16",
+   "crops": [
+    "hdrums (hall-02)"
+   ],
+   "look": "right: nine drums, four rows of crescents each, gold rims, a leaf spear (hall-04 shows nine); the real drums are a little crumpled and their rims duller",
+   "credits": 2.75
+  },
+  "hgoldbaisri": {
+   "job": "adc158b6-9ef4-468f-b9d3-260b9b70a45a",
+   "made": "high/2k",
+   "ar": "9:16",
+   "crops": [
+    "hgoldbaisri (hall-03)",
+    "hgoldbaisri4 (hall-04)"
+   ],
+   "look": "right in every part (bowl, yellow ring, pleated fronds with white bead tips, cone, thread, flower ring, bud); its fronds stand a little closer in than the real ones (0.42 of its height against 0.46)",
+   "credits": 2.75
+  },
+  "hcanopy": {
+   "job": "b39230b9-2fd8-481a-863a-f6d2c4239d01",
+   "made": "high/2k",
+   "ar": "3:2",
+   "crops": [
+    "hcanopy (hall-04, the image's head painted over)"
+   ],
+   "look": "right: a gathered gold drum, teal, green and silver flame medallions, a scalloped braid, a dense silver bead fringe with pale-blue drops, a maroon lining; the small covered button at the middle of its top is the drawing's own",
+   "credits": 2.75
+  },
+  "hpeacock": {
+   "job": "4d7224c0-a809-4fcc-baab-a1a0a5a07574",
+   "made": "high/2k",
+   "ar": "4:5",
+   "crops": [],
+   "look": "right in shape and parts, and no banknote, portrait or print anywhere; DRAWN TOO PINK (its paper: saturation 0.27, the real one's 0.13 in hall-02 and hall-03): the pink and lilac were paled by measure to 0.13 before it went to Meshy (crops_hallin.py --pale hpeacock; the picture as drawn is refs/hpeacock-2k-asdrawn.png, not committed, and is the job's own file)",
+   "credits": 2.75
+  },
+  "hmat": {
+   "job": "8dedeabb-1e23-4fe8-af2a-77919414481b",
+   "made": "medium/2k",
+   "ar": "3:2",
+   "crops": [
+    "hmat (hall-11)",
+    "hmatcloth (hall-11)"
+   ],
+   "look": "right in cloth and parts (white paisley satin, three stuffed sections along one edge, two tie tapes); seen from so low that its depth is ambiguous, and its model came out too deep",
+   "credits": 1
+  },
+  "hcanopy2": {
+   "job": "b9c21d9f-5f2e-41f9-8216-9addf2a2ba90",
+   "made": "high/2k",
+   "ar": "3:2",
+   "crops": [],
+   "reference": "the first picture itself (job b39230b9-2fd8-481a-863a-f6d2c4239d01)",
+   "credits": 2.75,
+   "why": "hcanopy's model failed at the game's count (its remesh, asked 12,000, came 8,685: the bead fringe two dozen stray shards, the gathered cloth a crumple of slivers); drawn again as one closed shape: the fringe a solid band, the tassels flat embroidery, the cloth taut",
+   "look": "right: the same canopy as the first picture, its fringe one solid band of silver beadwork with a close row of pale-blue drops, the swags flat, the cloth taut, the maroon lining inside: one closed shape",
+   "final": {
+    "job": "f66a9a8b-9996-42de-a2a8-2697eef98231",
+    "made": "max/2k",
+    "ar": "3:2",
+    "crops": [],
+    "credits": 9,
+    "look": "right, and the same canopy as the high one: one closed shape, the fringe a solid band of silver beadwork with a close row of pale-blue drops, the swags flat embroidery, the cloth taut, the maroon lining inside. The picture at high quality is kept as refs/hcanopy2-2k-high.png",
+    "reference": "the first picture itself (job b39230b9-2fd8-481a-863a-f6d2c4239d01)"
+   }
+  }
+ },
+ "second_batch": {
+  "hbrownbaisri": {
+   "job": "8740d0b5-75d4-4350-a1ca-eab43215a58a",
+   "made": "low/1k",
+   "ar": "2:3",
+   "crops": [
+    "hbrownbaisri (hall-02)"
+   ],
+   "look": "good: clusters of dark-brown plaited fingers with white bead tips round a spire, in a gold embossed pedestal bowl; small cream flower drops on the spire are the drawing's own",
+   "verdict": "draw again: at high, without the flower drops",
+   "credits": 0.25,
+   "final": {
+    "job": "31462a94-6208-4acf-9003-7742886f3531",
+    "made": "max/2k",
+    "ar": "2:3",
+    "crops": [
+     "hbrownbaisri (hall-02)"
+    ],
+    "credits": 9,
+    "look": "right: six clusters of dark-brown plaited leaf, every fold tipped with a white bead, a wrapped spire with a stacked knob finial and a small pink bow, a gold embossed pedestal bowl; no flower drops"
+   }
+  },
+  "hgreencol": {
+   "job": "7ecde31b-3d5a-4faf-addb-b709e88e69b0",
+   "made": "low/1k",
+   "ar": "9:16",
+   "crops": [
+    "hgreencol (hall-03)"
+   ],
+   "look": "good: seven tiers (the build sheet: seven or eight), each a pair of small naga crests and fern fronds over gold flowers on a dish, a lotus bud on top; its turned foot is the drawing's own (the real one's is hidden)",
+   "verdict": "draw again: at high (its thin fronds are the kind of picture Meshy has refused as too complex: fewer, larger leaves if it does)",
+   "credits": 0.25,
+   "final": {
+    "job": "00da7eb8-ba1f-47bc-a5c9-faf7c3cc69b4",
+    "made": "max/2k",
+    "ar": "9:16",
+    "crops": [
+     "hgreencol (hall-03)"
+    ],
+    "credits": 9,
+    "look": "right: seven tiers (counted in hall-04 and hall-06: seven), each a dull-gold dish ringed with yellow-gold roses, glossy dark-green satin leaves with white pearl edges, some curled like small naga crests; a cream lotus bud on top; a plain round green foot (the real foot is hidden). Its lowest tier is drawn larger than the others; the real tiers are even"
+   }
+  },
+  "hconetower": {
+   "job": "facf13ee-7394-4bf3-82c1-d17e2074f5c6",
+   "made": "low/1k",
+   "ar": "2:3",
+   "crops": [
+    "hconetower (hall-10)",
+    "hconetower5 (hall-05)"
+   ],
+   "look": "plausible, not confirmed: hall-05 and hall-10 show the two towers small and soft; the maroon bud shapes inside each tier are the drawing's reading of dark red marks",
+   "verdict": "draw again: at high; it cannot be checked finer than the photographs allow",
+   "credits": 0.25,
+   "final": {
+    "job": "1eab2cce-8666-4e55-a21b-5c58cdc158b0",
+    "made": "max/2k",
+    "ar": "9:16",
+    "crops": [
+     "hconetower (hall-10)",
+     "hconetower5 (hall-05)"
+    ],
+    "credits": 9,
+    "look": "right as a reading: a tall slim cone of seven tiers of spiky green fronds, a gold band and red and pink flowers at each, dark maroon folded buds and white points inside each tier, a leaf crest, a gold base. NOT CONFIRMED finer than that: both photographs show it small and soft, and its foot is hidden. Its leaf is a fresher green than the photographs' dark green (a tint darkens it). DRAWN TWICE: the first (job 324a8d40-06e8-4da5-ba8a-f995f6ce237f, refs/hconetower-2k-first.png, 9 credits) was one metre and five tiers, as the build sheet has it; measured in hall-05 against the gold Buddha beside it the towers are 1.43 and 1.58 m tall and about 0.26 m across",
+    "credits_all": 18
+   }
+  },
+  "hlotusvase": {
+   "job": "638a7981-3804-4f24-9569-3190a5205785",
+   "made": "low/1k",
+   "ar": "2:3",
+   "crops": [
+    "hlotusvase (hall-03)",
+    "hlotusvase2 (hall-02)"
+   ],
+   "look": "good: the vase's raised spiral scrolls and plain foot band as hall-02, white lotuses and green-yellow buds; small yellow sprigs and white berries are the drawing's own",
+   "verdict": "draw again: at high, as a few LARGE blooms with no sprigs (Meshy refused bunches of small blooms twice, 11 and 12 Nov)",
+   "credits": 0.25,
+   "final": {
+    "job": "72bf318b-14a4-420b-98f2-cc24d86aff42",
+    "made": "max/2k",
+    "ar": "2:3",
+    "crops": [
+     "hlotusvase (hall-03)",
+     "hlotusvase2 (hall-02)"
+    ],
+    "credits": 9,
+    "look": "right: the cream vase with raised spiral scrolls in warm tan and a plain foot band, one closed dome of seven large white cloth lotuses, three pale green buds above, a few broad leaves; no sprigs, no berries"
+   }
+  },
+  "hwheel": {
+   "job": "62a463a6-0973-492d-a187-ab02e3c1f5f5",
+   "made": "low/1k",
+   "ar": "2:3",
+   "crops": [
+    "hwheel (hall-06, inside the rim painted over)",
+    "hwheel4 (hall-04, inside the rim painted over)"
+   ],
+   "look": "good: the spiked wheel of eight spokes, the naga at its left side, the gilded bodhi spray, the branch horns, four rings with white tips, the rattan stand; nothing between the spokes",
+   "verdict": "draw again: at max, after real references of the type are found (a naga piece a believer knows)",
+   "credits": 0.25,
+   "final": {
+    "job": "c583dfb6-4ca4-464f-993f-d9c020df6dde",
+    "made": "max/2k",
+    "ar": "2:3",
+    "crops": [
+     "hwheel (hall-06, inside the rim painted over)",
+     "hwheel4 (hall-04, inside the rim painted over)",
+     "wwheel (web: a maker's bai sri Dhamma wheel with its naga)"
+    ],
+    "credits": 9,
+    "look": "right in every part the photographs show: the spiked ring, eight wrapped spokes and a hub, the scaled cream-and-brown naga coiled round the left with a red mouth and a mane of silver-white spikes, the small dark naga with a branching crest on the rim's top, FIVE gold buds on a gold stem, four stacked rings studded with white leaf tips, the rattan stand. Its buds are closed and a little rounder than the real ones; nothing is between the spokes. Delivered with an alpha channel: laid on white"
+   }
+  },
+  "hnagagroup": {
+   "job": "c242fc78-b2e4-472a-8687-6d2a9e98cc15",
+   "made": "low/1k",
+   "ar": "2:3",
+   "crops": [
+    "hnagagroup8 (hall-08)"
+   ],
+   "look": "good as a reading of hall-08: five bronze-gold heads, pink lotus buds, a tall stack of coils, two red bodies; the gold tail finials and the lotus plinth are the drawing's own, and the build sheet reads one body red and one green",
+   "verdict": "draw again: at max, after real references of the type are found",
+   "credits": 0.25,
+   "final": {
+    "job": "042810b9-cf63-4e48-a607-d2eade173b6e",
+    "made": "max/2k",
+    "ar": "2:3",
+    "crops": [
+     "hnagagroup8 (hall-08)",
+     "wnagakc (web: Kham Chanot)",
+     "wnaga9 (web: a maker's nine-headed naga, its heads only)"
+    ],
+    "credits": 9,
+    "look": "right as a reading of hall-08 and hall-11, enlarged: five bronze-gold necks fanned from a pink lotus, flame crests, open mouths with fangs and red tongues, a tall stack of thirteen straw rope coils, two red-bodied nagas rising from a lower dark stack before it. NOT CONFIRMED by the photographs: the heads' detail (they are 20 pixels each: drawn from the web references of the kind), whether both small bodies are red (the build sheet read one red, one green), and their heads. Delivered with an alpha channel: laid on white (refs/hnagagroup-2k-asdrawn.png is the delivered file)"
+   }
+  },
+  "hnagagold": {
+   "job": "93cb7ff5-5806-45d7-8fa1-ab169c9f8770",
+   "made": "low/1k",
+   "ar": "2:3",
+   "crops": [
+    "hnagagold (hall-05)"
+   ],
+   "look": "good: three necks with gold sequin collars and red tongues, small golden heads round their foot, brown rope coils",
+   "verdict": "draw again: at max, after real references of the type are found",
+   "credits": 0.25,
+   "final": {
+    "job": "7ebcc9d4-aa89-4ca4-95ac-ab5c941f7c5d",
+    "made": "max/2k",
+    "ar": "2:3",
+    "crops": [
+     "hnagagold (hall-05)",
+     "wbsnaga9 (web: a nine-headed bai sri naga)",
+     "wbsnaga1 (web: one bai sri naga)"
+    ],
+    "credits": 9,
+    "look": "right as a reading of hall-05: three necks with belly bands and gold sequin collars, golden crested heads with teeth and curling red tongues, a crowd of small golden naga heads at their foot, a tall column of eight grey-brown rope coils wider at the foot. NOT CONFIRMED: how its foot stands (hidden in every photograph); the crop shows a broad gold-and-olive band round the necks' foot that the picture draws as leaf points. Delivered with an alpha channel: laid on white"
+   }
+  },
+  "hnagabronze": {
+   "job": "34de06f4-f6e8-48b6-9f0b-8a6ea9acbcf9",
+   "made": "low/1k",
+   "ar": "1:1",
+   "crops": [],
+   "look": "plausible only: written from words; the photographs show the two groups as dark blurs and how many heads each has cannot be read",
+   "verdict": "draw again: after real references of the type are found; not confirmed by the photographs",
+   "credits": 0.25,
+   "final": {
+    "job": "2c5deed1-32ec-4e89-bbcb-cbb64d544af3",
+    "made": "max/2k",
+    "ar": "2:3",
+    "crops": [
+     "wnagakc (web: Kham Chanot)",
+     "wnaga3b (web: a bronze three-headed naga)"
+    ],
+    "credits": 9,
+    "look": "a FIVE-headed dark bronze naga on its own coiled body: tall flame crests, open mouths with teeth and red tongues, belly bands, green-black patina with dull gold. NOT A COPY of the hall's: no crop could be given (the two groups stand before the printed backdrop). What the photographs settle, enlarged and brightened: the group left of the gold Buddha has five heads with flame crests and banded necks, stepping down in height, and is about 1.1 m tall (the build sheet: 0.5). What they do not: its base (hidden), and whether its necks stand apart as drawn or closer, like a sheaf"
+   }
+  },
+  "hswan": {
+   "job": "e0dab323-c27b-4c49-9d63-2ed408f50847",
+   "made": "low/1k",
+   "ar": "1:1",
+   "crops": [
+    "hswan5 (hall-05)"
+   ],
+   "look": "plausible: a white bird with raised fanned wings as hall-05; its gold collar and flame crest are the drawing's own (the photograph is too soft to show a crest)",
+   "verdict": "draw again: at high, all white, no collar",
+   "credits": 0.25,
+   "final": {
+    "job": "93e52865-bb4c-4b89-821c-3a6167d35dd5",
+    "made": "max/2k",
+    "ar": "1:1",
+    "crops": [
+     "hswan5 (hall-05)"
+    ],
+    "credits": 9,
+    "look": "right as a reading: a glossy white bird, a long S neck, a small pointed white crest, both wings raised and fanned, all white. NOT CONFIRMED: hall-05 shows it turned and half hidden, with a silver-white filigree spire standing behind it that is another object; its low base of curled waves is the drawing's own"
+   }
+  },
+  "humbrella": {
+   "job": "04e50b5b-4953-4405-8ec7-796effe6d670",
+   "made": "low/1k",
+   "ar": "2:3",
+   "crops": [],
+   "look": "plausible only: written from the build sheet's words; the piece could not be found in the photographs",
+   "verdict": "draw again: only after it is found in a photograph or Chad describes it",
+   "credits": 0.25,
+   "final": "NOT MADE: see hpapercone, which replaces it (the draft is refs/humbrella-1k.png)"
+  },
+  "hredtable": {
+   "job": "12267e9f-cb9b-4adc-a48d-bacc8e3be89f",
+   "made": "low/1k",
+   "ar": "3:2",
+   "crops": [
+    "hredtable (hall-05)"
+   ],
+   "look": "good: the top, the scalloped apron, the out-curved legs; a touch browner than the photograph's orange-red",
+   "verdict": "good as it is",
+   "credits": 0.25,
+   "final": {
+    "job": "be02bb97-e1ca-4d2d-a2ba-42fe881cd384",
+    "made": "max/2k",
+    "ar": "3:2",
+    "crops": [
+     "hredtable (hall-05)"
+    ],
+    "credits": 9,
+    "look": "right: a plain top, a scalloped apron on all four sides, four short square legs curved out at the foot. A deeper red-brown than the lit photograph (0.73 against 0.48; the build sheet's base 0.65): dulled by measure to 0.59 before it went to Meshy (crops_hallin.py --dull hredtable 0.82 350 40; as drawn: refs/hredtable-2k-asdrawn.png)"
+   }
+  },
+  "hstripemat": {
+   "job": "f0e0b4b8-7f97-48c3-b6c3-e06d1f7c0b5b",
+   "made": "low/1k",
+   "ar": "3:2",
+   "crops": [
+    "hstripemat (hall-05)"
+   ],
+   "look": "good: maroon with cream bands of zigzag teeth edged in black, as hall-05",
+   "verdict": "good as it is",
+   "credits": 0.25,
+   "final": {
+    "job": "5b109813-10da-4163-8042-f17120a935c8",
+    "made": "max/2k",
+    "ar": "3:2",
+    "crops": [
+     "hstripemat (hall-05)"
+    ],
+    "credits": 9,
+    "look": "right: wide maroon bands, cream bands of small maroon and black zigzag teeth edged by wavy black lines, as hall-05; rounded stuffed edges. DRAWN TOO RED: its maroon's saturation 0.71 where the crop's is 0.48 as photographed and 0.59 seen through the photograph's own black and cream: dulled by measure to 0.51 before it went to Meshy (crops_hallin.py --dull hstripemat 0.72 320 30; the picture as drawn is refs/hstripemat-2k-asdrawn.png)"
+   }
+  },
+  "hbooktable": {
+   "job": "db3adf3f-2b9a-4ab9-98cb-c98b4cd1d604",
+   "made": "low/1k",
+   "ar": "1:1",
+   "crops": [
+    "hbooktable (hall-03)"
+   ],
+   "look": "good: the low red-brown table with a drawer front, four thick pale books (the photograph: five or six)",
+   "verdict": "good as it is",
+   "credits": 0.25,
+   "final": {
+    "job": "09f3aac6-e8bd-4829-8ad0-b0045aacc8dc",
+    "made": "max/2k",
+    "ar": "1:1",
+    "crops": [
+     "hbooktable (hall-03)"
+    ],
+    "credits": 9,
+    "look": "right: a low red-brown table with a drawer front and square legs, four thick old books with pale blank covers (the photograph: five or six)"
+   }
+  },
+  "hbroom": {
+   "job": "8d85956d-9bbb-41e8-82a8-8c2c130098cd",
+   "made": "low/1k",
+   "ar": "3:2",
+   "crops": [
+    "hbroom (hall-03)"
+   ],
+   "look": "good: a fan of tan grass bound with pale cord, a black-taped handle",
+   "verdict": "good as it is",
+   "credits": 0.25,
+   "final": {
+    "job": "d7fad832-baef-4f82-9ebb-9971fed193ee",
+    "made": "max/2k",
+    "ar": "3:2",
+    "crops": [
+     "hbroom (hall-03)"
+    ],
+    "credits": 9,
+    "look": "right: a full fan of fine tan grass, pale cord binding, a black-taped handle with a small cord loop"
+   }
+  },
+  "hclothsets": {
+   "job": "a3003cdf-0013-48d2-add8-ab0a96ca34fc",
+   "made": "low/1k",
+   "ar": "1:1",
+   "crops": [
+    "hclothsets (hall-06)"
+   ],
+   "look": "good: five bundles in gold satin",
+   "verdict": "good as it is",
+   "credits": 0.25,
+   "final": {
+    "job": "16666192-4b9e-4258-ac6d-ef0c08aadaef",
+    "made": "max/2k",
+    "ar": "1:1",
+    "crops": [
+     "hclothsets (hall-06)"
+    ],
+    "credits": 9,
+    "look": "right in kind: four bundles in shiny gold satin, their ends tucked (five were asked; the photograph shows about five, half hidden). Drawn square-on, so its depth is not shown"
+   }
+  },
+  "hwallfan": {
+   "job": "1266fa87-f941-4dea-bc6d-d049e0f6fdcd",
+   "made": "low/1k",
+   "ar": "1:1",
+   "crops": [
+    "hwallfan (hall-08)",
+    "hwallfan11 (hall-11)"
+   ],
+   "look": "good: grey wire guard, three translucent blades, cream motor, arm and wall plate, no badge",
+   "verdict": "draw again: at high; and its wire guard cannot be modelled from a picture (a guard drawn as a sheet, or built in code round the model)",
+   "credits": 0.25,
+   "final": {
+    "job": "33bf2745-b9b2-45f4-8685-4d29e8346fc9",
+    "made": "max/2k",
+    "ar": "1:1",
+    "crops": [
+     "hwallfan (hall-08)",
+     "hwallfan11 (hall-11)"
+    ],
+    "credits": 9,
+    "look": "right: a domed grey guard drawn as a closed shell of fine radial mesh, the three blades faint through it, a cream hub cap, a slotted cream motor housing, a cream arm and wall plate, no badge. DRAWN TWICE: the first (job 7177936b-39f2-4dca-a7e4-4dec9890a184, refs/hwallfan-2k-first.png, 9 credits) drew the guard as a flat disc like a dish",
+    "credits_all": 18
+   }
+  },
+  "hhorn": {
+   "job": "72216c3e-ca27-4993-99ed-eb509b925d73",
+   "made": "low/1k",
+   "ar": "1:1",
+   "crops": [
+    "hhorn (hall-11)"
+   ],
+   "look": "good: a cream flared horn, its driver, a U bracket, no name",
+   "verdict": "good as it is",
+   "credits": 0.25,
+   "final": {
+    "job": "76554828-a359-4820-bf06-cd560969f902",
+    "made": "max/2k",
+    "ar": "1:1",
+    "crops": [
+     "hhorn (hall-11)"
+    ],
+    "credits": 9,
+    "look": "right: an aged cream flared horn, its driver, a grey U bracket, chipped paint, no name"
+   }
+  },
+  "hpabox": {
+   "job": "0bc014a5-dace-4d98-98b3-69d1a5ea0a7f",
+   "made": "low/1k",
+   "ar": "1:1",
+   "crops": [
+    "hpabox (hall-07)"
+   ],
+   "look": "good: a black box with a perforated grille on a U bracket, no badge",
+   "verdict": "good as it is",
+   "credits": 0.25,
+   "final": {
+    "job": "34317821-b711-4267-9a1d-6e61b90a11bc",
+    "made": "max/2k",
+    "ar": "1:1",
+    "crops": [
+     "hpabox (hall-07, a pale smudge on its front painted over)"
+    ],
+    "credits": 9,
+    "look": "right: a moulded black box, a perforated grille, a black U bracket, no badge and no mark anywhere. Drawn from below its front, so its top shows: check its model from the side"
+   }
+  },
+  "hpedfan": {
+   "job": "2b98498b-65ae-4957-bbe4-621cac987bc6",
+   "made": "low/1k",
+   "ar": "2:3",
+   "crops": [
+    "hpedfan (hall-09)"
+   ],
+   "look": "fair: the guard and cream hub are right; the legs came out brown where the photograph's are grey steel, and the guard is a retro one",
+   "verdict": "draw again: at high, grey legs, a plain guard; the wire guard as the wall fan's",
+   "credits": 0.25,
+   "final": {
+    "job": "bf4a93a8-c4e4-4eb1-9f54-7f3a1a600096",
+    "made": "max/2k",
+    "ar": "2:3",
+    "crops": [
+     "hpedfan (hall-09)"
+    ],
+    "credits": 9,
+    "look": "right: a dark-grey guard drawn as a closed drum of fine mesh, the three blades faint behind it, a cream hub cap, three long grey steel legs splayed from under the guard, as the crop has them. DRAWN TWICE: a second picture with a shorter stand (job 3a541e30-e7cd-4699-b773-8748fa2cb243, refs/hpedfan-2k-second.png, 9 credits) has the wrong stand (a centre pole on a short tripod) and is not used; PROMPTS.py has the measure",
+    "credits_all": 18
+   }
+  },
+  "hsofa3": {
+   "job": "7868b3a7-201d-4d49-a751-366a8bd64c92",
+   "made": "low/1k",
+   "ar": "3:2",
+   "crops": [
+    "hsofa3 (hall-11, beige)",
+    "hsofa3mint (hall-09, for its shape)"
+   ],
+   "look": "good: three plump backs and seats, fat arms, gathered beige leather, a plinth",
+   "verdict": "good as it is",
+   "credits": 0.25,
+   "final": {
+    "job": "573a5b36-5a1f-4ce5-b626-705e3a865bd6",
+    "made": "max/2k",
+    "ar": "3:2",
+    "crops": [
+     "hsofa3 (hall-11, beige)",
+     "hsofa3mint (hall-09, for its shape)"
+    ],
+    "credits": 9,
+    "look": "right: three plump backs and seats, fat rounded arms, gathered beige leather with piped seams, a low plinth with small dark feet; the leather is #ae9b7d where the crop's is #8e8168 (the same hue and saturation, a stop brighter: a studio's light for the hall's lamps)"
+   }
+  },
+  "hcushions": {
+   "job": "94c60c66-c12a-4094-980e-6027f331a0c8",
+   "made": "low/1k",
+   "ar": "1:1",
+   "crops": [
+    "hcushions (hall-07)"
+   ],
+   "look": "fair: three columns where hall-07 has four, and straps over the whole stack where each real bundle is strapped",
+   "verdict": "draw again: at high, four columns, each bundle strapped",
+   "credits": 0.25,
+   "final": {
+    "job": "e8e71a63-a8d1-41b9-add6-f80bb039ea8d",
+    "made": "max/2k",
+    "ar": "1:1",
+    "crops": [
+     "hcushions (hall-07)"
+    ],
+    "credits": 9,
+    "look": "right: four columns, five bundles high, each bundle of flat white cushions in a clear bag with a grey strap; three big grey cushions on top. The real bundles are only one or two cushions thick (the draft's fault was three columns and straps over the whole stack: both mended)"
+   }
+  },
+  "hgreymats": {
+   "job": "18488999-2569-462b-87b1-ff19bf57a40e",
+   "made": "low/1k",
+   "ar": "3:2",
+   "crops": [
+    "hgreymats (hall-07)"
+   ],
+   "look": "good: the stack of thin mats; a darker grey than the photograph's",
+   "verdict": "good as it is",
+   "credits": 0.25,
+   "final": {
+    "job": "1e543249-f975-4c6b-9643-88134a51070c",
+    "made": "max/2k",
+    "ar": "3:2",
+    "crops": [
+     "hgreymats (hall-07)"
+    ],
+    "credits": 9,
+    "look": "right: about twenty-five thin flat grey foam mats, uneven edges; #676564, a little lighter than the crop's #4d4944, which stands in the hall's shade"
+   }
+  },
+  "hmattresses": {
+   "job": "c8c4af64-9bb7-4205-ba60-d86405c54331",
+   "made": "low/1k",
+   "ar": "3:2",
+   "crops": [
+    "hmattresses (hall-09)"
+   ],
+   "look": "good: three piles of folded cream mattresses with tie tapes, some patterned",
+   "verdict": "good as it is",
+   "credits": 0.25,
+   "final": {
+    "job": "3fab209f-6f3f-4524-8b48-19054b676f57",
+    "made": "max/2k",
+    "ar": "3:2",
+    "crops": [
+     "hmattresses (hall-09)"
+    ],
+    "credits": 9,
+    "look": "right: three piles of four folded cream mattresses, rounded folds, tie tapes, a faded tan pattern on two, tan piping"
+   }
+  },
+  "hclock": {
+   "job": "e3787a20-4a14-46d1-9023-75b6ad71aabd",
+   "made": "low/1k",
+   "ar": "1:1",
+   "crops": [],
+   "look": "good: dark brown rim, white face, black numerals, no name",
+   "verdict": "good as it is",
+   "credits": 0.25,
+   "final": {
+    "job": "0b465912-acf4-4b0d-a3bb-0d6d05c145bf",
+    "made": "max/2k",
+    "ar": "1:1",
+    "crops": [],
+    "credits": 9,
+    "look": "right: a rounded dark brown rim, a white face, bold black numerals, plain black hands at ten past ten, a clear cover; no name, no mark"
+   }
+  },
+  "hexhaust": {
+   "job": "57229ca2-bb68-4ea2-a312-190b870d447b",
+   "made": "low/1k",
+   "ar": "1:1",
+   "crops": [
+    "hexhaust (hall-09)"
+   ],
+   "note": "the first request was refused by the service's rate limit (429) with no job made; sent again",
+   "look": "good: cream frame, fine louvres, the fan behind; its box sides came out brown (the crop's brick edge was read as the object)",
+   "verdict": "draw again: at high, the casing cream all round",
+   "credits": 0.25,
+   "final": {
+    "job": "05726e8a-67a8-4abe-bfd2-b277793f9e5d",
+    "made": "max/2k",
+    "ar": "1:1",
+    "crops": [
+     "hexhaust (hall-09)"
+    ],
+    "credits": 9,
+    "look": "right: cream-white plastic all round, rounded corners, fine horizontal louvres, the dark fan behind; no name"
+   }
+  },
+  "hpillow2": {
+   "job": "f0584f0d-8219-4086-932e-313e13cb45ee",
+   "made": "max/2k",
+   "ar": "1:1",
+   "crops": [
+    "hpillow3 (hall-03, the cloth only)",
+    "hpillow2 (hall-02, the cloth only)"
+   ],
+   "credits": 9,
+   "look": "right in colour, which is what it was drawn again for: its plain cloth measures #3b2d34 and #382930 (the crops: #3d2832), its red band is one tube's, and its ends are woven in fine cream, grey and olive stripes. It has FIFTEEN tubes in five rows where ten in four were asked; the real pillows' rows cannot be counted (they stand behind the seated master). Its top tube is lit warmer (#61343c)",
+   "why": "the first pillow's model (hpillow, first batch) was painted crimson and no tint in the game reaches the real cloth; drawn again WITH crops of the pillows' own cloth"
+  },
+  "hpapercone": {
+   "job": "8c26c97a-7f13-44fb-bf4d-a1abb42a0bd3",
+   "made": "max/2k",
+   "ar": "2:3",
+   "crops": [],
+   "credits": 9,
+   "look": "right in kind: a slim cone of small folded paper points with a faint watermark pattern and a gold-foil tip, in a ring of ten pointed folded petals, in a gold embossed pedestal bowl; no banknote, portrait, numeral or print anywhere. DRAWN TOO PINK (petals saturation 0.23; the real ones 0.06 to 0.13 in hall-03): paled by measure before it went to Meshy (crops_hallin.py --pale hpapercone; as drawn: refs/hpapercone-2k-asdrawn.png). The real ring's petals are narrower and more of them, and its cone is plainer",
+   "why": "it REPLACES humbrella: there is no umbrella. Enlarged, hall-02, 03, 05, 06 and 10 show L18's two small pieces as a slim cone of folded notes with a gold tip in a lotus-like ring of folded-note petals in a gold pedestal bowl, as the research note says (docs/research/V26.18-HALL-IMAGES.md, 8). The real ones are folded of banknotes: no crop, ever; drawn in plain pale paper as the peacock was"
+  }
+ },
+ "_cost": "first batch 16.75 credits (five at high/2k 2.75, three at medium/2k 1), second batch 6.25 (twenty-five at low/1k 0.25), the canopy drawn again 2.75: 25.75 of the 30 in hand (4.25 left)",
+ "_models": {
+  "_note": "the first batch's Meshy jobs (masters/v26.0/meshy26.py at its highest settings; the list is props/jobs-h1.json; every id is also in masters/v26.0/src/jobs.json under the name). 40 credits a model, 5 a remesh: 365 in all (431 before, 66 after). The canopy's game file was not kept (its model failed at the game's count: TABLE.txt); hcanopy2 (props/jobs-h2.json) is not run.",
+  "hseat": {
+   "image_to_3d": "01a1e41b-8fb6-7537-b274-937ddfcb6a5a",
+   "remesh": {
+    "4000": "01a1e424-92aa-71f6-a78c-78e4561da7a4"
+   }
+  },
+  "hpillow": {
+   "image_to_3d": "01a1e41b-97b8-758c-8c18-bcac4053fd64",
+   "remesh": {
+    "6000": "01a1e429-0bcf-72b8-b69e-3a59e5791c6a"
+   }
+  },
+  "hframe": {
+   "image_to_3d": "01a1e41b-aa65-737e-b9ff-bd1349a5c547",
+   "remesh": {
+    "6000": "01a1e42e-07ad-7243-aaf1-1c9335f287b0",
+    "8000q": "01a1e453-3462-76c6-ada9-c2e2e748a65f"
+   }
+  },
+  "hdrums": {
+   "image_to_3d": "01a1e41b-b714-7706-b085-33ae09f9ba00",
+   "remesh": {
+    "12000": "01a1e432-c38d-704e-aaaa-62b9da31f471"
+   }
+  },
+  "hgoldbaisri": {
+   "image_to_3d": "01a1e41b-bf71-72c3-b828-ba46166df4bb",
+   "remesh": {
+    "24000": "01a1e437-8377-7230-b533-209f4ba5935e"
+   }
+  },
+  "hcanopy": {
+   "image_to_3d": "01a1e41b-c9a8-76f0-ad89-337eb2e1913a",
+   "remesh": {
+    "12000": "01a1e43c-02be-7024-98ef-d654ce354cc2"
+   }
+  },
+  "hpeacock": {
+   "image_to_3d": "01a1e41b-d4ed-75f2-9f1d-afb636a7835a",
+   "remesh": {
+    "20000": "01a1e441-0265-71f8-b824-5efa2c2f303f"
+   }
+  },
+  "hmat": {
+   "image_to_3d": "01a1e41b-e239-72d0-9a2b-43cf7c5f90d1",
+   "remesh": {
+    "3000": "01a1e447-c310-7045-81e4-db76f965df47"
+   }
+  }
+ },
+ "_note2": "16 Nov 2026, later (credits topped up: 504.25 in hand): every second-batch picture drawn again as its `final`, at max quality, 2k (9 credits each: asked of the service with get_cost before the first), with the words in PROMPTS.py and the crops named, changed only as its `verdict` said; each opened at its own pixels and judged against the photographs before its model. The picture a model is made from is refs/<name>-2k.png. Web photographs of the real KIND of thing went in beside the crops for the four naga pieces (masters/v26.0/ref/hall/web/11..13, each folder's SOURCES.txt). Three crops were mended first: the two cone towers' polygons tightened off the printed backdrop behind them, and a pale smudge on the PA box's front painted over.",
+ "_cost2": "30 pictures at max/2k, 9 credits each: 270 (504.25 before, 234.25 after, both read from the service). Twenty-seven are in use; three were drawn twice (hpedfan, hwallfan, hconetower: 27 credits for the three not used)"
+}

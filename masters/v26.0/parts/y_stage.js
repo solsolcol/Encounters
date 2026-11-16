@@ -249,10 +249,13 @@
     function lit(name, day) {
       if (kit) kit.daylight(PRESETS[name] || null, 0);
       lookName = name; FL.lit = name;
-      dayOne.visible = /one/.test(day); dayTwo.visible = /two/.test(day); nightG.visible = /night/.test(day); duskG.visible = name === 'DUSK';
+      /* (v26.18: a look inside the hall wears its hour's dressing outside, and sets the hall's glass and pictures to the hour) */
+      const hh = HALL_HOUR[name], out = hh ? hh[0] : name;
+      dayOne.visible = /one/.test(day); dayTwo.visible = /two/.test(day); nightG.visible = /night/.test(day); duskG.visible = out === 'DUSK';
       crowdSolid(dayOne.visible);
-      paintShade(name);
+      paintShade(out);
       phoLook.level.value = PHO_LEVEL[name] != null ? PHO_LEVEL[name] : 1;
+      hallGlass(hh ? hh[1] : out === 'DUSK' || out === 'NIGHT' ? 'DUSK' : out === 'AFTERNOON' ? 'NOON' : 'MORNING');
       mistK = 0;
     }
     /* HIS BAI SRI IN HIS HANDS, IN A FILM: exactly as play carries it (the hands' own pass, his hands under the frame's
@@ -308,6 +311,7 @@
       begin(api) { if (api.handsRoot) api.handsRoot.visible = false; FL.shot = ''; FL.bai = false; },
       stage(n) {
         FL.shot = n; filmBai(n === 'n1');
+        if (n !== 'n5') hallDay(false);                                          // (v26.18: the hall stands shut, and the bench's own man is on it, until first light)
         const row = [cast.hermitB, cast.red, cast.pho, cast.white, cast.hermitA];
         FL.sky = n === 'n4' ? { x: ROOM.x, z: ROOM.z } : null;
         if (n === 'n1') {
@@ -369,9 +373,10 @@
           { const X = ROOM.x, Zw = ROOM.wall, sl = ROOM.sill, hw = ROOM.w / 2 + 0.06;
             fitShot(BW.eye4, [X, sl + lp(0.5, 0.46, k), Zw], lp(60, 54, k), lp(46, 41, k), [[X - hw, sl - 0.1, Zw], [X + hw, sl - 0.1, Zw], [X - hw, sl + 1.1, Zw], [X + hw, sl + 1.1, Zw]]); }
         } else {
-          /* FIRST LIGHT ON THE TURF: his eyes come up from yesterday's petals to the bench across the turf, where one
-             man sits; and Ton, beside him. It ends on the very picture play begins the morning in */
-          const k = smo(sgk(t, T.n5 + 0.3, T.tn3n1 + 0.2)), ya = phoYawFrom(DAWN_AT), pi = lp(-0.6, -0.04, k), eye = [DAWN_AT.x, EYE, DAWN_AT.z];
+          /* FIRST LIGHT ON THE TURF: his eyes come up from yesterday's petals to the hall beyond the offering tables, its
+             west door standing open (v26.18: his teacher sits inside it that morning; the bench is empty); and Ton,
+             beside him. It ends on the very picture play begins the morning in */
+          const k = smo(sgk(t, T.n5 + 0.3, T.tn3n1 + 0.2)), ya = doorYawFrom(DAWN_AT), pi = lp(-0.6, DAWN_PITCH, k), eye = [DAWN_AT.x, EYE, DAWN_AT.z];
           shot(eye, [eye[0] - Math.sin(ya) * Math.cos(pi) * 10, EYE + Math.sin(pi) * 10, eye[2] - Math.cos(ya) * Math.cos(pi) * 10], PLAY_FOV, PLAY_FOV);
           mistK = 1;
           /* Ton says it, and is at rest again before play has him */
@@ -390,7 +395,16 @@
        the lens changes unseen is behind his own eyelids, once, before the teaching. */
     /* (his eye, kneeling; and FOOT, the carpet at Grandmaster Pho's foot, deep in petals, where his eyes drop on "kumanthong".
        v26.8: a golden bowl of petals stood there and the drops looked into it; taken out at Chad's word, "Remove it") */
-    const EK = [KNEEL2.x, KNEEL.y, KNEEL2.z], FOOT = benchAt(0.1, 0.72);
+    /* (v26.18: inside the hall. His eye over its floor; FOOT, the white tile and the hem of the dais's skirt at his
+       teacher's foot: the same drop of his eyes, onto the new ground) */
+    const EK = [KNEEL2.x, KNEELH.y, KNEEL2.z], FOOT = seatAt(0.1, 0.72);
+    /* (where his eyes DROP to, photographed: at the tile before the skirt through a phone's 56 degrees, two thirds of the
+       picture was blank white tile. They drop to the front of his teacher's seat instead, the hem of the white cloth on
+       the cushion: the old man's still hands over it, the cushion's edge, the skirt and a strip of the tile under it;
+       narrower, so nothing of the face is in it) */
+    const DROP = [HALLSEAT.x + 0.16, HF + HIN.dais.h + 0.07, HIN.zN + HIN.dais.v1 - 0.16];
+    /* the woman who serves him, seated at his right hand: quite still */
+    const auntRest = (t) => pose(cast.aunt, 'seiza', 1.5 + 0.3 * Math.sin(t * 0.5), false);
     /* his eyes from a place: a heading and a tilt (up is positive), at a lens */
     function eyes(eye, ya, pi, fPhone, fDesk, roll = 0) { const c = Math.cos(pi); shot(eye, [eye[0] - Math.sin(ya) * c * 10, eye[1] + Math.sin(pi) * 10, eye[2] - Math.cos(ya) * c * 10], fPhone, fDesk, roll); }
     const aimOf = (eye, p) => [yawTo(eye[0], eye[2], p[0], p[2]), Math.atan2(p[1] - eye[1], Math.hypot(p[0] - eye[0], p[2] - eye[2]))];
@@ -409,7 +423,7 @@
        rides the living head (v25.5: a look locked to a talking head sways the whole picture behind it) */
     function faceAt(id, P, restTake, restT) {
       if (!FL.faces[id] && P && P.ready) { pose(P, restTake, restT, false); const h = headOf(P, null); if (h) FL.faces[id] = [h[0], h[1] + 0.06, h[2]]; }
-      return FL.faces[id] || [P.group.position.x, 1.3, P.group.position.z];
+      return FL.faces[id] || [P.group.position.x, P === cast.phoH ? HALLSEAT.y + 0.72 : 1.3, P.group.position.z];
     }
     /* A SEATED MASTER SPEAKS, in a film: his talking take under each of his lines (eased in at the line's start and out
        at its end; each line begins the take somewhere else, so no two begin with one gesture), his rest between */
@@ -449,11 +463,11 @@
     FILMS.tell = {
       begin(api) { if (api.handsRoot) api.handsRoot.visible = false; FL.wai = false; },
       frame(t, api) {
-        const T = TELL, Ph = cast.pho, F = faceAt('pho', Ph, 'Sit_to_Stand_Transition_M', 0.16), [yF, pF] = aimOf(EK, F);
+        const T = TELL, Ph = cast.phoH, F = phoFace(), [yF, pF] = aimOf(EK, F);
         /* he listens: quite still, his eyes on the one who speaks */
         pose(Ph, 'Sit_to_Stand_Transition_M', 0.16 + 0.13 * Math.sin(t * 0.7), false);
         lookNow(Ph, 'lens', 1, 0.5, 0);
-        pose(cast.aunt, 'Idle_3', 2 + t, true);
+        auntRest(t);
         /* A LOOK OF ITS OWN FOR EACH SENTENCE (v26.8, Chad: "When grandmaster pho or the player talks for very long
            stretches, you should rotate between different camera panning, angles, etc, to make it less static and boring,
            so there is sustained visual interest"). Every change is still a move of his eyes or his lens, never a cut on
@@ -469,7 +483,7 @@
            the frame's top edge through his nose for the six seconds of the line. On a desktop the look goes to 0.40 m
            under it through 18 degrees: an insert of the beads and the pendant from his neck down. A phone's tall frame
            holds his face and the beads together, as before) */
-        const [yC, pC] = aimOf(EK, [FOOT[0], 0.02, FOOT[1]]), [yN, pN] = aimOf(EK, [F[0], F[1] - (isNarrow() ? 0.34 : 0.40), F[2]]);
+        const [yC, pC] = aimOf(EK, DROP), [yN, pN] = aimOf(EK, [F[0], F[1] - (isNarrow() ? 0.34 : 0.40), F[2]]);
         /* and the slow push on the old man's face through the whole telling */
         const kp = smo(sgk(t, 0, T.q3t8)), fP = lp(46, 25, kp), fD = lp(34, 18.5, kp), pT = faceTilt(EK, F, fP, fD);
         /* "my body moves by itself": for that sentence his body remembers it, and the picture sways a little */
@@ -488,12 +502,12 @@
     FILMS.answers = {
       begin(api) { if (api.handsRoot) api.handsRoot.visible = false; FL.wai = false; },
       frame(t, api) {
-        const T = ANSW, Ph = cast.pho, Au = cast.aunt, W8 = ANSW_WORDS;
+        const T = ANSW, Ph = cast.phoH, Au = cast.aunt, W8 = ANSW_WORDS;
         phoFace(); phoTalkFace();                                                // (both his places measured before he is posed)
         const kTalk = speaks(Ph, t, T, ['ph3n1', 'ph3n2', 'ph3n3', 'ph3n4']);
         const F = phoF(kTalk), [yF, pF] = aimOf(EK, F);
         lookNow(Ph, 'lens', 1, 0.5, 0);
-        pose(Au, 'Idle_3', 2 + t, true);
+        auntRest(t);
         /* A LOOK OF ITS OWN FOR EACH THING HE SAYS (v26.8, Chad: "When grandmaster pho or the player talks for very long
            stretches, you should rotate between different camera panning, angles, etc"), each on the word it is about,
            measured on the takes (ANSW_WORDS): "Different people bring different things", his eyes go down to what he
@@ -503,9 +517,9 @@
            of his sight; "You opened your body to the kumanthong", he cannot hold the old man's eyes: down to the petals
            on the carpet at his teacher's foot; his eyes close a moment; "To open when you choose, and to close when you choose", he draws
            back and the gold rises on his teacher. Every change is a move of his eyes or his lens, never a cut (v25.5) */
-        const kB = bump(t, T.ph3n1 + W8.n1diff - 0.15, T.ph3n1 + W8.n1and + 0.25, 0.9, 1.0), [yB, pB] = aimOf(EK, [BESIDE.x, 0.27, BESIDE.z]);
+        const kB = bump(t, T.ph3n1 + W8.n1diff - 0.15, T.ph3n1 + W8.n1and + 0.25, 0.9, 1.0), [yB, pB] = aimOf(EK, [BESIDE.x, HF + 0.27, BESIDE.z]);
         const kH = bump(t, T.ph3n2 + W8.n2born - 0.2, T.ph3n2 + W8.n2and + 0.3, 0.8, 0.8);
-        const kC = bump(t, T.ph3n3 + W8.n3you - 0.15, T.ph3n3 + SECS['ph3n3'] + 0.3, 1.0, 1.1), [yC, pC] = aimOf(EK, [FOOT[0], 0.02, FOOT[1]]);
+        const kC = bump(t, T.ph3n3 + W8.n3you - 0.15, T.ph3n3 + SECS['ph3n3'] + 0.3, 1.0, 1.1), [yC, pC] = aimOf(EK, DROP);
         /* THE LENS, one smooth line through the whole film (its knots: [second, phone, desktop]); a second line after
            his eyes have closed and opened */
         const first = t < T.blink + 0.33;
@@ -516,7 +530,7 @@
         let fP = L[0][1], fD = L[0][2];
         for (let i = 0; i < L.length - 1; i++) if (t >= L[i][0]) { const k = smo(sgk(t, L[i][0], L[i + 1][0])); fP = lp(L[i][1], L[i + 1][1], k); fD = lp(L[i][2], L[i + 1][2], k); }
         /* it ends on play's own picture: play's heading, tilt and lens from where he kneels */
-        const kEnd = smo(sgk(t, T.ph3n4 + SECS['ph3n4'] + 0.3, T.end - 0.4)), yaP = phoYawFrom(KNEEL2), piP = 0.16;
+        const kEnd = smo(sgk(t, T.ph3n4 + SECS['ph3n4'] + 0.3, T.end - 0.4)), yaP = pho2YawFrom(KNEEL2), piP = 0.16;
         const pT = faceTilt(EK, F, fP, fD);
         /* (v26.8: the drop wide, to the carpet's petals, as in the telling) */
         eyes(EK, lp(yF + (yB - yF) * kB + (yC - yF) * kC, yaP, kEnd), lp(pT + (pB - pT) * kB + (-0.6 - pT) * kH + (pC - pT) * kC, piP, kEnd),
@@ -537,18 +551,18 @@
        each comes back to that carpet for the close all four share. Pictures only: the cues are below the build. */
     const lensAt = (t, L) => { let fP = L[0][1], fD = L[0][2]; for (let i = 0; i < L.length - 1; i++) if (t >= L[i][0]) { const k = smo(sgk(t, L[i][0], L[i + 1][0])); fP = lp(L[i][1], L[i + 1][1], k); fD = lp(L[i][2], L[i + 1][2], k); } return [fP, fD]; };
     const yawMix = (a, b, k) => a + angTo(a, b) * k;                          // from heading a to heading b the short way, by k (angTo: the signed short turn)
-    const phoFace = () => faceAt('pho', cast.pho, 'Sit_to_Stand_Transition_M', 0.16);
+    const phoFace = () => faceAt('phoH', cast.phoH, 'Sit_to_Stand_Transition_M', 0.16);   // (v26.18: the morning's man, cross-legged on the hall's dais)
     /* WHERE HIS FACE IS WHILE HE TALKS: his talking take leans him forward and sets his head a hand lower than his rest
        does (from 1.3 m, in a narrow lens, his face fell out of the foot of the picture: photographed on "Tomorrow we
        begin."). A look still never rides a living head (v25.5), so the take's own MEAN place is measured once, and the
        look glides between the two places by how much he is talking (`speaks` answers it: a smooth function of the
        film's clock) */
     function phoTalkFace() {
-      const P = cast.pho;
-      if (!FL.faces.phoTalk && P.ready && P.acts[P.talkTake]) { const d = P.acts[P.talkTake].getClip().duration, s = [0, 0, 0]; let n = 0;
+      const P = cast.phoH;
+      if (!FL.faces.phoHTalk && P.ready && P.acts[P.talkTake]) { const d = P.acts[P.talkTake].getClip().duration, s = [0, 0, 0]; let n = 0;
         for (let i = 0; i < 12; i++) { pose(P, P.talkTake, (i + 0.5) / 12 * d, false); const h = headOf(P, null); if (h) { s[0] += h[0]; s[1] += h[1] + 0.06; s[2] += h[2]; n++; } }
-        if (n) FL.faces.phoTalk = [s[0] / n, s[1] / n, s[2] / n]; }
-      return FL.faces.phoTalk || phoFace();
+        if (n) FL.faces.phoHTalk = [s[0] / n, s[1] / n, s[2] / n]; }
+      return FL.faces.phoHTalk || phoFace();
     }
     const phoF = (k = 0) => (k > 0.001 ? lp3(phoFace(), phoTalkFace(), c01(k)) : phoFace());
     /* his eyes on Grandmaster Pho from an eye: the heading, and the tilt that holds the face well at this lens (k: how
@@ -576,17 +590,21 @@
     }
     const _bqe = new THREE.Quaternion();
     /* where his hand lets a handful of petals go: his own take's hand at its throw, measured once */
-    function phoThrow() { const Ph = cast.pho; if (!FL.throwPho && Ph.ready) { const v = handsAt(Ph, 'Sit_Cheer_with_Left_Hand', 1.32, new THREE.Vector3(), 'R'); if (v) { Ph.group.localToWorld(v); FL.throwPho = [v.x, v.y + 0.08, v.z]; } } return FL.throwPho; }
+    function phoThrow() { const Ph = cast.phoH; if (!FL.throwPho && Ph.ready) { const v = handsAt(Ph, 'Sit_Cheer_with_Left_Hand', 1.32, new THREE.Vector3(), 'R'); if (v) { Ph.group.localToWorld(v); FL.throwPho = [v.x, v.y + 0.08, v.z]; } } return FL.throwPho; }
 
-    const EKN = (() => { const [x, z] = benchAt(0.46, 1.3); return [x, KNEEL.y, z]; })();              // his eye, knelt nearer: where two pairs of hands meet on one bowl
+    const EKN = (() => { const [x, z] = seatAt(0.46, 1.3); return [x, KNEELH.y, z]; })();              // his eye, knelt nearer: where two pairs of hands meet on one bowl
     /* (v26.2 debug: the low table is smaller and a little to the right, clear of his foot, of the young man's knee and of
        the lime pole (b_world2.js TB); the bai sri is set on its front left, where nothing else stands, and the woman
        stands at its right) */
-    const TABLE_BAI = (() => { const [x, z] = benchAt(1.03, 0.8); return [x, 0.38, z]; })();           // where his bai sri is set down at the last: the low table at the old man's right hand
-    const AUNT_TABLE = (() => { const [x, z] = benchAt(1.95, 1.1); return { x, z, ry: faceTo(x, z, TABLE_BAI[0], TABLE_BAI[2]) }; })();
+    /* (v26.18: inside the hall there is no low table at his hand, and the dais beside him is full (his photograph 3). His
+       bai sri is set among the offerings on the altar at his right, at its front by its east end, by the woman who serves
+       him: she rises from where she sits and stands before it, and is seen as her hands leave it, as she was at the
+       bench) */
+    const TABLE_BAI = hallAt(0.5, 2.1, 0.65 + 0.012);
+    const AUNT_TABLE = (() => { const x = 0.58, z = HIN.zN + 2.2 + 0.4; return { x, z, ry: faceTo(x, z, TABLE_BAI[0], TABLE_BAI[2]) }; })();
     /* each ending's light at the close: the look it arrives in; what OPEN widens it to; the look it is left in */
-    const END_LOOK = { A: ['DAWN', 'OPENED', 'DAWN'], B: ['DUSK', 'DUSKOPEN', 'DUSK'], C: ['DAWN', 'OPENED', 'DAWN'], D: ['SHUT', 'OPENED', 'DAWN'] };
-    const shadeOf = (name) => (name === 'OPENED' || name === 'SHUT' ? 'DAWN' : name === 'DUSKOPEN' ? 'DUSK' : name);
+    const END_LOOK = { A: ['HALLDAY', 'HALLOPEN', 'HALLDAY'], B: ['HALLDUSK', 'HALLDUSKOPEN', 'HALLDUSK'], C: ['HALLDAY', 'HALLOPEN', 'HALLDAY'], D: ['HALLSHUT', 'HALLOPEN', 'HALLDAY'] };   // (v26.18: the hall's own)
+    const shadeOf = (name) => { const o = HALL_HOUR[name] ? HALL_HOUR[name][0] : name; return o === 'OPENED' || o === 'SHUT' ? 'DAWN' : o === 'DUSKOPEN' ? 'DUSK' : o; };
     /* THOSE WHO WAIT CARRY WHAT THEY BROUGHT: a small bai sri on its tray, in both hands at the waist (a hand's width
        under the elbow's height, measured from that body's own shoulder), the hands solved onto the tray's foot. Called
        after the body's take is posed, every frame it is seen */
@@ -600,18 +618,27 @@
       b.position.set(c[0], c[1], c[2]); b.rotation.y = ry + i * 1.3; b.visible = true;
       handsTo(P, trayGrip(c, WAIT_TRAY.r, [g.position.x, g.position.z]), 1);
     }
-    /* the world as play left it at the decision: the morning of day two, Grandmaster Pho on his bench, his bai sri on the
-       carpet beside him; and everything an ending may stand, put away */
+    /* (v26.18) INSIDE THE HALL THEY SIT: nobody stands over a master who sits on the floor (his photographs 5 and 10: every
+       devotee in the hall is on the tile). Each waits on his heels, and what he brought stands on the tile before his
+       knees, as offerings wait in a hall; his hands lie in his lap, the take's own. Called after the body is posed */
+    function waitSet(i, t) {
+      const P = cast.wait[i], b = waitBai[i]; if (!P.ready || !P.group.visible) { b.visible = false; return; }
+      pose(P, 'seiza', 1.3 + 0.9 * i + 0.3 * Math.sin(t * (0.45 + 0.04 * i) + i * 1.7), false);
+      const g = P.group, ry = g.rotation.y;
+      b.position.set(g.position.x + Math.sin(ry) * 0.5, g.position.y + 0.004, g.position.z + Math.cos(ry) * 0.5); b.rotation.y = ry + i * 1.3; b.visible = true;
+    }
+    /* the world as play left it at the decision: the morning of day two, Grandmaster Pho on the hall's dais, the woman who
+       serves him seated at his right hand, Ton on his mat at the back, his bai sri on the tile beside him; and everything
+       an ending may stand, put away */
     function endStage() {
-      lit('DAWN', 'two'); mistK = 0.6; dayCast(false);
-      for (const P of [cast.pho, cast.aunt]) { put(P, P.home.x, P.home.z, P.home.ry); if (P.ready) P.group.visible = true; }
-      put(cast.ton, TON_DAWN.x, TON_DAWN.z, faceTo(TON_DAWN.x, TON_DAWN.z, KNEEL2.x, KNEEL2.z)); if (cast.ton.ready) cast.ton.group.visible = true;
+      lit('HALLDAY', 'two'); mistK = 0.6; dayCast(false); hallDay(true); hallMats(5);
+      auntIn(); tonSit();
       for (const P of cast.wait) { if (P.ready) P.group.visible = false; put(P, P.home.x, P.home.z, P.home.ry); }
       for (const b of waitBai) b.visible = false;
       for (const P of [cast.ym, cast.goA, cast.goB]) if (P.ready) P.group.visible = false;
       matsG.visible = false; rolled.own.visible = false; ymBai.visible = false;
       for (const g of rolled.ton.concat(rolled.rolls, [rolled.carry])) g.visible = false;
-      baiPut(myBai, BESIDE.x, 0.012, BESIDE.z, 0.6); myBai.visible = true;
+      baiPut(myBai, BESIDE.x, BESIDE_Y, BESIDE.z, 0.6); myBai.visible = true;
       auraAt(0, 0); FL.litE = -1; FL.litA = -1; FL.goldMin = 0; FL.shot = '';
       if (kit && kit.hush) kit.hush(0, { secs: 0 });
       castSolid();
@@ -621,7 +648,7 @@
       myArmsAt(null, null, 0, null, 0, 0, 0); myOpenHand(null, null, 0, 0);
       for (const P of cast.wait) if (P.ready) P.group.visible = false;
       for (const b of waitBai) b.visible = false;
-      matsG.visible = false; auraAt(0, 0); filmBurstsEnd();
+      matsG.visible = false; hallMats(5); auraAt(0, 0); filmBurstsEnd();
       if (kit && kit.hush) kit.hush(0, { secs: 0 });
       if (kit && kit.captions) kit.captions(null);
     }
@@ -634,16 +661,17 @@
         let d = e > 0.004 ? dayBlend(PRESETS[base], PRESETS[opn], e) : PRESETS[base];
         if (a > 0.004) d = dayBlend(d, PRESETS[aft], a);
         if (kit) kit.daylight(d, 0);
-        phoLook.level.value = lp(lp(PHO_LEVEL[base], PHO_LEVEL.OPENED, e), PHO_LEVEL[aft], a); mistK = base === 'DUSK' ? 0 : 0.6 - 0.4 * e; }
+        { const g0 = HALL_HOUR[base][1]; if (a > 0.004) hallGlassMix(g0, HALL_HOUR[aft][1], a); else hallGlassMix(g0, g0 === 'DUSK' ? 'DUSK' : 'OPEN', e); }
+        phoLook.level.value = lp(lp(PHO_LEVEL[base], PHO_LEVEL.HALLOPEN, e), PHO_LEVEL[aft], a); mistK = 0; }
       auraAt(Math.max(e * 0.95, FL.goldMin || 0), t);
     }
     function closeStage(k) {
       const [base] = END_LOOK[k];
       endTidy();
-      lit(base, 'two'); paintShade(shadeOf(base)); mistK = base === 'DUSK' ? 0 : 0.6; dayCast(false);
-      for (const P of [cast.pho, cast.aunt]) { put(P, P.home.x, P.home.z, P.home.ry); if (P.ready) P.group.visible = true; }
-      put(cast.ton, TON_DAWN.x, TON_DAWN.z, faceTo(TON_DAWN.x, TON_DAWN.z, KNEEL2.x, KNEEL2.z));
-      baiPut(myBai, BESIDE.x, 0.012, BESIDE.z, 0.6); myBai.visible = true;
+      lit(base, 'two'); mistK = 0; dayCast(false); hallDay(true); hallMats(5);
+      auntIn();
+      { const T0 = cast.ton, was = T0.ready ? T0.group.visible : true; tonSit(); if (T0.ready) T0.group.visible = was; }     // (an ending that put him away keeps him away)
+      baiPut(myBai, BESIDE.x, BESIDE_Y, BESIDE.z, 0.6); myBai.visible = true;
       FL.litE = -1; FL.litA = -1; FL.goldMin = 0; FL.tabled = false;
       castSolid();
     }
@@ -653,7 +681,7 @@
        both hands: photographed, v26.10's third build) */
     const HOLD = { d: 0.48, y: 0.12, mid: 0.24 };
     function closeFrame(tc, k, api) {
-      const T = CLOSE, Ph = cast.pho, Au = cast.aunt;
+      const T = CLOSE, Ph = cast.phoH, Au = cast.aunt;
       if (FL.shot !== 'close') { FL.shot = 'close'; closeStage(k); }
       /* THE EYE: from where he knelt, forward on his knees to where four hands can meet on one bowl */
       const kf = smo(sgk(tc, T.take + 1.3, T.take + 3.3)), eye = lp3(EK, EKN, kf);
@@ -689,9 +717,9 @@
       const hd = lp(0.6, HOLD.d, kNear), hy = lp(0.42, HOLD.y, kUp);
       const H = [eye[0] + fx * hd, eye[1] - hy + 0.004 * Math.sin(tc * 1.3), eye[2] + fz * hd];
       const kl = smo(sgk(tc, T.take + 0.9, T.take + 2.7)), kg = smo(sgk(tc, T.give + 0.9, T.give + 2.0));
-      const G1 = [PHO_AT[0] + Math.sin(BENCH.ry) * 0.5, 0.72, PHO_AT[1] + Math.cos(BENCH.ry) * 0.5];
+      const G1 = [PHO2_AT[0] + Math.sin(HALLSEAT.ry) * 0.5, HALLSEAT.y + 0.28, PHO2_AT[1] + Math.cos(HALLSEAT.ry) * 0.5];   // (v26.18: half a metre before him, as far over his seat as it was over the bench's)
       const tabled = tc >= T.give + 2.3;
-      let bc = tabled ? TABLE_BAI.slice() : lp3(lp3([BESIDE.x, 0.012, BESIDE.z], H, kl), G1, kg);
+      let bc = tabled ? TABLE_BAI.slice() : lp3(lp3([BESIDE.x, BESIDE_Y, BESIDE.z], H, kl), G1, kg);
       if (!tabled) { bc[1] += 0.1 * Math.sin(Math.PI * kl) * (1 - kl);                                 // (lifted in an arc, not dragged)
         const ks = smo(sgk(tc, T.petals + 2.2, T.glow + 0.4)) * (1 - smo(sgk(tc, T.q3z1, T.q3z1 + 1.6)));
         bc[0] += ks * 0.0045 * Math.sin(tc * 61); bc[1] += ks * 0.004 * Math.sin(tc * 53 + 1); bc[2] += ks * 0.0045 * Math.sin(tc * 47 + 2); }
@@ -720,15 +748,15 @@
       const kpb = bump(tc, T.hands + 0.2, T.hands + 2.4, 0.7, 0.8);
       lookNow(Ph, 'lens', 1 - kpb, 0.5, 0); if (kpb > 0) lookNow(Ph, [bc[0], bc[1] + 0.3, bc[2]], kpb, 0.5, 0);
       const pt = phoThrow();
-      filmBurst('close', tc, T.petals + 1.6, pt, [eye[0] + fx * 0.42, eye[2] + fz * 0.42], { r: 0.42, up: 1.15, seed: 5521, s: 0.03 });
-      /* the woman at his bench: she takes it from him and sets it on the table (seen as her hands leave it) */
+      filmBurst('close', tc, T.petals + 1.6, pt, [eye[0] + fx * 0.42, eye[2] + fz * 0.42], { r: 0.42, up: 1.15, seed: 5521, s: 0.03, ground: HF + 0.014 });   // (they land on the hall's tile)
+      /* the woman who serves him: she takes it from him and sets it on the altar (seen as her hands leave it) */
       if (tabled && !FL.tabled) { FL.tabled = true; put(Au, AUNT_TABLE.x, AUNT_TABLE.z, AUNT_TABLE.ry); castSolid(); }
       if (tabled) pose(Au, 'give', lp(3.7, 5.7, smo(sgk(tc, T.give + 2.4, T.give + 4.4))), false, 'Idle_3', smo(sgk(tc, T.give + 4.2, T.give + 5.4)), 2 + tc);
-      else pose(Au, 'Idle_3', 2 + tc, true);
+      else auntRest(tc);
       /* HIS EYES: on his bai sri beside him; up to his teacher as he raises it; bowed a little while the old man's
          hands lie on it; to the table when it is set there; on the old man's face for "Tomorrow we begin."; and the
          whole of it at the last */
-      const [yB, pB] = aimOf(eye, [BESIDE.x, 0.3, BESIDE.z]), kB = 1 - smo(sgk(tc, T.take + 0.4, T.take + 2.0));
+      const [yB, pB] = aimOf(eye, [BESIDE.x, HF + 0.3, BESIDE.z]), kB = 1 - smo(sgk(tc, T.take + 0.4, T.take + 2.0));
       const pWide = Math.atan2(0.05, 1.2), pFace = faceTilt(eye, phoF(kTalk), fP, fD), kFace = smo(sgk(tc, T.give + 3.4, T.ph3z2)) * (1 - smo(sgk(tc, T.q3K1 + 3.5, T.black - 1)));
       const kBow = bump(tc, T.hands + 0.9, T.hands + 2.8, 0.8, 0.9) * 0.05, [yTb, pTb] = aimOf(eye, [TABLE_BAI[0], TABLE_BAI[1] + 0.34, TABLE_BAI[2]]);
       const kTb = tc >= T.give + 2.3 ? 1 - smo(sgk(tc, T.give + 3.5, T.ph3z2 - 0.1)) : 0;
@@ -750,15 +778,16 @@
     FILMS.A = {
       begin(api) { if (api.handsRoot) api.handsRoot.visible = false; FL.wai = false; FL.bai = false; endStage(); },
       frame(t, api) {
-        const T = ENDT.A, Ph = cast.pho, Tn = cast.ton;
+        const T = ENDT.A, Ph = cast.phoH, Tn = cast.ton;
         if (t >= T.close) { closeFrame(t - T.close, 'A', api); return; }
         const [o60, w60, w40, yng] = cast.wait;
         if (t < T.mats) {
           if (FL.shot !== 'a1') { FL.shot = 'a1';
-            /* Ton, behind him, with an armful of rolled mats; by the west tents the ground is being cleared */
-            const [tx, tz] = benchAt(-1.7, 5.1); put(Tn, tx, tz, faceTo(tx, tz, KNEEL2.x, KNEEL2.z)); matsG.visible = true; castSolid(); }      // (3.5 m off: at 1.9 m a kneeling eye saw two mats and no face)
+            /* Ton, behind him, with a rolled mat on his arms, by the mats stacked at the hall's east wall; at the back of
+               the hall the floor is being cleared (v26.18: inside the hall) */
+            put(Tn, TON_A1.x, TON_A1.z, faceTo(TON_A1.x, TON_A1.z, KNEEL2.x, KNEEL2.z)); if (Tn.ready) Tn.group.visible = true; matsG.visible = true; castSolid(); }      // (3.5 m off: at 1.9 m a kneeling eye saw two mats and no face)
           phoFace(); phoTalkFace(); const kTalk = speaks(Ph, t, T, ['ph3A1', 'ph3A2']); lookNow(Ph, 'lens', 1, 0.5, 0);
-          pose(cast.aunt, 'Idle_3', 2 + t, true);
+          auntRest(t);
           pose(Tn, 'give', 2.6 + 0.12 * Math.sin(t * 0.8), false); lookNow(Tn, 'lens', 1, 0.7);
           /* (v26.2 debug: ONE mat on his arms. Two, lying on his forearms as they now do and not through them, stood 0.44 m
              tall at his chest and hid his face from the kneeling eye: photographed. The second is not drawn) */
@@ -768,42 +797,47 @@
           const [yF, pT] = toPho(EK, fP, fD, kTalk);
           if (t < T.bow) eyes(EK, yF, pT, fP, fD);
           else if (t < T.ton) bowEyes(EK, yF, pT, (t - T.bow) / (T.ton - T.bow), 46, 34);
-          else { handsFilm(0); const kT = smo(sgk(t, T.ton, T.ton + 1.5)), [yN, pN] = aimOf(EK, [Tn.group.position.x, 1.02, Tn.group.position.z]);
+          else { handsFilm(0); const kT = smo(sgk(t, T.ton, T.ton + 1.5)), [yN, pN] = aimOf(EK, [Tn.group.position.x, Tn.group.position.y + 1.02, Tn.group.position.z]);
             eyes(EK, yawMix(yF, yN, kT), lp(pT, pN, kT), lp(46, 50, kT), lp(34, 36, kT)); }
         } else {
           if (FL.shot !== 'a2') { FL.shot = 'a2'; handsFilm(0);
             /* THE MATS: Ton has set his down and stands by the stack; two kneel and roll, one carries; he walks up with
                one in his arms */
-            put(Tn, MATS_AT.x - 1.35, MATS_AT.z + 0.55, faceTo(MATS_AT.x - 1.35, MATS_AT.z + 0.55, A_W1[0], A_W1[1]));
-            for (const g of rolled.ton) g.visible = false;
-            put(w60, -7.55, -0.35, -1.9); put(w40, -8.15, 1.25, -1.35); put(yng, -5.5, 0.15, faceTo(-5.5, 0.15, MATS_AT.x, MATS_AT.z)); put(o60, -8.9, 3.3, 1.2);
+            /* (v26.18: the same picture, carried whole to the back of the hall: MATD, c_zfx.js. The hall's own white mats
+               of its two back rows are already taken up) */
+            { const sx = MATS_AT.x + MATD.x, sz = MATS_AT.z + MATD.z, dx = MATD.x, dz = MATD.z;
+              put(Tn, sx - 1.35, sz + 0.55, faceTo(sx - 1.35, sz + 0.55, A_W1[0], A_W1[1]));
+              for (const g of rolled.ton) g.visible = false;
+              put(w60, -7.55 + dx, -0.35 + dz, -1.9); put(w40, -8.15 + dx, 1.25 + dz, -1.35); put(yng, -5.5 + dx, 0.15 + dz, faceTo(-5.5 + dx, 0.15 + dz, sx, sz)); put(o60, -8.9 + dx, 3.3 + dz, 1.2); }
+            hallMats(3);
             for (const P of cast.wait) if (P.ready) P.group.visible = true;
             castSolid(); }
           /* those who work: two on their knees with their hands on a mat, rolling it; one walking it to the stack; the
              old man watching, his hands behind him */
           [w60, w40].forEach((P, i) => { pose(P, 'prostrate', 2.35 + 0.22 * Math.sin(t * 1.5 + i * 2), false);
-            const ry = P.group.rotation.y, g = rolled.rolls[i]; g.position.set(P.group.position.x + Math.sin(ry) * 0.62, 0, P.group.position.z + Math.cos(ry) * 0.62); g.rotation.set(0, ry, 0); g.visible = true; });
+            const ry = P.group.rotation.y, g = rolled.rolls[i]; g.position.set(P.group.position.x + Math.sin(ry) * 0.62 - MATD.x, 0, P.group.position.z + Math.cos(ry) * 0.62 - MATD.z); g.rotation.set(0, ry, 0); g.visible = true; });
           /* (the young man carries one before him in both hands: his body has no take that holds a thing out, so the
              mat is the truth and his hands are solved under its two ends. Posed by a take he does not have, he stood with
              his arms down and the mat hung in the air beside him: photographed on a desktop) */
           pose(yng, 'Idle_3', 1 + t, true);
-          { const g = yng.group, ry = g.rotation.y, fx = Math.sin(ry), fz = Math.cos(ry), c = [g.position.x + fx * 0.3, 1.0, g.position.z + fz * 0.3], m = rolled.carry;
+          { const g = yng.group, ry = g.rotation.y, fx = Math.sin(ry), fz = Math.cos(ry), c = [g.position.x + fx * 0.3, g.position.y + 1.0, g.position.z + fz * 0.3], m = rolled.carry;
             /* (v26.2 debug: the mat's foot at his hands' bones had his palms and fingers inside its lower half, measured in the
                film by tools/probes/clipscan.mjs: it rests ON his palms now, a palm's thickness above his wrists' bones) */
-            m.position.set(c[0], c[1] - 0.064 + 0.045, c[2]); m.rotation.set(0, ry, 0); m.visible = true;
+            m.position.set(c[0] - MATD.x, c[1] - 0.064 + 0.045 - MATD.y, c[2] - MATD.z); m.rotation.set(0, ry, 0); m.visible = true;
             for (const [sd, sg] of [['L', 1], ['R', -1]]) handTo(yng, sd, [c[0] + fz * sg * 0.3, c[1] - 0.064, c[2] - fx * sg * 0.3], [fx, 0.1, fz], [0, 1, 0], 1, { out: 0.2, down: 0.4 }); }
           pose(o60, 'Idle_3', 1 + t, true);
           pose(Tn, 'Idle_3', 3 + t, true); lookNow(Tn, 'lens', 1, 0.7);
-          pose(Ph, 'Sit_to_Stand_Transition_M', 0.16 + 0.13 * Math.sin(t * 0.7), false); pose(cast.aunt, 'Idle_3', 2 + t, true);
-          /* HE WALKS, a mat in his arms: across the turf to the stack, his eyes on those who roll and then on the stack */
+          pose(Ph, 'Sit_to_Stand_Transition_M', 0.16 + 0.13 * Math.sin(t * 0.7), false); auntRest(t);
+          /* HE WALKS, a mat in his arms: across the back of the hall to the stack, his eyes on those who roll and then on
+             the stack */
           const kw = smo(sgk(t, T.mats + 0.5, T.q3A3 + 0.5)), ex = lp(A_W0[0], A_W1[0], kw), ez = lp(A_W0[1], A_W1[1], kw), dist = 3.62 * kw;
-          const eye = [ex, EYE + 0.02 * Math.sin(dist * 2 * Math.PI / 0.72) * Math.min(1, 6 * kw * (1 - kw)), ez], ts = t - T.q3A3;
-          const [yR, pR] = aimOf(eye, [-7.7, 0.5, 0.3]), [yS, pS] = aimOf(eye, [MATS_AT.x, 0.25, MATS_AT.z]), [yT, pT] = aimOf(eye, [Tn.group.position.x, 1.5, Tn.group.position.z]);
+          const eye = [ex, HF + EYE + 0.02 * Math.sin(dist * 2 * Math.PI / 0.72) * Math.min(1, 6 * kw * (1 - kw)), ez], ts = t - T.q3A3;
+          const [yR, pR] = aimOf(eye, [-7.7 + MATD.x, HF + 0.5, 0.3 + MATD.z]), [yS, pS] = aimOf(eye, [MATS_AT.x + MATD.x, HF + 0.25, MATS_AT.z + MATD.z]), [yT, pT] = aimOf(eye, [Tn.group.position.x, Tn.group.position.y + 1.5, Tn.group.position.z]);
           const [yP, pP] = aimOf(eye, phoFace());
           const k1 = smo(sgk(t, T.q3A2 + 2.6, T.q3A3 - 0.2)), k2 = smo(sgk(ts, 0.1, 1.0)) * (1 - smo(sgk(ts, 1.5, 2.3)));
           const ya0 = yawMix(yawMix(yR, yS, k1), yT, k2), pi0 = lp(lp(lp(pR, -0.12, 0.6), pS, k1 * smo(sgk(ts, 1.5, 2.4))), pT, k2);
-          /* (his eyes come UP off the stack first, and then go round to the far bench: turned and lifted on one ease, the
-             middle of the move was a frame of turf) */
+          /* (his eyes come UP off the stack first, and then go round to the dais across the hall: turned and lifted on one
+             ease, the middle of the move was a frame of floor) */
           const kUp = smo(sgk(ts, 3.3, 4.5)), kRound = smo(sgk(ts, 3.9, 6.3)), kz = smo(sgk(ts, 5.6, 8.8));
           eyes(eye, yawMix(ya0, yP, kRound), lp(lp(pi0, 0.02, kUp), pP, kRound), lp(60, 13, kz), lp(46, 9.5, kz));
           /* his own mat: under his arm as he walks; lowered onto the stack while his eyes are on Ton; and there, on the
@@ -817,18 +851,21 @@
       },
       end() { endTidy(); }
     };
-    const A_W0 = [-1.7, 2.95], A_W1 = [-5.3, 2.55];
+    const A_W0 = [-1.7 + MATD.x, 2.95 + MATD.z], A_W1 = [-5.3 + MATD.x, 2.55 + MATD.z];
+    const TON_A1 = { x: 3.55, z: -30.3 };                                       // (v26.18) by the stack of mats at the hall's east wall, 3.5 m behind the one who kneels and to his right
 
     /* B · CHALLENGE THE PATH: he is asked to tell again how he came there; he sits apart until the light goes; he comes back */
-    const B_EDGE = (() => { const [x, z] = benchAt(-4.6, 7.2); return [x, 0.86, z]; })();              // where he sits apart: before the bench and well to its side, the old man seen between the canopy's two front poles
+    /* (v26.18: inside the hall. The hall's width is to the west of the dais, so he sits apart on that side: the bench's own
+       place for it, turned over the line from his teacher to the one who kneels) */
+    const B_EDGE = (() => { const [x, z] = seatAt(5.52, 7.2); return [x, HF + 0.86, z]; })();          // where he sits apart: on a mat at the back of the hall and well to its west, the old man seen across the room
     FILMS.B = {
       begin(api) { if (api.handsRoot) api.handsRoot.visible = false; FL.wai = false; FL.bai = false; endStage(); },
       frame(t, api) {
-        const T = ENDT.B, Ph = cast.pho;
+        const T = ENDT.B, Ph = cast.phoH;
         if (t >= T.close) { closeFrame(t - T.close, 'B', api); return; }
         const [o60, w60, w40] = cast.wait;
         if (t < T.edge) {
-          phoFace(); phoTalkFace(); const kTalk = speaks(Ph, t, T, ['ph3B1', 'ph3B2', 'ph3B3']); lookNow(Ph, 'lens', 1, 0.5, 0); pose(cast.aunt, 'Idle_3', 2 + t, true);
+          phoFace(); phoTalkFace(); const kTalk = speaks(Ph, t, T, ['ph3B1', 'ph3B2', 'ph3B3']); lookNow(Ph, 'lens', 1, 0.5, 0); auntRest(t);
           const [fP, fD] = lensAt(t, [[0, 44, 33], [T.q3B0 + SECS['q3B0'], 38, 28], [T.ph3B1, 29, 21], [T.ph3B2 + SECS['ph3B2'], 33, 24], [T.q3B1 + 1, 50, 38], [T.q3B1 + 13, 50, 38],
                                       [T.q3B1 + SECS['q3B1'], 31, 23], [T.ph3B3 + 1.2, 22, 16], [T.q3B2, 23, 17], [T.edge, 28, 20]]);
           const [yF, pT] = toPho(EK, fP, fD, kTalk);
@@ -841,33 +878,35 @@
         } else if (t < T.dusk) {
           if (FL.shot !== 'b2') { FL.shot = 'b2';
             /* the afternoon, from where he sits apart: one kneels to him, two wait */
-            lit('AFTERNOON', 'two'); mistK = 0; myBai.visible = true;
+            lit('HALLNOON', 'two'); mistK = 0; myBai.visible = true;
             if (cast.ton.ready) cast.ton.group.visible = false;                 // (Ton has gone to help clear the ground: where the morning stood him he filled this picture, his back to it: photographed)
-            put(o60, KNEEL2.x, KNEEL2.z, faceTo(KNEEL2.x, KNEEL2.z, PHO_AT[0], PHO_AT[1])); put(w60, cast.wait[1].home.x, cast.wait[1].home.z, cast.wait[1].home.ry); put(w40, cast.wait[2].home.x, cast.wait[2].home.z, cast.wait[2].home.ry);
+            put(o60, KNEEL2.x, KNEEL2.z, faceTo(KNEEL2.x, KNEEL2.z, PHO2_AT[0], PHO2_AT[1]));
+            /* (the two who wait, on the tile beyond the one who kneels: from where he sits apart they are clear of the old man) */
+            for (const [P, x, z] of [[w60, 2.9, -31.5], [w40, 3.4, -30.5]]) put(P, x, z, faceTo(x, z, PHO2_AT[0], PHO2_AT[1]));
             for (const P of [o60, w60, w40]) if (P.ready) P.group.visible = true;
             castSolid(); }
           const u = t - T.edge;
-          pose(o60, 'seiza', 1.2 + 0.3 * Math.sin(u * 0.6), false); pose(w60, 'Idle_3', 1 + u, true); pose(w40, 'Idle_3', 4 + u, true); pose(cast.aunt, 'Idle_3', 2 + t, true);
-          waitCarry(1); waitCarry(2);
+          pose(o60, 'seiza', 1.2 + 0.3 * Math.sin(u * 0.6), false); auntRest(t);
+          waitSet(1, u); waitSet(2, u);
           /* he talks with the one who kneels, and never once looks this way */
           { const A2 = Ph.ready && Ph.acts[Ph.talkTake], d = A2 ? A2.getClip().duration : 1; pose(Ph, Ph.talkTake, (1.3 + u) % d, false); }
-          lookNow(Ph, [KNEEL2.x, 0.95, KNEEL2.z], 1, 0.5, 0);
+          lookNow(Ph, [KNEEL2.x, HF + 0.95, KNEEL2.z], 1, 0.5, 0);
           const k = smo(sgk(t, T.edge, T.dusk)), F = phoFace();
           /* (both of them WHOLE: the old man's far shoulder and the kneeler's back are named, not only their middles: a
              fit is given the extent of what it must hold, v25.5. Named by their middles, each was cut by an edge:
              photographed) */
-          const [s0x, s0z] = benchAt(-0.1, 0.1), [k0x, k0z] = benchAt(0.46, 2.85);
-          fitShot(B_EDGE, [lp(F[0], KNEEL2.x, 0.45), 0.95, lp(F[2], KNEEL2.z, 0.45)], lp(31, 28, k), lp(22, 19.5, k), [[F[0], F[1] + 0.18, F[2]], [s0x, 1.2, s0z], [k0x, 0.7, k0z], [KNEEL2.x, 0.08, KNEEL2.z]]);
+          const [s0x, s0z] = seatAt(-0.1, 0.1), [s1x, s1z] = seatAt(1.02, 0.1), [k0x, k0z] = seatAt(0.46, 2.85);
+          fitShot(B_EDGE, [lp(F[0], KNEEL2.x, 0.45), HF + 0.9, lp(F[2], KNEEL2.z, 0.45)], lp(31, 28, k), lp(22, 19.5, k), [[F[0], F[1] + 0.18, F[2]], [s0x, HALLSEAT.y + 0.45, s0z], [s1x, HALLSEAT.y + 0.45, s1z], [k0x, HF + 0.7, k0z], [KNEEL2.x, HF + 0.08, KNEEL2.z]]);
         } else if (t < T.back) {
           if (FL.shot !== 'b3') { FL.shot = 'b3';
             /* dusk: they have gone; the bulbs along the eaves are on; he sits there still */
-            lit('DUSK', 'two'); for (const P of cast.wait) if (P.ready) P.group.visible = false; for (const b of waitBai) b.visible = false; castSolid(); }
-          pose(Ph, 'Sit_to_Stand_Transition_M', 0.16 + 0.13 * Math.sin(t * 0.7), false); pose(cast.aunt, 'Idle_3', 2 + t, true);
+            lit('HALLDUSK', 'two'); for (const P of cast.wait) if (P.ready) P.group.visible = false; for (const b of waitBai) b.visible = false; castSolid(); }
+          pose(Ph, 'Sit_to_Stand_Transition_M', 0.16 + 0.13 * Math.sin(t * 0.7), false); auntRest(t);
           const k = smo(sgk(t, T.dusk, T.back)), F = phoFace();
-          shot(B_EDGE, [F[0] - 0.3, lp(1.75, 1.5, k), F[2]], lp(46, 40, k), lp(34, 29, k));
+          shot(B_EDGE, [F[0] - 0.3, F[1] + lp(0.45, 0.2, k), F[2]], lp(46, 40, k), lp(34, 29, k));
         } else {
           if (FL.shot !== 'b4') { FL.shot = 'b4'; }
-          phoFace(); phoTalkFace(); const kTalk = speaks(Ph, t, T, ['ph3B4']); lookNow(Ph, 'lens', 1, 0.5, 0); pose(cast.aunt, 'Idle_3', 2 + t, true);
+          phoFace(); phoTalkFace(); const kTalk = speaks(Ph, t, T, ['ph3B4']); lookNow(Ph, 'lens', 1, 0.5, 0); auntRest(t);
           const [fP, fD] = lensAt(t, [[T.back, 46, 34], [T.q3B4 + SECS['q3B4'], 36, 27], [T.ph3B4 + SECS['ph3B4'], 28, 20], [T.close, 32, 24]]);
           const [yF, pT] = toPho(EK, fP, fD, kTalk); eyes(EK, yF, pT, fP, fD);
         }
@@ -882,23 +921,27 @@
        filled the picture, and hid the other three: photographed) */
     /* (and clear of the canopy's front left pole, which stood between the second of them and the third when they waited
        at the carpet's side: photographed. From where he kneels the pole is five degrees outside this row's end) */
-    const WAIT_C = (() => { const [cx, cz] = benchAt(-3.4, 3.0), d = Math.hypot(cx - KNEEL2.x, cz - KNEEL2.z), ux = (cx - KNEEL2.x) / d, uz = (cz - KNEEL2.z) / d, dep = [0.14, -0.1, 0.18, -0.05];
+    /* (v26.18: inside the hall the open floor is to his LEFT as he kneels, the dais running on to the east wall at his
+       right: the bench's own place for them, turned over his own line to his teacher. They sit on their heels there, on
+       the mats and the tile: waitSet) */
+    const WAIT_C = (() => { const [cx, cz] = seatAt(4.32, 3.0), d = Math.hypot(cx - KNEEL2.x, cz - KNEEL2.z), ux = (cx - KNEEL2.x) / d, uz = (cz - KNEEL2.z) / d, dep = [0.14, -0.1, 0.18, -0.05];
       return [-0.84, -0.28, 0.28, 0.84].map((s, i) => [cx - uz * s + ux * dep[i], cz + ux * s + uz * dep[i]]); })();     // (0.56 m apart: at 0.67 a phone's widest lens cut the first of them down his middle: photographed)
     FILMS.C = {
       begin(api) { if (api.handsRoot) api.handsRoot.visible = false; FL.wai = false; FL.bai = false; endStage(); },
       frame(t, api) {
-        const T = ENDT.C, Ph = cast.pho, Wt = cast.wait;
+        const T = ENDT.C, Ph = cast.phoH, Wt = cast.wait;
         if (t >= T.close) { closeFrame(t - T.close, 'C', api); return; }
         if (FL.shot !== 'c1') { FL.shot = 'c1';
-          Wt.forEach((P, i) => { put(P, WAIT_C[i][0], WAIT_C[i][1], faceTo(WAIT_C[i][0], WAIT_C[i][1], PHO_AT[0], PHO_AT[1]) + [0.1, -0.12, 0.06, -0.08][i]); if (P.ready) P.group.visible = true; });
+          Wt.forEach((P, i) => { put(P, WAIT_C[i][0], WAIT_C[i][1], faceTo(WAIT_C[i][0], WAIT_C[i][1], PHO2_AT[0], PHO2_AT[1]) + [0.1, -0.12, 0.06, -0.08][i]); if (P.ready) P.group.visible = true; });
           if (cast.ton.ready) cast.ton.group.visible = false; castSolid(); }
-        const mid = [(WAIT_C[1][0] + WAIT_C[2][0]) / 2, 1.0, (WAIT_C[1][1] + WAIT_C[2][1]) / 2];
-        phoFace(); phoTalkFace(); const kTalk = speaks(Ph, t, T, ['ph3C1', 'ph3C2', 'ph3C3']); pose(cast.aunt, 'Idle_3', 2 + t, true);
+        const mid = [(WAIT_C[1][0] + WAIT_C[2][0]) / 2, HF + 0.62, (WAIT_C[1][1] + WAIT_C[2][1]) / 2];
+        phoFace(); phoTalkFace(); const kTalk = speaks(Ph, t, T, ['ph3C1', 'ph3C2', 'ph3C3']); auntRest(t);
         /* "For whom?": his own eyes go to them first */
         const kq = bump(t, T.ph3C2 + 1.6, T.backto + 0.6, 0.9, 1.0);
         lookNow(Ph, 'lens', 1 - kq, 0.5, 0); if (kq > 0) lookNow(Ph, mid, kq, 0.6, 0);
-        /* those who wait: they stand, and look to the old man on his bench; the first of them meets his eye, and nods */
-        Wt.forEach((P, i) => { pose(P, 'Idle_3', 1.5 + i * 2.3 + t, true); waitCarry(i); });
+        /* those who wait: they sit on their heels, and look to the old man on his dais; the first of them meets his eye,
+           and nods */
+        Wt.forEach((P, i) => waitSet(i, t));
         const kn = bump(t, T.q3C1 + 2.2, T.q3C1 + 6.4, 0.9, 1.0);
         lookNow(Wt[0], 'lens', kn, 0.7, 0.02 + 0.06 * kn * Math.max(0, Math.sin((t - T.q3C1 - 3.2) * 2.4)));
         const kW = smo(sgk(t, T.turn, T.turn + 2.4)) * (1 - smo(sgk(t, T.backto, T.backto + 1.5)));
@@ -908,11 +951,12 @@
         /* his head is turned: the four of them, whole, in one picture (a fit, for this screen); a slow drift along them
            as he says what he was shown */
         const pan = smo(sgk(t, T.turn + 2.0, T.q3C1 + SECS['q3C1'])), must = [];
-        for (const [wx, wz] of WAIT_C) { must.push([wx, 1.72, wz]); must.push([wx, 0.05, wz]); }
+        for (const [wx, wz] of WAIT_C) { must.push([wx, HF + 1.08, wz]); must.push([wx, HF + 0.02, wz]);
+          const a = faceTo(wx, wz, PHO2_AT[0], PHO2_AT[1]); must.push([wx + Math.sin(a) * 0.6, HF + 0.3, wz + Math.cos(a) * 0.6]); }     // (and what each brought, on the tile before him)
         /* (and the row's two ends by their far SHOULDERS, not their middles: a fit is given the extent of what it holds, v25.5) */
         { const ex = WAIT_C[3][0] - WAIT_C[0][0], ez = WAIT_C[3][1] - WAIT_C[0][1], el = Math.hypot(ex, ez) || 1;
-          must.push([WAIT_C[0][0] - ex / el * 0.32, 1.3, WAIT_C[0][1] - ez / el * 0.32]); must.push([WAIT_C[3][0] + ex / el * 0.32, 1.3, WAIT_C[3][1] + ez / el * 0.32]); }
-        const Fw = fit(EK, [mid[0], 0.95, mid[2]], isNarrow() ? 50 : 34, must), [yW0, pW] = aimOf(EK, Fw.at), yW = yW0 + 0.03 * (pan - 0.5);
+          must.push([WAIT_C[0][0] - ex / el * 0.32, HF + 0.8, WAIT_C[0][1] - ez / el * 0.32]); must.push([WAIT_C[3][0] + ex / el * 0.32, HF + 0.8, WAIT_C[3][1] + ez / el * 0.32]); }
+        const Fw = fit(EK, [mid[0], HF + 0.58, mid[2]], isNarrow() ? 50 : 34, must), [yW0, pW] = aimOf(EK, Fw.at), yW = yW0 + 0.03 * (pan - 0.5);
         if (t >= T.bow && t < T.q3C3) bowEyes(EK, yF, pT, (t - T.bow) / (T.q3C3 - T.bow), 46, 34);
         else { handsFilm(0); eyes(EK, yawMix(yF, yW, kW), lp(pT, pW, kW), lp(fP, Fw.fl, kW), lp(fD, Fw.fl, kW)); }
       },
@@ -921,26 +965,29 @@
 
     /* D · ASK TO MAKE IT STOP: he is taught to close and stay closed; he sits in the quiet; the chanting comes, and
        nothing takes him */
-    const D_SIT = [PLACE.x, KNEEL.y, PLACE.z];
+    /* (v26.18, his answer of 16 Nov: everything inside. He sits at the back of the emptied hall, on a mat of its last row,
+       east of the hall's one free post, so the long look to his teacher across the room runs clear of it) */
+    const D_SIT = [0.85, HF + KNEEL.y, HIN.zN + 12.3];
     FILMS.D = {
       begin(api) { if (api.handsRoot) api.handsRoot.visible = false; FL.wai = false; FL.bai = false; endStage(); },
       frame(t, api) {
-        const T = ENDT.D, Ph = cast.pho;
+        const T = ENDT.D, Ph = cast.phoH;
         shutVisionAt(t - T.shut);                                                  // (v26.12: his opening closed, seen: SHUTV)
         if (t >= T.close) { closeFrame(t - T.close, 'D', api); return; }
-        pose(cast.aunt, 'Idle_3', 2 + t, true);
+        auntRest(t);
         if (t < T.sit) {
           /* (his eyes close on "stay", and open on a plain world: the look changes behind them) */
-          if (t >= T.shut + SHUTV.fold[1] && FL.shot !== 'd2') { FL.shot = 'd2'; lit('SHUT', 'two'); paintShade('DAWN'); mistK = 0; if (kit && kit.hush) kit.hush(0.85, { secs: 0.8 }); }
+          if (t >= T.shut + SHUTV.fold[1] && FL.shot !== 'd2') { FL.shot = 'd2'; lit('HALLSHUT', 'two'); mistK = 0; if (kit && kit.hush) kit.hush(0.85, { secs: 0.8 }); }
           phoFace(); phoTalkFace(); const kTalk = speaks(Ph, t, T, ['ph3D1', 'ph3D2', 'ph3D3']); lookNow(Ph, 'lens', 1, 0.5, 0);
           const [fP, fD] = lensAt(t, [[0, 44, 33], [T.q3D0 + SECS['q3D0'], 36, 27], [T.ph3D2 + SECS['ph3D2'], 28, 20], [T.shut, 25, 18], [T.shut + SHUTV.fold[1] - 0.05, 25, 18], [T.shut + SHUTV.fold[1], 48, 36], [T.sit, 44, 33]]);
           const [yF, pT] = toPho(EK, fP, fD, kTalk); eyes(EK, yF, pT, fP, fD);
         } else if (t < T.back) {
           if (FL.shot !== 'd3') { FL.shot = 'd3'; myBai.visible = false; if (cast.ton.ready) cast.ton.group.visible = false; castSolid(); }   // (Ton is clearing the ground: where the morning stood him, his back filled the far look at the bench: photographed)
           pose(Ph, 'Sit_to_Stand_Transition_M', 0.16 + 0.13 * Math.sin(t * 0.7), false);
-          /* THE EMPTIED GROUND, from where he knelt yesterday: the tables, the pole, two people clearing up; then the
-             chanting from across the fields, and his own hand, which is only his hand; then, far off, the old man */
-          const ts = t - T.chant, [yN, pN] = aimOf(D_SIT, [1.2, 1.9, -9.5]), [yP, pP] = aimOf(D_SIT, phoFace());
+          /* THE EMPTIED HALL, from a mat at its back: the rows of mats nobody sits on, the altar and its banner under the
+             lamps; then the chanting from across the fields, through the walls, and his own hand, which is only his hand;
+             then, across the room, the old man */
+          const ts = t - T.chant, [yN, pN] = aimOf(D_SIT, [-2.2, HF + 1.75, HIN.zN + 0.1]), [yP, pP] = aimOf(D_SIT, phoFace());
           const kH = smo(sgk(ts, 0.9, 2.4)) * (1 - smo(sgk(t, T.q3D3 + 0.3, T.q3D3 + 2.2))), kP = smo(sgk(t, T.q3D3 + 0.6, T.q3D3 + 3.4)), kz = smo(sgk(t, T.q3D3 + 2.6, T.back - 0.6));
           const drift = 0.05 * Math.sin((t - T.sit) * 0.25);
           eyes(D_SIT, yawMix(yN + drift, yP, kP), lp(lp(pN, -0.52, kH), pP, kP), lp(62, 12.5, kz), lp(48, 9.5, kz));
@@ -1018,7 +1065,8 @@
       /* everything a run changes is put back (v8.1: a same-chapter replay never runs build() again) */
       play.run++;
       Object.assign(play, { busy: false, turning: null, bow: null, bai: false, baiP: 0, baiTo: 0, baiSecs: 1, knelt: false, homage: false, pull: null, looked: false,
-                            checked: false, bowed: false, breath: null, lookEase: null, tonGive: null, ymCarry: false, ymSet: null, pull3: 0, ymHands: null, away: false, chanting: false });
+                            checked: false, bowed: false, breath: null, lookEase: null, tonGive: null, ymCarry: false, ymSet: null, pull3: 0, ymHands: null, away: false, chanting: false,
+                            walk: null, said2: false, inK: -1 });
       play.asked = new Set(); open.k = 0; open.shown = -1; open.over = 0; open.i = -1; open.st = '';
       if (kit) {
         if (kit.abortEvent) kit.abortEvent();
@@ -1116,7 +1164,7 @@
          (it failed so the day the chapter was first put on walktest's list, 12 Nov): tools/probes/e4c3walk.mjs walks
          each of the chapter's three grounds in its own collision, from where each phase puts him) */
       arrivals: [{ what: 'in the line at his bench', x: LINE_AT.x, z: LINE_AT.z },
-                 { what: 'kneeling at his place', x: PLACE.x, z: PLACE.z }, { what: 'kneeling before Grandmaster Pho', x: KNEEL2.x, z: KNEEL2.z }],
+                 { what: 'kneeling at his place', x: PLACE.x, z: PLACE.z }],           // (v26.18: where he kneels before Grandmaster Pho is inside the hall now, behind a gate that is shut on the day walktest floods: tools/probes/e4c3walk.mjs walks the morning's own ground)
       /* (v26.18: the chapter's box reaches the hall's north wall now; on day one, which walktest floods, he is still held on
          the ground of the Wai Kru, by the gate across the lane's mouth and the columns either side of it) */
       keepIn: { what: 'the ground of the Wai Kru', minX: DATA.bounds.minX, maxX: DATA.bounds.maxX, minZ: -9.8, maxZ: DATA.bounds.maxZ },

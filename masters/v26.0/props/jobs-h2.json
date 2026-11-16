@@ -1,0 +1,8 @@
+[
+ {
+  "name": "hcanopy2",
+  "kind": "prop",
+  "image": "masters/v26.0/props/refs/hcanopy2-2k.png",
+  "_note": "NOT RUN (16 Nov 2026): the canopy drawn again as one closed shape, its picture checked; it waits for Meshy credits (a model 40, its remesh 5). Then make its row in TABLE.txt live and run prop.sh hcanopy2."
+ }
+]

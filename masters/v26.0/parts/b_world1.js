@@ -168,6 +168,9 @@
     const HIN = { x0: -4.8, x1: 4.8, zN: -38.6, zS: -21.8, ceil: 3.65, floor: HALL.floor, dais: { x0: 1.4, x1: 4.8, v1: 3.4, h: 0.28 }, cushion: 0.08 };
     const hallAt = (u, v, h = 0) => [u, HIN.floor + h, HIN.zN + v];              // the build sheet's (u, v, h) in the world
     const HALLSEAT = { x: 2.1, z: HIN.zN + 2.9, y: HIN.floor + HIN.dais.h + HIN.cushion, ry: 0 };
+    /* a place by his seat on the dais, as the bench's are by the bench (benchAt's own two numbers: a metres to his right, b
+       before him), so every look the morning's films make keeps its shape inside the hall (v26.18) */
+    const seatAt = (a, b) => [HALLSEAT.x + 0.46 - a, HALLSEAT.z - 0.04 + b];
     const SHED = { x0: -16, x1: -10.5, z0: -14, z1: -8, eave: 2.4 };
     const TENT_W1 = { x: -9, z: -1 }, TENT_W2 = { x: -9, z: 5 }, TENT_E = { x: 9, z: -2 };
     const TENT = { w: 4, eave: 2.2, peak: 3.3 };
@@ -309,6 +312,7 @@
       turf: [0x3f9a22, 'image/jpeg'], petalturf: [0x9a9c2c, 'image/jpeg'], earth: [0xb0663e, 'image/jpeg'], gravel: [0x9b968d, 'image/jpeg'],
       redplank: [0x8a2c26, 'image/jpeg'], tin: [0xcb8083, 'image/jpeg'],
       brick: [0x96573f, 'image/jpeg'], skirt: [0x1f9c3a, 'image/jpeg'], satin: [0xe9e9e9, 'image/jpeg'], mat: [0xc7b78a, 'image/jpeg'],
+      hpleat: [0xa79e46, 'image/jpeg'],                     // (v26.18: the gathered olive-gold satin of the hall's dais, masters/v26.18/skirt)
       carpet: [0x74202a, 'image/jpeg'], bluemat: [0x86c9c0, 'image/jpeg'], swag: [0xf2f0e4, 'image/webp'], banner: [0xe8e8e8, 'image/webp'], treeline: [0x4c7a3a, 'image/webp'],
       redroof: [0xc8483f, 'image/jpeg'], hallbrick: [0x9a4f3f, 'image/jpeg'], steptile: [0xc98c80, 'image/jpeg'], lawn: [0x5c9a35, 'image/jpeg'],
       kalae: [0x5a4a40, 'image/webp'], fretwork: [0x7a2a26, 'image/webp'], sign: [0xece8dc, 'image/webp'],
@@ -589,13 +593,25 @@
       /* (each wall runs up to just under the skirt where the skirt crosses it, so no slot of sky shows under the eave) */
       const yo = eave - 0.22, yi = yo + H.rise, run = H.rise / Math.tan(H.pitch);
       const topF = yo + H.rise * ov / run - 0.05, topS = yo + H.rise * H.overS / run - 0.05;
-      for (const [xa, za, xb, zw, top] of [[H.x0, zf, H.x1, zf, topF], [H.x1, zf, H.x1, H.z0, topS], [H.x1, H.z0, H.x0, H.z0, topF], [H.x0, H.z0, H.x0, zf, topS]]) wall(mHallBrick, xa, za, xb, zw, fl, top);
+      /* (v26.18: THE FRONT WALL IS OPEN BEHIND THE WEST DOOR'S SLIDING HALF. It was one sheet of brick with the doors' glass
+         laid before it, and with the leaf slid open the brick stood in the doorway (photographed from the lawn, 16 Nov).
+         The wall is laid in three pieces round the opening, its bricks in line (each piece's own start along the wall);
+         shut, the leaf's glass covers the opening and the front is the picture it was) */
+      const dA = cx - 2.7, dB = dA + 1.15, dTop = fl + 2.25;
+      wall(mHallBrick, H.x0, zf, dA, zf, fl, topF); wall(mHallBrick, dB, zf, H.x1, zf, fl, topF, dB - H.x0); wall(mHallBrick, dA, zf, dB, zf, dTop, topF, dA - H.x0);
+      for (const [xa, za, xb, zw, top] of [[H.x1, zf, H.x1, H.z0, topS], [H.x1, H.z0, H.x0, H.z0, topF], [H.x0, H.z0, H.x0, zf, topS]]) wall(mHallBrick, xa, za, xb, zw, fl, top);
       /* (the eave's shade, laid 8 mm off each wall, behind the grey band and the doors' glass: from the wall's top down 2.1 m) */
-      for (const [xa, za, xb, zw, top] of [[H.x0, zf, H.x1, zf, topF], [H.x1, zf, H.x1, H.z0, topS], [H.x1, H.z0, H.x0, H.z0, topF], [H.x0, H.z0, H.x0, zf, topS]]) {
-        const dx = xb - xa, dz = zw - za, L = Math.hypot(dx, dz), ox = -dz / L * 0.008, oz = dx / L * 0.008, y1 = top, y0 = top - 2.1;
-        const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), mEaveShade);
-        m.position.set((xa + xb) / 2 + ox, (y0 + y1) / 2, (za + zw) / 2 + oz); m.scale.set(L, y1 - y0, 1); m.rotation.y = Math.atan2(ox, oz); m.renderOrder = 1; world.add(m); owned.push(m); }
-      wall(mConcrete, H.x0, zf + 0.012, H.x1, zf + 0.012, fl, fl + 0.16);
+      /* (a piece of it between two heights, `lo` to `hi`, keeps its place in the shade's own fall: the front's is laid round
+         the west door's opening as the wall is, v26.18) */
+      const shade = (xa, za, xb, zw, top, lo = top - 2.1, hi = top) => {
+        const dx = xb - xa, dz = zw - za, L = Math.hypot(dx, dz), ox = -dz / L * 0.008, oz = dx / L * 0.008, y0 = top - 2.1;
+        const g = new THREE.PlaneGeometry(1, 1);
+        if (lo !== y0 || hi !== top) { const uv = g.attributes.uv; for (let i = 0; i < uv.count; i++) uv.setY(i, (lo - y0) / 2.1 + uv.getY(i) * (hi - lo) / 2.1); }
+        const m = new THREE.Mesh(g, mEaveShade);
+        m.position.set((xa + xb) / 2 + ox, (lo + hi) / 2, (za + zw) / 2 + oz); m.scale.set(L, hi - lo, 1); m.rotation.y = Math.atan2(ox, oz); m.renderOrder = 1; world.add(m); owned.push(m); };
+      shade(H.x0, zf, dA, zf, topF); shade(dB, zf, H.x1, zf, topF); shade(dA, zf, dB, zf, topF, dTop + 0.07, topF);
+      for (const [xa, za, xb, zw, top] of [[H.x1, zf, H.x1, H.z0, topS], [H.x1, H.z0, H.x0, H.z0, topF], [H.x0, H.z0, H.x0, zf, topS]]) shade(xa, za, xb, zw, top);
+      wall(mConcrete, H.x0, zf + 0.012, dA, zf + 0.012, fl, fl + 0.16); wall(mConcrete, dB, zf + 0.012, H.x1, zf + 0.012, fl, fl + 0.16, dB - H.x0);
       bar(mWhite, [H.x0, fl + 2.72, zf + 0.02], [H.x1, fl + 2.72, zf + 0.02], 0.012, 4);
       /* THE POSTS: dark red, at the four corners and the middle of the front */
       for (const [px, pz] of [[H.x0 - 0.02, zf + 0.07], [cx, zf + 0.07], [H.x1 + 0.02, zf + 0.07], [H.x0 - 0.02, H.z0 - 0.07], [H.x1 + 0.02, H.z0 - 0.07]]) post(mPostRed, px, pz, 0.11, fl, eave + 0.15, 10);
@@ -605,7 +621,9 @@
       for (const sx of [-1, 1]) { const dx = cx + sx * 2.7, w = 2.3, h = 2.25, z = zf + 0.02, slides = sx < 0;
         wall(mGlass, dx - w / 2, z, slides ? dx : dx + w / 2, z, fl + 0.02, fl + h);
         box(mBronze, dx, fl + h + 0.035, z + 0.02, w + 0.14, 0.07, 0.07);
-        box(mBronze, dx, fl + 0.05, z + 0.02, w, 0.08, 0.06);
+        /* (the sliding half's bottom rail goes with its leaf, b_world1h.js; in the opening lies the low track it runs on) */
+        if (slides) { box(mBronze, dx - w / 4, fl + 0.05, z + 0.02, w / 2, 0.08, 0.06); box(mBronze, dx + w / 4, fl + 0.011, z + 0.02, w / 2, 0.018, 0.05); }
+        else box(mBronze, dx, fl + 0.05, z + 0.02, w, 0.08, 0.06);
         for (const jx of [-w / 2 - 0.035, w / 2 + 0.035]) box(mBronze, dx + jx, fl + h / 2, z + 0.02, 0.07, h, 0.07);
         for (const jx of (slides ? [-0.03] : [-0.03, 0.03])) box(mBronze, dx + jx, fl + h / 2, z + 0.025, 0.05, h, 0.05);
         for (const jx of (slides ? [-0.13] : [-0.13, 0.13])) bar(mSteel, [dx + jx, fl + 0.85, z + 0.075], [dx + jx, fl + 1.35, z + 0.075], 0.014, 6); }

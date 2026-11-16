@@ -118,7 +118,8 @@
   const HALLSHUT = Object.assign({}, SHUT, { fog: [0xd6d8d6, 0.0014], hemi: [0xe4e6e8, 0x8a8a84, 0.92], key: [0xeef0f0, 0.7, -3, 12, 4], fill: [0xc4ccd6, 0.2] });
   const HALLNOON = Object.assign({}, AFTERNOON, { fog: [0xe8dcb8, 0.0014], hemi: [0xfff0d4, 0xa49a80, 1.05], key: [0xffe6b0, 0.85, -3, 12, 4], fill: [0xffdca0, 0.3] });
   const HALLDUSK = Object.assign({}, DUSK, { fog: [0x4a3a3a, 0.0014], hemi: [0xe8ecf6, 0x8a8478, 0.95], key: [0xf4f6ff, 0.75, -3, 12, 4], fill: [0xffd8a8, 0.2] });
-  const PRESETS = { DAY1, NIGHT, DAWN, OPENED, SHUT, AFTERNOON, DUSK, DUSKOPEN, ROOM0, ROOM1, COUNTER, HALLDAY, HALLOPEN, HALLSHUT, HALLNOON, HALLDUSK };
+  const HALLDUSKOPEN = Object.assign({}, DUSKOPEN, { fog: [0x6a4a3c, 0.0014], hemi: [0xfff0dc, 0xa0907a, 1.25], key: [0xffe8c8, 1.0, -3, 12, 4], fill: [0xffd8a0, 0.3] });
+  const PRESETS = { DAY1, NIGHT, DAWN, OPENED, SHUT, AFTERNOON, DUSK, DUSKOPEN, ROOM0, ROOM1, COUNTER, HALLDAY, HALLOPEN, HALLSHUT, HALLNOON, HALLDUSK, HALLDUSKOPEN };
 
   /* every line's length: an ESTIMATE at the speaker's pace until its take is measured at M7 (the registry will carry
      the same numbers); the queue books its window by it and every film's times are built from it, so a re-said line
@@ -136,7 +137,7 @@
     'q3A': 3.45, 'q3B': 4.17, 'q3C': 4.09, 'q3D': 3.85,
     /* Ton */
     'tn3a1': 2.89, 'tn3a2': 6.33, 'tn3d1': 2.65, 'tn3m1': 1.45, 'tn3m2': 4.56, 'tn3c1': 5.61, 'tn3c2': 4.25,
-    'tn3n1': 1.61, 'tn3A1': 2.09,
+    'tn3n1': 1.61, 'tn3A1': 2.09, 'tn3h1': 3.4, 'tn3h2': 2.4,
     /* the woman at his bench */
     'ds3c1': 7.37, 'ds3p1': 2.03,
     /* Grandmaster Pho */
@@ -313,7 +314,11 @@
       'w3t_steptile', 'w3t_lawn', 'w3t_kalae', 'w3t_fretwork', 'w3t_sign', 'w3banana2', 'w3frangipani',
       'w3isanhouse', 'w3tank', 'w3aircon', 'w3scooter', 'w3t_render', 'w3t_cloudbank', 'w3t_cloudtall',
       'w3t_cloudflat', 'w3t_cloudthree', 'w3t_cirrus', 'w3pholap', 'w3hseat', 'w3hpillow', 'w3hframe', 'w3hdrums',
-      'w3hgoldbaisri', 'w3hpeacock', 'w3hmat',
+      'w3hgoldbaisri', 'w3hpeacock', 'w3hmat', 'w3t_hmural', 'w3hgreencol', 'w3hwheel', 'w3hbrownbaisri',
+      'w3hbooktable', 'w3hnagabronze', 'w3hlotusvase', 'w3hredtable', 'w3hnagagold', 'w3hstripemat', 'w3hnagagroup',
+      'w3hpedfan', 'w3hsofa3', 'w3hgreymats', 'w3hmattresses', 'w3hwhitebuddha', 'w3hlotus', 'w3t_hpleat',
+      'w3hcanopy', 'w3hbroom', 'w3hclock', 'w3hclothsets', 'w3hexhaust', 'w3hhorn', 'w3hpabox', 'w3hpapercone',
+      'w3hswan', 'w3hconetower', 'w3hcushions', 'w3hwallfan',
       /* <<< this chapter's own keys <<< */
       /* the trees of this episode's first chapter (reuseInEpisode) */
       'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd',
@@ -325,14 +330,17 @@
       'filmlaptop', 'slipper',
       /* Chad's monk as episode 3 has him (reuse). (Grandmaster Pho, Chad's own model, cast here for the first time, is
          in the keys above.) */
-      'monkshop', 'monkrow'
+      'monkshop', 'monkrow',
+      /* Luang Pu Phiboon's photograph, in the frame hung high in the hall (reuse) */
+      'mstr_lpphiboon'
     ],
     /* FRESH (chaptertest) asks a chapter of episode 4 to declare what it takes from episodes 1 to 3 (`reuse`), and what
        it shares with the chapters of its own episode (`reuseInEpisode`): Chad, v17.4, "any reuse is declared" */
     reuse: { filmlaptop: "his own laptop on his counter (episode 3 chapter 1's, as chapters 1 and 2 of this episode have it): its screen the forum's thread chapter 2 ended on, in the opening film",
              slipper: "Chad's sandals, for the rows of them left at the turf's edge as at any Thai ceremony ground (the opening film): the one sandal he has given, a colour a pair",
              monkshop: "Chad's monk, in the middle chair of the three monks who sit under the east tent as monks sit at a real Wai Kru (photograph 2): the one monk he has made, sitting on its chair with its feet down, its hands on its thighs; met before in episode 3 chapter 3's shop, sitting on the floor; the two either side of him are new (Chad, 12 Nov 2026: \"can we have different monks?\")",
-             monkrow: "the same monk's light cut (episode 3 chapter 2's row), drawn for him when he is far across the turf" },
+             monkrow: "the same monk's light cut (episode 3 chapter 2's row), drawn for him when he is far across the turf",
+             mstr_lpphiboon: "Luang Pu Phiboon's photograph (episode 3 chapter 3's gallery), in the gold frame hung high on the hall's north wall as the real hall has it (Chad, 16 Nov 2026: \"i believe one of the photo frames hung very high near the ceiling is the lp phiboon photo that you already have\"): its own bytes, whole and unretouched" },
     reuseInEpisode: { e4raintree: "the rain tree of chapter 1's countryside, standing round the ground: the same country's trees, and no tree is built in code (v24.20)",
                       e4mango: "the mango of chapter 1's countryside, likewise",
                       e4raintreehd: "the same rain tree at its fuller level, for the one that stands over the turf",
@@ -381,6 +389,7 @@
       hotAskTon: 'Ask Ton',
       hotAskAunt: 'Ask her',
       // PLAY II · the chance (§4.3)
+      objHall: 'Follow Ton to the hall',
       objGo: 'Go to Grandmaster Pho',
       hotKneel: 'Kneel',
       objBow: 'Bow to your teacher',

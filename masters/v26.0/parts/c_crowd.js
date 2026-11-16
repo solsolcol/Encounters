@@ -157,7 +157,10 @@
         const r = PERSONAL[s.kind]; s.block = new THREE.Box3(new THREE.Vector3(p.x - r, 0, p.z - r), new THREE.Vector3(p.x + r, 1.5, p.z + r)); crowdBlock.push(s.block); }
       formNow = 'arrive';
       /* day two: two people far off by the offering tables, clearing up (the ground is not quite empty: §4.3) */
-      for (const [key, x, z, ry] of [['e4devb', -3.3, -9.25, 2.6], ['e4devh', 3.9, -9.3, -2.2]]) { mkMember(crowdDrivers[key].S, x, z, ry, { parent: dayTwo, blobW: 0.8, blobD: 0.7 });
+      /* (v26.18: the morning begins west of the tables now, looking at the hall's door, and the one who stood at -3.3 was
+         straight behind Ton in that first picture, a second head at his shoulder, a metre from the way he leads. She
+         stands 1.4 m further along the tables: clear of him in the picture, and of the way) */
+      for (const [key, x, z, ry] of [['e4devb', -1.9, -9.25, 2.6], ['e4devh', 3.9, -9.3, -2.2]]) { mkMember(crowdDrivers[key].S, x, z, ry, { parent: dayTwo, blobW: 0.8, blobD: 0.7 });
         dawnBlock.push(new THREE.Box3(new THREE.Vector3(x - 0.3, 60, z - 0.3), new THREE.Vector3(x + 0.3, 61, z + 0.3))); }
     }
     /* THE FORMATION, by name: every member onto his seat in it, his column with him; the kneelers' second driver to the
