@@ -9,6 +9,8 @@
    lights are past "enough", then dragged DOWN until it is shut (openGate). The decision is a
    tap on OPT. Films: WATCH=1 watches every one; otherwise the opening and the films from play are skipped by a TAP on
    the Skip button once it is offered (the real skip path), and the ENDING is always watched whole.
+   v26.18: the morning's walk to the hall ("Follow Ton to the hall") is WALKED, by the left thumb held on the stick
+   (walkTick), with the look turned onto Ton and then the door.
    Reports: the phases with the objective on screen and the beds at each; every press and how it landed; the breaths; the
    voice log (none over another); the captions (the chant's); the cues and how each sounded; every page error.
    ENC_DIST=<snapshot> CHROMIUM_PATH=... OPT=A|B|C|D [WATCH=1] [OUT=dir] node tools/probes/e4c3drive.mjs */
@@ -150,11 +152,56 @@ async function openGate(I) {
   log('  ' + breaths[breaths.length - 1]);
   await wait(1200);
 }
+/* v26.18 · THE MORNING'S WALK, by the finger ("Follow Ton to the hall"): nothing is pressed in it, he walks. The left
+   thumb holds the stick forward (a CDP touch put down on the left of the screen and moved up past the stick's reach), so
+   every step is the engine's own walk and its own collision (the door's frame, the steps, the lane's columns); the look
+   is turned onto where he is going each moment, what the right thumb's drag does (aimAt's way): after Ton while Ton
+   leads and is more than a body ahead; standing still while he is close (Ton walks on); to the door's mark once Ton
+   waits on the landing to let him in first, and on through it. Reported: how long it took, how often Ton waited, and
+   anywhere he stood still with the stick held */
+const STICK = { x: Math.round(W * 0.18), y: Math.round(H * 0.6), id: 77 };
+let stickOn = false;
+async function stick(on) {
+  if (on === stickOn) return;
+  const pt = (y) => [{ x: STICK.x, y, id: STICK.id, radiusX: 8, radiusY: 8, force: 1 }];
+  if (on) { await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', timestamp: Date.now() / 1000, touchPoints: pt(STICK.y) });
+            await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', timestamp: Date.now() / 1000, touchPoints: pt(STICK.y - 70) }); }
+  else await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', timestamp: Date.now() / 1000, touchPoints: [] });
+  stickOn = on;
+}
+const walk = { t0: 0, n: 0, still: 0, stuck: [], waits: 0, wasWaiting: false, last: null, legs: [] };
+async function walkTick() {
+  const r = await p.evaluate(() => {
+    const E = window.__enc, D = E.stage.dbg, Y = E.yaw, P = E.pitch, Wk = D.play.walk, ton = D.cast.ton, wp = E.kitDebug().waypoint;
+    const me = { x: Y.position.x, z: Y.position.z }, tg = ton && ton.group ? ton.group.position : null;
+    let to = null, leg = '';
+    if (Wk && Wk.i <= 4 && tg) {
+      const d = Math.hypot(tg.x - me.x, tg.z - me.z);
+      if (d > 1.8) { to = { x: tg.x, z: tg.z }; leg = 'after Ton'; } else leg = 'beside Ton';
+    } else if (wp) { to = { x: wp.x, z: wp.z - 1.6 }; leg = 'through the door'; }
+    if (to) { const dx = to.x - me.x, dz = to.z - me.z; Y.rotation.y = Math.atan2(-dx, -dz); P.rotation.x = -0.05; }
+    return { me, to, leg, waiting: !!(Wk && Wk.waiting), wi: Wk ? Wk.i : null };
+  });
+  if (!walk.t0) { walk.t0 = Date.now();
+    const under = await p.evaluate((q) => { const e = document.elementFromPoint(q.x, q.y); return e ? e.tagName + (e.id ? '#' + e.id : '') : null; }, STICK);
+    log('  walk: the left thumb goes down at', STICK.x, STICK.y, 'on', under); }
+  if (r.leg !== walk.legs[walk.legs.length - 1]) { walk.legs.push(r.leg); log('  walk:', r.leg, 'from', r.me.x.toFixed(2), r.me.z.toFixed(2), 'Ton at his way point', r.wi); }
+  if (r.waiting && !walk.wasWaiting) walk.waits++;
+  walk.wasWaiting = r.waiting;
+  await stick(!!r.to);
+  if (r.to && walk.last && Math.hypot(r.me.x - walk.last.x, r.me.z - walk.last.z) < 0.01) {
+    if (++walk.still === 12) { walk.stuck.push(`(${r.me.x.toFixed(2)}, ${r.me.z.toFixed(2)}) ${r.leg}`); log('  STOOD STILL with the stick held at', r.me.x.toFixed(2), r.me.z.toFixed(2), r.leg); await shot('walk-still'); }
+  } else walk.still = 0;
+  walk.last = r.me; walk.n++;
+  await frames(1);
+}
 const phases = [], bedsAt = {}, presses = [], unseen = [];
 let last = '', idle = 0, decided = false, cardAt = 0, lastCine = -1, lastVoices = 0, skips = [], films = [];
 const TMAX = 150 * 60 * 1000;
 while (Date.now() - T0 < TMAX) {
   const I = await info();
+  /* (the stick is let go the moment the walk is not what he is doing) */
+  if (stickOn && !(I.st === 'play' && I.phase === 'dawn' && !I.ev)) { await stick(false); log('  walk: the stick let go,', I.st, I.phase, 'after', ((Date.now() - walk.t0) / 1000).toFixed(0), 's'); }
   const key = `${I.st}|${I.phase}|${I.obj}|${I.ev ? I.ev.kind + (I.ev.briefing ? ':brief' : '') : ''}`;
   if (key !== last) {
     log(I.st, I.phase, JSON.stringify(I.obj), I.cine !== null ? `film ${I.cine} of ${I.dur}` : '', JSON.stringify(I.beds), I.ev ? 'event ' + I.ev.kind : '');
@@ -186,6 +233,8 @@ while (Date.now() - T0 < TMAX) {
   }
   if ((I.st === 'result' || I.st === 'complete') && !cardAt) { cardAt = Date.now(); log('the card'); await wait(2500); await shot('card'); }
   if (cardAt && Date.now() - cardAt > 12000) break;
+  /* the morning's walk goes on through Ton's lines (a player walks while he talks; Ton stops for them himself) */
+  if (I.st === 'play' && I.phase === 'dawn' && !I.ev && !I.busy && !(await spots()).length) { await walkTick(); idle = 0; continue; }
   if (I.st === 'play' && !I.pending && !I.queued && !I.busy) {
     const S = await spots();
     if (S.length) {
@@ -221,6 +270,7 @@ log('PRESSES', presses.join(' '));
 const bres = await p.evaluate(() => { try { return window.__enc.stage.dbg.play.breath; } catch { return null; } });
 log('BREATHS', breaths.join(' | '), '| the engine counted:', JSON.stringify(bres));
 log('SKIPPED', skips.join(' ') || '(none: every film watched)');
+log('WALK', walk.t0 ? `${walk.n} steps of the box's frames; legs: ${walk.legs.join(' > ')}; Ton waited ${walk.waits} time(s); ${walk.stuck.length ? 'STOOD STILL with the stick held at ' + walk.stuck.join('; ') : 'never stood still with the stick held'}` : 'no walk (the morning never reached)');
 log('BEDS', JSON.stringify(bedsAt));
 log('HELD', unseen.length ? 'THE BAI SRI IS HELD AND NOT DRAWN in: ' + unseen.join(' ') : 'what he holds is drawn wherever he holds it');
 /* a press that was refused and then landed on the next try is a retry (the first contact of a phase can race the line

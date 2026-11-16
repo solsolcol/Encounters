@@ -9190,8 +9190,49 @@ What the baseline contains, by release:
   play-through the minigame counted the breaths held too long: the probe's finger, on a box drawing a frame a second
   under two pages, let go a second late; on a slowed clock all three closed in their band. The full debug's round is
   complete (docs/V26.1-E4C3-DEBUG.md §6).
+- **v26.18 · 16 Nov 2026 · episode 4 chapter 3: the morning inside the main hall.** Chad's ask of 16 Nov (verbatim in
+  docs/V26.18-E4C3-HALL.md §0, with his eleven photographs of the hall's inside, which stay on the working machine): the
+  next morning's meeting with Grandmaster Pho moved from his bench outside to inside the main hall, Ton walking him there
+  from the ground, the inside "exactly the same as the photos", and everything after it re-staged ("Everything inside",
+  his answer). THE ROOM is built in place behind the hall's real front door at its true size (9.6 by 16.8 m, its
+  ceiling 3.65, its floor 0.48 m up three steps), the shell lengthened north to hold it and its west door's inner half a
+  leaf that slides open that morning. THE WALK is one, unbroken (no black): Ton says "This way. In the morning he sits in
+  the hall." and leads by the lane, waits when he is left behind, says "Go in. He is waiting for you." at the door, lets
+  him in first and kneels on a mat at the back where no shot sees him; the morning's light eases into the room's by
+  where he stands, never by a clock; a phase of its own (`hall`) is saved the moment he is inside. GRANDMASTER PHO sits
+  cross-legged on his cushion at the dais's front left corner, as the photographs have him: his own takes mixed, his robe
+  ended in a level hem, a cloth made over his legs, his two bead strands laid whole on his lap ("The beads get cut off"),
+  his hands in his lap through his talk. THE ROOM'S THINGS, about forty, each made from a crop of the thing alone (a
+  picture on white, then Meshy at its highest and its remesh), and the sacred images from real photographs first: the
+  white Buddha on its gold lotus under its canopy, the thread from his hand white and tied to the ceiling (his word), the
+  Emerald Buddha in its summer costume on the red table with the two paper cones, the gold Buddha, Somdej Toh's golden
+  bucha (his name for the gold monk), the green ribbon wheel with its small standing Buddha, the orange fan; the banner
+  his picture coloured to his photographs; the frame high on the north wall's post Luang Pu Phiboon's photograph the game
+  already had; two framed photographs of the game's own people (his answer); the candles lit. EVERY FILM AFTER THE WALK
+  is inside: the night's last picture, the telling, the answers, ending A stacking the hall's mats with Ton, B apart on
+  the west side until dusk, C with the four who wait before the second altar, D at the back of the emptied hall, and the
+  close. THE SOUND: Ton's two lines, his bare feet on the tile, the room's own tone (its wall fans, the birds far off
+  through the door), and, at his ask the same night ("I think the hall should have its own music theme as well but i
+  dont know what it should be"), four themes sent to him as loudness-matched previews: C plays until he says a letter.
+  MY MISTAKES, each said to him: the cross-legged seat's cost was not put to him first (half his week's credits, for a
+  reading of mine); Somdej Toh was first made with spectacles and his hands in his lap, from too few and the wrong
+  references ("Do you actually know how it looks like"), and its remake then fetched the first model's remesh by its old
+  job (the job ledger now sets a remade model's old jobs aside); and I told him the wheel's small Buddha was a quarter too
+  big when it was the photograph's size. Built on Fable 5.2 at max effort until its weekly limit, then on Opus 5.5 at his
+  word ("Continue exactly where you left off"). Deploy `6afb6119e1b77b3564995dbe` (540 files byte for byte), built without
+  the release zip (the working disk holds 2.3 GB; Netlify holds the deploy). Sheet v146.
 
 ## The sheet, version by version
+
+**v146, PUBLISHED 16 Nov 2026** (`masters/v26.18/masterz-text-v146.xlsx`, the game's own export at v26.18, its CSV
+beside it, and the repo's `masterz-text.csv` refreshed from it: three lines added, none other moved): v145 with
+three rows new and not one cell changed or gone (checked key by key): the order for the morning's walk
+(`e4c3.words.objHall`, "Follow Ton to the hall") and Ton's two lines on it (`voice.tn3h1` "[friendly] This way. In
+the morning he sits in the hall.", 4.33 s; `voice.tn3h2` "[quiet] Go in. He is waiting for you.", 2.09 s). 2314 rows
+in the CSV; six tabs (UI TEXT 448, EPISODE 1 114, EPISODE 2 201, EPISODE 3 400, EPISODE 4 237, VOICE LINES 913, each
+under its header). Uploaded whole by a file reference, id `1IzpLiHvIhtmfliCL51kBBE3EFH_iw4-v-1Jx8iSBH_Q`, every one of its 9,879
+cells read back and compared with the workbook: none different. v145 held no edit of his (checked first: modified a
+second after it was made).
 
 **v145, PUBLISHED 14 Nov 2026** (docs/V26.12-WHAT-IS-LEFT.md row 4): the first sheet he has had since v42. Uploaded whole
 by a file reference (the Drive connector now fills the file in on his approval, which ends the base64 ceiling of v7.9),

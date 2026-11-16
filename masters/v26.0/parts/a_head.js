@@ -313,13 +313,13 @@
       'w3t_carpet', 'w3t_bluemat', 'w3t_swag', 'w3t_banner', 'w3t_treeline', 'w3t_redroof', 'w3t_hallbrick',
       'w3t_steptile', 'w3t_lawn', 'w3t_kalae', 'w3t_fretwork', 'w3t_sign', 'w3banana2', 'w3frangipani',
       'w3isanhouse', 'w3tank', 'w3aircon', 'w3scooter', 'w3t_render', 'w3t_cloudbank', 'w3t_cloudtall',
-      'w3t_cloudflat', 'w3t_cloudthree', 'w3t_cirrus', 'w3pholap', 'w3hseat', 'w3hpillow', 'w3hframe', 'w3hdrums',
-      'w3hgoldbaisri', 'w3hpeacock', 'w3hmat', 'w3t_hmural', 'w3hgreencol', 'w3hwheel', 'w3hbrownbaisri',
-      'w3hbooktable', 'w3hnagabronze', 'w3hlotusvase', 'w3hredtable', 'w3hnagagold', 'w3hstripemat', 'w3hnagagroup',
-      'w3hpedfan', 'w3hsofa3', 'w3hgreymats', 'w3hmattresses', 'w3hwhitebuddha', 'w3hlotus', 'w3t_hpleat',
-      'w3hemerald', 'w3hgoldbuddha', 'w3hsomdej', 'w3hwheel2', 'w3hfan', 'w3htabletstand', 'w3hcanopy', 'w3hbroom',
-      'w3hclock', 'w3hclothsets', 'w3hexhaust', 'w3hhorn', 'w3hpabox', 'w3hpapercone', 'w3hswan', 'w3hconetower',
-      'w3hcushions', 'w3hwallfan',
+      'w3t_cloudflat', 'w3t_cloudthree', 'w3t_cirrus', 'w3pholap', 'w3hseat', 'w3hpillow', 'w3hframe', 'w3t_hpicpho',
+      'w3t_hpicmonk', 'w3hdrums', 'w3hgoldbaisri', 'w3hpeacock', 'w3hmat', 'w3t_hmural', 'w3hgreencol', 'w3hwheel',
+      'w3hbrownbaisri', 'w3hbooktable', 'w3hnagabronze', 'w3hlotusvase', 'w3hredtable', 'w3hnagagold',
+      'w3hstripemat', 'w3hnagagroup', 'w3hpedfan', 'w3hsofa3', 'w3hgreymats', 'w3hmattresses', 'w3hwhitebuddha',
+      'w3hlotus', 'w3t_hpleat', 'w3hemerald', 'w3hgoldbuddha', 'w3hsomdej', 'w3hwheel2', 'w3hfan', 'w3htabletstand',
+      'w3hcanopy', 'w3hbroom', 'w3hclock', 'w3hclothsets', 'w3hexhaust', 'w3hhorn', 'w3hpabox', 'w3hpapercone',
+      'w3hswan', 'w3hconetower', 'w3hcushions', 'w3hwallfan',
       /* <<< this chapter's own keys <<< */
       /* the trees of this episode's first chapter (reuseInEpisode) */
       'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd',
@@ -363,7 +363,7 @@
        loudspeakers, the morning's birds, the world heard OPEN (the breath's own level), the night's crickets (the
        night between; ending B's dusk), the pull (a low drone that follows the pull's own number) and his shop at night
        (the opening film: its 45 s are longer than one pass of the take) */
-    ambience: { beds: [['x3festbed', 0], ['x3festmus', 0], ['x3birds', 0], ['x3open', 0], ['x3crickets', 0], ['x3pull', 0], ['x3shophum', 0]] },
+    ambience: { beds: [['x3festbed', 0], ['x3festmus', 0], ['x3birds', 0], ['x3open', 0], ['x3crickets', 0], ['x3pull', 0], ['x3shophum', 0], ['x3hallbed', 0], ['x3hallmus', 0]] },
     voiceLine: null,
 
     words: {

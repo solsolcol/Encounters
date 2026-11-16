@@ -313,13 +313,13 @@
       'w3t_carpet', 'w3t_bluemat', 'w3t_swag', 'w3t_banner', 'w3t_treeline', 'w3t_redroof', 'w3t_hallbrick',
       'w3t_steptile', 'w3t_lawn', 'w3t_kalae', 'w3t_fretwork', 'w3t_sign', 'w3banana2', 'w3frangipani',
       'w3isanhouse', 'w3tank', 'w3aircon', 'w3scooter', 'w3t_render', 'w3t_cloudbank', 'w3t_cloudtall',
-      'w3t_cloudflat', 'w3t_cloudthree', 'w3t_cirrus', 'w3pholap', 'w3hseat', 'w3hpillow', 'w3hframe', 'w3hdrums',
-      'w3hgoldbaisri', 'w3hpeacock', 'w3hmat', 'w3t_hmural', 'w3hgreencol', 'w3hwheel', 'w3hbrownbaisri',
-      'w3hbooktable', 'w3hnagabronze', 'w3hlotusvase', 'w3hredtable', 'w3hnagagold', 'w3hstripemat', 'w3hnagagroup',
-      'w3hpedfan', 'w3hsofa3', 'w3hgreymats', 'w3hmattresses', 'w3hwhitebuddha', 'w3hlotus', 'w3t_hpleat',
-      'w3hemerald', 'w3hgoldbuddha', 'w3hsomdej', 'w3hwheel2', 'w3hfan', 'w3htabletstand', 'w3hcanopy', 'w3hbroom',
-      'w3hclock', 'w3hclothsets', 'w3hexhaust', 'w3hhorn', 'w3hpabox', 'w3hpapercone', 'w3hswan', 'w3hconetower',
-      'w3hcushions', 'w3hwallfan',
+      'w3t_cloudflat', 'w3t_cloudthree', 'w3t_cirrus', 'w3pholap', 'w3hseat', 'w3hpillow', 'w3hframe', 'w3t_hpicpho',
+      'w3t_hpicmonk', 'w3hdrums', 'w3hgoldbaisri', 'w3hpeacock', 'w3hmat', 'w3t_hmural', 'w3hgreencol', 'w3hwheel',
+      'w3hbrownbaisri', 'w3hbooktable', 'w3hnagabronze', 'w3hlotusvase', 'w3hredtable', 'w3hnagagold',
+      'w3hstripemat', 'w3hnagagroup', 'w3hpedfan', 'w3hsofa3', 'w3hgreymats', 'w3hmattresses', 'w3hwhitebuddha',
+      'w3hlotus', 'w3t_hpleat', 'w3hemerald', 'w3hgoldbuddha', 'w3hsomdej', 'w3hwheel2', 'w3hfan', 'w3htabletstand',
+      'w3hcanopy', 'w3hbroom', 'w3hclock', 'w3hclothsets', 'w3hexhaust', 'w3hhorn', 'w3hpabox', 'w3hpapercone',
+      'w3hswan', 'w3hconetower', 'w3hcushions', 'w3hwallfan',
       /* <<< this chapter's own keys <<< */
       /* the trees of this episode's first chapter (reuseInEpisode) */
       'e4raintree', 'e4mango', 'e4raintreehd', 'e4mangohd',
@@ -363,7 +363,7 @@
        loudspeakers, the morning's birds, the world heard OPEN (the breath's own level), the night's crickets (the
        night between; ending B's dusk), the pull (a low drone that follows the pull's own number) and his shop at night
        (the opening film: its 45 s are longer than one pass of the take) */
-    ambience: { beds: [['x3festbed', 0], ['x3festmus', 0], ['x3birds', 0], ['x3open', 0], ['x3crickets', 0], ['x3pull', 0], ['x3shophum', 0]] },
+    ambience: { beds: [['x3festbed', 0], ['x3festmus', 0], ['x3birds', 0], ['x3open', 0], ['x3crickets', 0], ['x3pull', 0], ['x3shophum', 0], ['x3hallbed', 0], ['x3hallmus', 0]] },
     voiceLine: null,
 
     words: {
@@ -1413,6 +1413,17 @@
     /* (and its west slope a shade lighter, as the lamp beside it lights it in his photographs 4 and 6, and its top a
        shade under the flat ceiling: all three the one grey, the recess did not read at all, laid beside photograph 6) */
     const mCeilSlope = B({ color: 0x7d7c79 }), mCeilTop = B({ color: 0x61605e });
+    /* (v26.18, the room laid beside his photographs 4 and 6 again, measured: the slope drew (142, 140, 138) where his
+       photograph 4 has it (101, 88, 88) and photograph 6 (126, 121, 121) to (133, 133, 131): a warm grey between the two,
+       a shade darker than it was. The top and the faces matched and stay) */
+    mCeilSlope.color.setHex(0x6a6464);
+    /* (and the flat ceiling is boards 0.6 m square, their joints faint lines across the grey: his photographs 5 and 10.
+       The quad's coordinates are the room's own metres, so the joints run straight across both pieces) */
+    const mCeilGrid = (() => { const [c, x] = cnv(256), W = 256;
+      x.fillStyle = '#ffffff'; x.fillRect(0, 0, W, W);
+      x.fillStyle = 'rgba(70,66,64,0.16)'; x.fillRect(0, 0, W, 3); x.fillRect(0, 0, 3, W);
+      const t = hRep(tex(done(THREE, c, true)), 0.6, 0.6); t.anisotropy = 8;
+      return B({ color: 0x6c6b69, map: t }); })();
     const mInPost = M({ color: 0x3d2830, roughness: 0.34 });
     const mInWhite = M({ color: 0xf1efe9, roughness: 0.6 });
     const mInDark = M({ color: 0x241f1d, roughness: 0.6 });
@@ -1497,7 +1508,7 @@
       floor(mTile, x0, zN, x1, zS, fy + 0.003);
       const down = (mat, ax, az, bx, bz, y) => quad(mat, [ax, y, az], [bx, y, az], [bx, y, bz], [ax, y, bz], ax, az);   // a piece that faces down (az north of bz)
       const RC = { u0: 1.3, v1: 4.2, in: 0.3, step: 0.25 };
-      down(mCeil, x0, zN, RC.u0, zS, cy); down(mCeil, RC.u0, Z(RC.v1), x1, zS, cy);
+      down(mCeilGrid, x0, zN, RC.u0, zS, cy); down(mCeilGrid, RC.u0, Z(RC.v1), x1, zS, cy);
       wall(mCeilLip, RC.u0, Z(RC.v1), RC.u0, zN, cy, cy + RC.step); wall(mCeilLip, x1, Z(RC.v1), RC.u0, Z(RC.v1), cy, cy + RC.step);                       // the first step's faces (west, south)
       down(mCeil, RC.u0, zN, RC.u0 + RC.in, Z(RC.v1), cy + RC.step); down(mCeil, RC.u0 + RC.in, Z(RC.v1 - RC.in), x1, Z(RC.v1), cy + RC.step);        // its ledge
       wall(mCeilLip, RC.u0 + RC.in, Z(RC.v1 - RC.in), RC.u0 + RC.in, zN, cy + RC.step, cy + 2 * RC.step); wall(mCeilLip, x1, Z(RC.v1 - RC.in), RC.u0 + RC.in, Z(RC.v1 - RC.in), cy + RC.step, cy + 2 * RC.step);
@@ -1652,7 +1663,9 @@
     /* MANY OF ONE MODEL INSIDE THE HALL: as the copied manyOf, in the room's own (u, v, h), with a scale an axis and a
        tint a place where the room needs one (a mat made for a square laid long; two of the four drum columns gold).
        A thing is asked for only once its file is in the build: until then nothing stands in its place */
-    function hallMany(key, list, lift = 3) {
+    /* (`paint`, v26.18: a function given the copy of each material, for a model drawn in another finish: the white frame
+       at the second altar is the room's ornate frame painted a light silver, its own sheet left off) */
+    function hallMany(key, list, lift = 3, paint = null) {
       if (!list.length) return;
       if (!have(key)) { waiting.add(key); return; }
       parseOnce(key).then(({ scene: src }) => {
@@ -1662,7 +1675,7 @@
         const tinted = list.some(t => t.tint != null);
         src.traverse(o => {
           if (!o.isMesh || /_far$/.test(o.name)) return;
-          const mat = o.material.clone(); mats.push(mat); bronzeLift({ material: mat }, lift);
+          const mat = o.material.clone(); mats.push(mat); bronzeLift({ material: mat }, lift); if (paint) paint(mat);
           const im = new THREE.InstancedMesh(o.geometry, mat, list.length);
           list.forEach((it, i) => { const [x, y, z] = hallAt(it.u, it.v, it.h || 0); e.set(it.rx || 0, it.ry || 0, it.rz || 0, 'YXZ'); q.setFromEuler(e);
             const k = it.s || 1; sc.set(k * (it.sx || 1), k * (it.sy || 1), k * (it.sz || 1));
@@ -1681,6 +1694,16 @@
     function dressHallThings() {
       const DH = HIN.dais.h, AH = 0.65, E = Math.PI / 2, W = -Math.PI / 2;
       const PIC_V = 0.2;                                                         // (a frame's middle on the north wall's middle post: the post stands 0.14 m into the room)
+      /* THE CANDLES, one table for the candles and their flames: the dais's two thick ones (D13), the one before the red
+         table, the second altar's two tall ones (L5, L10). (v26.18: lit, as his photographs 4 and 5 have them; his
+         photograph 10, of an afternoon's work, has them out.) A flame stands on each wick (c_zfx.js hallFlames), the
+         ground's own flame and glow at the size of its candle: a wick is the candle's top, 0.66 m on the middle one's
+         model and 1.25 on the tall one's, as the night's tables have it (b_world2.js) */
+      const HCAND = {
+        mid: [{ u: 2.75, v: 2.48, h: DH, s: 0.68, tint: 0xf0a020 }, { u: 3.8, v: 2.5, h: DH, s: 0.68, tint: 0xf0a020 }, { u: 0.15, v: 2.0, h: AH, s: 0.53, tint: 0xf0a020 }],
+        tall: [{ u: -3.35, v: 1.3, h: AH, s: 0.76 }, { u: -2.0, v: 1.3, h: AH, s: 0.72 }] };
+      stageList.hallFlames = HCAND.mid.map(c => [c, 0.66, 1.15]).concat(HCAND.tall.map(c => [c, 1.25, 1.7]))
+        .map(([c, top, fs]) => { const p = hallAtV(c.u, c.v, c.h + top * c.s); return { x: p.x, y: p.y, z: p.z, s: fs * c.s }; });
       /* the dais: the master's seat and its pillows (D8, D9), the four columns of drums at the wall (D4: the inner two
          gold), the two gold bai sri and the peacock before the lotus (D10, D11), the thick candles (D13) */
       /* THE WHITE BUDDHA ON ITS GOLD LOTUS (D1, D2): the hall's main image, in the dais's north-east, under the recess of
@@ -1722,7 +1745,7 @@
       hallMany('w3hdrums', [{ u: 1.7, v: 0.2, h: DH }, { u: 1.95, v: 0.2, h: DH, tint: 0xe8c060, ry: 1 }, { u: 4.3, v: 0.2, h: DH, tint: 0xe8c060, ry: 2 }, { u: 4.55, v: 0.2, h: DH, ry: 3 }], 4);
       hallMany('w3hgoldbaisri', [{ u: 2.75, v: 2.7, h: DH }, { u: 3.8, v: 2.7, h: DH, ry: 1.3 }]);
       hallMany('w3hpeacock', [{ u: 3.3, v: 2.85, h: DH }]);
-      hallMany('w3candlemid', [{ u: 2.75, v: 2.48, h: DH, s: 0.68, tint: 0xf0a020 }, { u: 3.8, v: 2.5, h: DH, s: 0.68, tint: 0xf0a020 }, { u: 0.15, v: 2.0, h: AH, s: 0.53, tint: 0xf0a020 }]);
+      hallMany('w3candlemid', HCAND.mid);
       hallMany('w3hgreencol', [{ u: 2.55, v: 0.15, h: DH }, { u: 4.15, v: 0.15, h: DH, ry: 2 }]);
       /* (the orange talapat fan on its pole in its stand, behind his left shoulder: his photographs 2, 4 and 6. Its blade
          is about 0.3 m across there (60 px at 6 m in photograph 6, 57 px behind him in photograph 4), so the model is
@@ -1733,8 +1756,12 @@
       hallMany('w3htabletstand', [{ u: 1.15, v: 3.0, h: 0, ry: 0.8 }]);
       hallMany('w3hcanopy', [{ u: 3.35, v: 1.25, h: 3.2 }]);
       hallMany('w3hwheel', [{ u: 4.4, v: 2.45, h: DH, ry: -0.35 }]);
+      /* (v26.18, the second altar's row laid beside his photographs 5 and 10: ten of them, packed close along its middle
+         before Somdej Toh and the wheel, each about 0.5 m tall on its bowl beside the tall candle's 0.95. Eight at 0.3 m
+         spaced along the edge read as a few small things. Two rows, staggered, so no two leaf crowns pass through
+         each other: the model is 0.26 m across) */
       hallMany('w3hbrownbaisri', [{ u: 2.78, v: 2.02, h: DH + 0.925 }, { u: 3.36, v: 2.12, h: DH + 0.925, ry: 1 }, { u: 3.95, v: 2.0, h: DH + 0.925, ry: 2 },
-        ...[-2.2, -1.92, -1.64, -1.36, -1.08, -0.8, -0.52, -0.24].map((u, i) => ({ u, v: 1.95, h: AH, s: 0.67, ry: i * 1.1 }))]);
+        ...[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => ({ u: -2.3 + 0.2 * i, v: i % 2 ? 1.62 : 1.86, h: AH, s: 1.1, ry: i * 1.1 }))]);
       hallMany('w3purple', [{ u: 4.3, v: 3.1, h: DH, s: 0.45 }, { u: -4.3, v: 1.5, h: AH, s: 0.41, ry: 1 }]);
       hallMany('w3hbooktable', [{ u: 1.68, v: 2.55, h: DH, ry: E }]);
       hallMany('w3hbroom', [{ u: 1.62, v: 3.12, h: DH, ry: 0.3 }, { u: 1.74, v: 3.2, h: DH, ry: 0.42 }]);
@@ -1742,7 +1769,7 @@
       /* the second altar: the fan of leaf nagas (L2), the tall candles (L5, L10), the cone towers (L8), the bronze naga
          heads (L7), the swan (L6), the red table (L15), the bouquet (L22), the gold naga heads at its east end (L23) */
       hallMany('w3naga', [[-4.26, 1.34, 0.5, 0.2], [-4.1, 1.45, 0.28, 0.1], [-3.94, 1.5, 0, 0], [-3.78, 1.45, -0.28, -0.1], [-3.62, 1.34, -0.5, -0.2]].map(([u, s, ry, rz]) => ({ u, v: 0.55, h: AH, s, ry, rz })));
-      hallMany('w3candle', [{ u: -3.35, v: 1.3, h: AH, s: 0.76 }, { u: -2.0, v: 1.3, h: AH, s: 0.72 }]);
+      hallMany('w3candle', HCAND.tall);
       hallMany('w3hconetower', [{ u: -2.95, v: 0.4, h: AH }, { u: -2.15, v: 0.4, h: AH, ry: 1.5 }]);
       hallMany('w3hnagabronze', [{ u: -3.2, v: 1.0, h: AH }, { u: -1.6, v: 0.45, h: AH, ry: 0.4 }]);
       /* (v26.18, Chad, 16 Nov 2026: "Where are the other assets, models, props, like the emerald buddha statue? And somdej
@@ -1762,7 +1789,10 @@
       hallMany('w3hswan', [{ u: -3.1, v: 1.65, h: AH, ry: 0.5 }]);
       hallMany('w3hlotusvase', [{ u: -3.7, v: 1.35, h: AH, s: 0.73 }, { u: 0.34, v: 1.45, h: AH, s: 0.73, ry: 2 }]);
       hallMany('w3hredtable', [{ u: 0.05, v: 0.95, h: AH, sx: 1.25 }]);
-      hallMany('w3hpapercone', [{ u: -0.44, v: 1.5, h: AH }, { u: 0.2, v: 1.5, h: AH, ry: 1.2 }]);       // (L18: two small cones of folded paper in gold bowls, before the red table)
+      /* (L18: two small cones of folded paper in gold bowls. v26.18, laid beside his photographs 5 and 10: they stand ON
+         the red table at the Emerald Buddha's feet, either side of the small white figure, not on the altar before it.
+         Measured on the models: the throne's front 1.16 m from the wall, the table's 1.37) */
+      hallMany('w3hpapercone', [{ u: -0.45, v: 1.27, h: AH + 0.389, s: 0.8 }, { u: 0.21, v: 1.27, h: AH + 0.389, s: 0.8, ry: 1.2 }]);
       hallMany('w3roses', [{ u: 0.98, v: 1.2, h: AH, s: 1.5 }]);
       hallMany('w3hnagagold', [{ u: 0.84, v: 1.85, h: AH, ry: 0.3 }]);
       /* (the mat tinted: his photograph 6's is maroon, black and cream, darker than the model's red and white) */
@@ -1805,6 +1835,27 @@
         pic.position.copy(hallAtV(FR.u, FR.v + 0.0105, FR.h + 0.385 * FR.sy)); pic.visible = false; hallIn.add(pic); owned.push(pic);
         picLoad('mstr_lpphiboon', 'image/jpeg').then(t => { if (!t || !alive) return; pm.map = t; pm.needsUpdate = true; pic.visible = true; }); }
       hallMany('w3hclock', [{ u: -0.14, v: PIC_V + 0.04, h: 2.29, s: 1.15 }]);
+      /* THE TWO FRAMED PHOTOGRAPHS THAT STAND IN THE ROOM (Chad, 16 Nov 2026, of what they show: "The game's own people"),
+         each a picture taken in the game on a plain light backdrop (masters/v26.18/frames): Grandmaster Pho on his bench,
+         in the room's ornate frame standing on the books of the low table behind his seat, leaning back (his
+         photographs 4 and 6: its top about 0.2 m over his head, its foot behind the books); and the young monk of the Wai
+         Kru in black and white, in the same frame painted a light silver, on the second altar's west end behind the
+         purple bouquet (his photographs 5 and 10). Each picture is a card laid in its frame's opening as the high
+         frame's is, turned and leant with it */
+      const standingFrame = (key, F, paint) => {
+        hallMany('w3hframe', [{ u: F.u, v: F.v, h: F.h, s: F.s, sx: F.sx, sy: F.sy, rx: F.rx, ry: F.ry }], 3, paint);
+        const k = F.s || 1, sx = k * (F.sx || 1), sy = k * (F.sy || 1), g = new THREE.Group(), p = hallAt(F.u, F.v, F.h);
+        g.position.set(p[0], p[1], p[2]); g.rotation.set(F.rx || 0, F.ry || 0, 0, 'YXZ');
+        const pm = mPic(), pic = new THREE.Mesh(new THREE.PlaneGeometry(0.471 * sx, 0.610 * sy), pm); hallPics.push([pm, F.lv]); pm.color.multiplyScalar(F.lv);
+        pic.position.set(0, 0.385 * sy, 0.0105 * k); pic.visible = false; g.add(pic); hallIn.add(g); owned.push(g);
+        picLoad(key, 'image/jpeg').then(t => { if (!t || !alive) return; pm.map = t; pm.needsUpdate = true; pic.visible = true; });
+      };
+      /* (photographed from its side, the low table's top is 0.30 m up and its stack of books 0.571, from 8 cm inside its
+         north end. On the table's free strip the frame stood too low and, turned, put its corners into the books: it
+         stands on the back of the stack, facing the room, the front of the top book before its foot) */
+      standingFrame('w3t_hpicpho', { u: 1.68, v: 2.37, h: DH + 0.571, s: 0.88, rx: -0.1, ry: 0, lv: 0.92 });
+      standingFrame('w3t_hpicmonk', { u: -4.3, v: 1.05, h: AH, sx: 0.85, sy: 0.82, rx: -0.1, ry: 0.35, lv: 0.95 },
+        (m) => { m.map = null; m.color.setHex(0xdedbd4); m.metalness = 0.3; m.roughness = 0.45; m.needsUpdate = true; });
     }
     /* ================================================================ THE OFFERING TABLES (photographs 10, 9, 4, 8)
        Three steps under white cloth, the lowest in front; a bright green satin skirt to the ground hung with swags of
@@ -5958,18 +6009,40 @@
       const rnd = rng(7733), seed = L.map(() => ({ ph: rnd() * 6.283, f: 7 + rnd() * 6, g: 1.3 + rnd() * 1.4 }));
       return { L, imF, imG, seed };
     })();
+    /* ---- THE HALL'S CANDLES (v26.18): a flame on each wick in the room (b_world1h.js HCAND), drawn with the inside
+       (hallIn) and so only while it is, each with its own flicker: the night's flame and glow, a stream of their own,
+       the glow lower in a lit room */
+    const hallFlames = (() => {
+      const L = stageList.hallFlames || [], n = L.length;
+      const gF = new THREE.PlaneGeometry(1, 1); gF.translate(0, 0.5, 0);
+      const mF = B({ map: tex(makeFlame(THREE, cnv)), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, side: THREE.DoubleSide });
+      const mG = B({ map: tex(makeGlow(THREE, cnv)), color: 0xff9a3c, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, opacity: 0.35, side: THREE.DoubleSide });
+      const imF = new THREE.InstancedMesh(gF, mF, Math.max(1, n)), imG = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1), mG, Math.max(1, n));
+      imF.frustumCulled = false; imG.frustumCulled = false; imF.renderOrder = 4; imG.renderOrder = 3; imF.count = n; imG.count = n;
+      hallIn.add(imG); hallIn.add(imF); owned.push(imF); owned.push(imG);
+      const rnd = rng(7734), seed = L.map(() => ({ ph: rnd() * 6.283, f: 7 + rnd() * 6, g: 1.3 + rnd() * 1.4 }));
+      return { L, imF, imG, seed };
+    })();
     const _flp = new THREE.Vector3(), _fls = new THREE.Vector3(), _flc = new THREE.Vector3();
     function flamesTick(t) {
       if (!nightG.visible || !flames.L.length) return;
+      flameSetTick(flames, t);
+    }
+    function hallFlamesTick(t) {
+      if (!hallIn.visible || !hallFlames.L.length) return;
+      flameSetTick(hallFlames, t);
+    }
+    /* (one set of flames turned to the lens and flickered: the night's body, moved out whole and unchanged) */
+    function flameSetTick(F, t) {
       camera.getWorldPosition(_flc);
-      flames.L.forEach((c, i) => { const sd = flames.seed[i], fl = 0.82 + 0.12 * Math.sin(t * sd.f + sd.ph) + 0.06 * Math.sin(t * sd.f * 2.7 + sd.ph * 3);
+      F.L.forEach((c, i) => { const sd = F.seed[i], fl = 0.82 + 0.12 * Math.sin(t * sd.f + sd.ph) + 0.06 * Math.sin(t * sd.f * 2.7 + sd.ph * 3);
         const ry = Math.atan2(_flc.x - c.x, _flc.z - c.z);
         _pte.set(0, ry, 0.07 * Math.sin(t * sd.g + sd.ph), 'YXZ'); _ptq.setFromEuler(_pte);
-        flames.imF.setMatrixAt(i, _wm.compose(_flp.set(c.x, c.y - 0.004, c.z), _ptq, _fls.set(0.04 * c.s * (1.1 - 0.12 * fl), 0.095 * c.s * fl, 1)));
+        F.imF.setMatrixAt(i, _wm.compose(_flp.set(c.x, c.y - 0.004, c.z), _ptq, _fls.set(0.04 * c.s * (1.1 - 0.12 * fl), 0.095 * c.s * fl, 1)));
         const gs = 0.56 * c.s * (0.88 + 0.22 * fl);
         _pte.set(0, ry, 0, 'YXZ'); _ptq.setFromEuler(_pte);
-        flames.imG.setMatrixAt(i, _wm.compose(_flp.set(c.x, c.y + 0.045 * c.s, c.z), _ptq, _fls.set(gs, gs, 1))); });
-      flames.imF.instanceMatrix.needsUpdate = true; flames.imG.instanceMatrix.needsUpdate = true;
+        F.imG.setMatrixAt(i, _wm.compose(_flp.set(c.x, c.y + 0.045 * c.s, c.z), _ptq, _fls.set(gs, gs, 1))); });
+      F.imF.instanceMatrix.needsUpdate = true; F.imG.instanceMatrix.needsUpdate = true;
     }
 
     /* ---- THE RENTED ROOM (§4.2: "his bai sri on the sill of a rented room, beside his bag"): a window, its sill and the
@@ -6345,10 +6418,19 @@
        colourful"): its music over the loudspeakers at -26.5 and the crowd at -31 under it, -25 together, which a
        voice (-16) still stands 17 dB over through the duck. The world heard open at -28.5 when it is wide; the pull's
        drone at -30 at its height, the ground's noise fallen away under it */
-    const BED = { fest: 0.64, mus: 0.38, birds: 0.56, open: 0.75, crick: 0.56, pull: 0.62, shop: 0.56 };
-    const bedMix = { fest: 0, mus: 0, birds: 0, open: 0, crick: 0, pull: 0, shop: 0 };
-    const filmBed = { on: false, fest: 0, mus: 0, birds: 0, open: 0, crick: 0, pull: 0, shop: 0 };
-    const BED_EASE = { fest: 1.0, mus: 1.6, birds: 1.0, open: 0.22, crick: 0.8, pull: 0.3, shop: 0.5 };
+    /* (v26.18: THE HALL'S OWN BED, the room's tone and its wall fans, a quiet place at -35 as the morning's birds are:
+       the file at -30, as theirs, by masters/v26.18/sound/make.sh. Inside, the birds come in through the door at under
+       half their level outside, as they do in the films inside, and crossing the threshold eases one into the other) */
+    /* (v26.18, Chad, 16 Nov 2026: "I think the hall should have its own music theme as well but i dont know what it
+       should be". Its own quiet theme, a loop, in play inside the hall only: at -33 dBFS, two decibels over the room's
+       tone and seventeen under a voice; not under the films, which have their own scores, and not in the breath, whose
+       sound is the world heard open. Which theme is his ear's: masters/v26.18/sound/make.sh) */
+    const BED = { fest: 0.64, mus: 0.38, birds: 0.56, open: 0.75, crick: 0.56, pull: 0.62, shop: 0.56, hall: 0.56, hallmus: 0.5 };
+    const bedMix = { fest: 0, mus: 0, birds: 0, open: 0, crick: 0, pull: 0, shop: 0, hall: 0, hallmus: 0 };
+    const filmBed = { on: false, fest: 0, mus: 0, birds: 0, open: 0, crick: 0, pull: 0, shop: 0, hall: 0, hallmus: 0 };
+    const BED_EASE = { fest: 1.0, mus: 1.6, birds: 1.0, open: 0.22, crick: 0.8, pull: 0.3, shop: 0.5, hall: 1.0, hallmus: 1.6 };
+    const BIRDS_IN = 0.45;
+    const inHall = () => hallShown.on && yaw.position.z < HALL.z1 - 0.1 && yaw.position.z > HALL.z0 && Math.abs(yaw.position.x) < 5;
     const DAY1 = new Set(['arrive', 'baisri', 'tables', 'place', 'festival', 'seen', 'check']);
     /* THE MIX FOLLOWS WHERE HE STANDS (the plan's §3.7: "each tent, the tables and the open turf has its own sound"; left
        unbuilt until the release's closing pass: the beds were mixed by the beat alone). On day one, in play: the
@@ -6367,7 +6449,7 @@
     }
     function mixBeds(wdt, st) {
       if (!(wdt > 0)) return;
-      const want = { fest: 0, mus: 0, birds: 0, open: 0, crick: 0, pull: 0, shop: 0 };
+      const want = { fest: 0, mus: 0, birds: 0, open: 0, crick: 0, pull: 0, shop: 0, hall: 0, hallmus: 0 };
       let panTo = 0;
       if (st === 'cine') { if (filmBed.on) for (const k in want) want[k] = filmBed[k]; }
       /* (on the title and the chapter's card nothing is heard: the engine holds every bed at 0 there. Nothing is RAISED
@@ -6381,10 +6463,10 @@
         want.pull = BED.pull * pk;
         if (play.chanting) { want.mus = 0; want.fest *= 0.55; }                             // the chant is on the loudspeakers, and the ground is bowing
         if (st === 'play') { const PM = placeMix(); want.mus *= PM.mus; want.fest *= PM.fest; panTo = PM.pan; }
-      } else { want.birds = BED.birds; if (phase === 'breath') want.open = BED.open * Math.max(0, open.shown); }
+      } else { const ink = inHall() ? 1 : 0; want.birds = BED.birds * (1 - (1 - BIRDS_IN) * ink); want.hall = BED.hall * ink; want.hallmus = phase === 'breath' ? 0 : BED.hallmus * ink; if (phase === 'breath') want.open = BED.open * Math.max(0, open.shown); }
       for (const k in bedMix) bedMix[k] += (want[k] - bedMix[k]) * (1 - Math.exp(-wdt / BED_EASE[k]));
       musPan += (panTo - musPan) * (1 - Math.exp(-wdt / 0.7));
-      const B = DATA.ambience.beds; B[0][1] = bedMix.fest; B[1][1] = bedMix.mus; B[2][1] = bedMix.birds; B[3][1] = bedMix.open; B[4][1] = bedMix.crick; B[5][1] = bedMix.pull; B[6][1] = bedMix.shop;
+      const B = DATA.ambience.beds; B[0][1] = bedMix.fest; B[1][1] = bedMix.mus; B[2][1] = bedMix.birds; B[3][1] = bedMix.open; B[4][1] = bedMix.crick; B[5][1] = bedMix.pull; B[6][1] = bedMix.shop; B[7][1] = bedMix.hall; B[8][1] = bedMix.hallmus;
       B[1][2] = Math.abs(musPan) < 0.002 ? 0 : musPan;
     }
     /* where a sound of the ground is, on his screen */
@@ -6454,13 +6536,25 @@
     const STEPS_GRASS = ['x3grass1', 'x3grass2', 'x3grass3', 'x3grass4', 'x3grass5', 'x3grass6', 'x3grass7', 'x3grass8'];
     const STEP_SEED = 8807;
     let stepSeed = STEP_SEED, stepLast = -1;
+    /* (v26.18) HIS BARE FEET ON THE HALL'S TILE, and on its steps and landing: the grass's method for a new kind
+       (masters/v26.18/sound/make.sh), from a stream of their own so the grass's run of falls is as it was */
+    /* (the three falls of the one take that a phone plays: make.sh) */
+    const STEPS_TILE = ['x3tile1', 'x3tile2', 'x3tile3'];
+    const TILE_SEED = 8821;
+    let tileSeed = TILE_SEED, tileLast = -1;
     function stepNext() {
+      if (hallShown.on && hallGround(yaw.position.x, yaw.position.z) > 0.05) {
+        tileSeed = (tileSeed * 1664525 + 1013904223) >>> 0;
+        let j = Math.floor(tileSeed / 4294967296 * (STEPS_TILE.length - (tileLast < 0 ? 0 : 1)));
+        if (tileLast >= 0 && j >= tileLast) j++;
+        tileLast = j; return STEPS_TILE[j];
+      }
       stepSeed = (stepSeed * 1664525 + 1013904223) >>> 0;
       let i = Math.floor(stepSeed / 4294967296 * (STEPS_GRASS.length - (stepLast < 0 ? 0 : 1)));
       if (stepLast >= 0 && i >= stepLast) i++;
       stepLast = i; return STEPS_GRASS[i];
     }
-    function ambReset() { ambSeed = AMB_SEED; ambAt = 0; ambBusy = 0; ambLast = ''; ambN = 0; for (const k in bedMix) bedMix[k] = 0; filmBed.on = false; wickAt = -1; kidsPh = ''; musPan = 0; stepSeed = STEP_SEED; stepLast = -1; }
+    function ambReset() { ambSeed = AMB_SEED; ambAt = 0; ambBusy = 0; ambLast = ''; ambN = 0; for (const k in bedMix) bedMix[k] = 0; filmBed.on = false; wickAt = -1; kidsPh = ''; musPan = 0; stepSeed = STEP_SEED; stepLast = -1; tileSeed = TILE_SEED; tileLast = -1; }
 
     const W = DATA.words;
     const play = { run: 0, busy: false, turning: null, bow: null, bai: false, baiP: 0, baiTo: 0, baiSecs: 1, knelt: false, homage: false,
@@ -6658,7 +6752,7 @@
     const WARM_DAY1 = ['q3v', 'tn3a1', 'q3p1', 'tn3a2', 'q3u1', 'q3u2', 'tn3m1', 'q3u3', 'tn3m2', 'q3c1', 'tn3c1', 'q3c2', 'ds3c1', 'tn3c2', 'q3c3',
                        'x3baitake', 'x3baiset', 'x3kneel', 'x3bowall', 'x3petals', 'x3chant', 'x3tone',
                        'x3grass1', 'x3grass2', 'x3grass3', 'x3grass4', 'x3grass5', 'x3grass6', 'x3grass7', 'x3grass8', 'x3os1', 'x3os2', 'x3os3', 'x3os4', 'x3os5', 'x3os6', 'x3wick'];
-    const WARM_DAY2 = ['tn3h1', 'tn3h2', 'ph3g1', 'ph3b0', 'ph3b1', 'ph3b2', 'ph3b3', 'ph3b4', 'ph3bx', 'ph3by', 'ph3b5', 'ph3p1', 'x3kneel', 'x3baiset', 'x3bell',
+    const WARM_DAY2 = ['tn3h1', 'tn3h2', 'x3tile1', 'x3tile2', 'x3tile3', 'ph3g1', 'ph3b0', 'ph3b1', 'ph3b2', 'ph3b3', 'ph3b4', 'ph3bx', 'ph3by', 'ph3b5', 'ph3p1', 'x3kneel', 'x3baiset', 'x3bell',
                        'x3grass1', 'x3grass2', 'x3grass3', 'x3grass4', 'x3grass5', 'x3grass6', 'x3grass7', 'x3grass8', 'x3os3', 'x3os7', 'x3os8', 'x3os9'];
     function dayOneStage() {
       look('DAY1', 0); auraAt(0, 0); mistK = 1; burstsClear();
@@ -7313,11 +7407,13 @@
       { id: 'homage', pos: { x: PLACE.x, y: 0.9, z: PLACE.z }, radius: 4, anyView: true, prompt: W.hotHomage, mark: false,
         enabled: () => phase === 'place' && play.knelt && !play.homage && !play.busy && !play.turning, onInteract() { return homage(); } },
       hsLook, hsAskTon, hsAskAunt,
-      { id: 'kneel2', pos: { x: KNEEL2.x, y: HF + 0.9, z: KNEEL2.z }, radius: 2.3, prompt: W.hotKneel, mark: false,
+      /* (v26.18: the three places of the morning are inside the hall, behind a gate the first frame keeps shut: walktest
+         tries them in the ground they belong to, stage.grounds) */
+      { id: 'kneel2', ground: 'the next morning', pos: { x: KNEEL2.x, y: HF + 0.9, z: KNEEL2.z }, radius: 2.3, prompt: W.hotKneel, mark: false,
         enabled: () => phase === 'hall' && !play.knelt && !play.busy, onInteract() { return kneelPho(false); } },
-      { id: 'bow2', pos: { x: PHO2_HEAD.x, y: HF + 1.0, z: PHO2_HEAD.z }, radius: 4, anyView: true, prompt: W.hotBow, mark: false,
+      { id: 'bow2', ground: 'the next morning', pos: { x: PHO2_HEAD.x, y: HF + 1.0, z: PHO2_HEAD.z }, radius: 4, anyView: true, prompt: W.hotBow, mark: false,
         enabled: () => phase === 'knelt' && play.knelt && !play.bowed && !play.busy && !play.turning, onInteract() { return bowPho(); } },
-      { id: 'tell', pos: { x: PHO2_HEAD.x, y: HF + 1.0, z: PHO2_HEAD.z }, radius: 4, anyView: true, prompt: W.hotTell, mark: false,
+      { id: 'tell', ground: 'the next morning', pos: { x: PHO2_HEAD.x, y: HF + 1.0, z: PHO2_HEAD.z }, radius: 4, anyView: true, prompt: W.hotTell, mark: false,
         enabled: () => phase === 'knelt' && play.bowed && !play.busy, onInteract() { return tellAll(); } }
     ];
     /* a mark rides the person it is on */
@@ -7333,7 +7429,7 @@
       const st = getState();
       const now = wallNow(), raw = lastWall0 ? Math.max(0, now - lastWall0) : 0, wdt = Math.min(0.25, raw); lastWall0 = now;
       /* (the people's own clocks run in a film too, v5.19: a film holds only those it has posed) */
-      windClock += wdt; windTick(windClock); peopleTick(wdt, st !== 'cine'); mistTick(windClock); hazeTick(windClock); skyTick(windClock); flamesTick(windClock); bulbsTick(windClock);
+      windClock += wdt; windTick(windClock); peopleTick(wdt, st !== 'cine'); mistTick(windClock); hazeTick(windClock); skyTick(windClock); flamesTick(windClock); hallFlamesTick(windClock); bulbsTick(windClock);
       /* (after the people: what is laid on a body's arm is laid on the pose its take has just written) */
       taperTick(windClock); kidsTick(wdt, st); dancersTick(wdt, st); dancersTurn(wdt);
       if (st !== 'cine') { peopleLevels(); lodTick(); zoneTick(now); }
@@ -8537,7 +8633,7 @@
        film's sound is its cues: z_tail.js). Each is a share of play's own level (BED), so a film that begins or ends on
        play's picture begins and ends on play's sound */
     function filmBeds(key, t) {
-      let fest = 0, mus = 0, birds = 0, crick = 0, open = 0, shop = 0;
+      let fest = 0, mus = 0, birds = 0, crick = 0, open = 0, shop = 0, hall = 0;
       if (key === 'open') { const T = OPENT, k4 = smo(sgk(t, T.o4 + 0.2, T.o4 + 1.8)), kf = smo(sgk(t, T.o4 + 1.8, T.o4 + 3.6));
         birds = 0.8 * k4 * (1 - 0.7 * kf); fest = kf; mus = 0.3 * kf;                      // his eyes open on the turf: birds, then the ground's noise comes up over them (its loudspeakers only a hint: the film's own music is still playing, and two musics at once are a clash; play begins on the ground's own)
         shop = smo(sgk(t, T.o1 + 0.3, T.o1 + 1.6)) * (1 - smo(sgk(t, T.o4 - 1.4, T.o4 - 0.3))); }   // and before it, his shop at night: its fridge, the street far off
@@ -8547,17 +8643,20 @@
         fest = 0.6 * (1 - smo(sgk(t, T.n1 + 0.5, T.n1 + 3.6)));                           // the day's noise falls away under the night's music
         crick = smo(sgk(t, T.n3 - 0.2, T.n3 + 0.8)) * (1 - smo(sgk(t, T.n5 - 0.5, T.n5 + 0.6)));
         birds = smo(sgk(t, T.n5, T.n5 + 1.5)); }                                          // first light: play's own morning
-      else if (key === 'tell' || key === 'answers') birds = 0.45;
+      /* (v26.18: every film after the morning's walk is inside the hall, and has the room's own tone under it, its birds
+         through the door at the share play gives them inside: BIRDS_IN) */
+      else if (key === 'tell' || key === 'answers') { birds = 0.45; hall = 1; }
       else if (key === 'A' || key === 'B' || key === 'C' || key === 'D') {
-        const T = ENDT[key]; birds = 0.5;
+        const T = ENDT[key]; birds = 0.5; hall = 1;
         if (key === 'B') { birds = (0.5 + 0.6 * bump(t, T.silence, T.edge - 0.4, 0.6, 0.5)) * (1 - smo(sgk(t, T.edge - 0.5, T.edge + 0.1)));   // the long silence is held by the birds; the afternoon has its own bed (a cue)
           crick = smo(sgk(t, T.dusk, T.dusk + 1.0)); }                                    // dusk, and on through the close
         if (key === 'D') { birds = 0.5 * (1 - smo(sgk(t, T.shut + SHUTV.show[0], T.shut + SHUTV.fold[1]))) + 0.25 * smo(sgk(t, T.back, T.back + 1.5));   // the world closes; he comes back to a quieter morning
+          hall = (1 - smo(sgk(t, T.shut + SHUTV.show[0], T.shut + SHUTV.fold[1]))) + 0.5 * smo(sgk(t, T.back, T.back + 1.5));
           open = 0.7 * bump(t, T.shut + SHUTV.show[0], T.shut + SHUTV.fold[1] - 0.3, 0.5, 0.8); }                      // (v26.12: the world heard open, as the lotus was in his first teaching, while it stands open in the dark)
         if (t >= T.close) { const tc = t - T.close; open = 0.6 * bump(tc, CLOSE.glow + 0.2, CLOSE.q3z1 + 2.0, 1.4, 1.6); }   // his own light in the close: the world heard a little open while it is on him
       }
       filmBed.on = true; filmBed.fest = BED.fest * fest; filmBed.mus = BED.mus * mus; filmBed.birds = BED.birds * birds; filmBed.crick = BED.crick * crick;
-      filmBed.open = BED.open * open; filmBed.pull = 0; filmBed.shop = BED.shop * shop;
+      filmBed.open = BED.open * open; filmBed.pull = 0; filmBed.shop = BED.shop * shop; filmBed.hall = BED.hall * hall; filmBed.hallmus = 0;
     }
     const films = {
       key: '',
@@ -8671,6 +8770,17 @@
 
     onePassCheck();                                      // (b_world1.js: every card given one pass is one flat plain card)
     const SNAP = [];                                     // (the proof's snapshot: stage.proofSnap)
+    /* the ground he is kept on (stage.keepIn): the day's, and the morning's three boxes (HLANE, HALL and HIN are the
+       hall's own numbers; the landing is the lane's foot east to the steps' solid, b_world1h.js buildHallWay) */
+    const KEEP_DAY = { what: 'the ground of the Wai Kru', minX: DATA.bounds.minX, maxX: DATA.bounds.maxX, minZ: -9.8, maxZ: DATA.bounds.maxZ };
+    const KEEP_MORNING_BOXES = [KEEP_DAY,
+      { minX: HLANE.x0, maxX: HLANE.x1, minZ: HLANE.z0, maxZ: KEEP_DAY.minZ },
+      { minX: -5.3, maxX: -1.3, minZ: HALL.z1 - 0.1, maxZ: HLANE.z0 },
+      { minX: HIN.x0, maxX: HIN.x1, minZ: HIN.zN, maxZ: HALL.z1 }];
+    const KEEP_MORNING = { what: 'the ground of the Wai Kru, the lane to the hall and the hall', boxes: KEEP_MORNING_BOXES,
+      minX: Math.min(...KEEP_MORNING_BOXES.map(q => q.minX)), maxX: Math.max(...KEEP_MORNING_BOXES.map(q => q.maxX)),
+      minZ: Math.min(...KEEP_MORNING_BOXES.map(q => q.minZ)), maxZ: Math.max(...KEEP_MORNING_BOXES.map(q => q.maxZ)) };
+    const KEEP_MORNING_PH = new Set(['dawn', 'hall', 'knelt', 'told', 'breath', 'taught', 'decide']);
     return (S = {
       world, noteTex, blockers: blockers(),
       ready: () => true,
@@ -8691,8 +8801,16 @@
       arrivals: [{ what: 'in the line at his bench', x: LINE_AT.x, z: LINE_AT.z },
                  { what: 'kneeling at his place', x: PLACE.x, z: PLACE.z }],           // (v26.18: where he kneels before Grandmaster Pho is inside the hall now, behind a gate that is shut on the day walktest floods: tools/probes/e4c3walk.mjs walks the morning's own ground)
       /* (v26.18: the chapter's box reaches the hall's north wall now; on day one, which walktest floods, he is still held on
-         the ground of the Wai Kru, by the gate across the lane's mouth and the columns either side of it) */
-      keepIn: { what: 'the ground of the Wai Kru', minX: DATA.bounds.minX, maxX: DATA.bounds.maxX, minZ: -9.8, maxZ: DATA.bounds.maxZ },
+         the ground of the Wai Kru, by the gate across the lane's mouth and the columns either side of it. From the morning
+         on, the gate open, his ground is three boxes: the turf, the lane with the landing before the west door, and the
+         hall's inside (`boxes`, which tools/probes/e4c3walk.mjs reads; the four numbers are the three's sum, for a reader
+         of one box) */
+      get keepIn() { return KEEP_MORNING_PH.has(phase) ? KEEP_MORNING : KEEP_DAY; },
+      /* (v26.18: the later ground walktest walks too: the next morning, the gate across the lane and the hall's west door
+         open and yesterday's crowd gone, put in place the way a Continue lands (the stage reset, the phase set, its next
+         live frame applying it) and flooded from where its phase puts him; the hall's three places name it, `ground`) */
+      grounds: [{ what: 'the next morning', enter() { S.reset(); kit.setPhase('dawn:'); },
+                  ready() { const i = S.info(); return i.phase === 'dawn' && i.applied && dayClock.t > 1.2 && !i.busy && !i.pending && !i.queued; } }],
       groundAt: hallGround,                                                     // the hall's steps and its floor, 0.48 m up (b_world1h.js)
       get phase() { return phase; },
       setPhase, applyPhase, after, dayClock, sayLine, queueLine, queueFn, queueGap,

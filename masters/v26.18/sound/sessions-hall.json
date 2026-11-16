@@ -1,0 +1,50 @@
+{
+ "flow": "KmH72f3OCTiZAx0cEEgw",
+ "why": "v26.18: the morning moved inside the main hall (Chad, 16 Nov 2026); its own sound, the tracker's H6: his bare feet on the hall's tile and the room's tone with its wall fans. eleven_text_to_sound_v2; the picks and why: make.sh.",
+ "nodes": {
+  "x3tileC": "L2aRXLtQQwbbfZlUN2zS",
+  "x3hallbed": "MznatnZ5lW9iltXmbf0h",
+  "x3tileD": "YKeit82pCUYey64hXKdm"
+ },
+ "sessions": {
+  "x3tileC": [
+   "fnpppQZzPlijCxCIE3hw",
+   "yleUoLbm9EOFprdjb8xO",
+   "SFbKQUOkuepBSMsOa5Fn",
+   "QU4eq6pVRilJcJ7x67gi"
+  ],
+  "x3hallbed": [
+   "sHf28cHWhxOJQxBKRiaf",
+   "C1J5am4iCqkh8Bzu1IqX",
+   "r7rKekFnqgKSdDnKctOy",
+   "XqDv6h49w9HI55hlqtFm"
+  ],
+  "x3tileD": [
+   "eRYEXDATk8JM88xQ0yS7",
+   "1Xj2huK8RsNuiXoifN9V",
+   "SQdoMYr8r4op8i8vRKrq",
+   "4L48pWJs8Zn4prUuqkvM"
+  ]
+ },
+ "params": {
+  "x3tileC": {
+   "duration_seconds": 3.5,
+   "prompt_influence": 0.5
+  },
+  "x3hallbed": {
+   "duration_seconds": 22,
+   "prompt_influence": 0.5,
+   "loop": true
+  },
+  "x3tileD": {
+   "duration_seconds": 3.5,
+   "prompt_influence": 0.6
+  }
+ },
+ "prompts": {
+  "x3tileC": "A person walking slowly barefoot across a smooth glazed ceramic tile floor in a quiet hall: four natural footsteps, soft skin-on-tile pats with a faint squeak of the sole, a little room around them, close microphone, evenly spaced.",
+  "x3hallbed": "Room tone of a large tiled Buddhist hall in the morning: several wall fans turning steadily overhead with a soft airy whir and a faint motor hum, the open hall gently reverberant, distant birds outside through an open door, calm and still, no voices, no music.",
+  "x3tileD": "Close foley of slow barefoot steps on a polished glazed tile floor: light crisp skin slaps and soft pats of the soles, a faint squeak as each foot lifts, bright mid and high frequencies, no low thud, no boom, dry close microphone, four steps."
+ },
+ "letters": "a b c d are the sessions in order (masters/v26.0/sound/raw/<name>_<letter>.mp3)"
+}

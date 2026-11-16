@@ -967,7 +967,10 @@
        nothing takes him */
     /* (v26.18, his answer of 16 Nov: everything inside. He sits at the back of the emptied hall, on a mat of its last row,
        east of the hall's one free post, so the long look to his teacher across the room runs clear of it) */
-    const D_SIT = [0.85, HF + KNEEL.y, HIN.zN + 12.3];
+    /* (on the row's EAST mat: from its third, the look to the second altar's banner ran through the free post, which stood
+       in the middle of a phone's picture and cut the banner's face in two (photographed, v26.18); from here the post is
+       twelve degrees west of the banner's middle, at the frame's side, and the look to his teacher is straight ahead) */
+    const D_SIT = [2.55, HF + KNEEL.y, HIN.zN + 12.3];
     FILMS.D = {
       begin(api) { if (api.handsRoot) api.handsRoot.visible = false; FL.wai = false; FL.bai = false; endStage(); },
       frame(t, api) {
@@ -1012,7 +1015,7 @@
        film's sound is its cues: z_tail.js). Each is a share of play's own level (BED), so a film that begins or ends on
        play's picture begins and ends on play's sound */
     function filmBeds(key, t) {
-      let fest = 0, mus = 0, birds = 0, crick = 0, open = 0, shop = 0;
+      let fest = 0, mus = 0, birds = 0, crick = 0, open = 0, shop = 0, hall = 0;
       if (key === 'open') { const T = OPENT, k4 = smo(sgk(t, T.o4 + 0.2, T.o4 + 1.8)), kf = smo(sgk(t, T.o4 + 1.8, T.o4 + 3.6));
         birds = 0.8 * k4 * (1 - 0.7 * kf); fest = kf; mus = 0.3 * kf;                      // his eyes open on the turf: birds, then the ground's noise comes up over them (its loudspeakers only a hint: the film's own music is still playing, and two musics at once are a clash; play begins on the ground's own)
         shop = smo(sgk(t, T.o1 + 0.3, T.o1 + 1.6)) * (1 - smo(sgk(t, T.o4 - 1.4, T.o4 - 0.3))); }   // and before it, his shop at night: its fridge, the street far off
@@ -1022,17 +1025,20 @@
         fest = 0.6 * (1 - smo(sgk(t, T.n1 + 0.5, T.n1 + 3.6)));                           // the day's noise falls away under the night's music
         crick = smo(sgk(t, T.n3 - 0.2, T.n3 + 0.8)) * (1 - smo(sgk(t, T.n5 - 0.5, T.n5 + 0.6)));
         birds = smo(sgk(t, T.n5, T.n5 + 1.5)); }                                          // first light: play's own morning
-      else if (key === 'tell' || key === 'answers') birds = 0.45;
+      /* (v26.18: every film after the morning's walk is inside the hall, and has the room's own tone under it, its birds
+         through the door at the share play gives them inside: BIRDS_IN) */
+      else if (key === 'tell' || key === 'answers') { birds = 0.45; hall = 1; }
       else if (key === 'A' || key === 'B' || key === 'C' || key === 'D') {
-        const T = ENDT[key]; birds = 0.5;
+        const T = ENDT[key]; birds = 0.5; hall = 1;
         if (key === 'B') { birds = (0.5 + 0.6 * bump(t, T.silence, T.edge - 0.4, 0.6, 0.5)) * (1 - smo(sgk(t, T.edge - 0.5, T.edge + 0.1)));   // the long silence is held by the birds; the afternoon has its own bed (a cue)
           crick = smo(sgk(t, T.dusk, T.dusk + 1.0)); }                                    // dusk, and on through the close
         if (key === 'D') { birds = 0.5 * (1 - smo(sgk(t, T.shut + SHUTV.show[0], T.shut + SHUTV.fold[1]))) + 0.25 * smo(sgk(t, T.back, T.back + 1.5));   // the world closes; he comes back to a quieter morning
+          hall = (1 - smo(sgk(t, T.shut + SHUTV.show[0], T.shut + SHUTV.fold[1]))) + 0.5 * smo(sgk(t, T.back, T.back + 1.5));
           open = 0.7 * bump(t, T.shut + SHUTV.show[0], T.shut + SHUTV.fold[1] - 0.3, 0.5, 0.8); }                      // (v26.12: the world heard open, as the lotus was in his first teaching, while it stands open in the dark)
         if (t >= T.close) { const tc = t - T.close; open = 0.6 * bump(tc, CLOSE.glow + 0.2, CLOSE.q3z1 + 2.0, 1.4, 1.6); }   // his own light in the close: the world heard a little open while it is on him
       }
       filmBed.on = true; filmBed.fest = BED.fest * fest; filmBed.mus = BED.mus * mus; filmBed.birds = BED.birds * birds; filmBed.crick = BED.crick * crick;
-      filmBed.open = BED.open * open; filmBed.pull = 0; filmBed.shop = BED.shop * shop;
+      filmBed.open = BED.open * open; filmBed.pull = 0; filmBed.shop = BED.shop * shop; filmBed.hall = BED.hall * hall; filmBed.hallmus = 0;
     }
     const films = {
       key: '',
@@ -1146,6 +1152,17 @@
 
     onePassCheck();                                      // (b_world1.js: every card given one pass is one flat plain card)
     const SNAP = [];                                     // (the proof's snapshot: stage.proofSnap)
+    /* the ground he is kept on (stage.keepIn): the day's, and the morning's three boxes (HLANE, HALL and HIN are the
+       hall's own numbers; the landing is the lane's foot east to the steps' solid, b_world1h.js buildHallWay) */
+    const KEEP_DAY = { what: 'the ground of the Wai Kru', minX: DATA.bounds.minX, maxX: DATA.bounds.maxX, minZ: -9.8, maxZ: DATA.bounds.maxZ };
+    const KEEP_MORNING_BOXES = [KEEP_DAY,
+      { minX: HLANE.x0, maxX: HLANE.x1, minZ: HLANE.z0, maxZ: KEEP_DAY.minZ },
+      { minX: -5.3, maxX: -1.3, minZ: HALL.z1 - 0.1, maxZ: HLANE.z0 },
+      { minX: HIN.x0, maxX: HIN.x1, minZ: HIN.zN, maxZ: HALL.z1 }];
+    const KEEP_MORNING = { what: 'the ground of the Wai Kru, the lane to the hall and the hall', boxes: KEEP_MORNING_BOXES,
+      minX: Math.min(...KEEP_MORNING_BOXES.map(q => q.minX)), maxX: Math.max(...KEEP_MORNING_BOXES.map(q => q.maxX)),
+      minZ: Math.min(...KEEP_MORNING_BOXES.map(q => q.minZ)), maxZ: Math.max(...KEEP_MORNING_BOXES.map(q => q.maxZ)) };
+    const KEEP_MORNING_PH = new Set(['dawn', 'hall', 'knelt', 'told', 'breath', 'taught', 'decide']);
     return (S = {
       world, noteTex, blockers: blockers(),
       ready: () => true,
@@ -1166,8 +1183,16 @@
       arrivals: [{ what: 'in the line at his bench', x: LINE_AT.x, z: LINE_AT.z },
                  { what: 'kneeling at his place', x: PLACE.x, z: PLACE.z }],           // (v26.18: where he kneels before Grandmaster Pho is inside the hall now, behind a gate that is shut on the day walktest floods: tools/probes/e4c3walk.mjs walks the morning's own ground)
       /* (v26.18: the chapter's box reaches the hall's north wall now; on day one, which walktest floods, he is still held on
-         the ground of the Wai Kru, by the gate across the lane's mouth and the columns either side of it) */
-      keepIn: { what: 'the ground of the Wai Kru', minX: DATA.bounds.minX, maxX: DATA.bounds.maxX, minZ: -9.8, maxZ: DATA.bounds.maxZ },
+         the ground of the Wai Kru, by the gate across the lane's mouth and the columns either side of it. From the morning
+         on, the gate open, his ground is three boxes: the turf, the lane with the landing before the west door, and the
+         hall's inside (`boxes`, which tools/probes/e4c3walk.mjs reads; the four numbers are the three's sum, for a reader
+         of one box) */
+      get keepIn() { return KEEP_MORNING_PH.has(phase) ? KEEP_MORNING : KEEP_DAY; },
+      /* (v26.18: the later ground walktest walks too: the next morning, the gate across the lane and the hall's west door
+         open and yesterday's crowd gone, put in place the way a Continue lands (the stage reset, the phase set, its next
+         live frame applying it) and flooded from where its phase puts him; the hall's three places name it, `ground`) */
+      grounds: [{ what: 'the next morning', enter() { S.reset(); kit.setPhase('dawn:'); },
+                  ready() { const i = S.info(); return i.phase === 'dawn' && i.applied && dayClock.t > 1.2 && !i.busy && !i.pending && !i.queued; } }],
       groundAt: hallGround,                                                     // the hall's steps and its floor, 0.48 m up (b_world1h.js)
       get phase() { return phase; },
       setPhase, applyPhase, after, dayClock, sayLine, queueLine, queueFn, queueGap,

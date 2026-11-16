@@ -20,7 +20,7 @@ fs.mkdirSync(OUT, { recursive: true });
 /* (M8) the strings are the game's OWN (setPhase writes `phase:` and that phase's marks only: mark()); the last three are
    what it never writes (a phase with no colon, marks carried from other phases), which readMark must still take */
 const PH = (process.env.PH || ['done:e4c2', 'arrive:', 'baisri:', 'tables:', 'place:', 'place:h', 'festival:', 'seen:', 'check:', 'check:t', 'check:a',
-  'check:t,a', 'check:t,a,x', 'dawn:', 'knelt:', 'knelt:b', 'told:', 'breath:c0,f0', 'taught:c2,f1', 'decide:c3,f0',
+  'check:t,a', 'check:t,a,x', 'dawn:', 'hall:', 'knelt:', 'knelt:b', 'told:', 'breath:c0,f0', 'taught:c2,f1', 'decide:c3,f0',
   'arrive', 'check:h,t', 'taught:h,t,a,x,b,c2,f1'].join('|')).split('|');
 /* where a Continue may be read (the phase's own name, or the one it moves to by itself) */
 const WANT = (ph) => { const p = ph.split(':')[0], m = ph.split(':')[1] || '', has = (c) => m.split(',').includes(c);

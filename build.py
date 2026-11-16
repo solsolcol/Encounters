@@ -16,7 +16,7 @@ base64 bytes (embedded). assetBytes() in main.js is the seam.
 """
 import pathlib, base64, hashlib, json, re, shutil, zipfile
 
-VERSION = "26.17"
+VERSION = "26.18"
 
 d = pathlib.Path(__file__).resolve().parent
 shell = (d / 'shell.html').read_text()
@@ -676,6 +676,8 @@ ASSETS = {
     'w3hseat':      ('assets/w3hseat.glb', True, False),     # the master's seat: a maroon mattress cushion under an ochre-tan cloth (the build sheet's D8)
     'w3hpillow':    ('assets/w3hpillow.glb', True, False),     # a maroon Thai triangle pillow behind the seat (D9)
     'w3hframe':     ('assets/w3hframe.glb', True, False),     # an ornate dark-and-gold picture frame, empty: a grey board where its picture goes (G1)
+    'w3t_hpicpho':  ('assets/w3t_hpicpho.jpg', True, False),     # the framed photograph standing on the low table behind the master's seat (his photographs 4 and 6): Grandmaster Pho on his bench, taken in the game on a plain light backdrop (Chad, 16 Nov 2026: "The game's own people")
+    'w3t_hpicmonk': ('assets/w3t_hpicmonk.jpg', True, False),     # the black-and-white photograph in the white frame at the second altar's west end (his photographs 5 and 10): the young monk of the Wai Kru, taken in the game, head and shoulders, made grey
     'w3hdrums':     ('assets/w3hdrums.glb', True, False),     # one column of stacked pressed-metal drums with a spear, mirror silver; the gold ones a tint (D4)
     'w3hgoldbaisri':('assets/w3hgoldbaisri.glb', True, False),     # the gold-foil bai sri in its silver pedestal bowl (D10)
     'w3hpeacock':   ('assets/w3hpeacock.glb', True, False),     # the peacock bai sri, of plain pale paper (D11)
@@ -700,7 +702,7 @@ ASSETS = {
     'w3t_hpleat':   ('assets/w3t_hpleat.jpg', True, False),     # the dais's skirt: gathered olive-gold satin in wide box pleats, from the cloth alone in his photograph 4 (masters/v26.18/skirt)
     'w3hemerald':   ('assets/w3hemerald.glb', True, False),     # the replica of the Emerald Buddha in its summer costume on its gold throne base, on the red table (L17): Chad, 16 Nov 2026, "Where are the other assets, models, props, like the emerald buddha statue?"; a checked picture, then Meshy
     'w3hgoldbuddha':('assets/w3hgoldbuddha.glb', True, False),     # the gold seated Buddha (maravijaya) with its gold cloth and its dark wooden stand, on the second altar (L9): a checked picture, then Meshy
-    'w3hsomdej':    ('assets/w3hsomdej.glb', True, False),     # Somdej Toh's golden bucha (L11, named by Chad, 16 Nov 2026): gilded, in round spectacles, from his photograph 5 and photographs of the real cast images; a checked picture, then Meshy
+    'w3hsomdej':    ('assets/w3hsomdej.glb', True, False),     # Somdej Toh's golden bucha (L11, named by Chad, 16 Nov 2026): gilded, the hands held together at the heart, no spectacles: from a real bucha of him (a cast of 2528) and his photograph 5; a checked picture, then Meshy
     'w3hwheel2':    ('assets/w3hwheel2.glb', True, False),     # the green ribbon wheel of eight spokes with its small gold standing Buddha, on the second altar (L12): a checked picture, then Meshy
     'w3hfan':       ('assets/w3hfan.glb', True, False),     # the orange talapat fan with its printed seated Buddha, on its pole in its low stand, on the dais: a checked picture, then Meshy
     'w3htabletstand':('assets/w3htabletstand.glb', True, False),     # the black tablet on its floor stand by the dais's west end, its back to the room (his photographs 4 and 6): a checked picture, then Meshy
@@ -711,7 +713,7 @@ ASSETS = {
     'w3hexhaust':   ('assets/w3hexhaust.glb', True, False),     # a cream exhaust fan in its square housing, high on the side walls (one a bay)
     'w3hhorn':      ('assets/w3hhorn.glb', True, False),     # a cream horn loudspeaker on the free post
     'w3hpabox':     ('assets/w3hpabox.glb', True, False),     # a black loudspeaker box on its bracket, on the first wall posts
-    'w3hpapercone': ('assets/w3hpapercone.glb', True, False),     # a small cone of folded plain paper in a gold pedestal bowl, two before the red table on the second altar (L18)
+    'w3hpapercone': ('assets/w3hpapercone.glb', True, False),     # a small cone of folded plain paper in a gold pedestal bowl: two on the red table at the Emerald Buddha's feet (L18), two on the white Buddha's ledge
     'w3hswan':      ('assets/w3hswan.glb', True, False),     # the white swan on the second altar (L6)
     'w3hconetower': ('assets/w3hconetower.glb', True, False),     # a dark-green cone tower of folded leaf on the second altar, two of them (L8)
     'w3hcushions':  ('assets/w3hcushions.glb', True, False),     # strapped bundles of cushions against the east wall (E1)
@@ -859,12 +861,13 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'w3t_treeline', 'w3t_redroof', 'w3t_hallbrick', 'w3t_steptile', 'w3t_lawn', 'w3t_kalae', 'w3t_fretwork',
            'w3t_sign', 'w3banana2', 'w3frangipani', 'w3isanhouse', 'w3tank', 'w3aircon', 'w3scooter', 'w3t_render',
            'w3t_cloudbank', 'w3t_cloudtall', 'w3t_cloudflat', 'w3t_cloudthree', 'w3t_cirrus', 'w3pholap', 'w3hseat',
-           'w3hpillow', 'w3hframe', 'w3hdrums', 'w3hgoldbaisri', 'w3hpeacock', 'w3hmat', 'w3t_hmural', 'w3hgreencol',
-           'w3hwheel', 'w3hbrownbaisri', 'w3hbooktable', 'w3hnagabronze', 'w3hlotusvase', 'w3hredtable',
-           'w3hnagagold', 'w3hstripemat', 'w3hnagagroup', 'w3hpedfan', 'w3hsofa3', 'w3hgreymats', 'w3hmattresses',
-           'w3hwhitebuddha', 'w3hlotus', 'w3t_hpleat', 'w3hemerald', 'w3hgoldbuddha', 'w3hsomdej', 'w3hwheel2',
-           'w3hfan', 'w3htabletstand', 'w3hcanopy', 'w3hbroom', 'w3hclock', 'w3hclothsets', 'w3hexhaust', 'w3hhorn',
-           'w3hpabox', 'w3hpapercone', 'w3hswan', 'w3hconetower', 'w3hcushions', 'w3hwallfan',
+           'w3hpillow', 'w3hframe', 'w3t_hpicpho', 'w3t_hpicmonk', 'w3hdrums', 'w3hgoldbaisri', 'w3hpeacock',
+           'w3hmat', 'w3t_hmural', 'w3hgreencol', 'w3hwheel', 'w3hbrownbaisri', 'w3hbooktable', 'w3hnagabronze',
+           'w3hlotusvase', 'w3hredtable', 'w3hnagagold', 'w3hstripemat', 'w3hnagagroup', 'w3hpedfan', 'w3hsofa3',
+           'w3hgreymats', 'w3hmattresses', 'w3hwhitebuddha', 'w3hlotus', 'w3t_hpleat', 'w3hemerald', 'w3hgoldbuddha',
+           'w3hsomdej', 'w3hwheel2', 'w3hfan', 'w3htabletstand', 'w3hcanopy', 'w3hbroom', 'w3hclock', 'w3hclothsets',
+           'w3hexhaust', 'w3hhorn', 'w3hpabox', 'w3hpapercone', 'w3hswan', 'w3hconetower', 'w3hcushions',
+           'w3hwallfan',
            # <<< e4c3 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY

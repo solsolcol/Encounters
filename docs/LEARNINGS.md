@@ -8796,3 +8796,18 @@ Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8,
   by one and the replay probe reported twenty "differences on screen" that were each the next object's place and paint.
   Read the objects only on one side first, and match a shifted run by what the objects are, before calling a difference
   something reset() forgot.
+
+## v26.18 — a place moved behind a gate, and a remesh fetched by its old name
+
+- **A hotspot can pass the walk harness by accident.** The morning's three places (kneel, bow, tell) stood at the
+  bench on day one's turf, so walktest's flood of the FIRST frame reached them, though they belong to the next morning.
+  Moved inside the hall, behind a gate the first day keeps shut, they failed: rightly, and not a fault in the room. The
+  cure is the class: a chapter names its later grounds (`stage.grounds`), each place names its ground (`ground`), and the
+  harness puts each later ground in place the way a Continue lands and floods it from where it puts him, with that
+  ground's own keep-in (several boxes: `boxes`). Proved by breaking it on a throwaway copy (the hall's door left shut
+  that morning, one place naming a ground nobody declares): both fail.
+- **A remade model's remesh was fetched by its NAME.** The job ledger keyed jobs by the model's name, so remaking a
+  model (Somdej Toh's bucha, without the spectacles) and asking for its remesh found the FIRST model's remesh job, waited
+  on it and fetched it: the game's file still wore the spectacles. Caught only because the prepared model was
+  photographed before it was placed. meshy26.py now sets a remade model's old jobs aside (`superseded`); a remesh is of
+  the image-to-3D job it names, never of whatever the name last pointed at.

@@ -13959,6 +13959,8 @@ const STING_SAMPLE = {
   /* v26.1: his feet on the grass (masters/v26.1/sound/steps.sh; x3step retired) */
   x3grass1: ['x3grass1', 1], x3grass2: ['x3grass2', 1], x3grass3: ['x3grass3', 1], x3grass4: ['x3grass4', 1],
   x3grass5: ['x3grass5', 1], x3grass6: ['x3grass6', 1], x3grass7: ['x3grass7', 1], x3grass8: ['x3grass8', 1],
+  /* v26.18 · episode 4 chapter 3's hall: his bare feet on its tile, and the room's own tone (masters/v26.18/sound/make.sh) */
+  x3tile1: ['x3tile1', 1], x3tile2: ['x3tile2', 1], x3tile3: ['x3tile3', 1], x3hallbed: ['x3hallbed', 1], x3hallmus: ['x3hallmus', 1],
   x3sweep: ['x3sweep', 1], x3tellmus: ['x3tellmus', 1], x3tone: ['x3tone', 1], x3trance: ['x3trance', 1],
   x3waiting: ['x3waiting', 1], x3zip: ['x3zip', 1],
   /* v26.0 · episode 4 chapter 3: its voices, effects, beds and music (masters/v26.0/sound.sh) */

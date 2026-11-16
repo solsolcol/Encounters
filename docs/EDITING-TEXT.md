@@ -11,19 +11,23 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
-**THE CURRENT SHEET (14 Nov 2026): Master Z's Encounters — GAME TEXT v145 (edit here)**, id
-`1yDHBCpg_ediTpfK1bCFsSxZTev-dNKlet4_S0mE_Fvw`, six tabs: UI TEXT (449 rows with its header), EPISODE 1 (115), EPISODE 2
-(202), EPISODE 3 (401), EPISODE 4 (237), VOICE LINES (912).
-<https://docs.google.com/spreadsheets/d/1yDHBCpg_ediTpfK1bCFsSxZTev-dNKlet4_S0mE_Fvw/edit>
-It is v145 exactly (`masters/v26.8/masterz-text-v145.xlsx`, sha256 bf169734...a671, and the game's own export on the
-day byte for byte the same). THE CEILING BELOW IS GONE: the Drive connector's `create_file` now takes a FILE REFERENCE
+**THE CURRENT SHEET (16 Nov 2026): Master Z's Encounters — GAME TEXT v146 (edit here)**, id
+`1IzpLiHvIhtmfliCL51kBBE3EFH_iw4-v-1Jx8iSBH_Q`, six tabs: UI TEXT (449 rows with its header), EPISODE 1 (115), EPISODE 2
+(202), EPISODE 3 (401), EPISODE 4 (238), VOICE LINES (914).
+<https://docs.google.com/spreadsheets/d/1IzpLiHvIhtmfliCL51kBBE3EFH_iw4-v-1Jx8iSBH_Q/edit>
+It is v146 exactly (`masters/v26.18/masterz-text-v146.xlsx`, sha256 fca70d90...0f30a5): v145 and three rows more, the
+hall move's (`e4c3.words.objHall`, `voice.tn3h1`, `voice.tn3h2`; docs/HISTORY.md, "The sheet, version by version").
+Read back tab by tab and compared cell by cell by `tools/sheetcmp.py`: 9,879 cells, mismatched cells: 0. v145
+(`1yDHBCpg_ediTpfK1bCFsSxZTev-dNKlet4_S0mE_Fvw`) was checked first: created 14 Nov 07:42:44.4, modified 07:42:45.5 (the
+conversion itself), so it held no edit of his to carry over. THE CEILING BELOW IS GONE: the Drive
+connector's `create_file` now takes a FILE REFERENCE
 in place of typed base64 (`base64Content` set to `sha256:<64 hex>:<absolute path>`; the app fills in the file once Chad
 approves the call), so the workbook goes up whole, at any size, with nothing retyped. Read back tab by tab with the
 Google Sheets connector's `get_values` (`'<tab>'!A1:Z1000`; a large tab is saved by the harness to a file, a small one
 is taken from the session's own record, never retyped) and compared cell by cell with the workbook by
-`tools/sheetcmp.py` (the same parse as verifytabs; `--transcript` takes the small tabs from the session record): 9,864 cells, mismatched cells: 0. The v42 sheet below was
+`tools/sheetcmp.py` (the same parse as verifytabs; `--transcript` takes the small tabs from the session record). The v42 sheet below was
 checked first (created 22:20:36.4, modified 22:20:37.4: the conversion itself), so it held no edit of his.
-Supersedes everything from v42 to v144, none of which was ever published.
+v146 supersedes v145, which superseded everything from v42 to v144, none of which was ever published.
 
 **Master Z's Encounters — GAME TEXT v42 (edit here)** in his Drive
 (id `1bqnbQJPr1O6YslOlcsbVDFlZCohQtyKbPzm9EuY1IpM` — the **v42** sheet,

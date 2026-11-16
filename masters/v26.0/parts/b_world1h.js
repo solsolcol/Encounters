@@ -58,6 +58,17 @@
     /* (and its west slope a shade lighter, as the lamp beside it lights it in his photographs 4 and 6, and its top a
        shade under the flat ceiling: all three the one grey, the recess did not read at all, laid beside photograph 6) */
     const mCeilSlope = B({ color: 0x7d7c79 }), mCeilTop = B({ color: 0x61605e });
+    /* (v26.18, the room laid beside his photographs 4 and 6 again, measured: the slope drew (142, 140, 138) where his
+       photograph 4 has it (101, 88, 88) and photograph 6 (126, 121, 121) to (133, 133, 131): a warm grey between the two,
+       a shade darker than it was. The top and the faces matched and stay) */
+    mCeilSlope.color.setHex(0x6a6464);
+    /* (and the flat ceiling is boards 0.6 m square, their joints faint lines across the grey: his photographs 5 and 10.
+       The quad's coordinates are the room's own metres, so the joints run straight across both pieces) */
+    const mCeilGrid = (() => { const [c, x] = cnv(256), W = 256;
+      x.fillStyle = '#ffffff'; x.fillRect(0, 0, W, W);
+      x.fillStyle = 'rgba(70,66,64,0.16)'; x.fillRect(0, 0, W, 3); x.fillRect(0, 0, 3, W);
+      const t = hRep(tex(done(THREE, c, true)), 0.6, 0.6); t.anisotropy = 8;
+      return B({ color: 0x6c6b69, map: t }); })();
     const mInPost = M({ color: 0x3d2830, roughness: 0.34 });
     const mInWhite = M({ color: 0xf1efe9, roughness: 0.6 });
     const mInDark = M({ color: 0x241f1d, roughness: 0.6 });
@@ -142,7 +153,7 @@
       floor(mTile, x0, zN, x1, zS, fy + 0.003);
       const down = (mat, ax, az, bx, bz, y) => quad(mat, [ax, y, az], [bx, y, az], [bx, y, bz], [ax, y, bz], ax, az);   // a piece that faces down (az north of bz)
       const RC = { u0: 1.3, v1: 4.2, in: 0.3, step: 0.25 };
-      down(mCeil, x0, zN, RC.u0, zS, cy); down(mCeil, RC.u0, Z(RC.v1), x1, zS, cy);
+      down(mCeilGrid, x0, zN, RC.u0, zS, cy); down(mCeilGrid, RC.u0, Z(RC.v1), x1, zS, cy);
       wall(mCeilLip, RC.u0, Z(RC.v1), RC.u0, zN, cy, cy + RC.step); wall(mCeilLip, x1, Z(RC.v1), RC.u0, Z(RC.v1), cy, cy + RC.step);                       // the first step's faces (west, south)
       down(mCeil, RC.u0, zN, RC.u0 + RC.in, Z(RC.v1), cy + RC.step); down(mCeil, RC.u0 + RC.in, Z(RC.v1 - RC.in), x1, Z(RC.v1), cy + RC.step);        // its ledge
       wall(mCeilLip, RC.u0 + RC.in, Z(RC.v1 - RC.in), RC.u0 + RC.in, zN, cy + RC.step, cy + 2 * RC.step); wall(mCeilLip, x1, Z(RC.v1 - RC.in), RC.u0 + RC.in, Z(RC.v1 - RC.in), cy + RC.step, cy + 2 * RC.step);
@@ -297,7 +308,9 @@
     /* MANY OF ONE MODEL INSIDE THE HALL: as the copied manyOf, in the room's own (u, v, h), with a scale an axis and a
        tint a place where the room needs one (a mat made for a square laid long; two of the four drum columns gold).
        A thing is asked for only once its file is in the build: until then nothing stands in its place */
-    function hallMany(key, list, lift = 3) {
+    /* (`paint`, v26.18: a function given the copy of each material, for a model drawn in another finish: the white frame
+       at the second altar is the room's ornate frame painted a light silver, its own sheet left off) */
+    function hallMany(key, list, lift = 3, paint = null) {
       if (!list.length) return;
       if (!have(key)) { waiting.add(key); return; }
       parseOnce(key).then(({ scene: src }) => {
@@ -307,7 +320,7 @@
         const tinted = list.some(t => t.tint != null);
         src.traverse(o => {
           if (!o.isMesh || /_far$/.test(o.name)) return;
-          const mat = o.material.clone(); mats.push(mat); bronzeLift({ material: mat }, lift);
+          const mat = o.material.clone(); mats.push(mat); bronzeLift({ material: mat }, lift); if (paint) paint(mat);
           const im = new THREE.InstancedMesh(o.geometry, mat, list.length);
           list.forEach((it, i) => { const [x, y, z] = hallAt(it.u, it.v, it.h || 0); e.set(it.rx || 0, it.ry || 0, it.rz || 0, 'YXZ'); q.setFromEuler(e);
             const k = it.s || 1; sc.set(k * (it.sx || 1), k * (it.sy || 1), k * (it.sz || 1));
@@ -326,6 +339,16 @@
     function dressHallThings() {
       const DH = HIN.dais.h, AH = 0.65, E = Math.PI / 2, W = -Math.PI / 2;
       const PIC_V = 0.2;                                                         // (a frame's middle on the north wall's middle post: the post stands 0.14 m into the room)
+      /* THE CANDLES, one table for the candles and their flames: the dais's two thick ones (D13), the one before the red
+         table, the second altar's two tall ones (L5, L10). (v26.18: lit, as his photographs 4 and 5 have them; his
+         photograph 10, of an afternoon's work, has them out.) A flame stands on each wick (c_zfx.js hallFlames), the
+         ground's own flame and glow at the size of its candle: a wick is the candle's top, 0.66 m on the middle one's
+         model and 1.25 on the tall one's, as the night's tables have it (b_world2.js) */
+      const HCAND = {
+        mid: [{ u: 2.75, v: 2.48, h: DH, s: 0.68, tint: 0xf0a020 }, { u: 3.8, v: 2.5, h: DH, s: 0.68, tint: 0xf0a020 }, { u: 0.15, v: 2.0, h: AH, s: 0.53, tint: 0xf0a020 }],
+        tall: [{ u: -3.35, v: 1.3, h: AH, s: 0.76 }, { u: -2.0, v: 1.3, h: AH, s: 0.72 }] };
+      stageList.hallFlames = HCAND.mid.map(c => [c, 0.66, 1.15]).concat(HCAND.tall.map(c => [c, 1.25, 1.7]))
+        .map(([c, top, fs]) => { const p = hallAtV(c.u, c.v, c.h + top * c.s); return { x: p.x, y: p.y, z: p.z, s: fs * c.s }; });
       /* the dais: the master's seat and its pillows (D8, D9), the four columns of drums at the wall (D4: the inner two
          gold), the two gold bai sri and the peacock before the lotus (D10, D11), the thick candles (D13) */
       /* THE WHITE BUDDHA ON ITS GOLD LOTUS (D1, D2): the hall's main image, in the dais's north-east, under the recess of
@@ -367,7 +390,7 @@
       hallMany('w3hdrums', [{ u: 1.7, v: 0.2, h: DH }, { u: 1.95, v: 0.2, h: DH, tint: 0xe8c060, ry: 1 }, { u: 4.3, v: 0.2, h: DH, tint: 0xe8c060, ry: 2 }, { u: 4.55, v: 0.2, h: DH, ry: 3 }], 4);
       hallMany('w3hgoldbaisri', [{ u: 2.75, v: 2.7, h: DH }, { u: 3.8, v: 2.7, h: DH, ry: 1.3 }]);
       hallMany('w3hpeacock', [{ u: 3.3, v: 2.85, h: DH }]);
-      hallMany('w3candlemid', [{ u: 2.75, v: 2.48, h: DH, s: 0.68, tint: 0xf0a020 }, { u: 3.8, v: 2.5, h: DH, s: 0.68, tint: 0xf0a020 }, { u: 0.15, v: 2.0, h: AH, s: 0.53, tint: 0xf0a020 }]);
+      hallMany('w3candlemid', HCAND.mid);
       hallMany('w3hgreencol', [{ u: 2.55, v: 0.15, h: DH }, { u: 4.15, v: 0.15, h: DH, ry: 2 }]);
       /* (the orange talapat fan on its pole in its stand, behind his left shoulder: his photographs 2, 4 and 6. Its blade
          is about 0.3 m across there (60 px at 6 m in photograph 6, 57 px behind him in photograph 4), so the model is
@@ -378,8 +401,12 @@
       hallMany('w3htabletstand', [{ u: 1.15, v: 3.0, h: 0, ry: 0.8 }]);
       hallMany('w3hcanopy', [{ u: 3.35, v: 1.25, h: 3.2 }]);
       hallMany('w3hwheel', [{ u: 4.4, v: 2.45, h: DH, ry: -0.35 }]);
+      /* (v26.18, the second altar's row laid beside his photographs 5 and 10: ten of them, packed close along its middle
+         before Somdej Toh and the wheel, each about 0.5 m tall on its bowl beside the tall candle's 0.95. Eight at 0.3 m
+         spaced along the edge read as a few small things. Two rows, staggered, so no two leaf crowns pass through
+         each other: the model is 0.26 m across) */
       hallMany('w3hbrownbaisri', [{ u: 2.78, v: 2.02, h: DH + 0.925 }, { u: 3.36, v: 2.12, h: DH + 0.925, ry: 1 }, { u: 3.95, v: 2.0, h: DH + 0.925, ry: 2 },
-        ...[-2.2, -1.92, -1.64, -1.36, -1.08, -0.8, -0.52, -0.24].map((u, i) => ({ u, v: 1.95, h: AH, s: 0.67, ry: i * 1.1 }))]);
+        ...[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => ({ u: -2.3 + 0.2 * i, v: i % 2 ? 1.62 : 1.86, h: AH, s: 1.1, ry: i * 1.1 }))]);
       hallMany('w3purple', [{ u: 4.3, v: 3.1, h: DH, s: 0.45 }, { u: -4.3, v: 1.5, h: AH, s: 0.41, ry: 1 }]);
       hallMany('w3hbooktable', [{ u: 1.68, v: 2.55, h: DH, ry: E }]);
       hallMany('w3hbroom', [{ u: 1.62, v: 3.12, h: DH, ry: 0.3 }, { u: 1.74, v: 3.2, h: DH, ry: 0.42 }]);
@@ -387,7 +414,7 @@
       /* the second altar: the fan of leaf nagas (L2), the tall candles (L5, L10), the cone towers (L8), the bronze naga
          heads (L7), the swan (L6), the red table (L15), the bouquet (L22), the gold naga heads at its east end (L23) */
       hallMany('w3naga', [[-4.26, 1.34, 0.5, 0.2], [-4.1, 1.45, 0.28, 0.1], [-3.94, 1.5, 0, 0], [-3.78, 1.45, -0.28, -0.1], [-3.62, 1.34, -0.5, -0.2]].map(([u, s, ry, rz]) => ({ u, v: 0.55, h: AH, s, ry, rz })));
-      hallMany('w3candle', [{ u: -3.35, v: 1.3, h: AH, s: 0.76 }, { u: -2.0, v: 1.3, h: AH, s: 0.72 }]);
+      hallMany('w3candle', HCAND.tall);
       hallMany('w3hconetower', [{ u: -2.95, v: 0.4, h: AH }, { u: -2.15, v: 0.4, h: AH, ry: 1.5 }]);
       hallMany('w3hnagabronze', [{ u: -3.2, v: 1.0, h: AH }, { u: -1.6, v: 0.45, h: AH, ry: 0.4 }]);
       /* (v26.18, Chad, 16 Nov 2026: "Where are the other assets, models, props, like the emerald buddha statue? And somdej
@@ -407,7 +434,10 @@
       hallMany('w3hswan', [{ u: -3.1, v: 1.65, h: AH, ry: 0.5 }]);
       hallMany('w3hlotusvase', [{ u: -3.7, v: 1.35, h: AH, s: 0.73 }, { u: 0.34, v: 1.45, h: AH, s: 0.73, ry: 2 }]);
       hallMany('w3hredtable', [{ u: 0.05, v: 0.95, h: AH, sx: 1.25 }]);
-      hallMany('w3hpapercone', [{ u: -0.44, v: 1.5, h: AH }, { u: 0.2, v: 1.5, h: AH, ry: 1.2 }]);       // (L18: two small cones of folded paper in gold bowls, before the red table)
+      /* (L18: two small cones of folded paper in gold bowls. v26.18, laid beside his photographs 5 and 10: they stand ON
+         the red table at the Emerald Buddha's feet, either side of the small white figure, not on the altar before it.
+         Measured on the models: the throne's front 1.16 m from the wall, the table's 1.37) */
+      hallMany('w3hpapercone', [{ u: -0.45, v: 1.27, h: AH + 0.389, s: 0.8 }, { u: 0.21, v: 1.27, h: AH + 0.389, s: 0.8, ry: 1.2 }]);
       hallMany('w3roses', [{ u: 0.98, v: 1.2, h: AH, s: 1.5 }]);
       hallMany('w3hnagagold', [{ u: 0.84, v: 1.85, h: AH, ry: 0.3 }]);
       /* (the mat tinted: his photograph 6's is maroon, black and cream, darker than the model's red and white) */
@@ -450,4 +480,25 @@
         pic.position.copy(hallAtV(FR.u, FR.v + 0.0105, FR.h + 0.385 * FR.sy)); pic.visible = false; hallIn.add(pic); owned.push(pic);
         picLoad('mstr_lpphiboon', 'image/jpeg').then(t => { if (!t || !alive) return; pm.map = t; pm.needsUpdate = true; pic.visible = true; }); }
       hallMany('w3hclock', [{ u: -0.14, v: PIC_V + 0.04, h: 2.29, s: 1.15 }]);
+      /* THE TWO FRAMED PHOTOGRAPHS THAT STAND IN THE ROOM (Chad, 16 Nov 2026, of what they show: "The game's own people"),
+         each a picture taken in the game on a plain light backdrop (masters/v26.18/frames): Grandmaster Pho on his bench,
+         in the room's ornate frame standing on the books of the low table behind his seat, leaning back (his
+         photographs 4 and 6: its top about 0.2 m over his head, its foot behind the books); and the young monk of the Wai
+         Kru in black and white, in the same frame painted a light silver, on the second altar's west end behind the
+         purple bouquet (his photographs 5 and 10). Each picture is a card laid in its frame's opening as the high
+         frame's is, turned and leant with it */
+      const standingFrame = (key, F, paint) => {
+        hallMany('w3hframe', [{ u: F.u, v: F.v, h: F.h, s: F.s, sx: F.sx, sy: F.sy, rx: F.rx, ry: F.ry }], 3, paint);
+        const k = F.s || 1, sx = k * (F.sx || 1), sy = k * (F.sy || 1), g = new THREE.Group(), p = hallAt(F.u, F.v, F.h);
+        g.position.set(p[0], p[1], p[2]); g.rotation.set(F.rx || 0, F.ry || 0, 0, 'YXZ');
+        const pm = mPic(), pic = new THREE.Mesh(new THREE.PlaneGeometry(0.471 * sx, 0.610 * sy), pm); hallPics.push([pm, F.lv]); pm.color.multiplyScalar(F.lv);
+        pic.position.set(0, 0.385 * sy, 0.0105 * k); pic.visible = false; g.add(pic); hallIn.add(g); owned.push(g);
+        picLoad(key, 'image/jpeg').then(t => { if (!t || !alive) return; pm.map = t; pm.needsUpdate = true; pic.visible = true; });
+      };
+      /* (photographed from its side, the low table's top is 0.30 m up and its stack of books 0.571, from 8 cm inside its
+         north end. On the table's free strip the frame stood too low and, turned, put its corners into the books: it
+         stands on the back of the stack, facing the room, the front of the top book before its foot) */
+      standingFrame('w3t_hpicpho', { u: 1.68, v: 2.37, h: DH + 0.571, s: 0.88, rx: -0.1, ry: 0, lv: 0.92 });
+      standingFrame('w3t_hpicmonk', { u: -4.3, v: 1.05, h: AH, sx: 0.85, sy: 0.82, rx: -0.1, ry: 0.35, lv: 0.95 },
+        (m) => { m.map = null; m.color.setHex(0xdedbd4); m.metalness = 0.3; m.roughness = 0.45; m.needsUpdate = true; });
     }

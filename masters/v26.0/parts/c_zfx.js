@@ -557,18 +557,40 @@
       const rnd = rng(7733), seed = L.map(() => ({ ph: rnd() * 6.283, f: 7 + rnd() * 6, g: 1.3 + rnd() * 1.4 }));
       return { L, imF, imG, seed };
     })();
+    /* ---- THE HALL'S CANDLES (v26.18): a flame on each wick in the room (b_world1h.js HCAND), drawn with the inside
+       (hallIn) and so only while it is, each with its own flicker: the night's flame and glow, a stream of their own,
+       the glow lower in a lit room */
+    const hallFlames = (() => {
+      const L = stageList.hallFlames || [], n = L.length;
+      const gF = new THREE.PlaneGeometry(1, 1); gF.translate(0, 0.5, 0);
+      const mF = B({ map: tex(makeFlame(THREE, cnv)), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, side: THREE.DoubleSide });
+      const mG = B({ map: tex(makeGlow(THREE, cnv)), color: 0xff9a3c, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, opacity: 0.35, side: THREE.DoubleSide });
+      const imF = new THREE.InstancedMesh(gF, mF, Math.max(1, n)), imG = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1), mG, Math.max(1, n));
+      imF.frustumCulled = false; imG.frustumCulled = false; imF.renderOrder = 4; imG.renderOrder = 3; imF.count = n; imG.count = n;
+      hallIn.add(imG); hallIn.add(imF); owned.push(imF); owned.push(imG);
+      const rnd = rng(7734), seed = L.map(() => ({ ph: rnd() * 6.283, f: 7 + rnd() * 6, g: 1.3 + rnd() * 1.4 }));
+      return { L, imF, imG, seed };
+    })();
     const _flp = new THREE.Vector3(), _fls = new THREE.Vector3(), _flc = new THREE.Vector3();
     function flamesTick(t) {
       if (!nightG.visible || !flames.L.length) return;
+      flameSetTick(flames, t);
+    }
+    function hallFlamesTick(t) {
+      if (!hallIn.visible || !hallFlames.L.length) return;
+      flameSetTick(hallFlames, t);
+    }
+    /* (one set of flames turned to the lens and flickered: the night's body, moved out whole and unchanged) */
+    function flameSetTick(F, t) {
       camera.getWorldPosition(_flc);
-      flames.L.forEach((c, i) => { const sd = flames.seed[i], fl = 0.82 + 0.12 * Math.sin(t * sd.f + sd.ph) + 0.06 * Math.sin(t * sd.f * 2.7 + sd.ph * 3);
+      F.L.forEach((c, i) => { const sd = F.seed[i], fl = 0.82 + 0.12 * Math.sin(t * sd.f + sd.ph) + 0.06 * Math.sin(t * sd.f * 2.7 + sd.ph * 3);
         const ry = Math.atan2(_flc.x - c.x, _flc.z - c.z);
         _pte.set(0, ry, 0.07 * Math.sin(t * sd.g + sd.ph), 'YXZ'); _ptq.setFromEuler(_pte);
-        flames.imF.setMatrixAt(i, _wm.compose(_flp.set(c.x, c.y - 0.004, c.z), _ptq, _fls.set(0.04 * c.s * (1.1 - 0.12 * fl), 0.095 * c.s * fl, 1)));
+        F.imF.setMatrixAt(i, _wm.compose(_flp.set(c.x, c.y - 0.004, c.z), _ptq, _fls.set(0.04 * c.s * (1.1 - 0.12 * fl), 0.095 * c.s * fl, 1)));
         const gs = 0.56 * c.s * (0.88 + 0.22 * fl);
         _pte.set(0, ry, 0, 'YXZ'); _ptq.setFromEuler(_pte);
-        flames.imG.setMatrixAt(i, _wm.compose(_flp.set(c.x, c.y + 0.045 * c.s, c.z), _ptq, _fls.set(gs, gs, 1))); });
-      flames.imF.instanceMatrix.needsUpdate = true; flames.imG.instanceMatrix.needsUpdate = true;
+        F.imG.setMatrixAt(i, _wm.compose(_flp.set(c.x, c.y + 0.045 * c.s, c.z), _ptq, _fls.set(gs, gs, 1))); });
+      F.imF.instanceMatrix.needsUpdate = true; F.imG.instanceMatrix.needsUpdate = true;
     }
 
     /* ---- THE RENTED ROOM (§4.2: "his bai sri on the sill of a rented room, beside his bag"): a window, its sill and the

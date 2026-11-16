@@ -65,10 +65,19 @@
        colourful"): its music over the loudspeakers at -26.5 and the crowd at -31 under it, -25 together, which a
        voice (-16) still stands 17 dB over through the duck. The world heard open at -28.5 when it is wide; the pull's
        drone at -30 at its height, the ground's noise fallen away under it */
-    const BED = { fest: 0.64, mus: 0.38, birds: 0.56, open: 0.75, crick: 0.56, pull: 0.62, shop: 0.56 };
-    const bedMix = { fest: 0, mus: 0, birds: 0, open: 0, crick: 0, pull: 0, shop: 0 };
-    const filmBed = { on: false, fest: 0, mus: 0, birds: 0, open: 0, crick: 0, pull: 0, shop: 0 };
-    const BED_EASE = { fest: 1.0, mus: 1.6, birds: 1.0, open: 0.22, crick: 0.8, pull: 0.3, shop: 0.5 };
+    /* (v26.18: THE HALL'S OWN BED, the room's tone and its wall fans, a quiet place at -35 as the morning's birds are:
+       the file at -30, as theirs, by masters/v26.18/sound/make.sh. Inside, the birds come in through the door at under
+       half their level outside, as they do in the films inside, and crossing the threshold eases one into the other) */
+    /* (v26.18, Chad, 16 Nov 2026: "I think the hall should have its own music theme as well but i dont know what it
+       should be". Its own quiet theme, a loop, in play inside the hall only: at -33 dBFS, two decibels over the room's
+       tone and seventeen under a voice; not under the films, which have their own scores, and not in the breath, whose
+       sound is the world heard open. Which theme is his ear's: masters/v26.18/sound/make.sh) */
+    const BED = { fest: 0.64, mus: 0.38, birds: 0.56, open: 0.75, crick: 0.56, pull: 0.62, shop: 0.56, hall: 0.56, hallmus: 0.5 };
+    const bedMix = { fest: 0, mus: 0, birds: 0, open: 0, crick: 0, pull: 0, shop: 0, hall: 0, hallmus: 0 };
+    const filmBed = { on: false, fest: 0, mus: 0, birds: 0, open: 0, crick: 0, pull: 0, shop: 0, hall: 0, hallmus: 0 };
+    const BED_EASE = { fest: 1.0, mus: 1.6, birds: 1.0, open: 0.22, crick: 0.8, pull: 0.3, shop: 0.5, hall: 1.0, hallmus: 1.6 };
+    const BIRDS_IN = 0.45;
+    const inHall = () => hallShown.on && yaw.position.z < HALL.z1 - 0.1 && yaw.position.z > HALL.z0 && Math.abs(yaw.position.x) < 5;
     const DAY1 = new Set(['arrive', 'baisri', 'tables', 'place', 'festival', 'seen', 'check']);
     /* THE MIX FOLLOWS WHERE HE STANDS (the plan's §3.7: "each tent, the tables and the open turf has its own sound"; left
        unbuilt until the release's closing pass: the beds were mixed by the beat alone). On day one, in play: the
@@ -87,7 +96,7 @@
     }
     function mixBeds(wdt, st) {
       if (!(wdt > 0)) return;
-      const want = { fest: 0, mus: 0, birds: 0, open: 0, crick: 0, pull: 0, shop: 0 };
+      const want = { fest: 0, mus: 0, birds: 0, open: 0, crick: 0, pull: 0, shop: 0, hall: 0, hallmus: 0 };
       let panTo = 0;
       if (st === 'cine') { if (filmBed.on) for (const k in want) want[k] = filmBed[k]; }
       /* (on the title and the chapter's card nothing is heard: the engine holds every bed at 0 there. Nothing is RAISED
@@ -101,10 +110,10 @@
         want.pull = BED.pull * pk;
         if (play.chanting) { want.mus = 0; want.fest *= 0.55; }                             // the chant is on the loudspeakers, and the ground is bowing
         if (st === 'play') { const PM = placeMix(); want.mus *= PM.mus; want.fest *= PM.fest; panTo = PM.pan; }
-      } else { want.birds = BED.birds; if (phase === 'breath') want.open = BED.open * Math.max(0, open.shown); }
+      } else { const ink = inHall() ? 1 : 0; want.birds = BED.birds * (1 - (1 - BIRDS_IN) * ink); want.hall = BED.hall * ink; want.hallmus = phase === 'breath' ? 0 : BED.hallmus * ink; if (phase === 'breath') want.open = BED.open * Math.max(0, open.shown); }
       for (const k in bedMix) bedMix[k] += (want[k] - bedMix[k]) * (1 - Math.exp(-wdt / BED_EASE[k]));
       musPan += (panTo - musPan) * (1 - Math.exp(-wdt / 0.7));
-      const B = DATA.ambience.beds; B[0][1] = bedMix.fest; B[1][1] = bedMix.mus; B[2][1] = bedMix.birds; B[3][1] = bedMix.open; B[4][1] = bedMix.crick; B[5][1] = bedMix.pull; B[6][1] = bedMix.shop;
+      const B = DATA.ambience.beds; B[0][1] = bedMix.fest; B[1][1] = bedMix.mus; B[2][1] = bedMix.birds; B[3][1] = bedMix.open; B[4][1] = bedMix.crick; B[5][1] = bedMix.pull; B[6][1] = bedMix.shop; B[7][1] = bedMix.hall; B[8][1] = bedMix.hallmus;
       B[1][2] = Math.abs(musPan) < 0.002 ? 0 : musPan;
     }
     /* where a sound of the ground is, on his screen */
@@ -174,13 +183,25 @@
     const STEPS_GRASS = ['x3grass1', 'x3grass2', 'x3grass3', 'x3grass4', 'x3grass5', 'x3grass6', 'x3grass7', 'x3grass8'];
     const STEP_SEED = 8807;
     let stepSeed = STEP_SEED, stepLast = -1;
+    /* (v26.18) HIS BARE FEET ON THE HALL'S TILE, and on its steps and landing: the grass's method for a new kind
+       (masters/v26.18/sound/make.sh), from a stream of their own so the grass's run of falls is as it was */
+    /* (the three falls of the one take that a phone plays: make.sh) */
+    const STEPS_TILE = ['x3tile1', 'x3tile2', 'x3tile3'];
+    const TILE_SEED = 8821;
+    let tileSeed = TILE_SEED, tileLast = -1;
     function stepNext() {
+      if (hallShown.on && hallGround(yaw.position.x, yaw.position.z) > 0.05) {
+        tileSeed = (tileSeed * 1664525 + 1013904223) >>> 0;
+        let j = Math.floor(tileSeed / 4294967296 * (STEPS_TILE.length - (tileLast < 0 ? 0 : 1)));
+        if (tileLast >= 0 && j >= tileLast) j++;
+        tileLast = j; return STEPS_TILE[j];
+      }
       stepSeed = (stepSeed * 1664525 + 1013904223) >>> 0;
       let i = Math.floor(stepSeed / 4294967296 * (STEPS_GRASS.length - (stepLast < 0 ? 0 : 1)));
       if (stepLast >= 0 && i >= stepLast) i++;
       stepLast = i; return STEPS_GRASS[i];
     }
-    function ambReset() { ambSeed = AMB_SEED; ambAt = 0; ambBusy = 0; ambLast = ''; ambN = 0; for (const k in bedMix) bedMix[k] = 0; filmBed.on = false; wickAt = -1; kidsPh = ''; musPan = 0; stepSeed = STEP_SEED; stepLast = -1; }
+    function ambReset() { ambSeed = AMB_SEED; ambAt = 0; ambBusy = 0; ambLast = ''; ambN = 0; for (const k in bedMix) bedMix[k] = 0; filmBed.on = false; wickAt = -1; kidsPh = ''; musPan = 0; stepSeed = STEP_SEED; stepLast = -1; tileSeed = TILE_SEED; tileLast = -1; }
 
     const W = DATA.words;
     const play = { run: 0, busy: false, turning: null, bow: null, bai: false, baiP: 0, baiTo: 0, baiSecs: 1, knelt: false, homage: false,
@@ -378,7 +399,7 @@
     const WARM_DAY1 = ['q3v', 'tn3a1', 'q3p1', 'tn3a2', 'q3u1', 'q3u2', 'tn3m1', 'q3u3', 'tn3m2', 'q3c1', 'tn3c1', 'q3c2', 'ds3c1', 'tn3c2', 'q3c3',
                        'x3baitake', 'x3baiset', 'x3kneel', 'x3bowall', 'x3petals', 'x3chant', 'x3tone',
                        'x3grass1', 'x3grass2', 'x3grass3', 'x3grass4', 'x3grass5', 'x3grass6', 'x3grass7', 'x3grass8', 'x3os1', 'x3os2', 'x3os3', 'x3os4', 'x3os5', 'x3os6', 'x3wick'];
-    const WARM_DAY2 = ['tn3h1', 'tn3h2', 'ph3g1', 'ph3b0', 'ph3b1', 'ph3b2', 'ph3b3', 'ph3b4', 'ph3bx', 'ph3by', 'ph3b5', 'ph3p1', 'x3kneel', 'x3baiset', 'x3bell',
+    const WARM_DAY2 = ['tn3h1', 'tn3h2', 'x3tile1', 'x3tile2', 'x3tile3', 'ph3g1', 'ph3b0', 'ph3b1', 'ph3b2', 'ph3b3', 'ph3b4', 'ph3bx', 'ph3by', 'ph3b5', 'ph3p1', 'x3kneel', 'x3baiset', 'x3bell',
                        'x3grass1', 'x3grass2', 'x3grass3', 'x3grass4', 'x3grass5', 'x3grass6', 'x3grass7', 'x3grass8', 'x3os3', 'x3os7', 'x3os8', 'x3os9'];
     function dayOneStage() {
       look('DAY1', 0); auraAt(0, 0); mistK = 1; burstsClear();
@@ -1033,11 +1054,13 @@
       { id: 'homage', pos: { x: PLACE.x, y: 0.9, z: PLACE.z }, radius: 4, anyView: true, prompt: W.hotHomage, mark: false,
         enabled: () => phase === 'place' && play.knelt && !play.homage && !play.busy && !play.turning, onInteract() { return homage(); } },
       hsLook, hsAskTon, hsAskAunt,
-      { id: 'kneel2', pos: { x: KNEEL2.x, y: HF + 0.9, z: KNEEL2.z }, radius: 2.3, prompt: W.hotKneel, mark: false,
+      /* (v26.18: the three places of the morning are inside the hall, behind a gate the first frame keeps shut: walktest
+         tries them in the ground they belong to, stage.grounds) */
+      { id: 'kneel2', ground: 'the next morning', pos: { x: KNEEL2.x, y: HF + 0.9, z: KNEEL2.z }, radius: 2.3, prompt: W.hotKneel, mark: false,
         enabled: () => phase === 'hall' && !play.knelt && !play.busy, onInteract() { return kneelPho(false); } },
-      { id: 'bow2', pos: { x: PHO2_HEAD.x, y: HF + 1.0, z: PHO2_HEAD.z }, radius: 4, anyView: true, prompt: W.hotBow, mark: false,
+      { id: 'bow2', ground: 'the next morning', pos: { x: PHO2_HEAD.x, y: HF + 1.0, z: PHO2_HEAD.z }, radius: 4, anyView: true, prompt: W.hotBow, mark: false,
         enabled: () => phase === 'knelt' && play.knelt && !play.bowed && !play.busy && !play.turning, onInteract() { return bowPho(); } },
-      { id: 'tell', pos: { x: PHO2_HEAD.x, y: HF + 1.0, z: PHO2_HEAD.z }, radius: 4, anyView: true, prompt: W.hotTell, mark: false,
+      { id: 'tell', ground: 'the next morning', pos: { x: PHO2_HEAD.x, y: HF + 1.0, z: PHO2_HEAD.z }, radius: 4, anyView: true, prompt: W.hotTell, mark: false,
         enabled: () => phase === 'knelt' && play.bowed && !play.busy, onInteract() { return tellAll(); } }
     ];
     /* a mark rides the person it is on */
@@ -1053,7 +1076,7 @@
       const st = getState();
       const now = wallNow(), raw = lastWall0 ? Math.max(0, now - lastWall0) : 0, wdt = Math.min(0.25, raw); lastWall0 = now;
       /* (the people's own clocks run in a film too, v5.19: a film holds only those it has posed) */
-      windClock += wdt; windTick(windClock); peopleTick(wdt, st !== 'cine'); mistTick(windClock); hazeTick(windClock); skyTick(windClock); flamesTick(windClock); bulbsTick(windClock);
+      windClock += wdt; windTick(windClock); peopleTick(wdt, st !== 'cine'); mistTick(windClock); hazeTick(windClock); skyTick(windClock); flamesTick(windClock); hallFlamesTick(windClock); bulbsTick(windClock);
       /* (after the people: what is laid on a body's arm is laid on the pose its take has just written) */
       taperTick(windClock); kidsTick(wdt, st); dancersTick(wdt, st); dancersTurn(wdt);
       if (st !== 'cine') { peopleLevels(); lodTick(); zoneTick(now); }

@@ -220,7 +220,10 @@ that fits it, with the version it came from.
   2026) and all of its build are done on Fable 5.2 at max effort ("I want all of this to be done on fable 5.2 model with
   max effort"; "All the subsequent build out of this hall and interior should all also be done on fable 5.2 max
   effort"): a session on another model does only the bookkeeping on it and asks him to switch the session's model. Its
-  tracker is docs/V26.18-E4C3-HALL.md: read it first. (v26.18)
+  tracker is docs/V26.18-E4C3-HALL.md: read it first. (v26.18) His one exception so far: when Fable 5.2's weekly limit
+  was reached (16 Nov, until 23 Nov) he switched the session to Opus 5.5 himself and said "Continue exactly where you
+  left off", so the rest of v26.18 was built on Opus 5.5 at his word; a new piece of the hall after it goes back to the
+  rule. (v26.18)
 
 ### How the work is done and checked
 
@@ -316,7 +319,11 @@ that fits it, with the version it came from.
 - A chapter whose ground changes (a crowd that moves, a second day) is walked in each of its grounds: walktest
   floods the first frame only, so each phase's own collision is flooded from where that phase puts him
   (tools/probes/e4c3walk.mjs), and a same-chapter replay is read object by object against a fresh start through the
-  card's own buttons (tools/probes/e4c3replay.mjs; e4c3who.mjs names what a path is). (v26.0)
+  card's own buttons (tools/probes/e4c3replay.mjs; e4c3who.mjs names what a path is). (v26.0) Since v26.18 the harness
+  walks a LATER ground too, where the chapter names it: `stage.grounds = [{ what, enter(), ready() }]` puts it in
+  place the way a Continue lands, a hotspot that belongs to it says so (`ground`), and `stage.keepIn` is read in it
+  (a ground of several boxes: `boxes`). The hall's three places failed the first frame's flood, rightly: they are
+  behind a gate the first day keeps shut. (v26.18)
 - Harnesses may run on a hard-linked snapshot of dist while the next version builds. (v21.13)
 - Reusable probes live in tools/probes, so they survive a replaced container. (v24.3)
 - Unshallow the clone before making the backup bundle, so the bundle holds the whole history. (v24.4)
@@ -1383,7 +1390,12 @@ shot on a desktop, the bench's white seat: deploy `6af934bf3fbc8566ec243132`): t
 play-throughs with the sound on, Continue at every phase and the replay all passed on v26.17).
 His ask of 16 Nov 2026, the next morning's meeting with Grandmaster Pho moved from his bench outside to inside the
 main hall (Ton walking him there from the ground; the inside exactly as his eleven photographs; every film after it
-re-staged), is **docs/V26.18-E4C3-HALL.md**: recorded and being analysed, not yet built.
+re-staged), is **docs/V26.18-E4C3-HALL.md**: LIVE at v26.18 (deploy `6afb6119e1b77b3564995dbe`): the room built
+in place behind the hall's real front door at its true size, Ton leading him there in one unbroken walk, Grandmaster
+Pho cross-legged on his cushion at the dais, the room's things made from his photographs (the sacred images from real
+photographs first), and every film after the walk inside. On his word (docs/OPEN-ITEMS.md C13 ac): the hall's own
+theme (four previews sent, C in the game until he says a letter), one word of Ton's ending-A line (`tn3A1`, "roll" to
+"stack"), the small white figure before the Emerald Buddha (not identified, not made).
 Chapter 4 is next after it
 (S1·13, case one: the woman who rose from her wheelchair).
 The episode's plan, with what remains his to decide:
@@ -1523,13 +1535,13 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v145, PUBLISHED 14 Nov 2026** (`masters/v26.8/masterz-text-v145.xlsx`: v26.8's words, unchanged since).
+**THE SHEET IS v146, PUBLISHED 16 Nov 2026** (`masters/v26.18/masterz-text-v146.xlsx`: v26.18's words).
 The link to give Chad:
-https://docs.google.com/spreadsheets/d/1yDHBCpg_ediTpfK1bCFsSxZTev-dNKlet4_S0mE_Fvw/edit
+https://docs.google.com/spreadsheets/d/1IzpLiHvIhtmfliCL51kBBE3EFH_iw4-v-1Jx8iSBH_Q/edit
 The base64 ceiling is gone: the Drive connector's `create_file` takes a FILE REFERENCE (`sha256:<hex>:<path>`, filled in
 on his approval), so a workbook goes up whole at any size; read it back tab by tab with the Sheets connector's
 `get_values` and compare every cell before the link goes to him (docs/EDITING-TEXT.md, "THE CURRENT SHEET").
-Every sheet version's own diff, v145 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
+Every sheet version's own diff, v146 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
 first; a new version goes at its top).
 
 `docs/LEARNINGS.md` is the catalog of every hard-won lesson (CSP traps,

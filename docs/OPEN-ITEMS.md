@@ -332,6 +332,16 @@ CLOSED 14 Nov 2026: items 6 to 8 below were put to him together (docs/V26.12-WHA
       On v26.17 the round's last checks passed: the four play-throughs by finger with the sound on, Continue at all 23
       saved phases, the same-chapter replay (nothing a player sees differs), the minigame's band on a slowed clock. THE
       ROUND IS COMPLETE.
+    - ac. v26.18 (THE MORNING INSIDE THE HALL, his ask of 16 Nov; docs/V26.18-E4C3-HALL.md): LIVE. Waiting on his word:
+      (1) THE HALL'S OWN THEME, by his ear (his "I think the hall should have its own music theme as well but i dont know
+      what it should be"): four loudness-matched previews sent 16 Nov (masters/v26.18/sound/previews/hall-theme-A..D.mp3:
+      A a khim solo, B a drone with a singing bowl and the bamboo flute, C the fiddle with the low wooden xylophone, D a
+      hushed ensemble); C is in the game until he says a letter (`THEME=<letter> bash masters/v26.18/sound/make.sh`, then
+      build and deploy). (2) One word of Ton's ending-A line, `tn3A1` "New ones roll the mats, bro.": the hall's mats are
+      stacked, so "stack" (the plan's §3.1 row 5); not re-said until he says yes. (3) The small white figure before the
+      Emerald Buddha in his photographs 5 and 10 is not made (not identified: the research's Q2; a sacred image is never
+      guessed). Not asked, only if he offers: what the hall calls the white Buddha (Q1), what the brown bai sri are made
+      of (Q6), a photograph of the white Buddha's lap (Q7).
 
 ## D. Not built yet
 

@@ -45,7 +45,9 @@ for (const key of (process.env.WALK_ONLY ? KEYS.filter(k => process.env.WALK_ONL
   await toPlay(p, 180000);
   await p.waitForTimeout(4000);
 
-  const r = await p.evaluate(() => {
+  /* v26.18: the flood is a function of the ground it is asked for: null is the first frame (from the spawn and every
+     arrival), a later ground's name floods from where that ground has put him (see `grounds` below) */
+  const FLOOD = (g) => {
     const E = window.__enc, B = E.blockers, S = E.stage, D = window.__CHAPTERS__[E.chapterKey()];
     const BN = D.bounds, ST = 0.06;
     /* v16.4: the ground (the engine's groundAt seam) — collision samples 1.0 m
@@ -67,8 +69,10 @@ for (const key of (process.env.WALK_ONLY ? KEYS.filter(k => process.env.WALK_ONL
        ARRIVES, and the walk floods from there too: every place in that world
        must be walkable from where he is put down. (A teleport is not a route:
        the arrival itself must be open floor, and nothing else is assumed.) */
-    const arrivals = (S.arrivals || []).map(a => ({ ...a, k: cell(a.x, a.z) }));
-    const q = [cell(D.spawn.x, D.spawn.z)]; seen[q[0]] = 1;
+    const arrivals = g ? [] : (S.arrivals || []).map(a => ({ ...a, k: cell(a.x, a.z) }));
+    const from = g ? { x: E.yaw.position.x, z: E.yaw.position.z } : D.spawn;
+    const q = [cell(from.x, from.z)]; seen[q[0]] = 1;
+    const fromFree = !blocked[q[0]];
     for (const a of arrivals) if (!blocked[a.k] && !seen[a.k]) { seen[a.k] = 1; q.push(a.k); }
     for (let h = 0; h < q.length; h++) {
       const k = q[h], i = (k / nz) | 0, j = k % nz;
@@ -90,6 +94,7 @@ for (const key of (process.env.WALK_ONLY ? KEYS.filter(k => process.env.WALK_ONL
       return false;
     };
     const targets = [];
+    if (!g) {
     /* v16.4: a chapter whose decision object is behind a scene change (e3c1's
        Ajarn is in the private room, entered through a door) names where it is
        REACHED from — the door must be walkable, the room is a teleport */
@@ -99,7 +104,12 @@ for (const key of (process.env.WALK_ONLY ? KEYS.filter(k => process.env.WALK_ONL
        too — a decision closed with Step back is reopened by walking back to it */
     if (S.pileVia && arrivals.length && S.pile) targets.push({ what: 'the pile itself, from the arrival', x: S.pile.pos.x, z: S.pile.pos.z, r: 1.6 });
     if (typeof S.LINE_X === 'number') targets.push({ what: 'the fall-in line', x: S.LINE_X + 0.2, z: 0, r: 1.2 });
-    for (const h of (S.hotspots || [])) targets.push({ what: 'hotspot ' + (h.id || h.prompt), x: h.pos.x, z: h.pos.z, r: Math.max(0.8, (h.radius || 1.5) - 0.3) });
+    }
+    /* (v26.18: a hotspot that names a later ground, `ground`, is tried in that ground and not here) */
+    for (const h of (S.hotspots || [])) if ((h.ground || null) === (g || null))
+      targets.push({ what: 'hotspot ' + (h.id || h.prompt), x: h.pos.x, z: h.pos.z, r: Math.max(0.8, (h.radius || 1.5) - 0.3) });
+    const named = (S.grounds || []).map(q => q.what);
+    const undeclared = g ? [] : (S.hotspots || []).filter(h => h.ground && !named.includes(h.ground)).map(h => (h.id || h.prompt) + ' (' + h.ground + ')');
     /* v25.5: A CHAPTER MAY NAME THE GROUND HE MUST STAY ON (`stage.keepIn = { what, minX, maxX, minZ, maxZ }`), and no
        cell the flood reaches may lie outside it. Chad, of episode 4 chapter 2: "do not allow the player to exit the shop
        in the gameplay, i was able to walk out of the shop into other shops". v25.5 walled the open front and tried it at
@@ -108,15 +118,17 @@ for (const key of (process.env.WALK_ONLY ? KEYS.filter(k => process.env.WALK_ONL
        the same flood sees it. A chapter that names nothing is not asked */
     let keep = null;
     const K = S.keepIn;
-    if (K) { let n = 0, far = null, fd = 0;
+    /* (v26.18: a ground of several boxes, `boxes`: a cell is out when it is outside every one, by the nearest one) */
+    if (K) { let n = 0, far = null, fd = 0; const KB = K.boxes || [K];
       for (let k = 0; k < seen.length; k++) if (seen[k]) { const x = BN.minX + ((k / nz) | 0) * ST, z = BN.minZ + (k % nz) * ST;
-        const d = Math.max(K.minX - x, x - K.maxX, K.minZ - z, z - K.maxZ);
+        const d = Math.min(...KB.map(b => Math.max(b.minX - x, x - b.maxX, b.minZ - z, z - b.maxZ)));
         if (d > 1e-6) { n++; if (d > fd) { fd = d; far = [x, z]; } } }
       keep = { what: K.what || 'its ground', n, far, area: n * ST * ST }; }
     return { targets: targets.map(t => ({ ...t, reach: near(t.x, t.z, t.r) })),
-             spawnFree: !blocked[cell(D.spawn.x, D.spawn.z)], keep,
+             spawnFree: fromFree, keep, undeclared, from: [+from.x.toFixed(2), +from.z.toFixed(2)],
              arrivals: arrivals.map(a => ({ what: a.what, free: !blocked[a.k] })) };
-  });
+  };
+  const r = await p.evaluate(FLOOD, null);
 
   /* v14.1: NOTHING IN THE WORLD MAY BE NaN. An InstancedMesh composed with a
      non-finite scale renders as shards and reports a null bounding sphere, so
@@ -154,6 +166,28 @@ for (const key of (process.env.WALK_ONLY ? KEYS.filter(k => process.env.WALK_ONL
     ok(`${key}: can WALK to ${t.what}`, t.reach, t.reach ? '' : `(${t.x.toFixed(2)}, ${t.z.toFixed(2)}) unreachable on foot`);
   if (r.keep) ok(`${key}: cannot walk out of ${r.keep.what}`, r.keep.n === 0,
     r.keep.n ? `${r.keep.area.toFixed(1)} square metres reached outside it, as far as (${r.keep.far[0].toFixed(2)}, ${r.keep.far[1].toFixed(2)})` : '');
+  if (r.undeclared.length) ok(`${key}: every hotspot's ground is one the chapter names`, false, r.undeclared.join(', '));
+  /* v26.18: A CHAPTER WHOSE GROUND CHANGES NAMES ITS LATER GROUNDS (`stage.grounds = [{ what, enter(), ready() }]`).
+     Episode 4 chapter 3's next morning opens a gate and a hall the first frame keeps shut, and the hall's three places
+     were "unreachable on foot" from the first frame (true, and not a fault). Each later ground is put in place by the
+     chapter's own enter() (the way a Continue lands: the stage reset, the phase set), waited for by its ready(), and
+     flooded again on the collision of that moment, from where it has put him: its hotspots (those naming it, `ground`)
+     must be walkable, and the ground he is kept on then (stage.keepIn, read in that ground) must hold */
+  const grounds = await p.evaluate(() => (window.__enc.stage.grounds || []).map(q => q.what));
+  for (let gi = 0; gi < grounds.length; gi++) {
+    const gname = grounds[gi];
+    await p.evaluate((gi) => window.__enc.stage.grounds[gi].enter(), gi);
+    const came = await p.waitForFunction((gi) => { try { return !!window.__enc.stage.grounds[gi].ready(); } catch { return false; } }, gi, { polling: 300, timeout: 600000 }).then(() => true, () => false);
+    ok(`${key}: ${gname} is put in place`, came);
+    if (!came) continue;
+    const rg = await p.evaluate(FLOOD, gname);
+    ok(`${key}: ${gname}: where it puts him (${rg.from}) is on open floor`, rg.spawnFree);
+    if (!rg.targets.length) ok(`${key}: ${gname}: names a hotspot to walk to`, false);
+    for (const t of rg.targets)
+      ok(`${key}: ${gname}: can WALK to ${t.what}`, t.reach, t.reach ? '' : `(${t.x.toFixed(2)}, ${t.z.toFixed(2)}) unreachable on foot`);
+    if (rg.keep) ok(`${key}: ${gname}: cannot walk out of ${rg.keep.what}`, rg.keep.n === 0,
+      rg.keep.n ? `${rg.keep.area.toFixed(1)} square metres reached outside it, as far as (${rg.keep.far[0].toFixed(2)}, ${rg.keep.far[1].toFixed(2)})` : '');
+  }
 }
 
 await br.close();

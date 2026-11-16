@@ -16,7 +16,7 @@ import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
 const OUT = process.env.OUT || '/tmp/e4c3walk';
 fs.mkdirSync(OUT, { recursive: true });
 /* (the phases he walks in: at `place`, `knelt` and after, he kneels and presses from where he is) */
-const PH = (process.env.PH || 'arrive|baisri|tables|check|check:t|check:a|dawn').split('|');
+const PH = (process.env.PH || 'arrive|baisri|tables|check|check:t|check:a|dawn|hall').split('|');
 const b = await chromium.launch(LAUNCH);
 const p = await (await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, hasTouch: true, isMobile: true })).newPage();
 p.setDefaultTimeout(600000); p.setDefaultNavigationTimeout(600000);
@@ -50,9 +50,11 @@ for (const ph of PH) {
     for (const h of (S.hotspots || [])) { if (h.done || (h.enabled && !h.enabled())) continue;
       T.push({ what: h.id, x: h.pos.x, z: h.pos.z, r: Math.max(0.8, (h.radius || 1.5) - 0.3), any: !!h.anyView }); }
     /* the ring he must walk ONTO (his place on the mats, once his respects are paid; the place to kneel before his teacher) */
-    const I0 = S.info(), PL = (S.dbg && S.dbg.places) || {}, ring = I0.phase === 'tables' ? PL.PLACE : I0.phase === 'dawn' ? PL.KNEEL2 : null;
+    const I0 = S.info(), PL = (S.dbg && S.dbg.places) || {}, ring = I0.phase === 'tables' ? PL.PLACE : I0.phase === 'dawn' || I0.phase === 'hall' ? PL.KNEEL2 : null;
     const K = S.keepIn; let out = 0, far = 0;
-    if (K) for (let k = 0; k < seen.length; k++) if (seen[k]) { const x = BN.minX + ((k / nz) | 0) * ST, z = BN.minZ + (k % nz) * ST, d = Math.max(K.minX - x, x - K.maxX, K.minZ - z, z - K.maxZ); if (d > 1e-6) { out++; far = Math.max(far, d); } }
+    /* (v26.18: a ground of several boxes, `boxes`: a cell is out when it is outside every one, by the nearest one's distance) */
+    const KB = K ? (K.boxes || [K]) : [];
+    if (K) for (let k = 0; k < seen.length; k++) if (seen[k]) { const x = BN.minX + ((k / nz) | 0) * ST, z = BN.minZ + (k % nz) * ST, d = Math.min(...KB.map(q => Math.max(q.minX - x, x - q.maxX, q.minZ - z, z - q.maxZ))); if (d > 1e-6) { out++; far = Math.max(far, d); } }
     const I = S.info(), o = document.getElementById('objective');
     const rows = []; const stepC = 4;                                            // a character a 24 cm
     for (let j = 0; j < nz; j += stepC) { let row = ''; for (let i = 0; i < nx; i += stepC) { const k = i * nz + j; row += blocked[k] ? '#' : seen[k] ? 'o' : '.'; } rows.push(row); }
