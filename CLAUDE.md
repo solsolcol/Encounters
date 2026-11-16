@@ -216,6 +216,11 @@ that fits it, with the version it came from.
   person doing the same thing from the same angle, every difference written down and closed. It goes to him only once all
   of that passes. A report says what was checked and what I am unsure of, never "looks right"; I never guess at what he
   points to and call the guess the problem. (v26.3)
+- The main hall's inside in episode 4 chapter 3 (the morning's meeting with Grandmaster Pho moved inside it, 16 Nov
+  2026) and all of its build are done on Fable 5.2 at max effort ("I want all of this to be done on fable 5.2 model with
+  max effort"; "All the subsequent build out of this hall and interior should all also be done on fable 5.2 max
+  effort"): a session on another model does only the bookkeeping on it and asks him to switch the session's model. Its
+  tracker is docs/V26.18-E4C3-HALL.md: read it first. (v26.18)
 
 ### How the work is done and checked
 
@@ -1376,6 +1381,9 @@ four new sounds stand on the measured pick until his ear (C13 z). The full debug
 v26.16 (deploy `6af913fa26b1beb644ef8e03`; docs/V26.1-E4C3-DEBUG.md §6), and two more at v26.17 (the telling's bead
 shot on a desktop, the bench's white seat: deploy `6af934bf3fbc8566ec243132`): the round is complete (the four
 play-throughs with the sound on, Continue at every phase and the replay all passed on v26.17).
+His ask of 16 Nov 2026, the next morning's meeting with Grandmaster Pho moved from his bench outside to inside the
+main hall (Ton walking him there from the ground; the inside exactly as his eleven photographs; every film after it
+re-staged), is **docs/V26.18-E4C3-HALL.md**: recorded and being analysed, not yet built.
 Chapter 4 is next after it
 (S1·13, case one: the woman who rose from her wheelchair).
 The episode's plan, with what remains his to decide:
