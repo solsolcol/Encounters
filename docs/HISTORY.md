@@ -9224,7 +9224,13 @@ What the baseline contains, by release:
   harness failed, rightly (the hall's three places stood behind a gate the first frame keeps shut), and was taught a
   chapter's LATER grounds (`stage.grounds`, a hotspot's `ground`, a keep-in of several boxes), proved by breaking it on a
   throwaway copy; the four endings photographed inside found one staging fault, ending D's emptied hall looked through
-  the hall's free post, and his seat moved to the row's east mat. Build 12, deploy `6afb6b865107fbac543201f7`.
+  the hall's free post, and his seat moved to the row's east mat. Build 12, deploy `6afb6b865107fbac543201f7`. Build 13
+  (deploy `6afb7515955078a3563e965f`): ending A's rolled mat on both of Ton's palms (it lay by his higher wrist alone),
+  and the cushion stack and grey mats in that shot remeshed finer (they read as faceted stones). Build 14 (deploy
+  `6afb8163c0eb3d86d74ea970`): his photographs 2, 3, 7, 8, 9 and 11 taken again from their places and measured at their
+  own size closed four differences: the posts a plum maroon (drawn half as bright, and redder), both east sofas mint (one
+  was olive), the dais's candles 0.62 and 0.79 m and yellow behind the gold bai sri (0.45 m, hidden, orange), the bench at
+  the back brown wood (the chapter's red bench); what was seen and left, each with its reason, is in the tracker.
 
 ## The sheet, version by version
 

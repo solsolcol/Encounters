@@ -341,7 +341,11 @@ CLOSED 14 Nov 2026: items 6 to 8 below were put to him together (docs/V26.12-WHA
       stacked, so "stack" (the plan's §3.1 row 5); not re-said until he says yes. (3) The small white figure before the
       Emerald Buddha in his photographs 5 and 10 is not made (not identified: the research's Q2; a sacred image is never
       guessed). Not asked, only if he offers: what the hall calls the white Buddha (Q1), what the brown bai sri are made
-      of (Q6), a photograph of the white Buddha's lap (Q7).
+      of (Q6), a photograph of the white Buddha's lap (Q7). Build 14 (deploy `6afb8163c0eb3d86d74ea970`): every one of
+      his eleven photographs taken again from its place and laid beside; four differences closed (the posts, the east
+      sofas, the dais's candles, the bench), and what was seen and left, each with its reason (the matte floor, the fans'
+      guards and tripods, the mattress piles, the cushion bundles, a fan his two photographs place differently, his
+      photograph 7's place), is in the tracker's last entry.
 
 ## D. Not built yet
 

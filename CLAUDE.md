@@ -1390,7 +1390,7 @@ shot on a desktop, the bench's white seat: deploy `6af934bf3fbc8566ec243132`): t
 play-throughs with the sound on, Continue at every phase and the replay all passed on v26.17).
 His ask of 16 Nov 2026, the next morning's meeting with Grandmaster Pho moved from his bench outside to inside the
 main hall (Ton walking him there from the ground; the inside exactly as his eleven photographs; every film after it
-re-staged), is **docs/V26.18-E4C3-HALL.md**: LIVE at v26.18 (deploy `6afb6119e1b77b3564995dbe`): the room built
+re-staged), is **docs/V26.18-E4C3-HALL.md**: LIVE at v26.18 (build 14, deploy `6afb8163c0eb3d86d74ea970`): the room built
 in place behind the hall's real front door at its true size, Ton leading him there in one unbroken walk, Grandmaster
 Pho cross-legged on his cushion at the dais, the room's things made from his photographs (the sacred images from real
 photographs first), and every film after the walk inside. On his word (docs/OPEN-ITEMS.md C13 ac): the hall's own
