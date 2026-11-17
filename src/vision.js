@@ -137,12 +137,18 @@ export function makeVision(THREE, renderer, opts = {}) {
         vec3 col = mix(c, vec3(1.0) - c, inv);
         col += uLineCol * e * uLine * inv;
         /* the front: a band of light where the wave is, every line in it burning */
-        float band = exp(-pow((dist - uR) / max(0.05, uBand), 2.0)) * uMoving * uInvert;
-        col += uFront * band * (0.18 + 2.4 * e);
-        /* the spirits, with their glow (the target's smaller levels), where the vision has them */
-        vec3 sp = texture(tSpirit, vUv).rgb;
-        vec3 halo = textureLod(tSpirit, vUv, 2.5).rgb * 1.5 + textureLod(tSpirit, vUv, 4.0).rgb * 1.3;
-        col += (sp * 1.15 + halo) * uInvert;
+        float bw = max(0.05, uBand + uR * 0.03);                 // (a thin line through the room, wider as it runs out)
+        float band = exp(-pow((dist - uR) / bw, 2.0)) * uMoving * uInvert;
+        col += uFront * band * (0.05 + 2.8 * e);
+        /* the spirits, with their glow (the target's smaller levels), where the vision has them. LAID ON, never added:
+           the vision turns a dark room nearly white, and light added to white is lost; a colour laid over by its own
+           strength reads on a white room and on a black one alike (the body faint, the outline burning) */
+        vec4 hs = textureLod(tSpirit, vUv, 2.5) * 0.8 + textureLod(tSpirit, vUv, 4.0) * 0.7;
+        float ha = clamp(hs.a, 0.0, 1.0) * uInvert;
+        if (ha > 0.001) col = mix(col, clamp(hs.rgb / max(hs.a, 0.0001), 0.0, 1.0), ha * 0.55);
+        vec4 sp = texture(tSpirit, vUv);
+        float sa = clamp(sp.a * 1.15, 0.0, 0.94) * uInvert;
+        if (sa > 0.001) col = mix(col, clamp(sp.rgb / max(sp.a, 0.0001) * 1.08, 0.0, 1.0), sa);
         /* his hands, over everything: turned with the world once the wave has left him */
         vec4 h = texture(tHands, vUv);
         if (h.a > 0.002) {
@@ -167,12 +173,14 @@ export function makeVision(THREE, renderer, opts = {}) {
   /* ---- a spirit's own material: a glowing silhouette (works on a skinned body: three's normal material underneath) ---- */
   function spiritMaterial(o = {}) {
     const m = new THREE.MeshNormalMaterial({ side: THREE.FrontSide });
-    m.transparent = true; m.depthWrite = false; m.depthTest = false; m.blending = THREE.AdditiveBlending;
+    m.transparent = true; m.depthWrite = false; m.depthTest = false;
+    m.blending = THREE.CustomBlending; m.blendSrc = THREE.OneFactor; m.blendDst = THREE.OneFactor; m.blendEquation = THREE.AddEquation;
+    m.blendSrcAlpha = THREE.OneFactor; m.blendDstAlpha = THREE.OneFactor; m.blendEquationAlpha = THREE.AddEquation;
     m.fog = false; m.toneMapped = false;
     const col = new THREE.Color(o.color == null ? 0xff3344 : o.color);
     const U = {
-      uColor: { value: col }, uFill: { value: o.fill == null ? 0.22 : o.fill }, uRim: { value: o.rim == null ? 1.8 : o.rim },
-      uPow: { value: o.power == null ? 2.2 : o.power }, uXray: { value: o.xray == null ? 0.3 : o.xray },
+      uColor: { value: col }, uFill: { value: o.fill == null ? 0.1 : o.fill }, uRim: { value: o.rim == null ? 1.7 : o.rim },
+      uPow: { value: o.power == null ? 2.4 : o.power }, uXray: { value: o.xray == null ? 0.3 : o.xray },
       uFlick: { value: o.flicker == null ? 0.25 : o.flicker }, uAlpha: { value: 1 },
       uR: { value: 0 }, uSoft: { value: 0.35 }, uEye: { value: new THREE.Vector3() }, uTime: { value: 0 },
       uDepth: { value: V.depth }, uRes: { value: new THREE.Vector2(Math.max(2, V.w >> 1), Math.max(2, V.h >> 1)) }
@@ -192,7 +200,7 @@ export function makeVision(THREE, renderer, opts = {}) {
          float sv_occ = gl_FragCoord.z > sv_wd + 0.00002 ? uXray : 1.0;
          float sv_n = 0.85 + 0.15 * sin(uTime * 7.3 + vSvWorld.y * 11.0 + vSvWorld.x * 5.0);
          float sv_k = (uFill + uRim * sv_f) * sv_reveal * sv_occ * mix(1.0, sv_n, uFlick) * uAlpha;
-         gl_FragColor = vec4(uColor * sv_k, 1.0);`);
+         gl_FragColor = vec4(uColor * sv_k, sv_k);`);
     };
     m.customProgramCacheKey = () => 'spiritvision1';
     V.mats.add(m);

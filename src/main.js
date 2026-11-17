@@ -3826,7 +3826,7 @@ function torchToggle() {
    (`kit.vision({ r })`). `stage.onVision(on)` hears the player's every switch. A chapter that declares nothing has no
    button, no key, no target and no sound of it: unchanged by construction (`?visionlab` lends any chapter the defaults,
    for the probes). */
-const VIS_DEFAULTS = { rmax: 70, outSecs: 1.3, inSecs: 1.0, soft: 0.35, band: 0.75, blur: 0.45, vignette: 0.3, line: 0.16, sky: 70,
+const VIS_DEFAULTS = { rmax: 70, outSecs: 1.3, inSecs: 1.0, soft: 0.35, band: 0.28, blur: 0.45, vignette: 0.42, line: 0.16, sky: 70,
                        front: 0x8cf2ff, lineColor: 0x59bfff, heart: null, sound: null };
 const VIS_LAB = /[?&]visionlab\b/.test(location.search);
 const vis = { decl: null, on: false, r: 0, dir: 0, t: 0, k: 0, held: null, fx: null, last: 0, switches: 0, drawn: 0, heartOn: false };
