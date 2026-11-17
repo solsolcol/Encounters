@@ -453,7 +453,11 @@
       hallMany('w3roses', [{ u: 0.98, v: 1.2, h: AH, s: 1.5 }]);
       hallMany('w3hnagagold', [{ u: 0.84, v: 1.85, h: AH, ry: 0.3 }]);
       /* (the mat tinted: his photograph 6's is maroon, black and cream, darker than the model's red and white) */
-      hallMany('w3hstripemat', [{ u: -0.12, v: 2.62, h: 0, tint: 0x9a6060 }]);
+      /* (v26.18, 17 Nov: 0.27 m west of where it first lay. The woman who serves him now stands back from the altar as she
+         sets his bai sri down (y_stage.js AUNT_TABLE), and her left foot steps in 0.42 m east of the room's middle: the
+         mat's east end lay at 0.58, and her foot stood up to 9.6 cm deep in it, measured. Its east end is at 0.31 now,
+         6 cm clear of her foot; it still lies before the second altar, as his photograph 6 has it) */
+      hallMany('w3hstripemat', [{ u: -0.39, v: 2.62, h: 0, tint: 0x9a6060 }]);
       /* the floor between the altars: the cloth sets (G3), the water (G5), the clay pot (G6), the tray (L24) */
       hallMany('w3hclothsets', [{ u: 1.26, v: 3.3, h: 0, ry: E }]);
       hallMany('w3water', [0, 1, 2, 3].flatMap(i => [0, 1, 2].map(j => ({ u: 1.14 + j * 0.068, v: 4.18 + i * 0.068, h: 0 }))));
