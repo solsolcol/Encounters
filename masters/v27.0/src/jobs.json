@@ -1,7 +1,21 @@
 {
  "amma": {
+  "credits": 40,
+  "expires_at": 1795210840520,
   "image": "masters/v27.0/people/refs/amma-a-2k.png",
   "image_to_3d": "01a1eb6f-8b85-77c6-bb62-056a0b7648e1",
+  "rig": "01a1eb75-4cc6-727a-bc9a-5a6c6fb33859",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.52,
+   "include_fingers": true,
+   "input_task_id": "01a1eb6f-8b85-77c6-bb62-056a0b7648e1",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 78770032,
+   "walk": 79017484
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -20,11 +34,29 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 74529548,
+   "pre": 15876664
   }
  },
  "appa": {
+  "credits": 40,
+  "expires_at": 1795210756907,
   "image": "masters/v27.0/people/refs/appa-a-2k.png",
   "image_to_3d": "01a1eb6f-08a2-764e-bae3-78f304dbca6c",
+  "rig": "01a1eb75-4c89-743d-ad9d-67833d830d95",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.66,
+   "include_fingers": true,
+   "input_task_id": "01a1eb6f-08a2-764e-bae3-78f304dbca6c",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 57801188,
+   "walk": 58041428
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -43,11 +75,29 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 54087656,
+   "pre": 9009876
   }
  },
  "large": {
+  "credits": 40,
+  "expires_at": 1795210799996,
   "image": "masters/v27.0/people/refs/large-a-2k.png",
   "image_to_3d": "01a1eb6f-1cfb-7581-856d-b7c8b47c1035",
+  "rig": "01a1eb75-4c96-712e-b0ba-aeba063f4e23",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 2.1,
+   "include_fingers": true,
+   "input_task_id": "01a1eb6f-1cfb-7581-856d-b7c8b47c1035",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 72372324,
+   "walk": 72613500
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -66,11 +116,29 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 68337932,
+   "pre": 14261076
   }
  },
  "mala": {
+  "credits": 40,
+  "expires_at": 1795210755698,
   "image": "masters/v27.0/people/refs/mala-a-2k.png",
   "image_to_3d": "01a1eb6e-fe05-7791-a6e4-972a1f0a7078",
+  "rig": "01a1eb75-4cc3-7576-bb0e-47886076689a",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.58,
+   "include_fingers": true,
+   "input_task_id": "01a1eb6e-fe05-7791-a6e4-972a1f0a7078",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 62840988,
+   "walk": 63082308
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -89,11 +157,29 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 58186288,
+   "pre": 14652324
   }
  },
  "oppress": {
+  "credits": 40,
+  "expires_at": 1795210833682,
   "image": "masters/v27.0/people/refs/oppress-a-2k.png",
   "image_to_3d": "01a1eb6f-95ec-72df-8f7c-5bdce5fefb11",
+  "rig": "01a1eb75-4ce2-70c7-99b3-58a83b928a50",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.78,
+   "include_fingers": true,
+   "input_task_id": "01a1eb6f-95ec-72df-8f7c-5bdce5fefb11",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 78576744,
+   "walk": 78817884
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -112,11 +198,29 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 73305696,
+   "pre": 17870344
   }
  },
  "ravi": {
+  "credits": 40,
+  "expires_at": 1795210767058,
   "image": "masters/v27.0/people/refs/ravi-a-2k.png",
   "image_to_3d": "01a1eb6e-f516-76f9-a622-c73600b22642",
+  "rig": "01a1eb75-4c46-71e8-835b-fec8be51523b",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.7,
+   "include_fingers": true,
+   "input_task_id": "01a1eb6e-f516-76f9-a622-c73600b22642",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 63398316,
+   "walk": 63639384
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -135,11 +239,29 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 59190960,
+   "pre": 17200216
   }
  },
  "wander": {
+  "credits": 40,
+  "expires_at": 1795210845867,
   "image": "masters/v27.0/people/refs/wander-a-2k.png",
   "image_to_3d": "01a1eb6f-1324-735a-bdc5-2a9c90f9c4bc",
+  "rig": "01a1eb75-4cad-74c7-9d72-aec5ee94eced",
+  "rig_credits": 5,
+  "rig_settings": {
+   "height_meters": 1.35,
+   "include_fingers": true,
+   "input_task_id": "01a1eb6f-1324-735a-bdc5-2a9c90f9c4bc",
+   "skeleton_template": "meshyrig"
+  },
+  "rig_sizes": {
+   "rigged": 89125568,
+   "walk": 89366536
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -158,6 +280,10 @@
    "texture_model": "meshy-7",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 80545336,
+   "pre": 41638604
   }
  }
 }
