@@ -744,6 +744,10 @@ const tapOnce = async () => { await press(); await release(); };
 const untilT = t => p.waitForFunction(x => { const d = window.__enc.kitDebug(); return !!d.event && d.event.t >= x; }, t, { timeout: 60000 });
 const untilIdx = i => p.waitForFunction(x => { const d = window.__enc.kitDebug(); return !d.event || d.event.idx >= x; }, i, { timeout: 60000 });
 let r;
+/* (v27.0: sanity PINNED. The fixture's own ghost drains it on wall time all through these checks, about 0.8 a second on
+   this box (the trace of run 7: 92 at 46 s down to 0 at 204 s, through every block); since the checks of seams 50 to 52
+   wait for what they prove, the run is longer, and it fainted before the amulet. Nothing here tests sanity) */
+await p.evaluate(() => { window.__enc.stats.sanity = 100; });
 await lbl('events');
 r = await runEvent({ kind: 'tap', secs: 3 }, tapOnce);                      K.evTap = r.ok === true && r.kind === 'tap';
 r = await runEvent({ kind: 'tap', secs: 0.15 });                           K.evTapTimesOut = r.ok === false;
@@ -765,7 +769,7 @@ r = await runEvent({ kind: 'stabilise', secs: 0.25, grace: 2 }, press);    K.evS
    because through a round trip from here the presses landed late on a loaded
    box and scored as misses) */
 r = await runEvent({ kind: 'heartbeat', n: 2, bpm: 120, win: 0.34, zone: 1, lead: 0.5, pressAtT: [0.5, 1.0] });
-const beatAnswered = r.sum;
+const beatAnswered = r.sum, beatRun = r;
 K.evHeartbeat = r.band.length === 2;
 /* v18.0: RESIST (the twenty-fifth seam), a RAPID-TAP fight since 3 Oct.
    Never tapped, the danger runs past `grace` and it is LOST on that frame:
@@ -847,18 +851,25 @@ r = await runEvent({ kind: 'guard', brief: 'Keep the room.', label: 'HOLD THE RO
 });
 K.guardHandsBack = r.kind === 'guard' && r.ok === true
   && await p.evaluate(() => !document.body.classList.contains('evopen') && window.__enc.getState() === 'play');
+/* (polled, never a count of frames, v8.7; the order that stood before is put back as it was, with no COMPLETE either
+   way: a first version set its own over it and cleared it after, so the box said COMPLETE twice, the bar rightly stood
+   aside under that banner and failed, and the timer's check further on found no order left to paint its box) */
 K.guardBar = await p.evaluate(async () => {
-  const E = window.__enc, frames = (n) => new Promise(rs => { let k = 0; const f = () => (++k >= n ? rs() : requestAnimationFrame(f)); requestAnimationFrame(f); });
-  E.kit.objective('Keep the room');
-  E.kit.bar(0.5); await frames(4);
+  const E = window.__enc;
+  const until = (f, ms = 30000) => new Promise(rs => { const t0 = performance.now();
+    const g = () => (f() ? rs(true) : performance.now() - t0 > ms ? rs(false) : requestAnimationFrame(g)); requestAnimationFrame(g); });
+  const prev = E.kitDebug().objective;
+  E.kit.objective('Keep the room', { complete: false });
+  E.kit.bar(0.5);
   const el = document.getElementById('objBar');
-  const shown = !el.classList.contains('hide') && Math.abs(parseFloat(el.firstElementChild.style.width) - 50) < 0.6;
-  E.kit.bar(null); await frames(4);
-  const gone = el.classList.contains('hide') && E.kitBar() === null;
+  const shown = await until(() => !el.classList.contains('hide') && Math.abs(parseFloat(el.firstElementChild.style.width) - 50) < 0.6);
+  E.kit.bar(null);
+  const gone = await until(() => el.classList.contains('hide')) && E.kitBar() === null;
   E.kit.bar(0.8);                       // left standing for the reset at the end to clear
-  E.kit.objective(null);
+  E.kit.objective(prev, { complete: false });
   return shown && gone && E.kitBar() === 0.8;
 });
+await p.evaluate(() => { window.__enc.stats.sanity = 100; });   // (pinned again: see the note before the events)
 /* v18.3: TWO THUMBS. A second finger landing while the first is still down
    is a tap — it was dropped, because the event was still "down". Real
    pointer events on the overlay, the second before the first lifts. */
@@ -881,6 +892,7 @@ K.evHeartMissHurts = r.ok === false && r.sum < 0;
    Asserted as a comparison, not as an absolute band, because this box steps
    its clock 0.05 s a frame and a fixed window would be a coin toss (v8.7). */
 K.evHeartbeatRewardsTiming = beatAnswered > r.sum;
+if (!K.evHeartbeatRewardsTiming) console.log('heartbeat answered:', JSON.stringify({ sum: beatRun.sum, band: beatRun.band, hits: beatRun.hits, misses: beatRun.misses }), 'missed:', JSON.stringify({ sum: r.sum, band: r.band }));
 K.evHeartMissCostsSanity = await p.evaluate(s0 => window.__enc.stats.sanity < s0, san0);
 /* v9.3: wait until the CURRENT sequence item's slot clock has reached t */
 const untilSlot = (t) => p.waitForFunction(
@@ -1014,6 +1026,7 @@ await p.waitForFunction(() => !window.__enc.kitDebug().event, null, { timeout: 6
    the hotspot retires — the size of it is the chapter's business. */
 K.eventAwards = await p.evaluate(() => window.__enc.stats.awareness !== window.__aw0 && window.__enc.kitDebug().hotspot === null);   // once: retired
 
+await p.evaluate(() => { window.__enc.stats.sanity = 100; });   // (pinned again: see the note before the events)
 await lbl('bed');
 // pose: the bed lies him down, walking stops, the neck narrows; the bed stands him up
 await p.evaluate(() => { const e = window.__enc; e.yaw.position.set(6, 1.62, 7.8); e.yaw.rotation.y = 0; });

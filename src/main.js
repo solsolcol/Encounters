@@ -9970,7 +9970,11 @@ const ADULT_TAKES = new Set([
   'q3o1', 'q3o2', 'q3o3', 'q3o4', 'q3o5', 'q3o6', 'q3v', 'q3p1', 'q3m0', 'q3m1', 'q3w1', 'q3w2', 'q3w3', 'q3u1',
   'q3u2', 'q3u3', 'q3c1', 'q3c2', 'q3c3', 'q3t1', 'q3t2', 'q3t3', 'q3t4', 'q3t8', 'q3a1',
   'q3A0', 'q3A1', 'q3A2', 'q3A3', 'q3B0', 'q3B1', 'q3B2', 'q3B3', 'q3B4', 'q3B5', 'q3C0', 'q3C1', 'q3C2', 'q3C3',
-  'q3C4', 'q3D0', 'q3D1', 'q3D2', 'q3D3', 'q3D4', 'q3D5', 'q3z1', 'q3K1', 'q3A', 'q3B', 'q3C', 'q3D']);
+  'q3C4', 'q3D0', 'q3D1', 'q3D2', 'q3D3', 'q3D4', 'q3D5', 'q3z1', 'q3K1', 'q3A', 'q3B', 'q3C', 'q3D',
+  /* E4C4 ADULT BEGIN: v27.0, episode 4 chapter 4 (masters/v27.0/voices/registry.py) */
+  'q4o1', 'q4o2', 'q4h1', 'q4h2', 'q4h3', 'q4s1', 'q4s2', 'q4s3', 'q4A1', 'q4B1',
+  'q4C0', 'q4C1', 'q4D1', 'q4A', 'q4B', 'q4C', 'q4D',
+  /* E4C4 ADULT END */]);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
 const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
@@ -10064,7 +10068,12 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   'ph3n3', 'ph3n4', 'ph3b0', 'ph3b1', 'ph3b2',
   'ph3b3', 'ph3b4', 'ph3bx', 'ph3by', 'ph3b5', 'ph3p1', 'ph3A1', 'ph3A2', 'tn3A1', 'ph3B1',
   'ph3B2', 'ph3B3', 'ph3B4', 'ph3C1', 'ph3C2', 'ph3C3', 'ph3D1', 'ph3D2', 'ph3D3', 'ph3D4', 'ph3z0', 'ph3z1',
-  'ph3z2']);
+  'ph3z2',
+  /* E4C4 CAST BEGIN: v27.0, episode 4 chapter 4: Grandmaster Pho, Amma, Ravi, Mala (masters/v27.0/voices/registry.py) */
+  'rv4o1', 'ph4h0', 'rv4h1', 'rv4h2', 'ml4h1', 'ml4h2', 'ml4h3', 'am4h1', 'ph4h1', 'ph4s0',
+  'ph4s1', 'ph4s2', 'ph4s3', 'ph4s4', 'ph4b0', 'ph4b1', 'ph4b2', 'ml4t1', 'ml4t2', 'rv4t1',
+  'ph4A1', 'ph4B0', 'ph4B1', 'ph4C1', 'ph4D0', 'ph4D1', 'ph4z0', 'ph4z1',
+  /* E4C4 CAST END */]);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
    reactions "almost whispering to himself" and they were re-voiced as
@@ -14532,7 +14541,18 @@ const STING_SAMPLE = {
   x3wick: ['x3wick', 1],
   /* v26.12: the festival film's two hermits murmuring, and the man in trance crying out; ending D's lotus folding shut
      (x3shut retired) (masters/v26.0/sound.sh) */
-  x3chantb: ['x3chantb', 1], x3chanty: ['x3chanty', 1], x3cry: ['x3cry', 1], x3fold: ['x3fold', 1]
+  x3chantb: ['x3chantb', 1], x3chanty: ['x3chanty', 1], x3cry: ['x3cry', 1], x3fold: ['x3fold', 1],
+  /* E4C4 SOUNDS BEGIN: v27.0, episode 4 chapter 4's voices (masters/v27.0/voices/registry.py) */
+  q4o1: ['q4o1', 1], q4o2: ['q4o2', 1], rv4o1: ['rv4o1', 1], ph4h0: ['ph4h0', 1], rv4h1: ['rv4h1', 1],
+  rv4h2: ['rv4h2', 1], ml4h1: ['ml4h1', 1], q4h1: ['q4h1', 1], ml4h2: ['ml4h2', 1], ml4h3: ['ml4h3', 1],
+  q4h2: ['q4h2', 1], am4h1: ['am4h1', 1], q4h3: ['q4h3', 1], ph4h1: ['ph4h1', 1], ph4s0: ['ph4s0', 1],
+  q4s1: ['q4s1', 1], q4s2: ['q4s2', 1], q4s3: ['q4s3', 1], ph4s1: ['ph4s1', 1], ph4s2: ['ph4s2', 1],
+  ph4s3: ['ph4s3', 1], ph4s4: ['ph4s4', 1], ph4b0: ['ph4b0', 1], ph4b1: ['ph4b1', 1], ph4b2: ['ph4b2', 1],
+  ml4t1: ['ml4t1', 1], ml4t2: ['ml4t2', 1], rv4t1: ['rv4t1', 1], ph4A1: ['ph4A1', 1], q4A1: ['q4A1', 1],
+  ph4B0: ['ph4B0', 1], ph4B1: ['ph4B1', 1], q4B1: ['q4B1', 1], q4C0: ['q4C0', 1], ph4C1: ['ph4C1', 1],
+  q4C1: ['q4C1', 1], ph4D0: ['ph4D0', 1], ph4D1: ['ph4D1', 1], q4D1: ['q4D1', 1], ph4z0: ['ph4z0', 1],
+  ph4z1: ['ph4z1', 1], q4A: ['q4A', 1], q4B: ['q4B', 1], q4C: ['q4C', 1], q4D: ['q4D', 1],
+  /* E4C4 SOUNDS END */
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays

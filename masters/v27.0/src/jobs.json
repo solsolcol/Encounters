@@ -484,6 +484,9 @@
   "expires_at": 1795213806699,
   "image": "masters/v27.0/props/refs/coffeetable-2k.png",
   "image_to_3d": "01a1eb9b-ed64-70e2-ab89-769b7863a162",
+  "remesh": {
+   "8000": "01a1ebc8-d2c7-749a-ab6f-23e678be4f43"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -598,6 +601,9 @@
   "expires_at": 1795213725449,
   "image": "masters/v27.0/props/refs/door-2k.png",
   "image_to_3d": "01a1eb9b-6a06-7018-9cf0-4ad5b3cc1e40",
+  "remesh": {
+   "4000": "01a1ebcd-8985-7550-8726-ccd9b3681bb0"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -715,6 +721,9 @@
   "expires_at": 1795213681679,
   "image": "masters/v27.0/props/refs/fridge-2k.png",
   "image_to_3d": "01a1eb9b-7446-758a-ac0e-6d6ecbe650fb",
+  "remesh": {
+   "8000": "01a1ebdc-40d0-72cd-b674-b7d7328718e2"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -1194,6 +1203,9 @@
   "expires_at": 1795213915281,
   "image": "masters/v27.0/props/refs/shoerack-2k.png",
   "image_to_3d": "01a1eb9b-49df-72e7-8c35-0ae1b0c7a331",
+  "remesh": {
+   "30000": "01a1ebd2-bb84-7374-8e4a-db180f257b92"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -1368,6 +1380,9 @@
   "expires_at": 1795213982708,
   "image": "masters/v27.0/props/refs/tulsi-2k.png",
   "image_to_3d": "01a1eb9b-5aa3-7677-b17c-aafb73103e5f",
+  "remesh": {
+   "30000": "01a1ebd7-2561-7710-a71b-93b1cb5e9bb9"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,

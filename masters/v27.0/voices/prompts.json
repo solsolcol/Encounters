@@ -1,0 +1,317 @@
+[
+ {
+  "key": "q4o1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[reflective] Training began the next morning. Open. Close. Every day, for months."
+ },
+ {
+  "key": "q4o2",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[reflective] When Grandmaster Pho came to Singapore, a family asked him to see their mother."
+ },
+ {
+  "key": "rv4o1",
+  "speaker": "ravi",
+  "voice_id": "mnlHLlgagNmPlvf52KvT",
+  "takes": 2,
+  "prompt": "[respectful] Grandmaster. Thank you for coming. Please, come in."
+ },
+ {
+  "key": "ph4h0",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] First, we listen. Ask her family. Look at her home. Tell me what you learn."
+ },
+ {
+  "key": "rv4h1",
+  "speaker": "ravi",
+  "voice_id": "mnlHLlgagNmPlvf52KvT",
+  "takes": 2,
+  "prompt": "[weary] Seven years. She just... stopped walking properly. First a cane, then this chair."
+ },
+ {
+  "key": "rv4h2",
+  "speaker": "ravi",
+  "voice_id": "mnlHLlgagNmPlvf52KvT",
+  "takes": 2,
+  "prompt": "[frustrated] Neurologist, orthopaedic, the MRI, the nerve tests. Everything normal. They said maybe her age."
+ },
+ {
+  "key": "ml4h1",
+  "speaker": "mala",
+  "voice_id": "PIuCDYHMakaExG7GFyLU",
+  "takes": 2,
+  "prompt": "[tired] We went everywhere. Temple priests, a Chinese medium, an ustaz, a Thai monk in Golden Mile. Everyone tried. Everyone said something different. Nothing changed."
+ },
+ {
+  "key": "q4h1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[quiet] She saw the doctors first. All of them."
+ },
+ {
+  "key": "ml4h2",
+  "speaker": "mala",
+  "voice_id": "PIuCDYHMakaExG7GFyLU",
+  "takes": 2,
+  "prompt": "[proud] That's Amma. For twenty years, at the festival, Amman came to her. Kali Amman. Everyone came to ask her."
+ },
+ {
+  "key": "ml4h3",
+  "speaker": "mala",
+  "voice_id": "PIuCDYHMakaExG7GFyLU",
+  "takes": 2,
+  "prompt": "[sad] After Appa passed, she stopped. She said she was tired. She never went back."
+ },
+ {
+  "key": "q4h2",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[quiet] Her husband. The garland is fresh."
+ },
+ {
+  "key": "am4h1",
+  "speaker": "amma",
+  "voice_id": "cyzr0852QKE5DHnjiRWw",
+  "takes": 3,
+  "prompt": "[weary] You can see it, can't you?"
+ },
+ {
+  "key": "q4h3",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[serious] Seven years. Every doctor. Many practitioners. And she served Kali Amman, until her husband died."
+ },
+ {
+  "key": "ph4h1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[warm] Good. You looked before you looked."
+ },
+ {
+  "key": "ph4s0",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Now. Open. The way I taught you. Look at her. Only look."
+ },
+ {
+  "key": "q4s1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[uneasy] It's holding her down. It's been there a long time."
+ },
+ {
+  "key": "q4s2",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[quiet] Not him. He's only watching over her."
+ },
+ {
+  "key": "q4s3",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[uneasy] Hungry ones. Waiting for whatever is given here tonight."
+ },
+ {
+  "key": "ph4s1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Close."
+ },
+ {
+  "key": "ph4s2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] A spirit is sitting on her back. I believe it is why these years have been so hard."
+ },
+ {
+  "key": "ph4s3",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] She served Mae Kali. Past karma, and matters left unresolved: it has stayed with her, and pressed on her."
+ },
+ {
+  "key": "ph4s4",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] I will bless her, and release it. You hold the water. Keep the room."
+ },
+ {
+  "key": "ph4b0",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[gentle] Please light her lamp. Let her goddess see what we do."
+ },
+ {
+  "key": "ph4b1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Close. Breathe."
+ },
+ {
+  "key": "ph4b2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] Not everything you see is against us."
+ },
+ {
+  "key": "ml4t1",
+  "speaker": "mala",
+  "voice_id": "PIuCDYHMakaExG7GFyLU",
+  "takes": 2,
+  "prompt": "[worried] Amma?"
+ },
+ {
+  "key": "ml4t2",
+  "speaker": "mala",
+  "voice_id": "PIuCDYHMakaExG7GFyLU",
+  "takes": 2,
+  "prompt": "[awed] It's Amman."
+ },
+ {
+  "key": "rv4t1",
+  "speaker": "ravi",
+  "voice_id": "mnlHLlgagNmPlvf52KvT",
+  "takes": 2,
+  "prompt": "[panicked] Stop it! You're hurting her!"
+ },
+ {
+  "key": "ph4A1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] You kept the blessing. You forgot the son. His fear was only love."
+ },
+ {
+  "key": "q4A1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[ashamed] I saw a man in the way. He was her son."
+ },
+ {
+  "key": "ph4B0",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] Go."
+ },
+ {
+  "key": "ph4B1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] Your part was the water and the room. The work was mine. Today you were lucky."
+ },
+ {
+  "key": "q4B1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[ashamed] I saw it, and thought it was mine to fight."
+ },
+ {
+  "key": "q4C0",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[gentle] She's not being hurt. It's leaving her. Stay with her. Hold her hand."
+ },
+ {
+  "key": "ph4C1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[warm] You saw what was there, and you told him only what you knew. Nothing more."
+ },
+ {
+  "key": "q4C1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[quiet] I didn't promise him anything. I told him what I saw."
+ },
+ {
+  "key": "ph4D0",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Ravi. Hold her hand."
+ },
+ {
+  "key": "ph4D1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[warm] You held. That is where it starts. But there were two of them afraid in this room, and you are the one who could see."
+ },
+ {
+  "key": "q4D1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[reflective] I kept to my part. Next time I'll see the people too."
+ },
+ {
+  "key": "ph4z0",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] May all beings, without limit, without end, have a share in the merit just now made: those I have seen, and those I have never seen."
+ },
+ {
+  "key": "ph4z1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[serious] Keep seeing her doctors. What happened tonight is what happened tonight. It is not a promise."
+ },
+ {
+  "key": "q4A",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[ashamed] I held her son back. His fear was only love."
+ },
+ {
+  "key": "q4B",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[ashamed] I threw the water. It was never mine to fight."
+ },
+ {
+  "key": "q4C",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[quiet] I told him only what I saw. He held her hand."
+ },
+ {
+  "key": "q4D",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[reflective] I held my place. Next time, I see the people too."
+ }
+]

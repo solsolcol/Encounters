@@ -68,15 +68,21 @@
      moves what follows it. The names are QUOTED on purpose: build.py gives a sound to a chapter's own pack only when
      the chapter names it in quotes (v21.1). Written by masters/v27.0/script/secs.py from masters/v27.0/script/lines.py. */
   /* SECS BEGIN */
-  const SECS = {      // 0 of 50 MEASURED: every line ESTIMATED at its speaker's pace (masters/v27.0/script/lines.py)
-    'q4o1': 4.5, 'q4o2': 4.3, 'q4h1': 2.4, 'q4h2': 2.4, 'q4h3': 5.3, 'q4s1': 3.3, 'q4s2': 2.9, 'q4s3': 3.6,
-    'q4A1': 3.4, 'q4B1': 3.3, 'q4C0': 4.6, 'q4C1': 3.8, 'q4D1': 3.9, 'q4A': 3.1, 'q4B': 2.7, 'q4C': 2.8, 'q4D': 3.0,
-    'ph4h0': 4.9, 'ph4h1': 2.9, 'ph4s0': 4.1, 'ph4s1': 1.0, 'ph4s2': 5.0, 'ph4s3': 6.0, 'ph4s4': 4.5, 'ph4b0': 3.9,
-    'ph4b1': 1.6, 'ph4b2': 2.9, 'ph4A1': 4.4, 'ph4B0': 0.8, 'ph4B1': 4.6, 'ph4C1': 5.0, 'ph4D0': 1.9, 'ph4D1': 7.4,
-    'ph4z0': 7.0, 'ph4z1': 5.4,
-    'rv4o1': 3.5, 'rv4h1': 5.4, 'rv4h2': 6.2, 'rv4t1': 2.4,
-    'ml4h1': 9.8, 'ml4h2': 7.0, 'ml4h3': 5.0, 'ml4t1': 1.2, 'ml4t2': 1.6,
-    'am4h1': 2.2
+  const SECS = {      // 45 of 45 MEASURED from their takes; the rest estimated at the speaker's pace
+    /* him */
+    'q4o1': 6.65, 'q4o2': 4.73, 'q4h1': 3.61, 'q4h2': 3.53, 'q4h3': 9.77, 'q4s1': 4.01, 'q4s2': 3.05, 'q4s3': 4.09,
+    'q4A1': 3.53, 'q4B1': 3.21, 'q4C0': 6.41, 'q4C1': 3.69, 'q4D1': 4.25, 'q4A': 4.25, 'q4B': 3.29, 'q4C': 3.85,
+    'q4D': 4.65,
+    /* Ravi */
+    'rv4o1': 2.6, 'rv4h1': 8.33, 'rv4h2': 6.73, 'rv4t1': 1.77,
+    /* Grandmaster Pho */
+    'ph4h0': 6.81, 'ph4h1': 3.13, 'ph4s0': 7.14, 'ph4s1': 0.65, 'ph4s2': 6.17, 'ph4s3': 8.45, 'ph4s4': 6.65,
+    'ph4b0': 4.86, 'ph4b1': 2.06, 'ph4b2': 2.65, 'ph4A1': 6.25, 'ph4B0': 0.62, 'ph4B1': 6.41, 'ph4C1': 5.13,
+    'ph4D0': 2.24, 'ph4D1': 8.61, 'ph4z0': 10.56, 'ph4z1': 6.63,
+    /* Mala */
+    'ml4h1': 14.65, 'ml4h2': 9.61, 'ml4h3': 7.61, 'ml4t1': 1.13, 'ml4t2': 1.45,
+    /* Amma */
+    'am4h1': 1.81
   };
   /* SECS END */
 
@@ -404,7 +410,7 @@
     /* where people and things stand (c_people.js, c_props.js read these): her chair before her altar, a metre and a bit
        out; Grandmaster Pho's stool at her right; his bowl on the floor at the chair's foot */
     const ALTAR = { x: -0.15, z: 5.15, shelf: 1.50 };
-    const CHAIR = { x: -0.15, z: 3.85, ry: Math.PI };       // she faces her altar (+z): a body at 0 faces +z, so ry 0... set where cast
+    const CHAIR = { x: -0.15, z: 3.85, ry: 0 };             // she faces her altar (+z): a body and a thing at a turn of 0 face +z
     const STOOL = { x: 0.62, z: 3.55 };
     const BOWL = { x: 0.35, z: 3.20 };
 
@@ -2867,6 +2873,68 @@
     /* THE CAST OF DAY ONE AND DAY TWO. Who they are is the plan's §3.3. Each stands or sits where the photographs put
        their kind: the masters under their tents on the west side, the monks under the east one, Grandmaster Pho under the
        gold. (The crowd, the dancers and those who go up are placed by the play and the films.) */
+    /* ================================================================ HER FLAT'S THINGS (M5; the build sheet's 30 things)
+       Every one a real model (a checked picture on white, Meshy at its highest and its own remesh, tools/prepmeshy.mjs:
+       masters/v27.0/props/TABLE.txt), prepped in real metres with its origin on its base's middle and its front along +z,
+       so a place here is a place and `ry` turns its front. A thing stands only once its file has landed (stand() leaves an
+       empty group until then); its collision is a column from the floor, its FOOTPRINT written here (the model's own
+       extent measured at prep, `foot` [width, depth] before its turn), so the blockers stand before the model does
+       (v24.0: they must be in the array before build() returns).
+       The living room: her altar on the far wall facing the door; her chair before it, Grandmaster Pho's stool at her
+       right and his bowl at its foot; the sofa under the corridor window looking into the room; the TV on the left wall;
+       the coffee table, an armchair, a standing fan. Her room behind its folded partition: her bed with its rail, the
+       commode. The dining room: the table with her hospital folder, the display cabinet with her old photograph. The
+       kitchen: the fridge, the laundry out of the window. Outside: the gate, the shoe rack, a tulsi in its pot, the
+       mango leaves over the door. (Positions are the first layout: each is set again once its model is measured and
+       photographed in place, M5.) */
+    const PROPS = [
+      // key            x      y      z      ry              foot [w, d]   (what)
+      ['w4wheelchair', CHAIR.x, 0, CHAIR.z, 0,              [0.65, 1.05]],  // her chair, facing her altar
+      ['w4stool',      STOOL.x, 0, STOOL.z, -0.4,           [0.40, 0.40]],  // Grandmaster Pho's, at her right
+      ['w4bigbowl',    BOWL.x, 0, BOWL.z, 0,                null],          // his bowl on the floor: he dips here
+      ['w4prayershelf', ALTAR.x, 1.15, ALTAR.z - 0.16, Math.PI, null],      // her altar on the far wall (its base at 1.15: its shelf at 1.5)
+      ['w4altartray',  ALTAR.x, 0, ALTAR.z - 0.42, Math.PI, null],          // the brass tray before it, on the floor
+      ['w4vilakku',    ALTAR.x + 0.02, 0.03, ALTAR.z - 0.42, 0, null],      // the kuthu vilakku on the tray (lit by Mala in the blessing)
+      ['w4frameport',  0.78, 1.25, ALTAR.z - 0.03, Math.PI, null],          // Appa's photograph, on the wall at the altar's right
+      ['w4garland',    0.78, 1.63, ALTAR.z - 0.07, Math.PI, null],          // its garland, fresh
+      ['w4sofa',       1.72, 0, FL.face + 0.45, 0,          [1.90, 0.85]],  // under the corridor window, looking in
+      ['w4coffee',     1.72, 0, 1.62, 0,                    [1.10, 0.55]],
+      ['w4pilltray',   1.95, 0.42, 1.62, 0.3,               null],          // her medicine tray on the coffee table (its height set once the table is measured)
+      ['w4armchair',   2.42, 0, 2.62, -1.95,                [0.85, 0.80]],
+      ['w4standfan',   2.62, 0, 1.05, -2.4,                 [0.45, 0.45]],
+      ['w4tvconsole',  ROOMS.living.x0 + 0.24, 0, 1.85, Math.PI / 2, [1.50, 0.45]],
+      ['w4clock',      ROOMS.living.x0 + 0.02, 2.02, 1.85, Math.PI / 2, null],
+      ['w4hugger',     1.0, FL.ceil - 0.02, 2.05, 0,        null],          // the living room's ceiling fan (turned in the frame)
+      ['w4tubelight',  1.0, FL.ceil - 0.01, 3.65, 0,        null],          // the tube that dies in the blessing
+      ['w4hugger',     4.7, FL.ceil - 0.02, 1.8, 0,         null],          // her room's
+      ['w4tubelight',  4.8, FL.ceil - 0.01, 6.0, Math.PI / 2, null],        // the dining room's
+      ['w4phonetable', 4.45, 0, ROOMS.passage.z0 + 0.2, 0,  [0.50, 0.38]],  // in the passage, against her room's back wall
+      // her room
+      ['w4bed',        5.95, 0, 1.75, -Math.PI / 2,          [1.00, 2.00]],
+      ['w4commode',    4.95, 0, 0.75, 0.2,                  [0.55, 0.55]],
+      // the dining room and the kitchen
+      ['w4cabinet',    ROOMS.dining.x0 + 0.24, 0, 6.15, Math.PI / 2, [1.00, 0.42]],
+      ['w4dintable',   4.85, 0, 6.65, Math.PI / 2,          [1.20, 0.80]],
+      ['w4dinechair',  4.25, 0, 6.35, Math.PI / 2,          [0.45, 0.45]],
+      ['w4dinechair',  4.25, 0, 6.95, Math.PI / 2,          [0.45, 0.45]],
+      ['w4dinechair',  5.45, 0, 6.35, -Math.PI / 2,         [0.45, 0.45]],
+      ['w4dinechair',  5.45, 0, 6.95, -Math.PI / 2,         [0.45, 0.45]],
+      ['w4folder',     4.8, 0.77, 6.4, 0.25,                null],          // her hospital letters, on the table
+      ['w4fridge',     ROOMS.dining.x1 - 0.36, 0, 8.7, -Math.PI / 2, [0.60, 0.65]],
+      ['w4poles',      5.55, 1.15, FL.z1 + 0.55, 0,         null],          // the laundry out of the kitchen window
+      // outside her door
+      ['w4gate',       0, FL.corr, -0.09, 0,                null],          // the steel grille gate, shut behind them in play
+      ['w4thoranam',   0, 2.16, -0.03, 0,                   null],          // mango leaves over the door
+      ['w4shoerack',   -1.55, FL.corr, -0.22, Math.PI,      null],
+      ['w4tulsi',      1.35, FL.corr, -1.45, 0,             null]
+    ];
+    const things = {};
+    for (const [key, x, y, z, ry, foot] of PROPS) {
+      const g = stand(key, x, y, z, ry);
+      (things[key] = things[key] || []).push(g);
+      /* (the footprint as a column, turned with the thing: blockers() takes its box in the world, which holds it whole) */
+      if (foot) solidBox(foot[0], 1.2, foot[1], x, 0.6, z, ry);
+    }
     /* ================================================================ PLAY (M6: the phases of the plan's §4.1 to §4.3)
        FIRST LIGHT (M5): the flat stands, walked, and nothing in it plays yet. The phase string is the save's receipt
        (v7.3); every later phase will be applied from it here. */

@@ -39,7 +39,7 @@
     /* where people and things stand (c_people.js, c_props.js read these): her chair before her altar, a metre and a bit
        out; Grandmaster Pho's stool at her right; his bowl on the floor at the chair's foot */
     const ALTAR = { x: -0.15, z: 5.15, shelf: 1.50 };
-    const CHAIR = { x: -0.15, z: 3.85, ry: Math.PI };       // she faces her altar (+z): a body at 0 faces +z, so ry 0... set where cast
+    const CHAIR = { x: -0.15, z: 3.85, ry: 0 };             // she faces her altar (+z): a body and a thing at a turn of 0 face +z
     const STOOL = { x: 0.62, z: 3.55 };
     const BOWL = { x: 0.35, z: 3.20 };
 
