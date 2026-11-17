@@ -137,9 +137,12 @@ export function makeVision(THREE, renderer, opts = {}) {
         vec3 col = mix(c, vec3(1.0) - c, inv);
         col += uLineCol * e * uLine * inv;
         /* the front: a band of light where the wave is, every line in it burning */
-        float bw = max(0.05, uBand + uR * 0.03);                 // (a thin line through the room, wider as it runs out)
+        /* the FRONT: a thin line of light where the wave is now (12 cm through the room, wider as it runs out), a faint
+           glow of its own on every surface it crosses, and every edge it crosses burning in it (second light, 17 Nov: at
+           0.05 the front read on a flat floor only as the edge of the negative, not as a wave of light passing) */
+        float bw = max(0.05, uBand + uR * 0.02);
         float band = exp(-pow((dist - uR) / bw, 2.0)) * uMoving * uInvert;
-        col += uFront * band * (0.05 + 2.8 * e);
+        col += uFront * band * (0.22 + 2.6 * e);
         /* the spirits, with their glow (the target's smaller levels), where the vision has them. LAID ON, never added:
            the vision turns a dark room nearly white, and light added to white is lost; a colour laid over by its own
            strength reads on a white room and on a black one alike (the body faint, the outline burning) */

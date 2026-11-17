@@ -1,4 +1,166 @@
 {
+ "_motions": {
+  "aturn": {
+   "credits": 10,
+   "duration": 5.0,
+   "expires_at": 1795211333639,
+   "prompt": "An old man standing still and calm slowly turns his head and shoulders to look at someone to his right, holds the look steadily, then slowly turns back to face forward.",
+   "size": 16826064,
+   "task": "01a1eb7b-5974-7745-b013-2ee3eb765f46"
+  },
+  "claw": {
+   "credits": 10,
+   "duration": 5.0,
+   "expires_at": 1795211368068,
+   "prompt": "A person crouched low clutches and claws with both hands at something in front of it, shoulders straining, the head thrown back.",
+   "size": 16826064,
+   "task": "01a1eb7b-5928-72b9-9e45-48b0c40d3a10"
+  },
+  "cling": {
+   "credits": 10,
+   "duration": 8.0,
+   "expires_at": 1795211340241,
+   "prompt": "A thin person crouches low and hunched, knees deeply bent and drawn up, both arms wrapped tightly forward around something in front of its chest, the head low and pressed forward, breathing slowly, almost motionless.",
+   "size": 16954704,
+   "task": "01a1eb7b-59d7-7715-8096-b5b534061524"
+  },
+  "crawl": {
+   "credits": 10,
+   "duration": 6.0,
+   "expires_at": 1795211353424,
+   "prompt": "A person crawls slowly forward on hands and knees close to the floor, head hanging low, moving in a jerky, uneven way, pausing and starting again.",
+   "size": 16868848,
+   "task": "01a1eb7b-5999-7741-ae85-6c4e341fc898"
+  },
+  "creep": {
+   "credits": 10,
+   "duration": 6.0,
+   "expires_at": 1795211336639,
+   "prompt": "A person walks slowly forward bent far over at the waist, the arms hanging loose toward the floor, dragging its feet, the head low and swaying.",
+   "size": 16868848,
+   "task": "01a1eb7b-58d6-76d8-81b4-bed9a8105f6b"
+  },
+  "cry": {
+   "credits": 10,
+   "duration": 5.0,
+   "expires_at": 1795211321125,
+   "prompt": "A person crouched low throws its head back and its arms out wide, the whole body arching and shaking as if screaming.",
+   "size": 16826064,
+   "task": "01a1eb7b-5907-7749-9721-6f3a728bf79b"
+  },
+  "kneelhold": {
+   "credits": 10,
+   "duration": 6.0,
+   "expires_at": 1795211363889,
+   "prompt": "A person kneels down on one knee beside a chair and takes the hand of someone sitting in it in both hands, holding it gently and looking up at them.",
+   "size": 16868848,
+   "task": "01a1eb7b-5968-71d8-a3b1-372149de280a"
+  },
+  "lamp": {
+   "credits": 10,
+   "duration": 6.0,
+   "expires_at": 1795211344429,
+   "prompt": "An elderly woman standing in front of a shelf at chest height reaches forward with her right hand to light a small oil lamp, then steps back slightly, presses her palms together in front of her chest and bows her head.",
+   "size": 16868848,
+   "task": "01a1eb7b-597b-76f2-a823-0db53123b8d9"
+  },
+  "lightlamp": {
+   "credits": 10,
+   "duration": 6.0,
+   "expires_at": 1795211306816,
+   "prompt": "A woman standing in front of a shelf at head height reaches up with her right hand to light a small oil lamp with a match, then shakes the match out and presses her palms together in front of her chest, bowing her head slightly.",
+   "size": 16868848,
+   "task": "01a1eb7b-5958-7045-a632-7491cf69d23f"
+  },
+  "lumber": {
+   "credits": 10,
+   "duration": 6.0,
+   "expires_at": 1795211351242,
+   "prompt": "A very large heavy person walks slowly forward with a hunched back, the shoulders rolling with each heavy step and the arms swinging loosely.",
+   "size": 2789136,
+   "task": "01a1eb7b-593b-7236-96f7-42662b11be6c"
+  },
+  "oturn": {
+   "credits": 10,
+   "duration": 5.0,
+   "expires_at": 1795211300482,
+   "prompt": "A person crouched low with its arms wrapped forward around something slowly turns its head all the way to look back over its right shoulder, holds the stare, then slowly turns back.",
+   "size": 16826064,
+   "task": "01a1eb7b-58cb-729c-9ac2-7531a3243d37"
+  },
+  "rise": {
+   "credits": 10,
+   "duration": 5.0,
+   "expires_at": 1795211312565,
+   "prompt": "An elderly woman sitting in a chair puts both hands on the armrests, leans forward and slowly pushes herself up to standing, unsteady at first, then straightens and stands still.",
+   "size": 16826064,
+   "task": "01a1eb7b-5903-76e4-a4ee-44ee1ef97f5d"
+  },
+  "rush": {
+   "credits": 10,
+   "duration": 3.0,
+   "expires_at": 1795211360511,
+   "prompt": "A man standing suddenly lunges forward two or three quick steps with one arm reaching out in alarm, then stops.",
+   "size": 16768672,
+   "task": "01a1eb7b-597a-713c-b017-cd2a3fe4f86d"
+  },
+  "scream": {
+   "credits": 10,
+   "duration": 4.0,
+   "expires_at": 1795211325335,
+   "prompt": "A woman standing presses both hands to her mouth in fear, then cries out with her hands raised to her face, stepping back.",
+   "size": 16825904,
+   "task": "01a1eb7b-5923-77eb-886c-3a1ceb605172"
+  },
+  "steps": {
+   "credits": 10,
+   "duration": 6.0,
+   "expires_at": 1795211345065,
+   "prompt": "An elderly woman who has just stood up takes slow, careful, unsteady steps forward, arms a little out from her sides for balance, then steadies and walks slowly on.",
+   "size": 16868848,
+   "task": "01a1eb7b-5926-70d1-81bd-50c905765d9e"
+  },
+  "struggle": {
+   "credits": 10,
+   "duration": 6.0,
+   "expires_at": 1795211329648,
+   "prompt": "A man pushes forward against someone holding him back around the chest from behind, twisting and straining to get free, then gives up, goes still and lowers his head.",
+   "size": 16868848,
+   "task": "01a1eb7b-5887-754a-8876-48747964be94"
+  },
+  "torn": {
+   "credits": 10,
+   "duration": 3.0,
+   "expires_at": 1795211319264,
+   "prompt": "A person is violently pulled backwards off something in front of it, its arms flung forward, tumbling back.",
+   "size": 16768672,
+   "task": "01a1eb7b-5953-7475-bce7-56181a09eacc"
+  },
+  "trance": {
+   "credits": 10,
+   "duration": 10.0,
+   "expires_at": 1795211314579,
+   "prompt": "An elderly woman sitting in a chair takes a deep slow breath and sits very still, then slowly straightens her back and lifts her head, her eyes open wide, both open hands rising slowly up in front of her with a fine tremor, her upper body beginning to sway slowly in a small circle.",
+   "size": 16931312,
+   "task": "01a1eb7b-58d0-73ba-9010-d81df0a7dd0c"
+  },
+  "wsit": {
+   "credits": 10,
+   "duration": 8.0,
+   "expires_at": 1795211304131,
+   "prompt": "An elderly woman sits in a wheelchair with her hands resting in her lap, breathing slowly and tiredly, shoulders a little rounded, her head turning slightly to one side and back again, otherwise very still.",
+   "size": 16954704,
+   "task": "01a1eb7b-589d-75dd-aea5-f369f4133740"
+  },
+  "wturn": {
+   "credits": 10,
+   "duration": 4.0,
+   "expires_at": 1795211357899,
+   "prompt": "An elderly woman sitting in a chair slowly turns her head and shoulders to look at someone standing to her right, holds the look for a moment, then slowly turns back to face forward.",
+   "size": 16825904,
+   "task": "01a1eb7b-5993-757e-9532-e86fd9d105bb"
+  }
+ },
  "amma": {
   "credits": 40,
   "expires_at": 1795210840520,
@@ -38,6 +200,48 @@
   "sizes": {
    "glb": 74529548,
    "pre": 15876664
+  },
+  "takes": {
+   "lamp": {
+    "credits": 3,
+    "motion": "01a1eb7b-597b-76f2-a823-0db53123b8d9",
+    "size": 79690196,
+    "task": "01a1eb86-2871-77e0-bce6-100e2bc33dc0"
+   },
+   "lib": {
+    "actions": [
+     307
+    ],
+    "task": "01a1eb7c-fa02-7609-9c43-0c1012ddd5cb"
+   },
+   "rise": {
+    "credits": 3,
+    "motion": "01a1eb7b-5903-76e4-a4ee-44ee1ef97f5d",
+    "size": 79553956,
+    "task": "01a1eb86-28cc-76a4-89f8-820a6b8e3d64"
+   },
+   "steps": {
+    "credits": 3,
+    "motion": "01a1eb7b-5926-70d1-81bd-50c905765d9e",
+    "size": 79690220,
+    "task": "01a1eb86-279b-75ed-8ef6-f1bebd45a2e9"
+   },
+   "trance": {
+    "credits": 3,
+    "motion": "01a1eb7b-58d0-73ba-9010-d81df0a7dd0c",
+    "size": 80235148,
+    "task": "01a1eb86-28ba-7391-bec5-a0b1a3baf796"
+   },
+   "wsit": {
+    "credits": 3,
+    "motion": "01a1eb7b-589d-75dd-aea5-f369f4133740",
+    "size": 79962624,
+    "task": "01a1eb86-287f-729e-b13f-e7ab980a06e8"
+   },
+   "wturn": {
+    "motion": "01a1eb7b-5993-757e-9532-e86fd9d105bb",
+    "task": "01a1eb7d-b928-72d6-94c8-5e877c7f8fcf"
+   }
   }
  },
  "appa": {
@@ -79,6 +283,272 @@
   "sizes": {
    "glb": 54087656,
    "pre": 9009876
+  },
+  "takes": {
+   "aturn": {
+    "credits": 3,
+    "motion": "01a1eb7b-5974-7745-b013-2ee3eb765f46",
+    "size": 58564668,
+    "task": "01a1eb84-101c-7481-be9d-7433ab0a2a72"
+   },
+   "lib": {
+    "actions": [
+     243
+    ],
+    "credits": 3,
+    "size": 59229136,
+    "task": "01a1eb83-4824-77fe-99f5-b7f10a280fe0"
+   }
+  }
+ },
+ "armchair": {
+  "image": "masters/v27.0/props/refs/armchair-2k.png",
+  "image_to_3d": "01a1eb8b-0aee-75e8-b106-d2bedb069ac1",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "bigbowl": {
+  "credits": 40,
+  "expires_at": 1795212425035,
+  "image": "masters/v27.0/props/refs/bigbowl-2k.png",
+  "image_to_3d": "01a1eb85-1adc-77f4-b87f-ad55c2c00cf9",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 97968264
+  }
+ },
+ "cabinet": {
+  "credits": 40,
+  "expires_at": 1795212345199,
+  "image": "masters/v27.0/props/refs/cabinet-2k.png",
+  "image_to_3d": "01a1eb85-3955-7659-ab37-9fe54952c094",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 58723240
+  }
+ },
+ "dinechair": {
+  "credits": 40,
+  "expires_at": 1795212294745,
+  "image": "masters/v27.0/props/refs/dinechair-2k.png",
+  "image_to_3d": "01a1eb85-4d86-707b-a622-fea10eba8de6",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 50430464
+  }
+ },
+ "diningtable": {
+  "credits": 40,
+  "expires_at": 1795212306797,
+  "image": "masters/v27.0/props/refs/diningtable-2k.png",
+  "image_to_3d": "01a1eb85-4404-77ff-a614-c9fdd33226b8",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 56116252
+  }
+ },
+ "folder": {
+  "image": "masters/v27.0/props/refs/folder-2k.png",
+  "image_to_3d": "01a1eb8a-e153-7292-926b-65603cc18305",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "frameport": {
+  "image": "masters/v27.0/props/refs/frameport-2k.png",
+  "image_to_3d": "01a1eb8a-fac8-77e6-b447-86f294daa6f8",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "framesmall": {
+  "credits": 40,
+  "expires_at": 1795212363526,
+  "image": "masters/v27.0/props/refs/framesmall-2k.png",
+  "image_to_3d": "01a1eb85-5691-730c-98ea-6d8a8d5ed5f9",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 40650708
+  }
+ },
+ "gate": {
+  "image": "masters/v27.0/props/refs/gate-2k.png",
+  "image_to_3d": "01a1eb8a-f19d-774d-9b20-02643ad9cbe1",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "hugger": {
+  "credits": 40,
+  "expires_at": 1795212228755,
+  "image": "masters/v27.0/props/refs/hugger-2k.png",
+  "image_to_3d": "01a1eb85-634f-739f-9b21-49ad46bb26f5",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 26374468
   }
  },
  "large": {
@@ -120,6 +590,14 @@
   "sizes": {
    "glb": 68337932,
    "pre": 14261076
+  },
+  "takes": {
+   "lumber": {
+    "credits": 3,
+    "motion": "01a1eb7b-593b-7236-96f7-42662b11be6c",
+    "size": 73269664,
+    "task": "01a1eb83-0ad0-7716-951e-17599a51779e"
+   }
   }
  },
  "mala": {
@@ -161,6 +639,25 @@
   "sizes": {
    "glb": 58186288,
    "pre": 14652324
+  },
+  "takes": {
+   "lib": {
+    "actions": [
+     243,
+     47,
+     56,
+     314
+    ],
+    "credits": 12,
+    "size": 66563128,
+    "task": "01a1eb7c-fa02-740a-aa14-89fccb205dce"
+   },
+   "lightlamp": {
+    "credits": 3,
+    "motion": "01a1eb7b-5958-7045-a632-7491cf69d23f",
+    "size": 63738476,
+    "task": "01a1eb82-3be1-7757-bba1-4337af7a3f34"
+   }
   }
  },
  "oppress": {
@@ -202,6 +699,63 @@
   "sizes": {
    "glb": 73305696,
    "pre": 17870344
+  },
+  "takes": {
+   "claw": {
+    "credits": 3,
+    "motion": "01a1eb7b-5928-72b9-9e45-48b0c40d3a10",
+    "size": 79341168,
+    "task": "01a1eb87-3809-70ba-87c8-51d62df77950"
+   },
+   "cling": {
+    "credits": 3,
+    "motion": "01a1eb7b-59d7-7715-8096-b5b534061524",
+    "size": 79739852,
+    "task": "01a1eb87-384c-70df-86d2-060b5c74eb58"
+   },
+   "cry": {
+    "motion": "01a1eb7b-5907-7749-9721-6f3a728bf79b",
+    "task": "01a1eb7c-fa0e-75cb-8c35-2c4fa59ab5ad"
+   },
+   "oturn": {
+    "credits": 3,
+    "motion": "01a1eb7b-58cb-729c-9ac2-7531a3243d37",
+    "size": 79341132,
+    "task": "01a1eb87-382d-70f2-81dc-c4053a15e6bf"
+   },
+   "torn": {
+    "credits": 3,
+    "motion": "01a1eb7b-5953-7475-bce7-56181a09eacc",
+    "size": 79075060,
+    "task": "01a1eb87-387c-7783-abb1-92d3bd26f5a6"
+   }
+  }
+ },
+ "prayershelf": {
+  "credits": 40,
+  "expires_at": 1795212408436,
+  "image": "masters/v27.0/props/refs/prayershelf-2k.png",
+  "image_to_3d": "01a1eb84-f2dc-713e-aec7-cfec634198dd",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 67465804
   }
  },
  "ravi": {
@@ -243,6 +797,167 @@
   "sizes": {
    "glb": 59190960,
    "pre": 17200216
+  },
+  "takes": {
+   "kneelhold": {
+    "credits": 3,
+    "motion": "01a1eb7b-5968-71d8-a3b1-372149de280a",
+    "size": 64295560,
+    "task": "01a1eb82-78f1-7624-85e5-5f15c36b098c"
+   },
+   "lib": {
+    "actions": [
+     243,
+     47,
+     56,
+     313
+    ],
+    "credits": 12,
+    "size": 67873860,
+    "task": "01a1eb7c-f993-745c-90aa-3bf1b921d05d"
+   }
+  }
+ },
+ "sofa": {
+  "credits": 40,
+  "expires_at": 1795212354269,
+  "image": "masters/v27.0/props/refs/sofa-2k.png",
+  "image_to_3d": "01a1eb85-2a83-7574-87c4-5eb9a8412678",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 87800660
+  }
+ },
+ "standfan": {
+  "image": "masters/v27.0/props/refs/standfan-2k.png",
+  "image_to_3d": "01a1eb8b-3ad6-76e4-a704-4445b45b0743",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "stool": {
+  "image": "masters/v27.0/props/refs/stool-2k.png",
+  "image_to_3d": "01a1eb8b-2f49-72f9-be97-9e2c80f1a98d",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "tubelight": {
+  "image": "masters/v27.0/props/refs/tubelight-2k.png",
+  "image_to_3d": "01a1eb8b-1b18-711e-b49e-26e1864712f3",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "tvconsole": {
+  "image": "masters/v27.0/props/refs/tvconsole-2k.png",
+  "image_to_3d": "01a1eb8b-25bb-7642-a794-cef8ccc08d31",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "vilakku": {
+  "credits": 40,
+  "expires_at": 1795212214672,
+  "image": "masters/v27.0/props/refs/vilakku-2k.png",
+  "image_to_3d": "01a1eb85-0129-70fa-b18a-3f6f1a147e00",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 77728084
   }
  },
  "wander": {
@@ -284,6 +999,72 @@
   "sizes": {
    "glb": 80545336,
    "pre": 41638604
+  },
+  "takes": {
+   "crawl": {
+    "credits": 3,
+    "motion": "01a1eb7b-5999-7741-ae85-6c4e341fc898",
+    "size": 90022628,
+    "task": "01a1eb88-4971-72fc-9ee3-d6bd0c41f2b6"
+   },
+   "creep": {
+    "motion": "01a1eb7b-58d6-76d8-81b4-bed9a8105f6b",
+    "task": "01a1eb7d-fa3c-71e2-8f68-c38ced6b6711"
+   }
+  }
+ },
+ "waterbowl": {
+  "credits": 40,
+  "expires_at": 1795212382081,
+  "image": "masters/v27.0/props/refs/waterbowl-2k.png",
+  "image_to_3d": "01a1eb85-0a80-71c1-a80d-f559b7712758",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 76767632
+  }
+ },
+ "wheelchair": {
+  "credits": 40,
+  "expires_at": 1795212392537,
+  "image": "masters/v27.0/props/refs/wheelchair-2k.png",
+  "image_to_3d": "01a1eb84-e440-77b4-9569-a510a6bbfeb9",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 80103608
   }
  }
 }

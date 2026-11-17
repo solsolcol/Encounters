@@ -1,0 +1,27 @@
+v27.0 · the motions Meshy's library does not have, asked of its text-to-motion (prime, 10 credits a clip, skeleton-free,
+kept 3 days; laid on a rig for 3 credits). Each prompt is under 400 characters. A clip is judged on the rig that wears
+it, full size, front and side, and measured as a motion (head and hips travel) before it is cast. Her trance is worded
+from docs/research/V27.0-KALI.md §3.7 (what may be shown: a deep breath, stillness, the back straightening, eyes wide,
+a fine tremor, open hands lifting, the head held up, the upper body circling; never a seizure, never clawing).
+
+name       secs prompt
+wsit       8    An elderly woman sits in a wheelchair with her hands resting in her lap, breathing slowly and tiredly, shoulders a little rounded, her head turning slightly to one side and back again, otherwise very still.
+wturn      4    An elderly woman sitting in a chair slowly turns her head and shoulders to look at someone standing to her right, holds the look for a moment, then slowly turns back to face forward.
+trance     10   An elderly woman sitting in a chair takes a deep slow breath and sits very still, then slowly straightens her back and lifts her head, her eyes open wide, both open hands rising slowly up in front of her with a fine tremor, her upper body beginning to sway slowly in a small circle.
+rise       5    An elderly woman sitting in a chair puts both hands on the armrests, leans forward and slowly pushes herself up to standing, unsteady at first, then straightens and stands still.
+steps      6    An elderly woman who has just stood up takes slow, careful, unsteady steps forward, arms a little out from her sides for balance, then steadies and walks slowly on.
+lamp       6    An elderly woman standing in front of a shelf at chest height reaches forward with her right hand to light a small oil lamp, then steps back slightly, presses her palms together in front of her chest and bows her head.
+rush       3    A man standing suddenly lunges forward two or three quick steps with one arm reaching out in alarm, then stops.
+kneelhold  6    A person kneels down on one knee beside a chair and takes the hand of someone sitting in it in both hands, holding it gently and looking up at them.
+struggle   6    A man pushes forward against someone holding him back around the chest from behind, twisting and straining to get free, then gives up, goes still and lowers his head.
+scream     4    A woman standing presses both hands to her mouth in fear, then cries out with her hands raised to her face, stepping back.
+lightlamp  6    A woman standing in front of a shelf at head height reaches up with her right hand to light a small oil lamp with a match, then shakes the match out and presses her palms together in front of her chest, bowing her head slightly.
+aturn      5    An old man standing still and calm slowly turns his head and shoulders to look at someone to his right, holds the look steadily, then slowly turns back to face forward.
+cling      8    A thin person crouches low and hunched, knees deeply bent and drawn up, both arms wrapped tightly forward around something in front of its chest, the head low and pressed forward, breathing slowly, almost motionless.
+oturn      5    A person crouched low with its arms wrapped forward around something slowly turns its head all the way to look back over its right shoulder, holds the stare, then slowly turns back.
+claw       5    A person crouched low clutches and claws with both hands at something in front of it, shoulders straining, the head thrown back.
+cry        5    A person crouched low throws its head back and its arms out wide, the whole body arching and shaking as if screaming.
+torn       3    A person is violently pulled backwards off something in front of it, its arms flung forward, tumbling back.
+crawl      6    A person crawls slowly forward on hands and knees close to the floor, head hanging low, moving in a jerky, uneven way, pausing and starting again.
+creep      6    A person walks slowly forward bent far over at the waist, the arms hanging loose toward the floor, dragging its feet, the head low and swaying.
+lumber     6    A very large heavy person walks slowly forward with a hunched back, the shoulders rolling with each heavy step and the arms swinging loosely.

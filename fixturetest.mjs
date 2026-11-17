@@ -303,6 +303,53 @@ await p.evaluate(() => window.__enc.kit.take('rifle'));
 await until(() => !document.body.classList.contains('weaponUp'), 15000).catch(() => {});
 K.weaponHolsters = await p.evaluate(() => !document.body.classList.contains('weaponUp') && window.__enc.kitDebug().weapon.avail === false);
 
+/* v27.0: HIS OWN HANDS (the fifty-first seam), proved over the rifle the fixture declares: a weapon of `hands: 'own'`
+   forced out takes the hands into its pose and the left hand holds what kit.weaponHold gave it; FIRE spends a round,
+   flicks (p rises above 0 and comes back), throws drops and still reports to the chapter; the HUD says the chapter's
+   words; RELOAD dips (p below 0), owns the hands until the dip is done and fills the bowl again with no magazine
+   counted; a chapter's refusal is said under the reticle and nothing is filled; put away, the pose and the bowl go;
+   and the rifle's declaration comes back as it was */
+K.ownSeam = await p.evaluate(async () => {
+  const E = window.__enc, R = {};
+  const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
+  const poll = async (fn, ms) => { const t0 = performance.now(); while (!fn()) { if (performance.now() - t0 > ms) return false; await frames(1); } return true; };
+  const rifle = window.__CHAPTERS__.chtest.weapon;
+  R.declared = E.weaponDeclare({ hands: 'own', pose: 'bowl', rounds: 3, endless: true, fireGap: 0.05, spray: { count: 6 },
+                                 words: { fire: 'FLICK', reload: 'DIP' }, shot: 'uiclick', reload: 'uiclick', empty: 'uiclick' });
+  const bowl = E.camera.clone(); bowl.name = 'bowlproxy';            // any Object3D will do for the hand to carry
+  E.kit.weaponHold(bowl, { pos: [0, -0.04, -0.12] });
+  E.kit.weaponOut(true);
+  R.posed = await poll(() => { const s = E.ownState(); return s.shown && s.pose === 'bowl' && s.held; }, 60000);
+  R.words = E.ownState().fire.startsWith('FLICK');
+  let maxP = 0;
+  const logA = E.weaponLog.length;
+  R.fires = E.kit.fire() === true && E.ownState().rounds === 2 && E.ownState().anim === 'flick';
+  R.flicks = await poll(() => { maxP = Math.max(maxP, E.ownState().p); return E.ownState().anim === null; }, 60000) && maxP > 0.5;
+  R.logged = E.weaponLog.length === logA + 1 && E.weaponLog[E.weaponLog.length - 1].empty !== true;   // the round went through the shot path (onShot is called on it)
+  E.kit.fire(); await frames(2);
+  R.thrown = await poll(() => E.ownState().drops > 0 || E.ownState().drawn > 0, 20000);
+  /* the dip */
+  let minP = 0;
+  R.dips = E.kit.reload() === true && E.ownState().rounds === 3 && E.ownState().busy === 'reload';
+  R.dipBlocksFire = E.kit.fire() === false;
+  R.dipDone = await poll(() => { minP = Math.min(minP, E.ownState().p); return E.ownState().busy === null && E.ownState().anim === null; }, 60000) && minP < -0.5;
+  R.fullNoop = E.kit.reload() === false;                                   // a full bowl: nothing to do
+  /* a refusal where he stands: said, nothing filled */
+  E.kit.fire(); await frames(1);
+  const st = E.stage, had = st.reloadRefusal; st.reloadRefusal = () => 'Dip it in the large bowl.';
+  R.refused = E.kit.reload() === false && E.ownState().rounds === 2 && (document.getElementById('nofire').textContent || '') === 'Dip it in the large bowl.';
+  st.reloadRefusal = had;
+  /* put away */
+  E.kit.weaponOut(false);
+  R.putAway = await poll(() => { const s = E.ownState(); return !s.shown && !s.held && s.pose !== 'bowl'; }, 60000);
+  /* and the rifle back as it was */
+  E.kit.weaponOut(null);
+  R.rifleBack = E.weaponDeclare(rifle) && E.ownState().fire.startsWith('FIRE') && E.kitDebug().weapon.rounds === 3;
+  window.__ownSeam = R;
+  return Object.values(R).every(v => v === true);
+}).catch((e) => { console.log('ownSeam threw', e && e.message); return false; });
+if (!K.ownSeam) console.log('ownSeam parts:', JSON.stringify(await p.evaluate(() => window.__ownSeam || null)));
+
 // v7.1: a fade in play — the kit's black goes up and comes down on the cutscene element
 K.fadeInPlay = await p.evaluate(() => { window.__enc.kit.fade(1, 0.2); return true; })
   .then(() => p.waitForFunction(() => window.__enc.kitDebug().fade > 0.95, null, { timeout: 30000 }))
@@ -459,6 +506,45 @@ K.renderSeam = await p.evaluate(() => {
       && f(none, true, 3) === 2 && f(null, true, 3) === 2 && f(none, true, 1.5) === 1.5 && f(fx, false, 3) === 2 && f(none, false, 1) === 1
       && E.renderer.getPixelRatio() === f(fx, false, devicePixelRatio);
 }).catch(() => false);
+await settle();
+
+/* v27.0: SPIRIT VISION (the fiftieth seam) — a chapter that declares `vision` has the eye on its HUD (body.hasVision) and
+   V: V opens it (on, its wave going out), a held radius is the radius drawn and its openness the first six metres of it,
+   the pass draws every frame while the wave is out (`drawn`) and stops the frame it is home (the world drawn straight to
+   the screen again), a hold let go while it is shut runs home, the eye button closes it as V does; the spirit handed to
+   ctx.spirit lives on the vision's own layer, which the world's lens never draws; and the pass itself built and ran
+   (`ok`, no error). (kitReset shutting it is proved at the end, with the others a reset clears.) */
+K.visionSeam = await p.evaluate(async () => {
+  const E = window.__enc, R = {};
+  const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
+  const poll = async (fn, ms) => { const t0 = performance.now(); while (!fn()) { if (performance.now() - t0 > ms) return false; await frames(1); } return true; };
+  const s0 = E.vision();
+  R.declared = s0.decl === true && s0.on === false && s0.r === 0 && s0.drawn === 0;
+  const sp = E.chapterWorld().getObjectByName('spirit');
+  R.spiritLayer = !!sp && sp.layers.mask === (1 << 9) && !E.camera.layers.test(sp.layers);
+  R.hud = document.body.classList.contains('hasVision') && !!document.getElementById('visionBtn');
+  document.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyV', key: 'v', bubbles: true }));
+  await frames(2);
+  const s1 = E.vision(); R.keyOpens = s1.on === true && s1.dir === 1 && s1.switches === 1;
+  E.kit.vision({ r: 3, moving: false }); await frames(3);
+  const s2 = E.vision(); R.held = s2.r === 3 && Math.abs(s2.k - 0.5) < 1e-3;
+  await frames(3);
+  const s3 = E.vision(); R.passRuns = s3.drawn > s2.drawn && s3.ok === true && s3.err === null;
+  /* closed by the eye button over the hold: the hold is let go and the wave runs home from 3 m */
+  E.kit.vision(null);
+  document.getElementById('visionBtn').click(); await frames(2);
+  const s4 = E.vision(); R.buttonCloses = s4.on === false && s4.dir === -1 && s4.switches === 2;
+  R.home = await poll(() => E.vision().r === 0 && E.vision().dir === 0, 90000);
+  const d0 = E.vision().drawn; await frames(4);
+  R.passStops = E.vision().drawn === d0;
+  /* a hold let go while shut runs home, never out */
+  E.kit.vision({ r: 2, moving: true }); await frames(2);
+  E.kit.vision(null); await frames(1);
+  R.releaseHome = E.vision().dir === -1 && await poll(() => E.vision().r === 0, 90000);
+  window.__visionSeam = R;
+  return Object.values(R).every(v => v === true);
+}).catch(() => false);
+if (!K.visionSeam) console.log('visionSeam parts:', JSON.stringify(await p.evaluate(() => window.__visionSeam || null)));
 await settle();
 
 /* v22.0: THE COLD (the thirty-third, -fourth and -fifth seams) — kit.chill shows the edge layer with a blur and
@@ -1751,7 +1837,9 @@ const posFilm0 = await p.evaluate(() => ({ x: window.__enc.yaw.position.x, z: wi
 K.filmFromPlay = await filmGo();
 K.filmBackToPlay = await filmBack(false);
 K.filmFadeLifts = await until(() => window.__enc.kit.getFade() < 0.02, 30000).then(() => true, () => false);
+await p.evaluate(() => window.__enc.kit.vision(true));   // v27.0: Spirit Vision open as the film begins, so its close is seen
 K.filmSkip = await filmGo();
+K.visionClosedByFilm = await p.evaluate(() => { const v = window.__enc.vision(); return v.decl === true && v.on === false && v.r === 0 && v.dir === 0 && !document.body.classList.contains('visionOn'); });
 if (K.filmSkip) {
   /* a DECLARED film is refused while the game is not in play (here: another
      film is running) — the 'nope' check below only proves an undeclared key */
@@ -2294,6 +2382,8 @@ K.hposeClearedByReset = await p.evaluate(() => { const e = window.__enc, a = e.a
 K.rainClearedByReset = await p.evaluate(() => { const w = window.__enc.wxState(); return !w.visible && w.k === 0 && w.thunder === 0; });   // v24.0 (S45)
 K.lensClearedByReset = await p.evaluate(() => { const l = window.__enc.lens(); return l.took === false && l.fov === 72; });               // v26.0 (S47)
 K.hushClearedByReset = await p.evaluate(() => { const h = window.__enc.hush(); return h.k === 0 && h.wired === false; });                 // v26.0 (S48)
+/* v27.0 (S50): chapter 1 declares no vision: the swap took the seam down with the fixture (no eye, no state, no class) */
+K.visionGoneWithChapter = await p.evaluate(() => { const v = window.__enc.vision(); return v.decl === false && v.on === false && v.r === 0 && !document.body.classList.contains('hasVision') && !document.body.classList.contains('visionOn'); });
 
 console.log(JSON.stringify(out, null, 1));
 const MUST = ['bootedFixture', 'noChapterAssets', 'blockersFromChapter', 'cardShowsFixture',

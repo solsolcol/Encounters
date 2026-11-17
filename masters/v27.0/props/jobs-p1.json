@@ -1,0 +1,57 @@
+[
+ {
+  "name": "wheelchair",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/wheelchair-2k.png"
+ },
+ {
+  "name": "prayershelf",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/prayershelf-2k.png"
+ },
+ {
+  "name": "vilakku",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/vilakku-2k.png"
+ },
+ {
+  "name": "waterbowl",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/waterbowl-2k.png"
+ },
+ {
+  "name": "bigbowl",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/bigbowl-2k.png"
+ },
+ {
+  "name": "sofa",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/sofa-2k.png"
+ },
+ {
+  "name": "cabinet",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/cabinet-2k.png"
+ },
+ {
+  "name": "diningtable",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/diningtable-2k.png"
+ },
+ {
+  "name": "dinechair",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/dinechair-2k.png"
+ },
+ {
+  "name": "framesmall",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/framesmall-2k.png"
+ },
+ {
+  "name": "hugger",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/hugger-2k.png"
+ }
+]

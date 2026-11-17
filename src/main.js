@@ -2077,6 +2077,14 @@ let weaponRounds = 0, weaponMags = 0, weaponBusy = null, weaponFlash = null, wea
    clock, so they can never disagree about when a shot happened. */
 let weaponFlashObj = null, weaponFlashKey = null, weaponFlashCards = [], weaponFlashN = 0, weaponFlashDrawn = false;
 let weaponShown = false, weaponLastFire = 0;
+/* v27.0: his own hands (the holy water): the thing in his left hand, where, whether the pose is up, the flick or dip
+   under way, and the declaration the thing was given for (a new chapter's weapon lets the old one's thing go) */
+let ownObj = null, ownHold = {}, ownShown = false, ownAnim = null, ownFor = null;
+let ownSeed = 20271117;                                   // the drops' own seeded stream, rewound with the weapon
+const ownRnd = () => ((ownSeed = (ownSeed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff);
+const own = { drops: [], pts: null, glow: null, geo: null, pos: null, col: null, N: 160, dot: null };   // the drops' pool
+const _osA = new THREE.Vector3(), _osB = new THREE.Vector3(), _osC = new THREE.Vector3(), _osD = new THREE.Vector3(), _osE = new THREE.Vector3();
+const _osCol = new THREE.Color();
 /* v14.3: A CHAPTER MAY FORBID THE SHOT, and the refusal has to SAY WHY.
    Chad, on the live range: "disable shooting until the player actually
    reaches lane 6. The HUD ui should say something like 'Shooting only
@@ -2764,7 +2772,14 @@ const HPOSE = {
   mouth:   { r: { x: 0.014, y: -0.205, z: -0.104, fing: [-0.12, 0.94, -0.32], palm: [0.0, 0.32, 0.95], f: 'relax' }, l: 'mirror', ldz: -0.010 },
   /* the clasp, so a scene can draw it (play's is kit.pray's own): `pray` at kit.pray's height or `o.y`, and
      `small` — a child's añjali, lower and nearer the body (kit.pray's `small`) */
-  pray: 'clasp', small: 'clasp'
+  pray: 'clasp', small: 'clasp',
+  /* v27.0: THE BOWL OF HOLY WATER (episode 4 chapter 4; the casebook's student, "My part was small; I only held the holy
+     water", S1·16): the left hand low on the left, palm up under a small bowl; the right hand's fingertips over the
+     water. p above 0 is the FLICK (the right hand thrown out and up, the wrist turning, the fingers opening: Master Z's
+     own way, S3·01); p below 0 the DIP (the fingertips down into the water). Its numbers are set in the pose lab */
+  bowl:    { l: { fx: -0.30, fy: -0.66, z: -0.36, fing: [0.40, 0.10, -0.91], palm: [-0.10, 0.99, 0.05], w: -0.30, d: 0.30, f: 'relax' },
+             r: { rel: [0.02, 0.085, 0.03], fing: [-0.25, -0.80, -0.55], palm: [0.15, -0.55, 0.82], w: -0.30, d: 0.30, f: 'pinch', fp: 'open', fn: 'soft',
+                  relp: [0.11, 0.13, -0.10], fingp: [0.30, 0.45, -0.84], palmp: [0.10, -0.85, -0.50], reln: [0.0, -0.035, -0.005] } }
 };
 const PRAY_SMALL = { y: -0.33, z: -0.31 };
 const HP_GRIP  = { index: 2.3, middle: 2.4, ring: 2.45, pinky: 2.5, thumb: 1.5 };    // the walking curl, this many times over
@@ -2785,6 +2800,7 @@ const hpSnap = hpMk(), hpA = hpMk(), hpB = hpMk(), hpB2 = hpMk(), hpR0 = hpMk(),
 const _hpF = new THREE.Vector3(), _hpP = new THREE.Vector3(), _hpX = new THREE.Vector3(), _hpY = new THREE.Vector3(), _hpZ = new THREE.Vector3();
 const _hpM = new THREE.Matrix4(), _hpQ = new THREE.Quaternion(), _hpV = new THREE.Vector3(), _hpLa = new THREE.Vector3(), _hpLb = new THREE.Vector3();
 const _hpUp = new THREE.Vector3(0, 1, 0);
+const _hpQb = new THREE.Quaternion();     // v27.0: the look a hand turns to by p (fingp/palmp)
 function hpReady() {
   if (!handsReady || !rightOriented || !rightHandModel || !fingerPose || !restPose || !prayerPose) return false;
   if (!hpBonesR) {
@@ -2860,6 +2876,9 @@ const hpHalfH = z => Math.tan(THREE.MathUtils.degToRad(vmCam.fov / 2)) * Math.ab
    left hand steadies, the sticks over its lighter — so the two stay together on every screen. */
 function hpHand(S, mir, P, p, left, outP, outQ, outF, outG, other) {
   hpBasis(S.fing, S.palm, mir, outQ);
+  /* v27.0: a hand may TURN with p (`fingp`/`palmp`: the look it reaches at p 1, the flick of a wrist that throws water
+     off the fingers); a hand that names none keeps its one look, exactly as before */
+  if (S.fingp && p > 0) outQ.slerp(hpBasis(S.fingp, S.palmp || S.palm, mir, _hpQb), Math.min(1, p));
   /* (v23.0 CP6: the palm's offset in the hand is the DRAWN palm's — the left hand is a mirrored copy of the right
      (buildPrayerArm), so its palm is HOLD_PALM_L however its pose is written; a pose that wrote its left out (not
      'mirror') took the right's offset, a point 2.4 cm across the left hand from its palm, and measured the right's
@@ -2867,7 +2886,11 @@ function hpHand(S, mir, P, p, left, outP, outQ, outF, outG, other) {
      so every hand stands where it stood) */
   const hx = left ? -HOLD_PALM.x : mir * HOLD_PALM.x;
   if (S.rel && other) {
-    outG.set(other.x + mir * S.rel[0], other.y + S.rel[1], other.z + S.rel[2]);
+    /* v27.0: and a hand placed by `rel` may move from there by p (`relp` a unit of p above 0, `reln` a unit below:
+       the flick out and up, the dip down into the bowl); a hand that names neither stands exactly where it stood */
+    const dRel = p > 0 ? S.relp : (p < 0 ? S.reln : null), kRel = Math.abs(p);
+    if (dRel) outG.set(other.x + mir * (S.rel[0] + dRel[0] * kRel), other.y + S.rel[1] + dRel[1] * kRel, other.z + S.rel[2] + dRel[2] * kRel);
+    else outG.set(other.x + mir * S.rel[0], other.y + S.rel[1], other.z + S.rel[2]);
     outP.copy(outG).sub(_hpV.set(hx, HOLD_PALM.y, HOLD_PALM.z).applyQuaternion(outQ));
   } else {
     const z = S.z + (P.pz || 0) * p + (left && P.ldz ? P.ldz : 0);
@@ -2880,6 +2903,7 @@ function hpHand(S, mir, P, p, left, outP, outQ, outF, outG, other) {
   for (let i = 0; i < fingerPose.length; i++) {
     hpFingerInto(S.f, i, outF[i]);
     if (S.fp && p > 0) outF[i].slerp(hpFingerInto(S.fp, i, _hpQ), Math.min(1, p));
+    else if (S.fn && p < 0) outF[i].slerp(hpFingerInto(S.fn, i, _hpQ), Math.min(1, -p));   // v27.0: a shape p below 0 blends toward
   }
 }
 function hpArm(q, w, d) {      // the arm's turn from the hand's: A = H·Rx(w)·Ry(d)
@@ -3826,7 +3850,7 @@ function torchToggle() {
    (`kit.vision({ r })`). `stage.onVision(on)` hears the player's every switch. A chapter that declares nothing has no
    button, no key, no target and no sound of it: unchanged by construction (`?visionlab` lends any chapter the defaults,
    for the probes). */
-const VIS_DEFAULTS = { rmax: 70, outSecs: 1.3, inSecs: 1.0, soft: 0.35, band: 0.28, blur: 0.45, vignette: 0.42, line: 0.16, sky: 70,
+const VIS_DEFAULTS = { rmax: 70, outSecs: 1.3, inSecs: 1.0, soft: 0.25, band: 0.12, blur: 0.45, vignette: 0.42, line: 0.16, sky: 70,
                        front: 0x8cf2ff, lineColor: 0x59bfff, heart: null, sound: null };
 const VIS_LAB = /[?&]visionlab\b/.test(location.search);
 const vis = { decl: null, on: false, r: 0, dir: 0, t: 0, k: 0, held: null, fx: null, last: 0, switches: 0, drawn: 0, heartOn: false };
@@ -3914,6 +3938,14 @@ function visionFrame() {
   }
 }
 function visionActive() { return !!vis.decl && (vis.on || vis.r > 0.0005 || !!vis.held); }
+/* a wave let go from a hold (kit.vision(null), or a switch over it) runs on from where it was held toward the state the
+   vision is in: out if it is open, home if it is shut (a hold let go while shut had kept its outward run) */
+function visResume() {
+  const d = vis.decl; if (!d) return;
+  const f = Math.max(0, Math.min(1, vis.r / d.rmax));
+  if (vis.on) { vis.dir = f < 1 ? 1 : 0; vis.t = visCurveInv(f) * d.outSecs; }
+  else { vis.dir = f > 0 ? -1 : 0; vis.t = (1 - visCurveInv(f)) * d.inSecs; }
+}
 /* a spirit: the object's meshes drawn only through the vision, each as a glowing silhouette */
 function ctxSpirit(obj, opts = {}) {
   if (!obj) return null;
@@ -3951,9 +3983,11 @@ function kitVision(v) {
   if (!vis.decl) return null;
   if (v === undefined) return { on: vis.on, r: vis.r, k: vis.k, dir: vis.dir, held: !!vis.held };
   if (v && typeof v === 'object') { vis.held = { r: +v.r || 0, moving: !!v.moving }; return true; }
-  if (v === null) { vis.held = null; return true; }
+  if (v === null) { vis.held = null; visResume(); return true; }
   vis.held = null;
-  return visionSet(!!v, false);
+  const ok = visionSet(!!v, false);
+  visResume();
+  return ok;
 }
 
 /* ---- v12.0: RIFLE MODE — the weapon in his hands ------------------------
@@ -4036,6 +4070,18 @@ const WEAPON_DEFAULTS = {
        flashSecs  how long it is on screen. `weaponFlashT` already ran the
                   light for 0.09 s and the cone shares that clock. */
   flash: '', flashPos: [0.135, -0.091, -0.741], flashSize: 0.18, flashSecs: 0.09,
+  /* v27.0 — HIS OWN HANDS (the fifty-first seam), episode 4 chapter 4's holy water. All default to nothing, so the
+     rifle, the fixture's model-less weapon and episode 1 are untouched by construction.
+       hands      'own': no model; while it is out his own hands take the pose `pose` (kit.handPose's library), the
+                  thing the chapter gives kit.weaponHold rides his LEFT hand, FIRE plays the pose's p up and back
+                  (`flickSecs`: up, held, back) and RELOAD down and back (`dipSecs`); no flash, no muzzle light
+       endless    RELOAD never runs out (no magazines are counted; the HUD's count is the rounds against the bowl's
+                  own `rounds`); a chapter may refuse it where it stands (stage.reloadRefusal() → its words, said)
+       spray      { count, speed, size, color, glow, arc, reach }: drops thrown from his fingertips along the shot to
+                  where it landed (or `reach` metres down the line), a splash where they land; drawn in the world and,
+                  through Spirit Vision, glowing on the vision's own layer
+       words      { fire, reload }: the HUD's two buttons say the chapter's words (FLICK, DIP) */
+  hands: '', pose: '', flickSecs: [0.08, 0.05, 0.30], dipSecs: [0.35, 0.85, 0.40], endless: false, spray: null, words: null,
   clips: { draw: 'Draw', shoot: 'Shoot', reload: 'Reload', hide: 'Hide' },
   rates: { draw: 2.6, shoot: 1.6, reload: 1.6, hide: 2.6 },
   /* §8's measured placement: scale 0.01 (centimetres), a half turn about Y
@@ -4058,6 +4104,11 @@ function weaponSetup(decl) {
     camera.add(weaponFlash);
   }
   weaponPropLoad(weaponDecl.model);
+  /* v27.0: his own hands. A same-chapter replay keeps what the chapter's build() put in his hand (build never runs
+     again); another chapter's weapon lets it go (this runs before that chapter's build, which gives its own) */
+  if (decl !== ownFor) { ownObj = null; ownHold = {}; ownFor = decl; }
+  ownAnim = null; ownSeed = 20271117;
+  weaponWordsSet(weaponDecl.words);
   weaponFlashLoad(weaponDecl.flash);
   for (const k of ['shot', 'reload', 'empty', 'cock']) if (weaponDecl[k]) WARM_WANT.add(weaponDecl[k]);
   /* v13.0: a chapter with unlimited ammunition draws neither the count nor
@@ -4073,6 +4124,8 @@ function weaponTeardown() {
   if (weaponFlash) { camera.remove(weaponFlash); weaponFlash.dispose?.(); weaponFlash = null; }
   weaponFlashDrop();
   weaponPropDrop();
+  if (ownShown) weaponOwnSync(false);            // v27.0: his own hands given back, the bowl let go
+  ownObj = null; ownHold = {}; ownFor = null; ownAnim = null; ownSprayDrop(); weaponWordsSet(null);
   document.body.classList.remove('hasWeapon', 'weaponUp', 'wpnNoAmmo');
   weaponAvailSync();
 }
@@ -4296,6 +4349,7 @@ function weaponAvailSync() {
 function weaponPropSync() {
   const want = weaponWant();
   document.body.classList.toggle('weaponUp', want && state === 'play');
+  if (weaponDecl && weaponDecl.hands === 'own') { weaponOwnSync(want && state === 'play'); return; }   // v27.0
   if (!weaponProp) { weaponShown = false; return; }
   if (want && !weaponShown) {
     weaponShown = true; weaponBusy = 'draw';
@@ -4397,13 +4451,14 @@ function weaponFrame(dt) {
      running — finished, or never started because the rig has no such clip —
      releases the hands; the 'finished' listener below does the same a frame
      earlier for the common case. */
-  if (weaponBusy && weaponBusy !== 'hide') {
+  if (weaponDecl.hands === 'own') { weaponOwnFrame(wnow); ownSprayFrame(wnow); }   // v27.0: the flick, the dip, the drops
+  if (weaponBusy && weaponBusy !== 'hide' && !(weaponDecl.hands === 'own' && ownAnim)) {
     const a = weaponActs && weaponActs[weaponBusy];
     if (!a || !a.isRunning()) weaponBusy = null;
   }
   const pill = $('ammo');
   if (pill && !weaponDecl.unlimited) {
-    const txt = weaponRounds + ' / ' + weaponMags;
+    const txt = weaponRounds + ' / ' + (weaponDecl.endless ? (weaponDecl.rounds | 0) : weaponMags);   // v27.0: a bowl's count is against its own
     if (pill.textContent !== txt) pill.textContent = txt;
     pill.classList.toggle('empty', weaponRounds === 0);
   }
@@ -4549,13 +4604,13 @@ function weaponAssistHit(list, cone) {
    on each refusal past that window, so a second, deliberate press is
    visibly answered rather than silently ignored. On WALL time, because a
    hot phone's dt is clamped (the v7.4 law). */
-function weaponBlockSay() {
+function weaponBlockSay(msg) {
   const el = weaponBlockEl || (weaponBlockEl = $('nofire'));
   if (!el) return;
   const now = performance.now();
   if (now - weaponBlockShown < 900) return;
   weaponBlockShown = now;
-  el.textContent = weaponBlock;
+  el.textContent = msg || weaponBlock;          // v27.0: or the words it is given (a refill refused where he stands)
   el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
   clearTimeout(weaponBlockT);
   weaponBlockT = setTimeout(() => el.classList.remove('on'), 2200);
@@ -4585,6 +4640,7 @@ function weaponFire() {
     if (weaponDecl.empty) snd(weaponDecl.empty, 0.7); else snd('uiclick', 0.3);
     haptic(20);
     weaponLog.push({ t: now, hit: null, empty: true });
+    if (weaponDecl.hands === 'own') ownAnim = { kind: 'flick', t0: clock.getElapsed(), pk: 0 };   // v27.0: a dry flick
     return false;
   }
   if (!weaponDecl.unlimited) weaponRounds--;
@@ -4595,9 +4651,11 @@ function weaponFire() {
   if (weaponPlay('shoot')) weaponBusy = null;
   if (weaponDecl.shot) snd(weaponDecl.shot, 1);
   haptic([30, 20, 40]);
-  weaponFlashT = weaponDecl.flashSecs || 0.09;
-  weaponFlashDrawn = false;                   // v13.1: it owes the screen one frame
-  weaponFlashFire();                          // and the cone the player sees
+  if (weaponDecl.hands !== 'own') {
+    weaponFlashT = weaponDecl.flashSecs || 0.09;
+    weaponFlashDrawn = false;                   // v13.1: it owes the screen one frame
+    weaponFlashFire();                          // and the cone the player sees
+  } else ownAnim = { kind: 'flick', t0: clock.getElapsed(), pk: 0 };   // v27.0: his own hand flicks; no flash
   if (weaponDecl.kick) pitch.rotation.x = Math.min(pitchHi, pitch.rotation.x + weaponDecl.kick);
   weaponRecoilFire();
   weaponRay.setFromCamera({ x: 0, y: 0 }, camera);
@@ -4623,6 +4681,7 @@ function weaponFire() {
       retHitT = setTimeout(() => ret.classList.remove('hit'), 280);   // or it stays red for the rest of the chapter
     }
   }
+  if (weaponDecl.hands === 'own' && weaponDecl.spray) ownSprayThrow(hit ? hit.point : null, weaponRay.ray);   // v27.0: the drops fly where it landed
   if (stage && typeof stage.onShot === 'function') { try { stage.onShot(report); } catch (e) { console.error(e); } }
   return true;
 }
@@ -4632,6 +4691,20 @@ function weaponReload() {
      and nothing on screen asking for it */
   if (weaponDecl.unlimited) return false;
   if (weaponBusy && weaponBusy !== 'draw') return false;
+  /* v27.0: an ENDLESS refill (the bowl dipped again): nothing to do while it is full; the chapter may say where it can
+     be done (stage.reloadRefusal() answers its words, said under the reticle, or nothing) */
+  if (weaponDecl.endless) {
+    if (weaponRounds >= (weaponDecl.rounds | 0)) return false;
+    const why = stage && typeof stage.reloadRefusal === 'function' ? stage.reloadRefusal() : null;
+    if (why) { weaponBlockSay(String(why)); return false; }
+    weaponRounds = weaponDecl.rounds | 0;
+    if (weaponDecl.reload) snd(weaponDecl.reload, 0.9);
+    haptic(40);
+    weaponBusy = 'reload';
+    if (weaponDecl.hands === 'own') ownAnim = { kind: 'dip', t0: clock.getElapsed(), pk: 0 };
+    else if (!weaponPlay('reload')) weaponBusy = null;
+    return true;
+  }
   if (weaponMags <= 0 || weaponRounds >= (weaponDecl.rounds | 0)) { if (weaponDecl.empty) snd(weaponDecl.empty, 0.5); return false; }
   weaponMags--; weaponRounds = weaponDecl.rounds | 0;
   if (weaponDecl.reload) snd(weaponDecl.reload, 0.9);
@@ -4639,6 +4712,142 @@ function weaponReload() {
   weaponBusy = 'reload';
   if (!weaponPlay('reload')) weaponBusy = null;
   return true;
+}
+
+/* ---- v27.0: HIS OWN HANDS — the fifty-first seam (the holy water) ---------
+   A weapon declared with `hands: 'own'` is not a model: while it is out his own hands take its pose (HPOSE[pose]) and the
+   thing the chapter handed kit.weaponHold rides his LEFT hand; FIRE throws the pose's p up and back (the flick: the
+   right hand out and up, the wrist turning, the fingers opening) and RELOAD down and back (the dip), on WALL time (a hot
+   phone's dt is clamped: v9.3), the top of the flick held for at least two drawn frames so it is SEEN (v13.1's law: a
+   thing that must be seen lasts wall time AND a number of frames); a spray of drops flies from his fingertips to where
+   the shot landed. All of it is DERIVED on the frame (v11.1's law): a film takes the hands and lets go of the bowl on its
+   first frame (playCineFn), and when play comes back the pose and the bowl come back with it. While the water is out
+   the weapon owns his hands; a chapter that needs them for something else puts it away first (kit.weaponOut(false)). */
+function weaponOwnSync(up) {
+  const d = weaponDecl;
+  if (up) {
+    if (!d || !d.pose || !HPOSE[d.pose] || !hpReady()) return;      // nothing to draw with until the hands have landed
+    if (!(hp.on && hp.name === d.pose)) kitHandPose(d.pose, 1, { secs: ownShown ? 0.25 : 0.45, p: 0 });
+    if (ownObj && heldPropL !== ownObj) kitHold(ownObj, { hand: 'left', pos: ownHold.pos, rot: ownHold.rot });
+    ownShown = true;
+  } else if (ownShown) {
+    ownShown = false; ownAnim = null;
+    if (weaponBusy === 'reload') weaponBusy = null;
+    if (state === 'play' && d && hp.on && hp.name === d.pose) kitHandPose(null, 0, { secs: 0.35 });   // (a film took them itself)
+    if (ownObj && heldPropL === ownObj) kitHold(null, { hand: 'left' });
+  }
+}
+function weaponOwnFrame(now) {
+  const d = weaponDecl; let p = 0;
+  if (ownAnim) {
+    const S = ownAnim.kind === 'dip' ? d.dipSecs : d.flickSecs, a = S[0], h = S[1], b = S[2];
+    const sm = x => x * x * (3 - 2 * x);
+    let t = now - ownAnim.t0, v = 0;
+    /* the top is held until it has been drawn twice: a flick that is sometimes skipped is not a shorter flick */
+    if (t >= a + h && ownAnim.pk < 2) { ownAnim.t0 = now - (a + h); t = a + h; v = 1; }
+    else if (t < a) v = sm(Math.max(0, t) / a);
+    else if (t < a + h) v = 1;
+    else if (t < a + h + b) v = 1 - sm((t - a - h) / b);
+    else { if (ownAnim.kind === 'dip' && weaponBusy === 'reload') weaponBusy = null; ownAnim = null; }
+    if (ownAnim) { if (v >= 1) ownAnim.pk++; p = ownAnim.kind === 'dip' ? -v : v; }
+  }
+  if (ownShown && hp.on && hp.name === d.pose) hp.p = p;
+}
+/* the HUD's two buttons in the chapter's words (FLICK, DIP), and back to the engine's own */
+function weaponWordsSet(w) {
+  const fb = $('fireBtn'), rb = $('reloadBtn');
+  const f = w && w.fire ? String(w.fire) : null, r = w && w.reload ? String(w.reload) : null;
+  if (fb) { const s = fb.querySelector('[data-t="hud.fire"]'); if (s) s.textContent = f || T('hud.fire'); fb.setAttribute('aria-label', f || T('hud.fire')); }
+  if (rb) rb.setAttribute('aria-label', r || T('hud.reload'));
+}
+/* THE DROPS. One small pool of points in the world (bright on the world's pass) shared with a twin on Spirit Vision's
+   own layer (a glow its pass lays over the inverted world, premultiplied as the spirits are), so the water reads as
+   light whether the vision is open or shut. Thrown from where his fingertips are ON THE SCREEN (the hands are drawn
+   by their own lens: the palm is carried through it to the screen and back out through the world's), each drop on an
+   arc to where the shot landed, a few splashing there. The jitter is the chapter's own seeded stream (rewound with the
+   weapon), so a replay throws the same drops. */
+function ownSprayEnsure() {
+  if (own.pts) return;
+  const sp = (weaponDecl && weaponDecl.spray) || {}, N = own.N, geo = new THREE.BufferGeometry();
+  own.pos = new Float32Array(N * 3); own.col = new Float32Array(N * 3);
+  geo.setAttribute('position', new THREE.BufferAttribute(own.pos, 3).setUsage(THREE.DynamicDrawUsage));
+  geo.setAttribute('color', new THREE.BufferAttribute(own.col, 3).setUsage(THREE.DynamicDrawUsage));
+  geo.setDrawRange(0, 0);
+  if (!own.dot) own.dot = makeSoftDot('rgba(255,255,255,1)', 'rgba(255,255,255,0)');
+  const size = sp.size || 0.03;
+  own.pts = new THREE.Points(geo, new THREE.PointsMaterial({ map: own.dot, size, sizeAttenuation: true, vertexColors: true,
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }));
+  own.glow = new THREE.Points(geo, new THREE.PointsMaterial({ map: own.dot, size: size * 2.4, sizeAttenuation: true, vertexColors: true,
+    transparent: true, depthWrite: false, depthTest: false, fog: false, premultipliedAlpha: true,
+    blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor,
+    blendEquationAlpha: THREE.AddEquation, blendSrcAlpha: THREE.OneFactor, blendDstAlpha: THREE.OneFactor }));
+  own.pts.frustumCulled = own.glow.frustumCulled = false;
+  own.glow.layers.set(VIS_LAYER);
+  own.geo = geo;
+  scene.add(own.pts); scene.add(own.glow);
+}
+function ownSprayDrop() {
+  own.drops.length = 0;
+  if (!own.pts) return;
+  scene.remove(own.pts); scene.remove(own.glow);
+  own.geo.dispose(); own.pts.material.dispose(); own.glow.material.dispose();
+  own.pts = own.glow = own.geo = own.pos = own.col = null;
+}
+/* where his fingertips are, in the world: the right palm carried through the hands' own lens to the screen, and out
+   from the world's lens along that line (`depth` metres) */
+function ownTipWorld(out, depth) {
+  camera.updateMatrixWorld();
+  const o = _osD.setFromMatrixPosition(camera.matrixWorld);
+  const palm = kitHandPalm('right', _osC);
+  if (!palm) return out.set(0.10, -0.16, -depth).applyMatrix4(camera.matrixWorld);
+  vmCam.updateMatrixWorld(); palm.project(vmCam);
+  return out.set(palm.x, palm.y, 0.5).unproject(camera).sub(o).normalize().multiplyScalar(depth).add(o);
+}
+function ownSprayThrow(point, ray) {
+  const sp = weaponDecl && weaponDecl.spray; if (!sp) return;
+  ownSprayEnsure();
+  const now = clock.getElapsed();
+  const start = ownTipWorld(_osA, 0.5);
+  const end = point ? _osB.copy(point) : _osB.copy(ray.direction).multiplyScalar(sp.reach || 6).add(ray.origin);
+  const dist = Math.max(0.3, start.distanceTo(end));
+  const T = Math.max(0.12, Math.min(0.5, dist / (sp.speed || 14)));
+  const n = sp.count || 16;
+  for (let i = 0; i < n; i++) {
+    const spread = dist * 0.05 + 0.03;
+    _osE.set(ownRnd() - 0.5, ownRnd() - 0.5, ownRnd() - 0.5).multiplyScalar(spread);
+    own.drops.push({ a: start.clone().add(_osC.set(ownRnd() - 0.5, ownRnd() - 0.5, ownRnd() - 0.5).multiplyScalar(0.02)),
+                     b: end.clone().add(_osE), t0: now + i * 0.006, T: T * (0.85 + ownRnd() * 0.3),
+                     arc: (sp.arc == null ? 0.07 : sp.arc) * dist, k: 0.55 + ownRnd() * 0.45, splash: i % 3 === 0 });
+  }
+  if (own.drops.length > own.N) own.drops.splice(0, own.drops.length - own.N);
+}
+function ownSprayFrame(now) {
+  if (!own.pts) return;
+  const sp = (weaponDecl && weaponDecl.spray) || {};
+  _osCol.set(sp.color == null ? 0xdcefff : sp.color);
+  const keep = [], P = own.pos, C = own.col, N = own.N; let m = 0;
+  const put = (x, y, z, f) => { if (m >= N) return; P[m * 3] = x; P[m * 3 + 1] = y; P[m * 3 + 2] = z;
+    C[m * 3] = _osCol.r * f; C[m * 3 + 1] = _osCol.g * f; C[m * 3 + 2] = _osCol.b * f; m++; };
+  for (const d of own.drops) {
+    if (d.burst) {
+      const t = now - d.t0; if (t > d.life) continue;
+      put(d.p.x + d.v.x * t, d.p.y + d.v.y * t - 4.9 * t * t, d.p.z + d.v.z * t, d.k * (1 - t / d.life));
+      keep.push(d); continue;
+    }
+    const u = (now - d.t0) / d.T;
+    if (u < 0) { keep.push(d); continue; }
+    if (u >= 1) {
+      if (d.splash) for (let j = 0; j < 3; j++) keep.push({ burst: true, p: d.b, t0: now, life: 0.3,
+        v: new THREE.Vector3((ownRnd() - 0.5) * 1.6, 0.6 + ownRnd() * 0.9, (ownRnd() - 0.5) * 1.6), k: d.k * 0.8 });
+      continue;
+    }
+    const h = d.arc * 4 * u * (1 - u);
+    put(d.a.x + (d.b.x - d.a.x) * u, d.a.y + (d.b.y - d.a.y) * u + h, d.a.z + (d.b.z - d.a.z) * u, d.k * Math.min(1, u / 0.08));
+    keep.push(d);
+  }
+  own.drops = keep;
+  own.geo.setDrawRange(0, m);
+  own.geo.attributes.position.needsUpdate = true; own.geo.attributes.color.needsUpdate = true;
 }
 
 /* ---- presence: the drain without a ghost ---------------------------------
@@ -7617,6 +7826,9 @@ const KIT = {
      button, sets the ammo (a resume), and reads what is left */
   weapon: weaponSetup,
   weaponOut: v => { weaponForce = (v === null || v === undefined) ? null : !!v; weaponPropSync(); },
+  /* v27.0: the thing his LEFT hand carries while a weapon of his own hands is out (the bowl of holy water): given once
+     (build() is the place: a same-chapter replay keeps it), with where it sits in that hand (`pos`, `rot`); null lets go */
+  weaponHold: (obj, o) => { if (ownShown && ownObj && heldPropL === ownObj) kitHold(null, { hand: 'left' }); ownObj = obj || null; ownHold = o || {}; return true; },
   weaponIsOut: () => weaponWant(),
   weaponAds: v => { if (v === undefined) return weaponAds; weaponAds = !!v; weaponAdsSync(); return weaponAds; },
   weaponAvail,
@@ -14654,6 +14866,8 @@ function playCineFn(sceneFn, onDone, startFade = 0) {
   if (hands.k > 0 || hands.was > 0) snap.camRoll = 0;
   handsOff();
   kitLensOff();                    // v26.0: and a scene has the lens (a chapter's own play lens lets go here)
+  /* v27.0: and Spirit Vision is closed at once (a film opens it by holding its radius on its own clock, kit.vision({ r })) */
+  if (vis.decl && (vis.on || vis.r > 0 || vis.held)) { vis.held = null; visionSet(false, true); }
   cineDuck = null;                 // a scene starts with the room at full
   cineMusicK = 1;                  // v6.6: and the music at the chapter's level
   camLens(CAM_FOV);                // v6.12: and on the chapter's own lens
@@ -17440,6 +17654,12 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                        float: vis.fx ? !!vis.fx.floatOk : null, samples: vis.fx ? vis.fx.samples : null, mats: vis.fx && vis.fx.state.mats ? vis.fx.state.mats.size : 0 }
                    : kitVision(v)),
                  visionToggle,
+                 /* v27.0: HIS OWN HANDS (the holy water), for the probes: its state, and a weapon declared over the chapter's
+                    (the fixture proves the seam on a chapter whose own weapon is the rifle) */
+                 ownState: () => ({ shown: ownShown, anim: ownAnim ? ownAnim.kind : null, p: +(hp.p || 0).toFixed(3), pose: hp.on ? hp.name : null,
+                                    held: !!(ownObj && heldPropL === ownObj), drops: own.drops.length, drawn: own.geo ? own.geo.drawRange.count : 0,
+                                    rounds: weaponRounds, busy: weaponBusy, fire: ($('fireBtn')?.textContent || '').trim() }),
+                 weaponDeclare: (d) => { weaponTeardown(); if (d) weaponSetup(d); return !!weaponDecl; },
                  visionAuraNearest: (opts = {}, maxD = 12) => {
                    camera.updateMatrixWorld();
                    const eye = new THREE.Vector3().setFromMatrixPosition(camera.matrixWorld), fwd = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.getWorldQuaternion(new THREE.Quaternion()));

@@ -38,3 +38,55 @@
 #   LOOKED AT full size: amma2 passes (the sari's end across her chest and tucked at the waist; clear space between each
 #   arm and her side; five fingers a hand; both feet down); oppress2 passes. The refs keep amma1 (amma1-a-*) for the record.
 #   Spent on pictures: 53.25 credits (balance read 125.75 -> 72.5: the refused picture charged nothing).
+#
+# ---------------------------------------------------------------------------------------------------------------------
+# 2. THE PEOPLE AND THE SPIRITS: the models, rigs and takes (every id is in masters/v27.0/src/jobs.json)
+# ---------------------------------------------------------------------------------------------------------------------
+#   python3 -I masters/v27.0/meshy27.py model masters/v27.0/people/jobs-r1.json   (ravi mala appa wander large: 200 credits)
+#   python3 -I masters/v27.0/meshy27.py model masters/v27.0/people/jobs-r2.json   (amma oppress: 80)
+#   sh masters/v27.0/rigall.sh amma:1.52 ravi:1.70 mala:1.58 appa:1.66 oppress:1.78 wander:1.35 large:2.10   (35)
+#   the 20 written motions (masters/v27.0/people/MOTIONS.txt; 200): t2m, each skeleton-free, kept three days
+#   sh masters/v27.0/alltakes.sh   (each body's library set and its motions laid on its rig; 3 a take)
+#   TRAP (17 Nov): a take file from Meshy carries the whole body (60 to 90 MB) until mergetakes strips it to its bones;
+#   six laid on one rig at once filled the disk (the downloads died as .part files; the jobs are kept, refetch is free).
+#
+# ---------------------------------------------------------------------------------------------------------------------
+# 3. THE THINGS OF THE FLAT: the reference pictures (masters/v27.0/props/PROMPTS.py has every prompt)
+# ---------------------------------------------------------------------------------------------------------------------
+#   batch 0 (high/2k, 2.75 each): wheelchair 74a84fe6-ba42-4f2c-8cbe-cd64f0aa14ec · prayershelf 82b4d40d-fa22-4d92-99bb-c7c328c0425d
+#     vilakku a37783fd-17af-4f98-9a15-9558c20a54b8 · waterbowl ace572c6-2d70-46a9-8370-c9632bd96277
+#     bigbowl 9607c5c7-0fa8-420b-a5c0-e4704a1266d4 · sofa 6982e87b-a4b1-4dc3-94b8-8609b773eba4
+#     cabinet fc3f574e-3b2e-42c0-9209-6b88de907fbe · diningtable 8900912c-d82e-43cf-9326-ba97fa4dbb6b
+#   batch 1 (four refused by the rate limit, 429, sent again later): frameport 834674af-a94f-44a5-93ba-0fb6e25f0d86 ·
+#     dinechair 6b840bee-b988-4ca6-86d4-ebdeb95479b5 · framesmall 43e3bb88-18fa-430e-b98a-79ee9ac92ee1 ·
+#     hugger b63d1a69-fc65-4dd0-b557-a1e4165a2eee
+#   batch 2: folder 60fbeb7d-fc76-4f47-8aac-7d7c2a773c69 · gate c0745d0d-52cb-4f87-89f5-9829cd523080 ·
+#     garland 4a4471ab-736f-4c2b-8fc0-762910f70a55 · armchair 656ae90e-6992-4fd2-bf2f-bf5b4ac68906 ·
+#     tubelight a48ede09-d2c5-4504-88c4-d6d7ad4a7d15 (3:1 asked, 21:9 given) · tvconsole 52212486-ad4b-47c1-9556-d522cacba52e ·
+#     stool 9b0a0d29-6619-4ba5-810d-fe8ed4b598f8 · standfan 46a63791-da33-4dce-8b47-bfec10f07b4a
+#   LOOKED AT full size (batch 0 and the four of batch 1 that went through): all pass (the wheelchair worn and rusted
+#   with years; the prayer shelf empty, an arched carved canopy; the lamp with a swan finial; the small bowl embossed with
+#   lotus petals; the large one scalloped, flowers floating; the sofa's crocheted doily; the cabinet's blue-and-white
+#   china, brass and two carved elephants). Sent to Meshy: masters/v27.0/props/jobs-p1.json.
+#   TRAP (17 Nov): ten takes' job ids were lost to a race in the take bookkeeping (several takes laid on one body at once
+#   each wrote back the row it read at its start) and their downloads to the full disk; laid again after take_note was
+#   added (meshy27.py): amma wsit trance rise steps lamp · oppress cling oturn claw torn · wander crawl (30 credits).
+#   And four more rows the same race wrote over, though their files came down whole and are kept (takes-mala-kneelhold,
+#   -mala-scream, -ravi-rush, -ravi-struggle): their animation jobs are four of these six of the first wave, which the
+#   ledger lacks (Meshy's task list, read 17 Nov 22:10; a task names neither its rig nor its motion, so which is which
+#   is not known; the other two were superseded): 01a1eb7d-b95d-778f-bf0b-24dd9393251a 01a1eb7d-b98c-700f-b8cc-29d2ab7a375f
+#   01a1eb7d-b935-70f4-8078-317fd6f858ae 01a1eb7d-b929-714e-9120-c67c9955a547 01a1eb7d-b94d-7122-87c4-4e5e696b3e15
+#   01a1eb7d-fa24-713c-b9e6-70601ea34499. All 32 take files are in masters/v27.0/src (each distinct by sha1).
+#   LOOKED AT full size (batch 2): folder, gate, frameport (carved, gilt inner edge, blank), armchair (teak, slatted,
+#   faded palm-print cushions), tubelight, tvconsole (blank screen, no mark), stool (the red one with the hole),
+#   standfan (pale blue blades, no mark): all pass. The garland passes as a thing but lies in a flat oval; the frames
+#   want one HANGING (a U over a frame's top corners): made again as 'garlandhang' (batch 3). Sent to Meshy:
+#   masters/v27.0/props/jobs-p2.json.
+#   batch 3a (medium/2k, 1 each): shoerack d92c54ac-5f88-4488-8461-1bcc28f1b282 · tulsi 52420416-d9db-4902-a7e3-1043f5ee88cc ·
+#     door c8032e24-1630-4191-a44a-93a0d22ac428 · fridge 728b3f95-40ba-47d7-aa17-c27f41ae7686 ·
+#     pilltray a88b7862-1e8d-4e01-b066-d79176cdc96b · clock 6955e3ff-8cd8-4271-853a-17b09d716cd1 ·
+#     phonetable ac77a7f1-6c45-40bb-890b-0fd9c663fd09 · bed a8c42848-be5b-415b-b1f7-ca1736a5d914
+#   (Higgsfield read 31.5 before batch 3: the pictures are nearly spent; batch 3 costs 15.75)
+#   batch 3b: commode 2d8b2420-b617-49ad-914b-e4f326530f93 · poles 6b99d785-3ddf-4b89-baa4-c71431caa577 (21:9 given) ·
+#     thoranam c680a9f9-2d20-4396-8259-87fa37829a14 (21:9 given) · altartray 93b07d6a-a028-4617-a8e4-78b4617d8cf8 ·
+#     coffeetable e1f587d6-87d6-4518-b16f-711ab5c2979d · garlandhang (high) e57a8c80-28b5-41bd-8489-98cb1428e597

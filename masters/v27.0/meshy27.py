@@ -100,6 +100,13 @@ def note(name, **kw):
         L = ledger(); L.setdefault(name, {}).update(kw); save(L)
 
 
+def take_note(name, setname, **kw):
+    """one take's row merged INTO the ledger as it stands under the lock (v27.0, 17 Nov: several takes laid on one body at
+    once each wrote back the whole `takes` it had read at its start, so the last to finish wiped the others' job ids)"""
+    with locked():
+        L = ledger(); L.setdefault(name, {}).setdefault('takes', {}).setdefault(setname, {}).update(kw); save(L)
+
+
 def wait(path, tid, label):
     last = -1
     while True:
@@ -207,11 +214,11 @@ def cmd_anim(name, setname, ids):
     body = {'rig_task_id': L['rig']}
     body.update({'action_id': ids[0]} if len(ids) == 1 else {'action_ids': ids})
     tid = call('POST', '/animations', body)['result']
-    takes = L.get('takes', {}); takes[setname] = {'task': tid, 'actions': ids}; note(name, takes=takes)
+    take_note(name, setname, task=tid, actions=ids)
     print('started animation', name, setname, tid, flush=True)
     t = wait('/animations', tid, 'anim %s %s' % (name, setname))
     size = fetch(t['result']['animation_glb_url'], os.path.join(SRC, 'take-%s-%s.glb' % (name, setname)))
-    takes[setname].update(credits=t.get('consumed_credits'), size=size); note(name, takes=takes)
+    take_note(name, setname, credits=t.get('consumed_credits'), size=size)
     print('animation done', name, setname, size, flush=True)
 
 
@@ -219,10 +226,10 @@ def cmd_motion(name, setname, motion_task):
     L = ledger()[name]
     motion_task = ledger().get('_motions', {}).get(motion_task, {}).get('task', motion_task)   # a motion's name, or its id
     tid = call('POST', '/animations', {'rig_task_id': L['rig'], 'motion_task_id': motion_task})['result']
-    takes = L.get('takes', {}); takes[setname] = {'task': tid, 'motion': motion_task}; note(name, takes=takes)
+    take_note(name, setname, task=tid, motion=motion_task)
     t = wait('/animations', tid, 'motion %s %s' % (name, setname))
     size = fetch(t['result']['animation_glb_url'], os.path.join(SRC, 'take-%s-%s.glb' % (name, setname)))
-    takes[setname].update(credits=t.get('consumed_credits'), size=size); note(name, takes=takes)
+    take_note(name, setname, credits=t.get('consumed_credits'), size=size)
     print('motion done', name, setname, size, flush=True)
 
 

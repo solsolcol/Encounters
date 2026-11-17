@@ -68,6 +68,10 @@
        chapter's target, reload costs a magazine) is proved without the
        download. Three rounds and one spare magazine, so `empty` is reachable. */
     weapon: { item: 'rifle', rounds: 3, mags: 1, fireGap: 0.05, shot: 'uiclick', reload: 'uiclick', empty: 'uiclick' },
+    /* v27.0: SPIRIT VISION (the fiftieth seam), declared with the engine's own look and no sounds of its own: the button,
+       V, the wave out and home, the pass while it is open and the world's own drawing once it is home, a spirit drawn
+       only through it (`ctx.spirit`), a held radius, and kitReset shutting it (fixturetest K.visionSeam) */
+    vision: {},
     words: { presence: 'Something is in the room.' }
   };
 
@@ -410,6 +414,12 @@
         } }
     ];
     if (kit) { kit.objective('Find the marker on the floor'); kit.setPhase('room'); }
+
+    /* v27.0: a SPIRIT for the vision — the fixture's primitives only (it is not part of the game), handed to the engine
+       by ctx.spirit, which moves it to the vision's own layer: the world's pass never draws it */
+    const spirit = new THREE.Mesh(new THREE.SphereGeometry(0.45, 16, 12), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+    spirit.name = 'spirit'; spirit.position.set(0, 1.4, 3.5); world.add(spirit);
+    const spiritFx = ctx.spirit ? ctx.spirit(spirit, { color: 0x66ff88 }) : null;
 
     /* v12.0: a TARGET for the rifle — a board straight down the spawn's
        line of sight, and the two verbs the seam reaches a chapter through:

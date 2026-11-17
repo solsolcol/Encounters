@@ -1,0 +1,42 @@
+[
+ {
+  "name": "folder",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/folder-2k.png"
+ },
+ {
+  "name": "gate",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/gate-2k.png"
+ },
+ {
+  "name": "frameport",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/frameport-2k.png"
+ },
+ {
+  "name": "armchair",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/armchair-2k.png"
+ },
+ {
+  "name": "tubelight",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/tubelight-2k.png"
+ },
+ {
+  "name": "tvconsole",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/tvconsole-2k.png"
+ },
+ {
+  "name": "stool",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/stool-2k.png"
+ },
+ {
+  "name": "standfan",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/standfan-2k.png"
+ }
+]
