@@ -137,7 +137,11 @@ that fits it, with the version it came from.
 - Optimise only in ways that cost no visual quality or fidelity at all. (v15.0)
 - Never compress anything to make room on the working machine ("I dont want to compress anything"): room is made by clearing
   copies and leftovers (old build snapshots, release zips, a bundle's sent pieces, intermediates a recipe remakes), with
-  his yes, never by compressing a file. (v24.54)
+  his yes, never by compressing a file. (v24.54) Since 17 Nov 2026 the clearing itself needs no yes ("When you need to
+  clear disk space, make a judgement on what is safe to clear, and do it without asking me, but make sure it is totally
+  safe and redundant."): only what is totally safe and redundant (a build snapshot Netlify holds, a probe's leftover
+  browser profile, a scratch intermediate a recipe remakes), never a source, never his own files (`$S/b56`, his "old
+  Pho experiment files", stays), never a tool. (v27.0)
 - Adopt an objectively better solution only when very sure of it, and prove that new work has not silently broken or undone earlier fixes. (v14.16)
 - An important person is never drawn up close from a lighter body ("30k triangles up close should never have been
   allowed"): the people the story turns on (Ton, the woman at the bench, the seated masters, the woman lighting the
@@ -225,6 +229,15 @@ that fits it, with the version it came from.
   was reached (16 Nov, until 23 Nov) he switched the session to Opus 5.5 himself and said "Continue exactly where you
   left off", so the rest of v26.18 was built on Opus 5.5 at his word; a new piece of the hall after it goes back to the
   rule. (v26.18)
+- Episode 4 chapter 4 (17 Nov 2026) is researched, planned and then BUILT AUTOMATICALLY, end to end, at full effort,
+  with no approvals asked ("Do all of your research that you mentioned, write out the full build plan, and only once
+  after all that is done, proceed automatically to build the entire chapter out with full maximum effort. Don't wait
+  for my approvals, do it automatically."): what would have been put to him stands on a stated default and is sent to
+  him as it lands. It brings back episodes 1 and 2's horror, thrill and engagement ("The past few episodes and chapters
+  kind of lost the 'horror' feel of the game ... i want to bring that thrill, excitement, and engagement factor back"),
+  with new ways to fight and interact as the live range was in episode 2, and SPIRIT VISION, a HUD button like the
+  torch's (his full description: docs/V27.0-E4C4-PLAN.md §0). Its tracker is docs/V27.0-E4C4-BUILD.md: read it first.
+  (v27.0)
 
 ### How the work is done and checked
 
@@ -1401,8 +1414,9 @@ docs/OPEN-ITEMS.md C14). On his word (docs/OPEN-ITEMS.md
 C13 ac): the hall's own
 theme (four previews sent, C in the game until he says a letter), one word of Ton's ending-A line (`tn3A1`, "roll" to
 "stack"), the small white figure before the Emerald Buddha (not identified, not made).
-Chapter 4 is next after it
-(S1·13, case one: the woman who rose from her wheelchair).
+Chapter 4 (S1·13, case one: the woman who rose from her wheelchair) is BEING BUILT from 17 Nov 2026 at his direction:
+her own HDB flat in Singapore, she speaks English, her family, Pho and the player in the room, the horror brought back,
+a fight, and SPIRIT VISION; **docs/V27.0-E4C4-BUILD.md** (read it first) and docs/V27.0-E4C4-PLAN.md.
 The episode's plan, with what remains his to decide:
 **docs/V24.0-EPISODE4-PLAN.md** (its sixth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is
 still his). S1·11 in two chapters (the master he did not know, who wears the original Sak Yant Ajarn's model; then the
