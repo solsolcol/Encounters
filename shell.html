@@ -27,8 +27,18 @@
      It changes nothing else — light is what a browser draws its own
      controls in when a page declares nothing. The hosted page carries the
      matching <meta> in its head (build.py). */
-  color-scheme:only light;
+  /* v26.18 (Chad, 17 Nov 2026, with a screenshot from Samsung Internet: its HUD's orange bar dark red, its teal bar dark
+     green; his pick, "Try the one line change but make sure it does not affect or break anything unintended"): Samsung
+     Internet's forced dark is its own, and it recolours a page that lists no dark theme of its own, which `only light`
+     is (measured from his screenshot: docs/LEARNINGS.md, v26.18). The page lists one: it IS dark. `light dark` on the
+     root, so a browser that looks for a page's own dark theme finds it; the body pinned to `only light`, so everything
+     the page draws, and every control a browser draws for it, is drawn exactly as before whatever the phone prefers
+     (tools/probes/colorscheme.mjs: every screen identical, pixel for pixel, light and dark, phone and desktop); and a
+     rule under `prefers-color-scheme: dark` that changes nothing, for a browser that looks for one */
+  color-scheme:light dark;
 }
+body{color-scheme:only light}
+@media (prefers-color-scheme: dark){:root{color-scheme:light dark}}
 
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 /* v26.1: THE WORDS AT THEIR OWN SIZE (Chad, 12 Nov 2026, of every phone and browser, "especially samsung browser"; his

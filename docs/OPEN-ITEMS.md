@@ -359,6 +359,14 @@ ways, his pick: (1) declare the game's own dark theme (`color-scheme: dark` and 
 one line, one build; reports differ on whether Samsung Internet 30 honours it, so it is tested on his phone with the
 Labs setting off, and Chrome's own forced dark checked again); (2) draw the HUD's bars on a canvas, which the
 recolouring does not reach (the words and panels would still be recoloured); (3) leave it, and tell players.
+HIS PICK (1), "Try the one line change but make sure it does not affect or break anything unintended": LIVE at v26.18
+build 19 (deploy `6afc4a36ba6888e064b2154e`), `light dark` on the root with the body pinned `only light`, proven to draw
+every screen as before (docs/LEARNINGS.md). Then: "As of 2026, what is the best solution to this samsung problem that
+dont require the end user to change their settings? It is not like i can control my players settings", and "Cant you
+see even the graphics got affected": measured, the world's decoded pictures are toned down about 30 % too. Waiting on his
+phone: does build 19 look like Chrome in Samsung Internet, and if not, its ?diag screenshot (five rows). The setting-free
+fixes if not: the HUD drawn in canvas; the world's textures decoded by the game itself rather than by the browser (both
+put to him with their cost before they are built).
 
 ## D. Not built yet
 

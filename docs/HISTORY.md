@@ -9247,7 +9247,15 @@ What the baseline contains, by release:
   pause after "stay" 7.5 s where it was 4.4). The white building behind the west tents, its front alone until now, is
   made whole: both ends and its back in its front's brick and white, a door and windows, the roof carried past its ends
   with a board round its edges; its front unchanged but for the 8 cm under the roof closed. Build 18, deploy
-  `6afc287e49a1b8ecc541f52e`.
+  `6afc287e49a1b8ecc541f52e`. His screenshot from Samsung Internet the same day (the HUD's bars dark red and dark green,
+  the hall duller): Samsung's own forced dark for websites, which recolours a page that lists no dark theme of its own
+  (`only light`, v15.2, lists none), measured from his picture against the same hall drawn here, and found by research
+  (Samsung's developer notes and forum, developers' reports to Oct 2026) to ignore a page's declarations in its default
+  mode still; it tones down the world's decoded pictures too (the unlit mural and photograph about 30 % darker, the
+  canvas-painted wall unchanged). His pick, the one-line change: `light dark` on the root, the body pinned `only light`,
+  a no-op `prefers-color-scheme: dark` rule, the meta to match; proven to change no drawn pixel in an ordinary browser
+  (tools/probes/colorscheme.mjs); ?diag given three more colour rows (WebGL, WebGL from a decoded picture, a page
+  picture: tools/probes/diagshot.mjs). Build 19, deploy `6afc4a36ba6888e064b2154e`.
 
 ## The sheet, version by version
 

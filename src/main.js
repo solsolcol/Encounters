@@ -16704,7 +16704,8 @@ function anyVisibleMesh(o) {
    actually given, the screen, and two rows of colour — the top row painted by
    the page, the bottom by a canvas, which is what the item views are: a
    browser that repaints images in dark mode shows two rows that do not
-   match. A player never sees it; it is for a screenshot to be sent. */
+   match. A player never sees it; it is for a screenshot to be sent.
+   (v26.18: and a third row drawn by WebGL, as the world itself is.) */
 function showDiag() {
   if (document.getElementById('diagBox')) return;
   const rows = [];
@@ -16751,7 +16752,7 @@ function showDiag() {
   }
   const COLS = ['#ffffff', '#d4af37', '#c0392b', '#63d6c8', '#808080', '#000000'];
   const t = document.createElement('div');
-  t.textContent = 'Colour check — these two rows should look exactly alike:';
+  t.textContent = 'Colour check — these five rows should look exactly alike (page, canvas, 3D, 3D picture, picture):';
   t.style.cssText = 'margin:14px 0 6px';
   box.appendChild(t);
   const row = document.createElement('div'); row.style.cssText = 'display:flex;gap:0';
@@ -16762,6 +16763,48 @@ function showDiag() {
   const g = cv.getContext('2d');
   COLS.forEach((c, i) => { g.fillStyle = c; g.fillRect(i * 44, 0, 44, 44); });
   box.appendChild(cv);
+  /* v26.18: a THIRD row, drawn by WebGL as the world is (Chad, 17 Nov 2026, of Samsung Internet: "Cant you see even the
+     graphics got affected"). A browser's forced dark was measured to leave a 2D canvas alone; whether it tones down the
+     world's own kind of canvas is what this row shows on his phone, beside the two above */
+  const wc = document.createElement('canvas'); wc.width = COLS.length * 44; wc.height = 44;
+  wc.style.cssText = `width:${COLS.length * 44}px;height:44px;display:block;margin-top:6px`;
+  try {
+    const w = wc.getContext('webgl', { antialias: false, alpha: false, preserveDrawingBuffer: true });
+    if (w) { w.enable(w.SCISSOR_TEST);
+      COLS.forEach((c, i) => { const n = parseInt(c.slice(1), 16); w.scissor(i * 44, 0, 44, 44);
+        w.clearColor((n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255, 1); w.clear(w.COLOR_BUFFER_BIT); }); }
+  } catch (e) { console.warn('diag webgl row', e); }
+  box.appendChild(wc);
+  /* and the same colours as a PICTURE, decoded by the browser as the world's textures are (createImageBitmap from the
+     picture's own bytes): drawn by WebGL as a texture (row four), and shown as a page image (row five). A browser that
+     tones down pictures it decodes darkens rows four and five and leaves row three as it is */
+  const pc = document.createElement('canvas'); pc.width = COLS.length * 44; pc.height = 44;
+  const pg = pc.getContext('2d'); COLS.forEach((c, i) => { pg.fillStyle = c; pg.fillRect(i * 44, 0, 44, 44); });
+  const tc = document.createElement('canvas'); tc.width = COLS.length * 44; tc.height = 44;
+  tc.style.cssText = `width:${COLS.length * 44}px;height:44px;display:block;margin-top:6px`;
+  box.appendChild(tc);
+  const im = document.createElement('img'); im.alt = '';
+  im.style.cssText = `width:${COLS.length * 44}px;height:44px;display:block;margin-top:6px`;
+  box.appendChild(im);
+  pc.toBlob((blob) => {
+    if (!blob) return;
+    try { im.src = URL.createObjectURL(blob); } catch (e) { console.warn('diag image row', e); }
+    createImageBitmap(blob).then((bmp) => {
+      const w = tc.getContext('webgl', { antialias: false, alpha: false, preserveDrawingBuffer: true }); if (!w) return;
+      const sh = (type, src) => { const o = w.createShader(type); w.shaderSource(o, src); w.compileShader(o); return o; };
+      const pr = w.createProgram();
+      w.attachShader(pr, sh(w.VERTEX_SHADER, 'attribute vec2 p;varying vec2 u;void main(){u=p*.5+.5;u.y=1.-u.y;gl_Position=vec4(p,0.,1.);}'));
+      w.attachShader(pr, sh(w.FRAGMENT_SHADER, 'precision mediump float;varying vec2 u;uniform sampler2D t;void main(){gl_FragColor=texture2D(t,u);}'));
+      w.linkProgram(pr); w.useProgram(pr);
+      const bf = w.createBuffer(); w.bindBuffer(w.ARRAY_BUFFER, bf); w.bufferData(w.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), w.STATIC_DRAW);
+      const loc = w.getAttribLocation(pr, 'p'); w.enableVertexAttribArray(loc); w.vertexAttribPointer(loc, 2, w.FLOAT, false, 0, 0);
+      const tx = w.createTexture(); w.bindTexture(w.TEXTURE_2D, tx);
+      w.texParameteri(w.TEXTURE_2D, w.TEXTURE_MIN_FILTER, w.NEAREST); w.texParameteri(w.TEXTURE_2D, w.TEXTURE_MAG_FILTER, w.NEAREST);
+      w.texParameteri(w.TEXTURE_2D, w.TEXTURE_WRAP_S, w.CLAMP_TO_EDGE); w.texParameteri(w.TEXTURE_2D, w.TEXTURE_WRAP_T, w.CLAMP_TO_EDGE);
+      w.texImage2D(w.TEXTURE_2D, 0, w.RGBA, w.RGBA, w.UNSIGNED_BYTE, bmp);
+      w.viewport(0, 0, tc.width, tc.height); w.drawArrays(w.TRIANGLE_STRIP, 0, 4);
+    }).catch((e) => console.warn('diag texture row', e));
+  }, 'image/png');
   const x = document.createElement('button');
   x.textContent = 'Close';
   x.style.cssText = 'margin-top:16px;padding:8px 18px;background:#1B1F28;color:#E8E2D4;border:1px solid #2A303C;border-radius:8px;font:inherit';

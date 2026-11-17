@@ -172,6 +172,7 @@ that fits it, with the version it came from.
 - The auntie of episode 1 chapter 3 (`granny`) is overused and is not cast again ("Dont use this auntie as she has been used many times. Use the thai green shoplady that has never been shown to the player before"): the woman at his counter in episode 4 chapter 2 is his own woman in the green blouse (`e4stall`), his pick. Before a model is given a new part, count where the player has already met it and say so. (v25.5)
 - Lersi Chin works by the power of Shiva ("as lersi chin uses the power of shiva"): his chant is "Om Namah Shivaya", three times and nothing else, captioned over "Om. Homage to Shiva."; the white light gathers at his joined hands as he chants it, is sent to the one he clears, and the whole screen goes white and clears. (v25.5)
 - "Finish all of it" (or "what else is not done") means everything HE asked, for the chapter he is working on ("Why are you working on old chapters? I didnt ask for that, did i? I only asked for the latest chapter"): an old chapter's open item or my own finding is never started unasked, only listed for him. (v26.12)
+- A fault that shows only in one browser or device is fixed in the game, never left to a setting players must change ("It is not like i can control my players settings"): a player-side setting is named only as his own stopgap (Samsung Internet's forced dark, docs/OPEN-ITEMS.md C14). (v26.18)
 - Something he drops is closed for good: never ask for it again, and withdraw the ask from every doc that carried it. (v5.23)
 - His own models get no credit row; everyone else's work is credited with its link, and a credit row goes when its asset leaves the game. (v5.23)
 - His words are used exactly (lines, names, descriptions, punctuation), and any correction to them is said out loud. (v21.7)
@@ -1390,7 +1391,7 @@ shot on a desktop, the bench's white seat: deploy `6af934bf3fbc8566ec243132`): t
 play-throughs with the sound on, Continue at every phase and the replay all passed on v26.17).
 His ask of 16 Nov 2026, the next morning's meeting with Grandmaster Pho moved from his bench outside to inside the
 main hall (Ton walking him there from the ground; the inside exactly as his eleven photographs; every film after it
-re-staged), is **docs/V26.18-E4C3-HALL.md**: LIVE at v26.18 (build 18, deploy `6afc287e49a1b8ecc541f52e`): the room built
+re-staged), is **docs/V26.18-E4C3-HALL.md**: LIVE at v26.18 (build 19, deploy `6afc4a36ba6888e064b2154e`): the room built
 in place behind the hall's real front door at its true size, Ton leading him there in one unbroken walk, Grandmaster
 Pho cross-legged on his cushion at the dais, the room's things made from his photographs (the sacred images from real
 photographs first), and every film after the walk inside; with his notes of 17 Nov (the old lady clear of the altar, ending A's petals on a

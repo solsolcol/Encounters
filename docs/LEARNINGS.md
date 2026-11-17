@@ -8831,3 +8831,17 @@ query and getComputedStyle say nothing); `?diag`'s two colour rows (the page's a
 The player's own way out is Samsung Internet's Settings, Labs, "Use website dark theme" (Samsung Developer Relations'
 advice), or the browser's light theme. Before reading a phone's picture as the engine's, check which parts of it are
 HTML: the grey patterned mats in the same picture were the hall's front rows as built, not a recolour.
+
+**And it reaches the world's pictures (measured the same day, after Chad: "Cant you see even the graphics got
+affected").** In the same screenshot the hall's mural and its framed photograph, both drawn unlit and outside the tone map
+(b_world1h.js `mPic`, so their pixels do not depend on where he stands or the light), came out about 30 % darker than the
+same pictures drawn here (the mural's middle 102 to 72, its brightest tenth 126 to 87; the photograph 105 to 77), while the
+terracotta wall beside them, painted by the chapter on a canvas (`mTerra`), was the same (107 and 104). Read: what Samsung
+Internet tones down is the PICTURES it decodes (every texture here is decoded by `createImageBitmap` from its file's bytes),
+not the drawn frame. ?diag now draws five rows (page, 2D canvas, WebGL, WebGL from a decoded picture, a page picture) so a
+phone shows which. The `light dark` declaration (v26.18 build 19) was proven to draw every screen as before in an ordinary
+browser (tools/probes/colorscheme.mjs: the title, the chapter list, the credits, play, the bag, the menu and ?diag, pixel for
+pixel on a phone and a desktop with the reader preferring light and dark; only the root element's own scheme changes, the
+body pinned `only light`; without the pin about a thousand drawn elements change, which the probe catches). Chromium's
+own forced dark leaves the game alone either way (an already dark page), so it is no stand-in for Samsung's: only his phone
+can show whether Samsung honours the declaration.
