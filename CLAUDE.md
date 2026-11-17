@@ -1391,11 +1391,13 @@ shot on a desktop, the bench's white seat: deploy `6af934bf3fbc8566ec243132`): t
 play-throughs with the sound on, Continue at every phase and the replay all passed on v26.17).
 His ask of 16 Nov 2026, the next morning's meeting with Grandmaster Pho moved from his bench outside to inside the
 main hall (Ton walking him there from the ground; the inside exactly as his eleven photographs; every film after it
-re-staged), is **docs/V26.18-E4C3-HALL.md**: LIVE at v26.18 (build 19, deploy `6afc4a36ba6888e064b2154e`): the room built
+re-staged), is **docs/V26.18-E4C3-HALL.md**: LIVE at v26.18 (build 22, deploy `6afc5a02afd87bfe8bd9386b`): the room built
 in place behind the hall's real front door at its true size, Ton leading him there in one unbroken walk, Grandmaster
 Pho cross-legged on his cushion at the dais, the room's things made from his photographs (the sacred images from real
 photographs first), and every film after the walk inside; with his notes of 17 Nov (the old lady clear of the altar, ending A's petals on a
-first play, ending D's lotus paced, the white building behind the west tents made whole). On his word (docs/OPEN-ITEMS.md
+first play, ending D's lotus paced, the white building behind the west tents made whole), and Samsung Internet's dimming of
+every decoded picture gone round in the engine (main.js `PICR`, builds 21 and 22; the page's own colours are still its:
+docs/OPEN-ITEMS.md C14). On his word (docs/OPEN-ITEMS.md
 C13 ac): the hall's own
 theme (four previews sent, C in the game until he says a letter), one word of Ton's ending-A line (`tn3A1`, "roll" to
 "stack"), the small white figure before the Emerald Buddha (not identified, not made).

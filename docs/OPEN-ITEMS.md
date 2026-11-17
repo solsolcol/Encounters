@@ -350,7 +350,7 @@ CLOSED 14 Nov 2026: items 6 to 8 below were put to him together (docs/V26.12-WHA
       on its stand, where his photograph 4 has it, stands between his eye and her and hides her head: moved only on his
       word.
 
-### C14 · Samsung Internet's forced dark recolours the game's HTML (17 Nov 2026, put to him)
+### C14 · Samsung Internet's forced dark recolours the game's HTML and dims its pictures (17 Nov 2026; the pictures fixed at v26.18 build 21)
 
 His screenshot from Samsung Internet: the HUD's bars and words recoloured by the browser's own dark mode for
 websites (measured: docs/LEARNINGS.md, v26.18). The game's `color-scheme: only light` (v15.2) does not stop it. His
@@ -367,6 +367,18 @@ see even the graphics got affected": measured, the world's decoded pictures are 
 phone: does build 19 look like Chrome in Samsung Internet, and if not, its ?diag screenshot (five rows). The setting-free
 fixes if not: the HUD drawn in canvas; the world's textures decoded by the game itself rather than by the browser (both
 put to him with their cost before they are built).
+HIS ?diag (17 Nov, Samsung Internet 31, build 19): rows 1, 4 and 5 dimmed ("Rows 1, 4,5 are dimmed"): the page's colours
+recoloured (the declaration does nothing in Samsung's default mode), every decoded picture exactly 0.70, a canvas and
+WebGL's own drawing exact (docs/LEARNINGS.md). **The world's pictures: FIXED in the game, LIVE at v26.18 build 21**
+(deploy `6afc53223a7521a76d81e038`; build 22 `6afc5a02afd87bfe8bd9386b` adds ?diag's numbers and its video rows): a check
+at the first decode, and on a browser that dims, the pictures decoded by a worker (or, failing that, read back and turned
+back); every other browser keeps its own decode, untouched (main.js `PICR`; tools/probes/picroute.mjs proves it under a
+simulated phone on a JPEG, a WebP and a PNG, and the hall's 449 pictures hash the same). He asked "Does this affect other
+browsers?", "Are you sure whatever you just did is the best way forward" and "Is it sustainable": answered (nothing drawn
+changes elsewhere; it measures itself on every load; never worse than before). WAITING ON HIS PHONE: does the hall look
+like Chrome now, and ?diag again (rows 6 and 7 say which way his phone took; 8 to 10 whether the title's film is dimmed).
+STILL OPEN, his pick when he has seen it: the page's own colours (row 1): the HUD's bars, coloured words, the bag's item
+pictures (page images, row 5): only by drawing them in a canvas; the cost to be put to him first.
 
 ## D. Not built yet
 

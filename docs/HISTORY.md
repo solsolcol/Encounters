@@ -9255,7 +9255,24 @@ What the baseline contains, by release:
   canvas-painted wall unchanged). His pick, the one-line change: `light dark` on the root, the body pinned `only light`,
   a no-op `prefers-color-scheme: dark` rule, the meta to match; proven to change no drawn pixel in an ordinary browser
   (tools/probes/colorscheme.mjs); ?diag given three more colour rows (WebGL, WebGL from a decoded picture, a page
-  picture: tools/probes/diagshot.mjs). Build 19, deploy `6afc4a36ba6888e064b2154e`.
+  picture: tools/probes/diagshot.mjs). Build 19, deploy `6afc4a36ba6888e064b2154e`. His ?diag from Samsung Internet 31 on
+  build 19 ("Rows 1, 4,5 are dimmed"): the declaration did nothing in Samsung's default mode (the page's colours still
+  recoloured, the page told "no dark"); every DECODED picture exactly 0.70 of itself in each channel, a page image and a
+  WebGL texture alike; a 2D canvas and WebGL's own drawing exact. THE PICTURES A BROWSER DIMS (main.js `PICR`, an engine
+  change, every chapter): before the first picture is decoded, a picture the game writes byte by byte is decoded, put on a
+  small chip of its own and read back; a browser that gives it back as written keeps its own decode untouched (every one
+  but his); one that dims is given the pictures decoded by a worker thread (the same decoder, the same pixels; the page's
+  dark mode is not the worker's), or failing that read back from a texture and turned back by the inverse measured
+  (within one step in 255), or failing both the old way. Proved under a simulated phone (`?picsim=dim`, `dimall`):
+  tools/probes/picroute.mjs (a JPEG, a WebP and a PNG of the game's: identical by the worker, within 1 by the read-back,
+  0.70 with the check switched off), and the hall's 449 pictures (1,688 MB) hashed the same in a normal browser and under
+  the simulated phone with the fix. The first read-back way went through a 2D canvas and lost the colour under clear
+  pixels; the probe caught it before it shipped. ?diag gained the values under every row it can read, a worker's decode,
+  the game's own way with what its check measured, and a recorded video three ways (for the title's film). csp, census,
+  hosted, leak and inv pass (leak and inv failed once side by side, starving each other, and passed alone). Build 21,
+  deploy `6afc53223a7521a76d81e038`; build 22 (the video rows recorded reliably), deploy `6afc5a02afd87bfe8bd9386b`. The
+  page's own colours (the HUD's bars, coloured words, the bag's pictures) are still the browser's to recolour: only a
+  canvas escapes it, put to him with its cost (docs/OPEN-ITEMS.md C14).
 
 ## The sheet, version by version
 

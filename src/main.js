@@ -1161,7 +1161,7 @@ function treeKit() {
 /* v15: every engine optimization has a switch, ON by default, so a probe can
    draw the SAME frozen frame with it off and on and compare every pixel —
    the proof that an optimization changed nothing on screen. */
-const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true, lightSets: true, ctxRestore: true, herSounds: true, musicPark: true, lightMem: true, lightSeeds: true, skelMerge: true, ivSharp: true, ivMsaa: true, onePass: true, noGarbage: true, lazyRot: true, fastTwins: true, fastSkin: true, freePics: true, sheetOnce: true, keepShared: true };
+const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: true, vmSkip: true, letterbox: true, lightWarm: true, matSkip: true, boneSkip: true, warmTiny: true, lightSets: true, ctxRestore: true, herSounds: true, musicPark: true, lightMem: true, lightSeeds: true, skelMerge: true, ivSharp: true, ivMsaa: true, onePass: true, noGarbage: true, lazyRot: true, fastTwins: true, fastSkin: true, freePics: true, sheetOnce: true, keepShared: true, picRoute: true };
 /* a probe may switch any of them off from the address (`?opt=boneSkip:0,warmTiny:0`),
    so a switch that acts at LOAD time can be compared build against itself */
 { const m = /[?&]opt=([^&]*)/.exec(location.search);
@@ -1173,6 +1173,171 @@ const OPT = { instCull: true, sphereCull: true, shadowTrim: true, coverSkip: tru
    own measuring done without the overhead (FASTTWINS, FASTSKIN); sheetOnce: a body's sheet set up once, never uploaded
    again for nothing (SHEETONCE); keepShared: a film's full body gives back only what no other body draws (KEEPSHARED).
    No other chapter reads any key: unchanged by construction */
+/* v26.18 · THE PICTURES A BROWSER DIMS (Chad, 17 Nov 2026, of Samsung Internet: "Cant you see even the graphics got
+   affected"; "It is not like i can control my players settings"). His ?diag from Samsung Internet 31 (Chromium 148), its
+   own dark mode on and the page told "no dark": every picture the browser DECODES comes back at 0.70 of itself in each
+   channel, a page image and a WebGL texture made by createImageBitmap alike (255 to 179, 128 to 90, gold 213,174,55 to
+   148,123,39), while a 2D canvas and WebGL's own drawing are exact. Every texture of the world was 30% dark on his phone,
+   and no declaration of the page's turns it off (build 19's, measured on his phone).
+   THE CHECK: before the first picture is decoded, the game writes one picture of its own byte by byte (ramps of grey,
+   red, green and blue and two mixed ones, the same top to bottom so no flip can pass for a change), decodes it as every
+   texture is decoded, puts it on a graphics chip of its own and reads it back. A browser that gives it back as written
+   (every one measured but that one) keeps the path it always took: the decode is the browser's own, bit for bit. One
+   that gives it back CHANGED is offered, in order, the ways round, each proved on the same picture before it is taken:
+   - WORKER: decoded by a worker thread (a page's dark mode is a setting of the page, which a worker does not carry) and
+     handed back whole: the same decoder, the same pixels;
+   - READBACK: the browser's own decode put on the check's chip and read back as the texture holds it (never through a
+     2D canvas, which would premultiply it and lose the colour under every clear pixel), every value turned back by the
+     inverse of the change measured on the check's ramps, and handed over as raw pixels: within a step of 255 of the
+     truth (0.7 sends some two values to one), one picture at a time;
+   - neither proved: the path it always took (nothing is lost that was not lost already).
+   Every Blob the game decodes goes the chosen way (three's loader for the models, loadImageTexture, the rescue, the
+   pictures' recipes: PICS below binds the function wrapped here); a canvas, raw pixels or a video go as they always
+   went. A worker that fails later hands its picture back to the browser's own decode. `?opt=picRoute:0` skips the check;
+   a probe plays his phone with `?picsim=dim` (the page's decodes dimmed 0.7, as measured) or `?picsim=dimall` (the
+   worker's too); __enc.picRoute() says what was measured and chosen, and ?diag shows it. */
+const PICR = { route: 'native', ready: null, m: {}, lut: null, why: '', worker: null, url: '', gl: null, seq: 0, wait: new Map(), queue: Promise.resolve(),
+  sim: (/[?&]picsim=(dimall|dim)\b/.exec(location.search) || [])[1] || '' };
+const picrRaw = typeof window.createImageBitmap === 'function' ? window.createImageBitmap.bind(window) : null;
+const picrDim07 = (a) => { for (let i = 0; i < a.length; i += 4) { a[i] = Math.round(a[i] * 0.7); a[i + 1] = Math.round(a[i + 1] * 0.7); a[i + 2] = Math.round(a[i + 2] * 0.7); } };
+/* (the check's own small chip: kept while the read-back way or a simulation needs it, otherwise let go after the check) */
+function picrGL() {
+  if (PICR.gl && !PICR.gl.isContextLost()) return PICR.gl;
+  const c = document.createElement('canvas'); c.width = c.height = 1;
+  PICR.gl = c.getContext('webgl', { antialias: false, depth: false, stencil: false, alpha: true, preserveDrawingBuffer: false });
+  if (!PICR.gl) throw new Error('no WebGL to read with');
+  return PICR.gl;
+}
+/* (the options a picture made of raw pixels is handed over with: the caller's own, the decode's colour already settled) */
+const picrOpts = (o) => { const f = { colorSpaceConversion: 'none' };
+  for (const k of ['imageOrientation', 'premultiplyAlpha', 'resizeWidth', 'resizeHeight', 'resizeQuality']) if (o && o[k] !== undefined) f[k] = o[k];
+  return f; };
+const picrImage = (px, w, h, o) => picrRaw(new ImageData(new Uint8ClampedArray(px.buffer), w, h), picrOpts(o));
+/* (the browser's own decode; under ?picsim, his phone's 0.7 laid on a decoded Blob, for the probes) */
+const picrNative = (...a) => (PICR.sim && a[0] instanceof Blob && a.length <= 2
+  ? picrRaw(a[0], { premultiplyAlpha: 'none', colorSpaceConversion: (a[1] && a[1].colorSpaceConversion) || 'default' }).then((b) => {
+      const w = b.width, h = b.height, px = picrRead(picrGL(), b); b.close(); picrDim07(px); return picrImage(px, w, h, a[1]); })
+  : picrRaw(...a));
+/* (the check's picture: a PNG written here, never through a canvas, whose read-back a browser may noise) */
+function picrPng() {
+  const W = 256, P = [v => [v, v, v], v => [v, 0, 0], v => [0, v, 0], v => [0, 0, v], v => [v, 255 - v, (v * 97) & 255], v => [255 - v, (v * 31) & 255, v]];
+  const rows = [...P, ...P.slice().reverse()], H = rows.length, raw = new Uint8Array(H * (1 + W * 3)), truth = new Uint8Array(W * H * 4);
+  rows.forEach((f, y) => { let o = y * (1 + W * 3); raw[o++] = 0;
+    for (let x = 0; x < W; x++) { const c = f(x), q = (y * W + x) * 4; for (let k = 0; k < 3; k++) { raw[o++] = c[k]; truth[q + k] = c[k]; } truth[q + 3] = 255; } });
+  const T = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; T[n] = c >>> 0; }
+  const crc = (b) => { let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = T[(c ^ b[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+  const u32 = (n) => [n >>> 24 & 255, n >>> 16 & 255, n >>> 8 & 255, n & 255];
+  const chunk = (type, data) => { const td = new Uint8Array(4 + data.length); for (let i = 0; i < 4; i++) td[i] = type.charCodeAt(i); td.set(data, 4); return [...u32(data.length), ...td, ...u32(crc(td))]; };
+  let a1 = 1, a2 = 0; for (let i = 0; i < raw.length; i++) { a1 = (a1 + raw[i]) % 65521; a2 = (a2 + a1) % 65521; }
+  const n = raw.length, z = new Uint8Array(7 + n + 4);   // (zlib, one stored block: the picture is 9,228 bytes)
+  z.set([0x78, 0x01, 1, n & 255, n >>> 8 & 255, ~n & 255, ~n >>> 8 & 255]); z.set(raw, 7); z.set(u32(((a2 << 16) | a1) >>> 0), 7 + n);
+  const png = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10, ...chunk('IHDR', new Uint8Array([...u32(W), ...u32(H), 8, 2, 0, 0, 0])), ...chunk('IDAT', z), ...chunk('IEND', new Uint8Array(0))]);
+  return { png, truth };
+}
+/* (what a texture made of this picture holds, read back from the chip) */
+function picrRead(gl, bmp) {
+  const w = bmp.width, h = bmp.height, t = gl.createTexture(), fb = gl.createFramebuffer(), px = new Uint8Array(w * h * 4);
+  gl.bindTexture(gl.TEXTURE_2D, t);
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false); gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false); gl.pixelStorei(gl.UNPACK_COLORSPACE_CONVERSION_WEBGL, gl.NONE);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bmp);
+  for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, gl.NEAREST], [gl.TEXTURE_MAG_FILTER, gl.NEAREST], [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k, v);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fb); gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, t, 0);
+  const ok = gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE;
+  if (ok) gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, px);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null); gl.deleteFramebuffer(fb); gl.deleteTexture(t);
+  if (!ok) throw new Error('no read-back');
+  return px;
+}
+function picrMeasure(px, truth) {
+  let max = 0, sum = 0;
+  for (let i = 0; i < truth.length; i += 4) for (let k = 0; k < 3; k++) { const e = Math.abs(px[i + k] - truth[i + k]); if (e > max) max = e; sum += e; }
+  return { max, mean: +(sum / (truth.length * 0.75)).toFixed(2), white: [px[1020], px[1021], px[1022]] };   // (white: grey 255, the first row's last)
+}
+/* (each value read back, per channel, maps to the mean of the true values that read as it; between two read values the
+   line between them; under the first and over the last, the slope from black) */
+function picrLut(px, truth) {
+  return [0, 1, 2].map((k) => {
+    const s = new Float64Array(256), n = new Uint32Array(256), o = new Uint8Array(256), known = [];
+    for (let i = 0; i < truth.length; i += 4) { s[px[i + k]] += truth[i + k]; n[px[i + k]]++; }
+    for (let r = 0; r < 256; r++) if (n[r]) known.push([r, s[r] / n[r]]);
+    if (!known.length) { for (let r = 0; r < 256; r++) o[r] = r; return o; }
+    let j = 0;
+    for (let r = 0; r < 256; r++) {
+      while (j + 1 < known.length && known[j + 1][0] <= r) j++;
+      const [r0, v0] = known[j], nx = known[j + 1];
+      const v = r < r0 ? (r0 ? v0 * r / r0 : v0) : !nx ? (r0 ? v0 * r / r0 : v0) : v0 + (nx[1] - v0) * (r - r0) / (nx[0] - r0);
+      o[r] = Math.max(0, Math.min(255, Math.round(v)));
+    }
+    return o;
+  });
+}
+const PICW_SRC = 'self.onmessage=function(e){var d=e.data;createImageBitmap.apply(self,d.a).then(function(b){' +
+  'if(!d.dim){self.postMessage({i:d.i,b:b},[b]);return;}' +   // (?picsim=dimall: his phone's 0.7 here too)
+  'var c=new OffscreenCanvas(b.width,b.height),g=c.getContext("2d",{willReadFrequently:true});g.drawImage(b,0,0);b.close();' +
+  'var im=g.getImageData(0,0,c.width,c.height),a=im.data;for(var i=0;i<a.length;i+=4){a[i]=Math.round(a[i]*.7);a[i+1]=Math.round(a[i+1]*.7);a[i+2]=Math.round(a[i+2]*.7);}' +
+  'return createImageBitmap(im,{premultiplyAlpha:"none",colorSpaceConversion:"none"}).then(function(x){self.postMessage({i:d.i,b:x},[x]);});' +
+  '}).catch(function(x){self.postMessage({i:d.i,e:String(x&&x.message||x)});});};';
+function picrWorkerDecode(args) {
+  return new Promise((res, rej) => {
+    if (!PICR.worker) {
+      PICR.url = URL.createObjectURL(new Blob([PICW_SRC], { type: 'text/javascript' }));
+      const w = PICR.worker = new Worker(PICR.url);
+      const free = () => { if (PICR.url) { URL.revokeObjectURL(PICR.url); PICR.url = ''; } };
+      w.onmessage = (e) => { free(); const d = e.data, p = PICR.wait.get(d.i); if (!p) return; PICR.wait.delete(d.i); if (d.b) p.res(d.b); else p.rej(new Error(d.e || 'decode failed')); };
+      w.onerror = (e) => { free(); if (e && e.preventDefault) e.preventDefault(); for (const p of PICR.wait.values()) p.rej(new Error('the worker failed')); PICR.wait.clear(); };
+    }
+    const i = ++PICR.seq; PICR.wait.set(i, { res, rej });
+    PICR.worker.postMessage({ i, a: args, dim: PICR.sim === 'dimall' });
+  });
+}
+const picrIn = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('no answer in ' + ms + ' ms')), ms))]);
+/* (READBACK: the browser's decode, every value turned back by the inverse measured) */
+async function picrBack(src, opts) {
+  const o = opts || {}, L = PICR.lut;
+  const b = await picrNative(src, { premultiplyAlpha: 'none', colorSpaceConversion: o.colorSpaceConversion || 'default' });
+  let px, w = b.width, h = b.height;
+  try { px = picrRead(picrGL(), b); } catch (e) { try { b.close(); } catch {} return picrNative(src, opts); }   // (no chip to read with: the browser's own, dimmed but there)
+  try { b.close(); } catch {}
+  const L0 = L[0], L1 = L[1], L2 = L[2];
+  for (let i = 0; i < px.length; i += 4) { px[i] = L0[px[i]]; px[i + 1] = L1[px[i + 1]]; px[i + 2] = L2[px[i + 2]]; }
+  return picrImage(px, w, h, o);
+}
+function picrCheck() {
+  if (PICR.ready) return PICR.ready;
+  return (PICR.ready = (async () => {
+    try {
+      if (!OPT.picRoute) { PICR.why = 'switched off'; return; }
+      const { png, truth } = picrPng(), blob = new Blob([png], { type: 'image/png' }), OP = { premultiplyAlpha: 'none', colorSpaceConversion: 'none' };
+      const read = async (p) => { const b = await p; try { return picrRead(picrGL(), b); } finally { try { b.close(); } catch {} } };
+      const px0 = await read(picrNative(blob, OP)), m0 = PICR.m.native = picrMeasure(px0, truth);
+      if (m0.max <= 8 && m0.mean <= 1.5) return;   // (as written, give or take a privacy browser's noise: the path it always took)
+      try {
+        const m1 = PICR.m.worker = picrMeasure(await read(picrIn(picrWorkerDecode([blob, OP]), 4000)), truth);
+        if (m1.max <= 1 && m1.mean <= 0.5) { PICR.route = 'worker'; return; }
+      } catch (e) { PICR.m.worker = String(e && e.message || e); }
+      try {
+        PICR.lut = picrLut(px0, truth);
+        const m2 = PICR.m.readback = picrMeasure(await read(picrBack(blob, OP)), truth);
+        if (m2.max <= 2 && m2.mean <= 0.6) { PICR.route = 'readback'; return; }
+      } catch (e) { PICR.m.readback = String(e && e.message || e); }
+      PICR.lut = null; PICR.why = 'no way round proved';
+    } catch (e) { PICR.route = 'native'; PICR.lut = null; PICR.why = String(e && e.message || e); }
+    finally {
+      if (PICR.gl && PICR.route !== 'readback' && !PICR.sim) { try { const x = PICR.gl.getExtension('WEBGL_lose_context'); if (x) x.loseContext(); } catch {} PICR.gl = null; }
+      if (PICR.route !== 'worker' && PICR.worker) { try { PICR.worker.terminate(); } catch {} PICR.worker = null; }
+      if (PICR.route !== 'native') console.info('pictures: the browser dims what it decodes; taking the ' + PICR.route + ' way round', JSON.stringify(PICR.m));
+    }
+  })());
+}
+if (picrRaw) window.createImageBitmap = function (img, ...rest) {
+  if (!OPT.picRoute || !(img instanceof Blob)) return picrNative(img, ...rest);
+  return picrCheck().then(() => {
+    if (PICR.route === 'worker') return picrWorkerDecode([img, ...rest]).catch(() => picrNative(img, ...rest));
+    if (PICR.route === 'readback' && rest.length <= 1) return (PICR.queue = PICR.queue.then(() => picrBack(img, rest[0]), () => picrBack(img, rest[0])));
+    return picrNative(img, ...rest);
+  });
+};
 /* v26.11: ONE COPY OF EACH PICTURE (episode 4 chapter 3's speed-ups, the fourth: Chad, 14 Nov 2026, of the question
    whether to free them, "Yes, free the copies (Recommended)"). A picture on the graphics chip is held twice: the chip's
    copy, and the page's own decoded ImageBitmap, which three keeps on its texture in case it must upload again (1,316 MB
@@ -16750,48 +16915,42 @@ function showDiag() {
     const b = document.createElement('b'); b.textContent = k + ': '; d.appendChild(b);
     d.appendChild(document.createTextNode(v)); box.appendChild(d);
   }
-  const COLS = ['#ffffff', '#d4af37', '#c0392b', '#63d6c8', '#808080', '#000000'];
+  const COLS = ['#ffffff', '#d4af37', '#c0392b', '#63d6c8', '#808080', '#000000'], PW = COLS.length * 44;
+  /* v26.18: every row the page can read back carries its values under it (the hex of each square's middle), so his
+     screenshot is read as numbers, not judged by eye; and rows six to ten (below) */
+  const hex = (a, i) => ((1 << 24) | (a[i] << 16) | (a[i + 1] << 8) | a[i + 2]).toString(16).slice(1);
+  const say = (el, text) => { const d = document.createElement('div'); d.style.cssText = 'font-size:11px;color:#9AA3B2;margin:1px 0 0'; d.textContent = text; el.after(d); return d; };
+  const strip = (tag) => { const e = document.createElement(tag); if (tag === 'canvas') { e.width = PW; e.height = 44; }
+    e.style.cssText = `width:${PW}px;height:44px;display:block;margin-top:6px;object-fit:fill`; box.appendChild(e); return e; };
   const t = document.createElement('div');
-  t.textContent = 'Colour check — these five rows should look exactly alike (page, canvas, 3D, 3D picture, picture):';
+  t.textContent = 'Colour check — every row should look exactly alike: page, canvas, 3D, then pictures and a video:';
   t.style.cssText = 'margin:14px 0 6px';
   box.appendChild(t);
   const row = document.createElement('div'); row.style.cssText = 'display:flex;gap:0';
   for (const c of COLS) { const q = document.createElement('div'); q.style.cssText = `width:44px;height:44px;background:${c}`; row.appendChild(q); }
-  box.appendChild(row);
-  const cv = document.createElement('canvas'); cv.width = COLS.length * 44; cv.height = 44;
-  cv.style.cssText = `width:${COLS.length * 44}px;height:44px;display:block;margin-top:6px`;
+  box.appendChild(row); say(row, '1 page (as written: ' + COLS.map(c => c.slice(1)).join(' ') + ')');
+  const cv = strip('canvas');
   const g = cv.getContext('2d');
   COLS.forEach((c, i) => { g.fillStyle = c; g.fillRect(i * 44, 0, 44, 44); });
-  box.appendChild(cv);
+  { const d = g.getImageData(0, 0, PW, 44).data; say(cv, '2 canvas: ' + COLS.map((_, i) => hex(d, (22 * PW + i * 44 + 22) * 4)).join(' ')); }
   /* v26.18: a THIRD row, drawn by WebGL as the world is (Chad, 17 Nov 2026, of Samsung Internet: "Cant you see even the
      graphics got affected"). A browser's forced dark was measured to leave a 2D canvas alone; whether it tones down the
      world's own kind of canvas is what this row shows on his phone, beside the two above */
-  const wc = document.createElement('canvas'); wc.width = COLS.length * 44; wc.height = 44;
-  wc.style.cssText = `width:${COLS.length * 44}px;height:44px;display:block;margin-top:6px`;
+  const wc = strip('canvas');
   try {
     const w = wc.getContext('webgl', { antialias: false, alpha: false, preserveDrawingBuffer: true });
     if (w) { w.enable(w.SCISSOR_TEST);
       COLS.forEach((c, i) => { const n = parseInt(c.slice(1), 16); w.scissor(i * 44, 0, 44, 44);
-        w.clearColor((n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255, 1); w.clear(w.COLOR_BUFFER_BIT); }); }
+        w.clearColor((n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255, 1); w.clear(w.COLOR_BUFFER_BIT); });
+      const px = new Uint8Array(4), o = [];
+      COLS.forEach((_, i) => { w.readPixels(i * 44 + 22, 22, 1, 1, w.RGBA, w.UNSIGNED_BYTE, px); o.push(hex(px, 0)); });
+      say(wc, '3 3D: ' + o.join(' ')); }
   } catch (e) { console.warn('diag webgl row', e); }
-  box.appendChild(wc);
-  /* and the same colours as a PICTURE, decoded by the browser as the world's textures are (createImageBitmap from the
-     picture's own bytes): drawn by WebGL as a texture (row four), and shown as a page image (row five). A browser that
-     tones down pictures it decodes darkens rows four and five and leaves row three as it is */
-  const pc = document.createElement('canvas'); pc.width = COLS.length * 44; pc.height = 44;
-  const pg = pc.getContext('2d'); COLS.forEach((c, i) => { pg.fillStyle = c; pg.fillRect(i * 44, 0, 44, 44); });
-  const tc = document.createElement('canvas'); tc.width = COLS.length * 44; tc.height = 44;
-  tc.style.cssText = `width:${COLS.length * 44}px;height:44px;display:block;margin-top:6px`;
-  box.appendChild(tc);
-  const im = document.createElement('img'); im.alt = '';
-  im.style.cssText = `width:${COLS.length * 44}px;height:44px;display:block;margin-top:6px`;
-  box.appendChild(im);
-  pc.toBlob((blob) => {
-    if (!blob) return;
-    try { im.src = URL.createObjectURL(blob); } catch (e) { console.warn('diag image row', e); }
-    createImageBitmap(blob).then((bmp) => {
-      const w = tc.getContext('webgl', { antialias: false, alpha: false, preserveDrawingBuffer: true }); if (!w) return;
-      const sh = (type, src) => { const o = w.createShader(type); w.shaderSource(o, src); w.compileShader(o); return o; };
+  /* (a picture or a video frame drawn by WebGL as a texture, as the world draws its own, and its values read back) */
+  const glPic = (el, src, label) => {
+    try {
+      const w = el.getContext('webgl', { antialias: false, alpha: false, preserveDrawingBuffer: true }); if (!w) { say(el, label + ': no WebGL'); return; }
+      const sh = (type, s) => { const o = w.createShader(type); w.shaderSource(o, s); w.compileShader(o); return o; };
       const pr = w.createProgram();
       w.attachShader(pr, sh(w.VERTEX_SHADER, 'attribute vec2 p;varying vec2 u;void main(){u=p*.5+.5;u.y=1.-u.y;gl_Position=vec4(p,0.,1.);}'));
       w.attachShader(pr, sh(w.FRAGMENT_SHADER, 'precision mediump float;varying vec2 u;uniform sampler2D t;void main(){gl_FragColor=texture2D(t,u);}'));
@@ -16801,9 +16960,60 @@ function showDiag() {
       const tx = w.createTexture(); w.bindTexture(w.TEXTURE_2D, tx);
       w.texParameteri(w.TEXTURE_2D, w.TEXTURE_MIN_FILTER, w.NEAREST); w.texParameteri(w.TEXTURE_2D, w.TEXTURE_MAG_FILTER, w.NEAREST);
       w.texParameteri(w.TEXTURE_2D, w.TEXTURE_WRAP_S, w.CLAMP_TO_EDGE); w.texParameteri(w.TEXTURE_2D, w.TEXTURE_WRAP_T, w.CLAMP_TO_EDGE);
-      w.texImage2D(w.TEXTURE_2D, 0, w.RGBA, w.RGBA, w.UNSIGNED_BYTE, bmp);
-      w.viewport(0, 0, tc.width, tc.height); w.drawArrays(w.TRIANGLE_STRIP, 0, 4);
-    }).catch((e) => console.warn('diag texture row', e));
+      w.texImage2D(w.TEXTURE_2D, 0, w.RGBA, w.RGBA, w.UNSIGNED_BYTE, src);
+      w.viewport(0, 0, el.width, el.height); w.drawArrays(w.TRIANGLE_STRIP, 0, 4);
+      const px = new Uint8Array(4), o = [];
+      COLS.forEach((_, i) => { w.readPixels(i * 44 + 22, 22, 1, 1, w.RGBA, w.UNSIGNED_BYTE, px); o.push(hex(px, 0)); });
+      say(el, label + ': ' + o.join(' '));
+    } catch (e) { say(el, label + ': error ' + e.message); }
+  };
+  /* and the same colours as a PICTURE (a PNG made from that canvas): decoded by the browser itself as every texture was
+     before v26.18 (row four, drawn by WebGL; row five, a page image); decoded by a worker (row six); and decoded the
+     way the game decodes its pictures now (row seven: THE PICTURES A BROWSER DIMS, its choice said under it). Then a
+     VIDEO of the same colours, recorded here (rows eight to ten: the page's own video, drawn by WebGL, drawn by a 2D
+     canvas), for the title's film */
+  const pc = document.createElement('canvas'); pc.width = PW; pc.height = 44;
+  const pg = pc.getContext('2d'); COLS.forEach((c, i) => { pg.fillStyle = c; pg.fillRect(i * 44, 0, 44, 44); });
+  const tc = strip('canvas'), im = strip('img'); im.alt = '';
+  const wk = strip('canvas'), gm = strip('canvas');
+  const vr = strip('video'), vg = strip('canvas'), v2 = strip('canvas');
+  const OP = { premultiplyAlpha: 'none', colorSpaceConversion: 'none' };
+  pc.toBlob(async (blob) => {
+    if (!blob) return;
+    try { im.src = URL.createObjectURL(blob); say(im, '5 picture (page image)'); } catch (e) { console.warn('diag image row', e); }
+    try { const b = await (picrRaw ? picrNative(blob, OP) : createImageBitmap(blob)); glPic(tc, b, '4 3D picture, the browser\'s own decode'); } catch (e) { say(tc, '4 error ' + e.message); }
+    try { const b = await picrIn(picrWorkerDecode([blob, OP]), 4000); glPic(wk, b, '6 3D picture, decoded by a worker'); } catch (e) { say(wk, '6 worker: ' + e.message); }
+    try { await picrCheck(); const b = await createImageBitmap(blob, OP);
+      glPic(gm, b, '7 3D picture, the game\'s way (' + PICR.route + ')');
+      const m = PICR.m, f = (x) => (!x ? '-' : typeof x === 'string' ? x : `max ${x.max}, mean ${x.mean}, white ${x.white.join(',')}`);
+      say(gm.nextSibling, `   check: own decode ${f(m.native)}; worker ${f(m.worker)}; read-back ${f(m.readback)}${PICR.why ? '; ' + PICR.why : ''}`);
+    } catch (e) { say(gm, '7 error ' + e.message); }
+    if (PICR.route !== 'worker' && PICR.worker) { try { PICR.worker.terminate(); } catch {} PICR.worker = null; }   // (row six's worker: the game does not keep one it does not use)
+    /* the video: two thirds of a second of that canvas, recorded by the browser, then played back muted */
+    try {
+      const type = typeof MediaRecorder === 'undefined' || !pc.captureStream ? '' :
+        ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm', 'video/mp4'].find(x => MediaRecorder.isTypeSupported(x)) || '';
+      if (!type) { say(vr, '8 video: this browser cannot record one'); return; }
+      /* (the canvas in the page while it is recorded, and each frame asked for: a canvas out of the page gives a recorder
+         nothing in some browsers) */
+      pc.style.cssText = 'position:fixed;left:0;top:0;width:2px;height:2px;opacity:.01;pointer-events:none'; document.body.appendChild(pc);
+      const st = pc.captureStream(0), tr = st.getVideoTracks()[0];
+      const rec = new MediaRecorder(st, { mimeType: type, videoBitsPerSecond: 8e6 }), parts = [];
+      rec.ondataavailable = (e) => { if (e.data && e.data.size) parts.push(e.data); };
+      const draw = () => { COLS.forEach((c, i) => { pg.fillStyle = c; pg.fillRect(i * 44, 0, 44, 44); }); if (tr && tr.requestFrame) tr.requestFrame(); };
+      const done = new Promise(r => { rec.onstop = r; });
+      rec.start(100); draw(); const tick = setInterval(draw, 40);
+      await new Promise(r => setTimeout(r, 1200)); clearInterval(tick); rec.stop(); await done; pc.remove();
+      if (!parts.length) { say(vr, '8 video: the browser recorded nothing'); return; }
+      vr.muted = true; vr.playsInline = true; vr.loop = true; vr.setAttribute('playsinline', '');
+      vr.src = URL.createObjectURL(new Blob(parts, { type }));
+      await vr.play();
+      await new Promise(r => { const k = () => (vr.currentTime > 0.15 || vr.ended ? r() : requestAnimationFrame(k)); k(); });
+      say(vr, '8 video (page video, ' + type.split(';')[0] + ')');
+      glPic(vg, vr, '9 video drawn by 3D');
+      const g2 = v2.getContext('2d', { willReadFrequently: true }); g2.drawImage(vr, 0, 0, PW, 44);
+      const d2 = g2.getImageData(0, 0, PW, 44).data; say(v2, '10 video drawn by canvas: ' + COLS.map((_, i) => hex(d2, (22 * PW + i * 44 + 22) * 4)).join(' '));
+    } catch (e) { say(vr, '8 video: ' + e.message); }
   }, 'image/png');
   const x = document.createElement('button');
   x.textContent = 'Close';
@@ -17034,6 +17244,8 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                     from its recipe and compares it, byte for byte through a 2D canvas, with the picture it would replace (run
                     with ?opt=freePics:0, when every copy is still open); picsReset() loses and restores the graphics, as a
                     phone can */
+                 /* v26.18: what the picture check measured and chose (THE PICTURES A BROWSER DIMS) */
+                 picRoute: () => picrCheck().then(() => ({ route: PICR.route, sim: PICR.sim, m: PICR.m, why: PICR.why, lut: !!PICR.lut })),
                  pics: () => ({ on: picsOn(), freed: PICS.freed.size, closed: PICS.closed, mb: +(PICS.bytes / 1048576).toFixed(1), redone: PICS.redone, hold: PICS.hold, waits: PICS.waits, copies: PICS.copies, asked: PICS.hits, where: PICS.hitWhere.slice() }),
                  picsProve: async (limit = 1e9) => {
                    const seen = new Set(), out = { compared: 0, differing: 0, bytes: 0, skipped: 0, worst: [] };

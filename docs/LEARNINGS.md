@@ -8845,3 +8845,24 @@ pixel on a phone and a desktop with the reader preferring light and dark; only t
 body pinned `only light`; without the pin about a thousand drawn elements change, which the probe catches). Chromium's
 own forced dark leaves the game alone either way (an already dark page), so it is no stand-in for Samsung's: only his phone
 can show whether Samsung honours the declaration.
+
+**His ?diag settled it, and the game now goes round the dimming of pictures (v26.18 builds 21 and 22).** Samsung Internet
+31 (Chromium 148), "Asks for dark: no", build 19's `light dark` declared: row 1 (the page's colours) white 31,31,31, gold
+62,24,1, red 109,1,0, teal 0,58,44, grey 16 (so the declaration does nothing in the default mode: kept, proven harmless);
+rows 2 and 3 (a 2D canvas, WebGL's own clears) exact; rows 4 and 5 (a WebGL texture made by createImageBitmap, and a page
+image) EXACTLY 0.70 of each channel in 8-bit sRGB (255 to 179, 128 to 90, 213,174,55 to 148,123,39). A light page heading
+(#FFB367) came out about 170,106,44: light coloured words are darkened too, near-white ones left. So the browser multiplies
+every picture it DECODES by 0.7, in whatever it is drawn. Three lessons from building the way round (main.js, THE PICTURES
+A BROWSER DIMS, `PICR`):
+- A page cannot see forced dark through a media query or getComputedStyle, but it CAN see what is done to its pictures:
+  write a picture byte by byte (no canvas: a privacy browser noises a canvas's read-back), decode it as the textures are,
+  upload it and read the texture back from a framebuffer. Make it the same top to bottom, or a flip reads as a change.
+- Read a picture's pixels back through a WebGL texture, never a 2D canvas: a canvas premultiplies, and the colour under
+  every clear pixel is lost (127 levels off in a sign's WebP, 19 in a portrait's PNG) and rounded where alpha is small.
+  The first read-back way did, and the probe's simulation caught it on the game's own pictures.
+- A switch must gate the check itself, not only its use: with `?opt=picRoute:0` the probe's call still ran the check.
+And proving a world identical by photographs fails on a living scene (fans, candles and breathing differ between two runs:
+80 % of the pixels, mean 2 of 255): hash every texture's pixels instead (449 pictures, 1,688 MB, one hash in a normal
+browser and under the simulated phone with the fix). Two harnesses run side by side starved each other on this box once
+the hall was in (inv's browser closed, leak's fetches failed); each passed alone: when a pair fails, run each alone before
+reading it as the change's.
