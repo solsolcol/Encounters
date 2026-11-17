@@ -40,7 +40,9 @@ P = [
  ('phonetable', 'medium', '1:1', "a small dark wooden telephone table with a lower shelf, and on it a beige corded push-button home telephone."),
  ('bed', 'medium', '3:2', "a single bed for an elderly woman: a plain dark wooden bed frame, a thin mattress with a white sheet, a thin folded checked blanket and one pillow, and a chrome safety rail fixed along one long side."),
  ('commode', 'medium', '1:1', "a plain bedside commode chair of white plastic and aluminium with two armrests and a closed lid."),
- ('poles', 'medium', '3:1', "three long bamboo laundry poles lying parallel, with a few clothes hung on them: a white shirt, a faded towel and a long length of printed cotton."),
+ # (17 Nov: the first picture stood the poles on an A-frame rack; in a flat they go out of the kitchen window into sockets
+ #  in the wall, research R-C §1.10. Asked again with no stand: masters/v27.0/make.sh §3.)
+ ('poles', 'medium', '3:1', "three long bamboo laundry poles, each about 2.4 metres long, level and parallel about 30 cm apart, the way they stick straight out from a Singapore flat's kitchen window into the sockets on the outside wall; shown on their own: NO stand, NO legs, NO frame, nothing holding them visible; on them hang a white shirt on a wire hanger, a faded towel folded over one pole and a long length of printed cotton."),
  ('thoranam', 'medium', '3:1', "a festive door hanging (thoranam) of fresh green mango leaves strung side by side on a cord, the leaves hanging pointed downward, about 1 metre long, with a few small yellow marigold flowers between them."),
  ('altartray', 'medium', '1:1', "the small brass things of a Hindu home altar on one round brass tray about 25 cm across: a brass hand bell with a handle, a small brass camphor plate with a short handle, a little brass oil lamp, a brass incense holder with a burnt-down stick, and a small brass pot of sacred ash."),
  ('coffeetable', 'medium', '3:2', "a low rectangular coffee table of dark varnished wood with a glass top and a slatted wooden shelf below."),

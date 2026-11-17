@@ -1,0 +1,72 @@
+[
+ {
+  "name": "shoerack",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/shoerack-2k.png"
+ },
+ {
+  "name": "tulsi",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/tulsi-2k.png"
+ },
+ {
+  "name": "door",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/door-2k.png"
+ },
+ {
+  "name": "fridge",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/fridge-2k.png"
+ },
+ {
+  "name": "pilltray",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/pilltray-2k.png"
+ },
+ {
+  "name": "clock",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/clock-2k.png"
+ },
+ {
+  "name": "phonetable",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/phonetable-2k.png"
+ },
+ {
+  "name": "bed",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/bed-2k.png"
+ },
+ {
+  "name": "commode",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/commode-2k.png"
+ },
+ {
+  "name": "poles",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/poles-2k.png"
+ },
+ {
+  "name": "thoranam",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/thoranam-2k.png"
+ },
+ {
+  "name": "altartray",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/altartray-2k.png"
+ },
+ {
+  "name": "coffeetable",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/coffeetable-2k.png"
+ },
+ {
+  "name": "garlandhang",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/garlandhang-2k.png"
+ }
+]

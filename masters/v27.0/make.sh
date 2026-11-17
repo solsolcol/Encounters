@@ -90,3 +90,31 @@
 #   batch 3b: commode 2d8b2420-b617-49ad-914b-e4f326530f93 · poles 6b99d785-3ddf-4b89-baa4-c71431caa577 (21:9 given) ·
 #     thoranam c680a9f9-2d20-4396-8259-87fa37829a14 (21:9 given) · altartray 93b07d6a-a028-4617-a8e4-78b4617d8cf8 ·
 #     coffeetable e1f587d6-87d6-4518-b16f-711ab5c2979d · garlandhang (high) e57a8c80-28b5-41bd-8489-98cb1428e597
+#   LOOKED AT full size (batch 3): shoerack (nine pairs, worn), tulsi (in flower, terracotta pot on its stand), door
+#   (flush, brass lever and keyhole), fridge (fruit magnets, blank cards), pilltray (the organiser's day names are its
+#   own print, no brand), clock, phonetable (beige push-button phone), bed (chrome rail), commode, thoranam, altartray
+#   (its little lamp came LIT: the flame is cut at prep and the game's own flame drawn), coffeetable (a glass top: if
+#   the model paints the slats seen through it, the top is made glass at prep), garlandhang (a U with its tassel):
+#   all pass. poles: REFUSED (an A-frame rack: in a flat they go out of the kitchen window into wall sockets, R-C
+#   §1.10); asked again with no stand: poles 7b9f5769-c15a-48ae-a90a-d068c8872169.
+#   The new poles picture LOOKED AT full size: three bare poles, a shirt on a wire hanger, a towel, a printed cotton: pass
+#   (they stand one above another; in the flat they are turned to stick straight out from the wall under the window).
+#   The refused rack picture is kept out of refs (scratch only). Sent to Meshy: masters/v27.0/props/jobs-p3.json (14).
+#
+# ---------------------------------------------------------------------------------------------------------------------
+# 4. THE VOICES (17 Nov): three new speakers cast from the ElevenLabs library (voice DESIGN refused: the connector lacks
+#    the permission), one take each of a line in the part, eleven_v3, judged by measure (a session has no ears:
+#    masters/v27.0/voices/audition/*.mp3 kept for Chad's ear; $S/e4c4/tools/vmeasure.py: speech span, words a second,
+#    median pitch by autocorrelation, the end's level). Flow 98Se8Zdasa6YKTq5qoSb.
+#    Amma  "[weary] Seven years I have been in this chair. The doctors said it is my age. You can see it, can't you?"
+#      Tara (cyzr0852QKE5DHnjiRWw)   186 Hz  2.75 w/s  <- PICKED: the lowest and most unhurried; aged by the line's tag
+#      Sonam (PIuCDYHMakaExG7GFyLU)  235 Hz  2.68 w/s
+#      Lipsa (ql1brKcEMYebkPHXLRba)  229 Hz  3.19 w/s (rushed)
+#    Ravi  "[worried] Seven years. She just stopped walking properly. First a cane, then this chair. Every test came back normal."
+#      Dhananjay (mnlHLlgagNmPlvf52KvT)  88 Hz  2.50 w/s  <- PICKED: the game's pace, a son's plain voice
+#      Michael (PablrLlv6N5OXBbslUrg)   113 Hz  1.98 w/s (slow)
+#      Mayur (9IAi5SvX5bAamiDIdLdI)     190 Hz  2.19 w/s
+#    Mala: Sonam (PIuCDYHMakaExG7GFyLU), 235 Hz, calm, kept well apart from her mother's 186 (the plan's three voices
+#      must not sound like one another). Library voices have no "old" Indian woman: Tara is aged by the tag, as the
+#      granny of episode 1 was (Lexi, voicelines.js).
+

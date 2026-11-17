@@ -273,6 +273,21 @@ def cmd_remesh(name, polys):
     print('remesh done', name, polys, size, flush=True)
 
 
+def cmd_remesh_start(name, polys):
+    """v27.0: a remesh STARTED and written in the ledger, nothing waited for or fetched: the disk takes one remesh file at a
+    time (about 100 MB, its sheets 8192 PNGs), so the jobs run at Meshy together and prop.sh fetches each in turn (its
+    `remesh` finds the job in the ledger and waits for it instead of starting another)"""
+    topo = os.environ.get('TOPO', 'triangle'); tag = str(polys) + ('q' if topo == 'quad' else '')
+    L = ledger()[name]
+    if tag in L.get('remesh', {}) and not os.environ.get('AGAIN'):
+        print('  remesh %s %s: already in the ledger (%s)' % (name, tag, L['remesh'][tag]), flush=True); return
+    tid = call('POST', '/remesh', {'input_task_id': L['image_to_3d'], 'target_formats': ['glb'], 'topology': topo,
+                                   'target_polycount': int(polys)})['result']
+    with locked():
+        L2 = ledger(); r2 = L2.setdefault(name, {}).setdefault('remesh', {}); r2[tag] = tid; save(L2)
+    print('remesh started', name, tag, tid, flush=True)
+
+
 if __name__ == '__main__':
     a = sys.argv[1:]
     if not a or a[0] == 'balance': print(call('GET', '/balance'))
@@ -281,6 +296,7 @@ if __name__ == '__main__':
     elif a[0] == 'anim': cmd_anim(a[1], a[2], a[3])
     elif a[0] == 'motion': cmd_motion(a[1], a[2], a[3])
     elif a[0] == 'remesh': cmd_remesh(a[1], a[2])
+    elif a[0] == 'remeshstart': cmd_remesh_start(a[1], a[2])
     elif a[0] == 'refetch': cmd_refetch(a[1], a[2])
     elif a[0] == 'collect': cmd_collect(a[1:])
     elif a[0] == 'peek': cmd_collect(a[1:], thumbs_only=True)

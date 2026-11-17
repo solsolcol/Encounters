@@ -345,6 +345,9 @@ K.ownSeam = await p.evaluate(async () => {
   /* and the rifle back as it was */
   E.kit.weaponOut(null);
   R.rifleBack = E.weaponDeclare(rifle) && E.ownState().fire.startsWith('FIRE') && E.kitDebug().weapon.rounds === 3;
+  /* and taken down while out (weaponOut(null) puts an undeclared-item weapon out again), the hands are given back too:
+     the bowl's pose eases away instead of standing (it stood, and the praying hands below found it) */
+  R.poseGiven = await poll(() => E.ownState().pose !== 'bowl' && !E.ownState().shown, 60000);
   window.__ownSeam = R;
   return Object.values(R).every(v => v === true);
 }).catch((e) => { console.log('ownSeam threw', e && e.message); return false; });
@@ -531,15 +534,17 @@ K.visionSeam = await p.evaluate(async () => {
   await frames(3);
   const s3 = E.vision(); R.passRuns = s3.drawn > s2.drawn && s3.ok === true && s3.err === null;
   /* closed by the eye button over the hold: the hold is let go and the wave runs home from 3 m */
+  /* (read on the same tick: from 3 m the wave is home in 0.14 s of its clock, which two drawn frames of this box's
+     capped 0.1 s already pass, so a read two frames later found it home and called the press a failure) */
   E.kit.vision(null);
-  document.getElementById('visionBtn').click(); await frames(2);
+  document.getElementById('visionBtn').click();
   const s4 = E.vision(); R.buttonCloses = s4.on === false && s4.dir === -1 && s4.switches === 2;
   R.home = await poll(() => E.vision().r === 0 && E.vision().dir === 0, 90000);
   const d0 = E.vision().drawn; await frames(4);
   R.passStops = E.vision().drawn === d0;
   /* a hold let go while shut runs home, never out */
   E.kit.vision({ r: 2, moving: true }); await frames(2);
-  E.kit.vision(null); await frames(1);
+  E.kit.vision(null);
   R.releaseHome = E.vision().dir === -1 && await poll(() => E.vision().r === 0, 90000);
   window.__visionSeam = R;
   return Object.values(R).every(v => v === true);
@@ -817,6 +822,31 @@ r = await runEvent({ kind: 'timed', open: 0.5, close: 3, waitWord: 'Hold...', go
   await tapOnce();
 });
 K.evTimedWordsPress = r.ok === true;
+/* v27.0 · S52: HOLD THE ROOM. A guard opens on its briefing with its own picture (the eye, the wave, the shape, the
+   drop, the fingertip); START, a real tap, answers { ok: true } at once and PLAY comes back (no evopen); the objective's
+   bar stands at the share kit.bar gives, steps aside on null, and the reset at the end clears it */
+r = await runEvent({ kind: 'guard', brief: 'Keep the room.', label: 'HOLD THE ROOM' }, async () => {
+  K.guardIllustrates = await p.evaluate(() => {
+    const dm = document.getElementById('evDemo');
+    return dm.className === 'guard' && getComputedStyle(dm).display !== 'none'
+      && getComputedStyle(dm.querySelector('.dhs')).display !== 'none' && getComputedStyle(dm.querySelector('.dhe')).display !== 'none';
+  });
+  await tapOnce();                      // START
+});
+K.guardHandsBack = r.kind === 'guard' && r.ok === true
+  && await p.evaluate(() => !document.body.classList.contains('evopen') && window.__enc.getState() === 'play');
+K.guardBar = await p.evaluate(async () => {
+  const E = window.__enc, frames = (n) => new Promise(rs => { let k = 0; const f = () => (++k >= n ? rs() : requestAnimationFrame(f)); requestAnimationFrame(f); });
+  E.kit.objective('Keep the room');
+  E.kit.bar(0.5); await frames(4);
+  const el = document.getElementById('objBar');
+  const shown = !el.classList.contains('hide') && Math.abs(parseFloat(el.firstElementChild.style.width) - 50) < 0.6;
+  E.kit.bar(null); await frames(4);
+  const gone = el.classList.contains('hide') && E.kitBar() === null;
+  E.kit.bar(0.8);                       // left standing for the reset at the end to clear
+  E.kit.objective(null);
+  return shown && gone && E.kitBar() === 0.8;
+});
 /* v18.3: TWO THUMBS. A second finger landing while the first is still down
    is a tap — it was dropped, because the event was still "down". Real
    pointer events on the overlay, the second before the first lifts. */
@@ -1051,16 +1081,23 @@ K.unlockOpens = await p.evaluate(() => {
     && !document.getElementById('unlock').classList.contains('hide')
     && document.getElementById('unName').textContent.length > 0;
 });
+if (!K.tapTakesTheThing || !K.unlockOpens) console.log('first splash:', JSON.stringify({ relicAt, took: K.tapTakesTheThing, opens: K.unlockOpens,
+  now: await p.evaluate(() => { const e = window.__enc; return { state: e.getState(), unlock: e.unlockState(), sanity: e.stats.sanity, ev: !!e.kitDebug().event }; }) }));
 await p.waitForTimeout(900);
 await p.keyboard.press('Enter');
 K.unlockClosesOnKey = await until(() => window.__enc.getState() === 'play' && window.__enc.unlockState().id === null)
   .then(() => true, () => false);
 K.tapRetires = !!relicAt && await p.evaluate(a => window.__enc.hotspotTap(a.cx, a.cy) === false, relicAt);   // `once`
 // a second splash, closed by its own button
-await p.evaluate(() => window.__enc.kit.unlock('amulet'));
+/* (v27.0: a refused splash is a false check with the reason printed, never a crash of the whole harness: a click on a
+   button that never showed threw, and every check after it went unreported) */
+const unlock2 = await p.evaluate(() => window.__enc.kit.unlock('amulet'));
+if (!unlock2) console.log('second splash refused:', JSON.stringify(await p.evaluate(() => {
+  const e = window.__enc; return { state: e.getState(), unlock: e.unlockState(), sanity: e.stats.sanity, ev: !!e.kitDebug().event };
+})));
 await p.waitForTimeout(900);
-await p.click('#unClose', { force: true });
-K.unlockClosesOnButton = await until(() => window.__enc.getState() === 'play' && window.__enc.unlockState().id === null)
+if (unlock2) await p.click('#unClose', { force: true }).catch(err => console.log('unClose click failed:', err.message.split('\n')[0]));
+K.unlockClosesOnButton = !!unlock2 && await until(() => window.__enc.getState() === 'play' && window.__enc.unlockState().id === null)
   .then(() => true, () => false);
 // carried is not worn: no protection, no yellow
 K.wardNotWhileCarried = await p.evaluate(() => {
@@ -2382,8 +2419,18 @@ K.hposeClearedByReset = await p.evaluate(() => { const e = window.__enc, a = e.a
 K.rainClearedByReset = await p.evaluate(() => { const w = window.__enc.wxState(); return !w.visible && w.k === 0 && w.thunder === 0; });   // v24.0 (S45)
 K.lensClearedByReset = await p.evaluate(() => { const l = window.__enc.lens(); return l.took === false && l.fov === 72; });               // v26.0 (S47)
 K.hushClearedByReset = await p.evaluate(() => { const h = window.__enc.hush(); return h.k === 0 && h.wired === false; });                 // v26.0 (S48)
-/* v27.0 (S50): chapter 1 declares no vision: the swap took the seam down with the fixture (no eye, no state, no class) */
-K.visionGoneWithChapter = await p.evaluate(() => { const v = window.__enc.vision(); return v.decl === false && v.on === false && v.r === 0 && !document.body.classList.contains('hasVision') && !document.body.classList.contains('visionOn'); });
+K.barClearedByReset = await p.evaluate(() => window.__enc.kitBar() === null);                                                       // v27.0 (S52)
+/* v27.0 (S50): a chapter that declares no vision takes the seam down (no eye, no state, no class): what setChapter's
+   kitReset does on a real change of chapter. The swap above is rebuildStage alone, which builds the next stage and keeps
+   the chapter (CH), so the fixture's own declaration is taken away for a moment instead, and put back */
+K.visionGoneWithChapter = await p.evaluate(() => {
+  const E = window.__enc, C = window.__CHAPTERS__.chtest, had = C.vision;
+  delete C.vision; E.kitReset();
+  const v = E.vision();
+  const gone = v.decl === false && v.on === false && v.r === 0 && !document.body.classList.contains('hasVision') && !document.body.classList.contains('visionOn');
+  C.vision = had; E.kitReset();
+  return gone && E.vision().decl === true && document.body.classList.contains('hasVision');
+});
 
 console.log(JSON.stringify(out, null, 1));
 const MUST = ['bootedFixture', 'noChapterAssets', 'blockersFromChapter', 'cardShowsFixture',

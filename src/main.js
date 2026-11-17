@@ -2054,6 +2054,7 @@ const conductAcc = { s: 0, a: 0, notes: [] };
 const CONDUCT_CAP = 10;                             // play tilts a rank; the card decides it
 let runChoices = {};                                // the letter picked per chapter, this run
 let kitObjective = null, kitTimer = null, kitWaypoint = null;
+let kitBarK = null;                       // v27.0: the objective's bar of progress (kit.bar), a share 0..1, or null for none
 let kitPose = 'standing', poseFrom = 1.62, poseTo = 1.62, poseT = 1, poseSecs = 0.9;
 let lieYaw = 0, lieSpan = 1.1;
 let chapterPresence = 0;
@@ -3262,7 +3263,7 @@ function kitWaypointSet(pos) {
   kitWaypoint = pos && Number.isFinite(pos.x) && Number.isFinite(pos.z)
     ? { x: pos.x, y: pos.y ?? 1.2, z: pos.z } : null;
 }
-const objPainted = { txt: null, tm: null, shown: null, done: null };
+const objPainted = { txt: null, tm: null, shown: null, done: null, bar: null };
 /* v8.3: one bright pulse when the objective's words change. The class is
    pulled and re-added with a reflow between, because re-adding a class that
    is already there does not restart a CSS animation. */
@@ -3423,6 +3424,7 @@ function objReset() {
   const el = $('objective')?.querySelector('.obox');
   if (el) for (const c of ['done', 'flash', 'tflash', 'scan', 'in', 'out']) el.classList.remove(c);
   objPainted.txt = objPainted.tm = objPainted.shown = objPainted.done = null;
+  objPainted.bar = undefined;       // v27.0: the bar is painted again from what is set
 }
 function paintObjective() {
   const box = $('objective'); if (!box) return;
@@ -3499,6 +3501,14 @@ function paintObjective() {
     el.classList.toggle('hide', tm === null);
     if (tm !== null) { el.textContent = tm; el.classList.toggle('low', kitTimer.left <= 10); }
     objPainted.tm = tm;
+  }
+  /* v27.0 (the fifty-second seam): the chapter's progress as a bar along the foot of the box (a blessing's, while he
+     holds the room); it steps aside with the countdown while the box says COMPLETE. No chapter before it sets one */
+  const bk = (kitBarK === null || banner) ? null : Math.round(Math.max(0, Math.min(1, kitBarK)) * 1000) / 10;
+  if (bk !== objPainted.bar) {
+    const el = $('objBar');
+    if (el) { el.classList.toggle('hide', bk === null); if (bk !== null && el.firstElementChild) el.firstElementChild.style.width = bk + '%'; }
+    objPainted.bar = bk;
   }
 }
 /* v8.3: A MARK OVER EVERY LIVE HOTSPOT. Chad: "make all the interactable
@@ -4118,13 +4128,15 @@ function weaponSetup(decl) {
   weaponAvailSync();
 }
 function weaponTeardown() {
+  /* v27.0: his own hands given back and the bowl let go FIRST, while the declaration still says which pose was the
+     weapon's (taken down after it, the pose was left standing: the fixture's praying hands found the bowl still held) */
+  if (ownShown) weaponOwnSync(false);
   weaponDecl = null; weaponForce = null; weaponBusy = null; weaponRounds = 0; weaponMags = 0;
   weaponBlockSet(null);
   weaponRecoilReset(); weaponAdsOff(); camLens(CAM_FOV);
   if (weaponFlash) { camera.remove(weaponFlash); weaponFlash.dispose?.(); weaponFlash = null; }
   weaponFlashDrop();
   weaponPropDrop();
-  if (ownShown) weaponOwnSync(false);            // v27.0: his own hands given back, the bowl let go
   ownObj = null; ownHold = {}; ownFor = null; ownAnim = null; ownSprayDrop(); weaponWordsSet(null);
   document.body.classList.remove('hasWeapon', 'weaponUp', 'wpnNoAmmo');
   weaponAvailSync();
@@ -5017,6 +5029,7 @@ const EV_DEMO = {
   change: 'change',                      // v24.0: a small room that blinks; one thing moves in the dark and a fingertip taps it; a blink where nothing moves and the finger holds back
   breath: 'breath',                      // v26.0: a ring that opens under a held fingertip into its band, and shuts when the finger lifts
   gate: 'gate',                          // v26.3: a fingertip dragging a little gate open, lights coming through it, and dragging it shut
+  guard: 'guard',                        // v27.0: an eye lit, its wave running out; a green shape drifting at a person; a fingertip's flick of water and the shape gone
 };
 const EV_DEFAULT = {
   tap:       { secs: 4 },
@@ -5095,7 +5108,12 @@ const EV_DEFAULT = {
   /* v26.3: THE GATE — OPEN AND CLOSE BY HAND (the forty-ninth seam, see evGateFrame): the breath's list of breaths, its
      bands, prices and idle, under a gate the finger drags open and shut; `edge` is now seconds WIDE OPEN (the lights come
      in as fast as it stands open), and `fall` how fast they go once it is shut */
-  gate:      { secs: 0, fall: 1.6, idle: 20, lead: 0.5, gain: 2, cost: 2, gainStat: 'awareness', costStat: 'sanity' }
+  gate:      { secs: 0, fall: 1.6, idle: 20, lead: 0.5, gain: 2, cost: 2, gainStat: 'awareness', costStat: 'sanity' },
+  /* v27.0: HOLD THE ROOM (the fifty-second seam) — a briefing and nothing else: its instructions, its own picture and a
+     START, and the moment START is pressed the event answers { ok: true } and PLAY comes back (the walk, the look, Spirit
+     Vision, the holy water), because the minigame is the room itself. What stands while it runs is the chapter's: its
+     progress drawn along the foot of the objective (kit.bar). Episode 4 chapter 4's blessing */
+  guard:     { secs: 0 }
 };
 // the literals texttest looks for; the kind picks the row
 const EV_LABEL = { tap: 'event.tap', timed: 'event.timed', mash: 'event.mash', hold: 'event.hold',
@@ -5472,6 +5490,8 @@ function evBegin() {
     e.begun = true;
     try { o.onBegin(); } catch (err) { console.warn('event onBegin failed', err); }
   }
+  /* v27.0: HOLD THE ROOM is its briefing: START hands the screen back to play at once (the fifty-second seam) */
+  if (e.kind === 'guard') { evResolve({ ok: true, score: 1 }); return; }
   if (!host) return;
   host.className = 'layer ' + (e.layout === 'full' ? 'full ' : '') + e.kind + (o.low ? ' low' : '');
   $('evLabel').textContent = o.label || '';
@@ -7614,6 +7634,7 @@ function kitReset() {
   kitPhase = null;
   conductAcc.s = 0; conductAcc.a = 0; conductAcc.notes.length = 0;
   kitObjective = null; kitTimer = null; kitWaypoint = null;
+  kitBarK = null;                   // v27.0: and no bar of progress left from the run before
   objReset();                       // v8.7: and the beats queued against the old objective
   kitFlashReq = null;
   kitCaps = null;                   // v21.30: and no caption left up from the run before
@@ -7740,6 +7761,7 @@ const KIT = {
   film: kitFilm,                   // v21.0: the twenty-sixth seam — a cutscene from play, back to play
   filmPlaying: () => (cine && cine.inPlay) || null,
   objective: kitObjectiveSet, timer: kitTimerStart, waypoint: kitWaypointSet,
+  bar: (k) => { kitBarK = (k === null || k === undefined || !Number.isFinite(+k)) ? null : Math.max(0, Math.min(1, +k)); return true; },   // v27.0 (seam 52)
   event: kitEvent, eventActive: evActive, abortEvent: () => { if (ev) evResolve({ ok: false, aborted: true }); },
   torch: torchSetup, torchOn: torchSet, torchRed, torchIsOn: () => torchOn,
   vision: kitVision,               // v27.0: the fiftieth seam — on, off, or a radius held from a film's clock; no argument reads it
@@ -17660,6 +17682,7 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                                     held: !!(ownObj && heldPropL === ownObj), drops: own.drops.length, drawn: own.geo ? own.geo.drawRange.count : 0,
                                     rounds: weaponRounds, busy: weaponBusy, fire: ($('fireBtn')?.textContent || '').trim() }),
                  weaponDeclare: (d) => { weaponTeardown(); if (d) weaponSetup(d); return !!weaponDecl; },
+                 kitBar: () => kitBarK,              // v27.0 (seam 52): the objective's bar, for the fixture
                  visionAuraNearest: (opts = {}, maxD = 12) => {
                    camera.updateMatrixWorld();
                    const eye = new THREE.Vector3().setFromMatrixPosition(camera.matrixWorld), fwd = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.getWorldQuaternion(new THREE.Quaternion()));

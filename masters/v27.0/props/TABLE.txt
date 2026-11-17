@@ -1,0 +1,38 @@
+# v27.0 · the flat's things: name, asset key, size in metres, the dimension it is sized on (h height, w width on x, l length
+# on z), the triangle count asked of Meshy's remesh (nothing is thinned here: v25.5), the sheets' size, the turn in degrees
+# (settled by a photograph). Sizes from docs/research/V27.0-HDB.md's BUILD SHEET and the things' real sizes. Read by
+# masters/v27.0/props/prop.sh. A sheet of 2048 only where the thing is seen close (her chair, her altar, the bowl in his
+# hand); 1024 across the room; 512 for the small and far.
+wheelchair    w4wheelchair  0.65  w  40000  2048  0
+prayershelf   w4prayershelf 0.75  w  30000  2048  0
+vilakku       w4vilakku     0.45  h  20000  1024  0
+waterbowl     w4waterbowl   0.15  w  20000  2048  0
+bigbowl       w4bigbowl     0.32  w  16000  1024  0
+sofa          w4sofa        1.90  w  30000  1024  0
+cabinet       w4cabinet     1.80  h  20000  1024  0
+diningtable   w4dintable    1.20  w  16000  1024  0
+dinechair     w4dinechair   0.95  h  12000  1024  0
+framesmall    w4framesmall  0.25  w   4000   512  0
+hugger        w4hugger      1.20  w   8000  1024  0
+folder        w4folder      0.32  w   6000  1024  0
+gate          w4gate        2.10  h  20000  1024  0
+frameport     w4frameport   0.40  h  12000  1024  0
+armchair      w4armchair    0.85  w  20000  1024  0
+tubelight     w4tubelight   1.22  w   3000   512  0
+tvconsole     w4tvconsole   1.50  w  16000  1024  0
+stool         w4stool       0.45  h   6000   512  0
+standfan      w4standfan    1.20  h  12000  1024  0
+shoerack      w4shoerack    0.80  w  30000  1024  0
+tulsi         w4tulsi       0.70  h  30000  1024  0
+door          w4door        2.10  h   4000  1024  0
+fridge        w4fridge      1.70  h   8000  1024  0
+pilltray      w4pilltray    0.30  w  12000  1024  0
+clock         w4clock       0.30  w   4000   512  0
+phonetable    w4phonetable  0.70  h  12000  1024  0
+bed           w4bed         0.95  w  16000  1024  0
+commode       w4commode     0.55  w   8000   512  0
+poles         w4poles       2.40  w  16000  1024  0
+thoranam      w4thoranam    1.00  w  12000  1024  0
+altartray     w4altartray   0.25  w  16000  1024  0
+coffeetable   w4coffee      1.10  w   8000  1024  0
+garlandhang   w4garland     0.45  w  12000  1024  0
