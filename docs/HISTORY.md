@@ -9230,7 +9230,12 @@ What the baseline contains, by release:
   `6afb8163c0eb3d86d74ea970`): his photographs 2, 3, 7, 8, 9 and 11 taken again from their places and measured at their
   own size closed four differences: the posts a plum maroon (drawn half as bright, and redder), both east sofas mint (one
   was olive), the dais's candles 0.62 and 0.79 m and yellow behind the gold bai sri (0.45 m, hidden, orange), the bench at
-  the back brown wood (the chapter's red bench); what was seen and left, each with its reason, is in the tracker.
+  the back brown wood (the chapter's red bench); what was seen and left, each with its reason, is in the tracker. His note
+  of 17 Nov ("At the ending cutscene when the old lady help to place the bai sri on the hall platform, her body clips into
+  the platform"): her 'give' steps 0.72 m in toward the table, and from 0.4 m before the second altar her legs went 0.49 m
+  into it, measured point by point through the close; she stands 0.55 m further back now (no point of her inside the
+  altar at any moment, her hands at the bai sri's middle), and the striped mat before the altar lies 0.37 m further west,
+  clear of the foot she steps in with. Builds 15 to 17, deploy `6afbf405e5758e70c1b908d1`.
 
 ## The sheet, version by version
 

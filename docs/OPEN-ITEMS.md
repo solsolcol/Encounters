@@ -345,7 +345,10 @@ CLOSED 14 Nov 2026: items 6 to 8 below were put to him together (docs/V26.12-WHA
       his eleven photographs taken again from its place and laid beside; four differences closed (the posts, the east
       sofas, the dais's candles, the bench), and what was seen and left, each with its reason (the matte floor, the fans'
       guards and tripods, the mattress piles, the cushion bundles, a fan his two photographs place differently, his
-      photograph 7's place), is in the tracker's last entry.
+      photograph 7's place), is in the tracker's entry of 16 Nov night. (4) In the close, as the woman who serves him
+      sets his bai sri on the second altar (his note of 17 Nov fixed: she no longer passes through it), the black tablet
+      on its stand, where his photograph 4 has it, stands between his eye and her and hides her head: moved only on his
+      word.
 
 ## D. Not built yet
 
