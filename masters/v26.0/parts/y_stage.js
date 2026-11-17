@@ -601,7 +601,12 @@
        him: she rises from where she sits and stands before it, and is seen as her hands leave it, as she was at the
        bench) */
     const TABLE_BAI = hallAt(0.5, 2.1, 0.65 + 0.012);
-    const AUNT_TABLE = (() => { const x = 0.58, z = HIN.zN + 2.2 + 0.4; return { x, z, ry: faceTo(x, z, TABLE_BAI[0], TABLE_BAI[2]) }; })();
+    /* (v26.18, Chad, 17 Nov 2026: "At the ending cutscene when the old lady help to place the bai sri on the hall platform,
+       her body clips into the platform". Measured through the close: her 'give' from 3.7 s carries her hips 0.72 m
+       forward of where she stands (the take steps in to the table and back), and stood 0.4 m before the altar's front
+       her legs went 0.49 m into it while her hands left the bai sri. She stands 0.55 m further back: her body then clears
+       the altar's front by about 6 cm at that moment, her hands come to the bai sri's middle, and she steps back from it) */
+    const AUNT_TABLE = (() => { const x = 0.58, z = HIN.zN + 2.2 + 0.95; return { x, z, ry: faceTo(x, z, TABLE_BAI[0], TABLE_BAI[2]) }; })();
     /* each ending's light at the close: the look it arrives in; what OPEN widens it to; the look it is left in */
     const END_LOOK = { A: ['HALLDAY', 'HALLOPEN', 'HALLDAY'], B: ['HALLDUSK', 'HALLDUSKOPEN', 'HALLDUSK'], C: ['HALLDAY', 'HALLOPEN', 'HALLDAY'], D: ['HALLSHUT', 'HALLOPEN', 'HALLDAY'] };   // (v26.18: the hall's own)
     const shadeOf = (name) => { const o = HALL_HOUR[name] ? HALL_HOUR[name][0] : name; return o === 'OPENED' || o === 'SHUT' ? 'DAWN' : o === 'DUSKOPEN' ? 'DUSK' : o; };
