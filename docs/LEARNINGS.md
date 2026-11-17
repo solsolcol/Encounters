@@ -8811,3 +8811,23 @@ Episode 4 chapter 3 (docs/V26.0-E4C3-BUILD.md is its tracker; these are its §8,
   on it and fetched it: the game's file still wore the spectacles. Caught only because the prepared model was
   photographed before it was placed. meshy26.py now sets a remade model's old jobs aside (`superseded`); a remesh is of
   the image-to-3D job it names, never of whatever the name last pointed at.
+
+## v26.18 — Samsung Internet's dark mode recolours a page that says `only light`; a canvas it leaves alone
+
+Chad, 17 Nov 2026, with a screenshot from Samsung Internet in the hall: "Why does it look like this on Samsung browser?
+It looks perfect on chrome browser and other browsers." Measured against the same hall drawn here, its HUD bars were
+not the game's: the Awareness bar's orange-to-cream gradient (176,113,54 / 254,178,103 / 255,225,192 along its fill)
+came out dark red (58,4,2 / 74,8,1 / 78,13,1), the Wisdom bar's teal (91,199,186 / 184,239,230) dark green (5,51,40 /
+9,52,37), the Sanity bar's red-to-pink a flat dark red. That is Samsung Internet's own forced dark for websites, which
+its dark theme turns on (his browser's bars are dark; the system's dark mode drives it, as reported): a published
+measurement on Samsung Internet 30 (Chromium 143, Oct 2026) has an orange CSS gradient at 72,0,2, plain fills, SVG,
+borders and shadows recoloured, images dimmed, and a canvas the only thing left right (255,86,21 for 255,87,20).
+v15.2's `color-scheme: only light` was written against Chromium's forced dark and Samsung's 2020 note on its
+"adaptive" option; Samsung's DEFAULT mode is not that option: developers report it darkens any page that lists no dark
+theme, and `only light` lists none. What a page says to it is still contested by version (one report on v30: a meta of
+both schemes did nothing). What holds: the recolouring is the browser's, after the game has drawn; it reaches the HTML
+(HUD, panels, words, pictures in `<img>`), not the canvas the world is drawn in; a page cannot detect it (the media
+query and getComputedStyle say nothing); `?diag`'s two colour rows (the page's and a canvas's) show it on the device.
+The player's own way out is Samsung Internet's Settings, Labs, "Use website dark theme" (Samsung Developer Relations'
+advice), or the browser's light theme. Before reading a phone's picture as the engine's, check which parts of it are
+HTML: the grey patterned mats in the same picture were the hall's front rows as built, not a recolour.

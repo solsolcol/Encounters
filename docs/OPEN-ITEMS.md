@@ -350,6 +350,16 @@ CLOSED 14 Nov 2026: items 6 to 8 below were put to him together (docs/V26.12-WHA
       on its stand, where his photograph 4 has it, stands between his eye and her and hides her head: moved only on his
       word.
 
+### C14 · Samsung Internet's forced dark recolours the game's HTML (17 Nov 2026, put to him)
+
+His screenshot from Samsung Internet: the HUD's bars and words recoloured by the browser's own dark mode for
+websites (measured: docs/LEARNINGS.md, v26.18). The game's `color-scheme: only light` (v15.2) does not stop it. His
+own phone: Settings, Labs, "Use website dark theme" (or the browser's light theme). For every Samsung player, three
+ways, his pick: (1) declare the game's own dark theme (`color-scheme: dark` and a `prefers-color-scheme: dark` rule;
+one line, one build; reports differ on whether Samsung Internet 30 honours it, so it is tested on his phone with the
+Labs setting off, and Chrome's own forced dark checked again); (2) draw the HUD's bars on a canvas, which the
+recolouring does not reach (the words and panels would still be recoloured); (3) leave it, and tell players.
+
 ## D. Not built yet
 
 - Episode 4 chapters 4–5; Episode 5 (S1·16–S1·20); Episodes 6–10 (names still the v6.0 list).
