@@ -309,6 +309,13 @@ K.weaponHolsters = await p.evaluate(() => !document.body.classList.contains('wea
    words; RELOAD dips (p below 0), owns the hands until the dip is done and fills the bowl again with no magazine
    counted; a chapter's refusal is said under the reticle and nothing is filled; put away, the pose and the bowl go;
    and the rifle's declaration comes back as it was */
+/* (v27.0: a trace of sanity and state while the checks run, printed when a check finds the run already lost: the
+   fixture's own ghost drains on wall time, and run 5 and 6 fainted somewhere between here and the amulet) */
+await p.evaluate(() => { const E = window.__enc; window.__sanTrace = []; let ls = null, lst = null;
+  setInterval(() => { const s = Math.round(E.stats.sanity), st = E.getState();
+    if (ls === null || Math.abs(s - ls) >= 3 || st !== lst) { window.__sanTrace.push([Math.round(performance.now() / 1000), s, st, window.__lbl || '']); ls = s; lst = st; } }, 500); });
+const lbl = (l) => p.evaluate(x => { window.__lbl = x; }, l);
+await lbl('own');
 K.ownSeam = await p.evaluate(async () => {
   const E = window.__enc, R = {};
   const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
@@ -394,6 +401,7 @@ K.groundSeam = await p.evaluate(async () => {
 await settle();
 
 // v16.5: THE PRAYING HANDS — kit.pray brings both hands to scChant's clasp and takes them back to the rest exactly
+await lbl('pray');
 K.praySeam = await p.evaluate(async () => {
   const E = window.__enc;
   const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
@@ -517,6 +525,7 @@ await settle();
    the screen again), a hold let go while it is shut runs home, the eye button closes it as V does; the spirit handed to
    ctx.spirit lives on the vision's own layer, which the world's lens never draws; and the pass itself built and ran
    (`ok`, no error). (kitReset shutting it is proved at the end, with the others a reset clears.) */
+await lbl('vision');
 K.visionSeam = await p.evaluate(async () => {
   const E = window.__enc, R = {};
   const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
@@ -557,6 +566,7 @@ await settle();
    asked (a beat is counted as it lands), its erratic heart comes early and drops beats, and null hands the monitor
    back; kit.smear lays the last frame over this one (it draws and copies, with no GL error) and at 0 frees its
    texture. Before and after, nothing of any of them is left: no layer, no filter, no heart, no texture */
+await lbl('cold');
 K.coldSeam = await p.evaluate(async () => {
   const E = window.__enc;
   const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
@@ -734,6 +744,7 @@ const tapOnce = async () => { await press(); await release(); };
 const untilT = t => p.waitForFunction(x => { const d = window.__enc.kitDebug(); return !!d.event && d.event.t >= x; }, t, { timeout: 60000 });
 const untilIdx = i => p.waitForFunction(x => { const d = window.__enc.kitDebug(); return !d.event || d.event.idx >= x; }, i, { timeout: 60000 });
 let r;
+await lbl('events');
 r = await runEvent({ kind: 'tap', secs: 3 }, tapOnce);                      K.evTap = r.ok === true && r.kind === 'tap';
 r = await runEvent({ kind: 'tap', secs: 0.15 });                           K.evTapTimesOut = r.ok === false;
 r = await runEvent({ kind: 'timed', open: 0.15, close: 0.9 }, tapOnce);    K.evTimedEarly = r.ok === false && r.early === true;
@@ -825,6 +836,7 @@ K.evTimedWordsPress = r.ok === true;
 /* v27.0 · S52: HOLD THE ROOM. A guard opens on its briefing with its own picture (the eye, the wave, the shape, the
    drop, the fingertip); START, a real tap, answers { ok: true } at once and PLAY comes back (no evopen); the objective's
    bar stands at the share kit.bar gives, steps aside on null, and the reset at the end clears it */
+await lbl('guard');
 r = await runEvent({ kind: 'guard', brief: 'Keep the room.', label: 'HOLD THE ROOM' }, async () => {
   K.guardIllustrates = await p.evaluate(() => {
     const dm = document.getElementById('evDemo');
@@ -987,6 +999,7 @@ K.evBriefRuns = r.band.length === 2;
 // the award: the fixture's panel hotspot opens a sequence worth up to +6 awareness
 await p.evaluate(() => { const e = window.__enc; e.yaw.position.set(6, 1.62, -4.2); e.yaw.rotation.y = 0; });
 await settle();
+await lbl('hotspot');
 K.eventFromHotspot = await p.evaluate(() => {
   const e = window.__enc; window.__aw0 = e.stats.awareness; window.__evR = null;
   return e.kitDebug().hotspot === 'panel' && e.interactNow() === true;
@@ -1001,6 +1014,7 @@ await p.waitForFunction(() => !window.__enc.kitDebug().event, null, { timeout: 6
    the hotspot retires — the size of it is the chapter's business. */
 K.eventAwards = await p.evaluate(() => window.__enc.stats.awareness !== window.__aw0 && window.__enc.kitDebug().hotspot === null);   // once: retired
 
+await lbl('bed');
 // pose: the bed lies him down, walking stops, the neck narrows; the bed stands him up
 await p.evaluate(() => { const e = window.__enc; e.yaw.position.set(6, 1.62, 7.8); e.yaw.rotation.y = 0; });
 await settle();
@@ -1029,6 +1043,11 @@ K.waypointShown = await until(() => !document.getElementById('waypoint').classLi
   .then(() => true, () => false);
 await p.evaluate(() => window.__enc.kit.waypoint(null));
 
+/* (v27.0: sanity PINNED here too. The fixture's own ghost drains it on WALL time while she is present, and the checks
+   added before this point (HOLD THE ROOM's) moved her timeline: run 5's player fainted between the pin to 60 above and
+   the amulet below, so the splash was refused and every check after it read a run already lost. The clock below
+   measures its own cost from wherever sanity stands, and the amulet's ward checks set their own) */
+await p.evaluate(() => { window.__enc.stats.sanity = 60; });
 // the decision clock: armed, it drains under the panel and costs sanity when it runs out
 await p.evaluate(() => {
   const c = window.__enc.chapter;
@@ -1081,7 +1100,7 @@ K.unlockOpens = await p.evaluate(() => {
     && !document.getElementById('unlock').classList.contains('hide')
     && document.getElementById('unName').textContent.length > 0;
 });
-if (!K.tapTakesTheThing || !K.unlockOpens) console.log('first splash:', JSON.stringify({ relicAt, took: K.tapTakesTheThing, opens: K.unlockOpens,
+if (!K.tapTakesTheThing || !K.unlockOpens) console.log('first splash:', JSON.stringify({ relicAt, took: K.tapTakesTheThing, opens: K.unlockOpens, trace: await p.evaluate(() => window.__sanTrace),
   now: await p.evaluate(() => { const e = window.__enc; return { state: e.getState(), unlock: e.unlockState(), sanity: e.stats.sanity, ev: !!e.kitDebug().event }; }) }));
 await p.waitForTimeout(900);
 await p.keyboard.press('Enter');

@@ -719,6 +719,8 @@ ASSETS = {
     'w3hcushions':  ('assets/w3hcushions.glb', True, False),     # strapped bundles of cushions against the east wall (E1)
     'w3hwallfan':   ('assets/w3hwallfan.glb', True, False),     # a wall fan on its bracket, two on the free post
     # <<< e4c3 keys: the rows end <<<
+    # >>> e4c4 keys: written by masters/v27.0/keys.py from its table (edit the table, not these rows) >>>
+    # <<< e4c4 keys: the rows end <<<
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
     # in white (two women, two men), Mixamo's Praying and Kneeling Idle applied
@@ -869,6 +871,8 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'w3hexhaust', 'w3hhorn', 'w3hpabox', 'w3hpapercone', 'w3hswan', 'w3hconetower', 'w3hcushions',
            'w3hwallfan',
            # <<< e4c3 keys <<<
+           # >>> e4c4 keys (masters/v27.0/keys.py) >>>
+           # <<< e4c4 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY
 
