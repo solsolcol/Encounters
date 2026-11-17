@@ -1,0 +1,27 @@
+[
+ {
+  "name": "ravi",
+  "kind": "person",
+  "image": "masters/v27.0/people/refs/ravi-a-2k.png"
+ },
+ {
+  "name": "mala",
+  "kind": "person",
+  "image": "masters/v27.0/people/refs/mala-a-2k.png"
+ },
+ {
+  "name": "appa",
+  "kind": "person",
+  "image": "masters/v27.0/people/refs/appa-a-2k.png"
+ },
+ {
+  "name": "wander",
+  "kind": "person",
+  "image": "masters/v27.0/people/refs/wander-a-2k.png"
+ },
+ {
+  "name": "large",
+  "kind": "person",
+  "image": "masters/v27.0/people/refs/large-a-2k.png"
+ }
+]

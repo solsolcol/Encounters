@@ -1,0 +1,45 @@
+v27.0 · the people and the spirits of episode 4 chapter 4: the reference pictures
+(Chad, 11 Nov 2026: "first generate a reference of the person, describe it to GPTimage, person in photorealistic
+details, against a white background, in A pose." The house wording is v26.0's, masters/v26.0/people/PROMPTS.txt.)
+
+Higgsfield, model gpt_image_2_6, aspect 2:3. The four people at quality max, resolution 2k (9 credits a picture: they
+are seen close, and the photograph of the departed is the game's own render of his face). The three spirits at quality
+high, 2k (2.75): only their outline is ever drawn (Spirit Vision draws a rim of light, never their paint).
+Nobody is modelled on a real person.
+
+THE SHARED WORDING (WHO and DRESS change):
+  Photorealistic full-body studio photograph of WHO, standing upright in an A-pose: both arms straight and held about
+  35 degrees away from the body, palms facing the thighs, fingers slightly apart, feet shoulder-width apart, facing the
+  camera straight on, barefoot. DRESS. The whole figure is in frame from the top of the head to the toes with a clear
+  margin all round. Even soft studio lighting from the front, no cast shadow, pure white seamless background. Sharp
+  focus, neutral expression, mouth closed, natural skin texture, realistic cloth folds. No text, no logo, no watermark,
+  no props.
+
+amma    WHO  an elderly Indian Tamil woman of about seventy-two, slight and frail, a gentle deeply lined face, grey hair
+             combed back into a small low bun, a small red pottu dot on her forehead, a small gold nose stud
+        DRESS She wears an everyday cotton sari in faded maroon with a narrow mustard-gold border, draped in the
+              ordinary Tamil way with the pleats at the front and the end of the sari over her left shoulder and down her
+              back, a plain matching short-sleeved blouse, three thin gold bangles on each wrist and a thin gold chain
+ravi    WHO  a Singaporean Indian Tamil man of about forty-eight, medium build with a slight paunch, short black hair
+             greying at the temples, a neat black moustache, clean-shaven chin, a worried tired face
+        DRESS He wears a plain navy blue short-sleeved polo shirt tucked into grey cotton trousers with a black belt,
+              and a steel wristwatch on his left wrist
+mala    WHO  a Singaporean Indian Tamil woman of about forty-five, medium build, long black hair in a single low plait
+             hanging down her back, a small black pottu dot on her forehead, small gold stud earrings
+        DRESS She wears a knee-length cotton kurti tunic in mustard yellow with a small block-printed pattern, side
+              slits from the hip, three-quarter sleeves, over plain off-white cotton leggings, and thin glass bangles
+appa    WHO  an Indian Tamil man of about seventy, lean, a kind lined face, thinning grey hair combed back, a grey
+             moustache, three horizontal stripes of white sacred ash across his forehead with a small red dot at their
+             middle
+        DRESS He wears a white long-sleeved cotton shirt with the sleeves folded to the forearm, worn untucked over a
+              plain white cotton veshti (an ankle-length wrapped cloth with a thin gold border) tied at the waist
+oppress WHO  an emaciated, gaunt humanoid spirit figure, far thinner than a living person, skin stretched tight over
+             the ribs, collarbones and joints, very long thin arms and long bony fingers, a bald head, sunken eyes, a
+             hollow face, ash-grey skin
+        DRESS It wears only a ragged dark grey loincloth
+wander  WHO  a small, thin, stooped humanoid spirit figure about 1.35 metres tall, narrow shoulders, crooked thin limbs,
+             ash-grey skin, short matted black hair
+        DRESS It wears a torn grey cloth wrapped round its waist to the knees
+large   WHO  a very tall, heavily built, hunched humanoid spirit figure about 2.1 metres tall, broad sloping shoulders,
+             long heavy arms, a thick neck, a bald heavy head, ash-grey skin
+        DRESS It wears a ragged dark cloth wrapped round its waist to the knees
