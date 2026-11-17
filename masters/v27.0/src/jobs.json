@@ -370,6 +370,9 @@
   "expires_at": 1795213691161,
   "image": "masters/v27.0/props/refs/bed-2k.png",
   "image_to_3d": "01a1eb9b-abf8-77c5-a6be-87714b648cba",
+  "remesh": {
+   "16000": "01a1ebeb-c124-7577-a60b-fc6da48d4035"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -457,6 +460,9 @@
   "expires_at": 1795213704222,
   "image": "masters/v27.0/props/refs/clock-2k.png",
   "image_to_3d": "01a1eb9b-9035-77a0-acb2-7719538ca861",
+  "remesh": {
+   "4000": "01a1ebe3-a1d3-776f-b7e6-05f5b34f0b23"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -514,6 +520,9 @@
   "expires_at": 1795213811548,
   "image": "masters/v27.0/props/refs/commode-2k.png",
   "image_to_3d": "01a1eb9b-b610-7122-aff4-a239deea7701",
+  "remesh": {
+   "8000": "01a1ebef-7c2d-75f4-9a24-08b89d73b102"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -1028,6 +1037,9 @@
   "expires_at": 1795213741664,
   "image": "masters/v27.0/props/refs/phonetable-2k.png",
   "image_to_3d": "01a1eb9b-9d58-7700-8b47-30b61b32b3f0",
+  "remesh": {
+   "12000": "01a1ebe7-9545-7482-bc21-7d381df6d868"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -1055,6 +1067,9 @@
   "expires_at": 1795213735991,
   "image": "masters/v27.0/props/refs/pilltray-2k.png",
   "image_to_3d": "01a1eb9b-7e73-7472-8662-10db840ffd61",
+  "remesh": {
+   "12000": "01a1ebdf-f3bb-7385-ba10-94b1f284d4d9"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,

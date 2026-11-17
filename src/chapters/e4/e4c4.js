@@ -42,9 +42,11 @@
   const FLAT = sky({
     stops: [[0.00, '#3a2f30'], [0.10, '#2a2328'], [0.30, '#191820'], [0.60, '#101119'], [1.00, '#0a0b12']],
     bg: 0x14131a, fog: [0x14131a, 0.004],
-    hemi: [0xe8eef6, 0x4a4440, 0.95], key: [0xf2f6ff, 0.9, 1.0, 2.5, 2.6], fill: [0xb8c4d8, 0.22],
+    hemi: [0xe8eef6, 0x9a8f7e, 0.95], key: [0xf2f6ff, 0.9, 1.0, 2.5, 2.6], fill: [0xb8c4d8, 0.22],
     stars: 0.25, moon: 0,
-    vmHemi: [0xe8eef6, 0x4a4440, 0.9], vmKey: [0xf2f6ff, 0.62] });
+    vmHemi: [0xe8eef6, 0x857a6c, 0.9], vmKey: [0xf2f6ff, 0.62] });
+  /* (18 Nov, photographed: the hemisphere's ground was a dark brown, so every face looking down, the ceiling first,
+     drew near black under a lit tube; it is the beige floor's bounce now, the way a tiled room under a tube is lit) */
   /* THE BLESSING: the tube dead, the fan stopped, the TV dead; the lamp at her altar and the estate through the grilles
      are all the light there is. The key is the lamp: warm, low, from the altar's wall; the fill the estate's cold */
   const DARK = sky({
@@ -142,7 +144,7 @@
 
     /* units metres, y up; the build sheet's axes (above). Play begins just inside her door, turned into the room: her
        chair before her altar on the far wall is what a portrait phone must see first */
-    spawn:     { x: 0.15, y: 1.62, z: 1.0, rot: 0 },
+    spawn:     { x: 0.15, y: 1.62, z: 1.0, rot: Math.PI },   // facing into the room, her chair and her altar (a turn of 0 looks back at the door)
     shrine:    { x: -0.15, z: 3.9 },             // the engine's anchor (ghost: null): her chair, the chapter's pile
     ghostHome: { x: -0.15, z: 3.9 },
     /* the flat and its corridor: the living room, her room, the passage and the kitchen are walked; the bedrooms and the
@@ -162,12 +164,18 @@
     vision: {},
     /* THE HOLY WATER (the fifty-first seam, plan §6): his own hands, the small silver bowl in his left, a flick of the
        right hand's fingers a press, a dip at Grandmaster Pho's bowl to fill it again; the HUD says the chapter's words */
-    weapon: { hands: 'own', pose: 'bowl', rounds: 10, endless: true, fireGap: 0.35, spray: { count: 9 },
+    /* the holy water is IN HIS HANDS only once Grandmaster Pho has given him the bowl (the item, given in the blessing):
+       until then the hands are his own and empty (an item-less weapon is always out) */
+    weapon: { hands: 'own', pose: 'bowl', item: 'holywater', rounds: 10, endless: true, fireGap: 0.35, spray: { count: 9 },
               words: { fire: 'FLICK', reload: 'DIP' }, shot: 'uiclick', reload: 'uiclick', empty: 'uiclick' },
 
     assets: [
       /* the people, the spirits and the things made for this chapter (masters/v27.0/make.sh) */
       /* >>> this chapter's own keys: written by masters/v27.0/keys.py (edit its table, not this list) >>> */
+      'w4wheelchair', 'w4prayershelf', 'w4vilakku', 'w4waterbowl', 'w4bigbowl', 'w4sofa', 'w4cabinet', 'w4dintable',
+      'w4dinechair', 'w4framesmall', 'w4hugger', 'w4folder', 'w4gate', 'w4frameport', 'w4armchair', 'w4tubelight',
+      'w4tvconsole', 'w4stool', 'w4standfan', 'w4shoerack', 'w4tulsi', 'w4door', 'w4fridge', 'w4pilltray',
+      'w4coffee',
       /* <<< this chapter's own keys <<< */
       /* Grandmaster Pho, Chad's own model, as chapter 3 cast him (reuseInEpisode) */
       'pho'
@@ -404,6 +412,8 @@
        ceiling the floor above's slab; her neighbours' doors every 10.2 m; the lift lobby along it to the west */
     const CORR = { z0: -1.75, z1: 0, x0: -26, x1: 26, para: -1.90, paraTop: 0.90, soffit: 2.65 };
     const LOBBY = { x0: -21.5, x1: -16.5 };
+    /* her neighbours' doors along the corridor (every 10.2 m; the one where the lift lobby opens has none) */
+    const NEIGHBOURS = [-20.4, -10.2, 10.2, 20.4].filter(nx => !(nx > LOBBY.x0 - 0.6 && nx < LOBBY.x1 + 0.6));
     /* THE ESTATE: her block on the 8th storey (her floor 20.4 m above the ground); the next block across, 40 m out */
     const GROUND_Y = -20.4;
     const ACROSS = { z: -42, x0: -60, x1: 45, d: 12, storeys: 13, storey: 2.85 };
@@ -828,15 +838,20 @@
       for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) { const k = 0.9 + r() * 0.16;
         x.fillStyle = `rgb(${(150 * k) | 0},${(78 * k) | 0},${(56 * k) | 0})`; x.fillRect(i * T + 2, j * T + 2, T - 4, T - 4); }
       const t = tex(done(THREE, c, true)); rep(t, 0.6, 0.6); return M({ map: t, roughness: 0.6 }); })();
-    /* the walls: plaster painted a tired cream, faintly mottled, a little grime low down */
+    /* the walls: plaster painted a tired cream, only faintly uneven (18 Nov, photographed: 1600 blotches of up to 12 px
+       laid over one another read as a speckled wallpaper under the tube, which an HDB wall's paint is not; now a few
+       hundred soft ones, fainter) */
     const wallPaint = (hex, seed) => { const W = 256, [c, x] = cnv(W), r = rng(seed);
       x.fillStyle = hex; x.fillRect(0, 0, W, W);
-      for (let s = 0; s < 1600; s++) { x.fillStyle = r() < 0.5 ? 'rgba(0,0,0,0.035)' : 'rgba(255,255,255,0.05)'; const q = 2 + r() * 10; x.fillRect(r() * W, r() * W, q, q); }
+      /* (soft round spots, a radial fall each: squares, however faint, read as tiles of a pattern) */
+      for (let s = 0; s < 260; s++) { const cx = r() * W, cy = r() * W, q = 8 + r() * 26, dark = r() < 0.5;
+        const g = x.createRadialGradient(cx, cy, 0, cx, cy, q); g.addColorStop(0, dark ? 'rgba(0,0,0,0.018)' : 'rgba(255,255,255,0.022)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+        x.fillStyle = g; x.fillRect(cx - q, cy - q, q * 2, q * 2); }
       const t = tex(done(THREE, c, true)); rep(t, 1.4, 1.4); return t; };
     const mWall = M({ map: wallPaint('#d9cdb4', 3301), roughness: 0.92 });
     const mWallHers = M({ map: wallPaint('#cfd8c8', 3302), roughness: 0.92 });      // her room a pale green, as she chose it once
     const mWallOut = M({ map: wallPaint('#c9c2b2', 3303), roughness: 0.95 });      // the corridor's face: HDB's grey-cream
-    const mCeil = M({ color: 0xe6e4de, roughness: 0.95 });
+    const mCeil = M({ color: 0xe6e4de, roughness: 0.95, emissive: 0x2c2b28 });   // (a ceiling under its own tube is lit: painted light)
     /* the skirting: a strip of the floor's tile, 100 mm high, round every wall */
     const mSkirt = M({ color: 0x9c8a72, roughness: 0.5 });
     /* the kitchen's walls: white 150 mm tiles to 1.5 m, paint above */
@@ -927,7 +942,10 @@
       floor(mFloor, R.living.x0, F.face, R.living.x1, R.living.z1);
       floor(mFloor, R.hers.x0, F.face, R.hers.x1, R.passage.z1);
       floor(mFloor, R.nook.x0, R.nook.z0, R.nook.x1, R.nook.z1);
-      floor(mKitFloor, R.dining.x0, R.dining.z0, R.dining.x1, R.dining.z1);
+      /* the dining room is the living room's tile; the kitchen at its back (from z 7.6, where its tiled walls begin) its
+         own red quarry tile (18 Nov, photographed: the whole dining room had been laid in the kitchen's) */
+      floor(mFloor, R.dining.x0, R.dining.z0, R.dining.x1, 7.6);
+      floor(mKitFloor, R.dining.x0, 7.6, R.dining.x1, R.dining.z1);
       floor(mCorrFloor, CORR.x0, CORR.z0, CORR.x1, CORR.z1 + 0.002, F.corr);
       /* the ceilings (over everything walked, and over the corridor: the floor above) */
       const ceil = (x0, z0, x1, z1, y) => quad(mCeil, [x0, y, z0], [x1, y, z0], [x1, y, z1], [x0, y, z1]);
@@ -969,14 +987,8 @@
       wallZ(mKitTile, R.bath2.x1 + t / 2, t, R.bath2.z0, F.z1);
       /* the kitchen's tiled skin over the back walls to 1.5 m (inside the dining room's back third) */
       quad(mKitTile, [R.dining.x1 - 0.002, 0, 7.6], [R.dining.x1 - 0.002, 0, F.z1], [R.dining.x1 - 0.002, 1.5, F.z1], [R.dining.x1 - 0.002, 1.5, 7.6], 7.6, 0);
-      /* the doors that stay shut: a leaf of veneer in each doorway, set a little in (bedroom 3's stands a hand's width
-         open: c_props.js turns it) */
-      const leafX = (x0, x1, zc) => box(mVeneer, (x0 + x1) / 2, 1.04, zc, x1 - x0 - 0.02, 2.06, 0.04);
-      const leafZ = (z0, z1, xc) => box(mVeneer, xc, 1.04, (z0 + z1) / 2, 0.04, 2.06, z1 - z0 - 0.02);
-      leafX(DOOR_MASTER.x0, DOOR_MASTER.x1, R.living.z1 + 0.05);
-      leafZ(DOOR_STORE.z0, DOOR_STORE.z1, R.nook.x0 - 0.05);
-      leafX(DOOR_BED2.x0, DOOR_BED2.x1, R.nook.z1 + 0.05);
-      leafX(DOOR_BATH2.x0, DOOR_BATH2.x1, R.bath2.z0 - 0.05);
+      /* the doors that stay shut: each doorway's leaf is the door's own model (c_props.js DOORS; bedroom 3's stands a
+         hand's width open); here only what stops him walking through */
       solidBox(DOOR_MASTER.x1 - DOOR_MASTER.x0, 2.1, 0.1, (DOOR_MASTER.x0 + DOOR_MASTER.x1) / 2, 1.05, R.living.z1 + 0.05);
       solidBox(0.1, 2.1, DOOR_STORE.z1 - DOOR_STORE.z0, R.nook.x0 - 0.05, 1.05, (DOOR_STORE.z0 + DOOR_STORE.z1) / 2);
       solidBox(DOOR_BED2.x1 - DOOR_BED2.x0, 2.1, 0.1, (DOOR_BED2.x0 + DOOR_BED2.x1) / 2, 1.05, R.nook.z1 + 0.05);
@@ -1002,13 +1014,9 @@
       box(mWallOut, (c.x0 + c.x1) / 2, y0 - 0.25, c.para + 0.1, c.x1 - c.x0, 0.3, 0.2);
       /* the battens: a 1.2 m LED tube under the soffit every 7 m */
       for (let x = -24.5; x <= 24.5; x += 7) box(mBatten, x, c.soffit - 0.03, -0.9, 1.2, 0.03, 0.06);
-      /* her neighbours' doors: a leaf of veneer, a gate of bars before it, a window beside (shut, dark) */
-      for (const nx of [-20.4, -10.2, 10.2, 20.4]) {
-        if (nx > LOBBY.x0 - 0.6 && nx < LOBBY.x1 + 0.6) continue;
-        box(mVeneer, nx, y0 + 1.05, 0.02, 0.9, 2.1, 0.04);
-        for (let gx = nx - 0.45; gx <= nx + 0.45; gx += 0.1) bar(mGrille, [gx, y0, -0.15], [gx, y0 + 2.05, -0.15], 0.009, 6);
-        glass.push({ x0: nx + 0.6, x1: nx + 2.8, y0: 0.9, y1: 2.1, z: -0.01 });
-      }
+      /* her neighbours' doors: the door and the gate are the models hers are (c_props.js NEIGHBOURS); here a window
+         beside each (shut, dark) */
+      for (const nx of NEIGHBOURS) glass.push({ x0: nx + 0.6, x1: nx + 2.8, y0: 0.9, y1: 2.1, z: -0.01 });
       /* the corridor's own collision (the opening film walks it; play never does: the gate is shut behind them) */
       solidBox(c.x1 - c.x0, 1.2, 0.15, (c.x0 + c.x1) / 2, 0.5, c.para + 0.075);
     }
@@ -2877,64 +2885,140 @@
        Every one a real model (a checked picture on white, Meshy at its highest and its own remesh, tools/prepmeshy.mjs:
        masters/v27.0/props/TABLE.txt), prepped in real metres with its origin on its base's middle and its front along +z,
        so a place here is a place and `ry` turns its front. A thing stands only once its file has landed (stand() leaves an
-       empty group until then); its collision is a column from the floor, its FOOTPRINT written here (the model's own
-       extent measured at prep, `foot` [width, depth] before its turn), so the blockers stand before the model does
-       (v24.0: they must be in the array before build() returns).
+       empty group until then); its collision is a column from the floor, its FOOTPRINT the model's own extent as measured
+       in its file (18 Nov: `w`, `d` below, before its turn), so the blockers stand before the model does (v24.0: they must
+       be in the array before build() returns).
        The living room: her altar on the far wall facing the door; her chair before it, Grandmaster Pho's stool at her
        right and his bowl at its foot; the sofa under the corridor window looking into the room; the TV on the left wall;
        the coffee table, an armchair, a standing fan. Her room behind its folded partition: her bed with its rail, the
-       commode. The dining room: the table with her hospital folder, the display cabinet with her old photograph. The
-       kitchen: the fridge, the laundry out of the window. Outside: the gate, the shoe rack, a tulsi in its pot, the
-       mango leaves over the door. (Positions are the first layout: each is set again once its model is measured and
-       photographed in place, M5.) */
+       commode. The dining room: the table with her hospital folder, the display cabinet. The kitchen: the fridge, the
+       laundry out of the window. Outside: the gate, the shoe rack, a tulsi in its pot, the mango leaves over the door.
+       A thing whose height a place depends on is placed by its measured size: a ceiling's fan and tube HANG from it (their
+       origin is their lowest point, so each stands its own height under the ceiling), the dining table is drawn at a dining
+       table's 0.75 m (its file's 0.571 is a squat generation: its height scaled, nothing else), and what lies on a table
+       lies on that table's measured top. */
+    const TOP = { coffee: 0.444, dintable: 0.75 };            // the coffee table's top (its file), the dining table's (drawn)
+    /* HOW EACH THING TAKES THE LIGHT (18 Nov, photographed: the altar's shelves drew WHITE). A generator paints every
+       model as a metal-roughness sheet whose roughness runs down to 0, and stand() lifts the reflections of anything
+       with a metal sheet three-fold (bronzeLift: for brass and gold); a varnished shelf a little below the eye, seen at a
+       grazing angle, then mirrors the room's light whole. So a thing that is not metal is drawn as what it is: its metal
+       sheet dropped (a non-metal), its roughness one even finish (varnished timber 0.55, painted or plastic 0.5, cloth
+       and paper 0.85), reflections at their plain strength (the house's way for a generated piece: chapter 3's hall,
+       b_world2.js); the metal ones keep their sheets, the brass at the full lift, the painted steel at half.
+       (Measured from the files' own sheets, 18 Nov: the brass lamp's and the bowls' metal 0.7 to 0.9; the wheelchair's,
+       the tubes', the rack's and the gate's 0.16 to 0.46; every piece of furniture under 0.05.) */
+    const MATTE = { wood: 0.55, paint: 0.5, cloth: 0.85 };
+    const matte = (r) => (m) => m.traverse(q => { if (!q.isMesh) return; for (const mt of [].concat(q.material)) {
+      mt.metalnessMap = null; mt.metalness = 0; mt.roughnessMap = null; mt.roughness = r; mt.envMapIntensity = 1; mt.needsUpdate = true; } });
+    const LOOK = {
+      w4prayershelf: { done: matte(MATTE.wood) }, w4frameport: { done: matte(MATTE.wood) }, w4sofa: { done: matte(MATTE.cloth) },
+      w4armchair: { done: matte(MATTE.cloth) }, w4coffee: { done: matte(MATTE.wood) }, w4tvconsole: { done: matte(MATTE.wood) },
+      w4cabinet: { done: matte(MATTE.wood) }, w4dintable: { done: matte(MATTE.wood) }, w4dinechair: { done: matte(MATTE.wood) },
+      w4folder: { done: matte(MATTE.cloth) }, w4fridge: { done: matte(MATTE.paint) }, w4stool: { done: matte(MATTE.paint) },
+      w4hugger: { done: matte(MATTE.paint) }, w4tulsi: { done: matte(MATTE.cloth) }, w4clock: { done: matte(MATTE.paint) },
+      w4phonetable: { done: matte(MATTE.wood) }, w4bed: { done: matte(MATTE.cloth) }, w4commode: { done: matte(MATTE.paint) },
+      w4garland: { done: matte(MATTE.cloth) }, w4thoranam: { done: matte(MATTE.cloth) }, w4poles: { done: matte(MATTE.cloth) },
+      w4door: { done: matte(MATTE.wood) },
+      w4wheelchair: { lift: 1.5 }, w4gate: { lift: 1.5 }, w4shoerack: { lift: 1.5 }, w4standfan: { lift: 1.5 },
+      w4tubelight: { lift: 1.5 }, w4pilltray: { lift: 1.5 }
+      /* (the brass: w4vilakku, w4bigbowl, w4waterbowl, w4altartray, at stand()'s own lift of 3) */
+    };
+    const DINE_SY = 0.75 / 0.571;                             // the dining table's height drawn: 0.75 m from its file's 0.571
     const PROPS = [
-      // key            x      y      z      ry              foot [w, d]   (what)
-      ['w4wheelchair', CHAIR.x, 0, CHAIR.z, 0,              [0.65, 1.05]],  // her chair, facing her altar
-      ['w4stool',      STOOL.x, 0, STOOL.z, -0.4,           [0.40, 0.40]],  // Grandmaster Pho's, at her right
-      ['w4bigbowl',    BOWL.x, 0, BOWL.z, 0,                null],          // his bowl on the floor: he dips here
-      ['w4prayershelf', ALTAR.x, 1.15, ALTAR.z - 0.16, Math.PI, null],      // her altar on the far wall (its base at 1.15: its shelf at 1.5)
-      ['w4altartray',  ALTAR.x, 0, ALTAR.z - 0.42, Math.PI, null],          // the brass tray before it, on the floor
-      ['w4vilakku',    ALTAR.x + 0.02, 0.03, ALTAR.z - 0.42, 0, null],      // the kuthu vilakku on the tray (lit by Mala in the blessing)
-      ['w4frameport',  0.78, 1.25, ALTAR.z - 0.03, Math.PI, null],          // Appa's photograph, on the wall at the altar's right
-      ['w4garland',    0.78, 1.63, ALTAR.z - 0.07, Math.PI, null],          // its garland, fresh
-      ['w4sofa',       1.72, 0, FL.face + 0.45, 0,          [1.90, 0.85]],  // under the corridor window, looking in
-      ['w4coffee',     1.72, 0, 1.62, 0,                    [1.10, 0.55]],
-      ['w4pilltray',   1.95, 0.42, 1.62, 0.3,               null],          // her medicine tray on the coffee table (its height set once the table is measured)
-      ['w4armchair',   2.42, 0, 2.62, -1.95,                [0.85, 0.80]],
-      ['w4standfan',   2.62, 0, 1.05, -2.4,                 [0.45, 0.45]],
-      ['w4tvconsole',  ROOMS.living.x0 + 0.24, 0, 1.85, Math.PI / 2, [1.50, 0.45]],
-      ['w4clock',      ROOMS.living.x0 + 0.02, 2.02, 1.85, Math.PI / 2, null],
-      ['w4hugger',     1.0, FL.ceil - 0.02, 2.05, 0,        null],          // the living room's ceiling fan (turned in the frame)
-      ['w4tubelight',  1.0, FL.ceil - 0.01, 3.65, 0,        null],          // the tube that dies in the blessing
-      ['w4hugger',     4.7, FL.ceil - 0.02, 1.8, 0,         null],          // her room's
-      ['w4tubelight',  4.8, FL.ceil - 0.01, 6.0, Math.PI / 2, null],        // the dining room's
-      ['w4phonetable', 4.45, 0, ROOMS.passage.z0 + 0.2, 0,  [0.50, 0.38]],  // in the passage, against her room's back wall
+      // key            x       y      z      ry               foot [w, d] (the file's own extent)   (what)
+      ['w4wheelchair', CHAIR.x, 0, CHAIR.z, CHAIR.ry,          [0.65, 1.00]],   // her chair, facing her altar
+      ['w4stool',      STOOL.x, 0, STOOL.z, -0.4,             [0.40, 0.39]],   // Grandmaster Pho's, at her right
+      ['w4bigbowl',    BOWL.x, 0, BOWL.z, 0,                  [0.33, 0.33]],   // his bowl on the floor: he dips here
+      // her altar: a wall-mounted cabinet (the research's "floating unit", [32]), its back on the wall, its base at 1.15
+      ['w4prayershelf', ALTAR.x, 1.15, ROOMS.living.z1 - 0.226 - 0.004, Math.PI, null],
+      ['w4altartray',  ALTAR.x, 0, ALTAR.z - 0.42, Math.PI,   null],           // the brass tray before it, on the floor
+      ['w4vilakku',    ALTAR.x + 0.02, 0.03, ALTAR.z - 0.42, 0, null],          // the kuthu vilakku on the tray (Mala lights it)
+      // Appa's photograph on the wall at the altar's right (its back on the wall), and its garland
+      ['w4frameport',  0.62, 1.30, ROOMS.living.z1 - 0.011 - 0.004, Math.PI, null],
+      ['w4garland',    0.62, 1.66, ROOMS.living.z1 - 0.05, Math.PI, null],
+      // the sofa under the corridor window, its back to the front wall; the coffee table before it; the armchair at the
+      // room's right, facing the TV across it; a standing fan between them
+      ['w4sofa',       1.72, 0, FL.face + 0.456 + 0.01, 0,     [1.90, 0.91]],
+      ['w4coffee',     1.72, 0, 1.70, 0,                      [1.10, 0.77]],
+      ['w4pilltray',   1.95, TOP.coffee, 1.70, 0.3,           null],           // her medicine tray on the coffee table
+      ['w4armchair',   2.17, 0, 2.78, -Math.PI / 2,           [0.85, 1.26]],
+      ['w4standfan',   2.50, 0, 1.55, -2.4,                   [0.57, 0.45]],
+      // the TV on the left wall facing into the room, between the main door's open leaf and bedroom 3's door
+      ['w4tvconsole',  ROOMS.living.x0 + 0.25 + 0.005, 0, 1.92, Math.PI / 2, [1.50, 0.50]],
+      ['w4clock',      ROOMS.living.x0 + 0.02, 2.05, 1.92, Math.PI / 2, null],
+      // the ceilings': a hugger fan over the living room and one in her room (turned in the frame), and the tubes
+      ['w4hugger',     1.0, FL.ceil - 0.222 - 0.004, 2.40, 0, null],
+      ['w4hugger',     4.7, FL.ceil - 0.222 - 0.004, 1.80, 0, null],
+      ['w4tubelight',  0.2, FL.ceil - 0.109 - 0.003, 3.60, 0, null],           // the tube that dies in the blessing
+      ['w4tubelight',  4.85, FL.ceil - 0.109 - 0.003, 6.65, Math.PI / 2, null], // the dining room's
+      ['w4phonetable', 4.45, 0, ROOMS.passage.z0 + 0.12 + 0.20, 0, [0.50, 0.38]], // in the passage, against her room's back wall
       // her room
-      ['w4bed',        5.95, 0, 1.75, -Math.PI / 2,          [1.00, 2.00]],
-      ['w4commode',    4.95, 0, 0.75, 0.2,                  [0.55, 0.55]],
+      ['w4bed',        5.95, 0, 1.75, -Math.PI / 2,           [1.00, 2.00]],
+      ['w4commode',    4.95, 0, 0.75, 0.2,                    [0.55, 0.55]],
       // the dining room and the kitchen
-      ['w4cabinet',    ROOMS.dining.x0 + 0.24, 0, 6.15, Math.PI / 2, [1.00, 0.42]],
-      ['w4dintable',   4.85, 0, 6.65, Math.PI / 2,          [1.20, 0.80]],
-      ['w4dinechair',  4.25, 0, 6.35, Math.PI / 2,          [0.45, 0.45]],
-      ['w4dinechair',  4.25, 0, 6.95, Math.PI / 2,          [0.45, 0.45]],
-      ['w4dinechair',  5.45, 0, 6.35, -Math.PI / 2,         [0.45, 0.45]],
-      ['w4dinechair',  5.45, 0, 6.95, -Math.PI / 2,         [0.45, 0.45]],
-      ['w4folder',     4.8, 0.77, 6.4, 0.25,                null],          // her hospital letters, on the table
-      ['w4fridge',     ROOMS.dining.x1 - 0.36, 0, 8.7, -Math.PI / 2, [0.60, 0.65]],
-      ['w4poles',      5.55, 1.15, FL.z1 + 0.55, 0,         null],          // the laundry out of the kitchen window
-      // outside her door
-      ['w4gate',       0, FL.corr, -0.09, 0,                null],          // the steel grille gate, shut behind them in play
-      ['w4thoranam',   0, 2.16, -0.03, 0,                   null],          // mango leaves over the door
-      ['w4shoerack',   -1.55, FL.corr, -0.22, Math.PI,      null],
-      ['w4tulsi',      1.35, FL.corr, -1.45, 0,             null]
+      ['w4cabinet',    ROOMS.dining.x0 + 0.28 + 0.005, 0, 6.15, Math.PI / 2, [0.86, 0.56]],
+      ['w4dintable',   4.85, 0, 6.65, Math.PI / 2,            [1.20, 0.85]],
+      ['w4dinechair',  4.22, 0, 6.35, Math.PI / 2,            [0.48, 0.64]],
+      ['w4dinechair',  4.22, 0, 6.95, Math.PI / 2,            [0.48, 0.64]],
+      ['w4dinechair',  5.48, 0, 6.35, -Math.PI / 2,           [0.48, 0.64]],
+      ['w4dinechair',  5.48, 0, 6.95, -Math.PI / 2,           [0.48, 0.64]],
+      ['w4folder',     4.80, TOP.dintable + 0.001, 6.40, 0.25, null],          // her hospital letters, on the table
+      ['w4fridge',     ROOMS.dining.x1 - 0.382 - 0.01, 0, 8.70, -Math.PI / 2, [0.76, 0.76]],
+      ['w4poles',      5.55, 1.15, FL.z1 + 0.55, 0,           null],           // the laundry out of the kitchen window
+      // outside her door: the gate on the facade's face, the mango leaves over the door, the shoe rack, the tulsi
+      ['w4gate',       0, FL.corr, -0.051 - 0.006, 0,         null],
+      ['w4thoranam',   0, 2.16, -0.03, 0,                     null],
+      ['w4shoerack',   -1.55, FL.corr, -0.193 - 0.012, Math.PI, null],
+      ['w4tulsi',      1.35, FL.corr, -1.45, 0,               null]
     ];
     const things = {};
     for (const [key, x, y, z, ry, foot] of PROPS) {
-      const g = stand(key, x, y, z, ry);
+      const g = stand(key, x, y, z, ry, LOOK[key] || {});
+      if (key === 'w4dintable') g.scale.y = DINE_SY;
       (things[key] = things[key] || []).push(g);
       /* (the footprint as a column, turned with the thing: blockers() takes its box in the world, which holds it whole) */
       if (foot) solidBox(foot[0], 1.2, foot[1], x, 0.6, z, ry);
     }
+
+    /* THE DOORS: every doorway's leaf is the one door model (a flush door of varnished timber, its lever and hinges),
+       drawn to its doorway's width; her main door stands open into the room on its hinge, bedroom 3's a hand's width.
+       Until the model lands (and if it never does) a plain veneer leaf stands in each doorway, so no shut room is ever
+       seen through: hidden the moment the model is in (v4.7: a stand-in that hides on landing) */
+    const DOOR_W = 0.938, DOOR_H = 2.10;                      // the model's own leaf (its file's extent)
+    const doorLeaves = [], doorStandIns = [];
+    function door(w, hinge, ry, open, at) {
+      /* `hinge` [x, z]: the leaf turns about it; `ry`: the leaf's turn when SHUT (its face along the wall); `open`: how far
+         it is turned from shut (radians, into the room); `at`: the leaf's middle from its hinge when shut (-w/2 or +w/2 along
+         its own x) */
+      const pivot = new THREE.Group(); pivot.position.set(hinge[0], 0, hinge[1]); pivot.rotation.y = ry + open; world.add(pivot);
+      const leaf = stand('w4door', at, 0, 0, 0, { parent: pivot, ...LOOK.w4door });
+      leaf.scale.set((w - 0.02) / DOOR_W, 2.06 / DOOR_H, 1);
+      const si = new THREE.Mesh(new THREE.BoxGeometry(w - 0.02, 2.06, 0.04), mVeneer);
+      si.position.set(at, 1.03, 0); si.visible = !have('w4door'); pivot.add(si); owned.push(si.geometry);
+      doorLeaves.push({ pivot, leaf, shut: ry, open }); doorStandIns.push(si);
+      return pivot;
+    }
+    const R2 = ROOMS;
+    /* her main door: hinged at the doorway's right (x 0.50), standing open a quarter turn into the room; its middle to the
+       -x of its hinge, so the model's own hinged edge (its +x) is the one on the pivot; and a column where it stands */
+    /* (18 Nov, photographed from the corridor: the model's hinged edge is ragged, a strip the generator tore; its pivot
+       stands inside the jamb and the wall's thickness, so that end of the leaf is in the wall and the leaf comes out of
+       it at the wall's face) */
+    door(1.0, [DOOR_MAIN.x1 + 0.03, FL.face - 0.08], 0, Math.PI / 2, -0.5);
+    solidBox(0.06, 2.1, 1.0, DOOR_MAIN.x1 + 0.03, 1.05, FL.face - 0.08 + 0.5);
+    door(DOOR_MASTER.x1 - DOOR_MASTER.x0, [DOOR_MASTER.x0, R2.living.z1 + 0.05], 0, 0, (DOOR_MASTER.x1 - DOOR_MASTER.x0) / 2);
+    door(DOOR_BED2.x1 - DOOR_BED2.x0, [DOOR_BED2.x0, R2.nook.z1 + 0.05], 0, 0, (DOOR_BED2.x1 - DOOR_BED2.x0) / 2);
+    door(DOOR_BATH2.x1 - DOOR_BATH2.x0, [DOOR_BATH2.x0, R2.bath2.z0 - 0.05], 0, 0, (DOOR_BATH2.x1 - DOOR_BATH2.x0) / 2);
+    door(DOOR_STORE.z1 - DOOR_STORE.z0, [R2.nook.x0 - 0.05, DOOR_STORE.z0], -Math.PI / 2, 0, (DOOR_STORE.z1 - DOOR_STORE.z0) / 2);
+    /* bedroom 3's, a hand's width open (its scare eases it further: d_play turns doorLeaves[5].pivot) */
+    door(DOOR_BED3.z1 - DOOR_BED3.z0, [R2.living.x0 - 0.06, DOOR_BED3.z0], -Math.PI / 2, -0.12, (DOOR_BED3.z1 - DOOR_BED3.z0) / 2);
+    /* her neighbours' doors and gates along the corridor: the same door, the same gate, shut */
+    for (const nx of NEIGHBOURS) {
+      door(0.92, [nx - 0.46, 0.02], 0, 0, 0.46);
+      stand('w4gate', nx, FL.corr, -0.051 - 0.006, 0, LOOK.w4gate);
+    }
+    if (have('w4door')) parseOnce('w4door').then(() => { for (const s of doorStandIns) s.visible = false; },
+      () => { for (const s of doorStandIns) s.visible = true; });
     /* ================================================================ PLAY (M6: the phases of the plan's §4.1 to §4.3)
        FIRST LIGHT (M5): the flat stands, walked, and nothing in it plays yet. The phase string is the save's receipt
        (v7.3); every later phase will be applied from it here. */

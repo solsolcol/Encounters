@@ -720,6 +720,37 @@ ASSETS = {
     'w3hwallfan':   ('assets/w3hwallfan.glb', True, False),     # a wall fan on its bracket, two on the free post
     # <<< e4c3 keys: the rows end <<<
     # >>> e4c4 keys: written by masters/v27.0/keys.py from its table (edit the table, not these rows) >>>
+    # e4c4 v27.0 (episode 4 chapter 4, her flat): ITS PEOPLE AND ITS SPIRITS, each made end to end for it (a
+    # photorealistic reference on white in an A pose from GPT Image, looked at; Meshy at its highest; its rig; its takes).
+    # The near body with the takes, `m` the mid body, `h` the full model for the three the story turns on (v26.5); the
+    # spirits near only. masters/v27.0/bodies.sh, people.sh; the tracker's section 5.
+    # e4c4: the flat's things, each a checked picture on white, then Meshy at its highest and its own remesh,
+    # tools/prepmeshy.mjs (masters/v27.0/props/TABLE.txt, prop.sh)
+    'w4wheelchair': ('assets/w4wheelchair.glb', True, False),     # her folding steel wheelchair
+    'w4prayershelf':('assets/w4prayershelf.glb', True, False),     # her prayer shelf on the living room wall
+    'w4vilakku':    ('assets/w4vilakku.glb', True, False),     # the brass kuthu vilakku on her altar
+    'w4waterbowl':  ('assets/w4waterbowl.glb', True, False),     # the small silver bowl of holy water: in his hand
+    'w4bigbowl':    ('assets/w4bigbowl.glb', True, False),     # Grandmaster Pho's larger bowl, on the floor by her chair: where he dips again
+    'w4sofa':       ('assets/w4sofa.glb', True, False),     # the wooden-framed three-seater, its cushion covers
+    'w4cabinet':    ('assets/w4cabinet.glb', True, False),     # the glass-fronted display cabinet
+    'w4dintable':   ('assets/w4dintable.glb', True, False),     # the dining table
+    'w4dinechair':  ('assets/w4dinechair.glb', True, False),     # a dining chair
+    'w4framesmall': ('assets/w4framesmall.glb', True, False),     # a small standing photograph frame
+    'w4hugger':     ('assets/w4hugger.glb', True, False),     # the hugger ceiling fan
+    'w4folder':     ('assets/w4folder.glb', True, False),     # the folder of her hospital letters
+    'w4gate':       ('assets/w4gate.glb', True, False),     # the steel grille gate
+    'w4frameport':  ('assets/w4frameport.glb', True, False),     # a portrait frame on the wall (Appa's)
+    'w4armchair':   ('assets/w4armchair.glb', True, False),     # a wooden-framed armchair
+    'w4tubelight':  ('assets/w4tubelight.glb', True, False),     # the fluorescent tube fitting
+    'w4tvconsole':  ('assets/w4tvconsole.glb', True, False),     # the TV console and its TV
+    'w4stool':      ('assets/w4stool.glb', True, False),     # a plastic stool
+    'w4standfan':   ('assets/w4standfan.glb', True, False),     # a standing fan
+    'w4shoerack':   ('assets/w4shoerack.glb', True, False),     # the shoe rack outside the gate
+    'w4tulsi':      ('assets/w4tulsi.glb', True, False),     # a tulsi (holy basil) in its pot in the corridor
+    'w4door':       ('assets/w4door.glb', True, False),     # the main door
+    'w4fridge':     ('assets/w4fridge.glb', True, False),     # the fridge
+    'w4pilltray':   ('assets/w4pilltray.glb', True, False),     # her medicine tray
+    'w4coffee':     ('assets/w4coffee.glb', True, False),     # the coffee table
     # <<< e4c4 keys: the rows end <<<
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
@@ -872,6 +903,10 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'w3hwallfan',
            # <<< e4c3 keys <<<
            # >>> e4c4 keys (masters/v27.0/keys.py) >>>
+           'w4wheelchair', 'w4prayershelf', 'w4vilakku', 'w4waterbowl', 'w4bigbowl', 'w4sofa', 'w4cabinet',
+           'w4dintable', 'w4dinechair', 'w4framesmall', 'w4hugger', 'w4folder', 'w4gate', 'w4frameport',
+           'w4armchair', 'w4tubelight', 'w4tvconsole', 'w4stool', 'w4standfan', 'w4shoerack', 'w4tulsi', 'w4door',
+           'w4fridge', 'w4pilltray', 'w4coffee',
            # <<< e4c4 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY

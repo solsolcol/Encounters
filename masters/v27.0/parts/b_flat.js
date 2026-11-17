@@ -33,6 +33,8 @@
        ceiling the floor above's slab; her neighbours' doors every 10.2 m; the lift lobby along it to the west */
     const CORR = { z0: -1.75, z1: 0, x0: -26, x1: 26, para: -1.90, paraTop: 0.90, soffit: 2.65 };
     const LOBBY = { x0: -21.5, x1: -16.5 };
+    /* her neighbours' doors along the corridor (every 10.2 m; the one where the lift lobby opens has none) */
+    const NEIGHBOURS = [-20.4, -10.2, 10.2, 20.4].filter(nx => !(nx > LOBBY.x0 - 0.6 && nx < LOBBY.x1 + 0.6));
     /* THE ESTATE: her block on the 8th storey (her floor 20.4 m above the ground); the next block across, 40 m out */
     const GROUND_Y = -20.4;
     const ACROSS = { z: -42, x0: -60, x1: 45, d: 12, storeys: 13, storey: 2.85 };
@@ -86,15 +88,20 @@
       for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) { const k = 0.9 + r() * 0.16;
         x.fillStyle = `rgb(${(150 * k) | 0},${(78 * k) | 0},${(56 * k) | 0})`; x.fillRect(i * T + 2, j * T + 2, T - 4, T - 4); }
       const t = tex(done(THREE, c, true)); rep(t, 0.6, 0.6); return M({ map: t, roughness: 0.6 }); })();
-    /* the walls: plaster painted a tired cream, faintly mottled, a little grime low down */
+    /* the walls: plaster painted a tired cream, only faintly uneven (18 Nov, photographed: 1600 blotches of up to 12 px
+       laid over one another read as a speckled wallpaper under the tube, which an HDB wall's paint is not; now a few
+       hundred soft ones, fainter) */
     const wallPaint = (hex, seed) => { const W = 256, [c, x] = cnv(W), r = rng(seed);
       x.fillStyle = hex; x.fillRect(0, 0, W, W);
-      for (let s = 0; s < 1600; s++) { x.fillStyle = r() < 0.5 ? 'rgba(0,0,0,0.035)' : 'rgba(255,255,255,0.05)'; const q = 2 + r() * 10; x.fillRect(r() * W, r() * W, q, q); }
+      /* (soft round spots, a radial fall each: squares, however faint, read as tiles of a pattern) */
+      for (let s = 0; s < 260; s++) { const cx = r() * W, cy = r() * W, q = 8 + r() * 26, dark = r() < 0.5;
+        const g = x.createRadialGradient(cx, cy, 0, cx, cy, q); g.addColorStop(0, dark ? 'rgba(0,0,0,0.018)' : 'rgba(255,255,255,0.022)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+        x.fillStyle = g; x.fillRect(cx - q, cy - q, q * 2, q * 2); }
       const t = tex(done(THREE, c, true)); rep(t, 1.4, 1.4); return t; };
     const mWall = M({ map: wallPaint('#d9cdb4', 3301), roughness: 0.92 });
     const mWallHers = M({ map: wallPaint('#cfd8c8', 3302), roughness: 0.92 });      // her room a pale green, as she chose it once
     const mWallOut = M({ map: wallPaint('#c9c2b2', 3303), roughness: 0.95 });      // the corridor's face: HDB's grey-cream
-    const mCeil = M({ color: 0xe6e4de, roughness: 0.95 });
+    const mCeil = M({ color: 0xe6e4de, roughness: 0.95, emissive: 0x2c2b28 });   // (a ceiling under its own tube is lit: painted light)
     /* the skirting: a strip of the floor's tile, 100 mm high, round every wall */
     const mSkirt = M({ color: 0x9c8a72, roughness: 0.5 });
     /* the kitchen's walls: white 150 mm tiles to 1.5 m, paint above */
@@ -185,7 +192,10 @@
       floor(mFloor, R.living.x0, F.face, R.living.x1, R.living.z1);
       floor(mFloor, R.hers.x0, F.face, R.hers.x1, R.passage.z1);
       floor(mFloor, R.nook.x0, R.nook.z0, R.nook.x1, R.nook.z1);
-      floor(mKitFloor, R.dining.x0, R.dining.z0, R.dining.x1, R.dining.z1);
+      /* the dining room is the living room's tile; the kitchen at its back (from z 7.6, where its tiled walls begin) its
+         own red quarry tile (18 Nov, photographed: the whole dining room had been laid in the kitchen's) */
+      floor(mFloor, R.dining.x0, R.dining.z0, R.dining.x1, 7.6);
+      floor(mKitFloor, R.dining.x0, 7.6, R.dining.x1, R.dining.z1);
       floor(mCorrFloor, CORR.x0, CORR.z0, CORR.x1, CORR.z1 + 0.002, F.corr);
       /* the ceilings (over everything walked, and over the corridor: the floor above) */
       const ceil = (x0, z0, x1, z1, y) => quad(mCeil, [x0, y, z0], [x1, y, z0], [x1, y, z1], [x0, y, z1]);
@@ -227,14 +237,8 @@
       wallZ(mKitTile, R.bath2.x1 + t / 2, t, R.bath2.z0, F.z1);
       /* the kitchen's tiled skin over the back walls to 1.5 m (inside the dining room's back third) */
       quad(mKitTile, [R.dining.x1 - 0.002, 0, 7.6], [R.dining.x1 - 0.002, 0, F.z1], [R.dining.x1 - 0.002, 1.5, F.z1], [R.dining.x1 - 0.002, 1.5, 7.6], 7.6, 0);
-      /* the doors that stay shut: a leaf of veneer in each doorway, set a little in (bedroom 3's stands a hand's width
-         open: c_props.js turns it) */
-      const leafX = (x0, x1, zc) => box(mVeneer, (x0 + x1) / 2, 1.04, zc, x1 - x0 - 0.02, 2.06, 0.04);
-      const leafZ = (z0, z1, xc) => box(mVeneer, xc, 1.04, (z0 + z1) / 2, 0.04, 2.06, z1 - z0 - 0.02);
-      leafX(DOOR_MASTER.x0, DOOR_MASTER.x1, R.living.z1 + 0.05);
-      leafZ(DOOR_STORE.z0, DOOR_STORE.z1, R.nook.x0 - 0.05);
-      leafX(DOOR_BED2.x0, DOOR_BED2.x1, R.nook.z1 + 0.05);
-      leafX(DOOR_BATH2.x0, DOOR_BATH2.x1, R.bath2.z0 - 0.05);
+      /* the doors that stay shut: each doorway's leaf is the door's own model (c_props.js DOORS; bedroom 3's stands a
+         hand's width open); here only what stops him walking through */
       solidBox(DOOR_MASTER.x1 - DOOR_MASTER.x0, 2.1, 0.1, (DOOR_MASTER.x0 + DOOR_MASTER.x1) / 2, 1.05, R.living.z1 + 0.05);
       solidBox(0.1, 2.1, DOOR_STORE.z1 - DOOR_STORE.z0, R.nook.x0 - 0.05, 1.05, (DOOR_STORE.z0 + DOOR_STORE.z1) / 2);
       solidBox(DOOR_BED2.x1 - DOOR_BED2.x0, 2.1, 0.1, (DOOR_BED2.x0 + DOOR_BED2.x1) / 2, 1.05, R.nook.z1 + 0.05);
@@ -260,13 +264,9 @@
       box(mWallOut, (c.x0 + c.x1) / 2, y0 - 0.25, c.para + 0.1, c.x1 - c.x0, 0.3, 0.2);
       /* the battens: a 1.2 m LED tube under the soffit every 7 m */
       for (let x = -24.5; x <= 24.5; x += 7) box(mBatten, x, c.soffit - 0.03, -0.9, 1.2, 0.03, 0.06);
-      /* her neighbours' doors: a leaf of veneer, a gate of bars before it, a window beside (shut, dark) */
-      for (const nx of [-20.4, -10.2, 10.2, 20.4]) {
-        if (nx > LOBBY.x0 - 0.6 && nx < LOBBY.x1 + 0.6) continue;
-        box(mVeneer, nx, y0 + 1.05, 0.02, 0.9, 2.1, 0.04);
-        for (let gx = nx - 0.45; gx <= nx + 0.45; gx += 0.1) bar(mGrille, [gx, y0, -0.15], [gx, y0 + 2.05, -0.15], 0.009, 6);
-        glass.push({ x0: nx + 0.6, x1: nx + 2.8, y0: 0.9, y1: 2.1, z: -0.01 });
-      }
+      /* her neighbours' doors: the door and the gate are the models hers are (c_props.js NEIGHBOURS); here a window
+         beside each (shut, dark) */
+      for (const nx of NEIGHBOURS) glass.push({ x0: nx + 0.6, x1: nx + 2.8, y0: 0.9, y1: 2.1, z: -0.01 });
       /* the corridor's own collision (the opening film walks it; play never does: the gate is shut behind them) */
       solidBox(c.x1 - c.x0, 1.2, 0.15, (c.x0 + c.x1) / 2, 0.5, c.para + 0.075);
     }

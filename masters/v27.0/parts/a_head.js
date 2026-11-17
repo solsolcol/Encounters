@@ -42,9 +42,11 @@
   const FLAT = sky({
     stops: [[0.00, '#3a2f30'], [0.10, '#2a2328'], [0.30, '#191820'], [0.60, '#101119'], [1.00, '#0a0b12']],
     bg: 0x14131a, fog: [0x14131a, 0.004],
-    hemi: [0xe8eef6, 0x4a4440, 0.95], key: [0xf2f6ff, 0.9, 1.0, 2.5, 2.6], fill: [0xb8c4d8, 0.22],
+    hemi: [0xe8eef6, 0x9a8f7e, 0.95], key: [0xf2f6ff, 0.9, 1.0, 2.5, 2.6], fill: [0xb8c4d8, 0.22],
     stars: 0.25, moon: 0,
-    vmHemi: [0xe8eef6, 0x4a4440, 0.9], vmKey: [0xf2f6ff, 0.62] });
+    vmHemi: [0xe8eef6, 0x857a6c, 0.9], vmKey: [0xf2f6ff, 0.62] });
+  /* (18 Nov, photographed: the hemisphere's ground was a dark brown, so every face looking down, the ceiling first,
+     drew near black under a lit tube; it is the beige floor's bounce now, the way a tiled room under a tube is lit) */
   /* THE BLESSING: the tube dead, the fan stopped, the TV dead; the lamp at her altar and the estate through the grilles
      are all the light there is. The key is the lamp: warm, low, from the altar's wall; the fill the estate's cold */
   const DARK = sky({
@@ -142,7 +144,7 @@
 
     /* units metres, y up; the build sheet's axes (above). Play begins just inside her door, turned into the room: her
        chair before her altar on the far wall is what a portrait phone must see first */
-    spawn:     { x: 0.15, y: 1.62, z: 1.0, rot: 0 },
+    spawn:     { x: 0.15, y: 1.62, z: 1.0, rot: Math.PI },   // facing into the room, her chair and her altar (a turn of 0 looks back at the door)
     shrine:    { x: -0.15, z: 3.9 },             // the engine's anchor (ghost: null): her chair, the chapter's pile
     ghostHome: { x: -0.15, z: 3.9 },
     /* the flat and its corridor: the living room, her room, the passage and the kitchen are walked; the bedrooms and the
@@ -162,12 +164,18 @@
     vision: {},
     /* THE HOLY WATER (the fifty-first seam, plan §6): his own hands, the small silver bowl in his left, a flick of the
        right hand's fingers a press, a dip at Grandmaster Pho's bowl to fill it again; the HUD says the chapter's words */
-    weapon: { hands: 'own', pose: 'bowl', rounds: 10, endless: true, fireGap: 0.35, spray: { count: 9 },
+    /* the holy water is IN HIS HANDS only once Grandmaster Pho has given him the bowl (the item, given in the blessing):
+       until then the hands are his own and empty (an item-less weapon is always out) */
+    weapon: { hands: 'own', pose: 'bowl', item: 'holywater', rounds: 10, endless: true, fireGap: 0.35, spray: { count: 9 },
               words: { fire: 'FLICK', reload: 'DIP' }, shot: 'uiclick', reload: 'uiclick', empty: 'uiclick' },
 
     assets: [
       /* the people, the spirits and the things made for this chapter (masters/v27.0/make.sh) */
       /* >>> this chapter's own keys: written by masters/v27.0/keys.py (edit its table, not this list) >>> */
+      'w4wheelchair', 'w4prayershelf', 'w4vilakku', 'w4waterbowl', 'w4bigbowl', 'w4sofa', 'w4cabinet', 'w4dintable',
+      'w4dinechair', 'w4framesmall', 'w4hugger', 'w4folder', 'w4gate', 'w4frameport', 'w4armchair', 'w4tubelight',
+      'w4tvconsole', 'w4stool', 'w4standfan', 'w4shoerack', 'w4tulsi', 'w4door', 'w4fridge', 'w4pilltray',
+      'w4coffee',
       /* <<< this chapter's own keys <<< */
       /* Grandmaster Pho, Chad's own model, as chapter 3 cast him (reuseInEpisode) */
       'pho'
