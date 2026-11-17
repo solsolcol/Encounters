@@ -232,6 +232,21 @@ body.hasTorch.cine .torchBtn,body.hasTorch.invopen .torchBtn,body.hasTorch.menuo
 .torchBtn .beam{opacity:.25;transition:opacity .16s}
 .torchBtn.on{border-color:var(--sodium)}
 .torchBtn.on .beam{opacity:1;stroke:var(--sodium)}
+/* v27.0: SPIRIT VISION's button — only a chapter that declares the vision shows it, in the column under the torch's (in
+   the torch's own place when there is no torch); its hide rules carry as many classes as its show rule and come after
+   (v11.7's lesson) */
+.visionBtn{top:calc(max(14px,env(safe-area-inset-top)) + 168px);display:none}
+body.hasTorch .visionBtn{top:calc(max(14px,env(safe-area-inset-top)) + 224px)}
+body.inplay.hasVision .visionBtn{display:grid}
+body.hasVision.cine .visionBtn,body.hasVision.invopen .visionBtn,body.hasVision.menuopen .visionBtn,body.hasVision.cardup .visionBtn,
+body.hasVision.evopen .visionBtn,body.hasVision.unlockopen .visionBtn,body.hasVision.chooseopen .visionBtn,body.hasVision.galleryopen .visionBtn{display:none}
+.visionBtn svg{fill:none;stroke:var(--bone);stroke-width:1.8}
+.visionBtn svg path:first-child{fill:none}
+.visionBtn .rays{opacity:.25;transition:opacity .16s}
+.visionBtn.on{border-color:#8CF2FF;box-shadow:0 0 14px rgba(140,242,255,.45)}
+.visionBtn.on svg{stroke:#8CF2FF}
+.visionBtn.on .rays{opacity:1}
+.visionBtn:hover .invLabel,.visionBtn:focus-visible .invLabel{border-color:#8CF2FF}
 /* v12.0: RIFLE MODE's HUD — only while a chapter's weapon is OUT
    (`body.weaponUp`, derived on the frame from the hand slot). A big round
    FIRE button under the right thumb, RELOAD above it, the rounds pill beside
@@ -2991,6 +3006,15 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
     <g class="beam"><path d="M4 2.5l2.5 2.2"/><path d="M20 2.5l-2.5 2.2"/><path d="M12 0.8v2.6"/></g>
   </svg>
   <span class="invLabel"><span data-t="hud.torch">Torch</span><kbd data-t="hud.torchKey">F</kbd></span>
+</button>
+<!-- v27.0: SPIRIT VISION (the fiftieth seam) — an eye; only a chapter that declares the vision shows it -->
+<button id="visionBtn" class="soundBtn visionBtn" type="button" aria-label="Spirit Vision" data-t-aria="hud.vision">
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M2.5 12c2.6-4.2 5.8-6.3 9.5-6.3s6.9 2.1 9.5 6.3c-2.6 4.2-5.8 6.3-9.5 6.3S5.1 16.2 2.5 12z"/>
+    <circle cx="12" cy="12" r="3.1"/>
+    <g class="rays"><path d="M12 1.2v2.4"/><path d="M4.2 3.6l1.6 1.8"/><path d="M19.8 3.6l-1.6 1.8"/><path d="M12 20.4v2.4"/></g>
+  </svg>
+  <span class="invLabel"><span data-t="hud.vision">Spirit Vision</span><kbd data-t="hud.visionKey">V</kbd></span>
 </button>
 <div id="weaponHud">
   <div id="ammo">30 / 3</div>

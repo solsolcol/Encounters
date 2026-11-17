@@ -3,7 +3,8 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 import { clone as skeletonClone } from 'three/examples/jsm/utils/SkeletonUtils.js';   // v15.2: wrapped by cloneSkinned() below
-import LIGHT_SEEDS from './lightseeds.json';   // v15.1: the light counts each chapter's films and scenes reach (THE LIGHT COUNTS)
+import LIGHT_SEEDS from './lightseeds.json';
+import { makeVision, VIS_LAYER } from './vision.js';   // v27.0: SPIRIT VISION's picture (the fiftieth seam)   // v15.1: the light counts each chapter's films and scenes reach (THE LIGHT COUNTS)
 /* v14.14: every loader the engine hands out READS MESHOPT. Chad's amulets
    ship at full detail (every triangle of the scan, "ALL amulets must always
    show full quality"), which is only a sane download packed with meshopt —
@@ -3807,6 +3808,154 @@ function torchToggle() {
   if (torchDecl.click) snd(torchDecl.click, 0.8); else snd('uiclick', 0.3);   // v11.1: a real switch when the chapter names one
 }
 
+/* ---- v27.0: SPIRIT VISION — the fiftieth seam ----------------------------
+   Chad, 17 Nov 2026, for episode 4 chapter 4 (docs/V27.0-E4C4-PLAN.md §0, verbatim): "a new function, called 'Spirit
+   Vision' that is another button on the HUD UI, just like the flashlight icon back in episode 2 that can be turned on
+   and off anytime" — inverted colours, a slight blur as the camera moves, a slight vignette, spirits seen only through
+   it as glowing coloured silhouettes, its own sounds, ambience and music, the heart rate and its beat rising, and a wave
+   of energy and light out from him tracing every line when it opens, and back to him when it closes.
+   A chapter declares `vision: { rmax, outSecs, inSecs, soft, band, blur, vignette, line, sky, front, lineColor,
+   heart: { bpm, rest, sound, vol, secs }, sound: { on, off, bed: [name, vol], music: [name, vol], duck } }` (every key
+   optional). Then: the HUD's eye button and V turn it on and off at any time in play; the radius of its wave runs out
+   from his eyes over `outSecs` (slow through the room, fast to the far windows) and back over `inSecs`; while the wave
+   is out or moving the world is drawn through src/vision.js (THE PICTURE), and the moment it is home the world is drawn
+   straight to the screen again exactly as before. Its spirits are the chapter's own (`ctx.spirit(obj, opts)`: an
+   object's meshes moved to the vision's layer, each given a glowing silhouette), seen nowhere else; `ctx.spiritAura`
+   lays such a glow over a body the world also draws (Grandmaster Pho's gold in it). It is never saved (a Continue opens
+   with it closed), a scene and kitReset close it at once, and a film may hold its radius from its own clock
+   (`kit.vision({ r })`). `stage.onVision(on)` hears the player's every switch. A chapter that declares nothing has no
+   button, no key, no target and no sound of it: unchanged by construction (`?visionlab` lends any chapter the defaults,
+   for the probes). */
+const VIS_DEFAULTS = { rmax: 70, outSecs: 1.3, inSecs: 1.0, soft: 0.35, band: 0.75, blur: 0.45, vignette: 0.3, line: 0.16, sky: 70,
+                       front: 0x8cf2ff, lineColor: 0x59bfff, heart: null, sound: null };
+const VIS_LAB = /[?&]visionlab\b/.test(location.search);
+const vis = { decl: null, on: false, r: 0, dir: 0, t: 0, k: 0, held: null, fx: null, last: 0, switches: 0, drawn: 0, heartOn: false };
+/* the wave's radius as a share of its reach, over its own time u in 0..1: slow through the room it opens in, fast to the
+   far windows (out); the same curve run backwards brings it home (in) */
+const visCurve = u => 0.30 * u + 0.70 * u * u * u;
+function visCurveInv(f) { let lo = 0, hi = 1; for (let i = 0; i < 24; i++) { const m = (lo + hi) / 2; if (visCurve(m) < f) lo = m; else hi = m; } return (lo + hi) / 2; }
+function visDeclOf(ch) { return ch && ch.vision ? ch.vision : (VIS_LAB ? {} : null); }
+function visionSetup(decl) {
+  vis.decl = { ...VIS_DEFAULTS, ...(decl || {}) };
+  vis.on = false; vis.r = 0; vis.dir = 0; vis.t = 0; vis.k = 0; vis.held = null; vis.heartOn = false;
+  const s = vis.decl.sound;
+  if (s) for (const n of [s.on, s.off, s.bed && s.bed[0], s.music && s.music[0]]) if (n) WARM_WANT.add(n);
+  if (vis.decl.heart && vis.decl.heart.sound) WARM_WANT.add(vis.decl.heart.sound);
+  document.body.classList.add('hasVision');
+  $('visionBtn')?.classList.remove('on');
+}
+function visionTeardown() {
+  if (vis.decl && vis.heartOn) kitPulseSet(null);
+  vis.decl = null; vis.on = false; vis.r = 0; vis.dir = 0; vis.k = 0; vis.held = null; vis.heartOn = false;
+  if (vis.fx) { vis.fx.dispose(); vis.fx = null; }
+  document.body.classList.remove('hasVision', 'visionOn');
+  $('visionBtn')?.classList.remove('on');
+}
+function visionFx() {
+  if (!vis.fx) { try { vis.fx = makeVision(THREE, renderer); } catch (e) { console.warn('spirit vision: cannot draw here', e); vis.fx = { state: { ok: false } }; } }
+  return vis.fx;
+}
+/* on or off; `instant` lands it there with no wave (a scene, a reset, a teardown) */
+function visionSet(on, instant) {
+  if (!vis.decl) return false;
+  on = !!on;
+  const d = vis.decl;
+  if (instant) {
+    vis.on = on; vis.dir = 0; vis.r = on ? d.rmax : 0; vis.k = on ? 1 : 0; vis.t = 0;
+  } else if (on !== vis.on) {
+    vis.on = on;
+    const f = Math.max(0, Math.min(1, vis.r / d.rmax));
+    if (on) { vis.dir = 1; vis.t = visCurveInv(f) * d.outSecs; }
+    else { vis.dir = -1; vis.t = (1 - visCurveInv(f)) * d.inSecs; }
+    const s = d.sound;
+    if (s && (on ? s.on : s.off)) snd(on ? s.on : s.off, s.vol == null ? 0.9 : s.vol);
+  }
+  document.body.classList.toggle('visionOn', vis.on);
+  $('visionBtn')?.classList.toggle('on', vis.on);
+  /* the heart: it climbs as he opens, and settles back as he closes */
+  const h = d.heart;
+  if (h) {
+    if (vis.on) { kitPulseSet({ bpm: h.bpm || 118, secs: h.secs || 2.4, sound: h.sound || null, vol: h.vol == null ? 0.55 : h.vol, erratic: h.erratic || 0 }); vis.heartOn = true; }
+    else if (vis.heartOn) kitPulseSet({ bpm: h.rest || 74, secs: h.restSecs || 4.5 });
+  }
+  return true;
+}
+function visionToggle() {
+  if (!vis.decl || state !== 'play' || vis.held) return;
+  visionSet(!vis.on);
+  vis.switches++;
+  if (stage && typeof stage.onVision === 'function') { try { stage.onVision(vis.on); } catch (e) { console.error(e); } }
+}
+function visionFrame() {
+  const now = performance.now();
+  const dt = vis.last ? Math.min(0.1, (now - vis.last) / 1000) : 0;
+  vis.last = now;
+  if (!vis.decl) return;
+  const d = vis.decl;
+  if (vis.held) { vis.r = Math.max(0, +vis.held.r || 0); vis.dir = vis.held.moving ? 1 : 0; }
+  else if (vis.dir > 0) {
+    vis.t += dt;
+    const u = Math.min(1, vis.t / d.outSecs);
+    vis.r = d.rmax * visCurve(u);
+    if (u >= 1) vis.dir = 0;
+  } else if (vis.dir < 0) {
+    vis.t += dt;
+    const u = Math.min(1, vis.t / d.inSecs);
+    vis.r = d.rmax * visCurve(1 - u);
+    if (u >= 1) { vis.dir = 0; vis.r = 0; }
+  }
+  /* how open he is, for the blur, the vignette, the sound and the heart's beat: the room's first six metres */
+  vis.k = Math.max(0, Math.min(1, vis.r / 6));
+  /* the beat fades with the vision and stops once the heart has settled */
+  if (vis.heartOn && d.heart && !vis.on) {
+    const h = d.heart;
+    if (vis.k <= 0.001 && kitPulse && Math.abs(kitPulse.bpm - (h.rest || 74)) < 4) { kitPulseSet({ sound: null }); vis.heartOn = false; }
+    else if (kitPulse) kitPulse.vol = (h.vol == null ? 0.55 : h.vol) * Math.max(0.25, vis.k);
+  }
+}
+function visionActive() { return !!vis.decl && (vis.on || vis.r > 0.0005 || !!vis.held); }
+/* a spirit: the object's meshes drawn only through the vision, each as a glowing silhouette */
+function ctxSpirit(obj, opts = {}) {
+  if (!obj) return null;
+  const fx = visionFx(); if (!fx.spiritMaterial) return null;
+  const mats = [];
+  obj.traverse(o => {
+    if (!o.isMesh) return;
+    if (o.material && o.material.__svOwn) fx.forget(o.material);
+    const m = fx.spiritMaterial(opts); m.__svOwn = true; mats.push(m);
+    o.material = m; o.layers.set(VIS_LAYER); o.castShadow = false; o.receiveShadow = false; o.frustumCulled = false;
+  });
+  return { mats, set(k, v) { for (const m of mats) if (m.uniforms[k]) { if (m.uniforms[k].value && m.uniforms[k].value.set && typeof v !== 'number') m.uniforms[k].value.set(v); else m.uniforms[k].value = v; } } };
+}
+/* a glow laid over a body the world draws as it is: a twin of each of its meshes (the same geometry, the same skeleton)
+   in the vision's layer */
+function ctxSpiritAura(obj, opts = {}) {
+  if (!obj) return null;
+  const fx = visionFx(); if (!fx.spiritMaterial) return null;
+  const twins = [], mats = [], list = [];
+  obj.traverse(o => { if (o.isMesh && !o.userData.__svTwin && o.layers.mask !== (1 << VIS_LAYER)) list.push(o); });
+  for (const o of list) {
+    const m = fx.spiritMaterial(opts); m.__svOwn = true; mats.push(m);
+    let t;
+    if (o.isSkinnedMesh) { t = new THREE.SkinnedMesh(o.geometry, m); t.bind(o.skeleton, o.bindMatrix); }
+    else t = new THREE.Mesh(o.geometry, m);
+    t.userData.__svTwin = true;
+    t.layers.set(VIS_LAYER); t.frustumCulled = false; t.castShadow = false;
+    t.position.copy(o.position); t.quaternion.copy(o.quaternion); t.scale.copy(o.scale);
+    o.parent.add(t); twins.push(t);
+  }
+  return { twins, mats, remove() { for (const t of twins) { t.parent && t.parent.remove(t); } for (const m of mats) fx.forget(m); },
+           set(k, v) { for (const m of mats) if (m.uniforms[k]) { if (m.uniforms[k].value && m.uniforms[k].value.set && typeof v !== 'number') m.uniforms[k].value.set(v); else m.uniforms[k].value = v; } } };
+}
+function kitVision(v) {
+  if (!vis.decl) return null;
+  if (v === undefined) return { on: vis.on, r: vis.r, k: vis.k, dir: vis.dir, held: !!vis.held };
+  if (v && typeof v === 'object') { vis.held = { r: +v.r || 0, moving: !!v.moving }; return true; }
+  if (v === null) { vis.held = null; return true; }
+  vis.held = null;
+  return visionSet(!!v, false);
+}
+
 /* ---- v12.0: RIFLE MODE — the weapon in his hands ------------------------
    The shape is the torch's (v11.1, v11.6), extended. A chapter declares
 
@@ -6560,6 +6709,9 @@ function kitInit() {
      the torch button lives in did not exist when build() ran */
   if (CH.torch && !torchLight) torchSetup(CH.torch);
   if (CH.weapon && !weaponDecl) weaponSetup(CH.weapon);   // v12.0
+  if (visDeclOf(CH) && !vis.decl) visionSetup(visDeclOf(CH));   // v27.0
+  $('visionBtn')?.addEventListener('click', e => { e.stopPropagation(); visionToggle(); });
+  { const vb = $('visionBtn'); if (vb) vb.setAttribute('aria-label', T('hud.vision')); }
   $('interact')?.querySelector('.ibadge')?.addEventListener('click', e => { e.stopPropagation(); interactNow(); });
   $('torchBtn')?.addEventListener('click', e => { e.stopPropagation(); torchToggle(); });
   /* v12.0: the fire and reload buttons — a phone's trigger; a mouse's is the click */
@@ -7265,6 +7417,7 @@ function kitReset() {
   decClock = null; $('dclock')?.classList.add('hide');
   if (CH.torch) torchSetup(CH.torch); else torchTeardown();
   if (CH.weapon) weaponSetup(CH.weapon); else weaponTeardown();   // v12.0
+  if (visDeclOf(CH)) { if (vis.decl) { vis.held = null; visionSet(false, true); } else visionSetup(visDeclOf(CH)); } else if (vis.decl) visionTeardown();   // v27.0: closed, at once
   kitRooted = false; kitHurtSet(null);   // v11.1
   prayOff();                             // v16.5: a run never starts with the hands still together
   kitHold(null);                         // v21.0: nor with something still in his hand
@@ -7380,6 +7533,7 @@ const KIT = {
   objective: kitObjectiveSet, timer: kitTimerStart, waypoint: kitWaypointSet,
   event: kitEvent, eventActive: evActive, abortEvent: () => { if (ev) evResolve({ ok: false, aborted: true }); },
   torch: torchSetup, torchOn: torchSet, torchRed, torchIsOn: () => torchOn,
+  vision: kitVision,               // v27.0: the fiftieth seam — on, off, or a radius held from a film's clock; no argument reads it
   presence: v => { chapterPresence = Math.max(0, Math.min(1, +v || 0)); },
   getPresence: () => chapterPresence,
   conduct: kitConduct, award: kitAward,
@@ -7622,6 +7776,9 @@ const CHCTX = {
   sealedBefore: (key) => { if (SEALED_NOW.has(key)) return true; try { return !!sealedResults()[key]; } catch { return false; } },
   /* (v26.11) a switch of the OPT table, read-only: true unless the address turned it off (`?opt=onePass:0`) */
   opt: (key) => OPT[key] !== false,
+  /* v27.0: SPIRIT VISION's spirits (the fiftieth seam): an object drawn only through the vision, as a glowing
+     silhouette; and a glow laid over a body the world draws as it is */
+  spirit: ctxSpirit, spiritAura: ctxSpiritAura, visionLayer: VIS_LAYER,
   unifySkeletons,                     // v15.2: one exact skeleton per freshly parsed model
   /* THE HEAD BONE, named once for everybody (v5.01). Every rigged human in
      this game is a Mixamo skeleton, and glTF SANITIZES its node names:
@@ -8509,6 +8666,7 @@ addEventListener('keydown', e => {
      film's minigame went on to the film's skip listener, which found no event any more and skipped the film */
   if (evKey(e, true)) { e.stopImmediatePropagation(); return; }
   if (e.code === 'KeyF' && state === 'play') { torchToggle(); return; }   // v7.0
+  if (e.code === 'KeyV' && state === 'play' && vis.decl) { visionToggle(); return; }   // v27.0: SPIRIT VISION
   // Escape closes whatever is open: credits first, then the decision panel
   if (e.code === 'Escape' && !$('credits').classList.contains('hide')) {
     showCredits(false); return;
@@ -10156,11 +10314,19 @@ function updateAudioFrame(t) {
      screen. No other chapter declares one, so nothing else is panned. */
   /* v22.0: and a fourth, its RATE (loopRate) — episode 3 chapter 4's cassette
      slowing to a stop. No other chapter declares one, so nothing else moves. */
+  /* v27.0: SPIRIT VISION's own sound — the world's beds drawn back under it by `sound.duck` as it opens, and its bed and
+     its music brought up with it. A chapter that declares no vision multiplies every bed by exactly 1. */
+  const visS = vis.decl && vis.decl.sound;
+  const visDuck = visS && visS.duck ? 1 - visS.duck * vis.k : 1;
   for (const [name, vol, pan, rate] of (amb.beds || AMBIENCE_DEFAULT.beds)) {
-    loopVol(name, inWorld ? vol * duckOf(name) : 0);
+    loopVol(name, inWorld ? vol * duckOf(name) * visDuck : 0);
     if (pan !== undefined) loopPan(name, pan);
     if (rate !== undefined) loopRate(name, rate);
     liveLoops.add(name);
+  }
+  if (visS) for (const L of [visS.bed, visS.music]) if (L && L[0]) {
+    loopVol(L[0], inWorld ? (+L[1] || 0.5) * vis.k * duckOf(L[0]) : 0);
+    liveLoops.add(L[0]);
   }
   const at = amb.atShrine;
   if (at) {
@@ -16780,10 +16946,31 @@ function tick(now = 0) {
   if (forceDraw > 0) forceDraw--;
   if (shadowDirty > 0) { renderer.shadowMap.needsUpdate = true; shadowDirty--; }
   cullInstances(camera, renderer.shadowMap.needsUpdate || renderer.shadowMap.autoUpdate);   // v15: INSTANCE CULLING
-  const band = letterbox && document.body.classList.contains('cine');
+  /* v27.0: SPIRIT VISION (the fiftieth seam). While its wave is out or moving, the world, his hands and the spirits are
+     drawn through it (src/vision.js) and the letterbox's band is not used (the pass reads the whole picture); the
+     moment it is home, every frame is drawn exactly as before. A chapter that declares no vision never comes here. */
+  visionFrame();
+  const visGo = state !== 'title' && visionActive() && visionFx().state.ok;
+  const band = !visGo && letterbox && document.body.classList.contains('cine');
   if (band) { renderer.setScissor(0, letterbox.y, letterbox.w, letterbox.h); renderer.setScissorTest(true); }
   try {
   framesDrawn++;                           // v22.0: kit.smear lays only the frame drawn just before over this one
+  if (visGo) {
+    const ledUpV = !!(led.root && led.root.visible);
+    const drawHands = (handsReady || ledUpV) && (!OPT.vmSkip || anyVisibleMesh(handsRoot) || ledUpV);
+    const d = vis.decl;
+    try {
+      vis.fx.render({ scene, camera, vmScene, vmCam, drawHands, R: vis.r, soft: d.soft, band: d.band, moving: vis.dir !== 0 ? 1 : 0,
+                      k: vis.k, blur: d.blur, vignette: d.vignette, line: d.line, sky: d.sky, time: performance.now() / 1000,
+                      front: d.front, lineColor: d.lineColor });
+      vis.drawn++;
+    } catch (err) {
+      vis.fx.state.ok = false; console.warn('spirit vision: off for this session', err);
+      renderer.render(scene, camera);
+    }
+    if (!drawHands) vmScene.updateMatrixWorld();
+  } else {
+  if (vis.fx && vis.fx.idle) vis.fx.idle();
   renderer.render(scene, camera);
 
   // second pass: the viewmodel gets its own fresh depth buffer, so the hands
@@ -16798,6 +16985,7 @@ function tick(now = 0) {
     renderer.render(vmScene, vmCam);
     renderer.autoClear = true;
   } else vmScene.updateMatrixWorld();    // nothing to draw, but whatever reads a hand's matrix reads it fresh
+  }
   if (OPT.lightMem) lightMemTick();      // v15: a compile on screen is remembered for the next curtain
   if (smear.k > 0.002 || smear.at >= 0) smearPass();   // v22.0: kit.smear — a no-op unless a chapter asked
   } finally { if (band) renderer.setScissorTest(false); }   // never left on, whatever a pass did
@@ -17244,6 +17432,25 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                     from its recipe and compares it, byte for byte through a 2D canvas, with the picture it would replace (run
                     with ?opt=freePics:0, when every copy is still open); picsReset() loses and restores the graphics, as a
                     phone can */
+                 /* v27.0: SPIRIT VISION, for the probes: its state (no argument), or on / off / a held radius; and a glow laid
+                    over the nearest body in front of the lens (the lab's spirit, ?visionlab) */
+                 vision: (v) => (v === undefined
+                   ? { decl: !!vis.decl, on: vis.on, r: +vis.r.toFixed(3), k: +vis.k.toFixed(3), dir: vis.dir, drawn: vis.drawn, switches: vis.switches,
+                       ok: vis.fx ? !!vis.fx.state.ok : null, err: vis.fx && vis.fx.state ? vis.fx.state.err || null : null,
+                       float: vis.fx ? !!vis.fx.floatOk : null, samples: vis.fx ? vis.fx.samples : null, mats: vis.fx && vis.fx.state.mats ? vis.fx.state.mats.size : 0 }
+                   : kitVision(v)),
+                 visionToggle,
+                 visionAuraNearest: (opts = {}, maxD = 12) => {
+                   camera.updateMatrixWorld();
+                   const eye = new THREE.Vector3().setFromMatrixPosition(camera.matrixWorld), fwd = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.getWorldQuaternion(new THREE.Quaternion()));
+                   let best = null, bestS = Infinity; const p = new THREE.Vector3();
+                   scene.traverse(o => { if (!o.isSkinnedMesh || !o.visible || o.userData.__svTwin) return; o.getWorldPosition(p); const v = p.sub(eye); const d = v.length();
+                     if (d > maxD || d < 0.3) return; const ang = v.normalize().angleTo(fwd); const sc = ang * 6 + d * 0.2; if (ang < 0.7 && sc < bestS) { bestS = sc; best = o; } });
+                   if (!best) return null;
+                   let root = best; for (let i = 0; i < 3 && root.parent && root.parent !== scene; i++) root = root.parent;
+                   const a = ctxSpiritAura(root, opts);
+                   return a ? { twins: a.twins.length, at: best.getWorldPosition(new THREE.Vector3()).toArray().map(x => +x.toFixed(2)) } : null;
+                 },
                  /* v26.18: what the picture check measured and chose (THE PICTURES A BROWSER DIMS) */
                  picRoute: () => picrCheck().then(() => ({ route: PICR.route, sim: PICR.sim, m: PICR.m, why: PICR.why, lut: !!PICR.lut })),
                  pics: () => ({ on: picsOn(), freed: PICS.freed.size, closed: PICS.closed, mb: +(PICS.bytes / 1048576).toFixed(1), redone: PICS.redone, hold: PICS.hold, waits: PICS.waits, copies: PICS.copies, asked: PICS.hits, where: PICS.hitWhere.slice() }),

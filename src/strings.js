@@ -252,6 +252,8 @@ Object.assign(window.__TEXT__, {
   'hud.objDone':         'OBJECTIVE COMPLETE',
   'hud.torch':           'Torch',
   'hud.torchKey':        'F',
+  'hud.vision':          'Spirit Vision',
+  'hud.visionKey':       'V',
   'hud.fire':            'FIRE',
   'hud.fireKey':         'Space',
   'hud.reload':          'Reload',
