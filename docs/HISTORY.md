@@ -9235,7 +9235,19 @@ What the baseline contains, by release:
   the platform"): her 'give' steps 0.72 m in toward the table, and from 0.4 m before the second altar her legs went 0.49 m
   into it, measured point by point through the close; she stands 0.55 m further back now (no point of her inside the
   altar at any moment, her hands at the bai sri's middle), and the striped mat before the altar lies 0.37 m further west,
-  clear of the foot she steps in with. Builds 15 to 17, deploy `6afbf405e5758e70c1b908d1`.
+  clear of the foot she steps in with. Builds 15 to 17, deploy `6afbf405e5758e70c1b908d1`. His three notes after it
+  (17 Nov: ending A had no petals when Grandmaster Pho blesses him, then "no matter which first option i vhoose, the
+  petals dont apprar on first try ... This is something to do with loading"; ending D's lotus "a little abrupt and ends
+  abruptly too"; and, with a picture from the ground's south-west corner, "This house is not fully built out, improve it
+  without affecting anything else"): the close's handful was thrown from a point the festival's film had kept from the
+  old man at his bench outside, 44 m from the hall, and forgotten only by a reload, so every first play missed it; the
+  hall's throw now has its own point, measured from him on the dais at each ending (measured after the festival: from his
+  hand). The lotus is paced (2.35 s of it before; now his eyes close over a second, it comes up over a second and stands
+  open a second more, folds over 1.8 s, its ring widens slowing over 1.2 s while it fades, his eyes open over 1.4 s; the
+  pause after "stay" 7.5 s where it was 4.4). The white building behind the west tents, its front alone until now, is
+  made whole: both ends and its back in its front's brick and white, a door and windows, the roof carried past its ends
+  with a board round its edges; its front unchanged but for the 8 cm under the roof closed. Build 18, deploy
+  `6afc287e49a1b8ecc541f52e`.
 
 ## The sheet, version by version
 

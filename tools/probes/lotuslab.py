@@ -14,7 +14,7 @@ P = 'masters/v26.0/parts/'
 z = open(sys.argv[2] if len(sys.argv) > 2 else P + 'c_zfx.js', encoding='utf-8').read()
 fns = z[z.index('    function petalPath(x, pt) {'):z.index('    function shutVisionAt(u) {')]
 sv = z[z.index('    function shutVisionAt(u) {'):]
-params = sv[sv.index('      const a = smo(sgk(u, V.show[0]'):sv.index('\n', sv.index('      const b = smo(sgk(u, V.fold[1]'))]
+params = sv[sv.index('      const a = smo(sgk(u, V.show[0]'):sv.index('\n', sv.index('      const b = smo(sgk(u, V.'))]
 shutv = re.search(r'  const SHUTV = \{[^\n]*\};', open(P + 'a_head.js', encoding='utf-8').read()).group(0)
 ease = re.search(r'const c01 = [^\n]*;', open(P + 'b_world1.js', encoding='utf-8').read()).group(0)
 open(sys.argv[1], 'w', encoding='utf-8').write(

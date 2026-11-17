@@ -214,7 +214,7 @@
               ['@edge'], [1.7], ['q3B3', 1.2], ['@dusk'], [3.6], ['@back'], [1.3], ['q3B4', 0.9], ['ph3B4', 1.1], ['q3B5', 1.3], ['@close']]),
     C: tl(0, [[0.9], ['q3C0', 0.9], ['ph3C1', 0.8], ['ph3C2', 0.5], ['@turn'], [3.2], ['q3C1', 1.1], ['@backto'], [1.5], ['ph3C3', 1.0],
               ['q3C2', 0.5], ['@bow'], [3.0], ['q3C3', 1.0], ['q3C4', 1.3], ['@close']]),
-    D: tl(0, [[0.9], ['q3D0', 0.9], ['ph3D1', 0.8], ['ph3D2', 1.0], ['ph3D3', 0.5], ['@shut'], [4.4], ['q3D1', 1.5], ['@sit'], [3.4],
+    D: tl(0, [[0.9], ['q3D0', 0.9], ['ph3D1', 0.8], ['ph3D2', 1.0], ['ph3D3', 0.5], ['@shut'], [7.5], ['q3D1', 1.5], ['@sit'], [3.4],
               ['@chant'], [3.4], ['q3D2', 1.2], ['q3D3', 1.2], ['@back'], [1.4], ['q3D4', 0.9], ['ph3D4', 1.1], ['q3D5', 1.3], ['@close']])
   };
   /* ENDING D'S CLOSING, SEEN (v26.12, Chad, 14 Nov 2026: "the closing sound effect of option D, when grandmaster pho closes
@@ -223,7 +223,13 @@
      (eyes); in the dark, the lotus of his first teaching, open and lit (show); it folds shut (fold), and on the shut the
      world's sound closes and its look changes, under the dark; the last of its light goes out in a ring (ring, gone);
      his eyes open on the plain world (wake). The pause after "stay" is 4.4 s where it was 2.8 */
-  const SHUTV = { eyes: [0.2, 0.8], show: [0.6, 1.1], fold: [1.2, 2.3], ring: [2.3, 2.9], gone: [2.35, 2.95], wake: [3.2, 4.2] };
+  /* (v26.18, Chad, 17 Nov 2026: "the option D ending cutscene, the lotus closing scene can be improved. It is a little
+     abrupt and ends abruptly too". It was 2.35 s from its first light to its last: his eyes shut in 0.6 s, the lotus came
+     up in 0.5 s and began to fold 0.1 s after it was whole, folded in 1.1 s, and its light went out in 0.6 s, the eyes
+     opening 0.25 s later. Now his eyes close over a second; it comes up over a second and stands open, breathing, for
+     a second more; it folds over 1.8 s, the last 0.7 s of it drawing to a bud (bud); the ring widens and slows over 1.2 s while
+     the bud's light fades; his eyes open over 1.4 s as the last of it goes. The pause after "stay" is 7.5 s) */
+  const SHUTV = { eyes: [0.2, 1.2], show: [0.8, 1.8], fold: [2.9, 4.7], bud: [4.0, 4.7], ring: [4.7, 5.9], gone: [4.8, 6.0], wake: [6.0, 7.4] };
   /* THE CLOSE (§4.6), on its own clock from each ending's `close`: he takes his bai sri up and raises it; his teacher's
      two lines; both the old man's hands laid on it; a handful of petals; HIS OWN LIGHT, his hands shaking and in hand
      (v26.8: the breath once played here is shown instead); his line; the bai sri taken from him and set on the table;
@@ -1264,7 +1270,9 @@
       for (const z of [S0.z0 + 0.2, (S0.z0 + S0.z1) / 2, S0.z1 - 0.2]) { bar(mRafter, [S0.x0 + 0.2, lo, z], [sxc, hi, z], 0.04, 4); bar(mRafter, [S0.x1 - 0.2, lo, z], [sxc, hi, z], 0.04, 4); bar(mRafter, [S0.x0 + 0.2, lo, z], [S0.x1 - 0.2, lo, z], 0.035, 4); }
       bar(mRafter, [sxc, hi, S0.z0 + 0.2], [sxc, hi, S0.z1 - 0.2], 0.04, 4);
       /* a second, lower shed roof seen behind the west tents (photograph 10's left edge) */
-      quad(mTin, [-12.2, 2.5, 9], [-12.2, 2.5, -6], [-17.5, 3.4, -6], [-17.5, 3.4, 9]);
+      /* (v26.18: carried 0.35 m past each end of the house under it, a roof's overhang, its picture where it was: u0. The
+         house is made whole in b_world3.js buildEdges, 5) */
+      quad(mTin, [-12.2, 2.5, 9.35], [-12.2, 2.5, -6.35], [-17.5, 3.4, -6.35], [-17.5, 3.4, 9.35], -0.35);
       wall(mBrick, -12.4, 9, -12.4, -6, 0, 2.45); wall(mWhite, -12.38, 8.9, -12.38, -5.9, 0.9, 2.3);
       /* the white lattice fence: posts, two rails and the lattice between them (a drawn sheet with holes) */
       const mLattice = B({ map: tex(makeLattice(THREE, cnv)), alphaTest: 0.5, side: THREE.DoubleSide, color: 0xf2f1ec });
@@ -2706,6 +2714,58 @@
         wall(mGlass, -12.365, z + 0.55, -12.365, z - 0.55, 1.22, 2.12);
         box(mBlack, -12.35, 2.15, z, 0.04, 0.05, 1.2); box(mBlack, -12.35, 1.19, z, 0.04, 0.05, 1.2);
         for (const dz of [-0.575, 0, 0.575]) box(mBlack, -12.35, 1.67, z + dz, 0.04, 0.92, 0.045);
+      }
+      /* ---- 5. THE WHITE BUILDING BEHIND THE WEST TENTS, MADE WHOLE (v26.18, Chad, 17 Nov 2026, with his picture from the
+         ground's south-west corner: "This house is not fully built out, improve it without affecting anything else"). It
+         was its front alone (b_world1.js buildSurround: the brick wall facing the turf at x -12.4 from z 9 to -6, its white
+         panel, these windows, and over it the tin roof rising west to x -17.5), drawn to be seen from the turf; from that
+         corner the eye goes past its south end, and there it stood, one wall on its own under a sheet of roof with the
+         earth running on under it. Now its two ends and its back, in its front's own brick with a white panel set in as
+         the front's is; a door and a window in the south end, the end he sees, a window in the north end, three at the
+         back as at the front; the roof carried 0.35 m past each end (b_world1.js) and given its edges, a board round all
+         four. Its front is as it was, but for the 8 cm between the wall's head and the roof, which the eye went through
+         into the house, closed in its brick. Nothing here stands on ground he can walk (stage.keepIn) */
+      {
+        const WX = -12.4, BX = -17.1, ZS = 9, ZN = -6, RZS = 9.35, RZN = -6.35, HV = 0.9, WIN = [1.22, 2.12];
+        const roofY = (x) => 2.5 + 0.9 * (-12.2 - x) / 5.3;          // (the tin's own line: 2.5 m at its east eave, 3.4 at x -17.5)
+        const headY = (x) => roofY(x) - 0.012;                        // (a wall's head, just under the sheet)
+        const mBoard = M({ color: 0x6e4440, roughness: 0.8, side: THREE.DoubleSide });   // (the tin's own red-brown, darker: its edge)
+        const mDoor = M({ color: 0x5a3a26, roughness: 0.7 }), mDoorPanel = M({ color: 0x4a2f1f, roughness: 0.7 }), mStep = M({ color: 0xbdb8ad, roughness: 0.95 });
+        /* the front's head, closed to the roof */
+        wall(mBrick, WX, ZS, WX, ZN, 2.45, headY(WX), 0);
+        /* the south end (it faces south), the north end (north) and the back (west), each to the roof's line */
+        quad(mBrick, [BX, 0, ZS], [WX, 0, ZS], [WX, headY(WX), ZS], [BX, headY(BX), ZS]);
+        quad(mBrick, [WX, 0, ZN], [BX, 0, ZN], [BX, headY(BX), ZN], [WX, headY(WX), ZN]);
+        wall(mBrick, BX, ZN, BX, ZS, 0, headY(BX));
+        /* their white panels, 2 cm proud and 0.1 m in from each corner, from 0.9 m to 0.15 m under the head, as the front's */
+        quad(mWhite, [BX + 0.1, HV, ZS + 0.02], [WX - 0.1, HV, ZS + 0.02], [WX - 0.1, headY(WX - 0.1) - 0.15, ZS + 0.02], [BX + 0.1, headY(BX + 0.1) - 0.15, ZS + 0.02]);
+        quad(mWhite, [WX - 0.1, HV, ZN - 0.02], [BX + 0.1, HV, ZN - 0.02], [BX + 0.1, headY(BX + 0.1) - 0.15, ZN - 0.02], [WX - 0.1, headY(WX - 0.1) - 0.15, ZN - 0.02]);
+        wall(mWhite, BX - 0.02, ZN + 0.1, BX - 0.02, ZS - 0.1, HV, headY(BX) - 0.15);
+        /* the windows, the front's own: dark glass 1.1 by 0.9 m in black frames */
+        const winAcross = (cx, z, s) => {                             // (in an end: s +1 faces south, -1 north)
+          wall(mGlass, cx - s * 0.55, z + s * 0.035, cx + s * 0.55, z + s * 0.035, WIN[0], WIN[1]);
+          box(mBlack, cx, 2.15, z + s * 0.05, 1.2, 0.05, 0.04); box(mBlack, cx, 1.19, z + s * 0.05, 1.2, 0.05, 0.04);
+          for (const dx of [-0.575, 0, 0.575]) box(mBlack, cx + dx, 1.67, z + s * 0.05, 0.045, 0.92, 0.04);
+        };
+        winAcross(-13.75, ZS, 1); winAcross(-14.75, ZN, -1);
+        for (const z of [-3.6, 1.9, 7.2]) {
+          wall(mGlass, BX - 0.035, z - 0.55, BX - 0.035, z + 0.55, WIN[0], WIN[1]);
+          box(mBlack, BX - 0.05, 2.15, z, 0.04, 0.05, 1.2); box(mBlack, BX - 0.05, 1.19, z, 0.04, 0.05, 1.2);
+          for (const dz of [-0.575, 0, 0.575]) box(mBlack, BX - 0.05, 1.67, z + dz, 0.04, 0.92, 0.045);
+        }
+        /* the door, in the south end: a wooden leaf of two panels in a black frame, its handle, a concrete step before it */
+        const dc = -15.85, dw = 0.9, dTop = 2.06;
+        wall(mDoor, dc - dw / 2, ZS + 0.03, dc + dw / 2, ZS + 0.03, 0.12, dTop);
+        box(mDoorPanel, dc, 1.56, ZS + 0.042, 0.62, 0.74, 0.02); box(mDoorPanel, dc, 0.64, ZS + 0.042, 0.62, 0.66, 0.02);
+        box(mBlack, dc, dTop + 0.025, ZS + 0.045, dw + 0.1, 0.05, 0.05);
+        for (const sx of [-1, 1]) box(mBlack, dc + sx * (dw / 2 + 0.025), (0.12 + dTop) / 2, ZS + 0.045, 0.05, dTop - 0.12, 0.05);
+        box(mAlu, dc + 0.34, 1.05, ZS + 0.06, 0.03, 0.14, 0.03);
+        box(mStep, dc, 0.06, ZS + 0.22, 1.3, 0.12, 0.42);
+        /* the roof's edges: a board along the eave and the high edge, and up each end under the tin */
+        box(mBoard, -12.215, 2.455, (RZS + RZN) / 2, 0.03, 0.15, RZS - RZN);
+        box(mBoard, -17.515, 3.355, (RZS + RZN) / 2, 0.03, 0.15, RZS - RZN);
+        quad(mBoard, [-17.5, 3.28, RZS + 0.01], [-12.2, 2.38, RZS + 0.01], [-12.2, 2.53, RZS + 0.01], [-17.5, 3.43, RZS + 0.01]);
+        quad(mBoard, [-12.2, 2.38, RZN - 0.01], [-17.5, 3.28, RZN - 0.01], [-17.5, 3.43, RZN - 0.01], [-12.2, 2.53, RZN - 0.01]);
       }
       flush();
     }
@@ -5779,8 +5839,10 @@
       /* (open and lit as it comes; a breath of movement while it stands open; then it folds; its light goes out in a ring) */
       const a = smo(sgk(u, V.show[0], V.show[1])) * (1 - smo(sgk(u, V.gone[0], V.gone[1])));
       const kf = smo(sgk(u, V.fold[0], V.fold[1])), k = (1 - kf) * (1 - 0.035 * (0.5 - 0.5 * Math.cos(u * 2 * Math.PI / 1.6)) * (1 - smo(sgk(u, V.fold[0] - 0.2, V.fold[0]))));
-      const r = sgk(u, V.ring[0], V.ring[1]), g = smo(sgk(u, V.ring[0] - 0.02, V.ring[0] + 0.08)) * (1 - smo(sgk(u, V.ring[0] + 0.08, V.ring[1])));
-      const b = smo(sgk(u, V.fold[1] - 0.45, V.fold[1]));
+      /* (v26.18: the ring widens slowing to its edge, and its light comes up over a third of a second, not in a tenth: on
+         the slower close a flash read as a strike. The bud draws in over its own window, SHUTV.bud) */
+      const rr = sgk(u, V.ring[0], V.ring[1]), r = 1 - (1 - rr) * (1 - rr), g = smo(sgk(u, V.ring[0] - 0.1, V.ring[0] + 0.25)) * (1 - smo(sgk(u, V.ring[0] + 0.25, V.ring[1])));
+      const b = smo(sgk(u, V.bud[0], V.bud[1]));
       if (a <= 0.001 && g <= 0.001) { S.lot.visible = false; return; }
       lotusPaint(k, a, r, g, b);
       S.lot.visible = true;
@@ -7601,7 +7663,7 @@
        at once (lookNow), a throw of petals is where its age puts it (burstAt), so a seek, a skip and a slow phone land
        on the same picture. Whatever a film changes in the world is put back by the play that follows it (lineBegin,
        dawnBegin, toldBegin stage everything again), so a film skipped leaves what a film played leaves (v24.12). */
-    const FL = { key: '', api: null, once: new Set(), must: null, lit: '', bursts: {}, vf: null, throwAt: null, throwPho: null, shot: '', sky: null, bai: false, wai: false, waiPos: null, waiQ: null, faces: {}, openK: 0, openOut: 0, litE: -1, litA: -1, goldMin: 0, tabled: false, rest0: null };
+    const FL = { key: '', api: null, once: new Set(), must: null, lit: '', bursts: {}, vf: null, throwAt: null, throwPho: null, throwHall: null, shot: '', sky: null, bai: false, wai: false, waiPos: null, waiQ: null, faces: {}, openK: 0, openOut: 0, litE: -1, litA: -1, goldMin: 0, tabled: false, rest0: null };
     const PLAY_FOV = camera.fov;                                              // the lens play is seen through (a film that ends in the clear ends on it)
     const _ffv = new THREE.Vector3();
     function fLook(name, secs = 0) { if (FL.lit !== name) { FL.lit = name; look(name, secs); } }
@@ -8254,8 +8316,15 @@
       obj.quaternion.copy(_fhq).multiply(_bqe.setFromEuler(_fhe.set(rot[0], rot[1], rot[2], 'YXZ')));
     }
     const _bqe = new THREE.Quaternion();
-    /* where his hand lets a handful of petals go: his own take's hand at its throw, measured once */
-    function phoThrow() { const Ph = cast.phoH; if (!FL.throwPho && Ph.ready) { const v = handsAt(Ph, 'Sit_Cheer_with_Left_Hand', 1.32, new THREE.Vector3(), 'R'); if (v) { Ph.group.localToWorld(v); FL.throwPho = [v.x, v.y + 0.08, v.z]; } } return FL.throwPho; }
+    /* where his hand lets a handful of petals go: his own take's hand at its throw, measured once each ending */
+    /* (v26.18, Chad, 17 Nov 2026: "no matter which first option i choose, the petals dont appear on first try. They only
+       appear if i refresh the browser again, continue game, and select other options". The point was kept in FL.throwPho,
+       which the festival's film had already filled from Grandmaster Pho at his bench outside on day one, so in a play
+       that had seen the festival the close threw its handful from the bench, 44 m from the hall (measured: from
+       6.24, 1.73, 8.89 to his eye at 2.01, -34.79), and none came from his hand; after a reload and a Continue the
+       festival had not been seen and the point was measured here. The hall's point is its own (FL.throwHall), measured
+       from the old man on the dais, and forgotten at every ending's start) */
+    function phoThrow() { const Ph = cast.phoH; if (!FL.throwHall && Ph.ready) { const v = handsAt(Ph, 'Sit_Cheer_with_Left_Hand', 1.32, new THREE.Vector3(), 'R'); if (v) { Ph.group.localToWorld(v); FL.throwHall = [v.x, v.y + 0.08, v.z]; } } return FL.throwHall; }
 
     const EKN = (() => { const [x, z] = seatAt(0.46, 1.3); return [x, KNEELH.y, z]; })();              // his eye, knelt nearer: where two pairs of hands meet on one bowl
     /* (v26.2 debug: the low table is smaller and a little to the right, clear of his foot, of the young man's knee and of
@@ -8309,7 +8378,7 @@
       matsG.visible = false; rolled.own.visible = false; ymBai.visible = false;
       for (const g of rolled.ton.concat(rolled.rolls, [rolled.carry])) g.visible = false;
       baiPut(myBai, BESIDE.x, BESIDE_Y, BESIDE.z, 0.6); myBai.visible = true;
-      auraAt(0, 0); FL.litE = -1; FL.litA = -1; FL.goldMin = 0; FL.shot = '';
+      auraAt(0, 0); FL.litE = -1; FL.litA = -1; FL.goldMin = 0; FL.shot = ''; FL.throwHall = null;
       if (kit && kit.hush) kit.hush(0, { secs: 0 });
       castSolid();
     }
@@ -8704,7 +8773,7 @@
           crick = smo(sgk(t, T.dusk, T.dusk + 1.0)); }                                    // dusk, and on through the close
         if (key === 'D') { birds = 0.5 * (1 - smo(sgk(t, T.shut + SHUTV.show[0], T.shut + SHUTV.fold[1]))) + 0.25 * smo(sgk(t, T.back, T.back + 1.5));   // the world closes; he comes back to a quieter morning
           hall = (1 - smo(sgk(t, T.shut + SHUTV.show[0], T.shut + SHUTV.fold[1]))) + 0.5 * smo(sgk(t, T.back, T.back + 1.5));
-          open = 0.7 * bump(t, T.shut + SHUTV.show[0], T.shut + SHUTV.fold[1] - 0.3, 0.5, 0.8); }                      // (v26.12: the world heard open, as the lotus was in his first teaching, while it stands open in the dark)
+          open = 0.7 * bump(t, T.shut + SHUTV.show[0], T.shut + SHUTV.fold[1] - 0.3, 0.5, 1.4); }                      // (v26.12: the world heard open, as the lotus was in his first teaching, while it stands open in the dark)
         if (t >= T.close) { const tc = t - T.close; open = 0.6 * bump(tc, CLOSE.glow + 0.2, CLOSE.q3z1 + 2.0, 1.4, 1.6); }   // his own light in the close: the world heard a little open while it is on him
       }
       filmBed.on = true; filmBed.fest = BED.fest * fest; filmBed.mus = BED.mus * mus; filmBed.birds = BED.birds * birds; filmBed.crick = BED.crick * crick;

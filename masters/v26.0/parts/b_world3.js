@@ -325,6 +325,58 @@
         box(mBlack, -12.35, 2.15, z, 0.04, 0.05, 1.2); box(mBlack, -12.35, 1.19, z, 0.04, 0.05, 1.2);
         for (const dz of [-0.575, 0, 0.575]) box(mBlack, -12.35, 1.67, z + dz, 0.04, 0.92, 0.045);
       }
+      /* ---- 5. THE WHITE BUILDING BEHIND THE WEST TENTS, MADE WHOLE (v26.18, Chad, 17 Nov 2026, with his picture from the
+         ground's south-west corner: "This house is not fully built out, improve it without affecting anything else"). It
+         was its front alone (b_world1.js buildSurround: the brick wall facing the turf at x -12.4 from z 9 to -6, its white
+         panel, these windows, and over it the tin roof rising west to x -17.5), drawn to be seen from the turf; from that
+         corner the eye goes past its south end, and there it stood, one wall on its own under a sheet of roof with the
+         earth running on under it. Now its two ends and its back, in its front's own brick with a white panel set in as
+         the front's is; a door and a window in the south end, the end he sees, a window in the north end, three at the
+         back as at the front; the roof carried 0.35 m past each end (b_world1.js) and given its edges, a board round all
+         four. Its front is as it was, but for the 8 cm between the wall's head and the roof, which the eye went through
+         into the house, closed in its brick. Nothing here stands on ground he can walk (stage.keepIn) */
+      {
+        const WX = -12.4, BX = -17.1, ZS = 9, ZN = -6, RZS = 9.35, RZN = -6.35, HV = 0.9, WIN = [1.22, 2.12];
+        const roofY = (x) => 2.5 + 0.9 * (-12.2 - x) / 5.3;          // (the tin's own line: 2.5 m at its east eave, 3.4 at x -17.5)
+        const headY = (x) => roofY(x) - 0.012;                        // (a wall's head, just under the sheet)
+        const mBoard = M({ color: 0x6e4440, roughness: 0.8, side: THREE.DoubleSide });   // (the tin's own red-brown, darker: its edge)
+        const mDoor = M({ color: 0x5a3a26, roughness: 0.7 }), mDoorPanel = M({ color: 0x4a2f1f, roughness: 0.7 }), mStep = M({ color: 0xbdb8ad, roughness: 0.95 });
+        /* the front's head, closed to the roof */
+        wall(mBrick, WX, ZS, WX, ZN, 2.45, headY(WX), 0);
+        /* the south end (it faces south), the north end (north) and the back (west), each to the roof's line */
+        quad(mBrick, [BX, 0, ZS], [WX, 0, ZS], [WX, headY(WX), ZS], [BX, headY(BX), ZS]);
+        quad(mBrick, [WX, 0, ZN], [BX, 0, ZN], [BX, headY(BX), ZN], [WX, headY(WX), ZN]);
+        wall(mBrick, BX, ZN, BX, ZS, 0, headY(BX));
+        /* their white panels, 2 cm proud and 0.1 m in from each corner, from 0.9 m to 0.15 m under the head, as the front's */
+        quad(mWhite, [BX + 0.1, HV, ZS + 0.02], [WX - 0.1, HV, ZS + 0.02], [WX - 0.1, headY(WX - 0.1) - 0.15, ZS + 0.02], [BX + 0.1, headY(BX + 0.1) - 0.15, ZS + 0.02]);
+        quad(mWhite, [WX - 0.1, HV, ZN - 0.02], [BX + 0.1, HV, ZN - 0.02], [BX + 0.1, headY(BX + 0.1) - 0.15, ZN - 0.02], [WX - 0.1, headY(WX - 0.1) - 0.15, ZN - 0.02]);
+        wall(mWhite, BX - 0.02, ZN + 0.1, BX - 0.02, ZS - 0.1, HV, headY(BX) - 0.15);
+        /* the windows, the front's own: dark glass 1.1 by 0.9 m in black frames */
+        const winAcross = (cx, z, s) => {                             // (in an end: s +1 faces south, -1 north)
+          wall(mGlass, cx - s * 0.55, z + s * 0.035, cx + s * 0.55, z + s * 0.035, WIN[0], WIN[1]);
+          box(mBlack, cx, 2.15, z + s * 0.05, 1.2, 0.05, 0.04); box(mBlack, cx, 1.19, z + s * 0.05, 1.2, 0.05, 0.04);
+          for (const dx of [-0.575, 0, 0.575]) box(mBlack, cx + dx, 1.67, z + s * 0.05, 0.045, 0.92, 0.04);
+        };
+        winAcross(-13.75, ZS, 1); winAcross(-14.75, ZN, -1);
+        for (const z of [-3.6, 1.9, 7.2]) {
+          wall(mGlass, BX - 0.035, z - 0.55, BX - 0.035, z + 0.55, WIN[0], WIN[1]);
+          box(mBlack, BX - 0.05, 2.15, z, 0.04, 0.05, 1.2); box(mBlack, BX - 0.05, 1.19, z, 0.04, 0.05, 1.2);
+          for (const dz of [-0.575, 0, 0.575]) box(mBlack, BX - 0.05, 1.67, z + dz, 0.04, 0.92, 0.045);
+        }
+        /* the door, in the south end: a wooden leaf of two panels in a black frame, its handle, a concrete step before it */
+        const dc = -15.85, dw = 0.9, dTop = 2.06;
+        wall(mDoor, dc - dw / 2, ZS + 0.03, dc + dw / 2, ZS + 0.03, 0.12, dTop);
+        box(mDoorPanel, dc, 1.56, ZS + 0.042, 0.62, 0.74, 0.02); box(mDoorPanel, dc, 0.64, ZS + 0.042, 0.62, 0.66, 0.02);
+        box(mBlack, dc, dTop + 0.025, ZS + 0.045, dw + 0.1, 0.05, 0.05);
+        for (const sx of [-1, 1]) box(mBlack, dc + sx * (dw / 2 + 0.025), (0.12 + dTop) / 2, ZS + 0.045, 0.05, dTop - 0.12, 0.05);
+        box(mAlu, dc + 0.34, 1.05, ZS + 0.06, 0.03, 0.14, 0.03);
+        box(mStep, dc, 0.06, ZS + 0.22, 1.3, 0.12, 0.42);
+        /* the roof's edges: a board along the eave and the high edge, and up each end under the tin */
+        box(mBoard, -12.215, 2.455, (RZS + RZN) / 2, 0.03, 0.15, RZS - RZN);
+        box(mBoard, -17.515, 3.355, (RZS + RZN) / 2, 0.03, 0.15, RZS - RZN);
+        quad(mBoard, [-17.5, 3.28, RZS + 0.01], [-12.2, 2.38, RZS + 0.01], [-12.2, 2.53, RZS + 0.01], [-17.5, 3.43, RZS + 0.01]);
+        quad(mBoard, [-12.2, 2.38, RZN - 0.01], [-17.5, 3.28, RZN - 0.01], [-17.5, 3.43, RZN - 0.01], [-12.2, 2.53, RZN - 0.01]);
+      }
       flush();
     }
     buildEdges();

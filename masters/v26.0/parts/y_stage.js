@@ -6,7 +6,7 @@
        at once (lookNow), a throw of petals is where its age puts it (burstAt), so a seek, a skip and a slow phone land
        on the same picture. Whatever a film changes in the world is put back by the play that follows it (lineBegin,
        dawnBegin, toldBegin stage everything again), so a film skipped leaves what a film played leaves (v24.12). */
-    const FL = { key: '', api: null, once: new Set(), must: null, lit: '', bursts: {}, vf: null, throwAt: null, throwPho: null, shot: '', sky: null, bai: false, wai: false, waiPos: null, waiQ: null, faces: {}, openK: 0, openOut: 0, litE: -1, litA: -1, goldMin: 0, tabled: false, rest0: null };
+    const FL = { key: '', api: null, once: new Set(), must: null, lit: '', bursts: {}, vf: null, throwAt: null, throwPho: null, throwHall: null, shot: '', sky: null, bai: false, wai: false, waiPos: null, waiQ: null, faces: {}, openK: 0, openOut: 0, litE: -1, litA: -1, goldMin: 0, tabled: false, rest0: null };
     const PLAY_FOV = camera.fov;                                              // the lens play is seen through (a film that ends in the clear ends on it)
     const _ffv = new THREE.Vector3();
     function fLook(name, secs = 0) { if (FL.lit !== name) { FL.lit = name; look(name, secs); } }
@@ -589,8 +589,15 @@
       obj.quaternion.copy(_fhq).multiply(_bqe.setFromEuler(_fhe.set(rot[0], rot[1], rot[2], 'YXZ')));
     }
     const _bqe = new THREE.Quaternion();
-    /* where his hand lets a handful of petals go: his own take's hand at its throw, measured once */
-    function phoThrow() { const Ph = cast.phoH; if (!FL.throwPho && Ph.ready) { const v = handsAt(Ph, 'Sit_Cheer_with_Left_Hand', 1.32, new THREE.Vector3(), 'R'); if (v) { Ph.group.localToWorld(v); FL.throwPho = [v.x, v.y + 0.08, v.z]; } } return FL.throwPho; }
+    /* where his hand lets a handful of petals go: his own take's hand at its throw, measured once each ending */
+    /* (v26.18, Chad, 17 Nov 2026: "no matter which first option i choose, the petals dont appear on first try. They only
+       appear if i refresh the browser again, continue game, and select other options". The point was kept in FL.throwPho,
+       which the festival's film had already filled from Grandmaster Pho at his bench outside on day one, so in a play
+       that had seen the festival the close threw its handful from the bench, 44 m from the hall (measured: from
+       6.24, 1.73, 8.89 to his eye at 2.01, -34.79), and none came from his hand; after a reload and a Continue the
+       festival had not been seen and the point was measured here. The hall's point is its own (FL.throwHall), measured
+       from the old man on the dais, and forgotten at every ending's start) */
+    function phoThrow() { const Ph = cast.phoH; if (!FL.throwHall && Ph.ready) { const v = handsAt(Ph, 'Sit_Cheer_with_Left_Hand', 1.32, new THREE.Vector3(), 'R'); if (v) { Ph.group.localToWorld(v); FL.throwHall = [v.x, v.y + 0.08, v.z]; } } return FL.throwHall; }
 
     const EKN = (() => { const [x, z] = seatAt(0.46, 1.3); return [x, KNEELH.y, z]; })();              // his eye, knelt nearer: where two pairs of hands meet on one bowl
     /* (v26.2 debug: the low table is smaller and a little to the right, clear of his foot, of the young man's knee and of
@@ -644,7 +651,7 @@
       matsG.visible = false; rolled.own.visible = false; ymBai.visible = false;
       for (const g of rolled.ton.concat(rolled.rolls, [rolled.carry])) g.visible = false;
       baiPut(myBai, BESIDE.x, BESIDE_Y, BESIDE.z, 0.6); myBai.visible = true;
-      auraAt(0, 0); FL.litE = -1; FL.litA = -1; FL.goldMin = 0; FL.shot = '';
+      auraAt(0, 0); FL.litE = -1; FL.litA = -1; FL.goldMin = 0; FL.shot = ''; FL.throwHall = null;
       if (kit && kit.hush) kit.hush(0, { secs: 0 });
       castSolid();
     }
@@ -1039,7 +1046,7 @@
           crick = smo(sgk(t, T.dusk, T.dusk + 1.0)); }                                    // dusk, and on through the close
         if (key === 'D') { birds = 0.5 * (1 - smo(sgk(t, T.shut + SHUTV.show[0], T.shut + SHUTV.fold[1]))) + 0.25 * smo(sgk(t, T.back, T.back + 1.5));   // the world closes; he comes back to a quieter morning
           hall = (1 - smo(sgk(t, T.shut + SHUTV.show[0], T.shut + SHUTV.fold[1]))) + 0.5 * smo(sgk(t, T.back, T.back + 1.5));
-          open = 0.7 * bump(t, T.shut + SHUTV.show[0], T.shut + SHUTV.fold[1] - 0.3, 0.5, 0.8); }                      // (v26.12: the world heard open, as the lotus was in his first teaching, while it stands open in the dark)
+          open = 0.7 * bump(t, T.shut + SHUTV.show[0], T.shut + SHUTV.fold[1] - 0.3, 0.5, 1.4); }                      // (v26.12: the world heard open, as the lotus was in his first teaching, while it stands open in the dark)
         if (t >= T.close) { const tc = t - T.close; open = 0.6 * bump(tc, CLOSE.glow + 0.2, CLOSE.q3z1 + 2.0, 1.4, 1.6); }   // his own light in the close: the world heard a little open while it is on him
       }
       filmBed.on = true; filmBed.fest = BED.fest * fest; filmBed.mus = BED.mus * mus; filmBed.birds = BED.birds * birds; filmBed.crick = BED.crick * crick;

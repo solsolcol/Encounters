@@ -742,7 +742,9 @@
       for (const z of [S0.z0 + 0.2, (S0.z0 + S0.z1) / 2, S0.z1 - 0.2]) { bar(mRafter, [S0.x0 + 0.2, lo, z], [sxc, hi, z], 0.04, 4); bar(mRafter, [S0.x1 - 0.2, lo, z], [sxc, hi, z], 0.04, 4); bar(mRafter, [S0.x0 + 0.2, lo, z], [S0.x1 - 0.2, lo, z], 0.035, 4); }
       bar(mRafter, [sxc, hi, S0.z0 + 0.2], [sxc, hi, S0.z1 - 0.2], 0.04, 4);
       /* a second, lower shed roof seen behind the west tents (photograph 10's left edge) */
-      quad(mTin, [-12.2, 2.5, 9], [-12.2, 2.5, -6], [-17.5, 3.4, -6], [-17.5, 3.4, 9]);
+      /* (v26.18: carried 0.35 m past each end of the house under it, a roof's overhang, its picture where it was: u0. The
+         house is made whole in b_world3.js buildEdges, 5) */
+      quad(mTin, [-12.2, 2.5, 9.35], [-12.2, 2.5, -6.35], [-17.5, 3.4, -6.35], [-17.5, 3.4, 9.35], -0.35);
       wall(mBrick, -12.4, 9, -12.4, -6, 0, 2.45); wall(mWhite, -12.38, 8.9, -12.38, -5.9, 0.9, 2.3);
       /* the white lattice fence: posts, two rails and the lattice between them (a drawn sheet with holes) */
       const mLattice = B({ map: tex(makeLattice(THREE, cnv)), alphaTest: 0.5, side: THREE.DoubleSide, color: 0xf2f1ec });

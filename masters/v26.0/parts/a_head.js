@@ -214,7 +214,7 @@
               ['@edge'], [1.7], ['q3B3', 1.2], ['@dusk'], [3.6], ['@back'], [1.3], ['q3B4', 0.9], ['ph3B4', 1.1], ['q3B5', 1.3], ['@close']]),
     C: tl(0, [[0.9], ['q3C0', 0.9], ['ph3C1', 0.8], ['ph3C2', 0.5], ['@turn'], [3.2], ['q3C1', 1.1], ['@backto'], [1.5], ['ph3C3', 1.0],
               ['q3C2', 0.5], ['@bow'], [3.0], ['q3C3', 1.0], ['q3C4', 1.3], ['@close']]),
-    D: tl(0, [[0.9], ['q3D0', 0.9], ['ph3D1', 0.8], ['ph3D2', 1.0], ['ph3D3', 0.5], ['@shut'], [4.4], ['q3D1', 1.5], ['@sit'], [3.4],
+    D: tl(0, [[0.9], ['q3D0', 0.9], ['ph3D1', 0.8], ['ph3D2', 1.0], ['ph3D3', 0.5], ['@shut'], [7.5], ['q3D1', 1.5], ['@sit'], [3.4],
               ['@chant'], [3.4], ['q3D2', 1.2], ['q3D3', 1.2], ['@back'], [1.4], ['q3D4', 0.9], ['ph3D4', 1.1], ['q3D5', 1.3], ['@close']])
   };
   /* ENDING D'S CLOSING, SEEN (v26.12, Chad, 14 Nov 2026: "the closing sound effect of option D, when grandmaster pho closes
@@ -223,7 +223,13 @@
      (eyes); in the dark, the lotus of his first teaching, open and lit (show); it folds shut (fold), and on the shut the
      world's sound closes and its look changes, under the dark; the last of its light goes out in a ring (ring, gone);
      his eyes open on the plain world (wake). The pause after "stay" is 4.4 s where it was 2.8 */
-  const SHUTV = { eyes: [0.2, 0.8], show: [0.6, 1.1], fold: [1.2, 2.3], ring: [2.3, 2.9], gone: [2.35, 2.95], wake: [3.2, 4.2] };
+  /* (v26.18, Chad, 17 Nov 2026: "the option D ending cutscene, the lotus closing scene can be improved. It is a little
+     abrupt and ends abruptly too". It was 2.35 s from its first light to its last: his eyes shut in 0.6 s, the lotus came
+     up in 0.5 s and began to fold 0.1 s after it was whole, folded in 1.1 s, and its light went out in 0.6 s, the eyes
+     opening 0.25 s later. Now his eyes close over a second; it comes up over a second and stands open, breathing, for
+     a second more; it folds over 1.8 s, the last 0.7 s of it drawing to a bud (bud); the ring widens and slows over 1.2 s while
+     the bud's light fades; his eyes open over 1.4 s as the last of it goes. The pause after "stay" is 7.5 s) */
+  const SHUTV = { eyes: [0.2, 1.2], show: [0.8, 1.8], fold: [2.9, 4.7], bud: [4.0, 4.7], ring: [4.7, 5.9], gone: [4.8, 6.0], wake: [6.0, 7.4] };
   /* THE CLOSE (§4.6), on its own clock from each ending's `close`: he takes his bai sri up and raises it; his teacher's
      two lines; both the old man's hands laid on it; a handful of petals; HIS OWN LIGHT, his hands shaking and in hand
      (v26.8: the breath once played here is shown instead); his line; the bai sri taken from him and set on the table;

@@ -56,7 +56,9 @@ const b = await chromium.launch(LAUNCH);
 const DSF = +process.env.DSF || (FAST ? 1 : 2);
 /* (v26.1: VIEW=low is a 720p phone, 360 x 780 points at two pixels to one: Chad, 12 Nov 2026, "You also need to consider how
    it looks on a low res phone or 720p phone") */
-const PHONES = { phone: [390, 844], low: [360, 780] };
+/* (v26.18: VIEW=land is the phone turned on its side, as Chad held it for his picture of the house behind the west
+   tents, 17 Nov 2026: 844 x 390 points) */
+const PHONES = { phone: [390, 844], low: [360, 780], land: [844, 390] };
 const ctx = PHONES[VIEW] ? await b.newContext({ viewport: { width: PHONES[VIEW][0], height: PHONES[VIEW][1] }, deviceScaleFactor: DSF, hasTouch: true, isMobile: true })
                              : await b.newContext({ viewport: FAST ? { width: 960, height: 540 } : { width: 1280, height: 720 }, deviceScaleFactor: DSF });   // (FAST: the same shape, fewer pixels to draw in software)
 const p = await ctx.newPage();

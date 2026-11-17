@@ -296,8 +296,10 @@
       /* (open and lit as it comes; a breath of movement while it stands open; then it folds; its light goes out in a ring) */
       const a = smo(sgk(u, V.show[0], V.show[1])) * (1 - smo(sgk(u, V.gone[0], V.gone[1])));
       const kf = smo(sgk(u, V.fold[0], V.fold[1])), k = (1 - kf) * (1 - 0.035 * (0.5 - 0.5 * Math.cos(u * 2 * Math.PI / 1.6)) * (1 - smo(sgk(u, V.fold[0] - 0.2, V.fold[0]))));
-      const r = sgk(u, V.ring[0], V.ring[1]), g = smo(sgk(u, V.ring[0] - 0.02, V.ring[0] + 0.08)) * (1 - smo(sgk(u, V.ring[0] + 0.08, V.ring[1])));
-      const b = smo(sgk(u, V.fold[1] - 0.45, V.fold[1]));
+      /* (v26.18: the ring widens slowing to its edge, and its light comes up over a third of a second, not in a tenth: on
+         the slower close a flash read as a strike. The bud draws in over its own window, SHUTV.bud) */
+      const rr = sgk(u, V.ring[0], V.ring[1]), r = 1 - (1 - rr) * (1 - rr), g = smo(sgk(u, V.ring[0] - 0.1, V.ring[0] + 0.25)) * (1 - smo(sgk(u, V.ring[0] + 0.25, V.ring[1])));
+      const b = smo(sgk(u, V.bud[0], V.bud[1]));
       if (a <= 0.001 && g <= 0.001) { S.lot.visible = false; return; }
       lotusPaint(k, a, r, g, b);
       S.lot.visible = true;
