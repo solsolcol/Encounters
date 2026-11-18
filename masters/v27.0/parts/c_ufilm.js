@@ -172,7 +172,7 @@
           { t: TR.rush + 1.6, name: 'ravi', eye: S_EYE, at: RV(1.68, 1.25), fp: 60, fd: 54 },
           { t: TR.back, name: 'ravi', eye: S_EYE, at: [R1.x, 1.32, R1.z], fp: 60, fd: 56 },
           { t: TR.back + 1.0, name: 'end', eye: S_EYE, at: END_AIM, fp: 64, fd: 58 },
-          { t: TR.end, name: 'end', eye: S_EYE, at: END_AIM, fp: 64, fd: 58 }
+          { t: TR.end, name: 'end', eye: S_EYE, at: END_AIM, fp: PLAY_FOV, fd: PLAY_FOV }
         ]);
       },
       /* the room as the decision finds it, held still while he chooses: Ravi a step from her, the cry, the light in her,
@@ -349,7 +349,7 @@
         /* THE LENS: in on Ravi's shoulder as he is caught (his mother beyond him); held through the cry; the light; out
            to her standing; on his teacher for his word */
         track(t, [
-          { t: 0, name: 'S', eye: S_EYE, at: END_AIM, fp: 64, fd: 58 },
+          { t: 0, name: 'S', eye: DEC_EYE, at: DEC_AT, fp: PLAY_FOV, fd: PLAY_FOV },
           { t: 0.55, name: 'held', eye: A_EYE[0], at: [CHAIR.x + 0.1, 1.15, CHAIR.z - 0.05], fp: 64, fd: 56 },
           { t: E.open, name: 'held', eye: A_EYE[1], at: [CHAIR.x + 0.08, 1.1, CHAIR.z], fp: 62, fd: 56 },
           { t: E.rise + 3.5, name: 'her', eye: A_EYE[1], at: [CHAIR.x, 1.4, CHAIR.z + 0.32], fp: 56, fd: 52 },
@@ -403,7 +403,7 @@
         /* THE LENS: the throw (a lurch at her); the thing filling his eyes; white; his teacher's push seen through the
            white; then he is on the floor, looking up at her standing, and at his teacher */
         track(t, [
-          { t: 0, name: 'S', eye: S_EYE, at: END_AIM, fp: 64, fd: 58 },
+          { t: 0, name: 'S', eye: DEC_EYE, at: DEC_AT, fp: PLAY_FOV, fd: PLAY_FOV },
           { t: E.throw + 0.25, name: 'throw', eye: [S_EYE[0] + TOWARD[0] * 0.2, 1.58, S_EYE[2] + TOWARD[1] * 0.2], at: [CHAIR.x - 0.05, 1.0, CHAIR.z - 0.2], fp: 58, fd: 52 },
           { t: E.comes + 0.9, name: 'it', eye: [S_EYE[0] - TOWARD[0] * 0.06, 1.6, S_EYE[2] - TOWARD[1] * 0.06], at: [COMES[0], 1.3, COMES[2]], fp: 70, fd: 64 },
           { t: E.floor, name: 'down', eye: [S_EYE[0] - TOWARD[0] * 0.1, 1.58, S_EYE[2] - TOWARD[1] * 0.1], at: [COMES[0], 1.25, COMES[2]], fp: 68, fd: 62 },
@@ -447,7 +447,7 @@
         if (t >= E.look) whenReady(cast.amma, (P) => lookNow(P, headOf(cast.ravi, [KR.x, 0.9, KR.z]), smo(c01((t - E.look) / 0.8)), 1.0));
         visionAt(t, -1, 0.1);
         track(t, [
-          { t: 0, name: 'S', eye: S_EYE, at: END_AIM, fp: 64, fd: 58 },
+          { t: 0, name: 'S', eye: DEC_EYE, at: DEC_AT, fp: PLAY_FOV, fd: PLAY_FOV },
           { t: 0.65, name: 'ravi', eye: [R1.x - 0.25, 1.6, R1.z + 0.62], at: [R1.x, 1.55, R1.z], fp: 50, fd: 46 },
           { t: E.kneel, name: 'ravi', eye: [R1.x - 0.25, 1.6, R1.z + 0.62], at: [R1.x, 1.52, R1.z], fp: 50, fd: 46 },
           { t: E.kneel + 1.6, name: 'kneel', eye: [R1.x - 0.05, 1.6, R1.z + 0.7], at: [CHAIR.x + 0.15, 0.95, CHAIR.z + 0.1], fp: 60, fd: 54 },
@@ -474,7 +474,7 @@
         /* his sight shut at the start: the wave home to him */
         visionAt(t, -10, 0.1, E.shut, 1.0);
         track(t, [
-          { t: 0, name: 'S', eye: S_EYE, at: END_AIM, fp: 64, fd: 58 },
+          { t: 0, name: 'S', eye: DEC_EYE, at: DEC_AT, fp: PLAY_FOV, fd: PLAY_FOV },
           { t: 1.2, name: 'pho', eye: S_EYE, at: [cast.phoB.home.x, 1.55, cast.phoB.home.z], fp: 52, fd: 48 },
           { t: E.kneel + 0.6, name: 'pho', eye: S_EYE, at: [cast.phoB.home.x, 1.5, cast.phoB.home.z], fp: 52, fd: 48 },
           { t: E.kneel + 2.0, name: 'hands', eye: S_EYE, at: [CHAIR.x + 0.2, 0.85, CHAIR.z + 0.05], fp: 56, fd: 52 },

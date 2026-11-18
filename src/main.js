@@ -12216,7 +12216,7 @@ function showcaseOpen(id, opts) {
      flashes gold as it arrives */
   unl.dur = secs; scFx.motes = null; scFx.into = null;
   const sceneEl = $('scene'), fire = $('fireBtn');
-  sceneEl?.classList.remove('scShake'); fire?.classList.remove('scFill');
+  sceneEl?.classList.remove('scShake'); fire?.classList.remove('scFill'); document.body.classList.remove('scToHud');
   unl.flareT = setTimeout(() => {
     if (unl.id !== id || !unl.show) return;
     el.classList.add('flare');
@@ -12229,7 +12229,9 @@ function showcaseOpen(id, opts) {
   }, (secs - 1.2) * 1000);
   unl.intoT = setTimeout(() => {
     if (unl.id !== id || !unl.show) return;
-    /* where it goes: the holy water's button where there is one on the screen, else the foot of the screen */
+    /* where it goes: the holy water's button where there is one on the screen, else the foot of the screen (the
+       weapon's buttons are hidden under the showcase: they come back for its last 0.6 s, so it goes into the button) */
+    document.body.classList.add('scToHud');
     const r = fire && fire.offsetParent !== null ? fire.getBoundingClientRect() : null;
     const tx = r ? r.left + r.width / 2 : innerWidth / 2, ty = r ? r.top + r.height / 2 : innerHeight * 0.92;
     el.style.setProperty('--ix', (tx - innerWidth / 2).toFixed(1) + 'px'); el.style.setProperty('--iy', (ty - innerHeight / 2).toFixed(1) + 'px');
@@ -12248,7 +12250,7 @@ function unlockClose(how) {
     const el = $('showcase');
     unl.id = null; unl.show = false;
     clearTimeout(unl.autoT); unl.autoT = 0; clearTimeout(unl.flareT); clearTimeout(unl.intoT); clearTimeout(unl.fillT);
-    document.body.classList.remove('showcaseopen');
+    document.body.classList.remove('showcaseopen', 'scToHud');
     $('scene')?.classList.remove('scShake');
     if (how === 'force') $('fireBtn')?.classList.remove('scFill');
     scFxClear();

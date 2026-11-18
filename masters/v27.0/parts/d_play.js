@@ -31,6 +31,7 @@
       wallClock.t += wdt;
       peopleTick(wdt, st !== 'cine');
       if (st !== 'cine') { crownTick(wdt); oppRidePlay(); peopleLevels(); lodTick(); }
+      decideLook(now, st);
       /* the room's own motion runs under a film too (the fan, the lamp's flames, the photograph's glass) */
       fanTick(wdt); lampTick(wdt, wallClock.t); fogTick(wdt);
       mixBeds(wdt, st);

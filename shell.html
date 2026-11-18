@@ -2361,7 +2361,7 @@ body.capsOn #interact{padding-bottom:calc(var(--capTop,170px) + 14px)}
   -webkit-mask:linear-gradient(180deg,transparent 0%,#000 34%,#000 100%);mask:linear-gradient(180deg,transparent 0%,#000 34%,#000 100%);
   animation:scShaft 1.8s cubic-bezier(.3,.7,.3,1) both}
 #showcase .scAura{width:min(58vw,40vh);height:min(72vw,50vh);border-radius:50%;opacity:0;
-  background:radial-gradient(closest-side,rgba(255,228,156,.58),rgba(255,192,84,.26) 48%,rgba(255,172,52,0) 100%);
+  background:radial-gradient(closest-side,rgba(255,206,104,.66),rgba(255,160,44,.36) 48%,rgba(255,140,30,0) 100%);
   animation:scAuraIn .7s ease-out .9s both,scBreath 1.3s ease-in-out 1.6s infinite alternate}
 #showcase .scHalo{width:min(56vw,38vh);height:min(56vw,38vh);border-radius:50%;opacity:0;
   background:radial-gradient(closest-side,rgba(255,222,140,0) 56%,rgba(255,236,178,.82) 75%,rgba(255,204,96,.34) 88%,rgba(255,182,62,0) 100%)}
@@ -2377,6 +2377,8 @@ body.capsOn #interact{padding-bottom:calc(var(--capTop,170px) + 14px)}
 #showcase.into .scAura{animation:scAuraOut .45s ease-in both}
 #showcase.out{opacity:0;transition:opacity .35s ease-out}
 #scene.scShake{animation:scShake .55s linear both}
+/* (its last 0.6 s: the holy water's button back on the screen, so the amulet goes down into it and it takes the gold) */
+body.weaponUp.scToHud #weaponHud{display:flex}
 #fireBtn.scFill{animation:scFill .9s ease-out both}
 body.showcaseopen .soundBtn,body.showcaseopen #volWrap{display:none}
 @keyframes scShaft{0%{opacity:0;transform:scaleY(0) scaleX(.12)}22%{opacity:1;transform:scaleY(1) scaleX(.12)}52%{opacity:.9;transform:scaleY(1) scaleX(1)}100%{opacity:0;transform:scaleY(1) scaleX(1.4)}}

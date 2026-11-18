@@ -283,7 +283,12 @@
       const run = play.run;
       if (fresh || !play.opened) { play.busy = true;
         after(fresh ? 0.4 : 1.2, () => { if (!live(run)) return; say('ph4s0', cast.pho);
-          queueFn(() => { play.busy = false; objectiveFor('sight', { complete: false }); if (kit && kit.visionUrge && !visOpen()) kit.visionUrge(true); }); }); }
+          queueFn(() => { play.busy = false;
+            /* (opened while he was still speaking: "Now open your Spirit Vision" is pressed the moment it is heard, and
+               onVision lets a switch pass under his line; left there, the order said "Open" over an open sight and the
+               spirits could not be looked at until he shut it and opened it again. Build 21, found in the lab) */
+            if (visOpen() && !play.opened) { play.opened = true; saveMark(); }
+            objectiveFor('sight', { complete: false }); if (kit && kit.visionUrge && !visOpen()) kit.visionUrge(true); }); }); }
       else objectiveFor('sight', { complete: false });
     }
     /* the engine tells the stage every time he opens or shuts his sight (stage.onVision) */
@@ -937,8 +942,55 @@
     function trance() {
       if (!kit || !kit.film) { openDecision(); return; }
       const run = play.run;
-      if (!kit.film('trance', { onDone: () => { if (live(run)) openDecision(); } })) openDecision();
+      if (!kit.film('trance', { onDone: () => { if (live(run)) { atTurn(); openDecision(); } } })) openDecision();
     }
+    /* THE PICTURE WHILE HE CHOOSES (build 21, found on a phone at its real size, 390 x 844: a film from play gives the
+       player's look back as it was before it, so the decision opened over wherever he had last looked in the fight, and
+       the window covers the lower 57 % of such a screen: the turning point it asks about was out of sight or behind it.
+       Episode 4 chapter 2's law, v25.5: HE IS SEEN WHILE THE CHOICE IS MADE.) The decision finds him where the trance's
+       last frame stood him, looking where it looked, through the play lens it ended on; while the window is open his look
+       is eased (0.8 s, the wall clock) so her face stands in the clear band of THIS screen, from under the stats (where
+       they lie over the screen's middle) to the window's top edge, low in the band so the thing on her back and his
+       teacher's hand on her head have room over her; where the band is too short, her chin is put just over the window's
+       edge. Every ending begins on this look (DEC_EYE, DEC_AT), so the window going is no jump. A Step back gives him
+       the look as it stands: nothing is put back, so nothing snaps */
+    const DEC = { on: false, t0: 0, p0: 0, y0: 0, p1: null, y1: 0, w: 0, h: 0, at: null, eye: null };
+    const _dcE = new THREE.Vector3();
+    function atTurn() { camAt(S_EYE, END_AIM()); fLens(PLAY_FOV); DEC.on = false; DEC.at = null; DEC.eye = null; }
+    function decideSolve() {
+      const P = document.querySelector('#decide .panel'); if (!P || !P.offsetHeight) return null;
+      const H = window.innerHeight, W = window.innerWidth, S = document.getElementById('stats'), sr = S ? S.getBoundingClientRect() : null;
+      const top = sr && sr.width > 0 && sr.left < W / 2 + 50 && sr.right > W / 2 - 50 ? sr.bottom + 8 : H * 0.07;
+      const bot = P.offsetTop; if (bot - top < 48) return null;
+      camera.getWorldPosition(_dcE);
+      const fc = headOf(cast.amma, AMMA_FACE), tf = Math.tan(camera.fov * Math.PI / 360), hd = Math.hypot(fc[0] - _dcE.x, fc[2] - _dcE.z);
+      const elev = (y) => Math.atan2(y - _dcE.y, hd);
+      const solve = (y, sy) => elev(y) - Math.atan((H / 2 - sy) / (H / 2) * tf);
+      let th = solve(fc[1], top + (bot - top) * 0.7);
+      /* (the head's middle: her chin is 12 cm under it) */
+      if (H / 2 - (H / 2) * Math.tan(elev(fc[1] - 0.12) - th) / tf > bot - 8) th = solve(fc[1] - 0.12, bot - 8);
+      return { p: Math.max(-1.3, Math.min(0.6, th)), y: Math.atan2(-(fc[0] - _dcE.x), -(fc[2] - _dcE.z)) };
+    }
+    function decideLook(now, st) {
+      if (st !== 'decide' || phase !== 'kept') { DEC.on = false; return; }
+      if (!DEC.on || DEC.w !== window.innerWidth || DEC.h !== window.innerHeight) {
+        DEC.on = true; DEC.t0 = now; DEC.p0 = pitch.rotation.x; DEC.y0 = yaw.rotation.y; DEC.p1 = null;
+        DEC.w = window.innerWidth; DEC.h = window.innerHeight; }
+      if (DEC.p1 == null) {
+        const s = decideSolve(); if (!s) { DEC.t0 = now; return; }
+        DEC.p1 = s.p; DEC.y1 = DEC.y0 + angTo(DEC.y0, s.y);
+        camera.getWorldPosition(_dcE); const d = 1.2, cp = Math.cos(DEC.p1);
+        DEC.eye = [_dcE.x, _dcE.y, _dcE.z];
+        DEC.at = [_dcE.x - Math.sin(DEC.y1) * cp * d, _dcE.y + Math.sin(DEC.p1) * d, _dcE.z - Math.cos(DEC.y1) * cp * d];
+      }
+      const k = smo(c01((now - DEC.t0) / 0.8));
+      pitch.rotation.x = lp(DEC.p0, DEC.p1, k);
+      yaw.rotation.y = lp(DEC.y0, DEC.y1, k);
+    }
+    /* where every ending's first frame stands and looks: the decision's own look when it was solved from the place the
+       trance left him (a Step back and a walk elsewhere starts the ending from the trance's own last frame instead) */
+    const DEC_EYE = () => S_EYE;
+    const DEC_AT = () => (DEC.at && DEC.eye && Math.hypot(DEC.eye[0] - S_EYE[0], DEC.eye[2] - S_EYE[2]) < 0.1 ? DEC.at : END_AIM());
     /* every sound the four endings and their close play, warmed as the decision opens (the scenes cue the close's from a
        helper, which the engine's own reading of a scene cannot see) */
     function openDecision() {
@@ -1106,6 +1158,7 @@
       play.fanK = 1; play.fanTo = 1; play.scareSeed = SCARE_SEED; play.scareAt = 0; play.scared = new Set(); play.doorTo = -0.12; play.doorK = -0.12;
       play.fogged = false; play.fogAt = 0; fogK = 0; fogTo = 0; lampK = 0; lampTo = 0; crownK = 0; crownTo = 0; oppLooked = ''; wanderNext = 2;
       decOpen = false; altarBlock = false; bowlOnFloor.visible = true; chantNow = null;
+      DEC.on = false; DEC.p1 = null; DEC.at = null; DEC.eye = null;
       for (const P of spirits.wander.concat([spirits.large, spirits.appa, spirits.oppress])) { P.gone = false; P.alpha = 1; }
       if (kit) { kit.bar(null); if (kit.weaponBlock) kit.weaponBlock(null); if (kit.visionUrge) kit.visionUrge(false);
         if (kit.health) kit.health(null); if (kit.edge) kit.edge(null); if (kit.sprayColor) kit.sprayColor(null); }
