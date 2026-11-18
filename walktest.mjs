@@ -36,7 +36,7 @@ p.on('pageerror', e => errs.push(where + ': ' + e.message));
    receiving room's door, and the room itself, where pressing that door puts him down */
 /* v25.0: and episode 4 chapter 2: his shop, from behind the counter to the stand by the door, the light switch, the
    shutter's pull and the mat on the customers' floor */
-const KEYS = ['ch3', 'e2c1', 'e2c2', 'e2c3', 'e2c4', 'e2c5', 'e3c1', 'e3c2', 'e3c3', 'e3c4', 'e3c5', 'e4c1', 'e4c2', 'e4c3'];
+const KEYS = ['ch3', 'e2c1', 'e2c2', 'e2c3', 'e2c4', 'e2c5', 'e3c1', 'e3c2', 'e3c3', 'e3c4', 'e3c5', 'e4c1', 'e4c2', 'e4c3', 'e4c4'];
 /* WALK_ONLY=e3c3 walks one chapter (a re-check after a fix, not the release run) */
 for (const key of (process.env.WALK_ONLY ? KEYS.filter(k => process.env.WALK_ONLY.split(',').includes(k)) : KEYS)) {
   where = key;
