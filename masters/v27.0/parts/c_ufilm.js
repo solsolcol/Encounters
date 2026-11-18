@@ -62,18 +62,55 @@
        sofa's end to R1 while the take travelled too, so his body ran five metres and through the wall, and the armchair
        stood across that line; every hold of the take's end at R1 put him three metres past it) */
     const RS = { x: 3.70, z: 4.00, ry: -1.621 }, R1 = { x: 0.82, z: 3.42 };
+    /* ENDING C'S LENSES (18 Nov, re-staged from its photographs: aimed at R1, his face came to a phone's edge; and once
+       he knelt, from over his shoulder, his head hid her face through the cry, the light and her eyes opening). His head
+       where the decision holds him, measured (tools/probes/e4c4who.mjs: 0.88, 1.44, 3.45); the eye he speaks to him from;
+       and the two of them from her front left a step back, his head and her face 21 degrees apart from there, inside a
+       phone's 28 at 58 degrees of lens */
+    const CR_HEAD = [0.88, 1.44, 3.45], CR_EYE = [0.57, 1.6, 4.04], CK_EYE = [0.95, 1.55, 4.75], CK_AT = [0.04, 0.97, 3.99];
     /* (the rush take's hips over the floor, its own metres, every quarter second: tools/probes/takepath.mjs, 18 Nov) */
     const RUSH_HIPS = [[-0.01, -0.03], [-0.01, 0.0], [-0.02, 0.06], [-0.03, 0.22], [-0.08, 0.61], [-0.21, 1.22], [-0.35, 1.82], [-0.43, 2.24], [-0.43, 2.63], [-0.43, 2.82], [-0.44, 2.86], [-0.45, 2.89]];
     const RUSH_AT = (tk) => { const f = Math.max(0, Math.min(RUSH_HIPS.length - 1.001, tk / 0.25)), i = Math.floor(f), u = f - i, A = RUSH_HIPS[i], B = RUSH_HIPS[i + 1];
       return [lp(A[0], B[0], u) - RUSH_HIPS[0][0], lp(A[1], B[1], u) - RUSH_HIPS[0][1]]; };
     /* Ravi where his rush has carried him at the take's moment tk: his group moved along the travel taken out of his
        hips (c_scast.js, P.rushPath), turned with him; the take posed by the caller */
-    function rushAt(P, tk, dx = 0, dz = 0) {
+    function rushXZ(P, tk) {
       const R = P.rushPath; let ax = 0, az = 0;
       if (R) { const T = R.T, n = T.length; let i = 0; while (i < n - 2 && T[i + 1] <= tk) i++; const u = c01((tk - T[i]) / Math.max(1e-6, T[i + 1] - T[i])), k = Math.min(n - 1, i + 1);
         ax = lp(R.D[i * 2], R.D[k * 2], u); az = lp(R.D[i * 2 + 1], R.D[k * 2 + 1], u); }
       const c = Math.cos(RS.ry), sn = Math.sin(RS.ry);
-      put(P, RS.x + ax * c + az * sn + dx, RS.z - ax * sn + az * c + dz, RS.ry);
+      return { x: RS.x + ax * c + az * sn, z: RS.z - ax * sn + az * c };
+    }
+    function rushAt(P, tk, dx = 0, dz = 0) { const q = rushXZ(P, tk); put(P, q.x + dx, q.z + dz, RS.ry); }
+    /* HELD WHERE HIS RUSH STOPPED (18 Nov, read through ending C by tools/probes/e4c4who.mjs): the decision holds him at
+       the take's 2.5 s, straining (its 2.45 to 2.57 there and back in 1.4 s, c_ufilm.js trance end); the endings that
+       hold him go on from exactly that, his group where the decision left it and only the strain in the take */
+    function rushHeld(P, t) { rushAt(P, 2.5); pose(P, 'rush', pingOf(t, 2.45, 0.12, 1.4)); }
+    const lpA = (a, b, k) => a + Math.atan2(Math.sin(b - a), Math.cos(b - a)) * k;
+    /* TO HER SIDE AND DOWN ONTO THE KNEES (18 Nov, read through ending C: the kneel take is kneeling from its first
+       frame, so at the beat Ravi's head dropped half a metre in one frame and he then slid 0.8 m over the floor on his
+       knees to her side; Mala the same, 0.4 m; ending D's Ravi the same). Now: from where he stands at t0 a walk paced
+       by the ground it covers (1.29 m a second of the walking take: ending A's measure) at a slow 0.62 m a second,
+       turned out of his stance along the way and to her at its end, eased into a standing breath as he arrives; at
+       `kneelAt` (or on arrival) down onto his knees, the stand eased into the kneel over `down` seconds while the kneel
+       take runs from its start; `kt(td)` the kneel take's moment once down (its first 4.2 s by default). `from` is the
+       take and moment he stands in before he goes, so the walk begins out of it */
+    function walkKneel(P, t, t0, A, B, ryEnd, from, o = {}) {
+      const L = Math.hypot(B.x - A.x, B.z - A.z), T = L > 0.02 ? Math.max(0.5, L / 0.62) : 0;
+      const h = L > 0.02 ? faceTo(A.x, A.z, B.x, B.z) : ryEnd, tw = t - t0, down = o.down || 1.1;
+      const kAt = o.kneelAt != null ? Math.max(o.kneelAt, t0 + T) : t0 + T, idleT = (q) => 3 + q * 0.4;
+      if (tw < T) {
+        const s = L * smo(c01(tw / T)), u = s / L, a0 = o.ry0 != null ? o.ry0 : h;
+        put(P, lp(A.x, B.x, u), lp(A.z, B.z, u), lpA(lpA(a0, h, smo(c01(tw / 0.35))), ryEnd, smo(c01((tw - T + 0.35) / 0.35))));
+        const into = smo(c01(tw / 0.4)), outOf = smo(c01((tw - T + 0.4) / 0.4));
+        if (outOf <= 0) pose(P, 'Walking', s / 1.29, true, from[0], 1 - into, from[1]);
+        else pose(P, 'Idle_3', idleT(tw), true, 'Walking', 1 - outOf, s / 1.29);
+        return;
+      }
+      put(P, B.x, B.z, ryEnd);
+      if (t < kAt) { pose(P, 'Idle_3', idleT(tw), true); return; }
+      const td = t - kAt, k = smo(c01(td / down));
+      pose(P, 'kneelhold', o.kt ? o.kt(td) : Math.min(4.2, td), false, 'Idle_3', 1 - k, idleT(kAt - t0));
     }
     const MALA_T = { x: -0.55, z: 4.42 };                                     // Mala at her mother's right hand, before her
     const AMMA_FACE = [CHAIR.x, 1.02, CHAIR.z + 0.08];
@@ -393,7 +430,7 @@
             else { const k = smo(c01((t - E.torn) / 1.1)); pose(P, 'cry', lp(1.0, 1.9, k)); P.group.position.z -= 0.6 * k; P.group.position.y += 0.25 * k; } }
           if (P.fx) P.fx.set('uAlpha', t < E.torn ? 1 : 1 - smo(c01((t - E.torn - 0.3) / 0.9))); });
         goddess(t < E.falter ? 1 : t < E.back ? 0.35 : t < E.torn ? lp(0.35, 1, smo(c01((t - E.back) / 1.2))) : 1 - smo(c01((t - E.torn) / 1.5)));
-        whenReady(cast.ravi, (P) => { const tk = 2.45 + 0.1 * Math.sin(t); rushAt(P, tk); pose(P, 'rush', tk); lookNow(P, AMMA_FACE, 1, 0.9); });
+        whenReady(cast.ravi, (P) => { rushHeld(P, t); lookNow(P, AMMA_FACE, 1, 0.9); });
         /* Mala: crying out as the water hits her mother ("What are you doing?"), and at the falter ("Amma!"); her scream
            let go once her mother is up, and her eyes down to him on the floor ("Are you alright?") */
         whenReady(cast.mala, (P) => { if (t < E.splash) pose(P, 'lightlamp', 5.4);
@@ -434,27 +471,31 @@
         if (t < E.rise) ammaTrance(t); else ammaRise(t, E.rise);
         phoBless(t, 1 - smo(c01((t - E.rise + 0.4) / 0.8)));
         oppressAt(t, E.cry, E.torn); goddess(t < E.torn ? 1 : 1 - smo(c01((t - E.torn) / 1.5)));
+        /* (Ravi held where his rush stopped, his eyes on the one who stops him; on "Hold her hand" he goes to her side and
+           kneels, his eyes turning from him to her; Mala comes round to her other side and kneels too: walkKneel) */
         whenReady(cast.ravi, (P) => {
-          if (t < E.kneel) { const tk = 2.45 + 0.08 * Math.sin(t * 1.3); rushAt(P, tk); pose(P, 'rush', tk); lookNow(P, 'lens', smo(c01((t - 0.5) / 0.8)), 0.8); }
-          else { const u = smo(c01((t - E.kneel) / 1.2)); put(P, lp(R1.x, KR.x, u), lp(R1.z, KR.z, u), lp(RAVI_RY, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2), u));
-            pose(P, 'kneelhold', t < E.rise ? Math.min(4.2, (t - E.kneel) * 1.0) : runOf(t, E.rise + 0.6, E.rise + 3.6, 4.2, 0.2));
-            lookNow(P, AMMA_FACE, 1, 0.9); } });
+          if (t < E.kneel) { rushHeld(P, t); lookNow(P, CR_EYE, smo(c01((t - 0.5) / 0.8)), 0.8); }
+          else { walkKneel(P, t, E.kneel, rushXZ(P, 2.5), KR, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2), ['rush', pingOf(E.kneel, 2.45, 0.12, 1.4)],
+              { ry0: RAVI_RY, kt: (td) => (t < E.rise ? Math.min(4.2, td) : runOf(t, E.rise + 0.6, E.rise + 3.6, 4.2, 0.2)) });
+            lookNow(P, lp3(CR_EYE, AMMA_FACE, smo(c01((t - E.kneel) / 0.5))), 1, 0.9); } });
         whenReady(cast.mala, (P) => {
           if (t < E.mala) { pose(P, 'lightlamp', 5.4); lookNow(P, AMMA_FACE, 1, 0.9); }
-          else { const u = smo(c01((t - E.mala) / 1.2)); put(P, lp(MALA_T.x, KM.x, u), lp(MALA_T.z, KM.z, u), faceTo(KM.x, KM.z, CHAIR.x, CHAIR.z + 0.2));
-            pose(P, 'kneelhold', t < E.rise ? Math.min(4.2, (t - E.mala) * 1.0) : runOf(t, E.rise + 0.8, E.rise + 3.8, 4.2, 0.2)); lookNow(P, AMMA_FACE, 1, 0.9); } });
+          else { walkKneel(P, t, E.mala, MALA_T, KM, faceTo(KM.x, KM.z, CHAIR.x, CHAIR.z + 0.2), ['lightlamp', 5.4],
+              { ry0: faceTo(MALA_T.x, MALA_T.z, CHAIR.x, CHAIR.z), kt: (td) => (t < E.rise ? Math.min(4.2, td) : runOf(t, E.rise + 0.8, E.rise + 3.8, 4.2, 0.2)) });
+            lookNow(P, AMMA_FACE, 1, 0.9); } });
         /* she looks at her son before she stands */
         if (t >= E.look) whenReady(cast.amma, (P) => lookNow(P, headOf(cast.ravi, [KR.x, 0.9, KR.z]), smo(c01((t - E.look) / 0.8)), 1.0));
         visionAt(t, -1, 0.1);
         track(t, [
           { t: 0, name: 'S', eye: DEC_EYE, at: DEC_AT, fp: PLAY_FOV, fd: PLAY_FOV },
-          { t: 0.65, name: 'ravi', eye: [R1.x - 0.25, 1.6, R1.z + 0.62], at: [R1.x, 1.55, R1.z], fp: 50, fd: 46 },
-          { t: E.kneel, name: 'ravi', eye: [R1.x - 0.25, 1.6, R1.z + 0.62], at: [R1.x, 1.52, R1.z], fp: 50, fd: 46 },
-          { t: E.kneel + 1.6, name: 'kneel', eye: [R1.x - 0.05, 1.6, R1.z + 0.7], at: [CHAIR.x + 0.15, 0.95, CHAIR.z + 0.1], fp: 60, fd: 54 },
-          { t: E.rise + 3.5, name: 'stand', eye: [R1.x - 0.05, 1.62, R1.z + 0.75], at: [CHAIR.x + 0.15, 1.3, CHAIR.z + 0.15], fp: 58, fd: 52 },
-          { t: E.ph - 0.4, name: 'stand', eye: [R1.x - 0.05, 1.62, R1.z + 0.75], at: [CHAIR.x + 0.15, 1.32, CHAIR.z + 0.15], fp: 58, fd: 52 },
-          { t: E.ph + 0.5, name: 'pho', eye: [R1.x - 0.05, 1.62, R1.z + 0.75], at: [cast.phoB.home.x, 1.62, cast.phoB.home.z], fp: 46, fd: 42 },
-          { t: E.close, name: 'pho', eye: [R1.x - 0.05, 1.62, R1.z + 0.75], at: [cast.phoB.home.x, 1.62, cast.phoB.home.z], fp: 46, fd: 42 }
+          { t: 0.65, name: 'ravi', eye: CR_EYE, at: CR_HEAD, fp: 58, fd: 50 },
+          { t: E.kneel, name: 'ravi', eye: CR_EYE, at: CR_HEAD, fp: 58, fd: 50 },
+          { t: E.kneel + 1.9, name: 'kneel', eye: CK_EYE, at: CK_AT, fp: 58, fd: 52 },
+          { t: E.rise, name: 'kneel', eye: CK_EYE, at: CK_AT, fp: 58, fd: 52 },
+          { t: E.rise + 3.5, name: 'stand', eye: CK_EYE, at: [CHAIR.x + 0.08, 1.2, CHAIR.z + 0.12], fp: 58, fd: 52 },
+          { t: E.ph - 0.4, name: 'stand', eye: CK_EYE, at: [CHAIR.x + 0.08, 1.22, CHAIR.z + 0.12], fp: 58, fd: 52 },
+          { t: E.ph + 0.5, name: 'pho', eye: CK_EYE, at: [cast.phoB.home.x, 1.58, cast.phoB.home.z], fp: 46, fd: 42 },
+          { t: E.close, name: 'pho', eye: CK_EYE, at: [cast.phoB.home.x, 1.58, cast.phoB.home.z], fp: 46, fd: 42 }
         ]);
         phoTurn(t, E.ph, false, 'ph4C1');
       },
@@ -466,10 +507,15 @@
         if (t < E.rise) ammaTrance(t); else ammaRise(t, E.rise);
         phoBless(t, 1 - smo(c01((t - E.rise + 0.4) / 0.8)));
         oppressAt(t, E.cry, E.torn); goddess(t < E.torn ? 1 : 1 - smo(c01((t - E.torn) / 1.5)));
+        /* (Ravi reaches the chair: a step out of his rush toward her, standing there while his teacher speaks to him; on
+           "Hold her hand" round to her side and down onto his knees: walkKneel, its two legs) */
         whenReady(cast.ravi, (P) => {
-          if (t < E.kneel) { const u = smo(c01((t - E.reach) / 1.2)), tk = 2.45 + 0.08 * Math.sin(t * 1.3); rushAt(P, tk, -0.12 * u, 0.18 * u); pose(P, 'rush', tk); lookNow(P, AMMA_FACE, 1, 0.9); }
-          else { const u = smo(c01((t - E.kneel) / 1.2)); put(P, lp(R1.x - 0.12, KR.x, u), lp(R1.z + 0.18, KR.z, u), lp(RAVI_RY, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2), u));
-            pose(P, 'kneelhold', t < E.rise ? Math.min(4.2, (t - E.kneel) * 1.0) : runOf(t, E.rise + 0.6, E.rise + 3.6, 4.2, 0.2)); lookNow(P, AMMA_FACE, 1, 0.9); } });
+          const RX = rushXZ(P, 2.5), R2 = { x: RX.x - 0.12, z: RX.z + 0.18 }, r2 = faceTo(R2.x, R2.z, CHAIR.x, CHAIR.z);
+          if (t < E.reach) rushHeld(P, t);
+          else if (t < E.kneel) walkKneel(P, t, E.reach, RX, R2, r2, ['rush', pingOf(E.reach, 2.45, 0.12, 1.4)], { ry0: RAVI_RY, kneelAt: Infinity });
+          else walkKneel(P, t, E.kneel, R2, KR, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2), ['Idle_3', 3 + (E.kneel - E.reach) * 0.4],
+            { ry0: r2, kt: (td) => (t < E.rise ? Math.min(4.2, td) : runOf(t, E.rise + 0.6, E.rise + 3.6, 4.2, 0.2)) });
+          lookNow(P, AMMA_FACE, 1, 0.9); });
         whenReady(cast.mala, (P) => { pose(P, 'lightlamp', 5.4); lookNow(P, AMMA_FACE, 1, 0.9); });
         /* his sight shut at the start: the wave home to him */
         visionAt(t, -10, 0.1, E.shut, 1.0);
