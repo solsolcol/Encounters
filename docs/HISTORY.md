@@ -9280,7 +9280,7 @@ What the baseline contains, by release:
   VISION (a HUD button and V: the world turned negative and drained, the spirits in colour, a wave out and back, its own
   sound, the heart heard). Researched, planned and built without approvals asked (his word), its tracker
   docs/V27.0-E4C4-BUILD.md (§7 the log, §11 every ask against the live build). Builds 18 to 21f went live as they were
-  made; this release is build 21i, deploy `6afdc090ee25ef6b913d9424` (21g `6afdaba8f46aab269c592dd0` the first in the run,
+  made; this release is build 21i, deploy `6afdc090ee25ef6b913d9424`, then build 21j, deploy `6afddc6efa7e6ea6a460d180` (602 of 602 identical: R41, "When the gold edge kicks in, it should replace the red edge no matter what the sanity level it is at", the low-sanity red standing down while the gold is up, main.js goldUp; the shop doorway inside the room's keepIn, the 4 cm walktest found; fixturetest's two waits made fit for a slow box) (21g `6afdaba8f46aab269c592dd0` the first in the run,
   21h `6afdae979d2566f9988ec383`), 602 of 602 served files byte-identical. Its last
   pass, from drive A (a finger to ending A's card on 21e: 42 voices none over another, 25 cues all from their samples,
   no page error) and endings C and D photographed at a phone's size and read by tools/probes/e4c4who.mjs: the eye now

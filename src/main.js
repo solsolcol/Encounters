@@ -17500,9 +17500,14 @@ function tick(now = 0) {
     }
     // the edges close in as it goes, whether or not she is draining you now,
     // and start beating once it is genuinely getting dangerous
-    const dread = THREE.MathUtils.clamp((60 - stats.sanity) / 60, 0, 1);
+    /* v27.0 (R41, Chad: "When the gold edge kicks in, it should replace the red edge no matter what the sanity level
+       it is at"): while a chapter's glow is up (kit.edge, seam 56) the low-sanity red stands down at ANY sanity, its
+       own .4 s fade taking it off as the gold comes on and back once the gold has gone; no glow asked (every chapter
+       but episode 4 chapter 4, and that one outside its gold) is exactly the frame it always was */
+    const goldUp = edgeG.to > 0 || edgeG.k > 0.002;
+    const dread = goldUp ? 0 : THREE.MathUtils.clamp((60 - stats.sanity) / 60, 0, 1);
     ui.panic.style.opacity = dread.toFixed(3);
-    ui.panic.classList.toggle('critical', stats.sanity > 0 && stats.sanity < 30);
+    ui.panic.classList.toggle('critical', !goldUp && stats.sanity > 0 && stats.sanity < 30);
   } else {
     ui.interact.classList.add('hide');
     if (state !== 'lost') showHaunt(false);

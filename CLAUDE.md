@@ -19,6 +19,22 @@ teacher he finds. The release history is docs/HISTORY.md. This
 file is the contract for how work on this repo happens — read it before
 changing anything.
 
+## EFFICIENCY COMES FIRST (Chad, 18 Nov 2026: read this before anything else)
+
+His words, the same evening: *"I'm not going to wait 3 hours, build everything immediately and deploy immediately, and
+only further build if the tests find anything new"*; *"Im tired of telling you that you are inefficient, i already said
+many times build as fast as you can, deploy, then let the tests run. If the tests takes 6 hours, are you going to wait 6
+damn hours to build? Use your common sense. Why do you keep forgetting this"*; *"Also i want you to swear you will always
+remember how to be efficient"*. A promise does not survive a session; this paragraph does. Every time:
+
+1. An ask or a fix is BUILT AND DEPLOYED the moment it is written: static checks, the build, the deploy, the byte
+   check. Nothing waits for a test, a probe, a review or a photograph still running.
+2. Tests run AFTER, on the live build, in the background. Never wait for them to build the next thing. A new build ends
+   the round on the old one, and the round starts again on the new build's snapshot.
+3. Build again only when a test finds something NEW.
+4. At most two browsers at once on this box (five at once made spurious failures, 18 Nov).
+5. A question from him is answered at once, on one phone screen, while the work goes on.
+
 ## Who you are working with
 
 Chad (chadsor@gmail.com) has **zero game-dev experience** and often works
@@ -131,6 +147,7 @@ that fits it, with the version it came from.
 - Episode 4 chapter 1's black ajahn "is supposed to be evil": he chants no Buddhist chant ("should be chanting something else"), and his chants cannot be made out at all. Chad's word for this one character, the stated exception to the rule that no practitioner is the villain (Architecture, v21.30). (v24.25)
 - Anumodana is said only by a monk ("that can only be said by a monk"); a lay master or anyone else says thank you. (v24.25)
 - Every build is deployed as a FULL RELEASE, in the run, whatever its state; never a preview chapter (`preview: true` is never used again: "I also never asked for what preview bullshit you are doing, it should always be deployed as full release no matter the status"). (v27.0)
+- Efficiency comes first: build and deploy at once, the tests after on the live build, a rebuild only on a new finding (the block at the top of this file, his words). (v27.0)
 - Change only what he asked and keep everything else exactly as it was; if an addition does not fit a shot, say so and ask instead of re-staging it; never remove built flow unless told. (v14.10)
 - Use his models as he delivered them: never alter his files or their paint (a ruling such as 'no green' is applied at runtime), and leave a scan's own flaws as delivered. (v12.4)
 - Use the models he has already supplied, and use them to the fullest (their interiors, their own looks), before building anything in code; check the models docs for what he already sent. (v24.18)
@@ -1416,7 +1433,7 @@ C13 ac): the hall's own
 theme (four previews sent, C in the game until he says a letter), one word of Ton's ending-A line (`tn3A1`, "roll" to
 "stack"), the small white figure before the Emerald Buddha (not identified, not made).
 Chapter 4 (S1·13, case one: the woman who rose from her wheelchair) SHIPPED at v27.0 (18 Nov 2026, deploy
-`6afdc090ee25ef6b913d9424`): her own HDB flat in Singapore, she speaks English, her family, Pho and the player in the
+`6afddc6efa7e6ea6a460d180`, build 21j): her own HDB flat in Singapore, she speaks English, her family, Pho and the player in the
 room, the horror brought back, the holy-water fight, and SPIRIT VISION; **docs/V27.0-E4C4-BUILD.md** (its tracker: the
 log, and §11 every ask against the live build) and docs/V27.0-E4C4-PLAN.md (his words R1 to R40). Next: chapter 5
 (S1·14 and S1·15, cases two and three).

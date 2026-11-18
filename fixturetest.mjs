@@ -344,8 +344,11 @@ K.ownSeam = await p.evaluate(async () => {
   R.fires = E.kit.fire() === true && E.ownState().rounds === 2 && E.ownState().anim === 'flick';
   R.flicks = await poll(() => { maxP = Math.max(maxP, E.ownState().p); return E.ownState().anim === null; }, 60000) && maxP > 0.5;
   R.logged = E.weaponLog.length === logA + 1 && E.weaponLog[E.weaponLog.length - 1].empty !== true;   // the round went through the shot path (onShot is called on it)
-  E.kit.fire(); await frames(2);
-  R.thrown = await poll(() => E.ownState().drops > 0 || E.ownState().drawn > 0, 20000);
+  /* (18 Nov) the drops are thrown inside fire() itself and live half a second: read them on the spot. Two frames first
+     (four seconds on a loaded software renderer) let them land and fade before the first look, and the check failed on
+     a flick the game had thrown (the drives saw every one) */
+  const fired2 = E.kit.fire(), d0 = E.ownState().drops; await frames(2);
+  R.thrown = fired2 === true && (d0 > 0 || await poll(() => E.ownState().drops > 0 || E.ownState().drawn > 0, 20000));
   /* the dip */
   let minP = 0;
   R.dips = E.kit.reload() === true && E.ownState().rounds === 3 && E.ownState().busy === 'reload';
@@ -675,13 +678,15 @@ K.stakesShowcase = await p.evaluate(async () => {
   let told = 0;
   /* (auto 6 s, not 1.2: on a box drawing a frame a second, the three frames waited for before the look is read outlast a
      1.2 s showing, and build 20's run read a splash already gone: the game was right, the wait was the fault) */
-  const shown = E.kit.unlock('amulet', { gold: true, auto: 6, label: 'L1', name: 'N1', sub: 'S1', sound: 'itemunlock', onClose: () => { told++; } });
+  /* (18 Nov: auto 20 s. With two software renderers on the box three frames took longer than 6 s, and the look was read
+     after the showing had gone: the same fault as build 20's, one step further) */
+  const shown = E.kit.unlock('amulet', { gold: true, auto: 20, label: 'L1', name: 'N1', sub: 'S1', sound: 'itemunlock', onClose: () => { told++; } });
   await frames(3);
   const look = E.getState() === 'unlock' && el.classList.contains('gold') && el.querySelector('.unLabel').textContent === 'L1'
     && document.getElementById('unName').textContent === 'N1' && el.querySelector('.unSub').textContent === 'S1'
     && getComputedStyle(document.getElementById('unClose')).visibility === 'hidden';
   const t0 = performance.now();
-  const gone = await until(() => E.getState() === 'play', 20000) && told === 1 && performance.now() - t0 > 600 && E.unlockState().id === null;
+  const gone = await until(() => E.getState() === 'play', 60000) && told === 1 && performance.now() - t0 > 600 && E.unlockState().id === null;
   await until(() => el.classList.contains('hide'), 5000);
   const plain = E.kit.unlock('amulet'); await frames(3);
   const back = !el.classList.contains('gold') && el.querySelector('.unLabel').textContent === label0 && el.querySelector('.unSub').textContent === sub0

@@ -5949,7 +5949,11 @@
       { minX: ROOMS.living.x0, maxX: ROOMS.living.x1, minZ: FL.face, maxZ: ROOMS.living.z1 },
       { minX: ROOMS.nook.x0, maxX: ROOMS.nook.x1, minZ: ROOMS.nook.z0, maxZ: ROOMS.nook.z1 },
       { minX: ROOMS.hers.x0, maxX: ROOMS.hers.x1, minZ: FL.face, maxZ: ROOMS.passage.z1 },
-      { minX: ROOMS.dining.x0, maxX: ROOMS.dining.x1, minZ: ROOMS.dining.z0, maxZ: ROOMS.dining.z1 }];
+      { minX: ROOMS.dining.x0, maxX: ROOMS.dining.x1, minZ: ROOMS.dining.z0, maxZ: ROOMS.dining.z1 },
+      /* (18 Nov, walktest on the live build: he stood 4 cm into the main door's opening, 0.0 m2 "outside" a flat drawn to
+         the wall's inner face. The opening is hers up to her shut grille gate, whose column (c_props.js) stands across
+         its outer face from z -0.10 to -0.02: the doorway is in, the corridor is still out) */
+      { minX: DOOR_MAIN.x0, maxX: DOOR_MAIN.x1, minZ: -0.02, maxZ: FL.face }];
     const KEEP = { what: 'her flat', boxes: KEEP_BOXES,
       minX: Math.min(...KEEP_BOXES.map(q => q.minX)), maxX: Math.max(...KEEP_BOXES.map(q => q.maxX)),
       minZ: Math.min(...KEEP_BOXES.map(q => q.minZ)), maxZ: Math.max(...KEEP_BOXES.map(q => q.maxZ)) };
