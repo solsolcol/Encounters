@@ -209,13 +209,19 @@ export function makeVision(THREE, renderer, opts = {}) {
         `vec3 svN = normalize(normal);
          float sv_f = pow(1.0 - clamp(abs(svN.z), 0.0, 1.0), uPow);
          float sv_reveal = 1.0 - smoothstep(uR - uSoft, uR + uSoft, distance(vSvWorld, uEye));
-         float sv_wd = texture2D(uDepth, gl_FragCoord.xy / uRes).r;
+         /* (18 Nov, photographed on a phone: a glow laid on a body the world draws (her altar's blue, his gold) was SPECKLED
+            along every sloped face, the glow's own front surface failing its depth test at random. This pass is drawn at
+            half size and read the world's depth one texel at its middle, where a sloped face's depth is a texel's slope
+            off its own: it now reads the four full-size texels under it and is hidden only behind the farthest of them) */
+         vec2 sv_uv = gl_FragCoord.xy / uRes, sv_h = 0.25 / uRes;
+         float sv_wd = max(max(texture2D(uDepth, sv_uv + vec2(-sv_h.x, -sv_h.y)).r, texture2D(uDepth, sv_uv + vec2(sv_h.x, -sv_h.y)).r),
+                           max(texture2D(uDepth, sv_uv + vec2(-sv_h.x, sv_h.y)).r, texture2D(uDepth, sv_uv + vec2(sv_h.x, sv_h.y)).r));
          float sv_occ = gl_FragCoord.z > sv_wd + 0.00002 ? uXray : 1.0;
          float sv_n = 0.85 + 0.15 * sin(uTime * 7.3 + vSvWorld.y * 11.0 + vSvWorld.x * 5.0);
          float sv_k = (uFill + uRim * sv_f) * sv_reveal * sv_occ * mix(1.0, sv_n, uFlick) * uAlpha;
          gl_FragColor = vec4(uColor * sv_k, sv_k);`);
     };
-    m.customProgramCacheKey = () => 'spiritvision1';
+    m.customProgramCacheKey = () => 'spiritvision2';
     V.mats.add(m);
     return m;
   }

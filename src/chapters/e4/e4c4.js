@@ -3382,7 +3382,7 @@
                    opened: false, looked: new Set(), closed: false, read: false,
                    water: false, briefed: false, fight: null, appaGone: false, nerveOut: false, held: 0, heat: 0, heatStep: 0,
                    lit: false, dark: 0, fanK: 1, fanTo: 1, scareAt: 0, scareSeed: 0, scared: new Set(), doorTo: -0.12, doorK: -0.12,
-                   fogged: false, fogAt: 0, closeHold: 0 };
+                   fogged: false, fogAt: 0, closeHold: 0, breathSaid: -99 };
     let decOpen = false;
     const live = (run) => alive && run === play.run;
     const HEAD_OF = (P, dy = 0.08, fb) => { if (P && P.ready && P.head && P.group.visible) { P.head.getWorldPosition(_pv); return { x: _pv.x, y: _pv.y + dy, z: _pv.z }; } return fb; };
@@ -3616,7 +3616,11 @@
         const room = sanityNow() - HEAT.floor;
         if (room > 0) kit.award('sanity', -Math.min(room, HEAT.drain * wdt), { minigame: true });
       }
-      if (open && sanityNow() < HEAT.low && !play.closeHold && !play.busy && (phase === 'sight' || phase === 'bless')) nerveOut();
+      /* (shut for him only when his heart is PAST ITS LIMIT and his nerve low: 18 Nov, played by a finger, a fight that had
+         cost him his nerve (the shapes that reach him take it too) shut his sight the instant he opened it, every time, and
+         he could never see the room again. Held shut, his heart cools (5.5 s of HEAT.down), so he has some seconds of sight
+         before it is past its limit again) */
+      if (open && play.heat >= 1 && sanityNow() < HEAT.low && !play.closeHold && !play.busy && (phase === 'sight' || phase === 'bless')) nerveOut();
       if (play.closeHold && (play.closeHold -= wdt) <= 0) { play.closeHold = 0; kit.vision(null); }
     }
     /* "Close. Breathe." His sight shut for him and held shut for a few seconds; a price on the card (§4.3) */
@@ -3624,7 +3628,11 @@
       if (!kit || !kit.vision) return;
       kit.vision(false); kit.vision({ r: 0, moving: false }); play.closeHold = 5.5;
       play.nerveOut = true; bank(W.noteNerve, -4, 0);
-      if (!heard.has('ph4b1') || phase === 'bless') sayLine('ph4b1', 1, () => talk(cast.phoB.group.visible ? cast.phoB : cast.pho, SECS.ph4b1 || 2));
+      /* (his word the first time, and in the blessing at most once in 30 s: shut again later, the sight's own closing sound
+         says it; 18 Nov) */
+      const now = wallNow();
+      if (!heard.has('ph4b1') || (phase === 'bless' && now - play.breathSaid > 30)) { play.breathSaid = now;
+        phoSpeaks('ph4b1', () => talk(cast.phoB.group.visible ? cast.phoB : cast.pho, SECS.ph4b1 || 2)); }
     }
 
     /* ================================================================ PLAY II · THE SIGHT (§4.2) */
@@ -3850,8 +3858,7 @@
          minutes, not twelve: 18 Nov) */
       F.k = Math.min(1, F.k + wdt / FIGHT.secs * Math.max(0.35, slow));
       if (kit) kit.bar(F.k);
-      while (F.captions < CHANT.length && F.k > CHANT[F.captions].at) { const C = CHANT[F.captions++]; chantLine(C);
-        if (kit && kit.captions) kit.captions([{ at: 0, end: 2 * C.len + CHANT_GAP + 0.4, text: W[C.cap], sub: W[C.cap + 'Sub'] }]); }
+      while (F.captions < CHANT.length && F.k > CHANT[F.captions].at) chantSing(CHANT[F.captions++]);
       const appa = spirits.appa, ag = appa.group.position;
       for (const S of F.shapes) {
         const P = S.P; if (S.state === 'gone') continue;
@@ -3919,7 +3926,7 @@
       whenReady(P, (Q) => { span(Q, 'aturn', 0, 2.4, 1.6, { hold: 0.2, holdSecs: 3 }); gaze(Q, 'lens', { reach: 1.0, secs: 0.9 }); });
       let u = 0; const fade = () => { if (!live(run)) return; u = Math.min(1, u + 1 / 50); P.alpha = 1 - u; if (P.fx) P.fx.set('uAlpha', 1 - u); if (u < 1) after(0.05, fade); else { P.group.visible = false; P.gone = true; } };
       after(1.6, fade);
-      after(2.2, () => { if (live(run)) sayLine('ph4b2', 1, () => talk(cast.phoB, SECS.ph4b2 || 2.6)); });
+      after(2.2, () => { if (live(run)) phoSpeaks('ph4b2', () => talk(cast.phoB, SECS.ph4b2 || 2.6)); });
     }
     /* the end of the chant: the shapes thin away; silence but for the lamp's flame and her breathing */
     /* HIS CHANT (the plan's D13; masters/v27.0/chant/build.py): each line sung by him while its words are on screen,
@@ -3929,15 +3936,38 @@
     const CHANT_GAP = 1.2;
     const CHANT = [{ at: 0.06, n: 'u4chant1', len: 5.98, cap: 'cap1' }, { at: 0.30, n: 'u4chant2', len: 8.94, cap: 'cap2' },
                    { at: 0.55, n: 'u4chant1', len: 5.98, cap: 'cap1' }, { at: 0.80, n: 'u4chant2', len: 8.94, cap: 'cap2' }];
-    let chantNodes = [];
-    function chantStop() { for (const a of chantNodes) { try { a.stop(); } catch (e) { } } chantNodes = []; }
+    let chantNodes = [], chantNow = null, chantTok = 0;
+    function chantStop() { chantTok++; for (const a of chantNodes) { try { a.stop(); } catch (e) { } } chantNodes = []; }
     function chantLine(C) {
-      chantStop(); if (!worldSfx || (soundOff && soundOff())) return;
-      const g = cast.phoB.group.position, sing = () => { const a = worldSfx(C.n, 0.95, 1, panAt(g.x, g.z)); if (a) chantNodes.push(a); };
+      chantStop(); chantNow = C; if (!worldSfx || (soundOff && soundOff())) return;
+      const tok = chantTok, g = cast.phoB.group.position, sing = () => { if (tok !== chantTok) return;
+        const a = worldSfx(C.n, 0.95, 1, panAt(g.x, g.z)); if (!a) return;
+        chantNodes.push(a); a.addEventListener('ended', () => { const i = chantNodes.indexOf(a); if (i >= 0) chantNodes.splice(i, 1); }); };
       sing(); const run = play.run; after(C.len + CHANT_GAP, () => { if (live(run) && play.fight && play.fight.on) sing(); });
     }
+    /* a chant line sung, its caption with it (both of its times and the breath between) */
+    function chantSing(C) {
+      chantLine(C);
+      if (kit && kit.captions) kit.captions([{ at: 0, end: 2 * C.len + CHANT_GAP + 0.4, text: W[C.cap], sub: W[C.cap + 'Sub'] }]);
+    }
+    /* HE BREAKS OFF HIS CHANT TO SPEAK (18 Nov: "Close. Breathe." and his word after the water reached Appa were said over
+       his own chant, one man chanting and talking at once): the line he is singing fades in a quarter of a second, he
+       speaks, and then begins that line again from its start, under its caption. Between lines nothing is cut */
+    function phoSpeaks(name, onStart) {
+      const F = play.fight, singing = !!(F && F.on && chantNow && chantNodes.length);
+      if (singing) {
+        const tok = ++chantTok, nodes = chantNodes; chantNodes = [];
+        for (const a of nodes) { try { const g = a.__g && a.__g.gain, t = a.context.currentTime;
+          if (g) { g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(0.0001, t + 0.25); }
+          a.stop(t + 0.3); } catch (e) { } }
+        if (kit && kit.captions) kit.captions(null);
+        const C = chantNow, run = play.run;
+        after((SECS[name] || 2.5) + 0.9, () => { if (live(run) && play.fight && play.fight.on && chantTok === tok) chantSing(C); });
+      }
+      sayLine(name, 1, onStart);
+    }
     function fightEnd() {
-      const F = play.fight; F.ended = true; F.on = false; fightMusOff(); chantStop();
+      const F = play.fight; F.ended = true; F.on = false; fightMusOff(); chantStop(); chantNow = null;
       /* (each shape still in the room goes on its own beat: a golden-ratio spread over 0.4 s by its place in the list, the
          same on every run and every replay: v6.15, nothing random unseeded) */
       F.shapes.forEach((S, i) => { if (S.state !== 'gone' && S.state !== 'leave') { S.state = 'leave'; S.leave = -0.4 * ((i * 0.6180339887) % 1); } });
@@ -4106,10 +4136,10 @@
     function storyReset() {
       play.run++; play.busy = false; play.learned = new Set(); play.spoke = false; play.told = false; play.peeked = false;
       play.opened = false; play.looked = new Set(); play.closed = false; play.read = false; play.water = false; play.briefed = false;
-      play.fight = null; play.appaGone = false; play.nerveOut = false; play.heat = 0; play.heatStep = 0; play.closeHold = 0;
+      play.fight = null; play.appaGone = false; play.nerveOut = false; play.heat = 0; play.heatStep = 0; play.closeHold = 0; play.breathSaid = -99;
       play.fanK = 1; play.fanTo = 1; play.scareSeed = SCARE_SEED; play.scareAt = 0; play.scared = new Set(); play.doorTo = -0.12; play.doorK = -0.12;
       play.fogged = false; play.fogAt = 0; fogK = 0; fogTo = 0; lampK = 0; lampTo = 0; crownK = 0; crownTo = 0; oppLooked = ''; wanderNext = 2;
-      decOpen = false; altarBlock = false; bowlOnFloor.visible = true;
+      decOpen = false; altarBlock = false; bowlOnFloor.visible = true; chantNow = null;
       for (const P of spirits.wander.concat([spirits.large, spirits.appa, spirits.oppress])) { P.gone = false; P.alpha = 1; }
       if (kit) { kit.bar(null); if (kit.weaponBlock) kit.weaponBlock(null); if (kit.visionUrge) kit.visionUrge(false); }
       lookAt0('FLAT'); castHome(); spiritsHome(); soundReset(); whenReady(cast.phoB, (P) => bowSet(P, 0));

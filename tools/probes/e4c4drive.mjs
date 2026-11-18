@@ -61,7 +61,7 @@ const info = () => p.evaluate(() => {
   let pl = {}; try { const P = E.stage.dbg.play; pl = { busy: !!P.busy, learned: P.learned ? P.learned.size : 0, looked: P.looked ? P.looked.size : 0,
     fight: P.fight ? { on: !!P.fight.on, k: +P.fight.k.toFixed(3), wave: P.fight.wave, fed: P.fight.fed, families: P.fight.families, ended: !!P.fight.ended } : null,
     water: !!P.water, read: !!P.read, closed: !!P.closed, opened: !!P.opened }; } catch { /* */ }
-  let v = {}; try { const q = E.vision(); v = { on: q.on, r: +q.r.toFixed(2), dir: q.dir }; } catch { /* */ }
+  let v = {}; try { const q = E.vision(); v = { on: q.on, r: +q.r.toFixed(2), dir: q.dir, held: !!q.held }; } catch { /* */ }
   return { st: E.getState(), phase: i.phase, ev, pl, vis: v, busyQ: pl.busy,
            obj: o && !o.classList.contains('hide') ? (document.getElementById('objTxt') || o).textContent.trim() : null,
            cine: E.cine.active() ? +E.cine.t().toFixed(1) : null, dur: E.cine.active() ? +E.cine.dur().toFixed(1) : null, skip: E.cine.active() && E.cine.skipShown(),
@@ -133,7 +133,7 @@ async function eye(want) {
   return ok;
 }
 /* THE FIGHT, by the finger: the shape nearest to its mark aimed at and flicked; the bowl dipped at his teacher's bowl */
-const fightLog = { shots: 0, dips: 0, refused: 0, walks: 0 };
+const fightLog = { shots: 0, dips: 0, refused: 0, walks: 0, at: 0, held: 0 };
 async function fightTick() {
   const T = await p.evaluate(() => {
     const E = window.__enc, D = E.stage.dbg, F = D.play.fight, Y = E.yaw;
@@ -143,9 +143,14 @@ async function fightTick() {
     for (const S of live) { const g = S.P.group.position; const tg = S.to === 'me' ? me : (S.to === 'pho' ? D.cast.phoB.group.position : D.cast[S.to].group.position);
       const d = Math.hypot(tg.x - g.x, tg.z - g.z); if (d < bd) { bd = d; best = { x: g.x, y: g.y + (S.P === D.spirits.large ? 0.75 : 0.45), z: g.z, to: S.to, d: +d.toFixed(2) }; } }
     const ammo = document.getElementById('ammo'); const rounds = ammo ? parseInt(ammo.textContent, 10) : NaN;
-    return { best, rounds, me: { x: me.x, z: me.z }, n: live.length, k: F.k };
+    return { best, rounds, me: { x: me.x, z: me.z }, n: live.length, k: F.k, fed: F.fed, fam: F.families, heat: +(D.play.heat || 0).toFixed(2),
+             san: E.kit && E.kit.stat ? E.kit.stat('sanity') : null, hold: +(D.play.closeHold || 0).toFixed(1) };
   });
   if (!T) return false;
+  /* (18 Nov) the fight's progress, once a minute of the probe's own time: the blessing's bar, what reached them, his nerve
+     and his heart, what the finger did */
+  if (Date.now() - fightLog.at > 60000) { fightLog.at = Date.now();
+    log('  fight', JSON.stringify({ k: +T.k.toFixed(3), live: T.n, fed: T.fed, fam: T.fam, san: T.san, heat: T.heat, hold: T.hold, shots: fightLog.shots, dips: fightLog.dips, refused: fightLog.refused })); }
   if (T.rounds === 0) {
     /* the bowl is empty: back to his teacher's bowl (within 1.5 m of it), and DIP */
     const near = await p.evaluate(() => { const Y = window.__enc.yaw; return Math.hypot(Y.position.x - 0.35, Y.position.z - 3.20) < 1.3; });
@@ -201,7 +206,8 @@ while (Date.now() - T0 < TMAX) {
   if (cardAt && Date.now() - cardAt > 12000) break;
   /* THE FIGHT: the eye open, the finger on the shapes */
   if (I.st === 'play' && I.pl.fight && I.pl.fight.on) {
-    if (!I.vis.on && I.vis.dir !== 1) await eye(true);
+    /* (his sight held shut by his teacher, "Close. Breathe.": a finger waits out the hold, as a player must) */
+    if (!I.vis.on && I.vis.dir !== 1 && !I.vis.held) await eye(true); else if (I.vis.held) fightLog.held++;
     await fightTick(); idle = 0;
     if (fightLog.shots % 10 === 1) await shot('fight');
     continue;
