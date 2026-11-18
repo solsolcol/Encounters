@@ -4407,7 +4407,9 @@
     const MALA_C = { x: CHAIR.x - 0.42, z: CHAIR.z + 0.82 };                 // Mala at her right in the close
     /* Ravi KNEELS at her left in the close (his kneel's own take), looking up at her: on his knees his head is a third of
        a metre under her face from every place the close looks from, and clear of the chair, the lamp and her steps */
-    const RAVI_C = { x: CHAIR.x + 0.57, z: CHAIR.z + 0.67 };
+    /* (a step behind her left since 18 Nov: at her side he knelt on the line from the merit's eye to her palms, and the
+       lamp's shot was the back of his head, photographed) */
+    const RAVI_C = { x: CHAIR.x + 0.47, z: CHAIR.z + 0.40 };
     /* the last green shapes in the close (A, B, C: his sight still open): two of the night's wanderers going out by the
        room's open door as his teacher gives them a share of the merit, each crawling its own take's travel toward the
        doorway (its hips go 0.9 m in the 2.3 s it is seen, clear of the bowl, the TV and the sofa) and fading */
@@ -4468,8 +4470,9 @@
         const RG = { x: R1.x + 0.05, z: R1.z - 0.05 };                       // Ravi, held
         ammaRise(t, E.rise); if (t < E.rise) ammaTrance(t);
         /* standing, she looks back over her shoulder for her son: held back, behind her (her face turned to him and to
-           us; a neck's reach, the rest of the turn is his to see) */
-        if (t > E.rise + 1.5) whenReady(cast.amma, (P) => lookNow(P, headOf(cast.ravi, [RG.x, 1.4, RG.z]), smo(c01((t - E.rise - 1.5) / 1.2)), 1.25, 0.04));
+           us; a neck's reach, the rest of the turn is his to see), and calls him ("Ravi?" at E.call: 18 Nov, photographed,
+           said at 10.7 it fell while she was still pushing up out of the chair, her face down; he goes still on her voice) */
+        if (t > E.call - 0.6) whenReady(cast.amma, (P) => lookNow(P, headOf(cast.ravi, [RG.x, 1.4, RG.z]), smo(c01((t - E.call + 0.6) / 1.0)), 1.25, 0.04));
         phoBless(t, 1 - smo(c01((t - E.rise + 0.4) / 0.8)));
         oppressAt(t, E.cry, E.torn); goddess(t < E.torn ? 1 : 1 - smo(c01((t - E.torn) / 1.5)));
         /* Ravi: fighting his hold until she rises (the take run to its end by then: it ran out and froze 3 s early);
@@ -4697,9 +4700,11 @@
       /* the family about her: Mala at her right hand (the ash), Ravi at her left */
       whenReady(cast.mala, (P) => { put(P, MALA_C.x, MALA_C.z, faceTo(MALA_C.x, MALA_C.z, STAND.x, STAND.z));
         pose(P, 'Idle_3', 3 + c * 0.3, true); lookNow(P, HER_HEAD(), 1, 0.9);
-        /* (the ash on her FOREHEAD: 18 Nov, photographed, her daughter's fingers reached her chin; the head bone is at the
-           base of the skull, her brow 11 cm over it and 8 forward) */
-        if (c > CL.ash - 0.6 && c < CL.ash + 1.8) { const h = HER_HEAD(); handTo(P, 'R', [h[0] - 0.02, h[1] + 0.05, h[2] + 0.08], [0, 0, -1], [0, 0.3, -1], smo(c01((c - CL.ash + 0.6) / 0.6)) * (1 - smo(c01((c - CL.ash - 1.2) / 0.6))), { out: 0.25, down: 0.35 }); } });
+        /* (the ash on her FOREHEAD, her daughter's fingers drawn across her brow from her right side: 18 Nov, photographed
+           twice at her chin, the palm put before her face with the fingers back at it left the wrist 0.14 m short at full
+           reach, 7 cm low; from the side the wrist is 0.11 m nearer her daughter. The head bone is the skull's base: the
+           brow 11 cm over it and 9 forward) */
+        if (c > CL.ash - 0.6 && c < CL.ash + 1.8) { const h = HER_HEAD(); handTo(P, 'R', [h[0] - 0.03, h[1] + 0.05, h[2] + 0.09], [1, 0, 0], [0, 0, -1], smo(c01((c - CL.ash + 0.6) / 0.6)) * (1 - smo(c01((c - CL.ash - 1.2) / 0.6))), { out: 0.25, down: 0.35 }); } });
       /* (Ravi turns his head to his teacher as he is spoken to: a neck's reach, his body still turned to her) */
       whenReady(cast.ravi, (P) => { put(P, RAVI_C.x, RAVI_C.z, faceTo(RAVI_C.x, RAVI_C.z, STAND.x, STAND.z)); pose(P, 'kneelhold', pingOf(c, 2.6, 0.8, 6.0));
         const h = HER_HEAD(), ph = cast.phoB.home, k = smo(c01((c - CL.z1 + 0.9) / 0.9));
@@ -5046,7 +5051,7 @@
   const CL = { z0: 0.6, go: 2.0, steps: 11.6, slow: 12.0, ash: 15.0, palms: 17.2, thank: 17.3, bell: 18.7, shut: 20.2, fam: 21.3, z1: 23.0, black: 30.4, end: 32.6 };
   /* each ending's clock: its lines and beats, and where its close begins */
   const EN = {
-    A: { grab: 0.0, rv: 0.3, cry: 0.9, scream: 2.95, torn: 6.1, white: 6.3, open: 7.6, rise: 9.0, call: 10.7, still: 12.5, go: 14.2, rv2: 14.5, ph: 17.4, q: 24.2, close: 28.2 },
+    A: { grab: 0.0, rv: 0.3, cry: 0.9, scream: 2.95, torn: 6.1, white: 6.3, open: 7.6, rise: 9.0, call: 12.6, still: 13.2, go: 14.4, rv2: 14.7, ph: 17.4, q: 24.2, close: 28.2 },
     B: { throw: 0.15, splash: 0.55, comes: 0.9, white: 2.3, floor: 2.55, go: 3.3, push: 3.3, falter: 3.5, ml2: 4.0, back: 5.6, cry: 6.2, torn: 9.6, white2: 9.8, open: 11.4, rise: 12.0, ok: 16.0, ph: 17.6, q: 24.6, close: 28.4 },
     C: { step: 0.0, say: 0.7, kneel: 5.4, mala: 6.4, rv: 7.3, cry: 8.6, torn: 12.2, white: 12.4, open: 13.8, look: 14.6, my: 14.9, rise: 15.4, ph: 21.0, q: 26.8, close: 30.9 },
     D: { shut: 0.2, reach: 1.0, ph0: 1.9, kneel: 4.6, rv: 4.7, cry: 7.8, torn: 11.2, white: 11.4, open: 12.8, rise: 13.6, ml: 14.8, ph: 19.4, q: 28.8, close: 33.4 }
