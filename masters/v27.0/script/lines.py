@@ -44,20 +44,38 @@ LINES = [
     ('ml4t2', 'mala', 'film: the trance', "It's Amman."),
     ('rv4t1', 'ravi', 'film: the trance', "Stop it! You're hurting her!"),
     # ---- the four endings (§4.5)
+    #      (each ending's family, between its words and his teacher's: the plan's "Ravi fights him, shouting for his
+    #       mother; Mala screams at them both", and in each the people the student's choice touched, heard; 18 Nov, from
+    #       the static scan of the four: 13 to 17 s in each with nobody speaking)
+    ('rv4A1', 'ravi', 'ending A', "Let go of me! Amma! Amma!"),
+    ('ml4A1', 'mala', 'ending A', "Stop it! Both of you, stop!"),
+    ('am4A1', 'amma', 'ending A', "Ravi?"),
+    ('rv4A2', 'ravi', 'ending A', "Amma..."),
     ('ph4A1', 'pho', 'ending A', "You kept the blessing. You forgot the son. His fear was only love."),
     ('q4A1', 'he', 'ending A', "I saw a man in the way. He was her son."),
+    ('ml4B1', 'mala', 'ending B', "What are you doing?"),
     ('ph4B0', 'pho', 'ending B', "Go."),
+    ('ml4B2', 'mala', 'ending B', "Amma!"),
+    ('ml4B3', 'mala', 'ending B', "Are you alright?"),
     ('ph4B1', 'pho', 'ending B', "Your part was the water and the room. The work was mine. Today you were lucky."),
     ('q4B1', 'he', 'ending B', "I saw it, and thought it was mine to fight."),
     ('q4C0', 'he', 'ending C', "She's not being hurt. It's leaving her. Stay with her. Hold her hand."),
+    ('rv4C1', 'ravi', 'ending C', "I'm here, Amma. I'm right here."),
+    ('am4C1', 'amma', 'ending C', "My boy."),
     ('ph4C1', 'pho', 'ending C', "You saw what was there, and you told him only what you knew. Nothing more."),
     ('q4C1', 'he', 'ending C', "I didn't promise him anything. I told him what I saw."),
     ('ph4D0', 'pho', 'ending D', "Ravi. Hold her hand."),
+    ('rv4D1', 'ravi', 'ending D', "Okay. Okay. I've got you, Amma."),
+    ('ml4D1', 'mala', 'ending D', "Amma... you're standing."),
     ('ph4D1', 'pho', 'ending D', "You held. That is where it starts. But there were two of them afraid in this room, and you are the one who could see."),
     ('q4D1', 'he', 'ending D', "I kept to my part. Next time I'll see the people too."),
     # ---- the close, every ending: the dedication of merit SPOKEN (A Chanting Guide's own words, the anumodana-bearing
     #      ones left out: R-V B15, B16), and the case file's own caution (§4.5)
     ('ph4z0', 'pho', 'the close', "May all beings, without limit, without end, have a share in the merit just now made: those I have seen, and those I have never seen."),
+    #      (her own words at her altar, to her goddess, as she joins her palms by the lamp she has lit: hers, and the
+    #       only thanks the night is given; the goddess she served is Kali Amman, "mother", §2.4)
+    ('ml4z1', 'mala', 'the close', "Slowly, Amma. Slowly."),
+    ('am4z1', 'amma', 'the close', "Thank you, Mother."),
     ('ph4z1', 'pho', 'the close', "Keep seeing her doctors. What happened tonight is what happened tonight. It is not a promise."),
     # ---- the four lines under the outcome cards: his own terse first-person reflections (v4.91), never the card read
     ('q4A', 'he', 'card A', "I held her son back. His fear was only love."),

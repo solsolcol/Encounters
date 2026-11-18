@@ -196,6 +196,34 @@
   "prompt": "[panicked] Stop it! You're hurting her!"
  },
  {
+  "key": "rv4A1",
+  "speaker": "ravi",
+  "voice_id": "mnlHLlgagNmPlvf52KvT",
+  "takes": 2,
+  "prompt": "[panicked] Let go of me! Amma! Amma!"
+ },
+ {
+  "key": "ml4A1",
+  "speaker": "mala",
+  "voice_id": "PIuCDYHMakaExG7GFyLU",
+  "takes": 2,
+  "prompt": "[frantic] Stop it! Both of you, stop!"
+ },
+ {
+  "key": "am4A1",
+  "speaker": "amma",
+  "voice_id": "cyzr0852QKE5DHnjiRWw",
+  "takes": 3,
+  "prompt": "[confused] Ravi?"
+ },
+ {
+  "key": "rv4A2",
+  "speaker": "ravi",
+  "voice_id": "mnlHLlgagNmPlvf52KvT",
+  "takes": 2,
+  "prompt": "[tearful] Amma..."
+ },
+ {
   "key": "ph4A1",
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
@@ -210,11 +238,32 @@
   "prompt": "[ashamed] I saw a man in the way. He was her son."
  },
  {
+  "key": "ml4B1",
+  "speaker": "mala",
+  "voice_id": "PIuCDYHMakaExG7GFyLU",
+  "takes": 2,
+  "prompt": "[shocked] What are you doing?"
+ },
+ {
   "key": "ph4B0",
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
   "prompt": "[firm] Go."
+ },
+ {
+  "key": "ml4B2",
+  "speaker": "mala",
+  "voice_id": "PIuCDYHMakaExG7GFyLU",
+  "takes": 2,
+  "prompt": "[frightened] Amma!"
+ },
+ {
+  "key": "ml4B3",
+  "speaker": "mala",
+  "voice_id": "PIuCDYHMakaExG7GFyLU",
+  "takes": 2,
+  "prompt": "[concerned] Are you alright?"
  },
  {
   "key": "ph4B1",
@@ -238,6 +287,20 @@
   "prompt": "[gentle] She's not being hurt. It's leaving her. Stay with her. Hold her hand."
  },
  {
+  "key": "rv4C1",
+  "speaker": "ravi",
+  "voice_id": "mnlHLlgagNmPlvf52KvT",
+  "takes": 2,
+  "prompt": "[tearful] I'm here, Amma. I'm right here."
+ },
+ {
+  "key": "am4C1",
+  "speaker": "amma",
+  "voice_id": "cyzr0852QKE5DHnjiRWw",
+  "takes": 3,
+  "prompt": "[tender] My boy."
+ },
+ {
   "key": "ph4C1",
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
@@ -259,6 +322,20 @@
   "prompt": "[calm] Ravi. Hold her hand."
  },
  {
+  "key": "rv4D1",
+  "speaker": "ravi",
+  "voice_id": "mnlHLlgagNmPlvf52KvT",
+  "takes": 2,
+  "prompt": "[nervous] Okay. Okay. I've got you, Amma."
+ },
+ {
+  "key": "ml4D1",
+  "speaker": "mala",
+  "voice_id": "PIuCDYHMakaExG7GFyLU",
+  "takes": 2,
+  "prompt": "[awed] Amma... you're standing."
+ },
+ {
   "key": "ph4D1",
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
@@ -278,6 +355,20 @@
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
   "prompt": "[calm] May all beings, without limit, without end, have a share in the merit just now made: those I have seen, and those I have never seen."
+ },
+ {
+  "key": "ml4z1",
+  "speaker": "mala",
+  "voice_id": "PIuCDYHMakaExG7GFyLU",
+  "takes": 2,
+  "prompt": "[tearful] Slowly, Amma. Slowly."
+ },
+ {
+  "key": "am4z1",
+  "speaker": "amma",
+  "voice_id": "cyzr0852QKE5DHnjiRWw",
+  "takes": 3,
+  "prompt": "[grateful] Thank you, Mother."
  },
  {
   "key": "ph4z1",

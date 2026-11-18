@@ -70,21 +70,23 @@
      moves what follows it. The names are QUOTED on purpose: build.py gives a sound to a chapter's own pack only when
      the chapter names it in quotes (v21.1). Written by masters/v27.0/script/secs.py from masters/v27.0/script/lines.py. */
   /* SECS BEGIN */
-  const SECS = {      // 45 of 45 MEASURED from their takes; the rest estimated at the speaker's pace
+  const SECS = {      // 58 of 58 MEASURED from their takes; the rest estimated at the speaker's pace
     /* him */
     'q4o1': 6.65, 'q4o2': 4.73, 'q4h1': 3.61, 'q4h2': 3.53, 'q4h3': 9.77, 'q4s1': 4.01, 'q4s2': 3.05, 'q4s3': 4.09,
     'q4A1': 3.53, 'q4B1': 3.21, 'q4C0': 6.41, 'q4C1': 3.69, 'q4D1': 4.25, 'q4A': 4.25, 'q4B': 3.29, 'q4C': 3.85,
     'q4D': 4.65,
     /* Ravi */
-    'rv4o1': 2.6, 'rv4h1': 8.33, 'rv4h2': 6.73, 'rv4t1': 1.77,
+    'rv4o1': 2.6, 'rv4h1': 8.33, 'rv4h2': 6.73, 'rv4t1': 1.77, 'rv4A1': 2.51, 'rv4A2': 0.61, 'rv4C1': 2.58,
+    'rv4D1': 2.98,
     /* Grandmaster Pho */
     'ph4h0': 6.81, 'ph4h1': 3.13, 'ph4s0': 7.14, 'ph4s1': 0.65, 'ph4s2': 6.17, 'ph4s3': 8.45, 'ph4s4': 6.65,
     'ph4b0': 4.86, 'ph4b1': 2.06, 'ph4b2': 2.65, 'ph4A1': 6.25, 'ph4B0': 0.62, 'ph4B1': 6.41, 'ph4C1': 5.13,
     'ph4D0': 2.24, 'ph4D1': 8.61, 'ph4z0': 10.56, 'ph4z1': 6.63,
     /* Mala */
-    'ml4h1': 14.65, 'ml4h2': 9.61, 'ml4h3': 7.61, 'ml4t1': 1.13, 'ml4t2': 1.45,
+    'ml4h1': 14.65, 'ml4h2': 9.61, 'ml4h3': 7.61, 'ml4t1': 1.13, 'ml4t2': 1.45, 'ml4A1': 2.27, 'ml4B1': 1.62,
+    'ml4B2': 1.01, 'ml4B3': 1.38, 'ml4D1': 1.93, 'ml4z1': 2.56,
     /* Amma */
-    'am4h1': 1.81
+    'am4h1': 1.81, 'am4A1': 0.72, 'am4C1': 1.25, 'am4z1': 1.18
   };
   /* SECS END */
 
@@ -3942,9 +3944,10 @@
        helper, which the engine's own reading of a scene cannot see) */
     function openDecision() {
       decOpen = true;
-      if (warmSounds) warmSounds(['u4scuffle', 'u4cry', 'u4gaspf', 'u4torn', 'u4endA', 'u4stand', 'ph4A1', 'q4A1', 'u4flick', 'u4patter', 'u4dip',
-                      'u4chill', 'u4heart', 'u4fall', 'ph4B0', 'u4endB', 'ph4B1', 'q4B1', 'u4tile', 'q4C0', 'u4tile2', 'u4endC', 'ph4C1', 'q4C1',
-                      'u4visoff', 'ph4D0', 'u4endD', 'ph4D1', 'q4D1', 'u4closemus', 'ph4z0', 'u4release', 'u4steps', 'u4bell', 'ph4z1']);
+      if (warmSounds) warmSounds(['u4scuffle', 'rv4A1', 'u4cry', 'ml4A1', 'u4torn', 'u4endA', 'u4stand', 'am4A1', 'rv4A2', 'ph4A1', 'q4A1',
+                      'u4flick', 'u4patter', 'u4dip', 'ml4B1', 'u4chill', 'u4heart', 'u4fall', 'ph4B0', 'ml4B2', 'u4endB', 'ml4B3', 'ph4B1', 'q4B1',
+                      'u4tile', 'q4C0', 'u4tile2', 'rv4C1', 'u4endC', 'am4C1', 'ph4C1', 'q4C1', 'u4visoff', 'ph4D0', 'rv4D1', 'u4endD', 'ml4D1',
+                      'ph4D1', 'q4D1', 'u4closemus', 'ph4z0', 'u4release', 'u4steps', 'ml4z1', 'am4z1', 'u4bell', 'ph4z1']);
       if (getState() === 'play') startDecision();
     }
     function keptBegin() { blessStage(); lampLit(true); roomDark(true); setPhase('kept', { complete: false }); const run = play.run; after(1.0, () => { if (live(run)) trance(); }); }
@@ -4493,7 +4496,13 @@
          one moment it takes ("Go."); her trance falters; his hands return; the cry rises again and it is forced away.
          She opens her eyes and stands; he is on the floor. His teacher; his own thought */
       B(t, E) {
-        ammaRise(t, E.rise); if (t < E.rise) ammaTrance(t);
+        const B_FLOOR = [S_EYE[0] + 0.1, 0.45, S_EYE[2] + 0.2];        // his eyes, on the floor
+        ammaRise(t, E.rise);
+        /* her trance falters while his hand is off her head (Mala's "Amma!"): her raised hands sink and her body gives
+           toward her chair's rest, and comes back up as his hand returns */
+        if (t < E.rise) { const f = smo(c01((t - E.falter) / 0.5)) * (1 - smo(c01((t - E.back) / 0.9)));
+          if (f > 0.001) whenReady(cast.amma, (P) => { put(P, CHAIR.x, CHAIR.z, CHAIR.ry); pose(P, 'trance', pingOf(t, 8.2, 1.5, 3.2), false, 'wsit', 0.7 * f, 2.8); });
+          else ammaTrance(t); }
         const off = t >= E.push && t < E.back;
         phoBless(t, off ? 1 - smo(c01((t - E.push) / 0.25)) : (t < E.push ? 1 : smo(c01((t - E.back) / 0.4))) * (1 - smo(c01((t - E.rise + 0.4) / 0.8))));
         /* the thing: off her back and at him (from her shoulder to a hand's breadth from his eyes), then back on her
@@ -4517,7 +4526,11 @@
           if (P.fx) P.fx.set('uAlpha', t < E.torn ? 1 : 1 - smo(c01((t - E.torn - 0.3) / 0.9))); });
         goddess(t < E.falter ? 1 : t < E.back ? 0.35 : t < E.torn ? lp(0.35, 1, smo(c01((t - E.back) / 1.2))) : 1 - smo(c01((t - E.torn) / 1.5)));
         whenReady(cast.ravi, (P) => { const tk = 2.45 + 0.1 * Math.sin(t); rushAt(P, tk); pose(P, 'rush', tk); lookNow(P, AMMA_FACE, 1, 0.9); });
-        whenReady(cast.mala, (P) => { if (t < E.splash) pose(P, 'lightlamp', 5.4); else pose(P, 'scream', Math.min(3.9, (t - E.splash) * 0.8)); lookNow(P, AMMA_FACE, 0.8, 0.9); });
+        /* Mala: crying out as the water hits her mother ("What are you doing?"), and at the falter ("Amma!"); her scream
+           let go once her mother is up, and her eyes down to him on the floor ("Are you alright?") */
+        whenReady(cast.mala, (P) => { if (t < E.splash) pose(P, 'lightlamp', 5.4);
+          else { const r = smo(c01((t - E.rise - 1.2) / 1.4)); pose(P, 'scream', Math.min(3.9, (t - E.splash) * 0.8), false, 'Idle_3', r, 3 + t * 0.35); }
+          lookNow(P, lp3(AMMA_FACE, B_FLOOR, smo(c01((t - E.ok + 0.5) / 0.6))), 0.8, 0.9); });
         visionAt(t, -1, 0.1);
         /* THE LENS: the throw (a lurch at her); the thing filling his eyes; white; his teacher's push seen through the
            white; then he is on the floor, looking up at her standing, and at his teacher */
@@ -4987,13 +5000,13 @@
   const TR = { ml1: 2.6, ml2: 5.7, open: 7.6, claw: 7.6, cry: 10.6, rush: 12.7, rv: 13.05, back: 15.2, end: 17.6 };
   /* the close's own clock, from its start: Pho's dedication; the green shapes go; she rises (if she has not), walks;
      the ash; her palms; his sight closing; Pho's word; black */
-  const CL = { z0: 0.6, go: 2.0, steps: 11.6, ash: 15.0, palms: 17.2, bell: 18.4, shut: 20.2, z1: 21.6, black: 29.0, end: 31.2 };
+  const CL = { z0: 0.6, go: 2.0, steps: 11.6, slow: 12.0, ash: 15.0, palms: 17.2, thank: 17.3, bell: 18.7, shut: 20.2, z1: 21.6, black: 29.0, end: 31.2 };
   /* each ending's clock: its lines and beats, and where its close begins */
   const EN = {
-    A: { grab: 0.0, cry: 0.9, scream: 1.6, torn: 6.1, white: 6.3, open: 7.6, rise: 9.0, still: 12.5, go: 14.2, ph: 17.4, q: 24.2, close: 28.2 },
-    B: { throw: 0.15, splash: 0.55, comes: 0.9, white: 2.3, floor: 2.55, go: 3.3, push: 3.3, falter: 3.5, back: 5.6, cry: 6.2, torn: 9.6, white2: 9.8, open: 11.4, rise: 12.0, ph: 17.6, q: 24.6, close: 28.4 },
-    C: { step: 0.0, say: 0.7, kneel: 5.4, mala: 6.4, cry: 8.6, torn: 12.2, white: 12.4, open: 13.8, look: 14.6, rise: 15.4, ph: 21.0, q: 26.8, close: 30.9 },
-    D: { shut: 0.2, reach: 1.0, ph0: 1.9, kneel: 4.6, cry: 7.8, torn: 11.2, white: 11.4, open: 12.8, rise: 13.6, ph: 19.4, q: 28.8, close: 33.4 }
+    A: { grab: 0.0, rv: 0.3, cry: 0.9, scream: 2.95, torn: 6.1, white: 6.3, open: 7.6, rise: 9.0, call: 10.7, still: 12.5, go: 14.2, rv2: 14.5, ph: 17.4, q: 24.2, close: 28.2 },
+    B: { throw: 0.15, splash: 0.55, comes: 0.9, white: 2.3, floor: 2.55, go: 3.3, push: 3.3, falter: 3.5, ml2: 4.0, back: 5.6, cry: 6.2, torn: 9.6, white2: 9.8, open: 11.4, rise: 12.0, ok: 16.0, ph: 17.6, q: 24.6, close: 28.4 },
+    C: { step: 0.0, say: 0.7, kneel: 5.4, mala: 6.4, rv: 7.3, cry: 8.6, torn: 12.2, white: 12.4, open: 13.8, look: 14.6, my: 14.9, rise: 15.4, ph: 21.0, q: 26.8, close: 30.9 },
+    D: { shut: 0.2, reach: 1.0, ph0: 1.9, kneel: 4.6, rv: 4.7, cry: 7.8, torn: 11.2, white: 11.4, open: 12.8, rise: 13.6, ml: 14.8, ph: 19.4, q: 28.8, close: 33.4 }
   };
 
   /* THE OPENING FILM's clock (c_ufilm.js FILMS.open draws to it) */
@@ -5056,6 +5069,8 @@
     sfx(t0 + C.z0, 'ph4z0', 1);                         // "May all beings, without limit, without end, have a share in the merit just now made..."
     sfx(t0 + C.go, 'u4release', 0.45); sfx(t0 + C.go + 1.5, 'u4release', 0.35);
     sfx(t0 + C.steps + 0.1, 'u4steps', 0.75);           // her first steps, to her altar
+    sfx(t0 + C.slow, 'ml4z1', 1);                       // her daughter beside her: "Slowly, Amma. Slowly."
+    sfx(t0 + C.thank, 'am4z1', 1);                      // her palms joined at her lamp: "Thank you, Mother."
     sfx(t0 + C.bell, 'u4bell', 0.55);                   // at her altar
     if (k !== 'D') sfx(t0 + C.shut, 'u4visoff', 0.8);  // his sight closing: the wave home to him
     sfx(t0 + C.z1, 'ph4z1', 1);                         // "Keep seeing her doctors. What happened tonight is what happened tonight. It is not a promise."
@@ -5068,12 +5083,15 @@
   /* A · GRAB HIM AND HOLD HIM BACK (worst) */
   function scHold(c, s, api) { endingScene(c, s, api, 'A', (E, a) => {
     a.sfx(0.05, 'u4scuffle', 0.85);                     // his arms round him; Ravi fighting toward his mother
+    a.sfx(E.rv, 'rv4A1', 1);                            // "Let go of me! Amma! Amma!"
     a.sfx(E.cry, 'u4cry', 0.85);                        // the cry peaks
-    a.sfx(E.scream, 'u4gaspf', 0.9);                    // Mala, at them both
+    a.sfx(E.scream, 'ml4A1', 1);                        // Mala, at them both: "Stop it! Both of you, stop!"
     a.sfx(E.torn - 0.1, 'u4torn', 0.85);                // torn from her
     flash(a, E.white); a.sfxFade(E.white, E.white + 1.2, 'u4cry');
     a.sfx(E.open - 0.4, 'u4endA', 0.5);
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);               // she stands, and her son is not beside her
+    a.sfx(E.call, 'am4A1', 1);                          // she looks back for him: "Ravi?"
+    a.sfx(E.rv2, 'rv4A2', 1);                           // let go, he goes to her: "Amma..."
     a.sfx(E.ph, 'ph4A1', 1);                            // "You kept the blessing. You forgot the son. His fear was only love."
     a.sfx(E.q, 'q4A1', 1);                              // "I saw a man in the way. He was her son."
     a.sfxFade(E.close - 2.0, E.close + 0.5, 'u4endA');
@@ -5081,15 +5099,18 @@
   /* B · THROW THE WATER AT THE THING ON HER BACK (bad) */
   function scThrow(c, s, api) { endingScene(c, s, api, 'B', (E, a) => {
     a.sfx(E.throw, 'u4flick', 1); a.sfx(E.splash, 'u4patter', 1); a.sfx(E.splash + 0.08, 'u4dip', 0.6);   // the whole bowl
+    a.sfx(E.splash, 'ml4B1', 1);                        // Mala, the water on her mother: "What are you doing?"
     a.sfx(E.comes, 'u4chill', 0.95);                    // it lets go of her and comes at him
     a.sfx(E.comes + 0.35, 'u4heart', 0.9); a.sfx(E.comes + 0.95, 'u4heart', 0.7);   // his heart, and then it stalls
     flash(a, E.white, 1.4); a.sfx(E.floor + 0.15, 'u4fall', 0.85);               // white; he is on the floor
     a.sfx(E.go, 'ph4B0', 1);                            // "Go."
+    a.sfx(E.ml2, 'ml4B2', 1);                           // his hand off her head, her trance falters: "Amma!"
     a.sfx(E.cry, 'u4cry', 0.85);                        // the cry rises again
     a.sfx(E.torn - 0.1, 'u4torn', 0.85);
     flash(a, E.white2); a.sfxFade(E.white2, E.white2 + 1.1, 'u4cry');
     a.sfx(E.open - 0.6, 'u4endB', 0.5);
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);
+    a.sfx(E.ok, 'ml4B3', 1);                            // Mala, down to him on the floor: "Are you alright?"
     a.sfx(E.ph, 'ph4B1', 1);                            // "Your part was the water and the room. The work was mine. Today you were lucky."
     a.sfx(E.q, 'q4B1', 1);                              // "I saw it, and thought it was mine to fight."
     a.sfxFade(E.close - 2.0, E.close + 0.5, 'u4endB');
@@ -5099,10 +5120,12 @@
     a.sfx(0.05, 'u4tile', 0.6);                         // he steps between them
     a.sfx(E.say, 'q4C0', 1);                            // "She's not being hurt. It's leaving her. Stay with her. Hold her hand."
     a.sfx(E.kneel + 0.5, 'u4tile2', 0.5);               // Ravi kneels by her
+    a.sfx(E.rv, 'rv4C1', 1);                            // her hand in his: "I'm here, Amma. I'm right here."
     a.sfx(E.cry, 'u4cry', 0.85);
     a.sfx(E.torn - 0.1, 'u4torn', 0.85);
     flash(a, E.white); a.sfxFade(E.white, E.white + 1.2, 'u4cry');
     a.sfx(E.open - 0.8, 'u4endC', 0.5);
+    a.sfx(E.my, 'am4C1', 1);                            // her eyes open on her son: "My boy."
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);               // she stands, holding his hand
     a.sfx(E.ph, 'ph4C1', 1);                            // "You saw what was there, and you told him only what you knew. Nothing more."
     a.sfx(E.q, 'q4C1', 1);                              // "I didn't promise him anything. I told him what I saw."
@@ -5113,11 +5136,13 @@
     a.sfx(E.shut, 'u4visoff', 0.85);                    // his sight shut: the wave home to him
     a.sfx(E.ph0, 'ph4D0', 1);                           // "Ravi. Hold her hand."
     a.sfx(E.kneel + 0.5, 'u4tile2', 0.5);
+    a.sfx(E.rv, 'rv4D1', 1);                            // he does: "Okay. Okay. I've got you, Amma."
     a.sfx(E.cry, 'u4cry', 0.55);                        // heard, not seen: his sight is shut
     a.sfx(E.torn - 0.1, 'u4torn', 0.65);
     flash(a, E.white, 1.2, 0.75); a.sfxFade(E.white, E.white + 1.2, 'u4cry');
     a.sfx(E.open - 0.8, 'u4endD', 0.5);
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);
+    a.sfx(E.ml, 'ml4D1', 1);                            // Mala, at the lamp: "Amma... you're standing."
     a.sfx(E.ph, 'ph4D1', 1);                            // "You held. That is where it starts. But there were two of them afraid in this room..."
     a.sfx(E.q, 'q4D1', 1);                              // "I kept to my part. Next time I'll see the people too."
     a.sfxFade(E.close - 2.0, E.close + 0.5, 'u4endD');

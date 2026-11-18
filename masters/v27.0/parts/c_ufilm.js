@@ -305,7 +305,13 @@
          one moment it takes ("Go."); her trance falters; his hands return; the cry rises again and it is forced away.
          She opens her eyes and stands; he is on the floor. His teacher; his own thought */
       B(t, E) {
-        ammaRise(t, E.rise); if (t < E.rise) ammaTrance(t);
+        const B_FLOOR = [S_EYE[0] + 0.1, 0.45, S_EYE[2] + 0.2];        // his eyes, on the floor
+        ammaRise(t, E.rise);
+        /* her trance falters while his hand is off her head (Mala's "Amma!"): her raised hands sink and her body gives
+           toward her chair's rest, and comes back up as his hand returns */
+        if (t < E.rise) { const f = smo(c01((t - E.falter) / 0.5)) * (1 - smo(c01((t - E.back) / 0.9)));
+          if (f > 0.001) whenReady(cast.amma, (P) => { put(P, CHAIR.x, CHAIR.z, CHAIR.ry); pose(P, 'trance', pingOf(t, 8.2, 1.5, 3.2), false, 'wsit', 0.7 * f, 2.8); });
+          else ammaTrance(t); }
         const off = t >= E.push && t < E.back;
         phoBless(t, off ? 1 - smo(c01((t - E.push) / 0.25)) : (t < E.push ? 1 : smo(c01((t - E.back) / 0.4))) * (1 - smo(c01((t - E.rise + 0.4) / 0.8))));
         /* the thing: off her back and at him (from her shoulder to a hand's breadth from his eyes), then back on her
@@ -329,7 +335,11 @@
           if (P.fx) P.fx.set('uAlpha', t < E.torn ? 1 : 1 - smo(c01((t - E.torn - 0.3) / 0.9))); });
         goddess(t < E.falter ? 1 : t < E.back ? 0.35 : t < E.torn ? lp(0.35, 1, smo(c01((t - E.back) / 1.2))) : 1 - smo(c01((t - E.torn) / 1.5)));
         whenReady(cast.ravi, (P) => { const tk = 2.45 + 0.1 * Math.sin(t); rushAt(P, tk); pose(P, 'rush', tk); lookNow(P, AMMA_FACE, 1, 0.9); });
-        whenReady(cast.mala, (P) => { if (t < E.splash) pose(P, 'lightlamp', 5.4); else pose(P, 'scream', Math.min(3.9, (t - E.splash) * 0.8)); lookNow(P, AMMA_FACE, 0.8, 0.9); });
+        /* Mala: crying out as the water hits her mother ("What are you doing?"), and at the falter ("Amma!"); her scream
+           let go once her mother is up, and her eyes down to him on the floor ("Are you alright?") */
+        whenReady(cast.mala, (P) => { if (t < E.splash) pose(P, 'lightlamp', 5.4);
+          else { const r = smo(c01((t - E.rise - 1.2) / 1.4)); pose(P, 'scream', Math.min(3.9, (t - E.splash) * 0.8), false, 'Idle_3', r, 3 + t * 0.35); }
+          lookNow(P, lp3(AMMA_FACE, B_FLOOR, smo(c01((t - E.ok + 0.5) / 0.6))), 0.8, 0.9); });
         visionAt(t, -1, 0.1);
         /* THE LENS: the throw (a lurch at her); the thing filling his eyes; white; his teacher's push seen through the
            white; then he is on the floor, looking up at her standing, and at his teacher */

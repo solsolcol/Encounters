@@ -26,8 +26,11 @@ TAGS = {
     # the four endings
     'ph4A1': 'serious', 'q4A1': 'ashamed', 'ph4B0': 'firm', 'ph4B1': 'serious', 'q4B1': 'ashamed',
     'q4C0': 'gentle', 'ph4C1': 'warm', 'q4C1': 'quiet', 'ph4D0': 'calm', 'ph4D1': 'warm', 'q4D1': 'reflective',
+    # the family in the four endings: Ravi fighting to her, then reaching her; Mala at the room; their mother waking
+    'rv4A1': 'panicked', 'ml4A1': 'frantic', 'am4A1': 'confused', 'rv4A2': 'tearful', 'ml4B1': 'shocked',
+    'ml4B2': 'frightened', 'ml4B3': 'concerned', 'rv4C1': 'tearful', 'am4C1': 'tender', 'rv4D1': 'nervous', 'ml4D1': 'awed',
     # the close
-    'ph4z0': 'calm', 'ph4z1': 'serious',
+    'ph4z0': 'calm', 'ml4z1': 'tearful', 'am4z1': 'grateful', 'ph4z1': 'serious',
     # the outcome cards' lines
     'q4A': 'ashamed', 'q4B': 'ashamed', 'q4C': 'quiet', 'q4D': 'reflective',
 }

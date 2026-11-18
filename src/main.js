@@ -10080,7 +10080,9 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   /* E4C4 CAST BEGIN: v27.0, episode 4 chapter 4: Grandmaster Pho, Amma, Ravi, Mala (masters/v27.0/voices/registry.py) */
   'rv4o1', 'ph4h0', 'rv4h1', 'rv4h2', 'ml4h1', 'ml4h2', 'ml4h3', 'am4h1', 'ph4h1', 'ph4s0',
   'ph4s1', 'ph4s2', 'ph4s3', 'ph4s4', 'ph4b0', 'ph4b1', 'ph4b2', 'ml4t1', 'ml4t2', 'rv4t1',
-  'ph4A1', 'ph4B0', 'ph4B1', 'ph4C1', 'ph4D0', 'ph4D1', 'ph4z0', 'ph4z1',
+  'rv4A1', 'ml4A1', 'am4A1', 'rv4A2', 'ph4A1', 'ml4B1', 'ph4B0', 'ml4B2', 'ml4B3', 'ph4B1',
+  'rv4C1', 'am4C1', 'ph4C1', 'ph4D0', 'rv4D1', 'ml4D1', 'ph4D1', 'ph4z0', 'ml4z1', 'am4z1',
+  'ph4z1',
   /* E4C4 CAST END */]);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
@@ -14561,28 +14563,32 @@ const STING_SAMPLE = {
   q4h2: ['q4h2', 1], am4h1: ['am4h1', 1], q4h3: ['q4h3', 1], ph4h1: ['ph4h1', 1], ph4s0: ['ph4s0', 1],
   q4s1: ['q4s1', 1], q4s2: ['q4s2', 1], q4s3: ['q4s3', 1], ph4s1: ['ph4s1', 1], ph4s2: ['ph4s2', 1],
   ph4s3: ['ph4s3', 1], ph4s4: ['ph4s4', 1], ph4b0: ['ph4b0', 1], ph4b1: ['ph4b1', 1], ph4b2: ['ph4b2', 1],
-  ml4t1: ['ml4t1', 1], ml4t2: ['ml4t2', 1], rv4t1: ['rv4t1', 1], ph4A1: ['ph4A1', 1], q4A1: ['q4A1', 1],
-  ph4B0: ['ph4B0', 1], ph4B1: ['ph4B1', 1], q4B1: ['q4B1', 1], q4C0: ['q4C0', 1], ph4C1: ['ph4C1', 1],
-  q4C1: ['q4C1', 1], ph4D0: ['ph4D0', 1], ph4D1: ['ph4D1', 1], q4D1: ['q4D1', 1], ph4z0: ['ph4z0', 1],
-  ph4z1: ['ph4z1', 1], q4A: ['q4A', 1], q4B: ['q4B', 1], q4C: ['q4C', 1], q4D: ['q4D', 1],
-  /* v27.0 · its effects, beds and music (masters/v27.0/sound.sh: every pick and why) */
-  u4bell: ['u4bell', 1], u4breath: ['u4breath', 1], u4chill: ['u4chill', 1], u4closemus: ['u4closemus', 1],
-  u4corridor: ['u4corridor', 1], u4cry: ['u4cry', 1], u4dark: ['u4dark', 1], u4dip: ['u4dip', 1],
-  u4doorease: ['u4doorease', 1], u4endA: ['u4endA', 1], u4endB: ['u4endB', 1], u4endC: ['u4endC', 1],
-  u4endD: ['u4endD', 1], u4estate: ['u4estate', 1], u4fall: ['u4fall', 1], u4fanslow: ['u4fanslow', 1],
-  u4fanstop: ['u4fanstop', 1], u4fightmus: ['u4fightmus', 1], u4flatbed: ['u4flatbed', 1], u4flick: ['u4flick', 1],
-  u4fog: ['u4fog', 1], u4gaspf: ['u4gaspf', 1], u4gaspm: ['u4gaspm', 1], u4gate: ['u4gate', 1],
-  u4heart: ['u4heart', 1], u4histmus: ['u4histmus', 1], u4husband: ['u4husband', 1], u4large: ['u4large', 1],
-  u4lift: ['u4lift', 1], u4liftdoor: ['u4liftdoor', 1], u4match: ['u4match', 1], u4openmus: ['u4openmus', 1],
-  u4os1: ['u4os1', 1], u4os2: ['u4os2', 1], u4os3: ['u4os3', 1], u4os4: ['u4os4', 1], u4os5: ['u4os5', 1],
-  u4os6: ['u4os6', 1], u4patter: ['u4patter', 1], u4release: ['u4release', 1], u4sandals: ['u4sandals', 1],
-  u4scuffle: ['u4scuffle', 1], u4stand: ['u4stand', 1], u4steps: ['u4steps', 1], u4sting: ['u4sting', 1],
-  u4tile: ['u4tile', 1], u4tile2: ['u4tile2', 1], u4torn: ['u4torn', 1], u4trancemus: ['u4trancemus', 1],
-  u4tubedie: ['u4tubedie', 1], u4tubetick: ['u4tubetick', 1], u4tvdie: ['u4tvdie', 1], u4visbed: ['u4visbed', 1],
-  u4vismus: ['u4vismus', 1], u4visoff: ['u4visoff', 1], u4vison: ['u4vison', 1], u4whisper: ['u4whisper', 1],
-  /* v27.0 · its effects, beds and music (masters/v27.0/sound.sh: every pick and why) */
-  u4chant1: ['u4chant1', 1], u4chant2: ['u4chant2', 1],
+  ml4t1: ['ml4t1', 1], ml4t2: ['ml4t2', 1], rv4t1: ['rv4t1', 1], rv4A1: ['rv4A1', 1], ml4A1: ['ml4A1', 1],
+  am4A1: ['am4A1', 1], rv4A2: ['rv4A2', 1], ph4A1: ['ph4A1', 1], q4A1: ['q4A1', 1], ml4B1: ['ml4B1', 1],
+  ph4B0: ['ph4B0', 1], ml4B2: ['ml4B2', 1], ml4B3: ['ml4B3', 1], ph4B1: ['ph4B1', 1], q4B1: ['q4B1', 1],
+  q4C0: ['q4C0', 1], rv4C1: ['rv4C1', 1], am4C1: ['am4C1', 1], ph4C1: ['ph4C1', 1], q4C1: ['q4C1', 1],
+  ph4D0: ['ph4D0', 1], rv4D1: ['rv4D1', 1], ml4D1: ['ml4D1', 1], ph4D1: ['ph4D1', 1], q4D1: ['q4D1', 1],
+  ph4z0: ['ph4z0', 1], ml4z1: ['ml4z1', 1], am4z1: ['am4z1', 1], ph4z1: ['ph4z1', 1], q4A: ['q4A', 1],
+  q4B: ['q4B', 1], q4C: ['q4C', 1], q4D: ['q4D', 1],
   /* E4C4 SOUNDS END */
+  /* E4C4 FX BEGIN: v27.0, its effects, beds and music (masters/v27.0/install_sound.py) */
+  /* v27.0 · its effects, beds and music (masters/v27.0/sound.sh: every pick and why) */
+  u4bell: ['u4bell', 1], u4breath: ['u4breath', 1], u4chant1: ['u4chant1', 1], u4chant2: ['u4chant2', 1],
+  u4chill: ['u4chill', 1], u4closemus: ['u4closemus', 1], u4corridor: ['u4corridor', 1], u4cry: ['u4cry', 1],
+  u4dark: ['u4dark', 1], u4dip: ['u4dip', 1], u4doorease: ['u4doorease', 1], u4endA: ['u4endA', 1],
+  u4endB: ['u4endB', 1], u4endC: ['u4endC', 1], u4endD: ['u4endD', 1], u4estate: ['u4estate', 1],
+  u4fall: ['u4fall', 1], u4fanslow: ['u4fanslow', 1], u4fanstop: ['u4fanstop', 1], u4fightmus: ['u4fightmus', 1],
+  u4flatbed: ['u4flatbed', 1], u4flick: ['u4flick', 1], u4fog: ['u4fog', 1], u4gaspf: ['u4gaspf', 1],
+  u4gaspm: ['u4gaspm', 1], u4gate: ['u4gate', 1], u4heart: ['u4heart', 1], u4histmus: ['u4histmus', 1],
+  u4husband: ['u4husband', 1], u4large: ['u4large', 1], u4lift: ['u4lift', 1], u4liftdoor: ['u4liftdoor', 1],
+  u4match: ['u4match', 1], u4openmus: ['u4openmus', 1], u4os1: ['u4os1', 1], u4os2: ['u4os2', 1],
+  u4os3: ['u4os3', 1], u4os4: ['u4os4', 1], u4os5: ['u4os5', 1], u4os6: ['u4os6', 1], u4patter: ['u4patter', 1],
+  u4release: ['u4release', 1], u4sandals: ['u4sandals', 1], u4scuffle: ['u4scuffle', 1], u4stand: ['u4stand', 1],
+  u4steps: ['u4steps', 1], u4sting: ['u4sting', 1], u4tile: ['u4tile', 1], u4tile2: ['u4tile2', 1],
+  u4torn: ['u4torn', 1], u4trancemus: ['u4trancemus', 1], u4tubedie: ['u4tubedie', 1], u4tubetick: ['u4tubetick', 1],
+  u4tvdie: ['u4tvdie', 1], u4visbed: ['u4visbed', 1], u4vismus: ['u4vismus', 1], u4visoff: ['u4visoff', 1],
+  u4vison: ['u4vison', 1], u4whisper: ['u4whisper', 1],
+  /* E4C4 FX END */
 };
 /* Which kinds the synth below can actually fake. Everything else in
    STING_SAMPLE is sample-only: if its buffer is not decoded yet it stays

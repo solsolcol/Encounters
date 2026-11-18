@@ -2038,5 +2038,557 @@
     "heard": "Next time, I see the people too."
    }
   }
+ },
+ "rv4A1": {
+  "who": "ravi",
+  "text": "[panicked] Let go of me! Amma! Amma!",
+  "pick": "a",
+  "why": "the tighter read",
+  "med": 2.51,
+  "takes": {
+   "a": {
+    "len": 2.56,
+    "first": 0.0,
+    "last": 2.4,
+    "e_first": 0.16,
+    "e_last": 2.54,
+    "tail_db": -26.6,
+    "tail_rel": -14.9,
+    "hole": 0.3,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.52,
+    "heard": "Let go of me! Amma! Amma!"
+   },
+   "b": {
+    "len": 3.76,
+    "first": 0.0,
+    "last": 2.62,
+    "e_first": 0.12,
+    "e_last": 2.76,
+    "tail_db": -45.5,
+    "tail_rel": -36.0,
+    "hole": 0.38,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.27,
+    "heard": "Let go of me! Amma! Amma!"
+   }
+  }
+ },
+ "ml4A1": {
+  "who": "mala",
+  "text": "[frantic] Stop it! Both of you, stop!",
+  "pick": "a",
+  "why": "the tighter read",
+  "med": 2.2699999999999996,
+  "takes": {
+   "a": {
+    "len": 2.32,
+    "first": 0.0,
+    "last": 2.0,
+    "e_first": 0.22,
+    "e_last": 2.3,
+    "tail_db": -36.2,
+    "tail_rel": -29.5,
+    "hole": 0.24,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.88,
+    "heard": "Stop it! Both of you, stop!"
+   },
+   "b": {
+    "len": 2.56,
+    "first": 0.0,
+    "last": 2.14,
+    "e_first": 0.08,
+    "e_last": 2.54,
+    "tail_db": -27.8,
+    "tail_rel": -19.7,
+    "hole": 0.22,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.44,
+    "heard": "Stop it! Both of you, stop!"
+   }
+  }
+ },
+ "am4A1": {
+  "who": "amma",
+  "text": "[confused] Ravi?",
+  "pick": "a",
+  "why": "equal by every measure: the first",
+  "med": 0.48000000000000004,
+  "takes": {
+   "a": {
+    "len": 3.2,
+    "first": 0.0,
+    "last": 0.42,
+    "e_first": 0.06,
+    "e_last": 0.54,
+    "tail_db": -63.5,
+    "tail_rel": -37.6,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.08,
+    "heard": "Ravi?"
+   },
+   "b": {
+    "len": 3.28,
+    "first": 0.0,
+    "last": 0.34,
+    "e_first": 0.0,
+    "e_last": 0.42,
+    "tail_db": -56.6,
+    "tail_rel": -27.7,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.38,
+    "heard": "Ravi?"
+   },
+   "c": {
+    "len": 3.44,
+    "first": 0.0,
+    "last": 0.44,
+    "e_first": 0.04,
+    "e_last": 0.52,
+    "tail_db": -53.9,
+    "tail_rel": -31.8,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.08,
+    "heard": "Ravi?"
+   }
+  }
+ },
+ "rv4A2": {
+  "who": "ravi",
+  "text": "[tearful] Amma...",
+  "pick": "b",
+  "why": "the tighter read",
+  "med": 0.49,
+  "takes": {
+   "a": {
+    "len": 1.2,
+    "first": 0.0,
+    "last": 1.08,
+    "e_first": 0.04,
+    "e_last": 0.56,
+    "tail_db": -70.8,
+    "tail_rel": -52.6,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.92,
+    "heard": "Amma..."
+   },
+   "b": {
+    "len": 3.28,
+    "first": 0.0,
+    "last": 0.7,
+    "e_first": 0.02,
+    "e_last": 0.48,
+    "tail_db": -51.8,
+    "tail_rel": -25.6,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.17,
+    "heard": "Amma..."
+   }
+  }
+ },
+ "ml4B1": {
+  "who": "mala",
+  "text": "[shocked] What are you doing?",
+  "pick": "a",
+  "why": "the tighter read",
+  "med": 1.47,
+  "takes": {
+   "a": {
+    "len": 1.68,
+    "first": 0.0,
+    "last": 1.12,
+    "e_first": 0.2,
+    "e_last": 1.66,
+    "tail_db": -24.2,
+    "tail_rel": -13.8,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.74,
+    "heard": "What are you doing?"
+   },
+   "b": {
+    "len": 2.56,
+    "first": 0.0,
+    "last": 1.88,
+    "e_first": 1.06,
+    "e_last": 2.54,
+    "tail_db": -45.2,
+    "tail_rel": -32.7,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.7,
+    "heard": "What are you doing?"
+   }
+  }
+ },
+ "ml4B2": {
+  "who": "mala",
+  "text": "[frightened] Amma!",
+  "pick": "a",
+  "why": "the tighter read",
+  "med": 0.86,
+  "takes": {
+   "a": {
+    "len": 1.36,
+    "first": 0.0,
+    "last": 0.76,
+    "e_first": 0.08,
+    "e_last": 0.82,
+    "tail_db": -61.7,
+    "tail_rel": -52.5,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.35,
+    "heard": "Amma!"
+   },
+   "b": {
+    "len": 1.6,
+    "first": 0.0,
+    "last": 0.92,
+    "e_first": 0.04,
+    "e_last": 1.02,
+    "tail_db": -51.7,
+    "tail_rel": -43.9,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.02,
+    "heard": "Amma!"
+   }
+  }
+ },
+ "rv4C1": {
+  "who": "ravi",
+  "text": "[tearful] I'm here, Amma. I'm right here.",
+  "pick": "b",
+  "why": "the only clean and whole take",
+  "med": 2.42,
+  "takes": {
+   "a": {
+    "len": 2.48,
+    "first": 0.0,
+    "last": 2.42,
+    "e_first": 0.12,
+    "e_last": 2.46,
+    "tail_db": -19.5,
+    "tail_rel": -5.4,
+    "hole": 0.46,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": false,
+    "wps": 2.56,
+    "heard": "I'm here, Amma. I'm right here."
+   },
+   "b": {
+    "len": 2.64,
+    "first": 0.0,
+    "last": 2.54,
+    "e_first": 0.12,
+    "e_last": 2.62,
+    "tail_db": -29.0,
+    "tail_rel": -15.6,
+    "hole": 0.42,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.4,
+    "heard": "I'm here, Amma. I'm right here."
+   }
+  }
+ },
+ "am4C1": {
+  "who": "amma",
+  "text": "[tender] My boy.",
+  "pick": "c",
+  "why": "the unhurried read",
+  "med": 1.02,
+  "takes": {
+   "a": {
+    "len": 1.76,
+    "first": 0.0,
+    "last": 0.76,
+    "e_first": 0.12,
+    "e_last": 1.14,
+    "tail_db": -62.2,
+    "tail_rel": -45.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.96,
+    "heard": "My boy."
+   },
+   "b": {
+    "len": 0.88,
+    "first": 0.0,
+    "last": 0.68,
+    "e_first": 0.0,
+    "e_last": 0.86,
+    "tail_db": -21.2,
+    "tail_rel": -6.1,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.33,
+    "heard": "My boy."
+   },
+   "c": {
+    "len": 2.16,
+    "first": 0.0,
+    "last": 0.88,
+    "e_first": 0.08,
+    "e_last": 1.12,
+    "tail_db": -56.0,
+    "tail_rel": -38.8,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.92,
+    "heard": "My boy."
+   }
+  }
+ },
+ "rv4D1": {
+  "who": "ravi",
+  "text": "[nervous] Okay. Okay. I've got you, Amma.",
+  "pick": "a",
+  "why": "the only clean and whole take",
+  "med": 2.9,
+  "takes": {
+   "a": {
+    "len": 3.04,
+    "first": 0.5,
+    "last": 3.02,
+    "e_first": 0.12,
+    "e_last": 3.02,
+    "tail_db": -43.4,
+    "tail_rel": -27.3,
+    "hole": 0.6,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.07,
+    "heard": "Okay. Okay. I've got you, Amma."
+   },
+   "b": {
+    "len": 3.04,
+    "first": 0.0,
+    "last": 3.02,
+    "e_first": 0.12,
+    "e_last": 3.02,
+    "tail_db": -20.8,
+    "tail_rel": -5.4,
+    "hole": 0.98,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": false,
+    "wps": 2.07,
+    "heard": "Okay. Okay. I've got you, Amma."
+   }
+  }
+ },
+ "ml4D1": {
+  "who": "mala",
+  "text": "[awed] Amma... you're standing.",
+  "pick": "b",
+  "why": "the tighter read",
+  "med": 2.0,
+  "takes": {
+   "a": {
+    "len": 2.24,
+    "first": 0.0,
+    "last": 1.82,
+    "e_first": 0.06,
+    "e_last": 2.22,
+    "tail_db": -29.1,
+    "tail_rel": -19.1,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.39,
+    "heard": "Amma... you're standing."
+   },
+   "b": {
+    "len": 1.92,
+    "first": 0.0,
+    "last": 1.62,
+    "e_first": 0.06,
+    "e_last": 1.9,
+    "tail_db": -23.3,
+    "tail_rel": -13.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.63,
+    "heard": "Amma... you're standing."
+   }
+  }
+ },
+ "am4z1": {
+  "who": "amma",
+  "text": "[grateful] Thank you, Mother.",
+  "pick": "c",
+  "why": "the unhurried read",
+  "med": 0.9800000000000001,
+  "takes": {
+   "a": {
+    "len": 2.0,
+    "first": 0.0,
+    "last": 0.74,
+    "e_first": 0.1,
+    "e_last": 1.08,
+    "tail_db": -82.4,
+    "tail_rel": -69.2,
+    "hole": 0.14,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 3.06,
+    "heard": "Thank you, Mother."
+   },
+   "b": {
+    "len": 3.2,
+    "first": 0.0,
+    "last": 0.7,
+    "e_first": 0.12,
+    "e_last": 0.94,
+    "tail_db": -56.3,
+    "tail_rel": -40.8,
+    "hole": 0.14,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 3.66,
+    "heard": "Thank you, Mother."
+   },
+   "c": {
+    "len": 1.36,
+    "first": 0.0,
+    "last": 0.72,
+    "e_first": 0.0,
+    "e_last": 1.06,
+    "tail_db": -57.2,
+    "tail_rel": -44.8,
+    "hole": 0.14,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.83,
+    "heard": "Thank you, Mother."
+   }
+  }
+ },
+ "ml4B3": {
+  "who": "mala",
+  "text": "[concerned] Are you alright?",
+  "pick": "a",
+  "why": "the tighter read",
+  "med": 1.4700000000000002,
+  "takes": {
+   "a": {
+    "len": 1.44,
+    "first": 0.0,
+    "last": 1.02,
+    "e_first": 0.16,
+    "e_last": 1.42,
+    "tail_db": -23.3,
+    "tail_rel": -11.7,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.38,
+    "heard": "Are you alright?"
+   },
+   "b": {
+    "len": 1.84,
+    "first": 0.0,
+    "last": 0.92,
+    "e_first": 0.14,
+    "e_last": 1.82,
+    "tail_db": -24.0,
+    "tail_rel": -13.2,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.79,
+    "heard": "Are you alright?"
+   }
+  }
+ },
+ "ml4z1": {
+  "who": "mala",
+  "text": "[tearful] Slowly, Amma. Slowly.",
+  "pick": "a",
+  "why": "the tighter read",
+  "med": 2.9000000000000004,
+  "takes": {
+   "a": {
+    "len": 3.6,
+    "first": 0.0,
+    "last": 2.08,
+    "e_first": 0.3,
+    "e_last": 2.62,
+    "tail_db": -48.3,
+    "tail_rel": -36.1,
+    "hole": 0.64,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.29,
+    "heard": "Slowly, Amma. Slowly."
+   },
+   "b": {
+    "len": 3.52,
+    "first": 0.0,
+    "last": 2.1,
+    "e_first": 0.02,
+    "e_last": 3.5,
+    "tail_db": -33.4,
+    "tail_rel": -22.5,
+    "hole": 0.72,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 0.86,
+    "heard": "Slowly, Amma. Slowly."
+   }
+  }
  }
 }

@@ -8,6 +8,13 @@ names = sorted(f[:-4] for f in os.listdir('assets/audio-opus') if re.fullmatch(r
 miss = [n for n in names if not os.path.isfile(f'assets/audio/{n}.mp3')]
 assert not miss, ('mp3 missing', miss)
 END = '  /* E4C4 SOUNDS END */\n'; assert main.count(END) == 1
+# (18 Nov: the rows live between markers OF THEIR OWN, after the voices' block: voices/registry.py rewrites everything
+#  between E4C4 SOUNDS BEGIN and END, and when these rows stood inside it, a run of it for eleven new lines dropped all
+#  seventy of them; caught in the diff before a commit)
+FXB, FXE = '  /* E4C4 FX BEGIN: v27.0, its effects, beds and music (masters/v27.0/install_sound.py) */\n', '  /* E4C4 FX END */\n'
+if main.count(FXE) == 0: main = main.replace(END, END + FXB + FXE)
+assert main.count(FXB) == 1 and main.count(FXE) == 1
+END = FXE
 i = main.index('const STING_SAMPLE = {'); j = main.index('\n};', i)
 have = set(re.findall(r"([A-Za-z0-9_]+): \['", main[i:j]))
 new = [n for n in names if n not in have]
