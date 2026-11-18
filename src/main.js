@@ -12194,6 +12194,8 @@ function showcaseOpen(id, opts) {
   const el = $('showcase'); if (!el) return false;
   clearTimeout(unl.outT);
   unl.id = id; unl.onClose = typeof opts.onClose === 'function' ? opts.onClose : null; unl.show = true;
+  /* (the weapon's buttons were on the screen as it opened: `weaponUp` is derived on the frame, in play only) */
+  unl.wpn = document.body.classList.contains('weaponUp');
   for (const k in keys) keys[k] = false;
   state = 'unlock';
   clearTimeout(unl.autoT); unl.autoT = 0;
@@ -12231,7 +12233,7 @@ function showcaseOpen(id, opts) {
     if (unl.id !== id || !unl.show) return;
     /* where it goes: the holy water's button where there is one on the screen, else the foot of the screen (the
        weapon's buttons are hidden under the showcase: they come back for its last 0.6 s, so it goes into the button) */
-    document.body.classList.add('scToHud');
+    if (unl.wpn) document.body.classList.add('scToHud');
     const r = fire && fire.offsetParent !== null ? fire.getBoundingClientRect() : null;
     const tx = r ? r.left + r.width / 2 : innerWidth / 2, ty = r ? r.top + r.height / 2 : innerHeight * 0.92;
     el.style.setProperty('--ix', (tx - innerWidth / 2).toFixed(1) + 'px'); el.style.setProperty('--iy', (ty - innerHeight / 2).toFixed(1) + 'px');
