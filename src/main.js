@@ -2087,7 +2087,7 @@ let weaponShown = false, weaponLastFire = 0;
 let ownObj = null, ownHold = {}, ownShown = false, ownAnim = null, ownFor = null;
 let ownSeed = 20271117;                                   // the drops' own seeded stream, rewound with the weapon
 const ownRnd = () => ((ownSeed = (ownSeed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff);
-const own = { drops: [], pts: null, glow: null, geo: null, pos: null, col: null, N: 160, dot: null };   // the drops' pool
+const own = { drops: [], pts: null, glow: null, core: null, geo: null, pos: null, col: null, N: 160, dot: null };   // the drops' pool
 const _osA = new THREE.Vector3(), _osB = new THREE.Vector3(), _osC = new THREE.Vector3(), _osD = new THREE.Vector3(), _osE = new THREE.Vector3();
 const _osCol = new THREE.Color();
 /* v14.3: A CHAPTER MAY FORBID THE SHOT, and the refusal has to SAY WHY.
@@ -4880,17 +4880,28 @@ function ownSprayEnsure() {
     transparent: true, depthWrite: false, depthTest: false, fog: false, premultipliedAlpha: true,
     blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor,
     blendEquationAlpha: THREE.AddEquation, blendSrcAlpha: THREE.OneFactor, blendDstAlpha: THREE.OneFactor }));
-  own.pts.frustumCulled = own.glow.frustumCulled = false;
-  own.glow.layers.set(VIS_LAYER);
+  /* v27.0 (R85, Chad, 18 Nov: "After lp phiboon empowered, the water that sprays out, make it bright golden yellow instead
+     of the black yellow look it has now"): with his sight open the world's pass is drawn as a negative, so the drops'
+     own bright core came out dark under their gold glow. A coloured water (kitSprayColor: only the golden water asks)
+     has a CORE on the vision's layer too, its colour lifted toward white-gold, drawn over the negative: bright gold
+     whether his sight is open or shut. The plain water is untouched (the core is hidden while no colour is asked) */
+  own.core = new THREE.Points(geo, new THREE.PointsMaterial({ map: own.dot, size: size * 1.15, sizeAttenuation: true, vertexColors: true,
+    transparent: true, depthWrite: false, depthTest: false, fog: false, premultipliedAlpha: true,
+    blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor,
+    blendEquationAlpha: THREE.AddEquation, blendSrcAlpha: THREE.OneFactor, blendDstAlpha: THREE.OneFactor }));
+  own.core.material.color.setRGB(2.0, 1.85, 1.45);
+  own.core.visible = false;
+  own.pts.frustumCulled = own.glow.frustumCulled = own.core.frustumCulled = false;
+  own.glow.layers.set(VIS_LAYER); own.core.layers.set(VIS_LAYER);
   own.geo = geo;
-  scene.add(own.pts); scene.add(own.glow);
+  scene.add(own.pts); scene.add(own.glow); scene.add(own.core);
 }
 function ownSprayDrop() {
   own.drops.length = 0;
   if (!own.pts) return;
-  scene.remove(own.pts); scene.remove(own.glow);
-  own.geo.dispose(); own.pts.material.dispose(); own.glow.material.dispose();
-  own.pts = own.glow = own.geo = own.pos = own.col = null;
+  scene.remove(own.pts); scene.remove(own.glow); if (own.core) scene.remove(own.core);
+  own.geo.dispose(); own.pts.material.dispose(); own.glow.material.dispose(); if (own.core) own.core.material.dispose();
+  own.pts = own.glow = own.core = own.geo = own.pos = own.col = null;
 }
 /* where his fingertips are, in the world: the right palm carried through the hands' own lens to the screen, and out
    from the world's lens along that line (`depth` metres) */
@@ -4924,6 +4935,7 @@ function ownSprayFrame(now) {
   if (!own.pts) return;
   const sp = (weaponDecl && weaponDecl.spray) || {};
   _osCol.set(sprayCol != null ? sprayCol : (sp.color == null ? 0xdcefff : sp.color));
+  if (own.core) own.core.visible = sprayCol != null;          // (R85: the golden water's bright core, over the vision's negative)
   const keep = [], P = own.pos, C = own.col, N = own.N; let m = 0;
   const put = (x, y, z, f) => { if (m >= N) return; P[m * 3] = x; P[m * 3 + 1] = y; P[m * 3 + 2] = z;
     C[m * 3] = _osCol.r * f; C[m * 3 + 1] = _osCol.g * f; C[m * 3 + 2] = _osCol.b * f; m++; };
@@ -7830,7 +7842,7 @@ function kitReset() {
   life.on = false; life.k = 1; life.trail = 1; life.at = null;   // v27.0 (seam 54): nor a life's bar
   edgeG.to = 0; edgeG.k = 0;                                      // v27.0 (seam 56): nor a glow at the edges
   weaponInf = false;                                              // v27.0 (R56): nor a bowl that never empties
-  sprayCol = null; sprayScale = 1; if (own.pts) { own.pts.material.size = own.size0 || own.pts.material.size; own.glow.material.size = own.pts.material.size * 2.4; }   // v27.0: nor the water's gold
+  sprayCol = null; sprayScale = 1; if (own.pts) { own.pts.material.size = own.size0 || own.pts.material.size; own.glow.material.size = own.pts.material.size * 2.4; if (own.core) { own.core.material.size = own.pts.material.size * 1.15; own.core.visible = false; } }   // v27.0: nor the water's gold
   sprayHudSync();                   // v27.0: nor its button's
   gwave.on = false; gwave.R = 0; gwave.M = 0;                     // v27.0 (seam 57): nor a wave still going out
   objReset();                       // v8.7: and the beats queued against the old objective
@@ -7970,7 +7982,8 @@ const KIT = {
   wave: kitWave,                   // v27.0: the fifty-seventh seam — a wave of light in a colour, tracing every edge it crosses (sight open or shut)
   sprayColor: (c, o = {}) => { sprayCol = (c === null || c === undefined) ? null : c;
     sprayScale = c == null ? 1 : Math.max(0.3, Math.min(4, +(o.size || 1)));
-    if (own.pts) { own.size0 = own.size0 || own.pts.material.size; own.pts.material.size = own.size0 * sprayScale; own.glow.material.size = own.pts.material.size * 2.4; }
+    if (own.pts) { own.size0 = own.size0 || own.pts.material.size; own.pts.material.size = own.size0 * sprayScale; own.glow.material.size = own.pts.material.size * 2.4;
+      if (own.core) own.core.material.size = own.pts.material.size * 1.15; }
     sprayHudSync(); return true; },                // v27.0: the water's colour (Chad's gold) and its drops' size; null gives them back
   lose: (o) => { if (state !== 'play' || fainting || cine) return false; lose(o && typeof o === 'object' ? o : {}); return true; },   // v27.0: the fifty-third seam — the chapter loses the run itself
   /* v27.0: a stat READ, never a write (kit.award writes): a chapter whose price must stop short of a floor (the holy-water
@@ -11983,7 +11996,7 @@ function scFxFrame(t, dur) {
     let sd = 0x5a17c0de;
     const rnd = () => ((sd = (Math.imul(sd, 1664525) + 1013904223) >>> 0) / 4294967296);
     scFx.motes = Array.from({ length: 84 }, (_, i) => ({ a: i / 84 * Math.PI * 2 + rnd() * 0.3, r: 0.55 + rnd() * 0.45, d: rnd() * 0.35,
-      T: 0.5 + rnd() * 0.3, spin: 1.1 + rnd() * 0.9, sz: 1.2 + rnd() * 1.6 }));
+      T: 0.5 + rnd() * 0.3, spin: 1.1 + rnd() * 0.9, sz: 1.2 + rnd() * 1.6, glint: i % 3 === 0 }));
     scFx.embers = Array.from({ length: 36 }, () => ({ x: rnd() - 0.5, b: rnd(), v: 0.5 + rnd() * 0.7, sw: rnd() * 6.2832, sz: 0.8 + rnd() * 1.3 }));
     scFx.burst = Array.from({ length: 64 }, () => ({ a: rnd() * Math.PI * 2, v: 0.55 + rnd() * 0.85, sz: 1 + rnd() * 1.7 }));
   }
@@ -11999,25 +12012,32 @@ function scFxFrame(t, dur) {
     const e = ease(p), rr = m.r * R * (1 - e), aa = m.a + m.spin * e;
     const x = cx + Math.cos(aa) * rr, y = cy + Math.sin(aa) * rr;
     const e0 = ease(Math.max(0, p - 0.09)), r0 = m.r * R * (1 - e0), a0 = m.a + m.spin * e0;
-    g.globalAlpha = 0.22 + 0.5 * e; g.strokeStyle = 'rgba(255,214,130,1)'; g.lineWidth = m.sz * dpr;
+    /* (R83, Chad, 18 Nov: "make those effects look brighter and more obvious while keeping the look the same as they are,
+       but just make it more shiny and glowy and brighter": the same motes, tails and colours; each tail stronger and wider,
+       each mote a bright core in a wide soft glow, and a glint that twinkles on every third one) */
+    g.globalAlpha = Math.min(1, 0.42 + 0.58 * e); g.strokeStyle = 'rgba(255,224,150,1)'; g.lineWidth = m.sz * 1.5 * dpr;
     g.beginPath(); g.moveTo(cx + Math.cos(a0) * r0, cy + Math.sin(a0) * r0); g.lineTo(x, y); g.stroke();
-    dot(x, y, m.sz * dpr, 0.45 + 0.5 * e);
+    dot(x, y, m.sz * 2.8 * dpr, 0.3 + 0.3 * e);
+    dot(x, y, m.sz * 1.35 * dpr, 0.85 + 0.15 * e);
+    if (m.glint) { const tw = 0.5 + 0.5 * Math.sin(t * 19 + m.a * 7), L = m.sz * 9 * dpr * (0.6 + 0.4 * tw);
+      g.globalAlpha = Math.min(1, (0.55 + 0.45 * e) * tw); g.strokeStyle = 'rgba(255,246,214,1)'; g.lineWidth = Math.max(1, 0.9 * dpr);
+      g.beginPath(); g.moveTo(x - L, y); g.lineTo(x + L, y); g.moveTo(x, y - L); g.lineTo(x, y + L); g.stroke(); }
   }
   /* the point they gather into, swelling until the amulet is born from it */
   const core = Math.max(0, Math.min(1, (t - 0.45) / 0.5)) * (1 - Math.max(0, Math.min(1, (t - BIRTH) / 0.35)));
-  if (core > 0) dot(cx, cy, (4 + 12 * core) * dpr, 0.95 * core);
+  if (core > 0) { dot(cx, cy, (10 + 34 * core) * dpr, 0.55 * core); dot(cx, cy, (5 + 16 * core) * dpr, core); }   // (R83: a wider glow round it, its heart full)
   /* 2 · embers rising round it while it hovers */
   if (t > BIRTH + 0.25 && t < INTO) {
     const fade = Math.min(1, (t - BIRTH - 0.25) / 0.5) * Math.min(1, (INTO - t) / 0.3);
     for (const em of scFx.embers) {
       const ph = ((t - BIRTH) * em.v / 1.8 + em.b) % 1;
-      dot(cx + em.x * mw * 0.95 + Math.sin(em.sw + t * 2.1) * 6 * dpr, cy + mw * 0.42 - ph * mw * 1.15, em.sz * dpr, Math.sin(ph * Math.PI) * 0.6 * fade);
+      dot(cx + em.x * mw * 0.95 + Math.sin(em.sw + t * 2.1) * 6 * dpr, cy + mw * 0.42 - ph * mw * 1.15, em.sz * 1.3 * dpr, Math.sin(ph * Math.PI) * 0.85 * fade);
     }
   }
   /* 3 · the burst that goes out with its halos */
   if (t > REL && t < REL + 1.05) {
     const q = (t - REL) / 1.05, qe = 1 - Math.pow(1 - q, 2.4);
-    for (const b of scFx.burst) dot(cx + Math.cos(b.a) * (0.08 + b.v * qe) * R * 0.95, cy + Math.sin(b.a) * (0.08 + b.v * qe) * R * 0.95, b.sz * dpr, (1 - q) * 0.75);
+    for (const b of scFx.burst) dot(cx + Math.cos(b.a) * (0.08 + b.v * qe) * R * 0.95, cy + Math.sin(b.a) * (0.08 + b.v * qe) * R * 0.95, b.sz * 1.3 * dpr, Math.min(1, (1 - q) * 1.0));
   }
   /* 4 · the trail it leaves going down into the water */
   if (t > INTO && scFx.into) {
@@ -12289,10 +12309,27 @@ function showcaseOpen(id, opts) {
     scFx.into = { x: tx, y: ty };
     el.classList.add('into');
   }, (secs - 0.6) * 1000);
-  unl.fillT = setTimeout(() => { if (unl.id === id && unl.show && fire) { void fire.offsetWidth; fire.classList.add('scFill'); } }, (secs - 0.12) * 1000);
+  unl.fillT = setTimeout(() => { if (unl.id === id && unl.show && fire) { void fire.offsetWidth; fire.classList.add('scFill'); scMerge(fire); } }, (secs - 0.12) * 1000);
   unl.autoT = setTimeout(() => { unl.autoT = 0; if (unl.id === id) unlockClose('auto'); }, secs * 1000);
   unl.t0 = performance.now();
   return true;
+}
+/* v27.0 (R84, Chad, 18 Nov: "when lp phiboon amulet goes downwards to the water icon, it should have another effect as it
+   merges into the circle and releases a circle halo effect and give off a screen shaking effect"): where it meets the
+   button, a flash of gold, two rings of light going out from the circle one after the other, and the screen shaken
+   (shorter than the release's own). On the page itself, not in the showcase, so the showcase's close a moment later
+   cuts none of it; each piece takes itself away when its animation ends */
+function scMerge(btn) {
+  const r = btn.getBoundingClientRect(); if (!(r.width > 0)) return;
+  const x = r.left + r.width / 2, y = r.top + r.height / 2, d = Math.max(r.width, r.height);
+  for (const [cls, ms] of [['scMFlash', 600], ['scMRing', 1000], ['scMRing r2', 1150]]) {
+    const el = document.createElement('div'); el.className = 'scMerge ' + cls; el.setAttribute('aria-hidden', 'true');
+    el.style.left = x + 'px'; el.style.top = y + 'px'; el.style.width = el.style.height = d + 'px';
+    document.body.appendChild(el); setTimeout(() => el.remove(), ms);
+  }
+  const sc = $('scene');
+  if (sc) { sc.classList.remove('scMergeShake'); void sc.offsetWidth; sc.classList.add('scMergeShake'); clearTimeout(scMerge.t); scMerge.t = setTimeout(() => sc.classList.remove('scMergeShake'), 520); }
+  haptic([40, 30, 110]);
 }
 function unlockClose(how) {
   if (!unl.id) return false;

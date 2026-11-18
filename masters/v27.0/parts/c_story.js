@@ -712,7 +712,7 @@
       for (const S of F.shapes) {
         const P = S.P; if (S.state === 'gone') continue;
         S.t += wdt;
-        if (S.state === 'leave') { S.leave += wdt; const u = Math.min(1, S.leave / 1.1); P.alpha = 1 - u; if (P.fx) { P.fx.set('uAlpha', 1 - u); P.fx.set('uFill', 0.1 + 0.9 * (1 - u) * (1 - u)); } P.group.position.y += wdt * 0.35;
+        if (S.state === 'leave') { S.leave += wdt; const u = Math.min(1, S.leave / 1.1); P.alpha = 1 - u; if (P.fx) { P.fx.set('uAlpha', 1 - u); P.fx.set('uFill', 0.1 + 0.9 * (1 - u) * (1 - u) + (HIT_FILL - 1) * hitBoost(P) * (1 - u)); } P.group.position.y += wdt * 0.35;
           if (u >= 1) { S.state = 'gone'; P.group.visible = false; P.gone = true; } continue; }
         const tg = FAMILY[S.to](), dx = tg.x - P.group.position.x, dz = tg.z - P.group.position.z, d = Math.hypot(dx, dz);
         /* THE DART (R44): gathered, then flown at her out of the water's reach; and, struck, it comes down to feed */
@@ -820,20 +820,72 @@
        silhouette burns near white for a moment and settles back to its green over a third of a second (it was its own
        green filled to 0.9 for a quarter second, and read as nothing on a phone), the one released as it begins to go,
        the large one each of the three times */
-    const HIT_WHITE = new THREE.Color(0xe8ffe0), _hitC = new THREE.Color();
-    function hitFlash(S) {
-      const P = S.P; if (!P.fx) return;
-      const look = P === spirits.large ? SPIRIT.large : SPIRIT.wander, base = new THREE.Color(look.color), run = play.run, t0 = wallNow();
-      P.hitT0 = t0; P.fx.set('uColor', HIT_WHITE);
-      /* (one released goes out by its own fill, from bright: only its colour flashes; one staggered is filled bright too) */
+    /* (R81, Chad, 18 Nov: "the holy water spraying onto the green spirits effect that i wanted, is still not obvious enough,
+       and is sometimes totally missing". Measured in the code: the flash was the spirit's own colour lifted for a third of
+       a second, and the one RELEASED by the water, nearly every one, was already fading as it flashed, its fill written
+       over every frame by its going; in the gold nothing flashed at all. Now the silhouette burns pure white and holds a
+       tenth of a second before it settles over 0.4 s, the one released as brightly as it goes (hitBoost), and every
+       strike bursts where it lands, through his sight: hitBurst below) */
+    const HIT_WHITE = new THREE.Color(0xffffff), _hitC = new THREE.Color(), HIT_HOLD = 0.1, HIT_FADE = 0.4, HIT_FILL = 3.0;
+    const hitBoost = (P) => { const d = P.hitT0 != null ? wallNow() - P.hitT0 : 99; return d < HIT_HOLD ? 1 : Math.max(0, 1 - (d - HIT_HOLD) / HIT_FADE); };
+    function hitFlash(S, delay = 0) {
+      const P = S.P; hitBurst(S, delay); if (!P.fx) return;
+      const look = P === spirits.large ? SPIRIT.large : SPIRIT.wander, base = new THREE.Color(look.color), run = play.run, t0 = wallNow() + delay;
+      P.hitT0 = t0; if (delay <= 0) P.fx.set('uColor', HIT_WHITE);
+      /* (one released goes out by its own fill, lifted by hitBoost; one staggered is filled bright here) */
       const fill = () => S.state !== 'leave' && S.state !== 'gone';
-      if (fill()) P.fx.set('uFill', 2.2);
-      const step = () => { if (!live(run) || !P.fx || P.hitT0 !== t0) return; const u = Math.min(1, (wallNow() - t0) / 0.35);
-        P.fx.set('uColor', _hitC.copy(HIT_WHITE).lerp(base, u));
-        if (fill()) P.fx.set('uFill', 2.2 + (look.fill - 2.2) * u * u);
-        if (u < 1) requestAnimationFrame(step); };
+      if (fill() && delay <= 0) P.fx.set('uFill', HIT_FILL);
+      const step = () => { if (!live(run) || !P.fx || P.hitT0 !== t0) return; const d = wallNow() - t0;
+        if (d >= 0) { const u = Math.min(1, Math.max(0, d - HIT_HOLD) / HIT_FADE);
+          P.fx.set('uColor', _hitC.copy(HIT_WHITE).lerp(base, u * u));
+          if (fill()) P.fx.set('uFill', HIT_FILL + (look.fill - HIT_FILL) * u * u);
+          if (u >= 1) return; }
+        requestAnimationFrame(step); };
       requestAnimationFrame(step);
     }
+    /* THE BURST where the water lands (R81): a white flash swelling out, a ring thrown wide, six sparks flung off and
+       falling, half a second on the wall clock; drawn through his sight only, where the green ones are; sized by the one
+       struck (its sphere); eight at once, the oldest given back first */
+    const HITFX = { slots: 8, sparks: 6, flash: 0.24, ring: 0.5, spark: 0.46 };
+    const hitFx = { slots: null, next: 0 };
+    function hitTex(ring) {
+      const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'), r = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+      if (ring) { r.addColorStop(0, 'rgba(255,255,255,0)'); r.addColorStop(0.6, 'rgba(255,255,255,0)'); r.addColorStop(0.8, 'rgba(255,255,255,1)'); r.addColorStop(0.9, 'rgba(255,255,255,0.4)'); r.addColorStop(1, 'rgba(255,255,255,0)'); }
+      else { r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(0.28, 'rgba(255,255,255,0.9)'); r.addColorStop(0.6, 'rgba(255,255,255,0.28)'); r.addColorStop(1, 'rgba(255,255,255,0)'); }
+      g.fillStyle = r; g.fillRect(0, 0, 128, 128); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+    }
+    function hitSprite(tex, col) {
+      const m = new THREE.SpriteMaterial({ map: tex, color: col, transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, fog: false });
+      mats.push(m); const sp = new THREE.Sprite(m); sp.visible = false; sp.renderOrder = 32;
+      if (ctx.visionLayer != null) sp.layers.set(ctx.visionLayer); world.add(sp); return sp;
+    }
+    function hitBurst(S, delay = 0) {
+      const m = S.P.hit; if (!m) return;
+      if (!hitFx.slots) { const glow = dipTex(), ring = hitTex(true), core = hitTex(false); owned.push(glow, ring, core); hitFx.slots = [];
+        for (let i = 0; i < HITFX.slots; i++) hitFx.slots.push({ flash: hitSprite(core, 0xffffff), ring: hitSprite(ring, 0xd8ffd2),
+          sparks: Array.from({ length: HITFX.sparks }, () => hitSprite(glow, 0xeeffe8)), dirs: Array.from({ length: HITFX.sparks }, () => new THREE.Vector3()),
+          at: new THREE.Vector3(), t0: -99, r: 0.4 }); }
+      const B = hitFx.slots[hitFx.next]; hitFx.next = (hitFx.next + 1) % HITFX.slots;
+      B.t0 = wallNow() + delay; B.at.copy(m.position); B.r = Math.max(0.3, Math.min(0.9, m.scale.x || 0.4));
+      const turn = hitFx.next * 1.7;
+      B.dirs.forEach((v, i) => { const a = i * 2.39996 + turn, y = ((i * 0.618 + 0.25) % 1) - 0.3; v.set(Math.cos(a), y, Math.sin(a)).normalize(); });
+    }
+    function hitFxTick() {
+      if (!hitFx.slots) return;
+      const now = wallNow();
+      for (const B of hitFx.slots) {
+        const d = now - B.t0, uf = d / HITFX.flash, ur = d / HITFX.ring, us = d / HITFX.spark;
+        if (d >= 0 && uf < 1) { B.flash.position.copy(B.at); B.flash.scale.setScalar(B.r * (1.0 + 1.8 * (1 - (1 - uf) * (1 - uf)))); B.flash.material.opacity = 1 - uf * uf; B.flash.visible = true; }
+        else B.flash.visible = false;
+        if (d >= 0 && ur < 1) { const e = 1 - (1 - ur) * (1 - ur); B.ring.position.copy(B.at); B.ring.scale.setScalar(B.r * (0.8 + 3.4 * e)); B.ring.material.opacity = 1 - ur; B.ring.visible = true; }
+        else B.ring.visible = false;
+        for (let i = 0; i < B.sparks.length; i++) { const sp = B.sparks[i];
+          if (d >= 0 && us < 1) { const e = 1 - (1 - us) * (1 - us); sp.position.copy(B.at).addScaledVector(B.dirs[i], B.r * (0.3 + 2.6 * e)); sp.position.y -= 0.4 * us * us;
+            sp.scale.setScalar(B.r * 0.34 * (1 - 0.6 * us)); sp.material.opacity = 1 - us; sp.visible = true; }
+          else sp.visible = false; }
+      }
+    }
+    function hitFxReset() { if (!hitFx.slots) return; for (const B of hitFx.slots) { B.t0 = -99; B.flash.visible = B.ring.visible = false; for (const sp of B.sparks) sp.visible = false; } }
     function strike(S) {
       const P = S.P; S.hits++;
       if (S.hits >= S.need) { S.state = 'leave'; S.leave = 0; hitFlash(S); return true; }
@@ -847,6 +899,7 @@
         const m = S.P.hit; if (!m || !m.visible) continue;
         _fsph.center.copy(m.position); _fsph.radius = m.scale.x; if (!_frus.intersectsSphere(_fsph)) continue;
         S.state = 'leave'; S.leave = -0.25 * ((n * 0.6180339887) % 1); n++;       // (each on its own beat over a quarter second: v6.15)
+        hitFlash(S, -S.leave);                                                      // (R81: each one seen struck, on its beat)
       }
       fx('u4goldflick', 0.9, 0);
       if (n) { fx('u4goldclear', Math.min(1, 0.78 + 0.03 * n), 0); F.lastStrike = F.t; F.cleared += n; }
@@ -1298,6 +1351,7 @@
       spotsTick(); hitsTick(); scareTick(); doorTick(wdt); heatTick(wdt); altarTick();   // (the fan, the lamp and the glass: updateNotes, film or play; his hand on her head: updateNotes, play and the decision)
       fightTick(wdt);
       dipFxTick();                                                        // (R63: the refill seen)
+      hitFxTick();                                                        // (R81: every strike seen)
       /* (R58, Chad, 18 Nov evening: "why reloading and continuing game allows me to flick water even before that part of
          the gameplay begins"): the bag keeps the water from a run that reached the blessing (a Continue, a loss's start
          again), and the engine has the water out whenever the bowl is in his hand. So it is offered only in the blessing,
@@ -1322,7 +1376,7 @@
       play.fight = null; play.appaGone = false; play.nerveOut = false; play.heat = 0; play.heatStep = 0; play.closeHold = 0; play.breathSaid = -99; play.loseWait = false;
       play.fanK = 1; play.fanTo = 1; play.scareSeed = SCARE_SEED; play.scareAt = 0; play.scared = new Set(); play.doorTo = -0.12; play.doorK = -0.12;
       play.fogged = false; play.fogAt = 0; fogK = 0; fogTo = 0; lampK = 0; lampTo = 0; crownK = 0; crownTo = 0; oppLooked = ''; wanderNext = 2;
-      decOpen = false; altarBlock = false; bowlOnFloor.visible = true; chantNow = null; bowlsOnStool(false); waterLast = null;
+      decOpen = false; altarBlock = false; bowlOnFloor.visible = true; chantNow = null; bowlsOnStool(false); waterLast = null; hitFxReset();
       DEC.on = false; DEC.p1 = null; DEC.at = null; DEC.eye = null;
       for (const P of spirits.wander.concat([spirits.large, spirits.appa, spirits.oppress])) { P.gone = false; P.alpha = 1; }
       if (kit) { kit.bar(null); if (kit.weaponBlock) kit.weaponBlock(null); if (kit.visionUrge) kit.visionUrge(false);

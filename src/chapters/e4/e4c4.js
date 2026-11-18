@@ -4624,7 +4624,7 @@
       for (const S of F.shapes) {
         const P = S.P; if (S.state === 'gone') continue;
         S.t += wdt;
-        if (S.state === 'leave') { S.leave += wdt; const u = Math.min(1, S.leave / 1.1); P.alpha = 1 - u; if (P.fx) { P.fx.set('uAlpha', 1 - u); P.fx.set('uFill', 0.1 + 0.9 * (1 - u) * (1 - u)); } P.group.position.y += wdt * 0.35;
+        if (S.state === 'leave') { S.leave += wdt; const u = Math.min(1, S.leave / 1.1); P.alpha = 1 - u; if (P.fx) { P.fx.set('uAlpha', 1 - u); P.fx.set('uFill', 0.1 + 0.9 * (1 - u) * (1 - u) + (HIT_FILL - 1) * hitBoost(P) * (1 - u)); } P.group.position.y += wdt * 0.35;
           if (u >= 1) { S.state = 'gone'; P.group.visible = false; P.gone = true; } continue; }
         const tg = FAMILY[S.to](), dx = tg.x - P.group.position.x, dz = tg.z - P.group.position.z, d = Math.hypot(dx, dz);
         /* THE DART (R44): gathered, then flown at her out of the water's reach; and, struck, it comes down to feed */
@@ -4732,20 +4732,72 @@
        silhouette burns near white for a moment and settles back to its green over a third of a second (it was its own
        green filled to 0.9 for a quarter second, and read as nothing on a phone), the one released as it begins to go,
        the large one each of the three times */
-    const HIT_WHITE = new THREE.Color(0xe8ffe0), _hitC = new THREE.Color();
-    function hitFlash(S) {
-      const P = S.P; if (!P.fx) return;
-      const look = P === spirits.large ? SPIRIT.large : SPIRIT.wander, base = new THREE.Color(look.color), run = play.run, t0 = wallNow();
-      P.hitT0 = t0; P.fx.set('uColor', HIT_WHITE);
-      /* (one released goes out by its own fill, from bright: only its colour flashes; one staggered is filled bright too) */
+    /* (R81, Chad, 18 Nov: "the holy water spraying onto the green spirits effect that i wanted, is still not obvious enough,
+       and is sometimes totally missing". Measured in the code: the flash was the spirit's own colour lifted for a third of
+       a second, and the one RELEASED by the water, nearly every one, was already fading as it flashed, its fill written
+       over every frame by its going; in the gold nothing flashed at all. Now the silhouette burns pure white and holds a
+       tenth of a second before it settles over 0.4 s, the one released as brightly as it goes (hitBoost), and every
+       strike bursts where it lands, through his sight: hitBurst below) */
+    const HIT_WHITE = new THREE.Color(0xffffff), _hitC = new THREE.Color(), HIT_HOLD = 0.1, HIT_FADE = 0.4, HIT_FILL = 3.0;
+    const hitBoost = (P) => { const d = P.hitT0 != null ? wallNow() - P.hitT0 : 99; return d < HIT_HOLD ? 1 : Math.max(0, 1 - (d - HIT_HOLD) / HIT_FADE); };
+    function hitFlash(S, delay = 0) {
+      const P = S.P; hitBurst(S, delay); if (!P.fx) return;
+      const look = P === spirits.large ? SPIRIT.large : SPIRIT.wander, base = new THREE.Color(look.color), run = play.run, t0 = wallNow() + delay;
+      P.hitT0 = t0; if (delay <= 0) P.fx.set('uColor', HIT_WHITE);
+      /* (one released goes out by its own fill, lifted by hitBoost; one staggered is filled bright here) */
       const fill = () => S.state !== 'leave' && S.state !== 'gone';
-      if (fill()) P.fx.set('uFill', 2.2);
-      const step = () => { if (!live(run) || !P.fx || P.hitT0 !== t0) return; const u = Math.min(1, (wallNow() - t0) / 0.35);
-        P.fx.set('uColor', _hitC.copy(HIT_WHITE).lerp(base, u));
-        if (fill()) P.fx.set('uFill', 2.2 + (look.fill - 2.2) * u * u);
-        if (u < 1) requestAnimationFrame(step); };
+      if (fill() && delay <= 0) P.fx.set('uFill', HIT_FILL);
+      const step = () => { if (!live(run) || !P.fx || P.hitT0 !== t0) return; const d = wallNow() - t0;
+        if (d >= 0) { const u = Math.min(1, Math.max(0, d - HIT_HOLD) / HIT_FADE);
+          P.fx.set('uColor', _hitC.copy(HIT_WHITE).lerp(base, u * u));
+          if (fill()) P.fx.set('uFill', HIT_FILL + (look.fill - HIT_FILL) * u * u);
+          if (u >= 1) return; }
+        requestAnimationFrame(step); };
       requestAnimationFrame(step);
     }
+    /* THE BURST where the water lands (R81): a white flash swelling out, a ring thrown wide, six sparks flung off and
+       falling, half a second on the wall clock; drawn through his sight only, where the green ones are; sized by the one
+       struck (its sphere); eight at once, the oldest given back first */
+    const HITFX = { slots: 8, sparks: 6, flash: 0.24, ring: 0.5, spark: 0.46 };
+    const hitFx = { slots: null, next: 0 };
+    function hitTex(ring) {
+      const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'), r = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+      if (ring) { r.addColorStop(0, 'rgba(255,255,255,0)'); r.addColorStop(0.6, 'rgba(255,255,255,0)'); r.addColorStop(0.8, 'rgba(255,255,255,1)'); r.addColorStop(0.9, 'rgba(255,255,255,0.4)'); r.addColorStop(1, 'rgba(255,255,255,0)'); }
+      else { r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(0.28, 'rgba(255,255,255,0.9)'); r.addColorStop(0.6, 'rgba(255,255,255,0.28)'); r.addColorStop(1, 'rgba(255,255,255,0)'); }
+      g.fillStyle = r; g.fillRect(0, 0, 128, 128); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+    }
+    function hitSprite(tex, col) {
+      const m = new THREE.SpriteMaterial({ map: tex, color: col, transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, fog: false });
+      mats.push(m); const sp = new THREE.Sprite(m); sp.visible = false; sp.renderOrder = 32;
+      if (ctx.visionLayer != null) sp.layers.set(ctx.visionLayer); world.add(sp); return sp;
+    }
+    function hitBurst(S, delay = 0) {
+      const m = S.P.hit; if (!m) return;
+      if (!hitFx.slots) { const glow = dipTex(), ring = hitTex(true), core = hitTex(false); owned.push(glow, ring, core); hitFx.slots = [];
+        for (let i = 0; i < HITFX.slots; i++) hitFx.slots.push({ flash: hitSprite(core, 0xffffff), ring: hitSprite(ring, 0xd8ffd2),
+          sparks: Array.from({ length: HITFX.sparks }, () => hitSprite(glow, 0xeeffe8)), dirs: Array.from({ length: HITFX.sparks }, () => new THREE.Vector3()),
+          at: new THREE.Vector3(), t0: -99, r: 0.4 }); }
+      const B = hitFx.slots[hitFx.next]; hitFx.next = (hitFx.next + 1) % HITFX.slots;
+      B.t0 = wallNow() + delay; B.at.copy(m.position); B.r = Math.max(0.3, Math.min(0.9, m.scale.x || 0.4));
+      const turn = hitFx.next * 1.7;
+      B.dirs.forEach((v, i) => { const a = i * 2.39996 + turn, y = ((i * 0.618 + 0.25) % 1) - 0.3; v.set(Math.cos(a), y, Math.sin(a)).normalize(); });
+    }
+    function hitFxTick() {
+      if (!hitFx.slots) return;
+      const now = wallNow();
+      for (const B of hitFx.slots) {
+        const d = now - B.t0, uf = d / HITFX.flash, ur = d / HITFX.ring, us = d / HITFX.spark;
+        if (d >= 0 && uf < 1) { B.flash.position.copy(B.at); B.flash.scale.setScalar(B.r * (1.0 + 1.8 * (1 - (1 - uf) * (1 - uf)))); B.flash.material.opacity = 1 - uf * uf; B.flash.visible = true; }
+        else B.flash.visible = false;
+        if (d >= 0 && ur < 1) { const e = 1 - (1 - ur) * (1 - ur); B.ring.position.copy(B.at); B.ring.scale.setScalar(B.r * (0.8 + 3.4 * e)); B.ring.material.opacity = 1 - ur; B.ring.visible = true; }
+        else B.ring.visible = false;
+        for (let i = 0; i < B.sparks.length; i++) { const sp = B.sparks[i];
+          if (d >= 0 && us < 1) { const e = 1 - (1 - us) * (1 - us); sp.position.copy(B.at).addScaledVector(B.dirs[i], B.r * (0.3 + 2.6 * e)); sp.position.y -= 0.4 * us * us;
+            sp.scale.setScalar(B.r * 0.34 * (1 - 0.6 * us)); sp.material.opacity = 1 - us; sp.visible = true; }
+          else sp.visible = false; }
+      }
+    }
+    function hitFxReset() { if (!hitFx.slots) return; for (const B of hitFx.slots) { B.t0 = -99; B.flash.visible = B.ring.visible = false; for (const sp of B.sparks) sp.visible = false; } }
     function strike(S) {
       const P = S.P; S.hits++;
       if (S.hits >= S.need) { S.state = 'leave'; S.leave = 0; hitFlash(S); return true; }
@@ -4759,6 +4811,7 @@
         const m = S.P.hit; if (!m || !m.visible) continue;
         _fsph.center.copy(m.position); _fsph.radius = m.scale.x; if (!_frus.intersectsSphere(_fsph)) continue;
         S.state = 'leave'; S.leave = -0.25 * ((n * 0.6180339887) % 1); n++;       // (each on its own beat over a quarter second: v6.15)
+        hitFlash(S, -S.leave);                                                      // (R81: each one seen struck, on its beat)
       }
       fx('u4goldflick', 0.9, 0);
       if (n) { fx('u4goldclear', Math.min(1, 0.78 + 0.03 * n), 0); F.lastStrike = F.t; F.cleared += n; }
@@ -5210,6 +5263,7 @@
       spotsTick(); hitsTick(); scareTick(); doorTick(wdt); heatTick(wdt); altarTick();   // (the fan, the lamp and the glass: updateNotes, film or play; his hand on her head: updateNotes, play and the decision)
       fightTick(wdt);
       dipFxTick();                                                        // (R63: the refill seen)
+      hitFxTick();                                                        // (R81: every strike seen)
       /* (R58, Chad, 18 Nov evening: "why reloading and continuing game allows me to flick water even before that part of
          the gameplay begins"): the bag keeps the water from a run that reached the blessing (a Continue, a loss's start
          again), and the engine has the water out whenever the bowl is in his hand. So it is offered only in the blessing,
@@ -5234,7 +5288,7 @@
       play.fight = null; play.appaGone = false; play.nerveOut = false; play.heat = 0; play.heatStep = 0; play.closeHold = 0; play.breathSaid = -99; play.loseWait = false;
       play.fanK = 1; play.fanTo = 1; play.scareSeed = SCARE_SEED; play.scareAt = 0; play.scared = new Set(); play.doorTo = -0.12; play.doorK = -0.12;
       play.fogged = false; play.fogAt = 0; fogK = 0; fogTo = 0; lampK = 0; lampTo = 0; crownK = 0; crownTo = 0; oppLooked = ''; wanderNext = 2;
-      decOpen = false; altarBlock = false; bowlOnFloor.visible = true; chantNow = null; bowlsOnStool(false); waterLast = null;
+      decOpen = false; altarBlock = false; bowlOnFloor.visible = true; chantNow = null; bowlsOnStool(false); waterLast = null; hitFxReset();
       DEC.on = false; DEC.p1 = null; DEC.at = null; DEC.eye = null;
       for (const P of spirits.wander.concat([spirits.large, spirits.appa, spirits.oppress])) { P.gone = false; P.alpha = 1; }
       if (kit) { kit.bar(null); if (kit.weaponBlock) kit.weaponBlock(null); if (kit.visionUrge) kit.visionUrge(false);
@@ -5420,6 +5474,19 @@
        from where he keeps his place (D) the kneeling son's head stands clear of her face (it hid it when he knelt level
        with her); and Grandmaster Pho's head as he bows over her with his hand on her head (measured: e4c4who.mjs) */
     const KNEEL_R = { x: CHAIR.x + 0.45, z: CHAIR.z - 0.05 }, PHO_BOW = [-0.13, 1.40, 3.51];
+    /* (R80, Chad, 18 Nov: "in some outcome ending cutscenes, ravi's head blocks grandmaster pho when the camera tries to
+       show pho talking with his voicelines". Stood up where he had knelt, KNEEL_R, his head was 0.02 m from the line from
+       ending D's lens to his teacher's face and 0.07 m from ending C's: mine, from builds 21p and 21q. He rises now at his
+       mother's side, shoulder to her shoulder, carried there in the rise itself: 0.22 and 0.36 m off those lines, his
+       mother's own place clear of him by 0.3 m) */
+    const RAVI_UP = { x: CHAIR.x + 0.30, z: CHAIR.z + 0.17 };
+    function raviUp(P, t, rise) {                       // where his rise carries him, from the kneel to her side, by its run
+      const u = smo(c01((t - rise - 0.6) / 3.0));
+      if (u <= 0) return;
+      const ry0 = faceTo(KNEEL_R.x, KNEEL_R.z, CHAIR.x, CHAIR.z + 0.2), ry1 = faceTo(RAVI_UP.x, RAVI_UP.z, CHAIR.x, CHAIR.z + 0.2);
+      P.group.position.x += (RAVI_UP.x - KNEEL_R.x) * u; P.group.position.z += (RAVI_UP.z - KNEEL_R.z) * u;
+      P.group.rotation.y = lpA(ry0, ry1, u);
+    }
     /* (the rush take's hips over the floor, its own metres, every quarter second: tools/probes/takepath.mjs, 18 Nov) */
     const RUSH_HIPS = [[-0.01, -0.03], [-0.01, 0.0], [-0.02, 0.06], [-0.03, 0.22], [-0.08, 0.61], [-0.21, 1.22], [-0.35, 1.82], [-0.43, 2.24], [-0.43, 2.63], [-0.43, 2.82], [-0.44, 2.86], [-0.45, 2.89]];
     const RUSH_AT = (tk) => { const f = Math.max(0, Math.min(RUSH_HIPS.length - 1.001, tk / 0.25)), i = Math.floor(f), u = f - i, A = RUSH_HIPS[i], B = RUSH_HIPS[i + 1];
@@ -5604,7 +5671,7 @@
       frame(t) {
         fLook('DARK');
         whenReady(cast.amma, (P) => { put(P, CHAIR.x, CHAIR.z, CHAIR.ry); pose(P, 'wsit', pingOf(t, 2.0, 3.6, 12));
-          if (t > LO.turn) lookNow(P, 'lens', smo(c01((t - LO.turn) / 1.6)), 1.35, 0.05); });
+          if (t > LO.turn) lookNow(P, 'lens', smo(c01((t - LO.turn) / 1.6)), 0.85, 0.05); });                // (R82: a neck's reach)
         phoBless(t, 1 - smo(c01((t - LO.lift) / 0.8)));
         whenReady(cast.mala, (P) => { pose(P, 'kneelhold', pingOf(t, 2.5, 1.0, 6.0)); lookNow(P, AMMA_FACE, 1, 0.9); });
         whenReady(cast.ravi, (P) => { pose(P, 'Idle_3', 3 + t * 0.35, true); lookNow(P, AMMA_FACE, 1, 0.9); });
@@ -5643,7 +5710,10 @@
     const A_EYE = [[R1.x + 0.58, 1.62, R1.z - 0.28], [R1.x + 0.68, 1.62, R1.z - 0.36]];
     const A_WALK = [{ x: R1.x + 0.32, z: R1.z + 0.42 }, { x: R1.x - 0.02, z: R1.z + 0.56 }];
     const STEPS_TK = 0.9;                                                     // her steps take run to here: 0.28 m by its own travel
-    const MALA_C = { x: CHAIR.x - 0.42, z: CHAIR.z + 0.82 };                 // Mala at her right in the close
+    /* (R79, 18 Nov: at CHAIR + (-0.42, 0.82) her right shoulder stood 3 cm inside the end of her mother's altar, the cabinet
+       that spans x -0.525 to 0.225 and z 4.69 to 5.15 from 1.15 m up (its file's own extent, placed): she stands 0.15 m
+       back from it and a little to the wall, her right shoulder 8 cm clear of its end) */
+    const MALA_C = { x: CHAIR.x - 0.47, z: CHAIR.z + 0.67 };                 // Mala at her right in the close
     /* Ravi KNEELS at her left in the close (his kneel's own take), looking up at her: on his knees his head is a third of
        a metre under her face from every place the close looks from, and clear of the chair, the lamp and her steps */
     /* (a step behind her left since 18 Nov: at her side he knelt on the line from the merit's eye to her palms, and the
@@ -5665,6 +5735,16 @@
        first moments) */
     function ammaRise(t, t0) { whenReady(cast.amma, (P) => { put(P, CHAIR.x, CHAIR.z, CHAIR.ry);
       pose(P, 'rise', t - t0 < 4.9 ? Math.max(0, t - t0) : pingOf(t - t0 - 4.9, 4.6, 0.3, 3.0), false, 'trance', 1 - smo(c01((t - t0) / 0.4)), pingOf(t, 8.2, 1.5, 3.2)); }); }
+    /* (R82) a look past a neck's reach: she turns on the spot about her own hips by all but AMMA_NECK of it, eased by k
+       (called after ammaRise has posed and placed her this frame, so nothing stacks) */
+    const AMMA_NECK = 0.7, _atv = new THREE.Vector3();
+    function ammaTurnTo(P, tg, k) {
+      if (!P || !P.ready || !P.hips || !(k > 0)) return;
+      P.group.updateWorldMatrix(true, true); P.hips.getWorldPosition(_atv); const hx = _atv.x, hz = _atv.z;
+      const want = faceTo(hx, hz, tg[0], tg[2]), ry0 = P.group.rotation.y, d = Math.atan2(Math.sin(want - ry0), Math.cos(want - ry0));
+      P.group.rotation.y = ry0 + Math.sign(d) * Math.max(0, Math.abs(d) - AMMA_NECK) * k;
+      pinHips(P, hx, hz);
+    }
     function ammaTrance(t) { whenReady(cast.amma, (P) => { put(P, CHAIR.x, CHAIR.z, CHAIR.ry); pose(P, 'trance', pingOf(t, 8.2, 1.5, 3.2)); }); }
     /* the one on her back: its cry, then torn from her (thrown back and gone in the light) */
     function oppressAt(t, cry, torn) {
@@ -5783,7 +5863,12 @@
         /* standing, she looks back over her shoulder for her son: held back, behind her (her face turned to him and to
            us; a neck's reach, the rest of the turn is his to see), and calls him ("Ravi?" at E.call: 18 Nov, photographed,
            said at 10.7 it fell while she was still pushing up out of the chair, her face down; he goes still on her voice) */
-        if (t > E.call - 0.6) whenReady(cast.amma, (P) => lookNow(P, headOf(cast.ravi, [RG.x, 1.4, RG.z]), smo(c01((t - E.call + 0.6) / 1.0)), 1.25, 0.04));
+        /* (R82, Chad, 18 Nov: "when amma turns her head, it looks unnatural as it is impossible for a neck to turn 90 degrees
+           like that", with his photograph of this moment: her head alone turned 1.25 rad on top of her take's own turn.
+           Now she turns on the spot to her son, about her own hips, by all of the turn but a neck's, and her head does
+           the last of it) */
+        if (t > E.call - 0.6) whenReady(cast.amma, (P) => { const tg = headOf(cast.ravi, [RG.x, 1.4, RG.z]), k = smo(c01((t - E.call + 0.6) / 1.4));
+          ammaTurnTo(P, tg, k); lookNow(P, tg, k, AMMA_NECK, 0.04); });
         phoBless(t, 1 - smo(c01((t - E.rise + 0.4) / 0.8)));
         oppressAt(t, E.cry, E.torn); goddess(t < E.torn ? 1 : 1 - smo(c01((t - E.torn) / 1.5)));
         /* Ravi: fighting his hold until she rises (the take run to its end by then: it ran out and froze 3 s early);
@@ -5922,13 +6007,14 @@
            kneels, his eyes turning from him to her; Mala comes round to her other side and kneels too: walkKneel) */
         whenReady(cast.ravi, (P) => {
           if (t < E.kneel) { rushHeld(P, t); lookNow(P, CR_EYE, smo(c01((t - 0.5) / 0.8)), 0.8); }
-          else if (t > E.rise + 3.6) { put(P, KR.x, KR.z, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2));        // (R68: stood again, alive)
+          else if (t > E.rise + 3.6) { put(P, RAVI_UP.x, RAVI_UP.z, faceTo(RAVI_UP.x, RAVI_UP.z, CHAIR.x, CHAIR.z + 0.2));        // (R68: stood again, alive; R80: at her side)
             const it = 2 + (t - E.rise - 3.6) * 0.35;
             if (!malaCall(P, t, E.Rv, SECS.rv4R1 || 4.6, 'Stand_and_Chat', 'Idle_3', it))
               pose(P, 'Idle_3', it, true, 'kneelhold', 1 - smo(c01((t - E.rise - 3.6) / 0.8)), 0.2);
             lookNow(P, HER_HEAD(), 1, 0.9); }
           else { walkKneel(P, t, E.kneel, rushXZ(P, 2.5), KR, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2), ['rush', pingOf(E.kneel, 2.45, 0.12, 1.4)],
               { ry0: RAVI_RY, kt: (td) => (t < E.rise ? (td < 4.2 ? td : pingOf(td - 4.2, 4.05, 0.15, 3.4)) : runOf(t, E.rise + 0.6, E.rise + 3.6, 4.2, 0.2)) });
+            raviUp(P, t, E.rise);
             lookNow(P, lp3(CR_EYE, AMMA_FACE, smo(c01((t - E.kneel) / 0.5))), 1, 0.9); } });
         whenReady(cast.mala, (P) => {
           if (t < E.mala) { pose(P, 'lightlamp', MALA_LAMPT(t)); lookNow(P, AMMA_FACE, 1, 0.9); }
@@ -5941,7 +6027,7 @@
               { ry0: faceTo(MALA_T.x, MALA_T.z, CHAIR.x, CHAIR.z), kt: (td) => (t < E.rise ? (td < 4.2 ? td : pingOf(td - 4.2, 4.05, 0.15, 3.4)) : runOf(t, E.rise + 0.8, E.rise + 3.8, 4.2, 0.2)) });
             lookNow(P, AMMA_FACE, 1, 0.9); } });
         /* she looks at her son before she stands */
-        if (t >= E.look) whenReady(cast.amma, (P) => lookNow(P, headOf(cast.ravi, [KR.x, 0.9, KR.z]), smo(c01((t - E.look) / 0.8)), 1.0));
+        if (t >= E.look) whenReady(cast.amma, (P) => lookNow(P, headOf(cast.ravi, [KR.x, 0.9, KR.z]), smo(c01((t - E.look) / 0.8)), 0.85));   // (R82: a neck's reach)
         visionAt(t, -1, 0.1, E.sight, E.sightFor);                       // (R55, R65: his sight home to him before she stands)
         track(t, [
           { t: 0, name: 'S', eye: DEC_EYE, at: DEC_AT, fp: PLAY_FOV, fd: PLAY_FOV },
@@ -5968,15 +6054,16 @@
            "Hold her hand" round to her side and down onto his knees: walkKneel, its two legs) */
         whenReady(cast.ravi, (P) => {
           const RX = rushXZ(P, 2.5), R2 = { x: RX.x - 0.12, z: RX.z + 0.18 }, r2 = faceTo(R2.x, R2.z, CHAIR.x, CHAIR.z);
-          if (t > E.rise + 3.6) { put(P, KR.x, KR.z, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2));
+          if (t > E.rise + 3.6) { put(P, RAVI_UP.x, RAVI_UP.z, faceTo(RAVI_UP.x, RAVI_UP.z, CHAIR.x, CHAIR.z + 0.2));
             const it = 2 + (t - E.rise - 3.6) * 0.35;
             if (!malaCall(P, t, E.Rv, SECS.rv4R1 || 4.6, 'Stand_and_Chat', 'Idle_3', it))
               pose(P, 'Idle_3', it, true, 'kneelhold', 1 - smo(c01((t - E.rise - 3.6) / 0.8)), 0.2);
             lookNow(P, HER_HEAD(), 1, 0.9); return; }
           if (t < E.reach) rushHeld(P, t);
           else if (t < E.kneel) walkKneel(P, t, E.reach, RX, R2, r2, ['rush', pingOf(E.reach, 2.45, 0.12, 1.4)], { ry0: RAVI_RY, kneelAt: Infinity });
-          else walkKneel(P, t, E.kneel, R2, KR, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2), ['Idle_3', 3 + (E.kneel - E.reach) * 0.4],
+          else { walkKneel(P, t, E.kneel, R2, KR, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2), ['Idle_3', 3 + (E.kneel - E.reach) * 0.4],
             { ry0: r2, kt: (td) => (t < E.rise ? Math.min(4.2, td) : runOf(t, E.rise + 0.6, E.rise + 3.6, 4.2, 0.2)) });
+            raviUp(P, t, E.rise); }
           lookNow(P, AMMA_FACE, 1, 0.9); });
         /* (R68: at her lamp, breathing, through the cry and the light; as her mother's eyes open, into her stand and turned to
            her; her "Unbelievable... Amma, you're on your feet!" (R55) her talking take for its length; her eyes on her mother's face as it rises) */
@@ -6029,7 +6116,38 @@
     /* THE CLOSE (§4.5, every ending): from his place at her front left again */
     /* her hips' place when the rise leaves her standing at her chair (its held end), measured once on her own body; and her
        group moved so her hips stand where a moment of her walk says (a function of the film's clock: seek-safe) */
-    const _phv = new THREE.Vector3();
+    const _phv = new THREE.Vector3(), _rlv = new THREE.Vector3(), _rla = new THREE.Vector3(), _rlb = new THREE.Vector3();
+    /* (R79) MALA'S HANDS IN THE CLOSE, on her words "Slowly, Amma. Slowly." (CL.slow, its own length): up before her, palms
+       up; onto her mother's right arm as her mother reaches her altar (the steps end at CL.steps + STEPS_TK / 0.55); off
+       before her mother's palms join (CL.palms). Her mother's arm is read from her own bones on the frame, after she is
+       posed */
+    const _msS = new THREE.Vector3(), _msE = new THREE.Vector3(), _msW = new THREE.Vector3();
+    function malaSteady(P, c) {
+      const k = smo(c01((c - CL.slow + 0.25) / 0.45)) * (1 - smo(c01((c - CL.palms + 0.9) / 0.6)));
+      if (!(k > 0)) return;
+      const ry = P.group.rotation.y, F = [Math.sin(ry), Math.cos(ry)], R = [-F[1], F[0]], M = P.group.position;
+      const A = cast.amma && cast.amma.ready ? armsOf(cast.amma) : null, a = A && A.R;
+      let on = smo(c01((c - (CL.steps + STEPS_TK / 0.55) + 0.35) / 0.7));
+      if (!a) on = 0;
+      for (const sd of ['L', 'R']) {
+        const sg = sd === 'R' ? 1 : -1;
+        /* before her: palms up and a little in, at her waist */
+        let at = [M.x + F[0] * 0.30 + R[0] * 0.12 * sg, 1.02, M.z + F[1] * 0.30 + R[1] * 0.12 * sg],
+            f = [F[0], -0.12, F[1]], n = [-R[0] * 0.3 * sg, 0.95, -R[1] * 0.3 * sg];
+        if (on > 0) {
+          a.up.getWorldPosition(_msS); a.fore.getWorldPosition(_msE); a.hand.getWorldPosition(_msW);
+          const ar = cast.amma.group.rotation.y, AF = [Math.sin(ar), Math.cos(ar)];
+          /* her left hand behind her mother's arm just above the elbow, its palm to the arm; her right on the front of her
+             forearm below it: each hand's fingers along its reach, from her side */
+          const p = sd === 'L' ? [lp(_msE.x, _msS.x, 0.25) - AF[0] * 0.04, lp(_msE.y, _msS.y, 0.25), lp(_msE.z, _msS.z, 0.25) - AF[1] * 0.04]
+                               : [lp(_msE.x, _msW.x, 0.30) + AF[0] * 0.04, lp(_msE.y, _msW.y, 0.30), lp(_msE.z, _msW.z, 0.30) + AF[1] * 0.04];
+          const sh = [M.x + R[0] * 0.17 * sg, M.z + R[1] * 0.17 * sg], rx = p[0] - sh[0], rz = p[2] - sh[1], rl = Math.hypot(rx, rz) || 1;
+          const nn = sd === 'L' ? [AF[0], 0, AF[1]] : [-AF[0], 0, -AF[1]];
+          at = lp3(at, p, on); f = lp3(f, [rx / rl, -0.1, rz / rl], on); n = lp3(n, nn, on);
+        }
+        handTo(P, sd, at, f, n, k, { out: 0.12, down: 0.40 });
+      }
+    }
     function standA(P) { if (!P._standA) { put(P, CHAIR.x, CHAIR.z, CHAIR.ry); pose(P, 'rise', 4.75); P.group.updateWorldMatrix(true, true); P.hips.getWorldPosition(_phv); P._standA = [_phv.x, _phv.z]; } return P._standA; }
     function pinHips(P, x, z) { if (!P.hips) return; P.group.updateWorldMatrix(true, true); P.hips.getWorldPosition(_phv); P.group.position.x += x - _phv.x; P.group.position.z += z - _phv.z; }
     function closeFrame(k, c, tAll) {
@@ -6071,11 +6189,23 @@
         /* (the ash on her FOREHEAD, her daughter's fingers drawn across her brow from her right side: 18 Nov, photographed
            at her chin and then at her nose, the point guessed from the head bone; now her brow as her skin has it,
            HER_BROW (c_scast.js), and from the side the wrist is 0.11 m nearer her daughter) */
-        if (c > CL.ash - 0.6 && c < CL.ash + 1.8) { const h = HER_BROW(); handTo(P, 'R', [h[0] - 0.02, h[1], h[2]], [1, 0, 0], [0, 0, -1], smo(c01((c - CL.ash + 0.6) / 0.6)) * (1 - smo(c01((c - CL.ash - 1.2) / 0.6))), { out: 0.25, down: 0.35 }); } });
+        /* (R79, Chad, 18 Nov: "the yellow woman model, when she tells the auntie slowly and her hands come up to stop the
+           auntie, it clips into the altar, and also she should do that earlier so it syncs with her voiceline timing". Her
+           right hand went up to her mother's brow three seconds after her words, its elbow out under her mother's altar.
+           Now both hands come up WITH "Slowly", before her at her waist, palms up, ready for her; as her mother reaches her
+           altar they go to her right arm, behind her elbow and on her forearm, and hold her until her palms join; every
+           point below the altar's base, 1.15 m, and before its front) */
+        malaSteady(P, c); });
       /* (Ravi turns his head to his teacher as he is spoken to: a neck's reach, his body still turned to her) */
       whenReady(cast.ravi, (P) => { put(P, RAVI_C.x, RAVI_C.z, faceTo(RAVI_C.x, RAVI_C.z, STAND.x, STAND.z)); pose(P, 'kneelhold', pingOf(c, 2.6, 0.8, 6.0));
-        const h = HER_HEAD(), ph = cast.phoB.home, k = smo(c01((c - CL.z1 + 0.9) / 0.9));
-        lookNow(P, [lp(h[0], ph.x, k), lp(h[1], 1.55, k), lp(h[2], ph.z, k)], 1, 1.0); });
+        /* (R78, Chad, 18 Nov: "In all the ending cutscenes, ravi's head spins in an unnatural way just before the camera pans
+           back to grandmaster pho": his look's POINT was slid in a straight line from her head to his teacher's, and passing
+           close by his own head it swept his face round in a moment. Now the DIRECTION is turned, from her to his teacher,
+           over 1.2 s, and his head goes only a neck's reach of it) */
+        const h = HER_HEAD(), ph = cast.phoB.home, k = smo(c01((c - CL.z1 + 1.2) / 1.2));
+        if (P.head) { P.group.updateWorldMatrix(true, true); P.head.getWorldPosition(_rlv);
+          _rla.set(h[0], h[1], h[2]).sub(_rlv).normalize(); _rlb.set(ph.x, 1.55, ph.z).sub(_rlv).normalize(); _rla.lerp(_rlb, k).normalize();
+          lookNow(P, [_rlv.x + _rla.x, _rlv.y + _rla.y, _rlv.z + _rla.z], 1, 0.85); } });
       whenReady(spirits.oppress, (P) => { P.group.visible = false; });
       whenReady(spirits.appa, (P) => { if (P.gone) return; put(P, APPA_C.x, APPA_C.z, faceTo(APPA_C.x, APPA_C.z, CHAIR.x, CHAIR.z + 0.3)); pose(P, 'Idle_3', 2 + c * 0.3, true); });
       spirits.wander.forEach((P, i) => whenReady(P, (Q) => { const W = CLOSE_WANDER[i]; if (!W) return;
@@ -6188,7 +6318,7 @@
           else { put(P, RAVI_IN.x, RAVI_IN.z, faceTo(RAVI_IN.x, RAVI_IN.z, CHAIR.x, CHAIR.z)); pose(P, 'Idle_3', 4 + t * 0.35, true); lookNow(P, AMMA_FACE, 1, 0.8); } });
         whenReady(cast.mala, (P) => { put(P, MALA_T.x, MALA_T.z, faceTo(MALA_T.x, MALA_T.z, CHAIR.x, CHAIR.z)); pose(P, 'Idle_3', 1 + t * 0.35, true); lookNow(P, inside && t > T.inside ? 'lens' : AMMA_FACE, inside && t > T.inside ? smo(c01((t - T.inside) / 1.2)) * 0.6 : 1, 0.8); });
         /* her: in her chair before her goddess; her head turning to him (past his teacher) as the room's sound drops */
-        whenReady(cast.amma, (P) => { pose(P, 'wsit', pingOf(t, 2.0, 3.6, 12)); if (t > T.look) lookNow(P, 'lens', smo(c01((t - T.look) / 2.0)), 1.35, 0.05); });
+        whenReady(cast.amma, (P) => { pose(P, 'wsit', pingOf(t, 2.0, 3.6, 12)); if (t > T.look) lookNow(P, 'lens', smo(c01((t - T.look) / 2.0)), 0.85, 0.05); });   // (R82: a neck's reach)
         /* the one on her back, seen only in the flicker; its face turned to him with hers */
         whenReady(spirits.oppress, (P) => { oppRide(P); pose(P, 'cling', 2 + t * 0.3); if (t > T.look) lookNow(P, 'lens', smo(c01((t - T.look - 0.4) / 1.6)), 1.3); });
         /* his sight, open for a held breath by itself */
