@@ -2068,6 +2068,10 @@ let weaponDecl = null, weaponProp = null, weaponPropKey = null, weaponMixer = nu
 let weaponClipT0 = {};                       // v12.2: where each take's first key sits, measured at load
 let weaponForce = null;                      // null: follow the bag; true/false: a film or a scene has said
 let weaponRounds = 0, weaponMags = 0, weaponBusy = null, weaponFlash = null, weaponFlashT = 0;
+/* v27.0 (R56, Chad, 18 Nov evening: "after being empowered by lp phiboon, the ammo count of the water should switch to an
+   unlimited infinity symbol"): kit.ammoInf(true) and the count reads the infinity sign, and no flick spends the bowl, until
+   kit.ammoInf(false) or kitReset. Never asked, the count is as it was */
+let weaponInf = false;
 /* v13.1 — THE MUZZLE FLASH (Chad: "See if you can use this muzzle flash
    effect when shooting the rifle, it should show this for a split second").
    `weaponFlash` above is the POINT LIGHT that has thrown the world's flash
@@ -4531,9 +4535,10 @@ function weaponFrame(dt) {
   }
   const pill = $('ammo');
   if (pill && !weaponDecl.unlimited) {
-    const txt = weaponRounds + ' / ' + (weaponDecl.endless ? (weaponDecl.rounds | 0) : weaponMags);   // v27.0: a bowl's count is against its own
+    const txt = weaponInf ? '\u221E' : weaponRounds + ' / ' + (weaponDecl.endless ? (weaponDecl.rounds | 0) : weaponMags);   // v27.0: a bowl's count is against its own (R56: or none)
     if (pill.textContent !== txt) pill.textContent = txt;
-    pill.classList.toggle('empty', weaponRounds === 0);
+    pill.classList.toggle('empty', !weaponInf && weaponRounds === 0);
+    pill.classList.toggle('inf', weaponInf);
   }
 }
 /* v12.2 — RECOIL. Chad: "there is no proper recoil when shooting."
@@ -4710,14 +4715,18 @@ function weaponFire() {
   const now = performance.now();
   if (now - weaponLastFire < weaponDecl.fireGap * 1000) return false;
   weaponLastFire = now;
-  if (!weaponDecl.unlimited && weaponRounds <= 0) {
+  if (!weaponDecl.unlimited && !weaponInf && weaponRounds <= 0) {
     if (weaponDecl.empty) snd(weaponDecl.empty, 0.7); else snd('uiclick', 0.3);
     haptic(20);
+    /* (v27.0, R57, Chad, 18 Nov evening: "When the player runs out of water, and tries to flick, there should be a clear HUD
+       UI message asking the player to reload the water."): a weapon that names its empty words says them under the
+       reticle, as a refusal is said (its own sound already played: quiet); absent, as it was */
+    if (weaponDecl.words && weaponDecl.words.empty) weaponBlockSay(weaponDecl.words.empty, true);
     weaponLog.push({ t: now, hit: null, empty: true });
     if (weaponDecl.hands === 'own') ownAnim = { kind: 'flick', t0: clock.getElapsed(), pk: 0 };   // v27.0: a dry flick
     return false;
   }
-  if (!weaponDecl.unlimited) weaponRounds--;
+  if (!weaponDecl.unlimited && !weaponInf) weaponRounds--;
   /* THROUGH weaponPlay, not around it: this line used to reset and play the
      action itself, which meant it started at time 0 and never reached the
      Shoot take's first key at 3.37 s — so v12.2's whole clip-start fix was
@@ -4797,8 +4806,20 @@ function weaponReload() {
    the shot landed. All of it is DERIVED on the frame (v11.1's law): a film takes the hands and lets go of the bowl on its
    first frame (playCineFn), and when play comes back the pose and the bowl come back with it. While the water is out
    the weapon owns his hands; a chapter that needs them for something else puts it away first (kit.weaponOut(false)). */
+/* (v27.0, R54, Chad, 18 Nov: "why are there the hands holding the bowl like that? there is no need to have this pose, remove
+   the hands and bowl."): a weapon declared `view: false` is held with NOTHING drawn: while it is out his hands are not
+   drawn at all (the hands' root hidden, and given back the moment it is put away, in whatever state: a film's first frame
+   puts it away, so a film has his hands as it always had; no film writes the root, play's resume shows it, and the next
+   frame of play hides it again before anything is drawn), no pose is
+   taken and nothing rides his hand; the flick, its spray (from where his right hand would be: ownTipWorld's own
+   fallback), its sound, the dip and the HUD are as they were. Absent, every frame is as it was */
 function weaponOwnSync(up) {
   const d = weaponDecl;
+  if (d && d.view === false) {
+    if (up) { if (handsRoot.visible) handsRoot.visible = false; ownShown = true; }
+    else if (ownShown) { ownShown = false; ownAnim = null; if (weaponBusy === 'reload') weaponBusy = null; handsRoot.visible = true; }
+    return;
+  }
   if (up) {
     if (!d || !d.pose || !HPOSE[d.pose] || !hpReady()) return;      // nothing to draw with until the hands have landed
     if (!(hp.on && hp.name === d.pose)) kitHandPose(d.pose, 1, { secs: ownShown ? 0.25 : 0.45, p: 0 });
@@ -4872,7 +4893,7 @@ function ownSprayDrop() {
 function ownTipWorld(out, depth) {
   camera.updateMatrixWorld();
   const o = _osD.setFromMatrixPosition(camera.matrixWorld);
-  const palm = kitHandPalm('right', _osC);
+  const palm = weaponDecl && weaponDecl.view === false ? null : kitHandPalm('right', _osC);   // (R54: no hand drawn, the drops from where it would be)
   if (!palm) return out.set(0.10, -0.16, -depth).applyMatrix4(camera.matrixWorld);
   vmCam.updateMatrixWorld(); palm.project(vmCam);
   return out.set(palm.x, palm.y, 0.5).unproject(camera).sub(o).normalize().multiplyScalar(depth).add(o);
@@ -7804,6 +7825,7 @@ function kitReset() {
   visUrge = false;                  // v27.0: nor the eye button still asking
   life.on = false; life.k = 1; life.trail = 1; life.at = null;   // v27.0 (seam 54): nor a life's bar
   edgeG.to = 0; edgeG.k = 0;                                      // v27.0 (seam 56): nor a glow at the edges
+  weaponInf = false;                                              // v27.0 (R56): nor a bowl that never empties
   sprayCol = null; sprayScale = 1; if (own.pts) { own.pts.material.size = own.size0 || own.pts.material.size; own.glow.material.size = own.pts.material.size * 2.4; }   // v27.0: nor the water's gold
   sprayHudSync();                   // v27.0: nor its button's
   gwave.on = false; gwave.R = 0; gwave.M = 0;                     // v27.0 (seam 57): nor a wave still going out
@@ -8071,6 +8093,7 @@ const KIT = {
     weaponRecoilFire();
     return true;
   },
+  ammoInf: (on) => { weaponInf = !!on; return true; },             // v27.0 (R56): the count reads the infinity sign
   ammo: (rounds, mags) => { if (rounds !== undefined) weaponRounds = Math.max(0, rounds | 0); if (mags !== undefined) weaponMags = Math.max(0, mags | 0); return { rounds: weaponRounds, mags: weaponMags }; },
   setPhase: v => { kitPhase = (v === undefined) ? null : v; }, getPhase: () => kitPhase,
   choices: () => ({ ...runChoices }),

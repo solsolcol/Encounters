@@ -59,7 +59,7 @@
     function blockers() {
       const out = [];
       const solid = (o, pad = 0.14) => { o.updateWorldMatrix(true, false); const bb = new THREE.Box3().setFromObject(o); bb.expandByScalar(pad); bb.min.y = 0; bb.max.y = Math.max(bb.max.y, 1.40); out.push(bb); };
-      for (const s of solids) solid(s);
+      for (const s of solids) { solid(s); if (s === bigBowlSolid) { bigBowlBox = out[out.length - 1]; bigBowlBox0 = bigBowlBox.clone(); } }
       for (const k in castBlock) out.push(castBlock[k]);            // (moved in place by castSolid: never replaced)
       return out;
     }

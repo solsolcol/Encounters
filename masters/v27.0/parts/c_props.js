@@ -98,12 +98,15 @@
       ['w4tulsi',      1.35, FL.corr, -1.45, 0,               null]
     ];
     const things = {};
+    /* (his teacher's large bowl's column, and the box blockers() makes of it: the bowl goes up onto the stool for the
+       blessing, R53 in c_story.js, and its box on the floor goes with it) */
+    let bigBowlSolid = null, bigBowlBox = null, bigBowlBox0 = null;
     for (const [key, x, y, z, ry, foot] of PROPS) {
       const g = stand(key, x, y, z, ry, LOOK[key] || {});
       if (key === 'w4dintable') g.scale.y = DINE_SY;
       (things[key] = things[key] || []).push(g);
       /* (the footprint as a column, turned with the thing: blockers() takes its box in the world, which holds it whole) */
-      if (foot) solidBox(foot[0], 1.2, foot[1], x, 0.6, z, ry);
+      if (foot) { const sb = solidBox(foot[0], 1.2, foot[1], x, 0.6, z, ry); if (key === 'w4bigbowl') bigBowlSolid = sb; }
     }
 
     /* THE PICTURES IN THEIR FRAMES (masters/v27.0/SOURCES.md). The portrait frame's picture is a flat face 4.7 mm before its

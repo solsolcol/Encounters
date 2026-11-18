@@ -178,10 +178,15 @@
        flicked before reloading": fourteen flicks a bowl where there were ten, and the drops thrown wider, as wide as what a
        flick now reaches: c_story.js onShot) */
     weapon: { hands: 'own', pose: 'bowl', item: 'holywater', rounds: 14, endless: true, fireGap: 0.35, spray: { count: 16, spread: 0.24 },
-              words: { fire: 'FLICK', reload: 'DIP' }, shot: 'u4flick', reload: 'u4dip', empty: 'uiclick',
+              /* (R57, Chad, 18 Nov evening: "When the player runs out of water, and tries to flick, there should be a clear HUD UI
+                 message asking the player to reload the water.") */
+              words: { fire: 'FLICK', reload: 'DIP', empty: 'Out of holy water. DIP at the big bowl to refill.' }, shot: 'u4flick', reload: 'u4dip', empty: 'uiclick',
               /* (Chad, 18 Nov: "Flick icon can be a spraying water icon instead of a word."): the button draws water flung
                  (shell.html .wpnIco-spray), FLICK stays its name for a screen reader; no AIM (the water has no zoom) */
-              icon: 'spray' },
+              icon: 'spray',
+              /* (Chad, 18 Nov evening, R54: "why are there the hands holding the bowl like that? there is no need to have this
+                 pose, remove the hands and bowl."): nothing drawn in his hands while the water is out (main.js `view`) */
+              view: false },
 
     assets: [
       /* the people, the spirits and the things made for this chapter (masters/v27.0/make.sh) */

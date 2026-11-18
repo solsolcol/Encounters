@@ -178,10 +178,15 @@
        flicked before reloading": fourteen flicks a bowl where there were ten, and the drops thrown wider, as wide as what a
        flick now reaches: c_story.js onShot) */
     weapon: { hands: 'own', pose: 'bowl', item: 'holywater', rounds: 14, endless: true, fireGap: 0.35, spray: { count: 16, spread: 0.24 },
-              words: { fire: 'FLICK', reload: 'DIP' }, shot: 'u4flick', reload: 'u4dip', empty: 'uiclick',
+              /* (R57, Chad, 18 Nov evening: "When the player runs out of water, and tries to flick, there should be a clear HUD UI
+                 message asking the player to reload the water.") */
+              words: { fire: 'FLICK', reload: 'DIP', empty: 'Out of holy water. DIP at the big bowl to refill.' }, shot: 'u4flick', reload: 'u4dip', empty: 'uiclick',
               /* (Chad, 18 Nov: "Flick icon can be a spraying water icon instead of a word."): the button draws water flung
                  (shell.html .wpnIco-spray), FLICK stays its name for a screen reader; no AIM (the water has no zoom) */
-              icon: 'spray' },
+              icon: 'spray',
+              /* (Chad, 18 Nov evening, R54: "why are there the hands holding the bowl like that? there is no need to have this
+                 pose, remove the hands and bowl."): nothing drawn in his hands while the water is out (main.js `view`) */
+              view: false },
 
     assets: [
       /* the people, the spirits and the things made for this chapter (masters/v27.0/make.sh) */
@@ -3382,12 +3387,15 @@
       ['w4tulsi',      1.35, FL.corr, -1.45, 0,               null]
     ];
     const things = {};
+    /* (his teacher's large bowl's column, and the box blockers() makes of it: the bowl goes up onto the stool for the
+       blessing, R53 in c_story.js, and its box on the floor goes with it) */
+    let bigBowlSolid = null, bigBowlBox = null, bigBowlBox0 = null;
     for (const [key, x, y, z, ry, foot] of PROPS) {
       const g = stand(key, x, y, z, ry, LOOK[key] || {});
       if (key === 'w4dintable') g.scale.y = DINE_SY;
       (things[key] = things[key] || []).push(g);
       /* (the footprint as a column, turned with the thing: blockers() takes its box in the world, which holds it whole) */
-      if (foot) solidBox(foot[0], 1.2, foot[1], x, 0.6, z, ry);
+      if (foot) { const sb = solidBox(foot[0], 1.2, foot[1], x, 0.6, z, ry); if (key === 'w4bigbowl') bigBowlSolid = sb; }
     }
 
     /* THE PICTURES IN THEIR FRAMES (masters/v27.0/SOURCES.md). The portrait frame's picture is a flat face 4.7 mm before its
@@ -4159,6 +4167,7 @@
     function blessStage() {
       lookAt0('FLAT');
       castHome();
+      bowlsOnStool(true);                                                  // (R53: on his stool, in the black)
       whenReady(cast.pho, (P) => { P.group.visible = false; });
       whenReady(cast.phoB, (P) => { put(P, P.home.x, P.home.z, P.home.ry); P.group.visible = true; rest(P, 0); });
       /* Mala kneeling at her mother's lamp, to light it and to keep it through the night (18 Nov: she was sent to the lamp
@@ -4211,6 +4220,30 @@
     }
     /* THE HOLY WATER: the small silver bowl by his teacher's large one; taken, it is his (ITEM UNLOCKED, rare) */
     const bowlOnFloor = stand('w4waterbowl', SMALLBOWL_AT.x, 0, SMALLBOWL_AT.z, 0.4, { lift: 3 });
+    /* THE BOWLS ON HIS STOOL (Chad, 18 Nov evening, R53: "place the holy water bowl, and the water recharge bowl on top of the
+       red chair, so it is easier to access for the player"): from the blessing on, when Grandmaster Pho has left his red
+       stool for her chair, both bowls stand on it, its seat 0.445 m up, where they were on the floor at its foot: his large
+       bowl on the seat's middle, and the small silver one resting in its water, its rim over the water (the seat is some
+       0.29 m across, the large bowl 0.33 and the small 0.155: the two cannot stand side by side on it). Moved in the black
+       (blessStage), put back on the floor for the history and the sight (storyReset); the order's mark, the press on the
+       small bowl and the dip's reach follow them, and the large bowl's column on the floor goes up with it */
+    const DIP_AT = { x: BOWL.x, z: BOWL.z }, SMALLBOWL_FLOOR = Object.assign({}, SMALLBOWL_AT);
+    const BOWLS_UP = { x: STOOL.x, z: STOOL.z, y: STOOL_TOP, small: { dx: 0.03, dz: -0.035, y: 0.097 } };
+    let bowlsUp = false;
+    function bowlsOnStool(up) {
+      bowlsUp = !!up;
+      const big = (things.w4bigbowl || [])[0], hs = STORY_SPOTS.find(h => h.id === 'water');
+      if (up) { DIP_AT.x = BOWLS_UP.x; DIP_AT.z = BOWLS_UP.z;
+        Object.assign(SMALLBOWL_AT, { x: BOWLS_UP.x + BOWLS_UP.small.dx, y: BOWLS_UP.y + BOWLS_UP.small.y + 0.04, z: BOWLS_UP.z + BOWLS_UP.small.dz });
+        if (big) big.position.set(BOWLS_UP.x, BOWLS_UP.y, BOWLS_UP.z);
+        bowlOnFloor.position.set(BOWLS_UP.x + BOWLS_UP.small.dx, BOWLS_UP.y + BOWLS_UP.small.y, BOWLS_UP.z + BOWLS_UP.small.dz);
+        if (bigBowlBox) bigBowlBox.set(new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 61, 0)); }
+      else { DIP_AT.x = BOWL.x; DIP_AT.z = BOWL.z; Object.assign(SMALLBOWL_AT, SMALLBOWL_FLOOR);
+        if (big) big.position.set(BOWL.x, 0, BOWL.z);
+        bowlOnFloor.position.set(SMALLBOWL_FLOOR.x, 0, SMALLBOWL_FLOOR.z);
+        if (bigBowlBox && bigBowlBox0) bigBowlBox.copy(bigBowlBox0); }
+      if (hs) { hs.pos.x = SMALLBOWL_AT.x; hs.pos.z = SMALLBOWL_AT.z; hs.pos.y = up ? SMALLBOWL_AT.y + 0.12 : 0.3; }
+    }
     const bowlHold = new THREE.Group();
     stand('w4waterbowl', 0, -0.035, 0, 0, { parent: bowlHold, lift: 3, near: true });
     bowlHold.scale.setScalar(0.62);
@@ -4521,7 +4554,7 @@
       F.lost = true; F.on = false; F.chantHeld = true;
       fightMusOff(); chantStop(); chantNow = null; lineQ.length = 0;
       if (kit) { kit.bar(null); kit.captions(null); if (kit.health) kit.health(null); if (kit.visionUrge) kit.visionUrge(false);
-        if (kit.edge) kit.edge(null); if (kit.sprayColor) kit.sprayColor(null); }
+        if (kit.edge) kit.edge(null); if (kit.ammoInf) kit.ammoInf(false); if (kit.sprayColor) kit.sprayColor(null); }
       if (!kit || !kit.lose || !kit.lose({ film: 'lost', say: W.lostSay, teaching: W.lostTeach })) play.loseWait = true;   // (refused: asked again on the next frame of play)
     }
     /* the water reaches one (stage.onShot): released, or staggered (the large one takes three) */
@@ -4650,7 +4683,7 @@
          same on every run and every replay: v6.15, nothing random unseeded) */
       F.shapes.forEach((S, i) => { if (S.state !== 'gone' && S.state !== 'leave') { S.state = 'leave'; S.leave = -0.4 * ((i * 0.6180339887) % 1); } });
       if (kit) { kit.bar(null); kit.captions(null); if (kit.health) kit.health(null); if (kit.visionUrge) kit.visionUrge(false);
-        if (kit.edge) kit.edge(null); if (kit.sprayColor) kit.sprayColor(null); }
+        if (kit.edge) kit.edge(null); if (kit.ammoInf) kit.ammoInf(false); if (kit.sprayColor) kit.sprayColor(null); }
       if (F.families <= 1) bank(W.noteKept, 0, 4);
       whenReady(cast.phoB, (P) => handOnHead(P, false));
       if (kit && kit.vision) kit.vision(false);
@@ -4729,7 +4762,8 @@
          3.2 s with a slow trail, so the room stays traced in gold while it fades: at 26 m in 2.6 s it crossed the room in a
          fifth of a second and was gone) */
       if (!F.released && kit && kit.wave) kit.wave(WAVE_GOLD);
-      if (kit) { if (kit.edge) kit.edge({ color: [255, 196, 84], k: 0.85, secs: 1.2 }); if (kit.sprayColor) kit.sprayColor(0xffc24a, { size: 1.6 }); if (kit.ammo) kit.ammo(DATA.weapon.rounds); }
+      if (kit) { if (kit.edge) kit.edge({ color: [255, 196, 84], k: 0.85, secs: 1.2 }); if (kit.sprayColor) kit.sprayColor(0xffc24a, { size: 1.6 }); if (kit.ammo) kit.ammo(DATA.weapon.rounds);
+        if (kit.ammoInf) kit.ammoInf(true); }                                   // (R56: the count reads the infinity sign)
       if (!F.released) fx('u4goldpower', 1, 0);
       /* (the amulet's light reaches her too: her life at least half back. 18 Nov, photographed: held at 15 through the surge,
          she came into the gold two touches from the loss, and the power he was given was spent guarding a last breath) */
@@ -4951,7 +4985,7 @@
        teacher's large bowl. And the altar: a shot whose line meets her altar before anything else is refused, the HUD
        saying why (kit.weaponBlock, derived on the frame: v11.6) */
     function shootables() { const out = []; for (const P of [spirits.appa, spirits.large].concat(spirits.wander)) if (P.hit && P.hit.visible) out.push(P.hit); return out; }
-    function reloadRefusal() { return Math.hypot(yaw.position.x - BOWL.x, yaw.position.z - BOWL.z) < 1.5 ? null : W.dipHere; }
+    function reloadRefusal() { return Math.hypot(yaw.position.x - DIP_AT.x, yaw.position.z - DIP_AT.z) < 1.5 ? null : W.dipHere; }
     const _ray = new THREE.Raycaster(), _ab = new THREE.Box3(), _hit = new THREE.Vector3();
     let altarBlock = false;
     function altarTick() {
@@ -5001,11 +5035,11 @@
       play.fight = null; play.appaGone = false; play.nerveOut = false; play.heat = 0; play.heatStep = 0; play.closeHold = 0; play.breathSaid = -99; play.loseWait = false;
       play.fanK = 1; play.fanTo = 1; play.scareSeed = SCARE_SEED; play.scareAt = 0; play.scared = new Set(); play.doorTo = -0.12; play.doorK = -0.12;
       play.fogged = false; play.fogAt = 0; fogK = 0; fogTo = 0; lampK = 0; lampTo = 0; crownK = 0; crownTo = 0; oppLooked = ''; wanderNext = 2;
-      decOpen = false; altarBlock = false; bowlOnFloor.visible = true; chantNow = null;
+      decOpen = false; altarBlock = false; bowlOnFloor.visible = true; chantNow = null; bowlsOnStool(false);
       DEC.on = false; DEC.p1 = null; DEC.at = null; DEC.eye = null;
       for (const P of spirits.wander.concat([spirits.large, spirits.appa, spirits.oppress])) { P.gone = false; P.alpha = 1; }
       if (kit) { kit.bar(null); if (kit.weaponBlock) kit.weaponBlock(null); if (kit.visionUrge) kit.visionUrge(false);
-        if (kit.health) kit.health(null); if (kit.edge) kit.edge(null); if (kit.sprayColor) kit.sprayColor(null); }
+        if (kit.health) kit.health(null); if (kit.edge) kit.edge(null); if (kit.ammoInf) kit.ammoInf(false); if (kit.sprayColor) kit.sprayColor(null); }
       lookAt0('FLAT'); castHome(); spiritsHome(); soundReset(); whenReady(cast.phoB, (P) => bowSet(P, 0));
     }
     function storySnap() { return { phase, learned: [...play.learned], looked: [...play.looked], water: play.water, fight: play.fight ? +play.fight.k.toFixed(3) : null, heat: +play.heat.toFixed(2),
@@ -5967,7 +6001,7 @@
     function blockers() {
       const out = [];
       const solid = (o, pad = 0.14) => { o.updateWorldMatrix(true, false); const bb = new THREE.Box3().setFromObject(o); bb.expandByScalar(pad); bb.min.y = 0; bb.max.y = Math.max(bb.max.y, 1.40); out.push(bb); };
-      for (const s of solids) solid(s);
+      for (const s of solids) { solid(s); if (s === bigBowlSolid) { bigBowlBox = out[out.length - 1]; bigBowlBox0 = bigBowlBox.clone(); } }
       for (const k in castBlock) out.push(castBlock[k]);            // (moved in place by castSolid: never replaced)
       return out;
     }
