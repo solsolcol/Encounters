@@ -261,10 +261,13 @@ body.hasVision.evopen .visionBtn,body.hasVision.unlockopen .visionBtn,body.hasVi
 .visionBtn.urge svg{stroke:#D9BEFF}
 .visionBtn.urgeClose{border-color:#FF8E5E;animation:visUrgeClose 1.15s ease-in-out infinite}
 .visionBtn.urgeClose svg{stroke:#FFB08C}
-@keyframes visUrgeOpen{0%,100%{box-shadow:0 0 0 0 rgba(201,162,255,.7),0 0 12px 2px rgba(201,162,255,.35);transform:scale(1)}
-  50%{box-shadow:0 0 0 15px rgba(201,162,255,0),0 0 32px 9px rgba(201,162,255,.72);transform:scale(1.12)}}
-@keyframes visUrgeClose{0%,100%{box-shadow:0 0 0 0 rgba(255,142,94,.7),0 0 12px 2px rgba(255,142,94,.35);transform:scale(1)}
-  50%{box-shadow:0 0 0 15px rgba(255,142,94,0),0 0 32px 9px rgba(255,142,94,.72);transform:scale(1.12)}}
+/* (Chad, 18 Nov evening: "When prompting the player to open or close the spirit vision, the circle icon of spirit vision
+   should grow big and small to make it more obvious"): asking, the eye beats from 0.9 of its size to 1.32 (it was 1 to
+   1.12); grown, it stays 2.6 px clear of the button above it in the column (56 px apart, 46 px wide) */
+@keyframes visUrgeOpen{0%,100%{box-shadow:0 0 0 0 rgba(201,162,255,.7),0 0 12px 2px rgba(201,162,255,.35);transform:scale(.9)}
+  50%{box-shadow:0 0 0 15px rgba(201,162,255,0),0 0 32px 9px rgba(201,162,255,.72);transform:scale(1.32)}}
+@keyframes visUrgeClose{0%,100%{box-shadow:0 0 0 0 rgba(255,142,94,.7),0 0 12px 2px rgba(255,142,94,.35);transform:scale(.9)}
+  50%{box-shadow:0 0 0 15px rgba(255,142,94,0),0 0 32px 9px rgba(255,142,94,.72);transform:scale(1.32)}}
 .visionBtn.urge::after,.visionBtn.urgeClose::after{position:absolute;top:calc(100% + 7px);left:50%;transform:translateX(-50%);
   padding:4px 7px 3px;border-radius:7px;font:700 10px/1 var(--ui);letter-spacing:.16em;text-transform:uppercase;
   white-space:nowrap;background:rgba(8,10,14,.82);pointer-events:none}

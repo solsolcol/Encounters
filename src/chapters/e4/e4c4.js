@@ -4285,6 +4285,17 @@
        taken under 15 (the call is the story's, and comes whatever he did), and at 0 the chapter is lost (ammaLost) */
     const LIFE = { wander: 9, large: 16, again: 4.5, floor: 15, grace: 4 };
     const CRIES = ['u4ascream1', 'u4ascream2', 'u4ascream3'];
+    /* THE DART (Chad, 18 Nov evening: "add some green spirits that should fly immediately at fast speed to her once in a
+       while to cause instant damage, as any player that keeps spamming the water at the bowl area can indefinitely prevent
+       any green spirits from even reaching her. Its way too easy, there must be some green spirits that can immediately fly
+       to her in an invulnerable state and cause immediate damage out of the player's control"): every so often one of them,
+       from a door or a corner away from her and from him, gathers itself (0.35 s, rising off the floor and burning bright,
+       its shriek heard from where it is) and flies straight at her, fast (5.2 m a second: under a second from any door), the
+       water passing through it; it strikes her at once (10 of her 100, her cry, her bar) and then clings and feeds like any
+       other until the water sends it back. The first 15 s in, then every 14 to 20 s, up to 4 s sooner as the blessing nears
+       the surge; through the surge and the call too (her floor of 15 holds there); never under the amulet nor in his gold.
+       Its own seeded stream (v6.15: the fight's other draws stay as they were) */
+    const DART = { first: 15, gap: [14, 20], sooner: 4, wind: 0.35, speed: 5.2, lift: 0.7, land: 0.3, dmg: 10, away: 2.4, clear: 1.6 };
     /* GRANDMASTER PHO CALLS HIM BACK TO HIS SIGHT (Chad, 18 Nov: "If the player gets out of spirit vision for too long and is
        not doing anything to chase the green spirits away, grandmaster pho will have a voice line that tells him to go back
        into spirit vision to chase the entities away. This voiceline can keep repeating as long as the player is not in
@@ -4295,7 +4306,7 @@
       const F = play.fight = { on: true, t: 0, k: 0, wave: 0, shapes: [], fed: 0, families: 0, famCost: 0, captions: 0, ended: false,
                                hp: 100, cries: 0, criedAt: -99, lost: false, call: null, callT: 0, trickleAt: 0, goldT: 0, batchAt: 0,
                                cleared: 0, chantHeld: false, shutFor: 0, nagNext: NAG.first, nags: 0, lastStrike: -99, urge: null,
-                               saidMala: false, saidRavi: false, seed: 0x4c4f0d,
+                               saidMala: false, saidRavi: false, seed: 0x4c4f0d, dartAt: DART.first, darts: 0, dartHits: 0, dseed: 0x0da47e,
                                vseed: 0x5f1e0d, voxAt: 2.5, voxBigAt: 0, voxLast: '', voxUntil: [] };
       if (kit) { kit.bar(0); if (kit.health) kit.health({ label: W.ammaBar, k: 1, at: () => { const h = AMMA_HEAD(); return [h.x, h.y + 0.32, h.z]; } }); }
       objectiveFor('bless');
@@ -4383,6 +4394,50 @@
       const S = { P, to, v, need: 1, hits: 0, state: 'come', t: 0, back: 0, fedAt: -99 };
       F.shapes.push(S); return S;
     }
+    /* THE DART (R44, its constants by LIFE above) */
+    function dartRnd() { const F = play.fight; F.dseed = (F.dseed * 1103515245 + 12345) >>> 0; return (F.dseed >>> 8) / 16777216; }
+    function dartTick(wdt) {
+      const F = play.fight; if (F.call === 'shown' || F.call === 'gold') return;
+      if ((F.dartAt -= wdt) > 0) return;
+      F.dartAt = DART.gap[0] + (DART.gap[1] - DART.gap[0]) * dartRnd() - DART.sooner * Math.min(1, F.k / FIGHT.surgeAt);
+      dartLaunch();
+    }
+    /* from a door or a corner away from her and from him (none: none flies this time; and none when sixteen are in the room) */
+    function dartLaunch() {
+      const F = play.fight, me = yaw.position;
+      const keys = Object.keys(FROM).filter(k => { const a = FROM[k]; return Math.hypot(a.x - CHAIR.x, a.z - CHAIR.z) > DART.away && Math.hypot(a.x - me.x, a.z - me.z) > DART.clear; });
+      if (!keys.length) return null;
+      const at = FROM[keys[Math.floor(dartRnd() * keys.length)]], jx = (dartRnd() - 0.5) * 0.4, jz = (dartRnd() - 0.5) * 0.4;
+      const P = freeBody(); if (!P) return null;
+      const x = at.x + jx, z = at.z + jz, tg = FAMILY.amma();
+      put(P, x, z, faceTo(x, z, tg.x, tg.z));
+      take(P, 'crawl', 0.15);
+      const S = { P, to: 'amma', v: DART.speed, need: 1, hits: 0, state: 'wind', wind: 0, y0: P.group.position.y, t: 0, back: 0, fedAt: -99, dart: true, land: 0 };
+      F.shapes.push(S); F.darts++;
+      fx('u4sv5', 0.95, panOf(P.group.position));                       // (its shriek, from where it gathers itself)
+      return S;
+    }
+    function dartStep(S, wdt, tg, dx, dz, d) {
+      const P = S.P;
+      P.group.rotation.y = faceTo(P.group.position.x, P.group.position.z, tg.x, tg.z);
+      if (S.state === 'wind') {
+        S.wind += wdt; const u = Math.min(1, S.wind / DART.wind);
+        P.group.position.y = S.y0 + DART.lift * u * (2 - u);
+        if (P.fx) P.fx.set('uFill', SPIRIT.wander.fill + (0.8 - SPIRIT.wander.fill) * u);
+        if (u >= 1) S.state = 'dart';
+        return;
+      }
+      if (d > REACH.amma) { const step = Math.min(d - REACH.amma, DART.speed * wdt); P.group.position.x += dx / d * step; P.group.position.z += dz / d * step; }
+      if (Math.hypot(tg.x - P.group.position.x, tg.z - P.group.position.z) <= REACH.amma + 1e-3) dartStrike(S);
+    }
+    /* it reaches her: at once, and nothing he does could stop it */
+    function dartStrike(S) {
+      const F = play.fight, P = S.P;
+      S.state = 'feed'; S.fedAt = S.t; S.land = DART.land; F.fed++; F.families++; F.dartHits++;
+      if (P.fx) { P.fx.set('uFill', 1); const run = play.run; after(0.35, () => { if (live(run) && P.fx && S.state !== 'leave' && S.state !== 'gone') P.fx.set('uFill', SPIRIT.wander.fill); }); }
+      voxPlay('u4sv5', P.group.position, 0.9);
+      ammaHurt(S, DART.dmg);
+    }
     function fightTick(wdt) {
       const F = play.fight; if (!F || !F.on) return;
       if (getState() !== 'play') return;
@@ -4404,6 +4459,9 @@
         if (S.state === 'leave') { S.leave += wdt; const u = Math.min(1, S.leave / 1.1); P.alpha = 1 - u; if (P.fx) { P.fx.set('uAlpha', 1 - u); P.fx.set('uFill', 0.1 + 0.9 * (1 - u) * (1 - u)); } P.group.position.y += wdt * 0.35;
           if (u >= 1) { S.state = 'gone'; P.group.visible = false; P.gone = true; } continue; }
         const tg = FAMILY[S.to](), dx = tg.x - P.group.position.x, dz = tg.z - P.group.position.z, d = Math.hypot(dx, dz);
+        /* THE DART (R44): gathered, then flown at her out of the water's reach; and, struck, it comes down to feed */
+        if (S.state === 'wind' || S.state === 'dart') { dartStep(S, wdt, tg, dx, dz, d); if (!F.on) return; continue; }
+        if (S.land > 0) { S.land = Math.max(0, S.land - wdt); const u = S.land / DART.land; P.group.position.y = flatGround(P.group.position.x, P.group.position.z) + DART.lift * u * u; }
         if (S.back > 0) { S.back -= wdt; const k = Math.min(1, wdt * 1.6); P.group.position.x -= dx / Math.max(0.01, d) * 0.9 * k; P.group.position.z -= dz / Math.max(0.01, d) * 0.9 * k; continue; }
         if (S.state === 'come') {
           let v = S.v;
@@ -4443,10 +4501,10 @@
       } else if (S.to === 'amma') { F.families++; ammaHurt(S); }
     }
     /* one reaches her: what it takes of her life, her cry, her children's, and the loss at 0 */
-    function ammaHurt(S) {
+    function ammaHurt(S, amt = null) {
       const F = play.fight; if (!F || !F.on || F.lost) return;
       const floor = (F.call && F.call !== 'gold') || (F.call === 'gold' && F.goldT < LIFE.grace) ? LIFE.floor : 0;
-      F.hp = Math.max(Math.min(F.hp, floor), F.hp - (S.P === spirits.large ? LIFE.large : LIFE.wander));
+      F.hp = Math.max(Math.min(F.hp, floor), F.hp - (amt != null ? amt : S.P === spirits.large ? LIFE.large : LIFE.wander));
       if (kit && kit.health) kit.health({ k: F.hp / 100 });
       const now = wallNow();
       if (now - F.criedAt > 0.6) { F.criedAt = now; fx(CRIES[F.cries++ % CRIES.length], 0.9, panOf(CHAIR)); }
@@ -4485,9 +4543,10 @@
       if (P === spirits.oppress) return;                     // (her teacher's work, not the water's: it does not move)
       if (!F || !F.on) return;
       const reached = [];
-      if (P) { const S = F.shapes.find(q => q.P === P && q.state !== 'gone' && q.state !== 'leave'); if (S) reached.push(S); }
+      /* (a dart in its flight is out of the water's reach: R44) */
+      if (P) { const S = F.shapes.find(q => q.P === P && q.state !== 'gone' && q.state !== 'leave' && q.state !== 'wind' && q.state !== 'dart'); if (S) reached.push(S); }
       if (r && r.ray) for (const S of F.shapes) {
-        if (S.state === 'gone' || S.state === 'leave' || reached.includes(S)) continue;
+        if (S.state === 'gone' || S.state === 'leave' || S.state === 'wind' || S.state === 'dart' || reached.includes(S)) continue;
         const m = S.P.hit; if (!m || !m.visible) continue;
         _fr.copy(m.position).sub(r.ray.origin); const along = _fr.dot(r.ray.direction);
         if (along < 0.15 || along > FAN.far) continue;
@@ -4614,6 +4673,7 @@
       }
       if (F.call && F.call !== 'gold') F.k = Math.min(F.k, FIGHT.hold);          // (the blessing stalls under the swarm until the call is answered)
       if (F.call === 'gold') { F.goldT += wdt; if ((F.batchAt -= wdt) <= 0) { F.batchAt = FIGHT.batch.every; goldBatch(); } }
+      dartTick(wdt);
       nagTick(open, live);
       urgeTick(open, live);
       if (F.shapes.length > 48) F.shapes = F.shapes.filter(S => S.state !== 'gone');      // (the gone, let go of)
