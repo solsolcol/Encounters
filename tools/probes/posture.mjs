@@ -44,6 +44,9 @@ const res = await p.evaluate(async ({ WHO, N, TAKES, LIVE, SPAN }) => {
   const B = { hips: find(/Hips$/), sp0: find(/Spine$/), sp1: find(/Spine1$/), sp2: find(/Spine2$/), neck: find(/Neck$/), head: find(/Head$/),
     lc: find(/LeftShoulder$/), la: find(/LeftArm$/), rc: find(/RightShoulder$/), ra: find(/RightArm$/),
     lu: find(/LeftUpLeg$/), ll: find(/LeftLeg$/), lf: find(/LeftFoot$/), ru: find(/RightUpLeg$/), rl: find(/RightLeg$/), rf: find(/RightFoot$/) };
+  /* (a body with grafted legs under a robe, Grandmaster Pho's, tools/leggraft.mjs: his rig's knee stands at the robe's
+     front, bent 35 degrees by construction; the legs that are seen ride their own two bones to the same ankle) */
+  const G = { lu: find(/^LeftLegGraftUp$/), ll: find(/^LeftLegGraftLow$/), ru: find(/^RightLegGraftUp$/), rl: find(/^RightLegGraftLow$/) };
   const missing = Object.keys(B).filter(k => !B[k]); if (missing.length) return { err: 'no bone ' + missing.join(' ') };
   const pos = (o) => { const e = o.matrixWorld.elements; return [e[12], e[13], e[14]]; };
   const sub = (a, c) => [a[0] - c[0], a[1] - c[1], a[2] - c[2]], dot = (a, c) => a[0] * c[0] + a[1] * c[1] + a[2] * c[2];
@@ -72,6 +75,8 @@ const res = await p.evaluate(async ({ WHO, N, TAKES, LIVE, SPAN }) => {
     const hipf = (u, l) => { const th = nrm(sub(pos(l), pos(u))); return deg(Math.atan2(dot(th, f), -dot(th, trn))); };
     return { look, lean: deg(Math.atan2(dot(tr, f), tr[1])), side: deg(Math.atan2(dot(tr, sd), tr[1])),
       kneeL: knee(B.lu, B.ll, B.lf), kneeR: knee(B.ru, B.rl, B.rf), hipL: hipf(B.lu, B.ll), hipR: hipf(B.ru, B.rl),
+      gkL: G.lu && G.ll ? knee(G.lu, G.ll, B.lf) : NaN, gkR: G.ru && G.rl ? knee(G.ru, G.rl, B.rf) : NaN,
+      hipY: pos(B.hips)[1] - P.group.position.y,
       curve: deg(Math.acos(Math.max(-1, Math.min(1, dot(nrm(lo), nrm(up)))))), head: deg(Math.atan2(dot(hv, f), hv[1])),
       L: shr(B.lc, B.la), R: shr(B.rc, B.ra) };
   }
@@ -85,7 +90,7 @@ const res = await p.evaluate(async ({ WHO, N, TAKES, LIVE, SPAN }) => {
     const rows = [];
     for (let i = 0; i < N; i++) { await new Promise(r => setTimeout(r, SPAN * 1000 / N)); const r = read();
       rows.push({ t: +(i * SPAN / N).toFixed(1), take: P.cur, look: +(r.look - bindL.look).toFixed(1), lean: +r.lean.toFixed(1), side: +r.side.toFixed(1), curve: +r.curve.toFixed(1), head: +r.head.toFixed(1), shrugL: +(r.L.el - bindL.L.el).toFixed(1), shrugR: +(r.R.el - bindL.R.el).toFixed(1),
-        kneeL: +r.kneeL.toFixed(1), kneeR: +r.kneeR.toFixed(1), hipL: +r.hipL.toFixed(1), hipR: +r.hipR.toFixed(1) }); }
+        kneeL: +r.kneeL.toFixed(1), kneeR: +r.kneeR.toFixed(1), hipL: +r.hipL.toFixed(1), hipR: +r.hipR.toFixed(1), gkL: +r.gkL.toFixed(1), gkR: +r.gkR.toFixed(1), hipY: +r.hipY.toFixed(3) }); }
     return { live: rows };
   }
   const keepB = []; P.model.traverse(o => { if (o.isBone) keepB.push([o, o.quaternion.clone(), o.position.clone()]); });
@@ -104,7 +109,7 @@ const res = await p.evaluate(async ({ WHO, N, TAKES, LIVE, SPAN }) => {
       const r = read();
       rows.push({ t: +t.toFixed(2), look: +(r.look - bind.look).toFixed(1), lean: +r.lean.toFixed(1), side: +r.side.toFixed(1), curve: +r.curve.toFixed(1), head: +r.head.toFixed(1),
         shrugL: +(r.L.el - bind.L.el).toFixed(1), shrugR: +(r.R.el - bind.R.el).toFixed(1), riseL: +(r.L.ht - bind.L.ht).toFixed(1), riseR: +(r.R.ht - bind.R.ht).toFixed(1),
-        kneeL: +r.kneeL.toFixed(1), kneeR: +r.kneeR.toFixed(1), hipL: +r.hipL.toFixed(1), hipR: +r.hipR.toFixed(1) });
+        kneeL: +r.kneeL.toFixed(1), kneeR: +r.kneeR.toFixed(1), hipL: +r.hipL.toFixed(1), hipR: +r.hipR.toFixed(1), gkL: +r.gkL.toFixed(1), gkR: +r.gkR.toFixed(1), hipY: +r.hipY.toFixed(3) });
     }
     out.takes[name] = { win: W, rows };
   }
@@ -116,11 +121,11 @@ fs.writeFileSync(OUT, JSON.stringify(res, null, 1));
 if (res.err) { console.log(res.err); process.exit(1); }
 if (res.live) { for (const r of res.live) console.log(JSON.stringify(r)); console.log('page errors:', errs.length ? errs.slice(0, 4).join(' | ') : 'none'); await b.close(); process.exit(0); }
 const b0 = res.bind;
-console.log(`${WHO} bind: lean ${b0.lean.toFixed(1)}  curve ${b0.curve.toFixed(1)}  head ${b0.head.toFixed(1)}  collar L ${b0.L.el.toFixed(1)} R ${b0.R.el.toFixed(1)}  knee L ${b0.kneeL.toFixed(1)} R ${b0.kneeR.toFixed(1)}  hip L ${b0.hipL.toFixed(1)} R ${b0.hipR.toFixed(1)}`);
+console.log(`${WHO} bind: lean ${b0.lean.toFixed(1)}  curve ${b0.curve.toFixed(1)}  head ${b0.head.toFixed(1)}  collar L ${b0.L.el.toFixed(1)} R ${b0.R.el.toFixed(1)}  knee L ${b0.kneeL.toFixed(1)} R ${b0.kneeR.toFixed(1)}  hip L ${b0.hipL.toFixed(1)} R ${b0.hipR.toFixed(1)}  graft knee L ${b0.gkL.toFixed(1)} R ${b0.gkR.toFixed(1)}  hips ${b0.hipY.toFixed(3)} m`);
 for (const [name, T] of Object.entries(res.takes)) {
   if (T.err) { console.log(name, T.err); continue; }
   const avg = (k) => (T.rows.reduce((s, r) => s + r[k], 0) / T.rows.length).toFixed(1), mx = (k) => Math.max(...T.rows.map(r => r[k])).toFixed(1);
-  console.log(`${name.padEnd(28)} [${T.win.map(v => (+v).toFixed(2)).join('+')}]  look ${avg('look')}  lean ${avg('lean')} (max ${mx('lean')})  curve ${avg('curve')}  head ${avg('head')}  shrug L ${avg('shrugL')} R ${avg('shrugR')} deg  rise L ${avg('riseL')} R ${avg('riseR')} cm  knee L ${avg('kneeL')} R ${avg('kneeR')} (max ${mx('kneeL')} ${mx('kneeR')})  hip L ${avg('hipL')} R ${avg('hipR')}`);
+  console.log(`${name.padEnd(28)} [${T.win.map(v => (+v).toFixed(2)).join('+')}]  look ${avg('look')}  lean ${avg('lean')} (max ${mx('lean')})  curve ${avg('curve')}  head ${avg('head')}  shrug L ${avg('shrugL')} R ${avg('shrugR')} deg  rise L ${avg('riseL')} R ${avg('riseR')} cm  knee L ${avg('kneeL')} R ${avg('kneeR')} (max ${mx('kneeL')} ${mx('kneeR')})  hip L ${avg('hipL')} R ${avg('hipR')}  graft knee L ${avg('gkL')} R ${avg('gkR')}  hips ${(T.rows.reduce((q, r) => q + r.hipY, 0) / T.rows.length).toFixed(3)} m`);
 }
 console.log('page errors:', errs.length ? errs.slice(0, 4).join(' | ') : 'none');
 await b.close();
