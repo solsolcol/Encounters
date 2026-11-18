@@ -34,7 +34,8 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 GLB = os.path.join(ROOT, 'assets/pho.glb')
 OUT = os.path.join(ROOT, 'masters/v27.0/parts/c_phofleck.js')
 SIZE, AMAX, RING, SKIN, GROW = 1024, 3000, 0.78, 0.3, 4
-DRAWN, CHART_SKIN, MIXED, SHARE, SHARE_ROBE, RING_DRAWN = 0.3, 0.5, 0.2, 0.1, 0.3, 0.5
+DRAWN, CHART_SKIN, MIXED, SHARE, SHARE_ROBE, RING_DRAWN = 0.05, 0.5, 0.2, 0.1, 0.3, 0.5
+PAD_REACH, PAD_SKIN_CLEAR, PAD_TINT = 8, 6, 0.15
 SHARE_SKIN, RING_DRAWN_SKIN, RING_SKIN = 0.05, 0.8, 0.85
 
 
@@ -112,6 +113,42 @@ def main():
         cover[cy[free], cx[free]] = fid
         flecks.append({'area': a, 'ring': round(frac, 3), 'chart': c, 'box': [int(x0), int(y0), int(x1 - x0), int(y1 - y0)],
                        'c': [int(round(v * 255)) for v in col]})
+    # THE PADDING (v27.0 build 24): the texels no triangle paints keep whatever colour the scan left between its pieces,
+    # and where that is skin colour beside a piece of robe, the sheet's own filtering draws it into the robe's edge as
+    # soon as he is a little way off (the mark left at his shoulder blade on build 22, read back to its texels: a speck
+    # half on a thin strip of robe and half in the empty texels beside it). Each such empty texel within PAD_REACH of the
+    # robe, its nearest painted texel robe, and no painted skin within PAD_SKIN_CLEAR of it (so no cell of the mask ever
+    # reaches a piece of skin), is laid over in the colour of that nearest robe texel: padding the empty fill between the
+    # pieces, the one retouch v5.10 allows, here only at runtime.
+    dist, (ny, nx) = nd.distance_transform_edt(~painted, return_indices=True)
+    skin_painted = painted & skin
+    dskin = nd.distance_transform_edt(~skin_painted)
+    nearest_robe = robe[ny, nx] & ~skin[ny, nx]
+    notrobe = painted & ~robe
+    pad = (~painted) & (dist <= PAD_REACH) & nearest_robe & (skn > PAD_TINT) & (dskin > PAD_SKIN_CLEAR)
+    plab, pn = nd.label(pad, structure=np.ones((3, 3)))
+    pads = 0
+    for i, sl in enumerate(nd.find_objects(plab), start=1):
+        if sl is None:
+            continue
+        sub = plab[sl] == i
+        ys, xs = np.nonzero(sub); ys = ys + sl[0].start; xs = xs + sl[1].start
+        col = img[ny[ys, xs], nx[ys, xs]].mean(0)
+        cy, cx = ys // k, xs // k
+        # a cell of the mask is laid over only where every texel the body paints in it is robe (bright, unsaturated): never
+        # one that holds skin, a bead's or the gold's colour, or the robe's own painted shade
+        ok = np.array([not notrobe[yy * k:(yy + 1) * k, xx * k:(xx + 1) * k].any() for yy, xx in zip(cy, cx)], bool)
+        cy, cx = cy[ok], cx[ok]
+        if not cy.size:
+            continue
+        fid = len(flecks) + 1
+        free = cover[cy, cx] == 0
+        if not free.any():
+            continue
+        cover[cy[free], cx[free]] = fid
+        flecks.append({'area': int(sub.sum()), 'ring': 1.0, 'chart': -1, 'pad': True, 'box': [int(xs.min()), int(ys.min()), int(xs.max() - xs.min() + 1), int(ys.max() - ys.min() + 1)],
+                       'c': [int(round(v * 255)) for v in col]})
+        pads += 1
     # runs of each fleck's cells, row by row
     runs = {f: [] for f in range(1, len(flecks) + 1)}
     for y in range(SIZE):
@@ -129,6 +166,7 @@ def main():
     if '--json' in sys.argv:
         json.dump(flecks, open(sys.argv[sys.argv.index('--json') + 1], 'w'))
     if '--report' in sys.argv:
+        print('padding: empty texels laid over', int(sum(f['area'] for f in flecks if f.get('pad'))), 'in', pads, 'patches')
         print('sheet', W, 'x', H, 'islands', n, 'flecks', len(flecks), 'texels', sum(f['area'] for f in flecks),
               'mask cells', cells, 'of', SIZE * SIZE)
         print('largest', sorted(f['area'] for f in flecks)[-12:])
