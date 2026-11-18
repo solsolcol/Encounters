@@ -71,6 +71,18 @@
     /* (standing, his talk's head held as his seated one is: Chad's word on chapter 3's, "greatly restrained", v26.3; its
        head swings 9 cm side to side in its own file: tools/probes/takepath.mjs) */
     const PHO_STAND_HEAD = { Talk_with_Hands_Open: [0.3, 'Sit_to_Stand_Transition_M'] };
+    /* (R64, Chad, 18 Nov 2026: "not just pho's sitting posture, but also fix his standing posture, talking posture, and
+       other postures he uses in this particular chapter". MEASURED first on his standing body in the takes it wears here
+       (tools/probes/posture.mjs, the tracker's log): at rest on the end of his rise his head is held 15.1 degrees back
+       of his bind pose's 2.5, in his talk 17.8, a chin raised as if looking down his nose at her (a face tilted up reads
+       as disdain, v6.9); his talk lifts his right collar bone 5.3 degrees; his push (the cast's 0.50 to 0.95 s) lifts both
+       collar bones 32 and 35 degrees, 9 and 13 cm, his shoulders at his ears. So his neck is turned forward 12 degrees in
+       his rest and his talk (back to within a degree of his bind pose), his talk's shoulders let down whole, and his push's
+       let down 0.6 of the way, measured over the part of the take he plays: a man who thrusts both hands out does lift
+       and bring his shoulders forward, by a little, not to his ears) */
+    const PHO_STAND_UPRIGHT = { Sit_to_Stand_Transition_M: { head: 12 }, Talk_with_Hands_Open: { head: 12 } };
+    const PHO_STAND_SHOULDERS = { Talk_with_Hands_Open: 1, mage_soell_cast_3: 0.6 };
+    const PHO_STAND_SHWIN = { mage_soell_cast_3: [0.5, 0.45] };
     /* the shoulders let down in every standing and talking take (v26.8, every standing person) */
     const STAND_SHOULDERS = { Idle_3: 1, Stand_and_Chat: 1, Listening_Gesture: 1, Talk_with_Hands_Open: 1, Talk_with_Right_Hand_Open: 1, Walking: 1 };
 
@@ -138,7 +150,8 @@
       const phoBRy = faceTo(AT.phoB.x, AT.phoB.z, CHAIR.x, CHAIR.z);
       cast.phoB = mkPerson('pho', AT.phoB.x, AT.phoB.z, phoBRy, { take: 'Sit_to_Stand_Transition_M', hidden: true,
         win: { Sit_to_Stand_Transition_M: [5.85, 0.25, PHO_BREATH] }, skins: false, look: lookD, blobW: 0.9, blobD: 0.8,
-        centre: true, talk: 'Talk_with_Hands_Open', headDamp: PHO_STAND_HEAD });
+        centre: true, talk: 'Talk_with_Hands_Open', headDamp: PHO_STAND_HEAD,
+        upright: PHO_STAND_UPRIGHT, shoulders: PHO_STAND_SHOULDERS, shWin: PHO_STAND_SHWIN });
       cast.phoB.home = { x: AT.phoB.x, z: AT.phoB.z, ry: phoBRy };
     }
     buildCast();

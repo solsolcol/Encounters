@@ -40,6 +40,9 @@ EDITS = [
     ("if (P.hd) headDampLay(P);\n      if (P.shd) shouldersLay(P);", "if (P.hd) headDampLay(P);\n      if (P.upr) uprightLay(P);\n      if (P.shd) shouldersLay(P);"),
     ("if (P.hd) headDampLay(P);\n        if (P.shd) shouldersLay(P);", "if (P.hd) headDampLay(P);\n        if (P.upr) uprightLay(P);\n        if (P.shd) shouldersLay(P);"),
     ("R.up.quaternion.copy(R.sup); } SH.on = false; } }", "R.up.quaternion.copy(R.sup); } SH.on = false; }\n      const UP = P.upr; if (UP && UP.on) { for (const R of UP.B) R.b.quaternion.copy(R.sv); UP.on = false; } }"),
+    # R64 (18 Nov): a body may name the window its shoulders are measured over for a take it plays only part of
+    # (o.shWin: { take: [from, length] }), without making that a window the take is played inside (o.win)
+    ("W = P.win && P.win[name], N = 24, acc = S.map(", "W = (P.o.shWin && P.o.shWin[name]) || (P.win && P.win[name]), N = 24, acc = S.map("),
     ("      armsBack(P); P.group.updateWorldMatrix(true, false); P.group.updateMatrixWorld(true);", "      armsBack(P); P.group.updateWorldMatrix(true, false); P.group.updateMatrixWorld(true);\n      if (P.upr) { uprightLay(P); P.group.updateMatrixWorld(true); }"),
 ]
 
