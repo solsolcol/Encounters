@@ -111,7 +111,14 @@
       minZ: Math.min(...KEEP_BOXES.map(q => q.minZ)), maxZ: Math.max(...KEEP_BOXES.map(q => q.maxZ)) };
     return (S = {
       world, noteTex, blockers: blockers(),
-      ready: () => true,
+      /* (R51, Chad, 18 Nov 2026: "in the intro cutscene, when the camera pans across the hdb towards the corridor and
+         door of the flat, there is a huge long stutter that happens. How to fix that issue or improve it?". The curtain
+         was told the world was ready at once, so every body and every thing of the flat and the estate was unpacked
+         (parsed, cloned, its takes grounded) and its programs compiled while the opening film played, under its pan
+         across the estate. The world is ready now only when every body is and no model is still being unpacked, so all
+         of it is done under the curtain and warmed with the rest before the black lifts (v14.15: nothing heavy while the
+         world is on screen). A model that never lands holds it six quiet seconds at most (the engine's own rule)) */
+      ready: () => parsePend === 0 && people.every(P => P.ready),
       pile: { pos: PILE_POS, radius: INTERACT_R, group: pile,
               dist: pileDist, screen: pileScreen, inView: pileInView,
               hits: pointerHitsPile, interact: interactPile,

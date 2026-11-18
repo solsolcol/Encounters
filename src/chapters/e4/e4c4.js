@@ -290,6 +290,7 @@
     const owned = [];
     let alive = true;
     const parsedGlb = new Map();
+    let parsePend = 0;                                   // (R51: models being unpacked now: stage.ready waits for none)
     const madeTex = [];
     const tex = (t) => { madeTex.push(t); return t; };
     const noteTex = tex(makeHellNote());                  // the contract wants one (the engine's note prop reads it at boot)
@@ -501,7 +502,9 @@
             res({ scene: gltf.scene, animations: gltf.animations });
           }, rej))));
       }
-      return parsedGlb.get(key);
+      const pr = parsedGlb.get(key); parsePend++;
+      pr.then(() => setTimeout(() => { parsePend--; }, 0), () => { parsePend--; });
+      return pr;
     }
     /* (v24.17) Chad's Nang Kwak is bronze, about 0.8 metal by its own metal-roughness sheet, and a metal shows only what
        it reflects: under the scene's environment at 0.05 she drew as a black silhouette on the tray and the altar
@@ -6373,7 +6376,14 @@
       minZ: Math.min(...KEEP_BOXES.map(q => q.minZ)), maxZ: Math.max(...KEEP_BOXES.map(q => q.maxZ)) };
     return (S = {
       world, noteTex, blockers: blockers(),
-      ready: () => true,
+      /* (R51, Chad, 18 Nov 2026: "in the intro cutscene, when the camera pans across the hdb towards the corridor and
+         door of the flat, there is a huge long stutter that happens. How to fix that issue or improve it?". The curtain
+         was told the world was ready at once, so every body and every thing of the flat and the estate was unpacked
+         (parsed, cloned, its takes grounded) and its programs compiled while the opening film played, under its pan
+         across the estate. The world is ready now only when every body is and no model is still being unpacked, so all
+         of it is done under the curtain and warmed with the rest before the black lifts (v14.15: nothing heavy while the
+         world is on screen). A model that never lands holds it six quiet seconds at most (the engine's own rule)) */
+      ready: () => parsePend === 0 && people.every(P => P.ready),
       pile: { pos: PILE_POS, radius: INTERACT_R, group: pile,
               dist: pileDist, screen: pileScreen, inView: pileInView,
               hits: pointerHitsPile, interact: interactPile,
