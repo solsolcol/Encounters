@@ -56,9 +56,22 @@
     const RUSH_HIPS = [[-0.01, -0.03], [-0.01, 0.0], [-0.02, 0.06], [-0.03, 0.22], [-0.08, 0.61], [-0.21, 1.22], [-0.35, 1.82], [-0.43, 2.24], [-0.43, 2.63], [-0.43, 2.82], [-0.44, 2.86], [-0.45, 2.89]];
     const RUSH_AT = (tk) => { const f = Math.max(0, Math.min(RUSH_HIPS.length - 1.001, tk / 0.25)), i = Math.floor(f), u = f - i, A = RUSH_HIPS[i], B = RUSH_HIPS[i + 1];
       return [lp(A[0], B[0], u) - RUSH_HIPS[0][0], lp(A[1], B[1], u) - RUSH_HIPS[0][1]]; };
+    /* Ravi where his rush has carried him at the take's moment tk: his group moved along the travel taken out of his
+       hips (c_scast.js, P.rushPath), turned with him; the take posed by the caller */
+    function rushAt(P, tk, dx = 0, dz = 0) {
+      const R = P.rushPath; let ax = 0, az = 0;
+      if (R) { const T = R.T, n = T.length; let i = 0; while (i < n - 2 && T[i + 1] <= tk) i++; const u = c01((tk - T[i]) / Math.max(1e-6, T[i + 1] - T[i])), k = Math.min(n - 1, i + 1);
+        ax = lp(R.D[i * 2], R.D[k * 2], u); az = lp(R.D[i * 2 + 1], R.D[k * 2 + 1], u); }
+      const c = Math.cos(RS.ry), sn = Math.sin(RS.ry);
+      put(P, RS.x + ax * c + az * sn + dx, RS.z - ax * sn + az * c + dz, RS.ry);
+    }
     const MALA_T = { x: -0.55, z: 4.42 };                                     // Mala at her mother's right hand, before her
     const AMMA_FACE = [CHAIR.x, 1.02, CHAIR.z + 0.08];
     const RAVI_RY = RS.ry;
+    /* the picture the decision opens over (the trance's last, every ending's first). A phone's frame is a third of a desk's
+       width: from where he stands, Ravi at R1 is 67 degrees round from her face and cannot share it, so a phone holds
+       her, the thing on her back and his teacher's bowed head over her (what he must choose about); a desk holds them all */
+    const END_AIM = () => (isNarrow() ? [CHAIR.x - 0.05, 1.2, CHAIR.z - 0.13] : [lp(R1.x, CHAIR.x, 0.55), 1.15, lp(R1.z, CHAIR.z, 0.55)]);
     /* her goddess's light in her (§4.4: a light, never a figure): a dark blue glow laid over her own body in the vision,
        made once at the build so it is never compiled on screen, unseen (alpha 0) until a film raises it */
     let ammaAura = null;
@@ -80,7 +93,7 @@
        hand after; k eases both on and off */
     function phoBless(t, k) {
       const P = cast.phoB; if (!P.ready) return; P.group.visible = true; put(P, P.home.x, P.home.z, P.home.ry);
-      const h = HER_HEAD();
+      const h = HER_CROWN();
       bowSet(P, k > 0.01 ? k * bowFor(P, h) : 0);
       pose(P, 'Sit_to_Stand_Transition_M', pingOf(t, 5.85, 0.25, PHO_BREATH));
       if (k > 0.01) crownHand(P, h, k);
@@ -101,7 +114,7 @@
         FM.once = new Set();
         whenReady(cast.pho, (P) => { P.group.visible = false; });
         whenReady(cast.mala, (P) => { put(P, MALA_T.x, MALA_T.z, faceTo(MALA_T.x, MALA_T.z, CHAIR.x, CHAIR.z)); });
-        whenReady(cast.ravi, (P) => { put(P, RS.x, RS.z, RS.ry); });
+        whenReady(cast.ravi, (P) => { rushAt(P, 0); });
         spiritsHome(); castSolid();
         filmBed.on = true; for (const k in filmBed) if (k !== 'on') filmBed[k] = 0; filmBed.dark = BED.dark;      // the dark room under every silence
       },
@@ -118,10 +131,10 @@
         /* Ravi: still at the room's edge until the cry, then his rush (the take carries him, from its standing start, eased
            out of his rest over its first 0.3 s): three quick steps to a step from her chair; his eyes to him at his
            shout, and back to her */
-        whenReady(cast.ravi, (P) => { put(P, RS.x, RS.z, RS.ry);
-          if (t < TR.rush) { pose(P, 'Idle_3', 3 + t * 0.35, true); lookNow(P, AMMA_FACE, 1, 0.9); }
-          else { const b = smo(c01((t - TR.rush) / 0.3)), kL = smo(c01((t - TR.rv + 0.15) / 0.35)) * (1 - smo(c01((t - TR.back) / 0.9)));
-            pose(P, 'rush', Math.min(2.6, (t - TR.rush) * 1.05), false, 'Idle_3', 1 - b, 3 + TR.rush * 0.35);
+        whenReady(cast.ravi, (P) => {
+          if (t < TR.rush) { rushAt(P, 0); pose(P, 'Idle_3', 3 + t * 0.35, true); lookNow(P, AMMA_FACE, 1, 0.9); }
+          else { const b = smo(c01((t - TR.rush) / 0.3)), kL = smo(c01((t - TR.rv + 0.15) / 0.35)) * (1 - smo(c01((t - TR.back) / 0.9))), tk = Math.min(2.6, (t - TR.rush) * 1.05);
+            rushAt(P, tk); pose(P, 'rush', tk, false, 'Idle_3', 1 - b, 3 + TR.rush * 0.35);
             lookNow(P, lp3(AMMA_FACE, S_EYE, kL), 1, 0.9); }
         });
         /* the one on her back: its cling, its claws at her shoulders as the light rises in her, then its cry */
@@ -137,24 +150,26 @@
            puts his body at those moments: RS turned by RS.ry, its hips' own travel) */
         const RV = (tk, y) => { const h = RUSH_AT(tk); return [RS.x - 0.05 * h[0] - 0.9987 * h[1], y, RS.z + 0.9987 * h[0] - 0.05 * h[1]]; };
         track(t, [
-          { t: 0, name: 'her', eye: S_EYE, at: [CHAIR.x - 0.03, 1.02, CHAIR.z - 0.05], fp: 46, fd: 40 },
-          { t: TR.ml1 - 0.5, name: 'her', eye: S_EYE, at: [CHAIR.x - 0.03, 1.02, CHAIR.z - 0.03], fp: 46, fd: 40 },
-          { t: TR.ml1 + 0.3, name: 'mala', eye: S_EYE, at: [MALA_T.x, 1.37, MALA_T.z - 0.03], fp: 46, fd: 42 },
-          { t: TR.ml2 + 1.6, name: 'mala', eye: S_EYE, at: [MALA_T.x + 0.02, 1.33, MALA_T.z - 0.03], fp: 46, fd: 42 },
-          { t: TR.open + 0.3, name: 'both', eye: S_EYE, at: [CHAIR.x + 0.0, 1.22, CHAIR.z - 0.32], fp: 64, fd: 52 },
-          { t: TR.rush + 0.2, name: 'both', eye: S_EYE, at: [CHAIR.x + 0.02, 1.2, CHAIR.z - 0.32], fp: 64, fd: 52 },
+          { t: 0, name: 'her', eye: S_EYE, at: [CHAIR.x - 0.01, 0.99, CHAIR.z - 0.05], fp: 46, fd: 40 },
+          { t: TR.ml1 - 0.5, name: 'her', eye: S_EYE, at: [CHAIR.x - 0.015, 0.99, CHAIR.z], fp: 46, fd: 40 },
+          { t: TR.ml1 + 0.3, name: 'mala', eye: S_EYE, at: [MALA_T.x + 0.01, 1.36, MALA_T.z + 0.09], fp: 46, fd: 42 },
+          { t: TR.ml2 + 1.6, name: 'mala', eye: S_EYE, at: [MALA_T.x + 0.05, 1.37, MALA_T.z + 0.08], fp: 46, fd: 42 },
+          { t: TR.open + 0.3, name: 'vision', eye: S_EYE, at: [CHAIR.x - 0.1, 1.04, CHAIR.z + 0.13], fp: 56, fd: 48 },
+          { t: TR.cry + 0.4, name: 'vision', eye: S_EYE, at: [CHAIR.x - 0.1, 1.06, CHAIR.z + 0.11], fp: 58, fd: 50 },
+          { t: TR.cry + 1.8, name: 'cry', eye: S_EYE, at: [CHAIR.x - 0.13, 1.32, CHAIR.z - 0.1], fp: 66, fd: 56 },
+          { t: TR.rv - 0.1, name: 'cry', eye: S_EYE, at: [CHAIR.x - 0.13, 1.34, CHAIR.z - 0.13], fp: 66, fd: 56 },
           { t: TR.rv + 0.55, name: 'ravi', eye: S_EYE, at: RV(0.95, 1.32), fp: 60, fd: 54 },
           { t: TR.rush + 1.6, name: 'ravi', eye: S_EYE, at: RV(1.68, 1.25), fp: 60, fd: 54 },
           { t: TR.back, name: 'ravi', eye: S_EYE, at: [R1.x, 1.32, R1.z], fp: 60, fd: 56 },
-          { t: TR.back + 0.9, name: 'all', eye: S_EYE, at: [lp(R1.x, CHAIR.x, 0.55), 1.15, lp(R1.z, CHAIR.z, 0.55)], fp: 66, fd: 58 },
-          { t: TR.end, name: 'all', eye: S_EYE, at: [lp(R1.x, CHAIR.x, 0.55), 1.15, lp(R1.z, CHAIR.z, 0.55)], fp: 66, fd: 58 }
+          { t: TR.back + 1.0, name: 'end', eye: S_EYE, at: END_AIM, fp: 64, fd: 58 },
+          { t: TR.end, name: 'end', eye: S_EYE, at: END_AIM, fp: 64, fd: 58 }
         ]);
       },
       /* the room as the decision finds it, held still while he chooses: Ravi a step from her, the cry, the light in her,
          his teacher's hand on her head, the vision open (the endings take it from here) */
       end() {
         fLens(PLAY_FOV); filmBed.on = false;
-        whenReady(cast.ravi, (P) => { put(P, RS.x, RS.z, RS.ry); hold(P, 'rush', 2.45, 0.12, 0.2, 1.4); });
+        whenReady(cast.ravi, (P) => { rushAt(P, 2.5); hold(P, 'rush', 2.45, 0.12, 0.2, 1.4); });
         whenReady(cast.amma, (P) => hold(P, 'trance', 8.2, 1.5, 0.3, 3.2));
         whenReady(cast.mala, (P) => hold(P, 'lightlamp', 5.4, 0.2, 0.3, 2.5));
         whenReady(spirits.oppress, (P) => hold(P, 'cry', 2.6, 1.6, 0.3, 2.4));
@@ -170,13 +185,23 @@
        the room, her first steps to her altar, the sacred ash on her forehead, her palms together, his sight closing,
        and his teacher's word to the family. Every picture here is his eyes */
     const STAND = { x: CHAIR.x, z: CHAIR.z + 0.62 };                         // where her first steps take her, before her altar
+    /* ending A: his eyes as he holds Ravi from behind (pulled back with him as the struggle drags them both), and
+       Ravi's way to her afterwards, round the stool's far side to her left */
+    /* (18 Nov: from her side of him Ravi was 29 degrees out of a phone's frame, the struggle never seen: the eye is now
+       behind his shoulder on the line from him to her, and is pulled back with him, against the armchair's end) */
+    const A_EYE = [[R1.x + 0.58, 1.62, R1.z - 0.28], [R1.x + 0.68, 1.62, R1.z - 0.36]];
+    const A_WALK = [{ x: R1.x + 0.32, z: R1.z + 0.42 }, { x: R1.x - 0.02, z: R1.z + 0.56 }];
+    const STEPS_TK = 0.9;                                                     // her steps take run to here: 0.28 m by its own travel
     const MALA_C = { x: CHAIR.x - 0.42, z: CHAIR.z + 0.82 };                 // Mala at her right in the close
     const RAVI_C = { x: CHAIR.x + 0.48, z: CHAIR.z + 0.55 };                 // Ravi at her left in the close
     /* (the endings' clocks, EN, and the close's, CL, are the chapter's own, z_tail.js: chaptertest reads each scene's length
        from them) */
     /* her rise from the chair (§4.5: "she stands up out of the chair"), standing still after: the rise take run over its
        own five seconds, then held breathing on its end */
-    function ammaRise(t, t0) { whenReady(cast.amma, (P) => { put(P, CHAIR.x, CHAIR.z, CHAIR.ry); pose(P, 'rise', t - t0 < 4.9 ? Math.max(0, t - t0) : pingOf(t - t0 - 4.9, 4.6, 0.3, 3.0)); }); }
+    /* (out of her trance's held breath over its first 0.4 s, so her body does not jump the 5 cm between the two takes'
+       first moments) */
+    function ammaRise(t, t0) { whenReady(cast.amma, (P) => { put(P, CHAIR.x, CHAIR.z, CHAIR.ry);
+      pose(P, 'rise', t - t0 < 4.9 ? Math.max(0, t - t0) : pingOf(t - t0 - 4.9, 4.6, 0.3, 3.0), false, 'trance', 1 - smo(c01((t - t0) / 0.4)), pingOf(t, 8.2, 1.5, 3.2)); }); }
     function ammaTrance(t) { whenReady(cast.amma, (P) => { put(P, CHAIR.x, CHAIR.z, CHAIR.ry); pose(P, 'trance', pingOf(t, 8.2, 1.5, 3.2)); }); }
     /* the one on her back: its cry, then torn from her (thrown back and gone in the light) */
     function oppressAt(t, cry, torn) {
@@ -185,7 +210,10 @@
         P.group.visible = true; oppRide(P);
         if (t < cry) pose(P, 'cry', pingOf(t, 2.6, 1.6, 2.4));
         else if (t < torn) pose(P, 'cry', Math.min(4.4, 0.4 + (t - cry) * 1.1));
-        else { pose(P, 'torn', Math.min(2.9, (t - torn) * 1.6)); const k = smo(c01((t - torn) / 1.1)); P.group.position.z -= 0.6 * k; P.group.position.y += 0.25 * k; }
+        /* (torn away: its cry's own arch, the head thrown back and the arms flung wide, thrown back off her and up, and
+           gone in the light. Its written `torn` begins three metres in the air and falls to the floor: measured 18 Nov,
+           tools/probes/takepath.mjs, and not used) */
+        else { const k = smo(c01((t - torn) / 1.1)); pose(P, 'cry', lp(1.0, 1.9, k)); P.group.position.z -= 0.6 * k; P.group.position.y += 0.25 * k; }
         if (P.fx) P.fx.set('uAlpha', t < torn ? 1 : 1 - smo(c01((t - torn - 0.3) / 0.9))); });
     }
     /* the green shapes still in the room ease and go as the merit is dedicated */
@@ -217,25 +245,43 @@
       A(t, E) {
         const RG = { x: R1.x + 0.05, z: R1.z - 0.05 };                       // Ravi, held
         ammaRise(t, E.rise); if (t < E.rise) ammaTrance(t);
+        /* standing, she looks back over her shoulder for her son: held back, behind her (her face turned to him and to
+           us; a neck's reach, the rest of the turn is his to see) */
+        if (t > E.rise + 1.5) whenReady(cast.amma, (P) => lookNow(P, headOf(cast.ravi, [RG.x, 1.4, RG.z]), smo(c01((t - E.rise - 1.5) / 1.2)), 1.25, 0.04));
         phoBless(t, 1 - smo(c01((t - E.rise + 0.4) / 0.8)));
         oppressAt(t, E.cry, E.torn); goddess(t < E.torn ? 1 : 1 - smo(c01((t - E.torn) / 1.5)));
+        /* Ravi: fighting his hold until she rises (the take run to its end by then: it ran out and froze 3 s early);
+           going still where the struggle has pulled him (his group drawn under him as the stand takes over, so his body
+           stays put: the hips blend in a straight line between the two takes); then to her, round his teacher's stool by
+           its far side, the walk paced by the ground it covers (1.29 m a second at its own rate, measured), and turned to
+           her at the end */
         whenReady(cast.ravi, (P) => {
-          if (t < E.go) { put(P, RG.x, RG.z, RAVI_RY); pose(P, 'struggle', Math.min(5.9, t * (t < E.still ? 0.62 : 1.0))); }
-          else { const u = smo(c01((t - E.go) / 1.8)); put(P, lp(RG.x, RAVI_C.x, u), lp(RG.z, RAVI_C.z, u), faceTo(RG.x, RG.z, CHAIR.x, CHAIR.z + 0.6));
-            if (u < 1) pose(P, 'Walking', (t - E.go) * 1.0, true); else pose(P, 'Idle_3', 3 + (t - E.go) * 0.4, true);
-            lookNow(P, AMMA_FACE, smo(c01((t - E.go - 1) / 1)), 0.9); } });
+          const ds = hipsTravel(P, 'struggle', 5.9), c = Math.cos(RAVI_RY), sn = Math.sin(RAVI_RY);
+          const DS = [ds[0] * c + ds[1] * sn, -ds[0] * sn + ds[1] * c], B0 = { x: RG.x + DS[0], z: RG.z + DS[1] };
+          if (t < E.still) { put(P, RG.x, RG.z, RAVI_RY); pose(P, 'struggle', Math.min(5.9, t * 5.9 / E.still)); }
+          else if (t < E.go) { const w = smo(c01((t - E.still) / 0.6)); put(P, RG.x + DS[0] * w, RG.z + DS[1] * w, RAVI_RY);
+            pose(P, 'Idle_3', 3 + (t - E.still) * 0.4, true, 'struggle', 1 - w, 5.9); }
+          else { const W1 = A_WALK[0], W2 = A_WALK[1], L1 = Math.hypot(W1.x - B0.x, W1.z - B0.z), L2 = Math.hypot(W2.x - W1.x, W2.z - W1.z), L = L1 + L2, T = L / 0.62;
+            const sA = L * smo(c01((t - E.go) / T)), on1 = sA < L1, k1 = sA / Math.max(1e-3, L1), k2 = (sA - L1) / Math.max(1e-3, L2);
+            const h1 = faceTo(B0.x, B0.z, W1.x, W1.z), h2 = faceTo(W1.x, W1.z, W2.x, W2.z), h3 = faceTo(W2.x, W2.z, CHAIR.x, CHAIR.z);
+            const ry = sA < 0.25 ? lp(RAVI_RY, h1, smo(sA / 0.25)) : sA < L1 - 0.12 ? h1 : sA < L1 + 0.12 ? lp(h1, h2, smo((sA - L1 + 0.12) / 0.24)) : lp(h2, h3, smo(c01((sA - L + 0.25) / 0.25)));
+            put(P, on1 ? lp(B0.x, W1.x, k1) : lp(W1.x, W2.x, k2), on1 ? lp(B0.z, W1.z, k1) : lp(W1.z, W2.z, k2), ry);
+            const into = smo(c01((t - E.go) / 0.4)), outOf = smo(c01((t - E.go - T + 0.3) / 0.5));
+            if (outOf <= 0) pose(P, 'Walking', sA / 1.29, true, 'Idle_3', 1 - into, 3 + (E.go - E.still) * 0.4);
+            else pose(P, 'Idle_3', 3 + (t - E.go) * 0.4, true, 'Walking', 1 - outOf, sA / 1.29);
+            lookNow(P, AMMA_FACE, smo(c01((t - E.go - 0.6) / 1)), 0.9); } });
         whenReady(cast.mala, (P) => { if (t < E.scream) pose(P, 'lightlamp', 5.4); else pose(P, 'scream', Math.min(3.9, (t - E.scream) * 0.9)); lookNow(P, [RG.x, 1.5, RG.z], 0.7, 0.9); });
         visionAt(t, -1, 0.1);
         /* THE LENS: in on Ravi's shoulder as he is caught (his mother beyond him); held through the cry; the light; out
            to her standing; on his teacher for his word */
         track(t, [
-          { t: 0, name: 'S', eye: S_EYE, at: [(R1.x + CHAIR.x) / 2, 1.15, (R1.z + CHAIR.z) / 2], fp: 66, fd: 58 },
-          { t: 0.55, name: 'held', eye: [R1.x + 0.5, 1.6, R1.z + 0.3], at: [CHAIR.x + 0.1, 1.15, CHAIR.z - 0.05], fp: 64, fd: 56 },
-          { t: E.open, name: 'held', eye: [R1.x + 0.5, 1.6, R1.z + 0.3], at: [CHAIR.x + 0.08, 1.1, CHAIR.z], fp: 62, fd: 56 },
-          { t: E.rise + 3.5, name: 'her', eye: [R1.x + 0.55, 1.62, R1.z + 0.35], at: [CHAIR.x + 0.05, 1.3, CHAIR.z + 0.1], fp: 58, fd: 52 },
-          { t: E.ph - 0.6, name: 'her', eye: [R1.x + 0.55, 1.62, R1.z + 0.35], at: [CHAIR.x + 0.1, 1.35, CHAIR.z + 0.1], fp: 58, fd: 52 },
-          { t: E.ph + 0.4, name: 'pho', eye: [R1.x + 0.55, 1.62, R1.z + 0.35], at: [cast.phoB.home.x, 1.62, cast.phoB.home.z], fp: 46, fd: 42 },
-          { t: E.close, name: 'pho', eye: [R1.x + 0.55, 1.62, R1.z + 0.35], at: [cast.phoB.home.x, 1.62, cast.phoB.home.z], fp: 46, fd: 42 }
+          { t: 0, name: 'S', eye: S_EYE, at: END_AIM, fp: 64, fd: 58 },
+          { t: 0.55, name: 'held', eye: A_EYE[0], at: [CHAIR.x + 0.1, 1.15, CHAIR.z - 0.05], fp: 64, fd: 56 },
+          { t: E.open, name: 'held', eye: A_EYE[1], at: [CHAIR.x + 0.08, 1.1, CHAIR.z], fp: 62, fd: 56 },
+          { t: E.rise + 3.5, name: 'her', eye: A_EYE[1], at: [CHAIR.x, 1.4, CHAIR.z + 0.32], fp: 56, fd: 52 },
+          { t: E.ph - 0.6, name: 'her', eye: A_EYE[1], at: [CHAIR.x + 0.02, 1.42, CHAIR.z + 0.32], fp: 56, fd: 52 },
+          { t: E.ph + 0.4, name: 'pho', eye: A_EYE[1], at: [cast.phoB.home.x, 1.55, cast.phoB.home.z], fp: 46, fd: 42 },
+          { t: E.close, name: 'pho', eye: A_EYE[1], at: [cast.phoB.home.x, 1.55, cast.phoB.home.z], fp: 46, fd: 42 }
         ]);
         phoTurn(t, E.ph);
       },
@@ -264,16 +310,16 @@
           } else { oppRide(P);
             if (t < E.comes) pose(P, 'cry', pingOf(t, 2.6, 1.6, 2.4));
             else if (t < E.torn) pose(P, 'cry', Math.min(4.4, 0.4 + (t - E.cry) * 1.1));
-            else { pose(P, 'torn', Math.min(2.9, (t - E.torn) * 1.6)); const k = smo(c01((t - E.torn) / 1.1)); P.group.position.z -= 0.6 * k; P.group.position.y += 0.25 * k; } }
+            else { const k = smo(c01((t - E.torn) / 1.1)); pose(P, 'cry', lp(1.0, 1.9, k)); P.group.position.z -= 0.6 * k; P.group.position.y += 0.25 * k; } }
           if (P.fx) P.fx.set('uAlpha', t < E.torn ? 1 : 1 - smo(c01((t - E.torn - 0.3) / 0.9))); });
         goddess(t < E.falter ? 1 : t < E.back ? 0.35 : t < E.torn ? lp(0.35, 1, smo(c01((t - E.back) / 1.2))) : 1 - smo(c01((t - E.torn) / 1.5)));
-        whenReady(cast.ravi, (P) => { put(P, RS.x, RS.z, RS.ry); pose(P, 'rush', 2.45 + 0.1 * Math.sin(t)); lookNow(P, AMMA_FACE, 1, 0.9); });
+        whenReady(cast.ravi, (P) => { const tk = 2.45 + 0.1 * Math.sin(t); rushAt(P, tk); pose(P, 'rush', tk); lookNow(P, AMMA_FACE, 1, 0.9); });
         whenReady(cast.mala, (P) => { if (t < E.splash) pose(P, 'lightlamp', 5.4); else pose(P, 'scream', Math.min(3.9, (t - E.splash) * 0.8)); lookNow(P, AMMA_FACE, 0.8, 0.9); });
         visionAt(t, -1, 0.1);
         /* THE LENS: the throw (a lurch at her); the thing filling his eyes; white; his teacher's push seen through the
            white; then he is on the floor, looking up at her standing, and at his teacher */
         track(t, [
-          { t: 0, name: 'S', eye: S_EYE, at: [CHAIR.x + 0.0, 1.05, CHAIR.z - 0.1], fp: 60, fd: 54 },
+          { t: 0, name: 'S', eye: S_EYE, at: END_AIM, fp: 64, fd: 58 },
           { t: E.throw + 0.25, name: 'throw', eye: [S_EYE[0] + TOWARD[0] * 0.2, 1.58, S_EYE[2] + TOWARD[1] * 0.2], at: [CHAIR.x - 0.05, 1.0, CHAIR.z - 0.2], fp: 58, fd: 52 },
           { t: E.comes + 0.9, name: 'it', eye: [S_EYE[0] - TOWARD[0] * 0.06, 1.6, S_EYE[2] - TOWARD[1] * 0.06], at: [COMES[0], 1.3, COMES[2]], fp: 70, fd: 64 },
           { t: E.floor, name: 'down', eye: [S_EYE[0] - TOWARD[0] * 0.1, 1.58, S_EYE[2] - TOWARD[1] * 0.1], at: [COMES[0], 1.25, COMES[2]], fp: 68, fd: 62 },
@@ -296,7 +342,7 @@
         phoBless(t, 1 - smo(c01((t - E.rise + 0.4) / 0.8)));
         oppressAt(t, E.cry, E.torn); goddess(t < E.torn ? 1 : 1 - smo(c01((t - E.torn) / 1.5)));
         whenReady(cast.ravi, (P) => {
-          if (t < E.kneel) { put(P, RS.x, RS.z, RS.ry); pose(P, 'rush', 2.45 + 0.08 * Math.sin(t * 1.3)); lookNow(P, 'lens', smo(c01((t - 0.5) / 0.8)), 0.8); }
+          if (t < E.kneel) { const tk = 2.45 + 0.08 * Math.sin(t * 1.3); rushAt(P, tk); pose(P, 'rush', tk); lookNow(P, 'lens', smo(c01((t - 0.5) / 0.8)), 0.8); }
           else { const u = smo(c01((t - E.kneel) / 1.2)); put(P, lp(R1.x, KR.x, u), lp(R1.z, KR.z, u), lp(RAVI_RY, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2), u));
             pose(P, 'kneelhold', t < E.rise ? Math.min(4.2, (t - E.kneel) * 1.0) : runOf(t, E.rise + 0.6, E.rise + 3.6, 4.2, 0.2));
             lookNow(P, AMMA_FACE, 1, 0.9); } });
@@ -308,7 +354,7 @@
         if (t >= E.look) whenReady(cast.amma, (P) => lookNow(P, headOf(cast.ravi, [KR.x, 0.9, KR.z]), smo(c01((t - E.look) / 0.8)), 1.0));
         visionAt(t, -1, 0.1);
         track(t, [
-          { t: 0, name: 'S', eye: S_EYE, at: [(R1.x + CHAIR.x) / 2, 1.15, (R1.z + CHAIR.z) / 2], fp: 66, fd: 58 },
+          { t: 0, name: 'S', eye: S_EYE, at: END_AIM, fp: 64, fd: 58 },
           { t: 0.65, name: 'ravi', eye: [R1.x - 0.25, 1.6, R1.z + 0.62], at: [R1.x, 1.55, R1.z], fp: 50, fd: 46 },
           { t: E.kneel, name: 'ravi', eye: [R1.x - 0.25, 1.6, R1.z + 0.62], at: [R1.x, 1.52, R1.z], fp: 50, fd: 46 },
           { t: E.kneel + 1.6, name: 'kneel', eye: [R1.x - 0.05, 1.6, R1.z + 0.7], at: [CHAIR.x + 0.15, 0.95, CHAIR.z + 0.1], fp: 60, fd: 54 },
@@ -328,14 +374,14 @@
         phoBless(t, 1 - smo(c01((t - E.rise + 0.4) / 0.8)));
         oppressAt(t, E.cry, E.torn); goddess(t < E.torn ? 1 : 1 - smo(c01((t - E.torn) / 1.5)));
         whenReady(cast.ravi, (P) => {
-          if (t < E.kneel) { const u = smo(c01((t - E.reach) / 1.2)); put(P, RS.x - 0.12 * u, RS.z + 0.18 * u, RS.ry); pose(P, 'rush', 2.45 + 0.08 * Math.sin(t * 1.3)); lookNow(P, AMMA_FACE, 1, 0.9); }
+          if (t < E.kneel) { const u = smo(c01((t - E.reach) / 1.2)), tk = 2.45 + 0.08 * Math.sin(t * 1.3); rushAt(P, tk, -0.12 * u, 0.18 * u); pose(P, 'rush', tk); lookNow(P, AMMA_FACE, 1, 0.9); }
           else { const u = smo(c01((t - E.kneel) / 1.2)); put(P, lp(R1.x - 0.12, KR.x, u), lp(R1.z + 0.18, KR.z, u), lp(RAVI_RY, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2), u));
             pose(P, 'kneelhold', t < E.rise ? Math.min(4.2, (t - E.kneel) * 1.0) : runOf(t, E.rise + 0.6, E.rise + 3.6, 4.2, 0.2)); lookNow(P, AMMA_FACE, 1, 0.9); } });
         whenReady(cast.mala, (P) => { pose(P, 'lightlamp', 5.4); lookNow(P, AMMA_FACE, 1, 0.9); });
         /* his sight shut at the start: the wave home to him */
         visionAt(t, -10, 0.1, E.shut, 1.0);
         track(t, [
-          { t: 0, name: 'S', eye: S_EYE, at: [(R1.x + CHAIR.x) / 2, 1.15, (R1.z + CHAIR.z) / 2], fp: 66, fd: 58 },
+          { t: 0, name: 'S', eye: S_EYE, at: END_AIM, fp: 64, fd: 58 },
           { t: 1.2, name: 'pho', eye: S_EYE, at: [cast.phoB.home.x, 1.55, cast.phoB.home.z], fp: 52, fd: 48 },
           { t: E.kneel + 0.6, name: 'pho', eye: S_EYE, at: [cast.phoB.home.x, 1.5, cast.phoB.home.z], fp: 52, fd: 48 },
           { t: E.kneel + 2.0, name: 'hands', eye: S_EYE, at: [CHAIR.x + 0.2, 0.85, CHAIR.z + 0.05], fp: 56, fd: 52 },
@@ -356,9 +402,15 @@
       void EN;
       /* she stands (in every ending she has risen by now) and walks to her altar; the ash; her palms together */
       whenReady(cast.amma, (P) => {
+        /* (each take carries her body from its own first moment: the rise left her standing RISEN before the chair's
+           middle, the steps take the rest of the way to the altar by its own travel, so her mark moves only between
+           takes. 18 Nov: her mark slid to the altar under a walking take that also walked: she ended in its wall) */
+        const R0 = hipsTravel(P, 'rise', 4.75), sk = Math.min(STEPS_TK, (c - CL.steps) * 0.55), stepEnd = CL.steps + STEPS_TK / 0.55;
         if (c < CL.steps) { put(P, CHAIR.x, CHAIR.z, CHAIR.ry); pose(P, 'rise', pingOf(c, 4.6, 0.3, 3.0)); }
-        else if (c < CL.palms) { const u = smo(c01((c - CL.steps) / 3.0)); put(P, CHAIR.x, lp(CHAIR.z, STAND.z, u), CHAIR.ry); pose(P, 'steps', Math.min(3.4, (c - CL.steps) * 1.0)); }
-        else { put(P, STAND.x, STAND.z, CHAIR.ry); pose(P, 'lamp', runOf(c, CL.palms, CL.palms + 2.6, 3.4, 5.6)); }
+        else { put(P, CHAIR.x + R0[0], CHAIR.z + R0[1], CHAIR.ry);
+          if (c < stepEnd) pose(P, 'steps', sk, false, 'rise', 1 - smo(c01((c - CL.steps) / 0.5)), 4.75);
+          else if (c < CL.palms) pose(P, 'rise', pingOf(c - stepEnd, 4.6, 0.3, 3.0), false, 'steps', 1 - smo(c01((c - stepEnd) / 0.6)), STEPS_TK);
+          else pose(P, 'lamp', runOf(c, CL.palms, CL.palms + 2.6, 3.4, 5.6), false, 'rise', 1 - smo(c01((c - CL.palms) / 0.5)), 4.75); }
         lookNow(P, [ALTAR.x, 1.45, ALTAR.z], c < CL.palms ? smo(c01((c - CL.steps) / 1.5)) * 0.6 : 0, 0.6); });
       phoBless(tAll, 0);
       whenReady(cast.phoB, (P) => { lookNow(P, c > CL.z1 - 1 ? [RAVI_C.x, 1.6, RAVI_C.z] : AMMA_FACE, 0.8, 0.8); });

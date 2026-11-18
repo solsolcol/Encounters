@@ -3126,7 +3126,9 @@
       ravi: { x: 2.62, z: 2.02 },                       // by the standing fan, her room's window behind him to his left
       mala: { x: 0.95, z: 2.40 },                       // by the sofa's end, beside her mother
       phoS: { x: STOOL.x, z: STOOL.z },                 // his stool at her left
-      phoB: { x: CHAIR.x + 0.14, z: CHAIR.z - 0.66 },   // behind her chair, for the blessing
+      phoB: { x: CHAIR.x + 0.14, z: CHAIR.z - 0.72 },   // behind her chair, for the blessing: his hips here (18 Nov: his stand
+                                                        // took his body 27 cm behind the mark, where his rise from a seat
+                                                        // leaves him; `centre` now puts his hips on it, a hand behind her handles)
       appa: { x: 0.95, z: 4.72 }                        // by his own photograph on the altar's wall, turned to her
     };
     const HER_HEAD = () => { const P = cast.amma; if (P && P.ready && P.head) { P.head.getWorldPosition(_pv); return [_pv.x, _pv.y + 0.06, _pv.z]; } return [CHAIR.x, 1.18, CHAIR.z - 0.05]; };
@@ -3165,10 +3167,40 @@
       const phoBRy = faceTo(AT.phoB.x, AT.phoB.z, CHAIR.x, CHAIR.z);
       cast.phoB = mkPerson('pho', AT.phoB.x, AT.phoB.z, phoBRy, { take: 'Sit_to_Stand_Transition_M', hidden: true,
         win: { Sit_to_Stand_Transition_M: [5.85, 0.25, PHO_BREATH] }, skins: false, look: lookD, blobW: 0.9, blobD: 0.8,
-        ref: 'Sit_to_Stand_Transition_M', talk: 'Talk_with_Hands_Open' });
+        centre: true, talk: 'Talk_with_Hands_Open' });
       cast.phoB.home = { x: AT.phoB.x, z: AT.phoB.z, ry: phoBRy };
     }
     buildCast();
+    /* WHERE A TAKE CARRIES A BODY: its hips over the floor from the take's first moment to `t`, in the person's own
+       group's metres (its hips' track read through the fixed frame the armature stands in). Measured 18 Nov: her rise
+       ends 0.35 m before the chair's middle and her steps carry her 0.29 m a second; Ravi's rush runs 2.94 m */
+    const _htv = new THREE.Vector3();
+    function hipsFrame(P) { if (!P._hm && P.hips) { P.group.updateWorldMatrix(true, true); P._hm = new THREE.Matrix3().setFromMatrix4(new THREE.Matrix4().copy(P.group.matrixWorld).invert().multiply(P.hips.parent.matrixWorld)); } return P._hm; }
+    function hipsTravel(P, name, t) {
+      const A = P.acts && P.acts[name], M = hipsFrame(P); if (!A || !M) return [0, 0];
+      const tr = A.getClip().tracks.find(q => /Hips\.position$/.test(q.name)); if (!tr) return [0, 0];
+      const v = tr.values, T = tr.times, n = T.length; let i = 0; while (i < n - 2 && T[i + 1] <= t) i++;
+      const u = n > 1 ? c01((t - T[i]) / Math.max(1e-6, T[i + 1] - T[i])) : 0, j = Math.min(n - 1, i + 1);
+      _htv.set(lp(v[i * 3], v[j * 3], u) - v[0], lp(v[i * 3 + 1], v[j * 3 + 1], u) - v[1], lp(v[i * 3 + 2], v[j * 3 + 2], u) - v[2]).applyMatrix3(M);
+      return [_htv.x, _htv.z];
+    }
+    /* RAVI'S RUSH CARRIES HIS GROUP (18 Nov: at his mark he was not drawn: the renderer tests a body's sphere round its
+       group, and the rush had carried his body three metres from it). Its travel over the floor is taken out of his hips
+       as he lands and kept (P.rushPath, in his group's metres, every key of the take); a film moves his group along it
+       (c_ufilm.js rushAt), so his body goes exactly where the take took it and his sphere goes with him. Kept on the clip
+       too, so a second build of the chapter (a replay) finds it already taken out and reads it back */
+    whenReady(cast.ravi, (P) => {
+      const A = P.acts.rush, M = hipsFrame(P); if (!A || !M) { console.warn('p4ravi: no rush to carry'); return; }
+      const clip = A.getClip(), tr = clip.tracks.find(q => /Hips\.position$/.test(q.name)); if (!tr) return;
+      clip.userData = clip.userData || {};
+      if (!clip.userData.rushPath) {
+        const v = tr.values, T = tr.times, n = T.length, D = new Float32Array(n * 2), Mi = M.clone().invert(), d = new THREE.Vector3();
+        for (let i = 0; i < n; i++) { d.set(v[i * 3] - v[0], v[i * 3 + 1] - v[1], v[i * 3 + 2] - v[2]).applyMatrix3(M); D[i * 2] = d.x; D[i * 2 + 1] = d.z;
+          d.y = 0; d.applyMatrix3(Mi); v[i * 3] -= d.x; v[i * 3 + 1] -= d.y; v[i * 3 + 2] -= d.z; }
+        clip.userData.rushPath = { T: Float32Array.from(T), D };
+      }
+      P.rushPath = clip.userData.rushPath;
+    });
 
     /* ---------------------------------------------------------------- THE ONES ONLY THE VISION SHOWS (the plan's §4.2, §4.3)
        Each is a body made for it and drawn as light: its meshes handed to the engine (ctx.spirit), which moves them onto
@@ -3209,6 +3241,11 @@
        seated rest (her `wsit` at OPP_REF_T, inside the window play holds her in). Read once, as both bodies land, her own
        pose put back after; laid every frame after she is posed (play, every film), so where she leans, it leans */
     const OPP_REF_T = 3.0, OPP_REF = { m: null };
+    /* HER CROWN: the top of her head as her skin has it. Her head bone sits at the base of her skull: a palm laid 9.5 cm
+       over it was inside her head, its fingertips out at her ears in the trance's first picture (18 Nov). Read once below,
+       and carried by her head bone after (a fallback until she lands) */
+    const CROWN_LOCAL = new THREE.Vector3(0, 0.19, 0), _crw = new THREE.Vector3();
+    const HER_CROWN = () => { const A = cast.amma; if (A && A.ready && A.head) { A.head.updateWorldMatrix(true, false); _crw.copy(CROWN_LOCAL); A.head.localToWorld(_crw); return [_crw.x, _crw.y, _crw.z]; } return [CHAIR.x, 1.1, CHAIR.z - 0.15]; };
     const _om = new THREE.Matrix4(), _om2 = new THREE.Matrix4(), _os = new THREE.Vector3();
     function herBack(A) { if (A._back === undefined) { A._back = null; for (const n in A.bone) if (/^(mixamorig:?)?Spine02$/.test(n)) { A._back = A.bone[n]; break; } } return A._back; }
     whenReady(cast.amma, (A) => whenReady(spirits.oppress, (P) => {
@@ -3218,6 +3255,15 @@
       put(A, CHAIR.x, CHAIR.z, CHAIR.ry); pose(A, 'wsit', OPP_REF_T); bk.updateWorldMatrix(true, false);
       put(P, OPP_AT.x, OPP_AT.z, CHAIR.ry, OPP_AT.y); P.group.rotation.x = OPP_TILT; P.group.updateWorldMatrix(true, false);
       OPP_REF.m = new THREE.Matrix4().copy(bk.matrixWorld).invert().multiply(P.group.matrixWorld);
+      /* (her crown, read off the same seated rest: the highest point of the skin her head bone carries, in that bone's
+         own frame) */
+      const hb = A.head; A.group.updateWorldMatrix(true, true);
+      if (hb) { let best = null; const v = new THREE.Vector3();
+        for (const m of (A.lv[1] || [])) { if (!m.isSkinnedMesh || !m.geometry.attributes.skinIndex) continue; const bi = m.skeleton.bones.indexOf(hb); if (bi < 0) continue;
+          const SI = m.geometry.attributes.skinIndex, SW = m.geometry.attributes.skinWeight;
+          for (let i = 0; i < SI.count; i++) { let w = 0; for (let k = 0; k < 4; k++) if (SI.getComponent(i, k) === bi) w += SW.getComponent(i, k); if (w < 0.5) continue;
+            m.getVertexPosition(i, v); m.localToWorld(v); if (!best || v.y > best.y) best = v.clone(); } }
+        if (best) CROWN_LOCAL.copy(hb.worldToLocal(best)); else console.warn('p4amma: no skin on her head bone to read her crown from'); }
       for (const k in A.acts) { A.acts[k].time = keep[k][0]; A.w[k] = keep[k][1]; A.acts[k].setEffectiveWeight(keep[k][1]); }
       A.cur = cur; A.filmT = ft; A.mixer.update(0);
     }));
@@ -3603,7 +3649,7 @@
     /* ================================================================ PLAY III · THE BLESSING (§4.3) */
     const WARM_BLESS = ['ph4b0', 'ph4b1', 'ph4b2', 'u4match', 'u4tubedie', 'u4fanstop', 'u4tvdie', 'u4flick', 'u4patter', 'u4dip', 'u4whisper',
                         'u4release', 'u4large', 'u4gaspf', 'u4gaspm', 'u4chill', 'u4husband', 'u4vison', 'u4visbed', 'u4heart', 'uiclick',
-                        'u4fightmus'];
+                        'u4fightmus', 'u4chant1', 'u4chant2'];
     function blessBegin(R, fresh) {
       play.learned = new Set(['r', 'm', 'f', 'o', 'a']); play.spoke = true; play.told = true; play.opened = true; play.looked = new Set(['1', '2', '3']);
       play.closed = true; play.read = true; play.peeked = R.peeked; play.water = R.water; play.appaGone = R.appaGone;
@@ -3759,8 +3805,8 @@
       let slow = 1; for (const S of F.shapes) if (S.state === 'feed' && (S.to === 'amma' || S.to === 'pho')) slow *= 0.5;
       F.k = Math.min(1, F.k + wdt / FIGHT.secs * Math.max(0.15, slow));
       if (kit) kit.bar(F.k);
-      if (F.captions === 0 && F.k > 0.06) { F.captions = 1; if (kit && kit.captions) kit.captions([{ at: 0, end: 14, text: W.cap1, sub: W.cap1Sub }]); }
-      if (F.captions === 1 && F.k > 0.55) { F.captions = 2; if (kit && kit.captions) kit.captions([{ at: 0, end: 16, text: W.cap2, sub: W.cap2Sub }]); }
+      while (F.captions < CHANT.length && F.k > CHANT[F.captions].at) { const C = CHANT[F.captions++]; chantLine(C);
+        if (kit && kit.captions) kit.captions([{ at: 0, end: 2 * C.len + CHANT_GAP + 0.4, text: W[C.cap], sub: W[C.cap + 'Sub'] }]); }
       const appa = spirits.appa, ag = appa.group.position;
       for (const S of F.shapes) {
         const P = S.P; if (S.state === 'gone') continue;
@@ -3829,8 +3875,22 @@
       after(2.2, () => { if (live(run)) sayLine('ph4b2', 1, () => talk(cast.phoB, SECS.ph4b2 || 2.6)); });
     }
     /* the end of the chant: the shapes thin away; silence but for the lamp's flame and her breathing */
+    /* HIS CHANT (the plan's D13; masters/v27.0/chant/build.py): each line sung by him while its words are on screen,
+       twice with a breath between (its caption stands for both), from where he stands; four times through the blessing
+       at its own pace (the bar), the two lines in turn. Only ever under its caption: a chant with words is captioned
+       (v21.31) */
+    const CHANT_GAP = 1.2;
+    const CHANT = [{ at: 0.06, n: 'u4chant1', len: 5.98, cap: 'cap1' }, { at: 0.30, n: 'u4chant2', len: 8.94, cap: 'cap2' },
+                   { at: 0.55, n: 'u4chant1', len: 5.98, cap: 'cap1' }, { at: 0.80, n: 'u4chant2', len: 8.94, cap: 'cap2' }];
+    let chantNodes = [];
+    function chantStop() { for (const a of chantNodes) { try { a.stop(); } catch (e) { } } chantNodes = []; }
+    function chantLine(C) {
+      chantStop(); if (!worldSfx || (soundOff && soundOff())) return;
+      const g = cast.phoB.group.position, sing = () => { const a = worldSfx(C.n, 0.95, 1, panAt(g.x, g.z)); if (a) chantNodes.push(a); };
+      sing(); const run = play.run; after(C.len + CHANT_GAP, () => { if (live(run) && play.fight && play.fight.on) sing(); });
+    }
     function fightEnd() {
-      const F = play.fight; F.ended = true; F.on = false; fightMusOff();
+      const F = play.fight; F.ended = true; F.on = false; fightMusOff(); chantStop();
       for (const S of F.shapes) if (S.state !== 'gone' && S.state !== 'leave') { S.state = 'leave'; S.leave = -0.4 * Math.random(); }
       if (kit) { kit.bar(null); kit.captions(null); }
       if (F.families <= 1) bank(W.noteKept, 0, 4);
@@ -3868,38 +3928,42 @@
     function crownTick(wdt) {
       crownK += (crownTo - crownK) * Math.min(1, wdt * 1.5);
       const P = cast.phoB; if (!P.ready || !P.group.visible) return;
-      const h = HER_HEAD();
+      const h = HER_CROWN();
       bowSet(P, crownK > 0.01 ? crownK * bowFor(P, h) : 0);         // (the mixer lays it on at his next frame)
       if (crownK > 0.01) crownHand(P, h, crownK);
     }
-    /* the palm on the crown (h: her head's top, HER_HEAD), the fingers forward and a little down, the elbow out and down;
+    /* the palm on the crown (h: the top of her head, HER_CROWN), the fingers forward and a little down, the elbow out and down;
        and, while he bows, his other arm let hang straight from its shoulder (a bow tips the arms with the trunk) */
     function crownHand(P, h, k) {
       const g = P.group.position, fx0 = h[0] - g.x, fz0 = h[2] - g.z, fl = Math.hypot(fx0, fz0) || 1;
-      handTo(P, 'R', [h[0] - fx0 / fl * 0.02, h[1] + 0.035, h[2] - fz0 / fl * 0.02], [fx0 / fl, -0.25, fz0 / fl], [0, -1, 0], k, { out: 0.32, down: 0.3 });
+      handTo(P, 'R', [h[0] - fx0 / fl * 0.02, h[1] + 0.012, h[2] - fz0 / fl * 0.02], [fx0 / fl, -0.25, fz0 / fl], [0, -1, 0], k, { out: 0.32, down: 0.3 });
       const B = P.bow, bw = B ? B.a.getEffectiveWeight() * B.max : 0;
       if (bw > 2 && B.lsh) { B.lsh.getWorldPosition(_bwv); P.group.getWorldQuaternion(_bwq); _bwx.set(1, 0, 0).applyQuaternion(_bwq);
         handTo(P, 'L', [_bwv.x + _bwx.x * 0.04, _bwv.y - 0.6, _bwv.z + _bwx.z * 0.04], [0, -1, 0], [-_bwx.x, 0, -_bwx.z], k * Math.min(1, (bw - 2) / 8), { out: 0.12, down: 0.7 }); }
     }
     /* HIS BOW FROM THE WAIST (18 Nov: in the trance she sits up and forward, and her crown stood 0.6 to 0.8 m out from the
        right shoulder of a man upright behind her chair's handles; his arm reaches about 0.6: in the film's photographs his
-       arm pointed at her head across the air). His trunk is turned forward about his own left-right line at his lowest
-       spine bone, as far as the reach asks and no further (bowFor), by an ADDITIVE take in his own mixer (bowSet): a turn
+       arm pointed at her head across the air). His trunk is turned forward about his own left-right line at his hip
+       joints, as far as the reach asks and no further (bowFor), by an ADDITIVE take in his own mixer (bowSet): a turn
        laid on a bone after the mixer would be laid on itself again wherever the take holds that bone still (the v11.5
        law), and a take of the mixer's own is undone by the mixer. Its numbers are read once off his stand as he lands */
-    const BOW_MAX = 32, _bwv = new THREE.Vector3(), _bwq = new THREE.Quaternion(), _bwx = new THREE.Vector3(), _bwp = new THREE.Vector3(), _bws = new THREE.Vector3();
+    const BOW_MAX = 38, _bwv = new THREE.Vector3(), _bwq = new THREE.Quaternion(), _bwx = new THREE.Vector3(), _bwp = new THREE.Vector3(), _bws = new THREE.Vector3();
     const boneOfP = (P, nm) => { const re = new RegExp('^(mixamorig:?)?' + nm + '$'); for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
     whenReady(cast.phoB, (P) => {
-      const sp = boneOfP(P, 'Spine'), sh = boneOfP(P, 'RightArm'), el = boneOfP(P, 'RightForeArm'), wr = boneOfP(P, 'RightHand'), lsh = boneOfP(P, 'LeftArm');
-      if (!sp || !sh || !el || !wr || !P.mixer) { console.warn('phoB: no bones to bow with'); P.bow = null; return; }
+      const hp = boneOfP(P, 'Hips'), lu = boneOfP(P, 'LeftUpLeg'), ru = boneOfP(P, 'RightUpLeg'), sh = boneOfP(P, 'RightArm'), el = boneOfP(P, 'RightForeArm'), wr = boneOfP(P, 'RightHand'), lsh = boneOfP(P, 'LeftArm');
+      if (!hp || !lu || !ru || !sh || !el || !wr || !P.mixer) { console.warn('phoB: no bones to bow with'); P.bow = null; return; }
       put(P, P.home.x, P.home.z, P.home.ry); pose(P, 'Sit_to_Stand_Transition_M', 5.85); P.group.updateWorldMatrix(true, true);
       const inv = new THREE.Matrix4().copy(P.group.matrixWorld).invert(), at = (b) => b.getWorldPosition(new THREE.Vector3()).applyMatrix4(inv);
-      const piv = at(sp), s0 = at(sh), e0 = at(el), w0 = at(wr), reach = s0.distanceTo(e0) + e0.distanceTo(w0) + 0.07;
-      /* (his own left-right line in the spine's frame as he stands: the additive turn is about it) */
-      const qs = sp.getWorldQuaternion(new THREE.Quaternion()), qg = P.group.getWorldQuaternion(new THREE.Quaternion());
-      const ax = new THREE.Vector3(1, 0, 0).applyQuaternion(qg).applyQuaternion(qs.invert()).normalize();
-      const q = new THREE.Quaternion().setFromAxisAngle(ax, BOW_MAX * Math.PI / 180);
-      const clip = new THREE.AnimationClip('bow', 1, [new THREE.QuaternionKeyframeTrack(sp.name + '.quaternion', [0, 1], [q.x, q.y, q.z, q.w, q.x, q.y, q.z, q.w])], THREE.AdditiveAnimationBlendMode);
+      const piv = at(hp), s0 = at(sh), e0 = at(el), w0 = at(wr), reach = s0.distanceTo(e0) + e0.distanceTo(w0) + 0.07;
+      /* (the bow is at his hip joints, as a body bows: his hips turned about his own left-right line, read in the hips'
+         frame as he stands, and each thigh turned back by the same turn seen from it, so his legs stand where they stood:
+         a thigh's back-turn is its own turn's conjugate of the hips', exact at any share of the bow) */
+      const qg = P.group.getWorldQuaternion(new THREE.Quaternion()), qh = hp.getWorldQuaternion(new THREE.Quaternion());
+      const ax = new THREE.Vector3(1, 0, 0).applyQuaternion(qg).applyQuaternion(qh.invert()).normalize();
+      const dH = new THREE.Quaternion().setFromAxisAngle(ax, BOW_MAX * Math.PI / 180), dHi = dH.clone().invert();
+      const dL = lu.quaternion.clone().invert().multiply(dHi).multiply(lu.quaternion), dR = ru.quaternion.clone().invert().multiply(dHi).multiply(ru.quaternion);
+      const tr = (b, q) => new THREE.QuaternionKeyframeTrack(b.name + '.quaternion', [0, 1], [q.x, q.y, q.z, q.w, q.x, q.y, q.z, q.w]);
+      const clip = new THREE.AnimationClip('bow', 1, [tr(hp, dH), tr(lu, dL), tr(ru, dR)], THREE.AdditiveAnimationBlendMode);
       const a = P.mixer.clipAction(clip); a.blendMode = THREE.AdditiveAnimationBlendMode; a.setEffectiveWeight(0); a.play();
       P.bow = { a, max: BOW_MAX, piv, sh: s0, reach, lsh };
     });
@@ -3907,7 +3971,7 @@
        about the spine's joint, in his own frame) */
     function bowFor(P, h) {
       const B = P.bow; if (!B) return 0;
-      P.group.updateWorldMatrix(true, false); _bwp.set(h[0], h[1] + 0.035, h[2]);
+      P.group.updateWorldMatrix(true, false); _bwp.set(h[0], h[1] + 0.012, h[2]);
       const y = B.sh.y - B.piv.y, z = B.sh.z - B.piv.z;
       for (let d = 0; d <= B.max; d += 0.5) { const th = d * Math.PI / 180;
         _bws.set(B.sh.x, B.piv.y + y * Math.cos(th) - z * Math.sin(th), B.piv.z + y * Math.sin(th) + z * Math.cos(th)).applyMatrix4(P.group.matrixWorld);
@@ -4088,7 +4152,7 @@
     }
     function soundReset() {
       ambSeed = AMB_SEED; ambAt = 0; ambBusy = 0; ambLast = ''; ambN = 0; for (const k in bedMix) bedMix[k] = 0; filmBed.on = false;
-      tileSeed = TILE_SEED; tileLast = -1; fightMusOff();
+      tileSeed = TILE_SEED; tileLast = -1; fightMusOff(); chantStop();
     }
     /* ================================================================ THE FILMS' PICTURES (M7; the plan's §4.4 to §4.5)
        Every film is HIS EYES (the grown Master Zavier is never seen: CLAUDE.md, v24.56): the lens stands where he
@@ -4148,9 +4212,22 @@
     const RUSH_HIPS = [[-0.01, -0.03], [-0.01, 0.0], [-0.02, 0.06], [-0.03, 0.22], [-0.08, 0.61], [-0.21, 1.22], [-0.35, 1.82], [-0.43, 2.24], [-0.43, 2.63], [-0.43, 2.82], [-0.44, 2.86], [-0.45, 2.89]];
     const RUSH_AT = (tk) => { const f = Math.max(0, Math.min(RUSH_HIPS.length - 1.001, tk / 0.25)), i = Math.floor(f), u = f - i, A = RUSH_HIPS[i], B = RUSH_HIPS[i + 1];
       return [lp(A[0], B[0], u) - RUSH_HIPS[0][0], lp(A[1], B[1], u) - RUSH_HIPS[0][1]]; };
+    /* Ravi where his rush has carried him at the take's moment tk: his group moved along the travel taken out of his
+       hips (c_scast.js, P.rushPath), turned with him; the take posed by the caller */
+    function rushAt(P, tk, dx = 0, dz = 0) {
+      const R = P.rushPath; let ax = 0, az = 0;
+      if (R) { const T = R.T, n = T.length; let i = 0; while (i < n - 2 && T[i + 1] <= tk) i++; const u = c01((tk - T[i]) / Math.max(1e-6, T[i + 1] - T[i])), k = Math.min(n - 1, i + 1);
+        ax = lp(R.D[i * 2], R.D[k * 2], u); az = lp(R.D[i * 2 + 1], R.D[k * 2 + 1], u); }
+      const c = Math.cos(RS.ry), sn = Math.sin(RS.ry);
+      put(P, RS.x + ax * c + az * sn + dx, RS.z - ax * sn + az * c + dz, RS.ry);
+    }
     const MALA_T = { x: -0.55, z: 4.42 };                                     // Mala at her mother's right hand, before her
     const AMMA_FACE = [CHAIR.x, 1.02, CHAIR.z + 0.08];
     const RAVI_RY = RS.ry;
+    /* the picture the decision opens over (the trance's last, every ending's first). A phone's frame is a third of a desk's
+       width: from where he stands, Ravi at R1 is 67 degrees round from her face and cannot share it, so a phone holds
+       her, the thing on her back and his teacher's bowed head over her (what he must choose about); a desk holds them all */
+    const END_AIM = () => (isNarrow() ? [CHAIR.x - 0.05, 1.2, CHAIR.z - 0.13] : [lp(R1.x, CHAIR.x, 0.55), 1.15, lp(R1.z, CHAIR.z, 0.55)]);
     /* her goddess's light in her (§4.4: a light, never a figure): a dark blue glow laid over her own body in the vision,
        made once at the build so it is never compiled on screen, unseen (alpha 0) until a film raises it */
     let ammaAura = null;
@@ -4172,7 +4249,7 @@
        hand after; k eases both on and off */
     function phoBless(t, k) {
       const P = cast.phoB; if (!P.ready) return; P.group.visible = true; put(P, P.home.x, P.home.z, P.home.ry);
-      const h = HER_HEAD();
+      const h = HER_CROWN();
       bowSet(P, k > 0.01 ? k * bowFor(P, h) : 0);
       pose(P, 'Sit_to_Stand_Transition_M', pingOf(t, 5.85, 0.25, PHO_BREATH));
       if (k > 0.01) crownHand(P, h, k);
@@ -4193,7 +4270,7 @@
         FM.once = new Set();
         whenReady(cast.pho, (P) => { P.group.visible = false; });
         whenReady(cast.mala, (P) => { put(P, MALA_T.x, MALA_T.z, faceTo(MALA_T.x, MALA_T.z, CHAIR.x, CHAIR.z)); });
-        whenReady(cast.ravi, (P) => { put(P, RS.x, RS.z, RS.ry); });
+        whenReady(cast.ravi, (P) => { rushAt(P, 0); });
         spiritsHome(); castSolid();
         filmBed.on = true; for (const k in filmBed) if (k !== 'on') filmBed[k] = 0; filmBed.dark = BED.dark;      // the dark room under every silence
       },
@@ -4210,10 +4287,10 @@
         /* Ravi: still at the room's edge until the cry, then his rush (the take carries him, from its standing start, eased
            out of his rest over its first 0.3 s): three quick steps to a step from her chair; his eyes to him at his
            shout, and back to her */
-        whenReady(cast.ravi, (P) => { put(P, RS.x, RS.z, RS.ry);
-          if (t < TR.rush) { pose(P, 'Idle_3', 3 + t * 0.35, true); lookNow(P, AMMA_FACE, 1, 0.9); }
-          else { const b = smo(c01((t - TR.rush) / 0.3)), kL = smo(c01((t - TR.rv + 0.15) / 0.35)) * (1 - smo(c01((t - TR.back) / 0.9)));
-            pose(P, 'rush', Math.min(2.6, (t - TR.rush) * 1.05), false, 'Idle_3', 1 - b, 3 + TR.rush * 0.35);
+        whenReady(cast.ravi, (P) => {
+          if (t < TR.rush) { rushAt(P, 0); pose(P, 'Idle_3', 3 + t * 0.35, true); lookNow(P, AMMA_FACE, 1, 0.9); }
+          else { const b = smo(c01((t - TR.rush) / 0.3)), kL = smo(c01((t - TR.rv + 0.15) / 0.35)) * (1 - smo(c01((t - TR.back) / 0.9))), tk = Math.min(2.6, (t - TR.rush) * 1.05);
+            rushAt(P, tk); pose(P, 'rush', tk, false, 'Idle_3', 1 - b, 3 + TR.rush * 0.35);
             lookNow(P, lp3(AMMA_FACE, S_EYE, kL), 1, 0.9); }
         });
         /* the one on her back: its cling, its claws at her shoulders as the light rises in her, then its cry */
@@ -4229,24 +4306,26 @@
            puts his body at those moments: RS turned by RS.ry, its hips' own travel) */
         const RV = (tk, y) => { const h = RUSH_AT(tk); return [RS.x - 0.05 * h[0] - 0.9987 * h[1], y, RS.z + 0.9987 * h[0] - 0.05 * h[1]]; };
         track(t, [
-          { t: 0, name: 'her', eye: S_EYE, at: [CHAIR.x - 0.03, 1.02, CHAIR.z - 0.05], fp: 46, fd: 40 },
-          { t: TR.ml1 - 0.5, name: 'her', eye: S_EYE, at: [CHAIR.x - 0.03, 1.02, CHAIR.z - 0.03], fp: 46, fd: 40 },
-          { t: TR.ml1 + 0.3, name: 'mala', eye: S_EYE, at: [MALA_T.x, 1.37, MALA_T.z - 0.03], fp: 46, fd: 42 },
-          { t: TR.ml2 + 1.6, name: 'mala', eye: S_EYE, at: [MALA_T.x + 0.02, 1.33, MALA_T.z - 0.03], fp: 46, fd: 42 },
-          { t: TR.open + 0.3, name: 'both', eye: S_EYE, at: [CHAIR.x + 0.0, 1.22, CHAIR.z - 0.32], fp: 64, fd: 52 },
-          { t: TR.rush + 0.2, name: 'both', eye: S_EYE, at: [CHAIR.x + 0.02, 1.2, CHAIR.z - 0.32], fp: 64, fd: 52 },
+          { t: 0, name: 'her', eye: S_EYE, at: [CHAIR.x - 0.01, 0.99, CHAIR.z - 0.05], fp: 46, fd: 40 },
+          { t: TR.ml1 - 0.5, name: 'her', eye: S_EYE, at: [CHAIR.x - 0.015, 0.99, CHAIR.z], fp: 46, fd: 40 },
+          { t: TR.ml1 + 0.3, name: 'mala', eye: S_EYE, at: [MALA_T.x + 0.01, 1.36, MALA_T.z + 0.09], fp: 46, fd: 42 },
+          { t: TR.ml2 + 1.6, name: 'mala', eye: S_EYE, at: [MALA_T.x + 0.05, 1.37, MALA_T.z + 0.08], fp: 46, fd: 42 },
+          { t: TR.open + 0.3, name: 'vision', eye: S_EYE, at: [CHAIR.x - 0.1, 1.04, CHAIR.z + 0.13], fp: 56, fd: 48 },
+          { t: TR.cry + 0.4, name: 'vision', eye: S_EYE, at: [CHAIR.x - 0.1, 1.06, CHAIR.z + 0.11], fp: 58, fd: 50 },
+          { t: TR.cry + 1.8, name: 'cry', eye: S_EYE, at: [CHAIR.x - 0.13, 1.32, CHAIR.z - 0.1], fp: 66, fd: 56 },
+          { t: TR.rv - 0.1, name: 'cry', eye: S_EYE, at: [CHAIR.x - 0.13, 1.34, CHAIR.z - 0.13], fp: 66, fd: 56 },
           { t: TR.rv + 0.55, name: 'ravi', eye: S_EYE, at: RV(0.95, 1.32), fp: 60, fd: 54 },
           { t: TR.rush + 1.6, name: 'ravi', eye: S_EYE, at: RV(1.68, 1.25), fp: 60, fd: 54 },
           { t: TR.back, name: 'ravi', eye: S_EYE, at: [R1.x, 1.32, R1.z], fp: 60, fd: 56 },
-          { t: TR.back + 0.9, name: 'all', eye: S_EYE, at: [lp(R1.x, CHAIR.x, 0.55), 1.15, lp(R1.z, CHAIR.z, 0.55)], fp: 66, fd: 58 },
-          { t: TR.end, name: 'all', eye: S_EYE, at: [lp(R1.x, CHAIR.x, 0.55), 1.15, lp(R1.z, CHAIR.z, 0.55)], fp: 66, fd: 58 }
+          { t: TR.back + 1.0, name: 'end', eye: S_EYE, at: END_AIM, fp: 64, fd: 58 },
+          { t: TR.end, name: 'end', eye: S_EYE, at: END_AIM, fp: 64, fd: 58 }
         ]);
       },
       /* the room as the decision finds it, held still while he chooses: Ravi a step from her, the cry, the light in her,
          his teacher's hand on her head, the vision open (the endings take it from here) */
       end() {
         fLens(PLAY_FOV); filmBed.on = false;
-        whenReady(cast.ravi, (P) => { put(P, RS.x, RS.z, RS.ry); hold(P, 'rush', 2.45, 0.12, 0.2, 1.4); });
+        whenReady(cast.ravi, (P) => { rushAt(P, 2.5); hold(P, 'rush', 2.45, 0.12, 0.2, 1.4); });
         whenReady(cast.amma, (P) => hold(P, 'trance', 8.2, 1.5, 0.3, 3.2));
         whenReady(cast.mala, (P) => hold(P, 'lightlamp', 5.4, 0.2, 0.3, 2.5));
         whenReady(spirits.oppress, (P) => hold(P, 'cry', 2.6, 1.6, 0.3, 2.4));
@@ -4262,13 +4341,23 @@
        the room, her first steps to her altar, the sacred ash on her forehead, her palms together, his sight closing,
        and his teacher's word to the family. Every picture here is his eyes */
     const STAND = { x: CHAIR.x, z: CHAIR.z + 0.62 };                         // where her first steps take her, before her altar
+    /* ending A: his eyes as he holds Ravi from behind (pulled back with him as the struggle drags them both), and
+       Ravi's way to her afterwards, round the stool's far side to her left */
+    /* (18 Nov: from her side of him Ravi was 29 degrees out of a phone's frame, the struggle never seen: the eye is now
+       behind his shoulder on the line from him to her, and is pulled back with him, against the armchair's end) */
+    const A_EYE = [[R1.x + 0.58, 1.62, R1.z - 0.28], [R1.x + 0.68, 1.62, R1.z - 0.36]];
+    const A_WALK = [{ x: R1.x + 0.32, z: R1.z + 0.42 }, { x: R1.x - 0.02, z: R1.z + 0.56 }];
+    const STEPS_TK = 0.9;                                                     // her steps take run to here: 0.28 m by its own travel
     const MALA_C = { x: CHAIR.x - 0.42, z: CHAIR.z + 0.82 };                 // Mala at her right in the close
     const RAVI_C = { x: CHAIR.x + 0.48, z: CHAIR.z + 0.55 };                 // Ravi at her left in the close
     /* (the endings' clocks, EN, and the close's, CL, are the chapter's own, z_tail.js: chaptertest reads each scene's length
        from them) */
     /* her rise from the chair (§4.5: "she stands up out of the chair"), standing still after: the rise take run over its
        own five seconds, then held breathing on its end */
-    function ammaRise(t, t0) { whenReady(cast.amma, (P) => { put(P, CHAIR.x, CHAIR.z, CHAIR.ry); pose(P, 'rise', t - t0 < 4.9 ? Math.max(0, t - t0) : pingOf(t - t0 - 4.9, 4.6, 0.3, 3.0)); }); }
+    /* (out of her trance's held breath over its first 0.4 s, so her body does not jump the 5 cm between the two takes'
+       first moments) */
+    function ammaRise(t, t0) { whenReady(cast.amma, (P) => { put(P, CHAIR.x, CHAIR.z, CHAIR.ry);
+      pose(P, 'rise', t - t0 < 4.9 ? Math.max(0, t - t0) : pingOf(t - t0 - 4.9, 4.6, 0.3, 3.0), false, 'trance', 1 - smo(c01((t - t0) / 0.4)), pingOf(t, 8.2, 1.5, 3.2)); }); }
     function ammaTrance(t) { whenReady(cast.amma, (P) => { put(P, CHAIR.x, CHAIR.z, CHAIR.ry); pose(P, 'trance', pingOf(t, 8.2, 1.5, 3.2)); }); }
     /* the one on her back: its cry, then torn from her (thrown back and gone in the light) */
     function oppressAt(t, cry, torn) {
@@ -4277,7 +4366,10 @@
         P.group.visible = true; oppRide(P);
         if (t < cry) pose(P, 'cry', pingOf(t, 2.6, 1.6, 2.4));
         else if (t < torn) pose(P, 'cry', Math.min(4.4, 0.4 + (t - cry) * 1.1));
-        else { pose(P, 'torn', Math.min(2.9, (t - torn) * 1.6)); const k = smo(c01((t - torn) / 1.1)); P.group.position.z -= 0.6 * k; P.group.position.y += 0.25 * k; }
+        /* (torn away: its cry's own arch, the head thrown back and the arms flung wide, thrown back off her and up, and
+           gone in the light. Its written `torn` begins three metres in the air and falls to the floor: measured 18 Nov,
+           tools/probes/takepath.mjs, and not used) */
+        else { const k = smo(c01((t - torn) / 1.1)); pose(P, 'cry', lp(1.0, 1.9, k)); P.group.position.z -= 0.6 * k; P.group.position.y += 0.25 * k; }
         if (P.fx) P.fx.set('uAlpha', t < torn ? 1 : 1 - smo(c01((t - torn - 0.3) / 0.9))); });
     }
     /* the green shapes still in the room ease and go as the merit is dedicated */
@@ -4309,25 +4401,43 @@
       A(t, E) {
         const RG = { x: R1.x + 0.05, z: R1.z - 0.05 };                       // Ravi, held
         ammaRise(t, E.rise); if (t < E.rise) ammaTrance(t);
+        /* standing, she looks back over her shoulder for her son: held back, behind her (her face turned to him and to
+           us; a neck's reach, the rest of the turn is his to see) */
+        if (t > E.rise + 1.5) whenReady(cast.amma, (P) => lookNow(P, headOf(cast.ravi, [RG.x, 1.4, RG.z]), smo(c01((t - E.rise - 1.5) / 1.2)), 1.25, 0.04));
         phoBless(t, 1 - smo(c01((t - E.rise + 0.4) / 0.8)));
         oppressAt(t, E.cry, E.torn); goddess(t < E.torn ? 1 : 1 - smo(c01((t - E.torn) / 1.5)));
+        /* Ravi: fighting his hold until she rises (the take run to its end by then: it ran out and froze 3 s early);
+           going still where the struggle has pulled him (his group drawn under him as the stand takes over, so his body
+           stays put: the hips blend in a straight line between the two takes); then to her, round his teacher's stool by
+           its far side, the walk paced by the ground it covers (1.29 m a second at its own rate, measured), and turned to
+           her at the end */
         whenReady(cast.ravi, (P) => {
-          if (t < E.go) { put(P, RG.x, RG.z, RAVI_RY); pose(P, 'struggle', Math.min(5.9, t * (t < E.still ? 0.62 : 1.0))); }
-          else { const u = smo(c01((t - E.go) / 1.8)); put(P, lp(RG.x, RAVI_C.x, u), lp(RG.z, RAVI_C.z, u), faceTo(RG.x, RG.z, CHAIR.x, CHAIR.z + 0.6));
-            if (u < 1) pose(P, 'Walking', (t - E.go) * 1.0, true); else pose(P, 'Idle_3', 3 + (t - E.go) * 0.4, true);
-            lookNow(P, AMMA_FACE, smo(c01((t - E.go - 1) / 1)), 0.9); } });
+          const ds = hipsTravel(P, 'struggle', 5.9), c = Math.cos(RAVI_RY), sn = Math.sin(RAVI_RY);
+          const DS = [ds[0] * c + ds[1] * sn, -ds[0] * sn + ds[1] * c], B0 = { x: RG.x + DS[0], z: RG.z + DS[1] };
+          if (t < E.still) { put(P, RG.x, RG.z, RAVI_RY); pose(P, 'struggle', Math.min(5.9, t * 5.9 / E.still)); }
+          else if (t < E.go) { const w = smo(c01((t - E.still) / 0.6)); put(P, RG.x + DS[0] * w, RG.z + DS[1] * w, RAVI_RY);
+            pose(P, 'Idle_3', 3 + (t - E.still) * 0.4, true, 'struggle', 1 - w, 5.9); }
+          else { const W1 = A_WALK[0], W2 = A_WALK[1], L1 = Math.hypot(W1.x - B0.x, W1.z - B0.z), L2 = Math.hypot(W2.x - W1.x, W2.z - W1.z), L = L1 + L2, T = L / 0.62;
+            const sA = L * smo(c01((t - E.go) / T)), on1 = sA < L1, k1 = sA / Math.max(1e-3, L1), k2 = (sA - L1) / Math.max(1e-3, L2);
+            const h1 = faceTo(B0.x, B0.z, W1.x, W1.z), h2 = faceTo(W1.x, W1.z, W2.x, W2.z), h3 = faceTo(W2.x, W2.z, CHAIR.x, CHAIR.z);
+            const ry = sA < 0.25 ? lp(RAVI_RY, h1, smo(sA / 0.25)) : sA < L1 - 0.12 ? h1 : sA < L1 + 0.12 ? lp(h1, h2, smo((sA - L1 + 0.12) / 0.24)) : lp(h2, h3, smo(c01((sA - L + 0.25) / 0.25)));
+            put(P, on1 ? lp(B0.x, W1.x, k1) : lp(W1.x, W2.x, k2), on1 ? lp(B0.z, W1.z, k1) : lp(W1.z, W2.z, k2), ry);
+            const into = smo(c01((t - E.go) / 0.4)), outOf = smo(c01((t - E.go - T + 0.3) / 0.5));
+            if (outOf <= 0) pose(P, 'Walking', sA / 1.29, true, 'Idle_3', 1 - into, 3 + (E.go - E.still) * 0.4);
+            else pose(P, 'Idle_3', 3 + (t - E.go) * 0.4, true, 'Walking', 1 - outOf, sA / 1.29);
+            lookNow(P, AMMA_FACE, smo(c01((t - E.go - 0.6) / 1)), 0.9); } });
         whenReady(cast.mala, (P) => { if (t < E.scream) pose(P, 'lightlamp', 5.4); else pose(P, 'scream', Math.min(3.9, (t - E.scream) * 0.9)); lookNow(P, [RG.x, 1.5, RG.z], 0.7, 0.9); });
         visionAt(t, -1, 0.1);
         /* THE LENS: in on Ravi's shoulder as he is caught (his mother beyond him); held through the cry; the light; out
            to her standing; on his teacher for his word */
         track(t, [
-          { t: 0, name: 'S', eye: S_EYE, at: [(R1.x + CHAIR.x) / 2, 1.15, (R1.z + CHAIR.z) / 2], fp: 66, fd: 58 },
-          { t: 0.55, name: 'held', eye: [R1.x + 0.5, 1.6, R1.z + 0.3], at: [CHAIR.x + 0.1, 1.15, CHAIR.z - 0.05], fp: 64, fd: 56 },
-          { t: E.open, name: 'held', eye: [R1.x + 0.5, 1.6, R1.z + 0.3], at: [CHAIR.x + 0.08, 1.1, CHAIR.z], fp: 62, fd: 56 },
-          { t: E.rise + 3.5, name: 'her', eye: [R1.x + 0.55, 1.62, R1.z + 0.35], at: [CHAIR.x + 0.05, 1.3, CHAIR.z + 0.1], fp: 58, fd: 52 },
-          { t: E.ph - 0.6, name: 'her', eye: [R1.x + 0.55, 1.62, R1.z + 0.35], at: [CHAIR.x + 0.1, 1.35, CHAIR.z + 0.1], fp: 58, fd: 52 },
-          { t: E.ph + 0.4, name: 'pho', eye: [R1.x + 0.55, 1.62, R1.z + 0.35], at: [cast.phoB.home.x, 1.62, cast.phoB.home.z], fp: 46, fd: 42 },
-          { t: E.close, name: 'pho', eye: [R1.x + 0.55, 1.62, R1.z + 0.35], at: [cast.phoB.home.x, 1.62, cast.phoB.home.z], fp: 46, fd: 42 }
+          { t: 0, name: 'S', eye: S_EYE, at: END_AIM, fp: 64, fd: 58 },
+          { t: 0.55, name: 'held', eye: A_EYE[0], at: [CHAIR.x + 0.1, 1.15, CHAIR.z - 0.05], fp: 64, fd: 56 },
+          { t: E.open, name: 'held', eye: A_EYE[1], at: [CHAIR.x + 0.08, 1.1, CHAIR.z], fp: 62, fd: 56 },
+          { t: E.rise + 3.5, name: 'her', eye: A_EYE[1], at: [CHAIR.x, 1.4, CHAIR.z + 0.32], fp: 56, fd: 52 },
+          { t: E.ph - 0.6, name: 'her', eye: A_EYE[1], at: [CHAIR.x + 0.02, 1.42, CHAIR.z + 0.32], fp: 56, fd: 52 },
+          { t: E.ph + 0.4, name: 'pho', eye: A_EYE[1], at: [cast.phoB.home.x, 1.55, cast.phoB.home.z], fp: 46, fd: 42 },
+          { t: E.close, name: 'pho', eye: A_EYE[1], at: [cast.phoB.home.x, 1.55, cast.phoB.home.z], fp: 46, fd: 42 }
         ]);
         phoTurn(t, E.ph);
       },
@@ -4356,16 +4466,16 @@
           } else { oppRide(P);
             if (t < E.comes) pose(P, 'cry', pingOf(t, 2.6, 1.6, 2.4));
             else if (t < E.torn) pose(P, 'cry', Math.min(4.4, 0.4 + (t - E.cry) * 1.1));
-            else { pose(P, 'torn', Math.min(2.9, (t - E.torn) * 1.6)); const k = smo(c01((t - E.torn) / 1.1)); P.group.position.z -= 0.6 * k; P.group.position.y += 0.25 * k; } }
+            else { const k = smo(c01((t - E.torn) / 1.1)); pose(P, 'cry', lp(1.0, 1.9, k)); P.group.position.z -= 0.6 * k; P.group.position.y += 0.25 * k; } }
           if (P.fx) P.fx.set('uAlpha', t < E.torn ? 1 : 1 - smo(c01((t - E.torn - 0.3) / 0.9))); });
         goddess(t < E.falter ? 1 : t < E.back ? 0.35 : t < E.torn ? lp(0.35, 1, smo(c01((t - E.back) / 1.2))) : 1 - smo(c01((t - E.torn) / 1.5)));
-        whenReady(cast.ravi, (P) => { put(P, RS.x, RS.z, RS.ry); pose(P, 'rush', 2.45 + 0.1 * Math.sin(t)); lookNow(P, AMMA_FACE, 1, 0.9); });
+        whenReady(cast.ravi, (P) => { const tk = 2.45 + 0.1 * Math.sin(t); rushAt(P, tk); pose(P, 'rush', tk); lookNow(P, AMMA_FACE, 1, 0.9); });
         whenReady(cast.mala, (P) => { if (t < E.splash) pose(P, 'lightlamp', 5.4); else pose(P, 'scream', Math.min(3.9, (t - E.splash) * 0.8)); lookNow(P, AMMA_FACE, 0.8, 0.9); });
         visionAt(t, -1, 0.1);
         /* THE LENS: the throw (a lurch at her); the thing filling his eyes; white; his teacher's push seen through the
            white; then he is on the floor, looking up at her standing, and at his teacher */
         track(t, [
-          { t: 0, name: 'S', eye: S_EYE, at: [CHAIR.x + 0.0, 1.05, CHAIR.z - 0.1], fp: 60, fd: 54 },
+          { t: 0, name: 'S', eye: S_EYE, at: END_AIM, fp: 64, fd: 58 },
           { t: E.throw + 0.25, name: 'throw', eye: [S_EYE[0] + TOWARD[0] * 0.2, 1.58, S_EYE[2] + TOWARD[1] * 0.2], at: [CHAIR.x - 0.05, 1.0, CHAIR.z - 0.2], fp: 58, fd: 52 },
           { t: E.comes + 0.9, name: 'it', eye: [S_EYE[0] - TOWARD[0] * 0.06, 1.6, S_EYE[2] - TOWARD[1] * 0.06], at: [COMES[0], 1.3, COMES[2]], fp: 70, fd: 64 },
           { t: E.floor, name: 'down', eye: [S_EYE[0] - TOWARD[0] * 0.1, 1.58, S_EYE[2] - TOWARD[1] * 0.1], at: [COMES[0], 1.25, COMES[2]], fp: 68, fd: 62 },
@@ -4388,7 +4498,7 @@
         phoBless(t, 1 - smo(c01((t - E.rise + 0.4) / 0.8)));
         oppressAt(t, E.cry, E.torn); goddess(t < E.torn ? 1 : 1 - smo(c01((t - E.torn) / 1.5)));
         whenReady(cast.ravi, (P) => {
-          if (t < E.kneel) { put(P, RS.x, RS.z, RS.ry); pose(P, 'rush', 2.45 + 0.08 * Math.sin(t * 1.3)); lookNow(P, 'lens', smo(c01((t - 0.5) / 0.8)), 0.8); }
+          if (t < E.kneel) { const tk = 2.45 + 0.08 * Math.sin(t * 1.3); rushAt(P, tk); pose(P, 'rush', tk); lookNow(P, 'lens', smo(c01((t - 0.5) / 0.8)), 0.8); }
           else { const u = smo(c01((t - E.kneel) / 1.2)); put(P, lp(R1.x, KR.x, u), lp(R1.z, KR.z, u), lp(RAVI_RY, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2), u));
             pose(P, 'kneelhold', t < E.rise ? Math.min(4.2, (t - E.kneel) * 1.0) : runOf(t, E.rise + 0.6, E.rise + 3.6, 4.2, 0.2));
             lookNow(P, AMMA_FACE, 1, 0.9); } });
@@ -4400,7 +4510,7 @@
         if (t >= E.look) whenReady(cast.amma, (P) => lookNow(P, headOf(cast.ravi, [KR.x, 0.9, KR.z]), smo(c01((t - E.look) / 0.8)), 1.0));
         visionAt(t, -1, 0.1);
         track(t, [
-          { t: 0, name: 'S', eye: S_EYE, at: [(R1.x + CHAIR.x) / 2, 1.15, (R1.z + CHAIR.z) / 2], fp: 66, fd: 58 },
+          { t: 0, name: 'S', eye: S_EYE, at: END_AIM, fp: 64, fd: 58 },
           { t: 0.65, name: 'ravi', eye: [R1.x - 0.25, 1.6, R1.z + 0.62], at: [R1.x, 1.55, R1.z], fp: 50, fd: 46 },
           { t: E.kneel, name: 'ravi', eye: [R1.x - 0.25, 1.6, R1.z + 0.62], at: [R1.x, 1.52, R1.z], fp: 50, fd: 46 },
           { t: E.kneel + 1.6, name: 'kneel', eye: [R1.x - 0.05, 1.6, R1.z + 0.7], at: [CHAIR.x + 0.15, 0.95, CHAIR.z + 0.1], fp: 60, fd: 54 },
@@ -4420,14 +4530,14 @@
         phoBless(t, 1 - smo(c01((t - E.rise + 0.4) / 0.8)));
         oppressAt(t, E.cry, E.torn); goddess(t < E.torn ? 1 : 1 - smo(c01((t - E.torn) / 1.5)));
         whenReady(cast.ravi, (P) => {
-          if (t < E.kneel) { const u = smo(c01((t - E.reach) / 1.2)); put(P, RS.x - 0.12 * u, RS.z + 0.18 * u, RS.ry); pose(P, 'rush', 2.45 + 0.08 * Math.sin(t * 1.3)); lookNow(P, AMMA_FACE, 1, 0.9); }
+          if (t < E.kneel) { const u = smo(c01((t - E.reach) / 1.2)), tk = 2.45 + 0.08 * Math.sin(t * 1.3); rushAt(P, tk, -0.12 * u, 0.18 * u); pose(P, 'rush', tk); lookNow(P, AMMA_FACE, 1, 0.9); }
           else { const u = smo(c01((t - E.kneel) / 1.2)); put(P, lp(R1.x - 0.12, KR.x, u), lp(R1.z + 0.18, KR.z, u), lp(RAVI_RY, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2), u));
             pose(P, 'kneelhold', t < E.rise ? Math.min(4.2, (t - E.kneel) * 1.0) : runOf(t, E.rise + 0.6, E.rise + 3.6, 4.2, 0.2)); lookNow(P, AMMA_FACE, 1, 0.9); } });
         whenReady(cast.mala, (P) => { pose(P, 'lightlamp', 5.4); lookNow(P, AMMA_FACE, 1, 0.9); });
         /* his sight shut at the start: the wave home to him */
         visionAt(t, -10, 0.1, E.shut, 1.0);
         track(t, [
-          { t: 0, name: 'S', eye: S_EYE, at: [(R1.x + CHAIR.x) / 2, 1.15, (R1.z + CHAIR.z) / 2], fp: 66, fd: 58 },
+          { t: 0, name: 'S', eye: S_EYE, at: END_AIM, fp: 64, fd: 58 },
           { t: 1.2, name: 'pho', eye: S_EYE, at: [cast.phoB.home.x, 1.55, cast.phoB.home.z], fp: 52, fd: 48 },
           { t: E.kneel + 0.6, name: 'pho', eye: S_EYE, at: [cast.phoB.home.x, 1.5, cast.phoB.home.z], fp: 52, fd: 48 },
           { t: E.kneel + 2.0, name: 'hands', eye: S_EYE, at: [CHAIR.x + 0.2, 0.85, CHAIR.z + 0.05], fp: 56, fd: 52 },
@@ -4448,9 +4558,15 @@
       void EN;
       /* she stands (in every ending she has risen by now) and walks to her altar; the ash; her palms together */
       whenReady(cast.amma, (P) => {
+        /* (each take carries her body from its own first moment: the rise left her standing RISEN before the chair's
+           middle, the steps take the rest of the way to the altar by its own travel, so her mark moves only between
+           takes. 18 Nov: her mark slid to the altar under a walking take that also walked: she ended in its wall) */
+        const R0 = hipsTravel(P, 'rise', 4.75), sk = Math.min(STEPS_TK, (c - CL.steps) * 0.55), stepEnd = CL.steps + STEPS_TK / 0.55;
         if (c < CL.steps) { put(P, CHAIR.x, CHAIR.z, CHAIR.ry); pose(P, 'rise', pingOf(c, 4.6, 0.3, 3.0)); }
-        else if (c < CL.palms) { const u = smo(c01((c - CL.steps) / 3.0)); put(P, CHAIR.x, lp(CHAIR.z, STAND.z, u), CHAIR.ry); pose(P, 'steps', Math.min(3.4, (c - CL.steps) * 1.0)); }
-        else { put(P, STAND.x, STAND.z, CHAIR.ry); pose(P, 'lamp', runOf(c, CL.palms, CL.palms + 2.6, 3.4, 5.6)); }
+        else { put(P, CHAIR.x + R0[0], CHAIR.z + R0[1], CHAIR.ry);
+          if (c < stepEnd) pose(P, 'steps', sk, false, 'rise', 1 - smo(c01((c - CL.steps) / 0.5)), 4.75);
+          else if (c < CL.palms) pose(P, 'rise', pingOf(c - stepEnd, 4.6, 0.3, 3.0), false, 'steps', 1 - smo(c01((c - stepEnd) / 0.6)), STEPS_TK);
+          else pose(P, 'lamp', runOf(c, CL.palms, CL.palms + 2.6, 3.4, 5.6), false, 'rise', 1 - smo(c01((c - CL.palms) / 0.5)), 4.75); }
         lookNow(P, [ALTAR.x, 1.45, ALTAR.z], c < CL.palms ? smo(c01((c - CL.steps) / 1.5)) * 0.6 : 0, 0.6); });
       phoBless(tAll, 0);
       whenReady(cast.phoB, (P) => { lookNow(P, c > CL.z1 - 1 ? [RAVI_C.x, 1.6, RAVI_C.z] : AMMA_FACE, 0.8, 0.8); });

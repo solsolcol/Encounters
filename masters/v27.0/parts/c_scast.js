@@ -42,7 +42,9 @@
       ravi: { x: 2.62, z: 2.02 },                       // by the standing fan, her room's window behind him to his left
       mala: { x: 0.95, z: 2.40 },                       // by the sofa's end, beside her mother
       phoS: { x: STOOL.x, z: STOOL.z },                 // his stool at her left
-      phoB: { x: CHAIR.x + 0.14, z: CHAIR.z - 0.66 },   // behind her chair, for the blessing
+      phoB: { x: CHAIR.x + 0.14, z: CHAIR.z - 0.72 },   // behind her chair, for the blessing: his hips here (18 Nov: his stand
+                                                        // took his body 27 cm behind the mark, where his rise from a seat
+                                                        // leaves him; `centre` now puts his hips on it, a hand behind her handles)
       appa: { x: 0.95, z: 4.72 }                        // by his own photograph on the altar's wall, turned to her
     };
     const HER_HEAD = () => { const P = cast.amma; if (P && P.ready && P.head) { P.head.getWorldPosition(_pv); return [_pv.x, _pv.y + 0.06, _pv.z]; } return [CHAIR.x, 1.18, CHAIR.z - 0.05]; };
@@ -81,10 +83,40 @@
       const phoBRy = faceTo(AT.phoB.x, AT.phoB.z, CHAIR.x, CHAIR.z);
       cast.phoB = mkPerson('pho', AT.phoB.x, AT.phoB.z, phoBRy, { take: 'Sit_to_Stand_Transition_M', hidden: true,
         win: { Sit_to_Stand_Transition_M: [5.85, 0.25, PHO_BREATH] }, skins: false, look: lookD, blobW: 0.9, blobD: 0.8,
-        ref: 'Sit_to_Stand_Transition_M', talk: 'Talk_with_Hands_Open' });
+        centre: true, talk: 'Talk_with_Hands_Open' });
       cast.phoB.home = { x: AT.phoB.x, z: AT.phoB.z, ry: phoBRy };
     }
     buildCast();
+    /* WHERE A TAKE CARRIES A BODY: its hips over the floor from the take's first moment to `t`, in the person's own
+       group's metres (its hips' track read through the fixed frame the armature stands in). Measured 18 Nov: her rise
+       ends 0.35 m before the chair's middle and her steps carry her 0.29 m a second; Ravi's rush runs 2.94 m */
+    const _htv = new THREE.Vector3();
+    function hipsFrame(P) { if (!P._hm && P.hips) { P.group.updateWorldMatrix(true, true); P._hm = new THREE.Matrix3().setFromMatrix4(new THREE.Matrix4().copy(P.group.matrixWorld).invert().multiply(P.hips.parent.matrixWorld)); } return P._hm; }
+    function hipsTravel(P, name, t) {
+      const A = P.acts && P.acts[name], M = hipsFrame(P); if (!A || !M) return [0, 0];
+      const tr = A.getClip().tracks.find(q => /Hips\.position$/.test(q.name)); if (!tr) return [0, 0];
+      const v = tr.values, T = tr.times, n = T.length; let i = 0; while (i < n - 2 && T[i + 1] <= t) i++;
+      const u = n > 1 ? c01((t - T[i]) / Math.max(1e-6, T[i + 1] - T[i])) : 0, j = Math.min(n - 1, i + 1);
+      _htv.set(lp(v[i * 3], v[j * 3], u) - v[0], lp(v[i * 3 + 1], v[j * 3 + 1], u) - v[1], lp(v[i * 3 + 2], v[j * 3 + 2], u) - v[2]).applyMatrix3(M);
+      return [_htv.x, _htv.z];
+    }
+    /* RAVI'S RUSH CARRIES HIS GROUP (18 Nov: at his mark he was not drawn: the renderer tests a body's sphere round its
+       group, and the rush had carried his body three metres from it). Its travel over the floor is taken out of his hips
+       as he lands and kept (P.rushPath, in his group's metres, every key of the take); a film moves his group along it
+       (c_ufilm.js rushAt), so his body goes exactly where the take took it and his sphere goes with him. Kept on the clip
+       too, so a second build of the chapter (a replay) finds it already taken out and reads it back */
+    whenReady(cast.ravi, (P) => {
+      const A = P.acts.rush, M = hipsFrame(P); if (!A || !M) { console.warn('p4ravi: no rush to carry'); return; }
+      const clip = A.getClip(), tr = clip.tracks.find(q => /Hips\.position$/.test(q.name)); if (!tr) return;
+      clip.userData = clip.userData || {};
+      if (!clip.userData.rushPath) {
+        const v = tr.values, T = tr.times, n = T.length, D = new Float32Array(n * 2), Mi = M.clone().invert(), d = new THREE.Vector3();
+        for (let i = 0; i < n; i++) { d.set(v[i * 3] - v[0], v[i * 3 + 1] - v[1], v[i * 3 + 2] - v[2]).applyMatrix3(M); D[i * 2] = d.x; D[i * 2 + 1] = d.z;
+          d.y = 0; d.applyMatrix3(Mi); v[i * 3] -= d.x; v[i * 3 + 1] -= d.y; v[i * 3 + 2] -= d.z; }
+        clip.userData.rushPath = { T: Float32Array.from(T), D };
+      }
+      P.rushPath = clip.userData.rushPath;
+    });
 
     /* ---------------------------------------------------------------- THE ONES ONLY THE VISION SHOWS (the plan's §4.2, §4.3)
        Each is a body made for it and drawn as light: its meshes handed to the engine (ctx.spirit), which moves them onto
@@ -125,6 +157,11 @@
        seated rest (her `wsit` at OPP_REF_T, inside the window play holds her in). Read once, as both bodies land, her own
        pose put back after; laid every frame after she is posed (play, every film), so where she leans, it leans */
     const OPP_REF_T = 3.0, OPP_REF = { m: null };
+    /* HER CROWN: the top of her head as her skin has it. Her head bone sits at the base of her skull: a palm laid 9.5 cm
+       over it was inside her head, its fingertips out at her ears in the trance's first picture (18 Nov). Read once below,
+       and carried by her head bone after (a fallback until she lands) */
+    const CROWN_LOCAL = new THREE.Vector3(0, 0.19, 0), _crw = new THREE.Vector3();
+    const HER_CROWN = () => { const A = cast.amma; if (A && A.ready && A.head) { A.head.updateWorldMatrix(true, false); _crw.copy(CROWN_LOCAL); A.head.localToWorld(_crw); return [_crw.x, _crw.y, _crw.z]; } return [CHAIR.x, 1.1, CHAIR.z - 0.15]; };
     const _om = new THREE.Matrix4(), _om2 = new THREE.Matrix4(), _os = new THREE.Vector3();
     function herBack(A) { if (A._back === undefined) { A._back = null; for (const n in A.bone) if (/^(mixamorig:?)?Spine02$/.test(n)) { A._back = A.bone[n]; break; } } return A._back; }
     whenReady(cast.amma, (A) => whenReady(spirits.oppress, (P) => {
@@ -134,6 +171,15 @@
       put(A, CHAIR.x, CHAIR.z, CHAIR.ry); pose(A, 'wsit', OPP_REF_T); bk.updateWorldMatrix(true, false);
       put(P, OPP_AT.x, OPP_AT.z, CHAIR.ry, OPP_AT.y); P.group.rotation.x = OPP_TILT; P.group.updateWorldMatrix(true, false);
       OPP_REF.m = new THREE.Matrix4().copy(bk.matrixWorld).invert().multiply(P.group.matrixWorld);
+      /* (her crown, read off the same seated rest: the highest point of the skin her head bone carries, in that bone's
+         own frame) */
+      const hb = A.head; A.group.updateWorldMatrix(true, true);
+      if (hb) { let best = null; const v = new THREE.Vector3();
+        for (const m of (A.lv[1] || [])) { if (!m.isSkinnedMesh || !m.geometry.attributes.skinIndex) continue; const bi = m.skeleton.bones.indexOf(hb); if (bi < 0) continue;
+          const SI = m.geometry.attributes.skinIndex, SW = m.geometry.attributes.skinWeight;
+          for (let i = 0; i < SI.count; i++) { let w = 0; for (let k = 0; k < 4; k++) if (SI.getComponent(i, k) === bi) w += SW.getComponent(i, k); if (w < 0.5) continue;
+            m.getVertexPosition(i, v); m.localToWorld(v); if (!best || v.y > best.y) best = v.clone(); } }
+        if (best) CROWN_LOCAL.copy(hb.worldToLocal(best)); else console.warn('p4amma: no skin on her head bone to read her crown from'); }
       for (const k in A.acts) { A.acts[k].time = keep[k][0]; A.w[k] = keep[k][1]; A.acts[k].setEffectiveWeight(keep[k][1]); }
       A.cur = cur; A.filmT = ft; A.mixer.update(0);
     }));

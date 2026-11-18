@@ -313,7 +313,7 @@
     /* ================================================================ PLAY III · THE BLESSING (§4.3) */
     const WARM_BLESS = ['ph4b0', 'ph4b1', 'ph4b2', 'u4match', 'u4tubedie', 'u4fanstop', 'u4tvdie', 'u4flick', 'u4patter', 'u4dip', 'u4whisper',
                         'u4release', 'u4large', 'u4gaspf', 'u4gaspm', 'u4chill', 'u4husband', 'u4vison', 'u4visbed', 'u4heart', 'uiclick',
-                        'u4fightmus'];
+                        'u4fightmus', 'u4chant1', 'u4chant2'];
     function blessBegin(R, fresh) {
       play.learned = new Set(['r', 'm', 'f', 'o', 'a']); play.spoke = true; play.told = true; play.opened = true; play.looked = new Set(['1', '2', '3']);
       play.closed = true; play.read = true; play.peeked = R.peeked; play.water = R.water; play.appaGone = R.appaGone;
@@ -469,8 +469,8 @@
       let slow = 1; for (const S of F.shapes) if (S.state === 'feed' && (S.to === 'amma' || S.to === 'pho')) slow *= 0.5;
       F.k = Math.min(1, F.k + wdt / FIGHT.secs * Math.max(0.15, slow));
       if (kit) kit.bar(F.k);
-      if (F.captions === 0 && F.k > 0.06) { F.captions = 1; if (kit && kit.captions) kit.captions([{ at: 0, end: 14, text: W.cap1, sub: W.cap1Sub }]); }
-      if (F.captions === 1 && F.k > 0.55) { F.captions = 2; if (kit && kit.captions) kit.captions([{ at: 0, end: 16, text: W.cap2, sub: W.cap2Sub }]); }
+      while (F.captions < CHANT.length && F.k > CHANT[F.captions].at) { const C = CHANT[F.captions++]; chantLine(C);
+        if (kit && kit.captions) kit.captions([{ at: 0, end: 2 * C.len + CHANT_GAP + 0.4, text: W[C.cap], sub: W[C.cap + 'Sub'] }]); }
       const appa = spirits.appa, ag = appa.group.position;
       for (const S of F.shapes) {
         const P = S.P; if (S.state === 'gone') continue;
@@ -539,8 +539,22 @@
       after(2.2, () => { if (live(run)) sayLine('ph4b2', 1, () => talk(cast.phoB, SECS.ph4b2 || 2.6)); });
     }
     /* the end of the chant: the shapes thin away; silence but for the lamp's flame and her breathing */
+    /* HIS CHANT (the plan's D13; masters/v27.0/chant/build.py): each line sung by him while its words are on screen,
+       twice with a breath between (its caption stands for both), from where he stands; four times through the blessing
+       at its own pace (the bar), the two lines in turn. Only ever under its caption: a chant with words is captioned
+       (v21.31) */
+    const CHANT_GAP = 1.2;
+    const CHANT = [{ at: 0.06, n: 'u4chant1', len: 5.98, cap: 'cap1' }, { at: 0.30, n: 'u4chant2', len: 8.94, cap: 'cap2' },
+                   { at: 0.55, n: 'u4chant1', len: 5.98, cap: 'cap1' }, { at: 0.80, n: 'u4chant2', len: 8.94, cap: 'cap2' }];
+    let chantNodes = [];
+    function chantStop() { for (const a of chantNodes) { try { a.stop(); } catch (e) { } } chantNodes = []; }
+    function chantLine(C) {
+      chantStop(); if (!worldSfx || (soundOff && soundOff())) return;
+      const g = cast.phoB.group.position, sing = () => { const a = worldSfx(C.n, 0.95, 1, panAt(g.x, g.z)); if (a) chantNodes.push(a); };
+      sing(); const run = play.run; after(C.len + CHANT_GAP, () => { if (live(run) && play.fight && play.fight.on) sing(); });
+    }
     function fightEnd() {
-      const F = play.fight; F.ended = true; F.on = false; fightMusOff();
+      const F = play.fight; F.ended = true; F.on = false; fightMusOff(); chantStop();
       for (const S of F.shapes) if (S.state !== 'gone' && S.state !== 'leave') { S.state = 'leave'; S.leave = -0.4 * Math.random(); }
       if (kit) { kit.bar(null); kit.captions(null); }
       if (F.families <= 1) bank(W.noteKept, 0, 4);
@@ -578,38 +592,42 @@
     function crownTick(wdt) {
       crownK += (crownTo - crownK) * Math.min(1, wdt * 1.5);
       const P = cast.phoB; if (!P.ready || !P.group.visible) return;
-      const h = HER_HEAD();
+      const h = HER_CROWN();
       bowSet(P, crownK > 0.01 ? crownK * bowFor(P, h) : 0);         // (the mixer lays it on at his next frame)
       if (crownK > 0.01) crownHand(P, h, crownK);
     }
-    /* the palm on the crown (h: her head's top, HER_HEAD), the fingers forward and a little down, the elbow out and down;
+    /* the palm on the crown (h: the top of her head, HER_CROWN), the fingers forward and a little down, the elbow out and down;
        and, while he bows, his other arm let hang straight from its shoulder (a bow tips the arms with the trunk) */
     function crownHand(P, h, k) {
       const g = P.group.position, fx0 = h[0] - g.x, fz0 = h[2] - g.z, fl = Math.hypot(fx0, fz0) || 1;
-      handTo(P, 'R', [h[0] - fx0 / fl * 0.02, h[1] + 0.035, h[2] - fz0 / fl * 0.02], [fx0 / fl, -0.25, fz0 / fl], [0, -1, 0], k, { out: 0.32, down: 0.3 });
+      handTo(P, 'R', [h[0] - fx0 / fl * 0.02, h[1] + 0.012, h[2] - fz0 / fl * 0.02], [fx0 / fl, -0.25, fz0 / fl], [0, -1, 0], k, { out: 0.32, down: 0.3 });
       const B = P.bow, bw = B ? B.a.getEffectiveWeight() * B.max : 0;
       if (bw > 2 && B.lsh) { B.lsh.getWorldPosition(_bwv); P.group.getWorldQuaternion(_bwq); _bwx.set(1, 0, 0).applyQuaternion(_bwq);
         handTo(P, 'L', [_bwv.x + _bwx.x * 0.04, _bwv.y - 0.6, _bwv.z + _bwx.z * 0.04], [0, -1, 0], [-_bwx.x, 0, -_bwx.z], k * Math.min(1, (bw - 2) / 8), { out: 0.12, down: 0.7 }); }
     }
     /* HIS BOW FROM THE WAIST (18 Nov: in the trance she sits up and forward, and her crown stood 0.6 to 0.8 m out from the
        right shoulder of a man upright behind her chair's handles; his arm reaches about 0.6: in the film's photographs his
-       arm pointed at her head across the air). His trunk is turned forward about his own left-right line at his lowest
-       spine bone, as far as the reach asks and no further (bowFor), by an ADDITIVE take in his own mixer (bowSet): a turn
+       arm pointed at her head across the air). His trunk is turned forward about his own left-right line at his hip
+       joints, as far as the reach asks and no further (bowFor), by an ADDITIVE take in his own mixer (bowSet): a turn
        laid on a bone after the mixer would be laid on itself again wherever the take holds that bone still (the v11.5
        law), and a take of the mixer's own is undone by the mixer. Its numbers are read once off his stand as he lands */
-    const BOW_MAX = 32, _bwv = new THREE.Vector3(), _bwq = new THREE.Quaternion(), _bwx = new THREE.Vector3(), _bwp = new THREE.Vector3(), _bws = new THREE.Vector3();
+    const BOW_MAX = 38, _bwv = new THREE.Vector3(), _bwq = new THREE.Quaternion(), _bwx = new THREE.Vector3(), _bwp = new THREE.Vector3(), _bws = new THREE.Vector3();
     const boneOfP = (P, nm) => { const re = new RegExp('^(mixamorig:?)?' + nm + '$'); for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
     whenReady(cast.phoB, (P) => {
-      const sp = boneOfP(P, 'Spine'), sh = boneOfP(P, 'RightArm'), el = boneOfP(P, 'RightForeArm'), wr = boneOfP(P, 'RightHand'), lsh = boneOfP(P, 'LeftArm');
-      if (!sp || !sh || !el || !wr || !P.mixer) { console.warn('phoB: no bones to bow with'); P.bow = null; return; }
+      const hp = boneOfP(P, 'Hips'), lu = boneOfP(P, 'LeftUpLeg'), ru = boneOfP(P, 'RightUpLeg'), sh = boneOfP(P, 'RightArm'), el = boneOfP(P, 'RightForeArm'), wr = boneOfP(P, 'RightHand'), lsh = boneOfP(P, 'LeftArm');
+      if (!hp || !lu || !ru || !sh || !el || !wr || !P.mixer) { console.warn('phoB: no bones to bow with'); P.bow = null; return; }
       put(P, P.home.x, P.home.z, P.home.ry); pose(P, 'Sit_to_Stand_Transition_M', 5.85); P.group.updateWorldMatrix(true, true);
       const inv = new THREE.Matrix4().copy(P.group.matrixWorld).invert(), at = (b) => b.getWorldPosition(new THREE.Vector3()).applyMatrix4(inv);
-      const piv = at(sp), s0 = at(sh), e0 = at(el), w0 = at(wr), reach = s0.distanceTo(e0) + e0.distanceTo(w0) + 0.07;
-      /* (his own left-right line in the spine's frame as he stands: the additive turn is about it) */
-      const qs = sp.getWorldQuaternion(new THREE.Quaternion()), qg = P.group.getWorldQuaternion(new THREE.Quaternion());
-      const ax = new THREE.Vector3(1, 0, 0).applyQuaternion(qg).applyQuaternion(qs.invert()).normalize();
-      const q = new THREE.Quaternion().setFromAxisAngle(ax, BOW_MAX * Math.PI / 180);
-      const clip = new THREE.AnimationClip('bow', 1, [new THREE.QuaternionKeyframeTrack(sp.name + '.quaternion', [0, 1], [q.x, q.y, q.z, q.w, q.x, q.y, q.z, q.w])], THREE.AdditiveAnimationBlendMode);
+      const piv = at(hp), s0 = at(sh), e0 = at(el), w0 = at(wr), reach = s0.distanceTo(e0) + e0.distanceTo(w0) + 0.07;
+      /* (the bow is at his hip joints, as a body bows: his hips turned about his own left-right line, read in the hips'
+         frame as he stands, and each thigh turned back by the same turn seen from it, so his legs stand where they stood:
+         a thigh's back-turn is its own turn's conjugate of the hips', exact at any share of the bow) */
+      const qg = P.group.getWorldQuaternion(new THREE.Quaternion()), qh = hp.getWorldQuaternion(new THREE.Quaternion());
+      const ax = new THREE.Vector3(1, 0, 0).applyQuaternion(qg).applyQuaternion(qh.invert()).normalize();
+      const dH = new THREE.Quaternion().setFromAxisAngle(ax, BOW_MAX * Math.PI / 180), dHi = dH.clone().invert();
+      const dL = lu.quaternion.clone().invert().multiply(dHi).multiply(lu.quaternion), dR = ru.quaternion.clone().invert().multiply(dHi).multiply(ru.quaternion);
+      const tr = (b, q) => new THREE.QuaternionKeyframeTrack(b.name + '.quaternion', [0, 1], [q.x, q.y, q.z, q.w, q.x, q.y, q.z, q.w]);
+      const clip = new THREE.AnimationClip('bow', 1, [tr(hp, dH), tr(lu, dL), tr(ru, dR)], THREE.AdditiveAnimationBlendMode);
       const a = P.mixer.clipAction(clip); a.blendMode = THREE.AdditiveAnimationBlendMode; a.setEffectiveWeight(0); a.play();
       P.bow = { a, max: BOW_MAX, piv, sh: s0, reach, lsh };
     });
@@ -617,7 +635,7 @@
        about the spine's joint, in his own frame) */
     function bowFor(P, h) {
       const B = P.bow; if (!B) return 0;
-      P.group.updateWorldMatrix(true, false); _bwp.set(h[0], h[1] + 0.035, h[2]);
+      P.group.updateWorldMatrix(true, false); _bwp.set(h[0], h[1] + 0.012, h[2]);
       const y = B.sh.y - B.piv.y, z = B.sh.z - B.piv.z;
       for (let d = 0; d <= B.max; d += 0.5) { const th = d * Math.PI / 180;
         _bws.set(B.sh.x, B.piv.y + y * Math.cos(th) - z * Math.sin(th), B.piv.z + y * Math.sin(th) + z * Math.cos(th)).applyMatrix4(P.group.matrixWorld);

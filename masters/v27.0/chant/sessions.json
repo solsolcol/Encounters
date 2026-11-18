@@ -1,0 +1,34 @@
+{
+ "model": "eleven_v3",
+ "voice": "xYmBpJREC3WfqEFpbPvO",
+ "name": "Grandmaster Pho (his own voice, chapter 3's)",
+ "text": {
+  "ch1": "[chanting] Katā me rakkhā, katā me parittā. Paṭikkamantu bhūtāni.",
+  "ch2": "[chanting] Dukkhappattā ca niddukkhā, bhayappattā ca nibbhayā, sokappattā ca nissokā, hontu sabbe'pi pāṇino."
+ },
+ "ch1": {
+  "flow": "cQvw93T3UYNcfRlTggp3",
+  "sessions": [
+   "CvSGc1fbteUqayNmD82p",
+   "YVoahuDUeenNnzvb8FUF",
+   "txaLkMdnEPG9DpK5lzqM"
+  ]
+ },
+ "ch2": {
+  "flow": "BcsbOx34bHFmMAqWDJDQ",
+  "sessions": [
+   "cphxgVQxAw0iGhwaCS4N",
+   "i79MMNXh0n7FKuiylhew",
+   "rbJswZuiMHR2oUs5XQcE"
+  ]
+ },
+ "ch2_rerun": {
+  "flow": "BcsbOx34bHFmMAqWDJDQ",
+  "sessions": [
+   "CeZylGPFVWdgotNvccYk",
+   "lJaqpP1f2Gte6mL4JWSL",
+   "bGxYyn18KEZpo30AZecl"
+  ],
+  "why": "ch2 a, b, c all end on signal (the last vowel cut at the file's end): the line re-run unchanged (v4.1's law)"
+ }
+}

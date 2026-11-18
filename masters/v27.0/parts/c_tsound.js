@@ -84,5 +84,5 @@
     }
     function soundReset() {
       ambSeed = AMB_SEED; ambAt = 0; ambBusy = 0; ambLast = ''; ambN = 0; for (const k in bedMix) bedMix[k] = 0; filmBed.on = false;
-      tileSeed = TILE_SEED; tileLast = -1; fightMusOff();
+      tileSeed = TILE_SEED; tileLast = -1; fightMusOff(); chantStop();
     }

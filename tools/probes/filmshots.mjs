@@ -86,7 +86,16 @@ for (const t of TS) {
   if (process.env.BONES) console.log('   bones', JSON.stringify(await p.evaluate((spec) => { const S = window.__enc.stage, r = {};
     for (const it of spec.split(',')) { const [who, names] = it.split(':'), [key, i] = who.split('#'), P = S.person && S.person(key, +(i || 0)); if (!P) { r[who] = null; continue; }
       P.group.updateWorldMatrix(true, true); const g = P.group.position, o = { g: [g.x, g.y, g.z].map(v => +v.toFixed(3)), vis: P.group.visible };
-      for (const n of (names || '').split('/').filter(Boolean)) { const re = new RegExp('^(mixamorig:?)?' + n + '$'); let bn = null; for (const q in P.bone) if (re.test(q)) { bn = P.bone[q]; break; }
+      for (const n of (names || '').split('/').filter(Boolean)) {
+        /* '@top:Bone': the highest point of the skin that bone carries (over half its weight), as the frame draws it
+           (a crown, a hand's top), with the bone's own place for the offset between them */
+        if (n.startsWith('@top:')) { const bnm = n.slice(5), re = new RegExp('^(mixamorig:?)?' + bnm + '$'); let best = null;
+          P.group.traverse(m => { if (!m.isSkinnedMesh || !m.visible || !m.geometry.attributes.skinIndex) return; const sk = m.skeleton, bi = sk.bones.findIndex(b => re.test(b.name)); if (bi < 0) return;
+            const SI = m.geometry.attributes.skinIndex, SW = m.geometry.attributes.skinWeight, v = g.clone(), nV = SI.count;
+            for (let i = 0; i < nV; i++) { let w = 0; for (let k = 0; k < 4; k++) if (SI.getComponent(i, k) === bi) w += SW.getComponent(i, k); if (w < 0.5) continue;
+              m.getVertexPosition(i, v); m.localToWorld(v); if (!best || v.y > best[1]) best = [v.x, v.y, v.z]; } });
+          o[n] = best ? best.map(v => +v.toFixed(3)) : null; continue; }
+        const re = new RegExp('^(mixamorig:?)?' + n + '$'); let bn = null; for (const q in P.bone) if (re.test(q)) { bn = P.bone[q]; break; }
         if (bn) { const w = bn.getWorldPosition(g.clone()); o[n] = [w.x, w.y, w.z].map(v => +v.toFixed(3)); } }
       r[who] = o; }
     return r; }, process.env.BONES)));
