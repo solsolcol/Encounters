@@ -181,6 +181,10 @@
        it at the wall's face) */
     door(1.0, [DOOR_MAIN.x1 + 0.03, FL.face - 0.08], 0, Math.PI / 2, -0.5);
     solidBox(0.06, 2.1, 1.0, DOOR_MAIN.x1 + 0.03, 1.05, FL.face - 0.08 + 0.5);
+    /* her grille gate, shut behind them once the opening film has brought him in (it is drawn shut in play): a column
+       across the doorway's outer face, or he walked through it into the corridor (18 Nov, walktest: 15.7 square metres
+       reached outside her flat, out to -3.70, -1.60) */
+    solidBox(DOOR_MAIN.x1 - DOOR_MAIN.x0 + 0.04, 2.1, 0.08, 0, 1.0, -0.06);
     door(DOOR_MASTER.x1 - DOOR_MASTER.x0, [DOOR_MASTER.x0, R2.living.z1 + 0.05], 0, 0, (DOOR_MASTER.x1 - DOOR_MASTER.x0) / 2);
     door(DOOR_BED2.x1 - DOOR_BED2.x0, [DOOR_BED2.x0, R2.nook.z1 + 0.05], 0, 0, (DOOR_BED2.x1 - DOOR_BED2.x0) / 2);
     door(DOOR_BATH2.x1 - DOOR_BATH2.x0, [DOOR_BATH2.x0, R2.bath2.z0 - 0.05], 0, 0, (DOOR_BATH2.x1 - DOOR_BATH2.x0) / 2);
