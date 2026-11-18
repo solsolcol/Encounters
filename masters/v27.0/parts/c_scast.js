@@ -186,16 +186,34 @@
        its reason there): his face, hands and beads laid back at their own colour after the tone mapping, the robe lit.
        `level` is the hour's: under the tube he is lit as the room is (1); by the lamp alone the laid colour is dimmed */
     const phoLook = { k: { value: 1 }, level: { value: 1 }, lift: { value: 0.55 } };
+    /* R43 (Chad, 18 Nov 2026: "There are also some skin colour bits on the back of his robe that can be easily seen during
+       gameplay"): his body sheet holds small islands of skin colour lying inside the white of the robe, and look D draws
+       whatever its test calls skin unlit, so each one stood out of the lit robe as an orange speck (in his file's own lit
+       look they show too, fainter). His file is unchanged: the islands (PHO_FLECKS, c_phofleck.js, found in his sheet by
+       tools/phoflecks.py) are painted once on a canvas in the colour of the robe round each, and laid over his sheet where
+       its colour is read (premultiplied: a cell is the robe's colour, opaque, or nothing). */
+    let phoFleckTex = null;
+    function phoFleck() {
+      if (phoFleckTex) return phoFleckTex;
+      const N = PHO_FLECKS.size, cv = document.createElement('canvas'); cv.width = cv.height = N;
+      const g = cv.getContext('2d');
+      for (const [r, gr, b, R] of PHO_FLECKS.f) { g.fillStyle = `rgb(${r},${gr},${b})`; for (let i = 0; i < R.length; i += 3) g.fillRect(R[i + 1], R[i], R[i + 2], 1); }
+      const t = tex(new THREE.CanvasTexture(cv)); t.flipY = false; t.colorSpace = THREE.SRGBColorSpace; t.needsUpdate = true;
+      return (phoFleckTex = t);
+    }
     function lookD(model) {
       model.traverse(q => { if (!q.isMesh) return;
         const list = [].concat(q.material).map(m0 => { const mt = m0.clone(); mats.push(mt); const WHOLE = /\(face and hands\)$/.test(m0.name);
           mt.onBeforeCompile = (sh) => { sh.uniforms.uK = phoLook.k; sh.uniforms.uLevel = phoLook.level; sh.uniforms.uLift = phoLook.lift;
+            if (!WHOLE && mt.map) { sh.uniforms.uFleck = { value: phoFleck() };
+              sh.fragmentShader = 'uniform sampler2D uFleck;\n' + sh.fragmentShader.replace('#include <map_fragment>',
+                '#include <map_fragment>\n{ vec4 fl = texture2D(uFleck, vMapUv); diffuseColor.rgb = diffuseColor.rgb * (1.0 - fl.a) + fl.rgb * diffuse; }'); }
             sh.fragmentShader = 'uniform float uLevel;\nuniform float uK;\nuniform float uLift;\n' + sh.fragmentShader.replace('#include <tonemapping_fragment>', '#include <tonemapping_fragment>\n'
               + (WHOLE ? 'float skn = 1.0;\n' : 'vec3 sc = pow(max(diffuseColor.rgb, vec3(1e-4)), vec3(1.0 / 2.2)); float mxc = max(sc.r, max(sc.g, sc.b)); float skn = smoothstep(0.12, 0.25, (mxc - min(sc.r, min(sc.g, sc.b))) / max(mxc, 1e-4));\n')
               + 'float kS = clamp(uK * skn, 0.0, 1.0); vec3 unl = diffuseColor.rgb * uLevel;\n'
               + 'gl_FragColor.rgb += (1.0 - kS) * uK * uLift * max(vec3(0.0), unl * 0.9 - gl_FragColor.rgb);\n'
               + 'gl_FragColor.rgb = mix(gl_FragColor.rgb, unl, kS);'); };
-          mt.customProgramCacheKey = () => 'phoLookD' + (WHOLE ? ':whole' : ''); return mt; });
+          mt.customProgramCacheKey = () => 'phoLookD' + (WHOLE ? ':whole' : ':fleck'); return mt; });
         q.material = Array.isArray(q.material) ? list : list[0]; });
     }
 
