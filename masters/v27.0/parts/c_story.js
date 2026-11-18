@@ -851,13 +851,20 @@
        middle of the screen in a golden glow enveloping it, seemingly empowering the user, and then disappears away"; and,
        of build 19's: "there is no need for text at the top and bottom, and i want the effect to be different from the
        'item unlocked' effect. It should not totally obscure the whole screen"): the fifty-fifth seam's SHOWCASE, no words,
-       nothing over the room but its light, gone by itself after 3.4 s into a point of light; the fight stands still under
-       it. Its model was made ready under the chapter's curtain (`items`), and warmed again at the surge */
+       nothing over the room but its light; the fight stands still under it. Its model was made ready under the chapter's
+       curtain (`items`), and warmed again at the surge. Build 21 (Chad, 18 Nov: "design a new nicer effect ... The rays
+       you showed come from the item unlocked effect"; "floating hovering slight subtle bobbing ... the screen shakes as it
+       release its power, and a circular halo glow effect releases from the amulet outwards"): its own entrance, 4.2 s (the
+       engine's showcase): born from gathered light, it turns and hovers; 1.2 s before the end it RELEASES ITS POWER (the
+       room shakes, halos go out, its sound), and the golden wave goes through the room from that moment; then it goes down
+       into the holy water */
+    const WAVE_GOLD = { color: 0xffc552, secs: 3.2, reach: 14, trail: 0.12 };
     function showAmulet() {
       const F = play.fight; if (!F || !F.on) return;
-      F.call = 'shown'; F.urge = null; if (kit && kit.visionUrge) kit.visionUrge(false);
+      F.call = 'shown'; F.urge = null; F.released = false; if (kit && kit.visionUrge) kit.visionUrge(false);
       const go = () => { if (play.fight === F && F.on) goldBegin(); };
-      if (!(kit && kit.unlock && kit.unlock('amulet', { showcase: true, auto: 3.4, sound: 'u4goldcall', onClose: go }))) go();
+      const release = () => { if (play.fight !== F) return; F.released = true; if (kit && kit.wave) kit.wave(WAVE_GOLD); };
+      if (!(kit && kit.unlock && kit.unlock('amulet', { showcase: true, auto: 4.2, sound: 'u4goldcall', releaseSound: 'u4goldpower', onRelease: release, onClose: go }))) go();
     }
     /* EMPOWERED (R26 to R29: "the entire screen seem to have a golden vignette to show the new empowered status, and now the
        water being flicked becomes golden glow instead"): the gold at the edges of his sight (the fifty-sixth seam), the water
@@ -868,9 +875,12 @@
       /* (and its light goes out through the room from him, every thing and every outline it crosses burning gold, as his
          sight's own wave does: the fifty-seventh seam. Chad: "empowers with a golden glow that spreads throughout the scene,
          tracing every item and silhouette similar to how the spirit vision works") */
-      if (kit && kit.wave) kit.wave({ color: 0xffc552, secs: 2.6, reach: 26, trail: 0.3 });
+      /* (sent from the showcase's release when it ran, with its sound: here only when it could not be shown. Build 21: 14 m in
+         3.2 s with a slow trail, so the room stays traced in gold while it fades: at 26 m in 2.6 s it crossed the room in a
+         fifth of a second and was gone) */
+      if (!F.released && kit && kit.wave) kit.wave(WAVE_GOLD);
       if (kit) { if (kit.edge) kit.edge({ color: [255, 196, 84], k: 0.85, secs: 1.2 }); if (kit.sprayColor) kit.sprayColor(0xffc24a, { size: 1.6 }); if (kit.ammo) kit.ammo(DATA.weapon.rounds); }
-      fx('u4goldpower', 1, 0);
+      if (!F.released) fx('u4goldpower', 1, 0);
       /* (the amulet's light reaches her too: her life at least half back. 18 Nov, photographed: held at 15 through the surge,
          she came into the gold two touches from the loss, and the power he was given was spent guarding a last breath) */
       F.hp = Math.max(F.hp, 50); if (kit && kit.health) kit.health({ k: F.hp / 100 });

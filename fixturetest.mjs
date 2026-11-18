@@ -673,7 +673,9 @@ K.stakesShowcase = await p.evaluate(async () => {
   const until = async (f, ms) => { const t0 = performance.now(); while (!f() && performance.now() - t0 < ms) await frames(1); return f(); };
   const label0 = el.querySelector('.unLabel').textContent, sub0 = 'Added to your bag';
   let told = 0;
-  const shown = E.kit.unlock('amulet', { gold: true, auto: 1.2, label: 'L1', name: 'N1', sub: 'S1', sound: 'itemunlock', onClose: () => { told++; } });
+  /* (auto 6 s, not 1.2: on a box drawing a frame a second, the three frames waited for before the look is read outlast a
+     1.2 s showing, and build 20's run read a splash already gone: the game was right, the wait was the fault) */
+  const shown = E.kit.unlock('amulet', { gold: true, auto: 6, label: 'L1', name: 'N1', sub: 'S1', sound: 'itemunlock', onClose: () => { told++; } });
   await frames(3);
   const look = E.getState() === 'unlock' && el.classList.contains('gold') && el.querySelector('.unLabel').textContent === 'L1'
     && document.getElementById('unName').textContent === 'N1' && el.querySelector('.unSub').textContent === 'S1'
@@ -699,7 +701,8 @@ K.stakesShowcaseOwn = await p.evaluate(async () => {
   const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
   const until = async (f, ms) => { const t0 = performance.now(); while (!f() && performance.now() - t0 < ms) await frames(1); return f(); };
   let told = 0;
-  const shown = E.kit.unlock('amulet', { showcase: true, auto: 1.6, sound: 'itemunlock', onClose: () => { told++; } });
+  /* (auto 6 s, as the splash's check above: three frames on a slow box outlasted 1.6 s) */
+  const shown = E.kit.unlock('amulet', { showcase: true, auto: 6, sound: 'itemunlock', onClose: () => { told++; } });
   await frames(3);
   const look = E.getState() === 'unlock' && !sc.classList.contains('hide') && un.classList.contains('hide') && sc.textContent.trim() === ''
     && getComputedStyle(sc).backgroundColor === 'rgba(0, 0, 0, 0)' && E.stakes().show === 'amulet' && !!document.getElementById('scCv');
@@ -719,7 +722,8 @@ K.stakesWave = await p.evaluate(async () => {
   const until = async (f, ms) => { const t0 = performance.now(); while (!f() && performance.now() - t0 < ms) await frames(1); return f(); };
   const v0 = E.vision(), w0 = E.stakes().wave;
   const off0 = !v0.on && v0.r === 0 && w0.on === false;
-  const ok = E.kit.wave({ color: 0xffc552, secs: 0.9, reach: 12 });
+  /* (8 s, not 0.9: the wave runs on wall time, and on a box drawing a frame a second it had ended before its first read) */
+  const ok = E.kit.wave({ color: 0xffc552, secs: 8, reach: 12 });
   await frames(3);
   const w1 = E.stakes().wave, d1 = E.vision().drawn;
   await frames(4);
@@ -2648,6 +2652,9 @@ K.loseOwn = await until(() => window.__enc.getState() === 'play', 120000).then(a
   await p.evaluate(() => { window.__enc.stats.sanity = 80; });
   const took = await p.evaluate(() => window.__enc.kit.lose({ film: 'probe', say: 'Her life ran out.', teaching: 'See first.' }));
   const lost = await until(() => window.__enc.getState() === 'lost', 120000).then(() => true, () => false);
+  /* (the teaching is TYPED onto the card after its first line: it is read once written, never the moment the card opens;
+     build 20's run, on a slow box, read it empty and failed a card that was right) */
+  await until(() => /See first\./.test(document.getElementById('overTeach').textContent), 60000).catch(() => {});
   const L = await p.evaluate(() => ({ say: document.getElementById('overSay').textContent, teach: document.getElementById('overTeach').textContent, san: window.__enc.stats.sanity }));
   console.log('loseOwn', JSON.stringify({ took, lost, L }));
   return took === true && lost && L.say === 'Her life ran out.' && /See first\./.test(L.teach) && L.san > 0;

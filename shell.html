@@ -2342,49 +2342,54 @@ body.capsOn #interact{padding-bottom:calc(var(--capTop,170px) + 14px)}
 #unlock.gold .unSub{color:#FFE2A0}
 #unlock.gold #unClose{visibility:hidden}
 #unlock.gold.out{opacity:0;transform:scale(1.2);filter:brightness(1.8);transition:opacity .5s ease-in,transform .5s ease-in,filter .5s ease-in}
-/* v27.0 (seam 55): THE SHOWCASE (kit.unlock(id, { showcase })) — not the splash: no words, no button, no cover over the
-   room. A flash where it lands, three rings of gold going out, rays turning behind it, sparks flying out, a glow round
-   it, the model turning in the middle; for its last half second it flares and is drawn into a point of light. Sized on
-   the shorter side so a phone and a desktop see the same thing */
-/* (build 20: the grid's one cell is the screen: a ray wider than the screen had widened the cell, and every layer centred on it, a third of the screen to the right) */
+/* v27.0 (seam 55): THE SHOWCASE (kit.unlock(id, { showcase })), build 21: ITS OWN ENTRANCE (Chad, 18 Nov: "design a new
+   nicer effect for when the lp phiboon amulet appears? The rays you showed come from the item unlocked effect"; "The amulet
+   while spinning should have a floating hovering slight subtle bobbing up and down effect, and the screen shakes as it
+   release its power, and a circular halo glow effect releases from the amulet outwards"). No words, no button, nothing
+   laid over the room, and nothing of Item Unlocked's (no rays, no sunburst, no white flash). A shaft of light comes down to
+   the middle; motes of gold gather from the edges and spiral into one point (drawn on #scFx by the engine: scFxFrame); the
+   amulet is born from that point, turns once and comes to rest facing him, HOVERING (a slow bob), in a breathing aura with
+   embers rising; then it RELEASES ITS POWER: the room shakes (#scene.scShake), halos of light go out from it one after
+   another, motes burst outward; and it goes down into the holy water's button, which flashes gold (#fireBtn.scFill).
+   Sized on the shorter side so a phone and a desktop see the same thing */
+/* (build 20: the grid's one cell is the screen: a layer wider than the screen had widened the cell, and every layer centred on it, a third of the screen to the right) */
 #showcase{position:fixed;inset:0;z-index:12;pointer-events:none;display:grid;grid-template:100%/100%;place-items:center;place-content:center;overflow:hidden}
 #showcase > *{grid-area:1/1}
-#showcase .scGlow{width:min(124vw,82vh);height:min(124vw,82vh);border-radius:50%;
-  background:radial-gradient(circle,rgba(255,238,175,.66) 0%,rgba(255,198,86,.36) 28%,rgba(255,170,40,.13) 50%,transparent 69%);
-  animation:scGlow 3.4s ease-in-out both}
-#showcase .scRays{width:min(170vw,116vh);height:min(170vw,116vh);border-radius:50%;
-  background:repeating-conic-gradient(from 0deg,rgba(255,222,135,.40) 0deg 2.4deg,transparent 2.4deg 11deg);
-  -webkit-mask:radial-gradient(circle,#000 0%,rgba(0,0,0,.75) 20%,transparent 60%);mask:radial-gradient(circle,#000 0%,rgba(0,0,0,.75) 20%,transparent 60%);
-  animation:scRays 3.4s linear both}
-#showcase .scRing{width:min(58vw,38vh);height:min(58vw,38vh);border-radius:50%;border:3px solid rgba(255,216,124,.95);
-  box-shadow:0 0 26px rgba(255,200,90,.9),inset 0 0 22px rgba(255,200,90,.65);opacity:0;
-  animation:scRing 1.35s cubic-bezier(.15,.7,.3,1) both}
-#showcase .scRing:nth-of-type(2){animation-delay:.26s}
-#showcase .scRing:nth-of-type(3){animation-delay:.52s}
-#showcase .scSparks{width:2px;height:2px;position:relative}
-#showcase .scSparks i{position:absolute;left:0;top:0;width:7px;height:7px;margin:-3px;border-radius:50%;
-  background:#FFF3C4;box-shadow:0 0 12px 4px rgba(255,200,90,.95);opacity:0;
-  animation:scSpark 1.7s cubic-bezier(.12,.75,.3,1) both;animation-delay:var(--d,0s)}
-#showcase .scModel{width:min(68vw,46vh);height:min(68vw,46vh);animation:scIn .75s cubic-bezier(.2,1.45,.35,1) both}
+#scFx{width:100%;height:100%;display:block}
+#showcase .scShaft{align-self:start;width:min(18vmin,120px);height:50%;opacity:0;transform-origin:50% 0;
+  background:linear-gradient(90deg,transparent,rgba(255,222,150,.10) 26%,rgba(255,238,196,.64) 50%,rgba(255,222,150,.10) 74%,transparent);
+  -webkit-mask:linear-gradient(180deg,transparent 0%,#000 34%,#000 100%);mask:linear-gradient(180deg,transparent 0%,#000 34%,#000 100%);
+  animation:scShaft 1.8s cubic-bezier(.3,.7,.3,1) both}
+#showcase .scAura{width:min(58vw,40vh);height:min(72vw,50vh);border-radius:50%;opacity:0;
+  background:radial-gradient(closest-side,rgba(255,228,156,.58),rgba(255,192,84,.26) 48%,rgba(255,172,52,0) 100%);
+  animation:scAuraIn .7s ease-out .9s both,scBreath 1.3s ease-in-out 1.6s infinite alternate}
+#showcase .scHalo{width:min(56vw,38vh);height:min(56vw,38vh);border-radius:50%;opacity:0;
+  background:radial-gradient(closest-side,rgba(255,222,140,0) 56%,rgba(255,236,178,.82) 75%,rgba(255,204,96,.34) 88%,rgba(255,182,62,0) 100%)}
+#showcase .scModel{width:min(62vw,42vh);height:min(62vw,42vh);opacity:0;animation:scBirth .8s cubic-bezier(.2,1.3,.35,1) .9s both}
+#showcase .scHover{width:100%;height:100%;animation:scHover 2.4s ease-in-out 1.7s infinite}
 #scCv{width:100%;height:100%;display:block;
-  filter:sepia(.22) saturate(1.3) brightness(1.08) drop-shadow(0 0 9px rgba(255,216,124,.95)) drop-shadow(0 0 30px rgba(255,180,60,.8))}
-#showcase .scFlash{width:min(150vw,100vh);height:min(150vw,100vh);border-radius:50%;
-  background:radial-gradient(circle,rgba(255,252,230,.98) 0%,rgba(255,218,128,.6) 16%,rgba(255,190,70,.18) 34%,transparent 52%);
-  opacity:0;animation:scFlash .75s ease-out both}
-#showcase.flare .scModel{animation:scOut .55s cubic-bezier(.55,0,.85,.35) both}
-#showcase.flare .scFlash{animation:scBurst .6s ease-in both}
-#showcase.flare .scGlow{animation:scGlowOut .55s ease-in both}
-#showcase.out{opacity:0;transition:opacity .4s ease-out}
+  filter:sepia(.18) saturate(1.25) brightness(1.06) drop-shadow(0 0 8px rgba(255,216,124,.9)) drop-shadow(0 0 26px rgba(255,180,60,.7))}
+#showcase.flare .scHalo{animation:scHaloOut 1.15s cubic-bezier(.12,.6,.3,1) both}
+#showcase.flare .scHalo.h2{animation-delay:.2s}
+#showcase.flare .scHalo.h3{animation-delay:.4s}
+#showcase.flare .scModel{opacity:1;animation:scRelease .6s ease-out both}
+#showcase.into .scModel{opacity:1;animation:scInto .6s cubic-bezier(.5,0,.75,.35) both}
+#showcase.into .scAura{animation:scAuraOut .45s ease-in both}
+#showcase.out{opacity:0;transition:opacity .35s ease-out}
+#scene.scShake{animation:scShake .55s linear both}
+#fireBtn.scFill{animation:scFill .9s ease-out both}
 body.showcaseopen .soundBtn,body.showcaseopen #volWrap{display:none}
-@keyframes scIn{0%{transform:scale(.12) rotate(-14deg);opacity:0;filter:brightness(4)}55%{opacity:1;filter:brightness(1.6)}100%{transform:none;opacity:1;filter:none}}
-@keyframes scOut{0%{transform:scale(1);filter:brightness(1)}35%{transform:scale(1.14);filter:brightness(2.4)}100%{transform:scale(.02);filter:brightness(6);opacity:0}}
-@keyframes scGlow{0%{opacity:0;transform:scale(.3)}16%{opacity:1;transform:scale(1.06)}50%{transform:scale(.95)}85%{opacity:1;transform:scale(1.04)}100%{opacity:.85;transform:scale(1)}}
-@keyframes scGlowOut{0%{opacity:.85;transform:scale(1)}100%{opacity:0;transform:scale(.2)}}
-@keyframes scRays{0%{opacity:0;transform:rotate(0) scale(.55)}18%{opacity:1}100%{opacity:.75;transform:rotate(46deg) scale(1.1)}}
-@keyframes scRing{0%{opacity:0;transform:scale(.18)}12%{opacity:1}100%{opacity:0;transform:scale(2.9)}}
-@keyframes scFlash{0%{opacity:1;transform:scale(.55)}100%{opacity:0;transform:scale(1.5)}}
-@keyframes scBurst{0%{opacity:0;transform:scale(.2)}70%{opacity:1;transform:scale(.9)}100%{opacity:0;transform:scale(2)}}
-@keyframes scSpark{0%{opacity:0;transform:rotate(var(--a)) translateY(0) scale(1.2)}10%{opacity:1}100%{opacity:0;transform:rotate(var(--a)) translateY(calc(-1 * var(--r))) scale(.3)}}
+@keyframes scShaft{0%{opacity:0;transform:scaleY(0) scaleX(.12)}22%{opacity:1;transform:scaleY(1) scaleX(.12)}52%{opacity:.9;transform:scaleY(1) scaleX(1)}100%{opacity:0;transform:scaleY(1) scaleX(1.4)}}
+@keyframes scBirth{0%{opacity:0;transform:scale(.14);filter:brightness(2.6) blur(3px)}55%{opacity:1;filter:brightness(1.5) blur(0)}100%{opacity:1;transform:none;filter:none}}
+@keyframes scHover{0%,100%{transform:translateY(-1.5%)}50%{transform:translateY(1.5%)}}
+@keyframes scAuraIn{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+@keyframes scBreath{from{transform:scale(.94);filter:brightness(.9)}to{transform:scale(1.06);filter:brightness(1.12)}}
+@keyframes scAuraOut{to{opacity:0;transform:scale(.5)}}
+@keyframes scHaloOut{0%{opacity:0;transform:scale(.55)}12%{opacity:1}100%{opacity:0;transform:scale(4.4)}}
+@keyframes scRelease{0%{transform:none;filter:brightness(1)}30%{transform:scale(1.1);filter:brightness(2.3)}100%{transform:none;filter:brightness(1.15)}}
+@keyframes scInto{0%{transform:none}100%{opacity:0;transform:translate(var(--ix,0px),var(--iy,30vh)) scale(.06)}}
+@keyframes scShake{0%{transform:scale(1.03) translate(0,0)}10%{transform:scale(1.03) translate(-9px,5px)}20%{transform:scale(1.03) translate(8px,-6px)}30%{transform:scale(1.03) translate(-7px,-4px)}40%{transform:scale(1.03) translate(6px,6px)}50%{transform:scale(1.03) translate(-5px,3px)}60%{transform:scale(1.02) translate(4px,-4px)}70%{transform:scale(1.02) translate(-3px,2px)}80%{transform:scale(1.01) translate(2px,-2px)}90%{transform:scale(1.01) translate(-1px,1px)}100%{transform:none}}
+@keyframes scFill{0%{box-shadow:0 0 0 0 rgba(255,214,110,.95);filter:brightness(1)}35%{filter:brightness(1.9)}100%{box-shadow:0 0 0 26px rgba(255,214,110,0);filter:brightness(1)}}
 @keyframes unGoldIn{0%{opacity:0;transform:scale(.66);filter:brightness(3.2)}55%{opacity:1;filter:brightness(1.5)}100%{transform:none;filter:none}}
 @keyframes unFade{from{opacity:0}}
 body.unlockopen .soundBtn,body.unlockopen #volWrap{display:none}
@@ -3975,12 +3980,11 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
      button, nothing laid over the room but light (Chad, 18 Nov: "it simply appears in the middle of the screen with a nice
      powerful and impressive visual effect") -->
 <div id="showcase" class="hide" aria-hidden="true">
-  <div class="scGlow"></div>
-  <div class="scRays"></div>
-  <i class="scRing"></i><i class="scRing"></i><i class="scRing"></i>
-  <div class="scSparks"><i style="--a:0deg;--d:0.04s;--r:24vmin"></i><i style="--a:138deg;--d:0.11s;--r:34vmin"></i><i style="--a:275deg;--d:0.18s;--r:44vmin"></i><i style="--a:53deg;--d:0.25s;--r:29vmin"></i><i style="--a:190deg;--d:0.32s;--r:39vmin"></i><i style="--a:328deg;--d:0.39s;--r:24vmin"></i><i style="--a:105deg;--d:0.04s;--r:34vmin"></i><i style="--a:243deg;--d:0.11s;--r:44vmin"></i><i style="--a:20deg;--d:0.18s;--r:29vmin"></i><i style="--a:158deg;--d:0.25s;--r:39vmin"></i><i style="--a:295deg;--d:0.32s;--r:24vmin"></i><i style="--a:73deg;--d:0.39s;--r:34vmin"></i><i style="--a:210deg;--d:0.54s;--r:44vmin"></i><i style="--a:348deg;--d:0.61s;--r:29vmin"></i><i style="--a:125deg;--d:0.68s;--r:39vmin"></i><i style="--a:263deg;--d:0.75s;--r:24vmin"></i><i style="--a:40deg;--d:0.82s;--r:34vmin"></i><i style="--a:178deg;--d:0.89s;--r:44vmin"></i></div>
-  <div class="scModel"><canvas id="scCv"></canvas></div>
-  <div class="scFlash"></div>
+  <canvas id="scFx"></canvas>
+  <div class="scShaft"></div>
+  <div class="scAura"></div>
+  <div class="scHalo h1"></div><div class="scHalo h2"></div><div class="scHalo h3"></div>
+  <div class="scModel"><div class="scHover"><canvas id="scCv"></canvas></div></div>
 </div>
 
 <!-- v17.6: CHOOSE ONE — a few items, one card each, one taken (kit.choose) -->

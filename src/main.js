@@ -11904,6 +11904,82 @@ function ivRender(id, W, H, yawA, pitchA, k) {
   try { iv.r.render(iv.scene, iv.cam); } catch { return false; }
   return true;
 }
+/* v27.0 build 21: THE SHOWCASE'S OWN LIGHT, drawn on #scFx in device pixels on wall time (Chad, 18 Nov: its own effect,
+   nothing of Item Unlocked's): the motes of gold that gather from the edges and spiral into one point before the amulet
+   is born from it; the embers that rise round it while it hovers; the motes that burst out with its halos as it releases
+   its power; the trail it leaves going down into the water. Seeded, so every showing is the same; one small sprite drawn
+   at each point (a gradient made once, not one a mote a frame) */
+const scFx = { motes: null, embers: null, burst: null, into: null, dot: null };
+function scFxDot() {
+  if (scFx.dot) return scFx.dot;
+  const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
+  const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gr.addColorStop(0, 'rgba(255,246,214,1)'); gr.addColorStop(0.28, 'rgba(255,214,128,0.62)'); gr.addColorStop(1, 'rgba(255,180,60,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
+  return (scFx.dot = c);
+}
+function scFxClear() {
+  scFx.motes = null; scFx.into = null;
+  const cv = $('scFx'), g = cv && cv.getContext('2d'); if (g) g.clearRect(0, 0, cv.width, cv.height);
+}
+function scFxFrame(t, dur) {
+  const cv = $('scFx'); if (!cv) return;
+  const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return;
+  const dpr = Math.min(2, window.devicePixelRatio || 1), W = Math.round(w * dpr), H = Math.round(h * dpr);
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const g = cv.getContext('2d'); if (!g) return;
+  g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
+  g.clearRect(0, 0, W, H);
+  if (!scFx.motes) {
+    let sd = 0x5a17c0de;
+    const rnd = () => ((sd = (Math.imul(sd, 1664525) + 1013904223) >>> 0) / 4294967296);
+    scFx.motes = Array.from({ length: 84 }, (_, i) => ({ a: i / 84 * Math.PI * 2 + rnd() * 0.3, r: 0.55 + rnd() * 0.45, d: rnd() * 0.35,
+      T: 0.5 + rnd() * 0.3, spin: 1.1 + rnd() * 0.9, sz: 1.2 + rnd() * 1.6 }));
+    scFx.embers = Array.from({ length: 36 }, () => ({ x: rnd() - 0.5, b: rnd(), v: 0.5 + rnd() * 0.7, sw: rnd() * 6.2832, sz: 0.8 + rnd() * 1.3 }));
+    scFx.burst = Array.from({ length: 64 }, () => ({ a: rnd() * Math.PI * 2, v: 0.55 + rnd() * 0.85, sz: 1 + rnd() * 1.7 }));
+  }
+  const spr = scFxDot(), cx = W / 2, cy = H / 2, R = Math.hypot(W, H) / 2, mw = Math.min(w * 0.62, h * 0.42) * dpr;
+  const dot = (x, y, r, a) => { if (a <= 0.003) return; g.globalAlpha = Math.min(1, a); const s2 = r * 6; g.drawImage(spr, x - s2 / 2, y - s2 / 2, s2, s2); };
+  const BIRTH = 0.95, REL = dur - 1.2, INTO = dur - 0.6;
+  const ease = (p) => p * p * (1.6 - 0.6 * p);
+  g.globalCompositeOperation = 'lighter';
+  /* 1 · the gathering: each mote spirals in from beyond the screen's edge, quicker as it nears, a short tail behind it */
+  g.lineCap = 'round';
+  for (const m of scFx.motes) {
+    const p = (t - 0.08 - m.d) / m.T; if (p <= 0 || p >= 1) continue;
+    const e = ease(p), rr = m.r * R * (1 - e), aa = m.a + m.spin * e;
+    const x = cx + Math.cos(aa) * rr, y = cy + Math.sin(aa) * rr;
+    const e0 = ease(Math.max(0, p - 0.09)), r0 = m.r * R * (1 - e0), a0 = m.a + m.spin * e0;
+    g.globalAlpha = 0.22 + 0.5 * e; g.strokeStyle = 'rgba(255,214,130,1)'; g.lineWidth = m.sz * dpr;
+    g.beginPath(); g.moveTo(cx + Math.cos(a0) * r0, cy + Math.sin(a0) * r0); g.lineTo(x, y); g.stroke();
+    dot(x, y, m.sz * dpr, 0.45 + 0.5 * e);
+  }
+  /* the point they gather into, swelling until the amulet is born from it */
+  const core = Math.max(0, Math.min(1, (t - 0.45) / 0.5)) * (1 - Math.max(0, Math.min(1, (t - BIRTH) / 0.35)));
+  if (core > 0) dot(cx, cy, (4 + 12 * core) * dpr, 0.95 * core);
+  /* 2 · embers rising round it while it hovers */
+  if (t > BIRTH + 0.25 && t < INTO) {
+    const fade = Math.min(1, (t - BIRTH - 0.25) / 0.5) * Math.min(1, (INTO - t) / 0.3);
+    for (const em of scFx.embers) {
+      const ph = ((t - BIRTH) * em.v / 1.8 + em.b) % 1;
+      dot(cx + em.x * mw * 0.95 + Math.sin(em.sw + t * 2.1) * 6 * dpr, cy + mw * 0.42 - ph * mw * 1.15, em.sz * dpr, Math.sin(ph * Math.PI) * 0.6 * fade);
+    }
+  }
+  /* 3 · the burst that goes out with its halos */
+  if (t > REL && t < REL + 1.05) {
+    const q = (t - REL) / 1.05, qe = 1 - Math.pow(1 - q, 2.4);
+    for (const b of scFx.burst) dot(cx + Math.cos(b.a) * (0.08 + b.v * qe) * R * 0.95, cy + Math.sin(b.a) * (0.08 + b.v * qe) * R * 0.95, b.sz * dpr, (1 - q) * 0.75);
+  }
+  /* 4 · the trail it leaves going down into the water */
+  if (t > INTO && scFx.into) {
+    const q = Math.min(1, (t - INTO) / 0.6), x1 = scFx.into.x * dpr, y1 = scFx.into.y * dpr, qe = q * q * (3 - 2 * q);
+    for (let k = 0; k < 18; k++) {
+      const f = qe * k / 18;
+      dot(cx + (x1 - cx) * f + Math.sin(f * 9 + k) * 4 * dpr, cy + (y1 - cy) * f * f * (3 - 2 * f), 1.4 * dpr, (0.35 + 0.65 * k / 18) * (1 - Math.max(0, q - 0.85) / 0.15));
+    }
+  }
+  g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
+}
 /* v27.0: the showcase's turn (seconds since it came): one whole turn eased out over 1.5 s, ending face on; then a sway
    of about eighteen degrees either side, faded in */
 function showYaw(s) {
@@ -11955,7 +12031,8 @@ function ivFrame(now) {
     /* (the showcase turns it once round as it comes in, quick and slowing, and it comes to rest FACING him, then sways a
        little while it stands: a turning model that shows its face. Build 20's photographs caught the first spin (a turn
        every three seconds) on its plain back at both moments taken, and the face is the sacred side) */
-    if (cv) ivBlit(cv, unl.id, unl.show ? showYaw(secs) : secs * 0.6, 0.1, 1, 0);
+    if (cv) ivBlit(cv, unl.id, unl.show ? showYaw(Math.max(0, secs - 0.95)) : secs * 0.6, 0.1, 1, 0);
+    if (unl.show) scFxFrame(secs, unl.dur || 4.2);
     return;
   }
   const z = iv.zoom;
@@ -12132,9 +12209,34 @@ function showcaseOpen(id, opts) {
   ivStart();
   snd(opts.sound || 'itemunlock', 0.95);
   haptic([30, 50, 120]);
-  const secs = Math.max(1.2, +opts.auto || 3.2);
-  /* the flare: the model brightens and shrinks into a point of light for its last 0.55 s, then it is gone */
-  unl.flareT = setTimeout(() => { if (unl.id === id && unl.show) el.classList.add('flare'); }, (secs - 0.55) * 1000);
+  const secs = Math.max(2.4, +opts.auto || 4.2);
+  /* (build 21, Chad 18 Nov: its own entrance, nothing of Item Unlocked's.) The light gathers and it is born at 0.95 s
+     (CSS), it turns and hovers; 1.2 s before the end it RELEASES ITS POWER: the room shakes, halos go out from it, motes
+     burst (scFxFrame) and the release's sound; 0.6 s before the end it goes down into the holy water's button, which
+     flashes gold as it arrives */
+  unl.dur = secs; scFx.motes = null; scFx.into = null;
+  const sceneEl = $('scene'), fire = $('fireBtn');
+  sceneEl?.classList.remove('scShake'); fire?.classList.remove('scFill');
+  unl.flareT = setTimeout(() => {
+    if (unl.id !== id || !unl.show) return;
+    el.classList.add('flare');
+    if (sceneEl) { void sceneEl.offsetWidth; sceneEl.classList.add('scShake'); }
+    if (opts.releaseSound) snd(opts.releaseSound, 0.9);           // (the chapter's own sound, named by it: never a chapter's name here)
+    haptic([60, 40, 160]);
+    /* (the chapter's own moment of release: episode 4 chapter 4 sends its golden wave through the room from here, so the
+       halos and the light through the room go out together) */
+    if (typeof opts.onRelease === 'function') { try { opts.onRelease(); } catch (e) { console.warn('showcase onRelease failed', e); } }
+  }, (secs - 1.2) * 1000);
+  unl.intoT = setTimeout(() => {
+    if (unl.id !== id || !unl.show) return;
+    /* where it goes: the holy water's button where there is one on the screen, else the foot of the screen */
+    const r = fire && fire.offsetParent !== null ? fire.getBoundingClientRect() : null;
+    const tx = r ? r.left + r.width / 2 : innerWidth / 2, ty = r ? r.top + r.height / 2 : innerHeight * 0.92;
+    el.style.setProperty('--ix', (tx - innerWidth / 2).toFixed(1) + 'px'); el.style.setProperty('--iy', (ty - innerHeight / 2).toFixed(1) + 'px');
+    scFx.into = { x: tx, y: ty };
+    el.classList.add('into');
+  }, (secs - 0.6) * 1000);
+  unl.fillT = setTimeout(() => { if (unl.id === id && unl.show && fire) { void fire.offsetWidth; fire.classList.add('scFill'); } }, (secs - 0.12) * 1000);
   unl.autoT = setTimeout(() => { unl.autoT = 0; if (unl.id === id) unlockClose('auto'); }, secs * 1000);
   unl.t0 = performance.now();
   return true;
@@ -12145,9 +12247,12 @@ function unlockClose(how) {
   if (unl.show) {                              // v27.0: the showcase goes its own way (no click, no sound of a press)
     const el = $('showcase');
     unl.id = null; unl.show = false;
-    clearTimeout(unl.autoT); unl.autoT = 0; clearTimeout(unl.flareT);
+    clearTimeout(unl.autoT); unl.autoT = 0; clearTimeout(unl.flareT); clearTimeout(unl.intoT); clearTimeout(unl.fillT);
     document.body.classList.remove('showcaseopen');
-    if (el) { if (how === 'force') el.classList.add('hide'); else { el.classList.add('out'); unl.outT = setTimeout(() => el.classList.add('hide'), 420); } el.classList.remove('in'); }
+    $('scene')?.classList.remove('scShake');
+    if (how === 'force') $('fireBtn')?.classList.remove('scFill');
+    scFxClear();
+    if (el) { if (how === 'force') el.classList.add('hide'); else { el.classList.add('out'); unl.outT = setTimeout(() => el.classList.add('hide'), 420); } el.classList.remove('in', 'into'); }
     const cb = unl.onClose; unl.onClose = null;
     if (how === 'force') return true;
     state = 'play';
