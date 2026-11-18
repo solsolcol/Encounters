@@ -165,6 +165,11 @@
        and carried by her head bone after (a fallback until she lands) */
     const CROWN_LOCAL = new THREE.Vector3(0, 0.19, 0), _crw = new THREE.Vector3();
     const HER_CROWN = () => { const A = cast.amma; if (A && A.ready && A.head) { A.head.updateWorldMatrix(true, false); _crw.copy(CROWN_LOCAL); A.head.localToWorld(_crw); return [_crw.x, _crw.y, _crw.z]; } return [CHAIR.x, 1.1, CHAIR.z - 0.15]; };
+    /* HER BROW, read off her skin the same way (18 Nov: the ash put by a guess at the head bone's height reached her chin
+       and then her nose): the most forward point of her head's skin in its top 9 cm, over her eyebrows, where the ash is
+       drawn. She faces +z in the seated rest it is read from */
+    const BROW_LOCAL = new THREE.Vector3(0, 0.11, 0.09);
+    const HER_BROW = () => { const A = cast.amma; if (A && A.ready && A.head) { A.head.updateWorldMatrix(true, false); _crw.copy(BROW_LOCAL); A.head.localToWorld(_crw); return [_crw.x, _crw.y, _crw.z]; } return [CHAIR.x, 1.05, CHAIR.z]; };
     const _om = new THREE.Matrix4(), _om2 = new THREE.Matrix4(), _os = new THREE.Vector3();
     function herBack(A) { if (A._back === undefined) { A._back = null; for (const n in A.bone) if (/^(mixamorig:?)?Spine02$/.test(n)) { A._back = A.bone[n]; break; } } return A._back; }
     whenReady(cast.amma, (A) => whenReady(spirits.oppress, (P) => {
@@ -182,7 +187,13 @@
           const SI = m.geometry.attributes.skinIndex, SW = m.geometry.attributes.skinWeight;
           for (let i = 0; i < SI.count; i++) { let w = 0; for (let k = 0; k < 4; k++) if (SI.getComponent(i, k) === bi) w += SW.getComponent(i, k); if (w < 0.5) continue;
             m.getVertexPosition(i, v); m.localToWorld(v); if (!best || v.y > best.y) best = v.clone(); } }
-        if (best) CROWN_LOCAL.copy(hb.worldToLocal(best)); else console.warn('p4amma: no skin on her head bone to read her crown from'); }
+        if (best) CROWN_LOCAL.copy(hb.worldToLocal(best)); else console.warn('p4amma: no skin on her head bone to read her crown from');
+        if (best) { let brow = null;
+          for (const m of (A.lv[1] || [])) { if (!m.isSkinnedMesh || !m.geometry.attributes.skinIndex) continue; const bi = m.skeleton.bones.indexOf(hb); if (bi < 0) continue;
+            const SI = m.geometry.attributes.skinIndex, SW = m.geometry.attributes.skinWeight;
+            for (let i = 0; i < SI.count; i++) { let w = 0; for (let k = 0; k < 4; k++) if (SI.getComponent(i, k) === bi) w += SW.getComponent(i, k); if (w < 0.5) continue;
+              m.getVertexPosition(i, v); m.localToWorld(v); if (v.y < best.y - 0.09) continue; if (!brow || v.z > brow.z) brow = v.clone(); } }
+          if (brow) BROW_LOCAL.copy(hb.worldToLocal(brow)); } }
       for (const k in A.acts) { A.acts[k].time = keep[k][0]; A.w[k] = keep[k][1]; A.acts[k].setEffectiveWeight(keep[k][1]); }
       A.cur = cur; A.filmT = ft; A.mixer.update(0);
     }));

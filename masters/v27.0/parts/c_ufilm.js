@@ -494,10 +494,9 @@
       whenReady(cast.mala, (P) => { put(P, MALA_C.x, MALA_C.z, faceTo(MALA_C.x, MALA_C.z, STAND.x, STAND.z));
         pose(P, 'Idle_3', 3 + c * 0.3, true); lookNow(P, HER_HEAD(), 1, 0.9);
         /* (the ash on her FOREHEAD, her daughter's fingers drawn across her brow from her right side: 18 Nov, photographed
-           twice at her chin, the palm put before her face with the fingers back at it left the wrist 0.14 m short at full
-           reach, 7 cm low; from the side the wrist is 0.11 m nearer her daughter. The head bone is the skull's base: the
-           brow 11 cm over it and 9 forward) */
-        if (c > CL.ash - 0.6 && c < CL.ash + 1.8) { const h = HER_HEAD(); handTo(P, 'R', [h[0] - 0.03, h[1] + 0.05, h[2] + 0.09], [1, 0, 0], [0, 0, -1], smo(c01((c - CL.ash + 0.6) / 0.6)) * (1 - smo(c01((c - CL.ash - 1.2) / 0.6))), { out: 0.25, down: 0.35 }); } });
+           at her chin and then at her nose, the point guessed from the head bone; now her brow as her skin has it,
+           HER_BROW (c_scast.js), and from the side the wrist is 0.11 m nearer her daughter) */
+        if (c > CL.ash - 0.6 && c < CL.ash + 1.8) { const h = HER_BROW(); handTo(P, 'R', [h[0] - 0.02, h[1], h[2]], [1, 0, 0], [0, 0, -1], smo(c01((c - CL.ash + 0.6) / 0.6)) * (1 - smo(c01((c - CL.ash - 1.2) / 0.6))), { out: 0.25, down: 0.35 }); } });
       /* (Ravi turns his head to his teacher as he is spoken to: a neck's reach, his body still turned to her) */
       whenReady(cast.ravi, (P) => { put(P, RAVI_C.x, RAVI_C.z, faceTo(RAVI_C.x, RAVI_C.z, STAND.x, STAND.z)); pose(P, 'kneelhold', pingOf(c, 2.6, 0.8, 6.0));
         const h = HER_HEAD(), ph = cast.phoB.home, k = smo(c01((c - CL.z1 + 0.9) / 0.9));
