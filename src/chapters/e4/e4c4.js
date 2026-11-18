@@ -5107,9 +5107,13 @@
     /* ENDING C'S LENSES (18 Nov, re-staged from its photographs: aimed at R1, his face came to a phone's edge; and once
        he knelt, from over his shoulder, his head hid her face through the cry, the light and her eyes opening). His head
        where the decision holds him, measured (tools/probes/e4c4who.mjs: 0.88, 1.44, 3.45); the eye he speaks to him from;
-       and the two of them from her front left a step back, his head and her face 21 degrees apart from there, inside a
-       phone's 28 at 58 degrees of lens */
-    const CR_HEAD = [0.88, 1.44, 3.45], CR_EYE = [0.57, 1.6, 4.04], CK_EYE = [0.95, 1.55, 4.75], CK_AT = [0.04, 0.97, 3.99];
+       and the two of them from her front left a step back, his head (where he kneels, KNEEL_R) and her face 16 degrees
+       apart from there, inside a phone's 31 at 62 degrees of lens (to be read in the photographs) */
+    const CR_HEAD = [0.88, 1.44, 3.45], CR_EYE = [0.57, 1.6, 4.04], CK_EYE = [0.95, 1.55, 4.75], CK_AT = [0.045, 0.97, 3.87];
+    /* where Ravi kneels at her side in C and D: a little behind her left hand, so from her front left (C's two-shot) and
+       from where he keeps his place (D) the kneeling son's head stands clear of her face (it hid it when he knelt level
+       with her); and Grandmaster Pho's head as he bows over her with his hand on her head (measured: e4c4who.mjs) */
+    const KNEEL_R = { x: CHAIR.x + 0.45, z: CHAIR.z - 0.05 }, PHO_BOW = [-0.13, 1.40, 3.51];
     /* (the rush take's hips over the floor, its own metres, every quarter second: tools/probes/takepath.mjs, 18 Nov) */
     const RUSH_HIPS = [[-0.01, -0.03], [-0.01, 0.0], [-0.02, 0.06], [-0.03, 0.22], [-0.08, 0.61], [-0.21, 1.22], [-0.35, 1.82], [-0.43, 2.24], [-0.43, 2.63], [-0.43, 2.82], [-0.44, 2.86], [-0.45, 2.89]];
     const RUSH_AT = (tk) => { const f = Math.max(0, Math.min(RUSH_HIPS.length - 1.001, tk / 0.25)), i = Math.floor(f), u = f - i, A = RUSH_HIPS[i], B = RUSH_HIPS[i + 1];
@@ -5509,7 +5513,7 @@
          her. Stay with her. Hold her hand." Ravi kneels by the chair and takes her hand; Mala comes to the other side.
          The cry; the thing forced from her back; she opens her eyes, looks at her son, and stands, holding his hand */
       C(t, E) {
-        const KR = { x: CHAIR.x + 0.42, z: CHAIR.z + 0.12 }, KM = { x: CHAIR.x - 0.48, z: CHAIR.z + 0.2 };
+        const KR = KNEEL_R, KM = { x: CHAIR.x - 0.48, z: CHAIR.z + 0.2 };
         if (t < E.rise) ammaTrance(t); else ammaRise(t, E.rise);
         phoBless(t, 1 - smo(c01((t - E.rise + 0.4) / 0.8)));
         oppressAt(t, E.cry, E.torn); goddess(t < E.torn ? 1 : 1 - smo(c01((t - E.torn) / 1.5)));
@@ -5532,10 +5536,10 @@
           { t: 0, name: 'S', eye: DEC_EYE, at: DEC_AT, fp: PLAY_FOV, fd: PLAY_FOV },
           { t: 0.65, name: 'ravi', eye: CR_EYE, at: CR_HEAD, fp: 58, fd: 50 },
           { t: E.kneel, name: 'ravi', eye: CR_EYE, at: CR_HEAD, fp: 58, fd: 50 },
-          { t: E.kneel + 1.9, name: 'kneel', eye: CK_EYE, at: CK_AT, fp: 58, fd: 52 },
-          { t: E.rise, name: 'kneel', eye: CK_EYE, at: CK_AT, fp: 58, fd: 52 },
-          { t: E.rise + 3.5, name: 'stand', eye: CK_EYE, at: [CHAIR.x + 0.08, 1.2, CHAIR.z + 0.12], fp: 58, fd: 52 },
-          { t: E.ph - 0.4, name: 'stand', eye: CK_EYE, at: [CHAIR.x + 0.08, 1.22, CHAIR.z + 0.12], fp: 58, fd: 52 },
+          { t: E.kneel + 1.9, name: 'kneel', eye: CK_EYE, at: CK_AT, fp: 62, fd: 54 },
+          { t: E.rise, name: 'kneel', eye: CK_EYE, at: CK_AT, fp: 62, fd: 54 },
+          { t: E.rise + 2.8, name: 'stand', eye: CK_EYE, at: [CHAIR.x + 0.04, 1.22, CHAIR.z + 0.24], fp: 58, fd: 52 },
+          { t: E.ph - 0.4, name: 'stand', eye: CK_EYE, at: [CHAIR.x + 0.04, 1.28, CHAIR.z + 0.28], fp: 58, fd: 52 },
           { t: E.ph + 0.5, name: 'pho', eye: CK_EYE, at: [cast.phoB.home.x, 1.58, cast.phoB.home.z], fp: 46, fd: 42 },
           { t: E.close, name: 'pho', eye: CK_EYE, at: [cast.phoB.home.x, 1.58, cast.phoB.home.z], fp: 46, fd: 42 }
         ]);
@@ -5545,7 +5549,7 @@
          his teacher, without looking up: "Ravi. Hold her hand." He does. The cry is heard; the light; she opens her eyes
          and stands. His teacher; his own thought */
       D(t, E) {
-        const KR = { x: CHAIR.x + 0.42, z: CHAIR.z + 0.12 };
+        const KR = KNEEL_R;
         if (t < E.rise) ammaTrance(t); else ammaRise(t, E.rise);
         phoBless(t, 1 - smo(c01((t - E.rise + 0.4) / 0.8)));
         oppressAt(t, E.cry, E.torn); goddess(t < E.torn ? 1 : 1 - smo(c01((t - E.torn) / 1.5)));
@@ -5563,11 +5567,12 @@
         visionAt(t, -10, 0.1, E.shut, 1.0);
         track(t, [
           { t: 0, name: 'S', eye: DEC_EYE, at: DEC_AT, fp: PLAY_FOV, fd: PLAY_FOV },
-          { t: 1.2, name: 'pho', eye: S_EYE, at: [cast.phoB.home.x, 1.55, cast.phoB.home.z], fp: 52, fd: 48 },
-          { t: E.kneel + 0.6, name: 'pho', eye: S_EYE, at: [cast.phoB.home.x, 1.5, cast.phoB.home.z], fp: 52, fd: 48 },
-          { t: E.kneel + 2.0, name: 'hands', eye: S_EYE, at: [CHAIR.x + 0.2, 0.85, CHAIR.z + 0.05], fp: 56, fd: 52 },
-          { t: E.rise + 3.5, name: 'stand', eye: S_EYE, at: [CHAIR.x + 0.12, 1.25, CHAIR.z], fp: 58, fd: 52 },
-          { t: E.ph - 0.4, name: 'stand', eye: S_EYE, at: [CHAIR.x + 0.12, 1.28, CHAIR.z], fp: 58, fd: 52 },
+          { t: 1.2, name: 'pho', eye: S_EYE, at: PHO_BOW, fp: 52, fd: 48 },
+          { t: E.kneel + 0.6, name: 'pho', eye: S_EYE, at: PHO_BOW, fp: 52, fd: 48 },
+          { t: E.kneel + 2.0, name: 'her', eye: S_EYE, at: [CHAIR.x + 0.09, 0.92, CHAIR.z + 0.08], fp: 60, fd: 52 },
+          { t: E.rise, name: 'her', eye: S_EYE, at: [CHAIR.x + 0.09, 0.92, CHAIR.z + 0.08], fp: 60, fd: 52 },
+          { t: E.rise + 2.8, name: 'stand', eye: S_EYE, at: [CHAIR.x + 0.04, 1.26, CHAIR.z + 0.26], fp: 58, fd: 52 },
+          { t: E.ph - 0.4, name: 'stand', eye: S_EYE, at: [CHAIR.x + 0.04, 1.30, CHAIR.z + 0.28], fp: 58, fd: 52 },
           { t: E.ph + 0.5, name: 'pho', eye: S_EYE, at: [cast.phoB.home.x, 1.62, cast.phoB.home.z], fp: 46, fd: 42 },
           { t: E.close, name: 'pho', eye: S_EYE, at: [cast.phoB.home.x, 1.62, cast.phoB.home.z], fp: 46, fd: 42 }
         ]);

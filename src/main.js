@@ -3926,9 +3926,13 @@ function visionToggle() {
   vis.switches++;
   if (stage && typeof stage.onVision === 'function') { try { stage.onVision(vis.on); } catch (e) { console.error(e); } }
 }
-function visionHeldSay() {
+/* (`begun`: said once, quietly, as a hold begins in play: 18 Nov, drive A, his teacher shut his sight at the surge while
+   another line was speaking, and his own line could not be said; so the shut came with no reason. A press says it again,
+   with the buzz and the eye shaken once) */
+function visionHeldSay(begun) {
   const w = CH && CH.words && CH.words.visionHeld;
-  weaponBlockSay(w || T('hud.visionHeld'));
+  weaponBlockSay(w || T('hud.visionHeld'), !!begun);
+  if (begun) return;
   const vb = $('visionBtn');
   if (vb) { vb.classList.remove('heldTap'); void vb.offsetWidth; vb.classList.add('heldTap'); }
 }
@@ -4673,7 +4677,7 @@ function weaponAssistHit(list, cone) {
    on each refusal past that window, so a second, deliberate press is
    visibly answered rather than silently ignored. On WALL time, because a
    hot phone's dt is clamped (the v7.4 law). */
-function weaponBlockSay(msg) {
+function weaponBlockSay(msg, quiet) {
   const el = weaponBlockEl || (weaponBlockEl = $('nofire'));
   if (!el) return;
   const now = performance.now();
@@ -4683,6 +4687,7 @@ function weaponBlockSay(msg) {
   el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
   clearTimeout(weaponBlockT);
   weaponBlockT = setTimeout(() => el.classList.remove('on'), 2200);
+  if (quiet) return;
   snd('hudfail', 0.55);
   haptic([28, 50, 28]);
 }
@@ -7634,7 +7639,8 @@ function kitFrame(dt, t, dLookX, dLookY) {
     if (vb) { vb.classList.toggle('urge', visUrge === 'open' && !vis.on && !vis.held && state === 'play');
               vb.classList.toggle('urgeClose', visUrge === 'close' && vis.on && !vis.held && state === 'play');
               /* (18 Nov) held shut by the chapter: the eye dimmed and still; a press says why (visionHeldSay) */
-              vb.classList.toggle('held', !!vis.held && state === 'play'); } }
+              vb.classList.toggle('held', !!vis.held && state === 'play'); }
+    if (vis.held && state === 'play') { if (!vis.heldSaid) { vis.heldSaid = true; visionHeldSay(true); } } else vis.heldSaid = false; }
   lifeFrame();       // v27.0 (seam 54): a life in his keeping, its bar over them
   edgeTick();        // v27.0 (seam 56): a glow at the edges of his sight
   /* v11.7 (Chad: "why does the torch icon draw over every ui element?"): the
