@@ -75,7 +75,11 @@ export function makeVision(THREE, renderer, opts = {}) {
       uR: { value: 0 }, uSoft: { value: 0.35 }, uBand: { value: 0.7 }, uMoving: { value: 0 },
       uK: { value: 0 }, uBlur: { value: 0.45 }, uVig: { value: 0.3 }, uLine: { value: 0.16 }, uSky: { value: 70 },
       uFront: { value: new THREE.Color(0.55, 0.95, 1.0) }, uLineCol: { value: new THREE.Color(0.35, 0.75, 1.0) },
-      uHandsAt: { value: 0.45 }, uTime: { value: 0 }, uInvert: { value: 1 }
+      uHandsAt: { value: 0.45 }, uTime: { value: 0 }, uInvert: { value: 1 },
+      /* whether his hands and the spirits were drawn into their targets THIS frame (a cleared multisample target that is
+         never rendered to is never resolved: its texture keeps the last picture drawn into it, so a film that hid his
+         hands with the vision open would show the hands of play's last frame) */
+      uHandsOn: { value: 0 }, uSpiritOn: { value: 0 }
     },
     vertexShader: /* glsl */`
       out vec2 vUv;
@@ -86,7 +90,7 @@ export function makeVision(THREE, renderer, opts = {}) {
       out vec4 outColor;
       uniform sampler2D tWorld, tDepth, tHands, tSpirit;
       uniform vec2 uRes;
-      uniform float uNear, uFar, uR, uSoft, uBand, uMoving, uK, uBlur, uVig, uLine, uSky, uHandsAt, uTime, uInvert;
+      uniform float uNear, uFar, uR, uSoft, uBand, uMoving, uK, uBlur, uVig, uLine, uSky, uHandsAt, uTime, uInvert, uHandsOn, uSpiritOn;
       uniform mat4 uInvProj, uCamWorld, uPrevVP;
       uniform vec3 uEye, uFront, uLineCol;
       float viewZ(float d) { return (uNear * uFar) / ((uFar - uNear) * d - uFar); }   // negative in front
@@ -146,14 +150,14 @@ export function makeVision(THREE, renderer, opts = {}) {
         /* the spirits, with their glow (the target's smaller levels), where the vision has them. LAID ON, never added:
            the vision turns a dark room nearly white, and light added to white is lost; a colour laid over by its own
            strength reads on a white room and on a black one alike (the body faint, the outline burning) */
-        vec4 hs = textureLod(tSpirit, vUv, 2.5) * 0.8 + textureLod(tSpirit, vUv, 4.0) * 0.7;
+        vec4 hs = uSpiritOn > 0.5 ? textureLod(tSpirit, vUv, 2.5) * 0.8 + textureLod(tSpirit, vUv, 4.0) * 0.7 : vec4(0.0);
         float ha = clamp(hs.a, 0.0, 1.0) * uInvert;
         if (ha > 0.001) col = mix(col, clamp(hs.rgb / max(hs.a, 0.0001), 0.0, 1.0), ha * 0.55);
-        vec4 sp = texture(tSpirit, vUv);
+        vec4 sp = uSpiritOn > 0.5 ? texture(tSpirit, vUv) : vec4(0.0);
         float sa = clamp(sp.a * 1.15, 0.0, 0.94) * uInvert;
         if (sa > 0.001) col = mix(col, clamp(sp.rgb / max(sp.a, 0.0001) * 1.08, 0.0, 1.0), sa);
         /* his hands, over everything: turned with the world once the wave has left him */
-        vec4 h = texture(tHands, vUv);
+        vec4 h = uHandsOn > 0.5 ? texture(tHands, vUv) : vec4(0.0);
         if (h.a > 0.002) {
           vec3 hc = disp(h.rgb / max(h.a, 0.0001));
           float hinv = invAt(uHandsAt) * uInvert;
@@ -233,10 +237,12 @@ export function makeVision(THREE, renderer, opts = {}) {
       renderer.setClearColor(0x000000, 0);
       renderer.clear(true, true, false);
       if (drawHands) { renderer.autoClear = false; renderer.render(vmScene, vmCam); renderer.autoClear = true; }
+      const handsOn = !!drawHands;
       /* 3 · the spirits */
       renderer.setRenderTarget(V.spirit);
       renderer.clear(true, false, false);
-      if (V.mats.size && o.spirits !== false) {
+      const spiritOn = !!(V.mats.size && o.spirits !== false);
+      if (spiritOn) {
         const bg = scene.background, env = scene.environment, mask = camera.layers.mask;
         scene.background = null;
         camera.layers.set(VIS_LAYER);
@@ -253,6 +259,8 @@ export function makeVision(THREE, renderer, opts = {}) {
       renderer.setClearColor(clr, cla);
       /* 4 · to the screen */
       const U = comp.uniforms;
+      /* (`noGate` is the fixture's: the old way, the targets read whatever they hold, to prove its check sees the fault) */
+      U.uHandsOn.value = handsOn || V.noGate ? 1 : 0; U.uSpiritOn.value = spiritOn || V.noGate ? 1 : 0; V.handsOn = handsOn; V.spiritOn = spiritOn;
       U.uNear.value = camera.near; U.uFar.value = camera.far;
       U.uInvProj.value.copy(camera.projectionMatrixInverse);
       U.uCamWorld.value.copy(camera.matrixWorld);

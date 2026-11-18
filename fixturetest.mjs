@@ -16,6 +16,7 @@
    costs a fraction of what the same walk costs in the void deck.          */
 import { chromium } from 'playwright';
 import { LAUNCH, PAGE } from './testlib.mjs';
+import sharp from 'sharp';                                 // v27.0: the vision's hands read off the picture
 
 const errs = [];
 const sep = PAGE.includes('?') ? '&' : '?';
@@ -559,6 +560,32 @@ K.visionSeam = await p.evaluate(async () => {
   return Object.values(R).every(v => v === true);
 }).catch(() => false);
 if (!K.visionSeam) console.log('visionSeam parts:', JSON.stringify(await p.evaluate(() => window.__visionSeam || null)));
+await settle();
+
+/* v27.0: HIS HANDS UNDER THE VISION ARE THE HANDS DRAWN THIS FRAME. A film may hold the vision open while it hides his hands
+   (episode 4 chapter 4's trance): the hands' target is cleared and nothing is drawn into it, and a multisample target that
+   is cleared and never rendered to is never resolved, so its texture kept play's last hands and the picture showed them
+   (seen first in the chapter's own photographs, 18 Nov). Proved on the picture itself: the hands' corner with the vision
+   held open and his hands shown, then hidden (it must change), then hidden with the vision's gate switched off, the old
+   way (it must look as the shown one did: so the check is seen to catch the fault in the same run) */
+await lbl('vision-hands');
+{
+  const corner = async () => { const vp = p.viewportSize();
+    const b = await p.screenshot({ clip: { x: Math.round(vp.width * 0.5), y: Math.round(vp.height * 0.55), width: Math.round(vp.width * 0.45), height: Math.round(vp.height * 0.4) } });
+    return (await sharp(b).raw().toBuffer({ resolveWithObject: true })).data; };
+  const diff = (a, b) => { let t = 0; for (let i = 0; i < a.length; i++) t += Math.abs(a[i] - b[i]); return t / a.length; };
+  const fr = (n) => p.evaluate((n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); }), n);
+  await p.evaluate(() => window.__enc.kit.vision({ r: 60, moving: false })); await fr(4);
+  const shown = await corner();
+  await p.evaluate(() => { window.__enc.handsRoot.visible = false; }); await fr(4);
+  const hidden = await corner();
+  const gated = await p.evaluate(() => window.__enc.visionGate(false)); await fr(4);
+  const stale = await corner();
+  await p.evaluate(() => { const E = window.__enc; E.visionGate(true); E.handsRoot.visible = true; E.kit.vision(null); E.kit.vision(false); }); await fr(4);
+  const dHidden = diff(shown, hidden), dStale = diff(shown, stale);
+  K.visionHandsHidden = gated && dHidden > 3 && dStale < dHidden * 0.25;
+  console.log('vision-hands: shown vs hidden', dHidden.toFixed(2), '| shown vs hidden the old way', dStale.toFixed(2));
+}
 await settle();
 
 /* v22.0: THE COLD (the thirty-third, -fourth and -fifth seams) — kit.chill shows the edge layer with a blur and

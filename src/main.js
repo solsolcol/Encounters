@@ -17723,6 +17723,7 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                        float: vis.fx ? !!vis.fx.floatOk : null, samples: vis.fx ? vis.fx.samples : null, mats: vis.fx && vis.fx.state.mats ? vis.fx.state.mats.size : 0 }
                    : kitVision(v)),
                  visionToggle,
+                 visionGate: (on) => { if (vis.fx && vis.fx.state) vis.fx.state.noGate = !on; return !!(vis.fx && vis.fx.state); },   // v27.0: the fixture's switch (vision.js `noGate`)
                  /* v27.0: HIS OWN HANDS (the holy water), for the probes: its state, and a weapon declared over the chapter's
                     (the fixture proves the seam on a chapter whose own weapon is the rifle) */
                  ownState: () => ({ shown: ownShown, anim: ownAnim ? ownAnim.kind : null, p: +(hp.p || 0).toFixed(3), pose: hp.on ? hp.name : null,

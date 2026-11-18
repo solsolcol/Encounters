@@ -97,7 +97,7 @@
        body the world draws (his gold, her altar's blue) is drawn on its front surface only (xray 0: its own back layers
        stand behind the world's depth and drop out), or his robe's folds summed into an orange sheet) */
     const SPIRIT = {
-      oppress: { color: 0xff2238, fill: 0.025, rim: 2.3, flicker: 0.35, power: 2.0 },
+      oppress: { color: 0xff2238, fill: 0.025, rim: 2.3, flicker: 0.35, power: 2.0, xray: 0 },
       appa:    { color: 0xbfe2ff, fill: 0.04, rim: 1.6, flicker: 0.05, power: 2.4 },
       wander:  { color: 0x8cff5e, fill: 0.02, rim: 2.0, flicker: 0.3, power: 2.2 },
       large:   { color: 0x5cff7a, fill: 0.025, rim: 2.2, flicker: 0.25, power: 2.0 },
@@ -109,10 +109,16 @@
       return P;
     }
     /* THE ONE ON HER BACK: crouched on her shoulders, its arms round her chest, its weight on her (its `cling`, written
-       for it). It rides her chair: set where her upper back is, a little above her seat, turned as she is */
-    const OPP_AT = { x: CHAIR.x, y: WHEEL.seat + 0.18, z: CHAIR.z - 0.2 };
+       for it). It rides her chair, turned as she is. (18 Nov: first set over her seat, its hips stood at 1.01 m over her
+       head's base at 0.85, and it floated over her head in the photographs (tools/probes/bonesat.mjs); placed by
+       photograph (tools/probes/spiritlab.mjs, variant A2): its chest against her upper back, tipped back 15 degrees so it
+       hugs her rather than hunching over her, its head beside hers over her right shoulder, its arms over her shoulders
+       and across her chest. Drawn only where she does not hide it (xray 0): through her, its folded legs read from her
+       front as feet in her lap) */
+    const OPP_AT = { x: CHAIR.x - 0.115, y: 0.075, z: CHAIR.z - 0.452 }, OPP_TILT = -0.262;
     const spirits = {};
     spirits.oppress = spiritOf(mkPerson('p4oppress', OPP_AT.x, OPP_AT.z, CHAIR.ry, { y: OPP_AT.y, take: 'cling', centre: true, noBlob: true, skins: false }), SPIRIT.oppress);
+    whenReady(spirits.oppress, (P) => { P.group.rotation.x = OPP_TILT; });
     /* APPA, her late husband, standing by his photograph, looking at her; still (his stand, its window its calmest);
        his turn of the head is to her, and once, if water is thrown at him, to the student */
     spirits.appa = spiritOf(mkPerson('p4appa', AT.appa.x, AT.appa.z, faceTo(AT.appa.x, AT.appa.z, CHAIR.x, CHAIR.z), { take: 'Idle_3', phase: 0.3, noBlob: true, skins: false }), SPIRIT.appa);
@@ -128,7 +134,7 @@
     const CORNERS = [{ x: 5.95, z: 9.55, ry: -2.6 }, { x: 4.85, z: 6.65, ry: Math.PI }];   // the kitchen's far corner; under the dining table
     spirits.large = spiritOf(mkPerson('p4large', 0, 0, 0, { take: 'lumber', hidden: true, noBlob: true, skins: false }), SPIRIT.large);
     function spiritsHome() {
-      whenReady(spirits.oppress, (P) => { put(P, OPP_AT.x, OPP_AT.z, CHAIR.ry, OPP_AT.y); P.group.visible = true; P.alpha = 1; if (P.fx) P.fx.set('uAlpha', 1); rest(P, 0); });
+      whenReady(spirits.oppress, (P) => { put(P, OPP_AT.x, OPP_AT.z, CHAIR.ry, OPP_AT.y); P.group.rotation.x = OPP_TILT; P.group.visible = true; P.alpha = 1; if (P.fx) P.fx.set('uAlpha', 1); rest(P, 0); });
       whenReady(spirits.appa, (P) => { put(P, AT.appa.x, AT.appa.z, faceTo(AT.appa.x, AT.appa.z, CHAIR.x, CHAIR.z)); P.group.visible = true; P.alpha = 1; if (P.fx) P.fx.set('uAlpha', 1); rest(P, 0); });
       spirits.wander.forEach((P, i) => whenReady(P, (Q) => {
         const C = CORNERS[i]; Q.alpha = 1; if (Q.fx) Q.fx.set('uAlpha', 1);

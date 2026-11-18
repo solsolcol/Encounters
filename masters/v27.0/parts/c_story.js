@@ -556,7 +556,15 @@
       const run = play.run;
       if (!kit.film('trance', { onDone: () => { if (live(run)) openDecision(); } })) openDecision();
     }
-    function openDecision() { decOpen = true; if (getState() === 'play') startDecision(); }
+    /* every sound the four endings and their close play, warmed as the decision opens (the scenes cue the close's from a
+       helper, which the engine's own reading of a scene cannot see) */
+    function openDecision() {
+      decOpen = true;
+      if (warmSounds) warmSounds(['u4scuffle', 'u4cry', 'u4gaspf', 'u4torn', 'u4endA', 'u4stand', 'ph4A1', 'q4A1', 'u4flick', 'u4patter', 'u4dip',
+                      'u4chill', 'u4heart', 'u4fall', 'ph4B0', 'u4endB', 'ph4B1', 'q4B1', 'u4tile', 'q4C0', 'u4tile2', 'u4endC', 'ph4C1', 'q4C1',
+                      'u4visoff', 'ph4D0', 'u4endD', 'ph4D1', 'q4D1', 'u4closemus', 'ph4z0', 'u4release', 'u4steps', 'u4bell', 'ph4z1']);
+      if (getState() === 'play') startDecision();
+    }
     function keptBegin() { blessStage(); lampLit(true); roomDark(true); setPhase('kept', { complete: false }); const run = play.run; after(1.0, () => { if (live(run)) trance(); }); }
 
     /* ---------------------------------------------------------------- HIS HAND ON HER HEAD (the blessing): the right
