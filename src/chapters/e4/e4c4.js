@@ -3827,7 +3827,7 @@
       { at: 76, list: [['master', 'mala', 0.37], ['store', 'me', 0.36], ['passage', 'amma', 0.34], ['kitchen', 'amma', 0.26, 'large']] } ] };
     const REACH = { me: 0.75, amma: 0.62, pho: 0.6, ravi: 0.55, mala: 0.55 };
     function fightBegin() {
-      const F = play.fight = { on: true, t: 0, k: 0, wave: 0, shapes: [], fed: 0, families: 0, captions: 0, ended: false };
+      const F = play.fight = { on: true, t: 0, k: 0, wave: 0, shapes: [], fed: 0, families: 0, famCost: 0, captions: 0, ended: false };
       if (kit) { kit.bar(0); }
       objectiveFor('bless');
       /* the two in the corners are the first wave's: they wake */
@@ -3901,7 +3901,9 @@
       } else if (S.to === 'ravi' || S.to === 'mala') {
         F.families++;
         fx(S.to === 'ravi' ? 'u4gaspm' : 'u4gaspf', 0.75, panOf(FAMILY[S.to]()));
-        kit.award('awareness', -2, { minigame: true });
+        /* (what reaches her children costs his awareness, up to 10 in the fight: 18 Nov, a slow finger let one reach them 78
+           times, each a 2, and the stat was gone by the fight's middle; past the cap they still gasp, and still count) */
+        if (F.famCost < 10) { F.famCost += 2; kit.award('awareness', -2, { minigame: true }); }
         /* (Mala kneeling at the lamp gasps where she kneels: her scream is a standing take, and it stood her up and knelt her
            down again in a second) */
         const P = cast[S.to]; if (P === cast.mala && P.rest !== MALA_KNEEL) whenReady(P, (Q) => { span(Q, 'scream', 0.4, 2.2, 1.0, { then: () => rest(Q, 0.8) }); });
