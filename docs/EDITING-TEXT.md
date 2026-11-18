@@ -11,7 +11,10 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
-**THE CURRENT SHEET (18 Nov 2026): Master Z's Encounters — GAME TEXT v147 (edit here)**, id `1qccVM5K9i4_vIg4tNRlTnaWJWer2kXgMcDz02tJqVfE`
+**THE CURRENT SHEET (18 Nov 2026): Master Z's Encounters — GAME TEXT v148 (edit here)**, id `1dNizsZjTkxgwJH5ztKSkuWh3GhN1sWeEkeCH5WN1NBA`
+(<https://docs.google.com/spreadsheets/d/1dNizsZjTkxgwJH5ztKSkuWh3GhN1sWeEkeCH5WN1NBA/edit>; v147 and seven cells: the
+photograph's Close, her rise's three voice lines, ending D's retired line, D's answer, "Puu"; 10,541 cells read back,
+mismatched 0). The one before it, v147, id `1qccVM5K9i4_vIg4tNRlTnaWJWer2kXgMcDz02tJqVfE`
 (<https://docs.google.com/spreadsheets/d/1qccVM5K9i4_vIg4tNRlTnaWJWer2kXgMcDz02tJqVfE/edit>; v146 and episode 4 chapter 4's
 words and voice lines; 10,526 cells read back, mismatched 0). The one before it, v146, id
 `1IzpLiHvIhtmfliCL51kBBE3EFH_iw4-v-1Jx8iSBH_Q`, six tabs: UI TEXT (449 rows with its header), EPISODE 1 (115), EPISODE 2

@@ -9303,6 +9303,15 @@ What the baseline contains, by release:
 
 ## The sheet, version by version
 
+**v148, PUBLISHED 18 Nov 2026** (`masters/v27.0/masterz-text-v148.xlsx`, its CSV beside it, the repo's
+`masterz-text.csv` refreshed from it): v147 with exactly seven cells changed. Added: `picture.close` (the old
+photograph's Close, R50), `voice.q4R1`, `voice.rv4R1`, `voice.ml4R1` (her rise, R55). Removed: `voice.ml4D1` (ending
+D's "Amma... you're standing.", retired: Ravi says it now). Changed: `e4c4.D.text` ("Keep your place: hold the holy
+water, trust your teacher") and `voice.q4o2` ("When Grandmaster Puu came to Singapore...", R49, 4.65 s). Id
+`1dNizsZjTkxgwJH5ztKSkuWh3GhN1sWeEkeCH5WN1NBA`; v147 checked first (created 13:45:49.9, modified 13:45:51.5: the
+conversion itself, so no edit of his to carry over); read back tab by tab and compared by tools/sheetcmp.py: 10,541
+cells, mismatched cells: 0.
+
 **v147, PUBLISHED 18 Nov 2026** (`masters/v27.0/masterz-text-v147.xlsx`, its CSV beside it, the repo's
 `masterz-text.csv` refreshed from it): v146 with episode 4 chapter 4's words and voice lines (EPISODE 4 299 rows, VOICE
 LINES 982) and the engine's `hud.visionHeld`. Id `1qccVM5K9i4_vIg4tNRlTnaWJWer2kXgMcDz02tJqVfE`; read back tab by tab
