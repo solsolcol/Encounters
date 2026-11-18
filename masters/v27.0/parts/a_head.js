@@ -161,8 +161,7 @@
     daylight: FLAT,
     /* (the speed-up of v26.11 chapter 3 took: a picture's decoded copy let go once it is on the graphics chip) */
     render: { freePictures: true },
-    /* a PREVIEW chapter until the release (D9): out of the run, opened by ?ch=e4c4 only, saving and unlocking nothing */
-    preview: true,
+    /* (released at v27.0, 18 Nov: in the run, after chapter 3; it was a preview chapter until then, D9) */
 
     /* SPIRIT VISION (the fiftieth seam, plan §5): this chapter's colours and sounds. The spirits are handed to the
        engine by the build (ctx.spirit) */

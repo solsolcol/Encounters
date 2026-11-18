@@ -9274,7 +9274,33 @@ What the baseline contains, by release:
   page's own colours (the HUD's bars, coloured words, the bag's pictures) are still the browser's to recolour: only a
   canvas escapes it, put to him with its cost (docs/OPEN-ITEMS.md C14).
 
+- **v27.0 · 18 Nov 2026 · EPISODE 4 CHAPTER 4 · THE WOMAN WHO ROSE FROM HER WHEELCHAIR, released.** Chad's direction of
+  17 Nov (docs/V27.0-E4C4-PLAN.md §0, R1 to R40 verbatim): her own HDB flat in Singapore, she speaks English, her family,
+  Grandmaster Pho and the player in the room, the horror brought back, a new way to fight (the holy water), and SPIRIT
+  VISION (a HUD button and V: the world turned negative and drained, the spirits in colour, a wave out and back, its own
+  sound, the heart heard). Researched, planned and built without approvals asked (his word), its tracker
+  docs/V27.0-E4C4-BUILD.md (§7 the log, §11 every ask against the live build). Builds 18 to 21f went live as they were
+  made; this release is build 21h, deploy `6afdae979d2566f9988ec383` (21g, `6afdaba8f46aab269c592dd0`, the first in the
+  run), 602 of 602 served files byte-identical. Its last
+  pass, from drive A (a finger to ending A's card on 21e: 42 voices none over another, 25 cues all from their samples,
+  no page error) and endings C and D photographed at a phone's size and read by tools/probes/e4c4who.mjs: the eye now
+  says why while his teacher holds it shut (dimmed, a press answered, and the reason shown once as the hold begins: his
+  line could not be said at the surge); Ravi and Mala walk to her side and sink onto their knees (they had dropped into
+  a kneel in one frame and slid up to 0.8 m on their knees); the held Ravi stays where the decision left him; ending C's
+  lenses re-staged so his head no longer hides her face, ending D's line shot aimed at Grandmaster Pho's bowed head and
+  both endings held on her through the release and following her up; her old photograph laid on its frame's glass, which
+  leans back (it read as grey glass; laid upright before it, only its top fifth showed: the glass measured as a surface
+  by tools/probes/frontz.mjs, where planez sees only points), and the frame brought before the cabinet's brass pot. And at his word ("I also never asked
+  for what preview bullshit you are doing, it should always be deployed as full release no matter the status") the
+  chapter is in the run, and no chapter is ever a preview again (CLAUDE.md, his standing rules). Sheet v147. Not made:
+  the backup bundle (the history is 2.7 GB and the working machine had 0.3 GB free: put to him).
+
 ## The sheet, version by version
+
+**v147, PUBLISHED 18 Nov 2026** (`masters/v27.0/masterz-text-v147.xlsx`, its CSV beside it, the repo's
+`masterz-text.csv` refreshed from it): v146 with episode 4 chapter 4's words and voice lines (EPISODE 4 299 rows, VOICE
+LINES 982) and the engine's `hud.visionHeld`. Id `1qccVM5K9i4_vIg4tNRlTnaWJWer2kXgMcDz02tJqVfE`; read back tab by tab
+and compared by tools/sheetcmp.py: 10,526 cells, mismatched cells: 0.
 
 **v146, PUBLISHED 16 Nov 2026** (`masters/v26.18/masterz-text-v146.xlsx`, the game's own export at v26.18, its CSV
 beside it, and the repo's `masterz-text.csv` refreshed from it: three lines added, none other moved): v145 with

@@ -161,8 +161,7 @@
     daylight: FLAT,
     /* (the speed-up of v26.11 chapter 3 took: a picture's decoded copy let go once it is on the graphics chip) */
     render: { freePictures: true },
-    /* a PREVIEW chapter until the release (D9): out of the run, opened by ?ch=e4c4 only, saving and unlocking nothing */
-    preview: true,
+    /* (released at v27.0, 18 Nov: in the run, after chapter 3; it was a preview chapter until then, D9) */
 
     /* SPIRIT VISION (the fiftieth seam, plan §5): this chapter's colours and sounds. The spirits are handed to the
        engine by the build (ctx.spirit) */
@@ -3408,7 +3407,7 @@
     function picIn(g, key, s = 1, P = PIC) {
       const m = M({ color: 0xffffff, roughness: 0.55, metalness: 0 });
       const pl = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), m); pl.visible = false; owned.push(pl.geometry);
-      pl.position.set(0, P.y * s, P.z * s); g.add(pl); pics[key] = pl;
+      pl.position.set(0, P.y * s, P.z * s); if (P.rx) pl.rotation.x = P.rx; g.add(pl); pics[key] = pl;
       picLoad(key).then(t => { if (!t) return; const im = t.image, a = im && im.width ? im.width / im.height : 0.72;
         m.map = t; m.needsUpdate = true; pl.scale.set(P.h * s * a, P.h * s, 1); pl.visible = true; });
       return pl;
@@ -3420,9 +3419,16 @@
        the passage he comes in by; the picture laid in it (measured on the frame, tools/probes/planez.mjs: its card at z
        0.032 to 0.033, its opening 0.219 by 0.165 about 0.100 up; the picture 1.5 mm before the card, under the lip at 0.038).
        The cabinet's shelf is 1.06 m up its file (tools/probes/surfaces.mjs), its depth -0.20 to 0.24 */
-    const PIC_SMALL = { y: 0.100, z: 0.0345, h: 0.165 };
+    /* (18 Nov, photographed from where he stands: laid on the card the picture was under the frame's own glass, which the
+       generator painted grey, and the cabinet's brass pot stood before the frame: the picture now lies before the glass,
+       under the lip's edge, and the frame stands at the shelf's front, the pot behind it) */
+    /* (18 Nov, photographed again on the live build: only the picture's top fifth showed. The glass is not upright: it
+       leans back, its front at z 0.049 at the opening's foot and 0.035 at its head (tools/probes/frontz.mjs, the front-most
+       surface over the opening; planez sees only points, and the glass is two big triangles), so an upright picture at
+       0.040 stood behind it below 0.16 m. The picture is laid on the glass, 2 mm before it and leaning with it) */
+    const PIC_SMALL = { y: 0.100, z: 0.0442, h: 0.162, rx: -0.0848 };
     const CAB = { x: ROOMS.dining.x0 + 0.28 + 0.005, z: 6.15 };
-    const oldFrame = stand('w4framesmall', CAB.x + 0.10, 1.062, CAB.z - 0.08, Math.PI / 2 + 0.3, { lift: 1.5 });
+    const oldFrame = stand('w4framesmall', CAB.x + 0.20, 1.062, CAB.z - 0.08, Math.PI / 2 + 0.15, { lift: 1.5 });
     picIn(oldFrame, 'w4t_oldphoto', 1, PIC_SMALL);
     things.oldFrame = [oldFrame];
     /* HER SHRINE'S THREE: Kali in the middle, Ganesha at her left as one stands before it, Murugan at her right; each in
@@ -3796,7 +3802,7 @@
     const MALA_HEAD = () => HEAD_OF(cast.mala, 0.1, { x: cast.mala.group.position.x, y: 1.62, z: cast.mala.group.position.z });
     /* the five sources' places, measured from the things themselves (c_props.js) */
     const FOLDER_AT = { x: 4.80, y: 0.80, z: 6.40 };
-    const OLDPHOTO_AT = { x: ROOMS.dining.x0 + 0.385, y: 1.17, z: 6.07 };          // the picture's middle in its frame (c_props.js)
+    const OLDPHOTO_AT = { x: ROOMS.dining.x0 + 0.525, y: 1.17, z: 6.07 };          // the picture's middle in its frame (c_props.js)
     const APPA_PHOTO_AT = { x: 0.62, y: 1.50, z: ROOMS.living.z1 - 0.03 };
     const SMALLBOWL_AT = { x: BOWL.x + 0.30, y: 0.04, z: BOWL.z - 0.12 };
     const LAMP_AT = { x: VILAKKU.x, y: 0.43, z: VILAKKU.z };

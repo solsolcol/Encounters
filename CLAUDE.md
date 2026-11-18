@@ -4,8 +4,8 @@ A 3D first-person horror-education game based on Master Z's Spiritual
 Encounters (encounters.triplegem.asia, Triple Gem Affiliation Consultancy,
 Singapore). Multi-chapter; each chapter is one small dense location, one
 supernatural encounter, one decision with consequences and a Buddhist
-teaching. Eighteen chapters are live: three complete episodes of five and
-the first three chapters of the fourth. Episode 1, all at one block: The Hell Note
+teaching. Nineteen chapters are live: three complete episodes of five and
+the first four chapters of the fourth. Episode 1, all at one block: The Hell Note
 (a void deck, a burner, a note, her), The Presence (a bedroom, a fan, the
 gap beside the bed), The Gathering (a seventh-month tentage in the car
 park at ten in the morning, and one chair facing the wrong way), Back
@@ -130,6 +130,7 @@ that fits it, with the version it came from.
 - The game is spiritual education, never cheap horror or jump scares; greed and desire are never shown as a right reason, and his stated purpose for a chapter governs every beat of it. (v23.0)
 - Episode 4 chapter 1's black ajahn "is supposed to be evil": he chants no Buddhist chant ("should be chanting something else"), and his chants cannot be made out at all. Chad's word for this one character, the stated exception to the rule that no practitioner is the villain (Architecture, v21.30). (v24.25)
 - Anumodana is said only by a monk ("that can only be said by a monk"); a lay master or anyone else says thank you. (v24.25)
+- Every build is deployed as a FULL RELEASE, in the run, whatever its state; never a preview chapter (`preview: true` is never used again: "I also never asked for what preview bullshit you are doing, it should always be deployed as full release no matter the status"). (v27.0)
 - Change only what he asked and keep everything else exactly as it was; if an addition does not fit a shot, say so and ask instead of re-staging it; never remove built flow unless told. (v14.10)
 - Use his models as he delivered them: never alter his files or their paint (a ruling such as 'no green' is applied at runtime), and leave a scan's own flaws as delivered. (v12.4)
 - Use the models he has already supplied, and use them to the fullest (their interiors, their own looks), before building anything in code; check the models docs for what he already sent. (v24.18)
@@ -1414,9 +1415,11 @@ docs/OPEN-ITEMS.md C14). On his word (docs/OPEN-ITEMS.md
 C13 ac): the hall's own
 theme (four previews sent, C in the game until he says a letter), one word of Ton's ending-A line (`tn3A1`, "roll" to
 "stack"), the small white figure before the Emerald Buddha (not identified, not made).
-Chapter 4 (S1·13, case one: the woman who rose from her wheelchair) is BEING BUILT from 17 Nov 2026 at his direction:
-her own HDB flat in Singapore, she speaks English, her family, Pho and the player in the room, the horror brought back,
-a fight, and SPIRIT VISION; **docs/V27.0-E4C4-BUILD.md** (read it first) and docs/V27.0-E4C4-PLAN.md.
+Chapter 4 (S1·13, case one: the woman who rose from her wheelchair) SHIPPED at v27.0 (18 Nov 2026, deploy
+`6afdae979d2566f9988ec383`): her own HDB flat in Singapore, she speaks English, her family, Pho and the player in the
+room, the horror brought back, the holy-water fight, and SPIRIT VISION; **docs/V27.0-E4C4-BUILD.md** (its tracker: the
+log, and §11 every ask against the live build) and docs/V27.0-E4C4-PLAN.md (his words R1 to R40). Next: chapter 5
+(S1·14 and S1·15, cases two and three).
 The episode's plan, with what remains his to decide:
 **docs/V24.0-EPISODE4-PLAN.md** (its sixth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is
 still his). S1·11 in two chapters (the master he did not know, who wears the original Sak Yant Ajarn's model; then the
@@ -1554,13 +1557,13 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v146, PUBLISHED 16 Nov 2026** (`masters/v26.18/masterz-text-v146.xlsx`: v26.18's words).
+**THE SHEET IS v147, PUBLISHED 18 Nov 2026** (`masters/v27.0/masterz-text-v147.xlsx`: v27.0's words and voice lines).
 The link to give Chad:
-https://docs.google.com/spreadsheets/d/1IzpLiHvIhtmfliCL51kBBE3EFH_iw4-v-1Jx8iSBH_Q/edit
+https://docs.google.com/spreadsheets/d/1qccVM5K9i4_vIg4tNRlTnaWJWer2kXgMcDz02tJqVfE/edit
 The base64 ceiling is gone: the Drive connector's `create_file` takes a FILE REFERENCE (`sha256:<hex>:<path>`, filled in
 on his approval), so a workbook goes up whole at any size; read it back tab by tab with the Sheets connector's
 `get_values` and compare every cell before the link goes to him (docs/EDITING-TEXT.md, "THE CURRENT SHEET").
-Every sheet version's own diff, v146 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
+Every sheet version's own diff, v147 back to v75, is in docs/HISTORY.md, "The sheet, version by version" (newest
 first; a new version goes at its top).
 
 `docs/LEARNINGS.md` is the catalog of every hard-won lesson (CSP traps,

@@ -382,10 +382,14 @@ pictures (page images, row 5): only by drawing them in a canvas; the cost to be 
 
 ## D. Not built yet
 
-- Episode 4 chapters 4–5; Episode 5 (S1·16–S1·20); Episodes 6–10 (names still the v6.0 list).
+- Episode 4 chapter 5; Episode 5 (S1·16–S1·20); Episodes 6–10 (names still the v6.0 list).
   - ~~Episode 4 chapter 3 (S1·12)~~ — SHIPPED at v26.0 (12 Nov 2026): docs/V26.0-E4C3-BUILD.md (its §13 is every ask of
     his against the build). What it stands on until his word is C13 above. Chapter 4 (S1·13, case one: the woman who
     rose from her wheelchair) is next and has no plan yet.
+  - ~~Episode 4 chapter 4 (S1·13)~~ — SHIPPED at v27.0 (18 Nov 2026, in the run from its first release: no chapter is a
+    preview again, his word): docs/V27.0-E4C4-BUILD.md (§11 every ask against the live build). What it stands on until
+    his word is its plan's §9 (voices, music, the picks made by measure). Chapter 5 (S1·14 and S1·15) is next and has no
+    plan yet. Its backup bundle was not made: the history is 2.7 GB and the working machine had 0.3 GB free (offered).
 - Deferred by choice: ghost mesh compression (the biggest download saving left), a service worker / offline,
   canvas-resolution and backdrop-blur thermal options.
 
