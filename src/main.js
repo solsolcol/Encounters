@@ -16226,6 +16226,29 @@ async function warmWorld(items) {
     if (par) await cap(Promise.all([renderer.compileAsync(scene, camera), renderer.compileAsync(vmScene, vmCam)]), 15000);
     else { renderer.compile(scene, camera); renderer.compile(vmScene, vmCam); }
   } catch {}
+  /* v27.0 (R51, Chad, 18 Nov 2026: "in the intro cutscene, when the camera pans across the hdb towards the corridor and
+     door of the flat, there is a huge long stutter that happens"). A chapter that declares a SPIRIT VISION draws its world,
+     while the vision is open, held by a film or its wave is moving, into the vision's own targets (src/vision.js): linear
+     light, no tone mapping. three makes a different program for a material drawn into a target than for one drawn to the
+     screen, and the compile above made only the screen's, so the first frame each thing was drawn through the vision
+     compiled its program on screen (measured: tools/probes/progs.mjs and progdiff.mjs, twelve programs as the opening's
+     picture came up and seven as its lens turned into the corridor onto his teacher and Ravi; the keys differed only in the
+     output's colour space and the tone mapping). The same compile with a target bound makes the target's programs too; the
+     target is unbound the moment the compile has been asked for (compileAsync makes its programs before it first waits),
+     so no frame drawn while it finishes is drawn into it. A chapter with no vision never comes here: every chapter before
+     episode 4 chapter 4 is unchanged by construction. */
+  if (vis.decl) try {
+    const par = renderer.extensions && renderer.extensions.has && renderer.extensions.has('KHR_parallel_shader_compile');
+    const tgt = new THREE.WebGLRenderTarget(1, 1), prev = renderer.getRenderTarget();
+    let pend = null;
+    renderer.setRenderTarget(tgt);
+    try {
+      if (par) pend = Promise.all([renderer.compileAsync(scene, camera), renderer.compileAsync(vmScene, vmCam)]);
+      else { renderer.compile(scene, camera); renderer.compile(vmScene, vmCam); }
+    } finally { renderer.setRenderTarget(prev); }
+    if (pend) await cap(pend, 15000);
+    tgt.dispose();
+  } catch {}
   try { warmLightStates(); } catch {}           // v15: the light counts play will reach, compiled now
   /* v14.16: the geometry of what is hidden, too — v15: into ONE pixel. The
      warm draw exists to upload buffers and build pipelines, which a draw does

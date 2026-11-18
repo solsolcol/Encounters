@@ -6517,7 +6517,7 @@
     FILMS.open = {
       begin(api) {
         if (api && api.handsRoot) api.handsRoot.visible = false;
-        FM.once = new Set(); castHome(); spiritsHome(); whenReady(cast.phoB, (P) => bowSet(P, 0));
+        FM.once = new Set(); FM.visHeld = false; castHome(); spiritsHome(); whenReady(cast.phoB, (P) => bowSet(P, 0));
         whenReady(cast.pho, (P) => { P.group.visible = false; });
         filmBed.on = true; for (const k in filmBed) if (k !== 'on') filmBed[k] = 0;
       },
@@ -6547,10 +6547,13 @@
         whenReady(cast.amma, (P) => { pose(P, 'wsit', pingOf(t, 2.0, 3.6, 12)); if (t > T.look) lookNow(P, 'lens', smo(c01((t - T.look) / 2.0)), 0.85, 0.05); });   // (R82: a neck's reach)
         /* the one on her back, seen only in the flicker; its face turned to him with hers */
         whenReady(spirits.oppress, (P) => { oppRide(P); pose(P, 'cling', 2 + t * 0.3); if (t > T.look) lookNow(P, 'lens', smo(c01((t - T.look - 0.4) / 1.6)), 1.3); });
-        /* his sight, open for a held breath by itself */
+        /* his sight, open for a held breath by itself. (R51: held ONLY round the flick. Held from the film's first frame at a
+           radius of 0, it sent every frame of the film through the vision's own pass, the world drawn into its targets for
+           nothing the picture showed: the heavier way to draw, and the way the curtain had not warmed) */
         if (kit && kit.vision) {
           const u = c01((t - T.flick) / (T.flickEnd - T.flick)), r = t < T.flick || t > T.flickEnd ? 0 : 7 * Math.sin(Math.PI * u);
-          kit.vision({ r, moving: r > 0.01 });
+          if (t >= T.flick - 0.3 && t <= T.flickEnd + 0.3) { kit.vision({ r, moving: r > 0.01 }); FM.visHeld = true; }
+          else if (FM.visHeld) { kit.vision(null); FM.visHeld = false; }
         }
         /* THE LENS */
         track(t, [
@@ -6577,7 +6580,7 @@
         ]);
       },
       /* play begins in the history (historyBegin stages everyone again): her gate shut behind them, the beds play's */
-      end() { fLens(PLAY_FOV); filmBed.on = false; for (const g of (things.w4gate || []).slice(0, 1)) g.visible = true; if (kit && kit.vision) kit.vision(null); }
+      end() { fLens(PLAY_FOV); filmBed.on = false; for (const g of (things.w4gate || []).slice(0, 1)) g.visible = true; if (kit && kit.vision) kit.vision(null); FM.visHeld = false; }
     };
     filmsApi.open = FILMS.open;
     /* ================================================================ PLAY (M6: the phases of the plan's §4.1 to §4.3)
