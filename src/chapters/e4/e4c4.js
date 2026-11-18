@@ -1390,7 +1390,8 @@
       for (let lx = -84; lx <= 84; lx += 24) LAMPS.push({ x: lx, z: -38.9, ry: 0 });
       for (const L of LAMPS) { const pz = L.z + (L.ry ? -1.6 : 1.6);
         quadUV(mPool, [L.x - 7, G + 0.05, pz + 7], [L.x + 7, G + 0.05, pz + 7], [L.x + 7, G + 0.05, pz - 7], [L.x - 7, G + 0.05, pz - 7], 0, 0, 1, 1); }
-      many('w4streetlamp', LAMPS.map(L => ({ x: L.x, y: G, z: L.z, ry: L.ry })), world, 0.02);
+      /* the lamp's arm reaches -x at a turn of 0 (its photographs, 18 Nov): turned a quarter so each reaches over the road */
+      many('w4streetlamp', LAMPS.map(L => ({ x: L.x, y: G, z: L.z, ry: L.ry ? -Math.PI / 2 : Math.PI / 2 })), world, 0.02);
       /* the estate's trees: angsanas along the road and the paths, foxtail palms in the gaps */
       const TREES = [], PALMS = [], tr = rng(7110);
       for (let tx = -84; tx <= 84; tx += 16) { if (tr() < 0.15) continue; TREES.push({ x: tx + (tr() - 0.5) * 4, y: G, z: -23.2 + (tr() - 0.5) * 2, ry: tr() * 6.28, s: 0.85 + tr() * 0.3 }); }

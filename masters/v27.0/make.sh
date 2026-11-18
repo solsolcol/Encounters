@@ -122,6 +122,12 @@
 #   Take b (PsVwfFd0TlE8bG5UdLC0) LOOKED AT full size and picked (a single trunk, the crown a closed dome), given a white
 #   margin (x1.16, the picture untouched) and sent with a texture prompt: jobs-p6.json, image-to-3d
 #   01a1edce-9793-732a-8547-279e84fdc9c2. TABLE.txt's row is angsana2 now (the refused model stays in src).
+#   It FAILED at 45% ("image_too_complex"; no credits taken: 723 -> 698 is the five remeshes). The model's settings were
+#   then set back to the ones that made chapter 1's rain tree leafy (v24.19: Meshy's standard geometry, no symmetry, no
+#   image enhancement; meshy27.py 'geo': 'standard', 'sym': 'off', 'enhance': false), and both pictures sent again:
+#   jobs-p7.json, angsana3 (the first, open crown) 01a1edd3-86ba-7676-a7e4-90e23980c774 · angsana4 (the dense one)
+#   01a1edd3-9e8c-7350-898a-005b59c988c4. The streetlamp LOOKED AT: a dark grey tapered pole, its arm and flat head
+#   reaching -x at a turn of 0, a concrete foot: pass (turned a quarter in the estate so each arm reaches the road).
 #
 # ---------------------------------------------------------------------------------------------------------------------
 # 4. THE VOICES (17 Nov): three new speakers cast from the ElevenLabs library (voice DESIGN refused: the connector lacks

@@ -1,0 +1,16 @@
+[
+ {
+  "name": "angsana3",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/angsana-2k.png",
+  "geo": "standard", "sym": "off", "enhance": false,
+  "texture": "lush green leaves, grey-brown furrowed bark"
+ },
+ {
+  "name": "angsana4",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/angsana2-2k.png",
+  "geo": "standard", "sym": "off", "enhance": false,
+  "texture": "dense glossy green leaves in heavy clumps, grey-brown furrowed bark"
+ }
+]

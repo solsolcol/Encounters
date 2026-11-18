@@ -135,10 +135,15 @@ def cmd_model(jobs_path):
             'should_remesh': True, 'topology': 'triangle',
             'target_polycount': j.get('polys', 300000),  # the highest the remesh gives; a rig takes at most 380,000
             'save_pre_remeshed_model': j.get('pre', person),   # a person: the untouched surface beside it (a prop: not kept, for room)
-            'image_enhancement': True,
+            'image_enhancement': j.get('enhance', True),
             'target_formats': ['glb'],
             'multi_view_thumbnails': True,
         }
+        # (18 Nov: a tree's leaves came back as bare twigs at these settings, and a denser picture was refused as
+        #  'image_too_complex'; chapter 1's rain tree was made with Meshy's standard geometry and no symmetry: a job
+        #  may ask for those, 'geo': 'standard' leaving the ultra resolution out, 'sym': 'off')
+        if j.get('geo') == 'standard': body.pop('geometry_resolution')
+        if j.get('sym'): body['symmetry_mode'] = j['sym']
         if person: body['pose_mode'] = 'a-pose'
         if j.get('texture'): body['texture_prompt'] = j['texture']
         j['task'] = call('POST', '/image-to-3d', body)['result']
