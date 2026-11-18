@@ -3846,7 +3846,9 @@ function torchToggle() {
 /* ---- v27.0: SPIRIT VISION — the fiftieth seam ----------------------------
    Chad, 17 Nov 2026, for episode 4 chapter 4 (docs/V27.0-E4C4-PLAN.md §0, verbatim): "a new function, called 'Spirit
    Vision' that is another button on the HUD UI, just like the flashlight icon back in episode 2 that can be turned on
-   and off anytime" — inverted colours, a slight blur as the camera moves, a slight vignette, spirits seen only through
+   and off anytime" — inverted colours (since 18 Nov, at his word, a NEGATIVE IN BLACK AND WHITE: "Spirit vision should
+   make everything black and white inverted except for the entities, so it is easier to differentiate"; `lineColor`
+   gives the lines only their brightness), a slight blur as the camera moves, a slight vignette, spirits seen only through
    it as glowing coloured silhouettes, its own sounds, ambience and music, the heart rate and its beat rising, and a wave
    of energy and light out from him tracing every line when it opens, and back to him when it closes.
    A chapter declares `vision: { rmax, outSecs, inSecs, soft, band, blur, vignette, line, sky, front, lineColor,

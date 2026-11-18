@@ -15,7 +15,9 @@
    4. one pass to the screen: the world's light tone-mapped and encoded exactly as three draws it to the screen (its own
       toneMapping() and linearToOutputTexel(), so what the wave has not reached looks as it did), then, where the wave has
       passed (the distance from his eyes to what the pixel shows, from the depth, against the wave's radius), the colour
-      inverted, the camera's own movement blurred a little (each pixel's world point carried back through last frame's
+      inverted IN BLACK AND WHITE (18 Nov, Chad: "Spirit vision should make everything black and white inverted except for
+      the entities, so it is easier to differentiate": the luminance inverted, no hue; his hands too; the spirits and the
+      glows only the vision draws keep their colour), the camera's own movement blurred a little (each pixel's world point carried back through last frame's
       camera), the edges of everything (from the depth: silhouettes, corners, creases; and a little from the colour)
       traced in light at the wave's front and faintly behind it, the spirits laid on with their glow, his hands over it
       all (turned with the world once the wave has left him), and a slight vignette.
@@ -137,9 +139,13 @@ export function makeVision(THREE, renderer, opts = {}) {
         float lum = length(vec2(dot(cr - cl, vec3(0.299, 0.587, 0.114)), dot(cup - cdn, vec3(0.299, 0.587, 0.114))));
         e = clamp(e + smoothstep(0.10, 0.45, lum) * 0.45, 0.0, 1.0);
         if (sky) e = 0.0;
-        /* the colour turned where the wave has passed, the lines kept faintly behind it */
-        vec3 col = mix(c, vec3(1.0) - c, inv);
-        col += uLineCol * e * uLine * inv;
+        /* the world turned where the wave has passed: a NEGATIVE IN BLACK AND WHITE, its light's luminance inverted and no
+           hue left, so the only colour in the vision is what the vision alone shows (Chad, 18 Nov 2026: "Spirit vision
+           should make everything black and white inverted except for the entities, so it is easier to differentiate");
+           the lines kept faintly behind it, in grey */
+        float yv = dot(c, vec3(0.299, 0.587, 0.114));
+        vec3 col = mix(c, vec3(1.0 - yv), inv);
+        col += vec3(dot(uLineCol, vec3(0.299, 0.587, 0.114))) * e * uLine * inv;
         /* the front: a band of light where the wave is, every line in it burning */
         /* the FRONT: a thin line of light where the wave is now (12 cm through the room, wider as it runs out), a faint
            glow of its own on every surface it crosses, and every edge it crosses burning in it (second light, 17 Nov: at
@@ -161,7 +167,7 @@ export function makeVision(THREE, renderer, opts = {}) {
         if (h.a > 0.002) {
           vec3 hc = disp(h.rgb / max(h.a, 0.0001));
           float hinv = invAt(uHandsAt) * uInvert;
-          hc = mix(hc, vec3(1.0) - hc, hinv);
+          hc = mix(hc, vec3(1.0 - dot(hc, vec3(0.299, 0.587, 0.114))), hinv);
           col = mix(col, hc, clamp(h.a, 0.0, 1.0));
         }
         /* a slight vignette */

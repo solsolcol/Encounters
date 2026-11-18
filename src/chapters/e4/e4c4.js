@@ -4554,7 +4554,9 @@
           const w = smo(c01((t - E.push) / 0.3)) * (1 - smo(c01((t - E.back + 0.45) / 0.45)));
           const d0 = faceTo(P.home.x, P.home.z, S_EYE[0], S_EYE[2]) - P.home.ry, d = Math.atan2(Math.sin(d0), Math.cos(d0));
           P.group.rotation.y = P.home.ry + d * w;
-          pose(P, 'mage_soell_cast_3', runOf(t, E.push, E.push + 0.6, 0.5, 1.32), false, 'Sit_to_Stand_Transition_M', 1 - w, pingOf(t, 5.85, 0.25, PHO_BREATH)); });
+          /* (held at the take's 0.95: from 1.0 on it crosses both arms over his face, and from the floor, at its 1.32, he read
+             headless again: build 13, photographed at 4.0) */
+          pose(P, 'mage_soell_cast_3', runOf(t, E.push, E.push + 0.6, 0.5, 0.95), false, 'Sit_to_Stand_Transition_M', 1 - w, pingOf(t, 5.85, 0.25, PHO_BREATH)); });
       },
       /* C · HE GOES TO HIM (best). Between Ravi and the chair, his hands open, low: "She's not being hurt. It's leaving
          her. Stay with her. Hold her hand." Ravi kneels by the chair and takes her hand; Mala comes to the other side.
@@ -4638,6 +4640,11 @@
         pose(P, 'Talk_with_Hands_Open', Math.max(0, t - at), true, 'Sit_to_Stand_Transition_M', 1 - k, pingOf(t, 5.85, 0.25, PHO_BREATH)); });
     }
     /* THE CLOSE (§4.5, every ending): from his place at her front left again */
+    /* her hips' place when the rise leaves her standing at her chair (its held end), measured once on her own body; and her
+       group moved so her hips stand where a moment of her walk says (a function of the film's clock: seek-safe) */
+    const _phv = new THREE.Vector3();
+    function standA(P) { if (!P._standA) { put(P, CHAIR.x, CHAIR.z, CHAIR.ry); pose(P, 'rise', 4.75); P.group.updateWorldMatrix(true, true); P.hips.getWorldPosition(_phv); P._standA = [_phv.x, _phv.z]; } return P._standA; }
+    function pinHips(P, x, z) { if (!P.hips) return; P.group.updateWorldMatrix(true, true); P.hips.getWorldPosition(_phv); P.group.position.x += x - _phv.x; P.group.position.z += z - _phv.z; }
     function closeFrame(k, c, tAll) {
       void EN;
       /* she stands (in every ending she has risen by now) and walks to her altar; the ash; her palms together */
@@ -4645,14 +4652,26 @@
         /* (each take carries her body from its own first moment: the rise left her standing RISEN before the chair's
            middle, the steps take the rest of the way to the altar by its own travel, so her mark moves only between
            takes. 18 Nov: her mark slid to the altar under a walking take that also walked: she ended in its wall) */
-        const R0 = hipsTravel(P, 'rise', 4.75), sk = Math.min(STEPS_TK, (c - CL.steps) * 0.55), stepEnd = CL.steps + STEPS_TK / 0.55;
+        const sk = Math.min(STEPS_TK, (c - CL.steps) * 0.55), stepEnd = CL.steps + STEPS_TK / 0.55;
         if (c < CL.steps) { put(P, CHAIR.x, CHAIR.z, CHAIR.ry); pose(P, 'rise', pingOf(c, 4.6, 0.3, 3.0)); }
-        else { put(P, CHAIR.x + R0[0], CHAIR.z + R0[1], CHAIR.ry);
-          if (c < stepEnd) pose(P, 'steps', sk, false, 'rise', 1 - smo(c01((c - CL.steps) / 0.5)), 4.75);
-          else if (c < CL.palms) pose(P, 'rise', pingOf(c - stepEnd, 4.6, 0.3, 3.0), false, 'steps', 1 - smo(c01((c - stepEnd) / 0.6)), STEPS_TK);
-          /* (her palms joined at her chest and held there, upright: the take's last half-second is a deep bow, 0.31 m from
-             hips to head, and held for ten seconds she stood folded over: 18 Nov, photographed) */
-          else pose(P, 'lamp', runOf(c, CL.palms, CL.palms + 2.2, 3.4, 4.8), false, 'rise', 1 - smo(c01((c - CL.palms) / 0.5)), 4.75); }
+        else {
+          /* (her HIPS held where her own takes carry them: where the rise leaves them standing at her chair (measured once
+             on the rise's held end, standA), then on by the steps' own travel, then still, the lamp's own small sway kept.
+             18 Nov, measured from the close's photographs: her mark moved for the steps while the rise was still blended in
+             carried her 0.31 m forward in half a second as she began to walk, out of the shot; and the lamp take's own
+             offset carried her 0.48 m back toward her chair as her palms joined, out of the lamp's shot) */
+          const A = standA(P); let hx = A[0], hz = A[1];
+          put(P, CHAIR.x, CHAIR.z, CHAIR.ry);
+          if (c < stepEnd) { const S = hipsTravel(P, 'steps', sk); hx += S[0]; hz += S[1];
+            pose(P, 'steps', sk, false, 'rise', 1 - smo(c01((c - CL.steps) / 0.5)), 4.75); }
+          else { const S = hipsTravel(P, 'steps', STEPS_TK); hx += S[0]; hz += S[1];
+            if (c < CL.palms) pose(P, 'rise', pingOf(c - stepEnd, 4.6, 0.3, 3.0), false, 'steps', 1 - smo(c01((c - stepEnd) / 0.6)), STEPS_TK);
+            /* (her palms joined at her chest and held there, upright: the take's last half-second is a deep bow, 0.31 m from
+               hips to head, and held for ten seconds she stood folded over: 18 Nov, photographed) */
+            else { const lt = runOf(c, CL.palms, CL.palms + 2.2, 3.4, 4.8), wl = smo(c01((c - CL.palms) / 0.5)), L = hipsTravel(P, 'lamp', lt), L0 = hipsTravel(P, 'lamp', 3.4);
+              hx += (L[0] - L0[0]) * wl; hz += (L[1] - L0[1]) * wl;
+              pose(P, 'lamp', lt, false, 'rise', 1 - wl, 4.75); } }
+          pinHips(P, hx, hz); }
         lookNow(P, [ALTAR.x, 1.45, ALTAR.z], c < CL.palms ? smo(c01((c - CL.steps) / 1.5)) * 0.6 : 0, 0.6); });
       phoBless(tAll, 0);
       phoTalk(c, CL.z1, 'ph4z1');
@@ -4662,7 +4681,9 @@
       /* the family about her: Mala at her right hand (the ash), Ravi at her left */
       whenReady(cast.mala, (P) => { put(P, MALA_C.x, MALA_C.z, faceTo(MALA_C.x, MALA_C.z, STAND.x, STAND.z));
         pose(P, 'Idle_3', 3 + c * 0.3, true); lookNow(P, HER_HEAD(), 1, 0.9);
-        if (c > CL.ash - 0.6 && c < CL.ash + 1.8) { const h = HER_HEAD(); handTo(P, 'R', [h[0] - 0.02, h[1] + 0.02, h[2] + 0.09], [0, 0, -1], [0, 0.3, -1], smo(c01((c - CL.ash + 0.6) / 0.6)) * (1 - smo(c01((c - CL.ash - 1.2) / 0.6))), { out: 0.25, down: 0.35 }); } });
+        /* (the ash on her FOREHEAD: 18 Nov, photographed, her daughter's fingers reached her chin; the head bone is at the
+           base of the skull, her brow 11 cm over it and 8 forward) */
+        if (c > CL.ash - 0.6 && c < CL.ash + 1.8) { const h = HER_HEAD(); handTo(P, 'R', [h[0] - 0.02, h[1] + 0.05, h[2] + 0.08], [0, 0, -1], [0, 0.3, -1], smo(c01((c - CL.ash + 0.6) / 0.6)) * (1 - smo(c01((c - CL.ash - 1.2) / 0.6))), { out: 0.25, down: 0.35 }); } });
       /* (Ravi turns his head to his teacher as he is spoken to: a neck's reach, his body still turned to her) */
       whenReady(cast.ravi, (P) => { put(P, RAVI_C.x, RAVI_C.z, faceTo(RAVI_C.x, RAVI_C.z, STAND.x, STAND.z)); pose(P, 'kneelhold', pingOf(c, 2.6, 0.8, 6.0));
         const h = HER_HEAD(), ph = cast.phoB.home, k = smo(c01((c - CL.z1 + 0.9) / 0.9));
@@ -4679,7 +4700,11 @@
          palms and her lamp; his sight closing on her; out to her family about her in the room's own colours; and over her
          son's shoulder to his teacher for his word. Every aim is where its subject stands (a phone's frame is 35 degrees:
          his teacher and the shapes share it, her family shares it, but not both) */
-      const ph = cast.phoB.home, FAM = [-0.10, 1.34, 4.50];
+      /* (THE FAMILY, 18 Nov, re-staged: from the merit's eye they stood in one line from the lens, her son's head under her
+         and her daughter behind the altar's post, and the shot's two keys ran backwards in time, so it never held. Now from
+         behind and to their left, by his teacher's stool: the three before her altar, her lamp lit between them, her
+         chair empty in the corner of the frame. Cut to and cut away: its own eye) */
+      const ph = cast.phoB.home, FAM_EYE = [0.80, 1.55, 3.40], FAM = [-0.12, 1.12, 4.75];
       track(c, [
         { t: 0, name: 'merit', eye: CLOSE_EYE, at: [0.05, 1.09, 2.39], fp: 58, fd: 52, cut: true },
         { t: 6.6, name: 'merit', eye: CLOSE_EYE, at: [0.02, 1.13, 2.47], fp: 58, fd: 52 },
@@ -4690,9 +4715,9 @@
         { t: CL.ash + 1.5, name: 'ash', eye: CLOSE_EYE, at: [lp(STAND.x, MALA_C.x, 0.4), 1.45, lp(STAND.z, MALA_C.z, 0.4)], fp: 48, fd: 44 },
         { t: CL.palms + 0.4, name: 'lamp', eye: CLOSE_EYE, at: [STAND.x + 0.02, 1.22, STAND.z + 0.16], fp: 54, fd: 50 },
         { t: CL.shut + 0.2, name: 'lamp', eye: CLOSE_EYE, at: [STAND.x + 0.02, 1.22, STAND.z + 0.16], fp: 54, fd: 50 },
-        { t: CL.shut + 1.4, name: 'family', eye: CLOSE_EYE, at: FAM, fp: 66, fd: 56 },
-        { t: CL.z1 - 0.3, name: 'family', eye: CLOSE_EYE, at: FAM, fp: 66, fd: 56 },
-        { t: CL.z1 + 1.0, name: 'pho', eye: CLOSE_EYE, at: [ph.x + 0.05, 1.5, ph.z + 0.05], fp: 50, fd: 46 },
+        { t: CL.fam, name: 'family', eye: FAM_EYE, at: FAM, fp: 62, fd: 54, cut: true },
+        { t: CL.z1 - 0.35, name: 'family', eye: FAM_EYE, at: [FAM[0] + 0.03, FAM[1] + 0.02, FAM[2]], fp: 60, fd: 52 },
+        { t: CL.z1 - 0.3, name: 'pho', eye: CLOSE_EYE, at: [ph.x + 0.05, 1.5, ph.z + 0.05], fp: 50, fd: 46, cut: true },
         { t: CL.end, name: 'pho', eye: CLOSE_EYE, at: [ph.x + 0.05, 1.5, ph.z + 0.05], fp: 50, fd: 46 }
       ]);
     }
@@ -4999,8 +5024,8 @@
   /* THE FILMS' CLOCKS (c_ufilm.js draws to them): the trance's, each ending's, and the close's, every one from its start */
   const TR = { ml1: 2.6, ml2: 5.7, open: 7.6, claw: 7.6, cry: 10.6, rush: 12.7, rv: 13.05, back: 15.2, end: 17.6 };
   /* the close's own clock, from its start: Pho's dedication; the green shapes go; she rises (if she has not), walks;
-     the ash; her palms; his sight closing; Pho's word; black */
-  const CL = { z0: 0.6, go: 2.0, steps: 11.6, slow: 12.0, ash: 15.0, palms: 17.2, thank: 17.3, bell: 18.7, shut: 20.2, z1: 21.6, black: 29.0, end: 31.2 };
+     the ash; her palms; his sight closing; her family before her altar (fam); Pho's word; black */
+  const CL = { z0: 0.6, go: 2.0, steps: 11.6, slow: 12.0, ash: 15.0, palms: 17.2, thank: 17.3, bell: 18.7, shut: 20.2, fam: 21.3, z1: 23.0, black: 30.4, end: 32.6 };
   /* each ending's clock: its lines and beats, and where its close begins */
   const EN = {
     A: { grab: 0.0, rv: 0.3, cry: 0.9, scream: 2.95, torn: 6.1, white: 6.3, open: 7.6, rise: 9.0, call: 10.7, still: 12.5, go: 14.2, rv2: 14.5, ph: 17.4, q: 24.2, close: 28.2 },

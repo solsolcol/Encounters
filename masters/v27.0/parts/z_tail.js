@@ -6,8 +6,8 @@
   /* THE FILMS' CLOCKS (c_ufilm.js draws to them): the trance's, each ending's, and the close's, every one from its start */
   const TR = { ml1: 2.6, ml2: 5.7, open: 7.6, claw: 7.6, cry: 10.6, rush: 12.7, rv: 13.05, back: 15.2, end: 17.6 };
   /* the close's own clock, from its start: Pho's dedication; the green shapes go; she rises (if she has not), walks;
-     the ash; her palms; his sight closing; Pho's word; black */
-  const CL = { z0: 0.6, go: 2.0, steps: 11.6, slow: 12.0, ash: 15.0, palms: 17.2, thank: 17.3, bell: 18.7, shut: 20.2, z1: 21.6, black: 29.0, end: 31.2 };
+     the ash; her palms; his sight closing; her family before her altar (fam); Pho's word; black */
+  const CL = { z0: 0.6, go: 2.0, steps: 11.6, slow: 12.0, ash: 15.0, palms: 17.2, thank: 17.3, bell: 18.7, shut: 20.2, fam: 21.3, z1: 23.0, black: 30.4, end: 32.6 };
   /* each ending's clock: its lines and beats, and where its close begins */
   const EN = {
     A: { grab: 0.0, rv: 0.3, cry: 0.9, scream: 2.95, torn: 6.1, white: 6.3, open: 7.6, rise: 9.0, call: 10.7, still: 12.5, go: 14.2, rv2: 14.5, ph: 17.4, q: 24.2, close: 28.2 },
