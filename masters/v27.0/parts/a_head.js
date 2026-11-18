@@ -40,9 +40,9 @@
      and the estate's night through the corridor windows. The sky is Singapore's at night: never black, an orange-grey
      glow from the city low down, a few stars */
   /* (R36, 18 Nov: a Singapore night's sky is never black: the city's light on its haze, warm and low, a dull purple-grey
-     overhead; the opening now begins on it) */
+     overhead; the opening now begins on it. Build 20's photographs still read it black above the blocks: a step lighter) */
   const FLAT = sky({
-    stops: [[0.00, '#4a3a36'], [0.08, '#3a2f33'], [0.25, '#262330'], [0.55, '#16161f'], [1.00, '#0c0d14']],
+    stops: [[0.00, '#5a463e'], [0.10, '#463837'], [0.30, '#2e2a36'], [0.60, '#1b1a24'], [1.00, '#0e0f17']],
     bg: 0x14131a, fog: [0x14131a, 0.004],
     hemi: [0xe8eef6, 0x9a8f7e, 0.95], key: [0xf2f6ff, 0.9, 1.0, 2.5, 2.6], fill: [0xb8c4d8, 0.22],
     stars: 0.25, moon: 0,
@@ -192,7 +192,8 @@
       'w4sofa', 'w4cabinet', 'w4dintable', 'w4dinechair', 'w4framesmall', 'w4hugger', 'w4folder', 'w4gate',
       'w4frameport', 'w4armchair', 'w4tubelight', 'w4tvconsole', 'w4stool', 'w4standfan', 'w4shoerack', 'w4tulsi',
       'w4doorleaf', 'w4fridge', 'w4pilltray', 'w4clock', 'w4phonetable', 'w4bed', 'w4commode', 'w4poles',
-      'w4thoranam', 'w4altartray', 'w4coffee', 'w4garland', 'w4t_kali', 'w4t_ganesha', 'w4t_murugan', 'w4t_appa',
+      'w4thoranam', 'w4altartray', 'w4coffee', 'w4garland', 'w4angsana', 'w4foxpalm', 'w4streetlamp', 'w4bougain',
+      'w4corrpots', 'w4bicycle', 'w4clothesrack', 'w4t_kali', 'w4t_ganesha', 'w4t_murugan', 'w4t_appa',
       'w4t_oldphoto', 'iconwater',
       /* <<< this chapter's own keys <<< */
       /* Grandmaster Pho, Chad's own model, as chapter 3 cast him (reuseInEpisode) */

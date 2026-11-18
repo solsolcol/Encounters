@@ -128,6 +128,13 @@
 #   jobs-p7.json, angsana3 (the first, open crown) 01a1edd3-86ba-7676-a7e4-90e23980c774 · angsana4 (the dense one)
 #   01a1edd3-9e8c-7350-898a-005b59c988c4. The streetlamp LOOKED AT: a dark grey tapered pole, its arm and flat head
 #   reaching -x at a turn of 0, a concrete foot: pass (turned a quarter in the estate so each arm reaches the road).
+#   angsana3 came back leafy but sparse (an open umbrella); angsana4, the dense picture at the standard settings, came back
+#   a full closed crown on a buttressed trunk (its thumbnails): PICKED, TABLE.txt's row angsana4, remeshed at 40,000 (its
+#   leaves become narrower shards at that count, as chapter 1's rain tree's did at 30,000; seen from 20 m and more it reads
+#   as a crown). The bougainvillea (a green pot on its saucer, magenta bracts), the three pots (money plant on its iron
+#   stand, aloe in terracotta, pandan in black plastic), the bicycle (black, step-through, a basket, its stand down) and
+#   the rack (chrome X legs, a blue tee, a white towel, a batik sarong) LOOKED AT front, side, back and three-quarter: pass;
+#   each set against the corridor wall by its own measured box (c_props.js).
 #
 # ---------------------------------------------------------------------------------------------------------------------
 # 4. THE VOICES (17 Nov): three new speakers cast from the ElevenLabs library (voice DESIGN refused: the connector lacks

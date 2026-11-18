@@ -332,6 +332,8 @@
   }
  },
  "angsana3": {
+  "credits": 35,
+  "expires_at": 1795251031033,
   "image": "masters/v27.0/props/refs/angsana-2k.png",
   "image_to_3d": "01a1edd3-86ba-7676-a7e4-90e23980c774",
   "settings": {
@@ -352,11 +354,19 @@
    "texture_prompt": "lush green leaves, grey-brown furrowed bark",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 86719184
   }
  },
  "angsana4": {
+  "credits": 35,
+  "expires_at": 1795251198154,
   "image": "masters/v27.0/props/refs/angsana2-2k.png",
   "image_to_3d": "01a1edd3-9e8c-7350-898a-005b59c988c4",
+  "remesh": {
+   "40000": "01a1edde-428f-76f5-8899-a03619003fb4"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -375,6 +385,9 @@
    "texture_prompt": "dense glossy green leaves in heavy clumps, grey-brown furrowed bark",
    "texture_resolution": "8k",
    "topology": "triangle"
+  },
+  "sizes": {
+   "glb": 93617284
   }
  },
  "appa": {

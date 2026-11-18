@@ -772,6 +772,16 @@ ASSETS = {
     'w4altartray':  ('assets/w4altartray.glb', True, False),     # the altar's brass tray: the camphor plate, the bell, small lamps
     'w4coffee':     ('assets/w4coffee.glb', True, False),     # the coffee table
     'w4garland':    ('assets/w4garland.glb', True, False),     # a jasmine and marigold garland, hung on a picture
+    # e4c4 (R36, 18 Nov: Chad, "the hdb blocks at the start look way too basic"): the estate's and the corridor's things,
+    # each a checked picture on white (GPT Image 2.6 at high quality, ElevenLabs flow DvN9hpjTl7PGaYI7cIj8), then Meshy at its
+    # highest and its own remesh (masters/v27.0/props/jobs-p5.json, TABLE.txt, prop.sh)
+    'w4angsana':    ('assets/w4angsana.glb', True, False),     # an angsana, the estate's shade tree, along the road and the paths
+    'w4foxpalm':    ('assets/w4foxpalm.glb', True, False),     # a foxtail palm in the gaps between the trees
+    'w4streetlamp': ('assets/w4streetlamp.glb', True, False),     # the estate's street lamp: a grey pole, an LED head on its arm
+    'w4bougain':    ('assets/w4bougain.glb', True, False),     # a neighbour's bougainvillea in its pot in the corridor
+    'w4corrpots':   ('assets/w4corrpots.glb', True, False),     # a neighbour's three pots: money plant, aloe, pandan
+    'w4bicycle':    ('assets/w4bicycle.glb', True, False),     # a neighbour's bicycle against the corridor wall
+    'w4clothesrack':('assets/w4clothesrack.glb', True, False),     # a neighbour's folding clothes rack, a shirt, a towel, a sarong
     # e4c4: the pictures in her flat, each a picture laid in a frame (masters/v27.0/SOURCES.md): her altar's three, the
     # Wellcome Collection's own images at 1024 tall, whole (Public Domain Mark, credited in the panel); Appa's photograph,
     # rendered from his own full model (tools/portrait.mjs)
@@ -941,7 +951,8 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'w4bigbowl', 'w4sofa', 'w4cabinet', 'w4dintable', 'w4dinechair', 'w4framesmall', 'w4hugger', 'w4folder',
            'w4gate', 'w4frameport', 'w4armchair', 'w4tubelight', 'w4tvconsole', 'w4stool', 'w4standfan',
            'w4shoerack', 'w4tulsi', 'w4doorleaf', 'w4fridge', 'w4pilltray', 'w4clock', 'w4phonetable', 'w4bed',
-           'w4commode', 'w4poles', 'w4thoranam', 'w4altartray', 'w4coffee', 'w4garland', 'w4t_kali', 'w4t_ganesha',
+           'w4commode', 'w4poles', 'w4thoranam', 'w4altartray', 'w4coffee', 'w4garland', 'w4angsana', 'w4foxpalm',
+           'w4streetlamp', 'w4bougain', 'w4corrpots', 'w4bicycle', 'w4clothesrack', 'w4t_kali', 'w4t_ganesha',
            'w4t_murugan', 'w4t_appa', 'w4t_oldphoto', 'iconwater',
            # <<< e4c4 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)

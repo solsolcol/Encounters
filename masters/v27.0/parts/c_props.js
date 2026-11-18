@@ -200,10 +200,12 @@
        parapet (docs/research/V27.0-HDB.md §2.1): a shoe rack at each door, a bougainvillea, three pots, a bicycle, a
        clothes rack out to dry. Clear of the opening film's walk (x -6 to -2 by the parapet side) */
     for (const nx of NEIGHBOURS) stand('w4shoerack', nx - 1.55, FL.corr, -0.193 - 0.012, Math.PI, LOOK.w4shoerack);
-    stand('w4bougain', 12.6, FL.corr, -0.34, 0.4, { lift: 1.5 });
-    stand('w4corrpots', 14.6, FL.corr, -0.32, Math.PI, { lift: 1.5 });
-    stand('w4corrpots', -8.4, FL.corr, -0.32, Math.PI, { lift: 1.5 });
-    stand('w4bicycle', 17.4, FL.corr, -0.34, Math.PI, { lift: 1.5 });
-    stand('w4clothesrack', 23.0, FL.corr, -0.45, Math.PI, { lift: 1.5 });
+    /* each against the wall (its face at z 0) by its own box, measured from its file (18 Nov): the bougainvillea 0.74 x
+       0.63 (turned 0.4, 0.44 deep), the pots 1.0 x 0.49, the bicycle 1.70 x 0.71, the rack 1.35 x 0.75; 1.5 cm clear */
+    stand('w4bougain', 12.6, FL.corr, -0.45, 0.4, { lift: 1.5 });
+    stand('w4corrpots', 14.6, FL.corr, -0.262, Math.PI, { lift: 1.5 });
+    stand('w4corrpots', -8.4, FL.corr, -0.262, Math.PI, { lift: 1.5 });
+    stand('w4bicycle', 17.4, FL.corr, -0.37, Math.PI, { lift: 1.5 });
+    stand('w4clothesrack', 23.0, FL.corr, -0.39, Math.PI, { lift: 1.5 });
     if (have('w4doorleaf')) parseOnce('w4doorleaf').then(() => { for (const s of doorStandIns) s.visible = false; },
       () => { for (const s of doorStandIns) s.visible = true; });

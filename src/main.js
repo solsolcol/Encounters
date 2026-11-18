@@ -11904,6 +11904,12 @@ function ivRender(id, W, H, yawA, pitchA, k) {
   try { iv.r.render(iv.scene, iv.cam); } catch { return false; }
   return true;
 }
+/* v27.0: the showcase's turn (seconds since it came): one whole turn eased out over 1.5 s, ending face on; then a sway
+   of about eighteen degrees either side, faded in */
+function showYaw(s) {
+  const u = Math.min(1, s / 1.5), e = 1 - Math.pow(1 - u, 3), w = Math.min(1, Math.max(0, (s - 1.1) / 0.6));
+  return Math.PI * 2 * (1 - e) + 0.32 * Math.sin((s - 1.1) * 1.7) * w * w * (3 - 2 * w);
+}
 function ivBlit(cv, id, yawA, pitchA, k, renderPx) {
   const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return;
   const dpr = ivDpr();
@@ -11946,9 +11952,10 @@ function ivFrame(now) {
   if (unl.id) {
     const cv = $(unl.show ? 'scCv' : 'unCv');
     const secs = ((now || performance.now()) - unl.t0) / 1000;
-    /* (the showcase turns it a full turn in about three seconds, easing from quicker as it comes in: it is arriving, not
-       being looked over) */
-    if (cv) ivBlit(cv, unl.id, unl.show ? secs * 2.1 + 1.4 * (1 - Math.exp(-secs * 2.2)) : secs * 0.6, 0.1, 1, 0);
+    /* (the showcase turns it once round as it comes in, quick and slowing, and it comes to rest FACING him, then sways a
+       little while it stands: a turning model that shows its face. Build 20's photographs caught the first spin (a turn
+       every three seconds) on its plain back at both moments taken, and the face is the sacred side) */
+    if (cv) ivBlit(cv, unl.id, unl.show ? showYaw(secs) : secs * 0.6, 0.1, 1, 0);
     return;
   }
   const z = iv.zoom;

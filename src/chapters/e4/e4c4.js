@@ -40,9 +40,9 @@
      and the estate's night through the corridor windows. The sky is Singapore's at night: never black, an orange-grey
      glow from the city low down, a few stars */
   /* (R36, 18 Nov: a Singapore night's sky is never black: the city's light on its haze, warm and low, a dull purple-grey
-     overhead; the opening now begins on it) */
+     overhead; the opening now begins on it. Build 20's photographs still read it black above the blocks: a step lighter) */
   const FLAT = sky({
-    stops: [[0.00, '#4a3a36'], [0.08, '#3a2f33'], [0.25, '#262330'], [0.55, '#16161f'], [1.00, '#0c0d14']],
+    stops: [[0.00, '#5a463e'], [0.10, '#463837'], [0.30, '#2e2a36'], [0.60, '#1b1a24'], [1.00, '#0e0f17']],
     bg: 0x14131a, fog: [0x14131a, 0.004],
     hemi: [0xe8eef6, 0x9a8f7e, 0.95], key: [0xf2f6ff, 0.9, 1.0, 2.5, 2.6], fill: [0xb8c4d8, 0.22],
     stars: 0.25, moon: 0,
@@ -192,7 +192,8 @@
       'w4sofa', 'w4cabinet', 'w4dintable', 'w4dinechair', 'w4framesmall', 'w4hugger', 'w4folder', 'w4gate',
       'w4frameport', 'w4armchair', 'w4tubelight', 'w4tvconsole', 'w4stool', 'w4standfan', 'w4shoerack', 'w4tulsi',
       'w4doorleaf', 'w4fridge', 'w4pilltray', 'w4clock', 'w4phonetable', 'w4bed', 'w4commode', 'w4poles',
-      'w4thoranam', 'w4altartray', 'w4coffee', 'w4garland', 'w4t_kali', 'w4t_ganesha', 'w4t_murugan', 'w4t_appa',
+      'w4thoranam', 'w4altartray', 'w4coffee', 'w4garland', 'w4angsana', 'w4foxpalm', 'w4streetlamp', 'w4bougain',
+      'w4corrpots', 'w4bicycle', 'w4clothesrack', 'w4t_kali', 'w4t_ganesha', 'w4t_murugan', 'w4t_appa',
       'w4t_oldphoto', 'iconwater',
       /* <<< this chapter's own keys <<< */
       /* Grandmaster Pho, Chad's own model, as chapter 3 cast him (reuseInEpisode) */
@@ -1102,7 +1103,8 @@
       doors.forEach((dx, i) => {
         box(mBox, dx - 0.75, 1.62, -0.055, 0.3, 0.42, 0.11);
         const k = Math.min(3, i), v0 = 1 - (k + 1) / 4 + 0.01, v1 = 1 - k / 4 - 0.01, Bt = batchOf(plates);
-        const P = [[dx + 0.16, 2.2, -0.006], [dx - 0.16, 2.2, -0.006], [dx - 0.16, 2.26, -0.006], [dx + 0.16, 2.26, -0.006]], U = [[1, v0], [0, v0], [0, v1], [1, v1]], I = [0, 1, 2, 0, 2, 3];
+        /* (u runs from the +x end: seen from the corridor +x is on the left, and the plates were mirrored: build 20) */
+        const P = [[dx + 0.16, 2.2, -0.006], [dx - 0.16, 2.2, -0.006], [dx - 0.16, 2.26, -0.006], [dx + 0.16, 2.26, -0.006]], U = [[0, v0], [1, v0], [1, v1], [0, v1]], I = [0, 1, 2, 0, 2, 3];
         for (let j = 0; j < 6; j++) { const q = P[I[j]]; Bt.p.push(q[0], q[1], q[2]); Bt.n.push(0, 0, -1); Bt.u.push(U[I[j]][0], U[I[j]][1]); }
       });
       const mVent = B({ map: (() => { const W = 256, cv = document.createElement('canvas'); cv.width = cv.height = W; const x = cv.getContext('2d');
@@ -1267,7 +1269,8 @@
          streaks under it), the slab's edge under it: a 5 m tile */
       const ACC = '#5b3a30';
       const mPara = B({ fog: true, map: lit((() => { const [c, x] = canvas(512, 160), rr = rng(7103);
-        x.fillStyle = '#56534c'; x.fillRect(0, 0, 512, 160);
+        /* (a step darker at build 20: the night is the lit corridors') */
+        x.fillStyle = '#48453f'; x.fillRect(0, 0, 512, 160);
         x.fillStyle = ACC; x.fillRect(0, 60, 512, 22);                                   // the block's band of colour
         x.fillStyle = '#8f8a7e'; x.fillRect(0, 0, 512, 7);                               // the coping's lit edge
         x.fillStyle = '#34322e'; x.fillRect(0, 7, 512, 6);                               // its shadow
@@ -1278,7 +1281,8 @@
         return c; })()) });
       const mParaIn = B({ color: 0x6e695f, fog: true });                                // its inner face and top, in the corridor's light
       const mFin = B({ fog: true, map: lit((() => { const [c, x] = canvas(64, 512);
-        const g = x.createLinearGradient(0, 0, 0, 512); g.addColorStop(0, '#2c2b2e'); g.addColorStop(0.7, '#3a3834'); g.addColorStop(1, '#5a554c');
+        /* (the parapets' paint: drawn near black they read as poles, build 20) */
+        const g = x.createLinearGradient(0, 0, 0, 512); g.addColorStop(0, '#403d39'); g.addColorStop(0.7, '#4a4741'); g.addColorStop(1, '#58544c');
         x.fillStyle = g; x.fillRect(0, 0, 64, 512); x.fillStyle = 'rgba(255,255,255,0.05)'; x.fillRect(0, 0, 6, 512); return c; })()) });
       const mDark = B({ color: 0x24242a, fog: true });                                  // ends and backs, in the night
       const mRoofEdge = B({ color: 0x302f34, fog: true });
@@ -1385,20 +1389,25 @@
         g.addColorStop(0, 'rgba(255,246,226,0.55)'); g.addColorStop(0.4, 'rgba(255,240,215,0.22)'); g.addColorStop(1, 'rgba(255,240,215,0)');
         x.fillStyle = g; x.fillRect(0, 0, 128, 128); return c; })());
       const mPool = new THREE.MeshBasicMaterial({ map: poolT, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: true }); mats.push(mPool);
+      /* each lamp's pole on a footpath 0.6 m from the kerb, its arm over the road (s: the way it reaches in z). The model
+         (its photographs and its box, 18 Nov): 1.99 m long, the arm reaching -x at a turn of 0, the pole 0.75 m from the
+         box's middle on its +x side, the head's middle 1.45 m out from the pole; turned a quarter to reach the road */
       const LAMPS = [];
-      for (let lx = -96; lx <= 96; lx += 24) LAMPS.push({ x: lx, z: -27.3, ry: Math.PI });
-      for (let lx = -84; lx <= 84; lx += 24) LAMPS.push({ x: lx, z: -38.9, ry: 0 });
-      for (const L of LAMPS) { const pz = L.z + (L.ry ? -1.6 : 1.6);
+      for (let lx = -96; lx <= 96; lx += 24) LAMPS.push({ x: lx, zp: -27.4, s: -1 });
+      for (let lx = -84; lx <= 84; lx += 24) LAMPS.push({ x: lx, zp: -35.8, s: 1 });
+      for (const L of LAMPS) { const pz = L.zp + L.s * 1.45;
         quadUV(mPool, [L.x - 7, G + 0.05, pz + 7], [L.x + 7, G + 0.05, pz + 7], [L.x + 7, G + 0.05, pz - 7], [L.x - 7, G + 0.05, pz - 7], 0, 0, 1, 1); }
-      /* the lamp's arm reaches -x at a turn of 0 (its photographs, 18 Nov): turned a quarter so each reaches over the road */
-      many('w4streetlamp', LAMPS.map(L => ({ x: L.x, y: G, z: L.z, ry: L.ry ? -Math.PI / 2 : Math.PI / 2 })), world, 0.02);
+      many('w4streetlamp', LAMPS.map(L => ({ x: L.x, y: G, z: L.zp + L.s * 0.75, ry: L.s < 0 ? -Math.PI / 2 : Math.PI / 2 })), world, 0.02);
       /* the estate's trees: angsanas along the road and the paths, foxtail palms in the gaps */
       const TREES = [], PALMS = [], tr = rng(7110);
       for (let tx = -84; tx <= 84; tx += 16) { if (tr() < 0.15) continue; TREES.push({ x: tx + (tr() - 0.5) * 4, y: G, z: -23.2 + (tr() - 0.5) * 2, ry: tr() * 6.28, s: 0.85 + tr() * 0.3 }); }
       for (const [tx, tz] of [[-68, -36], [-74, -50], [54, -33], [61, -47], [-30, -8.5], [-13, -9], [16, -8.5], [33, -9]]) TREES.push({ x: tx, y: G, z: tz, ry: tr() * 6.28, s: 0.8 + tr() * 0.3 });
       for (let tx = -90; tx <= 90; tx += 13) { if (tr() < 0.35) continue; PALMS.push({ x: tx + (tr() - 0.5) * 3, y: G, z: -17.5 + (tr() - 0.5) * 3, ry: tr() * 6.28, s: 0.9 + tr() * 0.2 }); }
-      many('w4angsana', TREES, world, 0.03);
-      many('w4foxpalm', PALMS, world, 0.03);
+      /* in bands 32 m wide, each its own instanced mesh, so the frame draws only the trees it looks at (an instanced mesh
+         is culled whole by the sphere round all its copies: one mesh for the street was every tree in every frame) */
+      const bands = (list) => { const byBand = new Map(); for (const it of list) { const band = Math.floor((it.x + 200) / 32); if (!byBand.has(band)) byBand.set(band, []); byBand.get(band).push(it); } return [...byBand.values()]; };
+      for (const grp of bands(TREES)) many('w4angsana', grp, world, 0.03);
+      for (const grp of bands(PALMS)) many('w4foxpalm', grp, world, 0.03);
 
       /* ---------------------------------------------- THE BLOCKS ROUND THEM, and the newer estate's taller ones beyond:
          each its corridor lines and its windows, painted at a storey's true size, fading into the haze */
@@ -3474,11 +3483,13 @@
        parapet (docs/research/V27.0-HDB.md §2.1): a shoe rack at each door, a bougainvillea, three pots, a bicycle, a
        clothes rack out to dry. Clear of the opening film's walk (x -6 to -2 by the parapet side) */
     for (const nx of NEIGHBOURS) stand('w4shoerack', nx - 1.55, FL.corr, -0.193 - 0.012, Math.PI, LOOK.w4shoerack);
-    stand('w4bougain', 12.6, FL.corr, -0.34, 0.4, { lift: 1.5 });
-    stand('w4corrpots', 14.6, FL.corr, -0.32, Math.PI, { lift: 1.5 });
-    stand('w4corrpots', -8.4, FL.corr, -0.32, Math.PI, { lift: 1.5 });
-    stand('w4bicycle', 17.4, FL.corr, -0.34, Math.PI, { lift: 1.5 });
-    stand('w4clothesrack', 23.0, FL.corr, -0.45, Math.PI, { lift: 1.5 });
+    /* each against the wall (its face at z 0) by its own box, measured from its file (18 Nov): the bougainvillea 0.74 x
+       0.63 (turned 0.4, 0.44 deep), the pots 1.0 x 0.49, the bicycle 1.70 x 0.71, the rack 1.35 x 0.75; 1.5 cm clear */
+    stand('w4bougain', 12.6, FL.corr, -0.45, 0.4, { lift: 1.5 });
+    stand('w4corrpots', 14.6, FL.corr, -0.262, Math.PI, { lift: 1.5 });
+    stand('w4corrpots', -8.4, FL.corr, -0.262, Math.PI, { lift: 1.5 });
+    stand('w4bicycle', 17.4, FL.corr, -0.37, Math.PI, { lift: 1.5 });
+    stand('w4clothesrack', 23.0, FL.corr, -0.39, Math.PI, { lift: 1.5 });
     if (have('w4doorleaf')) parseOnce('w4doorleaf').then(() => { for (const s of doorStandIns) s.visible = false; },
       () => { for (const s of doorStandIns) s.visible = true; });
     /* ================================================================ THE CAST (the plan's §8; masters/v27.0/people.sh)

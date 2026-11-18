@@ -2346,7 +2346,8 @@ body.capsOn #interact{padding-bottom:calc(var(--capTop,170px) + 14px)}
    room. A flash where it lands, three rings of gold going out, rays turning behind it, sparks flying out, a glow round
    it, the model turning in the middle; for its last half second it flares and is drawn into a point of light. Sized on
    the shorter side so a phone and a desktop see the same thing */
-#showcase{position:fixed;inset:0;z-index:12;pointer-events:none;display:grid;place-items:center;overflow:hidden}
+/* (build 20: the grid's one cell is the screen: a ray wider than the screen had widened the cell, and every layer centred on it, a third of the screen to the right) */
+#showcase{position:fixed;inset:0;z-index:12;pointer-events:none;display:grid;grid-template:100%/100%;place-items:center;place-content:center;overflow:hidden}
 #showcase > *{grid-area:1/1}
 #showcase .scGlow{width:min(124vw,82vh);height:min(124vw,82vh);border-radius:50%;
   background:radial-gradient(circle,rgba(255,238,175,.66) 0%,rgba(255,198,86,.36) 28%,rgba(255,170,40,.13) 50%,transparent 69%);
