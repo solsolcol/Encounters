@@ -243,7 +243,7 @@
       guardBriefKey: 'Keep the room while Grandmaster Pho blesses her. Open your Spirit Vision (V) to see them. Click or press Space to flick the holy water and send them back, and R to dip the bowl again at his bowl. Each one that reaches Amma hurts her: if her bar runs out, the blessing fails. Keep them from her family and from you too. Not everything you see is against you.',
       // the fight's stakes and the call (Chad, 18 Nov: plan §0 R16 to R29)
       ammaBar: 'Amma',
-      objGold: 'Send them back with the golden water',
+      objGold: 'Flick the golden water',
       goldLabel: 'Empowered',
       goldSub: 'The water turns to gold.',
       // the card when her life runs out: what happened, over Master Z's own words (the case file S1·12, word for word)

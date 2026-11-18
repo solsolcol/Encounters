@@ -7527,14 +7527,21 @@ function lifeFrame() {
   let ex, ey, ang = 0;
   if (inView) { ex = Math.max(mx, Math.min(W - mx, x)); ey = Math.max(top, Math.min(H - bot, y)); }
   else {
-    const cx = W / 2, cy = (top + H - bot) / 2; let dx = x - cx, dy = y - cy;
+    /* (at the edge the arrow stands outside the box toward them, so the box keeps further in from every side: 18 Nov, at the
+       foot of a phone's screen its arrow was under the bowl's count) */
+    const topE = 250, botE = 214, mxE = 100;
+    const cx = W / 2, cy = (topE + H - botE) / 2; let dx = x - cx, dy = y - cy;
     if (Math.abs(dx) < 1e-3 && Math.abs(dy) < 1e-3) dy = 1;
-    const sc = Math.min((W / 2 - mx) / Math.max(1e-3, Math.abs(dx)), ((H - bot - top) / 2) / Math.max(1e-3, Math.abs(dy)));
+    const sc = Math.min((W / 2 - mxE) / Math.max(1e-3, Math.abs(dx)), ((H - botE - topE) / 2) / Math.max(1e-3, Math.abs(dy)));
     ex = cx + dx * sc; ey = cy + dy * sc; ang = Math.atan2(dy, dx);
   }
   el.style.left = ex.toFixed(1) + 'px'; el.style.top = ey.toFixed(1) + 'px';
   el.classList.toggle('edge', !inView);
-  if (!inView) { const a = el.querySelector('.lbArrow'); if (a) a.style.transform = 'rotate(' + ang.toFixed(3) + 'rad)'; }
+  if (!inView) { const a = el.querySelector('.lbArrow'); if (a) {
+    /* (the arrow just outside the box's own edge in its direction, whatever the label makes its width) */
+    const hw = el.offsetWidth / 2, hh = el.offsetHeight / 2, c = Math.abs(Math.cos(ang)), sn = Math.abs(Math.sin(ang));
+    const d = Math.min(c > 1e-3 ? hw / c : 1e9, sn > 1e-3 ? hh / sn : 1e9) + 4;
+    a.style.transform = 'rotate(' + ang.toFixed(3) + 'rad)'; a.style.setProperty('--ad', d.toFixed(1) + 'px'); } }
 }
 /* v27.0 · THE FIFTY-SIXTH SEAM: A GLOW AT THE EDGES OF HIS SIGHT (kit.edge). Chad, 18 Nov: "the entire screen seem to have a
    golden vignette to show the new empowered status". A colour held at the screen's edges, breathing (CSS), under the

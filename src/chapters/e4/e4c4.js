@@ -243,7 +243,7 @@
       guardBriefKey: 'Keep the room while Grandmaster Pho blesses her. Open your Spirit Vision (V) to see them. Click or press Space to flick the holy water and send them back, and R to dip the bowl again at his bowl. Each one that reaches Amma hurts her: if her bar runs out, the blessing fails. Keep them from her family and from you too. Not everything you see is against you.',
       // the fight's stakes and the call (Chad, 18 Nov: plan §0 R16 to R29)
       ammaBar: 'Amma',
-      objGold: 'Send them back with the golden water',
+      objGold: 'Flick the golden water',
       goldLabel: 'Empowered',
       goldSub: 'The water turns to gold.',
       // the card when her life runs out: what happened, over Master Z's own words (the case file S1·12, word for word)
@@ -4218,6 +4218,9 @@
       const F = play.fight; F.call = 'gold'; F.goldT = 0; F.batchAt = 1.0; F.urge = null;
       if (kit) { if (kit.edge) kit.edge({ color: [255, 196, 84], k: 0.85, secs: 1.2 }); if (kit.sprayColor) kit.sprayColor(0xffc24a, { size: 1.6 }); if (kit.ammo) kit.ammo(DATA.weapon.rounds); }
       fx('u4goldpower', 1, 0);
+      /* (the amulet's light reaches her too: her life at least half back. 18 Nov, photographed: held at 15 through the surge,
+         she came into the gold two touches from the loss, and the power he was given was spent guarding a last breath) */
+      F.hp = Math.max(F.hp, 50); if (kit && kit.health) kit.health({ k: F.hp / 100 });
       let i = 0; for (const S of F.shapes) if (S.state !== 'gone' && S.state !== 'leave') { S.state = 'leave'; S.leave = -0.5 * ((i++ * 0.6180339887) % 1); }
       if (i) fx('u4goldclear', 0.9, 0);
       play.heat = Math.min(play.heat, 0.5);
@@ -4382,13 +4385,24 @@
     function altarTick() {
       if (!kit || !kit.weaponBlock) return;
       let block = false;
-      if (phase === 'bless' && play.water && getState() === 'play') {
+      /* (never in the gold, whose flick takes every green one in view whatever stands behind them; and never while the
+         flick's reach would take a green one in front of her altar: 18 Nov, from the room's south side she sits between him
+         and her altar, and every flick at what was on her was refused) */
+      const F = play.fight;
+      if (phase === 'bless' && play.water && getState() === 'play' && !(F && F.on && F.call === 'gold')) {
         _ray.setFromCamera({ x: 0, y: 0 }, camera);
         altarHit.updateWorldMatrix(true, false); _ab.setFromObject(altarHit);
         const pt = _ray.ray.intersectBox(_ab, _hit);
         if (pt) { const dA = _ray.ray.origin.distanceTo(pt); block = true;
           for (const P of [spirits.appa, spirits.large].concat(spirits.wander)) { const h = P.hit; if (!h || !h.visible) continue;
-            const s = new THREE.Sphere(h.position, h.scale.x); if (_ray.ray.intersectsSphere(s) && _ray.ray.origin.distanceTo(h.position) - h.scale.x < dA) { block = false; break; } } }
+            const s = new THREE.Sphere(h.position, h.scale.x); if (_ray.ray.intersectsSphere(s) && _ray.ray.origin.distanceTo(h.position) - h.scale.x < dA) { block = false; break; } }
+          if (block && F && F.on) for (const S of F.shapes) {
+            if (S.state !== 'come' && S.state !== 'feed') continue;
+            const m = S.P.hit; if (!m || !m.visible) continue;
+            _fr.copy(m.position).sub(_ray.ray.origin); const along = _fr.dot(_ray.ray.direction);
+            if (along < 0.15 || along > Math.min(FAN.far, dA)) continue;
+            _fq.copy(_ray.ray.direction).multiplyScalar(along).add(_ray.ray.origin);
+            if (_fq.distanceTo(m.position) <= Math.min(FAN.max, FAN.r0 + FAN.perM * along)) { block = false; break; } } }
       }
       if (block !== altarBlock) { altarBlock = block; kit.weaponBlock(block ? W.noAltar : null); }
     }

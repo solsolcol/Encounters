@@ -289,9 +289,9 @@ body.hasVision.evopen .visionBtn,body.hasVision.unlockopen .visionBtn,body.hasVi
 #lifeBar.edge.hit{animation:lbHitE .5s ease-out}
 @keyframes lbHit{0%{transform:translate(-50%,-100%) scale(1.14);box-shadow:0 0 22px 6px rgba(255,70,90,.75)}100%{transform:translate(-50%,-100%) scale(1)}}
 @keyframes lbHitE{0%{transform:translate(-50%,-50%) scale(1.14);box-shadow:0 0 22px 6px rgba(255,70,90,.75)}100%{transform:translate(-50%,-50%) scale(1)}}
-#lifeBar .lbArrow{display:none;position:absolute;left:50%;top:50%;width:0;height:0;margin:-7px 0 0 -7px;pointer-events:none}
+#lifeBar .lbArrow{display:none;position:absolute;left:50%;top:50%;width:0;height:0;pointer-events:none}
 #lifeBar.edge .lbArrow{display:block}
-#lifeBar .lbArrow::before{content:'';position:absolute;left:72px;top:0;border:7px solid transparent;border-left:11px solid #FF5468;
+#lifeBar .lbArrow::before{content:'';position:absolute;left:var(--ad,72px);top:-7px;border:7px solid transparent;border-left:11px solid #FF5468;border-right:0;
   filter:drop-shadow(0 0 4px rgba(255,84,104,.8))}
 .visionBtn:hover .invLabel,.visionBtn:focus-visible .invLabel{border-color:#8CF2FF}
 /* v12.0: RIFLE MODE's HUD — only while a chapter's weapon is OUT
@@ -2272,6 +2272,9 @@ body.capsOn #interact{padding-bottom:calc(var(--capTop,170px) + 14px)}
      14 px from the edge, plus 10 px of air) and the torch sits beside it */
   .obox{max-width:92vw;font-size:.94rem;padding:7px 12px;gap:10px}
   body.hasTorch .obox{max-width:calc(100vw - 148px);flex-direction:column;align-items:flex-start;gap:2px}
+  /* v27.0: and the eye (Spirit Vision) stands in that column at the same height: the same narrower box (18 Nov, photographed:
+     "Send them back with the golden water" ran under the eye and lost its last word) */
+  body.hasVision .obox{max-width:calc(100vw - 148px);flex-direction:column;align-items:flex-start;gap:2px}
   /* v11.8 (Chad's screenshot): the presence banner sat ACROSS the objective
      box — its 212 px top was chosen against no box at all. With an
      objective on screen it stands under the box, whatever the box's
