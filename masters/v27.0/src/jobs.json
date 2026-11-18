@@ -308,6 +308,29 @@
    "glb": 74061780
   }
  },
+ "angsana2": {
+  "image": "masters/v27.0/props/refs/angsana2-2k.png",
+  "image_to_3d": "01a1edce-9793-732a-8547-279e84fdc9c2",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_prompt": "dense glossy green leaves in heavy clumps, grey-brown furrowed bark",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
  "appa": {
   "credits": 40,
   "expires_at": 1795210756907,
@@ -811,6 +834,9 @@
   "expires_at": 1795249272718,
   "image": "masters/v27.0/props/refs/foxpalm-2k.png",
   "image_to_3d": "01a1edb4-ed4d-72b9-9c4c-a5cb019a3756",
+  "remesh": {
+   "30000": "01a1edca-0d90-7740-b740-ca23acc2d68d"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -1542,6 +1568,9 @@
   "expires_at": 1795248852443,
   "image": "masters/v27.0/props/refs/streetlamp-2k.png",
   "image_to_3d": "01a1edb4-f7be-7341-a958-ddbc5976063f",
+  "remesh": {
+   "6000": "01a1edcf-3aaf-76bd-9005-5d4ee685d9c9"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,

@@ -39,8 +39,10 @@
   /* HER FLAT AT NIGHT: a fluorescent tube in the middle of the living room's ceiling (cool white, even, from above),
      and the estate's night through the corridor windows. The sky is Singapore's at night: never black, an orange-grey
      glow from the city low down, a few stars */
+  /* (R36, 18 Nov: a Singapore night's sky is never black: the city's light on its haze, warm and low, a dull purple-grey
+     overhead; the opening now begins on it) */
   const FLAT = sky({
-    stops: [[0.00, '#3a2f30'], [0.10, '#2a2328'], [0.30, '#191820'], [0.60, '#101119'], [1.00, '#0a0b12']],
+    stops: [[0.00, '#4a3a36'], [0.08, '#3a2f33'], [0.25, '#262330'], [0.55, '#16161f'], [1.00, '#0c0d14']],
     bg: 0x14131a, fog: [0x14131a, 0.004],
     hemi: [0xe8eef6, 0x9a8f7e, 0.95], key: [0xf2f6ff, 0.9, 1.0, 2.5, 2.6], fill: [0xb8c4d8, 0.22],
     stars: 0.25, moon: 0,

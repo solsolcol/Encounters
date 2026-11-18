@@ -353,7 +353,7 @@
     function buildEstate() {
       const A = ACROSS, G = GROUND_Y, SH = A.storey, NS = A.storeys, TOP = G + NS * SH;
       const WZ = A.z, PZ = A.z + 1.9, PO = PZ + 0.15;            // the flats' corridor wall; the parapet's inner and outer faces
-      const BAY = 10.2, LIFT = { x0: -16.6, x1: -11.4 };          // a unit's frontage; the lift lobby's width in the corridor
+      const BAY = 10.2, STAIR = 6.6, LOBBY_I = 4;                 // a unit's frontage; a stair tower's width; the bay the lift lobby is
       const r = rng(270042);
       const canvas = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return [c, c.getContext('2d')]; };
       const lit = (c, rx, ry) => { const t = tex(done(THREE, c, true)); if (rx) rep(t, rx, ry); t.anisotropy = 8; return t; };
@@ -500,7 +500,9 @@
       const mRoofEdge = B({ color: 0x302f34, fog: true });
 
       /* ---------------------------------------------- THE BLOCK ACROSS, storey by storey */
-      const bays = []; for (let bx = A.x0 + 4.4; bx + BAY <= A.x1 - 4.4 + 0.01; bx += BAY) bays.push(bx);
+      /* nine flats a storey between the stair towers (105 m: 6.6 + 9 x 10.2 + 6.6), the lift lobby in the fifth */
+      const bays = []; for (let bx = A.x0 + STAIR; bx + BAY <= A.x1 - STAIR + 0.01; bx += BAY) bays.push(bx);
+      const LX = bays[LOBBY_I] + BAY / 2;
       const deal = rng(4404);
       for (let s = 1; s < NS; s++) {
         const fl = G + s * SH, ce = fl + SH - 0.25;
@@ -513,8 +515,8 @@
         quadUV(mCeil7, [A.x0, ce, WZ], [A.x1, ce, WZ], [A.x1, ce, PZ], [A.x0, ce, PZ], 0, 0, (A.x1 - A.x0) / 7, 1);
         for (let bx = A.x0 + 3.5; bx < A.x1; bx += 7) box(mBat, bx, ce - 0.03, (WZ + PZ) / 2, 1.2, 0.04, 0.08);
         /* the flats behind it, bay by bay (and the lift lobby's cell where the lobby is) */
-        for (const bx of bays) {
-          const lobby = bx < LIFT.x1 && bx + BAY > LIFT.x0;
+        for (const [bi, bx] of bays.entries()) {
+          const lobby = bi === LOBBY_I;
           const v = lobby ? NV : (deal() * NV) | 0, flip = deal() < 0.5;
           const v0 = 1 - (v + 1) / (NV + 1), v1 = 1 - v / (NV + 1), u0 = flip ? 1 : 0, u1 = flip ? 0 : 1;
           quadUV(mFlats, [bx, fl, WZ], [bx + BAY, fl, WZ], [bx + BAY, ce, WZ], [bx, ce, WZ], u0, v0 + 0.0004, u1, v1 - 0.0004);
@@ -527,9 +529,10 @@
           for (let i = 0; i < 6; i++) for (let j = 0; j < 4; j++) { x.fillStyle = s ? `rgba(230,220,190,${0.25 + rr() * 0.25})` : 'rgba(40,40,40,1)'; x.fillRect(22 + i * 15, y + 8 + j * 8, 9, 5); } }
         return c; })());
       const mStair = B({ map: stairT, fog: true });
-      for (const sx of [A.x0 + 2.2, A.x1 - 2.2]) {
-        quadUV(mStair, [sx - 2.2, G, PO + 1.02], [sx + 2.2, G, PO + 1.02], [sx + 2.2, TOP + 1.4, PO + 1.02], [sx - 2.2, TOP + 1.4, PO + 1.02], 0, 0, 1, 1);
-        box(mDark, sx, (G + TOP + 1.4) / 2, (WZ + PO + 1.0) / 2 - 3, 4.4, TOP + 1.4 - G, PO + 1.0 - WZ + 6);
+      for (const sx of [A.x0 + STAIR / 2, A.x1 - STAIR / 2]) {
+        const hw = STAIR / 2;
+        quadUV(mStair, [sx - hw, G, PO + 1.02], [sx + hw, G, PO + 1.02], [sx + hw, TOP + 1.4, PO + 1.02], [sx - hw, TOP + 1.4, PO + 1.02], 0, 0, 1, 1);
+        box(mDark, sx, (G + TOP + 1.4) / 2, (WZ + PO + 1.0) / 2 - 3, STAIR, TOP + 1.4 - G, PO + 1.0 - WZ + 6);
       }
       /* the party walls standing out of the face as fins, ground to roof, between every two flats */
       for (let i = 0; i <= bays.length; i++) { const fx = (i < bays.length ? bays[i] : bays[bays.length - 1] + BAY);
@@ -543,7 +546,6 @@
         box(mRoofEdge, (A.x0 + A.x1) / 2, TOP + 0.4, (zb + zf) / 2, A.x1 - A.x0 + 0.4, 1.4, zf - zb); }
       quadUV(mPara, [A.x0, TOP - 0.3, PO + 0.01], [A.x1, TOP - 0.3, PO + 0.01], [A.x1, TOP + 1.1, PO + 0.01], [A.x0, TOP + 1.1, PO + 0.01], 0, 0, (A.x1 - A.x0) / 5, 1);
       /* THE LIFT CORE: its shaft above the roof, the motor room, the block's number on it, the lobby's tubes brighter */
-      const LX = (LIFT.x0 + LIFT.x1) / 2;
       const numT = lit((() => { const [c, x] = canvas(256, 512);
         x.fillStyle = '#3a3633'; x.fillRect(0, 0, 256, 512); x.fillStyle = '#6b3f31'; x.fillRect(0, 0, 256, 30);
         x.fillStyle = '#e9e2d0'; x.font = 'bold 132px Arial, Helvetica, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle';

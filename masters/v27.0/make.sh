@@ -116,6 +116,12 @@
 #     corrpots 01a1edb5-0d6f-711a-9743-79208a3992e9 · bicycle 01a1edb5-1a30-758d-9bf9-309887bab0c5 ·
 #     clothesrack 01a1edb5-2497-7415-8320-3646ac87968a
 #   then prop.sh (their remesh to TABLE.txt's counts, prepmeshy, each photographed alone at 1100 px).
+#   The angsana came back BARE: Meshy's own thumbnails (src/thumb-angsana-*.png) show branches and no leaves, from a
+#   reference whose crown is open and full of sky. Its photographs refused it. A second picture asked for the crown as
+#   one dense mass of leaf clumps with almost no sky through it (node bFw0GjCae4xezIFW5Pmj, angsana2, two takes).
+#   Take b (PsVwfFd0TlE8bG5UdLC0) LOOKED AT full size and picked (a single trunk, the crown a closed dome), given a white
+#   margin (x1.16, the picture untouched) and sent with a texture prompt: jobs-p6.json, image-to-3d
+#   01a1edce-9793-732a-8547-279e84fdc9c2. TABLE.txt's row is angsana2 now (the refused model stays in src).
 #
 # ---------------------------------------------------------------------------------------------------------------------
 # 4. THE VOICES (17 Nov): three new speakers cast from the ElevenLabs library (voice DESIGN refused: the connector lacks
