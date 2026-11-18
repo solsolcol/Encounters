@@ -854,8 +854,9 @@
        nothing over the room but its light; the fight stands still under it. Its model was made ready under the chapter's
        curtain (`items`), and warmed again at the surge. Build 21 (Chad, 18 Nov: "design a new nicer effect ... The rays
        you showed come from the item unlocked effect"; "floating hovering slight subtle bobbing ... the screen shakes as it
-       release its power, and a circular halo glow effect releases from the amulet outwards"): its own entrance, 4.2 s (the
-       engine's showcase): born from gathered light, it turns and hovers; 1.2 s before the end it RELEASES ITS POWER (the
+       release its power, and a circular halo glow effect releases from the amulet outwards"): its own entrance, 5.2 s (the
+       engine's showcase; at 4.2 the hover had one second, too short to read as a bob): born from gathered light, it turns
+       and hovers; 1.2 s before the end it RELEASES ITS POWER (the
        room shakes, halos go out, its sound), and the golden wave goes through the room from that moment; then it goes down
        into the holy water */
     const WAVE_GOLD = { color: 0xffc552, secs: 3.2, reach: 14, trail: 0.12 };
@@ -864,7 +865,7 @@
       F.call = 'shown'; F.urge = null; F.released = false; if (kit && kit.visionUrge) kit.visionUrge(false);
       const go = () => { if (play.fight === F && F.on) goldBegin(); };
       const release = () => { if (play.fight !== F) return; F.released = true; if (kit && kit.wave) kit.wave(WAVE_GOLD); };
-      if (!(kit && kit.unlock && kit.unlock('amulet', { showcase: true, auto: 4.2, sound: 'u4goldcall', releaseSound: 'u4goldpower', onRelease: release, onClose: go }))) go();
+      if (!(kit && kit.unlock && kit.unlock('amulet', { showcase: true, auto: 5.2, sound: 'u4goldcall', releaseSound: 'u4goldpower', onRelease: release, onClose: go }))) go();
     }
     /* EMPOWERED (R26 to R29: "the entire screen seem to have a golden vignette to show the new empowered status, and now the
        water being flicked becomes golden glow instead"): the gold at the edges of his sight (the fifty-sixth seam), the water
