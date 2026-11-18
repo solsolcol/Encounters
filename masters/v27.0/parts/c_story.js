@@ -555,7 +555,9 @@
     }
     function fightEnd() {
       const F = play.fight; F.ended = true; F.on = false; fightMusOff(); chantStop();
-      for (const S of F.shapes) if (S.state !== 'gone' && S.state !== 'leave') { S.state = 'leave'; S.leave = -0.4 * Math.random(); }
+      /* (each shape still in the room goes on its own beat: a golden-ratio spread over 0.4 s by its place in the list, the
+         same on every run and every replay: v6.15, nothing random unseeded) */
+      F.shapes.forEach((S, i) => { if (S.state !== 'gone' && S.state !== 'leave') { S.state = 'leave'; S.leave = -0.4 * ((i * 0.6180339887) % 1); } });
       if (kit) { kit.bar(null); kit.captions(null); }
       if (F.families <= 1) bank(W.noteKept, 0, 4);
       whenReady(cast.phoB, (P) => handOnHead(P, false));

@@ -71,6 +71,11 @@ if (FILM && !OPT) {
   console.log(el(), 'film', FILM, await p.evaluate((k) => window.__enc.kit.film(k), FILM));
 }
 await p.waitForFunction(() => window.__enc.cine.active() && window.__enc.getState() === 'cine', null, { timeout: 1500000, polling: 500 });
+/* (v27.0) NOCULL='key[#i],...': those people's meshes drawn whatever their culling spheres say, so a part missing from a
+   picture is proved culled (it comes back) or not (it stays missing) */
+if (process.env.NOCULL) console.log('   nocull', await p.evaluate((spec) => { const S = window.__enc.stage; let n = 0;
+  for (const who of spec.split(',')) { const [key, i] = who.split('#'), P = S.person && S.person(key, +(i || 0)); if (P) P.group.traverse(m => { if (m.isMesh) { m.frustumCulled = false; n++; } }); }
+  return n; }, process.env.NOCULL));
 await p.waitForFunction(() => window.__enc.cine.t() > 0.2, null, { timeout: 600000, polling: 300 });
 for (const t of TS) {
   await p.evaluate((t) => window.__enc.cine.seek(t), t);

@@ -3101,6 +3101,9 @@
     const MASTER_DOWN = { hipOver: 0.11, sink: 0.01, sole: GROUND_SOLE, edge: -9, flat: true };
     const PHO_BREATH = 6;
     const PHO_TALK_HEAD = { Sitting_Answering_Questions: [0.3, 'Sit_to_Stand_Transition_M'] };
+    /* (standing, his talk's head held as his seated one is: Chad's word on chapter 3's, "greatly restrained", v26.3; its
+       head swings 9 cm side to side in its own file: tools/probes/takepath.mjs) */
+    const PHO_STAND_HEAD = { Talk_with_Hands_Open: [0.3, 'Sit_to_Stand_Transition_M'] };
     /* the shoulders let down in every standing and talking take (v26.8, every standing person) */
     const STAND_SHOULDERS = { Idle_3: 1, Stand_and_Chat: 1, Listening_Gesture: 1, Talk_with_Hands_Open: 1, Talk_with_Right_Hand_Open: 1, Walking: 1 };
 
@@ -3167,7 +3170,7 @@
       const phoBRy = faceTo(AT.phoB.x, AT.phoB.z, CHAIR.x, CHAIR.z);
       cast.phoB = mkPerson('pho', AT.phoB.x, AT.phoB.z, phoBRy, { take: 'Sit_to_Stand_Transition_M', hidden: true,
         win: { Sit_to_Stand_Transition_M: [5.85, 0.25, PHO_BREATH] }, skins: false, look: lookD, blobW: 0.9, blobD: 0.8,
-        centre: true, talk: 'Talk_with_Hands_Open' });
+        centre: true, talk: 'Talk_with_Hands_Open', headDamp: PHO_STAND_HEAD });
       cast.phoB.home = { x: AT.phoB.x, z: AT.phoB.z, ry: phoBRy };
     }
     buildCast();
@@ -3891,7 +3894,9 @@
     }
     function fightEnd() {
       const F = play.fight; F.ended = true; F.on = false; fightMusOff(); chantStop();
-      for (const S of F.shapes) if (S.state !== 'gone' && S.state !== 'leave') { S.state = 'leave'; S.leave = -0.4 * Math.random(); }
+      /* (each shape still in the room goes on its own beat: a golden-ratio spread over 0.4 s by its place in the list, the
+         same on every run and every replay: v6.15, nothing random unseeded) */
+      F.shapes.forEach((S, i) => { if (S.state !== 'gone' && S.state !== 'leave') { S.state = 'leave'; S.leave = -0.4 * ((i * 0.6180339887) % 1); } });
       if (kit) { kit.bar(null); kit.captions(null); }
       if (F.families <= 1) bank(W.noteKept, 0, 4);
       whenReady(cast.phoB, (P) => handOnHead(P, false));
@@ -4198,7 +4203,12 @@
     /* (18 Nov: from 1.12, 4.45 her face was a profile in every close shot of the trance; here she is three quarters to him,
        a pace from her left knee, clear of the lamp at the altar's foot and of Appa by his photograph) */
     const S_EYE = [0.55, 1.62, 4.42];                                         // he stands at her front left, by her goddess's wall
-    const CLOSE_EYE = [1.12, 1.62, 4.45];                                     // where he watches the close from (her family stands about her)
+    /* where he watches the close from: his back to her altar's wall between Appa's photograph and the master bedroom's
+       door, her front left (18 Nov, photographed: from 1.12, 4.45 Ravi stood on the line from his eyes to her, his back
+       filling every shot of the close, and his teacher's word was a dark doorway and an arm). From here she is three
+       quarters to him at her altar, Mala beyond her, Ravi at her left a step behind (clear of both lines), his teacher
+       behind her chair seen past Ravi's shoulder */
+    const CLOSE_EYE = [1.30, 1.62, 4.93];
     /* (ending B: where the thing comes to, a hand's breadth from his eyes, on the line from her back to him; and that line) */
     const TOWARD = (() => { const dx = CHAIR.x - S_EYE[0], dz = CHAIR.z - 0.3 - S_EYE[2], l = Math.hypot(dx, dz); return [dx / l, dz / l]; })();
     const COMES = [S_EYE[0] + TOWARD[0] * 0.36, 1.1, S_EYE[2] + TOWARD[1] * 0.36];
@@ -4349,7 +4359,11 @@
     const A_WALK = [{ x: R1.x + 0.32, z: R1.z + 0.42 }, { x: R1.x - 0.02, z: R1.z + 0.56 }];
     const STEPS_TK = 0.9;                                                     // her steps take run to here: 0.28 m by its own travel
     const MALA_C = { x: CHAIR.x - 0.42, z: CHAIR.z + 0.82 };                 // Mala at her right in the close
-    const RAVI_C = { x: CHAIR.x + 0.48, z: CHAIR.z + 0.55 };                 // Ravi at her left in the close
+    const RAVI_C = { x: CHAIR.x + 0.49, z: CHAIR.z + 0.43 };                 // Ravi at her left in the close, a step behind her
+    /* the last green shapes in the close (A, B, C: his sight still open): two of the night's wanderers going out by the
+       room's open door as his teacher gives them a share of the merit, each crawling its own take's travel toward the
+       doorway (its hips go 0.9 m in the 2.3 s it is seen, clear of the bowl, the TV and the sofa) and fading */
+    const CLOSE_WANDER = [{ x: 0.60, z: 2.50 }, { x: 0.25, z: 0.72 }].map(W => ({ ...W, ry: faceTo(W.x, W.z, 0, -0.4) }));
     /* (the endings' clocks, EN, and the close's, CL, are the chapter's own, z_tail.js: chaptertest reads each scene's length
        from them) */
     /* her rise from the chair (§4.5: "she stands up out of the chair"), standing still after: the rise take run over its
@@ -4439,7 +4453,7 @@
           { t: E.ph + 0.4, name: 'pho', eye: A_EYE[1], at: [cast.phoB.home.x, 1.55, cast.phoB.home.z], fp: 46, fd: 42 },
           { t: E.close, name: 'pho', eye: A_EYE[1], at: [cast.phoB.home.x, 1.55, cast.phoB.home.z], fp: 46, fd: 42 }
         ]);
-        phoTurn(t, E.ph);
+        phoTurn(t, E.ph, false, 'ph4A1');
       },
       /* B · HE THROWS THE WATER AT THE THING ON HER BACK (bad). The whole bowl at it: it lets go of her and comes at
          HIM, the vision filled with it, his heart stalling, the picture white. His teacher's hand leaves her head for the
@@ -4485,7 +4499,7 @@
           { t: E.ph + 0.3, name: 'pho', eye: [S_EYE[0] + 0.1, 0.45, S_EYE[2] + 0.2], at: [cast.phoB.home.x, 1.55, cast.phoB.home.z], fp: 52, fd: 46 },
           { t: E.close, name: 'pho', eye: [S_EYE[0] + 0.1, 0.45, S_EYE[2] + 0.2], at: [cast.phoB.home.x, 1.55, cast.phoB.home.z], fp: 52, fd: 46 }
         ]);
-        phoTurn(t, E.ph, true);
+        phoTurn(t, E.ph, true, 'ph4B1');
         /* his teacher's push: the right arm out at it and back (his cast's gesture), the hand off her head meanwhile */
         if (off) whenReady(cast.phoB, (P) => { pose(P, 'mage_soell_cast_8', Math.min(1.3, (t - E.push) * 1.1)); });
       },
@@ -4519,7 +4533,7 @@
           { t: E.ph + 0.5, name: 'pho', eye: [R1.x - 0.05, 1.62, R1.z + 0.75], at: [cast.phoB.home.x, 1.62, cast.phoB.home.z], fp: 46, fd: 42 },
           { t: E.close, name: 'pho', eye: [R1.x - 0.05, 1.62, R1.z + 0.75], at: [cast.phoB.home.x, 1.62, cast.phoB.home.z], fp: 46, fd: 42 }
         ]);
-        phoTurn(t, E.ph);
+        phoTurn(t, E.ph, false, 'ph4C1');
       },
       /* D · HE KEEPS HIS PLACE (good). The bowl steady, his sight shut, his eyes on his teacher. Ravi reaches the chair;
          his teacher, without looking up: "Ravi. Hold her hand." He does. The cry is heard; the light; she opens her eyes
@@ -4546,12 +4560,20 @@
           { t: E.ph + 0.5, name: 'pho', eye: S_EYE, at: [cast.phoB.home.x, 1.62, cast.phoB.home.z], fp: 46, fd: 42 },
           { t: E.close, name: 'pho', eye: S_EYE, at: [cast.phoB.home.x, 1.62, cast.phoB.home.z], fp: 46, fd: 42 }
         ]);
-        phoTurn(t, E.ph);
+        phoTurn(t, E.ph, false, 'ph4D1');
       }
     };
     /* Grandmaster Pho turns his face to him for his word (and talks: his own talking take, the line's length) */
-    function phoTurn(t, ph, low = false) {
+    function phoTurn(t, ph, low = false, line = null) {
+      phoTalk(t, ph, line);
       whenReady(cast.phoB, (P) => { if (t >= ph - 0.6) lookNow(P, low ? [S_EYE[0] + 0.1, 0.5, S_EYE[2] + 0.2] : 'lens', smo(c01((t - ph + 0.6) / 0.8)), 0.8, low ? 0 : 0.03); });
+    }
+    /* his talking take on the line's own start, eased in and out of his stand, for the line's measured length (the v11.4
+       law: he talks while he speaks, and goes back to rest after); its head held (PHO_STAND_HEAD) */
+    function phoTalk(t, at, line) {
+      const L = line && SECS[line]; if (!L || t < at - 0.25 || t > at + L + 0.7) return;
+      whenReady(cast.phoB, (P) => { const k = smo(c01((t - at + 0.25) / 0.4)) * (1 - smo(c01((t - at - L - 0.1) / 0.6)));
+        pose(P, 'Talk_with_Hands_Open', Math.max(0, t - at), true, 'Sit_to_Stand_Transition_M', 1 - k, pingOf(t, 5.85, 0.25, PHO_BREATH)); });
     }
     /* THE CLOSE (§4.5, every ending): from his place at her front left again */
     function closeFrame(k, c, tAll) {
@@ -4569,23 +4591,44 @@
           else pose(P, 'lamp', runOf(c, CL.palms, CL.palms + 2.6, 3.4, 5.6), false, 'rise', 1 - smo(c01((c - CL.palms) / 0.5)), 4.75); }
         lookNow(P, [ALTAR.x, 1.45, ALTAR.z], c < CL.palms ? smo(c01((c - CL.steps) / 1.5)) * 0.6 : 0, 0.6); });
       phoBless(tAll, 0);
-      whenReady(cast.phoB, (P) => { lookNow(P, c > CL.z1 - 1 ? [RAVI_C.x, 1.6, RAVI_C.z] : AMMA_FACE, 0.8, 0.8); });
+      phoTalk(c, CL.z1, 'ph4z1');
+      /* (his dedication said with his eyes on her and a little lowered; his word to the family to her son. 18 Nov: every
+         look in the close went to AMMA_FACE, her face SEATED, a chest's height once she stands) */
+      whenReady(cast.phoB, (P) => { const h = HER_HEAD(); lookNow(P, c > CL.z1 - 1 ? headOf(cast.ravi, [RAVI_C.x, 1.6, RAVI_C.z]) : [h[0], h[1] - 0.25, h[2]], 0.8, 0.8); });
       /* the family about her: Mala at her right hand (the ash), Ravi at her left */
       whenReady(cast.mala, (P) => { put(P, MALA_C.x, MALA_C.z, faceTo(MALA_C.x, MALA_C.z, STAND.x, STAND.z));
-        pose(P, 'Idle_3', 3 + c * 0.3, true); lookNow(P, AMMA_FACE, 1, 0.9);
+        pose(P, 'Idle_3', 3 + c * 0.3, true); lookNow(P, HER_HEAD(), 1, 0.9);
         if (c > CL.ash - 0.6 && c < CL.ash + 1.8) { const h = HER_HEAD(); handTo(P, 'R', [h[0] - 0.02, h[1] + 0.02, h[2] + 0.09], [0, 0, -1], [0, 0.3, -1], smo(c01((c - CL.ash + 0.6) / 0.6)) * (1 - smo(c01((c - CL.ash - 1.2) / 0.6))), { out: 0.25, down: 0.35 }); } });
-      whenReady(cast.ravi, (P) => { put(P, RAVI_C.x, RAVI_C.z, faceTo(RAVI_C.x, RAVI_C.z, STAND.x, STAND.z)); pose(P, 'Idle_3', 5 + c * 0.3, true); lookNow(P, AMMA_FACE, 1, 0.9); });
+      /* (Ravi turns his head to his teacher as he is spoken to: a neck's reach, his body still turned to her) */
+      whenReady(cast.ravi, (P) => { put(P, RAVI_C.x, RAVI_C.z, faceTo(RAVI_C.x, RAVI_C.z, STAND.x, STAND.z)); pose(P, 'Idle_3', 5 + c * 0.3, true);
+        const h = HER_HEAD(), ph = cast.phoB.home, k = smo(c01((c - CL.z1 + 0.9) / 0.9));
+        lookNow(P, [lp(h[0], ph.x, k), lp(h[1], 1.55, k), lp(h[2], ph.z, k)], 1, 1.0); });
       whenReady(spirits.oppress, (P) => { P.group.visible = false; });
+      spirits.wander.forEach((P, i) => whenReady(P, (Q) => { const W = CLOSE_WANDER[i]; if (!W) return;
+        put(Q, W.x, W.z, W.ry); Q.group.visible = true; pose(Q, 'crawl', Math.max(0, c - CL.go + 1.0) * 0.6); }));
       wanderersAt(c, CL.go);
       /* his sight: still open from the ending (but D's, shut already), closing after her palms */
       if (k !== 'D') visionAt(c, -10, 0.1, CL.shut, 1.0); else visionAt(c, 1e9);
+      /* THE LENS (18 Nov, re-staged): his teacher whole as he dedicates the merit, the last green shapes going out low
+         past him; to her, risen at her chair; her steps to her altar; in on the ash between her and her daughter; her
+         palms and her lamp; his sight closing on her; out to her family about her in the room's own colours; and over her
+         son's shoulder to his teacher for his word. Every aim is where its subject stands (a phone's frame is 35 degrees:
+         his teacher and the shapes share it, her family shares it, but not both) */
+      const ph = cast.phoB.home, FAM = [0.04, 1.38, 4.32];
       track(c, [
-        { t: 0, name: 'close', eye: CLOSE_EYE, at: [CHAIR.x + 0.1, 1.3, CHAIR.z + 0.2], fp: 56, fd: 50, cut: true },
-        { t: CL.steps, name: 'close', eye: CLOSE_EYE, at: [CHAIR.x + 0.05, 1.3, CHAIR.z + 0.25], fp: 56, fd: 50 },
-        { t: CL.palms, name: 'altar', eye: CLOSE_EYE, at: [STAND.x, 1.35, STAND.z + 0.1], fp: 54, fd: 50 },
-        { t: CL.z1 - 0.5, name: 'altar', eye: CLOSE_EYE, at: [STAND.x, 1.38, STAND.z + 0.1], fp: 54, fd: 50 },
-        { t: CL.z1 + 0.5, name: 'family', eye: CLOSE_EYE, at: [lp(STAND.x, cast.phoB.home.x, 0.5), 1.5, lp(STAND.z, cast.phoB.home.z, 0.5)], fp: 62, fd: 56 },
-        { t: CL.end, name: 'family', eye: CLOSE_EYE, at: [lp(STAND.x, cast.phoB.home.x, 0.5), 1.5, lp(STAND.z, cast.phoB.home.z, 0.5)], fp: 62, fd: 56 }
+        { t: 0, name: 'merit', eye: CLOSE_EYE, at: [0.17, 1.09, 2.70], fp: 58, fd: 52, cut: true },
+        { t: 6.6, name: 'merit', eye: CLOSE_EYE, at: [0.12, 1.13, 2.78], fp: 58, fd: 52 },
+        { t: 9.8, name: 'her', eye: CLOSE_EYE, at: [CHAIR.x + 0.05, 1.30, CHAIR.z + 0.30], fp: 56, fd: 50 },
+        { t: CL.steps + 0.2, name: 'her', eye: CLOSE_EYE, at: [CHAIR.x + 0.05, 1.30, CHAIR.z + 0.30], fp: 56, fd: 50 },
+        { t: CL.steps + 1.6, name: 'her', eye: CLOSE_EYE, at: [STAND.x + 0.02, 1.34, STAND.z], fp: 54, fd: 50 },
+        { t: CL.ash - 0.5, name: 'ash', eye: CLOSE_EYE, at: [lp(STAND.x, MALA_C.x, 0.4), 1.45, lp(STAND.z, MALA_C.z, 0.4)], fp: 48, fd: 44 },
+        { t: CL.ash + 1.5, name: 'ash', eye: CLOSE_EYE, at: [lp(STAND.x, MALA_C.x, 0.4), 1.45, lp(STAND.z, MALA_C.z, 0.4)], fp: 48, fd: 44 },
+        { t: CL.palms + 0.4, name: 'lamp', eye: CLOSE_EYE, at: [STAND.x + 0.02, 1.22, STAND.z + 0.16], fp: 54, fd: 50 },
+        { t: CL.shut + 0.2, name: 'lamp', eye: CLOSE_EYE, at: [STAND.x + 0.02, 1.22, STAND.z + 0.16], fp: 54, fd: 50 },
+        { t: CL.shut + 1.4, name: 'family', eye: CLOSE_EYE, at: FAM, fp: 66, fd: 56 },
+        { t: CL.z1 - 0.3, name: 'family', eye: CLOSE_EYE, at: FAM, fp: 66, fd: 56 },
+        { t: CL.z1 + 1.0, name: 'pho', eye: CLOSE_EYE, at: [ph.x + 0.05, 1.5, ph.z + 0.05], fp: 50, fd: 46 },
+        { t: CL.end, name: 'pho', eye: CLOSE_EYE, at: [ph.x + 0.05, 1.5, ph.z + 0.05], fp: 50, fd: 46 }
       ]);
     }
     /* what a scene reaches of the films (stage.films): the clocks, and each film's three hands */
@@ -4856,6 +4899,8 @@
       who: () => people.filter(P => !P.driver).map(P => ({ key: P.key, ready: P.ready, take: P.cur })),
       /* (a probe's handle on one person: tools/probes/bonesat.mjs reads its bones where the world draws them) */
       person: (key, i) => people.filter(P => P.key === key)[i || 0] || null,
+      /* (tools/probes/headturn.mjs reads a talking head through these) */
+      dbg: { cast, headDampLay },
       census: () => {
         let meshes = 0, tris = 0; const texs = new Set();
         world.traverse(o => { if (!o.isMesh && !o.isLine && !o.isLineSegments) return; let v = true; for (let q = o; q; q = q.parent) if (!q.visible) { v = false; break; }

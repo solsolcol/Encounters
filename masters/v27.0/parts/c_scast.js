@@ -17,6 +17,9 @@
     const MASTER_DOWN = { hipOver: 0.11, sink: 0.01, sole: GROUND_SOLE, edge: -9, flat: true };
     const PHO_BREATH = 6;
     const PHO_TALK_HEAD = { Sitting_Answering_Questions: [0.3, 'Sit_to_Stand_Transition_M'] };
+    /* (standing, his talk's head held as his seated one is: Chad's word on chapter 3's, "greatly restrained", v26.3; its
+       head swings 9 cm side to side in its own file: tools/probes/takepath.mjs) */
+    const PHO_STAND_HEAD = { Talk_with_Hands_Open: [0.3, 'Sit_to_Stand_Transition_M'] };
     /* the shoulders let down in every standing and talking take (v26.8, every standing person) */
     const STAND_SHOULDERS = { Idle_3: 1, Stand_and_Chat: 1, Listening_Gesture: 1, Talk_with_Hands_Open: 1, Talk_with_Right_Hand_Open: 1, Walking: 1 };
 
@@ -83,7 +86,7 @@
       const phoBRy = faceTo(AT.phoB.x, AT.phoB.z, CHAIR.x, CHAIR.z);
       cast.phoB = mkPerson('pho', AT.phoB.x, AT.phoB.z, phoBRy, { take: 'Sit_to_Stand_Transition_M', hidden: true,
         win: { Sit_to_Stand_Transition_M: [5.85, 0.25, PHO_BREATH] }, skins: false, look: lookD, blobW: 0.9, blobD: 0.8,
-        centre: true, talk: 'Talk_with_Hands_Open' });
+        centre: true, talk: 'Talk_with_Hands_Open', headDamp: PHO_STAND_HEAD });
       cast.phoB.home = { x: AT.phoB.x, z: AT.phoB.z, ry: phoBRy };
     }
     buildCast();
