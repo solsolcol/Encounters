@@ -155,7 +155,8 @@
        shoulders back off his knees; his seated talk's shrug let down whole) */
     const PHO_SIT_UPRIGHT = { Sit_to_Stand_Transition_M: { hips: -11, trunk: 0, head: 0 } };
     const PHO_SIT_SHOULDERS = { Sitting_Answering_Questions: 1 };
-    const PHO_SIT_HANDS = { how: 'lap' };
+    /* (R77: the drape over his left arm goes with the arm as his hand is laid on his thigh: assemble.py's K.follow) */
+    const PHO_SIT_HANDS = { how: 'lap', follow: { L: ['DrapeArm', 'DrapeHang'] } };
     const PHO_TALK_HEAD = { Sitting_Answering_Questions: [0.3, 'Sit_to_Stand_Transition_M'] };
     /* (standing, his talk's head held as his seated one is: Chad's word on chapter 3's, "greatly restrained", v26.3; its
        head swings 9 cm side to side in its own file: tools/probes/takepath.mjs) */

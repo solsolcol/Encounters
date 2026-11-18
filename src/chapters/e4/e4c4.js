@@ -3126,6 +3126,7 @@
            index finger and 11 to 18 off the palm: laid so, joint by joint, while the rest is laid. Absent, the take's) */
         if (K.thumb === 'bind') for (let j = 1; j <= 3; j++) { const b = bone(S0 + 'HandThumb' + j), q0 = b && bindLocal(P, b); if (q0) fing.push({ b, q: q0, fi: -1 }); }
         R[sd] = { W: best.W, pdir, f: best.f, n: best.n, fing, fingerQs };
+        if (K.follow && K.follow[sd]) { const fl = K.follow[sd].map(nm => P.bone[nm]).filter(b => b && b.parent === a.up.parent).map(b => ({ b, q: new THREE.Quaternion(), on: false })); if (fl.length) R[sd].fol = fl; else console.warn(P.key + ': K.follow names no brother of his ' + sd + ' upper arm'); }
         /* (a hand of one piece is laid by its own measured axes: armsOf's, for a hand with no finger bones, is the
            forearm's line carried on) */
         if (!a.fingers) { const m = handAxes(P, A, sd); if (m) { R[sd].fL = m.fL; R[sd].nL = m.nL; R[sd].aL = m.aL; } }
@@ -3404,9 +3405,10 @@
        gold. (The crowd, the dancers and those who go up are placed by the play and the films.) */
     /* R43 (Chad, 18 Nov 2026: "There are also some skin colour bits on the back of his robe that can be easily seen
        during gameplay"). WRITTEN BY tools/phoflecks.py from assets/pho.glb (sha1 df95bef025b1958c22e20c8e05493e17b86461a8), never by hand:
-       1398 islands of skin colour lying inside the white of his robe in his body sheet (4096 x 4096), each on a piece of
-       robe the game draws (never a piece of skin: build 21z), each grown by
-       4 texels, as runs [row, first cell, cells] of a 1024 x 1024 mask, in the colour of the robe round it (sRGB).
+       48 islands of skin colour lying inside the white of his robe in his body sheet (4096 x 4096), each on a piece of
+       robe the game draws (never a piece of skin: build 21z), each grown by 4 texels, and 1350 patches of the empty
+       texels beside the robe that hold skin colour (build 24), as runs [row, first cell, cells] of a 1024 x 1024 mask,
+       each in the colour of the robe round it (sRGB).
        c_scast.js lookD paints them once and lays them over his sheet; his file is unchanged. */
     const PHO_FLECKS = { size: 1024, f: [
       [254, 253, 246, [21,156,3,22,155,5,23,155,5,24,156,4,25,156,4,26,156,4,27,156,3]],
@@ -5201,7 +5203,8 @@
        shoulders back off his knees; his seated talk's shrug let down whole) */
     const PHO_SIT_UPRIGHT = { Sit_to_Stand_Transition_M: { hips: -11, trunk: 0, head: 0 } };
     const PHO_SIT_SHOULDERS = { Sitting_Answering_Questions: 1 };
-    const PHO_SIT_HANDS = { how: 'lap' };
+    /* (R77: the drape over his left arm goes with the arm as his hand is laid on his thigh: assemble.py's K.follow) */
+    const PHO_SIT_HANDS = { how: 'lap', follow: { L: ['DrapeArm', 'DrapeHang'] } };
     const PHO_TALK_HEAD = { Sitting_Answering_Questions: [0.3, 'Sit_to_Stand_Transition_M'] };
     /* (standing, his talk's head held as his seated one is: Chad's word on chapter 3's, "greatly restrained", v26.3; its
        head swings 9 cm side to side in its own file: tools/probes/takepath.mjs) */

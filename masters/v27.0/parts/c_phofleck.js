@@ -1,8 +1,9 @@
     /* R43 (Chad, 18 Nov 2026: "There are also some skin colour bits on the back of his robe that can be easily seen
        during gameplay"). WRITTEN BY tools/phoflecks.py from assets/pho.glb (sha1 df95bef025b1958c22e20c8e05493e17b86461a8), never by hand:
-       1398 islands of skin colour lying inside the white of his robe in his body sheet (4096 x 4096), each on a piece of
-       robe the game draws (never a piece of skin: build 21z), each grown by
-       4 texels, as runs [row, first cell, cells] of a 1024 x 1024 mask, in the colour of the robe round it (sRGB).
+       48 islands of skin colour lying inside the white of his robe in his body sheet (4096 x 4096), each on a piece of
+       robe the game draws (never a piece of skin: build 21z), each grown by 4 texels, and 1350 patches of the empty
+       texels beside the robe that hold skin colour (build 24), as runs [row, first cell, cells] of a 1024 x 1024 mask,
+       each in the colour of the robe round it (sRGB).
        c_scast.js lookD paints them once and lays them over his sheet; his file is unchanged. */
     const PHO_FLECKS = { size: 1024, f: [
       [254, 253, 246, [21,156,3,22,155,5,23,155,5,24,156,4,25,156,4,26,156,4,27,156,3]],

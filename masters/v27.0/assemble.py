@@ -55,6 +55,13 @@ EDITS = [
     # (o.shWin: { take: [from, length] }), without making that a window the take is played inside (o.win)
     ("W = P.win && P.win[name], N = 24, acc = S.map(", "W = (P.o.shWin && P.o.shWin[name]) || (P.win && P.win[name]), N = 24, acc = S.map("),
     ("      armsBack(P); P.group.updateWorldMatrix(true, false); P.group.updateMatrixWorld(true);", "      armsBack(P); P.group.updateWorldMatrix(true, false); P.group.updateMatrixWorld(true);\n      if (P.upr) { uprightLay(P); P.group.updateMatrixWorld(true); }"),
+    # R77 (18 Nov, traced on build 24): a hand laid on the lap ('lap') moved Grandmaster Pho's left arm on his stool and
+    # left the drape that hangs over that arm where the take had it, so his elbow showed through the white low at his
+    # left side (the texels of the speck read back from the picture are his forearm's, tools/probes/texwhere.mjs). A lap
+    # rest may now name, per side, the cloth bones that are its upper arm's brothers (K.follow: { L: [...] }), given the
+    # turn the laying gave the upper arm, as chapter 3's crossed hands (crossHands, spec.follow) already give them
+    ("        R[sd] = { W: best.W, pdir, f: best.f, n: best.n, fing, fingerQs };\n",
+     "        R[sd] = { W: best.W, pdir, f: best.f, n: best.n, fing, fingerQs };\n        if (K.follow && K.follow[sd]) { const fl = K.follow[sd].map(nm => P.bone[nm]).filter(b => b && b.parent === a.up.parent).map(b => ({ b, q: new THREE.Quaternion(), on: false })); if (fl.length) R[sd].fol = fl; else console.warn(P.key + ': K.follow names no brother of his ' + sd + ' upper arm'); }\n"),
 ]
 
 

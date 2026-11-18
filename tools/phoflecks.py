@@ -179,11 +179,12 @@ def main():
     js = ('    /* R43 (Chad, 18 Nov 2026: "There are also some skin colour bits on the back of his robe that can be easily seen\n'
           '       during gameplay"). WRITTEN BY tools/phoflecks.py from assets/pho.glb (sha1 %s), never by hand:\n'
           '       %d islands of skin colour lying inside the white of his robe in his body sheet (%d x %d), each on a piece of\n'
-          '       robe the game draws (never a piece of skin: build 21z), each grown by\n'
-          '       %d texels, as runs [row, first cell, cells] of a %d x %d mask, in the colour of the robe round it (sRGB).\n'
+          '       robe the game draws (never a piece of skin: build 21z), each grown by %d texels, and %d patches of the empty\n'
+          '       texels beside the robe that hold skin colour (build 24), as runs [row, first cell, cells] of a %d x %d mask,\n'
+          '       each in the colour of the robe round it (sRGB).\n'
           '       c_scast.js lookD paints them once and lays them over his sheet; his file is unchanged. */\n'
           '    const PHO_FLECKS = { size: %d, f: [\n      %s\n    ] };\n') % (
-        glbsha, len(flecks), W, H, GROW, SIZE, SIZE, SIZE, ',\n      '.join(rows))
+        glbsha, len(flecks) - pads, W, H, GROW, pads, SIZE, SIZE, SIZE, ',\n      '.join(rows))
     open(OUT, 'w').write(js)
     print('wrote', os.path.relpath(OUT, ROOT), len(js), 'bytes;', len(flecks), 'flecks,', cells, 'cells,',
           sum(len(r) for r in runs.values()), 'runs')

@@ -9328,6 +9328,21 @@ What the baseline contains, by release:
   the skin-coloured islands inside his robe in his body sheet, 114 of them, covered at runtime in the robe's own colour,
   his file unchanged: tools/phoflecks.py, c_phofleck.js); 21y the corridor as a real access balcony (R48: beams, piers,
   the lights between them, the floor's joints, the water main).
+  Then 21z (R43: the speck mask read against his body, tools/probes/uvcharts.mjs mapping which piece of his file paints
+  each texel, an island taken only on a painted piece that is not skin, a small part of it, robe round it: 21x's first
+  rule, judging the sheet alone, had painted five pieces of real skin the robe's colour, mine); 22 (deploy
+  `6afe2f32262be13598a1fe7a`: a speck in the robe's strip of a piece that is mostly skin taken too, so the cluster at his
+  left shoulder blade went again, his skin untouched, photographed from four sides); 23 (deploy
+  `6afe33843f2c8bbf1d1985e4`: R51, the opening's stutter measured to its cause with tools/probes/progs.mjs and
+  progdiff.mjs: the film held Spirit Vision at a radius of 0 from its first frame, so the world was drawn through the
+  vision's targets, and every material the curtain had warmed was made again, in the target's own variant, as the pan
+  turned into the corridor; the engine's warm now also compiles with a target bound when a chapter declares a vision,
+  earlier chapters unchanged by construction, and the opening holds the vision only round its flicker); 24 (deploy
+  `6afe35cd255ad2bf5f77bae6`: R43, the empty texels beside the robe that hold skin colour laid over in the robe's nearest
+  colour, since the sheet's filtering draws them into the robe's edge a little way off; the speck on his lower robe
+  seen from his left traced by tools/probes/texwhere.mjs to his own left forearm by the elbow, showing through the
+  drape: R77's); 25 (deploy `6afe3808c63e46bfc2930abd`: R77, on his stool the drape over his left arm goes with the arm
+  as his hand is laid on his thigh, as chapter 3's crossed hands already carried it, his arm's pose unchanged).
 
 ## The sheet, version by version
 
