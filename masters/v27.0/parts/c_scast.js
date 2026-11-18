@@ -218,7 +218,10 @@
     /* THE HUNGRY ONES: one body, many of them (each its own clone; mirrored and sized a little apart so no two are one
        shape twice). Two wait in the corners from the start (by the kitchen, under the dining table: §4.2); the rest
        are the blessing's waves, hidden until they come */
-    const WANDER_N = 7;
+    /* (sixteen: Chad, 18 Nov, the end of the blessing: "the green entities should swarm in the screen in dramatic numbers,
+       filling the screen with many of them"; each a 15,799-triangle clone of one body, drawn in the vision only. The
+       fight never has more than sixteen in the room at once: c_story.js freeBody) */
+    const WANDER_N = 16;
     spirits.wander = [];
     for (let i = 0; i < WANDER_N; i++) {
       const P = mkPerson('p4wander', 0, 0, 0, { take: i % 2 ? 'creep' : 'crawl', phase: 0.13 * i, hidden: true, noBlob: true, skins: false, s: 0.94 + 0.03 * (i % 4) });
@@ -254,8 +257,11 @@
     const hitGeo = new THREE.SphereGeometry(1, 12, 8), hitMat = new THREE.MeshBasicMaterial({ visible: false });
     owned.push(hitGeo); mats.push(hitMat);
     function hitBall(P, r, up) { const m = new THREE.Mesh(hitGeo, hitMat); m.scale.setScalar(r); m.visible = false; m.userData.up = up; m.name = 'hit:' + P.key; world.add(m); P.hit = m; return m; }
-    hitBall(spirits.oppress, 0.32, 0.25); hitBall(spirits.appa, 0.36, 1.0); hitBall(spirits.large, 0.55, 1.05);
-    for (const P of spirits.wander) hitBall(P, 0.36, 0.22);
+    /* (18 Nov, Chad: "make the aoe of the water flicking bigger": the green ones' spheres 0.5 m where they were 0.36, the
+       large one's 0.72 where it was 0.55, and every green one near the flick's line is reached too: c_story.js onShot.
+       Appa's and the one on her back's stay as they were: a flick reaches him only when it is aimed at him) */
+    hitBall(spirits.oppress, 0.32, 0.25); hitBall(spirits.appa, 0.36, 1.0); hitBall(spirits.large, 0.72, 1.05);
+    for (const P of spirits.wander) hitBall(P, 0.5, 0.22);
     /* the altar, so a shot at it can be refused (Not at her altar.): her shelf's column, from the floor to its top */
     const altarHit = new THREE.Mesh(new THREE.BoxGeometry(0.95, 2.1, 0.7), hitMat); altarHit.position.set(ALTAR.x, 1.05, ALTAR.z - 0.32); altarHit.visible = false; altarHit.name = 'hit:altar';
     world.add(altarHit); owned.push(altarHit.geometry);

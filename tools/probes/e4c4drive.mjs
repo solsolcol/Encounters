@@ -12,11 +12,15 @@
    Reports: the phases with the objective on screen and the beds at each; every press and how it landed; the vision's
    switches; the fight (shots, hits, what fed); the voice log (none over another); the captions (the chant's); the cues
    and how each sounded; every page error.
-   ENC_DIST=<snapshot> CHROMIUM_PATH=... OPT=A|B|C|D [WATCH=1] [OUT=dir] node tools/probes/e4c4drive.mjs */
+   (18 Nov, Chad's stakes and the call) The finger goes first for the ones coming for Amma; her life, the call and what the
+   golden water sent back are logged; the golden showcase is left to go by itself. OPT=LOSE does nothing in the fight (no
+   sight, no water): it proves her life runs out, the loss's own film and card (its two lines read back), and Retry from
+   the chapter's start.
+   ENC_DIST=<snapshot> CHROMIUM_PATH=... OPT=A|B|C|D|LOSE [WATCH=1] [OUT=dir] node tools/probes/e4c4drive.mjs */
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
-const OPT = process.env.OPT || 'A', OPT_I = 'ABCD'.indexOf(OPT), WATCH = !!process.env.WATCH;
+const OPT = process.env.OPT || 'A', OPT_I = 'ABCD'.indexOf(OPT), WATCH = !!process.env.WATCH, LOSE = OPT === 'LOSE';
 const OUT = process.env.OUT || '/tmp/e4c4drive';
 fs.mkdirSync(OUT, { recursive: true });
 const W = 390, H = 844;
@@ -59,7 +63,8 @@ const info = () => p.evaluate(() => {
   let beds = {}; try { const M = E.stage.amb().beds; for (const k in M) if (M[k] > 0.01) beds[k] = +M[k].toFixed(2); } catch { /* */ }
   /* the chapter's own play state (stage.dbg.play): busy, the fight, what is learned and looked at; the vision's */
   let pl = {}; try { const P = E.stage.dbg.play; pl = { busy: !!P.busy, learned: P.learned ? P.learned.size : 0, looked: P.looked ? P.looked.size : 0,
-    fight: P.fight ? { on: !!P.fight.on, k: +P.fight.k.toFixed(3), wave: P.fight.wave, fed: P.fight.fed, families: P.fight.families, ended: !!P.fight.ended } : null,
+    fight: P.fight ? { on: !!P.fight.on, k: +P.fight.k.toFixed(3), wave: P.fight.wave, fed: P.fight.fed, families: P.fight.families, ended: !!P.fight.ended,
+                       hp: P.fight.hp, call: P.fight.call, cleared: P.fight.cleared, lost: !!P.fight.lost } : null,
     water: !!P.water, read: !!P.read, closed: !!P.closed, opened: !!P.opened }; } catch { /* */ }
   let v = {}; try { const q = E.vision(); v = { on: q.on, r: +q.r.toFixed(2), dir: q.dir, held: !!q.held }; } catch { /* */ }
   return { st: E.getState(), phase: i.phase, ev, pl, vis: v, busyQ: pl.busy,
@@ -140,17 +145,23 @@ async function fightTick() {
     if (!F || !F.on) return null;
     const me = Y.position, live = F.shapes.filter(S => S.state === 'come' || S.state === 'feed');
     let best = null, bd = 1e9;
+    /* (the ones coming for Amma first: each that reaches her takes her life) */
     for (const S of live) { const g = S.P.group.position; const tg = S.to === 'me' ? me : (S.to === 'pho' ? D.cast.phoB.group.position : D.cast[S.to].group.position);
-      const d = Math.hypot(tg.x - g.x, tg.z - g.z); if (d < bd) { bd = d; best = { x: g.x, y: g.y + (S.P === D.spirits.large ? 0.75 : 0.45), z: g.z, to: S.to, d: +d.toFixed(2) }; } }
+      const d = Math.hypot(tg.x - g.x, tg.z - g.z) - (S.to === 'amma' ? 1.5 : 0); if (d < bd) { bd = d; best = { x: g.x, y: g.y + (S.P === D.spirits.large ? 0.75 : 0.45), z: g.z, to: S.to, d: +d.toFixed(2) }; } }
+    /* (the golden water: aimed at her chair, where most of them come, and flicked again and again) */
+    if (F.call === 'gold' && live.some(S => S.to === 'amma')) best = { x: -0.15, y: 0.6, z: 3.85, to: 'amma', d: 0 };
     const ammo = document.getElementById('ammo'); const rounds = ammo ? parseInt(ammo.textContent, 10) : NaN;
     return { best, rounds, me: { x: me.x, z: me.z }, n: live.length, k: F.k, fed: F.fed, fam: F.families, heat: +(D.play.heat || 0).toFixed(2),
-             san: E.kit && E.kit.stat ? E.kit.stat('sanity') : null, hold: +(D.play.closeHold || 0).toFixed(1) };
+             san: E.kit && E.kit.stat ? E.kit.stat('sanity') : null, hold: +(D.play.closeHold || 0).toFixed(1), hp: F.hp, call: F.call, cleared: F.cleared,
+             urge: (document.getElementById('visionBtn') || { className: '' }).className };
   });
   if (!T) return false;
   /* (18 Nov) the fight's progress, once a minute of the probe's own time: the blessing's bar, what reached them, his nerve
      and his heart, what the finger did */
-  if (Date.now() - fightLog.at > 60000) { fightLog.at = Date.now();
-    log('  fight', JSON.stringify({ k: +T.k.toFixed(3), live: T.n, fed: T.fed, fam: T.fam, san: T.san, heat: T.heat, hold: T.hold, shots: fightLog.shots, dips: fightLog.dips, refused: fightLog.refused })); }
+  if (Date.now() - fightLog.at > (LOSE ? 20000 : 60000) || T.call !== fightLog.call) { fightLog.at = Date.now(); fightLog.call = T.call;
+    log('  fight', JSON.stringify({ k: +T.k.toFixed(3), live: T.n, fed: T.fed, fam: T.fam, hp: T.hp, call: T.call, cleared: T.cleared, san: T.san, heat: T.heat, hold: T.hold,
+      eye: T.urge, shots: fightLog.shots, dips: fightLog.dips, refused: fightLog.refused })); }
+  if (LOSE) { await wait(600); return true; }                 // (OPT=LOSE: nothing done; her life must run out)
   if (T.rounds === 0) {
     /* the bowl is empty: back to his teacher's bowl (within 1.5 m of it), and DIP */
     const near = await p.evaluate(() => { const Y = window.__enc.yaw; return Math.hypot(Y.position.x - 0.35, Y.position.z - 3.20) < 1.3; });
@@ -167,7 +178,7 @@ async function fightTick() {
 }
 
 const phases = [], bedsAt = {}, presses = [];
-let last = '', idle = 0, decided = false, cardAt = 0, lastCine = -1, lastVoices = 0, skips = [], films = [];
+let last = '', idle = 0, decided = false, cardAt = 0, lastCine = -1, lastVoices = 0, skips = [], films = [], lostDone = false;
 const ORDER = ['ravi', 'mala', 'folder', 'old', 'appa', 'amma', 'tell', 'look1', 'look2', 'look3', 'water'];
 const TMAX = 150 * 60 * 1000;
 while (Date.now() - T0 < TMAX) {
@@ -185,6 +196,9 @@ while (Date.now() - T0 < TMAX) {
     if (I.ev.briefing) { await shot('brief-' + I.ev.kind); const bt = await box('#evBtn'); if (bt) { await tap(bt.x, bt.y); log('  START tapped'); } await wait(1200); continue; }
     await wait(400); idle = 0; continue;
   }
+  /* the golden showcase (the call): it goes by itself; photographed under its glow */
+  if (I.st === 'unlock' && await p.evaluate(() => document.getElementById('unlock').classList.contains('gold'))) {
+    await wait(900); await shot('gold-showcase'); log('  the golden showcase'); await wait(600); continue; }
   /* the ITEM UNLOCKED splash: its Close, as a thumb taps it */
   if (I.st === 'unlock') { await wait(1500); await shot('unlock'); const cb = await p.evaluate(() => { const b = [...document.querySelectorAll('#unlock button')].find(x => x.offsetParent);
       if (!b) return null; const r = b.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
@@ -203,11 +217,22 @@ while (Date.now() - T0 < TMAX) {
     log('decision: tapped', OPT, JSON.stringify(bt.txt), 'of', bt.n); decided = true; await wait(1500); continue;
   }
   if ((I.st === 'result' || I.st === 'complete') && !cardAt) { cardAt = Date.now(); log('the card'); await wait(2500); await shot('card'); }
+  /* the loss's card (her life ran out): its two lines read back; Retry from the chapter's start (OPT=LOSE) */
+  if (I.st === 'lost' && !cardAt) {
+    cardAt = Date.now(); await wait(2500); await shot('lost-card');
+    const L = await p.evaluate(() => ({ say: document.getElementById('overSay').textContent.trim(), teach: document.getElementById('overTeach').textContent.trim() }));
+    log('the lost card:', JSON.stringify(L));
+    const rb = await box('#retryBtn'); if (rb) { await tap(rb.x, rb.y); log('  Retry tapped'); }
+    await p.waitForFunction(() => ['play', 'cine'].includes(window.__enc.getState()), null, { timeout: 600000, polling: 500 }).catch(() => {});
+    await wait(4000);
+    const R = await info(); log('after Retry:', R.st, R.phase, JSON.stringify(R.obj), 'fight', JSON.stringify(R.pl.fight));
+    await shot('after-retry'); lostDone = true; break;
+  }
   if (cardAt && Date.now() - cardAt > 12000) break;
   /* THE FIGHT: the eye open, the finger on the shapes */
   if (I.st === 'play' && I.pl.fight && I.pl.fight.on) {
-    /* (his sight held shut by his teacher, "Close. Breathe.": a finger waits out the hold, as a player must) */
-    if (!I.vis.on && I.vis.dir !== 1 && !I.vis.held) await eye(true); else if (I.vis.held) fightLog.held++;
+    /* (his sight held shut by his teacher, "Close. Breathe.": a finger waits out the hold, as a player must; OPT=LOSE never opens it) */
+    if (!LOSE && !I.vis.on && I.vis.dir !== 1 && !I.vis.held) await eye(true); else if (I.vis.held) fightLog.held++;
     await fightTick(); idle = 0;
     if (fightLog.shots % 10 === 1) await shot('fight');
     continue;
@@ -256,7 +281,8 @@ log('SKIPPED', skips.join(' ') || '(none: every film watched)');
 log('BEDS', JSON.stringify(bedsAt));
 const badPress = presses.some((x, i) => /FALLBACK/.test(x) || (/REFUSED/.test(x) && !presses.slice(i + 1).some(y => y.split('=')[0] === x.split('=')[0] && !/REFUSED|FALLBACK/.test(y))));
 const badEye = visTaps.some(x => /REFUSED|NO-BUTTON/.test(x));
-log('result', errs.length ? 'ERRORS' : !cardAt ? 'DID NOT REACH THE CARD' : over.length ? 'REACHED THE CARD, but a voice ran over another' : silent.length ? 'REACHED THE CARD, but a cue made no sound' : badPress ? 'REACHED THE CARD, but a press needed the E path' : badEye ? 'REACHED THE CARD, but the eye refused a tap' : 'PASS');
+if (LOSE) log('result', errs.length ? 'ERRORS' : !lostDone ? 'DID NOT LOSE' : 'LOST AS IT MUST: the loss film, the card and Retry');
+else log('result', errs.length ? 'ERRORS' : !cardAt ? 'DID NOT REACH THE CARD' : over.length ? 'REACHED THE CARD, but a voice ran over another' : silent.length ? 'REACHED THE CARD, but a cue made no sound' : badPress ? 'REACHED THE CARD, but a press needed the E path' : badEye ? 'REACHED THE CARD, but the eye refused a tap' : 'PASS');
 console.log('errs', JSON.stringify(errs));
 await b.close();
 process.exit(errs.length || !cardAt || over.length ? 1 : 0);

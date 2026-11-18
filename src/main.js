@@ -12055,7 +12055,7 @@ function unlockClose(how) {
   const cb = unl.onClose; unl.onClose = null;
   if (how === 'force') return true;            // torn down with the run (kitReset): no story, no sound
   state = 'play';
-  snd('uiconfirm', 0.45);
+  if (how !== 'auto') snd('uiconfirm', 0.45);   // (v27.0: a showcase that goes by itself is not a press: no click over its own sound)
   /* the mouse goes back to looking — from a click or a key, which are real
      gestures. Not from Esc: the browser does not count it as one, a refused
      lock marks the page as unable to lock at all, and the next click on the

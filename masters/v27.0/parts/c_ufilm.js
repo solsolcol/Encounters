@@ -188,6 +188,54 @@
       }
     };
 
+    /* ---------------------------------------------------------------- HER LIFE RUNS OUT (its clock: LO, z_tail.js)
+       Chad, 18 Nov: "If her health bar drops to 0, the player loses this game and chapter and has to restart again". The
+       film the loss plays before its card (the fifty-third seam, kit.lose: c_story.js ammaLost). From his place at her front
+       left, his sight forced open: the green ones on her, round her chair; her last cry; his teacher's hand lifted from her
+       head, his chant already broken off; Mala's gasp at the lamp; Ravi's "Amma..."; her eyes turned to him; his sight shut,
+       the wave home; the dark room; black. Every place a function of the film's clock (seven of them round her chair, each
+       a fixed spot by its slot: v6.4) */
+    const LOST_RING = [[0.62, -0.02], [-0.64, 0.04], [0.30, 0.68], [-0.36, 0.62], [0.54, -0.44], [-0.52, -0.42], [0.02, 0.90]];
+    FILMS.lost = {
+      begin(api) {
+        if (api && api.handsRoot) api.handsRoot.visible = false;
+        FM.once = new Set();
+        whenReady(cast.pho, (P) => { P.group.visible = false; });
+        whenReady(cast.mala, (P) => { put(P, MALA_LAMP.x, MALA_LAMP.z, 0); });
+        whenReady(cast.ravi, (P) => { put(P, AT.ravi.x, AT.ravi.z, faceTo(AT.ravi.x, AT.ravi.z, CHAIR.x, CHAIR.z)); });
+        spirits.wander.forEach((P, i) => whenReady(P, (Q) => {
+          const R = LOST_RING[i]; Q.group.visible = !!R; Q.gone = !R; if (!R) return;
+          const x = CHAIR.x + R[0], z = CHAIR.z + R[1]; put(Q, x, z, faceTo(x, z, CHAIR.x, CHAIR.z));
+          Q.alpha = 1; if (Q.fx) { Q.fx.set('uAlpha', 1); Q.fx.set('uFill', SPIRIT.wander.fill); } }));
+        whenReady(spirits.large, (P) => { P.group.visible = false; P.gone = true; });
+        castSolid();
+        filmBed.on = true; for (const k in filmBed) if (k !== 'on') filmBed[k] = 0; filmBed.dark = BED.dark;
+      },
+      frame(t) {
+        fLook('DARK');
+        whenReady(cast.amma, (P) => { put(P, CHAIR.x, CHAIR.z, CHAIR.ry); pose(P, 'wsit', pingOf(t, 2.0, 3.6, 12));
+          if (t > LO.turn) lookNow(P, 'lens', smo(c01((t - LO.turn) / 1.6)), 1.35, 0.05); });
+        phoBless(t, 1 - smo(c01((t - LO.lift) / 0.8)));
+        whenReady(cast.mala, (P) => { pose(P, 'kneelhold', pingOf(t, 2.5, 1.0, 6.0)); lookNow(P, AMMA_FACE, 1, 0.9); });
+        whenReady(cast.ravi, (P) => { pose(P, 'Idle_3', 3 + t * 0.35, true); lookNow(P, AMMA_FACE, 1, 0.9); });
+        whenReady(spirits.oppress, (P) => { oppRide(P); pose(P, 'cling', 2 + t * 0.3); });
+        spirits.wander.forEach((P, i) => { if (LOST_RING[i]) whenReady(P, (Q) => pose(Q, i % 2 ? 'creep' : 'crawl', 0.37 * i + t * 0.9, true)); });
+        goddess(0);
+        visionAt(t, 0.05, 0.9, LO.shut, 1.0);
+        track(t, [
+          { t: 0, name: 'her', eye: S_EYE, at: [CHAIR.x - 0.08, 0.92, CHAIR.z + 0.12], fp: 62, fd: 54 },
+          { t: LO.turn, name: 'her', eye: S_EYE, at: [CHAIR.x - 0.04, 1.0, CHAIR.z + 0.06], fp: 54, fd: 48 },
+          { t: LO.shut + 1.0, name: 'her', eye: S_EYE, at: [CHAIR.x - 0.02, 1.02, CHAIR.z + 0.06], fp: 48, fd: 43 },
+          { t: LO.end, name: 'her', eye: S_EYE, at: [CHAIR.x - 0.02, 1.02, CHAIR.z + 0.06], fp: 48, fd: 43 }
+        ]);
+      },
+      end() {
+        fLens(PLAY_FOV); filmBed.on = false;
+        if (kit && kit.vision) kit.vision({ r: 0, moving: false });
+        whenReady(cast.phoB, (P) => bowSet(P, 0));
+      }
+    };
+
     /* ---------------------------------------------------------------- THE FOUR ENDINGS (§4.5) AND THE CLOSE
        Each ending begins on the trance's last frame (Ravi a step from her chair, the thing crying on her back, his
        teacher's hand on her head) and is a whole story: what he did, how it was answered, what it cost him, what he was
@@ -542,6 +590,7 @@
     /* what a scene reaches of the films (stage.films): the clocks, and each film's three hands */
     const filmsApi = {
       trance: FILMS.trance,
+      lost: FILMS.lost,
       begin: (k, c, api) => FILMS.ending.begin(k, api),
       frame: (k, t, api) => FILMS.ending.frame(k, t, api),
       end: () => FILMS.ending.end()

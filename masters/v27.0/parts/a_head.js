@@ -173,7 +173,10 @@
        right hand's fingers a press, a dip at Grandmaster Pho's bowl to fill it again; the HUD says the chapter's words */
     /* the holy water is IN HIS HANDS only once Grandmaster Pho has given him the bowl (the item, given in the blessing):
        until then the hands are his own and empty (an item-less weapon is always out) */
-    weapon: { hands: 'own', pose: 'bowl', item: 'holywater', rounds: 10, endless: true, fireGap: 0.35, spray: { count: 9 },
+    /* (Chad, 18 Nov: "make the aoe of the water flicking bigger, and slightly increase the amount of times the water can be
+       flicked before reloading": fourteen flicks a bowl where there were ten, and the drops thrown wider, as wide as what a
+       flick now reaches: c_story.js onShot) */
+    weapon: { hands: 'own', pose: 'bowl', item: 'holywater', rounds: 14, endless: true, fireGap: 0.35, spray: { count: 16, spread: 0.24 },
               words: { fire: 'FLICK', reload: 'DIP' }, shot: 'u4flick', reload: 'u4dip', empty: 'uiclick' },
 
     assets: [
@@ -194,7 +197,8 @@
     reuse: {},
     reuseInEpisode: { pho: "Grandmaster Pho himself, Chad's own model in his look D, as chapter 3 cast him: the same man, come to Singapore" },
     placeholders: {},
-    items: ['holywater'],                        // the small silver bowl, given in the blessing (kit.give: c_story.js takeWater)
+    items: ['holywater',                         // the small silver bowl, given in the blessing (kit.give: c_story.js takeWater)
+            'amulet'],                           // (shown, never given: his Luang Phor Phiboon amulet in the call, kit.unlock gold, c_story.js; its model warmed by the curtain)
 
     musicVol: 0,
     /* THE BEDS (M8): every one at 0 here; the chapter's mixer sets each by the room and the beat */
@@ -235,8 +239,16 @@
       dipHere: 'Fill it again at his bowl.',
       objHold: 'Keep the room',
       guardTitle: 'HOLD THE ROOM',
-      guardBrief: 'Keep the room while Grandmaster Pho blesses her. Open your Spirit Vision to see them. Tap FLICK to send them back with the holy water, and DIP to fill the bowl again at his bowl. Keep them from her, from her family and from you. Not everything you see is against you.',
-      guardBriefKey: 'Keep the room while Grandmaster Pho blesses her. Open your Spirit Vision (V) to see them. Click or press Space to flick the holy water and send them back, and R to dip the bowl again at his bowl. Keep them from her, from her family and from you. Not everything you see is against you.',
+      guardBrief: 'Keep the room while Grandmaster Pho blesses her. Open your Spirit Vision to see them. Tap FLICK to send them back with the holy water, and DIP to fill the bowl again at his bowl. Each one that reaches Amma hurts her: if her bar runs out, the blessing fails. Keep them from her family and from you too. Not everything you see is against you.',
+      guardBriefKey: 'Keep the room while Grandmaster Pho blesses her. Open your Spirit Vision (V) to see them. Click or press Space to flick the holy water and send them back, and R to dip the bowl again at his bowl. Each one that reaches Amma hurts her: if her bar runs out, the blessing fails. Keep them from her family and from you too. Not everything you see is against you.',
+      // the fight's stakes and the call (Chad, 18 Nov: plan §0 R16 to R29)
+      ammaBar: 'Amma',
+      objGold: 'Send them back with the golden water',
+      goldLabel: 'Empowered',
+      goldSub: 'The water turns to gold.',
+      // the card when her life runs out: what happened, over Master Z's own words (the case file S1·12, word for word)
+      lostSay: 'Too many of them reached Amma. Her cry broke the blessing, and it could not be finished.',
+      lostTeach: 'Learning when to open myself and when to close is the true path of cultivation. Today I can use these sensitivities to help others, which is the point of them.',
       noAltar: 'Not at her altar.',
       // the chant's captions: the Pali as chanted over its meaning (v21.31), Thanissaro Bhikkhu's A Chanting Guide,
       // word for word (docs/research/V27.0-BLESSING.md §1.3; docs/research/V27.0-VERDICTS.md B13, B14)

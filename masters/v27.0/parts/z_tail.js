@@ -5,6 +5,9 @@
 
   /* THE FILMS' CLOCKS (c_ufilm.js draws to them): the trance's, each ending's, and the close's, every one from its start */
   const TR = { ml1: 2.6, ml2: 5.7, open: 7.6, claw: 7.6, cry: 10.6, rush: 12.7, rv: 13.05, back: 15.2, end: 17.6 };
+  /* the loss's (her life run out: c_ufilm.js FILMS.lost): her cry, his teacher's hand lifted, Mala's gasp, Ravi's word, her
+     eyes to him, his sight shut, black */
+  const LO = { cry: 0.35, lift: 1.4, gasp: 2.2, rv: 3.0, turn: 3.1, shut: 5.0, black: 6.1, end: 7.0 };
   /* the close's own clock, from its start: Pho's dedication; the green shapes go; she rises (if she has not), walks;
      the ash; her palms; his sight closing; her family before her altar (fam); Pho's word; black */
   const CL = { z0: 0.6, go: 2.0, steps: 11.6, slow: 12.0, ash: 15.0, palms: 17.2, thank: 17.3, bell: 18.7, shut: 20.2, fam: 21.3, z1: 23.0, black: 30.4, end: 32.6 };
@@ -60,6 +63,28 @@
     sfx(T.rv, 'rv4t1', 1);                              // "Stop it! You're hurting her!"
     sfxFade(T.end - 1.5, T.end - 0.05, 'u4trancemus');
     step(T.end, () => F.trance.end());
+  }
+
+  /* HER LIFE RUNS OUT (Chad, 18 Nov): the film the loss plays before its card (c_story.js ammaLost, kit.lose). Its pictures
+     are the stage's (c_ufilm.js FILMS.lost); here its clock's one track, its fades and its cues. It ends on its black (the
+     card lies over it) */
+  function filmLost(c, s, api) {
+    const { tr, step, fade, sfx, sfxFade, rawK, stage } = api, F = stage.films, T = LO;
+    step(0, () => F.lost.begin(api));
+    tr(0, T.end, (k, t) => F.lost.frame(t), rawK);
+    fade(0, 0.5, 1, 0);
+    sfx(0.05, 'u4vison', 0.8);                          // his sight forced open: the wave out from him
+    sfx(0.25, 'u4sting', 0.8);                          // the low sting under what he sees
+    sfx(T.cry, 'u4ascream2', 1);                        // her last cry
+    sfx(T.gasp, 'u4gaspf', 0.75);                       // Mala at the lamp
+    sfx(T.rv, 'rv4A2', 1);                              // Ravi: "Amma..."
+    sfx(T.rv + 0.95, 'u4heart', 0.75); sfx(T.rv + 1.55, 'u4heart', 0.7);   // his own heart, under her eyes on him
+    sfx(T.shut, 'u4visoff', 0.85);                      // his sight shut: the wave home to him
+    sfx(T.shut + 0.6, 'u4whisper', 0.45);               // and in the dark, theirs
+    fade(T.black, T.end - 0.1, 0, 1);
+    sfxFade(T.black, T.end - 0.05, 'u4whisper');
+    c.keepFade = true; c.endFade = 1;
+    step(T.end, () => F.lost.end());
   }
 
   /* THE FOUR ENDINGS (the plan's §4.5), each a whole story, each with THE CLOSE: their pictures are the stage's
@@ -158,7 +183,7 @@
   (window.__CHAPTERS__ = window.__CHAPTERS__ || {}).e4c4 = Object.assign(DATA, {
     build,
     intro,
-    films: { trance: filmTrance },
+    films: { trance: filmTrance, lost: filmLost },
     scenes: [scHold, scThrow, scGo, scKeep]
   });
 })();

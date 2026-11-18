@@ -70,18 +70,19 @@
      moves what follows it. The names are QUOTED on purpose: build.py gives a sound to a chapter's own pack only when
      the chapter names it in quotes (v21.1). Written by masters/v27.0/script/secs.py from masters/v27.0/script/lines.py. */
   /* SECS BEGIN */
-  const SECS = {      // 58 of 58 MEASURED from their takes; the rest estimated at the speaker's pace
+  const SECS = {      // 69 of 69 MEASURED from their takes; the rest estimated at the speaker's pace
     /* him */
     'q4o1': 6.65, 'q4o2': 4.73, 'q4h1': 3.61, 'q4h2': 3.53, 'q4h3': 9.77, 'q4s1': 4.01, 'q4s2': 3.05, 'q4s3': 4.09,
-    'q4A1': 3.53, 'q4B1': 3.21, 'q4C0': 6.41, 'q4C1': 3.69, 'q4D1': 4.25, 'q4A': 4.25, 'q4B': 3.29, 'q4C': 3.85,
-    'q4D': 4.65,
+    'q4f1': 2.97, 'q4f2': 2.89, 'q4f3': 2.33, 'q4f4': 3.61, 'q4A1': 3.53, 'q4B1': 3.21, 'q4C0': 6.41, 'q4C1': 3.69,
+    'q4D1': 4.25, 'q4A': 4.25, 'q4B': 3.29, 'q4C': 3.85, 'q4D': 4.65,
     /* Ravi */
-    'rv4o1': 2.6, 'rv4h1': 8.33, 'rv4h2': 6.73, 'rv4t1': 1.77, 'rv4A1': 2.51, 'rv4A2': 0.61, 'rv4C1': 2.58,
-    'rv4D1': 2.98,
+    'rv4o1': 2.6, 'rv4h1': 8.33, 'rv4h2': 6.73, 'rv4f1': 1.93, 'rv4t1': 1.77, 'rv4A1': 2.51, 'rv4A2': 0.61,
+    'rv4C1': 2.58, 'rv4D1': 2.98,
     /* Grandmaster Pho */
     'ph4h0': 6.81, 'ph4h1': 3.13, 'ph4s0': 7.14, 'ph4s1': 0.65, 'ph4s2': 6.17, 'ph4s3': 8.45, 'ph4s4': 6.65,
-    'ph4b0': 4.86, 'ph4b1': 2.06, 'ph4b2': 2.65, 'ph4A1': 6.25, 'ph4B0': 0.62, 'ph4B1': 6.41, 'ph4C1': 5.13,
-    'ph4D0': 2.24, 'ph4D1': 8.61, 'ph4z0': 10.56, 'ph4z1': 6.63,
+    'ph4b0': 4.86, 'ph4b1': 2.06, 'ph4b2': 2.65, 'ph4b3': 2.65, 'ph4b4': 4.81, 'ph4b5': 2.33, 'ph4f1': 4.81,
+    'ph4f2': 2.59, 'ph4f3': 2.97, 'ph4A1': 6.25, 'ph4B0': 0.62, 'ph4B1': 6.41, 'ph4C1': 5.13, 'ph4D0': 2.24,
+    'ph4D1': 8.61, 'ph4z0': 10.56, 'ph4z1': 6.63,
     /* Mala */
     'ml4h1': 14.65, 'ml4h2': 9.61, 'ml4h3': 7.61, 'ml4t1': 1.13, 'ml4t2': 1.45, 'ml4A1': 2.27, 'ml4B1': 1.62,
     'ml4B2': 1.01, 'ml4B3': 1.38, 'ml4D1': 1.93, 'ml4z1': 2.56,
@@ -172,7 +173,10 @@
        right hand's fingers a press, a dip at Grandmaster Pho's bowl to fill it again; the HUD says the chapter's words */
     /* the holy water is IN HIS HANDS only once Grandmaster Pho has given him the bowl (the item, given in the blessing):
        until then the hands are his own and empty (an item-less weapon is always out) */
-    weapon: { hands: 'own', pose: 'bowl', item: 'holywater', rounds: 10, endless: true, fireGap: 0.35, spray: { count: 9 },
+    /* (Chad, 18 Nov: "make the aoe of the water flicking bigger, and slightly increase the amount of times the water can be
+       flicked before reloading": fourteen flicks a bowl where there were ten, and the drops thrown wider, as wide as what a
+       flick now reaches: c_story.js onShot) */
+    weapon: { hands: 'own', pose: 'bowl', item: 'holywater', rounds: 14, endless: true, fireGap: 0.35, spray: { count: 16, spread: 0.24 },
               words: { fire: 'FLICK', reload: 'DIP' }, shot: 'u4flick', reload: 'u4dip', empty: 'uiclick' },
 
     assets: [
@@ -193,7 +197,8 @@
     reuse: {},
     reuseInEpisode: { pho: "Grandmaster Pho himself, Chad's own model in his look D, as chapter 3 cast him: the same man, come to Singapore" },
     placeholders: {},
-    items: ['holywater'],                        // the small silver bowl, given in the blessing (kit.give: c_story.js takeWater)
+    items: ['holywater',                         // the small silver bowl, given in the blessing (kit.give: c_story.js takeWater)
+            'amulet'],                           // (shown, never given: his Luang Phor Phiboon amulet in the call, kit.unlock gold, c_story.js; its model warmed by the curtain)
 
     musicVol: 0,
     /* THE BEDS (M8): every one at 0 here; the chapter's mixer sets each by the room and the beat */
@@ -234,8 +239,16 @@
       dipHere: 'Fill it again at his bowl.',
       objHold: 'Keep the room',
       guardTitle: 'HOLD THE ROOM',
-      guardBrief: 'Keep the room while Grandmaster Pho blesses her. Open your Spirit Vision to see them. Tap FLICK to send them back with the holy water, and DIP to fill the bowl again at his bowl. Keep them from her, from her family and from you. Not everything you see is against you.',
-      guardBriefKey: 'Keep the room while Grandmaster Pho blesses her. Open your Spirit Vision (V) to see them. Click or press Space to flick the holy water and send them back, and R to dip the bowl again at his bowl. Keep them from her, from her family and from you. Not everything you see is against you.',
+      guardBrief: 'Keep the room while Grandmaster Pho blesses her. Open your Spirit Vision to see them. Tap FLICK to send them back with the holy water, and DIP to fill the bowl again at his bowl. Each one that reaches Amma hurts her: if her bar runs out, the blessing fails. Keep them from her family and from you too. Not everything you see is against you.',
+      guardBriefKey: 'Keep the room while Grandmaster Pho blesses her. Open your Spirit Vision (V) to see them. Click or press Space to flick the holy water and send them back, and R to dip the bowl again at his bowl. Each one that reaches Amma hurts her: if her bar runs out, the blessing fails. Keep them from her family and from you too. Not everything you see is against you.',
+      // the fight's stakes and the call (Chad, 18 Nov: plan §0 R16 to R29)
+      ammaBar: 'Amma',
+      objGold: 'Send them back with the golden water',
+      goldLabel: 'Empowered',
+      goldSub: 'The water turns to gold.',
+      // the card when her life runs out: what happened, over Master Z's own words (the case file S1·12, word for word)
+      lostSay: 'Too many of them reached Amma. Her cry broke the blessing, and it could not be finished.',
+      lostTeach: 'Learning when to open myself and when to close is the true path of cultivation. Today I can use these sensitivities to help others, which is the point of them.',
       noAltar: 'Not at her altar.',
       // the chant's captions: the Pali as chanted over its meaning (v21.31), Thanissaro Bhikkhu's A Chanting Guide,
       // word for word (docs/research/V27.0-BLESSING.md §1.3; docs/research/V27.0-VERDICTS.md B13, B14)
@@ -3323,7 +3336,10 @@
     /* THE HUNGRY ONES: one body, many of them (each its own clone; mirrored and sized a little apart so no two are one
        shape twice). Two wait in the corners from the start (by the kitchen, under the dining table: §4.2); the rest
        are the blessing's waves, hidden until they come */
-    const WANDER_N = 7;
+    /* (sixteen: Chad, 18 Nov, the end of the blessing: "the green entities should swarm in the screen in dramatic numbers,
+       filling the screen with many of them"; each a 15,799-triangle clone of one body, drawn in the vision only. The
+       fight never has more than sixteen in the room at once: c_story.js freeBody) */
+    const WANDER_N = 16;
     spirits.wander = [];
     for (let i = 0; i < WANDER_N; i++) {
       const P = mkPerson('p4wander', 0, 0, 0, { take: i % 2 ? 'creep' : 'crawl', phase: 0.13 * i, hidden: true, noBlob: true, skins: false, s: 0.94 + 0.03 * (i % 4) });
@@ -3359,8 +3375,11 @@
     const hitGeo = new THREE.SphereGeometry(1, 12, 8), hitMat = new THREE.MeshBasicMaterial({ visible: false });
     owned.push(hitGeo); mats.push(hitMat);
     function hitBall(P, r, up) { const m = new THREE.Mesh(hitGeo, hitMat); m.scale.setScalar(r); m.visible = false; m.userData.up = up; m.name = 'hit:' + P.key; world.add(m); P.hit = m; return m; }
-    hitBall(spirits.oppress, 0.32, 0.25); hitBall(spirits.appa, 0.36, 1.0); hitBall(spirits.large, 0.55, 1.05);
-    for (const P of spirits.wander) hitBall(P, 0.36, 0.22);
+    /* (18 Nov, Chad: "make the aoe of the water flicking bigger": the green ones' spheres 0.5 m where they were 0.36, the
+       large one's 0.72 where it was 0.55, and every green one near the flick's line is reached too: c_story.js onShot.
+       Appa's and the one on her back's stay as they were: a flick reaches him only when it is aimed at him) */
+    hitBall(spirits.oppress, 0.32, 0.25); hitBall(spirits.appa, 0.36, 1.0); hitBall(spirits.large, 0.72, 1.05);
+    for (const P of spirits.wander) hitBall(P, 0.5, 0.22);
     /* the altar, so a shot at it can be refused (Not at her altar.): her shelf's column, from the floor to its top */
     const altarHit = new THREE.Mesh(new THREE.BoxGeometry(0.95, 2.1, 0.7), hitMat); altarHit.position.set(ALTAR.x, 1.05, ALTAR.z - 0.32); altarHit.visible = false; altarHit.name = 'hit:altar';
     world.add(altarHit); owned.push(altarHit.geometry);
@@ -3451,10 +3470,11 @@
         else if (!play.closed) o = W.objClose;
       } else if (p === 'bless') {
         if (!play.water) { o = W.objWater; wp = SMALLBOWL_AT; }
-        else if (play.fight && play.fight.on) o = W.objHold;
+        else if (play.fight && play.fight.on) o = play.fight.call === 'gold' ? W.objGold : W.objHold;
       }
       kit.objective(o, opts);
       kit.waypoint(wp);
+      if (p === 'sight') urgeSight();
     }
 
     /* ---------------------------------------------------------------- a line said by one of them (v11.4: he talks
@@ -3613,6 +3633,9 @@
       const v = kit.vision(); if (!v) return;
       const open = v.on && !play.closeHold;
       play.heat = Math.max(0, Math.min(1.3, play.heat + (open ? HEAT.up : -HEAT.down) * wdt));
+      /* (empowered, his heart is steadied: it never passes 0.7 while the golden water is his, so the swarm is fought with his
+         sight open and nothing shuts it for him: R26) */
+      if (play.fight && play.fight.on && play.fight.call === 'gold') play.heat = Math.min(play.heat, 0.7);
       const step = play.heat >= 1 ? 3 : play.heat >= 0.75 ? 2 : play.heat >= 0.45 ? 1 : 0;
       if (open && step !== play.heatStep) {
         play.heatStep = step;
@@ -3658,13 +3681,25 @@
     }
     /* the engine tells the stage every time he opens or shuts his sight (stage.onVision) */
     function onVision(on) {
-      if (kit && kit.visionUrge) kit.visionUrge(false);
+      /* (in the fight the eye button's ask is worked out again on the next frame, from his sight as it now is: urgeTick) */
+      if (play.fight && play.fight.on) play.fight.urge = null;
+      else if (kit && kit.visionUrge) kit.visionUrge(false);
       if (on && (phase === 'history' || phase === 'sight')) oppressLooks();
       if (phase === 'history' && on && !play.peeked) { play.peeked = true; saveMark(); }
       if (phase === 'sight' && !play.busy) {
         if (on && !play.opened) { play.opened = true; saveMark(); const run = play.run; after(1.4, () => { if (live(run)) objectiveFor('sight'); }); }
         else if (!on && play.opened && play.looked.size >= 3 && !play.closed) { play.closed = true; readingBegin(); }
       }
+      if (phase === 'sight' && !play.busy) urgeSight();
+    }
+    /* THE EYE BUTTON ASKS (Chad, 18 Nov: "When the game wants to prompt the user to enter or exit spirit vision, there also
+       should be a different set of glow colour pulsating effect on the spirit vision icon so that the player clearly knows
+       what to do"): in the sight, OPEN while there is something left to look at and his sight is shut, CLOSE once all three
+       are seen and it is still open (the order says the same); nothing while a line hands off */
+    function urgeSight() {
+      if (!kit || !kit.visionUrge || phase !== 'sight') return;
+      const open = visOpen();
+      kit.visionUrge(!play.opened || play.looked.size < 3 ? (open ? false : 'open') : (!play.closed && open ? 'close' : false));
     }
     /* as the wave reaches it, the one on her back turns its head and looks at him: his heart kicks, a low sting
        (once a phase: the first time the wave finds it) */
@@ -3700,7 +3735,10 @@
     /* ================================================================ PLAY III · THE BLESSING (§4.3) */
     const WARM_BLESS = ['ph4b0', 'ph4b1', 'ph4b2', 'u4match', 'u4tubedie', 'u4fanstop', 'u4tvdie', 'u4flick', 'u4patter', 'u4dip', 'u4whisper',
                         'u4release', 'u4large', 'u4gaspf', 'u4gaspm', 'u4chill', 'u4husband', 'u4vison', 'u4visbed', 'u4heart', 'uiclick',
-                        'u4fightmus', 'u4fightloop', 'u4chant1', 'u4chant2'];
+                        'u4fightmus', 'u4fightloop', 'u4chant1', 'u4chant2',
+                        /* (18 Nov: her cries, the surge, the call and the gold; every line of the fight's stakes) */
+                        'u4ascream1', 'u4ascream2', 'u4ascream3', 'u4surge', 'u4goldcall', 'u4goldpower', 'u4goldflick', 'u4goldclear', 'u4sting',
+                        'ph4b3', 'ph4b4', 'ph4b5', 'q4f1', 'q4f2', 'ph4f1', 'q4f3', 'ph4f2', 'q4f4', 'ph4f3', 'rv4f1', 'ml4B2', 'rv4A2', 'u4visoff'];
     function blessBegin(R, fresh) {
       play.learned = new Set(['r', 'm', 'f', 'o', 'a']); play.spoke = true; play.told = true; play.opened = true; play.looked = new Set(['1', '2', '3']);
       play.closed = true; play.read = true; play.peeked = R.peeked; play.water = R.water; play.appaGone = R.appaGone;
@@ -3824,11 +3862,41 @@
          there to her it crawled through the master bedroom's wall, and from bedroom 3 to her through her mother's chair) */
       { at: 2.5, list: [['corner0', 'amma', 0.30], ['corner1', 'ravi', 0.28], ['bed3', 'me', 0.30]] },
       { at: 38, list: [['master', 'ravi', 0.34], ['passage', 'pho', 0.33], ['door', 'me', 0.34], ['kitchen', 'amma', 0.32]] },
-      { at: 76, list: [['master', 'mala', 0.37], ['store', 'me', 0.36], ['passage', 'amma', 0.34], ['kitchen', 'amma', 0.26, 'large']] } ] };
+      { at: 76, list: [['master', 'mala', 0.37], ['store', 'me', 0.36], ['passage', 'amma', 0.34], ['kitchen', 'amma', 0.26, 'large']] } ],
+      /* THE SURGE (Chad, 18 Nov: "when there are too many green entities coming towards the end"; "this dramatic sequence
+         should happen only at the end when many green entities appear and it feels impossible for the player to clear. The
+         player needs to feel desperate first"): at the blessing's 0.70, twelve at once from every door and corner, quick, most
+         of them for her, and two more every 1.6 s while it lasts; the blessing held at 0.82 until the call is answered. He
+         calls after 7 s of it (after 4 if her life is under 40) */
+      surgeAt: 0.70, hold: 0.82, trickle: 1.6, callAfter: 7, callLow: { secs: 4, hp: 40 },
+      surge: [['door', 'amma', 0.46], ['bed3', 'amma', 0.44], ['master', 'amma', 0.45], ['passage', 'amma', 0.47], ['kitchen', 'amma', 0.44],
+              ['store', 'amma', 0.45], ['corner0', 'amma', 0.43], ['corner1', 'pho', 0.44], ['door', 'me', 0.45], ['bed3', 'ravi', 0.42],
+              ['master', 'mala', 0.43], ['passage', 'me', 0.46]],
+      /* EMPOWERED, to the blessing's end (R28, R29: "the green entities should swarm in the screen in dramatic numbers ... they
+         keep spawning even after getting cleared ... until the whole timer is completed"): a batch of five to seven every
+         2.2 s from the room's edges, never more than sixteen in the room (freeBody) */
+      batch: { every: 2.2, min: 5, max: 7 } };
     const REACH = { me: 0.75, amma: 0.62, pho: 0.6, ravi: 0.55, mala: 0.55 };
+    /* AMMA'S LIFE IN HIS KEEPING (Chad, 18 Nov: "There must be consequences if the spirit entities in green gets to the lady in
+       wheelchair. Everytime the green spirits get to her, she screams one time, and her health bar drops. Put a health bar on
+       the lady in wheelchair. If her health bar drops to 0, the player loses this game and chapter and has to restart
+       again"): a green one that reaches her takes 9 of her 100 (the large one 16), and again every 4.5 s it stays; she cries
+       out each time (her three cries in turn, never two within 0.6 s); from the surge until 4 s into the gold she is never
+       taken under 15 (the call is the story's, and comes whatever he did), and at 0 the chapter is lost (ammaLost) */
+    const LIFE = { wander: 9, large: 16, again: 4.5, floor: 15, grace: 4 };
+    const CRIES = ['u4ascream1', 'u4ascream2', 'u4ascream3'];
+    /* GRANDMASTER PHO CALLS HIM BACK TO HIS SIGHT (Chad, 18 Nov: "If the player gets out of spirit vision for too long and is
+       not doing anything to chase the green spirits away, grandmaster pho will have a voice line that tells him to go back
+       into spirit vision to chase the entities away. This voiceline can keep repeating as long as the player is not in
+       spirit vision"): six seconds shut with green ones in the room and none of them reached by his water in those six, then
+       again eleven seconds after each; never while his sight is held shut for him, nor in the call; his three lines in turn */
+    const NAG = { first: 6, again: 11, lines: ['ph4b3', 'ph4b4', 'ph4b5'] };
     function fightBegin() {
-      const F = play.fight = { on: true, t: 0, k: 0, wave: 0, shapes: [], fed: 0, families: 0, famCost: 0, captions: 0, ended: false };
-      if (kit) { kit.bar(0); }
+      const F = play.fight = { on: true, t: 0, k: 0, wave: 0, shapes: [], fed: 0, families: 0, famCost: 0, captions: 0, ended: false,
+                               hp: 100, cries: 0, criedAt: -99, lost: false, call: null, callT: 0, trickleAt: 0, goldT: 0, batchAt: 0,
+                               cleared: 0, chantHeld: false, shutFor: 0, nagNext: NAG.first, nags: 0, lastStrike: -99, urge: null,
+                               saidMala: false, saidRavi: false, seed: 0x4c4f0d };
+      if (kit) { kit.bar(0); if (kit.health) kit.health({ label: W.ammaBar, k: 1, at: () => { const h = AMMA_HEAD(); return [h.x, h.y + 0.32, h.z]; } }); }
       objectiveFor('bless');
       /* the two in the corners are the first wave's: they wake */
       whenReady(cast.phoB, (P) => handOnHead(P, true));
@@ -3844,7 +3912,7 @@
       const F = play.fight, run = play.run;
       for (const [from, to, v, kind] of w.list) {
         const large = kind === 'large';
-        const P = large ? shapeOf(0, true) : from === 'corner0' ? shapeOf(0) : from === 'corner1' ? shapeOf(1) : shapeOf(wanderNext++ % WANDER_N);
+        const P = large ? shapeOf(0, true) : from === 'corner0' ? shapeOf(0) : from === 'corner1' ? shapeOf(1) : freeBody();
         if (!P) continue;
         const at = FROM[from]; if (!/^corner/.test(from)) put(P, at.x, at.z, faceTo(at.x, at.z, FAMILY[to]().x, FAMILY[to]().z));
         take(P, large ? 'lumber' : (P.slot % 2 ? 'creep' : 'crawl'), 0.4);
@@ -3852,20 +3920,50 @@
       }
       if (w.list.some(r => r[3] === 'large')) fx('u4large', 0.8, panOf(FROM.kitchen));
       fx('u4whisper', 0.55, 0);
+      /* (Chad, 18 Nov: "Have some dramatic voicelines along the way"): the second wave, his; the large one, his and his
+         teacher's word on it */
+      if (w === FIGHT.waves[1]) say('q4f1', null);                       // "More of them. From the doors."
+      if (w.list.some(r => r[3] === 'large')) { say('q4f2', null); phoQueued('ph4f1'); }   // "What is that...?" / "A heavy one. Again, and again, until it goes."
       void run;
+    }
+    /* a free body for one more of them: one no living shape in the fight is wearing (one still fading wears it too), taken in
+       turn from where the last was taken; none, and nothing more comes (never more than sixteen in the room). The two that
+       wait in the corners are the first wave's */
+    function freeBody() {
+      const F = play.fight, used = new Set();
+      for (const S of F.shapes) if (S.state !== 'gone') used.add(S.P);
+      for (let n = 0; n < WANDER_N; n++) {
+        const i = (wanderNext + n) % WANDER_N, P = spirits.wander[i];
+        if (used.has(P) || !P.ready || (i < 2 && F.wave < 1)) continue;
+        wanderNext = i + 1; return shapeOf(i);
+      }
+      return null;
+    }
+    /* the fight's own seeded stream (v6.15: nothing random unseeded; begun again with every fight) */
+    function fightRnd() { const F = play.fight; F.seed = (F.seed * 1103515245 + 12345) >>> 0; return (F.seed >>> 8) / 16777216; }
+    /* one more of them, at a door or a corner (a hand's spread round it, so a batch never stands in one place), for one of
+       the people in the room */
+    function spawnAt(from, to, v) {
+      const F = play.fight, P = freeBody(); if (!P) return null;
+      const at = FROM[from], x = at.x + (fightRnd() - 0.5) * 0.5, z = at.z + (fightRnd() - 0.5) * 0.5, tg = FAMILY[to]();
+      put(P, x, z, faceTo(x, z, tg.x, tg.z));
+      take(P, P.slot % 2 ? 'creep' : 'crawl', 0.3);
+      const S = { P, to, v, need: 1, hits: 0, state: 'come', t: 0, back: 0, fedAt: -99 };
+      F.shapes.push(S); return S;
     }
     function fightTick(wdt) {
       const F = play.fight; if (!F || !F.on) return;
       if (getState() !== 'play') return;
       F.t += wdt; fightMusTick();
       while (F.wave < FIGHT.waves.length && F.t >= FIGHT.waves[F.wave].at) waveStart(FIGHT.waves[F.wave++]);
-      /* the blessing's own pace: slowed while anything crowds her or her teacher */
-      let slow = 1; for (const S of F.shapes) if (S.state === 'feed' && (S.to === 'amma' || S.to === 'pho')) slow *= 0.5;
+      /* the blessing's own pace: slowed while anything crowds her or her teacher (empowered, at its full pace: R29) */
+      let slow = 1; if (F.call !== 'gold') for (const S of F.shapes) if (S.state === 'feed' && (S.to === 'amma' || S.to === 'pho')) slow *= 0.5;
       /* (never under a third of its pace: crowded, the blessing slows, and a fight left alone still ends in about five
          minutes, not twelve: 18 Nov) */
       F.k = Math.min(1, F.k + wdt / FIGHT.secs * Math.max(0.35, slow));
+      stakesTick(wdt); if (!F.on) return;
       if (kit) kit.bar(F.k);
-      while (F.captions < CHANT.length && F.k > CHANT[F.captions].at) chantSing(CHANT[F.captions++]);
+      if (!F.chantHeld) while (F.captions < CHANT.length && F.k > CHANT[F.captions].at) chantSing(CHANT[F.captions++]);
       const appa = spirits.appa, ag = appa.group.position;
       for (const S of F.shapes) {
         const P = S.P; if (S.state === 'gone') continue;
@@ -3879,10 +3977,11 @@
           /* Appa's watch: near him, the ones that come for his family are slowed */
           if (!play.appaGone && appa.group.visible && (S.to === 'ravi' || S.to === 'mala') && Math.hypot(ag.x - P.group.position.x, ag.z - P.group.position.z) < 1.3) v *= 0.3;
           if (d > REACH[S.to]) { P.group.position.x += dx / d * v * wdt; P.group.position.z += dz / d * v * wdt; P.group.rotation.y = faceTo(P.group.position.x, P.group.position.z, tg.x, tg.z); P.group.position.y = flatGround(P.group.position.x, P.group.position.z); }
-          else { S.state = 'feed'; feed(S); }
+          else { S.state = 'feed'; feed(S); if (!F.on) return; }
         } else if (S.state === 'feed') {
           if (S.to === 'me') { if (d > REACH.me + 0.5) S.state = 'come'; else if (S.t - S.fedAt > 4) feed(S); }
-          else if (S.t - S.fedAt > 6) feed(S);
+          else if (S.t - S.fedAt > (S.to === 'amma' ? LIFE.again : 6)) feed(S);
+          if (!F.on) return;                                     // (her life ran out on this one: the loss has begun)
           P.group.rotation.y = faceTo(P.group.position.x, P.group.position.z, tg.x, tg.z);
         }
       }
@@ -3907,23 +4006,84 @@
         /* (Mala kneeling at the lamp gasps where she kneels: her scream is a standing take, and it stood her up and knelt her
            down again in a second) */
         const P = cast[S.to]; if (P === cast.mala && P.rest !== MALA_KNEEL) whenReady(P, (Q) => { span(Q, 'scream', 0.4, 2.2, 1.0, { then: () => rest(Q, 0.8) }); });
-      } else if (S.to === 'amma') { F.families++; fx('u4gaspf', 0.6, panOf(CHAIR)); }
+      } else if (S.to === 'amma') { F.families++; ammaHurt(S); }
+    }
+    /* one reaches her: what it takes of her life, her cry, her children's, and the loss at 0 */
+    function ammaHurt(S) {
+      const F = play.fight; if (!F || !F.on || F.lost) return;
+      const floor = (F.call && F.call !== 'gold') || (F.call === 'gold' && F.goldT < LIFE.grace) ? LIFE.floor : 0;
+      F.hp = Math.max(Math.min(F.hp, floor), F.hp - (S.P === spirits.large ? LIFE.large : LIFE.wander));
+      if (kit && kit.health) kit.health({ k: F.hp / 100 });
+      const now = wallNow();
+      if (now - F.criedAt > 0.6) { F.criedAt = now; fx(CRIES[F.cries++ % CRIES.length], 0.9, panOf(CHAIR)); }
+      /* her children, the first times they see her hurt (Mala kneels at the lamp: her word without a standing take) */
+      if (!F.saidMala && F.hp <= 80) { F.saidMala = true; say('ml4B2', null); }                 // "Amma!"
+      else if (!F.saidRavi && F.hp <= 55) { F.saidRavi = true; say('rv4f1', cast.ravi, false); }   // "Amma! What's happening to her?"
+      if (F.hp <= 0) ammaLost();
+    }
+    /* HER LIFE RUNS OUT: the chapter is lost (the fifty-third seam, kit.lose): its own film (FILMS.lost), its card's two lines,
+       the save put back at the chapter's start, Retry from there (Chad: "the player loses this game and chapter and has to
+       restart again") */
+    function ammaLost() {
+      const F = play.fight; if (!F || F.lost) return;
+      F.lost = true; F.on = false; F.chantHeld = true;
+      fightMusOff(); chantStop(); chantNow = null; lineQ.length = 0;
+      if (kit) { kit.bar(null); kit.captions(null); if (kit.health) kit.health(null); if (kit.visionUrge) kit.visionUrge(false);
+        if (kit.edge) kit.edge(null); if (kit.sprayColor) kit.sprayColor(null); }
+      if (!kit || !kit.lose || !kit.lose({ film: 'lost', say: W.lostSay, teaching: W.lostTeach })) play.loseWait = true;   // (refused: asked again on the next frame of play)
     }
     /* the water reaches one (stage.onShot): released, or staggered (the large one takes three) */
     const hitOwner = new Map();
     for (const P of [spirits.oppress, spirits.appa, spirits.large].concat(spirits.wander)) if (P.hit) hitOwner.set(P.hit, P);
+    /* THE FLICK'S REACH (Chad, 18 Nov: "make the aoe of the water flicking bigger"): every green one whose middle is within
+       0.42 m of the flick's line, and 0.11 m more for each metre out (a metre at most), out to 8 m, is reached with the one
+       the line struck; Appa only when it is aimed at him (his sphere is the one the line must meet: "Not everything you see
+       is against you"). AND THE GOLDEN WATER (R27: "every flick from it clears all green entities on the whole screen in a
+       single flick"): every green one inside his view is sent back, and the bowl stays full */
+    const FAN = { r0: 0.42, perM: 0.11, max: 1.0, far: 8 };
+    const _fr = new THREE.Vector3(), _fq = new THREE.Vector3(), _frus = new THREE.Frustum(), _frm = new THREE.Matrix4(), _fsph = new THREE.Sphere();
     function onShot(r) {
+      const F = play.fight;
+      if (F && F.on && F.call === 'gold') { goldFlick(); return; }
       const P = r && r.object ? hitOwner.get(r.object) : null;
       if (r && r.point) fx('u4patter', 0.5, panOf(r.point));
-      if (!P) return;
       if (P === spirits.appa) { appaStruck(); return; }
       if (P === spirits.oppress) return;                     // (her teacher's work, not the water's: it does not move)
-      const F = play.fight; if (!F || !F.on) return;
-      const S = F.shapes.find(q => q.P === P); if (!S || S.state === 'gone' || S.state === 'leave') return;
-      S.hits++;
+      if (!F || !F.on) return;
+      const reached = [];
+      if (P) { const S = F.shapes.find(q => q.P === P && q.state !== 'gone' && q.state !== 'leave'); if (S) reached.push(S); }
+      if (r && r.ray) for (const S of F.shapes) {
+        if (S.state === 'gone' || S.state === 'leave' || reached.includes(S)) continue;
+        const m = S.P.hit; if (!m || !m.visible) continue;
+        _fr.copy(m.position).sub(r.ray.origin); const along = _fr.dot(r.ray.direction);
+        if (along < 0.15 || along > FAN.far) continue;
+        _fq.copy(r.ray.direction).multiplyScalar(along).add(r.ray.origin);
+        if (_fq.distanceTo(m.position) <= Math.min(FAN.max, FAN.r0 + FAN.perM * along)) reached.push(S);
+      }
+      let sent = 0;
+      for (const S of reached) if (strike(S)) sent++;
+      if (reached.length) F.lastStrike = F.t;
+      if (sent) fx('u4release', Math.min(0.95, 0.7 + 0.08 * (sent - 1)), panOf(reached[0].P.group.position));
+    }
+    /* the water on one of them: sent back (released), or staggered back (the large one takes three) */
+    function strike(S) {
+      const P = S.P; S.hits++;
       if (P.fx) { P.fx.set('uFill', 0.9); const run = play.run; after(0.25, () => { if (live(run) && P.fx && S.state !== 'leave') P.fx.set('uFill', P === spirits.large ? SPIRIT.large.fill : SPIRIT.wander.fill); }); }
-      if (S.hits >= S.need) { S.state = 'leave'; S.leave = 0; fx('u4release', 0.7, panOf(P.group.position)); }
-      else { S.back = 0.8; S.state = 'come'; }
+      if (S.hits >= S.need) { S.state = 'leave'; S.leave = 0; return true; }
+      S.back = 0.8; S.state = 'come'; return false;
+    }
+    function goldFlick() {
+      const F = play.fight; let n = 0;
+      camera.updateMatrixWorld(); _frm.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse); _frus.setFromProjectionMatrix(_frm);
+      for (const S of F.shapes) {
+        if (S.state === 'gone' || S.state === 'leave') continue;
+        const m = S.P.hit; if (!m || !m.visible) continue;
+        _fsph.center.copy(m.position); _fsph.radius = m.scale.x; if (!_frus.intersectsSphere(_fsph)) continue;
+        S.state = 'leave'; S.leave = -0.25 * ((n * 0.6180339887) % 1); n++;       // (each on its own beat over a quarter second: v6.15)
+      }
+      fx('u4goldflick', 0.9, 0);
+      if (n) { fx('u4goldclear', Math.min(1, 0.78 + 0.03 * n), 0); F.lastStrike = F.t; F.cleared += n; }
+      if (kit && kit.ammo) kit.ammo(DATA.weapon.rounds);       // (the golden water never runs dry: no dip in the swarm)
     }
     /* WATER THROWN AT APPA: he turns, looks at the student, and fades for the rest of the night (a price on the card,
        and his teacher's word after) */
@@ -3935,7 +4095,7 @@
       whenReady(P, (Q) => { span(Q, 'aturn', 0, 2.4, 1.6, { hold: 0.2, holdSecs: 3 }); gaze(Q, 'lens', { reach: 1.0, secs: 0.9 }); });
       let u = 0; const fade = () => { if (!live(run)) return; u = Math.min(1, u + 1 / 50); P.alpha = 1 - u; if (P.fx) P.fx.set('uAlpha', 1 - u); if (u < 1) after(0.05, fade); else { P.group.visible = false; P.gone = true; } };
       after(1.6, fade);
-      after(2.2, () => { if (live(run)) phoSpeaks('ph4b2', () => talk(cast.phoB, SECS.ph4b2 || 2.6)); });
+      after(2.2, () => { if (live(run)) phoSoon('ph4b2'); });
     }
     /* the end of the chant: the shapes thin away; silence but for the lamp's flame and her breathing */
     /* HIS CHANT (the plan's D13; masters/v27.0/chant/build.py): each line sung by him while its words are on screen,
@@ -3962,31 +4122,137 @@
     /* HE BREAKS OFF HIS CHANT TO SPEAK (18 Nov: "Close. Breathe." and his word after the water reached Appa were said over
        his own chant, one man chanting and talking at once): the line he is singing fades in a quarter of a second, he
        speaks, and then begins that line again from its start, under its caption. Between lines nothing is cut */
+    /* (a line refused while another voice is live is never taken as said, and his chant is never broken off for a line
+       that does not come: 18 Nov, sayLine's refusal is never ignored, v9.5) */
     function phoSpeaks(name, onStart) {
+      if (dayClock.t < speak.until || speak.pending || lineQ.length) return false;
+      chantBreak((SECS[name] || 2.5) + 0.9);
+      return sayLine(name, 1, onStart);
+    }
+    /* the line he is singing faded in a quarter of a second; begun again from its start `resumeIn` seconds later, unless the
+       chant has moved on or is held (the call) */
+    function chantBreak(resumeIn) {
       const F = play.fight, singing = !!(F && F.on && chantNow && chantNodes.length);
-      if (singing) {
-        const tok = ++chantTok, nodes = chantNodes; chantNodes = [];
-        for (const a of nodes) { try { const g = a.__g && a.__g.gain, t = a.context.currentTime;
-          if (g) { g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(0.0001, t + 0.25); }
-          a.stop(t + 0.3); } catch (e) { } }
-        if (kit && kit.captions) kit.captions(null);
-        const C = chantNow, run = play.run;
-        after((SECS[name] || 2.5) + 0.9, () => { if (live(run) && play.fight && play.fight.on && chantTok === tok) chantSing(C); });
-      }
-      sayLine(name, 1, onStart);
+      if (!singing) return;
+      const tok = ++chantTok, nodes = chantNodes; chantNodes = [];
+      for (const a of nodes) { try { const g = a.__g && a.__g.gain, t = a.context.currentTime;
+        if (g) { g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(0.0001, t + 0.25); }
+        a.stop(t + 0.3); } catch (e) { } }
+      if (kit && kit.captions) kit.captions(null);
+      if (resumeIn == null) return;
+      const C = chantNow, run = play.run;
+      after(resumeIn, () => { if (live(run) && play.fight && play.fight.on && !play.fight.chantHeld && chantTok === tok) chantSing(C); });
+    }
+    /* his word in the order of the lines (the queue), his chant broken off as it begins */
+    function phoQueued(name) { queueFn(() => chantBreak((SECS[name] || 2.5) + 0.9)); queueLine(name, () => talk(cast.phoB, SECS[name] || 2.5)); }
+    /* his word as soon as the room is quiet for it (asked again every half second, a few seconds at most) */
+    function phoSoon(name, tries = 12) {
+      const run = play.run;
+      const go = (n) => { if (!live(run)) return; if (!phoSpeaks(name, () => talk(cast.phoB, SECS[name] || 2.6)) && n > 0) after(0.5, () => go(n - 1)); };
+      go(tries);
     }
     function fightEnd() {
       const F = play.fight; F.ended = true; F.on = false; fightMusOff(); chantStop(); chantNow = null;
       /* (each shape still in the room goes on its own beat: a golden-ratio spread over 0.4 s by its place in the list, the
          same on every run and every replay: v6.15, nothing random unseeded) */
       F.shapes.forEach((S, i) => { if (S.state !== 'gone' && S.state !== 'leave') { S.state = 'leave'; S.leave = -0.4 * ((i * 0.6180339887) % 1); } });
-      if (kit) { kit.bar(null); kit.captions(null); }
+      if (kit) { kit.bar(null); kit.captions(null); if (kit.health) kit.health(null); if (kit.visionUrge) kit.visionUrge(false);
+        if (kit.edge) kit.edge(null); if (kit.sprayColor) kit.sprayColor(null); }
       if (F.families <= 1) bank(W.noteKept, 0, 4);
       whenReady(cast.phoB, (P) => handOnHead(P, false));
       if (kit && kit.vision) kit.vision(false);
       setPhase('kept');
       const run = play.run;
       after(2.6, () => { if (live(run)) trance(); });
+    }
+    /* ---------------------------------------------------------------- THE STAKES AND THE CALL (Chad's two messages of
+       18 Nov: plan §0 R16 to R29), every frame of the fight after the blessing's pace: the surge, the call, the golden
+       swarm; his teacher calling him back to his sight; and what the eye button asks */
+    function stakesTick(wdt) {
+      const F = play.fight, open = visOpen();
+      let live = 0; for (const S of F.shapes) if (S.state === 'come' || S.state === 'feed') live++;
+      if (!open && !play.closeHold) F.shutFor += wdt; else F.shutFor = 0;
+      if (!F.call && F.k >= FIGHT.surgeAt) surgeBegin();
+      if (F.call === 'surge') { F.callT += wdt; if (F.callT >= FIGHT.callAfter || (F.callT >= FIGHT.callLow.secs && F.hp < FIGHT.callLow.hp)) callBegin(); }
+      if ((F.call === 'surge' || F.call === 'asking') && (F.trickleAt -= wdt) <= 0) {
+        F.trickleAt = FIGHT.trickle; const keys = Object.keys(FROM);
+        for (let i = 0; i < 2; i++) spawnAt(keys[Math.floor(fightRnd() * keys.length)], fightRnd() < 0.75 ? 'amma' : 'me', 0.44 + 0.06 * fightRnd());
+      }
+      if (F.call && F.call !== 'gold') F.k = Math.min(F.k, FIGHT.hold);          // (the blessing stalls under the swarm until the call is answered)
+      if (F.call === 'gold') { F.goldT += wdt; if ((F.batchAt -= wdt) <= 0) { F.batchAt = FIGHT.batch.every; goldBatch(); } }
+      nagTick(open, live);
+      urgeTick(open, live);
+      if (F.shapes.length > 48) F.shapes = F.shapes.filter(S => S.state !== 'gone');      // (the gone, let go of)
+    }
+    /* THE SURGE: twelve at once from every door and corner, the room's whisper rising, his heart kicking */
+    function surgeBegin() {
+      const F = play.fight; F.call = 'surge'; F.callT = 0; F.trickleAt = FIGHT.trickle;
+      for (const [from, to, v] of FIGHT.surge) spawnAt(from, to, v);
+      fx('u4surge', 0.95, 0); fx('u4whisper', 0.75, 0);
+      if (kit && kit.pulse) kit.pulse({ bpm: 172, secs: 1.0, erratic: 0.5 });
+    }
+    /* THE CALL: he shouts to his teacher; his teacher breaks off his chant for his word; he calls out; the amulet answers */
+    function callBegin() {
+      const F = play.fight; F.call = 'asking';
+      say('q4f3', null);                                                      // "Grandmaster, there are way too many of them!"
+      queueFn(() => chantHush());                                              // (his chant broken off for his word, and held until the gold)
+      queueLine('ph4f2', () => talk(cast.phoB, SECS.ph4f2 || 2.6));           // "Call out to Luang Phor Phiboon, now!"
+      say('q4f4', null);                                                      // "Luang Phor Phiboon... please, help us."
+      queueFn(() => showAmulet());
+    }
+    function chantHush() { const F = play.fight; if (F) F.chantHeld = true; chantBreak(null); }
+    /* HIS AMULET (Chad: "the luang phor phiboon amulet in its full 3d rotating model suddenly and dramatically appears in the
+       middle of the screen in a golden glow enveloping it, seemingly empowering the user, and then disappears away"): the
+       fifty-fifth seam's showcase, golden, gone by itself after 3.4 s; the fight stands still under it */
+    function showAmulet() {
+      const F = play.fight; if (!F || !F.on) return;
+      F.call = 'shown'; F.urge = null; if (kit && kit.visionUrge) kit.visionUrge(false);
+      const go = () => { if (play.fight === F && F.on) goldBegin(); };
+      if (!(kit && kit.unlock && kit.unlock('amulet', { gold: true, auto: 3.4, label: W.goldLabel, sub: W.goldSub, sound: 'u4goldcall', onClose: go }))) go();
+    }
+    /* EMPOWERED (R26 to R29: "the entire screen seem to have a golden vignette to show the new empowered status, and now the
+       water being flicked becomes golden glow instead"): the gold at the edges of his sight (the fifty-sixth seam), the water
+       gold; the amulet's light sends back every one in the room at once; his heart steadied; his teacher's word, and his
+       chant again; and the swarm */
+    function goldBegin() {
+      const F = play.fight; F.call = 'gold'; F.goldT = 0; F.batchAt = 1.0; F.urge = null;
+      if (kit) { if (kit.edge) kit.edge({ color: [255, 196, 84], k: 0.85, secs: 1.2 }); if (kit.sprayColor) kit.sprayColor(0xffc24a, { size: 1.6 }); if (kit.ammo) kit.ammo(DATA.weapon.rounds); }
+      fx('u4goldpower', 1, 0);
+      let i = 0; for (const S of F.shapes) if (S.state !== 'gone' && S.state !== 'leave') { S.state = 'leave'; S.leave = -0.5 * ((i++ * 0.6180339887) % 1); }
+      if (i) fx('u4goldclear', 0.9, 0);
+      play.heat = Math.min(play.heat, 0.5);
+      if (kit && kit.pulse) kit.pulse({ bpm: 124, secs: 2.2 });
+      objectiveFor('bless');
+      queueLine('ph4f3', () => talk(cast.phoB, SECS.ph4f3 || 3));            // "Now you are not alone. Send them back."
+      queueFn(() => { F.chantHeld = false; if (play.fight === F && F.on && chantNow) chantSing(chantNow); });
+    }
+    /* a batch of five to seven from the room's edges, most of them for her (R28: "the green entities should swarm in the
+       screen in dramatic numbers, filling the screen with many of them") */
+    function goldBatch() {
+      const B = FIGHT.batch, n = B.min + Math.floor(fightRnd() * (B.max - B.min + 1)), keys = Object.keys(FROM);
+      let made = 0;
+      for (let i = 0; i < n; i++) { const u = fightRnd(), to = u < 0.56 ? 'amma' : u < 0.76 ? 'me' : u < 0.86 ? 'pho' : u < 0.93 ? 'ravi' : 'mala';
+        if (!spawnAt(keys[Math.floor(fightRnd() * keys.length)], to, 0.44 + 0.1 * fightRnd())) break; made++; }
+      if (made) fx(made > 4 ? 'u4surge' : 'u4whisper', 0.55, 0);
+    }
+    function nagTick(open, live) {
+      const F = play.fight;
+      if (open) { F.nagNext = NAG.first; return; }
+      if (play.closeHold || !live || F.call === 'asking' || F.call === 'shown' || F.shutFor < F.nagNext) return;
+      if (F.t - F.lastStrike < NAG.first) { F.nagNext = F.shutFor + 1; return; }      // (his water is reaching them blind: he is doing something)
+      const name = NAG.lines[F.nags % NAG.lines.length];
+      if (phoSpeaks(name, () => talk(cast.phoB, SECS[name] || 2.6))) { F.nags++; F.nagNext = F.shutFor + (SECS[name] || 2.6) + NAG.again; }
+      else F.nagNext = F.shutFor + 0.5;                                               // (a voice is live: asked again in half a second)
+    }
+    /* THE EYE BUTTON IN THE FIGHT: OPEN when his sight is shut with green ones in the room (straight away at the start and in
+       the surge and the gold, after 3 s otherwise); CLOSE when it is open and his heart is near its limit (0.85: past 1 his
+       nerve drains); nothing under the showcase or while his sight is held shut for him */
+    function urgeTick(open, live) {
+      const F = play.fight; let u = false;
+      if (F.call === 'shown' || play.closeHold) u = false;
+      else if (open) u = play.heat >= 0.85 && F.call !== 'gold' ? 'close' : false;
+      else if (live && (F.shutFor >= 3 || F.t < 8 || F.call)) u = 'open';
+      if (u !== F.urge) { F.urge = u; if (kit && kit.visionUrge) kit.visionUrge(u); }
     }
     /* THE TURNING POINT: the trance's film, and the decision at its end (the plan's §4.4) */
     function trance() {
@@ -4131,6 +4397,7 @@
     function storyTick(wdt, t) {
       spotsTick(); hitsTick(); scareTick(); doorTick(wdt); heatTick(wdt); altarTick();   // (the fan, the lamp and the glass: updateNotes, film or play; his hand on her head: updateNotes, play and the decision)
       fightTick(wdt);
+      if (play.loseWait && getState() === 'play' && kit && kit.lose && kit.lose({ film: 'lost', say: W.lostSay, teaching: W.lostTeach })) play.loseWait = false;
     }
     function applyPhase(saved) {
       const R = readMark(saved);
@@ -4145,15 +4412,17 @@
     function storyReset() {
       play.run++; play.busy = false; play.learned = new Set(); play.spoke = false; play.told = false; play.peeked = false;
       play.opened = false; play.looked = new Set(); play.closed = false; play.read = false; play.water = false; play.briefed = false;
-      play.fight = null; play.appaGone = false; play.nerveOut = false; play.heat = 0; play.heatStep = 0; play.closeHold = 0; play.breathSaid = -99;
+      play.fight = null; play.appaGone = false; play.nerveOut = false; play.heat = 0; play.heatStep = 0; play.closeHold = 0; play.breathSaid = -99; play.loseWait = false;
       play.fanK = 1; play.fanTo = 1; play.scareSeed = SCARE_SEED; play.scareAt = 0; play.scared = new Set(); play.doorTo = -0.12; play.doorK = -0.12;
       play.fogged = false; play.fogAt = 0; fogK = 0; fogTo = 0; lampK = 0; lampTo = 0; crownK = 0; crownTo = 0; oppLooked = ''; wanderNext = 2;
       decOpen = false; altarBlock = false; bowlOnFloor.visible = true; chantNow = null;
       for (const P of spirits.wander.concat([spirits.large, spirits.appa, spirits.oppress])) { P.gone = false; P.alpha = 1; }
-      if (kit) { kit.bar(null); if (kit.weaponBlock) kit.weaponBlock(null); if (kit.visionUrge) kit.visionUrge(false); }
+      if (kit) { kit.bar(null); if (kit.weaponBlock) kit.weaponBlock(null); if (kit.visionUrge) kit.visionUrge(false);
+        if (kit.health) kit.health(null); if (kit.edge) kit.edge(null); if (kit.sprayColor) kit.sprayColor(null); }
       lookAt0('FLAT'); castHome(); spiritsHome(); soundReset(); whenReady(cast.phoB, (P) => bowSet(P, 0));
     }
-    function storySnap() { return { phase, learned: [...play.learned], looked: [...play.looked], water: play.water, fight: play.fight ? +play.fight.k.toFixed(3) : null, heat: +play.heat.toFixed(2) }; }
+    function storySnap() { return { phase, learned: [...play.learned], looked: [...play.looked], water: play.water, fight: play.fight ? +play.fight.k.toFixed(3) : null, heat: +play.heat.toFixed(2),
+      hp: play.fight ? play.fight.hp : null, call: play.fight ? play.fight.call : null }; }
 
     /* ====================================================== THE FLAT'S SOUND (M8; masters/v27.0/sound.sh made every file)
        THE BEDS, each eased toward what the beat wants (chapter 3's mixBeds; the engine ducks every bed 8 dB under a voice):
@@ -4444,6 +4713,54 @@
         whenReady(spirits.oppress, (P) => hold(P, 'cry', 2.6, 1.6, 0.3, 2.4));
         if (kit && kit.vision) kit.vision({ r: VR, moving: false });
         handOnHead(cast.phoB, true); crownK = 1;
+      }
+    };
+
+    /* ---------------------------------------------------------------- HER LIFE RUNS OUT (its clock: LO, z_tail.js)
+       Chad, 18 Nov: "If her health bar drops to 0, the player loses this game and chapter and has to restart again". The
+       film the loss plays before its card (the fifty-third seam, kit.lose: c_story.js ammaLost). From his place at her front
+       left, his sight forced open: the green ones on her, round her chair; her last cry; his teacher's hand lifted from her
+       head, his chant already broken off; Mala's gasp at the lamp; Ravi's "Amma..."; her eyes turned to him; his sight shut,
+       the wave home; the dark room; black. Every place a function of the film's clock (seven of them round her chair, each
+       a fixed spot by its slot: v6.4) */
+    const LOST_RING = [[0.62, -0.02], [-0.64, 0.04], [0.30, 0.68], [-0.36, 0.62], [0.54, -0.44], [-0.52, -0.42], [0.02, 0.90]];
+    FILMS.lost = {
+      begin(api) {
+        if (api && api.handsRoot) api.handsRoot.visible = false;
+        FM.once = new Set();
+        whenReady(cast.pho, (P) => { P.group.visible = false; });
+        whenReady(cast.mala, (P) => { put(P, MALA_LAMP.x, MALA_LAMP.z, 0); });
+        whenReady(cast.ravi, (P) => { put(P, AT.ravi.x, AT.ravi.z, faceTo(AT.ravi.x, AT.ravi.z, CHAIR.x, CHAIR.z)); });
+        spirits.wander.forEach((P, i) => whenReady(P, (Q) => {
+          const R = LOST_RING[i]; Q.group.visible = !!R; Q.gone = !R; if (!R) return;
+          const x = CHAIR.x + R[0], z = CHAIR.z + R[1]; put(Q, x, z, faceTo(x, z, CHAIR.x, CHAIR.z));
+          Q.alpha = 1; if (Q.fx) { Q.fx.set('uAlpha', 1); Q.fx.set('uFill', SPIRIT.wander.fill); } }));
+        whenReady(spirits.large, (P) => { P.group.visible = false; P.gone = true; });
+        castSolid();
+        filmBed.on = true; for (const k in filmBed) if (k !== 'on') filmBed[k] = 0; filmBed.dark = BED.dark;
+      },
+      frame(t) {
+        fLook('DARK');
+        whenReady(cast.amma, (P) => { put(P, CHAIR.x, CHAIR.z, CHAIR.ry); pose(P, 'wsit', pingOf(t, 2.0, 3.6, 12));
+          if (t > LO.turn) lookNow(P, 'lens', smo(c01((t - LO.turn) / 1.6)), 1.35, 0.05); });
+        phoBless(t, 1 - smo(c01((t - LO.lift) / 0.8)));
+        whenReady(cast.mala, (P) => { pose(P, 'kneelhold', pingOf(t, 2.5, 1.0, 6.0)); lookNow(P, AMMA_FACE, 1, 0.9); });
+        whenReady(cast.ravi, (P) => { pose(P, 'Idle_3', 3 + t * 0.35, true); lookNow(P, AMMA_FACE, 1, 0.9); });
+        whenReady(spirits.oppress, (P) => { oppRide(P); pose(P, 'cling', 2 + t * 0.3); });
+        spirits.wander.forEach((P, i) => { if (LOST_RING[i]) whenReady(P, (Q) => pose(Q, i % 2 ? 'creep' : 'crawl', 0.37 * i + t * 0.9, true)); });
+        goddess(0);
+        visionAt(t, 0.05, 0.9, LO.shut, 1.0);
+        track(t, [
+          { t: 0, name: 'her', eye: S_EYE, at: [CHAIR.x - 0.08, 0.92, CHAIR.z + 0.12], fp: 62, fd: 54 },
+          { t: LO.turn, name: 'her', eye: S_EYE, at: [CHAIR.x - 0.04, 1.0, CHAIR.z + 0.06], fp: 54, fd: 48 },
+          { t: LO.shut + 1.0, name: 'her', eye: S_EYE, at: [CHAIR.x - 0.02, 1.02, CHAIR.z + 0.06], fp: 48, fd: 43 },
+          { t: LO.end, name: 'her', eye: S_EYE, at: [CHAIR.x - 0.02, 1.02, CHAIR.z + 0.06], fp: 48, fd: 43 }
+        ]);
+      },
+      end() {
+        fLens(PLAY_FOV); filmBed.on = false;
+        if (kit && kit.vision) kit.vision({ r: 0, moving: false });
+        whenReady(cast.phoB, (P) => bowSet(P, 0));
       }
     };
 
@@ -4801,6 +5118,7 @@
     /* what a scene reaches of the films (stage.films): the clocks, and each film's three hands */
     const filmsApi = {
       trance: FILMS.trance,
+      lost: FILMS.lost,
       begin: (k, c, api) => FILMS.ending.begin(k, api),
       frame: (k, t, api) => FILMS.ending.frame(k, t, api),
       end: () => FILMS.ending.end()
@@ -5102,6 +5420,9 @@
 
   /* THE FILMS' CLOCKS (c_ufilm.js draws to them): the trance's, each ending's, and the close's, every one from its start */
   const TR = { ml1: 2.6, ml2: 5.7, open: 7.6, claw: 7.6, cry: 10.6, rush: 12.7, rv: 13.05, back: 15.2, end: 17.6 };
+  /* the loss's (her life run out: c_ufilm.js FILMS.lost): her cry, his teacher's hand lifted, Mala's gasp, Ravi's word, her
+     eyes to him, his sight shut, black */
+  const LO = { cry: 0.35, lift: 1.4, gasp: 2.2, rv: 3.0, turn: 3.1, shut: 5.0, black: 6.1, end: 7.0 };
   /* the close's own clock, from its start: Pho's dedication; the green shapes go; she rises (if she has not), walks;
      the ash; her palms; his sight closing; her family before her altar (fam); Pho's word; black */
   const CL = { z0: 0.6, go: 2.0, steps: 11.6, slow: 12.0, ash: 15.0, palms: 17.2, thank: 17.3, bell: 18.7, shut: 20.2, fam: 21.3, z1: 23.0, black: 30.4, end: 32.6 };
@@ -5157,6 +5478,28 @@
     sfx(T.rv, 'rv4t1', 1);                              // "Stop it! You're hurting her!"
     sfxFade(T.end - 1.5, T.end - 0.05, 'u4trancemus');
     step(T.end, () => F.trance.end());
+  }
+
+  /* HER LIFE RUNS OUT (Chad, 18 Nov): the film the loss plays before its card (c_story.js ammaLost, kit.lose). Its pictures
+     are the stage's (c_ufilm.js FILMS.lost); here its clock's one track, its fades and its cues. It ends on its black (the
+     card lies over it) */
+  function filmLost(c, s, api) {
+    const { tr, step, fade, sfx, sfxFade, rawK, stage } = api, F = stage.films, T = LO;
+    step(0, () => F.lost.begin(api));
+    tr(0, T.end, (k, t) => F.lost.frame(t), rawK);
+    fade(0, 0.5, 1, 0);
+    sfx(0.05, 'u4vison', 0.8);                          // his sight forced open: the wave out from him
+    sfx(0.25, 'u4sting', 0.8);                          // the low sting under what he sees
+    sfx(T.cry, 'u4ascream2', 1);                        // her last cry
+    sfx(T.gasp, 'u4gaspf', 0.75);                       // Mala at the lamp
+    sfx(T.rv, 'rv4A2', 1);                              // Ravi: "Amma..."
+    sfx(T.rv + 0.95, 'u4heart', 0.75); sfx(T.rv + 1.55, 'u4heart', 0.7);   // his own heart, under her eyes on him
+    sfx(T.shut, 'u4visoff', 0.85);                      // his sight shut: the wave home to him
+    sfx(T.shut + 0.6, 'u4whisper', 0.45);               // and in the dark, theirs
+    fade(T.black, T.end - 0.1, 0, 1);
+    sfxFade(T.black, T.end - 0.05, 'u4whisper');
+    c.keepFade = true; c.endFade = 1;
+    step(T.end, () => F.lost.end());
   }
 
   /* THE FOUR ENDINGS (the plan's §4.5), each a whole story, each with THE CLOSE: their pictures are the stage's
@@ -5255,7 +5598,7 @@
   (window.__CHAPTERS__ = window.__CHAPTERS__ || {}).e4c4 = Object.assign(DATA, {
     build,
     intro,
-    films: { trance: filmTrance },
+    films: { trance: filmTrance, lost: filmLost },
     scenes: [scHold, scThrow, scGo, scKeep]
   });
 })();
