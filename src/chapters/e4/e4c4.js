@@ -1949,6 +1949,7 @@
         if (o.shoulders !== null) shouldersInit(P);
         if (o.upright) uprightInit(P);
         if (o.armRest) armRestInit(P);
+        if (o.knees) kneesInit(P);
         /* THE GROUND A WALK OR A RUN COVERS IN A SECOND (o.pace: asked for by whoever moves the group, who drives the take's
            rate from the ground covered: v7.1). The library's walks and runs come on the spot (their hips travel nowhere:
            measured, a few millimetres a second), so the pace is read from the foot that is down: under a body that stays
@@ -2294,6 +2295,7 @@
       if (P.hd) headDampLay(P);
       if (P.upr) uprightLay(P);
       if (P.arst) armRestLay(P);
+      if (P.knees) kneesLay(P);
       if (P.shd) shouldersLay(P);
       if (P.restLegs) seatLegsLay(P);
       if (P.restHands && !(P.layK > 0)) restHandsLay(P);
@@ -2321,6 +2323,7 @@
         if (P.hd) headDampLay(P);
         if (P.upr) uprightLay(P);
         if (P.arst) armRestLay(P);
+        if (P.knees) kneesLay(P);
         if (P.shd) shouldersLay(P);
         if (P.gaze || P.gazeK > 0) gazeTick(P, wdt);
         if (P.lay || P.layK > 0) layTick(P, wdt);
@@ -2504,6 +2507,7 @@
       /* (the shoulders let down were laid first, under every hand: so they are taken off last) */
       const SH = P.shd; if (SH && SH.on) { for (const R of SH.S) { R.cl.quaternion.copy(R.scl); R.up.quaternion.copy(R.sup); if (R.fol) for (const F of R.fol) F.b.quaternion.copy(F.sv); } SH.on = false; }
       const UP = P.upr; if (UP && UP.on) { for (const R of UP.B) R.b.quaternion.copy(R.sv); UP.on = false; }
+      const KN = P.knees; if (KN && KN.on) { KN.hips.position.copy(KN.hp); for (const R of KN.B) R.b.quaternion.copy(R.sv); KN.on = false; }
       const AR = P.arst; if (AR && AR.on) { for (const R of AR.B) R.b.quaternion.copy(R.sv); AR.on = false; } }
     /* A HAND CLOSED ROUND A THING (the woman with the taper): each finger's three joints turned by `th` radians toward
        the palm's own facing, about the hand's own measured across-axis as it lies in the world now. Laid on after
@@ -3675,6 +3679,64 @@
       H.top.updateWorldMatrix(false, true);                // (the collar bone: the arm and the drape both hang from it)
       H.on = true;
     }
+    /* KNEES STRAIGHT STANDING (o.knees; R76, Chad, 18 Nov 2026: "his knees seem bent even when standing"). MEASURED
+       (tools/probes/posture.mjs, KNEE, on 21u): standing at rest the legs that are seen (the grafted ones,
+       tools/leggraft.mjs) are bent 9.8 and 11.7 degrees, in his talk 12.7 and 12.2; a man standing at ease holds his knees
+       within about 5 (the group photograph of the masters at the Wai Kru, masters/v26.0/ref/waikru-8: every one standing
+       straight). Near straight a knee's bend is all in the last millimetres of the leg's reach (from 12 degrees to 4 the
+       hip rises 4 mm), so while a take named in o.knees is worn (inside its window) his hips are lifted by what brings
+       each grafted knee to `bend` degrees, by the take's weight, and both legs reach again to where his feet stood: his
+       rig's (which carries his feet) and the grafted one (which is seen), each knee bending forward, each foot keeping
+       its turn. Laid after the arm's hold, taken off by armsBack() before the mixer runs again (v11.5) */
+    const _kA = new THREE.Vector3(), _kB = new THREE.Vector3(), _kC = new THREE.Vector3(), _kP = new THREE.Vector3(), _kF = new THREE.Vector3(), _kQ = new THREE.Quaternion();
+    function kneesInit(P) {
+      const O = P.o.knees, bone = (re) => { for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
+      const hips = bone(/^(mixamorig:?)?Hips$/), S = [];
+      for (const sd of ['Left', 'Right']) {
+        const up = bone(new RegExp('^(mixamorig:?)?' + sd + 'UpLeg$')), leg = bone(new RegExp('^(mixamorig:?)?' + sd + 'Leg$')), foot = bone(new RegExp('^(mixamorig:?)?' + sd + 'Foot$'));
+        const gu = bone(new RegExp('^' + sd + 'LegGraftUp$')), gl = bone(new RegExp('^' + sd + 'LegGraftLow$'));
+        if (!up || !leg || !foot || !gu || !gl) { console.warn(P.key + ': o.knees asked, and the ' + sd + ' legs are not all there'); return; }
+        /* (the grafted shin's end, at the ankle it was solved to reach: his foot, measured in the shin's own frame) */
+        P.group.updateWorldMatrix(true, true); foot.getWorldPosition(_kA); const gEnd = new THREE.Object3D(); gl.add(gEnd); gl.worldToLocal(gEnd.position.copy(_kA));
+        S.push({ up, leg, foot, gu, gl, gEnd, T: new THREE.Vector3(), Q: new THREE.Quaternion() });
+      }
+      if (!hips) return;
+      const B = []; for (const sd of S) for (const b of [sd.up, sd.leg, sd.foot, sd.gu, sd.gl]) B.push({ b, sv: new THREE.Quaternion() });
+      P.knees = { hips, S, B, hp: new THREE.Vector3(), take: Object.assign({}, O.takes), win: O.win || {}, bend: (O.bend != null ? O.bend : 4) * Math.PI / 180, max: O.max || 0.012, on: false };
+    }
+    function kneesLay(P) {
+      const K = P.knees; if (!K) return;
+      let k = 0;
+      for (const n in K.take) { const w = P.w[n] || 0; if (!(w > 0)) continue; const W = K.win[n], A = P.acts[n];
+        if (W && A && (A.time < W[0] || A.time > W[1])) continue; k += w * K.take[n]; }
+      if (!(k > 1e-4)) return;
+      k = Math.min(1, k);
+      P.group.updateWorldMatrix(true, true);
+      let lift = Infinity;
+      for (const sd of K.S) {
+        sd.foot.getWorldPosition(sd.T); sd.foot.getWorldQuaternion(sd.Q);
+        sd.gu.getWorldPosition(_kA); sd.gl.getWorldPosition(_kB); sd.gEnd.getWorldPosition(_kC);
+        const a = _kA.distanceTo(_kB), b = _kB.distanceTo(_kC), d = _kA.distanceTo(_kC);
+        if (!(d > 0.2)) return;
+        const bend = Math.PI - Math.acos(THREE.MathUtils.clamp((a * a + b * b - d * d) / (2 * a * b), -1, 1));
+        if (bend > 0.6) return;                                    // (not standing: a knee bent past 34 degrees is left as the take has it)
+        const want = Math.sqrt(a * a + b * b + 2 * a * b * Math.cos(K.bend)), up = (_kA.y - _kC.y) / d;
+        lift = Math.min(lift, Math.max(0, (want - d) / Math.max(0.5, up)));
+      }
+      lift = Math.min(lift, K.max) * k;
+      if (!(lift > 1e-5)) return;
+      for (const R of K.B) R.sv.copy(R.b.quaternion); K.hp.copy(K.hips.position);
+      K.on = true;
+      K.hips.getWorldPosition(_kA); _kA.y += lift; K.hips.parent.worldToLocal(_kA); K.hips.position.copy(_kA); K.hips.updateWorldMatrix(false, true);
+      const ry = P.group.rotation.y; _kF.set(Math.sin(ry), 0, Math.cos(ry));
+      for (const sd of K.S) {
+        sd.leg.getWorldPosition(_kP); _kP.addScaledVector(_kF, 0.5);
+        armTo({ up: sd.up, fore: sd.leg, hand: sd.foot }, sd.T, _kP);
+        sd.foot.parent.getWorldQuaternion(_kQ); sd.foot.quaternion.copy(_kQ.invert().multiply(sd.Q)); sd.foot.updateWorldMatrix(false, true);
+        sd.gl.getWorldPosition(_kP); _kP.addScaledVector(_kF, 0.5);
+        armTo({ up: sd.gu, fore: sd.gl, hand: sd.gEnd }, sd.T, _kP);
+      }
+    }
     const cast = {};
     const WHEEL = { seat: 0.44, front: 0.28, foot: 0.10 };
     const STOOL_TOP = 0.445;
@@ -3703,7 +3765,11 @@
        his rest and his talk (back to within a degree of his bind pose), his talk's shoulders let down whole, and his push's
        let down 0.6 of the way, measured over the part of the take he plays: a man who thrusts both hands out does lift
        and bring his shoulders forward, by a little, not to his ears) */
-    const PHO_STAND_UPRIGHT = { Sit_to_Stand_Transition_M: { head: 12 }, Talk_with_Hands_Open: { head: 12 } };
+    /* (R76, Chad, 18 Nov 2026: "Grandmaster pho's standing pose and standing talking pose is still hunchbacked and not
+       natural". Measured on 21u: his trunk leans 4.3 degrees forward at rest and 5.9 in his talk (8.7 at most); turned
+       back by as much, his neck given it back so his face stays where R64 set it) */
+    const PHO_STAND_UPRIGHT = { Sit_to_Stand_Transition_M: { trunk: -4.5, head: 16.5 }, Talk_with_Hands_Open: { trunk: -6, head: 18 } };
+    const PHO_KNEES = { takes: { Sit_to_Stand_Transition_M: 1, Talk_with_Hands_Open: 1 }, win: { Sit_to_Stand_Transition_M: [5.2, 99] }, bend: 4, max: 0.012 };
     const PHO_STAND_SHOULDERS = { Talk_with_Hands_Open: 1, mage_soell_cast_3: 0.6 };
     const PHO_STAND_SHWIN = { mage_soell_cast_3: [0.5, 0.45] };
     /* (R77: his left arm and the drape over it held at his rest's while he talks standing, so the cloth covers the arm) */
@@ -3777,7 +3843,7 @@
       cast.phoB = mkPerson('pho', AT.phoB.x, AT.phoB.z, phoBRy, { take: 'Sit_to_Stand_Transition_M', hidden: true,
         win: { Sit_to_Stand_Transition_M: [5.85, 0.25, PHO_BREATH] }, skins: false, look: lookD, blobW: 0.9, blobD: 0.8,
         centre: true, talk: 'Talk_with_Hands_Open', headDamp: PHO_STAND_HEAD,
-        upright: PHO_STAND_UPRIGHT, shoulders: PHO_STAND_SHOULDERS, shWin: PHO_STAND_SHWIN, armRest: PHO_ARM_REST });
+        upright: PHO_STAND_UPRIGHT, shoulders: PHO_STAND_SHOULDERS, shWin: PHO_STAND_SHWIN, armRest: PHO_ARM_REST, knees: PHO_KNEES });
       cast.phoB.home = { x: AT.phoB.x, z: AT.phoB.z, ry: phoBRy };
     }
     buildCast();
