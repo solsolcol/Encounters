@@ -19,7 +19,10 @@ not skin (under CHART_SKIN of its texels skin), the island is a small part of it
 SHARE_ROBE of a piece of robe or SHARE of a piece that also paints some skin, MIXED or more), and of the texels round it
 (within 3) that are painted, leaving out other small islands' skin, at least RING are robe (bright, unsaturated); on a
 piece that also paints skin, the texels round it must be mostly painted too (RING_DRAWN: skin at such a piece's edge may
-go on across its seam). The look's test: the sheet's colour, decoded from sRGB and raised to 1/2.2 as
+go on across its seam). A piece that is mostly skin (CHART_SKIN or more) can still carry a strip of robe, and a speck in
+that strip is taken only when it is a tiny part of the piece (SHARE_SKIN), painted all round (RING_DRAWN_SKIN) and robe
+all round (RING_SKIN): build 21z left out such pieces whole, and with them the specks at his left shoulder blade, which
+lie in the robe's strip of the piece that paints his back (photographed: the cluster came back). The look's test: the sheet's colour, decoded from sRGB and raised to 1/2.2 as
 the shader does, its saturation through smoothstep(0.12, 0.25); a texel is skin past SKIN of that.
 """
 import hashlib, io, json, os, struct, subprocess, sys, tempfile
@@ -32,6 +35,7 @@ GLB = os.path.join(ROOT, 'assets/pho.glb')
 OUT = os.path.join(ROOT, 'masters/v27.0/parts/c_phofleck.js')
 SIZE, AMAX, RING, SKIN, GROW = 1024, 3000, 0.78, 0.3, 4
 DRAWN, CHART_SKIN, MIXED, SHARE, SHARE_ROBE, RING_DRAWN = 0.3, 0.5, 0.2, 0.1, 0.3, 0.5
+SHARE_SKIN, RING_DRAWN_SKIN, RING_SKIN = 0.05, 0.8, 0.85
 
 
 def sheet():
@@ -87,14 +91,15 @@ def main():
             continue                                         # too big to be a speck, or never drawn
         c = int(np.bincount(d).argmax())
         mixed = cskin[c] >= MIXED                            # a piece of robe that also paints some skin
-        if cskin[c] >= CHART_SKIN or a > (SHARE if mixed else SHARE_ROBE) * ccount[c]:
-            continue                                         # a piece of skin, or too much of its piece
+        skinny = cskin[c] >= CHART_SKIN                      # a piece that is mostly skin, with a strip of robe in it
+        if a > (SHARE_SKIN if skinny else SHARE if mixed else SHARE_ROBE) * ccount[c]:
+            continue                                         # too much of its piece to be a speck on it
         ring = nd.binary_dilation(sub, iterations=3) & ~sub
         rp = ring & painted[Y0:Y1, X0:X1]
         other = skin[Y0:Y1, X0:X1] & (lab[Y0:Y1, X0:X1] != i) & small[lab[Y0:Y1, X0:X1]]
         cnt = int((rp & ~other).sum())
         frac = float((rp & robe[Y0:Y1, X0:X1]).sum()) / max(cnt, 1)
-        if (mixed and rp.sum() < RING_DRAWN * ring.sum()) or frac < RING:
+        if (mixed and rp.sum() < (RING_DRAWN_SKIN if skinny else RING_DRAWN) * ring.sum()) or frac < (RING_SKIN if skinny else RING):
             if frac >= 0.6:
                 near.append((a, round(frac, 3), x0, y0))
             continue

@@ -3404,7 +3404,7 @@
        gold. (The crowd, the dancers and those who go up are placed by the play and the films.) */
     /* R43 (Chad, 18 Nov 2026: "There are also some skin colour bits on the back of his robe that can be easily seen
        during gameplay"). WRITTEN BY tools/phoflecks.py from assets/pho.glb (sha1 df95bef025b1958c22e20c8e05493e17b86461a8), never by hand:
-       32 islands of skin colour lying inside the white of his robe in his body sheet (4096 x 4096), each on a piece of
+       34 islands of skin colour lying inside the white of his robe in his body sheet (4096 x 4096), each on a piece of
        robe the game draws (never a piece of skin: build 21z), each grown by
        4 texels, as runs [row, first cell, cells] of a 1024 x 1024 mask, in the colour of the robe round it (sRGB).
        c_scast.js lookD paints them once and lays them over his sheet; his file is unchanged. */
@@ -3419,6 +3419,8 @@
       [254, 253, 248, [315,331,3,316,330,4,317,329,5,318,329,5,319,328,6,320,329,3]],
       [251, 250, 244, [358,84,3,359,81,7,360,80,8,361,80,8,362,80,7,363,80,7,364,80,6,365,81,4]],
       [249, 246, 241, [371,1016,2,372,1016,3,373,1016,2]],
+      [254, 251, 246, [410,4,3,411,3,6,412,3,7,413,3,7,414,4,6,415,5,5,416,6,3,417,6,3]],
+      [255, 253, 247, [418,6,3,419,5,5,420,5,5,421,5,5,422,5,5,423,6,4,424,7,3,425,8,1]],
       [253, 251, 246, [522,925,5,523,924,7,524,924,6,525,924,5,526,924,5,527,926,1]],
       [247, 246, 236, [568,922,4,569,922,5,570,921,6,571,922,5,572,922,5,573,918,3,573,922,6,574,917,11,575,918,10,576,918,9,577,918,9,578,918,9,579,918,9,580,918,8,581,917,10,582,917,10,583,917,6,583,924,3,584,917,10,585,917,10,586,917,10,587,918,9,588,918,10,589,920,8,590,920,7,591,919,8,592,919,8,593,920,7,594,920,7,595,920,7,596,920,7,597,920,6,598,920,5,599,921,4,600,920,4,601,920,5,602,920,5,603,921,4,604,922,2]],
       [229, 229, 227, [571,732,1,572,731,3,573,731,3,574,730,4,575,730,4,576,731,2]],
