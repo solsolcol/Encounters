@@ -12,11 +12,17 @@ a texel of the mask is either the robe's colour, opaque, or nothing).
 
     python3 -I tools/phoflecks.py [--report]      (from the repo root; numpy, Pillow and scipy)
 
-An island is a fleck when: its area is at most AMAX texels, and at least RING of the texels within 3 of it are robe
-(bright, unsaturated). The look's test: the sheet's colour, decoded from sRGB and raised to 1/2.2 as the shader does,
-its saturation through smoothstep(0.12, 0.25); a texel is skin past SKIN of that.
+An island is a fleck when (v27.0 build 21z: read against the body, not the sheet alone, since build 21x's first rule
+also took five small pieces of real skin and 95 islands no triangle draws): it lies on a piece of the body that is painted
+(at least DRAWN of it inside a triangle: tools/probes/uvcharts.mjs maps which UV chart paints each texel), that piece is
+not skin (under CHART_SKIN of its texels skin), the island is a small part of it (at most AMAX texels, and at most
+SHARE_ROBE of a piece of robe or SHARE of a piece that also paints some skin, MIXED or more), and of the texels round it
+(within 3) that are painted, leaving out other small islands' skin, at least RING are robe (bright, unsaturated); on a
+piece that also paints skin, the texels round it must be mostly painted too (RING_DRAWN: skin at such a piece's edge may
+go on across its seam). The look's test: the sheet's colour, decoded from sRGB and raised to 1/2.2 as
+the shader does, its saturation through smoothstep(0.12, 0.25); a texel is skin past SKIN of that.
 """
-import hashlib, io, json, os, struct, sys
+import hashlib, io, json, os, struct, subprocess, sys, tempfile
 import numpy as np
 from PIL import Image
 from scipy import ndimage as nd
@@ -24,7 +30,8 @@ from scipy import ndimage as nd
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 GLB = os.path.join(ROOT, 'assets/pho.glb')
 OUT = os.path.join(ROOT, 'masters/v27.0/parts/c_phofleck.js')
-SIZE, AMAX, RING, SKIN, GROW = 1024, 3000, 0.85, 0.3, 4
+SIZE, AMAX, RING, SKIN, GROW = 1024, 3000, 0.78, 0.3, 4
+DRAWN, CHART_SKIN, MIXED, SHARE, SHARE_ROBE, RING_DRAWN = 0.3, 0.5, 0.2, 0.1, 0.3, 0.5
 
 
 def sheet():
@@ -55,6 +62,16 @@ def main():
     lab, n = nd.label(skin, structure=np.ones((3, 3)))
     sizes = nd.sum(skin, lab, index=np.arange(1, n + 1))
     objs = nd.find_objects(lab)
+    small = np.zeros(n + 1, bool); small[1:] = sizes < 20000
+    # which piece of the body (UV chart) paints each texel, as the game reads his file
+    with tempfile.TemporaryDirectory() as td:
+        cm = os.path.join(td, 'charts.i32')
+        subprocess.run(['node', os.path.join(ROOT, 'tools/probes/uvcharts.mjs'), GLB, 'texture_0', cm, str(W)], check=True, stdout=subprocess.DEVNULL)
+        own = np.fromfile(cm, dtype='<i4').reshape(H, W)
+    painted = own >= 0
+    nc = int(own.max()) + 1
+    ccount = np.bincount(own[painted], minlength=nc).astype(float)
+    cskin = np.bincount(own[painted & skin], minlength=nc) / np.maximum(ccount, 1)
     k = W // SIZE
     cover = np.zeros((SIZE, SIZE), np.int32)                 # which fleck (1-based) owns each cell of the mask
     flecks, near = [], []
@@ -65,11 +82,20 @@ def main():
         y0, y1, x0, x1 = sl[0].start, sl[0].stop, sl[1].start, sl[1].stop
         Y0, Y1, X0, X1 = max(0, y0 - 8), min(H, y1 + 8), max(0, x0 - 8), min(W, x1 + 8)
         sub = lab[Y0:Y1, X0:X1] == i
+        o = own[Y0:Y1, X0:X1][sub]; d = o[o >= 0]
+        if a > AMAX or d.size < DRAWN * a:
+            continue                                         # too big to be a speck, or never drawn
+        c = int(np.bincount(d).argmax())
+        mixed = cskin[c] >= MIXED                            # a piece of robe that also paints some skin
+        if cskin[c] >= CHART_SKIN or a > (SHARE if mixed else SHARE_ROBE) * ccount[c]:
+            continue                                         # a piece of skin, or too much of its piece
         ring = nd.binary_dilation(sub, iterations=3) & ~sub
-        rr = robe[Y0:Y1, X0:X1][ring]
-        frac = float(rr.mean()) if rr.size else 0.0
-        if a > AMAX or frac < RING:
-            if a <= 4 * AMAX and frac >= 0.6:
+        rp = ring & painted[Y0:Y1, X0:X1]
+        other = skin[Y0:Y1, X0:X1] & (lab[Y0:Y1, X0:X1] != i) & small[lab[Y0:Y1, X0:X1]]
+        cnt = int((rp & ~other).sum())
+        frac = float((rp & robe[Y0:Y1, X0:X1]).sum()) / max(cnt, 1)
+        if (mixed and rp.sum() < RING_DRAWN * ring.sum()) or frac < RING:
+            if frac >= 0.6:
                 near.append((a, round(frac, 3), x0, y0))
             continue
         col = img[Y0:Y1, X0:X1][ring & robe[Y0:Y1, X0:X1]].mean(0)
@@ -79,7 +105,7 @@ def main():
         fid = len(flecks) + 1
         free = cover[cy, cx] == 0
         cover[cy[free], cx[free]] = fid
-        flecks.append({'area': a, 'ring': round(frac, 3), 'box': [int(x0), int(y0), int(x1 - x0), int(y1 - y0)],
+        flecks.append({'area': a, 'ring': round(frac, 3), 'chart': c, 'box': [int(x0), int(y0), int(x1 - x0), int(y1 - y0)],
                        'c': [int(round(v * 255)) for v in col]})
     # runs of each fleck's cells, row by row
     runs = {f: [] for f in range(1, len(flecks) + 1)}
@@ -95,6 +121,8 @@ def main():
                 if j < nz.size:
                     s = nz[j]
     cells = int((cover > 0).sum())
+    if '--json' in sys.argv:
+        json.dump(flecks, open(sys.argv[sys.argv.index('--json') + 1], 'w'))
     if '--report' in sys.argv:
         print('sheet', W, 'x', H, 'islands', n, 'flecks', len(flecks), 'texels', sum(f['area'] for f in flecks),
               'mask cells', cells, 'of', SIZE * SIZE)
@@ -107,7 +135,8 @@ def main():
         rows.append('[%d, %d, %d, [%s]]' % (F['c'][0], F['c'][1], F['c'][2], ','.join(map(str, flat))))
     js = ('    /* R43 (Chad, 18 Nov 2026: "There are also some skin colour bits on the back of his robe that can be easily seen\n'
           '       during gameplay"). WRITTEN BY tools/phoflecks.py from assets/pho.glb (sha1 %s), never by hand:\n'
-          '       %d islands of skin colour lying wholly inside the white of his robe in his body sheet (%d x %d), each grown by\n'
+          '       %d islands of skin colour lying inside the white of his robe in his body sheet (%d x %d), each on a piece of\n'
+          '       robe the game draws (never a piece of skin: build 21z), each grown by\n'
           '       %d texels, as runs [row, first cell, cells] of a %d x %d mask, in the colour of the robe round it (sRGB).\n'
           '       c_scast.js lookD paints them once and lays them over his sheet; his file is unchanged. */\n'
           '    const PHO_FLECKS = { size: %d, f: [\n      %s\n    ] };\n') % (
