@@ -299,8 +299,8 @@
   "name": "u4goldpower",
   "secs": 2.5,
   "loop": false,
-  "takes": 2,
-  "prompt": "A powerful blessing taking hold: a deep warm boom of energy, then a bright shimmering golden tail of chimes fading out. Triumphant, sacred.",
+  "takes": 4,
+  "prompt": "A bright burst of holy light filling a room: a radiant shimmering swell of chimes and singing bowls rising fast, a warm sparkling whoosh, brilliant and clear, then ringing away. Loud, bright, no deep bass.",
   "where": "the call: he is empowered"
  },
  {
@@ -315,8 +315,8 @@
   "name": "u4goldclear",
   "secs": 2.2,
   "loop": false,
-  "takes": 2,
-  "prompt": "Many shadowy presences dispelled at once by a wave of light: a bright sweeping whoosh of radiance, many faint ghostly sighs dissolving away, a shimmering tail.",
+  "takes": 4,
+  "prompt": "A loud radiant wave of light sweeping outward through a room, a bright rushing whoosh with sparkling shimmer, and many eerie ghostly hisses and sighs vanishing at once. Clear and powerful.",
   "where": "empowered: every green one released"
  },
  {

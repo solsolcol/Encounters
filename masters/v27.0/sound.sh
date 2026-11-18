@@ -133,6 +133,22 @@ fx   u4visoff    $R/u4vison_b.mp3     -14 "areverse"                          # 
 fx   u4tile2     $R/u4tile_b.mp3      -16                                     # his other bare step (b, 89 % where a phone plays): stepSound deals the two
 fi
 
+# ---- (v27.0 build 18, Chad 18 Nov: "Everytime the green spirits get to her, she screams one time" ... "This entire sequence
+# needs its own sound effects etc.") Amma's cry when a green one reaches her (three, dealt in turn); the surge of too many;
+# the call to Luang Phor Phiboon, the power taking hold, each golden flick and every green one released at once.
+if [ -z "$ONLY" ] || [ "$ONLY" = sfx ] || [ "$ONLY" = fight ]; then
+fx   u4ascream1  $R/u4ascream_a.mp3   -14                                     # a: her cry, no word heard (4 flat-topped peaks)
+fx   u4ascream2  $R/u4ascream_b.mp3   -14                                     # b: no word heard, the least clipped (3)
+fx   u4ascream3  $R/u4ascream_d.mp3   -14                                     # d: no word heard (c refused: 8 flat-topped peaks, the most clipped)
+fx   u4surge     $R/u4surge_a.mp3     -14                                     # a: the hissing rush, no word heard (b sounds at -36, 21 dB under a)
+fx   u4goldcall  $R/u4goldcall_a.mp3  -14                                     # a: the gong, the bells and the wordless choir, all where a phone plays (b is 81 % outside the voice's band: a drone)
+ffmpeg -v error -y -i $R/u4goldpower_c.mp3 -i $R/u4goldpower_b.mp3 -filter_complex "[1:a]asplit[a][b];[b]lowpass=f=160,volume=26dB,asoftclip=type=tanh,highpass=f=180,lowpass=f=2500,volume=-6dB[h];[a][h]amix=inputs=2:normalize=0,volume=-6dB[m];[0:a]volume=16dB[s];[s][m]amix=inputs=2:normalize=0" -ar 48000 -ac 2 d_u4goldpower.wav
+fx   u4goldpower d_u4goldpower.wav    -14                                     # the second prompt's shimmer (c, all where a phone plays) over the first's boom (b, 99 % under 150 Hz) with its harmonics laid in (HARM): the boom for a desktop, its harmonics and the shimmer for a phone
+rm -f d_u4goldpower.wav
+fx   u4goldflick $R/u4goldflick_b.mp3 -14                                     # b: 93 % where a phone plays (a 29 %)
+fx   u4goldclear $R/u4goldclear_d.mp3 -14                                     # d: the second prompt's, the fuller (8 dB over c); the first prompt's two sound at -45, nearly nothing
+fi
+
 # ---- THE MUSIC (sound/measures-music.json, sound/measures-music2.json): music at peak -3 (v22.4), Opus 128k
 cuthead() { echo "atrim=start=$1,asetpts=PTS-STARTPTS,afade=t=in:d=0.04"; }
 mus() { # name src [ffmpeg filter]: a film's cue

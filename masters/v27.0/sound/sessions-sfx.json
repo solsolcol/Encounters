@@ -250,7 +250,9 @@
   ],
   "u4goldpower": [
    "D1qTRh1zkzBCxzoFn9nY",
-   "uRA09oq6GpGfn1otBO67"
+   "uRA09oq6GpGfn1otBO67",
+   "N1xXSL9xEmGiX9rdYzWz",
+   "EdkomcaapBiGK3uq6bng"
   ],
   "u4goldflick": [
    "clR74AP54SllTgiUz8od",
@@ -258,7 +260,27 @@
   ],
   "u4goldclear": [
    "oExLVxuQNXasZStrSMIE",
-   "oWy4gxArT6CsFLHaqoi4"
+   "oWy4gxArT6CsFLHaqoi4",
+   "4DabqNoWEhwE6NA1KSsU",
+   "gspWnT6pAPMqd7v9laWo"
   ]
+ },
+ "remade": {
+  "u4goldpower": {
+   "node": "5nSjLBDj7NYxvhC3523m",
+   "sessions": [
+    "7OwfVEf5SbvNJbcALnPW",
+    "AJ6CnI7FgwvWLkRnaYoS"
+   ],
+   "letters": "cd"
+  },
+  "u4goldclear": {
+   "node": "lEO8NFtTC2MxLHdFEJp4",
+   "sessions": [
+    "aZTVeHzLucNGpbD2nnif",
+    "njOW1xkGWVWF62WVUVmJ"
+   ],
+   "letters": "cd"
+  }
  }
 }

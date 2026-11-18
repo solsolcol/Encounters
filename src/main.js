@@ -14706,6 +14706,10 @@ const STING_SAMPLE = {
   u4vison: ['u4vison', 1], u4whisper: ['u4whisper', 1],
   /* v27.0 · its effects, beds and music (masters/v27.0/sound.sh: every pick and why) */
   u4fightloop: ['u4fightloop', 1],
+  /* v27.0 · its effects, beds and music (masters/v27.0/sound.sh: every pick and why) */
+  u4ascream1: ['u4ascream1', 1], u4ascream2: ['u4ascream2', 1], u4ascream3: ['u4ascream3', 1],
+  u4goldcall: ['u4goldcall', 1], u4goldclear: ['u4goldclear', 1], u4goldflick: ['u4goldflick', 1],
+  u4goldpower: ['u4goldpower', 1], u4surge: ['u4surge', 1],
   /* E4C4 FX END */
 };
 /* Which kinds the synth below can actually fake. Everything else in

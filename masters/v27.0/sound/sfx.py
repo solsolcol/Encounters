@@ -52,9 +52,15 @@ SFX = [
     ('u4ascream', 1.8, False, 4, "An elderly woman crying out once in sudden sharp pain and fear, a short frightened scream that breaks off, indoors, close. Only her voice, no words.", 'the fight: a green one reaches her (three kept, in turn)'),
     ('u4surge', 3.0, False, 2, "A sudden rising rush of many hissing, whispering voices swarming in from every side at once, growing louder and closer, menacing. No words.", 'the fight: the surge, too many'),
     ('u4goldcall', 3.5, False, 2, "A sacred golden radiance rising: a deep resonant temple gong, then shimmering bells and a soft wordless choir swelling upward into brilliant light. Awe-inspiring, holy.", 'the call: his amulet appears'),
-    ('u4goldpower', 2.5, False, 2, "A powerful blessing taking hold: a deep warm boom of energy, then a bright shimmering golden tail of chimes fading out. Triumphant, sacred.", 'the call: he is empowered'),
+    # u4goldpower and u4goldclear were made twice: the first prompts (a, b) came back with 1 % of their energy where a phone
+    # plays ("a deep warm boom ...") and nearly silent ("... faint ghostly sighs dissolving away"); c and d are the second
+    # prompts, bright and loud on purpose. First u4goldpower: "A powerful blessing taking hold: a deep warm boom of energy,
+    # then a bright shimmering golden tail of chimes fading out. Triumphant, sacred." First u4goldclear: "Many shadowy
+    # presences dispelled at once by a wave of light: a bright sweeping whoosh of radiance, many faint ghostly sighs
+    # dissolving away, a shimmering tail."
+    ('u4goldpower', 2.5, False, 4, "A bright burst of holy light filling a room: a radiant shimmering swell of chimes and singing bowls rising fast, a warm sparkling whoosh, brilliant and clear, then ringing away. Loud, bright, no deep bass.", 'the call: he is empowered'),
     ('u4goldflick', 1.0, False, 2, "A flick of glowing water thrown with a bright magical shimmer: a quick wet whoosh with a crystalline chime.", 'empowered: each golden flick'),
-    ('u4goldclear', 2.2, False, 2, "Many shadowy presences dispelled at once by a wave of light: a bright sweeping whoosh of radiance, many faint ghostly sighs dissolving away, a shimmering tail.", 'empowered: every green one released'),
+    ('u4goldclear', 2.2, False, 4, "A loud radiant wave of light sweeping outward through a room, a bright rushing whoosh with sparkling shimmer, and many eerie ghostly hisses and sighs vanishing at once. Clear and powerful.", 'empowered: every green one released'),
     # ---- the endings and the close
     ('u4scuffle', 4.0, False, 2, "Two men struggling on a tiled floor: clothes and shoes scuffling, a stumble, heavy breathing. No words.", 'ending A: he holds Ravi back'),
     ('u4fall', 2.0, False, 2, "A man falling heavily onto a tiled floor: a body's thud and a winded exhale.", 'ending B: the student on the floor'),
