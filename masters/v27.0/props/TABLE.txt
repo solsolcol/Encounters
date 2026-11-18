@@ -36,3 +36,10 @@ thoranam      w4thoranam    1.00  w  12000  1024  0
 altartray     w4altartray   0.25  w  16000  1024  0
 coffeetable   w4coffee      1.10  w   8000  1024  0
 garlandhang   w4garland     0.45  w  12000  1024  0
+angsana       w4angsana    11.00  h  40000  2048  0
+foxpalm       w4foxpalm     8.50  h  30000  2048  0
+streetlamp    w4streetlamp  7.00  h   6000  1024  0
+bougain       w4bougain     1.00  h  30000  1024  0
+corrpots      w4corrpots    1.00  w  30000  1024  0
+bicycle       w4bicycle     1.70  w  30000  1024  0
+clothesrack   w4clothesrack 1.35  w  20000  1024  0

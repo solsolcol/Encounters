@@ -222,11 +222,14 @@
         spirits.wander.forEach((P, i) => { if (LOST_RING[i]) whenReady(P, (Q) => pose(Q, i % 2 ? 'creep' : 'crawl', 0.37 * i + t * 0.9, true)); });
         goddess(0);
         visionAt(t, 0.05, 0.9, LO.shut, 1.0);
+        /* (18 Nov, photographed on build 19: from S_EYE, 0.9 m off, the lens looked 10 to 17 cm past her face and a phone
+           saw her chin and the green ones' backs; from CLOSE_EYE, as the close's own shots of her, at her head as it sits
+           in the loss's take, the ring of them round her and her face both held) */
         track(t, [
-          { t: 0, name: 'her', eye: S_EYE, at: [CHAIR.x - 0.08, 0.92, CHAIR.z + 0.12], fp: 62, fd: 54 },
-          { t: LO.turn, name: 'her', eye: S_EYE, at: [CHAIR.x - 0.04, 1.0, CHAIR.z + 0.06], fp: 54, fd: 48 },
-          { t: LO.shut + 1.0, name: 'her', eye: S_EYE, at: [CHAIR.x - 0.02, 1.02, CHAIR.z + 0.06], fp: 48, fd: 43 },
-          { t: LO.end, name: 'her', eye: S_EYE, at: [CHAIR.x - 0.02, 1.02, CHAIR.z + 0.06], fp: 48, fd: 43 }
+          { t: 0, name: 'her', eye: CLOSE_EYE, at: [CHAIR.x - 0.04, 0.92, CHAIR.z - 0.02], fp: 60, fd: 50 },
+          { t: LO.turn, name: 'her', eye: CLOSE_EYE, at: [CHAIR.x - 0.02, 0.97, CHAIR.z - 0.04], fp: 50, fd: 44 },
+          { t: LO.shut + 1.0, name: 'her', eye: CLOSE_EYE, at: [CHAIR.x - 0.01, 0.99, CHAIR.z - 0.05], fp: 40, fd: 36 },
+          { t: LO.end, name: 'her', eye: CLOSE_EYE, at: [CHAIR.x - 0.01, 0.99, CHAIR.z - 0.05], fp: 40, fd: 36 }
         ]);
       },
       end() {
@@ -672,16 +675,26 @@
         }
         /* THE LENS */
         track(t, [
-          { t: 0, name: 'estate', eye: [-6.0, 1.5, -1.3], at: [-14, 5, -42], fp: 52, fd: 46 },
-          { t: T.turn, name: 'estate', eye: [-6.0, 1.5, -1.3], at: [-2, 4.5, -42], fp: 52, fd: 46 },
+          /* (R36, 18 Nov: the picture comes up after 2.6 s of black, not 7.6 (v7.7: no long black), on the sky over the
+             estate, the block across's roof and the newer towers beyond; and comes down across the block's lit storeys
+             while he speaks, to its middle, before he turns to the corridor) */
+          { t: 0, name: 'sky', eye: [-6.0, 1.52, -1.35], at: [-20, 26, -60], fp: 54, fd: 48 },
+          { t: T.est + 0.4, name: 'sky', eye: [-6.0, 1.52, -1.35], at: [-20, 26, -60], fp: 54, fd: 48 },
+          { t: T.turn, name: 'estate', eye: [-6.0, 1.5, -1.3], at: [-2, 3.5, -42], fp: 52, fd: 46 },
           { t: T.walk, name: 'corridor', eye: [-6.0, 1.5, -1.05], at: [2, 1.35, -0.85], fp: 60, fd: 54 },
-          { t: T.at, name: 'gate', eye: [-1.25, 1.5, -1.1], at: [0.15, 1.25, -0.2], fp: 58, fd: 52 },
+          /* (18 Nov, photographed on build 19: from behind his teacher's shoulder the gate and Ravi behind it were his
+             back; from here, nearer the parapet and further back, his teacher stands at the right in profile and Ravi's
+             face is behind the grille in the middle) */
+          { t: T.at, name: 'gate', eye: [-2.0, 1.55, -1.6], at: [-0.15, 1.55, 0.0], fp: 58, fd: 52 },
           { t: T.cut1 + 0.6, name: 'door', eye: [0.48, 1.5, -1.05], at: [RAVI_DOOR.x, 1.6, RAVI_DOOR.z], fp: 50, fd: 46, cut: true },
           { t: T.cut2, name: 'door', eye: [0.48, 1.5, -1.05], at: [RAVI_DOOR.x, 1.6, RAVI_DOOR.z], fp: 50, fd: 46 },
           { t: T.cut2 + 0.5, name: 'in', eye: [0.1, 1.6, 0.45], at: [CHAIR.x, 1.1, CHAIR.z], fp: 62, fd: 56, cut: true },
           { t: T.inside, name: 'in', eye: [0.45, 1.62, 1.7], at: [CHAIR.x + 0.1, 1.05, CHAIR.z], fp: 62, fd: 56 },
-          { t: T.look, name: 'her', eye: O_EYE, at: [CHAIR.x + 0.02, 1.0, CHAIR.z + 0.05], fp: 50, fd: 46 },
-          { t: T.end, name: 'her', eye: O_EYE, at: [CHAIR.x + 0.02, 1.0, CHAIR.z + 0.05], fp: 46, fd: 44 }
+          /* (18 Nov, photographed on build 19: aimed at 1.0 m over a point 10 cm before the chair's middle, a phone had her
+             face at its right edge and Mala's head cut away above; her head as it sits in her chair is 5 cm behind the
+             chair's middle: the loss's measure) */
+          { t: T.look, name: 'her', eye: O_EYE, at: [CHAIR.x - 0.01, 0.99, CHAIR.z - 0.05], fp: 52, fd: 46 },
+          { t: T.end, name: 'her', eye: O_EYE, at: [CHAIR.x - 0.01, 0.99, CHAIR.z - 0.05], fp: 47, fd: 43 }
         ]);
       },
       /* play begins in the history (historyBegin stages everyone again): her gate shut behind them, the beds play's */

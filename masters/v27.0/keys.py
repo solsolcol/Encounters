@@ -75,6 +75,17 @@ group("e4c4: the flat's things, each a checked picture on white, then Meshy at i
        ('w4coffee', 'w4coffee.glb', 'the coffee table'),
        ('w4garland', 'w4garland.glb', 'a jasmine and marigold garland, hung on a picture')])
 
+group("e4c4 (R36, 18 Nov: Chad, \"the hdb blocks at the start look way too basic\"): the estate's and the corridor's things,\n"
+      "each a checked picture on white (GPT Image 2.6 at high quality, ElevenLabs flow DvN9hpjTl7PGaYI7cIj8), then Meshy at its\n"
+      "highest and its own remesh (masters/v27.0/props/jobs-p5.json, TABLE.txt, prop.sh)",
+      [('w4angsana', 'w4angsana.glb', 'an angsana, the estate\'s shade tree, along the road and the paths'),
+       ('w4foxpalm', 'w4foxpalm.glb', 'a foxtail palm in the gaps between the trees'),
+       ('w4streetlamp', 'w4streetlamp.glb', 'the estate\'s street lamp: a grey pole, an LED head on its arm'),
+       ('w4bougain', 'w4bougain.glb', 'a neighbour\'s bougainvillea in its pot in the corridor'),
+       ('w4corrpots', 'w4corrpots.glb', 'a neighbour\'s three pots: money plant, aloe, pandan'),
+       ('w4bicycle', 'w4bicycle.glb', 'a neighbour\'s bicycle against the corridor wall'),
+       ('w4clothesrack', 'w4clothesrack.glb', 'a neighbour\'s folding clothes rack, a shirt, a towel, a sarong')])
+
 B0, B1 = '    # >>> e4c4 keys: written by masters/v27.0/keys.py from its table (edit the table, not these rows) >>>\n', '    # <<< e4c4 keys: the rows end <<<'
 S0, S1 = '           # >>> e4c4 keys (masters/v27.0/keys.py) >>>\n', '           # <<< e4c4 keys <<<'
 H0, H1 = '      /* >>> this chapter\'s own keys: written by masters/v27.0/keys.py (edit its table, not this list) >>> */\n', '      /* <<< this chapter\'s own keys <<< */'

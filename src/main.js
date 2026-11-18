@@ -3951,6 +3951,34 @@ function visionFrame() {
   }
 }
 function visionActive() { return !!vis.decl && (vis.on || vis.r > 0.0005 || !!vis.held); }
+/* v27.0 · THE FIFTY-SEVENTH SEAM: A WAVE OF LIGHT IN A COLOUR (Chad, 18 Nov: his amulet "empowers with a golden glow that
+   spreads throughout the scene, tracing every item and silhouette similar to how the spirit vision works"). kit.wave({
+   color, secs, reach, trail }) sends a front of light out from his eye through the world, `reach` metres in `secs`
+   seconds on wall time: a glow on every surface it crosses, every edge it crosses burning in its colour and left glowing
+   behind it, the whole fading as it runs out. Drawn by the vision's own compositor, with his sight open (laid over the
+   vision) or shut (the world as it is, nothing turned, no spirit drawn: only the wave). kit.wave(null) stops it; a scene
+   and kitReset end it. Absent, nothing of it runs (the frame's choice of pass is the one it always was) */
+const gwave = { on: false, t0: 0, secs: 2.4, reach: 24, trail: 0.35, col: new THREE.Color(1.0, 0.78, 0.32), R: 0, M: 0 };
+function kitWave(o) {
+  if (o === null || o === false) { gwave.on = false; gwave.R = 0; gwave.M = 0; return true; }
+  if (!vis.decl || state === 'title') return false;
+  const fx = visionFx(); if (!fx || !fx.state || !fx.state.ok) return false;
+  o = o || {};
+  gwave.on = true; gwave.t0 = performance.now();
+  gwave.secs = Math.max(0.4, +o.secs || 2.4); gwave.reach = Math.max(2, +o.reach || 24); gwave.trail = o.trail == null ? 0.35 : Math.max(0, +o.trail);
+  gwave.col.set(o.color == null ? 0xffc752 : o.color);
+  return true;
+}
+/* the wave's front and strength on wall time: out fast and easing, then the whole fading over its last 0.7 s */
+function gwaveFrame() {
+  if (!gwave.on) return false;
+  const u = (performance.now() - gwave.t0) / 1000 / gwave.secs;
+  if (u >= 1.35) { gwave.on = false; gwave.R = 0; gwave.M = 0; return false; }
+  const e = 1 - Math.pow(1 - Math.min(1, u), 2.2);
+  gwave.R = gwave.reach * e;
+  gwave.M = u < 0.75 ? 1 : Math.max(0, 1 - (u - 0.75) / 0.6);
+  return true;
+}
 /* a wave let go from a hold (kit.vision(null), or a switch over it) runs on from where it was held toward the state the
    vision is in: out if it is open, home if it is shut (a hold let go while shut had kept its outward run) */
 function visResume() {
@@ -4103,6 +4131,7 @@ const WEAPON_DEFAULTS = {
   scale: 0.01, rot: [0, Math.PI, 0], pos: [0.00, -1.528, -0.32],
   metalness: 0.25, roughness: 0.55, envMapIntensity: 1.6
 };
+const WPN_ICONS = ['spray'];        // v27.0: the fire button's icons the page draws (shell.html .wpnIco-<name>)
 function weaponSetup(decl) {
   weaponDecl = { ...WEAPON_DEFAULTS, ...(decl || {}),
                  clips: { ...WEAPON_DEFAULTS.clips, ...((decl && decl.clips) || {}) },
@@ -4128,7 +4157,23 @@ function weaponSetup(decl) {
      the reload button — the HUD says what the mechanic is, so a player is
      never shown a number that cannot change. */
   document.body.classList.toggle('wpnNoAmmo', !!weaponDecl.unlimited);
+  /* v27.0 (Chad, 18 Nov: "I think the aim button is pointless and you can remove it"): a weapon with no zoom draws no
+     AIM (an interaction with nothing to offer is not offered at all, v12.5); and a weapon may name an ICON for its fire
+     button, drawn in the button's place of the word ("Flick icon can be a spraying water icon instead of a word."): the
+     icons are the page's own (shell.html `.wpnIco-<name>`), the word stays the button's name for a screen reader */
+  document.body.classList.toggle('wpnNoAim', !(weaponDecl.zoom > 0));
+  for (const k of WPN_ICONS) document.body.classList.toggle('wpnIco-' + k, weaponDecl.icon === k);
+  sprayHudSync();
   weaponAvailSync();
+}
+/* v27.0: the fire button's icon carries the water's colour (Chad's gold): the page reads --sp, and the ring takes it */
+function sprayHudSync() {
+  const fb = $('fireBtn'); if (!fb) return;
+  if (sprayCol == null) { fb.style.removeProperty('--sp'); fb.style.removeProperty('border-color'); fb.style.removeProperty('box-shadow'); return; }
+  const c = new THREE.Color(sprayCol), r = Math.round(c.r * 255), g = Math.round(c.g * 255), b = Math.round(c.b * 255);
+  fb.style.setProperty('--sp', `rgb(${r},${g},${b})`);
+  fb.style.setProperty('border-color', `rgba(${r},${g},${b},.8)`);
+  fb.style.setProperty('box-shadow', `0 0 24px rgba(${r},${g},${b},.42),0 2px 14px rgba(0,0,0,.5)`);
 }
 function weaponTeardown() {
   /* v27.0: his own hands given back and the bowl let go FIRST, while the declaration still says which pose was the
@@ -4141,7 +4186,7 @@ function weaponTeardown() {
   weaponFlashDrop();
   weaponPropDrop();
   ownObj = null; ownHold = {}; ownFor = null; ownAnim = null; ownSprayDrop(); weaponWordsSet(null);
-  document.body.classList.remove('hasWeapon', 'weaponUp', 'wpnNoAmmo');
+  document.body.classList.remove('hasWeapon', 'weaponUp', 'wpnNoAmmo', 'wpnNoAim', ...WPN_ICONS.map(k => 'wpnIco-' + k));
   weaponAvailSync();
 }
 function weaponPropLoad(key) {
@@ -7743,6 +7788,8 @@ function kitReset() {
   life.on = false; life.k = 1; life.trail = 1; life.at = null;   // v27.0 (seam 54): nor a life's bar
   edgeG.to = 0; edgeG.k = 0;                                      // v27.0 (seam 56): nor a glow at the edges
   sprayCol = null; sprayScale = 1; if (own.pts) { own.pts.material.size = own.size0 || own.pts.material.size; own.glow.material.size = own.pts.material.size * 2.4; }   // v27.0: nor the water's gold
+  sprayHudSync();                   // v27.0: nor its button's
+  gwave.on = false; gwave.R = 0; gwave.M = 0;                     // v27.0 (seam 57): nor a wave still going out
   objReset();                       // v8.7: and the beats queued against the old objective
   kitFlashReq = null;
   kitCaps = null;                   // v21.30: and no caption left up from the run before
@@ -7876,10 +7923,11 @@ const KIT = {
   visionUrge: v => { visUrge = v === 'close' ? 'close' : (v ? 'open' : false); return true; },   // v27.0: the eye button pulses while the order is to open his sight ('open' or true), or to close it ('close')
   health: kitHealth,               // v27.0: the fifty-fourth seam — a life in his keeping, its bar over them in the room
   edge: kitEdge,                   // v27.0: the fifty-sixth seam — a glow at the edges of his sight
+  wave: kitWave,                   // v27.0: the fifty-seventh seam — a wave of light in a colour, tracing every edge it crosses (sight open or shut)
   sprayColor: (c, o = {}) => { sprayCol = (c === null || c === undefined) ? null : c;
     sprayScale = c == null ? 1 : Math.max(0.3, Math.min(4, +(o.size || 1)));
     if (own.pts) { own.size0 = own.size0 || own.pts.material.size; own.pts.material.size = own.size0 * sprayScale; own.glow.material.size = own.pts.material.size * 2.4; }
-    return true; },                // v27.0: the water's colour (Chad's gold) and its drops' size; null gives them back
+    sprayHudSync(); return true; },                // v27.0: the water's colour (Chad's gold) and its drops' size; null gives them back
   lose: (o) => { if (state !== 'play' || fainting || cine) return false; lose(o && typeof o === 'object' ? o : {}); return true; },   // v27.0: the fifty-third seam — the chapter loses the run itself
   /* v27.0: a stat READ, never a write (kit.award writes): a chapter whose price must stop short of a floor (the holy-water
      fight takes his nerve, never his consciousness) reads where it stands. Unknown names answer null */
@@ -11896,9 +11944,11 @@ function ivFrame(now) {
      full turn in about ten seconds, the "slowly" Chad asked for, and the
      same speed on a phone that draws a frame a second as on a laptop. */
   if (unl.id) {
-    const cv = $('unCv');
+    const cv = $(unl.show ? 'scCv' : 'unCv');
     const secs = ((now || performance.now()) - unl.t0) / 1000;
-    if (cv) ivBlit(cv, unl.id, secs * 0.6, 0.1, 1, 0);
+    /* (the showcase turns it a full turn in about three seconds, easing from quicker as it comes in: it is arriving, not
+       being looked over) */
+    if (cv) ivBlit(cv, unl.id, unl.show ? secs * 2.1 + 1.4 * (1 - Math.exp(-secs * 2.2)) : secs * 0.6, 0.1, 1, 0);
     return;
   }
   const z = iv.zoom;
@@ -12006,12 +12056,20 @@ function ivZoomClose() {
    what happens next is the story's business. Any chapter may call it; only
    chapter 3 does, so nothing shipped before v14.7 can reach it. */
 const UNLOCK_GUARD = 600;
-const unl = { id: null, t0: 0, onClose: null, outT: 0, autoT: 0 };
+const unl = { id: null, t0: 0, onClose: null, outT: 0, autoT: 0, show: false };
 function kitUnlock(id, opts = {}) {
   if (!ITEM_DEFS[id] || unl.id || state !== 'play' || fainting) return false;
+  /* v27.0 · seam 55, A SHOWCASE OF ITS OWN (Chad, 18 Nov: "When the lp phiboon amulet shows up, there is no need for text at
+     the top and bottom, and i want the effect to be different from the 'item unlocked' effect. It should not totally
+     obscure the whole screen, it simply appears in the middle of the screen with a nice powerful and impressive visual
+     effect"; "The amulet when it appears, should show the full 3d rotating model,"): `showcase` draws no words, no button
+     and no cover over the room: the model turning in the middle of the screen in a burst of light (a flash, three rings
+     going out, rays turning, sparks), flaring and gone by itself after `auto` seconds. The same screen state (`unlock`), so
+     the world stands still under it as it does under the splash */
+  if (opts.showcase) return showcaseOpen(id, opts);
   const el = $('unlock'); if (!el) return false;
   clearTimeout(unl.outT);
-  unl.id = id; unl.onClose = typeof opts.onClose === 'function' ? opts.onClose : null;
+  unl.id = id; unl.onClose = typeof opts.onClose === 'function' ? opts.onClose : null; unl.show = false;
   for (const k in keys) keys[k] = false;       // a held W does not keep walking under it
   state = 'unlock';
   /* v27.0 · THE FIFTY-FIFTH SEAM: A SHOWCASE (Chad, 18 Nov: his amulet "suddenly and dramatically appears in the middle of
@@ -12048,9 +12106,48 @@ function kitUnlock(id, opts = {}) {
   unl.t0 = performance.now();
   return true;
 }
+function showcaseOpen(id, opts) {
+  const el = $('showcase'); if (!el) return false;
+  clearTimeout(unl.outT);
+  unl.id = id; unl.onClose = typeof opts.onClose === 'function' ? opts.onClose : null; unl.show = true;
+  for (const k in keys) keys[k] = false;
+  state = 'unlock';
+  clearTimeout(unl.autoT); unl.autoT = 0;
+  el.classList.remove('hide', 'out', 'flare');
+  void el.offsetWidth;                         // (the entry's animations begin again on a second showing)
+  el.classList.add('in');
+  el.classList.toggle('flat', !ITEM_DEFS[id].model || iv.state[id] === 'none');
+  document.body.classList.add('showcaseopen');
+  document.exitPointerLock?.();
+  itemArtGet(id); ivModel(id);
+  const cv = $('scCv');
+  if (cv) { const g = cv.getContext('2d'); if (g) g.clearRect(0, 0, cv.width, cv.height); }
+  ivStart();
+  snd(opts.sound || 'itemunlock', 0.95);
+  haptic([30, 50, 120]);
+  const secs = Math.max(1.2, +opts.auto || 3.2);
+  /* the flare: the model brightens and shrinks into a point of light for its last 0.55 s, then it is gone */
+  unl.flareT = setTimeout(() => { if (unl.id === id && unl.show) el.classList.add('flare'); }, (secs - 0.55) * 1000);
+  unl.autoT = setTimeout(() => { unl.autoT = 0; if (unl.id === id) unlockClose('auto'); }, secs * 1000);
+  unl.t0 = performance.now();
+  return true;
+}
 function unlockClose(how) {
   if (!unl.id) return false;
   if (how !== 'force' && performance.now() - unl.t0 < UNLOCK_GUARD) return false;
+  if (unl.show) {                              // v27.0: the showcase goes its own way (no click, no sound of a press)
+    const el = $('showcase');
+    unl.id = null; unl.show = false;
+    clearTimeout(unl.autoT); unl.autoT = 0; clearTimeout(unl.flareT);
+    document.body.classList.remove('showcaseopen');
+    if (el) { if (how === 'force') el.classList.add('hide'); else { el.classList.add('out'); unl.outT = setTimeout(() => el.classList.add('hide'), 420); } el.classList.remove('in'); }
+    const cb = unl.onClose; unl.onClose = null;
+    if (how === 'force') return true;
+    state = 'play';
+    if (how !== 'esc') tryLock();
+    if (cb) { try { cb(); } catch (e) { console.warn('showcase onClose failed', e); } }
+    return true;
+  }
   const el = $('unlock');
   unl.id = null;
   clearTimeout(unl.autoT); unl.autoT = 0;
@@ -14717,6 +14814,9 @@ const STING_SAMPLE = {
   u4ascream1: ['u4ascream1', 1], u4ascream2: ['u4ascream2', 1], u4ascream3: ['u4ascream3', 1],
   u4goldcall: ['u4goldcall', 1], u4goldclear: ['u4goldclear', 1], u4goldflick: ['u4goldflick', 1],
   u4goldpower: ['u4goldpower', 1], u4surge: ['u4surge', 1],
+  /* v27.0 · its effects, beds and music (masters/v27.0/sound.sh: every pick and why) */
+  u4sv1: ['u4sv1', 1], u4sv2: ['u4sv2', 1], u4sv3: ['u4sv3', 1], u4sv4: ['u4sv4', 1], u4sv5: ['u4sv5', 1],
+  u4svL: ['u4svL', 1],
   /* E4C4 FX END */
 };
 /* Which kinds the synth below can actually fake. Everything else in
@@ -17382,7 +17482,8 @@ function tick(now = 0) {
      drawn through it (src/vision.js) and the letterbox's band is not used (the pass reads the whole picture); the
      moment it is home, every frame is drawn exactly as before. A chapter that declares no vision never comes here. */
   visionFrame();
-  const visGo = state !== 'title' && visionActive() && visionFx().state.ok;
+  const gwOn = gwaveFrame();                 // v27.0 (seam 57): a coloured wave asks for the vision's pass, sight open or shut
+  const visGo = state !== 'title' && (visionActive() || gwOn) && visionFx().state.ok;
   const band = !visGo && letterbox && document.body.classList.contains('cine');
   if (band) { renderer.setScissor(0, letterbox.y, letterbox.w, letterbox.h); renderer.setScissorTest(true); }
   try {
@@ -17390,11 +17491,16 @@ function tick(now = 0) {
   if (visGo) {
     const ledUpV = !!(led.root && led.root.visible);
     const drawHands = (handsReady || ledUpV) && (!OPT.vmSkip || anyVisibleMesh(handsRoot) || ledUpV);
-    const d = vis.decl;
+    const d = vis.decl, sight = visionActive();
     try {
-      vis.fx.render({ scene, camera, vmScene, vmCam, drawHands, R: vis.r, soft: d.soft, band: d.band, moving: vis.dir !== 0 ? 1 : 0,
+      /* (v27.0, seam 57: with his sight shut the pass draws the world as it is, nothing turned and no spirit, and only the
+         coloured wave over it) */
+      if (sight) vis.fx.render({ scene, camera, vmScene, vmCam, drawHands, R: vis.r, soft: d.soft, band: d.band, moving: vis.dir !== 0 ? 1 : 0,
                       k: vis.k, blur: d.blur, vignette: d.vignette, line: d.line, sky: d.sky, time: performance.now() / 1000,
-                      front: d.front, lineColor: d.lineColor });
+                      front: d.front, lineColor: d.lineColor, R2: gwOn ? gwave.R : 0, M2: gwOn ? gwave.M : 0, front2: gwave.col, trail2: gwave.trail });
+      else vis.fx.render({ scene, camera, vmScene, vmCam, drawHands, R: 0, soft: d.soft, band: 0, moving: 0, k: 0, blur: 0, vignette: 0,
+                      line: 0, sky: d.sky, time: performance.now() / 1000, invert: 0, spirits: false,
+                      R2: gwave.R, M2: gwave.M, front2: gwave.col, trail2: gwave.trail });
       vis.drawn++;
     } catch (err) {
       vis.fx.state.ok = false; console.warn('spirit vision: off for this session', err);
@@ -17880,9 +17986,14 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                                     rounds: weaponRounds, busy: weaponBusy, fire: ($('fireBtn')?.textContent || '').trim() }),
                  weaponDeclare: (d) => { weaponTeardown(); if (d) weaponSetup(d); return !!weaponDecl; },
                  kitBar: () => kitBarK,              // v27.0 (seam 52): the objective's bar, for the fixture
+                 /* v27.0: a probe slows the game's clock (the THREE.Timer every frame reads) to photograph what lasts less than
+                    one of a software renderer's frames (the water's drops: half a second); 1 gives it back. Nothing in play
+                    calls it */
+                 clockScale: (s) => { const k = Math.max(0.01, Math.min(1, +s || 1)); clock.setTimescale(k); return k; },
                  /* v27.0 (seams 54 and 56, the water's colour, the eye button's asks): what each holds, for the fixture */
                  stakes: () => ({ life: { on: life.on, k: life.k, label: life.label }, edge: { k: edgeG.k, to: edgeG.to, color: edgeG.color, on: edgeG.on },
-                                  spray: { col: sprayCol, scale: sprayScale }, urge: visUrge }),
+                                  spray: { col: sprayCol, scale: sprayScale }, urge: visUrge,
+                                  wave: { on: gwave.on, R: +gwave.R.toFixed(2), M: +gwave.M.toFixed(2) }, show: unl.show ? unl.id : null }),
                  visionAuraNearest: (opts = {}, maxD = 12) => {
                    camera.updateMatrixWorld();
                    const eye = new THREE.Vector3().setFromMatrixPosition(camera.matrixWorld), fwd = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.getWorldQuaternion(new THREE.Quaternion()));

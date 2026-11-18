@@ -20,7 +20,7 @@
   };
 
   /* THE OPENING FILM's clock (c_ufilm.js FILMS.open draws to it) */
-  const OP = { q1: 0.8, est: 7.6, q2: 8.4, turn: 13.6, walk: 14.6, at: 20.2, latch: 20.6, cut1: 21.3, rv: 22.2, cut2: 25.0, inside: 27.4, drop: 28.6, look: 29.0, flick: 31.6, flickEnd: 32.9, black: 33.4, end: 34.6 };
+  const OP = { q1: 0.8, est: 2.6, q2: 8.4, turn: 13.6, walk: 14.6, at: 20.2, latch: 20.6, cut1: 21.3, rv: 22.2, cut2: 25.0, inside: 27.4, drop: 28.6, look: 29.0, flick: 31.6, flickEnd: 32.9, black: 33.4, end: 34.6 };
   /* THE OPENING FILM (the plan's §4.0): its pictures are the stage's; here its clock's one track, its fades and its cues.
      It begins on black (v4.6) and ends on black, the title over it */
   function intro(c, s, api) {

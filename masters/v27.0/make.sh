@@ -101,6 +101,22 @@
 #   (they stand one above another; in the flat they are turned to stick straight out from the wall under the window).
 #   The refused rack picture is kept out of refs (scratch only). Sent to Meshy: masters/v27.0/props/jobs-p3.json (14).
 #
+#   batch 5 (18 Nov, R36: Chad, "the hdb blocks at the start look way too basic and need to be improved much more ...
+#   Improve the environment, props, assets, etc where needed."): the estate's and the corridor's things. Their pictures
+#   from GPT Image 2.6 (sunburst) at high quality, 2K, through ElevenLabs (Higgsfield had 8.75 credits left), flow
+#   DvN9hpjTl7PGaYI7cIj8: angsana ESfbEU1yG0A5mrOmp4Su · foxpalm sWmsg9fV1vNDCahlrLAL · streetlamp IYa7z3BtA0Bc8r3EiQAG ·
+#   bougain tqkzhGOCKanNi7EhkzV3 · corrpots mVuUkdUnvt4UAeq3620l · bicycle fdxgbq5D6HxKvqhP24CK · clothesrack
+#   uo6BV3MbbSDXLVcNkyfl. LOOKED AT full size: the angsana a broad dome on a short trunk; the foxtail palm's ringed grey
+#   trunk, green crownshaft and plumed fronds; the lamp a grey tapered pole, its access door, a flat LED head on a curved
+#   arm, no mark; the bougainvillea in a green pot on its saucer, a few bracts fallen; the three pots (money plant on its
+#   stand, aloe, pandan); the bicycle black, a basket, a step-through frame, worn, no mark; the rack chrome with a shirt,
+#   a towel and a batik sarong: all pass. Sent to Meshy: masters/v27.0/props/jobs-p5.json (40 credits each: 1013 -> 733):
+#     angsana 01a1edb4-ddc2-72e1-81d1-9fe574e3d77c · foxpalm 01a1edb4-ed4d-72b9-9c4c-a5cb019a3756 ·
+#     streetlamp 01a1edb4-f7be-7341-a958-ddbc5976063f · bougain 01a1edb4-ff9f-7060-a5df-ae72c3908b6e ·
+#     corrpots 01a1edb5-0d6f-711a-9743-79208a3992e9 · bicycle 01a1edb5-1a30-758d-9bf9-309887bab0c5 ·
+#     clothesrack 01a1edb5-2497-7415-8320-3646ac87968a
+#   then prop.sh (their remesh to TABLE.txt's counts, prepmeshy, each photographed alone at 1100 px).
+#
 # ---------------------------------------------------------------------------------------------------------------------
 # 4. THE VOICES (17 Nov): three new speakers cast from the ElevenLabs library (voice DESIGN refused: the connector lacks
 #    the permission), one take each of a line in the part, eleven_v3, judged by measure (a session has no ears:

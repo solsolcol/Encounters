@@ -177,7 +177,10 @@
        flicked before reloading": fourteen flicks a bowl where there were ten, and the drops thrown wider, as wide as what a
        flick now reaches: c_story.js onShot) */
     weapon: { hands: 'own', pose: 'bowl', item: 'holywater', rounds: 14, endless: true, fireGap: 0.35, spray: { count: 16, spread: 0.24 },
-              words: { fire: 'FLICK', reload: 'DIP' }, shot: 'u4flick', reload: 'u4dip', empty: 'uiclick' },
+              words: { fire: 'FLICK', reload: 'DIP' }, shot: 'u4flick', reload: 'u4dip', empty: 'uiclick',
+              /* (Chad, 18 Nov: "Flick icon can be a spraying water icon instead of a word."): the button draws water flung
+                 (shell.html .wpnIco-spray), FLICK stays its name for a screen reader; no AIM (the water has no zoom) */
+              icon: 'spray' },
 
     assets: [
       /* the people, the spirits and the things made for this chapter (masters/v27.0/make.sh) */
@@ -239,13 +242,13 @@
       dipHere: 'Fill it again at his bowl.',
       objHold: 'Keep the room',
       guardTitle: 'HOLD THE ROOM',
-      guardBrief: 'Keep the room while Grandmaster Pho blesses her. Open your Spirit Vision to see them. Tap FLICK to send them back with the holy water, and DIP to fill the bowl again at his bowl. Each one that reaches Amma hurts her: if her bar runs out, the blessing fails. Keep them from her family and from you too. Not everything you see is against you.',
-      guardBriefKey: 'Keep the room while Grandmaster Pho blesses her. Open your Spirit Vision (V) to see them. Click or press Space to flick the holy water and send them back, and R to dip the bowl again at his bowl. Each one that reaches Amma hurts her: if her bar runs out, the blessing fails. Keep them from her family and from you too. Not everything you see is against you.',
+      /* (Chad, 18 Nov: "I think the 'hold the room' instructions are too long and can be shortened , but it still needs to
+         read natural, direct and straightforward."; the button shows water now, not the word FLICK, and its refill an arrow) */
+      guardBrief: 'Grandmaster Pho is blessing Amma. Keep the spirits away from her. Open your Spirit Vision to see them, and tap the water button to flick holy water at them. Refill at his bowl with the arrow button. If her bar runs out, the blessing fails. Not every spirit is against you.',
+      guardBriefKey: 'Grandmaster Pho is blessing Amma. Keep the spirits away from her. Open your Spirit Vision (V) to see them, and click or press Space to flick holy water at them. Refill at his bowl with R. If her bar runs out, the blessing fails. Not every spirit is against you.',
       // the fight's stakes and the call (Chad, 18 Nov: plan §0 R16 to R29)
       ammaBar: 'Amma',
       objGold: 'Flick the golden water',
-      goldLabel: 'Empowered',
-      goldSub: 'The water turns to gold.',
       // the card when her life runs out: what happened, over Master Z's own words (the case file S1·12, word for word)
       lostSay: 'Too many of them reached Amma. Her cry broke the blessing, and it could not be finished.',
       lostTeach: 'Learning when to open myself and when to close is the true path of cultivation. Today I can use these sensitivities to help others, which is the point of them.',

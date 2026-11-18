@@ -11,7 +11,7 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__)); SR = 32000
 table = sys.argv[1]; only = sys.argv[2:]
 ROWS = json.load(open(os.path.join(HERE, table + '.json')))
-WORDLESS = {'u4vison', 'u4visbed', 'u4heart', 'u4flatbed', 'u4estate', 'u4corridor', 'u4dark', 'u4sandals', 'u4breath', 'u4fog', 'u4sting',
+WORDLESS = {'u4sv1', 'u4sv2', 'u4sv3', 'u4sv4', 'u4sv5', 'u4svL', 'u4vison', 'u4visbed', 'u4heart', 'u4flatbed', 'u4estate', 'u4corridor', 'u4dark', 'u4sandals', 'u4breath', 'u4fog', 'u4sting',
             'u4whisper', 'u4release', 'u4large', 'u4gaspf', 'u4gaspm', 'u4chill', 'u4husband', 'u4cry', 'u4torn', 'u4scuffle', 'u4fall',
             'u4stand', 'u4os2', 'u4ascream', 'u4surge', 'u4goldcall', 'u4goldpower', 'u4goldclear'}
 

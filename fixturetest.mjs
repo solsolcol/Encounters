@@ -249,6 +249,16 @@ K.weaponNoFlashByDefault = await p.evaluate(() => {
 await p.evaluate(() => { window.__enc.kit.give('rifle'); window.__enc.kit.equip('rifle'); });
 await until(() => document.body.classList.contains('weaponUp') && document.body.classList.contains('hasWeapon'), 15000).catch(() => {});
 K.weaponOutWhenEquipped = await p.evaluate(() => document.body.classList.contains('weaponUp') && window.__enc.kitDebug().weapon.avail === true);
+/* v27.0 (Chad, 18 Nov: "I think the aim button is pointless and you can remove it"): a weapon with no zoom (the fixture's
+   declares none) draws no AIM; and with no icon declared its fire button keeps its word */
+K.weaponNoAimWithoutZoom = await p.evaluate(() => {
+  const b = document.body, aim = document.getElementById('aimBtn'), fb = document.getElementById('fireBtn');
+  const word = fb.querySelector('[data-t="hud.fire"]'), ico = fb.querySelector('.wpnIco-spray');
+  const r = { noAim: b.classList.contains('wpnNoAim'), aimHidden: getComputedStyle(aim).display === 'none',
+              word: getComputedStyle(word).display !== 'none', ico: getComputedStyle(ico).display === 'none', icoClass: !b.classList.contains('wpnIco-spray') };
+  console.log('weaponNoAimWithoutZoom', JSON.stringify(r));
+  return r.noAim && r.aimHidden && r.word && r.ico && r.icoClass;
+});
 await p.evaluate(() => { const e = window.__enc; e.yaw.position.set(0, 1.62, 9); e.yaw.rotation.y = 0; e.pitch.rotation.x = 0; });
 await settle();
 K.weaponHits = await p.evaluate(() => {
@@ -679,6 +689,48 @@ K.stakesShowcase = await p.evaluate(async () => {
   console.log('stakesShowcase', JSON.stringify({ shown, look, gone, told, plain, back, closed, label0 }));
   return shown && look && gone && plain && back && closed;
 }).catch(e => { console.log('stakesShowcase threw', e.message); return false; });
+await settle();
+/* v27.0 (seam 55, Chad 18 Nov: "no need for text at the top and bottom ... different from the 'item unlocked' effect. It
+   should not totally obscure the whole screen"): `showcase` draws its own layer, not the splash: no word in it, nothing
+   laid over the room (its layer is transparent where it has no light), the splash hidden; it flares before it goes, goes
+   by itself, says so once, and hands play back */
+K.stakesShowcaseOwn = await p.evaluate(async () => {
+  const E = window.__enc, sc = document.getElementById('showcase'), un = document.getElementById('unlock');
+  const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
+  const until = async (f, ms) => { const t0 = performance.now(); while (!f() && performance.now() - t0 < ms) await frames(1); return f(); };
+  let told = 0;
+  const shown = E.kit.unlock('amulet', { showcase: true, auto: 1.6, sound: 'itemunlock', onClose: () => { told++; } });
+  await frames(3);
+  const look = E.getState() === 'unlock' && !sc.classList.contains('hide') && un.classList.contains('hide') && sc.textContent.trim() === ''
+    && getComputedStyle(sc).backgroundColor === 'rgba(0, 0, 0, 0)' && E.stakes().show === 'amulet' && !!document.getElementById('scCv');
+  const flared = await until(() => sc.classList.contains('flare') || E.getState() === 'play', 20000) && sc.classList.contains('flare');
+  const gone = await until(() => E.getState() === 'play', 20000) && told === 1 && E.unlockState().id === null && E.stakes().show === null;
+  const hidden = await until(() => sc.classList.contains('hide'), 5000);
+  console.log('stakesShowcaseOwn', JSON.stringify({ shown, look, flared, gone, told, hidden }));
+  return shown && look && flared && gone && hidden;
+}).catch(e => { console.log('stakesShowcaseOwn threw', e.message); return false; });
+await settle();
+/* v27.0 (seam 57, Chad 18 Nov: "empowers with a golden glow that spreads throughout the scene, tracing every item and
+   silhouette similar to how the spirit vision works"): kit.wave goes out from him on wall time with his sight SHUT, drawn
+   by the vision's pass (its frame count rises while the sight is shut), and ends by itself; null stops one at once */
+K.stakesWave = await p.evaluate(async () => {
+  const E = window.__enc;
+  const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
+  const until = async (f, ms) => { const t0 = performance.now(); while (!f() && performance.now() - t0 < ms) await frames(1); return f(); };
+  const v0 = E.vision(), w0 = E.stakes().wave;
+  const off0 = !v0.on && v0.r === 0 && w0.on === false;
+  const ok = E.kit.wave({ color: 0xffc552, secs: 0.9, reach: 12 });
+  await frames(3);
+  const w1 = E.stakes().wave, d1 = E.vision().drawn;
+  await frames(4);
+  const w2 = E.stakes().wave, d2 = E.vision().drawn;
+  const going = w1.on && w2.on && w2.R >= w1.R && w2.M > 0 && d2 > d1 && !E.vision().on;
+  const ended = await until(() => E.stakes().wave.on === false, 20000) && E.stakes().wave.R === 0;
+  const again = E.kit.wave({ secs: 5 }); await frames(2);
+  const stopped = again && E.kit.wave(null) && E.stakes().wave.on === false;
+  console.log('stakesWave', JSON.stringify({ off0, ok, w1, w2, d1, d2, going, ended, stopped }));
+  return off0 && ok && going && ended && stopped;
+}).catch(e => { console.log('stakesWave threw', e.message); return false; });
 await settle();
 
 /* v22.0: THE COLD (the thirty-third, -fourth and -fifth seams) — kit.chill shows the edge layer with a blur and
@@ -2573,7 +2625,7 @@ K.rainClearedByReset = await p.evaluate(() => { const w = window.__enc.wxState()
 K.lensClearedByReset = await p.evaluate(() => { const l = window.__enc.lens(); return l.took === false && l.fov === 72; });               // v26.0 (S47)
 K.hushClearedByReset = await p.evaluate(() => { const h = window.__enc.hush(); return h.k === 0 && h.wired === false; });                 // v26.0 (S48)
 K.barClearedByReset = await p.evaluate(() => window.__enc.kitBar() === null);                                                       // v27.0 (S52)
-K.stakesClearedByReset = await p.evaluate(() => { const q = window.__enc.stakes(); return q.life.on === false && q.edge.to === 0 && q.edge.k === 0 && q.spray.col === null && q.spray.scale === 1 && q.urge === false; });   // v27.0 (S54, S56)
+K.stakesClearedByReset = await p.evaluate(() => { const q = window.__enc.stakes(); return q.life.on === false && q.edge.to === 0 && q.edge.k === 0 && q.spray.col === null && q.spray.scale === 1 && q.urge === false && q.wave.on === false && q.show === null; });   // v27.0 (S54, S56, S55, S57)
 /* v27.0 (S50): a chapter that declares no vision takes the seam down (no eye, no state, no class): what setChapter's
    kitReset does on a real change of chapter. The swap above is rebuildStage alone, which builds the next stage and keeps
    the chapter (CH), so the fixture's own declaration is taken away for a moment instead, and put back */

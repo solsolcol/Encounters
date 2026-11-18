@@ -1,0 +1,37 @@
+[
+ {
+  "name": "angsana",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/angsana-2k.png"
+ },
+ {
+  "name": "foxpalm",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/foxpalm-2k.png"
+ },
+ {
+  "name": "streetlamp",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/streetlamp-2k.png"
+ },
+ {
+  "name": "bougain",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/bougain-2k.png"
+ },
+ {
+  "name": "corrpots",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/corrpots-2k.png"
+ },
+ {
+  "name": "bicycle",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/bicycle-2k.png"
+ },
+ {
+  "name": "clothesrack",
+  "kind": "prop",
+  "image": "masters/v27.0/props/refs/clothesrack-2k.png"
+ }
+]

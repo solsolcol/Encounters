@@ -196,5 +196,14 @@
       door(0.92, [nx - 0.46, 0.02], 0, 0, 0.46);
       stand('w4gate', nx, FL.corr, -0.051 - 0.006, 0, LOOK.w4gate);
     }
+    /* (R36, 18 Nov) her neighbours' lives along the corridor, against their walls inside SCDF's 1.2 m clear from the
+       parapet (docs/research/V27.0-HDB.md §2.1): a shoe rack at each door, a bougainvillea, three pots, a bicycle, a
+       clothes rack out to dry. Clear of the opening film's walk (x -6 to -2 by the parapet side) */
+    for (const nx of NEIGHBOURS) stand('w4shoerack', nx - 1.55, FL.corr, -0.193 - 0.012, Math.PI, LOOK.w4shoerack);
+    stand('w4bougain', 12.6, FL.corr, -0.34, 0.4, { lift: 1.5 });
+    stand('w4corrpots', 14.6, FL.corr, -0.32, Math.PI, { lift: 1.5 });
+    stand('w4corrpots', -8.4, FL.corr, -0.32, Math.PI, { lift: 1.5 });
+    stand('w4bicycle', 17.4, FL.corr, -0.34, Math.PI, { lift: 1.5 });
+    stand('w4clothesrack', 23.0, FL.corr, -0.45, Math.PI, { lift: 1.5 });
     if (have('w4doorleaf')) parseOnce('w4doorleaf').then(() => { for (const s of doorStandIns) s.visible = false; },
       () => { for (const s of doorStandIns) s.visible = true; });

@@ -81,7 +81,10 @@ export function makeVision(THREE, renderer, opts = {}) {
       /* whether his hands and the spirits were drawn into their targets THIS frame (a cleared multisample target that is
          never rendered to is never resolved: its texture keeps the last picture drawn into it, so a film that hid his
          hands with the vision open would show the hands of play's last frame) */
-      uHandsOn: { value: 0 }, uSpiritOn: { value: 0 }
+      uHandsOn: { value: 0 }, uSpiritOn: { value: 0 },
+      /* v27.0 (seam 57): A SECOND WAVE, of light in a colour of its own (kit.wave): its front's distance from his eye, its
+         strength, its colour, and how long the edges it has crossed keep its light behind it */
+      uR2: { value: 0 }, uM2: { value: 0 }, uFront2: { value: new THREE.Color(1.0, 0.78, 0.32) }, uTrail2: { value: 0.35 }
     },
     vertexShader: /* glsl */`
       out vec2 vUv;
@@ -93,6 +96,8 @@ export function makeVision(THREE, renderer, opts = {}) {
       uniform sampler2D tWorld, tDepth, tHands, tSpirit;
       uniform vec2 uRes;
       uniform float uNear, uFar, uR, uSoft, uBand, uMoving, uK, uBlur, uVig, uLine, uSky, uHandsAt, uTime, uInvert, uHandsOn, uSpiritOn;
+      uniform float uR2, uM2, uTrail2;
+      uniform vec3 uFront2;
       uniform mat4 uInvProj, uCamWorld, uPrevVP;
       uniform vec3 uEye, uFront, uLineCol;
       float viewZ(float d) { return (uNear * uFar) / ((uFar - uNear) * d - uFar); }   // negative in front
@@ -153,6 +158,16 @@ export function makeVision(THREE, renderer, opts = {}) {
         float bw = max(0.05, uBand + uR * 0.02);
         float band = exp(-pow((dist - uR) / bw, 2.0)) * uMoving * uInvert;
         col += uFront * band * (0.22 + 2.6 * e);
+        /* v27.0 (seam 57): THE SECOND WAVE, in its own colour, with the sight open or shut: a front of light going out from
+           his eye (a glow on every surface it crosses, every edge it crosses burning), and behind it every edge it has
+           crossed keeping its light, fading the further back it lies, so the room is traced in it as it passes */
+        if (uM2 > 0.0) {
+          float bw2 = 0.10 + uR2 * 0.03;
+          float band2 = exp(-pow((dist - uR2) / bw2, 2.0));
+          float behind = 1.0 - smoothstep(uR2 - bw2, uR2, dist);
+          float trail2 = behind * exp(-max(0.0, uR2 - dist) * uTrail2);
+          col += uFront2 * uM2 * (band2 * (0.30 + 3.2 * e) + trail2 * e * 1.1 + trail2 * 0.06);
+        }
         /* the spirits, with their glow (the target's smaller levels), where the vision has them. LAID ON, never added:
            the vision turns a dark room nearly white, and light added to white is lost; a colour laid over by its own
            strength reads on a white room and on a black one alike (the body faint, the outline burning) */
@@ -287,6 +302,8 @@ export function makeVision(THREE, renderer, opts = {}) {
       U.uInvert.value = o.invert == null ? 1 : o.invert;
       if (o.front) U.uFront.value.set(o.front);
       if (o.lineColor) U.uLineCol.value.set(o.lineColor);
+      U.uR2.value = o.R2 || 0; U.uM2.value = o.M2 || 0; U.uTrail2.value = o.trail2 == null ? 0.35 : o.trail2;
+      if (o.front2 != null) U.uFront2.value.set(o.front2);
       renderer.setRenderTarget(prevTarget);
       renderer.render(compScene, compCam);
       V.prevVP.copy(_vp); V.havePrev = true;

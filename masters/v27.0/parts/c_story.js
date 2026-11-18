@@ -345,7 +345,9 @@
                         'u4fightmus', 'u4fightloop', 'u4chant1', 'u4chant2',
                         /* (18 Nov: her cries, the surge, the call and the gold; every line of the fight's stakes) */
                         'u4ascream1', 'u4ascream2', 'u4ascream3', 'u4surge', 'u4goldcall', 'u4goldpower', 'u4goldflick', 'u4goldclear', 'u4sting',
-                        'ph4b3', 'ph4b4', 'ph4b5', 'q4f1', 'q4f2', 'ph4f1', 'q4f3', 'ph4f2', 'q4f4', 'ph4f3', 'rv4f1', 'ml4B2', 'rv4A2', 'u4visoff'];
+                        'ph4b3', 'ph4b4', 'ph4b5', 'q4f1', 'q4f2', 'ph4f1', 'q4f3', 'ph4f2', 'q4f4', 'ph4f3', 'rv4f1', 'ml4B2', 'rv4A2', 'u4visoff',
+                        /* (18 Nov: the green ones' own voices) */
+                        'u4sv1', 'u4sv2', 'u4sv3', 'u4sv4', 'u4sv5', 'u4svL'];
     function blessBegin(R, fresh) {
       play.learned = new Set(['r', 'm', 'f', 'o', 'a']); play.spoke = true; play.told = true; play.opened = true; play.looked = new Set(['1', '2', '3']);
       play.closed = true; play.read = true; play.peeked = R.peeked; play.water = R.water; play.appaGone = R.appaGone;
@@ -480,9 +482,11 @@
               ['store', 'amma', 0.45], ['corner0', 'amma', 0.43], ['corner1', 'pho', 0.44], ['door', 'me', 0.45], ['bed3', 'ravi', 0.42],
               ['master', 'mala', 0.43], ['passage', 'me', 0.46]],
       /* EMPOWERED, to the blessing's end (R28, R29: "the green entities should swarm in the screen in dramatic numbers ... they
-         keep spawning even after getting cleared ... until the whole timer is completed"): a batch of five to seven every
-         2.2 s from the room's edges, never more than sixteen in the room (freeBody) */
-      batch: { every: 2.2, min: 5, max: 7 } };
+         keep spawning even after getting cleared ... until the whole timer is completed"): a batch of seven to nine every
+         1.8 s, rising round HER, 1.7 to 2.8 m out on every side (through her walls and floor, as they do), so they come at
+         her where he is looking; never more than sixteen in the room (freeBody). (18 Nov, photographed: from the room's
+         doors, five to seven at a time, six were in the room and most of them out of his view) */
+      batch: { every: 1.8, min: 7, max: 9, r0: 1.7, r1: 2.8 } };
     const REACH = { me: 0.75, amma: 0.62, pho: 0.6, ravi: 0.55, mala: 0.55 };
     /* AMMA'S LIFE IN HIS KEEPING (Chad, 18 Nov: "There must be consequences if the spirit entities in green gets to the lady in
        wheelchair. Everytime the green spirits get to her, she screams one time, and her health bar drops. Put a health bar on
@@ -502,7 +506,8 @@
       const F = play.fight = { on: true, t: 0, k: 0, wave: 0, shapes: [], fed: 0, families: 0, famCost: 0, captions: 0, ended: false,
                                hp: 100, cries: 0, criedAt: -99, lost: false, call: null, callT: 0, trickleAt: 0, goldT: 0, batchAt: 0,
                                cleared: 0, chantHeld: false, shutFor: 0, nagNext: NAG.first, nags: 0, lastStrike: -99, urge: null,
-                               saidMala: false, saidRavi: false, seed: 0x4c4f0d };
+                               saidMala: false, saidRavi: false, seed: 0x4c4f0d,
+                               vseed: 0x5f1e0d, voxAt: 2.5, voxBigAt: 0, voxLast: '', voxUntil: [] };
       if (kit) { kit.bar(0); if (kit.health) kit.health({ label: W.ammaBar, k: 1, at: () => { const h = AMMA_HEAD(); return [h.x, h.y + 0.32, h.z]; } }); }
       objectiveFor('bless');
       /* the two in the corners are the first wave's: they wake */
@@ -548,6 +553,37 @@
     }
     /* the fight's own seeded stream (v6.15: nothing random unseeded; begun again with every fight) */
     function fightRnd() { const F = play.fight; F.seed = (F.seed * 1103515245 + 12345) >>> 0; return (F.seed >>> 8) / 16777216; }
+    /* THE GREEN ONES' OWN VOICES (Chad, 18 Nov: "Each entity should also make its own sounds and voices , like groaning
+       sounds or angry sounds"): now and then one of them is heard from where it is, a groan, a snarl, a moan or a rasp
+       (never the same twice running); the large one growls in its own deeper voice; one that reaches someone, or is struck
+       and not yet sent, shrieks. Panned by where it stands, quieter further off and while anyone speaks, never more than
+       two at once, closer together in the swarm. A cosmetic stream of its own (v6.15: the fight's own draws stay as they
+       were), begun again with every fight */
+    const VOX = ['u4sv1', 'u4sv2', 'u4sv3', 'u4sv4'], VOX_LEN = { u4sv1: 1.8, u4sv2: 1.4, u4sv3: 2.2, u4sv4: 1.4, u4sv5: 1.2, u4svL: 2.8 };
+    function voxRnd() { const F = play.fight; F.vseed = (F.vseed * 1664525 + 1013904223) >>> 0; return F.vseed / 4294967296; }
+    function voxPlay(name, at, vol) {
+      const F = play.fight; if (!F || !at) return false;
+      F.voxUntil = F.voxUntil.filter(u => u > F.t);
+      if (F.voxUntil.length >= 2) return false;
+      const d = Math.hypot(at.x - yaw.position.x, at.z - yaw.position.z), near = Math.max(0.4, Math.min(1, 2.4 / Math.max(1, d)));
+      fx(name, vol * near * (dayClock.t < speak.until ? 0.6 : 1), panOf(at));
+      F.voxUntil.push(F.t + VOX_LEN[name]); return true;
+    }
+    function voxTick() {
+      const F = play.fight; if (!F || !F.on || F.t < F.voxAt) return;
+      const live = F.shapes.filter(S => (S.state === 'come' || S.state === 'feed') && S.P.group.visible);
+      if (!live.length) { F.voxAt = F.t + 0.8; return; }
+      const big = live.find(S => S.P === spirits.large), small = live.filter(S => S !== big);
+      let S = null, name = '';
+      if (big && F.t >= F.voxBigAt) { S = big; name = 'u4svL'; F.voxBigAt = F.t + 3.6 + 2.2 * voxRnd(); }
+      else if (small.length) {
+        S = small[Math.floor(voxRnd() * small.length)];
+        let k = Math.floor(voxRnd() * VOX.length); if (VOX[k] === F.voxLast) k = (k + 1 + Math.floor(voxRnd() * (VOX.length - 1))) % VOX.length;
+        name = VOX[k];
+      }
+      if (S && voxPlay(name, S.P.group.position, name === 'u4svL' ? 0.9 : S.state === 'feed' ? 0.72 : 0.58) && name !== 'u4svL') F.voxLast = name;
+      F.voxAt = F.t + (F.call === 'gold' || F.call === 'surge' || F.call === 'asking' ? 0.5 + 0.45 * voxRnd() : 1.0 + 1.2 * voxRnd());
+    }
     /* one more of them, at a door or a corner (a hand's spread round it, so a batch never stands in one place), for one of
        the people in the room */
     function spawnAt(from, to, v) {
@@ -569,6 +605,7 @@
          minutes, not twelve: 18 Nov) */
       F.k = Math.min(1, F.k + wdt / FIGHT.secs * Math.max(0.35, slow));
       stakesTick(wdt); if (!F.on) return;
+      voxTick();
       if (kit) kit.bar(F.k);
       if (!F.chantHeld) while (F.captions < CHANT.length && F.k > CHANT[F.captions].at) chantSing(CHANT[F.captions++]);
       const appa = spirits.appa, ag = appa.group.position;
@@ -597,6 +634,7 @@
     /* one reaches its mark: what it costs */
     function feed(S) {
       const F = play.fight; S.fedAt = S.t; F.fed++;
+      if (S.to !== 'me') voxPlay(S.P === spirits.large ? 'u4svL' : 'u4sv5', S.P.group.position, 0.62);
       if (S.to === 'me') {
         fx('u4chill', 0.8, 0);
         const room = sanityNow() - HEAT.floor; if (room > 0) kit.award('sanity', -Math.min(room, 6), { minigame: true });
@@ -677,7 +715,7 @@
       const P = S.P; S.hits++;
       if (P.fx) { P.fx.set('uFill', 0.9); const run = play.run; after(0.25, () => { if (live(run) && P.fx && S.state !== 'leave') P.fx.set('uFill', P === spirits.large ? SPIRIT.large.fill : SPIRIT.wander.fill); }); }
       if (S.hits >= S.need) { S.state = 'leave'; S.leave = 0; return true; }
-      S.back = 0.8; S.state = 'come'; return false;
+      S.back = 0.8; S.state = 'come'; voxPlay(P === spirits.large ? 'u4svL' : 'u4sv5', P.group.position, 0.8); return false;
     }
     function goldFlick() {
       const F = play.fight; let n = 0;
@@ -794,6 +832,7 @@
     /* THE SURGE: twelve at once from every door and corner, the room's whisper rising, his heart kicking */
     function surgeBegin() {
       const F = play.fight; F.call = 'surge'; F.callT = 0; F.trickleAt = FIGHT.trickle;
+      if (kit && kit.itemWarm) kit.itemWarm('amulet');                          // (his amulet's model ready before it is called: R33)
       for (const [from, to, v] of FIGHT.surge) spawnAt(from, to, v);
       fx('u4surge', 0.95, 0); fx('u4whisper', 0.75, 0);
       if (kit && kit.pulse) kit.pulse({ bpm: 172, secs: 1.0, erratic: 0.5 });
@@ -809,13 +848,16 @@
     }
     function chantHush() { const F = play.fight; if (F) F.chantHeld = true; chantBreak(null); }
     /* HIS AMULET (Chad: "the luang phor phiboon amulet in its full 3d rotating model suddenly and dramatically appears in the
-       middle of the screen in a golden glow enveloping it, seemingly empowering the user, and then disappears away"): the
-       fifty-fifth seam's showcase, golden, gone by itself after 3.4 s; the fight stands still under it */
+       middle of the screen in a golden glow enveloping it, seemingly empowering the user, and then disappears away"; and,
+       of build 19's: "there is no need for text at the top and bottom, and i want the effect to be different from the
+       'item unlocked' effect. It should not totally obscure the whole screen"): the fifty-fifth seam's SHOWCASE, no words,
+       nothing over the room but its light, gone by itself after 3.4 s into a point of light; the fight stands still under
+       it. Its model was made ready under the chapter's curtain (`items`), and warmed again at the surge */
     function showAmulet() {
       const F = play.fight; if (!F || !F.on) return;
       F.call = 'shown'; F.urge = null; if (kit && kit.visionUrge) kit.visionUrge(false);
       const go = () => { if (play.fight === F && F.on) goldBegin(); };
-      if (!(kit && kit.unlock && kit.unlock('amulet', { gold: true, auto: 3.4, label: W.goldLabel, sub: W.goldSub, sound: 'u4goldcall', onClose: go }))) go();
+      if (!(kit && kit.unlock && kit.unlock('amulet', { showcase: true, auto: 3.4, sound: 'u4goldcall', onClose: go }))) go();
     }
     /* EMPOWERED (R26 to R29: "the entire screen seem to have a golden vignette to show the new empowered status, and now the
        water being flicked becomes golden glow instead"): the gold at the edges of his sight (the fifty-sixth seam), the water
@@ -823,6 +865,10 @@
        chant again; and the swarm */
     function goldBegin() {
       const F = play.fight; F.call = 'gold'; F.goldT = 0; F.batchAt = 1.0; F.urge = null;
+      /* (and its light goes out through the room from him, every thing and every outline it crosses burning gold, as his
+         sight's own wave does: the fifty-seventh seam. Chad: "empowers with a golden glow that spreads throughout the scene,
+         tracing every item and silhouette similar to how the spirit vision works") */
+      if (kit && kit.wave) kit.wave({ color: 0xffc552, secs: 2.6, reach: 26, trail: 0.3 });
       if (kit) { if (kit.edge) kit.edge({ color: [255, 196, 84], k: 0.85, secs: 1.2 }); if (kit.sprayColor) kit.sprayColor(0xffc24a, { size: 1.6 }); if (kit.ammo) kit.ammo(DATA.weapon.rounds); }
       fx('u4goldpower', 1, 0);
       /* (the amulet's light reaches her too: her life at least half back. 18 Nov, photographed: held at 15 through the surge,
@@ -839,11 +885,23 @@
     /* a batch of five to seven from the room's edges, most of them for her (R28: "the green entities should swarm in the
        screen in dramatic numbers, filling the screen with many of them") */
     function goldBatch() {
-      const B = FIGHT.batch, n = B.min + Math.floor(fightRnd() * (B.max - B.min + 1)), keys = Object.keys(FROM);
+      const B = FIGHT.batch, n = B.min + Math.floor(fightRnd() * (B.max - B.min + 1)), a0 = fightRnd() * Math.PI * 2;
       let made = 0;
-      for (let i = 0; i < n; i++) { const u = fightRnd(), to = u < 0.56 ? 'amma' : u < 0.76 ? 'me' : u < 0.86 ? 'pho' : u < 0.93 ? 'ravi' : 'mala';
-        if (!spawnAt(keys[Math.floor(fightRnd() * keys.length)], to, 0.44 + 0.1 * fightRnd())) break; made++; }
+      for (let i = 0; i < n; i++) {
+        const u = fightRnd(), to = u < 0.62 ? 'amma' : u < 0.80 ? 'me' : u < 0.88 ? 'pho' : u < 0.94 ? 'ravi' : 'mala';
+        const a = a0 + (i + 0.5 * fightRnd()) * (Math.PI * 2 / n), r = B.r0 + (B.r1 - B.r0) * fightRnd();
+        const x = CHAIR.x + Math.sin(a) * r, z = CHAIR.z + Math.cos(a) * r;
+        if (Math.hypot(x - yaw.position.x, z - yaw.position.z) < 1.2) continue;      // (never risen on top of him)
+        if (!spawnRound(x, z, to, 0.40 + 0.1 * fightRnd())) break; made++; }
       if (made) fx(made > 4 ? 'u4surge' : 'u4whisper', 0.55, 0);
+    }
+    /* one more of them where it is asked to rise (the gold's ring round her) */
+    function spawnRound(x, z, to, v) {
+      const F = play.fight, P = freeBody(); if (!P) return null;
+      const tg = FAMILY[to](); put(P, x, z, faceTo(x, z, tg.x, tg.z));
+      take(P, P.slot % 2 ? 'creep' : 'crawl', 0.3);
+      const S = { P, to, v, need: 1, hits: 0, state: 'come', t: 0, back: 0, fedAt: -99 };
+      F.shapes.push(S); return S;
     }
     function nagTick(open, live) {
       const F = play.fight;

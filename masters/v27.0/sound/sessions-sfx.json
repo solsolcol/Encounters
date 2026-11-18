@@ -51,7 +51,13 @@
   "u4goldcall": "3SuxrAJrWRRXgvtYkQ9D",
   "u4goldpower": "ND3rrPUsBunBRTvsXsx8",
   "u4goldflick": "MDWbHPe11A1B138hNgiE",
-  "u4goldclear": "BplvnHErnIOwtRWZNhaV"
+  "u4goldclear": "BplvnHErnIOwtRWZNhaV",
+  "u4sv1": "0nOk0iwq5Iv1ebwlcduc",
+  "u4sv2": "snTvp9cznEUoVFtlXOct",
+  "u4sv3": "hZ0UoLwFWtKfUsdFv1lR",
+  "u4sv4": "9tgwMyx1NVJl8lzDfBKH",
+  "u4sv5": "nG1AWugezdASq1NMgxqa",
+  "u4svL": "aaxYKnOpODelt30WGxEW"
  },
  "sounds": {
   "u4vison": [
@@ -282,5 +288,31 @@
    ],
    "letters": "cd"
   }
+ },
+ "sessions": {
+  "u4sv1": [
+   "cOOQlWZ6jDtp3H0Hkxkb",
+   "VdSb4qcLyI9sNBGIfLJJ"
+  ],
+  "u4sv2": [
+   "v8wzvJlE5qU3wRT2F4LQ",
+   "gbVWJ7c1QNQaPbJUYeI0"
+  ],
+  "u4sv3": [
+   "RmrAxwlOZqZmyO38ZZnz",
+   "mZo5xS07QofoNxBcwy7s"
+  ],
+  "u4sv4": [
+   "sv9aW3xuFr6tIqyJHfI0",
+   "SY6LbFl7nivS5SCyt9IN"
+  ],
+  "u4sv5": [
+   "ooKr9ZZ3lNfMHnIuVqbU",
+   "yDTAEeSAmpAh6XZjxQDN"
+  ],
+  "u4svL": [
+   "D9BfsLTEIyMYm3O5tT4p",
+   "1tEb8wuEIpmjfxmyVHCq"
+  ]
  }
 }

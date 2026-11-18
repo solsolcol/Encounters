@@ -147,6 +147,14 @@ fx   u4goldpower d_u4goldpower.wav    -14                                     # 
 rm -f d_u4goldpower.wav
 fx   u4goldflick $R/u4goldflick_b.mp3 -14                                     # b: 93 % where a phone plays (a 29 %)
 fx   u4goldclear $R/u4goldclear_d.mp3 -14                                     # d: the second prompt's, the fuller (8 dB over c); the first prompt's two sound at -45, nearly nothing
+# the green ones' own voices (Chad, 18 Nov: "Each entity should also make its own sounds and voices , like groaning sounds
+# or angry sounds"): six kinds, two takes each (sound/sessions-sfx.json), every take put through the transcriber (WORDLESS)
+fx   u4sv1       $R/u4sv1_b.mp3       -14                                     # b: the groan, 78 % where a phone plays, no word heard (a: the transcriber writes "YEAH!")
+fx   u4sv2       $R/u4sv2_b.mp3       -14                                     # b: the snarl, 88 % in the voice's band (a 68 %), no word heard; its overs held by the limiter
+fx   u4sv3       $R/u4sv3_a.mp3       -14                                     # a: the moan, 89 % in the voice's band, no word heard (b has a hole: 7 % silent)
+fx   u4sv4       $R/u4sv4_b.mp3       -14                                     # b: the rasp, no word heard (a: the transcriber writes "Argh!")
+fx   u4sv5       $R/u4sv5_a.mp3       -14 "atrim=start=0.40,asetpts=PTS-STARTPTS"   # a: the shriek, its first 0.40 s of nothing cut (it is cued on a hit); no word heard (b: the transcriber writes "Thanks for watching!")
+fx   u4svL       $R/u4svL_b.mp3       -14                                     # b: the large one's growl, 85 % where a phone plays (a 57 %), no word heard
 fi
 
 # ---- THE MUSIC (sound/measures-music.json, sound/measures-music2.json): music at peak -3 (v22.4), Opus 128k

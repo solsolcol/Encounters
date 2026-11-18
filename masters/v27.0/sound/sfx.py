@@ -61,6 +61,14 @@ SFX = [
     ('u4goldpower', 2.5, False, 4, "A bright burst of holy light filling a room: a radiant shimmering swell of chimes and singing bowls rising fast, a warm sparkling whoosh, brilliant and clear, then ringing away. Loud, bright, no deep bass.", 'the call: he is empowered'),
     ('u4goldflick', 1.0, False, 2, "A flick of glowing water thrown with a bright magical shimmer: a quick wet whoosh with a crystalline chime.", 'empowered: each golden flick'),
     ('u4goldclear', 2.2, False, 4, "A loud radiant wave of light sweeping outward through a room, a bright rushing whoosh with sparkling shimmer, and many eerie ghostly hisses and sighs vanishing at once. Clear and powerful.", 'empowered: every green one released'),
+    # ---- the green ones' own voices (Chad, 18 Nov: "Each entity should also make its own sounds and voices , like groaning
+    #      sounds or angry sounds"): each heard from where it is, a few at a time; the large one's deeper (c_story.js)
+    ('u4sv1', 1.8, False, 2, "A hungry ghost's low wordless groan, drawn out and aching, breathy and hollow, close. Only a voice, no words.", 'the fight: a green one groans'),
+    ('u4sv2', 1.4, False, 2, "An angry ghostly snarl: a sharp rasping hiss rising into a short guttural growl, wordless, close.", 'the fight: a green one snarls'),
+    ('u4sv3', 2.2, False, 2, "A mournful wordless moan of a lost spirit, wavering and rising, eerie and sad, a little distant. Only a voice, no words.", 'the fight: a green one moans'),
+    ('u4sv4', 1.4, False, 2, "A ghost's harsh wordless rasp of frustration, a choked growl through clenched teeth, close.", 'the fight: a green one rasps'),
+    ('u4sv5', 1.6, False, 2, "A spirit's sudden furious wordless shriek, short and hoarse, breaking into a hiss, close.", 'the fight: a green one shrieks (hit, or near her)'),
+    ('u4svL', 2.8, False, 2, "A huge dark spirit's deep wordless growl, slow and menacing, rumbling and rasping with a hollow echo, close.", 'the fight: the large one growls'),
     # ---- the endings and the close
     ('u4scuffle', 4.0, False, 2, "Two men struggling on a tiled floor: clothes and shoes scuffling, a stumble, heavy breathing. No words.", 'ending A: he holds Ravi back'),
     ('u4fall', 2.0, False, 2, "A man falling heavily onto a tiled floor: a body's thud and a winded exhale.", 'ending B: the student on the floor'),

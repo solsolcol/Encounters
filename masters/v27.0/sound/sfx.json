@@ -320,6 +320,54 @@
   "where": "empowered: every green one released"
  },
  {
+  "name": "u4sv1",
+  "secs": 1.8,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A hungry ghost's low wordless groan, drawn out and aching, breathy and hollow, close. Only a voice, no words.",
+  "where": "the fight: a green one groans"
+ },
+ {
+  "name": "u4sv2",
+  "secs": 1.4,
+  "loop": false,
+  "takes": 2,
+  "prompt": "An angry ghostly snarl: a sharp rasping hiss rising into a short guttural growl, wordless, close.",
+  "where": "the fight: a green one snarls"
+ },
+ {
+  "name": "u4sv3",
+  "secs": 2.2,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A mournful wordless moan of a lost spirit, wavering and rising, eerie and sad, a little distant. Only a voice, no words.",
+  "where": "the fight: a green one moans"
+ },
+ {
+  "name": "u4sv4",
+  "secs": 1.4,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A ghost's harsh wordless rasp of frustration, a choked growl through clenched teeth, close.",
+  "where": "the fight: a green one rasps"
+ },
+ {
+  "name": "u4sv5",
+  "secs": 1.6,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A spirit's sudden furious wordless shriek, short and hoarse, breaking into a hiss, close.",
+  "where": "the fight: a green one shrieks (hit, or near her)"
+ },
+ {
+  "name": "u4svL",
+  "secs": 2.8,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A huge dark spirit's deep wordless growl, slow and menacing, rumbling and rasping with a hollow echo, close.",
+  "where": "the fight: the large one growls"
+ },
+ {
   "name": "u4scuffle",
   "secs": 4.0,
   "loop": false,

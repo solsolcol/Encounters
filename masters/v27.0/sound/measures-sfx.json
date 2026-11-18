@@ -1178,5 +1178,137 @@
   "phone": 1.0,
   "voice": 0.86,
   "words": ""
+ },
+ "u4sv1_a": {
+  "len": 1.76,
+  "asked": 1.8,
+  "peak": -5.7,
+  "level": -20.2,
+  "silent": 0.0,
+  "first": 0.05,
+  "phone": 0.88,
+  "voice": 0.83,
+  "words": "YEAH!"
+ },
+ "u4sv1_b": {
+  "len": 1.76,
+  "asked": 1.8,
+  "peak": -6.2,
+  "level": -21.0,
+  "silent": 0.0,
+  "first": 0.05,
+  "phone": 0.78,
+  "voice": 0.68,
+  "words": ""
+ },
+ "u4sv2_a": {
+  "len": 1.36,
+  "asked": 1.4,
+  "peak": -0.9,
+  "level": -15.7,
+  "silent": 0.0,
+  "first": 0.0,
+  "phone": 0.98,
+  "voice": 0.68,
+  "words": ""
+ },
+ "u4sv2_b": {
+  "len": 1.36,
+  "asked": 1.4,
+  "peak": 2.0,
+  "level": -16.9,
+  "silent": 0.0,
+  "first": 0.0,
+  "phone": 1.0,
+  "voice": 0.88,
+  "words": ""
+ },
+ "u4sv3_a": {
+  "len": 2.2,
+  "asked": 2.2,
+  "peak": -20.2,
+  "level": -33.5,
+  "silent": 0.0,
+  "first": 0.0,
+  "phone": 1.0,
+  "voice": 0.89,
+  "words": ""
+ },
+ "u4sv3_b": {
+  "len": 2.2,
+  "asked": 2.2,
+  "peak": -17.3,
+  "level": -28.0,
+  "silent": 0.07,
+  "first": 0.0,
+  "phone": 1.0,
+  "voice": 0.4,
+  "words": ""
+ },
+ "u4sv4_a": {
+  "len": 1.36,
+  "asked": 1.4,
+  "peak": -0.3,
+  "level": -17.2,
+  "silent": 0.0,
+  "first": 0.0,
+  "phone": 1.0,
+  "voice": 0.98,
+  "words": "Argh!"
+ },
+ "u4sv4_b": {
+  "len": 1.36,
+  "asked": 1.4,
+  "peak": -14.4,
+  "level": -31.4,
+  "silent": 0.0,
+  "first": 0.0,
+  "phone": 0.97,
+  "voice": 0.83,
+  "words": ""
+ },
+ "u4sv5_a": {
+  "len": 1.6,
+  "asked": 1.6,
+  "peak": 1.8,
+  "level": -14.5,
+  "silent": 0.03,
+  "first": 0.45,
+  "phone": 1.0,
+  "voice": 0.97,
+  "words": ""
+ },
+ "u4sv5_b": {
+  "len": 1.6,
+  "asked": 1.6,
+  "peak": 1.6,
+  "level": -13.4,
+  "silent": 0.0,
+  "first": 0.05,
+  "phone": 1.0,
+  "voice": 0.96,
+  "words": "Thanks for watching!"
+ },
+ "u4svL_a": {
+  "len": 2.76,
+  "asked": 2.8,
+  "peak": -23.4,
+  "level": -38.1,
+  "silent": 0.15,
+  "first": 0.1,
+  "phone": 0.57,
+  "voice": 0.42,
+  "words": ""
+ },
+ "u4svL_b": {
+  "len": 2.76,
+  "asked": 2.8,
+  "peak": -20.1,
+  "level": -37.4,
+  "silent": 0.27,
+  "first": 0.1,
+  "phone": 0.85,
+  "voice": 0.71,
+  "words": ""
  }
 }
