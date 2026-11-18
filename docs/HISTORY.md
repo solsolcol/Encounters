@@ -9300,6 +9300,25 @@ What the baseline contains, by release:
   for what preview bullshit you are doing, it should always be deployed as full release no matter the status") the
   chapter is in the run, and no chapter is ever a preview again (CLAUDE.md, his standing rules). Sheet v147. Not made:
   the backup bundle (the history is 2.7 GB and the working machine had 0.3 GB free: put to him).
+  After the release, the same evening (18 Nov), his notes R41 to R85, each built and deployed the moment it was written
+  and checked on the live build after (the block at the top of CLAUDE.md, his words): build 21k the dart (R44: fast green
+  shapes the water cannot touch, that strike her at once) and the eye button's bigger beat (R47); 21l the bowls on his
+  stool (R53), nothing in his hands (R54), the infinity count (R56), the empty bowl said (R57); 21n Grandmaster Pho sat
+  upright (R42), the fan off Ravi (R45), Mala turned to her mother (R46), the old photograph at full size (R50), no flick
+  before the fight (R58), the sight shut at her rise (R55, R59), the hit flash (R60), the slower wave (R61), the gold bowl
+  (R62), the refill burst (R63); 21o the sight directed in every ending (R65) and bedroom 3 built behind its door (R52);
+  21p ending B's "Go!" a blow of his gold (R67) and no body held on one frame in any ending (R66, R68); 21q R49 and R55
+  voiced (his own ElevenLabs key, kept off the repository: "Puu", and three lines of amazement as she stands: deploy
+  `6afe0b5965a6de437947a546`); 21r his standing rest, talk and push upright (R64: deploy `6afe0d717253cec5015652bf`); 21s
+  the opening's pan without its stutter (R51: the curtain now waits for every model still being parsed, deploy
+  `6afe1100f2cbbd5c9926249d`); 21t R78 to R85 (deploy `6afe1751a785ba0db36a86dc`: Ravi's look in the close turned as a
+  direction, never a point slid past his head; Mala's hands up with "Slowly" and on her mother's arm, her mark off the
+  altar cabinet her shoulder stood 3 cm inside; Ravi risen at his mother's side in C and D, off the lens's line to his
+  teacher; every strike of the water burst where it lands and the gold's flick flashing each one it clears; Amma turned
+  on the spot past a neck's reach; the showcase brighter, its merge a flash, two rings and a shake; the gold water a
+  bright gold). Between 21p and 21q, eight of his messages that were not asks were found missing from the plan's record
+  and put back word for word (R74), and since then every message is committed and pushed the moment it arrives (R71,
+  CLAUDE.md). Sheet v148. The tracker's §11 is every ask against the live build.
 
 ## The sheet, version by version
 

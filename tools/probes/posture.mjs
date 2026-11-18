@@ -13,6 +13,10 @@
    the shoulders where they rest (a shrug of 0): the numbers to hold a take to.
      LOOK    where the face points: below the horizontal positive (its forward found from the bind pose, where the face
              points the body's way: v6.8, never the head bone's own +z)
+     KNEE    each knee's bend: the angle between the thigh (hip joint to knee) and the shin (knee to ankle), 0 straight
+             (R76, Chad, 18 Nov 2026: "his knees seem bent even when standing"; a relaxed adult stands with the knees
+             within about 5 degrees of straight)
+     HIPF    each hip's bend: the thigh from the trunk's line, forward positive (a man standing holds it near 0)
      CHROMIUM_PATH=... [ENC_DIST=snap] [CH=e4c4] [WHO=pho] [N=8] [TAKES='{"Sit_to_Stand_Transition_M":[0.02,0.3]}']
        [LIVE='bless:r,m,f,o,a,k,p,v,l1,l2,l3,w'] [SPAN=6] [OUT=file.json] node tools/probes/posture.mjs
    LIVE: no take is posed; the phase is applied and the body read N times over SPAN seconds as the game draws it (every
@@ -38,7 +42,8 @@ const res = await p.evaluate(async ({ WHO, N, TAKES, LIVE, SPAN }) => {
   const P = window.__enc.stage.dbg.cast[WHO];
   const find = (re) => { for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
   const B = { hips: find(/Hips$/), sp0: find(/Spine$/), sp1: find(/Spine1$/), sp2: find(/Spine2$/), neck: find(/Neck$/), head: find(/Head$/),
-    lc: find(/LeftShoulder$/), la: find(/LeftArm$/), rc: find(/RightShoulder$/), ra: find(/RightArm$/) };
+    lc: find(/LeftShoulder$/), la: find(/LeftArm$/), rc: find(/RightShoulder$/), ra: find(/RightArm$/),
+    lu: find(/LeftUpLeg$/), ll: find(/LeftLeg$/), lf: find(/LeftFoot$/), ru: find(/RightUpLeg$/), rl: find(/RightLeg$/), rf: find(/RightFoot$/) };
   const missing = Object.keys(B).filter(k => !B[k]); if (missing.length) return { err: 'no bone ' + missing.join(' ') };
   const pos = (o) => { const e = o.matrixWorld.elements; return [e[12], e[13], e[14]]; };
   const sub = (a, c) => [a[0] - c[0], a[1] - c[1], a[2] - c[2]], dot = (a, c) => a[0] * c[0] + a[1] * c[1] + a[2] * c[2];
@@ -63,7 +68,10 @@ const res = await p.evaluate(async ({ WHO, N, TAKES, LIVE, SPAN }) => {
     const shr = (c, a) => { const v = nrm(sub(pos(a), pos(c))); return { el: deg(Math.asin(Math.max(-1, Math.min(1, dot(v, trn))))), ht: dot(sub(pos(a), n), trn) * 100 }; };
     const hq = wq(B.head); if (!faceL) { const inv = [-hq[0], -hq[1], -hq[2], hq[3]]; faceL = qrot(inv, f); }
     const fw = qrot(hq, faceL), look = deg(Math.atan2(-fw[1], Math.hypot(fw[0], fw[2])));
+    const knee = (u, l, ft) => { const a = nrm(sub(pos(l), pos(u))), c = nrm(sub(pos(ft), pos(l))); return deg(Math.acos(Math.max(-1, Math.min(1, dot(a, c))))); };
+    const hipf = (u, l) => { const th = nrm(sub(pos(l), pos(u))); return deg(Math.atan2(dot(th, f), -dot(th, trn))); };
     return { look, lean: deg(Math.atan2(dot(tr, f), tr[1])), side: deg(Math.atan2(dot(tr, sd), tr[1])),
+      kneeL: knee(B.lu, B.ll, B.lf), kneeR: knee(B.ru, B.rl, B.rf), hipL: hipf(B.lu, B.ll), hipR: hipf(B.ru, B.rl),
       curve: deg(Math.acos(Math.max(-1, Math.min(1, dot(nrm(lo), nrm(up)))))), head: deg(Math.atan2(dot(hv, f), hv[1])),
       L: shr(B.lc, B.la), R: shr(B.rc, B.ra) };
   }
@@ -76,7 +84,8 @@ const res = await p.evaluate(async ({ WHO, N, TAKES, LIVE, SPAN }) => {
     smL[0].skeleton.pose(); const bindL = read(); for (const [o, q, v] of keepL) { o.quaternion.copy(q); o.position.copy(v); }
     const rows = [];
     for (let i = 0; i < N; i++) { await new Promise(r => setTimeout(r, SPAN * 1000 / N)); const r = read();
-      rows.push({ t: +(i * SPAN / N).toFixed(1), take: P.cur, look: +(r.look - bindL.look).toFixed(1), lean: +r.lean.toFixed(1), side: +r.side.toFixed(1), curve: +r.curve.toFixed(1), head: +r.head.toFixed(1), shrugL: +(r.L.el - bindL.L.el).toFixed(1), shrugR: +(r.R.el - bindL.R.el).toFixed(1) }); }
+      rows.push({ t: +(i * SPAN / N).toFixed(1), take: P.cur, look: +(r.look - bindL.look).toFixed(1), lean: +r.lean.toFixed(1), side: +r.side.toFixed(1), curve: +r.curve.toFixed(1), head: +r.head.toFixed(1), shrugL: +(r.L.el - bindL.L.el).toFixed(1), shrugR: +(r.R.el - bindL.R.el).toFixed(1),
+        kneeL: +r.kneeL.toFixed(1), kneeR: +r.kneeR.toFixed(1), hipL: +r.hipL.toFixed(1), hipR: +r.hipR.toFixed(1) }); }
     return { live: rows };
   }
   const keepB = []; P.model.traverse(o => { if (o.isBone) keepB.push([o, o.quaternion.clone(), o.position.clone()]); });
@@ -94,7 +103,8 @@ const res = await p.evaluate(async ({ WHO, N, TAKES, LIVE, SPAN }) => {
       A.time = Math.max(0, Math.min(d - 1e-3, t)); A.timeScale = 0; P.mixer.update(0);
       const r = read();
       rows.push({ t: +t.toFixed(2), look: +(r.look - bind.look).toFixed(1), lean: +r.lean.toFixed(1), side: +r.side.toFixed(1), curve: +r.curve.toFixed(1), head: +r.head.toFixed(1),
-        shrugL: +(r.L.el - bind.L.el).toFixed(1), shrugR: +(r.R.el - bind.R.el).toFixed(1), riseL: +(r.L.ht - bind.L.ht).toFixed(1), riseR: +(r.R.ht - bind.R.ht).toFixed(1) });
+        shrugL: +(r.L.el - bind.L.el).toFixed(1), shrugR: +(r.R.el - bind.R.el).toFixed(1), riseL: +(r.L.ht - bind.L.ht).toFixed(1), riseR: +(r.R.ht - bind.R.ht).toFixed(1),
+        kneeL: +r.kneeL.toFixed(1), kneeR: +r.kneeR.toFixed(1), hipL: +r.hipL.toFixed(1), hipR: +r.hipR.toFixed(1) });
     }
     out.takes[name] = { win: W, rows };
   }
@@ -106,11 +116,11 @@ fs.writeFileSync(OUT, JSON.stringify(res, null, 1));
 if (res.err) { console.log(res.err); process.exit(1); }
 if (res.live) { for (const r of res.live) console.log(JSON.stringify(r)); console.log('page errors:', errs.length ? errs.slice(0, 4).join(' | ') : 'none'); await b.close(); process.exit(0); }
 const b0 = res.bind;
-console.log(`${WHO} bind: lean ${b0.lean.toFixed(1)}  curve ${b0.curve.toFixed(1)}  head ${b0.head.toFixed(1)}  collar L ${b0.L.el.toFixed(1)} R ${b0.R.el.toFixed(1)}`);
+console.log(`${WHO} bind: lean ${b0.lean.toFixed(1)}  curve ${b0.curve.toFixed(1)}  head ${b0.head.toFixed(1)}  collar L ${b0.L.el.toFixed(1)} R ${b0.R.el.toFixed(1)}  knee L ${b0.kneeL.toFixed(1)} R ${b0.kneeR.toFixed(1)}  hip L ${b0.hipL.toFixed(1)} R ${b0.hipR.toFixed(1)}`);
 for (const [name, T] of Object.entries(res.takes)) {
   if (T.err) { console.log(name, T.err); continue; }
   const avg = (k) => (T.rows.reduce((s, r) => s + r[k], 0) / T.rows.length).toFixed(1), mx = (k) => Math.max(...T.rows.map(r => r[k])).toFixed(1);
-  console.log(`${name.padEnd(28)} [${T.win.map(v => (+v).toFixed(2)).join('+')}]  look ${avg('look')}  lean ${avg('lean')} (max ${mx('lean')})  curve ${avg('curve')}  head ${avg('head')}  shrug L ${avg('shrugL')} R ${avg('shrugR')} deg  rise L ${avg('riseL')} R ${avg('riseR')} cm`);
+  console.log(`${name.padEnd(28)} [${T.win.map(v => (+v).toFixed(2)).join('+')}]  look ${avg('look')}  lean ${avg('lean')} (max ${mx('lean')})  curve ${avg('curve')}  head ${avg('head')}  shrug L ${avg('shrugL')} R ${avg('shrugR')} deg  rise L ${avg('riseL')} R ${avg('riseR')} cm  knee L ${avg('kneeL')} R ${avg('kneeR')} (max ${mx('kneeL')} ${mx('kneeR')})  hip L ${avg('hipL')} R ${avg('hipR')}`);
 }
 console.log('page errors:', errs.length ? errs.slice(0, 4).join(' | ') : 'none');
 await b.close();
