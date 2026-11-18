@@ -42,8 +42,11 @@
        out; Grandmaster Pho's stool at her right; his bowl on the floor at the chair's foot */
     const ALTAR = { x: -0.15, z: 5.15, shelf: 1.50 };
     const CHAIR = { x: -0.15, z: 3.85, ry: 0 };             // she faces her altar (+z): a body and a thing at a turn of 0 face +z
-    const STOOL = { x: 0.62, z: 3.55 };
-    const BOWL = { x: 0.35, z: 3.20 };
+    /* (18 Nov evening, R42's measures, tools/probes/clipscan.mjs on the history: seated, his robe and left shin crossed her
+       wheelchair's side 6 cm (x 0.11 to 0.17 against its edge at 0.175) and his foot stood on his bowl's rim: his stool
+       10 cm further from her, the bowl 15 cm nearer the door) */
+    const STOOL = { x: 0.72, z: 3.55 };
+    const BOWL = { x: 0.35, z: 3.05 };
     /* her kuthu vilakku on the floor beside her shrine's right end, below Appa's photograph: where Mala kneels to light it
        (18 Nov, measured: her kneeling take's right hand rides 0.085 m to her right and 0.30 before her, 0.57 m up, so it
        stands over the lamp's wick at 0.43; set before the shrine's middle, her knees were in her mother's footrest) */

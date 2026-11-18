@@ -139,7 +139,7 @@
         d: { sanity: 6, awareness: 6, wisdom: 18 }, verdict: 'best',
         say: 'I told him only what I saw. He held her hand.',
         teach: 'Experience teaches you not to jump to conclusions. You told her son what you saw and nothing more, and he stayed with her.' },
-      { k: 'D', text: 'Keep your place: hold the holy water, close your Spirit Vision, trust your teacher',
+      { k: 'D', text: 'Keep your place: hold the holy water, trust your teacher',
         d: { sanity: 3, awareness: 0, wisdom: 9 }, verdict: 'good',
         say: 'I held my place. Next time, I see the people too.',
         teach: 'Sensitivity only lets you experience something; cultivation is what teaches you how to examine it. You held your part and your teacher’s work was done. There were two people afraid in that room, and you were the one who could see.' }
@@ -168,7 +168,12 @@
     /* SPIRIT VISION's own sound (masters/v27.0/sound.sh): the wave out (u4vison) and back (u4visoff, the same swell run
        backwards, as the wave is), its bed and its music brought up with it while the world's beds fall back 60 % under
        it, and his heart: up to 112 as he opens, its beat heard (his own thump, harmonised for a phone), back to 76 */
-    vision: { heart: { bpm: 112, rest: 76, sound: 'u4heart', vol: 0.55, secs: 2.2, restSecs: 4.5 },
+    /* (R61, Chad, 18 Nov evening: "make the tracer effect just ever so slightly slower so that the player can see the
+       tracing effect even more? Also make the tracer effect look a little more obvious visually": out in 1.6 s where it
+       was 1.3, home in 1.25 where it was 1.0; its front 18 cm wide where it was 12, the edges behind it traced half again
+       as bright) */
+    vision: { outSecs: 1.6, inSecs: 1.25, band: 0.18, line: 0.24,
+              heart: { bpm: 112, rest: 76, sound: 'u4heart', vol: 0.55, secs: 2.2, restSecs: 4.5 },
               sound: { on: 'u4vison', off: 'u4visoff', vol: 0.85, bed: ['u4visbed', 0.56], music: ['u4vismus', 0.32], duck: 0.6 } },
     /* THE HOLY WATER (the fifty-first seam, plan §6): his own hands, the small silver bowl in his left, a flick of the
        right hand's fingers a press, a dip at Grandmaster Pho's bowl to fill it again; the HUD says the chapter's words */
@@ -198,7 +203,7 @@
       'w4doorleaf', 'w4fridge', 'w4pilltray', 'w4clock', 'w4phonetable', 'w4bed', 'w4commode', 'w4poles',
       'w4thoranam', 'w4altartray', 'w4coffee', 'w4garland', 'w4angsana', 'w4foxpalm', 'w4streetlamp', 'w4bougain',
       'w4corrpots', 'w4bicycle', 'w4clothesrack', 'w4t_kali', 'w4t_ganesha', 'w4t_murugan', 'w4t_appa',
-      'w4t_oldphoto', 'iconwater',
+      'w4t_oldphoto', 'w4t_oldphotofull', 'iconwater',
       /* <<< this chapter's own keys <<< */
       /* Grandmaster Pho, Chad's own model, as chapter 3 cast him (reuseInEpisode) */
       'pho'

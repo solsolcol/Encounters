@@ -790,6 +790,7 @@ ASSETS = {
     'w4t_murugan':  ('assets/w4t_murugan.jpg', True, False),     # Kartikeya (Murugan), gouache on mica (Wellcome V0046230)
     'w4t_appa':     ('assets/w4t_appa.jpg', True, False),     # Appa's photograph: the game's own Appa, head and shoulders
     'w4t_oldphoto': ('assets/w4t_oldphoto.jpg', True, False),     # her old photograph: a young woman in a yellow sari in trance at a temple festival, 1980s print (GPT Image 2.6, job 013ca386-de47-4e8f-9826-c6e888e14a0e)
+    'w4t_oldphotofull': ('assets/w4t_oldphotofull.jpg', True, False),     # the same picture whole at its master's own size (1168 x 880, the GPT Image output's bytes unchanged), drawn only when he looks at it (R50: kit.picture)
     # e4c4: the holy water's inventory picture, painted in the style of Chad's own (GPT Image 2.6 at high quality, job
     # 18b6a0ff-435b-4e06-8c03-1402bf0f66c2: his torch and amulet icons as the style references, the bowl's own reference on
     # white, masters/v27.0/props/refs/waterbowl-1024.jpg, as the object; the master at 1024, masters/v27.0/icons)
@@ -953,7 +954,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'w4shoerack', 'w4tulsi', 'w4doorleaf', 'w4fridge', 'w4pilltray', 'w4clock', 'w4phonetable', 'w4bed',
            'w4commode', 'w4poles', 'w4thoranam', 'w4altartray', 'w4coffee', 'w4garland', 'w4angsana', 'w4foxpalm',
            'w4streetlamp', 'w4bougain', 'w4corrpots', 'w4bicycle', 'w4clothesrack', 'w4t_kali', 'w4t_ganesha',
-           'w4t_murugan', 'w4t_appa', 'w4t_oldphoto', 'iconwater',
+           'w4t_murugan', 'w4t_appa', 'w4t_oldphoto', 'w4t_oldphotofull', 'iconwater',
            # <<< e4c4 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY

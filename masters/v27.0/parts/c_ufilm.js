@@ -117,6 +117,7 @@
       pose(P, 'kneelhold', o.kt ? o.kt(td) : Math.min(4.2, td), false, 'Idle_3', 1 - k, idleT(kAt - t0));
     }
     const MALA_T = { x: -0.55, z: 4.42 };                                     // Mala at her mother's right hand, before her
+    const MALA_TO_HER = faceTo(MALA_LAMP.x, MALA_LAMP.z, CHAIR.x, CHAIR.z);   // (R46: from her lamp, turned to her mother)
     const AMMA_FACE = [CHAIR.x, 1.02, CHAIR.z + 0.08];
     const RAVI_RY = RS.ry;
     /* the picture the decision opens over (the trance's last, every ending's first). A phone's frame is a third of a desk's
@@ -385,8 +386,12 @@
             if (outOf <= 0) pose(P, 'Walking', sA / 1.29, true, 'Idle_3', 1 - into, 3 + (E.go - E.still) * 0.4);
             else pose(P, 'Idle_3', 3 + (t - E.go) * 0.4, true, 'Walking', 1 - outOf, sA / 1.29);
             lookNow(P, AMMA_FACE, smo(c01((t - E.go - 0.6) / 1)), 0.9); } });
-        whenReady(cast.mala, (P) => { if (t < E.scream) pose(P, 'lightlamp', 5.4); else pose(P, 'scream', Math.min(3.9, (t - E.scream) * 0.9)); lookNow(P, [RG.x, 1.5, RG.z], 0.7, 0.9); });
-        visionAt(t, -1, 0.1);
+        /* (R46, Chad, 18 Nov evening: "when the daughter model at the end tries to gesture with her hand to block the auntie,
+           her hand clips into the altar": knelt at the lamp she faces the shrine's wall, and her scream's hand went out into
+           her mother's altar. She turns on her knees to her mother as she cries out, so the hand goes out toward her) */
+        whenReady(cast.mala, (P) => { if (t < E.scream) pose(P, 'lightlamp', 5.4); else pose(P, 'scream', Math.min(3.9, (t - E.scream) * 0.9));
+          P.group.rotation.y = lpA(0, MALA_TO_HER, smo(c01((t - E.scream + 0.1) / 0.5))); lookNow(P, [RG.x, 1.5, RG.z], 0.7, 0.9); });
+        visionAt(t, -1, 0.1, E.rise - 0.2, 1.0);                         // (R55: his sight closes as she stands)
         /* THE LENS: in on Ravi's shoulder as he is caught (his mother beyond him); held through the cry; the light; out
            to her standing; on his teacher for his word */
         track(t, [
@@ -439,8 +444,9 @@
            let go once her mother is up, and her eyes down to him on the floor ("Are you alright?") */
         whenReady(cast.mala, (P) => { if (t < E.splash) pose(P, 'lightlamp', 5.4);
           else { const r = smo(c01((t - E.rise - 1.2) / 1.4)); pose(P, 'scream', Math.min(3.9, (t - E.splash) * 0.8), false, 'Idle_3', r, 3 + t * 0.35); }
+          P.group.rotation.y = lpA(0, MALA_TO_HER, smo(c01((t - E.splash + 0.1) / 0.5)));           // (R46: to her mother, not into the altar)
           lookNow(P, lp3(AMMA_FACE, B_FLOOR, smo(c01((t - E.ok + 0.5) / 0.6))), 0.8, 0.9); });
-        visionAt(t, -1, 0.1);
+        visionAt(t, -1, 0.1, E.rise - 0.2, 1.0);                         // (R55: his sight closes as she stands)
         /* THE LENS: the throw (a lurch at her); the thing filling his eyes; white; his teacher's push seen through the
            white; then he is on the floor, looking up at her standing, and at his teacher */
         track(t, [
@@ -489,7 +495,7 @@
             lookNow(P, AMMA_FACE, 1, 0.9); } });
         /* she looks at her son before she stands */
         if (t >= E.look) whenReady(cast.amma, (P) => lookNow(P, headOf(cast.ravi, [KR.x, 0.9, KR.z]), smo(c01((t - E.look) / 0.8)), 1.0));
-        visionAt(t, -1, 0.1);
+        visionAt(t, -1, 0.1, E.rise - 0.2, 1.0);                         // (R55: his sight closes as she stands)
         track(t, [
           { t: 0, name: 'S', eye: DEC_EYE, at: DEC_AT, fp: PLAY_FOV, fd: PLAY_FOV },
           { t: 0.65, name: 'ravi', eye: CR_EYE, at: CR_HEAD, fp: 58, fd: 50 },
@@ -521,8 +527,10 @@
             { ry0: r2, kt: (td) => (t < E.rise ? Math.min(4.2, td) : runOf(t, E.rise + 0.6, E.rise + 3.6, 4.2, 0.2)) });
           lookNow(P, AMMA_FACE, 1, 0.9); });
         whenReady(cast.mala, (P) => { pose(P, 'lightlamp', 5.4); lookNow(P, AMMA_FACE, 1, 0.9); });
-        /* his sight shut at the start: the wave home to him */
-        visionAt(t, -10, 0.1, E.shut, 1.0);
+        /* his sight held open until she stands, as in every ending (R59, Chad, 18 Nov evening: "i think option D outcome
+           cutscene turns off spirit vision prematurely?": it closed at 0.2 s, and the thing torn from her back and the
+           light were never seen; R55: "when the auntie stands up from her wheelchair, turn off spirit vision") */
+        visionAt(t, -10, 0.1, E.rise - 0.2, 1.0);
         track(t, [
           { t: 0, name: 'S', eye: DEC_EYE, at: DEC_AT, fp: PLAY_FOV, fd: PLAY_FOV },
           { t: 1.2, name: 'pho', eye: S_EYE, at: PHO_BOW, fp: 52, fd: 48 },
@@ -614,7 +622,7 @@
         put(Q, W.x, W.z, W.ry); Q.group.visible = true; pose(Q, 'crawl', Math.max(0, c - CL.go + 1.0) * 0.6); }));
       wanderersAt(c, CL.go);
       /* his sight: still open from the ending (but D's, shut already), closing after her palms */
-      if (k !== 'D') visionAt(c, -10, 0.1, CL.shut, 1.0); else visionAt(c, 1e9);
+      visionAt(c, 1e9);                                                   // (R55: she has stood: the close in his own sight, every ending)
       /* THE LENS (18 Nov, re-staged): his teacher whole as he dedicates the merit, the last green shapes going out low
          past him; to her, risen at her chair; her steps to her altar; in on the ash between her and her daughter; her
          palms and her lamp; his sight closing on her; out to her family about her in the room's own colours; and over her

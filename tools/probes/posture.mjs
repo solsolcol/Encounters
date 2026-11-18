@@ -70,9 +70,13 @@ const res = await p.evaluate(async ({ WHO, N, TAKES, LIVE, SPAN }) => {
   /* the bind pose: every bone from the skin's own inverse binds (skeleton.pose), read, then the mixer lays the takes back */
   const sm = []; P.model.traverse(o => { if (o.isSkinnedMesh) sm.push(o); });
   if (LIVE) {
+    /* (the face's forward from the bind pose first, as the takes' reading takes it: the pose put back after) */
+    const smL = []; P.model.traverse(o => { if (o.isSkinnedMesh) smL.push(o); });
+    const keepL = []; P.model.traverse(o => { if (o.isBone) keepL.push([o, o.quaternion.clone(), o.position.clone()]); });
+    smL[0].skeleton.pose(); const bindL = read(); for (const [o, q, v] of keepL) { o.quaternion.copy(q); o.position.copy(v); }
     const rows = [];
     for (let i = 0; i < N; i++) { await new Promise(r => setTimeout(r, SPAN * 1000 / N)); const r = read();
-      rows.push({ t: +(i * SPAN / N).toFixed(1), take: P.cur, look: +r.look.toFixed(1), lean: +r.lean.toFixed(1), side: +r.side.toFixed(1), curve: +r.curve.toFixed(1), head: +r.head.toFixed(1), collarL: +r.L.el.toFixed(1), collarR: +r.R.el.toFixed(1) }); }
+      rows.push({ t: +(i * SPAN / N).toFixed(1), take: P.cur, look: +(r.look - bindL.look).toFixed(1), lean: +r.lean.toFixed(1), side: +r.side.toFixed(1), curve: +r.curve.toFixed(1), head: +r.head.toFixed(1), shrugL: +(r.L.el - bindL.L.el).toFixed(1), shrugR: +(r.R.el - bindL.R.el).toFixed(1) }); }
     return { live: rows };
   }
   const keepB = []; P.model.traverse(o => { if (o.isBone) keepB.push([o, o.quaternion.clone(), o.position.clone()]); });

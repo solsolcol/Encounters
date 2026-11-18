@@ -4783,6 +4783,10 @@ function weaponReload() {
     weaponRounds = weaponDecl.rounds | 0;
     if (weaponDecl.reload) snd(weaponDecl.reload, 0.9);
     haptic(40);
+    /* (v27.0, R63, Chad, 18 Nov evening: "when player reloads the holy water bowl, show a visual effect going or flying from
+       the water bowl towards the player to show that it successfully reloaded"): a refill that took place is told to the
+       chapter (stage.onReload), which draws what it likes; a chapter without one is as it was */
+    if (stage && typeof stage.onReload === 'function') { try { stage.onReload(); } catch (e) { console.warn('stage.onReload threw', e); } }
     weaponBusy = 'reload';
     if (weaponDecl.hands === 'own') ownAnim = { kind: 'dip', t0: clock.getElapsed(), pk: 0 };
     else if (!weaponPlay('reload')) weaponBusy = null;
@@ -7857,6 +7861,7 @@ function kitReset() {
   if (unl.id) unlockClose('force');      // v14.7: a splash never outlives the run it opened in
   if (cho.ids) chooseClose('force');     // v17.6: nor does a choice
   if (gal.open) galClose('force');       // v21.10: nor a gallery
+  if (pic.key) pictureClose('force');    // v27.0 (seam 58): nor a picture looked at
 }
 /* v11.1: HURT. A chapter holds the red damage frame on the screen and bleeds
    sanity on WALL time until the player acts (chapter 3's pressure: Chad,
@@ -8045,6 +8050,8 @@ const KIT = {
   pick: kitPick,                         // v24.0: S47 — a few plain options (a word, a colour) in the choose window
   gallery: kitGallery,                   // v21.10: THE GALLERY, the twenty-ninth seam
   galleryOpen: () => gal.open,
+  picture: kitPicture,                   // v27.0: A PICTURE, LOOKED AT, the fifty-eighth seam (whole, in the middle of the screen, Close under it)
+  pictureOpen: () => !!pic.key,
   itemWarm: id => { if (ITEM_DEFS[id]) { itemArtGet(id); ivModel(id); } },
   /* v14.7: what the worn ward holds right now (0 when none is worn) */
   wardLeft: () => wardLeft(),
@@ -9148,6 +9155,8 @@ document.addEventListener('pointerlockchange', () => {
   /* (v21.23: a lock asked for a moment before the gallery opened by itself can land after it — the cursor hidden over
      a window made to be pointed at; it is let go at once) */
   if (locked && state === 'gallery') document.exitPointerLock?.();
+  /* (v27.0, seam 58: nor over a picture looked at, which is closed by its button) */
+  if (locked && state === 'picture') document.exitPointerLock?.();
   setHint();
 });
 document.addEventListener('pointerlockerror', () => { lockBlocked = true; setHint(); });
@@ -12333,6 +12342,138 @@ addEventListener('keydown', e => {
     unlockClose(e.code === 'Escape' ? 'esc' : 'key');
   }
 });
+
+/* ── v27.0: A PICTURE, LOOKED AT — the FIFTY-EIGHTH SEAM, `kit.picture(key, opts)` ──
+   Chad, 18 Nov 2026, of episode 4 chapter 4's old photograph (R50): "When looking at the old photo, i want the old photo
+   to pop up in the middle of the screen in its full high resolution so that the player can actually see what it is, with
+   a button to close it once the player is done seeing it."
+   So a chapter may open, from play, a window holding one PICTURE (an asset key: a jpg, a png or a webp) in the middle of
+   the screen, WHOLE at its own aspect (never cropped), with Close under it, over the world dimmed. It is drawn from the
+   file's own bytes, decoded in memory as the gallery's portraits are (no blob: or data: URL, so the strict-CSP single
+   file can show it too; and through the way round a browser's dimming, PICR, as every Blob the game decodes), as large
+   as the window holds it inside its margins and never past its own pixels (one to a CSS pixel: a picture drawn bigger
+   than it is is not drawn sharper). Its canvas is drawn at the screen's own pixels and never more than the file has (on
+   a phone at three pixels a point, the file's whole width). A screen STATE of its own, `picture`: every "is it
+   play?" gate closes under it (no walking, no drain, no hotspot, no menu, no bag) and a chapter's own clock, which runs
+   in play, waits; a voice already speaking plays on, and the world is not drawn under it (WORLD COVERED, as under the
+   gallery). Close, Esc, E, Enter and Space close it, none in its first 0.6 s (the press that opened it, an E or a tap
+   whose click lands on the window, must not also close it); `onClose` is told once; the mouse is let go while it is up
+   and taken back after a click or a key (never after Esc: v14.7). It waits unseen until the picture's bytes have landed,
+   and past 0.35 s shows its frame with the loading word (v15.3), asking again every 3 s if they failed. `ar` (width over
+   height) shapes that frame before the picture lands; `name` is what a screen reader calls it. Refused (false) outside
+   play, over another window or a live minigame, or for a key the build does not carry. Only episode 4 chapter 4 calls
+   it; the fixture proves it. */
+const PIC_GUARD = 600, PIC_WAIT = 350, PIC_RETRY = 3000;
+const pic = { key: null, open: false, run: 0, t0: 0, onClose: null, ar: 0, bmp: null, drawn: 0, guarded: 0, outT: 0, waitT: 0, retryT: 0 };
+/* (what the bytes are, read from their first few: createImageBitmap is told what it decodes) */
+function picMime(b) {
+  const u = new Uint8Array(b, 0, Math.min(12, b.byteLength));
+  if (u[0] === 0x89 && u[1] === 0x50 && u[2] === 0x4E && u[3] === 0x47) return 'image/png';
+  if (u[0] === 0x52 && u[1] === 0x49 && u[2] === 0x46 && u[3] === 0x46 && u[8] === 0x57 && u[9] === 0x45 && u[10] === 0x42 && u[11] === 0x50) return 'image/webp';
+  return 'image/jpeg';
+}
+function kitPicture(key, opts = {}) {
+  if (typeof key !== 'string' || !(HOSTED ? ASSET_MAP[key] : EMBED[key])) { console.warn('kit.picture: the build carries no picture called', key); return false; }
+  const el = $('picture'), cv = $('picImg'); if (!el || !cv) return false;
+  if (pic.key || unl.id || cho.ids || gal.open || led.open || ev || state !== 'play' || fainting) return false;
+  clearTimeout(pic.outT); clearTimeout(pic.waitT); clearTimeout(pic.retryT);
+  picFree();                                   // (a picture still fading out from the last look goes now)
+  const run = ++pic.run;
+  pic.key = key; pic.open = true; pic.drawn = 0; pic.guarded = 0;
+  pic.onClose = typeof opts.onClose === 'function' ? opts.onClose : null;
+  pic.ar = +opts.ar > 0 ? +opts.ar : 0;
+  for (const k in keys) keys[k] = false;       // a held W does not walk on under it
+  state = 'picture';
+  for (const n of [el, cv]) { if (opts.name != null) n.setAttribute('aria-label', String(opts.name)); else n.removeAttribute('aria-label'); }
+  el.classList.remove('hide', 'out', 'loading'); el.classList.add('wait');
+  document.body.classList.add('pictureopen');
+  document.exitPointerLock?.();
+  picPaint();                                  // (its frame shaped by `ar` while it waits unseen)
+  pic.waitT = setTimeout(() => { if (run === pic.run && pic.open && !pic.bmp) { el.classList.remove('wait'); el.classList.add('loading'); } }, PIC_WAIT);
+  picLoad(run);
+  haptic(12);
+  pic.t0 = performance.now();                  // (the guard's clock starts after the work of opening, as the splash's does)
+  return true;
+}
+function picLoad(run) {
+  const key = pic.key;
+  assetBytes(key)
+    .then(b => createImageBitmap(new Blob([b], { type: picMime(b) })))
+    .then(bmp => {
+      if (run !== pic.run || !pic.open) { try { bmp.close(); } catch {} return; }
+      clearTimeout(pic.waitT);
+      pic.bmp = bmp;
+      $('picture')?.classList.remove('wait', 'loading');
+      picPaint();
+    })
+    .catch(err => {
+      console.warn('kit.picture: the picture did not arrive', key, err);
+      if (run !== pic.run || !pic.open) return;
+      clearTimeout(pic.retryT);
+      pic.retryT = setTimeout(() => { if (run === pic.run && pic.open && !pic.bmp) picLoad(run); }, PIC_RETRY);
+    });
+}
+/* the picture: whole, at its own aspect, as large as the window holds it (its padding, the frame's own edge and Close
+   under it taken off) and never larger than its own pixels; its canvas at the screen's own sharpness, up to the file's */
+function picPaint() {
+  const el = $('picture'), cv = $('picImg'), fr = $('picFrame'), btn = $('picClose');
+  if (!pic.key || !el || !cv || !fr) return;
+  const px = v => parseFloat(v) || 0, cs = getComputedStyle(el), fs = getComputedStyle(fr);
+  const edgeX = px(fs.paddingLeft) + px(fs.paddingRight) + px(fs.borderLeftWidth) + px(fs.borderRightWidth);
+  const edgeY = px(fs.paddingTop) + px(fs.paddingBottom) + px(fs.borderTopWidth) + px(fs.borderBottomWidth);
+  let under = 0;
+  if (btn && btn.offsetParent !== null) {      // (an emptied word on the sheet hides Close: then it takes no room)
+    const bs = getComputedStyle(btn), gap = fr.parentElement ? px(getComputedStyle(fr.parentElement).rowGap) : 0;
+    under = btn.offsetHeight + px(bs.marginTop) + px(bs.marginBottom) + gap;
+  }
+  const aw = Math.max(48, el.clientWidth - px(cs.paddingLeft) - px(cs.paddingRight) - edgeX);
+  const ah = Math.max(48, el.clientHeight - px(cs.paddingTop) - px(cs.paddingBottom) - edgeY - under);
+  const bmp = pic.bmp, iw = bmp ? bmp.width : (pic.ar || 4 / 3), ih = bmp ? bmp.height : 1;
+  const s = Math.min(aw / iw, ah / ih, bmp ? 1 : Infinity);
+  const cw = Math.max(24, Math.floor(iw * s)), ch = Math.max(24, Math.floor(ih * s));
+  cv.style.width = cw + 'px'; cv.style.height = ch + 'px';
+  /* (the screen's own pixels, and never more than the picture has) */
+  const k = bmp ? Math.max(1, Math.min(devicePixelRatio || 1, bmp.width / cw)) : 1;
+  const W = Math.max(1, Math.min(bmp ? bmp.width : Infinity, Math.round(cw * k))), H = Math.max(1, Math.min(bmp ? bmp.height : Infinity, Math.round(ch * k)));
+  if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+  const g = cv.getContext('2d'); if (!g) return;
+  if (bmp) { g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high'; g.drawImage(bmp, 0, 0, W, H); pic.drawn++; }
+  else { g.fillStyle = '#17130e'; g.fillRect(0, 0, W, H); }
+}
+function pictureClose(how) {
+  if (!pic.key) return false;
+  if (how !== 'force' && performance.now() - pic.t0 < PIC_GUARD) { pic.guarded++; return false; }
+  const el = $('picture'), cb = pic.onClose;
+  pic.key = null; pic.open = false; pic.onClose = null; pic.run++;
+  clearTimeout(pic.waitT); clearTimeout(pic.retryT); clearTimeout(pic.outT);
+  document.body.classList.remove('pictureopen');
+  if (el) {
+    if (how === 'force') { el.classList.add('hide'); picFree(); }
+    else { el.classList.add('out'); pic.outT = setTimeout(() => { el.classList.add('hide'); picFree(); }, 260); }
+  }
+  for (const k in keys) keys[k] = false;
+  if (how === 'force') return true;            // torn down with the run (kitReset): no story, no sound
+  state = 'play';
+  snd('uiconfirm', 0.45);
+  if (how !== 'esc') tryLock();                // (Esc is no gesture the browser will lock on: v14.7)
+  if (cb) { try { cb(); } catch (e) { console.warn('picture onClose failed', e); } }
+  return true;
+}
+/* (the decoded picture and the canvas's pixels let go once it has gone: a phone's memory is the world's) */
+function picFree() {
+  if (pic.bmp) { try { pic.bmp.close(); } catch {} pic.bmp = null; }
+  const cv = $('picImg'); if (cv && (cv.width || cv.height)) { cv.width = 0; cv.height = 0; }
+}
+$('picClose')?.addEventListener('click', () => pictureClose('click'));
+addEventListener('keydown', e => {
+  if (!pic.key) return;
+  if (['Enter', 'Space', 'Escape', 'KeyE', 'NumpadEnter'].includes(e.code)) {
+    e.preventDefault();
+    if (e.repeat) return;                      // an E still held from the press that opened it is not a second press
+    pictureClose(e.code === 'Escape' ? 'esc' : 'key');
+  }
+});
+addEventListener('resize', () => { if (pic.key) picPaint(); });
 
 /* ── v17.6: CHOOSE ONE — the TWENTY-THIRD SEAM, `kit.choose(ids, opts)` ──
    Chad: "the ajahn asks the player which sakyant design the player would
@@ -17729,6 +17870,8 @@ function worldCovered() {
   /* v21.10: the gallery's window and its backdrop cover the world (a frozen frame shows dimmed round the window's
      edges, which is all a reader sees of it) */
   if (gal.open) return true;
+  /* v27.0 (the fifty-eighth seam): and a picture looked at, its dimmed backdrop over the whole of it */
+  if (pic.open) return true;
   return false;
 }
 function anyVisibleMesh(o) {
@@ -18229,6 +18372,14 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                                 cracks: wardFx.cracks, breaks: wardFx.breaks,
                                 banner: !!$('wardBreak')?.classList.contains('on') }),
                  unlockState: () => ({ id: unl.id, state }),
+                 /* v27.0 (seam 58): the picture looked at, for the fixture and probes: its key, whether it is up, how long it has
+                    been up (ms), its file's own size once decoded, its canvas's pixels, how often it was drawn and how many
+                    closes its guard refused */
+                 pictureState: () => ({ key: pic.key, open: pic.open, state, drawn: pic.drawn, guarded: pic.guarded,
+                                        age: pic.key ? Math.round(performance.now() - pic.t0) : null,
+                                        nat: pic.bmp ? { w: pic.bmp.width, h: pic.bmp.height } : null,
+                                        canvas: (cv => (cv ? { w: cv.width, h: cv.height } : null))($('picImg')) }),
+                 pictureClose: how => pictureClose(how || 'click'),
                  /* v24.29: an item's close-up drawn at a fixed angle, and the close-ups' own scene, for probes only — the shine's
                     before-and-after (tools/probes/shine.mjs). ivShot answers null until the item's model has landed */
                  ivShot: (id, W, H, yawA, pitchA) => (ivRender(id, W, H, yawA, pitchA, 1)

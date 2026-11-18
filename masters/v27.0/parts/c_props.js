@@ -66,7 +66,10 @@
       ['w4coffee',     1.72, 0, 1.70, 0,                      [1.10, 0.77]],
       ['w4pilltray',   1.95, TOP.coffee, 1.70, 0.3,           null],           // her medicine tray on the coffee table
       ['w4armchair',   2.17, 0, 2.78, -Math.PI / 2,           [0.85, 1.26]],
-      ['w4standfan',   2.50, 0, 1.55, -2.4,                   [0.57, 0.45]],
+      /* (R45, Chad, 18 Nov evening: "the indian man model when standing and speaking, clips into another object": Ravi
+         stands at (2.62, 2.02) and the fan stood 0.49 m behind his left shoulder, its head at his own height, where his
+         talk's hands and sway go; it stands 0.94 m from him now, still behind him by the window, clear of the right wall) */
+      ['w4standfan',   2.45, 0, 1.10, -2.4,                   [0.57, 0.45]],
       // the TV on the left wall facing into the room, between the main door's open leaf and bedroom 3's door
       ['w4tvconsole',  ROOMS.living.x0 + 0.25 + 0.005, 0, 1.92, Math.PI / 2, [1.50, 0.50]],
       ['w4clock',      ROOMS.living.x0 + 0.02, 2.05, 1.92, Math.PI / 2, null],

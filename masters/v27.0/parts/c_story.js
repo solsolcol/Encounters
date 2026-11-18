@@ -143,6 +143,20 @@
       if (kit && kit.captions) kit.captions([{ at: 0, end: 7.5, text: W.letter, sub: W.letterSub }]);
       return true;
     }
+    /* the old photograph, looked at (R50, Chad, 18 Nov: "When looking at the old photo, i want the old photo to pop up in
+       the middle of the screen in its full high resolution so that the player can actually see what it is, with a button
+       to close it once the player is done seeing it."): the engine's window (kit.picture, the fifty-eighth seam) holds the
+       photograph whole, drawn from its own file. Mala's first line ("That's Amma...") is begun as it opens and plays on
+       under it; the window stands the chapter's clock still, so her second follows once he has closed it and her first is
+       done. The count, the receipt and the order come after her lines, as they always did. Refused (no window), her two
+       lines are said as they always were. `ar`: its shape until its bytes land (the file's own 1024 by 772) */
+    function lookOld() {
+      if (!learn('o', [['ml4h2', cast.mala], ['ml4h3', cast.mala]])) return false;
+      runQueue();
+      /* (R50: the picture at its master's own size, 1168 x 880, where the frame on the cabinet draws the 1024 copy) */
+      if (kit && kit.picture) kit.picture('w4t_oldphotofull', { ar: 1168 / 880 });
+      return true;
+    }
     /* Amma, to him, quietly: her head turns to him, not to her teacher */
     function ammaSpeaks() {
       if (play.busy || play.spoke || play.learned.size < 5) return false;
@@ -436,6 +450,7 @@
        (blessStage), put back on the floor for the history and the sight (storyReset); the order's mark, the press on the
        small bowl and the dip's reach follow them, and the large bowl's column on the floor goes up with it */
     const DIP_AT = { x: BOWL.x, z: BOWL.z }, SMALLBOWL_FLOOR = Object.assign({}, SMALLBOWL_AT);
+    let waterLast = null;                                                // (R58: the water offered only in the blessing, once taken)
     const BOWLS_UP = { x: STOOL.x, z: STOOL.z, y: STOOL_TOP, small: { dx: 0.03, dz: -0.035, y: 0.097 } };
     let bowlsUp = false;
     function bowlsOnStool(up) {
@@ -800,11 +815,29 @@
       if (sent) fx('u4release', Math.min(0.95, 0.7 + 0.08 * (sent - 1)), panOf(reached[0].P.group.position));
     }
     /* the water on one of them: sent back (released), or staggered back (the large one takes three) */
+    /* (R60, Chad, 18 Nov evening: "when the holy water hits the green spirit, can you add an effect to show that they got
+       hit by it? For example, flashing the silohuette of the green spirits brighter for a short moment"): the whole
+       silhouette burns near white for a moment and settles back to its green over a third of a second (it was its own
+       green filled to 0.9 for a quarter second, and read as nothing on a phone), the one released as it begins to go,
+       the large one each of the three times */
+    const HIT_WHITE = new THREE.Color(0xe8ffe0), _hitC = new THREE.Color();
+    function hitFlash(S) {
+      const P = S.P; if (!P.fx) return;
+      const look = P === spirits.large ? SPIRIT.large : SPIRIT.wander, base = new THREE.Color(look.color), run = play.run, t0 = wallNow();
+      P.hitT0 = t0; P.fx.set('uColor', HIT_WHITE);
+      /* (one released goes out by its own fill, from bright: only its colour flashes; one staggered is filled bright too) */
+      const fill = () => S.state !== 'leave' && S.state !== 'gone';
+      if (fill()) P.fx.set('uFill', 2.2);
+      const step = () => { if (!live(run) || !P.fx || P.hitT0 !== t0) return; const u = Math.min(1, (wallNow() - t0) / 0.35);
+        P.fx.set('uColor', _hitC.copy(HIT_WHITE).lerp(base, u));
+        if (fill()) P.fx.set('uFill', 2.2 + (look.fill - 2.2) * u * u);
+        if (u < 1) requestAnimationFrame(step); };
+      requestAnimationFrame(step);
+    }
     function strike(S) {
       const P = S.P; S.hits++;
-      if (P.fx) { P.fx.set('uFill', 0.9); const run = play.run; after(0.25, () => { if (live(run) && P.fx && S.state !== 'leave') P.fx.set('uFill', P === spirits.large ? SPIRIT.large.fill : SPIRIT.wander.fill); }); }
-      if (S.hits >= S.need) { S.state = 'leave'; S.leave = 0; return true; }
-      S.back = 0.8; S.state = 'come'; voxPlay(P === spirits.large ? 'u4svL' : 'u4sv5', P.group.position, 0.8); return false;
+      if (S.hits >= S.need) { S.state = 'leave'; S.leave = 0; hitFlash(S); return true; }
+      S.back = 0.8; S.state = 'come'; hitFlash(S); voxPlay(P === spirits.large ? 'u4svL' : 'u4sv5', P.group.position, 0.8); return false;
     }
     function goldFlick() {
       const F = play.fight; let n = 0;
@@ -1175,7 +1208,7 @@
       { id: 'folder', pos: { x: FOLDER_AT.x, y: FOLDER_AT.y, z: FOLDER_AT.z }, radius: 1.8, prompt: W.hotFolder, markY: 0.25, hits: markHit(() => FOLDER_AT, 0.1),
         enabled: () => phase === 'history' && !play.busy && !play.learned.has('f'), onInteract() { return readLetters(); } },
       { id: 'old', pos: { x: OLDPHOTO_AT.x, y: OLDPHOTO_AT.y, z: OLDPHOTO_AT.z }, radius: 1.9, prompt: W.hotOld, markY: 0.3, hits: markHit(() => OLDPHOTO_AT, 0.1),
-        enabled: () => phase === 'history' && !play.busy && !play.learned.has('o'), onInteract() { return learn('o', [['ml4h2', cast.mala], ['ml4h3', cast.mala]]); } },
+        enabled: () => phase === 'history' && !play.busy && !play.learned.has('o'), onInteract() { return lookOld(); } },
       { id: 'appa', pos: { x: APPA_PHOTO_AT.x, y: APPA_PHOTO_AT.y, z: APPA_PHOTO_AT.z }, radius: 1.9, prompt: W.hotAppa, markY: 0.3, hits: markHit(() => APPA_PHOTO_AT, 0.1),
         enabled: () => phase === 'history' && !play.busy && !play.learned.has('a'), onInteract() { return learn('a', [['q4h2', null]]); } },
       hsAmma, hsTell, hsLook1, hsLook2, hsLook3,
@@ -1194,6 +1227,45 @@
        saying why (kit.weaponBlock, derived on the frame: v11.6) */
     function shootables() { const out = []; for (const P of [spirits.appa, spirits.large].concat(spirits.wander)) if (P.hit && P.hit.visible) out.push(P.hit); return out; }
     function reloadRefusal() { return Math.hypot(yaw.position.x - DIP_AT.x, yaw.position.z - DIP_AT.z) < 1.5 ? null : W.dipHere; }
+    /* THE REFILL SEEN (R63, Chad, 18 Nov evening: "when player reloads the holy water bowl, show a visual effect going or
+       flying from the water bowl towards the player to show that it successfully reloaded. This is for visual feedback
+       purpose."): at each dip that took (stage.onReload), eighteen motes of the water's light rise out of his teacher's
+       bowl and fly, each on its own arc, to just under the middle of his sight, shrinking and fading as they reach him
+       (half a second; gold in his gold, the water's pale blue otherwise). On the wall clock, so a slow phone sees all of it;
+       drawn in the world and through the vision alike */
+    const DIPFX = { n: 18, secs: [0.42, 0.62], stagger: 0.012, arc: 0.28, size: [0.055, 0.018] };
+    const dipFx = { sprites: null, motes: [], t0: 0 };
+    function dipTex() {
+      const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
+      const r = g.createRadialGradient(32, 32, 0, 32, 32, 32); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(0.35, 'rgba(255,255,255,0.55)'); r.addColorStop(1, 'rgba(255,255,255,0)');
+      g.fillStyle = r; g.fillRect(0, 0, 64, 64); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+    }
+    function dipBurst() {
+      if (!dipFx.sprites) { const tex = dipTex(); owned.push(tex); dipFx.sprites = [];
+        for (let i = 0; i < DIPFX.n; i++) { const m = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, fog: false });
+          mats.push(m); const sp = new THREE.Sprite(m); sp.visible = false; sp.renderOrder = 30; if (ctx.visionLayer != null) sp.layers.enable(ctx.visionLayer); world.add(sp); dipFx.sprites.push(sp); } }
+      const F = play.fight, gold = !!(F && F.on && F.call === 'gold'), col = gold ? 0xffd27a : 0xbfe8ff, now = wallNow();
+      const y0 = (bowlsUp ? BOWLS_UP.y : 0) + 0.15;
+      dipFx.motes = dipFx.sprites.map((sp, i) => { const a = i * 2.39996, r = 0.03 + 0.09 * ((i * 0.618) % 1);
+        sp.material.color.set(col);
+        return { sp, t0: now + i * DIPFX.stagger, T: DIPFX.secs[0] + (DIPFX.secs[1] - DIPFX.secs[0]) * ((i * 0.37) % 1),
+          a: new THREE.Vector3(DIP_AT.x + Math.cos(a) * r, y0, DIP_AT.z + Math.sin(a) * r), jx: (((i * 0.71) % 1) - 0.5) * 0.12, jy: (((i * 0.43) % 1) - 0.5) * 0.06 }; });
+    }
+    const _dpE = new THREE.Vector3(), _dpF = new THREE.Vector3(), _dpU = new THREE.Vector3(), _dpR = new THREE.Vector3(), _dpP = new THREE.Vector3();
+    function dipFxTick() {
+      if (!dipFx.motes.length) return;
+      const now = wallNow(); let live = 0;
+      camera.updateMatrixWorld(); camera.getWorldPosition(_dpE); camera.getWorldDirection(_dpF);
+      _dpR.crossVectors(_dpF, THREE.Object3D.DEFAULT_UP).normalize(); _dpU.crossVectors(_dpR, _dpF).normalize();
+      for (const M of dipFx.motes) { const u = (now - M.t0) / M.T;
+        if (u < 0 || u >= 1) { M.sp.visible = false; if (u < 0) live++; continue; } live++;
+        const e = u * u * (3 - 2 * u);
+        _dpP.copy(_dpE).addScaledVector(_dpF, 0.42).addScaledVector(_dpU, -0.13 + M.jy).addScaledVector(_dpR, M.jx);   // (just under the middle of his sight)
+        M.sp.position.copy(M.a).lerp(_dpP, e); M.sp.position.y += DIPFX.arc * 4 * e * (1 - e);
+        const s = DIPFX.size[0] + (DIPFX.size[1] - DIPFX.size[0]) * e; M.sp.scale.setScalar(s);
+        M.sp.material.opacity = Math.min(1, u * 6) * (1 - Math.max(0, (u - 0.7) / 0.3)); M.sp.visible = true; }
+      if (!live) dipFx.motes = [];
+    }
     const _ray = new THREE.Raycaster(), _ab = new THREE.Box3(), _hit = new THREE.Vector3();
     let altarBlock = false;
     function altarTick() {
@@ -1225,6 +1297,13 @@
     function storyTick(wdt, t) {
       spotsTick(); hitsTick(); scareTick(); doorTick(wdt); heatTick(wdt); altarTick();   // (the fan, the lamp and the glass: updateNotes, film or play; his hand on her head: updateNotes, play and the decision)
       fightTick(wdt);
+      dipFxTick();                                                        // (R63: the refill seen)
+      /* (R58, Chad, 18 Nov evening: "why reloading and continuing game allows me to flick water even before that part of
+         the gameplay begins"): the bag keeps the water from a run that reached the blessing (a Continue, a loss's start
+         again), and the engine has the water out whenever the bowl is in his hand. So it is offered only in the blessing,
+         once he has taken it: derived on the frame (v11.1), written only when it changes, asked again after a reset */
+      const waterUp = phase === 'bless' && !!play.water;
+      if (kit && kit.weaponOut && waterLast !== waterUp) { waterLast = waterUp; kit.weaponOut(waterUp ? null : false); }
       if (play.loseWait && getState() === 'play' && kit && kit.lose && kit.lose({ film: 'lost', say: W.lostSay, teaching: W.lostTeach })) play.loseWait = false;
     }
     function applyPhase(saved) {
@@ -1243,7 +1322,7 @@
       play.fight = null; play.appaGone = false; play.nerveOut = false; play.heat = 0; play.heatStep = 0; play.closeHold = 0; play.breathSaid = -99; play.loseWait = false;
       play.fanK = 1; play.fanTo = 1; play.scareSeed = SCARE_SEED; play.scareAt = 0; play.scared = new Set(); play.doorTo = -0.12; play.doorK = -0.12;
       play.fogged = false; play.fogAt = 0; fogK = 0; fogTo = 0; lampK = 0; lampTo = 0; crownK = 0; crownTo = 0; oppLooked = ''; wanderNext = 2;
-      decOpen = false; altarBlock = false; bowlOnFloor.visible = true; chantNow = null; bowlsOnStool(false);
+      decOpen = false; altarBlock = false; bowlOnFloor.visible = true; chantNow = null; bowlsOnStool(false); waterLast = null;
       DEC.on = false; DEC.p1 = null; DEC.at = null; DEC.eye = null;
       for (const P of spirits.wander.concat([spirits.large, spirits.appa, spirits.oppress])) { P.gone = false; P.alpha = 1; }
       if (kit) { kit.bar(null); if (kit.weaponBlock) kit.weaponBlock(null); if (kit.visionUrge) kit.visionUrge(false);

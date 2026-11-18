@@ -2466,6 +2466,34 @@ body.hasTorch.unlockopen .torchBtn{display:none}
   transition:background .18s,transform .18s var(--ease);animation:unUp .5s var(--ease) .62s backwards}
 #unClose:hover,#unClose:focus-visible{background:var(--sodium);transform:translateY(-2px);outline:none}
 
+/* ── v27.0: A PICTURE, LOOKED AT (kit.picture, the fifty-eighth seam) ────
+   No gold and no words: the picture itself, whole, in the middle of a dimmed screen, a print's pale edge round it, and
+   Close under it. It waits unseen until its picture has landed (.wait), then comes up in a moment; past a moment it shows
+   its frame with the loading word (.loading). The engine sizes it (picPaint), reading this padding, the frame's edge and
+   the gap and the button under it, so a change here is measured there */
+#picture{align-items:center;justify-content:center;pointer-events:auto;z-index:12;overflow:hidden;
+  padding:max(14px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));
+  background:radial-gradient(ellipse at 50% 46%,rgba(26,20,13,.84) 0%,rgba(8,8,10,.91) 62%,rgba(3,4,7,.95) 100%);
+  backdrop-filter:blur(4px);animation:unFade .3s var(--ease)}
+#picture.out{opacity:0;transition:opacity .22s linear;pointer-events:none}
+.picBox{display:flex;flex-direction:column;align-items:center;gap:14px;
+  transition:opacity .26s var(--ease),transform .32s cubic-bezier(.2,1.25,.4,1)}
+#picture.wait .picBox{opacity:0;transform:scale(.94);pointer-events:none}
+.picFrame{position:relative;padding:4px;background:#ebe2cd;
+  box-shadow:0 0 0 1px rgba(0,0,0,.5),0 18px 54px rgba(0,0,0,.8),0 0 80px rgba(255,212,140,.1)}
+#picImg{display:block}
+.picWait{display:none;position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;
+  font-family:var(--ui);font-size:.95rem;letter-spacing:.08em;color:#cfc6b4}
+#picture.loading .picWait{display:block}
+#picClose{margin:0;font-family:var(--ui);font-size:1.02rem;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--void);background:var(--bone);border:0;padding:14px 48px;cursor:pointer;
+  box-shadow:0 0 0 1px rgba(255,179,103,.45),0 10px 30px rgba(0,0,0,.6);transition:background .18s,transform .18s var(--ease)}
+#picClose:hover,#picClose:focus-visible{background:var(--sodium);transform:translateY(-2px);outline:none}
+body.pictureopen .soundBtn,body.pictureopen #volWrap{display:none}
+body.hasTorch.pictureopen .torchBtn{display:none}
+body.hasVision.pictureopen .visionBtn{display:none}
+@media (prefers-reduced-motion:reduce){#picture{animation:none}.picBox{transition:none}}
+
 /* ── v17.6: CHOOSE ONE (kit.choose) ──────────────────────────────────────
    A framed window in the middle of the screen over a dimmed world: a label,
    the chapter's question, one card per item side by side (stacked on a
@@ -3986,6 +4014,18 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
     <h3 id="unName"></h3>
     <p class="unSub" data-t="unlock.sub">Added to your bag</p>
     <button id="unClose" type="button" data-t="unlock.close">Close</button>
+  </div>
+</div>
+
+<!-- v27.0 (seam 58): A PICTURE, LOOKED AT (kit.picture) — the picture whole in the middle of the screen, drawn by the
+     engine into #picImg from its own bytes, and Close under it; the loading word only while it is late -->
+<div id="picture" class="layer hide" role="dialog" aria-modal="true">
+  <div class="picBox">
+    <div class="picFrame" id="picFrame">
+      <canvas id="picImg" role="img"></canvas>
+      <span class="picWait" data-t="chapter.loading">Loading…</span>
+    </div>
+    <button id="picClose" type="button" data-t="picture.close">Close</button>
   </div>
 </div>
 

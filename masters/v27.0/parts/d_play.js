@@ -149,7 +149,7 @@
       hotspots,
       /* the fiftieth and fifty-first seams: his sight opened or shut; what the water may reach, what it reached, and
          where the bowl is filled again */
-      onVision, shootables, onShot, reloadRefusal,
+      onVision, shootables, onShot, reloadRefusal, onReload: dipBurst,
       films: filmsApi,                                                          // the films' pictures (c_ufilm.js), for the scenes
       stepSound: stepNext,                                                      // his bare feet on her tiles (c_tsound.js)
       amb: () => ({ n: ambN, last: ambLast, next: +ambAt.toFixed(2), beds: Object.assign({}, bedMix) }),

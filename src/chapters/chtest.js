@@ -398,6 +398,18 @@
       { id: 'clue', pos: { x: 10.5, y: 1.6, z: 0 }, radius: 16, aim: 0.25, pressAim: true, mark: false, prompt: 'Look closer', once: true, markFar: 16,
         enabled() { return !!this.armed; },
         onInteract() { if (kit) kit.conduct({ note: 'You found the clue.' }); return true; } },
+      /* v27.0: A PICTURE, LOOKED AT (kit.picture, the fifty-eighth seam): pressed like the spots above, it opens a picture
+         whole in the middle of the screen; play waits under it, and the chapter is told once when it is closed (`seen`).
+         The fixture carries no picture of its own (it loads no assets, which is part of what it proves), so the harness
+         names one when it wakes the spot: `armed` is an asset key. Episode 4 chapter 4's old photograph is this. */
+      { id: 'photo', pos: { x: 6, y: 1.6, z: -4 }, radius: 16, aim: 0.25, pressAim: true, prompt: 'Look at the photograph', once: true, markFar: 16,
+        seen: 0,
+        enabled() { return !!this.armed; },
+        onInteract() {
+          if (!kit || !kit.picture) return false;
+          const h = this;
+          return kit.picture(this.armed, { ar: 4 / 3, onClose: () => { h.seen++; } });
+        } },
       /* v14.7: a hotspot answered by a TAP ON THE THING — `hits(x, y)`,
          reached through the engine's hotspotTap from a touch or an unlocked
          click — whose press hands over an item and opens the ITEM UNLOCKED

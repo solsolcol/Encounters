@@ -209,6 +209,9 @@ while (Date.now() - T0 < TMAX) {
   if (I.st === 'unlock') { await wait(1500); await shot('unlock'); const cb = await p.evaluate(() => { const b = [...document.querySelectorAll('#unlock button')].find(x => x.offsetParent);
       if (!b) return null; const r = b.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
     if (cb) { await tap(cb.x, cb.y); log('  the splash closed'); } await wait(1200); continue; }
+  /* (R50: the old photograph's window, closed by its own button as a finger closes it) */
+  if (I.st === 'picture') { await p.waitForFunction(() => (window.__enc.pictureState().age || 0) > 1500 && window.__enc.pictureState().drawn > 0, null, { timeout: 60000 }).catch(() => {});
+    await shot('picture'); const cb = await box('#picClose'); if (cb) { await tap(cb.x, cb.y); log('  the picture closed'); } await wait(1200); continue; }
   if (I.st === 'cine') {
     if (!films.length || films[films.length - 1].k !== (decided ? 'ending' : I.phase || 'opening') + ':' + I.dur) films.push({ k: (decided ? 'ending' : I.phase || 'opening') + ':' + I.dur, at: Date.now() });
     if (!WATCH && !decided && I.skip) { const sk = await box('#cineSkip'); if (sk) { await tap(sk.x, sk.y); skips.push(`${I.phase || 'opening'}@${I.cine}`); log('  Skip tapped at', I.cine); await wait(1500); continue; } }

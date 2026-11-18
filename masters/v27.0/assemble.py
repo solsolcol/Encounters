@@ -33,6 +33,14 @@ EDITS = [
     ("function put(P, x, z, ry, y = hallGround(x, z))", "function put(P, x, z, ry, y = flatGround(x, z))"),
     # this chapter's painted surfaces from a picture are keyed w4t_ (none yet)
     ("const key = 'w3t_' + name;", "const key = 'w4t_' + name;"),
+    # R42 (18 Nov): a body sat or stood up straight (o.upright, c_scast.js uprightInit/uprightLay): made with the body,
+    # laid after the head's damping and before the shoulders in both a film's pose and play's frame, taken off last, and
+    # laid for restHands' own measure of the arms
+    ("if (o.shoulders !== null) shouldersInit(P);", "if (o.shoulders !== null) shouldersInit(P);\n        if (o.upright) uprightInit(P);"),
+    ("if (P.hd) headDampLay(P);\n      if (P.shd) shouldersLay(P);", "if (P.hd) headDampLay(P);\n      if (P.upr) uprightLay(P);\n      if (P.shd) shouldersLay(P);"),
+    ("if (P.hd) headDampLay(P);\n        if (P.shd) shouldersLay(P);", "if (P.hd) headDampLay(P);\n        if (P.upr) uprightLay(P);\n        if (P.shd) shouldersLay(P);"),
+    ("R.up.quaternion.copy(R.sup); } SH.on = false; } }", "R.up.quaternion.copy(R.sup); } SH.on = false; }\n      const UP = P.upr; if (UP && UP.on) { for (const R of UP.B) R.b.quaternion.copy(R.sv); UP.on = false; } }"),
+    ("      armsBack(P); P.group.updateWorldMatrix(true, false); P.group.updateMatrixWorld(true);", "      armsBack(P); P.group.updateWorldMatrix(true, false); P.group.updateMatrixWorld(true);\n      if (P.upr) { uprightLay(P); P.group.updateMatrixWorld(true); }"),
 ]
 
 

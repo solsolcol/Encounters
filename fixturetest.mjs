@@ -741,6 +741,61 @@ K.stakesWave = await p.evaluate(async () => {
   return off0 && ok && going && ended && stopped;
 }).catch(e => { console.log('stakesWave threw', e.message); return false; });
 await settle();
+/* v27.0 (seam 58, Chad 18 Nov, R50: "When looking at the old photo, i want the old photo to pop up in the middle of the
+   screen in its full high resolution so that the player can actually see what it is, with a button to close it once the
+   player is done seeing it."): A PICTURE, LOOKED AT. A picture the build does not carry is refused. The fixture's own
+   spot, woken with a picture's key and pressed by a real E, opens kit.picture: a state of its own, nothing opening over it
+   (not a second picture, not a splash), the world not drawn under it, and the very E that opened it refused by its guard;
+   the picture drawn WHOLE at its own aspect from its own bytes (an episode-4 photograph, on the hosted build the suite
+   drives), inside the window and centred, Close under it, its canvas at the screen's pixels and never past the file's own;
+   past the guard a real click on Close shuts it, the chapter is told once, play and the world's drawing come back, the
+   spot is retired, and the picture and its pixels are let go. Opened again from the kit, Esc shuts it */
+await lbl('picture');
+const picFrom = await p.evaluate(() => { const e = window.__enc;
+  return { x: e.yaw.position.x, y: e.yaw.position.y, z: e.yaw.position.z, ry: e.yaw.rotation.y, px: e.pitch.rotation.x, cov: e.worldCovered() }; });
+K.pictureRefusesUnknown = await p.evaluate(() => { const E = window.__enc;
+  return E.getState() === 'play' && E.kit.picture('no_such_picture') === false && E.kit.pictureOpen() === false && E.getState() === 'play'; });
+await p.evaluate(() => { const h = window.__enc.stage.hotspots.find(x => x.id === 'photo'); h.armed = 'w4t_oldphoto'; });
+await aimFrom9(6, -4);
+await until(() => window.__enc.kitDebug().hotspot === 'photo', 20000).catch(() => {});
+K.pictureOffered = (await spotNow()) === 'photo';
+await p.keyboard.press('KeyE');
+K.pictureOpens = await until(() => window.__enc.getState() === 'picture', 20000).then(() => true, () => false)
+  && await p.evaluate(() => { const E = window.__enc, el = document.getElementById('picture'), s = E.pictureState();
+    return s.key === 'w4t_oldphoto' && s.open && E.kit.pictureOpen() === true && !el.classList.contains('hide')
+      && document.body.classList.contains('pictureopen') && E.worldCovered() === true
+      && E.kit.picture('w4t_oldphoto') === false && E.kit.unlock('amulet') === false && E.getState() === 'picture'; });
+/* (the E that opened it reached the window's own keys as well, and its guard refused it: still open) */
+K.pictureGuards = await p.evaluate(() => window.__enc.pictureState().guarded >= 1 && window.__enc.getState() === 'picture');
+const picLook = await until(() => { const s = window.__enc.pictureState(), bx = document.querySelector('#picture .picBox');
+    return s.drawn > 0 && !document.getElementById('picture').classList.contains('wait') && bx.getAnimations().every(a => a.playState === 'finished'); }, 30000)
+  .then(() => p.evaluate(() => {
+    const s = window.__enc.pictureState(), cv = document.getElementById('picImg'), r = cv.getBoundingClientRect(), b = document.getElementById('picClose').getBoundingClientRect();
+    const d = cv.getContext('2d').getImageData(cv.width >> 1, cv.height >> 1, 1, 1).data;
+    return { s, r: { l: r.left, t: r.top, w: r.width, h: r.height }, b: { t: b.top, bt: b.bottom, l: b.left, rt: b.right }, a: d[3], vw: innerWidth, vh: innerHeight };
+  }), () => null);
+K.pictureWhole = !!picLook && !!picLook.s.nat && (() => { const { s, r, b, a, vw, vh } = picLook;
+  return Math.abs(r.w / r.h - s.nat.w / s.nat.h) < 0.01                                                // whole, at its own aspect
+    && r.l >= 0 && r.t >= 0 && r.l + r.w <= vw && r.t + r.h <= vh && Math.abs(r.l + r.w / 2 - vw / 2) < 2   // inside the window, centred
+    && b.t >= r.t + r.h && b.bt <= vh && b.l >= 0 && b.rt <= vw                                       // Close under it, on the screen
+    && s.canvas.w <= s.nat.w && s.canvas.h <= s.nat.h && r.w <= s.nat.w + 0.5 && s.canvas.w >= Math.round(r.w) - 1   // its own pixels at most; the screen's
+    && a === 255; })();
+if (!K.pictureWhole) console.log('picture', JSON.stringify(picLook));
+await until(() => (window.__enc.pictureState().age || 0) > 700, 20000).catch(() => {});   // past the guard, certainly
+await p.click('#picClose', { force: true }).catch(err => console.log('picClose click failed:', err.message.split('\n')[0]));
+K.pictureClosesOnButton = await until(() => window.__enc.getState() === 'play' && window.__enc.pictureState().key === null, 20000).then(() => true, () => false)
+  && await p.evaluate((cov) => { const E = window.__enc, h = E.stage.hotspots.find(x => x.id === 'photo');
+    return h.seen === 1 && h.done === true && E.kit.pictureOpen() === false && !document.body.classList.contains('pictureopen') && E.worldCovered() === cov; }, picFrom.cov);
+K.pictureLetsGo = await until(() => document.getElementById('picture').classList.contains('hide'), 20000).then(() => true, () => false)
+  && await p.evaluate(() => { const s = window.__enc.pictureState(); return s.nat === null && s.canvas.w === 0 && s.canvas.h === 0; });
+const picEsc = await p.evaluate(() => { window.__picTold = 0; return window.__enc.kit.picture('w4t_oldphoto', { onClose: () => { window.__picTold++; } }); });
+await until(() => (window.__enc.pictureState().age || 0) > 700, 20000).catch(() => {});
+await p.keyboard.press('Escape');
+K.pictureEsc = picEsc && await until(() => window.__enc.getState() === 'play' && window.__picTold === 1, 20000).then(() => true, () => false);
+/* (whatever happened above, the window is not left up over the checks that follow, and he stands where he stood) */
+await p.evaluate((f) => { const e = window.__enc; if (e.kit.pictureOpen()) e.pictureClose('click');
+  e.yaw.position.set(f.x, f.y, f.z); e.yaw.rotation.y = f.ry; e.pitch.rotation.x = f.px; }, picFrom);
+await settle();
 
 /* v22.0: THE COLD (the thirty-third, -fourth and -fifth seams) — kit.chill shows the edge layer with a blur and
    puts a filter on the canvas, and at 0 takes both away entirely; kit.pulse beats on the wall clock at the rate

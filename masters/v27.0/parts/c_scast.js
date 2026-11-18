@@ -9,6 +9,49 @@
        of them is in the world.
        Every place is a number the plan or a measure gave (the tracker's log, 18 Nov): the wheelchair's seat 0.44 m, its
        front edge 0.28 ahead of its middle, its footrest 0.10 up from 0.35 to 0.50 ahead; the stool's top 0.445. */
+    /* A BODY SAT OR STOOD UP STRAIGHT (o.upright; R42, Chad, 18 Nov 2026: "From the very start of the intro cutscene to the
+       gameplay and to the ending cutscene, grandmaster pho has some animations and poses that look unnatural and overly
+       hunched with shoulders tightened upwards. Fix it so that he looks more natural."). MEASURED first (tools/probes/
+       posture.mjs, on his own body in the takes this chapter has him wear): seated at rest, the first moment of his rise
+       from a seat (his hands on his knees) leans his trunk 17.7 degrees forward of the vertical with his neck 27.6 forward,
+       the stoop of a man about to push himself up, held as if it were his sitting; his seated talk lifts both collar bones
+       25 to 28 degrees over his rest (7.8 and 8.4 cm). A man sitting upright on a stool with his hands on his knees holds
+       his trunk within ten degrees of the vertical. So while a take named in o.upright is worn, its trunk is turned back
+       about the body's own left-right line by that take's `trunk` degrees (shared out over the three spine bones, so the
+       back stays a curve) and its neck by its `head` degrees, weighted by the take's weight (a take fading in or out
+       takes its share): a CONSTANT turn per take, so every breath and gesture of the take moves as it did about the new
+       stance. Laid after the mixer and the head's damping, before the shoulders and the hands (a hand laid on a knee
+       reaches from the shoulder as it now stands: restHands lays it after), taken off by armsBack() before the mixer runs
+       again (v11.5), and laid for restHands' own measure of the arms (assemble.py) */
+    const _upA = new THREE.Vector3(), _upF = new THREE.Vector3(), _upQ = new THREE.Quaternion(), _upQp = new THREE.Quaternion(), _upV = new THREE.Vector3();
+    /* (`hips`: the pelvis turned back about its own joint as a man sits up on his sit bones, each thigh given back the turn
+       so his legs lie where they lay (the bow's own way, c_story.js); the whole trunk goes with it as one, so a lean of
+       the hips is a lean of the trunk degree for degree. `trunk`: the spine's three bones, shared out. `head`: the neck) */
+    function uprightInit(P) {
+      const find = (re) => { for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
+      const B = [find(/Spine$/), find(/Spine1$/), find(/Spine2$/)], neck = find(/Neck$/), hips = find(/Hips$/), legs = [find(/LeftUpLeg$/), find(/RightUpLeg$/)];
+      if (B.some(b => !b) || !neck || !hips || legs.some(b => !b)) { console.warn(P.key + ': o.upright asked, and its spine is not all there'); return; }
+      P.upr = { hips, legs, spine: B, neck, B: [hips].concat(legs, B, [neck]).map(b => ({ b, sv: new THREE.Quaternion() })), take: Object.assign({}, P.o.upright), on: false };
+    }
+    const _upW0 = new THREE.Quaternion(), _upW1 = new THREE.Quaternion(), _upD = new THREE.Quaternion();
+    function uprightLay(P) {
+      const U = P.upr; if (!U) return;
+      let tr = 0, hd = 0, hp = 0;
+      for (const n in U.take) { const w = P.w[n] || 0; if (w > 0) { tr += w * (U.take[n].trunk || 0); hd += w * (U.take[n].head || 0); hp += w * (U.take[n].hips || 0); } }
+      if (Math.abs(tr) < 1e-3 && Math.abs(hd) < 1e-3 && Math.abs(hp) < 1e-3) return;
+      for (const R of U.B) R.sv.copy(R.b.quaternion);
+      U.on = true;
+      P.group.updateWorldMatrix(true, false); P.group.getWorldQuaternion(_upQ);
+      _upF.set(0, 0, 1).applyQuaternion(_upQ); _upF.y = 0; _upF.normalize();
+      _upA.set(0, 1, 0).cross(_upF).normalize();                       // (a turn about it by a positive angle leans the body forward)
+      const turn = (b, deg) => { b.parent.updateWorldMatrix(true, false); b.parent.getWorldQuaternion(_upQp);
+        _upV.copy(_upA).applyQuaternion(_upQp.invert()); _upQ.setFromAxisAngle(_upV, deg * Math.PI / 180); b.quaternion.premultiply(_upQ); b.updateWorldMatrix(false, true); };
+      if (Math.abs(hp) >= 1e-3) { U.hips.getWorldQuaternion(_upW0); turn(U.hips, hp); U.hips.getWorldQuaternion(_upW1);
+        _upD.copy(_upW1).invert().multiply(_upW0);                      // (each thigh's turn given back: new hips^-1 * old hips)
+        for (const L of U.legs) { L.quaternion.premultiply(_upD); L.updateWorldMatrix(false, true); } }
+      if (Math.abs(tr) >= 1e-3) for (const b of U.spine) turn(b, tr / 3);
+      if (Math.abs(hd) >= 1e-3) turn(U.neck, hd);
+    }
     const cast = {};
     const WHEEL = { seat: 0.44, front: 0.28, foot: 0.10 };
     const STOOL_TOP = 0.445;
@@ -16,6 +59,14 @@
        each with its reason there): the bottom on the seat, each leg solved down to the floor, the feet laid flat */
     const MASTER_DOWN = { hipOver: 0.11, sink: 0.01, sole: GROUND_SOLE, edge: -9, flat: true };
     const PHO_BREATH = 6;
+    /* (R42: his seated rest sat up straight, his pelvis turned back 11 of its 17.7 degrees (to 6.7, a man sitting upright:
+       turned at the spine instead, by the same 11 shared out, the trunk came back only 4, measured), his neck as the take
+       holds it on the straightened trunk (27.6 less 11: 16.6 forward, his face level); his hands laid on
+       his thighs where his arms reach them with the elbow bent (restHands 'lap'), since the trunk's turn carries his
+       shoulders back off his knees; his seated talk's shrug let down whole) */
+    const PHO_SIT_UPRIGHT = { Sit_to_Stand_Transition_M: { hips: -11, trunk: 0, head: 0 } };
+    const PHO_SIT_SHOULDERS = { Sitting_Answering_Questions: 1 };
+    const PHO_SIT_HANDS = { how: 'lap' };
     const PHO_TALK_HEAD = { Sitting_Answering_Questions: [0.3, 'Sit_to_Stand_Transition_M'] };
     /* (standing, his talk's head held as his seated one is: Chad's word on chapter 3's, "greatly restrained", v26.3; its
        head swings 9 cm side to side in its own file: tools/probes/takepath.mjs) */
@@ -79,7 +130,8 @@
       cast.pho = mkPerson('pho', AT.phoS.x, AT.phoS.z, phoRy, { take: 'Sit_to_Stand_Transition_M', centre: true,
         win: { Sit_to_Stand_Transition_M: [0.02, 0.3, PHO_BREATH] },
         seat: { y: STOOL_TOP, takes: /^Sit/, down: Object.assign({}, MASTER_DOWN, { knees: 'keep', tuck: true }), rise: 'Sit_to_Stand_Transition_M' },
-        skins: false, look: lookD, blobW: 0.9, blobD: 0.9, talk: 'Sitting_Answering_Questions', headDamp: PHO_TALK_HEAD });
+        skins: false, look: lookD, blobW: 0.9, blobD: 0.9, talk: 'Sitting_Answering_Questions', headDamp: PHO_TALK_HEAD,
+        upright: PHO_SIT_UPRIGHT, shoulders: PHO_SIT_SHOULDERS, handsOn: PHO_SIT_HANDS });
       cast.pho.home = { x: AT.phoS.x, z: AT.phoS.z, ry: phoRy };
       /* GRANDMASTER PHO STANDING BEHIND HER CHAIR (the blessing): the same body standing, at rest on the end of his rise
          (upright, both arms down), his right hand laid on her head (handOnHead, c_story.js) */
@@ -140,7 +192,9 @@
       wander:  { color: 0x8cff5e, fill: 0.02, rim: 2.0, flicker: 0.3, power: 2.2 },
       large:   { color: 0x5cff7a, fill: 0.025, rim: 2.2, flicker: 0.25, power: 2.0 },
       altar:   { color: 0x2f4dff, fill: 0.14, rim: 0.22, flicker: 0.08, power: 2.0, xray: 0 },
-      pho:     { color: 0xffc456, fill: 0.0, rim: 0.5, flicker: 0.04, power: 3.0, xray: 0 }
+      pho:     { color: 0xffc456, fill: 0.0, rim: 0.5, flicker: 0.04, power: 3.0, xray: 0 },
+      /* (R62: his water bowl, found in gold from across the room, a little through what stands before it) */
+      bowl:    { color: 0xffc456, fill: 0.16, rim: 1.8, flicker: 0.05, power: 2.0, xray: 0.5 }
     };
     function spiritOf(P, look) {
       whenReady(P, () => { P.fx = ctx.spirit ? ctx.spirit(P.model, look) : null; P.glow = 1; if (P.fx) P.fx.set('uAlpha', P.alpha != null ? P.alpha : 1); });
@@ -249,6 +303,13 @@
       parseOnce(key).then(() => { if (!alive) return; for (const g of groups) { const a = ctx.spiritAura ? ctx.spiritAura(g, look) : null; if (a) { auras.push(a); altarAuras.push(a); } } }, () => {});
     }
     for (const k of ['w4prayershelf', 'w4vilakku']) auraOn(k, SPIRIT.altar);
+    /* (R62, Chad, 18 Nov evening: "when spirit vision is turned on, make the holy water bowl silohuette in a golden glow too
+       so player can more easily find it to reload the water"): Grandmaster Pho's large bowl, where the water is dipped
+       again, in gold through the vision (gold is his alone, v25.5, and this is his bowl); its glow's twins ride the bowl
+       wherever it is set (his stool, R53). Not one of the altar's lights (they follow her lamp) */
+    { const groups = things.w4bigbowl || [];
+      if (groups.length && have('w4bigbowl')) parseOnce('w4bigbowl').then(() => { if (!alive) return;
+        for (const g of groups) { const a = ctx.spiritAura ? ctx.spiritAura(g, SPIRIT.bowl) : null; if (a) auras.push(a); } }, () => {}); }
     for (const P of [cast.pho, cast.phoB]) whenReady(P, (Q) => { const a = ctx.spiritAura ? ctx.spiritAura(Q.model, SPIRIT.pho) : null; if (a) { auras.push(a); Q.aura = a; } });
 
     /* WHAT THE WATER CAN REACH (the engine raycasts the lens's line into stage.shootables()): a sphere round each

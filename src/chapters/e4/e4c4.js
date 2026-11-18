@@ -139,7 +139,7 @@
         d: { sanity: 6, awareness: 6, wisdom: 18 }, verdict: 'best',
         say: 'I told him only what I saw. He held her hand.',
         teach: 'Experience teaches you not to jump to conclusions. You told her son what you saw and nothing more, and he stayed with her.' },
-      { k: 'D', text: 'Keep your place: hold the holy water, close your Spirit Vision, trust your teacher',
+      { k: 'D', text: 'Keep your place: hold the holy water, trust your teacher',
         d: { sanity: 3, awareness: 0, wisdom: 9 }, verdict: 'good',
         say: 'I held my place. Next time, I see the people too.',
         teach: 'Sensitivity only lets you experience something; cultivation is what teaches you how to examine it. You held your part and your teacher’s work was done. There were two people afraid in that room, and you were the one who could see.' }
@@ -168,7 +168,12 @@
     /* SPIRIT VISION's own sound (masters/v27.0/sound.sh): the wave out (u4vison) and back (u4visoff, the same swell run
        backwards, as the wave is), its bed and its music brought up with it while the world's beds fall back 60 % under
        it, and his heart: up to 112 as he opens, its beat heard (his own thump, harmonised for a phone), back to 76 */
-    vision: { heart: { bpm: 112, rest: 76, sound: 'u4heart', vol: 0.55, secs: 2.2, restSecs: 4.5 },
+    /* (R61, Chad, 18 Nov evening: "make the tracer effect just ever so slightly slower so that the player can see the
+       tracing effect even more? Also make the tracer effect look a little more obvious visually": out in 1.6 s where it
+       was 1.3, home in 1.25 where it was 1.0; its front 18 cm wide where it was 12, the edges behind it traced half again
+       as bright) */
+    vision: { outSecs: 1.6, inSecs: 1.25, band: 0.18, line: 0.24,
+              heart: { bpm: 112, rest: 76, sound: 'u4heart', vol: 0.55, secs: 2.2, restSecs: 4.5 },
               sound: { on: 'u4vison', off: 'u4visoff', vol: 0.85, bed: ['u4visbed', 0.56], music: ['u4vismus', 0.32], duck: 0.6 } },
     /* THE HOLY WATER (the fifty-first seam, plan §6): his own hands, the small silver bowl in his left, a flick of the
        right hand's fingers a press, a dip at Grandmaster Pho's bowl to fill it again; the HUD says the chapter's words */
@@ -198,7 +203,7 @@
       'w4doorleaf', 'w4fridge', 'w4pilltray', 'w4clock', 'w4phonetable', 'w4bed', 'w4commode', 'w4poles',
       'w4thoranam', 'w4altartray', 'w4coffee', 'w4garland', 'w4angsana', 'w4foxpalm', 'w4streetlamp', 'w4bougain',
       'w4corrpots', 'w4bicycle', 'w4clothesrack', 'w4t_kali', 'w4t_ganesha', 'w4t_murugan', 'w4t_appa',
-      'w4t_oldphoto', 'iconwater',
+      'w4t_oldphoto', 'w4t_oldphotofull', 'iconwater',
       /* <<< this chapter's own keys <<< */
       /* Grandmaster Pho, Chad's own model, as chapter 3 cast him (reuseInEpisode) */
       'pho'
@@ -462,8 +467,11 @@
        out; Grandmaster Pho's stool at her right; his bowl on the floor at the chair's foot */
     const ALTAR = { x: -0.15, z: 5.15, shelf: 1.50 };
     const CHAIR = { x: -0.15, z: 3.85, ry: 0 };             // she faces her altar (+z): a body and a thing at a turn of 0 face +z
-    const STOOL = { x: 0.62, z: 3.55 };
-    const BOWL = { x: 0.35, z: 3.20 };
+    /* (18 Nov evening, R42's measures, tools/probes/clipscan.mjs on the history: seated, his robe and left shin crossed her
+       wheelchair's side 6 cm (x 0.11 to 0.17 against its edge at 0.175) and his foot stood on his bowl's rim: his stool
+       10 cm further from her, the bowl 15 cm nearer the door) */
+    const STOOL = { x: 0.72, z: 3.55 };
+    const BOWL = { x: 0.35, z: 3.05 };
     /* her kuthu vilakku on the floor beside her shrine's right end, below Appa's photograph: where Mala kneels to light it
        (18 Nov, measured: her kneeling take's right hand rides 0.085 m to her right and 0.30 before her, 0.57 m up, so it
        stands over the lamp's wick at 0.43; set before the shrine's middle, her knees were in her mother's footrest) */
@@ -1890,6 +1898,7 @@
         if (P.hips && skins[0] && skins[0].skeleton) groundTakes(P, skins);
         if (o.headDamp) headDampInit(P);
         if (o.shoulders !== null) shouldersInit(P);
+        if (o.upright) uprightInit(P);
         /* THE GROUND A WALK OR A RUN COVERS IN A SECOND (o.pace: asked for by whoever moves the group, who drives the take's
            rate from the ground covered: v7.1). The library's walks and runs come on the spot (their hips travel nowhere:
            measured, a few millimetres a second), so the pace is read from the foot that is down: under a body that stays
@@ -2232,6 +2241,7 @@
       if (name3 && P.acts[name3]) { const A3 = P.acts[name3], d3 = A3.getClip().duration; A3.time = Math.max(0, Math.min(d3 - 1e-3, t3)); }
       P.cur = name; P.filmT = t; armsBack(P); personSettle(P); P.mixer.update(0);
       if (P.hd) headDampLay(P);
+      if (P.upr) uprightLay(P);
       if (P.shd) shouldersLay(P);
       if (P.restLegs) seatLegsLay(P);
       if (P.restHands && !(P.layK > 0)) restHandsLay(P);
@@ -2257,6 +2267,7 @@
         armsBack(P);
         P.mixer.update(wdt * P.rate);
         if (P.hd) headDampLay(P);
+        if (P.upr) uprightLay(P);
         if (P.shd) shouldersLay(P);
         if (P.gaze || P.gazeK > 0) gazeTick(P, wdt);
         if (P.lay || P.layK > 0) layTick(P, wdt);
@@ -2438,7 +2449,8 @@
       if (!a.wrote) continue; a.up.quaternion.copy(a.qUp); a.fore.quaternion.copy(a.qFore); a.hand.quaternion.copy(a.qHand); a.wrote = false; }
       const RH0 = P.restHands; if (RH0) for (const sd in RH0.R) { const fl = RH0.R[sd].fol; if (fl) for (const F of fl) if (F.on) { F.b.quaternion.copy(F.q); F.on = false; } }
       /* (the shoulders let down were laid first, under every hand: so they are taken off last) */
-      const SH = P.shd; if (SH && SH.on) { for (const R of SH.S) { R.cl.quaternion.copy(R.scl); R.up.quaternion.copy(R.sup); } SH.on = false; } }
+      const SH = P.shd; if (SH && SH.on) { for (const R of SH.S) { R.cl.quaternion.copy(R.scl); R.up.quaternion.copy(R.sup); } SH.on = false; }
+      const UP = P.upr; if (UP && UP.on) { for (const R of UP.B) R.b.quaternion.copy(R.sv); UP.on = false; } }
     /* A HAND CLOSED ROUND A THING (the woman with the taper): each finger's three joints turned by `th` radians toward
        the palm's own facing, about the hand's own measured across-axis as it lies in the world now. Laid on after
        handTo() and taken off by armsBack() before the mixer runs again, as every laid pose is (v11.5). A rig with no
@@ -2799,6 +2811,7 @@
       if (!A || !skins || !skins.length) return null;
       const bone = (nm) => { const re = new RegExp('^(mixamorig:?)?' + nm + '$'); for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
       armsBack(P); P.group.updateWorldMatrix(true, false); P.group.updateMatrixWorld(true);
+      if (P.upr) { uprightLay(P); P.group.updateMatrixWorld(true); }
       /* (his legs where his seat lays them: the lap the hands lie on is theirs) */
       if (P.restLegs) { seatLegsLay(P); P.group.updateMatrixWorld(true); }
       /* (the take's own turns kept, so that what is solved here is taken off again: armsBack) */
@@ -3355,7 +3368,10 @@
       ['w4coffee',     1.72, 0, 1.70, 0,                      [1.10, 0.77]],
       ['w4pilltray',   1.95, TOP.coffee, 1.70, 0.3,           null],           // her medicine tray on the coffee table
       ['w4armchair',   2.17, 0, 2.78, -Math.PI / 2,           [0.85, 1.26]],
-      ['w4standfan',   2.50, 0, 1.55, -2.4,                   [0.57, 0.45]],
+      /* (R45, Chad, 18 Nov evening: "the indian man model when standing and speaking, clips into another object": Ravi
+         stands at (2.62, 2.02) and the fan stood 0.49 m behind his left shoulder, its head at his own height, where his
+         talk's hands and sway go; it stands 0.94 m from him now, still behind him by the window, clear of the right wall) */
+      ['w4standfan',   2.45, 0, 1.10, -2.4,                   [0.57, 0.45]],
       // the TV on the left wall facing into the room, between the main door's open leaf and bedroom 3's door
       ['w4tvconsole',  ROOMS.living.x0 + 0.25 + 0.005, 0, 1.92, Math.PI / 2, [1.50, 0.50]],
       ['w4clock',      ROOMS.living.x0 + 0.02, 2.05, 1.92, Math.PI / 2, null],
@@ -3526,6 +3542,49 @@
        of them is in the world.
        Every place is a number the plan or a measure gave (the tracker's log, 18 Nov): the wheelchair's seat 0.44 m, its
        front edge 0.28 ahead of its middle, its footrest 0.10 up from 0.35 to 0.50 ahead; the stool's top 0.445. */
+    /* A BODY SAT OR STOOD UP STRAIGHT (o.upright; R42, Chad, 18 Nov 2026: "From the very start of the intro cutscene to the
+       gameplay and to the ending cutscene, grandmaster pho has some animations and poses that look unnatural and overly
+       hunched with shoulders tightened upwards. Fix it so that he looks more natural."). MEASURED first (tools/probes/
+       posture.mjs, on his own body in the takes this chapter has him wear): seated at rest, the first moment of his rise
+       from a seat (his hands on his knees) leans his trunk 17.7 degrees forward of the vertical with his neck 27.6 forward,
+       the stoop of a man about to push himself up, held as if it were his sitting; his seated talk lifts both collar bones
+       25 to 28 degrees over his rest (7.8 and 8.4 cm). A man sitting upright on a stool with his hands on his knees holds
+       his trunk within ten degrees of the vertical. So while a take named in o.upright is worn, its trunk is turned back
+       about the body's own left-right line by that take's `trunk` degrees (shared out over the three spine bones, so the
+       back stays a curve) and its neck by its `head` degrees, weighted by the take's weight (a take fading in or out
+       takes its share): a CONSTANT turn per take, so every breath and gesture of the take moves as it did about the new
+       stance. Laid after the mixer and the head's damping, before the shoulders and the hands (a hand laid on a knee
+       reaches from the shoulder as it now stands: restHands lays it after), taken off by armsBack() before the mixer runs
+       again (v11.5), and laid for restHands' own measure of the arms (assemble.py) */
+    const _upA = new THREE.Vector3(), _upF = new THREE.Vector3(), _upQ = new THREE.Quaternion(), _upQp = new THREE.Quaternion(), _upV = new THREE.Vector3();
+    /* (`hips`: the pelvis turned back about its own joint as a man sits up on his sit bones, each thigh given back the turn
+       so his legs lie where they lay (the bow's own way, c_story.js); the whole trunk goes with it as one, so a lean of
+       the hips is a lean of the trunk degree for degree. `trunk`: the spine's three bones, shared out. `head`: the neck) */
+    function uprightInit(P) {
+      const find = (re) => { for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
+      const B = [find(/Spine$/), find(/Spine1$/), find(/Spine2$/)], neck = find(/Neck$/), hips = find(/Hips$/), legs = [find(/LeftUpLeg$/), find(/RightUpLeg$/)];
+      if (B.some(b => !b) || !neck || !hips || legs.some(b => !b)) { console.warn(P.key + ': o.upright asked, and its spine is not all there'); return; }
+      P.upr = { hips, legs, spine: B, neck, B: [hips].concat(legs, B, [neck]).map(b => ({ b, sv: new THREE.Quaternion() })), take: Object.assign({}, P.o.upright), on: false };
+    }
+    const _upW0 = new THREE.Quaternion(), _upW1 = new THREE.Quaternion(), _upD = new THREE.Quaternion();
+    function uprightLay(P) {
+      const U = P.upr; if (!U) return;
+      let tr = 0, hd = 0, hp = 0;
+      for (const n in U.take) { const w = P.w[n] || 0; if (w > 0) { tr += w * (U.take[n].trunk || 0); hd += w * (U.take[n].head || 0); hp += w * (U.take[n].hips || 0); } }
+      if (Math.abs(tr) < 1e-3 && Math.abs(hd) < 1e-3 && Math.abs(hp) < 1e-3) return;
+      for (const R of U.B) R.sv.copy(R.b.quaternion);
+      U.on = true;
+      P.group.updateWorldMatrix(true, false); P.group.getWorldQuaternion(_upQ);
+      _upF.set(0, 0, 1).applyQuaternion(_upQ); _upF.y = 0; _upF.normalize();
+      _upA.set(0, 1, 0).cross(_upF).normalize();                       // (a turn about it by a positive angle leans the body forward)
+      const turn = (b, deg) => { b.parent.updateWorldMatrix(true, false); b.parent.getWorldQuaternion(_upQp);
+        _upV.copy(_upA).applyQuaternion(_upQp.invert()); _upQ.setFromAxisAngle(_upV, deg * Math.PI / 180); b.quaternion.premultiply(_upQ); b.updateWorldMatrix(false, true); };
+      if (Math.abs(hp) >= 1e-3) { U.hips.getWorldQuaternion(_upW0); turn(U.hips, hp); U.hips.getWorldQuaternion(_upW1);
+        _upD.copy(_upW1).invert().multiply(_upW0);                      // (each thigh's turn given back: new hips^-1 * old hips)
+        for (const L of U.legs) { L.quaternion.premultiply(_upD); L.updateWorldMatrix(false, true); } }
+      if (Math.abs(tr) >= 1e-3) for (const b of U.spine) turn(b, tr / 3);
+      if (Math.abs(hd) >= 1e-3) turn(U.neck, hd);
+    }
     const cast = {};
     const WHEEL = { seat: 0.44, front: 0.28, foot: 0.10 };
     const STOOL_TOP = 0.445;
@@ -3533,6 +3592,14 @@
        each with its reason there): the bottom on the seat, each leg solved down to the floor, the feet laid flat */
     const MASTER_DOWN = { hipOver: 0.11, sink: 0.01, sole: GROUND_SOLE, edge: -9, flat: true };
     const PHO_BREATH = 6;
+    /* (R42: his seated rest sat up straight, his pelvis turned back 11 of its 17.7 degrees (to 6.7, a man sitting upright:
+       turned at the spine instead, by the same 11 shared out, the trunk came back only 4, measured), his neck as the take
+       holds it on the straightened trunk (27.6 less 11: 16.6 forward, his face level); his hands laid on
+       his thighs where his arms reach them with the elbow bent (restHands 'lap'), since the trunk's turn carries his
+       shoulders back off his knees; his seated talk's shrug let down whole) */
+    const PHO_SIT_UPRIGHT = { Sit_to_Stand_Transition_M: { hips: -11, trunk: 0, head: 0 } };
+    const PHO_SIT_SHOULDERS = { Sitting_Answering_Questions: 1 };
+    const PHO_SIT_HANDS = { how: 'lap' };
     const PHO_TALK_HEAD = { Sitting_Answering_Questions: [0.3, 'Sit_to_Stand_Transition_M'] };
     /* (standing, his talk's head held as his seated one is: Chad's word on chapter 3's, "greatly restrained", v26.3; its
        head swings 9 cm side to side in its own file: tools/probes/takepath.mjs) */
@@ -3596,7 +3663,8 @@
       cast.pho = mkPerson('pho', AT.phoS.x, AT.phoS.z, phoRy, { take: 'Sit_to_Stand_Transition_M', centre: true,
         win: { Sit_to_Stand_Transition_M: [0.02, 0.3, PHO_BREATH] },
         seat: { y: STOOL_TOP, takes: /^Sit/, down: Object.assign({}, MASTER_DOWN, { knees: 'keep', tuck: true }), rise: 'Sit_to_Stand_Transition_M' },
-        skins: false, look: lookD, blobW: 0.9, blobD: 0.9, talk: 'Sitting_Answering_Questions', headDamp: PHO_TALK_HEAD });
+        skins: false, look: lookD, blobW: 0.9, blobD: 0.9, talk: 'Sitting_Answering_Questions', headDamp: PHO_TALK_HEAD,
+        upright: PHO_SIT_UPRIGHT, shoulders: PHO_SIT_SHOULDERS, handsOn: PHO_SIT_HANDS });
       cast.pho.home = { x: AT.phoS.x, z: AT.phoS.z, ry: phoRy };
       /* GRANDMASTER PHO STANDING BEHIND HER CHAIR (the blessing): the same body standing, at rest on the end of his rise
          (upright, both arms down), his right hand laid on her head (handOnHead, c_story.js) */
@@ -3657,7 +3725,9 @@
       wander:  { color: 0x8cff5e, fill: 0.02, rim: 2.0, flicker: 0.3, power: 2.2 },
       large:   { color: 0x5cff7a, fill: 0.025, rim: 2.2, flicker: 0.25, power: 2.0 },
       altar:   { color: 0x2f4dff, fill: 0.14, rim: 0.22, flicker: 0.08, power: 2.0, xray: 0 },
-      pho:     { color: 0xffc456, fill: 0.0, rim: 0.5, flicker: 0.04, power: 3.0, xray: 0 }
+      pho:     { color: 0xffc456, fill: 0.0, rim: 0.5, flicker: 0.04, power: 3.0, xray: 0 },
+      /* (R62: his water bowl, found in gold from across the room, a little through what stands before it) */
+      bowl:    { color: 0xffc456, fill: 0.16, rim: 1.8, flicker: 0.05, power: 2.0, xray: 0.5 }
     };
     function spiritOf(P, look) {
       whenReady(P, () => { P.fx = ctx.spirit ? ctx.spirit(P.model, look) : null; P.glow = 1; if (P.fx) P.fx.set('uAlpha', P.alpha != null ? P.alpha : 1); });
@@ -3766,6 +3836,13 @@
       parseOnce(key).then(() => { if (!alive) return; for (const g of groups) { const a = ctx.spiritAura ? ctx.spiritAura(g, look) : null; if (a) { auras.push(a); altarAuras.push(a); } } }, () => {});
     }
     for (const k of ['w4prayershelf', 'w4vilakku']) auraOn(k, SPIRIT.altar);
+    /* (R62, Chad, 18 Nov evening: "when spirit vision is turned on, make the holy water bowl silohuette in a golden glow too
+       so player can more easily find it to reload the water"): Grandmaster Pho's large bowl, where the water is dipped
+       again, in gold through the vision (gold is his alone, v25.5, and this is his bowl); its glow's twins ride the bowl
+       wherever it is set (his stool, R53). Not one of the altar's lights (they follow her lamp) */
+    { const groups = things.w4bigbowl || [];
+      if (groups.length && have('w4bigbowl')) parseOnce('w4bigbowl').then(() => { if (!alive) return;
+        for (const g of groups) { const a = ctx.spiritAura ? ctx.spiritAura(g, SPIRIT.bowl) : null; if (a) auras.push(a); } }, () => {}); }
     for (const P of [cast.pho, cast.phoB]) whenReady(P, (Q) => { const a = ctx.spiritAura ? ctx.spiritAura(Q.model, SPIRIT.pho) : null; if (a) { auras.push(a); Q.aura = a; } });
 
     /* WHAT THE WATER CAN REACH (the engine raycasts the lens's line into stage.shootables()): a sphere round each
@@ -3933,6 +4010,20 @@
     function readLetters() {
       if (!learn('f', [['q4h1', null]])) return false;
       if (kit && kit.captions) kit.captions([{ at: 0, end: 7.5, text: W.letter, sub: W.letterSub }]);
+      return true;
+    }
+    /* the old photograph, looked at (R50, Chad, 18 Nov: "When looking at the old photo, i want the old photo to pop up in
+       the middle of the screen in its full high resolution so that the player can actually see what it is, with a button
+       to close it once the player is done seeing it."): the engine's window (kit.picture, the fifty-eighth seam) holds the
+       photograph whole, drawn from its own file. Mala's first line ("That's Amma...") is begun as it opens and plays on
+       under it; the window stands the chapter's clock still, so her second follows once he has closed it and her first is
+       done. The count, the receipt and the order come after her lines, as they always did. Refused (no window), her two
+       lines are said as they always were. `ar`: its shape until its bytes land (the file's own 1024 by 772) */
+    function lookOld() {
+      if (!learn('o', [['ml4h2', cast.mala], ['ml4h3', cast.mala]])) return false;
+      runQueue();
+      /* (R50: the picture at its master's own size, 1168 x 880, where the frame on the cabinet draws the 1024 copy) */
+      if (kit && kit.picture) kit.picture('w4t_oldphotofull', { ar: 1168 / 880 });
       return true;
     }
     /* Amma, to him, quietly: her head turns to him, not to her teacher */
@@ -4228,6 +4319,7 @@
        (blessStage), put back on the floor for the history and the sight (storyReset); the order's mark, the press on the
        small bowl and the dip's reach follow them, and the large bowl's column on the floor goes up with it */
     const DIP_AT = { x: BOWL.x, z: BOWL.z }, SMALLBOWL_FLOOR = Object.assign({}, SMALLBOWL_AT);
+    let waterLast = null;                                                // (R58: the water offered only in the blessing, once taken)
     const BOWLS_UP = { x: STOOL.x, z: STOOL.z, y: STOOL_TOP, small: { dx: 0.03, dz: -0.035, y: 0.097 } };
     let bowlsUp = false;
     function bowlsOnStool(up) {
@@ -4592,11 +4684,29 @@
       if (sent) fx('u4release', Math.min(0.95, 0.7 + 0.08 * (sent - 1)), panOf(reached[0].P.group.position));
     }
     /* the water on one of them: sent back (released), or staggered back (the large one takes three) */
+    /* (R60, Chad, 18 Nov evening: "when the holy water hits the green spirit, can you add an effect to show that they got
+       hit by it? For example, flashing the silohuette of the green spirits brighter for a short moment"): the whole
+       silhouette burns near white for a moment and settles back to its green over a third of a second (it was its own
+       green filled to 0.9 for a quarter second, and read as nothing on a phone), the one released as it begins to go,
+       the large one each of the three times */
+    const HIT_WHITE = new THREE.Color(0xe8ffe0), _hitC = new THREE.Color();
+    function hitFlash(S) {
+      const P = S.P; if (!P.fx) return;
+      const look = P === spirits.large ? SPIRIT.large : SPIRIT.wander, base = new THREE.Color(look.color), run = play.run, t0 = wallNow();
+      P.hitT0 = t0; P.fx.set('uColor', HIT_WHITE);
+      /* (one released goes out by its own fill, from bright: only its colour flashes; one staggered is filled bright too) */
+      const fill = () => S.state !== 'leave' && S.state !== 'gone';
+      if (fill()) P.fx.set('uFill', 2.2);
+      const step = () => { if (!live(run) || !P.fx || P.hitT0 !== t0) return; const u = Math.min(1, (wallNow() - t0) / 0.35);
+        P.fx.set('uColor', _hitC.copy(HIT_WHITE).lerp(base, u));
+        if (fill()) P.fx.set('uFill', 2.2 + (look.fill - 2.2) * u * u);
+        if (u < 1) requestAnimationFrame(step); };
+      requestAnimationFrame(step);
+    }
     function strike(S) {
       const P = S.P; S.hits++;
-      if (P.fx) { P.fx.set('uFill', 0.9); const run = play.run; after(0.25, () => { if (live(run) && P.fx && S.state !== 'leave') P.fx.set('uFill', P === spirits.large ? SPIRIT.large.fill : SPIRIT.wander.fill); }); }
-      if (S.hits >= S.need) { S.state = 'leave'; S.leave = 0; return true; }
-      S.back = 0.8; S.state = 'come'; voxPlay(P === spirits.large ? 'u4svL' : 'u4sv5', P.group.position, 0.8); return false;
+      if (S.hits >= S.need) { S.state = 'leave'; S.leave = 0; hitFlash(S); return true; }
+      S.back = 0.8; S.state = 'come'; hitFlash(S); voxPlay(P === spirits.large ? 'u4svL' : 'u4sv5', P.group.position, 0.8); return false;
     }
     function goldFlick() {
       const F = play.fight; let n = 0;
@@ -4967,7 +5077,7 @@
       { id: 'folder', pos: { x: FOLDER_AT.x, y: FOLDER_AT.y, z: FOLDER_AT.z }, radius: 1.8, prompt: W.hotFolder, markY: 0.25, hits: markHit(() => FOLDER_AT, 0.1),
         enabled: () => phase === 'history' && !play.busy && !play.learned.has('f'), onInteract() { return readLetters(); } },
       { id: 'old', pos: { x: OLDPHOTO_AT.x, y: OLDPHOTO_AT.y, z: OLDPHOTO_AT.z }, radius: 1.9, prompt: W.hotOld, markY: 0.3, hits: markHit(() => OLDPHOTO_AT, 0.1),
-        enabled: () => phase === 'history' && !play.busy && !play.learned.has('o'), onInteract() { return learn('o', [['ml4h2', cast.mala], ['ml4h3', cast.mala]]); } },
+        enabled: () => phase === 'history' && !play.busy && !play.learned.has('o'), onInteract() { return lookOld(); } },
       { id: 'appa', pos: { x: APPA_PHOTO_AT.x, y: APPA_PHOTO_AT.y, z: APPA_PHOTO_AT.z }, radius: 1.9, prompt: W.hotAppa, markY: 0.3, hits: markHit(() => APPA_PHOTO_AT, 0.1),
         enabled: () => phase === 'history' && !play.busy && !play.learned.has('a'), onInteract() { return learn('a', [['q4h2', null]]); } },
       hsAmma, hsTell, hsLook1, hsLook2, hsLook3,
@@ -4986,6 +5096,45 @@
        saying why (kit.weaponBlock, derived on the frame: v11.6) */
     function shootables() { const out = []; for (const P of [spirits.appa, spirits.large].concat(spirits.wander)) if (P.hit && P.hit.visible) out.push(P.hit); return out; }
     function reloadRefusal() { return Math.hypot(yaw.position.x - DIP_AT.x, yaw.position.z - DIP_AT.z) < 1.5 ? null : W.dipHere; }
+    /* THE REFILL SEEN (R63, Chad, 18 Nov evening: "when player reloads the holy water bowl, show a visual effect going or
+       flying from the water bowl towards the player to show that it successfully reloaded. This is for visual feedback
+       purpose."): at each dip that took (stage.onReload), eighteen motes of the water's light rise out of his teacher's
+       bowl and fly, each on its own arc, to just under the middle of his sight, shrinking and fading as they reach him
+       (half a second; gold in his gold, the water's pale blue otherwise). On the wall clock, so a slow phone sees all of it;
+       drawn in the world and through the vision alike */
+    const DIPFX = { n: 18, secs: [0.42, 0.62], stagger: 0.012, arc: 0.28, size: [0.055, 0.018] };
+    const dipFx = { sprites: null, motes: [], t0: 0 };
+    function dipTex() {
+      const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
+      const r = g.createRadialGradient(32, 32, 0, 32, 32, 32); r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(0.35, 'rgba(255,255,255,0.55)'); r.addColorStop(1, 'rgba(255,255,255,0)');
+      g.fillStyle = r; g.fillRect(0, 0, 64, 64); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+    }
+    function dipBurst() {
+      if (!dipFx.sprites) { const tex = dipTex(); owned.push(tex); dipFx.sprites = [];
+        for (let i = 0; i < DIPFX.n; i++) { const m = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, fog: false });
+          mats.push(m); const sp = new THREE.Sprite(m); sp.visible = false; sp.renderOrder = 30; if (ctx.visionLayer != null) sp.layers.enable(ctx.visionLayer); world.add(sp); dipFx.sprites.push(sp); } }
+      const F = play.fight, gold = !!(F && F.on && F.call === 'gold'), col = gold ? 0xffd27a : 0xbfe8ff, now = wallNow();
+      const y0 = (bowlsUp ? BOWLS_UP.y : 0) + 0.15;
+      dipFx.motes = dipFx.sprites.map((sp, i) => { const a = i * 2.39996, r = 0.03 + 0.09 * ((i * 0.618) % 1);
+        sp.material.color.set(col);
+        return { sp, t0: now + i * DIPFX.stagger, T: DIPFX.secs[0] + (DIPFX.secs[1] - DIPFX.secs[0]) * ((i * 0.37) % 1),
+          a: new THREE.Vector3(DIP_AT.x + Math.cos(a) * r, y0, DIP_AT.z + Math.sin(a) * r), jx: (((i * 0.71) % 1) - 0.5) * 0.12, jy: (((i * 0.43) % 1) - 0.5) * 0.06 }; });
+    }
+    const _dpE = new THREE.Vector3(), _dpF = new THREE.Vector3(), _dpU = new THREE.Vector3(), _dpR = new THREE.Vector3(), _dpP = new THREE.Vector3();
+    function dipFxTick() {
+      if (!dipFx.motes.length) return;
+      const now = wallNow(); let live = 0;
+      camera.updateMatrixWorld(); camera.getWorldPosition(_dpE); camera.getWorldDirection(_dpF);
+      _dpR.crossVectors(_dpF, THREE.Object3D.DEFAULT_UP).normalize(); _dpU.crossVectors(_dpR, _dpF).normalize();
+      for (const M of dipFx.motes) { const u = (now - M.t0) / M.T;
+        if (u < 0 || u >= 1) { M.sp.visible = false; if (u < 0) live++; continue; } live++;
+        const e = u * u * (3 - 2 * u);
+        _dpP.copy(_dpE).addScaledVector(_dpF, 0.42).addScaledVector(_dpU, -0.13 + M.jy).addScaledVector(_dpR, M.jx);   // (just under the middle of his sight)
+        M.sp.position.copy(M.a).lerp(_dpP, e); M.sp.position.y += DIPFX.arc * 4 * e * (1 - e);
+        const s = DIPFX.size[0] + (DIPFX.size[1] - DIPFX.size[0]) * e; M.sp.scale.setScalar(s);
+        M.sp.material.opacity = Math.min(1, u * 6) * (1 - Math.max(0, (u - 0.7) / 0.3)); M.sp.visible = true; }
+      if (!live) dipFx.motes = [];
+    }
     const _ray = new THREE.Raycaster(), _ab = new THREE.Box3(), _hit = new THREE.Vector3();
     let altarBlock = false;
     function altarTick() {
@@ -5017,6 +5166,13 @@
     function storyTick(wdt, t) {
       spotsTick(); hitsTick(); scareTick(); doorTick(wdt); heatTick(wdt); altarTick();   // (the fan, the lamp and the glass: updateNotes, film or play; his hand on her head: updateNotes, play and the decision)
       fightTick(wdt);
+      dipFxTick();                                                        // (R63: the refill seen)
+      /* (R58, Chad, 18 Nov evening: "why reloading and continuing game allows me to flick water even before that part of
+         the gameplay begins"): the bag keeps the water from a run that reached the blessing (a Continue, a loss's start
+         again), and the engine has the water out whenever the bowl is in his hand. So it is offered only in the blessing,
+         once he has taken it: derived on the frame (v11.1), written only when it changes, asked again after a reset */
+      const waterUp = phase === 'bless' && !!play.water;
+      if (kit && kit.weaponOut && waterLast !== waterUp) { waterLast = waterUp; kit.weaponOut(waterUp ? null : false); }
       if (play.loseWait && getState() === 'play' && kit && kit.lose && kit.lose({ film: 'lost', say: W.lostSay, teaching: W.lostTeach })) play.loseWait = false;
     }
     function applyPhase(saved) {
@@ -5035,7 +5191,7 @@
       play.fight = null; play.appaGone = false; play.nerveOut = false; play.heat = 0; play.heatStep = 0; play.closeHold = 0; play.breathSaid = -99; play.loseWait = false;
       play.fanK = 1; play.fanTo = 1; play.scareSeed = SCARE_SEED; play.scareAt = 0; play.scared = new Set(); play.doorTo = -0.12; play.doorK = -0.12;
       play.fogged = false; play.fogAt = 0; fogK = 0; fogTo = 0; lampK = 0; lampTo = 0; crownK = 0; crownTo = 0; oppLooked = ''; wanderNext = 2;
-      decOpen = false; altarBlock = false; bowlOnFloor.visible = true; chantNow = null; bowlsOnStool(false);
+      decOpen = false; altarBlock = false; bowlOnFloor.visible = true; chantNow = null; bowlsOnStool(false); waterLast = null;
       DEC.on = false; DEC.p1 = null; DEC.at = null; DEC.eye = null;
       for (const P of spirits.wander.concat([spirits.large, spirits.appa, spirits.oppress])) { P.gone = false; P.alpha = 1; }
       if (kit) { kit.bar(null); if (kit.weaponBlock) kit.weaponBlock(null); if (kit.visionUrge) kit.visionUrge(false);
@@ -5266,6 +5422,7 @@
       pose(P, 'kneelhold', o.kt ? o.kt(td) : Math.min(4.2, td), false, 'Idle_3', 1 - k, idleT(kAt - t0));
     }
     const MALA_T = { x: -0.55, z: 4.42 };                                     // Mala at her mother's right hand, before her
+    const MALA_TO_HER = faceTo(MALA_LAMP.x, MALA_LAMP.z, CHAIR.x, CHAIR.z);   // (R46: from her lamp, turned to her mother)
     const AMMA_FACE = [CHAIR.x, 1.02, CHAIR.z + 0.08];
     const RAVI_RY = RS.ry;
     /* the picture the decision opens over (the trance's last, every ending's first). A phone's frame is a third of a desk's
@@ -5534,8 +5691,12 @@
             if (outOf <= 0) pose(P, 'Walking', sA / 1.29, true, 'Idle_3', 1 - into, 3 + (E.go - E.still) * 0.4);
             else pose(P, 'Idle_3', 3 + (t - E.go) * 0.4, true, 'Walking', 1 - outOf, sA / 1.29);
             lookNow(P, AMMA_FACE, smo(c01((t - E.go - 0.6) / 1)), 0.9); } });
-        whenReady(cast.mala, (P) => { if (t < E.scream) pose(P, 'lightlamp', 5.4); else pose(P, 'scream', Math.min(3.9, (t - E.scream) * 0.9)); lookNow(P, [RG.x, 1.5, RG.z], 0.7, 0.9); });
-        visionAt(t, -1, 0.1);
+        /* (R46, Chad, 18 Nov evening: "when the daughter model at the end tries to gesture with her hand to block the auntie,
+           her hand clips into the altar": knelt at the lamp she faces the shrine's wall, and her scream's hand went out into
+           her mother's altar. She turns on her knees to her mother as she cries out, so the hand goes out toward her) */
+        whenReady(cast.mala, (P) => { if (t < E.scream) pose(P, 'lightlamp', 5.4); else pose(P, 'scream', Math.min(3.9, (t - E.scream) * 0.9));
+          P.group.rotation.y = lpA(0, MALA_TO_HER, smo(c01((t - E.scream + 0.1) / 0.5))); lookNow(P, [RG.x, 1.5, RG.z], 0.7, 0.9); });
+        visionAt(t, -1, 0.1, E.rise - 0.2, 1.0);                         // (R55: his sight closes as she stands)
         /* THE LENS: in on Ravi's shoulder as he is caught (his mother beyond him); held through the cry; the light; out
            to her standing; on his teacher for his word */
         track(t, [
@@ -5588,8 +5749,9 @@
            let go once her mother is up, and her eyes down to him on the floor ("Are you alright?") */
         whenReady(cast.mala, (P) => { if (t < E.splash) pose(P, 'lightlamp', 5.4);
           else { const r = smo(c01((t - E.rise - 1.2) / 1.4)); pose(P, 'scream', Math.min(3.9, (t - E.splash) * 0.8), false, 'Idle_3', r, 3 + t * 0.35); }
+          P.group.rotation.y = lpA(0, MALA_TO_HER, smo(c01((t - E.splash + 0.1) / 0.5)));           // (R46: to her mother, not into the altar)
           lookNow(P, lp3(AMMA_FACE, B_FLOOR, smo(c01((t - E.ok + 0.5) / 0.6))), 0.8, 0.9); });
-        visionAt(t, -1, 0.1);
+        visionAt(t, -1, 0.1, E.rise - 0.2, 1.0);                         // (R55: his sight closes as she stands)
         /* THE LENS: the throw (a lurch at her); the thing filling his eyes; white; his teacher's push seen through the
            white; then he is on the floor, looking up at her standing, and at his teacher */
         track(t, [
@@ -5638,7 +5800,7 @@
             lookNow(P, AMMA_FACE, 1, 0.9); } });
         /* she looks at her son before she stands */
         if (t >= E.look) whenReady(cast.amma, (P) => lookNow(P, headOf(cast.ravi, [KR.x, 0.9, KR.z]), smo(c01((t - E.look) / 0.8)), 1.0));
-        visionAt(t, -1, 0.1);
+        visionAt(t, -1, 0.1, E.rise - 0.2, 1.0);                         // (R55: his sight closes as she stands)
         track(t, [
           { t: 0, name: 'S', eye: DEC_EYE, at: DEC_AT, fp: PLAY_FOV, fd: PLAY_FOV },
           { t: 0.65, name: 'ravi', eye: CR_EYE, at: CR_HEAD, fp: 58, fd: 50 },
@@ -5670,8 +5832,10 @@
             { ry0: r2, kt: (td) => (t < E.rise ? Math.min(4.2, td) : runOf(t, E.rise + 0.6, E.rise + 3.6, 4.2, 0.2)) });
           lookNow(P, AMMA_FACE, 1, 0.9); });
         whenReady(cast.mala, (P) => { pose(P, 'lightlamp', 5.4); lookNow(P, AMMA_FACE, 1, 0.9); });
-        /* his sight shut at the start: the wave home to him */
-        visionAt(t, -10, 0.1, E.shut, 1.0);
+        /* his sight held open until she stands, as in every ending (R59, Chad, 18 Nov evening: "i think option D outcome
+           cutscene turns off spirit vision prematurely?": it closed at 0.2 s, and the thing torn from her back and the
+           light were never seen; R55: "when the auntie stands up from her wheelchair, turn off spirit vision") */
+        visionAt(t, -10, 0.1, E.rise - 0.2, 1.0);
         track(t, [
           { t: 0, name: 'S', eye: DEC_EYE, at: DEC_AT, fp: PLAY_FOV, fd: PLAY_FOV },
           { t: 1.2, name: 'pho', eye: S_EYE, at: PHO_BOW, fp: 52, fd: 48 },
@@ -5763,7 +5927,7 @@
         put(Q, W.x, W.z, W.ry); Q.group.visible = true; pose(Q, 'crawl', Math.max(0, c - CL.go + 1.0) * 0.6); }));
       wanderersAt(c, CL.go);
       /* his sight: still open from the ending (but D's, shut already), closing after her palms */
-      if (k !== 'D') visionAt(c, -10, 0.1, CL.shut, 1.0); else visionAt(c, 1e9);
+      visionAt(c, 1e9);                                                   // (R55: she has stood: the close in his own sight, every ending)
       /* THE LENS (18 Nov, re-staged): his teacher whole as he dedicates the merit, the last green shapes going out low
          past him; to her, risen at her chair; her steps to her altar; in on the ash between her and her daughter; her
          palms and her lamp; his sight closing on her; out to her family about her in the room's own colours; and over her
@@ -6091,7 +6255,7 @@
       hotspots,
       /* the fiftieth and fifty-first seams: his sight opened or shut; what the water may reach, what it reached, and
          where the bowl is filled again */
-      onVision, shootables, onShot, reloadRefusal,
+      onVision, shootables, onShot, reloadRefusal, onReload: dipBurst,
       films: filmsApi,                                                          // the films' pictures (c_ufilm.js), for the scenes
       stepSound: stepNext,                                                      // his bare feet on her tiles (c_tsound.js)
       amb: () => ({ n: ambN, last: ambLast, next: +ambAt.toFixed(2), beds: Object.assign({}, bedMix) }),

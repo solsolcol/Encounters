@@ -543,6 +543,8 @@ Object.assign(window.__TEXT__, {
   'unlock.label':        'Item unlocked',
   'unlock.sub':          'Added to your bag',
   'unlock.close':        'Close',
+  // v27.0 (seam 58): a picture looked at (kit.picture) — the button under it
+  'picture.close':       'Close',
   // v17.6: the choose-one window (a chapter may give its own label and button)
   'choose.label':        'Choose one',
   'choose.confirm':      'Confirm',
