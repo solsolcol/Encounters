@@ -3232,12 +3232,15 @@
        one on her back read as a red block that hid her. Each is now its RIM, with a breath of fill. A glow laid over a
        body the world draws (his gold, her altar's blue) is drawn on its front surface only (xray 0: its own back layers
        stand behind the world's depth and drop out), or his robe's folds summed into an orange sheet) */
+    /* (18 Nov: once the glow's own front surface passed its depth test whole (src/vision.js), her altar's rim lit every
+       grazing face of it (its inner walls, its shelf) solid blue, a paint and not a light: photographed at three strengths
+       (`$S/e4c4/auralab`), the most even taken, a light ON it: fill 0.14, rim 0.22, where it was 0.03 and 1.1) */
     const SPIRIT = {
       oppress: { color: 0xff2238, fill: 0.025, rim: 2.3, flicker: 0.35, power: 2.0, xray: 0 },
       appa:    { color: 0xbfe2ff, fill: 0.04, rim: 1.6, flicker: 0.05, power: 2.4 },
       wander:  { color: 0x8cff5e, fill: 0.02, rim: 2.0, flicker: 0.3, power: 2.2 },
       large:   { color: 0x5cff7a, fill: 0.025, rim: 2.2, flicker: 0.25, power: 2.0 },
-      altar:   { color: 0x2f4dff, fill: 0.03, rim: 1.1, flicker: 0.08, power: 2.0, xray: 0 },
+      altar:   { color: 0x2f4dff, fill: 0.14, rim: 0.22, flicker: 0.08, power: 2.0, xray: 0 },
       pho:     { color: 0xffc456, fill: 0.0, rim: 0.5, flicker: 0.04, power: 3.0, xray: 0 }
     };
     function spiritOf(P, look) {

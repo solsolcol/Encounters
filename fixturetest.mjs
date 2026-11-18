@@ -576,15 +576,19 @@ await lbl('vision-hands');
   const diff = (a, b) => { let t = 0; for (let i = 0; i < a.length; i++) t += Math.abs(a[i] - b[i]); return t / a.length; };
   const fr = (n) => p.evaluate((n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); }), n);
   await p.evaluate(() => window.__enc.kit.vision({ r: 60, moving: false })); await fr(4);
-  const shown = await corner();
+  const shown = await corner(); await fr(4);
+  /* (18 Nov: the picture is never still (the hands breathe, a spirit flickers), and two shown pictures with nothing changed
+     between them differed by 1.5 to 1.7 (tools/probes/visionhands.mjs), more than a quarter of the hidden hands' 6: the
+     check failed on its own noise. That noise is measured in the run, and the two answers are judged against it) */
+  const shown2 = await corner();
   await p.evaluate(() => { window.__enc.handsRoot.visible = false; }); await fr(4);
   const hidden = await corner();
   const gated = await p.evaluate(() => window.__enc.visionGate(false)); await fr(4);
   const stale = await corner();
   await p.evaluate(() => { const E = window.__enc; E.visionGate(true); E.handsRoot.visible = true; E.kit.vision(null); E.kit.vision(false); }); await fr(4);
-  const dHidden = diff(shown, hidden), dStale = diff(shown, stale);
-  K.visionHandsHidden = gated && dHidden > 3 && dStale < dHidden * 0.25;
-  console.log('vision-hands: shown vs hidden', dHidden.toFixed(2), '| shown vs hidden the old way', dStale.toFixed(2));
+  const dHidden = diff(shown, hidden), dStale = diff(shown, stale), dNoise = diff(shown, shown2);
+  K.visionHandsHidden = gated && dHidden > 3 && dHidden > 2.5 * dNoise && dStale < Math.max(dHidden * 0.25, 1.6 * dNoise + 0.3);
+  console.log('vision-hands: shown vs hidden', dHidden.toFixed(2), '| shown vs hidden the old way', dStale.toFixed(2), '| shown vs shown (its noise)', dNoise.toFixed(2));
 }
 await settle();
 
