@@ -456,6 +456,9 @@
   "expires_at": 1795249017519,
   "image": "masters/v27.0/props/refs/bicycle-2k.png",
   "image_to_3d": "01a1edb5-1a30-758d-9bf9-309887bab0c5",
+  "remesh": {
+   "30000": "01a1edd0-e9c2-72dc-9f2b-64eb751163d4"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -513,6 +516,9 @@
   "expires_at": 1795249404760,
   "image": "masters/v27.0/props/refs/bougain-2k.png",
   "image_to_3d": "01a1edb4-ff9f-7060-a5df-ae72c3908b6e",
+  "remesh": {
+   "30000": "01a1edd0-e65c-74b3-927c-bb5f5514cc1b"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -600,6 +606,9 @@
   "expires_at": 1795249071648,
   "image": "masters/v27.0/props/refs/clothesrack-2k.png",
   "image_to_3d": "01a1edb5-2497-7415-8320-3646ac87968a",
+  "remesh": {
+   "20000": "01a1edd0-eb27-7464-8adc-670b19ce4747"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -687,6 +696,9 @@
   "expires_at": 1795249165827,
   "image": "masters/v27.0/props/refs/corrpots-2k.png",
   "image_to_3d": "01a1edb5-0d6f-711a-9743-79208a3992e9",
+  "remesh": {
+   "30000": "01a1edd0-e820-7164-b225-666a0720c5bb"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
