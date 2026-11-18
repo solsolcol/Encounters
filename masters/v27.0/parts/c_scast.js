@@ -57,15 +57,15 @@
         win: { wsit: [2.0, 3.6, 12] }, talk: 'Sitting_Answering_Questions',
         seat: { y: WHEEL.seat, takes: /^(Sitting_Answering_Questions|wsit|wturn|trance)$/,
                 down: { hipOver: 0.11, sink: 0.015, sole: WHEEL.foot + 0.004, edge: WHEEL.front, r: 0.055, apron: 0.14, flat: true } },
-        headDamp: { Sitting_Answering_Questions: [0.45, 'wsit'] }, blobW: 0.8, blobD: 1.05 });   // (her shadow is her chair's too)
+        headDamp: { Sitting_Answering_Questions: [0.45, 'wsit'] }, skins: { 0: 'p4ammah', 2: 'p4ammam' }, blobW: 0.8, blobD: 1.05 });   // (her shadow is her chair's too; no far body in a flat of ten metres)
       cast.amma.home = { x: CHAIR.x, z: CHAIR.z, ry: CHAIR.ry };
       /* RAVI and MALA, standing, turned to their mother; each talks in the library's chat (its head's turn measured
          before it is cast: tools/probes/headturn.mjs) and rests in its stand */
       cast.ravi = mkPerson('p4ravi', AT.ravi.x, AT.ravi.z, faceTo(AT.ravi.x, AT.ravi.z, CHAIR.x, CHAIR.z), { take: 'Idle_3', phase: 0.55,
-        talk: 'Stand_and_Chat', shoulders: STAND_SHOULDERS, blobW: 0.8, blobD: 0.6 });
+        talk: 'Stand_and_Chat', shoulders: STAND_SHOULDERS, skins: { 0: 'p4ravih', 2: 'p4ravim' }, blobW: 0.8, blobD: 0.6 });
       cast.ravi.home = { x: AT.ravi.x, z: AT.ravi.z, ry: faceTo(AT.ravi.x, AT.ravi.z, CHAIR.x, CHAIR.z) };
       cast.mala = mkPerson('p4mala', AT.mala.x, AT.mala.z, faceTo(AT.mala.x, AT.mala.z, CHAIR.x, CHAIR.z), { take: 'Idle_3', phase: 0.15,
-        talk: 'Stand_and_Chat', shoulders: STAND_SHOULDERS, blobW: 0.75, blobD: 0.6 });
+        talk: 'Stand_and_Chat', shoulders: STAND_SHOULDERS, skins: { 0: 'p4malah', 2: 'p4malam' }, blobW: 0.75, blobD: 0.6 });
       cast.mala.home = { x: AT.mala.x, z: AT.mala.z, ry: faceTo(AT.mala.x, AT.mala.z, CHAIR.x, CHAIR.z) };
       /* GRANDMASTER PHO ON HIS STOOL (Chad's own model in his look D, as chapter 3 cast him on his bench: the same
          numbers, the stool's top for the bench's), turned to her; his rest the start of his rise from a seat, both hands
@@ -91,13 +91,18 @@
        the vision's own layer. Their colours keep their meaning all chapter: crimson the one on her back, pale blue Appa,
        green the hungry ones; her goddess is a DARK BLUE LIGHT round her altar and never a figure (the standing rule);
        GOLD is Grandmaster Pho's alone (Chad, v25.5). A spirit's glow is read and set through P.fx (uAlpha, uFill, uRim) */
+    /* (18 Nov, photographed through the vision on a phone: a generated body is many layers deep (its clothes, its rags),
+       and a spirit is drawn over everything with no test of its own depth, so its fill summed through every layer and the
+       one on her back read as a red block that hid her. Each is now its RIM, with a breath of fill. A glow laid over a
+       body the world draws (his gold, her altar's blue) is drawn on its front surface only (xray 0: its own back layers
+       stand behind the world's depth and drop out), or his robe's folds summed into an orange sheet) */
     const SPIRIT = {
-      oppress: { color: 0xff2238, fill: 0.12, rim: 1.9, flicker: 0.35, power: 2.2 },
-      appa:    { color: 0xbfe2ff, fill: 0.16, rim: 1.4, flicker: 0.05, power: 2.6 },
-      wander:  { color: 0x8cff5e, fill: 0.08, rim: 1.7, flicker: 0.3, power: 2.4 },
-      large:   { color: 0x5cff7a, fill: 0.1, rim: 1.9, flicker: 0.25, power: 2.2 },
-      altar:   { color: 0x2f4dff, fill: 0.05, rim: 1.1, flicker: 0.08, power: 2.0 },
-      pho:     { color: 0xffc456, fill: 0.03, rim: 0.75, flicker: 0.04, power: 2.8 }
+      oppress: { color: 0xff2238, fill: 0.025, rim: 2.3, flicker: 0.35, power: 2.0 },
+      appa:    { color: 0xbfe2ff, fill: 0.04, rim: 1.6, flicker: 0.05, power: 2.4 },
+      wander:  { color: 0x8cff5e, fill: 0.02, rim: 2.0, flicker: 0.3, power: 2.2 },
+      large:   { color: 0x5cff7a, fill: 0.025, rim: 2.2, flicker: 0.25, power: 2.0 },
+      altar:   { color: 0x2f4dff, fill: 0.03, rim: 1.1, flicker: 0.08, power: 2.0, xray: 0 },
+      pho:     { color: 0xffc456, fill: 0.0, rim: 0.5, flicker: 0.04, power: 3.0, xray: 0 }
     };
     function spiritOf(P, look) {
       whenReady(P, () => { P.fx = ctx.spirit ? ctx.spirit(P.model, look) : null; P.glow = 1; if (P.fx) P.fx.set('uAlpha', P.alpha != null ? P.alpha : 1); });
@@ -134,12 +139,12 @@
     /* HER GODDESS'S LIGHT: a dark blue glow laid over her altar (the shelf, its pictures, the lamp) in the vision only,
        twins of their own meshes (ctx.spiritAura): a light, never a figure. And GRANDMASTER PHO, in the vision, the one
        person in the room who stands in gold, faintly (gold is his alone: Chad, v25.5) */
-    const auras = [];
+    const auras = [], altarAuras = [];
     /* (a thing's twins are made once its model is in its group: stand() asked for the parse first, so its own handler,
        which puts the model in, has run before this one) */
     function auraOn(key, look) {
       const groups = things[key] || []; if (!groups.length || !have(key)) return;
-      parseOnce(key).then(() => { if (!alive) return; for (const g of groups) { const a = ctx.spiritAura ? ctx.spiritAura(g, look) : null; if (a) auras.push(a); } }, () => {});
+      parseOnce(key).then(() => { if (!alive) return; for (const g of groups) { const a = ctx.spiritAura ? ctx.spiritAura(g, look) : null; if (a) { auras.push(a); altarAuras.push(a); } } }, () => {});
     }
     for (const k of ['w4prayershelf', 'w4vilakku']) auraOn(k, SPIRIT.altar);
     for (const P of [cast.pho, cast.phoB]) whenReady(P, (Q) => { const a = ctx.spiritAura ? ctx.spiritAura(Q.model, SPIRIT.pho) : null; if (a) { auras.push(a); Q.aura = a; } });

@@ -28,7 +28,9 @@
     const matte = (r) => (m) => m.traverse(q => { if (!q.isMesh) return; for (const mt of [].concat(q.material)) {
       mt.metalnessMap = null; mt.metalness = 0; mt.roughnessMap = null; mt.roughness = r; mt.envMapIntensity = 1; mt.needsUpdate = true; } });
     const LOOK = {
-      w4prayershelf: { done: matte(MATTE.wood) }, w4frameport: { done: matte(MATTE.wood) }, w4sofa: { done: matte(MATTE.cloth) },
+      /* (18 Nov, photographed: her shrine's shelves drew pale at the eye's grazing angle even matte at 0.55: its varnish
+         is a softer one, its reflection halved) */
+      w4prayershelf: { done: (m) => { matte(0.78)(m); m.traverse(q => { if (q.isMesh) for (const mt of [].concat(q.material)) mt.envMapIntensity = 0.5; }); } }, w4frameport: { done: matte(MATTE.wood) }, w4sofa: { done: matte(MATTE.cloth) },
       w4armchair: { done: matte(MATTE.cloth) }, w4coffee: { done: matte(MATTE.wood) }, w4tvconsole: { done: matte(MATTE.wood) },
       w4cabinet: { done: matte(MATTE.wood) }, w4dintable: { done: matte(MATTE.wood) }, w4dinechair: { done: matte(MATTE.wood) },
       w4folder: { done: matte(MATTE.cloth) }, w4fridge: { done: matte(MATTE.paint) }, w4stool: { done: matte(MATTE.paint) },
@@ -114,7 +116,9 @@
       return loadImageTexture(key, 'image/jpeg').then(t => { if (!t || !alive) return null; madeTex.push(t);
         t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; t.repeat.set(1, -1); t.offset.set(0, 1); t.needsUpdate = true; return t; }).catch(() => null);
     }
-    const PIC = { y: 0.20, z: 0.0062, h: 0.295 };
+    /* (18 Nov, photographed: laid at 6.2 mm, the frame's own mount, which is not flat (its points 1.6 to 7.5 mm), stood
+       over the top of the photograph in a pale band: laid at 8.5 mm, under the frame's lip at 9 to 10.6) */
+    const PIC = { y: 0.20, z: 0.0085, h: 0.295 };
     const pics = {};
     function picIn(g, key, s = 1) {
       const m = M({ color: 0xffffff, roughness: 0.55, metalness: 0 });

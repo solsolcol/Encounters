@@ -94,8 +94,10 @@
     const wallPaint = (hex, seed) => { const W = 256, [c, x] = cnv(W), r = rng(seed);
       x.fillStyle = hex; x.fillRect(0, 0, W, W);
       /* (soft round spots, a radial fall each: squares, however faint, read as tiles of a pattern) */
-      for (let s = 0; s < 260; s++) { const cx = r() * W, cy = r() * W, q = 8 + r() * 26, dark = r() < 0.5;
-        const g = x.createRadialGradient(cx, cy, 0, cx, cy, q); g.addColorStop(0, dark ? 'rgba(0,0,0,0.018)' : 'rgba(255,255,255,0.022)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+      /* (18 Nov, photographed on a phone: 260 of them at 2 % read as damp stains on every wall; a painted HDB wall is even:
+         a few, at under 1 %, so it is paint and not a flat colour) */
+      for (let s = 0; s < 120; s++) { const cx = r() * W, cy = r() * W, q = 8 + r() * 26, dark = r() < 0.5;
+        const g = x.createRadialGradient(cx, cy, 0, cx, cy, q); g.addColorStop(0, dark ? 'rgba(0,0,0,0.007)' : 'rgba(255,255,255,0.009)'); g.addColorStop(1, 'rgba(0,0,0,0)');
         x.fillStyle = g; x.fillRect(cx - q, cy - q, q * 2, q * 2); }
       const t = tex(done(THREE, c, true)); rep(t, 1.4, 1.4); return t; };
     const mWall = M({ map: wallPaint('#d9cdb4', 3301), roughness: 0.92 });

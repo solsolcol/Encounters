@@ -124,6 +124,8 @@
                      pending: speak.pending ? speak.pending.name : null, applied: booted, waiting: [...waiting].sort(), mends: twinMends }),
       sayLine, queueLine, queueFn, queueGap, dayClock, after,
       who: () => people.filter(P => !P.driver).map(P => ({ key: P.key, ready: P.ready, take: P.cur })),
+      /* (a probe's handle on one person: tools/probes/bonesat.mjs reads its bones where the world draws them) */
+      person: (key, i) => people.filter(P => P.key === key)[i || 0] || null,
       census: () => {
         let meshes = 0, tris = 0; const texs = new Set();
         world.traverse(o => { if (!o.isMesh && !o.isLine && !o.isLineSegments) return; let v = true; for (let q = o; q; q = q.parent) if (!q.visible) { v = false; break; }

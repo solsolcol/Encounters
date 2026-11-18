@@ -49,9 +49,14 @@ const place = (v) => p.evaluate((v) => { const E = window.__enc, d = Math.PI / 1
   const cam = E.pitch.children.find(o => o.isCamera);
   if (cam) { const f = v.fov || 72; if (Math.abs(cam.fov - f) > 1e-3) { cam.fov = f; cam.updateProjectionMatrix(); } } }, v);
 for (const v of VIEWS) {
-  if (v.what && v.what !== '-') {
-    if (v.what.startsWith('look=')) await p.evaluate((n) => window.__enc.stage.look(n, 0), v.what.slice(5));
-    else { await p.evaluate((ph) => window.__enc.stage.applyPhase(ph), v.what);
+  /* (v27.0: `what` may join several with '+': a bookmark, look=NAME, `vis` (Spirit Vision opened, the wave let run out to
+     its end before the shot) or `novis` (shut, the wave home)) */
+  if (v.what && v.what !== '-') for (const w of v.what.split('+')) {
+    if (w.startsWith('look=')) await p.evaluate((n) => window.__enc.stage.look(n, 0), w.slice(5));
+    else if (w === 'vis' || w === 'novis') { const on = w === 'vis';
+      await p.evaluate((on) => window.__enc.kit.vision(on), on);
+      await p.waitForFunction((on) => { const v = window.__enc.kit.vision(); return v && v.dir === 0 && (on ? v.on : !v.on && v.r === 0); }, on, { timeout: 240000, polling: 200 }); }
+    else { await p.evaluate((ph) => window.__enc.stage.applyPhase(ph), w);
       await p.waitForFunction(() => window.__enc.getState() === 'play', null, { timeout: 600000, polling: 300 }); }
     await frames(4); await p.waitForTimeout(1500);
   }

@@ -852,8 +852,10 @@
     const wallPaint = (hex, seed) => { const W = 256, [c, x] = cnv(W), r = rng(seed);
       x.fillStyle = hex; x.fillRect(0, 0, W, W);
       /* (soft round spots, a radial fall each: squares, however faint, read as tiles of a pattern) */
-      for (let s = 0; s < 260; s++) { const cx = r() * W, cy = r() * W, q = 8 + r() * 26, dark = r() < 0.5;
-        const g = x.createRadialGradient(cx, cy, 0, cx, cy, q); g.addColorStop(0, dark ? 'rgba(0,0,0,0.018)' : 'rgba(255,255,255,0.022)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+      /* (18 Nov, photographed on a phone: 260 of them at 2 % read as damp stains on every wall; a painted HDB wall is even:
+         a few, at under 1 %, so it is paint and not a flat colour) */
+      for (let s = 0; s < 120; s++) { const cx = r() * W, cy = r() * W, q = 8 + r() * 26, dark = r() < 0.5;
+        const g = x.createRadialGradient(cx, cy, 0, cx, cy, q); g.addColorStop(0, dark ? 'rgba(0,0,0,0.007)' : 'rgba(255,255,255,0.009)'); g.addColorStop(1, 'rgba(0,0,0,0)');
         x.fillStyle = g; x.fillRect(cx - q, cy - q, q * 2, q * 2); }
       const t = tex(done(THREE, c, true)); rep(t, 1.4, 1.4); return t; };
     const mWall = M({ map: wallPaint('#d9cdb4', 3301), roughness: 0.92 });
@@ -2919,7 +2921,9 @@
     const matte = (r) => (m) => m.traverse(q => { if (!q.isMesh) return; for (const mt of [].concat(q.material)) {
       mt.metalnessMap = null; mt.metalness = 0; mt.roughnessMap = null; mt.roughness = r; mt.envMapIntensity = 1; mt.needsUpdate = true; } });
     const LOOK = {
-      w4prayershelf: { done: matte(MATTE.wood) }, w4frameport: { done: matte(MATTE.wood) }, w4sofa: { done: matte(MATTE.cloth) },
+      /* (18 Nov, photographed: her shrine's shelves drew pale at the eye's grazing angle even matte at 0.55: its varnish
+         is a softer one, its reflection halved) */
+      w4prayershelf: { done: (m) => { matte(0.78)(m); m.traverse(q => { if (q.isMesh) for (const mt of [].concat(q.material)) mt.envMapIntensity = 0.5; }); } }, w4frameport: { done: matte(MATTE.wood) }, w4sofa: { done: matte(MATTE.cloth) },
       w4armchair: { done: matte(MATTE.cloth) }, w4coffee: { done: matte(MATTE.wood) }, w4tvconsole: { done: matte(MATTE.wood) },
       w4cabinet: { done: matte(MATTE.wood) }, w4dintable: { done: matte(MATTE.wood) }, w4dinechair: { done: matte(MATTE.wood) },
       w4folder: { done: matte(MATTE.cloth) }, w4fridge: { done: matte(MATTE.paint) }, w4stool: { done: matte(MATTE.paint) },
@@ -3005,7 +3009,9 @@
       return loadImageTexture(key, 'image/jpeg').then(t => { if (!t || !alive) return null; madeTex.push(t);
         t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; t.repeat.set(1, -1); t.offset.set(0, 1); t.needsUpdate = true; return t; }).catch(() => null);
     }
-    const PIC = { y: 0.20, z: 0.0062, h: 0.295 };
+    /* (18 Nov, photographed: laid at 6.2 mm, the frame's own mount, which is not flat (its points 1.6 to 7.5 mm), stood
+       over the top of the photograph in a pale band: laid at 8.5 mm, under the frame's lip at 9 to 10.6) */
+    const PIC = { y: 0.20, z: 0.0085, h: 0.295 };
     const pics = {};
     function picIn(g, key, s = 1) {
       const m = M({ color: 0xffffff, roughness: 0.55, metalness: 0 });
@@ -3130,15 +3136,15 @@
         win: { wsit: [2.0, 3.6, 12] }, talk: 'Sitting_Answering_Questions',
         seat: { y: WHEEL.seat, takes: /^(Sitting_Answering_Questions|wsit|wturn|trance)$/,
                 down: { hipOver: 0.11, sink: 0.015, sole: WHEEL.foot + 0.004, edge: WHEEL.front, r: 0.055, apron: 0.14, flat: true } },
-        headDamp: { Sitting_Answering_Questions: [0.45, 'wsit'] }, blobW: 0.8, blobD: 1.05 });   // (her shadow is her chair's too)
+        headDamp: { Sitting_Answering_Questions: [0.45, 'wsit'] }, skins: { 0: 'p4ammah', 2: 'p4ammam' }, blobW: 0.8, blobD: 1.05 });   // (her shadow is her chair's too; no far body in a flat of ten metres)
       cast.amma.home = { x: CHAIR.x, z: CHAIR.z, ry: CHAIR.ry };
       /* RAVI and MALA, standing, turned to their mother; each talks in the library's chat (its head's turn measured
          before it is cast: tools/probes/headturn.mjs) and rests in its stand */
       cast.ravi = mkPerson('p4ravi', AT.ravi.x, AT.ravi.z, faceTo(AT.ravi.x, AT.ravi.z, CHAIR.x, CHAIR.z), { take: 'Idle_3', phase: 0.55,
-        talk: 'Stand_and_Chat', shoulders: STAND_SHOULDERS, blobW: 0.8, blobD: 0.6 });
+        talk: 'Stand_and_Chat', shoulders: STAND_SHOULDERS, skins: { 0: 'p4ravih', 2: 'p4ravim' }, blobW: 0.8, blobD: 0.6 });
       cast.ravi.home = { x: AT.ravi.x, z: AT.ravi.z, ry: faceTo(AT.ravi.x, AT.ravi.z, CHAIR.x, CHAIR.z) };
       cast.mala = mkPerson('p4mala', AT.mala.x, AT.mala.z, faceTo(AT.mala.x, AT.mala.z, CHAIR.x, CHAIR.z), { take: 'Idle_3', phase: 0.15,
-        talk: 'Stand_and_Chat', shoulders: STAND_SHOULDERS, blobW: 0.75, blobD: 0.6 });
+        talk: 'Stand_and_Chat', shoulders: STAND_SHOULDERS, skins: { 0: 'p4malah', 2: 'p4malam' }, blobW: 0.75, blobD: 0.6 });
       cast.mala.home = { x: AT.mala.x, z: AT.mala.z, ry: faceTo(AT.mala.x, AT.mala.z, CHAIR.x, CHAIR.z) };
       /* GRANDMASTER PHO ON HIS STOOL (Chad's own model in his look D, as chapter 3 cast him on his bench: the same
          numbers, the stool's top for the bench's), turned to her; his rest the start of his rise from a seat, both hands
@@ -3164,13 +3170,18 @@
        the vision's own layer. Their colours keep their meaning all chapter: crimson the one on her back, pale blue Appa,
        green the hungry ones; her goddess is a DARK BLUE LIGHT round her altar and never a figure (the standing rule);
        GOLD is Grandmaster Pho's alone (Chad, v25.5). A spirit's glow is read and set through P.fx (uAlpha, uFill, uRim) */
+    /* (18 Nov, photographed through the vision on a phone: a generated body is many layers deep (its clothes, its rags),
+       and a spirit is drawn over everything with no test of its own depth, so its fill summed through every layer and the
+       one on her back read as a red block that hid her. Each is now its RIM, with a breath of fill. A glow laid over a
+       body the world draws (his gold, her altar's blue) is drawn on its front surface only (xray 0: its own back layers
+       stand behind the world's depth and drop out), or his robe's folds summed into an orange sheet) */
     const SPIRIT = {
-      oppress: { color: 0xff2238, fill: 0.12, rim: 1.9, flicker: 0.35, power: 2.2 },
-      appa:    { color: 0xbfe2ff, fill: 0.16, rim: 1.4, flicker: 0.05, power: 2.6 },
-      wander:  { color: 0x8cff5e, fill: 0.08, rim: 1.7, flicker: 0.3, power: 2.4 },
-      large:   { color: 0x5cff7a, fill: 0.1, rim: 1.9, flicker: 0.25, power: 2.2 },
-      altar:   { color: 0x2f4dff, fill: 0.05, rim: 1.1, flicker: 0.08, power: 2.0 },
-      pho:     { color: 0xffc456, fill: 0.03, rim: 0.75, flicker: 0.04, power: 2.8 }
+      oppress: { color: 0xff2238, fill: 0.025, rim: 2.3, flicker: 0.35, power: 2.0 },
+      appa:    { color: 0xbfe2ff, fill: 0.04, rim: 1.6, flicker: 0.05, power: 2.4 },
+      wander:  { color: 0x8cff5e, fill: 0.02, rim: 2.0, flicker: 0.3, power: 2.2 },
+      large:   { color: 0x5cff7a, fill: 0.025, rim: 2.2, flicker: 0.25, power: 2.0 },
+      altar:   { color: 0x2f4dff, fill: 0.03, rim: 1.1, flicker: 0.08, power: 2.0, xray: 0 },
+      pho:     { color: 0xffc456, fill: 0.0, rim: 0.5, flicker: 0.04, power: 3.0, xray: 0 }
     };
     function spiritOf(P, look) {
       whenReady(P, () => { P.fx = ctx.spirit ? ctx.spirit(P.model, look) : null; P.glow = 1; if (P.fx) P.fx.set('uAlpha', P.alpha != null ? P.alpha : 1); });
@@ -3207,12 +3218,12 @@
     /* HER GODDESS'S LIGHT: a dark blue glow laid over her altar (the shelf, its pictures, the lamp) in the vision only,
        twins of their own meshes (ctx.spiritAura): a light, never a figure. And GRANDMASTER PHO, in the vision, the one
        person in the room who stands in gold, faintly (gold is his alone: Chad, v25.5) */
-    const auras = [];
+    const auras = [], altarAuras = [];
     /* (a thing's twins are made once its model is in its group: stand() asked for the parse first, so its own handler,
        which puts the model in, has run before this one) */
     function auraOn(key, look) {
       const groups = things[key] || []; if (!groups.length || !have(key)) return;
-      parseOnce(key).then(() => { if (!alive) return; for (const g of groups) { const a = ctx.spiritAura ? ctx.spiritAura(g, look) : null; if (a) auras.push(a); } }, () => {});
+      parseOnce(key).then(() => { if (!alive) return; for (const g of groups) { const a = ctx.spiritAura ? ctx.spiritAura(g, look) : null; if (a) { auras.push(a); altarAuras.push(a); } } }, () => {});
     }
     for (const k of ['w4prayershelf', 'w4vilakku']) auraOn(k, SPIRIT.altar);
     for (const P of [cast.pho, cast.phoB]) whenReady(P, (Q) => { const a = ctx.spiritAura ? ctx.spiritAura(Q.model, SPIRIT.pho) : null; if (a) { auras.push(a); Q.aura = a; } });
@@ -3604,7 +3615,7 @@
       for (let i = 0; i < flames.length; i++) { const f = flames[i]; f.visible = lampK > 0.02; if (!f.visible) continue;
         const fl = 0.85 + 0.15 * Math.sin(t * 13 + i * 2) + 0.08 * Math.sin(t * 31 + i);
         f.scale.set(0.034 * lampK * fl, 0.062 * lampK * (0.9 + 0.2 * Math.sin(t * 9 + i * 3)), 1); }
-      for (const a of auras) if (a.set) a.set('uFill', 0.05 + 0.07 * lampK);
+      for (const a of altarAuras) if (a.set) a.set('uFill', SPIRIT.altar.fill + 0.05 * lampK);   // (her lamp lit: her goddess's light a little brighter)
     }
     /* THE ROOM TURNS: the tube light dies, the fan stops, the TV dies; the lamp and the estate through the grilles are
        all the light there is (the DARK look). A beat of near black first, where Mala goes back to her brother */
@@ -3873,7 +3884,9 @@
     }
     function applyPhase(saved) {
       const R = readMark(saved);
-      phase = R.p; play.run++;
+      /* (a jump from one phase to another drops what the last one had queued: its lines, its timers, its busy hand-off:
+         the v21.25 law, a phase jump leaves the line queue full) */
+      phase = R.p; play.run++; play.busy = false; lineQ.length = 0; speakReset();
       if (R.p === 'history') historyBegin(R, !saved || !R.learned.length);
       else if (R.p === 'sight') sightBegin(R, false);
       else if (R.p === 'bless') blessBegin(R, false);
@@ -4057,6 +4070,8 @@
                      pending: speak.pending ? speak.pending.name : null, applied: booted, waiting: [...waiting].sort(), mends: twinMends }),
       sayLine, queueLine, queueFn, queueGap, dayClock, after,
       who: () => people.filter(P => !P.driver).map(P => ({ key: P.key, ready: P.ready, take: P.cur })),
+      /* (a probe's handle on one person: tools/probes/bonesat.mjs reads its bones where the world draws them) */
+      person: (key, i) => people.filter(P => P.key === key)[i || 0] || null,
       census: () => {
         let meshes = 0, tris = 0; const texs = new Set();
         world.traverse(o => { if (!o.isMesh && !o.isLine && !o.isLineSegments) return; let v = true; for (let q = o; q; q = q.parent) if (!q.visible) { v = false; break; }

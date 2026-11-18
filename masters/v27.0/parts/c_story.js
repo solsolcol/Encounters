@@ -366,7 +366,7 @@
       for (let i = 0; i < flames.length; i++) { const f = flames[i]; f.visible = lampK > 0.02; if (!f.visible) continue;
         const fl = 0.85 + 0.15 * Math.sin(t * 13 + i * 2) + 0.08 * Math.sin(t * 31 + i);
         f.scale.set(0.034 * lampK * fl, 0.062 * lampK * (0.9 + 0.2 * Math.sin(t * 9 + i * 3)), 1); }
-      for (const a of auras) if (a.set) a.set('uFill', 0.05 + 0.07 * lampK);
+      for (const a of altarAuras) if (a.set) a.set('uFill', SPIRIT.altar.fill + 0.05 * lampK);   // (her lamp lit: her goddess's light a little brighter)
     }
     /* THE ROOM TURNS: the tube light dies, the fan stops, the TV dies; the lamp and the estate through the grilles are
        all the light there is (the DARK look). A beat of near black first, where Mala goes back to her brother */
@@ -635,7 +635,9 @@
     }
     function applyPhase(saved) {
       const R = readMark(saved);
-      phase = R.p; play.run++;
+      /* (a jump from one phase to another drops what the last one had queued: its lines, its timers, its busy hand-off:
+         the v21.25 law, a phase jump leaves the line queue full) */
+      phase = R.p; play.run++; play.busy = false; lineQ.length = 0; speakReset();
       if (R.p === 'history') historyBegin(R, !saved || !R.learned.length);
       else if (R.p === 'sight') sightBegin(R, false);
       else if (R.p === 'bless') blessBegin(R, false);

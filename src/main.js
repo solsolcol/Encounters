@@ -17614,6 +17614,7 @@ async function skelLab(key, o = {}) {
 }
 window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () => state,   // v8.7: pitch, so a probe can aim the lens at the floor
                  skelLab,                                  // v15.2: the merge, proven
+                 hands: () => handsRoot,                   // v27.0: a probe photographs a body without his hands in front of it (play shows them again on its next entry)
                  chapterNext: (k) => nextChapterKey(k), chapterStops, isPreview,   // v23.0: the preview seam, for the fixture
                  kit: KIT, kitDebug, interactNow,          // v7.0: the play kit, by state
                  /* v21.9: where a hotspot's mark is on the screen (CSS px), so a probe can tap it as a thumb would */
