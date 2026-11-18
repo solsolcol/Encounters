@@ -649,36 +649,60 @@
       for (const grp of bands(TREES)) many('w4angsana', grp, world, 0.03);
       for (const grp of bands(PALMS)) many('w4foxpalm', grp, world, 0.03);
 
-      /* ---------------------------------------------- THE BLOCKS ROUND THEM, and the newer estate's taller ones beyond:
-         each its corridor lines and its windows, painted at a storey's true size, fading into the haze */
-      const farT = (seed, cols, rows) => { const [c, x] = canvas(512, 512), rr = rng(seed), cw = 512 / cols, rh = 512 / rows;
-        x.fillStyle = '#1d1d23'; x.fillRect(0, 0, 512, 512);
-        for (let j = 0; j < rows; j++) { const y0 = j * rh;
-          x.fillStyle = 'rgba(205,214,232,0.55)'; x.fillRect(0, y0 + rh * 0.08, 512, Math.max(1.5, rh * 0.07));      // the corridor's lit line
-          x.fillStyle = '#2a2a30'; x.fillRect(0, y0 + rh * 0.66, 512, rh * 0.1);                                         // the parapet's band
-          for (let i = 0; i < cols; i++) { const v = rr(); if (v > 0.62) continue;
-            x.fillStyle = v < 0.3 ? '#e9c487' : v < 0.48 ? '#d7e0ea' : v < 0.54 ? '#8ea4dc' : '#f0b878';
-            x.fillRect(i * cw + cw * 0.2, y0 + rh * 0.22, cw * 0.55, rh * 0.36); } }
-        return c; };
-      const FAR = [[7120, 24, 13], [7121, 20, 30], [7122, 28, 16]].map(([sd, cols, rows]) => ({ m: B({ map: lit(farT(sd, cols, rows)), fog: true }), W: cols * 3.4, H: rows * 2.85 }));
-      const [mFarA, mFarB, mFarC] = FAR;
-      const slab = (F, x0, z0, x1, z1, h, d = 12) => {               // a block from (x0, z0) to (x1, z1), its lit face toward her
-        const nx = z1 - z0, nz = -(x1 - x0), nl = Math.hypot(nx, nz), ox = nx / nl * d, oz = nz / nl * d;
-        quadUV(F.m, [x0, G, z0], [x1, G, z1], [x1, G + h, z1], [x0, G + h, z0], 0, 0, nl / F.W, h / F.H);
-        quad(mDark, [x0 + ox, G, z0 + oz], [x0, G, z0], [x0, G + h, z0], [x0 + ox, G + h, z0 + oz]);
-        quad(mDark, [x1, G, z1], [x1 + ox, G, z1 + oz], [x1 + ox, G + h, z1 + oz], [x1, G + h, z1]);
-        quad(mRoofEdge, [x0, G + h, z0], [x1, G + h, z1], [x1 + ox, G + h, z1 + oz], [x0 + ox, G + h, z0 + oz]);
+      /* ---------------------------------------------- THE BLOCKS ROUND THEM, and the newer estate's taller ones beyond
+         (R48, Chad, 18 Nov: "no basic HDB block left in its background". Each was one painted card, its corridors and
+         windows drawn flat on it, and from her corridor at 50 to 200 m it read as a picture of a block. Each is built now as
+         the block across is, storey by storey: the flats' wall behind each corridor (the same households' atlas, dealt
+         again), the corridor's lit ceiling and its floor, the parapet standing 2 m out in front with its band of colour and
+         the slab's edge, the party walls as fins every second flat, the void deck's lit ceiling under it, the body behind,
+         its roof's parapet and a lift core over the roof; a storey 2.85 m, as hers. Turned any way, so laid in the block's
+         own frame (along its face, up, and out toward her); in the block across's own materials, so no new draw call) */
+      const deal2 = rng(4405);
+      const slab = (x0, z0, x1, z1, h, d = 12) => {
+        const L = Math.hypot(x1 - x0, z1 - z0), ax = (x1 - x0) / L, az = (z1 - z0) / L, bx = az, bz = -ax;   // along; into the block
+        const P = (u, y, w) => [x0 + ax * u - bx * w, y, z0 + az * u - bz * w];                             // w: out toward her
+        const NSf = Math.max(4, Math.round(h / SH)), top = G + NSf * SH, PIN = 1.9, POU = 2.05, ry = Math.atan2(-az, ax);
+        const nb = Math.max(1, Math.floor((L - 2) / BAY)), ub = (L - nb * BAY) / 2;                        // its flats, the ends its stairs'
+        for (let s2 = 1; s2 < NSf; s2++) {
+          const fl = G + s2 * SH, ce = fl + SH - 0.25;
+          quadUV(mPara, P(0, fl - 0.30, POU), P(L, fl - 0.30, POU), P(L, fl + 1.0, POU), P(0, fl + 1.0, POU), 0, 0, L / 5, 1);
+          quad(mParaIn, P(0, fl + 1.0, POU), P(L, fl + 1.0, POU), P(L, fl + 1.0, PIN), P(0, fl + 1.0, PIN));
+          quadUV(mFloor7, P(0, fl + 0.01, PIN), P(L, fl + 0.01, PIN), P(L, fl + 0.01, 0), P(0, fl + 0.01, 0), 0, 0, L / 7, 1);
+          quadUV(mCeil7, P(0, ce, 0), P(L, ce, 0), P(L, ce, PIN), P(0, ce, PIN), 0, 0, L / 7, 1);
+          for (let i = 0; i < nb; i++) { const u = ub + i * BAY, v = (deal2() * NV) | 0, flip = deal2() < 0.5;
+            const v0 = 1 - (v + 1) / (NV + 1), v1 = 1 - v / (NV + 1);
+            quadUV(mFlats, P(u, fl, 0), P(u + BAY, fl, 0), P(u + BAY, ce, 0), P(u, ce, 0), flip ? 1 : 0, v0 + 0.0004, flip ? 0 : 1, v1 - 0.0004); }
+          quad(mDark, P(0, fl, 0), P(ub, fl, 0), P(ub, ce, 0), P(0, ce, 0));                                // the stairs' walls at its ends
+          quad(mDark, P(L - ub, fl, 0), P(L, fl, 0), P(L, ce, 0), P(L - ub, ce, 0));
+        }
+        /* the void deck: its back wall in the dark, its lit ceiling, its columns */
+        quad(mDark, P(0, G, -d * 0.6), P(L, G, -d * 0.6), P(L, G + SH - 0.3, -d * 0.6), P(0, G + SH - 0.3, -d * 0.6));
+        quadUV(mVoidCeil, P(0, G + SH - 0.3, -d * 0.6), P(L, G + SH - 0.3, -d * 0.6), P(L, G + SH - 0.3, POU), P(0, G + SH - 0.3, POU), 0, 0, L / 5.1, (POU + d * 0.6) / 5);
+        for (let cu = 2.5; cu <= L - 2.4; cu += 5.1) { const c = P(cu, 0, POU - 0.4); box(mParaIn, c[0], G + SH / 2, c[2], 0.6, SH, 0.6, ry); }
+        /* the party walls out of the face as fins, every second flat, ground to roof */
+        for (let i = 0; i <= nb; i += 2) { const u = ub + i * BAY;
+          quadUV(mFin, P(u - 0.2, G, POU + 0.35), P(u + 0.2, G, POU + 0.35), P(u + 0.2, top + 0.6, POU + 0.35), P(u - 0.2, top + 0.6, POU + 0.35), 0, 0, 1, 1);
+          quad(mDark, P(u - 0.2, G, 0), P(u - 0.2, G, POU + 0.35), P(u - 0.2, top + 0.6, POU + 0.35), P(u - 0.2, top + 0.6, 0));
+          quad(mDark, P(u + 0.2, G, POU + 0.35), P(u + 0.2, G, 0), P(u + 0.2, top + 0.6, 0), P(u + 0.2, top + 0.6, POU + 0.35)); }
+        /* its ends and its roof, its roof's parapet against the sky */
+        quad(mDark, P(0, G, -d), P(0, G, POU), P(0, top, POU), P(0, top, -d));
+        quad(mDark, P(L, G, POU), P(L, G, -d), P(L, top, -d), P(L, top, POU));
+        quad(mRoofEdge, P(0, top, POU), P(L, top, POU), P(L, top, -d), P(0, top, -d));
+        quadUV(mPara, P(0, top - 0.3, POU + 0.01), P(L, top - 0.3, POU + 0.01), P(L, top + 1.1, POU + 0.01), P(0, top + 1.1, POU + 0.01), 0, 0, L / 5, 1);
+        /* its lift core over the roof, its motor room, and a tank */
+        { const c = P(L / 2, 0, -1.2); box(mDark, c[0], top + 3.2, c[2], 4.8, 6.4, 4.6, ry); box(mRoofEdge, c[0], top + 6.5, c[2], 5.4, 0.3, 5.2, ry); }
+        { const c = P(L * 0.22, 0, -d / 2); box(mDark, c[0], top + 1.6, c[2], 5, 2.2, 3.6, ry); }
       };
-      slab(mFarA, -128, -8, -74, -46, 37.05);                          // a block turned toward her, west of the one across
-      slab(mFarA, 66, -52, 118, -20, 37.05);                           // and one east of it
-      slab(mFarC, -150, -112, -60, -128, 45.6);                        // the next row behind, three storeys taller
-      slab(mFarC, 40, -120, 140, -104, 45.6);
+      slab(-128, -8, -74, -46, 37.05);                          // a block turned toward her, west of the one across
+      slab(66, -52, 118, -20, 37.05);                           // and one east of it
+      slab(-150, -112, -60, -128, 45.6);                        // the next row behind, three storeys taller
+      slab(40, -120, 140, -104, 45.6);
       /* (the newer estate's towers, 34 to 40 storeys: from her storey they must rise past the block across's roof, 21.6
          degrees up, to be seen over it at 150 to 200 m) */
-      slab(mFarB, -46, -150, -8, -158, 108.3, 14);
-      slab(mFarB, 18, -176, 52, -182, 114.0, 14);
-      slab(mFarB, -96, -190, -64, -200, 102.6, 14);
-      slab(mFarB, 84, -168, 112, -176, 96.9, 14);
+      slab(-46, -150, -8, -158, 108.3, 14);
+      slab(18, -176, 52, -182, 114.0, 14);
+      slab(-96, -190, -64, -200, 102.6, 14);
+      slab(84, -168, 112, -176, 96.9, 14);
       /* her own block's corridor face below her storey (each storey's band, its lit line and the parapet) */
       for (let s = 1; s <= 7; s++) { const y = -s * 2.85;
         const zo = CORR.para - 0.075;

@@ -73,18 +73,13 @@
        with her); and Grandmaster Pho's head as he bows over her with his hand on her head (measured: e4c4who.mjs) */
     const KNEEL_R = { x: CHAIR.x + 0.45, z: CHAIR.z - 0.05 }, PHO_BOW = [-0.13, 1.40, 3.51];
     /* (R80, Chad, 18 Nov: "in some outcome ending cutscenes, ravi's head blocks grandmaster pho when the camera tries to
-       show pho talking with his voicelines". Stood up where he had knelt, KNEEL_R, his head was 0.02 m from the line from
-       ending D's lens to his teacher's face and 0.07 m from ending C's: mine, from builds 21p and 21q. He rises now at his
-       mother's side, shoulder to her shoulder, carried there in the rise itself: 0.22 and 0.36 m off those lines, his
-       mother's own place clear of him by 0.3 m) */
-    const RAVI_UP = { x: CHAIR.x + 0.30, z: CHAIR.z + 0.17 };
-    function raviUp(P, t, rise) {                       // where his rise carries him, from the kneel to her side, by its run
-      const u = smo(c01((t - rise - 0.6) / 3.0));
-      if (u <= 0) return;
-      const ry0 = faceTo(KNEEL_R.x, KNEEL_R.z, CHAIR.x, CHAIR.z + 0.2), ry1 = faceTo(RAVI_UP.x, RAVI_UP.z, CHAIR.x, CHAIR.z + 0.2);
-      P.group.position.x += (RAVI_UP.x - KNEEL_R.x) * u; P.group.position.z += (RAVI_UP.z - KNEEL_R.z) * u;
-      P.group.rotation.y = lpA(ry0, ry1, u);
-    }
+       show pho talking with his voicelines". Stood where he had knelt, KNEEL_R, Ravi's head was 0.02 m from the line from
+       ending D's lens to his teacher's face and 0.07 m from ending C's: mine, from builds 21p and 21q. Build 21t moved HIM
+       to her side, and as he rose his head went through her waist (photographed, C at 18.5): a family round her chair
+       leaves no standing place clear of both lenses and of her, the chair, the stool and the altar (searched on a 1 cm
+       grid). So the LENS moves: each ending cuts, for his teacher's words, to a place that sees him past all three of
+       them by 0.32 m, from his front right as he speaks to her (C_PHO_EYE, D_PHO_EYE)) */
+    const C_PHO_EYE = [1.35, 1.55, 4.25], D_PHO_EYE = [1.01, 1.58, 3.97];
     /* (the rush take's hips over the floor, its own metres, every quarter second: tools/probes/takepath.mjs, 18 Nov) */
     const RUSH_HIPS = [[-0.01, -0.03], [-0.01, 0.0], [-0.02, 0.06], [-0.03, 0.22], [-0.08, 0.61], [-0.21, 1.22], [-0.35, 1.82], [-0.43, 2.24], [-0.43, 2.63], [-0.43, 2.82], [-0.44, 2.86], [-0.45, 2.89]];
     const RUSH_AT = (tk) => { const f = Math.max(0, Math.min(RUSH_HIPS.length - 1.001, tk / 0.25)), i = Math.floor(f), u = f - i, A = RUSH_HIPS[i], B = RUSH_HIPS[i + 1];
@@ -605,14 +600,13 @@
            kneels, his eyes turning from him to her; Mala comes round to her other side and kneels too: walkKneel) */
         whenReady(cast.ravi, (P) => {
           if (t < E.kneel) { rushHeld(P, t); lookNow(P, CR_EYE, smo(c01((t - 0.5) / 0.8)), 0.8); }
-          else if (t > E.rise + 3.6) { put(P, RAVI_UP.x, RAVI_UP.z, faceTo(RAVI_UP.x, RAVI_UP.z, CHAIR.x, CHAIR.z + 0.2));        // (R68: stood again, alive; R80: at her side)
+          else if (t > E.rise + 3.6) { put(P, KR.x, KR.z, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2));        // (R68: stood again, alive)
             const it = 2 + (t - E.rise - 3.6) * 0.35;
             if (!malaCall(P, t, E.Rv, SECS.rv4R1 || 4.6, 'Stand_and_Chat', 'Idle_3', it))
               pose(P, 'Idle_3', it, true, 'kneelhold', 1 - smo(c01((t - E.rise - 3.6) / 0.8)), 0.2);
             lookNow(P, HER_HEAD(), 1, 0.9); }
           else { walkKneel(P, t, E.kneel, rushXZ(P, 2.5), KR, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2), ['rush', pingOf(E.kneel, 2.45, 0.12, 1.4)],
               { ry0: RAVI_RY, kt: (td) => (t < E.rise ? (td < 4.2 ? td : pingOf(td - 4.2, 4.05, 0.15, 3.4)) : runOf(t, E.rise + 0.6, E.rise + 3.6, 4.2, 0.2)) });
-            raviUp(P, t, E.rise);
             lookNow(P, lp3(CR_EYE, AMMA_FACE, smo(c01((t - E.kneel) / 0.5))), 1, 0.9); } });
         whenReady(cast.mala, (P) => {
           if (t < E.mala) { pose(P, 'lightlamp', MALA_LAMPT(t)); lookNow(P, AMMA_FACE, 1, 0.9); }
@@ -635,8 +629,8 @@
           { t: E.rise, name: 'kneel', eye: CK_EYE, at: CK_AT, fp: 62, fd: 54 },
           { t: E.rise + 2.8, name: 'stand', eye: CK_EYE, at: [CHAIR.x + 0.04, 1.22, CHAIR.z + 0.24], fp: 58, fd: 52 },
           { t: E.ph - 0.4, name: 'stand', eye: CK_EYE, at: [CHAIR.x + 0.04, 1.28, CHAIR.z + 0.28], fp: 58, fd: 52 },
-          { t: E.ph + 0.5, name: 'pho', eye: CK_EYE, at: [cast.phoB.home.x, 1.58, cast.phoB.home.z], fp: 46, fd: 42 },
-          { t: E.close, name: 'pho', eye: CK_EYE, at: [cast.phoB.home.x, 1.58, cast.phoB.home.z], fp: 46, fd: 42 }
+          { t: E.ph + 0.5, name: 'pho', eye: C_PHO_EYE, at: [cast.phoB.home.x, 1.58, cast.phoB.home.z], fp: 46, fd: 42, cut: true },   // (R80)
+          { t: E.close, name: 'pho', eye: C_PHO_EYE, at: [cast.phoB.home.x, 1.58, cast.phoB.home.z], fp: 46, fd: 42 }
         ]);
         phoTurn(t, E.ph, false, 'ph4C1');
       },
@@ -652,16 +646,15 @@
            "Hold her hand" round to her side and down onto his knees: walkKneel, its two legs) */
         whenReady(cast.ravi, (P) => {
           const RX = rushXZ(P, 2.5), R2 = { x: RX.x - 0.12, z: RX.z + 0.18 }, r2 = faceTo(R2.x, R2.z, CHAIR.x, CHAIR.z);
-          if (t > E.rise + 3.6) { put(P, RAVI_UP.x, RAVI_UP.z, faceTo(RAVI_UP.x, RAVI_UP.z, CHAIR.x, CHAIR.z + 0.2));
+          if (t > E.rise + 3.6) { put(P, KR.x, KR.z, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2));
             const it = 2 + (t - E.rise - 3.6) * 0.35;
             if (!malaCall(P, t, E.Rv, SECS.rv4R1 || 4.6, 'Stand_and_Chat', 'Idle_3', it))
               pose(P, 'Idle_3', it, true, 'kneelhold', 1 - smo(c01((t - E.rise - 3.6) / 0.8)), 0.2);
             lookNow(P, HER_HEAD(), 1, 0.9); return; }
           if (t < E.reach) rushHeld(P, t);
           else if (t < E.kneel) walkKneel(P, t, E.reach, RX, R2, r2, ['rush', pingOf(E.reach, 2.45, 0.12, 1.4)], { ry0: RAVI_RY, kneelAt: Infinity });
-          else { walkKneel(P, t, E.kneel, R2, KR, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2), ['Idle_3', 3 + (E.kneel - E.reach) * 0.4],
+          else walkKneel(P, t, E.kneel, R2, KR, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2), ['Idle_3', 3 + (E.kneel - E.reach) * 0.4],
             { ry0: r2, kt: (td) => (t < E.rise ? Math.min(4.2, td) : runOf(t, E.rise + 0.6, E.rise + 3.6, 4.2, 0.2)) });
-            raviUp(P, t, E.rise); }
           lookNow(P, AMMA_FACE, 1, 0.9); });
         /* (R68: at her lamp, breathing, through the cry and the light; as her mother's eyes open, into her stand and turned to
            her; her "Unbelievable... Amma, you're on your feet!" (R55) her talking take for its length; her eyes on her mother's face as it rises) */
@@ -684,8 +677,8 @@
           { t: E.rise, name: 'her', eye: S_EYE, at: [CHAIR.x + 0.09, 0.92, CHAIR.z + 0.08], fp: 60, fd: 52 },
           { t: E.rise + 2.8, name: 'stand', eye: S_EYE, at: [CHAIR.x + 0.04, 1.26, CHAIR.z + 0.26], fp: 58, fd: 52 },
           { t: E.ph - 0.4, name: 'stand', eye: S_EYE, at: [CHAIR.x + 0.04, 1.30, CHAIR.z + 0.28], fp: 58, fd: 52 },
-          { t: E.ph + 0.5, name: 'pho', eye: S_EYE, at: [cast.phoB.home.x, 1.62, cast.phoB.home.z], fp: 46, fd: 42 },
-          { t: E.close, name: 'pho', eye: S_EYE, at: [cast.phoB.home.x, 1.62, cast.phoB.home.z], fp: 46, fd: 42 }
+          { t: E.ph + 0.5, name: 'pho', eye: D_PHO_EYE, at: [cast.phoB.home.x, 1.62, cast.phoB.home.z], fp: 46, fd: 42, cut: true },   // (R80)
+          { t: E.close, name: 'pho', eye: D_PHO_EYE, at: [cast.phoB.home.x, 1.62, cast.phoB.home.z], fp: 46, fd: 42 }
         ]);
         phoTurn(t, E.ph, false, 'ph4D1');
       }

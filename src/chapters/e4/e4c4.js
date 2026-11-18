@@ -1448,36 +1448,60 @@
       for (const grp of bands(TREES)) many('w4angsana', grp, world, 0.03);
       for (const grp of bands(PALMS)) many('w4foxpalm', grp, world, 0.03);
 
-      /* ---------------------------------------------- THE BLOCKS ROUND THEM, and the newer estate's taller ones beyond:
-         each its corridor lines and its windows, painted at a storey's true size, fading into the haze */
-      const farT = (seed, cols, rows) => { const [c, x] = canvas(512, 512), rr = rng(seed), cw = 512 / cols, rh = 512 / rows;
-        x.fillStyle = '#1d1d23'; x.fillRect(0, 0, 512, 512);
-        for (let j = 0; j < rows; j++) { const y0 = j * rh;
-          x.fillStyle = 'rgba(205,214,232,0.55)'; x.fillRect(0, y0 + rh * 0.08, 512, Math.max(1.5, rh * 0.07));      // the corridor's lit line
-          x.fillStyle = '#2a2a30'; x.fillRect(0, y0 + rh * 0.66, 512, rh * 0.1);                                         // the parapet's band
-          for (let i = 0; i < cols; i++) { const v = rr(); if (v > 0.62) continue;
-            x.fillStyle = v < 0.3 ? '#e9c487' : v < 0.48 ? '#d7e0ea' : v < 0.54 ? '#8ea4dc' : '#f0b878';
-            x.fillRect(i * cw + cw * 0.2, y0 + rh * 0.22, cw * 0.55, rh * 0.36); } }
-        return c; };
-      const FAR = [[7120, 24, 13], [7121, 20, 30], [7122, 28, 16]].map(([sd, cols, rows]) => ({ m: B({ map: lit(farT(sd, cols, rows)), fog: true }), W: cols * 3.4, H: rows * 2.85 }));
-      const [mFarA, mFarB, mFarC] = FAR;
-      const slab = (F, x0, z0, x1, z1, h, d = 12) => {               // a block from (x0, z0) to (x1, z1), its lit face toward her
-        const nx = z1 - z0, nz = -(x1 - x0), nl = Math.hypot(nx, nz), ox = nx / nl * d, oz = nz / nl * d;
-        quadUV(F.m, [x0, G, z0], [x1, G, z1], [x1, G + h, z1], [x0, G + h, z0], 0, 0, nl / F.W, h / F.H);
-        quad(mDark, [x0 + ox, G, z0 + oz], [x0, G, z0], [x0, G + h, z0], [x0 + ox, G + h, z0 + oz]);
-        quad(mDark, [x1, G, z1], [x1 + ox, G, z1 + oz], [x1 + ox, G + h, z1 + oz], [x1, G + h, z1]);
-        quad(mRoofEdge, [x0, G + h, z0], [x1, G + h, z1], [x1 + ox, G + h, z1 + oz], [x0 + ox, G + h, z0 + oz]);
+      /* ---------------------------------------------- THE BLOCKS ROUND THEM, and the newer estate's taller ones beyond
+         (R48, Chad, 18 Nov: "no basic HDB block left in its background". Each was one painted card, its corridors and
+         windows drawn flat on it, and from her corridor at 50 to 200 m it read as a picture of a block. Each is built now as
+         the block across is, storey by storey: the flats' wall behind each corridor (the same households' atlas, dealt
+         again), the corridor's lit ceiling and its floor, the parapet standing 2 m out in front with its band of colour and
+         the slab's edge, the party walls as fins every second flat, the void deck's lit ceiling under it, the body behind,
+         its roof's parapet and a lift core over the roof; a storey 2.85 m, as hers. Turned any way, so laid in the block's
+         own frame (along its face, up, and out toward her); in the block across's own materials, so no new draw call) */
+      const deal2 = rng(4405);
+      const slab = (x0, z0, x1, z1, h, d = 12) => {
+        const L = Math.hypot(x1 - x0, z1 - z0), ax = (x1 - x0) / L, az = (z1 - z0) / L, bx = az, bz = -ax;   // along; into the block
+        const P = (u, y, w) => [x0 + ax * u - bx * w, y, z0 + az * u - bz * w];                             // w: out toward her
+        const NSf = Math.max(4, Math.round(h / SH)), top = G + NSf * SH, PIN = 1.9, POU = 2.05, ry = Math.atan2(-az, ax);
+        const nb = Math.max(1, Math.floor((L - 2) / BAY)), ub = (L - nb * BAY) / 2;                        // its flats, the ends its stairs'
+        for (let s2 = 1; s2 < NSf; s2++) {
+          const fl = G + s2 * SH, ce = fl + SH - 0.25;
+          quadUV(mPara, P(0, fl - 0.30, POU), P(L, fl - 0.30, POU), P(L, fl + 1.0, POU), P(0, fl + 1.0, POU), 0, 0, L / 5, 1);
+          quad(mParaIn, P(0, fl + 1.0, POU), P(L, fl + 1.0, POU), P(L, fl + 1.0, PIN), P(0, fl + 1.0, PIN));
+          quadUV(mFloor7, P(0, fl + 0.01, PIN), P(L, fl + 0.01, PIN), P(L, fl + 0.01, 0), P(0, fl + 0.01, 0), 0, 0, L / 7, 1);
+          quadUV(mCeil7, P(0, ce, 0), P(L, ce, 0), P(L, ce, PIN), P(0, ce, PIN), 0, 0, L / 7, 1);
+          for (let i = 0; i < nb; i++) { const u = ub + i * BAY, v = (deal2() * NV) | 0, flip = deal2() < 0.5;
+            const v0 = 1 - (v + 1) / (NV + 1), v1 = 1 - v / (NV + 1);
+            quadUV(mFlats, P(u, fl, 0), P(u + BAY, fl, 0), P(u + BAY, ce, 0), P(u, ce, 0), flip ? 1 : 0, v0 + 0.0004, flip ? 0 : 1, v1 - 0.0004); }
+          quad(mDark, P(0, fl, 0), P(ub, fl, 0), P(ub, ce, 0), P(0, ce, 0));                                // the stairs' walls at its ends
+          quad(mDark, P(L - ub, fl, 0), P(L, fl, 0), P(L, ce, 0), P(L - ub, ce, 0));
+        }
+        /* the void deck: its back wall in the dark, its lit ceiling, its columns */
+        quad(mDark, P(0, G, -d * 0.6), P(L, G, -d * 0.6), P(L, G + SH - 0.3, -d * 0.6), P(0, G + SH - 0.3, -d * 0.6));
+        quadUV(mVoidCeil, P(0, G + SH - 0.3, -d * 0.6), P(L, G + SH - 0.3, -d * 0.6), P(L, G + SH - 0.3, POU), P(0, G + SH - 0.3, POU), 0, 0, L / 5.1, (POU + d * 0.6) / 5);
+        for (let cu = 2.5; cu <= L - 2.4; cu += 5.1) { const c = P(cu, 0, POU - 0.4); box(mParaIn, c[0], G + SH / 2, c[2], 0.6, SH, 0.6, ry); }
+        /* the party walls out of the face as fins, every second flat, ground to roof */
+        for (let i = 0; i <= nb; i += 2) { const u = ub + i * BAY;
+          quadUV(mFin, P(u - 0.2, G, POU + 0.35), P(u + 0.2, G, POU + 0.35), P(u + 0.2, top + 0.6, POU + 0.35), P(u - 0.2, top + 0.6, POU + 0.35), 0, 0, 1, 1);
+          quad(mDark, P(u - 0.2, G, 0), P(u - 0.2, G, POU + 0.35), P(u - 0.2, top + 0.6, POU + 0.35), P(u - 0.2, top + 0.6, 0));
+          quad(mDark, P(u + 0.2, G, POU + 0.35), P(u + 0.2, G, 0), P(u + 0.2, top + 0.6, 0), P(u + 0.2, top + 0.6, POU + 0.35)); }
+        /* its ends and its roof, its roof's parapet against the sky */
+        quad(mDark, P(0, G, -d), P(0, G, POU), P(0, top, POU), P(0, top, -d));
+        quad(mDark, P(L, G, POU), P(L, G, -d), P(L, top, -d), P(L, top, POU));
+        quad(mRoofEdge, P(0, top, POU), P(L, top, POU), P(L, top, -d), P(0, top, -d));
+        quadUV(mPara, P(0, top - 0.3, POU + 0.01), P(L, top - 0.3, POU + 0.01), P(L, top + 1.1, POU + 0.01), P(0, top + 1.1, POU + 0.01), 0, 0, L / 5, 1);
+        /* its lift core over the roof, its motor room, and a tank */
+        { const c = P(L / 2, 0, -1.2); box(mDark, c[0], top + 3.2, c[2], 4.8, 6.4, 4.6, ry); box(mRoofEdge, c[0], top + 6.5, c[2], 5.4, 0.3, 5.2, ry); }
+        { const c = P(L * 0.22, 0, -d / 2); box(mDark, c[0], top + 1.6, c[2], 5, 2.2, 3.6, ry); }
       };
-      slab(mFarA, -128, -8, -74, -46, 37.05);                          // a block turned toward her, west of the one across
-      slab(mFarA, 66, -52, 118, -20, 37.05);                           // and one east of it
-      slab(mFarC, -150, -112, -60, -128, 45.6);                        // the next row behind, three storeys taller
-      slab(mFarC, 40, -120, 140, -104, 45.6);
+      slab(-128, -8, -74, -46, 37.05);                          // a block turned toward her, west of the one across
+      slab(66, -52, 118, -20, 37.05);                           // and one east of it
+      slab(-150, -112, -60, -128, 45.6);                        // the next row behind, three storeys taller
+      slab(40, -120, 140, -104, 45.6);
       /* (the newer estate's towers, 34 to 40 storeys: from her storey they must rise past the block across's roof, 21.6
          degrees up, to be seen over it at 150 to 200 m) */
-      slab(mFarB, -46, -150, -8, -158, 108.3, 14);
-      slab(mFarB, 18, -176, 52, -182, 114.0, 14);
-      slab(mFarB, -96, -190, -64, -200, 102.6, 14);
-      slab(mFarB, 84, -168, 112, -176, 96.9, 14);
+      slab(-46, -150, -8, -158, 108.3, 14);
+      slab(18, -176, 52, -182, 114.0, 14);
+      slab(-96, -190, -64, -200, 102.6, 14);
+      slab(84, -168, 112, -176, 96.9, 14);
       /* her own block's corridor face below her storey (each storey's band, its lit line and the parapet) */
       for (let s = 1; s <= 7; s++) { const y = -s * 2.85;
         const zo = CORR.para - 0.075;
@@ -5475,18 +5499,13 @@
        with her); and Grandmaster Pho's head as he bows over her with his hand on her head (measured: e4c4who.mjs) */
     const KNEEL_R = { x: CHAIR.x + 0.45, z: CHAIR.z - 0.05 }, PHO_BOW = [-0.13, 1.40, 3.51];
     /* (R80, Chad, 18 Nov: "in some outcome ending cutscenes, ravi's head blocks grandmaster pho when the camera tries to
-       show pho talking with his voicelines". Stood up where he had knelt, KNEEL_R, his head was 0.02 m from the line from
-       ending D's lens to his teacher's face and 0.07 m from ending C's: mine, from builds 21p and 21q. He rises now at his
-       mother's side, shoulder to her shoulder, carried there in the rise itself: 0.22 and 0.36 m off those lines, his
-       mother's own place clear of him by 0.3 m) */
-    const RAVI_UP = { x: CHAIR.x + 0.30, z: CHAIR.z + 0.17 };
-    function raviUp(P, t, rise) {                       // where his rise carries him, from the kneel to her side, by its run
-      const u = smo(c01((t - rise - 0.6) / 3.0));
-      if (u <= 0) return;
-      const ry0 = faceTo(KNEEL_R.x, KNEEL_R.z, CHAIR.x, CHAIR.z + 0.2), ry1 = faceTo(RAVI_UP.x, RAVI_UP.z, CHAIR.x, CHAIR.z + 0.2);
-      P.group.position.x += (RAVI_UP.x - KNEEL_R.x) * u; P.group.position.z += (RAVI_UP.z - KNEEL_R.z) * u;
-      P.group.rotation.y = lpA(ry0, ry1, u);
-    }
+       show pho talking with his voicelines". Stood where he had knelt, KNEEL_R, Ravi's head was 0.02 m from the line from
+       ending D's lens to his teacher's face and 0.07 m from ending C's: mine, from builds 21p and 21q. Build 21t moved HIM
+       to her side, and as he rose his head went through her waist (photographed, C at 18.5): a family round her chair
+       leaves no standing place clear of both lenses and of her, the chair, the stool and the altar (searched on a 1 cm
+       grid). So the LENS moves: each ending cuts, for his teacher's words, to a place that sees him past all three of
+       them by 0.32 m, from his front right as he speaks to her (C_PHO_EYE, D_PHO_EYE)) */
+    const C_PHO_EYE = [1.35, 1.55, 4.25], D_PHO_EYE = [1.01, 1.58, 3.97];
     /* (the rush take's hips over the floor, its own metres, every quarter second: tools/probes/takepath.mjs, 18 Nov) */
     const RUSH_HIPS = [[-0.01, -0.03], [-0.01, 0.0], [-0.02, 0.06], [-0.03, 0.22], [-0.08, 0.61], [-0.21, 1.22], [-0.35, 1.82], [-0.43, 2.24], [-0.43, 2.63], [-0.43, 2.82], [-0.44, 2.86], [-0.45, 2.89]];
     const RUSH_AT = (tk) => { const f = Math.max(0, Math.min(RUSH_HIPS.length - 1.001, tk / 0.25)), i = Math.floor(f), u = f - i, A = RUSH_HIPS[i], B = RUSH_HIPS[i + 1];
@@ -6007,14 +6026,13 @@
            kneels, his eyes turning from him to her; Mala comes round to her other side and kneels too: walkKneel) */
         whenReady(cast.ravi, (P) => {
           if (t < E.kneel) { rushHeld(P, t); lookNow(P, CR_EYE, smo(c01((t - 0.5) / 0.8)), 0.8); }
-          else if (t > E.rise + 3.6) { put(P, RAVI_UP.x, RAVI_UP.z, faceTo(RAVI_UP.x, RAVI_UP.z, CHAIR.x, CHAIR.z + 0.2));        // (R68: stood again, alive; R80: at her side)
+          else if (t > E.rise + 3.6) { put(P, KR.x, KR.z, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2));        // (R68: stood again, alive)
             const it = 2 + (t - E.rise - 3.6) * 0.35;
             if (!malaCall(P, t, E.Rv, SECS.rv4R1 || 4.6, 'Stand_and_Chat', 'Idle_3', it))
               pose(P, 'Idle_3', it, true, 'kneelhold', 1 - smo(c01((t - E.rise - 3.6) / 0.8)), 0.2);
             lookNow(P, HER_HEAD(), 1, 0.9); }
           else { walkKneel(P, t, E.kneel, rushXZ(P, 2.5), KR, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2), ['rush', pingOf(E.kneel, 2.45, 0.12, 1.4)],
               { ry0: RAVI_RY, kt: (td) => (t < E.rise ? (td < 4.2 ? td : pingOf(td - 4.2, 4.05, 0.15, 3.4)) : runOf(t, E.rise + 0.6, E.rise + 3.6, 4.2, 0.2)) });
-            raviUp(P, t, E.rise);
             lookNow(P, lp3(CR_EYE, AMMA_FACE, smo(c01((t - E.kneel) / 0.5))), 1, 0.9); } });
         whenReady(cast.mala, (P) => {
           if (t < E.mala) { pose(P, 'lightlamp', MALA_LAMPT(t)); lookNow(P, AMMA_FACE, 1, 0.9); }
@@ -6037,8 +6055,8 @@
           { t: E.rise, name: 'kneel', eye: CK_EYE, at: CK_AT, fp: 62, fd: 54 },
           { t: E.rise + 2.8, name: 'stand', eye: CK_EYE, at: [CHAIR.x + 0.04, 1.22, CHAIR.z + 0.24], fp: 58, fd: 52 },
           { t: E.ph - 0.4, name: 'stand', eye: CK_EYE, at: [CHAIR.x + 0.04, 1.28, CHAIR.z + 0.28], fp: 58, fd: 52 },
-          { t: E.ph + 0.5, name: 'pho', eye: CK_EYE, at: [cast.phoB.home.x, 1.58, cast.phoB.home.z], fp: 46, fd: 42 },
-          { t: E.close, name: 'pho', eye: CK_EYE, at: [cast.phoB.home.x, 1.58, cast.phoB.home.z], fp: 46, fd: 42 }
+          { t: E.ph + 0.5, name: 'pho', eye: C_PHO_EYE, at: [cast.phoB.home.x, 1.58, cast.phoB.home.z], fp: 46, fd: 42, cut: true },   // (R80)
+          { t: E.close, name: 'pho', eye: C_PHO_EYE, at: [cast.phoB.home.x, 1.58, cast.phoB.home.z], fp: 46, fd: 42 }
         ]);
         phoTurn(t, E.ph, false, 'ph4C1');
       },
@@ -6054,16 +6072,15 @@
            "Hold her hand" round to her side and down onto his knees: walkKneel, its two legs) */
         whenReady(cast.ravi, (P) => {
           const RX = rushXZ(P, 2.5), R2 = { x: RX.x - 0.12, z: RX.z + 0.18 }, r2 = faceTo(R2.x, R2.z, CHAIR.x, CHAIR.z);
-          if (t > E.rise + 3.6) { put(P, RAVI_UP.x, RAVI_UP.z, faceTo(RAVI_UP.x, RAVI_UP.z, CHAIR.x, CHAIR.z + 0.2));
+          if (t > E.rise + 3.6) { put(P, KR.x, KR.z, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2));
             const it = 2 + (t - E.rise - 3.6) * 0.35;
             if (!malaCall(P, t, E.Rv, SECS.rv4R1 || 4.6, 'Stand_and_Chat', 'Idle_3', it))
               pose(P, 'Idle_3', it, true, 'kneelhold', 1 - smo(c01((t - E.rise - 3.6) / 0.8)), 0.2);
             lookNow(P, HER_HEAD(), 1, 0.9); return; }
           if (t < E.reach) rushHeld(P, t);
           else if (t < E.kneel) walkKneel(P, t, E.reach, RX, R2, r2, ['rush', pingOf(E.reach, 2.45, 0.12, 1.4)], { ry0: RAVI_RY, kneelAt: Infinity });
-          else { walkKneel(P, t, E.kneel, R2, KR, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2), ['Idle_3', 3 + (E.kneel - E.reach) * 0.4],
+          else walkKneel(P, t, E.kneel, R2, KR, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2), ['Idle_3', 3 + (E.kneel - E.reach) * 0.4],
             { ry0: r2, kt: (td) => (t < E.rise ? Math.min(4.2, td) : runOf(t, E.rise + 0.6, E.rise + 3.6, 4.2, 0.2)) });
-            raviUp(P, t, E.rise); }
           lookNow(P, AMMA_FACE, 1, 0.9); });
         /* (R68: at her lamp, breathing, through the cry and the light; as her mother's eyes open, into her stand and turned to
            her; her "Unbelievable... Amma, you're on your feet!" (R55) her talking take for its length; her eyes on her mother's face as it rises) */
@@ -6086,8 +6103,8 @@
           { t: E.rise, name: 'her', eye: S_EYE, at: [CHAIR.x + 0.09, 0.92, CHAIR.z + 0.08], fp: 60, fd: 52 },
           { t: E.rise + 2.8, name: 'stand', eye: S_EYE, at: [CHAIR.x + 0.04, 1.26, CHAIR.z + 0.26], fp: 58, fd: 52 },
           { t: E.ph - 0.4, name: 'stand', eye: S_EYE, at: [CHAIR.x + 0.04, 1.30, CHAIR.z + 0.28], fp: 58, fd: 52 },
-          { t: E.ph + 0.5, name: 'pho', eye: S_EYE, at: [cast.phoB.home.x, 1.62, cast.phoB.home.z], fp: 46, fd: 42 },
-          { t: E.close, name: 'pho', eye: S_EYE, at: [cast.phoB.home.x, 1.62, cast.phoB.home.z], fp: 46, fd: 42 }
+          { t: E.ph + 0.5, name: 'pho', eye: D_PHO_EYE, at: [cast.phoB.home.x, 1.62, cast.phoB.home.z], fp: 46, fd: 42, cut: true },   // (R80)
+          { t: E.close, name: 'pho', eye: D_PHO_EYE, at: [cast.phoB.home.x, 1.62, cast.phoB.home.z], fp: 46, fd: 42 }
         ]);
         phoTurn(t, E.ph, false, 'ph4D1');
       }
