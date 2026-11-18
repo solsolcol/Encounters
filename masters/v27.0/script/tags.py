@@ -20,7 +20,7 @@ TAGS = {
     'ph4s0': 'calm', 'q4s1': 'uneasy', 'q4s2': 'quiet', 'q4s3': 'uneasy', 'ph4s1': 'calm',
     'ph4s2': 'serious', 'ph4s3': 'serious', 'ph4s4': 'calm',
     # the blessing
-    'ph4b0': 'gentle', 'ph4b1': 'calm', 'ph4b2': 'serious',
+    'ph4b0': 'gentle', 'ph4b1': 'calm', 'ph4b2': 'serious', 'ph4b3': 'firm', 'ph4b4': 'serious', 'ph4b5': 'firm',
     # the trance: Mala knows it; Ravi is afraid of the cry
     'ml4t1': 'worried', 'ml4t2': 'awed', 'rv4t1': 'panicked',
     # the four endings

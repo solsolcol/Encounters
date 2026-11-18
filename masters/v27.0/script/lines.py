@@ -39,6 +39,12 @@ LINES = [
     ('ph4b0', 'pho', 'play, the blessing', "Please light her lamp. Let her goddess see what we do."),
     ('ph4b1', 'pho', 'play, the blessing', "Close. Breathe."),
     ('ph4b2', 'pho', 'play, the blessing', "Not everything you see is against us."),
+    # (Chad, 18 Nov: "If the player gets out of spirit vision for too long and is not doing anything to chase the green spirits
+    # away, grandmaster pho will have a voice line that tells him to go back into spirit vision": three, in turn, again
+    # while his sight stays shut. Written here and sent to Chad as they land, his rule for every line of Grandmaster Pho's)
+    ('ph4b3', 'pho', 'play, the blessing: his sight shut too long', "Open your sight. They are coming for her."),
+    ('ph4b4', 'pho', 'play, the blessing: his sight shut too long', "What you do not look at still comes. Open your sight."),
+    ('ph4b5', 'pho', 'play, the blessing: his sight shut too long', "Look again. Send them back."),
     # ---- the trance and the turning point (§4.4)
     ('ml4t1', 'mala', 'film: the trance', "Amma?"),
     ('ml4t2', 'mala', 'film: the trance', "It's Amman."),
