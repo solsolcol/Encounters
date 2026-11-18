@@ -267,6 +267,7 @@ Object.assign(window.__TEXT__, {
   'hud.visionKey':       'V',
   'hud.visionOpen':      'Open',          // v27.0: under the eye while the chapter asks him to open his sight
   'hud.visionClose':     'Close',         // v27.0: and while it asks him to close it
+  'hud.visionHeld':      'Your Spirit Vision is held shut. Breathe.',   // v27.0: said when the eye is pressed while a chapter holds it shut
   'hud.fire':            'FIRE',
   'hud.fireKey':         'Space',
   'hud.reload':          'Reload',

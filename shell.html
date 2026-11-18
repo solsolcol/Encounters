@@ -270,6 +270,11 @@ body.hasVision.evopen .visionBtn,body.hasVision.unlockopen .visionBtn,body.hasVi
   white-space:nowrap;background:rgba(8,10,14,.82);pointer-events:none}
 .visionBtn.urge::after{content:attr(data-open);color:#E2CCFF;box-shadow:0 0 12px rgba(201,162,255,.55)}
 .visionBtn.urgeClose::after{content:attr(data-close);color:#FFC3A6;box-shadow:0 0 12px rgba(255,142,94,.55)}
+/* (18 Nov) held shut by the chapter: the eye dimmed and still; pressed, it shakes once and the words say why (visionHeldSay) */
+.visionBtn.held{opacity:.48;border-color:rgba(190,200,210,.4);background:rgba(16,20,26,.55);animation:none}
+.visionBtn.held .rays{opacity:0}
+.visionBtn.held.heldTap{animation:visHeldTap .38s ease-out}
+@keyframes visHeldTap{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}45%{transform:translateX(4px)}70%{transform:translateX(-3px)}}
 /* v27.0 · A LIFE IN HIS KEEPING (kit.health, the fifty-fourth seam): a bar over a person in the room, its bottom at the
    point the chapter names; at the screen's edge, centred there with an arrow toward them. In the page, over the picture */
 #lifeBar{position:fixed;left:0;top:0;z-index:4;display:none;pointer-events:none;transform:translate(-50%,-100%);

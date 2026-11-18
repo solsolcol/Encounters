@@ -220,6 +220,8 @@
       interactTouch: 'Tap to answer',
       actLine: 'Press E to answer',
       actLineTouch: 'Tap to answer',
+      /* (18 Nov) said under the reticle when the eye is pressed while his teacher holds his sight shut (the engine's visionHeldSay) */
+      visionHeld: 'Grandmaster Pho closed your Spirit Vision. Breathe.',
       // PLAY I · history first (§4.1)
       objHistory: 'Learn her history · {n}/5',
       hotRavi: 'Talk to Ravi',

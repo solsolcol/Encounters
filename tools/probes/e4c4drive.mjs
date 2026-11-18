@@ -131,10 +131,15 @@ async function eye(want) {
   if (v.on === want) return true;
   const b = await box('#visionBtn');
   if (!b) { visTaps.push((want ? 'open' : 'shut') + ':NO-BUTTON'); return false; }
+  const heldBefore = await p.evaluate(() => !!document.querySelector('#visionBtn.held'));
   await tap(b.x, b.y); await frames(2);
   const ok = await p.evaluate((w) => window.__enc.vision().on === w, want);
-  visTaps.push((want ? 'open' : 'shut') + (ok ? '' : ':REFUSED'));
-  log('  the eye tapped:', want ? 'open' : 'shut', ok ? '' : 'REFUSED');
+  /* (18 Nov) a press while the chapter holds his sight shut is ANSWERED (the eye dimmed, the words under the reticle):
+     that is a lock that says why, not a dead button; a refusal with no answer stays REFUSED */
+  const said = !ok && heldBefore ? await p.evaluate(() => { const n = document.getElementById('nofire'); return n && n.classList.contains('on') ? n.textContent : ''; }) : '';
+  const how = ok ? '' : said ? ':HELD(' + said + ')' : ':REFUSED';
+  visTaps.push((want ? 'open' : 'shut') + how);
+  log('  the eye tapped:', want ? 'open' : 'shut', how.replace(/^:/, ''));
   return ok;
 }
 /* THE FIGHT, by the finger: the shape nearest to its mark aimed at and flicked; the bowl dipped at his teacher's bowl */

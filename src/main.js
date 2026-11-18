@@ -3918,10 +3918,19 @@ function visionSet(on, instant) {
   return true;
 }
 function visionToggle() {
-  if (!vis.decl || state !== 'play' || vis.held) return;
+  if (!vis.decl || state !== 'play') return;
+  /* (18 Nov: while the chapter holds his sight, kit.vision({ r }), a press of the eye is answered with why, never dropped
+     without a word: a lock always says why, v8.1. The chapter's words, `words.visionHeld`, or the sheet's) */
+  if (vis.held) { visionHeldSay(); return; }
   visionSet(!vis.on);
   vis.switches++;
   if (stage && typeof stage.onVision === 'function') { try { stage.onVision(vis.on); } catch (e) { console.error(e); } }
+}
+function visionHeldSay() {
+  const w = CH && CH.words && CH.words.visionHeld;
+  weaponBlockSay(w || T('hud.visionHeld'));
+  const vb = $('visionBtn');
+  if (vb) { vb.classList.remove('heldTap'); void vb.offsetWidth; vb.classList.add('heldTap'); }
 }
 function visionFrame() {
   const now = performance.now();
@@ -7622,8 +7631,10 @@ function kitFrame(dt, t, dLookX, dLookY) {
   /* (18 Nov, Chad: "a different set of glow colour pulsating effect on the spirit vision icon so that the player clearly
      knows what to do"): asked to OPEN it, one colour; asked to CLOSE it, another; in use, its own colour breathing (CSS) */
   if (vis.decl) { const vb = $('visionBtn');
-    if (vb) { vb.classList.toggle('urge', visUrge === 'open' && !vis.on && state === 'play');
-              vb.classList.toggle('urgeClose', visUrge === 'close' && vis.on && state === 'play'); } }
+    if (vb) { vb.classList.toggle('urge', visUrge === 'open' && !vis.on && !vis.held && state === 'play');
+              vb.classList.toggle('urgeClose', visUrge === 'close' && vis.on && !vis.held && state === 'play');
+              /* (18 Nov) held shut by the chapter: the eye dimmed and still; a press says why (visionHeldSay) */
+              vb.classList.toggle('held', !!vis.held && state === 'play'); } }
   lifeFrame();       // v27.0 (seam 54): a life in his keeping, its bar over them
   edgeTick();        // v27.0 (seam 56): a glow at the edges of his sight
   /* v11.7 (Chad: "why does the torch icon draw over every ui element?"): the
