@@ -24,7 +24,7 @@ stool         w4stool       0.45  h   6000   512  0
 standfan      w4standfan    1.20  h  12000  1024  0
 shoerack      w4shoerack    0.80  w  30000  1024  0
 tulsi         w4tulsi       0.70  h  30000  1024  0
-door          w4door        2.10  h   4000  1024  0
+door          w4doorleaf    2.10  h   4000  1024  0
 fridge        w4fridge      1.70  h   8000  1024  0
 pilltray      w4pilltray    0.30  w  12000  1024  0
 clock         w4clock       0.30  w   4000   512  0

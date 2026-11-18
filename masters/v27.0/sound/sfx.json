@@ -1,0 +1,362 @@
+[
+ {
+  "name": "u4vison",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A rising breath of supernatural energy: a soft airy whoosh swelling upward with a cold shimmering high tone, ending in one deep soft thump like a heartbeat leaving the body. Ethereal and eerie, no electronic beeps, no voices.",
+  "where": "Spirit Vision opens"
+ },
+ {
+  "name": "u4visbed",
+  "secs": 30,
+  "loop": true,
+  "takes": 2,
+  "prompt": "A low eerie drone of many faint breathing voices far away, wordless and sustained, with a thin high ringing like pressure in the ears and a slow cold wind under it. Unsettling and still. No words, no melody, no drums.",
+  "where": "Spirit Vision: its bed while open"
+ },
+ {
+  "name": "u4heart",
+  "secs": 1.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "One single human heartbeat, a deep close lub-dub thump inside the chest, muffled and heavy, very close microphone. Only one beat.",
+  "where": "Spirit Vision: his heart"
+ },
+ {
+  "name": "u4flatbed",
+  "secs": 30,
+  "loop": true,
+  "takes": 2,
+  "prompt": "Inside a small Singapore apartment at night: a ceiling fan turning steadily overhead with a soft rhythmic whir, a fluorescent tube light's faint hum, a refrigerator compressor in the next room. Quiet and close. No voices, no music, no television.",
+  "where": "the flat in play: the living room"
+ },
+ {
+  "name": "u4estate",
+  "secs": 30,
+  "loop": true,
+  "takes": 2,
+  "prompt": "Night outside a high-rise public housing estate heard through open window grilles: distant road traffic, a far train passing slowly on an elevated track, a neighbour's television murmuring faintly through a wall, a gecko clicking once. Indistinct, no clear words, no music.",
+  "where": "the flat in play: the windows; the opening film"
+ },
+ {
+  "name": "u4corridor",
+  "secs": 30,
+  "loop": true,
+  "takes": 2,
+  "prompt": "An open-air common corridor of a high-rise apartment block at night: a fluorescent tube light buzzing overhead, distant traffic far below, a light warm wind. No voices, no music.",
+  "where": "the opening film: the corridor and the lift lobby"
+ },
+ {
+  "name": "u4dark",
+  "secs": 30,
+  "loop": true,
+  "takes": 2,
+  "prompt": "A dark silent room at night after the power has gone out: deep stillness, a very faint low wind through metal window grilles, the soft steady crackle of a small oil lamp flame close by. No voices, no music.",
+  "where": "the blessing: the dark room"
+ },
+ {
+  "name": "u4lift",
+  "secs": 8.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "Inside a small old apartment lift going up: a steady electric motor hum, cables creaking softly, a faint ding as it passes a floor. No voices, no music.",
+  "where": "the opening film: the lift"
+ },
+ {
+  "name": "u4liftdoor",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 2,
+  "prompt": "Old metal lift doors sliding open with a soft chime in a concrete lift lobby at night, a little echo.",
+  "where": "the opening film: the lift opens"
+ },
+ {
+  "name": "u4gate",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A steel grille gate at an apartment door being unlatched and swung open: a padlock click, a metal bolt sliding, hinges squeaking, a soft clank.",
+  "where": "the opening film: Ravi opens the gate"
+ },
+ {
+  "name": "u4sandals",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "Two people walking slowly in sandals along a smooth concrete corridor floor, their footsteps unhurried, slight echo.",
+  "where": "the opening film: the corridor"
+ },
+ {
+  "name": "u4tile",
+  "secs": 0.6,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A single soft bare footstep on a smooth ceramic tile floor indoors, very close, dry, no echo.",
+  "where": "his own bare feet on her tiles (shoes are left at the rack outside)"
+ },
+ {
+  "name": "u4tubetick",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A fluorescent tube light overhead flickering: a few quick sharp electrical ticks and a short buzzing stutter, then steady again. Close.",
+  "where": "history: the tube ticks"
+ },
+ {
+  "name": "u4fanslow",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A ceiling fan's motor slowing down with a falling whine and a soft clicking, then catching and spinning up again.",
+  "where": "history: the fan slows and catches"
+ },
+ {
+  "name": "u4doorease",
+  "secs": 3.5,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A wooden bedroom door creaking slowly open a few centimetres on old hinges, alone in a silent room at night.",
+  "where": "history: bedroom 3's door eases open"
+ },
+ {
+  "name": "u4breath",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A slow cold exhale very close behind the listener's ear, airy and wordless, unsettling, intimate. Only breath, no voice.",
+  "where": "history: a cold breath by her chair"
+ },
+ {
+  "name": "u4fog",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A faint high glassy hiss as cold breath fogs a pane of glass, then a soft crackle as it slowly fades away.",
+  "where": "history: Appa's photograph fogs and clears"
+ },
+ {
+  "name": "u4sting",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A sudden deep low cinematic sting: a dark heavy bass hit with a short dissonant string swell, then silence. Ominous, not loud.",
+  "where": "the sight: the thing on her back looks at him"
+ },
+ {
+  "name": "u4match",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A wooden match struck and a small brass oil lamp's cotton wick catching from it: a soft sputter and the small flame taking, close, quiet.",
+  "where": "the blessing: Mala lights the lamp; and her own second wick"
+ },
+ {
+  "name": "u4tubedie",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A fluorescent tube light dying: a sharp electrical pop, a buzzing flicker, then dead silence.",
+  "where": "the blessing: the light dies"
+ },
+ {
+  "name": "u4fanstop",
+  "secs": 6.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A ceiling fan losing its power and winding down slowly to a stop, its whir falling and slowing, a last soft click.",
+  "where": "the blessing: the fan stops"
+ },
+ {
+  "name": "u4tvdie",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "An old television bursting into loud hissing white-noise static, then a sharp click as it dies to silence.",
+  "where": "the blessing: the TV fills with static and dies"
+ },
+ {
+  "name": "u4flick",
+  "secs": 0.8,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A quick flick of water droplets thrown from wet fingertips through the air, a soft wet spatter.",
+  "where": "the fight: FLICK"
+ },
+ {
+  "name": "u4patter",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "prompt": "Drops of water landing and pattering lightly on a tiled floor and on cloth.",
+  "where": "the fight: the drops land"
+ },
+ {
+  "name": "u4dip",
+  "secs": 1.5,
+  "loop": false,
+  "takes": 2,
+  "prompt": "Fingers dipping into a small metal bowl of water: a gentle splash and the bowl's faint metallic ring.",
+  "where": "the fight: DIP"
+ },
+ {
+  "name": "u4whisper",
+  "secs": 6.0,
+  "loop": true,
+  "takes": 2,
+  "prompt": "A crowd of hungry wordless whispers and soft low moans drifting through a dark room, breathy and unintelligible, slowly circling. No clear words.",
+  "where": "the fight: the wanderers (always heard, panned)"
+ },
+ {
+  "name": "u4release",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A soft relieved sigh that fades upward into a faint airy shimmer, gentle and peaceful, like something let go.",
+  "where": "the fight: a wanderer released"
+ },
+ {
+  "name": "u4large",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A large creature's slow heavy breathing in a dark room, deep, rasping and wet, close.",
+  "where": "the fight: the large one"
+ },
+ {
+  "name": "u4gaspf",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A woman gasping sharply at a sudden touch of cold, one short frightened breath. No words.",
+  "where": "the fight: a wanderer reaches Mala or Amma"
+ },
+ {
+  "name": "u4gaspm",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A man gasping sharply at a sudden touch of cold, one short startled breath. No words.",
+  "where": "the fight: a wanderer reaches Ravi"
+ },
+ {
+  "name": "u4chill",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A sudden rush of icy air with a deep muffled thud, as if the breath were knocked out of the listener.",
+  "where": "the fight: one reaches him"
+ },
+ {
+  "name": "u4husband",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A single low sorrowful sigh of an old man, fading away into silence, gentle. No words.",
+  "where": "the fight: water thrown at Appa: he turns and fades"
+ },
+ {
+  "name": "u4cry",
+  "secs": 8.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A long inhuman wailing cry rising and tearing, mournful and terrible, holding on and breaking, like a creature being pulled away against its will. Not words, not a human scream of words.",
+  "where": "the trance: the thing on her back cries out"
+ },
+ {
+  "name": "u4torn",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A sudden tearing whoosh of air rushing outward, a deep soft release, and then stillness.",
+  "where": "every ending: the thing torn free of her"
+ },
+ {
+  "name": "u4scuffle",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "Two men struggling on a tiled floor: clothes and shoes scuffling, a stumble, heavy breathing. No words.",
+  "where": "ending A: he holds Ravi back"
+ },
+ {
+  "name": "u4fall",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A man falling heavily onto a tiled floor: a body's thud and a winded exhale.",
+  "where": "ending B: the student on the floor"
+ },
+ {
+  "name": "u4stand",
+  "secs": 3.5,
+  "loop": false,
+  "takes": 2,
+  "prompt": "An old wheelchair's brakes clicking off and its frame creaking as a woman slowly stands up from it, the soft rustle of a cotton sari.",
+  "where": "every ending: she stands"
+ },
+ {
+  "name": "u4steps",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "Bare feet taking a few slow, careful, uncertain steps on a smooth tiled floor indoors.",
+  "where": "every ending: her first steps, to her altar"
+ },
+ {
+  "name": "u4bell",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A small brass prayer hand bell rung softly three times indoors, close, its ring dying away.",
+  "where": "every ending: at her altar"
+ },
+ {
+  "name": "u4os1",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A lift arriving at a floor far down an apartment corridor at night: a soft chime and doors sliding open, distant, heard through a wall.",
+  "where": "in play"
+ },
+ {
+  "name": "u4os2",
+  "secs": 4.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "One person in slippers walking past outside along a concrete corridor at night, passing a closed gate and fading away.",
+  "where": "in play"
+ },
+ {
+  "name": "u4os3",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A rubbish chute's metal hopper door clanking shut far away down an apartment corridor, then a bag sliding down a metal chute.",
+  "where": "in play"
+ },
+ {
+  "name": "u4os4",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A dog barking twice far away outdoors at night, distant.",
+  "where": "in play"
+ },
+ {
+  "name": "u4os5",
+  "secs": 2.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A gecko's short clicking chirp indoors at night, close.",
+  "where": "in play"
+ },
+ {
+  "name": "u4os6",
+  "secs": 5.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A motorcycle passing far below on a road at night, distant, fading.",
+  "where": "in play"
+ }
+]

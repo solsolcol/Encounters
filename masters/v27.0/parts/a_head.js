@@ -174,8 +174,8 @@
       /* >>> this chapter's own keys: written by masters/v27.0/keys.py (edit its table, not this list) >>> */
       'w4wheelchair', 'w4prayershelf', 'w4vilakku', 'w4waterbowl', 'w4bigbowl', 'w4sofa', 'w4cabinet', 'w4dintable',
       'w4dinechair', 'w4framesmall', 'w4hugger', 'w4folder', 'w4gate', 'w4frameport', 'w4armchair', 'w4tubelight',
-      'w4tvconsole', 'w4stool', 'w4standfan', 'w4shoerack', 'w4tulsi', 'w4door', 'w4fridge', 'w4pilltray',
-      'w4coffee',
+      'w4tvconsole', 'w4stool', 'w4standfan', 'w4shoerack', 'w4tulsi', 'w4doorleaf', 'w4fridge', 'w4pilltray',
+      'w4clock', 'w4phonetable', 'w4bed', 'w4commode', 'w4coffee',
       /* <<< this chapter's own keys <<< */
       /* Grandmaster Pho, Chad's own model, as chapter 3 cast him (reuseInEpisode) */
       'pho'

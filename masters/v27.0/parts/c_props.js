@@ -35,7 +35,7 @@
       w4hugger: { done: matte(MATTE.paint) }, w4tulsi: { done: matte(MATTE.cloth) }, w4clock: { done: matte(MATTE.paint) },
       w4phonetable: { done: matte(MATTE.wood) }, w4bed: { done: matte(MATTE.cloth) }, w4commode: { done: matte(MATTE.paint) },
       w4garland: { done: matte(MATTE.cloth) }, w4thoranam: { done: matte(MATTE.cloth) }, w4poles: { done: matte(MATTE.cloth) },
-      w4door: { done: matte(MATTE.wood) },
+      w4doorleaf: { done: matte(MATTE.wood) },
       w4wheelchair: { lift: 1.5 }, w4gate: { lift: 1.5 }, w4shoerack: { lift: 1.5 }, w4standfan: { lift: 1.5 },
       w4tubelight: { lift: 1.5 }, w4pilltray: { lift: 1.5 }
       /* (the brass: w4vilakku, w4bigbowl, w4waterbowl, w4altartray, at stand()'s own lift of 3) */
@@ -108,10 +108,10 @@
          it is turned from shut (radians, into the room); `at`: the leaf's middle from its hinge when shut (-w/2 or +w/2 along
          its own x) */
       const pivot = new THREE.Group(); pivot.position.set(hinge[0], 0, hinge[1]); pivot.rotation.y = ry + open; world.add(pivot);
-      const leaf = stand('w4door', at, 0, 0, 0, { parent: pivot, ...LOOK.w4door });
+      const leaf = stand('w4doorleaf', at, 0, 0, 0, { parent: pivot, ...LOOK.w4doorleaf });
       leaf.scale.set((w - 0.02) / DOOR_W, 2.06 / DOOR_H, 1);
       const si = new THREE.Mesh(new THREE.BoxGeometry(w - 0.02, 2.06, 0.04), mVeneer);
-      si.position.set(at, 1.03, 0); si.visible = !have('w4door'); pivot.add(si); owned.push(si.geometry);
+      si.position.set(at, 1.03, 0); si.visible = !have('w4doorleaf'); pivot.add(si); owned.push(si.geometry);
       doorLeaves.push({ pivot, leaf, shut: ry, open }); doorStandIns.push(si);
       return pivot;
     }
@@ -134,5 +134,5 @@
       door(0.92, [nx - 0.46, 0.02], 0, 0, 0.46);
       stand('w4gate', nx, FL.corr, -0.051 - 0.006, 0, LOOK.w4gate);
     }
-    if (have('w4door')) parseOnce('w4door').then(() => { for (const s of doorStandIns) s.visible = false; },
+    if (have('w4doorleaf')) parseOnce('w4doorleaf').then(() => { for (const s of doorStandIns) s.visible = false; },
       () => { for (const s of doorStandIns) s.visible = true; });

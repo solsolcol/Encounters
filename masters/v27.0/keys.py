@@ -62,7 +62,7 @@ group("e4c4: the flat's things, each a checked picture on white, then Meshy at i
        ('w4standfan', 'w4standfan.glb', 'a standing fan'),
        ('w4shoerack', 'w4shoerack.glb', 'the shoe rack outside the gate'),
        ('w4tulsi', 'w4tulsi.glb', 'a tulsi (holy basil) in its pot in the corridor'),
-       ('w4door', 'w4door.glb', 'the main door'),
+       ('w4doorleaf', 'w4doorleaf.glb', 'every doorway\'s leaf (not w4door: that is episode 4 chapter 1\'s sound, and a key is global)'),
        ('w4fridge', 'w4fridge.glb', 'the fridge'),
        ('w4pilltray', 'w4pilltray.glb', 'her medicine tray'),
        ('w4clock', 'w4clock.glb', 'the wall clock'),

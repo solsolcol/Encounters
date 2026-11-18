@@ -747,9 +747,13 @@ ASSETS = {
     'w4standfan':   ('assets/w4standfan.glb', True, False),     # a standing fan
     'w4shoerack':   ('assets/w4shoerack.glb', True, False),     # the shoe rack outside the gate
     'w4tulsi':      ('assets/w4tulsi.glb', True, False),     # a tulsi (holy basil) in its pot in the corridor
-    'w4door':       ('assets/w4door.glb', True, False),     # the main door
+    'w4doorleaf':   ('assets/w4doorleaf.glb', True, False),     # every doorway's leaf (not w4door: that is episode 4 chapter 1's sound, and a key is global)
     'w4fridge':     ('assets/w4fridge.glb', True, False),     # the fridge
     'w4pilltray':   ('assets/w4pilltray.glb', True, False),     # her medicine tray
+    'w4clock':      ('assets/w4clock.glb', True, False),     # the wall clock
+    'w4phonetable': ('assets/w4phonetable.glb', True, False),     # the telephone table and its corded phone
+    'w4bed':        ('assets/w4bed.glb', True, False),     # her bed with its rail
+    'w4commode':    ('assets/w4commode.glb', True, False),     # the commode chair by her bed
     'w4coffee':     ('assets/w4coffee.glb', True, False),     # the coffee table
     # <<< e4c4 keys: the rows end <<<
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
@@ -905,8 +909,8 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            # >>> e4c4 keys (masters/v27.0/keys.py) >>>
            'w4wheelchair', 'w4prayershelf', 'w4vilakku', 'w4waterbowl', 'w4bigbowl', 'w4sofa', 'w4cabinet',
            'w4dintable', 'w4dinechair', 'w4framesmall', 'w4hugger', 'w4folder', 'w4gate', 'w4frameport',
-           'w4armchair', 'w4tubelight', 'w4tvconsole', 'w4stool', 'w4standfan', 'w4shoerack', 'w4tulsi', 'w4door',
-           'w4fridge', 'w4pilltray', 'w4coffee',
+           'w4armchair', 'w4tubelight', 'w4tvconsole', 'w4stool', 'w4standfan', 'w4shoerack', 'w4tulsi',
+           'w4doorleaf', 'w4fridge', 'w4pilltray', 'w4clock', 'w4phonetable', 'w4bed', 'w4commode', 'w4coffee',
            # <<< e4c4 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY
@@ -924,6 +928,14 @@ for _k in sorted(PACK_OF):
 ASSETS['opuspack'] = ('assets/opuspack.bin', True, False)
 HOSTED_ONLY.add('opuspack')
 PACK_KEYS = {k for k in ASSETS if k.endswith('pack') or 'pack_' in k}
+# v27.0: AN ASSET'S KEY IS NEVER A SOUND'S NAME. chapter_sounds() reads any sound named outright in a chapter's source as
+# a sound that chapter asks for, so a model keyed like a sound makes every chapter that loads the model "ask" for the
+# sound too: asked for by two chapters, the sound leaves its own chapter's pack for the SHARED one, every player's
+# download at boot, with no error (episode 4 chapter 4's door model was keyed `w4door`, which is chapter 1's door sound).
+# The two that have stood since episode 1 are named and left as they are; a new one stops the build.
+_KEY_IS_SOUND = sorted(set(ASSETS) & set(SOUNDS))
+assert set(_KEY_IS_SOUND) <= {'chair', 'curtain'}, ('an asset key is also a sound\'s name (rename the asset): '
+                                                      + ', '.join(sorted(set(_KEY_IS_SOUND) - {'chair', 'curtain'})))
 
 # What the ENGINE uses, whatever chapter is playing: the player's hands, the
 # ghost, the logo, the music bed, the sound pack. Everything else belongs to

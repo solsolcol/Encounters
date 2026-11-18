@@ -1,0 +1,72 @@
+[
+ {
+  "name": "u4openmus",
+  "secs": 75,
+  "takes": 2,
+  "prompt": "Slow, dark, restrained cinematic underscore for a quiet horror film set at night in a Singapore public housing estate: a low sustained string drone, a soft repeating two-note piano figure in a low register, distant metallic textures like wind through window grilles, a slow pulse of a muffled bass drum that grows a little heavier near the end, then thins away. Sparse, uneasy, patient; no melody to hum, no jump scares. Instrumental.",
+  "where": "the opening film: the estate, the lift, the corridor, the flat"
+ },
+ {
+  "name": "u4histmus",
+  "secs": 60,
+  "takes": 2,
+  "prompt": "A very quiet, uneasy ambient underscore for listening in a family's living room at night: low sustained cello and viola tones, a faint high violin harmonic that comes and goes, soft felt-piano single notes far apart, a slow breathing swell. Intimate, sad, a little dread under it. Loopable, steady level, no climax, no drums. Instrumental.",
+  "where": "play: history first"
+ },
+ {
+  "name": "u4vismus",
+  "secs": 30,
+  "takes": 2,
+  "prompt": "A slow dark pulse for a supernatural sight: a deep sub-bass throb every two seconds like a slow heartbeat, a glassy shimmering pad, reversed ghostly piano tones, a faint choir-like texture without words. Cold, otherworldly, hypnotic. Loopable, steady, no melody, no build. Instrumental.",
+  "where": "Spirit Vision: its music while open"
+ },
+ {
+  "name": "u4fightmus",
+  "secs": 150,
+  "takes": 2,
+  "prompt": "Tense, building cinematic music for a supernatural struggle in a dark room while a blessing is being chanted: begins quiet with low pulsing strings and a ticking pulse, adds tremolo strings, deep taiko-like hits and rising brass swells in three waves, each wave stronger, a dark choir texture without words near the end, then a sudden drop to a sustained hush. Urgent but controlled, never chaotic. Instrumental.",
+  "where": "the blessing: the fight, under the chant"
+ },
+ {
+  "name": "u4trancemus",
+  "secs": 60,
+  "takes": 2,
+  "prompt": "A short instrumental piece inspired by South Indian Tamil folk temple music for a sacred trance: it opens with one small brass bell and a low sustained drone; then a soft steady pulse on a small hourglass hand drum, answered by a pair of deeper barrel drums; the rhythm rolls and tightens little by little; a deep rubbed friction drum moans beneath and the drums roll together; one short phrase of a South Indian double-reed horn above, not a hummable melody; then everything stops dead. Devotional and powerful, not frightening, not a horror film. Instrumental.",
+  "where": "the trance: her goddess comes (the drums are hers and her people's, never the spirit's)"
+ },
+ {
+  "name": "u4endA",
+  "secs": 50,
+  "takes": 2,
+  "prompt": "Sorrowful, regretful orchestral underscore: a slow cello line over soft sustained strings, a heavy quiet weight, resolving uneasily to a tender but unfinished chord. Reflective, about a mistake made out of fear. Instrumental.",
+  "where": "ending A: he held her son back"
+ },
+ {
+  "name": "u4endB",
+  "secs": 50,
+  "takes": 2,
+  "prompt": "Shaken, somber underscore after a dangerous mistake: low trembling strings, a distant muffled heartbeat-like pulse slowing down, a single high violin note that steadies, ending quiet and humbled. Instrumental.",
+  "where": "ending B: he threw the water"
+ },
+ {
+  "name": "u4endC",
+  "secs": 55,
+  "takes": 2,
+  "prompt": "Warm, quietly moving orchestral music for a family reunited: soft strings and a gentle piano melody, rising slowly with hope, a light touch of a South Indian bamboo flute far in the background, resolving gently and warmly. Tender, not triumphant. Instrumental.",
+  "where": "ending C: he told the son what he saw; she stands holding her son's hand"
+ },
+ {
+  "name": "u4endD",
+  "secs": 50,
+  "takes": 2,
+  "prompt": "Calm, steady, dignified underscore: sustained warm strings and a slow simple piano line, patient and grounded, with a faint note of something missed, ending on a quiet open chord. Instrumental.",
+  "where": "ending D: he kept his place"
+ },
+ {
+  "name": "u4closemus",
+  "secs": 70,
+  "takes": 2,
+  "prompt": "Gentle, peaceful closing music for the end of a long night: a soft piano melody over warm sustained strings, a slow, open, healing feeling, a small brass bell once near the start and once at the end, fading softly. Quietly hopeful and spiritual, not grand. Instrumental.",
+  "where": "the close: her first steps, her altar, the dedication of merit, the card"
+ }
+]
