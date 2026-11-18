@@ -5,14 +5,17 @@
    up — with the light counts that frame drew with, since the number of lights
    of each kind is part of every lit shader.
    Usage: node tools/probes/progs.mjs <chapter…>   (STEP=0.5 seconds of film;
-   OPT=lightSets:0 switches an OPT off for the run) */
+   OPT=lightSets:0 switches an OPT off for the run; VIEW=phone frames it as a phone, 390 x 844 with touch)
+   v27.0 (R51, a stutter in the opening's pan): the renderer's TEXTURES and GEOMETRIES are counted at every step too,
+   since a texture uploaded or a geometry first drawn on screen is a stall as a shader is. */
 import { chromium } from 'playwright';
 import { LAUNCH, PAGE } from '../../testlib.mjs';
 const chs = process.argv.slice(2), STEP = +(process.env.STEP || 0.5);
 const b = await chromium.launch(LAUNCH);
 const RUNS = process.env.REPEAT ? 2 : 1;       // REPEAT=1: the same chapter twice in one browser profile (the light memory)
 for (const ch of chs) {
-  const ctx = await b.newContext({ viewport: { width: 1280, height: 800 } });
+  const ctx = process.env.VIEW === 'phone' ? await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, hasTouch: true, isMobile: true })
+                                           : await b.newContext({ viewport: { width: 1280, height: 800 } });
   for (let run = 0; run < RUNS; run++) {
   const p = await ctx.newPage();
   const errs = [];
@@ -36,11 +39,15 @@ for (const ch of chs) {
     let base = await progs();
     const film = await p.evaluate(() => window.__enc.getState() === 'cine' ? window.__enc.cine.dur() : 0);
     const start = base;
+    let memBase = null;
     for (let t = 0; film && t <= film; t += STEP) {
       const r = await p.evaluate(async (t) => { const E = window.__enc; if (!E.cine.active()) return null;
-        E.cine.seek(t); await window.__frames(2); return { n: E.renderer.info.programs.length, l: window.__lights() }; }, t);
+        E.cine.seek(t); await window.__frames(2); const m = E.renderer.info.memory;
+        return { n: E.renderer.info.programs.length, l: window.__lights(), tx: m.textures, g: m.geometries }; }, t);
       if (!r) break;
-      if (r.n > base) { out.push(`film ${t.toFixed(1)}s +${r.n - base} [${r.l}]`); base = r.n; }
+      if (memBase === null) memBase = { tx: r.tx, g: r.g };
+      if (r.n > base) { out.push(`film ${t.toFixed(2)}s +${r.n - base} [${r.l}]`); base = r.n; }
+      if (r.tx > memBase.tx || r.g > memBase.g) { out.push(`film ${t.toFixed(2)}s textures +${r.tx - memBase.tx} geometries +${r.g - memBase.g}`); memBase = { tx: Math.max(r.tx, memBase.tx), g: Math.max(r.g, memBase.g) }; }
     }
     const filmMade = base - start;
     if (film) await p.evaluate(() => { window.__enc.cine.resume(); window.__enc.cine.skip && window.__enc.cine.skip(); });

@@ -315,20 +315,57 @@
       const mPoolC = new THREE.MeshBasicMaterial({ map: poolTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }); mats.push(mPoolC);
       const pool = (cx, cy, cz, w, h, ax) => {           // a pool laid on a surface: 'y' a ceiling or floor, '-z' the wall, '+z' the parapet
         const hw = w / 2, hh = h / 2, Bt = batchOf(mPoolC);
-        const P = ax === 'yd' ? [[cx - hw, cy, cz - hh], [cx + hw, cy, cz - hh], [cx + hw, cy, cz + hh], [cx - hw, cy, cz + hh]]
-                : ax === 'yu' ? [[cx - hw, cy, cz + hh], [cx + hw, cy, cz + hh], [cx + hw, cy, cz - hh], [cx - hw, cy, cz - hh]]
-                : ax === '-z' ? [[cx + hw, cy - hh, cz], [cx - hw, cy - hh, cz], [cx - hw, cy + hh, cz], [cx + hw, cy + hh, cz]]
-                : [[cx - hw, cy - hh, cz], [cx + hw, cy - hh, cz], [cx + hw, cy + hh, cz], [cx - hw, cy + hh, cz]];
-        const U = [[0, 0], [1, 0], [1, 1], [0, 0], [1, 1], [0, 1]], I = [0, 1, 2, 0, 2, 3];
+        /* (R48) a pool stops at the corridor's end walls: its light is cut where the wall stands (its u the pool's own) */
+        const xa = Math.max(cx - hw, c.x0 + 0.02), xb = Math.min(cx + hw, c.x1 - 0.02); if (xb - xa < 0.05) return;
+        const ua = (xa - cx + hw) / w, ub = (xb - cx + hw) / w;
+        const P = ax === 'yd' ? [[xa, cy, cz - hh], [xb, cy, cz - hh], [xb, cy, cz + hh], [xa, cy, cz + hh]]
+                : ax === 'yu' ? [[xa, cy, cz + hh], [xb, cy, cz + hh], [xb, cy, cz - hh], [xa, cy, cz - hh]]
+                : ax === '-z' ? [[xb, cy - hh, cz], [xa, cy - hh, cz], [xa, cy + hh, cz], [xb, cy + hh, cz]]
+                : [[xa, cy - hh, cz], [xb, cy - hh, cz], [xb, cy + hh, cz], [xa, cy + hh, cz]];
+        const U = ax === '-z' ? [[1 - ub, 0], [1 - ua, 0], [1 - ua, 1], [1 - ub, 1]] : [[ua, 0], [ub, 0], [ub, 1], [ua, 1]], I = [0, 1, 2, 0, 2, 3];
         const nn = ax === 'yd' ? [0, -1, 0] : ax === 'yu' ? [0, 1, 0] : ax === '-z' ? [0, 0, -1] : [0, 0, 1];
-        for (let i = 0; i < 6; i++) { const q = P[I[i]]; Bt.p.push(q[0], q[1], q[2]); Bt.n.push(nn[0], nn[1], nn[2]); Bt.u.push(U[i][0], U[i][1]); } };
-      for (let x = -24.5; x <= 24.5; x += 7) {
+        for (let i = 0; i < 6; i++) { const q = P[I[i]], uv = U[I[i]]; Bt.p.push(q[0], q[1], q[2]); Bt.n.push(nn[0], nn[1], nn[2]); Bt.u.push(uv[0], uv[1]); } };
+      /* (R48) a pool on a beam's side, the face across the corridor turned to its batten (sgn: the way it faces in x); the
+         middle band of the pool's light, so the face is lit up its whole depth and fades toward its two ends */
+      const poolX = (xf, cy, cz, w, h, sgn) => {
+        const hw = w / 2, hh = h / 2, Bt = batchOf(mPoolC);
+        const P = sgn > 0 ? [[xf, cy - hh, cz + hw], [xf, cy - hh, cz - hw], [xf, cy + hh, cz - hw], [xf, cy + hh, cz + hw]]
+                          : [[xf, cy - hh, cz - hw], [xf, cy - hh, cz + hw], [xf, cy + hh, cz + hw], [xf, cy + hh, cz - hw]];
+        const U = [[0, 0.38], [1, 0.38], [1, 0.62], [0, 0.62]], I = [0, 1, 2, 0, 2, 3];
+        for (let i = 0; i < 6; i++) { const q = P[I[i]], uv = U[I[i]]; Bt.p.push(q[0], q[1], q[2]); Bt.n.push(sgn, 0, 0); Bt.u.push(uv[0], uv[1]); } };
+      /* (R48, Chad, 18 Nov 2026: "the corridor can still be improved"). A real access balcony (docs/research/V27.0-HDB.md
+         [47], the corridor photograph): its ceiling crossed bay by bay by DOWNSTAND BEAMS, PIERS rising from the parapet to
+         the slab above, the lights between the beams, pipes along the wall under the ceiling, the floor's joints across it.
+         The beams every 3.4 m from her party wall (a third of her flat's 10.2 m frontage), 0.22 wide, 0.30 deep (the
+         research's DEFAULT downstand), from her wall's face out over the parapet; a pier at every second beam, on the
+         parapet's coping, 0.24 wide and standing 0.09 proud of the parapet's inner face; the battens in the middle of every
+         second bay (7 m apart before; 6.8 now), the one past the last beam in the bay the end wall closes */
+      const BAY = 3.4, beams = [], mJoint = M({ color: 0x5c5a55, roughness: 0.7 });
+      for (let x = FL.x0; x > c.x0 + 0.3; x -= BAY) beams.push(x);
+      for (let x = FL.x0 + BAY; x < c.x1 - 0.3; x += BAY) beams.push(x);
+      beams.sort((a, b) => a - b);
+      const BEAM_D = 0.30, BEAM_W = 0.22, PIER_W = 0.24;
+      for (const xb of beams) {
+        box(mSoffit, xb, c.soffit - BEAM_D / 2, (c.para + 0.005) / 2, BEAM_W, BEAM_D, -c.para - 0.005, 0, mSoffit, false);
+        if (Math.round((xb - FL.x0) / BAY) % 2 === 0)
+          box(mWallOut, xb, (c.paraTop + 0.06 + c.soffit) / 2, c.para + 0.12, PIER_W, c.soffit - c.paraTop - 0.06, 0.24);
+        /* the floor's joint under the beam: a seam across the terrazzo */
+        quad(mJoint, [xb - 0.008, y0 + 0.0025, 0], [xb + 0.008, y0 + 0.0025, 0], [xb + 0.008, y0 + 0.0025, c.z0], [xb - 0.008, y0 + 0.0025, c.z0]);
+      }
+      const battens = [];
+      for (let x = FL.x0 + BAY / 2; x > c.x0 + 0.7; x -= 2 * BAY) battens.push(x);
+      for (let x = FL.x0 + BAY / 2 + 2 * BAY; x < c.x1 - 0.7; x += 2 * BAY) battens.push(x);
+      for (const x of battens) {
         box(mFix, x, c.soffit - 0.024, -0.9, 1.26, 0.048, 0.09);
         box(mBatten, x, c.soffit - 0.052, -0.9, 1.2, 0.008, 0.06);
         pool(x, c.soffit - 0.004, -0.9, 3.6, 1.7, 'yd');
         pool(x, 1.45, -0.004, 4.2, 2.6, '-z');
         pool(x, y0 + 0.004, -0.85, 3.2, 1.6, 'yu');
         pool(x, 0.5, c.para + 0.155, 3.4, 1.1, '+z');
+        /* the two beams of its bay, their faces turned to it */
+        const has = (bx) => beams.some(q => Math.abs(q - bx) < 0.01);
+        if (has(x - BAY / 2)) poolX(x - BAY / 2 + BEAM_W / 2 + 0.003, c.soffit - BEAM_D / 2, c.para / 2, -c.para - 0.04, BEAM_D, 1);
+        if (has(x + BAY / 2)) poolX(x + BAY / 2 - BEAM_W / 2 - 0.003, c.soffit - BEAM_D / 2, c.para / 2, -c.para - 0.04, BEAM_D, -1);
       }
       /* the town gas pipe along the corridor's wall under the soffit, yellow, on its brackets; each flat's electricity
          meter box by its door and its number over it; the corridor's two ends: a wall of vent blocks before the stair */
@@ -347,6 +384,13 @@
         const P = [[dx + 0.16, 2.2, -0.006], [dx - 0.16, 2.2, -0.006], [dx - 0.16, 2.26, -0.006], [dx + 0.16, 2.26, -0.006]], U = [[0, v0], [1, v0], [1, v1], [0, v1]], I = [0, 1, 2, 0, 2, 3];
         for (let j = 0; j < 6; j++) { const q = P[I[j]]; Bt.p.push(q[0], q[1], q[2]); Bt.n.push(0, 0, -1); Bt.u.push(U[I[j]][0], U[I[j]][1]); }
       });
+      /* (R48) the water main along the same wall under the gas pipe, galvanised grey on its own brackets (the corridor
+         photograph [47]: the pipes run along the wall's top), a valve on it over each door */
+      const mWater = M({ color: 0x8e9294, roughness: 0.45, metalness: 0.4 }), mValve = M({ color: 0x9a2a22, roughness: 0.5 });
+      bar(mWater, [c.x0, 2.27, -0.075], [c.x1, 2.27, -0.075], 0.026, 8);
+      for (let gx = c.x0 + 1.4; gx < c.x1; gx += 1.6) box(mBox, gx, 2.27, -0.035, 0.03, 0.08, 0.07);
+      for (const dx of doors) { box(mWater, dx + 0.62, 2.27, -0.075, 0.09, 0.075, 0.075); bar(mValve, [dx + 0.62, 2.31, -0.075], [dx + 0.62, 2.34, -0.075], 0.006, 5);
+        box(mValve, dx + 0.62, 2.345, -0.075, 0.075, 0.008, 0.02); }
       const mVent = B({ map: (() => { const W = 256, cv = document.createElement('canvas'); cv.width = cv.height = W; const x = cv.getContext('2d');
         x.fillStyle = '#8f8a80'; x.fillRect(0, 0, W, W);
         for (let i = 0; i < 8; i++) for (let j = 0; j < 8; j++) { x.fillStyle = '#23242a'; x.fillRect(i * 32 + 5, j * 32 + 5, 22, 22);
