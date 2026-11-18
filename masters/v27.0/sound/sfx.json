@@ -272,6 +272,54 @@
   "where": "every ending: the thing torn free of her"
  },
  {
+  "name": "u4ascream",
+  "secs": 1.8,
+  "loop": false,
+  "takes": 4,
+  "prompt": "An elderly woman crying out once in sudden sharp pain and fear, a short frightened scream that breaks off, indoors, close. Only her voice, no words.",
+  "where": "the fight: a green one reaches her (three kept, in turn)"
+ },
+ {
+  "name": "u4surge",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A sudden rising rush of many hissing, whispering voices swarming in from every side at once, growing louder and closer, menacing. No words.",
+  "where": "the fight: the surge, too many"
+ },
+ {
+  "name": "u4goldcall",
+  "secs": 3.5,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A sacred golden radiance rising: a deep resonant temple gong, then shimmering bells and a soft wordless choir swelling upward into brilliant light. Awe-inspiring, holy.",
+  "where": "the call: his amulet appears"
+ },
+ {
+  "name": "u4goldpower",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A powerful blessing taking hold: a deep warm boom of energy, then a bright shimmering golden tail of chimes fading out. Triumphant, sacred.",
+  "where": "the call: he is empowered"
+ },
+ {
+  "name": "u4goldflick",
+  "secs": 1.0,
+  "loop": false,
+  "takes": 2,
+  "prompt": "A flick of glowing water thrown with a bright magical shimmer: a quick wet whoosh with a crystalline chime.",
+  "where": "empowered: each golden flick"
+ },
+ {
+  "name": "u4goldclear",
+  "secs": 2.2,
+  "loop": false,
+  "takes": 2,
+  "prompt": "Many shadowy presences dispelled at once by a wave of light: a bright sweeping whoosh of radiance, many faint ghostly sighs dissolving away, a shimmering tail.",
+  "where": "empowered: every green one released"
+ },
+ {
   "name": "u4scuffle",
   "secs": 4.0,
   "loop": false,

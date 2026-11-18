@@ -45,7 +45,13 @@
   "u4os3": "3cD4VGtdKLfhHr309ly8",
   "u4os4": "OqqzHhiAkb4Cvypz4AWY",
   "u4os5": "yqH0EsmUlzhUQbIU0CdF",
-  "u4os6": "9e3LM9kQkQVc7e9AsrMQ"
+  "u4os6": "9e3LM9kQkQVc7e9AsrMQ",
+  "u4ascream": "Ddt1R4xwUGwgf2zCsRUx",
+  "u4surge": "9Qxmq18zoKZRYCuU0vRb",
+  "u4goldcall": "3SuxrAJrWRRXgvtYkQ9D",
+  "u4goldpower": "ND3rrPUsBunBRTvsXsx8",
+  "u4goldflick": "MDWbHPe11A1B138hNgiE",
+  "u4goldclear": "BplvnHErnIOwtRWZNhaV"
  },
  "sounds": {
   "u4vison": [
@@ -227,6 +233,32 @@
   "u4os6": [
    "smHI0CWheDEv9IkJJn5y",
    "CE1zLjBn6NTqztRld8At"
+  ],
+  "u4ascream": [
+   "XmnkXhzl9PulZzJqIcc2",
+   "h3OREYDa2FBUUrwmMl1K",
+   "Ps8ytmjGFnx8teUMJ8K2",
+   "Tzdv5D02CclgB6uTMr7d"
+  ],
+  "u4surge": [
+   "1gUfs3nyKWopowWERVhK",
+   "1oJiwYpyAfQpxBIgdPzp"
+  ],
+  "u4goldcall": [
+   "yJ5pWGJNYChFJL6PzpMH",
+   "6rrUvsj4E4RNGndYl6N8"
+  ],
+  "u4goldpower": [
+   "D1qTRh1zkzBCxzoFn9nY",
+   "uRA09oq6GpGfn1otBO67"
+  ],
+  "u4goldflick": [
+   "clR74AP54SllTgiUz8od",
+   "imm7XtMZes0EcGnqtIcH"
+  ],
+  "u4goldclear": [
+   "oExLVxuQNXasZStrSMIE",
+   "oWy4gxArT6CsFLHaqoi4"
   ]
  }
 }

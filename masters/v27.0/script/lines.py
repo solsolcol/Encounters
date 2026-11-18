@@ -45,6 +45,15 @@ LINES = [
     ('ph4b3', 'pho', 'play, the blessing: his sight shut too long', "Open your sight. They are coming for her."),
     ('ph4b4', 'pho', 'play, the blessing: his sight shut too long', "What you do not look at still comes. Open your sight."),
     ('ph4b5', 'pho', 'play, the blessing: his sight shut too long', "Look again. Send them back."),
+    # (Chad, 18 Nov: "Have some dramatic voicelines along the way": the fight speaks. q4f3 and ph4f2 are his words exactly)
+    ('q4f1', 'he', 'play, the fight: the second wave comes', "More of them. From the doors."),
+    ('q4f2', 'he', 'play, the fight: the large one stands', "What is that...?"),
+    ('ph4f1', 'pho', 'play, the fight: the large one stands', "A heavy one. Again, and again, until it goes."),
+    ('rv4f1', 'ravi', 'play, the fight: his mother cries out', "Amma! What's happening to her?"),
+    ('q4f3', 'he', 'play, the fight: the surge, too many', "Grandmaster, there are way too many of them!"),
+    ('ph4f2', 'pho', 'play, the fight: the surge, too many', "Call out to Luang Phor Phiboon, now!"),
+    ('q4f4', 'he', 'play, the fight: he calls on him', "Luang Phor Phiboon... please, help us."),
+    ('ph4f3', 'pho', 'play, the fight: the gold in the water', "Now you are not alone. Send them back."),
     # ---- the trance and the turning point (§4.4)
     ('ml4t1', 'mala', 'film: the trance', "Amma?"),
     ('ml4t2', 'mala', 'film: the trance', "It's Amman."),

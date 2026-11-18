@@ -151,6 +151,10 @@ body.ledgeropen #objective,body.ledgeropen #hotmarks{opacity:0;transition:opacit
    heartbeat surging them inward. Two SIBLINGS on the page rather than one box, because a box holding a backdrop
    filter can become its child's backdrop root and blur nothing. Under the HUD and the dread frame. */
 #chillBlur,#chillTint{position:fixed;inset:0;pointer-events:none;z-index:3}
+/* v27.0 (seam 56): a glow at the edges of his sight (kit.edge): its colour and strength written by the engine, its
+   breath here; under the HUD */
+#edgeGlow{position:fixed;inset:0;pointer-events:none;z-index:3;animation:edgeBreath 2.6s ease-in-out infinite}
+@keyframes edgeBreath{0%,100%{filter:brightness(1)}50%{filter:brightness(1.45)}}
 #panic{position:fixed;inset:0;pointer-events:none;z-index:3;opacity:0;
   transition:opacity .4s linear;
   background:radial-gradient(ellipse at 50% 50%,transparent 12%,
@@ -243,12 +247,52 @@ body.hasVision.evopen .visionBtn,body.hasVision.unlockopen .visionBtn,body.hasVi
 .visionBtn svg{fill:none;stroke:var(--bone);stroke-width:1.8}
 .visionBtn svg path:first-child{fill:none}
 .visionBtn .rays{opacity:.25;transition:opacity .16s}
-.visionBtn.on{border-color:#8CF2FF;box-shadow:0 0 14px rgba(140,242,255,.45)}
-.visionBtn.on svg{stroke:#8CF2FF}
+/* v27.0 (18 Nov, Chad: "make the spirit vision icon glow with pulsing effects and make it more obvious when in use. When
+   the game wants to prompt the user to enter or exit spirit vision, there also should be a different set of glow colour
+   pulsating effect"): IN USE its own pale blue, lit inside and breathing; ASKED TO OPEN (kit.visionUrge('open')), violet,
+   a beacon; ASKED TO CLOSE (kit.visionUrge('close')), ember, a warning; each asking with its word under the button (the
+   sheet's hud.visionOpen and hud.visionClose, set on the button as data-open and data-close) */
+.visionBtn.on{border-color:#8CF2FF;background:rgba(36,110,128,.34);animation:visOn 2.4s ease-in-out infinite}
+.visionBtn.on svg{stroke:#BFF8FF}
 .visionBtn.on .rays{opacity:1}
-/* v27.0: the eye button asks, as the bag button does, while the chapter's order is to open his sight (kit.visionUrge) */
-.visionBtn.urge{border-color:#8CF2FF;animation:invUrge 1.5s ease-in-out infinite}
-.visionBtn.urge svg{stroke:#8CF2FF}
+@keyframes visOn{0%,100%{box-shadow:0 0 10px 1px rgba(140,242,255,.45),inset 0 0 8px rgba(140,242,255,.22)}
+  50%{box-shadow:0 0 28px 7px rgba(140,242,255,.78),inset 0 0 14px rgba(140,242,255,.42)}}
+.visionBtn.urge{border-color:#C9A2FF;animation:visUrgeOpen 1.15s ease-in-out infinite}
+.visionBtn.urge svg{stroke:#D9BEFF}
+.visionBtn.urgeClose{border-color:#FF8E5E;animation:visUrgeClose 1.15s ease-in-out infinite}
+.visionBtn.urgeClose svg{stroke:#FFB08C}
+@keyframes visUrgeOpen{0%,100%{box-shadow:0 0 0 0 rgba(201,162,255,.7),0 0 12px 2px rgba(201,162,255,.35);transform:scale(1)}
+  50%{box-shadow:0 0 0 15px rgba(201,162,255,0),0 0 32px 9px rgba(201,162,255,.72);transform:scale(1.12)}}
+@keyframes visUrgeClose{0%,100%{box-shadow:0 0 0 0 rgba(255,142,94,.7),0 0 12px 2px rgba(255,142,94,.35);transform:scale(1)}
+  50%{box-shadow:0 0 0 15px rgba(255,142,94,0),0 0 32px 9px rgba(255,142,94,.72);transform:scale(1.12)}}
+.visionBtn.urge::after,.visionBtn.urgeClose::after{position:absolute;top:calc(100% + 7px);left:50%;transform:translateX(-50%);
+  padding:4px 7px 3px;border-radius:7px;font:700 10px/1 var(--ui);letter-spacing:.16em;text-transform:uppercase;
+  white-space:nowrap;background:rgba(8,10,14,.82);pointer-events:none}
+.visionBtn.urge::after{content:attr(data-open);color:#E2CCFF;box-shadow:0 0 12px rgba(201,162,255,.55)}
+.visionBtn.urgeClose::after{content:attr(data-close);color:#FFC3A6;box-shadow:0 0 12px rgba(255,142,94,.55)}
+/* v27.0 · A LIFE IN HIS KEEPING (kit.health, the fifty-fourth seam): a bar over a person in the room, its bottom at the
+   point the chapter names; at the screen's edge, centred there with an arrow toward them. In the page, over the picture */
+#lifeBar{position:fixed;left:0;top:0;z-index:4;display:none;pointer-events:none;transform:translate(-50%,-100%);
+  min-width:118px;padding:5px 9px 7px;border-radius:10px;background:rgba(8,10,14,.66);
+  box-shadow:0 2px 12px rgba(0,0,0,.5),0 0 0 1px rgba(255,120,130,.28)}
+#lifeBar.on{display:block}
+#lifeBar.edge{transform:translate(-50%,-50%)}
+#lifeBar .lbName{display:block;text-align:center;margin-bottom:5px;font:700 11px/1.1 var(--ui);letter-spacing:.16em;
+  text-transform:uppercase;color:#FFE1DC}
+#lifeBar .lbTrack{position:relative;height:8px;border-radius:4px;background:rgba(30,34,42,.95);overflow:hidden;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.6)}
+#lifeBar .lbTrail{position:absolute;left:0;top:0;bottom:0;width:100%;background:#FFF3E8;opacity:.6}
+#lifeBar .lbFill{position:absolute;left:0;top:0;bottom:0;width:100%;background:linear-gradient(90deg,#A3203A,#FF5468)}
+#lifeBar.low .lbFill{animation:lbLow .7s ease-in-out infinite}
+@keyframes lbLow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.6)}}
+#lifeBar.hit{animation:lbHit .5s ease-out}
+#lifeBar.edge.hit{animation:lbHitE .5s ease-out}
+@keyframes lbHit{0%{transform:translate(-50%,-100%) scale(1.14);box-shadow:0 0 22px 6px rgba(255,70,90,.75)}100%{transform:translate(-50%,-100%) scale(1)}}
+@keyframes lbHitE{0%{transform:translate(-50%,-50%) scale(1.14);box-shadow:0 0 22px 6px rgba(255,70,90,.75)}100%{transform:translate(-50%,-50%) scale(1)}}
+#lifeBar .lbArrow{display:none;position:absolute;left:50%;top:50%;width:0;height:0;margin:-7px 0 0 -7px;pointer-events:none}
+#lifeBar.edge .lbArrow{display:block}
+#lifeBar .lbArrow::before{content:'';position:absolute;left:72px;top:0;border:7px solid transparent;border-left:11px solid #FF5468;
+  filter:drop-shadow(0 0 4px rgba(255,84,104,.8))}
 .visionBtn:hover .invLabel,.visionBtn:focus-visible .invLabel{border-color:#8CF2FF}
 /* v12.0: RIFLE MODE's HUD — only while a chapter's weapon is OUT
    (`body.weaponUp`, derived on the frame from the hand slot). A big round
@@ -2274,6 +2318,20 @@ body.capsOn #interact{padding-bottom:calc(var(--capTop,170px) + 14px)}
   background:radial-gradient(ellipse at 50% 44%,rgba(60,42,10,.58) 0%,rgba(9,9,11,.80) 55%,rgba(3,4,7,.93) 100%);
   backdrop-filter:blur(3px);animation:unFade .35s var(--ease)}
 #unlock.out{opacity:0;transition:opacity .22s linear;pointer-events:none}
+/* v27.0 (seam 55): A SHOWCASE (kit.unlock(id, { gold, auto })): a thing that comes to him rather than one he is given,
+   lit through with gold, flashing in and swelling away; no button (it goes by itself) */
+#unlock.gold{background:radial-gradient(ellipse at 50% 44%,rgba(255,200,90,.55) 0%,rgba(132,82,14,.62) 36%,rgba(14,9,2,.9) 100%);
+  animation:unGoldIn .6s var(--ease)}
+#unlock.gold .unRays::before{background:repeating-conic-gradient(from 0deg,rgba(255,214,120,.36) 0deg 3.4deg,transparent 3.4deg 15deg);
+  animation-duration:22s}
+#unlock.gold .unGlow{width:min(96vw,64vh,560px);height:min(96vw,64vh,560px);
+  background:radial-gradient(circle,rgba(255,234,160,.82) 0%,rgba(255,182,64,.40) 38%,transparent 70%)}
+#unlock.gold .unLabel{color:#FFD66B;text-shadow:0 0 22px rgba(255,200,90,.95)}
+#unlock.gold #unName{color:#FFE9AC;text-shadow:0 0 26px rgba(255,190,70,.95)}
+#unlock.gold .unSub{color:#FFE2A0}
+#unlock.gold #unClose{visibility:hidden}
+#unlock.gold.out{opacity:0;transform:scale(1.2);filter:brightness(1.8);transition:opacity .5s ease-in,transform .5s ease-in,filter .5s ease-in}
+@keyframes unGoldIn{0%{opacity:0;transform:scale(.66);filter:brightness(3.2)}55%{opacity:1;filter:brightness(1.5)}100%{transform:none;filter:none}}
 @keyframes unFade{from{opacity:0}}
 body.unlockopen .soundBtn,body.unlockopen #volWrap{display:none}
 body.hasTorch.unlockopen .torchBtn{display:none}
@@ -3112,6 +3170,7 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
 <div id="grade"></div>
 <!-- v22.0: the cold (kit.chill) — the edges of his sight blurred, then the blue there; shown only while it is cold -->
 <div id="chillBlur" class="hide"></div>
+<div id="edgeGlow" class="hide"></div>
 <div id="chillTint" class="hide"></div>
 <div id="panic"></div>
 <!-- v8.7: one screen flash, fired by the kit — a reached place, a beat landing -->
@@ -3632,6 +3691,7 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
 
 <!-- hud -->
 <div id="hud" class="layer hide">
+  <div id="lifeBar" aria-hidden="true"><span class="lbName"></span><div class="lbTrack"><div class="lbTrail"></div><div class="lbFill"></div></div><span class="lbArrow"></span></div>
   <div id="stats">
     <div class="stat sSan"><svg class="sic" aria-hidden="true"><use href="#i-san"/></svg>
       <span class="n" data-t="hud.sanity">Sanity</span><canvas id="ecg"></canvas><span class="v" id="vSan">100</span>

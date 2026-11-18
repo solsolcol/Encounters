@@ -265,6 +265,8 @@ Object.assign(window.__TEXT__, {
   'hud.torchKey':        'F',
   'hud.vision':          'Spirit Vision',
   'hud.visionKey':       'V',
+  'hud.visionOpen':      'Open',          // v27.0: under the eye while the chapter asks him to open his sight
+  'hud.visionClose':     'Close',         // v27.0: and while it asks him to close it
   'hud.fire':            'FIRE',
   'hud.fireKey':         'Space',
   'hud.reload':          'Reload',

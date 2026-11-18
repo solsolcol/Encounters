@@ -48,6 +48,13 @@ SFX = [
     # ---- the trance and the turning point
     ('u4cry', 8.0, False, 2, "A long inhuman wailing cry rising and tearing, mournful and terrible, holding on and breaking, like a creature being pulled away against its will. Not words, not a human scream of words.", 'the trance: the thing on her back cries out'),
     ('u4torn', 3.0, False, 2, "A sudden tearing whoosh of air rushing outward, a deep soft release, and then stillness.", 'every ending: the thing torn free of her'),
+    # ---- the holy water's stakes and the call (Chad, 18 Nov: "This entire sequence needs its own sound effects etc.")
+    ('u4ascream', 1.8, False, 4, "An elderly woman crying out once in sudden sharp pain and fear, a short frightened scream that breaks off, indoors, close. Only her voice, no words.", 'the fight: a green one reaches her (three kept, in turn)'),
+    ('u4surge', 3.0, False, 2, "A sudden rising rush of many hissing, whispering voices swarming in from every side at once, growing louder and closer, menacing. No words.", 'the fight: the surge, too many'),
+    ('u4goldcall', 3.5, False, 2, "A sacred golden radiance rising: a deep resonant temple gong, then shimmering bells and a soft wordless choir swelling upward into brilliant light. Awe-inspiring, holy.", 'the call: his amulet appears'),
+    ('u4goldpower', 2.5, False, 2, "A powerful blessing taking hold: a deep warm boom of energy, then a bright shimmering golden tail of chimes fading out. Triumphant, sacred.", 'the call: he is empowered'),
+    ('u4goldflick', 1.0, False, 2, "A flick of glowing water thrown with a bright magical shimmer: a quick wet whoosh with a crystalline chime.", 'empowered: each golden flick'),
+    ('u4goldclear', 2.2, False, 2, "Many shadowy presences dispelled at once by a wave of light: a bright sweeping whoosh of radiance, many faint ghostly sighs dissolving away, a shimmering tail.", 'empowered: every green one released'),
     # ---- the endings and the close
     ('u4scuffle', 4.0, False, 2, "Two men struggling on a tiled floor: clothes and shoes scuffling, a stumble, heavy breathing. No words.", 'ending A: he holds Ravi back'),
     ('u4fall', 2.0, False, 2, "A man falling heavily onto a tiled floor: a body's thud and a winded exhale.", 'ending B: the student on the floor'),

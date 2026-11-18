@@ -2752,5 +2752,362 @@
     "heard": "Look again. Send them back."
    }
   }
+ },
+ "q4f1": {
+  "who": "he",
+  "text": "[tense] More of them. From the doors.",
+  "pick": "b",
+  "why": "the tighter read",
+  "med": 3.02,
+  "takes": {
+   "a": {
+    "len": 3.12,
+    "first": 0.0,
+    "last": 2.66,
+    "e_first": 0.0,
+    "e_last": 3.1,
+    "tail_db": -19.8,
+    "tail_rel": -4.3,
+    "hole": 1.2,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.94,
+    "heard": "More of them. From the doors."
+   },
+   "b": {
+    "len": 2.96,
+    "first": 0.0,
+    "last": 2.5,
+    "e_first": 0.0,
+    "e_last": 2.94,
+    "tail_db": -36.1,
+    "tail_rel": -19.9,
+    "hole": 1.06,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.04,
+    "heard": "More of them. From the doors."
+   }
+  }
+ },
+ "q4f2": {
+  "who": "he",
+  "text": "[afraid] What is that...?",
+  "pick": "a",
+  "why": "not rushed",
+  "med": 1.89,
+  "takes": {
+   "a": {
+    "len": 2.88,
+    "first": 0.0,
+    "last": 2.0,
+    "e_first": 0.06,
+    "e_last": 2.86,
+    "tail_db": -43.6,
+    "tail_rel": -23.8,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.07,
+    "heard": "What is that...?"
+   },
+   "b": {
+    "len": 2.08,
+    "first": 0.0,
+    "last": 1.9,
+    "e_first": 0.08,
+    "e_last": 1.06,
+    "tail_db": -77.1,
+    "tail_rel": -59.0,
+    "hole": 0.0,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 3.06,
+    "heard": "What is that...?"
+   }
+  }
+ },
+ "ph4f1": {
+  "who": "pho",
+  "text": "[firm] A heavy one. Again, and again, until it goes.",
+  "pick": "b",
+  "why": "the tighter read, by hand: it is said in the fight, where 6.0 s with a 1.32 s hole (c) holds the action (b: 4.80 s, its words whole)",
+  "med": 5.22,
+  "takes": {
+   "a": {
+    "len": 5.28,
+    "first": 0.0,
+    "last": 5.06,
+    "e_first": 0.04,
+    "e_last": 5.26,
+    "tail_db": -40.6,
+    "tail_rel": -26.0,
+    "hole": 0.76,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.72,
+    "heard": "A heavy one. Again, and again, until it goes."
+   },
+   "b": {
+    "len": 4.8,
+    "first": 0.0,
+    "last": 4.54,
+    "e_first": 0.06,
+    "e_last": 4.78,
+    "tail_db": -26.0,
+    "tail_rel": -12.1,
+    "hole": 0.9,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.91,
+    "heard": "A heavy one. Again, and again, until it goes."
+   },
+   "c": {
+    "len": 6.0,
+    "first": 0.0,
+    "last": 5.5,
+    "e_first": 0.06,
+    "e_last": 5.84,
+    "tail_db": -59.2,
+    "tail_rel": -45.0,
+    "hole": 1.32,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.56,
+    "heard": "A heavy one. Again, and again, until it goes."
+   }
+  }
+ },
+ "rv4f1": {
+  "who": "ravi",
+  "text": "[panicked] Amma! What's happening to her?",
+  "pick": "a",
+  "why": "the tighter read",
+  "med": 1.89,
+  "takes": {
+   "a": {
+    "len": 1.92,
+    "first": 0.0,
+    "last": 1.78,
+    "e_first": 0.06,
+    "e_last": 1.88,
+    "tail_db": -41.0,
+    "tail_rel": -31.4,
+    "hole": 0.38,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.75,
+    "heard": "Amma! What's happening to her?"
+   },
+   "b": {
+    "len": 2.08,
+    "first": 0.0,
+    "last": 1.98,
+    "e_first": 0.1,
+    "e_last": 2.06,
+    "tail_db": -31.9,
+    "tail_rel": -20.5,
+    "hole": 0.3,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.55,
+    "heard": "Amma! What's happening to her?"
+   }
+  }
+ },
+ "q4f3": {
+  "who": "he",
+  "text": "[desperate] Grandmaster, there are way too many of them!",
+  "pick": "a",
+  "why": "the tighter read",
+  "med": 2.28,
+  "takes": {
+   "a": {
+    "len": 2.32,
+    "first": 0.0,
+    "last": 2.18,
+    "e_first": 0.04,
+    "e_last": 2.3,
+    "tail_db": -31.9,
+    "tail_rel": -24.9,
+    "hole": 0.2,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 3.54,
+    "heard": "Grandmaster, there are way too many of them!"
+   },
+   "b": {
+    "len": 2.32,
+    "first": 0.0,
+    "last": 2.2,
+    "e_first": 0.0,
+    "e_last": 2.3,
+    "tail_db": -27.0,
+    "tail_rel": -19.0,
+    "hole": 0.24,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 3.48,
+    "heard": "Grandmaster, there are way too many of them!"
+   }
+  }
+ },
+ "ph4f2": {
+  "who": "pho",
+  "text": "[urgent] Call out to Luang Phor Phiboon, now!",
+  "pick": "c",
+  "why": "the unhurried read",
+  "med": 2.46,
+  "takes": {
+   "a": {
+    "len": 2.56,
+    "first": 0.0,
+    "last": 2.32,
+    "e_first": 0.08,
+    "e_last": 2.54,
+    "tail_db": -25.5,
+    "tail_rel": -15.1,
+    "hole": 0.54,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.85,
+    "heard": "Call out to Luang Phor Phiboon, now!"
+   },
+   "b": {
+    "len": 2.4,
+    "first": 0.0,
+    "last": 2.2,
+    "e_first": 0.0,
+    "e_last": 2.38,
+    "tail_db": -20.6,
+    "tail_rel": -10.2,
+    "hole": 0.16,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.94,
+    "heard": "Call out to Luang Phor Phiboon, now!"
+   },
+   "c": {
+    "len": 2.64,
+    "first": 0.0,
+    "last": 2.38,
+    "e_first": 0.12,
+    "e_last": 2.62,
+    "tail_db": -34.6,
+    "tail_rel": -24.2,
+    "hole": 0.12,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.8,
+    "heard": "Call out to Luang Phor Phiboon, now!"
+   }
+  }
+ },
+ "q4f4": {
+  "who": "he",
+  "text": "[pleading] Luang Phor Phiboon... please, help us.",
+  "pick": "b",
+  "why": "the tighter read",
+  "med": 3.7800000000000002,
+  "takes": {
+   "a": {
+    "len": 4.32,
+    "first": 0.0,
+    "last": 4.04,
+    "e_first": 0.02,
+    "e_last": 4.3,
+    "tail_db": -34.3,
+    "tail_rel": -18.7,
+    "hole": 0.84,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.4,
+    "heard": "Luang Phor Phiboon... please, help us."
+   },
+   "b": {
+    "len": 3.6,
+    "first": 0.0,
+    "last": 3.24,
+    "e_first": 0.16,
+    "e_last": 3.44,
+    "tail_db": -54.3,
+    "tail_rel": -39.4,
+    "hole": 0.6,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.83,
+    "heard": "Luang Phor Phiboon... please, help us."
+   }
+  }
+ },
+ "ph4f3": {
+  "who": "pho",
+  "text": "[firm] Now you are not alone. Send them back.",
+  "pick": "c",
+  "why": "the unhurried read",
+  "med": 2.8,
+  "takes": {
+   "a": {
+    "len": 2.96,
+    "first": 0.0,
+    "last": 2.82,
+    "e_first": 0.16,
+    "e_last": 2.94,
+    "tail_db": -34.7,
+    "tail_rel": -23.7,
+    "hole": 0.66,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.88,
+    "heard": "Now you are not alone. Send them back."
+   },
+   "b": {
+    "len": 2.88,
+    "first": 0.0,
+    "last": 2.7,
+    "e_first": 0.06,
+    "e_last": 2.86,
+    "tail_db": -31.9,
+    "tail_rel": -19.5,
+    "hole": 0.62,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.86,
+    "heard": "Now you are not alone. Send them back."
+   },
+   "c": {
+    "len": 2.96,
+    "first": 0.0,
+    "last": 2.8,
+    "e_first": 0.0,
+    "e_last": 2.94,
+    "tail_db": -29.1,
+    "tail_rel": -16.5,
+    "hole": 0.56,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.72,
+    "heard": "Now you are not alone. Send them back."
+   }
+  }
  }
 }

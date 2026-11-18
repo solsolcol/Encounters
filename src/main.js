@@ -3070,7 +3070,7 @@ function hpDraw(name, k, o = {}) {
 }
 let kitRooted = false, kitHurt = null;       // v11.1: the player held in place; the red damage frame + a bleed until the player acts
 let invUrge = null;                          // v11.6: an item the bag button pulses for until it is equipped (kit.give)
-let visUrge = false;                         // v27.0: the eye button pulses while a chapter's order asks him to open his sight (kit.visionUrge)
+let visUrge = false;                         // v27.0: the eye button pulses while a chapter's order asks him to open his sight (kit.visionUrge): 'open', 'close' or false
 let invBtnEl = null;                         // v11.6: the bag button, looked up once
 let dayTween = null;
 let kitFade = null, kitFadeNow = 0;              // v7.1: a chapter's own black, in play
@@ -4828,7 +4828,7 @@ function ownSprayThrow(point, ray) {
   const T = Math.max(0.12, Math.min(0.5, dist / (sp.speed || 14)));
   const n = sp.count || 16;
   for (let i = 0; i < n; i++) {
-    const spread = dist * 0.05 + 0.03;
+    const spread = dist * (sp.spread == null ? 0.05 : +sp.spread) + 0.03;   // v27.0: a chapter may fan it wider (its splash)
     _osE.set(ownRnd() - 0.5, ownRnd() - 0.5, ownRnd() - 0.5).multiplyScalar(spread);
     own.drops.push({ a: start.clone().add(_osC.set(ownRnd() - 0.5, ownRnd() - 0.5, ownRnd() - 0.5).multiplyScalar(0.02)),
                      b: end.clone().add(_osE), t0: now + i * 0.006, T: T * (0.85 + ownRnd() * 0.3),
@@ -4839,7 +4839,7 @@ function ownSprayThrow(point, ray) {
 function ownSprayFrame(now) {
   if (!own.pts) return;
   const sp = (weaponDecl && weaponDecl.spray) || {};
-  _osCol.set(sp.color == null ? 0xdcefff : sp.color);
+  _osCol.set(sprayCol != null ? sprayCol : (sp.color == null ? 0xdcefff : sp.color));
   const keep = [], P = own.pos, C = own.col, N = own.N; let m = 0;
   const put = (x, y, z, f) => { if (m >= N) return; P[m * 3] = x; P[m * 3 + 1] = y; P[m * 3 + 2] = z;
     C[m * 3] = _osCol.r * f; C[m * 3 + 1] = _osCol.g * f; C[m * 3 + 2] = _osCol.b * f; m++; };
@@ -6943,7 +6943,9 @@ function kitInit() {
   if (CH.weapon && !weaponDecl) weaponSetup(CH.weapon);   // v12.0
   if (visDeclOf(CH) && !vis.decl) visionSetup(visDeclOf(CH));   // v27.0
   $('visionBtn')?.addEventListener('click', e => { e.stopPropagation(); visionToggle(); });
-  { const vb = $('visionBtn'); if (vb) vb.setAttribute('aria-label', T('hud.vision')); }
+  { const vb = $('visionBtn'); if (vb) { vb.setAttribute('aria-label', T('hud.vision'));
+    /* v27.0: the two words under it while it asks (CSS reads them: the sheet's, never typed into the style) */
+    vb.setAttribute('data-open', T('hud.visionOpen')); vb.setAttribute('data-close', T('hud.visionClose')); } }
   $('interact')?.querySelector('.ibadge')?.addEventListener('click', e => { e.stopPropagation(); interactNow(); });
   $('torchBtn')?.addEventListener('click', e => { e.stopPropagation(); torchToggle(); });
   /* v12.0: the fire and reload buttons — a phone's trigger; a mouse's is the click */
@@ -7475,13 +7477,103 @@ const kitLedger = {
   clear: () => { led.entries.length = 0; led.ep = 0; }
 };
 
+/* v27.0 · THE FIFTY-FOURTH SEAM: A LIFE IN HIS KEEPING (kit.health). Chad, 18 Nov 2026: "Put a health bar on the lady in
+   wheelchair." A bar over a person in the room, anchored to the point a chapter gives (`at()` answers [x, y, z], read
+   every frame), drawn in the page over the picture (so Spirit Vision's negative never turns it), and held at the screen's
+   edge with an arrow toward them while they are out of view. `label` is its name (the chapter's words, put as text), `k`
+   0..1: a fall flashes it and leaves a pale trail that follows it down a beat later. null takes it away, and kitReset.
+   Shown in play only. A chapter that never asks has nothing drawn and nothing run */
+const life = { on: false, label: '', k: 1, trail: 1, at: null, hitAt: 0, hitShown: 0, last: 0, el: null, shownLabel: null };
+const _lifeV = new THREE.Vector3();
+function kitHealth(o) {
+  if (o === null || o === undefined || o === false) { life.on = false; return true; }
+  if (typeof o !== 'object') return false;
+  if (typeof o.at === 'function') life.at = o.at;
+  if (o.label != null) life.label = String(o.label);
+  if (o.k != null && Number.isFinite(+o.k)) {
+    const k = Math.max(0, Math.min(1, +o.k));
+    if (life.on && k < life.k - 1e-6) life.hitAt = performance.now();
+    life.k = k;
+  }
+  if (!life.on) { life.on = true; life.trail = life.k; }
+  return true;
+}
+function lifeFrame() {
+  if (!life.on && !life.el) return;
+  const el = life.el || (life.el = $('lifeBar'));
+  if (!el) return;
+  const show = life.on && state === 'play' && !cine && typeof life.at === 'function';
+  el.classList.toggle('on', show);
+  if (!show) return;
+  const now = performance.now(), dt = life.last ? Math.min(0.1, (now - life.last) / 1000) : 0; life.last = now;
+  if (life.shownLabel !== life.label) { const n = el.querySelector('.lbName'); if (n) n.textContent = life.label; life.shownLabel = life.label; }
+  /* the trail waits a beat after a fall, then follows it down */
+  if (life.trail > life.k) { if (now - life.hitAt > 380) life.trail = Math.max(life.k, life.trail - 0.55 * dt); } else life.trail = life.k;
+  const f = el.querySelector('.lbFill'), tr = el.querySelector('.lbTrail');
+  if (f) f.style.width = (life.k * 100).toFixed(1) + '%';
+  if (tr) tr.style.width = (life.trail * 100).toFixed(1) + '%';
+  if (life.hitAt !== life.hitShown) { life.hitShown = life.hitAt; el.classList.remove('hit'); void el.offsetWidth; el.classList.add('hit'); }
+  el.classList.toggle('low', life.k <= 0.3);
+  /* where they are: over their head in view, at the screen's edge (an arrow toward them) when not */
+  let p = null; try { p = life.at(); } catch (e) { p = null; }
+  if (!p) { el.classList.remove('on'); return; }
+  _lifeV.set(+p[0] || 0, +p[1] || 0, +p[2] || 0).project(camera);
+  const W = innerWidth, H = innerHeight, behind = _lifeV.z > 1;
+  let x = (_lifeV.x * 0.5 + 0.5) * W, y = (-_lifeV.y * 0.5 + 0.5) * H;
+  if (behind) { x = W - x; y = H - y; }
+  /* (inside the HUD's own margins: the stats and the round buttons above, AIM and FLICK below) */
+  const mx = 74, top = 236, bot = 150;
+  const inView = !behind && x >= 0 && x <= W && y >= 0 && y <= H;
+  let ex, ey, ang = 0;
+  if (inView) { ex = Math.max(mx, Math.min(W - mx, x)); ey = Math.max(top, Math.min(H - bot, y)); }
+  else {
+    const cx = W / 2, cy = (top + H - bot) / 2; let dx = x - cx, dy = y - cy;
+    if (Math.abs(dx) < 1e-3 && Math.abs(dy) < 1e-3) dy = 1;
+    const sc = Math.min((W / 2 - mx) / Math.max(1e-3, Math.abs(dx)), ((H - bot - top) / 2) / Math.max(1e-3, Math.abs(dy)));
+    ex = cx + dx * sc; ey = cy + dy * sc; ang = Math.atan2(dy, dx);
+  }
+  el.style.left = ex.toFixed(1) + 'px'; el.style.top = ey.toFixed(1) + 'px';
+  el.classList.toggle('edge', !inView);
+  if (!inView) { const a = el.querySelector('.lbArrow'); if (a) a.style.transform = 'rotate(' + ang.toFixed(3) + 'rad)'; }
+}
+/* v27.0 · THE FIFTY-SIXTH SEAM: A GLOW AT THE EDGES OF HIS SIGHT (kit.edge). Chad, 18 Nov: "the entire screen seem to have a
+   golden vignette to show the new empowered status". A colour held at the screen's edges, breathing (CSS), under the
+   HUD, in the page (so the vision's negative never turns it); shown in play; eased on wall time; kitReset takes it off.
+   `color` [r, g, b], `k` 0..1, `secs` the ease. Never asked, nothing is drawn or run */
+const edgeG = { color: '255,200,90', k: 0, to: 0, secs: 0.8, last: 0, el: null, on: false, sig: '' };
+function kitEdge(o) {
+  if (!o) { edgeG.to = 0; return true; }
+  if (Array.isArray(o.color)) edgeG.color = o.color.slice(0, 3).map(v => Math.round(Math.max(0, Math.min(255, +v || 0)))).join(',');
+  edgeG.to = Math.max(0, Math.min(1, o.k == null ? 1 : (+o.k || 0)));
+  if (o.secs != null) edgeG.secs = Math.max(0.01, +o.secs);
+  return true;
+}
+function edgeTick() {
+  if (!edgeG.on && edgeG.k === 0 && edgeG.to === 0) return;
+  const el = edgeG.el || (edgeG.el = $('edgeGlow')); if (!el) return;
+  const now = performance.now(), dt = edgeG.last ? Math.min(0.25, (now - edgeG.last) / 1000) : 0; edgeG.last = now;
+  if (edgeG.k !== edgeG.to) edgeG.k = edgeG.to > edgeG.k ? Math.min(edgeG.to, edgeG.k + dt / edgeG.secs) : Math.max(edgeG.to, edgeG.k - dt / edgeG.secs);
+  const show = edgeG.k > 0.002 && state === 'play';
+  if (show !== edgeG.on) { edgeG.on = show; el.classList.toggle('hide', !show); }
+  if (!show) { if (edgeG.k === 0 && edgeG.to === 0) edgeG.last = 0; return; }
+  const sig = edgeG.color + ' ' + edgeG.k.toFixed(2);
+  if (sig !== edgeG.sig) { edgeG.sig = sig; el.style.opacity = edgeG.k.toFixed(3);
+    el.style.background = 'radial-gradient(ellipse at 50% 50%,transparent 40%,rgba(' + edgeG.color + ',.30) 70%,rgba(' + edgeG.color + ',.78) 100%)'; }
+}
+let sprayCol = null, sprayScale = 1;   // v27.0: a chapter may turn the water's colour and size (kit.sprayColor): Chad's golden water
 function kitFrame(dt, t, dLookX, dLookY) {
   if (!kitInited) kitInit();
   /* v11.6: the bag button asks while a given item waits unequipped (a class
      toggle is a no-op when nothing changed, so this costs the frame nothing) */
   (invBtnEl || (invBtnEl = $('invBtn')))?.classList.toggle('urge', !!invUrge && state === 'play');
   /* v27.0: the eye button asks the same way while the chapter's order is to open his sight (kit.visionUrge) */
-  if (vis.decl) $('visionBtn')?.classList.toggle('urge', visUrge && !vis.on && state === 'play');
+  /* (18 Nov, Chad: "a different set of glow colour pulsating effect on the spirit vision icon so that the player clearly
+     knows what to do"): asked to OPEN it, one colour; asked to CLOSE it, another; in use, its own colour breathing (CSS) */
+  if (vis.decl) { const vb = $('visionBtn');
+    if (vb) { vb.classList.toggle('urge', visUrge === 'open' && !vis.on && state === 'play');
+              vb.classList.toggle('urgeClose', visUrge === 'close' && vis.on && state === 'play'); } }
+  lifeFrame();       // v27.0 (seam 54): a life in his keeping, its bar over them
+  edgeTick();        // v27.0 (seam 56): a glow at the edges of his sight
   /* v11.7 (Chad: "why does the torch icon draw over every ui element?"): the
      round buttons sit at z 9 and the cards at z 5, so the decision, the
      outcome and the sealed card all had the lit torch button on top of
@@ -7641,6 +7733,9 @@ function kitReset() {
   kitObjective = null; kitTimer = null; kitWaypoint = null;
   kitBarK = null;                   // v27.0: and no bar of progress left from the run before
   visUrge = false;                  // v27.0: nor the eye button still asking
+  life.on = false; life.k = 1; life.trail = 1; life.at = null;   // v27.0 (seam 54): nor a life's bar
+  edgeG.to = 0; edgeG.k = 0;                                      // v27.0 (seam 56): nor a glow at the edges
+  sprayCol = null; sprayScale = 1; if (own.pts) { own.pts.material.size = own.size0 || own.pts.material.size; own.glow.material.size = own.pts.material.size * 2.4; }   // v27.0: nor the water's gold
   objReset();                       // v8.7: and the beats queued against the old objective
   kitFlashReq = null;
   kitCaps = null;                   // v21.30: and no caption left up from the run before
@@ -7771,7 +7866,14 @@ const KIT = {
   event: kitEvent, eventActive: evActive, abortEvent: () => { if (ev) evResolve({ ok: false, aborted: true }); },
   torch: torchSetup, torchOn: torchSet, torchRed, torchIsOn: () => torchOn,
   vision: kitVision,               // v27.0: the fiftieth seam — on, off, or a radius held from a film's clock; no argument reads it
-  visionUrge: v => { visUrge = !!v; return true; },   // v27.0: the eye button pulses while the order is to open his sight
+  visionUrge: v => { visUrge = v === 'close' ? 'close' : (v ? 'open' : false); return true; },   // v27.0: the eye button pulses while the order is to open his sight ('open' or true), or to close it ('close')
+  health: kitHealth,               // v27.0: the fifty-fourth seam — a life in his keeping, its bar over them in the room
+  edge: kitEdge,                   // v27.0: the fifty-sixth seam — a glow at the edges of his sight
+  sprayColor: (c, o = {}) => { sprayCol = (c === null || c === undefined) ? null : c;
+    sprayScale = c == null ? 1 : Math.max(0.3, Math.min(4, +(o.size || 1)));
+    if (own.pts) { own.size0 = own.size0 || own.pts.material.size; own.pts.material.size = own.size0 * sprayScale; own.glow.material.size = own.pts.material.size * 2.4; }
+    return true; },                // v27.0: the water's colour (Chad's gold) and its drops' size; null gives them back
+  lose: (o) => { if (state !== 'play' || fainting || cine) return false; lose(o && typeof o === 'object' ? o : {}); return true; },   // v27.0: the fifty-third seam — the chapter loses the run itself
   /* v27.0: a stat READ, never a write (kit.award writes): a chapter whose price must stop short of a floor (the holy-water
      fight takes his nerve, never his consciousness) reads where it stands. Unknown names answer null */
   stat: k => (Object.prototype.hasOwnProperty.call(stats, k) ? stats[k] : null),
@@ -9982,8 +10084,9 @@ const ADULT_TAKES = new Set([
   'q3A0', 'q3A1', 'q3A2', 'q3A3', 'q3B0', 'q3B1', 'q3B2', 'q3B3', 'q3B4', 'q3B5', 'q3C0', 'q3C1', 'q3C2', 'q3C3',
   'q3C4', 'q3D0', 'q3D1', 'q3D2', 'q3D3', 'q3D4', 'q3D5', 'q3z1', 'q3K1', 'q3A', 'q3B', 'q3C', 'q3D',
   /* E4C4 ADULT BEGIN: v27.0, episode 4 chapter 4 (masters/v27.0/voices/registry.py) */
-  'q4o1', 'q4o2', 'q4h1', 'q4h2', 'q4h3', 'q4s1', 'q4s2', 'q4s3', 'q4A1', 'q4B1',
-  'q4C0', 'q4C1', 'q4D1', 'q4A', 'q4B', 'q4C', 'q4D',
+  'q4o1', 'q4o2', 'q4h1', 'q4h2', 'q4h3', 'q4s1', 'q4s2', 'q4s3', 'q4f1', 'q4f2',
+  'q4f3', 'q4f4', 'q4A1', 'q4B1', 'q4C0', 'q4C1', 'q4D1', 'q4A', 'q4B', 'q4C',
+  'q4D',
   /* E4C4 ADULT END */]);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
@@ -10081,10 +10184,10 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   'ph3z2',
   /* E4C4 CAST BEGIN: v27.0, episode 4 chapter 4: Grandmaster Pho, Amma, Ravi, Mala (masters/v27.0/voices/registry.py) */
   'rv4o1', 'ph4h0', 'rv4h1', 'rv4h2', 'ml4h1', 'ml4h2', 'ml4h3', 'am4h1', 'ph4h1', 'ph4s0',
-  'ph4s1', 'ph4s2', 'ph4s3', 'ph4s4', 'ph4b0', 'ph4b1', 'ph4b2', 'ml4t1', 'ml4t2', 'rv4t1',
-  'rv4A1', 'ml4A1', 'am4A1', 'rv4A2', 'ph4A1', 'ml4B1', 'ph4B0', 'ml4B2', 'ml4B3', 'ph4B1',
-  'rv4C1', 'am4C1', 'ph4C1', 'ph4D0', 'rv4D1', 'ml4D1', 'ph4D1', 'ph4z0', 'ml4z1', 'am4z1',
-  'ph4z1',
+  'ph4s1', 'ph4s2', 'ph4s3', 'ph4s4', 'ph4b0', 'ph4b1', 'ph4b2', 'ph4b3', 'ph4b4', 'ph4b5',
+  'ph4f1', 'rv4f1', 'ph4f2', 'ph4f3', 'ml4t1', 'ml4t2', 'rv4t1', 'rv4A1', 'ml4A1', 'am4A1',
+  'rv4A2', 'ph4A1', 'ml4B1', 'ph4B0', 'ml4B2', 'ml4B3', 'ph4B1', 'rv4C1', 'am4C1', 'ph4C1',
+  'ph4D0', 'rv4D1', 'ml4D1', 'ph4D1', 'ph4z0', 'ml4z1', 'am4z1', 'ph4z1',
   /* E4C4 CAST END */]);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
@@ -11896,7 +11999,7 @@ function ivZoomClose() {
    what happens next is the story's business. Any chapter may call it; only
    chapter 3 does, so nothing shipped before v14.7 can reach it. */
 const UNLOCK_GUARD = 600;
-const unl = { id: null, t0: 0, onClose: null, outT: 0 };
+const unl = { id: null, t0: 0, onClose: null, outT: 0, autoT: 0 };
 function kitUnlock(id, opts = {}) {
   if (!ITEM_DEFS[id] || unl.id || state !== 'play' || fainting) return false;
   const el = $('unlock'); if (!el) return false;
@@ -11904,7 +12007,14 @@ function kitUnlock(id, opts = {}) {
   unl.id = id; unl.onClose = typeof opts.onClose === 'function' ? opts.onClose : null;
   for (const k in keys) keys[k] = false;       // a held W does not keep walking under it
   state = 'unlock';
-  $('unName').textContent = itemName(id);
+  /* v27.0 · THE FIFTY-FIFTH SEAM: A SHOWCASE (Chad, 18 Nov: his amulet "suddenly and dramatically appears in the middle of
+     the screen in a golden glow enveloping it, seemingly empowering the user, and then disappears away"). `gold` lights
+     it through with gold and swells it in and out; `auto` (seconds) takes it away by itself, with no button; `label`,
+     `name` and `sub` are the chapter's words for its three lines (as text); `sound` its own cue. Absent, as it was */
+  el.classList.toggle('gold', !!opts.gold);
+  { const lab = el.querySelector('.unLabel'); if (lab) lab.textContent = opts.label != null ? String(opts.label) : T('unlock.label', lab.textContent); }
+  clearTimeout(unl.autoT); unl.autoT = 0;
+  $('unName').textContent = opts.name != null ? String(opts.name) : itemName(id);
   /* v17.6: the line under the name may be the chapter's (a Sak Yant is inked
      on him, not "added to your bag") */
   const sub = el.querySelector('.unSub'); if (sub) sub.textContent = opts.sub || T('unlock.sub', 'Added to your bag');
@@ -11920,8 +12030,9 @@ function kitUnlock(id, opts = {}) {
   const cv = $('unCv');
   if (cv) { const g = cv.getContext('2d'); if (g) g.clearRect(0, 0, cv.width, cv.height); }
   ivStart();
-  snd('itemunlock', 0.9);
+  snd(opts.sound || 'itemunlock', 0.9);
   haptic([24, 60, 90]);
+  if (opts.auto) unl.autoT = setTimeout(() => { unl.autoT = 0; if (unl.id === id) unlockClose('auto'); }, Math.max(0.6, +opts.auto) * 1000);
   /* the guard's clock starts HERE, after the work above: the first splash of
      a session creates the item renderer (ivInit renders a room environment),
      which is milliseconds on a phone and seconds on a software-rendered box,
@@ -11935,10 +12046,11 @@ function unlockClose(how) {
   if (how !== 'force' && performance.now() - unl.t0 < UNLOCK_GUARD) return false;
   const el = $('unlock');
   unl.id = null;
+  clearTimeout(unl.autoT); unl.autoT = 0;
   document.body.classList.remove('unlockopen');
   if (el) {
     if (how === 'force') el.classList.add('hide');
-    else { el.classList.add('out'); unl.outT = setTimeout(() => el.classList.add('hide'), 240); }
+    else { el.classList.add('out'); unl.outT = setTimeout(() => el.classList.add('hide'), el.classList.contains('gold') ? 520 : 240); }   // (a showcase swells out over half a second)
   }
   const cb = unl.onClose; unl.onClose = null;
   if (how === 'force') return true;            // torn down with the run (kitReset): no story, no sound
@@ -14565,13 +14677,15 @@ const STING_SAMPLE = {
   q4h2: ['q4h2', 1], am4h1: ['am4h1', 1], q4h3: ['q4h3', 1], ph4h1: ['ph4h1', 1], ph4s0: ['ph4s0', 1],
   q4s1: ['q4s1', 1], q4s2: ['q4s2', 1], q4s3: ['q4s3', 1], ph4s1: ['ph4s1', 1], ph4s2: ['ph4s2', 1],
   ph4s3: ['ph4s3', 1], ph4s4: ['ph4s4', 1], ph4b0: ['ph4b0', 1], ph4b1: ['ph4b1', 1], ph4b2: ['ph4b2', 1],
-  ml4t1: ['ml4t1', 1], ml4t2: ['ml4t2', 1], rv4t1: ['rv4t1', 1], rv4A1: ['rv4A1', 1], ml4A1: ['ml4A1', 1],
-  am4A1: ['am4A1', 1], rv4A2: ['rv4A2', 1], ph4A1: ['ph4A1', 1], q4A1: ['q4A1', 1], ml4B1: ['ml4B1', 1],
-  ph4B0: ['ph4B0', 1], ml4B2: ['ml4B2', 1], ml4B3: ['ml4B3', 1], ph4B1: ['ph4B1', 1], q4B1: ['q4B1', 1],
-  q4C0: ['q4C0', 1], rv4C1: ['rv4C1', 1], am4C1: ['am4C1', 1], ph4C1: ['ph4C1', 1], q4C1: ['q4C1', 1],
-  ph4D0: ['ph4D0', 1], rv4D1: ['rv4D1', 1], ml4D1: ['ml4D1', 1], ph4D1: ['ph4D1', 1], q4D1: ['q4D1', 1],
-  ph4z0: ['ph4z0', 1], ml4z1: ['ml4z1', 1], am4z1: ['am4z1', 1], ph4z1: ['ph4z1', 1], q4A: ['q4A', 1],
-  q4B: ['q4B', 1], q4C: ['q4C', 1], q4D: ['q4D', 1],
+  ph4b3: ['ph4b3', 1], ph4b4: ['ph4b4', 1], ph4b5: ['ph4b5', 1], q4f1: ['q4f1', 1], q4f2: ['q4f2', 1],
+  ph4f1: ['ph4f1', 1], rv4f1: ['rv4f1', 1], q4f3: ['q4f3', 1], ph4f2: ['ph4f2', 1], q4f4: ['q4f4', 1],
+  ph4f3: ['ph4f3', 1], ml4t1: ['ml4t1', 1], ml4t2: ['ml4t2', 1], rv4t1: ['rv4t1', 1], rv4A1: ['rv4A1', 1],
+  ml4A1: ['ml4A1', 1], am4A1: ['am4A1', 1], rv4A2: ['rv4A2', 1], ph4A1: ['ph4A1', 1], q4A1: ['q4A1', 1],
+  ml4B1: ['ml4B1', 1], ph4B0: ['ph4B0', 1], ml4B2: ['ml4B2', 1], ml4B3: ['ml4B3', 1], ph4B1: ['ph4B1', 1],
+  q4B1: ['q4B1', 1], q4C0: ['q4C0', 1], rv4C1: ['rv4C1', 1], am4C1: ['am4C1', 1], ph4C1: ['ph4C1', 1],
+  q4C1: ['q4C1', 1], ph4D0: ['ph4D0', 1], rv4D1: ['rv4D1', 1], ml4D1: ['ml4D1', 1], ph4D1: ['ph4D1', 1],
+  q4D1: ['q4D1', 1], ph4z0: ['ph4z0', 1], ml4z1: ['ml4z1', 1], am4z1: ['am4z1', 1], ph4z1: ['ph4z1', 1],
+  q4A: ['q4A', 1], q4B: ['q4B', 1], q4C: ['q4C', 1], q4D: ['q4D', 1],
   /* E4C4 SOUNDS END */
   /* E4C4 FX BEGIN: v27.0, its effects, beds and music (masters/v27.0/install_sound.py) */
   /* v27.0 · its effects, beds and music (masters/v27.0/sound.sh: every pick and why) */
@@ -16663,11 +16777,17 @@ function scFaint(c, s) {
   c.endFade = 1;
 }
 
-function lose() {
+/* v27.0 · THE FIFTY-THIRD SEAM: A CHAPTER MAY LOSE THE RUN ITSELF (kit.lose). Chad, 18 Nov, of the holy water: "If her
+   health bar drops to 0, the player loses this game and chapter and has to restart again." Everything a faint does
+   follows (the save back at the chapter's start, Retry starts it again), but his nerve is not taken, the scene is the
+   chapter's own film (`film`: a key of its `films`), and the card's two lines are the chapter's (`say`, `teaching`: put
+   on the page as TEXT, never markup). Called with nothing (the faint), every line of it is as it always was, the card's
+   words the sheet's own */
+function lose(o) {
   if (state === 'lost' || fainting) return;
   fainting = true;
-  stats.sanity = 0;
-  syncBars();
+  const own = !!(o && typeof o === 'object');
+  if (!own) { stats.sanity = 0; syncBars(); }
   stopBed();
   loopVol('heart', 0);
   showHaunt(false);
@@ -16693,17 +16813,22 @@ function lose() {
      chapter 1's heartbeat — both can drain to zero while they run) */
   if (ev) evResolve({ ok: false, aborted: true });
   snd('dread', 0.6);
-  playCineFn(scFaint, () => {
+  const lossFilm = own && o.film && CH.films && typeof CH.films[o.film] === 'function' ? CH.films[o.film] : scFaint;
+  playCineFn(lossFilm, () => {
     fainting = false;
     state = 'lost';
     ui.hud.classList.add('hide');
     ui.panic.style.opacity = '1';
     snd('ulost', 0.8);
+    /* (the card's first line: the chapter's for its own loss, the sheet's again for every other) */
+    const sayEl = $('overSay');
+    if (sayEl) sayEl.textContent = own && o.say != null ? String(o.say) : T('lost.say', sayEl.textContent);
     ui.over.classList.remove('hide');
-    loseSpeech = boyVoiced() ? speak('vlost', { wait: 10000 }) : Promise.resolve(false);   // v18.5: the boy's take
+    loseSpeech = (!own && boyVoiced()) ? speak('vlost', { wait: 10000 }) : Promise.resolve(false);   // v18.5: the boy's take
     const teach = $('overTeach');
     teach.closest('.teachbox').classList.add('veiled');
-    const teachHTML = T('lost.teaching', teach.innerHTML);
+    const escT = v => String(v).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+    const teachHTML = own && o.teaching != null ? escT(o.teaching) : T('lost.teaching', teach.innerHTML);
     runCardSequence([], teach, teachHTML, loseSpeech, $('retryBtn'));
     document.exitPointerLock?.();
   });

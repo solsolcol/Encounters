@@ -21,6 +21,9 @@ TAGS = {
     'ph4s2': 'serious', 'ph4s3': 'serious', 'ph4s4': 'calm',
     # the blessing
     'ph4b0': 'gentle', 'ph4b1': 'calm', 'ph4b2': 'serious', 'ph4b3': 'firm', 'ph4b4': 'serious', 'ph4b5': 'firm',
+    # the fight speaks (Chad, 18 Nov)
+    'q4f1': 'tense', 'q4f2': 'afraid', 'ph4f1': 'firm', 'rv4f1': 'panicked', 'q4f3': 'desperate', 'ph4f2': 'urgent',
+    'q4f4': 'pleading', 'ph4f3': 'firm',
     # the trance: Mala knows it; Ravi is afraid of the cry
     'ml4t1': 'worried', 'ml4t2': 'awed', 'rv4t1': 'panicked',
     # the four endings

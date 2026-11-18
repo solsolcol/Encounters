@@ -196,6 +196,62 @@
   "prompt": "[firm] Look again. Send them back."
  },
  {
+  "key": "q4f1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[tense] More of them. From the doors."
+ },
+ {
+  "key": "q4f2",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[afraid] What is that...?"
+ },
+ {
+  "key": "ph4f1",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] A heavy one. Again, and again, until it goes."
+ },
+ {
+  "key": "rv4f1",
+  "speaker": "ravi",
+  "voice_id": "mnlHLlgagNmPlvf52KvT",
+  "takes": 2,
+  "prompt": "[panicked] Amma! What's happening to her?"
+ },
+ {
+  "key": "q4f3",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[desperate] Grandmaster, there are way too many of them!"
+ },
+ {
+  "key": "ph4f2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[urgent] Call out to Luang Phor Phiboon, now!"
+ },
+ {
+  "key": "q4f4",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[pleading] Luang Phor Phiboon... please, help us."
+ },
+ {
+  "key": "ph4f3",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] Now you are not alone. Send them back."
+ },
+ {
   "key": "ml4t1",
   "speaker": "mala",
   "voice_id": "PIuCDYHMakaExG7GFyLU",
