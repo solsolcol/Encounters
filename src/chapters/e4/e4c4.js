@@ -3771,7 +3771,9 @@
     }
     function takeWater() {
       if (play.busy || play.water || phase !== 'bless') return false;
-      play.busy = true; if (kit) kit.waypoint(null);
+      /* (the order is done the moment the bowl is in his hands: 18 Nov, played by a finger, "Take the holy water" came back
+         under the fight's brief after the splash, the order cleared nowhere: objectiveFor waits while play is busy) */
+      play.busy = true; if (kit) { kit.waypoint(null); kit.objective(null); }
       giveWater(false);
       const run = play.run, go = () => { if (!live(run)) return; play.busy = false; briefFight(); };
       if (kit && kit.unlock && kit.unlock('holywater', { onClose: go })) return true;
