@@ -52,6 +52,37 @@
       if (Math.abs(tr) >= 1e-3) for (const b of U.spine) turn(b, tr / 3);
       if (Math.abs(hd) >= 1e-3) turn(U.neck, hd);
     }
+    /* AN ARM HELD AT ITS REST under its cloth (o.armRest; R77, Chad, 18 Nov 2026: "his arms and hands keep clipping into
+       his robes in many of his poses"). Grandmaster Pho's left arm is under the drape of his robe, and the drape hangs from
+       his collar bone on two bones of its own (DrapeArm, DrapeHang: tools/robeskin.mjs's DRAPE family) baked to follow
+       the arm in each take; in his standing talk the take's left hand comes up and in, and the drape, which follows it
+       only part of the way, opens on his forearm (photographed: the close's word to the family, skin showing through the
+       white at his left side). While a take named in o.armRest.takes is worn, the arm's bones and the drape's are laid at
+       their turns in his rest (o.armRest.from: a take and its moment, where the drape covers the arm whole), by that take's
+       weight: his left hand hangs at his side under the cloth and his right talks. Laid after the upright lay, taken off
+       by armsBack() before the mixer runs again (v11.5). Measured once, from the rest take, when the body lands */
+    function armRestInit(P) {
+      const O = P.o.armRest, A = P.acts[O.from[0]]; if (!A) { console.warn(P.key + ': o.armRest asked, and no rest take ' + O.from[0]); return; }
+      const B = []; for (const n in P.bone) if (O.re.test(n)) B.push({ b: P.bone[n], q: new THREE.Quaternion(), sv: new THREE.Quaternion() });
+      if (!B.length) { console.warn(P.key + ': o.armRest asked, and no bone answers it'); return; }
+      const keep = {}; for (const k in P.acts) keep[k] = [P.acts[k].time, P.acts[k].getEffectiveWeight()];
+      for (const k in P.acts) P.acts[k].setEffectiveWeight(k === O.from[0] ? 1 : 0);
+      A.time = Math.min(A.getClip().duration - 1e-3, O.from[1]); P.mixer.update(0);
+      for (const R of B) R.q.copy(R.b.quaternion);
+      for (const k in keep) { P.acts[k].time = keep[k][0]; P.acts[k].setEffectiveWeight(keep[k][1]); }
+      P.mixer.update(0);
+      const up = B.find(R => /LeftArm$/.test(R.b.name));
+      P.arst = { B, top: up ? up.b.parent : B[0].b.parent, take: Object.assign({}, O.takes), on: false };
+    }
+    function armRestLay(P) {
+      const H = P.arst; if (!H) return;
+      let k = 0; for (const n in H.take) k += (P.w[n] || 0) * H.take[n];
+      if (!(k > 1e-4)) return;
+      k = Math.min(1, k);
+      for (const R of H.B) { R.sv.copy(R.b.quaternion); R.b.quaternion.slerp(R.q, k); }
+      H.top.updateWorldMatrix(false, true);                // (the collar bone: the arm and the drape both hang from it)
+      H.on = true;
+    }
     const cast = {};
     const WHEEL = { seat: 0.44, front: 0.28, foot: 0.10 };
     const STOOL_TOP = 0.445;
@@ -83,6 +114,9 @@
     const PHO_STAND_UPRIGHT = { Sit_to_Stand_Transition_M: { head: 12 }, Talk_with_Hands_Open: { head: 12 } };
     const PHO_STAND_SHOULDERS = { Talk_with_Hands_Open: 1, mage_soell_cast_3: 0.6 };
     const PHO_STAND_SHWIN = { mage_soell_cast_3: [0.5, 0.45] };
+    /* (R77: his left arm and the drape over it held at his rest's while he talks standing, so the cloth covers the arm) */
+    const PHO_ARM_REST = { takes: { Talk_with_Hands_Open: 1 }, from: ['Sit_to_Stand_Transition_M', 6.0],
+      re: /^(mixamorig:?)?Left(ForeArm|Hand|Hand(Thumb|Index|Middle|Ring|Pinky)\d)$|^(mixamorig:?)?LeftArm$|^Drape(Arm|Hang)$/ };
     /* the shoulders let down in every standing and talking take (v26.8, every standing person) */
     const STAND_SHOULDERS = { Idle_3: 1, Stand_and_Chat: 1, Listening_Gesture: 1, Talk_with_Hands_Open: 1, Talk_with_Right_Hand_Open: 1, Walking: 1 };
 
@@ -151,7 +185,7 @@
       cast.phoB = mkPerson('pho', AT.phoB.x, AT.phoB.z, phoBRy, { take: 'Sit_to_Stand_Transition_M', hidden: true,
         win: { Sit_to_Stand_Transition_M: [5.85, 0.25, PHO_BREATH] }, skins: false, look: lookD, blobW: 0.9, blobD: 0.8,
         centre: true, talk: 'Talk_with_Hands_Open', headDamp: PHO_STAND_HEAD,
-        upright: PHO_STAND_UPRIGHT, shoulders: PHO_STAND_SHOULDERS, shWin: PHO_STAND_SHWIN });
+        upright: PHO_STAND_UPRIGHT, shoulders: PHO_STAND_SHOULDERS, shWin: PHO_STAND_SHWIN, armRest: PHO_ARM_REST });
       cast.phoB.home = { x: AT.phoB.x, z: AT.phoB.z, ry: phoBRy };
     }
     buildCast();

@@ -36,10 +36,17 @@ EDITS = [
     # R42 (18 Nov): a body sat or stood up straight (o.upright, c_scast.js uprightInit/uprightLay): made with the body,
     # laid after the head's damping and before the shoulders in both a film's pose and play's frame, taken off last, and
     # laid for restHands' own measure of the arms
-    ("if (o.shoulders !== null) shouldersInit(P);", "if (o.shoulders !== null) shouldersInit(P);\n        if (o.upright) uprightInit(P);"),
-    ("if (P.hd) headDampLay(P);\n      if (P.shd) shouldersLay(P);", "if (P.hd) headDampLay(P);\n      if (P.upr) uprightLay(P);\n      if (P.shd) shouldersLay(P);"),
-    ("if (P.hd) headDampLay(P);\n        if (P.shd) shouldersLay(P);", "if (P.hd) headDampLay(P);\n        if (P.upr) uprightLay(P);\n        if (P.shd) shouldersLay(P);"),
-    ("R.up.quaternion.copy(R.sup); } SH.on = false; } }", "R.up.quaternion.copy(R.sup); } SH.on = false; }\n      const UP = P.upr; if (UP && UP.on) { for (const R of UP.B) R.b.quaternion.copy(R.sv); UP.on = false; } }"),
+    # R77 (18 Nov): a shoulder let down (shouldersLay) holds the upper arm where the take put it, and the drape that hangs
+    # over Grandmaster Pho's left arm from the same collar bone (DrapeArm, DrapeHang) was carried down off the arm with the
+    # collar bone (his standing talk: skin through the white at his left side, from 21r's R64). It is held as the arm is
+    ("if (qb) S.push({ cl, up, qb, scl: new THREE.Quaternion(), sup: new THREE.Quaternion(), M: {} }); }",
+     "if (qb) S.push({ cl, up, qb, scl: new THREE.Quaternion(), sup: new THREE.Quaternion(), M: {}, fol: cl.children.filter(c => c.isBone && c !== up && /^Drape/.test(c.name)).map(b => ({ b, sv: new THREE.Quaternion() })) }); }"),
+    ("        R.up.quaternion.copy(R.cl.quaternion).invert().multiply(R.scl).multiply(R.sup);\n",
+     "        R.up.quaternion.copy(R.cl.quaternion).invert().multiply(R.scl).multiply(R.sup);\n        for (const F of R.fol || []) { F.sv.copy(F.b.quaternion); F.b.quaternion.copy(R.cl.quaternion).invert().multiply(R.scl).multiply(F.sv); }\n"),
+    ("if (o.shoulders !== null) shouldersInit(P);", "if (o.shoulders !== null) shouldersInit(P);\n        if (o.upright) uprightInit(P);\n        if (o.armRest) armRestInit(P);"),
+    ("if (P.hd) headDampLay(P);\n      if (P.shd) shouldersLay(P);", "if (P.hd) headDampLay(P);\n      if (P.upr) uprightLay(P);\n      if (P.arst) armRestLay(P);\n      if (P.shd) shouldersLay(P);"),
+    ("if (P.hd) headDampLay(P);\n        if (P.shd) shouldersLay(P);", "if (P.hd) headDampLay(P);\n        if (P.upr) uprightLay(P);\n        if (P.arst) armRestLay(P);\n        if (P.shd) shouldersLay(P);"),
+    ("R.up.quaternion.copy(R.sup); } SH.on = false; } }", "R.up.quaternion.copy(R.sup); if (R.fol) for (const F of R.fol) F.b.quaternion.copy(F.sv); } SH.on = false; }\n      const UP = P.upr; if (UP && UP.on) { for (const R of UP.B) R.b.quaternion.copy(R.sv); UP.on = false; }\n      const AR = P.arst; if (AR && AR.on) { for (const R of AR.B) R.b.quaternion.copy(R.sv); AR.on = false; } }"),
     # R51 (18 Nov): every model being unpacked is counted, from the call until its caller's own setup has run (the
     # count falls a task after the parse resolves, after the caller's then), so the stage can hold the curtain for it
     ("      return parsedGlb.get(key);\n", "      const pr = parsedGlb.get(key); parsePend++;\n      pr.then(() => setTimeout(() => { parsePend--; }, 0), () => { parsePend--; });\n      return pr;\n"),

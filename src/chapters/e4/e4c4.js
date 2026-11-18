@@ -1948,6 +1948,7 @@
         if (o.headDamp) headDampInit(P);
         if (o.shoulders !== null) shouldersInit(P);
         if (o.upright) uprightInit(P);
+        if (o.armRest) armRestInit(P);
         /* THE GROUND A WALK OR A RUN COVERS IN A SECOND (o.pace: asked for by whoever moves the group, who drives the take's
            rate from the ground covered: v7.1). The library's walks and runs come on the spot (their hips travel nowhere:
            measured, a few millimetres a second), so the pace is read from the foot that is down: under a body that stays
@@ -2200,7 +2201,7 @@
       const bone = (nm) => { const re = new RegExp('^(mixamorig:?)?' + nm + '$'); for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
       const S = [];
       for (const S0 of ['Left', 'Right']) { const cl = bone(S0 + 'Shoulder'), up = bone(S0 + 'Arm'); if (!cl || !up || up.parent !== cl) continue;
-        const qb = bindLocal(P, cl); if (qb) S.push({ cl, up, qb, scl: new THREE.Quaternion(), sup: new THREE.Quaternion(), M: {} }); }
+        const qb = bindLocal(P, cl); if (qb) S.push({ cl, up, qb, scl: new THREE.Quaternion(), sup: new THREE.Quaternion(), M: {}, fol: cl.children.filter(c => c.isBone && c !== up && /^Drape/.test(c.name)).map(b => ({ b, sv: new THREE.Quaternion() })) }); }
       if (!S.length) { if (asked) console.warn(P.key + ': o.shoulders asked, and no collar bone with its upper arm under it'); return; }
       /* (each take's middle turn of each collar bone, over the window the take is worn in: headDampInit's measure) */
       for (const name in D) { const A = P.acts[name]; if (!A) continue; const d = A.getClip().duration, W = (P.o.shWin && P.o.shWin[name]) || (P.win && P.win[name]), N = 24, acc = S.map(() => [0, 0, 0, 0]), first = [];
@@ -2224,6 +2225,7 @@
         R.cl.quaternion.slerp(_sdq2, k);
         /* the upper arm: the same turn against the collar bone's parent as before (old collar * old arm = new collar * new arm) */
         R.up.quaternion.copy(R.cl.quaternion).invert().multiply(R.scl).multiply(R.sup);
+        for (const F of R.fol || []) { F.sv.copy(F.b.quaternion); F.b.quaternion.copy(R.cl.quaternion).invert().multiply(R.scl).multiply(F.sv); }
         R.cl.updateWorldMatrix(false, true);
       }
       H.on = true;
@@ -2291,6 +2293,7 @@
       P.cur = name; P.filmT = t; armsBack(P); personSettle(P); P.mixer.update(0);
       if (P.hd) headDampLay(P);
       if (P.upr) uprightLay(P);
+      if (P.arst) armRestLay(P);
       if (P.shd) shouldersLay(P);
       if (P.restLegs) seatLegsLay(P);
       if (P.restHands && !(P.layK > 0)) restHandsLay(P);
@@ -2317,6 +2320,7 @@
         P.mixer.update(wdt * P.rate);
         if (P.hd) headDampLay(P);
         if (P.upr) uprightLay(P);
+        if (P.arst) armRestLay(P);
         if (P.shd) shouldersLay(P);
         if (P.gaze || P.gazeK > 0) gazeTick(P, wdt);
         if (P.lay || P.layK > 0) layTick(P, wdt);
@@ -2498,8 +2502,9 @@
       if (!a.wrote) continue; a.up.quaternion.copy(a.qUp); a.fore.quaternion.copy(a.qFore); a.hand.quaternion.copy(a.qHand); a.wrote = false; }
       const RH0 = P.restHands; if (RH0) for (const sd in RH0.R) { const fl = RH0.R[sd].fol; if (fl) for (const F of fl) if (F.on) { F.b.quaternion.copy(F.q); F.on = false; } }
       /* (the shoulders let down were laid first, under every hand: so they are taken off last) */
-      const SH = P.shd; if (SH && SH.on) { for (const R of SH.S) { R.cl.quaternion.copy(R.scl); R.up.quaternion.copy(R.sup); } SH.on = false; }
-      const UP = P.upr; if (UP && UP.on) { for (const R of UP.B) R.b.quaternion.copy(R.sv); UP.on = false; } }
+      const SH = P.shd; if (SH && SH.on) { for (const R of SH.S) { R.cl.quaternion.copy(R.scl); R.up.quaternion.copy(R.sup); if (R.fol) for (const F of R.fol) F.b.quaternion.copy(F.sv); } SH.on = false; }
+      const UP = P.upr; if (UP && UP.on) { for (const R of UP.B) R.b.quaternion.copy(R.sv); UP.on = false; }
+      const AR = P.arst; if (AR && AR.on) { for (const R of AR.B) R.b.quaternion.copy(R.sv); AR.on = false; } }
     /* A HAND CLOSED ROUND A THING (the woman with the taper): each finger's three joints turned by `th` radians toward
        the palm's own facing, about the hand's own measured across-axis as it lies in the world now. Laid on after
        handTo() and taken off by armsBack() before the mixer runs again, as every laid pose is (v11.5). A rig with no
@@ -3639,6 +3644,37 @@
       if (Math.abs(tr) >= 1e-3) for (const b of U.spine) turn(b, tr / 3);
       if (Math.abs(hd) >= 1e-3) turn(U.neck, hd);
     }
+    /* AN ARM HELD AT ITS REST under its cloth (o.armRest; R77, Chad, 18 Nov 2026: "his arms and hands keep clipping into
+       his robes in many of his poses"). Grandmaster Pho's left arm is under the drape of his robe, and the drape hangs from
+       his collar bone on two bones of its own (DrapeArm, DrapeHang: tools/robeskin.mjs's DRAPE family) baked to follow
+       the arm in each take; in his standing talk the take's left hand comes up and in, and the drape, which follows it
+       only part of the way, opens on his forearm (photographed: the close's word to the family, skin showing through the
+       white at his left side). While a take named in o.armRest.takes is worn, the arm's bones and the drape's are laid at
+       their turns in his rest (o.armRest.from: a take and its moment, where the drape covers the arm whole), by that take's
+       weight: his left hand hangs at his side under the cloth and his right talks. Laid after the upright lay, taken off
+       by armsBack() before the mixer runs again (v11.5). Measured once, from the rest take, when the body lands */
+    function armRestInit(P) {
+      const O = P.o.armRest, A = P.acts[O.from[0]]; if (!A) { console.warn(P.key + ': o.armRest asked, and no rest take ' + O.from[0]); return; }
+      const B = []; for (const n in P.bone) if (O.re.test(n)) B.push({ b: P.bone[n], q: new THREE.Quaternion(), sv: new THREE.Quaternion() });
+      if (!B.length) { console.warn(P.key + ': o.armRest asked, and no bone answers it'); return; }
+      const keep = {}; for (const k in P.acts) keep[k] = [P.acts[k].time, P.acts[k].getEffectiveWeight()];
+      for (const k in P.acts) P.acts[k].setEffectiveWeight(k === O.from[0] ? 1 : 0);
+      A.time = Math.min(A.getClip().duration - 1e-3, O.from[1]); P.mixer.update(0);
+      for (const R of B) R.q.copy(R.b.quaternion);
+      for (const k in keep) { P.acts[k].time = keep[k][0]; P.acts[k].setEffectiveWeight(keep[k][1]); }
+      P.mixer.update(0);
+      const up = B.find(R => /LeftArm$/.test(R.b.name));
+      P.arst = { B, top: up ? up.b.parent : B[0].b.parent, take: Object.assign({}, O.takes), on: false };
+    }
+    function armRestLay(P) {
+      const H = P.arst; if (!H) return;
+      let k = 0; for (const n in H.take) k += (P.w[n] || 0) * H.take[n];
+      if (!(k > 1e-4)) return;
+      k = Math.min(1, k);
+      for (const R of H.B) { R.sv.copy(R.b.quaternion); R.b.quaternion.slerp(R.q, k); }
+      H.top.updateWorldMatrix(false, true);                // (the collar bone: the arm and the drape both hang from it)
+      H.on = true;
+    }
     const cast = {};
     const WHEEL = { seat: 0.44, front: 0.28, foot: 0.10 };
     const STOOL_TOP = 0.445;
@@ -3670,6 +3706,9 @@
     const PHO_STAND_UPRIGHT = { Sit_to_Stand_Transition_M: { head: 12 }, Talk_with_Hands_Open: { head: 12 } };
     const PHO_STAND_SHOULDERS = { Talk_with_Hands_Open: 1, mage_soell_cast_3: 0.6 };
     const PHO_STAND_SHWIN = { mage_soell_cast_3: [0.5, 0.45] };
+    /* (R77: his left arm and the drape over it held at his rest's while he talks standing, so the cloth covers the arm) */
+    const PHO_ARM_REST = { takes: { Talk_with_Hands_Open: 1 }, from: ['Sit_to_Stand_Transition_M', 6.0],
+      re: /^(mixamorig:?)?Left(ForeArm|Hand|Hand(Thumb|Index|Middle|Ring|Pinky)\d)$|^(mixamorig:?)?LeftArm$|^Drape(Arm|Hang)$/ };
     /* the shoulders let down in every standing and talking take (v26.8, every standing person) */
     const STAND_SHOULDERS = { Idle_3: 1, Stand_and_Chat: 1, Listening_Gesture: 1, Talk_with_Hands_Open: 1, Talk_with_Right_Hand_Open: 1, Walking: 1 };
 
@@ -3738,7 +3777,7 @@
       cast.phoB = mkPerson('pho', AT.phoB.x, AT.phoB.z, phoBRy, { take: 'Sit_to_Stand_Transition_M', hidden: true,
         win: { Sit_to_Stand_Transition_M: [5.85, 0.25, PHO_BREATH] }, skins: false, look: lookD, blobW: 0.9, blobD: 0.8,
         centre: true, talk: 'Talk_with_Hands_Open', headDamp: PHO_STAND_HEAD,
-        upright: PHO_STAND_UPRIGHT, shoulders: PHO_STAND_SHOULDERS, shWin: PHO_STAND_SHWIN });
+        upright: PHO_STAND_UPRIGHT, shoulders: PHO_STAND_SHOULDERS, shWin: PHO_STAND_SHWIN, armRest: PHO_ARM_REST });
       cast.phoB.home = { x: AT.phoB.x, z: AT.phoB.z, ry: phoBRy };
     }
     buildCast();
