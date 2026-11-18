@@ -10,13 +10,15 @@
   const LO = { cry: 0.35, lift: 1.4, gasp: 2.2, rv: 3.0, turn: 3.1, shut: 5.0, black: 6.1, end: 7.0 };
   /* the close's own clock, from its start: Pho's dedication; the green shapes go; she rises (if she has not), walks;
      the ash; her palms; his sight closing; her family before her altar (fam); Pho's word; black */
-  const CL = { z0: 0.6, go: 2.0, steps: 11.6, slow: 12.0, ash: 15.0, palms: 17.2, thank: 17.3, bell: 18.7, shut: 20.2, fam: 21.3, z1: 23.0, black: 30.4, end: 32.6 };
-  /* each ending's clock: its lines and beats, and where its close begins */
+  const CL = { z0: 0.6, see: 0.25, seeFor: 1.4, go: 2.0, unsee: 5.4, unseeFor: 1.0, steps: 11.6, slow: 12.0, ash: 15.0, palms: 17.2, thank: 17.3, bell: 18.7, shut: 20.2, fam: 21.3, z1: 23.0, black: 30.4, end: 32.6 };
+  /* each ending's clock: its lines and beats, and where its close begins. `sight` and `sightFor` (R65, Chad, 18 Nov
+     evening: "when auntie is about to stand up from her wheelchair, the vision should be turned off for that special
+     moment"): his sight going home to him once the light has cleared, shut before her rise begins */
   const EN = {
-    A: { grab: 0.0, rv: 0.3, cry: 0.9, scream: 2.95, torn: 6.1, white: 6.3, open: 7.6, rise: 9.0, call: 12.6, still: 13.2, go: 14.4, rv2: 14.7, ph: 17.4, q: 24.56, close: 28.56 },
-    B: { throw: 0.15, splash: 0.55, comes: 0.9, white: 2.3, floor: 2.55, go: 3.3, push: 3.3, falter: 3.5, ml2: 4.0, back: 5.6, cry: 6.2, torn: 9.6, white2: 9.8, open: 11.4, rise: 12.0, ok: 16.0, ph: 17.6, q: 27.32, close: 31.12 },
-    C: { step: 0.0, say: 0.7, kneel: 5.4, mala: 6.4, rv: 7.3, cry: 8.6, torn: 12.2, white: 12.4, open: 13.8, look: 14.6, my: 14.9, rise: 15.4, ph: 21.0, q: 26.8, close: 30.9 },
-    D: { shut: 0.2, reach: 1.0, ph0: 1.9, kneel: 4.6, rv: 4.7, cry: 7.8, torn: 11.2, white: 11.4, open: 12.8, rise: 13.6, ml: 14.8, ph: 19.4, q: 31.24, close: 35.84 }
+    A: { grab: 0.0, rv: 0.3, cry: 0.9, scream: 2.95, torn: 6.1, white: 6.3, open: 7.6, sight: 7.75, sightFor: 1.0, rise: 9.0, call: 12.6, still: 13.2, go: 14.4, rv2: 14.7, ph: 17.4, q: 24.56, close: 28.56 },
+    B: { throw: 0.15, splash: 0.55, comes: 0.9, white: 2.3, floor: 2.55, go: 3.3, push: 3.3, falter: 3.5, ml2: 4.0, back: 5.6, cry: 6.2, torn: 9.6, white2: 9.8, open: 11.4, sight: 11.2, sightFor: 0.65, rise: 12.0, ok: 16.0, ph: 17.6, q: 27.32, close: 31.12 },
+    C: { step: 0.0, say: 0.7, kneel: 5.4, mala: 6.4, rv: 7.3, cry: 8.6, torn: 12.2, white: 12.4, open: 13.8, look: 14.6, my: 14.9, sight: 14.1, sightFor: 1.0, rise: 15.4, ph: 21.0, q: 26.8, close: 30.9 },
+    D: { reach: 1.0, ph0: 1.9, kneel: 4.6, rv: 4.7, cry: 7.8, torn: 11.2, white: 11.4, open: 12.8, sight: 12.8, sightFor: 0.6, rise: 13.6, ml: 14.8, ph: 19.4, q: 31.24, close: 35.84 }
   };
 
   /* THE OPENING FILM's clock (c_ufilm.js FILMS.open draws to it) */
@@ -95,16 +97,17 @@
     step(0, () => F.begin(k, c, api));
     tr(0, total, (kk, t) => F.frame(k, t, api), rawK);
     cues(E, { sfx, sfxFade, fade });
-    /* THE CLOSE: the merit dedicated; the green shapes go; her first steps; the bell at her altar; his sight closing;
-       his teacher's word to the family; black */
+    /* THE CLOSE: the merit dedicated, his sight opened again to see the lingering shapes go and shut once they are gone
+       (R65); her first steps; the bell at her altar; his teacher's word to the family; black */
     sfx(t0 - 1.6, 'u4closemus', 0.5);
+    sfx(t0 + C.see, 'u4vison', 0.8);                    // his sight opened again for the merit: the wave out from him
     sfx(t0 + C.z0, 'ph4z0', 1);                         // "May all beings, without limit, without end, have a share in the merit just now made..."
     sfx(t0 + C.go, 'u4release', 0.45); sfx(t0 + C.go + 1.5, 'u4release', 0.35);
+    sfx(t0 + C.unsee, 'u4visoff', 0.8);                 // they are gone: his sight home to him
     sfx(t0 + C.steps + 0.1, 'u4steps', 0.75);           // her first steps, to her altar
     sfx(t0 + C.slow, 'ml4z1', 1);                       // her daughter beside her: "Slowly, Amma. Slowly."
     sfx(t0 + C.thank, 'am4z1', 1);                      // her palms joined at her lamp: "Thank you, Mother."
     sfx(t0 + C.bell, 'u4bell', 0.55);                   // at her altar
-    if (k !== 'D') sfx(t0 + C.shut, 'u4visoff', 0.8);  // his sight closing: the wave home to him
     sfx(t0 + C.z1, 'ph4z1', 1);                         // "Keep seeing her doctors. What happened tonight is what happened tonight. It is not a promise."
     fade(t0 + C.black, t0 + C.end - 0.2, 0, 1);
     sfxFade(t0 + C.black - 0.5, t0 + C.end - 0.05, 'u4closemus');
@@ -121,6 +124,7 @@
     a.sfx(E.torn - 0.1, 'u4torn', 0.85);                // torn from her
     flash(a, E.white); a.sfxFade(E.white, E.white + 1.2, 'u4cry');
     a.sfx(E.open - 0.4, 'u4endA', 0.5);
+    a.sfx(E.sight, 'u4visoff', 0.85);                   // his sight home to him, before she stands (R65)
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);               // she stands, and her son is not beside her
     a.sfx(E.call, 'am4A1', 1);                          // she looks back for him: "Ravi?"
     a.sfx(E.rv2, 'rv4A2', 1);                           // let go, he goes to her: "Amma..."
@@ -141,6 +145,7 @@
     a.sfx(E.torn - 0.1, 'u4torn', 0.85);
     flash(a, E.white2); a.sfxFade(E.white2, E.white2 + 1.1, 'u4cry');
     a.sfx(E.open - 0.6, 'u4endB', 0.5);
+    a.sfx(E.sight, 'u4visoff', 0.85);                   // his sight home to him, before she stands (R65)
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);
     a.sfx(E.ok, 'ml4B3', 1);                            // Mala, down to him on the floor: "Are you alright?"
     a.sfx(E.ph, 'ph4B1', 1);                            // "Your part was the holy water, and keeping the spirits away from her. The work was mine..."
@@ -157,22 +162,25 @@
     a.sfx(E.torn - 0.1, 'u4torn', 0.85);
     flash(a, E.white); a.sfxFade(E.white, E.white + 1.2, 'u4cry');
     a.sfx(E.open - 0.8, 'u4endC', 0.5);
+    a.sfx(E.sight, 'u4visoff', 0.85);                   // his sight home to him, before she stands (R65)
     a.sfx(E.my, 'am4C1', 1);                            // her eyes open on her son: "My boy."
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);               // she stands, holding his hand
     a.sfx(E.ph, 'ph4C1', 1);                            // "You saw what was there, and you told him only what you knew. Nothing more."
     a.sfx(E.q, 'q4C1', 1);                              // "I didn't promise him anything. I told him what I saw."
     a.sfxFade(E.close - 2.0, E.close + 0.5, 'u4endC');
   }); }
-  /* D · KEEP YOUR PLACE: HOLD THE HOLY WATER, CLOSE YOUR SPIRIT VISION, TRUST YOUR TEACHER (good) */
+  /* D · KEEP YOUR PLACE: HOLD THE HOLY WATER, TRUST YOUR TEACHER (good). His sight open through the cry and the light
+     since R59 (it shut at 0.2 s, and the thing torn from her back was never seen): the cry, the tearing and the light at
+     the others' strength, seen now; home to him before she stands, as in every ending (R65) */
   function scKeep(c, s, api) { endingScene(c, s, api, 'D', (E, a) => {
-    a.sfx(E.shut, 'u4visoff', 0.85);                    // his sight shut: the wave home to him
     a.sfx(E.ph0, 'ph4D0', 1);                           // "Ravi. Hold her hand."
     a.sfx(E.kneel + 0.5, 'u4tile2', 0.5);
     a.sfx(E.rv, 'rv4D1', 1);                            // he does: "Okay. Okay. I've got you, Amma."
-    a.sfx(E.cry, 'u4cry', 0.55);                        // heard, not seen: his sight is shut
-    a.sfx(E.torn - 0.1, 'u4torn', 0.65);
-    flash(a, E.white, 1.2, 0.75); a.sfxFade(E.white, E.white + 1.2, 'u4cry');
+    a.sfx(E.cry, 'u4cry', 0.85);
+    a.sfx(E.torn - 0.1, 'u4torn', 0.85);
+    flash(a, E.white); a.sfxFade(E.white, E.white + 1.2, 'u4cry');
     a.sfx(E.open - 0.8, 'u4endD', 0.5);
+    a.sfx(E.sight, 'u4visoff', 0.85);                   // his sight home to him, before she stands (R65)
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);
     a.sfx(E.ml, 'ml4D1', 1);                            // Mala, at the lamp: "Amma... you're standing."
     a.sfx(E.ph, 'ph4D1', 1);                            // "You kept your place. That is where it starts. But there were two people afraid in this room..."

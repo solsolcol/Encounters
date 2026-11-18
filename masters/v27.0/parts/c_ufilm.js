@@ -301,11 +301,11 @@
     /* (a step behind her left since 18 Nov: at her side he knelt on the line from the merit's eye to her palms, and the
        lamp's shot was the back of his head, photographed) */
     const RAVI_C = { x: CHAIR.x + 0.47, z: CHAIR.z + 0.40 };
-    /* the last green shapes in the close (A, B, C: his sight still open): two of the night's wanderers going out by the
+    /* the last green shapes in the close (his sight opened again for the merit, every ending: R65): two of the night's wanderers going out by the
        room's open door as his teacher gives them a share of the merit, each crawling its own take's travel toward the
        doorway (its hips go 0.9 m in the 2.3 s it is seen, clear of the bowl, the TV and the sofa) and fading */
     const CLOSE_WANDER = [{ x: 0.60, z: 2.50 }, { x: 0.25, z: 0.72 }].map(W => ({ ...W, ry: faceTo(W.x, W.z, 0, -0.4) }));
-    /* Appa in the close (his sight still open in A, B, C): standing in the room between the shapes' way out and her
+    /* Appa in the close (seen while his sight is open for the merit, every ending: R65): standing in the room between the shapes' way out and her
        chair, turned to her, while the merit is given; he does not go with them. (18 Nov, photographed: by his photograph,
        his own place, he stood a step from the close's lens and laid himself over his teacher's shoulder) */
     const APPA_C = { x: 0.10, z: 1.64 };
@@ -391,7 +391,7 @@
            her mother's altar. She turns on her knees to her mother as she cries out, so the hand goes out toward her) */
         whenReady(cast.mala, (P) => { if (t < E.scream) pose(P, 'lightlamp', 5.4); else pose(P, 'scream', Math.min(3.9, (t - E.scream) * 0.9));
           P.group.rotation.y = lpA(0, MALA_TO_HER, smo(c01((t - E.scream + 0.1) / 0.5))); lookNow(P, [RG.x, 1.5, RG.z], 0.7, 0.9); });
-        visionAt(t, -1, 0.1, E.rise - 0.2, 1.0);                         // (R55: his sight closes as she stands)
+        visionAt(t, -1, 0.1, E.sight, E.sightFor);                       // (R55, R65: his sight home to him before she stands)
         /* THE LENS: in on Ravi's shoulder as he is caught (his mother beyond him); held through the cry; the light; out
            to her standing; on his teacher for his word */
         track(t, [
@@ -446,7 +446,7 @@
           else { const r = smo(c01((t - E.rise - 1.2) / 1.4)); pose(P, 'scream', Math.min(3.9, (t - E.splash) * 0.8), false, 'Idle_3', r, 3 + t * 0.35); }
           P.group.rotation.y = lpA(0, MALA_TO_HER, smo(c01((t - E.splash + 0.1) / 0.5)));           // (R46: to her mother, not into the altar)
           lookNow(P, lp3(AMMA_FACE, B_FLOOR, smo(c01((t - E.ok + 0.5) / 0.6))), 0.8, 0.9); });
-        visionAt(t, -1, 0.1, E.rise - 0.2, 1.0);                         // (R55: his sight closes as she stands)
+        visionAt(t, -1, 0.1, E.sight, E.sightFor);                       // (R55, R65: his sight home to him before she stands)
         /* THE LENS: the throw (a lurch at her); the thing filling his eyes; white; his teacher's push seen through the
            white; then he is on the floor, looking up at her standing, and at his teacher */
         track(t, [
@@ -495,7 +495,7 @@
             lookNow(P, AMMA_FACE, 1, 0.9); } });
         /* she looks at her son before she stands */
         if (t >= E.look) whenReady(cast.amma, (P) => lookNow(P, headOf(cast.ravi, [KR.x, 0.9, KR.z]), smo(c01((t - E.look) / 0.8)), 1.0));
-        visionAt(t, -1, 0.1, E.rise - 0.2, 1.0);                         // (R55: his sight closes as she stands)
+        visionAt(t, -1, 0.1, E.sight, E.sightFor);                       // (R55, R65: his sight home to him before she stands)
         track(t, [
           { t: 0, name: 'S', eye: DEC_EYE, at: DEC_AT, fp: PLAY_FOV, fd: PLAY_FOV },
           { t: 0.65, name: 'ravi', eye: CR_EYE, at: CR_HEAD, fp: 58, fd: 50 },
@@ -527,10 +527,11 @@
             { ry0: r2, kt: (td) => (t < E.rise ? Math.min(4.2, td) : runOf(t, E.rise + 0.6, E.rise + 3.6, 4.2, 0.2)) });
           lookNow(P, AMMA_FACE, 1, 0.9); });
         whenReady(cast.mala, (P) => { pose(P, 'lightlamp', 5.4); lookNow(P, AMMA_FACE, 1, 0.9); });
-        /* his sight held open until she stands, as in every ending (R59, Chad, 18 Nov evening: "i think option D outcome
-           cutscene turns off spirit vision prematurely?": it closed at 0.2 s, and the thing torn from her back and the
-           light were never seen; R55: "when the auntie stands up from her wheelchair, turn off spirit vision") */
-        visionAt(t, -10, 0.1, E.rise - 0.2, 1.0);
+        /* his sight held open through the cry and the light, as in every ending (R59, Chad, 18 Nov evening: "i think
+           option D outcome cutscene turns off spirit vision prematurely?": it closed at 0.2 s, and the thing torn from her
+           back and the light were never seen), and home to him before she stands (R55, R65: "when auntie is about to stand
+           up from her wheelchair, the vision should be turned off for that special moment") */
+        visionAt(t, -10, 0.1, E.sight, E.sightFor);
         track(t, [
           { t: 0, name: 'S', eye: DEC_EYE, at: DEC_AT, fp: PLAY_FOV, fd: PLAY_FOV },
           { t: 1.2, name: 'pho', eye: S_EYE, at: PHO_BOW, fp: 52, fd: 48 },
@@ -621,11 +622,15 @@
       spirits.wander.forEach((P, i) => whenReady(P, (Q) => { const W = CLOSE_WANDER[i]; if (!W) return;
         put(Q, W.x, W.z, W.ry); Q.group.visible = true; pose(Q, 'crawl', Math.max(0, c - CL.go + 1.0) * 0.6); }));
       wanderersAt(c, CL.go);
-      /* his sight: still open from the ending (but D's, shut already), closing after her palms */
-      visionAt(c, 1e9);                                                   // (R55: she has stood: the close in his own sight, every ending)
+      /* his sight (R65, Chad, 18 Nov evening: "when grandmaster pho chants for the lingering spirits for them to get
+         merits, the spirit vision needs to be turned on again to show them leaving the scene. Then turned off again once
+         that is done"): shut since before her rise; opened again as his teacher begins the dedication, so the last green
+         shapes are seen going out by the open door and her husband seen standing where he stood; home to him once they are
+         gone, before the lens turns to her */
+      visionAt(c, CL.see, CL.seeFor, CL.unsee, CL.unseeFor);
       /* THE LENS (18 Nov, re-staged): his teacher whole as he dedicates the merit, the last green shapes going out low
          past him; to her, risen at her chair; her steps to her altar; in on the ash between her and her daughter; her
-         palms and her lamp; his sight closing on her; out to her family about her in the room's own colours; and over her
+         palms and her lamp; out to her family about her in the room's own colours; and over her
          son's shoulder to his teacher for his word. Every aim is where its subject stands (a phone's frame is 35 degrees:
          his teacher and the shapes share it, her family shares it, but not both) */
       /* (THE FAMILY, 18 Nov, re-staged: from the merit's eye they stood in one line from the lens, her son's head under her

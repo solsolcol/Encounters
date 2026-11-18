@@ -443,6 +443,9 @@
       bed2:    { x0: -3.65, x1: -0.80, z0: 5.40, z1: 10.10 },
       bath2:   { x0: 3.05, x1: 4.60, z0: 8.45, z1: 11.00 }
     };
+    /* (R52) bedroom 3's bed: along its back wall, its head against the party wall (the bed model is 2.01 m by 0.95 m, its
+       length along its own z, so turned a quarter it runs along x): behind the door's gap, a step in */
+    const BED3_BED = { x: -2.62, z: 3.70 };
     /* the openings: doors (x or z along their wall, their width) and windows (with their sill and head) */
     const DOOR_MAIN = { x0: -0.50, x1: 0.50, h: 2.10 };
     const DOOR_BED3 = { z0: 2.70, z1: 3.60, h: 2.10 };       // in the living room's left wall (x -0.80)
@@ -1007,6 +1010,25 @@
       const ceil = (x0, z0, x1, z1, y) => quad(mCeil, [x0, y, z0], [x1, y, z0], [x1, y, z1], [x0, y, z1]);
       ceil(R.living.x0, F.face, R.living.x1, R.living.z1, h); ceil(R.hers.x0, F.face, R.hers.x1, R.passage.z1, h);
       ceil(R.dining.x0, R.dining.z0, R.dining.x1, R.dining.z1, h); ceil(R.nook.x0, R.nook.z0, R.nook.x1, R.nook.z1, h);
+      /* BEDROOM 3, behind its door (R52, Chad, 18 Nov evening: "why does the side room door open into nothing outside? i
+         can see green floor from that open door": its door eases open in the fight's scare, and nothing had been built
+         behind it, so through the gap was the estate's lawn twenty metres down). A spare room with its light off: its
+         floor, ceiling and walls in the flat's own tile and paint, darkened (no light is added: v9.4), the curtain drawn
+         over its window on the corridor, its inside wall faced in its own paint, and a bed against its far wall
+         (c_props.js). Nobody walks in: its doorway is a solid (below) */
+      { const mFloor3 = M({ map: mFloor.map, color: 0x4a4844, roughness: 0.55 }), mWall3 = M({ map: mWall.map, color: 0x57534c, roughness: 0.95 });
+        const mCeil3 = M({ color: 0x3e3d3a, roughness: 0.95 }), mCurt3 = M({ color: 0x3b404d, roughness: 0.92, emissive: 0x0c0e13, side: THREE.DoubleSide });
+        const B3 = R.bed3, zi = F.face + 0.003, W3 = WIN_BED3;
+        floor(mFloor3, B3.x0, F.face, B3.x1, B3.z1);
+        quad(mCeil3, [B3.x0, h, F.face], [B3.x1, h, F.face], [B3.x1, h, B3.z1], [B3.x0, h, B3.z1]);
+        wallZ(mWall3, F.x0 - 0.09, 0.18, F.face, B3.z1 + t, [], 0, h, false);                       // the party wall
+        wallX(mWall3, B3.z1 + t / 2, t, F.x0 - 0.18, R.nook.x0 - t / 2, [], 0, h, false);            // its back wall, over the store
+        /* the facade's inside face in the room's own paint, round the window (below the sill, above the head, either side) */
+        const skin = (x0, x1, y0, y1) => quad(mWall3, [x1, y0, zi], [x0, y0, zi], [x0, y1, zi], [x1, y1, zi]);
+        skin(B3.x0, B3.x1, 0, W3.sill); skin(B3.x0, B3.x1, W3.head, h); skin(B3.x0, W3.x0, W3.sill, W3.head); skin(W3.x1, B3.x1, W3.sill, W3.head);
+        /* the curtain, drawn: a dark cloth a hand inside the glass, its hem below the sill and its rail above the head */
+        const zc = F.face + 0.10;
+        quad(mCurt3, [W3.x1 + 0.12, W3.sill - 0.12, zc], [W3.x0 - 0.12, W3.sill - 0.12, zc], [W3.x0 - 0.12, W3.head + 0.15, zc], [W3.x1 + 0.12, W3.head + 0.15, zc]); }
       quad(mSoffit, [CORR.x0, CORR.soffit, CORR.para], [CORR.x1, CORR.soffit, CORR.para], [CORR.x1, CORR.soffit, F.face], [CORR.x0, CORR.soffit, F.face]);
       /* THE FRONT FACADE (z 0 to 0.18): her door, the living room's window, her room's, bedroom 3's (on the corridor) */
       const fz = F.face / 2;
@@ -3413,6 +3435,10 @@
       /* (the footprint as a column, turned with the thing: blockers() takes its box in the world, which holds it whole) */
       if (foot) { const sb = solidBox(foot[0], 1.2, foot[1], x, 0.6, z, ry); if (key === 'w4bigbowl') bigBowlSolid = sb; }
     }
+    /* (R52) bedroom 3's bed, against its far wall: the flat's own bed model, its paint darkened as the room's is (its light
+       is off; nothing is lit for it), seen only through the door's gap */
+    stand('w4bed', BED3_BED.x, 0, BED3_BED.z, -Math.PI / 2, { done: (m) => { matte(MATTE.cloth)(m);
+      m.traverse(q => { if (q.isMesh) for (const mt of [].concat(q.material)) { mt.color.multiplyScalar(0.34); mt.envMapIntensity = 0.3; } }); } });
 
     /* THE PICTURES IN THEIR FRAMES (masters/v27.0/SOURCES.md). The portrait frame's picture is a flat face 4.7 mm before its
        back with its opening's middle 0.20 m up, measured on the model (tools/probes/planez.mjs: its inner corners at z
@@ -4985,7 +5011,7 @@
       decOpen = true;
       if (warmSounds) warmSounds(['u4scuffle', 'rv4A1', 'u4cry', 'ml4A1', 'u4torn', 'u4endA', 'u4stand', 'am4A1', 'rv4A2', 'ph4A1', 'q4A1',
                       'u4flick', 'u4patter', 'u4dip', 'ml4B1', 'u4chill', 'u4heart', 'u4fall', 'ph4B0', 'ml4B2', 'u4endB', 'ml4B3', 'ph4B1', 'q4B1',
-                      'u4tile', 'q4C0', 'u4tile2', 'rv4C1', 'u4endC', 'am4C1', 'ph4C1', 'q4C1', 'u4visoff', 'ph4D0', 'rv4D1', 'u4endD', 'ml4D1',
+                      'u4tile', 'q4C0', 'u4tile2', 'rv4C1', 'u4endC', 'am4C1', 'ph4C1', 'q4C1', 'u4visoff', 'u4vison', 'ph4D0', 'rv4D1', 'u4endD', 'ml4D1',
                       'ph4D1', 'q4D1', 'u4closemus', 'ph4z0', 'u4release', 'u4steps', 'ml4z1', 'am4z1', 'u4bell', 'ph4z1']);
       if (getState() === 'play') startDecision();
     }
@@ -5606,11 +5632,11 @@
     /* (a step behind her left since 18 Nov: at her side he knelt on the line from the merit's eye to her palms, and the
        lamp's shot was the back of his head, photographed) */
     const RAVI_C = { x: CHAIR.x + 0.47, z: CHAIR.z + 0.40 };
-    /* the last green shapes in the close (A, B, C: his sight still open): two of the night's wanderers going out by the
+    /* the last green shapes in the close (his sight opened again for the merit, every ending: R65): two of the night's wanderers going out by the
        room's open door as his teacher gives them a share of the merit, each crawling its own take's travel toward the
        doorway (its hips go 0.9 m in the 2.3 s it is seen, clear of the bowl, the TV and the sofa) and fading */
     const CLOSE_WANDER = [{ x: 0.60, z: 2.50 }, { x: 0.25, z: 0.72 }].map(W => ({ ...W, ry: faceTo(W.x, W.z, 0, -0.4) }));
-    /* Appa in the close (his sight still open in A, B, C): standing in the room between the shapes' way out and her
+    /* Appa in the close (seen while his sight is open for the merit, every ending: R65): standing in the room between the shapes' way out and her
        chair, turned to her, while the merit is given; he does not go with them. (18 Nov, photographed: by his photograph,
        his own place, he stood a step from the close's lens and laid himself over his teacher's shoulder) */
     const APPA_C = { x: 0.10, z: 1.64 };
@@ -5696,7 +5722,7 @@
            her mother's altar. She turns on her knees to her mother as she cries out, so the hand goes out toward her) */
         whenReady(cast.mala, (P) => { if (t < E.scream) pose(P, 'lightlamp', 5.4); else pose(P, 'scream', Math.min(3.9, (t - E.scream) * 0.9));
           P.group.rotation.y = lpA(0, MALA_TO_HER, smo(c01((t - E.scream + 0.1) / 0.5))); lookNow(P, [RG.x, 1.5, RG.z], 0.7, 0.9); });
-        visionAt(t, -1, 0.1, E.rise - 0.2, 1.0);                         // (R55: his sight closes as she stands)
+        visionAt(t, -1, 0.1, E.sight, E.sightFor);                       // (R55, R65: his sight home to him before she stands)
         /* THE LENS: in on Ravi's shoulder as he is caught (his mother beyond him); held through the cry; the light; out
            to her standing; on his teacher for his word */
         track(t, [
@@ -5751,7 +5777,7 @@
           else { const r = smo(c01((t - E.rise - 1.2) / 1.4)); pose(P, 'scream', Math.min(3.9, (t - E.splash) * 0.8), false, 'Idle_3', r, 3 + t * 0.35); }
           P.group.rotation.y = lpA(0, MALA_TO_HER, smo(c01((t - E.splash + 0.1) / 0.5)));           // (R46: to her mother, not into the altar)
           lookNow(P, lp3(AMMA_FACE, B_FLOOR, smo(c01((t - E.ok + 0.5) / 0.6))), 0.8, 0.9); });
-        visionAt(t, -1, 0.1, E.rise - 0.2, 1.0);                         // (R55: his sight closes as she stands)
+        visionAt(t, -1, 0.1, E.sight, E.sightFor);                       // (R55, R65: his sight home to him before she stands)
         /* THE LENS: the throw (a lurch at her); the thing filling his eyes; white; his teacher's push seen through the
            white; then he is on the floor, looking up at her standing, and at his teacher */
         track(t, [
@@ -5800,7 +5826,7 @@
             lookNow(P, AMMA_FACE, 1, 0.9); } });
         /* she looks at her son before she stands */
         if (t >= E.look) whenReady(cast.amma, (P) => lookNow(P, headOf(cast.ravi, [KR.x, 0.9, KR.z]), smo(c01((t - E.look) / 0.8)), 1.0));
-        visionAt(t, -1, 0.1, E.rise - 0.2, 1.0);                         // (R55: his sight closes as she stands)
+        visionAt(t, -1, 0.1, E.sight, E.sightFor);                       // (R55, R65: his sight home to him before she stands)
         track(t, [
           { t: 0, name: 'S', eye: DEC_EYE, at: DEC_AT, fp: PLAY_FOV, fd: PLAY_FOV },
           { t: 0.65, name: 'ravi', eye: CR_EYE, at: CR_HEAD, fp: 58, fd: 50 },
@@ -5832,10 +5858,11 @@
             { ry0: r2, kt: (td) => (t < E.rise ? Math.min(4.2, td) : runOf(t, E.rise + 0.6, E.rise + 3.6, 4.2, 0.2)) });
           lookNow(P, AMMA_FACE, 1, 0.9); });
         whenReady(cast.mala, (P) => { pose(P, 'lightlamp', 5.4); lookNow(P, AMMA_FACE, 1, 0.9); });
-        /* his sight held open until she stands, as in every ending (R59, Chad, 18 Nov evening: "i think option D outcome
-           cutscene turns off spirit vision prematurely?": it closed at 0.2 s, and the thing torn from her back and the
-           light were never seen; R55: "when the auntie stands up from her wheelchair, turn off spirit vision") */
-        visionAt(t, -10, 0.1, E.rise - 0.2, 1.0);
+        /* his sight held open through the cry and the light, as in every ending (R59, Chad, 18 Nov evening: "i think
+           option D outcome cutscene turns off spirit vision prematurely?": it closed at 0.2 s, and the thing torn from her
+           back and the light were never seen), and home to him before she stands (R55, R65: "when auntie is about to stand
+           up from her wheelchair, the vision should be turned off for that special moment") */
+        visionAt(t, -10, 0.1, E.sight, E.sightFor);
         track(t, [
           { t: 0, name: 'S', eye: DEC_EYE, at: DEC_AT, fp: PLAY_FOV, fd: PLAY_FOV },
           { t: 1.2, name: 'pho', eye: S_EYE, at: PHO_BOW, fp: 52, fd: 48 },
@@ -5926,11 +5953,15 @@
       spirits.wander.forEach((P, i) => whenReady(P, (Q) => { const W = CLOSE_WANDER[i]; if (!W) return;
         put(Q, W.x, W.z, W.ry); Q.group.visible = true; pose(Q, 'crawl', Math.max(0, c - CL.go + 1.0) * 0.6); }));
       wanderersAt(c, CL.go);
-      /* his sight: still open from the ending (but D's, shut already), closing after her palms */
-      visionAt(c, 1e9);                                                   // (R55: she has stood: the close in his own sight, every ending)
+      /* his sight (R65, Chad, 18 Nov evening: "when grandmaster pho chants for the lingering spirits for them to get
+         merits, the spirit vision needs to be turned on again to show them leaving the scene. Then turned off again once
+         that is done"): shut since before her rise; opened again as his teacher begins the dedication, so the last green
+         shapes are seen going out by the open door and her husband seen standing where he stood; home to him once they are
+         gone, before the lens turns to her */
+      visionAt(c, CL.see, CL.seeFor, CL.unsee, CL.unseeFor);
       /* THE LENS (18 Nov, re-staged): his teacher whole as he dedicates the merit, the last green shapes going out low
          past him; to her, risen at her chair; her steps to her altar; in on the ash between her and her daughter; her
-         palms and her lamp; his sight closing on her; out to her family about her in the room's own colours; and over her
+         palms and her lamp; out to her family about her in the room's own colours; and over her
          son's shoulder to his teacher for his word. Every aim is where its subject stands (a phone's frame is 35 degrees:
          his teacher and the shapes share it, her family shares it, but not both) */
       /* (THE FAMILY, 18 Nov, re-staged: from the merit's eye they stood in one line from the lens, her son's head under her
@@ -6279,13 +6310,15 @@
   const LO = { cry: 0.35, lift: 1.4, gasp: 2.2, rv: 3.0, turn: 3.1, shut: 5.0, black: 6.1, end: 7.0 };
   /* the close's own clock, from its start: Pho's dedication; the green shapes go; she rises (if she has not), walks;
      the ash; her palms; his sight closing; her family before her altar (fam); Pho's word; black */
-  const CL = { z0: 0.6, go: 2.0, steps: 11.6, slow: 12.0, ash: 15.0, palms: 17.2, thank: 17.3, bell: 18.7, shut: 20.2, fam: 21.3, z1: 23.0, black: 30.4, end: 32.6 };
-  /* each ending's clock: its lines and beats, and where its close begins */
+  const CL = { z0: 0.6, see: 0.25, seeFor: 1.4, go: 2.0, unsee: 5.4, unseeFor: 1.0, steps: 11.6, slow: 12.0, ash: 15.0, palms: 17.2, thank: 17.3, bell: 18.7, shut: 20.2, fam: 21.3, z1: 23.0, black: 30.4, end: 32.6 };
+  /* each ending's clock: its lines and beats, and where its close begins. `sight` and `sightFor` (R65, Chad, 18 Nov
+     evening: "when auntie is about to stand up from her wheelchair, the vision should be turned off for that special
+     moment"): his sight going home to him once the light has cleared, shut before her rise begins */
   const EN = {
-    A: { grab: 0.0, rv: 0.3, cry: 0.9, scream: 2.95, torn: 6.1, white: 6.3, open: 7.6, rise: 9.0, call: 12.6, still: 13.2, go: 14.4, rv2: 14.7, ph: 17.4, q: 24.56, close: 28.56 },
-    B: { throw: 0.15, splash: 0.55, comes: 0.9, white: 2.3, floor: 2.55, go: 3.3, push: 3.3, falter: 3.5, ml2: 4.0, back: 5.6, cry: 6.2, torn: 9.6, white2: 9.8, open: 11.4, rise: 12.0, ok: 16.0, ph: 17.6, q: 27.32, close: 31.12 },
-    C: { step: 0.0, say: 0.7, kneel: 5.4, mala: 6.4, rv: 7.3, cry: 8.6, torn: 12.2, white: 12.4, open: 13.8, look: 14.6, my: 14.9, rise: 15.4, ph: 21.0, q: 26.8, close: 30.9 },
-    D: { shut: 0.2, reach: 1.0, ph0: 1.9, kneel: 4.6, rv: 4.7, cry: 7.8, torn: 11.2, white: 11.4, open: 12.8, rise: 13.6, ml: 14.8, ph: 19.4, q: 31.24, close: 35.84 }
+    A: { grab: 0.0, rv: 0.3, cry: 0.9, scream: 2.95, torn: 6.1, white: 6.3, open: 7.6, sight: 7.75, sightFor: 1.0, rise: 9.0, call: 12.6, still: 13.2, go: 14.4, rv2: 14.7, ph: 17.4, q: 24.56, close: 28.56 },
+    B: { throw: 0.15, splash: 0.55, comes: 0.9, white: 2.3, floor: 2.55, go: 3.3, push: 3.3, falter: 3.5, ml2: 4.0, back: 5.6, cry: 6.2, torn: 9.6, white2: 9.8, open: 11.4, sight: 11.2, sightFor: 0.65, rise: 12.0, ok: 16.0, ph: 17.6, q: 27.32, close: 31.12 },
+    C: { step: 0.0, say: 0.7, kneel: 5.4, mala: 6.4, rv: 7.3, cry: 8.6, torn: 12.2, white: 12.4, open: 13.8, look: 14.6, my: 14.9, sight: 14.1, sightFor: 1.0, rise: 15.4, ph: 21.0, q: 26.8, close: 30.9 },
+    D: { reach: 1.0, ph0: 1.9, kneel: 4.6, rv: 4.7, cry: 7.8, torn: 11.2, white: 11.4, open: 12.8, sight: 12.8, sightFor: 0.6, rise: 13.6, ml: 14.8, ph: 19.4, q: 31.24, close: 35.84 }
   };
 
   /* THE OPENING FILM's clock (c_ufilm.js FILMS.open draws to it) */
@@ -6364,16 +6397,17 @@
     step(0, () => F.begin(k, c, api));
     tr(0, total, (kk, t) => F.frame(k, t, api), rawK);
     cues(E, { sfx, sfxFade, fade });
-    /* THE CLOSE: the merit dedicated; the green shapes go; her first steps; the bell at her altar; his sight closing;
-       his teacher's word to the family; black */
+    /* THE CLOSE: the merit dedicated, his sight opened again to see the lingering shapes go and shut once they are gone
+       (R65); her first steps; the bell at her altar; his teacher's word to the family; black */
     sfx(t0 - 1.6, 'u4closemus', 0.5);
+    sfx(t0 + C.see, 'u4vison', 0.8);                    // his sight opened again for the merit: the wave out from him
     sfx(t0 + C.z0, 'ph4z0', 1);                         // "May all beings, without limit, without end, have a share in the merit just now made..."
     sfx(t0 + C.go, 'u4release', 0.45); sfx(t0 + C.go + 1.5, 'u4release', 0.35);
+    sfx(t0 + C.unsee, 'u4visoff', 0.8);                 // they are gone: his sight home to him
     sfx(t0 + C.steps + 0.1, 'u4steps', 0.75);           // her first steps, to her altar
     sfx(t0 + C.slow, 'ml4z1', 1);                       // her daughter beside her: "Slowly, Amma. Slowly."
     sfx(t0 + C.thank, 'am4z1', 1);                      // her palms joined at her lamp: "Thank you, Mother."
     sfx(t0 + C.bell, 'u4bell', 0.55);                   // at her altar
-    if (k !== 'D') sfx(t0 + C.shut, 'u4visoff', 0.8);  // his sight closing: the wave home to him
     sfx(t0 + C.z1, 'ph4z1', 1);                         // "Keep seeing her doctors. What happened tonight is what happened tonight. It is not a promise."
     fade(t0 + C.black, t0 + C.end - 0.2, 0, 1);
     sfxFade(t0 + C.black - 0.5, t0 + C.end - 0.05, 'u4closemus');
@@ -6390,6 +6424,7 @@
     a.sfx(E.torn - 0.1, 'u4torn', 0.85);                // torn from her
     flash(a, E.white); a.sfxFade(E.white, E.white + 1.2, 'u4cry');
     a.sfx(E.open - 0.4, 'u4endA', 0.5);
+    a.sfx(E.sight, 'u4visoff', 0.85);                   // his sight home to him, before she stands (R65)
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);               // she stands, and her son is not beside her
     a.sfx(E.call, 'am4A1', 1);                          // she looks back for him: "Ravi?"
     a.sfx(E.rv2, 'rv4A2', 1);                           // let go, he goes to her: "Amma..."
@@ -6410,6 +6445,7 @@
     a.sfx(E.torn - 0.1, 'u4torn', 0.85);
     flash(a, E.white2); a.sfxFade(E.white2, E.white2 + 1.1, 'u4cry');
     a.sfx(E.open - 0.6, 'u4endB', 0.5);
+    a.sfx(E.sight, 'u4visoff', 0.85);                   // his sight home to him, before she stands (R65)
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);
     a.sfx(E.ok, 'ml4B3', 1);                            // Mala, down to him on the floor: "Are you alright?"
     a.sfx(E.ph, 'ph4B1', 1);                            // "Your part was the holy water, and keeping the spirits away from her. The work was mine..."
@@ -6426,22 +6462,25 @@
     a.sfx(E.torn - 0.1, 'u4torn', 0.85);
     flash(a, E.white); a.sfxFade(E.white, E.white + 1.2, 'u4cry');
     a.sfx(E.open - 0.8, 'u4endC', 0.5);
+    a.sfx(E.sight, 'u4visoff', 0.85);                   // his sight home to him, before she stands (R65)
     a.sfx(E.my, 'am4C1', 1);                            // her eyes open on her son: "My boy."
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);               // she stands, holding his hand
     a.sfx(E.ph, 'ph4C1', 1);                            // "You saw what was there, and you told him only what you knew. Nothing more."
     a.sfx(E.q, 'q4C1', 1);                              // "I didn't promise him anything. I told him what I saw."
     a.sfxFade(E.close - 2.0, E.close + 0.5, 'u4endC');
   }); }
-  /* D · KEEP YOUR PLACE: HOLD THE HOLY WATER, CLOSE YOUR SPIRIT VISION, TRUST YOUR TEACHER (good) */
+  /* D · KEEP YOUR PLACE: HOLD THE HOLY WATER, TRUST YOUR TEACHER (good). His sight open through the cry and the light
+     since R59 (it shut at 0.2 s, and the thing torn from her back was never seen): the cry, the tearing and the light at
+     the others' strength, seen now; home to him before she stands, as in every ending (R65) */
   function scKeep(c, s, api) { endingScene(c, s, api, 'D', (E, a) => {
-    a.sfx(E.shut, 'u4visoff', 0.85);                    // his sight shut: the wave home to him
     a.sfx(E.ph0, 'ph4D0', 1);                           // "Ravi. Hold her hand."
     a.sfx(E.kneel + 0.5, 'u4tile2', 0.5);
     a.sfx(E.rv, 'rv4D1', 1);                            // he does: "Okay. Okay. I've got you, Amma."
-    a.sfx(E.cry, 'u4cry', 0.55);                        // heard, not seen: his sight is shut
-    a.sfx(E.torn - 0.1, 'u4torn', 0.65);
-    flash(a, E.white, 1.2, 0.75); a.sfxFade(E.white, E.white + 1.2, 'u4cry');
+    a.sfx(E.cry, 'u4cry', 0.85);
+    a.sfx(E.torn - 0.1, 'u4torn', 0.85);
+    flash(a, E.white); a.sfxFade(E.white, E.white + 1.2, 'u4cry');
     a.sfx(E.open - 0.8, 'u4endD', 0.5);
+    a.sfx(E.sight, 'u4visoff', 0.85);                   // his sight home to him, before she stands (R65)
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);
     a.sfx(E.ml, 'ml4D1', 1);                            // Mala, at the lamp: "Amma... you're standing."
     a.sfx(E.ph, 'ph4D1', 1);                            // "You kept your place. That is where it starts. But there were two people afraid in this room..."

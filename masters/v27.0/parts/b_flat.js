@@ -18,6 +18,9 @@
       bed2:    { x0: -3.65, x1: -0.80, z0: 5.40, z1: 10.10 },
       bath2:   { x0: 3.05, x1: 4.60, z0: 8.45, z1: 11.00 }
     };
+    /* (R52) bedroom 3's bed: along its back wall, its head against the party wall (the bed model is 2.01 m by 0.95 m, its
+       length along its own z, so turned a quarter it runs along x): behind the door's gap, a step in */
+    const BED3_BED = { x: -2.62, z: 3.70 };
     /* the openings: doors (x or z along their wall, their width) and windows (with their sill and head) */
     const DOOR_MAIN = { x0: -0.50, x1: 0.50, h: 2.10 };
     const DOOR_BED3 = { z0: 2.70, z1: 3.60, h: 2.10 };       // in the living room's left wall (x -0.80)
@@ -211,6 +214,25 @@
       const ceil = (x0, z0, x1, z1, y) => quad(mCeil, [x0, y, z0], [x1, y, z0], [x1, y, z1], [x0, y, z1]);
       ceil(R.living.x0, F.face, R.living.x1, R.living.z1, h); ceil(R.hers.x0, F.face, R.hers.x1, R.passage.z1, h);
       ceil(R.dining.x0, R.dining.z0, R.dining.x1, R.dining.z1, h); ceil(R.nook.x0, R.nook.z0, R.nook.x1, R.nook.z1, h);
+      /* BEDROOM 3, behind its door (R52, Chad, 18 Nov evening: "why does the side room door open into nothing outside? i
+         can see green floor from that open door": its door eases open in the fight's scare, and nothing had been built
+         behind it, so through the gap was the estate's lawn twenty metres down). A spare room with its light off: its
+         floor, ceiling and walls in the flat's own tile and paint, darkened (no light is added: v9.4), the curtain drawn
+         over its window on the corridor, its inside wall faced in its own paint, and a bed against its far wall
+         (c_props.js). Nobody walks in: its doorway is a solid (below) */
+      { const mFloor3 = M({ map: mFloor.map, color: 0x4a4844, roughness: 0.55 }), mWall3 = M({ map: mWall.map, color: 0x57534c, roughness: 0.95 });
+        const mCeil3 = M({ color: 0x3e3d3a, roughness: 0.95 }), mCurt3 = M({ color: 0x3b404d, roughness: 0.92, emissive: 0x0c0e13, side: THREE.DoubleSide });
+        const B3 = R.bed3, zi = F.face + 0.003, W3 = WIN_BED3;
+        floor(mFloor3, B3.x0, F.face, B3.x1, B3.z1);
+        quad(mCeil3, [B3.x0, h, F.face], [B3.x1, h, F.face], [B3.x1, h, B3.z1], [B3.x0, h, B3.z1]);
+        wallZ(mWall3, F.x0 - 0.09, 0.18, F.face, B3.z1 + t, [], 0, h, false);                       // the party wall
+        wallX(mWall3, B3.z1 + t / 2, t, F.x0 - 0.18, R.nook.x0 - t / 2, [], 0, h, false);            // its back wall, over the store
+        /* the facade's inside face in the room's own paint, round the window (below the sill, above the head, either side) */
+        const skin = (x0, x1, y0, y1) => quad(mWall3, [x1, y0, zi], [x0, y0, zi], [x0, y1, zi], [x1, y1, zi]);
+        skin(B3.x0, B3.x1, 0, W3.sill); skin(B3.x0, B3.x1, W3.head, h); skin(B3.x0, W3.x0, W3.sill, W3.head); skin(W3.x1, B3.x1, W3.sill, W3.head);
+        /* the curtain, drawn: a dark cloth a hand inside the glass, its hem below the sill and its rail above the head */
+        const zc = F.face + 0.10;
+        quad(mCurt3, [W3.x1 + 0.12, W3.sill - 0.12, zc], [W3.x0 - 0.12, W3.sill - 0.12, zc], [W3.x0 - 0.12, W3.head + 0.15, zc], [W3.x1 + 0.12, W3.head + 0.15, zc]); }
       quad(mSoffit, [CORR.x0, CORR.soffit, CORR.para], [CORR.x1, CORR.soffit, CORR.para], [CORR.x1, CORR.soffit, F.face], [CORR.x0, CORR.soffit, F.face]);
       /* THE FRONT FACADE (z 0 to 0.18): her door, the living room's window, her room's, bedroom 3's (on the corridor) */
       const fz = F.face / 2;
