@@ -172,10 +172,12 @@
     assets: [
       /* the people, the spirits and the things made for this chapter (masters/v27.0/make.sh) */
       /* >>> this chapter's own keys: written by masters/v27.0/keys.py (edit its table, not this list) >>> */
-      'w4wheelchair', 'w4prayershelf', 'w4vilakku', 'w4waterbowl', 'w4bigbowl', 'w4sofa', 'w4cabinet', 'w4dintable',
-      'w4dinechair', 'w4framesmall', 'w4hugger', 'w4folder', 'w4gate', 'w4frameport', 'w4armchair', 'w4tubelight',
-      'w4tvconsole', 'w4stool', 'w4standfan', 'w4shoerack', 'w4tulsi', 'w4doorleaf', 'w4fridge', 'w4pilltray',
-      'w4clock', 'w4phonetable', 'w4bed', 'w4commode', 'w4coffee',
+      'p4amma', 'p4ammam', 'p4ammah', 'p4ravi', 'p4ravim', 'p4ravih', 'p4mala', 'p4malam', 'p4malah', 'p4oppress',
+      'p4wander', 'p4large', 'p4appa', 'w4wheelchair', 'w4prayershelf', 'w4vilakku', 'w4waterbowl', 'w4bigbowl',
+      'w4sofa', 'w4cabinet', 'w4dintable', 'w4dinechair', 'w4framesmall', 'w4hugger', 'w4folder', 'w4gate',
+      'w4frameport', 'w4armchair', 'w4tubelight', 'w4tvconsole', 'w4stool', 'w4standfan', 'w4shoerack', 'w4tulsi',
+      'w4doorleaf', 'w4fridge', 'w4pilltray', 'w4clock', 'w4phonetable', 'w4bed', 'w4commode', 'w4poles',
+      'w4thoranam', 'w4altartray', 'w4coffee', 'w4garland', 'w4t_kali', 'w4t_ganesha', 'w4t_murugan', 'w4t_appa',
       /* <<< this chapter's own keys <<< */
       /* Grandmaster Pho, Chad's own model, as chapter 3 cast him (reuseInEpisode) */
       'pho'
@@ -184,7 +186,7 @@
     reuse: {},
     reuseInEpisode: { pho: "Grandmaster Pho himself, Chad's own model in his look D, as chapter 3 cast him: the same man, come to Singapore" },
     placeholders: {},
-    items: [],
+    items: ['holywater'],                        // the small silver bowl, given in the blessing (kit.give: c_story.js takeWater)
 
     musicVol: 0,
     /* THE BEDS (M8): every one at 0 here; the chapter's mixer sets each by the room and the beat */
@@ -200,10 +202,13 @@
       actLine: 'Press E to answer',
       actLineTouch: 'Tap to answer',
       // PLAY I · history first (§4.1)
-      objHistory: 'Learn her history',
+      objHistory: 'Learn her history · {n}/5',
       hotRavi: 'Talk to Ravi',
       hotMala: 'Talk to Mala',
       hotFolder: 'Read the letters',
+      /* the clinic's letter, read on the screen while he thinks his line (§4.1 source 3): what it says, over what it is */
+      letter: '“No structural cause identified. Physiotherapy advised. Review in six months.”',
+      letterSub: 'The last of many letters in a thick folder, from many clinics.',
       hotOld: 'Look at the old photograph',
       hotAppa: 'Look at his photograph',
       objAmma: 'Go to her',
@@ -212,10 +217,13 @@
       hotTell: 'Tell him',
       // PLAY II · the sight (§4.2)
       objOpen: 'Open your Spirit Vision',
-      objLook: 'Look at each presence',
+      objLook: 'Look at each presence · {n}/3',
       hotLook: 'Look',
       objClose: 'Close your Spirit Vision',
       // PLAY III · the blessing (§4.3)
+      objWater: 'Take the holy water',
+      hotWater: 'Take the holy water',
+      dipHere: 'Fill it again at his bowl.',
       objHold: 'Keep the room',
       guardTitle: 'HOLD THE ROOM',
       guardBrief: 'Keep the room while Grandmaster Pho blesses her. Open your Spirit Vision to see them. Tap FLICK to send them back with the holy water, and DIP to fill the bowl again at his bowl. Keep them from her, from her family and from you. Not everything you see is against you.',

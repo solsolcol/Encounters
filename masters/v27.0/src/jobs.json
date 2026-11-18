@@ -166,6 +166,9 @@
   "expires_at": 1795213769849,
   "image": "masters/v27.0/props/refs/altartray-2k.png",
   "image_to_3d": "01a1eb9b-dc84-77ce-bc50-d1e9abc5008f",
+  "remesh": {
+   "16000": "01a1ebfc-4901-75f8-aa43-f3c79a4ced04"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -760,6 +763,9 @@
   "expires_at": 1795213800840,
   "image": "masters/v27.0/props/refs/garlandhang-2k.png",
   "image_to_3d": "01a1eb9b-fa65-739c-a141-4099d7161dbc",
+  "remesh": {
+   "12000": "01a1ec01-34fb-74ca-b827-a6dc9c842e4c"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -1097,6 +1103,9 @@
   "expires_at": 1795213661685,
   "image": "masters/v27.0/props/refs/poles-2k.png",
   "image_to_3d": "01a1eb9b-c087-76bb-b183-62d1e7cead9c",
+  "remesh": {
+   "16000": "01a1ebf3-a63b-74d0-8ee0-d38ac10f6d3f"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,
@@ -1338,6 +1347,9 @@
   "expires_at": 1795213676522,
   "image": "masters/v27.0/props/refs/thoranam-2k.png",
   "image_to_3d": "01a1eb9b-cc82-746c-8dd6-9b6a18601248",
+  "remesh": {
+   "12000": "01a1ebf8-1700-733f-9ef2-097042b2070a"
+  },
   "settings": {
    "ai_model": "latest",
    "enable_pbr": true,

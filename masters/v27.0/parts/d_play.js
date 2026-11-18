@@ -8,11 +8,8 @@
        voice plays on; the line queue and every timer of the play run on it (chapter 3's, copied) */
     const dayClock = { t: 0 };
 //@@COPY 6474-6513 :: const todo = [];
-    function setPhase(p) { phase = p; if (kit) kit.setPhase(p + ':'); }
-    function applyPhase(saved) { phase = saved ? String(saved).split(':')[0] || 'history' : 'history'; }
-
-    /* the things he can press (M6) */
-    const hotspots = [];
+    /* the things he can press (c_story.js: the five sources, her, his teacher, the three presences, the water) */
+    const hotspots = STORY_SPOTS;
 
     /* the decision's anchor (the engine's pile): her chair. The decision is opened by the trance's film at the turning
        point (M7), never by walking up to her; until then the pile is never live */
@@ -20,7 +17,7 @@
     const PILE_POS = new THREE.Vector3(CHAIR.x, 0, CHAIR.z);
     const pile = new THREE.Group(); world.add(pile);
     const _ndc = new THREE.Vector3();
-    const pileLive = () => false;
+    const pileLive = () => decOpen && phase === 'kept';
     function pileDist() { return Math.hypot(yaw.position.x - PILE_POS.x, yaw.position.z - PILE_POS.z); }
     function pileScreen() { camera.updateMatrixWorld(); return _ndc.set(PILE_POS.x, PILE_POS.y + 1.0, PILE_POS.z).project(camera); }
     function pileInView() { if (!pileLive()) return false; const n = pileScreen(); return n.z < 1 && Math.abs(n.x) < 1.1 && Math.abs(n.y) < 1.1; }
@@ -34,6 +31,8 @@
       wallClock.t += wdt;
       peopleTick(wdt, st !== 'cine');
       if (st !== 'cine') { peopleLevels(); lodTick(); }
+      /* the room's own motion runs under a film too (the fan, the lamp's flames, the photograph's glass) */
+      fanTick(wdt); lampTick(wdt, wallClock.t); fogTick(wdt);
       const liveSt = st === 'play';
       if (!liveSt) { if (!pausedAt) pausedAt = now; lastWall = 0; return; }
       /* a voice plays on under a panel while the chapter's clock stands still: its booking comes forward by the time the
@@ -44,20 +43,22 @@
       lastWall = now;
       if (!booted) { booted = true; applyPhase(kit ? kit.getPhase() : null); }
       runTodo(); runSpeak(); runQueue();
+      storyTick(wdt, wallClock.t);
     }
     function updatePile() {}
     function updateFire() {}
     function updateSlow() {}
 
-    function snap() { return { phase }; }
+    function snap() { return { phase, story: storySnap() }; }
     function restore() {}
-    function reset() { phase = null; booted = false; dropTodo(); speakReset(); lineQ.length = 0; heard.clear(); dayClock.t = 0; lastWall = 0; pausedAt = 0; }
+    function reset() { phase = null; booted = false; dropTodo(); speakReset(); lineQ.length = 0; heard.clear(); dayClock.t = 0; lastWall = 0; pausedAt = 0; storyReset(); }
 
     /* what he cannot walk through: every solid of the shell and the furniture, a column from the floor (v5.03) */
     function blockers() {
       const out = [];
       const solid = (o, pad = 0.14) => { o.updateWorldMatrix(true, false); const bb = new THREE.Box3().setFromObject(o); bb.expandByScalar(pad); bb.min.y = 0; bb.max.y = Math.max(bb.max.y, 1.40); out.push(bb); };
       for (const s of solids) solid(s);
+      for (const k in castBlock) out.push(castBlock[k]);            // (moved in place by castSolid: never replaced)
       return out;
     }
 
@@ -134,6 +135,9 @@
         return { meshes, tris: Math.round(tris), textures: texs.size, texMB: +mb.toFixed(1) };
       },
       hotspots,
+      /* the fiftieth and fifty-first seams: his sight opened or shut; what the water may reach, what it reached, and
+         where the bowl is filled again */
+      onVision, shootables, onShot, reloadRefusal,
       updateNotes, updatePile, updateFire, updateSlow,
       snap, restore, reset, dispose
     });

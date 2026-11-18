@@ -724,6 +724,19 @@ ASSETS = {
     # photorealistic reference on white in an A pose from GPT Image, looked at; Meshy at its highest; its rig; its takes).
     # The near body with the takes, `m` the mid body, `h` the full model for the three the story turns on (v26.5); the
     # spirits near only. masters/v27.0/bodies.sh, people.sh; the tracker's section 5.
+    'p4amma':       ('assets/p4amma.glb', True, False),     # Amma, about 72, in her wheelchair: a cotton sari, a shawl, grey hair in a bun
+    'p4ammam':      ('assets/p4ammam.glb', True, False),
+    'p4ammah':      ('assets/p4ammah.glb', True, False),
+    'p4ravi':       ('assets/p4ravi.glb', True, False),     # Ravi, her son, about 48: a polo shirt
+    'p4ravim':      ('assets/p4ravim.glb', True, False),
+    'p4ravih':      ('assets/p4ravih.glb', True, False),
+    'p4mala':       ('assets/p4mala.glb', True, False),     # Mala, her daughter, about 45: a salwar kameez
+    'p4malam':      ('assets/p4malam.glb', True, False),
+    'p4malah':      ('assets/p4malah.glb', True, False),
+    'p4oppress':    ('assets/p4oppress.glb', True, False),     # the spirit on her back (crimson in the vision): gaunt, crouched, clinging
+    'p4wander':     ('assets/p4wander.glb', True, False),     # the wanderers (green in the vision): low and crawling, hungry, come for a share of merit
+    'p4large':      ('assets/p4large.glb', True, False),     # the large wanderer, hunched and tall
+    'p4appa':       ('assets/p4appa.glb', True, False),     # Appa, her late husband (pale blue in the vision): a white veshti and shirt, standing still
     # e4c4: the flat's things, each a checked picture on white, then Meshy at its highest and its own remesh,
     # tools/prepmeshy.mjs (masters/v27.0/props/TABLE.txt, prop.sh)
     'w4wheelchair': ('assets/w4wheelchair.glb', True, False),     # her folding steel wheelchair
@@ -754,7 +767,18 @@ ASSETS = {
     'w4phonetable': ('assets/w4phonetable.glb', True, False),     # the telephone table and its corded phone
     'w4bed':        ('assets/w4bed.glb', True, False),     # her bed with its rail
     'w4commode':    ('assets/w4commode.glb', True, False),     # the commode chair by her bed
+    'w4poles':      ('assets/w4poles.glb', True, False),     # laundry on bamboo poles out of the kitchen window
+    'w4thoranam':   ('assets/w4thoranam.glb', True, False),     # the thoranam of mango leaves over her door
+    'w4altartray':  ('assets/w4altartray.glb', True, False),     # the altar's brass tray: the camphor plate, the bell, small lamps
     'w4coffee':     ('assets/w4coffee.glb', True, False),     # the coffee table
+    'w4garland':    ('assets/w4garland.glb', True, False),     # a jasmine and marigold garland, hung on a picture
+    # e4c4: the pictures in her flat, each a picture laid in a frame (masters/v27.0/SOURCES.md): her altar's three, the
+    # Wellcome Collection's own images at 1024 tall, whole (Public Domain Mark, credited in the panel); Appa's photograph,
+    # rendered from his own full model (tools/portrait.mjs)
+    'w4t_kali':     ('assets/w4t_kali.jpg', True, False),     # Kali trampling Shiva, chromolithograph by R. Varma (Wellcome V0045118)
+    'w4t_ganesha':  ('assets/w4t_ganesha.jpg', True, False),     # Ganesha, chromolithograph (Wellcome V0044933)
+    'w4t_murugan':  ('assets/w4t_murugan.jpg', True, False),     # Kartikeya (Murugan), gouache on mica (Wellcome V0046230)
+    'w4t_appa':     ('assets/w4t_appa.jpg', True, False),     # Appa's photograph: the game's own Appa, head and shoulders
     # <<< e4c4 keys: the rows end <<<
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
@@ -907,10 +931,13 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'w3hwallfan',
            # <<< e4c3 keys <<<
            # >>> e4c4 keys (masters/v27.0/keys.py) >>>
-           'w4wheelchair', 'w4prayershelf', 'w4vilakku', 'w4waterbowl', 'w4bigbowl', 'w4sofa', 'w4cabinet',
-           'w4dintable', 'w4dinechair', 'w4framesmall', 'w4hugger', 'w4folder', 'w4gate', 'w4frameport',
-           'w4armchair', 'w4tubelight', 'w4tvconsole', 'w4stool', 'w4standfan', 'w4shoerack', 'w4tulsi',
-           'w4doorleaf', 'w4fridge', 'w4pilltray', 'w4clock', 'w4phonetable', 'w4bed', 'w4commode', 'w4coffee',
+           'p4amma', 'p4ammam', 'p4ammah', 'p4ravi', 'p4ravim', 'p4ravih', 'p4mala', 'p4malam', 'p4malah',
+           'p4oppress', 'p4wander', 'p4large', 'p4appa', 'w4wheelchair', 'w4prayershelf', 'w4vilakku', 'w4waterbowl',
+           'w4bigbowl', 'w4sofa', 'w4cabinet', 'w4dintable', 'w4dinechair', 'w4framesmall', 'w4hugger', 'w4folder',
+           'w4gate', 'w4frameport', 'w4armchair', 'w4tubelight', 'w4tvconsole', 'w4stool', 'w4standfan',
+           'w4shoerack', 'w4tulsi', 'w4doorleaf', 'w4fridge', 'w4pilltray', 'w4clock', 'w4phonetable', 'w4bed',
+           'w4commode', 'w4poles', 'w4thoranam', 'w4altartray', 'w4coffee', 'w4garland', 'w4t_kali', 'w4t_ganesha',
+           'w4t_murugan', 'w4t_appa',
            # <<< e4c4 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY

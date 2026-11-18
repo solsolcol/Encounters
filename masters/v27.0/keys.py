@@ -80,6 +80,15 @@ S0, S1 = '           # >>> e4c4 keys (masters/v27.0/keys.py) >>>\n', '          
 H0, H1 = '      /* >>> this chapter\'s own keys: written by masters/v27.0/keys.py (edit its table, not this list) >>> */\n', '      /* <<< this chapter\'s own keys <<< */'
 
 
+
+group("e4c4: the pictures in her flat, each a picture laid in a frame (masters/v27.0/SOURCES.md): her altar's three, the\n"
+      "Wellcome Collection's own images at 1024 tall, whole (Public Domain Mark, credited in the panel); Appa's photograph,\n"
+      "rendered from his own full model (tools/portrait.mjs)",
+      [('w4t_kali', 'w4t_kali.jpg', 'Kali trampling Shiva, chromolithograph by R. Varma (Wellcome V0045118)'),
+       ('w4t_ganesha', 'w4t_ganesha.jpg', 'Ganesha, chromolithograph (Wellcome V0044933)'),
+       ('w4t_murugan', 'w4t_murugan.jpg', 'Kartikeya (Murugan), gouache on mica (Wellcome V0046230)'),
+       ('w4t_appa', 'w4t_appa.jpg', "Appa's photograph: the game's own Appa, head and shoulders")])
+
 def between(s, a, b, new, what):
     assert s.count(a) == 1 and s.count(b) == 1, '%s: its markers are not there once (%d, %d)' % (what, s.count(a), s.count(b))
     i, j = s.index(a) + len(a), s.index(b)

@@ -246,6 +246,9 @@ body.hasVision.evopen .visionBtn,body.hasVision.unlockopen .visionBtn,body.hasVi
 .visionBtn.on{border-color:#8CF2FF;box-shadow:0 0 14px rgba(140,242,255,.45)}
 .visionBtn.on svg{stroke:#8CF2FF}
 .visionBtn.on .rays{opacity:1}
+/* v27.0: the eye button asks, as the bag button does, while the chapter's order is to open his sight (kit.visionUrge) */
+.visionBtn.urge{border-color:#8CF2FF;animation:invUrge 1.5s ease-in-out infinite}
+.visionBtn.urge svg{stroke:#8CF2FF}
 .visionBtn:hover .invLabel,.visionBtn:focus-visible .invLabel{border-color:#8CF2FF}
 /* v12.0: RIFLE MODE's HUD — only while a chapter's weapon is OUT
    (`body.weaponUp`, derived on the frame from the hand slot). A big round
@@ -2969,6 +2972,12 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
     <path d="M12 8.2a1.5 1.5 0 1 1 0.01 0M9.2 16.6c.4-2.6 1.4-4.4 2.8-4.4s2.4 1.8 2.8 4.4M14.2 12.6l1.6-2.2.9.6"
       fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
   </symbol>
+  <!-- v27.0: the holy water (episode 4 chapter 4): a small silver bowl, its water, three drops over it -->
+  <symbol id="e-holywater" viewBox="0 0 24 24">
+    <path d="M4.2 12.2h15.6c-.5 4.1-3.6 6.8-7.8 6.8s-7.3-2.7-7.8-6.8z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M6.4 14.2c1.8.8 3.6 1.1 5.6 1.1s3.8-.3 5.6-1.1M9.4 19.4l-.6 1.6h6.4l-.6-1.6" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+    <path d="M12 3.4c.9 1.4 1.4 2.3 1.4 3a1.4 1.4 0 1 1-2.8 0c0-.7.5-1.6 1.4-3zM7.4 6.6c.6.9.9 1.5.9 1.9a.9.9 0 1 1-1.8 0c0-.4.3-1 .9-1.9zM16.6 6.6c.6.9.9 1.5.9 1.9a.9.9 0 1 1-1.8 0c0-.4.3-1 .9-1.9z" fill="none" stroke="currentColor" stroke-width="1.1"/>
+  </symbol>
   <symbol id="e-takrut" viewBox="0 0 24 24">
     <rect x="7" y="9.6" width="10" height="4.8" rx="2.4" fill="none" stroke="currentColor" stroke-width="1.5"/>
     <path d="M9.6 9.6v4.8M12 9.6v4.8M14.4 9.6v4.8" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
@@ -3527,6 +3536,24 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
         <span class="credWho" data-t="credits.jadeWho">Anonymous, ink and colour on silk &middot; Sotheby&rsquo;s &middot; Wikipedia, public domain</span>
         <a class="credLink" href="https://commons.wikimedia.org/wiki/File:Portraits_of_Jade_Emperor_and_the_Heavenly_Kings.JPG"
            target="_blank" rel="noopener noreferrer" data-t="credits.jadeLink">commons.wikimedia.org &middot; Portraits of Jade Emperor and the Heavenly Kings</a>
+      </li>
+      <li>
+        <span class="credWhat" data-t="credits.kali">Kali, on Amma&rsquo;s altar</span>
+        <span class="credWho" data-t="credits.kaliWho">Chromolithograph by R. Varma &middot; Wellcome Collection &middot; Public Domain Mark</span>
+        <a class="credLink" href="https://wellcomecollection.org/works/d8rycze2"
+           target="_blank" rel="noopener noreferrer" data-t="credits.kaliLink">wellcomecollection.org &middot; Kali trampling Shiva</a>
+      </li>
+      <li>
+        <span class="credWhat" data-t="credits.ganesha">Ganesha, on Amma&rsquo;s altar</span>
+        <span class="credWho" data-t="credits.ganeshaWho">Chromolithograph &middot; Wellcome Collection &middot; Public Domain Mark</span>
+        <a class="credLink" href="https://wellcomecollection.org/works/nekd64ff"
+           target="_blank" rel="noopener noreferrer" data-t="credits.ganeshaLink">wellcomecollection.org &middot; Ganesha. Chromolithograph</a>
+      </li>
+      <li>
+        <span class="credWhat" data-t="credits.murugan">Murugan, on Amma&rsquo;s altar</span>
+        <span class="credWho" data-t="credits.muruganWho">Gouache on mica by an Indian artist, 19th century &middot; Wellcome Collection &middot; Public Domain Mark</span>
+        <a class="credLink" href="https://wellcomecollection.org/works/g3n5777h"
+           target="_blank" rel="noopener noreferrer" data-t="credits.muruganLink">wellcomecollection.org &middot; Kartikeya, also called Murugan</a>
       </li>
       <li>
         <span class="credWhat" data-t="credits.yinghost">The ghost in the Yin shop</span>

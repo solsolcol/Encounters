@@ -44,15 +44,20 @@
     const PROPS = [
       // key            x       y      z      ry               foot [w, d] (the file's own extent)   (what)
       ['w4wheelchair', CHAIR.x, 0, CHAIR.z, CHAIR.ry,          [0.65, 1.00]],   // her chair, facing her altar
-      ['w4stool',      STOOL.x, 0, STOOL.z, -0.4,             [0.40, 0.39]],   // Grandmaster Pho's, at her right
+      ['w4stool',      STOOL.x, 0, STOOL.z, -0.4,             [0.40, 0.39]],   // Grandmaster Pho's, at her left (+x: she faces +z)
       ['w4bigbowl',    BOWL.x, 0, BOWL.z, 0,                  [0.33, 0.33]],   // his bowl on the floor: he dips here
       // her altar: a wall-mounted cabinet (the research's "floating unit", [32]), its back on the wall, its base at 1.15
       ['w4prayershelf', ALTAR.x, 1.15, ROOMS.living.z1 - 0.226 - 0.004, Math.PI, null],
-      ['w4altartray',  ALTAR.x, 0, ALTAR.z - 0.42, Math.PI,   null],           // the brass tray before it, on the floor
-      ['w4vilakku',    ALTAR.x + 0.02, 0.03, ALTAR.z - 0.42, 0, null],          // the kuthu vilakku on the tray (Mala lights it)
+      /* (18 Nov, measured and photographed: the tray is a whole puja set on a plate, 0.25 m across and 0.15 high, its bell,
+         its small lamp, its kalasam pot, its camphor holder and its incense: the tall kuthu vilakku stands beside it on the
+         floor, not on it, where it was set sunk 11 cm into the pot) */
+      ['w4altartray',  ALTAR.x - 0.30, 0, ALTAR.z - 0.36, Math.PI, null],      // her puja tray before the altar, on the floor
+      ['w4vilakku',    ALTAR.x + 0.08, 0, ALTAR.z - 0.38, 0,     null],         // the kuthu vilakku beside it (Mala lights it)
       // Appa's photograph on the wall at the altar's right (its back on the wall), and its garland
       ['w4frameport',  0.62, 1.30, ROOMS.living.z1 - 0.011 - 0.004, Math.PI, null],
-      ['w4garland',    0.62, 1.66, ROOMS.living.z1 - 0.05, Math.PI, null],
+      /* (the garland is a V of jasmine and marigold 0.45 wide and 0.54 tall, its two ends at its top: hung at the frame's
+         top corners, 1.71 up, before its glass, its tassel below the frame) */
+      ['w4garland',    0.62, 1.71 - 0.542, ROOMS.living.z1 - 0.004 - 0.022 - 0.035 - 0.002, Math.PI, null],
       // the sofa under the corridor window, its back to the front wall; the coffee table before it; the armchair at the
       // room's right, facing the TV across it; a standing fan between them
       ['w4sofa',       1.72, 0, FL.face + 0.456 + 0.01, 0,     [1.90, 0.91]],
@@ -84,7 +89,9 @@
       ['w4poles',      5.55, 1.15, FL.z1 + 0.55, 0,           null],           // the laundry out of the kitchen window
       // outside her door: the gate on the facade's face, the mango leaves over the door, the shoe rack, the tulsi
       ['w4gate',       0, FL.corr, -0.051 - 0.006, 0,         null],
-      ['w4thoranam',   0, 2.16, -0.03, 0,                     null],
+      /* (the thoranam's rope is 0.245 up its file, its leaves hanging from it: tied across the doorway's head, 2.09 up, at
+         its outer edge inside the gate, the leaves over the top of the door) */
+      ['w4thoranam',   0, 2.09 - 0.245, 0.05, 0,              null],
       ['w4shoerack',   -1.55, FL.corr, -0.193 - 0.012, Math.PI, null],
       ['w4tulsi',      1.35, FL.corr, -1.45, 0,               null]
     ];
@@ -95,6 +102,43 @@
       (things[key] = things[key] || []).push(g);
       /* (the footprint as a column, turned with the thing: blockers() takes its box in the world, which holds it whole) */
       if (foot) solidBox(foot[0], 1.2, foot[1], x, 0.6, z, ry);
+    }
+
+    /* THE PICTURES IN THEIR FRAMES (masters/v27.0/SOURCES.md). The portrait frame's picture is a flat face 4.7 mm before its
+       back with its opening's middle 0.20 m up, measured on the model (tools/probes/planez.mjs: its inner corners at z
+       0.004 to 0.005); a picture is laid 1.2 mm before it, whole at its own aspect inside the opening's 0.295 m height.
+       Lit as the room is (the lamp alone lights it in the dark), never unlit. Until a picture lands its plane is hidden:
+       the frame shows its own blank mount */
+    function picLoad(key) {
+      if (!have(key)) { waiting.add(key); return Promise.resolve(null); }
+      return loadImageTexture(key, 'image/jpeg').then(t => { if (!t || !alive) return null; madeTex.push(t);
+        t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping; t.repeat.set(1, -1); t.offset.set(0, 1); t.needsUpdate = true; return t; }).catch(() => null);
+    }
+    const PIC = { y: 0.20, z: 0.0062, h: 0.295 };
+    const pics = {};
+    function picIn(g, key, s = 1) {
+      const m = M({ color: 0xffffff, roughness: 0.55, metalness: 0 });
+      const pl = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), m); pl.visible = false; owned.push(pl.geometry);
+      pl.position.set(0, PIC.y * s, PIC.z * s); g.add(pl); pics[key] = pl;
+      picLoad(key).then(t => { if (!t) return; const im = t.image, a = im && im.width ? im.width / im.height : 0.72;
+        m.map = t; m.needsUpdate = true; pl.scale.set(PIC.h * s * a, PIC.h * s, 1); pl.visible = true; });
+      return pl;
+    }
+    /* Appa's photograph in its frame on the wall */
+    for (const g of things.w4frameport || []) picIn(g, 'w4t_appa');
+    /* HER SHRINE'S THREE: Kali in the middle, Ganesha at her left as one stands before it, Murugan at her right; each in
+       the portrait frame drawn small, standing on the shrine's middle shelf and leaning back on its back panel (measured
+       on the shrine: the shelf's top 0.335 up its file, the panel's face 0.19 behind its middle; the shrine is turned to
+       the room, so its own +x is the room's -x: the right of one who faces it) */
+    const SHRINE = { shelf: 0.337, back: -0.181, lean: 0.10 };
+    if (things.w4prayershelf && things.w4prayershelf[0]) {
+      const sh = things.w4prayershelf[0];
+      for (const [key, x, s] of [['w4t_kali', 0, 0.62], ['w4t_ganesha', -0.19, 0.48], ['w4t_murugan', 0.19, 0.48]]) {
+        const f = stand('w4frameport', x, SHRINE.shelf, SHRINE.back + 0.011 * s + 0.02, 0, { parent: sh, s, ...LOOK.w4frameport });
+        f.rotation.x = -SHRINE.lean;
+        picIn(f, key, s);
+        (things.shrinePics = things.shrinePics || []).push(f);
+      }
     }
 
     /* THE DOORS: every doorway's leaf is the one door model (a flush door of varnished timber, its lever and hinges),

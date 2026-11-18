@@ -11,8 +11,13 @@
   function scGo(c, s, api) { endingStub(c, s, api); }
   function scKeep(c, s, api) { endingStub(c, s, api); }
 
+  /* THE TRANCE (the plan's §4.4), a film from play at the turning point; the decision opens where it ends (M7 writes it:
+     until then two seconds of the dark room, so the chapter reaches its decision while it is built) */
+  function filmTrance(c, s, api) { const { tr } = api; tr(0, 2.0, () => {}); }
+
   (window.__CHAPTERS__ = window.__CHAPTERS__ || {}).e4c4 = Object.assign(DATA, {
     build,
+    films: { trance: filmTrance },
     scenes: [scHold, scThrow, scGo, scKeep]
   });
 })();

@@ -199,6 +199,17 @@ Object.assign(window.__TEXT__, {
   'credits.jade':           'The Jade Emperor and the Heavenly Kings, in the medium’s shrine',
   'credits.jadeWho':        'Anonymous, ink and colour on silk · Sotheby’s · Wikipedia, public domain',
   'credits.jadeLink':       'commons.wikimedia.org · Portraits of Jade Emperor and the Heavenly Kings',
+  // v27.0 · the three pictures on Amma's altar (episode 4 chapter 4) — Wellcome Collection, Public Domain Mark, each the
+  // holder's own image at the size it serves, whole (masters/v27.0/SOURCES.md)
+  'credits.kali':           'Kali, on Amma’s altar',
+  'credits.kaliWho':        'Chromolithograph by R. Varma · Wellcome Collection · Public Domain Mark',
+  'credits.kaliLink':       'wellcomecollection.org · Kali trampling Shiva',
+  'credits.ganesha':        'Ganesha, on Amma’s altar',
+  'credits.ganeshaWho':     'Chromolithograph · Wellcome Collection · Public Domain Mark',
+  'credits.ganeshaLink':    'wellcomecollection.org · Ganesha. Chromolithograph',
+  'credits.murugan':        'Murugan, on Amma’s altar',
+  'credits.muruganWho':     'Gouache on mica by an Indian artist, 19th century · Wellcome Collection · Public Domain Mark',
+  'credits.muruganLink':    'wellcomecollection.org · Kartikeya, also called Murugan',
   // v22.0 · the Yin shop's ghost (Chad's pick, Sketchfab, CC BY 4.0) and its skulls (a Khronos sample scan, CC0)
   'credits.yinghost':       'The ghost in the Yin shop',
   'credits.yinghostWho':    'Horror Ghost Character – Blood Stained Spirit · adhamasalah · Sketchfab, CC BY 4.0',
@@ -502,6 +513,8 @@ Object.assign(window.__TEXT__, {
      points, because this teaches the player what each design is. */
   'item.nangkwak.name':  'Nang Kwak',
   'item.nangkwak.desc':  'A small bronze Nang Kwak, the beckoning lady, her right hand raised to call the customers in. Shopkeepers keep her facing the door.',
+  'item.holywater.name': 'Holy water',
+  'item.holywater.desc': 'A small silver bowl of water, blessed by Grandmaster Pho for the night’s work. A flick of the fingers sends it where it is needed.',
   'item.takrut.name':    'Takrut',
   'item.takrut.desc':    'A tiny scroll of metal, a yant inscribed on it and rolled tight, capped at both ends, with rings for its cord. It is worn: at the waist, or round the neck.',
   'item.phayant.name':   'Pha yant',

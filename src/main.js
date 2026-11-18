@@ -3070,6 +3070,7 @@ function hpDraw(name, k, o = {}) {
 }
 let kitRooted = false, kitHurt = null;       // v11.1: the player held in place; the red damage frame + a bleed until the player acts
 let invUrge = null;                          // v11.6: an item the bag button pulses for until it is equipped (kit.give)
+let visUrge = false;                         // v27.0: the eye button pulses while a chapter's order asks him to open his sight (kit.visionUrge)
 let invBtnEl = null;                         // v11.6: the bag button, looked up once
 let dayTween = null;
 let kitFade = null, kitFadeNow = 0;              // v7.1: a chapter's own black, in play
@@ -7477,6 +7478,8 @@ function kitFrame(dt, t, dLookX, dLookY) {
   /* v11.6: the bag button asks while a given item waits unequipped (a class
      toggle is a no-op when nothing changed, so this costs the frame nothing) */
   (invBtnEl || (invBtnEl = $('invBtn')))?.classList.toggle('urge', !!invUrge && state === 'play');
+  /* v27.0: the eye button asks the same way while the chapter's order is to open his sight (kit.visionUrge) */
+  if (vis.decl) $('visionBtn')?.classList.toggle('urge', visUrge && !vis.on && state === 'play');
   /* v11.7 (Chad: "why does the torch icon draw over every ui element?"): the
      round buttons sit at z 9 and the cards at z 5, so the decision, the
      outcome and the sealed card all had the lit torch button on top of
@@ -7635,6 +7638,7 @@ function kitReset() {
   conductAcc.s = 0; conductAcc.a = 0; conductAcc.notes.length = 0;
   kitObjective = null; kitTimer = null; kitWaypoint = null;
   kitBarK = null;                   // v27.0: and no bar of progress left from the run before
+  visUrge = false;                  // v27.0: nor the eye button still asking
   objReset();                       // v8.7: and the beats queued against the old objective
   kitFlashReq = null;
   kitCaps = null;                   // v21.30: and no caption left up from the run before
@@ -7765,6 +7769,10 @@ const KIT = {
   event: kitEvent, eventActive: evActive, abortEvent: () => { if (ev) evResolve({ ok: false, aborted: true }); },
   torch: torchSetup, torchOn: torchSet, torchRed, torchIsOn: () => torchOn,
   vision: kitVision,               // v27.0: the fiftieth seam — on, off, or a radius held from a film's clock; no argument reads it
+  visionUrge: v => { visUrge = !!v; return true; },   // v27.0: the eye button pulses while the order is to open his sight
+  /* v27.0: a stat READ, never a write (kit.award writes): a chapter whose price must stop short of a floor (the holy-water
+     fight takes his nerve, never his consciousness) reads where it stands. Unknown names answer null */
+  stat: k => (Object.prototype.hasOwnProperty.call(stats, k) ? stats[k] : null),
   presence: v => { chapterPresence = Math.max(0, Math.min(1, +v || 0)); },
   getPresence: () => chapterPresence,
   conduct: kitConduct, award: kitAward,
@@ -10883,7 +10891,11 @@ const ITEM_DEFS = {
      torch and amulet icons (masters/v24.18/icons), on the bag's squares and the choose window's cards. */
   nangkwak: { icon: 'e-nangkwak', art: 'iconnangkwak', slot: 'hand', model: 'e4nangkwakhd', rarity: 'common' },
   takrut: { icon: 'e-takrut', art: 'icontakrut', slot: 'hand', model: 'e4takruthd', rarity: 'common' },
-  phayant: { icon: 'e-phayant', art: 'iconphayant', slot: 'hand', model: 'e4phayanthd', rarity: 'common' }
+  phayant: { icon: 'e-phayant', art: 'iconphayant', slot: 'hand', model: 'e4phayanthd', rarity: 'common' },
+  /* v27.0: the HOLY WATER (episode 4 chapter 4): the small silver bowl Grandmaster Pho fills for the blessing, taken
+     from beside his large one. Held in the hand slot it is the weapon of his own hands (the fifty-first seam: FLICK and
+     DIP); rare, blue (Chad's rarity rule, v14.11); its model is the bowl itself */
+  holywater: { icon: 'e-holywater', slot: 'hand', model: 'w4waterbowl', rarity: 'rare' }
 };
 /* v14.11: every item has a RARITY (Chad: "Torch is common rarity with grey
    colour coding, the lp phiboon amulet is rare rarity with blue colour
