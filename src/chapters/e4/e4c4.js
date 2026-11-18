@@ -3436,9 +3436,10 @@
       if (foot) { const sb = solidBox(foot[0], 1.2, foot[1], x, 0.6, z, ry); if (key === 'w4bigbowl') bigBowlSolid = sb; }
     }
     /* (R52) bedroom 3's bed, against its far wall: the flat's own bed model, its paint darkened as the room's is (its light
-       is off; nothing is lit for it), seen only through the door's gap */
+       is off; nothing is lit for it), seen only through the door's gap. (A colour multiplies in linear light: at 0.34 its white
+       mattress read light grey through the gap on 21o, photographed; 0.12 sits it with the room's own floor and walls) */
     stand('w4bed', BED3_BED.x, 0, BED3_BED.z, -Math.PI / 2, { done: (m) => { matte(MATTE.cloth)(m);
-      m.traverse(q => { if (q.isMesh) for (const mt of [].concat(q.material)) { mt.color.multiplyScalar(0.34); mt.envMapIntensity = 0.3; } }); } });
+      m.traverse(q => { if (q.isMesh) for (const mt of [].concat(q.material)) { mt.color.multiplyScalar(0.12); mt.envMapIntensity = 0.15; } }); } });
 
     /* THE PICTURES IN THEIR FRAMES (masters/v27.0/SOURCES.md). The portrait frame's picture is a flat face 4.7 mm before its
        back with its opening's middle 0.20 m up, measured on the model (tools/probes/planez.mjs: its inner corners at z
@@ -5011,7 +5012,7 @@
       decOpen = true;
       if (warmSounds) warmSounds(['u4scuffle', 'rv4A1', 'u4cry', 'ml4A1', 'u4torn', 'u4endA', 'u4stand', 'am4A1', 'rv4A2', 'ph4A1', 'q4A1',
                       'u4flick', 'u4patter', 'u4dip', 'ml4B1', 'u4chill', 'u4heart', 'u4fall', 'ph4B0', 'ml4B2', 'u4endB', 'ml4B3', 'ph4B1', 'q4B1',
-                      'u4tile', 'q4C0', 'u4tile2', 'rv4C1', 'u4endC', 'am4C1', 'ph4C1', 'q4C1', 'u4visoff', 'u4vison', 'ph4D0', 'rv4D1', 'u4endD', 'ml4D1',
+                      'u4tile', 'q4C0', 'u4tile2', 'rv4C1', 'u4endC', 'am4C1', 'ph4C1', 'q4C1', 'u4visoff', 'u4vison', 'u4goldpower', 'u4goldclear', 'ph4D0', 'rv4D1', 'u4endD', 'ml4D1',
                       'ph4D1', 'q4D1', 'u4closemus', 'ph4z0', 'u4release', 'u4steps', 'ml4z1', 'am4z1', 'u4bell', 'ph4z1']);
       if (getState() === 'play') startDecision();
     }
@@ -5673,7 +5674,7 @@
         whenReady(cast.pho, (P) => { P.group.visible = false; });
         whenReady(cast.mala, (P) => { put(P, MALA_T.x, MALA_T.z, faceTo(MALA_T.x, MALA_T.z, CHAIR.x, CHAIR.z)); });
         whenReady(cast.ravi, (P) => { put(P, R1.x, R1.z, RAVI_RY); });
-        spiritsHome(); castSolid();
+        spiritsHome(); castSolid(); goHide();
         filmBed.on = true; for (const q in filmBed) if (q !== 'on') filmBed[q] = 0; filmBed.dark = BED.dark;      // the dark room under every silence
       },
       frame(k, t, api) {
@@ -5681,8 +5682,80 @@
         const E = EN[k], c = t - E.close;
         if (c < 0) ENDS[k](t, E, api); else closeFrame(k, c, t);
       },
-      end() { fLens(PLAY_FOV); goddess(0); filmBed.on = false; if (kit && kit.vision) kit.vision(null); }
+      end() { fLens(PLAY_FOV); goddess(0); goHide(); filmBed.on = false; if (kit && kit.vision) kit.vision(null); }
     };
+    /* (R67, Chad, 18 Nov evening: "for option b cutscene, when grandmaster pho suddenly shouts go! , there should be some
+       special power effect coming out from him that hits the red spirit, along with a screen shake effect. Just make that
+       moment more dramatic"). On "Go." his gold (his alone: v25.5) leaves his thrust hands as a stream of light and
+       strikes the thing at his student's eyes (E.hit): a burst where it lands, the thing burned near white and flung back
+       off him ON the hit (it had begun back at the word, before anything reached it), and the picture shaken by it. The
+       stream and the halo are its hue laid over (a bright wall, or the sight's pale world, would sum an added gold to
+       white: v8.8), the burst's core added. Every part a function of the film's clock, so a seek and a skip land on the
+       same frame (v6.4) */
+    const GOB = { fire: 0.14, n: 16, burst: 0.6, shake: 0.75, amp: 0.045, roll: 0.035, col: 0xffc860 };
+    const goFx = { motes: null, burst: null };
+    const _gbH = new THREE.Vector3(), _gbL = new THREE.Vector3(), _gbT = new THREE.Vector3();
+    function goHide() { if (goFx.motes) for (const sp of goFx.motes.concat(goFx.burst)) sp.visible = false; }
+    function goBlast(t, E) {
+      if (!goFx.motes) { const tex = dipTex(); owned.push(tex);
+        const mk = (add) => { const m = new THREE.SpriteMaterial({ map: tex, color: add ? 0xfff0c8 : GOB.col, transparent: true, depthWrite: false, depthTest: false,
+            blending: add ? THREE.AdditiveBlending : THREE.NormalBlending, fog: false });
+          mats.push(m); const sp = new THREE.Sprite(m); sp.visible = false; sp.renderOrder = 31; if (ctx.visionLayer != null) sp.layers.enable(ctx.visionLayer); world.add(sp); return sp; };
+        goFx.motes = Array.from({ length: GOB.n }, () => mk(false)); goFx.burst = [mk(true), mk(false)]; }
+      goHide();
+      const t0 = E.go + GOB.fire, travel = E.hit - t0;
+      if (t < t0 - 0.02 || t > E.hit + GOB.burst) return;
+      /* from between his two hands as the thrust holds them out (his hand bones as this frame draws them); to the thing's
+         chest (its head, less a hand's span) */
+      const P = cast.phoB, rh = P.ready ? boneOfP(P, 'RightHand') : null, lh = P.ready ? boneOfP(P, 'LeftHand') : null;
+      if (rh && lh) { P.group.updateWorldMatrix(true, true); rh.getWorldPosition(_gbH); lh.getWorldPosition(_gbL); _gbH.lerp(_gbL, 0.5); }
+      else _gbH.set(P.home.x, 1.3, P.home.z);
+      const O = spirits.oppress;
+      if (O && O.ready && O.head && O.group.visible) { O.group.updateWorldMatrix(true, true); O.head.getWorldPosition(_gbT); _gbT.y -= 0.2; }
+      else _gbT.set(COMES[0], 0.95, COMES[2]);
+      /* the stream: motes leaving his hands one after another, each crossing in the bolt's time, the first the largest */
+      if (t < E.hit + 0.1) goFx.motes.forEach((sp, i) => {
+        const s = (t - t0 - i * 0.011) / travel; if (s < 0 || s > 1.2) return;
+        const e = Math.min(1, s), j = ((i * 0.618) % 1) - 0.5;
+        sp.position.copy(_gbH).lerp(_gbT, e); sp.position.y += j * 0.05 * (1 - e); sp.position.x += j * 0.04 * Math.sin(e * 3.1);
+        sp.scale.setScalar((i === 0 ? 0.15 : 0.07) + 0.06 * Math.sin(Math.PI * e));
+        sp.material.opacity = Math.min(1, s * 5) * (s > 1 ? Math.max(0, 1 - (s - 1) / 0.2) : 1) * (i === 0 ? 1 : 0.85); sp.visible = true; });
+      /* the burst where it lands: a hot core and a wider halo of his gold, out fast and gone */
+      const b = (t - E.hit) / GOB.burst;
+      if (b >= 0 && b < 1) { const [core, halo] = goFx.burst, f = 1 - b;
+        core.position.copy(_gbT); core.scale.setScalar(0.16 + 0.6 * Math.sqrt(b)); core.material.opacity = f * f; core.visible = true;
+        halo.position.copy(_gbT); halo.scale.setScalar(0.35 + 1.7 * b); halo.material.opacity = 0.6 * f; halo.visible = true; }
+    }
+    /* the picture shaken by the hit: the lens knocked off its line and back, fast and dying away; laid on after the track
+       has placed it this frame, so the shot itself never moves */
+    function goShake(t, E) {
+      const u = t - E.hit; if (u < 0 || u > GOB.shake) return;
+      const k = Math.pow(1 - u / GOB.shake, 2), a = GOB.amp * k;
+      yaw.position.x += a * (0.6 * Math.sin(u * 71) + 0.4 * Math.sin(u * 43 + 1.7));
+      yaw.position.y += a * 0.7 * (0.6 * Math.sin(u * 83 + 0.4) + 0.4 * Math.sin(u * 37 + 2.1));
+      camera.rotation.z += GOB.roll * k * Math.sin(u * 59 + 0.9);
+    }
+    /* the thing burned near white on the hit, settling back to its red over half a second (R60's flash, its own colours) */
+    const GO_WHITE = new THREE.Color(0xfff1d8), _goC = new THREE.Color();
+    function goFlash(P, t, E) { if (!P.fx) return; const u = t - E.hit;
+      const k = u < 0 ? 0 : u < 0.05 ? u / 0.05 : Math.max(0, 1 - (u - 0.05) / 0.45);
+      P.fx.set('uColor', _goC.set(SPIRIT.oppress.color).lerp(GO_WHITE, k)); P.fx.set('uFill', SPIRIT.oppress.fill + 2.0 * k); }
+
+    /* NO BODY HELD ON ONE FRAME THROUGH A FILM (R66 and R68, Chad, 18 Nov evening: "for option a cutscene, the yellow
+       female model is stuck in an awkward unnatural pose when she says 'stop it you two' , and continues getting stuck in
+       that pose after saying it"; "for option d cutscene, the yellow female model is also stuck in a pose when the auntie
+       stands up from the wheelchair"). Mala at her lamp breathes (a slow there-and-back over the take's still end, never its
+       frame 5.4 held); her calls are her own talking takes for each line's measured length (the written scream that held a
+       hand up beside her face is not used); after a line she eases into her stand, alive, and turns to her mother */
+    const MALA_LAMPT = (t) => pingOf(t, 5.3, 0.15, 3.6);
+    /* her talking take for a line: `into` and `out` 0..1 as it begins and ends, over her stand (or her lamp before it) */
+    function malaCall(P, t, at, L, take, under, underT) {
+      const into = smo(c01((t - at + 0.15) / 0.35)), out = smo(c01((t - at - L - 0.15) / 0.9)), k = into * (1 - out);
+      if (k <= 0.001) return false;
+      pose(P, take, Math.max(0, t - at + 0.15) * 1.05, true, under, 1 - k, underT);
+      return true;
+    }
+
     const ENDS = {
       /* A · HE GRABS HIM AND HOLDS HIM BACK (worst). His arms round Ravi from the side, Ravi fighting him toward his
          mother, Mala screaming at them both; the cry peaks and the thing is torn from her in the light; she opens her
@@ -5720,8 +5793,15 @@
         /* (R46, Chad, 18 Nov evening: "when the daughter model at the end tries to gesture with her hand to block the auntie,
            her hand clips into the altar": knelt at the lamp she faces the shrine's wall, and her scream's hand went out into
            her mother's altar. She turns on her knees to her mother as she cries out, so the hand goes out toward her) */
-        whenReady(cast.mala, (P) => { if (t < E.scream) pose(P, 'lightlamp', 5.4); else pose(P, 'scream', Math.min(3.9, (t - E.scream) * 0.9));
-          P.group.rotation.y = lpA(0, MALA_TO_HER, smo(c01((t - E.scream + 0.1) / 0.5))); lookNow(P, [RG.x, 1.5, RG.z], 0.7, 0.9); });
+        /* (R66: at her lamp, breathing; on her cry turned to the two men, calling to them with her talking take, its right hand
+           opened to them, for the line's length; then into her stand, turned back to her mother, her eyes on her as she rises) */
+        whenReady(cast.mala, (P) => {
+          const L = SECS.ml4A1 || 2.3, s1 = E.scream + L + 0.15, back = smo(c01((t - s1) / 1.2)), turn = smo(c01((t - E.scream + 0.15) / 0.45));
+          const stand = smo(c01((t - E.scream + 0.15) / 0.35));
+          if (!malaCall(P, t, E.scream, L, 'Talk_with_Right_Hand_Open', t < s1 ? 'lightlamp' : 'Idle_3', t < s1 ? MALA_LAMPT(t) : 2 + (t - s1) * 0.35)) {
+            if (stand <= 0.001) pose(P, 'lightlamp', MALA_LAMPT(t)); else pose(P, 'Idle_3', 2 + Math.max(0, t - s1) * 0.35, true); }
+          P.group.rotation.y = lpA(lpA(0, faceTo(MALA_T.x, MALA_T.z, RG.x, RG.z), turn), MALA_TO_HER, back);
+          lookNow(P, t < s1 ? [RG.x, 1.5, RG.z] : (t < E.rise ? AMMA_FACE : HER_HEAD()), t < s1 ? 0.8 : 0.9, 0.9); });
         visionAt(t, -1, 0.1, E.sight, E.sightFor);                       // (R55, R65: his sight home to him before she stands)
         /* THE LENS: in on Ravi's shoulder as he is caught (his mother beyond him); held through the cry; the light; out
            to her standing; on his teacher for his word */
@@ -5759,7 +5839,7 @@
           if (t >= E.comes && t < E.back) {
             /* (off her back by m: from where it rides her to a hand's breadth from his eyes, turned to face him; back as
                his teacher's hand returns) */
-            const u = smo(c01((t - E.comes) / 0.9)), w = smo(c01((t - E.go) / 0.5)), m = u * (1 - w);
+            const u = smo(c01((t - E.comes) / 0.9)), w = smo(c01((t - E.hit) / 0.45)), m = u * (1 - w);      // (R67: flung back by the light)
             oppRide(P); _obq.copy(P.group.quaternion);
             const g = P.group.position, x = lp(g.x, eye[0], m), z = lp(g.z, eye[2], m), y = lp(g.y, eye[1] - 0.75, m);
             _ofq.setFromEuler(_ofe.set(0, faceTo(x, z, S_EYE[0], S_EYE[2]), 0));
@@ -5768,15 +5848,22 @@
             if (t < E.comes) pose(P, 'cry', pingOf(t, 2.6, 1.6, 2.4));
             else if (t < E.torn) pose(P, 'cry', Math.min(4.4, 0.4 + (t - E.cry) * 1.1));
             else { const k = smo(c01((t - E.torn) / 1.1)); pose(P, 'cry', lp(1.0, 1.9, k)); P.group.position.z -= 0.6 * k; P.group.position.y += 0.25 * k; } }
-          if (P.fx) P.fx.set('uAlpha', t < E.torn ? 1 : 1 - smo(c01((t - E.torn - 0.3) / 0.9))); });
+          if (P.fx) P.fx.set('uAlpha', t < E.torn ? 1 : 1 - smo(c01((t - E.torn - 0.3) / 0.9)));
+          goFlash(P, t, E); });
         goddess(t < E.falter ? 1 : t < E.back ? 0.35 : t < E.torn ? lp(0.35, 1, smo(c01((t - E.back) / 1.2))) : 1 - smo(c01((t - E.torn) / 1.5)));
         whenReady(cast.ravi, (P) => { rushHeld(P, t); lookNow(P, AMMA_FACE, 1, 0.9); });
         /* Mala: crying out as the water hits her mother ("What are you doing?"), and at the falter ("Amma!"); her scream
            let go once her mother is up, and her eyes down to him on the floor ("Are you alright?") */
-        whenReady(cast.mala, (P) => { if (t < E.splash) pose(P, 'lightlamp', 5.4);
-          else { const r = smo(c01((t - E.rise - 1.2) / 1.4)); pose(P, 'scream', Math.min(3.9, (t - E.splash) * 0.8), false, 'Idle_3', r, 3 + t * 0.35); }
+        /* (R68's law here too: her three lines each her talking take for its length, over her stand between them, alive;
+           never the written scream held for eight seconds) */
+        whenReady(cast.mala, (P) => {
+          const st = smo(c01((t - E.splash + 0.15) / 0.35)), idle = 2 + Math.max(0, t - E.splash) * 0.35;
+          if (!malaCall(P, t, E.splash, SECS.ml4B1 || 1.7, 'Talk_with_Right_Hand_Open', st < 1 ? 'lightlamp' : 'Idle_3', st < 1 ? MALA_LAMPT(t) : idle)
+              && !malaCall(P, t, E.ml2, SECS.ml4B2 || 1.0, 'Talk_with_Right_Hand_Open', 'Idle_3', idle)
+              && !malaCall(P, t, E.ok, SECS.ml4B3 || 1.6, 'Stand_and_Chat', 'Idle_3', idle)) {
+            if (st <= 0.001) pose(P, 'lightlamp', MALA_LAMPT(t)); else pose(P, 'Idle_3', idle, true); }
           P.group.rotation.y = lpA(0, MALA_TO_HER, smo(c01((t - E.splash + 0.1) / 0.5)));           // (R46: to her mother, not into the altar)
-          lookNow(P, lp3(AMMA_FACE, B_FLOOR, smo(c01((t - E.ok + 0.5) / 0.6))), 0.8, 0.9); });
+          lookNow(P, lp3(t < E.rise ? AMMA_FACE : HER_HEAD(), B_FLOOR, smo(c01((t - E.ok + 0.5) / 0.6))), 0.8, 0.9); });
         visionAt(t, -1, 0.1, E.sight, E.sightFor);                       // (R55, R65: his sight home to him before she stands)
         /* THE LENS: the throw (a lurch at her); the thing filling his eyes; white; his teacher's push seen through the
            white; then he is on the floor, looking up at her standing, and at his teacher */
@@ -5803,6 +5890,7 @@
           /* (held at the take's 0.95: from 1.0 on it crosses both arms over his face, and from the floor, at its 1.32, he read
              headless again: build 13, photographed at 4.0) */
           pose(P, 'mage_soell_cast_3', runOf(t, E.push, E.push + 0.6, 0.5, 0.95), false, 'Sit_to_Stand_Transition_M', 1 - w, pingOf(t, 5.85, 0.25, PHO_BREATH)); });
+        goBlast(t, E); goShake(t, E);                                     // (R67: his light at the thing, and the hit felt)
       },
       /* C · HE GOES TO HIM (best). Between Ravi and the chair, his hands open, low: "She's not being hurt. It's leaving
          her. Stay with her. Hold her hand." Ravi kneels by the chair and takes her hand; Mala comes to the other side.
@@ -5816,13 +5904,17 @@
            kneels, his eyes turning from him to her; Mala comes round to her other side and kneels too: walkKneel) */
         whenReady(cast.ravi, (P) => {
           if (t < E.kneel) { rushHeld(P, t); lookNow(P, CR_EYE, smo(c01((t - 0.5) / 0.8)), 0.8); }
+          else if (t > E.rise + 3.6) { put(P, KR.x, KR.z, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2));        // (R68: stood again, alive)
+            pose(P, 'Idle_3', 2 + (t - E.rise - 3.6) * 0.35, true, 'kneelhold', 1 - smo(c01((t - E.rise - 3.6) / 0.8)), 0.2); lookNow(P, HER_HEAD(), 1, 0.9); }
           else { walkKneel(P, t, E.kneel, rushXZ(P, 2.5), KR, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2), ['rush', pingOf(E.kneel, 2.45, 0.12, 1.4)],
-              { ry0: RAVI_RY, kt: (td) => (t < E.rise ? Math.min(4.2, td) : runOf(t, E.rise + 0.6, E.rise + 3.6, 4.2, 0.2)) });
+              { ry0: RAVI_RY, kt: (td) => (t < E.rise ? (td < 4.2 ? td : pingOf(td - 4.2, 4.05, 0.15, 3.4)) : runOf(t, E.rise + 0.6, E.rise + 3.6, 4.2, 0.2)) });
             lookNow(P, lp3(CR_EYE, AMMA_FACE, smo(c01((t - E.kneel) / 0.5))), 1, 0.9); } });
         whenReady(cast.mala, (P) => {
-          if (t < E.mala) { pose(P, 'lightlamp', 5.4); lookNow(P, AMMA_FACE, 1, 0.9); }
+          if (t < E.mala) { pose(P, 'lightlamp', MALA_LAMPT(t)); lookNow(P, AMMA_FACE, 1, 0.9); }
+          else if (t > E.rise + 3.8) { put(P, KM.x, KM.z, faceTo(KM.x, KM.z, CHAIR.x, CHAIR.z + 0.2));        // (R68: stood again, alive)
+            pose(P, 'Idle_3', 2 + (t - E.rise - 3.8) * 0.35, true, 'kneelhold', 1 - smo(c01((t - E.rise - 3.8) / 0.8)), 0.2); lookNow(P, HER_HEAD(), 1, 0.9); }
           else { walkKneel(P, t, E.mala, MALA_T, KM, faceTo(KM.x, KM.z, CHAIR.x, CHAIR.z + 0.2), ['lightlamp', 5.4],
-              { ry0: faceTo(MALA_T.x, MALA_T.z, CHAIR.x, CHAIR.z), kt: (td) => (t < E.rise ? Math.min(4.2, td) : runOf(t, E.rise + 0.8, E.rise + 3.8, 4.2, 0.2)) });
+              { ry0: faceTo(MALA_T.x, MALA_T.z, CHAIR.x, CHAIR.z), kt: (td) => (t < E.rise ? (td < 4.2 ? td : pingOf(td - 4.2, 4.05, 0.15, 3.4)) : runOf(t, E.rise + 0.8, E.rise + 3.8, 4.2, 0.2)) });
             lookNow(P, AMMA_FACE, 1, 0.9); } });
         /* she looks at her son before she stands */
         if (t >= E.look) whenReady(cast.amma, (P) => lookNow(P, headOf(cast.ravi, [KR.x, 0.9, KR.z]), smo(c01((t - E.look) / 0.8)), 1.0));
@@ -5857,7 +5949,14 @@
           else walkKneel(P, t, E.kneel, R2, KR, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2), ['Idle_3', 3 + (E.kneel - E.reach) * 0.4],
             { ry0: r2, kt: (td) => (t < E.rise ? Math.min(4.2, td) : runOf(t, E.rise + 0.6, E.rise + 3.6, 4.2, 0.2)) });
           lookNow(P, AMMA_FACE, 1, 0.9); });
-        whenReady(cast.mala, (P) => { pose(P, 'lightlamp', 5.4); lookNow(P, AMMA_FACE, 1, 0.9); });
+        /* (R68: at her lamp, breathing, through the cry and the light; as her mother's eyes open, into her stand and turned to
+           her; her "Amma... you're standing." her talking take for its length; her eyes on her mother's face as it rises) */
+        whenReady(cast.mala, (P) => {
+          const k = smo(c01((t - E.open) / 0.9)), idle = 2 + Math.max(0, t - E.open) * 0.35;
+          if (!malaCall(P, t, E.ml, SECS.ml4D1 || 1.9, 'Stand_and_Chat', 'Idle_3', idle)) {
+            if (k <= 0.001) pose(P, 'lightlamp', MALA_LAMPT(t)); else pose(P, 'Idle_3', idle, true, 'lightlamp', 1 - k, MALA_LAMPT(E.open)); }
+          if (k > 0) P.group.rotation.y = lpA(faceTo(MALA_T.x, MALA_T.z, CHAIR.x, CHAIR.z), MALA_TO_HER, k);
+          lookNow(P, t < E.rise ? AMMA_FACE : HER_HEAD(), 1, 0.9); });
         /* his sight held open through the cry and the light, as in every ending (R59, Chad, 18 Nov evening: "i think
            option D outcome cutscene turns off spirit vision prematurely?": it closed at 0.2 s, and the thing torn from her
            back and the light were never seen), and home to him before she stands (R55, R65: "when auntie is about to stand
@@ -6272,7 +6371,7 @@
       /* (tools/probes/headturn.mjs reads a talking head through these) */
       /* (tools/probes/e4c4drive.mjs reads the play's own state and the spirits through these: the fight's shapes, what is
          learned and looked at) */
-      dbg: { cast, headDampLay, play, spirits },
+      dbg: { cast, headDampLay, play, spirits, pose },
       census: () => {
         let meshes = 0, tris = 0; const texs = new Set();
         world.traverse(o => { if (!o.isMesh && !o.isLine && !o.isLineSegments) return; let v = true; for (let q = o; q; q = q.parent) if (!q.visible) { v = false; break; }
@@ -6316,7 +6415,7 @@
      moment"): his sight going home to him once the light has cleared, shut before her rise begins */
   const EN = {
     A: { grab: 0.0, rv: 0.3, cry: 0.9, scream: 2.95, torn: 6.1, white: 6.3, open: 7.6, sight: 7.75, sightFor: 1.0, rise: 9.0, call: 12.6, still: 13.2, go: 14.4, rv2: 14.7, ph: 17.4, q: 24.56, close: 28.56 },
-    B: { throw: 0.15, splash: 0.55, comes: 0.9, white: 2.3, floor: 2.55, go: 3.3, push: 3.3, falter: 3.5, ml2: 4.0, back: 5.6, cry: 6.2, torn: 9.6, white2: 9.8, open: 11.4, sight: 11.2, sightFor: 0.65, rise: 12.0, ok: 16.0, ph: 17.6, q: 27.32, close: 31.12 },
+    B: { throw: 0.15, splash: 0.55, comes: 0.9, white: 2.3, floor: 2.55, go: 3.3, push: 3.3, hit: 3.68, falter: 3.5, ml2: 4.0, back: 5.6, cry: 6.2, torn: 9.6, white2: 9.8, open: 11.4, sight: 11.2, sightFor: 0.65, rise: 12.0, ok: 16.0, ph: 17.6, q: 27.32, close: 31.12 },
     C: { step: 0.0, say: 0.7, kneel: 5.4, mala: 6.4, rv: 7.3, cry: 8.6, torn: 12.2, white: 12.4, open: 13.8, look: 14.6, my: 14.9, sight: 14.1, sightFor: 1.0, rise: 15.4, ph: 21.0, q: 26.8, close: 30.9 },
     D: { reach: 1.0, ph0: 1.9, kneel: 4.6, rv: 4.7, cry: 7.8, torn: 11.2, white: 11.4, open: 12.8, sight: 12.8, sightFor: 0.6, rise: 13.6, ml: 14.8, ph: 19.4, q: 31.24, close: 35.84 }
   };
@@ -6438,8 +6537,10 @@
     a.sfx(E.splash, 'ml4B1', 1);                        // Mala, the water on her mother: "What are you doing?"
     a.sfx(E.comes, 'u4chill', 0.95);                    // it lets go of her and comes at him
     a.sfx(E.comes + 0.35, 'u4heart', 0.9); a.sfx(E.comes + 0.95, 'u4heart', 0.7);   // his heart, and then it stalls
-    flash(a, E.white, 1.4); a.sfx(E.floor + 0.15, 'u4fall', 0.85);               // white; he is on the floor
+    flash(a, E.white, 1.0); a.sfx(E.floor + 0.15, 'u4fall', 0.85);               // white; he is on the floor (clear by "Go.": R67)
     a.sfx(E.go, 'ph4B0', 1);                            // "Go."
+    a.sfx(E.go + 0.12, 'u4goldpower', 0.9);             // his gold leaves his hands (R67)
+    a.sfx(E.hit, 'u4goldclear', 0.95);                  // and strikes the thing (R67)
     a.sfx(E.ml2, 'ml4B2', 1);                           // his hand off her head, her trance falters: "Amma!"
     a.sfx(E.cry, 'u4cry', 0.85);                        // the cry rises again
     a.sfx(E.torn - 0.1, 'u4torn', 0.85);

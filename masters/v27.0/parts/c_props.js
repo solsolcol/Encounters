@@ -112,9 +112,10 @@
       if (foot) { const sb = solidBox(foot[0], 1.2, foot[1], x, 0.6, z, ry); if (key === 'w4bigbowl') bigBowlSolid = sb; }
     }
     /* (R52) bedroom 3's bed, against its far wall: the flat's own bed model, its paint darkened as the room's is (its light
-       is off; nothing is lit for it), seen only through the door's gap */
+       is off; nothing is lit for it), seen only through the door's gap. (A colour multiplies in linear light: at 0.34 its white
+       mattress read light grey through the gap on 21o, photographed; 0.12 sits it with the room's own floor and walls) */
     stand('w4bed', BED3_BED.x, 0, BED3_BED.z, -Math.PI / 2, { done: (m) => { matte(MATTE.cloth)(m);
-      m.traverse(q => { if (q.isMesh) for (const mt of [].concat(q.material)) { mt.color.multiplyScalar(0.34); mt.envMapIntensity = 0.3; } }); } });
+      m.traverse(q => { if (q.isMesh) for (const mt of [].concat(q.material)) { mt.color.multiplyScalar(0.12); mt.envMapIntensity = 0.15; } }); } });
 
     /* THE PICTURES IN THEIR FRAMES (masters/v27.0/SOURCES.md). The portrait frame's picture is a flat face 4.7 mm before its
        back with its opening's middle 0.20 m up, measured on the model (tools/probes/planez.mjs: its inner corners at z

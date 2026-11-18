@@ -135,7 +135,7 @@
       /* (tools/probes/headturn.mjs reads a talking head through these) */
       /* (tools/probes/e4c4drive.mjs reads the play's own state and the spirits through these: the fight's shapes, what is
          learned and looked at) */
-      dbg: { cast, headDampLay, play, spirits },
+      dbg: { cast, headDampLay, play, spirits, pose },
       census: () => {
         let meshes = 0, tris = 0; const texs = new Set();
         world.traverse(o => { if (!o.isMesh && !o.isLine && !o.isLineSegments) return; let v = true; for (let q = o; q; q = q.parent) if (!q.visible) { v = false; break; }

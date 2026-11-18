@@ -16,7 +16,7 @@
      moment"): his sight going home to him once the light has cleared, shut before her rise begins */
   const EN = {
     A: { grab: 0.0, rv: 0.3, cry: 0.9, scream: 2.95, torn: 6.1, white: 6.3, open: 7.6, sight: 7.75, sightFor: 1.0, rise: 9.0, call: 12.6, still: 13.2, go: 14.4, rv2: 14.7, ph: 17.4, q: 24.56, close: 28.56 },
-    B: { throw: 0.15, splash: 0.55, comes: 0.9, white: 2.3, floor: 2.55, go: 3.3, push: 3.3, falter: 3.5, ml2: 4.0, back: 5.6, cry: 6.2, torn: 9.6, white2: 9.8, open: 11.4, sight: 11.2, sightFor: 0.65, rise: 12.0, ok: 16.0, ph: 17.6, q: 27.32, close: 31.12 },
+    B: { throw: 0.15, splash: 0.55, comes: 0.9, white: 2.3, floor: 2.55, go: 3.3, push: 3.3, hit: 3.68, falter: 3.5, ml2: 4.0, back: 5.6, cry: 6.2, torn: 9.6, white2: 9.8, open: 11.4, sight: 11.2, sightFor: 0.65, rise: 12.0, ok: 16.0, ph: 17.6, q: 27.32, close: 31.12 },
     C: { step: 0.0, say: 0.7, kneel: 5.4, mala: 6.4, rv: 7.3, cry: 8.6, torn: 12.2, white: 12.4, open: 13.8, look: 14.6, my: 14.9, sight: 14.1, sightFor: 1.0, rise: 15.4, ph: 21.0, q: 26.8, close: 30.9 },
     D: { reach: 1.0, ph0: 1.9, kneel: 4.6, rv: 4.7, cry: 7.8, torn: 11.2, white: 11.4, open: 12.8, sight: 12.8, sightFor: 0.6, rise: 13.6, ml: 14.8, ph: 19.4, q: 31.24, close: 35.84 }
   };
@@ -138,8 +138,10 @@
     a.sfx(E.splash, 'ml4B1', 1);                        // Mala, the water on her mother: "What are you doing?"
     a.sfx(E.comes, 'u4chill', 0.95);                    // it lets go of her and comes at him
     a.sfx(E.comes + 0.35, 'u4heart', 0.9); a.sfx(E.comes + 0.95, 'u4heart', 0.7);   // his heart, and then it stalls
-    flash(a, E.white, 1.4); a.sfx(E.floor + 0.15, 'u4fall', 0.85);               // white; he is on the floor
+    flash(a, E.white, 1.0); a.sfx(E.floor + 0.15, 'u4fall', 0.85);               // white; he is on the floor (clear by "Go.": R67)
     a.sfx(E.go, 'ph4B0', 1);                            // "Go."
+    a.sfx(E.go + 0.12, 'u4goldpower', 0.9);             // his gold leaves his hands (R67)
+    a.sfx(E.hit, 'u4goldclear', 0.95);                  // and strikes the thing (R67)
     a.sfx(E.ml2, 'ml4B2', 1);                           // his hand off her head, her trance falters: "Amma!"
     a.sfx(E.cry, 'u4cry', 0.85);                        // the cry rises again
     a.sfx(E.torn - 0.1, 'u4torn', 0.85);

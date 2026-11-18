@@ -38,6 +38,11 @@ if (OPT) {
   await p.waitForTimeout(8000);                                       // the chapter's first frames (v9.3: boot before driving a phase)
   await p.evaluate((ph) => window.__enc.stage.applyPhase(ph), process.env.PHASE || 'decide:~fri');
   await p.waitForFunction(() => window.__enc.getState() === 'decide', null, { timeout: 600000, polling: 500 });
+  /* (v27.0) READY='amma,ravi,mala,phoB': the option is pressed only once every named member of the chapter's cast has
+     landed (stage.dbg.cast[k].ready): on a starved box the people of episode 4 chapter 4 were still loading when an
+     ending began, and it was photographed as an empty room */
+  if (process.env.READY) await p.waitForFunction((ks) => ks.every(k => { const C = window.__enc.stage.dbg && window.__enc.stage.dbg.cast, P = C && C[k]; return P && P.ready; }),
+    process.env.READY.split(','), { timeout: 1200000, polling: 1000 });
   await p.waitForTimeout(2500);
   /* (v24.5) the panel rises 40 px into place (a 0.45 s CSS animation, which a starved headless box can hold at its first
      frame for seconds): read the option's place only once that has finished, or a tap aimed at B lands on C */
