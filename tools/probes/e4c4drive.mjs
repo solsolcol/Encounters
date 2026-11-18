@@ -25,7 +25,8 @@ const OUT = process.env.OUT || '/tmp/e4c4drive';
 fs.mkdirSync(OUT, { recursive: true });
 const W = 390, H = 844;
 const b = await chromium.launch(LAUNCH);
-const ctx = await b.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 1, hasTouch: true, isMobile: true });
+/* (18 Nov) DSF=2: its pictures drawn at two device pixels a point, the size a picture that judges anything is taken at */
+const ctx = await b.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: +(process.env.DSF || 1), hasTouch: true, isMobile: true });
 const p = await ctx.newPage();
 const cdp = await ctx.newCDPSession(p);
 const errs = [];

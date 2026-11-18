@@ -36,6 +36,10 @@ const errs = [];
 const b = await chromium.launch(LAUNCH);
 const p = await b.newPage({ viewport: { width: 800, height: 520 } });
 p.on('pageerror', e => errs.push('pageerror: ' + e.message));
+/* v27.0: a 'Failed to fetch' page error names no address: the requests that failed are kept beside it and listed
+   when anything failed (an abort of a disposed chapter's download is listed too, but is no error by itself) */
+const failedReq = [];
+p.on('requestfailed', r => failedReq.push((r.failure() && r.failure().errorText || '?') + ' ' + r.url().replace(/^https?:\/\/[^/]+/, '')));
 
 /* v5.31: the same navigation budget every other harness gives the page —
    Playwright's default 30 s is not enough for the boot preloads on a box that
@@ -107,6 +111,13 @@ const out = await p.evaluate(async ({ CYCLES, WARM }) => {
     try {
       e.rebuildStage(window.__CHAPTERS__[k]);
       await drawn();
+      /* (v27.0) each chapter's downloads are let land before the next is built, as a player's world lands before he can
+         leave it. Built back to back, nineteen chapters' models were all in flight at once, and with episode 4 chapter 4
+         in the list the browser refused the excess: 399 requests failed net::ERR_INSUFFICIENT_RESOURCES (episode 4's
+         yard cars, shelf pieces and trees), 56 'Failed to fetch' page errors, every leak measure still true. Polled on
+         the engine's own load tracker (__enc.loads), never a fixed wait; a chapter still loading after three minutes is
+         left as it is and the run goes on */
+      for (const t0 = performance.now(); e.loads && e.loads().pending > 0 && performance.now() - t0 < 180000; ) await new Promise(r => setTimeout(r, 250));
       const w = e.chapterWorld();
       /* (v25.5) "the world has things in it" counts what is DRAWN, never the world's direct children. Episode 4
          chapter 2 keeps its shop, its corridor and its cast in three groups (three children, hundreds of meshes),
@@ -195,5 +206,6 @@ const MUST = ['hasRebuild', 'everyChapterBuilds', 'geoFlat', 'texFlat', 'uploade
               'worldRebuilt', 'pileAlive', 'blockersAlive', 'stillPlayable'];
 for (const k of MUST) if (out[k] !== true) errs.push(`ERR leak promise broken: ${k}`);
 console.log('errors:', errs.length ? errs : 'none');
+if (errs.length && failedReq.length) console.log('requests failed (' + failedReq.length + '):', [...new Set(failedReq)].slice(0, 40));
 await b.close();
 if (errs.length) process.exit(1);

@@ -390,6 +390,9 @@ pictures (page images, row 5): only by drawing them in a canvas; the cost to be 
     preview again, his word): docs/V27.0-E4C4-BUILD.md (§11 every ask against the live build). What it stands on until
     his word is its plan's §9 (voices, music, the picks made by measure). Chapter 5 (S1·14 and S1·15) is next and has no
     plan yet. Its backup bundle was not made: the history is 2.7 GB and the working machine had 0.3 GB free (offered).
+    Open, mine to check (18 Nov): a thin blue line across Grandmaster Pho in ending C's last shot, photographed once
+    after a probe's 4 s seek and gone at a direct seek (the vision's afterimage of the jump, by every test so far): to be
+    confirmed in a live play of the ending (tools/probes/filmlive.mjs) before it is called nothing.
 - Deferred by choice: ghost mesh compression (the biggest download saving left), a service worker / offline,
   canvas-resolution and backdrop-blur thermal options.
 

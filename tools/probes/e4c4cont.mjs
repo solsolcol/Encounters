@@ -28,7 +28,10 @@ const WANT = (ph) => { const p = ph.split(':')[0], m = ph.split(':')[1] || '', h
   if (p === 'history' && ['r', 'm', 'f', 'o', 'a', 'k'].every(has)) return ['history', 'sight'];
   if (p === 'sight' && ['l1', 'l2', 'l3'].every(has)) return ['sight', 'bless'];
   return [p]; };
-const SPAWN = null;     /* (the chapter places him by its phase: c_story.js) */
+/* (18 Nov, its first run in the run: a save with no standing place is a chapter's START to the engine (v18.4: its phase is
+   dropped), and every phase landed at the history's 0 of 5. A real save always carries where he stood (only play is
+   saved); the chapter's own spawn is given, and the chapter places him by its phase from there (c_story.js) */
+const SPAWN = { x: 0.15, y: 1.62, z: 1.0 };
 const b = await chromium.launch(LAUNCH);
 const T0 = Date.now(), el = () => ((Date.now() - T0) / 1000).toFixed(0) + 's';
 let bad = 0;
@@ -124,6 +127,11 @@ for (const ph of PH) {
   const got = r.land && r.land.phase ? String(r.land.phase).split(':')[0] : null;
   r.landed = want.includes(got) ? 'right' : `WRONG (wanted ${want.join(' or ')}, got ${got})`;
   if (done && r.land && r.land.ch !== 'e4c4') r.landed = `WRONG CHAPTER (${r.land.ch})`;
+  /* (18 Nov) and what was learned comes back with it: every mark the save carried is in the bookmark it lands on (a
+     phase that moves on by itself may add marks, never drop one). The first run judged the phase alone and passed a
+     save whose three learned things were lost */
+  if (!done && r.landed === 'right' && r.land) { const had = (ph.split(':')[1] || '').split(',').filter(Boolean), now = new Set(String(r.land.kp || '').split(':')[1] ? String(r.land.kp).split(':')[1].split(',') : []);
+    const lost = had.filter(c => !now.has(c)); if (lost.length) r.landed = `WRONG (marks lost: ${lost.join(',')}; landed ${r.land.kp})`; }
   if (r.fail || errs.length || r.sameSitting === 'DIFFERS' || r.landed !== 'right') bad++;
   console.log(el(), JSON.stringify(r));
   await ctx.close();

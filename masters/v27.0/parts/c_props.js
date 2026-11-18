@@ -142,10 +142,17 @@
        leans back, its front at z 0.049 at the opening's foot and 0.035 at its head (tools/probes/frontz.mjs, the front-most
        surface over the opening; planez sees only points, and the glass is two big triangles), so an upright picture at
        0.040 stood behind it below 0.16 m. The picture is laid on the glass, 2 mm before it and leaning with it) */
-    const PIC_SMALL = { y: 0.100, z: 0.0442, h: 0.162, rx: -0.0848 };
+    /* (18 Nov, photographed on build 21h: its left side ran a slant through the picture. The frame stood 4 cm into the
+       cabinet's middle post (its local x -0.04 to 0.04, front at 0.26) and over the blue bowl in the right bay
+       (tools/probes/propfit.mjs: 1,398 of its points inside the cabinet, 14 of 63 of the picture's inside the post). The
+       right bay's middle shelf is clear from the bowl's edge (its x 0.19) to the stile (0.33), 14 cm: the frame drawn at
+       0.6 (15 by 12 cm, a small standing frame; the picture 13 by 10) stands there, a little turned to the passage, its
+       base on the shelf's top (1.068). Measured: nothing of it inside the cabinet but its base resting on the shelf,
+       and the picture seen whole from the room) */
+    const PIC_SMALL = { y: 0.100, z: 0.0442, h: 0.162, rx: -0.0848 }, FRAME_S = 0.6;
     const CAB = { x: ROOMS.dining.x0 + 0.28 + 0.005, z: 6.15 };
-    const oldFrame = stand('w4framesmall', CAB.x + 0.20, 1.062, CAB.z - 0.08, Math.PI / 2 + 0.15, { lift: 1.5 });
-    picIn(oldFrame, 'w4t_oldphoto', 1, PIC_SMALL);
+    const oldFrame = stand('w4framesmall', CAB.x + 0.17, 1.068, CAB.z - 0.259, Math.PI / 2 + 0.10, { lift: 1.5, s: FRAME_S });
+    picIn(oldFrame, 'w4t_oldphoto', FRAME_S, PIC_SMALL);
     things.oldFrame = [oldFrame];
     /* HER SHRINE'S THREE: Kali in the middle, Ganesha at her left as one stands before it, Murugan at her right; each in
        the portrait frame drawn small, standing on the shrine's middle shelf and leaning back on its back panel (measured

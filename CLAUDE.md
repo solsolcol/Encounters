@@ -1416,7 +1416,7 @@ C13 ac): the hall's own
 theme (four previews sent, C in the game until he says a letter), one word of Ton's ending-A line (`tn3A1`, "roll" to
 "stack"), the small white figure before the Emerald Buddha (not identified, not made).
 Chapter 4 (S1·13, case one: the woman who rose from her wheelchair) SHIPPED at v27.0 (18 Nov 2026, deploy
-`6afdae979d2566f9988ec383`): her own HDB flat in Singapore, she speaks English, her family, Pho and the player in the
+`6afdc090ee25ef6b913d9424`): her own HDB flat in Singapore, she speaks English, her family, Pho and the player in the
 room, the horror brought back, the holy-water fight, and SPIRIT VISION; **docs/V27.0-E4C4-BUILD.md** (its tracker: the
 log, and §11 every ask against the live build) and docs/V27.0-E4C4-PLAN.md (his words R1 to R40). Next: chapter 5
 (S1·14 and S1·15, cases two and three).

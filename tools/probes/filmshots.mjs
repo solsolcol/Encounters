@@ -100,6 +100,32 @@ for (const t of TS) {
              cam: [E.yaw.position.x, E.yaw.position.y, E.yaw.position.z, E.yaw.rotation.y, E.pitch.rotation.x].map(v => +v.toFixed(2)) }; });
   await p.screenshot({ path: `${OUT}/${OPT ? 'end' + OPT : FILM || 'film'}-${String(t).replace('.', '_').padStart(5, '0')}.jpg`, quality: 90, timeout: 240000 });
   console.log(el(), t, JSON.stringify(s));
+  /* (v27.0) EXTRA='name=js|name=js': after the frame, each in turn (they add up): the page runs it (S the stage, E the
+     engine's handle), three frames are drawn, and the frame is photographed again as <frame>-<name>.jpg: a thing hidden
+     one at a time shows which one draws what */
+  if (process.env.EXTRA) for (const it of process.env.EXTRA.split('|')) { const i = it.indexOf('='), nm = it.slice(0, i), js = it.slice(i + 1);
+    const r = await p.evaluate((js) => { const E = window.__enc, S = E.stage; try { return String(new Function('E', 'S', 'return (' + js + ')')(E, S)); } catch (e) { return 'threw ' + e.message; } }, js);
+    await p.evaluate(() => new Promise(r => { let k = 0; const f = () => (++k >= 3 ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); }));
+    await p.screenshot({ path: `${OUT}/${OPT ? 'end' + OPT : FILM || 'film'}-${String(t).replace('.', '_').padStart(5, '0')}-${nm}.jpg`, quality: 90, timeout: 240000 });
+    console.log('   extra', nm, '->', r); }
+  /* (v27.0) PICK='x,y;x,y' (CSS pixels): what is drawn there, read from this frame: every visible mesh, line or point
+     cloud whose box, carried to the screen, holds that point, thinnest first (a thin thing across a shot is found by
+     its width on the screen), with its own name, its parents', its material's colour and its distance */
+  if (process.env.PICK) console.log('   pick', JSON.stringify(await p.evaluate((spec) => { const E = window.__enc, cam = E.camera, V3 = cam.position.constructor;
+    cam.updateMatrixWorld(); const eye = new V3().setFromMatrixPosition(cam.matrixWorld), W = innerWidth, H = innerHeight, out = {};
+    for (const xy of spec.split(';')) { const [x, y] = xy.split(',').map(Number), hits = [];
+      E.scene.traverse(o => { if (!(o.isMesh || o.isLine || o.isPoints || o.isSprite) || !o.geometry) return; for (let q = o; q; q = q.parent) if (!q.visible) return;
+        const g = o.geometry; if (!g.boundingBox) g.computeBoundingBox(); const bb = g.boundingBox; if (!bb || !isFinite(bb.min.x)) return;
+        let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9, d0 = 1e9, front = false;
+        for (const cx of [bb.min.x, bb.max.x]) for (const cy of [bb.min.y, bb.max.y]) for (const cz of [bb.min.z, bb.max.z]) {
+          const w = new V3(cx, cy, cz).applyMatrix4(o.matrixWorld); d0 = Math.min(d0, w.distanceTo(eye)); const n = w.clone().project(cam); if (n.z < 1) front = true;
+          const sx = (n.x + 1) / 2 * W, sy = (1 - n.y) / 2 * H; x0 = Math.min(x0, sx); x1 = Math.max(x1, sx); y0 = Math.min(y0, sy); y1 = Math.max(y1, sy); }
+        if (!front || x < x0 || x > x1 || y < y0 || y > y1) return;
+        const m = Array.isArray(o.material) ? o.material[0] : o.material, chain = []; for (let q = o.parent; q && chain.length < 4; q = q.parent) chain.push(q.name || q.type);
+        hits.push({ name: o.name || o.type, up: chain.join('<'), w: +(x1 - x0).toFixed(1), h: +(y1 - y0).toFixed(1), d: +d0.toFixed(2), kind: o.type,
+                    mat: m ? (m.type + (m.color ? ' #' + m.color.getHexString() : '') + (m.emissive ? ' e#' + m.emissive.getHexString() : '')) : null }); });
+      out[xy] = hits.sort((a, b) => a.w - b.w).slice(0, 8); }
+    return out; }, process.env.PICK)));
   /* (v27.0) BONES='key[#i]:Bone/Bone,...': where those bones of those people stand in the world at this moment (and
      each one's group), read from the frame just photographed, so a film's staging is measured beside its picture */
   if (process.env.BONES) console.log('   bones', JSON.stringify(await p.evaluate((spec) => { const S = window.__enc.stage, r = {};

@@ -25,7 +25,7 @@
     const MALA_HEAD = () => HEAD_OF(cast.mala, 0.1, { x: cast.mala.group.position.x, y: 1.62, z: cast.mala.group.position.z });
     /* the five sources' places, measured from the things themselves (c_props.js) */
     const FOLDER_AT = { x: 4.80, y: 0.80, z: 6.40 };
-    const OLDPHOTO_AT = { x: ROOMS.dining.x0 + 0.525, y: 1.17, z: 6.07 };          // the picture's middle in its frame (c_props.js)
+    const OLDPHOTO_AT = { x: ROOMS.dining.x0 + 0.481, y: 1.13, z: 5.89 };          // the picture's middle in its frame (c_props.js)
     const APPA_PHOTO_AT = { x: 0.62, y: 1.50, z: ROOMS.living.z1 - 0.03 };
     const SMALLBOWL_AT = { x: BOWL.x + 0.30, y: 0.04, z: BOWL.z - 0.12 };
     const LAMP_AT = { x: VILAKKU.x, y: 0.43, z: VILAKKU.z };
