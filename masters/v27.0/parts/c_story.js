@@ -318,7 +318,7 @@
     /* ================================================================ PLAY III · THE BLESSING (§4.3) */
     const WARM_BLESS = ['ph4b0', 'ph4b1', 'ph4b2', 'u4match', 'u4tubedie', 'u4fanstop', 'u4tvdie', 'u4flick', 'u4patter', 'u4dip', 'u4whisper',
                         'u4release', 'u4large', 'u4gaspf', 'u4gaspm', 'u4chill', 'u4husband', 'u4vison', 'u4visbed', 'u4heart', 'uiclick',
-                        'u4fightmus', 'u4chant1', 'u4chant2'];
+                        'u4fightmus', 'u4fightloop', 'u4chant1', 'u4chant2'];
     function blessBegin(R, fresh) {
       play.learned = new Set(['r', 'm', 'f', 'o', 'a']); play.spoke = true; play.told = true; play.opened = true; play.looked = new Set(['1', '2', '3']);
       play.closed = true; play.read = true; play.peeked = R.peeked; play.water = R.water; play.appaGone = R.appaGone;
@@ -473,11 +473,13 @@
     function fightTick(wdt) {
       const F = play.fight; if (!F || !F.on) return;
       if (getState() !== 'play') return;
-      F.t += wdt;
+      F.t += wdt; fightMusTick();
       while (F.wave < FIGHT.waves.length && F.t >= FIGHT.waves[F.wave].at) waveStart(FIGHT.waves[F.wave++]);
       /* the blessing's own pace: slowed while anything crowds her or her teacher */
       let slow = 1; for (const S of F.shapes) if (S.state === 'feed' && (S.to === 'amma' || S.to === 'pho')) slow *= 0.5;
-      F.k = Math.min(1, F.k + wdt / FIGHT.secs * Math.max(0.15, slow));
+      /* (never under a third of its pace: crowded, the blessing slows, and a fight left alone still ends in about five
+         minutes, not twelve: 18 Nov) */
+      F.k = Math.min(1, F.k + wdt / FIGHT.secs * Math.max(0.35, slow));
       if (kit) kit.bar(F.k);
       while (F.captions < CHANT.length && F.k > CHANT[F.captions].at) { const C = CHANT[F.captions++]; chantLine(C);
         if (kit && kit.captions) kit.captions([{ at: 0, end: 2 * C.len + CHANT_GAP + 0.4, text: W[C.cap], sub: W[C.cap + 'Sub'] }]); }

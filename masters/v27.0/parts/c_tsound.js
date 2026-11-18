@@ -30,9 +30,23 @@
     /* THE FIGHT'S MUSIC, one pass from the fight's first second (a bed runs from the chapter's start, so a piece that builds
        in three waves is begun where the fight begins): a one-shot, held so the fight's end, a bookmark and a reset can stop
        it; at 0.35 its average stands about 11 dB under a voice. A film is never under it (a scene stops the world's sounds) */
-    let fightMus = null;
-    function fightMusOn() { fightMusOff(); if (worldSfx && !(soundOff && soundOff())) fightMus = worldSfx('u4fightmus', 0.35, 1, 0) || null; }
-    function fightMusOff() { if (fightMus) { try { fightMus.stop(); } catch (e) { } fightMus = null; } }
+    /* (18 Nov: the blessing runs 116 s at its own pace and slows while the shapes crowd her or her teacher, so a fight may
+       outlast the one pass, 150 s, and was silent after it. Its body, looped (sound.sh u4fightloop: the flattest 48 s of
+       the same take, its join crossfaded, padded for the insets), comes in under the pass's last 3 s and holds to the
+       end: fightMusTick, on the fight's frames) */
+    let fightMus = null, fightLoop = null;
+    const FIGHT_VOL = 0.35;
+    function fightMusOn() { fightMusOff(); if (worldSfx && !(soundOff && soundOff())) { fightMus = worldSfx('u4fightmus', FIGHT_VOL, 1, 0) || null; if (fightMus && fightMus.context) fightMus.__t0 = fightMus.context.currentTime; } }
+    function fightMusOff() { for (const a of [fightMus, fightLoop]) if (a) { try { a.stop(); } catch (e) { } } fightMus = null; fightLoop = null; }
+    function fightMusTick() {
+      if (!fightMus || fightLoop || !fightMus.buffer || !fightMus.context || fightMus.__t0 == null) return;
+      const ac = fightMus.context, now = ac.currentTime, left = fightMus.buffer.duration - (now - fightMus.__t0);
+      if (left > 3.2 || !worldSfx) return;
+      const L = worldSfx('u4fightloop', FIGHT_VOL, 1, 0); if (!L || !L.buffer) return;
+      fightLoop = L; L.loop = true; L.loopStart = 0.06; L.loopEnd = Math.max(0.2, L.buffer.duration - 0.06);
+      if (L.__g) { L.__g.gain.cancelScheduledValues(now); L.__g.gain.setValueAtTime(0, now); L.__g.gain.linearRampToValueAtTime(FIGHT_VOL, now + 3); }
+      if (fightMus.__g) { fightMus.__g.gain.cancelScheduledValues(now); fightMus.__g.gain.setValueAtTime(FIGHT_VOL, now); fightMus.__g.gain.linearRampToValueAtTime(0, now + Math.max(0.2, left - 0.1)); }
+    }
     /* THE ESTATE'S OWN NOISES, one at a time on the chapter's clock from their own seeded stream (e3c3's shape, v21.13): a
        lift's chime far down the corridor, slippers passing outside the gate, the rubbish chute, a dog far off, a gecko on
        the wall, a motorbike far below. Each panned to where it comes from, a third quieter while a line is said, never two

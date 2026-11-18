@@ -14590,6 +14590,8 @@ const STING_SAMPLE = {
   u4torn: ['u4torn', 1], u4trancemus: ['u4trancemus', 1], u4tubedie: ['u4tubedie', 1], u4tubetick: ['u4tubetick', 1],
   u4tvdie: ['u4tvdie', 1], u4visbed: ['u4visbed', 1], u4vismus: ['u4vismus', 1], u4visoff: ['u4visoff', 1],
   u4vison: ['u4vison', 1], u4whisper: ['u4whisper', 1],
+  /* v27.0 · its effects, beds and music (masters/v27.0/sound.sh: every pick and why) */
+  u4fightloop: ['u4fightloop', 1],
   /* E4C4 FX END */
 };
 /* Which kinds the synth below can actually fake. Everything else in

@@ -157,3 +157,9 @@ mus  u4endC      $R/u4endC_a.mp3      "$(cuthead 0.75)"                       # 
 mus  u4endD      $R/u4endD_a.mp3      "afade=t=in:d=0.6"                      # ending D: a, 96 % where a phone plays, 42 % in the voice's band (b 76 %)
 mus  u4closemus  $R/u4closemus_a.mp3  "$(cuthead 0.05)"                       # the close: a, 71 % where a phone plays (b 68 %)
 fi
+# ---- (v27.0, 18 Nov) THE FIGHT'S MUSIC, LOOPED: the blessing runs 116 s at its own pace and slows while the shapes crowd her
+#      or her teacher, so a fight may outlast the one pass (150 s); its body as a loop comes in under the pass's last 3 s
+#      (c_tsound.js fightMusTick). The same take (a), its flattest 48 s, the join crossfaded where like meets like
+if [ -z "$ONLY" ] || [ "$ONLY" = music ] || [ "$ONLY" = fightloop ]; then
+mbed u4fightloop $R/u4fightmus_a.mp3  48
+fi
