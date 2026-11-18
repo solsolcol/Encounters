@@ -25,7 +25,7 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[calm] First, we listen. Ask her family. Look at her home. Tell me what you learn."
+  "prompt": "[calm] First, learn her story. Talk to her family, and look around her home. Then tell me what you learned."
  },
  {
   "key": "rv4h1",
@@ -95,14 +95,14 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[warm] Good. You looked before you looked."
+  "prompt": "[warm] Good. Now you know her story. Always learn the story first, before you use your Spirit Vision."
  },
  {
   "key": "ph4s0",
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[calm] Now. Open. The way I taught you. Look at her. Only look."
+  "prompt": "[calm] Now open your Spirit Vision, the way I taught you. Look at each spirit in this room. Only look."
  },
  {
   "key": "q4s1",
@@ -130,7 +130,7 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[calm] Close."
+  "prompt": "[calm] Good. Now close your Spirit Vision."
  },
  {
   "key": "ph4s2",
@@ -151,7 +151,7 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[calm] I will bless her, and release it. You hold the water. Keep the room."
+  "prompt": "[calm] I will bless her, and release the spirit on her back. Take the holy water, and keep the green spirits away from her."
  },
  {
   "key": "ph4b0",
@@ -165,35 +165,35 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[calm] Close. Breathe."
+  "prompt": "[calm] I am closing your Spirit Vision. Breathe."
  },
  {
   "key": "ph4b2",
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[serious] Not everything you see is against us."
+  "prompt": "[serious] Not him. The pale blue spirit is her husband. Only flick the holy water at the green spirits."
  },
  {
   "key": "ph4b3",
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[firm] Open your sight. They are coming for her."
+  "prompt": "[firm] Open your Spirit Vision! The green spirits are coming for her."
  },
  {
   "key": "ph4b4",
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[serious] What you do not look at still comes. Open your sight."
+  "prompt": "[serious] Open your Spirit Vision now. You cannot stop what you cannot see."
  },
  {
   "key": "ph4b5",
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[firm] Look again. Send them back."
+  "prompt": "[firm] Open your Spirit Vision, and flick the holy water at the green spirits!"
  },
  {
   "key": "q4f1",
@@ -214,7 +214,7 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[firm] A heavy one. Again, and again, until it goes."
+  "prompt": "[firm] That big one is strong. Keep flicking the holy water at it until it goes."
  },
  {
   "key": "rv4f1",
@@ -249,7 +249,7 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[firm] Now you are not alone. Send them back."
+  "prompt": "[firm] Luang Phor Phiboon is with you. Flick the golden water at the green spirits!"
  },
  {
   "key": "ml4t1",
@@ -305,7 +305,7 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[serious] You kept the blessing. You forgot the son. His fear was only love."
+  "prompt": "[serious] You protected the blessing. You forgot her son. His fear was only love."
  },
  {
   "key": "q4A1",
@@ -347,7 +347,7 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[serious] Your part was the water and the room. The work was mine. Today you were lucky."
+  "prompt": "[serious] Your part was the holy water, and keeping the spirits away from her. The work was mine. Today you were lucky."
  },
  {
   "key": "q4B1",
@@ -417,7 +417,7 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[warm] You held. That is where it starts. But there were two of them afraid in this room, and you are the one who could see."
+  "prompt": "[warm] You kept your place. That is where it starts. But there were two people afraid in this room, and you are the one who could see."
  },
  {
   "key": "q4D1",

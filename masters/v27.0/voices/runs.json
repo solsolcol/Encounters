@@ -34,19 +34,6 @@
     "7jMEP9lDOtnhVaCbrSPZ"
    ]
   },
-  "ph4h0": {
-   "node": "ILqISivtNxDWGL9NPq4q",
-   "sessions": [
-    "Pi5wuWYDJHywIxpKRdO1",
-    "m8Rvdb6jy5CsKuyPC298",
-    "FdZIddkrEFiifrFZIQJg"
-   ],
-   "gens": [
-    "7IcDd1El2MBmNpse4Xwm",
-    "mvtIktCdEcabsQPCDKC6",
-    "nNw8ZSfV6PURftHcfdGu"
-   ]
-  },
   "rv4h1": {
    "node": "yxEB9hI8My64Pb1VLUMz",
    "sessions": [
@@ -148,32 +135,6 @@
     "d43UrrJJpxajTSGzsnrC"
    ]
   },
-  "ph4h1": {
-   "node": "Ac4LoaKRhKbx65NqEuaM",
-   "sessions": [
-    "YBLoouBjP9r4k6qe8Y5U",
-    "gMKGfU762llag7WaPK3M",
-    "pdNDQ4rbJZEeQWvrImZs"
-   ],
-   "gens": [
-    "KxjX7xZJmeAuXOAUNGGJ",
-    "zmww0NSINwl2tTG27TJ9",
-    "tXT1o24TrhoS1iGD242I"
-   ]
-  },
-  "ph4s0": {
-   "node": "h90a48XgIMWF3iYaUwo8",
-   "sessions": [
-    "oXQLcE05iowr2BsoYkHw",
-    "maPKiUT9xNJTG35a2gGC",
-    "wekAeIMYRnTMHkkHjhCs"
-   ],
-   "gens": [
-    "wCDyVQYqQ5Fy60cjK1qJ",
-    "ohc1KKMXKFTDWIWapn7Y",
-    "DTlBsatzaimazPc1srUv"
-   ]
-  },
   "q4s1": {
    "node": "5GNB8dsc8FnWrApO87P9",
    "sessions": [
@@ -207,19 +168,6 @@
     "HTMgbURZPpAvE71Nk4au"
    ]
   },
-  "ph4s1": {
-   "node": "9qcEBhfaHXiBDjACFNMK",
-   "sessions": [
-    "aUsM0jfbklQlJLk18Jo4",
-    "ig9JptpY41TSyrJtbWYt",
-    "4kslRjP87iRpDEOmZlQ8"
-   ],
-   "gens": [
-    "QOzUFw8DacfFVIWKlJrk",
-    "exVkaR5dmR9ZAleQ4RqF",
-    "PtCrIHHBQlTG0LQU3TE5"
-   ]
-  },
   "ph4s2": {
    "node": "xaijmilBqfgh3e4vYYs2",
    "sessions": [
@@ -246,19 +194,6 @@
     "bon0QfJb5tZ1Gu9iMKFn"
    ]
   },
-  "ph4s4": {
-   "node": "fXRlWXgEVltm1K0VF4Ho",
-   "sessions": [
-    "tgIhin550q1meQlvbCdL",
-    "AywL3gpO4RmgR7quhQ3R",
-    "1SNVUwj4Jb2DGCaRuLOV"
-   ],
-   "gens": [
-    "C2wiL3RBud6kDOGCtMJ5",
-    "pEvmE7yTorgIFUBtX7CP",
-    "u4TJf8JywAlwjWWDU3KQ"
-   ]
-  },
   "ph4b0": {
    "node": "4DBtuoGK7aHmBnE231ZV",
    "sessions": [
@@ -270,32 +205,6 @@
     "s7W3Lmggp3iToSTTixzw",
     "UfKxa16EnQc2xocPFBrO",
     "dUd7jBvVy9FF1sPtMca1"
-   ]
-  },
-  "ph4b1": {
-   "node": "6YKnOugiteDdwriUWabb",
-   "sessions": [
-    "iQLnqqA6rKronLfJ5dOw",
-    "XHhkQzBsCbwatCLA6gUR",
-    "oYiXxhtjDnDsRpgbfhCZ"
-   ],
-   "gens": [
-    "3IL65c1bHxW7ubfVjkAX",
-    "SIqnWQ9BDSkP2g2w18JG",
-    "Ksb9P0DdodR6xMnHsCms"
-   ]
-  },
-  "ph4b2": {
-   "node": "YiU4UcjtcPhjn1MqyBeC",
-   "sessions": [
-    "jvkk9tD1xrfs0CrQ82Ey",
-    "ar8KykGzmKKeAQZ2P61l",
-    "s1C6xp5fsCAlFrSWiuh2"
-   ],
-   "gens": [
-    "5Vej7XTJwvy9poa4Q3lz",
-    "WSskhzRwF0iwlVEhK3EW",
-    "JHFhYpy2e8ds5g8AI2bq"
    ]
   },
   "ml4t1": {
@@ -331,19 +240,6 @@
     "ZakpAaWW7ictUaOyYm7r"
    ]
   },
-  "ph4A1": {
-   "node": "sBuu2StUGCWpsCPsmFbL",
-   "sessions": [
-    "NbVKqAOn1CTQfra9SaPt",
-    "k5Hh6QYqP980Znd0qiXQ",
-    "roKkkdkg0FQPpO8YTwik"
-   ],
-   "gens": [
-    "NPxOXNnx4VfsmmLNjVMU",
-    "sf0KYjghq1JrSAmzCas8",
-    "2VzX3yjJWtsCexOlmY64"
-   ]
-  },
   "q4A1": {
    "node": "17B0Yz7L39HhAlgv9QuD",
    "sessions": [
@@ -366,19 +262,6 @@
     "6cXzL1bGz1Off4aQnUX3",
     "Zf2hroNxz2IjVSGiJIw8",
     "k3w6VKbAdj9iPGoPDOlQ"
-   ]
-  },
-  "ph4B1": {
-   "node": "HujoaB0HRLNKVNySCMqD",
-   "sessions": [
-    "ps09ZS8mi7w63oYxB9vT",
-    "JshRnnLDxlkwmgdGcMnU",
-    "3D95nNJweKcu3o0bnN4G"
-   ],
-   "gens": [
-    "Cl0JWynzXZUjdYvTN2W7",
-    "V89hXspiyLpvvfCohfXw",
-    "yiNXkpjTdsxn9N02JUKM"
    ]
   },
   "q4B1": {
@@ -438,19 +321,6 @@
     "XwjebR6I2j3sVHopZdS3",
     "na0f6WKiYDYVP4cELTVg",
     "PZ5wyIQM8OOSsITrNwxZ"
-   ]
-  },
-  "ph4D1": {
-   "node": "iJjJH7A6IcQWfnhUsGyR",
-   "sessions": [
-    "1tiaP5EirkT5ApahpcfO",
-    "XZItHuMyGu8IzVsp1k17",
-    "BGaZNyKjhKVzmVaqqpMY"
-   ],
-   "gens": [
-    "xNQLx9l5asylNOEuk6BT",
-    "JXXLV4fLEbBeYRDVabGp",
-    "fToTJNncdz3BmbyImy65"
    ]
   },
   "q4D1": {
@@ -683,45 +553,6 @@
     "tCPdUtBmMNZvgaaLATiE"
    ]
   },
-  "ph4b3": {
-   "node": "PguuRepl3EazaAAyNVsd",
-   "sessions": [
-    "vbv1eIL93nzYiNtE62W2",
-    "Si7eO1090h91tHsaGJRG",
-    "ILZcvicjnLH3ZrnPAUew"
-   ],
-   "gens": [
-    "N8rZXbfKzCbIX0rMw9ts",
-    "68MZWiuTSfLJAa4HuSxo",
-    "P4Gz2Sn5HO2emNCcPTrN"
-   ]
-  },
-  "ph4b4": {
-   "node": "kEA2zdFSGwg0fjd6Fcgf",
-   "sessions": [
-    "a1AsrY5ci7xZJ8j7ees6",
-    "FzRPfpFI9NAO1KDNeNMh",
-    "jTJ3Tn2YSkLBEggC7om1"
-   ],
-   "gens": [
-    "xxFEonZzJCDGzL8CaAfE",
-    "2BbSMGwzLpopiPjRmkNN",
-    "2guseiBfbjkWquGsmuH3"
-   ]
-  },
-  "ph4b5": {
-   "node": "Ojpb3qppO1j259eTovbx",
-   "sessions": [
-    "MFx5VmuvVnSZ6H435xUQ",
-    "Nael3NYwhvhgUlVy4c7F",
-    "0Ub99E1W7WGoBYNpi20i"
-   ],
-   "gens": [
-    "bViIWPqoKxL5DfqAWygk",
-    "Pj1ykRtDdiY3T1C9wAyA",
-    "xF063s0lIdLOtp7LeCHZ"
-   ]
-  },
   "q4f3": {
    "node": "EoYJP5ElYtpQSniELWkP",
    "sessions": [
@@ -757,19 +588,6 @@
     "16LfY7UKkZ7qg9YeISFY"
    ]
   },
-  "ph4f3": {
-   "node": "KL82oXW0W9yHpaNR9eyV",
-   "sessions": [
-    "oKsXWeyYgjCwwFjNkF3Q",
-    "RhwFDfayjfe0mQHzh4Si",
-    "mnMu31HbuTRMzdbqmSF2"
-   ],
-   "gens": [
-    "uTdPpJFYXxigA8gcyWX8",
-    "ZCMe2MM3J1uI9q9gh9iW",
-    "3iUHTI9i36bfVlRpOwUG"
-   ]
-  },
   "q4f1": {
    "node": "FrPLWfDDymAq2KBmaGUB",
    "sessions": [
@@ -792,19 +610,6 @@
     "QrSvTFN5QvUPrHpYbcSp"
    ]
   },
-  "ph4f1": {
-   "node": "vYq5SGBt7xI06qOaXYYa",
-   "sessions": [
-    "VdAP2nsX2rZW64PU7Xyq",
-    "6vQtdXACrIrt87elFepU",
-    "mVVOaazSphVnGGvAJm1D"
-   ],
-   "gens": [
-    "N1KzoeMOHrgJxX6Ba1p5",
-    "v3UEemF34HIT4e0VQrHA",
-    "7PhFNwAMY8roANHck08x"
-   ]
-  },
   "rv4f1": {
    "node": "R7Z0oVbcuu9L80YEHwSK",
    "sessions": [
@@ -815,6 +620,413 @@
     "HUcTEWI3e1CYJbCsLwM9",
     "aE6TS40qi3u2eToFJHP4"
    ]
+  },
+  "ph4h0": {
+   "node": "Wvpb71r2YK73ElT5b5vy",
+   "sessions": [
+    "y0cyMuBotfWnbi5506c9",
+    "rW1bEQN13EMKsomgy1zL",
+    "I26bEnkOEGvLwyoGuOvL"
+   ],
+   "gens": [
+    "98FeLkILQJucHA9IkVTy",
+    "SLRngJTCnDViG4mp4cpf",
+    "y0HdMjE94zZ1OniQLP5o"
+   ]
+  },
+  "ph4h1": {
+   "node": "ZNXUlq0hnCERRUvtoCtB",
+   "sessions": [
+    "syfKpma5A3l7Z6Yj57M6",
+    "v7xleciBI0BPeXcjIg5Y",
+    "qzIOzXQzyZaMcvhRrGYT"
+   ],
+   "gens": [
+    "YeRfqfMsf999NytTdsqf",
+    "1ef3abDZ1txVKmEAXt7e",
+    "VcFG7nc4XVblfHVX2xcD"
+   ]
+  },
+  "ph4s0": {
+   "node": "XJwSQKcCsOGVYsFvKEBq",
+   "sessions": [
+    "i339Vephr9LOpx5Rc4Ce",
+    "HZRMjNXAjk0XQr87MUcM",
+    "0S5oXrhzO1uXpxaijuBv"
+   ],
+   "gens": [
+    "npyDzCT47mdOUlXl7Fxg",
+    "EsKvYNGmH2CU15WJRk73",
+    "nGeLzBzp4HXKRvctp9RQ"
+   ]
+  },
+  "ph4s1": {
+   "node": "exF3fOtPTTc52GQXylCC",
+   "sessions": [
+    "LQXFkkJhVgPrTxjoLSEa",
+    "vkQkWHXwdFTnSh8qHdfY",
+    "pQEe8rV6LkVbRTGYvQIV"
+   ],
+   "gens": [
+    "jQW93pTKMD5VeYANZEWH",
+    "TYjx5PmsP2NiEzXCm8NM",
+    "oDqBhdrIeXrb9torx2z7"
+   ]
+  },
+  "ph4s4": {
+   "node": "nr5045PGO7vdXbdDz7z3",
+   "sessions": [
+    "ztfwrJbXc6s9lN2y4c3W",
+    "bdzFz5iknJWDvrVSjgeZ",
+    "JYQqytMmzBsGA83uUFZ7"
+   ],
+   "gens": [
+    "LTthQW7Y97Mde6Z5ALd6",
+    "1mAMqDeyWbVjblqluYSn",
+    "iKtgIFLMbONz6w8YSWa3"
+   ]
+  },
+  "ph4b1": {
+   "node": "bbsFaeKBQJOpoeNqBc4t",
+   "sessions": [
+    "PG0nJ5htPTY3vgqtccrK",
+    "uspXBRGPJeNMAl86ViIM",
+    "Q8gzdqxQlGLi0pY6lqqA"
+   ],
+   "gens": [
+    "zaVN9lB93lZgCTitSPNV",
+    "cQhSRNNeqxr8Vks6NHUH",
+    "7HHiUg1qfeSl0S76Xg38"
+   ]
+  },
+  "ph4b2": {
+   "node": "0Ty96UF2yakCoi0c1pQM",
+   "sessions": [
+    "rzy72edyxASA3eGzdRsy",
+    "l9QrqNzOtw0CVoBaYS94",
+    "Fri7o5DuiuFitOFTPOjc"
+   ],
+   "gens": [
+    "8xu5Xf6CiplIuAalDXxq",
+    "kz9fscPgm93AdBObPZVt",
+    "q8o84WqlUJp1ibJzsV16"
+   ]
+  },
+  "ph4b3": {
+   "node": "rnN6FLJP60wlaUJykVe1",
+   "sessions": [
+    "8GsLr998ZtOoGrYfhlwU",
+    "qeVNUhkdeOzxOc94Z8Ii",
+    "hiX9fTUKyiAJ3WEK3Sra"
+   ],
+   "gens": [
+    "773gTNIOUvbGFDgtZgBZ",
+    "qQUUdhNBVR9v4Z7HIxZb",
+    "TjgI1oL3el2QPQ6djgRu"
+   ]
+  },
+  "ph4b4": {
+   "node": "aebJnRo4guTrz7D7cYyI",
+   "sessions": [
+    "Ys7O1fpzv4AQ2j8Smfc0",
+    "6q8THu8I4rc2jmHqnH1O",
+    "iHVW26KGGhYIje3l0JI7"
+   ],
+   "gens": [
+    "A3hTsQfVfpENWXOHcAP5",
+    "ia8bGco9bAkp1bFrarEQ",
+    "FugyuHOiFdTaGsinEyf4"
+   ]
+  },
+  "ph4b5": {
+   "node": "8NypjGgS5wRiThoEM5UJ",
+   "sessions": [
+    "HGMH3dPWiHBl4QgHZRil",
+    "XkdeNEUUUp49mkYSyscF",
+    "mUiHIMnXIvtBiUBgl1hR"
+   ],
+   "gens": [
+    "Uqiz0SrX19ZUnyhE6Gq0",
+    "vKg7fbPaaV2xABPOagD4",
+    "pkLatjtklK2aeJ8GMYTO"
+   ]
+  },
+  "ph4f1": {
+   "node": "TRwsXLlSLyAVc28AxngK",
+   "sessions": [
+    "3g29EHhr2S8aWCOCRD1Y",
+    "aiM3fvFTCuHulRwBgSxS",
+    "1Nr28hc0P1xP2iyvSbsl"
+   ],
+   "gens": [
+    "NSGdo4U9hCh9jhFZ4qAe",
+    "AbRQjXsdJp87ANaPcylF",
+    "lALR3Sa6qafvSSz4eqYC"
+   ]
+  },
+  "ph4f3": {
+   "node": "GAPzKiGJCEdSPRbGDCsI",
+   "sessions": [
+    "7CR8UOzM5Ob7cufus8Js",
+    "5YMnfT2SAvtHaJGIM74k",
+    "Aw0nJXgLCUlrzdiz5gjn"
+   ],
+   "gens": [
+    "lXNbtZ1zO722wlylr2E5",
+    "gEiKIE0VPAAyUQCk6Gsc",
+    "Fhc9vo8K6OZ5Sx6zlcxU"
+   ]
+  },
+  "ph4A1": {
+   "node": "vb2QuTskcxfX4KEPhwfE",
+   "sessions": [
+    "IUjtuJAhOnYXT21P9HUy",
+    "37itpPEiAFQhHYBOuakw",
+    "9L6xSLeStvEIoom0ip2B"
+   ],
+   "gens": [
+    "RIJtJSYQqFC33vUkKChv",
+    "JYuuYBk2LdRxsek4W0HA",
+    "ArTNXe9PmZnPaFKCnUJD"
+   ]
+  },
+  "ph4B1": {
+   "node": "TGjTC7Ja0dcGbXxr7X3B",
+   "sessions": [
+    "n5d57tNDGSWxwTaf6s5o",
+    "vVVybROUwkOEsVWc2ptx",
+    "qWCJKIdyawRR00Y7fV4I"
+   ],
+   "gens": [
+    "HzGiF2gnFaqmEQzWWZgq",
+    "I7AaIZDy3PmuJWLsm9yU",
+    "TIySt7JQbyJrfR4OQ8D7"
+   ]
+  },
+  "ph4D1": {
+   "node": "lRRpSAqjCEvbCmUiK7AE",
+   "sessions": [
+    "awF0vhkcoQjPT14nzHG2",
+    "6EqXAYcrIU1UI2Xozcvh",
+    "JX87uMPdnkkVkEPIvvER"
+   ],
+   "gens": [
+    "QNufyeOd0mIqQTyx8H6d",
+    "vF8wXY2FI6pCmHoprw9J",
+    "8u4xNlqrV0LaGhTtF5JD"
+   ]
+  }
+ },
+ "retired": {
+  "ph4h0@r1": {
+   "node": "ILqISivtNxDWGL9NPq4q",
+   "sessions": [
+    "Pi5wuWYDJHywIxpKRdO1",
+    "m8Rvdb6jy5CsKuyPC298",
+    "FdZIddkrEFiifrFZIQJg"
+   ],
+   "gens": [
+    "7IcDd1El2MBmNpse4Xwm",
+    "mvtIktCdEcabsQPCDKC6",
+    "nNw8ZSfV6PURftHcfdGu"
+   ],
+   "prompt": "[calm] First, we listen. Ask her family. Look at her home. Tell me what you learn."
+  },
+  "ph4h1@r1": {
+   "node": "Ac4LoaKRhKbx65NqEuaM",
+   "sessions": [
+    "YBLoouBjP9r4k6qe8Y5U",
+    "gMKGfU762llag7WaPK3M",
+    "pdNDQ4rbJZEeQWvrImZs"
+   ],
+   "gens": [
+    "KxjX7xZJmeAuXOAUNGGJ",
+    "zmww0NSINwl2tTG27TJ9",
+    "tXT1o24TrhoS1iGD242I"
+   ],
+   "prompt": "[warm] Good. You looked before you looked."
+  },
+  "ph4s0@r1": {
+   "node": "h90a48XgIMWF3iYaUwo8",
+   "sessions": [
+    "oXQLcE05iowr2BsoYkHw",
+    "maPKiUT9xNJTG35a2gGC",
+    "wekAeIMYRnTMHkkHjhCs"
+   ],
+   "gens": [
+    "wCDyVQYqQ5Fy60cjK1qJ",
+    "ohc1KKMXKFTDWIWapn7Y",
+    "DTlBsatzaimazPc1srUv"
+   ],
+   "prompt": "[calm] Now. Open. The way I taught you. Look at her. Only look."
+  },
+  "ph4s1@r1": {
+   "node": "9qcEBhfaHXiBDjACFNMK",
+   "sessions": [
+    "aUsM0jfbklQlJLk18Jo4",
+    "ig9JptpY41TSyrJtbWYt",
+    "4kslRjP87iRpDEOmZlQ8"
+   ],
+   "gens": [
+    "QOzUFw8DacfFVIWKlJrk",
+    "exVkaR5dmR9ZAleQ4RqF",
+    "PtCrIHHBQlTG0LQU3TE5"
+   ],
+   "prompt": "[calm] Close."
+  },
+  "ph4s4@r1": {
+   "node": "fXRlWXgEVltm1K0VF4Ho",
+   "sessions": [
+    "tgIhin550q1meQlvbCdL",
+    "AywL3gpO4RmgR7quhQ3R",
+    "1SNVUwj4Jb2DGCaRuLOV"
+   ],
+   "gens": [
+    "C2wiL3RBud6kDOGCtMJ5",
+    "pEvmE7yTorgIFUBtX7CP",
+    "u4TJf8JywAlwjWWDU3KQ"
+   ],
+   "prompt": "[calm] I will bless her, and release it. You hold the water. Keep the room."
+  },
+  "ph4b1@r1": {
+   "node": "6YKnOugiteDdwriUWabb",
+   "sessions": [
+    "iQLnqqA6rKronLfJ5dOw",
+    "XHhkQzBsCbwatCLA6gUR",
+    "oYiXxhtjDnDsRpgbfhCZ"
+   ],
+   "gens": [
+    "3IL65c1bHxW7ubfVjkAX",
+    "SIqnWQ9BDSkP2g2w18JG",
+    "Ksb9P0DdodR6xMnHsCms"
+   ],
+   "prompt": "[calm] Close. Breathe."
+  },
+  "ph4b2@r1": {
+   "node": "YiU4UcjtcPhjn1MqyBeC",
+   "sessions": [
+    "jvkk9tD1xrfs0CrQ82Ey",
+    "ar8KykGzmKKeAQZ2P61l",
+    "s1C6xp5fsCAlFrSWiuh2"
+   ],
+   "gens": [
+    "5Vej7XTJwvy9poa4Q3lz",
+    "WSskhzRwF0iwlVEhK3EW",
+    "JHFhYpy2e8ds5g8AI2bq"
+   ],
+   "prompt": "[serious] Not everything you see is against us."
+  },
+  "ph4b3@r1": {
+   "node": "PguuRepl3EazaAAyNVsd",
+   "sessions": [
+    "vbv1eIL93nzYiNtE62W2",
+    "Si7eO1090h91tHsaGJRG",
+    "ILZcvicjnLH3ZrnPAUew"
+   ],
+   "gens": [
+    "N8rZXbfKzCbIX0rMw9ts",
+    "68MZWiuTSfLJAa4HuSxo",
+    "P4Gz2Sn5HO2emNCcPTrN"
+   ],
+   "prompt": "[firm] Open your sight. They are coming for her."
+  },
+  "ph4b4@r1": {
+   "node": "kEA2zdFSGwg0fjd6Fcgf",
+   "sessions": [
+    "a1AsrY5ci7xZJ8j7ees6",
+    "FzRPfpFI9NAO1KDNeNMh",
+    "jTJ3Tn2YSkLBEggC7om1"
+   ],
+   "gens": [
+    "xxFEonZzJCDGzL8CaAfE",
+    "2BbSMGwzLpopiPjRmkNN",
+    "2guseiBfbjkWquGsmuH3"
+   ],
+   "prompt": "[serious] What you do not look at still comes. Open your sight."
+  },
+  "ph4b5@r1": {
+   "node": "Ojpb3qppO1j259eTovbx",
+   "sessions": [
+    "MFx5VmuvVnSZ6H435xUQ",
+    "Nael3NYwhvhgUlVy4c7F",
+    "0Ub99E1W7WGoBYNpi20i"
+   ],
+   "gens": [
+    "bViIWPqoKxL5DfqAWygk",
+    "Pj1ykRtDdiY3T1C9wAyA",
+    "xF063s0lIdLOtp7LeCHZ"
+   ],
+   "prompt": "[firm] Look again. Send them back."
+  },
+  "ph4f1@r1": {
+   "node": "vYq5SGBt7xI06qOaXYYa",
+   "sessions": [
+    "VdAP2nsX2rZW64PU7Xyq",
+    "6vQtdXACrIrt87elFepU",
+    "mVVOaazSphVnGGvAJm1D"
+   ],
+   "gens": [
+    "N1KzoeMOHrgJxX6Ba1p5",
+    "v3UEemF34HIT4e0VQrHA",
+    "7PhFNwAMY8roANHck08x"
+   ],
+   "prompt": "[firm] A heavy one. Again, and again, until it goes."
+  },
+  "ph4f3@r1": {
+   "node": "KL82oXW0W9yHpaNR9eyV",
+   "sessions": [
+    "oKsXWeyYgjCwwFjNkF3Q",
+    "RhwFDfayjfe0mQHzh4Si",
+    "mnMu31HbuTRMzdbqmSF2"
+   ],
+   "gens": [
+    "uTdPpJFYXxigA8gcyWX8",
+    "ZCMe2MM3J1uI9q9gh9iW",
+    "3iUHTI9i36bfVlRpOwUG"
+   ],
+   "prompt": "[firm] Now you are not alone. Send them back."
+  },
+  "ph4A1@r1": {
+   "node": "sBuu2StUGCWpsCPsmFbL",
+   "sessions": [
+    "NbVKqAOn1CTQfra9SaPt",
+    "k5Hh6QYqP980Znd0qiXQ",
+    "roKkkdkg0FQPpO8YTwik"
+   ],
+   "gens": [
+    "NPxOXNnx4VfsmmLNjVMU",
+    "sf0KYjghq1JrSAmzCas8",
+    "2VzX3yjJWtsCexOlmY64"
+   ],
+   "prompt": "[serious] You kept the blessing. You forgot the son. His fear was only love."
+  },
+  "ph4B1@r1": {
+   "node": "HujoaB0HRLNKVNySCMqD",
+   "sessions": [
+    "ps09ZS8mi7w63oYxB9vT",
+    "JshRnnLDxlkwmgdGcMnU",
+    "3D95nNJweKcu3o0bnN4G"
+   ],
+   "gens": [
+    "Cl0JWynzXZUjdYvTN2W7",
+    "V89hXspiyLpvvfCohfXw",
+    "yiNXkpjTdsxn9N02JUKM"
+   ],
+   "prompt": "[serious] Your part was the water and the room. The work was mine. Today you were lucky."
+  },
+  "ph4D1@r1": {
+   "node": "iJjJH7A6IcQWfnhUsGyR",
+   "sessions": [
+    "1tiaP5EirkT5ApahpcfO",
+    "XZItHuMyGu8IzVsp1k17",
+    "BGaZNyKjhKVzmVaqqpMY"
+   ],
+   "gens": [
+    "xNQLx9l5asylNOEuk6BT",
+    "JXXLV4fLEbBeYRDVabGp",
+    "fToTJNncdz3BmbyImy65"
+   ],
+   "prompt": "[warm] You held. That is where it starts. But there were two of them afraid in this room, and you are the one who could see."
   }
  }
 }

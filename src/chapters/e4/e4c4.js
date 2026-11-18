@@ -81,10 +81,10 @@
     'rv4o1': 2.6, 'rv4h1': 8.33, 'rv4h2': 6.73, 'rv4f1': 1.93, 'rv4t1': 1.77, 'rv4A1': 2.51, 'rv4A2': 0.61,
     'rv4C1': 2.58, 'rv4D1': 2.98,
     /* Grandmaster Pho */
-    'ph4h0': 6.81, 'ph4h1': 3.13, 'ph4s0': 7.14, 'ph4s1': 0.65, 'ph4s2': 6.17, 'ph4s3': 8.45, 'ph4s4': 6.65,
-    'ph4b0': 4.86, 'ph4b1': 2.06, 'ph4b2': 2.65, 'ph4b3': 2.65, 'ph4b4': 4.81, 'ph4b5': 2.33, 'ph4f1': 4.81,
-    'ph4f2': 2.59, 'ph4f3': 2.97, 'ph4A1': 6.25, 'ph4B0': 0.62, 'ph4B1': 6.41, 'ph4C1': 5.13, 'ph4D0': 2.24,
-    'ph4D1': 8.61, 'ph4z0': 10.56, 'ph4z1': 6.63,
+    'ph4h0': 7.53, 'ph4h1': 6.81, 'ph4s0': 8.57, 'ph4s1': 3.58, 'ph4s2': 6.17, 'ph4s3': 8.45, 'ph4s4': 9.77,
+    'ph4b0': 4.86, 'ph4b1': 4.65, 'ph4b2': 7.78, 'ph4b3': 4.36, 'ph4b4': 4.41, 'ph4b5': 5.2, 'ph4f1': 4.95,
+    'ph4f2': 2.59, 'ph4f3': 5.37, 'ph4A1': 6.61, 'ph4B0': 0.62, 'ph4B1': 9.13, 'ph4C1': 5.13, 'ph4D0': 2.24,
+    'ph4D1': 11.05, 'ph4z0': 10.56, 'ph4z1': 6.63,
     /* Mala */
     'ml4h1': 14.65, 'ml4h2': 9.61, 'ml4h3': 7.61, 'ml4t1': 1.13, 'ml4t2': 1.45, 'ml4A1': 2.27, 'ml4B1': 1.62,
     'ml4B2': 1.01, 'ml4B3': 1.38, 'ml4D1': 1.93, 'ml4z1': 2.56,
@@ -131,15 +131,15 @@
         d: { sanity: -6, awareness: -3, wisdom: -18 }, verdict: 'worst', critical: true,
         say: 'I held her son back. His fear was only love.',
         teach: 'Look carefully at a person’s history, their previous practices and their circumstances before reaching any conclusion. You looked at the son running and saw a man in the way. He was her son, and his fear was only love.' },
-      { k: 'B', text: 'Throw the water at the thing on her back',
+      { k: 'B', text: 'Throw the holy water at the spirit on her back',
         d: { sanity: -9, awareness: 3, wisdom: -9 }, verdict: 'bad',
         say: 'I threw the water. It was never mine to fight.',
-        teach: 'Sensitivity only lets you experience something; cultivation is what teaches you how to examine it. You saw it and threw everything you had at it. Your part was the water and the room. The work was your teacher’s.' },
+        teach: 'Sensitivity only lets you experience something; cultivation is what teaches you how to examine it. You saw it and threw everything you had at it. Your part was the holy water, and keeping the spirits away from her. The work was your teacher’s.' },
       { k: 'C', text: 'Go to him: tell him she is safe, and stay with him',
         d: { sanity: 6, awareness: 6, wisdom: 18 }, verdict: 'best',
         say: 'I told him only what I saw. He held her hand.',
         teach: 'Experience teaches you not to jump to conclusions. You told her son what you saw and nothing more, and he stayed with her.' },
-      { k: 'D', text: 'Keep your place: hold the water, stay closed, trust your teacher',
+      { k: 'D', text: 'Keep your place: hold the holy water, close your Spirit Vision, trust your teacher',
         d: { sanity: 3, awareness: 0, wisdom: 9 }, verdict: 'good',
         say: 'I held my place. Next time, I see the people too.',
         teach: 'Sensitivity only lets you experience something; cultivation is what teaches you how to examine it. You held your part and your teacher’s work was done. There were two people afraid in that room, and you were the one who could see.' }
@@ -236,24 +236,24 @@
       hotTell: 'Tell him',
       // PLAY II · the sight (§4.2)
       objOpen: 'Open your Spirit Vision',
-      objLook: 'Look at each presence · {n}/3',
+      objLook: 'Look at each spirit · {n}/3',
       hotLook: 'Look',
       objClose: 'Close your Spirit Vision',
       // PLAY III · the blessing (§4.3)
       objWater: 'Take the holy water',
       hotWater: 'Take the holy water',
       dipHere: 'Fill it again at his bowl.',
-      objHold: 'Keep the room',
-      guardTitle: 'HOLD THE ROOM',
+      objHold: 'Keep the green spirits away from Amma',
+      guardTitle: 'PROTECT AMMA',
       /* (Chad, 18 Nov: "I think the 'hold the room' instructions are too long and can be shortened , but it still needs to
          read natural, direct and straightforward."; the button shows water now, not the word FLICK, and its refill an arrow) */
-      guardBrief: 'Grandmaster Pho is blessing Amma. Keep the spirits away from her. Open your Spirit Vision to see them, and tap the water button to flick holy water at them. Refill at his bowl with the arrow button. If her bar runs out, the blessing fails. Not every spirit is against you.',
-      guardBriefKey: 'Grandmaster Pho is blessing Amma. Keep the spirits away from her. Open your Spirit Vision (V) to see them, and click or press Space to flick holy water at them. Refill at his bowl with R. If her bar runs out, the blessing fails. Not every spirit is against you.',
+      guardBrief: 'Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision to see them, and tap the water button to flick holy water at them. Refill at his bowl with the arrow button. If her bar runs out, the blessing fails.',
+      guardBriefKey: 'Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision (V) to see them, and click or press Space to flick holy water at them. Refill at his bowl with R. If her bar runs out, the blessing fails.',
       // the fight's stakes and the call (Chad, 18 Nov: plan §0 R16 to R29)
       ammaBar: 'Amma',
       objGold: 'Flick the golden water',
       // the card when her life runs out: what happened, over Master Z's own words (the case file S1·12, word for word)
-      lostSay: 'Too many of them reached Amma. Her cry broke the blessing, and it could not be finished.',
+      lostSay: 'Too many green spirits reached Amma. Her cry broke the blessing, and it could not be finished.',
       lostTeach: 'Learning when to open myself and when to close is the true path of cultivation. Today I can use these sensitivities to help others, which is the point of them.',
       noAltar: 'Not at her altar.',
       // the chant's captions: the Pali as chanted over its meaning (v21.31), Thanissaro Bhikkhu's A Chanting Guide,
@@ -263,10 +263,10 @@
       cap2: 'Dukkhappattā ca niddukkhā, Bhayappattā ca nibbhayā, Sokappattā ca nissokā, Hontu sabbe’pi pāṇino.',
       cap2Sub: 'May all beings: who have fallen into suffering be without suffering, who have fallen into danger be without danger, who have fallen into sorrow be without sorrow.',
       // the card's What you did
-      noteHistory: 'You learned her history before you looked.',
-      noteAppa: 'You threw water at the one who was watching over her.',
-      noteNerve: 'Your nerve ran out. Your teacher closed your sight for you.',
-      noteKept: 'You kept the room.'
+      noteHistory: 'You learned her history before you used your Spirit Vision.',
+      noteAppa: 'You flicked holy water at her husband, who was watching over her.',
+      noteNerve: 'You kept your Spirit Vision open too long. Your teacher closed it for you.',
+      noteKept: 'You kept the green spirits away from her family.'
     },
     sayPrefix: 'q4'
   };
@@ -3999,7 +3999,7 @@
     /* ================================================================ SPIRIT VISION'S PRICE (§4.2, §4.3)
        His heart climbs while his sight is open and settles while it is shut: past its limit the picture throbs and his
        nerve (Sanity) drains. Open to see; shut to breathe (chapter 3's teaching, with a price). If his nerve runs low,
-       his teacher closes his sight for him for a few seconds ("Close. Breathe."): every timed phase has a failure state
+       his teacher closes his sight for him for a few seconds ("I am closing your Spirit Vision. Breathe."): every timed phase has a failure state
        that ends it, and nothing soft-locks (v7.4) */
     const HEAT = { up: 1 / 32, down: 1 / 9, drain: 1.4, floor: 15, low: 26 };
     const sanityNow = () => { const v = kit && kit.stat ? kit.stat('sanity') : null; return Number.isFinite(v) ? v : 100; };
@@ -4029,7 +4029,7 @@
       if (open && play.heat >= 1 && sanityNow() < HEAT.low && !play.closeHold && !play.busy && (phase === 'sight' || phase === 'bless')) nerveOut();
       if (play.closeHold && (play.closeHold -= wdt) <= 0) { play.closeHold = 0; kit.vision(null); }
     }
-    /* "Close. Breathe." His sight shut for him and held shut for a few seconds; a price on the card (§4.3) */
+    /* "I am closing your Spirit Vision. Breathe." His sight shut for him and held shut for a few seconds; a price on the card (§4.3) */
     function nerveOut() {
       if (!kit || !kit.vision) return;
       kit.vision(false); kit.vision({ r: 0, moving: false }); play.closeHold = 5.5;
@@ -4304,7 +4304,7 @@
       /* (Chad, 18 Nov: "Have some dramatic voicelines along the way"): the second wave, his; the large one, his and his
          teacher's word on it */
       if (w === FIGHT.waves[1]) say('q4f1', null);                       // "More of them. From the doors."
-      if (w.list.some(r => r[3] === 'large')) { say('q4f2', null); phoQueued('ph4f1'); }   // "What is that...?" / "A heavy one. Again, and again, until it goes."
+      if (w.list.some(r => r[3] === 'large')) { say('q4f2', null); phoQueued('ph4f1'); }   // "What is that...?" / "That big one is strong. Keep flicking the holy water at it until it goes."
       void run;
     }
     /* a free body for one more of them: one no living shape in the fight is wearing (one still fading wears it too), taken in
@@ -4533,7 +4533,7 @@
       chantLine(C);
       if (kit && kit.captions) kit.captions([{ at: 0, end: 2 * C.len + CHANT_GAP + 0.4, text: W[C.cap], sub: W[C.cap + 'Sub'] }]);
     }
-    /* HE BREAKS OFF HIS CHANT TO SPEAK (18 Nov: "Close. Breathe." and his word after the water reached Appa were said over
+    /* HE BREAKS OFF HIS CHANT TO SPEAK (18 Nov: his "Close. Breathe." and his word after the water reached Appa were said over
        his own chant, one man chanting and talking at once): the line he is singing fades in a quarter of a second, he
        speaks, and then begins that line again from its start, under its caption. Between lines nothing is cut */
     /* (a line refused while another voice is live is never taken as said, and his chant is never broken off for a line
@@ -4658,7 +4658,7 @@
       play.heat = Math.min(play.heat, 0.5);
       if (kit && kit.pulse) kit.pulse({ bpm: 124, secs: 2.2 });
       objectiveFor('bless');
-      queueLine('ph4f3', () => talk(cast.phoB, SECS.ph4f3 || 3));            // "Now you are not alone. Send them back."
+      queueLine('ph4f3', () => talk(cast.phoB, SECS.ph4f3 || 3));            // "Luang Phor Phiboon is with you. Flick the golden water at the green spirits!"
       queueFn(() => { F.chantHeld = false; if (play.fight === F && F.on && chantNow) chantSing(chantNow); });
     }
     /* a batch of five to seven from the room's edges, most of them for her (R28: "the green entities should swarm in the
@@ -5899,10 +5899,10 @@
   const CL = { z0: 0.6, go: 2.0, steps: 11.6, slow: 12.0, ash: 15.0, palms: 17.2, thank: 17.3, bell: 18.7, shut: 20.2, fam: 21.3, z1: 23.0, black: 30.4, end: 32.6 };
   /* each ending's clock: its lines and beats, and where its close begins */
   const EN = {
-    A: { grab: 0.0, rv: 0.3, cry: 0.9, scream: 2.95, torn: 6.1, white: 6.3, open: 7.6, rise: 9.0, call: 12.6, still: 13.2, go: 14.4, rv2: 14.7, ph: 17.4, q: 24.2, close: 28.2 },
-    B: { throw: 0.15, splash: 0.55, comes: 0.9, white: 2.3, floor: 2.55, go: 3.3, push: 3.3, falter: 3.5, ml2: 4.0, back: 5.6, cry: 6.2, torn: 9.6, white2: 9.8, open: 11.4, rise: 12.0, ok: 16.0, ph: 17.6, q: 24.6, close: 28.4 },
+    A: { grab: 0.0, rv: 0.3, cry: 0.9, scream: 2.95, torn: 6.1, white: 6.3, open: 7.6, rise: 9.0, call: 12.6, still: 13.2, go: 14.4, rv2: 14.7, ph: 17.4, q: 24.56, close: 28.56 },
+    B: { throw: 0.15, splash: 0.55, comes: 0.9, white: 2.3, floor: 2.55, go: 3.3, push: 3.3, falter: 3.5, ml2: 4.0, back: 5.6, cry: 6.2, torn: 9.6, white2: 9.8, open: 11.4, rise: 12.0, ok: 16.0, ph: 17.6, q: 27.32, close: 31.12 },
     C: { step: 0.0, say: 0.7, kneel: 5.4, mala: 6.4, rv: 7.3, cry: 8.6, torn: 12.2, white: 12.4, open: 13.8, look: 14.6, my: 14.9, rise: 15.4, ph: 21.0, q: 26.8, close: 30.9 },
-    D: { shut: 0.2, reach: 1.0, ph0: 1.9, kneel: 4.6, rv: 4.7, cry: 7.8, torn: 11.2, white: 11.4, open: 12.8, rise: 13.6, ml: 14.8, ph: 19.4, q: 28.8, close: 33.4 }
+    D: { shut: 0.2, reach: 1.0, ph0: 1.9, kneel: 4.6, rv: 4.7, cry: 7.8, torn: 11.2, white: 11.4, open: 12.8, rise: 13.6, ml: 14.8, ph: 19.4, q: 31.24, close: 35.84 }
   };
 
   /* THE OPENING FILM's clock (c_ufilm.js FILMS.open draws to it) */
@@ -6010,11 +6010,11 @@
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);               // she stands, and her son is not beside her
     a.sfx(E.call, 'am4A1', 1);                          // she looks back for him: "Ravi?"
     a.sfx(E.rv2, 'rv4A2', 1);                           // let go, he goes to her: "Amma..."
-    a.sfx(E.ph, 'ph4A1', 1);                            // "You kept the blessing. You forgot the son. His fear was only love."
+    a.sfx(E.ph, 'ph4A1', 1);                            // "You protected the blessing. You forgot her son. His fear was only love."
     a.sfx(E.q, 'q4A1', 1);                              // "I saw a man in the way. He was her son."
     a.sfxFade(E.close - 2.0, E.close + 0.5, 'u4endA');
   }); }
-  /* B · THROW THE WATER AT THE THING ON HER BACK (bad) */
+  /* B · THROW THE HOLY WATER AT THE SPIRIT ON HER BACK (bad) */
   function scThrow(c, s, api) { endingScene(c, s, api, 'B', (E, a) => {
     a.sfx(E.throw, 'u4flick', 1); a.sfx(E.splash, 'u4patter', 1); a.sfx(E.splash + 0.08, 'u4dip', 0.6);   // the whole bowl
     a.sfx(E.splash, 'ml4B1', 1);                        // Mala, the water on her mother: "What are you doing?"
@@ -6029,7 +6029,7 @@
     a.sfx(E.open - 0.6, 'u4endB', 0.5);
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);
     a.sfx(E.ok, 'ml4B3', 1);                            // Mala, down to him on the floor: "Are you alright?"
-    a.sfx(E.ph, 'ph4B1', 1);                            // "Your part was the water and the room. The work was mine. Today you were lucky."
+    a.sfx(E.ph, 'ph4B1', 1);                            // "Your part was the holy water, and keeping the spirits away from her. The work was mine..."
     a.sfx(E.q, 'q4B1', 1);                              // "I saw it, and thought it was mine to fight."
     a.sfxFade(E.close - 2.0, E.close + 0.5, 'u4endB');
   }); }
@@ -6049,7 +6049,7 @@
     a.sfx(E.q, 'q4C1', 1);                              // "I didn't promise him anything. I told him what I saw."
     a.sfxFade(E.close - 2.0, E.close + 0.5, 'u4endC');
   }); }
-  /* D · KEEP YOUR PLACE: HOLD THE WATER, STAY CLOSED, TRUST YOUR TEACHER (good) */
+  /* D · KEEP YOUR PLACE: HOLD THE HOLY WATER, CLOSE YOUR SPIRIT VISION, TRUST YOUR TEACHER (good) */
   function scKeep(c, s, api) { endingScene(c, s, api, 'D', (E, a) => {
     a.sfx(E.shut, 'u4visoff', 0.85);                    // his sight shut: the wave home to him
     a.sfx(E.ph0, 'ph4D0', 1);                           // "Ravi. Hold her hand."
@@ -6061,7 +6061,7 @@
     a.sfx(E.open - 0.8, 'u4endD', 0.5);
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);
     a.sfx(E.ml, 'ml4D1', 1);                            // Mala, at the lamp: "Amma... you're standing."
-    a.sfx(E.ph, 'ph4D1', 1);                            // "You held. That is where it starts. But there were two of them afraid in this room..."
+    a.sfx(E.ph, 'ph4D1', 1);                            // "You kept your place. That is where it starts. But there were two people afraid in this room..."
     a.sfx(E.q, 'q4D1', 1);                              // "I kept to my part. Next time I'll see the people too."
     a.sfxFade(E.close - 2.0, E.close + 0.5, 'u4endD');
   }); }

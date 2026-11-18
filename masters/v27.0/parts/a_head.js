@@ -81,10 +81,10 @@
     'rv4o1': 2.6, 'rv4h1': 8.33, 'rv4h2': 6.73, 'rv4f1': 1.93, 'rv4t1': 1.77, 'rv4A1': 2.51, 'rv4A2': 0.61,
     'rv4C1': 2.58, 'rv4D1': 2.98,
     /* Grandmaster Pho */
-    'ph4h0': 6.81, 'ph4h1': 3.13, 'ph4s0': 7.14, 'ph4s1': 0.65, 'ph4s2': 6.17, 'ph4s3': 8.45, 'ph4s4': 6.65,
-    'ph4b0': 4.86, 'ph4b1': 2.06, 'ph4b2': 2.65, 'ph4b3': 2.65, 'ph4b4': 4.81, 'ph4b5': 2.33, 'ph4f1': 4.81,
-    'ph4f2': 2.59, 'ph4f3': 2.97, 'ph4A1': 6.25, 'ph4B0': 0.62, 'ph4B1': 6.41, 'ph4C1': 5.13, 'ph4D0': 2.24,
-    'ph4D1': 8.61, 'ph4z0': 10.56, 'ph4z1': 6.63,
+    'ph4h0': 7.53, 'ph4h1': 6.81, 'ph4s0': 8.57, 'ph4s1': 3.58, 'ph4s2': 6.17, 'ph4s3': 8.45, 'ph4s4': 9.77,
+    'ph4b0': 4.86, 'ph4b1': 4.65, 'ph4b2': 7.78, 'ph4b3': 4.36, 'ph4b4': 4.41, 'ph4b5': 5.2, 'ph4f1': 4.95,
+    'ph4f2': 2.59, 'ph4f3': 5.37, 'ph4A1': 6.61, 'ph4B0': 0.62, 'ph4B1': 9.13, 'ph4C1': 5.13, 'ph4D0': 2.24,
+    'ph4D1': 11.05, 'ph4z0': 10.56, 'ph4z1': 6.63,
     /* Mala */
     'ml4h1': 14.65, 'ml4h2': 9.61, 'ml4h3': 7.61, 'ml4t1': 1.13, 'ml4t2': 1.45, 'ml4A1': 2.27, 'ml4B1': 1.62,
     'ml4B2': 1.01, 'ml4B3': 1.38, 'ml4D1': 1.93, 'ml4z1': 2.56,
@@ -131,15 +131,15 @@
         d: { sanity: -6, awareness: -3, wisdom: -18 }, verdict: 'worst', critical: true,
         say: 'I held her son back. His fear was only love.',
         teach: 'Look carefully at a person’s history, their previous practices and their circumstances before reaching any conclusion. You looked at the son running and saw a man in the way. He was her son, and his fear was only love.' },
-      { k: 'B', text: 'Throw the water at the thing on her back',
+      { k: 'B', text: 'Throw the holy water at the spirit on her back',
         d: { sanity: -9, awareness: 3, wisdom: -9 }, verdict: 'bad',
         say: 'I threw the water. It was never mine to fight.',
-        teach: 'Sensitivity only lets you experience something; cultivation is what teaches you how to examine it. You saw it and threw everything you had at it. Your part was the water and the room. The work was your teacher’s.' },
+        teach: 'Sensitivity only lets you experience something; cultivation is what teaches you how to examine it. You saw it and threw everything you had at it. Your part was the holy water, and keeping the spirits away from her. The work was your teacher’s.' },
       { k: 'C', text: 'Go to him: tell him she is safe, and stay with him',
         d: { sanity: 6, awareness: 6, wisdom: 18 }, verdict: 'best',
         say: 'I told him only what I saw. He held her hand.',
         teach: 'Experience teaches you not to jump to conclusions. You told her son what you saw and nothing more, and he stayed with her.' },
-      { k: 'D', text: 'Keep your place: hold the water, stay closed, trust your teacher',
+      { k: 'D', text: 'Keep your place: hold the holy water, close your Spirit Vision, trust your teacher',
         d: { sanity: 3, awareness: 0, wisdom: 9 }, verdict: 'good',
         say: 'I held my place. Next time, I see the people too.',
         teach: 'Sensitivity only lets you experience something; cultivation is what teaches you how to examine it. You held your part and your teacher’s work was done. There were two people afraid in that room, and you were the one who could see.' }
@@ -236,24 +236,24 @@
       hotTell: 'Tell him',
       // PLAY II · the sight (§4.2)
       objOpen: 'Open your Spirit Vision',
-      objLook: 'Look at each presence · {n}/3',
+      objLook: 'Look at each spirit · {n}/3',
       hotLook: 'Look',
       objClose: 'Close your Spirit Vision',
       // PLAY III · the blessing (§4.3)
       objWater: 'Take the holy water',
       hotWater: 'Take the holy water',
       dipHere: 'Fill it again at his bowl.',
-      objHold: 'Keep the room',
-      guardTitle: 'HOLD THE ROOM',
+      objHold: 'Keep the green spirits away from Amma',
+      guardTitle: 'PROTECT AMMA',
       /* (Chad, 18 Nov: "I think the 'hold the room' instructions are too long and can be shortened , but it still needs to
          read natural, direct and straightforward."; the button shows water now, not the word FLICK, and its refill an arrow) */
-      guardBrief: 'Grandmaster Pho is blessing Amma. Keep the spirits away from her. Open your Spirit Vision to see them, and tap the water button to flick holy water at them. Refill at his bowl with the arrow button. If her bar runs out, the blessing fails. Not every spirit is against you.',
-      guardBriefKey: 'Grandmaster Pho is blessing Amma. Keep the spirits away from her. Open your Spirit Vision (V) to see them, and click or press Space to flick holy water at them. Refill at his bowl with R. If her bar runs out, the blessing fails. Not every spirit is against you.',
+      guardBrief: 'Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision to see them, and tap the water button to flick holy water at them. Refill at his bowl with the arrow button. If her bar runs out, the blessing fails.',
+      guardBriefKey: 'Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision (V) to see them, and click or press Space to flick holy water at them. Refill at his bowl with R. If her bar runs out, the blessing fails.',
       // the fight's stakes and the call (Chad, 18 Nov: plan §0 R16 to R29)
       ammaBar: 'Amma',
       objGold: 'Flick the golden water',
       // the card when her life runs out: what happened, over Master Z's own words (the case file S1·12, word for word)
-      lostSay: 'Too many of them reached Amma. Her cry broke the blessing, and it could not be finished.',
+      lostSay: 'Too many green spirits reached Amma. Her cry broke the blessing, and it could not be finished.',
       lostTeach: 'Learning when to open myself and when to close is the true path of cultivation. Today I can use these sensitivities to help others, which is the point of them.',
       noAltar: 'Not at her altar.',
       // the chant's captions: the Pali as chanted over its meaning (v21.31), Thanissaro Bhikkhu's A Chanting Guide,
@@ -263,10 +263,10 @@
       cap2: 'Dukkhappattā ca niddukkhā, Bhayappattā ca nibbhayā, Sokappattā ca nissokā, Hontu sabbe’pi pāṇino.',
       cap2Sub: 'May all beings: who have fallen into suffering be without suffering, who have fallen into danger be without danger, who have fallen into sorrow be without sorrow.',
       // the card's What you did
-      noteHistory: 'You learned her history before you looked.',
-      noteAppa: 'You threw water at the one who was watching over her.',
-      noteNerve: 'Your nerve ran out. Your teacher closed your sight for you.',
-      noteKept: 'You kept the room.'
+      noteHistory: 'You learned her history before you used your Spirit Vision.',
+      noteAppa: 'You flicked holy water at her husband, who was watching over her.',
+      noteNerve: 'You kept your Spirit Vision open too long. Your teacher closed it for you.',
+      noteKept: 'You kept the green spirits away from her family.'
     },
     sayPrefix: 'q4'
   };

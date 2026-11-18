@@ -13,10 +13,10 @@
   const CL = { z0: 0.6, go: 2.0, steps: 11.6, slow: 12.0, ash: 15.0, palms: 17.2, thank: 17.3, bell: 18.7, shut: 20.2, fam: 21.3, z1: 23.0, black: 30.4, end: 32.6 };
   /* each ending's clock: its lines and beats, and where its close begins */
   const EN = {
-    A: { grab: 0.0, rv: 0.3, cry: 0.9, scream: 2.95, torn: 6.1, white: 6.3, open: 7.6, rise: 9.0, call: 12.6, still: 13.2, go: 14.4, rv2: 14.7, ph: 17.4, q: 24.2, close: 28.2 },
-    B: { throw: 0.15, splash: 0.55, comes: 0.9, white: 2.3, floor: 2.55, go: 3.3, push: 3.3, falter: 3.5, ml2: 4.0, back: 5.6, cry: 6.2, torn: 9.6, white2: 9.8, open: 11.4, rise: 12.0, ok: 16.0, ph: 17.6, q: 24.6, close: 28.4 },
+    A: { grab: 0.0, rv: 0.3, cry: 0.9, scream: 2.95, torn: 6.1, white: 6.3, open: 7.6, rise: 9.0, call: 12.6, still: 13.2, go: 14.4, rv2: 14.7, ph: 17.4, q: 24.56, close: 28.56 },
+    B: { throw: 0.15, splash: 0.55, comes: 0.9, white: 2.3, floor: 2.55, go: 3.3, push: 3.3, falter: 3.5, ml2: 4.0, back: 5.6, cry: 6.2, torn: 9.6, white2: 9.8, open: 11.4, rise: 12.0, ok: 16.0, ph: 17.6, q: 27.32, close: 31.12 },
     C: { step: 0.0, say: 0.7, kneel: 5.4, mala: 6.4, rv: 7.3, cry: 8.6, torn: 12.2, white: 12.4, open: 13.8, look: 14.6, my: 14.9, rise: 15.4, ph: 21.0, q: 26.8, close: 30.9 },
-    D: { shut: 0.2, reach: 1.0, ph0: 1.9, kneel: 4.6, rv: 4.7, cry: 7.8, torn: 11.2, white: 11.4, open: 12.8, rise: 13.6, ml: 14.8, ph: 19.4, q: 28.8, close: 33.4 }
+    D: { shut: 0.2, reach: 1.0, ph0: 1.9, kneel: 4.6, rv: 4.7, cry: 7.8, torn: 11.2, white: 11.4, open: 12.8, rise: 13.6, ml: 14.8, ph: 19.4, q: 31.24, close: 35.84 }
   };
 
   /* THE OPENING FILM's clock (c_ufilm.js FILMS.open draws to it) */
@@ -124,11 +124,11 @@
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);               // she stands, and her son is not beside her
     a.sfx(E.call, 'am4A1', 1);                          // she looks back for him: "Ravi?"
     a.sfx(E.rv2, 'rv4A2', 1);                           // let go, he goes to her: "Amma..."
-    a.sfx(E.ph, 'ph4A1', 1);                            // "You kept the blessing. You forgot the son. His fear was only love."
+    a.sfx(E.ph, 'ph4A1', 1);                            // "You protected the blessing. You forgot her son. His fear was only love."
     a.sfx(E.q, 'q4A1', 1);                              // "I saw a man in the way. He was her son."
     a.sfxFade(E.close - 2.0, E.close + 0.5, 'u4endA');
   }); }
-  /* B · THROW THE WATER AT THE THING ON HER BACK (bad) */
+  /* B · THROW THE HOLY WATER AT THE SPIRIT ON HER BACK (bad) */
   function scThrow(c, s, api) { endingScene(c, s, api, 'B', (E, a) => {
     a.sfx(E.throw, 'u4flick', 1); a.sfx(E.splash, 'u4patter', 1); a.sfx(E.splash + 0.08, 'u4dip', 0.6);   // the whole bowl
     a.sfx(E.splash, 'ml4B1', 1);                        // Mala, the water on her mother: "What are you doing?"
@@ -143,7 +143,7 @@
     a.sfx(E.open - 0.6, 'u4endB', 0.5);
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);
     a.sfx(E.ok, 'ml4B3', 1);                            // Mala, down to him on the floor: "Are you alright?"
-    a.sfx(E.ph, 'ph4B1', 1);                            // "Your part was the water and the room. The work was mine. Today you were lucky."
+    a.sfx(E.ph, 'ph4B1', 1);                            // "Your part was the holy water, and keeping the spirits away from her. The work was mine..."
     a.sfx(E.q, 'q4B1', 1);                              // "I saw it, and thought it was mine to fight."
     a.sfxFade(E.close - 2.0, E.close + 0.5, 'u4endB');
   }); }
@@ -163,7 +163,7 @@
     a.sfx(E.q, 'q4C1', 1);                              // "I didn't promise him anything. I told him what I saw."
     a.sfxFade(E.close - 2.0, E.close + 0.5, 'u4endC');
   }); }
-  /* D · KEEP YOUR PLACE: HOLD THE WATER, STAY CLOSED, TRUST YOUR TEACHER (good) */
+  /* D · KEEP YOUR PLACE: HOLD THE HOLY WATER, CLOSE YOUR SPIRIT VISION, TRUST YOUR TEACHER (good) */
   function scKeep(c, s, api) { endingScene(c, s, api, 'D', (E, a) => {
     a.sfx(E.shut, 'u4visoff', 0.85);                    // his sight shut: the wave home to him
     a.sfx(E.ph0, 'ph4D0', 1);                           // "Ravi. Hold her hand."
@@ -175,7 +175,7 @@
     a.sfx(E.open - 0.8, 'u4endD', 0.5);
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);
     a.sfx(E.ml, 'ml4D1', 1);                            // Mala, at the lamp: "Amma... you're standing."
-    a.sfx(E.ph, 'ph4D1', 1);                            // "You held. That is where it starts. But there were two of them afraid in this room..."
+    a.sfx(E.ph, 'ph4D1', 1);                            // "You kept your place. That is where it starts. But there were two people afraid in this room..."
     a.sfx(E.q, 'q4D1', 1);                              // "I kept to my part. Next time I'll see the people too."
     a.sfxFade(E.close - 2.0, E.close + 0.5, 'u4endD');
   }); }

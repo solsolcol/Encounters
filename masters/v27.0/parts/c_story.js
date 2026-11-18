@@ -230,7 +230,7 @@
     /* ================================================================ SPIRIT VISION'S PRICE (§4.2, §4.3)
        His heart climbs while his sight is open and settles while it is shut: past its limit the picture throbs and his
        nerve (Sanity) drains. Open to see; shut to breathe (chapter 3's teaching, with a price). If his nerve runs low,
-       his teacher closes his sight for him for a few seconds ("Close. Breathe."): every timed phase has a failure state
+       his teacher closes his sight for him for a few seconds ("I am closing your Spirit Vision. Breathe."): every timed phase has a failure state
        that ends it, and nothing soft-locks (v7.4) */
     const HEAT = { up: 1 / 32, down: 1 / 9, drain: 1.4, floor: 15, low: 26 };
     const sanityNow = () => { const v = kit && kit.stat ? kit.stat('sanity') : null; return Number.isFinite(v) ? v : 100; };
@@ -260,7 +260,7 @@
       if (open && play.heat >= 1 && sanityNow() < HEAT.low && !play.closeHold && !play.busy && (phase === 'sight' || phase === 'bless')) nerveOut();
       if (play.closeHold && (play.closeHold -= wdt) <= 0) { play.closeHold = 0; kit.vision(null); }
     }
-    /* "Close. Breathe." His sight shut for him and held shut for a few seconds; a price on the card (§4.3) */
+    /* "I am closing your Spirit Vision. Breathe." His sight shut for him and held shut for a few seconds; a price on the card (§4.3) */
     function nerveOut() {
       if (!kit || !kit.vision) return;
       kit.vision(false); kit.vision({ r: 0, moving: false }); play.closeHold = 5.5;
@@ -535,7 +535,7 @@
       /* (Chad, 18 Nov: "Have some dramatic voicelines along the way"): the second wave, his; the large one, his and his
          teacher's word on it */
       if (w === FIGHT.waves[1]) say('q4f1', null);                       // "More of them. From the doors."
-      if (w.list.some(r => r[3] === 'large')) { say('q4f2', null); phoQueued('ph4f1'); }   // "What is that...?" / "A heavy one. Again, and again, until it goes."
+      if (w.list.some(r => r[3] === 'large')) { say('q4f2', null); phoQueued('ph4f1'); }   // "What is that...?" / "That big one is strong. Keep flicking the holy water at it until it goes."
       void run;
     }
     /* a free body for one more of them: one no living shape in the fight is wearing (one still fading wears it too), taken in
@@ -764,7 +764,7 @@
       chantLine(C);
       if (kit && kit.captions) kit.captions([{ at: 0, end: 2 * C.len + CHANT_GAP + 0.4, text: W[C.cap], sub: W[C.cap + 'Sub'] }]);
     }
-    /* HE BREAKS OFF HIS CHANT TO SPEAK (18 Nov: "Close. Breathe." and his word after the water reached Appa were said over
+    /* HE BREAKS OFF HIS CHANT TO SPEAK (18 Nov: his "Close. Breathe." and his word after the water reached Appa were said over
        his own chant, one man chanting and talking at once): the line he is singing fades in a quarter of a second, he
        speaks, and then begins that line again from its start, under its caption. Between lines nothing is cut */
     /* (a line refused while another voice is live is never taken as said, and his chant is never broken off for a line
@@ -889,7 +889,7 @@
       play.heat = Math.min(play.heat, 0.5);
       if (kit && kit.pulse) kit.pulse({ bpm: 124, secs: 2.2 });
       objectiveFor('bless');
-      queueLine('ph4f3', () => talk(cast.phoB, SECS.ph4f3 || 3));            // "Now you are not alone. Send them back."
+      queueLine('ph4f3', () => talk(cast.phoB, SECS.ph4f3 || 3));            // "Luang Phor Phiboon is with you. Flick the golden water at the green spirits!"
       queueFn(() => { F.chantHeld = false; if (play.fight === F && F.on && chantNow) chantSing(chantNow); });
     }
     /* a batch of five to seven from the room's edges, most of them for her (R28: "the green entities should swarm in the
