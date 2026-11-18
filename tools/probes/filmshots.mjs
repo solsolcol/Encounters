@@ -12,7 +12,7 @@ import { chromium } from 'playwright';
 import fs from 'node:fs';
 import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
 const VIEW = process.env.VIEW || 'phone', PHONE = VIEW === 'phone';
-const CH = process.env.CH || 'e4c1', TS = (process.env.TS || '1,5,10').split(',').map(Number);
+const CH = process.env.CH || 'e4c1', TS = process.env.TS === 'none' ? [] : (process.env.TS || '1,5,10').split(',').map(Number);
 const SETTLE = +(process.env.SETTLE || 1500);
 const OUT = (process.env.OUT || '/tmp/filmshots') + '-' + VIEW;
 fs.mkdirSync(OUT, { recursive: true });
@@ -77,6 +77,20 @@ if (process.env.NOCULL) console.log('   nocull', await p.evaluate((spec) => { co
   for (const who of spec.split(',')) { const [key, i] = who.split('#'), P = S.person && S.person(key, +(i || 0)); if (P) P.group.traverse(m => { if (m.isMesh) { m.frustumCulled = false; n++; } }); }
   return n; }, process.env.NOCULL));
 await p.waitForFunction(() => window.__enc.cine.t() > 0.2, null, { timeout: 600000, polling: 300 });
+/* (v27.0) LENS=<step> [LENSTO=s]: THE CAMERA AS A MOVE (v25.5): the film sought from where it stands to its end (or LENSTO) in
+   steps of that many seconds, and at each the lens, where the camera stands and looks and the film's black, written to
+   <OUT>/lens-<name>.json in tools/probes/e4c3beats.mjs's rows (read by tools/probes/lensread.py). TS=none: no pictures */
+if (process.env.LENS) {
+  const rows = await p.evaluate(([step, to]) => { const E = window.__enc, C = E.cine, c = E.camera, out = [], fd = document.getElementById('cineFade');
+    const end = Math.min(to != null ? to : 1e9, C.dur() - 0.25);
+    for (let t = Math.ceil(C.t() / step) * step; t <= end + 1e-6; t += step) { C.seek(t); c.updateWorldMatrix(true, false); const e = c.matrixWorld.elements, dx = -e[8], dy = -e[9], dz = -e[10];
+      out.push([+t.toFixed(3), +c.fov.toFixed(4), +(Math.atan2(dx, -dz) * 180 / Math.PI).toFixed(4), +(Math.asin(Math.max(-1, Math.min(1, dy))) * 180 / Math.PI).toFixed(4),
+                +e[12].toFixed(4), +e[13].toFixed(4), +e[14].toFixed(4), +(parseFloat(fd && fd.style.opacity) || 0).toFixed(3), +(Math.atan2(e[1], e[5]) * 180 / Math.PI).toFixed(3)]); }
+    return out; }, [+process.env.LENS, process.env.LENSTO ? +process.env.LENSTO : null]);
+  const f = `${OUT}/lens-${OPT ? 'end' + OPT : FILM || 'film'}.json`;
+  fs.writeFileSync(f, JSON.stringify(rows));
+  console.log(el(), 'lens', rows.length, 'moments', rows.length ? `from ${rows[0][0]} to ${rows[rows.length - 1][0]}` : '', '->', f);
+}
 for (const t of TS) {
   await p.evaluate((t) => window.__enc.cine.seek(t), t);
   await p.evaluate(() => new Promise(r => { let k = 0; const f = () => (++k >= 3 ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); }));
