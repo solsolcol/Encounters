@@ -87,7 +87,8 @@ group("e4c4: the pictures in her flat, each a picture laid in a frame (masters/v
       [('w4t_kali', 'w4t_kali.jpg', 'Kali trampling Shiva, chromolithograph by R. Varma (Wellcome V0045118)'),
        ('w4t_ganesha', 'w4t_ganesha.jpg', 'Ganesha, chromolithograph (Wellcome V0044933)'),
        ('w4t_murugan', 'w4t_murugan.jpg', 'Kartikeya (Murugan), gouache on mica (Wellcome V0046230)'),
-       ('w4t_appa', 'w4t_appa.jpg', "Appa's photograph: the game's own Appa, head and shoulders")])
+       ('w4t_appa', 'w4t_appa.jpg', "Appa's photograph: the game's own Appa, head and shoulders"),
+       ('w4t_oldphoto', 'w4t_oldphoto.jpg', "her old photograph: a young woman in a yellow sari in trance at a temple festival, 1980s print (GPT Image 2.6, job 013ca386-de47-4e8f-9826-c6e888e14a0e)")])
 
 group("e4c4: the holy water's inventory picture, painted in the style of Chad's own (GPT Image 2.6 at high quality, job\n"
       "18b6a0ff-435b-4e06-8c03-1402bf0f66c2: his torch and amulet icons as the style references, the bowl's own reference on\n"

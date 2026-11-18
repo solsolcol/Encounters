@@ -120,16 +120,26 @@
        over the top of the photograph in a pale band: laid at 8.5 mm, under the frame's lip at 9 to 10.6) */
     const PIC = { y: 0.20, z: 0.0085, h: 0.295 };
     const pics = {};
-    function picIn(g, key, s = 1) {
+    function picIn(g, key, s = 1, P = PIC) {
       const m = M({ color: 0xffffff, roughness: 0.55, metalness: 0 });
       const pl = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), m); pl.visible = false; owned.push(pl.geometry);
-      pl.position.set(0, PIC.y * s, PIC.z * s); g.add(pl); pics[key] = pl;
+      pl.position.set(0, P.y * s, P.z * s); g.add(pl); pics[key] = pl;
       picLoad(key).then(t => { if (!t) return; const im = t.image, a = im && im.width ? im.width / im.height : 0.72;
-        m.map = t; m.needsUpdate = true; pl.scale.set(PIC.h * s * a, PIC.h * s, 1); pl.visible = true; });
+        m.map = t; m.needsUpdate = true; pl.scale.set(P.h * s * a, P.h * s, 1); pl.visible = true; });
       return pl;
     }
     /* Appa's photograph in its frame on the wall */
     for (const g of things.w4frameport || []) picIn(g, 'w4t_appa');
+    /* HER OLD PHOTOGRAPH (the plan's source 4: "a young woman in a yellow sari, eyes wide, a crowd round her, a temple's
+       festival"): the small standing frame on the display cabinet's middle shelf, behind its glass, turned a little to
+       the passage he comes in by; the picture laid in it (measured on the frame, tools/probes/planez.mjs: its card at z
+       0.032 to 0.033, its opening 0.219 by 0.165 about 0.100 up; the picture 1.5 mm before the card, under the lip at 0.038).
+       The cabinet's shelf is 1.06 m up its file (tools/probes/surfaces.mjs), its depth -0.20 to 0.24 */
+    const PIC_SMALL = { y: 0.100, z: 0.0345, h: 0.165 };
+    const CAB = { x: ROOMS.dining.x0 + 0.28 + 0.005, z: 6.15 };
+    const oldFrame = stand('w4framesmall', CAB.x + 0.10, 1.062, CAB.z - 0.08, Math.PI / 2 + 0.3, { lift: 1.5 });
+    picIn(oldFrame, 'w4t_oldphoto', 1, PIC_SMALL);
+    things.oldFrame = [oldFrame];
     /* HER SHRINE'S THREE: Kali in the middle, Ganesha at her left as one stands before it, Murugan at her right; each in
        the portrait frame drawn small, standing on the shrine's middle shelf and leaning back on its back panel (measured
        on the shrine: the shelf's top 0.335 up its file, the panel's face 0.19 behind its middle; the shrine is turned to

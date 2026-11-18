@@ -182,7 +182,7 @@
       'w4frameport', 'w4armchair', 'w4tubelight', 'w4tvconsole', 'w4stool', 'w4standfan', 'w4shoerack', 'w4tulsi',
       'w4doorleaf', 'w4fridge', 'w4pilltray', 'w4clock', 'w4phonetable', 'w4bed', 'w4commode', 'w4poles',
       'w4thoranam', 'w4altartray', 'w4coffee', 'w4garland', 'w4t_kali', 'w4t_ganesha', 'w4t_murugan', 'w4t_appa',
-      'iconwater',
+      'w4t_oldphoto', 'iconwater',
       /* <<< this chapter's own keys <<< */
       /* Grandmaster Pho, Chad's own model, as chapter 3 cast him (reuseInEpisode) */
       'pho'
@@ -3023,16 +3023,26 @@
        over the top of the photograph in a pale band: laid at 8.5 mm, under the frame's lip at 9 to 10.6) */
     const PIC = { y: 0.20, z: 0.0085, h: 0.295 };
     const pics = {};
-    function picIn(g, key, s = 1) {
+    function picIn(g, key, s = 1, P = PIC) {
       const m = M({ color: 0xffffff, roughness: 0.55, metalness: 0 });
       const pl = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), m); pl.visible = false; owned.push(pl.geometry);
-      pl.position.set(0, PIC.y * s, PIC.z * s); g.add(pl); pics[key] = pl;
+      pl.position.set(0, P.y * s, P.z * s); g.add(pl); pics[key] = pl;
       picLoad(key).then(t => { if (!t) return; const im = t.image, a = im && im.width ? im.width / im.height : 0.72;
-        m.map = t; m.needsUpdate = true; pl.scale.set(PIC.h * s * a, PIC.h * s, 1); pl.visible = true; });
+        m.map = t; m.needsUpdate = true; pl.scale.set(P.h * s * a, P.h * s, 1); pl.visible = true; });
       return pl;
     }
     /* Appa's photograph in its frame on the wall */
     for (const g of things.w4frameport || []) picIn(g, 'w4t_appa');
+    /* HER OLD PHOTOGRAPH (the plan's source 4: "a young woman in a yellow sari, eyes wide, a crowd round her, a temple's
+       festival"): the small standing frame on the display cabinet's middle shelf, behind its glass, turned a little to
+       the passage he comes in by; the picture laid in it (measured on the frame, tools/probes/planez.mjs: its card at z
+       0.032 to 0.033, its opening 0.219 by 0.165 about 0.100 up; the picture 1.5 mm before the card, under the lip at 0.038).
+       The cabinet's shelf is 1.06 m up its file (tools/probes/surfaces.mjs), its depth -0.20 to 0.24 */
+    const PIC_SMALL = { y: 0.100, z: 0.0345, h: 0.165 };
+    const CAB = { x: ROOMS.dining.x0 + 0.28 + 0.005, z: 6.15 };
+    const oldFrame = stand('w4framesmall', CAB.x + 0.10, 1.062, CAB.z - 0.08, Math.PI / 2 + 0.3, { lift: 1.5 });
+    picIn(oldFrame, 'w4t_oldphoto', 1, PIC_SMALL);
+    things.oldFrame = [oldFrame];
     /* HER SHRINE'S THREE: Kali in the middle, Ganesha at her left as one stands before it, Murugan at her right; each in
        the portrait frame drawn small, standing on the shrine's middle shelf and leaning back on its back panel (measured
        on the shrine: the shelf's top 0.335 up its file, the panel's face 0.19 behind its middle; the shrine is turned to
@@ -3369,7 +3379,7 @@
     const MALA_HEAD = () => HEAD_OF(cast.mala, 0.1, { x: cast.mala.group.position.x, y: 1.62, z: cast.mala.group.position.z });
     /* the five sources' places, measured from the things themselves (c_props.js) */
     const FOLDER_AT = { x: 4.80, y: 0.80, z: 6.40 };
-    const OLDPHOTO_AT = { x: ROOMS.dining.x0 + 0.30, y: 1.25, z: 6.15 };
+    const OLDPHOTO_AT = { x: ROOMS.dining.x0 + 0.385, y: 1.17, z: 6.07 };          // the picture's middle in its frame (c_props.js)
     const APPA_PHOTO_AT = { x: 0.62, y: 1.50, z: ROOMS.living.z1 - 0.03 };
     const SMALLBOWL_AT = { x: BOWL.x + 0.30, y: 0.04, z: BOWL.z - 0.12 };
     const LAMP_AT = { x: VILAKKU.x, y: 0.43, z: VILAKKU.z };
@@ -4220,12 +4230,12 @@
     /* (18 Nov: from 1.12, 4.45 her face was a profile in every close shot of the trance; here she is three quarters to him,
        a pace from her left knee, clear of the lamp at the altar's foot and of Appa by his photograph) */
     const S_EYE = [0.55, 1.62, 4.42];                                         // he stands at her front left, by her goddess's wall
-    /* where he watches the close from: his back to her altar's wall between Appa's photograph and the master bedroom's
-       door, her front left (18 Nov, photographed: from 1.12, 4.45 Ravi stood on the line from his eyes to her, his back
-       filling every shot of the close, and his teacher's word was a dark doorway and an arm). From here she is three
-       quarters to him at her altar, Mala beyond her, Ravi at her left a step behind (clear of both lines), his teacher
-       behind her chair seen past Ravi's shoulder */
-    const CLOSE_EYE = [1.30, 1.62, 4.93];
+    /* where he watches the close from: her front left, before Appa's photograph and the master bedroom's door (18 Nov,
+       photographed twice: from 1.12, 4.45 Ravi stood on the line from his eyes to her, his back filling every shot, and
+       his teacher's word was a dark doorway and an arm; from 1.30, 4.93, against the wall, her altar's cabinet stood
+       across the line to Mala and Appa stood a step from the lens). Here he is in front of the cabinet's face, Mala is
+       seen at her right beyond her, Ravi kneels at her left below her face, and his teacher stands clear behind her */
+    const CLOSE_EYE = [1.30, 1.62, 4.55];
     /* (ending B: where the thing comes to, a hand's breadth from his eyes, on the line from her back to him; and that line) */
     const TOWARD = (() => { const dx = CHAIR.x - S_EYE[0], dz = CHAIR.z - 0.3 - S_EYE[2], l = Math.hypot(dx, dz); return [dx / l, dz / l]; })();
     const COMES = [S_EYE[0] + TOWARD[0] * 0.36, 1.1, S_EYE[2] + TOWARD[1] * 0.36];
@@ -4376,11 +4386,17 @@
     const A_WALK = [{ x: R1.x + 0.32, z: R1.z + 0.42 }, { x: R1.x - 0.02, z: R1.z + 0.56 }];
     const STEPS_TK = 0.9;                                                     // her steps take run to here: 0.28 m by its own travel
     const MALA_C = { x: CHAIR.x - 0.42, z: CHAIR.z + 0.82 };                 // Mala at her right in the close
-    const RAVI_C = { x: CHAIR.x + 0.49, z: CHAIR.z + 0.43 };                 // Ravi at her left in the close, a step behind her
+    /* Ravi KNEELS at her left in the close (his kneel's own take), looking up at her: on his knees his head is a third of
+       a metre under her face from every place the close looks from, and clear of the chair, the lamp and her steps */
+    const RAVI_C = { x: CHAIR.x + 0.57, z: CHAIR.z + 0.67 };
     /* the last green shapes in the close (A, B, C: his sight still open): two of the night's wanderers going out by the
        room's open door as his teacher gives them a share of the merit, each crawling its own take's travel toward the
        doorway (its hips go 0.9 m in the 2.3 s it is seen, clear of the bowl, the TV and the sofa) and fading */
     const CLOSE_WANDER = [{ x: 0.60, z: 2.50 }, { x: 0.25, z: 0.72 }].map(W => ({ ...W, ry: faceTo(W.x, W.z, 0, -0.4) }));
+    /* Appa in the close (his sight still open in A, B, C): standing in the room between the shapes' way out and her
+       chair, turned to her, while the merit is given; he does not go with them. (18 Nov, photographed: by his photograph,
+       his own place, he stood a step from the close's lens and laid himself over his teacher's shoulder) */
+    const APPA_C = { x: 0.10, z: 1.64 };
     /* (the endings' clocks, EN, and the close's, CL, are the chapter's own, z_tail.js: chaptertest reads each scene's length
        from them) */
     /* her rise from the chair (§4.5: "she stands up out of the chair"), standing still after: the rise take run over its
@@ -4517,8 +4533,15 @@
           { t: E.close, name: 'pho', eye: [S_EYE[0] + 0.1, 0.45, S_EYE[2] + 0.2], at: [cast.phoB.home.x, 1.55, cast.phoB.home.z], fp: 52, fd: 46 }
         ]);
         phoTurn(t, E.ph, true, 'ph4B1');
-        /* his teacher's push: the right arm out at it and back (his cast's gesture), the hand off her head meanwhile */
-        if (off) whenReady(cast.phoB, (P) => { pose(P, 'mage_soell_cast_8', Math.min(1.3, (t - E.push) * 1.1)); });
+        /* his teacher's push: turned toward the thing that went for his student, both hands thrust out at it and held,
+           then back to his stand as his hand goes back to her head (18 Nov, photographed: the cast that raises both arms
+           threw his head back behind its own raised robe, and from the floor he read headless; this cast's thrust keeps
+           his head up and forward, 1.34 m, over his hands: tools/probes/takepath.mjs) */
+        if (t >= E.push - 0.05 && t < E.back) whenReady(cast.phoB, (P) => {
+          const w = smo(c01((t - E.push) / 0.3)) * (1 - smo(c01((t - E.back + 0.45) / 0.45)));
+          const d0 = faceTo(P.home.x, P.home.z, S_EYE[0], S_EYE[2]) - P.home.ry, d = Math.atan2(Math.sin(d0), Math.cos(d0));
+          P.group.rotation.y = P.home.ry + d * w;
+          pose(P, 'mage_soell_cast_3', runOf(t, E.push, E.push + 0.6, 0.5, 1.32), false, 'Sit_to_Stand_Transition_M', 1 - w, pingOf(t, 5.85, 0.25, PHO_BREATH)); });
       },
       /* C · HE GOES TO HIM (best). Between Ravi and the chair, his hands open, low: "She's not being hurt. It's leaving
          her. Stay with her. Hold her hand." Ravi kneels by the chair and takes her hand; Mala comes to the other side.
@@ -4581,9 +4604,18 @@
       }
     };
     /* Grandmaster Pho turns his face to him for his word (and talks: his own talking take, the line's length) */
+    /* (a man who talks to him turns his BODY to him, the head doing only the last of the turn, a neck's easy 26 degrees:
+       the rule of v14.5. 18 Nov, photographed: ending A's eye is at his left, 93 degrees round; the head alone at its
+       reach, over a talking take that turns his shoulders 15 degrees the other way, left him in profile looking away) */
+    const _ptv = new THREE.Vector3();
     function phoTurn(t, ph, low = false, line = null) {
       phoTalk(t, ph, line);
-      whenReady(cast.phoB, (P) => { if (t >= ph - 0.6) lookNow(P, low ? [S_EYE[0] + 0.1, 0.5, S_EYE[2] + 0.2] : 'lens', smo(c01((t - ph + 0.6) / 0.8)), 0.8, low ? 0 : 0.03); });
+      whenReady(cast.phoB, (P) => { if (t < ph - 0.6) return;
+        const k = smo(c01((t - ph + 0.6) / 0.8)), to = low ? [S_EYE[0] + 0.1, 0.5, S_EYE[2] + 0.2] : null;
+        if (to) _ptv.set(to[0], to[1], to[2]); else camera.getWorldPosition(_ptv);
+        const h = P.home, d0 = faceTo(h.x, h.z, _ptv.x, _ptv.z) - h.ry, d = Math.atan2(Math.sin(d0), Math.cos(d0));
+        P.group.rotation.y = h.ry + Math.sign(d) * Math.max(0, Math.abs(d) - 0.45) * k;
+        lookNow(P, to || 'lens', k, 0.8, low ? 0 : 0.03); });
     }
     /* his talking take on the line's own start, eased in and out of his stand, for the line's measured length (the v11.4
        law: he talks while he speaks, and goes back to rest after); its head held (PHO_STAND_HEAD) */
@@ -4605,7 +4637,9 @@
         else { put(P, CHAIR.x + R0[0], CHAIR.z + R0[1], CHAIR.ry);
           if (c < stepEnd) pose(P, 'steps', sk, false, 'rise', 1 - smo(c01((c - CL.steps) / 0.5)), 4.75);
           else if (c < CL.palms) pose(P, 'rise', pingOf(c - stepEnd, 4.6, 0.3, 3.0), false, 'steps', 1 - smo(c01((c - stepEnd) / 0.6)), STEPS_TK);
-          else pose(P, 'lamp', runOf(c, CL.palms, CL.palms + 2.6, 3.4, 5.6), false, 'rise', 1 - smo(c01((c - CL.palms) / 0.5)), 4.75); }
+          /* (her palms joined at her chest and held there, upright: the take's last half-second is a deep bow, 0.31 m from
+             hips to head, and held for ten seconds she stood folded over: 18 Nov, photographed) */
+          else pose(P, 'lamp', runOf(c, CL.palms, CL.palms + 2.2, 3.4, 4.8), false, 'rise', 1 - smo(c01((c - CL.palms) / 0.5)), 4.75); }
         lookNow(P, [ALTAR.x, 1.45, ALTAR.z], c < CL.palms ? smo(c01((c - CL.steps) / 1.5)) * 0.6 : 0, 0.6); });
       phoBless(tAll, 0);
       phoTalk(c, CL.z1, 'ph4z1');
@@ -4617,10 +4651,11 @@
         pose(P, 'Idle_3', 3 + c * 0.3, true); lookNow(P, HER_HEAD(), 1, 0.9);
         if (c > CL.ash - 0.6 && c < CL.ash + 1.8) { const h = HER_HEAD(); handTo(P, 'R', [h[0] - 0.02, h[1] + 0.02, h[2] + 0.09], [0, 0, -1], [0, 0.3, -1], smo(c01((c - CL.ash + 0.6) / 0.6)) * (1 - smo(c01((c - CL.ash - 1.2) / 0.6))), { out: 0.25, down: 0.35 }); } });
       /* (Ravi turns his head to his teacher as he is spoken to: a neck's reach, his body still turned to her) */
-      whenReady(cast.ravi, (P) => { put(P, RAVI_C.x, RAVI_C.z, faceTo(RAVI_C.x, RAVI_C.z, STAND.x, STAND.z)); pose(P, 'Idle_3', 5 + c * 0.3, true);
+      whenReady(cast.ravi, (P) => { put(P, RAVI_C.x, RAVI_C.z, faceTo(RAVI_C.x, RAVI_C.z, STAND.x, STAND.z)); pose(P, 'kneelhold', pingOf(c, 2.6, 0.8, 6.0));
         const h = HER_HEAD(), ph = cast.phoB.home, k = smo(c01((c - CL.z1 + 0.9) / 0.9));
         lookNow(P, [lp(h[0], ph.x, k), lp(h[1], 1.55, k), lp(h[2], ph.z, k)], 1, 1.0); });
       whenReady(spirits.oppress, (P) => { P.group.visible = false; });
+      whenReady(spirits.appa, (P) => { if (P.gone) return; put(P, APPA_C.x, APPA_C.z, faceTo(APPA_C.x, APPA_C.z, CHAIR.x, CHAIR.z + 0.3)); pose(P, 'Idle_3', 2 + c * 0.3, true); });
       spirits.wander.forEach((P, i) => whenReady(P, (Q) => { const W = CLOSE_WANDER[i]; if (!W) return;
         put(Q, W.x, W.z, W.ry); Q.group.visible = true; pose(Q, 'crawl', Math.max(0, c - CL.go + 1.0) * 0.6); }));
       wanderersAt(c, CL.go);
@@ -4631,10 +4666,10 @@
          palms and her lamp; his sight closing on her; out to her family about her in the room's own colours; and over her
          son's shoulder to his teacher for his word. Every aim is where its subject stands (a phone's frame is 35 degrees:
          his teacher and the shapes share it, her family shares it, but not both) */
-      const ph = cast.phoB.home, FAM = [0.04, 1.38, 4.32];
+      const ph = cast.phoB.home, FAM = [-0.10, 1.34, 4.50];
       track(c, [
-        { t: 0, name: 'merit', eye: CLOSE_EYE, at: [0.17, 1.09, 2.70], fp: 58, fd: 52, cut: true },
-        { t: 6.6, name: 'merit', eye: CLOSE_EYE, at: [0.12, 1.13, 2.78], fp: 58, fd: 52 },
+        { t: 0, name: 'merit', eye: CLOSE_EYE, at: [0.05, 1.09, 2.39], fp: 58, fd: 52, cut: true },
+        { t: 6.6, name: 'merit', eye: CLOSE_EYE, at: [0.02, 1.13, 2.47], fp: 58, fd: 52 },
         { t: 9.8, name: 'her', eye: CLOSE_EYE, at: [CHAIR.x + 0.05, 1.30, CHAIR.z + 0.30], fp: 56, fd: 50 },
         { t: CL.steps + 0.2, name: 'her', eye: CLOSE_EYE, at: [CHAIR.x + 0.05, 1.30, CHAIR.z + 0.30], fp: 56, fd: 50 },
         { t: CL.steps + 1.6, name: 'her', eye: CLOSE_EYE, at: [STAND.x + 0.02, 1.34, STAND.z], fp: 54, fd: 50 },

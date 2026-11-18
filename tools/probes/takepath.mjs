@@ -34,7 +34,9 @@ const world = (node, t) => { const chain = []; for (let n = node; n; n = n.getPa
     const tp = qrot(q, T.map(x => x * s)); p = [p[0] + tp[0], p[1] + tp[1], p[2] + tp[2]]; q = qmul(q, R); s *= S; }
   return p; };
 const find = (re) => root.listNodes().find(n => re.test(n.getName()));
-const parts = { head: find(/^(mixamorig:?)?Head$/), hips: find(/^(mixamorig:?)?Hips$/), lhand: find(/^(mixamorig:?)?LeftHand$/), rhand: find(/^(mixamorig:?)?RightHand$/) };
+/* (PARTS=LeftArm,RightArm,...: those bones instead of the head, the hips and the hands) */
+const parts = process.env.PARTS ? Object.fromEntries(process.env.PARTS.split(',').map(n => [n, find(new RegExp('^(mixamorig:?)?' + n + '$'))]))
+  : { head: find(/^(mixamorig:?)?Head$/), hips: find(/^(mixamorig:?)?Hips$/), lhand: find(/^(mixamorig:?)?LeftHand$/), rhand: find(/^(mixamorig:?)?RightHand$/) };
 const dur = Math.max(...[...ch.values()].flatMap(c => Object.values(c).map(s => s.t[s.t.length - 1])));
 const STEP = +(process.env.STEP || 0.5);
 console.log(`${file.split('/').pop()} ${clipName} (${dur.toFixed(2)} s): every ${STEP} s, the file's own metres (x y z), relative to the hips at 0`);
