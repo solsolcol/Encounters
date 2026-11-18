@@ -42,11 +42,16 @@ for (const ch of chs) {
     let memBase = null;
     for (let t = 0; film && t <= film; t += STEP) {
       const r = await p.evaluate(async (t) => { const E = window.__enc; if (!E.cine.active()) return null;
+        const seen = window.__progSeen || (window.__progSeen = new Set(E.renderer.info.programs.map(q => q.id)));
         E.cine.seek(t); await window.__frames(2); const m = E.renderer.info.memory;
-        return { n: E.renderer.info.programs.length, l: window.__lights(), tx: m.textures, g: m.geometries }; }, t);
+        /* (R51) each program made at this step, named: its material's type and the custom key or name it was made for */
+        const made = E.renderer.info.programs.filter(q => !seen.has(q.id)).map(q => { seen.add(q.id);
+          const ck = String(q.cacheKey || ''), cust = ck.split(',').filter(x => /[A-Za-z]{4,}/.test(x) && !/^(MeshStandardMaterial|MeshBasicMaterial|MeshPhysicalMaterial|MeshLambertMaterial|ShaderMaterial)$/.test(x)).slice(0, 3).join(' ');
+          return q.name + (cust ? ' {' + cust.slice(0, 90) + '}' : ''); });
+        return { n: E.renderer.info.programs.length, l: window.__lights(), tx: m.textures, g: m.geometries, made }; }, t);
       if (!r) break;
       if (memBase === null) memBase = { tx: r.tx, g: r.g };
-      if (r.n > base) { out.push(`film ${t.toFixed(2)}s +${r.n - base} [${r.l}]`); base = r.n; }
+      if (r.n > base) { out.push(`film ${t.toFixed(2)}s +${r.n - base} [${r.l}]` + (r.made.length ? '\n      ' + r.made.join('\n      ') : '')); base = r.n; }
       if (r.tx > memBase.tx || r.g > memBase.g) { out.push(`film ${t.toFixed(2)}s textures +${r.tx - memBase.tx} geometries +${r.g - memBase.g}`); memBase = { tx: Math.max(r.tx, memBase.tx), g: Math.max(r.g, memBase.g) }; }
     }
     const filmMade = base - start;
