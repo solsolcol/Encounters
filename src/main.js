@@ -10189,8 +10189,8 @@ const ADULT_TAKES = new Set([
   'q3C4', 'q3D0', 'q3D1', 'q3D2', 'q3D3', 'q3D4', 'q3D5', 'q3z1', 'q3K1', 'q3A', 'q3B', 'q3C', 'q3D',
   /* E4C4 ADULT BEGIN: v27.0, episode 4 chapter 4 (masters/v27.0/voices/registry.py) */
   'q4o1', 'q4o2', 'q4h1', 'q4h2', 'q4h3', 'q4s1', 'q4s2', 'q4s3', 'q4f1', 'q4f2',
-  'q4f3', 'q4f4', 'q4A1', 'q4B1', 'q4C0', 'q4C1', 'q4D1', 'q4A', 'q4B', 'q4C',
-  'q4D',
+  'q4f3', 'q4f4', 'q4A1', 'q4B1', 'q4C0', 'q4C1', 'q4D1', 'q4R1', 'q4A', 'q4B',
+  'q4C', 'q4D',
   /* E4C4 ADULT END */]);
 /* The rest of the cast. They share `voiceOut` and the duck, but not the
    boost — see voiceStage() above. */
@@ -10291,7 +10291,7 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   'ph4s1', 'ph4s2', 'ph4s3', 'ph4s4', 'ph4b0', 'ph4b1', 'ph4b2', 'ph4b3', 'ph4b4', 'ph4b5',
   'ph4f1', 'rv4f1', 'ph4f2', 'ph4f3', 'ml4t1', 'ml4t2', 'rv4t1', 'rv4A1', 'ml4A1', 'am4A1',
   'rv4A2', 'ph4A1', 'ml4B1', 'ph4B0', 'ml4B2', 'ml4B3', 'ph4B1', 'rv4C1', 'am4C1', 'ph4C1',
-  'ph4D0', 'rv4D1', 'ml4D1', 'ph4D1', 'ph4z0', 'ml4z1', 'am4z1', 'ph4z1',
+  'ph4D0', 'rv4D1', 'ph4D1', 'rv4R1', 'ml4R1', 'ph4z0', 'ml4z1', 'am4z1', 'ph4z1',
   /* E4C4 CAST END */]);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
@@ -15084,9 +15084,9 @@ const STING_SAMPLE = {
   ml4A1: ['ml4A1', 1], am4A1: ['am4A1', 1], rv4A2: ['rv4A2', 1], ph4A1: ['ph4A1', 1], q4A1: ['q4A1', 1],
   ml4B1: ['ml4B1', 1], ph4B0: ['ph4B0', 1], ml4B2: ['ml4B2', 1], ml4B3: ['ml4B3', 1], ph4B1: ['ph4B1', 1],
   q4B1: ['q4B1', 1], q4C0: ['q4C0', 1], rv4C1: ['rv4C1', 1], am4C1: ['am4C1', 1], ph4C1: ['ph4C1', 1],
-  q4C1: ['q4C1', 1], ph4D0: ['ph4D0', 1], rv4D1: ['rv4D1', 1], ml4D1: ['ml4D1', 1], ph4D1: ['ph4D1', 1],
-  q4D1: ['q4D1', 1], ph4z0: ['ph4z0', 1], ml4z1: ['ml4z1', 1], am4z1: ['am4z1', 1], ph4z1: ['ph4z1', 1],
-  q4A: ['q4A', 1], q4B: ['q4B', 1], q4C: ['q4C', 1], q4D: ['q4D', 1],
+  q4C1: ['q4C1', 1], ph4D0: ['ph4D0', 1], rv4D1: ['rv4D1', 1], ph4D1: ['ph4D1', 1], q4D1: ['q4D1', 1],
+  q4R1: ['q4R1', 1], rv4R1: ['rv4R1', 1], ml4R1: ['ml4R1', 1], ph4z0: ['ph4z0', 1], ml4z1: ['ml4z1', 1],
+  am4z1: ['am4z1', 1], ph4z1: ['ph4z1', 1], q4A: ['q4A', 1], q4B: ['q4B', 1], q4C: ['q4C', 1], q4D: ['q4D', 1],
   /* E4C4 SOUNDS END */
   /* E4C4 FX BEGIN: v27.0, its effects, beds and music (masters/v27.0/install_sound.py) */
   /* v27.0 · its effects, beds and music (masters/v27.0/sound.sh: every pick and why) */

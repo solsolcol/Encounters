@@ -40,40 +40,40 @@
  },
  "q4o2": {
   "who": "he",
-  "text": "[reflective] When Grandmaster Pho came to Singapore, a family asked him to see their mother.",
+  "text": "[reflective] When Grandmaster Puu came to Singapore, a family asked him to see their mother.",
   "pick": "a",
   "why": "the tighter read",
-  "med": 4.780000000000001,
+  "med": 4.67,
   "takes": {
    "a": {
-    "len": 4.72,
+    "len": 4.64,
     "first": 0.0,
-    "last": 4.6,
-    "e_first": 0.02,
-    "e_last": 4.7,
-    "tail_db": -20.7,
-    "tail_rel": -8.7,
-    "hole": 0.68,
+    "last": 4.52,
+    "e_first": 0.0,
+    "e_last": 4.62,
+    "tail_db": -21.4,
+    "tail_rel": -8.1,
+    "hole": 0.72,
     "sim": 1.0,
     "tag_said": false,
     "clean_end": true,
-    "wps": 2.99,
-    "heard": "When Grandmaster Pho came to Singapore, a family asked him to see their mother."
+    "wps": 3.03,
+    "heard": "When Grandmaster Puu came to Singapore, a family asked him to see their mother."
    },
    "b": {
-    "len": 4.96,
+    "len": 4.88,
     "first": 0.0,
-    "last": 4.8,
-    "e_first": 0.06,
-    "e_last": 4.94,
-    "tail_db": -24.0,
-    "tail_rel": -12.2,
-    "hole": 0.86,
+    "last": 4.7,
+    "e_first": 0.14,
+    "e_last": 4.86,
+    "tail_db": -27.8,
+    "tail_rel": -16.1,
+    "hole": 0.8,
     "sim": 1.0,
     "tag_said": false,
     "clean_end": true,
-    "wps": 2.87,
-    "heard": "When Grandmaster Pho came to Singapore, a family asked him to see their mother."
+    "wps": 2.97,
+    "heard": "When Grandmaster Puu came to Singapore, a family asked him to see their mother."
    }
   }
  },
@@ -3107,6 +3107,123 @@
     "clean_end": true,
     "wps": 2.75,
     "heard": "Luang Phor Phiboon is with you. Flick the golden water at the green spirits!"
+   }
+  }
+ },
+ "q4R1": {
+  "who": "he",
+  "text": "[astonished] Oh my god, she's standing!",
+  "pick": "a",
+  "why": "the tighter read",
+  "med": 2.49,
+  "takes": {
+   "a": {
+    "len": 2.16,
+    "first": 0.0,
+    "last": 1.86,
+    "e_first": 0.12,
+    "e_last": 2.14,
+    "tail_db": -32.9,
+    "tail_rel": -19.7,
+    "hole": 0.6,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.48,
+    "heard": "Oh my god, she's standing!"
+   },
+   "b": {
+    "len": 3.04,
+    "first": 0.0,
+    "last": 2.66,
+    "e_first": 0.0,
+    "e_last": 2.96,
+    "tail_db": -50.9,
+    "tail_rel": -37.3,
+    "hole": 0.82,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.69,
+    "heard": "Oh my god, she's standing!"
+   }
+  }
+ },
+ "rv4R1": {
+  "who": "ravi",
+  "text": "[astonished] Amma... you're standing. After all these years!",
+  "pick": "a",
+  "why": "the tighter read",
+  "med": 4.4399999999999995,
+  "takes": {
+   "a": {
+    "len": 6.64,
+    "first": 0.0,
+    "last": 4.36,
+    "e_first": 0.22,
+    "e_last": 4.6,
+    "tail_db": -88.6,
+    "tail_rel": -76.0,
+    "hole": 0.92,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.6,
+    "heard": "Amma... you're standing. After all these years!"
+   },
+   "b": {
+    "len": 4.72,
+    "first": 0.0,
+    "last": 4.5,
+    "e_first": 0.2,
+    "e_last": 4.7,
+    "tail_db": -30.5,
+    "tail_rel": -19.2,
+    "hole": 0.8,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.56,
+    "heard": "Amma... you're standing. After all these years!"
+   }
+  }
+ },
+ "ml4R1": {
+  "who": "mala",
+  "text": "[amazed] Unbelievable... Amma, you're on your feet!",
+  "pick": "b",
+  "why": "the tighter read",
+  "med": 3.9000000000000004,
+  "takes": {
+   "a": {
+    "len": 5.44,
+    "first": 1.66,
+    "last": 4.14,
+    "e_first": 0.1,
+    "e_last": 4.5,
+    "tail_db": -41.6,
+    "tail_rel": -31.3,
+    "hole": 0.24,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.36,
+    "heard": "Unbelievable... Amma, you're on your feet!"
+   },
+   "b": {
+    "len": 3.52,
+    "first": 1.32,
+    "last": 3.26,
+    "e_first": 0.1,
+    "e_last": 3.5,
+    "tail_db": -30.5,
+    "tail_rel": -20.2,
+    "hole": 0.2,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.76,
+    "heard": "Unbelievable... Amma, you're on your feet!"
    }
   }
  }

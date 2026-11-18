@@ -72,14 +72,14 @@
      moves what follows it. The names are QUOTED on purpose: build.py gives a sound to a chapter's own pack only when
      the chapter names it in quotes (v21.1). Written by masters/v27.0/script/secs.py from masters/v27.0/script/lines.py. */
   /* SECS BEGIN */
-  const SECS = {      // 69 of 69 MEASURED from their takes; the rest estimated at the speaker's pace
+  const SECS = {      // 71 of 71 MEASURED from their takes; the rest estimated at the speaker's pace
     /* him */
-    'q4o1': 6.65, 'q4o2': 4.73, 'q4h1': 3.61, 'q4h2': 3.53, 'q4h3': 9.77, 'q4s1': 4.01, 'q4s2': 3.05, 'q4s3': 4.09,
+    'q4o1': 6.65, 'q4o2': 4.65, 'q4h1': 3.61, 'q4h2': 3.53, 'q4h3': 9.77, 'q4s1': 4.01, 'q4s2': 3.05, 'q4s3': 4.09,
     'q4f1': 2.97, 'q4f2': 2.89, 'q4f3': 2.33, 'q4f4': 3.61, 'q4A1': 3.53, 'q4B1': 3.21, 'q4C0': 6.41, 'q4C1': 3.69,
-    'q4D1': 4.25, 'q4A': 4.25, 'q4B': 3.29, 'q4C': 3.85, 'q4D': 4.65,
+    'q4D1': 4.25, 'q4R1': 2.17, 'q4A': 4.25, 'q4B': 3.29, 'q4C': 3.85, 'q4D': 4.65,
     /* Ravi */
     'rv4o1': 2.6, 'rv4h1': 8.33, 'rv4h2': 6.73, 'rv4f1': 1.93, 'rv4t1': 1.77, 'rv4A1': 2.51, 'rv4A2': 0.61,
-    'rv4C1': 2.58, 'rv4D1': 2.98,
+    'rv4C1': 2.58, 'rv4D1': 2.98, 'rv4R1': 4.59,
     /* Grandmaster Pho */
     'ph4h0': 7.53, 'ph4h1': 6.81, 'ph4s0': 8.57, 'ph4s1': 3.58, 'ph4s2': 6.17, 'ph4s3': 8.45, 'ph4s4': 9.77,
     'ph4b0': 4.86, 'ph4b1': 4.65, 'ph4b2': 7.78, 'ph4b3': 4.36, 'ph4b4': 4.41, 'ph4b5': 5.2, 'ph4f1': 4.95,
@@ -87,7 +87,7 @@
     'ph4D1': 11.05, 'ph4z0': 10.56, 'ph4z1': 6.63,
     /* Mala */
     'ml4h1': 14.65, 'ml4h2': 9.61, 'ml4h3': 7.61, 'ml4t1': 1.13, 'ml4t2': 1.45, 'ml4A1': 2.27, 'ml4B1': 1.62,
-    'ml4B2': 1.01, 'ml4B3': 1.38, 'ml4D1': 1.93, 'ml4z1': 2.56,
+    'ml4B2': 1.01, 'ml4B3': 1.38, 'ml4R1': 3.53, 'ml4z1': 2.56,
     /* Amma */
     'am4h1': 1.81, 'am4A1': 0.72, 'am4C1': 1.25, 'am4z1': 1.18
   };
@@ -5012,7 +5012,7 @@
       decOpen = true;
       if (warmSounds) warmSounds(['u4scuffle', 'rv4A1', 'u4cry', 'ml4A1', 'u4torn', 'u4endA', 'u4stand', 'am4A1', 'rv4A2', 'ph4A1', 'q4A1',
                       'u4flick', 'u4patter', 'u4dip', 'ml4B1', 'u4chill', 'u4heart', 'u4fall', 'ph4B0', 'ml4B2', 'u4endB', 'ml4B3', 'ph4B1', 'q4B1',
-                      'u4tile', 'q4C0', 'u4tile2', 'rv4C1', 'u4endC', 'am4C1', 'ph4C1', 'q4C1', 'u4visoff', 'u4vison', 'u4goldpower', 'u4goldclear', 'ph4D0', 'rv4D1', 'u4endD', 'ml4D1',
+                      'u4tile', 'q4C0', 'u4tile2', 'rv4C1', 'u4endC', 'am4C1', 'ph4C1', 'q4C1', 'u4visoff', 'u4vison', 'u4goldpower', 'u4goldclear', 'ph4D0', 'rv4D1', 'u4endD', 'q4R1', 'rv4R1', 'ml4R1',
                       'ph4D1', 'q4D1', 'u4closemus', 'ph4z0', 'u4release', 'u4steps', 'ml4z1', 'am4z1', 'u4bell', 'ph4z1']);
       if (getState() === 'play') startDecision();
     }
@@ -5798,7 +5798,8 @@
         whenReady(cast.mala, (P) => {
           const L = SECS.ml4A1 || 2.3, s1 = E.scream + L + 0.15, back = smo(c01((t - s1) / 1.2)), turn = smo(c01((t - E.scream + 0.15) / 0.45));
           const stand = smo(c01((t - E.scream + 0.15) / 0.35));
-          if (!malaCall(P, t, E.scream, L, 'Talk_with_Right_Hand_Open', t < s1 ? 'lightlamp' : 'Idle_3', t < s1 ? MALA_LAMPT(t) : 2 + (t - s1) * 0.35)) {
+          if (!malaCall(P, t, E.scream, L, 'Talk_with_Right_Hand_Open', t < s1 ? 'lightlamp' : 'Idle_3', t < s1 ? MALA_LAMPT(t) : 2 + (t - s1) * 0.35)
+              && !malaCall(P, t, E.Rm, SECS.ml4R1 || 3.5, 'Stand_and_Chat', 'Idle_3', 2 + Math.max(0, t - s1) * 0.35)) {
             if (stand <= 0.001) pose(P, 'lightlamp', MALA_LAMPT(t)); else pose(P, 'Idle_3', 2 + Math.max(0, t - s1) * 0.35, true); }
           P.group.rotation.y = lpA(lpA(0, faceTo(MALA_T.x, MALA_T.z, RG.x, RG.z), turn), MALA_TO_HER, back);
           lookNow(P, t < s1 ? [RG.x, 1.5, RG.z] : (t < E.rise ? AMMA_FACE : HER_HEAD()), t < s1 ? 0.8 : 0.9, 0.9); });
@@ -5851,7 +5852,7 @@
           if (P.fx) P.fx.set('uAlpha', t < E.torn ? 1 : 1 - smo(c01((t - E.torn - 0.3) / 0.9)));
           goFlash(P, t, E); });
         goddess(t < E.falter ? 1 : t < E.back ? 0.35 : t < E.torn ? lp(0.35, 1, smo(c01((t - E.back) / 1.2))) : 1 - smo(c01((t - E.torn) / 1.5)));
-        whenReady(cast.ravi, (P) => { rushHeld(P, t); lookNow(P, AMMA_FACE, 1, 0.9); });
+        whenReady(cast.ravi, (P) => { rushHeld(P, t); lookNow(P, t < E.rise ? AMMA_FACE : HER_HEAD(), 1, 0.9); });
         /* Mala: crying out as the water hits her mother ("What are you doing?"), and at the falter ("Amma!"); her scream
            let go once her mother is up, and her eyes down to him on the floor ("Are you alright?") */
         /* (R68's law here too: her three lines each her talking take for its length, over her stand between them, alive;
@@ -5860,6 +5861,7 @@
           const st = smo(c01((t - E.splash + 0.15) / 0.35)), idle = 2 + Math.max(0, t - E.splash) * 0.35;
           if (!malaCall(P, t, E.splash, SECS.ml4B1 || 1.7, 'Talk_with_Right_Hand_Open', st < 1 ? 'lightlamp' : 'Idle_3', st < 1 ? MALA_LAMPT(t) : idle)
               && !malaCall(P, t, E.ml2, SECS.ml4B2 || 1.0, 'Talk_with_Right_Hand_Open', 'Idle_3', idle)
+              && !malaCall(P, t, E.Rm, SECS.ml4R1 || 3.5, 'Stand_and_Chat', 'Idle_3', idle)
               && !malaCall(P, t, E.ok, SECS.ml4B3 || 1.6, 'Stand_and_Chat', 'Idle_3', idle)) {
             if (st <= 0.001) pose(P, 'lightlamp', MALA_LAMPT(t)); else pose(P, 'Idle_3', idle, true); }
           P.group.rotation.y = lpA(0, MALA_TO_HER, smo(c01((t - E.splash + 0.1) / 0.5)));           // (R46: to her mother, not into the altar)
@@ -5905,14 +5907,20 @@
         whenReady(cast.ravi, (P) => {
           if (t < E.kneel) { rushHeld(P, t); lookNow(P, CR_EYE, smo(c01((t - 0.5) / 0.8)), 0.8); }
           else if (t > E.rise + 3.6) { put(P, KR.x, KR.z, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2));        // (R68: stood again, alive)
-            pose(P, 'Idle_3', 2 + (t - E.rise - 3.6) * 0.35, true, 'kneelhold', 1 - smo(c01((t - E.rise - 3.6) / 0.8)), 0.2); lookNow(P, HER_HEAD(), 1, 0.9); }
+            const it = 2 + (t - E.rise - 3.6) * 0.35;
+            if (!malaCall(P, t, E.Rv, SECS.rv4R1 || 4.6, 'Stand_and_Chat', 'Idle_3', it))
+              pose(P, 'Idle_3', it, true, 'kneelhold', 1 - smo(c01((t - E.rise - 3.6) / 0.8)), 0.2);
+            lookNow(P, HER_HEAD(), 1, 0.9); }
           else { walkKneel(P, t, E.kneel, rushXZ(P, 2.5), KR, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2), ['rush', pingOf(E.kneel, 2.45, 0.12, 1.4)],
               { ry0: RAVI_RY, kt: (td) => (t < E.rise ? (td < 4.2 ? td : pingOf(td - 4.2, 4.05, 0.15, 3.4)) : runOf(t, E.rise + 0.6, E.rise + 3.6, 4.2, 0.2)) });
             lookNow(P, lp3(CR_EYE, AMMA_FACE, smo(c01((t - E.kneel) / 0.5))), 1, 0.9); } });
         whenReady(cast.mala, (P) => {
           if (t < E.mala) { pose(P, 'lightlamp', MALA_LAMPT(t)); lookNow(P, AMMA_FACE, 1, 0.9); }
           else if (t > E.rise + 3.8) { put(P, KM.x, KM.z, faceTo(KM.x, KM.z, CHAIR.x, CHAIR.z + 0.2));        // (R68: stood again, alive)
-            pose(P, 'Idle_3', 2 + (t - E.rise - 3.8) * 0.35, true, 'kneelhold', 1 - smo(c01((t - E.rise - 3.8) / 0.8)), 0.2); lookNow(P, HER_HEAD(), 1, 0.9); }
+            const it = 2 + (t - E.rise - 3.8) * 0.35;
+            if (!malaCall(P, t, E.Rm, SECS.ml4R1 || 3.5, 'Stand_and_Chat', 'Idle_3', it))
+              pose(P, 'Idle_3', it, true, 'kneelhold', 1 - smo(c01((t - E.rise - 3.8) / 0.8)), 0.2);
+            lookNow(P, HER_HEAD(), 1, 0.9); }
           else { walkKneel(P, t, E.mala, MALA_T, KM, faceTo(KM.x, KM.z, CHAIR.x, CHAIR.z + 0.2), ['lightlamp', 5.4],
               { ry0: faceTo(MALA_T.x, MALA_T.z, CHAIR.x, CHAIR.z), kt: (td) => (t < E.rise ? (td < 4.2 ? td : pingOf(td - 4.2, 4.05, 0.15, 3.4)) : runOf(t, E.rise + 0.8, E.rise + 3.8, 4.2, 0.2)) });
             lookNow(P, AMMA_FACE, 1, 0.9); } });
@@ -5944,16 +5952,21 @@
            "Hold her hand" round to her side and down onto his knees: walkKneel, its two legs) */
         whenReady(cast.ravi, (P) => {
           const RX = rushXZ(P, 2.5), R2 = { x: RX.x - 0.12, z: RX.z + 0.18 }, r2 = faceTo(R2.x, R2.z, CHAIR.x, CHAIR.z);
+          if (t > E.rise + 3.6) { put(P, KR.x, KR.z, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2));
+            const it = 2 + (t - E.rise - 3.6) * 0.35;
+            if (!malaCall(P, t, E.Rv, SECS.rv4R1 || 4.6, 'Stand_and_Chat', 'Idle_3', it))
+              pose(P, 'Idle_3', it, true, 'kneelhold', 1 - smo(c01((t - E.rise - 3.6) / 0.8)), 0.2);
+            lookNow(P, HER_HEAD(), 1, 0.9); return; }
           if (t < E.reach) rushHeld(P, t);
           else if (t < E.kneel) walkKneel(P, t, E.reach, RX, R2, r2, ['rush', pingOf(E.reach, 2.45, 0.12, 1.4)], { ry0: RAVI_RY, kneelAt: Infinity });
           else walkKneel(P, t, E.kneel, R2, KR, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2), ['Idle_3', 3 + (E.kneel - E.reach) * 0.4],
             { ry0: r2, kt: (td) => (t < E.rise ? Math.min(4.2, td) : runOf(t, E.rise + 0.6, E.rise + 3.6, 4.2, 0.2)) });
           lookNow(P, AMMA_FACE, 1, 0.9); });
         /* (R68: at her lamp, breathing, through the cry and the light; as her mother's eyes open, into her stand and turned to
-           her; her "Amma... you're standing." her talking take for its length; her eyes on her mother's face as it rises) */
+           her; her "Unbelievable... Amma, you're on your feet!" (R55) her talking take for its length; her eyes on her mother's face as it rises) */
         whenReady(cast.mala, (P) => {
           const k = smo(c01((t - E.open) / 0.9)), idle = 2 + Math.max(0, t - E.open) * 0.35;
-          if (!malaCall(P, t, E.ml, SECS.ml4D1 || 1.9, 'Stand_and_Chat', 'Idle_3', idle)) {
+          if (!malaCall(P, t, E.ml, SECS.ml4R1 || 3.5, 'Stand_and_Chat', 'Idle_3', idle)) {
             if (k <= 0.001) pose(P, 'lightlamp', MALA_LAMPT(t)); else pose(P, 'Idle_3', idle, true, 'lightlamp', 1 - k, MALA_LAMPT(E.open)); }
           if (k > 0) P.group.rotation.y = lpA(faceTo(MALA_T.x, MALA_T.z, CHAIR.x, CHAIR.z), MALA_TO_HER, k);
           lookNow(P, t < E.rise ? AMMA_FACE : HER_HEAD(), 1, 0.9); });
@@ -6413,11 +6426,14 @@
   /* each ending's clock: its lines and beats, and where its close begins. `sight` and `sightFor` (R65, Chad, 18 Nov
      evening: "when auntie is about to stand up from her wheelchair, the vision should be turned off for that special
      moment"): his sight going home to him once the light has cleared, shut before her rise begins */
+  /* (R55, Chad, 18 Nov 2026: at her rise, in every ending, he says "Oh my god, she's standing!" (R1) and her son (Rv)
+     and her daughter (Rm; D's is its old `ml`) each say a line of amazement, one voice at a time; everything after them
+     moved on by the time they take, each ending's own order of who speaks first kept to its story) */
   const EN = {
-    A: { grab: 0.0, rv: 0.3, cry: 0.9, scream: 2.95, torn: 6.1, white: 6.3, open: 7.6, sight: 7.75, sightFor: 1.0, rise: 9.0, call: 12.6, still: 13.2, go: 14.4, rv2: 14.7, ph: 17.4, q: 24.56, close: 28.56 },
-    B: { throw: 0.15, splash: 0.55, comes: 0.9, white: 2.3, floor: 2.55, go: 3.3, push: 3.3, hit: 3.68, falter: 3.5, ml2: 4.0, back: 5.6, cry: 6.2, torn: 9.6, white2: 9.8, open: 11.4, sight: 11.2, sightFor: 0.65, rise: 12.0, ok: 16.0, ph: 17.6, q: 27.32, close: 31.12 },
-    C: { step: 0.0, say: 0.7, kneel: 5.4, mala: 6.4, rv: 7.3, cry: 8.6, torn: 12.2, white: 12.4, open: 13.8, look: 14.6, my: 14.9, sight: 14.1, sightFor: 1.0, rise: 15.4, ph: 21.0, q: 26.8, close: 30.9 },
-    D: { reach: 1.0, ph0: 1.9, kneel: 4.6, rv: 4.7, cry: 7.8, torn: 11.2, white: 11.4, open: 12.8, sight: 12.8, sightFor: 0.6, rise: 13.6, ml: 14.8, ph: 19.4, q: 31.24, close: 35.84 }
+    A: { grab: 0.0, rv: 0.3, cry: 0.9, scream: 2.95, torn: 6.1, white: 6.3, open: 7.6, sight: 7.75, sightFor: 1.0, rise: 9.0, R1: 9.7, Rm: 12.2, call: 16.05, still: 13.2, go: 17.85, rv2: 18.15, ph: 23.25, q: 30.41, close: 34.41 },
+    B: { throw: 0.15, splash: 0.55, comes: 0.9, white: 2.3, floor: 2.55, go: 3.3, push: 3.3, hit: 3.68, falter: 3.5, ml2: 4.0, back: 5.6, cry: 6.2, torn: 9.6, white2: 9.8, open: 11.4, sight: 11.2, sightFor: 0.65, rise: 12.0, R1: 12.7, Rm: 15.2, Rv: 19.05, ok: 23.95, ph: 25.55, q: 35.27, close: 39.07 },
+    C: { step: 0.0, say: 0.7, kneel: 5.4, mala: 6.4, rv: 7.3, cry: 8.6, torn: 12.2, white: 12.4, open: 13.8, look: 14.6, my: 14.9, sight: 14.1, sightFor: 1.0, rise: 15.4, R1: 16.45, Rv: 20.0, Rm: 24.9, ph: 28.75, q: 34.55, close: 38.65 },
+    D: { reach: 1.0, ph0: 1.9, kneel: 4.6, rv: 4.7, cry: 7.8, torn: 11.2, white: 11.4, open: 12.8, sight: 12.8, sightFor: 0.6, rise: 13.6, R1: 15.1, Rv: 18.2, ml: 23.1, ph: 26.95, q: 38.79, close: 43.39 }
   };
 
   /* THE OPENING FILM's clock (c_ufilm.js FILMS.open draws to it) */
@@ -6525,8 +6541,10 @@
     a.sfx(E.open - 0.4, 'u4endA', 0.5);
     a.sfx(E.sight, 'u4visoff', 0.85);                   // his sight home to him, before she stands (R65)
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);               // she stands, and her son is not beside her
+    a.sfx(E.R1, 'q4R1', 1);                             // "Oh my god, she's standing!" (R55)
+    a.sfx(E.Rm, 'ml4R1', 1);                            // Mala: "Unbelievable... Amma, you're on your feet!" (R55)
     a.sfx(E.call, 'am4A1', 1);                          // she looks back for him: "Ravi?"
-    a.sfx(E.rv2, 'rv4A2', 1);                           // let go, he goes to her: "Amma..."
+    a.sfx(E.rv2, 'rv4R1', 1);                           // let go, he goes to her: "Amma... you're standing. After all these years!"
     a.sfx(E.ph, 'ph4A1', 1);                            // "You protected the blessing. You forgot her son. His fear was only love."
     a.sfx(E.q, 'q4A1', 1);                              // "I saw a man in the way. He was her son."
     a.sfxFade(E.close - 2.0, E.close + 0.5, 'u4endA');
@@ -6548,6 +6566,9 @@
     a.sfx(E.open - 0.6, 'u4endB', 0.5);
     a.sfx(E.sight, 'u4visoff', 0.85);                   // his sight home to him, before she stands (R65)
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);
+    a.sfx(E.R1, 'q4R1', 1);                             // from the floor: "Oh my god, she's standing!" (R55)
+    a.sfx(E.Rm, 'ml4R1', 1);                            // Mala: "Unbelievable... Amma, you're on your feet!" (R55)
+    a.sfx(E.Rv, 'rv4R1', 1);                            // Ravi: "Amma... you're standing. After all these years!" (R55)
     a.sfx(E.ok, 'ml4B3', 1);                            // Mala, down to him on the floor: "Are you alright?"
     a.sfx(E.ph, 'ph4B1', 1);                            // "Your part was the holy water, and keeping the spirits away from her. The work was mine..."
     a.sfx(E.q, 'q4B1', 1);                              // "I saw it, and thought it was mine to fight."
@@ -6566,6 +6587,9 @@
     a.sfx(E.sight, 'u4visoff', 0.85);                   // his sight home to him, before she stands (R65)
     a.sfx(E.my, 'am4C1', 1);                            // her eyes open on her son: "My boy."
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);               // she stands, holding his hand
+    a.sfx(E.R1, 'q4R1', 1);                             // "Oh my god, she's standing!" (R55)
+    a.sfx(E.Rv, 'rv4R1', 1);                            // Ravi, up beside her: "Amma... you're standing. After all these years!" (R55)
+    a.sfx(E.Rm, 'ml4R1', 1);                            // Mala: "Unbelievable... Amma, you're on your feet!" (R55)
     a.sfx(E.ph, 'ph4C1', 1);                            // "You saw what was there, and you told him only what you knew. Nothing more."
     a.sfx(E.q, 'q4C1', 1);                              // "I didn't promise him anything. I told him what I saw."
     a.sfxFade(E.close - 2.0, E.close + 0.5, 'u4endC');
@@ -6583,7 +6607,9 @@
     a.sfx(E.open - 0.8, 'u4endD', 0.5);
     a.sfx(E.sight, 'u4visoff', 0.85);                   // his sight home to him, before she stands (R65)
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);
-    a.sfx(E.ml, 'ml4D1', 1);                            // Mala, at the lamp: "Amma... you're standing."
+    a.sfx(E.R1, 'q4R1', 1);                             // "Oh my god, she's standing!" (R55)
+    a.sfx(E.Rv, 'rv4R1', 1);                            // Ravi, up with her: "Amma... you're standing. After all these years!" (R55)
+    a.sfx(E.ml, 'ml4R1', 1);                            // Mala, at the lamp: "Unbelievable... Amma, you're on your feet!" (R55)
     a.sfx(E.ph, 'ph4D1', 1);                            // "You kept your place. That is where it starts. But there were two people afraid in this room..."
     a.sfx(E.q, 'q4D1', 1);                              // "I kept to my part. Next time I'll see the people too."
     a.sfxFade(E.close - 2.0, E.close + 0.5, 'u4endD');

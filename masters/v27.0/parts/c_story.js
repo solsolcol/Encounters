@@ -1116,7 +1116,7 @@
       decOpen = true;
       if (warmSounds) warmSounds(['u4scuffle', 'rv4A1', 'u4cry', 'ml4A1', 'u4torn', 'u4endA', 'u4stand', 'am4A1', 'rv4A2', 'ph4A1', 'q4A1',
                       'u4flick', 'u4patter', 'u4dip', 'ml4B1', 'u4chill', 'u4heart', 'u4fall', 'ph4B0', 'ml4B2', 'u4endB', 'ml4B3', 'ph4B1', 'q4B1',
-                      'u4tile', 'q4C0', 'u4tile2', 'rv4C1', 'u4endC', 'am4C1', 'ph4C1', 'q4C1', 'u4visoff', 'u4vison', 'u4goldpower', 'u4goldclear', 'ph4D0', 'rv4D1', 'u4endD', 'ml4D1',
+                      'u4tile', 'q4C0', 'u4tile2', 'rv4C1', 'u4endC', 'am4C1', 'ph4C1', 'q4C1', 'u4visoff', 'u4vison', 'u4goldpower', 'u4goldclear', 'ph4D0', 'rv4D1', 'u4endD', 'q4R1', 'rv4R1', 'ml4R1',
                       'ph4D1', 'q4D1', 'u4closemus', 'ph4z0', 'u4release', 'u4steps', 'ml4z1', 'am4z1', 'u4bell', 'ph4z1']);
       if (getState() === 'play') startDecision();
     }

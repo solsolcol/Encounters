@@ -12,7 +12,9 @@ PACE = {'he': 2.3, 'pho': 1.9, 'amma': 2.0, 'ravi': 2.4, 'mala': 2.4}      # wor
 LINES = [
     # ---- the opening film (§4.0)
     ('q4o1', 'he', 'opening film', "Training began the next morning. Open. Close. Every day, for months."),
-    ('q4o2', 'he', 'opening film', "When Grandmaster Pho came to Singapore, a family asked him to see their mother."),
+    #      (his name is written Pho and said Puu: Chad, 12 Nov 2026, said again 18 Nov, R49; the voice is given his
+    #       spelling, as chapter 3's q3w3 and tn3c1 were)
+    ('q4o2', 'he', 'opening film', "When Grandmaster Puu came to Singapore, a family asked him to see their mother."),
     ('rv4o1', 'ravi', 'opening film', "Grandmaster. Thank you for coming. Please, come in."),
     # ---- play I, history first (§4.1)
     ('ph4h0', 'pho', 'play, history', "First, learn her story. Talk to her family, and look around her home. Then tell me what you learned."),
@@ -81,9 +83,16 @@ LINES = [
     ('q4C1', 'he', 'ending C', "I didn't promise him anything. I told him what I saw."),
     ('ph4D0', 'pho', 'ending D', "Ravi. Hold her hand."),
     ('rv4D1', 'ravi', 'ending D', "Okay. Okay. I've got you, Amma."),
-    ('ml4D1', 'mala', 'ending D', "Amma... you're standing."),
     ('ph4D1', 'pho', 'ending D', "You kept your place. That is where it starts. But there were two people afraid in this room, and you are the one who could see."),
     ('q4D1', 'he', 'ending D', "I kept to my part. Next time I'll see the people too."),
+    # ---- her rise, in every ending (Chad, 18 Nov 2026, R55: "Have a dramatic voiceline for the player saying 'oh my
+    #      god, she's standing!' The male and female models both also should say something each, they need to sound
+    #      surprised and amazed that she finally can stand after all these years, unbelievable, etc."): his words as he
+    #      gave them, and one line each for her son and her daughter in their own words (Mala's replaces ending D's
+    #      "Amma... you're standing.", which Ravi's now says first)
+    ('q4R1', 'he', 'every ending, her rise', "Oh my god, she's standing!"),
+    ('rv4R1', 'ravi', 'every ending, her rise', "Amma... you're standing. After all these years!"),
+    ('ml4R1', 'mala', 'every ending, her rise', "Unbelievable... Amma, you're on your feet!"),
     # ---- the close, every ending: the dedication of merit SPOKEN (A Chanting Guide's own words, the anumodana-bearing
     #      ones left out: R-V B15, B16), and the case file's own caution (§4.5)
     ('ph4z0', 'pho', 'the close', "May all beings, without limit, without end, have a share in the merit just now made: those I have seen, and those I have never seen."),

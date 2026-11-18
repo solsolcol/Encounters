@@ -11,7 +11,7 @@
   "speaker": "he",
   "voice_id": "bP8FJDHmWVEgXJDitdQd",
   "takes": 2,
-  "prompt": "[reflective] When Grandmaster Pho came to Singapore, a family asked him to see their mother."
+  "prompt": "[reflective] When Grandmaster Puu came to Singapore, a family asked him to see their mother."
  },
  {
   "key": "rv4o1",
@@ -481,5 +481,26 @@
   "voice_id": "bP8FJDHmWVEgXJDitdQd",
   "takes": 2,
   "prompt": "[reflective] I held my place. Next time, I see the people too."
+ },
+ {
+  "key": "q4R1",
+  "speaker": "he",
+  "voice_id": "bP8FJDHmWVEgXJDitdQd",
+  "takes": 2,
+  "prompt": "[astonished] Oh my god, she's standing!"
+ },
+ {
+  "key": "rv4R1",
+  "speaker": "ravi",
+  "voice_id": "mnlHLlgagNmPlvf52KvT",
+  "takes": 2,
+  "prompt": "[astonished] Amma... you're standing. After all these years!"
+ },
+ {
+  "key": "ml4R1",
+  "speaker": "mala",
+  "voice_id": "PIuCDYHMakaExG7GFyLU",
+  "takes": 2,
+  "prompt": "[amazed] Unbelievable... Amma, you're on your feet!"
  }
 ]

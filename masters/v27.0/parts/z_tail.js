@@ -14,11 +14,14 @@
   /* each ending's clock: its lines and beats, and where its close begins. `sight` and `sightFor` (R65, Chad, 18 Nov
      evening: "when auntie is about to stand up from her wheelchair, the vision should be turned off for that special
      moment"): his sight going home to him once the light has cleared, shut before her rise begins */
+  /* (R55, Chad, 18 Nov 2026: at her rise, in every ending, he says "Oh my god, she's standing!" (R1) and her son (Rv)
+     and her daughter (Rm; D's is its old `ml`) each say a line of amazement, one voice at a time; everything after them
+     moved on by the time they take, each ending's own order of who speaks first kept to its story) */
   const EN = {
-    A: { grab: 0.0, rv: 0.3, cry: 0.9, scream: 2.95, torn: 6.1, white: 6.3, open: 7.6, sight: 7.75, sightFor: 1.0, rise: 9.0, call: 12.6, still: 13.2, go: 14.4, rv2: 14.7, ph: 17.4, q: 24.56, close: 28.56 },
-    B: { throw: 0.15, splash: 0.55, comes: 0.9, white: 2.3, floor: 2.55, go: 3.3, push: 3.3, hit: 3.68, falter: 3.5, ml2: 4.0, back: 5.6, cry: 6.2, torn: 9.6, white2: 9.8, open: 11.4, sight: 11.2, sightFor: 0.65, rise: 12.0, ok: 16.0, ph: 17.6, q: 27.32, close: 31.12 },
-    C: { step: 0.0, say: 0.7, kneel: 5.4, mala: 6.4, rv: 7.3, cry: 8.6, torn: 12.2, white: 12.4, open: 13.8, look: 14.6, my: 14.9, sight: 14.1, sightFor: 1.0, rise: 15.4, ph: 21.0, q: 26.8, close: 30.9 },
-    D: { reach: 1.0, ph0: 1.9, kneel: 4.6, rv: 4.7, cry: 7.8, torn: 11.2, white: 11.4, open: 12.8, sight: 12.8, sightFor: 0.6, rise: 13.6, ml: 14.8, ph: 19.4, q: 31.24, close: 35.84 }
+    A: { grab: 0.0, rv: 0.3, cry: 0.9, scream: 2.95, torn: 6.1, white: 6.3, open: 7.6, sight: 7.75, sightFor: 1.0, rise: 9.0, R1: 9.7, Rm: 12.2, call: 16.05, still: 13.2, go: 17.85, rv2: 18.15, ph: 23.25, q: 30.41, close: 34.41 },
+    B: { throw: 0.15, splash: 0.55, comes: 0.9, white: 2.3, floor: 2.55, go: 3.3, push: 3.3, hit: 3.68, falter: 3.5, ml2: 4.0, back: 5.6, cry: 6.2, torn: 9.6, white2: 9.8, open: 11.4, sight: 11.2, sightFor: 0.65, rise: 12.0, R1: 12.7, Rm: 15.2, Rv: 19.05, ok: 23.95, ph: 25.55, q: 35.27, close: 39.07 },
+    C: { step: 0.0, say: 0.7, kneel: 5.4, mala: 6.4, rv: 7.3, cry: 8.6, torn: 12.2, white: 12.4, open: 13.8, look: 14.6, my: 14.9, sight: 14.1, sightFor: 1.0, rise: 15.4, R1: 16.45, Rv: 20.0, Rm: 24.9, ph: 28.75, q: 34.55, close: 38.65 },
+    D: { reach: 1.0, ph0: 1.9, kneel: 4.6, rv: 4.7, cry: 7.8, torn: 11.2, white: 11.4, open: 12.8, sight: 12.8, sightFor: 0.6, rise: 13.6, R1: 15.1, Rv: 18.2, ml: 23.1, ph: 26.95, q: 38.79, close: 43.39 }
   };
 
   /* THE OPENING FILM's clock (c_ufilm.js FILMS.open draws to it) */
@@ -126,8 +129,10 @@
     a.sfx(E.open - 0.4, 'u4endA', 0.5);
     a.sfx(E.sight, 'u4visoff', 0.85);                   // his sight home to him, before she stands (R65)
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);               // she stands, and her son is not beside her
+    a.sfx(E.R1, 'q4R1', 1);                             // "Oh my god, she's standing!" (R55)
+    a.sfx(E.Rm, 'ml4R1', 1);                            // Mala: "Unbelievable... Amma, you're on your feet!" (R55)
     a.sfx(E.call, 'am4A1', 1);                          // she looks back for him: "Ravi?"
-    a.sfx(E.rv2, 'rv4A2', 1);                           // let go, he goes to her: "Amma..."
+    a.sfx(E.rv2, 'rv4R1', 1);                           // let go, he goes to her: "Amma... you're standing. After all these years!"
     a.sfx(E.ph, 'ph4A1', 1);                            // "You protected the blessing. You forgot her son. His fear was only love."
     a.sfx(E.q, 'q4A1', 1);                              // "I saw a man in the way. He was her son."
     a.sfxFade(E.close - 2.0, E.close + 0.5, 'u4endA');
@@ -149,6 +154,9 @@
     a.sfx(E.open - 0.6, 'u4endB', 0.5);
     a.sfx(E.sight, 'u4visoff', 0.85);                   // his sight home to him, before she stands (R65)
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);
+    a.sfx(E.R1, 'q4R1', 1);                             // from the floor: "Oh my god, she's standing!" (R55)
+    a.sfx(E.Rm, 'ml4R1', 1);                            // Mala: "Unbelievable... Amma, you're on your feet!" (R55)
+    a.sfx(E.Rv, 'rv4R1', 1);                            // Ravi: "Amma... you're standing. After all these years!" (R55)
     a.sfx(E.ok, 'ml4B3', 1);                            // Mala, down to him on the floor: "Are you alright?"
     a.sfx(E.ph, 'ph4B1', 1);                            // "Your part was the holy water, and keeping the spirits away from her. The work was mine..."
     a.sfx(E.q, 'q4B1', 1);                              // "I saw it, and thought it was mine to fight."
@@ -167,6 +175,9 @@
     a.sfx(E.sight, 'u4visoff', 0.85);                   // his sight home to him, before she stands (R65)
     a.sfx(E.my, 'am4C1', 1);                            // her eyes open on her son: "My boy."
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);               // she stands, holding his hand
+    a.sfx(E.R1, 'q4R1', 1);                             // "Oh my god, she's standing!" (R55)
+    a.sfx(E.Rv, 'rv4R1', 1);                            // Ravi, up beside her: "Amma... you're standing. After all these years!" (R55)
+    a.sfx(E.Rm, 'ml4R1', 1);                            // Mala: "Unbelievable... Amma, you're on your feet!" (R55)
     a.sfx(E.ph, 'ph4C1', 1);                            // "You saw what was there, and you told him only what you knew. Nothing more."
     a.sfx(E.q, 'q4C1', 1);                              // "I didn't promise him anything. I told him what I saw."
     a.sfxFade(E.close - 2.0, E.close + 0.5, 'u4endC');
@@ -184,7 +195,9 @@
     a.sfx(E.open - 0.8, 'u4endD', 0.5);
     a.sfx(E.sight, 'u4visoff', 0.85);                   // his sight home to him, before she stands (R65)
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);
-    a.sfx(E.ml, 'ml4D1', 1);                            // Mala, at the lamp: "Amma... you're standing."
+    a.sfx(E.R1, 'q4R1', 1);                             // "Oh my god, she's standing!" (R55)
+    a.sfx(E.Rv, 'rv4R1', 1);                            // Ravi, up with her: "Amma... you're standing. After all these years!" (R55)
+    a.sfx(E.ml, 'ml4R1', 1);                            // Mala, at the lamp: "Unbelievable... Amma, you're on your feet!" (R55)
     a.sfx(E.ph, 'ph4D1', 1);                            // "You kept your place. That is where it starts. But there were two people afraid in this room..."
     a.sfx(E.q, 'q4D1', 1);                              // "I kept to my part. Next time I'll see the people too."
     a.sfxFade(E.close - 2.0, E.close + 0.5, 'u4endD');

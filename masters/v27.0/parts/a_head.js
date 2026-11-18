@@ -72,14 +72,14 @@
      moves what follows it. The names are QUOTED on purpose: build.py gives a sound to a chapter's own pack only when
      the chapter names it in quotes (v21.1). Written by masters/v27.0/script/secs.py from masters/v27.0/script/lines.py. */
   /* SECS BEGIN */
-  const SECS = {      // 69 of 69 MEASURED from their takes; the rest estimated at the speaker's pace
+  const SECS = {      // 71 of 71 MEASURED from their takes; the rest estimated at the speaker's pace
     /* him */
-    'q4o1': 6.65, 'q4o2': 4.73, 'q4h1': 3.61, 'q4h2': 3.53, 'q4h3': 9.77, 'q4s1': 4.01, 'q4s2': 3.05, 'q4s3': 4.09,
+    'q4o1': 6.65, 'q4o2': 4.65, 'q4h1': 3.61, 'q4h2': 3.53, 'q4h3': 9.77, 'q4s1': 4.01, 'q4s2': 3.05, 'q4s3': 4.09,
     'q4f1': 2.97, 'q4f2': 2.89, 'q4f3': 2.33, 'q4f4': 3.61, 'q4A1': 3.53, 'q4B1': 3.21, 'q4C0': 6.41, 'q4C1': 3.69,
-    'q4D1': 4.25, 'q4A': 4.25, 'q4B': 3.29, 'q4C': 3.85, 'q4D': 4.65,
+    'q4D1': 4.25, 'q4R1': 2.17, 'q4A': 4.25, 'q4B': 3.29, 'q4C': 3.85, 'q4D': 4.65,
     /* Ravi */
     'rv4o1': 2.6, 'rv4h1': 8.33, 'rv4h2': 6.73, 'rv4f1': 1.93, 'rv4t1': 1.77, 'rv4A1': 2.51, 'rv4A2': 0.61,
-    'rv4C1': 2.58, 'rv4D1': 2.98,
+    'rv4C1': 2.58, 'rv4D1': 2.98, 'rv4R1': 4.59,
     /* Grandmaster Pho */
     'ph4h0': 7.53, 'ph4h1': 6.81, 'ph4s0': 8.57, 'ph4s1': 3.58, 'ph4s2': 6.17, 'ph4s3': 8.45, 'ph4s4': 9.77,
     'ph4b0': 4.86, 'ph4b1': 4.65, 'ph4b2': 7.78, 'ph4b3': 4.36, 'ph4b4': 4.41, 'ph4b5': 5.2, 'ph4f1': 4.95,
@@ -87,7 +87,7 @@
     'ph4D1': 11.05, 'ph4z0': 10.56, 'ph4z1': 6.63,
     /* Mala */
     'ml4h1': 14.65, 'ml4h2': 9.61, 'ml4h3': 7.61, 'ml4t1': 1.13, 'ml4t2': 1.45, 'ml4A1': 2.27, 'ml4B1': 1.62,
-    'ml4B2': 1.01, 'ml4B3': 1.38, 'ml4D1': 1.93, 'ml4z1': 2.56,
+    'ml4B2': 1.01, 'ml4B3': 1.38, 'ml4R1': 3.53, 'ml4z1': 2.56,
     /* Amma */
     'am4h1': 1.81, 'am4A1': 0.72, 'am4C1': 1.25, 'am4z1': 1.18
   };

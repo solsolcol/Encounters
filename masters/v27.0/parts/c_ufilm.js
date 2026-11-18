@@ -466,7 +466,8 @@
         whenReady(cast.mala, (P) => {
           const L = SECS.ml4A1 || 2.3, s1 = E.scream + L + 0.15, back = smo(c01((t - s1) / 1.2)), turn = smo(c01((t - E.scream + 0.15) / 0.45));
           const stand = smo(c01((t - E.scream + 0.15) / 0.35));
-          if (!malaCall(P, t, E.scream, L, 'Talk_with_Right_Hand_Open', t < s1 ? 'lightlamp' : 'Idle_3', t < s1 ? MALA_LAMPT(t) : 2 + (t - s1) * 0.35)) {
+          if (!malaCall(P, t, E.scream, L, 'Talk_with_Right_Hand_Open', t < s1 ? 'lightlamp' : 'Idle_3', t < s1 ? MALA_LAMPT(t) : 2 + (t - s1) * 0.35)
+              && !malaCall(P, t, E.Rm, SECS.ml4R1 || 3.5, 'Stand_and_Chat', 'Idle_3', 2 + Math.max(0, t - s1) * 0.35)) {
             if (stand <= 0.001) pose(P, 'lightlamp', MALA_LAMPT(t)); else pose(P, 'Idle_3', 2 + Math.max(0, t - s1) * 0.35, true); }
           P.group.rotation.y = lpA(lpA(0, faceTo(MALA_T.x, MALA_T.z, RG.x, RG.z), turn), MALA_TO_HER, back);
           lookNow(P, t < s1 ? [RG.x, 1.5, RG.z] : (t < E.rise ? AMMA_FACE : HER_HEAD()), t < s1 ? 0.8 : 0.9, 0.9); });
@@ -519,7 +520,7 @@
           if (P.fx) P.fx.set('uAlpha', t < E.torn ? 1 : 1 - smo(c01((t - E.torn - 0.3) / 0.9)));
           goFlash(P, t, E); });
         goddess(t < E.falter ? 1 : t < E.back ? 0.35 : t < E.torn ? lp(0.35, 1, smo(c01((t - E.back) / 1.2))) : 1 - smo(c01((t - E.torn) / 1.5)));
-        whenReady(cast.ravi, (P) => { rushHeld(P, t); lookNow(P, AMMA_FACE, 1, 0.9); });
+        whenReady(cast.ravi, (P) => { rushHeld(P, t); lookNow(P, t < E.rise ? AMMA_FACE : HER_HEAD(), 1, 0.9); });
         /* Mala: crying out as the water hits her mother ("What are you doing?"), and at the falter ("Amma!"); her scream
            let go once her mother is up, and her eyes down to him on the floor ("Are you alright?") */
         /* (R68's law here too: her three lines each her talking take for its length, over her stand between them, alive;
@@ -528,6 +529,7 @@
           const st = smo(c01((t - E.splash + 0.15) / 0.35)), idle = 2 + Math.max(0, t - E.splash) * 0.35;
           if (!malaCall(P, t, E.splash, SECS.ml4B1 || 1.7, 'Talk_with_Right_Hand_Open', st < 1 ? 'lightlamp' : 'Idle_3', st < 1 ? MALA_LAMPT(t) : idle)
               && !malaCall(P, t, E.ml2, SECS.ml4B2 || 1.0, 'Talk_with_Right_Hand_Open', 'Idle_3', idle)
+              && !malaCall(P, t, E.Rm, SECS.ml4R1 || 3.5, 'Stand_and_Chat', 'Idle_3', idle)
               && !malaCall(P, t, E.ok, SECS.ml4B3 || 1.6, 'Stand_and_Chat', 'Idle_3', idle)) {
             if (st <= 0.001) pose(P, 'lightlamp', MALA_LAMPT(t)); else pose(P, 'Idle_3', idle, true); }
           P.group.rotation.y = lpA(0, MALA_TO_HER, smo(c01((t - E.splash + 0.1) / 0.5)));           // (R46: to her mother, not into the altar)
@@ -573,14 +575,20 @@
         whenReady(cast.ravi, (P) => {
           if (t < E.kneel) { rushHeld(P, t); lookNow(P, CR_EYE, smo(c01((t - 0.5) / 0.8)), 0.8); }
           else if (t > E.rise + 3.6) { put(P, KR.x, KR.z, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2));        // (R68: stood again, alive)
-            pose(P, 'Idle_3', 2 + (t - E.rise - 3.6) * 0.35, true, 'kneelhold', 1 - smo(c01((t - E.rise - 3.6) / 0.8)), 0.2); lookNow(P, HER_HEAD(), 1, 0.9); }
+            const it = 2 + (t - E.rise - 3.6) * 0.35;
+            if (!malaCall(P, t, E.Rv, SECS.rv4R1 || 4.6, 'Stand_and_Chat', 'Idle_3', it))
+              pose(P, 'Idle_3', it, true, 'kneelhold', 1 - smo(c01((t - E.rise - 3.6) / 0.8)), 0.2);
+            lookNow(P, HER_HEAD(), 1, 0.9); }
           else { walkKneel(P, t, E.kneel, rushXZ(P, 2.5), KR, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2), ['rush', pingOf(E.kneel, 2.45, 0.12, 1.4)],
               { ry0: RAVI_RY, kt: (td) => (t < E.rise ? (td < 4.2 ? td : pingOf(td - 4.2, 4.05, 0.15, 3.4)) : runOf(t, E.rise + 0.6, E.rise + 3.6, 4.2, 0.2)) });
             lookNow(P, lp3(CR_EYE, AMMA_FACE, smo(c01((t - E.kneel) / 0.5))), 1, 0.9); } });
         whenReady(cast.mala, (P) => {
           if (t < E.mala) { pose(P, 'lightlamp', MALA_LAMPT(t)); lookNow(P, AMMA_FACE, 1, 0.9); }
           else if (t > E.rise + 3.8) { put(P, KM.x, KM.z, faceTo(KM.x, KM.z, CHAIR.x, CHAIR.z + 0.2));        // (R68: stood again, alive)
-            pose(P, 'Idle_3', 2 + (t - E.rise - 3.8) * 0.35, true, 'kneelhold', 1 - smo(c01((t - E.rise - 3.8) / 0.8)), 0.2); lookNow(P, HER_HEAD(), 1, 0.9); }
+            const it = 2 + (t - E.rise - 3.8) * 0.35;
+            if (!malaCall(P, t, E.Rm, SECS.ml4R1 || 3.5, 'Stand_and_Chat', 'Idle_3', it))
+              pose(P, 'Idle_3', it, true, 'kneelhold', 1 - smo(c01((t - E.rise - 3.8) / 0.8)), 0.2);
+            lookNow(P, HER_HEAD(), 1, 0.9); }
           else { walkKneel(P, t, E.mala, MALA_T, KM, faceTo(KM.x, KM.z, CHAIR.x, CHAIR.z + 0.2), ['lightlamp', 5.4],
               { ry0: faceTo(MALA_T.x, MALA_T.z, CHAIR.x, CHAIR.z), kt: (td) => (t < E.rise ? (td < 4.2 ? td : pingOf(td - 4.2, 4.05, 0.15, 3.4)) : runOf(t, E.rise + 0.8, E.rise + 3.8, 4.2, 0.2)) });
             lookNow(P, AMMA_FACE, 1, 0.9); } });
@@ -612,16 +620,21 @@
            "Hold her hand" round to her side and down onto his knees: walkKneel, its two legs) */
         whenReady(cast.ravi, (P) => {
           const RX = rushXZ(P, 2.5), R2 = { x: RX.x - 0.12, z: RX.z + 0.18 }, r2 = faceTo(R2.x, R2.z, CHAIR.x, CHAIR.z);
+          if (t > E.rise + 3.6) { put(P, KR.x, KR.z, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2));
+            const it = 2 + (t - E.rise - 3.6) * 0.35;
+            if (!malaCall(P, t, E.Rv, SECS.rv4R1 || 4.6, 'Stand_and_Chat', 'Idle_3', it))
+              pose(P, 'Idle_3', it, true, 'kneelhold', 1 - smo(c01((t - E.rise - 3.6) / 0.8)), 0.2);
+            lookNow(P, HER_HEAD(), 1, 0.9); return; }
           if (t < E.reach) rushHeld(P, t);
           else if (t < E.kneel) walkKneel(P, t, E.reach, RX, R2, r2, ['rush', pingOf(E.reach, 2.45, 0.12, 1.4)], { ry0: RAVI_RY, kneelAt: Infinity });
           else walkKneel(P, t, E.kneel, R2, KR, faceTo(KR.x, KR.z, CHAIR.x, CHAIR.z + 0.2), ['Idle_3', 3 + (E.kneel - E.reach) * 0.4],
             { ry0: r2, kt: (td) => (t < E.rise ? Math.min(4.2, td) : runOf(t, E.rise + 0.6, E.rise + 3.6, 4.2, 0.2)) });
           lookNow(P, AMMA_FACE, 1, 0.9); });
         /* (R68: at her lamp, breathing, through the cry and the light; as her mother's eyes open, into her stand and turned to
-           her; her "Amma... you're standing." her talking take for its length; her eyes on her mother's face as it rises) */
+           her; her "Unbelievable... Amma, you're on your feet!" (R55) her talking take for its length; her eyes on her mother's face as it rises) */
         whenReady(cast.mala, (P) => {
           const k = smo(c01((t - E.open) / 0.9)), idle = 2 + Math.max(0, t - E.open) * 0.35;
-          if (!malaCall(P, t, E.ml, SECS.ml4D1 || 1.9, 'Stand_and_Chat', 'Idle_3', idle)) {
+          if (!malaCall(P, t, E.ml, SECS.ml4R1 || 3.5, 'Stand_and_Chat', 'Idle_3', idle)) {
             if (k <= 0.001) pose(P, 'lightlamp', MALA_LAMPT(t)); else pose(P, 'Idle_3', idle, true, 'lightlamp', 1 - k, MALA_LAMPT(E.open)); }
           if (k > 0) P.group.rotation.y = lpA(faceTo(MALA_T.x, MALA_T.z, CHAIR.x, CHAIR.z), MALA_TO_HER, k);
           lookNow(P, t < E.rise ? AMMA_FACE : HER_HEAD(), 1, 0.9); });
