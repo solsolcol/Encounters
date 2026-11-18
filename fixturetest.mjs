@@ -592,6 +592,95 @@ await lbl('vision-hands');
 }
 await settle();
 
+/* v27.0: THE STAKES AND THE CALL (Chad, 18 Nov: episode 4 chapter 4's holy-water fight) — the fifty-fourth to fifty-sixth
+   seams and the eye button's two asks, on a chapter the engine has never seen. HEALTH (54): absent, no bar; asked, its
+   label the chapter's, its fill the share asked and a fall marked `hit`; over the place `at` names while it is in view,
+   at the screen's edge (its arrow) when it is behind the lens; null takes it off. THE EDGE (56): a colour at the screen's
+   edges at the share asked, and gone again. THE WATER'S COLOUR: held, and given back. THE EYE (visionUrge): 'open' asks
+   while the sight is shut, 'close' only while it is open, false neither. THE SHOWCASE (55): golden, its three lines the
+   chapter's, no Close to press, gone by itself after `auto`, the chapter told once; the plain splash after it is the
+   sheet's own again */
+await lbl('stakes');
+K.stakesHealth = await p.evaluate(async () => {
+  const E = window.__enc, el = document.getElementById('lifeBar');
+  const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
+  const off0 = !el.classList.contains('on') && E.stakes().life.on === false;
+  E.camera.updateMatrixWorld();
+  const V = E.camera.position.constructor, eye = new V().setFromMatrixPosition(E.camera.matrixWorld), fw = E.camera.getWorldDirection(new V());
+  const ahead = [eye.x + fw.x * 3, eye.y + fw.y * 3, eye.z + fw.z * 3], behind = [eye.x - fw.x * 3, eye.y - fw.y * 3, eye.z - fw.z * 3];
+  let at = ahead;
+  E.kit.health({ label: 'Her', k: 1, at: () => at }); await frames(4);
+  const on = el.classList.contains('on') && el.querySelector('.lbName').textContent === 'Her' && !el.classList.contains('edge');
+  E.kit.health({ k: 0.5 }); await frames(4);
+  const half = /^50(\.0)?%$/.test(el.querySelector('.lbFill').style.width) && el.classList.contains('hit') && E.stakes().life.k === 0.5;
+  at = behind; await frames(4);
+  const edge = el.classList.contains('edge') && el.classList.contains('on');
+  E.kit.health(null); await frames(4);
+  const off = !el.classList.contains('on') && E.stakes().life.on === false;
+  console.log('stakesHealth', JSON.stringify({ off0, on, half, edge, off }));
+  return off0 && on && half && edge && off;
+}).catch(e => { console.log('stakesHealth threw', e.message); return false; });
+K.stakesEdge = await p.evaluate(async () => {
+  const E = window.__enc, el = document.getElementById('edgeGlow');
+  const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
+  const until = async (f, ms) => { const t0 = performance.now(); while (!f() && performance.now() - t0 < ms) await frames(1); return f(); };
+  const off0 = el.classList.contains('hide') && E.stakes().edge.k === 0;
+  E.kit.edge({ color: [255, 200, 90], k: 0.8, secs: 0.05 });
+  const on = await until(() => !el.classList.contains('hide') && Math.abs(parseFloat(el.style.opacity) - 0.8) < 0.01, 20000)
+    && /255,200,90/.test(el.style.background.replace(/\s/g, ''));
+  E.kit.edge(null);
+  const gone = await until(() => el.classList.contains('hide') && E.stakes().edge.k === 0, 20000);
+  console.log('stakesEdge', JSON.stringify({ off0, on, gone }));
+  return off0 && on && gone;
+}).catch(e => { console.log('stakesEdge threw', e.message); return false; });
+K.stakesSpray = await p.evaluate(() => {
+  const E = window.__enc, s0 = E.stakes().spray;
+  const a = E.kit.sprayColor(0xffc24a, { size: 1.6 }), s1 = E.stakes().spray;
+  const b = E.kit.sprayColor(null), s2 = E.stakes().spray;
+  return a === true && b === true && s0.col === null && s0.scale === 1 && s1.col === 0xffc24a && Math.abs(s1.scale - 1.6) < 1e-9 && s2.col === null && s2.scale === 1;
+}).catch(() => false);
+K.stakesUrge = await p.evaluate(async () => {
+  const E = window.__enc, b = document.getElementById('visionBtn');
+  const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
+  const until = async (f, ms) => { const t0 = performance.now(); while (!f() && performance.now() - t0 < ms) await frames(1); return f(); };
+  const shut0 = E.vision().on === false;
+  E.kit.visionUrge('open'); await frames(3);
+  const open = b.classList.contains('urge') && !b.classList.contains('urgeClose');
+  E.kit.visionUrge('close'); await frames(3);
+  const closeWhileShut = !b.classList.contains('urge') && !b.classList.contains('urgeClose');
+  E.kit.vision(true); await until(() => E.vision().on, 20000); await frames(2);
+  const closeWhileOpen = b.classList.contains('urgeClose') && !b.classList.contains('urge');
+  E.kit.visionUrge(false); await frames(3);
+  const none = !b.classList.contains('urge') && !b.classList.contains('urgeClose') && E.stakes().urge === false;
+  E.kit.vision(false); await until(() => E.vision().r === 0 && E.vision().dir === 0, 90000);
+  const words = !!b.dataset.open && !!b.dataset.close;
+  console.log('stakesUrge', JSON.stringify({ shut0, open, closeWhileShut, closeWhileOpen, none, words }));
+  return shut0 && open && closeWhileShut && closeWhileOpen && none && words;
+}).catch(e => { console.log('stakesUrge threw', e.message); return false; });
+K.stakesShowcase = await p.evaluate(async () => {
+  const E = window.__enc, el = document.getElementById('unlock');
+  const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
+  const until = async (f, ms) => { const t0 = performance.now(); while (!f() && performance.now() - t0 < ms) await frames(1); return f(); };
+  const label0 = el.querySelector('.unLabel').textContent, sub0 = 'Added to your bag';
+  let told = 0;
+  const shown = E.kit.unlock('amulet', { gold: true, auto: 1.2, label: 'L1', name: 'N1', sub: 'S1', sound: 'itemunlock', onClose: () => { told++; } });
+  await frames(3);
+  const look = E.getState() === 'unlock' && el.classList.contains('gold') && el.querySelector('.unLabel').textContent === 'L1'
+    && document.getElementById('unName').textContent === 'N1' && el.querySelector('.unSub').textContent === 'S1'
+    && getComputedStyle(document.getElementById('unClose')).visibility === 'hidden';
+  const t0 = performance.now();
+  const gone = await until(() => E.getState() === 'play', 20000) && told === 1 && performance.now() - t0 > 600 && E.unlockState().id === null;
+  await until(() => el.classList.contains('hide'), 5000);
+  const plain = E.kit.unlock('amulet'); await frames(3);
+  const back = !el.classList.contains('gold') && el.querySelector('.unLabel').textContent === label0 && el.querySelector('.unSub').textContent === sub0
+    && getComputedStyle(document.getElementById('unClose')).visibility !== 'hidden';
+  await new Promise(r => setTimeout(r, 900)); E.unlockClose('key');
+  const closed = await until(() => E.getState() === 'play', 20000);
+  console.log('stakesShowcase', JSON.stringify({ shown, look, gone, told, plain, back, closed, label0 }));
+  return shown && look && gone && plain && back && closed;
+}).catch(e => { console.log('stakesShowcase threw', e.message); return false; });
+await settle();
+
 /* v22.0: THE COLD (the thirty-third, -fourth and -fifth seams) — kit.chill shows the edge layer with a blur and
    puts a filter on the canvas, and at 0 takes both away entirely; kit.pulse beats on the wall clock at the rate
    asked (a beat is counted as it lands), its erratic heart comes early and drops beats, and null hands the monitor
@@ -2475,6 +2564,7 @@ out.aliveAfterSwap = await p.evaluate(() =>
   isFinite(window.__enc.pileDist()) && window.__enc.getState() !== 'error');
 /* v23.0 · S40: and kitReset clears a pose (here, at the end — it clears the conduct the card above read) */
 await p.evaluate(() => { window.__enc.kit.handPose('cross', 1, { secs: 0 }); window.__enc.kit.rain(1); window.__enc.kit.lens(44, { secs: 0 }); window.__enc.kit.hush(1, { secs: 0 }); });   // (v24.0: and rain, for the reset to clear; v26.0: a borrowed lens and a hush)
+await p.evaluate(() => { const k = window.__enc.kit; k.health({ label: 'x', k: 0.5, at: () => [0, 1, 0] }); k.edge({ k: 1, secs: 0.01 }); k.sprayColor(0xff0000); k.visionUrge('open'); });   // (v27.0: the stakes, for the reset to clear)
 await until(() => window.__enc.hpose().on && window.__enc.armNow().lv, 20000).catch(() => {});
 await p.evaluate(() => window.__enc.kitReset());
 await p.waitForTimeout(400);
@@ -2483,6 +2573,7 @@ K.rainClearedByReset = await p.evaluate(() => { const w = window.__enc.wxState()
 K.lensClearedByReset = await p.evaluate(() => { const l = window.__enc.lens(); return l.took === false && l.fov === 72; });               // v26.0 (S47)
 K.hushClearedByReset = await p.evaluate(() => { const h = window.__enc.hush(); return h.k === 0 && h.wired === false; });                 // v26.0 (S48)
 K.barClearedByReset = await p.evaluate(() => window.__enc.kitBar() === null);                                                       // v27.0 (S52)
+K.stakesClearedByReset = await p.evaluate(() => { const q = window.__enc.stakes(); return q.life.on === false && q.edge.to === 0 && q.edge.k === 0 && q.spray.col === null && q.spray.scale === 1 && q.urge === false; });   // v27.0 (S54, S56)
 /* v27.0 (S50): a chapter that declares no vision takes the seam down (no eye, no state, no class): what setChapter's
    kitReset does on a real change of chapter. The swap above is rebuildStage alone, which builds the next stage and keeps
    the chapter (CH), so the fixture's own declaration is taken away for a moment instead, and put back */
@@ -2494,6 +2585,29 @@ K.visionGoneWithChapter = await p.evaluate(() => {
   C.vision = had; E.kitReset();
   return gone && E.vision().decl === true && document.body.classList.contains('hasVision');
 });
+
+/* v27.0 (the fifty-third seam): THE CHAPTER'S OWN LOSS, last of all (Retry begins the chapter again, and nothing after
+   this reads the run). Refused outside play; from play, its film (the fixture's own) and its two lines on the card, his
+   nerve NOT emptied by it (the loss is the chapter's, not his nerve's); an own loss with no lines has the sheet's two; and
+   Retry gives play back */
+K.loseRefusedOutsidePlay = await p.evaluate(() => { const E = window.__enc, st = E.getState(); return st !== 'play' && E.kit.lose({ say: 'x' }) === false && E.getState() === st; });
+await p.evaluate(() => window.__enc.restart());
+K.loseOwn = await until(() => window.__enc.getState() === 'play', 120000).then(async () => {
+  await p.evaluate(() => { window.__enc.stats.sanity = 80; });
+  const took = await p.evaluate(() => window.__enc.kit.lose({ film: 'probe', say: 'Her life ran out.', teaching: 'See first.' }));
+  const lost = await until(() => window.__enc.getState() === 'lost', 120000).then(() => true, () => false);
+  const L = await p.evaluate(() => ({ say: document.getElementById('overSay').textContent, teach: document.getElementById('overTeach').textContent, san: window.__enc.stats.sanity }));
+  console.log('loseOwn', JSON.stringify({ took, lost, L }));
+  return took === true && lost && L.say === 'Her life ran out.' && /See first\./.test(L.teach) && L.san > 0;
+}, () => false);
+await p.evaluate(() => document.getElementById('retryBtn').click());
+K.loseRetry = await until(() => window.__enc.getState() === 'play', 120000).then(() => true, () => false);
+K.loseSheetLines = K.loseRetry && await p.evaluate(() => window.__enc.kit.lose({})) === true
+  && await until(() => window.__enc.getState() === 'lost', 120000).then(() => true, () => false)
+  && await p.evaluate(() => { const s = document.getElementById('overSay').textContent; return s.length > 0 && s !== 'Her life ran out.'; });
+await p.evaluate(() => document.getElementById('retryBtn').click());
+await until(() => window.__enc.getState() === 'play', 120000).catch(() => {});
+out.kit = K;
 
 console.log(JSON.stringify(out, null, 1));
 const MUST = ['bootedFixture', 'noChapterAssets', 'blockersFromChapter', 'cardShowsFixture',

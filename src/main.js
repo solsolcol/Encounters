@@ -17873,6 +17873,9 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                                     rounds: weaponRounds, busy: weaponBusy, fire: ($('fireBtn')?.textContent || '').trim() }),
                  weaponDeclare: (d) => { weaponTeardown(); if (d) weaponSetup(d); return !!weaponDecl; },
                  kitBar: () => kitBarK,              // v27.0 (seam 52): the objective's bar, for the fixture
+                 /* v27.0 (seams 54 and 56, the water's colour, the eye button's asks): what each holds, for the fixture */
+                 stakes: () => ({ life: { on: life.on, k: life.k, label: life.label }, edge: { k: edgeG.k, to: edgeG.to, color: edgeG.color, on: edgeG.on },
+                                  spray: { col: sprayCol, scale: sprayScale }, urge: visUrge }),
                  visionAuraNearest: (opts = {}, maxD = 12) => {
                    camera.updateMatrixWorld();
                    const eye = new THREE.Vector3().setFromMatrixPosition(camera.matrixWorld), fwd = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.getWorldQuaternion(new THREE.Quaternion()));
