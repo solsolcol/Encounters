@@ -8,13 +8,13 @@
        nobody speaking: the room at -35 (the house's quiet place), the windows at -38 under it, the dark room at -34, the
        whispers at -35 and round him; history's music (a loop at its own -3 dBFS peak, -29 by its average) at -36 under the room.
        In a film the beds are the film's (filmBed: a film writes it from its own clock; every film cues the rest itself) */
-    const BED = { flat: 0.56, estate: 0.4, hist: 0.45, dark: 0.63, whisper: 0.56 };
-    const bedMix = { flat: 0, estate: 0, hist: 0, dark: 0, whisper: 0 };
-    const filmBed = { on: false, flat: 0, estate: 0, hist: 0, dark: 0, whisper: 0 };
-    const BED_EASE = { flat: 1.0, estate: 1.0, hist: 1.8, dark: 1.2, whisper: 0.8 };
+    const BED = { flat: 0.56, estate: 0.4, hist: 0.45, dark: 0.63, whisper: 0.56, corr: 0.56 };
+    const bedMix = { flat: 0, estate: 0, hist: 0, dark: 0, whisper: 0, corr: 0 };
+    const filmBed = { on: false, flat: 0, estate: 0, hist: 0, dark: 0, whisper: 0, corr: 0 };
+    const BED_EASE = { flat: 1.0, estate: 1.0, hist: 1.8, dark: 1.2, whisper: 0.8, corr: 0.8 };
     function mixBeds(wdt, st) {
       if (!(wdt > 0)) return;
-      const want = { flat: 0, estate: 0, hist: 0, dark: 0, whisper: 0 };
+      const want = { flat: 0, estate: 0, hist: 0, dark: 0, whisper: 0, corr: 0 };
       if (st === 'cine') { if (filmBed.on) for (const k in want) want[k] = filmBed[k]; }
       else if (st === 'title' || st === 'chapter') { /* all at 0: the title and the card hear nothing of the flat */ }
       else {
@@ -25,7 +25,7 @@
         const F = play.fight; want.whisper = F && F.on ? BED.whisper * Math.min(1, F.shapes.filter(S => S.state !== 'gone').length / 2) : 0;
       }
       for (const k in bedMix) bedMix[k] += (want[k] - bedMix[k]) * (1 - Math.exp(-wdt / BED_EASE[k]));
-      const B = DATA.ambience.beds; B[0][1] = bedMix.flat; B[1][1] = bedMix.estate; B[2][1] = bedMix.hist; B[3][1] = bedMix.dark; B[4][1] = bedMix.whisper;
+      const B = DATA.ambience.beds; B[0][1] = bedMix.flat; B[1][1] = bedMix.estate; B[2][1] = bedMix.hist; B[3][1] = bedMix.dark; B[4][1] = bedMix.whisper; B[5][1] = bedMix.corr;
     }
     /* THE FIGHT'S MUSIC, one pass from the fight's first second (a bed runs from the chapter's start, so a piece that builds
        in three waves is begun where the fight begins): a one-shot, held so the fight's end, a bookmark and a reset can stop

@@ -16,6 +16,33 @@
     D: { shut: 0.2, reach: 1.0, ph0: 1.9, kneel: 4.6, cry: 7.8, torn: 11.2, white: 11.4, open: 12.8, rise: 13.6, ph: 19.4, q: 28.8, close: 33.4 }
   };
 
+  /* THE OPENING FILM's clock (c_ufilm.js FILMS.open draws to it) */
+  const OP = { q1: 0.8, est: 7.6, q2: 8.4, turn: 13.6, walk: 14.6, at: 20.2, latch: 20.6, cut1: 21.3, rv: 22.2, cut2: 25.0, inside: 27.4, drop: 28.6, look: 29.0, flick: 31.6, flickEnd: 32.9, black: 33.4, end: 34.6 };
+  /* THE OPENING FILM (the plan's §4.0): its pictures are the stage's; here its clock's one track, its fades and its cues.
+     It begins on black (v4.6) and ends on black, the title over it */
+  function intro(c, s, api) {
+    const { tr, step, fade, sfx, sfxFade, rawK, stage } = api, F = stage.films.open, T = OP;
+    step(0, () => F.begin(api));
+    tr(0, T.end, (k, t) => F.frame(t), rawK);
+    sfx(0.3, 'u4openmus', 0.55);                        // the opening's own music, from the black
+    sfx(T.q1, 'q4o1', 1);                               // "Training began the next morning. Open. Close. Every day, for months."
+    fade(T.est, T.est + 1.4, 1, 0);
+    sfx(T.q2, 'q4o2', 1);                               // "When Grandmaster Pho came to Singapore, a family asked him to see their mother."
+    sfx(T.turn + 0.1, 'u4os1', 0.45);                   // a lift's chime, far down the corridor
+    sfx(T.walk + 0.2, 'u4sandals', 0.6);                // his own steps along it
+    sfx(T.latch, 'u4gate', 0.7);                        // Ravi at the grille: the latch
+    fade(T.cut1, T.cut1 + 0.25, 0, 1); fade(T.cut1 + 0.35, T.cut1 + 0.65, 1, 0);
+    sfx(T.rv, 'rv4o1', 1);                              // "Grandmaster. Thank you for coming. Please, come in."
+    fade(T.cut2 - 0.25, T.cut2, 0, 1); fade(T.cut2 + 0.1, T.cut2 + 0.45, 1, 0);
+    sfx(T.cut2 + 0.6, 'u4tile', 0.45); sfx(T.cut2 + 1.25, 'u4tile2', 0.45); sfx(T.cut2 + 1.9, 'u4tile', 0.45); sfx(T.cut2 + 2.6, 'u4tile2', 0.4);   // his bare feet on her tiles
+    sfx(T.drop + 0.4, 'u4heart', 0.7); sfx(T.drop + 1.2, 'u4heart', 0.8);         // the room's sound drops; his heart, twice
+    sfx(T.flick, 'u4vison', 0.45); sfx(T.flickEnd - 0.5, 'u4visoff', 0.45);       // his sight, open for a held breath by itself
+    fade(T.black, T.black + 0.6, 0, 1);
+    sfxFade(T.black - 0.6, T.end - 0.05, 'u4openmus');
+    step(T.end, () => F.end());
+    c.keepFade = true; c.endFade = 1;
+  }
+
   /* THE TRANCE (the plan's §4.4), a film from play at the turning point; the decision opens where it ends (c_story.js
      trance()). Its pictures are the stage's (c_ufilm.js FILMS.trance); here are its clock's one track and its cues */
   function filmTrance(c, s, api) {
@@ -118,6 +145,7 @@
 
   (window.__CHAPTERS__ = window.__CHAPTERS__ || {}).e4c4 = Object.assign(DATA, {
     build,
+    intro,
     films: { trance: filmTrance },
     scenes: [scHold, scThrow, scGo, scKeep]
   });

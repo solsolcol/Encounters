@@ -119,6 +119,36 @@
     const spirits = {};
     spirits.oppress = spiritOf(mkPerson('p4oppress', OPP_AT.x, OPP_AT.z, CHAIR.ry, { y: OPP_AT.y, take: 'cling', centre: true, noBlob: true, skins: false }), SPIRIT.oppress);
     whenReady(spirits.oppress, (P) => { P.group.rotation.x = OPP_TILT; });
+    /* IT RIDES HER (18 Nov: in the trance she sits up and forward of the recline it was placed on, and in the film's
+       photographs it hung in the air behind her chair, a hand's breadth and more off her back): it is carried by her
+       upper back (her Spine02) as if it were one of her bones, from exactly where the photograph placed it against her
+       seated rest (her `wsit` at OPP_REF_T, inside the window play holds her in). Read once, as both bodies land, her own
+       pose put back after; laid every frame after she is posed (play, every film), so where she leans, it leans */
+    const OPP_REF_T = 3.0, OPP_REF = { m: null };
+    const _om = new THREE.Matrix4(), _om2 = new THREE.Matrix4(), _os = new THREE.Vector3();
+    function herBack(A) { if (A._back === undefined) { A._back = null; for (const n in A.bone) if (/^(mixamorig:?)?Spine02$/.test(n)) { A._back = A.bone[n]; break; } } return A._back; }
+    whenReady(cast.amma, (A) => whenReady(spirits.oppress, (P) => {
+      const bk = herBack(A); if (!bk || OPP_REF.m) return;
+      const keep = {}; for (const k in A.acts) keep[k] = [A.acts[k].time, A.w[k]];
+      const cur = A.cur, ft = A.filmT;
+      put(A, CHAIR.x, CHAIR.z, CHAIR.ry); pose(A, 'wsit', OPP_REF_T); bk.updateWorldMatrix(true, false);
+      put(P, OPP_AT.x, OPP_AT.z, CHAIR.ry, OPP_AT.y); P.group.rotation.x = OPP_TILT; P.group.updateWorldMatrix(true, false);
+      OPP_REF.m = new THREE.Matrix4().copy(bk.matrixWorld).invert().multiply(P.group.matrixWorld);
+      for (const k in A.acts) { A.acts[k].time = keep[k][0]; A.w[k] = keep[k][1]; A.acts[k].setEffectiveWeight(keep[k][1]); }
+      A.cur = cur; A.filmT = ft; A.mixer.update(0);
+    }));
+    /* in play, every frame after the people are posed (play never moves it: the water does not, c_story.js) */
+    function oppRidePlay() { const P = spirits.oppress; if (P && P.ready && P.group.visible) oppRide(P); }
+    /* lay it on her back where she is posed now (its own take is its own: only its place and its turn are hers) */
+    function oppRide(P = spirits.oppress) {
+      const A = cast.amma, bk = A && A.ready ? herBack(A) : null;
+      if (!P || !P.ready) return;
+      if (!OPP_REF.m || !bk) { put(P, OPP_AT.x, OPP_AT.z, CHAIR.ry, OPP_AT.y); P.group.rotation.set(OPP_TILT, CHAIR.ry, 0); return; }
+      bk.updateWorldMatrix(true, false);
+      _om.multiplyMatrices(bk.matrixWorld, OPP_REF.m);
+      const par = P.group.parent; if (par) { par.updateWorldMatrix(true, false); _om2.copy(par.matrixWorld).invert(); _om.premultiply(_om2); }
+      _om.decompose(P.group.position, P.group.quaternion, _os);
+    }
     /* APPA, her late husband, standing by his photograph, looking at her; still (his stand, its window its calmest);
        his turn of the head is to her, and once, if water is thrown at him, to the student */
     spirits.appa = spiritOf(mkPerson('p4appa', AT.appa.x, AT.appa.z, faceTo(AT.appa.x, AT.appa.z, CHAIR.x, CHAIR.z), { take: 'Idle_3', phase: 0.3, noBlob: true, skins: false }), SPIRIT.appa);
@@ -134,7 +164,7 @@
     const CORNERS = [{ x: 5.95, z: 9.55, ry: -2.6 }, { x: 4.85, z: 6.65, ry: Math.PI }];   // the kitchen's far corner; under the dining table
     spirits.large = spiritOf(mkPerson('p4large', 0, 0, 0, { take: 'lumber', hidden: true, noBlob: true, skins: false }), SPIRIT.large);
     function spiritsHome() {
-      whenReady(spirits.oppress, (P) => { put(P, OPP_AT.x, OPP_AT.z, CHAIR.ry, OPP_AT.y); P.group.rotation.x = OPP_TILT; P.group.visible = true; P.alpha = 1; if (P.fx) P.fx.set('uAlpha', 1); rest(P, 0); });
+      whenReady(spirits.oppress, (P) => { oppRide(P); P.group.visible = true; P.alpha = 1; if (P.fx) P.fx.set('uAlpha', 1); rest(P, 0); });
       whenReady(spirits.appa, (P) => { put(P, AT.appa.x, AT.appa.z, faceTo(AT.appa.x, AT.appa.z, CHAIR.x, CHAIR.z)); P.group.visible = true; P.alpha = 1; if (P.fx) P.fx.set('uAlpha', 1); rest(P, 0); });
       spirits.wander.forEach((P, i) => whenReady(P, (Q) => {
         const C = CORNERS[i]; Q.alpha = 1; if (Q.fx) Q.fx.set('uAlpha', 1);

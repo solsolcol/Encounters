@@ -17,7 +17,8 @@ const SETTLE = +(process.env.SETTLE || 1500);
 const OUT = (process.env.OUT || '/tmp/filmshots') + '-' + VIEW;
 fs.mkdirSync(OUT, { recursive: true });
 const b = await chromium.launch(LAUNCH);
-const ctx = await b.newContext(PHONE ? { viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, hasTouch: true, isMobile: true }
+/* (v27.0: a phone drawn at two device pixels a point, as the house's photographs are: "NO SMALL PICTURE IS EVER A CHECK", v26.0; DPR=1 for a quick look) */
+const ctx = await b.newContext(PHONE ? { viewport: { width: 390, height: 844 }, deviceScaleFactor: +(process.env.DPR || 2), hasTouch: true, isMobile: true }
                                      : { viewport: { width: 1280, height: 800 }, deviceScaleFactor: 1 });
 const p = await ctx.newPage();
 /* (v25.5) SWAP=key=file.glb[,key=file.glb]: the real game served ANOTHER FILE for an asset (its request answered from disk),
@@ -78,8 +79,17 @@ for (const t of TS) {
   const s = await p.evaluate(() => { const E = window.__enc, c = E.camera;
     return { st: E.getState(), t: +E.cine.t().toFixed(2), fov: c ? +c.fov.toFixed(1) : null,
              cam: [E.yaw.position.x, E.yaw.position.y, E.yaw.position.z, E.yaw.rotation.y, E.pitch.rotation.x].map(v => +v.toFixed(2)) }; });
-  await p.screenshot({ path: `${OUT}/${OPT ? 'end' + OPT : FILM || 'film'}-${String(t).replace('.', '_').padStart(5, '0')}.jpg`, quality: 70, timeout: 240000 });
+  await p.screenshot({ path: `${OUT}/${OPT ? 'end' + OPT : FILM || 'film'}-${String(t).replace('.', '_').padStart(5, '0')}.jpg`, quality: 90, timeout: 240000 });
   console.log(el(), t, JSON.stringify(s));
+  /* (v27.0) BONES='key[#i]:Bone/Bone,...': where those bones of those people stand in the world at this moment (and
+     each one's group), read from the frame just photographed, so a film's staging is measured beside its picture */
+  if (process.env.BONES) console.log('   bones', JSON.stringify(await p.evaluate((spec) => { const S = window.__enc.stage, r = {};
+    for (const it of spec.split(',')) { const [who, names] = it.split(':'), [key, i] = who.split('#'), P = S.person && S.person(key, +(i || 0)); if (!P) { r[who] = null; continue; }
+      P.group.updateWorldMatrix(true, true); const g = P.group.position, o = { g: [g.x, g.y, g.z].map(v => +v.toFixed(3)), vis: P.group.visible };
+      for (const n of (names || '').split('/').filter(Boolean)) { const re = new RegExp('^(mixamorig:?)?' + n + '$'); let bn = null; for (const q in P.bone) if (re.test(q)) { bn = P.bone[q]; break; }
+        if (bn) { const w = bn.getWorldPosition(g.clone()); o[n] = [w.x, w.y, w.z].map(v => +v.toFixed(3)); } }
+      r[who] = o; }
+    return r; }, process.env.BONES)));
 }
 console.log(el(), 'errs', JSON.stringify(errs));
 await b.close();

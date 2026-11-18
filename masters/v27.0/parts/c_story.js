@@ -572,13 +572,59 @@
        read from her own head each frame (her body breathes) */
     let crownK = 0, crownTo = 0;
     function handOnHead(P, on) { crownTo = on ? 1 : 0; }
-    /* (laid after the people's frame has posed him, and taken off by armsBack before the mixer runs again: v11.5) */
+    /* (laid after the people's frame has posed him, and taken off by armsBack before the mixer runs again: v11.5. Run
+       wherever the people are posed live, play and the decision alike: updateNotes. Her head moves (the trance sits her
+       up and forward), so his bow is read from it each frame: bowFor) */
     function crownTick(wdt) {
       crownK += (crownTo - crownK) * Math.min(1, wdt * 1.5);
-      const P = cast.phoB; if (!(crownK > 0.01) || !P.ready || !P.group.visible) return;
-      const h = HER_HEAD(), g = P.group.position, fx0 = h[0] - g.x, fz0 = h[2] - g.z, fl = Math.hypot(fx0, fz0) || 1;
-      handTo(P, 'R', [h[0] - fx0 / fl * 0.02, h[1] + 0.035, h[2] - fz0 / fl * 0.02], [fx0 / fl, -0.25, fz0 / fl], [0, -1, 0], crownK, { out: 0.32, down: 0.3 });
+      const P = cast.phoB; if (!P.ready || !P.group.visible) return;
+      const h = HER_HEAD();
+      bowSet(P, crownK > 0.01 ? crownK * bowFor(P, h) : 0);         // (the mixer lays it on at his next frame)
+      if (crownK > 0.01) crownHand(P, h, crownK);
     }
+    /* the palm on the crown (h: her head's top, HER_HEAD), the fingers forward and a little down, the elbow out and down;
+       and, while he bows, his other arm let hang straight from its shoulder (a bow tips the arms with the trunk) */
+    function crownHand(P, h, k) {
+      const g = P.group.position, fx0 = h[0] - g.x, fz0 = h[2] - g.z, fl = Math.hypot(fx0, fz0) || 1;
+      handTo(P, 'R', [h[0] - fx0 / fl * 0.02, h[1] + 0.035, h[2] - fz0 / fl * 0.02], [fx0 / fl, -0.25, fz0 / fl], [0, -1, 0], k, { out: 0.32, down: 0.3 });
+      const B = P.bow, bw = B ? B.a.getEffectiveWeight() * B.max : 0;
+      if (bw > 2 && B.lsh) { B.lsh.getWorldPosition(_bwv); P.group.getWorldQuaternion(_bwq); _bwx.set(1, 0, 0).applyQuaternion(_bwq);
+        handTo(P, 'L', [_bwv.x + _bwx.x * 0.04, _bwv.y - 0.6, _bwv.z + _bwx.z * 0.04], [0, -1, 0], [-_bwx.x, 0, -_bwx.z], k * Math.min(1, (bw - 2) / 8), { out: 0.12, down: 0.7 }); }
+    }
+    /* HIS BOW FROM THE WAIST (18 Nov: in the trance she sits up and forward, and her crown stood 0.6 to 0.8 m out from the
+       right shoulder of a man upright behind her chair's handles; his arm reaches about 0.6: in the film's photographs his
+       arm pointed at her head across the air). His trunk is turned forward about his own left-right line at his lowest
+       spine bone, as far as the reach asks and no further (bowFor), by an ADDITIVE take in his own mixer (bowSet): a turn
+       laid on a bone after the mixer would be laid on itself again wherever the take holds that bone still (the v11.5
+       law), and a take of the mixer's own is undone by the mixer. Its numbers are read once off his stand as he lands */
+    const BOW_MAX = 32, _bwv = new THREE.Vector3(), _bwq = new THREE.Quaternion(), _bwx = new THREE.Vector3(), _bwp = new THREE.Vector3(), _bws = new THREE.Vector3();
+    const boneOfP = (P, nm) => { const re = new RegExp('^(mixamorig:?)?' + nm + '$'); for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
+    whenReady(cast.phoB, (P) => {
+      const sp = boneOfP(P, 'Spine'), sh = boneOfP(P, 'RightArm'), el = boneOfP(P, 'RightForeArm'), wr = boneOfP(P, 'RightHand'), lsh = boneOfP(P, 'LeftArm');
+      if (!sp || !sh || !el || !wr || !P.mixer) { console.warn('phoB: no bones to bow with'); P.bow = null; return; }
+      put(P, P.home.x, P.home.z, P.home.ry); pose(P, 'Sit_to_Stand_Transition_M', 5.85); P.group.updateWorldMatrix(true, true);
+      const inv = new THREE.Matrix4().copy(P.group.matrixWorld).invert(), at = (b) => b.getWorldPosition(new THREE.Vector3()).applyMatrix4(inv);
+      const piv = at(sp), s0 = at(sh), e0 = at(el), w0 = at(wr), reach = s0.distanceTo(e0) + e0.distanceTo(w0) + 0.07;
+      /* (his own left-right line in the spine's frame as he stands: the additive turn is about it) */
+      const qs = sp.getWorldQuaternion(new THREE.Quaternion()), qg = P.group.getWorldQuaternion(new THREE.Quaternion());
+      const ax = new THREE.Vector3(1, 0, 0).applyQuaternion(qg).applyQuaternion(qs.invert()).normalize();
+      const q = new THREE.Quaternion().setFromAxisAngle(ax, BOW_MAX * Math.PI / 180);
+      const clip = new THREE.AnimationClip('bow', 1, [new THREE.QuaternionKeyframeTrack(sp.name + '.quaternion', [0, 1], [q.x, q.y, q.z, q.w, q.x, q.y, q.z, q.w])], THREE.AdditiveAnimationBlendMode);
+      const a = P.mixer.clipAction(clip); a.blendMode = THREE.AdditiveAnimationBlendMode; a.setEffectiveWeight(0); a.play();
+      P.bow = { a, max: BOW_MAX, piv, sh: s0, reach, lsh };
+    });
+    /* the bow, in degrees, that brings the crown `h` within nine tenths of his reach (his shoulder turned with his trunk
+       about the spine's joint, in his own frame) */
+    function bowFor(P, h) {
+      const B = P.bow; if (!B) return 0;
+      P.group.updateWorldMatrix(true, false); _bwp.set(h[0], h[1] + 0.035, h[2]);
+      const y = B.sh.y - B.piv.y, z = B.sh.z - B.piv.z;
+      for (let d = 0; d <= B.max; d += 0.5) { const th = d * Math.PI / 180;
+        _bws.set(B.sh.x, B.piv.y + y * Math.cos(th) - z * Math.sin(th), B.piv.z + y * Math.sin(th) + z * Math.cos(th)).applyMatrix4(P.group.matrixWorld);
+        if (_bws.distanceTo(_bwp) <= B.reach * 0.9) return d; }
+      return B.max;
+    }
+    function bowSet(P, deg) { const B = P.bow; if (!B) return; B.a.setEffectiveWeight(Math.max(0, Math.min(1, deg / B.max))); }
 
     /* ================================================================ WHAT HE CAN PRESS (stage.hotspots)
        Each a press (tap, click or E: Chad's rule of v21.9), each with its mark on the thing, each offered only while it
@@ -640,7 +686,7 @@
 
     /* ---------------------------------------------------------------- the story's frame, its start and its reset */
     function storyTick(wdt, t) {
-      spotsTick(); hitsTick(); scareTick(); doorTick(wdt); heatTick(wdt); crownTick(wdt); altarTick();   // (the fan, the lamp and the glass: updateNotes, film or play)
+      spotsTick(); hitsTick(); scareTick(); doorTick(wdt); heatTick(wdt); altarTick();   // (the fan, the lamp and the glass: updateNotes, film or play; his hand on her head: updateNotes, play and the decision)
       fightTick(wdt);
     }
     function applyPhase(saved) {
@@ -662,7 +708,7 @@
       decOpen = false; altarBlock = false; bowlOnFloor.visible = true;
       for (const P of spirits.wander.concat([spirits.large, spirits.appa, spirits.oppress])) { P.gone = false; P.alpha = 1; }
       if (kit) { kit.bar(null); if (kit.weaponBlock) kit.weaponBlock(null); if (kit.visionUrge) kit.visionUrge(false); }
-      lookAt0('FLAT'); castHome(); spiritsHome(); soundReset();
+      lookAt0('FLAT'); castHome(); spiritsHome(); soundReset(); whenReady(cast.phoB, (P) => bowSet(P, 0));
     }
     function storySnap() { return { phase, learned: [...play.learned], looked: [...play.looked], water: play.water, fight: play.fight ? +play.fight.k.toFixed(3) : null, heat: +play.heat.toFixed(2) }; }
 

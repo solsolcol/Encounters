@@ -195,7 +195,7 @@
     musicVol: 0,
     /* THE BEDS (M8): every one at 0 here; the chapter's mixer sets each by the room and the beat */
     /* THE BEDS, every one at 0 here: mixBeds (c_tsound.js) sets each by the beat, and a film sets its own */
-    ambience: { beds: [['u4flatbed', 0], ['u4estate', 0], ['u4histmus', 0], ['u4dark', 0], ['u4whisper', 0]] },
+    ambience: { beds: [['u4flatbed', 0], ['u4estate', 0], ['u4histmus', 0], ['u4dark', 0], ['u4whisper', 0], ['u4corridor', 0]] },
     voiceLine: null,
 
     words: {
