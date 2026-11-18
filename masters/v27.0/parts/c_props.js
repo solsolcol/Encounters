@@ -54,7 +54,7 @@
          its small lamp, its kalasam pot, its camphor holder and its incense: the tall kuthu vilakku stands beside it on the
          floor, not on it, where it was set sunk 11 cm into the pot) */
       ['w4altartray',  ALTAR.x - 0.30, 0, ALTAR.z - 0.36, Math.PI, null],      // her puja tray before the altar, on the floor
-      ['w4vilakku',    ALTAR.x + 0.08, 0, ALTAR.z - 0.38, 0,     null],         // the kuthu vilakku beside it (Mala lights it)
+      ['w4vilakku',    VILAKKU.x, 0, VILAKKU.z, 0,             null],         // the kuthu vilakku at the shrine's right end (Mala kneels to light it)
       // Appa's photograph on the wall at the altar's right (its back on the wall), and its garland
       ['w4frameport',  0.62, 1.30, ROOMS.living.z1 - 0.011 - 0.004, Math.PI, null],
       /* (the garland is a V of jasmine and marigold 0.45 wide and 0.54 tall, its two ends at its top: hung at the frame's

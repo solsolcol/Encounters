@@ -10895,7 +10895,8 @@ const ITEM_DEFS = {
   /* v27.0: the HOLY WATER (episode 4 chapter 4): the small silver bowl Grandmaster Pho fills for the blessing, taken
      from beside his large one. Held in the hand slot it is the weapon of his own hands (the fifty-first seam: FLICK and
      DIP); rare, blue (Chad's rarity rule, v14.11); its model is the bowl itself */
-  holywater: { icon: 'e-holywater', slot: 'hand', model: 'w4waterbowl', rarity: 'rare' }
+  /* (v27.0: its painted icon, in the style of his torch and amulet: masters/v27.0/keys.py) */
+  holywater: { icon: 'e-holywater', art: 'iconwater', slot: 'hand', model: 'w4waterbowl', rarity: 'rare' }
 };
 /* v14.11: every item has a RARITY (Chad: "Torch is common rarity with grey
    colour coding, the lp phiboon amulet is rare rarity with blue colour

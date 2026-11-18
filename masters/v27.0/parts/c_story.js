@@ -28,7 +28,11 @@
     const OLDPHOTO_AT = { x: ROOMS.dining.x0 + 0.30, y: 1.25, z: 6.15 };
     const APPA_PHOTO_AT = { x: 0.62, y: 1.50, z: ROOMS.living.z1 - 0.03 };
     const SMALLBOWL_AT = { x: BOWL.x + 0.30, y: 0.04, z: BOWL.z - 0.12 };
-    const LAMP_AT = { x: ALTAR.x + 0.08, y: 0.43, z: ALTAR.z - 0.38 };
+    const LAMP_AT = { x: VILAKKU.x, y: 0.43, z: VILAKKU.z };
+    /* Mala KNEELING at it (her kneel's right hand over its wick, measured: tools/probes/takepath.mjs ABS=1 kneelhold), and
+       the stand she was built in, given back whenever the family goes home */
+    const MALA_LAMP = { x: VILAKKU.x + 0.085, z: VILAKKU.z - 0.30 };
+    const MALA_KNEEL = { take: 'kneelhold', win: { kneelhold: [2.5, 1.0, 6.0] } }, MALA_STAND = cast.mala.rest;
 
     /* ---------------------------------------------------------------- the receipts (§9 of the plan: the phase string)
        history: r m f o a (each source learned), k (her line heard), p (he opened his sight before he had listened);
@@ -95,6 +99,7 @@
       if (name !== 'DARK') { play.fanTo = 1; }
     }
     function castHome() {
+      cast.mala.rest = MALA_STAND;
       for (const k of ['amma', 'ravi', 'mala']) whenReady(cast[k], (P) => { put(P, P.home.x, P.home.z, P.home.ry); P.group.visible = true; gaze(P, null, { secs: 0.01 }); rest(P, 0); });
       whenReady(cast.pho, (P) => { put(P, P.home.x, P.home.z, P.home.ry); P.group.visible = true; gaze(P, null, { secs: 0.01 }); rest(P, 0); });
       whenReady(cast.phoB, (P) => { P.group.visible = false; });
@@ -338,9 +343,10 @@
       castHome();
       whenReady(cast.pho, (P) => { P.group.visible = false; });
       whenReady(cast.phoB, (P) => { put(P, P.home.x, P.home.z, P.home.ry); P.group.visible = true; rest(P, 0); });
-      /* Mala and Ravi together by the fan, out of the way of the work (they have no seat in this flat that their files
-         sit in: they stand together) */
-      whenReady(cast.mala, (P) => { put(P, 2.22, 2.34, faceTo(2.22, 2.34, CHAIR.x, CHAIR.z)); rest(P, 0); });
+      /* Mala kneeling at her mother's lamp, to light it and to keep it through the night (18 Nov: she was sent to the lamp
+         from the fan in full view and back again, and her lighting take, made for a lamp at head height, lit a floor lamp
+         at 1.6 m); Ravi by the fan */
+      whenReady(cast.mala, (P) => { put(P, MALA_LAMP.x, MALA_LAMP.z, 0); P.rest = MALA_KNEEL; rest(P, 0); });
       spiritsHome();
       /* Appa stands between his family and the dark (§4.3) */
       whenReady(spirits.appa, (P) => { if (play.appaGone) { P.group.visible = false; P.gone = true; return; } put(P, APPA_GUARD.x, APPA_GUARD.z, faceTo(APPA_GUARD.x, APPA_GUARD.z, CHAIR.x, CHAIR.z + 1.2)); });
@@ -351,9 +357,10 @@
        brightens a little */
     function lightLamp(done) {
       const run = play.run;
-      whenReady(cast.mala, (P) => { put(P, LAMP_AT.x + 0.42, LAMP_AT.z - 0.55, faceTo(LAMP_AT.x + 0.42, LAMP_AT.z - 0.55, LAMP_AT.x, LAMP_AT.z)); span(P, 'lightlamp', 0, 5.9, 5.9, { hold: 0.2, holdSecs: 4 }); });
-      after(2.6, () => { if (!live(run)) return; fx('u4match', 0.7, panOf(LAMP_AT)); lampLit(false); });
-      after(5.6, () => { if (!live(run)) return; whenReady(cast.mala, (P) => { put(P, 2.22, 2.34, faceTo(2.22, 2.34, CHAIR.x, CHAIR.z)); rest(P, 0.3); }); if (done) done(); });
+      /* (she kneels there already, placed in the black: the match, the flame taking under her hands, and the room goes) */
+      after(0.6, () => { if (!live(run)) return; fx('u4match', 0.7, panOf(LAMP_AT)); });
+      after(1.1, () => { if (!live(run)) return; lampLit(false); });
+      after(2.8, () => { if (!live(run)) return; if (done) done(); });
     }
     /* the lamp's flame: three small flames on its top dish, additive, flickering on the chapter's clock */
     const flameTex = (() => { const [c, x] = cnv(64); const g = x.createRadialGradient(32, 40, 2, 32, 36, 30);
@@ -428,9 +435,12 @@
     const FAMILY = { ravi: () => cast.ravi.group.position, mala: () => cast.mala.group.position, amma: () => cast.amma.group.position,
                      pho: () => cast.phoB.group.position, me: () => yaw.position };
     const FIGHT = { secs: 116, waves: [
-      { at: 2.5, list: [['corner0', 'amma', 0.30], ['corner1', 'mala', 0.28], ['bed3', 'me', 0.30]] },
+      /* (18 Nov: Mala keeps her mother's lamp, kneeling at the shrine's right end, so what comes for her comes along the
+         back wall from the master bedroom's door; the shape under the dining table goes for her brother by the fan: from
+         there to her it crawled through the master bedroom's wall, and from bedroom 3 to her through her mother's chair) */
+      { at: 2.5, list: [['corner0', 'amma', 0.30], ['corner1', 'ravi', 0.28], ['bed3', 'me', 0.30]] },
       { at: 38, list: [['master', 'ravi', 0.34], ['passage', 'pho', 0.33], ['door', 'me', 0.34], ['kitchen', 'amma', 0.32]] },
-      { at: 76, list: [['bed3', 'mala', 0.37], ['store', 'me', 0.36], ['passage', 'amma', 0.34], ['kitchen', 'amma', 0.26, 'large']] } ] };
+      { at: 76, list: [['master', 'mala', 0.37], ['store', 'me', 0.36], ['passage', 'amma', 0.34], ['kitchen', 'amma', 0.26, 'large']] } ] };
     const REACH = { me: 0.75, amma: 0.62, pho: 0.6, ravi: 0.55, mala: 0.55 };
     function fightBegin() {
       const F = play.fight = { on: true, t: 0, k: 0, wave: 0, shapes: [], fed: 0, families: 0, captions: 0, ended: false };
@@ -507,7 +517,9 @@
         F.families++;
         fx(S.to === 'ravi' ? 'u4gaspm' : 'u4gaspf', 0.75, panOf(FAMILY[S.to]()));
         kit.award('awareness', -2, { minigame: true });
-        const P = cast[S.to]; if (P === cast.mala) whenReady(P, (Q) => { span(Q, 'scream', 0.4, 2.2, 1.0, { then: () => rest(Q, 0.8) }); });
+        /* (Mala kneeling at the lamp gasps where she kneels: her scream is a standing take, and it stood her up and knelt her
+           down again in a second) */
+        const P = cast[S.to]; if (P === cast.mala && P.rest !== MALA_KNEEL) whenReady(P, (Q) => { span(Q, 'scream', 0.4, 2.2, 1.0, { then: () => rest(Q, 0.8) }); });
       } else if (S.to === 'amma') { F.families++; fx('u4gaspf', 0.6, panOf(CHAIR)); }
     }
     /* the water reaches one (stage.onShot): released, or staggered (the large one takes three) */

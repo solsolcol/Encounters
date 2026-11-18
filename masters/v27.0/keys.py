@@ -89,6 +89,11 @@ group("e4c4: the pictures in her flat, each a picture laid in a frame (masters/v
        ('w4t_murugan', 'w4t_murugan.jpg', 'Kartikeya (Murugan), gouache on mica (Wellcome V0046230)'),
        ('w4t_appa', 'w4t_appa.jpg', "Appa's photograph: the game's own Appa, head and shoulders")])
 
+group("e4c4: the holy water's inventory picture, painted in the style of Chad's own (GPT Image 2.6 at high quality, job\n"
+      "18b6a0ff-435b-4e06-8c03-1402bf0f66c2: his torch and amulet icons as the style references, the bowl's own reference on\n"
+      "white, masters/v27.0/props/refs/waterbowl-1024.jpg, as the object; the master at 1024, masters/v27.0/icons)",
+      [('iconwater', 'iconwater.jpg', "the holy water's icon (384 px, q88, from masters/v27.0/icons/iconwater-1k.jpg)")])
+
 def between(s, a, b, new, what):
     assert s.count(a) == 1 and s.count(b) == 1, '%s: its markers are not there once (%d, %d)' % (what, s.count(a), s.count(b))
     i, j = s.index(a) + len(a), s.index(b)

@@ -779,6 +779,10 @@ ASSETS = {
     'w4t_ganesha':  ('assets/w4t_ganesha.jpg', True, False),     # Ganesha, chromolithograph (Wellcome V0044933)
     'w4t_murugan':  ('assets/w4t_murugan.jpg', True, False),     # Kartikeya (Murugan), gouache on mica (Wellcome V0046230)
     'w4t_appa':     ('assets/w4t_appa.jpg', True, False),     # Appa's photograph: the game's own Appa, head and shoulders
+    # e4c4: the holy water's inventory picture, painted in the style of Chad's own (GPT Image 2.6 at high quality, job
+    # 18b6a0ff-435b-4e06-8c03-1402bf0f66c2: his torch and amulet icons as the style references, the bowl's own reference on
+    # white, masters/v27.0/props/refs/waterbowl-1024.jpg, as the object; the master at 1024, masters/v27.0/icons)
+    'iconwater':    ('assets/iconwater.jpg', True, False),     # the holy water's icon (384 px, q88, from masters/v27.0/icons/iconwater-1k.jpg)
     # <<< e4c4 keys: the rows end <<<
     'e4buddha':     ('assets/e4buddha.glb', True, False),     # e4c1 v24.14: Chad's seated Buddha — "Yoga - Buddha" by T.Koeniger (Sketchfab, CC-BY-4.0), 0.32 m, 112k -> 50k triangles, base colour JPEG 2048 (tools/prepstatic.mjs), on the altar's top tier
     # e3c2 v19.6: the evening chant's crowd is Chad's congregation — his four
@@ -937,7 +941,7 @@ E2_ONLY = {'fbosling', 'fbonosling', 'admintee', 'botak', 'sleeper', 'sleepanim'
            'w4gate', 'w4frameport', 'w4armchair', 'w4tubelight', 'w4tvconsole', 'w4stool', 'w4standfan',
            'w4shoerack', 'w4tulsi', 'w4doorleaf', 'w4fridge', 'w4pilltray', 'w4clock', 'w4phonetable', 'w4bed',
            'w4commode', 'w4poles', 'w4thoranam', 'w4altartray', 'w4coffee', 'w4garland', 'w4t_kali', 'w4t_ganesha',
-           'w4t_murugan', 'w4t_appa',
+           'w4t_murugan', 'w4t_appa', 'iconwater',
            # <<< e4c4 keys <<<
            }   # v16.6: episode 3's too — the single-file build carries episode 1 alone (and v24.0: episode 4's)
 HOSTED_ONLY |= E2_ONLY

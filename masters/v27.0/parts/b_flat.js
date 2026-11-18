@@ -44,6 +44,10 @@
     const CHAIR = { x: -0.15, z: 3.85, ry: 0 };             // she faces her altar (+z): a body and a thing at a turn of 0 face +z
     const STOOL = { x: 0.62, z: 3.55 };
     const BOWL = { x: 0.35, z: 3.20 };
+    /* her kuthu vilakku on the floor beside her shrine's right end, below Appa's photograph: where Mala kneels to light it
+       (18 Nov, measured: her kneeling take's right hand rides 0.085 m to her right and 0.30 before her, 0.57 m up, so it
+       stands over the lamp's wick at 0.43; set before the shrine's middle, her knees were in her mother's footrest) */
+    const VILAKKU = { x: 0.32, z: 4.80 };
 
     const world = new THREE.Group();
     scene.add(world);

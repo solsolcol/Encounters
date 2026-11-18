@@ -182,6 +182,7 @@
       'w4frameport', 'w4armchair', 'w4tubelight', 'w4tvconsole', 'w4stool', 'w4standfan', 'w4shoerack', 'w4tulsi',
       'w4doorleaf', 'w4fridge', 'w4pilltray', 'w4clock', 'w4phonetable', 'w4bed', 'w4commode', 'w4poles',
       'w4thoranam', 'w4altartray', 'w4coffee', 'w4garland', 'w4t_kali', 'w4t_ganesha', 'w4t_murugan', 'w4t_appa',
+      'iconwater',
       /* <<< this chapter's own keys <<< */
       /* Grandmaster Pho, Chad's own model, as chapter 3 cast him (reuseInEpisode) */
       'pho'
