@@ -4277,7 +4277,12 @@
     const v3 = (o) => (typeof o === 'function' ? o() : o);
     /* a track of keys: { t, eye, at, fp, fd, roll, cut }. Between two keys the lens eases from one to the next; a key
        marked `cut` is jumped to at its time (the one before it held until then) */
+    /* (a shot's keys must run forward in time: the close's family shot ran 21.6 then 21.3 and never held, and nothing
+       said so (18 Nov). Said now, once for each pair, as a console error every probe counts) */
+    const keysBad = new Set();
     function track(t, K) {
+      for (let j = 1; j < K.length; j++) if (K[j].t < K[j - 1].t) { const w = (K[j - 1].name || '') + '@' + K[j - 1].t.toFixed(2) + ' > ' + (K[j].name || '') + '@' + K[j].t.toFixed(2);
+        if (!keysBad.has(w)) { keysBad.add(w); console.error('e4c4: a film\'s camera keys run backwards in time: ' + w); } }
       let i = 0; while (i < K.length - 1 && t >= K[i + 1].t) i++;
       const A = K[i], B = K[i + 1];
       if (!B || B.cut) { shot(v3(A.eye), v3(A.at), A.fp, A.fd, A.roll || 0); FM.shot = A.name || ''; return; }
