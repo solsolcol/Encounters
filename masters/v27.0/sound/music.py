@@ -18,6 +18,14 @@ MUSIC = [
     ('u4endD', 50, 2, "Calm, steady, dignified underscore: sustained warm strings and a slow simple piano line, patient and grounded, with a faint note of something missed, ending on a quiet open chord. Instrumental.", 'ending D: he kept his place'),
     ('u4closemus', 70, 2, "Gentle, peaceful closing music for the end of a long night: a soft piano melody over warm sustained strings, a slow, open, healing feeling, a small brass bell once near the start and once at the end, fading softly. Quietly hopeful and spiritual, not grand. Instrumental.", 'the close: her first steps, her altar, the dedication of merit, the card'),
 ]
+# MADE AGAIN (18 Nov, sound/measure.py): two cues came back nearly all under 150 Hz, which a phone's speaker does not play
+# (the opening film's 2 to 3 %, ending B's 4 to 5 %: a phone would hear almost nothing of either). Asked again in the
+# middle and upper registers, with no sub-bass and no deep drone (chapter 3's remedy for its two low effects, v26.0):
+MUSIC2 = [
+    ('u4openmus2', 75, 2, "Slow, dark, restrained cinematic underscore for a quiet horror film at night in a Singapore public housing estate, written in the middle and upper registers so it carries on a small phone speaker: a soft repeating two-note piano figure in the middle register, sustained violas and violins holding quiet uneasy chords, distant metallic textures like wind through window grilles, a faint ticking pulse on a muted woodblock that grows a little heavier near the end, then thins away. No sub-bass, no deep drones, no bass drum. Sparse, uneasy, patient; no melody to hum, no jump scares. Instrumental.", 'the opening film: the estate, the lift, the corridor, the flat'),
+    ('u4endB2', 50, 2, "Shaken, somber underscore after a dangerous mistake, written in the middle and upper registers so it carries on a small phone speaker: trembling violas and violins, a soft muffled pulse on a muted hand drum slowing down, a few quiet piano notes in the middle register, a single high violin note that steadies, ending quiet and humbled. No sub-bass, no deep drones. Instrumental.", 'ending B: he threw the water'),
+]
+json.dump([dict(name=n, secs=s, takes=t, prompt=p, where=w) for n, s, t, p, w in MUSIC2], open(os.path.join(HERE, 'music2.json'), 'w'), indent=1)
 names = [r[0] for r in MUSIC]; assert len(set(names)) == len(names)
 json.dump([dict(name=n, secs=s, takes=t, prompt=p, where=w) for n, s, t, p, w in MUSIC], open(os.path.join(HERE, 'music.json'), 'w'), indent=1)
 print(len(MUSIC), 'cues;', sum(r[2] for r in MUSIC), 'takes;', sum(r[1] * r[2] for r in MUSIC), 'seconds asked for')

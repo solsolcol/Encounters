@@ -6,7 +6,7 @@
 import json, os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 table, what, ids = sys.argv[1], sys.argv[2], sys.argv[3:]
-assert table in ('sfx', 'sfx2', 'music')
+assert table in ('sfx', 'sfx2', 'music', 'music2')
 p = os.path.join(HERE, 'sessions-%s.json' % table)
 d = json.load(open(p)) if os.path.exists(p) else {'flow': None, 'nodes': {}, 'sounds': {}}
 rows = {o['name']: o for o in json.load(open(os.path.join(HERE, table + '.json')))}

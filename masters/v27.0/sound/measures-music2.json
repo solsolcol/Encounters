@@ -1,0 +1,42 @@
+{
+ "u4openmus2_a": {
+  "len": 75.0,
+  "asked": 75,
+  "peak": -1.7,
+  "level": -21.0,
+  "silent": 0.03,
+  "first": 0.7,
+  "phone": 0.78,
+  "voice": 0.39
+ },
+ "u4openmus2_b": {
+  "len": 75.0,
+  "asked": 75,
+  "peak": -0.1,
+  "level": -22.9,
+  "silent": 0.03,
+  "first": 0.5,
+  "phone": 0.88,
+  "voice": 0.48
+ },
+ "u4endB2_a": {
+  "len": 50.0,
+  "asked": 50,
+  "peak": -0.4,
+  "level": -19.5,
+  "silent": 0.01,
+  "first": 0.05,
+  "phone": 0.85,
+  "voice": 0.67
+ },
+ "u4endB2_b": {
+  "len": 50.0,
+  "asked": 50,
+  "peak": 0.3,
+  "level": -19.7,
+  "silent": 0.03,
+  "first": 0.0,
+  "phone": 0.95,
+  "voice": 0.35
+ }
+}

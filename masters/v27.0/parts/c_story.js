@@ -110,7 +110,8 @@
 
     /* ================================================================ PLAY I · HISTORY FIRST (§4.1) */
     const WARM_HISTORY = ['ph4h0', 'rv4h1', 'rv4h2', 'ml4h1', 'q4h1', 'ml4h2', 'ml4h3', 'q4h2', 'am4h1', 'q4h3', 'ph4h1',
-                          'u4tubetick', 'u4fanslow', 'u4doorease', 'u4breath', 'u4fog', 'u4sting', 'u4tile'];
+                          'u4tubetick', 'u4fanslow', 'u4doorease', 'u4breath', 'u4fog', 'u4sting', 'u4tile', 'u4tile2',
+                          'u4os1', 'u4os2', 'u4os3', 'u4os4', 'u4os5', 'u4os6'];
     function historyBegin(R, fresh) {
       lookAt0('FLAT'); castHome(); spiritsHome();
       play.learned = new Set(R.learned); play.spoke = R.spoke; play.peeked = R.peeked; play.told = false;
@@ -311,7 +312,8 @@
 
     /* ================================================================ PLAY III · THE BLESSING (§4.3) */
     const WARM_BLESS = ['ph4b0', 'ph4b1', 'ph4b2', 'u4match', 'u4tubedie', 'u4fanstop', 'u4tvdie', 'u4flick', 'u4patter', 'u4dip', 'u4whisper',
-                        'u4release', 'u4large', 'u4gaspf', 'u4gaspm', 'u4chill', 'u4husband', 'u4vison', 'u4visbed', 'u4heart', 'uiclick'];
+                        'u4release', 'u4large', 'u4gaspf', 'u4gaspm', 'u4chill', 'u4husband', 'u4vison', 'u4visbed', 'u4heart', 'uiclick',
+                        'u4fightmus'];
     function blessBegin(R, fresh) {
       play.learned = new Set(['r', 'm', 'f', 'o', 'a']); play.spoke = true; play.told = true; play.opened = true; play.looked = new Set(['1', '2', '3']);
       play.closed = true; play.read = true; play.peeked = R.peeked; play.water = R.water; play.appaGone = R.appaGone;
@@ -436,7 +438,7 @@
       objectiveFor('bless');
       /* the two in the corners are the first wave's: they wake */
       whenReady(cast.phoB, (P) => handOnHead(P, true));
-      fx('u4whisper', 0.45, 0);
+      fightMusOn();
     }
     function shapeOf(i, large) {
       const P = large ? spirits.large : spirits.wander[i]; if (!P || !P.ready) return null;
@@ -538,7 +540,7 @@
     }
     /* the end of the chant: the shapes thin away; silence but for the lamp's flame and her breathing */
     function fightEnd() {
-      const F = play.fight; F.ended = true; F.on = false;
+      const F = play.fight; F.ended = true; F.on = false; fightMusOff();
       for (const S of F.shapes) if (S.state !== 'gone' && S.state !== 'leave') { S.state = 'leave'; S.leave = -0.4 * Math.random(); }
       if (kit) { kit.bar(null); kit.captions(null); }
       if (F.families <= 1) bank(W.noteKept, 0, 4);
@@ -652,7 +654,7 @@
       decOpen = false; altarBlock = false; bowlOnFloor.visible = true;
       for (const P of spirits.wander.concat([spirits.large, spirits.appa, spirits.oppress])) { P.gone = false; P.alpha = 1; }
       if (kit) { kit.bar(null); if (kit.weaponBlock) kit.weaponBlock(null); if (kit.visionUrge) kit.visionUrge(false); }
-      lookAt0('FLAT'); castHome(); spiritsHome();
+      lookAt0('FLAT'); castHome(); spiritsHome(); soundReset();
     }
     function storySnap() { return { phase, learned: [...play.learned], looked: [...play.looked], water: play.water, fight: play.fight ? +play.fight.k.toFixed(3) : null, heat: +play.heat.toFixed(2) }; }
 

@@ -33,6 +33,7 @@
       if (st !== 'cine') { peopleLevels(); lodTick(); }
       /* the room's own motion runs under a film too (the fan, the lamp's flames, the photograph's glass) */
       fanTick(wdt); lampTick(wdt, wallClock.t); fogTick(wdt);
+      mixBeds(wdt, st);
       const liveSt = st === 'play';
       if (!liveSt) { if (!pausedAt) pausedAt = now; lastWall = 0; return; }
       /* a voice plays on under a panel while the chapter's clock stands still: its booking comes forward by the time the
@@ -43,7 +44,7 @@
       lastWall = now;
       if (!booted) { booted = true; applyPhase(kit ? kit.getPhase() : null); }
       runTodo(); runSpeak(); runQueue();
-      storyTick(wdt, wallClock.t);
+      storyTick(wdt, wallClock.t); ambTick();
     }
     function updatePile() {}
     function updateFire() {}
@@ -140,6 +141,8 @@
       /* the fiftieth and fifty-first seams: his sight opened or shut; what the water may reach, what it reached, and
          where the bowl is filled again */
       onVision, shootables, onShot, reloadRefusal,
+      stepSound: stepNext,                                                      // his bare feet on her tiles (c_tsound.js)
+      amb: () => ({ n: ambN, last: ambLast, next: +ambAt.toFixed(2), beds: Object.assign({}, bedMix) }),
       updateNotes, updatePile, updateFire, updateSlow,
       snap, restore, reset, dispose
     });

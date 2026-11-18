@@ -14564,6 +14564,21 @@ const STING_SAMPLE = {
   ph4B0: ['ph4B0', 1], ph4B1: ['ph4B1', 1], q4B1: ['q4B1', 1], q4C0: ['q4C0', 1], ph4C1: ['ph4C1', 1],
   q4C1: ['q4C1', 1], ph4D0: ['ph4D0', 1], ph4D1: ['ph4D1', 1], q4D1: ['q4D1', 1], ph4z0: ['ph4z0', 1],
   ph4z1: ['ph4z1', 1], q4A: ['q4A', 1], q4B: ['q4B', 1], q4C: ['q4C', 1], q4D: ['q4D', 1],
+  /* v27.0 · its effects, beds and music (masters/v27.0/sound.sh: every pick and why) */
+  u4bell: ['u4bell', 1], u4breath: ['u4breath', 1], u4chill: ['u4chill', 1], u4closemus: ['u4closemus', 1],
+  u4corridor: ['u4corridor', 1], u4cry: ['u4cry', 1], u4dark: ['u4dark', 1], u4dip: ['u4dip', 1],
+  u4doorease: ['u4doorease', 1], u4endA: ['u4endA', 1], u4endB: ['u4endB', 1], u4endC: ['u4endC', 1],
+  u4endD: ['u4endD', 1], u4estate: ['u4estate', 1], u4fall: ['u4fall', 1], u4fanslow: ['u4fanslow', 1],
+  u4fanstop: ['u4fanstop', 1], u4fightmus: ['u4fightmus', 1], u4flatbed: ['u4flatbed', 1], u4flick: ['u4flick', 1],
+  u4fog: ['u4fog', 1], u4gaspf: ['u4gaspf', 1], u4gaspm: ['u4gaspm', 1], u4gate: ['u4gate', 1],
+  u4heart: ['u4heart', 1], u4histmus: ['u4histmus', 1], u4husband: ['u4husband', 1], u4large: ['u4large', 1],
+  u4lift: ['u4lift', 1], u4liftdoor: ['u4liftdoor', 1], u4match: ['u4match', 1], u4openmus: ['u4openmus', 1],
+  u4os1: ['u4os1', 1], u4os2: ['u4os2', 1], u4os3: ['u4os3', 1], u4os4: ['u4os4', 1], u4os5: ['u4os5', 1],
+  u4os6: ['u4os6', 1], u4patter: ['u4patter', 1], u4release: ['u4release', 1], u4sandals: ['u4sandals', 1],
+  u4scuffle: ['u4scuffle', 1], u4stand: ['u4stand', 1], u4steps: ['u4steps', 1], u4sting: ['u4sting', 1],
+  u4tile: ['u4tile', 1], u4tile2: ['u4tile2', 1], u4torn: ['u4torn', 1], u4trancemus: ['u4trancemus', 1],
+  u4tubedie: ['u4tubedie', 1], u4tubetick: ['u4tubetick', 1], u4tvdie: ['u4tvdie', 1], u4visbed: ['u4visbed', 1],
+  u4vismus: ['u4vismus', 1], u4visoff: ['u4visoff', 1], u4vison: ['u4vison', 1], u4whisper: ['u4whisper', 1],
   /* E4C4 SOUNDS END */
 };
 /* Which kinds the synth below can actually fake. Everything else in
@@ -17614,7 +17629,6 @@ async function skelLab(key, o = {}) {
 }
 window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () => state,   // v8.7: pitch, so a probe can aim the lens at the floor
                  skelLab,                                  // v15.2: the merge, proven
-                 hands: () => handsRoot,                   // v27.0: a probe photographs a body without his hands in front of it (play shows them again on its next entry)
                  chapterNext: (k) => nextChapterKey(k), chapterStops, isPreview,   // v23.0: the preview seam, for the fixture
                  kit: KIT, kitDebug, interactNow,          // v7.0: the play kit, by state
                  /* v21.9: where a hotspot's mark is on the screen (CSS px), so a probe can tap it as a thumb would */

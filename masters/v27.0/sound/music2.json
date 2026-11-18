@@ -1,0 +1,16 @@
+[
+ {
+  "name": "u4openmus2",
+  "secs": 75,
+  "takes": 2,
+  "prompt": "Slow, dark, restrained cinematic underscore for a quiet horror film at night in a Singapore public housing estate, written in the middle and upper registers so it carries on a small phone speaker: a soft repeating two-note piano figure in the middle register, sustained violas and violins holding quiet uneasy chords, distant metallic textures like wind through window grilles, a faint ticking pulse on a muted woodblock that grows a little heavier near the end, then thins away. No sub-bass, no deep drones, no bass drum. Sparse, uneasy, patient; no melody to hum, no jump scares. Instrumental.",
+  "where": "the opening film: the estate, the lift, the corridor, the flat"
+ },
+ {
+  "name": "u4endB2",
+  "secs": 50,
+  "takes": 2,
+  "prompt": "Shaken, somber underscore after a dangerous mistake, written in the middle and upper registers so it carries on a small phone speaker: trembling violas and violins, a soft muffled pulse on a muted hand drum slowing down, a few quiet piano notes in the middle register, a single high violin note that steadies, ending quiet and humbled. No sub-bass, no deep drones. Instrumental.",
+  "where": "ending B: he threw the water"
+ }
+]

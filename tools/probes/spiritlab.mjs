@@ -36,7 +36,7 @@ for (const on of (VIS ? [true, false] : [false])) {
     for (const C of VIEWS) {
       /* (his hands' scene emptied of all but its lights; the eye's height held where the view asks by the kit's own
          lying pose, its turn left free, since standing play puts the eye back at 1.62 every frame) */
-      await p.evaluate((v) => { const E = window.__enc, d = Math.PI / 180; for (const c of E.hands().parent.children) if (!c.isLight) c.visible = false;
+      await p.evaluate((v) => { const E = window.__enc, d = Math.PI / 180; const hs = E.handsRoot; hs.visible = false; if (hs.parent) hs.parent.visible = false; window.__vmDbg = window.__vmDbg || (hs.parent ? hs.parent.children.map(c => (c.type + ":" + (c.name || "") + ":" + c.visible)).join(" | ") : "no parent");
         E.kit.pose('lying', { y: v.y, yaw: v.yaw * d, span: Math.PI, pitchLo: -1.565, pitchHi: 1.565, secs: 0.05 });
         E.yaw.position.set(v.x, v.y, v.z); E.yaw.rotation.y = v.yaw * d; E.pitch.rotation.x = v.pitch * d;
         const cam = E.pitch.children.find(o => o.isCamera); if (cam && Math.abs(cam.fov - v.fov) > 1e-3) { cam.fov = v.fov; cam.updateProjectionMatrix(); } }, C);
@@ -45,5 +45,6 @@ for (const on of (VIS ? [true, false] : [false])) {
     }
   }
 }
+console.log('vmScene', await p.evaluate(() => window.__vmDbg || ''));
 console.log('errors', errs.length, errs.slice(0, 3).join(' | '));
 await b.close();

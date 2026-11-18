@@ -161,13 +161,17 @@
 
     /* SPIRIT VISION (the fiftieth seam, plan §5): this chapter's colours and sounds. The spirits are handed to the
        engine by the build (ctx.spirit) */
-    vision: {},
+    /* SPIRIT VISION's own sound (masters/v27.0/sound.sh): the wave out (u4vison) and back (u4visoff, the same swell run
+       backwards, as the wave is), its bed and its music brought up with it while the world's beds fall back 60 % under
+       it, and his heart: up to 112 as he opens, its beat heard (his own thump, harmonised for a phone), back to 76 */
+    vision: { heart: { bpm: 112, rest: 76, sound: 'u4heart', vol: 0.55, secs: 2.2, restSecs: 4.5 },
+              sound: { on: 'u4vison', off: 'u4visoff', vol: 0.85, bed: ['u4visbed', 0.56], music: ['u4vismus', 0.32], duck: 0.6 } },
     /* THE HOLY WATER (the fifty-first seam, plan §6): his own hands, the small silver bowl in his left, a flick of the
        right hand's fingers a press, a dip at Grandmaster Pho's bowl to fill it again; the HUD says the chapter's words */
     /* the holy water is IN HIS HANDS only once Grandmaster Pho has given him the bowl (the item, given in the blessing):
        until then the hands are his own and empty (an item-less weapon is always out) */
     weapon: { hands: 'own', pose: 'bowl', item: 'holywater', rounds: 10, endless: true, fireGap: 0.35, spray: { count: 9 },
-              words: { fire: 'FLICK', reload: 'DIP' }, shot: 'uiclick', reload: 'uiclick', empty: 'uiclick' },
+              words: { fire: 'FLICK', reload: 'DIP' }, shot: 'u4flick', reload: 'u4dip', empty: 'uiclick' },
 
     assets: [
       /* the people, the spirits and the things made for this chapter (masters/v27.0/make.sh) */
@@ -190,7 +194,8 @@
 
     musicVol: 0,
     /* THE BEDS (M8): every one at 0 here; the chapter's mixer sets each by the room and the beat */
-    ambience: { beds: [] },
+    /* THE BEDS, every one at 0 here: mixBeds (c_tsound.js) sets each by the beat, and a film sets its own */
+    ambience: { beds: [['u4flatbed', 0], ['u4estate', 0], ['u4histmus', 0], ['u4dark', 0], ['u4whisper', 0]] },
     voiceLine: null,
 
     words: {
