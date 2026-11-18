@@ -9319,6 +9319,15 @@ What the baseline contains, by release:
   bright gold). Between 21p and 21q, eight of his messages that were not asks were found missing from the plan's record
   and put back word for word (R74), and since then every message is committed and pushed the moment it arrives (R71,
   CLAUDE.md). Sheet v148. The tracker's §11 is every ask against the live build.
+  Then 21u (deploy `6afe1bfa777006ecc47713da`: Ravi left at his place and the lenses of C and D moved off his line to
+  his teacher instead, since raising him took his head through his mother's waist; every far block of the opening built
+  storey by storey, R48); 21v (deploy `6afe1e368eb4280bf13cd6b2`: R77, the drape over Grandmaster Pho's left arm carried
+  with the arm where his shoulders are let down, and his left arm held at its rest while he talks); 21w (deploy
+  `6afe21f7f19f9a60f7707d43`: R76, his trunk and head upright in his standing takes and his grafted legs' knees laid
+  straighter, lean 4.3 to 2.6 degrees, knees 9.8 and 11.7 to 5.9 and 7.5); 21x (deploy `6afe288bcec18cb9171a8d73`: R43,
+  the skin-coloured islands inside his robe in his body sheet, 114 of them, covered at runtime in the robe's own colour,
+  his file unchanged: tools/phoflecks.py, c_phofleck.js); 21y the corridor as a real access balcony (R48: beams, piers,
+  the lights between them, the floor's joints, the water main).
 
 ## The sheet, version by version
 
