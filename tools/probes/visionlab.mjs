@@ -44,13 +44,14 @@ let n = 0;
 for (const s of STEPS) {
   try {
     if (s.frames) await frames(s.frames);
+    /* (19 Nov: an until's own ms is its timeout, so it is read before a plain ms: it had been a plain wait) */
+    else if (s.until) { const ok = await p.waitForFunction(new Function('const E = window.__enc; try { return !!(' + s.until + '); } catch (e) { return false; }'), null, { timeout: s.ms || 300000, polling: 300 }).then(() => true, () => false); log('until', s.until, ok ? 'ok' : 'TIMED OUT'); }
     else if (s.ms) { await p.waitForTimeout(s.ms); await frames(3); }
     else if (s.view) { await p.evaluate((v) => { const E = window.__enc, d = Math.PI / 180; E.yaw.position.x = v[0]; if (v[1] != null) E.yaw.position.y = v[1]; E.yaw.position.z = v[2]; E.yaw.rotation.y = v[3] * d; E.pitch.rotation.x = (v[4] || 0) * d; }, s.view); await frames(3); }
     else if (s.look) { await p.evaluate((v) => { const E = window.__enc, d = Math.PI / 180; E.yaw.rotation.y = v[0] * d; E.pitch.rotation.x = (v[1] || 0) * d; }, s.look); await frames(3); }
     else if (s.eval) { const r = await p.evaluate(new Function('const E = window.__enc; return (' + s.eval + ');')).catch(e => 'THREW ' + e.message); if (r !== undefined && r !== null) log('eval', String(s.eval).slice(0, 70), '->', JSON.stringify(r).slice(0, 1600)); }
     else if (s.tap) { const r = await p.evaluate((q) => { const e = document.querySelector(q); if (!e) return null; const b = e.getBoundingClientRect(); return b.width ? { x: b.left + b.width / 2, y: b.top + b.height / 2 } : null; }, s.tap);
       if (!r) log('tap: nothing to tap at', s.tap); else { if (PHONES[VIEW]) await p.touchscreen.tap(r.x, r.y); else await p.mouse.click(r.x, r.y); log('tapped', s.tap); await frames(2); } }
-    else if (s.until) { const ok = await p.waitForFunction(new Function('const E = window.__enc; try { return !!(' + s.until + '); } catch (e) { return false; }'), null, { timeout: s.ms || 300000, polling: 300 }).then(() => true, () => false); log('until', s.until, ok ? 'ok' : 'TIMED OUT'); }
     if (s.shot) { await frames(3); await p.screenshot({ path: `${OUT}/${String(++n).padStart(2, '0')}-${s.shot}.png`, timeout: 240000 }).catch(() => log('shot failed', s.shot)); log('shot', s.shot); }
   } catch (e) { log('STEP FAILED', JSON.stringify(s), e.message.split('\n')[0]); }
 }

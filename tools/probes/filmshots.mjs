@@ -104,10 +104,26 @@ if (process.env.LENS) {
    <OUT>/who-<name>.json as rows [t, fov, [nx, ny, front, x, y, z] | null per bone]; the pictures follow as before */
 if (process.env.WHO) {
   const rows = await p.evaluate(([spec, from, to, step]) => { const E = window.__enc, C = E.cine, c = E.camera, S = E.stage, out = [];
-    const who = spec.split(',').filter(Boolean).map(s => { const [key, bn] = s.split(':'); return { key, re: new RegExp('^(mixamorig:?)?' + bn + '$') }; });
+    const who = spec.split(',').filter(Boolean).map(s => { const [key, bn0] = s.split(':'), skin = bn0.startsWith('@'), bn = skin ? bn0.slice(1) : bn0;
+      return { key, skin, re: new RegExp('^(mixamorig:?)?' + bn + '$') }; });
     const end = Math.min(to, C.dur() - 0.25);
+    /* ('key:@Bone': the skin that bone carries, over half its weight, on every visible skinned mesh of the person, as the
+       frame draws it: its extent on this screen [x0, x1, y0, y1] and in the world [x0, y0, z0, x1, y1, z1] — a head's
+       face as well as its bone, so a fit can be read against the whole of what it must hold) */
+    const skinOf = (P, re) => { const L = []; P.group.traverse(m => { if (!m.isSkinnedMesh || !m.geometry.attributes.skinIndex) return;
+        const bi = m.skeleton.bones.findIndex(b => re.test(b.name)); if (bi < 0) return; const SI = m.geometry.attributes.skinIndex, SW = m.geometry.attributes.skinWeight, ix = [];
+        for (let i = 0; i < SI.count; i++) { let w = 0; for (let k = 0; k < 4; k++) if (SI.getComponent(i, k) === bi) w += SW.getComponent(i, k); if (w > 0.5) ix.push(i); }
+        if (ix.length) L.push({ m, ix }); }); return L; };
+    const seen = (o) => { for (let q = o; q; q = q.parent) if (!q.visible) return false; return true; };
     for (let t = from; t <= end + 1e-6; t += step) { C.seek(t); c.updateWorldMatrix(true, false); c.updateProjectionMatrix(); const row = [+t.toFixed(3), +c.fov.toFixed(3)];
-      for (const W of who) { const P = S.person && S.person(W.key, 0); let bone = null; if (P) for (const q in P.bone) if (W.re.test(q)) { bone = P.bone[q]; break; }
+      for (const W of who) { const P = S.person && S.person(W.key, 0);
+        if (W.skin) { if (!P) { row.push(null); continue; } if (!W.L) W.L = skinOf(P, W.re); P.group.updateWorldMatrix(true, true);
+          const v = c.position.clone(), n = c.position.clone(); let a = [9, -9, 9, -9], b = [1e9, 1e9, 1e9, -1e9, -1e9, -1e9], any = false;
+          for (const { m, ix } of W.L) { if (!seen(m)) continue; for (const i of ix) { m.getVertexPosition(i, v); m.localToWorld(v); n.copy(v).project(c); if (n.z >= 1) continue; any = true;
+            a = [Math.min(a[0], n.x), Math.max(a[1], n.x), Math.min(a[2], n.y), Math.max(a[3], n.y)];
+            b = [Math.min(b[0], v.x), Math.min(b[1], v.y), Math.min(b[2], v.z), Math.max(b[3], v.x), Math.max(b[4], v.y), Math.max(b[5], v.z)]; } }
+          row.push(any ? a.map(q => +q.toFixed(3)).concat(b.map(q => +q.toFixed(3))) : null); continue; }
+        let bone = null; if (P) for (const q in P.bone) if (W.re.test(q)) { bone = P.bone[q]; break; }
         if (!bone) { row.push(null); continue; }
         const v = bone.getWorldPosition(c.position.clone()), n = v.clone().project(c);
         row.push([+n.x.toFixed(3), +n.y.toFixed(3), n.z < 1 ? 1 : 0, +v.x.toFixed(3), +v.y.toFixed(3), +v.z.toFixed(3)]); }
