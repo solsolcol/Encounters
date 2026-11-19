@@ -5161,11 +5161,11 @@
     const _upW0 = new THREE.Quaternion(), _upW1 = new THREE.Quaternion(), _upD = new THREE.Quaternion();
     function uprightLay(P) {
       const U = P.upr; if (!U) return;
-      let tr = 0, hd = 0, hp = 0, ch = 0, nd = 0, cl = 0, cr = 0, ka = 0;
+      let tr = 0, hd = 0, hp = 0, ch = 0, nd = 0, cl = 0, cr = 0, ka = 0, dl = 0, dr = 0;
       for (const n in U.take) { const w = P.w[n] || 0, T = U.take[n]; if (w > 0) { tr += w * (T.trunk || 0); hd += w * (T.head || 0); hp += w * (T.hips || 0);
-        ch += w * (T.chest || 0); nd += w * (T.nod || 0); cl += w * (T.clavL || 0); cr += w * (T.clavR || 0); ka += w * (T.arms || 0); } }
+        ch += w * (T.chest || 0); nd += w * (T.nod || 0); cl += w * (T.clavL || 0); cr += w * (T.clavR || 0); ka += w * (T.arms || 0); dl += w * (T.dropL || 0); dr += w * (T.dropR || 0); } }
       U.ka = Math.min(1, ka);
-      if (Math.abs(tr) < 1e-3 && Math.abs(hd) < 1e-3 && Math.abs(hp) < 1e-3 && Math.abs(ch) < 1e-3 && Math.abs(nd) < 1e-3 && Math.abs(cl) < 1e-3 && Math.abs(cr) < 1e-3) return;
+      if (Math.abs(tr) < 1e-3 && Math.abs(hd) < 1e-3 && Math.abs(hp) < 1e-3 && Math.abs(ch) < 1e-3 && Math.abs(nd) < 1e-3 && Math.abs(cl) < 1e-3 && Math.abs(cr) < 1e-3 && Math.abs(dl) < 1e-3 && Math.abs(dr) < 1e-3) return;
       for (const R of U.B) R.sv.copy(R.b.quaternion);
       U.on = true;
       P.group.updateWorldMatrix(true, false); P.group.getWorldQuaternion(_upQ);
@@ -5189,6 +5189,12 @@
       const clav = (b, deg, sgn) => { if (!b || Math.abs(deg) < 1e-3) return; b.parent.updateWorldMatrix(true, false); b.parent.getWorldQuaternion(_upQp);
         _upV.set(0, 1, 0).applyQuaternion(_upQp.invert()); _upQ.setFromAxisAngle(_upV, sgn * deg * Math.PI / 180); b.quaternion.premultiply(_upQ); b.updateWorldMatrix(false, true); };
       clav(U.clL, cl, 1); clav(U.clR, cr, -1);
+      /* (R93, Chad, 19 Nov 2026: "And relax his shoulders by moving it down very slightly": each collar bone turned down
+         about the body's forward line by `dropL` and `dropR` degrees, its shoulder going down with it; the arms are hung
+         again from where the collar bones stood before (uprightArmsLay), so they hang as they did) */
+      const drop = (b, deg, sgn) => { if (!b || Math.abs(deg) < 1e-3) return; b.parent.updateWorldMatrix(true, false); b.parent.getWorldQuaternion(_upQp);
+        _upV.copy(_upF).applyQuaternion(_upQp.invert()); _upQ.setFromAxisAngle(_upV, sgn * deg * Math.PI / 180); b.quaternion.premultiply(_upQ); b.updateWorldMatrix(false, true); };
+      drop(U.clL, dl, -1); drop(U.clR, dr, 1);
     }
     /* THE ARMS LEFT HANGING WHERE THE TAKE HUNG THEM (R88, Chad, 19 Nov 2026: "grandmaster pho's shoulders are still too
        bent forward, make it more natural"). A back straightened by the upright lay carries both upper arms with it, the
@@ -5285,6 +5291,7 @@
        rig's (which carries his feet) and the grafted one (which is seen), each knee bending forward, each foot keeping
        its turn. Laid after the arm's hold, taken off by armsBack() before the mixer runs again (v11.5) */
     const _kA = new THREE.Vector3(), _kB = new THREE.Vector3(), _kC = new THREE.Vector3(), _kP = new THREE.Vector3(), _kF = new THREE.Vector3(), _kQ = new THREE.Quaternion();
+    const _kD = new THREE.Vector3();
     function kneesInit(P) {
       const O = P.o.knees, bone = (re) => { for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
       const hips = bone(/^(mixamorig:?)?Hips$/), S = [];
@@ -5298,7 +5305,8 @@
       }
       if (!hips) return;
       const B = []; for (const sd of S) for (const b of [sd.up, sd.leg, sd.foot, sd.gu, sd.gl]) B.push({ b, sv: new THREE.Quaternion() });
-      P.knees = { hips, S, B, hp: new THREE.Vector3(), take: Object.assign({}, O.takes), win: O.win || {}, bend: (O.bend != null ? O.bend : 4) * Math.PI / 180, max: O.max || 0.012, on: false };
+      P.knees = { hips, S, B, hp: new THREE.Vector3(), take: Object.assign({}, O.takes), win: O.win || {}, bend: (O.bend != null ? O.bend : 4) * Math.PI / 180, max: O.max || 0.012, on: false,
+        own: O.own != null ? O.own * Math.PI / 180 : null };
     }
     function kneesLay(P) {
       const K = P.knees; if (!K) return;
@@ -5320,14 +5328,24 @@
         lift = Math.min(lift, Math.max(0, (want - d) / Math.max(0.5, up)));
       }
       lift = Math.min(lift, K.max) * k;
-      if (!(lift > 1e-5)) return;
+      if (!(lift > 1e-5) && K.own == null) return;
+      if (!(lift > 1e-5)) lift = 0;
       for (const R of K.B) R.sv.copy(R.b.quaternion); K.hp.copy(K.hips.position);
       K.on = true;
       K.hips.getWorldPosition(_kA); _kA.y += lift; K.hips.parent.worldToLocal(_kA); K.hips.position.copy(_kA); K.hips.updateWorldMatrix(false, true);
       const ry = P.group.rotation.y; _kF.set(Math.sin(ry), 0, Math.cos(ry));
       for (const sd of K.S) {
         sd.leg.getWorldPosition(_kP); _kP.addScaledVector(_kF, 0.5);
-        armTo({ up: sd.up, fore: sd.leg, hand: sd.foot }, sd.T, _kP);
+        /* (R92: his own legs, which his robe follows, are 3.6 to 4.5 cm longer than the grafted ones that are seen, so at
+           the same hips and ankles they stood bent 21.6 and 31.1 degrees, the robe pushed forward at the knees, while the
+           grafted legs stood at 5.9 and 7.4: measured at the order to take the holy water on build 37. The grafted legs
+           cannot reach further, so his hips stay; his own legs reach their ankles on down along the leg until they stand
+           at `own` degrees, the ankles the robe's hem hangs from going down with them) */
+        let T = sd.T;
+        if (K.own != null) { sd.up.getWorldPosition(_kA); const a = _kA.distanceTo(sd.leg.getWorldPosition(_kB)), b = _kB.distanceTo(sd.foot.getWorldPosition(_kC)),
+            d = _kA.distanceTo(sd.T), want = Math.sqrt(a * a + b * b + 2 * a * b * Math.cos(K.own));
+          if (d > 0.2 && d < want) T = _kD.copy(sd.T).sub(_kA).multiplyScalar(1 + (want / d - 1) * k).add(_kA); }
+        armTo({ up: sd.up, fore: sd.leg, hand: sd.foot }, T, _kP);
         sd.foot.parent.getWorldQuaternion(_kQ); sd.foot.quaternion.copy(_kQ.invert().multiply(sd.Q)); sd.foot.updateWorldMatrix(false, true);
         sd.gl.getWorldPosition(_kP); _kP.addScaledVector(_kF, 0.5);
         armTo({ up: sd.gu, fore: sd.gl, hand: sd.gEnd }, sd.T, _kP);
@@ -5383,9 +5401,12 @@
        vertical and his forearm 7.5 forward, the hand at his thigh; chest -20 (V2a) looked the same with his head a
        little further back, and the milder of the two was taken (v22.0: never overshoot). His talk takes the same,
        its own lean kept (its trunk and head one and a half degrees more, as R76 had them)) */
-    const PHO_STAND_UPRIGHT = { Sit_to_Stand_Transition_M: { trunk: 0.5, chest: -15, head: 10, nod: 9, clavR: 10, arms: 1 },
-      Talk_with_Hands_Open: { trunk: -1, chest: -15, head: 11.5, nod: 9, clavR: 10, arms: 1 } };
-    const PHO_KNEES = { takes: { Sit_to_Stand_Transition_M: 1, Talk_with_Hands_Open: 1 }, win: { Sit_to_Stand_Transition_M: [5.2, 99] }, bend: 4, max: 0.012 };
+    /* (R93, 19 Nov: his collar bones let down 3 degrees each, "very slightly", standing and talking: chosen beside 5 by
+       photographs from his side and from where his shot was taken) */
+    const PHO_STAND_UPRIGHT = { Sit_to_Stand_Transition_M: { trunk: 0.5, chest: -15, head: 10, nod: 9, clavR: 10, arms: 1, dropL: 3, dropR: 3 },
+      Talk_with_Hands_Open: { trunk: -1, chest: -15, head: 11.5, nod: 9, clavR: 10, arms: 1, dropL: 3, dropR: 3 } };
+    /* (R92, 19 Nov: and his own legs, which his robe follows, straightened to 5 degrees at the knee (kneesLay `own`)) */
+    const PHO_KNEES = { takes: { Sit_to_Stand_Transition_M: 1, Talk_with_Hands_Open: 1 }, win: { Sit_to_Stand_Transition_M: [5.2, 99] }, bend: 4, max: 0.012, own: 5 };
     const PHO_STAND_SHOULDERS = { Talk_with_Hands_Open: 1, mage_soell_cast_3: 0.6 };
     const PHO_STAND_SHWIN = { mage_soell_cast_3: [0.5, 0.45] };
     /* (R77: his left arm and the drape over it held at his rest's while he talks standing, so the cloth covers the arm) */
