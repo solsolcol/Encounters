@@ -436,8 +436,8 @@
       /* the burst where it lands: a hot core and a wider halo of his gold, out fast and gone */
       const b = (t - E.hit) / GOB.burst;
       if (b >= 0 && b < 1) { const [core, halo] = goFx.burst, f = 1 - b;
-        core.position.copy(_gbT); core.scale.setScalar(0.16 + 0.6 * Math.sqrt(b)); core.material.opacity = f * f; core.visible = true;
-        halo.position.copy(_gbT); halo.scale.setScalar(0.35 + 1.7 * b); halo.material.opacity = 0.6 * f; halo.visible = true; }
+        core.position.copy(_gbT); core.scale.setScalar(0.14 + 0.45 * Math.sqrt(b)); core.material.opacity = f * f; core.visible = true;
+        halo.position.copy(_gbT); halo.scale.setScalar(0.3 + 1.1 * b); halo.material.opacity = 0.6 * f; halo.visible = true; }
     }
     /* the picture shaken by the hit: the lens knocked off its line and back, fast and dying away; laid on after the track
        has placed it this frame, so the shot itself never moves */
@@ -460,11 +460,13 @@
        a little arc, to the thing on her back, and bursts on it: a flash and a ring in the water's colour, R81's (deep
        enough to read on his sight's pale room; the fight's own), the thing burning in it (bFlash). Every drop a function of
        the film's clock (v6.4), so a seek and a skip land on the same frame */
-    const SPRAYB = { n: 22, stagger: 0.009, arc: 0.1, spread: 0.12, size: 0.05, burst: 0.6 };
+    /* (build 50: build 49's 22 drops 5 cm wide, from 0.3 m before the lens, read on a phone as a column of blue blobs;
+       now thirty small ones from 0.55 m out, fanning wider as they fly, a spray) */
+    const SPRAYB = { n: 30, stagger: 0.007, arc: 0.07, spread: 0.2, size: 0.026, burst: 0.6 };
     const sprayFx = { drops: null, burst: null };
     const _sbA = new THREE.Vector3(), _sbT = new THREE.Vector3(), _sbP = new THREE.Vector3();
     function sprayHide() { if (sprayFx.drops) for (const sp of sprayFx.drops.concat(sprayFx.burst)) sp.visible = false; }
-    function sprayB(t, E) {
+    function sprayB(t, E, from) {
       if (!sprayFx.drops) { const tex = dipTex(), ringT = hitTex(true); owned.push(tex, ringT);
         const mk = (col, add, map) => { const m = new THREE.SpriteMaterial({ map, color: col, transparent: true, depthWrite: false, depthTest: false,
             blending: add ? THREE.AdditiveBlending : THREE.NormalBlending, fog: false });
@@ -474,7 +476,7 @@
       sprayHide();
       if (t < E.throw - 0.02 || t > E.splash + SPRAYB.burst) return;
       /* from his hands under the lens (the throw's own line), to the thing's chest (its head, less a hand's span) */
-      _sbA.set(S_EYE[0] + TOWARD[0] * 0.3, 1.3, S_EYE[2] + TOWARD[1] * 0.3);
+      if (from) _sbA.set(from[0], from[1], from[2]); else _sbA.set(S_EYE[0] + TOWARD[0] * 0.3, 1.3, S_EYE[2] + TOWARD[1] * 0.3);
       const O = spirits.oppress;
       if (O && O.ready && O.head && O.group.visible) { O.group.updateWorldMatrix(true, true); O.head.getWorldPosition(_sbT); _sbT.y -= 0.18; }
       else _sbT.set(CHAIR.x - 0.12, 1.2, CHAIR.z - 0.4);
@@ -490,9 +492,9 @@
       /* the burst where it lands, out fast and gone */
       const b = (t - E.splash) / SPRAYB.burst;
       if (b >= 0 && b < 1) { const [hue, flash, ring] = sprayFx.burst, f = 1 - b;
-        hue.position.copy(_sbT); hue.scale.setScalar(0.2 + 0.75 * Math.sqrt(b)); hue.material.opacity = 0.8 * f; hue.visible = true;
-        flash.position.copy(_sbT); flash.scale.setScalar(0.14 + 0.4 * b); flash.material.opacity = f * f; flash.visible = true;
-        ring.position.copy(_sbT); ring.scale.setScalar(0.3 + 1.5 * b); ring.material.opacity = 0.6 * f; ring.visible = true; }
+        hue.position.copy(_sbT); hue.scale.setScalar(0.15 + 0.4 * Math.sqrt(b)); hue.material.opacity = 0.8 * f; hue.visible = true;
+        flash.position.copy(_sbT); flash.scale.setScalar(0.1 + 0.25 * b); flash.material.opacity = f * f; flash.visible = true;
+        ring.position.copy(_sbT); ring.scale.setScalar(0.25 + 0.9 * b); ring.material.opacity = 0.6 * f; ring.visible = true; }
     }
     /* (R112) the thing burning in the water's colour as the drops strike it (R81's hold and fade), and near white on his
        teacher's hit (goFlash's) */
@@ -500,8 +502,8 @@
     function bFlash(P, t, E) { if (!P.fx) return;
       const w = t - E.splash, kw = w < 0 ? 0 : w < 0.1 ? 1 : Math.max(0, 1 - (w - 0.1) / 0.6);
       const u = t - E.hit, kh = u < 0 ? 0 : u < 0.05 ? u / 0.05 : Math.max(0, 1 - (u - 0.05) / 0.45);
-      P.fx.set('uColor', _goC.set(SPIRIT.oppress.color).lerp(_bwC, kw).lerp(GO_WHITE, kh));
-      P.fx.set('uFill', SPIRIT.oppress.fill + 2.6 * kw + 2.0 * kh); }
+      P.fx.set('uColor', _goC.set(SPIRIT.oppress.color).lerp(_bwC, 0.55 * kw).lerp(GO_WHITE, kh));
+      P.fx.set('uFill', SPIRIT.oppress.fill + 2.2 * kw + 2.0 * kh); }
 
     /* NO BODY HELD ON ONE FRAME THROUGH A FILM (R66 and R68, Chad, 18 Nov evening: "for option a cutscene, the yellow
        female model is stuck in an awkward unnatural pose when she says 'stop it you two' , and continues getting stuck in
@@ -597,7 +599,25 @@
         const B_FLOOR = [S_EYE[0] + 0.1, 0.42, S_EYE[2] + 0.2];        // his eyes, on the floor
         /* where it is when it is struck (over him on the floor), and where it is flung to: straight up from there and a
            little back, out through the ceiling, clear of her, of his teacher and of her son */
-        const OVER = [COMES[0], COMES[1] - 1.05, COMES[2]], FLY_TO = [COMES[0] - 0.15, 2.55, COMES[2] - 0.45];
+        /* (R112, build 50: build 49, photographed on a phone, held his teacher while the thing at her side sat 27 to 36
+           degrees left of him, off a phone's edge; and brought it to 0.2 m from his eyes, where it read as red smears.
+           Now the lens is on IT as the water strikes and it thrashes; its lunge stops 0.65 m from his eyes; over him on the
+           floor it hovers 0.85 m off, beside his teacher, so a phone holds both. Its places are given for its HEAD, its body
+           set from the head by the clawing pose's own measure: the head 0.9 m over its root, leant 0.26 m toward what it
+           faces (build 49, measured) */
+        const B_DIR = (() => { const dx = -0.45 - S_EYE[0], dz = 3.92 - S_EYE[2], l = Math.hypot(dx, dz); return [dx / l, dz / l]; })();
+        const B_SPC = [-0.45, 1.4, 3.92];                                // its chest where it rides her (build 49: hips -0.46 1.43 3.97)
+        const B_LURCH = [S_EYE[0] + B_DIR[0] * 0.1, 1.6, S_EYE[2] + B_DIR[1] * 0.1];
+        const B_SPRAY0 = [B_LURCH[0] + B_DIR[0] * 0.55, 1.36, B_LURCH[2] + B_DIR[1] * 0.55];   // the water, out of his hands
+        const B_LUNGE = [S_EYE[0] + B_DIR[0] * 0.65, 1.45, S_EYE[2] + B_DIR[1] * 0.65];   // its head, at him
+        const B_HOVER = [B_FLOOR[0] - 0.353, 1.02, B_FLOOR[2] - 0.485];    // its head over him on the floor (0.6 m out, beside his teacher)
+        const B_FLYH = [B_HOVER[0] - 0.35, 2.95, B_HOVER[2] - 0.45];        // its head flung up, out through the ceiling
+        const bOrigin = (h, ex, ez) => { const dx = ex - h[0], dz = ez - h[2], l = Math.hypot(dx, dz) || 1; return [h[0] - 0.26 * dx / l, h[1] - 0.9, h[2] - 0.26 * dz / l]; };
+        const bBob = (q) => 0.035 * Math.sin(q * 2.3) * smo(c01((q - E.floor) / 0.6));   // its hover over him, breathing
+        /* its scream held to the take's upright first moments (2.6 to 2.95 s: past them the take doubles it over, out of a
+           phone's frame: build 50, photographed at 0.55 and 0.75), shuddering through them, slowly until the water
+           strikes and three times as fast after; its phase carried on so the change of pace never snaps the pose */
+        const bCry = (q) => { const ph = q < E.splash ? q / 1.2 : E.splash / 1.2 + (q - E.splash) / 0.45; return 2.6 + 0.35 * (0.5 - 0.5 * Math.cos(Math.PI * 2 * ph)); };
         ammaRise(t, E.rise);
         /* her trance falters while his hand is off her head (Mala's "Amma!"): her raised hands sink and her body gives
            toward her chair's rest, and comes back up as his hand returns */
@@ -606,33 +626,42 @@
           else ammaTrance(t); }
         const off = t >= E.push && t < E.back;
         phoBless(t, off ? 1 - smo(c01((t - E.push) / 0.25)) : (t < E.push ? 1 : smo(c01((t - E.back) / 0.4))) * (1 - smo(c01((t - E.rise + 0.4) / 0.8))));
-        sprayB(t, E);
+        sprayB(t, E, B_SPRAY0);
         whenReady(spirits.oppress, (P) => {
           if (t >= E.hit + 1.35) { P.group.visible = false; P.group.scale.setScalar(1); return; }
           P.group.visible = true; P.group.scale.setScalar(1);
           oppRide(P);                                                   // where it rides her, this frame
-          if (t < E.splash) pose(P, 'cry', pingOf(t, 2.6, 1.6, 2.4));
+          if (t < E.splash) pose(P, 'cry', bCry(t));
           else if (t < E.hit) {
-            /* BURNED: it tears up off her back, thrashing and shaking (a function of the clock: there and back, never a
-               held frame), the shaking easing as it comes at him */
-            const g = P.group.position, up = smo(c01((t - E.wild) / 0.7)), sh = 1 - 0.65 * smo(c01((t - E.comes) / 0.6));
-            g.y += 0.32 * up + sh * 0.025 * Math.sin(t * 61 + 2.1);
-            g.x += sh * (0.035 * Math.sin(t * 47) + 0.02 * Math.sin(t * 83 + 1.3)); g.z += sh * 0.03 * Math.sin(t * 53 + 0.7);
-            P.group.rotation.y += sh * 0.14 * Math.sin(t * 31 + 0.4);
-            if (t < E.comes) pose(P, 'claw', pingOf(t, 0.4, 1.0, 0.5));
+            /* BURNED: it tears up off her, thrashing hard (a function of the clock: there and back, never a held frame),
+               the thrashing easing as it comes at him */
+            const g = P.group.position, up = smo(c01((t - E.wild) / 0.7)), sh = 1 - 0.7 * smo(c01((t - E.comes) / 0.6));
+            g.y += 0.28 * up + sh * 0.05 * Math.sin(t * 61 + 2.1);
+            g.x += sh * (0.06 * Math.sin(t * 47) + 0.03 * Math.sin(t * 83 + 1.3)); g.z += sh * 0.05 * Math.sin(t * 53 + 0.7);
+            P.group.rotation.y += sh * 0.24 * Math.sin(t * 31 + 0.4);
+            /* (build 50, photographed: its crawl lies low and a metre and more across, under a phone's frame; while it
+               burns and wails it keeps its scream upright, arms up (bCry), its body thrashing, and goes down into the crawl
+               only as it comes at him) */
+            const kd = smo(c01((t - E.comes) / 0.35)), rc = Math.sin(Math.PI * c01((t - E.splash) / 0.5)) * 0.12;
+            if (t < E.comes + 0.35) pose(P, 'cry', bCry(t), false, 'claw', kd, pingOf(t, 0.4, 1.0, 0.5));
+            g.x += B_DIR[0] * rc; g.z += B_DIR[1] * rc;                   // struck: it recoils from the water, and back
+            if (t < E.comes) { /* (the scream and its thrash, above) */ }
             else {
-              /* AT HIM: from there to a hand's breadth from his eyes, turned to him; down over him once he is on the floor */
-              const u = smo(c01((t - E.comes) / 0.7)), dn = smo(c01((t - E.floor) / 0.5));
+              /* AT HIM: its head to 0.65 m from his eyes, turned to him; then, as he goes down, over him on the floor,
+                 0.6 m out and beside his teacher, turned down to him, hovering */
+              const u = smo(c01((t - E.comes) / 0.6)), dn = smo(c01((t - E.floor) / 0.55));
+              const ex = lp(S_EYE[0], B_FLOOR[0], dn), ez = lp(S_EYE[2], B_FLOOR[2], dn), o = bOrigin(lp3(B_LUNGE, B_HOVER, dn), ex, ez);
               _obq.copy(P.group.quaternion);
-              const x = lp(g.x, COMES[0], u), z = lp(g.z, COMES[2], u), y = lp(g.y, COMES[1] - 0.75 - 0.3 * dn, u);
-              _ofq.setFromEuler(_ofe.set(0, faceTo(x, z, S_EYE[0], S_EYE[2]), 0));
-              P.group.position.set(x, y, z); P.group.quaternion.slerpQuaternions(_obq, _ofq, u); pose(P, 'claw', (t - E.comes) * 1.2); }
+              _ofq.setFromEuler(_ofe.set(0, faceTo(o[0], o[2], ex, ez), 0));
+              P.group.position.set(lp(g.x, o[0], u), lp(g.y, o[1] + bBob(t), u), lp(g.z, o[2], u)); P.group.quaternion.slerpQuaternions(_obq, _ofq, u);
+              if (t >= E.comes + 0.35) pose(P, 'claw', (t - E.comes) * 1.2); }
           } else {
-            /* STRUCK: flung from over him straight up and away, out through the ceiling, turning, shrinking into the dark */
-            const k = 1 - Math.pow(1 - c01((t - E.hit) / 1.3), 2.2);
-            P.group.position.set(lp(OVER[0], FLY_TO[0], k), lp(OVER[1], FLY_TO[1], k), lp(OVER[2], FLY_TO[2], k));
-            P.group.rotation.set(0, faceTo(OVER[0], OVER[2], S_EYE[0], S_EYE[2]) + 0.9 * k, 0);
-            P.group.scale.setScalar(1 - 0.6 * k); pose(P, 'cry', lp(1.0, 1.9, k)); }
+            /* STRUCK: flung from over him up and away out through the ceiling, turning, shrinking, gone (its clawing
+               carried on through the hit, so its body never jumps on that frame) */
+            const k = 1 - Math.pow(1 - c01((t - E.hit) / 1.3), 2.2), o0 = bOrigin(B_HOVER, B_FLOOR[0], B_FLOOR[2]), o1 = bOrigin(B_FLYH, B_FLOOR[0], B_FLOOR[2]);
+            P.group.position.set(lp(o0[0], o1[0], k), lp(o0[1] + bBob(E.hit), o1[1], k), lp(o0[2], o1[2], k));
+            P.group.rotation.set(0, faceTo(o0[0], o0[2], B_FLOOR[0], B_FLOOR[2]) + 0.9 * k, 0);
+            P.group.scale.setScalar(1 - 0.6 * k); pose(P, 'claw', (t - E.comes) * 1.2); }
           if (P.fx) P.fx.set('uAlpha', t < E.hit + 0.25 ? 1 : 1 - smo(c01((t - E.hit - 0.25) / 1.0)));
           bFlash(P, t, E); });
         goddess(t < E.falter ? 1 : t < E.back ? 0.35 : lp(0.35, 1, smo(c01((t - E.back) / 1.2))) * (1 - smo(c01((t - E.open + 1.6) / 1.5))));
@@ -654,15 +683,16 @@
         /* THE LENS: the throw (a lurch at her), on the thing as the water strikes it; held on it as it tears up and wails;
            it fills his eyes; down on the floor, looking up at it over him with his teacher beyond; up after it as it is
            flung out; then her, standing, and his teacher. (No cut: the fall is the lens going down) */
-        const ab = [lp(OVER[0], cast.phoB.home.x, 0.45), lp(OVER[1] + 0.85, 1.35, 0.45), lp(OVER[2], cast.phoB.home.z, 0.45)];
+        const B_AB = lp3(B_HOVER, [cast.phoB.home.x, 1.5, cast.phoB.home.z], 0.4);   // the thing over him, and his teacher beyond
         track(t, [
           { t: 0, name: 'S', eye: DEC_EYE, at: DEC_AT, fp: PLAY_FOV, fd: PLAY_FOV },
-          { t: E.throw + 0.25, name: 'throw', eye: [S_EYE[0] + TOWARD[0] * 0.2, 1.58, S_EYE[2] + TOWARD[1] * 0.2], at: [CHAIR.x - 0.1, 1.22, CHAIR.z - 0.38], fp: 58, fd: 52 },
-          { t: E.wail, name: 'wild', eye: [S_EYE[0] + TOWARD[0] * 0.12, 1.6, S_EYE[2] + TOWARD[1] * 0.12], at: [CHAIR.x - 0.1, 1.45, CHAIR.z - 0.42], fp: 58, fd: 52 },
-          { t: E.comes + 0.7, name: 'it', eye: [S_EYE[0] - TOWARD[0] * 0.06, 1.6, S_EYE[2] - TOWARD[1] * 0.06], at: [COMES[0], 1.3, COMES[2]], fp: 70, fd: 64 },
-          { t: E.floor + 0.35, name: 'floor', eye: B_FLOOR, at: ab, fp: 66, fd: 58, roll: 0.12 },
-          { t: E.hit + 0.1, name: 'floor', eye: B_FLOOR, at: ab, fp: 66, fd: 58, roll: 0.1 },
-          { t: E.hit + 1.1, name: 'fly', eye: B_FLOOR, at: [lp(OVER[0], FLY_TO[0], 0.75), lp(OVER[1] + 0.6, FLY_TO[1], 0.75), lp(OVER[2], FLY_TO[2], 0.75)], fp: 66, fd: 58, roll: 0.08 },
+          { t: E.throw + 0.2, name: 'throw', eye: B_LURCH, at: [B_SPC[0] - 0.05, 1.62, B_SPC[2]], fp: 60, fd: 54 },
+          { t: E.splash + 0.2, name: 'burn', eye: B_LURCH, at: [B_SPC[0] - 0.05, 1.76, B_SPC[2]], fp: 60, fd: 54 },
+          { t: E.wail, name: 'wild', eye: B_LURCH, at: [B_SPC[0] - 0.05, 1.95, B_SPC[2]], fp: 60, fd: 54 },
+          { t: E.comes + 0.55, name: 'it', eye: [S_EYE[0] - B_DIR[0] * 0.06, 1.62, S_EYE[2] - B_DIR[1] * 0.06], at: [B_LUNGE[0], B_LUNGE[1] - 0.15, B_LUNGE[2]], fp: 72, fd: 66 },
+          { t: E.floor + 0.4, name: 'floor', eye: B_FLOOR, at: B_AB, fp: 66, fd: 58, roll: 0.12 },
+          { t: E.hit + 0.1, name: 'floor', eye: B_FLOOR, at: B_AB, fp: 66, fd: 58, roll: 0.1 },
+          { t: E.hit + 1.1, name: 'fly', eye: B_FLOOR, at: lp3(B_HOVER, B_FLYH, 0.7), fp: 66, fd: 58, roll: 0.08 },
           { t: E.back + 0.6, name: 'floor', eye: B_FLOOR, at: [CHAIR.x + 0.2, 0.95, CHAIR.z], fp: 66, fd: 58, roll: 0.1 },
           /* (19 Nov: her rise followed, RISE_HEAD: from the floor her head went off a phone's left edge as she leaned) */
           { t: E.rise, name: 'floor', eye: B_FLOOR, at: [CHAIR.x + 0.14, 1.10, CHAIR.z + 0.06], fp: 66, fd: 58, roll: 0.08 },

@@ -118,8 +118,16 @@ if (process.env.WHO) {
     const seen = (o) => { for (let q = o; q; q = q.parent) if (!q.visible) return false; return true; };
     const cache = new Map();
     window.__whoRow = (spec) => { c.updateWorldMatrix(true, false); c.updateProjectionMatrix(); const row = [];
-      for (const s of spec.split(',').filter(Boolean)) { const [key, bn0] = s.split(':'), skin = bn0.startsWith('@'), bn = skin ? bn0.slice(1) : bn0, re = new RegExp('^(mixamorig:?)?' + bn + '$');
+      for (const s of spec.split(',').filter(Boolean)) { const [key, bn0] = s.split(':'), skin = bn0.startsWith('@'), bn = skin ? bn0.slice(1) : bn0, re = bn0 === '*BODY' ? null : new RegExp('^(mixamorig:?)?' + bn + '$');
         const P = S.person && S.person(key, 0); if (!P) { row.push(null); continue; }
+        /* (19 Nov) 'key:*BODY': the WHOLE drawn body (every fifth vertex of every shown skinned mesh, posed): its extent
+           on this screen [minx, maxx, miny, maxy] in NDC and its box in the world [x0 y0 z0 x1 y1 z1] */
+        if (bn0 === '*BODY') { P.group.updateWorldMatrix(true, true); const v = c.position.clone(), n = c.position.clone(); let a = [9, -9, 9, -9], b = [1e9, 1e9, 1e9, -1e9, -1e9, -1e9], any = false;
+          P.group.traverse(m => { if (!m.isSkinnedMesh || !seen(m)) return; if (m.skeleton) m.skeleton.update(); const N = m.geometry.attributes.position.count;
+            for (let i = 0; i < N; i += 5) { m.getVertexPosition(i, v); m.localToWorld(v); n.copy(v).project(c); if (n.z >= 1) continue; any = true;
+              a = [Math.min(a[0], n.x), Math.max(a[1], n.x), Math.min(a[2], n.y), Math.max(a[3], n.y)];
+              b = [Math.min(b[0], v.x), Math.min(b[1], v.y), Math.min(b[2], v.z), Math.max(b[3], v.x), Math.max(b[4], v.y), Math.max(b[5], v.z)]; } });
+          row.push(any ? a.map(q => +q.toFixed(3)).concat(b.map(q => +q.toFixed(3))) : null); continue; }
         if (skin) { if (!cache.has(s)) cache.set(s, skinOf(P, re)); P.group.updateWorldMatrix(true, true);
           /* (the bones' matrices for the skin are made only when a frame is drawn: after a seek and no draw, getVertexPosition
              read the last DRAWN frame's pose, a whole film step stale; made here from the bones as they stand) */
