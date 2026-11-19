@@ -1357,23 +1357,43 @@
       const mBat = B({ color: 0xf6f9ff, fog: true });
       /* the parapet's outer face (its paint, its accent band, a coping catching the corridor's light on its edge, rain
          streaks under it), the slab's edge under it: a 5 m tile */
-      const ACC = '#5b3a30';
-      const mPara = B({ fog: true, map: lit((() => { const [c, x] = canvas(512, 160), rr = rng(7103);
-        /* (a step darker at build 20: the night is the lit corridors') */
-        x.fillStyle = '#48453f'; x.fillRect(0, 0, 512, 160);
-        x.fillStyle = ACC; x.fillRect(0, 60, 512, 22);                                   // the block's band of colour
-        x.fillStyle = '#8f8a7e'; x.fillRect(0, 0, 512, 7);                               // the coping's lit edge
-        x.fillStyle = '#34322e'; x.fillRect(0, 7, 512, 6);                               // its shadow
+      /* (R103, Chad, 19 Nov: "the overall hdb environment can be improved much further, the streets, the environment below,
+         the blocks"): EACH BLOCK ITS OWN PAINT, as an estate's repainting gives every block of a precinct a scheme of its
+         own: a body colour, a band of accent along each storey's parapet, the fins and the stair towers in the body's
+         colour with the accent up one edge. The block across keeps its terracotta, a step warmer and lighter (build 20 had
+         drawn the whole estate in one dark grey-brown, and at night every block read as the same block); the one to the
+         west a cool grey with teal, the one to the east a sand with sage. Each still painted about half as bright as it
+         should read (v8.9: the tone mapping lifts it). The repainting is kept: a few rain streaks under the coping, not
+         the grime of a block left unpainted (an estate's blocks are repainted every five to seven years) */
+      const PAINT = {
+        across: { body: '#58524a', band: '#7c4434', coping: '#958e80', fin: ['#4c4740', '#57524a', '#625c52'] },
+        west:   { body: '#4f5458', band: '#2f6670', coping: '#8e9294', fin: ['#44494d', '#4d5256', '#575c60'] },
+        east:   { body: '#5a5648', band: '#55693f', coping: '#959080', fin: ['#4c493d', '#565346', '#605c4e'] } };
+      const ACC = PAINT.across.band;
+      /* the parapet's outer face (its paint, its accent band, a coping catching the corridor's light on its edge, rain
+         streaks under it), the slab's edge under it: a 5 m tile */
+      const paraMat = (P, seed) => B({ fog: true, map: lit((() => { const [c, x] = canvas(512, 160), rr = rng(seed);
+        x.fillStyle = P.body; x.fillRect(0, 0, 512, 160);
+        x.fillStyle = P.band; x.fillRect(0, 60, 512, 22);                                // the block's band of colour
+        x.fillStyle = 'rgba(255,255,255,0.10)'; x.fillRect(0, 60, 512, 3);               // its top edge catching the light
+        x.fillStyle = P.coping; x.fillRect(0, 0, 512, 7);                                // the coping's lit edge
+        x.fillStyle = 'rgba(0,0,0,0.30)'; x.fillRect(0, 7, 512, 6);                      // its shadow
         x.fillStyle = '#2c2a27'; x.fillRect(0, 128, 512, 32);                            // the slab's edge
-        for (let s = 0; s < 70; s++) { const sx = rr() * 512, sw = 2 + rr() * 6, sl = 20 + rr() * 90;
-          const g = x.createLinearGradient(0, 13, 0, 13 + sl); g.addColorStop(0, 'rgba(20,18,16,0.35)'); g.addColorStop(1, 'rgba(20,18,16,0)');
+        /* the repainting's age: a faint mottle, the paint a shade lighter where the rain does not reach */
+        for (let s2 = 0; s2 < 900; s2++) { x.fillStyle = rr() < 0.5 ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.035)'; x.fillRect(rr() * 512, rr() * 128, 2 + rr() * 6, 2 + rr() * 5); }
+        for (let s2 = 0; s2 < 28; s2++) { const sx = rr() * 512, sw = 2 + rr() * 5, sl = 14 + rr() * 60;
+          const g = x.createLinearGradient(0, 13, 0, 13 + sl); g.addColorStop(0, 'rgba(20,18,16,0.20)'); g.addColorStop(1, 'rgba(20,18,16,0)');
           x.fillStyle = g; x.fillRect(sx, 13, sw, sl); }
         return c; })()) });
-      const mParaIn = B({ color: 0x6e695f, fog: true });                                // its inner face and top, in the corridor's light
-      const mFin = B({ fog: true, map: lit((() => { const [c, x] = canvas(64, 512);
+      const finMat = (P) => B({ fog: true, map: lit((() => { const [c, x] = canvas(64, 512);
         /* (the parapets' paint: drawn near black they read as poles, build 20) */
-        const g = x.createLinearGradient(0, 0, 0, 512); g.addColorStop(0, '#403d39'); g.addColorStop(0.7, '#4a4741'); g.addColorStop(1, '#58544c');
-        x.fillStyle = g; x.fillRect(0, 0, 64, 512); x.fillStyle = 'rgba(255,255,255,0.05)'; x.fillRect(0, 0, 6, 512); return c; })()) });
+        const g = x.createLinearGradient(0, 0, 0, 512); g.addColorStop(0, P.fin[0]); g.addColorStop(0.7, P.fin[1]); g.addColorStop(1, P.fin[2]);
+        x.fillStyle = g; x.fillRect(0, 0, 64, 512); x.fillStyle = 'rgba(255,255,255,0.05)'; x.fillRect(0, 0, 6, 512);
+        x.fillStyle = P.band; x.fillRect(52, 0, 12, 512);                                // the accent up its edge
+        return c; })()) });
+      const mPara = paraMat(PAINT.across, 7103);
+      const mParaIn = B({ color: 0x6e695f, fog: true });                                // its inner face and top, in the corridor's light
+      const mFin = finMat(PAINT.across);
       const mDark = B({ color: 0x24242a, fog: true });                                  // ends and backs, in the night
       const mRoofEdge = B({ color: 0x302f34, fog: true });
 
@@ -1400,13 +1420,43 @@
           quadUV(mFlats, [bx, fl, WZ], [bx + BAY, fl, WZ], [bx + BAY, ce, WZ], [bx, ce, WZ], u0, v0 + 0.0004, u1, v1 - 0.0004);
         }
       }
-      /* the ends past the first and last bays: the stair towers (their vents lit dimly, the stair's lamp in each) */
-      const stairT = lit((() => { const [c, x] = canvas(128, 512), rr = rng(7105);
-        x.fillStyle = '#2e2d30'; x.fillRect(0, 0, 128, 512);
-        for (let s = 0; s < 13; s++) { const y = 512 - (s + 1) * 512 / 13;
-          for (let i = 0; i < 6; i++) for (let j = 0; j < 4; j++) { x.fillStyle = s ? `rgba(230,220,190,${0.25 + rr() * 0.25})` : 'rgba(40,40,40,1)'; x.fillRect(22 + i * 15, y + 8 + j * 8, 9, 5); } }
+      /* the ends past the first and last bays: the stair towers. (R103, "the blocks": each tower had been drawn as a dark
+         slab with a grid of dim dots. Now as a real stair tower is: the block's paint, the accent band up its edge, and at
+         every landing its wide opening under the stair's own tube, a screen of breeze blocks across it, the flight's
+         handrail seen through it, its ledge; the ground storey the void deck's) */
+      const stairTower = (P, storeys, seed) => lit((() => { const W = 256, H = 1024, [c, x] = canvas(W, H), rr = rng(seed);
+        const tall = storeys * SH + 1.4, yOf = (m) => H * (1 - m / tall);              // a metre up the tower, in the picture
+        x.fillStyle = P.body; x.fillRect(0, 0, W, H);
+        for (let s2 = 0; s2 < 1400; s2++) { x.fillStyle = rr() < 0.5 ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.03)'; x.fillRect(rr() * W, rr() * H, 2 + rr() * 5, 2 + rr() * 5); }
+        x.fillStyle = P.band; x.fillRect(W - 40, 0, 26, H);                               // the accent band up its edge
+        for (let st = 1; st < storeys; st++) {
+          const lo = yOf(st * SH + 1.0), hi = yOf(st * SH + 2.3), ox = 26, ow = 168;
+          const on = rr() < 0.92;
+          /* the opening, lit by the stair's tube from above */
+          const g = x.createLinearGradient(0, hi, 0, lo); g.addColorStop(0, on ? '#fff3d8' : '#2a2a2e'); g.addColorStop(0.55, on ? '#d8caa4' : '#222226'); g.addColorStop(1, on ? '#9b8f74' : '#1a1a1e');
+          x.fillStyle = g; x.fillRect(ox, hi, ow, lo - hi);
+          /* the flight going up across it and its handrail */
+          x.strokeStyle = on ? 'rgba(70,64,54,0.85)' : 'rgba(10,10,12,0.8)'; x.lineWidth = 7;
+          x.beginPath(); x.moveTo(ox + 6, lo - 4); x.lineTo(ox + ow - 6, hi + 10); x.stroke();
+          x.strokeStyle = on ? 'rgba(40,36,30,0.9)' : 'rgba(8,8,10,0.9)'; x.lineWidth = 2;
+          x.beginPath(); x.moveTo(ox + 6, lo - 16); x.lineTo(ox + ow - 6, hi - 2); x.stroke();
+          /* the breeze-block screen: a lattice of open rings in the wall's paint */
+          const cell = 21, rows = Math.max(1, Math.round((lo - hi) / cell)), ch2 = (lo - hi) / rows;
+          x.strokeStyle = P.body; x.lineWidth = 5;
+          for (let r = 0; r < rows; r++) for (let i = 0; i < Math.round(ow / cell); i++) {
+            const cx2 = ox + (i + 0.5) * ow / Math.round(ow / cell), cy2 = hi + (r + 0.5) * ch2;
+            x.beginPath(); x.arc(cx2, cy2, Math.min(cell, ch2) * 0.36, 0, Math.PI * 2); x.stroke();
+            x.strokeRect(cx2 - ow / Math.round(ow / cell) / 2, cy2 - ch2 / 2, ow / Math.round(ow / cell), ch2); }
+          /* its ledge, catching the light, and the shadow under it */
+          x.fillStyle = P.coping; x.fillRect(ox - 8, lo, ow + 16, 5);
+          x.fillStyle = 'rgba(0,0,0,0.28)'; x.fillRect(ox - 8, lo + 5, ow + 16, 7);
+          /* the light the tube throws out on the wall round the opening */
+          if (on) { const gl = x.createRadialGradient(ox + ow / 2, hi + 4, 4, ox + ow / 2, hi + 4, ow * 0.8);
+            gl.addColorStop(0, 'rgba(255,244,214,0.16)'); gl.addColorStop(1, 'rgba(255,244,214,0)'); x.fillStyle = gl; x.fillRect(0, hi - ow * 0.5, W, ow); }
+        }
+        x.fillStyle = 'rgba(0,0,0,0.55)'; x.fillRect(0, yOf(SH - 0.3), W, H - yOf(SH - 0.3));   // the void deck's shadow at its foot
         return c; })());
-      const mStair = B({ map: stairT, fog: true });
+      const mStair = B({ map: stairTower(PAINT.across, NS, 7105), fog: true });
       for (const sx of [A.x0 + STAIR / 2, A.x1 - STAIR / 2]) {
         const hw = STAIR / 2;
         quadUV(mStair, [sx - hw, G, PO + 1.02], [sx + hw, G, PO + 1.02], [sx + hw, TOP + 1.4, PO + 1.02], [sx - hw, TOP + 1.4, PO + 1.02], 0, 0, 1, 1);
@@ -1509,7 +1559,9 @@
          own frame (along its face, up, and out toward her); in the block across's own materials, so no new draw call) */
       const deal2 = rng(4405);
       const SLAB_FAR = 152, SLAB_EYES = [[-6, 1.5, -1.3], [0, 1.6, 1]];
-      const slab = (x0, z0, x1, z1, h, d = 12) => {
+      const slab = (x0, z0, x1, z1, h, paint, seed, d = 12) => {
+        /* (R103) each in its own paint: its parapets' band and its fins' (the block across's materials otherwise) */
+        const mPara = paraMat(paint, seed), mFin = finMat(paint);
         const L = Math.hypot(x1 - x0, z1 - z0), ax = (x1 - x0) / L, az = (z1 - z0) / L, bx = az, bz = -ax;   // along; into the block
         const P = (u, y, w) => [x0 + ax * u - bx * w, y, z0 + az * u - bz * w];                             // w: out toward her
         const NSf = Math.max(4, Math.round(h / SH)), top = G + NSf * SH, PIN = 1.9, POU = 2.05, ry = Math.atan2(-az, ax);
@@ -1551,8 +1603,8 @@
         { const c = P(L / 2, 0, -1.2); box(mDark, c[0], top + 3.2, c[2], 4.8, 6.4, 4.6, ry); box(mRoofEdge, c[0], top + 6.5, c[2], 5.4, 0.3, 5.2, ry); }
         { const c = P(L * 0.22, 0, -d / 2); box(mDark, c[0], top + 1.6, c[2], 5, 2.2, 3.6, ry); }
       };
-      slab(-128, -8, -74, -46, 37.05);                          // a block turned toward her, west of the one across
-      slab(66, -52, 118, -20, 37.05);                           // and one east of it
+      slab(-128, -8, -74, -46, 37.05, PAINT.west, 7121);        // a block turned toward her, west of the one across
+      slab(66, -52, 118, -20, 37.05, PAINT.east, 7122);         // and one east of it
       /* (R103, Chad, 19 Nov: "why is there a background basic hdb block that cuts into view at the back and cuts away
          again? why dont u just remove that basic looking hdb?") The next row behind (two slabs at 120 to 180 m) and the
          newer estate's four towers (150 to 207 m) are taken out: they stood across the lens's far plane (160 m, main.js),

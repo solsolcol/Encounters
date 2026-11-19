@@ -70,7 +70,17 @@ log('the surge', JSON.stringify(await fightState()));
 await p.evaluate((f) => window.__enc.showSlow(f), SLOW);
 await cdp.send('Animation.enable'); await cdp.send('Animation.setPlaybackRate', { playbackRate: 1 / SLOW });
 log('slowed', SLOW, 'times');
-await p.waitForFunction(() => window.__enc.getState() === 'unlock' && window.__enc.showT() != null, null, { timeout: 300000, polling: 100 });
+/* (her life held full by the probe until the showcase opens: nothing defends her here, and twelve at once took her life
+   before his call was answered on both first runs, the loss's film in place of the showcase) */
+{ const until = Date.now() + 600000; let last = '';
+  for (;;) {
+    const s = await p.evaluate(() => { const E = window.__enc, F = E.stage.dbg.play.fight; if (F && F.on) F.hp = 100;
+      return { st: E.getState(), show: E.showT(), call: F ? F.call : null }; });
+    if (s.st === 'unlock' && s.show != null) break;
+    if (s.st + s.call !== last) { last = s.st + s.call; log('  waiting:', JSON.stringify(s)); }
+    if (s.st === 'lost' || Date.now() > until) throw new Error('the showcase never opened: ' + JSON.stringify(s));
+    await p.waitForTimeout(150);
+  } }
 log('the showcase opened, slowed', SLOW, 'times');
 for (const t of AT) {
   await p.waitForFunction((t) => { const s = window.__enc.showT(); return s == null || s >= t; }, t, { timeout: 600000, polling: 'raf' });
@@ -92,6 +102,18 @@ for (const dt of MERGE_AT) {
 await p.waitForFunction(() => window.__enc.getState() === 'play', null, { timeout: 600000, polling: 100 });
 if (closedAt == null) { closedAt = Date.now(); log('the showcase closed', JSON.stringify(await fightState())); }
 await cdp.send('Animation.setPlaybackRate', { playbackRate: 1 }); await p.evaluate(() => window.__enc.showSlow(1));
+/* the wave and the return MEASURED before any picture (a picture on this box can take longer than the whole return):
+   the fight read every 150 ms for POLL seconds of the page's own clock, a line each time what it holds changes */
+{ const POLL = +(process.env.POLL || 6), t0 = await p.evaluate(() => performance.now()); let last = '';
+  for (;;) {
+    const s = await p.evaluate((t0) => { const F = window.__enc.stage.dbg.play.fight, n = (st) => F.shapes.filter(S => S.state === st).length;
+      return { t: +((performance.now() - t0) / 1000).toFixed(2), call: F.call, come: n('come'), feed: n('feed'), leave: n('leave'),
+               quick: F.shapes.filter(S => S.state === 'leave' && S.quick).length, gone: n('gone'), backN: F.backN || 0, wave: window.__enc.vision().wave }; }, t0);
+    const key = JSON.stringify({ ...s, t: 0 });
+    if (key !== last) { last = key; log('  the fight at', s.t, 's after the close:', JSON.stringify(s)); }
+    if (s.t >= POLL) break;
+    await p.waitForTimeout(150);
+  } }
 const seen = [];
 for (let i = 0; i < 8; i++) {
   const st = await fightState(); seen.push({ after: +((Date.now() - closedAt) / 1000).toFixed(2), ...st });
