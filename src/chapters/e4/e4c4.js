@@ -6389,8 +6389,9 @@
        vision's light negative of the room, a white haze over a near-white floor, and the struck one went from green to
        nothing. The strike is the WATER's colour now, deep enough to read on that light room: the silhouette burns in it and
        the burst throws it; in his gold, gold) */
+    /* (build 32: the gold is the chapter's own, WAVE_GOLD's; 0xffb424 read orange on the negative) */
     const HIT_HUE = { water: { body: 0x46cfff, flash: 0x9fe6ff, ring: 0x46cfff, spark: 0x7fdcff },
-                      gold: { body: 0xffb424, flash: 0xffe7a0, ring: 0xffb424, spark: 0xffcf5a } };
+                      gold: { body: 0xffc94a, flash: 0xffe7a0, ring: 0xffc94a, spark: 0xffd76a } };
     const hitHue = () => (play.fight && play.fight.call === 'gold' ? HIT_HUE.gold : HIT_HUE.water);
     const hitBoost = (P) => { const d = P.hitT0 != null ? wallNow() - P.hitT0 : 99; return d < HIT_HOLD ? 1 : Math.max(0, 1 - (d - HIT_HOLD) / HIT_FADE); };
     function hitFlash(S, delay = 0) {
