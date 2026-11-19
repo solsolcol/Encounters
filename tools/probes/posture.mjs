@@ -78,6 +78,16 @@ const res = await p.evaluate(async ({ WHO, N, TAKES, LIVE, SPAN }) => {
       gkL: G.lu && G.ll ? knee(G.lu, G.ll, B.lf) : NaN, gkR: G.ru && G.rl ? knee(G.ru, G.rl, B.rf) : NaN,
       hipY: pos(B.hips)[1] - P.group.position.y,
       curve: deg(Math.acos(Math.max(-1, Math.min(1, dot(nrm(lo), nrm(up)))))), head: deg(Math.atan2(dot(hv, f), hv[1])),
+      /* (R88) the upper back from the vertical (the first spine bone to the neck's base, forward positive); the line from
+         the neck's base to the head's base from the horizontal (90 is the head stacked over the neck; a head carried
+         forward is less); each arm's top forward of the neck's base along the facing, in cm (shoulders rolled forward
+         are more) */
+      upper: deg(Math.atan2(dot(sub(n, s1), f), sub(n, s1)[1])), cva: deg(Math.atan2(hv[1], dot(hv, f))),
+      protL: dot(sub(pos(B.la), n), f) * 100, protR: dot(sub(pos(B.ra), n), f) * 100,
+      /* (R88, the plumb line a standing body is read by from the side: the head's base forward of the two arms' tops,
+         and their middle forward of the hips, in cm along the facing; a body standing tall stacks them, near 0) */
+      headF: dot(sub(hd, [(pos(B.la)[0] + pos(B.ra)[0]) / 2, 0, (pos(B.la)[2] + pos(B.ra)[2]) / 2]), f) * 100,
+      shF: dot(sub([(pos(B.la)[0] + pos(B.ra)[0]) / 2, 0, (pos(B.la)[2] + pos(B.ra)[2]) / 2], h), f) * 100,
       L: shr(B.lc, B.la), R: shr(B.rc, B.ra) };
   }
   /* the bind pose: every bone from the skin's own inverse binds (skeleton.pose), read, then the mixer lays the takes back */
@@ -89,7 +99,9 @@ const res = await p.evaluate(async ({ WHO, N, TAKES, LIVE, SPAN }) => {
     smL[0].skeleton.pose(); const bindL = read(); for (const [o, q, v] of keepL) { o.quaternion.copy(q); o.position.copy(v); }
     const rows = [];
     for (let i = 0; i < N; i++) { await new Promise(r => setTimeout(r, SPAN * 1000 / N)); const r = read();
-      rows.push({ t: +(i * SPAN / N).toFixed(1), take: P.cur, look: +(r.look - bindL.look).toFixed(1), lean: +r.lean.toFixed(1), side: +r.side.toFixed(1), curve: +r.curve.toFixed(1), head: +r.head.toFixed(1), shrugL: +(r.L.el - bindL.L.el).toFixed(1), shrugR: +(r.R.el - bindL.R.el).toFixed(1),
+      rows.push({ t: +(i * SPAN / N).toFixed(1), take: P.cur, upper: +r.upper.toFixed(1), upperBind: +bindL.upper.toFixed(1), cva: +r.cva.toFixed(1), cvaBind: +bindL.cva.toFixed(1),
+        protL: +r.protL.toFixed(1), protR: +r.protR.toFixed(1), protBindL: +bindL.protL.toFixed(1), protBindR: +bindL.protR.toFixed(1),
+        headF: +r.headF.toFixed(1), headFBind: +bindL.headF.toFixed(1), shF: +r.shF.toFixed(1), shFBind: +bindL.shF.toFixed(1), look: +(r.look - bindL.look).toFixed(1), lean: +r.lean.toFixed(1), side: +r.side.toFixed(1), curve: +r.curve.toFixed(1), head: +r.head.toFixed(1), shrugL: +(r.L.el - bindL.L.el).toFixed(1), shrugR: +(r.R.el - bindL.R.el).toFixed(1),
         kneeL: +r.kneeL.toFixed(1), kneeR: +r.kneeR.toFixed(1), hipL: +r.hipL.toFixed(1), hipR: +r.hipR.toFixed(1), gkL: +r.gkL.toFixed(1), gkR: +r.gkR.toFixed(1), hipY: +r.hipY.toFixed(3) }); }
     return { live: rows };
   }
