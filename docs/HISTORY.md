@@ -9392,7 +9392,11 @@ What the baseline contains, by release:
   photograph stands); 37 (deploy `6afebbb344d171245a23d6ca`, 19 Nov: R86 in the close, found by reading build 36's
   photographs: once her palms join at her altar the lamp's take lifted her face 19 degrees and then bowed it 20, with no
   look holding it; her look on her altar now holds through the lamp at 0.8, its mark at her own eyes' height: 5 up, then a
-  bow of 7.6, measured on her head's own bones and photographed before and after).
+  bow of 7.6, measured on her head's own bones and photographed before and after); 38 (deploy `6afef36d52511c1dbc69438f`,
+  19 Nov: R92, "his knees are still bent forward", and R93, his shoulders "down very slightly": his own legs, which his
+  robe follows, are longer than the grafted legs that are seen and stood bent 21.6 and 31.1 degrees at the same hips and
+  ankles; they now reach their ankles on down along the leg to 5 degrees, his hips where they were, the robe falling
+  straight to his feet; his collar bones 3 degrees down, his shoulders a centimetre lower).
 
 ## The sheet, version by version
 
