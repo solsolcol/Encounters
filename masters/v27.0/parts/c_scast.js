@@ -31,14 +31,17 @@
       const find = (re) => { for (const n in P.bone) if (re.test(n)) return P.bone[n]; return null; };
       const B = [find(/Spine$/), find(/Spine1$/), find(/Spine2$/)], neck = find(/Neck$/), hips = find(/Hips$/), legs = [find(/LeftUpLeg$/), find(/RightUpLeg$/)];
       if (B.some(b => !b) || !neck || !hips || legs.some(b => !b)) { console.warn(P.key + ': o.upright asked, and its spine is not all there'); return; }
-      P.upr = { hips, legs, spine: B, neck, B: [hips].concat(legs, B, [neck]).map(b => ({ b, sv: new THREE.Quaternion() })), take: Object.assign({}, P.o.upright), on: false };
+      /* (R88: the head and the collar bones too, for a take that names `chest`, `nod` or `clav`) */
+      const head = find(/Head$/), clL = find(/LeftShoulder$/), clR = find(/RightShoulder$/);
+      P.upr = { hips, legs, spine: B, neck, head, clL, clR, B: [hips].concat(legs, B, [neck], [head, clL, clR].filter(Boolean)).map(b => ({ b, sv: new THREE.Quaternion() })), take: Object.assign({}, P.o.upright), on: false };
     }
     const _upW0 = new THREE.Quaternion(), _upW1 = new THREE.Quaternion(), _upD = new THREE.Quaternion();
     function uprightLay(P) {
       const U = P.upr; if (!U) return;
-      let tr = 0, hd = 0, hp = 0;
-      for (const n in U.take) { const w = P.w[n] || 0; if (w > 0) { tr += w * (U.take[n].trunk || 0); hd += w * (U.take[n].head || 0); hp += w * (U.take[n].hips || 0); } }
-      if (Math.abs(tr) < 1e-3 && Math.abs(hd) < 1e-3 && Math.abs(hp) < 1e-3) return;
+      let tr = 0, hd = 0, hp = 0, ch = 0, nd = 0, cl = 0, cr = 0;
+      for (const n in U.take) { const w = P.w[n] || 0, T = U.take[n]; if (w > 0) { tr += w * (T.trunk || 0); hd += w * (T.head || 0); hp += w * (T.hips || 0);
+        ch += w * (T.chest || 0); nd += w * (T.nod || 0); cl += w * (T.clavL || 0); cr += w * (T.clavR || 0); } }
+      if (Math.abs(tr) < 1e-3 && Math.abs(hd) < 1e-3 && Math.abs(hp) < 1e-3 && Math.abs(ch) < 1e-3 && Math.abs(nd) < 1e-3 && Math.abs(cl) < 1e-3 && Math.abs(cr) < 1e-3) return;
       for (const R of U.B) R.sv.copy(R.b.quaternion);
       U.on = true;
       P.group.updateWorldMatrix(true, false); P.group.getWorldQuaternion(_upQ);
@@ -50,7 +53,16 @@
         _upD.copy(_upW1).invert().multiply(_upW0);                      // (each thigh's turn given back: new hips^-1 * old hips)
         for (const L of U.legs) { L.quaternion.premultiply(_upD); L.updateWorldMatrix(false, true); } }
       if (Math.abs(tr) >= 1e-3) for (const b of U.spine) turn(b, tr / 3);
+      /* (R88: the upper back opened: the last two spine bones turned back, two thirds and one third, so the curve between
+         the lower back and the upper eases as a back straightening does, not at one joint) */
+      if (Math.abs(ch) >= 1e-3) { turn(U.spine[1], ch / 3); turn(U.spine[2], ch * 2 / 3); }
       if (Math.abs(hd) >= 1e-3) turn(U.neck, hd);
+      if (Math.abs(nd) >= 1e-3 && U.head) turn(U.head, nd);
+      /* (R88: a collar bone drawn back: turned about the vertical, its arm's top carried back with it; a positive turn takes
+         either side back) */
+      const clav = (b, deg, sgn) => { if (!b || Math.abs(deg) < 1e-3) return; b.parent.updateWorldMatrix(true, false); b.parent.getWorldQuaternion(_upQp);
+        _upV.set(0, 1, 0).applyQuaternion(_upQp.invert()); _upQ.setFromAxisAngle(_upV, sgn * deg * Math.PI / 180); b.quaternion.premultiply(_upQ); b.updateWorldMatrix(false, true); };
+      clav(U.clL, cl, 1); clav(U.clR, cr, -1);
     }
     /* AN ARM HELD AT ITS REST under its cloth (o.armRest; R77, Chad, 18 Nov 2026: "his arms and hands keep clipping into
        his robes in many of his poses"). Grandmaster Pho's left arm is under the drape of his robe, and the drape hangs from
@@ -209,7 +221,17 @@
     /* (R76, Chad, 18 Nov 2026: "Grandmaster pho's standing pose and standing talking pose is still hunchbacked and not
        natural". Measured on 21u: his trunk leans 4.3 degrees forward at rest and 5.9 in his talk (8.7 at most); turned
        back by as much, his neck given it back so his face stays where R64 set it) */
-    const PHO_STAND_UPRIGHT = { Sit_to_Stand_Transition_M: { trunk: -4.5, head: 16.5 }, Talk_with_Hands_Open: { trunk: -6, head: 18 } };
+    /* (R88, Chad, 19 Nov 2026: "grandmaster pho's shoulders are still too bent forward, make it more natural", with his
+       photograph of play from his side. MEASURED on build 33 (tools/probes/posture.mjs LIVE, the blessing, his standing
+       body with every lay): his trunk 2.6 degrees from the vertical and his head over his shoulders, but his back bent
+       53 degrees between its lower and upper parts, the upper back 20.5 degrees further forward than his own scan's bind
+       pose, and his right shoulder's top 10 cm further forward: the rounded back of the photograph. So the upper back is
+       opened (`chest`: the last two spine bones turned back), the whole trunk given back the lean that takes away
+       (`trunk`), the neck's forward turn eased and the skull's nod given the rest, so his head stays over his shoulders
+       and his face where it was (`head`, `nod`), and his right collar bone drawn back (`clavR`). The numbers chosen by
+       photographs from his side at several strengths, and measured again: the tracker's log) */
+    const PHO_STAND_UPRIGHT = { Sit_to_Stand_Transition_M: { trunk: 0.5, chest: -15, head: 10, nod: 9, clavR: 10 },
+      Talk_with_Hands_Open: { trunk: -1, chest: -15, head: 11.5, nod: 9, clavR: 10 } };
     const PHO_KNEES = { takes: { Sit_to_Stand_Transition_M: 1, Talk_with_Hands_Open: 1 }, win: { Sit_to_Stand_Transition_M: [5.2, 99] }, bend: 4, max: 0.012 };
     const PHO_STAND_SHOULDERS = { Talk_with_Hands_Open: 1, mage_soell_cast_3: 0.6 };
     const PHO_STAND_SHWIN = { mage_soell_cast_3: [0.5, 0.45] };
