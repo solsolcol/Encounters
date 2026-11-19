@@ -140,17 +140,36 @@ for k in range(360):
         # dist/ — _headers is Netlify's config, never served, so its EFFECT is checked instead (an asset's immutable cache
         # and index.html's revalidation). Anything else and the deploy is reported failed, never done.
         import concurrent.futures as cf
-        def check(rel):
-            url = LIVE + '/' + ('' if rel == 'index.html' else urllib.parse.quote(rel))
+        # (19 Nov 2026: fetching every file back cost the site 1.1 GB of its usage a deploy, and with Netlify's own fetch of
+        # the carried files, about 2 GB: some 100 deploys in November held the site for "Usage exceeded". Now the files
+        # SENT in this zip are fetched and compared byte for byte; a CARRIED file, whose sha1 Netlify's build has already
+        # checked against the manifest before publishing (rebuild.py fails the build on one mismatch), is read by a HEAD
+        # alone: its length, and its ETag where that is the sha1. A carried file whose length differs is fetched.)
+        sent = set(send); got = [0]
+        def fetch_ok(url, rel):
             for attempt in range(4):
                 try:
                     with urllib.request.urlopen(urllib.request.Request(url, headers={'Cache-Control': 'no-cache', 'User-Agent': 'byteverify'}), timeout=180) as rr:
-                        return rel, hashlib.sha1(rr.read()).hexdigest() == files[rel]['sha1']
+                        b = rr.read(); got[0] += len(b); return hashlib.sha1(b).hexdigest() == files[rel]['sha1']
                 except Exception:
                     time.sleep(2 * (attempt + 1))
-            return rel, False
+            return False
+        def check(rel):
+            url = LIVE + '/' + ('' if rel == 'index.html' else urllib.parse.quote(rel))
+            if rel in sent: return rel, fetch_ok(url, rel)
+            for attempt in range(4):
+                try:
+                    with urllib.request.urlopen(urllib.request.Request(url, method='HEAD', headers={'Cache-Control': 'no-cache', 'User-Agent': 'byteverify'}), timeout=60) as rr:
+                        n = int(rr.headers.get('Content-Length') or -1); et = (rr.headers.get('ETag') or '').replace('W/', '').strip('"').split('-')[0]
+                        if et == files[rel]['sha1']: return rel, True
+                        if n == files[rel]['size']: return rel, True
+                        break
+                except Exception:
+                    time.sleep(2 * (attempt + 1))
+            return rel, fetch_ok(url, rel)
         with cf.ThreadPoolExecutor(8) as ex: res = list(ex.map(check, [r for r in files if r != '_headers']))
         bad = [r for r, ok in res if not ok]
+        print(f'verify fetched {got[0] / 1e6:.1f} MB (the {len(sent)} files sent, and any carried one whose length differed)', flush=True)
         def hdr(path):
             with urllib.request.urlopen(urllib.request.Request(LIVE + path, method='HEAD', headers={'User-Agent': 'byteverify'}), timeout=60) as rr:
                 return (rr.headers.get('Cache-Control') or '').replace(' ', '')
