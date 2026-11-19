@@ -9,9 +9,11 @@
      07 the ring empty: the eye asking OPEN again
      08-09 left shut into THE RUSH: "Open it, now!" (ph4b7) heard once the ring is empty, and his sight opened for him
            three seconds after it, no tap
-   Two things are SET, and said: the rush is reached by setting the blessing's progress at its mark (F.k = FIGHT.surgeAt)
-   rather than waited for, and her life is held at 60 or more while the probe waits, so a fight left alone is not lost
-   while it is photographed. Every page error is printed, and the run exits non-zero on one or on a failed check.
+   Three things are SET, and said: the rush is reached by setting the blessing's progress at its mark (F.k = FIGHT.surgeAt)
+   rather than waited for; the strain is set at 0.9 for the red ring (on this box the fight's clock runs at a quarter of
+   the wall's: a frame is at most 0.25 s of it, so 27 s of strain is minutes of waiting); and her life is held at 60 or
+   more while the probe waits, so a fight left alone is not lost while it is photographed. (Build 40: the waits for the
+   first shapes, the wave home and the opening for him are long enough for that slow clock.) Every page error is printed, and the run exits non-zero on one or on a failed check.
      ENC_DIST=<snapshot> CHROMIUM_PATH=... [OUT=dir] [DSF=2] node tools/probes/e4c4strain.mjs */
 import { chromium } from 'playwright';
 import fs from 'node:fs';
@@ -79,8 +81,9 @@ await tapSel('#evBtn');
 await until(() => { const D = window.__enc.stage.dbg; return window.__enc.getState() === 'play' && D.play.fight && D.play.fight.on; }, 300000);
 log('the fight is on', JSON.stringify(await read()));
 /* 02: shut at the start: wait for a shape in the room and its shade on */
-await until(() => { const D = window.__enc.stage.dbg; return D.spirits.wander.concat([D.spirits.large]).some(P => P.shade && P.shade.on); }, 120000);
-await p.waitForTimeout(1500); await keepHer();
+await until(() => { const D = window.__enc.stage.dbg, F = D.play.fight;
+  return F && F.shapes.some(S => (S.state === 'come' || S.state === 'feed') && S.P.shade && S.P.shade.on && S.P.shade.u.uShA.value > 0.3); }, 300000);
+await keepHer();
 log('aim', JSON.stringify(await aimNearest()));
 let r = await read(); log('02', JSON.stringify(r));
 checks.shadesShut = r.shades > 0 && r.shadeA > 0.2 && !r.vis.on;
@@ -97,7 +100,8 @@ await until(() => window.__enc.stage.dbg.play.heat >= 0.5, 120000); await keepHe
 r = await read(); log('04', JSON.stringify(r));
 checks.ringHalf = r.ring !== null && Math.abs(r.ring - Math.min(1, r.heat)) < 0.05 && !/strainHot/.test(r.cls);
 await shot('open-ring-half');
-await until(() => window.__enc.stage.dbg.play.heat >= 0.87, 120000); await keepHer(); await aimNearest();
+await p.evaluate(() => { window.__enc.stage.dbg.play.heat = 0.9; });
+await until(() => document.getElementById('visionBtn').classList.contains('urgeClose'), 60000); await keepHer(); await aimNearest();
 r = await read(); log('05', JSON.stringify(r));
 checks.ringRedAskClose = /strainHot/.test(r.cls) && /urgeClose/.test(r.cls);
 await shot('open-ring-red-close');
@@ -109,7 +113,9 @@ r = await read(); log('06', JSON.stringify(r));
 await shot('shut-ring-cooling');
 checks.firstShutLine = await until(() => window.__enc.stage.info().heard.includes('ph4b6'), 20000);
 /* 07: the ring empty, the eye asking open */
-await until(() => window.__enc.stage.dbg.play.heat <= 0.02, 30000); await p.waitForTimeout(600); await keepHer(); await aimNearest();
+await until(() => window.__enc.stage.dbg.play.heat <= 0.02 && window.__enc.vision().r === 0, 240000);
+await until(() => { const D = window.__enc.stage.dbg; return D.spirits.wander.concat([D.spirits.large]).some(P => P.shade && P.shade.on && P.shade.u.uShA.value > 0.3); }, 120000);
+await keepHer(); await aimNearest();
 r = await read(); log('07', JSON.stringify(r));
 checks.emptyAskOpen = r.ring !== null && r.ring < 0.03 && /\burge\b/.test(r.cls) && r.shades > 0;
 await shot('shut-ring-empty-ask-open');
@@ -124,7 +130,7 @@ await keepHer(); await aimNearest();
 r = await read(); log('08 call heard after', callAfter, 's', JSON.stringify(r));
 await shot('rush-called');
 const tOpen = Date.now();
-checks.openedForHim = await until(() => window.__enc.vision().on, 30000);
+checks.openedForHim = await until(() => window.__enc.vision().on, 300000);
 const openAfter = ((Date.now() - tOpen) / 1000).toFixed(1);
 await p.waitForTimeout(2000); await keepHer(); await aimNearest();
 r = await read(); log('09 opened after the call by', openAfter, 's', JSON.stringify(r));

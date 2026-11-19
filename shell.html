@@ -285,8 +285,11 @@ body.hasVision.evopen .visionBtn,body.hasVision.unlockopen .visionBtn,body.hasVi
 .visionBtn .strainRing{position:absolute;inset:-1px;width:46px;height:46px;display:none;pointer-events:none;transform:rotate(-90deg)}
 .visionBtn.strain .strainRing{display:block}
 .visionBtn .strainRing circle{fill:none;stroke-width:3}
-.visionBtn .strainRing .srTrack{stroke:rgba(255,255,255,.18)}
-.visionBtn .strainRing .srFill{stroke:#9FF4FF;stroke-dasharray:135.09;stroke-dashoffset:135.09;stroke-linecap:butt;transition:stroke .2s}
+/* (build 40: photographed on a phone with his sight open, a pale blue ring on the pale blue of the button in use could
+   hardly be told from its border: the ring is white on a dark track, red from the mark) */
+.visionBtn .strainRing .srTrack{stroke:rgba(0,0,0,.5)}
+.visionBtn .strainRing .srFill{stroke:#FFFFFF;stroke-dasharray:135.09;stroke-dashoffset:135.09;stroke-linecap:butt;transition:stroke .2s;
+  filter:drop-shadow(0 0 2px rgba(255,255,255,.6))}
 .visionBtn.strainHot .strainRing .srFill{stroke:#FF4433;filter:drop-shadow(0 0 3px rgba(255,68,51,.9))}
 .visionBtn.strainFull .strainRing{animation:strainBeat .5s ease-in-out infinite}
 @keyframes strainBeat{0%,100%{opacity:1}50%{opacity:.4}}

@@ -1151,7 +1151,9 @@
     function bigNow() {
       const F = play.fight;
       if (F.call === 'gold') return 'gold';
-      if (F.call === 'surge') return 'surge';
+      /* (the rush runs on into his call for help: measured on build 39, the rush handed to the call 7 s after it began, before
+         the 3 s after "Open it, now!" were out, and his sight was never opened for him) */
+      if (F.call === 'surge' || F.call === 'asking') return 'surge';
       if (!F.call && F.shapes.some(S => S.P === spirits.large && (S.state === 'come' || S.state === 'feed'))) return 'large';
       return null;
     }
