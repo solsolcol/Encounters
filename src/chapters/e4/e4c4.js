@@ -2434,6 +2434,7 @@
       P.gazeK = G ? Math.min(1, P.gazeK + wdt / secs) : Math.max(0, P.gazeK - wdt / secs);
       const L = G || P.gazeLast; if (G) P.gazeLast = G;
       if (!L || !(P.gazeK > 0) || !P.head || !P.headRest) return;
+      lookSave(P);
       const tg = L.target === 'lens' ? camera.getWorldPosition(_lkv2) : _lkv2.set(L.target[0], L.target[1], L.target[2]);
       P.group.updateWorldMatrix(true, true);
       P.head.getWorldPosition(_lkv); P.head.getWorldQuaternion(_lkq);
@@ -2441,24 +2442,19 @@
       _lkz.set(0, 0, 1).applyQuaternion(P.headRest).applyQuaternion(_lkq).normalize();
       _lkv2.sub(_lkv); _lkv2.y -= L.down * _lkv2.length(); _lkv2.normalize();
       const ang = Math.acos(Math.max(-1, Math.min(1, _lkz.dot(_lkv2)))); if (ang < 1e-3) return;
-      const k = smo(P.gazeK) * Math.min(1, L.reach / ang);
-      _lkq3.setFromUnitVectors(_lkz, _lkv2); _lkq2.identity().slerp(_lkq3, k);        // the turn, in the world
-      /* onto the head bone: world' = turn * world, so local' = parentWorld^-1 * turn * world */
-      const par = P.head.parent; par.getWorldQuaternion(_lkq3);
-      P.head.quaternion.copy(_lkq3.invert().multiply(_lkq2).multiply(_lkq));
+      natLook(P, _lkz, _lkv2, smo(P.gazeK), L.reach, _lkq);
     }
     /* a film's look: the head turned onto a point (or the lens) by k, now, with no clock of its own (after pose()) */
     function lookNow(P, target, k = 1, reach = 0.75, down = 0.03) {
       if (!P || !P.ready || !P.head || !P.headRest || !(k > 0)) return;
+      lookSave(P);
       const tg = target === 'lens' ? camera.getWorldPosition(_lkv2) : _lkv2.set(target[0], target[1], target[2]);
       P.group.updateWorldMatrix(true, true);
       P.head.getWorldPosition(_lkv); P.head.getWorldQuaternion(_lkq);
       _lkz.set(0, 0, 1).applyQuaternion(P.headRest).applyQuaternion(_lkq).normalize();
       tg.sub(_lkv); tg.y -= down * tg.length(); tg.normalize();
       const ang = Math.acos(Math.max(-1, Math.min(1, _lkz.dot(tg)))); if (ang < 1e-3) return;
-      _lkq3.setFromUnitVectors(_lkz, tg); _lkq2.identity().slerp(_lkq3, smo(c01(k)) * Math.min(1, reach / ang));
-      P.head.parent.getWorldQuaternion(_lkq3);
-      P.head.quaternion.copy(_lkq3.invert().multiply(_lkq2).multiply(_lkq));
+      natLook(P, _lkz, tg, smo(c01(k)), reach, _lkq);
     }
     /* HANDS LAID ON A THING (photograph 5: the kneeling man raises his bai sri in both hands and the seated master "has
        both his hands on it too": that is the empowerment, Chad's §0). A take holds a body's hands where that body's own
@@ -2542,7 +2538,7 @@
       P.arms = out; return out;
     }
     /* (before a body's mixer runs: what was laid on its arms is taken off) */
-    function armsBack(P) { const HT0 = P.ht; if (HT0 && HT0.on) { for (const R of HT0.W) if (R.on) { R.fore.quaternion.copy(R.sf); R.hand.quaternion.copy(R.sh); R.on = false; }
+    function armsBack(P) { lookBack(P); const HT0 = P.ht; if (HT0 && HT0.on) { for (const R of HT0.W) if (R.on) { R.fore.quaternion.copy(R.sf); R.hand.quaternion.copy(R.sh); R.on = false; }
         for (const R of HT0.J) if (R.on) { R.b.quaternion.copy(R.sv); R.on = false; }
         for (const R of HT0.K) if (R.on) { R.b.quaternion.copy(R.sv); R.on = false; } HT0.on = false; }
       const LG = P.restLegs; if (LG && LG.wrote) { for (const sd in LG.R) { const r = LG.R[sd]; r.up.quaternion.copy(r.qUp); r.fore.quaternion.copy(r.qFore); r.foot.quaternion.copy(r.qFoot);
@@ -3407,6 +3403,72 @@
     /* THE CAST OF DAY ONE AND DAY TWO. Who they are is the plan's §3.3. Each stands or sits where the photographs put
        their kind: the masters under their tents on the west side, the monks under the east one, Grandmaster Pho under the
        gold. (The crowd, the dancers and those who go up are placed by the play and the films.) */
+    /* A LOOK AS A NECK MAKES IT (R86, R87; Chad, 19 Nov: "neck is too bent", of Amma standing in ending A, and "yellow
+       woman's head is too bent and unnatural", of Mala in ending B's floor shot). Two faults, both measured in the code:
+       1. A look was laid on the head after the mixer and never taken off. The mixer writes a bone only when its take's
+          value changes (the v11.5 law), so on a take run to its end and held (her rise; a kneel held), the head kept the
+          last frame's look and the next was laid on top: in a few frames the head swung all the way onto its mark,
+          whatever the reach (Amma's chin up into her son's face; Mala's head down onto her mother's). Now each look is
+          kept with what it turned (lookSave) and taken off before the next pose is written (lookBack, from armsBack, the
+          undo before the mixer), and laid again from the take's own pose.
+       2. A look was the shortest turn of the head bone onto its mark, up to 0.9 rad at one joint: a look down and to one
+          side is a turn about a slanted axis, which TIPS the head over (Mala's, nearly on its side). Now a look is a turn
+          about the chest's own up and a nod over the face's own side axis, never a tip; the turn held within the
+          caller's reach and 57 degrees of the chest, the nod within 19 up and 31 down of the chest's level (a real
+          neck's comfortable range, inside its full one: flexion and extension about 45 each, rotation about 60 to 80;
+          the AAOS's normal values, an elderly neck less); and the neck takes two fifths of it, the head the rest, so the
+          bend is spread over the neck as a body's is, not folded at the skull. A reach over 1 rad is a spirit's (the
+          one on her back looks at the lens): it keeps the shortest turn. */
+    const LOOK_UP = 0.33, LOOK_DOWN = 0.55, LOOK_YAW = 1.0, LOOK_NECK = 0.4;
+    const _nlA = new THREE.Vector3(), _nlB = new THREE.Vector3(), _nlU = new THREE.Vector3(), _nlF = new THREE.Vector3(), _nlR = new THREE.Vector3(),
+          _nlq = new THREE.Quaternion(), _nlq2 = new THREE.Quaternion(), _nlq3 = new THREE.Quaternion(), _nlq4 = new THREE.Quaternion();
+    function neckOf(P) { const p = P.head && P.head.parent; return p && p.isBone && /Neck$/.test(p.name) ? p : null; }
+    function lookSave(P) {
+      let L = P.lkSave;
+      if (!L) { const nb = neckOf(P); L = P.lkSave = { on: false, h: new THREE.Quaternion(), nb, n: new THREE.Quaternion() }; }
+      if (L.on) { P.head.quaternion.copy(L.h); if (L.nb) L.nb.quaternion.copy(L.n); }     // (laid again with no pose between: from the same pose)
+      else { L.h.copy(P.head.quaternion); if (L.nb) L.n.copy(L.nb.quaternion); L.on = true; }
+    }
+    function lookBack(P) { const L = P.lkSave; if (!L || !L.on) return; P.head.quaternion.copy(L.h); if (L.nb) L.nb.quaternion.copy(L.n); L.on = false; }
+    /* a bone's bind turn, inverted (as headRest): its turn since its bind, applied to +z and +y, is where it faces and its up */
+    function boneRest(P, b) {
+      if (!b) return null; P.bRest = P.bRest || new Map(); if (P.bRest.has(b)) return P.bRest.get(b);
+      let q = null;
+      P.group.traverse((o) => { if (q || !o.isSkinnedMesh || !o.skeleton) return; const i = o.skeleton.bones.indexOf(b); if (i < 0) return;
+        const m = new THREE.Matrix4().copy(o.skeleton.boneInverses[i]).invert().premultiply(o.bindMatrix);
+        q = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().extractRotation(m)).invert(); });
+      P.bRest.set(b, q); return q;
+    }
+    /* f: where the face looks now (world), g: where it is asked to (world, unit), s: how far (0..1), hq: the head's world
+       turn before this look */
+    function natLook(P, f, g, s, reach, hq) {
+      const head = P.head, neck = neckOf(P), chest = neck ? neck.parent : head.parent;
+      if (reach > 1) {                                       // (a spirit's: the shortest turn, at the head)
+        const a = Math.acos(Math.max(-1, Math.min(1, f.dot(g)))); if (a < 1e-3) return;
+        _nlq3.setFromUnitVectors(f, g); _nlq2.identity().slerp(_nlq3, s * Math.min(1, reach / a));
+        head.parent.getWorldQuaternion(_nlq3); head.quaternion.copy(_nlq3.invert().multiply(_nlq2).multiply(hq)); return;
+      }
+      const cr = boneRest(P, chest);
+      if (cr && chest) { chest.getWorldQuaternion(_nlq); _nlq.multiply(cr); } else P.group.getWorldQuaternion(_nlq);
+      _nlF.set(0, 0, 1).applyQuaternion(_nlq); _nlU.set(0, 1, 0).applyQuaternion(_nlq); _nlR.crossVectors(_nlU, _nlF).normalize();
+      const yawOf = (v) => Math.atan2(v.dot(_nlR), v.dot(_nlF)), nodOf = (v) => Math.asin(Math.max(-1, Math.min(1, v.dot(_nlU))));
+      const fy = yawOf(f), fn = nodOf(f), gy = yawOf(g), gn = nodOf(g), ym = Math.max(LOOK_YAW, reach);
+      let dy = Math.atan2(Math.sin(gy - fy), Math.cos(gy - fy)); dy = Math.max(-reach, Math.min(reach, dy));
+      dy = Math.max(-ym, Math.min(ym, fy + dy)) - fy;
+      let dn = Math.max(-LOOK_DOWN, Math.min(LOOK_UP, gn)) - fn; dn = Math.max(-reach, Math.min(reach, dn));
+      dy *= s; dn *= s; if (Math.abs(dy) < 1e-4 && Math.abs(dn) < 1e-4) return;
+      _nlq2.setFromAxisAngle(_nlU, dy);                       // the turn, about the chest's up
+      _nlA.copy(f).applyQuaternion(_nlq2); _nlB.crossVectors(_nlA, _nlU);
+      if (_nlB.lengthSq() < 1e-8) _nlB.copy(_nlR); _nlB.normalize();
+      _nlq3.setFromAxisAngle(_nlB, dn).multiply(_nlq2);       // then the nod, about the turned face's side: never a tip
+      if (neck && neck.parent) {
+        neck.getWorldQuaternion(_nlq4); _nlq.identity().slerp(_nlq3, LOOK_NECK); _nlq4.premultiply(_nlq);   // the neck's share
+        neck.parent.getWorldQuaternion(_nlq2); neck.quaternion.copy(_nlq2.invert().multiply(_nlq4));
+        _nlq2.copy(_nlq3).multiply(hq); head.quaternion.copy(_nlq4.invert().multiply(_nlq2));          // the head: the whole, less the neck's
+      } else {
+        _nlq2.copy(_nlq3).multiply(hq); head.parent.getWorldQuaternion(_nlq4); head.quaternion.copy(_nlq4.invert().multiply(_nlq2));
+      }
+    }
     /* R43 (Chad, 18 Nov 2026: "There are also some skin colour bits on the back of his robe that can be easily seen
        during gameplay"). WRITTEN BY tools/phoflecks.py from assets/pho.glb (sha1 df95bef025b1958c22e20c8e05493e17b86461a8), never by hand:
        48 islands of skin colour lying inside the white of his robe in his body sheet (4096 x 4096), each on a piece of

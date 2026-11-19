@@ -72,6 +72,19 @@ EDITS = [
     # Drape is the arm's
     ("        const arm = q.skeleton.bones.map(b => /(Shoulder|Arm|Hand)/.test(b.name));",
      "        const arm = q.skeleton.bones.map(b => /(Shoulder|Arm|Hand)|^Drape/.test(b.name));"),
+    # R86, R87 (19 Nov, build 33): a look is kept with what it turned and taken off before the next pose (lookSave, lookBack:
+    # on a held take the mixer does not write the head again, and looks were laid on looks until the head was on its mark),
+    # and laid as a neck makes it (natLook, c_people.js): a turn about the chest's up and a nod, never a tip, within a real
+    # neck's range, two fifths of it in the neck
+    ("    function armsBack(P) { const HT0 = P.ht;", "    function armsBack(P) { lookBack(P); const HT0 = P.ht;"),
+    ("      if (!P || !P.ready || !P.head || !P.headRest || !(k > 0)) return;\n      const tg = target === 'lens'",
+     "      if (!P || !P.ready || !P.head || !P.headRest || !(k > 0)) return;\n      lookSave(P);\n      const tg = target === 'lens'"),
+    ("      _lkq3.setFromUnitVectors(_lkz, tg); _lkq2.identity().slerp(_lkq3, smo(c01(k)) * Math.min(1, reach / ang));\n      P.head.parent.getWorldQuaternion(_lkq3);\n      P.head.quaternion.copy(_lkq3.invert().multiply(_lkq2).multiply(_lkq));\n",
+     "      natLook(P, _lkz, tg, smo(c01(k)), reach, _lkq);\n"),
+    ("      if (!L || !(P.gazeK > 0) || !P.head || !P.headRest) return;\n",
+     "      if (!L || !(P.gazeK > 0) || !P.head || !P.headRest) return;\n      lookSave(P);\n"),
+    ("      const k = smo(P.gazeK) * Math.min(1, L.reach / ang);\n      _lkq3.setFromUnitVectors(_lkz, _lkv2); _lkq2.identity().slerp(_lkq3, k);        // the turn, in the world\n      /* onto the head bone: world' = turn * world, so local' = parentWorld^-1 * turn * world */\n      const par = P.head.parent; par.getWorldQuaternion(_lkq3);\n      P.head.quaternion.copy(_lkq3.invert().multiply(_lkq2).multiply(_lkq));\n",
+     "      natLook(P, _lkz, _lkv2, smo(P.gazeK), L.reach, _lkq);\n"),
 ]
 
 
