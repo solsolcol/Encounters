@@ -129,10 +129,13 @@ if (process.env.WHO) {
         const v = bone.getWorldPosition(c.position.clone()), n = v.clone().project(c);
         row.push([+n.x.toFixed(3), +n.y.toFixed(3), n.z < 1 ? 1 : 0, +v.x.toFixed(3), +v.y.toFixed(3), +v.z.toFixed(3)]); }
       return row; }; });
-  const rows = await p.evaluate(([spec, from, to, step]) => { const E = window.__enc, C = E.cine, c = E.camera, out = [];
+  /* (v27.0) WHODRAW=1: each moment measured on a DRAWN frame (two frames after the seek), as whoNow is: what the frame loop
+     lays on after the mixer (a look, a head held) is not run by a seek, and the face is where the drawn frame has it */
+  const rows = await p.evaluate(async ([spec, from, to, step, draw]) => { const E = window.__enc, C = E.cine, c = E.camera, out = [];
     const end = Math.min(to, C.dur() - 0.25);
-    for (let t = from; t <= end + 1e-6; t += step) { C.seek(t); out.push([+t.toFixed(3), +c.fov.toFixed(3)].concat(window.__whoRow(spec))); }
-    return out; }, [process.env.WHO, +(process.env.WHOFROM || 0), +(process.env.WHOTO || 1e9), +(process.env.WHOSTEP || 0.1)]);
+    const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
+    for (let t = from; t <= end + 1e-6; t += step) { C.seek(t); if (draw) await frames(2); out.push([+t.toFixed(3), +c.fov.toFixed(3)].concat(window.__whoRow(spec))); }
+    return out; }, [process.env.WHO, +(process.env.WHOFROM || 0), +(process.env.WHOTO || 1e9), +(process.env.WHOSTEP || 0.1), process.env.WHODRAW === '1']);
   const f = `${OUT}/who-${OPT ? 'end' + OPT : FILM || 'film'}.json`;
   fs.writeFileSync(f, JSON.stringify(rows));
   console.log(el(), 'who', rows.length, 'moments', '->', f);
