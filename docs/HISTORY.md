@@ -9403,9 +9403,21 @@ What the baseline contains, by release:
   his sight is shut in the fight, and at the rush, the big one and the golden water "Open it, now!" and his sight opened
   for him; the brief's sentence; sheet v149); 40 (deploy `6aff0d4564e9405ae49a840a`, 19 Nov: found by the phone probe on 39,
   the rush handed to his call before his sight could be opened for him, now carried through the call; the ring white on a
-  dark track, the pale blue lost on the button in use).
+  dark track, the pale blue lost on the button in use); 41 (deploy `6aff17430ea203f8226e8db6`, 19 Nov: R101, "Do #3 only"
+  of four proposals: the first time he opens Spirit Vision in the history his teacher says once "Not yet. First, we
+  listen.", ph4h2; nothing is shut for him, the card's note for listening first stays the price; sheet v150); 42 (deploy
+  `6aff19507fb17aa8c5129d15`, 19 Nov: found by reading the line queue, 41 put the word at its back, after the rest of a
+  family member's telling, and after "Good. Now you know her story" when he peeked while telling his teacher; now said at
+  the next pause between lines, and not at all once he has begun telling his teacher, whose answer says it then).
 
 ## The sheet, version by version
+
+**v150, PUBLISHED 19 Nov 2026** (`masters/v27.0/masterz-text-v150.xlsx`, its CSV beside it, the repo's
+`masterz-text.csv` refreshed from it): v149 with exactly one row added (build 41, R101): `voice.ph4h2` ("Not yet. First,
+we listen.", 2.81 s). Id `1XNsCQrtmxmeJPLFp3KEH6scVC4gaGeBjKgoTnN7-O6w`; v149 checked first (created 14:14:14.7, modified
+14:14:15.9: the conversion itself, so no edit of his to carry over); read back tab by tab, 10,559 cells compared,
+mismatched 0 (tools/sheetcmp.py).
+<https://docs.google.com/spreadsheets/d/1XNsCQrtmxmeJPLFp3KEH6scVC4gaGeBjKgoTnN7-O6w/edit>
 
 **v149, PUBLISHED 19 Nov 2026** (`masters/v27.0/masterz-text-v149.xlsx`, its CSV beside it, the repo's
 `masterz-text.csv` refreshed from it): v148 with exactly five cells changed (build 39, R95 and R96). Added: `voice.ph4b6`

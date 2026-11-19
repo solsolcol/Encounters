@@ -11,7 +11,11 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
-**THE CURRENT SHEET (19 Nov 2026): Master Z's Encounters — GAME TEXT v149 (edit here)**, id `1RN4kwYBFNYuFQd6nOcmK4JIYFCUIvPeXmoG1MvWjkWA`
+**THE CURRENT SHEET (19 Nov 2026): Master Z's Encounters — GAME TEXT v150 (edit here)**, id `1XNsCQrtmxmeJPLFp3KEH6scVC4gaGeBjKgoTnN7-O6w`
+(<https://docs.google.com/spreadsheets/d/1XNsCQrtmxmeJPLFp3KEH6scVC4gaGeBjKgoTnN7-O6w/edit>; v149 and one row,
+`voice.ph4h2`, his teacher's word to a peek in the history; 10,559 cells read back, mismatched 0; v149 checked first:
+created 14:14:14.7, modified 14:14:15.9, the conversion itself). The one before it, v149, id
+`1RN4kwYBFNYuFQd6nOcmK4JIYFCUIvPeXmoG1MvWjkWA`
 (<https://docs.google.com/spreadsheets/d/1RN4kwYBFNYuFQd6nOcmK4JIYFCUIvPeXmoG1MvWjkWA/edit>; v148 and five cells: the fight's
 brief in its two forms (its sentence on the strain), `voice.ph4s1` re-said, `voice.ph4b6` and `voice.ph4b7` added; 10,553
 cells read back, mismatched 0; v148 checked first: created 20:44:49.6, modified 20:44:50.8, the conversion itself). The
