@@ -9400,6 +9400,15 @@ What the baseline contains, by release:
 
 ## The sheet, version by version
 
+**v149, PUBLISHED 19 Nov 2026** (`masters/v27.0/masterz-text-v149.xlsx`, its CSV beside it, the repo's
+`masterz-text.csv` refreshed from it): v148 with exactly five cells changed (build 39, R95 and R96). Added: `voice.ph4b6`
+("Good. Breathe. Now open it again. They are still coming.", 4.43 s) and `voice.ph4b7` ("Open it, now!", 1.47 s).
+Changed: `e4c4.words.guardBrief` and `e4c4.words.guardBriefKey` (the sentence "Spirit Vision strains you. Close it when
+the ring turns red, and open it again when it empties." after the one on Spirit Vision) and `voice.ph4s1` ("Good. Now
+close it. Kept open too long, it will overwhelm you.", 4.57 s). Id `1RN4kwYBFNYuFQd6nOcmK4JIYFCUIvPeXmoG1MvWjkWA`; v148
+checked first (created 20:44:49.6, modified 20:44:50.8: the conversion itself, so no edit of his to carry over); read
+back tab by tab and compared by tools/sheetcmp.py: 10,553 cells, mismatched cells: 0.
+
 **v148, PUBLISHED 18 Nov 2026** (`masters/v27.0/masterz-text-v148.xlsx`, its CSV beside it, the repo's
 `masterz-text.csv` refreshed from it): v147 with exactly seven cells changed. Added: `picture.close` (the old
 photograph's Close, R50), `voice.q4R1`, `voice.rv4R1`, `voice.ml4R1` (her rise, R55). Removed: `voice.ml4D1` (ending
