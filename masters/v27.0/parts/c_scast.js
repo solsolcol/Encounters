@@ -34,19 +34,26 @@
       /* (R88: the head and the collar bones too, for a take that names `chest`, `nod` or `clav`) */
       const head = find(/Head$/), clL = find(/LeftShoulder$/), clR = find(/RightShoulder$/);
       P.upr = { hips, legs, spine: B, neck, head, clL, clR, B: [hips].concat(legs, B, [neck], [head, clL, clR].filter(Boolean)).map(b => ({ b, sv: new THREE.Quaternion() })), take: Object.assign({}, P.o.upright), on: false };
+      /* (R88: the upper arms, and the drape that hangs beside the left one from the same collar bone, for a take that names `arms`) */
+      const arms = [find(/^(mixamorig:?)?LeftArm$/), find(/^(mixamorig:?)?RightArm$/)].filter(Boolean);
+      const drapes = clL ? clL.children.filter(c => c.isBone && /^Drape/.test(c.name)) : [];
+      P.upr.arms = arms.concat(drapes).map(b => ({ b, sv: new THREE.Quaternion(), pw: new THREE.Quaternion() })); P.upr.ka = 0; P.upr.armsOn = false;
     }
     const _upW0 = new THREE.Quaternion(), _upW1 = new THREE.Quaternion(), _upD = new THREE.Quaternion();
     function uprightLay(P) {
       const U = P.upr; if (!U) return;
-      let tr = 0, hd = 0, hp = 0, ch = 0, nd = 0, cl = 0, cr = 0;
+      let tr = 0, hd = 0, hp = 0, ch = 0, nd = 0, cl = 0, cr = 0, ka = 0;
       for (const n in U.take) { const w = P.w[n] || 0, T = U.take[n]; if (w > 0) { tr += w * (T.trunk || 0); hd += w * (T.head || 0); hp += w * (T.hips || 0);
-        ch += w * (T.chest || 0); nd += w * (T.nod || 0); cl += w * (T.clavL || 0); cr += w * (T.clavR || 0); } }
+        ch += w * (T.chest || 0); nd += w * (T.nod || 0); cl += w * (T.clavL || 0); cr += w * (T.clavR || 0); ka += w * (T.arms || 0); } }
+      U.ka = Math.min(1, ka);
       if (Math.abs(tr) < 1e-3 && Math.abs(hd) < 1e-3 && Math.abs(hp) < 1e-3 && Math.abs(ch) < 1e-3 && Math.abs(nd) < 1e-3 && Math.abs(cl) < 1e-3 && Math.abs(cr) < 1e-3) return;
       for (const R of U.B) R.sv.copy(R.b.quaternion);
       U.on = true;
       P.group.updateWorldMatrix(true, false); P.group.getWorldQuaternion(_upQ);
       _upF.set(0, 0, 1).applyQuaternion(_upQ); _upF.y = 0; _upF.normalize();
       _upA.set(0, 1, 0).cross(_upF).normalize();                       // (a turn about it by a positive angle leans the body forward)
+      /* (R88: where each upper arm hangs from before the back is turned: uprightArmsLay hangs it from there again) */
+      if (U.ka > 1e-3) for (const A of U.arms) A.b.parent.getWorldQuaternion(A.pw);
       const turn = (b, deg) => { b.parent.updateWorldMatrix(true, false); b.parent.getWorldQuaternion(_upQp);
         _upV.copy(_upA).applyQuaternion(_upQp.invert()); _upQ.setFromAxisAngle(_upV, deg * Math.PI / 180); b.quaternion.premultiply(_upQ); b.updateWorldMatrix(false, true); };
       if (Math.abs(hp) >= 1e-3) { U.hips.getWorldQuaternion(_upW0); turn(U.hips, hp); U.hips.getWorldQuaternion(_upW1);
@@ -63,6 +70,24 @@
       const clav = (b, deg, sgn) => { if (!b || Math.abs(deg) < 1e-3) return; b.parent.updateWorldMatrix(true, false); b.parent.getWorldQuaternion(_upQp);
         _upV.set(0, 1, 0).applyQuaternion(_upQp.invert()); _upQ.setFromAxisAngle(_upV, sgn * deg * Math.PI / 180); b.quaternion.premultiply(_upQ); b.updateWorldMatrix(false, true); };
       clav(U.clL, cl, 1); clav(U.clR, cr, -1);
+    }
+    /* THE ARMS LEFT HANGING WHERE THE TAKE HUNG THEM (R88, Chad, 19 Nov 2026: "grandmaster pho's shoulders are still too
+       bent forward, make it more natural"). A back straightened by the upright lay carries both upper arms with it, the
+       hands swung forward of his thighs: photographed from his side on build 34 at the order to take the holy water, his
+       left forearm out ahead of his leg and its hand open before it, as no man stands at ease (a hanging arm hangs by its
+       weight, whatever his back does). So where a take names `arms` (by its weight), each upper arm, and the drape that
+       hangs beside the left one from the same collar bone, is hung again from where its collar bone stood before the lay
+       turned it: the arm keeps the turn it has now (the take's, or the rest the arm's hold gave it), only the turn the lay
+       put on the back above it is taken away, so every gesture of the take keeps its aim in the room. Laid after the arm's
+       hold and before the knees, the arm let out and the shoulders (which hold the upper arm where it then stands), and
+       taken off by armsBack() before the arm's hold is (v11.5) */
+    function uprightArmsLay(P) {
+      const U = P.upr; if (!U || !U.on || !(U.ka > 1e-3) || !U.arms.length) return;
+      for (const A of U.arms) { A.b.parent.getWorldQuaternion(_upQp);
+        _upQ.copy(_upQp).invert().multiply(A.pw).multiply(A.b.quaternion);   // (the arm's own turn, hung from where its collar bone stood)
+        A.sv.copy(A.b.quaternion); A.b.quaternion.slerp(_upQ, U.ka); }
+      for (const A of U.arms) A.b.updateWorldMatrix(false, true);
+      U.armsOn = true;
     }
     /* AN ARM HELD AT ITS REST under its cloth (o.armRest; R77, Chad, 18 Nov 2026: "his arms and hands keep clipping into
        his robes in many of his poses"). Grandmaster Pho's left arm is under the drape of his robe, and the drape hangs from
@@ -230,8 +255,17 @@
        (`trunk`), the neck's forward turn eased and the skull's nod given the rest, so his head stays over his shoulders
        and his face where it was (`head`, `nod`), and his right collar bone drawn back (`clavR`). The numbers chosen by
        photographs from his side at several strengths, and measured again: the tracker's log) */
-    /* (held at R76's values until the photographs from his side choose the new ones: a body goes to him only once checked) */
-    const PHO_STAND_UPRIGHT = { Sit_to_Stand_Transition_M: { trunk: -4.5, head: 16.5 }, Talk_with_Hands_Open: { trunk: -6, head: 18 } };
+    /* (CHOSEN on build 35's code with the arms' lay (r88b, 19 Nov): photographed from his left at the order to take the holy
+       water, four ways, each full size, and laid beside the people standing in line at the offering tables in Chad's own
+       photograph 10 of the Wai Kru (upright, the head level over the shoulders, the arms hanging at the sides, the hands
+       at the front of the thigh). R76's stance (trunk -4.5, head 16.5) dropped his chin to his chest over a rounded back;
+       the opened back without `arms` swung his left forearm out ahead of his thigh, the hand spread (build 34); with
+       `arms`, chest -15 and the rest below (V1a) stand as the photograph stands, his upper arm 3.8 degrees behind the
+       vertical and his forearm 7.5 forward, the hand at his thigh; chest -20 (V2a) looked the same with his head a
+       little further back, and the milder of the two was taken (v22.0: never overshoot). His talk takes the same,
+       its own lean kept (its trunk and head one and a half degrees more, as R76 had them)) */
+    const PHO_STAND_UPRIGHT = { Sit_to_Stand_Transition_M: { trunk: 0.5, chest: -15, head: 10, nod: 9, clavR: 10, arms: 1 },
+      Talk_with_Hands_Open: { trunk: -1, chest: -15, head: 11.5, nod: 9, clavR: 10, arms: 1 } };
     const PHO_KNEES = { takes: { Sit_to_Stand_Transition_M: 1, Talk_with_Hands_Open: 1 }, win: { Sit_to_Stand_Transition_M: [5.2, 99] }, bend: 4, max: 0.012 };
     const PHO_STAND_SHOULDERS = { Talk_with_Hands_Open: 1, mage_soell_cast_3: 0.6 };
     const PHO_STAND_SHWIN = { mage_soell_cast_3: [0.5, 0.45] };
