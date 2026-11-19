@@ -9413,7 +9413,21 @@ What the baseline contains, by release:
   red edge is pulsing, the cutscenes should not have the red edge effect": the red edge was only ever set in play, so a
   film kept it, beat and all; every film now takes it off on its first frame, play's frame lays it back, eased, if his
   sanity is still low, and the lost card after a faint shows its red at once as before. Every chapter's films, episode 1's
-  included; restarttest checks it on episode 1's faint, every drawn frame by state).
+  included; restarttest checks it on episode 1's faint, every drawn frame by state); 44 (deploy
+  `6aff3cbcf90bc49c63a173e7`, 19 Nov: R103, "why is there a background basic hdb block that cuts into view at the back and
+  cuts away again?": six far slabs of the estate stood across the lens's 160 m far plane and were cut as it turned; taken
+  out, a guard at build against another; and R104, the move to Ravi for "come in" jumped: the lens had switched 0.25 s
+  after the dip's black lifted, now every change across both dips is made in the middle of the black; R103's estate made
+  better is still to build); 45 (deploy `6aff412aa9b7d3335d0d5845`, 19 Nov: R105, Spirit Vision's tracer: its blue laid on
+  before its light (it had summed to white on the vision's negative), half as wide again, slower (2.2 s out), a trail that
+  keeps every outline it crosses blue for 0.7 s, finer lines traced and his own hands outlined, every new declaration
+  absent the picture it was; and R106, "just dont make ravi turn his head": the close's turn to his teacher, behind his
+  shoulder, gone); 46 (deploy `6aff4603babc713a850d5d7c`, 19 Nov: R107 to R110, Luang Pu Phiboon's moment: the gathering's
+  lines drawn with a glow of their own and more of them, a burst at its birth; the merge's flash, three thick rings, a gold
+  wash and a shockwave past the screen's corner, the shake twice as hard; a second gold wave as it merges strikes every
+  green spirit as its front reaches it, and twelve more rise 0.85 s later, the fight going on; four new sounds for the
+  gathering, the hover, the dive and the merge, the hover's near silence filled. kit.wave gains a strength `k`, 1 as it
+  was).
 
 ## The sheet, version by version
 
