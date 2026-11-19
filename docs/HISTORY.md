@@ -9366,7 +9366,30 @@ What the baseline contains, by release:
   before), and the hit is the water's colour, cyan, gold in his gold. Bedroom 3's leaf turned so its hinges stand at
   the pivot. C's eye steps back as Ravi comes by. And the head measure learned two things: a seek leaves the skin's
   bone matrices at the last drawn frame, and the frame loop lays a pose on after the mixer that no seek runs, so a
-  face is measured on a drawn frame (WHODRAW)).
+  face is measured on a drawn frame (WHODRAW));
+  31 (deploy `6afe70e39d8c17b883a09cb2`: the plain water's far drops given a bright core in his sight, where the strike lab
+  on build 30 still read them as dark dots; R41 photographed through the real path, no red frame under the gold at
+  sanity 15; R52's door photographed with its hinges at its pivot); 32 (deploy `6afe734f316c057713fb719f`: B's rise aimed
+  on her face as the frame draws it, measured on drawn frames, the endings' track() modelled outside the game agreeing
+  with the drawn frame to 0.002 of the half-width; the gold hit in the chapter's own gold, where it read orange); then
+  THE OUTAGE (19 Nov, about 04:15 UTC): every page of the site answered 503 "usage exceeded", his Netlify team's period
+  used up, by a measured cause of mine: each deploy's check fetched the whole site back (1.1 GB) on top of Netlify's own
+  1 GB laying-out, about a hundred deploys that month. He added credits (05:20), and tools/netlifydeploy.py fetches back
+  only what it sent and checks what it carried by a HEAD (the ETag is the file's sha1), about a megabyte a deploy; 33
+  (R86, R87, his notes of 19 Nov, "neck is too bent" and "yellow woman's head is too bent and unnatural": a look laid
+  on a take held at its end was laid on the last frame's look, since the mixer writes a bone only when its value
+  changes, so a head swung all the way onto its mark whatever the reach; now each look is taken off before the next pose
+  and laid as a neck makes it, a turn about the chest's up and a nod, never a tip, within 57 degrees, 19 up and 31 down,
+  two fifths in the neck; C's and D's rise aimed on her drawn face, D's lens widened through it; photographed: A at 19 to
+  22 s her head level as she turns to her son, B at 14 s Mala's head upright); 34 (R88, "grandmaster pho's shoulders
+  are still too bent forward": his upper back opened, photographed from his side and not sent: the opened back carried
+  his arms round with it and swung his left forearm out ahead of his thigh); 35 (deploy `6afe880f5c51f2c4c5edf578`:
+  build 33 live, his stance held at R76's); 36 (deploy `6afe90f6b1461bb557c09ce1`, 19 Nov: R88 finished: a new lay hangs each upper arm, and the drape beside the
+  left, from where its collar bone stood before the back was opened, so the hands stay at his thighs, and the lays come
+  off in the exact reverse of their laying; the stance chosen from four side views at the order to take the holy water,
+  each full size, laid beside the people standing in line at the offering tables in Chad's photograph 10: chest -15,
+  the head level over the shoulders, the right collar bone drawn back, the milder of the two that stood as the
+  photograph stands).
 
 ## The sheet, version by version
 
