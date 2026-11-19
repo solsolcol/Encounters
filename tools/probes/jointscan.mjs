@@ -28,7 +28,8 @@ import { chromium } from 'playwright';
 import fs from 'node:fs';
 import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
 const CH = process.env.CH || 'e4c3', N = +(process.env.N || 4), SPAN = +(process.env.SPAN || 0.7), OUT = process.env.OUT || '/tmp/jointscan.json';
-const LIST = (process.env.PHASES != null ? process.env.PHASES : ',festival,dawn,decide').split(',').map(x => x.trim());
+/* (v27.0) a phase whose own name holds commas (episode 4 chapter 4's 'bless:r,m,f,...') is written with '|' in their place */
+const LIST = (process.env.PHASES != null ? process.env.PHASES : ',festival,dawn,decide').split(',').map(x => x.trim().replace(/\|/g, ','));
 const HOLDS = (process.env.HOLDS || '').split(',').map(x => x.trim()).filter(Boolean).map(Number);
 const WHO = process.env.WHO || '', PRE = process.env.PRE || '', NAMES = !!process.env.NAMES;
 const b = await chromium.launch(LAUNCH);
