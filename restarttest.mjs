@@ -88,6 +88,14 @@ const stateOf = p => p.evaluate(() => ({
   const p = await openPage();
   const errs = []; p.on('pageerror', e => errs.push(e.message));
   const out = { path: 'lost' };
+  /* v27.0 (R102, Chad: "the cutscenes should not have the red edge effect"): every drawn frame's red edge is sampled by
+     state, from here to the lost card. At sanity 3 it must be up in play, and off on every frame of the faint film */
+  await p.evaluate(() => { const R = window.__red = { play: 0, cine: 0, cineBeat: false, cineFrames: 0 };
+    const f = () => { const el = document.getElementById('panic'), st = window.__enc.getState(), o = +getComputedStyle(el).opacity;
+      if (st === 'play') R.play = Math.max(R.play, o);
+      else if (st === 'cine') { R.cine = Math.max(R.cine, o); R.cineFrames++; if (el.classList.contains('critical')) R.cineBeat = true; }
+      if (st !== 'lost') requestAnimationFrame(f); };
+    requestAnimationFrame(f); });
   // stand in front of her and let it run out
   await p.evaluate(() => { const e = window.__enc;
     e.yaw.position.set(-1.6, 1.62, -9.5);
@@ -98,6 +106,10 @@ const stateOf = p => p.evaluate(() => ({
   const end = await stateOf(p);
   out.reachedOver = end.overUp;
   out.vignetteFull = end.panic > 0.9;
+  const red = await p.evaluate(() => window.__red);
+  out.redInPlay = red.play > 0.3;
+  out.noRedInFilm = red.cineFrames > 0 && red.cine < 0.05 && !red.cineBeat;
+  if (!out.redInPlay || !out.noRedInFilm) console.log('  red edge by state:', JSON.stringify(red));
 
   await p.evaluate(() => { window.__noReload = true; });
   await p.click('#retryBtn');

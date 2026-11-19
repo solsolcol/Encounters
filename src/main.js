@@ -15557,6 +15557,17 @@ function playCineFn(sceneFn, onDone, startFade = 0) {
   ui.interact.classList.add('hide');
   hint.classList.add('hide');
   document.body.classList.add('cine');
+  /* v27.0 (R102, Chad, 19 Nov: "when entering the cutscenes, even if player sanity is low and the red edge is pulsing, the
+     cutscenes should not have the red edge effect. It affects the cinematic presentation of the cutscene"): the
+     low-sanity red edge (and the kit's hurt frame, the same layer) is play's warning only. Every film begins here, so it
+     goes here, at once: its .4 s fade killed so no red is seen over a film's first frames, its beat stopped. Nothing in a
+     film draws it, so it stays off until play's own frame lays it back (eased) if his sanity is still low; the lost
+     card after a faint puts it up at once, as it always stood there. A film's own colours are its fade layer's */
+  ui.panic.classList.remove('critical');
+  ui.panic.style.transition = 'none';
+  ui.panic.style.opacity = '0';
+  void ui.panic.offsetWidth;
+  ui.panic.style.transition = '';
   letterboxArm();                            // v15: once the bars are in, only the band between them is shaded
   cineFadeEl.classList.remove('clearing');   // a scene owns the fade outright
   cineFadeTint('');                          // (v25.5) and it opens on the black's own colour
@@ -17334,7 +17345,11 @@ function lose(o) {
     fainting = false;
     state = 'lost';
     ui.hud.classList.add('hide');
+    /* (R102) the faint film ran with no red, so the card's red is put up at once, the way it always stood there */
+    ui.panic.style.transition = 'none';
     ui.panic.style.opacity = '1';
+    void ui.panic.offsetWidth;
+    ui.panic.style.transition = '';
     snd('ulost', 0.8);
     /* (the card's first line: the chapter's for its own loss, the sheet's again for every other) */
     const sayEl = $('overSay');
