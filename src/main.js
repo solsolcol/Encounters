@@ -4887,7 +4887,7 @@ function ownSprayEnsure() {
      of the black yellow look it has now"): with his sight open the world's pass is drawn as a negative, so the drops'
      own bright core came out dark under their gold glow. A coloured water (kitSprayColor: only the golden water asks)
      has a CORE on the vision's layer too, its colour lifted toward white-gold, drawn over the negative: bright gold
-     whether his sight is open or shut. The plain water is untouched (the core is hidden while no colour is asked) */
+     whether his sight is open or shut. (Build 31: the plain water has its core too, in its own light blue: ownSprayFrame) */
   own.core = new THREE.Points(geo, new THREE.PointsMaterial({ map: own.dot, size: size * 1.15, sizeAttenuation: true, vertexColors: true,
     transparent: true, depthWrite: false, depthTest: false, fog: false, premultipliedAlpha: true,
     blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.OneFactor, blendDst: THREE.OneFactor,
@@ -4938,7 +4938,11 @@ function ownSprayFrame(now) {
   if (!own.pts) return;
   const sp = (weaponDecl && weaponDecl.spray) || {};
   _osCol.set(sprayCol != null ? sprayCol : (sp.color == null ? 0xdcefff : sp.color));
-  if (own.core) own.core.visible = sprayCol != null;          // (R85: the golden water's bright core, over the vision's negative)
+  /* (R85: a coloured water's bright core over the vision's negative. R81, build 31: the plain water's too: photographed on a
+     held clock through his sight, its drops in flight still drew as dark dots, the world's pass under the negative, its
+     glow too faint to cover them once they were small; the core lays a bright point of the water's own hue over each) */
+  if (own.core) { own.core.visible = true;
+    own.core.material.color.setRGB(sprayCol != null ? 2.0 : 0.75, sprayCol != null ? 1.85 : 1.0, sprayCol != null ? 1.45 : 1.2); }
   /* (R81: the plain water's glow in his sight in its own hue, deepened so it reads on the light negative; a coloured water is laid on as itself) */
   own.glow.material.color.setRGB(sprayCol != null ? 1 : 0.62, sprayCol != null ? 1 : 0.92, sprayCol != null ? 1 : 1.1);
   const keep = [], P = own.pos, C = own.col, N = own.N; let m = 0;
