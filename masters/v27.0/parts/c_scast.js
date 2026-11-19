@@ -83,6 +83,42 @@
       H.top.updateWorldMatrix(false, true);                // (the collar bone: the arm and the drape both hang from it)
       H.on = true;
     }
+    /* HIS LEFT ARM LET HANG A LITTLE OUT FROM HIS SIDE, STANDING (o.armOut; R77, Chad, 18 Nov 2026: "his arms and hands
+       keep clipping into his robes in many of his poses"). Photographed standing in the blessing (build 25, four sides,
+       the robe's back faces in red, the pixels read back): his left hand hung through the folds of the robe at his hip,
+       a strip of white across it seen from his left, and his own forearm showed in a gap of the drape at his waist. Not my
+       upright lay (taken off, more of the forearm showed) nor the drape's hanging band (swung 8 and 15 degrees out, back
+       and forward on the live build: the strip stayed, it is the robe at his hip). His whole left arm with the drape over
+       it (DrapeArm, DrapeHang: the upper arm's brothers under his collar bone), turned out about his forward line, was
+       tried at 4, 7 and 10 degrees: at 7 the hand hangs clear of the robe and nothing of it crosses it, the forearm bare
+       from the sleeve to the hand, as a robed man's arm hangs at ease (at 4 a streak of the drape still lay on the forearm;
+       10 bought nothing more). Laid while a take named in o.armOut.takes is worn (inside its window: the standing end of
+       his rise), by its weight, after the knees and before the shoulders (which hold the upper arm where it then stands),
+       and taken off by armsBack() before the mixer runs again (v11.5) */
+    const _aoQ = new THREE.Quaternion(), _aoP = new THREE.Quaternion(), _aoV = new THREE.Vector3(), _aoR = new THREE.Quaternion();
+    function armOutInit(P) {
+      const O = P.o.armOut; let up = null;
+      for (const n in P.bone) if (/^(mixamorig:?)?LeftArm$/.test(n)) up = P.bone[n];
+      if (!up) { console.warn(P.key + ': o.armOut asked, and no left upper arm'); return; }
+      const B = [up].concat((O.follow || []).map(n => P.bone[n]).filter(b => b && b.parent === up.parent)).map(b => ({ b, sv: new THREE.Quaternion() }));
+      P.aout = { B, take: Object.assign({}, O.takes), win: O.win || {}, rad: (O.deg || 0) * Math.PI / 180, on: false };
+    }
+    function armOutLay(P) {
+      const H = P.aout; if (!H) return;
+      let k = 0;
+      for (const n in H.take) { const w = P.w[n] || 0; if (!(w > 0)) continue; const W = H.win[n], A = P.acts[n];
+        if (W && A && (A.time < W[0] || A.time > W[1])) continue; k += w * H.take[n]; }
+      if (!(k > 1e-4)) return;
+      k = Math.min(1, k);
+      P.group.updateWorldMatrix(true, false); P.group.getWorldQuaternion(_aoQ);
+      _aoV.set(0, 0, 1).applyQuaternion(_aoQ);                    // (his forward: a turn about it by a positive angle takes his left arm out)
+      const par = H.B[0].b.parent; par.updateWorldMatrix(true, false); par.getWorldQuaternion(_aoP);
+      _aoV.applyQuaternion(_aoP.invert());                         // (in the collar bone's frame, which all of them hang from)
+      _aoR.setFromAxisAngle(_aoV.normalize(), H.rad * k);
+      for (const R of H.B) { R.sv.copy(R.b.quaternion); R.b.quaternion.premultiply(_aoR); }
+      par.updateWorldMatrix(false, true);
+      H.on = true;
+    }
     /* KNEES STRAIGHT STANDING (o.knees; R76, Chad, 18 Nov 2026: "his knees seem bent even when standing"). MEASURED
        (tools/probes/posture.mjs, KNEE, on 21u): standing at rest the legs that are seen (the grafted ones,
        tools/leggraft.mjs) are bent 9.8 and 11.7 degrees, in his talk 12.7 and 12.2; a man standing at ease holds his knees
@@ -180,6 +216,9 @@
     /* (R77: his left arm and the drape over it held at his rest's while he talks standing, so the cloth covers the arm) */
     const PHO_ARM_REST = { takes: { Talk_with_Hands_Open: 1 }, from: ['Sit_to_Stand_Transition_M', 6.0],
       re: /^(mixamorig:?)?Left(ForeArm|Hand|Hand(Thumb|Index|Middle|Ring|Pinky)\d)$|^(mixamorig:?)?LeftArm$|^Drape(Arm|Hang)$/ };
+    /* (R77: standing, his left arm and the drape over it let hang 7 degrees out from his side, clear of the robe at his hip) */
+    const PHO_ARM_OUT = { takes: { Sit_to_Stand_Transition_M: 1, Talk_with_Hands_Open: 1 }, win: { Sit_to_Stand_Transition_M: [5.2, 99] },
+      deg: 7, follow: ['DrapeArm', 'DrapeHang'] };
     /* the shoulders let down in every standing and talking take (v26.8, every standing person) */
     const STAND_SHOULDERS = { Idle_3: 1, Stand_and_Chat: 1, Listening_Gesture: 1, Talk_with_Hands_Open: 1, Talk_with_Right_Hand_Open: 1, Walking: 1 };
 
@@ -266,7 +305,8 @@
       cast.phoB = mkPerson('pho', AT.phoB.x, AT.phoB.z, phoBRy, { take: 'Sit_to_Stand_Transition_M', hidden: true,
         win: { Sit_to_Stand_Transition_M: [5.85, 0.25, PHO_BREATH] }, skins: false, look: lookD, blobW: 0.9, blobD: 0.8,
         centre: true, talk: 'Talk_with_Hands_Open', headDamp: PHO_STAND_HEAD,
-        upright: PHO_STAND_UPRIGHT, shoulders: PHO_STAND_SHOULDERS, shWin: PHO_STAND_SHWIN, armRest: PHO_ARM_REST, knees: PHO_KNEES });
+        upright: PHO_STAND_UPRIGHT, shoulders: PHO_STAND_SHOULDERS, shWin: PHO_STAND_SHWIN, armRest: PHO_ARM_REST, knees: PHO_KNEES,
+        armOut: PHO_ARM_OUT });
       cast.phoB.home = { x: AT.phoB.x, z: AT.phoB.z, ry: phoBRy };
     }
     buildCast();

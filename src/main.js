@@ -16249,6 +16249,22 @@ async function warmWorld(items) {
     if (pend) await cap(pend, 15000);
     tgt.dispose();
   } catch {}
+  /* v27.0 build 27 (R51, measured again on build 26: nothing of the opening's pan is compiled now; three programs and six
+     textures were still made on the frame its flicker first drew through the vision, 31.5 s in). The vision's own passes
+     are made ready too: its targets and its compositor (vision.js warm), and every spirit's program in the pass that draws
+     it, into the spirit target seen through the vision's layer alone, where no light is gathered (the compile above saw
+     the spirits through the world's camera, with its lights: another program each). Drawn into one pixel with whatever is
+     hidden shown (warmGeometry), so their geometry is uploaded as well; the scene's background is not drawn in that pass,
+     and is left out here too. A chapter with no vision never comes here */
+  if (vis.decl) try {
+    const fx = visionFx();
+    if (fx && fx.warm && fx.state && fx.state.ok && fx.warm()) {
+      const prev = renderer.getRenderTarget(), bg = scene.background, vc = camera.clone();
+      vc.layers.set(VIS_LAYER);
+      renderer.setRenderTarget(fx.state.spirit); scene.background = null;
+      try { warmGeometry(renderer, scene, vc, true); } finally { scene.background = bg; renderer.setRenderTarget(prev); }
+    }
+  } catch {}
   try { warmLightStates(); } catch {}           // v15: the light counts play will reach, compiled now
   /* v14.16: the geometry of what is hidden, too — v15: into ONE pixel. The
      warm draw exists to upload buffers and build pipelines, which a draw does

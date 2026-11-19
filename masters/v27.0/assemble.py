@@ -33,6 +33,9 @@ EDITS = [
     ("function put(P, x, z, ry, y = hallGround(x, z))", "function put(P, x, z, ry, y = flatGround(x, z))"),
     # this chapter's painted surfaces from a picture are keyed w4t_ (none yet)
     ("const key = 'w3t_' + name;", "const key = 'w4t_' + name;"),
+    # R77 (19 Nov, build 28): standing, his left arm and its drape let hang 7 degrees out (c_scast.js armOutInit/armOutLay):
+    # made with the body, laid after the knees and before the shoulders in both a film's pose and play's frame, and taken
+    # off after the shoulders' and before the arm's hold (the reverse of their laying: both turn the arm and the drape)
     # R42 (18 Nov): a body sat or stood up straight (o.upright, c_scast.js uprightInit/uprightLay): made with the body,
     # laid after the head's damping and before the shoulders in both a film's pose and play's frame, taken off last, and
     # laid for restHands' own measure of the arms
@@ -43,10 +46,10 @@ EDITS = [
      "if (qb) S.push({ cl, up, qb, scl: new THREE.Quaternion(), sup: new THREE.Quaternion(), M: {}, fol: cl.children.filter(c => c.isBone && c !== up && /^Drape/.test(c.name)).map(b => ({ b, sv: new THREE.Quaternion() })) }); }"),
     ("        R.up.quaternion.copy(R.cl.quaternion).invert().multiply(R.scl).multiply(R.sup);\n",
      "        R.up.quaternion.copy(R.cl.quaternion).invert().multiply(R.scl).multiply(R.sup);\n        for (const F of R.fol || []) { F.sv.copy(F.b.quaternion); F.b.quaternion.copy(R.cl.quaternion).invert().multiply(R.scl).multiply(F.sv); }\n"),
-    ("if (o.shoulders !== null) shouldersInit(P);", "if (o.shoulders !== null) shouldersInit(P);\n        if (o.upright) uprightInit(P);\n        if (o.armRest) armRestInit(P);\n        if (o.knees) kneesInit(P);"),
-    ("if (P.hd) headDampLay(P);\n      if (P.shd) shouldersLay(P);", "if (P.hd) headDampLay(P);\n      if (P.upr) uprightLay(P);\n      if (P.arst) armRestLay(P);\n      if (P.knees) kneesLay(P);\n      if (P.shd) shouldersLay(P);"),
-    ("if (P.hd) headDampLay(P);\n        if (P.shd) shouldersLay(P);", "if (P.hd) headDampLay(P);\n        if (P.upr) uprightLay(P);\n        if (P.arst) armRestLay(P);\n        if (P.knees) kneesLay(P);\n        if (P.shd) shouldersLay(P);"),
-    ("R.up.quaternion.copy(R.sup); } SH.on = false; } }", "R.up.quaternion.copy(R.sup); if (R.fol) for (const F of R.fol) F.b.quaternion.copy(F.sv); } SH.on = false; }\n      const UP = P.upr; if (UP && UP.on) { for (const R of UP.B) R.b.quaternion.copy(R.sv); UP.on = false; }\n      const KN = P.knees; if (KN && KN.on) { KN.hips.position.copy(KN.hp); for (const R of KN.B) R.b.quaternion.copy(R.sv); KN.on = false; }\n      const AR = P.arst; if (AR && AR.on) { for (const R of AR.B) R.b.quaternion.copy(R.sv); AR.on = false; } }"),
+    ("if (o.shoulders !== null) shouldersInit(P);", "if (o.shoulders !== null) shouldersInit(P);\n        if (o.upright) uprightInit(P);\n        if (o.armRest) armRestInit(P);\n        if (o.knees) kneesInit(P);\n        if (o.armOut) armOutInit(P);"),
+    ("if (P.hd) headDampLay(P);\n      if (P.shd) shouldersLay(P);", "if (P.hd) headDampLay(P);\n      if (P.upr) uprightLay(P);\n      if (P.arst) armRestLay(P);\n      if (P.knees) kneesLay(P);\n      if (P.aout) armOutLay(P);\n      if (P.shd) shouldersLay(P);"),
+    ("if (P.hd) headDampLay(P);\n        if (P.shd) shouldersLay(P);", "if (P.hd) headDampLay(P);\n        if (P.upr) uprightLay(P);\n        if (P.arst) armRestLay(P);\n        if (P.knees) kneesLay(P);\n        if (P.aout) armOutLay(P);\n        if (P.shd) shouldersLay(P);"),
+    ("R.up.quaternion.copy(R.sup); } SH.on = false; } }", "R.up.quaternion.copy(R.sup); if (R.fol) for (const F of R.fol) F.b.quaternion.copy(F.sv); } SH.on = false; }\n      const AO = P.aout; if (AO && AO.on) { for (const R of AO.B) R.b.quaternion.copy(R.sv); AO.on = false; }\n      const UP = P.upr; if (UP && UP.on) { for (const R of UP.B) R.b.quaternion.copy(R.sv); UP.on = false; }\n      const KN = P.knees; if (KN && KN.on) { KN.hips.position.copy(KN.hp); for (const R of KN.B) R.b.quaternion.copy(R.sv); KN.on = false; }\n      const AR = P.arst; if (AR && AR.on) { for (const R of AR.B) R.b.quaternion.copy(R.sv); AR.on = false; } }"),
     # R51 (18 Nov): every model being unpacked is counted, from the call until its caller's own setup has run (the
     # count falls a task after the parse resolves, after the caller's then), so the stage can hold the curtain for it
     ("      return parsedGlb.get(key);\n", "      const pr = parsedGlb.get(key); parsePend++;\n      pr.then(() => setTimeout(() => { parsePend--; }, 0), () => { parsePend--; });\n      return pr;\n"),

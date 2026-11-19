@@ -320,6 +320,28 @@ export function makeVision(THREE, renderer, opts = {}) {
   }
   /* the next frame drawn without the vision forgets the last camera, so a blur never reaches across a gap */
   function idle() { V.havePrev = false; }
+  /* MADE READY UNDER THE CURTAIN (v27.0 build 27, R51: measured on build 26 with tools/probes/progs.mjs, the opening's
+     flicker, the first frame its film draws through the vision, compiled three programs and made six textures on screen,
+     31.5 s in). The targets are made at the drawing buffer's size and set up on the GPU, and the compositor's program is
+     compiled and its quad drawn once, to the screen as every frame of the vision draws it (under the curtain, so nobody
+     sees it, and the frames drawn after it draw over it). The spirits' own programs are the caller's to warm (main.js
+     warmWorld: drawn into `state.spirit` through their own layer, where no light is gathered). No last camera is kept, so
+     the first true frame blurs nothing */
+  function warm() {
+    renderer.getDrawingBufferSize(_sz);
+    const w = _sz.x | 0, h = _sz.y | 0;
+    if (w < 2 || h < 2) return false;
+    targets(w, h);
+    const prev = renderer.getRenderTarget(), autoClr = renderer.autoClear;
+    try {
+      for (const t of [V.world, V.hands, V.spirit]) renderer.initRenderTarget(t);
+      renderer.setRenderTarget(prev);
+      renderer.autoClear = true;
+      renderer.render(compScene, compCam);
+    } finally { renderer.setRenderTarget(prev); renderer.autoClear = autoClr; }
+    V.havePrev = false;
+    return true;
+  }
   function dispose() {
     free();
     comp.dispose(); quad.geometry.dispose();
@@ -327,5 +349,5 @@ export function makeVision(THREE, renderer, opts = {}) {
     V.mats.clear();
   }
   function forget(m) { if (m && V.mats.delete(m)) m.dispose(); }
-  return { render, idle, dispose, spiritMaterial, forget, state: V, floatOk, samples: SAMPLES };
+  return { render, idle, warm, dispose, spiritMaterial, forget, state: V, floatOk, samples: SAMPLES };
 }
