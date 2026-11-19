@@ -9408,7 +9408,12 @@ What the baseline contains, by release:
   listen.", ph4h2; nothing is shut for him, the card's note for listening first stays the price; sheet v150); 42 (deploy
   `6aff19507fb17aa8c5129d15`, 19 Nov: found by reading the line queue, 41 put the word at its back, after the rest of a
   family member's telling, and after "Good. Now you know her story" when he peeked while telling his teacher; now said at
-  the next pause between lines, and not at all once he has begun telling his teacher, whose answer says it then).
+  the next pause between lines, and not at all once he has begun telling his teacher, whose answer says it then); 43
+  (deploy `6aff2431488f9aafd61d3c68`, 19 Nov: R102, "when entering the cutscenes, even if player sanity is low and the
+  red edge is pulsing, the cutscenes should not have the red edge effect": the red edge was only ever set in play, so a
+  film kept it, beat and all; every film now takes it off on its first frame, play's frame lays it back, eased, if his
+  sanity is still low, and the lost card after a faint shows its red at once as before. Every chapter's films, episode 1's
+  included; restarttest checks it on episode 1's faint, every drawn frame by state).
 
 ## The sheet, version by version
 
