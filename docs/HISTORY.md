@@ -9358,7 +9358,15 @@ What the baseline contains, by release:
   (`tools/probes/filmshots.mjs` WHO, new), the endings' track() modelled outside the game and calibrated to its lens
   (the head's edge at 1.56, 1.34 and 0.97 of the half-width; A's 0.68 left), then followed by each lens along the path
   eased over a second (RISE_HEAD: 0.88, 0.78, 0.68); C's look eased off through the lean; C's lens following Ravi's walk
-  to her over its own 1.04 s, where it had trailed him over 1.9; C's standing frame clear of the edge of his face).
+  to her over its own 1.04 s, where it had trailed him over 1.9; C's standing frame clear of the edge of his face);
+  30 (deploy `6afe6d579a2f873d08c88786`, 19 Nov: R81 plain through his sight, found by a strike lab on a held clock
+  (performance.now held, the burst photographed at 30 to 320 ms): the white silhouette and the white burst were lost on
+  the vision's light negative, and the plain water's drops drew as dark slate smoke because their fade was in their
+  colour and the vision lays a glow on by its colour; the fade is now their alpha (the world's pass draws exactly as
+  before), and the hit is the water's colour, cyan, gold in his gold. Bedroom 3's leaf turned so its hinges stand at
+  the pivot. C's eye steps back as Ravi comes by. And the head measure learned two things: a seek leaves the skin's
+  bone matrices at the last drawn frame, and the frame loop lays a pose on after the mixer that no seek runs, so a
+  face is measured on a drawn frame (WHODRAW)).
 
 ## The sheet, version by version
 
