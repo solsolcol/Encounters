@@ -172,7 +172,13 @@
        tracing effect even more? Also make the tracer effect look a little more obvious visually": out in 1.6 s where it
        was 1.3, home in 1.25 where it was 1.0; its front 18 cm wide where it was 12, the edges behind it traced half again
        as bright) */
-    vision: { outSecs: 1.6, inSecs: 1.25, band: 0.18, line: 0.24,
+    /* (R105, Chad, 19 Nov: the tracer "more obvious, slightly wider, blue colour stronger ... slightly slower ... linger on
+       slightly longer as it travels outwards", and tracing more of everything): out over 2.2 s where it was 1.6 and home
+       over 1.6 where it was 1.25; its band half as wide again (0.18 to 0.27); a deeper blue (0x3a96ff, where the engine's
+       is the pale 0x8cf2ff) laid on before its light is added, its light stronger on surfaces and edges (0.32 and 3.2,
+       from 0.22 and 2.6); every edge it crosses keeping the blue for 0.7 s behind it; the finer lines traced too */
+    vision: { outSecs: 2.2, inSecs: 1.6, band: 0.27, line: 0.24,
+              front: 0x3a96ff, glow: 0.32, burn: 3.2, laid: 0.55, linger: 0.7, detail: 1,
               heart: { bpm: 112, rest: 76, sound: 'u4heart', vol: 0.55, secs: 2.2, restSecs: 4.5 },
               sound: { on: 'u4vison', off: 'u4visoff', vol: 0.85, bed: ['u4visbed', 0.56], music: ['u4vismus', 0.32], duck: 0.6 } },
     /* THE HOLY WATER (the fifty-first seam, plan §6): his own hands, the small silver bowl in his left, a flick of the
@@ -8084,7 +8090,7 @@
     /* THE CLOSE (§4.5, every ending): from his place at her front left again */
     /* her hips' place when the rise leaves her standing at her chair (its held end), measured once on her own body; and her
        group moved so her hips stand where a moment of her walk says (a function of the film's clock: seek-safe) */
-    const _phv = new THREE.Vector3(), _rlv = new THREE.Vector3(), _rla = new THREE.Vector3(), _rlb = new THREE.Vector3();
+    const _phv = new THREE.Vector3();
     /* (R79) MALA'S HANDS IN THE CLOSE, on her words "Slowly, Amma. Slowly." (CL.slow, its own length): up before her, palms
        up; onto her mother's right arm as her mother reaches her altar (the steps end at CL.steps + STEPS_TK / 0.55); off
        before her mother's palms join (CL.palms). Her mother's arm is read from her own bones on the frame, after she is
@@ -8170,16 +8176,14 @@
            altar they go to her right arm, behind her elbow and on her forearm, and hold her until her palms join; every
            point below the altar's base, 1.15 m, and before its front) */
         malaSteady(P, c); });
-      /* (Ravi turns his head to his teacher as he is spoken to: a neck's reach, his body still turned to her) */
+      /* (Ravi's eyes stay on his mother to the end, his head never turned to his teacher. R78, Chad, 18 Nov: "In all the
+         ending cutscenes, ravi's head spins in an unnatural way just before the camera pans back to grandmaster pho"; its
+         fix turned his look's direction from her to his teacher over 1.2 s, and his teacher stands behind his right
+         shoulder, 99 degrees off the way he kneels, so his head still went round 84 degrees in the family's shot. R106,
+         Chad, 19 Nov: "ravi still does a weird head spin at the end before pho says 'see a doctor', just dont make ravi
+         turn his head") */
       whenReady(cast.ravi, (P) => { put(P, RAVI_C.x, RAVI_C.z, faceTo(RAVI_C.x, RAVI_C.z, STAND.x, STAND.z)); pose(P, 'kneelhold', pingOf(c, 2.6, 0.8, 6.0));
-        /* (R78, Chad, 18 Nov: "In all the ending cutscenes, ravi's head spins in an unnatural way just before the camera pans
-           back to grandmaster pho": his look's POINT was slid in a straight line from her head to his teacher's, and passing
-           close by his own head it swept his face round in a moment. Now the DIRECTION is turned, from her to his teacher,
-           over 1.2 s, and his head goes only a neck's reach of it) */
-        const h = HER_HEAD(), ph = cast.phoB.home, k = smo(c01((c - CL.z1 + 1.2) / 1.2));
-        if (P.head) { P.group.updateWorldMatrix(true, true); P.head.getWorldPosition(_rlv);
-          _rla.set(h[0], h[1], h[2]).sub(_rlv).normalize(); _rlb.set(ph.x, 1.55, ph.z).sub(_rlv).normalize(); _rla.lerp(_rlb, k).normalize();
-          lookNow(P, [_rlv.x + _rla.x, _rlv.y + _rla.y, _rlv.z + _rla.z], 1, 0.85); } });
+        lookNow(P, HER_HEAD(), 1, 0.85); });
       whenReady(spirits.oppress, (P) => { P.group.visible = false; });
       whenReady(spirits.appa, (P) => { if (P.gone) return; put(P, APPA_C.x, APPA_C.z, faceTo(APPA_C.x, APPA_C.z, CHAIR.x, CHAIR.z + 0.3)); pose(P, 'Idle_3', 2 + c * 0.3, true); });
       spirits.wander.forEach((P, i) => whenReady(P, (Q) => { const W = CLOSE_WANDER[i]; if (!W) return;

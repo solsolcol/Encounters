@@ -755,7 +755,7 @@
     /* THE CLOSE (§4.5, every ending): from his place at her front left again */
     /* her hips' place when the rise leaves her standing at her chair (its held end), measured once on her own body; and her
        group moved so her hips stand where a moment of her walk says (a function of the film's clock: seek-safe) */
-    const _phv = new THREE.Vector3(), _rlv = new THREE.Vector3(), _rla = new THREE.Vector3(), _rlb = new THREE.Vector3();
+    const _phv = new THREE.Vector3();
     /* (R79) MALA'S HANDS IN THE CLOSE, on her words "Slowly, Amma. Slowly." (CL.slow, its own length): up before her, palms
        up; onto her mother's right arm as her mother reaches her altar (the steps end at CL.steps + STEPS_TK / 0.55); off
        before her mother's palms join (CL.palms). Her mother's arm is read from her own bones on the frame, after she is
@@ -841,16 +841,14 @@
            altar they go to her right arm, behind her elbow and on her forearm, and hold her until her palms join; every
            point below the altar's base, 1.15 m, and before its front) */
         malaSteady(P, c); });
-      /* (Ravi turns his head to his teacher as he is spoken to: a neck's reach, his body still turned to her) */
+      /* (Ravi's eyes stay on his mother to the end, his head never turned to his teacher. R78, Chad, 18 Nov: "In all the
+         ending cutscenes, ravi's head spins in an unnatural way just before the camera pans back to grandmaster pho"; its
+         fix turned his look's direction from her to his teacher over 1.2 s, and his teacher stands behind his right
+         shoulder, 99 degrees off the way he kneels, so his head still went round 84 degrees in the family's shot. R106,
+         Chad, 19 Nov: "ravi still does a weird head spin at the end before pho says 'see a doctor', just dont make ravi
+         turn his head") */
       whenReady(cast.ravi, (P) => { put(P, RAVI_C.x, RAVI_C.z, faceTo(RAVI_C.x, RAVI_C.z, STAND.x, STAND.z)); pose(P, 'kneelhold', pingOf(c, 2.6, 0.8, 6.0));
-        /* (R78, Chad, 18 Nov: "In all the ending cutscenes, ravi's head spins in an unnatural way just before the camera pans
-           back to grandmaster pho": his look's POINT was slid in a straight line from her head to his teacher's, and passing
-           close by his own head it swept his face round in a moment. Now the DIRECTION is turned, from her to his teacher,
-           over 1.2 s, and his head goes only a neck's reach of it) */
-        const h = HER_HEAD(), ph = cast.phoB.home, k = smo(c01((c - CL.z1 + 1.2) / 1.2));
-        if (P.head) { P.group.updateWorldMatrix(true, true); P.head.getWorldPosition(_rlv);
-          _rla.set(h[0], h[1], h[2]).sub(_rlv).normalize(); _rlb.set(ph.x, 1.55, ph.z).sub(_rlv).normalize(); _rla.lerp(_rlb, k).normalize();
-          lookNow(P, [_rlv.x + _rla.x, _rlv.y + _rla.y, _rlv.z + _rla.z], 1, 0.85); } });
+        lookNow(P, HER_HEAD(), 1, 0.85); });
       whenReady(spirits.oppress, (P) => { P.group.visible = false; });
       whenReady(spirits.appa, (P) => { if (P.gone) return; put(P, APPA_C.x, APPA_C.z, faceTo(APPA_C.x, APPA_C.z, CHAIR.x, CHAIR.z + 0.3)); pose(P, 'Idle_3', 2 + c * 0.3, true); });
       spirits.wander.forEach((P, i) => whenReady(P, (Q) => { const W = CLOSE_WANDER[i]; if (!W) return;

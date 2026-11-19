@@ -172,7 +172,13 @@
        tracing effect even more? Also make the tracer effect look a little more obvious visually": out in 1.6 s where it
        was 1.3, home in 1.25 where it was 1.0; its front 18 cm wide where it was 12, the edges behind it traced half again
        as bright) */
-    vision: { outSecs: 1.6, inSecs: 1.25, band: 0.18, line: 0.24,
+    /* (R105, Chad, 19 Nov: the tracer "more obvious, slightly wider, blue colour stronger ... slightly slower ... linger on
+       slightly longer as it travels outwards", and tracing more of everything): out over 2.2 s where it was 1.6 and home
+       over 1.6 where it was 1.25; its band half as wide again (0.18 to 0.27); a deeper blue (0x3a96ff, where the engine's
+       is the pale 0x8cf2ff) laid on before its light is added, its light stronger on surfaces and edges (0.32 and 3.2,
+       from 0.22 and 2.6); every edge it crosses keeping the blue for 0.7 s behind it; the finer lines traced too */
+    vision: { outSecs: 2.2, inSecs: 1.6, band: 0.27, line: 0.24,
+              front: 0x3a96ff, glow: 0.32, burn: 3.2, laid: 0.55, linger: 0.7, detail: 1,
               heart: { bpm: 112, rest: 76, sound: 'u4heart', vol: 0.55, secs: 2.2, restSecs: 4.5 },
               sound: { on: 'u4vison', off: 'u4visoff', vol: 0.85, bed: ['u4visbed', 0.56], music: ['u4vismus', 0.32], duck: 0.6 } },
     /* THE HOLY WATER (the fifty-first seam, plan §6): his own hands, the small silver bowl in his left, a flick of the

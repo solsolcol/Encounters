@@ -3875,9 +3875,22 @@ function torchToggle() {
    button, no key, no target and no sound of it: unchanged by construction (`?visionlab` lends any chapter the defaults,
    for the probes). */
 const VIS_DEFAULTS = { rmax: 70, outSecs: 1.3, inSecs: 1.0, soft: 0.25, band: 0.12, blur: 0.45, vignette: 0.42, line: 0.16, sky: 70,
-                       front: 0x8cf2ff, lineColor: 0x59bfff, heart: null, sound: null };
+                       front: 0x8cf2ff, lineColor: 0x59bfff, heart: null, sound: null,
+                       /* (R105, Chad, 19 Nov: "the blue glow of the tracer can be more obvious, slightly wider, blue colour
+                          stronger, also make it slightly slower ... Does it trace the outline and silohuette of everything? If
+                          not, have it trace more ... The tracing outline effect on objects can linger on slightly longer as it
+                          travels outwards"). Each of these as absent keeps the picture it always was:
+                          glow, burn: the front's light on every surface it crosses and on every edge in it (were constants);
+                          laid: the front's colour LAID over what it crosses by that share before its light is added (light
+                            added to the vision's near-white negative sums to white: the blue was lost on it; v8.8's rule);
+                          linger: seconds an edge the wave has crossed keeps its colour behind the front, fading (none: only the
+                            band itself lit it, for the twentieth of a second the band took to pass);
+                          detail: 0 to 1, the finer lines it traces as well (the depth's slope and bend and the colour's edges
+                            taken from lower thresholds: tile joints, frames, folds) */
+                       glow: 0.22, burn: 2.6, laid: 0, linger: 0, detail: 0 };
 const VIS_LAB = /[?&]visionlab\b/.test(location.search);
-const vis = { decl: null, on: false, r: 0, dir: 0, t: 0, k: 0, held: null, fx: null, last: 0, switches: 0, drawn: 0, heartOn: false };
+const vis = { decl: null, on: false, r: 0, dir: 0, t: 0, k: 0, held: null, fx: null, last: 0, switches: 0, drawn: 0, heartOn: false,
+              wt: 0, r0: 0, ldir: 0, freeze: false };   // (R105) the trail's clock: since this wave began; its first radius; its way
 /* the wave's radius as a share of its reach, over its own time u in 0..1: slow through the room it opens in, fast to the
    far windows (out); the same curve run backwards brings it home (in) */
 const visCurve = u => 0.30 * u + 0.70 * u * u * u;
@@ -3886,6 +3899,7 @@ function visDeclOf(ch) { return ch && ch.vision ? ch.vision : (VIS_LAB ? {} : nu
 function visionSetup(decl) {
   vis.decl = { ...VIS_DEFAULTS, ...(decl || {}) };
   vis.on = false; vis.r = 0; vis.dir = 0; vis.t = 0; vis.k = 0; vis.held = null; vis.heartOn = false;
+  vis.wt = 0; vis.r0 = 0; vis.ldir = 0; vis.freeze = false;
   const s = vis.decl.sound;
   if (s) for (const n of [s.on, s.off, s.bed && s.bed[0], s.music && s.music[0]]) if (n) WARM_WANT.add(n);
   if (vis.decl.heart && vis.decl.heart.sound) WARM_WANT.add(vis.decl.heart.sound);
@@ -3895,6 +3909,7 @@ function visionSetup(decl) {
 function visionTeardown() {
   if (vis.decl && vis.heartOn) kitPulseSet(null);
   vis.decl = null; vis.on = false; vis.r = 0; vis.dir = 0; vis.k = 0; vis.held = null; vis.heartOn = false;
+  vis.wt = 0; vis.r0 = 0; vis.ldir = 0; vis.freeze = false;
   if (vis.fx) { vis.fx.dispose(); vis.fx = null; }
   document.body.classList.remove('hasVision', 'visionOn');
   $('visionBtn')?.classList.remove('on');
@@ -3910,11 +3925,13 @@ function visionSet(on, instant) {
   const d = vis.decl;
   if (instant) {
     vis.on = on; vis.dir = 0; vis.r = on ? d.rmax : 0; vis.k = on ? 1 : 0; vis.t = 0;
+    vis.wt = 0; vis.r0 = vis.r; vis.ldir = 0;
   } else if (on !== vis.on) {
     vis.on = on;
     const f = Math.max(0, Math.min(1, vis.r / d.rmax));
     if (on) { vis.dir = 1; vis.t = visCurveInv(f) * d.outSecs; }
     else { vis.dir = -1; vis.t = (1 - visCurveInv(f)) * d.inSecs; }
+    vis.wt = vis.t; vis.r0 = vis.r; vis.ldir = vis.dir;
     const s = d.sound;
     if (s && (on ? s.on : s.off)) snd(on ? s.on : s.off, s.vol == null ? 0.9 : s.vol);
   }
@@ -3953,7 +3970,8 @@ function visionFrame() {
   vis.last = now;
   if (!vis.decl) return;
   const d = vis.decl;
-  if (vis.held) { vis.r = Math.max(0, +vis.held.r || 0); vis.dir = vis.held.moving ? 1 : 0; }
+  if (vis.freeze) { /* (R105) a probe's still: the wave stands where it was put */ }
+  else if (vis.held) { vis.r = Math.max(0, +vis.held.r || 0); vis.dir = vis.held.moving ? 1 : 0; vis.ldir = 0; }
   else if (vis.dir > 0) {
     vis.t += dt;
     const u = Math.min(1, vis.t / d.outSecs);
@@ -3965,6 +3983,7 @@ function visionFrame() {
     vis.r = d.rmax * visCurve(1 - u);
     if (u >= 1) { vis.dir = 0; vis.r = 0; }
   }
+  if (!vis.freeze && !vis.held) vis.wt += dt;
   /* how open he is, for the blur, the vignette, the sound and the heart's beat: the room's first six metres */
   vis.k = Math.max(0, Math.min(1, vis.r / 6));
   /* the beat fades with the vision and stops once the heart has settled */
@@ -4010,6 +4029,7 @@ function visResume() {
   const f = Math.max(0, Math.min(1, vis.r / d.rmax));
   if (vis.on) { vis.dir = f < 1 ? 1 : 0; vis.t = visCurveInv(f) * d.outSecs; }
   else { vis.dir = f > 0 ? -1 : 0; vis.t = (1 - visCurveInv(f)) * d.inSecs; }
+  vis.wt = vis.t; vis.r0 = vis.r; vis.ldir = vis.dir;
 }
 /* a spirit: the object's meshes drawn only through the vision, each as a glowing silhouette */
 function ctxSpirit(obj, opts = {}) {
@@ -17922,7 +17942,9 @@ function tick(now = 0) {
          coloured wave over it) */
       if (sight) vis.fx.render({ scene, camera, vmScene, vmCam, drawHands, R: vis.r, soft: d.soft, band: d.band, moving: vis.dir !== 0 ? 1 : 0,
                       k: vis.k, blur: d.blur, vignette: d.vignette, line: d.line, sky: d.sky, time: performance.now() / 1000,
-                      front: d.front, lineColor: d.lineColor, R2: gwOn ? gwave.R : 0, M2: gwOn ? gwave.M : 0, front2: gwave.col, trail2: gwave.trail });
+                      front: d.front, lineColor: d.lineColor, R2: gwOn ? gwave.R : 0, M2: gwOn ? gwave.M : 0, front2: gwave.col, trail2: gwave.trail,
+                      glow: d.glow, burn: d.burn, laid: d.laid, linger: d.linger, detail: d.detail,
+                      wt: vis.wt, wsecs: vis.ldir < 0 ? d.inSecs : d.outSecs, wdir: vis.ldir, r0: vis.r0, rmax: d.rmax });
       else vis.fx.render({ scene, camera, vmScene, vmCam, drawHands, R: 0, soft: d.soft, band: 0, moving: 0, k: 0, blur: 0, vignette: 0,
                       line: 0, sky: d.sky, time: performance.now() / 1000, invert: 0, spirits: false,
                       R2: gwave.R, M2: gwave.M, front2: gwave.col, trail2: gwave.trail });
@@ -18401,10 +18423,21 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                     over the nearest body in front of the lens (the lab's spirit, ?visionlab) */
                  vision: (v) => (v === undefined
                    ? { decl: !!vis.decl, on: vis.on, r: +vis.r.toFixed(3), k: +vis.k.toFixed(3), dir: vis.dir, drawn: vis.drawn, switches: vis.switches,
+                       wt: +vis.wt.toFixed(3), r0: +vis.r0.toFixed(3), ldir: vis.ldir,
                        ok: vis.fx ? !!vis.fx.state.ok : null, err: vis.fx && vis.fx.state ? vis.fx.state.err || null : null,
                        float: vis.fx ? !!vis.fx.floatOk : null, samples: vis.fx ? vis.fx.samples : null, mats: vis.fx && vis.fx.state.mats ? vis.fx.state.mats.size : 0 }
                    : kitVision(v)),
                  visionToggle,
+                 /* (R105) the probes' STILL of the wave: { t, dir, r0, age } puts it where it would be t seconds into a wave
+                    going out (dir 1) or home (dir -1) from r0, the trail's clock `age` seconds on from there (the wave then
+                    standing at its end if t is past it), and freezes it there; null lets it run again */
+                 visionStill: (o) => { if (!vis.decl) return false; const d = vis.decl;
+                   if (o === null) { vis.freeze = false; return true; }
+                   const dir = o.dir < 0 ? -1 : 1, secs = dir > 0 ? d.outSecs : d.inSecs, t = Math.max(0, +o.t || 0), u = Math.min(1, t / secs);
+                   vis.on = dir > 0; vis.ldir = dir; vis.r0 = o.r0 == null ? (dir > 0 ? 0 : d.rmax) : +o.r0;
+                   vis.t = t; vis.dir = u < 1 ? dir : 0; vis.r = d.rmax * visCurve(dir > 0 ? u : 1 - u);
+                   vis.wt = t + Math.max(0, +o.age || 0); vis.k = Math.max(0, Math.min(1, vis.r / 6)); vis.freeze = true;
+                   document.body.classList.toggle('visionOn', vis.on); return { r: +vis.r.toFixed(3), moving: vis.dir !== 0 }; },
                  visionGate: (on) => { if (vis.fx && vis.fx.state) vis.fx.state.noGate = !on; return !!(vis.fx && vis.fx.state); },   // v27.0: the fixture's switch (vision.js `noGate`)
                  /* v27.0: HIS OWN HANDS (the holy water), for the probes: its state, and a weapon declared over the chapter's
                     (the fixture proves the seam on a chapter whose own weapon is the rifle) */

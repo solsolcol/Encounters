@@ -84,7 +84,13 @@ export function makeVision(THREE, renderer, opts = {}) {
       uHandsOn: { value: 0 }, uSpiritOn: { value: 0 },
       /* v27.0 (seam 57): A SECOND WAVE, of light in a colour of its own (kit.wave): its front's distance from his eye, its
          strength, its colour, and how long the edges it has crossed keep its light behind it */
-      uR2: { value: 0 }, uM2: { value: 0 }, uFront2: { value: new THREE.Color(1.0, 0.78, 0.32) }, uTrail2: { value: 0.35 }
+      uR2: { value: 0 }, uM2: { value: 0 }, uFront2: { value: new THREE.Color(1.0, 0.78, 0.32) }, uTrail2: { value: 0.35 },
+      /* v27.0 (R105): the front's light on surfaces and on edges, its colour laid on by a share, how long an edge it has
+         crossed keeps it, and the finer lines traced as well (0.22, 2.6, 0, 0, 0: the picture as it was); and the trail's
+         clock: seconds since this wave began, its length in seconds, its way (1 out, -1 home, 0 none), where it began, its
+         reach */
+      uGlow: { value: 0.22 }, uBurn: { value: 2.6 }, uLaid: { value: 0 }, uLinger: { value: 0 }, uDetail: { value: 0 },
+      uWT: { value: 0 }, uWSecs: { value: 1 }, uWDir: { value: 0 }, uR0: { value: 0 }, uRmax: { value: 70 }
     },
     vertexShader: /* glsl */`
       out vec2 vUv;
@@ -98,6 +104,19 @@ export function makeVision(THREE, renderer, opts = {}) {
       uniform float uNear, uFar, uR, uSoft, uBand, uMoving, uK, uBlur, uVig, uLine, uSky, uHandsAt, uTime, uInvert, uHandsOn, uSpiritOn;
       uniform float uR2, uM2, uTrail2;
       uniform vec3 uFront2;
+      uniform float uGlow, uBurn, uLaid, uLinger, uDetail, uWT, uWSecs, uWDir, uR0, uRmax;
+      /* (R105) how long ago the wave's front stood at this distance, and whether this wave has crossed it at all: its
+         radius is rmax * c(u), c(u) = 0.30u + 0.70u^3 over its own time u (main.js visCurve), so c is solved for u here by
+         Newton's steps; going home it runs the curve backwards. Negative: not reached yet */
+      float waveAge(float dist) {
+        if (uWDir == 0.0) return -1.0;
+        float f = clamp(dist / max(uRmax, 0.001), 0.0, 1.0);
+        float u = pow(max(f, 1e-6), 0.3333);
+        for (int i = 0; i < 5; i++) { float g = 0.30 * u + 0.70 * u * u * u - f; u = clamp(u - g / (0.30 + 2.10 * u * u), 0.0, 1.0); }
+        float tPass = uWDir > 0.0 ? u * uWSecs : (1.0 - u) * uWSecs;
+        bool crossed = uWDir > 0.0 ? (dist >= uR0 - 0.05 && dist <= uR + 0.0001) : (dist <= uR0 + 0.05 && dist >= uR - 0.0001);
+        return crossed ? uWT - tPass : -1.0;
+      }
       uniform mat4 uInvProj, uCamWorld, uPrevVP;
       uniform vec3 uEye, uFront, uLineCol;
       float viewZ(float d) { return (uNear * uFar) / ((uFar - uNear) * d - uFar); }   // negative in front
@@ -138,11 +157,12 @@ export function makeVision(THREE, renderer, opts = {}) {
         float zs = max(zc, 0.05);
         float slope = length(vec2(zr - zl, zu - zd)) / zs;
         float bend = abs(zl + zr + zd + zu - 4.0 * zc) / zs;
-        float e = clamp(smoothstep(0.06, 0.32, slope) * 0.7 + smoothstep(0.006, 0.05, bend), 0.0, 1.0);
+        float dk = 1.0 - 0.4 * uDetail;
+        float e = clamp(smoothstep(0.06 * dk, 0.32 * dk, slope) * 0.7 + smoothstep(0.006 * dk, 0.05 * dk, bend), 0.0, 1.0);
         vec3 cl = disp(texture(tWorld, vUv - vec2(o.x, 0.0)).rgb), cr = disp(texture(tWorld, vUv + vec2(o.x, 0.0)).rgb);
         vec3 cdn = disp(texture(tWorld, vUv - vec2(0.0, o.y)).rgb), cup = disp(texture(tWorld, vUv + vec2(0.0, o.y)).rgb);
         float lum = length(vec2(dot(cr - cl, vec3(0.299, 0.587, 0.114)), dot(cup - cdn, vec3(0.299, 0.587, 0.114))));
-        e = clamp(e + smoothstep(0.10, 0.45, lum) * 0.45, 0.0, 1.0);
+        e = clamp(e + smoothstep(0.10 * dk, 0.45 * dk, lum) * (0.45 + 0.25 * uDetail), 0.0, 1.0);
         if (sky) e = 0.0;
         /* the world turned where the wave has passed: a NEGATIVE IN BLACK AND WHITE, its light's luminance inverted and no
            hue left, so the only colour in the vision is what the vision alone shows (Chad, 18 Nov 2026: "Spirit vision
@@ -157,7 +177,20 @@ export function makeVision(THREE, renderer, opts = {}) {
            0.05 the front read on a flat floor only as the edge of the negative, not as a wave of light passing) */
         float bw = max(0.05, uBand + uR * 0.02);
         float band = exp(-pow((dist - uR) / bw, 2.0)) * uMoving * uInvert;
-        col += uFront * band * (0.22 + 2.6 * e);
+        /* (R105) its colour LAID ON first, by its own strength (light added to the negative's near-white came out white),
+           then its light added; at laid 0 the mix leaves the colour exactly as it was */
+        col = mix(col, uFront, clamp(band * uLaid * (0.35 + 0.65 * e), 0.0, 1.0));
+        col += uFront * band * (uGlow + uBurn * e);
+        /* (R105) THE TRAIL: every edge the front has crossed keeps its colour for uLinger seconds behind it, fading (an
+           outline that stays as the wave goes on out, not one lit only while the band crossed it) */
+        if (uLinger > 0.0 && !sky) {
+          float age = waveAge(dist);
+          if (age >= 0.0) {
+            float tr = exp(-age / uLinger) * uInvert;
+            col = mix(col, uFront, clamp(tr * e * max(uLaid, 0.4) * 0.9, 0.0, 1.0));
+            col += uFront * tr * (e * uBurn * 0.32 + 0.03);
+          }
+        }
         /* v27.0 (seam 57): THE SECOND WAVE, in its own colour, with the sight open or shut: a front of light going out from
            his eye (a glow on every surface it crosses, every edge it crosses burning), and behind it every edge it has
            crossed keeping its light, fading the further back it lies, so the room is traced in it as it passes */
@@ -184,6 +217,20 @@ export function makeVision(THREE, renderer, opts = {}) {
           float hinv = invAt(uHandsAt) * uInvert;
           hc = mix(hc, vec3(1.0 - dot(hc, vec3(0.299, 0.587, 0.114))), hinv);
           col = mix(col, hc, clamp(h.a, 0.0, 1.0));
+        }
+        /* (R105) his own hands traced too, as the wave leaves them: their outline (where their coverage changes) in the
+           front's colour while the band is on them, and lingering after it */
+        if (uLinger > 0.0 && uHandsOn > 0.5) {
+          float hl = texture(tHands, vUv - vec2(o.x, 0.0)).a, hr = texture(tHands, vUv + vec2(o.x, 0.0)).a;
+          float hd = texture(tHands, vUv - vec2(0.0, o.y)).a, hu = texture(tHands, vUv + vec2(0.0, o.y)).a;
+          float he = clamp(length(vec2(hr - hl, hu - hd)) * 1.6, 0.0, 1.0) * uInvert;
+          if (he > 0.01) {
+            float hb = exp(-pow((uHandsAt - uR) / bw, 2.0)) * uMoving;
+            float hage = waveAge(uHandsAt), htr = hage >= 0.0 ? exp(-hage / uLinger) : 0.0;
+            float hk = clamp(max(hb, htr) * he, 0.0, 1.0);
+            col = mix(col, uFront, clamp(hk * max(uLaid, 0.4), 0.0, 1.0));
+            col += uFront * hk * uBurn * 0.3;
+          }
         }
         /* a slight vignette */
         vec2 q = (vUv - 0.5) * vec2(uRes.x / uRes.y, 1.0);
@@ -303,6 +350,10 @@ export function makeVision(THREE, renderer, opts = {}) {
       if (o.front) U.uFront.value.set(o.front);
       if (o.lineColor) U.uLineCol.value.set(o.lineColor);
       U.uR2.value = o.R2 || 0; U.uM2.value = o.M2 || 0; U.uTrail2.value = o.trail2 == null ? 0.35 : o.trail2;
+      U.uGlow.value = o.glow == null ? 0.22 : o.glow; U.uBurn.value = o.burn == null ? 2.6 : o.burn;
+      U.uLaid.value = o.laid || 0; U.uLinger.value = o.linger || 0; U.uDetail.value = o.detail || 0;
+      U.uWT.value = o.wt || 0; U.uWSecs.value = o.wsecs || 1; U.uWDir.value = o.wdir || 0; U.uR0.value = o.r0 || 0;
+      U.uRmax.value = o.rmax || 70;
       if (o.front2 != null) U.uFront2.value.set(o.front2);
       renderer.setRenderTarget(prevTarget);
       renderer.render(compScene, compCam);
