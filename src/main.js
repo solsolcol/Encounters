@@ -4868,9 +4868,12 @@ function weaponWordsSet(w) {
 function ownSprayEnsure() {
   if (own.pts) return;
   const sp = (weaponDecl && weaponDecl.spray) || {}, N = own.N, geo = new THREE.BufferGeometry();
-  own.pos = new Float32Array(N * 3); own.col = new Float32Array(N * 3);
+  own.pos = new Float32Array(N * 3); own.col = new Float32Array(N * 4);
   geo.setAttribute('position', new THREE.BufferAttribute(own.pos, 3).setUsage(THREE.DynamicDrawUsage));
-  geo.setAttribute('color', new THREE.BufferAttribute(own.col, 3).setUsage(THREE.DynamicDrawUsage));
+  /* (R81: a drop's fade is its ALPHA, its colour whole: the world's pass adds colour times alpha, so it is drawn exactly as it
+     was; the vision lays its glow on by the glow's own colour, its alpha the strength, so a fading drop now fades out in its
+     own colour where a fade in the colour had laid it on as a darker one: the plain water read as dark smoke in his sight) */
+  geo.setAttribute('color', new THREE.BufferAttribute(own.col, 4).setUsage(THREE.DynamicDrawUsage));
   geo.setDrawRange(0, 0);
   if (!own.dot) own.dot = makeSoftDot('rgba(255,255,255,1)', 'rgba(255,255,255,0)');
   const size = sp.size || 0.03;
@@ -4936,9 +4939,11 @@ function ownSprayFrame(now) {
   const sp = (weaponDecl && weaponDecl.spray) || {};
   _osCol.set(sprayCol != null ? sprayCol : (sp.color == null ? 0xdcefff : sp.color));
   if (own.core) own.core.visible = sprayCol != null;          // (R85: the golden water's bright core, over the vision's negative)
+  /* (R81: the plain water's glow in his sight in its own hue, deepened so it reads on the light negative; a coloured water is laid on as itself) */
+  own.glow.material.color.setRGB(sprayCol != null ? 1 : 0.62, sprayCol != null ? 1 : 0.92, sprayCol != null ? 1 : 1.1);
   const keep = [], P = own.pos, C = own.col, N = own.N; let m = 0;
   const put = (x, y, z, f) => { if (m >= N) return; P[m * 3] = x; P[m * 3 + 1] = y; P[m * 3 + 2] = z;
-    C[m * 3] = _osCol.r * f; C[m * 3 + 1] = _osCol.g * f; C[m * 3 + 2] = _osCol.b * f; m++; };
+    C[m * 4] = _osCol.r; C[m * 4 + 1] = _osCol.g; C[m * 4 + 2] = _osCol.b; C[m * 4 + 3] = f; m++; };
   for (const d of own.drops) {
     if (d.burst) {
       const t = now - d.t0; if (t > d.life) continue;

@@ -826,24 +826,32 @@
        over every frame by its going; in the gold nothing flashed at all. Now the silhouette burns pure white and holds a
        tenth of a second before it settles over 0.4 s, the one released as brightly as it goes (hitBoost), and every
        strike bursts where it lands, through his sight: hitBurst below) */
-    const HIT_WHITE = new THREE.Color(0xffffff), _hitC = new THREE.Color(), HIT_HOLD = 0.1, HIT_FADE = 0.4, HIT_FILL = 3.0;
+    const _hitC = new THREE.Color(), HIT_HOLD = 0.1, HIT_FADE = 0.4, HIT_FILL = 3.0;
+    /* (R81, build 30: photographed through his sight on a held clock, the white flash and the white burst were lost on the
+       vision's light negative of the room, a white haze over a near-white floor, and the struck one went from green to
+       nothing. The strike is the WATER's colour now, deep enough to read on that light room: the silhouette burns in it and
+       the burst throws it; in his gold, gold) */
+    const HIT_HUE = { water: { body: 0x46cfff, flash: 0x9fe6ff, ring: 0x46cfff, spark: 0x7fdcff },
+                      gold: { body: 0xffb424, flash: 0xffe7a0, ring: 0xffb424, spark: 0xffcf5a } };
+    const hitHue = () => (play.fight && play.fight.call === 'gold' ? HIT_HUE.gold : HIT_HUE.water);
     const hitBoost = (P) => { const d = P.hitT0 != null ? wallNow() - P.hitT0 : 99; return d < HIT_HOLD ? 1 : Math.max(0, 1 - (d - HIT_HOLD) / HIT_FADE); };
     function hitFlash(S, delay = 0) {
       const P = S.P; hitBurst(S, delay); if (!P.fx) return;
       const look = P === spirits.large ? SPIRIT.large : SPIRIT.wander, base = new THREE.Color(look.color), run = play.run, t0 = wallNow() + delay;
-      P.hitT0 = t0; if (delay <= 0) P.fx.set('uColor', HIT_WHITE);
+      const hc = new THREE.Color(hitHue().body);
+      P.hitT0 = t0; if (delay <= 0) P.fx.set('uColor', hc);
       /* (one released goes out by its own fill, lifted by hitBoost; one staggered is filled bright here) */
       const fill = () => S.state !== 'leave' && S.state !== 'gone';
       if (fill() && delay <= 0) P.fx.set('uFill', HIT_FILL);
       const step = () => { if (!live(run) || !P.fx || P.hitT0 !== t0) return; const d = wallNow() - t0;
         if (d >= 0) { const u = Math.min(1, Math.max(0, d - HIT_HOLD) / HIT_FADE);
-          P.fx.set('uColor', _hitC.copy(HIT_WHITE).lerp(base, u * u));
+          P.fx.set('uColor', _hitC.copy(hc).lerp(base, u * u));
           if (fill()) P.fx.set('uFill', HIT_FILL + (look.fill - HIT_FILL) * u * u);
           if (u >= 1) return; }
         requestAnimationFrame(step); };
       requestAnimationFrame(step);
     }
-    /* THE BURST where the water lands (R81): a white flash swelling out, a ring thrown wide, six sparks flung off and
+    /* THE BURST where the water lands (R81): a flash in the water's colour swelling out (gold in his gold: hitHue), a ring thrown wide, six sparks flung off and
        falling, half a second on the wall clock; drawn through his sight only, where the green ones are; sized by the one
        struck (its sphere); eight at once, the oldest given back first */
     const HITFX = { slots: 8, sparks: 6, flash: 0.24, ring: 0.5, spark: 0.46 };
@@ -866,6 +874,7 @@
           sparks: Array.from({ length: HITFX.sparks }, () => hitSprite(glow, 0xeeffe8)), dirs: Array.from({ length: HITFX.sparks }, () => new THREE.Vector3()),
           at: new THREE.Vector3(), t0: -99, r: 0.4 }); }
       const B = hitFx.slots[hitFx.next]; hitFx.next = (hitFx.next + 1) % HITFX.slots;
+      const hue = hitHue(); B.flash.material.color.set(hue.flash); B.ring.material.color.set(hue.ring); for (const sp of B.sparks) sp.material.color.set(hue.spark);
       B.t0 = wallNow() + delay; B.at.copy(m.position); B.r = Math.max(0.3, Math.min(0.9, m.scale.x || 0.4));
       const turn = hitFx.next * 1.7;
       B.dirs.forEach((v, i) => { const a = i * 2.39996 + turn, y = ((i * 0.618 + 0.25) % 1) - 0.3; v.set(Math.cos(a), y, Math.sin(a)).normalize(); });
@@ -875,7 +884,7 @@
       const now = wallNow();
       for (const B of hitFx.slots) {
         const d = now - B.t0, uf = d / HITFX.flash, ur = d / HITFX.ring, us = d / HITFX.spark;
-        if (d >= 0 && uf < 1) { B.flash.position.copy(B.at); B.flash.scale.setScalar(B.r * (1.0 + 1.8 * (1 - (1 - uf) * (1 - uf)))); B.flash.material.opacity = 1 - uf * uf; B.flash.visible = true; }
+        if (d >= 0 && uf < 1) { B.flash.position.copy(B.at); B.flash.scale.setScalar(B.r * (0.9 + 1.3 * (1 - (1 - uf) * (1 - uf)))); B.flash.material.opacity = 1 - uf * uf; B.flash.visible = true; }
         else B.flash.visible = false;
         if (d >= 0 && ur < 1) { const e = 1 - (1 - ur) * (1 - ur); B.ring.position.copy(B.at); B.ring.scale.setScalar(B.r * (0.8 + 3.4 * e)); B.ring.material.opacity = 1 - ur; B.ring.visible = true; }
         else B.ring.visible = false;

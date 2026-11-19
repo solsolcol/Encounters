@@ -186,12 +186,14 @@
        seen through: hidden the moment the model is in (v4.7: a stand-in that hides on landing) */
     const DOOR_W = 0.938, DOOR_H = 2.10;                      // the model's own leaf (its file's extent)
     const doorLeaves = [], doorStandIns = [];
-    function door(w, hinge, ry, open, at) {
+    function door(w, hinge, ry, open, at, flip = false) {
       /* `hinge` [x, z]: the leaf turns about it; `ry`: the leaf's turn when SHUT (its face along the wall); `open`: how far
          it is turned from shut (radians, into the room); `at`: the leaf's middle from its hinge when shut (-w/2 or +w/2 along
          its own x) */
       const pivot = new THREE.Group(); pivot.position.set(hinge[0], 0, hinge[1]); pivot.rotation.y = ry + open; world.add(pivot);
-      const leaf = stand('w4doorleaf', at, 0, 0, 0, { parent: pivot, ...LOOK.w4doorleaf });
+      /* (`flip`: the leaf turned about its own middle so the model's hinged edge, its +x, lies at the pivot when `at` is
+         +w/2: 19 Nov, photographed through bedroom 3's door after its scare, its hinges were drawn on the edge that swings) */
+      const leaf = stand('w4doorleaf', at, 0, 0, flip ? Math.PI : 0, { parent: pivot, ...LOOK.w4doorleaf });
       leaf.scale.set((w - 0.02) / DOOR_W, 2.06 / DOOR_H, 1);
       const si = new THREE.Mesh(new THREE.BoxGeometry(w - 0.02, 2.06, 0.04), mVeneer);
       si.position.set(at, 1.03, 0); si.visible = !have('w4doorleaf'); pivot.add(si); owned.push(si.geometry);
@@ -215,7 +217,7 @@
     door(DOOR_BATH2.x1 - DOOR_BATH2.x0, [DOOR_BATH2.x0, R2.bath2.z0 - 0.05], 0, 0, (DOOR_BATH2.x1 - DOOR_BATH2.x0) / 2);
     door(DOOR_STORE.z1 - DOOR_STORE.z0, [R2.nook.x0 - 0.05, DOOR_STORE.z0], -Math.PI / 2, 0, (DOOR_STORE.z1 - DOOR_STORE.z0) / 2);
     /* bedroom 3's, a hand's width open (its scare eases it further: d_play turns doorLeaves[5].pivot) */
-    door(DOOR_BED3.z1 - DOOR_BED3.z0, [R2.living.x0 - 0.06, DOOR_BED3.z0], -Math.PI / 2, -0.12, (DOOR_BED3.z1 - DOOR_BED3.z0) / 2);
+    door(DOOR_BED3.z1 - DOOR_BED3.z0, [R2.living.x0 - 0.06, DOOR_BED3.z0], -Math.PI / 2, -0.12, (DOOR_BED3.z1 - DOOR_BED3.z0) / 2, true);
     /* her neighbours' doors and gates along the corridor: the same door, the same gate, shut */
     for (const nx of NEIGHBOURS) {
       door(0.92, [nx - 0.46, 0.02], 0, 0, 0.46);

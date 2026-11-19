@@ -5002,12 +5002,14 @@
        seen through: hidden the moment the model is in (v4.7: a stand-in that hides on landing) */
     const DOOR_W = 0.938, DOOR_H = 2.10;                      // the model's own leaf (its file's extent)
     const doorLeaves = [], doorStandIns = [];
-    function door(w, hinge, ry, open, at) {
+    function door(w, hinge, ry, open, at, flip = false) {
       /* `hinge` [x, z]: the leaf turns about it; `ry`: the leaf's turn when SHUT (its face along the wall); `open`: how far
          it is turned from shut (radians, into the room); `at`: the leaf's middle from its hinge when shut (-w/2 or +w/2 along
          its own x) */
       const pivot = new THREE.Group(); pivot.position.set(hinge[0], 0, hinge[1]); pivot.rotation.y = ry + open; world.add(pivot);
-      const leaf = stand('w4doorleaf', at, 0, 0, 0, { parent: pivot, ...LOOK.w4doorleaf });
+      /* (`flip`: the leaf turned about its own middle so the model's hinged edge, its +x, lies at the pivot when `at` is
+         +w/2: 19 Nov, photographed through bedroom 3's door after its scare, its hinges were drawn on the edge that swings) */
+      const leaf = stand('w4doorleaf', at, 0, 0, flip ? Math.PI : 0, { parent: pivot, ...LOOK.w4doorleaf });
       leaf.scale.set((w - 0.02) / DOOR_W, 2.06 / DOOR_H, 1);
       const si = new THREE.Mesh(new THREE.BoxGeometry(w - 0.02, 2.06, 0.04), mVeneer);
       si.position.set(at, 1.03, 0); si.visible = !have('w4doorleaf'); pivot.add(si); owned.push(si.geometry);
@@ -5031,7 +5033,7 @@
     door(DOOR_BATH2.x1 - DOOR_BATH2.x0, [DOOR_BATH2.x0, R2.bath2.z0 - 0.05], 0, 0, (DOOR_BATH2.x1 - DOOR_BATH2.x0) / 2);
     door(DOOR_STORE.z1 - DOOR_STORE.z0, [R2.nook.x0 - 0.05, DOOR_STORE.z0], -Math.PI / 2, 0, (DOOR_STORE.z1 - DOOR_STORE.z0) / 2);
     /* bedroom 3's, a hand's width open (its scare eases it further: d_play turns doorLeaves[5].pivot) */
-    door(DOOR_BED3.z1 - DOOR_BED3.z0, [R2.living.x0 - 0.06, DOOR_BED3.z0], -Math.PI / 2, -0.12, (DOOR_BED3.z1 - DOOR_BED3.z0) / 2);
+    door(DOOR_BED3.z1 - DOOR_BED3.z0, [R2.living.x0 - 0.06, DOOR_BED3.z0], -Math.PI / 2, -0.12, (DOOR_BED3.z1 - DOOR_BED3.z0) / 2, true);
     /* her neighbours' doors and gates along the corridor: the same door, the same gate, shut */
     for (const nx of NEIGHBOURS) {
       door(0.92, [nx - 0.46, 0.02], 0, 0, 0.46);
@@ -6382,24 +6384,32 @@
        over every frame by its going; in the gold nothing flashed at all. Now the silhouette burns pure white and holds a
        tenth of a second before it settles over 0.4 s, the one released as brightly as it goes (hitBoost), and every
        strike bursts where it lands, through his sight: hitBurst below) */
-    const HIT_WHITE = new THREE.Color(0xffffff), _hitC = new THREE.Color(), HIT_HOLD = 0.1, HIT_FADE = 0.4, HIT_FILL = 3.0;
+    const _hitC = new THREE.Color(), HIT_HOLD = 0.1, HIT_FADE = 0.4, HIT_FILL = 3.0;
+    /* (R81, build 30: photographed through his sight on a held clock, the white flash and the white burst were lost on the
+       vision's light negative of the room, a white haze over a near-white floor, and the struck one went from green to
+       nothing. The strike is the WATER's colour now, deep enough to read on that light room: the silhouette burns in it and
+       the burst throws it; in his gold, gold) */
+    const HIT_HUE = { water: { body: 0x46cfff, flash: 0x9fe6ff, ring: 0x46cfff, spark: 0x7fdcff },
+                      gold: { body: 0xffb424, flash: 0xffe7a0, ring: 0xffb424, spark: 0xffcf5a } };
+    const hitHue = () => (play.fight && play.fight.call === 'gold' ? HIT_HUE.gold : HIT_HUE.water);
     const hitBoost = (P) => { const d = P.hitT0 != null ? wallNow() - P.hitT0 : 99; return d < HIT_HOLD ? 1 : Math.max(0, 1 - (d - HIT_HOLD) / HIT_FADE); };
     function hitFlash(S, delay = 0) {
       const P = S.P; hitBurst(S, delay); if (!P.fx) return;
       const look = P === spirits.large ? SPIRIT.large : SPIRIT.wander, base = new THREE.Color(look.color), run = play.run, t0 = wallNow() + delay;
-      P.hitT0 = t0; if (delay <= 0) P.fx.set('uColor', HIT_WHITE);
+      const hc = new THREE.Color(hitHue().body);
+      P.hitT0 = t0; if (delay <= 0) P.fx.set('uColor', hc);
       /* (one released goes out by its own fill, lifted by hitBoost; one staggered is filled bright here) */
       const fill = () => S.state !== 'leave' && S.state !== 'gone';
       if (fill() && delay <= 0) P.fx.set('uFill', HIT_FILL);
       const step = () => { if (!live(run) || !P.fx || P.hitT0 !== t0) return; const d = wallNow() - t0;
         if (d >= 0) { const u = Math.min(1, Math.max(0, d - HIT_HOLD) / HIT_FADE);
-          P.fx.set('uColor', _hitC.copy(HIT_WHITE).lerp(base, u * u));
+          P.fx.set('uColor', _hitC.copy(hc).lerp(base, u * u));
           if (fill()) P.fx.set('uFill', HIT_FILL + (look.fill - HIT_FILL) * u * u);
           if (u >= 1) return; }
         requestAnimationFrame(step); };
       requestAnimationFrame(step);
     }
-    /* THE BURST where the water lands (R81): a white flash swelling out, a ring thrown wide, six sparks flung off and
+    /* THE BURST where the water lands (R81): a flash in the water's colour swelling out (gold in his gold: hitHue), a ring thrown wide, six sparks flung off and
        falling, half a second on the wall clock; drawn through his sight only, where the green ones are; sized by the one
        struck (its sphere); eight at once, the oldest given back first */
     const HITFX = { slots: 8, sparks: 6, flash: 0.24, ring: 0.5, spark: 0.46 };
@@ -6422,6 +6432,7 @@
           sparks: Array.from({ length: HITFX.sparks }, () => hitSprite(glow, 0xeeffe8)), dirs: Array.from({ length: HITFX.sparks }, () => new THREE.Vector3()),
           at: new THREE.Vector3(), t0: -99, r: 0.4 }); }
       const B = hitFx.slots[hitFx.next]; hitFx.next = (hitFx.next + 1) % HITFX.slots;
+      const hue = hitHue(); B.flash.material.color.set(hue.flash); B.ring.material.color.set(hue.ring); for (const sp of B.sparks) sp.material.color.set(hue.spark);
       B.t0 = wallNow() + delay; B.at.copy(m.position); B.r = Math.max(0.3, Math.min(0.9, m.scale.x || 0.4));
       const turn = hitFx.next * 1.7;
       B.dirs.forEach((v, i) => { const a = i * 2.39996 + turn, y = ((i * 0.618 + 0.25) % 1) - 0.3; v.set(Math.cos(a), y, Math.sin(a)).normalize(); });
@@ -6431,7 +6442,7 @@
       const now = wallNow();
       for (const B of hitFx.slots) {
         const d = now - B.t0, uf = d / HITFX.flash, ur = d / HITFX.ring, us = d / HITFX.spark;
-        if (d >= 0 && uf < 1) { B.flash.position.copy(B.at); B.flash.scale.setScalar(B.r * (1.0 + 1.8 * (1 - (1 - uf) * (1 - uf)))); B.flash.material.opacity = 1 - uf * uf; B.flash.visible = true; }
+        if (d >= 0 && uf < 1) { B.flash.position.copy(B.at); B.flash.scale.setScalar(B.r * (0.9 + 1.3 * (1 - (1 - uf) * (1 - uf)))); B.flash.material.opacity = 1 - uf * uf; B.flash.visible = true; }
         else B.flash.visible = false;
         if (d >= 0 && ur < 1) { const e = 1 - (1 - ur) * (1 - ur); B.ring.position.copy(B.at); B.ring.scale.setScalar(B.r * (0.8 + 3.4 * e)); B.ring.material.opacity = 1 - ur; B.ring.visible = true; }
         else B.ring.visible = false;
@@ -7696,13 +7707,16 @@
         track(t, [
           { t: 0, name: 'S', eye: DEC_EYE, at: DEC_AT, fp: PLAY_FOV, fd: PLAY_FOV },
           { t: 0.65, name: 'ravi', eye: CR_EYE, at: CR_HEAD, fp: 58, fd: 50 },
-          { t: E.kneel, name: 'ravi', eye: CR_EYE, at: CR_HEAD, fp: 58, fd: 50 },
+          /* (19 Nov, build 29 at 5.8 s: followed, his head was 0.72 m from the lens as he set off, the edge of his face past a
+             phone's: his eyes now step back from half a second before he moves, over 1.6 s, so he passes at 0.91 m. The eye
+             is the same function of the clock in both keys it spans, so the look's timing is the walk's and the step's its own) */
+          { t: E.kneel, name: 'ravi', eye: () => lp3(CR_EYE, CK_EYE, smo(c01((t - E.kneel + 0.5) / 1.6))), at: CR_HEAD, fp: 58, fd: 50 },
           /* (19 Nov, photographed on build 28 at 6.0 s: the lens turned from his face to the two of them over 1.9 s while he
              walked to her in 1.04 (walkKneel: 0.64 m at 0.62 m a second), so it trailed him, his shoulder a blur at a
              phone's left edge, 16 degrees out where its half-width is 18.5, and the sofa held the frame. Now he is followed
              to her side: the look rides the line his head walks, over the walk's own time and ease (its head at his
              kneeling place, KNEEL_R), while his eyes step back out of his way; then down to the two of them as he kneels) */
-          { t: E.kneel + 1.05, name: 'follow', eye: CK_EYE, at: [KNEEL_R.x, 1.42, KNEEL_R.z], fp: 60, fd: 52 },
+          { t: E.kneel + 1.05, name: 'follow', eye: () => lp3(CR_EYE, CK_EYE, smo(c01((t - E.kneel + 0.5) / 1.6))), at: [KNEEL_R.x, 1.42, KNEEL_R.z], fp: 60, fd: 52 },
           { t: E.kneel + 2.2, name: 'kneel', eye: CK_EYE, at: CK_AT, fp: 62, fd: 54 },
           { t: E.rise, name: 'kneel', eye: CK_EYE, at: CK_AT, fp: 62, fd: 54 },
           /* (19 Nov: her rise followed, RISE_HEAD; and once she stands the lens a few centimetres to its left, so the edge of

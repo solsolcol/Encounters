@@ -116,6 +116,9 @@ if (process.env.WHO) {
       for (const s of spec.split(',').filter(Boolean)) { const [key, bn0] = s.split(':'), skin = bn0.startsWith('@'), bn = skin ? bn0.slice(1) : bn0, re = new RegExp('^(mixamorig:?)?' + bn + '$');
         const P = S.person && S.person(key, 0); if (!P) { row.push(null); continue; }
         if (skin) { if (!cache.has(s)) cache.set(s, skinOf(P, re)); P.group.updateWorldMatrix(true, true);
+          /* (the bones' matrices for the skin are made only when a frame is drawn: after a seek and no draw, getVertexPosition
+             read the last DRAWN frame's pose, a whole film step stale; made here from the bones as they stand) */
+          for (const { m } of cache.get(s)) if (m.skeleton) m.skeleton.update();
           const v = c.position.clone(), n = c.position.clone(); let a = [9, -9, 9, -9], b = [1e9, 1e9, 1e9, -1e9, -1e9, -1e9], any = false;
           for (const { m, ix } of cache.get(s)) { if (!seen(m)) continue; for (const i of ix) { m.getVertexPosition(i, v); m.localToWorld(v); n.copy(v).project(c); if (n.z >= 1) continue; any = true;
             a = [Math.min(a[0], n.x), Math.max(a[1], n.x), Math.min(a[2], n.y), Math.max(a[3], n.y)];

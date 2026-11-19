@@ -650,13 +650,16 @@
         track(t, [
           { t: 0, name: 'S', eye: DEC_EYE, at: DEC_AT, fp: PLAY_FOV, fd: PLAY_FOV },
           { t: 0.65, name: 'ravi', eye: CR_EYE, at: CR_HEAD, fp: 58, fd: 50 },
-          { t: E.kneel, name: 'ravi', eye: CR_EYE, at: CR_HEAD, fp: 58, fd: 50 },
+          /* (19 Nov, build 29 at 5.8 s: followed, his head was 0.72 m from the lens as he set off, the edge of his face past a
+             phone's: his eyes now step back from half a second before he moves, over 1.6 s, so he passes at 0.91 m. The eye
+             is the same function of the clock in both keys it spans, so the look's timing is the walk's and the step's its own) */
+          { t: E.kneel, name: 'ravi', eye: () => lp3(CR_EYE, CK_EYE, smo(c01((t - E.kneel + 0.5) / 1.6))), at: CR_HEAD, fp: 58, fd: 50 },
           /* (19 Nov, photographed on build 28 at 6.0 s: the lens turned from his face to the two of them over 1.9 s while he
              walked to her in 1.04 (walkKneel: 0.64 m at 0.62 m a second), so it trailed him, his shoulder a blur at a
              phone's left edge, 16 degrees out where its half-width is 18.5, and the sofa held the frame. Now he is followed
              to her side: the look rides the line his head walks, over the walk's own time and ease (its head at his
              kneeling place, KNEEL_R), while his eyes step back out of his way; then down to the two of them as he kneels) */
-          { t: E.kneel + 1.05, name: 'follow', eye: CK_EYE, at: [KNEEL_R.x, 1.42, KNEEL_R.z], fp: 60, fd: 52 },
+          { t: E.kneel + 1.05, name: 'follow', eye: () => lp3(CR_EYE, CK_EYE, smo(c01((t - E.kneel + 0.5) / 1.6))), at: [KNEEL_R.x, 1.42, KNEEL_R.z], fp: 60, fd: 52 },
           { t: E.kneel + 2.2, name: 'kneel', eye: CK_EYE, at: CK_AT, fp: 62, fd: 54 },
           { t: E.rise, name: 'kneel', eye: CK_EYE, at: CK_AT, fp: 62, fd: 54 },
           /* (19 Nov: her rise followed, RISE_HEAD; and once she stands the lens a few centimetres to its left, so the edge of
