@@ -130,7 +130,7 @@
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
-  "prompt": "[calm] Good. Now close your Spirit Vision."
+  "prompt": "[calm] Good. Now close it. Kept open too long, it will overwhelm you."
  },
  {
   "key": "ph4s2",
@@ -194,6 +194,20 @@
   "voice_id": "xYmBpJREC3WfqEFpbPvO",
   "takes": 3,
   "prompt": "[firm] Open your Spirit Vision, and flick the holy water at the green spirits!"
+ },
+ {
+  "key": "ph4b6",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[calm] Good. Breathe. Now open it again. They are still coming."
+ },
+ {
+  "key": "ph4b7",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[urgent] Open it, now!"
  },
  {
   "key": "q4f1",

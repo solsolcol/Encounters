@@ -3075,6 +3075,13 @@ function hpDraw(name, k, o = {}) {
 let kitRooted = false, kitHurt = null;       // v11.1: the player held in place; the red damage frame + a bleed until the player acts
 let invUrge = null;                          // v11.6: an item the bag button pulses for until it is equipped (kit.give)
 let visUrge = false;                         // v27.0: the eye button pulses while a chapter's order asks him to open his sight (kit.visionUrge): 'open', 'close' or false
+/* v27.0 (19 Nov, Chad, R95/R96: "the game tells the player to close their spirit vision for no apparent reason and does not
+   explain why"): THE STRAIN OF HIS SIGHT, the fifty-ninth seam (kit.visionStrain): a ring on the eye button's own edge,
+   filled by the share a chapter gives it (its heart's strain: it fills while his sight is open and empties while it is
+   shut), red from the chapter's mark (`warn`), beating once full; null takes it off. Never called, no ring: unchanged by
+   construction */
+let visStrain = null, visStrainWarn = 0.85, visStrainDrawn = -1, visStrainEl = null;
+const VIS_STRAIN_C = 2 * Math.PI * 21.5;          // (the ring's length: its circle's radius in shell.html, r 21.5 of the button's 23)
 let invBtnEl = null;                         // v11.6: the bag button, looked up once
 let dayTween = null;
 let kitFade = null, kitFadeNow = 0;              // v7.1: a chapter's own black, in play
@@ -7685,7 +7692,16 @@ function kitFrame(dt, t, dLookX, dLookY) {
     if (vb) { vb.classList.toggle('urge', visUrge === 'open' && !vis.on && !vis.held && state === 'play');
               vb.classList.toggle('urgeClose', visUrge === 'close' && vis.on && !vis.held && state === 'play');
               /* (18 Nov) held shut by the chapter: the eye dimmed and still; a press says why (visionHeldSay) */
-              vb.classList.toggle('held', !!vis.held && state === 'play'); }
+              vb.classList.toggle('held', !!vis.held && state === 'play');
+              /* (seam 59) the strain of his sight: its ring filled by the chapter's share, red from its mark, beating when full;
+                 the ring's fill written only when it moves */
+              const sOn = visStrain !== null && state === 'play';
+              vb.classList.toggle('strain', sOn);
+              if (sOn) { const k = Math.min(1, visStrain);
+                if (Math.abs(k - visStrainDrawn) > 0.002) { visStrainDrawn = k; visStrainEl = visStrainEl || vb.querySelector('.srFill');
+                  if (visStrainEl) visStrainEl.style.strokeDashoffset = (VIS_STRAIN_C * (1 - k)).toFixed(2); }
+                vb.classList.toggle('strainHot', visStrain >= visStrainWarn); vb.classList.toggle('strainFull', visStrain >= 1); }
+              else if (visStrainDrawn !== -1) { visStrainDrawn = -1; vb.classList.remove('strainHot', 'strainFull'); } }
     if (vis.held && state === 'play') { if (!vis.heldSaid) { vis.heldSaid = true; visionHeldSay(true); } } else vis.heldSaid = false; }
   lifeFrame();       // v27.0 (seam 54): a life in his keeping, its bar over them
   edgeTick();        // v27.0 (seam 56): a glow at the edges of his sight
@@ -7848,6 +7864,7 @@ function kitReset() {
   kitObjective = null; kitTimer = null; kitWaypoint = null;
   kitBarK = null;                   // v27.0: and no bar of progress left from the run before
   visUrge = false;                  // v27.0: nor the eye button still asking
+  visStrain = null; visStrainWarn = 0.85;   // v27.0 (seam 59): nor the strain of his sight still drawn
   life.on = false; life.k = 1; life.trail = 1; life.at = null;   // v27.0 (seam 54): nor a life's bar
   edgeG.to = 0; edgeG.k = 0;                                      // v27.0 (seam 56): nor a glow at the edges
   weaponInf = false;                                              // v27.0 (R56): nor a bowl that never empties
@@ -7986,6 +8003,10 @@ const KIT = {
   torch: torchSetup, torchOn: torchSet, torchRed, torchIsOn: () => torchOn,
   vision: kitVision,               // v27.0: the fiftieth seam — on, off, or a radius held from a film's clock; no argument reads it
   visionUrge: v => { visUrge = v === 'close' ? 'close' : (v ? 'open' : false); return true; },   // v27.0: the eye button pulses while the order is to open his sight ('open' or true), or to close it ('close')
+  /* v27.0: the fifty-ninth seam, the strain of his sight drawn as a ring on the eye button (a share; null takes it off;
+     `warn` the share it turns red from) */
+  visionStrain: (k, o) => { visStrain = (k === null || k === undefined || !Number.isFinite(+k)) ? null : Math.max(0, +k);
+    if (o && Number.isFinite(+o.warn)) visStrainWarn = +o.warn; return true; },
   health: kitHealth,               // v27.0: the fifty-fourth seam — a life in his keeping, its bar over them in the room
   edge: kitEdge,                   // v27.0: the fifty-sixth seam — a glow at the edges of his sight
   wave: kitWave,                   // v27.0: the fifty-seventh seam — a wave of light in a colour, tracing every edge it crosses (sight open or shut)
@@ -10311,9 +10332,10 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   /* E4C4 CAST BEGIN: v27.0, episode 4 chapter 4: Grandmaster Pho, Amma, Ravi, Mala (masters/v27.0/voices/registry.py) */
   'rv4o1', 'ph4h0', 'rv4h1', 'rv4h2', 'ml4h1', 'ml4h2', 'ml4h3', 'am4h1', 'ph4h1', 'ph4s0',
   'ph4s1', 'ph4s2', 'ph4s3', 'ph4s4', 'ph4b0', 'ph4b1', 'ph4b2', 'ph4b3', 'ph4b4', 'ph4b5',
-  'ph4f1', 'rv4f1', 'ph4f2', 'ph4f3', 'ml4t1', 'ml4t2', 'rv4t1', 'rv4A1', 'ml4A1', 'am4A1',
-  'rv4A2', 'ph4A1', 'ml4B1', 'ph4B0', 'ml4B2', 'ml4B3', 'ph4B1', 'rv4C1', 'am4C1', 'ph4C1',
-  'ph4D0', 'rv4D1', 'ph4D1', 'rv4R1', 'ml4R1', 'ph4z0', 'ml4z1', 'am4z1', 'ph4z1',
+  'ph4b6', 'ph4b7', 'ph4f1', 'rv4f1', 'ph4f2', 'ph4f3', 'ml4t1', 'ml4t2', 'rv4t1', 'rv4A1',
+  'ml4A1', 'am4A1', 'rv4A2', 'ph4A1', 'ml4B1', 'ph4B0', 'ml4B2', 'ml4B3', 'ph4B1', 'rv4C1',
+  'am4C1', 'ph4C1', 'ph4D0', 'rv4D1', 'ph4D1', 'rv4R1', 'ml4R1', 'ph4z0', 'ml4z1', 'am4z1',
+  'ph4z1',
   /* E4C4 CAST END */]);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
@@ -15124,15 +15146,16 @@ const STING_SAMPLE = {
   q4h2: ['q4h2', 1], am4h1: ['am4h1', 1], q4h3: ['q4h3', 1], ph4h1: ['ph4h1', 1], ph4s0: ['ph4s0', 1],
   q4s1: ['q4s1', 1], q4s2: ['q4s2', 1], q4s3: ['q4s3', 1], ph4s1: ['ph4s1', 1], ph4s2: ['ph4s2', 1],
   ph4s3: ['ph4s3', 1], ph4s4: ['ph4s4', 1], ph4b0: ['ph4b0', 1], ph4b1: ['ph4b1', 1], ph4b2: ['ph4b2', 1],
-  ph4b3: ['ph4b3', 1], ph4b4: ['ph4b4', 1], ph4b5: ['ph4b5', 1], q4f1: ['q4f1', 1], q4f2: ['q4f2', 1],
-  ph4f1: ['ph4f1', 1], rv4f1: ['rv4f1', 1], q4f3: ['q4f3', 1], ph4f2: ['ph4f2', 1], q4f4: ['q4f4', 1],
-  ph4f3: ['ph4f3', 1], ml4t1: ['ml4t1', 1], ml4t2: ['ml4t2', 1], rv4t1: ['rv4t1', 1], rv4A1: ['rv4A1', 1],
-  ml4A1: ['ml4A1', 1], am4A1: ['am4A1', 1], rv4A2: ['rv4A2', 1], ph4A1: ['ph4A1', 1], q4A1: ['q4A1', 1],
-  ml4B1: ['ml4B1', 1], ph4B0: ['ph4B0', 1], ml4B2: ['ml4B2', 1], ml4B3: ['ml4B3', 1], ph4B1: ['ph4B1', 1],
-  q4B1: ['q4B1', 1], q4C0: ['q4C0', 1], rv4C1: ['rv4C1', 1], am4C1: ['am4C1', 1], ph4C1: ['ph4C1', 1],
-  q4C1: ['q4C1', 1], ph4D0: ['ph4D0', 1], rv4D1: ['rv4D1', 1], ph4D1: ['ph4D1', 1], q4D1: ['q4D1', 1],
-  q4R1: ['q4R1', 1], rv4R1: ['rv4R1', 1], ml4R1: ['ml4R1', 1], ph4z0: ['ph4z0', 1], ml4z1: ['ml4z1', 1],
-  am4z1: ['am4z1', 1], ph4z1: ['ph4z1', 1], q4A: ['q4A', 1], q4B: ['q4B', 1], q4C: ['q4C', 1], q4D: ['q4D', 1],
+  ph4b3: ['ph4b3', 1], ph4b4: ['ph4b4', 1], ph4b5: ['ph4b5', 1], ph4b6: ['ph4b6', 1], ph4b7: ['ph4b7', 1],
+  q4f1: ['q4f1', 1], q4f2: ['q4f2', 1], ph4f1: ['ph4f1', 1], rv4f1: ['rv4f1', 1], q4f3: ['q4f3', 1],
+  ph4f2: ['ph4f2', 1], q4f4: ['q4f4', 1], ph4f3: ['ph4f3', 1], ml4t1: ['ml4t1', 1], ml4t2: ['ml4t2', 1],
+  rv4t1: ['rv4t1', 1], rv4A1: ['rv4A1', 1], ml4A1: ['ml4A1', 1], am4A1: ['am4A1', 1], rv4A2: ['rv4A2', 1],
+  ph4A1: ['ph4A1', 1], q4A1: ['q4A1', 1], ml4B1: ['ml4B1', 1], ph4B0: ['ph4B0', 1], ml4B2: ['ml4B2', 1],
+  ml4B3: ['ml4B3', 1], ph4B1: ['ph4B1', 1], q4B1: ['q4B1', 1], q4C0: ['q4C0', 1], rv4C1: ['rv4C1', 1],
+  am4C1: ['am4C1', 1], ph4C1: ['ph4C1', 1], q4C1: ['q4C1', 1], ph4D0: ['ph4D0', 1], rv4D1: ['rv4D1', 1],
+  ph4D1: ['ph4D1', 1], q4D1: ['q4D1', 1], q4R1: ['q4R1', 1], rv4R1: ['rv4R1', 1], ml4R1: ['ml4R1', 1],
+  ph4z0: ['ph4z0', 1], ml4z1: ['ml4z1', 1], am4z1: ['am4z1', 1], ph4z1: ['ph4z1', 1], q4A: ['q4A', 1],
+  q4B: ['q4B', 1], q4C: ['q4C', 1], q4D: ['q4D', 1],
   /* E4C4 SOUNDS END */
   /* E4C4 FX BEGIN: v27.0, its effects, beds and music (masters/v27.0/install_sound.py) */
   /* v27.0 · its effects, beds and music (masters/v27.0/sound.sh: every pick and why) */
@@ -18381,7 +18404,7 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                  clockScale: (s) => { const k = Math.max(0.01, Math.min(1, +s || 1)); clock.setTimescale(k); return k; },
                  /* v27.0 (seams 54 and 56, the water's colour, the eye button's asks): what each holds, for the fixture */
                  stakes: () => ({ life: { on: life.on, k: life.k, label: life.label }, edge: { k: edgeG.k, to: edgeG.to, color: edgeG.color, on: edgeG.on },
-                                  spray: { col: sprayCol, scale: sprayScale }, urge: visUrge,
+                                  spray: { col: sprayCol, scale: sprayScale }, urge: visUrge, strain: visStrain, strainWarn: visStrainWarn,
                                   wave: { on: gwave.on, R: +gwave.R.toFixed(2), M: +gwave.M.toFixed(2) }, show: unl.show ? unl.id : null }),
                  visionAuraNearest: (opts = {}, maxD = 12) => {
                    camera.updateMatrixWorld();

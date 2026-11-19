@@ -277,6 +277,19 @@ body.hasVision.evopen .visionBtn,body.hasVision.unlockopen .visionBtn,body.hasVi
 .visionBtn.held{opacity:.48;border-color:rgba(190,200,210,.4);background:rgba(16,20,26,.55);animation:none}
 .visionBtn.held .rays{opacity:0}
 .visionBtn.held.heldTap{animation:visHeldTap .38s ease-out}
+/* v27.0 (19 Nov, Chad, R95/R96: "the game tells the player to close their spirit vision for no apparent reason"): THE
+   STRAIN OF HIS SIGHT (kit.visionStrain, the fifty-ninth seam), a ring on the eye button's own edge (r 20 to 23 of its 23,
+   so it grows with the button when the button asks and stays as clear of the button above as the button does): it fills
+   clockwise from the top while his sight is open and empties while it is shut; red from the chapter's mark, beating once
+   full. Butt ends, so an empty ring is its faint track alone, never a dot */
+.visionBtn .strainRing{position:absolute;inset:-1px;width:46px;height:46px;display:none;pointer-events:none;transform:rotate(-90deg)}
+.visionBtn.strain .strainRing{display:block}
+.visionBtn .strainRing circle{fill:none;stroke-width:3}
+.visionBtn .strainRing .srTrack{stroke:rgba(255,255,255,.18)}
+.visionBtn .strainRing .srFill{stroke:#9FF4FF;stroke-dasharray:135.09;stroke-dashoffset:135.09;stroke-linecap:butt;transition:stroke .2s}
+.visionBtn.strainHot .strainRing .srFill{stroke:#FF4433;filter:drop-shadow(0 0 3px rgba(255,68,51,.9))}
+.visionBtn.strainFull .strainRing{animation:strainBeat .5s ease-in-out infinite}
+@keyframes strainBeat{0%,100%{opacity:1}50%{opacity:.4}}
 @keyframes visHeldTap{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}45%{transform:translateX(4px)}70%{transform:translateX(-3px)}}
 /* v27.0 · A LIFE IN HIS KEEPING (kit.health, the fifty-fourth seam): a bar over a person in the room, its bottom at the
    point the chapter names; at the screen's edge, centred there with an arrow toward them. In the page, over the picture */
@@ -3228,6 +3241,7 @@ body.finePtr .galPull,body.finePtr .galEndHint{display:block}
     <circle cx="12" cy="12" r="3.1"/>
     <g class="rays"><path d="M12 1.2v2.4"/><path d="M4.2 3.6l1.6 1.8"/><path d="M19.8 3.6l-1.6 1.8"/><path d="M12 20.4v2.4"/></g>
   </svg>
+  <svg class="strainRing" viewBox="0 0 46 46" aria-hidden="true"><circle class="srTrack" cx="23" cy="23" r="21.5"/><circle class="srFill" cx="23" cy="23" r="21.5"/></svg>
   <span class="invLabel"><span data-t="hud.vision">Spirit Vision</span><kbd data-t="hud.visionKey">V</kbd></span>
 </button>
 <div id="weaponHud">

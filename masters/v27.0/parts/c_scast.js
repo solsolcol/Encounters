@@ -528,6 +528,44 @@
     }
     const CORNERS = [{ x: 5.95, z: 9.55, ry: -2.6 }, { x: 4.85, z: 6.65, ry: Math.PI }];   // the kitchen's far corner; under the dining table
     spirits.large = spiritOf(mkPerson('p4large', 0, 0, 0, { take: 'lumber', hidden: true, noBlob: true, skins: false }), SPIRIT.large);
+    /* (19 Nov, Chad, R95/R96: with his sight shut "they can possibly keep it off all the way and not know what is going on and
+       miss the entire climax"): IN THE FIGHT, WITH HIS SIGHT SHUT, THE GREEN ONES ARE FAINT DARK SHAPES. A twin of each of
+       their meshes (the same geometry, the same skeleton) in the world's own layer, unlit: near black, a dim green at its
+       edges so it reads in the dark room, and faint; written into the depth so a body's own layers (its rags) do not sum
+       into a block. Hidden until the fight asks for them (c_story.js shadeTick), and gone the moment his sight opens (the
+       vision draws them then, as themselves). Compiled under the curtain with everything else (compileAsync takes the
+       hidden too) */
+    const SHADE = { a: 0.38, col: 0x020504, rim: 0x2c5236 };
+    const SHADE_OUT = /gl_FragColor\s*=\s*vec4\(\s*normalize\(\s*normal\s*\)\s*\*\s*0\.5\s*\+\s*0\.5\s*,\s*diffuseColor\.a\s*\);/;
+    function shadeOf(P) {
+      whenReady(P, () => {
+        if (P.shade || !ctx.visionLayer) return;
+        const U = { uShA: { value: 0 }, uShCol: { value: new THREE.Color(SHADE.col) }, uShRim: { value: new THREE.Color(SHADE.rim) } };
+        const m = new THREE.MeshNormalMaterial({ side: THREE.FrontSide });
+        m.transparent = true; m.depthWrite = true; m.fog = false; m.toneMapped = false;
+        m.onBeforeCompile = (sh) => {
+          Object.assign(sh.uniforms, U);
+          const out = sh.fragmentShader.replace(SHADE_OUT, 'float shF = pow(1.0 - abs(normalize(normal).z), 2.0);\n  gl_FragColor = vec4(mix(uShCol, uShRim, shF), uShA * (0.6 + 0.4 * shF));');
+          if (out === sh.fragmentShader) console.warn('e4c4: the green ones\' shade found no colour line to write (three changed?)');
+          sh.fragmentShader = 'uniform vec3 uShCol, uShRim;\nuniform float uShA;\n' + out;
+        };
+        m.customProgramCacheKey = () => 'e4c4shade';
+        const twins = [], list = [];
+        P.model.traverse(o => { if (o.isMesh && !o.userData.__shade && o.layers.mask === (1 << ctx.visionLayer)) list.push(o); });
+        for (const o of list) {
+          let t;
+          if (o.isSkinnedMesh) { t = new THREE.SkinnedMesh(o.geometry, m); t.bind(o.skeleton, o.bindMatrix); }
+          else t = new THREE.Mesh(o.geometry, m);
+          t.userData.__shade = true; t.frustumCulled = false; t.castShadow = false; t.receiveShadow = false; t.visible = false;
+          t.position.copy(o.position); t.quaternion.copy(o.quaternion); t.scale.copy(o.scale);
+          o.parent.add(t); twins.push(t);
+        }
+        P.shade = { twins, u: U, on: false };
+      });
+      return P;
+    }
+    for (const P of spirits.wander) shadeOf(P);
+    shadeOf(spirits.large);
     function spiritsHome() {
       whenReady(spirits.oppress, (P) => { oppRide(P); P.group.visible = true; P.alpha = 1; if (P.fx) P.fx.set('uAlpha', 1); rest(P, 0); });
       whenReady(spirits.appa, (P) => { put(P, AT.appa.x, AT.appa.z, faceTo(AT.appa.x, AT.appa.z, CHAIR.x, CHAIR.z)); P.group.visible = true; P.alpha = 1; if (P.fx) P.fx.set('uAlpha', 1); rest(P, 0); });

@@ -72,7 +72,7 @@
      moves what follows it. The names are QUOTED on purpose: build.py gives a sound to a chapter's own pack only when
      the chapter names it in quotes (v21.1). Written by masters/v27.0/script/secs.py from masters/v27.0/script/lines.py. */
   /* SECS BEGIN */
-  const SECS = {      // 71 of 71 MEASURED from their takes; the rest estimated at the speaker's pace
+  const SECS = {      // 73 of 73 MEASURED from their takes; the rest estimated at the speaker's pace
     /* him */
     'q4o1': 6.65, 'q4o2': 4.65, 'q4h1': 3.61, 'q4h2': 3.53, 'q4h3': 9.77, 'q4s1': 4.01, 'q4s2': 3.05, 'q4s3': 4.09,
     'q4f1': 2.97, 'q4f2': 2.89, 'q4f3': 2.33, 'q4f4': 3.61, 'q4A1': 3.53, 'q4B1': 3.21, 'q4C0': 6.41, 'q4C1': 3.69,
@@ -81,10 +81,10 @@
     'rv4o1': 2.6, 'rv4h1': 8.33, 'rv4h2': 6.73, 'rv4f1': 1.93, 'rv4t1': 1.77, 'rv4A1': 2.51, 'rv4A2': 0.61,
     'rv4C1': 2.58, 'rv4D1': 2.98, 'rv4R1': 4.59,
     /* Grandmaster Pho */
-    'ph4h0': 7.53, 'ph4h1': 6.81, 'ph4s0': 8.57, 'ph4s1': 3.58, 'ph4s2': 6.17, 'ph4s3': 8.45, 'ph4s4': 9.77,
-    'ph4b0': 4.86, 'ph4b1': 4.65, 'ph4b2': 7.78, 'ph4b3': 4.36, 'ph4b4': 4.41, 'ph4b5': 5.2, 'ph4f1': 4.95,
-    'ph4f2': 2.59, 'ph4f3': 5.37, 'ph4A1': 6.61, 'ph4B0': 0.62, 'ph4B1': 9.13, 'ph4C1': 5.13, 'ph4D0': 2.24,
-    'ph4D1': 11.05, 'ph4z0': 10.56, 'ph4z1': 6.63,
+    'ph4h0': 7.53, 'ph4h1': 6.81, 'ph4s0': 8.57, 'ph4s1': 4.57, 'ph4s2': 6.17, 'ph4s3': 8.45, 'ph4s4': 9.77,
+    'ph4b0': 4.86, 'ph4b1': 4.65, 'ph4b2': 7.78, 'ph4b3': 4.36, 'ph4b4': 4.41, 'ph4b5': 5.2, 'ph4b6': 4.43,
+    'ph4b7': 1.47, 'ph4f1': 4.95, 'ph4f2': 2.59, 'ph4f3': 5.37, 'ph4A1': 6.61, 'ph4B0': 0.62, 'ph4B1': 9.13,
+    'ph4C1': 5.13, 'ph4D0': 2.24, 'ph4D1': 11.05, 'ph4z0': 10.56, 'ph4z1': 6.63,
     /* Mala */
     'ml4h1': 14.65, 'ml4h2': 9.61, 'ml4h3': 7.61, 'ml4t1': 1.13, 'ml4t2': 1.45, 'ml4A1': 2.27, 'ml4B1': 1.62,
     'ml4B2': 1.01, 'ml4B3': 1.38, 'ml4R1': 3.53, 'ml4z1': 2.56,
@@ -258,8 +258,9 @@
       guardTitle: 'PROTECT AMMA',
       /* (Chad, 18 Nov: "I think the 'hold the room' instructions are too long and can be shortened , but it still needs to
          read natural, direct and straightforward."; the button shows water now, not the word FLICK, and its refill an arrow) */
-      guardBrief: 'Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision to see them, and tap the water button to flick holy water at them. Refill at his bowl with the arrow button. If her bar runs out, the blessing fails.',
-      guardBriefKey: 'Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision (V) to see them, and click or press Space to flick holy water at them. Refill at his bowl with R. If her bar runs out, the blessing fails.',
+      /* (19 Nov, R96: its sentence on the strain, approved by Chad as written, after the sentence on Spirit Vision) */
+      guardBrief: 'Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision to see them, and tap the water button to flick holy water at them. Spirit Vision strains you. Close it when the ring turns red, and open it again when it empties. Refill at his bowl with the arrow button. If her bar runs out, the blessing fails.',
+      guardBriefKey: 'Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision (V) to see them, and click or press Space to flick holy water at them. Spirit Vision strains you. Close it when the ring turns red, and open it again when it empties. Refill at his bowl with R. If her bar runs out, the blessing fails.',
       // the fight's stakes and the call (Chad, 18 Nov: plan §0 R16 to R29)
       ammaBar: 'Amma',
       objGold: 'Flick the golden water',
@@ -5647,6 +5648,44 @@
     }
     const CORNERS = [{ x: 5.95, z: 9.55, ry: -2.6 }, { x: 4.85, z: 6.65, ry: Math.PI }];   // the kitchen's far corner; under the dining table
     spirits.large = spiritOf(mkPerson('p4large', 0, 0, 0, { take: 'lumber', hidden: true, noBlob: true, skins: false }), SPIRIT.large);
+    /* (19 Nov, Chad, R95/R96: with his sight shut "they can possibly keep it off all the way and not know what is going on and
+       miss the entire climax"): IN THE FIGHT, WITH HIS SIGHT SHUT, THE GREEN ONES ARE FAINT DARK SHAPES. A twin of each of
+       their meshes (the same geometry, the same skeleton) in the world's own layer, unlit: near black, a dim green at its
+       edges so it reads in the dark room, and faint; written into the depth so a body's own layers (its rags) do not sum
+       into a block. Hidden until the fight asks for them (c_story.js shadeTick), and gone the moment his sight opens (the
+       vision draws them then, as themselves). Compiled under the curtain with everything else (compileAsync takes the
+       hidden too) */
+    const SHADE = { a: 0.38, col: 0x020504, rim: 0x2c5236 };
+    const SHADE_OUT = /gl_FragColor\s*=\s*vec4\(\s*normalize\(\s*normal\s*\)\s*\*\s*0\.5\s*\+\s*0\.5\s*,\s*diffuseColor\.a\s*\);/;
+    function shadeOf(P) {
+      whenReady(P, () => {
+        if (P.shade || !ctx.visionLayer) return;
+        const U = { uShA: { value: 0 }, uShCol: { value: new THREE.Color(SHADE.col) }, uShRim: { value: new THREE.Color(SHADE.rim) } };
+        const m = new THREE.MeshNormalMaterial({ side: THREE.FrontSide });
+        m.transparent = true; m.depthWrite = true; m.fog = false; m.toneMapped = false;
+        m.onBeforeCompile = (sh) => {
+          Object.assign(sh.uniforms, U);
+          const out = sh.fragmentShader.replace(SHADE_OUT, 'float shF = pow(1.0 - abs(normalize(normal).z), 2.0);\n  gl_FragColor = vec4(mix(uShCol, uShRim, shF), uShA * (0.6 + 0.4 * shF));');
+          if (out === sh.fragmentShader) console.warn('e4c4: the green ones\' shade found no colour line to write (three changed?)');
+          sh.fragmentShader = 'uniform vec3 uShCol, uShRim;\nuniform float uShA;\n' + out;
+        };
+        m.customProgramCacheKey = () => 'e4c4shade';
+        const twins = [], list = [];
+        P.model.traverse(o => { if (o.isMesh && !o.userData.__shade && o.layers.mask === (1 << ctx.visionLayer)) list.push(o); });
+        for (const o of list) {
+          let t;
+          if (o.isSkinnedMesh) { t = new THREE.SkinnedMesh(o.geometry, m); t.bind(o.skeleton, o.bindMatrix); }
+          else t = new THREE.Mesh(o.geometry, m);
+          t.userData.__shade = true; t.frustumCulled = false; t.castShadow = false; t.receiveShadow = false; t.visible = false;
+          t.position.copy(o.position); t.quaternion.copy(o.quaternion); t.scale.copy(o.scale);
+          o.parent.add(t); twins.push(t);
+        }
+        P.shade = { twins, u: U, on: false };
+      });
+      return P;
+    }
+    for (const P of spirits.wander) shadeOf(P);
+    shadeOf(spirits.large);
     function spiritsHome() {
       whenReady(spirits.oppress, (P) => { oppRide(P); P.group.visible = true; P.alpha = 1; if (P.fx) P.fx.set('uAlpha', 1); rest(P, 0); });
       whenReady(spirits.appa, (P) => { put(P, AT.appa.x, AT.appa.z, faceTo(AT.appa.x, AT.appa.z, CHAIR.x, CHAIR.z)); P.group.visible = true; P.alpha = 1; if (P.fx) P.fx.set('uAlpha', 1); rest(P, 0); });
@@ -5946,7 +5985,13 @@
        nerve (Sanity) drains. Open to see; shut to breathe (chapter 3's teaching, with a price). If his nerve runs low,
        his teacher closes his sight for him for a few seconds ("I am closing your Spirit Vision. Breathe."): every timed phase has a failure state
        that ends it, and nothing soft-locks (v7.4) */
-    const HEAT = { up: 1 / 32, down: 1 / 9, drain: 1.4, floor: 15, low: 26 };
+    /* (19 Nov, Chad, R95/R96: "the game tells the player to close their spirit vision for no apparent reason", and once it is
+       shut "the player does not know when to turn it back on": the strain is DRAWN, the ring on the eye (the fifty-ninth
+       seam), and the eye asks again only once the ring is empty. Shut at the red mark, the ring empties in 2.4 s, as his
+       teacher's "Now open it again" is said (ph4b6, 1.8 s in): at 1/9 a second it took 7.6 s, and the eye had asked him to
+       open after 3 with the heart still half up: the two asks had no reason a player could see) */
+    const HEAT = { up: 1 / 32, down: 1 / 2.8, drain: 1.4, floor: 15, low: 26 };
+    const STRAIN_WARN = 0.85, STRAIN_EMPTY = 0.02;     // (the ring red from here, and the eye asking to close; the ring read empty)
     const sanityNow = () => { const v = kit && kit.stat ? kit.stat('sanity') : null; return Number.isFinite(v) ? v : 100; };
     const visOpen = () => { const v = kit && kit.vision ? kit.vision() : null; return !!(v && (v.on || v.held)); };
     function heatTick(wdt) {
@@ -5973,6 +6018,8 @@
          before it is past its limit again) */
       if (open && play.heat >= 1 && sanityNow() < HEAT.low && !play.closeHold && !play.busy && (phase === 'sight' || phase === 'bless')) nerveOut();
       if (play.closeHold && (play.closeHold -= wdt) <= 0) { play.closeHold = 0; kit.vision(null); }
+      /* the ring on the eye: his heart's strain as it is (R96); gone once the fight is done */
+      if (kit.visionStrain) kit.visionStrain(phase === 'kept' ? null : Math.min(1, play.heat), { warn: STRAIN_WARN });
     }
     /* "I am closing your Spirit Vision. Breathe." His sight shut for him and held shut for a few seconds; a price on the card (§4.3) */
     function nerveOut() {
@@ -6008,7 +6055,9 @@
     /* the engine tells the stage every time he opens or shuts his sight (stage.onVision) */
     function onVision(on) {
       /* (in the fight the eye button's ask is worked out again on the next frame, from his sight as it now is: urgeTick) */
-      if (play.fight && play.fight.on) play.fight.urge = null;
+      if (play.fight && play.fight.on) { play.fight.urge = null;
+        /* (R96) the first time he shuts it himself in the fight: "Good. Breathe. Now open it again. They are still coming." */
+        if (!on && !play.fight.shutSaid && play.fight.call !== 'shown') play.fight.shutWant = true; }
       else if (kit && kit.visionUrge) kit.visionUrge(false);
       if (on && (phase === 'history' || phase === 'sight')) oppressLooks();
       if (phase === 'history' && on && !play.peeked) { play.peeked = true; saveMark(); }
@@ -6064,7 +6113,7 @@
                         'u4fightmus', 'u4fightloop', 'u4chant1', 'u4chant2',
                         /* (18 Nov: her cries, the surge, the call and the gold; every line of the fight's stakes) */
                         'u4ascream1', 'u4ascream2', 'u4ascream3', 'u4surge', 'u4goldcall', 'u4goldpower', 'u4goldflick', 'u4goldclear', 'u4sting',
-                        'ph4b3', 'ph4b4', 'ph4b5', 'q4f1', 'q4f2', 'ph4f1', 'q4f3', 'ph4f2', 'q4f4', 'ph4f3', 'rv4f1', 'ml4B2', 'rv4A2', 'u4visoff',
+                        'ph4b3', 'ph4b4', 'ph4b5', 'ph4b6', 'ph4b7', 'q4f1', 'q4f2', 'ph4f1', 'q4f3', 'ph4f2', 'q4f4', 'ph4f3', 'rv4f1', 'ml4B2', 'rv4A2', 'u4visoff',
                         /* (18 Nov: the green ones' own voices) */
                         'u4sv1', 'u4sv2', 'u4sv3', 'u4sv4', 'u4sv5', 'u4svL'];
     function blessBegin(R, fresh) {
@@ -6263,7 +6312,9 @@
                                hp: 100, cries: 0, criedAt: -99, lost: false, call: null, callT: 0, trickleAt: 0, goldT: 0, batchAt: 0,
                                cleared: 0, chantHeld: false, shutFor: 0, nagNext: NAG.first, nags: 0, lastStrike: -99, urge: null,
                                saidMala: false, saidRavi: false, seed: 0x4c4f0d, dartAt: DART.first, darts: 0, dartHits: 0, dseed: 0x0da47e,
-                               vseed: 0x5f1e0d, voxAt: 2.5, voxBigAt: 0, voxLast: '', voxUntil: [] };
+                               vseed: 0x5f1e0d, voxAt: 2.5, voxBigAt: 0, voxLast: '', voxUntil: [],
+                               /* (R96) his teacher's word the first time he shuts it himself; the big moments he is called to */
+                               shutWant: false, shutSaid: false, shutSaidAt: null, bigDone: new Set(), bigCall: null };
       if (kit) { kit.bar(0); if (kit.health) kit.health({ label: W.ammaBar, k: 1, at: () => { const h = AMMA_HEAD(); return [h.x, h.y + 0.32, h.z]; } }); }
       objectiveFor('bless');
       /* the two in the corners are the first wave's: they wake */
@@ -6474,7 +6525,7 @@
        restart again") */
     function ammaLost() {
       const F = play.fight; if (!F || F.lost) return;
-      F.lost = true; F.on = false; F.chantHeld = true;
+      F.lost = true; F.on = false; F.chantHeld = true; shadesOff();
       fightMusOff(); chantStop(); chantNow = null; lineQ.length = 0;
       if (kit) { kit.bar(null); kit.captions(null); if (kit.health) kit.health(null); if (kit.visionUrge) kit.visionUrge(false);
         if (kit.edge) kit.edge(null); if (kit.ammoInf) kit.ammoInf(false); if (kit.sprayColor) kit.sprayColor(null); }
@@ -6682,7 +6733,7 @@
       go(tries);
     }
     function fightEnd() {
-      const F = play.fight; F.ended = true; F.on = false; fightMusOff(); chantStop(); chantNow = null;
+      const F = play.fight; F.ended = true; F.on = false; fightMusOff(); chantStop(); chantNow = null; shadesOff();
       /* (each shape still in the room goes on its own beat: a golden-ratio spread over 0.4 s by its place in the list, the
          same on every run and every replay: v6.15, nothing random unseeded) */
       F.shapes.forEach((S, i) => { if (S.state !== 'gone' && S.state !== 'leave') { S.state = 'leave'; S.leave = -0.4 * ((i * 0.6180339887) % 1); } });
@@ -6711,6 +6762,8 @@
       if (F.call && F.call !== 'gold') F.k = Math.min(F.k, FIGHT.hold);          // (the blessing stalls under the swarm until the call is answered)
       if (F.call === 'gold') { F.goldT += wdt; if ((F.batchAt -= wdt) <= 0) { F.batchAt = FIGHT.batch.every; goldBatch(); } }
       dartTick(wdt);
+      shutLineTick(open);
+      bigTick(open);
       nagTick(open, live);
       urgeTick(open, live);
       if (F.shapes.length > 48) F.shapes = F.shapes.filter(S => S.state !== 'gone');      // (the gone, let go of)
@@ -6801,6 +6854,58 @@
       const S = { P, to, v, need: 1, hits: 0, state: 'come', t: 0, back: 0, fedAt: -99 };
       F.shapes.push(S); return S;
     }
+    /* (R96) THE GREEN ONES, FAINT AND DARK, while his sight is shut in the fight (c_scast.js shadeOf): eased in over a third of
+       a second once his sight is home, each as faint as it is there (a released one fades with its glow), hidden the moment
+       his sight opens and whenever the fight is not on (a film never runs this: the fight's end and the loss hide them first) */
+    let shadeK = 0;
+    const GREENS = () => spirits.wander.concat([spirits.large]);
+    function shadesOff() {
+      shadeK = 0;
+      for (const P of GREENS()) if (P && P.shade && P.shade.on) { P.shade.on = false; P.shade.u.uShA.value = 0; for (const t of P.shade.twins) t.visible = false; }
+    }
+    function shadeTick(wdt) {
+      const F = play.fight, v = kit && kit.vision ? kit.vision() : null;
+      if (!F || !F.on || !v || v.on || v.r > 0.01 || F.call === 'shown' || getState() !== 'play') { if (shadeK > 0 || F) shadesOff(); return; }
+      shadeK = Math.min(1, shadeK + wdt * 3);
+      for (const P of GREENS()) {
+        if (!P || !P.shade) continue;
+        const a = SHADE.a * shadeK * (P.alpha != null ? P.alpha : 1), on = a > 0.004 && !P.gone;
+        P.shade.u.uShA.value = a;
+        if (on !== P.shade.on) { P.shade.on = on; for (const t of P.shade.twins) t.visible = on; }
+      }
+    }
+    /* (R96) THE FIRST TIME HE SHUTS IT HIMSELF in the fight, his teacher says when to open it again: said as soon as a voice
+       is free, while it is still shut (opened before it could be said, it waits for the next time he shuts it) */
+    function shutLineTick(open) {
+      const F = play.fight; if (!F.shutWant) return;
+      if (open || play.closeHold || F.call === 'shown') { F.shutWant = false; return; }
+      if (phoSpeaks('ph4b6', () => talk(cast.phoB, SECS.ph4b6 || 4.4))) { F.shutWant = false; F.shutSaid = true; F.shutSaidAt = F.t; }
+    }
+    /* (R96: "You can't miss the climax") THE BIG MOMENTS: the rush (the surge, until his call), the big one (while it is in the
+       room) and the golden water. Shut through one of them, once the ring on the eye is empty (and not straight after his
+       teacher's ph4b6), his teacher calls "Open it, now!"; still shut three seconds after the call, his sight is opened for
+       him. Each moment once: seen, by him or for him, it is not called again. Never under the showcase, nor while his
+       teacher holds his sight shut */
+    const BIG_GRACE = 3;
+    function bigNow() {
+      const F = play.fight;
+      if (F.call === 'gold') return 'gold';
+      if (F.call === 'surge') return 'surge';
+      if (!F.call && F.shapes.some(S => S.P === spirits.large && (S.state === 'come' || S.state === 'feed'))) return 'large';
+      return null;
+    }
+    function bigTick(open) {
+      const F = play.fight, m = bigNow();
+      if (!m || F.bigDone.has(m)) { F.bigCall = null; return; }
+      if (open) { F.bigDone.add(m); F.bigCall = null; return; }
+      if (play.closeHold || F.shutWant) return;
+      if (!F.bigCall || F.bigCall.m !== m) {
+        if (play.heat > STRAIN_EMPTY || (F.shutSaidAt !== null && F.t - F.shutSaidAt < 5)) return;
+        if (phoSpeaks('ph4b7', () => talk(cast.phoB, SECS.ph4b7 || 1.5))) F.bigCall = { m, at: F.t + (SECS.ph4b7 || 1.5) + BIG_GRACE };
+        return;
+      }
+      if (F.t >= F.bigCall.at && kit && kit.vision) { kit.vision(true); F.bigDone.add(m); F.bigCall = null; F.urge = null; F.shutFor = 0; }
+    }
     function nagTick(open, live) {
       const F = play.fight;
       if (open) { F.nagNext = NAG.first; return; }
@@ -6811,13 +6916,14 @@
       else F.nagNext = F.shutFor + 0.5;                                               // (a voice is live: asked again in half a second)
     }
     /* THE EYE BUTTON IN THE FIGHT: OPEN when his sight is shut with green ones in the room (straight away at the start and in
-       the surge and the gold, after 3 s otherwise); CLOSE when it is open and his heart is near its limit (0.85: past 1 his
-       nerve drains); nothing under the showcase or while his sight is held shut for him */
+       the surge and the gold, once the ring on the eye is empty otherwise: R96); CLOSE when it is open and his heart is near
+       its limit (the ring red, STRAIN_WARN: past 1 his nerve drains); nothing under the showcase or while his sight is held
+       shut for him */
     function urgeTick(open, live) {
       const F = play.fight; let u = false;
       if (F.call === 'shown' || play.closeHold) u = false;
-      else if (open) u = play.heat >= 0.85 && F.call !== 'gold' ? 'close' : false;
-      else if (live && (F.shutFor >= 3 || F.t < 8 || F.call)) u = 'open';
+      else if (open) u = play.heat >= STRAIN_WARN && F.call !== 'gold' ? 'close' : false;
+      else if (live && (play.heat <= STRAIN_EMPTY || F.t < 8 || F.call)) u = 'open';      // (R96: once the ring is empty; at once at the start and at the big moments)
       if (u !== F.urge) { F.urge = u; if (kit && kit.visionUrge) kit.visionUrge(u); }
     }
     /* THE TURNING POINT: the trance's film, and the decision at its end (the plan's §4.4) */
@@ -7060,6 +7166,7 @@
     function storyTick(wdt, t) {
       spotsTick(); hitsTick(); scareTick(); doorTick(wdt); heatTick(wdt); altarTick();   // (the fan, the lamp and the glass: updateNotes, film or play; his hand on her head: updateNotes, play and the decision)
       fightTick(wdt);
+      shadeTick(wdt);                                                     // (R96: the green ones as faint dark shapes while his sight is shut)
       dipFxTick();                                                        // (R63: the refill seen)
       hitFxTick();                                                        // (R81: every strike seen)
       /* (R58, Chad, 18 Nov evening: "why reloading and continuing game allows me to flick water even before that part of
@@ -7084,6 +7191,7 @@
       play.run++; play.busy = false; play.learned = new Set(); play.spoke = false; play.told = false; play.peeked = false;
       play.opened = false; play.looked = new Set(); play.closed = false; play.read = false; play.water = false; play.briefed = false;
       play.fight = null; play.appaGone = false; play.nerveOut = false; play.heat = 0; play.heatStep = 0; play.closeHold = 0; play.breathSaid = -99; play.loseWait = false;
+      shadesOff();
       play.fanK = 1; play.fanTo = 1; play.scareSeed = SCARE_SEED; play.scareAt = 0; play.scared = new Set(); play.doorTo = -0.12; play.doorK = -0.12;
       play.fogged = false; play.fogAt = 0; fogK = 0; fogTo = 0; lampK = 0; lampTo = 0; crownK = 0; crownTo = 0; oppLooked = ''; wanderNext = 2;
       decOpen = false; altarBlock = false; bowlOnFloor.visible = true; chantNow = null; bowlsOnStool(false); waterLast = null; hitFxReset();

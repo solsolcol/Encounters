@@ -33,7 +33,9 @@ LINES = [
     ('q4s1', 'he', 'play, the sight', "It's holding her down. It's been there a long time."),
     ('q4s2', 'he', 'play, the sight', "Not him. He's only watching over her."),
     ('q4s3', 'he', 'play, the sight', "Hungry ones. Waiting for whatever is given here tonight."),
-    ('ph4s1', 'pho', 'play, the sight', "Good. Now close your Spirit Vision."),
+    # (Chad, 19 Nov, R95/R96: the game asked him to close "for no apparent reason"; the reason said once, in his teacher's own
+    # teaching from chapter 3, "Without control, it will overwhelm you"; the words put to Chad and approved as written)
+    ('ph4s1', 'pho', 'play, the sight', "Good. Now close it. Kept open too long, it will overwhelm you."),
     ('ph4s2', 'pho', 'play, the sight', "A spirit is sitting on her back. I believe it is why these years have been so hard."),
     ('ph4s3', 'pho', 'play, the sight', "She served Mae Kali. Past karma, and matters left unresolved: it has stayed with her, and pressed on her."),
     ('ph4s4', 'pho', 'play, the sight', "I will bless her, and release the spirit on her back. Take the holy water, and keep the green spirits away from her."),
@@ -47,6 +49,10 @@ LINES = [
     ('ph4b3', 'pho', 'play, the blessing: his sight shut too long', "Open your Spirit Vision! The green spirits are coming for her."),
     ('ph4b4', 'pho', 'play, the blessing: his sight shut too long', "Open your Spirit Vision now. You cannot stop what you cannot see."),
     ('ph4b5', 'pho', 'play, the blessing: his sight shut too long', "Open your Spirit Vision, and flick the holy water at the green spirits!"),
+    # (Chad, 19 Nov, R95/R96: once he had shut it, "the player does not know when to turn it back on": the first time he shuts it
+    # himself in the fight, his teacher says when; and at the fight's big moments he is called to open it. Approved as written)
+    ('ph4b6', 'pho', 'play, the blessing: the first time he shuts his sight himself', "Good. Breathe. Now open it again. They are still coming."),
+    ('ph4b7', 'pho', 'play, the blessing: a big moment with his sight shut', "Open it, now!"),
     # (Chad, 18 Nov: "Have some dramatic voicelines along the way": the fight speaks. q4f3 and ph4f2 are his words exactly)
     ('q4f1', 'he', 'play, the fight: the second wave comes', "More of them. From the doors."),
     ('q4f2', 'he', 'play, the fight: the large one stands', "What is that...?"),

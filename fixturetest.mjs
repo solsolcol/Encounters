@@ -670,6 +670,28 @@ K.stakesUrge = await p.evaluate(async () => {
   console.log('stakesUrge', JSON.stringify({ shut0, open, closeWhileShut, closeWhileOpen, none, words }));
   return shut0 && open && closeWhileShut && closeWhileOpen && none && words;
 }).catch(e => { console.log('stakesUrge threw', e.message); return false; });
+/* v27.0 (19 Nov, R95/R96): THE STRAIN OF HIS SIGHT, the fifty-ninth seam: absent, no ring; asked, the ring on the eye
+   button's edge filled by the share asked (its dash offset the circle's length times what is left), red only from the
+   mark `warn`, beating only once full; null takes it off, and kitReset would too */
+K.stakesStrain = await p.evaluate(async () => {
+  const E = window.__enc, b = document.getElementById('visionBtn'), ring = b && b.querySelector('.strainRing'), fill = ring && ring.querySelector('.srFill');
+  const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
+  const C = 2 * Math.PI * 21.5, off = () => parseFloat(fill.style.strokeDashoffset);
+  const shown = () => b.classList.contains('strain') && getComputedStyle(ring).display !== 'none';
+  const off0 = !!ring && !!fill && !b.classList.contains('strain') && getComputedStyle(ring).display === 'none' && E.stakes().strain === null;
+  E.kit.visionStrain(0.5, { warn: 0.85 }); await frames(3);
+  const half = shown() && Math.abs(off() - C * 0.5) < 0.2 && !b.classList.contains('strainHot') && !b.classList.contains('strainFull') && E.stakes().strain === 0.5;
+  E.kit.visionStrain(0.9); await frames(3);
+  const hot = shown() && Math.abs(off() - C * 0.1) < 0.2 && b.classList.contains('strainHot') && !b.classList.contains('strainFull') && E.stakes().strainWarn === 0.85;
+  E.kit.visionStrain(1.25); await frames(3);
+  const full = shown() && off() < 0.01 && b.classList.contains('strainHot') && b.classList.contains('strainFull');
+  E.kit.visionStrain(0); await frames(3);
+  const empty = shown() && Math.abs(off() - C) < 0.2 && !b.classList.contains('strainHot');
+  E.kit.visionStrain(null); await frames(3);
+  const gone = !b.classList.contains('strain') && !b.classList.contains('strainHot') && getComputedStyle(ring).display === 'none' && E.stakes().strain === null;
+  console.log('stakesStrain', JSON.stringify({ off0, half, hot, full, empty, gone }));
+  return off0 && half && hot && full && empty && gone;
+}).catch(e => { console.log('stakesStrain threw', e.message); return false; });
 K.stakesShowcase = await p.evaluate(async () => {
   const E = window.__enc, el = document.getElementById('unlock');
   const frames = (n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); });
