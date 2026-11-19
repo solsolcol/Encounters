@@ -2928,7 +2928,7 @@
          hips, a palm's place came under his face, and the highest thing drawn there was his nose) */
       const hipB = bone('Hips'), LAPTOP = hipB ? loc(hipB, new THREE.Vector3()).y + 0.3 : Infinity;
       for (const q of skins) { const pos = q.geometry.attributes.position, si = q.geometry.attributes.skinIndex, sw = q.geometry.attributes.skinWeight; if (!pos || !si || !sw || !q.skeleton) continue;
-        const arm = q.skeleton.bones.map(b => /(Shoulder|Arm|Hand)/.test(b.name));
+        const arm = q.skeleton.bones.map(b => /(Shoulder|Arm|Hand)|^Drape/.test(b.name));
         const SM = FASTSKIN ? skinMats(q) : null;
         for (let i = 0; i < pos.count; i++) { let a = 0; for (let c = 0; c < 4; c++) if (arm[si.getComponent(i, c)]) a += sw.getComponent(i, c); if (a > 0.3) continue;
           if (SM) skinVertex(q, i, v, SM); else q.getVertexPosition(i, v); v.applyMatrix4(q.matrixWorld); P.group.worldToLocal(v);

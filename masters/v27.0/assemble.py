@@ -62,6 +62,13 @@ EDITS = [
     # turn the laying gave the upper arm, as chapter 3's crossed hands (crossHands, spec.follow) already give them
     ("        R[sd] = { W: best.W, pdir, f: best.f, n: best.n, fing, fingerQs };\n",
      "        R[sd] = { W: best.W, pdir, f: best.f, n: best.n, fing, fingerQs };\n        if (K.follow && K.follow[sd]) { const fl = K.follow[sd].map(nm => P.bone[nm]).filter(b => b && b.parent === a.up.parent).map(b => ({ b, q: new THREE.Quaternion(), on: false })); if (fl.length) R[sd].fol = fl; else console.warn(P.key + ': K.follow names no brother of his ' + sd + ' upper arm'); }\n"),
+    # R77 (18 Nov, photographed on build 25): with the drape now going with the arm, the arm's own cloth is no longer a
+    # thing the arm must clear. The lap's measure read the drape's hanging bone (DrapeHang: its name holds no "Arm") as
+    # his body, and turned his left elbow out until the arm cleared it: 89 degrees, 0.169 m from his side (his right,
+    # with no drape: 35 degrees, 0.018 m; the rest's report), a wing of white standing out at his left. A bone named
+    # Drape is the arm's
+    ("        const arm = q.skeleton.bones.map(b => /(Shoulder|Arm|Hand)/.test(b.name));",
+     "        const arm = q.skeleton.bones.map(b => /(Shoulder|Arm|Hand)|^Drape/.test(b.name));"),
 ]
 
 
