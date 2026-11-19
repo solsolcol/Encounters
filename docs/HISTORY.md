@@ -9396,7 +9396,14 @@ What the baseline contains, by release:
   19 Nov: R92, "his knees are still bent forward", and R93, his shoulders "down very slightly": his own legs, which his
   robe follows, are longer than the grafted legs that are seen and stood bent 21.6 and 31.1 degrees at the same hips and
   ankles; they now reach their ankles on down along the leg to 5 degrees, his hips where they were, the robe falling
-  straight to his feet; his collar bones 3 degrees down, his shoulders a centimetre lower).
+  straight to his feet; his collar bones 3 degrees down, his shoulders a centimetre lower); 39 (deploy `6aff030d7ca88efc68af6a59`,
+  19 Nov: R95, "the game tells the player to close their spirit vision for no apparent reason", and R96, "Ok do all of it":
+  the strain drawn as a ring on the eye, the fifty-ninth seam, red where the eye asks to close and empty where it asks to
+  open again, cooling from red in 2.4 s; Grandmaster Pho's three approved lines; the green spirits faint dark shapes while
+  his sight is shut in the fight, and at the rush, the big one and the golden water "Open it, now!" and his sight opened
+  for him; the brief's sentence; sheet v149); 40 (deploy `6aff0d4564e9405ae49a840a`, 19 Nov: found by the phone probe on 39,
+  the rush handed to his call before his sight could be opened for him, now carried through the call; the ring white on a
+  dark track, the pale blue lost on the button in use).
 
 ## The sheet, version by version
 
