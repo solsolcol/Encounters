@@ -4,7 +4,7 @@
    CL, the same close in every ending) sought every STEP seconds: his face's direction in the world (the head's turn applied
    to its rest, as lookNow reads it) against his body's facing (his group's turn), as a yaw; how far it turns between two
    moments, and how far it stands off his body. A SPIN is a turn of more than SPIN degrees between two moments; the run
-   fails on one (and on any page error). WIN, if given, reads only that stretch of the close (seconds of the close).
+   fails on one (and on any page error). The close opens on a cut (its first key), so the step across it is not a turn. WIN, if given, reads only that stretch of the close (seconds of the close).
      ENC_DIST=<snapshot> CHROMIUM_PATH=... [OPTS=ABCD] [STEP=0.1] [SPIN=6] [WIN=19,26] node tools/probes/e4c4ravi.mjs */
 import { chromium } from 'playwright';
 import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
@@ -45,12 +45,14 @@ for (const OPT of OPTS) {
     return out;
   }, { dur, CL_END, STEP, WIN });
   let maxStep = { d: 0 }, maxOff = { a: 0 };
+  const CUT = 0.15;                                              // (the step across the close's opening cut)
   for (let i = 1; i < rows.length; i++) {
+    if (rows[i - 1].c < CUT) continue;
     let d = rows[i].face - rows[i - 1].face; while (d > 180) d -= 360; while (d < -180) d += 360;
     if (Math.abs(d) > Math.abs(maxStep.d)) maxStep = { d: +d.toFixed(1), at: rows[i].c };
     if (Math.abs(rows[i].off) > Math.abs(maxOff.a)) maxOff = { a: rows[i].off, at: rows[i].c };
   }
-  const spins = []; for (let i = 1; i < rows.length; i++) { let d = rows[i].face - rows[i - 1].face; while (d > 180) d -= 360; while (d < -180) d += 360; if (Math.abs(d) > SPIN) spins.push({ at: rows[i].c, d: +d.toFixed(1) }); }
+  const spins = []; for (let i = 1; i < rows.length; i++) { if (rows[i - 1].c < CUT) continue; let d = rows[i].face - rows[i - 1].face; while (d > 180) d -= 360; while (d < -180) d += 360; if (Math.abs(d) > SPIN) spins.push({ at: rows[i].c, d: +d.toFixed(1) }); }
   const z1 = rows.filter(r => r.c >= Z1 - 2 && r.c <= Z1 + 1.5);
   log(OPT, 'film', dur.toFixed(2), 's; the close sought', rows.length, 'times; the most his face turns in', STEP, 's:', JSON.stringify(maxStep),
       '; the farthest it stands off his body:', JSON.stringify(maxOff), '; spins (over', SPIN, 'degrees a step):', spins.length ? JSON.stringify(spins) : 'none');

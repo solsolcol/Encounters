@@ -65,13 +65,11 @@ await p.waitForTimeout(2500);
 await p.evaluate(() => { const F = window.__enc.stage.dbg.play.fight; F.k = Math.max(F.k, 0.70); });
 await p.waitForFunction(() => { const F = window.__enc.stage.dbg.play.fight; return F && F.call === 'surge'; }, null, { timeout: 300000, polling: 300 });
 log('the surge', JSON.stringify(await fightState()));
-await p.waitForTimeout(2500);
-await shot('surge');
-await p.waitForFunction(() => { const F = window.__enc.stage.dbg.play.fight; return F && F.call === 'asking'; }, null, { timeout: 300000, polling: 300 });
-log('the call', JSON.stringify(await fightState()));
-/* slow motion from here: the engine's showcase and the page's CSS animations alike */
+/* slow motion from here, before his call (a picture taken on this box can take longer than the call's lines, so the call
+   is never waited for by name): the engine's showcase and the page's CSS animations alike */
 await p.evaluate((f) => window.__enc.showSlow(f), SLOW);
 await cdp.send('Animation.enable'); await cdp.send('Animation.setPlaybackRate', { playbackRate: 1 / SLOW });
+log('slowed', SLOW, 'times');
 await p.waitForFunction(() => window.__enc.getState() === 'unlock' && window.__enc.showT() != null, null, { timeout: 300000, polling: 100 });
 log('the showcase opened, slowed', SLOW, 'times');
 for (const t of AT) {

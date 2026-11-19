@@ -8158,6 +8158,9 @@
         /* (each take carries her body from its own first moment: the rise left her standing RISEN before the chair's
            middle, the steps take the rest of the way to the altar by its own travel, so her mark moves only between
            takes. 18 Nov: her mark slid to the altar under a walking take that also walked: she ended in its wall) */
+        /* (R106: where she stands risen at her chair, measured once before her son's look needs it, so a seek straight into
+           her steps finds it; her own pose for this frame is laid after it) */
+        if (c >= CL.steps - 0.7) standA(P);
         const sk = Math.min(STEPS_TK, (c - CL.steps) * 0.55), stepEnd = CL.steps + STEPS_TK / 0.55;
         if (c < CL.steps) { put(P, CHAIR.x, CHAIR.z, CHAIR.ry); pose(P, 'rise', pingOf(c, 4.6, 0.3, 3.0)); }
         else {
@@ -8209,8 +8212,16 @@
          shoulder, 99 degrees off the way he kneels, so his head still went round 84 degrees in the family's shot. R106,
          Chad, 19 Nov: "ravi still does a weird head spin at the end before pho says 'see a doctor', just dont make ravi
          turn his head") */
+      /* (R106, measured on build 46 by tools/probes/e4c4ravi.mjs: with his look on her live head, as she began her steps
+         from her chair, the rise's last pose blending into the walk carried her head past him 0.6 m away and his face
+         turned 45 degrees in half a second, the close's one quick turn. His look follows her steps now along an eased
+         path from where she stands at her chair to her altar (2.4 s, her own height read live), so his head goes round
+         at a neck's pace while she walks; before and after, his eyes are on her as they were) */
       whenReady(cast.ravi, (P) => { put(P, RAVI_C.x, RAVI_C.z, faceTo(RAVI_C.x, RAVI_C.z, STAND.x, STAND.z)); pose(P, 'kneelhold', pingOf(c, 2.6, 0.8, 6.0));
-        lookNow(P, HER_HEAD(), 1, 0.85); });
+        const h = HER_HEAD(), A = cast.amma._standA, w = A ? smo(c01((c - CL.steps + 0.6) / 0.5)) : 0;
+        if (w <= 0) lookNow(P, h, 1, 0.85);
+        else { const k = smo(c01((c - CL.steps + 0.1) / 2.4)), sx = lp(A[0], STAND.x, k), sz = lp(A[1], STAND.z, k);
+          lookNow(P, [lp(h[0], sx, w), h[1], lp(h[2], sz, w)], 1, 0.85); } });
       whenReady(spirits.oppress, (P) => { P.group.visible = false; });
       whenReady(spirits.appa, (P) => { if (P.gone) return; put(P, APPA_C.x, APPA_C.z, faceTo(APPA_C.x, APPA_C.z, CHAIR.x, CHAIR.z + 0.3)); pose(P, 'Idle_3', 2 + c * 0.3, true); });
       spirits.wander.forEach((P, i) => whenReady(P, (Q) => { const W = CLOSE_WANDER[i]; if (!W) return;
