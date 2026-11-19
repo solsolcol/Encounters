@@ -9350,7 +9350,15 @@ What the baseline contains, by release:
   through their own layer: measured, the whole opening film makes 0 programs, 0 textures and 0 geometries, where build 26
   still made three programs and six textures at its flicker); 28 (deploy `6afe4c7d01301f75d74c9dfd`: R77 standing, his
   left arm with the drape over it let hang 7 degrees out, chosen on the live build by trying the band and the arm at
-  several angles in the running game: the hand clear of the robe at his hip, nothing across it).
+  several angles in the running game: the hand clear of the robe at his hip, nothing across it); 29 (deploy
+  `6afe618dc4fab099d7b9c4ce`, 19 Nov: her rise framed on a phone in endings B, C and D. Build 28's endings photographed
+  and read full size found it, no ask of his: the rise take sits her back 0.23 m and leans her 0.6 m forward before she
+  is up, and the lenses held still on the chair lost her (B's head off the frame from the floor, D's frame her back, C's
+  look at her kneeling son turning her head into her lap). Her head's path measured where the film draws it
+  (`tools/probes/filmshots.mjs` WHO, new), the endings' track() modelled outside the game and calibrated to its lens
+  (the head's edge at 1.56, 1.34 and 0.97 of the half-width; A's 0.68 left), then followed by each lens along the path
+  eased over a second (RISE_HEAD: 0.88, 0.78, 0.68); C's look eased off through the lean; C's lens following Ravi's walk
+  to her over its own 1.04 s, where it had trailed him over 1.9; C's standing frame clear of the edge of his face).
 
 ## The sheet, version by version
 
