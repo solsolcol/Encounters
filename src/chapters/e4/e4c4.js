@@ -7995,7 +7995,13 @@
               hx += (L[0] - L0[0]) * wl; hz += (L[1] - L0[1]) * wl;
               pose(P, 'lamp', lt, false, 'rise', 1 - wl, 4.75); } }
           pinHips(P, hx, hz); }
-        lookNow(P, [ALTAR.x, 1.45, ALTAR.z], c < CL.palms ? smo(c01((c - CL.steps) / 1.5)) * 0.6 : 0, 0.6); });
+        /* (R86, measured on build 36 in the close (`neckA`): her look on her altar lifts her face 6.5 degrees over the level,
+           a woman looking at her altar; but once her palms join the lamp's take lifts it 10 degrees by A's 52.0 and 19 by
+           53.0, the chin raised that he called too bent, and no look held it. So her look stays on her altar through the
+           lamp, its weight eased from 0.6 to 0.8 and its mark eased down to her own eyes' height as her palms join: her
+           face level over her joined hands, a little lowered) */
+        const jk = smo(c01((c - CL.palms + 0.5) / 1.0)), ay = 1.45 + (P.head.getWorldPosition(_atv).y + 0.06 - 1.45) * jk;
+        lookNow(P, [ALTAR.x, ay, ALTAR.z], (c < CL.palms ? smo(c01((c - CL.steps) / 1.5)) : 1) * (0.6 + 0.2 * jk), 0.6); });
       phoBless(tAll, 0);
       phoTalk(c, CL.z1, 'ph4z1');
       /* (his dedication said with his eyes on her and a little lowered; his word to the family to her son. 18 Nov: every
