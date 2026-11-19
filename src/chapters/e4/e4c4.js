@@ -7396,7 +7396,10 @@
     const RISE_HEAD = [[-0.011, 0.877, 0.038], [0.001, 0.899, -0.017], [0.014, 0.925, -0.05], [0.031, 0.939, -0.029], [0.042, 0.933, 0.073], [0.049, 0.925, 0.19], [0.053, 0.918, 0.298], [0.05, 0.928, 0.379], [0.042, 0.979, 0.415], [0.031, 1.065, 0.414], [0.02, 1.161, 0.391], [0.013, 1.246, 0.355], [0.012, 1.299, 0.322], [0.016, 1.319, 0.304], [0.023, 1.32, 0.299], [0.029, 1.318, 0.299], [0.032, 1.317, 0.297], [0.034, 1.316, 0.295], [0.035, 1.316, 0.291]];
     /* (where each ending's lens aims from her eased head: B's from the floor keeps her left of his teacher, C's and D's
        below and beside her face) */
-    const RISE_OFF = { B: [0.40, -0.20, 0.20], C: [0.10, -0.20, -0.10], D: [0.15, 0.10, 0.05] };
+    /* (build 32: B's aim chosen on her face as the frame DRAWS it (filmshots WHO `@Head`, WHODRAW): the head's bone is the
+       back of her skull, and her face, 0.15 to 0.25 m in front of it, left a phone's frame at 13.1 to 13.5 s; now within
+       0.77 of the half-width through the rise) */
+    const RISE_OFF = { B: [0.20, -0.20, 0.15], C: [0.10, -0.20, -0.10], D: [0.15, 0.10, 0.05] };
     function riseAim(tau, off) {
       const f = Math.max(0, Math.min(RISE_HEAD.length - 1.001, tau / 0.25)), i = Math.floor(f), u = f - i, A = RISE_HEAD[i], B = RISE_HEAD[i + 1];
       return [CHAIR.x + lp(A[0], B[0], u) + off[0], lp(A[1], B[1], u) + off[1], CHAIR.z + lp(A[2], B[2], u) + off[2]];
