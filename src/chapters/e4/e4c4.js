@@ -7483,7 +7483,10 @@
     /* (build 32: B's aim chosen on her face as the frame DRAWS it (filmshots WHO `@Head`, WHODRAW): the head's bone is the
        back of her skull, and her face, 0.15 to 0.25 m in front of it, left a phone's frame at 13.1 to 13.5 s; now within
        0.77 of the half-width through the rise) */
-    const RISE_OFF = { B: [0.20, -0.20, 0.15], C: [0.10, -0.20, -0.10], D: [0.15, 0.10, 0.05] };
+    /* (build 35: C's and D's on build 33's drawn face, with each look laid once (R86): C's left a phone's frame at 16.7 to
+       17.9 s (to -1.19), D's at 14.8 to 16.1 (to -1.20) where her head, leaning toward his place, is 1.4 of the half-width
+       wide: D's lens widened through the rise to hold it, C's a little; both within 0.81 now) */
+    const RISE_OFF = { B: [0.20, -0.20, 0.15], C: [0.05, -0.10, 0.10], D: [0.15, 0.10, 0.10] };
     function riseAim(tau, off) {
       const f = Math.max(0, Math.min(RISE_HEAD.length - 1.001, tau / 0.25)), i = Math.floor(f), u = f - i, A = RISE_HEAD[i], B = RISE_HEAD[i + 1];
       return [CHAIR.x + lp(A[0], B[0], u) + off[0], lp(A[1], B[1], u) + off[1], CHAIR.z + lp(A[2], B[2], u) + off[2]];
@@ -7809,8 +7812,8 @@
           { t: E.rise, name: 'kneel', eye: CK_EYE, at: CK_AT, fp: 62, fd: 54 },
           /* (19 Nov: her rise followed, RISE_HEAD; and once she stands the lens a few centimetres to its left, so the edge of
              her son's face is not sliced by a phone's right edge through his line, build 28 at 21.0 s) */
-          { t: E.rise + 0.8, name: 'rise', eye: CK_EYE, at: () => riseAim(t - E.rise, RISE_OFF.C), fp: 62, fd: 54 },
-          { t: E.rise + 3.4, name: 'rise', eye: CK_EYE, at: () => riseAim(t - E.rise, RISE_OFF.C), fp: 62, fd: 54 },
+          { t: E.rise + 0.8, name: 'rise', eye: CK_EYE, at: () => riseAim(t - E.rise, RISE_OFF.C), fp: 66, fd: 58 },
+          { t: E.rise + 3.4, name: 'rise', eye: CK_EYE, at: () => riseAim(t - E.rise, RISE_OFF.C), fp: 66, fd: 58 },
           { t: E.rise + 4.5, name: 'stand', eye: CK_EYE, at: [CHAIR.x, 1.22, CHAIR.z + 0.30], fp: 58, fd: 52 },
           { t: E.ph - 0.4, name: 'stand', eye: CK_EYE, at: [CHAIR.x, 1.28, CHAIR.z + 0.34], fp: 58, fd: 52 },
           { t: E.ph + 0.5, name: 'pho', eye: C_PHO_EYE, at: [cast.phoB.home.x, 1.58, cast.phoB.home.z], fp: 46, fd: 42, cut: true },   // (R80)
@@ -7860,8 +7863,8 @@
           { t: E.kneel + 2.0, name: 'her', eye: S_EYE, at: [CHAIR.x + 0.09, 0.92, CHAIR.z + 0.08], fp: 60, fd: 52 },
           { t: E.rise, name: 'her', eye: S_EYE, at: [CHAIR.x + 0.09, 0.92, CHAIR.z + 0.08], fp: 60, fd: 52 },
           /* (19 Nov: her rise followed, RISE_HEAD: from his place the frame held her back as she leaned, her head at its edge) */
-          { t: E.rise + 0.8, name: 'rise', eye: S_EYE, at: () => riseAim(t - E.rise, RISE_OFF.D), fp: 60, fd: 52 },
-          { t: E.rise + 3.4, name: 'rise', eye: S_EYE, at: () => riseAim(t - E.rise, RISE_OFF.D), fp: 60, fd: 52 },
+          { t: E.rise + 0.8, name: 'rise', eye: S_EYE, at: () => riseAim(t - E.rise, RISE_OFF.D), fp: 70, fd: 62 },
+          { t: E.rise + 3.4, name: 'rise', eye: S_EYE, at: () => riseAim(t - E.rise, RISE_OFF.D), fp: 70, fd: 62 },
           { t: E.rise + 4.5, name: 'stand', eye: S_EYE, at: [CHAIR.x + 0.04, 1.26, CHAIR.z + 0.26], fp: 58, fd: 52 },
           { t: E.ph - 0.4, name: 'stand', eye: S_EYE, at: [CHAIR.x + 0.04, 1.30, CHAIR.z + 0.28], fp: 58, fd: 52 },
           { t: E.ph + 0.5, name: 'pho', eye: D_PHO_EYE, at: [cast.phoB.home.x, 1.62, cast.phoB.home.z], fp: 46, fd: 42, cut: true },   // (R80)
