@@ -15,7 +15,7 @@ TAGS = {
     'q4o1': 'reflective', 'q4o2': 'reflective', 'rv4o1': 'respectful',
     # history first: a family who has told this many times; him, quiet, piecing it together
     'ph4h0': 'calm', 'rv4h1': 'weary', 'rv4h2': 'frustrated', 'ml4h1': 'tired', 'q4h1': 'quiet',
-    'ml4h2': 'proud', 'ml4h3': 'sad', 'q4h2': 'quiet', 'am4h1': 'weary', 'q4h3': 'serious', 'ph4h1': 'warm',
+    'ml4h2': 'proud', 'ml4h3': 'sad', 'q4h2': 'quiet', 'am4h1': 'weary', 'q4h3': 'serious', 'ph4h1': 'warm', 'ph4h2': 'gentle',
     # the sight: his teacher's voice low; his own, shaken and then steady
     'ph4s0': 'calm', 'q4s1': 'uneasy', 'q4s2': 'quiet', 'q4s3': 'uneasy', 'ph4s1': 'calm',
     'ph4s2': 'serious', 'ph4s3': 'serious', 'ph4s4': 'calm',

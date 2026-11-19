@@ -28,6 +28,9 @@ LINES = [
     ('am4h1', 'amma', 'play, history', "You can see it, can't you?"),
     ('q4h3', 'he', 'play, history', "Seven years. Every doctor. Many practitioners. And she served Kali Amman, until her husband died."),
     ('ph4h1', 'pho', 'play, history', "Good. Now you know her story. Always learn the story first, before you use your Spirit Vision."),
+    # (Chad, 19 Nov, R100/R101: "Do #3 only": the first time he opens his sight during the history, before he has listened,
+    # his teacher stops him once; the words as proposed and picked)
+    ('ph4h2', 'pho', 'play, history: he opens his sight before he has listened', "Not yet. First, we listen."),
     # ---- play II, the sight (§4.2)
     ('ph4s0', 'pho', 'play, the sight', "Now open your Spirit Vision, the way I taught you. Look at each spirit in this room. Only look."),
     ('q4s1', 'he', 'play, the sight', "It's holding her down. It's been there a long time."),

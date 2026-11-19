@@ -2189,6 +2189,8 @@
       text: "[serious] Seven years. Every doctor. Many practitioners. And she served Kali Amman, until her husband died.", secs: 9.77 },
     { id: "ph4h1", who: "pho", ch: "e4c4", where: "play, history",
       text: "[warm] Good. Now you know her story. Always learn the story first, before you use your Spirit Vision.", secs: 6.81 },
+    { id: "ph4h2", who: "pho", ch: "e4c4", where: "play, history: he opens his sight before he has listened",
+      text: "[gentle] Not yet. First, we listen.", secs: 2.81 },
     { id: "ph4s0", who: "pho", ch: "e4c4", where: "play, the sight",
       text: "[calm] Now open your Spirit Vision, the way I taught you. Look at each spirit in this room. Only look.", secs: 8.57 },
     { id: "q4s1", who: "jamesAdult", ch: "e4c4", where: "play, the sight",

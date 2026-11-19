@@ -3379,5 +3379,59 @@
     "heard": "Open it, now!"
    }
   }
+ },
+ "ph4h2": {
+  "who": "pho",
+  "text": "[gentle] Not yet. First, we listen.",
+  "pick": "a",
+  "why": "the unhurried read; checked unprompted by ElevenLabs Scribe: all three say \"Not yet. First, we listen\"; a the cleanest end of the three (-36.2 dB), its hole the pause after \"Not yet.\"",
+  "med": 2.44,
+  "takes": {
+   "a": {
+    "len": 2.8,
+    "first": 0.0,
+    "last": 2.52,
+    "e_first": 0.02,
+    "e_last": 2.78,
+    "tail_db": -36.2,
+    "tail_rel": -23.6,
+    "hole": 0.6,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 1.81,
+    "heard": "Not yet. First, we listen."
+   },
+   "b": {
+    "len": 2.56,
+    "first": 0.0,
+    "last": 2.4,
+    "e_first": 0.1,
+    "e_last": 2.54,
+    "tail_db": -28.5,
+    "tail_rel": -16.5,
+    "hole": 0.58,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.05,
+    "heard": "Not yet. First, we listen."
+   },
+   "c": {
+    "len": 2.48,
+    "first": 0.0,
+    "last": 2.34,
+    "e_first": 0.08,
+    "e_last": 2.46,
+    "tail_db": -26.2,
+    "tail_rel": -14.6,
+    "hole": 0.6,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.1,
+    "heard": "Not yet. First, we listen."
+   }
+  }
  }
 }

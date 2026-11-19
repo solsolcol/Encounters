@@ -89,6 +89,15 @@
     function say(name, P, face = true) {
       queueLine(name, () => { if (P) { talk(P, SECS[name] || 2.5); if (face) { gaze(P, 'lens', { reach: 0.6, secs: 0.8 }); after((SECS[name] || 2.5) + 0.6, () => { if (P.gaze && P.gaze.target === 'lens') gaze(P, null); }); } } });
     }
+    /* (R101) his teacher's word to a peek in the history, "Not yet. First, we listen.": said at the NEXT PAUSE between
+       lines, never behind the rest of what is queued (a source's lines run to twenty seconds and more; a word that late
+       answers nothing), and a line already begun is never cut (one voice at a time, v5.30); the family's telling goes on
+       after it. Never once he has begun telling his teacher what he heard: his teacher's answer (ph4h1) says it then */
+    function peekLine() {
+      if (heard.has('q4h3') || lineQ.some(q => q.name === 'q4h3')) return;
+      say('ph4h2', cast.pho);
+      lineQ.unshift(lineQ.pop(), { gap: 0.5 });
+    }
 
     /* ---------------------------------------------------------------- THE LOOK (the flat lit by its tube; or dark)
        and every person at home: the family where they stand, Grandmaster Pho on his stool, his standing self hidden */
@@ -115,7 +124,7 @@
     for (const k in castBlock) whenReady(cast[k], castSolid);
 
     /* ================================================================ PLAY I · HISTORY FIRST (§4.1) */
-    const WARM_HISTORY = ['ph4h0', 'rv4h1', 'rv4h2', 'ml4h1', 'q4h1', 'ml4h2', 'ml4h3', 'q4h2', 'am4h1', 'q4h3', 'ph4h1',
+    const WARM_HISTORY = ['ph4h0', 'rv4h1', 'rv4h2', 'ml4h1', 'q4h1', 'ml4h2', 'ml4h3', 'q4h2', 'am4h1', 'q4h3', 'ph4h1', 'ph4h2',
                           'u4tubetick', 'u4fanslow', 'u4doorease', 'u4breath', 'u4fog', 'u4sting', 'u4tile', 'u4tile2',
                           'u4os1', 'u4os2', 'u4os3', 'u4os4', 'u4os5', 'u4os6'];
     function historyBegin(R, fresh) {
@@ -321,7 +330,10 @@
         if (!on && !play.fight.shutSaid && play.fight.call !== 'shown') play.fight.shutWant = true; }
       else if (kit && kit.visionUrge) kit.visionUrge(false);
       if (on && (phase === 'history' || phase === 'sight')) oppressLooks();
-      if (phase === 'history' && on && !play.peeked) { play.peeked = true; saveMark(); }
+      /* (Chad, 19 Nov, R100/R101, "Do #3 only": opening his sight during the history cost him the card's note with nobody
+         saying why; the first time, his teacher stops him once. Nothing is shut for him: the note stays the price. Once a
+         run: the save's `p` mark keeps it from coming again after a Continue) */
+      if (phase === 'history' && on && !play.peeked) { play.peeked = true; saveMark(); peekLine(); }
       if (phase === 'sight' && !play.busy) {
         if (on && !play.opened) { play.opened = true; saveMark(); const run = play.run; after(1.4, () => { if (live(run)) objectiveFor('sight'); }); }
         else if (!on && play.opened && play.looked.size >= 3 && !play.closed) { play.closed = true; readingBegin(); }

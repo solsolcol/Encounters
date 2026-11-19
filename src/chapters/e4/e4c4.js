@@ -72,7 +72,7 @@
      moves what follows it. The names are QUOTED on purpose: build.py gives a sound to a chapter's own pack only when
      the chapter names it in quotes (v21.1). Written by masters/v27.0/script/secs.py from masters/v27.0/script/lines.py. */
   /* SECS BEGIN */
-  const SECS = {      // 73 of 73 MEASURED from their takes; the rest estimated at the speaker's pace
+  const SECS = {      // 74 of 74 MEASURED from their takes; the rest estimated at the speaker's pace
     /* him */
     'q4o1': 6.65, 'q4o2': 4.65, 'q4h1': 3.61, 'q4h2': 3.53, 'q4h3': 9.77, 'q4s1': 4.01, 'q4s2': 3.05, 'q4s3': 4.09,
     'q4f1': 2.97, 'q4f2': 2.89, 'q4f3': 2.33, 'q4f4': 3.61, 'q4A1': 3.53, 'q4B1': 3.21, 'q4C0': 6.41, 'q4C1': 3.69,
@@ -81,10 +81,10 @@
     'rv4o1': 2.6, 'rv4h1': 8.33, 'rv4h2': 6.73, 'rv4f1': 1.93, 'rv4t1': 1.77, 'rv4A1': 2.51, 'rv4A2': 0.61,
     'rv4C1': 2.58, 'rv4D1': 2.98, 'rv4R1': 4.59,
     /* Grandmaster Pho */
-    'ph4h0': 7.53, 'ph4h1': 6.81, 'ph4s0': 8.57, 'ph4s1': 4.57, 'ph4s2': 6.17, 'ph4s3': 8.45, 'ph4s4': 9.77,
-    'ph4b0': 4.86, 'ph4b1': 4.65, 'ph4b2': 7.78, 'ph4b3': 4.36, 'ph4b4': 4.41, 'ph4b5': 5.2, 'ph4b6': 4.43,
-    'ph4b7': 1.47, 'ph4f1': 4.95, 'ph4f2': 2.59, 'ph4f3': 5.37, 'ph4A1': 6.61, 'ph4B0': 0.62, 'ph4B1': 9.13,
-    'ph4C1': 5.13, 'ph4D0': 2.24, 'ph4D1': 11.05, 'ph4z0': 10.56, 'ph4z1': 6.63,
+    'ph4h0': 7.53, 'ph4h1': 6.81, 'ph4h2': 2.81, 'ph4s0': 8.57, 'ph4s1': 4.57, 'ph4s2': 6.17, 'ph4s3': 8.45,
+    'ph4s4': 9.77, 'ph4b0': 4.86, 'ph4b1': 4.65, 'ph4b2': 7.78, 'ph4b3': 4.36, 'ph4b4': 4.41, 'ph4b5': 5.2,
+    'ph4b6': 4.43, 'ph4b7': 1.47, 'ph4f1': 4.95, 'ph4f2': 2.59, 'ph4f3': 5.37, 'ph4A1': 6.61, 'ph4B0': 0.62,
+    'ph4B1': 9.13, 'ph4C1': 5.13, 'ph4D0': 2.24, 'ph4D1': 11.05, 'ph4z0': 10.56, 'ph4z1': 6.63,
     /* Mala */
     'ml4h1': 14.65, 'ml4h2': 9.61, 'ml4h3': 7.61, 'ml4t1': 1.13, 'ml4t2': 1.45, 'ml4A1': 2.27, 'ml4B1': 1.62,
     'ml4B2': 1.01, 'ml4B3': 1.38, 'ml4R1': 3.53, 'ml4z1': 2.56,
@@ -5828,6 +5828,15 @@
     function say(name, P, face = true) {
       queueLine(name, () => { if (P) { talk(P, SECS[name] || 2.5); if (face) { gaze(P, 'lens', { reach: 0.6, secs: 0.8 }); after((SECS[name] || 2.5) + 0.6, () => { if (P.gaze && P.gaze.target === 'lens') gaze(P, null); }); } } });
     }
+    /* (R101) his teacher's word to a peek in the history, "Not yet. First, we listen.": said at the NEXT PAUSE between
+       lines, never behind the rest of what is queued (a source's lines run to twenty seconds and more; a word that late
+       answers nothing), and a line already begun is never cut (one voice at a time, v5.30); the family's telling goes on
+       after it. Never once he has begun telling his teacher what he heard: his teacher's answer (ph4h1) says it then */
+    function peekLine() {
+      if (heard.has('q4h3') || lineQ.some(q => q.name === 'q4h3')) return;
+      say('ph4h2', cast.pho);
+      lineQ.unshift(lineQ.pop(), { gap: 0.5 });
+    }
 
     /* ---------------------------------------------------------------- THE LOOK (the flat lit by its tube; or dark)
        and every person at home: the family where they stand, Grandmaster Pho on his stool, his standing self hidden */
@@ -5854,7 +5863,7 @@
     for (const k in castBlock) whenReady(cast[k], castSolid);
 
     /* ================================================================ PLAY I · HISTORY FIRST (§4.1) */
-    const WARM_HISTORY = ['ph4h0', 'rv4h1', 'rv4h2', 'ml4h1', 'q4h1', 'ml4h2', 'ml4h3', 'q4h2', 'am4h1', 'q4h3', 'ph4h1',
+    const WARM_HISTORY = ['ph4h0', 'rv4h1', 'rv4h2', 'ml4h1', 'q4h1', 'ml4h2', 'ml4h3', 'q4h2', 'am4h1', 'q4h3', 'ph4h1', 'ph4h2',
                           'u4tubetick', 'u4fanslow', 'u4doorease', 'u4breath', 'u4fog', 'u4sting', 'u4tile', 'u4tile2',
                           'u4os1', 'u4os2', 'u4os3', 'u4os4', 'u4os5', 'u4os6'];
     function historyBegin(R, fresh) {
@@ -6060,7 +6069,10 @@
         if (!on && !play.fight.shutSaid && play.fight.call !== 'shown') play.fight.shutWant = true; }
       else if (kit && kit.visionUrge) kit.visionUrge(false);
       if (on && (phase === 'history' || phase === 'sight')) oppressLooks();
-      if (phase === 'history' && on && !play.peeked) { play.peeked = true; saveMark(); }
+      /* (Chad, 19 Nov, R100/R101, "Do #3 only": opening his sight during the history cost him the card's note with nobody
+         saying why; the first time, his teacher stops him once. Nothing is shut for him: the note stays the price. Once a
+         run: the save's `p` mark keeps it from coming again after a Continue) */
+      if (phase === 'history' && on && !play.peeked) { play.peeked = true; saveMark(); peekLine(); }
       if (phase === 'sight' && !play.busy) {
         if (on && !play.opened) { play.opened = true; saveMark(); const run = play.run; after(1.4, () => { if (live(run)) objectiveFor('sight'); }); }
         else if (!on && play.opened && play.looked.size >= 3 && !play.closed) { play.closed = true; readingBegin(); }

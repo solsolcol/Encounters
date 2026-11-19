@@ -98,6 +98,13 @@
   "prompt": "[warm] Good. Now you know her story. Always learn the story first, before you use your Spirit Vision."
  },
  {
+  "key": "ph4h2",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[gentle] Not yet. First, we listen."
+ },
+ {
   "key": "ph4s0",
   "speaker": "pho",
   "voice_id": "xYmBpJREC3WfqEFpbPvO",

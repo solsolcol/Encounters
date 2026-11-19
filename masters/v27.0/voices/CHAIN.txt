@@ -12,6 +12,7 @@ q4h2    he   take a  the tighter read               voice 0.08-3.50 s of 3.52, 1
 am4h1   amma take b  the unhurried read             voice 0.18-1.90 s of 1.92, 3.49 words a second  (a 1.46 s, c 1.44 s (cut on a word))  -> 1.81 s  [cast, RMS -16]
 q4h3    he   take b  the only clean and whole take  voice 0.02-9.74 s of 9.76, 1.54 words a second  (a 9.74 s (cut on a word))  -> 9.77 s  [him]
 ph4h1   pho  take c  the unhurried read             voice 0.10-6.78 s of 6.80, 2.54 words a second  (a 6.54 s, b 6.40 s)  -> 6.81 s  [cast, RMS -16]
+ph4h2   pho  take a  the unhurried read; checked unprompted by ElevenLabs Scribe: all three say "Not yet. First, we listen"; a the cleanest end of the three (-36.2 dB), its hole the pause after "Not yet." voice 0.02-2.78 s of 2.80, 1.81 words a second  (b 2.44 s, c 2.38 s)  -> 2.81 s  [cast, RMS -16]
 ph4s0   pho  take a  equal by every measure: the first voice 0.08-8.54 s of 8.56, 2.25 words a second  (b 8.32 s, c 8.46 s)  -> 8.57 s  [cast, RMS -16]
 q4s1    he   take a  the tighter read               voice 0.10-3.98 s of 4.00, 2.58 words a second  (b 4.52 s)  -> 4.01 s  [him]
 q4s2    he   take b  the tighter read               voice 0.04-3.02 s of 3.04, 2.35 words a second  (a 3.26 s)  -> 3.05 s  [him]
