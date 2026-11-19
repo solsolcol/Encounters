@@ -6138,6 +6138,7 @@
                         'u4fightmus', 'u4fightloop', 'u4chant1', 'u4chant2',
                         /* (18 Nov: her cries, the surge, the call and the gold; every line of the fight's stakes) */
                         'u4ascream1', 'u4ascream2', 'u4ascream3', 'u4surge', 'u4goldcall', 'u4goldpower', 'u4goldflick', 'u4goldclear', 'u4sting',
+                        'u4goldgather', 'u4goldhover', 'u4golddive', 'u4goldmerge',          /* (R110: the amulet's moment, every beat of it) */
                         'ph4b3', 'ph4b4', 'ph4b5', 'ph4b6', 'ph4b7', 'q4f1', 'q4f2', 'ph4f1', 'q4f3', 'ph4f2', 'q4f4', 'ph4f3', 'rv4f1', 'ml4B2', 'rv4A2', 'u4visoff',
                         /* (18 Nov: the green ones' own voices) */
                         'u4sv1', 'u4sv2', 'u4sv3', 'u4sv4', 'u4sv5', 'u4svL'];
@@ -6305,7 +6306,10 @@
          1.8 s, rising round HER, 1.7 to 2.8 m out on every side (through her walls and floor, as they do), so they come at
          her where he is looking; never more than sixteen in the room (freeBody). (18 Nov, photographed: from the room's
          doors, five to seven at a time, six were in the room and most of them out of his view) */
-      batch: { every: 1.8, min: 7, max: 9, r0: 1.7, r1: 2.8 } };
+      batch: { every: 1.8, min: 7, max: 9, r0: 1.7, r1: 2.8 },
+      /* (R109: after the gold's wave has cleared the room, MORE of them, twelve, rise round her 0.85 s later: the struck burn
+         out in half a second, so every body is free again by then) */
+      back: { at: 0.85, n: 12 } };
     const REACH = { me: 0.75, amma: 0.62, pho: 0.6, ravi: 0.55, mala: 0.55 };
     /* AMMA'S LIFE IN HIS KEEPING (Chad, 18 Nov: "There must be consequences if the spirit entities in green gets to the lady in
        wheelchair. Everytime the green spirits get to her, she screams one time, and her health bar drops. Put a health bar on
@@ -6488,7 +6492,7 @@
       for (const S of F.shapes) {
         const P = S.P; if (S.state === 'gone') continue;
         S.t += wdt;
-        if (S.state === 'leave') { S.leave += wdt; const u = Math.min(1, S.leave / 1.1); P.alpha = 1 - u; if (P.fx) { P.fx.set('uAlpha', 1 - u); P.fx.set('uFill', 0.1 + 0.9 * (1 - u) * (1 - u) + (HIT_FILL - 1) * hitBoost(P) * (1 - u)); } P.group.position.y += wdt * 0.35;
+        if (S.state === 'leave') { S.leave += wdt; const u = Math.min(1, S.leave / (S.quick || 1.1)); P.alpha = 1 - u; if (P.fx) { P.fx.set('uAlpha', 1 - u); P.fx.set('uFill', 0.1 + 0.9 * (1 - u) * (1 - u) + (HIT_FILL - 1) * hitBoost(P) * (1 - u)); } P.group.position.y += wdt * 0.35;
           if (u >= 1) { S.state = 'gone'; P.group.visible = false; P.gone = true; } continue; }
         const tg = FAMILY[S.to](), dx = tg.x - P.group.position.x, dz = tg.z - P.group.position.z, d = Math.hypot(dx, dz);
         /* THE DART (R44): gathered, then flown at her out of the water's reach; and, struck, it comes down to feed */
@@ -6631,7 +6635,7 @@
     /* THE BURST where the water lands (R81): a flash in the water's colour swelling out (gold in his gold: hitHue), a ring thrown wide, six sparks flung off and
        falling, half a second on the wall clock; drawn through his sight only, where the green ones are; sized by the one
        struck (its sphere); eight at once, the oldest given back first */
-    const HITFX = { slots: 8, sparks: 6, flash: 0.24, ring: 0.5, spark: 0.46 };
+    const HITFX = { slots: 16, sparks: 6, flash: 0.24, ring: 0.5, spark: 0.46 };   // (R109: sixteen at once, so every one the gold's wave strikes bursts whole)
     const hitFx = { slots: null, next: 0 };
     function hitTex(ring) {
       const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d'), r = g.createRadialGradient(64, 64, 0, 64, 64, 64);
@@ -6785,7 +6789,7 @@
         for (let i = 0; i < 2; i++) spawnAt(keys[Math.floor(fightRnd() * keys.length)], fightRnd() < 0.75 ? 'amma' : 'me', 0.44 + 0.06 * fightRnd());
       }
       if (F.call && F.call !== 'gold') F.k = Math.min(F.k, FIGHT.hold);          // (the blessing stalls under the swarm until the call is answered)
-      if (F.call === 'gold') { F.goldT += wdt; if ((F.batchAt -= wdt) <= 0) { F.batchAt = FIGHT.batch.every; goldBatch(); } }
+      if (F.call === 'gold') { F.goldT += wdt; if ((F.batchAt -= wdt) <= 0) { F.batchAt = FIGHT.batch.every; goldBatch(F.backN || 0); F.backN = 0; } }
       dartTick(wdt);
       shutLineTick(open);
       bigTick(open);
@@ -6829,39 +6833,62 @@
       F.call = 'shown'; F.urge = null; F.released = false; if (kit && kit.visionUrge) kit.visionUrge(false);
       const go = () => { if (play.fight === F && F.on) goldBegin(); };
       const release = () => { if (play.fight !== F) return; F.released = true; if (kit && kit.wave) kit.wave(WAVE_GOLD); };
-      if (!(kit && kit.unlock && kit.unlock('amulet', { showcase: true, auto: 5.2, sound: 'u4goldcall', releaseSound: 'u4goldpower', onRelease: release, onClose: go }))) go();
+      if (!(kit && kit.unlock && kit.unlock('amulet', { showcase: true, auto: 5.2, sound: 'u4goldcall', releaseSound: 'u4goldpower', onRelease: release, onClose: go,
+                                                   gatherSound: 'u4goldgather', hoverSound: 'u4goldhover', intoSound: 'u4golddive', mergeSound: 'u4goldmerge' }))) go();
     }
     /* EMPOWERED (R26 to R29: "the entire screen seem to have a golden vignette to show the new empowered status, and now the
        water being flicked becomes golden glow instead"): the gold at the edges of his sight (the fifty-sixth seam), the water
-       gold; the amulet's light sends back every one in the room at once; his heart steadied; his teacher's word, and his
-       chant again; and the swarm */
+       gold; the amulet's light strikes every one in the room at once (nova, below: R109); his heart steadied; his teacher's
+       word, and his chant again; and the swarm, back at once */
     function goldBegin() {
-      const F = play.fight; F.call = 'gold'; F.goldT = 0; F.batchAt = 1.0; F.urge = null;
-      /* (and its light goes out through the room from him, every thing and every outline it crosses burning gold, as his
-         sight's own wave does: the fifty-seventh seam. Chad: "empowers with a golden glow that spreads throughout the scene,
-         tracing every item and silhouette similar to how the spirit vision works") */
-      /* (sent from the showcase's release when it ran, with its sound: here only when it could not be shown. Build 21: 14 m in
+      const F = play.fight; F.call = 'gold'; F.goldT = 0; F.batchAt = FIGHT.back.at; F.backN = FIGHT.back.n; F.urge = null;
+      /* (its light went out through the room from him at the showcase's release, every thing and every outline it crossed
+         burning gold, as his sight's own wave does: the fifty-seventh seam. Chad: "empowers with a golden glow that spreads
+         throughout the scene, tracing every item and silhouette similar to how the spirit vision works". Build 21: 14 m in
          3.2 s with a slow trail, so the room stays traced in gold while it fades: at 26 m in 2.6 s it crossed the room in a
-         fifth of a second and was gone) */
-      if (!F.released && kit && kit.wave) kit.wave(WAVE_GOLD);
+         fifth of a second and was gone. Here, as it merges into the water, its second wave: the nova's, R109) */
       if (kit) { if (kit.edge) kit.edge({ color: [255, 196, 84], k: 0.85, secs: 1.2 }); if (kit.sprayColor) kit.sprayColor(0xffc24a, { size: 1.6 }); if (kit.ammo) kit.ammo(DATA.weapon.rounds);
         if (kit.ammoInf) kit.ammoInf(true); }                                   // (R56: the count reads the infinity sign)
       if (!F.released) fx('u4goldpower', 1, 0);
       /* (the amulet's light reaches her too: her life at least half back. 18 Nov, photographed: held at 15 through the surge,
          she came into the gold two touches from the loss, and the power he was given was spent guarding a last breath) */
       F.hp = Math.max(F.hp, 50); if (kit && kit.health) kit.health({ k: F.hp / 100 });
-      let i = 0; for (const S of F.shapes) if (S.state !== 'gone' && S.state !== 'leave') { S.state = 'leave'; S.leave = -0.5 * ((i++ * 0.6180339887) % 1); }
-      if (i) fx('u4goldclear', 0.9, 0);
+      nova();
       play.heat = Math.min(play.heat, 0.5);
       if (kit && kit.pulse) kit.pulse({ bpm: 124, secs: 2.2 });
       objectiveFor('bless');
       queueLine('ph4f3', () => talk(cast.phoB, SECS.ph4f3 || 3));            // "Luang Phor Phiboon is with you. Flick the golden water at the green spirits!"
       queueFn(() => { F.chantHeld = false; if (play.fight === F && F.on && chantNow) chantSing(chantNow); });
     }
+    /* THE NOVA (R109, Chad, 19 Nov: "Also it should let out a wave of powerful AOE energy that immediately clears all green
+       spirits in one shot. But of course, even after that one shot clear, many more green spirits appear again almost
+       instantly after, and player has to spray the golden water at them to keep playing and clearing the green spirits.
+       The moment of instant clearing is just to show the power of lp phiboon and not to end the play moment there"): as it
+       merges into the water a second wave of its gold goes out from him through the room, quicker and brighter than the
+       release's (the whole room in a third of a second, half as bright again: kit.wave's `k`), and every green one, seen or
+       not, is struck the moment its front reaches it (kitWave's own curve: the front at reach (1 - (1 - u)^2.2)), bursting
+       in gold and burning out in half a second; the sound of a room of them going at once. Twelve more rise round her 0.85 s
+       later (FIGHT.back) and the swarm goes on: the golden water is his for the rest of the blessing */
+    const WAVE_NOVA = { color: 0xffd36a, secs: 1.4, reach: 14, trail: 0.12, k: 1.5 };
+    function nova() {
+      const F = play.fight; if (!F) return 0;
+      if (kit && kit.wave) kit.wave(WAVE_NOVA);
+      let n = 0;
+      for (const S of F.shapes) {
+        if (S.state === 'gone' || S.state === 'leave') continue;
+        const m = S.P.hit, at = m && m.visible ? m.position : S.P.group.position;
+        const f = Math.min(0.999, Math.hypot(at.x - yaw.position.x, at.z - yaw.position.z) / WAVE_NOVA.reach);
+        const delay = WAVE_NOVA.secs * (1 - Math.pow(1 - f, 1 / 2.2));
+        S.state = 'leave'; S.leave = -delay; S.quick = 0.5; hitFlash(S, delay); n++;
+      }
+      fx('u4goldclear', 0.95, 0);
+      if (n) F.lastStrike = F.t;
+      return n;
+    }
     /* a batch of five to seven from the room's edges, most of them for her (R28: "the green entities should swarm in the
-       screen in dramatic numbers, filling the screen with many of them") */
-    function goldBatch() {
-      const B = FIGHT.batch, n = B.min + Math.floor(fightRnd() * (B.max - B.min + 1)), a0 = fightRnd() * Math.PI * 2;
+       screen in dramatic numbers, filling the screen with many of them"); `many` asks for that many (the return: R109) */
+    function goldBatch(many) {
+      const B = FIGHT.batch, n = many > 0 ? many : B.min + Math.floor(fightRnd() * (B.max - B.min + 1)), a0 = fightRnd() * Math.PI * 2;
       let made = 0;
       for (let i = 0; i < n; i++) {
         const u = fightRnd(), to = u < 0.62 ? 'amma' : u < 0.80 ? 'me' : u < 0.88 ? 'pho' : u < 0.94 ? 'ravi' : 'mala';

@@ -157,6 +157,19 @@ fx   u4sv5       $R/u4sv5_a.mp3       -14 "atrim=start=0.40,asetpts=PTS-STARTPTS
 fx   u4svL       $R/u4svL_b.mp3       -14                                     # b: the large one's growl, 85 % where a phone plays (a 57 %), no word heard
 fi
 
+# ---- R107 to R110 (Chad, 19 Nov: "it should have more sound effects for this entire moment, as some parts are silent. For
+#      example, merging with the icon should have its sound effect too"): measured on the shipped call, the amulet hovered in
+#      near silence (u4goldcall under -35 from 2.0 s, the release at 4.0), went down into the water with no sound of its own,
+#      and merged with none. Four more (sound/sfx.py; sessions-sfx.json gold19: four takes each), each measured (its level,
+#      the share a phone plays, its envelope a tenth of a second at a time) and put through the transcriber with the chapter's
+#      own settings (measure.py's: no word in any pick; d of the hover writes "Oh")
+if [ -z "$ONLY" ] || [ "$ONLY" = sfx ] || [ "$ONLY" = gold ]; then
+fx   u4goldgather $R/u4goldgather_a.mp3 -14                                   # a: the light gathering, rising to its flash at 0.9 to 1.2 s as the amulet is born (b rises later and 6 dB under; c and d 10 to 13 dB under)
+fx   u4goldhover  $R/u4goldhover_a.mp3  -14                                   # a: the bowl, the choir and the bells held the longest (2.0 s before they fall away: b and c 1.5, d dies at 1.2 and is 40 % silence)
+fx   u4golddive   $R/u4golddive_a.mp3   -14                                   # a: the streak going down, the fullest (3 dB over b), all where a phone plays
+fxc  u4goldmerge  $R/u4goldmerge_a.mp3  -11 "$HARM"                           # a: the crack and the burst, 55 % where a phone plays (b 47, c and d 24), its low end's harmonics laid in (HARM) as u4goldpower's boom was; the loudest of the moment (the others -14)
+fi
+
 # ---- THE MUSIC (sound/measures-music.json, sound/measures-music2.json): music at peak -3 (v22.4), Opus 128k
 cuthead() { echo "atrim=start=$1,asetpts=PTS-STARTPTS,afade=t=in:d=0.04"; }
 mus() { # name src [ffmpeg filter]: a film's cue

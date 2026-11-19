@@ -4001,7 +4001,9 @@ function visionActive() { return !!vis.decl && (vis.on || vis.r > 0.0005 || !!vi
    behind it, the whole fading as it runs out. Drawn by the vision's own compositor, with his sight open (laid over the
    vision) or shut (the world as it is, nothing turned, no spirit drawn: only the wave). kit.wave(null) stops it; a scene
    and kitReset end it. Absent, nothing of it runs (the frame's choice of pass is the one it always was) */
-const gwave = { on: false, t0: 0, secs: 2.4, reach: 24, trail: 0.35, col: new THREE.Color(1.0, 0.78, 0.32), R: 0, M: 0 };
+const gwave = { on: false, t0: 0, secs: 2.4, reach: 24, trail: 0.35, col: new THREE.Color(1.0, 0.78, 0.32), R: 0, M: 0, k: 1 };
+/* (R109: `k`, the wave's strength, 1 as it always was; episode 4 chapter 4's second wave, as its amulet merges into the water,
+   goes out at 1.5) */
 function kitWave(o) {
   if (o === null || o === false) { gwave.on = false; gwave.R = 0; gwave.M = 0; return true; }
   if (!vis.decl || state === 'title') return false;
@@ -4010,6 +4012,7 @@ function kitWave(o) {
   gwave.on = true; gwave.t0 = performance.now();
   gwave.secs = Math.max(0.4, +o.secs || 2.4); gwave.reach = Math.max(2, +o.reach || 24); gwave.trail = o.trail == null ? 0.35 : Math.max(0, +o.trail);
   gwave.col.set(o.color == null ? 0xffc752 : o.color);
+  gwave.k = o.k == null ? 1 : Math.max(0, +o.k || 0);
   return true;
 }
 /* the wave's front and strength on wall time: out fast and easing, then the whole fading over its last 0.7 s */
@@ -4019,7 +4022,7 @@ function gwaveFrame() {
   if (u >= 1.35) { gwave.on = false; gwave.R = 0; gwave.M = 0; return false; }
   const e = 1 - Math.pow(1 - Math.min(1, u), 2.2);
   gwave.R = gwave.reach * e;
-  gwave.M = u < 0.75 ? 1 : Math.max(0, 1 - (u - 0.75) / 0.6);
+  gwave.M = (u < 0.75 ? 1 : Math.max(0, 1 - (u - 0.75) / 0.6)) * gwave.k;
   return true;
 }
 /* a wave let go from a hold (kit.vision(null), or a switch over it) runs on from where it was held toward the state the
@@ -12023,6 +12026,9 @@ function ivRender(id, W, H, yawA, pitchA, k) {
    its power; the trail it leaves going down into the water. Seeded, so every showing is the same; one small sprite drawn
    at each point (a gradient made once, not one a mote a frame) */
 const scFx = { motes: null, embers: null, burst: null, into: null, dot: null };
+/* (R107) each line of the showcase's gathering light drawn three times over: [its width in its mote's size, its strength,
+   its colour]: a wide deep-gold glow, a narrower brighter one, and its core in R83's own colour */
+const SC_GLOW = [[7, 0.16, 'rgba(255,168,56,'], [3.6, 0.34, 'rgba(255,206,110,'], [1.5, 1, 'rgba(255,224,150,']];
 function scFxDot() {
   if (scFx.dot) return scFx.dot;
   const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
@@ -12046,8 +12052,9 @@ function scFxFrame(t, dur) {
   if (!scFx.motes) {
     let sd = 0x5a17c0de;
     const rnd = () => ((sd = (Math.imul(sd, 1664525) + 1013904223) >>> 0) / 4294967296);
-    scFx.motes = Array.from({ length: 84 }, (_, i) => ({ a: i / 84 * Math.PI * 2 + rnd() * 0.3, r: 0.55 + rnd() * 0.45, d: rnd() * 0.35,
-      T: 0.5 + rnd() * 0.3, spin: 1.1 + rnd() * 0.9, sz: 1.2 + rnd() * 1.6, glint: i % 3 === 0 }));
+    /* (R107: 120 lines where there were 84, a glint on every other one where it was every third) */
+    scFx.motes = Array.from({ length: 120 }, (_, i) => ({ a: i / 120 * Math.PI * 2 + rnd() * 0.3, r: 0.55 + rnd() * 0.45, d: rnd() * 0.35,
+      T: 0.5 + rnd() * 0.3, spin: 1.1 + rnd() * 0.9, sz: 1.2 + rnd() * 1.6, glint: i % 2 === 0 }));
     scFx.embers = Array.from({ length: 36 }, () => ({ x: rnd() - 0.5, b: rnd(), v: 0.5 + rnd() * 0.7, sw: rnd() * 6.2832, sz: 0.8 + rnd() * 1.3 }));
     scFx.burst = Array.from({ length: 64 }, () => ({ a: rnd() * Math.PI * 2, v: 0.55 + rnd() * 0.85, sz: 1 + rnd() * 1.7 }));
   }
@@ -12062,21 +12069,38 @@ function scFxFrame(t, dur) {
     const p = (t - 0.08 - m.d) / m.T; if (p <= 0 || p >= 1) continue;
     const e = ease(p), rr = m.r * R * (1 - e), aa = m.a + m.spin * e;
     const x = cx + Math.cos(aa) * rr, y = cy + Math.sin(aa) * rr;
-    const e0 = ease(Math.max(0, p - 0.09)), r0 = m.r * R * (1 - e0), a0 = m.a + m.spin * e0;
     /* (R83, Chad, 18 Nov: "make those effects look brighter and more obvious while keeping the look the same as they are,
        but just make it more shiny and glowy and brighter": the same motes, tails and colours; each tail stronger and wider,
        each mote a bright core in a wide soft glow, and a glint that twinkles on every third one) */
-    g.globalAlpha = Math.min(1, 0.42 + 0.58 * e); g.strokeStyle = 'rgba(255,224,150,1)'; g.lineWidth = m.sz * 1.5 * dpr;
-    g.beginPath(); g.moveTo(cx + Math.cos(a0) * r0, cy + Math.sin(a0) * r0); g.lineTo(x, y); g.stroke();
+    /* (R107, Chad, 19 Nov: "the golden effect that plays just before lp phiboon amulet appears, make those individual lines
+       all have a glow to them. That moment can be more dramatic"): each line half as long again, and drawn three times
+       over, each fading from nothing at its tail to full at its head: a wide deep-gold glow, a narrower brighter one, and
+       its hot core; each glint's cross glows the same way. (R83's motes, colours and cores are kept) */
+    const e0 = ease(Math.max(0, p - 0.135)), r0 = m.r * R * (1 - e0), a0 = m.a + m.spin * e0;
+    const x0 = cx + Math.cos(a0) * r0, y0 = cy + Math.sin(a0) * r0, la = Math.min(1, 0.42 + 0.58 * e);
+    for (const [wd, al, c0] of SC_GLOW) {
+      const gr = g.createLinearGradient(x0, y0, x, y); gr.addColorStop(0, c0 + '0)'); gr.addColorStop(1, c0 + '1)');
+      g.globalAlpha = la * al; g.strokeStyle = gr; g.lineWidth = m.sz * wd * dpr;
+      g.beginPath(); g.moveTo(x0, y0); g.lineTo(x, y); g.stroke();
+    }
     dot(x, y, m.sz * 2.8 * dpr, 0.3 + 0.3 * e);
     dot(x, y, m.sz * 1.35 * dpr, 0.85 + 0.15 * e);
     if (m.glint) { const tw = 0.5 + 0.5 * Math.sin(t * 19 + m.a * 7), L = m.sz * 9 * dpr * (0.6 + 0.4 * tw);
-      g.globalAlpha = Math.min(1, (0.55 + 0.45 * e) * tw); g.strokeStyle = 'rgba(255,246,214,1)'; g.lineWidth = Math.max(1, 0.9 * dpr);
-      g.beginPath(); g.moveTo(x - L, y); g.lineTo(x + L, y); g.moveTo(x, y - L); g.lineTo(x, y + L); g.stroke(); }
+      for (const [wd, al, c0] of SC_GLOW) {
+        g.globalAlpha = Math.min(1, (0.55 + 0.45 * e) * tw) * al; g.strokeStyle = c0 + '1)'; g.lineWidth = Math.max(1, 0.6 * wd * dpr);
+        g.beginPath(); g.moveTo(x - L, y); g.lineTo(x + L, y); g.moveTo(x, y - L); g.lineTo(x, y + L); g.stroke(); } }
   }
   /* the point they gather into, swelling until the amulet is born from it */
   const core = Math.max(0, Math.min(1, (t - 0.45) / 0.5)) * (1 - Math.max(0, Math.min(1, (t - BIRTH) / 0.35)));
   if (core > 0) { dot(cx, cy, (10 + 34 * core) * dpr, 0.55 * core); dot(cx, cy, (5 + 16 * core) * dpr, core); }   // (R83: a wider glow round it, its heart full)
+  /* (R107) its birth: a burst of light out of that point as the lines meet, and a ring of it going out */
+  const bq = (t - BIRTH + 0.05) / 0.55;
+  if (bq > 0 && bq < 1) { const be = 1 - (1 - bq) * (1 - bq);
+    dot(cx, cy, (8 + mw / dpr * 0.06 * be) * dpr, 0.9 * (1 - bq));
+    g.globalAlpha = 0.85 * (1 - bq); g.strokeStyle = 'rgba(255,236,180,1)'; g.lineWidth = (3 + 5 * (1 - bq)) * dpr;
+    g.beginPath(); g.arc(cx, cy, mw * (0.08 + 0.62 * be), 0, Math.PI * 2); g.stroke();
+    g.globalAlpha = 0.35 * (1 - bq); g.strokeStyle = 'rgba(255,190,80,1)'; g.lineWidth = (12 + 14 * (1 - bq)) * dpr;
+    g.beginPath(); g.arc(cx, cy, mw * (0.08 + 0.62 * be), 0, Math.PI * 2); g.stroke(); }
   /* 2 · embers rising round it while it hovers */
   if (t > BIRTH + 0.25 && t < INTO) {
     const fade = Math.min(1, (t - BIRTH - 0.25) / 0.5) * Math.min(1, (INTO - t) / 0.3);
@@ -12147,7 +12171,7 @@ function ivFrame(now) {
      same speed on a phone that draws a frame a second as on a laptop. */
   if (unl.id) {
     const cv = $(unl.show ? 'scCv' : 'unCv');
-    const secs = ((now || performance.now()) - unl.t0) / 1000;
+    const secs = ((now || performance.now()) - unl.t0) / 1000 / (unl.show ? scSlow : 1);
     /* (the showcase turns it once round as it comes in, quick and slowing, and it comes to rest FACING him, then sways a
        little while it stands: a turning model that shows its face. Build 20's photographs caught the first spin (a turn
        every three seconds) on its plain back at both moments taken, and the face is the sacred side) */
@@ -12261,6 +12285,10 @@ function ivZoomClose() {
    chapter 3 does, so nothing shipped before v14.7 can reach it. */
 const UNLOCK_GUARD = 600;
 const unl = { id: null, t0: 0, onClose: null, outT: 0, autoT: 0, show: false };
+/* (R107 to R110) a probe's SLOW MOTION of the showcase: its timers and its drawn effects run this many times slower
+   (window.__enc.showSlow; the probe slows the page's CSS animations by the same through the browser's own animation
+   domain). 1, as it always is in the game: every time times 1 and over 1 is the same number */
+let scSlow = 1;
 function kitUnlock(id, opts = {}) {
   if (!ITEM_DEFS[id] || unl.id || state !== 'play' || fainting) return false;
   /* v27.0 · seam 55, A SHOWCASE OF ITS OWN (Chad, 18 Nov: "When the lp phiboon amulet shows up, there is no need for text at
@@ -12330,8 +12358,14 @@ function showcaseOpen(id, opts) {
   if (cv) { const g = cv.getContext('2d'); if (g) g.clearRect(0, 0, cv.width, cv.height); }
   ivStart();
   snd(opts.sound || 'itemunlock', 0.95);
+  /* (R110, Chad, 19 Nov: "it should have more sound effects for this entire moment, as some parts are silent. For example,
+     merging with the icon should have its sound effect too"): a chapter may name a sound for each beat of it, its own names
+     (never a chapter's name written here): `gatherSound` as the light gathers, `hoverSound` once it is born and hovers,
+     `intoSound` as it goes down into the button, `mergeSound` as it merges. Absent, each beat is as it was (silent) */
+  if (opts.gatherSound) snd(opts.gatherSound, 0.9);
   haptic([30, 50, 120]);
   const secs = Math.max(2.4, +opts.auto || 4.2);
+  unl.hoverT = opts.hoverSound ? setTimeout(() => { if (unl.id === id && unl.show) snd(opts.hoverSound, 0.85); }, 1700 * scSlow) : 0;
   /* (build 21, Chad 18 Nov: its own entrance, nothing of Item Unlocked's.) The light gathers and it is born at 0.95 s
      (CSS), it turns and hovers; 1.2 s before the end it RELEASES ITS POWER: the room shakes, halos go out from it, motes
      burst (scFxFrame) and the release's sound; 0.6 s before the end it goes down into the holy water's button, which
@@ -12348,7 +12382,7 @@ function showcaseOpen(id, opts) {
     /* (the chapter's own moment of release: episode 4 chapter 4 sends its golden wave through the room from here, so the
        halos and the light through the room go out together) */
     if (typeof opts.onRelease === 'function') { try { opts.onRelease(); } catch (e) { console.warn('showcase onRelease failed', e); } }
-  }, (secs - 1.2) * 1000);
+  }, (secs - 1.2) * 1000 * scSlow);
   unl.intoT = setTimeout(() => {
     if (unl.id !== id || !unl.show) return;
     /* where it goes: the holy water's button where there is one on the screen, else the foot of the screen (the
@@ -12359,9 +12393,12 @@ function showcaseOpen(id, opts) {
     el.style.setProperty('--ix', (tx - innerWidth / 2).toFixed(1) + 'px'); el.style.setProperty('--iy', (ty - innerHeight / 2).toFixed(1) + 'px');
     scFx.into = { x: tx, y: ty };
     el.classList.add('into');
-  }, (secs - 0.6) * 1000);
-  unl.fillT = setTimeout(() => { if (unl.id === id && unl.show && fire) { void fire.offsetWidth; fire.classList.add('scFill'); scMerge(fire); } }, (secs - 0.12) * 1000);
-  unl.autoT = setTimeout(() => { unl.autoT = 0; if (unl.id === id) unlockClose('auto'); }, secs * 1000);
+    if (opts.intoSound) snd(opts.intoSound, 0.9);
+  }, (secs - 0.6) * 1000 * scSlow);
+  unl.fillT = setTimeout(() => { if (unl.id !== id || !unl.show) return;
+    if (fire) { void fire.offsetWidth; fire.classList.add('scFill'); scMerge(fire); }
+    if (opts.mergeSound) snd(opts.mergeSound, 1); }, (secs - 0.12) * 1000 * scSlow);
+  unl.autoT = setTimeout(() => { unl.autoT = 0; if (unl.id === id) unlockClose('auto'); }, secs * 1000 * scSlow);
   unl.t0 = performance.now();
   return true;
 }
@@ -12370,17 +12407,24 @@ function showcaseOpen(id, opts) {
    button, a flash of gold, two rings of light going out from the circle one after the other, and the screen shaken
    (shorter than the release's own). On the page itself, not in the showcase, so the showcase's close a moment later
    cuts none of it; each piece takes itself away when its animation ends */
+/* (R108, Chad, 19 Nov: "When the amulet flies down to merge into the icon, the screen should shake more, have a powerful
+   sound effect, and the circle of halo that bursts out from the icon when merging should be more obvious and more dramatic
+   to feel more powerful"): the flash twice as wide, three thick glowing rings going out three times as far (one after the
+   other), and two of the screen's own size: a wash of gold from the circle over the whole screen, and a shockwave ring
+   sweeping out from it past the farthest corner (`D`, measured from the circle). The shake longer and twice as hard, with
+   a punch of zoom that keeps the screen's edges covered on a phone (shell.html). Its sound is the chapter's (`mergeSound`) */
 function scMerge(btn) {
   const r = btn.getBoundingClientRect(); if (!(r.width > 0)) return;
   const x = r.left + r.width / 2, y = r.top + r.height / 2, d = Math.max(r.width, r.height);
-  for (const [cls, ms] of [['scMFlash', 600], ['scMRing', 1000], ['scMRing r2', 1150]]) {
+  const D = 2 * Math.max(Math.hypot(x, y), Math.hypot(innerWidth - x, y), Math.hypot(x, innerHeight - y), Math.hypot(innerWidth - x, innerHeight - y));
+  for (const [cls, ms, size] of [['scMWash', 760, D], ['scMShock', 900, D], ['scMFlash', 800, d], ['scMRing', 1200, d], ['scMRing r2', 1350, d], ['scMRing r3', 1500, d]]) {
     const el = document.createElement('div'); el.className = 'scMerge ' + cls; el.setAttribute('aria-hidden', 'true');
-    el.style.left = x + 'px'; el.style.top = y + 'px'; el.style.width = el.style.height = d + 'px';
-    document.body.appendChild(el); setTimeout(() => el.remove(), ms);
+    el.style.left = x + 'px'; el.style.top = y + 'px'; el.style.width = el.style.height = size + 'px';
+    document.body.appendChild(el); setTimeout(() => el.remove(), ms * scSlow);
   }
   const sc = $('scene');
-  if (sc) { sc.classList.remove('scMergeShake'); void sc.offsetWidth; sc.classList.add('scMergeShake'); clearTimeout(scMerge.t); scMerge.t = setTimeout(() => sc.classList.remove('scMergeShake'), 520); }
-  haptic([40, 30, 110]);
+  if (sc) { sc.classList.remove('scMergeShake'); void sc.offsetWidth; sc.classList.add('scMergeShake'); clearTimeout(scMerge.t); scMerge.t = setTimeout(() => sc.classList.remove('scMergeShake'), 920 * scSlow); }
+  haptic([70, 40, 220]);
 }
 function unlockClose(how) {
   if (!unl.id) return false;
@@ -12388,7 +12432,7 @@ function unlockClose(how) {
   if (unl.show) {                              // v27.0: the showcase goes its own way (no click, no sound of a press)
     const el = $('showcase');
     unl.id = null; unl.show = false;
-    clearTimeout(unl.autoT); unl.autoT = 0; clearTimeout(unl.flareT); clearTimeout(unl.intoT); clearTimeout(unl.fillT);
+    clearTimeout(unl.autoT); unl.autoT = 0; clearTimeout(unl.flareT); clearTimeout(unl.intoT); clearTimeout(unl.fillT); clearTimeout(unl.hoverT);
     document.body.classList.remove('showcaseopen', 'scToHud');
     $('scene')?.classList.remove('scShake');
     if (how === 'force') $('fireBtn')?.classList.remove('scFill');
@@ -15203,6 +15247,9 @@ const STING_SAMPLE = {
   /* v27.0 · its effects, beds and music (masters/v27.0/sound.sh: every pick and why) */
   u4sv1: ['u4sv1', 1], u4sv2: ['u4sv2', 1], u4sv3: ['u4sv3', 1], u4sv4: ['u4sv4', 1], u4sv5: ['u4sv5', 1],
   u4svL: ['u4svL', 1],
+  /* v27.0 · its effects, beds and music (masters/v27.0/sound.sh: every pick and why) */
+  u4golddive: ['u4golddive', 1], u4goldgather: ['u4goldgather', 1], u4goldhover: ['u4goldhover', 1],
+  u4goldmerge: ['u4goldmerge', 1],
   /* E4C4 FX END */
 };
 /* Which kinds the synth below can actually fake. Everything else in
@@ -18431,6 +18478,8 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                  /* (R105) the probes' STILL of the wave: { t, dir, r0, age } puts it where it would be t seconds into a wave
                     going out (dir 1) or home (dir -1) from r0, the trail's clock `age` seconds on from there (the wave then
                     standing at its end if t is past it), and freezes it there; null lets it run again */
+                 showSlow: (f) => { scSlow = Math.max(1, +f || 1); return scSlow; },
+                 showT: () => (unl.id && unl.show ? (performance.now() - unl.t0) / 1000 / scSlow : null),
                  visionStill: (o) => { if (!vis.decl) return false; const d = vis.decl;
                    if (o === null) { vis.freeze = false; return true; }
                    const dir = o.dir < 0 ? -1 : 1, secs = dir > 0 ? d.outSecs : d.inSecs, t = Math.max(0, +o.t || 0), u = Math.min(1, t / secs);

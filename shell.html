@@ -2412,13 +2412,24 @@ body.scToHud.wpnNoAim #aimBtn{display:none}
 /* (R84: the amulet merging into the water's circle: a flash, two rings of light going out from the circle, the screen
    shaken; made and removed by the engine's scMerge) */
 .scMerge{position:fixed;z-index:14;pointer-events:none;border-radius:50%;transform:translate(-50%,-50%) scale(.6);opacity:0}
-.scMerge.scMFlash{background:radial-gradient(closest-side,rgba(255,252,232,1),rgba(255,214,110,.85) 42%,rgba(255,180,60,0) 100%);animation:scMFlash .6s ease-out both}
-.scMerge.scMRing{border:3px solid rgba(255,236,170,1);box-shadow:0 0 14px 4px rgba(255,206,96,.9),inset 0 0 12px 3px rgba(255,206,96,.75);animation:scMRing 1s cubic-bezier(.15,.6,.3,1) both}
-.scMerge.scMRing.r2{animation-delay:.15s;animation-duration:1s}
-#scene.scMergeShake{animation:scMergeShake .5s linear both}
-@keyframes scMFlash{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}18%{opacity:1;transform:translate(-50%,-50%) scale(1.6)}100%{opacity:0;transform:translate(-50%,-50%) scale(3.2)}}
-@keyframes scMRing{0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}10%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(7)}}
-@keyframes scMergeShake{0%{transform:translate(0,0)}12%{transform:translate(-7px,4px)}24%{transform:translate(6px,-5px)}36%{transform:translate(-5px,-3px)}48%{transform:translate(4px,4px)}60%{transform:translate(-3px,2px)}72%{transform:translate(2px,-2px)}86%{transform:translate(-1px,1px)}100%{transform:translate(0,0)}}
+/* (R108, Chad, 19 Nov: "the screen should shake more ... the circle of halo that bursts out from the icon when merging should
+   be more obvious and more dramatic to feel more powerful"): the flash twice as wide, three rings thick with glow going out
+   to twelve times the circle, a wash of gold over the whole screen from the circle and a shockwave ring past its farthest
+   corner (both sized by the engine to the screen: scMerge's D); the shake 0.9 s and twice as hard, with a punch of zoom
+   that keeps a phone's edges covered: a step's translate is itself scaled, so each stays under 390 (s - 1) / 2s points
+   (14.4 at 1.08, 11 at 1.06, 5.7 at 1.03) */
+.scMerge.scMFlash{background:radial-gradient(closest-side,rgba(255,253,238,1),rgba(255,222,120,.9) 40%,rgba(255,180,60,0) 100%);animation:scMFlash .8s ease-out both}
+.scMerge.scMRing{border:5px solid rgba(255,242,186,1);box-shadow:0 0 26px 9px rgba(255,206,96,.95),0 0 64px 20px rgba(255,170,50,.5),inset 0 0 18px 5px rgba(255,206,96,.8);animation:scMRing 1.2s cubic-bezier(.15,.6,.3,1) both}
+.scMerge.scMRing.r2{animation-delay:.14s}
+.scMerge.scMRing.r3{animation-delay:.28s}
+.scMerge.scMWash{background:radial-gradient(closest-side,rgba(255,240,186,.9),rgba(255,206,100,.6) 30%,rgba(255,176,64,.22) 66%,rgba(255,160,50,0) 100%);animation:scMWash .75s ease-out both}
+.scMerge.scMShock{border:8px solid rgba(255,246,206,.95);box-shadow:0 0 36px 14px rgba(255,200,90,.9),inset 0 0 32px 12px rgba(255,200,90,.7);animation:scMShock .9s cubic-bezier(.2,.65,.35,1) both}
+#scene.scMergeShake{animation:scMergeShake .9s linear both}
+@keyframes scMFlash{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}15%{opacity:1;transform:translate(-50%,-50%) scale(2.8)}100%{opacity:0;transform:translate(-50%,-50%) scale(6.5)}}
+@keyframes scMRing{0%{opacity:0;transform:translate(-50%,-50%) scale(.7)}8%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(12)}}
+@keyframes scMWash{0%{opacity:0;transform:translate(-50%,-50%) scale(.15)}16%{opacity:1;transform:translate(-50%,-50%) scale(.85)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.1)}}
+@keyframes scMShock{0%{opacity:0;transform:translate(-50%,-50%) scale(.03)}10%{opacity:1}72%{opacity:.85}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
+@keyframes scMergeShake{0%{transform:scale(1.08) translate(0,0)}8%{transform:scale(1.08) translate(-14px,9px)}16%{transform:scale(1.07) translate(12px,-12px)}24%{transform:scale(1.06) translate(-11px,-8px)}32%{transform:scale(1.05) translate(9px,10px)}42%{transform:scale(1.04) translate(-7px,6px)}52%{transform:scale(1.03) translate(5px,-6px)}62%{transform:scale(1.02) translate(-3.5px,4px)}74%{transform:scale(1.01) translate(1.5px,-2px)}86%{transform:scale(1.005) translate(-.8px,1px)}100%{transform:scale(1) translate(0,0)}}
 body.showcaseopen .soundBtn,body.showcaseopen #volWrap{display:none}
 @keyframes scShaft{0%{opacity:0;transform:scaleY(0) scaleX(.12)}22%{opacity:1;transform:scaleY(1) scaleX(.12)}52%{opacity:.9;transform:scaleY(1) scaleX(1)}100%{opacity:0;transform:scaleY(1) scaleX(1.4)}}
 @keyframes scBirth{0%{opacity:0;transform:scale(.14);filter:brightness(2.6) blur(3px)}55%{opacity:1;filter:brightness(1.5) blur(0)}100%{opacity:1;transform:none;filter:none}}

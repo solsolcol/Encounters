@@ -314,5 +314,48 @@
    "D9BfsLTEIyMYm3O5tT4p",
    "1tEb8wuEIpmjfxmyVHCq"
   ]
+ },
+ "gold19": {
+  "why": "R107-R110 (Chad, 19 Nov): four more for the amulet moment; four takes each, eleven_text_to_sound_v3, flow c0Jo6SrW7Q0K0NkWlk6e",
+  "u4goldmerge": {
+   "node": "LQQlI7wCVjdmmdBzrj84",
+   "sessions": [
+    "hJsEJmMOtAvsmGClxnBd",
+    "aAcRNOhyNy2RkQmX67WU",
+    "Odd5ST0qKaTq6toUYfsD",
+    "mT6Qw0pNZHfPo9dvMDRe"
+   ],
+   "letters": "abcd"
+  },
+  "u4golddive": {
+   "node": "WiziauiqcQhBHjpcFbT8",
+   "sessions": [
+    "rsRhJJZj6RWDP1maGPUA",
+    "WcfR9buIdjWAeBcBCJtG",
+    "8j6SGjxuoxk1M4TDt20K",
+    "AprFhiUHIX10XhjWjf7C"
+   ],
+   "letters": "abcd"
+  },
+  "u4goldhover": {
+   "node": "iOzQGmH4PKwo7jaiVA54",
+   "sessions": [
+    "2ttTLkSgM0TK2bHb0sEv",
+    "bs7ZNwi2YAvkRmlvfDg6",
+    "hoLj1bR2CPlMTFBKt3DU",
+    "83cSKhzE5XuP4w6OpnvY"
+   ],
+   "letters": "abcd"
+  },
+  "u4goldgather": {
+   "node": "B7SzxtufyviGIAD125bI",
+   "sessions": [
+    "UZnO5HyWYX4mGP25kO0B",
+    "VXyZcrwRGlKfhoVYAprv",
+    "5AcMgzdZtcCAcjHxmspx",
+    "rlzvP5w0pDDhV9tf6CIj"
+   ],
+   "letters": "abcd"
+  }
  }
 }
