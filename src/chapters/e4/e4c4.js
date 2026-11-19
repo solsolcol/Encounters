@@ -5346,8 +5346,8 @@
        (`trunk`), the neck's forward turn eased and the skull's nod given the rest, so his head stays over his shoulders
        and his face where it was (`head`, `nod`), and his right collar bone drawn back (`clavR`). The numbers chosen by
        photographs from his side at several strengths, and measured again: the tracker's log) */
-    const PHO_STAND_UPRIGHT = { Sit_to_Stand_Transition_M: { trunk: 0.5, chest: -15, head: 10, nod: 9, clavR: 10 },
-      Talk_with_Hands_Open: { trunk: -1, chest: -15, head: 11.5, nod: 9, clavR: 10 } };
+    /* (held at R76's values until the photographs from his side choose the new ones: a body goes to him only once checked) */
+    const PHO_STAND_UPRIGHT = { Sit_to_Stand_Transition_M: { trunk: -4.5, head: 16.5 }, Talk_with_Hands_Open: { trunk: -6, head: 18 } };
     const PHO_KNEES = { takes: { Sit_to_Stand_Transition_M: 1, Talk_with_Hands_Open: 1 }, win: { Sit_to_Stand_Transition_M: [5.2, 99] }, bend: 4, max: 0.012 };
     const PHO_STAND_SHOULDERS = { Talk_with_Hands_Open: 1, mage_soell_cast_3: 0.6 };
     const PHO_STAND_SHWIN = { mage_soell_cast_3: [0.5, 0.45] };
