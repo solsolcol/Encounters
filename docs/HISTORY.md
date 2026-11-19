@@ -9342,7 +9342,11 @@ What the baseline contains, by release:
   colour, since the sheet's filtering draws them into the robe's edge a little way off; the speck on his lower robe
   seen from his left traced by tools/probes/texwhere.mjs to his own left forearm by the elbow, showing through the
   drape: R77's); 25 (deploy `6afe3808c63e46bfc2930abd`: R77, on his stool the drape over his left arm goes with the arm
-  as his hand is laid on his thigh, as chapter 3's crossed hands already carried it, his arm's pose unchanged).
+  as his hand is laid on his thigh, as chapter 3's crossed hands already carried it, his arm's pose unchanged); 26 (deploy
+  `6afe3c1ed9b11f158697d442`: R77, his left elbow at his side on the stool: the lap's measure had read the drape's
+  hanging bone as his body and turned the elbow out until the arm cleared it, 89 degrees and 0.169 m, a wing of white at
+  his left; now 45 and 0.067, his right 35 and 0.018; the joint scan finds nothing a real body would not hold, seated or
+  standing).
 
 ## The sheet, version by version
 
