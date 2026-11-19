@@ -25,6 +25,11 @@ const p = await ctx.newPage();
    so one film frame can be photographed with a model as it was and as it is, nothing else changed */
 for (const [key, file] of (process.env.SWAP || '').split(',').filter(Boolean).map(q => q.split('=')))
   await p.route(new RegExp('/assets/' + key + '\\.[0-9a-f]+\\.glb$'), (r) => r.fulfill({ status: 200, contentType: 'model/gltf-binary', body: fs.readFileSync(file) }));
+/* (v27.0, 19 Nov) SWAPJS=key=file.js: a CHAPTER's script served from disk in place of the build's (a chapter file is
+   copied into the build byte for byte, so a change to the chapter alone is photographed without building again; the
+   build that ships is still made and checked whole) */
+for (const [key, file] of (process.env.SWAPJS || '').split(',').filter(Boolean).map(q => q.split('=')))
+  await p.route(new RegExp('/assets/' + key + '\\.[0-9a-f]+\\.js$'), (r) => r.fulfill({ status: 200, contentType: 'text/javascript', body: fs.readFileSync(file) }));
 const errs = [];
 p.on('pageerror', e => errs.push('PAGEERROR ' + e.message));
 p.on('console', m => { if (m.type() === 'error' || /failed|threw/i.test(m.text())) errs.push('CONSOLE ' + m.text().slice(0, 200)); });

@@ -1,0 +1,111 @@
+R103 (Chad, 19 Nov): the street below the block across, and the opening film's pan down to it, set aside until his yes
+(the film never looks down at the street; asked 19 Nov: carry the pan down to it before the turn, the same length).
+Apply from the repo root:  git apply masters/v27.0/pending/r103-street.patch
+and add in masters/v27.0/parts/a_head.js, after 'pho' in `assets`:
+      /* (R103) the cars parked in the estate road's lots, eight storeys below her corridor: chapter 1's (reuseInEpisode) */
+      'e4sedanfar', 'e4suvfar'
+and in `reuseInEpisode`:
+      e4sedanfar: "chapter 1's taxi-street sedan (v24.20), parked in the estate road's lots eight storeys below her corridor: small in the frame, never near",
+      e4suvfar: "chapter 1's taxi-street SUV (v24.20), parked beside it in the same lots"
+
+--- a/masters/v27.0/parts/b_flat.js
++++ b/masters/v27.0/parts/b_flat.js
+@@ -696,20 +696,75 @@
+         for (let i = 0; i < 16; i++) for (let j = 0; j < 6; j++) x.fillRect(4 + i * 15.8, 6 + j * 20, 13, 17);
+         quadUV(B({ map: lit(c), fog: true }), [LX - 2.2, G + 0.4, WZ - 0.9], [LX + 2.2, G + 0.4, WZ - 0.9], [LX + 2.2, G + 2.0, WZ - 0.9], [LX - 2.2, G + 2.0, WZ - 0.9], 0, 0, 1, 1); }
+ 
+-      /* ---------------------------------------------- THE GROUND between the blocks and round them */
+-      const mGrass = B({ fog: true, map: lit((() => { const [c, x] = canvas(256, 256), rr = rng(7108);
+-        x.fillStyle = '#16200f'; x.fillRect(0, 0, 256, 256);
+-        for (let s = 0; s < 3000; s++) { x.fillStyle = `rgba(${30 + rr() * 30},${50 + rr() * 40},${20 + rr() * 20},0.5)`; x.fillRect(rr() * 256, rr() * 256, 2, 2); }
+-        return c; })(), 6, 6) });
+-      const mRoad = B({ color: 0x1b1c1f, fog: true });
+-      const mPath = B({ color: 0x3c3a36, fog: true });
+-      const mLine = B({ color: 0x8c8a82, fog: true });
++      /* ---------------------------------------------- THE GROUND between the blocks and round them
++         (R103, Chad, 19 Nov: "the overall hdb environment can be improved much further, the streets, the environment
++         below"): the estate road as a Singapore estate's is, seen from eight storeys up at night. Its asphalt grained, its
++         footpaths of square concrete slabs, the grass in patches of light and dark turf; the road's markings: the dashed
++         centre line, the double yellow lines along the south kerb (no parking at any time), a row of parallel parking lots
++         along the north kerb marked in white, and a zebra crossing with its give-way lines; the open concrete drain along
++         the south footpath; cars parked in most of the lots. Every surface is painted (a picture each, in true metres), so
++         nothing is drawn as a block; the cars are real models (the yard's two from chapter 1, reuseInEpisode) */
++      /* (each picture tiles: whatever crosses an edge is drawn again from the other side) */
++      const wrapped = (W, H, f) => { for (const ox of [-W, 0, W]) for (const oy of [-H, 0, H]) f(ox, oy); };
++      const mGrass = B({ fog: true, map: lit((() => { const W = 512, [c, x] = canvas(W, W), rr = rng(7108);
++        x.fillStyle = '#16200f'; x.fillRect(0, 0, W, W);
++        for (let s2 = 0; s2 < 70; s2++) { const gx = rr() * W, gy = rr() * W, gr = 26 + rr() * 80, dark = rr() < 0.55;
++          wrapped(W, W, (ox, oy) => { const g = x.createRadialGradient(gx + ox, gy + oy, 0, gx + ox, gy + oy, gr);
++            g.addColorStop(0, dark ? 'rgba(6,12,5,0.38)' : 'rgba(44,64,24,0.30)'); g.addColorStop(1, 'rgba(0,0,0,0)');
++            x.fillStyle = g; x.fillRect(gx + ox - gr, gy + oy - gr, gr * 2, gr * 2); }); }
++        for (let s2 = 0; s2 < 9000; s2++) { x.fillStyle = `rgba(${26 + rr() * 30},${46 + rr() * 44},${16 + rr() * 20},0.5)`; x.fillRect(rr() * W, rr() * W, 1.5, 2 + rr() * 2.5); }
++        for (let s2 = 0; s2 < 5; s2++) { const gx = rr() * W, gy = rr() * W, gr = 14 + rr() * 22;     // a few trodden, bare patches
++          wrapped(W, W, (ox, oy) => { const g = x.createRadialGradient(gx + ox, gy + oy, 0, gx + ox, gy + oy, gr);
++            g.addColorStop(0, 'rgba(58,46,30,0.45)'); g.addColorStop(1, 'rgba(58,46,30,0)'); x.fillStyle = g; x.fillRect(gx + ox - gr, gy + oy - gr, gr * 2, gr * 2); }); }
++        return c; })(), 12, 12) });
++      /* the asphalt: a 4 m picture, grain of light and dark stone, a few darker patches where it was mended */
++      const mRoad = B({ fog: true, map: lit((() => { const W = 512, [c, x] = canvas(W, W), rr = rng(7111);
++        x.fillStyle = '#1d1e21'; x.fillRect(0, 0, W, W);
++        for (let s2 = 0; s2 < 6; s2++) { const px = rr() * W, py = rr() * W, pw = 40 + rr() * 120, ph = 30 + rr() * 90;
++          wrapped(W, W, (ox, oy) => { x.fillStyle = 'rgba(0,0,0,0.22)'; x.fillRect(px + ox, py + oy, pw, ph); }); }
++        for (let s2 = 0; s2 < 26000; s2++) { const v = rr();
++          x.fillStyle = v < 0.5 ? 'rgba(0,0,0,0.28)' : `rgba(${118 + rr() * 50},${118 + rr() * 50},${124 + rr() * 50},${0.06 + rr() * 0.12})`;
++          x.fillRect(rr() * W, rr() * W, 1 + rr() * 1.6, 1 + rr() * 1.6); }
++        return c; })(), 4, 4) });
++      /* the footpaths: square concrete slabs (0.25 m) in their joints, each a little its own shade */
++      const mPath = B({ fog: true, map: lit((() => { const W = 256, T = 32, [c, x] = canvas(W, W), rr = rng(7112);
++        x.fillStyle = '#25241f'; x.fillRect(0, 0, W, W);
++        for (let i = 0; i < 8; i++) for (let j = 0; j < 8; j++) { const k = 0.86 + rr() * 0.24;
++          x.fillStyle = `rgb(${(64 * k) | 0},${(62 * k) | 0},${(57 * k) | 0})`; x.fillRect(i * T + 1.5, j * T + 1.5, T - 3, T - 3);
++          for (let s2 = 0; s2 < 16; s2++) { x.fillStyle = rr() < 0.5 ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.05)'; x.fillRect(i * T + 2 + rr() * (T - 5), j * T + 2 + rr() * (T - 5), 1 + rr() * 2, 1 + rr() * 2); } }
++        return c; })(), 2, 2) });
++      const mLine = B({ color: 0x8c8a82, fog: true });                                  // white road paint
++      const mYellow = B({ color: 0x8a6a1e, fog: true });                                // yellow road paint
+       const mKerb = B({ color: 0x55534d, fog: true });
++      const mDrain = B({ color: 0x0e0f10, fog: true });
+       floor(mGrass, -160, -150, 160, 60, G);
+       floor(mRoad, -160, -35.2, 160, -28.0, G + 0.02);                                    // the road along the block across
+-      for (let lx = -150; lx < 150; lx += 6) floor(mLine, lx, -31.68, lx + 3, -31.52, G + 0.03);
++      /* its markings: the crossing at x 12 to 15, so nothing else is painted across it */
++      const XING = { x0: 12, x1: 15 };
++      for (let lx = -150; lx < 150; lx += 6) if (lx + 3 < XING.x0 - 2 || lx > XING.x1 + 2) floor(mLine, lx, -31.68, lx + 3, -31.52, G + 0.03);
++      for (const [a, b] of [[-160, XING.x0 - 1], [XING.x1 + 1, 160]]) {                  // the double yellow lines on the south kerb
++        floor(mYellow, a, -28.32, b, -28.22, G + 0.03); floor(mYellow, a, -28.52, b, -28.42, G + 0.03); }
++      for (let zz = -35.0; zz < -28.4; zz += 1.0) floor(mLine, XING.x0, zz, XING.x1, zz + 0.5, G + 0.03);   // the zebra's stripes
++      for (const gx of [XING.x0 - 1.2, XING.x1 + 1.2]) for (let zz = -35.1; zz < -28.2; zz += 0.6) floor(mLine, gx - 0.1, zz, gx + 0.1, zz + 0.3, G + 0.03);   // its give-way lines
++      /* the parking lots along the north kerb: 5.4 by 2.4 m, the outer line and each lot's end */
++      const LOT = { x0: -60, n: 12, len: 5.4, z0: -35.2, z1: -32.8 };
++      floor(mLine, LOT.x0, LOT.z1 - 0.05, LOT.x0 + LOT.n * LOT.len, LOT.z1 + 0.05, G + 0.03);
++      for (let k = 0; k <= LOT.n; k++) { const lx = LOT.x0 + k * LOT.len; floor(mLine, lx - 0.05, LOT.z0, lx + 0.05, LOT.z1, G + 0.03); }
+       floor(mPath, -160, -38.6, 160, -35.2, G + 0.025); floor(mPath, -160, -28.0, 160, -25.6, G + 0.025);   // its footpaths
+       box(mKerb, 0, G + 0.08, -35.2, 320, 0.16, 0.18); box(mKerb, 0, G + 0.08, -28.0, 320, 0.16, 0.18);
++      /* the open drain along the south footpath: its dark bed, its two inner walls, its lips */
++      { const z0 = -25.55, z1 = -24.95, dd = 0.45;
++        floor(mDrain, -160, z0, 160, z1, G - dd);
++        quad(mKerb, [-160, G - dd, z1], [160, G - dd, z1], [160, G + 0.02, z1], [-160, G + 0.02, z1]);
++        quad(mKerb, [160, G - dd, z0], [-160, G - dd, z0], [-160, G + 0.02, z0], [160, G + 0.02, z0]);
++        floor(mKerb, -160, z0 - 0.08, 160, z0, G + 0.03); floor(mKerb, -160, z1, 160, z1 + 0.08, G + 0.03); }
++      /* the cars in the lots: most of them taken, each its own model's paint, nose to the east (the lane beside them runs
++         east: the left of the road is driven), set back a little from the lot's ends by chance */
++      { const cr = rng(7113), sed = [], suv = [];
++        for (let k = 0; k < LOT.n; k++) { if (cr() < 0.25) continue;
++          const it = { x: LOT.x0 + (k + 0.5) * LOT.len + (cr() - 0.5) * 0.5, y: G + 0.02, z: (LOT.z0 + LOT.z1) / 2 + (cr() - 0.5) * 0.2, ry: -Math.PI / 2 + (cr() - 0.5) * 0.04 };
++          (cr() < 0.6 ? sed : suv).push(it); }
++        many('e4sedanfar', sed, world, 0.03); many('e4suvfar', suv, world, 0.03); }
+       floor(mPath, -160, -6.0, 160, -3.2, G + 0.025);                                     // the path under her own block
+       /* the covered walkway along her block's foot: its roof on posts, the tubes under it lit (seen over the parapet) */
+       const WK = { z: -12.5, w: 3.0, h: 3.0 };
+--- a/masters/v27.0/parts/c_ufilm.js
++++ b/masters/v27.0/parts/c_ufilm.js
+@@ -990,7 +990,10 @@
+              while he speaks, to its middle, before he turns to the corridor) */
+           { t: 0, name: 'sky', eye: [-6.0, 1.52, -1.35], at: [-20, 26, -60], fp: 54, fd: 48 },
+           { t: T.est + 0.4, name: 'sky', eye: [-6.0, 1.52, -1.35], at: [-20, 26, -60], fp: 54, fd: 48 },
+-          { t: T.turn, name: 'estate', eye: [-6.0, 1.5, -1.3], at: [-2, 3.5, -42], fp: 52, fd: 46 },
++          /* (R103, Chad, 19 Nov: "the streets, the environment below": the lens had never looked down at them) the look
++             comes on down past the block across's storeys to the street eight storeys below (its lots, its cars, the
++             crossing, the lamps' pools), the eye at the parapet, before he turns to the corridor: the same length */
++          { t: T.turn, name: 'street', eye: [-6.0, 1.5, -1.62], at: [-4, -20.4, -31], fp: 56, fd: 50 },
+           { t: T.walk, name: 'corridor', eye: [-6.0, 1.5, -1.05], at: [2, 1.35, -0.85], fp: 60, fd: 54 },
+           /* (18 Nov, photographed on build 19: from behind his teacher's shoulder the gate and Ravi behind it were his
+              back; from here, nearer the parapet and further back, his teacher stands at the right in profile and Ravi's

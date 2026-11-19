@@ -33,6 +33,10 @@ def enc_flat(n, wav):
     run('ffmpeg', '-v', 'error', '-y', '-i', wav, '-map_metadata', '-1', '-c:a', 'libopus', '-b:a', '64k', '-ar', '48000', ogg)
     return dur(ogg)
 rows = []
+# (R112, Chad, 19 Nov: Grandmaster Pho "should shout 'go away, now!'"): a shouted line is levelled 4 dB over the cast's
+# -16 (its own delivery a shout's: its voiced part measured -9.5 dB RMS as said, against -17.1 for his teaching), so the
+# shout is louder than his speech in the room as well as in its timbre; under the same limiter
+LOUD = {'ph4B0': -12}
 for lid, v in P.items():
     if only and lid not in only: continue
     k = v['pick']; t = v['takes'][k]; src = os.path.join(HERE, 'raw', '%s_%s.mp3' % (lid, k)); opts = []; cut = []
@@ -44,8 +48,8 @@ for lid, v in P.items():
         h = os.path.join(TMP, 'h_%s.wav' % lid); run('ffmpeg', '-v', 'error', '-y', '-i', p, '-af', 'highpass=f=70:poles=2', '-ar', '48000', '-ac', '1', h)
         L = enc_peak(lid, h, -6.85, -6.6); how = 'him'
     else:
-        w = os.path.join(TMP, 'w_%s.wav' % lid); run('python3', LEVEL, p, w, '-16')
-        L = enc_flat(lid, w); how = 'cast, RMS -16'
+        lv = LOUD.get(lid, -16); w = os.path.join(TMP, 'w_%s.wav' % lid); run('python3', LEVEL, p, w, str(lv))
+        L = enc_flat(lid, w); how = 'cast, RMS %d' % lv
     others = ', '.join('%s %.2f s%s' % (x, m['e_last'] - m['e_first'], '' if m['clean_end'] else ' (cut on a word)') for x, m in sorted(v['takes'].items()) if x != k)
     rows.append('%-7s %-4s take %s  %-30s voice %.2f-%.2f s of %.2f, %.2f words a second  (%s)%s  -> %.2f s  [%s]' % (
         lid, v['who'], k, v['why'] or 'the one take', t['e_first'], t['e_last'], t['len'], t['wps'], others, ('; ' + '; '.join(cut)) if cut else '', L, how))

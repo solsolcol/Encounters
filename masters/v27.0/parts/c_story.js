@@ -1072,7 +1072,8 @@
        you showed come from the item unlocked effect"; "floating hovering slight subtle bobbing ... the screen shakes as it
        release its power, and a circular halo glow effect releases from the amulet outwards"): its own entrance, 5.2 s (the
        engine's showcase; at 4.2 the hover had one second, too short to read as a bob): born from gathered light, it turns
-       and hovers; 1.2 s before the end it RELEASES ITS POWER (the
+       and hovers (R113: 5.58 s since the gathering was slowed, the 0.38 s it waits longer added, so the hover
+       keeps its length); 1.2 s before the end it RELEASES ITS POWER (the
        room shakes, halos go out, its sound), and the golden wave goes through the room from that moment; then it goes down
        into the holy water */
     const WAVE_GOLD = { color: 0xffc552, secs: 3.2, reach: 14, trail: 0.12 };
@@ -1081,7 +1082,7 @@
       F.call = 'shown'; F.urge = null; F.released = false; if (kit && kit.visionUrge) kit.visionUrge(false);
       const go = () => { if (play.fight === F && F.on) goldBegin(); };
       const release = () => { if (play.fight !== F) return; F.released = true; if (kit && kit.wave) kit.wave(WAVE_GOLD); };
-      if (!(kit && kit.unlock && kit.unlock('amulet', { showcase: true, auto: 5.2, sound: 'u4goldcall', releaseSound: 'u4goldpower', onRelease: release, onClose: go,
+      if (!(kit && kit.unlock && kit.unlock('amulet', { showcase: true, auto: 5.58, sound: 'u4goldcall', releaseSound: 'u4goldpower', onRelease: release, onClose: go,
                                                    gatherSound: 'u4goldgather', hoverSound: 'u4goldhover', intoSound: 'u4golddive', mergeSound: 'u4goldmerge' }))) go();
     }
     /* EMPOWERED (R26 to R29: "the entire screen seem to have a golden vignette to show the new empowered status, and now the
@@ -1286,7 +1287,7 @@
     function openDecision() {
       decOpen = true;
       if (warmSounds) warmSounds(['u4scuffle', 'rv4A1', 'u4cry', 'ml4A1', 'u4torn', 'u4endA', 'u4stand', 'am4A1', 'rv4A2', 'ph4A1', 'q4A1',
-                      'u4flick', 'u4patter', 'u4dip', 'ml4B1', 'u4chill', 'u4heart', 'u4fall', 'ph4B0', 'ml4B2', 'u4endB', 'ml4B3', 'ph4B1', 'q4B1',
+                      'u4flick', 'u4hiss', 'u4nooo', 'u4patter', 'ml4B1', 'u4chill', 'u4heart', 'u4fall', 'ph4B0', 'ml4B2', 'u4endB', 'ml4B3', 'ph4B1', 'q4B1',
                       'u4tile', 'q4C0', 'u4tile2', 'rv4C1', 'u4endC', 'am4C1', 'ph4C1', 'q4C1', 'u4visoff', 'u4vison', 'u4goldpower', 'u4goldclear', 'ph4D0', 'rv4D1', 'u4endD', 'q4R1', 'rv4R1', 'ml4R1',
                       'ph4D1', 'q4D1', 'u4closemus', 'ph4z0', 'u4release', 'u4steps', 'ml4z1', 'am4z1', 'u4bell', 'ph4z1']);
       if (getState() === 'play') startDecision();

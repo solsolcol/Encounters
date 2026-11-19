@@ -19,7 +19,9 @@
      moved on by the time they take, each ending's own order of who speaks first kept to its story) */
   const EN = {
     A: { grab: 0.0, rv: 0.3, cry: 0.9, scream: 2.95, torn: 6.1, white: 6.3, open: 7.6, sight: 7.75, sightFor: 1.0, rise: 9.0, R1: 9.7, Rm: 12.2, call: 16.05, still: 13.2, go: 17.85, rv2: 18.15, ph: 23.25, q: 30.41, close: 34.41 },
-    B: { throw: 0.15, splash: 0.55, comes: 0.9, white: 2.3, floor: 2.55, go: 3.3, push: 3.3, hit: 3.68, falter: 3.5, ml2: 4.0, back: 5.6, cry: 6.2, torn: 9.6, white2: 9.8, open: 11.4, sight: 11.2, sightFor: 0.65, rise: 12.0, R1: 12.7, Rm: 15.2, Rv: 19.05, ok: 23.95, ph: 25.55, q: 35.27, close: 39.07 },
+    /* (R112, Chad, 19 Nov: ending B told plainly: the water seen striking the thing; its frenzy and its wail; his teacher's
+       "Go away, now!" BEFORE his light strikes it; it flung away and gone. No white-out, no second tearing: 2.5 s shorter) */
+    B: { throw: 0.15, ml1: 0.25, splash: 0.62, wild: 0.65, wail: 1.95, comes: 2.35, floor: 3.05, push: 3.55, falter: 3.55, go: 3.9, fire: 4.95, hit: 5.35, ml2: 5.85, back: 6.6, open: 8.9, sight: 8.7, sightFor: 0.65, rise: 9.5, R1: 10.2, Rm: 12.7, Rv: 16.55, ok: 21.45, ph: 23.05, q: 32.77, close: 36.57 },
     C: { step: 0.0, say: 0.7, kneel: 5.4, mala: 6.4, rv: 7.3, cry: 8.6, torn: 12.2, white: 12.4, open: 13.8, look: 14.6, my: 14.9, sight: 14.1, sightFor: 1.0, rise: 15.4, R1: 16.45, Rv: 20.0, Rm: 24.9, ph: 28.75, q: 34.55, close: 38.65 },
     D: { reach: 1.0, ph0: 1.9, kneel: 4.6, rv: 4.7, cry: 7.8, torn: 11.2, white: 11.4, open: 12.8, sight: 12.8, sightFor: 0.6, rise: 13.6, R1: 15.1, Rv: 18.2, ml: 23.1, ph: 26.95, q: 38.79, close: 43.39 }
   };
@@ -143,20 +145,24 @@
     a.sfx(E.q, 'q4A1', 1);                              // "I saw a man in the way. He was her son."
     a.sfxFade(E.close - 2.0, E.close + 0.5, 'u4endA');
   }); }
-  /* B · THROW THE HOLY WATER AT THE SPIRIT ON HER BACK (bad) */
+  /* B · THROW THE HOLY WATER AT THE SPIRIT ON HER BACK (bad). (R112: in this order, each seen: the water flies and strikes
+     the thing, it burns; it tears up off her back thrashing and wails "NOOOOO!"; it comes at him and he goes down; his
+     teacher turns from her, "Go away, now!", and as the words end his light leaves his hands and strikes it; it is flung
+     away up out of the room, its cry going with it; her trance falters without his hand, and settles as it returns) */
   function scThrow(c, s, api) { endingScene(c, s, api, 'B', (E, a) => {
-    a.sfx(E.throw, 'u4flick', 1); a.sfx(E.splash, 'u4patter', 1); a.sfx(E.splash + 0.08, 'u4dip', 0.6);   // the whole bowl
-    a.sfx(E.splash, 'ml4B1', 1);                        // Mala, the water on her mother: "What are you doing?"
-    a.sfx(E.comes, 'u4chill', 0.95);                    // it lets go of her and comes at him
+    a.sfx(E.throw, 'u4flick', 1);                       // the water thrown from his hands, a spray of drops
+    a.sfx(E.ml1, 'ml4B1', 1);                           // Mala, as it goes at her mother: "What are you doing?"
+    a.sfx(E.splash, 'u4hiss', 1); a.sfx(E.splash + 0.05, 'u4patter', 0.6);   // the drops strike it: it burns (R112)
+    a.sfx(E.wail, 'u4nooo', 1);                         // it tears up off her back and wails: "NOOOOO!" (R112)
+    a.sfx(E.comes, 'u4chill', 0.95);                    // it comes at him
     a.sfx(E.comes + 0.35, 'u4heart', 0.9); a.sfx(E.comes + 0.95, 'u4heart', 0.7);   // his heart, and then it stalls
-    flash(a, E.white, 1.0); a.sfx(E.floor + 0.15, 'u4fall', 0.85);               // white; he is on the floor (clear by "Go.": R67)
-    a.sfx(E.go, 'ph4B0', 1);                            // "Go."
-    a.sfx(E.go + 0.12, 'u4goldpower', 0.9);             // his gold leaves his hands (R67)
-    a.sfx(E.hit, 'u4goldclear', 0.95);                  // and strikes the thing (R67)
+    a.sfx(E.floor + 0.15, 'u4fall', 0.85);              // he is on the floor, it over him
+    a.sfx(E.go, 'ph4B0', 1);                            // his teacher: "Go away, now!" (R112)
+    a.sfx(E.fire, 'u4goldpower', 0.9);                  // his gold leaves his hands as the words end (R67, R112)
+    a.sfx(E.hit, 'u4goldclear', 0.95);                  // and strikes it (R67)
+    a.sfx(E.hit + 0.05, 'u4torn', 0.85);                // flung up and away out of the room (R112)
+    a.sfx(E.hit + 0.1, 'u4cry', 0.75); a.sfxFade(E.hit + 0.4, E.hit + 1.9, 'u4cry');   // its cry going with it
     a.sfx(E.ml2, 'ml4B2', 1);                           // his hand off her head, her trance falters: "Amma!"
-    a.sfx(E.cry, 'u4cry', 0.85);                        // the cry rises again
-    a.sfx(E.torn - 0.1, 'u4torn', 0.85);
-    flash(a, E.white2); a.sfxFade(E.white2, E.white2 + 1.1, 'u4cry');
     a.sfx(E.open - 0.6, 'u4endB', 0.5);
     a.sfx(E.sight, 'u4visoff', 0.85);                   // his sight home to him, before she stands (R65)
     a.sfx(E.rise + 0.2, 'u4stand', 0.75);

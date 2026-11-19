@@ -2260,7 +2260,7 @@
     { id: "ml4B1", who: "mala", ch: "e4c4", where: "ending B",
       text: "[shocked] What are you doing?", secs: 1.62 },
     { id: "ph4B0", who: "pho", ch: "e4c4", where: "ending B",
-      text: "[firm] Go.", secs: 0.62 },
+      text: "[fierce] Go away, now!", secs: 1.19 },
     { id: "ml4B2", who: "mala", ch: "e4c4", where: "ending B",
       text: "[frightened] Amma!", secs: 1.01 },
     { id: "ml4B3", who: "mala", ch: "e4c4", where: "ending B",

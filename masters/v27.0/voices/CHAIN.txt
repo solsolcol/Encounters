@@ -29,7 +29,7 @@ ml4t2   mala take a  the tighter read               voice 0.00-1.14 s of 2.40, 1
 rv4t1   ravi take a  the tighter read               voice 0.12-1.74 s of 1.76, 3.09 words a second  (b 1.96 s)  -> 1.77 s  [cast, RMS -16]
 ph4A1   pho  take a  the unhurried read             voice 0.20-6.56 s of 6.80, 2.04 words a second  (b 6.18 s, c 5.46 s)  -> 6.61 s  [cast, RMS -16]
 q4A1    he   take a  the easier pace                voice 0.12-3.50 s of 3.52, 3.25 words a second  (b 3.14 s)  -> 3.53 s  [him]
-ph4B0   pho  take c  the unhurried read             voice 0.06-0.46 s of 0.88, 2.50 words a second  (a 0.30 s, b 0.32 s)  -> 0.62 s  [cast, RMS -16]
+ph4B0   pho  take c  the unhurried read             voice 0.00-1.04 s of 3.12, 2.88 words a second  (a 0.98 s, b 0.96 s); its silent tail cut at the voice's end + 0.3 s  -> 1.19 s  [cast, RMS -12]  (R112: "Go away, now!", re-said; the old "Go." takes kept as raw/ph4B0-go_*.mp3)
 ph4B1   pho  take a  the unhurried read             voice 0.00-9.10 s of 9.12, 2.31 words a second  (b 7.44 s, c 7.90 s)  -> 9.13 s  [cast, RMS -16]
 q4B1    he   take a  the easier pace                voice 0.04-3.18 s of 3.20, 3.18 words a second  (b 2.76 s)  -> 3.21 s  [him]
 q4C0    he   take b  the tighter read               voice 0.06-6.38 s of 6.40, 2.06 words a second  (a 6.70 s)  -> 6.41 s  [him]

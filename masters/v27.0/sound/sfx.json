@@ -320,6 +320,38 @@
   "where": "empowered: every green one released"
  },
  {
+  "name": "u4goldgather",
+  "secs": 1.2,
+  "loop": false,
+  "takes": 4,
+  "prompt": "Many streaks of shimmering golden light rushing inward from every side and converging on one point: a swelling reverse whoosh full of sparkling chimes, rising in pitch to a bright ringing flash. Magical, bright, no deep bass.",
+  "where": "the call: the lines of light gather"
+ },
+ {
+  "name": "u4goldhover",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 4,
+  "prompt": "A sacred golden presence hovering in the air: a warm resonant singing bowl tone with a soft wordless choir and gently twinkling bells, slowly swelling stronger, holy and awe-inspiring. Steady and bright, no drums, no deep bass.",
+  "where": "the call: the amulet hovers"
+ },
+ {
+  "name": "u4golddive",
+  "secs": 1.0,
+  "loop": false,
+  "takes": 4,
+  "prompt": "A fast magical streak of glowing light diving downward: a quick sweeping whoosh with a sparkling trail of crystalline chimes, gathering speed and ending in a bright snap. Quick, bright and clear, no deep bass.",
+  "where": "the call: the amulet goes down into the water"
+ },
+ {
+  "name": "u4goldmerge",
+  "secs": 3.0,
+  "loop": false,
+  "takes": 4,
+  "prompt": "A massive radiant impact of holy power: a sharp bright crack of energy, then a huge shimmering explosion of chimes and singing bowls bursting outward with a rushing whoosh, ringing brilliantly as it spreads. Loud, bright, overwhelming, in the middle and high frequencies, no deep sub bass.",
+  "where": "the call: it merges into the water and its power goes out through the room"
+ },
+ {
   "name": "u4sv1",
   "secs": 1.8,
   "loop": false,
@@ -382,6 +414,22 @@
   "takes": 2,
   "prompt": "A man falling heavily onto a tiled floor: a body's thud and a winded exhale.",
   "where": "ending B: the student on the floor"
+ },
+ {
+  "name": "u4hiss",
+  "secs": 1.5,
+  "loop": false,
+  "takes": 4,
+  "prompt": "Holy water splashing onto something burning and evil: a sharp violent sizzling hiss with crackling steam, rising and then fading.",
+  "where": "ending B: the water strikes the thing on her back"
+ },
+ {
+  "name": "u4nooo",
+  "secs": 2.5,
+  "loop": false,
+  "takes": 4,
+  "prompt": "A terrible inhuman spirit screaming the word Nooooo in agony and fury: one drawn-out cry of the word no, rising and cracking into a shriek, with a hollow ghostly echo. A voice saying only the word no.",
+  "where": "ending B: the thing on her back wails"
  },
  {
   "name": "u4stand",

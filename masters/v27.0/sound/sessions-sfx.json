@@ -357,5 +357,28 @@
    ],
    "letters": "abcd"
   }
+ },
+ "r112": {
+  "why": "R112 (Chad, 19 Nov): ending B, the water's strike on the thing on her back and its wail; four takes each, eleven_text_to_sound_v3, prompt influence 0.5, flow c0Jo6SrW7Q0K0NkWlk6e",
+  "u4nooo": {
+   "node": "aiSHh0yoWKhjptkpto4s",
+   "sessions": [
+    "bqvvE3wxM4NroGY20Mss",
+    "M8WdWzY8TEXBbzA2gUFu",
+    "5fYlkSUGGafkgdDvahWT",
+    "tPvCGX8FFR6lhJKrLimi"
+   ],
+   "letters": "abcd"
+  },
+  "u4hiss": {
+   "node": "SlXucTh8L40gkiZZY2fz",
+   "sessions": [
+    "hfX1NRJQJR5RsAJnzIO8",
+    "7hTaP27boyll7xLMZ8P2",
+    "G70x9xyFmx2r5byzQC9Y",
+    "t0nyRMaKGHgHOczTj6Ap"
+   ],
+   "letters": "abcd"
+  }
  }
 }

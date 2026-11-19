@@ -169,6 +169,13 @@ fx   u4goldhover  $R/u4goldhover_a.mp3  -14                                   # 
 fx   u4golddive   $R/u4golddive_a.mp3   -14                                   # a: the streak going down, the fullest (3 dB over b), all where a phone plays
 fxc  u4goldmerge  $R/u4goldmerge_a.mp3  -11 "$HARM"                           # a: the crack and the burst, 55 % where a phone plays (b 47, c and d 24), its low end's harmonics laid in (HARM) as u4goldpower's boom was; the loudest of the moment (the others -14)
 fi
+# ---- R112 (Chad, 19 Nov): ending B, "the holy water being sprayed on to the entity, the entity going crazy with wailing
+#      sounds like 'nooooo'". Four takes each (sound/sessions-sfx.json r112); every wail put through the transcriber (the
+#      word must be heard): a "No!" (short), b "NOOOOO!", c "Now!" (refused), d "NOOOOO!"
+if [ -z "$ONLY" ] || [ "$ONLY" = sfx ] || [ "$ONLY" = r112 ]; then
+fx   u4nooo       $R/u4nooo_b.mp3       -12                                   # b: the drawn-out "NOOOOO!" (with d the only two heard so), 1.5 s of it, all where a phone plays, 1.3 dB fuller than d; a voice over the room: louder than the spirits' -14
+fx   u4hiss       $R/u4hiss_b.mp3       -14                                   # b: the fullest burst, 0.78 s of it (a and c 0.55, d 0.34 and 7 dB under), 81 % where a phone plays
+fi
 
 # ---- THE MUSIC (sound/measures-music.json, sound/measures-music2.json): music at peak -3 (v22.4), Opus 128k
 cuthead() { echo "atrim=start=$1,asetpts=PTS-STARTPTS,afade=t=in:d=0.04"; }

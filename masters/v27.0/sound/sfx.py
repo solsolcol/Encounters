@@ -78,6 +78,11 @@ SFX = [
     # ---- the endings and the close
     ('u4scuffle', 4.0, False, 2, "Two men struggling on a tiled floor: clothes and shoes scuffling, a stumble, heavy breathing. No words.", 'ending A: he holds Ravi back'),
     ('u4fall', 2.0, False, 2, "A man falling heavily onto a tiled floor: a body's thud and a winded exhale.", 'ending B: the student on the floor'),
+    # (R112, Chad, 19 Nov: ending B "should show the holy water being sprayed on to the entity, the entity going crazy with
+    #  wailing sounds like 'nooooo'"): the water's strike on it, and its wail. Four takes each; prompt influence 0.5 (the
+    #  word must be heard: every take is put through the transcriber, and one that does not say "no" is refused)
+    ('u4hiss', 1.5, False, 4, "Holy water splashing onto something burning and evil: a sharp violent sizzling hiss with crackling steam, rising and then fading.", 'ending B: the water strikes the thing on her back'),
+    ('u4nooo', 2.5, False, 4, "A terrible inhuman spirit screaming the word Nooooo in agony and fury: one drawn-out cry of the word no, rising and cracking into a shriek, with a hollow ghostly echo. A voice saying only the word no.", 'ending B: the thing on her back wails'),
     ('u4stand', 3.5, False, 2, "An old wheelchair's brakes clicking off and its frame creaking as a woman slowly stands up from it, the soft rustle of a cotton sari.", 'every ending: she stands'),
     ('u4steps', 4.0, False, 2, "Bare feet taking a few slow, careful, uncertain steps on a smooth tiled floor indoors.", 'every ending: her first steps, to her altar'),
     ('u4bell', 3.0, False, 2, "A small brass prayer hand bell rung softly three times indoors, close, its ring dying away.", 'every ending: at her altar'),

@@ -394,7 +394,8 @@
         const E = EN[k], c = t - E.close;
         if (c < 0) ENDS[k](t, E, api); else closeFrame(k, c, t);
       },
-      end() { fLens(PLAY_FOV); goddess(0); goHide(); filmBed.on = false; if (kit && kit.vision) kit.vision(null); }
+      end() { fLens(PLAY_FOV); goddess(0); goHide(); sprayHide(); filmBed.on = false; if (kit && kit.vision) kit.vision(null);
+        if (spirits.oppress && spirits.oppress.group) spirits.oppress.group.scale.setScalar(1); }
     };
     /* (R67, Chad, 18 Nov evening: "for option b cutscene, when grandmaster pho suddenly shouts go! , there should be some
        special power effect coming out from him that hits the red spirit, along with a screen shake effect. Just make that
@@ -415,7 +416,7 @@
           mats.push(m); const sp = new THREE.Sprite(m); sp.visible = false; sp.renderOrder = 31; if (ctx.visionLayer != null) sp.layers.enable(ctx.visionLayer); world.add(sp); return sp; };
         goFx.motes = Array.from({ length: GOB.n }, () => mk(false)); goFx.burst = [mk(true), mk(false)]; }
       goHide();
-      const t0 = E.go + GOB.fire, travel = E.hit - t0;
+      const t0 = E.fire != null ? E.fire : E.go + GOB.fire, travel = E.hit - t0;      // (R112: B's leaves as his words end)
       if (t < t0 - 0.02 || t > E.hit + GOB.burst) return;
       /* from between his two hands as the thrust holds them out (his hand bones as this frame draws them); to the thing's
          chest (its head, less a hand's span) */
@@ -452,6 +453,55 @@
     function goFlash(P, t, E) { if (!P.fx) return; const u = t - E.hit;
       const k = u < 0 ? 0 : u < 0.05 ? u / 0.05 : Math.max(0, 1 - (u - 0.05) / 0.45);
       P.fx.set('uColor', _goC.set(SPIRIT.oppress.color).lerp(GO_WHITE, k)); P.fx.set('uFill', SPIRIT.oppress.fill + 2.0 * k); }
+    /* (R112, Chad, 19 Nov: "You should show the holy water being sprayed on to the entity, the entity going crazy with
+       wailing sounds like 'nooooo', which is why it prompted grandmaster pho to do the special effect power with a burst of
+       energy and should shout 'go away, now!' before the energy hits the spirit and cause the spirit to fly away").
+       THE SPRAY: the water thrown from his hands (just under the lens) flies in a spread of drops, each on its own line and
+       a little arc, to the thing on her back, and bursts on it: a flash and a ring in the water's colour, R81's (deep
+       enough to read on his sight's pale room; the fight's own), the thing burning in it (bFlash). Every drop a function of
+       the film's clock (v6.4), so a seek and a skip land on the same frame */
+    const SPRAYB = { n: 22, stagger: 0.009, arc: 0.1, spread: 0.12, size: 0.05, burst: 0.6 };
+    const sprayFx = { drops: null, burst: null };
+    const _sbA = new THREE.Vector3(), _sbT = new THREE.Vector3(), _sbP = new THREE.Vector3();
+    function sprayHide() { if (sprayFx.drops) for (const sp of sprayFx.drops.concat(sprayFx.burst)) sp.visible = false; }
+    function sprayB(t, E) {
+      if (!sprayFx.drops) { const tex = dipTex(), ringT = hitTex(true); owned.push(tex, ringT);
+        const mk = (col, add, map) => { const m = new THREE.SpriteMaterial({ map, color: col, transparent: true, depthWrite: false, depthTest: false,
+            blending: add ? THREE.AdditiveBlending : THREE.NormalBlending, fog: false });
+          mats.push(m); const sp = new THREE.Sprite(m); sp.visible = false; sp.renderOrder = 31; if (ctx.visionLayer != null) sp.layers.enable(ctx.visionLayer); world.add(sp); return sp; };
+        sprayFx.drops = Array.from({ length: SPRAYB.n * 2 }, (_, i) => mk(i % 2 ? HIT_HUE.water.flash : HIT_HUE.water.body, i % 2 === 1, tex));
+        sprayFx.burst = [mk(HIT_HUE.water.body, false, tex), mk(HIT_HUE.water.flash, true, tex), mk(HIT_HUE.water.ring, false, ringT)]; }
+      sprayHide();
+      if (t < E.throw - 0.02 || t > E.splash + SPRAYB.burst) return;
+      /* from his hands under the lens (the throw's own line), to the thing's chest (its head, less a hand's span) */
+      _sbA.set(S_EYE[0] + TOWARD[0] * 0.3, 1.3, S_EYE[2] + TOWARD[1] * 0.3);
+      const O = spirits.oppress;
+      if (O && O.ready && O.head && O.group.visible) { O.group.updateWorldMatrix(true, true); O.head.getWorldPosition(_sbT); _sbT.y -= 0.18; }
+      else _sbT.set(CHAIR.x - 0.12, 1.2, CHAIR.z - 0.4);
+      const travel = E.splash - E.throw;
+      for (let i = 0; i < SPRAYB.n; i++) {
+        const e = (t - E.throw - i * SPRAYB.stagger) / travel; if (e < 0 || e > 1) continue;
+        const jx = (((i * 0.618) % 1) - 0.5) * 2 * SPRAYB.spread, jy = (((i * 0.437) % 1) - 0.5) * 1.6 * SPRAYB.spread, jz = (((i * 0.271) % 1) - 0.5) * 2 * SPRAYB.spread;
+        _sbP.copy(_sbA).lerp(_sbT, e); _sbP.x += jx * e; _sbP.y += jy * e + SPRAYB.arc * Math.sin(Math.PI * e); _sbP.z += jz * e;
+        const body = sprayFx.drops[i * 2], core = sprayFx.drops[i * 2 + 1], sz = SPRAYB.size * (0.7 + 0.6 * ((i * 0.53) % 1));
+        body.position.copy(_sbP); body.scale.setScalar(sz * 1.6); body.material.opacity = 0.9; body.visible = true;
+        core.position.copy(_sbP); core.scale.setScalar(sz * 0.7); core.material.opacity = 0.9; core.visible = true;
+      }
+      /* the burst where it lands, out fast and gone */
+      const b = (t - E.splash) / SPRAYB.burst;
+      if (b >= 0 && b < 1) { const [hue, flash, ring] = sprayFx.burst, f = 1 - b;
+        hue.position.copy(_sbT); hue.scale.setScalar(0.2 + 0.75 * Math.sqrt(b)); hue.material.opacity = 0.8 * f; hue.visible = true;
+        flash.position.copy(_sbT); flash.scale.setScalar(0.14 + 0.4 * b); flash.material.opacity = f * f; flash.visible = true;
+        ring.position.copy(_sbT); ring.scale.setScalar(0.3 + 1.5 * b); ring.material.opacity = 0.6 * f; ring.visible = true; }
+    }
+    /* (R112) the thing burning in the water's colour as the drops strike it (R81's hold and fade), and near white on his
+       teacher's hit (goFlash's) */
+    const _bwC = new THREE.Color(HIT_HUE.water.body);
+    function bFlash(P, t, E) { if (!P.fx) return;
+      const w = t - E.splash, kw = w < 0 ? 0 : w < 0.1 ? 1 : Math.max(0, 1 - (w - 0.1) / 0.6);
+      const u = t - E.hit, kh = u < 0 ? 0 : u < 0.05 ? u / 0.05 : Math.max(0, 1 - (u - 0.05) / 0.45);
+      P.fx.set('uColor', _goC.set(SPIRIT.oppress.color).lerp(_bwC, kw).lerp(GO_WHITE, kh));
+      P.fx.set('uFill', SPIRIT.oppress.fill + 2.6 * kw + 2.0 * kh); }
 
     /* NO BODY HELD ON ONE FRAME THROUGH A FILM (R66 and R68, Chad, 18 Nov evening: "for option a cutscene, the yellow
        female model is stuck in an awkward unnatural pose when she says 'stop it you two' , and continues getting stuck in
@@ -534,12 +584,20 @@
         ]);
         phoTurn(t, E.ph, false, 'ph4A1');
       },
-      /* B · HE THROWS THE WATER AT THE THING ON HER BACK (bad). The whole bowl at it: it lets go of her and comes at
-         HIM, the vision filled with it, his heart stalling, the picture white. His teacher's hand leaves her head for the
-         one moment it takes ("Go."); her trance falters; his hands return; the cry rises again and it is forced away.
-         She opens her eyes and stands; he is on the floor. His teacher; his own thought */
+      /* B · HE THROWS THE WATER AT THE THING ON HER BACK (bad). (R112, Chad, 19 Nov: "the whole flow of storytelling needs to
+         be improved. The current flow is very confusing on whats actually happening".) Told in order, each beat framed to be
+         seen: the water flies from his hands and strikes the thing on her back, and it burns (sprayB, bFlash); it tears up
+         off her back thrashing and shaking and wails "NOOOOO!"; it comes at him, filling his eyes, and he goes down; from
+         the floor it is over him and his teacher beyond it turns from her (his hand off her head: her trance falters), says
+         "Go away, now!", and as the words end his light leaves his hands and strikes it; it is flung up and away out of
+         the room, burning white, shrinking, its cry going with it; his teacher's hand goes back to her head. No white-out
+         and no second tearing: what is seen is what happened. She opens her eyes and stands; he is on the floor. His
+         teacher; his own thought */
       B(t, E) {
-        const B_FLOOR = [S_EYE[0] + 0.1, 0.45, S_EYE[2] + 0.2];        // his eyes, on the floor
+        const B_FLOOR = [S_EYE[0] + 0.1, 0.42, S_EYE[2] + 0.2];        // his eyes, on the floor
+        /* where it is when it is struck (over him on the floor), and where it is flung to: straight up from there and a
+           little back, out through the ceiling, clear of her, of his teacher and of her son */
+        const OVER = [COMES[0], COMES[1] - 1.05, COMES[2]], FLY_TO = [COMES[0] - 0.15, 2.55, COMES[2] - 0.45];
         ammaRise(t, E.rise);
         /* her trance falters while his hand is off her head (Mala's "Amma!"): her raised hands sink and her body gives
            toward her chair's rest, and comes back up as his hand returns */
@@ -548,71 +606,87 @@
           else ammaTrance(t); }
         const off = t >= E.push && t < E.back;
         phoBless(t, off ? 1 - smo(c01((t - E.push) / 0.25)) : (t < E.push ? 1 : smo(c01((t - E.back) / 0.4))) * (1 - smo(c01((t - E.rise + 0.4) / 0.8))));
-        /* the thing: off her back and at him (from her shoulder to a hand's breadth from his eyes), then back on her
-           when his teacher's hand returns, its cry, and torn away */
+        sprayB(t, E);
         whenReady(spirits.oppress, (P) => {
-          if (t >= E.torn + 1.2) { P.group.visible = false; return; }
-          P.group.visible = true;
-          const eye = COMES;
-          if (t >= E.comes && t < E.back) {
-            /* (off her back by m: from where it rides her to a hand's breadth from his eyes, turned to face him; back as
-               his teacher's hand returns) */
-            const u = smo(c01((t - E.comes) / 0.9)), w = smo(c01((t - E.hit) / 0.45)), m = u * (1 - w);      // (R67: flung back by the light)
-            oppRide(P); _obq.copy(P.group.quaternion);
-            const g = P.group.position, x = lp(g.x, eye[0], m), z = lp(g.z, eye[2], m), y = lp(g.y, eye[1] - 0.75, m);
-            _ofq.setFromEuler(_ofe.set(0, faceTo(x, z, S_EYE[0], S_EYE[2]), 0));
-            P.group.position.set(x, y, z); P.group.quaternion.slerpQuaternions(_obq, _ofq, m); pose(P, 'claw', (t - E.comes) * 1.2);
-          } else { oppRide(P);
-            if (t < E.comes) pose(P, 'cry', pingOf(t, 2.6, 1.6, 2.4));
-            else if (t < E.torn) pose(P, 'cry', Math.min(4.4, 0.4 + (t - E.cry) * 1.1));
-            else { const k = smo(c01((t - E.torn) / 1.1)); pose(P, 'cry', lp(1.0, 1.9, k)); P.group.position.z -= 0.6 * k; P.group.position.y += 0.25 * k; } }
-          if (P.fx) P.fx.set('uAlpha', t < E.torn ? 1 : 1 - smo(c01((t - E.torn - 0.3) / 0.9)));
-          goFlash(P, t, E); });
-        goddess(t < E.falter ? 1 : t < E.back ? 0.35 : t < E.torn ? lp(0.35, 1, smo(c01((t - E.back) / 1.2))) : 1 - smo(c01((t - E.torn) / 1.5)));
+          if (t >= E.hit + 1.35) { P.group.visible = false; P.group.scale.setScalar(1); return; }
+          P.group.visible = true; P.group.scale.setScalar(1);
+          oppRide(P);                                                   // where it rides her, this frame
+          if (t < E.splash) pose(P, 'cry', pingOf(t, 2.6, 1.6, 2.4));
+          else if (t < E.hit) {
+            /* BURNED: it tears up off her back, thrashing and shaking (a function of the clock: there and back, never a
+               held frame), the shaking easing as it comes at him */
+            const g = P.group.position, up = smo(c01((t - E.wild) / 0.7)), sh = 1 - 0.65 * smo(c01((t - E.comes) / 0.6));
+            g.y += 0.32 * up + sh * 0.025 * Math.sin(t * 61 + 2.1);
+            g.x += sh * (0.035 * Math.sin(t * 47) + 0.02 * Math.sin(t * 83 + 1.3)); g.z += sh * 0.03 * Math.sin(t * 53 + 0.7);
+            P.group.rotation.y += sh * 0.14 * Math.sin(t * 31 + 0.4);
+            if (t < E.comes) pose(P, 'claw', pingOf(t, 0.4, 1.0, 0.5));
+            else {
+              /* AT HIM: from there to a hand's breadth from his eyes, turned to him; down over him once he is on the floor */
+              const u = smo(c01((t - E.comes) / 0.7)), dn = smo(c01((t - E.floor) / 0.5));
+              _obq.copy(P.group.quaternion);
+              const x = lp(g.x, COMES[0], u), z = lp(g.z, COMES[2], u), y = lp(g.y, COMES[1] - 0.75 - 0.3 * dn, u);
+              _ofq.setFromEuler(_ofe.set(0, faceTo(x, z, S_EYE[0], S_EYE[2]), 0));
+              P.group.position.set(x, y, z); P.group.quaternion.slerpQuaternions(_obq, _ofq, u); pose(P, 'claw', (t - E.comes) * 1.2); }
+          } else {
+            /* STRUCK: flung from over him straight up and away, out through the ceiling, turning, shrinking into the dark */
+            const k = 1 - Math.pow(1 - c01((t - E.hit) / 1.3), 2.2);
+            P.group.position.set(lp(OVER[0], FLY_TO[0], k), lp(OVER[1], FLY_TO[1], k), lp(OVER[2], FLY_TO[2], k));
+            P.group.rotation.set(0, faceTo(OVER[0], OVER[2], S_EYE[0], S_EYE[2]) + 0.9 * k, 0);
+            P.group.scale.setScalar(1 - 0.6 * k); pose(P, 'cry', lp(1.0, 1.9, k)); }
+          if (P.fx) P.fx.set('uAlpha', t < E.hit + 0.25 ? 1 : 1 - smo(c01((t - E.hit - 0.25) / 1.0)));
+          bFlash(P, t, E); });
+        goddess(t < E.falter ? 1 : t < E.back ? 0.35 : lp(0.35, 1, smo(c01((t - E.back) / 1.2))) * (1 - smo(c01((t - E.open + 1.6) / 1.5))));
         whenReady(cast.ravi, (P) => { rushHeld(P, t); lookNow(P, t < E.rise ? AMMA_FACE : HER_HEAD(), 1, 0.9); });
-        /* Mala: crying out as the water hits her mother ("What are you doing?"), and at the falter ("Amma!"); her scream
+        /* Mala: crying out as the water goes at her mother ("What are you doing?"), and at the falter ("Amma!"); her scream
            let go once her mother is up, and her eyes down to him on the floor ("Are you alright?") */
         /* (R68's law here too: her three lines each her talking take for its length, over her stand between them, alive;
            never the written scream held for eight seconds) */
         whenReady(cast.mala, (P) => {
-          const st = smo(c01((t - E.splash + 0.15) / 0.35)), idle = 2 + Math.max(0, t - E.splash) * 0.35;
-          if (!malaCall(P, t, E.splash, SECS.ml4B1 || 1.7, 'Talk_with_Right_Hand_Open', st < 1 ? 'lightlamp' : 'Idle_3', st < 1 ? MALA_LAMPT(t) : idle)
+          const st = smo(c01((t - E.ml1 + 0.15) / 0.35)), idle = 2 + Math.max(0, t - E.ml1) * 0.35;
+          if (!malaCall(P, t, E.ml1, SECS.ml4B1 || 1.7, 'Talk_with_Right_Hand_Open', st < 1 ? 'lightlamp' : 'Idle_3', st < 1 ? MALA_LAMPT(t) : idle)
               && !malaCall(P, t, E.ml2, SECS.ml4B2 || 1.0, 'Talk_with_Right_Hand_Open', 'Idle_3', idle)
               && !malaCall(P, t, E.Rm, SECS.ml4R1 || 3.5, 'Stand_and_Chat', 'Idle_3', idle)
               && !malaCall(P, t, E.ok, SECS.ml4B3 || 1.6, 'Stand_and_Chat', 'Idle_3', idle)) {
             if (st <= 0.001) pose(P, 'lightlamp', MALA_LAMPT(t)); else pose(P, 'Idle_3', idle, true); }
-          P.group.rotation.y = lpA(0, MALA_TO_HER, smo(c01((t - E.splash + 0.1) / 0.5)));           // (R46: to her mother, not into the altar)
+          P.group.rotation.y = lpA(0, MALA_TO_HER, smo(c01((t - E.ml1 + 0.1) / 0.5)));           // (R46: to her mother, not into the altar)
           lookNow(P, lp3(t < E.rise ? AMMA_FACE : HER_HEAD(), B_FLOOR, smo(c01((t - E.ok + 0.5) / 0.6))), 0.8, 0.9); });
         visionAt(t, -1, 0.1, E.sight, E.sightFor);                       // (R55, R65: his sight home to him before she stands)
-        /* THE LENS: the throw (a lurch at her); the thing filling his eyes; white; his teacher's push seen through the
-           white; then he is on the floor, looking up at her standing, and at his teacher */
+        /* THE LENS: the throw (a lurch at her), on the thing as the water strikes it; held on it as it tears up and wails;
+           it fills his eyes; down on the floor, looking up at it over him with his teacher beyond; up after it as it is
+           flung out; then her, standing, and his teacher. (No cut: the fall is the lens going down) */
+        const ab = [lp(OVER[0], cast.phoB.home.x, 0.45), lp(OVER[1] + 0.85, 1.35, 0.45), lp(OVER[2], cast.phoB.home.z, 0.45)];
         track(t, [
           { t: 0, name: 'S', eye: DEC_EYE, at: DEC_AT, fp: PLAY_FOV, fd: PLAY_FOV },
-          { t: E.throw + 0.25, name: 'throw', eye: [S_EYE[0] + TOWARD[0] * 0.2, 1.58, S_EYE[2] + TOWARD[1] * 0.2], at: [CHAIR.x - 0.05, 1.0, CHAIR.z - 0.2], fp: 58, fd: 52 },
-          { t: E.comes + 0.9, name: 'it', eye: [S_EYE[0] - TOWARD[0] * 0.06, 1.6, S_EYE[2] - TOWARD[1] * 0.06], at: [COMES[0], 1.3, COMES[2]], fp: 70, fd: 64 },
-          { t: E.floor, name: 'down', eye: [S_EYE[0] - TOWARD[0] * 0.1, 1.58, S_EYE[2] - TOWARD[1] * 0.1], at: [COMES[0], 1.25, COMES[2]], fp: 68, fd: 62 },
-          { t: E.floor + 0.6, name: 'floor', eye: [S_EYE[0] + 0.1, 0.42, S_EYE[2] + 0.2], at: [cast.phoB.home.x, 1.3, cast.phoB.home.z + 0.2], fp: 66, fd: 58, roll: 0.12 },
-          { t: E.back + 0.6, name: 'floor', eye: [S_EYE[0] + 0.1, 0.42, S_EYE[2] + 0.2], at: [CHAIR.x + 0.2, 0.95, CHAIR.z], fp: 66, fd: 58, roll: 0.1 },
+          { t: E.throw + 0.25, name: 'throw', eye: [S_EYE[0] + TOWARD[0] * 0.2, 1.58, S_EYE[2] + TOWARD[1] * 0.2], at: [CHAIR.x - 0.1, 1.22, CHAIR.z - 0.38], fp: 58, fd: 52 },
+          { t: E.wail, name: 'wild', eye: [S_EYE[0] + TOWARD[0] * 0.12, 1.6, S_EYE[2] + TOWARD[1] * 0.12], at: [CHAIR.x - 0.1, 1.45, CHAIR.z - 0.42], fp: 58, fd: 52 },
+          { t: E.comes + 0.7, name: 'it', eye: [S_EYE[0] - TOWARD[0] * 0.06, 1.6, S_EYE[2] - TOWARD[1] * 0.06], at: [COMES[0], 1.3, COMES[2]], fp: 70, fd: 64 },
+          { t: E.floor + 0.35, name: 'floor', eye: B_FLOOR, at: ab, fp: 66, fd: 58, roll: 0.12 },
+          { t: E.hit + 0.1, name: 'floor', eye: B_FLOOR, at: ab, fp: 66, fd: 58, roll: 0.1 },
+          { t: E.hit + 1.1, name: 'fly', eye: B_FLOOR, at: [lp(OVER[0], FLY_TO[0], 0.75), lp(OVER[1] + 0.6, FLY_TO[1], 0.75), lp(OVER[2], FLY_TO[2], 0.75)], fp: 66, fd: 58, roll: 0.08 },
+          { t: E.back + 0.6, name: 'floor', eye: B_FLOOR, at: [CHAIR.x + 0.2, 0.95, CHAIR.z], fp: 66, fd: 58, roll: 0.1 },
           /* (19 Nov: her rise followed, RISE_HEAD: from the floor her head went off a phone's left edge as she leaned) */
-          { t: E.rise, name: 'floor', eye: [S_EYE[0] + 0.1, 0.42, S_EYE[2] + 0.2], at: [CHAIR.x + 0.14, 1.10, CHAIR.z + 0.06], fp: 66, fd: 58, roll: 0.08 },
-          { t: E.rise + 0.8, name: 'rise', eye: [S_EYE[0] + 0.1, 0.42, S_EYE[2] + 0.2], at: () => riseAim(t - E.rise, RISE_OFF.B), fp: 66, fd: 58, roll: 0.07 },
-          { t: E.rise + 3.4, name: 'rise', eye: [S_EYE[0] + 0.1, 0.42, S_EYE[2] + 0.2], at: () => riseAim(t - E.rise, RISE_OFF.B), fp: 66, fd: 58, roll: 0.06 },
-          { t: E.rise + 4.5, name: 'floor', eye: [S_EYE[0] + 0.1, 0.42, S_EYE[2] + 0.2], at: [CHAIR.x + 0.1, 1.2, CHAIR.z + 0.1], fp: 62, fd: 56, roll: 0.05 },
+          { t: E.rise, name: 'floor', eye: B_FLOOR, at: [CHAIR.x + 0.14, 1.10, CHAIR.z + 0.06], fp: 66, fd: 58, roll: 0.08 },
+          { t: E.rise + 0.8, name: 'rise', eye: B_FLOOR, at: () => riseAim(t - E.rise, RISE_OFF.B), fp: 66, fd: 58, roll: 0.07 },
+          { t: E.rise + 3.4, name: 'rise', eye: B_FLOOR, at: () => riseAim(t - E.rise, RISE_OFF.B), fp: 66, fd: 58, roll: 0.06 },
+          { t: E.rise + 4.5, name: 'floor', eye: B_FLOOR, at: [CHAIR.x + 0.1, 1.2, CHAIR.z + 0.1], fp: 62, fd: 56, roll: 0.05 },
           { t: E.ph + 0.3, name: 'pho', eye: [S_EYE[0] + 0.1, 0.45, S_EYE[2] + 0.2], at: [cast.phoB.home.x, 1.55, cast.phoB.home.z], fp: 52, fd: 46 },
           { t: E.close, name: 'pho', eye: [S_EYE[0] + 0.1, 0.45, S_EYE[2] + 0.2], at: [cast.phoB.home.x, 1.55, cast.phoB.home.z], fp: 52, fd: 46 }
         ]);
         phoTurn(t, E.ph, true, 'ph4B1');
-        /* his teacher's push: turned toward the thing that went for his student, both hands thrust out at it and held,
+        /* his teacher's push: turned toward the thing that went for his student, ready while he says it (the cast's start,
+           breathing, never a held frame) and both hands thrust out at it as the light leaves them at his words' end, held,
            then back to his stand as his hand goes back to her head (18 Nov, photographed: the cast that raises both arms
-           threw his head back behind its own raised robe, and from the floor he read headless; this cast's thrust keeps
-           his head up and forward, 1.34 m, over his hands: tools/probes/takepath.mjs) */
+           threw his head back behind its own raised robe, and from the floor he read headless; this cast's thrust keeps his
+           head up and forward, 1.34 m, over his hands: tools/probes/takepath.mjs) */
         if (t >= E.push - 0.05 && t < E.back) whenReady(cast.phoB, (P) => {
           const w = smo(c01((t - E.push) / 0.3)) * (1 - smo(c01((t - E.back + 0.45) / 0.45)));
           const d0 = faceTo(P.home.x, P.home.z, S_EYE[0], S_EYE[2]) - P.home.ry, d = Math.atan2(Math.sin(d0), Math.cos(d0));
           P.group.rotation.y = P.home.ry + d * w;
           /* (held at the take's 0.95: from 1.0 on it crosses both arms over his face, and from the floor, at its 1.32, he read
              headless again: build 13, photographed at 4.0) */
-          pose(P, 'mage_soell_cast_3', runOf(t, E.push, E.push + 0.6, 0.5, 0.95), false, 'Sit_to_Stand_Transition_M', 1 - w, pingOf(t, 5.85, 0.25, PHO_BREATH)); });
+          const ready = (q) => pingOf(q, 0.46, 0.05, 1.1), t1 = E.fire - 0.35;
+          const ph = t < t1 ? ready(t) : runOf(t, t1, E.fire + 0.05, ready(t1), 0.95);
+          pose(P, 'mage_soell_cast_3', ph, false, 'Sit_to_Stand_Transition_M', 1 - w, pingOf(t, 5.85, 0.25, PHO_BREATH)); });
         goBlast(t, E); goShake(t, E);                                     // (R67: his light at the thing, and the hit felt)
       },
       /* C · HE GOES TO HIM (best). Between Ravi and the chair, his hands open, low: "She's not being hurt. It's leaving

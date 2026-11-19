@@ -28,7 +28,7 @@ TAGS = {
     # the trance: Mala knows it; Ravi is afraid of the cry
     'ml4t1': 'worried', 'ml4t2': 'awed', 'rv4t1': 'panicked',
     # the four endings
-    'ph4A1': 'serious', 'q4A1': 'ashamed', 'ph4B0': 'firm', 'ph4B1': 'serious', 'q4B1': 'ashamed',
+    'ph4A1': 'serious', 'q4A1': 'ashamed', 'ph4B0': 'fierce', 'ph4B1': 'serious', 'q4B1': 'ashamed',
     'q4C0': 'gentle', 'ph4C1': 'warm', 'q4C1': 'quiet', 'ph4D0': 'calm', 'ph4D1': 'warm', 'q4D1': 'reflective',
     # the family in the four endings: Ravi fighting to her, then reaching her; Mala at the room; their mother waking
     'rv4A1': 'panicked', 'ml4A1': 'frantic', 'am4A1': 'confused', 'rv4A2': 'tearful', 'ml4B1': 'shocked',

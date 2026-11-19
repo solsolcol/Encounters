@@ -12029,6 +12029,12 @@ const scFx = { motes: null, embers: null, burst: null, into: null, dot: null };
 /* (R107) each line of the showcase's gathering light drawn three times over: [its width in its mote's size, its strength,
    its colour]: a wide deep-gold glow, a narrower brighter one, and its core in R83's own colour */
 const SC_GLOW = [[7, 0.16, 'rgba(255,168,56,'], [3.6, 0.34, 'rgba(255,206,110,'], [1.5, 1, 'rgba(255,224,150,']];
+/* (R113, Chad, 19 Nov: "For the gold spiraling streaks, it animates too fast, slightly slow down the animation but still
+   make it smooth"): the gathering's lines take 1.4 times as long to spiral in, on the same paths with the same tails
+   (every point still a function of the showcase's own clock, so as smooth on a slow phone as on a fast one), and all that
+   follows them waits the same 0.38 s: the point they meet in, the amulet's birth and turn (its CSS too, shell.html), its
+   hover, and the sounds tied to them (the gathering's swell ends on the birth, as it did) */
+const SC_GATHER = 1.4, SC_LATE = 0.38, SC_BIRTH = 0.95 + SC_LATE;
 function scFxDot() {
   if (scFx.dot) return scFx.dot;
   const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
@@ -12060,13 +12066,13 @@ function scFxFrame(t, dur) {
   }
   const spr = scFxDot(), cx = W / 2, cy = H / 2, R = Math.hypot(W, H) / 2, mw = Math.min(w * 0.62, h * 0.42) * dpr;
   const dot = (x, y, r, a) => { if (a <= 0.003) return; g.globalAlpha = Math.min(1, a); const s2 = r * 6; g.drawImage(spr, x - s2 / 2, y - s2 / 2, s2, s2); };
-  const BIRTH = 0.95, REL = dur - 1.2, INTO = dur - 0.6;
+  const BIRTH = SC_BIRTH, REL = dur - 1.2, INTO = dur - 0.6;
   const ease = (p) => p * p * (1.6 - 0.6 * p);
   g.globalCompositeOperation = 'lighter';
   /* 1 · the gathering: each mote spirals in from beyond the screen's edge, quicker as it nears, a short tail behind it */
   g.lineCap = 'round';
   for (const m of scFx.motes) {
-    const p = (t - 0.08 - m.d) / m.T; if (p <= 0 || p >= 1) continue;
+    const p = (t - (0.08 + m.d) * SC_GATHER) / (m.T * SC_GATHER); if (p <= 0 || p >= 1) continue;
     const e = ease(p), rr = m.r * R * (1 - e), aa = m.a + m.spin * e;
     const x = cx + Math.cos(aa) * rr, y = cy + Math.sin(aa) * rr;
     /* (R83, Chad, 18 Nov: "make those effects look brighter and more obvious while keeping the look the same as they are,
@@ -12091,7 +12097,7 @@ function scFxFrame(t, dur) {
         g.beginPath(); g.moveTo(x - L, y); g.lineTo(x + L, y); g.moveTo(x, y - L); g.lineTo(x, y + L); g.stroke(); } }
   }
   /* the point they gather into, swelling until the amulet is born from it */
-  const core = Math.max(0, Math.min(1, (t - 0.45) / 0.5)) * (1 - Math.max(0, Math.min(1, (t - BIRTH) / 0.35)));
+  const core = Math.max(0, Math.min(1, (t - (BIRTH - 0.5 * SC_GATHER)) / (0.5 * SC_GATHER))) * (1 - Math.max(0, Math.min(1, (t - BIRTH) / 0.35)));
   if (core > 0) { dot(cx, cy, (10 + 34 * core) * dpr, 0.55 * core); dot(cx, cy, (5 + 16 * core) * dpr, core); }   // (R83: a wider glow round it, its heart full)
   /* (R107) its birth: a burst of light out of that point as the lines meet, and a ring of it going out */
   const bq = (t - BIRTH + 0.05) / 0.55;
@@ -12175,7 +12181,7 @@ function ivFrame(now) {
     /* (the showcase turns it once round as it comes in, quick and slowing, and it comes to rest FACING him, then sways a
        little while it stands: a turning model that shows its face. Build 20's photographs caught the first spin (a turn
        every three seconds) on its plain back at both moments taken, and the face is the sacred side) */
-    if (cv) ivBlit(cv, unl.id, unl.show ? showYaw(Math.max(0, secs - 0.95)) : secs * 0.6, 0.1, 1, 0);
+    if (cv) ivBlit(cv, unl.id, unl.show ? showYaw(Math.max(0, secs - SC_BIRTH)) : secs * 0.6, 0.1, 1, 0);
     if (unl.show) scFxFrame(secs, unl.dur || 4.2);
     return;
   }
@@ -12362,10 +12368,10 @@ function showcaseOpen(id, opts) {
      merging with the icon should have its sound effect too"): a chapter may name a sound for each beat of it, its own names
      (never a chapter's name written here): `gatherSound` as the light gathers, `hoverSound` once it is born and hovers,
      `intoSound` as it goes down into the button, `mergeSound` as it merges. Absent, each beat is as it was (silent) */
-  if (opts.gatherSound) snd(opts.gatherSound, 0.9);
+  unl.gatherT = opts.gatherSound ? setTimeout(() => { if (unl.id === id && unl.show) snd(opts.gatherSound, 0.9); }, SC_LATE * 1000 * scSlow) : 0;   // (R113: its swell still ends on the birth)
   haptic([30, 50, 120]);
   const secs = Math.max(2.4, +opts.auto || 4.2);
-  unl.hoverT = opts.hoverSound ? setTimeout(() => { if (unl.id === id && unl.show) snd(opts.hoverSound, 0.85); }, 1700 * scSlow) : 0;
+  unl.hoverT = opts.hoverSound ? setTimeout(() => { if (unl.id === id && unl.show) snd(opts.hoverSound, 0.85); }, (1.7 + SC_LATE) * 1000 * scSlow) : 0;
   /* (build 21, Chad 18 Nov: its own entrance, nothing of Item Unlocked's.) The light gathers and it is born at 0.95 s
      (CSS), it turns and hovers; 1.2 s before the end it RELEASES ITS POWER: the room shakes, halos go out from it, motes
      burst (scFxFrame) and the release's sound; 0.6 s before the end it goes down into the holy water's button, which
@@ -12432,7 +12438,7 @@ function unlockClose(how) {
   if (unl.show) {                              // v27.0: the showcase goes its own way (no click, no sound of a press)
     const el = $('showcase');
     unl.id = null; unl.show = false;
-    clearTimeout(unl.autoT); unl.autoT = 0; clearTimeout(unl.flareT); clearTimeout(unl.intoT); clearTimeout(unl.fillT); clearTimeout(unl.hoverT);
+    clearTimeout(unl.autoT); unl.autoT = 0; clearTimeout(unl.flareT); clearTimeout(unl.intoT); clearTimeout(unl.fillT); clearTimeout(unl.hoverT); clearTimeout(unl.gatherT);
     document.body.classList.remove('showcaseopen', 'scToHud');
     $('scene')?.classList.remove('scShake');
     if (how === 'force') $('fireBtn')?.classList.remove('scFill');
@@ -15250,6 +15256,8 @@ const STING_SAMPLE = {
   /* v27.0 · its effects, beds and music (masters/v27.0/sound.sh: every pick and why) */
   u4golddive: ['u4golddive', 1], u4goldgather: ['u4goldgather', 1], u4goldhover: ['u4goldhover', 1],
   u4goldmerge: ['u4goldmerge', 1],
+  /* v27.0 · its effects, beds and music (masters/v27.0/sound.sh: every pick and why) */
+  u4hiss: ['u4hiss', 1], u4nooo: ['u4nooo', 1],
   /* E4C4 FX END */
 };
 /* Which kinds the synth below can actually fake. Everything else in

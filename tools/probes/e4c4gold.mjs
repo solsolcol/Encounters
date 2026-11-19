@@ -21,9 +21,9 @@ import { LAUNCH, PAGE } from '../../testlib.mjs';
 const OUT = process.env.OUT || '/tmp/e4c4gold';
 fs.mkdirSync(OUT, { recursive: true });
 const DSF = +(process.env.DSF || 2), SLOW = +(process.env.SLOW || 12);
-const AT = (process.env.AT || '0.3,0.6,0.85,1.0,1.2,2.6,4.12,4.4,4.85').split(',').map(Number);
+const AT = (process.env.AT || '0.4,0.8,1.15,1.35,1.6,3.0,4.5,4.8,5.25').split(',').map(Number);
 const MERGE_AT = (process.env.MERGE_AT || '0.02,0.06,0.1').split(',').map(Number);
-const MERGE = 5.2 - 0.12;                                          // (the showcase's merge, seconds into its 5.2: main.js fillT)
+const MERGE = 5.58 - 0.12;                                         // (the showcase's merge, seconds into its 5.58: main.js fillT; R113)
 const b = await chromium.launch(LAUNCH);
 const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: DSF, hasTouch: true, isMobile: true });
 const save = { v: 2, ch: 'e4c4', stats: { sanity: 90, awareness: 55, wisdom: 52 }, inv: { gear: {}, bag: [] }, phase: 'bless:w',

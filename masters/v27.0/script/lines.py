@@ -80,7 +80,7 @@ LINES = [
     ('ph4A1', 'pho', 'ending A', "You protected the blessing. You forgot her son. His fear was only love."),
     ('q4A1', 'he', 'ending A', "I saw a man in the way. He was her son."),
     ('ml4B1', 'mala', 'ending B', "What are you doing?"),
-    ('ph4B0', 'pho', 'ending B', "Go."),
+    ('ph4B0', 'pho', 'ending B', "Go away, now!"),
     ('ml4B2', 'mala', 'ending B', "Amma!"),
     ('ml4B3', 'mala', 'ending B', "Are you alright?"),
     ('ph4B1', 'pho', 'ending B', "Your part was the holy water, and keeping the spirits away from her. The work was mine. Today you were lucky."),
