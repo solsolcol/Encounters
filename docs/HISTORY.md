@@ -9346,7 +9346,11 @@ What the baseline contains, by release:
   `6afe3c1ed9b11f158697d442`: R77, his left elbow at his side on the stool: the lap's measure had read the drape's
   hanging bone as his body and turned the elbow out until the arm cleared it, 89 degrees and 0.169 m, a wing of white at
   his left; now 45 and 0.067, his right 35 and 0.018; the joint scan finds nothing a real body would not hold, seated or
-  standing).
+  standing); 27 (R51: the vision made ready under the curtain, vision.js warm and the spirits drawn once into their target
+  through their own layer: measured, the whole opening film makes 0 programs, 0 textures and 0 geometries, where build 26
+  still made three programs and six textures at its flicker); 28 (deploy `6afe4c7d01301f75d74c9dfd`: R77 standing, his
+  left arm with the drape over it let hang 7 degrees out, chosen on the live build by trying the band and the arm at
+  several angles in the running game: the hand clear of the robe at his hip, nothing across it).
 
 ## The sheet, version by version
 
