@@ -398,6 +398,14 @@ pictures (page images, row 5): only by drawing them in a canvas; the cost to be 
 
 ## E. Housekeeping
 
+- **restarttest's finished path is stale** (found 19 Nov 2026, build 43, outside the ask, left as it was). It was
+  written when chapter 1 was the only chapter: "walk it again" restarted it in place. Since chapter 2 exists the button
+  ADVANCES to it (its opening film, its own spawn and pile), so six of its checks (playing, hudBack, backAtSpawn,
+  blackCleared, decisionOpensAgain, choosableAgain) read false, unseen: that path only ever printed its booleans,
+  and runtests reads exit codes and "errors: [" lines (the v6.3 rule). Measured the same on build 43 and on a copy
+  of it without its change. The lost path now fails on a false check (it carries R102's red-edge check, all true);
+  the finished path still only prints, with this reason beside it. To do: rewrite it for the advance (wait the
+  next chapter's film out, then check play, the HUD, the black and the red cleared, and that chapter's own spawn).
 - ~~**CLAUDE.md is ~663 KB (~165k tokens), loaded every session**; this session was summarised 26 times in three days.
   Moving the release history verbatim to its own file was left for Chad at v14.16 (it was ~84k then); recommended.~~
   **DONE 31 Oct (after v24.23)**, Chad: "Do what you recommend". The diary is docs/HISTORY.md word for word, its
