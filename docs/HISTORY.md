@@ -9389,7 +9389,10 @@ What the baseline contains, by release:
   off in the exact reverse of their laying; the stance chosen from four side views at the order to take the holy water,
   each full size, laid beside the people standing in line at the offering tables in Chad's photograph 10: chest -15,
   the head level over the shoulders, the right collar bone drawn back, the milder of the two that stood as the
-  photograph stands).
+  photograph stands); 37 (deploy `6afebbb344d171245a23d6ca`, 19 Nov: R86 in the close, found by reading build 36's
+  photographs: once her palms join at her altar the lamp's take lifted her face 19 degrees and then bowed it 20, with no
+  look holding it; her look on her altar now holds through the lamp at 0.8, its mark at her own eyes' height: 5 up, then a
+  bow of 7.6, measured on her head's own bones and photographed before and after).
 
 ## The sheet, version by version
 
