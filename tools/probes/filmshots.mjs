@@ -96,6 +96,27 @@ if (process.env.LENS) {
   fs.writeFileSync(f, JSON.stringify(rows));
   console.log(el(), 'lens', rows.length, 'moments', rows.length ? `from ${rows[0][0]} to ${rows[rows.length - 1][0]}` : '', '->', f);
 }
+/* (v27.0, 19 Nov) WHO='key:Bone,...' [WHOFROM=s] [WHOTO=s] [WHOSTEP=s]: WHERE A BODY STANDS ON THE SCREEN through a stretch
+   of the film: the film sought in steps (0.1 s unless given), and at each every named bone of every named person (its
+   first body under that key) carried through the film's own lens: its place on this screen (NDC, -1..1 across and up),
+   whether it is in front of the lens, and its place in the world. A seek poses the bodies (the chapter's pose() runs
+   the mixer at once), so a head that leaves a phone's frame during a take is caught between two stills. Written to
+   <OUT>/who-<name>.json as rows [t, fov, [nx, ny, front, x, y, z] | null per bone]; the pictures follow as before */
+if (process.env.WHO) {
+  const rows = await p.evaluate(([spec, from, to, step]) => { const E = window.__enc, C = E.cine, c = E.camera, S = E.stage, out = [];
+    const who = spec.split(',').filter(Boolean).map(s => { const [key, bn] = s.split(':'); return { key, re: new RegExp('^(mixamorig:?)?' + bn + '$') }; });
+    const end = Math.min(to, C.dur() - 0.25);
+    for (let t = from; t <= end + 1e-6; t += step) { C.seek(t); c.updateWorldMatrix(true, false); c.updateProjectionMatrix(); const row = [+t.toFixed(3), +c.fov.toFixed(3)];
+      for (const W of who) { const P = S.person && S.person(W.key, 0); let bone = null; if (P) for (const q in P.bone) if (W.re.test(q)) { bone = P.bone[q]; break; }
+        if (!bone) { row.push(null); continue; }
+        const v = bone.getWorldPosition(c.position.clone()), n = v.clone().project(c);
+        row.push([+n.x.toFixed(3), +n.y.toFixed(3), n.z < 1 ? 1 : 0, +v.x.toFixed(3), +v.y.toFixed(3), +v.z.toFixed(3)]); }
+      out.push(row); }
+    return out; }, [process.env.WHO, +(process.env.WHOFROM || 0), +(process.env.WHOTO || 1e9), +(process.env.WHOSTEP || 0.1)]);
+  const f = `${OUT}/who-${OPT ? 'end' + OPT : FILM || 'film'}.json`;
+  fs.writeFileSync(f, JSON.stringify(rows));
+  console.log(el(), 'who', rows.length, 'moments', '->', f);
+}
 for (const t of TS) {
   await p.evaluate((t) => window.__enc.cine.seek(t), t);
   await p.evaluate(() => new Promise(r => { let k = 0; const f = () => (++k >= 3 ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); }));
