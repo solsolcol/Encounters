@@ -9433,9 +9433,22 @@ What the baseline contains, by release:
   older build, the live film plain sky there; 48 (deploy `6aff50777ce0236f0f26a262`, 19 Nov: R103's blocks, each its own
   paint, real stair towers, fewer streaks; the streets put to him, since the film never looks down at them; and the gold
   probe's own fault found: its slow motion stalled the frame clock the showcase's drawn light is timed by, so builds 46
-  and 47 were photographed with the gathering's lines undrawn, which the game itself draws).
+  and 47 were photographed with the gathering's lines undrawn, which the game itself draws); 49 (deploy
+  `6aff5d15da9207e832fc5be5`, 19 Nov: R112, ending B retold in his order, the spray, the wail "NOOOOO", "Go away, now!"
+  re-said, the gold leaving his teacher's hands as the words end, the thing flung up and out; R113, the gold streaks 1.4
+  times as long); 50 (deploy `6aff6c8fd102a95fa284455d`, 19 Nov: build 49 photographed on a phone lost the spirit off
+  the frame, 27 to 36 degrees left of the lens's subject, and brought it to 0.2 m from his eyes; the lens now on the
+  spirit through every beat, its scream held upright, its lunge stopped 0.65 m off, its hover over him beside his
+  teacher; filmshots measures a whole body on the screen); R114 to R121 (his question on Symphony of the Night's
+  boss-death effect: his own copy of the video read frame by frame; the lessons put to him); sheet v151.
 
 ## The sheet, version by version
+
+**v151, PUBLISHED 19 Nov 2026** (`masters/v27.0/masterz-text-v151.xlsx`): v150 with exactly two cells changed (build 49,
+R112): `voice.ph4B0`'s words "[firm] Go." to "[fierce] Go away, now!" and its length 0.62 to 1.19 s. Id
+`1_EFB8Vn7ugoSqcHi3FSAI7MHYNrnXkRw3Mnuqvj7Rwk`; v150 checked first (created 15:48:32.4, modified 15:48:33.5: the conversion itself, so no edit of his to carry
+over); read back tab by tab, 10,559 cells compared, mismatched 0 (tools/sheetcmp.py).
+<https://docs.google.com/spreadsheets/d/1_EFB8Vn7ugoSqcHi3FSAI7MHYNrnXkRw3Mnuqvj7Rwk/edit>
 
 **v150, PUBLISHED 19 Nov 2026** (`masters/v27.0/masterz-text-v150.xlsx`, its CSV beside it, the repo's
 `masterz-text.csv` refreshed from it): v149 with exactly one row added (build 41, R101): `voice.ph4h2` ("Not yet. First,
