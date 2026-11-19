@@ -80,6 +80,10 @@ const stateOf = p => p.evaluate(() => ({
   out.decisionOpensAgain = await p.$eval('#decide', e => !e.classList.contains('hide'));
   out.choosableAgain = await p.evaluate(() => window.__enc.getState() === 'decide');
   console.log(JSON.stringify(out), '| errors:', errs.length ? errs : 'none');
+  /* (v27.0) every path turns a false check into the exit code and an "errors: [" line (the v6.3 rule: runtests reads
+     those, never the printed booleans; the first two paths only printed theirs) */
+  { const bad = Object.entries(out).filter(([k, v]) => k !== 'path' && v !== true).map(([k]) => k);
+    if (bad.length) { console.log('errors: [' + out.path + ': ' + bad.join(', ') + ']'); process.exitCode = 1; } }
   await p.close();
 }
 
@@ -130,6 +134,10 @@ const stateOf = p => p.evaluate(() => ({
   await goToPile(p);
   out.decisionOpensAgain = await p.$eval('#decide', e => !e.classList.contains('hide'));
   console.log(JSON.stringify(out), '| errors:', errs.length ? errs : 'none');
+  /* (v27.0) every path turns a false check into the exit code and an "errors: [" line (the v6.3 rule: runtests reads
+     those, never the printed booleans; the first two paths only printed theirs) */
+  { const bad = Object.entries(out).filter(([k, v]) => k !== 'path' && v !== true).map(([k]) => k);
+    if (bad.length) { console.log('errors: [' + out.path + ': ' + bad.join(', ') + ']'); process.exitCode = 1; } }
   await p.close();
 }
 /* ---- v6.3: the LAST chapter of a case: complete -> the EPISODE card -> the title.
