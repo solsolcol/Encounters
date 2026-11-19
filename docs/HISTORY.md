@@ -9427,7 +9427,13 @@ What the baseline contains, by release:
   wash and a shockwave past the screen's corner, the shake twice as hard; a second gold wave as it merges strikes every
   green spirit as its front reaches it, and twelve more rise 0.85 s later, the fight going on; four new sounds for the
   gathering, the hover, the dive and the merge, the hover's near silence filled. kit.wave gains a strength `k`, 1 as it
-  was).
+  was); 47 (deploy `6aff49f48cdc83c82682705b`, 19 Nov: R106 again, measured: his look, held on his mother, had turned 45
+  degrees in half a second as she rose; now it follows her steps at a neck's pace, no step over 2.9 degrees in 0.1 s in
+  any ending); R111 (his screenshot, "the block behind 236") answered: a far slab build 44 took out, his page still on an
+  older build, the live film plain sky there; 48 (deploy `6aff50777ce0236f0f26a262`, 19 Nov: R103's blocks, each its own
+  paint, real stair towers, fewer streaks; the streets put to him, since the film never looks down at them; and the gold
+  probe's own fault found: its slow motion stalled the frame clock the showcase's drawn light is timed by, so builds 46
+  and 47 were photographed with the gathering's lines undrawn, which the game itself draws).
 
 ## The sheet, version by version
 

@@ -4,9 +4,11 @@
    eye, and the blessing put at its surge (the fight's own `k`, FIGHT.surgeAt): the surge, his call, his teacher's word and
    his, and the amulet's showcase, all as the chapter runs them.
    The SHOWCASE is photographed in SLOW MOTION: the engine's own timers and drawn light SLOW times slower (window.__enc
-   .showSlow) and the page's CSS animations the same through the browser's animation domain, so each moment of AT (seconds
-   of the showcase) is a photograph of that moment: the lines gathering, its birth, its hover, its release, its dive, the
-   merge. MERGE_AT then photographs the merge's rings, wash and shockwave (seconds after the merge, still slowed).
+   .showSlow) and each of the page's own animations the same, set on each the moment it exists (never through the
+   browser's animation domain, which stalls the frame clock the drawn light is timed by: build 48 found every line of it
+   undrawn that way), so each moment of AT (seconds of the showcase) is a photograph of that moment: the lines gathering,
+   its birth, its hover, its release, its dive. MERGE_AT then photographs the merge's rings, wash and shockwave (seconds
+   after the merge, still slowed, while the showcase stands).
    THE NOVA is in play and not slowed (the world's clock is the wall's): the green ones counted the moment the showcase
    closes (how many the gold's wave struck, each burning out quick), the wave's strength, and the return (how many came
    back, and when), photographed as it plays.
@@ -20,7 +22,7 @@ const OUT = process.env.OUT || '/tmp/e4c4gold';
 fs.mkdirSync(OUT, { recursive: true });
 const DSF = +(process.env.DSF || 2), SLOW = +(process.env.SLOW || 12);
 const AT = (process.env.AT || '0.3,0.6,0.85,1.0,1.2,2.6,4.12,4.4,4.85').split(',').map(Number);
-const MERGE_AT = (process.env.MERGE_AT || '0.03,0.1,0.2,0.35,0.6').split(',').map(Number);
+const MERGE_AT = (process.env.MERGE_AT || '0.02,0.06,0.1').split(',').map(Number);
 const MERGE = 5.2 - 0.12;                                          // (the showcase's merge, seconds into its 5.2: main.js fillT)
 const b = await chromium.launch(LAUNCH);
 const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: DSF, hasTouch: true, isMobile: true });
@@ -28,7 +30,6 @@ const save = { v: 2, ch: 'e4c4', stats: { sanity: 90, awareness: 55, wisdom: 52 
                conduct: { s: 0, a: 0, notes: [] }, choices: {}, at: { x: 0.15, y: 1.62, z: 1.0 }, done: false, t: 1 };
 await ctx.addInitScript(s => { if (!sessionStorage.getItem('seeded')) { localStorage.setItem('mz.encounters.checkpoint', s); sessionStorage.setItem('seeded', '1'); } }, JSON.stringify(save));
 const p = await ctx.newPage();
-const cdp = await ctx.newCDPSession(p);
 const errs = [];
 p.on('pageerror', e => errs.push('PAGEERROR ' + e.message));
 p.on('console', m => { if (m.type() === 'error' || /failed|threw/i.test(m.text())) errs.push('CONSOLE ' + m.text().slice(0, 240)); });
@@ -67,8 +68,14 @@ await p.waitForFunction(() => { const F = window.__enc.stage.dbg.play.fight; ret
 log('the surge', JSON.stringify(await fightState()));
 /* slow motion from here, before his call (a picture taken on this box can take longer than the call's lines, so the call
    is never waited for by name): the engine's showcase and the page's CSS animations alike */
-await p.evaluate((f) => window.__enc.showSlow(f), SLOW);
-await cdp.send('Animation.enable'); await cdp.send('Animation.setPlaybackRate', { playbackRate: 1 / SLOW });
+/* (build 48: NOT through the browser's animation domain. Its playback rate slows the frame clock as well (a frame's time
+   stood 8 s behind the page's after it), and the showcase's drawn light is timed by the frame's time: every line it
+   draws fell before its own start and none was drawn, in every picture. Each of the page's own animations is slowed
+   instead, the moment it exists: a watcher on every change of class or style sets its rate, and the frame loop checks) */
+await p.evaluate((f) => { window.__enc.showSlow(f); const R = 1 / f;
+  const fix = () => { for (const a of document.getAnimations()) if (a.playbackRate !== R) a.playbackRate = R; };
+  window.__slowFix = new MutationObserver(fix); window.__slowFix.observe(document.documentElement, { attributes: true, subtree: true, childList: true, attributeFilter: ['class', 'style'] });
+  const loop = () => { if (!window.__slowFix) return; fix(); requestAnimationFrame(loop); }; fix(); requestAnimationFrame(loop); }, SLOW);
 log('slowed', SLOW, 'times');
 /* (her life held full by the probe until the showcase opens: nothing defends her here, and twelve at once took her life
    before his call was answered on both first runs, the loss's film in place of the showcase) */
@@ -89,19 +96,21 @@ for (const t of AT) {
   await shot('show-' + t.toFixed(2)); log('photographed the showcase at', t, '(taken at', s.toFixed(2), 'to', (await p.evaluate(() => window.__enc.showT()) || 0).toFixed(2) + ')');
 }
 /* the merge, still slowed: its rings, its wash, its shockwave and the shake */
-let closedAt = null;
+let closedAt = null, closeState = null;
 for (const dt of MERGE_AT) {
   const t = MERGE + dt;
   const ok = await p.waitForFunction((t) => { const s = window.__enc.showT(); return s == null || s >= t; }, t, { timeout: 600000, polling: 'raf' }).then(() => true).catch(() => false);
   const s = await p.evaluate(() => window.__enc.showT());
   if (!ok) break;
-  if (s == null && closedAt == null) { closedAt = Date.now(); log('the showcase has closed (the nova runs at the wall clock from here)', JSON.stringify(await fightState())); }
-  await shot('merge+' + dt.toFixed(2)); log('photographed the merge at +', dt, s == null ? '(after the close)' : '(showcase ' + s.toFixed(2) + ')');
+  /* (the merge is photographed only while the showcase stands: once it has closed, the wave and the return are measured
+     at once, at the wall's clock, before any picture) */
+  if (s == null) { closedAt = Date.now(); closeState = await fightState(); log('the showcase has closed (the nova runs at the wall clock from here)', JSON.stringify(closeState)); break; }
+  await shot('merge+' + dt.toFixed(2)); log('photographed the merge at +', dt, '(showcase ' + s.toFixed(2) + ')');
 }
 /* the nova and the return, at the wall's clock */
 await p.waitForFunction(() => window.__enc.getState() === 'play', null, { timeout: 600000, polling: 100 });
-if (closedAt == null) { closedAt = Date.now(); log('the showcase closed', JSON.stringify(await fightState())); }
-await cdp.send('Animation.setPlaybackRate', { playbackRate: 1 }); await p.evaluate(() => window.__enc.showSlow(1));
+if (closedAt == null) { closedAt = Date.now(); closeState = await fightState(); log('the showcase closed', JSON.stringify(closeState)); }
+await p.evaluate(() => { if (window.__slowFix) { window.__slowFix.disconnect(); window.__slowFix = null; } for (const a of document.getAnimations()) a.playbackRate = 1; window.__enc.showSlow(1); });
 /* the wave and the return MEASURED before any picture (a picture on this box can take longer than the whole return):
    the fight read every 150 ms for POLL seconds of the page's own clock, a line each time what it holds changes */
 { const POLL = +(process.env.POLL || 6), t0 = await p.evaluate(() => performance.now()); let last = '';
@@ -120,7 +129,7 @@ for (let i = 0; i < 8; i++) {
   log('after the close', seen[seen.length - 1].after, 's:', JSON.stringify(st));
   await shot('nova-' + i);
 }
-const struck = Math.max(...seen.map(s => s.quick)), back = Math.max(...seen.map(s => s.come + s.feed));
+const struck = Math.max(closeState ? closeState.quick : 0, ...seen.map(s => s.quick)), back = Math.max(...seen.map(s => s.come + s.feed));
 log('the gold\'s wave struck', struck, 'at most at once; the most that came back', back);
 if (!struck) errs.push('THE WAVE STRUCK NONE');
 if (!back) errs.push('NONE CAME BACK');

@@ -563,7 +563,6 @@
         across: { body: '#58524a', band: '#7c4434', coping: '#958e80', fin: ['#4c4740', '#57524a', '#625c52'] },
         west:   { body: '#4f5458', band: '#2f6670', coping: '#8e9294', fin: ['#44494d', '#4d5256', '#575c60'] },
         east:   { body: '#5a5648', band: '#55693f', coping: '#959080', fin: ['#4c493d', '#565346', '#605c4e'] } };
-      const ACC = PAINT.across.band;
       /* the parapet's outer face (its paint, its accent band, a coping catching the corridor's light on its edge, rain
          streaks under it), the slab's edge under it: a 5 m tile */
       const paraMat = (P, seed) => B({ fog: true, map: lit((() => { const [c, x] = canvas(512, 160), rr = rng(seed);
@@ -755,7 +754,7 @@
       const SLAB_FAR = 152, SLAB_EYES = [[-6, 1.5, -1.3], [0, 1.6, 1]];
       const slab = (x0, z0, x1, z1, h, paint, seed, d = 12) => {
         /* (R103) each in its own paint: its parapets' band and its fins' (the block across's materials otherwise) */
-        const mPara = paraMat(paint, seed), mFin = finMat(paint);
+        const sPara = paraMat(paint, seed), sFin = finMat(paint);
         const L = Math.hypot(x1 - x0, z1 - z0), ax = (x1 - x0) / L, az = (z1 - z0) / L, bx = az, bz = -ax;   // along; into the block
         const P = (u, y, w) => [x0 + ax * u - bx * w, y, z0 + az * u - bz * w];                             // w: out toward her
         const NSf = Math.max(4, Math.round(h / SH)), top = G + NSf * SH, PIN = 1.9, POU = 2.05, ry = Math.atan2(-az, ax);
@@ -769,7 +768,7 @@
           if (far > SLAB_FAR) console.error('e4c4: a block of the estate reaches ' + far.toFixed(1) + ' m out, past ' + SLAB_FAR + ' m (the far plane is 160): ' + [x0, z0, x1, z1].join(', ')); }
         for (let s2 = 1; s2 < NSf; s2++) {
           const fl = G + s2 * SH, ce = fl + SH - 0.25;
-          quadUV(mPara, P(0, fl - 0.30, POU), P(L, fl - 0.30, POU), P(L, fl + 1.0, POU), P(0, fl + 1.0, POU), 0, 0, L / 5, 1);
+          quadUV(sPara, P(0, fl - 0.30, POU), P(L, fl - 0.30, POU), P(L, fl + 1.0, POU), P(0, fl + 1.0, POU), 0, 0, L / 5, 1);
           quad(mParaIn, P(0, fl + 1.0, POU), P(L, fl + 1.0, POU), P(L, fl + 1.0, PIN), P(0, fl + 1.0, PIN));
           quadUV(mFloor7, P(0, fl + 0.01, PIN), P(L, fl + 0.01, PIN), P(L, fl + 0.01, 0), P(0, fl + 0.01, 0), 0, 0, L / 7, 1);
           quadUV(mCeil7, P(0, ce, 0), P(L, ce, 0), P(L, ce, PIN), P(0, ce, PIN), 0, 0, L / 7, 1);
@@ -785,14 +784,14 @@
         for (let cu = 2.5; cu <= L - 2.4; cu += 5.1) { const c = P(cu, 0, POU - 0.4); box(mParaIn, c[0], G + SH / 2, c[2], 0.6, SH, 0.6, ry); }
         /* the party walls out of the face as fins, every second flat, ground to roof */
         for (let i = 0; i <= nb; i += 2) { const u = ub + i * BAY;
-          quadUV(mFin, P(u - 0.2, G, POU + 0.35), P(u + 0.2, G, POU + 0.35), P(u + 0.2, top + 0.6, POU + 0.35), P(u - 0.2, top + 0.6, POU + 0.35), 0, 0, 1, 1);
+          quadUV(sFin, P(u - 0.2, G, POU + 0.35), P(u + 0.2, G, POU + 0.35), P(u + 0.2, top + 0.6, POU + 0.35), P(u - 0.2, top + 0.6, POU + 0.35), 0, 0, 1, 1);
           quad(mDark, P(u - 0.2, G, 0), P(u - 0.2, G, POU + 0.35), P(u - 0.2, top + 0.6, POU + 0.35), P(u - 0.2, top + 0.6, 0));
           quad(mDark, P(u + 0.2, G, POU + 0.35), P(u + 0.2, G, 0), P(u + 0.2, top + 0.6, 0), P(u + 0.2, top + 0.6, POU + 0.35)); }
         /* its ends and its roof, its roof's parapet against the sky */
         quad(mDark, P(0, G, -d), P(0, G, POU), P(0, top, POU), P(0, top, -d));
         quad(mDark, P(L, G, POU), P(L, G, -d), P(L, top, -d), P(L, top, POU));
         quad(mRoofEdge, P(0, top, POU), P(L, top, POU), P(L, top, -d), P(0, top, -d));
-        quadUV(mPara, P(0, top - 0.3, POU + 0.01), P(L, top - 0.3, POU + 0.01), P(L, top + 1.1, POU + 0.01), P(0, top + 1.1, POU + 0.01), 0, 0, L / 5, 1);
+        quadUV(sPara, P(0, top - 0.3, POU + 0.01), P(L, top - 0.3, POU + 0.01), P(L, top + 1.1, POU + 0.01), P(0, top + 1.1, POU + 0.01), 0, 0, L / 5, 1);
         /* its lift core over the roof, its motor room, and a tank */
         { const c = P(L / 2, 0, -1.2); box(mDark, c[0], top + 3.2, c[2], 4.8, 6.4, 4.6, ry); box(mRoofEdge, c[0], top + 6.5, c[2], 5.4, 0.3, 5.2, ry); }
         { const c = P(L * 0.22, 0, -d / 2); box(mDark, c[0], top + 1.6, c[2], 5, 2.2, 3.6, ry); }
