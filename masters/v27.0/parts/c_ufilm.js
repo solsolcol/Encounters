@@ -949,7 +949,7 @@
         filmBed.corr = t < T.cut2 ? BED.corr : 0;
         filmBed.flat = inside ? BED.flat * (1 - 0.75 * smo(c01((t - T.drop) / 0.8))) : 0;
         /* her gate: shut until the first black, swung back (out of sight) after it */
-        for (const g of (things.w4gate || []).slice(0, 1)) g.visible = t < T.cut1 + 0.3;
+        for (const g of (things.w4gate || []).slice(0, 1)) g.visible = t < T.blk1;
         /* his teacher: at her gate, then (in the second black) in the room before her, at her left */
         whenReady(cast.phoB, (P) => { P.group.visible = true;
           if (!inside) put(P, PHO_GATE.x, PHO_GATE.z, 0); else put(P, PHO_IN.x, PHO_IN.z, faceTo(PHO_IN.x, PHO_IN.z, CHAIR.x, CHAIR.z));
@@ -957,9 +957,9 @@
           if (inside) lookNow(P, AMMA_FACE, 1, 0.8); });
         /* Ravi: behind the grille, then in her doorway, his welcome; then aside, in the room */
         whenReady(cast.ravi, (P) => {
-          if (!inside) { put(P, RAVI_DOOR.x, t < T.cut1 ? RAVI_DOOR.z + 0.25 : RAVI_DOOR.z, Math.PI);
+          if (!inside) { put(P, RAVI_DOOR.x, t < T.blk1 ? RAVI_DOOR.z + 0.25 : RAVI_DOOR.z, Math.PI);
             if (t >= T.rv && t < T.rv + 2.7) pose(P, 'Talk_with_Hands_Open', (t - T.rv) * 1.0); else pose(P, 'Idle_3', 2 + t * 0.35, true);
-            lookNow(P, t < T.cut1 ? [PHO_GATE.x, 1.7, PHO_GATE.z] : 'lens', 1, 0.8); }
+            lookNow(P, t < T.blk1 ? [PHO_GATE.x, 1.7, PHO_GATE.z] : 'lens', 1, 0.8); }
           else { put(P, RAVI_IN.x, RAVI_IN.z, faceTo(RAVI_IN.x, RAVI_IN.z, CHAIR.x, CHAIR.z)); pose(P, 'Idle_3', 4 + t * 0.35, true); lookNow(P, AMMA_FACE, 1, 0.8); } });
         whenReady(cast.mala, (P) => { put(P, MALA_T.x, MALA_T.z, faceTo(MALA_T.x, MALA_T.z, CHAIR.x, CHAIR.z)); pose(P, 'Idle_3', 1 + t * 0.35, true); lookNow(P, inside && t > T.inside ? 'lens' : AMMA_FACE, inside && t > T.inside ? smo(c01((t - T.inside) / 1.2)) * 0.6 : 1, 0.8); });
         /* her: in her chair before her goddess; her head turning to him (past his teacher) as the room's sound drops */
@@ -987,9 +987,9 @@
              back; from here, nearer the parapet and further back, his teacher stands at the right in profile and Ravi's
              face is behind the grille in the middle) */
           { t: T.at, name: 'gate', eye: [-2.0, 1.55, -1.6], at: [-0.15, 1.55, 0.0], fp: 58, fd: 52 },
-          { t: T.cut1 + 0.6, name: 'door', eye: [0.48, 1.5, -1.05], at: [RAVI_DOOR.x, 1.6, RAVI_DOOR.z], fp: 50, fd: 46, cut: true },
+          { t: T.blk1, name: 'door', eye: [0.48, 1.5, -1.05], at: [RAVI_DOOR.x, 1.6, RAVI_DOOR.z], fp: 50, fd: 46, cut: true },
           { t: T.cut2, name: 'door', eye: [0.48, 1.5, -1.05], at: [RAVI_DOOR.x, 1.6, RAVI_DOOR.z], fp: 50, fd: 46 },
-          { t: T.cut2 + 0.5, name: 'in', eye: [0.1, 1.6, 0.45], at: [CHAIR.x, 1.1, CHAIR.z], fp: 62, fd: 56, cut: true },
+          { t: T.blk2, name: 'in', eye: [0.1, 1.6, 0.45], at: [CHAIR.x, 1.1, CHAIR.z], fp: 62, fd: 56, cut: true },
           { t: T.inside, name: 'in', eye: [0.45, 1.62, 1.7], at: [CHAIR.x + 0.1, 1.05, CHAIR.z], fp: 62, fd: 56 },
           /* (18 Nov, photographed on build 19: aimed at 1.0 m over a point 10 cm before the chair's middle, a phone had her
              face at its right edge and Mala's head cut away above; her head as it sits in her chair is 5 cm behind the

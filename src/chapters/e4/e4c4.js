@@ -1502,11 +1502,19 @@
          its roof's parapet and a lift core over the roof; a storey 2.85 m, as hers. Turned any way, so laid in the block's
          own frame (along its face, up, and out toward her); in the block across's own materials, so no new draw call) */
       const deal2 = rng(4405);
+      const SLAB_FAR = 152, SLAB_EYES = [[-6, 1.5, -1.3], [0, 1.6, 1]];
       const slab = (x0, z0, x1, z1, h, d = 12) => {
         const L = Math.hypot(x1 - x0, z1 - z0), ax = (x1 - x0) / L, az = (z1 - z0) / L, bx = az, bz = -ax;   // along; into the block
         const P = (u, y, w) => [x0 + ax * u - bx * w, y, z0 + az * u - bz * w];                             // w: out toward her
         const NSf = Math.max(4, Math.round(h / SH)), top = G + NSf * SH, PIN = 1.9, POU = 2.05, ry = Math.atan2(-az, ax);
         const nb = Math.max(1, Math.floor((L - 2) / BAY)), ub = (L - nb * BAY) / 2;                        // its flats, the ends its stairs'
+        /* (R103) slabFar: no block stands across the lens's far plane (160 m). Every corner of it (its face's fins, its
+           back, its ground and its lift core's roof) measured from the two places the estate is seen from (the opening
+           film's corridor, her doorway in play); one past SLAB_FAR is said in the console, which the probes read */
+        { let far = 0;
+          for (const u of [0, L]) for (const w of [POU + 0.4, -d]) for (const y of [G, top + 6.65]) { const q = P(u, y, w);
+            for (const e of SLAB_EYES) far = Math.max(far, Math.hypot(q[0] - e[0], q[1] - e[1], q[2] - e[2])); }
+          if (far > SLAB_FAR) console.error('e4c4: a block of the estate reaches ' + far.toFixed(1) + ' m out, past ' + SLAB_FAR + ' m (the far plane is 160): ' + [x0, z0, x1, z1].join(', ')); }
         for (let s2 = 1; s2 < NSf; s2++) {
           const fl = G + s2 * SH, ce = fl + SH - 0.25;
           quadUV(mPara, P(0, fl - 0.30, POU), P(L, fl - 0.30, POU), P(L, fl + 1.0, POU), P(0, fl + 1.0, POU), 0, 0, L / 5, 1);
@@ -1539,14 +1547,13 @@
       };
       slab(-128, -8, -74, -46, 37.05);                          // a block turned toward her, west of the one across
       slab(66, -52, 118, -20, 37.05);                           // and one east of it
-      slab(-150, -112, -60, -128, 45.6);                        // the next row behind, three storeys taller
-      slab(40, -120, 140, -104, 45.6);
-      /* (the newer estate's towers, 34 to 40 storeys: from her storey they must rise past the block across's roof, 21.6
-         degrees up, to be seen over it at 150 to 200 m) */
-      slab(-46, -150, -8, -158, 108.3, 14);
-      slab(18, -176, 52, -182, 114.0, 14);
-      slab(-96, -190, -64, -200, 102.6, 14);
-      slab(84, -168, 112, -176, 96.9, 14);
+      /* (R103, Chad, 19 Nov: "why is there a background basic hdb block that cuts into view at the back and cuts away
+         again? why dont u just remove that basic looking hdb?") The next row behind (two slabs at 120 to 180 m) and the
+         newer estate's four towers (150 to 207 m) are taken out: they stood across the lens's far plane (160 m, main.js),
+         so as the opening film's lens turned from the sky down to the block across, their tops and ends were cut off and
+         came back (a far plane is a flat wall square to the lens: a point at 170 m is behind it when looked at straight
+         and in front of it near the frame's edge), and at that distance their storeys read as a plain slab. Every block
+         left is checked against it (slabFar below) */
       /* her own block's corridor face below her storey (each storey's band, its lit line and the parapet) */
       for (let s = 1; s <= 7; s++) { const y = -s * 2.85;
         const zo = CORR.para - 0.075;
@@ -8271,7 +8278,7 @@
         filmBed.corr = t < T.cut2 ? BED.corr : 0;
         filmBed.flat = inside ? BED.flat * (1 - 0.75 * smo(c01((t - T.drop) / 0.8))) : 0;
         /* her gate: shut until the first black, swung back (out of sight) after it */
-        for (const g of (things.w4gate || []).slice(0, 1)) g.visible = t < T.cut1 + 0.3;
+        for (const g of (things.w4gate || []).slice(0, 1)) g.visible = t < T.blk1;
         /* his teacher: at her gate, then (in the second black) in the room before her, at her left */
         whenReady(cast.phoB, (P) => { P.group.visible = true;
           if (!inside) put(P, PHO_GATE.x, PHO_GATE.z, 0); else put(P, PHO_IN.x, PHO_IN.z, faceTo(PHO_IN.x, PHO_IN.z, CHAIR.x, CHAIR.z));
@@ -8279,9 +8286,9 @@
           if (inside) lookNow(P, AMMA_FACE, 1, 0.8); });
         /* Ravi: behind the grille, then in her doorway, his welcome; then aside, in the room */
         whenReady(cast.ravi, (P) => {
-          if (!inside) { put(P, RAVI_DOOR.x, t < T.cut1 ? RAVI_DOOR.z + 0.25 : RAVI_DOOR.z, Math.PI);
+          if (!inside) { put(P, RAVI_DOOR.x, t < T.blk1 ? RAVI_DOOR.z + 0.25 : RAVI_DOOR.z, Math.PI);
             if (t >= T.rv && t < T.rv + 2.7) pose(P, 'Talk_with_Hands_Open', (t - T.rv) * 1.0); else pose(P, 'Idle_3', 2 + t * 0.35, true);
-            lookNow(P, t < T.cut1 ? [PHO_GATE.x, 1.7, PHO_GATE.z] : 'lens', 1, 0.8); }
+            lookNow(P, t < T.blk1 ? [PHO_GATE.x, 1.7, PHO_GATE.z] : 'lens', 1, 0.8); }
           else { put(P, RAVI_IN.x, RAVI_IN.z, faceTo(RAVI_IN.x, RAVI_IN.z, CHAIR.x, CHAIR.z)); pose(P, 'Idle_3', 4 + t * 0.35, true); lookNow(P, AMMA_FACE, 1, 0.8); } });
         whenReady(cast.mala, (P) => { put(P, MALA_T.x, MALA_T.z, faceTo(MALA_T.x, MALA_T.z, CHAIR.x, CHAIR.z)); pose(P, 'Idle_3', 1 + t * 0.35, true); lookNow(P, inside && t > T.inside ? 'lens' : AMMA_FACE, inside && t > T.inside ? smo(c01((t - T.inside) / 1.2)) * 0.6 : 1, 0.8); });
         /* her: in her chair before her goddess; her head turning to him (past his teacher) as the room's sound drops */
@@ -8309,9 +8316,9 @@
              back; from here, nearer the parapet and further back, his teacher stands at the right in profile and Ravi's
              face is behind the grille in the middle) */
           { t: T.at, name: 'gate', eye: [-2.0, 1.55, -1.6], at: [-0.15, 1.55, 0.0], fp: 58, fd: 52 },
-          { t: T.cut1 + 0.6, name: 'door', eye: [0.48, 1.5, -1.05], at: [RAVI_DOOR.x, 1.6, RAVI_DOOR.z], fp: 50, fd: 46, cut: true },
+          { t: T.blk1, name: 'door', eye: [0.48, 1.5, -1.05], at: [RAVI_DOOR.x, 1.6, RAVI_DOOR.z], fp: 50, fd: 46, cut: true },
           { t: T.cut2, name: 'door', eye: [0.48, 1.5, -1.05], at: [RAVI_DOOR.x, 1.6, RAVI_DOOR.z], fp: 50, fd: 46 },
-          { t: T.cut2 + 0.5, name: 'in', eye: [0.1, 1.6, 0.45], at: [CHAIR.x, 1.1, CHAIR.z], fp: 62, fd: 56, cut: true },
+          { t: T.blk2, name: 'in', eye: [0.1, 1.6, 0.45], at: [CHAIR.x, 1.1, CHAIR.z], fp: 62, fd: 56, cut: true },
           { t: T.inside, name: 'in', eye: [0.45, 1.62, 1.7], at: [CHAIR.x + 0.1, 1.05, CHAIR.z], fp: 62, fd: 56 },
           /* (18 Nov, photographed on build 19: aimed at 1.0 m over a point 10 cm before the chair's middle, a phone had her
              face at its right edge and Mala's head cut away above; her head as it sits in her chair is 5 cm behind the
@@ -8561,6 +8568,12 @@
 
   /* THE OPENING FILM's clock (c_ufilm.js FILMS.open draws to it) */
   const OP = { q1: 0.8, est: 2.6, q2: 8.4, turn: 13.6, walk: 14.6, at: 20.2, latch: 20.6, cut1: 21.3, rv: 22.2, cut2: 25.0, inside: 27.4, drop: 28.6, look: 29.0, flick: 31.6, flickEnd: 32.9, black: 33.4, end: 34.6 };
+  /* (R104, Chad, 19 Nov: "when the camera switches to ravi for him to say come in, it is not a smooth transition, it sorts
+     of jumps") the middle of each dip's WHOLE black, where everything that changes across it changes: the lens, Ravi's
+     step and look, the gate, the room. The first is whole from cut1 + 0.25 to cut1 + 0.35, the second from cut2 to
+     cut2 + 0.1 (intro below). The lens had been switched at cut1 + 0.6 and cut2 + 0.5, after each black had lifted: the
+     old shot seen again with the gate gone and Ravi a step on, then the new one in a single frame */
+  OP.blk1 = OP.cut1 + 0.3; OP.blk2 = OP.cut2 + 0.05;
   /* THE OPENING FILM (the plan's §4.0): its pictures are the stage's; here its clock's one track, its fades and its cues.
      It begins on black (v4.6) and ends on black, the title over it */
   function intro(c, s, api) {

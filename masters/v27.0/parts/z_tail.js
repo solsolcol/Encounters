@@ -26,6 +26,12 @@
 
   /* THE OPENING FILM's clock (c_ufilm.js FILMS.open draws to it) */
   const OP = { q1: 0.8, est: 2.6, q2: 8.4, turn: 13.6, walk: 14.6, at: 20.2, latch: 20.6, cut1: 21.3, rv: 22.2, cut2: 25.0, inside: 27.4, drop: 28.6, look: 29.0, flick: 31.6, flickEnd: 32.9, black: 33.4, end: 34.6 };
+  /* (R104, Chad, 19 Nov: "when the camera switches to ravi for him to say come in, it is not a smooth transition, it sorts
+     of jumps") the middle of each dip's WHOLE black, where everything that changes across it changes: the lens, Ravi's
+     step and look, the gate, the room. The first is whole from cut1 + 0.25 to cut1 + 0.35, the second from cut2 to
+     cut2 + 0.1 (intro below). The lens had been switched at cut1 + 0.6 and cut2 + 0.5, after each black had lifted: the
+     old shot seen again with the gate gone and Ravi a step on, then the new one in a single frame */
+  OP.blk1 = OP.cut1 + 0.3; OP.blk2 = OP.cut2 + 0.05;
   /* THE OPENING FILM (the plan's §4.0): its pictures are the stage's; here its clock's one track, its fades and its cues.
      It begins on black (v4.6) and ends on black, the title over it */
   function intro(c, s, api) {
