@@ -192,7 +192,14 @@
     weapon: { hands: 'own', pose: 'bowl', item: 'holywater', rounds: 14, endless: true, fireGap: 0.35, spray: { count: 16, spread: 0.24 },
               /* (R57, Chad, 18 Nov evening: "When the player runs out of water, and tries to flick, there should be a clear HUD UI
                  message asking the player to reload the water.") */
-              words: { fire: 'FLICK', reload: 'DIP', empty: 'Out of holy water. DIP at the big bowl to refill.' }, shot: 'u4flick', reload: 'u4dip', empty: 'uiclick',
+              /* (R133, R136) the words said on a dry flick are the chapter's own, on the sheet (words.waterEmpty for a mouse and
+                 keyboard, waterEmptyTouch for a touch screen), laid in below */
+              words: { fire: 'FLICK', reload: 'DIP' }, shot: 'u4flick', reload: 'u4dip', empty: 'uiclick',
+              /* (R133, Chad, 20 Nov: "Remove the reload button at the bottom of the screen." and "instantly reload the water"):
+                 no reload button (main.js `reloadButton`; the sign over his teacher's bowl is the refill, c_story.js
+                 reloadHits, and R on a desktop), and the dip takes no time: nothing is drawn of it (view: false below), so a
+                 dip's 1.6 s would only have held the next flick back */
+              reloadButton: false, dipSecs: [0, 0, 0],
               /* (Chad, 18 Nov: "Flick icon can be a spraying water icon instead of a word."): the button draws water flung
                  (shell.html .wpnIco-spray), FLICK stays its name for a screen reader; no AIM (the water has no zoom) */
               icon: 'spray',
@@ -262,21 +269,25 @@
       // PLAY III · the blessing (§4.3)
       objWater: 'Take the holy water',
       hotWater: 'Take the holy water',
-      dipHere: 'Fill it again at his bowl.',
-      objHold: 'Keep the green spirits away from Amma',
+      /* (R135, Chad, 20 Nov: "The objective label text should be: Keep the green spirits away from Amma by using the holy
+         water.") */
+      objHold: 'Keep the green spirits away from Amma by using the holy water.',
       guardTitle: 'PROTECT AMMA',
       /* (Chad, 18 Nov: "I think the 'hold the room' instructions are too long and can be shortened , but it still needs to
          read natural, direct and straightforward."; the button shows water now, not the word FLICK, and its refill an arrow) */
       /* (19 Nov, R96: its sentence on the strain, approved by Chad as written, after the sentence on Spirit Vision) */
-      guardBrief: 'Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision to see them, and tap the water button to flick holy water at them. Spirit Vision strains you. Close it when the ring turns red, and open it again when it empties. Refill at his bowl with the arrow button. If her bar runs out, the blessing fails.',
-      guardBriefKey: 'Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision (V) to see them, and click or press Space to flick holy water at them. Spirit Vision strains you. Close it when the ring turns red, and open it again when it empties. Refill at his bowl with R. If her bar runs out, the blessing fails.',
+      guardBrief: 'Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision to see them, and tap the water button to flick holy water at them. Spirit Vision strains you. Close it when the ring turns red, and open it again when it empties. Tap the gold icon above the holy water bowl to reload. If her bar runs out, the blessing fails.',
+      guardBriefKey: 'Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision (V) to see them, and click or press Space to flick holy water at them. Spirit Vision strains you. Close it when the ring turns red, and open it again when it empties. Press R to reload. If her bar runs out, the blessing fails.',
+      /* (R133, R136) said under the reticle on a dry flick (the engine's weapon words, laid in below the chapter): on a touch
+         screen the gold sign over the bowl is the refill, with a mouse and keyboard R */
+      waterEmpty: 'Out of holy water. Press R to reload.',
+      waterEmptyTouch: 'Out of holy water. Tap the gold icon above the holy water bowl.',
       // the fight's stakes and the call (Chad, 18 Nov: plan §0 R16 to R29)
       ammaBar: 'Amma',
       objGold: 'Flick the golden water',
       // the card when her life runs out: what happened, over Master Z's own words (the case file S1·12, word for word)
       lostSay: 'Too many green spirits reached Amma. Her cry broke the blessing, and it could not be finished.',
       lostTeach: 'Learning when to open myself and when to close is the true path of cultivation. Today I can use these sensitivities to help others, which is the point of them.',
-      noAltar: 'Not at her altar.',
       // the chant's captions: the Pali as chanted over its meaning (v21.31), Thanissaro Bhikkhu's A Chanting Guide,
       // word for word (docs/research/V27.0-BLESSING.md §1.3; docs/research/V27.0-VERDICTS.md B13, B14)
       cap1: 'Katā me rakkhā, Katā me parittā. Paṭikkamantu bhūtāni.',
@@ -291,6 +302,9 @@
     },
     sayPrefix: 'q4'
   };
+  /* (R133, R136) the water's dry-flick words are the chapter's own words (so they are on the sheet): the weapon says them */
+  DATA.weapon.words.empty = DATA.words.waterEmpty;
+  DATA.weapon.words.emptyTouch = DATA.words.waterEmptyTouch;
   function build(ctx) {
     const { THREE, GLTFLoader, cloneSkinned, scene, camera, yaw, pitch, LOW, kit, cnv, loadImageTexture,
             assetBytes, rescueTextures, getState, startDecision, worldSfx, warmSounds, soundOff, unifySkeletons,
@@ -5793,9 +5807,6 @@
        Appa's and the one on her back's stay as they were: a flick reaches him only when it is aimed at him) */
     hitBall(spirits.oppress, 0.32, 0.25); hitBall(spirits.appa, 0.36, 1.0); hitBall(spirits.large, 0.72, 1.05);
     for (const P of spirits.wander) hitBall(P, 0.5, 0.22);
-    /* the altar, so a shot at it can be refused (Not at her altar.): her shelf's column, from the floor to its top */
-    const altarHit = new THREE.Mesh(new THREE.BoxGeometry(0.95, 2.1, 0.7), hitMat); altarHit.position.set(ALTAR.x, 1.05, ALTAR.z - 0.32); altarHit.visible = false; altarHit.name = 'hit:altar';
-    world.add(altarHit); owned.push(altarHit.geometry);
     const _hp = new THREE.Vector3();
     function hitsTick() {
       for (const P of [spirits.oppress, spirits.appa, spirits.large].concat(spirits.wander)) { const m = P.hit; if (!m) continue;
@@ -7301,11 +7312,11 @@
     }
 
     /* ---------------------------------------------------------------- WHERE THE WATER GOES (the engine's shot path)
-       stage.shootables: what the lens's line may reach. stage.reloadRefusal: the bowl is dipped again only at his
-       teacher's large bowl. And the altar: a shot whose line meets her altar before anything else is refused, the HUD
-       saying why (kit.weaponBlock, derived on the frame: v11.6) */
+       stage.shootables: what the lens's line may reach. The bowl in his hand is filled again from anywhere in the room (R133,
+       R136: a tap on the gold sign over his teacher's bowl, stage.reloadHits below, or R on a desktop), and nothing is
+       refused at her altar (R134, Chad, 20 Nov: "allow flicking water at the altar, instead of showing the 'not at her
+       altar' warning": the refusal and its words are gone) */
     function shootables() { const out = []; for (const P of [spirits.appa, spirits.large].concat(spirits.wander)) if (P.hit && P.hit.visible) out.push(P.hit); return out; }
-    function reloadRefusal() { return Math.hypot(yaw.position.x - DIP_AT.x, yaw.position.z - DIP_AT.z) < 1.5 ? null : W.dipHere; }
     /* THE REFILL SEEN (R63, Chad, 18 Nov evening: "when player reloads the holy water bowl, show a visual effect going or
        flying from the water bowl towards the player to show that it successfully reloaded. This is for visual feedback
        purpose."): at each dip that took (stage.onReload), eighteen motes of the water's light rise out of his teacher's
@@ -7371,6 +7382,26 @@
       world.add(sp); return sp;
     }
     dipMark.sp = dipMarkMake();
+    /* (R133, Chad, 20 Nov: "just allow the player to instantly reload the water by clicking on the floating reload icon
+       above the holy water bowl. Remove the reload button at the bottom of the screen."): THE SIGN IS THE REFILL. A tap on
+       it (or a click while the mouse is free) fills the bowl in his hand at once, wherever he stands (the engine's
+       weaponReloadTap asks here, then reloads as R does: the dip's sound, the motes from the big bowl to him). On the sign
+       while it is shown: inside its drawn size made half as large again, or a finger's width (34 px) of its middle,
+       whichever is larger, since three metres off it is some forty pixels across on a phone. On a desktop R reloads,
+       anywhere (R136, "on desktop just make it button 'r'"): under the mouse's lock a click stays the flick */
+    const RELOADTAP = { finger: 34, grow: 1.5 };
+    const _rhP = new THREE.Vector3(), _rhE = new THREE.Vector3();
+    function reloadHits(x, y) {
+      const sp = dipMark.sp; if (!sp || !sp.visible || dipMark.k < 0.5) return false;
+      camera.updateWorldMatrix(true, false); camera.matrixWorldInverse.copy(camera.matrixWorld).invert(); camera.getWorldPosition(_rhE);
+      sp.updateWorldMatrix(true, false); sp.getWorldPosition(_rhP);
+      const d = Math.max(0.05, _rhE.distanceTo(_rhP));
+      _rhP.project(camera);
+      if (!(_rhP.z > -1 && _rhP.z < 1)) return false;                      // (behind him, or past the far plane)
+      const vw = innerWidth, vh = innerHeight, sx = (_rhP.x + 1) / 2 * vw, sy = (1 - _rhP.y) / 2 * vh;
+      const half = (DIPMARK.size / 2) / (d * Math.tan(camera.fov * Math.PI / 360)) * (vh / 2);
+      return Math.hypot(x - sx, y - sy) <= Math.max(RELOADTAP.finger, half * RELOADTAP.grow);
+    }
     function dipMarkTick() {
       const F = play.fight, now = wallNow(), dt = dipMark.last ? Math.min(0.1, now - dipMark.last) : 0; dipMark.last = now;
       const want = phase === 'bless' && play.water && !!(F && F.on) && F.call !== 'shown' && F.call !== 'gold' && getState() === 'play';
@@ -7380,36 +7411,9 @@
       sp.position.set(DIP_AT.x, (bowlsUp ? BOWLS_UP.y : 0) + DIPMARK.rim + DIPMARK.above + DIPMARK.bob * Math.sin(now * Math.PI * 2 / DIPMARK.period), DIP_AT.z);
       sp.material.opacity = dipMark.k * dipMark.k * (3 - 2 * dipMark.k); sp.visible = true;
     }
-    const _ray = new THREE.Raycaster(), _ab = new THREE.Box3(), _hit = new THREE.Vector3();
-    let altarBlock = false;
-    function altarTick() {
-      if (!kit || !kit.weaponBlock) return;
-      let block = false;
-      /* (never in the gold, whose flick takes every green one in view whatever stands behind them; and never while the
-         flick's reach would take a green one in front of her altar: 18 Nov, from the room's south side she sits between him
-         and her altar, and every flick at what was on her was refused) */
-      const F = play.fight;
-      if (phase === 'bless' && play.water && getState() === 'play' && !(F && F.on && F.call === 'gold')) {
-        _ray.setFromCamera({ x: 0, y: 0 }, camera);
-        altarHit.updateWorldMatrix(true, false); _ab.setFromObject(altarHit);
-        const pt = _ray.ray.intersectBox(_ab, _hit);
-        if (pt) { const dA = _ray.ray.origin.distanceTo(pt); block = true;
-          for (const P of [spirits.appa, spirits.large].concat(spirits.wander)) { const h = P.hit; if (!h || !h.visible) continue;
-            const s = new THREE.Sphere(h.position, h.scale.x); if (_ray.ray.intersectsSphere(s) && _ray.ray.origin.distanceTo(h.position) - h.scale.x < dA) { block = false; break; } }
-          if (block && F && F.on) for (const S of F.shapes) {
-            if (S.state !== 'come' && S.state !== 'feed') continue;
-            const m = S.P.hit; if (!m || !m.visible) continue;
-            _fr.copy(m.position).sub(_ray.ray.origin); const along = _fr.dot(_ray.ray.direction);
-            if (along < 0.15 || along > Math.min(FAN.far, dA)) continue;
-            _fq.copy(_ray.ray.direction).multiplyScalar(along).add(_ray.ray.origin);
-            if (_fq.distanceTo(m.position) <= Math.min(FAN.max, FAN.r0 + FAN.perM * along)) { block = false; break; } } }
-      }
-      if (block !== altarBlock) { altarBlock = block; kit.weaponBlock(block ? W.noAltar : null); }
-    }
-
     /* ---------------------------------------------------------------- the story's frame, its start and its reset */
     function storyTick(wdt, t) {
-      spotsTick(); hitsTick(); scareTick(); doorTick(wdt); heatTick(wdt); altarTick();   // (the fan, the lamp and the glass: updateNotes, film or play; his hand on her head: updateNotes, play and the decision)
+      spotsTick(); hitsTick(); scareTick(); doorTick(wdt); heatTick(wdt);   // (the fan, the lamp and the glass: updateNotes, film or play; his hand on her head: updateNotes, play and the decision)
       fightTick(wdt);
       strainLinesTick();                                                  // (R128, R129: after the fight's frame, so a call due is made first)
       shadeTick(wdt);                                                     // (R96: the green ones as faint dark shapes while his sight is shut)
@@ -7442,7 +7446,7 @@
       shadesOff();
       play.fanK = 1; play.fanTo = 1; play.scareSeed = SCARE_SEED; play.scareAt = 0; play.scared = new Set(); play.doorTo = -0.12; play.doorK = -0.12;
       play.fogged = false; play.fogAt = 0; fogK = 0; fogTo = 0; lampK = 0; lampTo = 0; crownK = 0; crownTo = 0; oppLooked = ''; wanderNext = 2;
-      decOpen = false; altarBlock = false; bowlOnFloor.visible = true; chantNow = null; bowlsOnStool(false); waterLast = null; hitFxReset();
+      decOpen = false; bowlOnFloor.visible = true; chantNow = null; bowlsOnStool(false); waterLast = null; hitFxReset();
       dipMark.k = 0; dipMark.last = 0; dipMark.sp.visible = false;
       DEC.on = false; DEC.p1 = null; DEC.at = null; DEC.eye = null;
       for (const P of spirits.wander.concat([spirits.large, spirits.appa, spirits.oppress])) { P.gone = false; P.alpha = 1; }
@@ -8867,9 +8871,9 @@
         return { meshes, tris: Math.round(tris), textures: texs.size, texMB: +mb.toFixed(1) };
       },
       hotspots,
-      /* the fiftieth and fifty-first seams: his sight opened or shut; what the water may reach, what it reached, and
-         where the bowl is filled again */
-      onVision, shootables, onShot, reloadRefusal, onReload: dipBurst,
+      /* the fiftieth and fifty-first seams: his sight opened or shut; what the water may reach, what it reached, the sign
+         a tap on which fills the bowl again (R133), and the refill seen */
+      onVision, shootables, onShot, reloadHits, onReload: dipBurst,
       films: filmsApi,                                                          // the films' pictures (c_ufilm.js), for the scenes
       stepSound: stepNext,                                                      // his bare feet on her tiles (c_tsound.js)
       amb: () => ({ n: ambN, last: ambLast, next: +ambAt.toFixed(2), beds: Object.assign({}, bedMix) }),

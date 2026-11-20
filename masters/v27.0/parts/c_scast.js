@@ -606,9 +606,6 @@
        Appa's and the one on her back's stay as they were: a flick reaches him only when it is aimed at him) */
     hitBall(spirits.oppress, 0.32, 0.25); hitBall(spirits.appa, 0.36, 1.0); hitBall(spirits.large, 0.72, 1.05);
     for (const P of spirits.wander) hitBall(P, 0.5, 0.22);
-    /* the altar, so a shot at it can be refused (Not at her altar.): her shelf's column, from the floor to its top */
-    const altarHit = new THREE.Mesh(new THREE.BoxGeometry(0.95, 2.1, 0.7), hitMat); altarHit.position.set(ALTAR.x, 1.05, ALTAR.z - 0.32); altarHit.visible = false; altarHit.name = 'hit:altar';
-    world.add(altarHit); owned.push(altarHit.geometry);
     const _hp = new THREE.Vector3();
     function hitsTick() {
       for (const P of [spirits.oppress, spirits.appa, spirits.large].concat(spirits.wander)) { const m = P.hit; if (!m) continue;

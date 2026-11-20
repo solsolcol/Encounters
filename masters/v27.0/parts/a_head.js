@@ -192,7 +192,14 @@
     weapon: { hands: 'own', pose: 'bowl', item: 'holywater', rounds: 14, endless: true, fireGap: 0.35, spray: { count: 16, spread: 0.24 },
               /* (R57, Chad, 18 Nov evening: "When the player runs out of water, and tries to flick, there should be a clear HUD UI
                  message asking the player to reload the water.") */
-              words: { fire: 'FLICK', reload: 'DIP', empty: 'Out of holy water. DIP at the big bowl to refill.' }, shot: 'u4flick', reload: 'u4dip', empty: 'uiclick',
+              /* (R133, R136) the words said on a dry flick are the chapter's own, on the sheet (words.waterEmpty for a mouse and
+                 keyboard, waterEmptyTouch for a touch screen), laid in below */
+              words: { fire: 'FLICK', reload: 'DIP' }, shot: 'u4flick', reload: 'u4dip', empty: 'uiclick',
+              /* (R133, Chad, 20 Nov: "Remove the reload button at the bottom of the screen." and "instantly reload the water"):
+                 no reload button (main.js `reloadButton`; the sign over his teacher's bowl is the refill, c_story.js
+                 reloadHits, and R on a desktop), and the dip takes no time: nothing is drawn of it (view: false below), so a
+                 dip's 1.6 s would only have held the next flick back */
+              reloadButton: false, dipSecs: [0, 0, 0],
               /* (Chad, 18 Nov: "Flick icon can be a spraying water icon instead of a word."): the button draws water flung
                  (shell.html .wpnIco-spray), FLICK stays its name for a screen reader; no AIM (the water has no zoom) */
               icon: 'spray',
@@ -262,21 +269,25 @@
       // PLAY III · the blessing (§4.3)
       objWater: 'Take the holy water',
       hotWater: 'Take the holy water',
-      dipHere: 'Fill it again at his bowl.',
-      objHold: 'Keep the green spirits away from Amma',
+      /* (R135, Chad, 20 Nov: "The objective label text should be: Keep the green spirits away from Amma by using the holy
+         water.") */
+      objHold: 'Keep the green spirits away from Amma by using the holy water.',
       guardTitle: 'PROTECT AMMA',
       /* (Chad, 18 Nov: "I think the 'hold the room' instructions are too long and can be shortened , but it still needs to
          read natural, direct and straightforward."; the button shows water now, not the word FLICK, and its refill an arrow) */
       /* (19 Nov, R96: its sentence on the strain, approved by Chad as written, after the sentence on Spirit Vision) */
-      guardBrief: 'Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision to see them, and tap the water button to flick holy water at them. Spirit Vision strains you. Close it when the ring turns red, and open it again when it empties. Refill at his bowl with the arrow button. If her bar runs out, the blessing fails.',
-      guardBriefKey: 'Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision (V) to see them, and click or press Space to flick holy water at them. Spirit Vision strains you. Close it when the ring turns red, and open it again when it empties. Refill at his bowl with R. If her bar runs out, the blessing fails.',
+      guardBrief: 'Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision to see them, and tap the water button to flick holy water at them. Spirit Vision strains you. Close it when the ring turns red, and open it again when it empties. Tap the gold icon above the holy water bowl to reload. If her bar runs out, the blessing fails.',
+      guardBriefKey: 'Grandmaster Pho is blessing Amma. Keep the green spirits away from her. Open your Spirit Vision (V) to see them, and click or press Space to flick holy water at them. Spirit Vision strains you. Close it when the ring turns red, and open it again when it empties. Press R to reload. If her bar runs out, the blessing fails.',
+      /* (R133, R136) said under the reticle on a dry flick (the engine's weapon words, laid in below the chapter): on a touch
+         screen the gold sign over the bowl is the refill, with a mouse and keyboard R */
+      waterEmpty: 'Out of holy water. Press R to reload.',
+      waterEmptyTouch: 'Out of holy water. Tap the gold icon above the holy water bowl.',
       // the fight's stakes and the call (Chad, 18 Nov: plan §0 R16 to R29)
       ammaBar: 'Amma',
       objGold: 'Flick the golden water',
       // the card when her life runs out: what happened, over Master Z's own words (the case file S1·12, word for word)
       lostSay: 'Too many green spirits reached Amma. Her cry broke the blessing, and it could not be finished.',
       lostTeach: 'Learning when to open myself and when to close is the true path of cultivation. Today I can use these sensitivities to help others, which is the point of them.',
-      noAltar: 'Not at her altar.',
       // the chant's captions: the Pali as chanted over its meaning (v21.31), Thanissaro Bhikkhu's A Chanting Guide,
       // word for word (docs/research/V27.0-BLESSING.md §1.3; docs/research/V27.0-VERDICTS.md B13, B14)
       cap1: 'Katā me rakkhā, Katā me parittā. Paṭikkamantu bhūtāni.',
@@ -291,3 +302,6 @@
     },
     sayPrefix: 'q4'
   };
+  /* (R133, R136) the water's dry-flick words are the chapter's own words (so they are on the sheet): the weapon says them */
+  DATA.weapon.words.empty = DATA.words.waterEmpty;
+  DATA.weapon.words.emptyTouch = DATA.words.waterEmptyTouch;

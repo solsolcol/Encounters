@@ -1495,11 +1495,11 @@
     }
 
     /* ---------------------------------------------------------------- WHERE THE WATER GOES (the engine's shot path)
-       stage.shootables: what the lens's line may reach. stage.reloadRefusal: the bowl is dipped again only at his
-       teacher's large bowl. And the altar: a shot whose line meets her altar before anything else is refused, the HUD
-       saying why (kit.weaponBlock, derived on the frame: v11.6) */
+       stage.shootables: what the lens's line may reach. The bowl in his hand is filled again from anywhere in the room (R133,
+       R136: a tap on the gold sign over his teacher's bowl, stage.reloadHits below, or R on a desktop), and nothing is
+       refused at her altar (R134, Chad, 20 Nov: "allow flicking water at the altar, instead of showing the 'not at her
+       altar' warning": the refusal and its words are gone) */
     function shootables() { const out = []; for (const P of [spirits.appa, spirits.large].concat(spirits.wander)) if (P.hit && P.hit.visible) out.push(P.hit); return out; }
-    function reloadRefusal() { return Math.hypot(yaw.position.x - DIP_AT.x, yaw.position.z - DIP_AT.z) < 1.5 ? null : W.dipHere; }
     /* THE REFILL SEEN (R63, Chad, 18 Nov evening: "when player reloads the holy water bowl, show a visual effect going or
        flying from the water bowl towards the player to show that it successfully reloaded. This is for visual feedback
        purpose."): at each dip that took (stage.onReload), eighteen motes of the water's light rise out of his teacher's
@@ -1565,6 +1565,26 @@
       world.add(sp); return sp;
     }
     dipMark.sp = dipMarkMake();
+    /* (R133, Chad, 20 Nov: "just allow the player to instantly reload the water by clicking on the floating reload icon
+       above the holy water bowl. Remove the reload button at the bottom of the screen."): THE SIGN IS THE REFILL. A tap on
+       it (or a click while the mouse is free) fills the bowl in his hand at once, wherever he stands (the engine's
+       weaponReloadTap asks here, then reloads as R does: the dip's sound, the motes from the big bowl to him). On the sign
+       while it is shown: inside its drawn size made half as large again, or a finger's width (34 px) of its middle,
+       whichever is larger, since three metres off it is some forty pixels across on a phone. On a desktop R reloads,
+       anywhere (R136, "on desktop just make it button 'r'"): under the mouse's lock a click stays the flick */
+    const RELOADTAP = { finger: 34, grow: 1.5 };
+    const _rhP = new THREE.Vector3(), _rhE = new THREE.Vector3();
+    function reloadHits(x, y) {
+      const sp = dipMark.sp; if (!sp || !sp.visible || dipMark.k < 0.5) return false;
+      camera.updateWorldMatrix(true, false); camera.matrixWorldInverse.copy(camera.matrixWorld).invert(); camera.getWorldPosition(_rhE);
+      sp.updateWorldMatrix(true, false); sp.getWorldPosition(_rhP);
+      const d = Math.max(0.05, _rhE.distanceTo(_rhP));
+      _rhP.project(camera);
+      if (!(_rhP.z > -1 && _rhP.z < 1)) return false;                      // (behind him, or past the far plane)
+      const vw = innerWidth, vh = innerHeight, sx = (_rhP.x + 1) / 2 * vw, sy = (1 - _rhP.y) / 2 * vh;
+      const half = (DIPMARK.size / 2) / (d * Math.tan(camera.fov * Math.PI / 360)) * (vh / 2);
+      return Math.hypot(x - sx, y - sy) <= Math.max(RELOADTAP.finger, half * RELOADTAP.grow);
+    }
     function dipMarkTick() {
       const F = play.fight, now = wallNow(), dt = dipMark.last ? Math.min(0.1, now - dipMark.last) : 0; dipMark.last = now;
       const want = phase === 'bless' && play.water && !!(F && F.on) && F.call !== 'shown' && F.call !== 'gold' && getState() === 'play';
@@ -1574,36 +1594,9 @@
       sp.position.set(DIP_AT.x, (bowlsUp ? BOWLS_UP.y : 0) + DIPMARK.rim + DIPMARK.above + DIPMARK.bob * Math.sin(now * Math.PI * 2 / DIPMARK.period), DIP_AT.z);
       sp.material.opacity = dipMark.k * dipMark.k * (3 - 2 * dipMark.k); sp.visible = true;
     }
-    const _ray = new THREE.Raycaster(), _ab = new THREE.Box3(), _hit = new THREE.Vector3();
-    let altarBlock = false;
-    function altarTick() {
-      if (!kit || !kit.weaponBlock) return;
-      let block = false;
-      /* (never in the gold, whose flick takes every green one in view whatever stands behind them; and never while the
-         flick's reach would take a green one in front of her altar: 18 Nov, from the room's south side she sits between him
-         and her altar, and every flick at what was on her was refused) */
-      const F = play.fight;
-      if (phase === 'bless' && play.water && getState() === 'play' && !(F && F.on && F.call === 'gold')) {
-        _ray.setFromCamera({ x: 0, y: 0 }, camera);
-        altarHit.updateWorldMatrix(true, false); _ab.setFromObject(altarHit);
-        const pt = _ray.ray.intersectBox(_ab, _hit);
-        if (pt) { const dA = _ray.ray.origin.distanceTo(pt); block = true;
-          for (const P of [spirits.appa, spirits.large].concat(spirits.wander)) { const h = P.hit; if (!h || !h.visible) continue;
-            const s = new THREE.Sphere(h.position, h.scale.x); if (_ray.ray.intersectsSphere(s) && _ray.ray.origin.distanceTo(h.position) - h.scale.x < dA) { block = false; break; } }
-          if (block && F && F.on) for (const S of F.shapes) {
-            if (S.state !== 'come' && S.state !== 'feed') continue;
-            const m = S.P.hit; if (!m || !m.visible) continue;
-            _fr.copy(m.position).sub(_ray.ray.origin); const along = _fr.dot(_ray.ray.direction);
-            if (along < 0.15 || along > Math.min(FAN.far, dA)) continue;
-            _fq.copy(_ray.ray.direction).multiplyScalar(along).add(_ray.ray.origin);
-            if (_fq.distanceTo(m.position) <= Math.min(FAN.max, FAN.r0 + FAN.perM * along)) { block = false; break; } } }
-      }
-      if (block !== altarBlock) { altarBlock = block; kit.weaponBlock(block ? W.noAltar : null); }
-    }
-
     /* ---------------------------------------------------------------- the story's frame, its start and its reset */
     function storyTick(wdt, t) {
-      spotsTick(); hitsTick(); scareTick(); doorTick(wdt); heatTick(wdt); altarTick();   // (the fan, the lamp and the glass: updateNotes, film or play; his hand on her head: updateNotes, play and the decision)
+      spotsTick(); hitsTick(); scareTick(); doorTick(wdt); heatTick(wdt);   // (the fan, the lamp and the glass: updateNotes, film or play; his hand on her head: updateNotes, play and the decision)
       fightTick(wdt);
       strainLinesTick();                                                  // (R128, R129: after the fight's frame, so a call due is made first)
       shadeTick(wdt);                                                     // (R96: the green ones as faint dark shapes while his sight is shut)
@@ -1636,7 +1629,7 @@
       shadesOff();
       play.fanK = 1; play.fanTo = 1; play.scareSeed = SCARE_SEED; play.scareAt = 0; play.scared = new Set(); play.doorTo = -0.12; play.doorK = -0.12;
       play.fogged = false; play.fogAt = 0; fogK = 0; fogTo = 0; lampK = 0; lampTo = 0; crownK = 0; crownTo = 0; oppLooked = ''; wanderNext = 2;
-      decOpen = false; altarBlock = false; bowlOnFloor.visible = true; chantNow = null; bowlsOnStool(false); waterLast = null; hitFxReset();
+      decOpen = false; bowlOnFloor.visible = true; chantNow = null; bowlsOnStool(false); waterLast = null; hitFxReset();
       dipMark.k = 0; dipMark.last = 0; dipMark.sp.visible = false;
       DEC.on = false; DEC.p1 = null; DEC.at = null; DEC.eye = null;
       for (const P of spirits.wander.concat([spirits.large, spirits.appa, spirits.oppress])) { P.gone = false; P.alpha = 1; }

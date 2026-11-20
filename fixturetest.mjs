@@ -360,12 +360,39 @@ K.ownSeam = await p.evaluate(async () => {
   const st = E.stage, had = st.reloadRefusal; st.reloadRefusal = () => 'Dip it in the large bowl.';
   R.refused = E.kit.reload() === false && E.ownState().rounds === 2 && (document.getElementById('nofire').textContent || '') === 'Dip it in the large bowl.';
   st.reloadRefusal = had;
+  /* (v27.0, R133, R136) the reload button drawn unless a declaration says otherwise; then a refill that is a TAP ON THE
+     STAGE'S MARK (stage.reloadHits), the button gone, R still reloading, and the dry flick's words for a mouse */
+  const rb = document.getElementById('reloadBtn');
+  R.buttonByDefault = !document.body.classList.contains('wpnNoReload') && getComputedStyle(rb).display !== 'none';
+  R.noButton = E.weaponDeclare({ hands: 'own', pose: 'bowl', rounds: 3, endless: true, fireGap: 0.05, reloadButton: false, dipSecs: [0, 0, 0],
+                                 words: { fire: 'FLICK', reload: 'DIP', empty: 'Press R to reload.', emptyTouch: 'Tap the mark.' },
+                                 shot: 'uiclick', reload: 'uiclick', empty: 'uiclick' })
+    && await poll(() => document.body.classList.contains('weaponUp'), 60000)
+    && document.body.classList.contains('wpnNoReload') && getComputedStyle(rb).display === 'none';
+  const hadHits = st.reloadHits;
+  st.reloadHits = (x, y) => Math.hypot(x - 40, y - 40) < 12;
+  R.noHitsBefore = typeof hadHits !== 'function';
+  R.tapSpent = E.kit.fire() === true && E.ownState().rounds === 2;
+  R.tapMisses = E.weaponReloadTap(300, 300) === false && E.ownState().rounds === 2;
+  R.tapReloads = E.weaponReloadTap(40, 40) === true && E.ownState().rounds === 3;
+  R.tapFullIsTheMarks = E.weaponReloadTap(40, 40) === true && E.ownState().rounds === 3;   // the mark's tap, the bowl full
+  await poll(() => E.ownState().busy === null, 60000);
+  st.reloadHits = hadHits;
+  R.tapNeedsHits = E.weaponReloadTap(40, 40) === false;                                     // a stage without one: as it was
+  R.keyStillReloads = await (async () => { await new Promise(r => setTimeout(r, 80)); return E.kit.fire() === true && E.ownState().rounds === 2
+    && await poll(() => E.ownState().busy === null, 60000) && E.kit.reload() === true && E.ownState().rounds === 3; })();
+  /* dry: the mouse's words (this page has no touch), never the touch screen's */
+  await poll(() => E.ownState().busy === null, 60000);
+  for (let i = 0; i < 3; i++) { E.kit.fire(); await new Promise(r => setTimeout(r, 80)); }
+  E.kit.fire();
+  R.dryWords = (document.getElementById('nofire').textContent || '') === 'Press R to reload.';
   /* put away */
   E.kit.weaponOut(false);
   R.putAway = await poll(() => { const s = E.ownState(); return !s.shown && !s.held && s.pose !== 'bowl'; }, 60000);
   /* and the rifle back as it was */
   E.kit.weaponOut(null);
-  R.rifleBack = E.weaponDeclare(rifle) && E.ownState().fire.startsWith('FIRE') && E.kitDebug().weapon.rounds === 3;
+  R.rifleBack = E.weaponDeclare(rifle) && E.ownState().fire.startsWith('FIRE') && E.kitDebug().weapon.rounds === 3
+    && !document.body.classList.contains('wpnNoReload');                                 // (R133) and its reload button with it
   /* and taken down while out (weaponOut(null) puts an undeclared-item weapon out again), the hands are given back too:
      the bowl's pose eases away instead of standing (it stood, and the praying hands below found it) */
   R.poseGiven = await poll(() => E.ownState().pose !== 'bowl' && !E.ownState().shown, 60000);

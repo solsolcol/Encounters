@@ -363,6 +363,9 @@ body.weaponUp.wpnNoAmmo #ammo,body.weaponUp.wpnNoAmmo #reloadBtn{display:none}
 /* v27.0: a weapon with no zoom draws no AIM (Chad, 18 Nov); a weapon's own icon stands in the fire button's word (the
    word stays its name for a screen reader: aria-label). The icon's colour is --sp (the water's, set by main.js) */
 body.weaponUp.wpnNoAim #aimBtn{display:none}
+/* v27.0 (R133, Chad: "Remove the reload button at the bottom of the screen."): a weapon whose refill is in the chapter's
+   world draws no reload button (the R key still reloads) */
+body.weaponUp.wpnNoReload #reloadBtn{display:none}
 .wpnIco{display:none}
 body.wpnIco-spray #fireBtn .wpnIco-spray{display:block;width:46px;height:46px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.7))}
 body.wpnIco-spray #fireBtn [data-t="hud.fire"]{display:none}

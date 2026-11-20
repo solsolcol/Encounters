@@ -4172,8 +4172,15 @@ const WEAPON_DEFAULTS = {
        spray      { count, speed, size, color, glow, arc, reach }: drops thrown from his fingertips along the shot to
                   where it landed (or `reach` metres down the line), a splash where they land; drawn in the world and,
                   through Spirit Vision, glowing on the vision's own layer
-       words      { fire, reload }: the HUD's two buttons say the chapter's words (FLICK, DIP) */
+       words      { fire, reload }: the HUD's two buttons say the chapter's words (FLICK, DIP); `empty` is said under the
+                  reticle on a dry flick (R57), and `emptyTouch`, where a chapter gives it, in its place on a touch screen
+                  (R133: the two devices reload differently, so the words that say how differ too)
+       reloadButton  false: the HUD draws no reload button (R133, Chad, 20 Nov: "Remove the reload button at the bottom of
+                  the screen."); R still reloads (R136: "on desktop just make it button 'r'"), and a chapter may put the
+                  refill on a thing in its world: a tap on it (or a click while the mouse is free) that stage.reloadHits(x, y)
+                  says is on it reloads at once (weaponReloadTap). Absent, the button and every input are as they were */
   hands: '', pose: '', flickSecs: [0.08, 0.05, 0.30], dipSecs: [0.35, 0.85, 0.40], endless: false, spray: null, words: null,
+  reloadButton: true,
   clips: { draw: 'Draw', shoot: 'Shoot', reload: 'Reload', hide: 'Hide' },
   rates: { draw: 2.6, shoot: 1.6, reload: 1.6, hide: 2.6 },
   /* §8's measured placement: scale 0.01 (centimetres), a half turn about Y
@@ -4213,6 +4220,8 @@ function weaponSetup(decl) {
      button, drawn in the button's place of the word ("Flick icon can be a spraying water icon instead of a word."): the
      icons are the page's own (shell.html `.wpnIco-<name>`), the word stays the button's name for a screen reader */
   document.body.classList.toggle('wpnNoAim', !(weaponDecl.zoom > 0));
+  /* (v27.0, R133) a weapon whose refill is in the chapter's world draws no reload button (the key still reloads) */
+  document.body.classList.toggle('wpnNoReload', weaponDecl.reloadButton === false);
   for (const k of WPN_ICONS) document.body.classList.toggle('wpnIco-' + k, weaponDecl.icon === k);
   sprayHudSync();
   weaponAvailSync();
@@ -4237,7 +4246,7 @@ function weaponTeardown() {
   weaponFlashDrop();
   weaponPropDrop();
   ownObj = null; ownHold = {}; ownFor = null; ownAnim = null; ownSprayDrop(); weaponWordsSet(null);
-  document.body.classList.remove('hasWeapon', 'weaponUp', 'wpnNoAmmo', 'wpnNoAim', ...WPN_ICONS.map(k => 'wpnIco-' + k));
+  document.body.classList.remove('hasWeapon', 'weaponUp', 'wpnNoAmmo', 'wpnNoAim', 'wpnNoReload', ...WPN_ICONS.map(k => 'wpnIco-' + k));
   weaponAvailSync();
 }
 function weaponPropLoad(key) {
@@ -4755,7 +4764,9 @@ function weaponFire() {
     /* (v27.0, R57, Chad, 18 Nov evening: "When the player runs out of water, and tries to flick, there should be a clear HUD
        UI message asking the player to reload the water."): a weapon that names its empty words says them under the
        reticle, as a refusal is said (its own sound already played: quiet); absent, as it was */
-    if (weaponDecl.words && weaponDecl.words.empty) weaponBlockSay(weaponDecl.words.empty, true);
+    /* (R133) a touch screen hears the touch words where the chapter gives them (`emptyTouch`); absent, as it was */
+    const emptyW = weaponDecl.words && ((HAS_TOUCH && weaponDecl.words.emptyTouch) || weaponDecl.words.empty);
+    if (emptyW) weaponBlockSay(emptyW, true);
     weaponLog.push({ t: now, hit: null, empty: true });
     if (weaponDecl.hands === 'own') ownAnim = { kind: 'flick', t0: clock.getElapsed(), pk: 0 };   // v27.0: a dry flick
     return false;
@@ -4832,6 +4843,21 @@ function weaponReload() {
   haptic(40);
   weaponBusy = 'reload';
   if (!weaponPlay('reload')) weaponBusy = null;
+  return true;
+}
+
+/* (v27.0, R133, Chad, 20 Nov: "just allow the player to instantly reload the water by clicking on the floating reload icon
+   above the holy water bowl"): A REFILL ON A THING IN THE WORLD. A tap (or a click while the mouse is free: there is a
+   cursor then) that the chapter's stage.reloadHits(x, y) says is on its refill reloads, exactly as R does (weaponReload:
+   its refusals, its sound, the stage told, the dip); the tap is the refill's whether or not the bowl needed filling, so
+   it never falls through to anything behind it. Under the mouse's lock a click stays the trigger (R136: a flick at a
+   spirit before the mark is never taken for a refill; R reloads). A chapter without reloadHits is as it was */
+function weaponReloadTap(x, y) {
+  if (!weaponDecl || state !== 'play' || ev || !weaponWant() || !stage || typeof stage.reloadHits !== 'function') return false;
+  let on = false;
+  try { on = !!stage.reloadHits(x, y); } catch (e) { console.warn('stage.reloadHits threw', e); }
+  if (!on) return false;
+  weaponReload();
   return true;
 }
 
@@ -9286,6 +9312,7 @@ canvas.addEventListener('mousedown', e => {
     return;
   }
   if (!locked && hotspotTap(e.clientX, e.clientY)) return;   // v14.7: a hotspot that can be clicked on
+  if (!locked && weaponReloadTap(e.clientX, e.clientY)) return;   // v27.0 (R133): the chapter's refill, clicked with a cursor
   // v21.9: under lock the reticle is the cursor — a click presses the `pressAim` spot it is on, as E does
   if (locked && state === 'play' && activeSpot && activeSpot.pressAim) { interactNow(); return; }
   tryLock();                         // upgrade to real free look where allowed
@@ -9371,7 +9398,8 @@ function onTouchEnd(e) {
            frame outlasts the 450 ms above, and a tap begun on the page reached a sign in the room behind it) */
         && !(led.closedAt && s.at >= (led.t0 || 0) && s.at <= led.closedAt)
         && ((stage.pile.hits(t.clientX, t.clientY) && stage.pile.interact())
-            || hotspotTap(t.clientX, t.clientY))) {   // v14.7: or a hotspot that can be tapped on
+            || hotspotTap(t.clientX, t.clientY)   // v14.7: or a hotspot that can be tapped on
+            || weaponReloadTap(t.clientX, t.clientY))) {   // v27.0 (R133): or the chapter's refill
       // The browser follows an unprevented touchend with a synthetic click at
       // the same point — which by then lands on the panel this tap just
       // opened, and picks whichever choice is under your finger. Swallow it.
@@ -18665,7 +18693,7 @@ window.__enc = { yaw, pitch, stats, groundAt, collideAt: collide, getState: () =
                  },
                  gest: GEST, gestLayout,                   // v20.1: …and try its numbers
                  vmCam, handsRoot, rightHand: () => rightHandModel, prayArm: () => prayerArmL,   // v16.5: probes measure the clasp on screen
-                 weaponFire, weaponReload, weaponLog, weaponProp: () => weaponProp, weaponMixer: () => weaponMixer,      // v12.0, probes
+                 weaponFire, weaponReload, weaponReloadTap, weaponLog, weaponProp: () => weaponProp, weaponMixer: () => weaponMixer,      // v12.0, probes
                  evPress: (x, y) => evPress(x ?? innerWidth / 2, y ?? innerHeight / 2), evRelease,
                  /* v9.4: drive one drag-and-match drop by id, so a harness or a
                     probe can play the standby bed without synthesising pointer
