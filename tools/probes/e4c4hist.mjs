@@ -84,10 +84,16 @@ async function source(c) {
   log(`  ${c} (${id}): stood at`, JSON.stringify(g.at), 'facing', JSON.stringify(g.to), '; offered on the badge:', offered, '; badge', r.badge);
   if (MODE === 'thing') { const t = await thingAt(id); log('    tapping the thing at', JSON.stringify(t)); await p.touchscreen.tap(t.x, t.y); }
   else await tapSel('#interact .ibadge');
+  /* the old photograph opens its window, and the story waits on it as it should: he looks, then closes it (a tap on
+     Close once the guard is past), as a player does */
+  if (await until(() => window.__enc.getState() === 'picture', 8000)) {
+    await p.waitForTimeout(2500); await shot('window-' + c);
+    await tapSel('#picClose');
+    await until(() => window.__enc.getState() === 'play', 60000);
+  }
   const took = await until((c) => { const D = window.__enc.stage.dbg; return D.play.learned.has(c); }, 240000, c);
   await until(() => !window.__enc.stage.dbg.play.busy, 240000);
   await until(() => window.__enc.getState() === 'play', 240000);
-  if (await p.evaluate(() => window.__enc.getState() === 'picture')) await tapSel('#picture button');
   await keepGoing();
   r = await read();
   log(`  after ${c}:`, JSON.stringify(r));
@@ -95,7 +101,6 @@ async function source(c) {
 }
 
 for (const c of ORDER) {
-  if (await p.evaluate(() => window.__enc.getState() === 'picture')) { await p.waitForTimeout(1500); await tapSel('#picture button'); }
   const s = await source(c);
   checks['offered_' + c] = s.offered; checks['took_' + c] = s.took;
 }
