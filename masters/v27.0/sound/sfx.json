@@ -432,6 +432,22 @@
   "where": "ending B: the thing on her back wails"
  },
  {
+  "name": "u4swglint",
+  "secs": 2.8,
+  "loop": false,
+  "takes": 4,
+  "prompt": "A swirling glitter of many tiny magical bells and glass chimes twinkling at random high pitches, quick sparkling notes tumbling over each other and circling, slowly growing denser and brighter. Delicate, airy and bright, no bass, no drums, no whoosh.",
+  "where": "the showcase, swirl: the comets gathering into the whirlpool"
+ },
+ {
+  "name": "u4swbloom",
+  "secs": 3.5,
+  "loop": false,
+  "takes": 4,
+  "prompt": "A fast rising arpeggio of bright bell and harp notes climbing upward, landing on one radiant sustained major chord of shimmering chimes and a soft choir that rings out and slowly fades. Holy, triumphant, clear and bright, no drums, no deep bass.",
+  "where": "the showcase, swirl: its bloom, the amulet born"
+ },
+ {
   "name": "u4stand",
   "secs": 3.5,
   "loop": false,

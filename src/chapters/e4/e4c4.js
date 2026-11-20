@@ -6190,6 +6190,7 @@
                         /* (18 Nov: her cries, the surge, the call and the gold; every line of the fight's stakes) */
                         'u4ascream1', 'u4ascream2', 'u4ascream3', 'u4surge', 'u4goldcall', 'u4goldpower', 'u4goldflick', 'u4goldclear', 'u4sting',
                         'u4goldgather', 'u4goldhover', 'u4golddive', 'u4goldmerge',          /* (R110: the amulet's moment, every beat of it) */
+                        'u4swglint', 'u4swbloom',                                            /* (R122: the swirl's own two) */
                         'ph4b3', 'ph4b4', 'ph4b5', 'ph4b6', 'ph4b7', 'q4f1', 'q4f2', 'ph4f1', 'q4f3', 'ph4f2', 'q4f4', 'ph4f3', 'rv4f1', 'ml4B2', 'rv4A2', 'u4visoff',
                         /* (18 Nov: the green ones' own voices) */
                         'u4sv1', 'u4sv2', 'u4sv3', 'u4sv4', 'u4sv5', 'u4svL'];
@@ -6880,13 +6881,23 @@
        room shakes, halos go out, its sound), and the golden wave goes through the room from that moment; then it goes down
        into the holy water */
     const WAVE_GOLD = { color: 0xffc552, secs: 3.2, reach: 14, trail: 0.12 };
+    /* (R122, Chad, 20 Nov: "Build the castlevania style, but save the current version first. I only want to see how the
+       castlevania option will look like"): HOW ITS LIGHT GATHERS. 'swirl', the Castlevania way, as measured from the boss's
+       death in his video: comets of gold all over the screen rush into one whirlpool that closes into a pinwheel and blooms,
+       the amulet born in the bloom (the engine's scSwirl), with its own two sounds: a glitter of small bells through the
+       whirlpool, and a run rising into one held chord that lands on the bloom (u4swbloom lands 1.0 s in: bloomLead). It is
+       born 1.33 s later than build 50's, so the showcase is 1.33 s longer and the hover keeps its length. 'lines' is build
+       50's gathering, kept whole (deploy 6aff6c8fd102a95fa284455d): one word puts it back */
+    const SHOW_GATHER = 'swirl';
     function showAmulet() {
       const F = play.fight; if (!F || !F.on) return;
       F.call = 'shown'; F.urge = null; F.released = false; if (kit && kit.visionUrge) kit.visionUrge(false);
       const go = () => { if (play.fight === F && F.on) goldBegin(); };
       const release = () => { if (play.fight !== F) return; F.released = true; if (kit && kit.wave) kit.wave(WAVE_GOLD); };
-      if (!(kit && kit.unlock && kit.unlock('amulet', { showcase: true, auto: 5.58, sound: 'u4goldcall', releaseSound: 'u4goldpower', onRelease: release, onClose: go,
-                                                   gatherSound: 'u4goldgather', hoverSound: 'u4goldhover', intoSound: 'u4golddive', mergeSound: 'u4goldmerge' }))) go();
+      const how = SHOW_GATHER === 'swirl' ? { gather: 'swirl', auto: 6.91, gatherSound: 'u4swglint', bloomSound: 'u4swbloom', bloomLead: 1.0 }
+                                          : { auto: 5.58, gatherSound: 'u4goldgather' };
+      if (!(kit && kit.unlock && kit.unlock('amulet', Object.assign({ showcase: true, sound: 'u4goldcall', releaseSound: 'u4goldpower', onRelease: release, onClose: go,
+                                                   hoverSound: 'u4goldhover', intoSound: 'u4golddive', mergeSound: 'u4goldmerge' }, how)))) go();
     }
     /* EMPOWERED (R26 to R29: "the entire screen seem to have a golden vignette to show the new empowered status, and now the
        water being flicked becomes golden glow instead"): the gold at the edges of his sight (the fifty-sixth seam), the water

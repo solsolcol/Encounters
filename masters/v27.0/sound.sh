@@ -176,6 +176,17 @@ if [ -z "$ONLY" ] || [ "$ONLY" = sfx ] || [ "$ONLY" = r112 ]; then
 fx   u4nooo       $R/u4nooo_b.mp3       -12                                   # b: the drawn-out "NOOOOO!" (with d the only two heard so), 1.5 s of it, all where a phone plays, 1.3 dB fuller than d; a voice over the room: louder than the spirits' -14
 fx   u4hiss       $R/u4hiss_b.mp3       -14                                   # b: the fullest burst, 0.78 s of it (a and c 0.55, d 0.34 and 7 dB under), 81 % where a phone plays
 fi
+# ---- R122 (Chad, 20 Nov: "Build the castlevania style, but save the current version first. I only want to see how the
+#      castlevania option will look like"): the swirl's own two sounds, as measured from the boss's death in his video (a
+#      glitter of small bells at random pitches through the whirlpool, quiet, -19 to -25; a run rising into one held bright
+#      chord at the bloom, -13). Four takes each (sound/sfx.py; flow c0Jo6SrW7Q0K0NkWlk6e, nodes XYN9BmBckm7m3xJkxZ6Z and
+#      1K7xuhrfx83mLD2XyMU8), measured (measure.py: all where a phone plays, no word in any), each run's notes read
+if [ -z "$ONLY" ] || [ "$ONLY" = sfx ] || [ "$ONLY" = r122 ]; then
+ffmpeg -v error -y -i $R/u4swglint_c.mp3 -i $R/u4swglint_a.mp3 -filter_complex "[1:a]adelay=900|900[d];[0:a][d]amix=inputs=2:normalize=0:duration=longest" d_u4swglint.wav
+fx   u4swglint   d_u4swglint.wav       -19                                   # c (the glitter that lasts: within 12 dB of its loudest to 1.0 s; a, b and d fall away by 0.6) with a laid in 0.9 s later, so the bells run on through the whirlpool to the run (each take is a burst that dies in a second); quiet, as his was
+rm -f d_u4swglint.wav
+fx   u4swbloom   $R/u4swbloom_d.mp3    -12 "volume='0.2+0.8*pow(min(t,1),1.5)':eval=frame"   # d: the one run that lands on a major chord (C E G C, held E4 G4 C5 G5 C6; a and b hold a fourth in it, c open fifths); it came loudest mid-run, so it is swelled from -14 dB into its landing at 1.0 s (the loudest twentieth of a second there): the chapter cues it 1.0 s before the bloom (bloomLead)
+fi
 
 # ---- THE MUSIC (sound/measures-music.json, sound/measures-music2.json): music at peak -3 (v22.4), Opus 128k
 cuthead() { echo "atrim=start=$1,asetpts=PTS-STARTPTS,afade=t=in:d=0.04"; }

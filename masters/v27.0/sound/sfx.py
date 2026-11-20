@@ -83,6 +83,11 @@ SFX = [
     #  word must be heard: every take is put through the transcriber, and one that does not say "no" is refused)
     ('u4hiss', 1.5, False, 4, "Holy water splashing onto something burning and evil: a sharp violent sizzling hiss with crackling steam, rising and then fading.", 'ending B: the water strikes the thing on her back'),
     ('u4nooo', 2.5, False, 4, "A terrible inhuman spirit screaming the word Nooooo in agony and fury: one drawn-out cry of the word no, rising and cracking into a shriek, with a hollow ghostly echo. A voice saying only the word no.", 'ending B: the thing on her back wails'),
+    # (R122, Chad, 20 Nov: "Build the castlevania style ... I only want to see how the castlevania option will look like"): the
+    #  swirl's own two sounds, as measured from the boss's death in his video: a glitter of small bells at random pitches
+    #  through the whirlpool (quiet), and a run rising into one held bright chord at the bloom. Four takes each
+    ('u4swglint', 2.8, False, 4, "A swirling glitter of many tiny magical bells and glass chimes twinkling at random high pitches, quick sparkling notes tumbling over each other and circling, slowly growing denser and brighter. Delicate, airy and bright, no bass, no drums, no whoosh.", 'the showcase, swirl: the comets gathering into the whirlpool'),
+    ('u4swbloom', 3.5, False, 4, "A fast rising arpeggio of bright bell and harp notes climbing upward, landing on one radiant sustained major chord of shimmering chimes and a soft choir that rings out and slowly fades. Holy, triumphant, clear and bright, no drums, no deep bass.", 'the showcase, swirl: its bloom, the amulet born'),
     ('u4stand', 3.5, False, 2, "An old wheelchair's brakes clicking off and its frame creaking as a woman slowly stands up from it, the soft rustle of a cotton sari.", 'every ending: she stands'),
     ('u4steps', 4.0, False, 2, "Bare feet taking a few slow, careful, uncertain steps on a smooth tiled floor indoors.", 'every ending: her first steps, to her altar'),
     ('u4bell', 3.0, False, 2, "A small brass prayer hand bell rung softly three times indoors, close, its ring dying away.", 'every ending: at her altar'),

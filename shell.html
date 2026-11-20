@@ -2397,6 +2397,14 @@ body.capsOn #interact{padding-bottom:calc(var(--capTop,170px) + 14px)}
   filter:drop-shadow(0 0 10px rgba(255,214,120,.9))}
 #showcase .scModel{width:min(62vw,42vh);height:min(62vw,42vh);opacity:0;animation:scBirth .8s cubic-bezier(.2,1.3,.35,1) 1.28s both}
 #showcase .scHover{width:100%;height:100%;animation:scHover 2s ease-in-out 2.08s infinite}
+/* (R122, Chad 20 Nov: "Build the castlevania style ... I only want to see how the castlevania option will look like"): the
+   swirl (kit.unlock(id, { showcase: true, gather: 'swirl' }), main.js scSwirl): no shaft of light, and the amulet's birth, its
+   aura, the aura's breath and its hover each 1.33 s later, on the swirl's bloom (SC_SW_BIRTH 2.66 where SC_BIRTH is 1.33).
+   Before .flare and .into, which take the animations over as they always did */
+#showcase.sw .scShaft{display:none}
+#showcase.sw .scAura{animation-delay:2.61s,3.31s}
+#showcase.sw .scModel{animation-delay:2.61s}
+#showcase.sw .scHover{animation-delay:3.41s}
 #scCv{width:100%;height:100%;display:block;
   filter:sepia(.18) saturate(1.25) brightness(1.14) drop-shadow(0 0 12px rgba(255,222,140,1)) drop-shadow(0 0 40px rgba(255,186,70,.85))}
 #showcase.flare .scHalo{animation:scHaloOut 1.15s cubic-bezier(.12,.6,.3,1) both}

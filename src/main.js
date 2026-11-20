@@ -12047,6 +12047,90 @@ function scFxClear() {
   scFx.motes = null; scFx.into = null;
   const cv = $('scFx'), g = cv && cv.getContext('2d'); if (g) g.clearRect(0, 0, cv.width, cv.height);
 }
+/* (R122, Chad, 20 Nov: "Build the castlevania style, but save the current version first. I only want to see how the
+   castlevania option will look like"): THE SWIRL, the showcase's second way of gathering its light (`gather: 'swirl'`), as
+   measured from the boss's death in his own video (1:47): some three dozen comets of gold appear all over the screen, each a
+   white-hot head in a soft glow with its afterimages strung out behind it; they rush in, fast, and fall into one whirlpool
+   turning round the middle, quicker as it closes, its comets drawing together into seven arms, until it collapses into a
+   white-hot point and blooms: a soft wash of gold over the whole screen (gold, never a white flash: R39), the amulet born in
+   it. Every point a function of the showcase's own clock and seeded, so every showing is the same and a slow phone draws the
+   same picture as a fast one. Absent, the showcase gathers as it always has (build 50's lines, kept whole) */
+const SC_SW = { n: 36, arms: 7, Tc: 2.6, R0: 0.32, w0: 1.6, w1: 7.5, trail: 9, gap: 0.028, lag: 2.6, glint: 0.06 };
+const SC_SW_BIRTH = SC_SW.Tc + 0.06;
+function scSwirlDeep() {
+  if (scFx.deep) return scFx.deep;
+  const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
+  const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  gr.addColorStop(0, 'rgba(255,212,116,1)'); gr.addColorStop(0.35, 'rgba(255,166,48,0.55)'); gr.addColorStop(1, 'rgba(255,124,16,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
+  return (scFx.deep = c);
+}
+function scSwirl(g, t, W, H, cx, cy, dot) {
+  const C = SC_SW, Tc = C.Tc, Sm = Math.min(W, H), TAU = Math.PI * 2, ARM = TAU / C.arms;
+  if (!scFx.comets || scFx.comets.W !== W || scFx.comets.H !== H) {
+    /* (seeded on a grid over the whole screen, so they appear everywhere on any screen; each comet's arm dealt out by where
+       it falls into the whirlpool, five or six to an arm) */
+    let sd = 0x2b0b5eed;
+    const rnd = () => ((sd = (Math.imul(sd, 1664525) + 1013904223) >>> 0) / 4294967296);
+    const L = Array.from({ length: C.n }, (_, i) => ({ u: 0.03 + 0.94 * ((i % 6) + 0.1 + rnd() * 0.8) / 6, v: 0.03 + 0.94 * (Math.floor(i / 6) + 0.1 + rnd() * 0.8) / 6,
+      th: 0.7 + rnd() * 0.9, f: rnd(), ta: 0.04 + rnd() * 0.32, D: 0.62 + rnd() * 0.3, k: 0.72 + rnd() * 0.56, ph: rnd() * TAU, sz: 0.8 + rnd() * 0.4, sp: (rnd() - 0.5) * 0.24 }));
+    for (const c of L) { c.h = Math.atan2((c.v - 0.5) * H, (c.u - 0.5) * W) + c.th; c.h -= Math.floor(c.h / TAU) * TAU; }
+    const by = L.slice().sort((x, y) => x.h - y.h);
+    by.forEach((c, r) => { c.j = Math.floor(r * C.arms / C.n); });
+    let bx = 0, byy = 0; for (const c of L) { bx += Math.cos(c.h - c.j * ARM); byy += Math.sin(c.h - c.j * ARM); }
+    const base = Math.atan2(byy, bx);
+    for (const c of L) { let o = base + c.j * ARM - c.h; o -= Math.round(o / TAU) * TAU; c.arm = o + c.sp; }
+    L.W = W; L.H = H; scFx.comets = L;
+  }
+  const cl = (x) => Math.min(1, Math.max(0, x));
+  const smo = (a, b, x) => { const u = cl((x - a) / (b - a)); return u * u * (3 - 2 * u); };
+  const Phi = (q) => C.w0 * q + (C.w1 - C.w0) * q * q * q / (3 * Tc * Tc);
+  const Rsw = (q) => Sm * C.R0 * (1 - Math.pow(cl((q - 0.9) / (Tc - 0.9)), 2.2));   // (held, then closing, quicker and quicker, to nothing)
+  const pos = (c, q) => {
+    const u = cl((q - c.ta) / c.D), e = 0.45 * u * (1 - u) * (1 - u) + 3 * u * u * (1 - u) + u * u * u, p = smo(1.1, Tc - 0.35, q);
+    const dx = (c.u - 0.5) * W, dy = (c.v - 0.5) * H, a0 = Math.atan2(dy, dx), r0 = Math.max(Math.hypot(dx, dy), Sm * (0.3 + 0.1 * c.f));
+    const ro = Rsw(q) * (1 + (c.k - 1) * (1 - 0.75 * p) + 0.05 * Math.sin(2.1 * q + c.ph) * (1 - p));
+    const r = r0 + (ro - r0) * e, a = a0 + (c.th + c.arm * p + Phi(q)) * e;
+    return [cx + Math.cos(a) * r, cy + Math.sin(a) * r];
+  };
+  const deep = scSwirlDeep();
+  const glow = (x, y, r, al) => { if (al <= 0.003) return; g.globalAlpha = Math.min(1, al); const s2 = r * 6; g.drawImage(deep, x - s2 / 2, y - s2 / 2, s2, s2); };
+  g.lineCap = 'round';
+  for (const c of scFx.comets) {
+    if (t <= c.ta) continue;
+    const end = 1 - smo(Tc - 0.03, Tc + 0.08, t); if (end <= 0) continue;
+    const s = c.sz * Sm, p = smo(1.1, Tc - 0.35, t), pl = smo(1.0, 1.6, t), arr = c.ta + c.D;   // (pl: its afterimages left further out the older they are, so each arm of the whirlpool curls out behind its head)
+    let px = 0, py = 0, on = false;
+    /* its afterimages, oldest first, strung on a thread of its own light (a wide soft pass and its bright core); strobed as it
+       rushes in, a smooth arc once it is turning in the whirlpool; then its head */
+    for (let k = C.trail; k >= 0; k--) {
+      const q = t - k * C.gap; if (q <= c.ta) continue;
+      const [x0, y0] = pos(c, q), lg = 1 + C.lag * (t - q) * pl, x = cx + (x0 - cx) * lg, y = cy + (y0 - cy) * lg;
+      const f = 1 - k / (C.trail + 1), al = smo(c.ta, c.ta + 0.14, q) * end, st = 1 - smo(arr - 0.25 * c.D, arr + 0.3, q);
+      if (on) {
+        g.globalAlpha = Math.min(1, 0.26 * f * al); g.strokeStyle = 'rgba(255,150,40,1)'; g.lineWidth = s * 0.034 * (0.35 + 0.65 * f);
+        g.beginPath(); g.moveTo(px, py); g.lineTo(x, y); g.stroke();
+        g.globalAlpha = Math.min(1, (0.45 + 0.4 * (1 - st)) * f * al); g.strokeStyle = 'rgba(255,224,150,1)'; g.lineWidth = s * 0.012 * (0.35 + 0.65 * f);
+        g.beginPath(); g.moveTo(px, py); g.lineTo(x, y); g.stroke();
+      }
+      if (k) { if (st > 0.01) { glow(x, y, s * 0.012 * (0.5 + 0.5 * f), 0.5 * f * f * al * st); dot(x, y, s * 0.0075 * (0.5 + 0.5 * f), 0.75 * f * f * al * st); } }
+      else { glow(x, y, s * 0.022 * (1 - 0.5 * p), 0.6 * al * (1 - 0.45 * p)); dot(x, y, s * 0.014 * (1 - 0.3 * p), al); dot(x, y, s * 0.007, al); }
+      px = x; py = y; on = true;
+    }
+  }
+  /* where they fall: a white-hot point as they meet; and the bloom, gold washed over the whole screen, quick to come and
+     slow to go, the amulet born in it (its birth, shell.html: #showcase.sw) */
+  const m = smo(Tc - 0.34, Tc, t) * (1 - smo(Tc + 0.06, Tc + 0.45, t));
+  if (m > 0) { glow(cx, cy, Sm * (0.02 + 0.05 * m), 0.8 * m); dot(cx, cy, Sm * (0.01 + 0.022 * m), m); }
+  const wa = smo(Tc - 0.04, Tc + 0.06, t) * (1 - smo(Tc + 0.06, Tc + 0.6, t));
+  if (wa > 0) {
+    const gr = g.createRadialGradient(cx, cy, 0, cx, cy, Math.hypot(W, H) / 2);
+    gr.addColorStop(0, 'rgba(255,242,204,1)'); gr.addColorStop(0.22, 'rgba(255,226,160,0.9)'); gr.addColorStop(0.6, 'rgba(255,210,128,0.74)'); gr.addColorStop(1, 'rgba(255,196,104,0.64)');
+    g.globalAlpha = 0.85 * wa; g.fillStyle = gr; g.fillRect(0, 0, W, H);
+    const b = smo(Tc - 0.04, Tc + 0.35, t);
+    glow(cx, cy, Sm * (0.05 + 0.12 * b), wa); dot(cx, cy, Sm * (0.03 + 0.05 * b), wa);
+  }
+}
 function scFxFrame(t, dur) {
   const cv = $('scFx'); if (!cv) return;
   const w = cv.clientWidth, h = cv.clientHeight; if (!w || !h) return;
@@ -12066,9 +12150,11 @@ function scFxFrame(t, dur) {
   }
   const spr = scFxDot(), cx = W / 2, cy = H / 2, R = Math.hypot(W, H) / 2, mw = Math.min(w * 0.62, h * 0.42) * dpr;
   const dot = (x, y, r, a) => { if (a <= 0.003) return; g.globalAlpha = Math.min(1, a); const s2 = r * 6; g.drawImage(spr, x - s2 / 2, y - s2 / 2, s2, s2); };
-  const BIRTH = SC_BIRTH, REL = dur - 1.2, INTO = dur - 0.6;
+  const BIRTH = unl.sw ? SC_SW_BIRTH : SC_BIRTH, REL = dur - 1.2, INTO = dur - 0.6;
   const ease = (p) => p * p * (1.6 - 0.6 * p);
   g.globalCompositeOperation = 'lighter';
+  /* (R122) the swirl gathers its light its own way (scSwirl); else build 50's lines, their point and the birth's burst, as they were */
+  if (unl.sw) scSwirl(g, t, W, H, cx, cy, dot); else {
   /* 1 · the gathering: each mote spirals in from beyond the screen's edge, quicker as it nears, a short tail behind it */
   g.lineCap = 'round';
   for (const m of scFx.motes) {
@@ -12107,6 +12193,7 @@ function scFxFrame(t, dur) {
     g.beginPath(); g.arc(cx, cy, mw * (0.08 + 0.62 * be), 0, Math.PI * 2); g.stroke();
     g.globalAlpha = 0.35 * (1 - bq); g.strokeStyle = 'rgba(255,190,80,1)'; g.lineWidth = (12 + 14 * (1 - bq)) * dpr;
     g.beginPath(); g.arc(cx, cy, mw * (0.08 + 0.62 * be), 0, Math.PI * 2); g.stroke(); }
+  }
   /* 2 · embers rising round it while it hovers */
   if (t > BIRTH + 0.25 && t < INTO) {
     const fade = Math.min(1, (t - BIRTH - 0.25) / 0.5) * Math.min(1, (INTO - t) / 0.3);
@@ -12181,7 +12268,7 @@ function ivFrame(now) {
     /* (the showcase turns it once round as it comes in, quick and slowing, and it comes to rest FACING him, then sways a
        little while it stands: a turning model that shows its face. Build 20's photographs caught the first spin (a turn
        every three seconds) on its plain back at both moments taken, and the face is the sacred side) */
-    if (cv) ivBlit(cv, unl.id, unl.show ? showYaw(Math.max(0, secs - SC_BIRTH)) : secs * 0.6, 0.1, 1, 0);
+    if (cv) ivBlit(cv, unl.id, unl.show ? showYaw(Math.max(0, secs - (unl.sw ? SC_SW_BIRTH : SC_BIRTH))) : secs * 0.6, 0.1, 1, 0);
     if (unl.show) scFxFrame(secs, unl.dur || 4.2);
     return;
   }
@@ -12348,6 +12435,11 @@ function showcaseOpen(id, opts) {
   const el = $('showcase'); if (!el) return false;
   clearTimeout(unl.outT);
   unl.id = id; unl.onClose = typeof opts.onClose === 'function' ? opts.onClose : null; unl.show = true;
+  /* (R122) `gather: 'swirl'`: the light gathers the Castlevania way (scSwirl), 1.33 s longer to its birth (SC_SW_BIRTH), the
+     page's own parts of it held back to match (#showcase.sw, shell.html); `bloomSound` is played `bloomLead` seconds before
+     its bloom (the chapter's own sound, named by it). Absent, it gathers as it always has */
+  unl.sw = opts.gather === 'swirl';
+  el.classList.toggle('sw', unl.sw);
   /* (the weapon's buttons were on the screen as it opened: `weaponUp` is derived on the frame, in play only) */
   unl.wpn = document.body.classList.contains('weaponUp');
   for (const k in keys) keys[k] = false;
@@ -12368,10 +12460,11 @@ function showcaseOpen(id, opts) {
      merging with the icon should have its sound effect too"): a chapter may name a sound for each beat of it, its own names
      (never a chapter's name written here): `gatherSound` as the light gathers, `hoverSound` once it is born and hovers,
      `intoSound` as it goes down into the button, `mergeSound` as it merges. Absent, each beat is as it was (silent) */
-  unl.gatherT = opts.gatherSound ? setTimeout(() => { if (unl.id === id && unl.show) snd(opts.gatherSound, 0.9); }, SC_LATE * 1000 * scSlow) : 0;   // (R113: its swell still ends on the birth)
+  unl.gatherT = opts.gatherSound ? setTimeout(() => { if (unl.id === id && unl.show) snd(opts.gatherSound, 0.9); }, (unl.sw ? SC_SW.glint : SC_LATE) * 1000 * scSlow) : 0;   // (R113: its swell still ends on the birth)
   haptic([30, 50, 120]);
   const secs = Math.max(2.4, +opts.auto || 4.2);
-  unl.hoverT = opts.hoverSound ? setTimeout(() => { if (unl.id === id && unl.show) snd(opts.hoverSound, 0.85); }, (1.7 + SC_LATE) * 1000 * scSlow) : 0;
+  unl.hoverT = opts.hoverSound ? setTimeout(() => { if (unl.id === id && unl.show) snd(opts.hoverSound, 0.85); }, (unl.sw ? SC_SW_BIRTH + 0.75 : 1.7 + SC_LATE) * 1000 * scSlow) : 0;
+  unl.bloomT = unl.sw && opts.bloomSound ? setTimeout(() => { if (unl.id === id && unl.show) snd(opts.bloomSound, 0.95); }, Math.max(0, SC_SW_BIRTH - (+opts.bloomLead || 0)) * 1000 * scSlow) : 0;
   /* (build 21, Chad 18 Nov: its own entrance, nothing of Item Unlocked's.) The light gathers and it is born at 0.95 s
      (CSS), it turns and hovers; 1.2 s before the end it RELEASES ITS POWER: the room shakes, halos go out from it, motes
      burst (scFxFrame) and the release's sound; 0.6 s before the end it goes down into the holy water's button, which
@@ -12438,7 +12531,7 @@ function unlockClose(how) {
   if (unl.show) {                              // v27.0: the showcase goes its own way (no click, no sound of a press)
     const el = $('showcase');
     unl.id = null; unl.show = false;
-    clearTimeout(unl.autoT); unl.autoT = 0; clearTimeout(unl.flareT); clearTimeout(unl.intoT); clearTimeout(unl.fillT); clearTimeout(unl.hoverT); clearTimeout(unl.gatherT);
+    clearTimeout(unl.autoT); unl.autoT = 0; clearTimeout(unl.flareT); clearTimeout(unl.intoT); clearTimeout(unl.fillT); clearTimeout(unl.hoverT); clearTimeout(unl.gatherT); clearTimeout(unl.bloomT);
     document.body.classList.remove('showcaseopen', 'scToHud');
     $('scene')?.classList.remove('scShake');
     if (how === 'force') $('fireBtn')?.classList.remove('scFill');
@@ -15258,6 +15351,8 @@ const STING_SAMPLE = {
   u4goldmerge: ['u4goldmerge', 1],
   /* v27.0 · its effects, beds and music (masters/v27.0/sound.sh: every pick and why) */
   u4hiss: ['u4hiss', 1], u4nooo: ['u4nooo', 1],
+  /* v27.0 · its effects, beds and music (masters/v27.0/sound.sh: every pick and why) */
+  u4swbloom: ['u4swbloom', 1], u4swglint: ['u4swglint', 1],
   /* E4C4 FX END */
 };
 /* Which kinds the synth below can actually fake. Everything else in
