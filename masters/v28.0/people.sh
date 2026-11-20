@@ -53,7 +53,7 @@ one() {  # one <name> <near triangles> <near sheet px> <take args...>
   case " $HERO " in *" $n "*) prep $SRC/rigged-$n.glb assets/p5${n}h.glb ${HEROPX:-2048} $log ${HEROKEEP-keep} && made="$made, h $(node tools/tricount.mjs --n assets/p5${n}h.glb)";; esac
   echo "$n -> assets/p5$n.glb ($made triangles)"
 }
-HERO="zavier"
+HERO="zavier zavier2"
 # THE ARMS BROUGHT IN (tools/calmarms.mjs, v26.0): the library's stands and walks hold both upper arms fifteen to
 # nineteen degrees out from the body, a doll's A pose; each standing or walking take's mean angle out is set here.
 CALM="Idle_3=6,0.6 Stand_and_Chat=7 Listening_Gesture=7 Walking=7,0.5,0.7"
@@ -62,4 +62,8 @@ go() { [ $all -eq 1 ] && return 0; for w in $WANT; do [ "$w" = "$1" ] && return 
 # MASTER ZAVIER (Chad, 20 Nov 2026, R5): the player's own body, seen in the third-person fight. For now the rig's own
 # walk only (the takes of the fight are laid on once the plan names them). His full body is repainted (HEROKEEP empty).
 go zavier && HEROKEEP= one zavier 40000 2048 $(T zavier walking Walking)
+# HIS SECOND BODY (the same day): the first came with four fingers of each hand fused into one piece, the gaps between
+# them only painted, and a watch whose face was a noisy checkered patch. The reference was made again with the same man
+# (masters/v28.0/ref/zavier-a2-2k.png: palms forward, every finger apart, a plain round watch) and the body from it.
+go zavier2 && HEROKEEP= one zavier2 40000 2048 $(T zavier2 walking Walking)
 echo PEOPLE DONE
