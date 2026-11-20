@@ -45,6 +45,7 @@ console.log('opened', ok);
 let lit = 0;
 for (const t of AT) {
   await p.waitForFunction((t) => { const s = window.__enc.showT(); return s == null || s >= t; }, t, { timeout: 600000, polling: 'raf' });
+  if (await p.evaluate(() => window.__enc.showT() == null)) { console.log('at', t, 'the showcase has closed (this box photographs slower than it plays)'); break; }
   const r = await p.evaluate(() => { const cv = document.getElementById('scFx'), cs = getComputedStyle(cv), sc = getComputedStyle(document.getElementById('showcase'));
     const g = cv.getContext('2d'); let n = 0, max = 0;
     if (cv.width && cv.height) { const d = g.getImageData(0, 0, cv.width, cv.height).data; for (let i = 3; i < d.length; i += 4) { if (d[i] > 8) n++; if (d[i] > max) max = d[i]; } }
