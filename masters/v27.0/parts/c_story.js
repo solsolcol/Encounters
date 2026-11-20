@@ -55,6 +55,11 @@
       return { p, learned: ['r', 'm', 'f', 'o', 'a'].filter(c => f.has(c)), spoke: f.has('k'), peeked: f.has('p'), opened: f.has('v'),
                looked: ['1', '2', '3'].filter(c => f.has('l' + c)), water: f.has('w'), appaGone: f.has('x') };
     }
+    /* (R137) where the one source not yet learned is: its anchor, as its tap is tested against */
+    function HIST_LEFT() {
+      const c = ['r', 'm', 'f', 'o', 'a'].find(k => !play.learned.has(k));
+      return c === 'r' ? RAVI_HEAD() : c === 'm' ? MALA_HEAD() : c === 'f' ? FOLDER_AT : c === 'o' ? OLDPHOTO_AT : c === 'a' ? APPA_PHOTO_AT : null;
+    }
     function setPhase(p, opts) { phase = p; if (kit) kit.setPhase(p + ':' + mark()); objectiveFor(p, opts); }
     function saveMark() { if (kit) kit.setPhase(phase + ':' + mark()); }
     function bank(note, s = 0, a = 0) {
@@ -70,7 +75,10 @@
       if (play.busy) return;                                   // a line is handing off: the order waits for it
       let o = null, wp = null;
       if (p === 'history') {
-        if (play.learned.size < 5) o = W.objHistory.replace('{n}', String(play.learned.size));
+        /* (R137, Chad, 20 Nov: "it gets stuck on 4/5 and not able to trigger amma"): with one source left the order points
+           at it, wherever it is (the waypoint, at the screen's edge when it is behind him: v19.2); the count says how many,
+           the arrow says which (the others each wear their mark, but a mark is drawn only while its thing is on screen) */
+        if (play.learned.size < 5) { o = W.objHistory.replace('{n}', String(play.learned.size)); if (play.learned.size === 4) wp = HIST_LEFT(); }
         else if (!play.spoke) { o = W.objAmma; wp = AMMA_HEAD(); }
         else if (!play.told) { o = W.objTell; wp = PHO_HEAD(); }
       } else if (p === 'sight') {
@@ -1462,8 +1470,19 @@
        Each a press (tap, click or E: Chad's rule of v21.9), each with its mark on the thing, each offered only while it
        is live and no line is handing off (v12.5, v21.21). A mark rides the person it is on (spotsTick). */
     const _hv = new THREE.Vector3();
-    const markHit = (posF, frac = 0.1) => (x, y) => { const p = posF(); camera.updateMatrixWorld(); _hv.set(p.x, p.y, p.z).project(camera);
-      return _hv.z < 1 && Math.hypot(x - _hv.x, (y - _hv.y) / Math.max(0.3, camera.aspect)) < frac; };
+    /* (R137) a tap is told in the screen's own points (the engine's hotspotTap hands on the finger's clientX and clientY):
+       this test once measured them against the thing's place from -1 to 1 across the screen, so no tap on a person or a
+       thing here ever pressed it, and only the badge at the foot of the screen did (the same slip episode 4 chapter 1
+       found and mended at its CP8). A tap within `frac` of the screen's narrower side of the thing, or of the mark drawn
+       over it (the spot's own pos and markY: `this` is the spot), presses it */
+    const markHit = (posF, frac = 0.1) => function (x, y) {
+      const p = posF(), r = Math.min(innerWidth, innerHeight) * frac;
+      camera.updateMatrixWorld();
+      const pts = [[p.x, p.y, p.z]];
+      if (this && this.pos) pts.push([this.pos.x, (this.pos.y ?? 1.0) + (this.markY ?? 0.55), this.pos.z]);
+      return pts.some(([px, py, pz]) => { _hv.set(px, py, pz).project(camera);
+        return _hv.z < 1 && Math.hypot(x - (_hv.x * 0.5 + 0.5) * innerWidth, y - (-_hv.y * 0.5 + 0.5) * innerHeight) < r; });
+    };
     const hsRavi = { id: 'ravi', pos: { x: 0, y: 1.6, z: 0 }, radius: 2.4, prompt: W.hotRavi, hits: markHit(RAVI_HEAD, 0.13),
       enabled: () => phase === 'history' && !play.busy && !play.learned.has('r'), onInteract() { return learn('r', [['rv4h1', cast.ravi], ['rv4h2', cast.ravi]]); } };
     const hsMala = { id: 'mala', pos: { x: 0, y: 1.5, z: 0 }, radius: 2.4, prompt: W.hotMala, hits: markHit(MALA_HEAD, 0.13),
