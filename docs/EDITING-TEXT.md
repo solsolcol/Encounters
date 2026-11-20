@@ -11,7 +11,12 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
-**THE CURRENT SHEET (20 Nov 2026): Master Z's Encounters — GAME TEXT v152 (edit here)**, id `1phoBe7d28pGmsx6g_akjMtlisFfIQxjX2GBq7QkHE9E`
+**THE CURRENT SHEET (20 Nov 2026): Master Z's Encounters — GAME TEXT v153 (edit here)**, id `14vJ-7N4DCO_J-_9YDw8T9KEkXweJkRvgQdMPJ17M1m8`
+(<https://docs.google.com/spreadsheets/d/14vJ-7N4DCO_J-_9YDw8T9KEkXweJkRvgQdMPJ17M1m8/edit>; v152 with seven rows changed
+(build 54, R133 to R136): `e4c4.words.objHold` in Chad's words (R135), `guardBrief` and `guardBriefKey` saying how each
+device reloads, two rows added, `waterEmpty` and `waterEmptyTouch` (the dry flick's words, before only in the code), and
+two retired, `dipHere` and `noAltar`; 10,574 cells read back, mismatched 0; v152 checked first: created 08:20:16.9,
+modified 08:20:17.9, the conversion itself). The one before it, v152, id `1phoBe7d28pGmsx6g_akjMtlisFfIQxjX2GBq7QkHE9E`
 (<https://docs.google.com/spreadsheets/d/1phoBe7d28pGmsx6g_akjMtlisFfIQxjX2GBq7QkHE9E/edit>; v151 and three rows,
 `e4c4.words.visionLocked` (the climax's lock, R131), `voice.ph4b8` and `voice.ph4b9` (Grandmaster Pho on the strain, R128
 and R129: build 53); 10,574 cells read back, mismatched 0; v151 checked first: created 21:49:02.2, modified 21:49:03.2,

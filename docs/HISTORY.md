@@ -9462,6 +9462,15 @@ What the baseline contains, by release:
 
 ## The sheet, version by version
 
+**v153, PUBLISHED 20 Nov 2026** (`masters/v27.0/masterz-text-v153.xlsx`): v152 with exactly seven rows changed (build 54,
+R133 to R136): `e4c4.words.objHold` "Keep the green spirits away from Amma by using the holy water." (R135, his words);
+`guardBrief` and `guardBriefKey`, whose refill sentence now says "Tap the gold icon above the holy water bowl to reload."
+and "Press R to reload."; two added, `waterEmpty` ("Out of holy water. Press R to reload.") and `waterEmptyTouch` ("Out of
+holy water. Tap the gold icon above the holy water bowl."), the dry flick's words, which before lived only in the code and
+were never on the sheet; and two retired with what said them, `dipHere` ("Fill it again at his bowl.") and `noAltar` ("Not
+at her altar.", R134). Id `14vJ-7N4DCO_J-_9YDw8T9KEkXweJkRvgQdMPJ17M1m8`; v152 checked first (created 08:20:16.9, modified
+08:20:17.9: the conversion itself); read back tab by tab, 10,574 cells compared, mismatched 0 (tools/sheetcmp.py).
+
 **v152, PUBLISHED 20 Nov 2026** (`masters/v27.0/masterz-text-v152.xlsx`): v151 with exactly three rows added (build 53):
 `e4c4.words.visionLocked` ("Your Spirit Vision stays open until the fight is over.", R131), `voice.ph4b8` ("When you feel
 better, open your Spirit Vision again.", 3.56 s, R128) and `voice.ph4b9` ("You're losing control, close your Spirit

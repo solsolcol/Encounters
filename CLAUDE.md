@@ -1577,11 +1577,12 @@ longer grows with the game, and re-encoded from the masters. The ghost mesh
 is now the biggest single download by a wide margin and the only compression
 job left outstanding.
 
-**THE SHEET IS v152, PUBLISHED 20 Nov 2026** (`masters/v27.0/masterz-text-v152.xlsx`: v27.0's words and voice lines,
+**THE SHEET IS v153, PUBLISHED 20 Nov 2026** (`masters/v27.0/masterz-text-v153.xlsx`: v27.0's words and voice lines,
 with build 39's (the fight's brief on the strain, ph4s1 re-said, ph4b6 and ph4b7), build 41's ph4h2, build 49's ph4B0,
-"Go away, now!", and build 53's ph4b8 and ph4b9, Grandmaster Pho on the strain, and the words of the climax's lock).
+"Go away, now!", build 53's ph4b8 and ph4b9, Grandmaster Pho on the strain, and the words of the climax's lock, and build
+54's reload words and the fight's objective in Chad's words).
 The link to give Chad:
-https://docs.google.com/spreadsheets/d/1phoBe7d28pGmsx6g_akjMtlisFfIQxjX2GBq7QkHE9E/edit
+https://docs.google.com/spreadsheets/d/14vJ-7N4DCO_J-_9YDw8T9KEkXweJkRvgQdMPJ17M1m8/edit
 The base64 ceiling is gone: the Drive connector's `create_file` takes a FILE REFERENCE (`sha256:<hex>:<path>`, filled in
 on his approval), so a workbook goes up whole at any size; read it back tab by tab with the Sheets connector's
 `get_values` and compare every cell before the link goes to him (docs/EDITING-TEXT.md, "THE CURRENT SHEET").
