@@ -84,14 +84,19 @@ def unlin(c):
     c = np.clip(c, 0, 1)
     return np.round(np.where(c <= 0.0031308, c * 12.92, 1.055 * c ** (1 / 2.4) - 0.055) * 255).astype(np.uint8)
 
-def raster(tris):
-    """the texels whose centre a triangle covers: (row, col, triangle, the place on the body)"""
-    rr = []; cc = []; tt = []; pp = []
+def raster(tris, reach=0.75):
+    """the texels a triangle's paint is drawn from: (row, col, triangle, the place on the body). A texel belongs to a
+    triangle when its centre lies inside it OR within `reach` texels of it: a sliver thinner than a texel covers no
+    centre at all, yet the renderer draws it from the texels beside its line (bilinear), and a texel no triangle
+    'covered' was never painted again: on Master Zavier's full body (312,640 triangles as generated, slivers
+    everywhere) that left a dotted line of the old black along his collar. Where two triangles claim one texel, the
+    one it lies deepest in keeps it."""
+    rr = []; cc = []; tt = []; pp = []; ss = []
     uvt = UV[I[tris]] * PX                                      # (k, 3, 2) in texels; a texel's centre is at (c + .5, r + .5)
     for n, t in enumerate(tris):
         a, b, c = uvt[n]
-        x0 = max(int(math.floor(min(a[0], b[0], c[0]) - 0.5)), 0); x1 = min(int(math.ceil(max(a[0], b[0], c[0]) - 0.5)), PX - 1)
-        y0 = max(int(math.floor(min(a[1], b[1], c[1]) - 0.5)), 0); y1 = min(int(math.ceil(max(a[1], b[1], c[1]) - 0.5)), PX - 1)
+        x0 = max(int(math.floor(min(a[0], b[0], c[0]) - 0.5 - reach)), 0); x1 = min(int(math.ceil(max(a[0], b[0], c[0]) - 0.5 + reach)), PX - 1)
+        y0 = max(int(math.floor(min(a[1], b[1], c[1]) - 0.5 - reach)), 0); y1 = min(int(math.ceil(max(a[1], b[1], c[1]) - 0.5 + reach)), PX - 1)
         if x1 < x0 or y1 < y0: continue
         den = (b[1] - c[1]) * (a[0] - c[0]) + (c[0] - b[0]) * (a[1] - c[1])
         if abs(den) < 1e-12: continue
@@ -100,14 +105,18 @@ def raster(tris):
         l0 = ((b[1] - c[1]) * (X - c[0]) + (c[0] - b[0]) * (Y - c[1])) / den
         l1 = ((c[1] - a[1]) * (X - c[0]) + (a[0] - c[0]) * (Y - c[1])) / den
         l2 = 1 - l0 - l1
-        ok = (l0 >= -1e-4) & (l1 >= -1e-4) & (l2 >= -1e-4)
+        # each corner's height over the edge facing it, in texels: a barycentric times it is the distance from that edge
+        h0 = abs(den) / max(math.hypot(b[0] - c[0], b[1] - c[1]), 1e-9); h1 = abs(den) / max(math.hypot(c[0] - a[0], c[1] - a[1]), 1e-9); h2 = abs(den) / max(math.hypot(a[0] - b[0], a[1] - b[1]), 1e-9)
+        depth = np.minimum(np.minimum(l0 * h0, l1 * h1), l2 * h2)
+        ok = depth >= -reach
         if not ok.any(): continue
         yy, xx = np.nonzero(ok)
-        w = np.stack([l0[ok], l1[ok], l2[ok]], axis=1)
-        rr.append(yy + y0); cc.append(xx + x0); tt.append(np.full(len(yy), t)); pp.append(w @ W[I[t]])
+        w = np.clip(np.stack([l0[ok], l1[ok], l2[ok]], axis=1), 0, None); w /= np.maximum(w.sum(axis=1, keepdims=True), 1e-12)
+        rr.append(yy + y0); cc.append(xx + x0); tt.append(np.full(len(yy), t)); pp.append(w @ W[I[t]]); ss.append(depth[ok])
     if not rr: return (np.zeros(0, np.int64),) * 3 + (np.zeros((0, 3)),)
-    r = np.concatenate(rr); c = np.concatenate(cc); t = np.concatenate(tt); p = np.concatenate(pp)
-    _, first = np.unique(r * PX + c, return_index=True)          # (a texel on a shared edge is taken once)
+    r = np.concatenate(rr); c = np.concatenate(cc); t = np.concatenate(tt); p = np.concatenate(pp); sc = np.concatenate(ss)
+    order = np.lexsort((-sc, r * PX + c)); r, c, t, p = r[order], c[order], t[order], p[order]
+    _, first = np.unique(r * PX + c, return_index=True)          # (the triangle it lies deepest in)
     return r[first], c[first], t[first], p[first]
 
 def grid_of(p, lo_, shape):
@@ -239,11 +248,15 @@ for R in SPEC['regions']:
         d = ndimage.distance_transform_edt(~other) * VOX
         sel = c1 == k; dist[sel] = d[gi[sel, 0], gi[sel, 1], gi[sel, 2]]
     # 5. what is painted again
+    if R.get('everywhere'): c1[(c1 < 0) & inside] = 0
     rawbad = np.zeros(len(r), bool)                               # (a texel whose own colour is not its material's)
     for k in range(K):
         if 'raw' in rules[k]: sel = c1 == k; rawbad[sel] = ~fits(Lr[sel], rules[k]['raw'])
     smoothk = np.array([rules[k].get('fill', 'smooth') != 'mirror' for k in range(K)] + [False])
-    paint = inside & (c1 >= 0) & ~protect & ((((c0 != c1) | rawbad) & (dist < REACH)) | ((dist < BAND) & smoothk[c1]))
+    # (a box of ONE material, `everywhere`: hair with flecks of skin's colour in its creases. There is no edge to be
+    #  near, so whatever in the box is not the material's own colour is painted, wherever it lies)
+    reachq = (dist < REACH) | bool(R.get('everywhere'))
+    paint = inside & (c1 >= 0) & ~protect & ((((c0 != c1) | rawbad) & reachq) | ((dist < BAND) & smoothk[c1]))
     pure = inside & (c0 == c1) & (c1 >= 0) & ~paint & ~rawbad & (dist > BAND + 0.001) & ~protect    # (clean texels are taken from inside the box only)
     newL = L.copy(); stats = {}
     for k in range(K):
@@ -259,7 +272,7 @@ for R in SPEC['regions']:
         else:
             # (the material's own smooth colour, at every texel of it within REACH of an edge: what stands off it by more
             #  than TOL there, a hairline of the other colour that passed as a darker skin, is painted with it too)
-            q = np.nonzero(inside & (c1 == k) & ~protect & ((dist < REACH) | paint))[0]
+            q = np.nonzero(inside & (c1 == k) & ~protect & (reachq | paint))[0]
             sb, sw = blur_at(L[src].astype(np.float32), gi[src], shape, FILL)
             w = sw[gi[q, 0], gi[q, 1], gi[q, 2]]
             val = sb[gi[q, 0], gi[q, 1], gi[q, 2]] / np.maximum(w, 1e-9)[:, None]
