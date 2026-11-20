@@ -484,9 +484,22 @@ if (process.env.REPAINT) {
     const old = A.getArray(), arr = new old.constructor(nv * es); for (let i = 0; i < nv; i++) for (let q = 0; q < es; q++) arr[i * es + q] = old[src[i] * es + q]; A.setArray(arr); }
   if (p0.listTargets().length) throw new Error('REPAINT: morph targets are not carried');
   p0.getIndices().setArray(nv > 65535 ? idxNew : Uint16Array.from(idxNew));
-  baseTex.setImage(fs.readFileSync(`${dir}/baked.png`)).setMimeType('image/png').setName('repainted');
+  /* v28.0 (Master Zavier's model): THE EDGE BETWEEN TWO MATERIALS DRAWN CLEAN. EDGECLEAN=<spec.json> hands the body as it
+     now is (each point with its new coordinate) and the baked sheet to tools/edgeclean.py, which paints again only the
+     texels along a ragged painted edge inside the boxes the spec names (a collar on a neck, a lapel on a tee) and
+     answers the sheet; unset, nothing here runs and the baked sheet is used as it was */
+  let sheetFile = `${dir}/baked.png`, cleanNote = '';
+  if (process.env.EDGECLEAN) {
+    const ep = new Float32Array(nv * 3); for (let i = 0; i < nv; i++) { ep[i * 3] = P[src[i] * 3]; ep[i * 3 + 1] = P[src[i] * 3 + 1]; ep[i * 3 + 2] = P[src[i] * 3 + 2]; }
+    bin('e_pos.f32', ep); bin('e_uv.f32', Float32Array.from(uvNew)); bin('e_idx.u32', idxNew);
+    const r2 = spawnSync(process.env.PY3 || 'python3', ['-I', 'tools/edgeclean.py', dir, process.env.EDGECLEAN], { stdio: ['ignore', 'pipe', 'pipe'], env: process.env, maxBuffer: 1 << 26 });
+    for (const l of String(r2.stdout || '').split('\n').filter(l => /^\[/.test(l))) console.log('  edgeclean ' + l);
+    if (r2.status !== 0) { console.error(String(r2.stderr || '').slice(-3000)); throw new Error('EDGECLEAN: tools/edgeclean.py failed'); }
+    sheetFile = `${dir}/clean.png`; cleanNote = '; edges: ' + JSON.parse(fs.readFileSync(`${dir}/clean.json`, 'utf8')).summary;
+  }
+  baseTex.setImage(fs.readFileSync(sheetFile)).setMimeType('image/png').setName('repainted');
   const rep = JSON.parse(fs.readFileSync(`${dir}/baked.json`, 'utf8'));
-  console.log(`  repaint: ${n} points -> ${nv} (${nv - n} copied along the new seams), ${m} triangles; ${rep.summary}`);
+  console.log(`  repaint: ${n} points -> ${nv} (${nv - n} copied along the new seams), ${m} triangles; ${rep.summary}${cleanNote}`);
   if (!process.env.REPAINT_DIR) fs.rmSync(dir, { recursive: true, force: true });
   repainted = true;
 }

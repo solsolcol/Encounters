@@ -109,6 +109,15 @@ off = (cu < -1e-6) | (cu > 1 + 1e-6)
 def uvsum(u): return float(0.5 * np.abs((u[:, 1, 0] - u[:, 0, 0]) * (u[:, 2, 1] - u[:, 0, 1]) - (u[:, 2, 0] - u[:, 0, 0]) * (u[:, 1, 1] - u[:, 0, 1])).sum())
 if not off.any() and uvsum(cu) > 0.98:
     off[:] = True; log(f'the second packing covers {100 * uvsum(cu):.0f}% of the square in sum: charts lie over one another')
+# (v28.0, Master Zavier's full body, 20 Nov 2026: ONE triangle of 312,640 left outside the square threw the whole second
+#  packing away, and with it the face's larger share: his face fell from 2,100 texels a metre to 1,008 on the body made
+#  for close shots. Where MENDOUT is set and no more triangles than that lie outside, the second packing is KEPT and
+#  those triangles are mended below with the corners xatlas never placed: each corner given its neighbours' place, a
+#  sliver in the colour of the surface it sits in. Unset (0), the fallback is what it always was.)
+MENDOUT = int(os.environ.get('MENDOUT', '0')); outT = None
+if MENDOUT and off.any() and not off.all() and int(off.any(axis=(1, 2)).sum()) <= MENDOUT:
+    outT = off.any(axis=(1, 2)).copy(); off[:] = False
+    log(f'the second packing left {int(outT.sum())} triangles outside the square: kept, and those mended with the unplaced corners (MENDOUT {MENDOUT})')
 if off.any():
     # (the second packing can leave a chart outside the square: seen once, on the bench woman's full model of 310,742
     #  triangles, whose own scan has charts of no area. Then the first packing, which put every chart in its square with
@@ -136,6 +145,7 @@ duv = np.linalg.norm(cu - np.roll(cu, -1, axis=1), axis=2) * PX                 
 okE = d3 > 1e-6
 medR = float(np.median(duv[okE] / d3[okE])) if okE.any() else 0.0
 badT = ((duv > 6) & ((~okE) | (duv > 8 * medR * np.maximum(d3, 1e-9)))).any(axis=1)
+if outT is not None: badT = badT | outT                                              # (v28.0: the ones left outside the square)
 nBad = int(badT.sum())
 if nBad:
     good = np.nonzero(~badT)[0]
@@ -156,7 +166,9 @@ if nBad:
         tri = np.array(new)
         if (np.linalg.norm(tri - np.roll(tri, -1, axis=0), axis=1) * PX).max() > 6: tri[:] = have[0]
         cu[t] = tri; fixed += 1
-    log(f'{nBad} triangles reached across the sheet from a corner xatlas never placed: each given its neighbours\' place ({fixed})')
+    a3 = 0.5 * np.linalg.norm(np.cross(W[LI[badT, 1]] - W[LI[badT, 0]], W[LI[badT, 2]] - W[LI[badT, 0]]), axis=1)
+    log(f'{nBad} triangles reached across the sheet from a corner xatlas never placed: each given its neighbours\' place ({fixed}); '
+        f'together {a3.sum() * 1e6:.1f} mm2 of the body, the largest {a3.max() * 1e6:.3f} mm2 with an edge of {d3[badT].max() * 1000:.2f} mm')
 summary_note += f'; {nBad} unplaced corners mended' if nBad else ''
 
 # ---- the texels a metre, as shipped and now (the old sheet at the size it shipped at, which the dump names: 'shipped')

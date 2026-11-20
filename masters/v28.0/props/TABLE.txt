@@ -1,0 +1,7 @@
+# v28.0 · the things of episode 4 chapter 5: name, asset key, size in metres, the dimension it is sized on (h height, w
+# width on x, l length on z), the triangle count asked of Meshy's remesh (nothing is thinned here: v25.5), the sheets'
+# size, the turn in degrees (settled by a photograph). Read by masters/v28.0/props/prop.sh. A sheet of 2048 only where
+# the thing is seen close; 1024 across the room; 512 for the small and far.
+# The Naga staff: his own (plan §0, R2). Its height is not given: about 1.4 m by the stand beside it in his photograph
+# (to be asked of him only if a shot depends on it). Seen close in a follower's hands and in Grandmaster Pho's: 2048.
+nagastaff     w5nagastaff   1.40  h  30000  2048  0
