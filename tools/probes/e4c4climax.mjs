@@ -63,6 +63,20 @@ const aimAt = (q) => p.evaluate((q) => { const E = window.__enc, Y = E.yaw, P = 
   const dx = q.x - Y.position.x, dz = q.z - Y.position.z, d = Math.hypot(dx, dz);
   Y.rotation.y = Math.atan2(-dx, -dz); P.rotation.x = Math.max(-1.2, Math.min(1.2, Math.atan2(q.y - Y.position.y, Math.max(0.05, d)))); return +d.toFixed(2); }, q);
 const heardHas = (k) => p.evaluate((k) => window.__enc.stage.info().heard.includes(k), k);
+/* the sign's height sampled on every drawn frame for 4 s of the page's clock (two reads a second apart can land on one
+   drawn frame on a slow box): its swing, and each sample against the bob it is meant to make, 3 cm either way once in
+   2.8 s about its middle, on the wall clock */
+const bobCheck = async () => {
+  const S = await p.evaluate(() => new Promise(res => { const E = window.__enc; let m = null;
+    E.stage.pile.group.parent.traverse(o => { if (o.isSprite && o.renderOrder === 29 && o.material && o.material.toneMapped === false) m = o; });
+    const out = [], t0 = performance.now();
+    const f = () => { out.push([performance.now() / 1000, m.position.y]); if (performance.now() - t0 < 4000 && out.length < 600) requestAnimationFrame(f); else res(out); };
+    requestAnimationFrame(f); }));
+  const ys = S.map(q => q[1]), lo = Math.min(...ys), hi = Math.max(...ys), mid = (lo + hi) / 2;
+  const err = Math.max(...S.map(([t, y]) => Math.abs(y - (mid + 0.03 * Math.sin(t * Math.PI * 2 / 2.8)))));
+  log('  bob:', S.length, 'frames, swing', (hi - lo).toFixed(4), 'm, worst miss of the curve', err.toFixed(4), 'm, middle', mid.toFixed(3));
+  return { markBobs: S.length >= 4 && hi - lo > 0.02 && hi - lo <= 0.0605, markBobCurve: err < 0.012 };
+};
 
 await p.goto(PAGE, { waitUntil: 'load', timeout: 240000 });
 await p.waitForFunction(() => !!window.__enc, null, { timeout: 120000 });
@@ -80,10 +94,8 @@ if (MODE === 'shut') {
     return m && m.visible && m.material.opacity > 0.98; }, 60000);
   r = await read(); log('01', JSON.stringify(r.mark));
   const d = await aimAt({ x: r.mark.x, y: r.mark.y - 0.25, z: r.mark.z }); log('  aimed from', d, 'm');
-  const y1 = (await read()).mark.y; await p.waitForTimeout(1400); const y2 = (await read()).mark.y;
   checks.markShown = !!r.mark && r.mark.vis && r.mark.op > 0.98 && r.mark.layers !== 1;
-  checks.markBobs = Math.abs(y1 - y2) > 0.004 && Math.abs(y1 - y2) <= 0.061;
-  log('  bob: y', y1, '→', y2);
+  Object.assign(checks, await bobCheck());
   await keepHer(); await shot('sign-shut');
   /* 02: the sign, his sight open */
   await tapSel('#visionBtn');
@@ -121,10 +133,16 @@ if (MODE === 'shut') {
   await keepHer(); await shot('rest-feel-better');
   await until(() => !(window.__enc.stage.info().until > window.__enc.stage.info().t), 60000);
 } else {
-  /* MODE=open: open before the rush */
+  /* MODE=open: open before the rush; the sign seen through his sight, and its bob measured */
   await tapSel('#visionBtn');
   await until(() => { const v = window.__enc.vision(); return v.on && v.dir === 0; }, 60000);
   await p.evaluate(() => { window.__enc.stage.dbg.play.heat = 0.3; });
+  await until(() => { const E = window.__enc; let m = null; E.stage.pile.group.parent.traverse(o => { if (o.isSprite && o.renderOrder === 29 && o.material && o.material.toneMapped === false) m = o; });
+    return m && m.visible && m.material.opacity > 0.98; }, 60000);
+  r = await read(); checks.markShown = !!r.mark && r.mark.vis && r.mark.op > 0.98 && r.mark.layers !== 1;
+  await aimAt({ x: r.mark.x, y: r.mark.y - 0.25, z: r.mark.z });
+  Object.assign(checks, await bobCheck());
+  await keepHer(); await shot('sign-open');
 }
 
 /* 06: the rush */
