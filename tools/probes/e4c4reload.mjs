@@ -77,7 +77,7 @@ await p.waitForFunction(() => !!window.__enc, null, { timeout: 120000 });
 await frames(2);
 await press('#startBtn');
 log('Continue pressed');
-checks.briefOpens = await until(() => window.__enc.getState() === 'event', 900000);
+checks.briefOpens = await until(() => window.__enc.getState() === 'event', 1800000);   // (build 54: the chapter's boot took 908 s beside a second browser)
 const briefText = await p.evaluate(() => (document.getElementById('event') || document.body).innerText.replace(/\s+/g, ' '));
 checks.briefSays = briefText.includes(BRIEF);
 checks.briefNoOldWords = !/Refill at his bowl|arrow button/.test(briefText);
