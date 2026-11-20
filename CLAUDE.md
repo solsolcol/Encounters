@@ -257,6 +257,12 @@ that fits it, with the version it came from.
   with new ways to fight and interact as the live range was in episode 2, and SPIRIT VISION, a HUD button like the
   torch's (his full description: docs/V27.0-E4C4-PLAN.md §0). Its tracker is docs/V27.0-E4C4-BUILD.md: read it first.
   (v27.0)
+- Episode 4 chapter 5 (20 Nov 2026: S1·14 and S1·15, both in Singapore; at its climax a TAG-TEAM fight in third person,
+  Grandmaster Pho with the Naga stick's fireballs and a golden shockwave, Master Zavier in defence and support, then first
+  person again; Master Zavier modelled from his photograph and rigged) and ALL of its work are done on Fable 5.2 at max
+  effort ("Continue all of this in fable 5.2 max"): a session on another model does only the bookkeeping on it and asks
+  him to switch the session's model. Its plan is docs/V28.0-E4C5-PLAN.md (§0 his words, R1 on; §0.1 where it stands):
+  read it first. (v28.0)
 
 ### How the work is done and checked
 
@@ -410,7 +416,7 @@ that fits it, with the version it came from.
   reference photographs live on the working machine under a path git ignores (`masters/v26.0/ref/`), are described in
   words in the plan with their checksums in the research note, and are asked of him again if the machine is replaced. No
   part of a photograph that shows a face or a name is sent to a picture service, and nobody in one is copied into the
-  game (no face, no tattoo, no name, no group's badge). (v26.0)
+  game (no face, no tattoo, no name, no group's badge). (v26.0) His photograph of Master Zavier (20 Nov 2026, R5 of docs/V28.0-E4C5-PLAN.md), sent for his model to be made from it, is the one exception at his word: it goes to the picture services, cut out of its place; it is still never committed.
 
 ### Models and assets
 
@@ -571,7 +577,7 @@ that fits it, with the version it came from.
 - Shots look in at the subject, and whatever a shot looks straight at is built, never a flat painting. (v24.22)
 - A cutscene is skipped only by the Skip button or its keys, and only from 3.0 s. (v6.6)
 - A scene change happens in the black: place, warm and land everything before the black lifts. (v16.1)
-- The grown Master Zavier is never seen: no mirror, reflection or third-person shot shows him, because there is no model of him in the world (Chad: "it will then require a new master zavier model"; `zav` is the equipment panel's figure). Every shot is his eyes. (v24.56, the plan for episode 4 chapter 2)
+- The grown Master Zavier is never seen: no mirror, reflection or third-person shot shows him, because there is no model of him in the world (Chad: "it will then require a new master zavier model"; `zav` is the equipment panel's figure). Every shot is his eyes. (v24.56, the plan for episode 4 chapter 2) Lifted by him for episode 4 chapter 5's tag-team climax (20 Nov 2026, docs/V28.0-E4C5-PLAN.md R3 and R5): there Master Zavier is played in third person, his body made from his photograph.
 - A cramped interior gets a wider lens on a phone. (v24.21)
 - Frame and fade a rig by where its body actually is, not by its group's spot. (v24.4)
 - Lay a long thin strip near the lens in short lengths; it clips badly. (v22.3)
@@ -1439,7 +1445,8 @@ Chapter 4 (S1·13, case one: the woman who rose from her wheelchair) SHIPPED at 
 `6afddc6efa7e6ea6a460d180`, build 21j): her own HDB flat in Singapore, she speaks English, her family, Pho and the player in the
 room, the horror brought back, the holy-water fight, and SPIRIT VISION; **docs/V27.0-E4C4-BUILD.md** (its tracker: the
 log, and §11 every ask against the live build) and docs/V27.0-E4C4-PLAN.md (his words R1 to R40). Next: chapter 5
-(S1·14 and S1·15, cases two and three).
+(S1·14 and S1·15, cases two and three). Chapter 5 is being planned (20 Nov 2026, on Fable 5.2 at max effort only):
+**docs/V28.0-E4C5-PLAN.md**, his words R1 on and where it stands.
 The episode's plan, with what remains his to decide:
 **docs/V24.0-EPISODE4-PLAN.md** (its sixth draft; §0 what he decided, §1 the two episodes' two stories, §5 what is
 still his). S1·11 in two chapters (the master he did not know, who wears the original Sak Yant Ajarn's model; then the
