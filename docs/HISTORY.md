@@ -9458,7 +9458,12 @@ What the baseline contains, by release:
   Vision, and re-open it again." at the ring's red top and "When you feel better, open your Spirit Vision again." once a
   shut's strain has emptied; and the climax seen whole: from the rush to the fight's end his sight is held open, "Open it,
   now!" first and his sight opened for him if shut, a press of the eye refused with its words, his heart kept under the
-  red, by seam 50's new opt-in lock; sheet v152).
+  red, by seam 50's new opt-in lock; sheet v152); 54 (deploy `6b0057d136223e68209b030a`, 20 Nov: R133 to R136: the gold
+  sign over his teacher's bowl is the reload, a tap on it fills the bowl at once from anywhere in the room (the weapon
+  seam's new opt-in `reloadButton: false` and stage.reloadHits), the reload button gone, R from anywhere on a desktop
+  while a click stays the flick, each device's own words for it (`words.emptyTouch`), the altar's refusal gone, the
+  fight's objective in his words; sheet v153; my harness slip, five flicks' kick carried into the bed's test, found and
+  mended).
 
 ## The sheet, version by version
 
