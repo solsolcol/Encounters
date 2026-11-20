@@ -569,6 +569,22 @@ K.visionSeam = await p.evaluate(async () => {
   E.kit.vision({ r: 2, moving: true }); await frames(2);
   E.kit.vision(null);
   R.releaseHome = E.vision().dir === -1 && await poll(() => E.vision().r === 0, 90000);
+  /* (R131) a LOCK keeps his sight as it is: opened, then locked, a press of the eye (its button, and V) is refused (still
+     on, the switch count unmoved), the lock's own words said under the reticle, the eye lit as in use (`locked`, never the
+     dimmed `held`), and its wave left to run out (never held at a radius); kit.vision(false) lets it go and closes it */
+  E.kit.vision(true); E.kit.vision({ lock: true, why: 'fixture lock words' }); await frames(2);
+  const sw0 = E.vision().switches;
+  document.getElementById('visionBtn').click();
+  document.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyV', key: 'v', bubbles: true }));
+  await frames(2);
+  const s5 = E.kit.vision(), vb = document.getElementById('visionBtn'), nf = document.getElementById('nofire');
+  R.lockRefuses = s5.on === true && s5.held === true && E.vision().switches === sw0;
+  R.lockWords = !!nf && nf.textContent === 'fixture lock words';
+  R.lockLit = vb.classList.contains('locked') && vb.classList.contains('on') && !vb.classList.contains('held');
+  R.lockWaveRuns = await poll(() => E.vision().r > 3, 90000);
+  E.kit.vision(false); await frames(2);
+  R.lockLets = E.kit.vision().held === false && E.kit.vision().on === false && !vb.classList.contains('locked');
+  R.lockHome = await poll(() => E.vision().r === 0 && E.vision().dir === 0, 90000);
   window.__visionSeam = R;
   return Object.values(R).every(v => v === true);
 }).catch(() => false);
