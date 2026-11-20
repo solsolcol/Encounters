@@ -91,7 +91,9 @@ async function source(c) {
     await tapSel('#picClose');
     await until(() => window.__enc.getState() === 'play', 60000);
   }
-  const took = await until((c) => { const D = window.__enc.stage.dbg; return D.play.learned.has(c); }, 240000, c);
+  /* (a source's lines run on the story's clock, a quarter second at most a drawn frame: at one frame a second beside a
+     second browser, Ravi's two lines took 312 s of wall time on build 55) */
+  const took = await until((c) => { const D = window.__enc.stage.dbg; return D.play.learned.has(c); }, 900000, c);
   await until(() => !window.__enc.stage.dbg.play.busy, 240000);
   await until(() => window.__enc.getState() === 'play', 240000);
   await keepGoing();
