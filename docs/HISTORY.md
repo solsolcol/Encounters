@@ -9452,7 +9452,13 @@ What the baseline contains, by release:
   and the swirl remade from that record: soft blue orbs in mirror pairs and in over the edges, each on its own way in
   with a dotted train of copies, resting in a cloud as soft strokes, winding clockwise into a tightening whirlpool of
   arcs, a pinwheel of hooked blades, a lumpy white ball and a white flash that washes the screen and pulls back, the
-  amulet born in it at 3.22 s; blue and white as his video, gold one word).
+  amulet born in it at 3.22 s; blue and white as his video, gold one word); 53 (deploy `6b00017a3506104f9e82f193`, 20 Nov:
+  R126 to R132: the swirl in gold; the HUD's own reload sign bobbing over his teacher's bowl in its vision gold while the
+  water can be filled there; two new lines of Grandmaster Pho's on the strain, "You're losing control, close your Spirit
+  Vision, and re-open it again." at the ring's red top and "When you feel better, open your Spirit Vision again." once a
+  shut's strain has emptied; and the climax seen whole: from the rush to the fight's end his sight is held open, "Open it,
+  now!" first and his sight opened for him if shut, a press of the eye refused with its words, his heart kept under the
+  red, by seam 50's new opt-in lock; sheet v152).
 
 ## The sheet, version by version
 
