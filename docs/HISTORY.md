@@ -9463,7 +9463,10 @@ What the baseline contains, by release:
   seam's new opt-in `reloadButton: false` and stage.reloadHits), the reload button gone, R from anywhere on a desktop
   while a click stays the flick, each device's own words for it (`words.emptyTouch`), the altar's refusal gone, the
   fight's objective in his words; sheet v153; my harness slip, five flicks' kick carried into the bed's test, found and
-  mended).
+  mended); 55 (deploy `6b006a9dee00507e4802ff31`, 20 Nov: R137, the history "stuck on 4/5": reproduced in his order by
+  real taps, nothing locked, the fifth source (Appa's photograph) behind him with no mark on screen and nothing pointing
+  to it; with one source left the waypoint now points at it; and a tap on a person or a thing in the chapter now presses
+  it, the test having measured screen points against -1 to 1 so that only the badge ever worked).
 
 ## The sheet, version by version
 
