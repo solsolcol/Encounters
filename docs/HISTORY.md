@@ -9456,6 +9456,14 @@ What the baseline contains, by release:
 
 ## The sheet, version by version
 
+**v152, PUBLISHED 20 Nov 2026** (`masters/v27.0/masterz-text-v152.xlsx`): v151 with exactly three rows added (build 53):
+`e4c4.words.visionLocked` ("Your Spirit Vision stays open until the fight is over.", R131), `voice.ph4b8` ("When you feel
+better, open your Spirit Vision again.", 3.56 s, R128) and `voice.ph4b9` ("You're losing control, close your Spirit
+Vision, and re-open it again.", 5.05 s, R129). Id `1phoBe7d28pGmsx6g_akjMtlisFfIQxjX2GBq7QkHE9E`; v151 checked first
+(created 21:49:02.2, modified 21:49:03.2: the conversion itself, so no edit of his to carry over); read back tab by tab,
+10,574 cells compared, mismatched 0 (tools/sheetcmp.py).
+<https://docs.google.com/spreadsheets/d/1phoBe7d28pGmsx6g_akjMtlisFfIQxjX2GBq7QkHE9E/edit>
+
 **v151, PUBLISHED 19 Nov 2026** (`masters/v27.0/masterz-text-v151.xlsx`): v150 with exactly two cells changed (build 49,
 R112): `voice.ph4B0`'s words "[firm] Go." to "[fierce] Go away, now!" and its length 0.62 to 1.19 s. Id
 `1_EFB8Vn7ugoSqcHi3FSAI7MHYNrnXkRw3Mnuqvj7Rwk`; v150 checked first (created 15:48:32.4, modified 15:48:33.5: the conversion itself, so no edit of his to carry

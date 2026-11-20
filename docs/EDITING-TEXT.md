@@ -11,7 +11,11 @@ text comes up at all — the reply carries the full URL, not the version
 number alone. He reads these on his phone; a number he has to go hunting
 for in Drive is not a link.
 
-**THE CURRENT SHEET (19 Nov 2026): Master Z's Encounters — GAME TEXT v151 (edit here)**, id `1_EFB8Vn7ugoSqcHi3FSAI7MHYNrnXkRw3Mnuqvj7Rwk`
+**THE CURRENT SHEET (20 Nov 2026): Master Z's Encounters — GAME TEXT v152 (edit here)**, id `1phoBe7d28pGmsx6g_akjMtlisFfIQxjX2GBq7QkHE9E`
+(<https://docs.google.com/spreadsheets/d/1phoBe7d28pGmsx6g_akjMtlisFfIQxjX2GBq7QkHE9E/edit>; v151 and three rows,
+`e4c4.words.visionLocked` (the climax's lock, R131), `voice.ph4b8` and `voice.ph4b9` (Grandmaster Pho on the strain, R128
+and R129: build 53); 10,574 cells read back, mismatched 0; v151 checked first: created 21:49:02.2, modified 21:49:03.2,
+the conversion itself). The one before it, v151, id `1_EFB8Vn7ugoSqcHi3FSAI7MHYNrnXkRw3Mnuqvj7Rwk`
 (<https://docs.google.com/spreadsheets/d/1_EFB8Vn7ugoSqcHi3FSAI7MHYNrnXkRw3Mnuqvj7Rwk/edit>; v150 and two cells, `voice.ph4B0`'s words and length, "Go away,
 now!" (build 49, R112); 10,559 cells read back, mismatched 0; v150 checked first: created 15:48:32.4, modified 15:48:33.5,
 the conversion itself). The one before it, v150, id `1XNsCQrtmxmeJPLFp3KEH6scVC4gaGeBjKgoTnN7-O6w`
