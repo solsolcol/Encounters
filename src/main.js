@@ -12048,87 +12048,212 @@ function scFxClear() {
   const cv = $('scFx'), g = cv && cv.getContext('2d'); if (g) g.clearRect(0, 0, cv.width, cv.height);
 }
 /* (R122, Chad, 20 Nov: "Build the castlevania style, but save the current version first. I only want to see how the
-   castlevania option will look like"): THE SWIRL, the showcase's second way of gathering its light (`gather: 'swirl'`), as
-   measured from the boss's death in his own video (1:47): some three dozen comets of gold appear all over the screen, each a
-   white-hot head in a soft glow with its afterimages strung out behind it; they rush in, fast, and fall into one whirlpool
-   turning round the middle, quicker as it closes, its comets drawing together into seven arms, until it collapses into a
-   white-hot point and blooms: a soft wash of gold over the whole screen (gold, never a white flash: R39), the amulet born in
-   it. Every point a function of the showcase's own clock and seeded, so every showing is the same and a slow phone draws the
-   same picture as a fast one. Absent, the showcase gathers as it always has (build 50's lines, kept whole) */
-const SC_SW = { n: 36, arms: 7, Tc: 2.6, R0: 0.32, w0: 1.6, w1: 7.5, trail: 9, gap: 0.028, lag: 2.6, glint: 0.06 };
-const SC_SW_BIRTH = SC_SW.Tc + 0.06;
-function scSwirlDeep() {
-  if (scFx.deep) return scFx.deep;
-  const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
-  const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
-  gr.addColorStop(0, 'rgba(255,212,116,1)'); gr.addColorStop(0.35, 'rgba(255,166,48,0.55)'); gr.addColorStop(1, 'rgba(255,124,16,0)');
-  g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
-  return (scFx.deep = c);
+   castlevania option will look like"): the showcase's second way of gathering its light (`gather: 'swirl'`); build 51's
+   was gold comets spun into seven arms, and was not his video's (R123 to R125), so it is remade below from his frames */
+/* (R122 to R125, Chad, 20 Nov: "Build the castlevania style"; "it does not look like the castlevania one"; "It is too
+   simple. I suggest you really look at frame by frame of the castlevania animation"; "The trajectory of each streak is
+   different from yours"): THE SWIRL, rebuilt from every frame of his video (1:46.9 to 1:51.0, 150 frames read one by one,
+   cv/notes). Fourteen soft blue orbs appear at once all over the screen in seven mirror-image pairs, and more come in over
+   the edges; each flies on its OWN way to its own place round the middle (the corner ones slant in, the side ones cross
+   the screen level, the top ones drop, the bottom ones rise, one hooks out and back), fast at first and slowing, a train
+   of fading copies of itself strung out behind it along the way it came (where it was a few frames before, and before);
+   they come to rest in a loose cloud round the middle, the trains run into them and they swell into wisps; then the
+   cloud winds clockwise and draws in for two seconds, slowly at first and quicker as it closes, each wisp wandering in
+   curls with its copies behind it in thick soft ribbons; the ribbons close into a pinwheel of hooked blades, the pinwheel
+   into a white ball, and a white halo pops round the ball and doubles each frame until the whole screen is washed, then
+   pulls back from the edges to a small glow on what was born there. Blue and white, as in his video (`SC_SW.gold` paints
+   it gold). Every point is a function of the showcase's own clock: the same picture on every phone at every moment */
+const SC_SW = { birth: 3.22, glint: 0.06, N: 10, gold: false };
+const SC_SW_BIRTH = SC_SW.birth;
+/* the orbs, as his video has them: where each first shows (u, v: a share of the half-screen from the middle, so they fill
+   any screen; |v| over 1 comes in over an edge), where it comes to rest (sx, sy: a share of the shorter side from the
+   middle), how long it takes to get there (T, seconds), and how its way bends (a: where along it, b: how far aside, a
+   share of its length; + to the left of its way as it goes) */
+const SC_SW_ORB = [
+  //  u      v      sx     sy     T     a     b
+  [ 0.65, -0.85,  0.29, -0.06, 0.60, 0.45, -0.06],   // the top right corner, slanting down to the right of the middle
+  [-0.65, -0.84, -0.26, -0.13, 0.65, 0.30,  0.32],   // the top left corner: down first, then in to the right
+  [ 0.26, -0.66,  0.12, -0.21, 0.50, 0.50, -0.10],   // near the top, a little right: drops a short way, drifting left
+  [-0.26, -0.64, -0.10, -0.20, 0.55, 0.40, -0.18],   // near the top, a little left: in along the top, then down
+  [ 0.33, -0.04,  0.20, -0.10, 0.75, 0.55, -0.85],   // right of the middle: hooks up and out, then back in
+  [-0.33, -0.02,  0.17, -0.03, 1.00, 0.50,  0.06],   // left of the middle: crosses it level, to rest on the right
+  [ 0.73,  0.00, -0.23,  0.03, 1.00, 0.50, -0.08],   // the right side: crosses the whole screen level, to the left
+  [ 0.92,  0.01,  0.25,  0.12, 0.62, 0.40,  0.10],   // the right edge: down along the girder to the lower right
+  [-0.73,  0.03, -0.20,  0.06, 0.70, 0.40, -0.06],   // the left side: in level from the left
+  [-0.92, -0.03, -0.05, -0.09, 0.95, 0.45, -0.12],   // the left edge: a long way in, rising, to just above the middle
+  [ 0.26,  0.58,  0.08,  0.17, 0.55, 0.40, -0.25],   // low right: rises, curling in
+  [-0.26,  0.59, -0.03,  0.16, 0.55, 0.45,  0.22],   // low left: rises up and to the right
+  [ 0.67,  0.81,  0.13,  0.22, 0.80, 0.35,  0.18],   // the bottom right corner: along the bottom, then up
+  [-0.67,  0.79, -0.22,  0.15, 0.80, 0.40, -0.10],   // the bottom left corner: lingers, then in
+  [-0.48,  1.16, -0.02, -0.06, 0.90, 0.45, -0.10],   // in over the bottom edge, rising far to the middle
+  [-0.04,  1.16,  0.02,  0.23, 0.85, 0.50,  0.04],   // in over the bottom edge, rising slowly
+  [ 0.28,  1.16,  0.07,  0.20, 0.85, 0.50,  0.16],   // in over the bottom edge, up and to the left
+  [ 0.29, -1.16,  0.06, -0.26, 0.80, 0.50,  0.08],   // in over the top edge, dropping to the top of the cloud
+  [-0.07, -1.18, -0.05, -0.23, 0.85, 0.50, -0.05],   // in over the top edge, dropping
+  [ 1.16, -0.32,  0.24, -0.16, 0.80, 0.45, -0.12],   // in over the right edge
+  [-1.16,  0.40, -0.24, -0.18, 0.80, 0.45,  0.10],   // in over the left edge
+];
+function scSwirlSprites() {
+  if (scFx.swSpr && scFx.swSpr.gold === SC_SW.gold) return scFx.swSpr;
+  const G = SC_SW.gold;
+  /* the palette: his video's, measured (white-cyan cores, sky-blue bodies, blue rims, grey-lavender copies); or gold */
+  const P = G ? { core: '255,250,226', body: '255,214,128', rim: '232,150,48', lav: '214,170,110', sky: '255,196,96', deep: '200,120,30' }
+              : { core: '236,250,255', body: '128,198,240', rim: '58,110,196', lav: '100,150,205', sky: '96,176,234', deep: '40,86,170' };
+  const mk = (w, h, draw) => { const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h); return c; };
+  const blob = (g, x, y, r, stops) => { const gr = g.createRadialGradient(x, y, 0, x, y, r); for (const [o, c] of stops) gr.addColorStop(o, c); g.fillStyle = gr; g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill(); };
+  let sd = 0x51d0f00d; const rnd = () => ((sd = (Math.imul(sd, 1664525) + 1013904223) >>> 0) / 4294967296);
+  /* a square of soft light with a rounded, slightly spiky edge (the low-resolution sprite of his video, blurred) */
+  const square = (g, c, R, col, al) => {
+    g.fillStyle = `rgba(${col},${al})`; g.beginPath();
+    g.moveTo(c - R, c - R + 5); g.lineTo(c - R - 1.5, c - R - 1.5); g.lineTo(c - R + 5, c - R);
+    g.lineTo(c + R - 5, c - R); g.lineTo(c + R + 1.5, c - R - 1.5); g.lineTo(c + R, c - R + 5); g.lineTo(c + R, c + R - 5);
+    g.lineTo(c + R + 1.5, c + R + 1.5); g.lineTo(c + R - 5, c + R); g.lineTo(c - R + 5, c + R); g.lineTo(c - R - 1.5, c + R + 1.5);
+    g.lineTo(c - R, c + R - 5); g.closePath(); g.fill();
+  };
+  /* an ORB (his f18 to f39): a lumpy, boxy ball of light, white-cyan at its heart, sky blue round it, a blue rim */
+  const orb = mk(64, 64, (g) => {
+    g.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 5; i++) { const a = rnd() * 6.283, d = 3 + rnd() * 4; blob(g, 32 + Math.cos(a) * d, 32 + Math.sin(a) * d, 13 + rnd() * 5, [[0, `rgba(${P.body},0.42)`], [0.6, `rgba(${P.rim},0.3)`], [1, `rgba(${P.rim},0)`]]); }
+    g.filter = 'blur(3px)'; square(g, 31, 6, P.core, 0.75); g.filter = 'none';
+  });
+  /* a COPY, as it rushes in: a faint grey-lavender square with a bluer rim; and as it swirls: sky blue, a paler middle */
+  const copyL = mk(64, 64, (g) => { g.globalCompositeOperation = 'lighter'; g.filter = 'blur(4px)'; square(g, 32, 18, P.rim, 0.45); square(g, 32, 14, P.lav, 0.66); square(g, 32, 7, P.body, 0.25); g.filter = 'none'; });
+  const copyB = mk(64, 64, (g) => { g.globalCompositeOperation = 'lighter'; g.filter = 'blur(3.5px)'; square(g, 32, 17, P.deep, 0.5); square(g, 32, 13, P.sky, 0.66); square(g, 32, 7, P.body, 0.45); g.filter = 'none'; });
+  /* WISPS (his f40 to f51): the heads swollen into soft flames of light, a white heart along a bent spine, ragged edges,
+     holes and streaks; six of them, each its own shape */
+  const wisps = [];
+  for (let v = 0; v < 6; v++) wisps.push(mk(160, 48, (g) => {
+    /* a stroke three or four times as long as it is thick, bent (an S, a hook, a C), fat in its middle and thin at its
+       ends, pale cyan with a white streak along it and a blue fringe, its edge ragged (his f40 to f48) */
+    g.globalCompositeOperation = 'lighter';
+    const b1 = (rnd() - 0.5) * 22, b2 = (rnd() - 0.5) * 16 * (v % 2 ? 1 : -1);
+    const spine = (u) => [14 + u * 132, 24 + b1 * Math.sin(u * Math.PI) + b2 * Math.sin(u * Math.PI * 2)];
+    for (let i = 0; i < 60; i++) { const u = rnd(), [x, y] = spine(u), w = Math.pow(Math.sin(Math.PI * u), 0.7);
+      blob(g, x + (rnd() - 0.5) * 6, y + (rnd() - 0.5) * 6 * w, 3 + 9 * w * (0.7 + rnd() * 0.5), [[0, `rgba(${P.body},${0.16 + 0.12 * w})`], [0.6, `rgba(${P.rim},${0.1 * w})`], [1, `rgba(${P.rim},0)`]]); }
+    g.strokeStyle = `rgba(${P.core},0.5)`; g.lineCap = 'round';
+    for (let i = 0; i < 3; i++) { const o = (rnd() - 0.5) * 6, u0 = 0.15 + rnd() * 0.15, u1 = 0.65 + rnd() * 0.2; g.lineWidth = 2 + rnd() * 2.5; g.beginPath();
+      for (let u = u0; u <= u1; u += 0.03) { const [x, y] = spine(u); u === u0 ? g.moveTo(x, y + o) : g.lineTo(x, y + o); } g.stroke(); }
+    g.globalCompositeOperation = 'destination-out';
+    for (let i = 0; i < 3; i++) { const u = 0.2 + rnd() * 0.6, [x, y] = spine(u); blob(g, x + (rnd() - 0.5) * 10, y + (rnd() - 0.5) * 8, 2 + rnd() * 2.5, [[0, 'rgba(0,0,0,0.6)'], [1, 'rgba(0,0,0,0)']]); }
+    const c2 = document.createElement('canvas'); c2.width = 160; c2.height = 48; c2.getContext('2d').drawImage(g.canvas, 0, 0);
+    g.globalCompositeOperation = 'copy'; g.filter = 'blur(2px)'; g.drawImage(c2, 0, 0); g.filter = 'none'; g.globalCompositeOperation = 'source-over';
+  }));
+  /* a soft glow; and the BALL they close into (his f110): a lumpy white cloud with a thin cyan fringe */
+  const glow = mk(64, 64, (g) => blob(g, 32, 32, 32, [[0, `rgba(${P.core},0.9)`], [0.35, `rgba(${P.body},0.45)`], [1, `rgba(${P.rim},0)`]]));
+  const ball = mk(128, 128, (g) => {
+    g.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 11; i++) { const a = i / 11 * 6.283 + rnd() * 0.3, d = 24 + rnd() * 9; blob(g, 64 + Math.cos(a) * d, 64 + Math.sin(a) * d * 0.8, 13 + rnd() * 7, [[0, `rgba(${P.core},0.95)`], [0.7, `rgba(${P.core},0.6)`], [0.88, `rgba(${P.body},0.35)`], [1, `rgba(${P.rim},0)`]]); }
+    blob(g, 64, 64, 34, [[0, `rgba(${P.core},1)`], [0.85, `rgba(${P.core},0.9)`], [1, `rgba(${P.core},0)`]]);
+  });
+  return (scFx.swSpr = { gold: G, orb, copyL, copyB, wisps, glow, ball });
+}
+/* each orb's own constants, worked out once (seeded, so every showing is the same) */
+function scSwirlOrbs() {
+  if (scFx.swOrbs) return scFx.swOrbs;
+  let sd = 0x0b5eeded; const rnd = () => ((sd = (Math.imul(sd, 1664525) + 1013904223) >>> 0) / 4294967296);
+  return (scFx.swOrbs = SC_SW_ORB.map(([u, v, sx, sy, T, a, b], i) => ({ u, v, sx: sx * 0.8, sy: sy * 0.8, T, a, b,
+    A: 0.045 + rnd() * 0.03, wx: 3.4 + rnd() * 2.2, wy: 0.65 + rnd() * 0.5, px: rnd() * 6.283, py: rnd() * 6.283,
+    wv: i % 6, ws: 0.75 + rnd() * 0.55, ph: rnd() * 6.283, sz: 0.85 + rnd() * 0.3 })));
+}
+const scSwCl = (x) => Math.min(1, Math.max(0, x));
+const scSwSmo = (a, b, x) => { const u = scSwCl((x - a) / (b - a)); return u * u * (3 - 2 * u); };
+/* how far the cloud has drawn in (1 as they come to rest, a third by 2.95 s, a point at 3.1) and how far it has turned
+   (clockwise, slowly at first and quicker as it closes, as a whirlpool does: his f50 to f108, measured) */
+function scSwG(t) {
+  if (t <= 0.95) return 1;
+  if (t <= 2.95) return 1 - 0.35 * (t - 0.95);
+  return Math.max(0, 0.3 - 1.9 * (t - 2.95));
+}
+function scSwPhi(t) {
+  if (t <= 0.95) return 0;
+  const w0 = 0.12, k = 0.35;
+  if (t <= 2.95) return w0 / k * (1 / (1 - k * (t - 0.95)) - 1);
+  return w0 / k * (1 / 0.3 - 1) + 1.6 * (t - 2.95);
+}
+/* where an orb is at time t (t may be before 0: the way it was already coming, for the copies behind it) */
+function scSwPos(o, t, W, H, cx, cy, U) {
+  const x0 = cx + o.u * W / 2, y0 = cy + o.v * H / 2, x1 = cx + o.sx * U, y1 = cy + o.sy * U;
+  const dx = x1 - x0, dy = y1 - y0;
+  const qx = x0 + o.a * dx - o.b * dy, qy = y0 + o.a * dy + o.b * dx;
+  const s = 1 - Math.exp(-t * 1.6 / o.T);
+  let x = (1 - s) * (1 - s) * x0 + 2 * s * (1 - s) * qx + s * s * x1, y = (1 - s) * (1 - s) * y0 + 2 * s * (1 - s) * qy + s * s * y1;
+  /* the whirlpool: everything turned about the middle and drawn in towards it */
+  const g = scSwG(t), f = scSwPhi(t), c = Math.cos(f), sn = Math.sin(f);
+  const rx = (x - cx) * g, ry = (y - cy) * g;
+  x = cx + rx * c - ry * sn; y = cy + rx * sn + ry * c;
+  /* and its own wandering, in curls: none as it rushes in, a shimmer as it rests, curls while the cloud winds, the curls
+     drawn in with the cloud and stilled as it closes into the pinwheel */
+  const e = 0.12 + 0.88 * scSwSmo(0.85, 1.3, t), k = e * Math.pow(g, 1.6) * (1 - 0.85 * scSwSmo(2.25, 2.8, t)) * (t > 0 ? scSwSmo(0.35, 0.8, t) : 0);
+  const wa = o.wx * t + o.px; x += U * o.A * k * Math.cos(wa); y += U * o.A * o.wy * k * Math.sin(wa);
+  return [x, y];
+}
+/* how far behind each copy is (seconds): a train a third of a second long as they rush in, run into the head as they
+   rest, and drawn out again into ribbons as the cloud winds */
+function scSwLag(t) {
+  if (t < 0.45) return 0.08;
+  if (t < 0.8) return 0.08 - 0.06 * scSwSmo(0.45, 0.8, t);
+  if (t < 0.95) return 0.02;
+  return 0.02 + 0.04 * scSwSmo(0.95, 1.35, t) - 0.015 * scSwSmo(2.4, 3.0, t);
 }
 function scSwirl(g, t, W, H, cx, cy, dot) {
-  const C = SC_SW, Tc = C.Tc, Sm = Math.min(W, H), TAU = Math.PI * 2, ARM = TAU / C.arms;
-  if (!scFx.comets || scFx.comets.W !== W || scFx.comets.H !== H) {
-    /* (seeded on a grid over the whole screen, so they appear everywhere on any screen; each comet's arm dealt out by where
-       it falls into the whirlpool, five or six to an arm) */
-    let sd = 0x2b0b5eed;
-    const rnd = () => ((sd = (Math.imul(sd, 1664525) + 1013904223) >>> 0) / 4294967296);
-    const L = Array.from({ length: C.n }, (_, i) => ({ u: 0.03 + 0.94 * ((i % 6) + 0.1 + rnd() * 0.8) / 6, v: 0.03 + 0.94 * (Math.floor(i / 6) + 0.1 + rnd() * 0.8) / 6,
-      th: 0.7 + rnd() * 0.9, f: rnd(), ta: 0.04 + rnd() * 0.32, D: 0.62 + rnd() * 0.3, k: 0.72 + rnd() * 0.56, ph: rnd() * TAU, sz: 0.8 + rnd() * 0.4, sp: (rnd() - 0.5) * 0.24 }));
-    for (const c of L) { c.h = Math.atan2((c.v - 0.5) * H, (c.u - 0.5) * W) + c.th; c.h -= Math.floor(c.h / TAU) * TAU; }
-    const by = L.slice().sort((x, y) => x.h - y.h);
-    by.forEach((c, r) => { c.j = Math.floor(r * C.arms / C.n); });
-    let bx = 0, byy = 0; for (const c of L) { bx += Math.cos(c.h - c.j * ARM); byy += Math.sin(c.h - c.j * ARM); }
-    const base = Math.atan2(byy, bx);
-    for (const c of L) { let o = base + c.j * ARM - c.h; o -= Math.round(o / TAU) * TAU; c.arm = o + c.sp; }
-    L.W = W; L.H = H; scFx.comets = L;
-  }
-  const cl = (x) => Math.min(1, Math.max(0, x));
-  const smo = (a, b, x) => { const u = cl((x - a) / (b - a)); return u * u * (3 - 2 * u); };
-  const Phi = (q) => C.w0 * q + (C.w1 - C.w0) * q * q * q / (3 * Tc * Tc);
-  const Rsw = (q) => Sm * C.R0 * (1 - Math.pow(cl((q - 0.9) / (Tc - 0.9)), 2.2));   // (held, then closing, quicker and quicker, to nothing)
-  const pos = (c, q) => {
-    const u = cl((q - c.ta) / c.D), e = 0.45 * u * (1 - u) * (1 - u) + 3 * u * u * (1 - u) + u * u * u, p = smo(1.1, Tc - 0.35, q);
-    const dx = (c.u - 0.5) * W, dy = (c.v - 0.5) * H, a0 = Math.atan2(dy, dx), r0 = Math.max(Math.hypot(dx, dy), Sm * (0.3 + 0.1 * c.f));
-    const ro = Rsw(q) * (1 + (c.k - 1) * (1 - 0.75 * p) + 0.05 * Math.sin(2.1 * q + c.ph) * (1 - p));
-    const r = r0 + (ro - r0) * e, a = a0 + (c.th + c.arm * p + Phi(q)) * e;
-    return [cx + Math.cos(a) * r, cy + Math.sin(a) * r];
-  };
-  const deep = scSwirlDeep();
-  const glow = (x, y, r, al) => { if (al <= 0.003) return; g.globalAlpha = Math.min(1, al); const s2 = r * 6; g.drawImage(deep, x - s2 / 2, y - s2 / 2, s2, s2); };
-  g.lineCap = 'round';
-  for (const c of scFx.comets) {
-    if (t <= c.ta) continue;
-    const end = 1 - smo(Tc - 0.03, Tc + 0.08, t); if (end <= 0) continue;
-    const s = c.sz * Sm, p = smo(1.1, Tc - 0.35, t), pl = smo(1.0, 1.6, t), arr = c.ta + c.D;   // (pl: its afterimages left further out the older they are, so each arm of the whirlpool curls out behind its head)
-    let px = 0, py = 0, on = false;
-    /* its afterimages, oldest first, strung on a thread of its own light (a wide soft pass and its bright core); strobed as it
-       rushes in, a smooth arc once it is turning in the whirlpool; then its head */
-    for (let k = C.trail; k >= 0; k--) {
-      const q = t - k * C.gap; if (q <= c.ta) continue;
-      const [x0, y0] = pos(c, q), lg = 1 + C.lag * (t - q) * pl, x = cx + (x0 - cx) * lg, y = cy + (y0 - cy) * lg;
-      const f = 1 - k / (C.trail + 1), al = smo(c.ta, c.ta + 0.14, q) * end, st = 1 - smo(arr - 0.25 * c.D, arr + 0.3, q);
-      if (on) {
-        g.globalAlpha = Math.min(1, 0.26 * f * al); g.strokeStyle = 'rgba(255,150,40,1)'; g.lineWidth = s * 0.034 * (0.35 + 0.65 * f);
-        g.beginPath(); g.moveTo(px, py); g.lineTo(x, y); g.stroke();
-        g.globalAlpha = Math.min(1, (0.45 + 0.4 * (1 - st)) * f * al); g.strokeStyle = 'rgba(255,224,150,1)'; g.lineWidth = s * 0.012 * (0.35 + 0.65 * f);
-        g.beginPath(); g.moveTo(px, py); g.lineTo(x, y); g.stroke();
+  const SP = scSwirlSprites(), OR = scSwirlOrbs(), U = Math.min(W, H), N = SC_SW.N;
+  const draw = (img, x, y, s, a) => { if (a <= 0.004) return; g.globalAlpha = Math.min(1, a); g.drawImage(img, x - s / 2, y - s / 2, s, s); };
+  const life = scSwSmo(0, 0.04, t) * (1 - scSwSmo(3.0, 3.1, t));
+  if (life > 0) {
+    const lag = scSwLag(t), wb = scSwSmo(0.8, 1.2, t), late = scSwSmo(1.9, 2.7, t), wisp = scSwSmo(0.6, 0.85, t) * (1 - scSwSmo(1.15, 1.5, t));
+    const close = 1 - 0.62 * scSwSmo(2.3, 2.95, t);   // (as they crowd into the pinwheel each is dimmer, so it stays blue-white: his f96 to f108)
+    for (const o of OR) {
+      /* the train of copies, oldest first: each where the orb was k steps ago; a step a frame they come into being at the
+         start; grey-lavender and faint as they rush in, sky blue and stronger as they swirl */
+      for (let k = N; k >= 1; k--) {
+        const tk = 0.03 * k * (1 + 0.1 * k); if (t < tk) continue;
+        const [x, y] = scSwPos(o, t - k * lag, W, H, cx, cy, U);
+        const f = 1 - (k - 1) / N, al = life * scSwSmo(tk, tk + 0.04, t);
+        const aL = (k === 1 ? 1 : 0.62) * (0.6 + 0.4 * f), aB = (0.36 + 0.1 * late) * (0.5 + 0.5 * f) * (0.55 + 0.45 * scSwG(t)) * close;
+        const s = U * o.sz * (0.078 + 0.008 * wb + 0.008 * late);
+        if (wb < 1) draw(SP.copyL, x, y, s, al * aL * (1 - wb));
+        if (wb > 0) draw(SP.copyB, x, y, s, al * aB * wb);
       }
-      if (k) { if (st > 0.01) { glow(x, y, s * 0.012 * (0.5 + 0.5 * f), 0.5 * f * f * al * st); dot(x, y, s * 0.0075 * (0.5 + 0.5 * f), 0.75 * f * f * al * st); } }
-      else { glow(x, y, s * 0.022 * (1 - 0.5 * p), 0.6 * al * (1 - 0.45 * p)); dot(x, y, s * 0.014 * (1 - 0.3 * p), al); dot(x, y, s * 0.007, al); }
-      px = x; py = y; on = true;
+      /* the head: an orb as it rushes in; a wisp of flame as it rests (along its way, swollen); a small bright head of
+         its ribbon as it swirls */
+      const [x, y] = scSwPos(o, t, W, H, cx, cy, U);
+      const s = U * o.sz * 0.095;
+      draw(SP.glow, x, y, s * 1.6, life * (0.22 + 0.15 * late) * (1 - 0.6 * wb) * close);
+      draw(SP.orb, x, y, s * (1 - 0.35 * wb), life * (0.9 - 0.85 * wisp) * (1 - 0.5 * wb) * close);
+      const gl = life * scSwSmo(0.25, 0.4, t) * (1 - scSwSmo(1.0, 1.3, t)) * (o.wv % 3 === 0 ? 1 : 0);
+      if (gl > 0) {
+        const tw = 0.55 + 0.45 * Math.sin(o.ph * 3 + t * 17), L = U * 0.03 * (0.7 + 0.3 * tw);
+        g.globalAlpha = Math.min(1, 0.45 * gl * tw); g.strokeStyle = SC_SW.gold ? 'rgba(255,240,200,1)' : 'rgba(225,245,255,1)'; g.lineWidth = Math.max(1, U * 0.004);
+        g.beginPath(); g.moveTo(x - L, y); g.lineTo(x + L, y); g.moveTo(x, y - L); g.lineTo(x, y + L); g.stroke();
+      }
+      if (wisp > 0) {
+        const [xa, ya] = scSwPos(o, t - 0.06, W, H, cx, cy, U), an = Math.atan2(y - ya, x - xa) + 0.6 * Math.sin(o.ph + 2.3 * t);
+        const ww = U * o.ws * (0.14 + 0.07 * scSwSmo(0.6, 1.0, t)), wh = ww * 0.4;
+        g.save(); g.translate(x, y); g.rotate(an); g.globalAlpha = Math.min(1, life * wisp);
+        g.drawImage(SP.wisps[o.wv], -ww * 0.75, -wh / 2, ww, wh); g.restore();
+      }
     }
   }
-  /* where they fall: a white-hot point as they meet; and the bloom, gold washed over the whole screen, quick to come and
-     slow to go, the amulet born in it (its birth, shell.html: #showcase.sw) */
-  const m = smo(Tc - 0.34, Tc, t) * (1 - smo(Tc + 0.06, Tc + 0.45, t));
-  if (m > 0) { glow(cx, cy, Sm * (0.02 + 0.05 * m), 0.8 * m); dot(cx, cy, Sm * (0.01 + 0.022 * m), m); }
-  const wa = smo(Tc - 0.04, Tc + 0.06, t) * (1 - smo(Tc + 0.06, Tc + 0.6, t));
-  if (wa > 0) {
-    const gr = g.createRadialGradient(cx, cy, 0, cx, cy, Math.hypot(W, H) / 2);
-    gr.addColorStop(0, 'rgba(255,242,204,1)'); gr.addColorStop(0.22, 'rgba(255,226,160,0.9)'); gr.addColorStop(0.6, 'rgba(255,210,128,0.74)'); gr.addColorStop(1, 'rgba(255,196,104,0.64)');
-    g.globalAlpha = 0.85 * wa; g.fillStyle = gr; g.fillRect(0, 0, W, H);
-    const b = smo(Tc - 0.04, Tc + 0.35, t);
-    glow(cx, cy, Sm * (0.05 + 0.12 * b), wa); dot(cx, cy, Sm * (0.03 + 0.05 * b), wa);
+  const hc = scSwSmo(1.7, 2.9, t) * (1 - scSwSmo(3.0, 3.12, t));
+  if (hc > 0) { draw(SP.glow, cx, cy, U * (0.16 - 0.04 * hc), 0.4 * hc); draw(SP.orb, cx, cy, U * 0.1, 0.32 * hc); }
+  /* the ball they close into, white, swelling a little, gone into the flash */
+  const bl = scSwSmo(2.88, 3.05, t) * (1 - scSwSmo(3.12, 3.24, t));
+  if (bl > 0) { draw(SP.ball, cx, cy, U * (0.15 + 0.06 * scSwSmo(2.9, 3.1, t)), bl); draw(SP.glow, cx, cy, U * 0.3, 0.5 * bl); }
+  /* THE FLASH (his f111 to f120, measured): a white halo pops round the ball (a fifth of the screen's height), doubles,
+     doubles again, washes the whole screen (brightest in the middle) for two frames, then pulls back from the edges to a
+     glow round the middle and a small one, gone by 3.44 s */
+  const FK = [[3.07, 0, 0, 0], [3.09, 0.20, 0.7, 0], [3.12, 0.40, 0.7, 0], [3.155, 0.70, 0.66, 0.02], [3.19, 1.30, 0.6, 0.12],
+              [3.225, 1.50, 0.55, 0.3], [3.265, 1.50, 0.55, 0.3], [3.295, 1.10, 0.6, 0.1], [3.33, 0.42, 0.7, 0],
+              [3.365, 0.13, 0.8, 0], [3.40, 0.09, 0.6, 0], [3.44, 0.07, 0, 0]];
+  if (t > FK[0][0] && t < FK[FK.length - 1][0]) {
+    let i = 0; while (FK[i + 1][0] < t) i++;
+    const A = FK[i], B = FK[i + 1], q = (t - A[0]) / (B[0] - A[0]), lerp = (j) => A[j] + (B[j] - A[j]) * q;
+    const R = Math.max(1, lerp(1) * U), Ic = lerp(2), Iu = lerp(3), col = SC_SW.gold ? '255,236,190' : '255,252,246';
+    const gr = g.createRadialGradient(cx, cy, 0, cx, cy, R);
+    for (const x of [0, 0.15, 0.3, 0.45, 0.6, 0.75, 0.9, 1]) gr.addColorStop(x, `rgba(${col},${Math.min(1, Iu + Ic * Math.pow(1 - x, 1.1))})`);
+    g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; g.fillStyle = gr;
+    if (Iu > 0) g.fillRect(0, 0, W, H); else { g.beginPath(); g.arc(cx, cy, R, 0, Math.PI * 2); g.fill(); }
+    g.globalCompositeOperation = 'lighter';
   }
 }
 function scFxFrame(t, dur) {
@@ -12435,7 +12560,7 @@ function showcaseOpen(id, opts) {
   const el = $('showcase'); if (!el) return false;
   clearTimeout(unl.outT);
   unl.id = id; unl.onClose = typeof opts.onClose === 'function' ? opts.onClose : null; unl.show = true;
-  /* (R122) `gather: 'swirl'`: the light gathers the Castlevania way (scSwirl), 1.33 s longer to its birth (SC_SW_BIRTH), the
+  /* (R122) `gather: 'swirl'`: the light gathers the Castlevania way (scSwirl), 1.89 s longer to its birth (SC_SW_BIRTH), the
      page's own parts of it held back to match (#showcase.sw, shell.html); `bloomSound` is played `bloomLead` seconds before
      its bloom (the chapter's own sound, named by it). Absent, it gathers as it always has */
   unl.sw = opts.gather === 'swirl';

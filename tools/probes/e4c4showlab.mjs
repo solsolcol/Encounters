@@ -21,6 +21,10 @@ await p.goto(PAGE + '?ch=e4c4', { waitUntil: 'load', timeout: 240000 });
 await p.waitForFunction(() => !!window.__enc, null, { timeout: 120000 });
 await p.evaluate(() => document.getElementById('startBtn').click());
 await toPlay(p, 1500000); await p.waitForTimeout(3000);
+/* (R123: VISION=1 opens his sight first, the pale picture the fight is mostly seen in; BG=1 photographs the room before the
+   showcase opens, the plain background a drawn effect is designed on) */
+if (process.env.VISION === '1') { await p.evaluate(() => window.__enc.kit.vision(true)); await p.waitForTimeout(6000); }
+if (process.env.BG === '1') await p.screenshot({ path: `${OUT}/bg.png`, timeout: 240000 });
 /* (R122: the page's own animations slowed one by one, the moment each exists, as the gold probe has done since build 48;
    NOT through the browser's animation domain, whose playback rate slows the frame clock as well: the frame's time stood
    behind the page's, the showcase's drawn light is timed by it, and every frame this probe read came out blank. CSS=0

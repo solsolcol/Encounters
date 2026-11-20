@@ -9446,7 +9446,13 @@ What the baseline contains, by release:
   36 gold comets with white-hot heads and strobed afterimages appear all over the screen, rush into one whirlpool that
   closes into a seven-arm pinwheel, collapse into a white-hot point and bloom in a soft gold wash, the amulet born in it
   1.33 s later than before; its two sounds, a glitter of small bells and a run that lands on a major chord at the bloom
-  (`bloomSound`, `bloomLead`); the chapter's SHOW_GATHER says 'swirl', and 'lines' puts build 50's back, kept whole).
+  (`bloomSound`, `bloomLead`); the chapter's SHOW_GATHER says 'swirl', and 'lines' puts build 50's back, kept whole);
+  52 (deploy `6affebcd891af3cdbc9b2e24`, 20 Nov: R123 to R125, "it does not look like the castlevania one", "look at
+  frame by frame", "The trajectory of each streak is different from yours": every frame of his video read full size
+  and the swirl remade from that record: soft blue orbs in mirror pairs and in over the edges, each on its own way in
+  with a dotted train of copies, resting in a cloud as soft strokes, winding clockwise into a tightening whirlpool of
+  arcs, a pinwheel of hooked blades, a lumpy white ball and a white flash that washes the screen and pulls back, the
+  amulet born in it at 3.22 s; blue and white as his video, gold one word).
 
 ## The sheet, version by version
 

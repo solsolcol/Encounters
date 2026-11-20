@@ -6882,19 +6882,20 @@
        into the holy water */
     const WAVE_GOLD = { color: 0xffc552, secs: 3.2, reach: 14, trail: 0.12 };
     /* (R122, Chad, 20 Nov: "Build the castlevania style, but save the current version first. I only want to see how the
-       castlevania option will look like"): HOW ITS LIGHT GATHERS. 'swirl', the Castlevania way, as measured from the boss's
-       death in his video: comets of gold all over the screen rush into one whirlpool that closes into a pinwheel and blooms,
-       the amulet born in the bloom (the engine's scSwirl), with its own two sounds: a glitter of small bells through the
-       whirlpool, and a run rising into one held chord that lands on the bloom (u4swbloom lands 1.0 s in: bloomLead). It is
-       born 1.33 s later than build 50's, so the showcase is 1.33 s longer and the hover keeps its length. 'lines' is build
-       50's gathering, kept whole (deploy 6aff6c8fd102a95fa284455d): one word puts it back */
+       castlevania option will look like"): HOW ITS LIGHT GATHERS. 'swirl', the Castlevania way, remade from every frame of
+       his video (R123 to R125): soft blue orbs all over the screen, each on its own way in with a train of copies behind it,
+       resting in a cloud, winding into a whirlpool that closes into a pinwheel, a white ball and a white flash, the amulet
+       born in the flash (the engine's scSwirl), with its own two sounds: a glitter of small bells through the whirlpool,
+       and a run rising into one held chord that lands on the flash (u4swbloom lands 1.0 s in: bloomLead). It is born 1.89 s
+       later than build 50's, so the showcase is 1.89 s longer and the hover keeps its length. 'lines' is build 50's
+       gathering, kept whole (deploy 6aff6c8fd102a95fa284455d): one word puts it back */
     const SHOW_GATHER = 'swirl';
     function showAmulet() {
       const F = play.fight; if (!F || !F.on) return;
       F.call = 'shown'; F.urge = null; F.released = false; if (kit && kit.visionUrge) kit.visionUrge(false);
       const go = () => { if (play.fight === F && F.on) goldBegin(); };
       const release = () => { if (play.fight !== F) return; F.released = true; if (kit && kit.wave) kit.wave(WAVE_GOLD); };
-      const how = SHOW_GATHER === 'swirl' ? { gather: 'swirl', auto: 6.91, gatherSound: 'u4swglint', bloomSound: 'u4swbloom', bloomLead: 1.0 }
+      const how = SHOW_GATHER === 'swirl' ? { gather: 'swirl', auto: 7.47, gatherSound: 'u4swglint', bloomSound: 'u4swbloom', bloomLead: 1.0 }
                                           : { auto: 5.58, gatherSound: 'u4goldgather' };
       if (!(kit && kit.unlock && kit.unlock('amulet', Object.assign({ showcase: true, sound: 'u4goldcall', releaseSound: 'u4goldpower', onRelease: release, onClose: go,
                                                    hoverSound: 'u4goldhover', intoSound: 'u4golddive', mergeSound: 'u4goldmerge' }, how)))) go();
