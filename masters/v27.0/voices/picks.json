@@ -3433,5 +3433,113 @@
     "heard": "Not yet. First, we listen."
    }
   }
+ },
+ "ph4b8": {
+  "who": "pho",
+  "text": "[gentle] When you feel better, open your Spirit Vision again.",
+  "pick": "a",
+  "why": "the only clean and whole take",
+  "med": 3.48,
+  "takes": {
+   "a": {
+    "len": 3.6,
+    "first": 0.0,
+    "last": 3.46,
+    "e_first": 0.1,
+    "e_last": 3.58,
+    "tail_db": -34.7,
+    "tail_rel": -20.8,
+    "hole": 0.5,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.59,
+    "heard": "When you feel better, open your Spirit Vision again."
+   },
+   "b": {
+    "len": 3.52,
+    "first": 0.0,
+    "last": 3.44,
+    "e_first": 0.2,
+    "e_last": 3.5,
+    "tail_db": -25.5,
+    "tail_rel": -11.3,
+    "hole": 0.46,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": false,
+    "wps": 2.73,
+    "heard": "When you feel better, open your Spirit Vision again."
+   },
+   "c": {
+    "len": 3.6,
+    "first": 0.0,
+    "last": 3.54,
+    "e_first": 0.08,
+    "e_last": 3.58,
+    "tail_db": -24.3,
+    "tail_rel": -10.2,
+    "hole": 0.44,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": false,
+    "wps": 2.57,
+    "heard": "When you feel better, open your Spirit Vision again."
+   }
+  }
+ },
+ "ph4b9": {
+  "who": "pho",
+  "text": "[firm] You're losing control, close your Spirit Vision, and re-open it again.",
+  "pick": "a",
+  "why": "the unhurried read",
+  "med": 4.74,
+  "takes": {
+   "a": {
+    "len": 5.04,
+    "first": 0.0,
+    "last": 4.9,
+    "e_first": 0.0,
+    "e_last": 5.02,
+    "tail_db": -26.4,
+    "tail_rel": -12.5,
+    "hole": 0.58,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.39,
+    "heard": "You're losing control, close your Spirit Vision, and re -open it again."
+   },
+   "b": {
+    "len": 4.88,
+    "first": 0.0,
+    "last": 4.74,
+    "e_first": 0.12,
+    "e_last": 4.86,
+    "tail_db": -31.9,
+    "tail_rel": -17.8,
+    "hole": 0.54,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.53,
+    "heard": "You're losing control, close your Spirit Vision, and re -open it again."
+   },
+   "c": {
+    "len": 4.8,
+    "first": 0.0,
+    "last": 4.68,
+    "e_first": 0.06,
+    "e_last": 4.78,
+    "tail_db": -25.2,
+    "tail_rel": -10.0,
+    "hole": 0.48,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.54,
+    "heard": "You're losing control, close your Spirit Vision, and re -open it again."
+   }
+  }
  }
 }

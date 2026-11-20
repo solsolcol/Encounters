@@ -3958,7 +3958,7 @@ function visionToggle() {
    another line was speaking, and his own line could not be said; so the shut came with no reason. A press says it again,
    with the buzz and the eye shaken once) */
 function visionHeldSay(begun) {
-  const w = CH && CH.words && CH.words.visionHeld;
+  const w = (vis.held && vis.held.why) || (CH && CH.words && CH.words.visionHeld);
   weaponBlockSay(w || T('hud.visionHeld'), !!begun);
   if (begun) return;
   const vb = $('visionBtn');
@@ -3971,7 +3971,7 @@ function visionFrame() {
   if (!vis.decl) return;
   const d = vis.decl;
   if (vis.freeze) { /* (R105) a probe's still: the wave stands where it was put */ }
-  else if (vis.held) { vis.r = Math.max(0, +vis.held.r || 0); vis.dir = vis.held.moving ? 1 : 0; vis.ldir = 0; }
+  else if (vis.held && !vis.held.lock) { vis.r = Math.max(0, +vis.held.r || 0); vis.dir = vis.held.moving ? 1 : 0; vis.ldir = 0; }
   else if (vis.dir > 0) {
     vis.t += dt;
     const u = Math.min(1, vis.t / d.outSecs);
@@ -3983,7 +3983,7 @@ function visionFrame() {
     vis.r = d.rmax * visCurve(1 - u);
     if (u >= 1) { vis.dir = 0; vis.r = 0; }
   }
-  if (!vis.freeze && !vis.held) vis.wt += dt;
+  if (!vis.freeze && !(vis.held && !vis.held.lock)) vis.wt += dt;
   /* how open he is, for the blur, the vignette, the sound and the heart's beat: the room's first six metres */
   vis.k = Math.max(0, Math.min(1, vis.r / 6));
   /* the beat fades with the vision and stops once the heart has settled */
@@ -3993,7 +3993,7 @@ function visionFrame() {
     else if (kitPulse) kitPulse.vol = (h.vol == null ? 0.55 : h.vol) * Math.max(0.25, vis.k);
   }
 }
-function visionActive() { return !!vis.decl && (vis.on || vis.r > 0.0005 || !!vis.held); }
+function visionActive() { return !!vis.decl && (vis.on || vis.r > 0.0005 || (!!vis.held && !vis.held.lock)); }
 /* v27.0 · THE FIFTY-SEVENTH SEAM: A WAVE OF LIGHT IN A COLOUR (Chad, 18 Nov: his amulet "empowers with a golden glow that
    spreads throughout the scene, tracing every item and silhouette similar to how the spirit vision works"). kit.wave({
    color, secs, reach, trail }) sends a front of light out from his eye through the world, `reach` metres in `secs`
@@ -4070,7 +4070,11 @@ function ctxSpiritAura(obj, opts = {}) {
 function kitVision(v) {
   if (!vis.decl) return null;
   if (v === undefined) return { on: vis.on, r: vis.r, k: vis.k, dir: vis.dir, held: !!vis.held };
-  if (v && typeof v === 'object') { vis.held = { r: +v.r || 0, moving: !!v.moving }; return true; }
+  /* (R131, Chad, 20 Nov: "do not allow the player to turn off spirit vision at the climax all the way till the end") a hold
+     may be a LOCK, `{ lock: true, why }`: his sight kept as it is (the chapter opens it first) with its wave left to run,
+     his switch refused with `why` said (or words.visionHeld), the eye in its own look; a hold without `lock` is as it was */
+  if (v && typeof v === 'object') { vis.held = v.lock ? { r: 0, moving: false, lock: true, why: typeof v.why === 'string' ? v.why : null }
+                                                      : { r: +v.r || 0, moving: !!v.moving }; return true; }
   if (v === null) { vis.held = null; visResume(); return true; }
   vis.held = null;
   const ok = visionSet(!!v, false);
@@ -7715,7 +7719,9 @@ function kitFrame(dt, t, dLookX, dLookY) {
     if (vb) { vb.classList.toggle('urge', visUrge === 'open' && !vis.on && !vis.held && state === 'play');
               vb.classList.toggle('urgeClose', visUrge === 'close' && vis.on && !vis.held && state === 'play');
               /* (18 Nov) held shut by the chapter: the eye dimmed and still; a press says why (visionHeldSay) */
-              vb.classList.toggle('held', !!vis.held && state === 'play');
+              vb.classList.toggle('held', !!vis.held && !vis.held.lock && state === 'play');
+              /* (R131) held OPEN by the chapter (a lock): the eye stays lit as in use; a press shakes it and says why */
+              vb.classList.toggle('locked', !!vis.held && !!vis.held.lock && state === 'play');
               /* (seam 59) the strain of his sight: its ring filled by the chapter's share, red from its mark, beating when full;
                  the ring's fill written only when it moves */
               const sOn = visStrain !== null && state === 'play';
@@ -7725,7 +7731,8 @@ function kitFrame(dt, t, dLookX, dLookY) {
                   if (visStrainEl) visStrainEl.style.strokeDashoffset = (VIS_STRAIN_C * (1 - k)).toFixed(2); }
                 vb.classList.toggle('strainHot', visStrain >= visStrainWarn); vb.classList.toggle('strainFull', visStrain >= 1); }
               else if (visStrainDrawn !== -1) { visStrainDrawn = -1; vb.classList.remove('strainHot', 'strainFull'); } }
-    if (vis.held && state === 'play') { if (!vis.heldSaid) { vis.heldSaid = true; visionHeldSay(true); } } else vis.heldSaid = false; }
+    if (vis.held && state === 'play') { if (!vis.heldSaid) { vis.heldSaid = true; visionHeldSay(true); } }
+    else if (!(vis.held && vis.held.lock)) vis.heldSaid = false; }   // (a lock's words once as it begins, not again after a panel)
   lifeFrame();       // v27.0 (seam 54): a life in his keeping, its bar over them
   edgeTick();        // v27.0 (seam 56): a glow at the edges of his sight
   /* v11.7 (Chad: "why does the torch icon draw over every ui element?"): the
@@ -10355,10 +10362,10 @@ const CAST_TAKES = new Set(['v2ma', 'v4ma1', 'v4ma2', 'v4ma3', 'v5ma1', 'v5ma2',
   /* E4C4 CAST BEGIN: v27.0, episode 4 chapter 4: Grandmaster Pho, Amma, Ravi, Mala (masters/v27.0/voices/registry.py) */
   'rv4o1', 'ph4h0', 'rv4h1', 'rv4h2', 'ml4h1', 'ml4h2', 'ml4h3', 'am4h1', 'ph4h1', 'ph4h2',
   'ph4s0', 'ph4s1', 'ph4s2', 'ph4s3', 'ph4s4', 'ph4b0', 'ph4b1', 'ph4b2', 'ph4b3', 'ph4b4',
-  'ph4b5', 'ph4b6', 'ph4b7', 'ph4f1', 'rv4f1', 'ph4f2', 'ph4f3', 'ml4t1', 'ml4t2', 'rv4t1',
-  'rv4A1', 'ml4A1', 'am4A1', 'rv4A2', 'ph4A1', 'ml4B1', 'ph4B0', 'ml4B2', 'ml4B3', 'ph4B1',
-  'rv4C1', 'am4C1', 'ph4C1', 'ph4D0', 'rv4D1', 'ph4D1', 'rv4R1', 'ml4R1', 'ph4z0', 'ml4z1',
-  'am4z1', 'ph4z1',
+  'ph4b5', 'ph4b6', 'ph4b7', 'ph4b8', 'ph4b9', 'ph4f1', 'rv4f1', 'ph4f2', 'ph4f3', 'ml4t1',
+  'ml4t2', 'rv4t1', 'rv4A1', 'ml4A1', 'am4A1', 'rv4A2', 'ph4A1', 'ml4B1', 'ph4B0', 'ml4B2',
+  'ml4B3', 'ph4B1', 'rv4C1', 'am4C1', 'ph4C1', 'ph4D0', 'rv4D1', 'ph4D1', 'rv4R1', 'ml4R1',
+  'ph4z0', 'ml4z1', 'am4z1', 'ph4z1',
   /* E4C4 CAST END */]);
 const isVoice = name => JAMES_TAKES.has(name) || TEEN_TAKES.has(name) || ADULT_TAKES.has(name) || CAST_TAKES.has(name);
 /* v6.9: his WHISPERS go round the bus. Chad wanted the three pick-up
@@ -12062,8 +12069,10 @@ function scFxClear() {
    curls with its copies behind it in thick soft ribbons; the ribbons close into a pinwheel of hooked blades, the pinwheel
    into a white ball, and a white halo pops round the ball and doubles each frame until the whole screen is washed, then
    pulls back from the edges to a small glow on what was born there. Blue and white, as in his video (`SC_SW.gold` paints
-   it gold). Every point is a function of the showcase's own clock: the same picture on every phone at every moment */
-const SC_SW = { birth: 3.22, glint: 0.06, N: 10, gold: false };
+   it gold: R126, Chad, 20 Nov, "Ok it looks like the castlevania one now, but make it golden colour instead of blue", so
+   gold it is; every shape, size and moment as build 52's). Every point is a function of the showcase's own clock: the
+   same picture on every phone at every moment */
+const SC_SW = { birth: 3.22, glint: 0.06, N: 10, gold: true };
 const SC_SW_BIRTH = SC_SW.birth;
 /* the orbs, as his video has them: where each first shows (u, v: a share of the half-screen from the middle, so they fill
    any screen; |v| over 1 comes in over an edge), where it comes to rest (sx, sy: a share of the shorter side from the
@@ -15435,15 +15444,15 @@ const STING_SAMPLE = {
   ph4s0: ['ph4s0', 1], q4s1: ['q4s1', 1], q4s2: ['q4s2', 1], q4s3: ['q4s3', 1], ph4s1: ['ph4s1', 1],
   ph4s2: ['ph4s2', 1], ph4s3: ['ph4s3', 1], ph4s4: ['ph4s4', 1], ph4b0: ['ph4b0', 1], ph4b1: ['ph4b1', 1],
   ph4b2: ['ph4b2', 1], ph4b3: ['ph4b3', 1], ph4b4: ['ph4b4', 1], ph4b5: ['ph4b5', 1], ph4b6: ['ph4b6', 1],
-  ph4b7: ['ph4b7', 1], q4f1: ['q4f1', 1], q4f2: ['q4f2', 1], ph4f1: ['ph4f1', 1], rv4f1: ['rv4f1', 1],
-  q4f3: ['q4f3', 1], ph4f2: ['ph4f2', 1], q4f4: ['q4f4', 1], ph4f3: ['ph4f3', 1], ml4t1: ['ml4t1', 1],
-  ml4t2: ['ml4t2', 1], rv4t1: ['rv4t1', 1], rv4A1: ['rv4A1', 1], ml4A1: ['ml4A1', 1], am4A1: ['am4A1', 1],
-  rv4A2: ['rv4A2', 1], ph4A1: ['ph4A1', 1], q4A1: ['q4A1', 1], ml4B1: ['ml4B1', 1], ph4B0: ['ph4B0', 1],
-  ml4B2: ['ml4B2', 1], ml4B3: ['ml4B3', 1], ph4B1: ['ph4B1', 1], q4B1: ['q4B1', 1], q4C0: ['q4C0', 1],
-  rv4C1: ['rv4C1', 1], am4C1: ['am4C1', 1], ph4C1: ['ph4C1', 1], q4C1: ['q4C1', 1], ph4D0: ['ph4D0', 1],
-  rv4D1: ['rv4D1', 1], ph4D1: ['ph4D1', 1], q4D1: ['q4D1', 1], q4R1: ['q4R1', 1], rv4R1: ['rv4R1', 1],
-  ml4R1: ['ml4R1', 1], ph4z0: ['ph4z0', 1], ml4z1: ['ml4z1', 1], am4z1: ['am4z1', 1], ph4z1: ['ph4z1', 1],
-  q4A: ['q4A', 1], q4B: ['q4B', 1], q4C: ['q4C', 1], q4D: ['q4D', 1],
+  ph4b7: ['ph4b7', 1], ph4b8: ['ph4b8', 1], ph4b9: ['ph4b9', 1], q4f1: ['q4f1', 1], q4f2: ['q4f2', 1],
+  ph4f1: ['ph4f1', 1], rv4f1: ['rv4f1', 1], q4f3: ['q4f3', 1], ph4f2: ['ph4f2', 1], q4f4: ['q4f4', 1],
+  ph4f3: ['ph4f3', 1], ml4t1: ['ml4t1', 1], ml4t2: ['ml4t2', 1], rv4t1: ['rv4t1', 1], rv4A1: ['rv4A1', 1],
+  ml4A1: ['ml4A1', 1], am4A1: ['am4A1', 1], rv4A2: ['rv4A2', 1], ph4A1: ['ph4A1', 1], q4A1: ['q4A1', 1],
+  ml4B1: ['ml4B1', 1], ph4B0: ['ph4B0', 1], ml4B2: ['ml4B2', 1], ml4B3: ['ml4B3', 1], ph4B1: ['ph4B1', 1],
+  q4B1: ['q4B1', 1], q4C0: ['q4C0', 1], rv4C1: ['rv4C1', 1], am4C1: ['am4C1', 1], ph4C1: ['ph4C1', 1],
+  q4C1: ['q4C1', 1], ph4D0: ['ph4D0', 1], rv4D1: ['rv4D1', 1], ph4D1: ['ph4D1', 1], q4D1: ['q4D1', 1],
+  q4R1: ['q4R1', 1], rv4R1: ['rv4R1', 1], ml4R1: ['ml4R1', 1], ph4z0: ['ph4z0', 1], ml4z1: ['ml4z1', 1],
+  am4z1: ['am4z1', 1], ph4z1: ['ph4z1', 1], q4A: ['q4A', 1], q4B: ['q4B', 1], q4C: ['q4C', 1], q4D: ['q4D', 1],
   /* E4C4 SOUNDS END */
   /* E4C4 FX BEGIN: v27.0, its effects, beds and music (masters/v27.0/install_sound.py) */
   /* v27.0 · its effects, beds and music (masters/v27.0/sound.sh: every pick and why) */

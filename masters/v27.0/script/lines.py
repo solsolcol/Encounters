@@ -56,6 +56,8 @@ LINES = [
     # himself in the fight, his teacher says when; and at the fight's big moments he is called to open it. Approved as written)
     ('ph4b6', 'pho', 'play, the blessing: the first time he shuts his sight himself', "Good. Breathe. Now open it again. They are still coming."),
     ('ph4b7', 'pho', 'play, the blessing: a big moment with his sight shut', "Open it, now!"),
+    ('ph4b8', 'pho', 'play, the blessing: his sight shut and its strain gone, ready to open again (R128)', "When you feel better, open your Spirit Vision again."),
+    ('ph4b9', 'pho', 'play: his sight open, the strain red at its top (R129)', "You're losing control, close your Spirit Vision, and re-open it again."),
     # (Chad, 18 Nov: "Have some dramatic voicelines along the way": the fight speaks. q4f3 and ph4f2 are his words exactly)
     ('q4f1', 'he', 'play, the fight: the second wave comes', "More of them. From the doors."),
     ('q4f2', 'he', 'play, the fight: the large one stands', "What is that...?"),

@@ -72,7 +72,7 @@
      moves what follows it. The names are QUOTED on purpose: build.py gives a sound to a chapter's own pack only when
      the chapter names it in quotes (v21.1). Written by masters/v27.0/script/secs.py from masters/v27.0/script/lines.py. */
   /* SECS BEGIN */
-  const SECS = {      // 74 of 74 MEASURED from their takes; the rest estimated at the speaker's pace
+  const SECS = {      // 76 of 76 MEASURED from their takes; the rest estimated at the speaker's pace
     /* him */
     'q4o1': 6.65, 'q4o2': 4.65, 'q4h1': 3.61, 'q4h2': 3.53, 'q4h3': 9.77, 'q4s1': 4.01, 'q4s2': 3.05, 'q4s3': 4.09,
     'q4f1': 2.97, 'q4f2': 2.89, 'q4f3': 2.33, 'q4f4': 3.61, 'q4A1': 3.53, 'q4B1': 3.21, 'q4C0': 6.41, 'q4C1': 3.69,
@@ -83,8 +83,9 @@
     /* Grandmaster Pho */
     'ph4h0': 7.53, 'ph4h1': 6.81, 'ph4h2': 2.81, 'ph4s0': 8.57, 'ph4s1': 4.57, 'ph4s2': 6.17, 'ph4s3': 8.45,
     'ph4s4': 9.77, 'ph4b0': 4.86, 'ph4b1': 4.65, 'ph4b2': 7.78, 'ph4b3': 4.36, 'ph4b4': 4.41, 'ph4b5': 5.2,
-    'ph4b6': 4.43, 'ph4b7': 1.47, 'ph4f1': 4.95, 'ph4f2': 2.59, 'ph4f3': 5.37, 'ph4A1': 6.61, 'ph4B0': 1.19,
-    'ph4B1': 9.13, 'ph4C1': 5.13, 'ph4D0': 2.24, 'ph4D1': 11.05, 'ph4z0': 10.56, 'ph4z1': 6.63,
+    'ph4b6': 4.43, 'ph4b7': 1.47, 'ph4b8': 3.56, 'ph4b9': 5.05, 'ph4f1': 4.95, 'ph4f2': 2.59, 'ph4f3': 5.37,
+    'ph4A1': 6.61, 'ph4B0': 1.19, 'ph4B1': 9.13, 'ph4C1': 5.13, 'ph4D0': 2.24, 'ph4D1': 11.05, 'ph4z0': 10.56,
+    'ph4z1': 6.63,
     /* Mala */
     'ml4h1': 14.65, 'ml4h2': 9.61, 'ml4h3': 7.61, 'ml4t1': 1.13, 'ml4t2': 1.45, 'ml4A1': 2.27, 'ml4B1': 1.62,
     'ml4B2': 1.01, 'ml4B3': 1.38, 'ml4R1': 3.53, 'ml4z1': 2.56,
@@ -237,6 +238,8 @@
       actLineTouch: 'Tap to answer',
       /* (18 Nov) said under the reticle when the eye is pressed while his teacher holds his sight shut (the engine's visionHeldSay) */
       visionHeld: 'Grandmaster Pho closed your Spirit Vision. Breathe.',
+      /* (R131, 20 Nov) said under the reticle as the climax holds his sight open, and when the eye is pressed while it does */
+      visionLocked: 'Your Spirit Vision stays open until the fight is over.',
       // PLAY I · history first (§4.1)
       objHistory: 'Learn her history · {n}/5',
       hotRavi: 'Talk to Ravi',
@@ -5818,7 +5821,9 @@
                    opened: false, looked: new Set(), closed: false, read: false,
                    water: false, briefed: false, fight: null, appaGone: false, nerveOut: false, held: 0, heat: 0, heatStep: 0,
                    lit: false, dark: 0, fanK: 1, fanTo: 1, scareAt: 0, scareSeed: 0, scared: new Set(), doorTo: -0.12, doorK: -0.12,
-                   fogged: false, fogAt: 0, closeHold: 0, breathSaid: -99 };
+                   fogged: false, fogAt: 0, closeHold: 0, breathSaid: -99,
+                   /* (R128, R129) the last shut and the strain it was made at; his teacher's two words on the strain, when last said */
+                   sightWas: false, shutPeak: 0, restSaid: true, topArmed: true, topAt: -99, restAt: -99 };
     let decOpen = false;
     const live = (run) => alive && run === play.run;
     const HEAD_OF = (P, dy = 0.08, fb) => { if (P && P.ready && P.head && P.group.visible) { P.head.getWorldPosition(_pv); return { x: _pv.x, y: _pv.y + dy, z: _pv.z }; } return fb; };
@@ -6067,21 +6072,32 @@
     const STRAIN_WARN = 0.85, STRAIN_EMPTY = 0.02;     // (the ring red from here, and the eye asking to close; the ring read empty)
     const sanityNow = () => { const v = kit && kit.stat ? kit.stat('sanity') : null; return Number.isFinite(v) ? v : 100; };
     const visOpen = () => { const v = kit && kit.vision ? kit.vision() : null; return !!(v && (v.on || v.held)); };
+    /* (R131) THE CLIMAX: from the rush (the many green ones at once) through his call, the amulet's whole moment and the
+       golden water, to the fight's end */
+    const climaxNow = () => !!(play.fight && play.fight.on && play.fight.call);
+    const CLIMAX = { cap: 0.7, wait: 2.5 };
     function heatTick(wdt) {
       if (!kit || !kit.vision) return;
       const v = kit.vision(); if (!v) return;
       const open = v.on && !play.closeHold;
+      /* (R128, R129) the frame he shuts it, and the strain it was shut at (his teacher's "When you feel better" is for a shut
+         with strain in it, once its ring has emptied); "You're losing control" said again only once the ring has left the red */
+      if (play.sightWas && !open) { play.shutPeak = play.heat; play.restSaid = false; }
+      if (!open || play.heat < STRAIN_WARN) play.topArmed = true;
+      play.sightWas = open;
+      const h0 = play.heat, climax = climaxNow();
       play.heat = Math.max(0, Math.min(1.3, play.heat + (open ? HEAT.up : -HEAT.down) * wdt));
       /* (empowered, his heart is steadied: it never passes 0.7 while the golden water is his, so the swarm is fought with his
-         sight open and nothing shuts it for him: R26) */
-      if (play.fight && play.fight.on && play.fight.call === 'gold') play.heat = Math.min(play.heat, 0.7);
+         sight open and nothing shuts it for him: R26. R131: so through the whole climax, his sight held open to the fight's
+         end; over the mark as the climax begins, it comes down to it as fast as a shut sight's would) */
+      if (climax) play.heat = h0 > CLIMAX.cap ? Math.max(CLIMAX.cap, h0 - HEAT.down * wdt) : Math.min(play.heat, CLIMAX.cap);
       const step = play.heat >= 1 ? 3 : play.heat >= 0.75 ? 2 : play.heat >= 0.45 ? 1 : 0;
       if (open && step !== play.heatStep) {
         play.heatStep = step;
         if (kit.pulse) kit.pulse(step === 3 ? { bpm: 168, secs: 1.2, erratic: 0.5 } : step === 2 ? { bpm: 148, secs: 2 } : step === 1 ? { bpm: 132, secs: 2.5 } : { bpm: 118, secs: 2.4 });
         if (kit.smear) kit.smear(step === 3 ? 0.45 : 0, { secs: 0.6 });
       } else if (!open && play.heatStep) { play.heatStep = 0; if (kit.smear) kit.smear(0, { secs: 0.8 }); }
-      if (open && play.heat >= 1 && getState() === 'play') {
+      if (open && play.heat >= 1 && !climax && getState() === 'play') {
         const room = sanityNow() - HEAT.floor;
         if (room > 0) kit.award('sanity', -Math.min(room, HEAT.drain * wdt), { minigame: true });
       }
@@ -6089,7 +6105,7 @@
          cost him his nerve (the shapes that reach him take it too) shut his sight the instant he opened it, every time, and
          he could never see the room again. Held shut, his heart cools (5.5 s of HEAT.down), so he has some seconds of sight
          before it is past its limit again) */
-      if (open && play.heat >= 1 && sanityNow() < HEAT.low && !play.closeHold && !play.busy && (phase === 'sight' || phase === 'bless')) nerveOut();
+      if (open && play.heat >= 1 && sanityNow() < HEAT.low && !play.closeHold && !play.busy && !climax && (phase === 'sight' || phase === 'bless')) nerveOut();
       if (play.closeHold && (play.closeHold -= wdt) <= 0) { play.closeHold = 0; kit.vision(null); }
       /* the ring on the eye: his heart's strain as it is (R96); gone once the fight is done */
       if (kit.visionStrain) kit.visionStrain(phase === 'kept' ? null : Math.min(1, play.heat), { warn: STRAIN_WARN });
@@ -6107,7 +6123,8 @@
     }
 
     /* ================================================================ PLAY II · THE SIGHT (§4.2) */
-    const WARM_SIGHT = ['ph4s0', 'q4s1', 'q4s2', 'q4s3', 'ph4s1', 'ph4s2', 'ph4s3', 'ph4s4', 'u4sting', 'u4vison', 'u4visbed', 'u4heart'];
+    const WARM_SIGHT = ['ph4s0', 'q4s1', 'q4s2', 'q4s3', 'ph4s1', 'ph4s2', 'ph4s3', 'ph4s4', 'u4sting', 'u4vison', 'u4visbed', 'u4heart',
+                        'ph4b1', 'ph4b8', 'ph4b9'];                          // (his teacher on the strain, said in the sight too: R128, R129)
     function sightBegin(R, fresh) {
       lookAt0('FLAT'); castHome(); spiritsHome();
       play.learned = new Set(['r', 'm', 'f', 'o', 'a']); play.spoke = true; play.told = true; play.peeked = R.peeked;
@@ -6191,7 +6208,7 @@
                         'u4ascream1', 'u4ascream2', 'u4ascream3', 'u4surge', 'u4goldcall', 'u4goldpower', 'u4goldflick', 'u4goldclear', 'u4sting',
                         'u4goldgather', 'u4goldhover', 'u4golddive', 'u4goldmerge',          /* (R110: the amulet's moment, every beat of it) */
                         'u4swglint', 'u4swbloom',                                            /* (R122: the swirl's own two) */
-                        'ph4b3', 'ph4b4', 'ph4b5', 'ph4b6', 'ph4b7', 'q4f1', 'q4f2', 'ph4f1', 'q4f3', 'ph4f2', 'q4f4', 'ph4f3', 'rv4f1', 'ml4B2', 'rv4A2', 'u4visoff',
+                        'ph4b3', 'ph4b4', 'ph4b5', 'ph4b6', 'ph4b7', 'ph4b8', 'ph4b9', 'q4f1', 'q4f2', 'ph4f1', 'q4f3', 'ph4f2', 'q4f4', 'ph4f3', 'rv4f1', 'ml4B2', 'rv4A2', 'u4visoff',
                         /* (18 Nov: the green ones' own voices) */
                         'u4sv1', 'u4sv2', 'u4sv3', 'u4sv4', 'u4sv5', 'u4svL'];
     function blessBegin(R, fresh) {
@@ -6395,7 +6412,10 @@
                                saidMala: false, saidRavi: false, seed: 0x4c4f0d, dartAt: DART.first, darts: 0, dartHits: 0, dseed: 0x0da47e,
                                vseed: 0x5f1e0d, voxAt: 2.5, voxBigAt: 0, voxLast: '', voxUntil: [],
                                /* (R96) his teacher's word the first time he shuts it himself; the big moments he is called to */
-                               shutWant: false, shutSaid: false, shutSaidAt: null, bigDone: new Set(), bigCall: null };
+                               shutWant: false, shutSaid: false, shutSaidAt: null, bigDone: new Set(), bigCall: null,
+                               /* (R131) the climax: when it found his sight shut, when "Open it, now!" opens it, and whether it
+                                  is held open (the engine's lock) */
+                               climaxAt: null, climaxCall: null, locked: false };
       if (kit) { kit.bar(0); if (kit.health) kit.health({ label: W.ammaBar, k: 1, at: () => { const h = AMMA_HEAD(); return [h.x, h.y + 0.32, h.z]; } }); }
       objectiveFor('bless');
       /* the two in the corners are the first wave's: they wake */
@@ -6843,6 +6863,7 @@
       if (F.call && F.call !== 'gold') F.k = Math.min(F.k, FIGHT.hold);          // (the blessing stalls under the swarm until the call is answered)
       if (F.call === 'gold') { F.goldT += wdt; if ((F.batchAt -= wdt) <= 0) { F.batchAt = FIGHT.batch.every; goldBatch(F.backN || 0); F.backN = 0; } }
       dartTick(wdt);
+      climaxTick();
       shutLineTick(open);
       bigTick(open);
       nagTick(open, live);
@@ -6995,7 +7016,8 @@
     function shutLineTick(open) {
       const F = play.fight; if (!F.shutWant) return;
       if (open || play.closeHold || F.call === 'shown') { F.shutWant = false; return; }
-      if (phoSpeaks('ph4b6', () => talk(cast.phoB, SECS.ph4b6 || 4.4))) { F.shutWant = false; F.shutSaid = true; F.shutSaidAt = F.t; }
+      if (bigWaits(open)) return;                       // (R130: "Open it, now!" first; opened for him, this waits for his next shut)
+      if (phoSpeaks('ph4b6', () => talk(cast.phoB, SECS.ph4b6 || 4.4))) { F.shutWant = false; F.shutSaid = true; F.shutSaidAt = F.t; play.restSaid = true; }
     }
     /* (R96: "You can't miss the climax") THE BIG MOMENTS: the rush (the surge, until his call), the big one (while it is in the
        room) and the golden water. Shut through one of them, once the ring on the eye is empty (and not straight after his
@@ -7003,12 +7025,10 @@
        him. Each moment once: seen, by him or for him, it is not called again. Never under the showcase, nor while his
        teacher holds his sight shut */
     const BIG_GRACE = 3;
+    /* (R131: the rush and the golden water are the climax now, climaxTick's from the rush to the fight's end: here, the big
+       one alone) */
     function bigNow() {
       const F = play.fight;
-      if (F.call === 'gold') return 'gold';
-      /* (the rush runs on into his call for help: measured on build 39, the rush handed to the call 7 s after it began, before
-         the 3 s after "Open it, now!" were out, and his sight was never opened for him) */
-      if (F.call === 'surge' || F.call === 'asking') return 'surge';
       if (!F.call && F.shapes.some(S => S.P === spirits.large && (S.state === 'come' || S.state === 'feed'))) return 'large';
       return null;
     }
@@ -7016,7 +7036,7 @@
       const F = play.fight, m = bigNow();
       if (!m || F.bigDone.has(m)) { F.bigCall = null; return; }
       if (open) { F.bigDone.add(m); F.bigCall = null; return; }
-      if (play.closeHold || F.shutWant) return;
+      if (play.closeHold) return;                      // (R130: no longer waits on the first-shut line; that line waits on this)
       if (!F.bigCall || F.bigCall.m !== m) {
         if (play.heat > STRAIN_EMPTY || (F.shutSaidAt !== null && F.t - F.shutSaidAt < 5)) return;
         if (phoSpeaks('ph4b7', () => talk(cast.phoB, SECS.ph4b7 || 1.5))) F.bigCall = { m, at: F.t + (SECS.ph4b7 || 1.5) + BIG_GRACE };
@@ -7028,6 +7048,7 @@
       const F = play.fight;
       if (open) { F.nagNext = NAG.first; return; }
       if (play.closeHold || !live || F.call === 'asking' || F.call === 'shown' || F.shutFor < F.nagNext) return;
+      if (bigWaits(open)) return;                                                     // (R130: "Open it, now!" first)
       if (F.t - F.lastStrike < NAG.first) { F.nagNext = F.shutFor + 1; return; }      // (his water is reaching them blind: he is doing something)
       const name = NAG.lines[F.nags % NAG.lines.length];
       if (phoSpeaks(name, () => talk(cast.phoB, SECS[name] || 2.6))) { F.nags++; F.nagNext = F.shutFor + (SECS[name] || 2.6) + NAG.again; }
@@ -7039,10 +7060,81 @@
        shut for him */
     function urgeTick(open, live) {
       const F = play.fight; let u = false;
-      if (F.call === 'shown' || play.closeHold) u = false;
+      if (F.call === 'shown' || play.closeHold || F.locked) u = false;
       else if (open) u = play.heat >= STRAIN_WARN && F.call !== 'gold' ? 'close' : false;
       else if (live && (play.heat <= STRAIN_EMPTY || F.t < 8 || F.call)) u = 'open';      // (R96: once the ring is empty; at once at the start and at the big moments)
       if (u !== F.urge) { F.urge = u; if (kit && kit.visionUrge) kit.visionUrge(u); }
+    }
+    /* (R130, Chad, 20 Nov: "make sure that when the gameplay reaches climax, Grandmaster pho's voiceline of saying 'open
+       now! ' takes priority") A CALL DUE: the climax not yet held open, or the big one in the room not yet seen, with his
+       sight shut. "Open it, now!" is then the one word his teacher has about his sight: every other (the first-shut line,
+       the nags, the strain's two) waits, and none of them is begun */
+    function bigWaits(open) {
+      const F = play.fight; if (!F || !F.on || open) return false;
+      if (F.call) return !F.locked;
+      const m = bigNow(); return !!m && !F.bigDone.has(m);
+    }
+    /* (R131, Chad, 20 Nov: "At climax, if player has spirit vision turned off, pho shouts to open it now, and spirit vision is
+       automatically forced open. At climax, if player already has spirit vision turned on, then it is fine, but do not allow
+       the player to turn off spirit vision at the climax all the way till the end ... no matter what, the player always is
+       guaranteed to get to experience this whole experience from the very start to finish, without missing anything.")
+       THE CLIMAX SEEN WHOLE. From the rush to the fight's end: open, it is held open (the engine's lock: a press of the eye
+       is refused, and says why); shut, his teacher's own hold (if any) gives way, "Open it, now!" is shouted as soon as a
+       voice is free, and his sight is opened for him as the line ends; if no voice comes free in 2.5 s it is opened anyway
+       (the line, then late, is not said). His heart is held under the red the while (heatTick), so nothing of the strain
+       shuts it or asks him to; the fight's end (fightEnd), a loss's film and a reset let it go */
+    function climaxTick() {
+      const F = play.fight;
+      if (!F.call || F.locked || !kit || !kit.vision) return;
+      if (play.closeHold) { play.closeHold = 0; kit.vision(null); }
+      const v = kit.vision(); if (!v) return;
+      if (v.on) { lockOpen(); return; }
+      if (F.climaxCall == null) {
+        /* (a call already made for the big one, its line said: kept, so it is never shouted twice) */
+        if (F.bigCall) { F.climaxCall = F.bigCall.at - BIG_GRACE; F.bigCall = null; return; }
+        if (F.climaxAt == null) F.climaxAt = F.t;
+        if (phoSpeaks('ph4b7', () => talk(cast.phoB, SECS.ph4b7 || 1.5))) { F.climaxCall = F.t + (SECS.ph4b7 || 1.5); return; }
+        if (F.t - F.climaxAt < CLIMAX.wait) return;
+        F.climaxCall = F.t;
+      }
+      if (F.t >= F.climaxCall) { kit.vision(true); lockOpen(); }
+    }
+    function lockOpen() {
+      const F = play.fight; F.locked = true; F.urge = null; F.shutWant = false; F.shutFor = 0; F.bigCall = null;
+      kit.vision({ lock: true, why: W.visionLocked });
+      if (kit.visionUrge) kit.visionUrge(false);
+    }
+    /* (R128, R129, Chad, 20 Nov: "add another grandmaster pho line that says 'when you feel better, open your spirit vision
+       again' This is for when the player closes the spirit vision, and the strain has gone, and ready to open again"; "When the
+       strain has gone red at the max strain level, have a grandmaster pho line that says 'you're losing control, close your
+       spirit vision, and re open it again'") HIS TEACHER ON THE STRAIN. "You're losing control, close your Spirit Vision, and
+       re-open it again." when the ring on the eye is full, red at its top (past it his nerve drains: HEAT); "When you feel
+       better, open your Spirit Vision again." when, shut with the ring at least near half (his heart's first step, 0.45),
+       the ring has emptied and the eye asks to be opened again: a shut his teacher made (the nerve) too, as his hold lets go;
+       a shut whose first word was "Good. Breathe. Now open it again." (ph4b6) has had its word. In the sight while he still
+       has spirits to look at, and in the blessing (the second in the fight); each once a climb or a shut, 20 s apart at
+       least; never while a line plays (the queue, his word or another's), while his teacher holds it shut, under the
+       showcase, nor before "Open it, now!" (R130); the climax holds his sight open and his heart under the red (R131), so
+       neither is said there. The nags (the sight shut too long) come no sooner than 6 s after the second has ended */
+    const STRAIN_LINE = { rest: 0.45, gap: 20 };
+    function strainLinesTick() {
+      if (!kit || !kit.vision || getState() !== 'play' || play.busy || play.closeHold) return;
+      const v = kit.vision(); if (!v) return;
+      const open = !!v.on, F = play.fight, fight = !!(F && F.on);
+      if (fight && (F.call === 'shown' || F.locked || F.ended)) return;
+      if (bigWaits(open)) return;
+      const sight = phase === 'sight' && play.opened && play.looked.size < 3, now = wallNow();
+      const P = cast.phoB && cast.phoB.group.visible ? cast.phoB : cast.pho;
+      if (open) {
+        if (play.heat >= 1 && play.topArmed && (sight || phase === 'bless') && now - play.topAt >= STRAIN_LINE.gap &&
+            phoSpeaks('ph4b9', () => talk(P, SECS.ph4b9 || 5))) { play.topArmed = false; play.topAt = now; }
+        return;
+      }
+      if (!play.restSaid && play.shutPeak >= STRAIN_LINE.rest && play.heat <= STRAIN_EMPTY && (sight || fight) &&
+          now - play.restAt >= STRAIN_LINE.gap && phoSpeaks('ph4b8', () => talk(P, SECS.ph4b8 || 3.6))) {
+        play.restSaid = true; play.restAt = now;
+        if (fight) F.nagNext = Math.max(F.nagNext, F.shutFor + (SECS.ph4b8 || 3.6) + NAG.first);
+      }
     }
     /* THE TURNING POINT: the trance's film, and the decision at its end (the plan's §4.4) */
     function trance() {
@@ -7253,6 +7345,41 @@
         M.sp.material.opacity = Math.min(1, u * 6) * (1 - Math.max(0, (u - 0.7) / 0.3)); M.sp.visible = true; }
       if (!live) dipFx.motes = [];
     }
+    /* (R127, Chad, 20 Nov: "add a slow bobbing floating reload icon floating on top of the holy water bowl, in the same yellow
+       golden colour as the bowl, so that the player know that is where to reload the water") THE PLACE TO DIP, MARKED: the
+       HUD's own reload sign (its DIP button's arrow round in a circle, the same drawing) floating over his teacher's large
+       bowl in the bowl's gold as his sight shows it (SPIRIT.bowl's 0xffc456, R62), with a dark edge so it reads on the
+       vision's pale negative too, rising and sinking slowly (3 cm either way, once in 2.8 s, on the wall clock), its middle
+       0.27 m over the bowl's rim. Shown in the fight while the water is his and can be filled there (never under the
+       showcase, nor in the gold, whose water never runs out), in play only, eased in and out over a third of a second; drawn
+       in the world and through the vision alike (both layers), over what stands before it (a mark, like the order's),
+       never lit, never fogged */
+    const DIPMARK = { size: 0.2, rim: 0.19, above: 0.27, bob: 0.03, period: 2.8, ease: 0.35 };
+    const dipMark = { sp: null, k: 0, last: 0 };     // (made with the world, hidden, so the curtain's warm compiles it: dipMarkMake below)
+    function dipMarkMake() {
+      const S = 256, c = document.createElement('canvas'); c.width = c.height = S; const g = c.getContext('2d');
+      const u = 7.2, o = (S - 24 * u) / 2;                                 // (the HUD's 24-unit drawing, 173 px across, centred)
+      g.translate(o, o); g.scale(u, u); g.lineCap = 'round'; g.lineJoin = 'round';
+      const path = () => { g.beginPath(); g.arc(12, 12, 7, 0, Math.PI * 1.75, false); g.moveTo(19, 3); g.lineTo(19, 8); g.lineTo(14, 8); };
+      g.shadowColor = 'rgba(255,196,86,0.85)'; g.shadowBlur = 18; g.strokeStyle = 'rgba(58,36,6,0.92)'; g.lineWidth = 4.4; path(); g.stroke();
+      g.shadowBlur = 0; g.strokeStyle = '#ffc456'; g.lineWidth = 2.5; path(); g.stroke();
+      const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; owned.push(t);
+      const m = new THREE.SpriteMaterial({ map: t, transparent: true, opacity: 0, depthWrite: false, depthTest: false, fog: false, toneMapped: false });
+      mats.push(m);
+      const sp = new THREE.Sprite(m); sp.visible = false; sp.renderOrder = 29; sp.scale.set(DIPMARK.size, DIPMARK.size, 1);
+      if (ctx.visionLayer != null) sp.layers.enable(ctx.visionLayer);
+      world.add(sp); return sp;
+    }
+    dipMark.sp = dipMarkMake();
+    function dipMarkTick() {
+      const F = play.fight, now = wallNow(), dt = dipMark.last ? Math.min(0.1, now - dipMark.last) : 0; dipMark.last = now;
+      const want = phase === 'bless' && play.water && !!(F && F.on) && F.call !== 'shown' && F.call !== 'gold' && getState() === 'play';
+      dipMark.k = want ? Math.min(1, dipMark.k + dt / DIPMARK.ease) : Math.max(0, dipMark.k - dt / DIPMARK.ease);
+      if (!dipMark.k) { if (dipMark.sp.visible) dipMark.sp.visible = false; return; }
+      const sp = dipMark.sp;
+      sp.position.set(DIP_AT.x, (bowlsUp ? BOWLS_UP.y : 0) + DIPMARK.rim + DIPMARK.above + DIPMARK.bob * Math.sin(now * Math.PI * 2 / DIPMARK.period), DIP_AT.z);
+      sp.material.opacity = dipMark.k * dipMark.k * (3 - 2 * dipMark.k); sp.visible = true;
+    }
     const _ray = new THREE.Raycaster(), _ab = new THREE.Box3(), _hit = new THREE.Vector3();
     let altarBlock = false;
     function altarTick() {
@@ -7284,8 +7411,10 @@
     function storyTick(wdt, t) {
       spotsTick(); hitsTick(); scareTick(); doorTick(wdt); heatTick(wdt); altarTick();   // (the fan, the lamp and the glass: updateNotes, film or play; his hand on her head: updateNotes, play and the decision)
       fightTick(wdt);
+      strainLinesTick();                                                  // (R128, R129: after the fight's frame, so a call due is made first)
       shadeTick(wdt);                                                     // (R96: the green ones as faint dark shapes while his sight is shut)
       dipFxTick();                                                        // (R63: the refill seen)
+      dipMarkTick();                                                      // (R127: where to dip, marked)
       hitFxTick();                                                        // (R81: every strike seen)
       /* (R58, Chad, 18 Nov evening: "why reloading and continuing game allows me to flick water even before that part of
          the gameplay begins"): the bag keeps the water from a run that reached the blessing (a Continue, a loss's start
@@ -7309,10 +7438,12 @@
       play.run++; play.busy = false; play.learned = new Set(); play.spoke = false; play.told = false; play.peeked = false;
       play.opened = false; play.looked = new Set(); play.closed = false; play.read = false; play.water = false; play.briefed = false;
       play.fight = null; play.appaGone = false; play.nerveOut = false; play.heat = 0; play.heatStep = 0; play.closeHold = 0; play.breathSaid = -99; play.loseWait = false;
+      play.sightWas = false; play.shutPeak = 0; play.restSaid = true; play.topArmed = true; play.topAt = -99; play.restAt = -99;
       shadesOff();
       play.fanK = 1; play.fanTo = 1; play.scareSeed = SCARE_SEED; play.scareAt = 0; play.scared = new Set(); play.doorTo = -0.12; play.doorK = -0.12;
       play.fogged = false; play.fogAt = 0; fogK = 0; fogTo = 0; lampK = 0; lampTo = 0; crownK = 0; crownTo = 0; oppLooked = ''; wanderNext = 2;
       decOpen = false; altarBlock = false; bowlOnFloor.visible = true; chantNow = null; bowlsOnStool(false); waterLast = null; hitFxReset();
+      dipMark.k = 0; dipMark.last = 0; dipMark.sp.visible = false;
       DEC.on = false; DEC.p1 = null; DEC.at = null; DEC.eye = null;
       for (const P of spirits.wander.concat([spirits.large, spirits.appa, spirits.oppress])) { P.gone = false; P.alpha = 1; }
       if (kit) { kit.bar(null); if (kit.weaponBlock) kit.weaponBlock(null); if (kit.visionUrge) kit.visionUrge(false);

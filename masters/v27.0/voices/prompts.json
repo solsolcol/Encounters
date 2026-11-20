@@ -217,6 +217,20 @@
   "prompt": "[urgent] Open it, now!"
  },
  {
+  "key": "ph4b8",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[gentle] When you feel better, open your Spirit Vision again."
+ },
+ {
+  "key": "ph4b9",
+  "speaker": "pho",
+  "voice_id": "xYmBpJREC3WfqEFpbPvO",
+  "takes": 3,
+  "prompt": "[firm] You're losing control, close your Spirit Vision, and re-open it again."
+ },
+ {
   "key": "q4f1",
   "speaker": "he",
   "voice_id": "bP8FJDHmWVEgXJDitdQd",
