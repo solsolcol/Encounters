@@ -1,0 +1,23 @@
+v28.0 · the people of episode 4 chapter 5: the reference pictures
+(Chad, 11 Nov 2026: "first generate a reference of the person, describe it to GPTimage, person in photorealistic
+details, against a white background, in A pose." The house wording is v26.0's, masters/v26.0/people/PROMPTS.txt.)
+
+MASTER ZAVIER (Chad, 20 Nov 2026, R5: "Generate a master zavier model based on this photo, and rig it. Make sure it is
+extremely high quality and free of issues."). Higgsfield, model gpt_image_2_6, quality xhigh (max, 9 credits, was more
+than the balance held), resolution 2k, aspect 2:3, two image references (the man cut out of his photograph, and his head
+enlarged):
+
+  Photorealistic full-body studio photograph of the young man shown in the reference photographs: the same face, the
+  same hairstyle, the same slim build and the same clothes. He stands upright in an A-pose: both arms straight and held
+  about 35 degrees away from the body, palms facing the thighs, fingers slightly apart, feet shoulder-width apart,
+  facing the camera straight on, head level, looking at the camera. Short black hair, textured and tousled on top, the
+  fringe swept across his forehead; clean-shaven; a calm neutral expression, mouth closed. He wears a mid-grey marled
+  knit shawl-collar cardigan with dark buttons, worn open and unbuttoned, long sleeves to the wrists, over a plain black
+  crew-neck T-shirt; a black-and-white patterned belt; dark indigo straight-leg denim jeans with the hems turned up once
+  at the ankle; plain dark grey socks and no shoes. A steel wristwatch with a dark dial on his left wrist and a thin
+  silver bracelet on his right wrist. The cardigan fits close to the body: its two front edges hang straight down the
+  chest and end at the hip, and there is clear empty white space between each arm and his sides. His hands are empty; no
+  bag, no strap, no umbrella, no bottle. The whole figure is in frame from the top of the head to the toes with a clear
+  margin all round. Even soft studio lighting from the front, no cast shadow, pure white seamless background. Sharp
+  focus, natural skin texture, realistic knit and denim texture, realistic cloth folds. No text, no logo, no watermark,
+  no props.

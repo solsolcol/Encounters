@@ -1,0 +1,19 @@
+v28.0 · the things of episode 4 chapter 5: the reference pictures
+(Chad's rule of 30 Oct 2026: a generated model begins as a checked picture, and a sacred or ritual thing as real
+photographs. The Naga staff's photograph is his own: plan §0, R2.)
+
+THE NAGA STAFF (nagastaff). Higgsfield, model gpt_image_2_6, quality high, resolution 2k, aspect 9:16, two image
+references (the light brown staff alone, cut from his photograph, and its head):
+
+  Photorealistic studio product photograph of the light brown carved wooden Naga staff shown in the reference
+  photographs (the honey-coloured one; ignore the black staff behind it), shown whole and standing perfectly upright,
+  seen straight on from the side so that the Naga's head is in profile facing right. It is one piece of hand-carved wood
+  about 1.4 metres tall. At the top, a single Naga (serpent-dragon) head with a swept-back flame-shaped crest, an open
+  jaw showing small carved teeth, a carved eye and a curled lobe behind the jaw, the head in a darker walnut-brown stain.
+  Below the head, the serpent's body is carved all over with rows of small overlapping scales, in honey-yellow wood with
+  dark brown streaks of grain running along it. The body descends from the head in a long gentle S-curve and, over its
+  lower half, winds two and a half turns round a straight plain wooden shaft, which continues down to a plain blunt foot
+  at the bottom. Lightly lacquered, worn smooth by handling. The same colours, the same carving and the same proportions
+  as the reference. The whole staff is in frame from the top of the crest to the foot with a clear margin all round. Even
+  soft studio lighting, no cast shadow, pure white seamless background. Sharp focus. No text, no logo, no watermark, no
+  stand, no hands, no other object.
