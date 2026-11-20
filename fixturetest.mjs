@@ -362,7 +362,7 @@ K.ownSeam = await p.evaluate(async () => {
   st.reloadRefusal = had;
   /* (v27.0, R133, R136) the reload button drawn unless a declaration says otherwise; then a refill that is a TAP ON THE
      STAGE'S MARK (stage.reloadHits), the button gone, R still reloading, and the dry flick's words for a mouse */
-  const rb = document.getElementById('reloadBtn');
+  const rb = document.getElementById('reloadBtn'), px0 = E.pitch.rotation.x;   // (its flicks kick the view up: put back below)
   R.buttonByDefault = !document.body.classList.contains('wpnNoReload') && getComputedStyle(rb).display !== 'none';
   R.noButton = E.weaponDeclare({ hands: 'own', pose: 'bowl', rounds: 3, endless: true, fireGap: 0.05, reloadButton: false, dipSecs: [0, 0, 0],
                                  words: { fire: 'FLICK', reload: 'DIP', empty: 'Press R to reload.', emptyTouch: 'Tap the mark.' },
@@ -386,6 +386,7 @@ K.ownSeam = await p.evaluate(async () => {
   for (let i = 0; i < 3; i++) { E.kit.fire(); await new Promise(r => setTimeout(r, 80)); }
   E.kit.fire();
   R.dryWords = (document.getElementById('nofire').textContent || '') === 'Press R to reload.';
+  E.pitch.rotation.x = px0;   // (five flicks' kicks, 0.06 rad, carried into the bed's test and lifted the bed out of view)
   /* put away */
   E.kit.weaponOut(false);
   R.putAway = await poll(() => { const s = E.ownState(); return !s.shown && !s.held && s.pose !== 'bowl'; }, 60000);
@@ -1340,7 +1341,7 @@ K.eventAwards = await p.evaluate(() => window.__enc.stats.awareness !== window._
 await p.evaluate(() => { window.__enc.stats.sanity = 100; });   // (pinned again: see the note before the events)
 await lbl('bed');
 // pose: the bed lies him down, walking stops, the neck narrows; the bed stands him up
-await p.evaluate(() => { const e = window.__enc; e.yaw.position.set(6, 1.62, 7.8); e.yaw.rotation.y = 0; });
+await p.evaluate(() => { const e = window.__enc; e.yaw.position.set(6, 1.62, 7.8); e.yaw.rotation.y = 0; e.pitch.rotation.x = 0; });   // (build 54: the view too, not what earlier steps left)
 await settle();
 K.poseLies = await p.evaluate(() => window.__enc.kitDebug().hotspot === 'bed' && window.__enc.interactNow() === true)
   && await p.waitForFunction(() => window.__enc.kitDebug().pose === 'lying' && window.__enc.kitDebug().eyeY < 0.7, null, { timeout: 60000 }).then(() => true).catch(() => false);
@@ -1348,7 +1349,7 @@ K.poseLies = await p.evaluate(() => window.__enc.kitDebug().hotspot === 'bed' &&
    pose and the eye, where he stood and looked (the three pose checks failed together once under two browsers' load) */
 if (!K.poseLies) console.log('bed:', JSON.stringify(await p.evaluate(() => { const e = window.__enc, d = e.kitDebug();
   return { st: e.getState(), hotspot: d.hotspot, pose: d.pose, eyeY: d.eyeY, at: [+e.yaw.position.x.toFixed(2), +e.yaw.position.z.toFixed(2)],
-           ry: +e.yaw.rotation.y.toFixed(3), ev: !!d.event }; })));
+           ry: +e.yaw.rotation.y.toFixed(3), px: +e.pitch.rotation.x.toFixed(3), ev: !!d.event }; })));
 await p.keyboard.down('KeyW'); await p.waitForTimeout(1500); await p.keyboard.up('KeyW');
 K.poseStopsWalking = await p.evaluate(() => Math.abs(window.__enc.yaw.position.z - 7.8) < 0.05);
 K.poseStands = await p.evaluate(() => window.__enc.interactNow() === true)
