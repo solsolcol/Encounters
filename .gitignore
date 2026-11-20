@@ -100,6 +100,10 @@ __pycache__/
 # This repository is public, so they are NEVER committed (docs/V26.0-E4C3-PLAN.md §1.1, §2.2 #21).
 masters/v26.0/ref/
 
+# Chad's photographs for episode 4 chapter 5 (20 Nov 2026 on): his own rooms, and his phone's location in the EXIF.
+# This repository is public, so they are NEVER committed (docs/V28.0-E4C5-PLAN.md §0).
+masters/v28.0/ref/
+
 # the ledger lock and half-written downloads of the Meshy scripts
 masters/*/src/*.lock
 masters/*/src/*.tmp
