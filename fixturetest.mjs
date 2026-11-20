@@ -1344,6 +1344,11 @@ await p.evaluate(() => { const e = window.__enc; e.yaw.position.set(6, 1.62, 7.8
 await settle();
 K.poseLies = await p.evaluate(() => window.__enc.kitDebug().hotspot === 'bed' && window.__enc.interactNow() === true)
   && await p.waitForFunction(() => window.__enc.kitDebug().pose === 'lying' && window.__enc.kitDebug().eyeY < 0.7, null, { timeout: 60000 }).then(() => true).catch(() => false);
+/* (v27.0 build 54) when the bed does not lie him down, say what the page held: the state, the spot the badge named, the
+   pose and the eye, where he stood and looked (the three pose checks failed together once under two browsers' load) */
+if (!K.poseLies) console.log('bed:', JSON.stringify(await p.evaluate(() => { const e = window.__enc, d = e.kitDebug();
+  return { st: e.getState(), hotspot: d.hotspot, pose: d.pose, eyeY: d.eyeY, at: [+e.yaw.position.x.toFixed(2), +e.yaw.position.z.toFixed(2)],
+           ry: +e.yaw.rotation.y.toFixed(3), ev: !!d.event }; })));
 await p.keyboard.down('KeyW'); await p.waitForTimeout(1500); await p.keyboard.up('KeyW');
 K.poseStopsWalking = await p.evaluate(() => Math.abs(window.__enc.yaw.position.z - 7.8) < 0.05);
 K.poseStands = await p.evaluate(() => window.__enc.interactNow() === true)
