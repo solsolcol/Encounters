@@ -4,7 +4,7 @@
    AT (seconds of the showcase) the engine's own drawing surface for its gathering lines (#scFx) is read: its size in
    pixels and on the page, how it is laid out, and how many of its pixels carry any light, and the screen is photographed
    (OUT/lab-<t>.png). Every page error is printed; the run exits non-zero on one or if the surface never carries light.
-     ENC_DIST=<snapshot> CHROMIUM_PATH=... [OUT=dir] [SLOW=40] [AT=0.3,0.6,1.0] [DSF=2] node tools/probes/e4c4showlab.mjs */
+     ENC_DIST=<snapshot> CHROMIUM_PATH=... [OUT=dir] [SLOW=40] [AT=0.3,0.6,1.0] [DSF=2] [OPTS='{"gather":"swirl"}'] node tools/probes/e4c4showlab.mjs */
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
@@ -21,9 +21,14 @@ await p.goto(PAGE + '?ch=e4c4', { waitUntil: 'load', timeout: 240000 });
 await p.waitForFunction(() => !!window.__enc, null, { timeout: 120000 });
 await p.evaluate(() => document.getElementById('startBtn').click());
 await toPlay(p, 1500000); await p.waitForTimeout(3000);
-await p.evaluate((f) => window.__enc.showSlow(f), SLOW);
-/* (CSS=0 leaves the page's own animations at speed: the browser's animation domain slows the frame clock too) */
-if (process.env.CSS !== '0') { await cdp.send('Animation.enable'); await cdp.send('Animation.setPlaybackRate', { playbackRate: 1 / SLOW }); }
+/* (R122: the page's own animations slowed one by one, the moment each exists, as the gold probe has done since build 48;
+   NOT through the browser's animation domain, whose playback rate slows the frame clock as well: the frame's time stood
+   behind the page's, the showcase's drawn light is timed by it, and every frame this probe read came out blank. CSS=0
+   leaves the page's own animations at speed) */
+await p.evaluate(([f, css]) => { window.__enc.showSlow(f); if (!css) return; const R = 1 / f;
+  const fix = () => { for (const a of document.getAnimations()) if (a.playbackRate !== R) a.playbackRate = R; };
+  window.__slowFix = new MutationObserver(fix); window.__slowFix.observe(document.documentElement, { attributes: true, subtree: true, childList: true, attributeFilter: ['class', 'style'] });
+  const loop = () => { if (!window.__slowFix) return; fix(); requestAnimationFrame(loop); }; fix(); requestAnimationFrame(loop); }, [SLOW, process.env.CSS !== '0']);
 console.log('the frame clock against the page clock (ms):', JSON.stringify(await p.evaluate(() => new Promise(r => requestAnimationFrame((ts) => r({ raf: Math.round(ts), now: Math.round(performance.now()) }))))));
 /* every drawing call on the showcase's surface counted (which calls, and the last alpha and composite each was made with) */
 await p.evaluate(() => { const P = CanvasRenderingContext2D.prototype, cnt = window.__scCount = {};
@@ -32,7 +37,10 @@ await p.evaluate(() => { const P = CanvasRenderingContext2D.prototype, cnt = win
 /* (and every error the page raises in its frames, caught where it is thrown: the wrapped clearRect is the first call of the
    showcase's drawing, so whatever throws after it is in that drawing) */
 await p.evaluate(() => { window.__scErr = []; window.addEventListener('error', (e) => { window.__scErr.push(String(e.message) + ' @' + e.lineno + ':' + e.colno); }); });
-const ok = await p.evaluate(() => window.__enc.kit.unlock('amulet', { showcase: true, auto: 5.2 }));
+/* (R122: OPTS, a JSON object laid over the showcase's options, so its second style is opened as the chapter opens it:
+   OPTS='{"gather":"swirl","auto":6.91}') */
+const OPTS = JSON.parse(process.env.OPTS || '{}');
+const ok = await p.evaluate((o) => window.__enc.kit.unlock('amulet', Object.assign({ showcase: true, auto: 5.2 }, o)), OPTS);
 console.log('opened', ok);
 let lit = 0;
 for (const t of AT) {

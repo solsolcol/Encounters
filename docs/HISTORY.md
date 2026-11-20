@@ -9440,7 +9440,13 @@ What the baseline contains, by release:
   the frame, 27 to 36 degrees left of the lens's subject, and brought it to 0.2 m from his eyes; the lens now on the
   spirit through every beat, its scream held upright, its lunge stopped 0.65 m off, its hover over him beside his
   teacher; filmshots measures a whole body on the screen); R114 to R121 (his question on Symphony of the Night's
-  boss-death effect: his own copy of the video read frame by frame; the lessons put to him); sheet v151.
+  boss-death effect: his own copy of the video read frame by frame; the lessons put to him); sheet v151; 51 (deploy
+  `6affd63079fb863cc1408333`, 20 Nov: R122, "Build the castlevania style, but save the current version first": the
+  showcase gains a second way to gather its light, `gather: 'swirl'` (main.js scSwirl), as measured from his video:
+  36 gold comets with white-hot heads and strobed afterimages appear all over the screen, rush into one whirlpool that
+  closes into a seven-arm pinwheel, collapse into a white-hot point and bloom in a soft gold wash, the amulet born in it
+  1.33 s later than before; its two sounds, a glitter of small bells and a run that lands on a major chord at the bloom
+  (`bloomSound`, `bloomLead`); the chapter's SHOW_GATHER says 'swirl', and 'lines' puts build 50's back, kept whole).
 
 ## The sheet, version by version
 

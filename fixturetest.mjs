@@ -732,12 +732,22 @@ K.stakesShowcaseOwn = await p.evaluate(async () => {
   const shown = E.kit.unlock('amulet', { showcase: true, auto: 6, sound: 'itemunlock', onClose: () => { told++; } });
   await frames(3);
   const look = E.getState() === 'unlock' && !sc.classList.contains('hide') && un.classList.contains('hide') && sc.textContent.trim() === ''
-    && getComputedStyle(sc).backgroundColor === 'rgba(0, 0, 0, 0)' && E.stakes().show === 'amulet' && !!document.getElementById('scCv');
+    && getComputedStyle(sc).backgroundColor === 'rgba(0, 0, 0, 0)' && E.stakes().show === 'amulet' && !!document.getElementById('scCv')
+    && !sc.classList.contains('sw') && getComputedStyle(sc.querySelector('.scShaft')).display !== 'none';
   const flared = await until(() => sc.classList.contains('flare') || E.getState() === 'play', 20000) && sc.classList.contains('flare');
   const gone = await until(() => E.getState() === 'play', 20000) && told === 1 && E.unlockState().id === null && E.stakes().show === null;
   const hidden = await until(() => sc.classList.contains('hide'), 5000);
-  console.log('stakesShowcaseOwn', JSON.stringify({ shown, look, flared, gone, told, hidden }));
-  return shown && look && flared && gone && hidden;
+  /* (R122) the same showcase asked to gather the Castlevania way (`gather: 'swirl'`): its own class on the layer (its shaft
+     hidden, its birth held back: shell.html), and it flares, goes by itself and says so once, as the plain one does; the
+     plain one above wore none of it */
+  let told2 = 0;
+  const swirl = E.kit.unlock('amulet', { showcase: true, gather: 'swirl', auto: 7, sound: 'itemunlock', onClose: () => { told2++; } });
+  await frames(3);
+  const swLook = E.getState() === 'unlock' && sc.classList.contains('sw') && getComputedStyle(sc.querySelector('.scShaft')).display === 'none';
+  const swFlared = await until(() => sc.classList.contains('flare') || E.getState() === 'play', 30000) && sc.classList.contains('flare');
+  const swGone = await until(() => E.getState() === 'play', 30000) && told2 === 1 && E.unlockState().id === null;
+  console.log('stakesShowcaseOwn', JSON.stringify({ shown, look, flared, gone, told, hidden, swirl, swLook, swFlared, swGone }));
+  return shown && look && flared && gone && hidden && swirl && swLook && swFlared && swGone;
 }).catch(e => { console.log('stakesShowcaseOwn threw', e.message); return false; });
 await settle();
 /* v27.0 (seam 57, Chad 18 Nov: "empowers with a golden glow that spreads throughout the scene, tracing every item and
