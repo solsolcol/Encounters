@@ -92,11 +92,14 @@ const hud = await p.evaluate(() => { const rb = document.getElementById('reloadB
            fbShown: fb ? getComputedStyle(fb).display !== 'none' : null, obj: (document.getElementById('objTxt') || {}).textContent || '' }; });
 log('02 hud:', JSON.stringify(hud));
 checks.noReloadButton = hud.noReload && hud.rbShown === false && hud.fbShown === true;
-checks.objective = hud.obj.trim() === OBJ;
+checks.objective = hud.obj.trim() === OBJ || await until((o) => ((document.getElementById('objTxt') || {}).textContent || '').trim() === o, 60000, OBJ);   // (it eases in after the order's beat)
 await shot('fight-hud');
 
-const full = await rounds();
-log('03 the bowl holds', full);
+/* a full bowl is the weapon's own count (build 55's desktop drive found 13 here: one flick already spent by the time
+   the fight was on, its cause not yet traced; the first read is not "full") */
+const full = await p.evaluate(() => window.__CHAPTERS__.e4c4.weapon.rounds), first = await rounds();
+log('03 the bowl holds', first, 'of', full);
+checks.fullAtStart = first === full;
 const left = await emptyIt();
 await keepHer();
 if (PHONE) await press('#fireBtn'); else await p.keyboard.press('Space');
