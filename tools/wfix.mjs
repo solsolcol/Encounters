@@ -103,14 +103,22 @@ export function wfix(doc, spec, log = console.log) {
         const F = new Float32Array(n);
         for (let i = 0; i < n; i++) { if (armOf(i) <= 0) continue; const g = geo(i); if (g.t < 0 || g.t > 1.1 || g.side >= 0) continue;
           F[i] = smooth(R.from, R.to, g.d / radAt(Math.min(1, g.t))) * (R.tto ? smooth(R.tfrom || 0, R.tto, g.t) : 1); }
-        if (R.passes > 0) {
+        /* (`spread`, metres, in place of `passes`: the passes this body's own edges need for that reach, its median edge
+           measured: a pass moves the change about one edge, so a full body (3.4 mm edges) needs about eight times the
+           passes of a near one (11.6 mm) for the same slope; six passes on Mr Koh's full body left a notch in his side) */
+        let passes = R.passes || 0;
+        if (R.spread) { const I0 = p.getIndices().getArray(), el = [];
+          for (let t = 0; t < I0.length; t += 21) for (let k = 0; k < 3; k++) { const a = I0[t + k], c = I0[t + (k + 1) % 3]; el.push(Math.hypot(pos[3 * a] - pos[3 * c], pos[3 * a + 1] - pos[3 * c + 1], pos[3 * a + 2] - pos[3 * c + 2])); }
+          el.sort((x, y) => x - y); const med = el[el.length >> 1] || 1; passes = Math.max(0, Math.round((R.spread / med) ** 2));
+          log(`  wfix relief ${R.side}: median edge ${(med * 1000).toFixed(2)} mm, ${passes} passes for a spread of ${(R.spread * 1000).toFixed(1)} mm`); }
+        if (passes > 0) {
           const gid = new Int32Array(n), gm = new Map(); let G = 0;
           for (let i = 0; i < n; i++) { const k = Math.round(pos[3 * i] * 1e5) + ',' + Math.round(pos[3 * i + 1] * 1e5) + ',' + Math.round(pos[3 * i + 2] * 1e5); let g = gm.get(k); if (g === undefined) gm.set(k, g = G++); gid[i] = g; }
           let A = new Float32Array(G), cnt = new Float32Array(G); for (let i = 0; i < n; i++) { A[gid[i]] += F[i]; cnt[gid[i]]++; } for (let g = 0; g < G; g++) A[g] /= cnt[g];
           const I = p.getIndices().getArray(), nb = Array.from({ length: G }, () => new Set());
           for (let t = 0; t < I.length; t += 3) for (let k = 0; k < 3; k++) { const a = gid[I[t + k]], b = gid[I[t + (k + 1) % 3]]; if (a !== b) { nb[a].add(b); nb[b].add(a); } }
           const NB2 = nb.map(s => Int32Array.from(s));
-          for (let it = 0; it < R.passes; it++) { const B2 = new Float32Array(G); for (let g = 0; g < G; g++) { const m = NB2[g]; if (!m.length) { B2[g] = A[g]; continue; } let s = 0; for (const q of m) s += A[q]; B2[g] = 0.5 * A[g] + 0.5 * s / m.length; } A = B2; }
+          for (let it = 0; it < passes; it++) { const B2 = new Float32Array(G); for (let g = 0; g < G; g++) { const m = NB2[g]; if (!m.length) { B2[g] = A[g]; continue; } let s = 0; for (const q of m) s += A[q]; B2[g] = 0.5 * A[g] + 0.5 * s / m.length; } A = B2; }
           for (let i = 0; i < n; i++) F[i] = A[gid[i]];
         }
         let pts = 0, gave = 0;
@@ -122,7 +130,7 @@ export function wfix(doc, spec, log = console.log) {
           if (y <= lo.y) hi = lo; else if (y >= hi.y) lo = hi; else for (let q = 0; q + 1 < spine.length; q++) if (y >= spine[q].y && y <= spine[q + 1].y) { lo = spine[q]; hi = spine[q + 1]; m = (y - lo.y) / (hi.y - lo.y); break; }
           share[i].set(lo.j, (share[i].get(lo.j) || 0) + take * (1 - m)); if (hi !== lo) share[i].set(hi.j, (share[i].get(hi.j) || 0) + take * m);
           pts++; gave += take; touched[i] = 1; }
-        log(`  wfix relief ${R.side}: arm radius ${known.length} of ${NB} bins read (${Math.min(...known).toFixed(3)}-${Math.max(...known).toFixed(3)} m); ${pts} points of the side gave ${gave.toFixed(1)} of arm share to the spine (keep ${R.keep}, from ${R.from} to ${R.to} radii, along the arm from ${R.tfrom || 0} to ${R.tto || '-'}, spread ${R.passes || 0} passes)`);
+        log(`  wfix relief ${R.side}: arm radius ${known.length} of ${NB} bins read (${Math.min(...known).toFixed(3)}-${Math.max(...known).toFixed(3)} m); ${pts} points of the side gave ${gave.toFixed(1)} of arm share to the spine (keep ${R.keep}, from ${R.from} to ${R.to} radii, along the arm from ${R.tfrom || 0} to ${R.tto || '-'}, spread ${passes} passes)`);
       }
       let worst = 0, changed = 0;
       for (let i = 0; i < n; i++) { if (!touched[i]) continue; changed++;

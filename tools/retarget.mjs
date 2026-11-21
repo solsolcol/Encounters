@@ -252,7 +252,14 @@ const sampleQ = (tr, time) => {
 /* Parents before children — a child's local rotation is expressed under its
    parent's ALREADY-RETARGETED world rotation, so the order is not optional. */
 const mapped = [];
+/* v28.0 · --skip=<bone,bone>: those target bones are left at their rest (no track written); a child's world turn is the
+   source's all the same, solved under the parent's rest. The library's talk drops both collar bones 24 degrees and its
+   seated take raises them 12 to 24 (the collector, masters/v28.0/people/RECORD.md section 3b): on a narrow man the first
+   reads as a coat hanger's shoulders and the second as a shrug; left at rest (held there under their parent as it moves,
+   a track written), his arms still take the source's lines. Unset, nothing changes. */
+const SKIP = new Set(((process.argv.find(a => a.startsWith('--skip=')) || '--skip=').slice(7)).split(',').filter(Boolean));
 for (const dn of dstRest.order) {
+  if (SKIP.has(dn.getName())) { mapped.push({ dn, sn: null, name: '', skip: true }); continue; }
   const entry = Object.entries(MAP).find(([, v]) => v === dn.getName());
   if (!entry) continue;
   const sn = srcNode.get(entry[0]);
@@ -300,7 +307,7 @@ const srcChild = (sn, name) => srcNode.get(CHILD[name]) || sn.listChildren()[0] 
 if (ALIGN) {
   const sP = restPos(take), dP = restPos(dst);
   for (const { dn, sn, name } of mapped) {
-    if (name === 'Hips') continue;                // the hips' rest is the body's: never swung
+    if (name === 'Hips' || !sn) continue;                // the hips' rest is the body's: never swung
     const dc = dstChild(dn, name), sc = srcChild(sn, name);
     if (!dc || !sc) continue;
     const vd = vNorm(vSub(dP.get(dc), dP.get(dn))), vs = vNorm(vSub(sP.get(sc), sP.get(sn)));
@@ -311,9 +318,14 @@ if (ALIGN) {
 }
 const dstWorld = new Map();          // node -> per-frame world rotation
 const outLocal = new Map();          // node -> per-frame local rotation (the result)
-for (const { dn, sn } of mapped) {
-  const sRestW = srcRest.rot.get(sn), dRestW = dstRest.rot.get(dn);
+for (const { dn, sn, skip } of mapped) {
+  const sRestW = sn && srcRest.rot.get(sn), dRestW = dstRest.rot.get(dn);
   const world = new Array(F), local = new Array(F);
+  if (skip) {                                        // (--skip: held at its rest under its parent as that parent moves)
+    const dp = dstRest.parent.get(dn), rl = qNorm(dn.getRotation());
+    for (let f = 0; f < F; f++) { const dpW = dp ? (dstWorld.get(dp)?.[f] || dstRest.rot.get(dp) || [0, 0, 0, 1]) : [0, 0, 0, 1]; local[f] = rl; world[f] = qNorm(qMul(dpW, rl)); }
+    dstWorld.set(dn, world); outLocal.set(dn, local); continue;
+  }
   for (let f = 0; f < F; f++) {
     const sW = srcWorld.get(sn)[f];
     const delta = qMul(sW, qInv(sRestW));            // what the SOURCE turned through

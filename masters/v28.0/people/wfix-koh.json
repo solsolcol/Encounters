@@ -1,5 +1,5 @@
 {
- "_": "v28.0 \u00b7 Mr Koh's skin weights mended (tools/wfix.mjs, run by prepmonk WFIX=; RECORD.md section 5). THE SPIKE: one point of his left shoulder, 15 cm out from his head's line, held 0.74 of the Head where the points joined to it held 0.10 and 0.18; every turn of his head pulled it out of the body. `outlier` brings such a point down to its neighbours' mean (on his near body that one point; on his mid and full bodies there is none, and they are left as they are). A wider `leak` rule (the Head's share eased off everything 10 to 14 cm out) was tried first and refused: on his full body it opened 35 new stretched triangles at the collar, which rises with his neck. THE HOURGLASS: `relief` takes the arm's share off his sides under the arms, easing in from a quarter of the way down the upper arm to past half way: begun at the shoulder (0.15) it tore the armpit open in his talk, where his arms go out; begun at 0.35 it left the hourglass half there from behind. Each way photographed (scratch e4c5/cast2).",
+ "_": "v28.0 \u00b7 Mr Koh's skin weights mended (tools/wfix.mjs, run by prepmonk WFIX=; RECORD.md section 5). THE SPIKE: one point of his left shoulder, 15 cm out from his head's line, held 0.74 of the Head where the points joined to it held 0.10 and 0.18; every turn of his head pulled it out of the body. `outlier` brings such a point down to its neighbours' mean (on his near body that one point; on his mid and full bodies there is none, and they are left as they are). A wider `leak` rule (the Head's share eased off everything 10 to 14 cm out) was tried first and refused: on his full body it opened 35 new stretched triangles at the collar, which rises with his neck. THE HOURGLASS: `relief` takes the arm's share off his sides under the arms, easing in from a quarter of the way down the upper arm to past half way: begun at the shoulder (0.15) it tore the armpit open in his talk, where his arms go out; begun at 0.35 it left the hourglass half there from behind. The slope's reach is in metres (`spread` 28.4 mm: six passes on his near body's 11.6 mm edges, about 69 on his full body's 3.4 mm): six passes on the full body left a notch in each side at the top of his belly. Each way photographed (scratch e4c5/cast2).",
  "outlier": [
   {
    "bone": "Head",
@@ -15,12 +15,12 @@
    "to": 1.8,
    "tfrom": 0.25,
    "tto": 0.55,
-   "passes": 6,
    "spine": [
     "Spine02",
     "Spine01",
     "Spine"
-   ]
+   ],
+   "spread": 0.0284
   },
   {
    "side": "Right",
@@ -29,12 +29,12 @@
    "to": 1.8,
    "tfrom": 0.25,
    "tto": 0.55,
-   "passes": 6,
    "spine": [
     "Spine02",
     "Spine01",
     "Spine"
-   ]
+   ],
+   "spread": 0.0284
   }
  ]
 }

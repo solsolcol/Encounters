@@ -191,3 +191,47 @@ every 1/30 s, in the body's own frame; head travel and turn over each take):
 - No take was measured as a motion yet (headturn, gait, jointscan, feetscan, clipscan): the house rule asks it before a
   take is cast, and the faults above in the takes were seen in single frames only.
 - Nothing was generated a second time; no rig or remesh was sent again.
+
+## 5 · MR KOH: the shoulder spike and the shirt drawn in under his arms, mended in the prep (CAST-2, 21 Nov 2026)
+
+**Causes, measured** (scratch probes on the prepared near body: every triangle stretched past three times its rest in
+the talk, with its points' bones; each side's arm share by angle from the shoulder; the waist from the front and behind):
+- THE SPIKE: one triangle behind his left shoulder (rest 0.15 to 0.18 m out, 1.38 to 1.40 m up) whose three points held
+  the Head 0.18, 0.10 and 0.74. The third, 15 cm out from his head's line, went with every turn of his head: stretched
+  5.9 to 7.3 times at 0.4 to 0.6 of the talk. His mid and full bodies have no such point (none stretched at the shoulder).
+- THE HOURGLASS: the skin of his sides under the arms held 0.40 to 0.66 of the arm (a heavy man's side under a limb the
+  rig weighed as arm), and his stand and walk bring his arms in (calmarms, 12 degrees): the sides went in with them.
+
+**The mend** (tools/wfix.mjs, new, run by tools/prepmonk.mjs only when WFIX=<spec> is set; people/wfix-koh.json; his line
+in people.sh exports it, so all three levels take it):
+- `outlier`: a point holding more than 0.3 of the Head above the mean of the points joined to it is brought down to that
+  mean: on his near body exactly that one point (0.47 of share given to its other bones); on his mid and full none.
+- `relief`: on the inner half of each upper arm, a point further from the arm's line than the arm's own radius (read
+  along the arm from its outer half) keeps 0.3 of its arm share by 1.8 radii, eased in from a quarter of the way down the
+  upper arm to past half way and spread six times over the surface; what it gives goes to the spine round its height.
+- TRIED AND REFUSED, each photographed: a `leak` rule (the Head's share eased off everything 10 to 14 cm out: on his full
+  body it opened 35 new stretched triangles at the collar, which rises with his neck); the relief begun at the shoulder
+  (0.15 to 0.45: the sides straight, but in his talk, where the arms go out, the armpit's inside showed through in pale
+  tatters); begun at 0.35 (the talk as before, the hourglass half there from behind). The chosen one is between.
+**Proved**: with WFIX unset, Master Zavier's first body is prepared as people.sh prepares it and comes out the committed
+bytes (near 4af3b908ddc5..., full d05886dd081b...; scratch e4c5/cast2/zproof.sh, run with wfix.mjs and the hook in the
+tree). **Measured after**: no triangle at his shoulders stretched past three times in the talk on any level; in the stand,
+from in front his sides run straight down to his belly (the hourglass gone); from behind a little narrowing is left under
+the arms; in the talk the armpit as before the mend (a small pale notch where his scan's armpit opens, there in his file).
+
+## 7 · THE HEAVY PRAI: her arm into her side in the walk, mended (CAST-2, 21 Nov 2026)
+
+**Cause, measured** (tools/probes/armside.mjs, new: every 1/30 s of the walk, in her body's own frame, the arm's points
+that lie inside her torso's span across the same cell of height and depth, the armpit left out): her bind pose holds her
+arms 24 degrees out, her walk swings them from 9 to 30, and the house's arms-in (calmarms 18) left the swing's inner end
+at 9 degrees on hips a third wider than the walk was made for: her right arm in her side in 6 of 33 moments, 2.4 cm deep
+at 0.80 s (the notch in her dress at the waist). The weights were not the cause: taking the arm's share off her sides
+(tools/wfix.mjs `relief`, as Mr Koh's) left the arm passing in more often (12 moments, shallower), so it was not kept.
+**The mend** (people.sh, her CALM): the stand's arms at 21 degrees (was 18), the walk's at 24 with a third of its in-and-
+out kept (was 18 with half): the walk's arms now 21 to 27 degrees out. **After**: the right arm in her side in none of the
+33 moments; the left only as before (two points of the back of the upper arm close under the armpit, in one moment, 1.9
+cm); the stand in none of 301. filejoints: the walk clean; the stand's collar bones 10 to 13 degrees over neutral in three
+of 12 moments (the library's stand; the chapter's cast lets a stand's shrug down at run time). Photographed (front and
+close at 0.3 and 0.75 of the walk, before and after, opened full size): before, her right arm met her hip with a notch at
+the waist and hugged it on the back-swing; after, a clear gap between arm and body on both sides; the forward swing
+carries her left hand in front of her belly, as before.

@@ -17,6 +17,7 @@
                campaign is its own person: those numbers are scaled by 0.75 to 1.35, the pause after a line by 0.5 to
                1.5, the reading by 0.8 to 1.2 and the wrong presses by 0.5 to 1.5 (person())
      slow      a slow human: 400 ms to answer what the screen asks, 15% wrong presses
+     late      the pair played as the screen asks, a second and a half late on every press (the plan's 14.1)
      optimal   knows the rules: answers in 150 ms, never wrong, binds several before the golden shockwave, keeps
                Grandmaster Pho where he can reach the court
      masher    presses a random button (the switch among them) every 0.12 to 0.30 s, taps random Prai, swings the stick
@@ -299,6 +300,7 @@ function campaign(F, L, who, seed, opts) {
     // THE INVARIANTS (the plan's 14.1)
     if (st.stage === 'fight' && stageBefore === 'lost') { prevLeft = st.left; lastSwitch = -99; }
     if (st.left > prevLeft) bad('the count rose');
+    if (st.left < prevLeft - 1) bad('the count fell by more than one in a step');
     prevLeft = st.left;
     if (st.stage === 'fight' && st.left < 4) bad('the count under four in the fight');
     if (!Number.isFinite(st.sanity) || !Number.isFinite(st.cage.str) || !Number.isFinite(st.pho.x) || !Number.isFinite(st.zav.z)) bad('not a number');

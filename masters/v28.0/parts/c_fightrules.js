@@ -24,7 +24,8 @@
          5. Losing begins the FIGHT again (Chad's R14: "Fight restarts"); nothing is ever played for him.
 
        HOW THE CHAPTER USES IT (c_story.js, when the fight is built: the tracker's M8):
-         const fight = FIGHT.create({ sanity: <his sanity>, guard: <the worn piece's evGuard> });
+         const fight = FIGHT.create({ sanity: <his sanity> });      (guard left at 0 in the game: the engine's evCut guards
+           the drain events once, below; `guard` is for the simulation, which has no engine, to play the same sum)
          every frame of the mode:  const ev = FIGHT.step(fight, input, dt, { rand, secs: k => SECS[k] });
            input = { act } or { slot } (the button pressed: one a frame, the main one first), { mx, mz } (the stick, by
            the screen: up is -z, down the court), { pick: id } (a tap on a Prai) or { pickCloud: id } (a tap on a stale
@@ -54,24 +55,24 @@
         // THE TWO OF THEM
         phoWalk: 1.2, zavWalk: 0.6,           // his own Walking's travel (v26.0); his student is a man led
         apart: 1.45,                          // Grandmaster Pho never stands inside his student's cage (its bars 1.0, and himself)
-        switchLock: 0.6,                      // nothing pressed inside it is spent by the one who arrives
+        switchLock: 0.8,                      // nothing pressed inside it is spent by the one who arrives
         aiFar: 3.0, aiHome: [1.15, 1.3],      // the unplayed Grandmaster Pho walks back beside his student once this far
         // THE CAGE (his Lersi's, round him from the first moment to the last, never pressed for: the case file)
         cageR: 1.0, pressR: 1.3, himR: 0.55, waitR: 2.5, pressMax: 3,
-        cageMax: 100, wear: 5, mend: 6, whole: 30,
+        cageMax: 100, wear: 4, mend: 6, whole: 30,
         // HIS SANITY (the game's own stat)
-        drain: 2.5, gather: 1.5, lostAt: 12, floor: 40, surgeTo: 13, surgeSecs: 3,
+        drain: 2, gather: 2.0, lostAt: 12, floor: 40, surgeTo: 13, surgeSecs: 3,
         // THE PRAI
         paceCome: 0.6, paceSlip: 0.8, paceHide: 0.55, paceHidden: 0.5, rush: 2.2,
         enterSecs: 1.0, hideAfter: 1.5, weave: 0.9, weaveSecs: 1.8,
-        fleeSecs: 1.0, fleePace: 2.5, lurkSecs: 3,   // a Prai chased away flees, sinks, and lies still a while before it comes on
+        fleeSecs: 1.0, fleePace: 2.5, lurkSecs: 1.5, // a Prai chased away flees, sinks, and lies still a while before it comes on
         // FIRE (Grandmaster Pho's main act)
         fireWait: 1.1, flight: 0.7, fireReach: 5.5, push: 0.7, stopSecs: 0.8, aiFireWait: 3.3,
-        ringSecs: 10,                         // a tired Prai's ring closes over this; then it rises again, and hides
+        ringSecs: 6,                          // a tired Prai's ring closes over this; then it rises again, and hides
         // BAG
         bagReach: 2.5, bagSecs: 1.0,
         // THE GOLDEN SHOCKWAVE (his own R3: "travels as a circle outwards but with long cooldown")
-        waveWait: 40, waveBroken: 15, windSecs: 1.5, ringSpeed: 6, ringMax: 7, breakDist: 0.8, throwZ: -2.45, throwStop: 2.0,
+        waveWait: 50, waveBroken: 15, windSecs: 1.5, ringSpeed: 6, ringMax: 7, breakDist: 0.8, throwZ: -2.45, throwStop: 2.0,
         // BIND (Master Zavier's main act: Chad's "lock a prai in a bubble to stop it from escaping")
         bindWait: 3.5, bindReach: 5.5, bubbleSecs: 10, bubbleMax: 3,
         bubbleLongest: 30,                    // a bubble's own time, a hold's grace for the gold, the longest lend, and the gold gathered
@@ -79,18 +80,19 @@
         lendLongest: 9,                       // a lend, and the gold gathered and loosed under it
         // SMELL (only he finds a Prai that has gone unseen)
         smellWait: 2.5, showSecs: 4.0, staleSecs: 3.0,
-        drawSecs: 3.0, drawPace: 2.0, drawWear: 2.0,   // a breath taken for nothing (nothing hidden) draws every free Prai on, faster and harder
+        drawSecs: 3.0, drawPace: 2.5, drawWear: 3.0,   // a breath taken for nothing (nothing hidden) draws every free Prai on, faster and harder
         // LEND (his cage over his teacher while the gold is gathered)
         lendSecs: 6.0, lendAfter: 0.3,           // (pressed with the cage lent, the gold keeps the cage round him until it has gone out)
         // STAGE 3, THE FIGHT: the eight left after the lesson, in this order, each at its time while fewer than freeAt
         // allows are free on the court (one at a time once he asks his teacher to lead: after three losses)
         kinds3: ['come', 'slip', 'hide', 'come', 'slip', 'hide', 'slip', 'hide'],
         due3: [0, 12, 26, 42, 58, 74, 90, 106], entryGap: 1.5, leadMax: 1, breather: 8,
-        freeAt: [[0, 1], [24, 2], [58, 3], [90, 4]],   // how many may be free on the court at once, rising as the fight goes on
-        holdAt: [6, 4], holdSecs: 25, holdRetry: 12, holdPace: 1.0, goldGrace: 8,   // holdPace: how fast they move while the
-                                              // gold is gathered; goldGrace: in a hold, how long a bubble waits for the gold   // HOLD THE LINE, twice: at six left and at four the bag no longer takes
-                                              // them, the gold gathers itself anew (holdSecs), and only it can take them; after a wave
-                                              // that took none, holdRetry. The first hold ends when the gold has gathered; the last, at three
+        freeAt: [[0, 1], [24, 2]],             // how many may be free on the court at once: one, then two from 24 s
+        // HOLD THE LINE, twice: at six left and at four the bag no longer takes them, the gold gathers itself anew
+        // (holdSecs), and only it can take them; after a wave that took none, holdRetry. The first hold ends when the gold
+        // has gathered; the last, at three. While a hold stands they come on at holdPace (the gathering gold weighs on
+        // them), and once the gold is ready a bubble waits goldGrace for it
+        holdAt: [6, 4], holdSecs: 40, holdRetry: 12, holdPace: 0.45, goldGrace: 8,
         // STAGES 4 TO 6
         togetherAfter: 1.5, togetherSecs: 1.2, filmGuard: 40,
         // THE VOICE (one at a time, v5.30; a need's prompt never closer than needCap to the last line)
@@ -161,7 +163,7 @@
         last:     { pho: ['ph5nd3', 'ph5nd3', 'ph5nd3'] }
       };
       const ONCE = {
-        ph5l2: 3, q5c0: 3, ph5f0: 3, ph5f2: 3, ph5fa: 3, ph5fc: 3, ph5f10: 3, ph5fe: 3, ph5fg: 3, ph5fh: 3, ph5fi: 3, ph5ne1: 3, ph5c1: 3, ph5c3: 3, ph5c4: 3,
+        ph5l2: 3, q5c0: 3, ph5f0: 3, ph5f2: 3, ph5fa: 3, ph5fc: 3, ph5f10: 3, ph5fe: 3, ph5fg: 3, ph5fh: 3, ph5fi: 3, ph5fj: 3, ph5ne1: 3, ph5c1: 3, ph5c3: 3, ph5c4: 3,
         ph5g1: 2, ph5g2: 2, ph5g3: 2, ph5g4: 2,
         q5c1: 0, q5c2: 3, q5c3: 0, q5c4: 0, q5c5: 0,
         tn5c0: 0, ko5c1: 0, tn5c1: 0, ju5c1: 0, tn5c2: 0, ju5c2: 3, tn5c3: 0
@@ -420,7 +422,11 @@
       /* ------------------------------------------------------------------ the acts */
       function doAct(st, act, input) {
         const w = why(st, act);
-        if (w) { refuse(st, act, w); return; }
+        if (w) {
+          refuse(st, act, w);
+          if (w === 'full' && st.stage === 'fight') sayOnce(st, 'ph5fj');   // the first BIND his hands cannot make is told, once
+          return;
+        }
         const n = st.n, ph = st.pho, z = st.zav;
         switch (act) {
           case 'START': begin(st); return;
@@ -517,7 +523,7 @@
         for (let i = 0; i < 8; i++) { const p = fresh(2 + i, n.kinds3[i]); p.due = n.due3[i]; st.prai[1 + i] = p; }
         st.left = 8; st.lead = !!lead;
         st.cage.str = n.cageMax; st.cage.broken = false; st.cage.lent = 0;
-        st.flights.length = 0; st.clouds.length = 0; st.lastEntry = -99;
+        st.flights.length = 0; st.clouds.length = 0; st.lastEntry = -99; st.drawT = 0; st.goldAt = -1;   // (a breath taken for nothing in the lost fight is not carried into the next)
         const ph = st.pho, z = st.zav;
         ph.wind = 0; ph.ring = null; ph.draw = 0; ph.fireWait = 0; ph.aiWait = n.aiFireWait;
         ph.waveWait = n.waveWait; z.bindWait = 0; z.smellWait = 0;
@@ -691,7 +697,7 @@
             p.ring = n.ringSecs; setSt(st, p, 'held', 'fire on a bound one'); result = 'tired';
             if (st.stage === 'learn') sayOnce(st, 'ph5fa');
             else if (!st.firsts.boundFire) { st.firsts.boundFire = true; sayOnce(st, 'ph5g2'); }
-          } else if (p.kind === 'slip' && (p.st === 'coming' || p.st === 'pressing' || p.st === 'through')) {
+          } else if (p.kind === 'slip' && (p.st === 'coming' || p.st === 'pressing' || p.st === 'through' || p.st === 'shown')) {
             result = 'slipped'; st.stats.slipped++;
           } else if (p.st === 'coming' || p.st === 'pressing' || p.st === 'through' || p.st === 'shown') {
             chase(st, p); result = 'chased';
@@ -749,21 +755,23 @@
         const n = st.n, ph = st.pho, circle = ph.ring;
         if (!circle) return;
         circle.r += n.ringSpeed * dt;
-        for (const p of st.prai) {
+        let took = false;                                         // the count falls by one a step: a second one the ring has
+        for (const p of st.prai) {                                // reached is gathered on the next (one mark, one note, at a time)
           const bit = 1 << p.id;
           if (circle.touched & bit) continue;
           if (p.st === 'waiting' || p.st === 'gathered' || p.st === 'drawn' || p.st === 'entering' || p.st === 'fleeing' || p.st === 'shape' || p.st === 'laid' || p.st === 'tired') continue;
           if (dist(circle.x, circle.z, p.x, p.z) > circle.r) continue;
+          if (took && (p.st === 'bound' || p.st === 'held')) continue;
           circle.touched |= bit;
           if (p.st === 'bound' || p.st === 'held') {
             // gathered at once: never past the three the surge waits on, and never the count jumped (the plan's 5.5)
             if (st.stage === 'fight' && st.left - 1 < 3) { if (p.st === 'bound') { p.ring = n.ringSecs; setSt(st, p, 'held', 'the gold'); } continue; }
-            setSt(st, p, 'gathered', 'the gold'); p.hold = ''; st.left--; circle.gathered++; st.stats.byWave++;
+            setSt(st, p, 'gathered', 'the gold'); p.hold = ''; st.left--; circle.gathered++; st.stats.byWave++; took = true;
             st.ev.push({ e: 'gathered', id: p.id, by: 'wave', left: st.left });
             leftLines(st);
           } else throwBack(st, p, circle);
         }
-        if (circle.r >= n.ringMax) {
+        if (circle.r >= n.ringMax && !took) {                     // (it goes out only once a step has taken nothing more)
           ph.ring = null;
           if (st.cage.lent > n.lendAfter) st.cage.lent = n.lendAfter;
           if (!st.firsts.wave) {
@@ -793,12 +801,12 @@
       }
       function praiTick(st, dt) {
         const n = st.n, z = st.zav, cage = st.cage, lent = cage.lent > 0, holds = !cage.broken && !lent;
-        // a bubble does not run down while the cage is lent, nor, in a hold, for goldGrace seconds from the moment the gold
-        // is ready, nor while the gold is gathered and goes out (a bubble never ends in the instant the gold is asked for;
-        // the grace is a number, so a bubble is still a timed thing with a longest stand: bubbleLongest)
+        // a bubble does not run down while the cage is lent, nor while the gold is gathered and goes out, nor, in a hold,
+        // for goldGrace seconds from the moment the gold is ready (a bubble never ends in the instant the gold is asked
+        // for; the grace is a number, so a bubble is still a timed thing with a longest stand: bubbleLongest)
         const ph = st.pho, goldNow = st.hold > 0 && ph.waveWait <= 0 && !(ph.wind > 0) && !ph.ring;
         if (!goldNow) st.goldAt = -1; else if (!(st.goldAt >= 0)) st.goldAt = st.t;
-        const still = lent || (st.hold > 0 && ((goldNow && st.t - st.goldAt < n.goldGrace) || ph.wind > 0 || !!ph.ring));
+        const still = lent || ph.wind > 0 || !!ph.ring || (goldNow && st.t - st.goldAt < n.goldGrace);
         const drawn = (st.drawT > 0 ? n.drawPace : 1) * (st.hold ? n.holdPace : 1);   // his senses opened wide draw them on; the gathering gold weighs on them
         let pressing = 0;
         for (const p of st.prai) if (p.st === 'pressing') pressing++;
@@ -973,7 +981,7 @@
           const s = p.st;
           if (s === 'bound' || s === 'held') bound++;
           if (seenFree(p)) seenN++;
-          if (atHim(p) && s !== 'beneath') { if (p.kind === 'slip' && s !== 'shown') { if (!aHimSlip) aHimSlip = p; } else if (!aHim || p.gath < aHim.gath) aHim = p; }
+          if (atHim(p) && s !== 'beneath') { if (p.kind === 'slip') { if (!aHimSlip) aHimSlip = p; } else if (!aHim || p.gath < aHim.gath) aHim = p; }
           else if (s === 'beneath') { if (!aBen) aBen = p; }
           else if (s === 'bound') { if (!onFlight(st, p.id) && (!aBound || dist(ph.x, ph.z, p.x, p.z) < dist(ph.x, ph.z, aBound.x, aBound.z))) aBound = p; }
           else if (s === 'tired' || s === 'held') {
@@ -1004,7 +1012,7 @@
           if (lentGo) return mk('waveGo', 'SHOCKWAVE');
           if (goldFirst) return freeNear ? mk('waveLend', 'SWITCH', null, !lock) : mk('waveSafe', 'SHOCKWAVE');
           if (aHim) return mk('athimF', 'FIRE', aHim, fireOk && !lock);                    // chase it off him
-          if (aHimSlip) return mk('athimS', 'SWITCH', aHimSlip, !lock);
+          if (aHimSlip && !full) return mk('athimS', 'SWITCH', aHimSlip, !lock);
           if (aBen) return mk('beneath', 'SWITCH', aBen, !lock);
           if (waveReady && bound && !st.lesson.wave.startsWith('pend')) return freeNear ? mk('waveLend', 'SWITCH', null, !lock) : mk('waveSafe', 'SHOCKWAVE');
           if (st.lesson.wave === 'pending' && bound) return mk('waveL', 'SWITCH', null, !lock);
@@ -1014,12 +1022,13 @@
           if (aTired && !(st.hold > 0)) return bagNeed(st, 'tired', aTired, mk);
           if (aPressCome && st.cage.str < 35) return mk('cage', 'FIRE', aPressCome, fireOk && !lock);   // the cage nearly gone: chase it off
           if (pending) return bound ? mk('waveL', 'SWITCH', null, !lock) : mk('waveB', 'SWITCH', null, !lock);
-          if (aPress) return mk('press', 'SWITCH', aPress, !lock);
-          if (aShown) return mk('shown', 'SWITCH', aShown, !lock);
+          if (aPress && !full) return mk('press', 'SWITCH', aPress, !lock);
+          if (aPressCome && full) return mk('cage', 'FIRE', aPressCome, fireOk && !lock);   // his hands are full: chase it off his cage
+          if (aShown && !full) return mk('shown', 'SWITCH', aShown, !lock);
           if (waveReady && worth) return freeNear ? mk('waveLend', 'SWITCH', null, !lock) : mk('waveSafe', 'SHOCKWAVE');
-          if (aSlip) return mk('slip', 'SWITCH', aSlip, !lock);
+          if (aSlip && !full) return mk('slip', 'SWITCH', aSlip, !lock);
           if (aHid) return mk('hidden', 'SWITCH', aHid, !lock);
-          if (aCome) return mk('come', 'SWITCH', aCome, !lock);
+          if (aCome && !full) return mk('come', 'SWITCH', aCome, !lock);
           return null;
         }
         // MASTER ZAVIER, PLAYED: what is at him, what is under him, what presses his cage; what the smell has shown; the
@@ -1028,7 +1037,8 @@
         if (goldFirst && !(st.cage.lent > 0)) return mk('waveLend', 'LEND', null, !lock);
         if ((aHim || aHimSlip) && bindSoon) return mk('athimB', 'BIND', aHim || aHimSlip, bindOk && !lock);
         if (aHim) return mk('athimSw', 'SWITCH', aHim, !lock);                // his BIND is far off: his teacher's fire chases it off
-        if (aHimSlip) return mk('athimB', 'BIND', aHimSlip, false);            // the fire cannot touch it: his BIND, as soon as it is back
+        if (aHimSlip && !full) return mk('athimB', 'BIND', aHimSlip, false);   // the fire cannot touch it: his BIND, as soon as it is back
+        // (three bubbles already stand: his hands are full, and what frees one is his teacher's fire and bag, below)
         if (aBen && smellSoon) return mk('beneath', 'SMELL', aBen, smellOk && !lock);
         if (waveReady && bound && !(st.cage.lent > 0)) return mk(st.lesson.wave === 'pending' ? 'waveL' : 'waveLend', 'LEND', null, !lock);   // the gold, the way out
         if (aPress && bindSoon) return mk('press', 'BIND', aPress, bindOk && !lock);
