@@ -18,21 +18,24 @@
      MODE=restart: her life run out, and the card's Restart chapter tapped: the chapter's start (his teacher's first
        words, the history's order, the spawn), nothing held; then the whole chapter played by the finger to the fight
        again (the drive probe's order), Pho's four lines heard again before the water, and the brief.
+     MODE=button: straight to the fight (a save seeded with the water taken), its button at its largest breath measured
+       against every HUD box and photographed full size, in the water's colour and in the gold; DESK=1 on a desktop page
+       (1280 x 800, a mouse: every press a click) instead of the phone's.
    Every page error is printed; the run exits non-zero on one or on a failed check.
      ENC_DIST=<snapshot> CHROMIUM_PATH=... [MODE=retry|restart] [OPT=C] [OUT=dir] [DSF=2] node tools/probes/e4c4retry.mjs */
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 import { LAUNCH, PAGE } from '../../testlib.mjs';
-const MODE = process.env.MODE || 'retry', OPT = process.env.OPT || 'C', OPT_I = 'ABCD'.indexOf(OPT);
-const OUT = process.env.OUT || '/tmp/e4c4retry-' + MODE;
+const MODE = process.env.MODE || 'retry', OPT = process.env.OPT || 'C', OPT_I = 'ABCD'.indexOf(OPT), DESK = MODE === 'button' && !!process.env.DESK;
+const OUT = process.env.OUT || '/tmp/e4c4retry-' + MODE + (DESK ? '-desk' : '');
 fs.mkdirSync(OUT, { recursive: true });
-const W = 390, H = 844, DSF = +(process.env.DSF || 2);
+const W = DESK ? 1280 : 390, H = DESK ? 800 : 844, DSF = +(process.env.DSF || (DESK ? 1 : 2));
 const SPAWN = { x: 0.15, y: 1.62, z: 1.0, ry: Math.PI };
 const SIGHT = 'sight:r,m,f,o,a,k,v,l1,l2,l3';
 const WHY = ['ph4k1', 'ph4k2', 'ph4k3', 'ph4k4'];
 const b = await chromium.launch(LAUNCH);
-const ctx = await b.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: DSF, hasTouch: true, isMobile: true });
-const save = { v: 2, ch: 'e4c4', stats: { sanity: 90, awareness: 55, wisdom: 52 }, inv: { gear: {}, bag: [] }, phase: SIGHT,
+const ctx = await b.newContext(DESK ? { viewport: { width: W, height: H }, deviceScaleFactor: DSF } : { viewport: { width: W, height: H }, deviceScaleFactor: DSF, hasTouch: true, isMobile: true });
+const save = { v: 2, ch: 'e4c4', stats: { sanity: 90, awareness: 55, wisdom: 52 }, inv: { gear: {}, bag: [] }, phase: MODE === 'button' ? 'bless:r,m,f,o,a,k,v,l1,l2,l3,w,y' : SIGHT,
                conduct: { s: 0, a: 0, notes: [] }, choices: {}, at: SPAWN, done: false, t: 1 };
 /* the save seeded once in this context (a reload keeps what the game wrote since) */
 await ctx.addInitScript(s => { if (!sessionStorage.getItem('seeded')) { localStorage.setItem('mz.encounters.checkpoint', s); sessionStorage.setItem('seeded', '1'); } }, JSON.stringify(save));
@@ -43,7 +46,7 @@ p.on('console', m => { if (m.type() === 'error' || /failed|threw|has no take|no 
 const T0 = Date.now(), log = (...a) => console.log(((Date.now() - T0) / 1000).toFixed(0) + 's', ...a);
 const wait = (ms) => p.waitForTimeout(ms);
 const frames = (n = 3) => p.evaluate((n) => new Promise(r => { let k = 0; const f = () => (++k >= n ? r() : requestAnimationFrame(f)); requestAnimationFrame(f); }), n);
-const tap = (x, y) => p.touchscreen.tap(Math.round(x), Math.round(y));
+const tap = (x, y) => DESK ? p.mouse.click(Math.round(x), Math.round(y)) : p.touchscreen.tap(Math.round(x), Math.round(y));
 const until = (fn, ms, arg) => p.waitForFunction(fn, arg, { timeout: ms, polling: 250 }).then(() => true, () => false);
 let shotN = 0;
 const shot = async (tag, clip) => { await frames(3); try { await p.screenshot({ path: `${OUT}/${String(++shotN).padStart(2, '0')}-${tag}.png`, timeout: 240000, ...(clip ? { clip } : {}) }); } catch { log('  (a slow frame: no picture)'); } };
@@ -147,6 +150,7 @@ async function loseIt(tag) {
 /* ============================================================== to the fight, the first time */
 checks.booted = await (async () => { await p.goto(PAGE, { waitUntil: 'load', timeout: 240000 }); return boot('first'); })();
 log('in play:', JSON.stringify(await info()));
+if (MODE !== 'button') {
 checks.atSight = (await info()).phase === 'sight';
 /* his sight opened and shut: the reading, then the blessing */
 checks.eyeOpened = await eye(true);
@@ -172,6 +176,7 @@ await shot('why-done-order');
 /* the water taken, its splash closed: the brief */
 log('the water:', await pressSpot('water'));
 await closeSplash();
+}
 const A = await atBrief('first');
 checks.briefFirst = A.ok;
 checks.briefNoReload = !/reload|R to |gold icon|refill/i.test(A.text);
@@ -219,6 +224,20 @@ checks.breathInside = M.fb.l >= 0 && M.fb.t >= 0 && M.fb.r <= W && M.fb.b <= H;
 checks.breathClear = hitsBtn.length === 0;
 await shot('button-largest-breath');
 await shot('button-crop', { x: Math.max(0, M.fb.l - 60), y: Math.max(0, M.fb.t - 60), width: Math.min(W, M.fb.r + 60) - Math.max(0, M.fb.l - 60), height: Math.min(H, M.fb.b + 60) - Math.max(0, M.fb.t - 60) });
+if (MODE === 'button') {
+  /* and in the gold: the water's colour handed to the button as the gold gives it (kit.sprayColor), at the same breath */
+  await p.evaluate(() => window.__enc.kit.sprayColor(0xffc24a, { size: 1.6 }));
+  await frames(3);
+  const ring = await p.evaluate(() => getComputedStyle(document.getElementById('fireBtn'), '::before').boxShadow);
+  log('in the gold, its light:', ring);
+  checks.goldLight = /255, 194, 74/.test(ring);
+  await shot('button-gold-largest-breath');
+  await shot('button-gold-crop', { x: Math.max(0, M.fb.l - 60), y: Math.max(0, M.fb.t - 60), width: Math.min(W, M.fb.r + 60) - Math.max(0, M.fb.l - 60), height: Math.min(H, M.fb.b + 60) - Math.max(0, M.fb.t - 60) });
+  await p.evaluate(() => window.__enc.kit.sprayColor(null));
+  /* the smallest breath too, for the picture's sake */
+  await p.evaluate(() => { for (const a of document.getAnimations()) if (a.animationName === 'wpnBreath' || a.animationName === 'wpnGlow') a.currentTime = 0; });
+  await shot('button-smallest-breath-crop', { x: Math.max(0, M.fb.l - 60), y: Math.max(0, M.fb.t - 60), width: Math.min(W, M.fb.r + 60) - Math.max(0, M.fb.l - 60), height: Math.min(H, M.fb.b + 60) - Math.max(0, M.fb.t - 60) });
+}
 await p.evaluate(() => { for (const a of document.getAnimations()) if (a.animationName === 'wpnBreath' || a.animationName === 'wpnGlow') a.play(); });
 /* twenty flicks, never dry; R does nothing */
 await keepHer();
@@ -233,7 +252,9 @@ checks.neverDry = F20.flicks >= 18 && F20.dry === 0 && !/holy water/i.test(F20.w
 checks.rNothing = F20.dip !== 'reload' && F20.motes === 0;
 await shot('fight-flicks');
 
-if (MODE === 'retry') {
+if (MODE === 'button') {
+  /* (nothing more: the button's pictures and boxes are this mode's) */
+} else if (MODE === 'retry') {
   /* ========================================================== lost, the page reloaded, Continue */
   const L1 = await loseIt('loss1');
   checks.loss1 = L1.filmed && L1.lost && L1.ready && L1.card.say.startsWith('Too many green spirits reached Amma') && L1.card.restart === 'Restart chapter';
