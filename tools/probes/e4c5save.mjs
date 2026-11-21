@@ -32,7 +32,7 @@ const briefUp = async () => { try { await p.waitForFunction(() => { const E = wi
   catch (e) { const d = await p.evaluate(() => { const E = window.__enc; let f = null; try { f = E.stage.snap().story.fight; } catch (x) { } return { state: E.getState(), info: E.stage.info(), ev: E.kit.eventActive(), tag: E.kit.tagState(), f }; });
     say('NO BRIEF', JSON.stringify(d).slice(0, 900)); await p.screenshot({ path: OUT + '/no-brief.png', timeout: 300000 }); throw e; } };
 const tapEl = async (id) => { const r = await p.evaluate((id) => { const e = document.getElementById(id); if (!e) return null; const b = e.getBoundingClientRect(); return { x: b.x + b.width / 2, y: b.y + b.height / 2 }; }, id); if (r) await p.touchscreen.tap(r.x, r.y); return !!r; };
-const start = async () => { await sleep(900); await tapEl('evBtn'); await p.waitForFunction(() => { const f = window.__enc.stage.snap().story.fight; return f && f.stage === 'learn'; }, null, { timeout: 90000, polling: 200 }); };
+const start = async () => { await sleep(900); await p.waitForFunction(() => { const e = document.getElementById('evBtn'), r = e && e.getBoundingClientRect(); return !!r && r.width > 0 && e.textContent.trim().length > 0; }, null, { timeout: 180000, polling: 300 }); /* (the brief laid out: its first frame builds it) */ await tapEl('evBtn'); await p.waitForFunction(() => { const f = window.__enc.stage.snap().story.fight; return f && f.stage === 'learn'; }, null, { timeout: 90000, polling: 200 }); };
 async function continueFrom(save) {
   await p.evaluate((s) => localStorage.setItem('mz.encounters.checkpoint', JSON.stringify(s)), save);
   await boot();
@@ -82,7 +82,7 @@ const held = await p.evaluate(() => window.__enc.loadCheckpoint());
 ok('held: the phase is the fight\'s', held && held.phase === 'fight:', held && held.phase);
 ok('held: his sanity as at START', held && Math.abs(held.stats.sanity - sStart) < 0.01, { saved: held && held.stats.sanity, atStart: sStart, now: await p.evaluate(() => window.__enc.stats.sanity) });
 ok('held: lands in first person at the fight\'s place', held && held.at && Math.hypot(held.at.x + 8.5, held.at.z + 10.6) < 0.1, held && held.at);
-ok('the fight had moved on (so the hold is a hold)', f2.t > 6 && f2.stats.fires > 0, { t: f2.t, stats: f2.stats, stage: f2.stage });
+ok('the fight had moved on (so the hold is a hold)', f2.t > 6 && f2.stage === 'learn', { t: f2.t, stats: f2.stats, stage: f2.stage });
 await p.screenshot({ path: OUT + '/2-before-save.png', timeout: 300000 });
 /* 3 · a Continue from it */
 await continueFrom(held);

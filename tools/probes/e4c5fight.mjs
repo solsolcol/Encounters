@@ -75,6 +75,7 @@ await p.waitForFunction(() => window.__enc.kit.eventActive() && window.__enc.kit
 await sleep(1500); await pic('brief');
 let s = await snap();
 log.briefText = s.f;
+await p.waitForFunction(() => { const e = document.getElementById('evBtn'), r = e && e.getBoundingClientRect(); return !!r && r.width > 0 && e.textContent.trim().length > 0; }, null, { timeout: 180000, polling: 300 });   // (the brief laid out: its first frame builds it)
 for (let i = 0; ; i++) {                                     // (START by a tap on it; again if a tap was not taken, each written)
   s = await snap(); say('  START at', JSON.stringify(s.btn.start), 'ev', s.ev, 'state', s.state);
   await tap(s.btn.start, 'START');
