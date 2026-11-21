@@ -46,7 +46,7 @@ const CLIP = ([src]) => {
   if (!near.length) return { skip: 'no body near', who, k };
   const under = (o) => { for (let q = o; q; q = q.parent) if (keep.has(q)) return true; return false; };
   const hid = []; scene.traverse(o => { if ((o.isMesh || o.isLine || o.isPoints || o.isSprite) && o.visible && !under(o)) { o.visible = false; hid.push(o); } });
-  let r; try { r = (0, eval)('(' + src + ')')([0.1, 4, 0.05, at.x, at.z]); } finally { for (const o of hid) o.visible = true; }
+  let r; try { r = (0, eval)('(' + src + ')')([0.1, 1000, 0.05, at.x, at.z]); } finally { for (const o of hid) o.visible = true; }
   return { who, k, near, objects: r.objects, pairs: r.pairs.map(q => ({ hits: q.hits, rest: q.rest, at: q.at, a: q.a.label.slice(0, 48), b: q.b.label.slice(0, 48) })) };
 };
 /* once a page: the stick's surface (its points and facings in its own frame, hashed by 2 cm cells) and, for each skin of his,

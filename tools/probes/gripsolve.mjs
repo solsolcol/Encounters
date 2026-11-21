@@ -116,7 +116,7 @@ root.listMeshes().forEach(mesh => mesh.listPrimitives().forEach(pr => { const P 
     for (let q = 0; q < 4; q++) { if (!(ww[q] > 0)) continue; t3.copy(v).applyMatrix4(SK[jj[q]]).multiplyScalar(ww[q]); acc.add(t3); sw += ww[q]; }
     acc.divideScalar(sw || 1).applyMatrix4(mhInv);                                   // (into the hand's own frame)
     const r = acc.clone().sub(C), along = r.dot(A), radial = r.addScaledVector(A, -along).length();
-    pts.push([fam, +acc.x.toFixed(5), +acc.y.toFixed(5), +acc.z.toFixed(5), +((radial * s - NUM.STICK_R) * 100).toFixed(2)]); } }));
+    pts.push([fam, +acc.x.toFixed(5), +acc.y.toFixed(5), +acc.z.toFixed(5), +((radial * s - NUM.STICK_R) * 100).toFixed(2), nm(joints[best]).replace(/^RightHand/, '') || 'Palm']); } }));
 const per = {}; for (const p of pts) { const F = per[p[0]] || (per[p[0]] = { n: 0, inside: 0, deepCm: 0 }); F.n++; if (p[4] < -0.3) F.inside++; F.deepCm = Math.max(F.deepCm, -p[4]); }
 const V = (v) => v.toArray().map(x => +x.toFixed(5));
 fs.writeFileSync(OUT, JSON.stringify({ NUM, s, fL: V(fL), nL: V(nL), acL: V(acL), A: V(A), C: V(C), report: out.report, chains: Object.fromEntries(Object.entries(chainPts).map(([k, p]) => [k, p.map(V)])),

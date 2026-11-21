@@ -196,10 +196,10 @@ const CLIP = () => p.evaluate(([src]) => {
   scene.traverse(o => { if (!o.isSkinnedMesh) return; const r = rootOf(o), q = new V(); r.getWorldPosition(q); if (Math.hypot(q.x - at.x, q.z - at.z) < 2.5) keep.add(r); });
   const under = (o) => { for (let q = o; q; q = q.parent) if (keep.has(q)) return true; return false; };
   const hid = []; scene.traverse(o => { if ((o.isMesh || o.isLine || o.isPoints || o.isSprite) && o.visible && !under(o)) { o.visible = false; hid.push(o); } });
-  let r; try { r = (0, eval)('(' + src + ')')([0.1, 4, 0.05, at.x, at.z]); } finally { for (const o of hid) o.visible = true; }
+  let r; try { r = (0, eval)('(' + src + ')')([0.1, 1000, 0.05, at.x, at.z]); } finally { for (const o of hid) o.visible = true; }
   return { objects: r.objects, pairs: r.pairs.map(q => ({ hits: q.hits, rest: q.rest, at: q.at, a: q.a.label.slice(0, 48), b: q.b.label.slice(0, 48) })) };
 }, [ANALYSE_SRC]);
-const clipSay = (c) => c.err ? c.err : c.pairs.length ? c.pairs.map(q => `${q.a} x ${q.b}: ${q.hits} at ${JSON.stringify(q.at)}`).join(' | ') : 'none';
+const clipSay = (c) => c.err ? c.err : (c.pairs.length ? c.pairs.map(q => `${q.a} x ${q.b}: ${q.hits} at ${JSON.stringify(q.at)}`).join(' | ') : 'none') + ` (${c.objects} objects measured)`;
 /* HIS REST, the stick's distances to beat (his standing rest's own moment, Sit_to_Stand_Transition_M at 5.85 s, as the fight
    stands him: held by the lab, so a take posed before it cannot linger) */
 const REST = ['Sit_to_Stand_Transition_M', 5.85];
