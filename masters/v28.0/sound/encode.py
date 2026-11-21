@@ -63,11 +63,9 @@ def mus(n, src, af):
     print(f'{n:14s} music: mp3 {peak(os.path.join(A, n + ".mp3")):.1f}  ogg {peak(os.path.join(O, n + ".ogg")):.1f}', flush=True)
 def mbed(n, src, secs, start, af):
     w = pre(src, n, af + ',aformat=channel_layouts=stereo')
-    run('python3', os.path.join(M, 'v21.2/musicloop.py'), w, str(secs), str(start))
-    lw = os.path.join(os.path.dirname(w), 'w_' + os.path.basename(w))
-    if not os.path.exists(lw): lw = 'w_' + os.path.basename(w)
+    subprocess.run(['python3', os.path.join(M, 'v21.2/musicloop.py'), w, str(secs), str(start)], check=True, cwd=TMP)
+    lw = os.path.join(TMP, 'w_' + os.path.splitext(os.path.basename(w))[0] + '.wav')
     p = os.path.join(TMP, n + '_p.wav'); run('python3', '-I', os.path.join(M, 'v24.34/music/padloop.py'), lw, p)
-    if os.path.exists('w_' + os.path.basename(w)): os.remove('w_' + os.path.basename(w))
     mus(n, p, 'anull')
 for n, o in PICKS.items():
     if only and n not in only: continue
@@ -81,6 +79,5 @@ for n, o in PICKS.items():
     elif k == 'bed': bed(n, src)
     elif k == 'music': mus(n, src, af or 'anull')
     elif k == 'mbed': mbed(n, src, o['secs'], o['start'], af or 'anull')
-    elif k == 'stem': flat(n, os.path.join(R, o['wav']), 2, '128k') if os.path.exists(os.path.join(R, o['wav'])) else flat(n, o['wav'], 2, '128k')
-    elif k == 'note': flat(n, os.path.join(TMP, '..', o['wav']) if False else o['wav'], 1, '96k')
+    elif k in ('stem', 'note'): flat(n, os.path.join(os.environ.get('MADE', ''), o['wav']), 2 if k == 'stem' else 1, '128k' if k == 'stem' else '96k')
 shutil.rmtree(TMP, ignore_errors=True)

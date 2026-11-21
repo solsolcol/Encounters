@@ -8899,5 +8899,44 @@
     "heard": "Stay behind the thread, Mr Koh."
    }
   }
+ },
+ "ju5c1": {
+  "who": "jun",
+  "text": "[awed] Did you feel that? Like a door slammed.",
+  "pick": "b",
+  "why": "the tighter read",
+  "med": 2.8499999999999996,
+  "takes": {
+   "a": {
+    "len": 3.28,
+    "first": 0.0,
+    "last": 2.86,
+    "e_first": 0.14,
+    "e_last": 3.12,
+    "tail_db": -57.7,
+    "tail_rel": -43.1,
+    "hole": 0.82,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.68,
+    "heard": "Did you feel that? Like a door slammed."
+   },
+   "b": {
+    "len": 2.88,
+    "first": 0.0,
+    "last": 2.64,
+    "e_first": 0.14,
+    "e_last": 2.86,
+    "tail_db": -32.2,
+    "tail_rel": -17.8,
+    "hole": 0.56,
+    "sim": 1.0,
+    "tag_said": false,
+    "clean_end": true,
+    "wps": 2.94,
+    "heard": "Did you feel that? Like a door slammed."
+   }
+  }
  }
 }
