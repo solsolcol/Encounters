@@ -160,10 +160,13 @@
     }
     /* a person turned from one heading to another over [t0, t1], standing in his rest */
     const fmTurn = (t, t0, t1, a, b) => a + angTo(a, b) * smo(c01((t - t0) / Math.max(0.05, t1 - t0)));
-    /* the rests each body stands in (its take, its moment, how far its moment breathes, and whether it wraps) */
+    /* the rests each body stands in (its take, its moment, how far its moment breathes, and whether it wraps; a fifth, how
+       far a still one's moment sways, 0.25 unless said). phoS: his teacher SEATED on his cushion (the rise's first moments),
+       the rest the endings always gave him by hand (R25: a seated talk mixed with the standing rest half rose at each line) */
     const REST5 = { pho: ['Sit_to_Stand_Transition_M', 5.85, 0.04, false], ton: ['Idle_3', 2.0, 0.35, true], jun: ['Idle_3', 3.0, 0.35, true],
-                    koh: ['Idle_3', 1.0, 0.35, true], col: ['Sitting_Answering_Questions', 0.4, 0.0, false] };
-    const restOf5 = (who, t) => { const R = REST5[who]; return [R[0], R[3] ? R[1] + t * R[2] : fmPing(t, R[1], 0.25, 6), R[3]]; };
+                    koh: ['Idle_3', 1.0, 0.35, true], col: ['Sitting_Answering_Questions', 0.4, 0.0, false],
+                    phoS: ['Sit_to_Stand_Transition_M', 0.02, 0.0, false, 0.3] };
+    const restOf5 = (who, t) => { const R = REST5[who]; return [R[0], R[3] ? R[1] + t * R[2] : fmPing(t, R[1], R[4] || 0.25, 6), R[3]]; };
     function fmRest(P, who, t) { if (!P || !P.ready) return; const r = restOf5(who, t); pose(P, r[0], r[1], r[2]); }
     /* A PERSON'S TALKING OVER ALL HIS LINES IN A FILM (R25, Chad: "jerky character motions"): `lines` [[t0, secs, take], ...]
        each plays its talking take from the line's own start, eased in over 0.35 s and out over the half second after its
@@ -182,7 +185,7 @@
       /* ONE TAKE FOR HIS REST AND HIS TALK (the collector has one seated take, Sitting_Answering_Questions): a take cannot be
          mixed with itself at two moments (pose() gave the one action the rest's moment and the mix's weight, so every
          line began and ended with his body sagging toward its bind pose: JUMP and JERK at each of his lines). So it PLAYS:
-         slowly while he is quiet, at its own pace while he talks, its time the sum of both (each line's weight summed over
+         slowly while he is quiet (an eighth of its pace), at its own pace while he talks, its time the sum of both (each line's weight summed over
          the clock, in closed form: smoothstep's integral), a pure function of the clock with no step */
       if (S.length && S.every(q => q.seg.every(g => g.tk === r[0]))) {
         const Sm = (x) => x * x * x - 0.5 * x * x * x * x;
@@ -190,7 +193,7 @@
         for (const q of S) { if (t <= q.t0) break;
           I += 0.35 * Sm(c01((t - q.t0) / 0.35)) + Math.max(0, Math.min(t, q.t1 - 0.1) - (q.t0 + 0.35));
           const x = c01((t - q.t1 + 0.1) / 0.5); I += 0.5 * (x - Sm(x)); }
-        pose(P, r[0], REST5[who][1] + 0.3 * t + 0.7 * I, true); return;
+        pose(P, r[0], REST5[who][1] + 0.12 * t + 0.88 * I, true); return;
       }
       const s = S.find(q => t >= q.t0 && t < q.t1 + 0.45);
       if (!s) { pose(P, r[0], r[1], r[2]); return; }
@@ -444,21 +447,26 @@
         LIFTNUM5.set(t < T.out + 1.0 ? (t < T.num2 ? 0 : t < T.num3 ? 1 : 2) : -1);
         liftDoors(smo(c01((t - T.open) / 1.5)));
         /* his teacher: before him, facing the doors, his eyes on the number; out first, down the walkway to where he waits */
-        whenReady(cast.pho, (P) => { const walked = fmWalk(P, t, T.out, [CAR5.pho, [0.04, 0.7], [STATION.walk.pho.x, STATION.walk.pho.z]], 1.05, restOf5('pho', t), STATION.walk.pho.ry);
-          if (!walked && t < T.out) lookNow(P, [0, 2.2, LIFT.z0], 0.55, 0.6); });
+        /* (his look on the number let go over his first steps out, never dropped in one frame: R25) */
+        whenReady(cast.pho, (P) => { fmWalk(P, t, T.out, [CAR5.pho, [0.04, 0.7], [STATION.walk.pho.x, STATION.walk.pho.z]], 1.05, restOf5('pho', t), STATION.walk.pho.ry, { ry0: Math.PI });
+          const kl = 0.55 * (1 - smo(c01((t - T.out) / 0.6))); if (kl > 0.001) lookNow(P, [0, 2.2, LIFT.z0], kl, 0.6); });
         /* Ton, at his left, the wrapped staff upright in his right hand: his line turned back over his shoulder; out after
            his teacher, single file through the doors, turning back to him on the walkway as he stops */
         whenReady(cast.ton, (P) => { const r = restOf5('ton', t);
-          if (t < T.tonOut) { put(P, CAR5.ton[0], CAR5.ton[1], Math.PI); fmTalk(P, 'ton', t, T.tn5o1, SECS.tn5o1, 'Stand_and_Chat');
+          if (t < T.tonOut) { put(P, CAR5.ton[0], CAR5.ton[1], Math.PI + angTo(Math.PI, faceTo(CAR5.ton[0], CAR5.ton[1], CAR5.eye[0], CAR5.eye[2])) * 0.55 * smo(c01((t - T.tn5o1 + 0.5) / 0.6)) * (1 - smo(c01((t - T.tn5o1 - SECS.tn5o1) / 0.8))));
+            fmTalk(P, 'ton', t, T.tn5o1, SECS.tn5o1, 'Stand_and_Chat');
             lookNow(P, 'lens', smo(c01((t - T.tn5o1 + 0.3) / 0.6)) * (1 - smo(c01((t - T.tn5o1 - SECS.tn5o1) / 0.8))), 0.85, 0.12); }
-          else { fmWalk(P, t, T.tonOut, [CAR5.ton, [-0.16, 1.0], [STATION.walk.ton.x, STATION.walk.ton.z]], 1.0, r, STATION.walk.ton.ry);
+          else { fmWalk(P, t, T.tonOut, [CAR5.ton, [-0.16, 1.0], [STATION.walk.ton.x, STATION.walk.ton.z]], 1.0, r, STATION.walk.ton.ry, { ry0: Math.PI });   // (turned from where he stood, never snapped to the path)
             if (t > T.sour) lookNow(P, 'lens', smo(c01((t - T.sour) / 1.2)) * 0.8, 0.8); }
           STICK5.carry(P); });
         /* Jun, at his right, the duffel in his hand: his line, then out last before him */
         whenReady(cast.jun, (P) => { const r = restOf5('jun', t);
-          if (t < T.junOut) { put(P, CAR5.jun[0], CAR5.jun[1], Math.PI); fmTalk(P, 'jun', t, T.ju5o1, SECS.ju5o1, 'Talk_with_Right_Hand_Open');
+          /* (each half-turns his body back to him for his line and the head does the rest (v14.5: a man talking to him turns to
+             him); facing the doors, the back of Jun's head filled the phone as he spoke: open-phone film-012_5, R25) */
+          if (t < T.junOut) { put(P, CAR5.jun[0], CAR5.jun[1], Math.PI + angTo(Math.PI, faceTo(CAR5.jun[0], CAR5.jun[1], CAR5.eye[0], CAR5.eye[2])) * 0.55 * smo(c01((t - T.ju5o1 + 0.5) / 0.6)) * (1 - smo(c01((t - T.ju5o1 - SECS.ju5o1) / 0.8))));
+            fmTalk(P, 'jun', t, T.ju5o1, SECS.ju5o1, 'Talk_with_Right_Hand_Open');
             lookNow(P, 'lens', smo(c01((t - T.ju5o1 + 0.3) / 0.6)) * (1 - smo(c01((t - T.ju5o1 - SECS.ju5o1) / 0.8))), 0.85, 0.12); }
-          else { fmWalk(P, t, T.junOut, [CAR5.jun, [0.14, 1.0], [STATION.walk.jun.x, STATION.walk.jun.z]], 1.0, r, STATION.walk.jun.ry);
+          else { fmWalk(P, t, T.junOut, [CAR5.jun, [0.14, 1.0], [STATION.walk.jun.x, STATION.walk.jun.z]], 1.0, r, STATION.walk.jun.ry, { ry0: Math.PI });
             if (t > T.sour) lookNow(P, 'lens', smo(c01((t - T.sour - 0.4) / 1.2)) * 0.8, 0.8); }
           DUFFEL5.carry(P); });
         /* THE SOUR: the colour thinned toward grey-green from the edges in as he steps out, and held */
@@ -600,15 +608,12 @@
              the lens in his back) */
           else if (!inside) fmWalk(P, t, T.in, [[-8.5, -8.0], [-8.5, -5.05]], 1.4, restOf5('koh', t), Math.PI);   // (to just inside his door: the sofa begins at z -4.67)
           else { put(P, A.kohRoom[0], A.kohRoom[1], STATION.hunt.koh.ry);
-            const tk = t < T.ko5d3 ? 'Talk_with_Hands_Open' : t < T.ko5d4 ? 'Listening_Gesture' : 'Talk_with_Hands_Open';
-            if (t < T.ko5d2 + SECS.ko5d2 + 0.1) fmTalk(P, 'koh', t, T.ko5d2, SECS.ko5d2, 'Talk_with_Hands_Open');
-            else if (t < T.ko5d3 + SECS.ko5d3 + 0.1) fmTalk(P, 'koh', t, T.ko5d3, SECS.ko5d3, 'Talk_with_Hands_Open');
-            else if (t < T.ko5d4 + SECS.ko5d4 + 0.1) fmTalk(P, 'koh', t, T.ko5d4, SECS.ko5d4, 'Listening_Gesture');
-            else fmRest(P, 'koh', t);
-            void tk;
-            /* his eyes on the master, and down for "I know I have a mouth" */
+            /* (his three lines one talk: the second begins 0.35 s after the first ends, the third's gesture crossfaded in) */
+            fmSpeak(P, 'koh', t, [[T.ko5d2, SECS.ko5d2, 'Talk_with_Hands_Open'], [T.ko5d3, SECS.ko5d3, 'Talk_with_Hands_Open'], [T.ko5d4, SECS.ko5d4, 'Listening_Gesture']]);
+            /* his eyes on the master, and down for "I know I have a mouth": carried there and back by the same ease (handed
+               the low point the moment it began, his head turned there in one frame: JERK) */
             const low = smo(c01((t - T.ko5d4) / 0.6)) * (1 - smo(c01((t - T.ko5d4 - SECS.ko5d4) / 0.8)));
-            lookNow(P, t < T.ph5d1 ? (low > 0.01 ? [A.kohRoom[0] + 0.4, 0.6, A.kohRoom[1] - 1.0] : fmHead(cast.pho, [A.phoIn[0], 1.6, A.phoIn[1]])) : fmHead(cast.pho, [A.phoIn[0], 1.6, A.phoIn[1]]), 0.8, 0.75); }
+            lookNow(P, lp3(fmHead(cast.pho, [A.phoIn[0], 1.6, A.phoIn[1]]), [A.kohRoom[0] + 0.4, 0.6, A.kohRoom[1] - 1.0], low), 0.8, 0.75); }
         });
         /* his teacher: at the gate; in behind Mr Koh; in the room, listening, then his two lines: to Mr Koh, and turned to
            his student. At the end turned back toward the room (the hunt's station) */
@@ -617,11 +622,12 @@
           else if (!inside) fmWalk(P, t, T.in, [[A.phoGate[0], A.phoGate[1]], [-8.5, -12.6], [-8.5, -6.6]], 1.55, restOf5('pho', t), Math.PI);
           else { const toKoh = faceTo(A.phoIn[0], A.phoIn[1], A.kohRoom[0], A.kohRoom[1]), toMe = faceTo(A.phoIn[0], A.phoIn[1], A.eyeIn[0], A.eyeIn[2]);
             const ry = t < T.ph5d2 - 0.2 ? toKoh : fmTurn(t, T.ph5d2 - 0.2, T.ph5d2 + 0.6, toKoh, toMe);
-            if (t >= T.turn) { fmWalk(P, t, T.turn, [A.phoIn, [STATION.hunt.pho.x, STATION.hunt.pho.z]], 0.8, restOf5('pho', t), STATION.hunt.pho.ry, { ry0: toMe }); return; }
+            /* (his look on his student let go over his first steps, not dropped in one frame as he turns away) */
+            if (t >= T.turn) { fmWalk(P, t, T.turn, [A.phoIn, [STATION.hunt.pho.x, STATION.hunt.pho.z]], 0.8, restOf5('pho', t), STATION.hunt.pho.ry, { ry0: toMe });
+              lookNow(P, 'lens', 0.85 * (1 - smo(c01((t - T.turn) / 0.6))), 0.7); return; }
             put(P, A.phoIn[0], A.phoIn[1], ry);
-            if (t < T.ph5d1 + SECS.ph5d1 + 0.1) fmTalk(P, 'pho', t, T.ph5d1, SECS.ph5d1, 'Talk_with_Hands_Open');
-            else fmTalk(P, 'pho', t, T.ph5d2, SECS.ph5d2, 'Talk_with_Hands_Open');
-            lookNow(P, t < T.ph5d2 - 0.2 ? fmHead(cast.koh, [A.kohRoom[0], 1.55, A.kohRoom[1]]) : 'lens', 0.85, 0.7); }
+            fmSpeak(P, 'pho', t, [[T.ph5d1, SECS.ph5d1, 'Talk_with_Hands_Open'], [T.ph5d2, SECS.ph5d2, 'Talk_with_Hands_Open']]);
+            fmGaze(P, t, [[0, () => fmHead(cast.koh, [A.kohRoom[0], 1.55, A.kohRoom[1]])], [T.ph5d2 - 0.2, 'lens']], 0.85, 0.7, 0.03, 0.8); }
         });
         /* Ton and Jun: behind at the gate; into the court, where the hunt keeps them */
         whenReady(cast.ton, (P) => { if (t < T.in + 0.4) { put(P, A.tonW[0], A.tonW[1], 0); fmRest(P, 'ton', t); }
@@ -715,7 +721,14 @@
             STICK5.onPalms(P, 'stick');
             if (things.staffCloth) { things.staffCloth.visible = true; things.staffCloth.position.set(PR5AT.tonU[0] + 0.32, 0.01, PR5AT.tonU[1] + 0.18); things.staffCloth.rotation.set(0, 0.6, 0); }
             lookNow(P, [PR5AT.tonU[0] + 0.1, 0.9, PR5AT.tonU[1] - 0.5], 0.8, 0.8); }
-          else { fmWalk(P, t, T.take + 0.6, [PR5AT.tonU, [STATION.fight.ton.x, STATION.fight.ton.z]], 0.9, restOf5('ton', t), STATION.fight.ton.ry); lookNow(P, fmHead(cast.pho, [-8.6, 1.6, -9]), 0.7, 0.7); }
+          /* (his hands let down out of 'give' over half a second before he walks: put straight into his walk, the held-out
+             arms dropped in one frame, on screen: R25) */
+          else if (t < T.take + 1.1) { const ry = faceTo(PR5AT.tonU[0], PR5AT.tonU[1], PR5AT.phoU[0], PR5AT.phoU[1]), r = restOf5('ton', t);
+            put(P, PR5AT.tonU[0], PR5AT.tonU[1], ry); pose(P, r[0], r[1], r[2], 'give', 1 - smo(c01((t - T.take - 0.6) / 0.5)), 2.6);
+            const u = smo(c01((t - T.take - 0.6) / 0.5));
+            lookNow(P, lp3([PR5AT.tonU[0] + 0.1, 0.9, PR5AT.tonU[1] - 0.5], fmHead(cast.pho, [-8.6, 1.6, -9]), u), lp(0.8, 0.7, u), lp(0.8, 0.7, u)); }
+          else { fmWalk(P, t, T.take + 1.1, [PR5AT.tonU, [STATION.fight.ton.x, STATION.fight.ton.z]], 0.9, restOf5('ton', t), STATION.fight.ton.ry,
+                   { ry0: faceTo(PR5AT.tonU[0], PR5AT.tonU[1], PR5AT.phoU[0], PR5AT.phoU[1]) }); lookNow(P, fmHead(cast.pho, [-8.6, 1.6, -9]), 0.7, 0.7); }
         });
         /* his teacher: by the doorway as the stick is unwrapped; on the cut it is in his hand; his word to the household;
            his word to his student, at the court's middle; the stick set upright; from the turn at the fight's own place */
@@ -723,9 +736,15 @@
           if (t >= T.take && STICK5.who !== 'pho') STICK5.to('pho');
           if (t < T.thread) { put(P, PR5AT.phoU[0], PR5AT.phoU[1], faceTo(PR5AT.phoU[0], PR5AT.phoU[1], PR5AT.tonU[0], PR5AT.tonU[1])); fmRest(P, 'pho', t); lookNow(P, fmHead(cast.ton, [-8.05, 1.5, -7.35]), 0.7, 0.8); }
           else if (t < T.teacher) { const ry = faceTo(PR5AT.phoU[0], PR5AT.phoU[1], STATION.fight.koh.x, STATION.fight.koh.z); put(P, PR5AT.phoU[0], PR5AT.phoU[1], ry);
-            fmTalk(P, 'pho', t, T.ph5p1, SECS.ph5p1, 'Talk_with_Hands_Open'); lookNow(P, t < T.noans + 0.5 ? fmHead(cast.koh, [-8.5, 1.55, -4.7]) : [F.zav.x, 1.5, F.zav.z], 0.85, 0.7); }
-          else if (!turned) { const walked = fmWalk(P, t, T.teacher - 0.9, [PR5AT.phoU, [F.pho.x, F.pho.z]], 1.0, restOf5('pho', t), faceTo(F.pho.x, F.pho.z, F.zav.x, F.zav.z));
-            if (!walked) { if (t < T.ph5p2 + SECS.ph5p2 + 0.1) fmTalk(P, 'pho', t, T.ph5p2, SECS.ph5p2, 'Talk_with_Hands_Open'); lookNow(P, 'lens', 0.85, 0.7); } }
+            fmTalk(P, 'pho', t, T.ph5p1, SECS.ph5p1, 'Talk_with_Hands_Open');
+            /* (from Mr Koh to his student as he gives no answer, carried over 0.6 s: handed over in one frame, his head
+               turned 70 degrees on screen: R25) */
+            fmGaze(P, t, [[0, () => fmHead(cast.koh, [-8.5, 1.55, -4.7])], [T.noans + 0.2, [F.zav.x, 1.5, F.zav.z]]], 0.85, 0.7, 0.03, 0.6); }
+          else if (!turned) { const walked = fmWalk(P, t, T.teacher - 0.9, [PR5AT.phoU, [F.pho.x, F.pho.z]], 1.0, restOf5('pho', t), faceTo(F.pho.x, F.pho.z, F.zav.x, F.zav.z),
+                                                  { ry0: faceTo(PR5AT.phoU[0], PR5AT.phoU[1], STATION.fight.koh.x, STATION.fight.koh.z) });
+            /* (his eyes stay on his student as he walks to him: dropped as he set off, the head swung back in one frame) */
+            if (walked) lookNow(P, [F.zav.x, 1.5, F.zav.z], 0.85, 0.7);
+            else { if (t < T.ph5p2 + SECS.ph5p2 + 0.45) fmTalk(P, 'pho', t, T.ph5p2, SECS.ph5p2, 'Talk_with_Hands_Open'); lookNow(P, 'lens', 0.85, 0.7); } }
           else { put(P, F.pho.x, F.pho.z, COURT5.heading + Math.PI); fmRest(P, 'pho', t); lookNow(P, [F.lesson.x, 1.3, F.lesson.z], 0.6, 0.7); }
         });
         /* THE NINE: where they stood all evening, heads bowed toward the house; they lift their heads, turn to him, and
@@ -836,10 +855,13 @@
         fmBeds({ court: 0.22, sour: 0.3 * (1 - smo(c01((t - T.apart) / 2.5))) });
         /* the stick planted at his front right, where his cast brings it down; it stands by itself once planted */
         const fx = Math.sin(pz.ry), fz = Math.cos(pz.ry), sx = pz.x + fx * 0.42 - fz * 0.18, sz = pz.z + fz * 0.42 + fx * 0.18;
+        /* (his cast handed to his rest over 0.6 s, and his look from the Naga's head to his student over 0.8: each was put in
+           one frame, on screen: R25) */
         whenReady(cast.pho, (P) => { put(P, pz.x, pz.z, pz.ry);
-          if (t < T.plant + 4.2) { pose(P, 'Charged_Spell_Cast_1', Math.max(0, t - T.plant)); if (t < T.plant + 1.7) STICK5.to('pho'); else STICK5.plant(sx, sz, pz.ry); }
-          else { fmRest(P, 'pho', t); STICK5.plant(sx, sz, pz.ry); }
-          lookNow(P, t < T.lay ? [sx, 3.8, sz + 0.6] : [zz.x, 1.5, zz.z], 0.6, 0.7); });
+          const r = restOf5('pho', t), out = smo(c01((t - T.plant - 3.9) / 0.6));
+          if (out < 1) pose(P, 'Charged_Spell_Cast_1', Math.max(0, t - T.plant), false, r[0], out, r[1]); else fmRest(P, 'pho', t);
+          if (t < T.plant + 1.7) STICK5.to('pho'); else STICK5.plant(sx, sz, pz.ry);
+          fmGaze(P, t, [[0, [sx, 3.8, sz + 0.6]], [T.lay, [zz.x, 1.5, zz.z]]], 0.6, 0.7, 0.03, 0.8); });
         whenReady(cast.zav, (P) => { fmShow(P, true); put(P, zz.x, zz.z, COURT5.heading + Math.PI); const rt = zavRest(); if (rt) pose(P, rt, 2 + t * 0.35, true); else pose(P, 'Walking', ZAV_STAND5); });
         /* the cage: cracked under the shape, whole again as the Naga closes round them */
         const kc = t < T.apart ? 0.55 : 0.55 + 0.45 * smo(c01((t - T.apart) / 2.0));
@@ -951,15 +973,13 @@
           else if (t < T.room3) { put(P, A.dine[0], A.dine[1], faceTo(A.dine[0], A.dine[1], -11.6, 0.9)); pose(P, 'mage_soell_cast_3', fmRun(t, T.room2 + 0.3, T.room2 + 3.0, 0.2, 2.9)); }
           else if (t < T.knot) { put(P, A.terr[0], A.terr[1], faceTo(A.terr[0], A.terr[1], -12.4, -3.6)); pose(P, 'mage_soell_cast_3', fmRun(t, T.room3 + 0.3, T.room3 + 3.0, 0.2, 2.9)); }
           else if (!atLift) { put(P, A.phoKoh[0], A.phoKoh[1], faceTo(A.phoKoh[0], A.phoKoh[1], A.kohWin[0], A.kohWin[1]));
-            if (t > T.ph5b1 - 0.1 && t < T.ph5b1 + SECS.ph5b1 + 0.1) fmTalk(P, 'pho', t, T.ph5b1, SECS.ph5b1, 'Talk_with_Hands_Open');
-            else if (t > T.ph5b2 - 0.1 && t < T.ph5b2 + SECS.ph5b2 + 0.1) fmTalk(P, 'pho', t, T.ph5b2, SECS.ph5b2, 'Talk_with_Hands_Open');
-            else fmTalk(P, 'pho', t, T.ph5b3, SECS.ph5b3, 'Talk_with_Hands_Open');
+            /* (his three lines to Mr Koh one talk, never cut 0.1 s after each: R25) */
+            fmSpeak(P, 'pho', t, [[T.ph5b1, SECS.ph5b1, 'Talk_with_Hands_Open'], [T.ph5b2, SECS.ph5b2, 'Talk_with_Hands_Open'], [T.ph5b3, SECS.ph5b3, 'Talk_with_Hands_Open']]);
             lookNow(P, fmHead(cast.koh, [A.kohWin[0], 1.55, A.kohWin[1]]), 0.8, 0.7); }
           else { put(P, A.liftPho[0], A.liftPho[1], faceTo(A.liftPho[0], A.liftPho[1], A.liftEye[0], A.liftEye[2]));
-            if (t < T.ph5b5 - 0.1) fmTalk(P, 'pho', t, T.ph5b4, SECS.ph5b4, 'Talk_with_Hands_Open');
-            else if (t < T.ph5b6 - 0.1) fmTalk(P, 'pho', t, T.ph5b5, SECS.ph5b5, 'Talk_with_Hands_Open');
-            else fmTalk(P, 'pho', t, T.ph5b6, SECS.ph5b6, 'Talk_with_Hands_Open');
-            lookNow(P, t > T.ju5b1 - 0.2 && t < T.ph5b6 ? fmHead(cast.jun, [A.liftJun[0], 1.6, A.liftJun[1]]) : 'lens', 0.8, 0.7); }
+            fmSpeak(P, 'pho', t, [[T.ph5b4, SECS.ph5b4, 'Talk_with_Hands_Open'], [T.ph5b5, SECS.ph5b5, 'Talk_with_Hands_Open'], [T.ph5b6, SECS.ph5b6, 'Talk_with_Hands_Open']]);
+            /* (to Jun for his news and back, each carried over 0.6 s) */
+            fmGaze(P, t, [[0, 'lens'], [T.ju5b1 - 0.2, () => fmHead(cast.jun, [A.liftJun[0], 1.6, A.liftJun[1]])], [T.ph5b6, 'lens']], 0.8, 0.7, 0.03, 0.6); }
         });
         /* Ton: the stick in both hands behind his teacher, looking down at it; his line to him; at the lift */
         whenReady(cast.ton, (P) => {
@@ -968,9 +988,11 @@
             put(P, at[0], at[1], faceTo(at[0], at[1], at[0] - 0.5, at[1] + 1)); pose(P, 'give', 2.6 + 0.08 * Math.sin(t * 0.7)); STICK5.onPalms(P, 'stick');
             lookNow(P, [at[0], 0.8, at[1] + 0.5], 0.9, 0.8); }
           else if (!atLift) { put(P, A.tonKoh[0], A.tonKoh[1], faceTo(A.tonKoh[0], A.tonKoh[1], A.eyeKoh[0], A.eyeKoh[2])); pose(P, 'give', 2.6 + 0.08 * Math.sin(t * 0.7)); STICK5.onPalms(P, 'stick');
-            lookNow(P, t > T.tn5b1 + 0.6 && t < T.tn5b1 + SECS.tn5b1 ? 'lens' : [A.tonKoh[0], 0.8, A.tonKoh[1] - 0.4], 0.85, 0.8); }
-          else { put(P, A.liftTon[0], A.liftTon[1], faceTo(A.liftTon[0], A.liftTon[1], A.liftPho[0], A.liftPho[1])); pose(P, 'give', 2.6 + 0.08 * Math.sin(t * 0.7)); STICK5.onPalms(P, 'stick');
-            if (t > T.in) fmWalk(P, t, T.in + 0.2, [A.liftTon, [-0.3, 1.6]], 0.9, ['give', 2.6, 0, false], Math.PI); }
+            /* (up to him for his line and back down to the stick, each carried over half a second) */
+            fmGaze(P, t, [[0, [A.tonKoh[0], 0.8, A.tonKoh[1] - 0.4]], [T.tn5b1 + 0.6, 'lens'], [T.tn5b1 + SECS.tn5b1, [A.tonKoh[0], 0.8, A.tonKoh[1] - 0.4]]], 0.85, 0.8, 0.03, 0.5); }
+          else { const ry0 = faceTo(A.liftTon[0], A.liftTon[1], A.liftPho[0], A.liftPho[1]);
+            put(P, A.liftTon[0], A.liftTon[1], ry0); pose(P, 'give', 2.6 + 0.08 * Math.sin(t * 0.7)); STICK5.onPalms(P, 'stick');
+            if (t > T.in) fmWalk(P, t, T.in + 0.2, [A.liftTon, [-0.3, 1.6]], 0.9, ['give', 2.6, 0, false], Math.PI, { ry0 }); }
         });
         /* Mr Koh: behind the thread in the court; by his window, the curtain drawn back; his line, his bow; Jun with him */
         whenReady(cast.koh, (P) => {
@@ -980,7 +1002,7 @@
           else { fmShow(P, true); put(P, A.kohWin[0], A.kohWin[1], faceTo(A.kohWin[0], A.kohWin[1], A.phoKoh[0], A.phoKoh[1]));
             fmTalk(P, 'koh', t, T.ko5b1, SECS.ko5b1, 'Talk_with_Hands_Open');
             const bow = smo(c01((t - T.wai) / 0.6)) * (1 - smo(c01((t - T.wai - 1.4) / 0.8)));
-            lookNow(P, bow > 0.01 ? [A.phoKoh[0], 0.6, A.phoKoh[1]] : fmHead(cast.pho, [A.phoKoh[0], 1.6, A.phoKoh[1]]), 0.85, 0.85); }
+            lookNow(P, lp3(fmHead(cast.pho, [A.phoKoh[0], 1.6, A.phoKoh[1]]), [A.phoKoh[0], 0.6, A.phoKoh[1]], bow), 0.85, 0.85); }   // (the bow carried by its own ease, never handed in a frame)
         });
         whenReady(cast.jun, (P) => {
           if (!inEyes) { const s0 = STATION.fight.jun; put(P, s0.x, s0.z, s0.ry); fmRest(P, 'jun', t); }
@@ -1097,11 +1119,13 @@
         if (kit && kit.captions && !FM5.once.has('card') && t >= T.card) { FM5.once.add('card'); kit.captions([{ at: 0, end: 2.4, text: W.cardNext, sub: '' }]); }
         /* the pieces: laid out on the cut, the three of the presences among them */
         PIECES5.set(t >= T.laid);
+        /* (each look carried from one thing to the next over 0.6 s, never handed in a frame; the collector's one take PLAYS
+           through his lines, fmSpeak: mixed with itself it sagged toward its bind pose at each line's start and end, R25) */
         whenReady(cast.phoS, (P) => { const s0 = STATION.table.pho; put(P, s0.x, s0.z, s0.ry, CUSHION_TOP); fmRest(P, 'pho', t); pose(P, 'Sit_to_Stand_Transition_M', fmPing(t, 0.02, 0.3, 6));
-          lookNow(P, t < T.co5t1 ? [R.cx, 0.4, R.cz - 0.1] : fmHead(cast.col, [STATION.table.collector.x, 0.95, STATION.table.collector.z]), 0.7, 0.7); });
+          fmGaze(P, t, [[0, [R.cx, 0.4, R.cz - 0.1]], [T.co5t1, () => fmHead(cast.col, [STATION.table.collector.x, 0.95, STATION.table.collector.z])]], 0.7, 0.7, 0.03, 0.6); });
         whenReady(cast.col, (P) => { const s0 = STATION.table.collector; put(P, s0.x, s0.z, s0.ry, CUSHION_TOP);
-          fmTalk(P, 'col', t, t < T.co5t2 ? T.co5t1 : T.co5t2, t < T.co5t2 ? SECS.co5t1 : SECS.co5t2, 'Sitting_Answering_Questions');
-          lookNow(P, t < T.co5t1 ? [R.cx - 0.1, 0.35, R.cz - 0.1] : t < T.co5t2 + 3.0 ? fmHead(cast.phoS, [0, 0.95, 240.78]) : 'lens', 0.8, 0.7); });
+          fmSpeak(P, 'col', t, [[T.co5t1, SECS.co5t1, 'Sitting_Answering_Questions'], [T.co5t2, SECS.co5t2, 'Sitting_Answering_Questions']]);
+          fmGaze(P, t, [[0, [R.cx - 0.1, 0.35, R.cz - 0.1]], [T.co5t1, () => fmHead(cast.phoS, [0, 0.95, 240.78])], [T.co5t2 + 3.0, 'lens']], 0.8, 0.7, 0.03, 0.6); });
         whenReady(cast.jun, (P) => { const s0 = STATION.table.jun; put(P, s0.x, s0.z, s0.ry); fmRest(P, 'jun', t); lookNow(P, [R.cx, 0.4, R.cz], 0.5, 0.7); });
         const COL = colHead5;
         fmTrack(t, [
@@ -1172,25 +1196,39 @@
         if (vv && t < vv[1] + 1.5) fmVision(t, vv[0], 1.8, vv[1], 1.4); else fmVision(t, r0 + RT.see, 1.8, r0 + RT.unsee, 1.4);
         /* Grandmaster Pho: at rest; through the rite the fan in his left hand dipped and thrown (his seated cheer's raise and
            fall: the flick's own take is wanted, the plan's 9.1); his hand on the bag in the last picture */
+        /* (R25, "jerky character motions", measured: his seated talk was mixed with his STANDING rest (restOf5 'pho', the
+           rise's last moment), so at each line's start and end he half rose; each throw of the fan began from the last one's
+           top in one frame (the take wrapped); the rite's first throw and its end were put in one frame; and every look was
+           handed over in one. Now: his seated rest (REST5.phoS); the rite's throws eased in and out, each throw from his rest
+           and back to it; the fan in his hand from the rite's own cut to the bag's (both cuts); each look carried 0.6 s) */
+        const COLH = () => fmHead(cast.col, [STATION.table.collector.x, 0.95, STATION.table.collector.z]), CLOTH = [R.cx, 0.36, R.cz - 0.1];
         whenReady(cast.phoS, (P) => { const s0 = STATION.table.pho; put(P, s0.x, s0.z, s0.ry, CUSHION_TOP);
-          const flick = tr > RT.dip && tr < RT.end ? ((tr - RT.dip) % 2.2) : -1;
-          if (flick >= 0) { pose(P, 'Sit_Cheer_with_Left_Hand', 0.25 + flick * 0.85); FM5.fanOff = handHold5(P, 'Left', RITE5.fan, FM5.fanOff, { base: 0.05, ry: 0, rest: ['Sit_Cheer_with_Left_Hand', 1.2] }); }
-          else { pose(P, 'Sit_to_Stand_Transition_M', fmPing(t, 0.02, 0.3, 6)); RITE5.fan.visible = false; }
-          const speak = E.pho && E.pho.find(([key, at]) => t >= at - 0.1 && t < at + (SECS[key] || 2) + 0.1);
-          if (speak && flick < 0) fmTalk(P, 'pho', t, speak[1], SECS[speak[0]] || 2, 'Sitting_Answering_Questions');
-          lookNow(P, speak && speak[2] === 'me' ? 'lens' : (tr > 0 && tr < RT.end ? [R.cx, 0.36, R.cz - 0.1] : fmHead(cast.col, [STATION.table.collector.x, 0.95, STATION.table.collector.z])), 0.7, 0.7); });
-        if (tr > RT.dip && tr < RT.end) { const ft = (tr - RT.dip) % 2.2; RITE5.throwAt(ft, 0.9, RITE_AT.fanFrom, R.cx, R.cz - 0.12); } else RITE5.dropsOff();
+          /* (the throws end on the cut to the bag: the pieces are in it, and that close sees no fan) */
+          const wf = tr > RT.dip && tr < RT.bag ? smo(c01((tr - RT.dip) / 0.4)) : 0;
+          if (wf > 0) { const cyc = ((tr - RT.dip) % 2.2 + 2.2) % 2.2, wc = smo(c01(cyc / 0.25)) * (1 - smo(c01((cyc - 1.95) / 0.25))), r = restOf5('phoS', t);
+            pose(P, 'Sit_Cheer_with_Left_Hand', 0.25 + cyc * 0.85, false, r[0], 1 - wf * wc, r[1]); }
+          else fmSpeak(P, 'phoS', t, (E.pho || []).map(([key, at]) => [at, SECS[key] || 2, 'Sitting_Answering_Questions']));
+          if (tr >= 0 && tr < RT.bag) FM5.fanOff = handHold5(P, 'Left', RITE5.fan, FM5.fanOff, { base: 0.05, ry: 0, rest: ['Sit_Cheer_with_Left_Hand', 1.2] }); else RITE5.fan.visible = false;
+          const L = [[0, COLH]];
+          for (const [key, at, to] of (E.pho || [])) if (to === 'me') { L.push([at - 0.2, 'lens']); L.push([at + (SECS[key] || 2) + 0.2, COLH]); }
+          L.push([r0, CLOTH]); L.push([r0 + RT.end, COLH]); L.sort((a, b) => a[0] - b[0]);
+          fmGaze(P, t, L, 0.7, 0.7, 0.03, 0.6); });
+        if (tr > RT.dip && tr < RT.bag) { const ft = (tr - RT.dip) % 2.2; RITE5.throwAt(ft, 0.9, RITE_AT.fanFrom, R.cx, R.cz - 0.12); } else RITE5.dropsOff();
         /* the collector: his own story first; still through the rite; lighter after it; standing at the door, and gone */
         whenReady(cast.col, (P) => { const s0 = STATION.table.collector;
           const gone = E.gone != null && t >= E.gone;
           if (gone) { fmShow(P, false); return; }
           fmShow(P, true);
-          if (E.door != null && t >= E.door) { put(P, -1.15, 237.95, faceTo(-1.15, 237.95, me[0], me[2])); fmRest(P, 'koh', t); pose(P, 'Idle_3', 2 + t * 0.35, true); }
+          /* (R25: his one seated take PLAYS through his lines, fmSpeak, where mixed with itself it sagged toward its bind pose
+             at each line; at the door, standing, he talks with his hands for his line there) */
+          if (E.door != null && t >= E.door) { put(P, -1.15, 237.95, faceTo(-1.15, 237.95, me[0], me[2]));
+            fmSpeak(P, 'koh', t, Object.keys(E).filter(q => /^co5/.test(q) && E[q] >= E.door && SECS[q]).map(q => [E[q], SECS[q], 'Talk_with_Hands_Open'])); }
           else { put(P, s0.x, s0.z, s0.ry, CUSHION_TOP);
-            const speak = E.col && E.col.find(([key, at]) => t >= at - 0.1 && t < at + (SECS[key] || 2) + 0.1);
-            if (speak) fmTalk(P, 'col', t, speak[1], SECS[speak[0]] || 2, 'Sitting_Answering_Questions'); else fmRest(P, 'col', t); }
-          const cl = ENDS5[k].colLook ? ENDS5[k].colLook(t, E) : null;          // (an ending's own look, or none: null falls back to the common one; passed on as null it threw on every frame of ending B from the lid: endB, 21 Nov)
-          lookNow(P, cl || (tr > 0 && tr < RT.end ? [R.cx, 0.36, R.cz - 0.1] : 'lens'), 0.75, 0.7); });
+            fmSpeak(P, 'col', t, (E.col || []).map(([key, at]) => [at, SECS[key] || 2, 'Sitting_Answering_Questions'])); }
+          /* (his looks: the ending's own, then the cloth through the rite, then him: each carried 0.6 s) */
+          const L = ENDS5[k].colLooks ? ENDS5[k].colLooks(E).slice() : [[0, 'lens']];
+          L.push([r0, CLOTH]); L.push([r0 + RT.end, 'lens']); L.sort((a, b) => a[0] - b[0]);
+          fmGaze(P, t, L, 0.75, 0.7, 0.03, 0.6); });
         /* the ending's own things (the case pushed across, the lid, the three) */
         const X = ENDS5[k];
         if (X.things) X.things(t, E, me);
@@ -1283,7 +1321,7 @@
              { t: E.ph5B1, name: 'pho', eye: me, at: PHO, fp: 46, fd: 40, cut: true },
              { t: E.q5B2 + 0.2, name: 'table', eye: me, at: [0, 0.4, 240.0], fp: 52, fd: 46 } ],
            things: (t, E) => casePush5(t, E.lid + 0.8, E.lid + 2.0, [0.14, 240.3]),
-           colLook: (t, E) => (t < E.co5B4 ? [-0.2, 0.36, 239.8] : t < E.lid ? [0.2, 0.36, 239.85] : null) },
+           colLooks: (E) => [[0, [-0.2, 0.36, 239.8]], [E.co5B4, [0.2, 0.36, 239.85]], [E.lid, 'lens']] },
       /* C · "These three are the worst. The rest feel quiet." (bad): delighted, "Three! Only three."; he pushes the three
          across with one finger and fits the seventeen back into their foam; the film opens his sight on the case: on a
          piece already packed something small that his nose never caught lifts its head; his teacher's hand flat on the lid:
@@ -1326,5 +1364,5 @@
       /* the cast's handles the fight and the play read (the court's frame, the boom, the cage, the trance, the Naga) */
       fightStart, boomAt, COURT5, courtWorld, CAGE5, TRANCE5, NAGA5, PRAI5, STICK5,
       /* (a probe's read of every body the chapter made: tools/probes/e4c5films.mjs, R25) */
-      people: () => people, crowd: () => crowd
+      people: () => people, crowd: () => crowd, shot: () => FM5.shot
     };

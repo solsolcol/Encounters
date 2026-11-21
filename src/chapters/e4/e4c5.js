@@ -455,7 +455,7 @@
          Pho and Ton, chapter 3's; the white cloth over his crossed legs and the rite's fan, chapter 3's; the holy-water
          bowls, chapter 4's; and the seven Yin pieces of chapter 1, other men's pieces of the same kinds in the collector's
          rows (the plan's 9.4) */
-      'e4ton', 'e4tonm', 'e4tonf', 'e4tonh', 'w3pholap', 'w3fan', 'w4waterbowl', 'w4bigbowl',
+      'pho', 'e4ton', 'e4tonm', 'e4tonf', 'e4tonh', 'w3pholap', 'w3fan', 'w4waterbowl', 'w4bigbowl',
       'e4kuman', 'e4ngang', 'e4tani', 'e4phraioil', 'e4phraitab', 'e4praicase', 'e4tanitab',
       /* TODO-WORLD, when each is cast (the plan's 9): Grandmaster Pho (`pho`) and Ton (`e4ton`), each a declared reuse in
          the episode (reuseInEpisode); Jun, Mr Koh, the collector, the nine, the Naga; the things of the home and the room */
@@ -463,7 +463,7 @@
     /* FRESH (chaptertest): what this chapter takes from the chapters before it, declared (Chad, v17.4) */
     reuse: {},
     reuseInEpisode: { w4angsana: "chapter 4's angsana trees, on the estate's lawn five storeys below the walkway", w4foxpalm: "chapter 4's foxtail palms, round the estate's pool",
-      p5pho: "Grandmaster Pho, Chad's own model, as chapters 3 and 4 cast him (his look D): this chapter's copy of his file with finger bones on his right hand (R26), his own pho.glb untouched",
+      pho: "Grandmaster Pho, Chad's own model, as chapters 3 and 4 cast him (his look D): seated at the table in case three (standing, he is this chapter's copy of it with finger bones on his right hand, p5pho, R26)",
       e4ton: "Ton, chapter 3's follower: the same man, who works in Singapore (the plan's 9.1)", e4tonm: "Ton's mid body", e4tonf: "Ton's far body", e4tonh: "Ton's full body",
       w3pholap: "the white cloth over Grandmaster Pho's crossed legs, chapter 3's hall: his seat in case three",
       w3fan: "chapter 3's peacock-feather fan, from his own Wai Kru's photographs: the rite's fan (the plan's 16: his photograph was asked and not sent)",
@@ -5849,7 +5849,7 @@
        seat, its numbers (CROSS) and its cloth, on this room's cushion (w5cushion: its top 0.12 m) */
     const CUSHION_TOP = 0.12;
     { const S0 = at0('table', 'pho');
-      cast.phoS = mkPerson('p5pho', S0.x, S0.z, S0.ry, { y: CUSHION_TOP, take: 'Sit_to_Stand_Transition_M', centre: true, hidden: true,
+      cast.phoS = mkPerson('pho', S0.x, S0.z, S0.ry, { y: CUSHION_TOP, take: 'Sit_to_Stand_Transition_M', centre: true, hidden: true,
         win: { Sit_to_Stand_Transition_M: [0.02, 0.3, PHO_BREATH] }, seat: { y: 0, over: CROSS.hips, takes: /^Sit/ }, skins: false, look: lookD, blobW: 1.05, blobD: 0.85,
         talk: 'Sitting_Answering_Questions', headDamp: PHO_TALK_HEAD, cross: CROSS });
       cast.phoS.home = { x: S0.x, z: S0.z, ry: S0.ry, y: CUSHION_TOP }; }
@@ -6085,6 +6085,18 @@
       for (const B of bars) { const a = Math.atan2(B.b.position.x, B.b.position.z), gw = new THREE.CylinderGeometry(R, R, H * 0.94, 12, 1, true, a - WAKE, WAKE); owned.push(gw);
         const mw = new THREE.MeshBasicMaterial({ map: wakeTex, color: COL, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false, toneMapped: false }); mats.push(mw);
         const w = add(new THREE.Mesh(gw, mw)); w.position.y = H / 2 + 0.02; w.visible = false; spin.add(w); B.w = w; B.mw = mw; }
+      /* (and on the paving, turning with them, a swirl: each bar's arc of light along the circle at its foot, bright at the
+         bar and gone a third of the way to the next: seen from above, where the bars' wakes stand edge-on, the turn reads) */
+      const swirlTex = (() => { const n = 512, [c, x] = canvas(n, n); x.translate(n / 2, n / 2); x.lineCap = 'round';
+        for (const B of bars) { const a0 = Math.atan2(B.b.position.x, B.b.position.z);
+          for (let i = 0; i < 48; i++) { const u = i / 48, t0 = a0 - u * 1.1, t1 = a0 - (u + 1 / 48) * 1.1, al = Math.pow(1 - u, 1.6);
+            /* (the canvas's x is the plane's x and its y the plane's z once laid flat: the bar at angle a stands at (sin a, cos a)) */
+            x.strokeStyle = 'rgba(255,255,255,' + al.toFixed(3) + ')'; x.lineWidth = 14 * (1 - 0.6 * u);
+            x.beginPath(); x.moveTo(Math.sin(t0) * n * 0.4, Math.cos(t0) * n * 0.4); x.lineTo(Math.sin(t1) * n * 0.4, Math.cos(t1) * n * 0.4); x.stroke(); } }
+        return tex(done(THREE, c, false)); })();
+      const mSwirl = new THREE.MeshBasicMaterial({ map: swirlTex, color: COL, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 }); mats.push(mSwirl);
+      const gSwirl = new THREE.PlaneGeometry(2.5 * R, 2.5 * R); gSwirl.rotateX(-Math.PI / 2); owned.push(gSwirl);
+      const swirl = add(new THREE.Mesh(gSwirl, mSwirl)); swirl.position.y = 0.014; swirl.visible = false; spin.add(swirl);
       let ang = 0, rate = 0, lastT = null;
       const _cv = new THREE.Vector3(), _cl = new THREE.Vector3();
       return {
@@ -6107,8 +6119,9 @@
             const cr = o.crack ? 0.55 + 0.45 * Math.sin((o.t || 0) * 37 + B.b.position.x * 9) : 1;
             B.mb.opacity = 0.85 * o.k * front * cr; B.mg.opacity = 0.22 * o.k * front * cr;
             B.b.scale.set(0.7 + 0.6 * o.k, 1, 0.7 + 0.6 * o.k);
-            B.w.visible = wk > 0.01; B.mw.opacity = 0.3 * wk * o.k * front * cr; }
+            B.w.visible = wk > 0.01; B.mw.opacity = 0.5 * wk * o.k * front * cr; }
           mRing.opacity = 0.7 * o.k;
+          swirl.visible = wk > 0.01; mSwirl.opacity = 0.75 * wk * o.k * (o.crack ? 0.6 : 1);
         }
       };
     })();
@@ -7439,9 +7452,11 @@
       '  float d = q.y >= 0.0 || uRound > 0.5 ? length(q) / 0.62 : (q.y < -tl ? 9.0 : abs(q.x) / w + 0.3 * al);',
       /* (the flames flow back along the flight: the noise drawn along it on the clock; a finer one flickers the heat) */
       '  float n = fbm(vec2(q.x * 1.7 + uSeed, q.y * 1.15 + uT * uFlow)), n2 = fbm(vec2(q.x * 3.6 - uT * 1.1, q.y * 2.6 + uT * uFlow * 1.7) + uSeed * 1.9);',
-      '  float shape = 1.0 - smoothstep(0.5, 1.12, d + (n - 0.5) * 1.05);',
-      '  float heat = shape * (1.0 - 0.6 * al) * (0.72 + 0.56 * n2);',
-      '  float core = uRound > 0.5 ? 0.0 : exp(-dot(q, q) * 7.0);',
+      /* (tongues: a finer noise across the flame, drawn back along it, tearing its edge the more the further back) */
+      '  float n3 = vn(vec2(q.x * 6.0 + uSeed * 3.1, q.y * 2.0 + uT * uFlow * 2.3));',
+      '  float shape = 1.0 - smoothstep(0.45, 1.1, d + (n - 0.5) * 1.45 + (n3 - 0.5) * (0.25 + 0.6 * al));',
+      '  float heat = shape * (1.0 - 0.6 * al) * (0.55 + 0.9 * n2);',
+      '  float core = uRound > 0.5 ? 0.0 : exp(-dot(q, q) * 11.0);',
       '  vec3 c = mix(vec3(0.62, 0.05, 0.03), vec3(1.0, 0.30, 0.04), smoothstep(0.08, 0.42, heat));',
       '  c = mix(c, vec3(1.0, 0.62, 0.10), smoothstep(0.42, 0.72, heat));',
       '  c = mix(c, vec3(1.0, 0.94, 0.74), clamp(smoothstep(0.72, 1.0, heat) + core * 0.85, 0.0, 1.0));',
@@ -7811,11 +7826,11 @@
         _fsA.lerpVectors(B.a, B.b, u); _fsA.y += h;
         B.d.subVectors(B.b, B.a); B.d.y += H * 4 * (1 - 2 * u); if (B.d.lengthSq() > 1e-8) B.d.normalize(); else B.d.set(0, 0, 1);   // (its way now: the path's own)
         const sz = B.ai ? 0.72 : 1, fl = 0.9 + 0.07 * Math.sin(ft * 41 + B.id) + 0.05 * Math.sin(ft * 67 + B.seed);
-        fsFlameLay(B.flame, _fsA, B.d, 0.5 * sz * fl, 1.25 * sz);
+        fsFlameLay(B.flame, _fsA, B.d, 0.5 * sz * fl, Math.min(1.25 * sz, 1.1 * _fsA.distanceTo(B.a)));   // (its tail never longer than the way it has come)
         const U = B.flame.material.uniforms; U.uT.value = ft; U.uA.value = 1; U.uSeed.value = B.seed;
         B.flame.visible = B.core.visible = B.glow.visible = B.halo.visible = true;
         B.core.position.copy(_fsA); B.glow.position.copy(_fsA); B.halo.position.copy(_fsA);
-        B.core.scale.setScalar(0.2 * sz * fl); B.glow.scale.setScalar(0.7 * sz * fl); B.halo.scale.setScalar(1.6 * sz * (0.92 + 0.08 * fl));
+        B.core.scale.setScalar(0.15 * sz * fl); B.glow.scale.setScalar(0.6 * sz * fl); B.halo.scale.setScalar(1.6 * sz * (0.92 + 0.08 * fl));
         B.core.material.opacity = 0.95; B.glow.material.opacity = 0.5; B.halo.material.opacity = 0.26;
         /* (its embers: shed behind it, most rising as hot things rise, the brightest falling, a few of the stick's ruby;
            and a puff of thin smoke left in the air every 45 ms) */
@@ -7848,9 +7863,9 @@
         /* (fire's: the white flash, 0.16 s, and the ball of fire swelling and thinning as it rises, 0.5 s) */
         if (L.fire) { const ub = c01(L.t / 0.5), uf = c01(L.t / 0.16);
           L.ball.visible = ub < 1; L.flash.visible = uf < 1;
-          L.ball.position.y = L.y + 0.25 * ub * L.k; fsFlameLay(L.ball, L.ball.position, _fsUp, (0.35 + 1.25 * Math.sqrt(ub)) * L.k, 0);
-          const U = L.ball.material.uniforms; U.uT.value = ft; U.uA.value = Math.pow(1 - ub, 1.4);
-          L.flash.scale.setScalar((0.5 + 1.1 * uf) * L.k); L.flash.material.opacity = 1 - uf; }
+          L.ball.position.y = L.y + 0.3 * ub * L.k; fsFlameLay(L.ball, L.ball.position, _fsUp, (0.5 + 1.7 * Math.sqrt(ub)) * L.k, 0);
+          const U = L.ball.material.uniforms; U.uT.value = ft; U.uA.value = Math.pow(1 - ub, 1.2);
+          L.flash.scale.setScalar((0.7 + 1.5 * uf) * L.k); L.flash.material.opacity = 1 - uf; }
         else { L.ball.visible = L.flash.visible = false; }
         if (u >= 1) L.on = false;
       }
@@ -8190,7 +8205,7 @@
               fsBurst(w.x, y0, w.z, 30, { sp: 3.2, up: 0.15, life: 0.8, s0: 0.14, col: FS_FIRE.orange, col2: FS_FIRE.yel, mix: 0.4, grav: -4 });
               fsBurst(w.x, y0, w.z, 8, { sp: 2.4, up: 0.3, life: 0.7, s0: 0.1, col: FS_COL.ruby, grav: -3 }); }
             else if (e.result === 'chased' || e.result === 'setback') { fsBloom(w.x, w.z, FS_FIRE.orange, e.result === 'setback' ? 0.7 : 1, true, y0); fsFx(fsDeal('land'), e.result === 'setback' ? 0.5 : 0.8, w.x, w.z); if (p) fsFx(FS_HIT[p.kind] || 'u5hitc', e.result === 'setback' ? 0.5 : 0.8, w.x, w.z);
-              fsBurst(w.x, y0, w.z, e.result === 'setback' ? 12 : 22, { sp: 2.6, up: 0.25, life: 0.65, s0: 0.12, col: FS_FIRE.orange, col2: FS_FIRE.yel, mix: 0.35, grav: -4 });
+              fsBurst(w.x, y0, w.z, e.result === 'setback' ? 16 : 34, { sp: 3.0, up: 0.2, life: 0.7, s0: 0.12, col: FS_FIRE.orange, col2: FS_FIRE.yel, mix: 0.4, grav: -4 });
               fsBurst(w.x, y0, w.z, e.result === 'setback' ? 4 : 7, { sp: 2, up: 0.3, life: 0.6, s0: 0.09, col: FS_COL.ruby, grav: -3 }); }
             else if (e.result === 'slipped') { fsBloom(w.x, w.z, FS_FIRE.orange, 0.5, true, 0.6); fsFx('u5slipthru', 0.8, w.x, w.z); fsBurst(w.x, 0.3, w.z, 8, { sp: 1.6, up: 0.4, life: 0.5, s0: 0.06, col: FS_FIRE.orange, col2: FS_FIRE.yel, mix: 0.3, grav: -4 }); }
             else if (e.result === 'stale') { fsBloom(w.x, w.z, FS_COL.sour, 0.7); fsFx('u5stale', 0.8, w.x, w.z); fsBurst(w.x, 0.5, w.z, 8, { sp: 0.9, up: 0.5, life: 0.7, s0: 0.06, col: FS_COL.sour, grav: 0.3, a: 0.5 }); }
@@ -8533,6 +8548,7 @@
       swapOn() { const st = FS5.st; if (!st) return false; st.seen.swap = true; return true; },
       /* (his closed hand on the stick: the grip's solve, each joint's turn in degrees, and how far it is closed) */
       grip() { return typeof PHOGRIP5 === 'object' ? { report: PHOGRIP5.report(), k: PHOGRIP5.k() } : null; },
+      gripOn() { return typeof PHOGRIP5 === 'object' ? PHOGRIP5.on() : false; },
       gait() { const out = {}; for (const [who, P] of [['pho', cast.pho], ['zav', cast.zav]]) { if (!P || !P.ready) continue; const T = fsTake[who];
         out[who] = { gait: T.gait, walking: T.walking, pace: +(T.pace || 0).toFixed(3), cur: P.cur, own: P.pace ? Object.fromEntries(Object.entries(P.pace).map(([k, v]) => [k, +v.toFixed(3)])) : null,
           w: Object.fromEntries(Object.keys(P.acts).filter(k => (P.w[k] || 0) > 0.005).map(k => [k, +P.w[k].toFixed(2)])),
@@ -8661,9 +8677,9 @@
        holding it"; R26, his pick: "Finger bones (Recommended)"). His file has no finger bones; this chapter's copy of it
        (p5pho, tools/fingergraft.mjs: fifteen of the library's, and their ends, grafted onto his right hand from its own
        geometry, masters/v28.0/pho5) has, and at rest draws exactly as his. Here his hand is CLOSED ROUND THE SHAFT:
-       THE SHAFT, from the stick's file (w5nagastaff, read across its length): 1.40 m; from 0.95 to 1.10 m up its middle
-         stands 8.4 cm along its own x and its radius is 3.3 to 3.6 cm (3.6 taken); his hand closes at 1.00 m up it, under
-         the Naga's head (which begins at 1.15 m);
+       THE SHAFT, from the stick's file (w5nagastaff, read across its length): 1.40 m; from 0.95 to 1.12 m up its middle
+         stands 8.2 cm along its own x and its radius is 3.3 to 3.7 cm (3.6 taken); his hand closes at 1.10 m up it, just
+         under the Naga's head (which begins at 1.15 m), as a staff is held;
        ACROSS HIS PALM, in his hand's own frame (armsOf: the fingers' line, the palm's facing; across toward his thumb): its
          middle 1.8 cm short of his middle finger's knuckle along his hand and pressed into his palm (the palm 1.2 cm off
          the bone's line, measured from his hand's own skin there: 1.1 to 1.7 cm, a grip's press taken off), the shaft's
@@ -8682,7 +8698,11 @@
          runs again (armsBack, as every laid pose: v11.5); eased over 0.3 s as the stick comes into his hand or leaves it.
        The stick is laid in this hand at that place (STICK5.inHand asks PHOGRIP5 for it), and goes where the hand goes */
     const PHOGRIP5 = (() => {
-      const STICK_R = 0.036, STICK_Y = 1.0, STICK_C = [0.084, -0.005], TILT = 18 * Math.PI / 180, BACK = 0.018, PALM = 0.012, FING_R = 0.008, THUMB_R = 0.009, GAP = 0.003;
+      const STAFF_ON = true;
+      /* (held OFF until photographed and measured: the stick stands as it did, and his hand is his file's; a probe turns it
+         on through the fight's lab, gripOn) */
+      let GRIP_ON = false;
+      const STICK_R = 0.036, STICK_Y = 1.10, STICK_C = [0.082, -0.003], TILT = 18 * Math.PI / 180, BACK = 0.018, PALM = 0.012, FING_R = 0.008, THUMB_R = 0.009, GAP = 0.003;
       const LIM = { f: [90, 110, 85], t: [60, 60, 80] }, D2R = Math.PI / 180;
       const NAMES = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky'];
       let G = null, failed = false, k = 0, lastNow = 0, wroteQ = null;
@@ -8757,7 +8777,8 @@
         const off = new THREE.Matrix4().compose(V(), new THREE.Quaternion().setFromRotationMatrix(R), new THREE.Vector3(sc, sc, sc));
         const at = new THREE.Vector3(STICK_C[0], STICK_Y, STICK_C[1]).applyMatrix4(off);
         off.setPosition(C.clone().sub(at));
-        out.off = off; out.C = C; out.A = A;
+        out.off = off; out.C = C; out.A = A; out.F = xA.clone().negate();
+        out.foreAxis = a.hand.position.clone().normalize();                         // (the forearm's own line, in its frame)
         G = out; console.log('PHOGRIP5: his grip solved: ' + JSON.stringify(out.report)); return G;
       }
       /* the closed hand laid on, by k (0 his file's hand .. 1 closed), from wherever the take left the fingers (they have none
@@ -8773,6 +8794,49 @@
         wroteQ = a.fing.map(F => F.b.quaternion.clone());
         for (const nm of NAMES) G.chains[nm][0].updateMatrixWorld(true);
       }
+      /* HIS ARM HOLDING IT UPRIGHT while he rests, walks and runs (his takes' arms hang and swing: a stick through a hanging
+         fist would lie across his path). His right arm solved as an arm (armHinge: the elbow on its pole's side, its hinge
+         the one ALL his takes bend about, (0.805, 0, 0.593) in his upper arm's frame, read from ten of them), the fist where
+         a man stands holding a staff (in his own frame 0.30 m out to his right, 1.10 m up, 0.36 m before him: the forearm a
+         little under level, the elbow near a right angle), turned thumb-up so the stick stands upright with its Naga's head
+         toward where he faces, turned 15 degrees out; the hand's turn along the forearm carried by the forearm (thumb-up is
+         a forearm's middle), the wrist bent only toward the little finger by the shaft's slope across the palm; lifted 6 cm
+         as he walks or runs (his body dips 4 cm a step: the stick's foot kept off the paving). By those takes' weights: in an
+         act (the throw, the gold, the bag) his own take's arm carries the stick */
+      const STAFF = { fist: [-0.30, 1.10, 0.36], lift: 0.06, out: 15 * D2R, pole: [-0.45, -0.5, -0.74], hm: [0.805, 0, 0.593] };
+      const _sa = V(), _sb = V(), _sc = V(), _sd = V(), _se = V(), _sf = V(), _sq = new THREE.Quaternion(), _sq2 = new THREE.Quaternion(), _sq3 = new THREE.Quaternion(),
+            _sm = new THREE.Matrix4(), _sm2 = new THREE.Matrix4(), _keep = [new THREE.Quaternion(), new THREE.Quaternion(), new THREE.Quaternion()];
+      let wroteArm = null;
+      function staffLay(P, kk) {
+        const As = armsOf(P), a = As && As.R; if (!a || !G || !G.F) return;
+        const w = P.w || {}, rt = P.rest && P.rest.take;
+        let share = 0; for (const nm of [rt, 'Walking', 'Running']) if (nm && w[nm]) share += w[nm];
+        share = Math.min(1, share) * kk; if (!(share > 0.001)) return;
+        if (a.wrote && wroteArm && a.up.quaternion.equals(wroteArm[0]) && a.fore.quaternion.equals(wroteArm[1]) && a.hand.quaternion.equals(wroteArm[2])) return;   // (laid already in this frame)
+        if (!a.wrote) { a.qUp.copy(a.up.quaternion); a.qFore.copy(a.fore.quaternion); a.qHand.copy(a.hand.quaternion); a.wrote = true; }
+        _keep[0].copy(a.up.quaternion); _keep[1].copy(a.fore.quaternion); _keep[2].copy(a.hand.quaternion);
+        hingeOf(a, -1, STAFF.hm);
+        P.group.updateWorldMatrix(true, false); P.group.getWorldQuaternion(_sq);
+        const walk = Math.min(1, (w.Walking || 0) + (w.Running || 0));
+        const Ct = _sa.set(STAFF.fist[0], STAFF.fist[1] + STAFF.lift * walk, STAFF.fist[2]); P.group.localToWorld(Ct);
+        const up = _sb.set(0, 1, 0), front = _sc.set(-Math.sin(STAFF.out), 0, Math.cos(STAFF.out)).applyQuaternion(_sq).normalize();
+        /* the hand's turn in the world: the shaft's line (in the hand's frame) up, the knuckles' line front */
+        _sd.crossVectors(G.F, G.A).normalize(); _se.crossVectors(front, up).normalize();
+        _sm.makeBasis(front, up, _se); _sm2.makeBasis(G.F, G.A, _sd).transpose(); _sm.multiply(_sm2); _sq2.setFromRotationMatrix(_sm);
+        /* the wrist, where the fist's middle comes onto its place */
+        const Wr = _sf.copy(G.C).multiplyScalar(G.s).applyQuaternion(_sq2).negate().add(Ct);
+        const pole = _sd.set(STAFF.pole[0], STAFF.pole[1], STAFF.pole[2]).normalize().applyQuaternion(_sq);
+        armHinge(a, Wr, pole);
+        /* the forearm turned along its own line by the hand's turn about it (swing and twist: the twist to the forearm) */
+        a.fore.updateWorldMatrix(true, false); a.fore.getWorldQuaternion(_sq3);
+        const rel = _sq3.clone().invert().multiply(_sq2), ax = G.foreAxis, dd = rel.x * ax.x + rel.y * ax.y + rel.z * ax.z;
+        const tw = new THREE.Quaternion(ax.x * dd, ax.y * dd, ax.z * dd, rel.w); if (tw.lengthSq() > 1e-12) { tw.normalize(); a.fore.quaternion.multiply(tw); a.fore.updateWorldMatrix(false, true); }
+        a.fore.getWorldQuaternion(_sq3); a.hand.quaternion.copy(_sq3.invert().multiply(_sq2)); a.hand.updateWorldMatrix(false, true);
+        if (share < 0.999) { _sq.copy(a.up.quaternion); a.up.quaternion.copy(_keep[0]).slerp(_sq, share);
+          _sq.copy(a.fore.quaternion); a.fore.quaternion.copy(_keep[1]).slerp(_sq, share);
+          _sq.copy(a.hand.quaternion); a.hand.quaternion.copy(_keep[2]).slerp(_sq, share); a.up.updateWorldMatrix(false, true); }
+        wroteArm = [a.up.quaternion.clone(), a.fore.quaternion.clone(), a.hand.quaternion.clone()];
+      }
       const hook = new THREE.Object3D(); hook.name = 'his grip on the Naga stick';
       hook.updateMatrixWorld = function (force) {
         const P = cast.pho;
@@ -8781,14 +8845,15 @@
           if (now - lastNow > 1) { lastNow = now;
             const holding = !!(P && P.ready && typeof STICK5 === 'object' && STICK5.who === 'pho' && things.nagaStaff && things.nagaStaff.visible && P.group.visible);
             k = holding ? Math.min(1, k + dt / 0.3) : Math.max(0, k - dt / 0.3); }
-          if (P && P.ready && k > 0 && solve(P)) lay(P, k);
+          if (GRIP_ON && P && P.ready && k > 0 && solve(P)) { if (STAFF_ON) staffLay(P, k); lay(P, k); }
         } catch (e) { if (!failed) { failed = true; console.warn('PHOGRIP5 threw: ' + (e && e.message)); } }
         THREE.Object3D.prototype.updateMatrixWorld.call(this, force);
       };
       world.children.unshift(hook); hook.parent = world;
       return {
         /* the stick's place in his right hand, in that hand's frame (null: his hand has no fingers, and the stick stands as before) */
-        offset(P) { const g = solve(P); return g ? g.off : null; },
+        offset(P) { if (!GRIP_ON) return null; const g = solve(P); return g ? g.off : null; },
+        on() { GRIP_ON = true; if (typeof STICK5 === 'object') { STICK5.off = null; if (STICK5.who === 'pho' && cast.pho && cast.pho.ready) STICK5.inHand(cast.pho); } return true; },
         report() { return G ? JSON.parse(JSON.stringify(G.report)) : (failed ? 'failed' : null); },
         k() { return k; }
       };
@@ -10069,10 +10134,13 @@
     }
     /* a person turned from one heading to another over [t0, t1], standing in his rest */
     const fmTurn = (t, t0, t1, a, b) => a + angTo(a, b) * smo(c01((t - t0) / Math.max(0.05, t1 - t0)));
-    /* the rests each body stands in (its take, its moment, how far its moment breathes, and whether it wraps) */
+    /* the rests each body stands in (its take, its moment, how far its moment breathes, and whether it wraps; a fifth, how
+       far a still one's moment sways, 0.25 unless said). phoS: his teacher SEATED on his cushion (the rise's first moments),
+       the rest the endings always gave him by hand (R25: a seated talk mixed with the standing rest half rose at each line) */
     const REST5 = { pho: ['Sit_to_Stand_Transition_M', 5.85, 0.04, false], ton: ['Idle_3', 2.0, 0.35, true], jun: ['Idle_3', 3.0, 0.35, true],
-                    koh: ['Idle_3', 1.0, 0.35, true], col: ['Sitting_Answering_Questions', 0.4, 0.0, false] };
-    const restOf5 = (who, t) => { const R = REST5[who]; return [R[0], R[3] ? R[1] + t * R[2] : fmPing(t, R[1], 0.25, 6), R[3]]; };
+                    koh: ['Idle_3', 1.0, 0.35, true], col: ['Sitting_Answering_Questions', 0.4, 0.0, false],
+                    phoS: ['Sit_to_Stand_Transition_M', 0.02, 0.0, false, 0.3] };
+    const restOf5 = (who, t) => { const R = REST5[who]; return [R[0], R[3] ? R[1] + t * R[2] : fmPing(t, R[1], R[4] || 0.25, 6), R[3]]; };
     function fmRest(P, who, t) { if (!P || !P.ready) return; const r = restOf5(who, t); pose(P, r[0], r[1], r[2]); }
     /* A PERSON'S TALKING OVER ALL HIS LINES IN A FILM (R25, Chad: "jerky character motions"): `lines` [[t0, secs, take], ...]
        each plays its talking take from the line's own start, eased in over 0.35 s and out over the half second after its
@@ -10091,7 +10159,7 @@
       /* ONE TAKE FOR HIS REST AND HIS TALK (the collector has one seated take, Sitting_Answering_Questions): a take cannot be
          mixed with itself at two moments (pose() gave the one action the rest's moment and the mix's weight, so every
          line began and ended with his body sagging toward its bind pose: JUMP and JERK at each of his lines). So it PLAYS:
-         slowly while he is quiet, at its own pace while he talks, its time the sum of both (each line's weight summed over
+         slowly while he is quiet (an eighth of its pace), at its own pace while he talks, its time the sum of both (each line's weight summed over
          the clock, in closed form: smoothstep's integral), a pure function of the clock with no step */
       if (S.length && S.every(q => q.seg.every(g => g.tk === r[0]))) {
         const Sm = (x) => x * x * x - 0.5 * x * x * x * x;
@@ -10099,7 +10167,7 @@
         for (const q of S) { if (t <= q.t0) break;
           I += 0.35 * Sm(c01((t - q.t0) / 0.35)) + Math.max(0, Math.min(t, q.t1 - 0.1) - (q.t0 + 0.35));
           const x = c01((t - q.t1 + 0.1) / 0.5); I += 0.5 * (x - Sm(x)); }
-        pose(P, r[0], REST5[who][1] + 0.3 * t + 0.7 * I, true); return;
+        pose(P, r[0], REST5[who][1] + 0.12 * t + 0.88 * I, true); return;
       }
       const s = S.find(q => t >= q.t0 && t < q.t1 + 0.45);
       if (!s) { pose(P, r[0], r[1], r[2]); return; }
@@ -10353,21 +10421,26 @@
         LIFTNUM5.set(t < T.out + 1.0 ? (t < T.num2 ? 0 : t < T.num3 ? 1 : 2) : -1);
         liftDoors(smo(c01((t - T.open) / 1.5)));
         /* his teacher: before him, facing the doors, his eyes on the number; out first, down the walkway to where he waits */
-        whenReady(cast.pho, (P) => { const walked = fmWalk(P, t, T.out, [CAR5.pho, [0.04, 0.7], [STATION.walk.pho.x, STATION.walk.pho.z]], 1.05, restOf5('pho', t), STATION.walk.pho.ry);
-          if (!walked && t < T.out) lookNow(P, [0, 2.2, LIFT.z0], 0.55, 0.6); });
+        /* (his look on the number let go over his first steps out, never dropped in one frame: R25) */
+        whenReady(cast.pho, (P) => { fmWalk(P, t, T.out, [CAR5.pho, [0.04, 0.7], [STATION.walk.pho.x, STATION.walk.pho.z]], 1.05, restOf5('pho', t), STATION.walk.pho.ry, { ry0: Math.PI });
+          const kl = 0.55 * (1 - smo(c01((t - T.out) / 0.6))); if (kl > 0.001) lookNow(P, [0, 2.2, LIFT.z0], kl, 0.6); });
         /* Ton, at his left, the wrapped staff upright in his right hand: his line turned back over his shoulder; out after
            his teacher, single file through the doors, turning back to him on the walkway as he stops */
         whenReady(cast.ton, (P) => { const r = restOf5('ton', t);
-          if (t < T.tonOut) { put(P, CAR5.ton[0], CAR5.ton[1], Math.PI); fmTalk(P, 'ton', t, T.tn5o1, SECS.tn5o1, 'Stand_and_Chat');
+          if (t < T.tonOut) { put(P, CAR5.ton[0], CAR5.ton[1], Math.PI + angTo(Math.PI, faceTo(CAR5.ton[0], CAR5.ton[1], CAR5.eye[0], CAR5.eye[2])) * 0.55 * smo(c01((t - T.tn5o1 + 0.5) / 0.6)) * (1 - smo(c01((t - T.tn5o1 - SECS.tn5o1) / 0.8))));
+            fmTalk(P, 'ton', t, T.tn5o1, SECS.tn5o1, 'Stand_and_Chat');
             lookNow(P, 'lens', smo(c01((t - T.tn5o1 + 0.3) / 0.6)) * (1 - smo(c01((t - T.tn5o1 - SECS.tn5o1) / 0.8))), 0.85, 0.12); }
-          else { fmWalk(P, t, T.tonOut, [CAR5.ton, [-0.16, 1.0], [STATION.walk.ton.x, STATION.walk.ton.z]], 1.0, r, STATION.walk.ton.ry);
+          else { fmWalk(P, t, T.tonOut, [CAR5.ton, [-0.16, 1.0], [STATION.walk.ton.x, STATION.walk.ton.z]], 1.0, r, STATION.walk.ton.ry, { ry0: Math.PI });   // (turned from where he stood, never snapped to the path)
             if (t > T.sour) lookNow(P, 'lens', smo(c01((t - T.sour) / 1.2)) * 0.8, 0.8); }
           STICK5.carry(P); });
         /* Jun, at his right, the duffel in his hand: his line, then out last before him */
         whenReady(cast.jun, (P) => { const r = restOf5('jun', t);
-          if (t < T.junOut) { put(P, CAR5.jun[0], CAR5.jun[1], Math.PI); fmTalk(P, 'jun', t, T.ju5o1, SECS.ju5o1, 'Talk_with_Right_Hand_Open');
+          /* (each half-turns his body back to him for his line and the head does the rest (v14.5: a man talking to him turns to
+             him); facing the doors, the back of Jun's head filled the phone as he spoke: open-phone film-012_5, R25) */
+          if (t < T.junOut) { put(P, CAR5.jun[0], CAR5.jun[1], Math.PI + angTo(Math.PI, faceTo(CAR5.jun[0], CAR5.jun[1], CAR5.eye[0], CAR5.eye[2])) * 0.55 * smo(c01((t - T.ju5o1 + 0.5) / 0.6)) * (1 - smo(c01((t - T.ju5o1 - SECS.ju5o1) / 0.8))));
+            fmTalk(P, 'jun', t, T.ju5o1, SECS.ju5o1, 'Talk_with_Right_Hand_Open');
             lookNow(P, 'lens', smo(c01((t - T.ju5o1 + 0.3) / 0.6)) * (1 - smo(c01((t - T.ju5o1 - SECS.ju5o1) / 0.8))), 0.85, 0.12); }
-          else { fmWalk(P, t, T.junOut, [CAR5.jun, [0.14, 1.0], [STATION.walk.jun.x, STATION.walk.jun.z]], 1.0, r, STATION.walk.jun.ry);
+          else { fmWalk(P, t, T.junOut, [CAR5.jun, [0.14, 1.0], [STATION.walk.jun.x, STATION.walk.jun.z]], 1.0, r, STATION.walk.jun.ry, { ry0: Math.PI });
             if (t > T.sour) lookNow(P, 'lens', smo(c01((t - T.sour - 0.4) / 1.2)) * 0.8, 0.8); }
           DUFFEL5.carry(P); });
         /* THE SOUR: the colour thinned toward grey-green from the edges in as he steps out, and held */
@@ -10509,15 +10582,12 @@
              the lens in his back) */
           else if (!inside) fmWalk(P, t, T.in, [[-8.5, -8.0], [-8.5, -5.05]], 1.4, restOf5('koh', t), Math.PI);   // (to just inside his door: the sofa begins at z -4.67)
           else { put(P, A.kohRoom[0], A.kohRoom[1], STATION.hunt.koh.ry);
-            const tk = t < T.ko5d3 ? 'Talk_with_Hands_Open' : t < T.ko5d4 ? 'Listening_Gesture' : 'Talk_with_Hands_Open';
-            if (t < T.ko5d2 + SECS.ko5d2 + 0.1) fmTalk(P, 'koh', t, T.ko5d2, SECS.ko5d2, 'Talk_with_Hands_Open');
-            else if (t < T.ko5d3 + SECS.ko5d3 + 0.1) fmTalk(P, 'koh', t, T.ko5d3, SECS.ko5d3, 'Talk_with_Hands_Open');
-            else if (t < T.ko5d4 + SECS.ko5d4 + 0.1) fmTalk(P, 'koh', t, T.ko5d4, SECS.ko5d4, 'Listening_Gesture');
-            else fmRest(P, 'koh', t);
-            void tk;
-            /* his eyes on the master, and down for "I know I have a mouth" */
+            /* (his three lines one talk: the second begins 0.35 s after the first ends, the third's gesture crossfaded in) */
+            fmSpeak(P, 'koh', t, [[T.ko5d2, SECS.ko5d2, 'Talk_with_Hands_Open'], [T.ko5d3, SECS.ko5d3, 'Talk_with_Hands_Open'], [T.ko5d4, SECS.ko5d4, 'Listening_Gesture']]);
+            /* his eyes on the master, and down for "I know I have a mouth": carried there and back by the same ease (handed
+               the low point the moment it began, his head turned there in one frame: JERK) */
             const low = smo(c01((t - T.ko5d4) / 0.6)) * (1 - smo(c01((t - T.ko5d4 - SECS.ko5d4) / 0.8)));
-            lookNow(P, t < T.ph5d1 ? (low > 0.01 ? [A.kohRoom[0] + 0.4, 0.6, A.kohRoom[1] - 1.0] : fmHead(cast.pho, [A.phoIn[0], 1.6, A.phoIn[1]])) : fmHead(cast.pho, [A.phoIn[0], 1.6, A.phoIn[1]]), 0.8, 0.75); }
+            lookNow(P, lp3(fmHead(cast.pho, [A.phoIn[0], 1.6, A.phoIn[1]]), [A.kohRoom[0] + 0.4, 0.6, A.kohRoom[1] - 1.0], low), 0.8, 0.75); }
         });
         /* his teacher: at the gate; in behind Mr Koh; in the room, listening, then his two lines: to Mr Koh, and turned to
            his student. At the end turned back toward the room (the hunt's station) */
@@ -10526,11 +10596,12 @@
           else if (!inside) fmWalk(P, t, T.in, [[A.phoGate[0], A.phoGate[1]], [-8.5, -12.6], [-8.5, -6.6]], 1.55, restOf5('pho', t), Math.PI);
           else { const toKoh = faceTo(A.phoIn[0], A.phoIn[1], A.kohRoom[0], A.kohRoom[1]), toMe = faceTo(A.phoIn[0], A.phoIn[1], A.eyeIn[0], A.eyeIn[2]);
             const ry = t < T.ph5d2 - 0.2 ? toKoh : fmTurn(t, T.ph5d2 - 0.2, T.ph5d2 + 0.6, toKoh, toMe);
-            if (t >= T.turn) { fmWalk(P, t, T.turn, [A.phoIn, [STATION.hunt.pho.x, STATION.hunt.pho.z]], 0.8, restOf5('pho', t), STATION.hunt.pho.ry, { ry0: toMe }); return; }
+            /* (his look on his student let go over his first steps, not dropped in one frame as he turns away) */
+            if (t >= T.turn) { fmWalk(P, t, T.turn, [A.phoIn, [STATION.hunt.pho.x, STATION.hunt.pho.z]], 0.8, restOf5('pho', t), STATION.hunt.pho.ry, { ry0: toMe });
+              lookNow(P, 'lens', 0.85 * (1 - smo(c01((t - T.turn) / 0.6))), 0.7); return; }
             put(P, A.phoIn[0], A.phoIn[1], ry);
-            if (t < T.ph5d1 + SECS.ph5d1 + 0.1) fmTalk(P, 'pho', t, T.ph5d1, SECS.ph5d1, 'Talk_with_Hands_Open');
-            else fmTalk(P, 'pho', t, T.ph5d2, SECS.ph5d2, 'Talk_with_Hands_Open');
-            lookNow(P, t < T.ph5d2 - 0.2 ? fmHead(cast.koh, [A.kohRoom[0], 1.55, A.kohRoom[1]]) : 'lens', 0.85, 0.7); }
+            fmSpeak(P, 'pho', t, [[T.ph5d1, SECS.ph5d1, 'Talk_with_Hands_Open'], [T.ph5d2, SECS.ph5d2, 'Talk_with_Hands_Open']]);
+            fmGaze(P, t, [[0, () => fmHead(cast.koh, [A.kohRoom[0], 1.55, A.kohRoom[1]])], [T.ph5d2 - 0.2, 'lens']], 0.85, 0.7, 0.03, 0.8); }
         });
         /* Ton and Jun: behind at the gate; into the court, where the hunt keeps them */
         whenReady(cast.ton, (P) => { if (t < T.in + 0.4) { put(P, A.tonW[0], A.tonW[1], 0); fmRest(P, 'ton', t); }
@@ -10624,7 +10695,14 @@
             STICK5.onPalms(P, 'stick');
             if (things.staffCloth) { things.staffCloth.visible = true; things.staffCloth.position.set(PR5AT.tonU[0] + 0.32, 0.01, PR5AT.tonU[1] + 0.18); things.staffCloth.rotation.set(0, 0.6, 0); }
             lookNow(P, [PR5AT.tonU[0] + 0.1, 0.9, PR5AT.tonU[1] - 0.5], 0.8, 0.8); }
-          else { fmWalk(P, t, T.take + 0.6, [PR5AT.tonU, [STATION.fight.ton.x, STATION.fight.ton.z]], 0.9, restOf5('ton', t), STATION.fight.ton.ry); lookNow(P, fmHead(cast.pho, [-8.6, 1.6, -9]), 0.7, 0.7); }
+          /* (his hands let down out of 'give' over half a second before he walks: put straight into his walk, the held-out
+             arms dropped in one frame, on screen: R25) */
+          else if (t < T.take + 1.1) { const ry = faceTo(PR5AT.tonU[0], PR5AT.tonU[1], PR5AT.phoU[0], PR5AT.phoU[1]), r = restOf5('ton', t);
+            put(P, PR5AT.tonU[0], PR5AT.tonU[1], ry); pose(P, r[0], r[1], r[2], 'give', 1 - smo(c01((t - T.take - 0.6) / 0.5)), 2.6);
+            const u = smo(c01((t - T.take - 0.6) / 0.5));
+            lookNow(P, lp3([PR5AT.tonU[0] + 0.1, 0.9, PR5AT.tonU[1] - 0.5], fmHead(cast.pho, [-8.6, 1.6, -9]), u), lp(0.8, 0.7, u), lp(0.8, 0.7, u)); }
+          else { fmWalk(P, t, T.take + 1.1, [PR5AT.tonU, [STATION.fight.ton.x, STATION.fight.ton.z]], 0.9, restOf5('ton', t), STATION.fight.ton.ry,
+                   { ry0: faceTo(PR5AT.tonU[0], PR5AT.tonU[1], PR5AT.phoU[0], PR5AT.phoU[1]) }); lookNow(P, fmHead(cast.pho, [-8.6, 1.6, -9]), 0.7, 0.7); }
         });
         /* his teacher: by the doorway as the stick is unwrapped; on the cut it is in his hand; his word to the household;
            his word to his student, at the court's middle; the stick set upright; from the turn at the fight's own place */
@@ -10632,9 +10710,15 @@
           if (t >= T.take && STICK5.who !== 'pho') STICK5.to('pho');
           if (t < T.thread) { put(P, PR5AT.phoU[0], PR5AT.phoU[1], faceTo(PR5AT.phoU[0], PR5AT.phoU[1], PR5AT.tonU[0], PR5AT.tonU[1])); fmRest(P, 'pho', t); lookNow(P, fmHead(cast.ton, [-8.05, 1.5, -7.35]), 0.7, 0.8); }
           else if (t < T.teacher) { const ry = faceTo(PR5AT.phoU[0], PR5AT.phoU[1], STATION.fight.koh.x, STATION.fight.koh.z); put(P, PR5AT.phoU[0], PR5AT.phoU[1], ry);
-            fmTalk(P, 'pho', t, T.ph5p1, SECS.ph5p1, 'Talk_with_Hands_Open'); lookNow(P, t < T.noans + 0.5 ? fmHead(cast.koh, [-8.5, 1.55, -4.7]) : [F.zav.x, 1.5, F.zav.z], 0.85, 0.7); }
-          else if (!turned) { const walked = fmWalk(P, t, T.teacher - 0.9, [PR5AT.phoU, [F.pho.x, F.pho.z]], 1.0, restOf5('pho', t), faceTo(F.pho.x, F.pho.z, F.zav.x, F.zav.z));
-            if (!walked) { if (t < T.ph5p2 + SECS.ph5p2 + 0.1) fmTalk(P, 'pho', t, T.ph5p2, SECS.ph5p2, 'Talk_with_Hands_Open'); lookNow(P, 'lens', 0.85, 0.7); } }
+            fmTalk(P, 'pho', t, T.ph5p1, SECS.ph5p1, 'Talk_with_Hands_Open');
+            /* (from Mr Koh to his student as he gives no answer, carried over 0.6 s: handed over in one frame, his head
+               turned 70 degrees on screen: R25) */
+            fmGaze(P, t, [[0, () => fmHead(cast.koh, [-8.5, 1.55, -4.7])], [T.noans + 0.2, [F.zav.x, 1.5, F.zav.z]]], 0.85, 0.7, 0.03, 0.6); }
+          else if (!turned) { const walked = fmWalk(P, t, T.teacher - 0.9, [PR5AT.phoU, [F.pho.x, F.pho.z]], 1.0, restOf5('pho', t), faceTo(F.pho.x, F.pho.z, F.zav.x, F.zav.z),
+                                                  { ry0: faceTo(PR5AT.phoU[0], PR5AT.phoU[1], STATION.fight.koh.x, STATION.fight.koh.z) });
+            /* (his eyes stay on his student as he walks to him: dropped as he set off, the head swung back in one frame) */
+            if (walked) lookNow(P, [F.zav.x, 1.5, F.zav.z], 0.85, 0.7);
+            else { if (t < T.ph5p2 + SECS.ph5p2 + 0.45) fmTalk(P, 'pho', t, T.ph5p2, SECS.ph5p2, 'Talk_with_Hands_Open'); lookNow(P, 'lens', 0.85, 0.7); } }
           else { put(P, F.pho.x, F.pho.z, COURT5.heading + Math.PI); fmRest(P, 'pho', t); lookNow(P, [F.lesson.x, 1.3, F.lesson.z], 0.6, 0.7); }
         });
         /* THE NINE: where they stood all evening, heads bowed toward the house; they lift their heads, turn to him, and
@@ -10745,10 +10829,13 @@
         fmBeds({ court: 0.22, sour: 0.3 * (1 - smo(c01((t - T.apart) / 2.5))) });
         /* the stick planted at his front right, where his cast brings it down; it stands by itself once planted */
         const fx = Math.sin(pz.ry), fz = Math.cos(pz.ry), sx = pz.x + fx * 0.42 - fz * 0.18, sz = pz.z + fz * 0.42 + fx * 0.18;
+        /* (his cast handed to his rest over 0.6 s, and his look from the Naga's head to his student over 0.8: each was put in
+           one frame, on screen: R25) */
         whenReady(cast.pho, (P) => { put(P, pz.x, pz.z, pz.ry);
-          if (t < T.plant + 4.2) { pose(P, 'Charged_Spell_Cast_1', Math.max(0, t - T.plant)); if (t < T.plant + 1.7) STICK5.to('pho'); else STICK5.plant(sx, sz, pz.ry); }
-          else { fmRest(P, 'pho', t); STICK5.plant(sx, sz, pz.ry); }
-          lookNow(P, t < T.lay ? [sx, 3.8, sz + 0.6] : [zz.x, 1.5, zz.z], 0.6, 0.7); });
+          const r = restOf5('pho', t), out = smo(c01((t - T.plant - 3.9) / 0.6));
+          if (out < 1) pose(P, 'Charged_Spell_Cast_1', Math.max(0, t - T.plant), false, r[0], out, r[1]); else fmRest(P, 'pho', t);
+          if (t < T.plant + 1.7) STICK5.to('pho'); else STICK5.plant(sx, sz, pz.ry);
+          fmGaze(P, t, [[0, [sx, 3.8, sz + 0.6]], [T.lay, [zz.x, 1.5, zz.z]]], 0.6, 0.7, 0.03, 0.8); });
         whenReady(cast.zav, (P) => { fmShow(P, true); put(P, zz.x, zz.z, COURT5.heading + Math.PI); const rt = zavRest(); if (rt) pose(P, rt, 2 + t * 0.35, true); else pose(P, 'Walking', ZAV_STAND5); });
         /* the cage: cracked under the shape, whole again as the Naga closes round them */
         const kc = t < T.apart ? 0.55 : 0.55 + 0.45 * smo(c01((t - T.apart) / 2.0));
@@ -10860,15 +10947,13 @@
           else if (t < T.room3) { put(P, A.dine[0], A.dine[1], faceTo(A.dine[0], A.dine[1], -11.6, 0.9)); pose(P, 'mage_soell_cast_3', fmRun(t, T.room2 + 0.3, T.room2 + 3.0, 0.2, 2.9)); }
           else if (t < T.knot) { put(P, A.terr[0], A.terr[1], faceTo(A.terr[0], A.terr[1], -12.4, -3.6)); pose(P, 'mage_soell_cast_3', fmRun(t, T.room3 + 0.3, T.room3 + 3.0, 0.2, 2.9)); }
           else if (!atLift) { put(P, A.phoKoh[0], A.phoKoh[1], faceTo(A.phoKoh[0], A.phoKoh[1], A.kohWin[0], A.kohWin[1]));
-            if (t > T.ph5b1 - 0.1 && t < T.ph5b1 + SECS.ph5b1 + 0.1) fmTalk(P, 'pho', t, T.ph5b1, SECS.ph5b1, 'Talk_with_Hands_Open');
-            else if (t > T.ph5b2 - 0.1 && t < T.ph5b2 + SECS.ph5b2 + 0.1) fmTalk(P, 'pho', t, T.ph5b2, SECS.ph5b2, 'Talk_with_Hands_Open');
-            else fmTalk(P, 'pho', t, T.ph5b3, SECS.ph5b3, 'Talk_with_Hands_Open');
+            /* (his three lines to Mr Koh one talk, never cut 0.1 s after each: R25) */
+            fmSpeak(P, 'pho', t, [[T.ph5b1, SECS.ph5b1, 'Talk_with_Hands_Open'], [T.ph5b2, SECS.ph5b2, 'Talk_with_Hands_Open'], [T.ph5b3, SECS.ph5b3, 'Talk_with_Hands_Open']]);
             lookNow(P, fmHead(cast.koh, [A.kohWin[0], 1.55, A.kohWin[1]]), 0.8, 0.7); }
           else { put(P, A.liftPho[0], A.liftPho[1], faceTo(A.liftPho[0], A.liftPho[1], A.liftEye[0], A.liftEye[2]));
-            if (t < T.ph5b5 - 0.1) fmTalk(P, 'pho', t, T.ph5b4, SECS.ph5b4, 'Talk_with_Hands_Open');
-            else if (t < T.ph5b6 - 0.1) fmTalk(P, 'pho', t, T.ph5b5, SECS.ph5b5, 'Talk_with_Hands_Open');
-            else fmTalk(P, 'pho', t, T.ph5b6, SECS.ph5b6, 'Talk_with_Hands_Open');
-            lookNow(P, t > T.ju5b1 - 0.2 && t < T.ph5b6 ? fmHead(cast.jun, [A.liftJun[0], 1.6, A.liftJun[1]]) : 'lens', 0.8, 0.7); }
+            fmSpeak(P, 'pho', t, [[T.ph5b4, SECS.ph5b4, 'Talk_with_Hands_Open'], [T.ph5b5, SECS.ph5b5, 'Talk_with_Hands_Open'], [T.ph5b6, SECS.ph5b6, 'Talk_with_Hands_Open']]);
+            /* (to Jun for his news and back, each carried over 0.6 s) */
+            fmGaze(P, t, [[0, 'lens'], [T.ju5b1 - 0.2, () => fmHead(cast.jun, [A.liftJun[0], 1.6, A.liftJun[1]])], [T.ph5b6, 'lens']], 0.8, 0.7, 0.03, 0.6); }
         });
         /* Ton: the stick in both hands behind his teacher, looking down at it; his line to him; at the lift */
         whenReady(cast.ton, (P) => {
@@ -10877,9 +10962,11 @@
             put(P, at[0], at[1], faceTo(at[0], at[1], at[0] - 0.5, at[1] + 1)); pose(P, 'give', 2.6 + 0.08 * Math.sin(t * 0.7)); STICK5.onPalms(P, 'stick');
             lookNow(P, [at[0], 0.8, at[1] + 0.5], 0.9, 0.8); }
           else if (!atLift) { put(P, A.tonKoh[0], A.tonKoh[1], faceTo(A.tonKoh[0], A.tonKoh[1], A.eyeKoh[0], A.eyeKoh[2])); pose(P, 'give', 2.6 + 0.08 * Math.sin(t * 0.7)); STICK5.onPalms(P, 'stick');
-            lookNow(P, t > T.tn5b1 + 0.6 && t < T.tn5b1 + SECS.tn5b1 ? 'lens' : [A.tonKoh[0], 0.8, A.tonKoh[1] - 0.4], 0.85, 0.8); }
-          else { put(P, A.liftTon[0], A.liftTon[1], faceTo(A.liftTon[0], A.liftTon[1], A.liftPho[0], A.liftPho[1])); pose(P, 'give', 2.6 + 0.08 * Math.sin(t * 0.7)); STICK5.onPalms(P, 'stick');
-            if (t > T.in) fmWalk(P, t, T.in + 0.2, [A.liftTon, [-0.3, 1.6]], 0.9, ['give', 2.6, 0, false], Math.PI); }
+            /* (up to him for his line and back down to the stick, each carried over half a second) */
+            fmGaze(P, t, [[0, [A.tonKoh[0], 0.8, A.tonKoh[1] - 0.4]], [T.tn5b1 + 0.6, 'lens'], [T.tn5b1 + SECS.tn5b1, [A.tonKoh[0], 0.8, A.tonKoh[1] - 0.4]]], 0.85, 0.8, 0.03, 0.5); }
+          else { const ry0 = faceTo(A.liftTon[0], A.liftTon[1], A.liftPho[0], A.liftPho[1]);
+            put(P, A.liftTon[0], A.liftTon[1], ry0); pose(P, 'give', 2.6 + 0.08 * Math.sin(t * 0.7)); STICK5.onPalms(P, 'stick');
+            if (t > T.in) fmWalk(P, t, T.in + 0.2, [A.liftTon, [-0.3, 1.6]], 0.9, ['give', 2.6, 0, false], Math.PI, { ry0 }); }
         });
         /* Mr Koh: behind the thread in the court; by his window, the curtain drawn back; his line, his bow; Jun with him */
         whenReady(cast.koh, (P) => {
@@ -10889,7 +10976,7 @@
           else { fmShow(P, true); put(P, A.kohWin[0], A.kohWin[1], faceTo(A.kohWin[0], A.kohWin[1], A.phoKoh[0], A.phoKoh[1]));
             fmTalk(P, 'koh', t, T.ko5b1, SECS.ko5b1, 'Talk_with_Hands_Open');
             const bow = smo(c01((t - T.wai) / 0.6)) * (1 - smo(c01((t - T.wai - 1.4) / 0.8)));
-            lookNow(P, bow > 0.01 ? [A.phoKoh[0], 0.6, A.phoKoh[1]] : fmHead(cast.pho, [A.phoKoh[0], 1.6, A.phoKoh[1]]), 0.85, 0.85); }
+            lookNow(P, lp3(fmHead(cast.pho, [A.phoKoh[0], 1.6, A.phoKoh[1]]), [A.phoKoh[0], 0.6, A.phoKoh[1]], bow), 0.85, 0.85); }   // (the bow carried by its own ease, never handed in a frame)
         });
         whenReady(cast.jun, (P) => {
           if (!inEyes) { const s0 = STATION.fight.jun; put(P, s0.x, s0.z, s0.ry); fmRest(P, 'jun', t); }
@@ -11006,11 +11093,13 @@
         if (kit && kit.captions && !FM5.once.has('card') && t >= T.card) { FM5.once.add('card'); kit.captions([{ at: 0, end: 2.4, text: W.cardNext, sub: '' }]); }
         /* the pieces: laid out on the cut, the three of the presences among them */
         PIECES5.set(t >= T.laid);
+        /* (each look carried from one thing to the next over 0.6 s, never handed in a frame; the collector's one take PLAYS
+           through his lines, fmSpeak: mixed with itself it sagged toward its bind pose at each line's start and end, R25) */
         whenReady(cast.phoS, (P) => { const s0 = STATION.table.pho; put(P, s0.x, s0.z, s0.ry, CUSHION_TOP); fmRest(P, 'pho', t); pose(P, 'Sit_to_Stand_Transition_M', fmPing(t, 0.02, 0.3, 6));
-          lookNow(P, t < T.co5t1 ? [R.cx, 0.4, R.cz - 0.1] : fmHead(cast.col, [STATION.table.collector.x, 0.95, STATION.table.collector.z]), 0.7, 0.7); });
+          fmGaze(P, t, [[0, [R.cx, 0.4, R.cz - 0.1]], [T.co5t1, () => fmHead(cast.col, [STATION.table.collector.x, 0.95, STATION.table.collector.z])]], 0.7, 0.7, 0.03, 0.6); });
         whenReady(cast.col, (P) => { const s0 = STATION.table.collector; put(P, s0.x, s0.z, s0.ry, CUSHION_TOP);
-          fmTalk(P, 'col', t, t < T.co5t2 ? T.co5t1 : T.co5t2, t < T.co5t2 ? SECS.co5t1 : SECS.co5t2, 'Sitting_Answering_Questions');
-          lookNow(P, t < T.co5t1 ? [R.cx - 0.1, 0.35, R.cz - 0.1] : t < T.co5t2 + 3.0 ? fmHead(cast.phoS, [0, 0.95, 240.78]) : 'lens', 0.8, 0.7); });
+          fmSpeak(P, 'col', t, [[T.co5t1, SECS.co5t1, 'Sitting_Answering_Questions'], [T.co5t2, SECS.co5t2, 'Sitting_Answering_Questions']]);
+          fmGaze(P, t, [[0, [R.cx - 0.1, 0.35, R.cz - 0.1]], [T.co5t1, () => fmHead(cast.phoS, [0, 0.95, 240.78])], [T.co5t2 + 3.0, 'lens']], 0.8, 0.7, 0.03, 0.6); });
         whenReady(cast.jun, (P) => { const s0 = STATION.table.jun; put(P, s0.x, s0.z, s0.ry); fmRest(P, 'jun', t); lookNow(P, [R.cx, 0.4, R.cz], 0.5, 0.7); });
         const COL = colHead5;
         fmTrack(t, [
@@ -11081,25 +11170,39 @@
         if (vv && t < vv[1] + 1.5) fmVision(t, vv[0], 1.8, vv[1], 1.4); else fmVision(t, r0 + RT.see, 1.8, r0 + RT.unsee, 1.4);
         /* Grandmaster Pho: at rest; through the rite the fan in his left hand dipped and thrown (his seated cheer's raise and
            fall: the flick's own take is wanted, the plan's 9.1); his hand on the bag in the last picture */
+        /* (R25, "jerky character motions", measured: his seated talk was mixed with his STANDING rest (restOf5 'pho', the
+           rise's last moment), so at each line's start and end he half rose; each throw of the fan began from the last one's
+           top in one frame (the take wrapped); the rite's first throw and its end were put in one frame; and every look was
+           handed over in one. Now: his seated rest (REST5.phoS); the rite's throws eased in and out, each throw from his rest
+           and back to it; the fan in his hand from the rite's own cut to the bag's (both cuts); each look carried 0.6 s) */
+        const COLH = () => fmHead(cast.col, [STATION.table.collector.x, 0.95, STATION.table.collector.z]), CLOTH = [R.cx, 0.36, R.cz - 0.1];
         whenReady(cast.phoS, (P) => { const s0 = STATION.table.pho; put(P, s0.x, s0.z, s0.ry, CUSHION_TOP);
-          const flick = tr > RT.dip && tr < RT.end ? ((tr - RT.dip) % 2.2) : -1;
-          if (flick >= 0) { pose(P, 'Sit_Cheer_with_Left_Hand', 0.25 + flick * 0.85); FM5.fanOff = handHold5(P, 'Left', RITE5.fan, FM5.fanOff, { base: 0.05, ry: 0, rest: ['Sit_Cheer_with_Left_Hand', 1.2] }); }
-          else { pose(P, 'Sit_to_Stand_Transition_M', fmPing(t, 0.02, 0.3, 6)); RITE5.fan.visible = false; }
-          const speak = E.pho && E.pho.find(([key, at]) => t >= at - 0.1 && t < at + (SECS[key] || 2) + 0.1);
-          if (speak && flick < 0) fmTalk(P, 'pho', t, speak[1], SECS[speak[0]] || 2, 'Sitting_Answering_Questions');
-          lookNow(P, speak && speak[2] === 'me' ? 'lens' : (tr > 0 && tr < RT.end ? [R.cx, 0.36, R.cz - 0.1] : fmHead(cast.col, [STATION.table.collector.x, 0.95, STATION.table.collector.z])), 0.7, 0.7); });
-        if (tr > RT.dip && tr < RT.end) { const ft = (tr - RT.dip) % 2.2; RITE5.throwAt(ft, 0.9, RITE_AT.fanFrom, R.cx, R.cz - 0.12); } else RITE5.dropsOff();
+          /* (the throws end on the cut to the bag: the pieces are in it, and that close sees no fan) */
+          const wf = tr > RT.dip && tr < RT.bag ? smo(c01((tr - RT.dip) / 0.4)) : 0;
+          if (wf > 0) { const cyc = ((tr - RT.dip) % 2.2 + 2.2) % 2.2, wc = smo(c01(cyc / 0.25)) * (1 - smo(c01((cyc - 1.95) / 0.25))), r = restOf5('phoS', t);
+            pose(P, 'Sit_Cheer_with_Left_Hand', 0.25 + cyc * 0.85, false, r[0], 1 - wf * wc, r[1]); }
+          else fmSpeak(P, 'phoS', t, (E.pho || []).map(([key, at]) => [at, SECS[key] || 2, 'Sitting_Answering_Questions']));
+          if (tr >= 0 && tr < RT.bag) FM5.fanOff = handHold5(P, 'Left', RITE5.fan, FM5.fanOff, { base: 0.05, ry: 0, rest: ['Sit_Cheer_with_Left_Hand', 1.2] }); else RITE5.fan.visible = false;
+          const L = [[0, COLH]];
+          for (const [key, at, to] of (E.pho || [])) if (to === 'me') { L.push([at - 0.2, 'lens']); L.push([at + (SECS[key] || 2) + 0.2, COLH]); }
+          L.push([r0, CLOTH]); L.push([r0 + RT.end, COLH]); L.sort((a, b) => a[0] - b[0]);
+          fmGaze(P, t, L, 0.7, 0.7, 0.03, 0.6); });
+        if (tr > RT.dip && tr < RT.bag) { const ft = (tr - RT.dip) % 2.2; RITE5.throwAt(ft, 0.9, RITE_AT.fanFrom, R.cx, R.cz - 0.12); } else RITE5.dropsOff();
         /* the collector: his own story first; still through the rite; lighter after it; standing at the door, and gone */
         whenReady(cast.col, (P) => { const s0 = STATION.table.collector;
           const gone = E.gone != null && t >= E.gone;
           if (gone) { fmShow(P, false); return; }
           fmShow(P, true);
-          if (E.door != null && t >= E.door) { put(P, -1.15, 237.95, faceTo(-1.15, 237.95, me[0], me[2])); fmRest(P, 'koh', t); pose(P, 'Idle_3', 2 + t * 0.35, true); }
+          /* (R25: his one seated take PLAYS through his lines, fmSpeak, where mixed with itself it sagged toward its bind pose
+             at each line; at the door, standing, he talks with his hands for his line there) */
+          if (E.door != null && t >= E.door) { put(P, -1.15, 237.95, faceTo(-1.15, 237.95, me[0], me[2]));
+            fmSpeak(P, 'koh', t, Object.keys(E).filter(q => /^co5/.test(q) && E[q] >= E.door && SECS[q]).map(q => [E[q], SECS[q], 'Talk_with_Hands_Open'])); }
           else { put(P, s0.x, s0.z, s0.ry, CUSHION_TOP);
-            const speak = E.col && E.col.find(([key, at]) => t >= at - 0.1 && t < at + (SECS[key] || 2) + 0.1);
-            if (speak) fmTalk(P, 'col', t, speak[1], SECS[speak[0]] || 2, 'Sitting_Answering_Questions'); else fmRest(P, 'col', t); }
-          const cl = ENDS5[k].colLook ? ENDS5[k].colLook(t, E) : null;          // (an ending's own look, or none: null falls back to the common one; passed on as null it threw on every frame of ending B from the lid: endB, 21 Nov)
-          lookNow(P, cl || (tr > 0 && tr < RT.end ? [R.cx, 0.36, R.cz - 0.1] : 'lens'), 0.75, 0.7); });
+            fmSpeak(P, 'col', t, (E.col || []).map(([key, at]) => [at, SECS[key] || 2, 'Sitting_Answering_Questions'])); }
+          /* (his looks: the ending's own, then the cloth through the rite, then him: each carried 0.6 s) */
+          const L = ENDS5[k].colLooks ? ENDS5[k].colLooks(E).slice() : [[0, 'lens']];
+          L.push([r0, CLOTH]); L.push([r0 + RT.end, 'lens']); L.sort((a, b) => a[0] - b[0]);
+          fmGaze(P, t, L, 0.75, 0.7, 0.03, 0.6); });
         /* the ending's own things (the case pushed across, the lid, the three) */
         const X = ENDS5[k];
         if (X.things) X.things(t, E, me);
@@ -11192,7 +11295,7 @@
              { t: E.ph5B1, name: 'pho', eye: me, at: PHO, fp: 46, fd: 40, cut: true },
              { t: E.q5B2 + 0.2, name: 'table', eye: me, at: [0, 0.4, 240.0], fp: 52, fd: 46 } ],
            things: (t, E) => casePush5(t, E.lid + 0.8, E.lid + 2.0, [0.14, 240.3]),
-           colLook: (t, E) => (t < E.co5B4 ? [-0.2, 0.36, 239.8] : t < E.lid ? [0.2, 0.36, 239.85] : null) },
+           colLooks: (E) => [[0, [-0.2, 0.36, 239.8]], [E.co5B4, [0.2, 0.36, 239.85]], [E.lid, 'lens']] },
       /* C · "These three are the worst. The rest feel quiet." (bad): delighted, "Three! Only three."; he pushes the three
          across with one finger and fits the seventeen back into their foam; the film opens his sight on the case: on a
          piece already packed something small that his nose never caught lifts its head; his teacher's hand flat on the lid:
@@ -11233,7 +11336,9 @@
       bagtied: FILMS5.bagtied, collector: FILMS5.collector,
       ending: { begin: (k, api, s) => FILMS5.ending.begin(k, api, s), frame: (k, t, api) => FILMS5.ending.frame(k, t, api), end: () => FILMS5.ending.end() },
       /* the cast's handles the fight and the play read (the court's frame, the boom, the cage, the trance, the Naga) */
-      fightStart, boomAt, COURT5, courtWorld, CAGE5, TRANCE5, NAGA5, PRAI5, STICK5
+      fightStart, boomAt, COURT5, courtWorld, CAGE5, TRANCE5, NAGA5, PRAI5, STICK5,
+      /* (a probe's read of every body the chapter made: tools/probes/e4c5films.mjs, R25) */
+      people: () => people, crowd: () => crowd
     };
 
     /* ================================================================ THE FRAME, AND THE STAGE HANDED TO THE ENGINE */

@@ -27,7 +27,9 @@
 import { chromium } from 'playwright';
 import fs from 'node:fs';
 import { LAUNCH, PAGE, toPlay } from '../../testlib.mjs';
-const VIEW = process.env.VIEW || 'phone', PHONE = VIEW === 'phone', MODE = process.env.MODE || 'seek';
+const VIEW = process.env.VIEW || 'phone', PHONE = VIEW !== 'desktop', MODE = process.env.MODE || 'seek';
+/* (VIEW=both: a phone's page whose seeks are each measured twice, at a phone's shape and at a desk's (rowsD): one boot a film) */
+const BOTH = VIEW === 'both';
 const STEP = +(process.env.STEP || 0.1), STEP_MS = +(process.env.STEP_MS || 50), CLIP = +(process.env.CLIP || 0), R = +(process.env.R || 14);
 const FROM = +(process.env.FROM || 0), UNTIL = +(process.env.UNTIL || 1e9), DPR = +(process.env.DPR || 1), SETTLE = +(process.env.SETTLE || 1200);
 const JOBS = (process.env.JOBS || 'open,devotee,prepare,together,bagtied,collector,end:A,end:B,end:C,end:D').split(',').filter(Boolean);
@@ -65,13 +67,13 @@ const INSTALL = () => {
     walk(W, 0); return out; };
   let people = null;
   window.__labels = () => (people || (people = who())).map((q, i) => q.key + '#' + i);
-  window.__row = (t) => {
+  window.__row = (t, noThings) => {
     if (!people) people = who();
     cam.updateMatrixWorld(true); cam.getWorldPosition(w); cam.getWorldDirection(d);
     const fd = document.getElementById('cineFade');
     const L = [+t.toFixed(3), +cam.fov.toFixed(3), +cam.aspect.toFixed(4), +w.x.toFixed(3), +w.y.toFixed(3), +w.z.toFixed(3),
                +(Math.atan2(-d.x, -d.z) * 180 / Math.PI).toFixed(3), +(Math.asin(Math.max(-1, Math.min(1, d.y))) * 180 / Math.PI).toFixed(3),
-               +(parseFloat(fd && fd.style.opacity) || 0).toFixed(3)];
+               +(parseFloat(fd && fd.style.opacity) || 0).toFixed(3), S.films && S.films.shot ? S.films.shot() : ''];
     const P = people.map(({ x: Q }) => { const g = Q.group; if (!g) return null;
       const vis = seen(g) ? 1 : 0; g.updateWorldMatrix(true, true);
       const hip = Q.hips ? Q.hips.getWorldPosition(v).toArray().map(q => +q.toFixed(3)) : null;
@@ -86,6 +88,7 @@ const INSTALL = () => {
         if (any) ext = a.map(q => +q.toFixed(3)); }
       return [vis, +g.position.x.toFixed(3), +g.position.z.toFixed(3), hip, head, ext, Q.lvShown != null ? Q.lvShown : -9, hands[0], hands[1]]; });
     const T = {};
+    if (!noThings)
     for (const o of things()) { const vis = seen(o) ? 1 : 0; o.getWorldPosition(v); const k = o.name + '|' + o.uuid.slice(0, 4);
       const s = [vis, +v.x.toFixed(2), +v.y.toFixed(2), +v.z.toFixed(2)], was = last.get(k);
       if (!was || was[0] !== s[0] || Math.abs(was[1] - s[1]) + Math.abs(was[2] - s[2]) + Math.abs(was[3] - s[3]) > 0.02) {
@@ -135,14 +138,21 @@ for (const job of JOBS) {
     await p.evaluate(INSTALL);
     const dur = await p.evaluate(() => window.__enc.cine.dur()), labels = await p.evaluate(() => window.__labels());
     log(job, 'dur', dur.toFixed(2), 'people', labels.length, ready ? 'all ready' : 'NOT ALL READY');
-    const res = { view: VIEW, mode: MODE, job, dur, labels, step: STEP, rows: [], clips: [], errs };
+    const res = { view: VIEW, mode: MODE, job, dur, labels, step: STEP, rows: [], rowsD: BOTH ? [] : undefined, clips: [], errs };
     if (MODE === 'seek') {
       /* forward only: a seek applies the tracks it passes and undoes none, so every scan is made on the way through */
       const marks = []; if (CLIP) { for (let m = 0; m < dur - 0.3; m += CLIP) marks.push(+m.toFixed(2)); marks.push(+(dur - 0.3).toFixed(2)); }
       const end = dur - 0.05, rowsTo = async (a, z, incl) => {
         const kA = Math.ceil(Math.max(a, FROM) / STEP - 1e-6), kZ = incl ? Math.floor(Math.min(z, UNTIL) / STEP + 1e-6) + 1 : Math.ceil(Math.min(z, UNTIL) / STEP - 1e-6);
-        if (kZ > kA) res.rows.push(...await p.evaluate(([kA, kZ, step]) => { const C = window.__enc.cine, out = [];
-          for (let k = kA; k < kZ; k++) { const t = +(k * step).toFixed(3); C.seek(t); out.push(window.__row(t)); } return out; }, [kA, kZ, STEP])); };
+        /* (BOTH SHAPES FROM ONE BOOT: at each moment the film is sought with the lens's shape a phone's, then a desk's
+           (camera.aspect set, the film's own frame choosing its lens and its fit by it: isNarrow), then put back. A seek is a
+           pure function of the clock, so the same moment is the same world twice; only the frame differs) */
+        if (kZ > kA) { const two = await p.evaluate(([kA, kZ, step, aD]) => { const E = window.__enc, C = E.cine, cam = E.camera, aP = cam.aspect, out = [], outD = [];
+            for (let k = kA; k < kZ; k++) { const t = +(k * step).toFixed(3);
+              cam.aspect = aP; cam.updateProjectionMatrix(); C.seek(t); out.push(window.__row(t));
+              if (aD) { cam.aspect = aD; cam.updateProjectionMatrix(); C.seek(t); outD.push(window.__row(t, true)); } }
+            cam.aspect = aP; cam.updateProjectionMatrix(); return [out, outD]; }, [kA, kZ, STEP, BOTH ? 1280 / 800 : 0]);
+          res.rows.push(...two[0]); if (BOTH) res.rowsD.push(...two[1]); } };
       let t0 = 0;
       for (const m of marks) {
         await rowsTo(t0, m, false); t0 = m;

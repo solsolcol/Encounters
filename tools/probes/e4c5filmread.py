@@ -63,6 +63,9 @@ def spans(ts, gap=0.25):
     return ['%.1f' % a if abs(a - b) < 1e-6 else '%.1f-%.1f' % (a, b) for a, b in out]
 
 R = {v: load(v) for v in ('phone', 'desktop')}
+_b = os.path.join(D, 'both-seek-%s.json' % JOB)
+if os.path.exists(_b):            # (VIEW=both: one boot, each moment measured at a phone's shape and a desk's)
+    _d = json.load(open(_b)); R = {'phone': dict(_d), 'desktop': dict(_d, rows=_d.get('rowsD') or [], clips=[])}
 base = R['phone'] or R['desktop']
 labels = base['labels']
 print('== %s: %.2f s, %d people (%s), rows phone %s desktop %s' % (JOB, base['dur'], len(labels), ', '.join(labels),
@@ -141,6 +144,35 @@ if R['phone'] and R['desktop']:
             qp, qd = ndc(rp['L'], a[4]), ndc(rd['L'], b[4] if b else None)
             if qp and 0.88 < abs(qp[0]) < 1.15 and abs(qp[1]) < 1 and (qd and abs(qd[0]) < 0.8): E.setdefault(lab, []).append(rp['L'][0])
     for lab, ts in E.items(): print('FRAME phone-only head at the edge %-14s %s' % (lab, ' '.join(spans(ts))))
+# each shot (between cuts, or by its name where the rows carry one): whose heads each screen holds (in: |x|,|y| < 0.9;
+# edge: one of them 0.9-1.1), over the shot's rows, as the share of its time (only people within 9 m, drawn)
+if R['phone'] and R['desktop'] and os.environ.get('SHOTS'):
+    rp, rd = R['phone']['rows'], R['desktop']['rows']
+    seg, start = [], 0
+    for i in range(1, len(rp) + 1):
+        if i == len(rp) or i in C or (len(rp[i]['L']) > 9 and rp[i]['L'][9] != rp[i - 1]['L'][9] and '>' not in rp[i]['L'][9]):
+            seg.append((start, i)); start = i
+    for a, z in seg:
+        if z - a < 3: continue
+        name = rp[a]['L'][9] if len(rp[a]['L']) > 9 else ''
+        out = []
+        for k, lab in enumerate(labels):
+            cnt = {'p': [0, 0], 'd': [0, 0]}; n = 0
+            for i in range(a, z):
+                for v, rr in (('p', rp), ('d', rd)):
+                    P = rr[i]['P'][k] if i < len(rr) else None
+                    if not P or not P[0] or not P[4]: continue
+                    L = rr[i]['L']
+                    if math.dist(P[4], L[3:6]) > 9: continue
+                    q = ndc(L, P[4])
+                    if not q: continue
+                    if abs(q[0]) < 0.9 and abs(q[1]) < 0.9: cnt[v][0] += 1
+                    elif abs(q[0]) < 1.1 and abs(q[1]) < 1.1: cnt[v][1] += 1
+                n += 1
+            f = lambda v, j: cnt[v][j] / max(1, z - a)
+            if f('d', 0) > 0.2 or f('p', 0) > 0.2 or f('p', 1) > 0.2:
+                out.append('%s p%.0f%%/%.0f%% d%.0f%%' % (lab.split('#')[0].replace('p5', '').replace('e4', ''), 100 * f('p', 0), 100 * f('p', 1), 100 * f('d', 0)))
+        print('SHOT %5.1f-%5.1f %-14s %s' % (rp[a]['L'][0], rp[z - 1]['L'][0], name[:14], ' | '.join(out) or '(nobody)'))
 # clips
 src = R['phone'] if R['phone'] and R['phone'].get('clips') else R['desktop']
 for c in (src.get('clips') or []):
