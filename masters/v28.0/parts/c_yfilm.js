@@ -1095,7 +1095,9 @@
         /* THE LENS: the ending's own shots, the rite's, the close's */
         const COL = colHead5, PHO = () => fmHead(cast.phoS, [0, 0.95, 240.78]);
         const keys = X.shots(me, COL, PHO, E).concat([
-          { t: r0, name: 'rite', eye: [me[0] + 0.2, me[1] + 0.05, me[2] - 0.1], at: () => lp3(PHO(), [R.cx, 0.4, R.cz], 0.55), fp: 52, fd: 46 },
+          /* (the rite begins on a CUT: eased from the shot before over its last twentieth of a second, ending B read as two
+             jolts, the look 6.5 and 9.9 degrees in two steps: lensread.py on deploy 7) */
+          { t: r0, name: 'rite', eye: [me[0] + 0.2, me[1] + 0.05, me[2] - 0.1], at: () => lp3(PHO(), [R.cx, 0.4, R.cz], 0.55), fp: 52, fd: 46, cut: true },
           { t: r0 + RT.see + 1.2, name: 'rite', eye: [me[0] + 0.1, me[1], me[2]], at: [R.cx, 0.42, R.cz - 0.05], fp: 46, fd: 40 },
           { t: r0 + RT.away + 2.6, name: 'away', eye: [me[0], me[1] + 0.05, me[2] - 0.05], at: [R.cx + 0.1, 0.9, R.cz + 0.1], fp: 58, fd: 50 },
           { t: r0 + RT.bag, name: 'bag', eye: [me[0] + 0.15, me[1] - 0.1, me[2] + 0.15], at: [RITE_AT.bag[0], 0.45, RITE_AT.bag[1]], fp: 34, fd: 30, cut: true },
