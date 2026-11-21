@@ -1088,3 +1088,10 @@ c9312280d64a52c865e8111242ca564fe786d6c0303a961dd7c2f9a47302715f  masters/v27.0/
 f2dbb6d0df0b99eff8f61ad12b03e59357204ddc5d97a3be4315dbd9b329f281  masters/v27.0/src/mala-rig.log
 8004e20c9c9f9b68ae7e977d980b7573e8c812256ef8c7a1042ce91df3c4e713  masters/v27.0/src/mala-takes.log
 bd714f5d88f988ec667224c420f5219c118786fdffdc085c15b12732e637d52f  masters/v27.0/src/meshy-p5.log
+69e478f6d1a0a0e02fc2cdbe10e626a1db0e0fb401caaf304792b955ab03b473  masters/v27.0/src/motion-aturn.fbx
+04efb822c5605af73493dc9b9b0d8415a29a3e9350e8c7e4bbc41fb78a42d055  masters/v27.0/src/motion-claw.fbx
+857233303dc4472498e0fdce17d22830e92f76d6c6ebc07479130dafacb93b15  masters/v27.0/src/motion-cling.fbx
+cded4a284a39f3ab66362002b24a2c099545b26fbfccb1dbc48c3f2557d9f9d3  masters/v27.0/src/motion-crawl.fbx
+5fa8f7e92fd8b2b498994d2f8ed6399a40dea84ccd751222fe015903bf9b0751  masters/v27.0/src/motion-creep.fbx
+55328f64eb42fbc6c4004827a22f767ee2cae7717cc210c9e93c26c1635e256f  masters/v27.0/src/motion-cry.fbx
+3a8ddae3ed7421a1a73c090b481e2b9924c361ae83d4e6a92feaf9dfbbda5dd0  masters/v27.0/src/motion-kneelhold.fbx
