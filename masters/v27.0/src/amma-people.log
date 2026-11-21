@@ -1,0 +1,48 @@
+wrote masters/v27.0/src/merged-amma.glb 32321100 bytes
+["Sitting_Answering_Questions (140 ch, 9.67 s)","wsit (140 ch, 7.97 s)","wturn (140 ch, 3.97 s)","trance (140 ch, 9.97 s)","rise (140 ch, 4.97 s)","steps (140 ch, 5.97 s)","lamp (140 ch, 5.97 s)"]
+calmarms masters/v27.0/src/merged-amma.glb: the body's left 1.00,0.00,-0.01, its face 0.01,0.00,1.00
+  Idle_3: not in this file (left out)
+  Stand_and_Chat: not in this file (left out)
+  Listening_Gesture: not in this file (left out)
+  Walking: not in this file (left out)
+wrote masters/v27.0/src/merged-amma.glb
+  skin weights: 39593 vertices in 20721 positions over 69 joints, 24 diffusion passes; 7259 vertices' main weight moved
+prune: Removed types... Texture (1)
+  39593 vertices in 20721 positions; 17622 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.0s] 39593 points joined into 20721 places; 41442 triangles
+  repaint [   0.0s] the face 2370 triangles, the rest of the head 3652, the hands 4515, the body 30905 (looking [0.0, 0.0, 1.0])
+  repaint [   4.6s] xatlas: 905 charts, 67% of the square used
+  repaint [   6.2s] packed again: 905 charts in a 2565x2535 square drawn at 2048 (71% used), a margin of 4.0 pixels at 2048
+  repaint [   6.2s] 16 triangles reached across the sheet from a corner xatlas never placed: each given its neighbours' place (16)
+  repaint [   6.3s] texels a metre at 2048, before -> now: face 1393 -> 2167, head 1255 -> 1651, hands 2030 -> 1150, body 1028 -> 802; 906 charts, margin 4.0 px; 16 unplaced corners mended
+  repaint [   6.4s] baking 2048x2048 at 16 samples a texel from the 8192 sheet
+  repaint [  12.2s] baked
+  repaint [  12.2s] written
+  repaint: 39593 points -> 45594 (6001 copied along the new seams), 41442 triangles; texels a metre at 2048, before -> now: face 1393 -> 2167, head 1255 -> 1651, hands 2030 -> 1150, body 1028 -> 802; 906 charts, margin 4.0 px; 16 unplaced corners mended
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk p4amma.glb: tris 41442 -> 41442, 7 takes, 2352 KB
+  skin weights: 12881 vertices in 4165 positions over 69 joints, 24 diffusion passes; 7250 vertices' main weight moved
+prune: Removed types... Texture (1)
+  12881 vertices in 4165 positions; 9738 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.0s] 12881 points joined into 4165 places; 8337 triangles
+  repaint [   0.0s] the face 465 triangles, the rest of the head 723, the hands 932, the body 6217 (looking [0.0, 0.0, 1.0])
+  repaint [   0.4s] xatlas: 359 charts, 66% of the square used
+  repaint [   0.7s] packed again: 359 charts in a 1282x1288 square drawn at 1024 (68% used), a margin of 2.4 pixels at 1024
+  repaint [   0.7s] texels a metre at 1024, before -> now: face 715 -> 1045, head 627 -> 815, hands 993 -> 573, body 503 -> 395; 359 charts, margin 2.4 px
+  repaint [   0.8s] baking 1024x1024 at 64 samples a texel from the 8192 sheet
+  repaint [   4.2s] baked
+  repaint [   4.2s] written
+  repaint: 12881 points -> 13752 (871 copied along the new seams), 8337 triangles; texels a metre at 1024, before -> now: face 715 -> 1045, head 627 -> 815, hands 993 -> 573, body 503 -> 395; 359 charts, margin 2.4 px
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk p4ammam.glb: tris 8337 -> 8337, 0 takes, 514 KB
+  skin weights: 210430 vertices in 154935 positions over 69 joints, 24 diffusion passes; 8041 vertices' main weight moved
+prune: Removed types... Texture (2), Accessor (1)
+  210430 vertices in 154935 positions; 46829 normals turned more than 10° to agree across a seam; normals of no length: 0
+  thin charts: 77 of 954 charts (542 triangles) were edge-only and bled their neighbours — each pointed at a uniform spot of its colour, 6 taking the colour of the surface round it; 2005 triangles on the thin arms of solid charts; 4751 border vertices pulled 1.5 texels in from a neighbour of another colour (361 left where the pull would fold a triangle) (worst match 0.140)
+  largest fixed charts (texels at 2048): 71 70 61 61 58 42 39 31 30 27 27 24
+prune: Removed types... Accessor (6)
+quantize: Skipping TEXCOORD_0; out of [0,1] range.
+prune: Removed types... Skin (1), Accessor (4)
+prepmonk p4ammah.glb: tris 309822 -> 309822, 0 takes, 5193 KB

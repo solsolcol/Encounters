@@ -251,7 +251,7 @@ ce368aa16acaf315581339f6c77669a8ce9da521d48f2f2fb8b05512c6c0a2bc  masters/v26.0/
 cb8d95d379b86adfb7bdb03c5d4c0f0e89aee25caae68cf12068d660d5c6ab99  masters/v26.0/src/hunyuan-petalbowl-40k.glb
 a96fa49b8c5433a7212805aaa266c33b787a8d2557aac7d9c9ac1fb880add004  masters/v26.0/src/hunyuan-petalsteel-40k.glb
 2d4794330175aa0814179678c90717cf244cd1569f42d1ff0ae2b95ccd84a291  masters/v26.0/src/hunyuan-roses2-40k.glb
-16932c599468a817fe44dd2ed1f262726f2d8a3725a02d93798904949903c38b  masters/v26.0/src/jobs.json
+dd40697fe8ed95f988071d3f530f810a227335f2b92f766bbb05755ef71de34e  masters/v26.0/src/jobs.json
 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  masters/v26.0/src/jobs.json.lock
 84ee857f81d497d9e0890ab36f100319352057672e53d229abd6e5622fab6bbd  masters/v26.0/src/monkb-bodies.log
 ae83f40c592fa1857ace186ec2b5769a3d063c327cf1214b03ac84db2ec9daa0  masters/v26.0/src/monkb-people.log
@@ -402,7 +402,7 @@ cd35b3f33441dbabd3b4bb8990e2d4b4ee3fdf267887cb7bec939f6bbf225418  masters/v26.0/
 5a7fe818047f013facc60a1b6fc8472f3d195276e77718dd204d5cbeacd12a82  masters/v26.0/src/preremesh-red.glb
 87d26ff3328c4aa1a7696a90cce769439e68ab506c88b30cb494e8fc8cb926be  masters/v26.0/src/preremesh-ton.glb
 923cb25bd835ec5c7dc83253a5dbeeb62cf032701e261ca72bdc4231b7a694b6  masters/v26.0/src/preremesh-white.glb
-8fd5d5328df2cf5a86d4ab0f9b35491bfadee2a8586aa2f95798ff7a726b8256  masters/v26.0/src/props.log
+f5aee62b544542df7810107fa5d849a7659f07b4d6494c3e14fe0de956cffb76  masters/v26.0/src/props.log
 84794cd9b3bf8e2b2bfe5cd4397ae6c6dc9bf8a0268a239b39c90e4f00de6c31  masters/v26.0/src/r2-model.log
 5a70ecc9412bd677e6c19ad71195b3e384877c4c5a6f8875a581b17426274c8f  masters/v26.0/src/r3-model.log
 01ef636d7b2747f06237bc30252ab9c65ebca1a371a8303868f57e4b4d728061  masters/v26.0/src/r3-rig.log
@@ -1059,3 +1059,16 @@ aeae43c3fc248d2eb853756b300df7e22b88993418a49676f77ac3a18908b7ef  masters/v26.0/
 58db45998876e49f9aacf79e11a949f2397f768bea94a1645d5368eabd5dfb9e  masters/v26.0/src/white-people.log
 faaf2dfd451e942350eb5ae3cf49a55c8762478ba48343c613ee70250a14d631  masters/v26.0/src/white-rig.log
 7aeceac02ab3d532f5efcb7d5bf5e7e7b7e3f98c1ead0c46f5fef07882ed784e  masters/v26.0/src/white-takes.log
+a927e9c754351a8267f59efb70634af8e8109ffd78e1be4de37b29db27deb5bf  masters/v27.0/src/amma-bodies.log
+9aa2826cad269aca5946d220587246a534d61e93ba7237070b7fb31fe67072ba  masters/v27.0/src/amma-people.log
+d09321e31410a5cc320b1f98403747ea0bba02c9efd76d286fd0610d0354d913  masters/v27.0/src/amma-rig.log
+d42c3122e0e827f4c977bd52211d9bf166bc73883cb80d7fed2b11e00ff62fcd  masters/v27.0/src/amma-takes.log
+eb7e5148f5104409e34f382b479934580b22639a951c83a500f85f6efa7d4eab  masters/v27.0/src/appa-bodies.log
+4d72fca3e9dd3887b65074fae13051c4387387bc28bcaa1d609b91363f942563  masters/v27.0/src/appa-people.log
+1a5d9223f61362efaa074ff73e619ed4340804ea4c17bd8e867e2cabc6eed2a5  masters/v27.0/src/appa-rig.log
+ad86dc6162550cd935c9b01d17136cb672457fc7f90d82812d896aedabac795c  masters/v27.0/src/appa-takes.log
+2bd14f806499693db3e06ce3a3357f7f413dd9a50c9b13935165eed649b34490  masters/v27.0/src/body-amma-40000.glb
+dd9c4a3eff06dd52975a0645725caf00da992d964f6b4afaa52840854674f142  masters/v27.0/src/body-amma-8000.glb
+09aec9b1cd168a9c69388afc5983ed9708623fd5df544b29c2499c6d90786a8d  masters/v27.0/src/body-appa-30000.glb
+bad11282a733232c0b68c596170cbdd6b780ae405a8f52c1f80b715038dc37f3  masters/v27.0/src/body-large-24000.glb
+301183b57bef4948b03a96be5a4b5c00b2df2e58f5b7f982261aee8e22efb3d9  masters/v27.0/src/body-mala-40000.glb

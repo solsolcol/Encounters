@@ -1,0 +1,10 @@
+started rig amma 01a1eb75-4cc6-727a-bc9a-5a6c6fb33859
+  rig amma IN_PROGRESS 0%
+  rig amma IN_PROGRESS 47%
+  rig amma IN_PROGRESS 84%
+  rig amma IN_PROGRESS 90%
+  rig amma SUCCEEDED 100%
+rig done amma {'rigged': 78770032, 'walk': 79017484}
+body identical to masters/v27.0/src/rigged-amma.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-amma-walking.glb 104184 bytes ["Armature|walking_man|baselayer (140 ch, 1.03 s)"]

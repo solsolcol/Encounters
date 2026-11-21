@@ -1,0 +1,21 @@
+started animation appa lib 01a1eb83-4824-77fe-99f5-b7f10a280fe0
+  anim appa lib IN_PROGRESS 0%
+  anim appa lib IN_PROGRESS 47%
+  anim appa lib IN_PROGRESS 90%
+  anim appa lib SUCCEEDED 100%
+animation done appa lib 59229136
+body identical to masters/v27.0/src/rigged-appa.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-appa-lib.glb 597976 bytes ["Armature|Idle_3|baselayer (132 ch, 9.97 s)"]
+appa lib strip exit 0
+appa lib done
+  motion appa aturn PENDING 0%
+  motion appa aturn IN_PROGRESS 42%
+  motion appa aturn IN_PROGRESS 84%
+  motion appa aturn SUCCEEDED 100%
+motion done appa aturn 58564668
+body identical to masters/v27.0/src/rigged-appa.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-appa-aturn.glb 318096 bytes ["retarget_clip (132 ch, 4.97 s)"]
+appa aturn strip exit 0
+appa t2m done

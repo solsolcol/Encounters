@@ -1,0 +1,24 @@
+wrote masters/v27.0/src/merged-appa.glb 20187072 bytes
+["Idle_3 (132 ch, 9.97 s)","aturn (132 ch, 4.97 s)"]
+calmarms masters/v27.0/src/merged-appa.glb: the body's left 1.00,0.00,0.08, its face -0.08,0.00,1.00
+  Idle_3: Left out 11.2..20.9 (mean 17.1) -> 2.4..8.3; swing -7.1..2.4 -> -7.1..2.4 | Right out 12.4..22.1 (mean 17.3) -> 3.1..8.8; swing -3.7..4.2 -> -3.7..4.2
+  Stand_and_Chat: not in this file (left out)
+  Listening_Gesture: not in this file (left out)
+  Walking: not in this file (left out)
+wrote masters/v27.0/src/merged-appa.glb
+  skin weights: 26962 vertices in 15552 positions over 65 joints, 24 diffusion passes; 5975 vertices' main weight moved
+prune: Removed types... Texture (1), Accessor (2)
+  26962 vertices in 15552 positions; 8977 normals turned more than 10° to agree across a seam; normals of no length: 0
+  repaint [   0.0s] 26962 points joined into 15552 places; 31096 triangles
+  repaint [   0.0s] the face 2672 triangles, the rest of the head 3210, the hands 2990, the body 22224 (looking [0.0, 0.0, 1.0])
+  repaint [   2.7s] xatlas: 550 charts, 76% of the square used
+  repaint [   3.3s] packed again: 550 charts in a 1285x1310 square drawn at 1024 (77% used), a margin of 2.3 pixels at 1024
+  repaint [   3.4s] 1 triangles reached across the sheet from a corner xatlas never placed: each given its neighbours' place (1)
+  repaint [   3.4s] texels a metre at 1024, before -> now: face 775 -> 1073, head 685 -> 815, hands 944 -> 521, body 480 -> 404; 552 charts, margin 2.3 px; 1 unplaced corners mended
+  repaint [   3.5s] baking 1024x1024 at 64 samples a texel from the 8192 sheet
+  repaint [   7.2s] baked
+  repaint [   7.2s] written
+  repaint: 26962 points -> 31186 (4224 copied along the new seams), 31096 triangles; texels a metre at 1024, before -> now: face 775 -> 1073, head 685 -> 815, hands 944 -> 521, body 480 -> 404; 552 charts, margin 2.3 px; 1 unplaced corners mended
+prune: Removed types... Accessor (6)
+prune: Removed types... Skin (1), Accessor (5)
+prepmonk p4appa.glb: tris 31096 -> 31096, 2 takes, 1041 KB

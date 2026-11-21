@@ -1,0 +1,206 @@
+started animation amma lib 01a1eb7c-fa02-7609-9c43-0c1012ddd5cb
+  anim amma lib IN_PROGRESS 0%
+  anim amma lib IN_PROGRESS 47%
+  anim amma lib IN_PROGRESS 84%
+  anim amma lib SUCCEEDED 100%
+Traceback (most recent call last):
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 274, in <module>
+    elif a[0] == 'anim': cmd_anim(a[1], a[2], a[3])
+                         ~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 213, in cmd_anim
+    size = fetch(t['result']['animation_glb_url'], os.path.join(SRC, 'take-%s-%s.glb' % (name, setname)))
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 65, in fetch
+    f.write(b)
+    ~~~~~~~^^^
+OSError: [Errno 28] No space left on device
+amma lib done
+  motion amma lamp IN_PROGRESS 1%
+  motion amma rise IN_PROGRESS 1%
+  motion amma steps IN_PROGRESS 1%
+  motion amma trance IN_PROGRESS 1%
+  motion amma wsit IN_PROGRESS 1%
+  motion amma wturn IN_PROGRESS 1%
+  motion amma lamp IN_PROGRESS 42%
+  motion amma rise IN_PROGRESS 42%
+  motion amma steps IN_PROGRESS 42%
+  motion amma wsit IN_PROGRESS 42%
+  motion amma trance IN_PROGRESS 42%
+  motion amma wturn IN_PROGRESS 42%
+  motion amma rise IN_PROGRESS 84%
+  motion amma lamp IN_PROGRESS 84%
+  motion amma wsit IN_PROGRESS 84%
+  motion amma steps IN_PROGRESS 84%
+  motion amma trance IN_PROGRESS 84%
+  motion amma wturn IN_PROGRESS 84%
+  motion amma rise IN_PROGRESS 90%
+  motion amma lamp SUCCEEDED 100%
+  motion amma wsit IN_PROGRESS 90%
+  motion amma steps IN_PROGRESS 90%
+  motion amma wturn IN_PROGRESS 90%
+Traceback (most recent call last):
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 275, in <module>
+    elif a[0] == 'motion': cmd_motion(a[1], a[2], a[3])
+                           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 224, in cmd_motion
+    size = fetch(t['result']['animation_glb_url'], os.path.join(SRC, 'take-%s-%s.glb' % (name, setname)))
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 65, in fetch
+    f.write(b)
+    ~~~~~~~^^^
+OSError: [Errno 28] No space left on device
+  motion amma trance IN_PROGRESS 90%
+  motion amma rise SUCCEEDED 100%
+  motion amma wsit SUCCEEDED 100%
+Traceback (most recent call last):
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 275, in <module>
+    elif a[0] == 'motion': cmd_motion(a[1], a[2], a[3])
+                           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 224, in cmd_motion
+    size = fetch(t['result']['animation_glb_url'], os.path.join(SRC, 'take-%s-%s.glb' % (name, setname)))
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 65, in fetch
+    f.write(b)
+    ~~~~~~~^^^
+OSError: [Errno 28] No space left on device
+  motion amma steps IN_PROGRESS 95%
+  motion amma trance SUCCEEDED 100%
+Traceback (most recent call last):
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 275, in <module>
+    elif a[0] == 'motion': cmd_motion(a[1], a[2], a[3])
+                           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 224, in cmd_motion
+    size = fetch(t['result']['animation_glb_url'], os.path.join(SRC, 'take-%s-%s.glb' % (name, setname)))
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 65, in fetch
+    f.write(b)
+    ~~~~~~~^^^
+OSError: [Errno 28] No space left on device
+Traceback (most recent call last):
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 275, in <module>
+    elif a[0] == 'motion': cmd_motion(a[1], a[2], a[3])
+                           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 224, in cmd_motion
+    size = fetch(t['result']['animation_glb_url'], os.path.join(SRC, 'take-%s-%s.glb' % (name, setname)))
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 65, in fetch
+    f.write(b)
+    ~~~~~~~^^^
+OSError: [Errno 28] No space left on device
+  motion amma steps SUCCEEDED 100%
+  motion amma wturn SUCCEEDED 100%
+Traceback (most recent call last):
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 275, in <module>
+    elif a[0] == 'motion': cmd_motion(a[1], a[2], a[3])
+                           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 224, in cmd_motion
+    size = fetch(t['result']['animation_glb_url'], os.path.join(SRC, 'take-%s-%s.glb' % (name, setname)))
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 65, in fetch
+    f.write(b)
+    ~~~~~~~^^^
+OSError: [Errno 28] No space left on device
+Traceback (most recent call last):
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 275, in <module>
+    elif a[0] == 'motion': cmd_motion(a[1], a[2], a[3])
+                           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 224, in cmd_motion
+    size = fetch(t['result']['animation_glb_url'], os.path.join(SRC, 'take-%s-%s.glb' % (name, setname)))
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 65, in fetch
+    f.write(b)
+    ~~~~~~~^^^
+OSError: [Errno 28] No space left on device
+amma t2m done
+refetched amma lib 80194420
+body identical to masters/v27.0/src/rigged-amma.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-amma-lib.glb 616692 bytes ["Armature|Sitting_Answering_Questions|baselayer (140 ch, 9.67 s)"]
+Traceback (most recent call last):
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 277, in <module>
+    elif a[0] == 'refetch': cmd_refetch(a[1], a[2])
+                            ~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 231, in cmd_refetch
+    tid = ledger()[name]['takes'][setname]['task']
+          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+KeyError: 'wsit'
+refetched amma wturn 79417676
+body identical to masters/v27.0/src/rigged-amma.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-amma-wturn.glb 278460 bytes ["retarget_clip (140 ch, 3.97 s)"]
+Traceback (most recent call last):
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 277, in <module>
+    elif a[0] == 'refetch': cmd_refetch(a[1], a[2])
+                            ~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 231, in cmd_refetch
+    tid = ledger()[name]['takes'][setname]['task']
+          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+KeyError: 'trance'
+Traceback (most recent call last):
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 277, in <module>
+    elif a[0] == 'refetch': cmd_refetch(a[1], a[2])
+                            ~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 231, in cmd_refetch
+    tid = ledger()[name]['takes'][setname]['task']
+          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+KeyError: 'rise'
+Traceback (most recent call last):
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 277, in <module>
+    elif a[0] == 'refetch': cmd_refetch(a[1], a[2])
+                            ~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 231, in cmd_refetch
+    tid = ledger()[name]['takes'][setname]['task']
+          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+KeyError: 'steps'
+Traceback (most recent call last):
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 277, in <module>
+    elif a[0] == 'refetch': cmd_refetch(a[1], a[2])
+                            ~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/user/Encounters/masters/v27.0/meshy27.py", line 231, in cmd_refetch
+    tid = ledger()[name]['takes'][setname]['task']
+          ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+KeyError: 'lamp'
+  motion amma lamp IN_PROGRESS 1%
+  motion amma trance IN_PROGRESS 1%
+  motion amma steps IN_PROGRESS 1%
+  motion amma wsit IN_PROGRESS 1%
+  motion amma rise IN_PROGRESS 1%
+  motion amma lamp IN_PROGRESS 47%
+  motion amma trance IN_PROGRESS 47%
+  motion amma wsit IN_PROGRESS 47%
+  motion amma steps IN_PROGRESS 42%
+  motion amma rise IN_PROGRESS 42%
+  motion amma lamp IN_PROGRESS 84%
+  motion amma trance IN_PROGRESS 84%
+  motion amma wsit IN_PROGRESS 84%
+  motion amma steps IN_PROGRESS 84%
+  motion amma rise IN_PROGRESS 84%
+  motion amma lamp IN_PROGRESS 90%
+  motion amma wsit IN_PROGRESS 90%
+  motion amma trance IN_PROGRESS 90%
+  motion amma steps IN_PROGRESS 90%
+  motion amma rise IN_PROGRESS 90%
+  motion amma lamp SUCCEEDED 100%
+  motion amma wsit SUCCEEDED 100%
+  motion amma trance SUCCEEDED 100%
+  motion amma steps SUCCEEDED 100%
+  motion amma rise SUCCEEDED 100%
+motion done amma trance 80235148
+body identical to masters/v27.0/src/rigged-amma.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-amma-trance.glb 634468 bytes ["retarget_clip (140 ch, 9.97 s)"]
+amma trance strip exit 0
+motion done amma wsit 79962624
+motion done amma lamp 79690196
+motion done amma rise 79553956
+body identical to masters/v27.0/src/rigged-amma.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-amma-wsit.glb 515804 bytes ["retarget_clip (140 ch, 7.97 s)"]
+amma wsit strip exit 0
+motion done amma steps 79690220
+body identical to masters/v27.0/src/rigged-amma.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-amma-lamp.glb 397136 bytes ["retarget_clip (140 ch, 5.97 s)"]
+amma lamp strip exit 0
+body identical to masters/v27.0/src/rigged-amma.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-amma-rise.glb 337800 bytes ["retarget_clip (140 ch, 4.97 s)"]
+amma rise strip exit 0
+body identical to masters/v27.0/src/rigged-amma.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-amma-steps.glb 397136 bytes ["retarget_clip (140 ch, 5.97 s)"]
+amma steps strip exit 0
+amma t2m done

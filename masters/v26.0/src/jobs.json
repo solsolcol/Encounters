@@ -1948,6 +1948,7 @@
   "image": "masters/v26.0/props/refs/hcushions3-2k.png",
   "image_to_3d": "01a1e4e0-9957-72b9-8dc0-a0e1f093797f",
   "remesh": {
+   "30000": "01a1e631-ccfd-75ef-8836-9d7c99fdeb3c",
    "6000": "01a1e508-5d56-7011-ae2f-403319e5e13e"
   },
   "settings": {
@@ -2352,6 +2353,7 @@
   "image_to_3d": "01a1e4ba-0434-778f-a74b-0468d02f4fbc",
   "remesh": {
    "12000": "01a1e518-e6c2-751b-97d8-3d24f395c0d5",
+   "24000": "01a1e636-a67d-76cb-9ece-1fba6097f2a5",
    "3000": "01a1e4d9-621d-75e6-8ba2-343609bb3514",
    "4000q": "01a1e4de-5eb0-76e1-a9df-fdb19609a305"
   },

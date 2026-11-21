@@ -4359,3 +4359,86 @@ prepmeshy w3hsomdej.glb: 41081 -> 41081 triangles; 94.9 MB -> 1128 KB
 (static) {"box":[[-0.188,0,-0.134],[0.188,0.58,0.134]],"size":[0.377,0.58,0.268]}
 errs []
 hsomdej -> assets/w3hsomdej.glb 1154620 bytes
+  remesh hcushions3 30000 IN_PROGRESS 1%
+  remesh hcushions3 30000 IN_PROGRESS 35%
+  remesh hcushions3 30000 IN_PROGRESS 64%
+  remesh hcushions3 30000 IN_PROGRESS 90%
+  remesh hcushions3 30000 SUCCEEDED 100%
+remesh done hcushions3 30000 101249228
+  CONTRACT: w 1.600  h 1.172  l 1.600 m (x -0.800..0.800, z -0.800..0.800)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3hcushions.glb: 31293 -> 31293 triangles; 96.6 MB -> 1477 KB
+{
+ "info": {
+  "size": [
+   1.5999576314148236,
+   1.172263593797692,
+   1.6003483533859253
+  ],
+  "min": [
+   -0.7999788157074118,
+   -0.000015482964519919484,
+   -0.8001741766929626
+  ],
+  "max": [
+   0.7999788157074118,
+   1.1722481108331722,
+   0.8001741766929626
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 31293
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.8,0,-0.8],[0.8,1.172,0.8]],"size":[1.6,1.172,1.6]}
+errs []
+hcushions3 -> assets/w3hcushions.glb 1511944 bytes
+  remesh hgreymats 24000 IN_PROGRESS 1%
+  remesh hgreymats 24000 IN_PROGRESS 35%
+  remesh hgreymats 24000 IN_PROGRESS 64%
+  remesh hgreymats 24000 IN_PROGRESS 89%
+  remesh hgreymats 24000 IN_PROGRESS 90%
+  remesh hgreymats 24000 SUCCEEDED 100%
+remesh done hgreymats 24000 108365216
+  CONTRACT: w 0.900  h 0.481  l 0.902 m (x -0.450..0.450, z -0.451..0.451)
+prune: Removed types... Accessor (4)
+prune: Removed types... Accessor (3)
+prepmeshy w3hgreymats.glb: 22866 -> 22866 triangles; 103.3 MB -> 1250 KB
+{
+ "info": {
+  "size": [
+   0.8999768583474134,
+   0.48115068166028285,
+   0.9016278386116028
+  ],
+  "min": [
+   -0.4499884291737067,
+   0.000006469644254325502,
+   -0.4508139193058014
+  ],
+  "max": [
+   0.4499884291737067,
+   0.4811571513045372,
+   0.4508139193058014
+  ],
+  "clips": [],
+  "meshes": [
+   {
+    "name": "output_unwrapped",
+    "skinned": false,
+    "tris": 22866
+   }
+  ],
+  "bones": 0
+ }
+}
+(static) {"box":[[-0.45,0,-0.451],[0.45,0.481,0.451]],"size":[0.9,0.481,0.902]}
+errs []
+hgreymats -> assets/w3hgreymats.glb 1279856 bytes

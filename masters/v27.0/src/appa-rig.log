@@ -1,0 +1,10 @@
+started rig appa 01a1eb75-4c89-743d-ad9d-67833d830d95
+  rig appa IN_PROGRESS 0%
+  rig appa IN_PROGRESS 47%
+  rig appa IN_PROGRESS 84%
+  rig appa IN_PROGRESS 90%
+  rig appa SUCCEEDED 100%
+rig done appa {'rigged': 57801188, 'walk': 58041428}
+body identical to masters/v27.0/src/rigged-appa.glb (5 prints)
+prune: Removed types... Primitive (1), Accessor (202)
+wrote masters/v27.0/src/takes-appa-walking.glb 97716 bytes ["Armature|walking_man|baselayer (132 ch, 1.03 s)"]
