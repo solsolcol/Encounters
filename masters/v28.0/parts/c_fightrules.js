@@ -53,15 +53,17 @@
                                               // at [0, -1.5] it stood straight behind his student from the first lens, the
                                               // line of sight 0.38 m from his middle at head height; here 0.78 m clear: FIGHT-IN)
         laidAt: [[-1.15, -0.8], [0, -1.35], [1.15, -0.8]],   // where the Naga lays the last three (stage 6)
-        entryAt: [[-1.57, -2.46], [1.56, -2.46], [0.08, -2.45], [-1.75, -1.25], [1.75, -1.25], [-1.02, -2.3], [0.86, -2.09, 0.58], [-0.51, -2.6]],
+        entryAt: [[-1.57, -2.46], [1.56, -2.46], [0.08, -2.45, 0.09], [-1.75, -1.25], [1.75, -1.25], [-1.02, -2.3, 0.39], [0.86, -2.09, 0.58], [-0.51, -2.6]],
                                               // (R25, 21 Nov: spread so no two touch: each body's own ground at every 20 cm
                                               // of height (tools/probes/footprint.mjs), turned to face him, 12 cm apart or
                                               // more, clear of the slippers, the bag, the reel, the cloth and the wall lamps,
                                               // one only before the doorway; the two heavies had stood 0.46 m into each
                                               // other and a hide on the slippers, FILMS' clipscan of the turn: FIGHT-IN)
                                               // A slot's third number is a beat, in seconds, before its first move once risen:
-                                              // the 7th, a heavy, rises 0.46 m nearer him than it did (no clear slot at its old
-                                              // 3.38 m), so it waits what its own pace (paceSlip 0.8) takes to cover that
+                                              // each that rises nearer him than its old slot did waits what its own pace takes
+                                              // to cover the difference, so it reaches him on the old line's timing (the 3rd
+                                              // 0.05 m at 0.55, the 6th 0.22 m at 0.55, the 7th, a heavy, 0.46 m at 0.8: no
+                                              // clear slot at its old 3.38 m); one that rises farther, none
         entryJitter: 0.25,
         // THE TWO OF THEM
         phoWalk: 2.3, zavWalk: 1.4,           // (R25, 21 Nov: "the characters walking speed feels sluggish, make it faster")
