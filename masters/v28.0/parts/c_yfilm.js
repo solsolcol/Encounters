@@ -971,7 +971,7 @@
        chairs x -11.6..-9.2, z -1.18..1.0. As first written, his teacher stood in the sofa's edge and on a dining chair, the
        eye of the dining room's shot and the one by the window stood inside the sofa, and Ton stood in it) */
     const BT5AT = { live: [-7.92, -4.0], dine: [-10.3, -1.5], terr: [-11.2, -3.6], eyeLive: [-7.0, EYE, -4.75], eyeDine: [-9.4, EYE, -2.8], eyeTerr: [-9.8, EYE, -4.6],
-                    tie: [-7.28, -3.62], kohWin: [-10.5, -5.1], phoKoh: [-9.4, -4.4], eyeKoh: [-7.95, EYE, -3.3], tonKoh: [-8.0, -2.25],
+                    tie: [-7.28, -3.62], kohWin: [-10.5, -4.75], phoKoh: [-9.4, -4.4], eyeKoh: [-7.95, EYE, -3.3], tonKoh: [-8.0, -2.25],
                     liftPho: [0.35, 0.05], liftTon: [-0.6, 0.2], liftJun: [0.6, -0.3], liftEye: [-0.1, EYE, -1.55] };   // (Ton and Jun beside his teacher, off the line he is looked at along: Ton's back filled the phone's frame: bagtied-00058)
     FILMS5.bagtied = {
       begin(api, s) {
@@ -999,7 +999,7 @@
         if (inEyes && !atLift) { const k1 = smo(c01((t - T.lamp1) / 0.4)), k2 = smo(c01((t - T.lamp2) / 0.4)); courtLamps(0.15 + 0.85 * Math.min(1, (k1 + k2) / 2 + 0.0)); }
         /* the cage thins; Master Zavier seen until the violet */
         const kc = 1 - smo(c01((t - T.thin) / 1.4));
-        if (!inEyes) { whenReady(cast.zav, (P) => { fmShow(P, t < T.violet + 0.45); put(P, zz.x, zz.z, COURT5.heading + Math.PI); const rt = zavRest(); if (rt) pose(P, rt, 2 + t * 0.35, true); else pose(P, 'Walking', ZAV_STAND5); });
+        if (!inEyes) { whenReady(cast.zav, (P) => { fmShow(P, t < T.eyes); put(P, zz.x, zz.z, COURT5.heading + Math.PI); const rt = zavRest(); if (rt) pose(P, rt, 2 + t * 0.35, true); else pose(P, 'Walking', ZAV_STAND5); });
           CAGE5.set({ k: kc, x: zz.x, z: zz.z, t }); TRANCE5.set(1 - smo(c01((t - T.thin) / 2.0)), t); TRANCE5.pools(zz, pz, kc, kc); TRANCE5.gold(kc); }
         else { fmShow(cast.zav, false); CAGE5.set(null); TRANCE5.set(0); TRANCE5.pools(null, null, 0, 0); TRANCE5.gold(0); }
         /* his own hands before him, shaking, as his sight comes home to them */
@@ -1012,7 +1012,7 @@
         if (bagO && bagO.visible) { bagO.position.set(A.tie[0], 0.36, A.tie[1]); bagO.rotation.set(0, 0.4, 0); }
         if (bagT) { bagT.visible = t >= T.tied && t < T.end;
           if (bagT.visible && !atLift) { if (bagT.parent !== world) world.attach(bagT); bagT.position.set(A.tie[0], 0.36, A.tie[1]); bagT.rotation.set(0, 0.4, 0); }
-          if (bagT.visible && atLift) whenReady(cast.pho, (P) => { FM5.bagOff = handHold5(P, 'Left', bagT, FM5.bagOff, { hang: 0.0, ry: 0.3, rest: ['Sit_to_Stand_Transition_M', 5.9] }); }); }
+          if (bagT.visible && atLift) whenReady(cast.pho, (P) => { FM5.bagOff = handHold5(P, 'Left', bagT, FM5.bagOff, { hang: 0.0, ry: 0.3, out: 0.1, rest: ['Sit_to_Stand_Transition_M', 5.9] }); }); }
         /* where his teacher is: the court; the three rooms; by Mr Koh; at the lift */
         whenReady(cast.pho, (P) => {
           STICK5.to(t < T.eyes ? 'pho' : 'ton');
@@ -1056,7 +1056,8 @@
         });
         whenReady(cast.jun, (P) => {
           if (!inEyes) { const s0 = STATION.fight.jun; put(P, s0.x, s0.z, s0.ry); fmRest(P, 'jun', t); }
-          else if (!atLift) { put(P, -9.9, -4.2, faceTo(-9.9, -4.2, A.kohWin[0], A.kohWin[1])); fmRest(P, 'jun', t); }
+          /* (0.87 m from his teacher: at 0.54 his body was in Grandmaster Pho's robe, clipscan 920 to 9826 crossings) */
+          else if (!atLift) { put(P, -10.15, -3.9, faceTo(-10.15, -3.9, A.kohWin[0], A.kohWin[1])); fmRest(P, 'jun', t); }
           else { put(P, A.liftJun[0], A.liftJun[1], faceTo(A.liftJun[0], A.liftJun[1], A.liftPho[0], A.liftPho[1])); fmTalk(P, 'jun', t, T.ju5b1, SECS.ju5b1, 'Talk_with_Right_Hand_Open');
             if (t > T.in + 0.5) fmWalk(P, t, T.in + 0.5, [A.liftJun, [0.3, 1.7]], 0.9, restOf5('jun', t), Math.PI); }
         });
@@ -1084,7 +1085,10 @@
           /* (the bag on its table with the table round it, the knot readable: at 0.85 m on a 30 degree lens its black cloth
              filled the whole phone: bagtied-018_5) */
           { t: T.knot, name: 'knot', eye: [A.tie[0] + 0.7, 1.15, A.tie[1] - 0.75], at: [A.tie[0], 0.5, A.tie[1]], fp: 46, fd: 38, cut: true },
-          { t: T.tn5b1 - 0.05, name: 'knot', eye: [A.tie[0] + 0.62, 1.1, A.tie[1] - 0.68], at: [A.tie[0], 0.52, A.tie[1]], fp: 42, fd: 35 },
+          /* (the bag tied seen on its own CUT, as the plan has it: the open bag became the tied one in one frame mid-shot) */
+          { t: T.tied - 0.05, name: 'knot', eye: [A.tie[0] + 0.64, 1.11, A.tie[1] - 0.7], at: [A.tie[0], 0.52, A.tie[1]], fp: 43, fd: 36 },
+          { t: T.tied, name: 'tied', eye: [A.tie[0] + 0.45, 0.98, A.tie[1] - 0.82], at: [A.tie[0], 0.5, A.tie[1]], fp: 40, fd: 34, cut: true },
+          { t: T.tn5b1 - 0.05, name: 'tied', eye: [A.tie[0] + 0.42, 0.97, A.tie[1] - 0.78], at: [A.tie[0], 0.5, A.tie[1]], fp: 38, fd: 32 },
           { t: T.tn5b1, name: 'ton', eye: A.eyeKoh, at: () => fmHead(cast.ton, [A.tonKoh[0], 1.6, A.tonKoh[1]]), fp: 46, fd: 40, cut: true },
           { t: T.window - 0.05, name: 'ton', eye: A.eyeKoh, at: () => fmHead(cast.ton, [A.tonKoh[0], 1.6, A.tonKoh[1]]), fp: 44, fd: 38 },
           { t: T.window, name: 'window', eye: A.eyeKoh, at: () => lp3(fmHead(cast.koh, [A.kohWin[0], 1.55, A.kohWin[1]]), [A.kohWin[0] - 0.3, 1.5, A.kohWin[1] - 0.5], 0.3), fp: 52, fd: 46, cut: true },
@@ -1094,6 +1098,11 @@
           { t: T.lift, name: 'lift', eye: A.liftEye, at: () => fmHead(cast.pho, [A.liftPho[0], 1.6, A.liftPho[1]]), fp: 50, fd: 44, cut: true },
           { t: T.ju5b1 - 0.1, name: 'lift', eye: A.liftEye, at: () => fmHead(cast.pho, [A.liftPho[0], 1.6, A.liftPho[1]]), fp: 46, fd: 42 },
           { t: T.ju5b1 + 0.6, name: 'jun', eye: A.liftEye, at: () => fmHead(cast.jun, [A.liftJun[0], 1.6, A.liftJun[1]]), fp: 50, fd: 44 },
+          /* (held on Jun to his last word and on his teacher for "Tomorrow.": drifted toward the doors from 79 s, a phone lost
+             Jun from 80.5 s of his line and his teacher's answer: e4c5filmread FRAME) */
+          { t: T.ju5b1 + SECS.ju5b1 - 0.1, name: 'jun', eye: A.liftEye, at: () => fmHead(cast.jun, [A.liftJun[0], 1.6, A.liftJun[1]]), fp: 50, fd: 44 },
+          { t: T.ph5b6 + 0.05, name: 'pho', eye: A.liftEye, at: () => fmHead(cast.pho, [A.liftPho[0], 1.6, A.liftPho[1]]), fp: 48, fd: 42 },
+          { t: T.ph5b6 + SECS.ph5b6 + 0.1, name: 'pho', eye: A.liftEye, at: () => fmHead(cast.pho, [A.liftPho[0], 1.6, A.liftPho[1]]), fp: 48, fd: 42 },
           { t: T.in, name: 'doors', eye: A.liftEye, at: [0.0, 1.45, 1.6], fp: 62, fd: 54 },
           { t: T.close + 0.4, name: 'in', eye: [0.0, EYE, 0.9], at: [0.0, 1.4, 1.6], fp: 66, fd: 58 },
           { t: T.end, name: 'in', eye: [0.0, EYE, 1.0], at: [0.0, 1.4, 1.8], fp: 66, fd: 58 }
