@@ -5,3 +5,44 @@
 # The Naga staff: his own (plan §0, R2). Its height is not given: about 1.4 m by the stand beside it in his photograph
 # (to be asked of him only if a shot depends on it). Seen close in a follower's hands and in Grandmaster Pho's: 2048.
 nagastaff     w5nagastaff   1.40  h  30000  2048  0
+# ---- 21 Nov 2026: the rest of plan 9.4 (PROMPTS.py). Sizes from the plan's 8.1 and 8.2 and the things' real sizes.
+# the rite's
+bagopen       w5bagopen     0.40  h  20000  2048  0
+bagtied       w5bagtied     0.35  h  20000  2048  0
+threadreel    w5threadreel  0.09  h  12000  1024  0
+staffwrap     w5staffwrap   1.50  w  16000  1024  0
+staffcloth    w5staffcloth  0.60  w  12000  1024  0
+clothtable    w5clothtable  1.20  w  16000  1024  0
+# the collector's
+padcase       w5padcase     0.34  w  20000  2048  0
+# Mr Koh's home
+shoecab       w5shoecab     0.90  w  20000  2048  0
+oldchair      w5oldchair    0.95  w  30000  2048  0
+grating       w5grating     1.00  w  16000  2048  0
+gate          w5gate        1.40  h  30000  1024  0
+gatepost      w5gatepost    1.70  h  12000  1024  0
+planter       w5planter     2.00  w  40000  2048  0
+planter2      w5planter2    2.00  w  40000  1024  0
+frontdoor     w5frontdoor   2.10  h   8000  1024  0
+liftpanel     w5liftpanel   1.10  h  12000  1024  0
+sofa          w5sofa        2.10  w  30000  1024  0
+lowtable      w5lowtable    1.20  w  12000  1024  0
+tvconsole     w5tvconsole   1.80  w  16000  1024  0
+floorlamp     w5floorlamp   1.55  h  12000  1024  0
+tablelamp     w5tablelamp   0.55  h  12000  1024  0
+pendant       w5pendant     0.45  w   8000   512  0
+curtain       w5curtain     2.40  h  16000  1024  0
+dintable      w5dintable    1.30  w  16000  1024  0
+dinchair      w5dinchair    1.00  h  12000  1024  0
+sideboard     w5sideboard   1.60  w  20000  1024  0
+wallclock     w5wallclock   0.55  h   8000  1024  0
+frame         w5frame       0.68  w   6000  1024  0
+walllamp      w5walllamp    0.35  h   8000  1024  0
+rail          w5rail        2.00  w  16000  1024  0
+walklight     w5walklight   0.28  w   4000   512  0
+slippers      w5slippers    0.27  l   8000   512  0
+duffel        w5duffel      0.60  w  12000  1024  0
+# the receiving room
+cushion       w5cushion     0.50  w   6000   512  0
+altarshelf    w5altarshelf  0.70  w  16000  1024  0
+ceilfan       w5ceilfan     1.30  w  12000  1024  0

@@ -1,4 +1,70 @@
 {
+ "bagtied": {
+  "image": "masters/v28.0/props/refs/bagtied-2k.png",
+  "image_to_3d": "01a1fc89-c7f1-746c-817f-082c609a9841",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "gate": {
+  "image": "masters/v28.0/props/refs/gate-2k.png",
+  "image_to_3d": "01a1fc8a-39e9-73b2-ab66-ced6f82d92d5",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "grating": {
+  "image": "masters/v28.0/props/refs/grating-2k.png",
+  "image_to_3d": "01a1fc8a-22ff-7105-9fa2-0f7d0cd2f89f",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
  "nagastaff": {
   "credits": 40,
   "expires_at": 1795468846080,
@@ -28,6 +94,94 @@
   },
   "sizes": {
    "glb": 68103532
+  }
+ },
+ "oldchair": {
+  "image": "masters/v28.0/props/refs/oldchair-2k.png",
+  "image_to_3d": "01a1fc8a-0d6c-7574-bd32-ec61b717f48a",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "padcase": {
+  "image": "masters/v28.0/props/refs/padcase-2k.png",
+  "image_to_3d": "01a1fc89-dc17-76d9-b5ec-da3652162588",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "planter": {
+  "image": "masters/v28.0/props/refs/planter-2k.png",
+  "image_to_3d": "01a1fc8a-497a-74b8-beb8-9b277b68b44d",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
+  }
+ },
+ "shoecab": {
+  "image": "masters/v28.0/props/refs/shoecab-2k.png",
+  "image_to_3d": "01a1fc89-f63c-7281-a400-846b00e3b4a0",
+  "settings": {
+   "ai_model": "latest",
+   "enable_pbr": true,
+   "geometry_resolution": "4k",
+   "image_enhancement": true,
+   "model_type": "standard",
+   "multi_view_thumbnails": true,
+   "save_pre_remeshed_model": false,
+   "should_remesh": true,
+   "should_texture": true,
+   "target_formats": [
+    "glb"
+   ],
+   "target_polycount": 300000,
+   "texture_model": "meshy-7",
+   "texture_resolution": "8k",
+   "topology": "triangle"
   }
  },
  "zavier": {

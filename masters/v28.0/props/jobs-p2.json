@@ -1,0 +1,37 @@
+[
+ {
+  "name": "bagtied",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/bagtied-2k.png"
+ },
+ {
+  "name": "padcase",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/padcase-2k.png"
+ },
+ {
+  "name": "shoecab",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/shoecab-2k.png"
+ },
+ {
+  "name": "oldchair",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/oldchair-2k.png"
+ },
+ {
+  "name": "grating",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/grating-2k.png"
+ },
+ {
+  "name": "gate",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/gate-2k.png"
+ },
+ {
+  "name": "planter",
+  "kind": "prop",
+  "image": "masters/v28.0/props/refs/planter-2k.png"
+ }
+]
