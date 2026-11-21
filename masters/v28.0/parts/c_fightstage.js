@@ -1220,6 +1220,7 @@
       /* (his closed hand on the stick: the grip's solve, each joint's turn in degrees, and how far it is closed) */
       grip() { return typeof PHOGRIP5 === 'object' ? { report: PHOGRIP5.report(), k: PHOGRIP5.k() } : null; },
       gripOn() { return typeof PHOGRIP5 === 'object' ? PHOGRIP5.on() : false; },
+      gripTune(o) { return typeof PHOGRIP5 === 'object' ? PHOGRIP5.tune(o) : null; },
       gait() { const out = {}; for (const [who, P] of [['pho', cast.pho], ['zav', cast.zav]]) { if (!P || !P.ready) continue; const T = fsTake[who];
         out[who] = { gait: T.gait, walking: T.walking, pace: +(T.pace || 0).toFixed(3), cur: P.cur, own: P.pace ? Object.fromEntries(Object.entries(P.pace).map(([k, v]) => [k, +v.toFixed(3)])) : null,
           w: Object.fromEntries(Object.keys(P.acts).filter(k => (P.w[k] || 0) > 0.005).map(k => [k, +P.w[k].toFixed(2)])),
@@ -1373,7 +1374,8 @@
       /* (held OFF until photographed and measured: the stick stands as it did, and his hand is his file's; a probe turns it
          on through the fight's lab, gripOn) */
       let GRIP_ON = false;
-      const STICK_R = 0.036, STICK_Y = 1.10, STICK_C = [0.082, -0.003], TILT = 18 * Math.PI / 180, BACK = 0.018, PALM = 0.012, FING_R = 0.008, THUMB_R = 0.009, GAP = 0.003;
+      const STICK_R = 0.036, STICK_Y = 1.10, STICK_C = [0.082, -0.003], BACK = 0.018, PALM = 0.012, FING_R = 0.008, THUMB_R = 0.009, GAP = 0.003;
+      let TILT = 18 * Math.PI / 180;                                                 // (a probe may try another: tune)
       const LIM = { f: [90, 110, 85], t: [60, 60, 80] }, D2R = Math.PI / 180;
       const NAMES = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky'];
       let G = null, failed = false, k = 0, lastNow = 0, wroteQ = null;
@@ -1420,10 +1422,12 @@
           const x3 = fL.clone().addScaledVector(A, -fL.dot(A)).normalize(), y3 = A.clone().cross(x3).normalize(); if (y3.dot(up) < 0) y3.negate();
           const rho = M(STICK_R + THUMB_R + GAP), Q = (b) => cs.clone().addScaledVector(x3, rho * Math.cos(b)).addScaledVector(y3, rho * Math.sin(b));
           /* its knuckle on the circle above the shaft, nearer the wrist, the metacarpal's own length from its base */
-          let best = null; for (let t = 60; t <= 200; t += 0.5) { const b = t * D2R, e = Math.abs(Q(b).distanceTo(P0) - l[0]); if (!best || e < best.e) best = { b, e }; }
+          let best = null; const es = []; for (let t = 60; t <= 200; t += 0.5) { const b = t * D2R, e = Math.abs(Q(b).distanceTo(P0) - l[0]); es.push([t, e]); if (!best || e < best.e) best = { b, e }; }
+          /* (where the circle meets the metacarpal's reach: each place it comes nearest, said in the report, the one taken first) */
+          const roots = es.filter((q, i) => i > 0 && i < es.length - 1 && q[1] <= es[i - 1][1] && q[1] <= es[i + 1][1]).map(q => [q[0], +(q[1] * s * 100).toFixed(2)]);
           let be = best.b; const tg = [P0.clone(), Q(be)];
           for (const li of [l[1], l[2]]) { be += arc(li, rho); tg.push(Q(be)); }       // (round the shaft's near side and under it)
-          return { thumb: true, P0, l, tg, rest: seg.map(v => v.clone().normalize()), lim: LIM.t, miss: best.e };
+          return { thumb: true, P0, l, tg, rest: seg.map(v => v.clone().normalize()), lim: LIM.t, miss: best.e, at: +(best.b / D2R).toFixed(1), roots };
         };
         /* each chain's turns: each bone's rest line turned onto its target line, down the chain (each in its parent's frame) */
         const chainQ = (nm, tgDirs, lim) => {
@@ -1441,7 +1445,7 @@
         for (const nm of ['Index', 'Middle', 'Ring', 'Pinky']) { const F = finger(nm);
           const dir = (i) => { const a0 = F.pts[i], a1 = F.pts[i + 1]; return F.x3.clone().multiplyScalar(a1[0] - a0[0]).addScaledVector(F.y3, a1[1] - a0[1]).normalize(); };
           chainQ(nm, [dir(0), dir(1), dir(2)], F.lim); }
-        { const T = thumb(); chainQ('Thumb', [0, 1, 2].map(i => T.tg[i + 1].clone().sub(T.tg[i]).normalize()), T.lim); out.report.thumbMiss = +(T.miss * s * 100).toFixed(2); }
+        { const T = thumb(); chainQ('Thumb', [0, 1, 2].map(i => T.tg[i + 1].clone().sub(T.tg[i]).normalize()), T.lim); out.report.thumbMiss = +(T.miss * s * 100).toFixed(2); out.report.thumbAt = T.at; out.report.thumbRoots = T.roots; }
         /* the stick in this hand: its shaft's middle at 1.00 m up it on C, its length along A, the Naga's head facing as his knuckles do */
         const yA = A.clone(), xA = fL.clone().addScaledVector(A, -fL.dot(A)).normalize().negate(), zA = xA.clone().cross(yA).normalize();
         const R = new THREE.Matrix4().makeBasis(xA, yA, zA), sc = 1 / s;
@@ -1474,7 +1478,7 @@
          a forearm's middle), the wrist bent only toward the little finger by the shaft's slope across the palm; lifted 6 cm
          as he walks or runs (his body dips 4 cm a step: the stick's foot kept off the paving). In every take but a cast, by
          the casts' weights: in a cast (the throw, the gold, the bag, the Naga's planting) his own take's arm carries it */
-      const STAFF = { fist: [-0.30, 1.10, 0.36], lift: 0.06, out: 15 * D2R, pole: [-0.45, -0.5, -0.74], hm: [0.805, 0, 0.593],
+      const STAFF = { fist: [-0.30, 1.10, 0.36], lift: 0.06, out: 15 * D2R, pole: [-0.45, -0.5, -0.74], hm: [0.805, 0, 0.593], lean: 0,
                       casts: /^(Charged_Spell_Cast|mage_soell_cast|Right_Hand_Sword_Slash)/ };
       const _sa = V(), _sb = V(), _sc = V(), _sd = V(), _se = V(), _sf = V(), _sq = new THREE.Quaternion(), _sq2 = new THREE.Quaternion(), _sq3 = new THREE.Quaternion(),
             _sm = new THREE.Matrix4(), _sm2 = new THREE.Matrix4(), _keep = [new THREE.Quaternion(), new THREE.Quaternion(), new THREE.Quaternion()];
@@ -1495,6 +1499,9 @@
         const walk = Math.min(1, (w.Walking || 0) + (w.Running || 0));
         const Ct = _sa.set(STAFF.fist[0], STAFF.fist[1] + STAFF.lift * walk, STAFF.fist[2]); P.group.localToWorld(Ct);
         const up = _sb.set(0, 1, 0), front = _sc.set(-Math.sin(STAFF.out), 0, Math.cos(STAFF.out)).applyQuaternion(_sq).normalize();
+        /* (its top leaned back toward him by STAFF.lean, its foot ahead: the hand turned with it) */
+        if (STAFF.lean) { const cl = Math.cos(STAFF.lean), sl = Math.sin(STAFF.lean), fx = front.x, fy = front.y, fz = front.z;
+          front.set(fx * cl, sl, fz * cl).normalize(); up.set(-fx * sl, cl, -fz * sl).normalize(); }
         /* the hand's turn in the world: the shaft's line (in the hand's frame) up, the knuckles' line front */
         _sd.crossVectors(G.F, G.A).normalize(); _se.crossVectors(front, up).normalize();
         _sm.makeBasis(front, up, _se); _sm2.makeBasis(G.F, G.A, _sd).transpose(); _sm.multiply(_sm2); _sq2.setFromRotationMatrix(_sm);
@@ -1530,7 +1537,13 @@
         offset(P) { if (!GRIP_ON) return null; const g = solve(P); return g ? g.off : null; },
         on() { GRIP_ON = true; if (typeof STICK5 === 'object') { STICK5.off = null; if (STICK5.who === 'pho' && cast.pho && cast.pho.ready) STICK5.inHand(cast.pho); } return true; },
         report() { return G ? JSON.parse(JSON.stringify(G.report)) : (failed ? 'failed' : null); },
-        k() { return k; }
+        k() { return k; },
+        /* (a probe's: another slope across his palm, place of his fist, side of his elbow or lean of the stick tried, the
+           solve made again and the stick laid again; nothing calls it in play) */
+        tune(o = {}) { if (o.tilt != null) TILT = o.tilt * D2R; if (o.fist) STAFF.fist = o.fist.slice(); if (o.pole) STAFF.pole = o.pole.slice(); if (o.lean != null) STAFF.lean = o.lean * D2R;
+          G = null; failed = false; wroteQ = null; wroteArm = null;
+          if (typeof STICK5 === 'object') { STICK5.off = null; if (STICK5.who === 'pho' && cast.pho && cast.pho.ready) STICK5.inHand(cast.pho); }
+          return { tilt: +(TILT / D2R).toFixed(1), fist: STAFF.fist, pole: STAFF.pole, lean: +((STAFF.lean || 0) / D2R).toFixed(1) }; }
       };
     })();
     if (typeof STICK5 === 'object') STICK5.grip = PHOGRIP5;
