@@ -141,7 +141,9 @@
       return { g, set(i) { g.visible = i >= 0; nums.forEach((q, j) => { q.visible = j === i; }); } };
     })();
     /* the lift car's own places (LIFT: x -0.8..0.8, z 1.35..2.85; its doors at z 1.26, in the walkway's end wall) */
-    const CAR5 = { eye: [0.05, EYE, 2.55], pho: [0.04, 1.70], ton: [-0.44, 2.10], jun: [0.45, 2.16] };
+    /* (Jun and Ton a step forward of him, 0.85 to 0.95 m off, each half-turned to speak back to him: at 0.56 m Jun filled
+       the phone's frame edge as a face looking up past the lens: open-phone film-00011, 21 Nov) */
+    const CAR5 = { eye: [0.05, EYE, 2.55], pho: [0.04, 1.62], ton: [-0.5, 1.85], jun: [0.5, 1.9] };
 
     /* ---------------------------------------------------------------- THE THREAD ACROSS HIS DOORWAY (the plan's 4.4: Jun
        draws white thread across it and keeps hold of its end; the household behind it): a white cord at knee height from
@@ -334,14 +336,14 @@
            his teacher, single file through the doors, turning back to him on the walkway as he stops */
         whenReady(cast.ton, (P) => { const r = restOf5('ton', t);
           if (t < T.tonOut) { put(P, CAR5.ton[0], CAR5.ton[1], Math.PI); fmTalk(P, 'ton', t, T.tn5o1, SECS.tn5o1, 'Stand_and_Chat');
-            lookNow(P, 'lens', smo(c01((t - T.tn5o1 + 0.3) / 0.6)) * (1 - smo(c01((t - T.tn5o1 - SECS.tn5o1) / 0.8))), 0.85); }
+            lookNow(P, 'lens', smo(c01((t - T.tn5o1 + 0.3) / 0.6)) * (1 - smo(c01((t - T.tn5o1 - SECS.tn5o1) / 0.8))), 0.85, 0.12); }
           else { fmWalk(P, t, T.tonOut, [CAR5.ton, [-0.16, 1.0], [STATION.walk.ton.x, STATION.walk.ton.z]], 1.0, r, STATION.walk.ton.ry);
             if (t > T.sour) lookNow(P, 'lens', smo(c01((t - T.sour) / 1.2)) * 0.8, 0.8); }
           STICK5.carry(P); });
         /* Jun, at his right, the duffel in his hand: his line, then out last before him */
         whenReady(cast.jun, (P) => { const r = restOf5('jun', t);
           if (t < T.junOut) { put(P, CAR5.jun[0], CAR5.jun[1], Math.PI); fmTalk(P, 'jun', t, T.ju5o1, SECS.ju5o1, 'Talk_with_Right_Hand_Open');
-            lookNow(P, 'lens', smo(c01((t - T.ju5o1 + 0.3) / 0.6)) * (1 - smo(c01((t - T.ju5o1 - SECS.ju5o1) / 0.8))), 0.85); }
+            lookNow(P, 'lens', smo(c01((t - T.ju5o1 + 0.3) / 0.6)) * (1 - smo(c01((t - T.ju5o1 - SECS.ju5o1) / 0.8))), 0.85, 0.12); }
           else { fmWalk(P, t, T.junOut, [CAR5.jun, [0.14, 1.0], [STATION.walk.jun.x, STATION.walk.jun.z]], 1.0, r, STATION.walk.jun.ry);
             if (t > T.sour) lookNow(P, 'lens', smo(c01((t - T.sour - 0.4) / 1.2)) * 0.8, 0.8); }
           DUFFEL5.carry(P); });
@@ -355,10 +357,10 @@
           { t: 0, name: 'number', eye: [0.04, EYE, 2.5], at: D, fp: 26, fd: 22 },
           { t: T.ju5o1 - 1.4, name: 'number', eye: [0.04, EYE, 2.52], at: [0, 2.15, LIFT.z0], fp: 36, fd: 30 },
           { t: T.ju5o1 - 0.6, name: 'car', eye: CAR5.eye, at: [0.08, 1.42, 1.5], fp: 74, fd: 62 },
-          { t: T.ju5o1 + 0.5, name: 'jun', eye: CAR5.eye, at: () => fmHead(cast.jun, [0.45, 1.62, 2.16]), fp: 64, fd: 56 },
-          { t: T.ju5o1 + SECS.ju5o1 - 0.3, name: 'jun', eye: CAR5.eye, at: () => fmHead(cast.jun, [0.45, 1.62, 2.16]), fp: 64, fd: 56 },
-          { t: T.tn5o1 + 0.4, name: 'ton', eye: CAR5.eye, at: () => fmHead(cast.ton, [-0.44, 1.62, 2.1]), fp: 64, fd: 56 },
-          { t: T.tn5o1 + SECS.tn5o1 - 0.2, name: 'ton', eye: CAR5.eye, at: () => fmHead(cast.ton, [-0.44, 1.62, 2.1]), fp: 64, fd: 56 },
+          { t: T.ju5o1 + 0.5, name: 'jun', eye: CAR5.eye, at: () => fmHead(cast.jun, [0.5, 1.5, 1.9]), fp: 60, fd: 52 },
+          { t: T.ju5o1 + SECS.ju5o1 - 0.3, name: 'jun', eye: CAR5.eye, at: () => fmHead(cast.jun, [0.5, 1.5, 1.9]), fp: 60, fd: 52 },
+          { t: T.tn5o1 + 0.4, name: 'ton', eye: CAR5.eye, at: () => fmHead(cast.ton, [-0.5, 1.5, 1.85]), fp: 60, fd: 52 },
+          { t: T.tn5o1 + SECS.tn5o1 - 0.2, name: 'ton', eye: CAR5.eye, at: () => fmHead(cast.ton, [-0.5, 1.5, 1.85]), fp: 60, fd: 52 },
           { t: T.chime, name: 'doors', eye: CAR5.eye, at: [0.03, 1.45, 0.6], fp: 70, fd: 60 },
           { t: T.step, name: 'doors', eye: CAR5.eye, at: [0.02, 1.48, -2.0], fp: 70, fd: 60 },
           /* (his two steps out, one move at a walk's pace: 2.3 m over 1.9 s; a key between them made it stop and lurch, the
@@ -395,23 +397,33 @@
     function handHold5(P, sd, g, off, o = {}) {
       const hb = boneOf(P, sd + 'Hand'); if (!hb || !g) return off;
       if (!off && !g.userData.model) return off;                               // (not landed yet: its size is not known, nothing is kept)
+      /* A THING THAT HANGS OR STANDS IN A HAND (a staff carried upright, a bag by its handles) keeps itself upright, turned
+         with the body, its grip at the palm's middle: it goes where the hand goes and never takes the hand's swing (laid on the
+         hand bone, the wrapped staff swung 35 degrees off upright with every step: open-phone film-024_5, 21 Nov). Only a
+         thing worked by the hand (the fan, `base`) turns with it */
+      const world5 = !!o.upright || o.base == null;
       if (!off) {
         const keep = {}; for (const k in P.acts) keep[k] = [P.acts[k].time, P.w[k]];
         const cur = P.cur, ft = P.filmT, gp = P.group.position.clone(), gr = P.group.rotation.y;
         const R0 = o.rest || ['Idle_3', 2.0]; pose(P, R0[0], R0[1], true); P.group.updateWorldMatrix(true, true);
         const pm = palmOf(P, sd, _hhA);
-        let pos, q;
         /* (upright: its length, which lies along its own x, stood up by a quarter turn about z, and raised so that its LOWEST
            point is `foot` over the floor: the wrapped staff's file is centred on its length (x -0.75 .. 0.75), so stood up from
            its middle half of it was under the paving, and the photographs showed a stump from the floor to his hand) */
-        if (o.upright) { const bx = localBox5(g); pos = new THREE.Vector3(pm.x, (o.foot != null ? o.foot : 0.04) - (bx ? bx.min.x : 0), pm.z); q = _hhQ.setFromEuler(new THREE.Euler(0, gr + (o.ry || 0), Math.PI / 2, 'YXZ')); }
-        else if (o.base != null) { pos = new THREE.Vector3(pm.x, pm.y - o.base, pm.z); q = _hhQ.setFromAxisAngle(new THREE.Vector3(0, 1, 0), gr + (o.ry || 0)); }
-        else { const was = g.visible; g.visible = true; g.updateWorldMatrix(true, true); const bb = new THREE.Box3().setFromObject(g, true), hgt = bb.isEmpty() ? 0.3 : bb.max.y - bb.min.y; g.visible = was;
-          pos = new THREE.Vector3(pm.x, pm.y - (o.hang || 0) - hgt, pm.z); q = _hhQ.setFromAxisAngle(new THREE.Vector3(0, 1, 0), gr + (o.ry || 0)); }
-        _hhM.compose(pos, q, _hhS); hb.updateWorldMatrix(true, false);
-        off = new THREE.Matrix4().copy(hb.matrixWorld).invert().multiply(_hhM);
+        if (o.upright) { const bx = localBox5(g); off = { grip: pm.y - ((o.foot != null ? o.foot : 0.04) - (bx ? bx.min.x : 0)) }; }
+        else if (world5) { const bx = localBox5(g), hgt = bx ? bx.max.y - bx.min.y : 0.3; off = { grip: (o.hang || 0) + hgt + (bx ? bx.min.y : 0) }; }
+        else { const pos = new THREE.Vector3(pm.x, pm.y - o.base, pm.z), q = _hhQ.setFromAxisAngle(new THREE.Vector3(0, 1, 0), gr + (o.ry || 0));
+          _hhM.compose(pos, q, _hhS); hb.updateWorldMatrix(true, false);
+          off = new THREE.Matrix4().copy(hb.matrixWorld).invert().multiply(_hhM); }
         for (const k in P.acts) { P.acts[k].time = keep[k][0]; P.w[k] = keep[k][1]; P.acts[k].setEffectiveWeight(keep[k][1]); }
         P.cur = cur; P.filmT = ft; P.group.position.copy(gp); P.group.rotation.y = gr; P.mixer.update(0);
+      }
+      if (world5) {
+        if (g.parent !== world) world.attach(g);
+        P.group.updateWorldMatrix(true, true); const pm = palmOf(P, sd, _hhA); if (!pm) return off;
+        g.position.set(pm.x, pm.y - off.grip, pm.z);
+        if (o.upright) g.rotation.set(0, P.group.rotation.y + (o.ry || 0), Math.PI / 2, 'YXZ'); else g.rotation.set(0, P.group.rotation.y + (o.ry || 0), 0);
+        g.visible = true; return off;
       }
       if (g.parent !== hb) hb.add(g);
       off.decompose(g.position, g.quaternion, g.scale); g.visible = true;
