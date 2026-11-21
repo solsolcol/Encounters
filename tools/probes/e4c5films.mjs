@@ -38,8 +38,10 @@ const WAY = { devotee: 'walk', prepare: 'hunt', together: 'fight', bagtied: 'fig
 const CS = fs.readFileSync(new URL('./clipscan.mjs', import.meta.url), 'utf8'), A0 = CS.indexOf('const ANALYSE = '), A1 = CS.indexOf('\n};\n', A0);
 const ANALYSE = (0, eval)('(' + CS.slice(A0 + 'const ANALYSE = '.length, A1 + 2) + ')');
 /* the chapter as served, with the films' probe handle laid in when it is missing */
-const DIST = process.env.ENC_DIST || 'dist', CHF = fs.readdirSync(DIST + '/assets').find(f => /^e4c5\.[0-9a-f]+\.js$/.test(f));
-let CHSRC = fs.readFileSync(DIST + '/assets/' + CHF, 'utf8');
+/* (CHFILE=<file.js>: the chapter served from that file instead, src/chapters/e4/e4c5.js as just assembled: a chapter file
+   is copied into the build byte for byte, so a change to the chapter alone is measured with no build, filmshots' SWAPJS) */
+const DIST = process.env.ENC_DIST || 'dist', CHF = process.env.CHFILE || fs.readdirSync(DIST + '/assets').find(f => /^e4c5\.[0-9a-f]+\.js$/.test(f));
+let CHSRC = fs.readFileSync(process.env.CHFILE || DIST + '/assets/' + CHF, 'utf8');
 const HOOKED = /people: \(\) => people/.test(CHSRC);
 if (!HOOKED) CHSRC = CHSRC.replace(/(PRAI5, STICK5)(\s*\};)/, '$1, people: () => people, crowd: () => crowd$2');
 const b = await chromium.launch(LAUNCH);

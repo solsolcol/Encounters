@@ -1324,5 +1324,7 @@
       bagtied: FILMS5.bagtied, collector: FILMS5.collector,
       ending: { begin: (k, api, s) => FILMS5.ending.begin(k, api, s), frame: (k, t, api) => FILMS5.ending.frame(k, t, api), end: () => FILMS5.ending.end() },
       /* the cast's handles the fight and the play read (the court's frame, the boom, the cage, the trance, the Naga) */
-      fightStart, boomAt, COURT5, courtWorld, CAGE5, TRANCE5, NAGA5, PRAI5, STICK5
+      fightStart, boomAt, COURT5, courtWorld, CAGE5, TRANCE5, NAGA5, PRAI5, STICK5,
+      /* (a probe's read of every body the chapter made: tools/probes/e4c5films.mjs, R25) */
+      people: () => people, crowd: () => crowd
     };
