@@ -160,7 +160,10 @@ that fits it, with the version it came from.
   clear disk space, make a judgement on what is safe to clear, and do it without asking me, but make sure it is totally
   safe and redundant."): only what is totally safe and redundant (a build snapshot Netlify holds, a probe's leftover
   browser profile, a scratch intermediate a recipe remakes), never a source, never his own files (`$S/b56`, his "old
-  Pho experiment files", stays), never a tool. (v27.0)
+  Pho experiment files", stays), never a tool. (v27.0) A SOURCE'S local copy goes only on his yes: 21 Nov 2026 he gave
+  it once ("Yes", plan R16 of docs/V28.0-E4C5-PLAN.md) for `masters/v26.0/src` and `masters/v27.0/src`, each file let go
+  only after its sha256 matched the sources branch's record (1,154 files, 8.7 GiB; they are restored from
+  `claude/model-sources` as that branch's README says). The session's safety check refuses such a clearing without it.
 - Adopt an objectively better solution only when very sure of it, and prove that new work has not silently broken or undone earlier fixes. (v14.16)
 - An important person is never drawn up close from a lighter body ("30k triangles up close should never have been
   allowed"): the people the story turns on (Ton, the woman at the bench, the seated masters, the woman lighting the
