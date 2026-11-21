@@ -30,7 +30,8 @@ await p.evaluate(() => window.__enc.stage.setPhase('fight'));
 await p.waitForFunction(() => window.__enc.kit.eventActive() && window.__enc.kit.tagState().on, null, { timeout: 300000, polling: 500 });
 await p.evaluate(() => window.__enc.stage.snap().story.fight.lab.open());
 await p.waitForFunction(() => !window.__enc.kit.eventActive() && window.__enc.kit.tagState().live, null, { timeout: 300000, polling: 500 });
-await p.evaluate(() => { const L = window.__enc.stage.snap().story.fight.lab; if (L.gripOn) L.gripOn(); });   // (the grip is held off until it passes)
+/* (GRIP=0: the stick as the build ships it, the grip left off, for a picture of how it stands today) */
+if (process.env.GRIP !== '0') await p.evaluate(() => { const L = window.__enc.stage.snap().story.fight.lab; if (L.gripOn) L.gripOn(); });   // (the grip is held off until it passes)
 /* (TUNE='{"tilt":5,...}': one of the settings e4c5gripfit.mjs tried, photographed before it is written in) */
 if (process.env.TUNE) say('tuned', JSON.stringify(await p.evaluate((T) => window.__enc.stage.snap().story.fight.lab.gripTune(T), JSON.parse(process.env.TUNE))));
 await frames(12);
@@ -38,7 +39,8 @@ const grip = await p.evaluate(() => { const L = window.__enc.stage.snap().story.
 say('grip', JSON.stringify(grip)); say('page', JSON.stringify(logs));
 await p.evaluate(() => { const k = window.__enc.kit; if (k.tag().on) k.tag(null, null); });
 /* (his place for the pictures: the court's middle, clear of its walls on both sides; the court's frame: c_cast.js COURT5) */
-await p.evaluate(() => { const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho; P.group.position.x = -8.5; P.group.position.z = -9.7;
+/* (KEEP=1: photographed where the fight stands him, as a clipscan lead found him; else the court's middle) */
+if (process.env.KEEP !== '1') await p.evaluate(() => { const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho; P.group.position.x = -8.5; P.group.position.z = -9.7;
   /* (his student stood 0.3 m before him there: set aside, clear of every view, at the court's far corner on his left) */
   const Z = E.stage.plan.FLOOR.cast.zav; if (Z) { Z.group.position.x = -6.9; Z.group.position.z = -11.4; } });
 const res = { grip, poses: [] };
@@ -72,7 +74,7 @@ for (const [name, t] of POSES) {
     return { ws: +ws.toFixed(4), n, inside, deepCm: +(deep * 100).toFixed(2), per }; });
   say('contact', name, t, JSON.stringify(contact));
   res.poses.push({ name, t, contact });
-  for (const view of ['front', 'side', 'hand', 'handout']) {
+  for (const view of (process.env.VIEWS || 'front,side,hand,handout').split(',')) {
     const at = await p.evaluate(([view]) => { const E = window.__enc, P = E.stage.plan.FLOOR.cast.pho, V = P.group.position.constructor;
       P.group.updateWorldMatrix(true, true);
       let hb = null; for (const n in P.bone) if (/^(mixamorig:?)?RightHand$/.test(n)) hb = P.bone[n];
@@ -82,7 +84,8 @@ for (const [name, t] of POSES) {
       /* (the fist: a hand's length past the wrist along the hand; the views are taken at the engine's own eye height, which
          it keeps whatever a probe sets, so each is aimed from where the lens really stands) */
       const fist = new V(); { let mb = null; for (const n in P.bone) if (/^(mixamorig:?)?RightHandMiddle1$/.test(n)) mb = P.bone[n]; if (mb) { mb.getWorldPosition(fist); fist.lerp(h, 0.35); } else fist.copy(h); }
-      if (view === 'front') { c = new V(g.x + fx * 3.0, 1.35, g.z + fz * 3.0); tg = new V(g.x, 1.0, g.z); }
+      if (view === 'nine') { c = new V(-8.5, 2.3, -10.4); tg = new V(-8.5, 0.7, -6.4); }   // (the court's far end, the nine where the brief stands them)
+      else if (view === 'front') { c = new V(g.x + fx * 3.0, 1.35, g.z + fz * 3.0); tg = new V(g.x, 1.0, g.z); }
       else if (view === 'side') { c = new V(g.x - lx * 1.45, 1.3, g.z - lz * 1.45); tg = new V(g.x, 0.95, g.z); }   // (his right side, inside the court's wall)
       else if (view === 'hand') { c = new V(fist.x + fx * 0.9, fist.y + 0.12, fist.z + fz * 0.9); tg = fist.clone(); }   // (a little above: as a man standing before him sees it)
       else { c = new V(fist.x - lx * 0.9, fist.y + 0.12, fist.z - lz * 0.9); tg = fist.clone(); }
