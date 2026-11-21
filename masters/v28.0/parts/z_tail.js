@@ -2,15 +2,13 @@
   /* ================================================================ THE FILMS' CLOCKS AND CUES (M9; their pictures are the
      stage's: c_yfilm.js FILMS5, reached as stage.films). Each clock is built by tl() from SECS (a_head.js), so a measured
      take moves everything after it (v5.15): a list of ['line', gap], [secs] (a pause) and ['@mark'] (a named moment).
-     Every cue is a literal call of the film language's sound verb in the film's own source (v10.2, v14.16), and none is
-     written past the film's last track (v12.3).
-     THE VOICES, until their takes are installed (masters/v28.0/voices/install.py): each line is V(api, at, key), its words
-     shown at its measured time under who says them, so every film can be read; once the takes are in the build each V
-     becomes its line's own cue, with nothing here to move. THE SOUNDS AND THE MUSIC are planned beat by beat in
-     masters/v28.0/films/SOUNDS.md and go in once their files are installed (a cue that plays nothing fails chaptertest). */
-  function V(api, at, key) {
-    api.step(at, () => { const k = api.kit; if (k && k.captions && LINES[key]) k.captions([{ at: 0, end: (SECS[key] || 2.5) + 0.3, text: LINES[key][2], sub: WHO[LINES[key][0]] || '' }]); });
-  }
+     Every cue is a literal call of the film language's sound verb in the film's own source, so the engine's reading of a
+     scene warms it and chaptertest checks it (v10.2, v14.16), and none is written past the film's last track (v12.3).
+     THE VOICES are the lines' own takes (masters/v28.0/voices/install.py), each on its measured start. THE SOUNDS AND THE
+     MUSIC are the chapter's own (masters/v28.0/sound/manifest.json: every name a STING_SAMPLE row; each cue's volume the
+     manifest's gain, the measured picks standing until Chad's ear); the places' beds are the play's, written by each film
+     frame by frame (c_yfilm.js fmBeds). Every stretch of a second and a half with no voice is held by a sound with a reason:
+     the film's music under all of it, and what is happening in the picture (v21.30) */
 
   /* THE OPENING (the plan's 4.0): the case over black; the car, the number, Jun's line, Ton's; the chime and the doors;
      his teacher out first, then Ton, then Jun; his step out; the sour; his thought; black, the title over it */
@@ -18,12 +16,30 @@
                        ['@step'], [1.4], ['@sour'], [1.3], ['q5o2', 0.6], ['@black'], [0.9], ['@end']]);
   OP5.num2 = 10.6; OP5.num3 = OP5.chime - 0.5;                                  // the number over the doors: 2, then 3 as the car arrives
   function intro(c, s, api) {
-    const { tr, step, fade, rawK, stage } = api, F = stage.films.open, T = OP5;
+    const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, F = stage.films.open, T = OP5;
     step(0, () => F.begin(api, s));
     tr(0, T.end, (k, t) => F.frame(t), rawK);
     fade(1.3, 2.8, 1, 0);                                                      // (v7.7: the picture comes up as he speaks)
-    V(api, T.q5o1, 'q5o1'); V(api, T.ju5o1, 'ju5o1'); V(api, T.tn5o1, 'tn5o1'); V(api, T.q5o2, 'q5o2');
+    sfx(0.05, 'u5lifthum', 0.55); sfx(13.85, 'u5lifthum', 0.55);              // the car's hum (its 14.2 s, twice, end to end)
+    sfx(0.3, 'u5m1open', 0.7);                                                 // M1: a drone with no tune, dread
+    sfx(T.q5o1, 'q5o1', 1);                                                    // "Case two. A devotee's home. He had been quarrelling with people outside, and at home he could not rest."
+    sfx(3.0, 'u5cable', 0.45);                                                 // the cable, as the picture comes up on the number
+    sfx(T.ju5o1, 'ju5o1', 1);                                                  // "Mr Koh says the lights keep going off. Electrician came three times already."
+    sfx(T.tn5o1, 'tn5o1', 1);                                                  // "He also says he fights with everybody. His own words."
+    sfx(T.chime - 1.1, 'u5cable', 0.5);                                        // the car slowing
+    sfx(T.chime, 'u5chime', 0.8);                                              // the chime
+    sfx(T.open - 0.05, 'u5liftopen', 0.8);                                     // the doors open on the walkway
+    sfxFade(T.out + 0.6, T.step + 0.8, 'u5lifthum');                           // the car's hum left behind as they step out
+    sfx(T.open + 0.9, 'u5playground', 0.3);                                    // the last voices of a playground below
+    sfx(T.out + 0.35, 'u5phostep', 0.4); sfx(T.out + 0.95, 'u5phostep', 0.34); sfx(T.out + 1.55, 'u5phostep', 0.26);   // his teacher out first
+    sfx(T.tonOut + 0.4, 'u5step2', 0.3); sfx(T.tonOut + 1.0, 'u5step1', 0.24);                                          // Ton
+    sfx(T.junOut + 0.3, 'u5step1', 0.3); sfx(T.junOut + 0.9, 'u5step2', 0.24);                                          // Jun
+    sfx(T.step + 0.1, 'u5step2', 0.45); sfx(T.step + 0.7, 'u5step1', 0.45);                                             // his own two steps out
+    sfx(T.sour, 'u5souring', 0.8);                                             // and it hits him: the picture sours
+    sfx(T.sour + 1.0, 'u5heart', 0.55); sfx(T.sour + 1.7, 'u5heart', 0.6);     // his breath stopped; his heart
+    sfx(T.q5o2, 'q5o2', 1);                                                    // "The doors opened, and it hit me."
     fade(T.black, T.end - 0.15, 0, 1);
+    sfxFade(T.black, T.end - 0.2, 'u5m1open');                                 // (the music goes down with the picture: v15.3)
     step(T.end, () => F.end());
     c.keepFade = true; c.endFade = 1;
   }
@@ -33,11 +49,30 @@
   const DV5 = tl(0, [[0.8], ['@door'], [1.6], ['@walk'], [6.2], ['@cut1'], [0.35], ['ko5d1', 0.5], ['@in'], [2.7], ['@slip'], [2.7], ['@room'], [0.6],
                      ['ko5d2', 0.35], ['ko5d3', 0.6], ['ko5d4', 0.6], ['ph5d1', 0.45], ['ph5d2', 0.3], ['@turn'], [1.3], ['@end']]);
   function filmDevotee(c, s, api) {
-    const { tr, step, fade, rawK, stage } = api, F = stage.films.devotee, T = DV5;
+    const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, F = stage.films.devotee, T = DV5;
     step(0, () => F.begin(api, s));
     tr(0, T.end, (k, t) => F.frame(t), rawK);
     fade(0, 0.8, 1, 0);
-    for (const key of SAID.devotee) V(api, T[key], key);
+    sfx(T.door, 'u5doors', 0.6);                                               // his front doors, across the court
+    sfx(T.door + 0.6, 'u5m3room', 0.7);                                        // M3: a figure like a clock that does not quite keep time
+    sfx(T.walk + 0.4, 'u5step1', 0.18); sfx(T.walk + 1.0, 'u5step2', 0.2); sfx(T.walk + 1.6, 'u5step1', 0.22); sfx(T.walk + 2.2, 'u5step2', 0.24);
+    sfx(T.walk + 2.8, 'u5step1', 0.26); sfx(T.walk + 3.4, 'u5step2', 0.28); sfx(T.walk + 4.0, 'u5step1', 0.3); sfx(T.walk + 4.6, 'u5step2', 0.32);
+    sfx(T.walk + 5.2, 'u5step1', 0.34); sfx(T.walk + 5.8, 'u5step2', 0.36);   // his steps down his court, nearer
+    sfx(T.cut1 - 0.15, 'u5gate', 0.75);                                        // the gate, opened by his hand (the cut)
+    sfx(T.ko5d1, 'ko5d1', 1);                                                  // "Grandmaster. You came. I did not know who else to ask."
+    sfx(T.in + 0.5, 'u5phostep', 0.32); sfx(T.in + 1.1, 'u5phostep', 0.3); sfx(T.in + 1.7, 'u5phostep', 0.28); sfx(T.in + 2.3, 'u5phostep', 0.26);   // his teacher ahead
+    sfx(T.in + 0.25, 'u5step1', 0.45); sfx(T.in + 0.8, 'u5step2', 0.45); sfx(T.in + 1.35, 'u5step1', 0.45); sfx(T.in + 1.9, 'u5step2', 0.45);
+    sfx(T.in + 2.45, 'u5step1', 0.42);                                         // his own, up the court between the planters
+    sfx(T.slip + 1.0, 'u5tile1', 0.4); sfx(T.slip + 1.65, 'u5tile1', 0.36);    // the slippers left; bare feet on his tiles
+    sfx(T.room + 0.5, 'u5lamptick', 0.4);                                      // the fourth lamp, flickering
+    sfx(T.ko5d2, 'ko5d2', 1);                                                  // "At night somebody knocks. Inside the house. ..."
+    sfx(T.ko5d3, 'ko5d3', 1);                                                  // "Three weeks. My workers say I am short-tempered. I say I am not sleeping!"
+    sfx(T.ko5d3 + 2.6, 'u5lamptick', 0.28);
+    sfx(T.ko5d4, 'ko5d4', 1);                                                  // "I know I have a mouth. I have quarrelled with people. More than a few."
+    sfx(T.ph5d1, 'ph5d1', 1);                                                  // "We will look first."
+    sfx(T.ph5d2, 'ph5d2', 1);                                                  // "Use your nose. Then your Spirit Vision. ..."
+    sfx(T.turn - 0.2, 'u5lamptick', 0.32);
+    sfxFade(T.end - 1.4, T.end - 0.1, 'u5m3room');
     step(T.end, () => F.end());
   }
 
@@ -49,13 +84,36 @@
                      ['@violet'], [0.4], ['q5p1', 0.4], ['@leave'], [5.8], ['@rest'], [2.0], ['@end']]);
   const VIOLET5 = '#6b3fe2';                                                   // his protection's colour (the plan's 11: neither gold nor white)
   function filmPrepare(c, s, api) {
-    const { tr, step, fade, rawK, stage } = api, F = stage.films.prepare, T = PR5;
+    const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, F = stage.films.prepare, T = PR5;
     step(0, () => F.begin(api, s));
     tr(0, T.end, (k, t) => F.frame(t, api), rawK);
     fade(0, 1.2, 1, 0);                                                        // (a time cut: night now)
-    for (const key of SAID.prepare) V(api, T[key], key);
+    sfx(0.3, 'u5m6prep', 0.7);                                                 // M6: ritual, a slow drum, a reed's long line, gathering
+    sfx(T.unwrap + 0.2, 'u5unwrap', 0.7);                                      // Ton unwraps the Naga stick
+    sfx(T.take - 0.1, 'u5robe', 0.55);                                         // his teacher's sleeve as he takes it (the cut)
+    sfx(T.take + 1.4, 'u5bagdown', 0.6);                                       // Jun lays the black bag down before the doorway
+    sfx(T.thread - 0.4, 'u5unwind', 0.65);                                     // and draws the white thread across it
+    sfx(T.ph5p1, 'ph5p1', 1);                                                  // "Stay behind the thread. Whatever you hear, do not come out."
+    sfx(T.ko5p1, 'ko5p1', 1);                                                  // "What will I hear?"
+    sfx(T.teacher - 0.7, 'u5phostep', 0.4); sfx(T.teacher - 0.1, 'u5phostep', 0.38); sfx(T.teacher + 0.5, 'u5phostep', 0.34);   // to the court's middle
+    sfx(T.ph5p2, 'ph5p2', 1);                                                  // "Stand with me. Do not open to them. Whatever comes, stand."
+    sfx(T.plant, 'u5plant', 0.8);                                              // the stick set upright on the paving
+    sfx(T.sink, 'u5lampsink', 0.75);                                           // the lamps sink
+    sfx(T.open, 'u5vison', 0.85);                                              // his sight opened without his asking: the wave out from him
+    sfx(T.open + 0.45, 'u5heart', 0.6); sfx(T.open + 1.05, 'u5heart', 0.65); sfx(T.open + 1.65, 'u5heart', 0.7);
+    sfx(T.heads, 'u5nhide', 0.3);                                              // the nine, where they stood all evening: they lift their heads
+    sfx(T.turn, 'u5nslip', 0.32);                                              // they turn, toward the one whose senses are open
+    sfx(T.come, 'u5ncome', 0.45);                                              // they come
+    sfx(T.come + 0.5, 'u5souring', 0.8);                                       // the picture sours hard
+    sfx(T.come + 1.6, 'u5gather1', 0.6); sfx(T.come + 2.3, 'u5zbreath', 0.75); // one at him; his breath
+    sfx(T.violet - 0.1, 'u5turn', 0.8);                                        // the picture floods with his protection's colour
+    sfxFade(T.violet + 0.2, T.violet + 0.9, 'u5ncome'); sfxFade(T.violet + 0.2, T.violet + 0.9, 'u5nslip'); sfxFade(T.violet + 0.2, T.violet + 0.9, 'u5nhide');
+    sfx(T.q5p1, 'q5p1', 1);                                                    // "And then I was not alone in my body."
+    sfx(T.leave + 0.3, 'u5cagehum', 0.4);                                      // his cage of light, whole
+    sfx(T.leave + 0.9, 'u5murmur1', 0.45);                                     // his lips moving: his murmur
     fade(T.violet, T.violet + 0.6, 0, 1, VIOLET5);
     fade(T.leave, T.leave + 2.2, 1, 0, VIOLET5);
+    sfxFade(T.end - 1.6, T.end - 0.1, 'u5m6prep');
     step(T.end, () => F.end());
     /* (it ends on its own picture, the fight's boom, so the mode opens on exactly it: v19.2's keep.view) */
     c.keep.view = true;
@@ -66,10 +124,24 @@
      comes apart into its three, laid low; Mr Koh's warmth; the boom again */
   const NG5 = tl(0, [[0.2], ['@plant'], [2.0], ['@rise'], [3.6], ['ph5c2', 0.6], ['@lay'], [6.0], ['@apart'], [3.2], ['@low'], [1.5], ['ko5c2', 0.5], ['@back'], [2.0], ['@end']]);
   function filmTogether(c, s, api) {
-    const { tr, step, rawK, stage } = api, F = stage.films.together, T = NG5;
+    const { tr, step, sfx, sfxFade, rawK, stage } = api, F = stage.films.together, T = NG5;
     step(0, () => F.begin(api, s));
     tr(0, T.end, (k, t) => F.frame(t), rawK);
-    V(api, T.ph5c2, 'ph5c2'); V(api, T.ko5c2, 'ko5c2');
+    sfx(0.05, 'u5m9naga', 0.75);                                               // M9: both themes at once, the only time in the chapter
+    sfx(0.1, 'u5shapeloop', 0.5); sfx(8.0, 'u5shapeloop', 0.5);                // the tall shape standing over him
+    sfx(T.plant + 0.3, 'u5robe', 0.5);                                         // his arm comes up with the stick
+    sfx(T.plant + 1.65, 'u5plant', 0.9);                                       // and plants it
+    sfx(T.rise, 'u5nagarise', 1.0);                                            // the Naga rising from its head
+    sfx(T.rise + 1.2, 'u5embers', 0.35); sfx(T.rise + 7.2, 'u5embers', 0.35); sfx(T.rise + 13.2, 'u5embers', 0.3); sfx(T.rise + 19.2, 'u5embers', 0.28);
+    sfx(T.ph5c2, 'ph5c2', 1);                                                  // "The Naga guards. It always has."
+    sfx(T.lay, 'u5nagacoil', 0.8);                                             // its body laid round the court
+    sfx(T.lay + 0.6, 'u5nagabreath', 0.5); sfx(T.lay + 6.6, 'u5nagabreath', 0.5); sfx(T.lay + 12.6, 'u5nagabreath', 0.45);
+    sfxFade(T.apart - 0.2, T.apart + 0.6, 'u5shapeloop');
+    sfx(T.apart, 'u5shapebreak', 0.85);                                        // the tall shape comes apart into its three
+    sfx(T.apart + 1.8, 'u5cagewhole', 0.7);                                    // his cage whole again
+    sfx(T.low, 'u5laid', 0.8);                                                 // the three laid low, at rest
+    sfx(T.ko5c2, 'ko5c2', 1);                                                  // "It is... warm. Why is it warm?"
+    sfxFade(T.back - 0.2, T.end - 0.1, 'u5m9naga'); sfxFade(T.end - 1.0, T.end - 0.1, 'u5embers'); sfxFade(T.end - 1.0, T.end - 0.1, 'u5nagabreath');
     step(T.end, () => F.end());
     c.keep.view = true;
   }
@@ -81,13 +153,45 @@
                      ['@knot'], [2.6], ['@tied'], [1.0], ['tn5b1', 0.4], ['q5b1', 0.8], ['@window'], [1.4], ['ko5b1', 0.4], ['ph5b1', 0.6], ['@wai'], [1.2], ['ph5b2', 0.4], ['ph5b3', 0.8],
                      ['@lift'], [0.8], ['q5b2', 0.35], ['ph5b4', 0.4], ['ph5b5', 0.5], ['@doors'], [0.6], ['ju5b1', 0.3], ['ph5b6', 0.5], ['@in'], [1.5], ['@close'], [1.2], ['@black'], [0.8], ['@end']]);
   function filmBagTied(c, s, api) {
-    const { tr, step, fade, rawK, stage } = api, F = stage.films.bagtied, T = BT5;
+    const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, F = stage.films.bagtied, T = BT5;
     step(0, () => F.begin(api, s));
     tr(0, T.end, (k, t) => F.frame(t, api), rawK);
+    sfx(0.0, 'u5murmur1', 0.45);                                               // his murmur, still: it stops in the middle of a breath
+    sfxFade(T.thin + 0.5, T.thin + 0.62, 'u5murmur1');
+    sfx(0.05, 'u5cagethin', 0.4); sfxFade(T.thin + 0.3, T.thin + 1.5, 'u5cagethin');   // the cage, thinning
     fade(T.violet, T.violet + 0.45, 0, 1, VIOLET5); fade(T.eyes - 0.15, T.eyes + 0.7, 1, 0, VIOLET5);
-    for (const key of SAID.bagtied) V(api, T[key], key);
+    sfx(T.violet - 0.1, 'u5turn', 0.7);                                        // back through the violet, into his eyes
+    sfx(T.eyes + 0.1, 'u5zbreath', 0.7);                                       // his own breath, in his own body
+    sfx(T.eyes + 0.6, 'u5heart', 0.55); sfx(T.eyes + 1.3, 'u5heart', 0.5);
+    sfx(T.eyes + 0.5, 'u5m11light', 0.7);                                      // M11: the house lighter, plain and warm
+    sfx(T.lamp1, 'u5lampflare', 0.35); sfx(T.lamp2, 'u5lampflare', 0.35);      // the court's lamps come back, one, then the other
+    sfx(T.room1 + 0.35, 'u5baginhale', 0.7); sfx(T.room1 + 2.3, 'u5bagblow', 0.7);   // the living room: his breath drawn, blown into the bag
+    sfx(T.room2 + 0.3, 'u5baginhale', 0.7); sfx(T.room2 + 2.2, 'u5bagblow', 0.7);    // the dining room
+    sfx(T.room3 + 0.3, 'u5baginhale', 0.7); sfx(T.room3 + 2.2, 'u5bagblow', 0.7);    // the terrace door
+    sfx(T.knot + 0.15, 'u5bagtie', 0.75);                                      // the knot: the bag's own cord, tightly
+    sfx(T.tied + 0.1, 'u5curtain', 0.5);                                       // Mr Koh draws his curtains back
+    sfx(T.tn5b1, 'tn5b1', 1);                                                  // "Brother. Before he took it from me. It was shaking. ..."
+    sfx(T.q5b1, 'q5b1', 1);                                                    // "I believe you felt it."
+    sfx(T.window - 0.6, 'u5window', 0.7);                                      // a window opened: the night air
+    sfx(T.window + 0.5, 'u5flicker', 0.6);                                     // the fourth lamp flickers once, and holds
+    sfx(T.ko5b1, 'ko5b1', 1);                                                  // "It is... lighter. Is it lighter? Or is it me."
+    sfx(T.ph5b1, 'ph5b1', 1);                                                  // "Both can be true."
+    sfx(T.ph5b2, 'ph5b2', 1);                                                  // "Mend what you can with the people you quarrelled with. ..."
+    sfx(T.ph5b3, 'ph5b3', 1);                                                  // "And if you still do not sleep, see a doctor. ..."
     fade(T.lift - 0.4, T.lift, 0, 1); fade(T.lift + 0.1, T.lift + 0.6, 1, 0);   // (a scene change happens in the black: v16.1)
+    sfxFade(T.lift - 0.4, T.lift, 'u5m11light');
+    sfx(T.lift + 0.4, 'u5m12lift', 0.7);                                       // M12: at the lift, his teacher's lesson: almost nothing
+    sfx(T.q5b2, 'q5b2', 1);                                                    // "Grandmaster. The smell. Was it real?"
+    sfx(T.ph5b4, 'ph5b4', 1);                                                  // "You smelled it. They did not. That is a fact about you. ..."
+    sfx(T.ph5b5, 'ph5b5', 1);                                                  // "Your nose is open. Last time it was your sight. An open door is not a skill."
+    sfx(T.doors - 0.55, 'u5chime', 0.75); sfx(T.doors - 0.05, 'u5liftopen', 0.75);   // the car arrives; its doors
+    sfx(T.ju5b1, 'ju5b1', 1);                                                  // "Master, the man with the collection. He called again. Tomorrow, three o'clock?"
+    sfx(T.ph5b6, 'ph5b6', 1);                                                  // "Tomorrow."
+    sfx(T.in + 0.3, 'u5phostep', 0.35); sfx(T.in + 0.5, 'u5step1', 0.3); sfx(T.in + 0.9, 'u5phostep', 0.3); sfx(T.in + 1.1, 'u5step2', 0.35);   // in
+    sfx(T.close - 0.05, 'u5liftshut', 0.75);                                   // the doors close
+    sfx(T.close + 0.4, 'u5lifthum', 0.4);                                      // the car's hum again, on the black
     fade(T.black, T.end - 0.1, 0, 1);
+    sfxFade(T.black, T.end - 0.15, 'u5m12lift'); sfxFade(T.black, T.end - 0.15, 'u5lifthum');
     step(T.end, () => F.end());
     c.keepFade = true; c.endFade = 1;
   }
@@ -95,11 +199,18 @@
   /* THE COLLECTOR, THE FILM IN (the plan's 4.7): the card on black; the room in daylight; the pieces laid; his words */
   const CO5 = tl(0, [[0.3], ['@card'], [2.6], ['@up'], [1.4], ['@case'], [2.2], ['@laid'], [0.6], ['co5t1', 0.6], ['@laugh'], [0.8], ['co5t2', 0.4], ['@end']]);
   function filmCollector(c, s, api) {
-    const { tr, step, fade, rawK, stage } = api, F = stage.films.collector, T = CO5;
+    const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, F = stage.films.collector, T = CO5;
     step(0, () => F.begin(api, s));
     tr(0, T.end, (k, t) => F.frame(t), rawK);
     fade(T.up, T.up + 1.2, 1, 0);
-    V(api, T.co5t1, 'co5t1'); V(api, T.co5t2, 'co5t2');
+    sfx(0.3, 'u5m13shop', 0.65);                                               // M13: an afternoon, a soft plucked figure (under the card, then the room)
+    sfx(T.up + 0.2, 'u5farchime', 0.3);                                        // a far chime as the room comes up
+    sfx(T.case + 0.3, 'u5clasp', 0.75);                                        // the case's clasps
+    sfx(T.case + 1.0, 'u5lay1', 0.6); sfx(T.case + 1.35, 'u5lay2', 0.6); sfx(T.case + 1.7, 'u5lay1', 0.55);
+    sfx(T.laid - 0.25, 'u5lay3', 0.7); sfx(T.laid + 0.25, 'u5lay2', 0.55);    // laid out one after another, quickly, heard as the shot finds them
+    sfx(T.co5t1, 'co5t1', 1);                                                  // "Twenty. Twenty-one, with this one. I started with one."
+    sfx(T.co5t2, 'co5t2', 1);                                                  // "Lately nothing goes right. I am tired all the time. And there is a smell. ..."
+    sfxFade(T.end - 1.2, T.end - 0.1, 'u5m13shop');
     step(T.end, () => F.end());
   }
 
@@ -122,28 +233,92 @@
   for (const k of ['A', 'B', 'C', 'D']) { const E = EN5[k];
     E.pho = SAID['end' + k].filter(key => LINES[key][0] === 'pho').map(key => [key, E[key], /^ph5(A2|B1|C2|D2)$/.test(key) ? 'me' : 'col']);
     E.col = SAID['end' + k].concat(['co5z1']).filter(key => LINES[key][0] === 'collector' && E[key] != null && (E.door == null || E[key] < E.door)).map(key => [key, E[key]]); }
-  function endingScene(c, s, api, k) {
-    const { tr, step, fade, rawK, stage } = api, F = stage.films.ending, E = EN5[k];
-    step(0, () => F.begin(k, api, s));
-    tr(0, E.end, (kk, t) => F.frame(k, t, api), rawK);
-    for (const key of SAID['end' + k]) V(api, E[key], key);
-    V(api, E.co5z1, 'co5z1');
-    V(api, E.close + CL5.q, 'q5z1');
-    fade(E.close + CL5.black, E.end - 0.1, 0, 1);
-    step(E.end, () => F.end());
-    c.endFade = 1; c.keepFade = true;
+  /* ONE BODY FOR THE FOUR (each scene is this function with its letter), so the engine's reading of any scene's own source
+     (main.js cuesOf, which warms a scene's cues as the decision opens) finds every cue of every ending, the rite's and the
+     close's among them: none is cued from a helper it cannot see */
+  function mkEnding5(k) {
+    return function (c, s, api) {
+      const { tr, step, sfx, sfxFade, fade, rawK, stage } = api, F = stage.films.ending, E = EN5[k], r0 = E.rite, c0 = E.close, R = RT5;
+      step(0, () => F.begin(k, api, s));
+      tr(0, E.end, (kk, t) => F.frame(k, t, api), rawK);
+      /* each ending's own colour, from its first picture to its close (M15 to M18), and its own beats */
+      if (k === 'A') {
+        sfx(0.2, 'u5m15endA', 0.6);                                            // M15: an order obeyed, unresolved
+        sfx(E.co5A1, 'co5A1', 1);                                              // "All? Even the ones that did nothing?"
+        sfx(E.q5A1, 'q5A1', 1);                                                // "All."
+        sfx(E.push + 0.25, 'u5slide', 0.7);                                    // the case pushed across the cloth, as a man pays a fine
+        sfx(E.co5A2, 'co5A2', 1); sfx(E.ph5A1, 'ph5A1', 1);
+        sfx(E.gone - 0.4, 'u5farchime', 0.4);                                  // the door's chime as he goes
+        sfx(E.ph5A2, 'ph5A2', 1); sfx(E.q5A2, 'q5A2', 1);
+        sfxFade(c0 - 0.3, c0 + 0.8, 'u5m15endA');
+      } else if (k === 'B') {
+        sfx(0.2, 'u5m16endB', 0.6);                                            // M16: a man finding out, plain warmth
+        sfx(E.co5B1, 'co5B1', 1); sfx(E.co5B2, 'co5B2', 1); sfx(E.co5B3, 'co5B3', 1); sfx(E.co5B4, 'co5B4', 1);
+        sfx(E.lid + 0.15, 'u5lid', 0.75);                                      // the case's lid shut by his own hand
+        sfx(E.lid + 0.85, 'u5slide', 0.65);                                    // and the case pushed across
+        sfx(E.co5B5, 'co5B5', 1); sfx(E.q5B1, 'q5B1', 1);
+        sfx(E.gone - 0.4, 'u5farchime', 0.4);                                  // the door's chime as he goes
+        sfx(E.ph5B1, 'ph5B1', 1); sfx(E.q5B2, 'q5B2', 1);
+        sfxFade(c0 - 0.3, c0 + 0.8, 'u5m16endB');
+      } else if (k === 'C') {
+        sfx(0.2, 'u5m17endC', 0.6);                                            // M17: a small alarm that steadies
+        sfx(E.co5C1, 'co5C1', 1);                                              // "Three! Only three."
+        sfx(E.three + 0.1, 'u5slide', 0.5);                                    // the three pushed across with one finger
+        sfx(E.pack + 0.15, 'u5foam', 0.7); sfx(E.pack + 0.75, 'u5foam', 0.6);  // the seventeen fitted back into their foam
+        sfx(E.see, 'u5vison', 0.8);                                            // his sight opened on the case
+        sfx(E.see + 1.3, 'u5pcwarm', 0.4);                                     // something small his nose never caught lifts its head
+        sfx(E.ph5C1, 'ph5C1', 1); sfx(E.co5C2, 'co5C2', 1); sfx(E.ph5C2, 'ph5C2', 1);
+        sfx(E.across + 0.2, 'u5slide', 0.7);                                   // all twenty go across
+        sfx(E.q5C1, 'q5C1', 1);
+        sfxFade(c0 - 0.3, c0 + 0.8, 'u5m17endC');
+      } else {
+        sfx(0.2, 'u5m18endD', 0.6);                                            // M18: a wry turn
+        sfx(E.co5D1, 'co5D1', 1);                                              // "Yes. Yes! I know a man. Proper monks' pieces, all blessed. I can have twenty by Friday."
+        sfx(E.co5D1 + 3.6, 'u5count', 0.5); sfx(E.co5D1 + 5.4, 'u5count', 0.45);   // already counting on the table
+        sfx(E.ph5D1, 'ph5D1', 1); sfx(E.ph5D2, 'ph5D2', 1);
+        sfx(E.q5D1, 'q5D1', 1);
+        sfxFade(c0 - 0.3, c0 + 0.8, 'u5m18endD');
+      }
+      /* THE RITE (RT5 from r0): his sight held open (ending C's is open already); the fan dipped and thrown every 2.2 s,
+         its whisk and the water falling on the pieces; the presences crying out and coming away; his sight shut; the
+         pieces gathered into the bag on a cut; the white string wound and knotted; the heaviness lifting */
+      if (k !== 'C') sfx(r0 + R.see, 'u5vison', 0.8);
+      sfx(r0 + R.see + 0.5, 'u5heart', 0.5); sfx(r0 + R.see + 1.2, 'u5heart', 0.5);
+      sfx(r0 + R.dip + 0.35, 'u5whisk1', 0.7); sfx(r0 + R.dip + 0.95, 'u5drops', 0.6);
+      sfx(r0 + R.dip + 2.55, 'u5whisk2', 0.7); sfx(r0 + R.dip + 3.15, 'u5drops', 0.6);
+      sfx(r0 + R.dip + 4.75, 'u5whisk1', 0.7); sfx(r0 + R.dip + 5.35, 'u5drops', 0.6);
+      sfx(r0 + R.dip + 6.95, 'u5whisk2', 0.7); sfx(r0 + R.dip + 7.55, 'u5drops', 0.6);
+      sfx(r0 + R.dip + 9.15, 'u5whisk1', 0.65); sfx(r0 + R.dip + 9.75, 'u5drops', 0.5);
+      sfx(r0 + R.dip + 11.35, 'u5whisk2', 0.6); sfx(r0 + R.dip + 11.95, 'u5drops', 0.45);
+      sfx(r0 + R.away, 'u5pcangry', 0.7); sfx(r0 + R.away + 0.3, 'u5pcry1', 0.6);                     // the angry one, as the water reaches it
+      sfx(r0 + R.away + 0.7, 'u5pchungry', 0.7); sfx(r0 + R.away + 1.1, 'u5pcry2', 0.55);              // the hungry one
+      sfx(r0 + R.away + 1.4, 'u5pcwarm', 0.65);                                                       // the one looking for energy
+      sfx(r0 + R.unsee, 'u5visoff', 0.8);                                      // his sight shut
+      sfx(r0 + R.bag - 0.1, 'u5pgather', 0.75);                                // the pieces gathered into the black bag (the cut)
+      sfx(r0 + R.string, 'u5string', 0.75);                                    // the white string wound and knotted, chanted over
+      sfx(r0 + R.end - 0.6, 'u5lighter', 0.7);                                 // the heaviness lifting
+      sfx(E.co5z1, 'co5z1', 1);                                                // "I feel lighter. My head is quieter."
+      /* THE CLOSE: the last picture (the bag, the string, his teacher's hand on it, the case open and empty beside it),
+         the student's theme alone, quiet (M19), and the lesson */
+      sfx(c0 - 0.6, 'u5m19card', 0.6);
+      sfx(c0 + CL5.q, 'q5z1', 1);                                              // "Understanding first. Then possession."
+      fade(c0 + CL5.black, E.end - 0.1, 0, 1);
+      sfxFade(c0 + CL5.black, E.end - 0.15, 'u5m19card');
+      step(E.end, () => F.end());
+      c.endFade = 1; c.keepFade = true;
+    };
   }
   /* A · "NONE OF THEM. LET THEM ALL GO." (good): the right act and no understanding, an order; he will buy again */
-  function scNone(c, s, api) { endingScene(c, s, api, 'A'); }
+  const scNone = mkEnding5('A');
   /* B · "TELL ME WHAT EACH ONE IS, AND WHERE IT CAME FROM." (best): the case file's own plain questions, and the man
      answers them himself; he closes the case's lid and pushes it across the cloth */
-  function scTell(c, s, api) { endingScene(c, s, api, 'B'); }
+  const scTell = mkEnding5('B');
   /* C · "THESE THREE ARE THE WORST. THE REST FEEL QUIET." (bad): the student made his appraiser; on a piece already
      packed, something his nose never caught lifts its head */
-  function scThree(c, s, api) { endingScene(c, s, api, 'C'); }
+  const scThree = mkEnding5('C');
   /* D · "KEEP THE HOLY ONES. THE YIN ONES ARE THE TROUBLE." (worst): a rule about kinds of object, which the case file
      refuses in its first sentence; he is already counting twenty more on his fingers */
-  function scHoly(c, s, api) { endingScene(c, s, api, 'D'); }
+  const scHoly = mkEnding5('D');
 
   (window.__CHAPTERS__ = window.__CHAPTERS__ || {}).e4c5 = Object.assign(DATA, {
     build,

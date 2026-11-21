@@ -73,6 +73,10 @@
       else if (FM5.vis) { kit.vision(null); FM5.vis = false; }
     }
     function fmVisionOff() { if (FM5.vis && kit && kit.vision) kit.vision(null); FM5.vis = false; }
+    /* THE BEDS IN A FILM: the play's own loops (c_play.js BED5: the walkway, the court, his room and its clock, the
+       receiving room's fan, the smell, the lamp's buzz), which in a film are what the film writes each frame and else
+       all at 0; each eased by the play's own frame. Written by every film on every frame, so none inherits another's */
+    function fmBeds(o) { if (typeof BED5 !== 'undefined') BED5.film = o; }
     /* A WALK ALONG A PATH (pts: [[x, z], ...]) from `t0` at `v` metres a second, the walking take's time read from the ground
        covered (P.pace: the take's own travel, v26.0; the library walk's 1.29 m a second where a body has none), eased out
        of its rest and into it again at the end over `ease` seconds of the walk; turned along the path and, at its end, to
@@ -312,6 +316,8 @@
       frame(t) {
         const T = OP5;
         fmLook('DUSK');
+        /* the walkway's evening comes in as the doors open; the smell under it from his step out */
+        fmBeds({ walk: 0.55 * smo(c01((t - T.open) / 1.6)), sour: 0.32 * smo(c01((t - T.sour) / 2.0)) });
         /* the car's number: 1, then 2, then 3 (the walkway's storey) as the chime comes */
         LIFTNUM5.set(t < T.out + 1.0 ? (t < T.num2 ? 0 : t < T.num3 ? 1 : 2) : -1);
         liftDoors(smo(c01((t - T.open) / 1.5)));
@@ -427,6 +433,10 @@
       frame(t) {
         const T = DV5, A = DV5AT, inside = t >= T.room;
         fmLook('DUSK');
+        /* outside his gate the walkway, the court heard through the bars; in the court; at the doors; his room, its clock,
+           and the smell under it */
+        fmBeds(t < T.in ? { walk: 0.45, court: 0.22 } : t < T.slip ? { court: 0.5, walk: 0.12 } : !inside ? { court: 0.35, room: 0.2 }
+                                                    : { room: 0.5, tick: 0.22, sour: 0.18 });
         /* the gate: shut until the cut, open after (Mr Koh opened it: a change made on a cut, v24.12); his doors open */
         gateOpen(t < T.cut1 ? 0 : 1); doorOpen(smo(c01((t - T.door) / 1.2)));
         /* the fourth lamp, by the armchair, flickering (an ordinary fault: the electrician came three times, 4.0) */
@@ -525,6 +535,10 @@
         const T = PR5, F = fightStart(), N = NINE5();
         const turned = t >= T.leave;                                            // from the violet on: the trance, third person
         fmLook(turned ? 'TRANCE' : 'NIGHT');
+        /* the court after dark, a wall lamp's buzz until the lamps sink; the smell as the nine come, hard; in the trance
+           the court almost silent */
+        const kSink = smo(c01((t - T.sink) / 1.4)), kCome = smo(c01((t - T.come) / 2.4));
+        fmBeds(turned ? { court: 0.2, sour: 0.12 } : { court: 0.55 - 0.2 * kSink, buzz: 0.2 * (1 - kSink), sour: 0.4 * kCome });
         courtLamps(turned ? 0.15 : 1 - 0.75 * smo(c01((t - T.sink) / 1.4)));
         /* the rite's things before the doorway: the bag laid open, the reel beside it, the thread across the door from
            its west jamb to Jun's hand */
@@ -655,6 +669,8 @@
       frame(t) {
         const T = NG5, F = fightStart(), pz = this.pho || { x: F.pho.x, z: F.pho.z, ry: COURT5.heading + Math.PI }, zz = this.zav || F.zav;
         fmLook('TRANCE'); courtLamps(0.15 + 0.25 * smo(c01((t - T.rise) / 2)));
+        /* the court low under the trance; the smell of the tall shape until it comes apart */
+        fmBeds({ court: 0.22, sour: 0.3 * (1 - smo(c01((t - T.apart) / 2.5))) });
         /* the stick planted at his front right, where his cast brings it down; it stands by itself once planted */
         const fx = Math.sin(pz.ry), fz = Math.cos(pz.ry), sx = pz.x + fx * 0.42 - fz * 0.18, sz = pz.z + fz * 0.42 + fx * 0.18;
         whenReady(cast.pho, (P) => { put(P, pz.x, pz.z, pz.ry);
@@ -734,6 +750,12 @@
       frame(t, api) {
         const T = BT5, A = BT5AT, zz = this.zav, pz = this.pho, inEyes = t >= T.eyes, atLift = t >= T.lift;
         fmLook(!inEyes ? 'TRANCE' : 'NIGHT');
+        /* the court in the trance, then after dark with its lamp's buzz; his rooms and their clock, the smell thinning room
+           by room and gone at the knot; the night air through the open window; the walkway at the lift */
+        const sourLeft = 0.3 * (1 - smo(c01((t - T.room1 - 2.4) / 1.5)) * 0.35 - smo(c01((t - T.room2 - 2.4) / 1.5)) * 0.35 - smo(c01((t - T.room3 - 2.4) / 1.5)) * 0.3);
+        fmBeds(atLift ? { walk: 0.35 } : !inEyes ? { court: 0.25, sour: 0.25 } : t < T.room1 ? { court: 0.5, buzz: 0.15, sour: 0.25 }
+             : t < T.knot ? { room: 0.5, tick: 0.2, sour: Math.max(0, sourLeft) }
+             : { room: 0.45, tick: 0.2, court: t >= T.window ? 0.32 : 0.12 });
         /* the court's lamps come back, one, then the other */
         if (!atLift) { if (!inEyes) courtLamps(0.15); else for (const [i, L] of [[0, T.lamp1], [1, T.lamp2]]) void i, void L; }
         if (inEyes && !atLift) { const k1 = smo(c01((t - T.lamp1) / 0.4)), k2 = smo(c01((t - T.lamp2) / 0.4)); courtLamps(0.15 + 0.85 * Math.min(1, (k1 + k2) / 2 + 0.0)); }
@@ -891,6 +913,8 @@
       frame(t) {
         const T = CO5, R = ROOM, me = FM5.s ? [FM5.s.yawPos.x, FM5.s.yawPos.y, FM5.s.yawPos.z] : [0, 1.05, 239.2];
         fmLook('DAY');
+        /* the receiving room's afternoon and its fan as the picture comes up; the smell he brought in with the case */
+        fmBeds({ rfan: 0.55 * smo(c01((t - T.up) / 1.2)), sour: 0.22 * smo(c01((t - T.case) / 2.0)) });
         if (things.fan) things.fan.rotation.y = t * 2.6;
         /* the card, on the black (W.cardNext: the sheet's words; drawn by the captions, the screen's own words) */
         if (kit && kit.captions && !FM5.once.has('card') && t >= T.card) { FM5.once.add('card'); kit.captions([{ at: 0, end: 2.4, text: W.cardNext, sub: '' }]); }
@@ -942,6 +966,8 @@
         const E = EN5[k], R = ROOM, r0 = E.rite, RT = RT5, CL = CL5, c0 = E.close, me = FM5.s ? [FM5.s.yawPos.x, FM5.s.yawPos.y, FM5.s.yawPos.z] : [0, 1.05, 239.2];
         const tr = t - r0, tc = t - c0;
         fmLook('DAY');
+        /* the receiving room and its fan; the smell until the rite ends, and then gone ("My head is quieter") */
+        fmBeds({ rfan: 0.55, sour: 0.24 * (1 - smo(c01((tr - RT.end + 1.2) / 1.6))) });
         if (things.fan) things.fan.rotation.y = t * 2.6;
         /* THE PIECES: on the cloth until the rite gathers them (on a cut, into the bag), the case beside */
         const gathered = tr >= RT.bag;
@@ -1006,6 +1032,9 @@
         if (tc >= 0 && bag) whenReady(cast.phoS, (P) => handTo(P, 'R', [RITE_AT.bag[0] - 0.02, 0.345 + 0.16, RITE_AT.bag[1] + 0.03], [0.05, -0.35, -0.93], [0, -1, 0.2], smo(c01(tc / 0.6)), { out: 0.22, down: 0.3 }));
       },
       end() { fmLens(PLAYFOV5); fmVisionOff(); RITE5.dropsOff(); RITE5.fan.visible = false; if (FM5.api && FM5.api.handPose) FM5.api.handPose(null, 0); if (kit && kit.captions) kit.captions(null);
+        fmBeds(null);
+        /* (the presences put back where the play keeps them, whole: the rite carried them off the table) */
+        { const P5 = presOf5(); if (P5) for (const nm in P5) { const q = P5[nm]; if (q && q.grp && q.home) { q.grp.position.copy(q.home); if (q.fx) q.fx.set('uAlpha', 1); } } }
         /* (a same-chapter replay never runs build() again: what the ending moved is put back, v8.1) */
         if (things.bagTied) things.bagTied.visible = false; RITE5.string(0, null); RITE5.bowl.visible = false; SMALL5.set(0, 0);
         PIECES5.set(true); threeAt5(0); if (casePos0.x !== null) caseAt5(casePos0.x, casePos0.z, casePos0.ry); }
