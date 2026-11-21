@@ -8101,7 +8101,10 @@
         if (pk && q.slot && q.slot !== 'swap' && q.slot !== 'together') { if (pk[0] === 'p') input.pick = +pk.slice(1); else input.pickCloud = +pk.slice(1); FS5.pick = null; }
       } else if (FS5.swNeed) { input.act = 'SWITCH'; FS5.swNeed = false; }
       /* 3. the step */
-      if (st.stage !== 'brief' && st.stage !== 'lost' && st.stage !== 'won' && st.stage !== 'naga') fsStep(input, dt);
+      if (st.stage !== 'brief' && st.stage !== 'lost' && st.stage !== 'won' && st.stage !== 'naga') { fsStep(input, dt);
+        /* (A PROBE'S SPEED, inert unless a probe sets it (lab.speed): on a box that draws a frame in seconds the rules are
+           stepped k times a frame, each step the mode's own, the press only in the first; real play never sets it) */
+        for (let i = 1; i < (FS5.probeK || 1) && FS5.st === st && (st.stage === 'learn' || st.stage === 'fight' || st.stage === 'surge' || st.stage === 'last'); i++) fsStep({ mx, mz }, dt); }
       /* (the rules and the engine must agree on who is played: a switch the engine made inside the rules' last instant of
          lock is told to the rules again on the next frame) */
       if (st.stage === 'learn' || st.stage === 'fight') { const rw = st.who === 'pho' ? 'pho' : 'zavier'; if (rw !== played && !FS5.swNeed) FS5.swNeed = true; }
@@ -8244,6 +8247,7 @@
        the effects' clock stands). Only a probe calls it, through stage.snap().story.fight.lab */
     const FS_LAB = {
       open() { if (!FS5.st) return false; FS5.lab = true; if (FS5.brief && kit && kit.abortEvent) kit.abortEvent(); return true; },
+      speed(k) { FS5.probeK = Math.max(1, Math.min(20, Math.round(+k || 1))); return FS5.probeK; },
       clear() { const st = FS5.st; FS5.labHold = false; fsFxClear(); if (!st) return;
         st.pho.wind = 0; st.pho.ring = null; for (const p of st.prai) if (p.labWas) { p.st = p.labWas; p.labWas = null; } },
       moment(name, secs = 0.3) {
@@ -8283,7 +8287,7 @@
       fsLoopsStop(); fsFxClear(); FSG.visible = false;
       Object.assign(FS5, { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, wall: 0, wonAt: -1, done: false,
         hudSig: '', obj: null, objKey: '', film: false, losses: 0, rand: null, flare: 0, flared: false, drainSnd: 0, reached: 0, chillK: -1, chillHold: 0,
-        swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null, act: null, actN: 0, waits: {}, lab: false, labHold: false });
+        swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null, act: null, actN: 0, waits: {}, lab: false, labHold: false, probeK: FS5.probeK || 1 });
       FS5.heard.length = 0; FS5.last.pho = null; FS5.last.zav = null; FS5.faceT.pho = FS5.faceT.zavier = 0; FS5.aiPace.pho = 0;
       fsTake.pho.stepU = fsTake.zav.stepU = null;
       for (const k in fsDealN) delete fsDealN[k];
