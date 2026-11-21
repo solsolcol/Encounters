@@ -98,7 +98,9 @@ def read_script():
             die('lines.json: %s says his name: give the voice "Puu" in `say` (it is written Pho and said Puu)' % k)
         if 'secs' in r and not (isinstance(r['secs'], (int, float)) and r['secs'] > 0): die('lines.json: %s has a length that is not one' % k)
         if 'draft' in r and r['draft'] != 'FIGHT-DRAFT': die('lines.json: %s carries an unknown draft mark %r' % (k, r['draft']))
-        if r['at'] == 'fight' and r.get('draft') != 'FIGHT-DRAFT': die('lines.json: %s is a line of the fight and is not marked FIGHT-DRAFT' % k)
+        # the fight's lines were marked FIGHT-DRAFT until its specification was written (docs/V28.0-FIGHT.md 10, applied
+        # 21 Nov); from then they are lines like any other, and a draft mark left on one is refused
+        if r['at'] == 'fight' and r.get('draft'): die('lines.json: %s is a line of the fight still marked %r: the fight\'s words are docs/V28.0-FIGHT.md 10' % (k, r['draft']))
     for r in rows:
         s = r.get('same')
         if s and s not in seen and not re.match(r'^[a-z]+4', s): die('lines.json: %s is the same as %r, which is no line' % (r['key'], s))
@@ -131,9 +133,8 @@ def lines_block(pace, speakers, rows):
         out.append(line)
     out[-1] = out[-1].rstrip(',')
     out.append('  };')
-    out.append('  /* every line\'s words: key: [who, where in the chapter, the words exactly as said]. A row marked FIGHT-DRAFT is a line')
-    out.append('     of the fight as the plan\'s 7.3 drafted it: the fight is being redesigned (R14), so these WILL change, and none is')
-    out.append('     voiced before the fight\'s specification is written. */')
+    out.append('  /* every line\'s words: key: [who, where in the chapter, the words exactly as said]. The fight\'s are those of its')
+    out.append('     specification (docs/V28.0-FIGHT.md 10). */')
     out.append('  const LINES = {')
     for i, r in enumerate(rows):
         tail = '' if i == len(rows) - 1 else ','
