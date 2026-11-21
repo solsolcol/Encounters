@@ -217,6 +217,15 @@
              path by their place along the body, a cross-section kept round the path's own frame) */
           const base = geo.attributes.position.array.slice(0);
           st.base = base; st.along = along; st.geo = geo;
+          /* ITS OWN CENTRE LINE, taken out of every point before the body is laid along the path (the file's serpent rears and
+             waves: 8.4 m long, 0.78 m wide and 3.6 m tall), so only its round cross-section, scales and all, is laid round the
+             path. Laid with its waves, each point stood up to 1.8 m off the path and the body came out as sheets of pink glass
+             across the court: together-00012 after the shader's fix, 21 Nov */
+          { const NB = 200, cx = new Float32Array(NB), cy = new Float32Array(NB), cn = new Float32Array(NB), n = base.length / 3, bin = new Uint16Array(n), sp = st.maxX - st.minX;
+            for (let i = 0; i < n; i++) { const ax = along === 'z' ? base[i * 3 + 2] : base[i * 3], c = along === 'z' ? base[i * 3] : base[i * 3 + 2];
+              const b0 = Math.min(NB - 1, Math.max(0, Math.floor((ax - st.minX) / sp * NB))); bin[i] = b0; cx[b0] += c; cy[b0] += base[i * 3 + 1]; cn[b0]++; }
+            let lx = 0, ly = 0; for (let b0 = 0; b0 < NB; b0++) { if (cn[b0] > 0) { cx[b0] /= cn[b0]; cy[b0] /= cn[b0]; lx = cx[b0]; ly = cy[b0]; } else { cx[b0] = lx; cy[b0] = ly; } }
+            st.cl = { cx, cy, bin }; }
           const mesh = new THREE.Mesh(geo, m); mesh.frustumCulled = false; mesh.renderOrder = 3; g.add(mesh); st.mesh = mesh; st.mat = m;
           st.ready = true;
         }).catch(err => { console.warn('p5naga failed to load', err); if (ctx.loadFail) ctx.loadFail('p5naga', err); });
@@ -243,7 +252,7 @@
             const u = Math.max(0, Math.min(1, (k * st.len - (1 - f) * Lb) / st.len));
             P0.getPointAt(u, _np); P0.getTangentAt(u, _nt);
             _nb.crossVectors(_nt, _up); if (_nb.lengthSq() < 1e-6) _nb.set(1, 0, 0); _nb.normalize(); _nn.crossVectors(_nb, _nt).normalize();
-            const yy = cy * s * (f > 0.86 ? 1.0 : 0.55), xx = cx * s * (f > 0.86 ? 1.0 : 0.62);
+            const bn = st.cl.bin[i], yy = (cy - st.cl.cy[bn]) * s, xx = (cx - st.cl.cx[bn]) * s;
             arr[i * 3] = _np.x + _nb.x * xx + _nn.x * yy; arr[i * 3 + 1] = _np.y + _nb.y * xx + _nn.y * yy; arr[i * 3 + 2] = _np.z + _nb.z * xx + _nn.z * yy;
           }
           st.geo.attributes.position.needsUpdate = true; st.geo.computeBoundingSphere();
