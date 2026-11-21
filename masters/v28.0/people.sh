@@ -65,7 +65,12 @@ go() { [ $all -eq 1 ] && return 0; for w in $WANT; do [ "$w" = "$1" ] && return 
 # walk only (the takes of the fight are laid on once the plan names them). His full body is repainted (HEROKEEP empty).
 # (each body's line runs in ( ) so that the switches written in front of `one` end with it: in some shells an
 #  assignment in front of a FUNCTION stays set afterwards, and the next body would inherit OUTN, WSMOOTH, XSCALE or FINS)
-go zavier && ( HEROKEEP= OUTN=zavier1 one zavier 40000 2048 $(T zavier walking Walking) )
+# (21 Nov 2026, after Chad's R8 and R9: "the first one already looked the best", "The first model face is the closest to
+#  reference": the first body is given the three switches the fourth proved (below), because its knit smears the same
+#  way under the weight smoothing: its back in the walk at 0.3, 99th percentile edge stretch and roughness 1.727 / 1.14
+#  as it was first prepared, the fourth's 1.741 / 1.13 before its switches. Without them this line made the bytes
+#  committed at 54038f5, proved: masters/v28.0/make.sh 5g.)
+go zavier && ( WSMOOTH=0 XSCALE=1000 FINS=1 HEROKEEP= OUTN=zavier1 one zavier 40000 2048 $(T zavier walking Walking) )
 # HIS SECOND BODY (the same day): the first came with four fingers of each hand fused into one piece, the gaps between
 # them only painted, and a watch whose face was a noisy checkered patch. The reference was made again with the same man
 # (masters/v28.0/ref/zavier-a2-2k.png: palms forward, every finger apart, a plain round watch) and the body from it.
