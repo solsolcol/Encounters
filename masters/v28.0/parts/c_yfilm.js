@@ -194,14 +194,17 @@
           const ext = bb.getSize(new THREE.Vector3()), along = ext.z >= ext.x ? 'z' : 'x';
           st.minX = along === 'z' ? bb.min.z : bb.min.x; st.maxX = along === 'z' ? bb.max.z : bb.max.x;
           const m = new THREE.MeshBasicMaterial({ color: 0xff3050, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, toneMapped: false, side: THREE.DoubleSide }); mats.push(m);
-          const ALONG = along === 'z' ? 'position.z' : 'position.x', ACROSS = along === 'z' ? 'position.x' : 'position.z';
+          /* (each point's place along the body, 0 at the tail and 1 at the head, kept as its own attribute: the body is laid
+             on the CPU into the world (set(), below), so the shader cannot read it from the position. As first written the
+             shader also set every point to the origin, left from a design that laid the body in the shader, and the Naga
+             was never drawn: together-00012, 21 Nov) */
+          { const P = geo.attributes.position, nf = new Float32Array(P.count), sp = st.maxX - st.minX;
+            for (let i = 0; i < P.count; i++) nf[i] = ((along === 'z' ? P.getZ(i) : P.getX(i)) - st.minX) / sp;
+            geo.setAttribute('aNf', new THREE.BufferAttribute(nf, 1)); }
           m.onBeforeCompile = (sh) => { Object.assign(sh.uniforms, U);
-            sh.vertexShader = 'uniform float uNK, uNT, uNLen; uniform sampler2D uNPath; varying float vNf; varying vec3 vNn;\n' + sh.vertexShader
+            sh.vertexShader = 'attribute float aNf; varying float vNf; varying vec3 vNn;\n' + sh.vertexShader
               .replace('#include <begin_vertex>', `#include <begin_vertex>
-                /* along the body: 0 at the tail, 1 at the head (the head leads along the path) */
-                float nf = (${ALONG} - ${st.minX.toFixed(4)}) / ${(st.maxX - st.minX).toFixed(4)};
-                vNf = nf; vNn = normal;
-                transformed = vec3(0.0);`);
+                vNf = aNf; vNn = normal;`);
             sh.fragmentShader = 'uniform float uNA, uNT, uNK; uniform vec3 uNCol, uNGold; varying float vNf; varying vec3 vNn;\n' + sh.fragmentShader
               .replace('vec4 diffuseColor = vec4( diffuse, opacity );', `
                 float scl = 0.55 + 0.45 * sin(vNf * 180.0 - uNT * 3.0) * sin(vNf * 37.0 + uNT * 1.7);
