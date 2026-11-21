@@ -1489,6 +1489,7 @@ f97cbc085517e6ec319ce0f3e2c48fbd22bca7e9076cfd6108ea95ce0c0cbf47  masters/v28.0/
 79e6254c08732a233684dc412a17a0219d9bdb6daf4a6178c075c4e5cbfa755b  masters/v28.0/src/original-jun.glb
 6c5fb0af4bee2d1a2e132e579d577afd3d06f1a2ce5ed73806bc7c2459fa7ab4  masters/v28.0/src/original-koh.glb
 58e378163098f63f0b1e04ac4619401af121a60665d7a712834704c813c0e99f  masters/v28.0/src/original-liftpanel.glb
+fd1f05027f929935341c3b1d8c0d7bea2c4780a076bc3891f6be6d9ad9f3c978  masters/v28.0/src/original-lowtable.glb
 fcde1cf408fb8d22231eb009dd50846ed06e9fa6d62b854d4deb7c7284624af6  masters/v28.0/src/original-nagastaff.glb
 f04f4941a48e0e2a2e8657c1b257dc35a9f9340d3f7a78be68f2949a4149019a  masters/v28.0/src/original-zavier.glb
 36fcb33832101b4cdb06c7f6576944c5d7baca85857de5b7b236dabcb5e87d6e  masters/v28.0/src/original-zavier4.glb
