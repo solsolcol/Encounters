@@ -97,13 +97,20 @@
     /* THE GOLDEN SHOCKWAVE: the gold gathering at his shoulders and a ring of gold drawn in round him (its 1.5 s), then the
        wheel going out over the paving; the lamps flaring as it passes them; the screen warmed a fifth of a second */
     const fsWheel = fsGround(fsWheelTex, FS_COL.gold, true, 0.02), fsWheel2 = fsGround(fsWheelTex, FS_COL.gold, true, 0.019);
+    /* (and its rim a low wall of gold light standing up off the paving as it goes out: the wheel read from behind and
+       above, where a ring lying flat on the paving is a thin line) */
+    const fsWallTex = (() => { const [c, x] = fsCanvas(64); const g = x.createLinearGradient(0, 64, 0, 0); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.3, 'rgba(255,255,255,0.5)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+      x.fillStyle = g; x.fillRect(0, 0, 64, 64); return tex(done(THREE, c, false)); })();
+    const fsWall = (() => { const geo = new THREE.CylinderGeometry(1, 1, 0.75, 72, 1, true); geo.translate(0, 0.375, 0); owned.push(geo);
+      const m = new THREE.MeshBasicMaterial({ map: fsWallTex, color: FS_COL.gold, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false, toneMapped: false }); mats.push(m);
+      const me = new THREE.Mesh(geo, m); me.visible = false; me.renderOrder = 3; FSG.add(me); return me; })();
     const fsGatherRing = fsGround(fsRingTex, FS_COL.gold, true, 0.021);
     const fsGoldHalo = fsSprite(FS_COL.gold, true, 6);
     /* THE BAG: what is drawn streams to his mouth and down into the open bag at the doorway; a thin line on the paving joins
        him to the one the button will take while it shows */
     const FS_STREAK = 14;
     const fsStreaks = [0, 1, 2].map(() => ({ on: false, id: 0, t: 0, T: 1, gold: false, a: new THREE.Vector3(), m: new THREE.Vector3(), b: new THREE.Vector3(), c: new THREE.Vector3(),
-      dots: Array.from({ length: FS_STREAK }, () => fsSprite(0x2a2f38, false, 5)), glints: Array.from({ length: 5 }, () => fsSprite(FS_COL.pale, true, 6)) }));
+      dots: Array.from({ length: FS_STREAK }, () => fsSprite(0x2a2f38, false, 5)), glints: Array.from({ length: 9 }, () => fsSprite(FS_COL.pale, true, 6)) }));
     const fsReach = (() => { const m = new THREE.Mesh(fsQuad, fsGroundMat(null, FS_COL.pale, true)); m.visible = false; m.position.y = 0.019; m.renderOrder = 2; FSG.add(m); return m; })();
     /* where a Prai presses his cage's bars: a violet flare on the bars, flickering */
     const fsPress = [0, 1, 2].map(() => fsSprite(FS_COL.violet, true, 5));
@@ -364,32 +371,32 @@
     function fsBallStart(f, wait = 0) {
       const B = fsBalls.find(b => !b.on) || fsBalls[0];
       B.on = true; B.t = 0; B.wait = Math.max(0, wait); B.T = Math.max(0.25, (FN5.flight || 0.7) - B.wait); B.ai = !!f.ai; B.id = f.id || 0; B.hist.length = 0;
-      fsMouth(B.a); const w = fsW(f.x, f.z); B.b.set(w.x, 0.85, w.z);
+      fsMouth(B.a); const w = fsW(f.x, f.z); B.b.set(w.x, 1.3, w.z);
       if (!f.id && !f.cloud) B.b.y = 0.05;
       if (!B.wait) fsBallSound(B);
     }
     function fsBallSound(B) { const m = B.a; fsFx(fsDeal('ball'), B.ai ? 0.45 : 0.8, m.x, m.z); fsFx('u5flight', B.ai ? 0.32 : 0.6, m.x, m.z); }
     function fsBloom(x, z, col, k = 1) { const L = fsBlooms.find(b => !b.on) || fsBlooms[0]; L.on = true; L.t = 0; L.col = col; L.k = k;
-      L.s.material.color.setHex(col); L.g.material.color.setHex(col); L.s.position.set(x, 0.9, z); L.g.position.set(x, 0.017, z); }
+      L.s.material.color.setHex(col); L.g.material.color.setHex(col); L.s.position.set(x, 1.3, z); L.g.position.set(x, 0.017, z); }
     function fsFxFrame(wdt0, ft) {
       const st = FS5.st, wdt = FS5.labHold ? 0 : wdt0;
       /* the fireballs: up out of the mouth, over, and down (a parabola above the line between them; it rises 1.6 m) */
       for (const B of fsBalls) {
         if (!B.on) { if (B.core.visible) { B.core.visible = B.glow.visible = B.halo.visible = B.pool.visible = false; for (const s of B.trail) s.visible = false; } continue; }
         if (B.wait > 0) { B.wait -= wdt; if (B.wait > 0) continue; fsMouth(B.a); fsBallSound(B);   // (let go now, from the stick's head)
-          fsBurst(B.a.x, B.a.y, B.a.z, B.ai ? 6 : 12, { sp: 1.6, up: 0.2, life: 0.45, s0: 0.06, col: FS_COL.ruby, col2: FS_COL.rubyCore, mix: 0.4, grav: -2 }); }
+          fsBurst(B.a.x, B.a.y, B.a.z, B.ai ? 6 : 12, { sp: 1.6, up: 0.2, life: 0.45, s0: 0.1, col: FS_COL.ruby, col2: FS_COL.rubyCore, mix: 0.4, grav: -2 }); }
         B.t += wdt; const u = c01(B.t / B.T), h = (B.ai ? 1.1 : 1.6) * 4 * u * (1 - u);
         _fsA.lerpVectors(B.a, B.b, u); _fsA.y += h;
         const sz = B.ai ? 0.62 : 1, fl = 0.88 + 0.08 * Math.sin(ft * 41 + B.id) + 0.05 * Math.sin(ft * 67);
         B.core.visible = B.glow.visible = B.halo.visible = true; B.core.position.copy(_fsA); B.glow.position.copy(_fsA); B.halo.position.copy(_fsA);
-        B.core.scale.setScalar(0.18 * sz * (0.95 + 0.1 * fl)); B.glow.scale.setScalar(0.62 * sz * fl); B.halo.scale.setScalar(1.25 * sz * (0.9 + 0.1 * fl));
+        B.core.scale.setScalar(0.26 * sz * (0.95 + 0.1 * fl)); B.glow.scale.setScalar(0.9 * sz * fl); B.halo.scale.setScalar(1.7 * sz * (0.9 + 0.1 * fl));
         B.core.material.opacity = 1; B.glow.material.opacity = 0.9; B.halo.material.opacity = 0.28;
         /* (its sparks: shed behind it, ruby and its pale heart, falling away) */
-        if (wdt > 0) { const r = FS5.srand || Math.random, n = B.ai ? 1 : 2;
+        if (wdt > 0) { const r = FS5.srand || Math.random, n = B.ai ? 2 : 3;
           for (let k = 0; k < n; k++) fsSpark(_fsA.x + (r() - 0.5) * 0.12, _fsA.y + (r() - 0.5) * 0.12, _fsA.z + (r() - 0.5) * 0.12,
-            { vx: (r() - 0.5) * 0.8, vy: (r() - 0.3) * 0.8, vz: (r() - 0.5) * 0.8, life: 0.32 + 0.25 * r(), s0: (B.ai ? 0.05 : 0.075) * (0.7 + 0.6 * r()), col: r() < 0.35 ? FS_COL.rubyCore : FS_COL.ruby, grav: -2.2, drag: 2.5 }); }
+            { vx: (r() - 0.5) * 0.8, vy: (r() - 0.3) * 0.8, vz: (r() - 0.5) * 0.8, life: 0.32 + 0.25 * r(), s0: (B.ai ? 0.08 : 0.11) * (0.7 + 0.6 * r()), col: r() < 0.35 ? FS_COL.rubyCore : FS_COL.ruby, grav: -2.2, drag: 2.5 }); }
         if (wdt > 0) { B.hist.unshift(_fsA.clone()); if (B.hist.length > FS_TRAIL * 2) B.hist.length = FS_TRAIL * 2; }
-        B.trail.forEach((s, j) => { const q = B.hist[j * 2 + 1]; s.visible = !!q; if (!q) return; s.position.copy(q); s.scale.setScalar(0.36 * sz * (1 - j / FS_TRAIL)); s.material.opacity = 0.55 * (1 - j / FS_TRAIL); });
+        B.trail.forEach((s, j) => { const q = B.hist[j * 2 + 1]; s.visible = !!q; if (!q) return; s.position.copy(q); s.scale.setScalar(0.52 * sz * (1 - j / FS_TRAIL)); s.material.opacity = 0.6 * (1 - j / FS_TRAIL); });
         B.pool.visible = true; B.pool.position.set(_fsA.x, 0.016, _fsA.z); B.pool.scale.set(1.1 * sz, 1, 1.1 * sz); B.pool.material.opacity = 0.32 * (0.4 + 0.6 * (1 - h / 1.6));
         if (u >= 1) B.on = false;
       }
@@ -413,7 +420,7 @@
         const U = Bb.me.material.uniforms; U.uA.value = 0.35 + 0.65 * left; U.uT.value = ft; U.uFl.value = Bb.fl;
         /* (violet motes rising off its skin, the fewer the thinner it has worn) */
         if (wdt > 0) { const rr = FS5.srand || Math.random; if (rr() < wdt * (6 + 10 * left)) { const a = rr() * Math.PI * 2, yy = rr() * 2 - 1, q = Math.sqrt(1 - yy * yy);
-          fsSpark(w.x + Math.cos(a) * q * 0.6 * sc, 0.92 * sc + yy * 0.95 * sc, w.z + Math.sin(a) * q * 0.6 * sc, { vx: 0, vy: 0.22 + 0.2 * rr(), vz: 0, life: 0.8 + 0.4 * rr(), s0: 0.045, s1: 0.02, col: 0xc9b0ff, grav: 0.05, drag: 0.4, a: 0.85 }); } }
+          fsSpark(w.x + Math.cos(a) * q * 0.6 * sc, 0.92 * sc + yy * 0.95 * sc, w.z + Math.sin(a) * q * 0.6 * sc, { vx: 0, vy: 0.22 + 0.2 * rr(), vz: 0, life: 0.8 + 0.4 * rr(), s0: 0.075, s1: 0.03, col: 0xc9b0ff, grav: 0.05, drag: 0.4, a: 0.85 }); } }
         void P;
       });
       /* the tired ones' rings, closing */
@@ -438,21 +445,22 @@
       /* THE GOLD: gathering at his shoulders (a ring of gold drawn in round him), then the wheel out over the paving */
       const ph = st.pho, pw = cast.pho ? cast.pho.group.position : null, wind = ph.wind > 0 ? 1 - ph.wind / Math.max(0.1, FN5.windSecs || 1.5) : 0;
       if (wind > 0 && pw) { fsGatherRing.visible = true; fsGatherRing.position.set(pw.x, 0.021, pw.z); const r = 2.6 - 1.9 * wind; fsGatherRing.scale.set(r * 2, 1, r * 2); fsGatherRing.material.opacity = 0.35 + 0.5 * wind;
-        fsGoldHalo.visible = true; fsHead(cast.pho, fsGoldHalo.position, 1.5); fsGoldHalo.position.y -= 0.15; fsGoldHalo.scale.setScalar(0.9 + 1.6 * wind); fsGoldHalo.material.opacity = 0.35 + 0.5 * wind;
+        fsGoldHalo.visible = true; fsHead(cast.pho, fsGoldHalo.position, 1.5); fsGoldHalo.position.y -= 0.15; fsGoldHalo.scale.setScalar(0.9 + 1.6 * wind); fsGoldHalo.material.opacity = 0.22 + 0.38 * wind;
         if (wdt > 0) { const rr = FS5.srand || Math.random, to = { x: fsGoldHalo.position.x, y: fsGoldHalo.position.y, z: fsGoldHalo.position.z, k: 3.2 };
           for (let k = 0; k < 4; k++) { const a = rr() * Math.PI * 2, R = r + 0.2 + rr() * 0.6;
-            fsSpark(pw.x + Math.cos(a) * R, 0.15 + rr() * 1.7, pw.z + Math.sin(a) * R, { vx: -Math.sin(a) * 0.9, vy: 0, vz: Math.cos(a) * 0.9, life: 0.5 + 0.2 * rr(), s0: 0.06 * (0.7 + 0.6 * rr()), s1: 0.03, col: rr() < 0.25 ? 0xfff0c8 : FS_COL.gold, grav: 0, drag: 0.5, to }); } } }
+            fsSpark(pw.x + Math.cos(a) * R, 0.15 + rr() * 1.7, pw.z + Math.sin(a) * R, { vx: -Math.sin(a) * 0.9, vy: 0, vz: Math.cos(a) * 0.9, life: 0.5 + 0.2 * rr(), s0: 0.1 * (0.7 + 0.6 * rr()), s1: 0.04, col: rr() < 0.25 ? 0xfff0c8 : FS_COL.gold, grav: 0, drag: 0.5, to }); } } }
       else { fsGatherRing.visible = false; fsGoldHalo.visible = false; }
       if (ph.ring) { const w = fsW(ph.ring.x, ph.ring.z), r = Math.max(0.2, ph.ring.r), out = c01(r / Math.max(0.1, FN5.ringMax || 7));
         fsWheel.visible = true; fsWheel.position.set(w.x, 0.02, w.z); fsWheel.scale.set(r * 2, 1, r * 2); fsWheel.rotation.y = -r * 0.25; fsWheel.material.opacity = 0.95 * (1 - out * out);
         /* (a second wheel just behind it, turning the other way; gold motes lifting off its rim as it goes) */
+        fsWall.visible = true; fsWall.position.set(w.x, 0, w.z); fsWall.scale.set(r, 1 - 0.5 * out, r); fsWall.material.opacity = 0.75 * (1 - out);
         const r2 = Math.max(0.15, r - 0.55); fsWheel2.visible = true; fsWheel2.position.set(w.x, 0.019, w.z); fsWheel2.scale.set(r2 * 2, 1, r2 * 2); fsWheel2.rotation.y = r * 0.4; fsWheel2.material.opacity = 0.5 * (1 - out);
         if (wdt > 0) { const rr = FS5.srand || Math.random; for (let k = 0; k < 7; k++) { const a = rr() * Math.PI * 2;
-          fsSpark(w.x + Math.cos(a) * r, 0.06, w.z + Math.sin(a) * r, { vx: Math.cos(a) * 0.5, vy: 0.7 + 0.8 * rr(), vz: Math.sin(a) * 0.5, life: 0.55 + 0.35 * rr(), s0: 0.07 * (0.7 + 0.6 * rr()), col: rr() < 0.3 ? 0xfff0c8 : FS_COL.gold, grav: 0.25, drag: 1.2, a: 0.9 * (1 - out) }); } }
+          fsSpark(w.x + Math.cos(a) * r, 0.06, w.z + Math.sin(a) * r, { vx: Math.cos(a) * 0.5, vy: 0.7 + 0.8 * rr(), vz: Math.sin(a) * 0.5, life: 0.55 + 0.35 * rr(), s0: 0.11 * (0.7 + 0.6 * rr()), col: rr() < 0.3 ? 0xfff0c8 : FS_COL.gold, grav: 0.25, drag: 1.2, a: 0.9 * (1 - out) }); } }
         /* the lamps at the house flare as it passes them */
         const dl = Math.abs((COURT5.z - (HOUSE.face - 0.3)) - ph.ring.z) - r;
         if (dl < 0.2 && !FS5.flared) { FS5.flared = true; FS5.flare = 1; fsFx('u5lampflare', 0.4, DOOR_FRONT.x0 - 0.38, HOUSE.face - 0.3); fsFx('u5lampflare', 0.34, DOOR_FRONT.x1 + 0.38, HOUSE.face - 0.3); } }
-      else { fsWheel.visible = fsWheel2.visible = false; FS5.flared = false; }
+      else { fsWheel.visible = fsWheel2.visible = fsWall.visible = false; FS5.flared = false; }
       FS5.flare = Math.max(0, FS5.flare - wdt * 2.2);
       /* the streaks: drawn to his mouth, and down into the bag (gold when the gold gathers it) */
       for (const S of fsStreaks) {
@@ -463,8 +471,8 @@
           const v = (q - 0.6) / 0.4; return out.lerpVectors(S.m, S.c, v).setY(lp(S.m.y, S.c.y, v) + 0.25 * Math.sin(v * Math.PI)); };
         S.dots.forEach((d, j) => { const q = u * 1.25 - j * 0.03; d.visible = q > 0 && q < 1; if (!d.visible) return; at(q, d.position);
           d.scale.setScalar(0.26 * (1 - 0.6 * q) + 0.05); d.material.opacity = 0.85 * (1 - q * 0.5); d.material.color.setHex(S.gold ? 0x7a5a18 : 0x232830); });
-        S.glints.forEach((d, j) => { const q = u * 1.25 - j * 0.07 - 0.02; d.visible = q > 0 && q < 1; if (!d.visible) return; at(q, d.position);
-          d.scale.setScalar(0.18); d.material.opacity = 0.7; d.material.color.setHex(S.gold ? FS_COL.gold : FS_COL.pale); });
+        S.glints.forEach((d, j) => { const q = u * 1.25 - j * 0.04 - 0.02; d.visible = q > 0 && q < 1; if (!d.visible) return; at(q, d.position);
+          d.scale.setScalar(0.3 * (1 - 0.4 * q)); d.material.opacity = 0.85; d.material.color.setHex(S.gold ? FS_COL.gold : FS_COL.pale); });
         if (u >= 1) S.on = false;
       }
       /* the bubbles of light where a Prai presses the bars, flickering */
@@ -621,7 +629,7 @@
       const P = st.who === 'pho', nd = st.cur, out = [];
       const pick = FS5.pick;
       for (const p of st.prai) {
-        const s = p.st, w = fsW(p.x, p.z), V = fsVis[p.id - 1], y = 1.0 * (V ? V.s : 1);
+        const s = p.st, w = fsW(p.x, p.z), V = fsVis[p.id - 1], y = 1.95 * (V ? V.s : 1);   // (over its head, never on one in front of it)
         let col = null, dim = false;
         if (P) {
           if (s === 'bound') col = '#ff4a62';
@@ -654,11 +662,11 @@
             fsBallStart(e, up); FS5.faceTo.pho = e; FS5.faceT.pho = 0.7;
             break; }
           case 'land': { const w = fsW(e.x, e.z), p = e.id ? st.prai[e.id - 1] : null;
-            const y0 = 0.9 * (p && fsVis[p.id - 1] ? fsVis[p.id - 1].s : 1);
+            const y0 = 1.3 * (p && fsVis[p.id - 1] ? fsVis[p.id - 1].s : 1);
             if (e.result === 'tired') { fsBloom(w.x, w.z, FS_COL.ruby, 1.2); fsFx('u5ruby', 0.8, w.x, w.z); fsFx(fsDeal('tired'), 0.8, w.x, w.z); const Bb = fsBubbles.find(b => b.id === e.id); if (Bb) Bb.fl = 1;
-              fsBurst(w.x, y0, w.z, 30, { sp: 3.2, up: 0.15, life: 0.8, s0: 0.085, col: FS_COL.ruby, col2: FS_COL.rubyCore, mix: 0.35, grav: -4 }); }
+              fsBurst(w.x, y0, w.z, 30, { sp: 3.2, up: 0.15, life: 0.8, s0: 0.14, col: FS_COL.ruby, col2: FS_COL.rubyCore, mix: 0.35, grav: -4 }); }
             else if (e.result === 'chased' || e.result === 'setback') { fsBloom(w.x, w.z, FS_COL.ruby, e.result === 'setback' ? 0.7 : 1); fsFx(fsDeal('land'), e.result === 'setback' ? 0.5 : 0.8, w.x, w.z); if (p) fsFx(FS_HIT[p.kind] || 'u5hitc', e.result === 'setback' ? 0.5 : 0.8, w.x, w.z);
-              fsBurst(w.x, y0, w.z, e.result === 'setback' ? 12 : 22, { sp: 2.6, up: 0.25, life: 0.65, s0: 0.075, col: FS_COL.ruby, col2: FS_COL.rubyCore, mix: 0.3, grav: -4 }); }
+              fsBurst(w.x, y0, w.z, e.result === 'setback' ? 12 : 22, { sp: 2.6, up: 0.25, life: 0.65, s0: 0.12, col: FS_COL.ruby, col2: FS_COL.rubyCore, mix: 0.3, grav: -4 }); }
             else if (e.result === 'slipped') { fsBloom(w.x, w.z, FS_COL.ruby, 0.5); fsFx('u5slipthru', 0.8, w.x, w.z); fsBurst(w.x, 0.3, w.z, 8, { sp: 1.6, up: 0.4, life: 0.5, s0: 0.06, col: FS_COL.ruby, grav: -4 }); }
             else if (e.result === 'stale') { fsBloom(w.x, w.z, FS_COL.sour, 0.7); fsFx('u5stale', 0.8, w.x, w.z); fsBurst(w.x, 0.5, w.z, 8, { sp: 0.9, up: 0.5, life: 0.7, s0: 0.06, col: FS_COL.sour, grav: 0.3, a: 0.5 }); }
             else { fsBloom(w.x, w.z, FS_COL.ruby, 0.6); fsFx(fsDeal('land'), 0.6, w.x, w.z); fsBurst(w.x, 0.1, w.z, 10, { sp: 2, up: 0.45, life: 0.5, s0: 0.065, col: FS_COL.ruby, grav: -5 }); }
@@ -667,7 +675,7 @@
             if (e.stale) fsFx('u5bindstale', 0.8, zw ? zw.x : null, zw ? zw.z : null);
             else { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null; fsFx(fsDeal('bind'), 0.8, w ? w.x : null, w ? w.z : null);
               if (w) { FS5.faceTo.zavier = { x: p.x, z: p.z }; FS5.faceT.zavier = 0.7; fsBloom(w.x, w.z, FS_COL.violet, 0.9);
-                fsBurst(w.x, 0.95, w.z, 20, { sp: 1.8, up: 0, life: 0.6, s0: 0.065, col: FS_COL.violet, col2: 0xe6dcff, mix: 0.3, grav: 0, drag: 3.5 }); } }
+                fsBurst(w.x, 1.2, w.z, 20, { sp: 1.8, up: 0, life: 0.6, s0: 0.11, col: FS_COL.violet, col2: 0xe6dcff, mix: 0.3, grav: 0, drag: 3.5 }); } }
             break; }
           case 'unbind': { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null; fsFx('u5bindpop', 0.8, w ? w.x : null, w ? w.z : null); break; }
           case 'smell': { const zw = cast.zav ? cast.zav.group.position : { x: 0, z: 0 }; fsRipple.t = 0; fsRipple.x = zw.x; fsRipple.z = zw.z;
@@ -682,14 +690,14 @@
           case 'windup': { const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5windup', 0.8, pw ? pw.x : null, pw ? pw.z : null); fsFx('u5robe', 0.8, pw ? pw.x : null, pw ? pw.z : null);
             fsPhoAct('wave', FN5.windSecs || 1.5); break; }
           case 'wave': fsFx('u5wave', 1.0, null); if (kit && kit.flash) kit.flash({ color: '#FFD27A', secs: 0.22 }); FS5.flared = false; fsPhoRelease('wave');
-            { const pw = cast.pho ? cast.pho.group.position : null; if (pw) fsBurst(pw.x, 1.45, pw.z, 40, { sp: 4, up: 0, life: 0.85, s0: 0.085, col: FS_COL.gold, col2: 0xfff0c8, mix: 0.35, grav: -0.6, drag: 1.6 }); }
+            { const pw = cast.pho ? cast.pho.group.position : null; if (pw) fsBurst(pw.x, 1.45, pw.z, 40, { sp: 4, up: 0, life: 0.85, s0: 0.13, col: FS_COL.gold, col2: 0xfff0c8, mix: 0.35, grav: -0.6, drag: 1.6 }); }
             break;
           case 'broken': { const pw = cast.pho ? cast.pho.group.position : null; fsFx('u5wavebreak', 0.8, pw ? pw.x : null, pw ? pw.z : null); fsPhoCut('wave'); break; }
           case 'gathered': { const p = st.prai[e.id - 1]; fsStreak(p, e.by === 'wave');
             /* (the manifest's: gathered by the gold, drawn and its note; by the bag, the bag's snap and its note: the bag's
                drawing was heard at its press) */
             if (e.by === 'bag') { fsFx('u5bagsnap', 0.8, RITE.bag.x, RITE.bag.z); fsPhoRelease('bag'); fsBurst(RITE.bag.x, 0.4, RITE.bag.z, 14, { sp: 1.2, up: 0.5, life: 0.55, s0: 0.05, col: FS_COL.pale, grav: -1 }); }
-            else { fsFx(fsDeal('drawn'), 0.8, null); if (p) { const w = fsW(p.x, p.z); fsBurst(w.x, 0.9, w.z, 16, { sp: 1.6, up: 0.3, life: 0.6, s0: 0.07, col: FS_COL.gold, col2: 0xfff0c8, mix: 0.3, grav: 0.4 }); } }
+            else { fsFx(fsDeal('drawn'), 0.8, null); if (p) { const w = fsW(p.x, p.z); fsBurst(w.x, 0.9, w.z, 16, { sp: 1.6, up: 0.3, life: 0.6, s0: 0.11, col: FS_COL.gold, col2: 0xfff0c8, mix: 0.3, grav: 0.4 }); } }
             const n = Math.max(1, Math.min(9, 9 - e.left)); fsFx(FS_DEAL.note[n - 1], 0.7, null);
             if (FS5.pick === 'p' + e.id) FS5.pick = null;
             break; }
@@ -700,7 +708,7 @@
           case 'reach': { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null; fsFx(fsDeal('gather'), 0.8, w ? w.x : null, w ? w.z : null); break; }
           case 'rise': { const p = st.prai[e.id - 1], w = p ? fsW(p.x, p.z) : null; fsFx('u5unrise', 0.8, w ? w.x : null, w ? w.z : null); break; }
           case 'cageBreak': { const zw = cast.zav ? cast.zav.group.position : null; fsFx('u5cagecrack', 0.8, zw ? zw.x : null, zw ? zw.z : null); fsFx('u5stagger', 0.8, zw ? zw.x : null, zw ? zw.z : null);
-            if (zw) fsBurst(zw.x, 1.1, zw.z, 26, { sp: 2.4, up: 0, life: 0.7, s0: 0.07, col: FS_COL.violet, col2: 0xffffff, mix: 0.2, grav: -3, drag: 1.5 }); break; }
+            if (zw) fsBurst(zw.x, 1.1, zw.z, 26, { sp: 2.4, up: 0, life: 0.7, s0: 0.11, col: FS_COL.violet, col2: 0xffffff, mix: 0.2, grav: -3, drag: 1.5 }); break; }
           case 'cageWhole': fsFx('u5cagewhole', 0.8, null); break;
           case 'switch': fsFx(e.to === 'pho' ? 'u5swpho' : 'u5swzav', 0.8, null); break;
           case 'hold': fsFx('u5plant', 0.8, null); break;
