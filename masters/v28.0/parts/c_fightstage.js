@@ -929,6 +929,9 @@
         /* (the played one kept in by the rules keeps walking along what kept him (R25): only the push into it is lost) */
         if (who === playedNow) { if (off > 0.012 && st.stage !== 'brief') kit.tagPlace(who, w.x, w.z, { keep: true }); }
         else { if (off > 0.004) kit.tagPlace(who, w.x, w.z); if (who === 'pho') FS5.aiPace.pho = dt > 0 ? off / dt : 0; }
+        /* (the ground each really covered this frame, where the rules have him: what his walk's rate follows. The engine's
+           own reading counts a push the rules then took back, and his legs walked on the spot against the court's edge) */
+        const L0 = FS5.last[k2]; FS5.cov[k2] = L0 && dt > 0 ? Math.hypot(R2.x - L0.x, R2.z - L0.z) / dt : 0;
         FS5.last[k2] = { x: R2.x, z: R2.z };
       }
       /* (a held act let go when the rules let it go, whatever ended it: the gold out or broken, the bag's draw done or
@@ -971,8 +974,8 @@
        pools and the gold at his shoulders, the nine, the effects, the souring of the picture when he is reached */
     function fsLookFrame(wdt, played, phoB, zavB) {
       const st = FS5.st, ft = st.t;
-      fsBodyTake(cast.pho, 'pho', played === 'pho' ? (phoB ? phoB.v : 0) : (FS5.aiPace.pho || 0), wdt);
-      fsBodyTake(cast.zav, 'zav', played === 'zavier' ? (zavB ? zavB.v : 0) : 0, wdt);
+      fsBodyTake(cast.pho, 'pho', FS5.cov.pho || 0, wdt);
+      fsBodyTake(cast.zav, 'zav', played === 'zavier' ? (FS5.cov.zav || 0) : 0, wdt);
       fsSteps();
       const zw = cast.zav ? cast.zav.group.position : null, pw = cast.pho ? cast.pho.group.position : null;
       /* the cage: round him, or round his teacher while it is lent; its strength its brightness; cracked when broken or in the surge */
@@ -1011,7 +1014,7 @@
     /* THE FIGHT'S LOOPS, aimed each frame: the cage, the murmur, each Prai's voice where it is, each bubble's note, the
        shape, M7's stems (the one played leads: the manifest's levels), M10 for the last three */
     const FS_M7 = 1;                                                        // (M7 at the manifest's own gains, each stem's note: the sound helper's measured mix)
-    FS5.aiPace = { pho: 0 };
+    FS5.aiPace = { pho: 0 }; FS5.cov = { pho: 0, zav: 0 };
     function fsSoundFrame(wdt, played) {
       /* (under the brief the mode is not live, but the court is his: the cage's hum and his murmur go on from the film's) */
       const st = FS5.st, c = st.cage, str = c.broken ? 0 : c.str / (FN5.cageMax || 100), live = (FS5.live || FS5.brief) && st.stage !== 'lost';
@@ -1117,7 +1120,7 @@
       Object.assign(FS5, { on: false, st: null, mode: false, brief: false, live: false, lastT: 0, q: null, pick: null, wall: 0, wonAt: -1, done: false,
         hudSig: '', obj: null, objKey: '', film: false, losses: 0, rand: null, flare: 0, flared: false, drainSnd: 0, reached: 0, chillK: -1, chillHold: 0,
         swNeed: false, stemsOn: false, lastLine: '', card: null, cardAt: 0, lostAt: 0, retrying: false, cageAt: null, m8: null, act: null, actN: 0, waits: {}, lab: false, labHold: false, labPose: null, probeK: FS5.probeK || 1, groundOn: !!FS5.groundOn });
-      FS5.heard.length = 0; FS5.last.pho = null; FS5.last.zav = null; FS5.faceT.pho = FS5.faceT.zavier = 0; FS5.aiPace.pho = 0;
+      FS5.heard.length = 0; FS5.last.pho = null; FS5.last.zav = null; FS5.faceT.pho = FS5.faceT.zavier = 0; FS5.aiPace.pho = 0; FS5.cov.pho = FS5.cov.zav = 0;
       fsTake.pho.stepU = fsTake.zav.stepU = null;
       for (const k in fsDealN) delete fsDealN[k];
       fsPraiReset(false);
