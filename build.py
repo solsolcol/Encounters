@@ -1061,7 +1061,14 @@ for key, (name, wanted, _pre) in ASSETS.items():
     body = (d / name).read_bytes()
     tag = hashlib.md5(body).hexdigest()[:10]
     out = f'assets/{key}.{tag}{pathlib.Path(name).suffix}'
-    (dist / out).write_bytes(body)
+    # v28.0: ENC_DISTLINK=1 hard-links the asset into dist instead of writing a second copy of its bytes (the same
+    # bytes by construction: the name alone differs), for a build on a machine short of room. Unset, or where a link
+    # cannot be made, the copy is written as it always was.
+    if __import__('os').environ.get('ENC_DISTLINK') == '1':
+        try: __import__('os').link(d / name, dist / out)
+        except OSError: (dist / out).write_bytes(body)
+    else:
+        (dist / out).write_bytes(body)
     asset_map[key] = out
 
 hosted = bundle.replace('__ASSET_MAP_B64__',
